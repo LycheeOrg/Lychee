@@ -44,16 +44,19 @@ Only the lychee instance owner can set their album and photos as purchasable. On
 
 The shop integration uses a modular payment processing architecture that:
 
-- Supports multiple payment providers.
-- Handles payment verification and confirmation.
-- Manages secure download delivery after purchase.
-- Maintains purchase records for accounting.
+- **Supports multiple payment providers**: Mollie, PayPal (Express, Pro, Rest, ExpressInContext), Stripe, and Dummy (for testing)
+- **Handles payment verification and confirmation**: Complete payment flow with return/cancel URLs
+- **Manages secure download delivery after purchase**: Temporary signed URLs prevent unauthorized access
+- **Maintains purchase records for accounting**: Full order and transaction history
+- **Offline mode**: For manual payment processing when `webshop_offline` is enabled
+- **Guest checkout support**: Configurable guest checkout with email requirements for FULL size variants
 
 ## Size Variant Options
 
 The system supports multiple size variant options for purchase:
 
 - **MEDIUM**: Lower-priced option for digital/web use.
+- **MEDIUM2x**: Higher resolution medium option for better quality.
 - **FULL**: Medium-priced option providing the largest size available on Lychee.
 - **ORIGINAL**: Premium option providing the original file directly from the photographer (optional, requires the photographer to export the photo).
 
@@ -86,18 +89,22 @@ The system offers several configuration options:
 
 The frontend implementation consists of several key components:
 
-- **Basket**: A global component allowing users to review selected photos before purchase.
-- **Photo Purchase Dialog**: Interface for selecting photo resolution and adding to basket.
-- **Checkout Flow**: Steps to complete the purchase, including payment method selection.
-- **Purchase History**: View for users to access their previously purchased photos.
+- **Basket Management** (`BasketList.vue`): Complete basket interface with item management
+- **Checkout Flow** (`CheckoutPage.vue`): Multi-step checkout process with payment integration
+- **Order Management** (`OrderList.vue`): Admin interface for viewing all orders
+- **Purchasables Management** (`PurchasablesList.vue`): Admin interface for managing purchasable items
+- **Purchase Actions** (`ThumbBuyMe.vue`): Photo thumbnail overlay for adding to basket
+- **Order Components**: Order summary, status indicators, and info sections
+- **Integration Components**: Mollie and Stripe payment components with proper theming
 
 ## State Management
 
 ### Frontend State
-The shop functionality uses Pinia store to manage:
+The shop functionality uses Pinia stores to manage:
 
-- Shopping basket contents
-- Checkout process state
+- **OrderManagementStore**: Shopping basket contents, order state, and basket operations
+- **CatalogStore**: Purchasable items and catalog data
+- **UserStore**: User authentication state for checkout validation
 
 ### Backend Session Management
 The basket functionality uses Laravel's session management:
@@ -112,10 +119,12 @@ The basket functionality uses Laravel's session management:
 
 The shop functionality integrates with Lychee at multiple levels:
 
-- **Photo Context Menu**: Adds "Add to Basket" option for purchasable photos.
-- **Photo Detail View**: Displays purchase information and pricing.
-- **User Account**: Extends with purchase history and download rights.
-- **Admin Panel**: Adds controls to set photos as purchasable and configure pricing.
+- **Album/Photo Headers**: Basket icon with item count in headers (`AlbumHeader.vue`, `AlbumsHeader.vue`)
+- **Photo Thumbnails**: "Add to Basket" overlay on purchasable photos (`ThumbBuyMe.vue`)
+- **Navigation**: Dedicated routes for basket, checkout, orders, and purchasables management
+- **Admin Interface**: Complete shop management through admin controllers and views
+- **Session Management**: Automatic basket persistence across user sessions
+- **Permission System**: Integration with Lychee's permission system for purchasable content
 
 ## User Flows
 
@@ -142,11 +151,12 @@ The shop functionality integrates with Lychee at multiple levels:
 
 ### Photographer Flow
 
-1. Photographer uploads photos.
-2. Photographer marks specific photos as purchasable.
-3. Photographer sets pricing and license options.
-4. Photographer receives notifications of sales.
-5. Photographer can review sales history.
+1. Photographer uploads photos to Lychee.
+2. Photographer accesses the Purchasables management interface (`/purchasables`).
+3. Photographer sets individual photos or entire albums as purchasable.
+4. Photographer configures pricing for different size variants and license types.
+5. Photographer can enable/disable purchasable items and add descriptions.
+6. Photographer views order history and manages completed sales via Orders interface (`/orders`).
 
 ## License Management
 

@@ -4,148 +4,185 @@ This document provides detailed implementation notes for the Shop Integration in
 
 ## Database Structure
 
-### Purchasable
-The `purchasable` table defines which photos or albums are available for purchase:
+### Purchasables Table
+The `purchasables` table defines which photos or albums are available for purchase:
 
-- `id`: Primary key
-- `album_id`: FK to albums table (nullable if photo-specific)
-- `photo_id`: FK to photos table (nullable if album-level)
-- `description`: Public description shown to customers
-- `owner_notes`: Private notes for the owner
-- `is_active`: Whether this item is currently purchasable
+- `id`: Primary key (int)
+- `photo_id`: Foreign key to photos table (string, nullable)
+- `album_id`: Foreign key to albums table (string, nullable)
+- `description`: Public description shown to customers (string, nullable)
+- `owner_notes`: Private notes for the owner (string, nullable)  
+- `is_active`: Boolean indicating if the item is currently purchasable
+- No timestamps (timestamps = false)
 
-### Purchasable Prices
-The `purchasable_prices` table handles the combination of size variants and license types:
+### Purchasable Prices Table
+The `purchasable_prices` table stores pricing for size variant and license combinations:
 
-- `id`: Primary key
-- `purchasable_id`: FK to purchasables table
-- `size_variant`: Size variant type (MEDIUM, MEDIUM2x, FULL, ORIGINAL)
-- `license_type`: License type (PERSONAL, COMMERCIAL, EXTENDED)
-- `price_cents`: Integer price in smallest currency unit (cents)
+- `id`: Primary key (int)
+- `purchasable_id`: Foreign key to purchasables table (int)
+- `size_variant`: PurchasableSizeVariantType enum ('medium', 'medium2x', 'original', 'full')
+- `license_type`: PurchasableLicenseType enum ('personal', 'commercial', 'extended')
+- `price_cents`: Money object using MoneyCast
+- No timestamps (timestamps = false)
 
-### Order
-The `orders` table represents a complete purchase transaction:
+### Orders Table
+The `orders` table represents purchase transactions:
 
-- `id`: Primary key
-- `transaction_id`: Unique transaction identifier
-- `provider`: Payment provider name (OmnipayProviderType enum)
-- `user_id`: FK to users table (nullable)
-- `email`: Customer email
-- `status`: Order status (PaymentStatusType enum: PENDING, COMPLETED, etc.)
-- `amount_cents`: Total order amount in smallest currency unit
-- `paid_at`: Payment timestamp (nullable)
-- `comment`: Order notes (nullable)
+- `id`: Primary key (int)
+- `transaction_id`: Unique transaction identifier (string)
+- `provider`: OmnipayProviderType enum (payment provider)
+- `user_id`: Foreign key to users table (int, nullable)
+- `email`: Customer email address (string, nullable)
+- `status`: PaymentStatusType enum ('pending', 'cancelled', 'failed', 'refunded', 'processing', 'offline', 'completed', 'closed')
+- `amount_cents`: Money object using MoneyCast
+- `paid_at`: Payment timestamp (datetime, nullable)
+- `comment`: Order notes (string, nullable)
+- `created_at`, `updated_at`: Laravel timestamps
 
-### Order Item
+### Order Items Table  
 The `order_items` table represents individual items within an order:
 
-- `id`: Primary key
-- `order_id`: FK to orders table
-- `purchasable_id`: FK to purchasables table
-- `album_id`: FK to albums table (nullable)
-- `photo_id`: FK to photos table (nullable)
-- `title`: Item title at time of purchase
-- `license_type`: PurchasableLicenseType enum (PERSONAL, COMMERCIAL, EXTENDED)
-- `price_cents`: Price in smallest currency unit
-- `size_variant_type`: PurchasableSizeVariantType enum (MEDIUM, MEDIUM2x, FULL, ORIGINAL)
-- `item_notes`: Item-specific notes (nullable)
+- `id`: Primary key (int)
+- `order_id`: Foreign key to orders table (int)
+- `purchasable_id`: Foreign key to purchasables table (int, nullable)
+- `album_id`: Foreign key to albums table (string, nullable)
+- `photo_id`: Foreign key to photos table (string, nullable)
+- `title`: Item title at time of purchase (string)
+- `license_type`: PurchasableLicenseType enum
+- `price_cents`: Money object using MoneyCast
+- `size_variant_type`: PurchasableSizeVariantType enum
+- `item_notes`: Item-specific notes (string, nullable)
+- No timestamps (timestamps = false)
 
 ## Models
 
 ### Purchasable
-The `Purchasable` model defines whether a photo or album is available for purchase and its pricing options.
-
-Key methods:
-- `getPriceFor(PurchasableSizeVariantType $size_variant, PurchasableLicenseType $license_type)`: Get price for specific size and license combination as a Money object or null if not available
-- `setPriceFor(PurchasableSizeVariantType $size_variant, PurchasableLicenseType $license_type, Money $money)`: Set price for a specific combination
-- `isAlbumLevel()`: Check if this is an album-level purchasable
-
-Relationships:
-- `album()`: The album this purchasable item belongs to
-- `photo()`: The photo this purchasable item belongs to
-- `prices()`: The prices for this purchasable item (HasMany relationship to PurchasablePrice)
-
-### PurchasablePrice
-The `PurchasablePrice` model represents a price for a specific size variant and license type combination.
+The `Purchasable` model defines whether a photo or album is available for purchase.
 
 Key attributes:
-- `size_variant`: PurchasableSizeVariantType enum
-- `license_type`: PurchasableLicenseType enum
-- `price_cents`: Money object (using MoneyCast)
+- `photo_id`: String foreign key to photos table (nullable)
+- `album_id`: String foreign key to albums table (nullable)  
+- `description`: Public description for customers (nullable)
+- `owner_notes`: Private notes for owner (nullable)
+- `is_active`: Boolean controlling purchase availability
+
+Key methods:
+- `getPriceFor(PurchasableSizeVariantType $size_variant, PurchasableLicenseType $license_type)`: Get price for specific size and license combination
+- `setPriceFor(PurchasableSizeVariantType $size_variant, PurchasableLicenseType $license_type, Money $money)`: Set price for specific combination
+- `isAlbumLevel()`: Check if this is an album-level purchasable (has album_id but no photo_id)
 
 Relationships:
-- `purchasable()`: The purchasable item this price belongs to
+- `album()`: BelongsTo relationship to Album model
+- `photo()`: BelongsTo relationship to Photo model  
+- `prices()`: HasMany relationship to PurchasablePrice
+
+### PurchasablePrice
+The `PurchasablePrice` model represents pricing for size variant and license type combinations.
+
+Key attributes:
+- `purchasable_id`: Foreign key to purchasables table
+- `size_variant`: PurchasableSizeVariantType enum ('medium', 'medium2x', 'original', 'full')
+- `license_type`: PurchasableLicenseType enum ('personal', 'commercial', 'extended')
+- `price_cents`: Money object using MoneyCast
+
+Relationships:
+- `purchasable()`: BelongsTo relationship to Purchasable
 
 ### Order
 The `Order` model represents a complete purchase transaction.
 
+Key attributes:
+- `transaction_id`: Unique transaction identifier
+- `provider`: OmnipayProviderType enum for payment provider
+- `user_id`: Foreign key to users table (nullable)
+- `email`: Customer email address (nullable)
+- `status`: PaymentStatusType enum ('pending', 'cancelled', 'failed', 'refunded', 'processing', 'offline', 'completed', 'closed')
+- `amount_cents`: Money object using MoneyCast
+- `paid_at`: Payment timestamp (nullable)
+- `comment`: Order notes (nullable)
+
 Key methods:
-- `calculateTotal()`: Calculate the total amount for this order as a Money object
-- `updateTotal()`: Update the total amount based on the order items and save
-- `markAsPaid(string $transaction_id)`: Mark the order as paid with transaction ID
-- `findByTransactionId(string $transaction_id)`: Static method to find an order by transaction ID
-- `getOrdersForUser(User $user)`: Static method to get all orders for a user
+- `calculateTotal()`: Calculate total from order items as Money object
+- `updateTotal()`: Update amount_cents based on order items
+- `markAsPaid(string $transaction_id)`: Mark order as completed with transaction ID
+- `canCheckout()`: Check if order can proceed to checkout (status allows + has items)
+- `canProcessPayment()`: Check if payment can be processed (can checkout + provider set + email requirements met)
+- `findByTransactionId(string $transaction_id)`: Static method to find order by transaction ID
+- `getOrdersForUser(User $user)`: Static method to get user's orders
+- `getOrdersByEmail(string $email)`: Static method to get orders by email
 
 Relationships:
-- `user()`: The user who placed this order (BelongsTo relationship)
-- `items()`: The items in this order (HasMany relationship to OrderItem)
-
-Key attributes:
-- `status`: PaymentStatusType enum (PENDING, COMPLETED, etc.)
-- `provider`: OmnipayProviderType enum
-- `amount_cents`: Money object (using MoneyCast)
-- `paid_at`: DateTime (nullable)
+- `user()`: BelongsTo relationship to User model
+- `items()`: HasMany relationship to OrderItem
 
 ### OrderItem
-The `OrderItem` model represents an individual item within an order.
+The `OrderItem` model represents individual items within an order.
 
 Key attributes:
+- `order_id`: Foreign key to orders table
+- `purchasable_id`: Foreign key to purchasables table (nullable)
+- `album_id`: Foreign key to albums table (nullable)
+- `photo_id`: Foreign key to photos table (nullable)
+- `title`: Item title at time of purchase
 - `license_type`: PurchasableLicenseType enum
+- `price_cents`: Money object using MoneyCast
 - `size_variant_type`: PurchasableSizeVariantType enum
-- `price_cents`: Money object (using MoneyCast)
-- `title`: Title of the photo/album at time of purchase
+- `item_notes`: Item-specific notes (nullable)
 
 Relationships:
-- `order()`: The order this item belongs to (BelongsTo relationship)
-- `purchasable()`: The purchasable definition this item was based on (BelongsTo relationship)
+- `order()`: BelongsTo relationship to Order
+- `purchasable()`: BelongsTo relationship to Purchasable
+- `photo()`: BelongsTo relationship to Photo
+- `album()`: BelongsTo relationship to Album
 - `photo()`: The photo this item refers to (BelongsTo relationship)
 - `album()`: The album this item refers to (BelongsTo relationship)
 
-## Services and Actions
+## Services
 
 ### PurchasableService
 Handles the logic for determining which items are purchasable and their pricing.
 
 Key methods:
-- `getEffectivePurchasableForPhoto(Photo $photo, string $album_id)`: Find the applicable purchasable for a photo
-- `getPhotoOptions(Photo $photo, string $album_id)`: Get all pricing options for a photo as PurchasableOption[] array
-- `getPurchasablePhotosInAlbum(string $album_id)`: Get all purchasable photos in an album
-- `createPurchasableForPhoto(Photo $photo, string $album_id, array $prices, ?string $description, ?string $owner_notes)`: Make a photo purchasable
-- `createPurchasableForAlbum(Album $album, array $prices, bool $applies_to_subalbums, ?string $description, ?string $owner_notes)`: Make an album purchasable
-- `updatePrices(Purchasable $purchasable, array $prices)`: Update the prices for a purchasable item
+- `getByAlbum(Album $album)`: Get purchasable for an album
+- `getByPhoto(Photo $photo)`: Get purchasable for a photo
+- `createForPhoto(Photo $photo)`: Create purchasable for a photo
+- `createForAlbum(Album $album)`: Create purchasable for an album
+- `updatePrices(Purchasable $purchasable, array $prices)`: Update pricing for a purchasable
+- `delete(Purchasable $purchasable)`: Delete a purchasable and its prices
+- `toggle(Purchasable $purchasable)`: Toggle enabled status
 
 ### BasketService
-Handles the management of baskets (pending orders) that users can add items to.
+Handles session-based shopping basket management.
 
 Key methods:
-- `getOrCreateBasket(?Order $basket, ?User $user = null)`: Get an existing basket or create a new one
-- `addPhotoToBasket(Order $basket, Photo $photo, string $album_id, PurchasableSizeVariantType $size_variant, PurchasableLicenseType $license_type, ?string $notes = null)`: Add a photo to a basket
-- `addAlbumToBasket(Order $basket, Album $album, PurchasableSizeVariantType $size_variant, PurchasableLicenseType $license_type, ?string $notes = null, bool $include_subalbums = false)`: Add all purchasable photos in an album to a basket
-- `removeItemFromBasket(Order $basket, int $item_id)`: Remove an item from a basket
-- `deleteBasket(Order $basket)`: Delete an entire basket
-- `ensurePendingStatus(Order $basket)`: Guard method to ensure the basket is in pending state
+- `getBasket()`: Get current basket from session
+- `addPhoto(Photo $photo, string $size)`: Add a photo with size to basket
+- `addAlbum(Album $album)`: Add an album to basket
+- `removeItem(string $basketItemId)`: Remove specific item from basket
+- `clear()`: Clear entire basket
+- `getTotal()`: Calculate total basket value as Money object
+- `isEmpty()`: Check if basket is empty
+- `getItemCount()`: Get number of items in basket
 
 ### OrderService
-Handles the logic for creating and processing orders.
+Handles order creation and processing.
 
 Key methods:
-- `createOrder(?User $user = null, ?string $comment = null)`: Create a new order
-- `addPhotoToOrder(Order $order, Photo $photo, string $album_id, PurchasableSizeVariantType $size_variant, PurchasableLicenseType $license_type, ?string $notes = null)`: Add a photo to an order
-- `processPayment(Order $order, string $provider, string $transaction_id)`: Process a payment for an order
+- `createFromBasket(string $email)`: Create order from current basket contents
+- `processPayment(Order $order, array $paymentData)`: Process payment for an order
+- `markAsCompleted(Order $order, string $transactionId)`: Mark order as completed
+- `markAsCancelled(Order $order)`: Mark order as cancelled
+- `getByTransactionId(string $transactionId)`: Find order by transaction ID
 
-Dependencies:
-- `MoneyService`: For handling monetary values and currency operations
-- `PurchasableService`: For determining purchasable items and pricing
+### CheckoutService
+Handles the checkout process and payment integration.
+
+Key methods:
+- `getAvailableProviders()`: Get list of configured payment providers
+- `createPaymentSession(Order $order, string $provider)`: Create payment session
+- `processCallback(string $provider, array $data)`: Handle payment provider callback
+- `validateOrder(Order $order)`: Validate order before payment
+- `getOfflineConfiguration()`: Get offline payment configuration
 
 ## Pricing Hierarchy
 
@@ -173,71 +210,134 @@ The shop integration uses a structured approach to exception handling:
 
 ## Money Handling
 
-The shop integration uses the `moneyphp/money` library to handle monetary values with precision:
+The shop integration uses the `moneyphp/money` library for precise monetary calculations:
 
-1. All monetary values are stored as integers representing the smallest currency unit (cents)
-2. The `MoneyCast` class converts between database integer values and Money objects
-3. The `MoneyService` class provides helper methods for money operations:
-   - `getDefaultCurrencyCode()`: Get the default currency from config
-   - `createFromCents(int $cents, ?string $currency_code = null)`: Create Money object from cents
-   - `createFromDecimal(float $amount, ?string $currency_code = null)`: Create Money object from decimal amount
-   - `format(Money $money)`: Format Money object to human-readable string with currency symbol
-   - `toDecimal(Money $money)`: Convert Money object to decimal string
+### MoneyCast
+Laravel Eloquent cast that automatically converts between:
+- Database storage: Integer values in minor currency units (cents, pence, etc.)
+- Application logic: `Money\Money` objects with proper currency handling
+
+### Currency Support
+- Supports all ISO 4217 currency codes (USD, EUR, GBP, etc.)
+- Automatic conversion to minor units (e.g., $10.99 → 1099 cents)
+- Precise calculations without floating-point errors
+- Currency-specific formatting and display
+
+### Usage in Models
+```php
+// In model definition
+protected $casts = [
+    'price_cents' => MoneyCast::class,
+    'total_cents' => MoneyCast::class,
+];
+
+// Automatic conversion
+$price = Money::USD(1099); // $10.99
+$model->price_cents = $price; // Stores 1099 in database
+$retrieved = $model->price_cents; // Returns Money object
+```
+
+### Configuration
+Default currency is configured in the application settings and used throughout the shop system for consistent pricing and display.
 
 ## Data Transfer Objects
 
-The shop implementation uses DTOs to represent data structures:
+The shop implementation uses Spatie Data DTOs for structured data handling:
 
-1. `PurchasableOption`: Read-only DTO for available purchase options
-   - `size_variant`: PurchasableSizeVariantType enum
-   - `license_type`: PurchasableLicenseType enum
-   - `price`: Money object
-   - `purchasable_id`: ID of the associated purchasable
+### BasketItemResource
+Represents an item in the shopping basket:
+- `id`: Unique basket item identifier
+- `type`: Type of item ('photo' or 'album')
+- `title`: Display title
+- `size`: Selected size variant
+- `price`: Price as formatted string
+- `thumb_url`: Thumbnail image URL (for photos)
 
-2. `PurchasableOptionCreate`: Read-only DTO for creating purchase options
-   - `size_variant`: PurchasableSizeVariantType enum
-   - `license_type`: PurchasableLicenseType enum
-   - `price`: Money object
+### OrderResource
+Represents a completed order:
+- `id`: Order UUID
+- `email`: Customer email
+- `status`: Current order status
+- `total`: Total amount as formatted string
+- `currency`: Currency code
+- `created_at`: Order creation timestamp
+- `items`: Array of OrderItemResource objects
+
+### OrderItemResource
+Represents an item within an order:
+- `id`: Item ID
+- `size`: Size variant ordered
+- `price`: Price paid as formatted string
+- `title`: Item title at time of purchase
+- `type`: Item type ('photo' or 'album')
+
+### CheckoutOptionsResource
+Configuration for checkout process:
+- `providers`: Available payment provider configurations
+- `offline_enabled`: Whether offline payments are allowed
+- `currencies`: Supported currency options
 
 ## Request/Response Pattern
 
 ### Request Classes
-The shop implementation uses a robust request pattern for handling basket operations:
+The shop uses Laravel Form Requests for validation and processing:
 
-1. `BasketRequest`: Abstract base class for all basket-related requests
-   - Implements `HasBasket` interface
-   - Uses `HasBasketTrait` for common functionality
-   - Automatically retrieves the current basket from the session (or user id if logged in and session has none)
+1. **Basket Requests**:
+   - `AddPhotoToBasketRequest`: Validates photo ID and size selection
+   - `AddAlbumToBasketRequest`: Validates album ID for basket addition
+   - `RemoveItemFromBasketRequest`: Validates item removal from basket
+   - `ClearBasketRequest`: Handles basket clearing operations
 
-2. Specialized Request Classes:
-   - `AddPhotoToBasketRequest`: For adding photos to a basket
-   - `AddAlbumToBasketRequest`: For adding albums to a basket
-   - `DeleteItemRequest`: For removing items from a basket
-   - `DeleteBasketRequest`: For deleting an entire basket
-   - `GetBasketRequest`: For retrieving the current basket
+2. **Checkout Requests**:
+   - `CreateCheckoutSessionRequest`: Validates email and payment provider selection
+   - `ProcessPaymentRequest`: Handles payment processing data
+   - `OfflinePaymentRequest`: Processes offline payment completion
 
-### Resources
-The shop implementation uses Spatie Data resources for API responses:
+3. **Management Requests**:
+   - `CreatePurchasableRequest`: Validates purchasable creation data
+   - `UpdatePricesRequest`: Validates price updates for purchasables
+   - `DeletePurchasableRequest`: Handles purchasable deletion
 
-1. `OrderResource`: Resource for Order models with all related items
-2. `OrderItemResource`: Resource for individual order items
+### API Response Format
+All responses use Spatie Data resources with consistent structure:
+- Success responses include appropriate HTTP status codes
+- Error responses follow Laravel's validation error format
+- Money values are formatted consistently across all endpoints
 
-## License Types
+## Size Variants and License Types
 
-The shop supports three types of licenses (defined in PurchasableLicenseType enum):
+### Size Variants
+The shop supports the following size variants (PurchasableSizeVariantType enum):
 
-- `PERSONAL`: For personal use only
-- `COMMERCIAL`: For commercial use
-- `EXTENDED`: For extended commercial use with fewer restrictions
+- `MEDIUM`: Medium resolution ('medium')
+- `MEDIUM2X`: Medium 2x resolution ('medium2x') 
+- `ORIGINAL`: Original uploaded photo resolution ('original')
+- `FULL`: Largest size that can be exported by photographer ('full') - requires extra export
 
-## Size Variants
+**Note**: `FULL` differs from `ORIGINAL` in that `ORIGINAL` is the largest size uploaded to Lychee and can be directly downloaded, while `FULL` requires additional export work from the photographer.
 
-The shop offers multiple size variants:
+### License Types  
+The shop supports three license types (PurchasableLicenseType enum):
 
-- `MEDIUM`: Lower-resolution option
-- `MEDIUM2x`: Medium resolution option
-- `ORIGINAL`: Original photo as uploaded to Lychee
-- `FULL`: The largest size that can be exported by the photographer (requires extra export)
+- `PERSONAL`: For personal use only ('personal')
+- `COMMERCIAL`: For commercial use ('commercial') 
+- `EXTENDED`: For extended commercial use with fewer restrictions ('extended')
+
+### Payment Status Types
+Orders progress through various states (PaymentStatusType enum):
+
+**Checkout Allowed States**:
+- `PENDING`: Initial state ('pending')
+- `FAILED`: Payment failed ('failed') 
+- `CANCELLED`: Payment aborted by user ('cancelled')
+
+**Processing States**:
+- `PROCESSING`: Intermediate state during payment processing ('processing')
+- `OFFLINE`: Completed offline without payment processing ('offline')
+
+**Final States**:
+- `COMPLETED`: Payment successful ('completed')
+- `CLOSED`: Order paid and delivered ('closed')
 
 ## Album Hierarchy Integration
 
@@ -265,12 +365,20 @@ The following outlines the typical flow for a user shopping in the Lychee websho
    - `DELETE /Shop/Basket` — Delete the entire basket
 
 4. **Checkout**
+   - `GET /Shop/Checkout/Options` — Get checkout configuration and available providers
    - `POST /Shop/Checkout/Create-session` — Create a checkout session (select provider, enter email)
    - `POST /Shop/Checkout/Process` — Process payment (send payment data)
-   - `POST /Shop/Checkout/Finalize/{provider}/{transaction_id}` — Finalize payment after provider callback
+   - `POST /Shop/Checkout/Offline` — Complete order in offline mode (if enabled)
+   - `GET /Shop/Checkout/Finalize/{provider}/{transaction_id}` — Finalize payment after provider callback
    - `GET /Shop/Checkout/Cancel/{provider}/{transaction_id}` — Cancel the payment session
 
-5. **Management (Admin only)**
+5. **Order Management**
+   - `GET /Shop/Order/List` — List all orders (admin only)
+   - `GET /Shop/Order/{order_id}` — Get specific order details
+
+6. **Management (Admin only)**
+   - `GET /Shop/Management/Options` — Get management configuration options
+   - `GET /Shop/Management/Purchasables` — List all purchasable items
    - `POST /Shop/Management/Purchasable/Photo` — Set photo as purchasable
    - `POST /Shop/Management/Purchasable/Album` — Set album as purchasable
    - `PUT /Shop/Management/Purchasable/Price` — Update purchasable prices
@@ -344,38 +452,19 @@ The checkout process implements multiple layers of validation to ensure security
 
 **Order Checkout Eligibility (`Order::canCheckout()`):**
 - Order status must allow checkout (`PaymentStatusType::canCheckout()`)
-- Must have either:
-  - A valid email address, OR
-  - A user_id AND no FULL size variant items (FULL variants require email for delivery)
+- Order must have at least one item
 
-**Detailed Conditions:**
+**Actual Implementation:**
 ```php
 public function canCheckout(): bool
 {
-    // 1. Status must allow checkout (typically PENDING)
-    if (!$this->status->canCheckout()) {
-        return false;
-    }
-
-    // 2. If email is provided, checkout is allowed
-    if ($this->email !== null) {
-        return true;
-    }
-
-    // 3. If no email, check for FULL size variants
-    // FULL variants require email for delivery, so they block checkout
-    if ($this->items()->where('size_variant_type', PurchasableSizeVariantType::FULL)->exists()) {
-        return false;
-    }
-
-    // 4. Finally, must have a user_id if no email
-    return $this->user_id !== null;
+    return $this->status->canCheckout() && $this->items->count() > 0;
 }
 ```
 
 **Summary of canCheckout() conditions:**
-- ✅ **Allowed when:** Status allows checkout AND (has email OR (has user_id AND no FULL variants))
-- ❌ **Blocked when:** Status doesn't allow checkout OR (no email AND no user_id) OR (no email AND has FULL variants)
+- ✅ **Allowed when:** Status allows checkout (PENDING, FAILED, CANCELLED) AND has items
+- ❌ **Blocked when:** Status doesn't allow checkout OR no items in order
 
 ### 2. Process Payment Validation (`ProcessRequest`)
 
@@ -386,20 +475,45 @@ public function canCheckout(): bool
 - `additional_data`: Optional array containing payment-specific data (card details, etc.)
 
 **Payment Processing Eligibility (`Order::canProcessPayment()`):**
-- Must pass all checkout eligibility checks
-- Payment provider must be set (`$this->provider !== null`)
+- Must pass checkout eligibility checks
+- Payment provider must be set  
+- Email requirements must be met for FULL size variants
 
-**Detailed Conditions:**
+**Actual Implementation:**
 ```php
 public function canProcessPayment(): bool
 {
-    return $this->canCheckout() && $this->provider !== null;
+    // Not in a state that allows checkout
+    if ($this->canCheckout() === false) {
+        return false;
+    }
+
+    // No provider, how are we supposed to know what to do?
+    if ($this->provider === null) {
+        return false;
+    }
+
+    // Email is set, we are fine.
+    if ($this->email !== null && $this->email !== '') {
+        return true;
+    }
+
+    // We do not have a mail, so we cannot checkout if the order contains FULL size variants
+    if ($this->items()->where('size_variant_type', PurchasableSizeVariantType::FULL)->exists()) {
+        return false;
+    }
+
+    return $this->user_id !== null;
 }
 ```
 
 **Summary of canProcessPayment() conditions:**
-- ✅ **Allowed when:** All `canCheckout()` conditions are met AND provider is set
-- ❌ **Blocked when:** Any `canCheckout()` condition fails OR provider is null
+- ✅ **Allowed when:** Can checkout AND provider set AND (email provided OR (user_id set AND no FULL variants))
+- ❌ **Blocked when:** Cannot checkout OR no provider OR (no email AND no user_id) OR (no email AND has FULL variants)
+
+**Why These Conditions Exist:**
+- **FULL variants require email**: FULL size variants need special export processing and must be delivered via email
+- **User/Email requirement**: Ensures there's a way to contact the customer for order fulfillment
 
 **Why These Conditions Exist:**
 
@@ -442,5 +556,5 @@ Finalize → Verify PROCESSING status + provider match
 
 ---
 
-*Last updated: September 13, 2025*
+*Last updated: November 16, 2025*
 
