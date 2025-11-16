@@ -153,6 +153,16 @@ class OrderFactory extends Factory
 	}
 
 	/**
+	 * Create a offline order.
+	 *
+	 * @return static
+	 */
+	public function offline(): static
+	{
+		return $this->withStatus(PaymentStatusType::OFFLINE);
+	}
+
+	/**
 	 * Create a completed order.
 	 *
 	 * @return static
@@ -161,6 +171,19 @@ class OrderFactory extends Factory
 	{
 		return $this->withStatus(PaymentStatusType::COMPLETED)
 			->withProvider(OmnipayProviderType::DUMMY)
+			->state(fn (array $attributes) => [
+				'paid_at' => fake()->dateTimeBetween('-1 month', 'now'),
+			]);
+	}
+
+	/**
+	 * Create a closed order.
+	 *
+	 * @return static
+	 */
+	public function closed(): static
+	{
+		return $this->withStatus(PaymentStatusType::CLOSED)
 			->state(fn (array $attributes) => [
 				'paid_at' => fake()->dateTimeBetween('-1 month', 'now'),
 			]);

@@ -100,6 +100,7 @@ class ConfigIntegrity
 		'webshop_default_price_cents',
 		'webshop_default_license',
 		'webshop_default_size',
+		'webshop_offline',
 	];
 
 	/**
