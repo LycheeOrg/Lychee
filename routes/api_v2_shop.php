@@ -19,7 +19,6 @@ Route::middleware('support:se')->group(function (): void {
 	Route::get('/Shop', [Shop\CatalogController::class, 'getAlbumCatalog']);
 	Route::group(['prefix' => '/Shop/Order'], function (): void {
 		Route::get('/List', [Shop\OrderController::class, 'list']);
-		Route::post('/Clear', [Shop\OrderController::class, 'clearOldOrders']);
 		Route::get('/{order_id}', [Shop\OrderController::class, 'get']);
 		Route::post('/{order_id}', [Shop\OrderController::class, 'markAsPaid']);
 		Route::put('/{order_id}', [Shop\OrderController::class, 'markAsDelivered']);
