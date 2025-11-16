@@ -19,6 +19,7 @@ use App\Models\Photo;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class OrderService
@@ -126,14 +127,19 @@ class OrderService
 	/**
 	 * Clear old orders that are older than 2 weeks, have no items, and have no user_id.
 	 *
-	 * @return int Number of orders deleted
+	 * @return void Number of orders deleted
 	 */
-	public function clearOldOrders(): int
+	public function clearOldOrders(): void
 	{
-		// Delete all the order items first to avoid foreign key constraint issues
-		OrderItem::whereIn('order_id', $this->getQueryOldOrders()->select('id'))->delete();
+		DB::transaction(function (): void {
+			// Delete all the order items first to avoid foreign key constraint issues
+			$chunk = $this->getQueryOldOrders()->pluck('id')->chunk(100);
+			foreach ($chunk as $old_orders_ids) {
+				OrderItem::whereIn('order_id', $old_orders_ids)->delete();
+			}
+			$this->getQueryOldOrders()->delete();
+		});
 
-		return $this->getQueryOldOrders()->delete();
 	}
 
 	/**
