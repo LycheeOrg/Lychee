@@ -49,16 +49,6 @@ class OrderController extends Controller
 	}
 
 	/**
-	 * Clear old orders that are still pending.
-	 *
-	 * @return void
-	 */
-	public function clearOldOrders(ClearOldOrdersRequest $request): void
-	{
-		$this->order_service->clearOldOrders();
-	}
-
-	/**
 	 * Mark an order as paid.
 	 *
 	 * @param MarkAsPaidOrderRequest $request
