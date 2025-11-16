@@ -139,7 +139,6 @@ class OrderService
 			}
 			$this->getQueryOldOrders()->delete();
 		});
-
 	}
 
 	/**
