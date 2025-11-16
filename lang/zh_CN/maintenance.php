@@ -74,4 +74,9 @@ return [
         'description' => '清除所有用户的缓存以解决失效问题。',
         'button' => '清除',
     ],
+    'old-orders' => [
+        'title' => 'Old Orders',
+        'description' => 'Found %d old orders.<br/><br/>An old order is older than 14 days, that have no associated user and are either still pending payment or have no items in them.',
+        'button' => 'Delete old orders',
+    ],
 ];

@@ -7,17 +7,17 @@
 	>
 		<template #title>
 			<div class="text-center">
-				{{ $t("maintenance.fix-jobs.title") }}
+				{{ $t("maintenance.old-orders.title") }}
 			</div>
 		</template>
 		<template #content>
 			<ScrollPanel class="w-full h-40 text-sm text-muted-color">
-				<div class="w-full text-center" v-html="description"></div>
+				<div v-if="!loading" class="w-full lft:text-left rtl:text-right" v-html="description"></div>
 				<ProgressSpinner v-if="loading" class="w-full"></ProgressSpinner>
 			</ScrollPanel>
 			<div class="flex gap-4 mt-1">
-				<Button v-if="data > 0 && !loading" severity="warn" class="w-full border-none" @click="exec">
-					{{ $t("maintenance.fix-jobs.button") }}
+				<Button v-if="data > 0 && !loading" severity="danger" class="w-full border-none" @click="exec">
+					{{ $t("maintenance.old-orders.button") }}
 				</Button>
 			</div>
 		</template>
@@ -40,18 +40,25 @@ const loading = ref(false);
 const toast = useToast();
 
 const description = computed(() => {
-	return sprintf(trans("maintenance.fix-jobs.description"), "ready", "started", "failed");
+	return sprintf(trans("maintenance.old-orders.description"), data.value);
 });
 
 function load() {
-	MaintenanceService.jobsGet().then((response) => {
-		data.value = response.data;
-	});
+	loading.value = true;
+	MaintenanceService.oldOrdersCheck()
+		.then((response) => {
+			data.value = response.data;
+			loading.value = false;
+		})
+		.catch((e) => {
+			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response.data.message, life: 3000 });
+			loading.value = false;
+		});
 }
 
 function exec() {
 	loading.value = true;
-	MaintenanceService.jobsDo()
+	MaintenanceService.oldOrdersDo()
 		.then(() => {
 			toast.add({ severity: "success", summary: trans("toasts.success"), life: 3000 });
 			loading.value = false;
