@@ -12,7 +12,7 @@ use App\Contracts\Http\Requests\RequestAttribute;
 use App\Enum\PaymentStatusType;
 use App\Models\Order;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Cookie;
 
 trait HasBasketTrait
 {
@@ -27,14 +27,14 @@ trait HasBasketTrait
 	}
 
 	/**
-	 * Resolve the basket from the session and prepare it for validation.
+	 * Resolve the basket from the cookie and prepare it for validation.
 	 *
 	 * @return void
 	 */
 	protected function prepareBasket(): void
 	{
-		// If there is a basket_id in the session, use it.
-		$basket_id = Session::get(RequestAttribute::BASKET_ID_ATTRIBUTE);
+		// If there is a basket_id in the cookie, use it.
+		$basket_id = Cookie::get(RequestAttribute::BASKET_ID_ATTRIBUTE);
 		if ($basket_id !== null) {
 			$this->order = Order::find($basket_id);
 		}
@@ -48,7 +48,7 @@ trait HasBasketTrait
 			$this->order->user_id !== $user_id
 		) {
 			$this->order = null;
-			Session::forget(RequestAttribute::BASKET_ID_ATTRIBUTE);
+			Cookie::queue(Cookie::forget(RequestAttribute::BASKET_ID_ATTRIBUTE));
 		}
 
 		// If user is logged in, retrieve the current pending basket.

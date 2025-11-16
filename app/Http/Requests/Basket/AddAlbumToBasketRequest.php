@@ -52,7 +52,7 @@ class AddAlbumToBasketRequest extends BaseBasketRequest
 	 */
 	public function authorize(): bool
 	{
-		return true; // Anyone can add albums to the basket
+		return $this->order !== null; // Anyone can add albums to the basket
 	}
 
 	/**

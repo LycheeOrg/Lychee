@@ -21,7 +21,7 @@ use App\Http\Resources\Shop\OrderResource;
 use App\Models\User;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Cookie;
 
 class BasketController extends Controller
 {
@@ -115,7 +115,7 @@ class BasketController extends Controller
 		$this->basket_service->deleteBasket($basket);
 
 		// Remove basket ID from session
-		Session::forget(RequestAttribute::BASKET_ID_ATTRIBUTE);
+		Cookie::queue(Cookie::forget(RequestAttribute::BASKET_ID_ATTRIBUTE));
 	}
 
 	/**
@@ -130,7 +130,7 @@ class BasketController extends Controller
 		/** @var User|null $user */
 		$user = Auth::user();
 		$basket = $this->basket_service->getOrCreateBasket($request->basket(), $user);
-		Session::put(RequestAttribute::BASKET_ID_ATTRIBUTE, $basket->id);
+		Cookie::queue(RequestAttribute::BASKET_ID_ATTRIBUTE, $basket->id, config('session.lifetime'));
 
 		return OrderResource::fromModel($basket);
 	}

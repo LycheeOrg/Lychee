@@ -14,7 +14,7 @@ use App\Enum\PaymentStatusType;
 use App\Http\Requests\BaseApiRequest;
 use App\Models\Order;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Cookie;
 
 class GetBasketRequest extends BaseApiRequest implements HasBasket
 {
@@ -35,15 +35,13 @@ class GetBasketRequest extends BaseApiRequest implements HasBasket
 	 */
 	public function rules(): array
 	{
-		return [
-			RequestAttribute::BASKET_ID_ATTRIBUTE => ['nullable', 'integer'],
-		];
+		return [];
 	}
 
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		// If there is a basket_id in the session, use it.
-		$basket_id = Session::get(RequestAttribute::BASKET_ID_ATTRIBUTE, $values[RequestAttribute::BASKET_ID_ATTRIBUTE] ?? null);
+		// If there is a basket_id in the cookie, use it.
+		$basket_id = Cookie::get(RequestAttribute::BASKET_ID_ATTRIBUTE, $values[RequestAttribute::BASKET_ID_ATTRIBUTE] ?? null);
 		if ($basket_id !== null) {
 			$this->order = Order::find($basket_id);
 		}

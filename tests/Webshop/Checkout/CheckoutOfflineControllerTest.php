@@ -21,6 +21,7 @@ namespace Tests\Webshop\Checkout;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Enum\PaymentStatusType;
 use App\Models\Configs;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Session;
 
 /**
@@ -191,7 +192,7 @@ class CheckoutOfflineControllerTest extends BaseCheckoutControllerTest
 	public function testOfflineOrderWithoutBasket(): void
 	{
 		// Remove basket from session
-		Session::forget(RequestAttribute::BASKET_ID_ATTRIBUTE);
+		Cookie::queue(Cookie::forget(RequestAttribute::BASKET_ID_ATTRIBUTE));
 
 		$response = $this->postJson('Shop/Checkout/Offline', [
 			'email' => 'customer@example.com',
