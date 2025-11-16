@@ -2,7 +2,7 @@
 	<div>
 		<div class="flex items-center gap-4 justify-between">
 			<div class="w-1/2 sm:w-full" :class="props.config.require_se ? 'text-primary-emphasis' : 'text-muted-color-emphasis'">
-				{{ props.config.documentation }}
+				{{ tDoc(props.config) }}
 				<SETag v-if="config.require_se" />
 			</div>
 			<div class="flex gap-4 items-center">
@@ -22,7 +22,7 @@
 				/>
 			</div>
 		</div>
-		<div v-if="props.config.details" class="text-muted-color text-sm hidden sm:block" v-html="props.config.details" />
+		<div v-if="props.config.details" class="text-muted-color text-sm hidden sm:block" v-html="tDetails(props.config)" />
 	</div>
 </template>
 <script setup lang="ts">
@@ -30,6 +30,9 @@ import { computed, ref, watch } from "vue";
 import InputNumber from "primevue/inputnumber";
 import ResetField from "@/components/forms/settings/ResetField.vue";
 import SETag from "@/components/icons/SETag.vue";
+import { useTranslation } from "@/composables/useTranslation";
+
+const { tDoc, tDetails } = useTranslation();
 
 const props = defineProps<{
 	min: number;

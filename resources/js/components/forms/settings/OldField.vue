@@ -10,9 +10,9 @@
 		</IconField>
 		<Message v-if="changed && isVersion" class="w-full h-8 mt-0.5" severity="error">We strongly recommend you do not modify this value.</Message>
 		<div v-if="!changed || !isVersion" class="w-full text-muted-color">
-			{{ props.config.documentation }}
+			{{ tDoc(props.config) }}
 			<br v-if="props.config.details" />
-			<span v-html="props.config.details"></span>
+			<span v-html="tDetails(props.config)"></span>
 		</div>
 	</div>
 </template>
@@ -22,6 +22,9 @@ import IconField from "primevue/iconfield";
 import InputIcon from "primevue/inputicon";
 import Message from "primevue/message";
 import InputText from "@/components/forms/basic/InputText.vue";
+import { useTranslation } from "@/composables/useTranslation";
+
+const { tDoc, tDetails } = useTranslation();
 
 const props = defineProps<{
 	config: App.Http.Resources.Models.ConfigResource;

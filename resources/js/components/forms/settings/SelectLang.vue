@@ -1,6 +1,6 @@
 <template>
 	<div class="flex gap-4 justify-between items-center">
-		<label class="w-full text-muted-color-emphasis" :for="props.config.key" v-html="props.label ?? props.config.documentation" />
+		<label class="w-full text-muted-color-emphasis" :for="props.config.key" v-html="props.label ?? tDoc(props.config)" />
 		<div class="flex gap-4 items-center">
 			<ResetField v-if="changed" @click="reset" />
 			<Select :id="props.config.key" v-model="val" class="border-none" :options="options" @update:model-value="update" />
@@ -13,6 +13,9 @@ import { computed, ref, watch } from "vue";
 import Select from "primevue/select";
 import ResetField from "@/components/forms/settings/ResetField.vue";
 import SettingsService from "@/services/settings-service";
+import { useTranslation } from "@/composables/useTranslation";
+
+const { tDoc } = useTranslation();
 
 type Props = {
 	config: App.Http.Resources.Models.ConfigResource;
