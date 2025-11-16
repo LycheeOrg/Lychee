@@ -8,11 +8,11 @@
 					'text-primary-emphasis': props.config.require_se,
 					'text-muted-color-emphasis': !props.config.require_se,
 				}"
-				v-html="props.label ?? props.config.documentation"
+				v-html="props.label ?? tDoc(props.config)"
 			/>
 			<FloatLabel class="w-full grow">
 				<IconField>
-					<InputText :id="props.config.key" v-model="val" type="text" class="!py-1" @update:model-value="update" />
+					<InputText :id="props.config.key" v-model="val" type="text" class="py-1!" @update:model-value="update" />
 					<InputIcon
 						v-if="changed"
 						v-tooltip="'Click me to reset!'"
@@ -25,7 +25,7 @@
 		<div
 			v-if="props.config.details || details !== undefined"
 			class="text-muted-color text-sm hidden sm:block"
-			v-html="props.details ?? props.config.details"
+			v-html="props.details ?? tDetails(props.config)"
 		/>
 	</div>
 </template>
@@ -35,6 +35,9 @@ import FloatLabel from "primevue/floatlabel";
 import IconField from "primevue/iconfield";
 import InputIcon from "primevue/inputicon";
 import InputText from "@/components/forms/basic/InputText.vue";
+import { useTranslation } from "@/composables/useTranslation";
+
+const { tDoc, tDetails } = useTranslation();
 
 const props = defineProps<{
 	config: App.Http.Resources.Models.ConfigResource;

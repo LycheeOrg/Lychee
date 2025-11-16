@@ -7,7 +7,7 @@
 				'text-muted-color-emphasis': !props.config.require_se,
 			}"
 			:for="props.config.key"
-			v-html="props.label ?? props.config.documentation"
+			v-html="props.label ?? tDoc(props.config)"
 		/>
 		<div class="flex gap-4 items-center">
 			<ResetField v-if="changed" @click="reset" />
@@ -35,7 +35,7 @@
 	<div
 		v-if="props.config.details || props.details !== undefined"
 		class="w-full text-muted-color text-sm"
-		v-html="props.details ?? props.config.details"
+		v-html="props.details ?? tDetails(props.config)"
 	/>
 </template>
 
@@ -44,6 +44,9 @@ import { computed, ref, watch } from "vue";
 import Select from "primevue/select";
 import { SelectOption } from "@/config/constants";
 import ResetField from "@/components/forms/settings/ResetField.vue";
+import { useTranslation } from "@/composables/useTranslation";
+
+const { tDoc, tDetails } = useTranslation();
 
 type Props = {
 	config: App.Http.Resources.Models.ConfigResource;
