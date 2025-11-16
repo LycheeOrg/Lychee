@@ -110,7 +110,6 @@ const MaintenanceService = {
 	oldOrdersDo(): Promise<AxiosResponse> {
 		return axios.post(`${Constants.getApiUrl()}Maintenance::oldOrders`, {});
 	},
-
 };
 
 export default MaintenanceService;

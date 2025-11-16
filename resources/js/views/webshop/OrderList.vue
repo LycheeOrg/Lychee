@@ -11,7 +11,11 @@
 		<template #end> </template>
 	</Toolbar>
 	<div class="text-center lg:hidden font-bold text-danger-700 py-3" v-html="$t('settings.small_screen')"></div>
-	<Panel :pt:header:class="'hidden'" class="border-0 md:max-w-3xl lg:max-w-5xl xl:max-w-7xl mt-9 mx-auto w-full">
+	<Panel :pt:header:class="'hidden'" class="border-0 md:max-w-3xl lg:max-w-5xl xl:max-w-7xl mt-8 mx-auto w-full">
+		<div v-if="numOldOrders > 0" class="flex justify-center items-center gap-4 mb-8">
+			<p>Number of stale orders: {{ numOldOrders }}</p>
+			<Button label="Clean stale orders" icon="pi pi-trash" class="border-none" severity="warn" @click="clean" />
+		</div>
 		<!-- Empty panel to keep the same layout as other settings pages -->
 		<DataTable :value="orders" :loading="orders === undefined" class="mt-4" selectionMode="single" dataKey="id">
 			<Column header="Client" header-class="w-3/12" body-class="w-3/12 align-top">
@@ -21,7 +25,11 @@
 					<span v-else>{{ slotProps.data.email }}</span>
 				</template>
 			</Column>
-			<Column header="Transaction ID" field="transaction_id" header-class="w-3/12" body-class="w-3/12 align-top"></Column>
+			<Column header="Transaction ID" field="transaction_id" header-class="w-3/12" body-class="w-3/12 align-top">
+				<template #body="slotProps">
+					<span :class="{ 'text-muted-color': isStale(slotProps.data) }">{{ slotProps.data.transaction_id }}</span>
+				</template>
+			</Column>
 			<Column header="Status" field="status" header-class="w-1/12" body-class="w-2/12 align-top">
 				<template #body="slotProps">
 					<OrderStatus :status="slotProps.data.status" />
@@ -40,7 +48,7 @@
 					<span v-else-if="slotProps.data.status === 'offline'" class="text-warning-600"
 						><i class="pi pi-clock ltr:mr-2 rtl:ml-2" /> {{ new Date(slotProps.data.created_at).toLocaleString() }}
 					</span>
-					<span v-else-if="isStale(slotProps.data.created_at)" class="text-muted-color"
+					<span v-else-if="isStale(slotProps.data)" class="text-muted-color"
 						><i class="pi pi-bolt ltr:mr-2 rtl:ml-2" /> {{ new Date(slotProps.data.created_at).toLocaleString() }}</span
 					>
 					<span v-else class="text-muted-color-emphasis"
@@ -54,7 +62,9 @@
 <script setup lang="ts">
 import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
 import OrderStatus from "@/components/webshop/OrderStatus.vue";
+import MaintenanceService from "@/services/maintenance-service";
 import WebshopService from "@/services/webshop-service";
+import Button from "primevue/button";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import Panel from "primevue/panel";
@@ -66,11 +76,19 @@ const orders = ref<App.Http.Resources.Shop.OrderResource[] | undefined>(undefine
 const router = useRouter();
 
 // Return true if the date is older than 2 weeks
-function isStale(date: string): boolean {
+function isStale(order: App.Http.Resources.Shop.OrderResource): boolean {
+	if (order.created_at === null) {
+		return true;
+	}
+	if (order.status !== "pending" || order.username !== null || (order.items?.length ?? 0) > 0) {
+		return false;
+	}
 	const twoWeeksAgo = new Date();
 	twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 1);
-	return new Date(date) < twoWeeksAgo;
+	return new Date(order.created_at) < twoWeeksAgo;
 }
+
+const numOldOrders = ref(0);
 
 function isZero(string: string): boolean {
 	return string.substring(1) === "0.00";
@@ -86,6 +104,15 @@ function load() {
 				router.push({ name: "login" });
 			}
 		});
+	MaintenanceService.oldOrdersCheck().then((response) => {
+		numOldOrders.value = response.data;
+	});
+}
+
+function clean() {
+	MaintenanceService.oldOrdersDo().then(() => {
+		load();
+	});
 }
 
 onMounted(() => {
