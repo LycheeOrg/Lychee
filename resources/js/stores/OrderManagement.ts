@@ -31,10 +31,15 @@ export const useOrderManagementStore = defineStore("basket-management-store", {
 			this.reset();
 			return this.load();
 		},
-		addPhoto(photoData: AddPhoto): Promise<void> {
+		async addPhoto(photoData: AddPhoto): Promise<void> {
 			// Guard for SE
 			if (useLycheeStateStore().is_se_enabled !== true) {
 				return Promise.resolve();
+			}
+
+			// First load the order if not yet done
+			if (this.order === undefined) {
+				await this.load();
 			}
 
 			return WebshopService.Order.addPhotoToBasket(photoData).then((response) => {

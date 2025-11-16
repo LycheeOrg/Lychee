@@ -24,7 +24,6 @@
 		@toggle-edit="toggleEdit"
 		@open-search="openSearch"
 		@go-back="goBack"
-		:total="albumStore.total"
 		:first="(albumStore.current_page - 1) * albumStore.per_page"
 		@update:first="
 			(val) => {
