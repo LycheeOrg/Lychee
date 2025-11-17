@@ -52,7 +52,7 @@ class AddAlbumToBasketRequest extends BaseBasketRequest
 	 */
 	public function authorize(): bool
 	{
-		return $this->order !== null; // Requires an active order
+		return $this->order?->canAddItems() === true; // Requires an active order which accept items.
 	}
 
 	/**
