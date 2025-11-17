@@ -99,9 +99,7 @@ class BasketControllerTest extends BaseApiWithDataTest
 			'username' => null,
 			'items' => [],
 		]);
-
-		// Should create a new basket in session
-		$this->assertNotNull(Session::get('basket_id'));
+		$response->assertCookie('basket_id');
 	}
 
 	/**
@@ -114,6 +112,7 @@ class BasketControllerTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->userMayUpload1)->getJson('Shop/Basket/');
 
 		$this->assertOk($response);
+		$response->assertCookie('basket_id');
 		$response->assertJson([
 			'status' => PaymentStatusType::PENDING->value,
 			'username' => $this->userMayUpload1->name,
@@ -129,7 +128,8 @@ class BasketControllerTest extends BaseApiWithDataTest
 	public function testAddPhotoToBasketSuccess(): void
 	{
 		$response = $this->getJson('Shop/Basket/');
-		$response = $this->postJson('Shop/Basket/Photo', [
+		$order_id = $response->getCookie('basket_id')->getValue();
+		$response = $this->withCookie('basket_id', $order_id)->postJson('Shop/Basket/Photo', [
 			'photo_id' => $this->photo1->id,
 			'album_id' => $this->album1->id,
 			'size_variant' => PurchasableSizeVariantType::MEDIUM->value,
@@ -180,7 +180,8 @@ class BasketControllerTest extends BaseApiWithDataTest
 	public function testAddPhotoToBasketValidationError(): void
 	{
 		$response = $this->getJson('Shop/Basket/');
-		$response = $this->postJson('Shop/Basket/Photo', [
+		$order_id = $response->getCookie('basket_id')->getValue();
+		$response = $this->withCookie('basket_id', $order_id)->postJson('Shop/Basket/Photo', [
 			'photo_id' => $this->photo1->id,
 			'album_id' => $this->album1->id,
 			'size_variant' => 'invalid-size',
@@ -199,7 +200,8 @@ class BasketControllerTest extends BaseApiWithDataTest
 	public function testAddNonExistentPhotoToBasket(): void
 	{
 		$response = $this->getJson('Shop/Basket/');
-		$response = $this->postJson('Shop/Basket/Photo', [
+		$order_id = $response->getCookie('basket_id')->getValue();
+		$response = $this->withCookie('basket_id', $order_id)->postJson('Shop/Basket/Photo', [
 			'photo_id' => 'non-existent-id',
 			'album_id' => $this->album1->id,
 			'size_variant' => PurchasableSizeVariantType::MEDIUM->value,
@@ -217,7 +219,8 @@ class BasketControllerTest extends BaseApiWithDataTest
 	public function testAddAlbumToBasketSuccess(): void
 	{
 		$response = $this->getJson('Shop/Basket/');
-		$response = $this->actingAs($this->userMayUpload1)->postJson('Shop/Basket/Album', [
+		$order_id = $response->getCookie('basket_id')->getValue();
+		$response = $this->withCookie('basket_id', $order_id)->actingAs($this->userMayUpload1)->postJson('Shop/Basket/Album', [
 			'album_id' => $this->album1->id,
 			'size_variant' => PurchasableSizeVariantType::ORIGINAL->value,
 			'license_type' => PurchasableLicenseType::COMMERCIAL->value,
@@ -250,7 +253,8 @@ class BasketControllerTest extends BaseApiWithDataTest
 	public function testAddAlbumToBasketWithSubalbums(): void
 	{
 		$response = $this->getJson('Shop/Basket/');
-		$response = $this->postJson('Shop/Basket/Album', [
+		$order_id = $response->getCookie('basket_id')->getValue();
+		$response = $this->withCookie('basket_id', $order_id)->postJson('Shop/Basket/Album', [
 			'album_id' => $this->album1->id,
 			'size_variant' => PurchasableSizeVariantType::ORIGINAL->value,
 			'license_type' => PurchasableLicenseType::COMMERCIAL->value,
@@ -271,7 +275,8 @@ class BasketControllerTest extends BaseApiWithDataTest
 	public function testAddAlbumToBasketValidationError(): void
 	{
 		$response = $this->getJson('Shop/Basket/');
-		$response = $this->postJson('Shop/Basket/Album', [
+		$order_id = $response->getCookie('basket_id')->getValue();
+		$response = $this->withCookie('basket_id', $order_id)->postJson('Shop/Basket/Album', [
 			'album_id' => $this->album1->id,
 			'size_variant' => 'invalid-size',
 			'license_type' => 'invalid-license',
@@ -289,7 +294,8 @@ class BasketControllerTest extends BaseApiWithDataTest
 	public function testAddAlbumToBasketValidationNotFound(): void
 	{
 		$response = $this->getJson('Shop/Basket/');
-		$response = $this->postJson('Shop/Basket/Album', [
+		$order_id = $response->getCookie('basket_id')->getValue();
+		$response = $this->withCookie('basket_id', $order_id)->postJson('Shop/Basket/Album', [
 			'album_id' => 'non-existent-album',
 			'size_variant' => PurchasableSizeVariantType::ORIGINAL->value,
 			'license_type' => PurchasableLicenseType::COMMERCIAL->value,
@@ -307,7 +313,8 @@ class BasketControllerTest extends BaseApiWithDataTest
 	{
 		// First, add an item to the basket
 		$response = $this->getJson('Shop/Basket/');
-		$addResponse = $this->postJson('Shop/Basket/Photo', [
+		$order_id = $response->getCookie('basket_id')->getValue();
+		$addResponse = $this->withCookie('basket_id', $order_id)->postJson('Shop/Basket/Photo', [
 			'photo_id' => $this->photo1->id,
 			'album_id' => $this->album1->id,
 			'size_variant' => PurchasableSizeVariantType::MEDIUM->value,
@@ -338,7 +345,8 @@ class BasketControllerTest extends BaseApiWithDataTest
 	public function testRemoveNonExistentItemFromBasket(): void
 	{
 		$response = $this->getJson('Shop/Basket/');
-		$response = $this->deleteJson('Shop/Basket/item', [
+		$order_id = $response->getCookie('basket_id')->getValue();
+		$response = $this->withCookie('basket_id', $order_id)->deleteJson('Shop/Basket/item', [
 			'item_id' => 99999,
 		]);
 
@@ -353,7 +361,8 @@ class BasketControllerTest extends BaseApiWithDataTest
 	public function testDeleteBasket(): void
 	{
 		$response = $this->getJson('Shop/Basket/');
-		$this->postJson('Shop/Basket/Photo', [
+		$order_id = $response->getCookie('basket_id')->getValue();
+		$response = $this->withCookie('basket_id', $order_id)->postJson('Shop/Basket/Photo', [
 			'photo_id' => $this->photo1->id,
 			'album_id' => $this->album1->id,
 			'size_variant' => PurchasableSizeVariantType::MEDIUM->value,
@@ -361,16 +370,16 @@ class BasketControllerTest extends BaseApiWithDataTest
 		]);
 
 		// Store the basket ID before deletion
-		$basketId = Session::get('basket_id');
+		$basketId = $response->getCookie('basket_id')->getValue();
 		$this->assertNotNull($basketId);
 
 		// Delete the basket
-		$response = $this->deleteJson('Shop/Basket/');
+		$response = $this->withCookie('basket_id', $order_id)->deleteJson('Shop/Basket/');
 
 		$this->assertNoContent($response);
 
 		// Check that basket ID is removed from session
-		$this->assertNull(Session::get('basket_id'));
+		$response->assertCookie('basket_id', null);
 
 		// Check that the order is deleted from database
 		$this->assertDatabaseMissing('orders', ['id' => $basketId]);
@@ -399,7 +408,8 @@ class BasketControllerTest extends BaseApiWithDataTest
 	{
 		// Add first item
 		$response = $this->getJson('Shop/Basket/');
-		$response1 = $this->postJson('Shop/Basket/Photo', [
+		$order_id = $response->getCookie('basket_id')->getValue();
+		$response1 = $this->withCookie('basket_id', $order_id)->postJson('Shop/Basket/Photo', [
 			'photo_id' => $this->photo1->id,
 			'album_id' => $this->album1->id,
 			'size_variant' => PurchasableSizeVariantType::MEDIUM->value,
@@ -411,7 +421,7 @@ class BasketControllerTest extends BaseApiWithDataTest
 		$this->assertNotNull($basketId1);
 
 		// Add second item - should use same basket
-		$response2 = $this->postJson('Shop/Basket/Photo', [
+		$response2 = $this->withCookie('basket_id', $order_id)->postJson('Shop/Basket/Photo', [
 			'photo_id' => $this->photo2->id,
 			'album_id' => $this->album2->id,
 			'size_variant' => PurchasableSizeVariantType::ORIGINAL->value,
@@ -436,7 +446,8 @@ class BasketControllerTest extends BaseApiWithDataTest
 	{
 		// Add item as authenticated user
 		$response = $this->actingAs($this->userMayUpload1)->getJson('Shop/Basket/');
-		$response = $this->actingAs($this->userMayUpload1)
+		$order_id = $response->getCookie('basket_id')->getValue();
+		$response = $this->withCookie('basket_id', $order_id)->actingAs($this->userMayUpload1)
 			->postJson('Shop/Basket/Photo', [
 				'photo_id' => $this->photo1->id,
 				'album_id' => $this->album1->id,
@@ -466,7 +477,8 @@ class BasketControllerTest extends BaseApiWithDataTest
 	public function testBasketWithEmail(): void
 	{
 		$response = $this->getJson('Shop/Basket/');
-		$response = $this->postJson('Shop/Basket/Photo', [
+		$order_id = $response->getCookie('basket_id')->getValue();
+		$response = $this->withCookie('basket_id', $order_id)->postJson('Shop/Basket/Photo', [
 			'photo_id' => $this->photo1->id,
 			'album_id' => $this->album1->id,
 			'size_variant' => PurchasableSizeVariantType::MEDIUM->value,
@@ -490,7 +502,8 @@ class BasketControllerTest extends BaseApiWithDataTest
 	public function testAddItemWithInvalidEmail(): void
 	{
 		$response = $this->getJson('Shop/Basket/');
-		$response = $this->postJson('Shop/Basket/Photo', [
+		$order_id = $response->getCookie('basket_id')->getValue();
+		$response = $this->withCookie('basket_id', $order_id)->postJson('Shop/Basket/Photo', [
 			'photo_id' => $this->photo1->id,
 			'album_id' => $this->album1->id,
 			'size_variant' => PurchasableSizeVariantType::MEDIUM->value,
@@ -522,9 +535,7 @@ class BasketControllerTest extends BaseApiWithDataTest
 		$order->save();
 
 		// Try to add item to completed order by manually setting session
-		Session::put('basket_id', $order->id);
-
-		$response = $this->postJson('Shop/Basket/Photo', [
+		$response = $this->withCookie('basket_id', $order->id)->postJson('Shop/Basket/Photo', [
 			'photo_id' => $this->photo1->id,
 			'album_id' => $this->album1->id,
 			'size_variant' => PurchasableSizeVariantType::MEDIUM->value,
@@ -532,7 +543,7 @@ class BasketControllerTest extends BaseApiWithDataTest
 		]);
 
 		// Should fail because the order is not pending
-		$this->assertForbidden($response);
+		$this->assertUnauthorized($response);
 	}
 
 	/**
@@ -545,7 +556,8 @@ class BasketControllerTest extends BaseApiWithDataTest
 		$notes = 'Special print instructions';
 
 		$response = $this->getJson('Shop/Basket/');
-		$response = $this->postJson('Shop/Basket/Photo', [
+		$order_id = $response->getCookie('basket_id')->getValue();
+		$response = $this->withCookie('basket_id', $order_id)->postJson('Shop/Basket/Photo', [
 			'photo_id' => $this->photo1->id,
 			'album_id' => $this->album1->id,
 			'size_variant' => PurchasableSizeVariantType::MEDIUM->value,
@@ -567,7 +579,8 @@ class BasketControllerTest extends BaseApiWithDataTest
 		$longNotes = str_repeat('x', 1001); // Exceeds 1000 character limit
 
 		$response = $this->getJson('Shop/Basket/');
-		$response = $this->postJson('Shop/Basket/Photo', [
+		$order_id = $response->getCookie('basket_id')->getValue();
+		$response = $this->withCookie('basket_id', $order_id)->postJson('Shop/Basket/Photo', [
 			'photo_id' => $this->photo1->id,
 			'album_id' => $this->album1->id,
 			'size_variant' => PurchasableSizeVariantType::MEDIUM->value,
@@ -588,14 +601,16 @@ class BasketControllerTest extends BaseApiWithDataTest
 	{
 		// Add multiple items and verify total
 		$response = $this->getJson('Shop/Basket/');
-		$this->postJson('Shop/Basket/Photo', [
+		$order_id = $response->getCookie('basket_id')->getValue();
+		$response = $this->withCookie('basket_id', $order_id)->postJson('Shop/Basket/Photo', [
 			'photo_id' => $this->photo1->id,
 			'album_id' => $this->album1->id,
 			'size_variant' => PurchasableSizeVariantType::MEDIUM->value,
 			'license_type' => PurchasableLicenseType::PERSONAL->value,
 		]);
 
-		$response = $this->postJson('Shop/Basket/Photo', [
+		$order_id = $response->getCookie('basket_id')->getValue();
+		$response = $this->withCookie('basket_id', $order_id)->postJson('Shop/Basket/Photo', [
 			'photo_id' => $this->photo2->id,
 			'album_id' => $this->album2->id,
 			'size_variant' => PurchasableSizeVariantType::ORIGINAL->value,

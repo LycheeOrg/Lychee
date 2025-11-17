@@ -22,7 +22,6 @@ use App\Contracts\Http\Requests\RequestAttribute;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Purchasable;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 use Tests\Traits\RequireSE;
@@ -69,7 +68,7 @@ class BaseCheckoutControllerTest extends BaseApiWithDataTest
 		OrderItem::factory()->forOrder($this->test_order)->forPurchasable($this->purchasable1)->forPhoto($this->photo1)->fullSize()->create();
 
 		// Put the order in session to simulate a basket
-		Session::put(RequestAttribute::BASKET_ID_ATTRIBUTE, $this->test_order->id);
+		$this->withCookie(RequestAttribute::BASKET_ID_ATTRIBUTE, $this->test_order->id);
 
 		$this->requireSe();
 	}

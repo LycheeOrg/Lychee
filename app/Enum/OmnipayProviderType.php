@@ -51,7 +51,7 @@ enum OmnipayProviderType: string
 		return match ($this) {
 			OmnipayProviderType::DUMMY => ['apiKey'],
 			OmnipayProviderType::MOLLIE => ['apiKey', 'profileId'],
-			OmnipayProviderType::STRIPE => ['apiKey', 'publishable_key'],
+			OmnipayProviderType::STRIPE => ['apiKey', 'publishableKey'],
 			OmnipayProviderType::PAYPAL_REST => ['clientId', 'secret'],
 			OmnipayProviderType::PAYPAL_EXPRESS,
 			OmnipayProviderType::PAYPAL_PRO,

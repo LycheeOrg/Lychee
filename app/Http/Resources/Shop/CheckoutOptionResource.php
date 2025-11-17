@@ -39,7 +39,7 @@ class CheckoutOptionResource extends Data
 
 		$this->mollie_profile_id = config('omnipay.Mollie.profileId', '');
 		// Disable Stripe. It is not working yet, maybe later.
-		$this->stripe_public_key = ''; // config('omnipay.Stripe.publishable_key', '');
+		$this->stripe_public_key = ''; // config('omnipay.Stripe.publishableKey', '');
 		$this->is_test_mode = config('omnipay.testMode', false) === true;
 	}
 }

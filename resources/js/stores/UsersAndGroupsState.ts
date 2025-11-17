@@ -52,7 +52,8 @@ export const useUsersAndGroupStore = defineStore("users-and-groups-store", {
 			});
 		},
 		_loadGroups(): Promise<void> {
-			if (useLycheeStateStore().is_se_enabled !== true) {
+			const isSupporter = useLycheeStateStore().is_se_enabled;
+			if (!isSupporter) {
 				return Promise.resolve();
 			}
 

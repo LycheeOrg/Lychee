@@ -27,7 +27,7 @@ return [
 	],
 
 	'Stripe' => [
-		'publishable_key' => env('STRIPE_PUBLISHABLE_KEY', ''),
+		'publishableKey' => env('STRIPE_PUBLISHABLE_KEY', ''),
 		'apiKey' => env('STRIPE_API_KEY', ''),
 	],
 

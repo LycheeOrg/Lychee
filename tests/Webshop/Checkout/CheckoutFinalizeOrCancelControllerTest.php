@@ -82,6 +82,12 @@ class CheckoutFinalizeOrCancelControllerTest extends BaseCheckoutControllerTest
 			'is_success' => true,
 			'message' => 'Payment completed successfully',
 		]);
+
+		// Verify order status was updated to COMPLETED
+		$this->assertDatabaseHas('orders', [
+			'id' => $this->test_order->id,
+			'status' => PaymentStatusType::COMPLETED->value,
+		]);
 	}
 
 	/**
@@ -165,7 +171,7 @@ class CheckoutFinalizeOrCancelControllerTest extends BaseCheckoutControllerTest
 
 		$response = $this->getJson('Shop/Checkout/Cancel/Dummy/' . $invalid_transaction_id);
 
-		$this->assertNotFound($response); // Should be unauthorized as order not found
+		$this->assertNotFound($response); // Order not found
 	}
 
 	/**

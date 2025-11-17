@@ -33,7 +33,7 @@ class OfflineRequest extends BaseApiRequest implements HasBasket
 	public function rules(): array
 	{
 		return [
-			RequestAttribute::EMAIL_ATTRIBUTE => ['sometimes', 'email'],
+			RequestAttribute::EMAIL_ATTRIBUTE => ['sometimes', 'nullable', 'email'],
 		];
 	}
 

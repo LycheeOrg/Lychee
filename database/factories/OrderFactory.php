@@ -153,7 +153,7 @@ class OrderFactory extends Factory
 	}
 
 	/**
-	 * Create a offline order.
+	 * Create an offline order.
 	 *
 	 * @return static
 	 */

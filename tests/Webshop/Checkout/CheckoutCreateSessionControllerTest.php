@@ -21,7 +21,7 @@ namespace Tests\Webshop\Checkout;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Enum\OmnipayProviderType;
 use App\Enum\PaymentStatusType;
-use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Cookie;
 
 /**
  * Test class for CheckoutController CreateSession functionality.
@@ -136,8 +136,8 @@ class CheckoutCreateSessionControllerTest extends BaseCheckoutControllerTest
 	 */
 	public function testCreateSessionWithoutBasket(): void
 	{
-		// Remove basket from session
-		Session::forget(RequestAttribute::BASKET_ID_ATTRIBUTE);
+		// Remove basket from cookie (mark as empty string)
+		$this->withCookie(RequestAttribute::BASKET_ID_ATTRIBUTE, '');
 
 		$response = $this->postJson('Shop/Checkout/Create-session', [
 			'provider' => OmnipayProviderType::DUMMY->value,
@@ -149,7 +149,7 @@ class CheckoutCreateSessionControllerTest extends BaseCheckoutControllerTest
 			'provider' => OmnipayProviderType::DUMMY->value,
 		]);
 
-		$this->assertForbidden($response); // Should be unauthorized without a valid basket
+		$this->assertForbidden($response); // Should be forbidden without a valid basket (if logged in)
 	}
 
 	/**

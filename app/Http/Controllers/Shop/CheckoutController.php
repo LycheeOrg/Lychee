@@ -112,7 +112,7 @@ class CheckoutController extends Controller
 	public function finalize(FinalizeRequest $request, string $provider, string $transaction_id): CheckoutResource
 	{
 		/** @disregard P1013 */
-		Log::warning("Finalize payment for provider {$provider} and transaction ID {$transaction_id}", $request->all());
+		Log::info("Finalize payment for provider {$provider} and transaction ID {$transaction_id}", $request->all());
 		/** @disregard P1013 */
 		$order = $this->checkout_service->handlePaymentReturn($request->basket(), $request->provider_type());
 

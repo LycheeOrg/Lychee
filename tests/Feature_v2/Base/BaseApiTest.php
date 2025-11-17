@@ -46,7 +46,7 @@ abstract class BaseApiTest extends AbstractTestCase
 	 */
 	public function getJsonWithData($uri, array $data = [], array $headers = [], $options = 0)
 	{
-		return $this->json('GET', self::API_PREFIX . ltrim($uri, '/'), $data, $headers, $options);
+		return $this->withCredentials()->json('GET', self::API_PREFIX . ltrim($uri, '/'), $data, $headers, $options);
 	}
 
 	/**
@@ -60,7 +60,7 @@ abstract class BaseApiTest extends AbstractTestCase
 	 */
 	public function getJson($uri, array $headers = [], $options = 0)
 	{
-		return $this->json('GET', self::API_PREFIX . ltrim($uri, '/'), [], $headers, $options);
+		return $this->withCredentials()->json('GET', self::API_PREFIX . ltrim($uri, '/'), [], $headers, $options);
 	}
 
 	/**
@@ -75,7 +75,7 @@ abstract class BaseApiTest extends AbstractTestCase
 	 */
 	public function postJson($uri, array $data = [], array $headers = [], $options = 0)
 	{
-		return $this->json('POST', self::API_PREFIX . ltrim($uri, '/'), $data, $headers, $options);
+		return $this->withCredentials()->json('POST', self::API_PREFIX . ltrim($uri, '/'), $data, $headers, $options);
 	}
 
 	/**
@@ -132,7 +132,7 @@ abstract class BaseApiTest extends AbstractTestCase
 	 */
 	public function patchJson($uri, array $data = [], array $headers = [], $options = 0)
 	{
-		return $this->json('PATCH', self::API_PREFIX . ltrim($uri, '/'), $data, $headers, $options);
+		return $this->withCredentials()->json('PATCH', self::API_PREFIX . ltrim($uri, '/'), $data, $headers, $options);
 	}
 
 	/**
@@ -147,7 +147,7 @@ abstract class BaseApiTest extends AbstractTestCase
 	 */
 	public function putJson($uri, array $data = [], array $headers = [], $options = 0)
 	{
-		return $this->json('PUT', self::API_PREFIX . ltrim($uri, '/'), $data, $headers, $options);
+		return $this->withCredentials()->json('PUT', self::API_PREFIX . ltrim($uri, '/'), $data, $headers, $options);
 	}
 
 	/**
@@ -162,7 +162,7 @@ abstract class BaseApiTest extends AbstractTestCase
 	 */
 	public function deleteJson($uri, array $data = [], array $headers = [], $options = 0)
 	{
-		return $this->json('DELETE', self::API_PREFIX . ltrim($uri, '/'), $data, $headers, $options);
+		return $this->withCredentials()->json('DELETE', self::API_PREFIX . ltrim($uri, '/'), $data, $headers, $options);
 	}
 
 	/**
