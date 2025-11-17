@@ -1,6 +1,6 @@
 <template>
 	<div class="items-center flex-wrap gap-4 justify-between hidden sm:flex">
-		<div class="text-muted-color-emphasis">{{ props.config.documentation }}</div>
+		<div class="text-muted-color-emphasis">{{ tDoc(props.config) }}</div>
 		<div class="flex gap-4 items-center">
 			<ResetField v-if="changed" @click="reset" />
 			<SelectButton
@@ -18,6 +18,9 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import SelectButton from "primevue/selectbutton";
+import { useTranslation } from "@/composables/useTranslation";
+
+const { tDoc } = useTranslation();
 
 const props = defineProps<{
 	config: App.Http.Resources.Models.ConfigResource;

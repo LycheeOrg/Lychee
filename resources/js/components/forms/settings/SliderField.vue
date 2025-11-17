@@ -6,7 +6,7 @@
 					'text-primary-emphasis': props.config.require_se,
 					'text-muted-color-emphasis': !props.config.require_se,
 				}"
-				v-html="props.label ?? props.config.documentation"
+				v-html="props.label ?? tDoc(props.config)"
 			/>
 			<div class="items-center flex gap-2">
 				<ResetField v-if="changed" @click="reset" />
@@ -16,7 +16,7 @@
 		<div
 			v-if="props.config.details || details !== undefined"
 			class="text-muted-color text-sm hidden sm:block"
-			v-html="props.details ?? props.config.details"
+			v-html="props.details ?? tDetails(props.config)"
 		/>
 	</div>
 </template>
@@ -25,6 +25,9 @@
 import { computed, ref, watch } from "vue";
 import SelectButton from "primevue/selectbutton";
 import ResetField from "./ResetField.vue";
+import { useTranslation } from "@/composables/useTranslation";
+
+const { tDoc, tDetails } = useTranslation();
 
 const props = defineProps<{
 	label?: string;
