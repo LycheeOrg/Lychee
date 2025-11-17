@@ -41,7 +41,7 @@ class GetBasketRequest extends BaseApiRequest implements HasBasket
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		// If there is a basket_id in the cookie, use it.
-		$basket_id = Cookie::get(RequestAttribute::BASKET_ID_ATTRIBUTE, $values[RequestAttribute::BASKET_ID_ATTRIBUTE] ?? null);
+		$basket_id = Cookie::get(RequestAttribute::BASKET_ID_ATTRIBUTE);
 		if ($basket_id !== null) {
 			$this->order = Order::find($basket_id);
 		}
