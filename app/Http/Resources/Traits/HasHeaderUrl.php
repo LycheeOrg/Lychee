@@ -54,24 +54,30 @@ trait HasHeaderUrl
 			return $header_size_variant->url;
 		}
 
-		$query_ratio = SizeVariant::query()->select('photo_id');
-
 		/** @var Collection<int,Photo>|LengthAwarePaginator<int,Photo> $photos */
 		$photos = $album->get_photos();
-		if ($photos instanceof LengthAwarePaginator) {
-			$photo_ids = collect($photos->items())->pluck('id')->all();
-			$query_ratio = $query_ratio->whereIn('photo_id', $photo_ids);
-		} else {
-			$query_ratio = $query_ratio->whereBelongsTo($photos);
-		}
-		$query_ratio = $query_ratio->where('ratio', '>', 1)->whereIn('type', [SizeVariantType::MEDIUM, SizeVariantType::SMALL2X, SizeVariantType::SMALL]);
+		$query_ratio = SizeVariant::query()->select('photo_id')
+			->when($photos instanceof LengthAwarePaginator, function ($query) use ($photos): void {
+				$photo_ids = collect($photos->items())->pluck('id')->all();
+				$query->whereIn('photo_id', $photo_ids);
+			})
+			->when($photos instanceof Collection, function ($query) use ($photos): void {
+				$query->whereBelongsTo($photos);
+			})
+			->where('ratio', '>', 1)->whereIn('type', [SizeVariantType::MEDIUM, SizeVariantType::SMALL2X, SizeVariantType::SMALL]);
 		$num = $query_ratio->count() - 1;
 		$photo = $num >= 0 ? $query_ratio->skip(rand(0, $num))->first() : null;
 
 		if ($photo === null) {
 			$query = SizeVariant::query()
 				->select('photo_id')
-				->whereBelongsTo($album->get_photos())
+				->when($photos instanceof LengthAwarePaginator, function ($query) use ($photos): void {
+					$photo_ids = collect($photos->items())->pluck('id')->all();
+					$query->whereIn('photo_id', $photo_ids);
+				})
+				->when($photos instanceof Collection, function ($query) use ($photos): void {
+					$query->whereBelongsTo($photos);
+				})
 				->whereIn('type', [SizeVariantType::MEDIUM, SizeVariantType::SMALL2X, SizeVariantType::SMALL]);
 			$num = $query->count() - 1;
 			$photo = $query->skip(rand(0, $num))->first();
