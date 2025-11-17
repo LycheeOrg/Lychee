@@ -35,8 +35,8 @@ trait HasBasketTrait
 	{
 		// If there is a basket_id in the cookie, use it.
 		$basket_id = Cookie::get(RequestAttribute::BASKET_ID_ATTRIBUTE);
-		if ($basket_id !== null) {
-			$this->order = Order::find($basket_id);
+		if ($basket_id !== null && $basket_id !== '') {
+			$this->order = Order::find(intval($basket_id));
 		}
 
 		// Validate basket is not of another user.
