@@ -543,7 +543,7 @@ class BasketControllerTest extends BaseApiWithDataTest
 		]);
 
 		// Should fail because the order is not pending
-		$this->assertForbidden($response);
+		$this->assertUnauthorized($response);
 	}
 
 	/**
