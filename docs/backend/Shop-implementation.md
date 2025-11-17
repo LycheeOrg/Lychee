@@ -134,8 +134,6 @@ Relationships:
 - `purchasable()`: BelongsTo relationship to Purchasable
 - `photo()`: BelongsTo relationship to Photo
 - `album()`: BelongsTo relationship to Album
-- `photo()`: The photo this item refers to (BelongsTo relationship)
-- `album()`: The album this item refers to (BelongsTo relationship)
 
 ## Services
 

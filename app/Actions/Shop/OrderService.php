@@ -128,7 +128,7 @@ class OrderService
 	/**
 	 * Clear old orders that are older than 2 weeks, have no items, and have no user_id.
 	 *
-	 * @return void Number of orders deleted
+	 * @return void
 	 */
 	public function clearOldOrders(): void
 	{

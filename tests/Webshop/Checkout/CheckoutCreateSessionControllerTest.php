@@ -136,7 +136,7 @@ class CheckoutCreateSessionControllerTest extends BaseCheckoutControllerTest
 	 */
 	public function testCreateSessionWithoutBasket(): void
 	{
-		// Remove basket from cookie
+		// Remove basket from cookie (mark as empty string)
 		$this->withCookie(RequestAttribute::BASKET_ID_ATTRIBUTE, '');
 
 		$response = $this->postJson('Shop/Checkout/Create-session', [
@@ -149,7 +149,7 @@ class CheckoutCreateSessionControllerTest extends BaseCheckoutControllerTest
 			'provider' => OmnipayProviderType::DUMMY->value,
 		]);
 
-		$this->assertForbidden($response); // Should be unauthorized without a valid basket
+		$this->assertForbidden($response); // Should be forbidden without a valid basket (if logged in)
 	}
 
 	/**

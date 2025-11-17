@@ -21,6 +21,7 @@ namespace Tests\Webshop\OrderManagement;
 use App\Enum\PaymentStatusType;
 use App\Models\Order;
 use App\Models\OrderItem;
+use Illuminate\Support\Str;
 use Tests\Webshop\Checkout\BaseCheckoutControllerTest;
 
 /**
@@ -281,7 +282,7 @@ class OrderControllerMarkAsPaidTest extends BaseCheckoutControllerTest
 	{
 		// Create additional offline orders
 		$order2 = Order::factory()
-			->withTransactionId(\Str::uuid()->toString())
+			->withTransactionId(Str::uuid()->toString())
 			->withEmail('test@example.com')
 			->offline()
 			->withAmountCents(1999)
@@ -289,7 +290,7 @@ class OrderControllerMarkAsPaidTest extends BaseCheckoutControllerTest
 		OrderItem::factory()->forOrder($order2)->forPurchasable($this->purchasable1)->forPhoto($this->photo1)->fullSize()->create();
 
 		$order3 = Order::factory()
-			->withTransactionId(\Str::uuid()->toString())
+			->withTransactionId(Str::uuid()->toString())
 			->withEmail('test@example.com')
 			->offline()
 			->withAmountCents(1999)

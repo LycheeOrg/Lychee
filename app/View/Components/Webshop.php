@@ -16,8 +16,8 @@ use Illuminate\View\View;
 use LycheeVerify\Verify;
 
 /**
- * This is the bottom of the page.
- * We provides socials etc...
+ * Webshop component.
+ * Displays webshop functionality when enabled for supporters.
  */
 class Webshop extends Component
 {
@@ -26,7 +26,7 @@ class Webshop extends Component
 	public bool $with_stripe = false;
 
 	/**
-	 * Initialize the footer once for all.
+	 * Initialize the webshop component.
 	 *
 	 * @throws ConfigurationKeyMissingException
 	 */
@@ -35,8 +35,8 @@ class Webshop extends Component
 		$is_supporter = resolve(Verify::class)->check();
 
 		$this->enable = $is_supporter && !Configs::getValueAsBool('webshop_offline') && Configs::getValueAsBool('webshop_enabled');
-		$this->with_mollie = config('omnipay.Mollie.apiKey') !== '';
-		$this->with_stripe = config('omnipay.Stripe.apiKey') !== '';
+		$this->with_mollie = config('omnipay.Mollie.apiKey') !== '' && config('omnipay.Mollie.apiKey') !== null;
+		$this->with_stripe = config('omnipay.Stripe.apiKey') !== '' && config('omnipay.Stripe.apiKey') !== null;
 	}
 
 	/**

@@ -182,7 +182,7 @@ class OrderListingAccessTest extends BaseApiWithDataTest
 
 	/**
 	 * Test getting specific order when not authenticated but with invalid transaction ID.
-	 * Should return 403 Forbidden.
+	 * Should return 401 Unauthorized.
 	 */
 	public function testGetOrderNotAuthenticatedWithInvalidTransactionId(): void
 	{
@@ -274,7 +274,7 @@ class OrderListingAccessTest extends BaseApiWithDataTest
 
 	/**
 	 * Test getting anonymous order with invalid transaction ID.
-	 * Should return 403 Forbidden.
+	 * Should return 401 Unauthorized.
 	 */
 	public function testGetAnonymousOrderWithInvalidTransactionId(): void
 	{
