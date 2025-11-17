@@ -191,8 +191,8 @@ class CheckoutOfflineControllerTest extends BaseCheckoutControllerTest
 	 */
 	public function testOfflineOrderWithoutBasket(): void
 	{
-		// Remove basket from session
-		Cookie::queue(Cookie::forget(RequestAttribute::BASKET_ID_ATTRIBUTE));
+		// Remove basket from cookie
+		$this->withCookie(RequestAttribute::BASKET_ID_ATTRIBUTE, '');
 
 		$response = $this->postJson('Shop/Checkout/Offline', [
 			'email' => 'customer@example.com',

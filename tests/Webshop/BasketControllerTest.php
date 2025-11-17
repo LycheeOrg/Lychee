@@ -24,7 +24,6 @@ use App\Enum\PurchasableLicenseType;
 use App\Enum\PurchasableSizeVariantType;
 use App\Models\Order;
 use App\Models\Purchasable;
-use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Session;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 use Tests\Traits\RequireSE;
@@ -380,7 +379,7 @@ class BasketControllerTest extends BaseApiWithDataTest
 		$this->assertNoContent($response);
 
 		// Check that basket ID is removed from session
-		$response->assertCookieMissing('basket_id');
+		$response->assertCookie('basket_id', null);
 
 		// Check that the order is deleted from database
 		$this->assertDatabaseMissing('orders', ['id' => $basketId]);

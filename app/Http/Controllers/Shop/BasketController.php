@@ -114,7 +114,7 @@ class BasketController extends Controller
 		// The service will throw appropriate exceptions if deletion fails
 		$this->basket_service->deleteBasket($basket);
 
-		// Remove basket ID from session
+		// Remove basket ID from the cookie
 		Cookie::queue(Cookie::forget(RequestAttribute::BASKET_ID_ATTRIBUTE));
 	}
 

@@ -22,7 +22,6 @@ use App\Contracts\Http\Requests\RequestAttribute;
 use App\Enum\OmnipayProviderType;
 use App\Enum\PaymentStatusType;
 use Illuminate\Support\Facades\Cookie;
-use Illuminate\Support\Facades\Session;
 
 /**
  * Test class for CheckoutController CreateSession functionality.
@@ -137,8 +136,8 @@ class CheckoutCreateSessionControllerTest extends BaseCheckoutControllerTest
 	 */
 	public function testCreateSessionWithoutBasket(): void
 	{
-		// Remove basket from session
-		Cookie::queue(Cookie::forget(RequestAttribute::BASKET_ID_ATTRIBUTE));
+		// Remove basket from cookie
+		$this->withCookie(RequestAttribute::BASKET_ID_ATTRIBUTE, '');
 
 		$response = $this->postJson('Shop/Checkout/Create-session', [
 			'provider' => OmnipayProviderType::DUMMY->value,
