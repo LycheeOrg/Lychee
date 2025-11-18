@@ -191,8 +191,7 @@ class OrderService
 			throw new LycheeLogicException('Order must be in offline status to be marked as paid');
 		}
 
-		$order->status = PaymentStatusType::COMPLETED;
-		$order->save();
+		$order->markAsPaid($order->transaction_id);
 
 		return $order;
 	}

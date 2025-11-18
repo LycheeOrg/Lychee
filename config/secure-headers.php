@@ -405,7 +405,7 @@ return [
 			'none' => false,
 			'*' => false,
 			'self' => true,
-			'origins' => env('APP_URL', '') !== '' ? [parse_url(env('APP_URL'), PHP_URL_HOST)] : [],
+			'origins' => env('APP_URL', '') !== '' && ($host = parse_url(env('APP_URL'), PHP_URL_HOST)) !== null ? [$host] : [],
 		],
 
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/picture-in-picture
