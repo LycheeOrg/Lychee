@@ -8,6 +8,7 @@
 
 namespace App\Http\Resources\Embed;
 
+use App\Assets\Helpers;
 use App\Http\Resources\Models\SizeVariantsResouce;
 use App\Models\Photo;
 use Spatie\LaravelData\Data;
@@ -25,6 +26,8 @@ class EmbedPhotoResource extends Data
 	public string $id;
 	public ?string $title;
 	public ?string $description;
+	public bool $is_video;
+	public ?string $duration;
 	public SizeVariantsResouce $size_variants;
 	/** @var array<string, string|null> */
 	public array $exif;
@@ -34,6 +37,12 @@ class EmbedPhotoResource extends Data
 		$this->id = $photo->id;
 		$this->title = $photo->title;
 		$this->description = $photo->description;
+		$this->is_video = $photo->isVideo();
+
+		// For videos, aperture field stores duration in seconds
+		$this->duration = $this->is_video && $photo->aperture !== null
+			? app(Helpers::class)->secondsToHMS(intval($photo->aperture))
+			: null;
 
 		// Reuse existing SizeVariantsResouce instead of duplicating logic
 		// Pass null for album since embeds are always public
