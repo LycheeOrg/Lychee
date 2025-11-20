@@ -57,6 +57,13 @@
 						@keydown.enter="openLightbox(albumData.photos[filmstripActiveIndex].id)"
 						@keydown.space.prevent="openLightbox(albumData.photos[filmstripActiveIndex].id)"
 					/>
+					<!-- Video play icon overlay for filmstrip main viewer -->
+					<div v-if="albumData && albumData.photos[filmstripActiveIndex]?.is_video" class="lychee-embed__video-overlay">
+						<svg class="lychee-embed__play-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+							<circle cx="50" cy="50" r="45" fill="rgba(0, 0, 0, 0.6)" />
+							<polygon points="37,30 37,70 70,50" fill="white" />
+						</svg>
+					</div>
 
 					<!-- Navigation arrows -->
 					<button
@@ -117,6 +124,13 @@
 							loading="lazy"
 							class="lychee-embed__photo-img"
 						/>
+						<!-- Video play icon overlay -->
+						<div v-if="thumb.photo.is_video" class="lychee-embed__video-overlay">
+							<svg class="lychee-embed__play-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+								<circle cx="50" cy="50" r="45" fill="rgba(0, 0, 0, 0.6)" />
+								<polygon points="37,30 37,70 70,50" fill="white" />
+							</svg>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -148,6 +162,13 @@
 						loading="lazy"
 						class="lychee-embed__photo-img"
 					/>
+					<!-- Video play icon overlay -->
+					<div v-if="photo.is_video" class="lychee-embed__video-overlay">
+						<svg class="lychee-embed__play-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+							<circle cx="50" cy="50" r="45" fill="rgba(0, 0, 0, 0.6)" />
+							<polygon points="37,30 37,70 70,50" fill="white" />
+						</svg>
+					</div>
 				</div>
 			</div>
 
@@ -610,5 +631,35 @@ watch(
 	height: 100%;
 	object-fit: cover;
 	display: block;
+}
+
+/* Video play icon overlay */
+.lychee-embed__video-overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	pointer-events: none;
+	transition: opacity 0.3s ease;
+}
+
+.lychee-embed__photo:hover .lychee-embed__video-overlay,
+.lychee-embed__filmstrip-thumb:hover .lychee-embed__video-overlay,
+.lychee-embed__filmstrip-main:hover .lychee-embed__video-overlay {
+	opacity: 0.7;
+}
+
+.lychee-embed__play-icon {
+	width: 20%;
+	height: 20%;
+	min-width: 40px;
+	min-height: 40px;
+	max-width: 80px;
+	max-height: 80px;
+	filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 </style>

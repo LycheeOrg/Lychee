@@ -96,6 +96,8 @@ export interface Photo {
 	id: string;
 	title: string | null;
 	description: string | null;
+	is_video: boolean;
+	duration: string | null;
 	size_variants: {
 		placeholder: SizeVariantData | null;
 		thumb: SizeVariantData | null;
@@ -104,10 +106,7 @@ export interface Photo {
 		small2x: SizeVariantData | null;
 		medium: SizeVariantData | null;
 		medium2x: SizeVariantData | null;
-		original: {
-			width: number;
-			height: number;
-		};
+		original: SizeVariantData | null;
 	};
 	exif: PhotoExif;
 }
