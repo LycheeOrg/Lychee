@@ -122,7 +122,7 @@ class OrderService
 			->when($user?->may_administrate !== true, function ($query) use ($user): void {
 				$query->where('user_id', $user?->id);
 			})
-			->orderBy('id', 'desc')->get()->all();
+			->orderBy('updated_at', 'desc')->get()->all();
 	}
 
 	/**
