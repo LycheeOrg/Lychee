@@ -10,6 +10,7 @@ namespace App\Http\Controllers\Shop;
 
 use App\Actions\Shop\CheckoutService;
 use App\Enum\PaymentStatusType;
+use App\Http\Requests\Checkout\CancelRequest;
 use App\Http\Requests\Checkout\CreateSessionRequest;
 use App\Http\Requests\Checkout\FinalizeRequest;
 use App\Http\Requests\Checkout\OfflineRequest;
@@ -84,7 +85,7 @@ class CheckoutController extends Controller
 
 		// Generate return URLs for the payment provider
 		$return_url = URL::route('shop.checkout.return', ['provider' => $order->provider->value, 'transaction_id' => $order->transaction_id]);
-		$cancel_url = URL::route('shop.checkout.cancel', ['provider' => $order->provider->value, 'transaction_id' => $order->transaction_id]);
+		$cancel_url = URL::route('shop.checkout.cancel', ['transaction_id' => $order->transaction_id]);
 
 		// Process the payment
 		$result = $this->checkout_service->processPayment(
@@ -135,7 +136,7 @@ class CheckoutController extends Controller
 	 *
 	 * @return CheckoutResource The cancellation response
 	 */
-	public function cancel(FinalizeRequest $request): CheckoutResource
+	public function cancel(CancelRequest $request): CheckoutResource
 	{
 		$order = $request->basket();
 
