@@ -4,11 +4,19 @@
 			{
 				pending: 'info',
 				paid: 'success',
-				completed: 'success',
+				offline: 'contrast',
+				completed: 'primary',
+				processing: 'warn',
 				failed: 'danger',
-			}[props.status] || 'secondary'
+				closed: 'success',
+			}[props.status as string] || 'secondary'
 		"
-		rounded
+		:class="{ 'opacity-50': props.status === 'pending' }"
+		:style="{
+			fontSize: props.size === 'small' ? '0.75rem' : '0.875rem',
+			padding: props.size === 'small' ? '0.125rem 0.25rem' : '0.25rem 0.5rem',
+			'border-radius': props.size === 'small' ? '0.5rem' : '1rem',
+		}"
 	>
 		{{ status }}
 	</Tag>
@@ -17,6 +25,7 @@
 import Tag from "primevue/tag";
 
 const props = defineProps<{
-	status: string;
+	status: App.Enum.PaymentStatusType;
+	size?: "small" | "normal";
 }>();
 </script>

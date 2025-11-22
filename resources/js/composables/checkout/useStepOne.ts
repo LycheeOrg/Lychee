@@ -1,4 +1,5 @@
 import WebshopService from "@/services/webshop-service";
+import { OrderManagementStateStore } from "@/stores/OrderManagement";
 import { UserStore } from "@/stores/UserState";
 import { computed, ref } from "vue";
 
@@ -7,12 +8,16 @@ const options = ref<undefined | App.Http.Resources.Shop.CheckoutOptionResource>(
 const consentGiven = ref(false);
 const errors = ref<Record<string, string | undefined>>({});
 
-export function useStepOne(userStore: UserStore) {
+export function useStepOne(userStore: UserStore, orderManagementStore: OrderManagementStateStore) {
 	function loadCheckoutOptions(): Promise<void> {
 		return WebshopService.Checkout.getOptions().then((response) => {
 			options.value = response.data;
 			console.log("Loaded checkout options:", response.data);
 		});
+	}
+
+	function loadEmailForUser(): void {
+		email.value = orderManagementStore.order?.email ?? userStore.user?.email ?? undefined;
 	}
 
 	const isStepOneValid = computed(() => {
@@ -57,6 +62,7 @@ export function useStepOne(userStore: UserStore) {
 		consentGiven,
 		validate,
 		loadCheckoutOptions,
+		loadEmailForUser,
 		isStepOneValid,
 	};
 }

@@ -52,9 +52,11 @@ import { useRouter } from "vue-router";
 import InputText from "@/components/forms/basic/InputText.vue";
 import Checkbox from "primevue/checkbox";
 import Button from "primevue/button";
+import { useOrderManagementStore } from "@/stores/OrderManagement";
 
 const userStore = useUserStore();
 const router = useRouter();
+const orderManagementStore = useOrderManagementStore();
 
-const { email, options, errors, validate, consentGiven } = useStepOne(userStore);
+const { email, options, errors, validate, consentGiven } = useStepOne(userStore, orderManagementStore);
 </script>

@@ -63,6 +63,12 @@ const OrderService = {
 	get(orderId: number, transactionId?: string): Promise<AxiosResponse<App.Http.Resources.Shop.OrderResource>> {
 		return axios.get(`${Constants.getApiUrl()}Shop/Order/${orderId}`, { data: {}, params: { transaction_id: transactionId } });
 	},
+	markAsPaid(orderId: number): Promise<AxiosResponse<void>> {
+		return axios.post(`${Constants.getApiUrl()}Shop/Order/${orderId}`, {});
+	},
+	markAsDelivered(orderId: number): Promise<AxiosResponse<void>> {
+		return axios.put(`${Constants.getApiUrl()}Shop/Order/${orderId}`, {});
+	},
 };
 
 const CheckoutService = {
@@ -76,6 +82,9 @@ const CheckoutService = {
 		additional_data: { card?: CardDetails; cardToken?: string; paymentToken?: string };
 	}): Promise<AxiosResponse<App.Http.Resources.Shop.CheckoutResource>> {
 		return axios.post(`${Constants.getApiUrl()}Shop/Checkout/Process`, data);
+	},
+	cancelPayment(transactionId: string): Promise<AxiosResponse<App.Http.Resources.Shop.CheckoutResource>> {
+		return axios.get(`${Constants.getApiUrl()}Shop/Checkout/Cancel/${transactionId}`, { data: {} });
 	},
 	offline(data: OfflineCheckout): Promise<AxiosResponse<App.Http.Resources.Shop.CheckoutResource>> {
 		return axios.post(`${Constants.getApiUrl()}Shop/Checkout/Offline`, data);

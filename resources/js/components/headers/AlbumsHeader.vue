@@ -61,10 +61,10 @@
 				<template v-for="(item, idx) in menu" :key="`menu-item-${idx}`">
 					<template v-if="item.type === 'link'">
 						<!-- @vue-ignore -->
-						<Button as="router-link" :to="item.to" :icon="item.icon" class="border-none" severity="secondary" text />
+						<Button as="router-link" :to="item.to" :icon="item.icon" class="border-none" :severity="item.severity ?? 'secondary'" text />
 					</template>
 					<template v-else>
-						<Button :icon="item.icon" class="border-none" severity="secondary" text @click="item.callback" />
+						<Button :icon="item.icon" class="border-none" :severity="item.severity ?? 'secondary'" text @click="item.callback" />
 					</template>
 				</template>
 				<!-- Not logged in. -->
@@ -236,6 +236,7 @@ type Callback = {
 type Item = {
 	icon: string;
 	if: boolean;
+	severity?: string;
 };
 type MenuRight = (Item & Link & { key: string }) | (Item & Callback & { key: string });
 
@@ -245,6 +246,7 @@ const menu = computed(() =>
 			to: { name: "basket" },
 			type: "link",
 			icon: "pi pi-shopping-cart",
+			severity: orderManagementStore.order?.status === "processing" ? "danger" : "secondary",
 			if: orderManagementStore.hasItems,
 			key: "basket",
 		},

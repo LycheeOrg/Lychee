@@ -16,6 +16,7 @@
 			<p>Number of stale orders: {{ numOldOrders }}</p>
 			<Button label="Clean stale orders" icon="pi pi-trash" class="border-none" severity="warn" @click="clean" />
 		</div>
+		<OrderLegend />
 		<!-- Empty panel to keep the same layout as other settings pages -->
 		<DataTable :value="orders" :loading="orders === undefined" class="mt-4" selectionMode="single" dataKey="id">
 			<Column header="Client" header-class="w-3/12" body-class="w-3/12 align-top">
@@ -40,12 +41,16 @@
 					<span :class="isZero(slotProps.data.amount) ? 'text-muted-color' : 'font-bold'">{{ slotProps.data.amount }}</span>
 				</template>
 			</Column>
+			<!-- export type PaymentStatusType = "pending" | "cancelled" | "failed" | "refunded" | "processing" | "offline" | "completed" | "closed"; -->
 			<Column header="" header-class="w-3/12 ltr:text-right rtl:text-left" body-class="w-3/12 align-top ltr:text-right rtl:text-left">
 				<template #body="slotProps">
-					<span v-if="slotProps.data.paid_at" class="text-create-600"
-						><i class="pi pi-check-square ltr:mr-2 rtl:ml-2" /> {{ new Date(slotProps.data.paid_at).toLocaleString() }}</span
+					<span v-if="slotProps.data.status === 'closed'" class="text-create-600">
+						<i class="pi pi-check-square ltr:mr-2 rtl:ml-2" /> {{ new Date(slotProps.data.updated_at).toLocaleString() }}
+					</span>
+					<span v-else-if="slotProps.data.status === 'completed'" class="text-primary-600" @click="markAsDelivered(slotProps.data.id)"
+						><i class="pi pi-stop ltr:mr-2 rtl:ml-2" /> {{ new Date(slotProps.data.paid_at).toLocaleString() }}</span
 					>
-					<span v-else-if="slotProps.data.status === 'offline'" class="text-warning-600"
+					<span v-else-if="slotProps.data.status === 'offline'" class="text-warning-600" @click="markAsPaid(slotProps.data.id)"
 						><i class="pi pi-clock ltr:mr-2 rtl:ml-2" /> {{ new Date(slotProps.data.created_at).toLocaleString() }}
 					</span>
 					<span v-else-if="isStale(slotProps.data)" class="text-muted-color"
@@ -61,6 +66,7 @@
 </template>
 <script setup lang="ts">
 import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
+import OrderLegend from "@/components/webshop/OrderLegend.vue";
 import OrderStatus from "@/components/webshop/OrderStatus.vue";
 import MaintenanceService from "@/services/maintenance-service";
 import WebshopService from "@/services/webshop-service";
@@ -84,7 +90,7 @@ function isStale(order: App.Http.Resources.Shop.OrderResource): boolean {
 		return false;
 	}
 	const twoWeeksAgo = new Date();
-	twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 1);
+	twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
 	return new Date(order.created_at) < twoWeeksAgo;
 }
 
@@ -106,6 +112,18 @@ function load() {
 		});
 	MaintenanceService.oldOrdersCheck().then((response) => {
 		numOldOrders.value = response.data;
+	});
+}
+
+function markAsPaid(orderId: number) {
+	WebshopService.Order.markAsPaid(orderId).then(() => {
+		load();
+	});
+}
+
+function markAsDelivered(orderId: number) {
+	WebshopService.Order.markAsDelivered(orderId).then(() => {
+		load();
 	});
 }
 

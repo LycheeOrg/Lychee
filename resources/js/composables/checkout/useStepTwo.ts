@@ -4,6 +4,16 @@ import axios, { AxiosError, AxiosResponse } from "axios";
 import { ToastServiceMethods } from "primevue/toastservice";
 import { Ref, ref } from "vue";
 
+const isStepTwoValid = ref(false);
+const canProcessPayment = ref(false);
+const selectedProvider = ref<undefined | App.Enum.OmnipayProviderType>(undefined);
+const cardDetails = ref<CardDetails>({
+	number: "",
+	expiryMonth: "",
+	expiryYear: "",
+	cvv: "",
+});
+
 export function useStepTwo(
 	email: Ref<undefined | string>,
 	orderManagement: OrderManagementStateStore,
@@ -12,17 +22,6 @@ export function useStepTwo(
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	mollie: Ref<any | undefined>,
 ) {
-	const selectedProvider = ref<undefined | App.Enum.OmnipayProviderType>(undefined);
-	const canProcessPayment = ref(false);
-	const cardDetails = ref<CardDetails>({
-		number: "",
-		expiryMonth: "",
-		expiryYear: "",
-		cvv: "",
-	});
-
-	const isStepTwoValid = ref(false);
-
 	function setStepTwoValid() {
 		isStepTwoValid.value = isCardValid() && canProcessPayment.value === true;
 	}
