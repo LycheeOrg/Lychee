@@ -37,6 +37,14 @@ class WebshopCheck implements DiagnosticPipe
 		if (!Configs::getValueAsBool('webshop_enabled')) {
 			return $next($data);
 		}
+		// @codeCoverageIgnoreStart
+		if (config('omnipay.test_mode', false) === true) {
+			$data[] = DiagnosticData::warn(
+				'Webshop is running in test mode.',
+				self::class,
+				['This means that payments won\'t be executed.', 'Users may use it to get free content.']
+			);
+		}
 
 		if (config('app.env', 'production') !== 'production') {
 			$data[] = DiagnosticData::warn(
@@ -60,6 +68,7 @@ class WebshopCheck implements DiagnosticPipe
 				self::class
 			);
 		}
+		// @codeCoverageIgnoreEnd
 
 		return $next($data);
 	}

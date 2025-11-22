@@ -60,8 +60,6 @@ class BasketService
 	public function getOrCreateBasket(?Order $basket, ?User $user = null): Order
 	{
 		if ($basket !== null) {
-			$this->ensurePendingStatus($basket);
-
 			// If user is now logged in but basket wasn't associated with a user
 			if ($user !== null && $basket->user_id === null) {
 				$basket->user_id = $user->id;

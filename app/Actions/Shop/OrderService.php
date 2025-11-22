@@ -11,20 +11,21 @@ namespace App\Actions\Shop;
 use App\Enum\PaymentStatusType;
 use App\Enum\PurchasableLicenseType;
 use App\Enum\PurchasableSizeVariantType;
+use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\Shop\InvalidPurchaseOptionException;
 use App\Exceptions\Shop\PhotoNotPurchasableException;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Photo;
 use App\Models\User;
-use App\Services\MoneyService;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class OrderService
 {
 	public function __construct(
-		private MoneyService $money_service,
 		private PurchasableService $purchasable_service,
 	) {
 	}
@@ -121,6 +122,98 @@ class OrderService
 			->when($user?->may_administrate !== true, function ($query) use ($user): void {
 				$query->where('user_id', $user?->id);
 			})
-			->orderBy('id', 'desc')->get()->all();
+			->orderBy('updated_at', 'desc')->get()->all();
+	}
+
+	/**
+	 * Clear old orders that are older than 2 weeks, have no items, and have no user_id.
+	 *
+	 * @return void
+	 */
+	public function clearOldOrders(): void
+	{
+		DB::transaction(function (): void {
+			// Delete all the order items first to avoid foreign key constraint issues
+			$chunk = $this->getQueryOldOrders()->pluck('id')->chunk(100);
+			foreach ($chunk as $old_orders_ids) {
+				OrderItem::whereIn('order_id', $old_orders_ids)->delete();
+			}
+			$this->getQueryOldOrders()->delete();
+		});
+	}
+
+	/**
+	 * Count the number of old orders.
+	 *
+	 * @return int
+	 */
+	public function countOldOrders(): int
+	{
+		return $this->getQueryOldOrders()->count();
+	}
+
+	/**
+	 * Return the query builder for old orders.
+	 *
+	 * An old order is defined as being older than $weeks weeks,
+	 * - having no user_id,
+	 * - having no items
+	 * - or having items but status is still PENDING
+	 *
+	 * @param int $weeks
+	 *
+	 * @return Builder
+	 */
+	protected function getQueryOldOrders(int $weeks = 2): Builder
+	{
+		$threshold_date = now()->subWeeks($weeks);
+
+		return Order::where('created_at', '<', $threshold_date)
+			->whereNull('user_id')
+			->where(function (Builder $query): void {
+				$query->where('status', PaymentStatusType::PENDING)
+					->orWhereDoesntHave('items');
+			});
+	}
+
+	/**
+	 * Mark an offline order as paid (completed).
+	 *
+	 * @param Order $order The order to mark as paid
+	 *
+	 * @return Order The updated order
+	 *
+	 * @throws LycheeLogicException If the order is not in offline status
+	 */
+	public function markAsPaid(Order $order): Order
+	{
+		if ($order->status !== PaymentStatusType::OFFLINE) {
+			throw new LycheeLogicException('Order must be in offline status to be marked as paid');
+		}
+
+		$order->markAsPaid($order->transaction_id);
+
+		return $order;
+	}
+
+	/**
+	 * Mark a completed order as delivered (closed).
+	 *
+	 * @param Order $order The order to mark as delivered
+	 *
+	 * @return Order The updated order
+	 *
+	 * @throws LycheeLogicException If the order is not in completed status
+	 */
+	public function markAsDelivered(Order $order): Order
+	{
+		if ($order->status !== PaymentStatusType::COMPLETED) {
+			throw new LycheeLogicException('Order must be in completed status to be marked as delivered');
+		}
+
+		$order->status = PaymentStatusType::CLOSED;
+		$order->save();
+
+		return $order;
 	}
 }

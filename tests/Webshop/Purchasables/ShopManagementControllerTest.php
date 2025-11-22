@@ -16,7 +16,7 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Webshop;
+namespace Tests\Webshop\Purchasables;
 
 use App\Models\Purchasable;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;

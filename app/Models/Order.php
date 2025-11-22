@@ -188,6 +188,16 @@ class Order extends Model
 	}
 
 	/**
+	 * We can only add items if the order has not been paid.
+	 *
+	 * @return bool
+	 */
+	public function canAddItems(): bool
+	{
+		return $this->status->canAddItems();
+	}
+
+	/**
 	 * We can only process a payment if we can checkout AND if provider is set...
 	 * And email is set OR we do not have FULL size variants in the order AND user_id is set.
 	 *

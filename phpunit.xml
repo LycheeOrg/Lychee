@@ -25,7 +25,7 @@
     </testsuite>
     <testsuite name="Webshop">
       <directory suffix="Test.php">./tests/Webshop</directory>
-      <exclude>./tests/Webshop/BaseCheckoutControllerTest.php</exclude>
+      <exclude>./tests/Webshop/Checkout/BaseCheckoutControllerTest.php</exclude>
     </testsuite>
   </testsuites>
   <extensions>
@@ -45,6 +45,10 @@
     <env name="QUEUE_CONNECTION" value="sync"/>
     <env name="MAIL_DRIVER" value="array"/>
     <ini name="memory_limit" value="512M"/>
+	<env name="STRIPE_API_KEY" value="" />
+	<env name="STRIPE_PUBLISHABLE_KEY" value="" />
+	<env name="MOLLIE_API_KEY" value="" />
+	<env name="MOLLIE_PROFILE_ID" value="" />
 	<env name="WEBSHOP_ENABLED" value="true"/>
   </php>
   <source>

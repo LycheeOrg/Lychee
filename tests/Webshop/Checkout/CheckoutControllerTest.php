@@ -16,7 +16,7 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Webshop;
+namespace Tests\Webshop\Checkout;
 
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 use Tests\Traits\RequireSE;
@@ -61,11 +61,11 @@ class CheckoutControllerTest extends BaseApiWithDataTest
 	}
 
 	/**
-	 * Test the options endpoint requires authentication.
+	 * Test the options endpoint works without authentication.
 	 */
-	public function testOptionsRequiresAuth(): void
+	public function testOptionsWithoutAuth(): void
 	{
-		// Call the options endpoint without authentication
+		// Call the options endpoint as guest (unauthenticated)
 		$response = $this->getJson('Shop/Checkout/Options');
 
 		// Assert successful response

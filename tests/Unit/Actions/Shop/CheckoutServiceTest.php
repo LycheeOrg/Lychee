@@ -318,7 +318,6 @@ class CheckoutServiceTest extends AbstractTestCase
 		// Execute
 		$result = $this->checkout_service->handlePaymentReturn(
 			$this->order,
-			['payment_id' => 'test-payment-id'],
 			OmnipayProviderType::DUMMY
 		);
 
@@ -356,7 +355,6 @@ class CheckoutServiceTest extends AbstractTestCase
 		// Execute
 		$result = $this->checkout_service->handlePaymentReturn(
 			$this->order,
-			['payment_id' => 'test-payment-id'],
 			OmnipayProviderType::DUMMY
 		);
 
@@ -384,7 +382,6 @@ class CheckoutServiceTest extends AbstractTestCase
 		// Execute
 		$result = $this->checkout_service->handlePaymentReturn(
 			$this->order,
-			['payment_id' => 'test-payment-id'],
 			OmnipayProviderType::DUMMY
 		);
 
@@ -420,7 +417,6 @@ class CheckoutServiceTest extends AbstractTestCase
 		// Execute
 		$result = $this->checkout_service->handlePaymentReturn(
 			$this->order,
-			['payment_id' => 'test-payment-id'],
 			OmnipayProviderType::DUMMY
 		);
 

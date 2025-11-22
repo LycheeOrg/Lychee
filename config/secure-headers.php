@@ -404,10 +404,8 @@ return [
 		'payment' => [
 			'none' => false,
 			'*' => false,
-			'self' => false,
-			'origins' => [
-				// 'url',
-			],
+			'self' => true,
+			'origins' => env('APP_URL', '') !== '' && ($host = parse_url(env('APP_URL'), PHP_URL_HOST)) !== null ? [$host] : [],
 		],
 
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/picture-in-picture
@@ -700,7 +698,7 @@ return [
 			'report-sample' => true,
 
 			'allow' => array_merge(
-				['https://www.dropbox.com/static/api/1/dropins.js'],
+				['https://www.dropbox.com/static/api/1/dropins.js', 'https://js.mollie.com', 'https://js.stripe.com'],
 				explode(',', (string) env('SECURITY_HEADER_SCRIPT_SRC_ALLOW', ''))
 			),
 

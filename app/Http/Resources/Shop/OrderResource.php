@@ -34,6 +34,7 @@ class OrderResource extends Data
 		// public string $currency,
 		public ?string $paid_at,
 		public ?string $created_at,
+		public ?string $updated_at,
 		public ?string $comment,
 		#[LiteralTypeScriptType('App.Http.Resources.Shop.OrderItemResource[]|null')]
 		public ?Collection $items,
@@ -58,6 +59,7 @@ class OrderResource extends Data
 			amount: $money_service->format($order->amount_cents),
 			paid_at: $order->paid_at?->toIso8601String(),
 			created_at: $order->created_at?->toIso8601String(),
+			updated_at: $order->updated_at?->toIso8601String(),
 			comment: $order->comment,
 			items: $order->relationLoaded('items') ? OrderItemResource::collect($order->items) : null,
 			can_process_payment: $order->relationLoaded('items') ? $order->canProcessPayment() : false, // only if items are loaded we are able to check this.
