@@ -11,7 +11,7 @@
 		</template>
 		<template #content>
 			<div class="w-full h-40 text-sm text-muted-color">
-				<div class="w-full text-left">
+				<div class="w-full ltr:text-left rtl:text-right">
 					<h2 class="mb-4">{{ $t("maintenance.duplicate-finder.description") }}</h2>
 					<p v-if="data !== undefined && data.pure_duplicates + data.duplicates_within_album + data.title_duplicates > 0">
 						{{ $t("maintenance.duplicate-finder.duplicates-all") }}: {{ data.pure_duplicates }}<br />

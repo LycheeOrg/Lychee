@@ -30,7 +30,7 @@ export const useUsersAndGroupStore = defineStore("users-and-groups-store", {
 			this.isLoading = false;
 			this.usersGroupsList = undefined;
 		},
-		load(): Promise<void> {
+		async load(): Promise<void> {
 			if (this.isLoading) {
 				return Promise.resolve();
 			}

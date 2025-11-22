@@ -49,7 +49,7 @@ return [
     ],
     'optimize' => [
         'title' => 'Optymalizacja bazy danych',
-        'description' => 'Jeśli zauważysz spowolnienie w instalacji, może to być spowodowane tym, że baza danych 
+        'description' => 'Jeśli zauważysz spowolnienie w instalacji, może to być spowodowane tym, że baza danych
         nie ma wszystkich potrzebnych indeksów.',
         'button' => 'Optymalizacja bazy danych',
     ],
@@ -74,5 +74,10 @@ return [
         'title' => 'Opróżnianie pamięci podręcznej',
         'description' => 'Opróżnianie pamięci podręcznej każdego użytkownika w celu rozwiązania problemów z unieważnianiem.',
         'button' => 'Opróżnianie',
+    ],
+    'old-orders' => [
+        'title' => 'Old Orders',
+        'description' => 'Found %d old orders.<br/><br/>An old order is older than 14 days, that have no associated user and are either still pending payment or have no items in them.',
+        'button' => 'Delete old orders',
     ],
 ];

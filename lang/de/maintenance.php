@@ -73,4 +73,9 @@ return [
         'description' => 'Leeren Sie den Cache jedes Benutzers, um Ungültigkeitsprobleme zu lösen.',
         'button' => 'Leeren',
     ],
+    'old-orders' => [
+        'title' => 'Old Orders',
+        'description' => 'Found %d old orders.<br/><br/>An old order is older than 14 days, that have no associated user and are either still pending payment or have no items in them.',
+        'button' => 'Delete old orders',
+    ],
 ];
