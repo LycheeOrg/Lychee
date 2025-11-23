@@ -107,7 +107,7 @@ class OrderCompletedListener
 			};
 
 			// Update delivery status: false if any variant is null (unavailable)
-			$all_items_delivered &= $variant !== null;
+			$all_items_delivered = $all_items_delivered && $variant !== null;
 
 			// Link the order item to the size variant for download access
 			$item->size_variant_id = $variant?->id ?? null;
