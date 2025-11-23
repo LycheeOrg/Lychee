@@ -86,7 +86,7 @@ class CheckoutService
 					$metadata = $response->getMetadata();
 					$reference = $response->getTransactionReference();
 					$metadata['transactionReference'] = $reference;
-					Session::put('metadata', $metadata);
+					Session::put('metadata.' . $order->id, $metadata);
 				}
 
 				if (!$response instanceof RedirectResponseInterface) {
@@ -167,7 +167,7 @@ class CheckoutService
 	 */
 	public function handlePaymentReturn(Order $order, OmnipayProviderType $provider): ?Order
 	{
-		$metadata = Session::get('metadata', []);
+		$metadata = Session::get('metadata.' . $order->id, []);
 		Log::info('Payment return metadata', ['metadata' => $metadata]);
 
 		$gateway = $this->omnipay_factory->create_gateway($provider);
