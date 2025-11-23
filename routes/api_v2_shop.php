@@ -37,7 +37,7 @@ Route::middleware('support:se')->group(function (): void {
 		Route::post('/Create-session', [Shop\CheckoutController::class, 'createSession']);
 		Route::post('/Process', [Shop\CheckoutController::class, 'process']);
 		Route::get('/Finalize/{provider}/{transaction_id}', [Shop\CheckoutController::class, 'finalize'])->withoutMiddleware(['content_type:json', 'accept_content_type:json'])->name('shop.checkout.return');
-		Route::get('/Cancel/{transaction_id}', [Shop\CheckoutController::class, 'cancel'])->name('shop.checkout.cancel');
+		Route::get('/Cancel/{transaction_id}', [Shop\CheckoutController::class, 'cancel'])->withoutMiddleware(['content_type:json', 'accept_content_type:json'])->name('shop.checkout.cancel');
 	});
 	Route::group(['prefix' => '/Shop/Management'], function (): void {
 		Route::get('/Options', [Admin\ShopManagementController::class, 'options']);

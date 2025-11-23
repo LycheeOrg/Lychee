@@ -65,23 +65,10 @@ class CheckoutFinalizeOrCancelControllerTest extends BaseCheckoutControllerTest
 			],
 		]);
 
-		$response = $this->getJsonWithData('Shop/Checkout/Finalize/' . $provider . '/' . $transaction_id);
+		$response = $this->get('/api/v2/Shop/Checkout/Finalize/' . $provider . '/' . $transaction_id);
 
-		$this->assertOk($response);
-		$response->assertJsonStructure([
-			'is_success',
-			'message',
-			'order' => [
-				'id',
-				'status',
-				'amount',
-			],
-		]);
-
-		$response->assertJson([
-			'is_success' => true,
-			'message' => 'Payment completed successfully',
-		]);
+		$this->assertRedirect($response);
+		$response->assertRedirect(route('shop.checkout.complete'));
 
 		// Verify order status was updated to COMPLETED
 		$this->assertDatabaseHas('orders', [
@@ -100,7 +87,7 @@ class CheckoutFinalizeOrCancelControllerTest extends BaseCheckoutControllerTest
 		$provider = OmnipayProviderType::DUMMY->value;
 		$invalidTransactionId = 'invalid-transaction-id';
 
-		$response = $this->getJson('Shop/Checkout/Finalize/' . $provider . '/' . $invalidTransactionId);
+		$response = $this->get('/api/v2/Shop/Checkout/Finalize/' . $provider . '/' . $invalidTransactionId);
 
 		$this->assertNotFound($response);
 	}
@@ -118,9 +105,10 @@ class CheckoutFinalizeOrCancelControllerTest extends BaseCheckoutControllerTest
 		$invalidProvider = 'invalid-provider';
 		$transaction_id = $this->test_order->transaction_id;
 
-		$response = $this->getJson('Shop/Checkout/Finalize/' . $invalidProvider . '/' . $transaction_id);
+		$response = $this->get('/api/v2/Shop/Checkout/Finalize/' . $invalidProvider . '/' . $transaction_id);
 
-		$this->assertUnprocessable($response);
+		// Invalid provider results in a redirect (validation failure)
+		$this->assertRedirect($response);
 	}
 
 	/**
@@ -136,22 +124,10 @@ class CheckoutFinalizeOrCancelControllerTest extends BaseCheckoutControllerTest
 
 		$transaction_id = $this->test_order->transaction_id;
 
-		$response = $this->getJson('Shop/Checkout/Cancel/' . $transaction_id);
+		$response = $this->get('/api/v2/Shop/Checkout/Cancel/' . $transaction_id);
 
-		$this->assertOk($response);
-		$response->assertJsonStructure([
-			'is_success',
-			'message',
-			'order' => [
-				'id',
-				'status',
-			],
-		]);
-
-		$response->assertJson([
-			'is_success' => true,
-			'message' => 'Payment was canceled by the user',
-		]);
+		$this->assertRedirect($response);
+		$response->assertRedirect(route('shop.checkout.cancelled'));
 
 		// Verify order was marked as cancelled
 		$this->assertDatabaseHas('orders', [
@@ -169,7 +145,7 @@ class CheckoutFinalizeOrCancelControllerTest extends BaseCheckoutControllerTest
 	{
 		$invalid_transaction_id = 'invalid-transaction-id';
 
-		$response = $this->getJson('Shop/Checkout/Cancel/' . $invalid_transaction_id);
+		$response = $this->get('/api/v2/Shop/Checkout/Cancel/' . $invalid_transaction_id);
 
 		$this->assertNotFound($response); // Order not found
 	}
@@ -245,11 +221,9 @@ class CheckoutFinalizeOrCancelControllerTest extends BaseCheckoutControllerTest
 			],
 		]);
 
-		$response = $this->getJsonWithData('Shop/Checkout/Finalize/' . $provider . '/' . $transaction_id);
+		$response = $this->get('/api/v2/Shop/Checkout/Finalize/' . $provider . '/' . $transaction_id);
 
-		$this->assertOk($response);
-		$response->assertJson([
-			'is_success' => true,
-		]);
+		$this->assertRedirect($response);
+		$response->assertRedirect(route('shop.checkout.complete'));
 	}
 }
