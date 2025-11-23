@@ -19,6 +19,7 @@ use App\Http\Requests\Checkout\ProcessRequest;
 use App\Http\Resources\Shop\CheckoutOptionResource;
 use App\Http\Resources\Shop\CheckoutResource;
 use App\Http\Resources\Shop\OrderResource;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
@@ -109,9 +110,9 @@ class CheckoutController extends Controller
 	 *
 	 * @param FinalizeRequest $request The request containing return data from the payment provider
 	 *
-	 * @return CheckoutResource The finalization response
+	 * @return RedirectResponse The redirection response
 	 */
-	public function finalize(FinalizeRequest $request, string $provider, string $transaction_id): CheckoutResource
+	public function finalize(FinalizeRequest $request, string $provider, string $transaction_id): RedirectResponse
 	{
 		/** @disregard P1013 */
 		Log::info("Finalize payment for provider {$provider} and transaction ID {$transaction_id}", $request->all());
@@ -119,27 +120,20 @@ class CheckoutController extends Controller
 		$order = $this->checkout_service->handlePaymentReturn($request->basket(), $request->provider_type());
 
 		if ($order->status !== PaymentStatusType::COMPLETED) {
-			return new CheckoutResource(
-				is_success: false,
-				message: 'Order failed.',
-			);
+			return redirect()->route('shop.checkout.failed');
 		}
 
 		OrderCompleted::dispatch($order->id);
 
-		return new CheckoutResource(
-			is_success: true,
-			message: 'Payment completed successfully',
-			order: OrderResource::fromModel($order),
-		);
+		return redirect()->route('shop.checkout.complete');
 	}
 
 	/**
 	 * Handle cancellation of the payment process.
 	 *
-	 * @return CheckoutResource The cancellation response
+	 * @return RedirectResponse The cancellation response
 	 */
-	public function cancel(CancelRequest $request): CheckoutResource
+	public function cancel(CancelRequest $request): RedirectResponse
 	{
 		$order = $request->basket();
 
@@ -147,11 +141,7 @@ class CheckoutController extends Controller
 		$order->status = PaymentStatusType::CANCELLED;
 		$order->save();
 
-		return new CheckoutResource(
-			is_success: true,
-			message: 'Payment was canceled by the user',
-			order: OrderResource::fromModel($order),
-		);
+		return redirect()->route('shop.checkout.cancelled');
 	}
 
 	/**

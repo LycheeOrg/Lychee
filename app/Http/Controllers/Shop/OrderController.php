@@ -15,6 +15,7 @@ use App\Http\Requests\Order\MarkAsDeliveredOrderRequest;
 use App\Http\Requests\Order\MarkAsPaidOrderRequest;
 use App\Http\Resources\Shop\OrderResource;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Cookie;
 
 /**
  * Controller responsible for listing the orders.
@@ -69,5 +70,15 @@ class OrderController extends Controller
 	public function markAsDelivered(MarkAsDeliveredOrderRequest $request): void
 	{
 		$this->order_service->markAsDelivered($request->order);
+	}
+
+	/**
+	 * Simple end point to delete existing cookies.
+	 *
+	 * @return void
+	 */
+	public function forget(): void
+	{
+		Cookie::queue(Cookie::forget('basket_id'));
 	}
 }

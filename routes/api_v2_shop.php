@@ -22,6 +22,7 @@ Route::middleware('support:se')->group(function (): void {
 		Route::get('/{order_id}', [Shop\OrderController::class, 'get']);
 		Route::post('/{order_id}', [Shop\OrderController::class, 'markAsPaid']);
 		Route::put('/{order_id}', [Shop\OrderController::class, 'markAsDelivered']);
+		Route::delete('/', [Shop\OrderController::class, 'forget']);
 	});
 	Route::group(['prefix' => '/Shop/Basket'], function (): void {
 		Route::get('/', [Shop\BasketController::class, 'get']);
