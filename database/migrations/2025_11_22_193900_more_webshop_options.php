@@ -12,7 +12,7 @@ return new class() extends BaseConfigMigration {
 	public const MOD_PRO = 'Mod Pro';
 
 	/**
-	 * @return array<int,array{key:string,value:string,is_secret:bool,cat:string,type_range:string,description:string,details?:string,order?:int,not_on_docker?:bool,level?:int}>
+	 * @return array<int,array{key:string,value:string,is_secret:bool,cat:string,type_range:string,description:string,order?:int,not_on_docker?:bool,is_expert?:bool,level?:int}>
 	 */
 	public function getConfigs(): array
 	{
@@ -25,7 +25,21 @@ return new class() extends BaseConfigMigration {
 				'description' => 'Keep webshop offline',
 				'details' => 'All payment processing will be skipped. Orders will be marked as OFFLINE instead of going through the payment flow.',
 				'is_secret' => true,
+				'is_expert' => false,
 				'order' => 19,
+				'not_on_docker' => false,
+				'level' => 1, // Only for SE.
+			],
+			[
+				'key' => 'webshop_lycheeorg_disclaimer_enabled',
+				'value' => '1',
+				'cat' => self::MOD_PRO,
+				'type_range' => self::BOOL,
+				'description' => 'Enable LycheeOrg non-liability disclaimer',
+				'details' => 'Lychee is provided under MIT license without any warranties. Disabling this option removes the disclaimer from the order page.',
+				'is_secret' => true,
+				'is_expert' => true,
+				'order' => 20,
 				'not_on_docker' => false,
 				'level' => 1, // Only for SE.
 			],

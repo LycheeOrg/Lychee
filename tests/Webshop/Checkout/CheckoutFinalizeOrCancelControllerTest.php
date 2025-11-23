@@ -53,7 +53,7 @@ class CheckoutFinalizeOrCancelControllerTest extends BaseCheckoutControllerTest
 
 		$this->assertDatabaseHas('orders', ['transaction_id' => $transaction_id, 'status' => PaymentStatusType::PROCESSING->value]);
 
-		Session::put('processing', [
+		Session::put('metadata', [
 			'payment_id' => 'dummy-payment-123',
 			'status' => 'completed',
 			'transactionReference' => $this->test_order->transaction_id,
@@ -136,7 +136,7 @@ class CheckoutFinalizeOrCancelControllerTest extends BaseCheckoutControllerTest
 
 		$transaction_id = $this->test_order->transaction_id;
 
-		$response = $this->getJson('Shop/Checkout/Cancel/Dummy/' . $transaction_id);
+		$response = $this->getJson('Shop/Checkout/Cancel/' . $transaction_id);
 
 		$this->assertOk($response);
 		$response->assertJsonStructure([
@@ -169,7 +169,7 @@ class CheckoutFinalizeOrCancelControllerTest extends BaseCheckoutControllerTest
 	{
 		$invalid_transaction_id = 'invalid-transaction-id';
 
-		$response = $this->getJson('Shop/Checkout/Cancel/Dummy/' . $invalid_transaction_id);
+		$response = $this->getJson('Shop/Checkout/Cancel/' . $invalid_transaction_id);
 
 		$this->assertNotFound($response); // Order not found
 	}
@@ -233,7 +233,7 @@ class CheckoutFinalizeOrCancelControllerTest extends BaseCheckoutControllerTest
 		$provider = OmnipayProviderType::DUMMY->value;
 		$transaction_id = $this->test_order->transaction_id;
 
-		Session::put('processing', [
+		Session::put('metadata', [
 			'payment_id' => 'dummy-payment-123',
 			'status' => 'completed',
 			'transactionReference' => $this->test_order->transaction_id,

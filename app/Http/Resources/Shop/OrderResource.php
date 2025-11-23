@@ -49,6 +49,11 @@ class OrderResource extends Data
 	{
 		$money_service = resolve(MoneyService::class);
 
+		// The order has been paid, so we provide the download links
+		if ($order->status === PaymentStatusType::CLOSED) {
+			$order->load('items.size_variant');
+		}
+
 		return new self(
 			id: $order->id,
 			provider: $order->provider,

@@ -11,6 +11,7 @@ namespace App\Actions\Shop;
 use App\Enum\PaymentStatusType;
 use App\Enum\PurchasableLicenseType;
 use App\Enum\PurchasableSizeVariantType;
+use App\Events\OrderCompleted;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\Shop\InvalidPurchaseOptionException;
 use App\Exceptions\Shop\PhotoNotPurchasableException;
@@ -192,6 +193,9 @@ class OrderService
 		}
 
 		$order->markAsPaid($order->transaction_id);
+
+		// Dispatch the OrderCompleted event to fullfill post-order actions
+		OrderCompleted::dispatch($order->id);
 
 		return $order;
 	}

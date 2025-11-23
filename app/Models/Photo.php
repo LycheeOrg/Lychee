@@ -286,6 +286,7 @@ class Photo extends Model implements HasUTCBasedTimes
 			// shutter speed needs to be processed. It is stored as a string `a/b s`
 			if (!str_starts_with($shutter, '1/')) {
 				preg_match('/(\d+)\/(\d+) s/', $shutter, $matches);
+				/** @disregard pass by reference from above. */
 				if (count($matches) > 0) {
 					$a = intval($matches[1]);
 					$b = intval($matches[2]);

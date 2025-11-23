@@ -10,6 +10,7 @@ namespace App\Http\Controllers\Shop;
 
 use App\Actions\Shop\CheckoutService;
 use App\Enum\PaymentStatusType;
+use App\Events\OrderCompleted;
 use App\Http\Requests\Checkout\CancelRequest;
 use App\Http\Requests\Checkout\CreateSessionRequest;
 use App\Http\Requests\Checkout\FinalizeRequest;
@@ -123,6 +124,8 @@ class CheckoutController extends Controller
 				message: 'Order failed.',
 			);
 		}
+
+		OrderCompleted::dispatch($order->id);
 
 		return new CheckoutResource(
 			is_success: true,

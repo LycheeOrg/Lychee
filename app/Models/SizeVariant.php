@@ -178,6 +178,26 @@ class SizeVariant extends Model
 		);
 	}
 
+	/**
+	 * Return the downloadable URL for this size variant.
+	 * This is not watermark aware.
+	 *
+	 * @return string
+	 */
+	public function getDownloadUrlAttribute(): string
+	{
+		return self::pathToUrl(
+			$this->short_path,
+			$this->storage_disk->value,
+			$this->type,
+		);
+	}
+
+	/**
+	 * Return the file associated to the size variant.
+	 *
+	 * @return FlysystemFile
+	 */
 	public function getFile(): FlysystemFile
 	{
 		return new FlysystemFile(
@@ -204,6 +224,11 @@ class SizeVariant extends Model
 		return new SizeVariantResource($this, no_url: $no_url);
 	}
 
+	/**
+	 * Accessor for the is_watermarked attribute.
+	 *
+	 * @return bool
+	 */
 	public function getIsWatermarkedAttribute(): bool
 	{
 		return $this->short_path_watermarked !== null && $this->short_path_watermarked !== '';

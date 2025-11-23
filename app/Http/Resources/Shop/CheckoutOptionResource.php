@@ -27,6 +27,7 @@ class CheckoutOptionResource extends Data
 	public string $mollie_profile_id;
 	public string $stripe_public_key;
 	public bool $is_test_mode;
+	public bool $is_lycheeorg_disclaimer_enabled;
 
 	public function __construct()
 	{
@@ -35,6 +36,7 @@ class CheckoutOptionResource extends Data
 		$this->allow_guest_checkout = Configs::getValueAsBool('webshop_allow_guest_checkout');
 		$this->terms_url = Configs::getValueAsString('webshop_terms_url');
 		$this->privacy_url = Configs::getValueAsString('webshop_privacy_url');
+		$this->is_lycheeorg_disclaimer_enabled = Configs::getValueAsBool('webshop_lycheeorg_disclaimer_enabled');
 		$this->payment_providers = (new OmnipayFactory())->get_supported_providers();
 
 		$this->mollie_profile_id = config('omnipay.Mollie.profileId', '');
