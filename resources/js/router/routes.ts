@@ -213,7 +213,7 @@ const routes_ = [
 		path: "/order/:orderId",
 		component: OrderDownload,
 		props: true,
-	}
+	},
 ];
 
 if (import.meta.env.MODE === "development" && import.meta.env.VITE_LOCAL_DEV === "true") {

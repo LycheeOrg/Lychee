@@ -1,6 +1,7 @@
 import { AlbumStore } from "@/stores/AlbumState";
 import { CatalogStore } from "@/stores/CatalogState";
 import { OrderManagementStateStore } from "@/stores/OrderManagement";
+import { ToastServiceMethods } from "primevue/toastservice";
 import { ref } from "vue";
 
 const buyablePhotoId = ref<string | undefined>(undefined);
@@ -8,7 +9,12 @@ const buyableAlbumId = ref<string | undefined>(undefined);
 const prices = ref<App.Http.Resources.Shop.PriceResource[]>([]);
 const showBuyMeDialog = ref(false);
 
-export function useBuyMeActions(albumStore: AlbumStore, orderManagement: OrderManagementStateStore, catalogStore: CatalogStore) {
+export function useBuyMeActions(
+	albumStore: AlbumStore,
+	orderManagement: OrderManagementStateStore,
+	catalogStore: CatalogStore,
+	toast: ToastServiceMethods,
+) {
 	async function toggleBuyMe(idx: string) {
 		// Sanity check
 		if (albumStore.modelAlbum === undefined) return;
@@ -27,28 +33,63 @@ export function useBuyMeActions(albumStore: AlbumStore, orderManagement: OrderMa
 			return;
 		}
 
+		const photoToAdd = albumStore.album?.photos.find((p) => p.id === idx);
+		if (photoToAdd === undefined) {
+			// Photo not found
+			return;
+		}
+
+		// Filter out the options which do not exists on the photo
+		const pricesOptions = getPricesOptionsForPhoto(photoToAdd);
+		if (pricesOptions.length === 0) {
+			// Nothing is buyable
+			return;
+		}
+
 		// Now we now we must add it.
 		buyablePhotoId.value = idx;
 		buyableAlbumId.value = albumStore.modelAlbum.id;
 		// Either there is only 1 option in the catalog, if so we take that one
 		// For now we focus only on album purchasable
 		// Later we want to also check if the photo is purchasable individually
-		if (catalogStore.catalog?.album_purchasable?.prices?.length === 1) {
-			const sizeVariant = catalogStore.catalog.album_purchasable.prices[0].size_variant;
-			const licenseType = catalogStore.catalog.album_purchasable.prices[0].license_type;
+		if (pricesOptions.length === 1) {
+			const sizeVariant = pricesOptions[0].size_variant;
+			const licenseType = pricesOptions[0].license_type;
 			addPhotoToOrder(sizeVariant, licenseType);
+			notify(photoToAdd.title, pricesOptions[0].price);
 			return;
 		}
 
 		// If we are here, we have multiple options, so we need to ask the user
-		prices.value = catalogStore.catalog?.album_purchasable?.prices ?? [];
+		prices.value = pricesOptions;
 		showBuyMeDialog.value = true;
+	}
+
+	function notify(photoTitle: string, price: string) {
+		toast.add({
+			severity: "success",
+			summary: "Added to order",
+			detail: photoTitle + " added to your order for " + price,
+			life: 3000,
+		});
 	}
 
 	function addPhotoToOrder(size_variant: App.Enum.PurchasableSizeVariantType, license_type: App.Enum.PurchasableLicenseType) {
 		showBuyMeDialog.value = false;
 
-		if (buyablePhotoId.value === undefined || albumStore.modelAlbum === undefined) return;
+		if (buyablePhotoId.value === undefined || albumStore.modelAlbum === undefined) {
+			return;
+		}
+
+		const photo = albumStore.album?.photos.find((p) => p.id === buyablePhotoId.value);
+		if (photo === undefined) {
+			return;
+		}
+
+		const priceOption = getPricesOptionsForPhoto(photo).find((p) => p.size_variant === size_variant && p.license_type === license_type);
+		if (priceOption === undefined) {
+			return;
+		}
 
 		orderManagement
 			.addPhoto({
@@ -56,6 +97,9 @@ export function useBuyMeActions(albumStore: AlbumStore, orderManagement: OrderMa
 				album_id: buyableAlbumId.value,
 				size_variant: size_variant,
 				license_type: license_type,
+			})
+			.then(() => {
+				notify(photo.title, priceOption.price);
 			})
 			.finally(resetBuyMeDialog);
 	}
@@ -67,6 +111,33 @@ export function useBuyMeActions(albumStore: AlbumStore, orderManagement: OrderMa
 		showBuyMeDialog.value = false;
 	}
 
+	function getPricesOptionsForPhoto(
+		photo: App.Http.Resources.Models.PhotoResource,
+		pricesOptions?: App.Http.Resources.Shop.PriceResource[] | null,
+	): App.Http.Resources.Shop.PriceResource[] {
+		if (pricesOptions === undefined || pricesOptions === null) {
+			pricesOptions = catalogStore.catalog?.album_purchasable?.prices;
+			if (pricesOptions === undefined || pricesOptions === null || pricesOptions.length === 0) {
+				// Nothing is buyable
+				return [];
+			}
+		}
+
+		// Filter out the options which do not exists on the photo
+		return pricesOptions.filter((price) => {
+			if (price.size_variant === "full" || price.size_variant === "original") {
+				return true; // Original & Full always exists
+			}
+			if (price.size_variant === "medium" && photo.size_variants.medium !== null) {
+				return true;
+			}
+			if (price.size_variant === "medium2x" && photo.size_variants.medium2x !== null) {
+				return true;
+			}
+			return false;
+		});
+	}
+
 	return {
 		showBuyMeDialog,
 		buyableAlbumId,
@@ -75,5 +146,6 @@ export function useBuyMeActions(albumStore: AlbumStore, orderManagement: OrderMa
 		toggleBuyMe,
 		addPhotoToOrder,
 		resetBuyMeDialog,
+		getPricesOptionsForPhoto,
 	};
 }

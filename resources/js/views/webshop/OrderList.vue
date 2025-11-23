@@ -27,10 +27,22 @@
 					<span v-else>{{ slotProps.data.email }}</span>
 				</template>
 			</Column>
-			<Column header="Transaction ID" field="transaction_id" header-class="w-2/12" body-class="w-2/12 align-top"  v-if="initData?.settings.can_edit">
+			<Column
+				header="Transaction ID"
+				field="transaction_id"
+				header-class="w-2/12"
+				body-class="w-2/12 align-top"
+				v-if="initData?.settings.can_edit"
+			>
 				<template #body="slotProps">
-					<span :class="{ 'text-muted-color': isStale(slotProps.data) }" v-tooltip="slotProps.data.transaction_id">{{ slotProps.data.transaction_id.slice(0, 12) }}</span>
-					<i v-if="slotProps.data.status === 'closed'" class="pi pi-copy cursor-pointer hover:text-primary-400 ltr:ml-2 rtl:mr-2" @click="copyTransactionIdToClipboard(slotProps.data.transaction_id)" />
+					<span :class="{ 'text-muted-color': isStale(slotProps.data) }" v-tooltip="slotProps.data.transaction_id">{{
+						slotProps.data.transaction_id.slice(0, 12)
+					}}</span>
+					<i
+						v-if="slotProps.data.status === 'closed'"
+						class="pi pi-copy cursor-pointer hover:text-primary-400 ltr:ml-2 rtl:mr-2"
+						@click="copyTransactionIdToClipboard(slotProps.data.transaction_id)"
+					/>
 				</template>
 			</Column>
 			<Column header="Status" field="status" header-class="w-1/24" body-class="w-1/12 align-top">
@@ -64,7 +76,7 @@
 			<Column header=" " header-class="w-2/12" body-class="w-2/12">
 				<template #body="slotProps">
 					<!-- Mark as paid if in offline state -->
-					<template  v-if="initData?.settings.can_edit">
+					<template v-if="initData?.settings.can_edit">
 						<Button
 							v-if="slotProps.data.status === 'offline'"
 							label="Mark as Paid"
@@ -158,7 +170,7 @@ function load() {
 }
 
 function copyTransactionIdToClipboard(transactionId: string) {
-	toast.add({ severity: 'info', summary: 'Copied to clipboard', detail: 'Transaction ID copied to clipboard', life: 3000 });
+	toast.add({ severity: "info", summary: "Copied to clipboard", detail: "Transaction ID copied to clipboard", life: 3000 });
 	navigator.clipboard.writeText(transactionId);
 }
 

@@ -20,21 +20,12 @@
 		<div v-else-if="order === undefined" class="p-6">
 			<div class="text-center mb-6">
 				<h2 class="text-xl font-semibold mb-2">Order Access Required</h2>
-				<p class=" text-muted-color">Please provide the transaction ID to access your order details.</p>
+				<p class="text-muted-color">Please provide the transaction ID to access your order details.</p>
 			</div>
 			<div class="max-w-md mx-auto">
 				<div class="flex flex-col gap-4">
-					<InputText
-						v-model="transactionId"
-						placeholder="Enter transaction ID"
-						class="w-full"
-					/>
-					<Button
-						@click="loadOrder"
-						label="Load Order"
-						:disabled="!transactionId || transactionId.trim() === ''"
-						class="w-full"
-					/>
+					<InputText v-model="transactionId" placeholder="Enter transaction ID" class="w-full" />
+					<Button @click="loadOrder" label="Load Order" :disabled="!transactionId || transactionId.trim() === ''" class="w-full" />
 				</div>
 			</div>
 		</div>
@@ -43,8 +34,13 @@
 		<div v-else class="p-6">
 			<div class="mb-6">
 				<h2 class="text-2xl font-bold mb-2">Order Details</h2>
-				<p class="text-muted-color">Transaction ID: {{ order.transaction_id }}
-					<i v-if="order.status === 'closed'" class="pi pi-copy cursor-pointer hover:text-primary-400 ltr:ml-2 rtl:mr-2" @click="copyToClipboard" />
+				<p class="text-muted-color">
+					Transaction ID: {{ order.transaction_id }}
+					<i
+						v-if="order.status === 'closed'"
+						class="pi pi-copy cursor-pointer hover:text-primary-400 ltr:ml-2 rtl:mr-2"
+						@click="copyToClipboard"
+					/>
 				</p>
 			</div>
 
@@ -63,11 +59,11 @@
 						</div>
 						<div class="flex justify-between">
 							<span>Paid:</span>
-							<span>{{ order.paid_at ? new Date(order.paid_at).toLocaleDateString() : 'not paid' }}</span>
+							<span>{{ order.paid_at ? new Date(order.paid_at).toLocaleDateString() : "not paid" }}</span>
 						</div>
 						<div class="flex justify-between">
 							<span>Last update:</span>
-							<span>{{ order.updated_at ? new Date(order.updated_at).toLocaleDateString() : 'N/A' }}</span>
+							<span>{{ order.updated_at ? new Date(order.updated_at).toLocaleDateString() : "N/A" }}</span>
 						</div>
 					</div>
 				</div>
@@ -84,12 +80,7 @@
 							<div class="text-right">
 								<div class="font-medium">{{ item.price }}</div>
 								<div v-if="item.content_url" class="mt-1">
-									<Button
-										@click="downloadItem(item.content_url)"
-										label="Download"
-										size="small"
-										severity="secondary"
-									/>
+									<Button @click="downloadItem(item.content_url)" label="Download" size="small" severity="secondary" />
 								</div>
 							</div>
 						</div>
@@ -100,18 +91,18 @@
 	</Panel>
 </template>
 <script setup lang="ts">
-import InputText from '@/components/forms/basic/InputText.vue';
-import OpenLeftMenu from '@/components/headers/OpenLeftMenu.vue';
-import OrderStatus from '@/components/webshop/OrderStatus.vue';
-import Constants from '@/services/constants';
-import WebshopService from '@/services/webshop-service';
-import Button from 'primevue/button';
-import Panel from 'primevue/panel';
-import ProgressSpinner from 'primevue/progressspinner';
-import Toolbar from 'primevue/toolbar';
-import { useToast } from 'primevue/usetoast';
-import { onMounted, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import InputText from "@/components/forms/basic/InputText.vue";
+import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
+import OrderStatus from "@/components/webshop/OrderStatus.vue";
+import Constants from "@/services/constants";
+import WebshopService from "@/services/webshop-service";
+import Button from "primevue/button";
+import Panel from "primevue/panel";
+import ProgressSpinner from "primevue/progressspinner";
+import Toolbar from "primevue/toolbar";
+import { useToast } from "primevue/usetoast";
+import { onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
 
 const props = defineProps<{
 	orderId: string;
@@ -126,23 +117,23 @@ const loading = ref(true);
 
 function loadOrder() {
 	WebshopService.Order.get(parseInt(orderId.value, 10), transactionId.value)
-	.then((response) => {
-		order.value = response.data;
-		loading.value = false;
-	})
-	.catch((error) => {
-		console.log(error);
-		order.value = undefined;
-		loading.value = false;
-	});
+		.then((response) => {
+			order.value = response.data;
+			loading.value = false;
+		})
+		.catch((error) => {
+			console.log(error);
+			order.value = undefined;
+			loading.value = false;
+		});
 }
 
 function downloadItem(contentUrl: string) {
 	// Create a temporary anchor element to trigger download
-	const link = document.createElement('a');
+	const link = document.createElement("a");
 	link.href = contentUrl;
-	link.target = '_blank';
-	link.download = ''; // This will use the filename from the server
+	link.target = "_blank";
+	link.download = ""; // This will use the filename from the server
 	document.body.appendChild(link);
 	link.click();
 	document.body.removeChild(link);
@@ -157,10 +148,11 @@ function loadTransactionId() {
 }
 
 function copyToClipboard() {
-	toast.add({ severity: 'success', summary: 'Copied to clipboard', detail: 'Order link copied to clipboard', life: 3000 });
-	navigator.clipboard.writeText(Constants.BASE_URL + router.resolve({ name: 'order', params: { orderId: order.value?.id } }).href + "#" + order.value?.transaction_id);
+	toast.add({ severity: "success", summary: "Copied to clipboard", detail: "Order link copied to clipboard", life: 3000 });
+	navigator.clipboard.writeText(
+		Constants.BASE_URL + router.resolve({ name: "order", params: { orderId: order.value?.id } }).href + "#" + order.value?.transaction_id,
+	);
 }
-
 
 onMounted(() => {
 	loadTransactionId();

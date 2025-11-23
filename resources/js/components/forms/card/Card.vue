@@ -51,7 +51,7 @@
 							</div>
 						</transition>
 					</label>
-					<div class="cursor-pointer w-[80px] flex-wrap ml-auto p-2.5 inline-flex shrink-0 whitespace-nowrap" ref="cardDate">
+					<div class="cursor-pointer w-20 flex-wrap ml-auto p-2.5 inline-flex shrink-0 whitespace-nowrap" ref="cardDate">
 						<label for="cardYear" class="opacity-70 text-xs mb-1">{{ $t("webshop.card.expires") }}</label>
 						<label for="cardMonth" class="relative">
 							<transition name="slide-fade-up">

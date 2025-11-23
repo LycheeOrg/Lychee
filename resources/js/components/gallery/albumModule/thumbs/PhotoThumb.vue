@@ -39,7 +39,7 @@
 		</span>
 		<div
 			:class="{
-				'overlay w-full absolute bottom-0 m-0 bg-gradient-to-t from-[#00000066] text-shadow-sm': true,
+				'overlay w-full absolute bottom-0 m-0 bg-linear-to-t from-[#00000066] text-shadow-sm': true,
 				'opacity-0 group-hover:opacity-100 transition-all ease-out': display_thumb_photo_overlay === 'hover',
 				hidden: display_thumb_photo_overlay === 'never',
 			}"
@@ -85,7 +85,7 @@
 			<ThumbFavourite v-if="is_favourite_enabled" :is-favourite="isFavourite" @click="toggleFavourite" />
 		</div>
 		<!-- TODO: make me an option. -->
-		<div v-if="userStore.isLoggedIn" class="badges absolute mt-[-1px] ltr:ml-1 rtl:mr-1 top-0 lfr:left-0 rtl:right-0 flex">
+		<div v-if="userStore.isLoggedIn" class="badges absolute -mt-px ltr:ml-1 rtl:mr-1 top-0 lfr:left-0 rtl:right-0 flex">
 			<ThumbBadge v-if="props.photo.is_starred" class="bg-yellow-500" icon="star" />
 			<ThumbBadge v-if="props.isCoverId" class="bg-yellow-500" icon="folder-cover" />
 			<ThumbBadge v-if="props.isHeaderId" class="bg-slate-400 hidden sm:block" pi="image" />
