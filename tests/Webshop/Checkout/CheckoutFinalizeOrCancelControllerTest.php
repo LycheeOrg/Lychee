@@ -53,7 +53,7 @@ class CheckoutFinalizeOrCancelControllerTest extends BaseCheckoutControllerTest
 
 		$this->assertDatabaseHas('orders', ['transaction_id' => $transaction_id, 'status' => PaymentStatusType::PROCESSING->value]);
 
-		Session::put('metadata', [
+		Session::put('metadata.' . $this->test_order->id, [
 			'payment_id' => 'dummy-payment-123',
 			'status' => 'completed',
 			'transactionReference' => $this->test_order->transaction_id,
@@ -233,7 +233,7 @@ class CheckoutFinalizeOrCancelControllerTest extends BaseCheckoutControllerTest
 		$provider = OmnipayProviderType::DUMMY->value;
 		$transaction_id = $this->test_order->transaction_id;
 
-		Session::put('metadata', [
+		Session::put('metadata.' . $this->test_order->id, [
 			'payment_id' => 'dummy-payment-123',
 			'status' => 'completed',
 			'transactionReference' => $this->test_order->transaction_id,

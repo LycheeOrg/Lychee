@@ -63,6 +63,7 @@ class BasketService
 			// If user is now logged in but basket wasn't associated with a user
 			if ($user !== null && $basket->user_id === null) {
 				$basket->user_id = $user->id;
+				$basket->email = $user->email;
 				$basket->save();
 			}
 
