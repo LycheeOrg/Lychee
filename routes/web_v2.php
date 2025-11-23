@@ -69,6 +69,9 @@ Route::get('/purchasables', VueController::class)->middleware(['migration:comple
 Route::get('/orders', VueController::class)->middleware(['migration:complete', 'login_required:always']);
 Route::get('/order/{order_id}', VueController::class)->middleware(['migration:complete']);
 Route::get('/basket', VueController::class)->middleware(['migration:complete']);
+Route::get('/checkout/completed', VueController::class)->middleware(['migration:complete'])->name('shop.checkout.complete');
+Route::get('/checkout/failed', VueController::class)->middleware(['migration:complete'])->name('shop.checkout.failed');
+Route::get('/checkout/cancelled', VueController::class)->middleware(['migration:complete'])->name('shop.checkout.cancelled');
 Route::get('/checkout/{step?}', VueController::class)->middleware(['migration:complete']);
 
 Route::match(['get', 'post'], '/migrate', [Admin\UpdateController::class, 'migrate'])
