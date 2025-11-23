@@ -50,6 +50,10 @@
 					<h3 class="text-lg font-semibold mb-3">Order Summary</h3>
 					<div class="space-y-2">
 						<div class="flex justify-between">
+							<span>For:</span>
+							<span class="font-medium"><UsernameEmail :username="order.username" :email="order.email" /></span>
+						</div>
+						<div class="flex justify-between">
 							<span>Status:</span>
 							<OrderStatus :status="order.status" />
 						</div>
@@ -73,15 +77,24 @@
 					<h3 class="text-lg font-medium mb-3">Items</h3>
 					<div class="space-y-3">
 						<div v-for="item in order.items" :key="item.id" class="flex justify-between items-center p-3 bg-surface-50/5 rounded">
-							<div>
-								<div class="font-medium">{{ item.title }}</div>
-								<div class="text-sm text-muted-color">{{ item.size_variant_type }} - {{ item.license_type }}</div>
+							<div class="flex gap-4">
+								<div>
+									<div class="font-medium">{{ item.title }}</div>
+									<div class="text-sm text-muted-color">{{ item.size_variant_type }} - {{ item.license_type }}</div>
+								</div>
+								<div v-if="item.content_url" class="mt-1">
+									<Button
+										@click="downloadItem(item.content_url)"
+										icon="pi pi-cloud-download"
+										label="Download"
+										size="small"
+										class="border-0"
+										severity="primary"
+									/>
+								</div>
 							</div>
 							<div class="text-right">
 								<div class="font-medium">{{ item.price }}</div>
-								<div v-if="item.content_url" class="mt-1">
-									<Button @click="downloadItem(item.content_url)" label="Download" size="small" severity="secondary" />
-								</div>
 							</div>
 						</div>
 					</div>
@@ -103,6 +116,7 @@ import Toolbar from "primevue/toolbar";
 import { useToast } from "primevue/usetoast";
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
+import UsernameEmail from "./UsernameEmail.vue";
 
 const props = defineProps<{
 	orderId: string;

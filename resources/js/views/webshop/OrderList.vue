@@ -22,9 +22,7 @@
 		<DataTable :value="orders" :loading="orders === undefined" class="mt-4" dataKey="id">
 			<Column header="Client" header-class="w-3/12" body-class="w-3/12 align-top">
 				<template #body="slotProps">
-					<span>{{ slotProps.data.username }}</span>
-					<span v-if="slotProps.data.username && slotProps.data.email">({{ slotProps.data.email }})</span>
-					<span v-else>{{ slotProps.data.email }}</span>
+					<UsernameEmail :username="slotProps.data.username" :email="slotProps.data.email" />
 				</template>
 			</Column>
 			<Column
@@ -127,6 +125,7 @@ import Toolbar from "primevue/toolbar";
 import { useToast } from "primevue/usetoast";
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
+import UsernameEmail from "./UsernameEmail.vue";
 
 const orders = ref<App.Http.Resources.Shop.OrderResource[] | undefined>(undefined);
 const router = useRouter();

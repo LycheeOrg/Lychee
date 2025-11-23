@@ -42,8 +42,8 @@ export type CardDetails = {
 };
 
 const OrderService = {
-	getCurrentBasket(orderId?: number): Promise<AxiosResponse<App.Http.Resources.Shop.OrderResource>> {
-		return axios.get(`${Constants.getApiUrl()}Shop/Basket`, { data: {}, params: { order_id: orderId } });
+	getCurrentBasket(): Promise<AxiosResponse<App.Http.Resources.Shop.OrderResource>> {
+		return axios.get(`${Constants.getApiUrl()}Shop/Basket`, { data: {}, params: {} });
 	},
 	addPhotoToBasket(data: AddPhoto): Promise<AxiosResponse<App.Http.Resources.Shop.OrderResource>> {
 		return axios.post(`${Constants.getApiUrl()}Shop/Basket/Photo`, data);
@@ -68,6 +68,9 @@ const OrderService = {
 	},
 	markAsDelivered(orderId: number): Promise<AxiosResponse<void>> {
 		return axios.put(`${Constants.getApiUrl()}Shop/Order/${orderId}`, {});
+	},
+	forget(): Promise<AxiosResponse<void>> {
+		return axios.delete(`${Constants.getApiUrl()}Shop/Order`, { data: {} });
 	},
 };
 

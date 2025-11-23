@@ -57,8 +57,21 @@
 							<div
 								class="border-2 border-dashed border-surface-200 dark:border-surface-700 rounded bg-surface-50 dark:bg-surface-950 flex-auto flex justify-center items-center font-medium"
 							>
-								Enjoy your purchase!
+								<h2 class="font-bold text-xl">Thank you for your purchase!</h2>
+								<div>
+									<p>
+										Your order number is: <strong>{{ order?.id }}</strong>
+									</p>
+									<p>
+										Your transaction id is: <strong>{{ order?.transaction_id }}</strong>
+									</p>
+								</div>
+								<p>Please note your transaction id and your order number as you will need them to access your content.</p>
+								<p>Enjoy your purchase!</p>
 							</div>
+						</div>
+						<div class="flex pt-6 ltr:justify-end rtl:justify-start">
+							<Button label="To the gallery" icon="pi pi-arrow-right" @click="backToGallery" class="border-none" />
 						</div>
 					</StepPanel>
 				</template>
@@ -75,7 +88,7 @@
 								We will notify you once your photos are ready to be downloaded.
 							</div>
 							<div class="flex pt-6 ltr:justify-end rtl:justify-start">
-								<Button label="To the gallery" icon="pi pi-arrow-right" @click="next" class="border-none" />
+								<Button label="To the gallery" icon="pi pi-arrow-right" @click="backToGallery" class="border-none" />
 							</div>
 						</div>
 					</StepPanel>
@@ -97,7 +110,7 @@ import Toolbar from "primevue/toolbar";
 import { storeToRefs } from "pinia";
 import { useOrderManagementStore } from "@/stores/OrderManagement";
 import { useRouter } from "vue-router";
-import { onMounted } from "vue";
+import { onMounted, watch } from "vue";
 import { useUserStore } from "@/stores/UserState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useStepOne } from "@/composables/checkout/useStepOne";
@@ -111,6 +124,7 @@ import { useSteps } from "@/composables/checkout/useSteps";
 import PaymentForm from "@/components/webshop/PaymentForm.vue";
 import { useMollie } from "@/composables/checkout/useMollie";
 import PaymentInProgress from "@/components/webshop/PaymentInProgress.vue";
+import WebshopService from "@/services/webshop-service";
 
 const props = defineProps<{
 	step?: CheckoutSteps;
@@ -123,26 +137,39 @@ const { order } = storeToRefs(orderStore);
 const router = useRouter();
 const toast = useToast();
 
-const { stepToNumber, steps } = useSteps();
-
 const { email, options, loadCheckoutOptions, loadEmailForUser, isStepOneValid } = useStepOne(userStore, orderStore);
+const { stepToNumber, steps } = useSteps(options);
 const { mollie } = useMollie(options, toast);
 const { processPayment, isStepTwoValid } = useStepTwo(email, orderStore, steps, toast, mollie);
 
-const { markAsOffline } = useStepOffline(email, steps, orderStore);
+const { markAsOffline } = useStepOffline(email, router, orderStore);
 
 function next() {
 	if (options.value?.is_offline === true) {
 		markAsOffline();
 	} else {
-		steps.value = 2;
+		router.push({ name: "checkout", params: { step: "payment" } });
 	}
 }
 
-onMounted(async () => {
-	steps.value = stepToNumber(props.step);
+async function backToGallery() {
+	// We need to reset the order store to clear the previous order
+	// Clear the cookie.
+	await WebshopService.Order.forget();
+	orderStore.reset();
+	router.push({ name: "gallery" });
+}
 
+onMounted(async () => {
 	await lycheeStateStore.load();
+	await loadCheckoutOptions();
+
+	if (props.step === undefined) {
+		router.push({ name: "checkout", params: { step: "info" } });
+	} else {
+		steps.value = stepToNumber(props.step);
+	}
+
 	userStore.load().then(() => {
 		if (userStore.user && userStore.user.email) {
 			email.value = userStore.user.email;
@@ -153,12 +180,33 @@ onMounted(async () => {
 			// Redirect to basket if no items
 			router.push({ name: "gallery" });
 		}
+
+		// Handle order status
 		if (order.value?.status === "processing") {
 			// Switch to step 2 if payment is in progress
 			steps.value = 2;
+			router.push({ name: "checkout", params: { step: "payment" } });
 		}
+
+		if (order.value?.status === "completed") {
+			// Switch to completed page if order is completed
+			router.push({ name: "checkout", params: { step: "completed" } });
+		}
+
+		if (order.value?.status === "offline") {
+			// Switch to cancelled page if order is cancelled
+			router.push({ name: "checkout", params: { step: "completed" } });
+		}
+
 		loadEmailForUser();
 	});
-	loadCheckoutOptions();
 });
+
+watch(
+	() => props.step,
+	(newStep) => {
+		steps.value = stepToNumber(newStep);
+		console.log("Step changed to", newStep, "->", steps.value);
+	},
+);
 </script>

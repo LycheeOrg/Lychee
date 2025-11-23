@@ -12,7 +12,6 @@ export function useStepOne(userStore: UserStore, orderManagementStore: OrderMana
 	function loadCheckoutOptions(): Promise<void> {
 		return WebshopService.Checkout.getOptions().then((response) => {
 			options.value = response.data;
-			console.log("Loaded checkout options:", response.data);
 		});
 	}
 
