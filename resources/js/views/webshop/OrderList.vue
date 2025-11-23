@@ -16,9 +16,10 @@
 			<p>Number of stale orders: {{ numOldOrders }}</p>
 			<Button label="Clean stale orders" icon="pi pi-trash" class="border-none" severity="warn" @click="clean" />
 		</div>
+		<Disclaimer />
 		<OrderLegend />
 		<!-- Empty panel to keep the same layout as other settings pages -->
-		<DataTable :value="orders" :loading="orders === undefined" class="mt-4" selectionMode="single" dataKey="id">
+		<DataTable :value="orders" :loading="orders === undefined" class="mt-4" dataKey="id">
 			<Column header="Client" header-class="w-3/12" body-class="w-3/12 align-top">
 				<template #body="slotProps">
 					<span>{{ slotProps.data.username }}</span>
@@ -26,12 +27,13 @@
 					<span v-else>{{ slotProps.data.email }}</span>
 				</template>
 			</Column>
-			<Column header="Transaction ID" field="transaction_id" header-class="w-3/12" body-class="w-3/12 align-top">
+			<Column header="Transaction ID" field="transaction_id" header-class="w-2/12" body-class="w-2/12 align-top"  v-if="initData?.settings.can_edit">
 				<template #body="slotProps">
-					<span :class="{ 'text-muted-color': isStale(slotProps.data) }">{{ slotProps.data.transaction_id }}</span>
+					<span :class="{ 'text-muted-color': isStale(slotProps.data) }" v-tooltip="slotProps.data.transaction_id">{{ slotProps.data.transaction_id.slice(0, 12) }}</span>
+					<i v-if="slotProps.data.status === 'closed'" class="pi pi-copy cursor-pointer hover:text-primary-400 ltr:ml-2 rtl:mr-2" @click="copyTransactionIdToClipboard(slotProps.data.transaction_id)" />
 				</template>
 			</Column>
-			<Column header="Status" field="status" header-class="w-1/12" body-class="w-2/12 align-top">
+			<Column header="Status" field="status" header-class="w-1/24" body-class="w-1/12 align-top">
 				<template #body="slotProps">
 					<OrderStatus :status="slotProps.data.status" />
 				</template>
@@ -42,23 +44,55 @@
 				</template>
 			</Column>
 			<!-- export type PaymentStatusType = "pending" | "cancelled" | "failed" | "refunded" | "processing" | "offline" | "completed" | "closed"; -->
-			<Column header="" header-class="w-3/12 ltr:text-right rtl:text-left" body-class="w-3/12 align-top ltr:text-right rtl:text-left">
+			<Column header="" header-class="w-2/12 ltr:text-right rtl:text-left" body-class="w-2/12 align-top ltr:text-right rtl:text-left">
 				<template #body="slotProps">
 					<span v-if="slotProps.data.status === 'closed'" class="text-create-600">
-						<i class="pi pi-check-square ltr:mr-2 rtl:ml-2" /> {{ new Date(slotProps.data.updated_at).toLocaleString() }}
+						{{ new Date(slotProps.data.updated_at).toLocaleString() }}
 					</span>
-					<span v-else-if="slotProps.data.status === 'completed'" class="text-primary-600" @click="markAsDelivered(slotProps.data.id)"
-						><i class="pi pi-stop ltr:mr-2 rtl:ml-2" /> {{ new Date(slotProps.data.paid_at).toLocaleString() }}</span
+					<span v-else-if="slotProps.data.status === 'completed'" class="text-primary-600" @click="markAsDelivered(slotProps.data.id)">
+						{{ new Date(slotProps.data.paid_at).toLocaleString() }}</span
 					>
-					<span v-else-if="slotProps.data.status === 'offline'" class="text-warning-600" @click="markAsPaid(slotProps.data.id)"
-						><i class="pi pi-clock ltr:mr-2 rtl:ml-2" /> {{ new Date(slotProps.data.created_at).toLocaleString() }}
+					<span v-else-if="slotProps.data.status === 'offline'" class="text-warning-600" @click="markAsPaid(slotProps.data.id)">
+						{{ new Date(slotProps.data.created_at).toLocaleString() }}
 					</span>
-					<span v-else-if="isStale(slotProps.data)" class="text-muted-color"
-						><i class="pi pi-bolt ltr:mr-2 rtl:ml-2" /> {{ new Date(slotProps.data.created_at).toLocaleString() }}</span
+					<span v-else-if="isStale(slotProps.data)" class="text-muted-color">
+						{{ new Date(slotProps.data.created_at).toLocaleString() }}</span
 					>
-					<span v-else class="text-muted-color-emphasis"
-						><i class="pi pi-bolt ltr:mr-2 rtl:ml-2" /> {{ new Date(slotProps.data.created_at).toLocaleString() }}</span
-					>
+					<span v-else class="text-muted-color-emphasis">{{ new Date(slotProps.data.created_at).toLocaleString() }}</span>
+				</template>
+			</Column>
+			<Column header=" " header-class="w-2/12" body-class="w-2/12">
+				<template #body="slotProps">
+					<!-- Mark as paid if in offline state -->
+					<template  v-if="initData?.settings.can_edit">
+						<Button
+							v-if="slotProps.data.status === 'offline'"
+							label="Mark as Paid"
+							icon="pi pi-check"
+							class="border-none py-0"
+							severity="secondary"
+							text
+							@click="markAsPaid(slotProps.data.id)"
+						/>
+						<Button
+							v-if="slotProps.data.status === 'completed'"
+							label="Mark as Delivered"
+							icon="pi pi-check"
+							class="border-none py-0"
+							severity="secondary"
+							text
+							@click="markAsPaid(slotProps.data.id)"
+						/>
+					</template>
+					<Button
+						v-if="slotProps.data.status === 'closed'"
+						label="View Details"
+						icon="pi pi-eye"
+						class="border-none py-0"
+						severity="primary"
+						text
+						@click="router.push({ name: 'order', params: { orderId: slotProps.data.id } })"
+					/>
 				</template>
 			</Column>
 		</DataTable>
@@ -66,20 +100,28 @@
 </template>
 <script setup lang="ts">
 import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
+import Disclaimer from "@/components/webshop/Disclaimer.vue";
 import OrderLegend from "@/components/webshop/OrderLegend.vue";
 import OrderStatus from "@/components/webshop/OrderStatus.vue";
 import MaintenanceService from "@/services/maintenance-service";
 import WebshopService from "@/services/webshop-service";
+import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
+import { storeToRefs } from "pinia";
 import Button from "primevue/button";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import Panel from "primevue/panel";
 import Toolbar from "primevue/toolbar";
+import { useToast } from "primevue/usetoast";
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 
 const orders = ref<App.Http.Resources.Shop.OrderResource[] | undefined>(undefined);
 const router = useRouter();
+const toast = useToast();
+
+const leftMenuStore = useLeftMenuStateStore();
+const { initData } = storeToRefs(leftMenuStore);
 
 // Return true if the date is older than 2 weeks
 function isStale(order: App.Http.Resources.Shop.OrderResource): boolean {
@@ -113,6 +155,11 @@ function load() {
 	MaintenanceService.oldOrdersCheck().then((response) => {
 		numOldOrders.value = response.data;
 	});
+}
+
+function copyTransactionIdToClipboard(transactionId: string) {
+	toast.add({ severity: 'info', summary: 'Copied to clipboard', detail: 'Transaction ID copied to clipboard', life: 3000 });
+	navigator.clipboard.writeText(transactionId);
 }
 
 function markAsPaid(orderId: number) {

@@ -31,6 +31,7 @@ const PurchasablesList = () => import("@/views/webshop/PurchasablesList.vue");
 const BasketList = () => import("@/views/webshop/BasketList.vue");
 const CheckoutPage = () => import("@/views/webshop/CheckoutPage.vue");
 const OrderList = () => import("@/views/webshop/OrderList.vue");
+const OrderDownload = () => import("@/views/webshop/OrderDownload.vue");
 
 const routes_ = [
 	{
@@ -203,10 +204,16 @@ const routes_ = [
 		props: true,
 	},
 	{
-		name: "order",
+		name: "orders",
 		path: "/orders",
 		component: OrderList,
 	},
+	{
+		name: "order",
+		path: "/order/:orderId",
+		component: OrderDownload,
+		props: true,
+	}
 ];
 
 if (import.meta.env.MODE === "development" && import.meta.env.VITE_LOCAL_DEV === "true") {

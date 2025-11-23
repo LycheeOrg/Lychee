@@ -12,7 +12,6 @@
 	</div>
 	<Transition name="fade">
 		<div v-if="isVisible" class="flex flex-row-reverse flex-wrap justify-center mb-8">
-			<Disclaimer />
 			<div class="flex flex-col justify-start items-start gap-1 w-full lg:w-1/3 mb-4">
 				<div class="text-lg font-bold mb-2">Legend:</div>
 				<div><OrderStatus size="small" status="pending" /> : Order is created but not paid yet.</div>
@@ -94,9 +93,8 @@
 <script setup lang="ts">
 import OrderStatus from "@/components/webshop/OrderStatus.vue";
 import { ref } from "vue";
-import Disclaimer from "./Disclaimer.vue";
 
-const isVisible = ref(true);
+const isVisible = ref(false);
 
 function toggle() {
 	isVisible.value = !isVisible.value;

@@ -12,6 +12,7 @@
 	</Toolbar>
 	<div class="text-center lg:hidden font-bold text-danger-700 py-3" v-html="$t('settings.small_screen')"></div>
 	<Panel :pt:header:class="'hidden'" class="border-0 md:max-w-3xl lg:max-w-5xl xl:max-w-7xl mt-9 mx-auto w-full">
+		<Disclaimer />
 		<!-- Empty panel to keep the same layout as other settings pages -->
 		<DataTable :value="purchasables" :loading="purchasables === undefined" class="mt-4" selectionMode="single" dataKey="purchasable_id">
 			<Column header-class="w-1/12" body-class="w-1/12 align-top">
@@ -61,6 +62,7 @@ import Column from "primevue/column";
 import ShopManagementService from "@/services/shop-management-service";
 import { onMounted, ref } from "vue";
 import { RouterLink } from "vue-router";
+import Disclaimer from "@/components/webshop/Disclaimer.vue";
 
 const purchasables = ref<undefined | App.Http.Resources.Shop.EditablePurchasableResource[]>(undefined);
 
