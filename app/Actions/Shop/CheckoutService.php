@@ -68,9 +68,6 @@ class CheckoutService
 		// Prepare the purchase request parameters
 		$params = $this->preparePurchaseParameters($order, $return_url, $cancel_url, $additional_data);
 
-		// Save the parameters.
-		Session::put('processing', $params);
-
 		try {
 			// Update order status to processing
 			$order->status = PaymentStatusType::PROCESSING;
@@ -87,9 +84,7 @@ class CheckoutService
 			if ($response->isRedirect()) {
 				if ($response instanceof FetchTransactionResponse) {
 					$metadata = $response->getMetadata();
-					Log::info('Redirect response metadata', ['metadata' => $metadata]);
 					$reference = $response->getTransactionReference();
-					Log::info('Redirect response reference', ['reference' => $reference]);
 					$metadata['transactionReference'] = $reference;
 					Session::put('metadata', $metadata);
 				}
@@ -172,8 +167,6 @@ class CheckoutService
 	 */
 	public function handlePaymentReturn(Order $order, OmnipayProviderType $provider): ?Order
 	{
-		$request_data = Session::get('processing', []);
-		Log::info('Handling payment return', ['request_data' => $request_data]);
 		$metadata = Session::get('metadata', []);
 		Log::info('Payment return metadata', ['metadata' => $metadata]);
 

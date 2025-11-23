@@ -54,7 +54,7 @@ class CheckoutServiceTest extends AbstractTestCase
 	private CheckoutService $checkout_service;
 	/** @var OmnipayFactory&MockInterface */
 	private OmnipayFactory $omnipay_factory_mock;
-	/** @var OmnipayFactory&MockInterface */
+	/** @var GatewayInterface&MockInterface */
 	private GatewayInterface $gateway_mock;
 	private Order $order;
 
@@ -140,7 +140,7 @@ class CheckoutServiceTest extends AbstractTestCase
 	public function testProcessPaymentWithRedirect(): void
 	{
 		// Mock canProcessPayment to return true
-		/** @var MockeryInterface&Order $order_mock */
+		/** @var MockInterface&Order $order_mock */
 		$order_mock = \Mockery::mock(Order::class)->makePartial();
 		$order_mock->shouldReceive('items')->andReturn(collect([1])); // Simulate having items
 		$order_mock->shouldReceive('canProcessPayment')->andReturn(true);
@@ -370,6 +370,7 @@ class CheckoutServiceTest extends AbstractTestCase
 	 */
 	public function testHandlePaymentReturnInvalidStatus(): void
 	{
+		Log::shouldReceive('info')->once();
 		Log::shouldReceive('error')->once();
 
 		$this->order->status = PaymentStatusType::COMPLETED;
@@ -396,6 +397,7 @@ class CheckoutServiceTest extends AbstractTestCase
 	 */
 	public function testHandlePaymentReturnWithException(): void
 	{
+		Log::shouldReceive('info')->once();
 		Log::shouldReceive('error')->once();
 
 		$this->order->status = PaymentStatusType::PROCESSING;
