@@ -16,10 +16,12 @@ use App\Events\Metrics\PhotoDownload;
 use App\Events\Metrics\PhotoFavourite;
 use App\Events\Metrics\PhotoShared;
 use App\Events\Metrics\PhotoVisit;
+use App\Events\OrderCompleted;
 use App\Events\TaggedRouteCacheUpdated;
 use App\Listeners\AlbumCacheCleaner;
 use App\Listeners\CacheListener;
 use App\Listeners\MetricsListener;
+use App\Listeners\OrderCompletedListener;
 use App\Listeners\TaggedRouteCacheCleaner;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Cache\Events\CacheHit;
@@ -88,5 +90,7 @@ class EventServiceProvider extends ServiceProvider
 		Event::listen(PhotoFavourite::class, MetricsListener::class . '@handle');
 		Event::listen(PhotoShared::class, MetricsListener::class . '@handle');
 		Event::listen(PhotoVisit::class, MetricsListener::class . '@handle');
+
+		Event::listen(OrderCompleted::class, OrderCompletedListener::class . '@handle');
 	}
 }
