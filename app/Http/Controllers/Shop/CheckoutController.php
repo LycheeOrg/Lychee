@@ -21,7 +21,6 @@ use App\Http\Resources\Shop\CheckoutResource;
 use App\Http\Resources\Shop\OrderResource;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 
 class CheckoutController extends Controller
@@ -97,6 +96,11 @@ class CheckoutController extends Controller
 			$request->additional_data ?? []
 		);
 
+		// If we have a sucess directly without redirection mark order as completed
+		if ($result->is_success && !$result->is_redirect) {
+			OrderCompleted::dispatch($order->id);
+		}
+
 		return new CheckoutResource(
 			is_success: $result->is_success,
 			is_redirect: $result->is_redirect,
@@ -114,8 +118,6 @@ class CheckoutController extends Controller
 	 */
 	public function finalize(FinalizeRequest $request, string $provider, string $transaction_id): RedirectResponse
 	{
-		/** @disregard P1013 */
-		Log::info("Finalize payment for provider {$provider} and transaction ID {$transaction_id}", $request->all());
 		/** @disregard P1013 */
 		$order = $this->checkout_service->handlePaymentReturn($request->basket(), $request->provider_type());
 
