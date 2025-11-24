@@ -87,6 +87,71 @@ class OrderCompletedListener
 			return;
 		}
 
+		$this->fullfillOrder($order);
+	}
+
+	/**
+	 * Fulfill an order by linking items to downloadable content.
+	 *
+	 * This is the core fulfillment logic that processes each order item and
+	 * attempts to link it to its corresponding downloadable size variant. The
+	 * method can be called either automatically (via the handle() event method)
+	 * or manually (via maintenance tasks like FullfillOrders).
+	 *
+	 * Processing Flow:
+	 * 1. Iterates through all order items
+	 * 2. Skips items already fulfilled (have content_url or size_variant_id)
+	 * 3. Maps size variant type to actual photo size variant
+	 * 4. Updates order item with size_variant_id for downloadable content
+	 * 5. Tracks whether ALL items can be delivered
+	 * 6. Closes order if all items are successfully linked
+	 *
+	 * Size Variant Resolution:
+	 * - MEDIUM: Links to photo's medium size variant (typically 1920px)
+	 * - MEDIUM2X: Links to photo's medium2x size variant (typically 3840px)
+	 * - ORIGINAL: Links to photo's original size variant (full resolution)
+	 * - FULL: Returns null, requires manual photographer processing
+	 *
+	 * Fulfillment Status Tracking:
+	 * Uses bitwise AND logic to track if all items can be delivered:
+	 * - Starts as true
+	 * - Becomes false if ANY item's variant is null
+	 * - Only closes order if remains true after all items processed
+	 *
+	 * Order Status Transitions:
+	 * - COMPLETED → CLOSED: All items successfully linked to variants
+	 * - COMPLETED → COMPLETED: At least one item cannot be auto-fulfilled
+	 *
+	 * Items That Cannot Be Auto-Fulfilled:
+	 * - FULL size variants (require manual processing)
+	 * - Missing size variants (not yet generated)
+	 * - Deleted photos (photo relationship is null)
+	 *
+	 * Items That Are Skipped:
+	 * - Already have content_url (custom download link provided)
+	 * - Already have size_variant_id (previously processed)
+	 *
+	 * Usage Scenarios:
+	 * 1. **Automatic**: Called by handle() when OrderCompleted event fires
+	 * 2. **Manual**: Called by FullfillOrders maintenance task for retry logic
+	 * 3. **Batch**: Called for multiple orders during maintenance operations
+	 *
+	 * Side Effects:
+	 * - Modifies order_items.size_variant_id for fulfilled items
+	 * - May change orders.status from COMPLETED to CLOSED
+	 * - Updates orders.updated_at timestamp when status changes
+	 *
+	 * No Exceptions Thrown:
+	 * - Gracefully handles missing photos (variant will be null)
+	 * - Gracefully handles missing size variants (variant will be null)
+	 * - Does not fail the entire order if one item cannot be fulfilled
+	 *
+	 * @param Order $order The order to fulfill (must have items relationship loaded)
+	 *
+	 * @return void
+	 */
+	public function fullfillOrder(Order $order): void
+	{
 		// Track whether all items in the order can be delivered immediately
 		$all_items_delivered = true;
 

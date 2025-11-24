@@ -19,6 +19,7 @@ use App\Http\Requests\Checkout\ProcessRequest;
 use App\Http\Resources\Shop\CheckoutOptionResource;
 use App\Http\Resources\Shop\CheckoutResource;
 use App\Http\Resources\Shop\OrderResource;
+use App\Models\Configs;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\URL;
@@ -98,7 +99,7 @@ class CheckoutController extends Controller
 
 		// If we have a sucess directly without redirection mark order as completed
 		if ($result->is_success && !$result->is_redirect) {
-			OrderCompleted::dispatch($order->id);
+			OrderCompleted::dispatchIf(Configs::getValueAsBool('webshop_auto_fullfill_enabled'), $order->id);
 		}
 
 		return new CheckoutResource(
@@ -125,7 +126,7 @@ class CheckoutController extends Controller
 			return redirect()->route('shop.checkout.failed');
 		}
 
-		OrderCompleted::dispatch($order->id);
+		OrderCompleted::dispatchIf(Configs::getValueAsBool('webshop_auto_fullfill_enabled'), $order->id);
 
 		return redirect()->route('shop.checkout.complete');
 	}

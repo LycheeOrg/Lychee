@@ -8,6 +8,7 @@
 
 namespace App\Actions\Diagnostics\Pipes\Checks;
 
+use App\Actions\Shop\OrderService;
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
 use App\Enum\OmnipayProviderType;
@@ -22,6 +23,7 @@ class WebshopCheck implements DiagnosticPipe
 {
 	public function __construct(
 		private OmnipayFactory $factory,
+		private OrderService $order_service,
 	) {
 	}
 
@@ -66,6 +68,26 @@ class WebshopCheck implements DiagnosticPipe
 			$data[] = DiagnosticData::info(
 				'Webshop is enabled with the following payment providers: ' . implode(', ', $provider_names),
 				self::class
+			);
+		}
+
+		$number_broken_order = $this->order_service->selectClosedOrderNeedingFulfillmentQuery()->count();
+
+		if ($number_broken_order > 0) {
+			$data[] = DiagnosticData::error(
+				'There are ' . $number_broken_order . ' completed orders with items that have no associated download link or size variant.',
+				self::class,
+				['Please fullfill them as appropriate.']
+			);
+		}
+
+		$number_waiting_order = $this->order_service->selectCompleteOrderNeedingFulfillmentQuery()->count();
+
+		if ($number_waiting_order > 0) {
+			$data[] = DiagnosticData::warn(
+				'There are ' . $number_waiting_order . ' completed orders which require your attention.',
+				self::class,
+				['Please check and fullfill them to mark them as closed.']
 			);
 		}
 		// @codeCoverageIgnoreEnd
