@@ -44,9 +44,9 @@ const userStore = useUserStore();
 const orderStore = useOrderManagementStore();
 
 const toast = useToast();
-const { steps } = useSteps();
 
 const { email, options } = useStepOne(userStore, orderStore);
+const { steps } = useSteps(options);
 const { mollie, mollieComponent, mountMollie } = useMollie(options, toast);
 const { canProcessPayment, createSession, selectedProvider, updateCardDetails, getFakeNumber } = useStepTwo(email, orderStore, steps, toast, mollie);
 

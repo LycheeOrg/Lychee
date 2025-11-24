@@ -33,9 +33,16 @@
 				v-if="initData?.settings.can_edit"
 			>
 				<template #body="slotProps">
-					<span :class="{ 'text-muted-color': isStale(slotProps.data) }" v-tooltip="slotProps.data.transaction_id">{{
-						slotProps.data.transaction_id.slice(0, 12)
-					}}</span>
+					<a
+						:class="{
+							'line-through': isStale(slotProps.data),
+							'cursor-pointer hover:text-primary-400': canOpen(slotProps.data),
+							'cursor-not-allowed text-muted-color': !canOpen(slotProps.data),
+						}"
+						v-tooltip="slotProps.data.transaction_id"
+						@click.prevent="openOrder(slotProps.data)"
+						>{{ slotProps.data.transaction_id.slice(0, 12) }}</a
+					>
 					<i
 						v-if="slotProps.data.status === 'closed'"
 						class="pi pi-copy cursor-pointer hover:text-primary-400 ltr:ml-2 rtl:mr-2"
@@ -133,6 +140,17 @@ const toast = useToast();
 
 const leftMenuStore = useLeftMenuStateStore();
 const { initData } = storeToRefs(leftMenuStore);
+
+function canOpen(order: App.Http.Resources.Shop.OrderResource): boolean {
+	return !["pending", "cancelled", "failed", "refunded"].includes(order.status);
+}
+
+function openOrder(order: App.Http.Resources.Shop.OrderResource) {
+	if (!canOpen(order)) {
+		return;
+	}
+	router.push({ name: "order", params: { orderId: order.id, transactionId: order.transaction_id } });
+}
 
 // Return true if the date is older than 2 weeks
 function isStale(order: App.Http.Resources.Shop.OrderResource): boolean {

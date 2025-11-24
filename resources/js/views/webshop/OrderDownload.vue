@@ -79,7 +79,11 @@
 						<div v-for="item in order.items" :key="item.id" class="flex justify-between items-center p-3 bg-surface-50/5 rounded">
 							<div class="flex gap-4">
 								<div>
-									<div class="font-medium">{{ item.title }}</div>
+									<div class="font-medium">
+										<RouterLink :to="{ name: 'album', params: { albumId: item.album_id, photoId: item.photo_id } }">{{
+											item.title
+										}}</RouterLink>
+									</div>
 									<div class="text-sm text-muted-color">{{ item.size_variant_type }} - {{ item.license_type }}</div>
 								</div>
 								<div v-if="item.content_url" class="mt-1">
@@ -120,12 +124,13 @@ import UsernameEmail from "./UsernameEmail.vue";
 
 const props = defineProps<{
 	orderId: string;
+	transactionId?: string;
 }>();
 
 const toast = useToast();
 const router = useRouter();
 const orderId = ref(props.orderId);
-const transactionId = ref<string | undefined>(undefined);
+const transactionId = ref<string | undefined>(props.transactionId);
 const order = ref<App.Http.Resources.Shop.OrderResource | undefined>(undefined);
 const loading = ref(true);
 
@@ -164,7 +169,7 @@ function loadTransactionId() {
 function copyToClipboard() {
 	toast.add({ severity: "success", summary: "Copied to clipboard", detail: "Order link copied to clipboard", life: 3000 });
 	navigator.clipboard.writeText(
-		Constants.BASE_URL + router.resolve({ name: "order", params: { orderId: order.value?.id } }).href + "#" + order.value?.transaction_id,
+		Constants.BASE_URL + router.resolve({ name: "order", params: { orderId: order.value?.id, transactionId: order.value?.transaction_id } }).href,
 	);
 }
 
