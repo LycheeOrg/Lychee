@@ -41,6 +41,11 @@ export type CardDetails = {
 	cvv: string;
 };
 
+export type ItemLink = {
+	id: number;
+	download_link: string;
+}
+
 const OrderService = {
 	getCurrentBasket(): Promise<AxiosResponse<App.Http.Resources.Shop.OrderResource>> {
 		return axios.get(`${Constants.getApiUrl()}Shop/Basket`, { data: {}, params: {} });
@@ -66,8 +71,8 @@ const OrderService = {
 	markAsPaid(orderId: number): Promise<AxiosResponse<void>> {
 		return axios.post(`${Constants.getApiUrl()}Shop/Order/${orderId}`, {});
 	},
-	markAsDelivered(orderId: number): Promise<AxiosResponse<void>> {
-		return axios.put(`${Constants.getApiUrl()}Shop/Order/${orderId}`, {});
+	markAsDelivered(orderId: number, items: ItemLink[]): Promise<AxiosResponse<void>> {
+		return axios.put(`${Constants.getApiUrl()}Shop/Order/${orderId}`, { items });
 	},
 	forget(): Promise<AxiosResponse<void>> {
 		return axios.delete(`${Constants.getApiUrl()}Shop/Order`, { data: {} });
