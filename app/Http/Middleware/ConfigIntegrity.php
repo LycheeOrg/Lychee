@@ -103,6 +103,7 @@ class ConfigIntegrity
 		'webshop_offline',
 		'webshop_lycheeorg_disclaimer_enabled',
 		'webshop_auto_fulfill_enabled',
+		'webshop_manual_fulfill_enabled',
 	];
 
 	/**

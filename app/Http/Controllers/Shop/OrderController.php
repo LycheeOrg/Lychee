@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\Shop;
 
 use App\Actions\Shop\OrderService;
+use App\Events\OrderCompleted;
 use App\Http\Requests\Order\GetOrderRequest;
 use App\Http\Requests\Order\ListOrderRequest;
 use App\Http\Requests\Order\MarkAsDeliveredOrderRequest;
@@ -70,9 +71,13 @@ class OrderController extends Controller
 	 */
 	public function markAsDelivered(MarkAsDeliveredOrderRequest $request): void
 	{
-		$key_name = 'id';
-		$order_item_instance = new OrderItem();
-		batch()->update($order_item_instance, $request->items, $key_name);
+		if (count($request->items) > 0) {
+			$key_name = 'id';
+			$order_item_instance = new OrderItem();
+			batch()->update($order_item_instance, $request->items, $key_name);
+		}
+
+		OrderCompleted::dispatchIf(\Configs::getValueAsBool('webshop_manual_fulfill_enabled'), $request->order->id);
 
 		$this->order_service->markAsDelivered($request->order);
 	}
