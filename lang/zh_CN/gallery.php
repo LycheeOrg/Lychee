@@ -49,6 +49,7 @@ return [
         'justified' => '等比例对齐',
         'masonry' => '等比例瀑布流',
         'grid' => '等比例网格',
+        'filmstrip' => '胶片条',
     ],
     'overlay' => [
         'none' => '无',

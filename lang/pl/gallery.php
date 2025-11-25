@@ -49,6 +49,7 @@ return [
         'justified' => 'Z aspektem, wyjustowane',
         'masonry' => 'Z aspektem, cegiełki',
         'grid' => 'Z aspektem, siatka',
+        'filmstrip' => 'Taśma filmowa',
     ],
     'overlay' => [
         'none' => 'Brak',
