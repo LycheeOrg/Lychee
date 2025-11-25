@@ -116,7 +116,7 @@
 									</div>
 									<div class="text-sm text-muted-color">{{ item.size_variant_type }} - {{ item.license_type }}</div>
 								</div>
-								<div v-if="edit && initData?.settings.can_edit" class="grow max-w-1/2">
+								<div v-if="showInput(item)" class="grow max-w-1/2">
 									<InputText
 										placeholder="Enter content URL here."
 										class="w-full text-left"
@@ -184,7 +184,6 @@ function loadOrder() {
 		.then((response) => {
 			order.value = response.data;
 			loading.value = false;
-			edit.value = response.data.items?.some((item) => !item.content_url) ?? false;
 		})
 		.catch(() => {
 			order.value = undefined;
@@ -196,6 +195,10 @@ async function load(): Promise<void> {
 	return InitService.fetchGlobalRights().then((data) => {
 		initData.value = data.data;
 	});
+}
+
+function showInput(item: App.Http.Resources.Shop.OrderItemResource): boolean {
+	return (initData.value?.settings.can_edit ?? false) && (!item.content_url || edit.value);
 }
 
 function downloadItem(contentUrl: string) {
