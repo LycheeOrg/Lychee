@@ -67,7 +67,7 @@ Route::get('/duplicatesFinder', VueController::class)->middleware(['migration:co
 Route::get('/renamerRules', VueController::class)->middleware(['migration:complete', 'login_required:always']);
 Route::get('/purchasables', VueController::class)->middleware(['migration:complete', 'login_required:always']);
 Route::get('/orders', VueController::class)->middleware(['migration:complete', 'login_required:always']);
-Route::get('/order/{order_id}', VueController::class)->middleware(['migration:complete']);
+Route::get('/order/{orderId}/{transactionId?}', VueController::class)->middleware(['migration:complete']);
 Route::get('/basket', VueController::class)->middleware(['migration:complete']);
 Route::get('/checkout/completed', VueController::class)->middleware(['migration:complete'])->name('shop.checkout.complete');
 Route::get('/checkout/failed', VueController::class)->middleware(['migration:complete'])->name('shop.checkout.failed');

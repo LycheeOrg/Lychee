@@ -43,6 +43,19 @@ return new class() extends BaseConfigMigration {
 				'not_on_docker' => false,
 				'level' => 1, // Only for SE.
 			],
+			[
+				'key' => 'webshop_auto_fullfill_enabled',
+				'value' => '1',
+				'cat' => self::MOD_PRO,
+				'type_range' => self::BOOL,
+				'description' => 'Enable auto-fullfillement of orders.',
+				'details' => 'Once a payment is completed, the content is automatically made available to the user when possible.',
+				'is_secret' => true,
+				'is_expert' => false,
+				'order' => 21,
+				'not_on_docker' => false,
+				'level' => 1, // Only for SE.
+			],
 		];
 	}
 };
