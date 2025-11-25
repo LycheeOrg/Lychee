@@ -33,11 +33,27 @@
 						</svg>
 					</button>
 
-					<!-- Photo display -->
+					<!-- Photo/Video display -->
 					<div class="lychee-lightbox-content">
 						<div class="lychee-lightbox-image-container">
+							<!-- Video player -->
+							<video
+								v-if="currentPhoto && currentPhoto.is_video"
+								:src="getVideoUrl(currentPhoto)"
+								class="lychee-lightbox-image"
+								controls
+								autoplay
+								@loadeddata="handleImageLoad"
+								@error="handleImageError"
+								@click.stop
+								:title="currentPhoto.title || undefined"
+							>
+								Your browser does not support the video tag.
+							</video>
+
+							<!-- Image display -->
 							<img
-								v-if="currentPhoto"
+								v-else-if="currentPhoto"
 								:src="getPhotoUrl(currentPhoto)"
 								:alt="currentPhoto.title || 'Photo'"
 								class="lychee-lightbox-image"
@@ -66,7 +82,7 @@
 										<span>{{ [currentPhoto.exif.make, currentPhoto.exif.model].filter(Boolean).join(" ") }}</span>
 									</div>
 
-									<div v-if="currentPhoto.exif.lens" class="lychee-lightbox-exif-item">
+									<div v-if="!currentPhoto.is_video && currentPhoto.exif.lens" class="lychee-lightbox-exif-item">
 										<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 											<circle cx="12" cy="12" r="10"></circle>
 											<circle cx="12" cy="12" r="3"></circle>
@@ -74,14 +90,42 @@
 										<span>{{ currentPhoto.exif.lens }}</span>
 									</div>
 
-									<div v-if="currentPhoto.exif.focal" class="lychee-lightbox-exif-item">
-										<span class="lychee-lightbox-exif-label">{{ currentPhoto.exif.focal }}</span>
+									<!-- Photo-specific EXIF (focal length, aperture, shutter) -->
+									<div
+										v-if="
+											!currentPhoto.is_video &&
+											(currentPhoto.exif.focal ||
+												currentPhoto.exif.aperture ||
+												currentPhoto.exif.shutter ||
+												currentPhoto.exif.iso)
+										"
+										class="lychee-lightbox-exif-item"
+									>
+										<span v-if="currentPhoto.exif.focal" class="lychee-lightbox-exif-label">{{ currentPhoto.exif.focal }}</span>
 										<span v-if="currentPhoto.exif.aperture" class="lychee-lightbox-exif-label"
 											>f/{{ currentPhoto.exif.aperture }}</span
 										>
 										<span v-if="currentPhoto.exif.shutter" class="lychee-lightbox-exif-label">{{
 											currentPhoto.exif.shutter
 										}}</span>
+										<span v-if="currentPhoto.exif.iso" class="lychee-lightbox-exif-label">ISO {{ currentPhoto.exif.iso }}</span>
+									</div>
+
+									<!-- Video-specific metadata (duration and framerate) -->
+									<div
+										v-if="currentPhoto.is_video && (currentPhoto.duration || currentPhoto.exif.focal)"
+										class="lychee-lightbox-exif-item"
+									>
+										<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+											<rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+											<line x1="7" y1="2" x2="7" y2="22"></line>
+											<line x1="17" y1="2" x2="17" y2="22"></line>
+											<line x1="2" y1="12" x2="22" y2="12"></line>
+										</svg>
+										<span v-if="currentPhoto.duration" class="lychee-lightbox-exif-label">{{ currentPhoto.duration }}</span>
+										<span v-if="currentPhoto.exif.focal" class="lychee-lightbox-exif-label"
+											>{{ currentPhoto.exif.focal }} fps</span
+										>
 										<span v-if="currentPhoto.exif.iso" class="lychee-lightbox-exif-label">ISO {{ currentPhoto.exif.iso }}</span>
 									</div>
 
@@ -170,6 +214,14 @@ function getPhotoUrl(photo: Photo): string {
 		variants.thumb?.url ||
 		""
 	);
+}
+
+/**
+ * Get the video URL for lightbox playback
+ */
+function getVideoUrl(photo: Photo): string {
+	// For videos, always use the original size variant
+	return photo.size_variants.original?.url || "";
 }
 
 /**

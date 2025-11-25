@@ -49,6 +49,7 @@ return [
         'justified' => 'Mit Seitenverhältnis, ausgerichtet',
         'masonry' => 'Mit Seitenverhältnis, masonry',
         'grid' => 'Mit Seitenverhältnis, Raster',
+        'filmstrip' => 'Filmstreifen',
     ],
     'overlay' => [
         'none' => 'Keine',

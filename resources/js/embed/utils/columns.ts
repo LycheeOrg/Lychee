@@ -172,7 +172,7 @@ export function getAspectRatio(width: number, height: number): number {
  * @returns Object with width and height, defaults to { width: 1, height: 1 } if all variants are null
  */
 export function getSafeDimensions(sizeVariants: {
-	original: { width: number; height: number };
+	original: { width?: number; height?: number } | null;
 	medium: { width?: number; height?: number } | null;
 	small: { width?: number; height?: number } | null;
 	thumb: { width?: number; height?: number } | null;
