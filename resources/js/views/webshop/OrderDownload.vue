@@ -111,6 +111,7 @@
 import InputText from "@/components/forms/basic/InputText.vue";
 import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
 import OrderStatus from "@/components/webshop/OrderStatus.vue";
+import UsernameEmail from "@/components/webshop/UsernameEmail.vue";
 import Constants from "@/services/constants";
 import WebshopService from "@/services/webshop-service";
 import Button from "primevue/button";
@@ -120,7 +121,6 @@ import Toolbar from "primevue/toolbar";
 import { useToast } from "primevue/usetoast";
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
-import UsernameEmail from "./UsernameEmail.vue";
 
 const props = defineProps<{
 	orderId: string;
