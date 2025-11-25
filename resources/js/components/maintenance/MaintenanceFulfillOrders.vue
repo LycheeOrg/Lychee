@@ -66,7 +66,8 @@ function exec() {
 		.catch((e) => {
 			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response.data.message, life: 3000 });
 			loading.value = false;
-		});
+		})
+		.finally(load);
 }
 
 load();

@@ -79,4 +79,9 @@ return [
         'description' => 'Found %d old orders.<br/><br/>An old order is older than 14 days, that have no associated user and are either still pending payment or have no items in them.',
         'button' => 'Delete old orders',
     ],
+    'fulfill-orders' => [
+        'title' => 'Orders to fulfill',
+        'description' => 'Found %d orders with content that has not been made available.<br/><br/>Click on the button to assign content when possible.',
+        'button' => 'Fulfill orders',
+    ],
 ];

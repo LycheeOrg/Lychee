@@ -46,9 +46,9 @@
 
 			<div class="grid gap-6">
 				<!-- Order Summary -->
-				<div class="border rounded-lg p-4 border-surface-50/20">
+				<div class="border rounded-lg p-4 border-surface-50/20 w-full lg:w-1/3">
 					<h3 class="text-lg font-semibold mb-3">Order Summary</h3>
-					<div class="space-y-2">
+					<div class="space-y-1">
 						<div class="flex justify-between">
 							<span>For:</span>
 							<span class="font-medium"><UsernameEmail :username="order.username" :email="order.email" /></span>
@@ -77,7 +77,7 @@
 					<h3 class="text-lg font-medium mb-3">Items</h3>
 					<div class="space-y-3">
 						<div v-for="item in order.items" :key="item.id" class="flex justify-between items-center p-3 bg-surface-50/5 rounded">
-							<div class="flex gap-4">
+							<div class="flex gap-4 items-center">
 								<div>
 									<div class="font-medium">
 										<RouterLink :to="{ name: 'album', params: { albumId: item.album_id, photoId: item.photo_id } }">{{
@@ -86,7 +86,7 @@
 									</div>
 									<div class="text-sm text-muted-color">{{ item.size_variant_type }} - {{ item.license_type }}</div>
 								</div>
-								<div v-if="item.content_url" class="mt-1">
+								<div v-if="item.content_url">
 									<Button
 										@click="downloadItem(item.content_url)"
 										icon="pi pi-cloud-download"
@@ -96,6 +96,14 @@
 										severity="primary"
 									/>
 								</div>
+								<div v-else-if="initData?.settings.can_edit">
+									<InputText
+										v-model="item.content_url"
+										placeholder="Enter content URL here."
+										class="w-64 text-left"
+									/>
+								</div>
+								<div v-else class="mt-1 text-sm text-muted-color">Download not available (yet)</div>
 							</div>
 							<div class="text-right">
 								<div class="font-medium">{{ item.price }}</div>
@@ -113,7 +121,10 @@ import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
 import OrderStatus from "@/components/webshop/OrderStatus.vue";
 import UsernameEmail from "@/components/webshop/UsernameEmail.vue";
 import Constants from "@/services/constants";
+import InitService from "@/services/init-service";
 import WebshopService from "@/services/webshop-service";
+import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
+import { storeToRefs } from "pinia";
 import Button from "primevue/button";
 import Panel from "primevue/panel";
 import ProgressSpinner from "primevue/progressspinner";
@@ -133,6 +144,8 @@ const orderId = ref(props.orderId);
 const transactionId = ref<string | undefined>(props.transactionId);
 const order = ref<App.Http.Resources.Shop.OrderResource | undefined>(undefined);
 const loading = ref(true);
+const leftMenuStore = useLeftMenuStateStore();
+const { initData } = storeToRefs(leftMenuStore);
 
 function loadOrder() {
 	WebshopService.Order.get(parseInt(orderId.value, 10), transactionId.value)
@@ -146,6 +159,13 @@ function loadOrder() {
 			loading.value = false;
 		});
 }
+
+async function load(): Promise<void> {
+	return InitService.fetchGlobalRights().then((data) => {
+		initData.value = data.data;
+	});
+}
+
 
 function downloadItem(contentUrl: string) {
 	// Create a temporary anchor element to trigger download
@@ -176,5 +196,6 @@ function copyToClipboard() {
 onMounted(() => {
 	loadTransactionId();
 	loadOrder();
+	load();
 });
 </script>
