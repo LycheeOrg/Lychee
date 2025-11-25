@@ -110,11 +110,11 @@ const MaintenanceService = {
 	oldOrdersDo(): Promise<AxiosResponse> {
 		return axios.post(`${Constants.getApiUrl()}Maintenance::oldOrders`, {});
 	},
-	fullfillOrdersCheck(): Promise<AxiosResponse<number>> {
-		return axios.get(`${Constants.getApiUrl()}Maintenance::fullfillOrders`, { data: {} });
+	fulfillOrdersCheck(): Promise<AxiosResponse<number>> {
+		return axios.get(`${Constants.getApiUrl()}Maintenance::fulfillOrders`, { data: {} });
 	},
-	fullfillOrdersDo(): Promise<AxiosResponse> {
-		return axios.post(`${Constants.getApiUrl()}Maintenance::fullfillOrders`, {});
+	fulfillOrdersDo(): Promise<AxiosResponse> {
+		return axios.post(`${Constants.getApiUrl()}Maintenance::fulfillOrders`, {});
 	},
 };
 

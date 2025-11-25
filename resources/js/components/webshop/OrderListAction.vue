@@ -17,6 +17,7 @@
 			class="border-none py-0"
 			severity="warn"
 			text
+			@click="router.push({ name: 'order', params: { orderId: props.order.id } })"
 		/>
 		<Button
 			v-else-if="props.order.status === 'completed'"

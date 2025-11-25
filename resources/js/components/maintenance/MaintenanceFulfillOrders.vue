@@ -45,7 +45,7 @@ const description = computed(() => {
 
 function load() {
 	loading.value = true;
-	MaintenanceService.fullfillOrdersCheck()
+	MaintenanceService.fulfillOrdersCheck()
 		.then((response) => {
 			data.value = response.data;
 			loading.value = false;
@@ -58,7 +58,7 @@ function load() {
 
 function exec() {
 	loading.value = true;
-	MaintenanceService.fullfillOrdersDo()
+	MaintenanceService.fulfillOrdersDo()
 		.then(() => {
 			toast.add({ severity: "success", summary: trans("toasts.success"), life: 3000 });
 			loading.value = false;

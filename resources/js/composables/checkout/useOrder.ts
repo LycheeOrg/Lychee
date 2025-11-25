@@ -9,18 +9,20 @@ const numOldOrders = ref<number>(0);
 
 export function useOrder(toast: ToastServiceMethods, router: Router) {
 	function load() {
-		WebshopService.Order.list()
-			.then((response) => {
-				orders.value = response.data;
-			})
-			.catch((err) => {
-				if (err.status === 401 || err.status === 403) {
-					router.push({ name: "login" });
-				}
-			});
-		MaintenanceService.oldOrdersCheck().then((response) => {
-			numOldOrders.value = response.data;
-		});
+		return Promise.all([
+			WebshopService.Order.list()
+				.then((response) => {
+					orders.value = response.data;
+				})
+				.catch((err) => {
+					if (err.status === 401 || err.status === 403) {
+						router.push({ name: "login" });
+					}
+				}),
+			MaintenanceService.oldOrdersCheck().then((response) => {
+				numOldOrders.value = response.data;
+			}),
+		]);
 	}
 
 	function markAsPaid(orderId: number) {
@@ -30,8 +32,10 @@ export function useOrder(toast: ToastServiceMethods, router: Router) {
 	}
 
 	function markAsDelivered(orderId: number) {
-		WebshopService.Order.markAsDelivered(orderId).then(() => {
-			load();
+		WebshopService.Order.markAsDelivered(orderId, []).then(async () => {
+			await load();
+			if (orders.value?.find((order) => order.id === orderId)) {
+			}
 		});
 	}
 

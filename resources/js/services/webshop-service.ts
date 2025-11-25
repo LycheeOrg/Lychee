@@ -44,7 +44,7 @@ export type CardDetails = {
 export type ItemLink = {
 	id: number;
 	download_link: string;
-}
+};
 
 const OrderService = {
 	getCurrentBasket(): Promise<AxiosResponse<App.Http.Resources.Shop.OrderResource>> {
