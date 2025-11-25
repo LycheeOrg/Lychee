@@ -12,6 +12,7 @@ use App\Enum\PaymentStatusType;
 use App\Http\Requests\BaseApiRequest;
 use App\Models\Order;
 use App\Models\User;
+use App\Rules\StringRule;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -21,12 +22,24 @@ class MarkAsDeliveredOrderRequest extends BaseApiRequest
 {
 	public Order $order;
 
+	/** @var array<int,array{id:int,download_lint:string}> */
+	public array $items = [];
+
 	public function authorize(): bool
 	{
 		/** @var User|null */
 		$user = Auth::user();
 
-		return $user?->may_administrate === true;
+		if ($user?->may_administrate !== true) {
+			return false;
+		}
+
+		// All the elements of $this->items should be found it the items of order.
+		return count(
+			array_diff(
+				array_column($this->items, 'id'),
+				$this->order->items->pluck('id')->toArray())
+		) > 0;
 	}
 
 	protected function prepareForValidation(): void
@@ -41,6 +54,9 @@ class MarkAsDeliveredOrderRequest extends BaseApiRequest
 	{
 		return [
 			'order_id' => 'required|integer',
+			'items' => 'sometimes|array',
+			'items.*.id' => 'required|integer',
+			'items.*.download_link' => ['required', new StringRule(false, 190)],
 		];
 	}
 
@@ -52,5 +68,7 @@ class MarkAsDeliveredOrderRequest extends BaseApiRequest
 			->where('status', '=', PaymentStatusType::COMPLETED)
 			->where('id', '=', $order_id)
 			->firstOrFail();
+
+		$this->items = $values['items'] ?? [];
 	}
 }
