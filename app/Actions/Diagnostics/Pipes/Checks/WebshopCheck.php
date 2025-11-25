@@ -76,7 +76,7 @@ class WebshopCheck implements DiagnosticPipe
 			$data[] = DiagnosticData::error(
 				'There are ' . $number_broken_order . ' closed orders with items that have no associated download link or size variant.',
 				self::class,
-				['Please check and assigned the needed materials.']
+				['Please check and assign the needed materials.']
 			);
 		}
 
