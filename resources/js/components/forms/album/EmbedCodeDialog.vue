@@ -140,6 +140,8 @@ import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { storeToRefs } from "pinia";
 import { useToast } from "primevue/usetoast";
 import { useAlbumStore } from "@/stores/AlbumState";
+import { trans } from "laravel-vue-i18n";
+import { sprintf } from "sprintf-js";
 
 // Type declaration for the embed widget global
 declare global {
@@ -179,41 +181,41 @@ const config = ref({
 });
 
 // Layout options
-const layoutOptions = [
-	{ label: "Square", value: "square" },
-	{ label: "Masonry", value: "masonry" },
-	{ label: "Grid", value: "grid" },
-	{ label: "Justified", value: "justified" },
-	{ label: "Filmstrip", value: "filmstrip" },
-];
+const layoutOptions = computed(() => [
+	{ label: trans("dialogs.embed_code.layout_square"), value: "square" },
+	{ label: trans("dialogs.embed_code.layout_masonry"), value: "masonry" },
+	{ label: trans("dialogs.embed_code.layout_grid"), value: "grid" },
+	{ label: trans("dialogs.embed_code.layout_justified"), value: "justified" },
+	{ label: trans("dialogs.embed_code.layout_filmstrip"), value: "filmstrip" },
+]);
 
 // Header placement options
-const headerPlacementOptions = [
-	{ label: "Top", value: "top" },
-	{ label: "Bottom", value: "bottom" },
-	{ label: "None", value: "none" },
-];
+const headerPlacementOptions = computed(() => [
+	{ label: trans("dialogs.embed_code.header_top"), value: "top" },
+	{ label: trans("dialogs.embed_code.header_bottom"), value: "bottom" },
+	{ label: trans("dialogs.embed_code.header_none"), value: "none" },
+]);
 
 // Max photos options
-const maxPhotosOptions = [
-	{ label: "None (all photos)", value: "none" },
-	{ label: "6 photos", value: 6 },
-	{ label: "12 photos", value: 12 },
-	{ label: "18 photos", value: 18 },
-	{ label: "30 photos", value: 30 },
-	{ label: "60 photos", value: 60 },
-	{ label: "90 photos", value: 90 },
-	{ label: "120 photos", value: 120 },
-	{ label: "180 photos", value: 180 },
-	{ label: "300 photos", value: 300 },
-	{ label: "500 photos", value: 500 },
-];
+const maxPhotosOptions = computed(() => [
+	{ label: trans("dialogs.embed_code.max_photos_none"), value: "none" },
+	{ label: sprintf(trans("dialogs.embed_code.max_photos_count"), 6), value: 6 },
+	{ label: sprintf(trans("dialogs.embed_code.max_photos_count"), 12), value: 12 },
+	{ label: sprintf(trans("dialogs.embed_code.max_photos_count"), 18), value: 18 },
+	{ label: sprintf(trans("dialogs.embed_code.max_photos_count"), 30), value: 30 },
+	{ label: sprintf(trans("dialogs.embed_code.max_photos_count"), 60), value: 60 },
+	{ label: sprintf(trans("dialogs.embed_code.max_photos_count"), 90), value: 90 },
+	{ label: sprintf(trans("dialogs.embed_code.max_photos_count"), 120), value: 120 },
+	{ label: sprintf(trans("dialogs.embed_code.max_photos_count"), 180), value: 180 },
+	{ label: sprintf(trans("dialogs.embed_code.max_photos_count"), 300), value: 300 },
+	{ label: sprintf(trans("dialogs.embed_code.max_photos_count"), 500), value: 500 },
+]);
 
 // Sort order options
-const sortOrderOptions = [
-	{ label: "Newest first", value: "desc" },
-	{ label: "Oldest first", value: "asc" },
-];
+const sortOrderOptions = computed(() => [
+	{ label: trans("dialogs.embed_code.sort_newest"), value: "desc" },
+	{ label: trans("dialogs.embed_code.sort_oldest"), value: "asc" },
+]);
 
 // Get the base URL for the Lychee instance
 const apiUrl = computed(() => {
@@ -259,8 +261,8 @@ function copyCode() {
 			copied.value = true;
 			toast.add({
 				severity: "success",
-				summary: "Copied",
-				detail: "Embed code copied to clipboard",
+				summary: trans("dialogs.embed_code.copied"),
+				detail: trans("dialogs.embed_code.copy_success"),
 				life: 3000,
 			});
 
@@ -272,8 +274,8 @@ function copyCode() {
 		.catch(() => {
 			toast.add({
 				severity: "error",
-				summary: "Error",
-				detail: "Failed to copy to clipboard",
+				summary: trans("dialogs.embed_code.copy_error"),
+				detail: trans("dialogs.embed_code.copy_error_message"),
 				life: 3000,
 			});
 		});
@@ -383,8 +385,7 @@ function initializePreview() {
 		.catch((error) => {
 			console.error("Failed to initialize preview:", error);
 			if (previewContainer.value) {
-				previewContainer.value.innerHTML =
-					'<div class="text-xs text-red-500 text-center p-4">Failed to load preview. The embed widget will work when deployed.</div>';
+				previewContainer.value.innerHTML = `<div class="text-xs text-red-500 text-center p-4">${trans("dialogs.embed_code.preview_failed")}</div>`;
 			}
 		});
 }
