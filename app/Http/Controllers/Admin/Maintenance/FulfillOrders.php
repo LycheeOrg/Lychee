@@ -9,10 +9,12 @@
 namespace App\Http\Controllers\Admin\Maintenance;
 
 use App\Actions\Shop\OrderService;
+use App\Enum\PaymentStatusType;
 use App\Http\Requests\Maintenance\MaintenanceRequest;
 use App\Listeners\OrderCompletedListener;
 use App\Models\Order;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
 
 /**
  * FulfillOrders - Maintenance controller for order fulfillment retry logic.
@@ -122,8 +124,12 @@ class FulfillOrders extends Controller
 	public function do(MaintenanceRequest $request): void
 	{
 		$orders = Order::with('items', 'items.photo', 'items.photo.size_variants')
-			->whereIn('orders.id', $this->order_service->selectClosedOrderNeedingFulfillmentQuery()->select('orders.id'))
-			->orWhereIn('orders.id', $this->order_service->selectCompleteOrderNeedingFulfillmentQuery()->select('orders.id'))
+			->whereIn('status', [PaymentStatusType::COMPLETED->value, PaymentStatusType::CLOSED->value])
+			->whereExists(fn ($query) => $query->select(DB::raw(1))
+				->from('order_items')
+				->whereColumn('order_items.order_id', 'orders.id')
+				->whereNull('size_variant_id')
+				->whereNull('download_link'))
 			->get();
 
 		foreach ($orders as $order) {
