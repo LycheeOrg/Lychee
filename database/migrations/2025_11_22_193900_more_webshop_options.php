@@ -44,11 +44,11 @@ return new class() extends BaseConfigMigration {
 				'level' => 1, // Only for SE.
 			],
 			[
-				'key' => 'webshop_auto_fullfill_enabled',
+				'key' => 'webshop_auto_fulfill_enabled',
 				'value' => '1',
 				'cat' => self::MOD_PRO,
 				'type_range' => self::BOOL,
-				'description' => 'Enable auto-fullfillement of orders.',
+				'description' => 'Enable auto-fulfillment of orders.',
 				'details' => 'Once a payment is completed, the content is automatically made available to the user when possible.',
 				'is_secret' => true,
 				'is_expert' => false,

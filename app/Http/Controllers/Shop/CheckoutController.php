@@ -99,7 +99,7 @@ class CheckoutController extends Controller
 
 		// If we have a sucess directly without redirection mark order as completed
 		if ($result->is_success && !$result->is_redirect) {
-			OrderCompleted::dispatchIf(Configs::getValueAsBool('webshop_auto_fullfill_enabled'), $order->id);
+			OrderCompleted::dispatchIf(Configs::getValueAsBool('webshop_auto_fulfill_enabled'), $order->id);
 		}
 
 		return new CheckoutResource(
@@ -126,7 +126,7 @@ class CheckoutController extends Controller
 			return redirect()->route('shop.checkout.failed');
 		}
 
-		OrderCompleted::dispatchIf(Configs::getValueAsBool('webshop_auto_fullfill_enabled'), $order->id);
+		OrderCompleted::dispatchIf(Configs::getValueAsBool('webshop_auto_fulfill_enabled'), $order->id);
 
 		return redirect()->route('shop.checkout.complete');
 	}

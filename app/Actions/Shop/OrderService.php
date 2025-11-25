@@ -338,7 +338,7 @@ class OrderService
 	 * 3. Conditionally dispatches OrderCompleted event for auto-fulfillment
 	 *
 	 * Auto-fulfillment behavior:
-	 * - If webshop_auto_fullfill_enabled = true: OrderCompleted event is dispatched
+	 * - If webshop_auto_fulfill_enabled = true: OrderCompleted event is dispatched
 	 * - OrderCompletedListener handles automatic content delivery
 	 * - Order may transition to CLOSED if all items can be fulfilled immediately
 	 *
@@ -368,7 +368,7 @@ class OrderService
 		$order->markAsPaid($order->transaction_id);
 
 		// Dispatch the OrderCompleted event to fullfill post-order actions
-		OrderCompleted::dispatchIf(Configs::getValueAsBool('webshop_auto_fullfill_enabled'), $order->id);
+		OrderCompleted::dispatchIf(Configs::getValueAsBool('webshop_auto_fulfill_enabled'), $order->id);
 
 		return $order;
 	}
