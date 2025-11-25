@@ -182,11 +182,11 @@ const config = ref({
 
 // Layout options
 const layoutOptions = computed(() => [
-	{ label: trans("dialogs.embed_code.layout_square"), value: "square" },
-	{ label: trans("dialogs.embed_code.layout_masonry"), value: "masonry" },
-	{ label: trans("dialogs.embed_code.layout_grid"), value: "grid" },
-	{ label: trans("dialogs.embed_code.layout_justified"), value: "justified" },
-	{ label: trans("dialogs.embed_code.layout_filmstrip"), value: "filmstrip" },
+	{ label: trans("gallery.layout.squares"), value: "square" },
+	{ label: trans("gallery.layout.masonry"), value: "masonry" },
+	{ label: trans("gallery.layout.grid"), value: "grid" },
+	{ label: trans("gallery.layout.justified"), value: "justified" },
+	{ label: trans("gallery.layout.filmstrip"), value: "filmstrip" },
 ]);
 
 // Header placement options
