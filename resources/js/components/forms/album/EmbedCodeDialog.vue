@@ -140,6 +140,7 @@ import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { storeToRefs } from "pinia";
 import { useToast } from "primevue/usetoast";
 import { useAlbumStore } from "@/stores/AlbumState";
+import Constants from "@/services/constants";
 import { trans } from "laravel-vue-i18n";
 import { sprintf } from "sprintf-js";
 
@@ -219,8 +220,8 @@ const sortOrderOptions = computed(() => [
 
 // Get the base URL for the Lychee instance
 const apiUrl = computed(() => {
-	// Use window.location.origin for the current domain
-	return window.location.origin;
+	// Use the base URL from the HTML <base> tag, removing trailing slashes
+	return Constants.BASE_URL.replace(/\/+$/, "");
 });
 
 // Get the album ID from the store
