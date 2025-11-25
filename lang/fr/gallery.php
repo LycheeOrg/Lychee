@@ -49,6 +49,7 @@ return [
         'justified' => 'Justifié avec proportions',
         'masonry' => 'Masonry avec proportions',
         'grid' => 'Grille avec proportions',
+        'filmstrip' => 'Pellicule',
     ],
     'overlay' => [
         'none' => 'Aucun',

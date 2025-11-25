@@ -49,6 +49,7 @@ return [
         'justified' => 'Met aspect, uitgelijnd',
         'masonry' => 'Met aspect, metselwerk',
         'grid' => 'Met aspect, raster',
+        'filmstrip' => 'Filmstrip',
     ],
     'overlay' => [
         'none' => 'Geen',

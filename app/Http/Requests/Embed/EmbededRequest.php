@@ -66,7 +66,7 @@ class EmbededRequest extends BaseApiRequest implements HasBaseAlbum
 
 		// Validate and cap limit to 500 max
 		if ($limit !== null) {
-			$this->limit = max(1, min((int) $this->limit, 500));
+			$this->limit = max(1, min((int) $limit, 500));
 		}
 		$this->offset = max(0, (int) $offset);
 
