@@ -162,7 +162,7 @@ class FulfillOrders extends Controller
 	 * - Alert administrators when count exceeds threshold
 	 *
 	 * Why Orders May Need Fulfillment:
-	 * - Auto-fulfillment disabled (webshop_auto_fullfill_enabled = false)
+	 * - Auto-fulfillment disabled (webshop_auto_fulfill_enabled = false)
 	 * - Size variants not yet generated (need to run GenSizeVariants)
 	 * - FULL variants awaiting manual processing (expected behavior)
 	 * - OrderCompletedListener errors during automatic fulfillment

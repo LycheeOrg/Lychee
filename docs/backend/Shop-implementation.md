@@ -368,7 +368,7 @@ The following outlines the typical flow for a user shopping in the Lychee websho
    - `POST /Shop/Checkout/Process` — Process payment (send payment data)
    - `POST /Shop/Checkout/Offline` — Complete order in offline mode (if enabled)
    - `GET /Shop/Checkout/Finalize/{provider}/{transaction_id}` — Finalize payment after provider callback
-   - `GET /Shop/Checkout/Cancel/{provider}/{transaction_id}` — Cancel the payment session
+   - `GET /Shop/Checkout/Cancel/{transaction_id}` — Cancel the payment session
 
 5. **Order Management**
    - `GET /Shop/Order/List` — List all orders (admin only)
@@ -404,7 +404,7 @@ stateDiagram
 	note right of i
         Order must be in PROCESSING state.
 	end note
-	j: GET /Shop/Checkout/Cancel/provider/transaction_id <br> Cancel Payment
+	j: GET /Shop/Checkout/Cancel/transaction_id <br> Cancel Payment
 	note right of j
         Order must be in PROCESSING state.
 	end note
