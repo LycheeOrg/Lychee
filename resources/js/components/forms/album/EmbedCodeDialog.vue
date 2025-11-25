@@ -140,6 +140,7 @@ import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { storeToRefs } from "pinia";
 import { useToast } from "primevue/usetoast";
 import { useAlbumStore } from "@/stores/AlbumState";
+import Constants from "@/services/constants";
 
 // Type declaration for the embed widget global
 declare global {
@@ -217,8 +218,8 @@ const sortOrderOptions = [
 
 // Get the base URL for the Lychee instance
 const apiUrl = computed(() => {
-	// Use window.location.origin for the current domain
-	return window.location.origin;
+	// Use the base URL from the HTML <base> tag, removing trailing slashes
+	return Constants.BASE_URL.replace(/\/+$/, "");
 });
 
 // Get the album ID from the store
@@ -383,8 +384,7 @@ function initializePreview() {
 		.catch((error) => {
 			console.error("Failed to initialize preview:", error);
 			if (previewContainer.value) {
-				previewContainer.value.innerHTML =
-					'<div class="text-xs text-red-500 text-center p-4">Failed to load preview. The embed widget will work when deployed.</div>';
+				previewContainer.value.innerHTML = '<div class="text-xs text-red-500 text-center p-4">Failed to load preview.</div>';
 			}
 		});
 }
