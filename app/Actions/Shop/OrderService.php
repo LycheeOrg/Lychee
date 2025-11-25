@@ -411,6 +411,11 @@ class OrderService
 	 */
 	public function markAsDelivered(Order $order): Order
 	{
+		if ($order->items()->whereNull('download_link')->whereNull('size_variant_id')->exists()) {
+			// There are still unfulfilled items
+			return $order;
+		}
+
 		if ($order->status !== PaymentStatusType::COMPLETED) {
 			throw new LycheeLogicException('Order must be in completed status to be marked as delivered');
 		}

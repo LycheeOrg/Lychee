@@ -15,7 +15,7 @@ use App\Models\Order;
 use Illuminate\Routing\Controller;
 
 /**
- * FullfillOrders - Maintenance controller for order fulfillment retry logic.
+ * FulfillOrders - Maintenance controller for order fulfillment retry logic.
  *
  * This maintenance controller provides administrative tools to identify and process
  * orders that have been paid but not yet fulfilled. It serves as a "catch-all"
@@ -35,10 +35,10 @@ use Illuminate\Routing\Controller;
  * @see Order The order model being processed
  * @see OrderItem Items within orders requiring fulfillment
  */
-class FullfillOrders extends Controller
+class FulfillOrders extends Controller
 {
 	/**
-	 * Create a new FullfillOrders controller instance.
+	 * Create a new FulfillOrders controller instance.
 	 *
 	 * Dependencies:
 	 * - OrderService: Provides query builders for identifying unfulfilled orders

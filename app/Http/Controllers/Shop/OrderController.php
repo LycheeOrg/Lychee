@@ -14,6 +14,7 @@ use App\Http\Requests\Order\ListOrderRequest;
 use App\Http\Requests\Order\MarkAsDeliveredOrderRequest;
 use App\Http\Requests\Order\MarkAsPaidOrderRequest;
 use App\Http\Resources\Shop\OrderResource;
+use App\Models\OrderItem;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Cookie;
 
@@ -69,9 +70,10 @@ class OrderController extends Controller
 	 */
 	public function markAsDelivered(MarkAsDeliveredOrderRequest $request): void
 	{
-		// TODO: FIX ME
-		// WE NEED TO ASSIGN THE url to the items here.
-		// Get the item id and the url to be associated with.
+		$key_name = 'id';
+		$order_item_instance = new OrderItem();
+		batch()->update($order_item_instance, $request->items, $key_name);
+
 		$this->order_service->markAsDelivered($request->order);
 	}
 

@@ -277,8 +277,8 @@ Route::get('/Maintenance::missingPalettes', [Admin\Maintenance\MissingPalettes::
 Route::post('/Maintenance::missingPalettes', [Admin\Maintenance\MissingPalettes::class, 'do']);
 Route::get('/Maintenance::oldOrders', [Admin\Maintenance\FlushOldOrders::class, 'check']);
 Route::post('/Maintenance::oldOrders', [Admin\Maintenance\FlushOldOrders::class, 'do']);
-Route::get('/Maintenance::fullfillOrders', [Admin\Maintenance\FullfillOrders::class, 'check']);
-Route::post('/Maintenance::fullfillOrders', [Admin\Maintenance\FullfillOrders::class, 'do']);
+Route::get('/Maintenance::fulfillOrders', [Admin\Maintenance\FulfillOrders::class, 'check']);
+Route::post('/Maintenance::fulfillOrders', [Admin\Maintenance\FulfillOrders::class, 'do']);
 
 /**
  * STATISTICS.

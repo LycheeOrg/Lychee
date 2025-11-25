@@ -72,22 +72,20 @@ class WebshopCheck implements DiagnosticPipe
 		}
 
 		$number_broken_order = $this->order_service->selectClosedOrderNeedingFulfillmentQuery()->count();
-
 		if ($number_broken_order > 0) {
 			$data[] = DiagnosticData::error(
-				'There are ' . $number_broken_order . ' completed orders with items that have no associated download link or size variant.',
+				'There are ' . $number_broken_order . ' closed orders with items that have no associated download link or size variant.',
 				self::class,
-				['Please fullfill them as appropriate.']
+				['Please check and assigned the needed materials.']
 			);
 		}
 
 		$number_waiting_order = $this->order_service->selectCompleteOrderNeedingFulfillmentQuery()->count();
-
 		if ($number_waiting_order > 0) {
 			$data[] = DiagnosticData::warn(
 				'There are ' . $number_waiting_order . ' completed orders which require your attention.',
 				self::class,
-				['Please check and fullfill them to mark them as closed.']
+				['Please check and fulfill them in order to mark them as closed.']
 			);
 		}
 		// @codeCoverageIgnoreEnd
