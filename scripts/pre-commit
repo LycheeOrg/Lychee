@@ -12,10 +12,11 @@ PHP_CS_FIXER_IGNORE_ENV=1
 NPM_FORMAT="node_modules/prettier"
 
 if [ -x "$PHP_CS_FIXER" ]; then
+    # Exclude lang/ files - they use 4-space indentation for Weblate compatibility
     php_files=()
     while IFS= read -r line; do
         php_files+=("$line")
-    done < <(git status --porcelain | awk '/^[AM].*\.php$/ {print substr($0,4)}')
+    done < <(git status --porcelain | awk '/^[AM].*\.php$/ {print substr($0,4)}' | grep -v '^lang/')
     if [ "${#php_files[@]}" -gt 0 ]; then
         printf "Running php-cs-fixer on %s PHP file(s)\n" "${#php_files[@]}"
         "${PHP_CS_FIXER}" fix --config=.php-cs-fixer.php --path-mode=override "${php_files[@]}"

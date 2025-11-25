@@ -49,6 +49,7 @@ return [
         'justified' => 'With aspect, justified',
         'masonry' => 'With aspect, masonry',
         'grid' => 'With aspect, grid',
+        'filmstrip' => 'Filmstrip',
     ],
     'overlay' => [
         'none' => 'None',

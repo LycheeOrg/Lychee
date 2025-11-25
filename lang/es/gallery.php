@@ -49,6 +49,7 @@ return [
         'justified' => 'Con aspecto, justificado',
         'masonry' => 'Con aspecto, mampostería',
         'grid' => 'Con aspecto, cuadrícula',
+        'filmstrip' => 'Tira de película',
     ],
     'overlay' => [
         'none' => 'Ninguno',

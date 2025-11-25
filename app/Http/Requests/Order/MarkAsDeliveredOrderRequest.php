@@ -22,7 +22,7 @@ class MarkAsDeliveredOrderRequest extends BaseApiRequest
 {
 	public Order $order;
 
-	/** @var array<int,array{id:int,download_lint:string}> */
+	/** @var array<int,array{id:int,download_link:string}> */
 	public array $items = [];
 
 	public function authorize(): bool
@@ -39,7 +39,7 @@ class MarkAsDeliveredOrderRequest extends BaseApiRequest
 			array_diff(
 				array_column($this->items, 'id'),
 				$this->order->items->pluck('id')->toArray())
-		) > 0;
+		) === 0;
 	}
 
 	protected function prepareForValidation(): void
