@@ -3,6 +3,7 @@ import WebshopService from "@/services/webshop-service";
 import { ToastServiceMethods } from "primevue/toastservice";
 import { ref } from "vue";
 import { Router } from "vue-router";
+import { trans } from "laravel-vue-i18n";
 
 const orders = ref<App.Http.Resources.Shop.OrderResource[] | undefined>(undefined);
 const numOldOrders = ref<number>(0);
@@ -74,7 +75,12 @@ export function useOrder(toast: ToastServiceMethods, router: Router) {
 	}
 
 	function copyTransactionIdToClipboard(transactionId: string) {
-		toast.add({ severity: "info", summary: "Copied to clipboard", detail: "Transaction ID copied to clipboard", life: 3000 });
+		toast.add({
+			severity: "info",
+			summary: trans("webshop.useOrder.copiedToClipboard"),
+			detail: trans("webshop.useOrder.transactionIdCopied"),
+			life: 3000,
+		});
 		navigator.clipboard.writeText(transactionId);
 	}
 

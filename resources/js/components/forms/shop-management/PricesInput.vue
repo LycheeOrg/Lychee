@@ -9,10 +9,20 @@
 				/>
 			</div>
 			<div class="w-full">
-				<Select v-model="price.license_type" :options="licenseTypeOptions" placeholder="License Type" class="w-full border-b border-0" />
+				<Select
+					v-model="price.license_type"
+					:options="licenseTypeOptions"
+					:placeholder="$t('webshop.pricesInput.licenseType')"
+					class="w-full border-b border-0"
+				/>
 			</div>
 			<div class="w-full">
-				<Select v-model="price.size_variant_type" :options="sizeVariantOptions" placeholder="Variant" class="w-full border-b border-0" />
+				<Select
+					v-model="price.size_variant_type"
+					:options="sizeVariantOptions"
+					:placeholder="$t('webshop.pricesInput.variant')"
+					class="w-full border-b border-0"
+				/>
 			</div>
 			<div>
 				<Button
@@ -23,8 +33,13 @@
 				</Button>
 			</div>
 		</div>
-		<Message v-if="!isValid" severity="error">There are duplicate prices (same license type and size variant).</Message>
-		<Button label="Add Price" icon="pi pi-plus" class="p-button-sm p-button-outlined" @click="pricesValues.push({ ..._priceDefault })" />
+		<Message v-if="!isValid" severity="error">{{ $t("webshop.pricesInput.duplicateError") }}</Message>
+		<Button
+			:label="$t('webshop.pricesInput.addPrice')"
+			icon="pi pi-plus"
+			class="p-button-sm p-button-outlined"
+			@click="pricesValues.push({ ..._priceDefault })"
+		/>
 	</div>
 </template>
 <script setup lang="ts">

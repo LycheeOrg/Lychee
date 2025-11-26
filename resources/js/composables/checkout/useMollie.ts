@@ -1,6 +1,7 @@
 import { ToastServiceMethods } from "primevue/toastservice";
 import { Ref, ref } from "vue";
 import { $dt } from "@primeuix/themes";
+import { trans } from "laravel-vue-i18n";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mollie = ref<any | undefined>(undefined);
@@ -27,7 +28,12 @@ async function waitForElement(id: string): Promise<HTMLElement> {
 export function useMollie(options: Ref<undefined | App.Http.Resources.Shop.CheckoutOptionResource>, toast: ToastServiceMethods) {
 	async function mountMollie() {
 		if (options.value?.mollie_profile_id === undefined || options.value?.mollie_profile_id === null || options.value?.mollie_profile_id === "") {
-			toast.add({ severity: "error", summary: "Error", detail: "Mollie profile ID is not configured.", life: 3000 });
+			toast.add({
+				severity: "error",
+				summary: trans("webshop.useMollie.error"),
+				detail: trans("webshop.useMollie.profileNotConfigured"),
+				life: 3000,
+			});
 			return;
 		}
 
@@ -35,8 +41,6 @@ export function useMollie(options: Ref<undefined | App.Http.Resources.Shop.Check
 
 		// @ts-expect-error - Mollie is loaded from CDN
 		mollie.value = Mollie(options.value.mollie_profile_id, { testmode: options.value.is_test_mode });
-
-		console.log($dt("formField.color"));
 		const style = isDarkMode() ? "dark" : "light";
 		const optionsStyle = {
 			styles: {
@@ -55,7 +59,6 @@ export function useMollie(options: Ref<undefined | App.Http.Resources.Shop.Check
 				},
 			},
 		};
-		console.log("Mounting Mollie component with options:", optionsStyle);
 		mollieComponent.value = mollie.value.createComponent("card", optionsStyle);
 		mollieComponent.value.mount("#checkout");
 	}

@@ -2,6 +2,7 @@ import WebshopService from "@/services/webshop-service";
 import { OrderManagementStateStore } from "@/stores/OrderManagement";
 import { UserStore } from "@/stores/UserState";
 import { computed, ref } from "vue";
+import { trans } from "laravel-vue-i18n";
 
 const email = ref<undefined | string>(undefined);
 const options = ref<undefined | App.Http.Resources.Shop.CheckoutOptionResource>(undefined);
@@ -41,14 +42,14 @@ export function useStepOne(userStore: UserStore, orderManagementStore: OrderMana
 
 	function validate() {
 		if (userStore.isGuest && !email.value) {
-			errors.value.email = "Email is required for guest checkout.";
+			errors.value.email = trans("webshop.errors.emailRequired");
 		} else {
 			errors.value.email = undefined;
 		}
 
 		// Simple email format validation: xxx@xxx.xxx
 		if (!isEmailValid()) {
-			errors.value.email = "Please enter a valid email address.";
+			errors.value.email = trans("webshop.errors.invalidEmail");
 		} else {
 			errors.value.email = undefined;
 		}

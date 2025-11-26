@@ -5,7 +5,7 @@
 		</template>
 
 		<template #center>
-			{{ "Purchasables" }}
+			{{ $t("webshop.purchasablesList.purchasables") }}
 		</template>
 
 		<template #end> </template>
@@ -21,7 +21,7 @@
 					<img src="/img/placeholder.png" class="h-8 w-8" v-else />
 				</template>
 			</Column>
-			<Column header="Title" header-class="w-2/12" body-class="w-2/12 align-top">
+			<Column :header="$t('webshop.purchasablesList.title')" header-class="w-2/12" body-class="w-2/12 align-top">
 				<template #body="slotProps">
 					<router-link
 						:to="{ name: 'album', params: { albumId: slotProps.data.album_id, photoId: slotProps.data.photo_id } }"
@@ -32,9 +32,19 @@
 					</router-link>
 				</template>
 			</Column>
-			<Column header="Description" field="description" header-class="w-3/12" body-class="w-3/12 align-top text-sm"></Column>
-			<Column header="Notes" field="owner_notes" header-class="w-2/12" body-class="w-2/12 align-top text-sm"></Column>
-			<Column header="Prices" header-class="w-4/12" body-class="w-4/12 text-sm">
+			<Column
+				:header="$t('webshop.purchasablesList.description')"
+				field="description"
+				header-class="w-3/12"
+				body-class="w-3/12 align-top text-sm"
+			></Column>
+			<Column
+				:header="$t('webshop.purchasablesList.notes')"
+				field="owner_notes"
+				header-class="w-2/12"
+				body-class="w-2/12 align-top text-sm"
+			></Column>
+			<Column :header="$t('webshop.purchasablesList.prices')" header-class="w-4/12" body-class="w-4/12 text-sm">
 				<template #body="slotProps">
 					<div class="w-full flex flex-col">
 						<div

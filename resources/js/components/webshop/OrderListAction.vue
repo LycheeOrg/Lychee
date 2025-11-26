@@ -3,7 +3,7 @@
 	<template v-if="initData?.settings.can_edit">
 		<Button
 			v-if="props.order.status === 'offline'"
-			label="Mark as Paid"
+			:label="$t('webshop.orderListAction.markAsPaid')"
 			icon="pi pi-check"
 			class="border-none py-0"
 			severity="secondary"
@@ -12,7 +12,7 @@
 		/>
 		<Button
 			v-else-if="requireAttention(props.order)"
-			label="Require Attention"
+			:label="$t('webshop.orderListAction.requireAttention')"
 			icon="pi pi-exclamation-triangle"
 			class="border-none py-0"
 			severity="warn"
@@ -21,7 +21,7 @@
 		/>
 		<Button
 			v-else-if="props.order.status === 'completed'"
-			label="Mark as Delivered"
+			:label="$t('webshop.orderListAction.markAsDelivered')"
 			icon="pi pi-check"
 			class="border-none py-0"
 			severity="secondary"
@@ -31,7 +31,7 @@
 	</template>
 	<Button
 		v-if="props.order.status === 'closed' && !requireAttention(props.order)"
-		label="View Details"
+		:label="$t('webshop.orderListAction.viewDetails')"
 		icon="pi pi-eye"
 		class="border-none py-0"
 		severity="primary"

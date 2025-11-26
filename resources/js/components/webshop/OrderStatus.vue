@@ -18,11 +18,12 @@
 			'border-radius': props.size === 'small' ? '0.5rem' : '1rem',
 		}"
 	>
-		{{ status }}
+		{{ trans(`webshop.status.${status}`) }}
 	</Tag>
 </template>
 <script setup lang="ts">
 import Tag from "primevue/tag";
+import { trans } from "laravel-vue-i18n";
 
 const props = defineProps<{
 	status: App.Enum.PaymentStatusType;

@@ -5,7 +5,7 @@
 		</template>
 
 		<template #center>
-			{{ "Basket" }}
+			{{ $t("webshop.basketList.basket") }}
 		</template>
 
 		<template #end> </template>
@@ -25,17 +25,20 @@
 							item.title
 						}}</router-link></span
 					>
-					<span class="text-sm text-muted-color">Size: {{ item.size_variant_type }}, License: {{ item.license_type }}</span>
-					<span class="text-sm text-muted-color" v-if="item.item_notes">Notes: {{ item.item_notes }}</span>
+					<span class="text-sm text-muted-color"
+						>{{ $t("webshop.basketList.size") }}: {{ item.size_variant_type }}, {{ $t("webshop.basketList.license") }}:
+						{{ item.license_type }}</span
+					>
+					<span class="text-sm text-muted-color" v-if="item.item_notes">{{ $t("webshop.basketList.notes") }}: {{ item.item_notes }}</span>
 				</div>
 				<div class="font-bold shrink">{{ item.price }}</div>
 				<Button
 					icon="pi pi-trash"
 					severity="secondary"
 					class="border-0 h-12"
-					aria-label="Remove item"
+					:aria-label="$t('webshop.basketList.removeItem')"
 					@click="removeItem(item.id)"
-					v-tooltip.bottom="'Remove item'"
+					v-tooltip.bottom="$t('webshop.basketList.removeItem')"
 				/>
 			</div>
 			<div class="flex flex-row-reverse p-4 items-center">
@@ -43,21 +46,23 @@
 					icon="pi pi-trash"
 					severity="secondary"
 					class="border-0 h-12"
-					aria-label="Remove item"
+					:aria-label="$t('webshop.basketList.clearBasket')"
 					@click="removeBasket"
-					v-tooltip.bottom="'Clear basket'"
+					v-tooltip.bottom="$t('webshop.basketList.clearBasket')"
 				/>
-				<div class="flex flex-row justify-end items-center p-4 font-bold text-2xl">Total: {{ order.amount }}</div>
+				<div class="flex flex-row justify-end items-center p-4 font-bold text-2xl">
+					{{ $t("webshop.basketList.total") }} {{ order.amount }}
+				</div>
 			</div>
 			<div class="flex ltr:justify-end rtl:justify-start">
 				<Button asChild v-slot="slotProps">
 					<RouterLink :to="{ name: 'checkout' }" :class="slotProps.class" class="px-8 border-none"
-						><i class="pi pi-credit-card" />Proceed to Checkout</RouterLink
+						><i class="pi pi-credit-card" />{{ $t("webshop.basketList.proceedToCheckout") }}</RouterLink
 					>
 				</Button>
 			</div>
 		</div>
-		<div v-else class="text-center py-10 text-muted-color">Your basket is empty.</div>
+		<div v-else class="text-center py-10 text-muted-color">{{ $t("webshop.basketList.emptyBasket") }}</div>
 		<div>
 			<!-- Future actions like checkout or clear basket can be added here -->
 		</div>

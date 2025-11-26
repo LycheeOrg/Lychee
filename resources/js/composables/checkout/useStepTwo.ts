@@ -3,6 +3,7 @@ import { OrderManagementStateStore } from "@/stores/OrderManagement";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { ToastServiceMethods } from "primevue/toastservice";
 import { Ref, ref } from "vue";
+import { trans } from "laravel-vue-i18n";
 
 const isStepTwoValid = ref(false);
 const canProcessPayment = ref(false);
@@ -38,7 +39,7 @@ export function useStepTwo(
 
 		navigator.clipboard
 			.writeText("4111111111111152")
-			.then(() => toast.add({ severity: "info", summary: "fake card number available in clip board", life: 3000 }));
+			.then(() => toast.add({ severity: "info", summary: trans("webshop.useStepTwo.fakeCardClipboard"), life: 3000 }));
 
 		return;
 	}
@@ -80,7 +81,6 @@ export function useStepTwo(
 			provider: selectedProvider.value!,
 		})
 			.then((response) => {
-				console.log("Created session:", response);
 				orderManagement.order = response.data;
 				canProcessPayment.value = response.data.can_process_payment;
 				setStepTwoValid();
@@ -127,14 +127,22 @@ export function useStepTwo(
 	}
 
 	function handleSuccess(response: AxiosResponse<App.Http.Resources.Shop.CheckoutResource>) {
-		console.log("Payment processed:", response.data);
-
 		if (response.data.is_success) {
-			toast.add({ severity: "success", summary: "Success", detail: "Payment processed successfully.", life: 3000 });
+			toast.add({
+				severity: "success",
+				summary: trans("webshop.useStepTwo.success"),
+				detail: trans("webshop.useStepTwo.paymentSuccess"),
+				life: 3000,
+			});
 		}
 
 		if (response.data.is_redirect && (response.data.redirect_url === null || response.data.redirect_url === "")) {
-			toast.add({ severity: "error", summary: "Error", detail: "Redirection requested but target is absent.", life: 3000 });
+			toast.add({
+				severity: "error",
+				summary: trans("webshop.useStepTwo.error"),
+				detail: trans("webshop.useStepTwo.redirectError"),
+				life: 3000,
+			});
 			return;
 		}
 
@@ -145,17 +153,32 @@ export function useStepTwo(
 		}
 
 		if (response.data.redirect_url === null || response.data.redirect_url === "") {
-			toast.add({ severity: "error", summary: "Error", detail: "Finalization requested but target is absent.", life: 3000 });
+			toast.add({
+				severity: "error",
+				summary: trans("webshop.useStepTwo.error"),
+				detail: trans("webshop.useStepTwo.finalizationError"),
+				life: 3000,
+			});
 			return;
 		}
 
 		axios.get(response.data.redirect_url!).then((data: AxiosResponse<App.Http.Resources.Shop.CheckoutResource>) => {
 			console.log("Finalization completed:", data);
 			if (data.data.is_success && data.data.order) {
-				toast.add({ severity: "success", summary: "Success", detail: "Order finalized successfully.", life: 3000 });
+				toast.add({
+					severity: "success",
+					summary: trans("webshop.useStepTwo.success"),
+					detail: trans("webshop.useStepTwo.orderFinalizedSuccess"),
+					life: 3000,
+				});
 				orderManagement.order = data.data.order;
 			} else {
-				toast.add({ severity: "error", summary: "Error", detail: "Order finalization failed.", life: 5000 });
+				toast.add({
+					severity: "error",
+					summary: trans("webshop.useStepTwo.error"),
+					detail: trans("webshop.useStepTwo.orderFinalizationFailed"),
+					life: 5000,
+				});
 			}
 		});
 		// https://lychee.test/api/v2/Shop/Checkout/Finalize/Dummy/37b8f4bc-a3a6-4119-bca9-5865a167505c
@@ -164,9 +187,13 @@ export function useStepTwo(
 	}
 
 	function handleError(error: AxiosError) {
-		console.log(error);
 		if (error.status === 400) {
-			toast.add({ severity: "error", summary: "Bad Request", detail: "The request was invalid. Please check your input.", life: 5000 });
+			toast.add({
+				severity: "error",
+				summary: trans("webshop.useStepTwo.badRequest"),
+				detail: trans("webshop.useStepTwo.invalidInput"),
+				life: 5000,
+			});
 		}
 	}
 

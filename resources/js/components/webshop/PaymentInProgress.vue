@@ -2,8 +2,8 @@
 	<div
 		class="w-full flex flex-col p-8 bg-surface-50 dark:bg-surface-950/25 rounded border border-surface-200 dark:border-surface-700 justify-center"
 	>
-		<div class="text-red-600 font-bold text-center mb-8">Payment in progess...</div>
-		<Button severity="secondary" label="cancel" class="w-1/2 mx-auto" @click="cancelPayment" />
+		<div class="text-red-600 font-bold text-center mb-8">{{ $t("webshop.paymentInProgress.message") }}</div>
+		<Button severity="secondary" :label="$t('webshop.paymentInProgress.cancel')" class="w-1/2 mx-auto" @click="cancelPayment" />
 	</div>
 </template>
 <script setup lang="ts">

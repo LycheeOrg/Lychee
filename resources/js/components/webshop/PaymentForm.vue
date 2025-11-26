@@ -4,26 +4,32 @@
 		v-if="options !== undefined"
 	>
 		<div v-if="!canProcessPayment" class="flex flex-col">
-			<div class="text-lg mb-12 font-bold text-center">Select your payment provider</div>
+			<div class="text-lg mb-12 font-bold text-center">{{ $t("webshop.paymentForm.selectProvider") }}</div>
 			<Select
 				v-model="selectedProvider"
 				:options="options.payment_providers"
-				placeholder="Select a payment provider"
+				:placeholder="$t('webshop.paymentForm.selectProviderPlaceholder')"
 				class="mt-4"
 				@update:modelValue="createSession"
 			/>
 		</div>
 		<div v-else-if="selectedProvider === 'Mollie'" class="h-full flex flex-col justify-between">
 			<div id="checkout" class="flex flex-wrap gap-x-4 justify-between"></div>
-			<div class="text-muted-color text-xs text-center mt-4">
-				This payment is
-				<a href="https://www.pcisecuritystandards.org/" class="hover:text-primary-400 text-muted-color-emphasis">PCI-DSS</a>
-				compliant.<br />
-				Your card details are processed securely by {{ selectedProvider }}.
-			</div>
+			<div
+				class="text-muted-color text-xs text-center mt-4"
+				v-html="
+					sprintf(
+						trans('webshop.paymentForm.pciCompliant'),
+						'<a href=\'https://www.pcisecuritystandards.org/\' class=\'hover:text-primary-400 text-muted-color-emphasis\'>PCI-DSS</a>',
+						selectedProvider,
+					)
+				"
+			></div>
 		</div>
 		<div v-else class="flex flex-col">
-			<div class="text-lg mb-12 font-bold text-center" @click="getFakeNumber">Enter your info for {{ selectedProvider }}</div>
+			<div class="text-lg mb-12 font-bold text-center" @click="getFakeNumber">
+				{{ sprintf(trans("webshop.paymentForm.enterInfo"), selectedProvider) }}
+			</div>
 			<CardForm @updated="updateCardDetails" />
 		</div>
 	</div>
@@ -39,6 +45,8 @@ import { onMounted, watch } from "vue";
 import CardForm from "@/components/forms/card/CardForm.vue";
 import Select from "primevue/select";
 import { useMollie } from "@/composables/checkout/useMollie";
+import { trans } from "laravel-vue-i18n";
+import { sprintf } from "sprintf-js";
 
 const userStore = useUserStore();
 const orderStore = useOrderManagementStore();

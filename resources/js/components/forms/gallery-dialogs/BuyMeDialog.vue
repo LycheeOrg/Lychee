@@ -35,7 +35,7 @@
 					</div>
 				</div>
 			</div>
-			<Button severity="secondary" class="rounded-b-xl font-bold" @click="resetBuyMeDialog">Cancel</Button>
+			<Button severity="secondary" class="rounded-b-xl font-bold" @click="resetBuyMeDialog">{{ $t("dialogs.button.cancel") }}</Button>
 			<!-- ADD text later that explains which license to chose -->
 			<!-- <div class="text-center text-muted-color mt-4" v-if="[...prices.reduce((acc, e) => acc.set(e.license_type, (acc.get(e.license_type) || 0) + 1), new Map()).keys()].length > 1"> -->
 			<!-- </div> -->

@@ -5,7 +5,7 @@
 		</template>
 
 		<template #center>
-			{{ "Order " + props.orderId }}
+			{{ sprintf($t("webshop.orderDownload.order"), props.orderId) }}
 		</template>
 
 		<template #end> </template>
@@ -19,13 +19,18 @@
 		<!-- If order is undefined. This means that we did not have access, ask for the transaction ID. -->
 		<div v-else-if="order === undefined" class="p-6">
 			<div class="text-center mb-6">
-				<h2 class="text-xl font-semibold mb-2">Order Access Required</h2>
-				<p class="text-muted-color">Please provide the transaction ID to access your order details.</p>
+				<h2 class="text-xl font-semibold mb-2">{{ $t("webshop.orderDownload.orderAccessRequired") }}</h2>
+				<p class="text-muted-color">{{ $t("webshop.orderDownload.provideTransactionId") }}</p>
 			</div>
 			<div class="max-w-md mx-auto">
 				<div class="flex flex-col gap-4">
-					<InputText v-model="transactionId" placeholder="Enter transaction ID" class="w-full" />
-					<Button @click="loadOrder" label="Load Order" :disabled="!transactionId || transactionId.trim() === ''" class="w-full" />
+					<InputText v-model="transactionId" :placeholder="$t('webshop.orderDownload.enterTransactionId')" class="w-full" />
+					<Button
+						@click="loadOrder"
+						:label="$t('webshop.orderDownload.loadOrder')"
+						:disabled="!transactionId || transactionId.trim() === ''"
+						class="w-full"
+					/>
 				</div>
 			</div>
 		</div>
@@ -33,9 +38,9 @@
 		<!-- If order is not undefined, display it. -->
 		<div v-else class="p-6">
 			<div class="mb-6">
-				<h2 class="text-2xl font-bold mb-2">Order Details</h2>
+				<h2 class="text-2xl font-bold mb-2">{{ $t("webshop.orderDownload.orderDetails") }}</h2>
 				<p class="text-muted-color">
-					Transaction ID: {{ order.transaction_id }}
+					{{ $t("webshop.orderDownload.transactionId") }} {{ order.transaction_id }}
 					<i
 						v-if="order.status === 'closed'"
 						class="pi pi-copy cursor-pointer hover:text-primary-400 ltr:ml-2 rtl:mr-2"
@@ -47,26 +52,26 @@
 			<div class="grid gap-6">
 				<!-- Order Summary -->
 				<div class="border rounded-lg p-4 border-surface-50/20 w-full lg:w-1/3">
-					<h3 class="text-lg font-semibold mb-3">Order Summary</h3>
+					<h3 class="text-lg font-semibold mb-3">{{ $t("webshop.orderDownload.orderSummary") }}</h3>
 					<div class="space-y-1">
 						<div class="flex justify-between">
-							<span>For:</span>
+							<span>{{ $t("webshop.orderDownload.for") }}</span>
 							<span class="font-medium"><UsernameEmail :username="order.username" :email="order.email" /></span>
 						</div>
 						<div class="flex justify-between">
-							<span>Status:</span>
+							<span>{{ $t("webshop.orderDownload.status") }}</span>
 							<OrderStatus :status="order.status" />
 						</div>
 						<div class="flex justify-between">
-							<span>Total:</span>
+							<span>{{ $t("webshop.orderDownload.total") }}</span>
 							<span class="font-medium">{{ order.amount }}</span>
 						</div>
 						<div class="flex justify-between">
-							<span>Paid:</span>
-							<span>{{ order.paid_at ? new Date(order.paid_at).toLocaleDateString() : "not paid" }}</span>
+							<span>{{ $t("webshop.orderDownload.paid") }}</span>
+							<span>{{ order.paid_at ? new Date(order.paid_at).toLocaleDateString() : $t("webshop.orderDownload.notPaid") }}</span>
 						</div>
 						<div class="flex justify-between">
-							<span>Last update:</span>
+							<span>{{ $t("webshop.orderDownload.lastUpdate") }}</span>
 							<span>{{ order.updated_at ? new Date(order.updated_at).toLocaleDateString() : "N/A" }}</span>
 						</div>
 					</div>
@@ -75,11 +80,11 @@
 				<!-- Order Items -->
 				<div class="border rounded-lg p-4 border-surface-50/20">
 					<div class="flex justify-between mb-3">
-						<h3 class="text-xl font-bold mt-3">Items</h3>
+						<h3 class="text-xl font-bold mt-3">{{ $t("webshop.orderDownload.items") }}</h3>
 						<Button
 							v-if="initData?.settings.can_edit && itemsToUpdate.length > 0"
 							@click="markAsDelivered"
-							label="Deliver"
+							:label="$t('webshop.orderDownload.deliver')"
 							icon="pi pi-save"
 							size="small"
 							class="border-0"
@@ -89,7 +94,7 @@
 							v-else-if="initData?.settings.can_edit && !edit"
 							@click="edit = !edit"
 							severity="danger"
-							label="Edit"
+							:label="$t('webshop.orderDownload.edit')"
 							icon="pi pi-pencil"
 							size="small"
 							class="border-0"
@@ -99,7 +104,7 @@
 							v-else-if="initData?.settings.can_edit && edit"
 							@click="edit = !edit"
 							severity="secondary"
-							label="View"
+							:label="$t('webshop.orderDownload.view')"
 							icon="pi pi-eye"
 							size="small"
 							class="border-0"
@@ -118,7 +123,7 @@
 								</div>
 								<div v-if="showInput(item)" class="grow max-w-1/2">
 									<InputText
-										placeholder="Enter content URL here."
+										:placeholder="$t('webshop.orderDownload.enterContentUrl')"
 										class="w-full text-left"
 										@update:modelValue="(v) => updateItemLink({ id: item.id, download_link: v ?? '' })"
 									/>
@@ -127,13 +132,13 @@
 									<Button
 										@click="downloadItem(item.content_url)"
 										icon="pi pi-cloud-download"
-										label="Download"
+										:label="$t('webshop.orderDownload.download')"
 										size="small"
 										class="border-0"
 										severity="primary"
 									/>
 								</div>
-								<div v-else class="mt-1 text-sm text-muted-color">Download not available (yet)</div>
+								<div v-else class="mt-1 text-sm text-muted-color">{{ $t("webshop.orderDownload.downloadNotAvailable") }}</div>
 							</div>
 							<div class="text-right">
 								<div class="font-medium">{{ item.price }}</div>
@@ -162,6 +167,8 @@ import Toolbar from "primevue/toolbar";
 import { useToast } from "primevue/usetoast";
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
+import { trans } from "laravel-vue-i18n";
+import { sprintf } from "sprintf-js";
 
 const props = defineProps<{
 	orderId: string;
@@ -213,7 +220,12 @@ function downloadItem(contentUrl: string) {
 }
 
 function copyToClipboard() {
-	toast.add({ severity: "success", summary: "Copied to clipboard", detail: "Order link copied to clipboard", life: 3000 });
+	toast.add({
+		severity: "success",
+		summary: trans("webshop.orderDownload.copiedToClipboard"),
+		detail: trans("webshop.orderDownload.orderLinkCopied"),
+		life: 3000,
+	});
 	navigator.clipboard.writeText(
 		Constants.BASE_URL + router.resolve({ name: "order", params: { orderId: order.value?.id, transactionId: order.value?.transaction_id } }).href,
 	);

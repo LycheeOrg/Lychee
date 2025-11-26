@@ -5,7 +5,7 @@
 		</template>
 
 		<template #center>
-			{{ "Checkout" }}
+			{{ $t("webshop.checkout.checkout") }}
 		</template>
 
 		<template #end> </template>
@@ -13,13 +13,13 @@
 	<Panel :pt:header:class="'hidden'" class="border-0 md:max-w-3xl lg:max-w-5xl xl:max-w-7xl mt-9 mx-auto w-full">
 		<Stepper :value="steps" linear class="basis-200" v-if="options !== undefined">
 			<StepList>
-				<Step :value="1">Your info</Step>
+				<Step :value="1">{{ $t("webshop.checkout.yourInfo") }}</Step>
 				<template v-if="!options.is_offline">
-					<Step :value="2">Payment</Step>
-					<Step :value="3">Confirmation</Step>
+					<Step :value="2">{{ $t("webshop.checkout.payment") }}</Step>
+					<Step :value="3">{{ $t("webshop.checkout.confirmation") }}</Step>
 				</template>
 				<template v-else>
-					<Step :value="2">Confirmation</Step>
+					<Step :value="2">{{ $t("webshop.checkout.confirmation") }}</Step>
 				</template>
 			</StepList>
 			<StepPanels>
@@ -30,7 +30,13 @@
 					</div>
 					<div class="flex pt-6 ltr:justify-end rtl:justify-start">
 						<!-- FIX RTL for the arrow of the button -->
-						<Button label="Next" icon="pi pi-arrow-right" @click="next" class="border-none" :disabled="!isStepOneValid" />
+						<Button
+							:label="$t('webshop.checkout.next')"
+							icon="pi pi-arrow-right"
+							@click="next"
+							class="border-none"
+							:disabled="!isStepOneValid"
+						/>
 					</div>
 				</StepPanel>
 				<template v-if="!options.is_offline">
@@ -41,9 +47,9 @@
 							<PaymentForm v-else />
 						</div>
 						<div class="flex pt-6 justify-between">
-							<Button label="Back" severity="secondary" icon="pi pi-arrow-left" @click="goToInfo" />
+							<Button :label="$t('webshop.checkout.back')" severity="secondary" icon="pi pi-arrow-left" @click="goToInfo" />
 							<Button
-								label="Next"
+								:label="$t('webshop.checkout.next')"
 								icon="pi pi-arrow-right"
 								iconPos="right"
 								@click="processPayment"
@@ -57,25 +63,28 @@
 							<div
 								class="border-2 border-dashed border-surface-200 dark:border-surface-700 rounded bg-surface-50 dark:bg-surface-950 flex-col gap-4 p-4 flex justify-center items-center font-medium"
 							>
-								<h2 class="font-bold text-xl">Thank you for your purchase!</h2>
+								<h2 class="font-bold text-xl">{{ $t("webshop.checkout.thankYou") }}</h2>
 								<div class="text-muted-color">
 									<p>
-										Your order number is: <strong class="text-muted-color-emphasis">{{ order?.id }}</strong>
+										{{ $t("webshop.checkout.orderNumber") }} <strong class="text-muted-color-emphasis">{{ order?.id }}</strong>
 									</p>
 									<p>
-										Your transaction id is: <strong class="text-muted-color-emphasis">{{ order?.transaction_id }}</strong>
+										{{ $t("webshop.checkout.transactionId") }}
+										<strong class="text-muted-color-emphasis">{{ order?.transaction_id }}</strong>
 									</p>
 								</div>
 								<p class="text-muted-color">
 									<i class="pi pi-exclamation-triangle ltr:mr-2 rtl:mr-2 text-warning-600" />
-									Please <strong class="text-muted-color-emphasis">note your transaction id and</strong> your
-									<strong class="text-muted-color-emphasis">order number</strong> as you will need them to access your content.
+									{{ $t("webshop.checkout.noteWarning") }}
+									<strong class="text-muted-color-emphasis">{{ $t("webshop.checkout.noteTransactionId") }}</strong>
+									{{ $t("webshop.checkout.noteOrderNumber") }}
+									{{ $t("webshop.checkout.noteReason") }}
 								</p>
-								<p class="text-muted-color">Enjoy your purchase!</p>
+								<p class="text-muted-color">{{ $t("webshop.checkout.enjoyPurchase") }}</p>
 								<Button
 									v-if="order?.status === 'closed'"
 									text
-									label="To my downloads"
+									:label="$t('webshop.checkout.toMyDownloads')"
 									icon="pi pi-link"
 									@click="openOrderPage"
 									class="border-none"
@@ -83,7 +92,12 @@
 							</div>
 						</div>
 						<div class="flex pt-6 ltr:justify-end rtl:justify-start">
-							<Button label="To the gallery" icon="pi pi-arrow-right" @click="backToGallery" class="border-none" />
+							<Button
+								:label="$t('webshop.checkout.toTheGallery')"
+								icon="pi pi-arrow-right"
+								@click="backToGallery"
+								class="border-none"
+							/>
 						</div>
 					</StepPanel>
 				</template>
@@ -93,14 +107,19 @@
 							<div
 								class="border-2 border-dashed border-surface-200 dark:border-surface-700 rounded bg-surface-50 dark:bg-surface-950 flex-auto flex justify-center items-center font-medium text-center"
 							>
-								Thank you for your purchase!<br />
+								{{ $t("webshop.checkout.offlineThankYou") }}<br />
 								<!-- Message is payment is required. -->
-								We will get in touch with you shortly via email with the payment instructions.<br />
+								{{ $t("webshop.checkout.offlinePaymentMessage") }}<br />
 								<!-- Message if photos need to be processed. -->
-								We will notify you once your photos are ready to be downloaded.
+								{{ $t("webshop.checkout.offlineProcessingMessage") }}
 							</div>
 							<div class="flex pt-6 ltr:justify-end rtl:justify-start">
-								<Button label="To the gallery" icon="pi pi-arrow-right" @click="backToGallery" class="border-none" />
+								<Button
+									:label="$t('webshop.checkout.toTheGallery')"
+									icon="pi pi-arrow-right"
+									@click="backToGallery"
+									class="border-none"
+								/>
 							</div>
 						</div>
 					</StepPanel>

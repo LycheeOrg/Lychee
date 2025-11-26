@@ -53,7 +53,7 @@
 				}"
 				@click="activeTab = 4"
 			>
-				{{ $t("Shop management") }}
+				{{ $t("gallery.album.tabs.shop") }}
 			</li>
 			<li
 				v-if="canDelete || canTransfer"

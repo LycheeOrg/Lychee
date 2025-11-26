@@ -7,23 +7,23 @@
 				'text-primary-500': isVisible,
 			}"
 			@click="toggle"
-			v-tooltip.left="'Need help?'"
+			v-tooltip.left="$t('webshop.orderLegend.needHelp')"
 		/>
 	</div>
 	<Transition name="fade">
 		<div v-if="isVisible" class="flex flex-row-reverse flex-wrap justify-center mb-8">
 			<div class="flex flex-col justify-start items-start gap-1 w-full lg:w-1/3 mb-4">
-				<div class="text-lg font-bold mb-2">Legend:</div>
-				<div><OrderStatus size="small" status="pending" /> : Order is created but not paid yet.</div>
-				<div><OrderStatus size="small" status="processing" /> : Payment is being processed.</div>
-				<div><OrderStatus size="small" status="offline" /> : Order is marked as to be paid manually.</div>
-				<div><OrderStatus size="small" status="completed" /> : Order has been paid.</div>
-				<div><OrderStatus size="small" status="closed" /> : Order has been delivered.</div>
-				<div><OrderStatus size="small" status="cancelled" /> : Payment has been cancelled.</div>
-				<div><OrderStatus size="small" status="failed" /> : Payment has failed.</div>
+				<div class="text-lg font-bold mb-2">{{ $t("webshop.orderLegend.legend") }}</div>
+				<div><OrderStatus size="small" status="pending" /> : {{ $t("webshop.orderLegend.pendingDesc") }}</div>
+				<div><OrderStatus size="small" status="processing" /> : {{ $t("webshop.orderLegend.processingDesc") }}</div>
+				<div><OrderStatus size="small" status="offline" /> : {{ $t("webshop.orderLegend.offlineDesc") }}</div>
+				<div><OrderStatus size="small" status="completed" /> : {{ $t("webshop.orderLegend.completedDesc") }}</div>
+				<div><OrderStatus size="small" status="closed" /> : {{ $t("webshop.orderLegend.closedDesc") }}</div>
+				<div><OrderStatus size="small" status="cancelled" /> : {{ $t("webshop.orderLegend.cancelledDesc") }}</div>
+				<div><OrderStatus size="small" status="failed" /> : {{ $t("webshop.orderLegend.failedDesc") }}</div>
 			</div>
 			<div class="flex flex-col justify-start items-start gap-2 w-full lg:w-2/3">
-				<div class="mb-2">There are multiple possible order control flows as described bellow:</div>
+				<div class="mb-2">{{ $t("webshop.orderLegend.flowsIntro") }}</div>
 				<div class="flex justify-center gap-2 items-center">
 					<OrderStatus size="small" status="pending" />
 					<i class="pi pi-arrow-right" />
@@ -77,14 +77,16 @@
 			</div>
 			<div class="mb-4 text-muted-color flex flex-col gap-2">
 				<p>
-					An order in the <OrderStatus size="small" status="offline" /> status indicates that the payment will be handled manually, such as
-					through bank transfer or cash on delivery. The admin of the webshop is responsible for updating the order status to
-					<OrderStatus size="small" status="completed" /> once the payment is confirmed by clicking the "Mark as Paid" button in the order
-					details.
+					{{ $t("webshop.orderLegend.offlineExplanationPart1") }}
+					<OrderStatus size="small" status="offline" />
+					{{ $t("webshop.orderLegend.offlineExplanationPart2") }}
+					<OrderStatus size="small" status="completed" />
+					{{ $t("webshop.orderLegend.offlineExplanationPart3") }}
 				</p>
 				<p>
-					Once an order reaches the <OrderStatus size="small" status="closed" /> status, it is considered finalized and no further actions
-					can be taken.
+					{{ $t("webshop.orderLegend.closedExplanationPart1") }}
+					<OrderStatus size="small" status="closed" />
+					{{ $t("webshop.orderLegend.closedExplanationPart2") }}
 				</p>
 			</div>
 		</div>

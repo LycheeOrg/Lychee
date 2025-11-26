@@ -3,14 +3,14 @@
 		<template #content>
 			<div v-if="albumPurchasable !== undefined" class="flex flex-col gap-4">
 				<template v-if="albumPurchasable === null">
-					<p class="font-bold text-muted-color text-lg text-center">This album is not purchasable (yet).</p>
-					<Textarea v-model="description" placeholder="Description for clients" />
-					<Textarea v-model="note" placeholder="Owner's Note" />
+					<p class="font-bold text-muted-color text-lg text-center">{{ $t("webshop.albumPurchasable.notPurchasableYet") }}</p>
+					<Textarea v-model="description" :placeholder="$t('webshop.albumPurchasable.descriptionPlaceholder')" />
+					<Textarea v-model="note" :placeholder="$t('webshop.albumPurchasable.ownerNotePlaceholder')" />
 					<PricesInput :prices="prices" />
 					<div class="flex gap-4">
 						<Button
 							icon="pi pi-plus"
-							label="Set Purchasable"
+							:label="$t('webshop.albumPurchasable.setPurchasable')"
 							class="border-none w-full"
 							@click="makePurchasable"
 							:disabled="prices.length === 0"
@@ -19,7 +19,7 @@
 						<Button
 							icon="pi pi-forward"
 							severity="danger"
-							label="Set Purchasable and propagate"
+							:label="$t('webshop.albumPurchasable.setPurchasablePropagate')"
 							class="font-bold w-full border-none"
 							@click="
 								appliesToSubalbums = true;
@@ -29,21 +29,23 @@
 						>
 						</Button>
 					</div>
-					<Message severity="error" v-if="prices.length === 0">Set at least one price.</Message>
+					<Message severity="error" v-if="prices.length === 0">{{ $t("webshop.albumPurchasable.setAtLeastOnePrice") }}</Message>
 				</template>
 				<template v-else>
-					<Textarea v-model="description" placeholder="Description for clients" />
-					<Textarea v-model="note" placeholder="Owner's Note" />
+					<Textarea v-model="description" :placeholder="$t('webshop.albumPurchasable.descriptionPlaceholder')" />
+					<Textarea v-model="note" :placeholder="$t('webshop.albumPurchasable.ownerNotePlaceholder')" />
 					<PricesInput :prices="prices" />
 					<div class="flex gap-4">
 						<Button
 							class="text-danger-800 font-bold hover:text-white hover:bg-danger-800 w-full bg-transparent border-none"
 							@click="disable"
-							>Disable</Button
+							>{{ $t("webshop.albumPurchasable.disable") }}</Button
 						>
-						<Button class="border-none font-bold w-full" @click="makePurchasable" :disabled="prices.length === 0"> Update </Button>
+						<Button class="border-none font-bold w-full" @click="makePurchasable" :disabled="prices.length === 0">
+							{{ $t("webshop.albumPurchasable.update") }}
+						</Button>
 					</div>
-					<Message severity="error" v-if="prices.length === 0">Set at least one price.</Message>
+					<Message severity="error" v-if="prices.length === 0">{{ $t("webshop.albumPurchasable.setAtLeastOnePrice") }}</Message>
 				</template>
 			</div>
 		</template>
@@ -59,6 +61,7 @@ import Button from "primevue/button";
 import PricesInput from "@/components/forms/shop-management/PricesInput.vue";
 import Message from "primevue/message";
 import { useAlbumStore } from "@/stores/AlbumState";
+import { trans } from "laravel-vue-i18n";
 
 const toast = useToast();
 const albumStore = useAlbumStore();
@@ -90,7 +93,7 @@ function load() {
 				}) ?? [];
 		})
 		.catch((error) => {
-			toast.add({ severity: "error", summary: "Error", detail: error.message, life: 3000 });
+			toast.add({ severity: "error", summary: trans("webshop.albumPurchasable.error"), detail: error.message, life: 3000 });
 		});
 }
 
@@ -107,11 +110,16 @@ function makePurchasable() {
 		applies_to_subalbums: appliesToSubalbums.value,
 	})
 		.then(() => {
-			toast.add({ severity: "success", summary: "Success", detail: "Album is now purchasable", life: 3000 });
+			toast.add({
+				severity: "success",
+				summary: trans("webshop.albumPurchasable.success"),
+				detail: trans("webshop.albumPurchasable.albumNowPurchasable"),
+				life: 3000,
+			});
 			load();
 		})
 		.catch((error) => {
-			toast.add({ severity: "error", summary: "Error", detail: error.message, life: 3000 });
+			toast.add({ severity: "error", summary: trans("webshop.albumPurchasable.error"), detail: error.message, life: 3000 });
 		});
 }
 
@@ -121,11 +129,16 @@ function disable() {
 	}
 	ShopManagementService.deletePurchasable(albumPurchasable.value.purchasable_id)
 		.then(() => {
-			toast.add({ severity: "success", summary: "Success", detail: "Album is no longer purchasable", life: 3000 });
+			toast.add({
+				severity: "success",
+				summary: trans("webshop.albumPurchasable.success"),
+				detail: trans("webshop.albumPurchasable.albumNoLongerPurchasable"),
+				life: 3000,
+			});
 			load();
 		})
 		.catch((error) => {
-			toast.add({ severity: "error", summary: "Error", detail: error.message, life: 3000 });
+			toast.add({ severity: "error", summary: trans("webshop.albumPurchasable.error"), detail: error.message, life: 3000 });
 		});
 }
 

@@ -12,7 +12,7 @@
 		{{ new Date(props.order.created_at).toLocaleString() }}</span
 	>
 	<span v-else-if="props.order.created_at" class="text-muted-color-emphasis">{{ new Date(props.order.created_at).toLocaleString() }}</span>
-	<span v-else>NO DATA</span>
+	<span v-else>{{ $t("webshop.errors.noData") }}</span>
 </template>
 <script setup lang="ts">
 import { useOrder } from "@/composables/checkout/useOrder";

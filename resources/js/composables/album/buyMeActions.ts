@@ -3,6 +3,8 @@ import { CatalogStore } from "@/stores/CatalogState";
 import { OrderManagementStateStore } from "@/stores/OrderManagement";
 import { ToastServiceMethods } from "primevue/toastservice";
 import { ref } from "vue";
+import { trans } from "laravel-vue-i18n";
+import { sprintf } from "sprintf-js";
 
 const buyablePhotoId = ref<string | undefined>(undefined);
 const buyableAlbumId = ref<string | undefined>(undefined);
@@ -68,8 +70,8 @@ export function useBuyMeActions(
 	function notify(photoTitle: string, price: string) {
 		toast.add({
 			severity: "success",
-			summary: "Added to order",
-			detail: photoTitle + " added to your order for " + price,
+			summary: trans("webshop.buyMeActions.addedToOrder"),
+			detail: sprintf(trans("webshop.buyMeActions.photoAddedToOrder"), photoTitle, price),
 			life: 3000,
 		});
 	}
