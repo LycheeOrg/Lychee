@@ -77,6 +77,7 @@ return [
             'share' => 'Del Album',
             'embed' => 'Embed Album',
             'move' => 'Flytt Album',
+            'shop' => 'Shop Management',
             'danger' => 'FARESONE',
         ],
         'hero' => [
