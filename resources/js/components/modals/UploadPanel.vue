@@ -54,7 +54,7 @@
 				<Button
 					v-if="showCancel"
 					severity="secondary"
-					class="w-full font-bold border-none border-1 rounded-none ltr:rounded-bl-xl rtl:rounded-br-xl"
+					class="w-full font-bold border-none border rounded-none ltr:rounded-bl-xl rtl:rounded-br-xl"
 					@click="cancel"
 				>
 					{{ $t("dialogs.button.cancel") }}
@@ -62,7 +62,7 @@
 				<Button
 					v-if="!showResume"
 					severity="secondary"
-					class="w-full font-bold border-none border-1 rounded-none ltr:rounded-br-xl rtl:rounded-bl-xl"
+					class="w-full font-bold border-none border rounded-none ltr:rounded-br-xl rtl:rounded-bl-xl"
 					:class="showCancel ? '' : 'ltr:rounded-bl-xl rtl:rounded-br-xl'"
 					:disabled="showCancel"
 					@click="close"
@@ -72,7 +72,7 @@
 				<Button
 					v-else
 					severity="contrast"
-					class="w-full font-bold border-none border-1 rounded-none ltr:rounded-br-xl rtl:rounded-bl-xl"
+					class="w-full font-bold border-none border rounded-none ltr:rounded-br-xl rtl:rounded-bl-xl"
 					@click="() => uploadNext()"
 				>
 					{{ $t("dialogs.upload.resume") }}

@@ -43,6 +43,19 @@
 				{{ $t("gallery.album.tabs.move") }}
 			</li>
 			<li
+				v-if="canManagePurchase"
+				:class="{
+					'px-2 pt-3 pb-4 cursor-pointer font-bold text-center transition-colors ease-in-out select-none': true,
+					'xl:border-l-2': isLTR(),
+					'xl:border-r-2': !isLTR(),
+					'max-xl:border-b-2 border-solid border-primary-500 text-primary-500 hover:border-primary-300 hover:text-primary-300': true,
+					'bg-primary-500/5': activeTab === 4,
+				}"
+				@click="activeTab = 4"
+			>
+				{{ $t("gallery.album.tabs.shop") }}
+			</li>
+			<li
 				v-if="canDelete || canTransfer"
 				:class="{
 					'px-2 pt-3 pb-4 cursor-pointer font-bold text-center transition-colors ease-in-out select-none': true,
@@ -67,6 +80,9 @@
 		<div v-if="activeTab === 2 && canMove" class="w-full xl:w-5/6 flex justify-center flex-wrap mb-4 sm:mt-7 ltr:pl-7 rtl:pr-7">
 			<AlbumMove :key="`move_${albumStore.album?.id}`" />
 		</div>
+		<div v-if="activeTab === 4 && canManagePurchase" class="w-full xl:w-5/6 flex justify-center flex-wrap mb-4 sm:mt-7 ltr:pl-7 rtl:pr-7">
+			<AlbumPurchasable :key="`purchasable_${albumStore.album?.id}`" />
+		</div>
 		<div
 			v-if="activeTab === 3 && (canDelete || canTransfer)"
 			class="w-full xl:w-5/6 flex justify-center flex-wrap mb-4 sm:mt-7 ltr:pl-7 rtl:pr-7"
@@ -84,6 +100,7 @@ import AlbumProperties from "@/components/forms/album/AlbumProperties.vue";
 import AlbumVisibility from "@/components/forms/album/AlbumVisibility.vue";
 import AlbumDelete from "@/components/forms/album/AlbumDelete.vue";
 import AlbumMove from "@/components/forms/album/AlbumMove.vue";
+import AlbumPurchasable from "@/components/forms/album/AlbumPurchasable.vue";
 import AlbumTransfer from "@/components/forms/album/AlbumTransfer.vue";
 import AlbumShare from "@/components/forms/album/AlbumShare.vue";
 import { storeToRefs } from "pinia";
@@ -108,6 +125,7 @@ const canShare = computed(() => albumStore.rights?.can_share_with_users && numUs
 const canMove = computed(() => albumStore.config?.is_model_album && albumStore.rights?.can_move);
 const canTransfer = computed(() => albumStore.config?.is_base_album && numUsers.value > 1 && albumStore.rights?.can_transfer);
 const canDelete = computed(() => albumStore.config?.is_base_album && albumStore.rights?.can_delete);
+const canManagePurchase = computed(() => albumStore.config?.is_model_album && albumStore.rights?.can_make_purchasable);
 
 function close() {
 	activeTab.value = 0;
