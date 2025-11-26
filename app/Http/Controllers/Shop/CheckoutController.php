@@ -97,7 +97,7 @@ class CheckoutController extends Controller
 			$request->additional_data ?? []
 		);
 
-		// If we have a sucess directly without redirection mark order as completed
+		// If we have a success directly without redirection mark order as completed
 		if ($result->is_success && !$result->is_redirect) {
 			OrderCompleted::dispatchIf(Configs::getValueAsBool('webshop_auto_fulfill_enabled'), $order->id);
 		}
