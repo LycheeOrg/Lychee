@@ -19,33 +19,33 @@ use Illuminate\Support\Facades\DB;
 /**
  * FulfillOrders - Maintenance controller for order fulfillment retry logic.
  *
- * This maintenance controller provides administrative tools to identify and process
- * orders that have been paid but not yet fulfilled. It serves as a "catch-all"
- * mechanism to ensure customers receive their purchased content even when automatic
- * fulfillment fails or is incomplete.
+ * Processes orders that have been paid but not yet fulfilled. This serves as a
+ * catch-all mechanism when automatic fulfillment fails.
  *
- * What Gets Fulfilled:
- * - Orders in COMPLETED status with unfulfilled items (payment received, content pending)
- * - Orders in CLOSED status with unfulfilled items (data inconsistency correction)
+ * Common Scenarios:
+ * - Missing size variants at fulfillment time
+ * - System interruptions during fulfillment
+ * - Auto-fulfillment disabled (webshop_auto_fulfill_enabled = false)
+ * - Manual status changes without actual fulfillment
  *
- * An item is considered unfulfilled when BOTH conditions are true:
- * - size_variant_id is NULL (not linked to downloadable content)
- * - download_link is NULL (no custom download URL provided)
+ * Fulfillment Criteria:
+ * An item is unfulfilled when both size_variant_id and download_link are NULL.
+ * Orders in COMPLETED or CLOSED status with unfulfilled items are processed.
+ *
+ * Auto-Fulfilled: MEDIUM, MEDIUM2X, ORIGINAL (if size variants exist)
+ * Manual Processing Required: FULL variants (photographer processing needed)
+ *
+ * Usage:
+ * - Run after GenSizeVariants to link newly created variants
+ * - Run when customers report missing download links
+ * - Run periodically as health check
  *
  * @see OrderService Provides queries for unfulfilled orders
  * @see OrderCompletedListener Contains the actual fulfillment logic
- * @see Order The order model being processed
- * @see OrderItem Items within orders requiring fulfillment
  */
 class FulfillOrders extends Controller
 {
 	/**
-	 * Create a new FulfillOrders controller instance.
-	 *
-	 * Dependencies:
-	 * - OrderService: Provides query builders for identifying unfulfilled orders
-	 * - OrderCompletedListener: Contains the fulfillment logic for processing orders
-	 *
 	 * @param OrderService           $order_service            Service for order queries and operations
 	 * @param OrderCompletedListener $order_completed_listener Listener for order fulfillment
 	 */
@@ -58,68 +58,32 @@ class FulfillOrders extends Controller
 	/**
 	 * Process all unfulfilled orders and attempt to fulfill them.
 	 *
-	 * This method is the primary action of the maintenance task. It identifies
-	 * all orders that have been paid but not fully fulfilled, then attempts to
-	 * complete the fulfillment process by linking order items to downloadable
-	 * size variants.
+	 * Identifies orders with status COMPLETED or CLOSED that have unfulfilled items
+	 * (size_variant_id and download_link both NULL), then links order items to their
+	 * corresponding size variants. Orders are closed when all items are fulfilled.
 	 *
-	 * Query Strategy:
-	 * Uses two separate queries to identify problematic orders:
-	 * 1. CLOSED orders with unfulfilled items (data inconsistency)
-	 * 2. COMPLETED orders with unfulfilled items (normal retry scenario)
-	 *
-	 * The queries are combined with orWhereIn() to process both types in a
-	 * single batch, with eager loading of all necessary relationships to
-	 * optimize database performance.
-	 *
-	 * Process Flow:
-	 * 1. Queries for orders with status CLOSED or COMPLETED that have items where:
-	 *    - size_variant_id is NULL
-	 *    - download_link is NULL
+	 * Process:
+	 * 1. Single query with EXISTS clause finds orders with unfulfilled items
 	 * 2. Eager loads: items, items.photo, items.photo.size_variants
-	 * 3. Iterates through each order
-	 * 4. Calls OrderCompletedListener.fullfillOrder() to process each order
-	 * 5. Each order item is linked to its size variant if available
-	 * 6. Order status changes to CLOSED if all items are fulfilled
+	 * 3. Calls OrderCompletedListener.fulfillOrder() for each order
+	 * 4. Links items to size variants (MEDIUM, MEDIUM2X, ORIGINAL)
+	 * 5. Updates order status to CLOSED if all items are fulfilled
 	 *
-	 * What This Method Does:
-	 * - Links order items to existing size variants
-	 * - Updates order_items.size_variant_id for fulfilled items
-	 * - Changes orders.status to CLOSED for fully fulfilled orders
-	 * - Updates orders.updated_at timestamp
+	 * What It Does:
+	 * - Links order_items to existing size_variants
+	 * - Updates order status to CLOSED when fully fulfilled
 	 *
-	 * What This Method Does NOT Do:
+	 * What It Doesn't Do:
 	 * - Generate missing size variants (run GenSizeVariants first)
-	 * - Process FULL variants (requires manual photographer intervention)
-	 * - Send customer notifications (handled separately)
-	 * - Refund orders that cannot be fulfilled
+	 * - Process FULL variants (requires manual intervention)
+	 * - Send notifications or refunds
 	 *
-	 * Expected Outcomes:
-	 * - Success: Items linked to size variants, order status becomes CLOSED
-	 * - Partial: Some items fulfilled, order remains COMPLETED
-	 * - No Change: Size variants still missing or FULL variants present
-	 *
-	 * Performance Considerations:
-	 * - Uses eager loading to prevent N+1 query problems
-	 * - Processes all orders in a single batch (no pagination)
-	 * - For large datasets (100+ orders), consider monitoring execution time
-	 * - Safe to run multiple times (idempotent - already fulfilled items are skipped)
-	 *
-	 * Error Handling:
-	 * - Gracefully handles missing photos (items remain unfulfilled)
-	 * - Gracefully handles missing size variants (items remain unfulfilled)
-	 * - Does not throw exceptions for individual order failures
-	 * - Check application logs for specific error details
-	 *
-	 * After Running:
-	 * - Verify count decreases with check() method
-	 * - Review logs for any errors during processing
-	 * - Check customer accounts to ensure download access
-	 * - Investigate persistent unfulfilled items for root cause
+	 * Safe to run multiple times (idempotent). Already fulfilled items are skipped.
+	 * Verify results by checking count before and after with check() method.
 	 *
 	 * @param MaintenanceRequest $request Authenticated maintenance request (admin only)
 	 *
-	 * @return void No return value (check logs for processing details)
+	 * @return void
 	 */
 	public function do(MaintenanceRequest $request): void
 	{
@@ -140,57 +104,24 @@ class FulfillOrders extends Controller
 	/**
 	 * Count the number of orders requiring fulfillment.
 	 *
-	 * This method returns the total count of orders that have unfulfilled items,
-	 * serving as a diagnostic tool to determine if maintenance action is needed.
+	 * Returns the count of COMPLETED or CLOSED orders with at least one unfulfilled item
+	 * (where both size_variant_id and download_link are NULL).
 	 *
-	 * Calculation:
-	 * Sums two separate counts:
-	 * 1. Orders with status COMPLETED and unfulfilled items
-	 * 2. Orders with status CLOSED and unfulfilled items
+	 * Interpreting Results:
+	 * - 0: All orders properly fulfilled
+	 * - 1-10: Small backlog (possibly FULL variants or recent orders)
+	 * - 11-50: Moderate backlog (investigate root cause)
+	 * - 50+: Systemic issue (check auto-fulfillment, size variants, logs)
 	 *
-	 * An order is included in the count if it has at least one order item where
-	 * BOTH conditions are true:
-	 * - size_variant_id is NULL (not linked to downloadable content)
-	 * - download_link is NULL (no custom download URL provided)
-	 *
-	 * Interpreting the Results:
-	 * - 0: All orders are properly fulfilled, system is healthy
-	 * - 1-10: Small number of unfulfilled orders, possibly FULL variants or recent orders
-	 * - 11-50: Moderate backlog, consider investigating root cause
-	 * - 50+: Significant issue, likely systemic problem (auto-fulfillment disabled,
-	 *        missing size variants, or listener failures)
-	 *
-	 * Use Cases:
-	 * - Display in admin dashboard as a health indicator
-	 * - Determine if do() method needs to be executed
-	 * - Monitor fulfillment system effectiveness over time
-	 * - Validate maintenance task results (should decrease after running do())
-	 * - Alert administrators when count exceeds threshold
-	 *
-	 * Why Orders May Need Fulfillment:
-	 * - Auto-fulfillment disabled (webshop_auto_fulfill_enabled = false)
-	 * - Size variants not yet generated (need to run GenSizeVariants)
-	 * - FULL variants awaiting manual processing (expected behavior)
-	 * - OrderCompletedListener errors during automatic fulfillment
-	 * - Database inconsistencies from migrations or manual changes
-	 *
-	 * Workflow:
+	 * Typical Workflow:
 	 * 1. Call check() to see current count
-	 * 2. If count > 0, investigate why (check logs, size variants, FULL items)
-	 * 3. Run GenSizeVariants if size variants are missing
-	 * 4. Call do() to process fulfillment
-	 * 5. Call check() again to verify count decreased
-	 * 6. If count unchanged, investigate FULL variants or other blockers
-	 *
-	 * Performance:
-	 * - Executes two separate COUNT queries (efficient)
-	 * - Uses EXISTS subquery (optimized for large datasets)
-	 * - No data loading, only counting (fast operation)
-	 * - Safe to call frequently for monitoring
+	 * 2. Run GenSizeVariants if size variants are missing
+	 * 3. Call do() to process fulfillment
+	 * 4. Call check() again to verify count decreased
 	 *
 	 * @param MaintenanceRequest $request Authenticated maintenance request (admin only)
 	 *
-	 * @return int Total number of orders with unfulfilled items (COMPLETED + CLOSED)
+	 * @return int Total number of orders with unfulfilled items
 	 */
 	public function check(MaintenanceRequest $request): int
 	{

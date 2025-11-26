@@ -344,7 +344,7 @@ class OrderService
 	 *
 	 * If auto-fulfillment is disabled:
 	 * - Order remains in COMPLETED status
-	 * - Administrator must manually fulfill via FullfillOrders maintenance task
+	 * - Administrator must manually fulfill via FulfillOrders maintenance task
 	 *
 	 * Usage Scenario:
 	 * Customer selects "bank transfer" payment method:
@@ -367,7 +367,7 @@ class OrderService
 
 		$order->markAsPaid($order->transaction_id);
 
-		// Dispatch the OrderCompleted event to fullfill post-order actions
+		// Dispatch the OrderCompleted event to fulfill post-order actions
 		OrderCompleted::dispatchIf(Configs::getValueAsBool('webshop_auto_fulfill_enabled'), $order->id);
 
 		return $order;
@@ -386,7 +386,7 @@ class OrderService
 	 * - Administrator confirms all items have been provided to customer
 	 *
 	 * Status Transition:
-	 * COMPLETED → CLOSED
+	 * COMPLETED → CLOSED (or CLOSED → CLOSED for idempotency)
 	 *
 	 * The CLOSED status indicates:
 	 * - Payment has been received
@@ -403,16 +403,16 @@ class OrderService
 	 * It is purely a status update and should only be used when the
 	 * administrator has independently verified fulfillment is complete.
 	 *
-	 * @param Order $order The order to mark as delivered (must be COMPLETED status)
+	 * @param Order $order The order to mark as delivered (must be COMPLETED or CLOSED status)
 	 *
 	 * @return Order The updated order with CLOSED status
 	 *
-	 * @throws LycheeLogicException If the order is not in COMPLETED status
+	 * @throws LycheeLogicException If the order is not in COMPLETED or CLOSED status
 	 */
 	public function markAsDelivered(Order $order): Order
 	{
 		if ($order->status !== PaymentStatusType::COMPLETED && $order->status !== PaymentStatusType::CLOSED) {
-			throw new LycheeLogicException('Order must be in completed status to be marked as delivered');
+			throw new LycheeLogicException('Order must be in completed or closed status to be marked as delivered');
 		}
 
 		$order->status = PaymentStatusType::CLOSED;
@@ -431,7 +431,7 @@ class OrderService
 	 * - download_link is NULL (no custom download URL provided)
 	 *
 	 * This query is used by:
-	 * - FullfillOrders maintenance task (identifies orders needing processing)
+	 * - FulfillOrders maintenance task (identifies orders needing processing)
 	 * - Admin dashboard (displays fulfillment statistics)
 	 * - Order management interface (shows pending fulfillments)
 	 *
@@ -480,7 +480,7 @@ class OrderService
 	 * - Verify customer actually has access to content
 	 * - Investigate why order was closed without fulfillment
 	 *
-	 * The FullfillOrders maintenance task processes both COMPLETED and CLOSED
+	 * The FulfillOrders maintenance task processes both COMPLETED and CLOSED
 	 * orders to ensure data consistency and customer satisfaction.
 	 *
 	 * @return Builder Query builder for CLOSED orders needing fulfillment
