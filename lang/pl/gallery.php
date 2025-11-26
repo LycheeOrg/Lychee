@@ -77,6 +77,7 @@ return [
             'share' => 'Udostępnij album',
             'embed' => 'Embed Album',
             'move' => 'Przenieś album',
+            'shop' => 'Shop Management',
             'danger' => 'STREFA RYZYKOWNA',
         ],
         'hero' => [

@@ -76,6 +76,7 @@ return [
             'share' => 'Поделиться альбомом',
             'embed' => 'Embed Album',
             'move' => 'Переместить альбом',
+            'shop' => 'Shop Management',
             'danger' => 'ОПАСНОЕ МЕСТО',
         ],
         'hero' => [
