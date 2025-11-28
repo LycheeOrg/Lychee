@@ -1,9 +1,9 @@
 <template>
 	<div class="flex items-center justify-between p-3 hover:bg-surface-50 dark:hover:bg-surface-950 transition-colors">
-		<div class="flex items-center gap-8 flex-grow">
+		<div class="flex items-center gap-8 grow">
 			<!-- Order and enabled status -->
 			<div class="flex items-center gap-4 justify-end">
-				<span class="text-sm font-semibold text-muted-color min-w-[2rem] ltr:text-right rtl:text-left">{{ rule.order }}</span>
+				<span class="text-sm font-semibold text-muted-color min-w-8 ltr:text-right rtl:text-left">{{ rule.order }}</span>
 				<div class="flex items-center">
 					<div :class="{ 'w-2 h-2 rounded-full': true, 'bg-green-500': rule.is_enabled, 'bg-red-500': !rule.is_enabled }"></div>
 				</div>
@@ -13,14 +13,14 @@
 						v-if="rule.is_photo_rule"
 						severity="success"
 						rounded
-						class="px-2 py-0.25 text-2xs ltr:mr-2 rtl:ml-2"
+						class="px-2 py-px text-2xs ltr:mr-2 rtl:ml-2"
 					/>
-					<Tag :value="$t('renamer.album')" v-if="rule.is_album_rule" severity="warn" rounded class="px-2 py-0.25 text-2xs" />
+					<Tag :value="$t('renamer.album')" v-if="rule.is_album_rule" severity="warn" rounded class="px-2 py-px text-2xs" />
 				</div>
 			</div>
 
 			<!-- Rule info -->
-			<div class="flex-grow flex-col justify-start">
+			<div class="grow flex-col justify-start">
 				<div class="flex items-center gap-4">
 					<h4 class="text-sm font-bold">{{ rule.rule }}</h4>
 					<Tag :value="rule.mode" severity="primary" rounded class="px-4 py-0.5" />
@@ -28,7 +28,7 @@
 				<p v-if="rule.description" class="text-xs text-muted-color mt-1">{{ rule.description }}</p>
 			</div>
 			<!-- This part might change later with more complex rules... -->
-			<div class="text-xs text-muted-color mt-1 text-center flex-grow" v-show="hasNeddle">
+			<div class="text-xs text-muted-color mt-1 text-center grow" v-show="hasNeddle">
 				<span class="font-medium mx-2">{{ $t("renamer.pattern_label") }}:</span>
 				<pre class="inline font-mono before:content-['`'] after:content-['`']">{{ rule.needle }}</pre>
 				<span class="mx-2 rtl:hidden">&xrarr;</span><span class="mx-2 ltr:hidden">&xlarr;</span

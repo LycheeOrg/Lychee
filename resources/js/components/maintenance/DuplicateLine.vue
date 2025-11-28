@@ -8,7 +8,7 @@
 				}"
 				@mouseover="hover(duplicate.url ?? '', duplicate.photo_title)"
 			>
-				<div class="flex-shrink">
+				<div class="shrink">
 					<i
 						class="pi pi-trash ltr:mr-2 rtl:ml-2"
 						:class="{

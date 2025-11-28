@@ -2,7 +2,7 @@
 	<Dialog v-model:visible="visible" header="Add New User Group" pt:root:class="border-none" modal :dismissable-mask="true" :closable="true">
 		<template #container="{ closeCallback }">
 			<form @submit.prevent="submitForm">
-				<div class="flex flex-col gap-4 bg-gradient-to-b from-bg-300 to-bg-400 relative w-full md:w-lg rounded-md text-muted-color p-9">
+				<div class="flex flex-col gap-4 bg-linear-to-b from-bg-300 to-bg-400 relative w-full md:w-lg rounded-md text-muted-color p-9">
 					<Message v-if="error" severity="danger">{{ error }}</Message>
 					<FloatLabel variant="on">
 						<InputText id="name" v-model="name" required />

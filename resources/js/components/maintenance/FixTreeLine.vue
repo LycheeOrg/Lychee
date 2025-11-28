@@ -63,7 +63,7 @@
 					<span
 						:class="{
 							' text-muted-color-emphasis': props.album.trimmedParentId === 'root',
-							'!text-danger-600 font-bold': !props.album.isExpectedParentId,
+							'text-danger-600! font-bold': !props.album.isExpectedParentId,
 							'font-bold text-primary-emphasis': isHoverParent,
 						}"
 						@mouseenter="setHoverParent"

@@ -5,7 +5,7 @@
 				<a href="#">
 					<h1 class="text-lg font-bold uppercase text-center roboto">
 						{{ initdata.landing_title }}
-						<span class="p-0 text-2xs block font-thin tracking-wide leading-[0]">{{ initdata.landing_subtitle }}</span>
+						<span class="p-0 text-2xs block font-thin tracking-wide leading-0">{{ initdata.landing_subtitle }}</span>
 					</h1>
 				</a>
 			</div>

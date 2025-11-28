@@ -45,5 +45,6 @@
 	<div id="app" class="w-full3">
         <app/>
 	</div>
+	<x-webshop />
 </body>
 </html>
