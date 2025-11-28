@@ -41,6 +41,7 @@ export const useCatalogStore = defineStore("catalog-store", {
 
 			const requestedAlbumId = this.albumId;
 			this._loadingAlbumId = requestedAlbumId;
+			this.isLoading = true;
 			return WebshopService.Catalog.getCatalog(this.albumId)
 				.then((catalogData) => {
 					this.catalog = catalogData.data;

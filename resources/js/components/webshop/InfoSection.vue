@@ -29,7 +29,7 @@
 			></div>
 			<div class="flex flex-col mb-2 gap-1">
 				<FloatLabel variant="on">
-					<InputText id="email" v-model="email" @updated="validate" :invalid="errors.email !== undefined" />
+					<InputText id="email" v-model="email" @update:modelValue="validate" :invalid="errors.email !== undefined" />
 					<label for="email">{{ $t("profile.login.email") }} <span class="text-red-500" v-if="userStore.isGuest">*</span></label>
 				</FloatLabel>
 				<span class="text-muted-color text-2xs"> {{ $t("webshop.infoSection.emailUsageNote") }} </span>

@@ -41,18 +41,19 @@ export function useStepOne(userStore: UserStore, orderManagementStore: OrderMana
 	}
 
 	function validate() {
+		// Required for guests
 		if (userStore.isGuest && !email.value) {
 			errors.value.email = trans("webshop.errors.emailRequired");
-		} else {
-			errors.value.email = undefined;
+			return;
 		}
 
 		// Simple email format validation: xxx@xxx.xxx
 		if (!isEmailValid()) {
 			errors.value.email = trans("webshop.errors.invalidEmail");
-		} else {
-			errors.value.email = undefined;
+			return;
 		}
+
+		errors.value.email = undefined;
 	}
 
 	return {

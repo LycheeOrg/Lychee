@@ -41,17 +41,22 @@ export const useShopManagementStore = defineStore("webshop-management-store", {
 			}
 			this.is_loading = true;
 
-			return ShopManagementService.options().then((response) => {
-				this.is_init = true;
-				this.is_loading = false;
+			return ShopManagementService.options()
+				.then((response) => {
+					this.is_init = true;
+					this.is_loading = false;
 
-				const data = response.data;
+					const data = response.data;
 
-				this.currency = data.currency;
-				this.default_price_cents = data.default_price_cents;
-				this.default_license = data.default_license;
-				this.default_size = data.default_size;
-			});
+					this.currency = data.currency;
+					this.default_price_cents = data.default_price_cents;
+					this.default_license = data.default_license;
+					this.default_size = data.default_size;
+				})
+				.catch((error) => {
+					this.is_loading = false;
+					throw error;
+				});
 		},
 	},
 });

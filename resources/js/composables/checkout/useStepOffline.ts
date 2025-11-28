@@ -13,9 +13,9 @@ export function useStepOffline(email: Ref<undefined | string>, router: Router, o
 				orderManagement.reset();
 			})
 			.catch((error) => {
-				if (error.response.status === 400) {
+				if (error.response?.status === 400) {
 					// Validation error
-					if (error.response.data.errors.email) {
+					if (error.response.data?.errors?.email) {
 						email.value = undefined;
 					}
 				}

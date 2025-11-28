@@ -186,11 +186,11 @@ const { initData } = storeToRefs(leftMenuStore);
 const edit = ref(false);
 
 function loadOrder() {
-	router.push({ name: "order", params: { orderId: orderId.value, transactionId: transactionId.value } });
 	WebshopService.Order.get(parseInt(orderId.value, 10), transactionId.value)
 		.then((response) => {
 			order.value = response.data;
 			loading.value = false;
+			router.push({ name: "order", params: { orderId: orderId.value, transactionId: transactionId.value } });
 		})
 		.catch(() => {
 			order.value = undefined;
