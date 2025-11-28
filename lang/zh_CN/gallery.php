@@ -77,6 +77,7 @@ return [
             'share' => '分享相册',
             'embed' => 'Embed Album',
             'move' => '移动相册',
+            'shop' => 'Shop Management',
             'danger' => '危险操作',
         ],
         'hero' => [
