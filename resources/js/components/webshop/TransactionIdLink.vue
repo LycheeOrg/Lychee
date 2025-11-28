@@ -7,7 +7,7 @@
 		}"
 		v-tooltip="props.order.transaction_id"
 		@click.prevent="openOrder(props.order)"
-		>{{ order.transaction_id.slice(0, 12) }}</a
+		>{{ props.order.transaction_id.slice(0, 12) }}</a
 	>
 	<i
 		v-if="props.order.status === 'closed'"

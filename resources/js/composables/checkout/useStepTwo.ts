@@ -187,7 +187,7 @@ export function useStepTwo(
 	}
 
 	function handleError(error: AxiosError) {
-		if (error.status === 400) {
+		if (error.response?.status === 400) {
 			toast.add({
 				severity: "error",
 				summary: trans("webshop.useStepTwo.badRequest"),
