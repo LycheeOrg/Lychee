@@ -83,6 +83,8 @@ final readonly class RouteCacheManager
 			'api/v2/Maintenance::searchDuplicates' => false,
 			'api/v2/Maintenance::statisticsIntegrity' => false,
 			'api/v2/Maintenance::missingPalettes' => false,
+			'api/v2/Maintenance::oldOrders' => false,
+			'api/v2/Maintenance::fulfillOrders' => false,
 
 			'api/v2/Map' => new RouteCacheConfig(tag: CacheTag::GALLERY, user_dependant: true, extra: [RequestAttribute::ALBUM_ID_ATTRIBUTE]),
 			'api/v2/Map::provider' => new RouteCacheConfig(tag: CacheTag::SETTINGS),
@@ -137,7 +139,7 @@ final readonly class RouteCacheManager
 			'api/v2/Shop' => false,
 			'api/v2/Shop/Basket' => false,
 			'api/v2/Shop/Checkout/Finalize/{provider}/{transaction_id}' => false,
-			'api/v2/Shop/Checkout/Cancel/{provider}/{transaction_id}' => false,
+			'api/v2/Shop/Checkout/Cancel/{transaction_id}' => false,
 
 			'api/v2/Shop/Checkout/Options' => new RouteCacheConfig(tag: CacheTag::SETTINGS, user_dependant: false),
 			'api/v2/Shop/Management/Options' => new RouteCacheConfig(tag: CacheTag::SETTINGS, user_dependant: true),

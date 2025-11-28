@@ -127,5 +127,5 @@ return [
 	 | This is a feature flags to avoid shipping webshop related code
 	 | when the webshop is not ready yet.
 	 */
-	'enable-webshop' => (bool) env('WEBSHOP_ENABLED', false),
+	'webshop' => (bool) env('WEBSHOP_ENABLED', false),
 ];

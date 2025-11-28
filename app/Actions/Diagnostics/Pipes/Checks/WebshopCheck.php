@@ -8,6 +8,7 @@
 
 namespace App\Actions\Diagnostics\Pipes\Checks;
 
+use App\Actions\Shop\OrderService;
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
 use App\Enum\OmnipayProviderType;
@@ -22,6 +23,7 @@ class WebshopCheck implements DiagnosticPipe
 {
 	public function __construct(
 		private OmnipayFactory $factory,
+		private OrderService $order_service,
 	) {
 	}
 
@@ -36,6 +38,14 @@ class WebshopCheck implements DiagnosticPipe
 
 		if (!Configs::getValueAsBool('webshop_enabled')) {
 			return $next($data);
+		}
+		// @codeCoverageIgnoreStart
+		if (config('omnipay.testMode', false) === true) {
+			$data[] = DiagnosticData::warn(
+				'Webshop is running in test mode.',
+				self::class,
+				['This means that payments won\'t be executed.', 'Users may use it to get free content.']
+			);
 		}
 
 		if (config('app.env', 'production') !== 'production') {
@@ -60,6 +70,25 @@ class WebshopCheck implements DiagnosticPipe
 				self::class
 			);
 		}
+
+		$number_broken_order = $this->order_service->selectClosedOrderNeedingFulfillmentQuery()->count();
+		if ($number_broken_order > 0) {
+			$data[] = DiagnosticData::error(
+				'There are ' . $number_broken_order . ' closed orders with items that have no associated download link or size variant.',
+				self::class,
+				['Please check and assign the needed materials.']
+			);
+		}
+
+		$number_waiting_order = $this->order_service->selectCompleteOrderNeedingFulfillmentQuery()->count();
+		if ($number_waiting_order > 0) {
+			$data[] = DiagnosticData::warn(
+				'There are ' . $number_waiting_order . ' completed orders which require your attention.',
+				self::class,
+				['Please check and fulfill them in order to mark them as closed.']
+			);
+		}
+		// @codeCoverageIgnoreEnd
 
 		return $next($data);
 	}

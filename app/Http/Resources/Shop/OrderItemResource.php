@@ -29,6 +29,7 @@ class OrderItemResource extends Data
 		public string $price,
 		public PurchasableSizeVariantType $size_variant_type,
 		public ?string $item_notes,
+		public ?string $content_url,
 	) {
 	}
 
@@ -50,6 +51,7 @@ class OrderItemResource extends Data
 			price: $money_service->format($item->price_cents),
 			size_variant_type: $item->size_variant_type,
 			item_notes: $item->item_notes,
+			content_url: $item->content_url,
 		);
 	}
 }

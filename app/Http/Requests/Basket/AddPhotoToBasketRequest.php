@@ -52,8 +52,9 @@ class AddPhotoToBasketRequest extends BaseBasketRequest
 	 */
 	public function authorize(): bool
 	{
+		// Validate that the order support new additions
 		// Validate that the photo is in the specified album
-		return $this->photo->albums()->where('id', $this->album_id)->exists();
+		return $this->order?->canAddItems() === true && $this->photo->albums()->where('id', $this->album_id)->exists();
 	}
 
 	/**

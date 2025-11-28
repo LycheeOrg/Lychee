@@ -100,6 +100,10 @@ class ConfigIntegrity
 		'webshop_default_price_cents',
 		'webshop_default_license',
 		'webshop_default_size',
+		'webshop_offline',
+		'webshop_lycheeorg_disclaimer_enabled',
+		'webshop_auto_fulfill_enabled',
+		'webshop_manual_fulfill_enabled',
 	];
 
 	/**

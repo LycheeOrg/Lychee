@@ -10,12 +10,17 @@ namespace App\Http\Controllers\Shop;
 
 use App\Actions\Shop\CheckoutService;
 use App\Enum\PaymentStatusType;
+use App\Events\OrderCompleted;
+use App\Http\Requests\Checkout\CancelRequest;
 use App\Http\Requests\Checkout\CreateSessionRequest;
 use App\Http\Requests\Checkout\FinalizeRequest;
+use App\Http\Requests\Checkout\OfflineRequest;
 use App\Http\Requests\Checkout\ProcessRequest;
 use App\Http\Resources\Shop\CheckoutOptionResource;
 use App\Http\Resources\Shop\CheckoutResource;
 use App\Http\Resources\Shop\OrderResource;
+use App\Models\Configs;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\URL;
 
@@ -82,7 +87,7 @@ class CheckoutController extends Controller
 
 		// Generate return URLs for the payment provider
 		$return_url = URL::route('shop.checkout.return', ['provider' => $order->provider->value, 'transaction_id' => $order->transaction_id]);
-		$cancel_url = URL::route('shop.checkout.cancel', ['provider' => $order->provider->value, 'transaction_id' => $order->transaction_id]);
+		$cancel_url = URL::route('shop.checkout.cancel', ['transaction_id' => $order->transaction_id]);
 
 		// Process the payment
 		$result = $this->checkout_service->processPayment(
@@ -91,6 +96,11 @@ class CheckoutController extends Controller
 			$cancel_url,
 			$request->additional_data ?? []
 		);
+
+		// If we have a success directly without redirection mark order as completed
+		if ($result->is_success && !$result->is_redirect) {
+			OrderCompleted::dispatchIf(Configs::getValueAsBool('webshop_auto_fulfill_enabled'), $order->id);
+		}
 
 		return new CheckoutResource(
 			is_success: $result->is_success,
@@ -105,33 +115,28 @@ class CheckoutController extends Controller
 	 *
 	 * @param FinalizeRequest $request The request containing return data from the payment provider
 	 *
-	 * @return CheckoutResource The finalization response
+	 * @return RedirectResponse The redirection response
 	 */
-	public function finalize(FinalizeRequest $request, string $provider, string $transaction_id): CheckoutResource
+	public function finalize(FinalizeRequest $request, string $provider, string $transaction_id): RedirectResponse
 	{
 		/** @disregard P1013 */
-		$order = $this->checkout_service->handlePaymentReturn($request->basket(), $request->all(), $request->provider_type());
+		$order = $this->checkout_service->handlePaymentReturn($request->basket(), $request->provider_type());
 
 		if ($order->status !== PaymentStatusType::COMPLETED) {
-			return new CheckoutResource(
-				is_success: false,
-				message: 'Order failed.',
-			);
+			return redirect()->route('shop.checkout.failed');
 		}
 
-		return new CheckoutResource(
-			is_success: true,
-			message: 'Payment completed successfully',
-			order: OrderResource::fromModel($order),
-		);
+		OrderCompleted::dispatchIf(Configs::getValueAsBool('webshop_auto_fulfill_enabled'), $order->id);
+
+		return redirect()->route('shop.checkout.complete');
 	}
 
 	/**
 	 * Handle cancellation of the payment process.
 	 *
-	 * @return CheckoutResource The cancellation response
+	 * @return RedirectResponse The cancellation response
 	 */
-	public function cancel(FinalizeRequest $request): CheckoutResource
+	public function cancel(CancelRequest $request): RedirectResponse
 	{
 		$order = $request->basket();
 
@@ -139,9 +144,40 @@ class CheckoutController extends Controller
 		$order->status = PaymentStatusType::CANCELLED;
 		$order->save();
 
+		return redirect()->route('shop.checkout.cancelled');
+	}
+
+	/**
+	 * Handle offline order completion.
+	 *
+	 * @param OfflineRequest $request
+	 *
+	 * @return CheckoutResource
+	 */
+	public function offline(OfflineRequest $request): CheckoutResource
+	{
+		$order = $request->basket();
+
+		// Add email if provided
+		if ($request->email !== null) {
+			$order->email = $request->email;
+		}
+
+		if ($order->email === null || $order->email === '') {
+			return new CheckoutResource(
+				is_success: false,
+				message: 'Email is required for offline orders.',
+				order: OrderResource::fromModel($order),
+			);
+		}
+
+		// Mark the order as completed (offline)
+		$order->status = PaymentStatusType::OFFLINE;
+		$order->save();
+
 		return new CheckoutResource(
 			is_success: true,
-			message: 'Payment was canceled by the user',
+			message: 'Order marked as completed (offline)',
 			order: OrderResource::fromModel($order),
 		);
 	}
