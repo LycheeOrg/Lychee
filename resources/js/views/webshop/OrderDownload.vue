@@ -29,7 +29,7 @@
 						@click="loadOrder"
 						:label="$t('webshop.orderDownload.loadOrder')"
 						:disabled="!transactionId || transactionId.trim() === ''"
-						class="w-full"
+						class="w-full border-none"
 					/>
 				</div>
 			</div>
