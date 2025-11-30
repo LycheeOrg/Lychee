@@ -105,7 +105,7 @@ class CheckoutController extends Controller
 
 		$order->refresh();
 		$redirect_url = $result->redirect_url;
-		if (!$result->is_redirect) {
+		if ($result->is_redirect === false) {
 			// If this is not a redirect, the url may have changed because the transaction id got updated.
 			$redirect_url = URL::route('shop.checkout.return', ['provider' => $order->provider->value, 'transaction_id' => $order->transaction_id]);
 		}
@@ -113,7 +113,7 @@ class CheckoutController extends Controller
 		return new CheckoutResource(
 			is_success: $result->is_success,
 			is_redirect: $result->is_redirect,
-			redirect_url: $$redirect_url,
+			redirect_url: $redirect_url,
 			message: $result->message ?? '',
 			order: OrderResource::fromModel($order),
 		);
