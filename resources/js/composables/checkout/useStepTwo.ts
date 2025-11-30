@@ -114,6 +114,12 @@ export function useStepTwo(
 		const { token, error } = await mollie.value.createToken();
 		if (error) {
 			// Something wrong happened while creating the token. Handle this situation gracefully.
+			toast.add({
+				severity: "error",
+				summary: trans("toasts.error"),
+				detail: trans("Something went wrong with Mollie."),
+				life: 5000,
+			});
 			return;
 		}
 
@@ -162,25 +168,28 @@ export function useStepTwo(
 			return;
 		}
 
-		axios.get(response.data.redirect_url!).then((data: AxiosResponse<App.Http.Resources.Shop.CheckoutResource>) => {
-			console.log("Finalization completed:", data);
-			if (data.data.is_success && data.data.order) {
-				toast.add({
-					severity: "success",
-					summary: trans("webshop.useStepTwo.success"),
-					detail: trans("webshop.useStepTwo.orderFinalizedSuccess"),
-					life: 3000,
-				});
-				orderManagement.order = data.data.order;
-			} else {
-				toast.add({
-					severity: "error",
-					summary: trans("webshop.useStepTwo.error"),
-					detail: trans("webshop.useStepTwo.orderFinalizationFailed"),
-					life: 5000,
-				});
-			}
-		});
+		axios
+			.get(response.data.redirect_url!)
+			.then((data: AxiosResponse<App.Http.Resources.Shop.CheckoutResource>) => {
+				console.log("Finalization completed:", data);
+				if (data.data.is_success && data.data.order) {
+					toast.add({
+						severity: "success",
+						summary: trans("webshop.useStepTwo.success"),
+						detail: trans("webshop.useStepTwo.orderFinalizedSuccess"),
+						life: 3000,
+					});
+					orderManagement.order = data.data.order;
+				} else {
+					toast.add({
+						severity: "error",
+						summary: trans("webshop.useStepTwo.error"),
+						detail: trans("webshop.useStepTwo.orderFinalizationFailed"),
+						life: 5000,
+					});
+				}
+			})
+			.catch(handleError);
 		// https://lychee.test/api/v2/Shop/Checkout/Finalize/Dummy/37b8f4bc-a3a6-4119-bca9-5865a167505c
 		step.value = 3;
 		return;

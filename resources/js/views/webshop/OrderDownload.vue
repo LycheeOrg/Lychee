@@ -212,6 +212,7 @@ function downloadItem(contentUrl: string) {
 	// Create a temporary anchor element to trigger download
 	const link = document.createElement("a");
 	link.href = contentUrl;
+	link.rel = "noopener noreferrer";
 	link.target = "_blank";
 	link.download = ""; // This will use the filename from the server
 	document.body.appendChild(link);
@@ -220,15 +221,37 @@ function downloadItem(contentUrl: string) {
 }
 
 function copyToClipboard() {
-	toast.add({
-		severity: "success",
-		summary: trans("webshop.orderDownload.copiedToClipboard"),
-		detail: trans("webshop.orderDownload.orderLinkCopied"),
-		life: 3000,
-	});
-	navigator.clipboard.writeText(
-		Constants.BASE_URL + router.resolve({ name: "order", params: { orderId: order.value?.id, transactionId: order.value?.transaction_id } }).href,
-	);
+	if (navigator.clipboard?.writeText) {
+		navigator.clipboard
+			.writeText(
+				Constants.BASE_URL +
+					router.resolve({ name: "order", params: { orderId: order.value?.id, transactionId: order.value?.transaction_id } }).href,
+			)
+			.then(() => {
+				toast.add({
+					severity: "success",
+					summary: trans("webshop.orderDownload.copiedToClipboard"),
+					detail: trans("webshop.orderDownload.orderLinkCopied"),
+					life: 3000,
+				});
+			})
+			.catch(() => {
+				// Fallback if clipboard write fails
+				toast.add({
+					severity: "error",
+					summary: trans("toast.error"),
+					detail: "Could not copy to clipboard.",
+					life: 3000,
+				});
+			});
+	} else {
+		toast.add({
+			severity: "error",
+			summary: trans("toasts.error"),
+			detail: trans("Could not copy to clipboard."),
+			life: 3000,
+		});
+	}
 }
 
 const itemsToUpdate = ref<ItemLink[]>([]);
