@@ -182,12 +182,13 @@ class CheckoutFinalizeOrCancelControllerTest extends BaseCheckoutControllerTest
 			'is_success' => true,
 		]);
 
-		// For DUMMY provider, payment should complete immediately without redirect
-		if (!$process_response->json('is_redirect')) {
-			// Verify order status was updated
-			$this->test_order->refresh();
-			$this->assertEquals(PaymentStatusType::COMPLETED, $this->test_order->status);
-		}
+		// Verify order status was updated
+		$this->test_order->refresh();
+		$this->assertEquals(PaymentStatusType::PROCESSING, $this->test_order->status);
+
+		$response = $this->get('/api/v2/Shop/Checkout/Finalize/Dummy/' . $this->test_order->transaction_id);
+		$this->assertRedirect($response);
+		$response->assertRedirect(route('shop.checkout.complete'));
 	}
 
 	/**

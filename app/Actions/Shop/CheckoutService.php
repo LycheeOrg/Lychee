@@ -104,7 +104,6 @@ class CheckoutService
 					redirect_url: $redirect_url,
 				);
 			} elseif ($response->isSuccessful()) {
-
 				if ($response instanceof DummyResponse) {
 					// We need those metadata for later completion
 					$metadata = [];

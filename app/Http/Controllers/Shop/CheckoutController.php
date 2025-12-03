@@ -100,6 +100,7 @@ class CheckoutController extends Controller
 		if ($result->is_success && !$result->is_redirect) {
 			// This is a success we now need to complete the order.
 			$order->refresh();
+
 			return new CheckoutResource(
 				is_success: true,
 				is_redirect: false,
