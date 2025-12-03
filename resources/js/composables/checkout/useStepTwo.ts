@@ -59,10 +59,11 @@ export function useStepTwo(
 
 	function isCardNumberValid(): boolean {
 		const number = cardDetails.value.number.replace(/\s+/g, "");
+		const shouldDoubleEven = number.length % 2;
 		let sum = 0;
 		for (let i = 0; i < number.length; i++) {
 			let intVal = parseInt(number.charAt(i));
-			if (i % 2 === 0) {
+			if (i % 2 !== shouldDoubleEven) {
 				intVal *= 2;
 				if (intVal > 9) {
 					intVal = 1 + (intVal % 10);
