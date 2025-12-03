@@ -171,7 +171,7 @@ const toast = useToast();
 const { email, options, loadCheckoutOptions, loadEmailForUser, isStepOneValid } = useStepOne(userStore, orderStore);
 const { stepToNumber, steps } = useSteps(options);
 const { mollie } = useMollie(options, toast);
-const { processPayment, isStepTwoValid, canProcessPayment } = useStepTwo(email, orderStore, steps, toast, mollie);
+const { processPayment, isStepTwoValid, canProcessPayment } = useStepTwo(email, orderStore, toast, mollie);
 
 const { markAsOffline } = useStepOffline(email, router, orderStore);
 

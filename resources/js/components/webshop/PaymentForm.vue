@@ -36,7 +36,6 @@
 </template>
 <script setup lang="ts">
 import { useStepOne } from "@/composables/checkout/useStepOne";
-import { useSteps } from "@/composables/checkout/useSteps";
 import { useStepTwo } from "@/composables/checkout/useStepTwo";
 import { useOrderManagementStore } from "@/stores/OrderManagement";
 import { useUserStore } from "@/stores/UserState";
@@ -54,9 +53,8 @@ const orderStore = useOrderManagementStore();
 const toast = useToast();
 
 const { email, options } = useStepOne(userStore, orderStore);
-const { steps } = useSteps(options);
 const { mollie, mollieComponent, mountMollie } = useMollie(options, toast);
-const { canProcessPayment, createSession, selectedProvider, updateCardDetails, getFakeNumber } = useStepTwo(email, orderStore, steps, toast, mollie);
+const { canProcessPayment, createSession, selectedProvider, updateCardDetails, getFakeNumber } = useStepTwo(email, orderStore, toast, mollie);
 
 watch(
 	() => selectedProvider.value,
