@@ -41,7 +41,7 @@
 				</StepPanel>
 				<template v-if="!options.is_offline">
 					<StepPanel :value="2">
-						<div div class="grid grid-cols-2 gap-4 mb-4">
+						<div class="grid grid-cols-2 gap-4 mb-4">
 							<OrderSummary />
 							<PaymentInProgress v-if="order?.status === 'processing'" />
 							<PaymentForm v-else />
@@ -247,7 +247,6 @@ watch(
 	() => props.step,
 	(newStep) => {
 		steps.value = stepToNumber(newStep);
-		console.log("Step changed to", newStep, "->", steps.value);
 	},
 );
 </script>

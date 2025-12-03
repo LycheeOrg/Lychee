@@ -75,6 +75,15 @@ export const useOrderManagementStore = defineStore("basket-management-store", {
 			await WebshopService.Order.clearBasket();
 			return this.load();
 		},
+		async forget(): Promise<void> {
+			// Guard for SE
+			if (useLycheeStateStore().is_se_enabled !== true) {
+				return Promise.resolve();
+			}
+			this.reset();
+			await WebshopService.Order.forget();
+			return Promise.resolve();
+		},
 	},
 	getters: {
 		hasItems(): boolean {
