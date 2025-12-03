@@ -20,6 +20,7 @@ class CheckoutResource extends Data
 		public readonly bool $is_success,
 		public readonly bool $is_redirect = false,
 		public readonly ?string $redirect_url = null,
+		public readonly ?string $complete_url = null,
 		public readonly string $message = '',
 		public readonly ?OrderResource $order = null,
 	) {

@@ -97,23 +97,22 @@ class CheckoutController extends Controller
 			$request->additional_data ?? []
 		);
 
-		// If we have a success directly without redirection mark order as completed
-		// if ($result->is_success && !$result->is_redirect) {
-		// 	$order->refresh();
-		// 	OrderCompleted::dispatchIf(Configs::getValueAsBool('webshop_auto_fulfill_enabled'), $order->id);
-		// }
-
-		$order->refresh();
-		$redirect_url = $result->redirect_url;
-		if ($result->is_redirect === false) {
-			// If this is not a redirect, the url may have changed because the transaction id got updated.
-			$redirect_url = URL::route('shop.checkout.return', ['provider' => $order->provider->value, 'transaction_id' => $order->transaction_id]);
+		if ($result->is_success && !$result->is_redirect) {
+			// This is a success we now need to complete the order.
+			$order->refresh();
+			return new CheckoutResource(
+				is_success: true,
+				is_redirect: false,
+				complete_url: URL::route('shop.checkout.return', ['provider' => $order->provider->value, 'transaction_id' => $order->transaction_id]),
+				message: '',
+				order: OrderResource::fromModel($order),
+			);
 		}
 
 		return new CheckoutResource(
 			is_success: $result->is_success,
 			is_redirect: $result->is_redirect,
-			redirect_url: $redirect_url,
+			redirect_url: $result->redirect_url,
 			message: $result->message ?? '',
 			order: OrderResource::fromModel($order),
 		);
