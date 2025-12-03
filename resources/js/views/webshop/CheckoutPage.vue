@@ -41,7 +41,7 @@
 				</StepPanel>
 				<template v-if="!options.is_offline">
 					<StepPanel :value="2">
-						<div div class="grid grid-cols-2 gap-4 mb-4">
+						<div class="grid grid-cols-2 gap-4 mb-4">
 							<OrderSummary />
 							<PaymentInProgress v-if="order?.status === 'processing'" />
 							<PaymentForm v-else />
@@ -171,7 +171,7 @@ const toast = useToast();
 const { email, options, loadCheckoutOptions, loadEmailForUser, isStepOneValid } = useStepOne(userStore, orderStore);
 const { stepToNumber, steps } = useSteps(options);
 const { mollie } = useMollie(options, toast);
-const { processPayment, isStepTwoValid } = useStepTwo(email, orderStore, steps, toast, mollie);
+const { processPayment, isStepTwoValid, canProcessPayment } = useStepTwo(email, orderStore, toast, mollie);
 
 const { markAsOffline } = useStepOffline(email, router, orderStore);
 
@@ -196,6 +196,8 @@ function openOrderPage() {
 }
 
 function goToInfo() {
+	canProcessPayment.value = false;
+	order.value!.provider = null;
 	router.push({ name: "checkout", params: { step: "info" } });
 }
 
@@ -245,7 +247,6 @@ watch(
 	() => props.step,
 	(newStep) => {
 		steps.value = stepToNumber(newStep);
-		console.log("Step changed to", newStep, "->", steps.value);
 	},
 );
 </script>

@@ -271,6 +271,8 @@ declare namespace App.Http.Resources.Embed {
 		id: string;
 		title: string | null;
 		description: string | null;
+		is_video: boolean;
+		duration: string | null;
 		size_variants: App.Http.Resources.Models.SizeVariantsResouce;
 		exif: { [key: string]: string | null };
 	};
@@ -908,6 +910,7 @@ declare namespace App.Http.Resources.Shop {
 		is_success: boolean;
 		is_redirect: boolean;
 		redirect_url: string | null;
+		complete_url: string | null;
 		message: string;
 		order: App.Http.Resources.Shop.OrderResource | null;
 	};

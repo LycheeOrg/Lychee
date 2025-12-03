@@ -1,6 +1,6 @@
 import WebshopService, { CardDetails } from "@/services/webshop-service";
 import { OrderManagementStateStore } from "@/stores/OrderManagement";
-import axios, { AxiosError, AxiosResponse } from "axios";
+import { AxiosError, AxiosResponse } from "axios";
 import { ToastServiceMethods } from "primevue/toastservice";
 import { Ref, ref } from "vue";
 import { trans } from "laravel-vue-i18n";
@@ -18,7 +18,6 @@ const cardDetails = ref<CardDetails>({
 export function useStepTwo(
 	email: Ref<undefined | string>,
 	orderManagement: OrderManagementStateStore,
-	step: Ref<number>,
 	toast: ToastServiceMethods,
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	mollie: Ref<any | undefined>,
@@ -114,6 +113,12 @@ export function useStepTwo(
 		const { token, error } = await mollie.value.createToken();
 		if (error) {
 			// Something wrong happened while creating the token. Handle this situation gracefully.
+			toast.add({
+				severity: "error",
+				summary: trans("toasts.error"),
+				detail: trans("Something went wrong with Mollie."),
+				life: 5000,
+			});
 			return;
 		}
 
@@ -152,7 +157,7 @@ export function useStepTwo(
 			return;
 		}
 
-		if (response.data.redirect_url === null || response.data.redirect_url === "") {
+		if (response.data.complete_url === null || response.data.complete_url === "") {
 			toast.add({
 				severity: "error",
 				summary: trans("webshop.useStepTwo.error"),
@@ -162,27 +167,7 @@ export function useStepTwo(
 			return;
 		}
 
-		axios.get(response.data.redirect_url!).then((data: AxiosResponse<App.Http.Resources.Shop.CheckoutResource>) => {
-			console.log("Finalization completed:", data);
-			if (data.data.is_success && data.data.order) {
-				toast.add({
-					severity: "success",
-					summary: trans("webshop.useStepTwo.success"),
-					detail: trans("webshop.useStepTwo.orderFinalizedSuccess"),
-					life: 3000,
-				});
-				orderManagement.order = data.data.order;
-			} else {
-				toast.add({
-					severity: "error",
-					summary: trans("webshop.useStepTwo.error"),
-					detail: trans("webshop.useStepTwo.orderFinalizationFailed"),
-					life: 5000,
-				});
-			}
-		});
-		// https://lychee.test/api/v2/Shop/Checkout/Finalize/Dummy/37b8f4bc-a3a6-4119-bca9-5865a167505c
-		step.value = 3;
+		window.location.href = response.data.complete_url;
 		return;
 	}
 

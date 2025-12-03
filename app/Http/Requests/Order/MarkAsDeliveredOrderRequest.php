@@ -38,7 +38,8 @@ class MarkAsDeliveredOrderRequest extends BaseApiRequest
 		return count(
 			array_diff(
 				array_column($this->items, 'id'),
-				$this->order->items->pluck('id')->toArray())
+				$this->order->items->pluck('id')->toArray()
+			)
 		) === 0;
 	}
 
@@ -65,7 +66,9 @@ class MarkAsDeliveredOrderRequest extends BaseApiRequest
 		/** @var int $order_id */
 		$order_id = intval($values['order_id'] ?? null);
 		$this->order = Order::query()
-			->where('status', '=', PaymentStatusType::COMPLETED)
+			->where(fn($query) => $query
+				->where('status', '=', PaymentStatusType::COMPLETED)
+				->orWhere('status', '=', PaymentStatusType::CLOSED))
 			->where('id', '=', $order_id)
 			->firstOrFail();
 

@@ -20,12 +20,13 @@
 			<div
 				class="text-sm text-muted-color-emphasis mb-4"
 				v-else-if="userStore.user?.email"
-				v-html="sprintf(trans('webshop.infoSection.loggedInWithEmail'), userStore.user?.username, userStore.user.email)"
+				v-html="sprintf(trans('webshop.infoSection.loggedInWithEmail'), strip(userStore.user?.username), strip(userStore.user.email))"
 			></div>
+
 			<div
 				class="text-sm text-muted-color-emphasis mb-4"
 				v-else
-				v-html="sprintf(trans('webshop.infoSection.loggedInWithoutEmail'), userStore.user?.username)"
+				v-html="sprintf(trans('webshop.infoSection.loggedInWithoutEmail'), strip(userStore.user?.username))"
 			></div>
 			<div class="flex flex-col mb-2 gap-1">
 				<FloatLabel variant="on">
@@ -63,5 +64,13 @@ const userStore = useUserStore();
 const router = useRouter();
 const orderManagementStore = useOrderManagementStore();
 
+function strip(html: string | null | undefined): string | null | undefined {
+	if (!html) {
+		return html;
+	}
+
+	const doc = new DOMParser().parseFromString(html, "text/html");
+	return doc.body.textContent || "";
+}
 const { email, options, errors, validate, consentGiven } = useStepOne(userStore, orderManagementStore);
 </script>

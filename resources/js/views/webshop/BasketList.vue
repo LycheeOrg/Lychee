@@ -78,17 +78,20 @@ import Button from "primevue/button";
 import Panel from "primevue/panel";
 import Toolbar from "primevue/toolbar";
 import { onMounted } from "vue";
+import { useRouter } from "vue-router";
 
 const lycheeStateStore = useLycheeStateStore();
 const orderStore = useOrderManagementStore();
 const { order } = storeToRefs(orderStore);
+const router = useRouter();
 
 function removeItem(itemId: number) {
 	orderStore.removeItem(itemId);
 }
 
 function removeBasket() {
-	orderStore.clear();
+	orderStore.forget();
+	router.push({ name: "gallery" });
 }
 
 onMounted(async () => {

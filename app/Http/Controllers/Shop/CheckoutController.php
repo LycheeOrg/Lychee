@@ -97,9 +97,16 @@ class CheckoutController extends Controller
 			$request->additional_data ?? []
 		);
 
-		// If we have a success directly without redirection mark order as completed
 		if ($result->is_success && !$result->is_redirect) {
-			OrderCompleted::dispatchIf(Configs::getValueAsBool('webshop_auto_fulfill_enabled'), $order->id);
+			// This is a success we now need to complete the order.
+			$order->refresh();
+			return new CheckoutResource(
+				is_success: true,
+				is_redirect: false,
+				complete_url: URL::route('shop.checkout.return', ['provider' => $order->provider->value, 'transaction_id' => $order->transaction_id]),
+				message: '',
+				order: OrderResource::fromModel($order),
+			);
 		}
 
 		return new CheckoutResource(
@@ -107,6 +114,7 @@ class CheckoutController extends Controller
 			is_redirect: $result->is_redirect,
 			redirect_url: $result->redirect_url,
 			message: $result->message ?? '',
+			order: OrderResource::fromModel($order),
 		);
 	}
 
