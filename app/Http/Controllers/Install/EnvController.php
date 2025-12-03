@@ -30,7 +30,7 @@ class EnvController extends Controller
 			if ($request->has('envConfig')) {
 				// @codeCoverageIgnoreStart
 				// We are not testing this as this would break the tests.
-				$env = str_replace("\r", '', $request->get('envConfig'));
+				$env = str_replace("\r", '', $request->attributes->get('envConfig'));
 				file_put_contents(base_path('.env'), $env, LOCK_EX);
 				$exists = true;
 			// @codeCoverageIgnoreEnd
