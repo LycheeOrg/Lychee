@@ -10,7 +10,7 @@ namespace App\DTO;
 
 use App\Exceptions\Internal\LycheeInvalidArgumentException;
 
-class Version
+class Version implements \Stringable
 {
 	public function __construct(
 		public int $major,

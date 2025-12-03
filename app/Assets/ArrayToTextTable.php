@@ -27,7 +27,7 @@ use Safe\Exceptions\PcreException;
 use function Safe\mb_internal_encoding;
 use function Safe\preg_match_all;
 
-class ArrayToTextTable
+class ArrayToTextTable implements \Stringable
 {
 	public const ALIGNLEFT = STR_PAD_RIGHT;
 	public const ALIGNCENTER = STR_PAD_BOTH;
