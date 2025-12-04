@@ -129,7 +129,8 @@ class CheckoutServiceTest extends AbstractTestCase
 		$this->assertInstanceOf(CheckoutDTO::class, $result);
 		$this->assertTrue($result->is_success);
 		$this->assertFalse($result->is_redirect);
-		$this->assertEquals('https://example.com/return', $result->redirect_url);
+		$this->assertEquals('', $result->message);
+		$this->assertNull($result->redirect_url);
 	}
 
 	/**

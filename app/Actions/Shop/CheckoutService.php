@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Session;
 use Omnipay\Common\Exception\InvalidCreditCardException;
 use Omnipay\Common\Message\RedirectResponseInterface;
 use Omnipay\Common\Message\ResponseInterface;
+use Omnipay\Dummy\Message\Response as DummyResponse;
 use Omnipay\Mollie\Message\Response\FetchTransactionResponse;
 
 /**
@@ -103,13 +104,21 @@ class CheckoutService
 					redirect_url: $redirect_url,
 				);
 			} elseif ($response->isSuccessful()) {
+				if ($response instanceof DummyResponse) {
+					// We need those metadata for later completion
+					$metadata = [];
+					$reference = $response->getTransactionReference();
+					$metadata['transactionReference'] = $reference;
+					Session::put('metadata.' . $order->id, $metadata);
+				}
+
 				// Payment was successful
-				$this->completePayment($order, $response);
+				$order->transaction_id = $response->getTransactionReference();
+				$order->save();
 
 				return new CheckoutDTO(
 					is_success: true,
 					is_redirect: false,
-					redirect_url: $return_url,
 				);
 			} else {
 				// Payment failed
@@ -122,8 +131,6 @@ class CheckoutService
 				);
 			}
 		} catch (\Exception|InvalidCreditCardException $e) {
-			// dd($e);
-			// TODO: later do better error management
 			Log::error('Error processing payment: ' . $e->getMessage(), [
 				'order_id' => $order->id,
 				'transaction_id' => $order->transaction_id,
