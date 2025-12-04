@@ -103,6 +103,19 @@ const MaintenanceService = {
 	statisticsIntegrityCheckDo(): Promise<AxiosResponse> {
 		return axios.post(`${Constants.getApiUrl()}Maintenance::statisticsIntegrity`, {});
 	},
+
+	oldOrdersCheck(): Promise<AxiosResponse<number>> {
+		return axios.get(`${Constants.getApiUrl()}Maintenance::oldOrders`, { data: {} });
+	},
+	oldOrdersDo(): Promise<AxiosResponse> {
+		return axios.post(`${Constants.getApiUrl()}Maintenance::oldOrders`, {});
+	},
+	fulfillOrdersCheck(): Promise<AxiosResponse<number>> {
+		return axios.get(`${Constants.getApiUrl()}Maintenance::fulfillOrders`, { data: {} });
+	},
+	fulfillOrdersDo(): Promise<AxiosResponse> {
+		return axios.post(`${Constants.getApiUrl()}Maintenance::fulfillOrders`, {});
+	},
 };
 
 export default MaintenanceService;

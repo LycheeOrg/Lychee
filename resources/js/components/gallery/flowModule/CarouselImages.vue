@@ -1,6 +1,6 @@
 <template>
 	<div class="w-full bg-surface-800 overflow-x-scroll flex pt-1 gap-1">
-		<div v-for="(photo, idx) in photos" :key="`album-${props.albumId}-photo-${photo.id}`" class="block shrink-0 grow-1 relative">
+		<div v-for="(photo, idx) in photos" :key="`album-${props.albumId}-photo-${photo.id}`" class="block shrink-0 grow relative">
 			<img
 				:src="photo.size_variants.thumb?.url ?? '/img/no_images.svg'"
 				:alt="photo.title"
