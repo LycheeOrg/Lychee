@@ -229,7 +229,7 @@ class OrderControllerMarkAsDeliveredTest extends BaseCheckoutControllerTest
 		$response = $this->actingAs($this->admin)
 			->putJson('Shop/Order/' . $this->test_order->id);
 
-		$this->assertNotFound($response);
+		$response->assertNoContent();
 
 		// Verify status wasn't changed
 		$this->assertDatabaseHas('orders', [

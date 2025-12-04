@@ -66,7 +66,7 @@ class MarkAsDeliveredOrderRequest extends BaseApiRequest
 		/** @var int $order_id */
 		$order_id = intval($values['order_id'] ?? null);
 		$this->order = Order::query()
-			->where(fn($query) => $query
+			->where(fn ($query) => $query
 				->where('status', '=', PaymentStatusType::COMPLETED)
 				->orWhere('status', '=', PaymentStatusType::CLOSED))
 			->where('id', '=', $order_id)
