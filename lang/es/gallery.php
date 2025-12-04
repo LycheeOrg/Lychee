@@ -77,6 +77,7 @@ return [
             'share' => 'Compartir álbum',
             'embed' => 'Embed Album',
             'move' => 'Mover álbum',
+            'shop' => 'Shop Management',
             'danger' => 'ZONA DE PELIGRO',
         ],
         'hero' => [
