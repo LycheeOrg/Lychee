@@ -35,7 +35,7 @@ return [
     ],
     'line' => [
         'owner' => 'Besitzer',
-        'admin' => 'Admin-Benutzer',
+        'admin' => 'Administrator',
         'edit' => 'Bearbeiten',
         'delete' => 'Löschen',
     ],
