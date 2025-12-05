@@ -1,5 +1,4 @@
 <?php
-
 return [
     /*
     |--------------------------------------------------------------------------
@@ -18,7 +17,7 @@ return [
     'user' => 'Benutzer',
     'sign_out' => 'Abmelden',
     'about' => 'Über',
-    'changelog' => 'Changelog',
+    'changelog' => 'Änderungsprotokoll',
     'api' => 'API Dokumentation',
     'source_code' => 'Quellcode',
     'support' => 'Support',
