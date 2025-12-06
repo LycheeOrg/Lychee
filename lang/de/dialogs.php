@@ -30,7 +30,7 @@ return [
     'keybindings' => [
         'header' => 'Tastaturkürzel',
         'don_t_show_again' => 'Diesen Dialog nicht nochmal anzeigen',
-        'hide_header_button' => 'Hilfe nicht im Header anzeigen',
+        'hide_header_button' => 'Hilfe in der Kopfzeile nicht anzeigen',
         'side_wide' => 'Website übergreifende Tastaturkürzel',
         'back_cancel' => 'Zurück/Abbrechen',
         'confirm' => 'Bestätigen',

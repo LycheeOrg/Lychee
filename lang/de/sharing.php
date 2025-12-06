@@ -30,8 +30,8 @@ return [
     'grants' => [
         'read' => 'Gewährt Lesezugriff',
         'original' => 'Gewährt Zugriff auf das Originalfoto',
-        'download' => 'Gewährt das Recht zum Download',
-        'upload' => 'Gewährt das Recht zum Upload',
+        'download' => 'Herunterladen erlauben',
+        'upload' => 'Hochladen erlauben',
         'edit' => 'Gewährt das Recht zur Bearbeitung',
         'delete' => 'Gewährt das Recht zu löschen',
     ],

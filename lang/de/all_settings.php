@@ -1,39 +1,37 @@
 <?php
-
 return [
-    /*
+    'documentation' => [
+        /*
     |--------------------------------------------------------------------------
     | All Settings
     |--------------------------------------------------------------------------
     */
-
-    'documentation' => [
-        'version' => 'Current version of Lychee',
-        'check_for_updates' => 'Automatically check for new updates',
-        'sorting_photos_col' => 'Default column used for sorting photos',
-        'sorting_photos_order' => 'Default order used for sorting photos',
-        'sorting_albums_col' => 'Default column used for sorting albums',
-        'sorting_albums_order' => 'Default order used for sorting albums',
-        'imagick' => 'Enable imagick processing',
-        'dropbox_key' => 'Dropbox API key',
-        'skip_duplicates' => 'Skip duplicate if found on import',
-        'lang' => 'Language used by Lychee',
-        'default_license' => 'Default license used for albums',
-        'small_max_width' => 'Maximum width for small thumbs (album view)',
-        'small_max_height' => 'Maximum height for small thumbs (album view)',
-        'medium_max_width' => 'Maximum width for medium image (photo view)',
-        'medium_max_height' => 'Maximum height for medium image (photo view)',
-        'grants_full_photo_access' => 'Allows access to full resolution by default',
-        'delete_imported' => 'When importing from server, delete originals',
-        'mod_frame_enabled' => 'Enable Mod Frame',
-        'mod_frame_refresh' => 'Refresh rate of the Frame',
-        'image_overlay_type' => 'Default image overlay information',
-        'compression_quality' => 'Compression percent when generating thumbs',
-        'landing_page_enable' => 'Display the landing page',
-        'site_owner' => 'Website Owner',
-        'landing_title' => 'Title on the landing page',
-        'landing_subtitle' => 'Subtitle on the landing page',
-        'sm_facebook_url' => 'Url of facebook profile',
+        'version' => 'Aktuelle Version von Lychee',
+        'check_for_updates' => 'Automatisch auf Aktualisierungen prüfen.',
+        'sorting_photos_col' => 'Standardspalten zum Sortieren von Fotos',
+        'sorting_photos_order' => 'Standardordner für die Sortierung von Fotos genutzt',
+        'sorting_albums_col' => 'Standardspalten für die Albumsortierung gewählt',
+        'sorting_albums_order' => 'Standardordner für die Albensortierung gewählt',
+        'imagick' => 'Bildverarbeitung aktivieren',
+        'dropbox_key' => 'Dropbox API Schlüssel',
+        'skip_duplicates' => 'Duplikate beim Import überspringen, falls vorhanden.',
+        'lang' => 'Die von Lychee verwendete Sprache',
+        'default_license' => 'Standardlizenz für Alben',
+        'small_max_width' => 'Maximale Breite für kleine Vorschaubilder (Albumansicht)',
+        'small_max_height' => 'Maximale Höhe für kleine Vorschaubilder (Albumansicht)',
+        'medium_max_width' => 'Maximale Breite für ein mittleres Bild (Fotoansicht)',
+        'medium_max_height' => 'Maximale Höhe für mittleres Bild (Fotoansicht)',
+        'grants_full_photo_access' => 'Ermöglicht standardmäßig den Zugriff auf die volle Auflösung.',
+        'delete_imported' => 'Beim Import vom Server die Originale löschen',
+        'mod_frame_enabled' => 'Modularen Rahmen aktivieren',
+        'mod_frame_refresh' => 'Bildwiederholungsrate des Rahmens',
+        'image_overlay_type' => 'Standardinformationen zur Bildüberlagerung',
+        'compression_quality' => 'Kompressionsprozentsatz bei der Vorschaugenerierung',
+        'landing_page_enable' => 'Zeigen Sie die Startseite an',
+        'site_owner' => 'Website-Inhaber',
+        'landing_title' => 'Überschrift der Startseite',
+        'landing_subtitle' => 'Untertitel auf der Startseite',
+        'sm_facebook_url' => 'URL des Facebook-Profils',
         'sm_flickr_url' => 'Url of flickr profile',
         'sm_twitter_url' => 'Url of X profile (formerly Twitter)',
         'sm_instagram_url' => 'Url of instagram profile',
