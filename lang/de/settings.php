@@ -24,7 +24,7 @@ return [
     ],
     'system' => [
         'header' => 'System',
-        'use_dark_mode' => 'Dark Mode für Lychee verwenden',
+        'use_dark_mode' => 'Dunklen Modus für Lychee verwenden',
         'language' => 'Von Lychee verwendete Sprache',
         'nsfw_album_visibility' => 'Sensible Alben standardmäßig sichtbar machen.',
         'nsfw_album_explanation' => 'Wenn das Album öffentlich ist, ist es immer noch zugänglich, es ist nur nicht sichtbar und<b>kann durch Drücken von <kbd>H</kbd></b> angezeigt werden.',
@@ -34,13 +34,13 @@ return [
     'lychee_se' => [
         'header' => 'Lychee <span class="text-primary-emphasis">SE</span>',
         'call4action' => 'Erhalte exklusive Funktionen und unterstütze die Entwicklung von Lychee. Schalten die <a href="https://lycheeorg.dev/get-supporter-edition/" class="text-primary-500 underline">SE Edition</a> frei.',
-        'preview' => 'Preview der Lychee SE-Funktionen einschalten',
+        'preview' => 'Vorschau der Lychee SE-Funktionen einschalten',
         'hide_call4action' => 'Lychee SE-Anmeldeformular ausblenden. Ich bin mit Lychee so zufrieden, wie es ist. :)',
         'hide_warning' => 'Wenn diese Option aktiviert ist, können Sie Ihren Lizenzschlüssel nur über die obige Registerkarte "Mehr" registrieren. Die Änderungen werden beim Neuladen der Seite übernommen.',
     ],
     'dropbox' => [
         'header' => 'Dropbox',
-        'instruction' => 'Um Fotos aus Ihrer Dropbox zu importieren, benötigen Sie einen gültigen drop-ins app Schlüssel von der Dropbox-Website.',
+        'instruction' => 'Um Fotos aus deinem Dropbox-Konto zu importieren, benötigst du einen gültigen „Drop-ins App Key“ von der Dropbox-Website.',
         'api_key' => 'Dropbox API Schlüssel',
         'set_key' => 'Dropbox-Schlüssel festlegen',
     ],
