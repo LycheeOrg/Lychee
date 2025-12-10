@@ -10,6 +10,7 @@ namespace App\Image\Files;
 
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
+use App\Models\Configs;
 use Safe\Exceptions\PcreException;
 use function Safe\fclose;
 use function Safe\fopen;
@@ -41,7 +42,14 @@ class DownloadedFile extends TemporaryLocalFile
 			$basename = pathinfo($path, PATHINFO_FILENAME);
 			$extension = '.' . pathinfo($path, PATHINFO_EXTENSION);
 
-			$download_stream = fopen($url, 'rb');
+			$opts = [
+				'http' => [
+					'follow_location' => !Configs::getValueAsBool('import_via_url_forbidden_redirect'),
+				],
+			];
+
+			$context = stream_context_create($opts);
+			$download_stream = fopen($url, 'rb', context: $context);
 			$download_stream_data = stream_get_meta_data($download_stream);
 
 			/** @var string|null $original_mime_type */
