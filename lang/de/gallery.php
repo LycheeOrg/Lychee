@@ -76,6 +76,7 @@ return [
             'share' => 'Album teilen',
             'embed' => 'Embed Album',
             'move' => 'Album verschieben',
+            'shop' => 'Shop Management',
             'danger' => 'GEFAHRENZONE',
         ],
         'hero' => [

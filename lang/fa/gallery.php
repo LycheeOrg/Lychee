@@ -77,6 +77,7 @@ return [
             'share' => 'اشتراک‌گذاری آلبوم',
             'embed' => 'Embed Album',
             'move' => 'انتقال آلبوم',
+            'shop' => 'Shop Management',
             'danger' => 'منطقه خطر',
         ],
         'hero' => [
