@@ -23,7 +23,7 @@ return new class() extends BaseConfigMigration {
 				'cat' => self::CONFIG,
 				'type_range' => self::BOOL,
 				'description' => 'Import via URL should not follow redirections',
-				'details' => '<span class="pi pi-exclamation-triangle text-orange-500"></span> Disabling this expose your localhost to the Import via URL functionality and could lead to Server-Side Request Forgery (SSRF).',
+				'details' => '<span class="pi pi-exclamation-triangle text-orange-500"></span> Disabling this exposes your localhost to the Import via URL functionality and could lead to Server-Side Request Forgery (SSRF).',
 				'is_secret' => false,
 				'is_expert' => true,
 				'level' => 0,
