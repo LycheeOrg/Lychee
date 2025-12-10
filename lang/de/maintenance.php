@@ -22,7 +22,7 @@ return [
         'show' => 'Duplikate anzeigen',
     ],
     'fix-jobs' => [
-        'title' => 'Job Historie reparieren',
+        'title' => 'Korrigieren des Auftragsverlaufs',
         'description' => 'Markiere Jobs mit dem Status <span class="text-ready-400">%s</span> oder <span class="text-primary-500">%s</span> als <span class="text-danger-700">%s</span>.',
         'button' => 'Repariere Job Historie',
     ],

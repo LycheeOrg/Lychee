@@ -1,5 +1,4 @@
 <?php
-
 return [
     /*
     |--------------------------------------------------------------------------
@@ -8,7 +7,7 @@ return [
     */
     'title' => 'Galerie',
     'smart_albums' => 'Intelligente Alben',
-    'pinned_albums' => 'Angeheftete Alben',
+    'pinned_albums' => 'Vorgeschlagene Alben',
     'albums' => 'Alben',
     'root' => 'Alben',
     'favourites' => 'Favoriten',
