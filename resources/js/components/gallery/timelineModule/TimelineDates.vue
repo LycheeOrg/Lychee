@@ -4,7 +4,7 @@
 			'fixed flex flex-col text-muted-color ltr:text-right rtl:text-left top-0 h-full overflow-y-scroll no-scrollbar': true,
 			'ltr:right-6 rtl:left-6': !isTouch,
 			'ltr:right-2 rtl:left-2': isTouch,
-			'ltr:bg-gradient-to-l rtl:bg-gradient-to-r from-(--p-surface-0) pt-14 dark:from-(--p-surface-900) text-shadow-sm group pb-24': true,
+			'ltr:bg-linear-to-l rtl:bg-linear-to-r from-(--p-surface-0) pt-14 dark:from-(--p-surface-900) text-shadow-sm group pb-24': true,
 		}"
 		@mouseleave="scrollToView"
 	>

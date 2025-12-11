@@ -26,7 +26,7 @@
 							'bg-sky-300 dark:bg-sky-300/80': week[d].count >= low && week[d].count < medium,
 							'bg-sky-500 dark:bg-sky-500/80': week[d].count >= medium && week[d].count < high,
 							'bg-sky-700 dark:bg-sky-700': week[d].count >= high,
-							'!border-sky-400': week[d].date.getMonth() === 0 && week[d].date.getDate() === 1,
+							'border-sky-400!': week[d].date.getMonth() === 0 && week[d].date.getDate() === 1,
 						}"
 					></td>
 				</template>

@@ -2,7 +2,7 @@
 	<div
 		class=""
 		:class="{
-			'overlay absolute mb-[1px] mx-[1px] p-0 border-0 w-[calc(100%-2px)] bottom-0 bg-gradient-to-t from-[#00000099] text-shadow-sm': true,
+			'overlay absolute mb-px mx-px p-0 border-0 w-[calc(100%-2px)] bottom-0 bg-linear-to-t from-[#00000099] text-shadow-sm': true,
 			'opacity-0 group-hover:opacity-100 transition-all ease-out': display_thumb_album_overlay === 'hover',
 		}"
 	>

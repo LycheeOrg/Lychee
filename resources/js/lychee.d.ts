@@ -271,6 +271,8 @@ declare namespace App.Http.Resources.Embed {
 		id: string;
 		title: string | null;
 		description: string | null;
+		is_video: boolean;
+		duration: string | null;
 		size_variants: App.Http.Resources.Models.SizeVariantsResouce;
 		exif: { [key: string]: string | null };
 	};
@@ -902,11 +904,13 @@ declare namespace App.Http.Resources.Shop {
 		mollie_profile_id: string;
 		stripe_public_key: string;
 		is_test_mode: boolean;
+		is_lycheeorg_disclaimer_enabled: boolean;
 	};
 	export type CheckoutResource = {
 		is_success: boolean;
 		is_redirect: boolean;
 		redirect_url: string | null;
+		complete_url: string | null;
 		message: string;
 		order: App.Http.Resources.Shop.OrderResource | null;
 	};
@@ -939,6 +943,7 @@ declare namespace App.Http.Resources.Shop {
 		price: string;
 		size_variant_type: App.Enum.PurchasableSizeVariantType;
 		item_notes: string | null;
+		content_url: string | null;
 	};
 	export type OrderResource = {
 		id: number;
@@ -950,6 +955,7 @@ declare namespace App.Http.Resources.Shop {
 		amount: string;
 		paid_at: string | null;
 		created_at: string | null;
+		updated_at: string | null;
 		comment: string | null;
 		items: App.Http.Resources.Shop.OrderItemResource[] | null;
 		can_process_payment: boolean;

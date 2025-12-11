@@ -1,4 +1,5 @@
 <template>
+	<BuyMeDialog />
 	<div class="h-svh overflow-y-hidden flex flex-col">
 		<!-- Trick to avoid the scroll bar to appear on the right when switching to full screen -->
 		<AlbumHeader
@@ -71,6 +72,7 @@
 					@clicked="photoClick"
 					@selected="photoSelect"
 					@contexted="photoMenuOpen"
+					@toggle-buy-me="toggleBuyMe"
 				/>
 				<div v-if="photosStore.photos.length > 0 && albumStore.hasPagination" class="flex justify-center w-full">
 					<Paginator
@@ -128,14 +130,20 @@ import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { usePhotoRoute } from "@/composables/photo/photoRoute";
 import { useRouter } from "vue-router";
 import SelectDrag from "@/components/forms/album/SelectDrag.vue";
+import { useOrderManagementStore } from "@/stores/OrderManagement";
+import { useBuyMeActions } from "@/composables/album/buyMeActions";
 import Paginator from "primevue/paginator";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { usePhotosStore } from "@/stores/PhotosState";
 import { useAlbumsStore } from "@/stores/AlbumsState";
 import { useUserStore } from "@/stores/UserState";
 import { useLayoutStore } from "@/stores/LayoutState";
+import { useCatalogStore } from "@/stores/CatalogState";
+import BuyMeDialog from "@/components/forms/gallery-dialogs/BuyMeDialog.vue";
+import { useToast } from "primevue/usetoast";
 
 const router = useRouter();
+const toast = useToast();
 
 const props = defineProps<{
 	isPhotoOpen: boolean;
@@ -145,10 +153,12 @@ const props = defineProps<{
 const userStore = useUserStore();
 const albumStore = useAlbumStore();
 const photosStore = usePhotosStore();
+const catalogStore = useCatalogStore();
 const albumsStore = useAlbumsStore();
 const layoutStore = useLayoutStore();
 const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
+const orderManagement = useOrderManagementStore();
 
 const emits = defineEmits<{
 	refresh: [];
@@ -175,6 +185,8 @@ const {
 	toggleCopy,
 	toggleUpload,
 } = useGalleryModals(togglableStore);
+
+const { toggleBuyMe } = useBuyMeActions(albumStore, orderManagement, catalogStore, toast);
 
 const {
 	selectedPhotosIdx,
