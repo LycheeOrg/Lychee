@@ -162,7 +162,7 @@ return [
                 'number_of_visits' => 'Кол-во посещений',
                 'number_of_downloads' => 'Кол-во скачиваний',
                 'number_of_shares' => 'Кол-во поделившихся',
-                'number_of_favourites' => 'Number of favourites',
+                'number_of_favourites' => 'Кол-во избранных',
             ],
             'links' => [
                 'header' => 'Ссылки',
