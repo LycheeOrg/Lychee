@@ -91,7 +91,7 @@ return [
         'stats' => [
             'number_of_visits' => 'Кол-во посещений',
             'number_of_downloads' => 'Количество скачиваний',
-            'number_of_shares' => 'Number of shares',
+            'number_of_shares' => 'Кол-во поделившихся',
             'lens' => 'Объектив',
             'shutter' => 'Выдержка',
             'iso' => 'ISO',
@@ -161,8 +161,8 @@ return [
                 'header' => 'Статистика',
                 'number_of_visits' => 'Кол-во посещений',
                 'number_of_downloads' => 'Кол-во скачиваний',
-                'number_of_shares' => 'Number of shares',
-                'number_of_favourites' => 'Number of favourites',
+                'number_of_shares' => 'Кол-во поделившихся',
+                'number_of_favourites' => 'Кол-во избранных',
             ],
             'links' => [
                 'header' => 'Ссылки',
