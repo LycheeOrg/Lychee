@@ -44,7 +44,7 @@ class DownloadedFile extends TemporaryLocalFile
 
 			$opts = [
 				'http' => [
-					'follow_location' => !Configs::getValueAsBool('import_via_url_forbidden_redirect'),
+					'follow_location' => !Configs::getValueAsBool('import_via_url_block_redirect'),
 					'max_redirects' => 3,
 					'timeout' => 10.0,
 				],

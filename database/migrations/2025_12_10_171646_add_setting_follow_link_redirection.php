@@ -18,7 +18,7 @@ return new class() extends BaseConfigMigration {
 	{
 		return [
 			[
-				'key' => 'import_via_url_forbidden_redirect',
+				'key' => 'import_via_url_block_redirect',
 				'value' => '1',
 				'cat' => self::CONFIG,
 				'type_range' => self::BOOL,
