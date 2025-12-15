@@ -210,7 +210,7 @@ const routes_ = [
 	},
 	{
 		name: "order",
-		path: "/order/:orderId/:transactionId?",
+		path: "/order/:orderId?/:transactionId?",
 		component: OrderDownload,
 		props: true,
 	},

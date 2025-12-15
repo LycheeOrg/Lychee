@@ -37,7 +37,7 @@
 				<span v-if="errors.email" class="text-red-500 text-sm">{{ errors.email }}</span>
 			</div>
 			<div>
-				<Checkbox v-model="consentGiven" binary inputId="consent" class="mt-4" />
+				<Checkbox v-model="consentGiven" binary inputId="consent" class="mt-4 ltr:mr-2 rtl:ml-2" />
 				<label
 					for="consent"
 					class="text-sm text-muted-color-emphasis"

@@ -96,6 +96,21 @@ function removeBasket() {
 
 onMounted(async () => {
 	await lycheeStateStore.load();
-	orderStore.load();
+	orderStore.load().then(() => {
+		if (order.value === undefined || order.value?.items === null || order.value.items.length === 0) {
+			// Redirect to basket if no items
+			router.push({ name: "gallery" });
+		}
+
+		// Handle order status
+		if (order.value?.status === "processing") {
+			// Switch to step 2 if payment is in progress
+			router.push({ name: "checkout", params: { step: "payment" } });
+		}
+
+		if (["completed", "closed", "offline"].includes(order.value?.status || "")) {
+			router.push({ name: "checkout", params: { step: "completed" } });
+		}
+	});
 });
 </script>
