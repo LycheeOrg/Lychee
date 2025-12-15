@@ -24,7 +24,7 @@ use App\Models\OrderItem;
 use App\Models\Purchasable;
 use Illuminate\Support\Str;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
-use Tests\Traits\RequireSE;
+use Tests\Traits\RequirePro;
 
 /**
  * Test class for CheckoutController.
@@ -39,7 +39,7 @@ use Tests\Traits\RequireSE;
  */
 class BaseCheckoutControllerTest extends BaseApiWithDataTest
 {
-	use RequireSE;
+	use RequirePro;
 
 	protected Purchasable $purchasable1;
 	protected Order $test_order;
@@ -70,12 +70,12 @@ class BaseCheckoutControllerTest extends BaseApiWithDataTest
 		// Put the order in session to simulate a basket
 		$this->withCookie(RequestAttribute::BASKET_ID_ATTRIBUTE, $this->test_order->id);
 
-		$this->requireSe();
+		$this->requirePro();
 	}
 
 	public function tearDown(): void
 	{
-		$this->resetSe();
+		$this->resetPro();
 		parent::tearDown();
 	}
 }

@@ -44,5 +44,11 @@ final class ConfigKeyRequireSupportRule implements ValidationRule
 
 			return;
 		}
+
+		if ($config->level === 2 && !$this->verify->is_pro()) {
+			$fail('Error: This functionality is only available in the Pro Edition of Lychee. See here: https://lycheeorg.dev/get-supporter-edition/');
+
+			return;
+		}
 	}
 }

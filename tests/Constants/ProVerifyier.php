@@ -12,16 +12,16 @@ use LycheeVerify\Contract\Status;
 use LycheeVerify\Contract\VerifyInterface;
 use LycheeVerify\Exceptions\SupporterOnlyOperationException;
 
-class SupporterVerifyier implements VerifyInterface
+class ProVerifyier implements VerifyInterface
 {
 	public function get_status(): Status
 	{
-		return Status::SUPPORTER_EDITION;
+		return Status::PRO_EDITION;
 	}
 
-	public function check(Status $required_status = Status::SUPPORTER_EDITION): bool
+	public function check(Status $required_status = Status::PRO_EDITION): bool
 	{
-		return $required_status === Status::FREE_EDITION || $required_status === Status::SUPPORTER_EDITION;
+		return $required_status === Status::FREE_EDITION || $required_status === Status::SUPPORTER_EDITION || $required_status === Status::PRO_EDITION;
 	}
 
 	public function is_supporter(): bool
@@ -31,7 +31,7 @@ class SupporterVerifyier implements VerifyInterface
 
 	public function is_pro(): bool
 	{
-		return false;
+		return true;
 	}
 
 	public function is_signature(): bool
@@ -39,14 +39,14 @@ class SupporterVerifyier implements VerifyInterface
 		return false;
 	}
 
-	public function authorize(Status $required_status = Status::SUPPORTER_EDITION): void
+	public function authorize(Status $required_status = Status::PRO_EDITION): void
 	{
 		if (!$this->check($required_status)) {
 			throw new SupporterOnlyOperationException($required_status);
 		}
 	}
 
-	public function when(mixed $valIfTrue, mixed $valIfFalse, Status $required_status = Status::SUPPORTER_EDITION): mixed
+	public function when(mixed $valIfTrue, mixed $valIfFalse, Status $required_status = Status::PRO_EDITION): mixed
 	{
 		$retValue = $this->check($required_status) ? $valIfTrue : $valIfFalse;
 
