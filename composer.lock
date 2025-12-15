@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2aa6daf242f8c7a2b29628da6e6190e9",
+    "content-hash": "f5bbcd412a80a5ed26c62e2283a547a7",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -2753,16 +2753,16 @@
         },
         {
             "name": "laravel/socialite",
-            "version": "v5.23.2",
+            "version": "v5.24.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/socialite.git",
-                "reference": "41e65d53762d33d617bf0253330d672cb95e624b"
+                "reference": "1d19358c28e8951dde6e36603b89d8f09e6cfbfd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/socialite/zipball/41e65d53762d33d617bf0253330d672cb95e624b",
-                "reference": "41e65d53762d33d617bf0253330d672cb95e624b",
+                "url": "https://api.github.com/repos/laravel/socialite/zipball/1d19358c28e8951dde6e36603b89d8f09e6cfbfd",
+                "reference": "1d19358c28e8951dde6e36603b89d8f09e6cfbfd",
                 "shasum": ""
             },
             "require": {
@@ -2821,7 +2821,7 @@
                 "issues": "https://github.com/laravel/socialite/issues",
                 "source": "https://github.com/laravel/socialite"
             },
-            "time": "2025-11-21T14:00:38+00:00"
+            "time": "2025-12-09T15:37:06+00:00"
         },
         {
             "name": "lcobucci/clock",
@@ -3776,16 +3776,16 @@
         },
         {
             "name": "lychee-org/lycheeverify",
-            "version": "1.0.3",
+            "version": "2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/LycheeOrg/verify.git",
-                "reference": "a162857a6e7545159b427523205d33c5652da61e"
+                "reference": "fe0fa68095095a4219a68e7db97f29879e7bdb71"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/LycheeOrg/verify/zipball/a162857a6e7545159b427523205d33c5652da61e",
-                "reference": "a162857a6e7545159b427523205d33c5652da61e",
+                "url": "https://api.github.com/repos/LycheeOrg/verify/zipball/fe0fa68095095a4219a68e7db97f29879e7bdb71",
+                "reference": "fe0fa68095095a4219a68e7db97f29879e7bdb71",
                 "shasum": ""
             },
             "require": {
@@ -3854,7 +3854,7 @@
             "description": "Verification package for Lychee",
             "homepage": "https://github.com/LycheeOrg/verify",
             "support": {
-                "source": "https://github.com/LycheeOrg/verify/tree/1.0.3",
+                "source": "https://github.com/LycheeOrg/verify/tree/2.0.0",
                 "issues": "https://github.com/LycheeOrg/verify/issues"
             },
             "funding": [
@@ -3863,7 +3863,7 @@
                     "url": "https://github.com/LycheeOrg"
                 }
             ],
-            "time": "2025-08-28T09:51:40+00:00"
+            "time": "2025-12-12T22:02:32+00:00"
         },
         {
             "name": "lychee-org/nestedset",
@@ -4026,16 +4026,16 @@
         },
         {
             "name": "maennchen/zipstream-php",
-            "version": "3.2.0",
+            "version": "3.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/maennchen/ZipStream-PHP.git",
-                "reference": "9712d8fa4cdf9240380b01eb4be55ad8dcf71416"
+                "reference": "682f1098a8fddbaf43edac2306a691c7ad508ec5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/maennchen/ZipStream-PHP/zipball/9712d8fa4cdf9240380b01eb4be55ad8dcf71416",
-                "reference": "9712d8fa4cdf9240380b01eb4be55ad8dcf71416",
+                "url": "https://api.github.com/repos/maennchen/ZipStream-PHP/zipball/682f1098a8fddbaf43edac2306a691c7ad508ec5",
+                "reference": "682f1098a8fddbaf43edac2306a691c7ad508ec5",
                 "shasum": ""
             },
             "require": {
@@ -4046,7 +4046,7 @@
             "require-dev": {
                 "brianium/paratest": "^7.7",
                 "ext-zip": "*",
-                "friendsofphp/php-cs-fixer": "^3.16",
+                "friendsofphp/php-cs-fixer": "^3.86",
                 "guzzlehttp/guzzle": "^7.5",
                 "mikey179/vfsstream": "^1.6",
                 "php-coveralls/php-coveralls": "^2.5",
@@ -4092,7 +4092,7 @@
             ],
             "support": {
                 "issues": "https://github.com/maennchen/ZipStream-PHP/issues",
-                "source": "https://github.com/maennchen/ZipStream-PHP/tree/3.2.0"
+                "source": "https://github.com/maennchen/ZipStream-PHP/tree/3.2.1"
             },
             "funding": [
                 {
@@ -4100,7 +4100,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-07-17T11:15:13+00:00"
+            "time": "2025-12-10T09:58:31+00:00"
         },
         {
             "name": "mavinoo/laravel-batch",
@@ -6377,16 +6377,16 @@
         },
         {
             "name": "phpseclib/phpseclib",
-            "version": "3.0.47",
+            "version": "3.0.48",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpseclib/phpseclib.git",
-                "reference": "9d6ca36a6c2dd434765b1071b2644a1c683b385d"
+                "reference": "64065a5679c50acb886e82c07aa139b0f757bb89"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/9d6ca36a6c2dd434765b1071b2644a1c683b385d",
-                "reference": "9d6ca36a6c2dd434765b1071b2644a1c683b385d",
+                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/64065a5679c50acb886e82c07aa139b0f757bb89",
+                "reference": "64065a5679c50acb886e82c07aa139b0f757bb89",
                 "shasum": ""
             },
             "require": {
@@ -6467,7 +6467,7 @@
             ],
             "support": {
                 "issues": "https://github.com/phpseclib/phpseclib/issues",
-                "source": "https://github.com/phpseclib/phpseclib/tree/3.0.47"
+                "source": "https://github.com/phpseclib/phpseclib/tree/3.0.48"
             },
             "funding": [
                 {
@@ -6483,7 +6483,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-10-06T01:07:24+00:00"
+            "time": "2025-12-15T11:51:42+00:00"
         },
         {
             "name": "phpstan/phpdoc-parser",
