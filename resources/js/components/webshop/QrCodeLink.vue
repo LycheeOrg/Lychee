@@ -1,17 +1,24 @@
 <template>
-	<canvas id="canvas"></canvas>
+	<canvas ref="canvasRef"></canvas>
 </template>
 <script setup lang="ts">
-import { watch } from "vue";
+import { watch, ref, nextTick } from "vue";
 import QRCode from "qrcode";
 
 const props = defineProps<{ url: string }>();
+const canvasRef = ref<HTMLCanvasElement | null>(null);
 
 watch(
 	() => props.url,
-	(newUrl: string) => {
+
+	async (newUrl: string) => {
+		await nextTick();
+		if (!canvasRef.value || !newUrl) {
+			return;
+		}
+
 		QRCode.toCanvas(
-			document.getElementById("canvas"),
+			canvasRef.value,
 			newUrl,
 			{
 				errorCorrectionLevel: "H",
@@ -20,7 +27,9 @@ watch(
 				// size: 300,
 			},
 			function (err: Error | null | undefined) {
-				if (err) throw err;
+				if (err) {
+					console.error("QR code generation failed:", err);
+				}
 			},
 		);
 	},

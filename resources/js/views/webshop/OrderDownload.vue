@@ -1,7 +1,7 @@
 <template>
 	<Toolbar class="w-full border-0 h-14 rounded-none">
 		<template #start>
-			<OpenLeftMenu />
+			<GoBack @go-back="backToGallery" />
 		</template>
 
 		<template #center>
@@ -152,7 +152,6 @@
 </template>
 <script setup lang="ts">
 import InputText from "@/components/forms/basic/InputText.vue";
-import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
 import OrderStatus from "@/components/webshop/OrderStatus.vue";
 import UsernameEmail from "@/components/webshop/UsernameEmail.vue";
 import Constants from "@/services/constants";
@@ -169,6 +168,7 @@ import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import { trans } from "laravel-vue-i18n";
 import { sprintf } from "sprintf-js";
+import GoBack from "@/components/headers/GoBack.vue";
 
 const props = defineProps<{
 	orderId: string;
@@ -184,6 +184,10 @@ const loading = ref(true);
 const leftMenuStore = useLeftMenuStateStore();
 const { initData } = storeToRefs(leftMenuStore);
 const edit = ref(false);
+
+function backToGallery() {
+	router.push({ name: "gallery" });
+}
 
 function loadOrder() {
 	WebshopService.Order.get(parseInt(orderId.value, 10), transactionId.value)

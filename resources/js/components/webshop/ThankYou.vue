@@ -49,7 +49,10 @@ const { order } = storeToRefs(orderStore);
 const router = useRouter();
 
 function openOrderPage() {
-	router.push({ name: "order", params: { orderId: order.value?.id, transactionId: order.value?.transaction_id } });
+	const orderId = order.value?.id;
+	const transactionId = order.value?.transaction_id;
+	orderStore.forget();
+	router.push({ name: "order", params: { orderId: orderId, transactionId: transactionId } });
 }
 
 const url = computed(() => {
