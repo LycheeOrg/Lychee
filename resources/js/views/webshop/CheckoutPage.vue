@@ -29,10 +29,18 @@
 						<InfoSection />
 					</div>
 					<div class="flex pt-6 ltr:justify-end rtl:justify-start">
-						<!-- FIX RTL for the arrow of the button -->
 						<Button
+							v-if="ltr"
 							:label="$t('webshop.checkout.next')"
 							icon="pi pi-arrow-right"
+							@click="next"
+							class="border-none"
+							:disabled="!isStepOneValid"
+						/>
+						<Button
+							v-else
+							:label="$t('webshop.checkout.next')"
+							icon="pi pi-arrow-left"
 							@click="next"
 							class="border-none"
 							:disabled="!isStepOneValid"
@@ -47,57 +55,49 @@
 							<PaymentForm v-else />
 						</div>
 						<div class="flex pt-6 justify-between">
-							<Button :label="$t('webshop.checkout.back')" severity="secondary" icon="pi pi-arrow-left" @click="goToInfo" />
-							<Button
-								:label="$t('webshop.checkout.next')"
-								icon="pi pi-arrow-right"
-								iconPos="right"
-								@click="processPayment"
-								class="border-none"
-								:disabled="!isStepTwoValid"
-							/>
+							<template v-if="ltr">
+								<Button :label="$t('webshop.checkout.back')" severity="secondary" icon="pi pi-arrow-left" @click="goToInfo" />
+								<Button
+									:label="$t('webshop.checkout.next')"
+									icon="pi pi-arrow-right"
+									iconPos="right"
+									@click="processPayment"
+									class="border-none"
+									:disabled="!isStepTwoValid"
+								/>
+							</template>
+							<template v-else>
+								<Button :label="$t('webshop.checkout.back')" severity="secondary" icon="pi pi-arrow-right" @click="goToInfo" />
+								<Button
+									:label="$t('webshop.checkout.next')"
+									icon="pi pi-arrow-left"
+									iconPos="right"
+									@click="processPayment"
+									class="border-none"
+									:disabled="!isStepTwoValid"
+								/>
+							</template>
 						</div>
 					</StepPanel>
 					<StepPanel :value="3">
 						<div class="flex flex-col h-48">
-							<div
-								class="border-2 border-dashed border-surface-200 dark:border-surface-700 rounded bg-surface-50 dark:bg-surface-950 flex-col gap-4 p-4 flex justify-center items-center font-medium"
-							>
-								<h2 class="font-bold text-xl">{{ $t("webshop.checkout.thankYou") }}</h2>
-								<div class="text-muted-color">
-									<p>
-										{{ $t("webshop.checkout.orderNumber") }} <strong class="text-muted-color-emphasis">{{ order?.id }}</strong>
-									</p>
-									<p>
-										{{ $t("webshop.checkout.transactionId") }}
-										<strong class="text-muted-color-emphasis">{{ order?.transaction_id }}</strong>
-									</p>
-								</div>
-								<p class="text-muted-color">
-									<i class="pi pi-exclamation-triangle ltr:mr-2 rtl:mr-2 text-warning-600" />
-									{{ $t("webshop.checkout.noteWarning") }}
-									<strong class="text-muted-color-emphasis">{{ $t("webshop.checkout.noteTransactionId") }}</strong>
-									{{ $t("webshop.checkout.noteOrderNumber") }}
-									{{ $t("webshop.checkout.noteReason") }}
-								</p>
-								<p class="text-muted-color">{{ $t("webshop.checkout.enjoyPurchase") }}</p>
+							<ThankYou />
+							<div class="flex pt-6 ltr:justify-end rtl:justify-start">
 								<Button
-									v-if="order?.status === 'closed'"
-									text
-									:label="$t('webshop.checkout.toMyDownloads')"
-									icon="pi pi-link"
-									@click="openOrderPage"
+									v-if="ltr"
+									:label="$t('webshop.checkout.toTheGallery')"
+									icon="pi pi-arrow-right"
+									@click="backToGallery"
+									class="border-none"
+								/>
+								<Button
+									v-else
+									:label="$t('webshop.checkout.toTheGallery')"
+									icon="pi pi-arrow-right"
+									@click="backToGallery"
 									class="border-none"
 								/>
 							</div>
-						</div>
-						<div class="flex pt-6 ltr:justify-end rtl:justify-start">
-							<Button
-								:label="$t('webshop.checkout.toTheGallery')"
-								icon="pi pi-arrow-right"
-								@click="backToGallery"
-								class="border-none"
-							/>
 						</div>
 					</StepPanel>
 				</template>
@@ -115,6 +115,14 @@
 							</div>
 							<div class="flex pt-6 ltr:justify-end rtl:justify-start">
 								<Button
+									v-if="ltr"
+									:label="$t('webshop.checkout.toTheGallery')"
+									icon="pi pi-arrow-right"
+									@click="backToGallery"
+									class="border-none"
+								/>
+								<Button
+									v-else
 									:label="$t('webshop.checkout.toTheGallery')"
 									icon="pi pi-arrow-right"
 									@click="backToGallery"
@@ -141,7 +149,7 @@ import Toolbar from "primevue/toolbar";
 import { storeToRefs } from "pinia";
 import { useOrderManagementStore } from "@/stores/OrderManagement";
 import { useRouter } from "vue-router";
-import { onMounted, watch } from "vue";
+import { computed, onMounted, watch } from "vue";
 import { useUserStore } from "@/stores/UserState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useStepOne } from "@/composables/checkout/useStepOne";
@@ -156,6 +164,8 @@ import PaymentForm from "@/components/webshop/PaymentForm.vue";
 import { useMollie } from "@/composables/checkout/useMollie";
 import PaymentInProgress from "@/components/webshop/PaymentInProgress.vue";
 import WebshopService from "@/services/webshop-service";
+import ThankYou from "@/components/webshop/ThankYou.vue";
+import { useLtRorRtL } from "@/utils/Helpers";
 
 const props = defineProps<{
 	step?: CheckoutSteps;
@@ -167,6 +177,10 @@ const orderStore = useOrderManagementStore();
 const { order } = storeToRefs(orderStore);
 const router = useRouter();
 const toast = useToast();
+
+const { isLTR } = useLtRorRtL();
+
+const ltr = computed(() => isLTR());
 
 const { email, options, loadCheckoutOptions, loadEmailForUser, isStepOneValid } = useStepOne(userStore, orderStore);
 const { stepToNumber, steps } = useSteps(options);
@@ -189,10 +203,6 @@ async function backToGallery() {
 	await WebshopService.Order.forget();
 	orderStore.reset();
 	router.push({ name: "gallery" });
-}
-
-function openOrderPage() {
-	router.push({ name: "order", params: { orderId: order.value?.id, transactionId: order.value?.transaction_id } });
 }
 
 function goToInfo() {
@@ -229,13 +239,7 @@ onMounted(async () => {
 			router.push({ name: "checkout", params: { step: "payment" } });
 		}
 
-		if (order.value?.status === "completed") {
-			// Switch to completed page if order is completed
-			router.push({ name: "checkout", params: { step: "completed" } });
-		}
-
-		if (order.value?.status === "offline") {
-			// Switch to cancelled page if order is cancelled
+		if (["completed", "closed", "offline"].includes(order.value?.status || "")) {
 			router.push({ name: "checkout", params: { step: "completed" } });
 		}
 
