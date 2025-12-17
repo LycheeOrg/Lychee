@@ -70,7 +70,9 @@ return [
     'register' => [
         'enter_license' => 'Введите ваш лицензионный ключ ниже:',
         'license_key' => 'Лицензионный ключ',
-        'invalid_license' => 'Неверный лицензионный ключ.',        'expired_license' => 'Your license key has expired. Empty the field or get a new one at <a href="https://keygen.lycheeorg.dev" class="text-primary-500 underline">keygen.lycheeorg.dev</a>.',        'register' => 'Зарегистрировать',
+        'invalid_license' => 'Неверный лицензионный ключ.',
+        'expired_license' => 'Your license key has expired. Empty the field or get a new one at <a href="https://keygen.lycheeorg.dev" class="text-primary-500 underline">keygen.lycheeorg.dev</a>.',
+        'register' => 'Зарегистрировать',
     ],
     'share_album' => [
         'url_copied' => 'URL скопирован в буфер обмена!',

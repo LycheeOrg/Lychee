@@ -227,6 +227,6 @@ class InitConfig extends Data
 
 		$this->is_live_metrics_enabled = $this->is_se_enabled && Configs::getValueAsBool('live_metrics_enabled');
 
-		$this->is_se_expired = Configs::getValueAsString('license_key') && !$this->is_se_enabled;
+		$this->is_se_expired = Configs::getValueAsString('license_key') !== '' && !$this->is_se_enabled;
 	}
 }

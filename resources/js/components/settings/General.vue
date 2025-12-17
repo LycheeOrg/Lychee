@@ -22,12 +22,10 @@
 			/>
 		</div>
 	</Fieldset>
-	<Fieldset
-		legend="Lychee SE"
-		v-if="!is_se_enabled && (!is_se_info_hidden || is_se_expired )">
+	<Fieldset legend="Lychee SE" v-if="!is_se_enabled && (!is_se_info_hidden || is_se_expired)">
 		<template #legend>
 			<!-- This is not working at the moment, something is broken in PrimeVue. -->
-		<!-- :legend="$t('settings.lychee_se.header')" -->
+			<!-- :legend="$t('settings.lychee_se.header')" -->
 			<div class="font-bold" v-html="$t('settings.lychee_se.header')" />
 		</template>
 		<p v-if="is_se_expired" class="inline-block mb-8 text-danger-600" v-html="$t('dialogs.register.expired_license')" />
