@@ -22,10 +22,15 @@
 			/>
 		</div>
 	</Fieldset>
-	<Fieldset v-if="!is_se_enabled && !is_se_info_hidden">
+	<Fieldset
+		legend="Lychee SE"
+		v-if="!is_se_enabled && (!is_se_info_hidden || is_se_expired )">
 		<template #legend>
+			<!-- This is not working at the moment, something is broken in PrimeVue. -->
+		<!-- :legend="$t('settings.lychee_se.header')" -->
 			<div class="font-bold" v-html="$t('settings.lychee_se.header')" />
 		</template>
+		<p v-if="is_se_expired" class="inline-block mb-8 text-danger-600" v-html="$t('dialogs.register.expired_license')" />
 		<p class="mb-2" v-html="$t('settings.lychee_se.call4action')" />
 		<div v-if="!is_se_enabled" class="mb-8 flex items-start">
 			<div class="w-3/4">
@@ -291,7 +296,7 @@ const isValidRegistrationForm = computed(() => {
 
 // Map stuff
 const lycheeStore = useLycheeStateStore();
-const { is_se_preview_enabled, is_se_enabled, is_se_info_hidden } = storeToRefs(lycheeStore);
+const { is_se_preview_enabled, is_se_enabled, is_se_info_hidden, is_se_expired } = storeToRefs(lycheeStore);
 
 function save(configKey: string, value: string) {
 	SettingsService.setConfigs({
@@ -372,6 +377,7 @@ function register() {
 		.then((response) => {
 			if (response.data.success) {
 				is_se_enabled.value = true;
+				is_se_expired.value = false;
 				is_se_preview_enabled.value = false;
 				is_se_info_hidden.value = false;
 				toast.add({

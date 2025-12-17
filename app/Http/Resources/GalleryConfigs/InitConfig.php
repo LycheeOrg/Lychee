@@ -85,11 +85,13 @@ class InitConfig extends Data
 
 	// Lychee SE is available.
 	public bool $is_se_enabled;
+	public bool $is_pro_enabled;
 	// Lychee SE is not available, but preview is enabled.
 	public bool $is_se_preview_enabled;
 	// We hide the info about Lychee SE if the user is already a supporter
 	// or if they asked to hide it (because we are nice :) ).
 	public bool $is_se_info_hidden;
+	public bool $is_se_expired;
 
 	// Live Metrics settings
 	public bool $is_live_metrics_enabled;
@@ -211,9 +213,11 @@ class InitConfig extends Data
 	{
 		$verify = resolve(Verify::class);
 		$is_supporter = $verify->is_supporter();
+		$is_pro = $verify->is_pro();
 
 		// We enable Lychee SE if the user is a supporter.
 		$this->is_se_enabled = $verify->validate() && $is_supporter;
+		$this->is_pro_enabled = $this->is_se_enabled && $is_pro;
 
 		// We disable preview if we are already a supporter.
 		$this->is_se_preview_enabled = !$is_supporter && Configs::getValueAsBool('enable_se_preview');
@@ -222,5 +226,7 @@ class InitConfig extends Data
 		$this->is_se_info_hidden = $is_supporter || Configs::getValueAsBool('disable_se_call_for_actions');
 
 		$this->is_live_metrics_enabled = $this->is_se_enabled && Configs::getValueAsBool('live_metrics_enabled');
+
+		$this->is_se_expired = Configs::getValueAsString('license_key') && !$this->is_se_enabled;
 	}
 }
