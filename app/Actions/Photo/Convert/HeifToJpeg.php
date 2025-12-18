@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2017-2018 Tobias Reich
+ * Copyright (c) 2018-2025 LycheeOrg.
+ */
+
 namespace App\Actions\Photo\Convert;
 
 use App\Contracts\Image\ConvertMediaFileInterface;
@@ -13,24 +19,24 @@ class HeifToJpeg implements ConvertMediaFileInterface
 	/**
 	 * @throws \Exception
 	 */
-	public function handle(NativeLocalFile $tmpFile): TemporaryJobFile
+	public function handle(NativeLocalFile $tmp_file): TemporaryJobFile
 	{
 		try {
-			$baseName = $tmpFile->getBasename();
-			$path = $tmpFile->getRealPath();
+			$base_name = $tmp_file->getBasename();
+			$path = $tmp_file->getRealPath();
 			$pathinfo = pathinfo($path);
-			$newPath = $pathinfo['dirname'] . '/' . $baseName . '.jpg';
+			$new_path = $pathinfo['dirname'] . '/' . $base_name . '.jpg';
 
 			// Convert to Jpeg
-			$imagickConverted = $this->convertToJpeg($path);
+			$imagick_converted = $this->convertToJpeg($path);
 
 			// Store converted image
-			$this->storeNewImage($imagickConverted, $newPath);
+			$this->storeNewImage($imagick_converted, $new_path);
 
 			// Delete old file
 			$this->deleteOldFile($path);
 
-			return new TemporaryJobFile($newPath);
+			return new TemporaryJobFile($new_path);
 		} catch (\Exception $e) {
 			throw new \Exception('Failed to convert HEIC/HEIF to JPEG. ' . $e->getMessage());
 		}
@@ -39,10 +45,10 @@ class HeifToJpeg implements ConvertMediaFileInterface
 	/**
 	 * @throws \Exception
 	 */
-	public function storeNewImage(\Imagick $imageInstance, string $storeToPath): void
+	public function storeNewImage(\Imagick $image_instance, string $store_to_path): void
 	{
 		try {
-			$imageInstance->writeImage($storeToPath);
+			$image_instance->writeImage($store_to_path);
 		} catch (\ImagickException $e) {
 			throw new \Exception('Failed to store converted image');
 		}

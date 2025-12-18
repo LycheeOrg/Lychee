@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2017-2018 Tobias Reich
+ * Copyright (c) 2018-2025 LycheeOrg.
+ */
+
 namespace App\Enum;
 
 enum ConvertableImageType: string
@@ -10,7 +16,7 @@ enum ConvertableImageType: string
 	public static function isHeifImageType(string $extension): bool
 	{
 		$extension = str($extension)->lower()->toString();
-		
+
 		return in_array($extension, [
 			self::HEIC->value,
 			self::HEIF->value,
