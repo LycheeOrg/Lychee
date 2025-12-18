@@ -16,7 +16,7 @@ export const useOrderManagementStore = defineStore("basket-management-store", {
 		},
 		async load(): Promise<void> {
 			// Guard for SE
-			if (useLycheeStateStore().is_se_enabled !== true) {
+			if (useLycheeStateStore().is_pro_enabled !== true) {
 				return Promise.resolve();
 			}
 			if (this.order !== undefined) {
@@ -33,7 +33,7 @@ export const useOrderManagementStore = defineStore("basket-management-store", {
 		},
 		async addPhoto(photoData: AddPhoto): Promise<void> {
 			// Guard for SE
-			if (useLycheeStateStore().is_se_enabled !== true) {
+			if (useLycheeStateStore().is_pro_enabled !== true) {
 				return Promise.resolve();
 			}
 
@@ -48,7 +48,7 @@ export const useOrderManagementStore = defineStore("basket-management-store", {
 		},
 		addAlbum(albumData: AddAlbum): Promise<void> {
 			// Guard for SE
-			if (useLycheeStateStore().is_se_enabled !== true) {
+			if (useLycheeStateStore().is_pro_enabled !== true) {
 				return Promise.resolve();
 			}
 
@@ -58,7 +58,7 @@ export const useOrderManagementStore = defineStore("basket-management-store", {
 		},
 		removeItem(itemId: number): Promise<void> {
 			// Guard for SE
-			if (useLycheeStateStore().is_se_enabled !== true) {
+			if (useLycheeStateStore().is_pro_enabled !== true) {
 				return Promise.resolve();
 			}
 
@@ -68,7 +68,7 @@ export const useOrderManagementStore = defineStore("basket-management-store", {
 		},
 		async clear(): Promise<void> {
 			// Guard for SE
-			if (useLycheeStateStore().is_se_enabled !== true) {
+			if (useLycheeStateStore().is_pro_enabled !== true) {
 				return Promise.resolve();
 			}
 			this.reset();
@@ -77,7 +77,7 @@ export const useOrderManagementStore = defineStore("basket-management-store", {
 		},
 		async forget(): Promise<void> {
 			// Guard for SE
-			if (useLycheeStateStore().is_se_enabled !== true) {
+			if (useLycheeStateStore().is_pro_enabled !== true) {
 				return Promise.resolve();
 			}
 			this.reset();
