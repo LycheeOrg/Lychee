@@ -75,7 +75,7 @@ class AlbumRightsResource extends Data
 		}
 
 		$verify = resolve(Verify::class);
-		if (!$verify->is_supporter()) {
+		if (!$verify->is_pro()) {
 			return false;
 		}
 
