@@ -177,7 +177,7 @@ class ModulesRightsResource extends Data
 			return false;
 		}
 
-		if (!$this->verify->check()) {
+		if (!$this->verify->is_pro()) {
 			return false;
 		}
 
