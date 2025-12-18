@@ -1,0 +1,20 @@
+<?php
+
+namespace App\Exceptions;
+
+use Symfony\Component\HttpFoundation\Response;
+
+/**
+ * CannotConvertMediaFileException.
+ *
+ * Indicates that a media file cannot be converted to another format.
+ */
+class CannotConvertMediaFileException extends BaseLycheeException
+{
+	public const string DEFAULT_MESSAGE = 'Cannot convert media file to another format';
+
+	public function __construct(string $msg = self::DEFAULT_MESSAGE, ?\Throwable $previous = null)
+	{
+		parent::__construct(Response::HTTP_UNPROCESSABLE_ENTITY, $msg, $previous);
+	}
+}
