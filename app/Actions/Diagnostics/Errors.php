@@ -26,6 +26,7 @@ use App\Actions\Diagnostics\Pipes\Checks\ImageOptCheck;
 use App\Actions\Diagnostics\Pipes\Checks\ImagickPdfCheck;
 use App\Actions\Diagnostics\Pipes\Checks\IniSettingsCheck;
 use App\Actions\Diagnostics\Pipes\Checks\MigrationCheck;
+use App\Actions\Diagnostics\Pipes\Checks\OldLicenseCheck;
 use App\Actions\Diagnostics\Pipes\Checks\OpCacheCheck;
 use App\Actions\Diagnostics\Pipes\Checks\PHPVersionCheck;
 use App\Actions\Diagnostics\Pipes\Checks\PlaceholderExistsCheck;
@@ -52,6 +53,7 @@ class Errors
 		AuthDisabledCheck::class,
 		BasicPermissionCheck::class,
 		ConfigSanityCheck::class,
+		OldLicenseCheck::class,
 		DBSupportCheck::class,
 		GDSupportCheck::class,
 		ImageOptCheck::class,

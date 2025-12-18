@@ -230,8 +230,10 @@ readonly class Delete
 						->on('dup.checksum', '=', 'p.checksum')
 						->whereNotIn('dup.id', $photo_ids);
 				})
+				->leftJoin('order_items as oi', 'oi.size_variant_id', '=', 'sv.id')
 				->whereIn('p.id', $photo_ids)
 				->whereNull('dup.id')
+				->whereNull('oi.id')
 				->get();
 			$this->file_deleter->addSizeVariants($size_variants);
 			// @codeCoverageIgnoreStart
@@ -309,6 +311,11 @@ readonly class Delete
 			if (count($photo_ids) !== 0) {
 				SizeVariant::query()
 					->whereIn('size_variants.photo_id', $photo_ids)
+					->whereNotExists(function (BaseBuilder $query): void {
+						$query
+							->from('order_items')
+							->whereColumn('order_items.size_variant_id', '=', 'size_variants.id');
+					})
 					->delete();
 			}
 			if (count($album_ids) !== 0) {
@@ -319,6 +326,11 @@ readonly class Delete
 							->whereColumn('p.id', '=', 'size_variants.photo_id')
 							->leftJoin(PA::PHOTO_ALBUM, PA::PHOTO_ID, '=', 'p.id')
 							->whereIn(PA::ALBUM_ID, $album_ids);
+					})
+					->whereNotExists(function (BaseBuilder $query): void {
+						$query
+							->from('order_items')
+							->whereColumn('order_items.size_variant_id', '=', 'size_variants.id');
 					})
 					->delete();
 			}

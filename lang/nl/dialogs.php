@@ -71,6 +71,7 @@ return [
         'enter_license' => 'Voer uw licentiesleutel hieronder in:',
         'license_key' => 'Licentiesleutel',
         'invalid_license' => 'Ongeldige licentiesleutel.',
+        'expired_license' => 'Your license key has expired. Empty the field or get a new one at <a href="https://keygen.lycheeorg.dev" class="text-primary-500 underline">keygen.lycheeorg.dev</a>.',
         'register' => 'Registreren',
     ],
     'share_album' => [

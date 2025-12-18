@@ -1,7 +1,7 @@
 <template>
 	<Toolbar class="w-full border-0 h-14 rounded-none">
 		<template #start>
-			<OpenLeftMenu />
+			<GoBack @go-back="backToGallery" />
 		</template>
 
 		<template #center>
@@ -137,7 +137,6 @@
 	</Panel>
 </template>
 <script setup lang="ts">
-import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
 import Panel from "primevue/panel";
 import Stepper from "primevue/stepper";
 import StepList from "primevue/steplist";
@@ -166,6 +165,7 @@ import PaymentInProgress from "@/components/webshop/PaymentInProgress.vue";
 import WebshopService from "@/services/webshop-service";
 import ThankYou from "@/components/webshop/ThankYou.vue";
 import { useLtRorRtL } from "@/utils/Helpers";
+import GoBack from "@/components/headers/GoBack.vue";
 
 const props = defineProps<{
 	step?: CheckoutSteps;
@@ -198,10 +198,12 @@ function next() {
 }
 
 async function backToGallery() {
-	// We need to reset the order store to clear the previous order
-	// Clear the cookie.
-	await WebshopService.Order.forget();
-	orderStore.reset();
+	if (["completed", "closed", "offline"].includes(order.value?.status || "")) {
+		// We need to reset the order store to clear the previous order
+		// Clear the cookie.
+		await WebshopService.Order.forget();
+		orderStore.reset();
+	}
 	router.push({ name: "gallery" });
 }
 

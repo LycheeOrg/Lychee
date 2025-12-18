@@ -20,7 +20,7 @@ namespace Tests\Webshop;
 
 use App\Models\Purchasable;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
-use Tests\Traits\RequireSE;
+use Tests\Traits\RequirePro;
 
 /**
  * Test class for CatalogController.
@@ -34,18 +34,18 @@ use Tests\Traits\RequireSE;
  */
 class CatalogControllerTest extends BaseApiWithDataTest
 {
-	use RequireSE;
+	use RequirePro;
 
 	public function setUp(): void
 	{
 		parent::setUp();
 
-		$this->requireSe();
+		$this->requirePro();
 	}
 
 	public function tearDown(): void
 	{
-		$this->resetSe();
+		$this->resetPro();
 		parent::tearDown();
 	}
 

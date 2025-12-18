@@ -15,6 +15,8 @@ use App\Enum\OmnipayProviderType;
 use App\Factories\OmnipayFactory;
 use App\Models\Configs;
 use Illuminate\Support\Facades\Schema;
+use LycheeVerify\Contract\Status;
+use LycheeVerify\Verify;
 
 /**
  * Check webshop configuration and environment conditions.
@@ -24,6 +26,7 @@ class WebshopCheck implements DiagnosticPipe
 	public function __construct(
 		private OmnipayFactory $factory,
 		private OrderService $order_service,
+		private Verify $verify,
 	) {
 	}
 
@@ -33,6 +36,11 @@ class WebshopCheck implements DiagnosticPipe
 	public function handle(array &$data, \Closure $next): array
 	{
 		if (!Schema::hasTable('configs')) {
+			return $next($data);
+		}
+
+		if ($this->verify->get_status() !== Status::PRO_EDITION) {
+			// Webshop not available in free edition
 			return $next($data);
 		}
 

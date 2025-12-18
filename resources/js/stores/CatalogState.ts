@@ -21,7 +21,7 @@ export const useCatalogStore = defineStore("catalog-store", {
 		},
 		load(): Promise<void> {
 			// Guard for SE
-			if (useLycheeStateStore().is_se_enabled !== true) {
+			if (useLycheeStateStore().is_pro_enabled !== true) {
 				return Promise.resolve();
 			}
 

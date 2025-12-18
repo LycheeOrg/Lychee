@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
  * All routes start with /api/shop/basket.
  */
 // Only for SE sorry.
-Route::middleware('support:se')->group(function (): void {
+Route::middleware('support:pro')->group(function (): void {
 	Route::get('/Shop', [Shop\CatalogController::class, 'getAlbumCatalog']);
 	Route::group(['prefix' => '/Shop/Order'], function (): void {
 		Route::get('/List', [Shop\OrderController::class, 'list']);
