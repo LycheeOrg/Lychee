@@ -91,6 +91,9 @@ class ConfigIntegrity
 		'flow_carousel_height',
 		'date_format_flow_published',
 		'date_format_flow_min_max',
+	];
+
+	public const PRO_FIELDS = [
 		'webshop_enabled',
 		'webshop_currency',
 		'webshop_default_description',
@@ -118,6 +121,7 @@ class ConfigIntegrity
 	{
 		try {
 			DB::table('configs')->whereIn('key', self::SE_FIELDS)->update(['level' => 1]);
+			DB::table('configs')->whereIn('key', self::PRO_FIELDS)->update(['level' => 2]);
 		} catch (\Exception $e) {
 			// Do nothing: we are not installed yet, so we fail silently.
 		}

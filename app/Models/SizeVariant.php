@@ -34,8 +34,8 @@ use Illuminate\Support\Facades\Storage;
  * Describes a size variant of a photo.
  *
  * @property int                  $id
- * @property string               $photo_id
- * @property Photo                $photo
+ * @property string|null          $photo_id
+ * @property Photo|null           $photo
  * @property SizeVariantType      $type
  * @property string               $short_path
  * @property string|null          $short_path_watermarked

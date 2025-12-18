@@ -90,7 +90,8 @@ class VersionInfo implements DiagnosticStringPipe
 		$lychee_version = 'Lychee';
 		$lychee_version .= match ($this->verify->get_status()) {
 			Status::SUPPORTER_EDITION => ' SE',
-			Status::PLUS_EDITION => ' Plus',
+			Status::PRO_EDITION => ' Pro',
+			Status::SIGNATURE_EDITION => ' Signature',
 			default => '',
 		};
 

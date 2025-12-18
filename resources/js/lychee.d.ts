@@ -390,8 +390,10 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		title: string;
 		dropbox_api_key: string;
 		is_se_enabled: boolean;
+		is_pro_enabled: boolean;
 		is_se_preview_enabled: boolean;
 		is_se_info_hidden: boolean;
+		is_se_expired: boolean;
 		is_live_metrics_enabled: boolean;
 		is_basic_auth_enabled: boolean;
 		is_webauthn_enabled: boolean;

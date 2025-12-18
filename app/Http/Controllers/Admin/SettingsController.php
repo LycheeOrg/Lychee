@@ -47,6 +47,7 @@ class SettingsController extends Controller
 				->when(config('features.hide-lychee-SE', false) === true, fn ($q) => $q->where('cat', '!=', 'lychee SE'))
 				->when($docker_info->isDocker(), fn ($q) => $q->where('not_on_docker', '!=', true))
 				->when(!$request->is_se() && !Configs::getValueAsBool('enable_se_preview'), fn ($q) => $q->where('level', '=', 0))
+				->when(!$request->is_pro(), fn ($q) => $q->where('level', '<', 2))
 				->when(config('features.webshop') === false, fn ($q) => $q->where('key', 'NOT LIKE', 'webshop_%')),
 		])->orderBy('order', 'asc')->get();
 

@@ -24,9 +24,8 @@ use App\Enum\PurchasableLicenseType;
 use App\Enum\PurchasableSizeVariantType;
 use App\Models\Order;
 use App\Models\Purchasable;
-use Illuminate\Support\Facades\Session;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
-use Tests\Traits\RequireSE;
+use Tests\Traits\RequirePro;
 
 /**
  * Test class for BasketController.
@@ -42,7 +41,7 @@ use Tests\Traits\RequireSE;
  */
 class BasketControllerTest extends BaseApiWithDataTest
 {
-	use RequireSE;
+	use RequirePro;
 
 	private Purchasable $purchasable1;
 	private Purchasable $purchasable2;
@@ -51,7 +50,7 @@ class BasketControllerTest extends BaseApiWithDataTest
 	{
 		parent::setUp();
 
-		$this->requireSe();
+		$this->requirePro();
 
 		// Create purchasable items for testing
 		$this->purchasable1 = Purchasable::factory()
@@ -67,7 +66,7 @@ class BasketControllerTest extends BaseApiWithDataTest
 
 	public function tearDown(): void
 	{
-		$this->resetSe();
+		$this->resetPro();
 		parent::tearDown();
 	}
 
