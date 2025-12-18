@@ -190,6 +190,7 @@ function backToGallery() {
 }
 
 function loadOrder() {
+	loading.value = true;
 	WebshopService.Order.get(parseInt(orderId.value, 10), transactionId.value)
 		.then((response) => {
 			order.value = response.data;
