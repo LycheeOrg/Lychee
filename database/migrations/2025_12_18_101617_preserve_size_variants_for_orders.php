@@ -24,7 +24,6 @@ return new class() extends Migration {
 	 * Changes:
 	 * 1. Makes photo_id nullable in size_variants table
 	 * 2. Updates foreign key to use onDelete('set null')
-	 * 3. Adds onDelete('set null') to size_variant_id in order_items table
 	 */
 	public function up(): void
 	{
