@@ -37,9 +37,13 @@ export function useStepTwo(email: Ref<undefined | string>, orderManagement: Orde
 	}
 
 	function createSession() {
+		if (selectedProvider.value === undefined || email.value === undefined) {
+			return;
+		}
+
 		WebshopService.Checkout.createSession({
 			email: email.value,
-			provider: selectedProvider.value!,
+			provider: selectedProvider.value,
 		})
 			.then((response) => {
 				orderManagement.order = response.data;

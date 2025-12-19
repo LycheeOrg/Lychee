@@ -99,8 +99,13 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 
 			// semaphore to avoid multiple calls
 			if (this.is_loading) {
+				while (this.is_loading) {
+					await new Promise((resolve) => setTimeout(resolve, 100));
+				}
+
 				return Promise.resolve();
 			}
+
 			this.is_loading = true;
 
 			return InitService.fetchInitData()

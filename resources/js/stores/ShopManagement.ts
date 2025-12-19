@@ -29,7 +29,7 @@ export const useShopManagementStore = defineStore("webshop-management-store", {
 			return this.load();
 		},
 
-		load(): Promise<void> {
+		async load(): Promise<void> {
 			// Guard for SE.
 			if (useLycheeStateStore().is_se_enabled !== true) {
 				return Promise.resolve();
@@ -37,8 +37,13 @@ export const useShopManagementStore = defineStore("webshop-management-store", {
 
 			// semaphore to avoid multiple calls
 			if (this.is_loading) {
+				while (this.is_loading) {
+					await new Promise((resolve) => setTimeout(resolve, 100));
+				}
+
 				return Promise.resolve();
 			}
+
 			this.is_loading = true;
 
 			return ShopManagementService.options()

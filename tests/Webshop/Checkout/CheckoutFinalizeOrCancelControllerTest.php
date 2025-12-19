@@ -152,6 +152,104 @@ class CheckoutFinalizeOrCancelControllerTest extends BaseCheckoutControllerTest
 	}
 
 	/**
+	 * Test cancelling PayPal payment successfully returns CheckoutResource.
+	 *
+	 * @return void
+	 */
+	public function testCancelPaypalPaymentSuccess(): void
+	{
+		$this->test_order->status = PaymentStatusType::PROCESSING;
+		$this->test_order->provider = OmnipayProviderType::PAYPAL;
+		$this->test_order->save();
+
+		$transaction_id = $this->test_order->transaction_id;
+
+		$response = $this->get('/api/v2/Shop/Checkout/Cancel/' . $transaction_id);
+
+		// For PayPal, it should return JSON (CheckoutResource), not a redirect
+		$this->assertOk($response);
+		$response->assertJson([
+			'is_success' => true,
+			'complete_url' => null,
+			'redirect_url' => route('shop.checkout.cancelled'),
+			'message' => 'cancelled by user',
+		]);
+
+		// Verify order was marked as cancelled
+		$this->assertDatabaseHas('orders', [
+			'id' => $this->test_order->id,
+			'status' => PaymentStatusType::CANCELLED->value,
+		]);
+	}
+
+	/**
+	 * Test cancelling PayPal payment with invalid transaction ID.
+	 *
+	 * @return void
+	 */
+	public function testCancelPaypalPaymentInvalidTransactionId(): void
+	{
+		$invalid_transaction_id = 'invalid-transaction-id';
+
+		$response = $this->get('/api/v2/Shop/Checkout/Cancel/' . $invalid_transaction_id);
+
+		$this->assertNotFound($response);
+	}
+
+	/**
+	 * Test that PayPal cancellation returns CheckoutResource, not RedirectResponse.
+	 *
+	 * @return void
+	 */
+	public function testCancelPaypalReturnsJsonNotRedirect(): void
+	{
+		$this->test_order->status = PaymentStatusType::PROCESSING;
+		$this->test_order->provider = OmnipayProviderType::PAYPAL;
+		$this->test_order->save();
+
+		$transaction_id = $this->test_order->transaction_id;
+
+		$response = $this->get('/api/v2/Shop/Checkout/Cancel/' . $transaction_id);
+
+		// For PayPal, verify it returns JSON content type, not a redirect
+		$this->assertOk($response);
+		$response->assertHeader('Content-Type', 'application/json');
+
+		// Verify the response structure matches CheckoutResource
+		$response->assertJsonStructure([
+			'is_success',
+			'complete_url',
+			'redirect_url',
+			'message',
+			'order' => [
+				'id',
+				'transaction_id',
+				'status',
+			],
+		]);
+	}
+
+	/**
+	 * Test that non-PayPal provider cancellation still returns redirect.
+	 *
+	 * @return void
+	 */
+	public function testCancelNonPayPalReturnsRedirect(): void
+	{
+		$this->test_order->status = PaymentStatusType::PROCESSING;
+		$this->test_order->provider = OmnipayProviderType::DUMMY;
+		$this->test_order->save();
+
+		$transaction_id = $this->test_order->transaction_id;
+
+		$response = $this->get('/api/v2/Shop/Checkout/Cancel/' . $transaction_id);
+
+		// For non-PayPal providers, it should still return a redirect
+		$this->assertRedirect($response);
+		$response->assertRedirect(route('shop.checkout.cancelled'));
+	}
+
+	/**
 	 * Test complete checkout flow.
 	 *
 	 * @return void

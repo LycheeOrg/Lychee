@@ -280,10 +280,20 @@ function updateItemLink(link: ItemLink) {
 
 function markAsDelivered() {
 	if (order.value) {
-		WebshopService.Order.markAsDelivered(order.value.id, itemsToUpdate.value).then(() => {
-			itemsToUpdate.value = [];
-			loadOrder();
-		});
+		WebshopService.Order.markAsDelivered(order.value.id, itemsToUpdate.value)
+			.then(() => {
+				itemsToUpdate.value = [];
+				loadOrder();
+			})
+			.catch((error) => {
+				console.error("Error marking items as delivered:", error);
+				toast.add({
+					severity: "error",
+					summary: "something went wrong",
+					detail: "Could not mark item as delivered.",
+					life: 3000,
+				});
+			});
 	}
 }
 
