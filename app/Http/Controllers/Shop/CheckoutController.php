@@ -146,7 +146,7 @@ class CheckoutController extends Controller
 
 		if ($order->provider === OmnipayProviderType::PAYPAL) {
 			return new CheckoutResource(
-				is_success: $order->status === PaymentStatusType::COMPLETED,
+				is_success: $success,
 				complete_url: $complete_url,
 				redirect_url: $redirect_url,
 				message: $message,
