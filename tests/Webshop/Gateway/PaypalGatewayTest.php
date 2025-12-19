@@ -231,8 +231,6 @@ class PaypalGatewayTest extends AbstractTestCase
 		$orderItem1->size_variant_type = PurchasableSizeVariantType::MEDIUM;
 		$orderItem1->license_type = PurchasableLicenseType::PERSONAL;
 
-
-
 		$orderItem2 = \Mockery::mock(OrderItem::class)->makePartial();
 		$orderItem2->shouldAllowMockingProtectedMethods();
 		$orderItem2->title = 'Test Photo 2';
