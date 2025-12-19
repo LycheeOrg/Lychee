@@ -160,7 +160,6 @@ import { type CheckoutSteps } from "@/config/constants";
 import { useStepOffline } from "@/composables/checkout/useStepOffline";
 import { useSteps } from "@/composables/checkout/useSteps";
 import PaymentForm from "@/components/webshop/PaymentForm.vue";
-import { useMollie } from "@/composables/checkout/useMollie";
 import PaymentInProgress from "@/components/webshop/PaymentInProgress.vue";
 import WebshopService from "@/services/webshop-service";
 import ThankYou from "@/components/webshop/ThankYou.vue";
@@ -184,8 +183,7 @@ const ltr = computed(() => isLTR());
 
 const { email, options, loadCheckoutOptions, loadEmailForUser, isStepOneValid } = useStepOne(userStore, orderStore);
 const { stepToNumber, steps } = useSteps(options);
-const { mollie } = useMollie(options, toast);
-const { processPayment, isStepTwoValid, canProcessPayment } = useStepTwo(email, orderStore, toast, mollie);
+const { processPayment, isStepTwoValid, canProcessPayment } = useStepTwo(email, orderStore, toast);
 
 const { markAsOffline } = useStepOffline(email, router, orderStore);
 

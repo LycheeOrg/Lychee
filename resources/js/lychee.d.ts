@@ -103,7 +103,7 @@ declare namespace App.Enum {
 		| "microsoft"
 		| "nextcloud"
 		| "keycloak";
-	export type OmnipayProviderType = "Dummy" | "Mollie" | "PayPal_Express" | "PayPal_ExpressInContext" | "PayPal_Pro" | "PayPal_Rest" | "Stripe";
+	export type OmnipayProviderType = "Dummy" | "Mollie" | "PayPal" | "Stripe";
 	export type OrderSortingType = "ASC" | "DESC";
 	export type PaymentStatusType = "pending" | "cancelled" | "failed" | "refunded" | "processing" | "offline" | "completed" | "closed";
 	export type PhotoLayoutType = "square" | "justified" | "masonry" | "grid";
@@ -905,6 +905,7 @@ declare namespace App.Http.Resources.Shop {
 		payment_providers: App.Enum.OmnipayProviderType[];
 		mollie_profile_id: string;
 		stripe_public_key: string;
+		paypal_client_id: string;
 		is_test_mode: boolean;
 		is_lycheeorg_disclaimer_enabled: boolean;
 	};

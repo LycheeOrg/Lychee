@@ -4,24 +4,17 @@ import { AxiosError, AxiosResponse } from "axios";
 import { ToastServiceMethods } from "primevue/toastservice";
 import { Ref, ref } from "vue";
 import { trans } from "laravel-vue-i18n";
+import { useDummy } from "./useDummy";
+import { useMollie } from "./useMollie";
 
 const isStepTwoValid = ref(false);
 const canProcessPayment = ref(false);
 const selectedProvider = ref<undefined | App.Enum.OmnipayProviderType>(undefined);
-const cardDetails = ref<CardDetails>({
-	number: "",
-	expiryMonth: "",
-	expiryYear: "",
-	cvv: "",
-});
 
-export function useStepTwo(
-	email: Ref<undefined | string>,
-	orderManagement: OrderManagementStateStore,
-	toast: ToastServiceMethods,
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	mollie: Ref<any | undefined>,
-) {
+export function useStepTwo(email: Ref<undefined | string>, orderManagement: OrderManagementStateStore, toast: ToastServiceMethods) {
+	const { cardDetails, isCardNumberNotEmpty, isCardNumberValid, getFakeNumber, processDummyPayment } = useDummy(toast);
+	const { processMolliePayment } = useMollie(toast);
+
 	function setStepTwoValid() {
 		isStepTwoValid.value = isCardValid() && canProcessPayment.value === true;
 	}
@@ -31,47 +24,16 @@ export function useStepTwo(
 		setStepTwoValid();
 	}
 
-	function getFakeNumber() {
-		if (selectedProvider.value !== "Dummy") {
-			return;
-		}
-
-		navigator.clipboard
-			.writeText("4111111111111152")
-			.then(() => toast.add({ severity: "info", summary: trans("webshop.useStepTwo.fakeCardClipboard"), life: 3000 }));
-
-		return;
-	}
-
 	function isCardValid(): boolean {
 		if (selectedProvider.value === "Mollie") {
 			return true; // Mollie handles validation internally
 		}
 
-		return (
-			isCardNumberValid() &&
-			cardDetails.value.number.length > 0 &&
-			cardDetails.value.expiryMonth !== "" &&
-			cardDetails.value.expiryYear !== "" &&
-			cardDetails.value.cvv !== ""
-		);
-	}
-
-	function isCardNumberValid(): boolean {
-		const number = cardDetails.value.number.replace(/\s+/g, "");
-		const shouldDoubleEven = number.length % 2;
-		let sum = 0;
-		for (let i = 0; i < number.length; i++) {
-			let intVal = parseInt(number.charAt(i));
-			if (i % 2 === shouldDoubleEven) {
-				intVal *= 2;
-				if (intVal > 9) {
-					intVal = 1 + (intVal % 10);
-				}
-			}
-			sum += intVal;
+		if (selectedProvider.value === "PayPal") {
+			return true; // Paypal handles validation internally
 		}
-		return sum % 10 === 0;
+
+		return isCardNumberValid() && isCardNumberNotEmpty();
 	}
 
 	function createSession() {
@@ -91,44 +53,11 @@ export function useStepTwo(
 
 	async function processPayment() {
 		if (selectedProvider.value === "Mollie") {
-			await processMolliePayment();
+			await processMolliePayment(handleSuccess, handleError);
 			return;
 		}
 
-		WebshopService.Checkout.processCheckout({
-			additional_data: {
-				card: {
-					number: cardDetails.value.number.replace(/\s+/g, ""),
-					expiryMonth: cardDetails.value.expiryMonth,
-					expiryYear: cardDetails.value.expiryYear,
-					cvv: cardDetails.value.cvv,
-				},
-			},
-		})
-			.then(handleSuccess)
-			.catch(handleError);
-	}
-
-	async function processMolliePayment() {
-		const { token, error } = await mollie.value.createToken();
-		if (error) {
-			// Something wrong happened while creating the token. Handle this situation gracefully.
-			toast.add({
-				severity: "error",
-				summary: trans("toasts.error"),
-				detail: trans("Something went wrong with Mollie."),
-				life: 5000,
-			});
-			return;
-		}
-
-		WebshopService.Checkout.processCheckout({
-			additional_data: {
-				cardToken: token,
-			},
-		})
-			.then(handleSuccess)
-			.catch(handleError);
+		processDummyPayment(handleSuccess, handleError);
 	}
 
 	function handleSuccess(response: AxiosResponse<App.Http.Resources.Shop.CheckoutResource>) {

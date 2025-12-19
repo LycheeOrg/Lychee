@@ -1,6 +1,9 @@
 <template>
 	<div
-		class="w-full flex flex-col p-8 bg-surface-50 dark:bg-surface-950/25 rounded border border-surface-200 dark:border-surface-700"
+		class="w-full flex flex-col p-8 bg-surface-50 rounded border border-surface-200 dark:border-surface-700"
+		:class="{
+			'dark:bg-surface-950/25': selectedProvider !== 'PayPal',
+		}"
 		v-if="options !== undefined"
 	>
 		<div v-if="!canProcessPayment" class="flex flex-col">
@@ -26,6 +29,9 @@
 				"
 			></div>
 		</div>
+		<div v-else-if="selectedProvider === 'PayPal'" class="h-full flex flex-col justify-between">
+			<div id="paypal-button-container" class="flex flex-wrap gap-x-4 justify-between"></div>
+		</div>
 		<div v-else class="flex flex-col">
 			<div class="text-lg mb-12 font-bold text-center" @click="getFakeNumber">
 				{{ sprintf(trans("webshop.paymentForm.enterInfo"), selectedProvider) }}
@@ -46,6 +52,7 @@ import Select from "primevue/select";
 import { useMollie } from "@/composables/checkout/useMollie";
 import { trans } from "laravel-vue-i18n";
 import { sprintf } from "sprintf-js";
+import { usePaypal } from "@/composables/checkout/usePaypal";
 
 const userStore = useUserStore();
 const orderStore = useOrderManagementStore();
@@ -53,14 +60,19 @@ const orderStore = useOrderManagementStore();
 const toast = useToast();
 
 const { email, options } = useStepOne(userStore, orderStore);
-const { mollie, mollieComponent, mountMollie } = useMollie(options, toast);
-const { canProcessPayment, createSession, selectedProvider, updateCardDetails, getFakeNumber } = useStepTwo(email, orderStore, toast, mollie);
+const { mollieComponent, mountMollie } = useMollie(toast);
+const { mountPaypal } = usePaypal(toast);
+const { canProcessPayment, createSession, selectedProvider, updateCardDetails, getFakeNumber } = useStepTwo(email, orderStore, toast);
 
 watch(
 	() => selectedProvider.value,
 	async (new_val) => {
 		if (new_val === "Mollie") {
-			mountMollie();
+			mountMollie(options);
+		}
+		if (new_val === "PayPal") {
+			console.log("Mounting PayPal");
+			mountPaypal(options);
 		}
 	},
 );
