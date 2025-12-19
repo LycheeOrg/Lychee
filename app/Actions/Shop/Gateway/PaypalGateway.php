@@ -140,9 +140,6 @@ class PaypalGateway extends AbstractGateway implements GatewayInterface
 	 * - clientId: PayPal REST API client ID (string)
 	 * - secret: PayPal REST API secret key (string)
 	 *
-	 * Optional Parameters:
-	 * - testMode: Use sandbox environment if true, production if false (boolean)
-	 *
 	 * If required credentials are missing, the method returns early without
 	 * initializing the client. This allows the gateway to fail gracefully
 	 * during configuration validation.
@@ -164,7 +161,8 @@ class PaypalGateway extends AbstractGateway implements GatewayInterface
 					$parameters['secret']
 				)
 			)
-			->environment(Environment::SANDBOX)
+			->environment(
+				config('omnipay.testMode', false) === true ? Environment::SANDBOX : Environment::PRODUCTION)
 			->build();
 
 		return $this;
@@ -300,7 +298,7 @@ class PaypalGateway extends AbstractGateway implements GatewayInterface
 				['error' => 'Order creation failed with status: ' . json_encode($order)]
 			);
 		} catch (\Exception $e) {
-			Log::error('paypal purchase:', [$order]);
+			Log::error('paypal purchase:', [$e->getMessage()]);
 
 			return new OrderFailedResponse(
 				['error' => $e->getMessage()]
@@ -378,22 +376,7 @@ class PaypalGateway extends AbstractGateway implements GatewayInterface
 				return new CapturedResponse($capture->getId());
 			}
 
-			if ($capture instanceof ErrorException) {
-				Log::error('complete_purchase:', [$capture]);
-				/** @var \PaypalServerSdkLib\Models\ErrorDetails[] $details */
-				$details = $capture->getDetails();
-				if (count($details) > 0) {
-					return new CaptureFailedResponse([
-						'issue' => $details[0]->getIssue(),
-						'description' => $details[0]->getDescription(),
-					]);
-				}
-
-				return new CaptureFailedResponse([
-					'error' => 'Capture failed: ' . $capture->getMessage(),
-				]);
-			}
-
+			Log::error('complete_purchase:', [$capture]);
 			if (is_array($capture) && is_array($capture['details']) && $capture['details'][0]->issue === 'INSTRUMENT_DECLINED') {
 				return new CaptureFailedResponse([
 					'issue' => $capture['details'][0]->issue,

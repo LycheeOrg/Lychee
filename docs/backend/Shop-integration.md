@@ -206,4 +206,4 @@ Photos can be sold with different licensing terms:
 
 ---
 
-*Last updated: December 19, 2024*
+*Last updated: December 19, 2025*

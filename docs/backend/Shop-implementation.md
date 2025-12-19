@@ -378,10 +378,6 @@ The shop supports the following size variants (PurchasableSizeVariantType enum):
 - `ORIGINAL`: Original uploaded photo resolution ('original')
 - `FULL`: Largest size that can be exported by photographer ('full') - requires extra export
 
----
-
-*Last updated: December 19, 2024*
-
 **Note**: `FULL` differs from `ORIGINAL` in that `ORIGINAL` is the largest size uploaded to Lychee and can be directly downloaded, while `FULL` requires additional export work from the photographer.
 
 ### License Types  
@@ -624,5 +620,5 @@ Finalize → Verify PROCESSING status + provider match
 
 ---
 
-*Last updated: November 16, 2025*
+*Last updated: December 19, 2025*
 

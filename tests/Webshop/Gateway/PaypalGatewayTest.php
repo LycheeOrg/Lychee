@@ -231,8 +231,17 @@ class PaypalGatewayTest extends AbstractTestCase
 		$orderItem1->size_variant_type = PurchasableSizeVariantType::MEDIUM;
 		$orderItem1->license_type = PurchasableLicenseType::PERSONAL;
 
+
+
 		$orderItem2 = \Mockery::mock(OrderItem::class)->makePartial();
 		$orderItem2->shouldAllowMockingProtectedMethods();
+		$orderItem2->title = 'Test Photo 2';
+		$orderItem2->price_cents = new Money(1999, new Currency('USD'));
+		$orderItem2->purchasable_id = 456;
+		$orderItem2->size_variant_type = PurchasableSizeVariantType::MEDIUM2x;
+		$orderItem2->license_type = PurchasableLicenseType::COMMERCIAL;
+
+		$order->items = new Collection([$orderItem1, $orderItem2]);
 		// Initialize gateway
 		$this->gateway->initialize([
 			'clientId' => 'test-client-id',
@@ -262,7 +271,13 @@ class PaypalGatewayTest extends AbstractTestCase
 
 		$orderItem = \Mockery::mock(OrderItem::class)->makePartial();
 		$orderItem->shouldAllowMockingProtectedMethods();
+		$orderItem->title = 'Test Product';
+		$orderItem->price_cents = new Money(2499, new Currency('USD'));
+		$orderItem->purchasable_id = 789;
+		$orderItem->size_variant_type = PurchasableSizeVariantType::MEDIUM;
+		$orderItem->license_type = PurchasableLicenseType::PERSONAL;
 
+		$order->items = new Collection([$orderItem]);
 		// Initialize gateway
 		$this->gateway->initialize([
 			'clientId' => 'test-client-id',
@@ -290,6 +305,13 @@ class PaypalGatewayTest extends AbstractTestCase
 
 		$orderItem = \Mockery::mock(OrderItem::class)->makePartial();
 		$orderItem->shouldAllowMockingProtectedMethods();
+		$orderItem->title = 'Deleted Photo';
+		$orderItem->price_cents = new Money(1999, new Currency('USD'));
+		$orderItem->purchasable_id = null;  // This is the key for testing deleted purchasable
+		$orderItem->size_variant_type = PurchasableSizeVariantType::MEDIUM;
+		$orderItem->license_type = PurchasableLicenseType::PERSONAL;
+
+		$order->items = new Collection([$orderItem]);
 
 		// Initialize gateway
 		$this->gateway->initialize([
@@ -306,37 +328,11 @@ class PaypalGatewayTest extends AbstractTestCase
 	}
 
 	/**
-	 * Test purchase method returns response interface.
-	 *
-	 * Note: This test verifies the method signature and return type.
-	 * Actual PayPal API integration requires valid credentials.
+	 * Test getOrderDetails without initialization returns failure response.
 	 *
 	 * @return void
 	 */
-	public function testPurchaseMethodExists(): void
-	{
-		$this->assertTrue(method_exists($this->gateway, 'purchase'));
-	}
-
-	/**
-	 * Test completePurchase method exists.
-	 *
-	 * Note: This test verifies the method signature.
-	 * Actual PayPal API integration requires valid credentials.
-	 *
-	 * @return void
-	 */
-	public function testCompletePurchaseMethodExists(): void
-	{
-		$this->assertTrue(method_exists($this->gateway, 'completePurchase'));
-	}
-
-	/**
-	 * Test purchase without initialization returns failure response.
-	 *
-	 * @return void
-	 */
-	public function testPurchaseWithoutInitialization(): void
+	public function testGetOrderDetailsWithoutInitialization(): void
 	{
 		$order = \Mockery::mock(Order::class)->makePartial();
 		$order->shouldAllowMockingProtectedMethods();

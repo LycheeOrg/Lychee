@@ -178,7 +178,7 @@ class CheckoutProcessPaymentControllerTest extends BaseCheckoutControllerTest
 			]);
 
 			// Should respond appropriately based on provider
-			if ($provider === OmnipayProviderType::DUMMY || $provider === OmnipayProviderType::PAYPAL) {
+			if ($provider === OmnipayProviderType::DUMMY) {
 				$this->assertOk($response);
 			} else {
 				// Real providers might require different handling
