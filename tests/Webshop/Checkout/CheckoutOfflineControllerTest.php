@@ -21,8 +21,6 @@ namespace Tests\Webshop\Checkout;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Enum\PaymentStatusType;
 use App\Models\Configs;
-use Illuminate\Support\Facades\Cookie;
-use Illuminate\Support\Facades\Session;
 
 /**
  * Test class for CheckoutController Offline functionality.

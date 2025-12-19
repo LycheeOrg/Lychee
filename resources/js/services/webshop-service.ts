@@ -94,6 +94,9 @@ const CheckoutService = {
 	cancelPayment(transactionId: string): Promise<AxiosResponse<App.Http.Resources.Shop.CheckoutResource>> {
 		return axios.get(`${Constants.getApiUrl()}Shop/Checkout/Cancel/${transactionId}`, { data: {} });
 	},
+	completePayment(transactionId: string, provider: string): Promise<AxiosResponse<App.Http.Resources.Shop.CheckoutResource>> {
+		return axios.get(`${Constants.getApiUrl()}Shop/Checkout/Finalize/${provider}/${transactionId}`, { data: {} });
+	},
 	offline(data: OfflineCheckout): Promise<AxiosResponse<App.Http.Resources.Shop.CheckoutResource>> {
 		return axios.post(`${Constants.getApiUrl()}Shop/Checkout/Offline`, data);
 	},

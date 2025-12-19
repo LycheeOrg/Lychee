@@ -2,6 +2,8 @@ import { ToastServiceMethods } from "primevue/toastservice";
 import { Ref, ref } from "vue";
 import { $dt } from "@primeuix/themes";
 import { trans } from "laravel-vue-i18n";
+import WebshopService from "@/services/webshop-service";
+import { AxiosError, AxiosResponse } from "axios";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mollie = ref<any | undefined>(undefined);
@@ -25,8 +27,8 @@ async function waitForElement(id: string): Promise<HTMLElement> {
 	});
 }
 
-export function useMollie(options: Ref<undefined | App.Http.Resources.Shop.CheckoutOptionResource>, toast: ToastServiceMethods) {
-	async function mountMollie() {
+export function useMollie(toast: ToastServiceMethods) {
+	async function mountMollie(options: Ref<undefined | App.Http.Resources.Shop.CheckoutOptionResource>) {
 		if (options.value?.mollie_profile_id === undefined || options.value?.mollie_profile_id === null || options.value?.mollie_profile_id === "") {
 			toast.add({
 				severity: "error",
@@ -63,9 +65,35 @@ export function useMollie(options: Ref<undefined | App.Http.Resources.Shop.Check
 		mollieComponent.value.mount("#checkout");
 	}
 
+	async function processMolliePayment(
+		handleSuccess: (response: AxiosResponse<App.Http.Resources.Shop.CheckoutResource>) => void,
+		handleError: (error: AxiosError) => void,
+	) {
+		const { token, error } = await mollie.value.createToken();
+		if (error) {
+			// Something wrong happened while creating the token. Handle this situation gracefully.
+			toast.add({
+				severity: "error",
+				summary: trans("toasts.error"),
+				detail: trans("Something went wrong with Mollie."),
+				life: 5000,
+			});
+			return;
+		}
+
+		WebshopService.Checkout.processCheckout({
+			additional_data: {
+				cardToken: token,
+			},
+		})
+			.then(handleSuccess)
+			.catch(handleError);
+	}
+
 	return {
 		mollie,
 		mountMollie,
 		mollieComponent,
+		processMolliePayment,
 	};
 }

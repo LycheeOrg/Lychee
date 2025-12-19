@@ -43,6 +43,7 @@
     "dependencies": {
         "@fortawesome/fontawesome-free": "^7.1.0",
         "@mollie/api-client": "^4.3.3",
+        "@paypal/paypal-js": "^9.1.0",
         "@primeuix/themes": "^2.0.2",
         "@sidsbrmnn/scrollspy": "^1.1.0",
         "@stripe/stripe-js": "^8.0.0",
