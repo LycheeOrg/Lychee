@@ -210,9 +210,23 @@ return [
         "error" => "Error",
         "profileNotConfigured" => "Mollie profile ID is not configured."
     ],
+    "usePaypal" => [
+        "error" => "Error",
+        "client_id_missing" => "PayPal client ID is not configured.",
+        "sdkLoadError" => "PayPal JS SDK Load Error",
+        "sdkLoadErrorDetail" => "Failed to load the PayPal JS SDK script",
+        "paymentError" => "PayPal Payment Error",
+        "paymentErrorDetail" => "An error occurred during the PayPal payment process."
+    ],
     "buyMeActions" => [
         "success" => "Success",
         "addedToOrder" => "Added to order",
         "photoAddedToOrder" => "%s added to your order for %s"
+    ],
+    "cancelledFailed" => [
+        "paymentCancelled" => "Payment cancelled",
+        "paymentCancelledMessage" => "Payment has been cancelled.",
+        "paymentFailed" => "Payment failed",
+        "paymentFailedMessage" => "We were not able to confirm your payment. Please try again or contact support if the problem persists."
     ]
 ];
