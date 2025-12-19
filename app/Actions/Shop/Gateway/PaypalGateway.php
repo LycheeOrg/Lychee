@@ -22,7 +22,6 @@ use PaypalServerSdkLib\Models\CheckoutPaymentIntent;
 use PaypalServerSdkLib\Models\Order as PaypalOrder;
 use PaypalServerSdkLib\PaypalServerSdkClient;
 use PaypalServerSdkLib\PaypalServerSdkClientBuilder;
-
 use function Safe\json_encode;
 
 class PaypalGateway extends AbstractGateway implements GatewayInterface
@@ -119,7 +118,6 @@ class PaypalGateway extends AbstractGateway implements GatewayInterface
 	public function purchase(array $data): ResponseInterface
 	{
 		try {
-
 			$api_response = $this->client->getOrdersController()->createOrder($data);
 			/** @var PaypalOrder $order */
 			$order = $api_response->getResult();
@@ -131,11 +129,13 @@ class PaypalGateway extends AbstractGateway implements GatewayInterface
 			}
 
 			Log::error('paypal purchase:', [$order]);
+
 			return new OrderFailedResponse(
 				['error' => 'Order creation failed with status: ' . json_encode($order)]
 			);
 		} catch (\Exception $e) {
 			Log::error('paypal purchase:', [$order]);
+
 			return new OrderFailedResponse(
 				['error' => $e->getMessage()]
 			);
@@ -183,14 +183,14 @@ class PaypalGateway extends AbstractGateway implements GatewayInterface
 			}
 
 			if (is_array($capture) && is_array($capture['details']) && $capture['details'][0]->issue === 'INSTRUMENT_DECLINED') {
-					return new CaptureFailedResponse([
-						'issue' => $capture['details'][0]->issue,
-						'description' => $capture['details'][0]->description,
-						'message' => $capture['message'],
-						'debug_id' => $capture['debug_id'],
-						'error' => 'Capture failed',
-						'links' => $capture['links']
-					]);
+				return new CaptureFailedResponse([
+					'issue' => $capture['details'][0]->issue,
+					'description' => $capture['details'][0]->description,
+					'message' => $capture['message'],
+					'debug_id' => $capture['debug_id'],
+					'error' => 'Capture failed',
+					'links' => $capture['links'],
+				]);
 			}
 
 			return new CaptureFailedResponse([
