@@ -52,6 +52,8 @@
 	<env name="STRIPE_PUBLISHABLE_KEY" value="" />
 	<env name="MOLLIE_API_KEY" value="" />
 	<env name="MOLLIE_PROFILE_ID" value="" />
+	<env name="PAYPAL_CLIENT_ID" value="" />
+	<env name="PAYPAL_SECRET" value="" />
 	<env name="WEBSHOP_ENABLED" value="true"/>
   </php>
   <source>
