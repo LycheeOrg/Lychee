@@ -18,7 +18,6 @@ use Omnipay\Common\GatewayInterface;
 use Omnipay\Common\Message\ResponseInterface;
 use PaypalServerSdkLib\Authentication\ClientCredentialsAuthCredentialsBuilder;
 use PaypalServerSdkLib\Environment;
-use PaypalServerSdkLib\Exceptions\ErrorException;
 use PaypalServerSdkLib\Models\Builders\AmountBreakdownBuilder;
 use PaypalServerSdkLib\Models\Builders\AmountWithBreakdownBuilder;
 use PaypalServerSdkLib\Models\Builders\ItemBuilder;
@@ -77,6 +76,18 @@ class PaypalGateway extends AbstractGateway implements GatewayInterface
 	 * in the initialize() method with credentials from configuration.
 	 */
 	private ?PaypalServerSdkClient $client = null;
+
+	/**
+	 * Setter for unit tests.
+	 *
+	 * @param PaypalServerSdkClient $client
+	 *
+	 * @return void
+	 */
+	public function setClient(PaypalServerSdkClient $client): void
+	{
+		$this->client = $client;
+	}
 
 	/**
 	 * Get the human-readable name of the payment gateway.
