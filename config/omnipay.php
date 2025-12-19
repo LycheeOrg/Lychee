@@ -31,48 +31,9 @@ return [
 		'apiKey' => env('STRIPE_API_KEY', ''),
 	],
 
-	// https://github.com/thephpleague/omnipay-paypal/blob/master/src/RestGateway.php
-	'PayPal_Rest' => [
+	'PayPal' => [
 		'clientId' => env('PAYPAL_CLIENT_ID', ''),
 		'secret' => env('PAYPAL_SECRET', ''),
 		'testMode' => (bool) env('OMNIPAY_TEST_MODE', false),
-	],
-
-	// https://github.com/thephpleague/omnipay-paypal/blob/master/src/ProGateway.php
-	'PayPal_Pro' => [
-		'username' => env('PAYPAL_API_USERNAME', ''),
-		'password' => env('PAYPAL_API_PASSWORD', ''),
-		'signature' => env('PAYPAL_API_SIGNATURE', ''),
-		'testMode' => (bool) env('OMNIPAY_TEST_MODE', false),
-	],
-
-	// https://github.com/thephpleague/omnipay-paypal/blob/master/src/ExpressGateway.php
-	'PayPal_Express' => [
-		'username' => env('PAYPAL_API_USERNAME', ''),
-		'password' => env('PAYPAL_API_PASSWORD', ''),
-		'signature' => env('PAYPAL_API_SIGNATURE', ''),
-		'testMode' => (bool) env('OMNIPAY_TEST_MODE', false),
-
-		'solutionType' => 'Sole', // array('Sole', 'Mark'),
-		'landingPage' => 'Billing', // array('Billing', 'Login'),
-		'brandName' => '',
-		'headerImageUrl' => '',
-		'logoImageUrl' => '',
-		'borderColor' => '',
-	],
-
-	// https://github.com/thephpleague/omnipay-paypal/blob/master/src/ExpressInContextGateway.php
-	'PayPal_ExpressInContext' => [
-		'username' => env('PAYPAL_API_USERNAME', ''),
-		'password' => env('PAYPAL_API_PASSWORD', ''),
-		'signature' => env('PAYPAL_API_SIGNATURE', ''),
-		'testMode' => (bool) env('OMNIPAY_TEST_MODE', false),
-
-		'solutionType' => 'Sole', // array('Sole', 'Mark'),
-		'landingPage' => 'Billing', // array('Billing', 'Login'),
-		'brandName' => '',
-		'headerImageUrl' => '',
-		'logoImageUrl' => '',
-		'borderColor' => '',
 	],
 ];

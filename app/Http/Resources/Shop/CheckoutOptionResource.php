@@ -26,6 +26,7 @@ class CheckoutOptionResource extends Data
 	public array $payment_providers = [];
 	public string $mollie_profile_id;
 	public string $stripe_public_key;
+	public string $paypal_client_id;
 	public bool $is_test_mode;
 	public bool $is_lycheeorg_disclaimer_enabled;
 
@@ -42,6 +43,7 @@ class CheckoutOptionResource extends Data
 		$this->mollie_profile_id = config('omnipay.Mollie.profileId', '');
 		// Disable Stripe. It is not working yet, maybe later.
 		$this->stripe_public_key = ''; // config('omnipay.Stripe.publishableKey', '');
+		$this->paypal_client_id = config('omnipay.PayPal.clientId', '');
 		$this->is_test_mode = config('omnipay.testMode', false) === true;
 	}
 }
