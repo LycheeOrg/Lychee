@@ -144,7 +144,7 @@ class CheckoutController extends Controller
 			$message = 'Payment completed successfully.';
 		}
 
-		if ($request->provider_type() === OmnipayProviderType::PAYPAL) {
+		if ($order->provider === OmnipayProviderType::PAYPAL) {
 			return new CheckoutResource(
 				is_success: $order->status === PaymentStatusType::COMPLETED,
 				complete_url: $complete_url,
@@ -164,15 +164,25 @@ class CheckoutController extends Controller
 	/**
 	 * Handle cancellation of the payment process.
 	 *
-	 * @return RedirectResponse The cancellation response
+	 * @return RedirectResponse|CheckoutResource The cancellation response
 	 */
-	public function cancel(CancelRequest $request): RedirectResponse
+	public function cancel(CancelRequest $request): RedirectResponse|CheckoutResource
 	{
 		$order = $request->basket();
 
 		// Mark the order as cancelled
 		$order->status = PaymentStatusType::CANCELLED;
 		$order->save();
+
+		if ($order->provider === OmnipayProviderType::PAYPAL) {
+			return new CheckoutResource(
+				is_success: true,
+				is_redirect: false,
+				redirect_url: route('shop.checkout.cancelled'),
+				message: 'cancelled by user',
+				order: OrderResource::fromModel($order),
+			);
+		}
 
 		return redirect()->route('shop.checkout.cancelled');
 	}
