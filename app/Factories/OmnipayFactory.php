@@ -30,8 +30,7 @@ class OmnipayFactory
 	{
 		$gateway = match ($provider) {
 			OmnipayProviderType::PAYPAL => new PaypalGateway(), // home backed...
-			OmnipayProviderType::MOLLIE,
-			OmnipayProviderType::DUMMY => Omnipay::create($provider->value),
+			default => Omnipay::create($provider->value),
 		};
 
 		$gateway = $this->initialize_gateway($gateway, $provider);

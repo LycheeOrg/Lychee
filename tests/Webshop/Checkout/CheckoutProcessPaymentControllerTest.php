@@ -156,7 +156,7 @@ class CheckoutProcessPaymentControllerTest extends BaseCheckoutControllerTest
 		$providers = [
 			OmnipayProviderType::DUMMY,
 			OmnipayProviderType::STRIPE,
-			OmnipayProviderType::PAYPAL_EXPRESS,
+			OmnipayProviderType::PAYPAL,
 		];
 
 		foreach ($providers as $provider) {
@@ -178,7 +178,7 @@ class CheckoutProcessPaymentControllerTest extends BaseCheckoutControllerTest
 			]);
 
 			// Should respond appropriately based on provider
-			if ($provider === OmnipayProviderType::DUMMY) {
+			if ($provider === OmnipayProviderType::DUMMY || $provider === OmnipayProviderType::PAYPAL) {
 				$this->assertOk($response);
 			} else {
 				// Real providers might require different handling
