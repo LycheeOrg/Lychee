@@ -37,8 +37,8 @@ export function usePaypal(toast: ToastServiceMethods) {
 		} catch (error) {
 			toast.add({
 				severity: "error",
-				summary: "PayPal JS SDK Load Error",
-				detail: "failed to load the PayPal JS SDK script",
+				summary: trans("webshop.usePaypal.sdkLoadError"),
+				detail: trans("webshop.usePaypal.sdkLoadErrorDetail"),
 				life: 3000,
 			});
 			console.error("failed to load the PayPal JS SDK script", error);
@@ -50,6 +50,16 @@ export function usePaypal(toast: ToastServiceMethods) {
 					.Buttons({
 						createOrder: createOrder,
 						onApprove: onApprove,
+						onCancel: onCancel,
+						onError: (err: unknown) => {
+							console.error("PayPal Buttons onError", err);
+							toast.add({
+								severity: "error",
+								summary: trans("webshop.usePaypal.paymentError"),
+								detail: trans("webshop.usePaypal.paymentErrorDetail"),
+								life: 3000,
+							});
+						},
 					})
 					.render("#paypal-button-container");
 			} catch (error) {
@@ -99,6 +109,18 @@ export function usePaypal(toast: ToastServiceMethods) {
 		} catch (error) {
 			console.error(error);
 		}
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	async function onCancel(data: any) {
+		WebshopService.Checkout.cancelPayment(data.orderID)
+			.then((response) => {
+				console.log(response.data);
+				window.location.href = response.data.redirect_url ?? "/";
+			})
+			.catch((error) => {
+				console.error("Error cancelling PayPal payment", error);
+			});
 	}
 
 	return {

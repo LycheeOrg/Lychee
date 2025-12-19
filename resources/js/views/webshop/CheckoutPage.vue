@@ -81,7 +81,8 @@
 					</StepPanel>
 					<StepPanel :value="3">
 						<div class="flex flex-col h-48">
-							<ThankYou />
+							<ThankYou v-if="['completed', 'closed'].includes(order?.status ?? '')" />
+							<CancelledFailed v-else />
 							<div class="flex pt-6 ltr:justify-end rtl:justify-start">
 								<Button
 									v-if="ltr"
@@ -165,6 +166,7 @@ import WebshopService from "@/services/webshop-service";
 import ThankYou from "@/components/webshop/ThankYou.vue";
 import { useLtRorRtL } from "@/utils/Helpers";
 import GoBack from "@/components/headers/GoBack.vue";
+import CancelledFailed from "@/components/webshop/CancelledFailed.vue";
 
 const props = defineProps<{
 	step?: CheckoutSteps;
