@@ -299,8 +299,7 @@ return [
         'webshop_offline' => 'Le traitement des paiements est ignoré. Les commandes sont marquées OFFLINE.',
         'deduplicate_pinned_albums' => 'Les albums mis en avant n’apparaissent qu’une seule fois sur la page principale.',
         'desktop_dock_full_transparency_enabled' => 'En vue photo le dock devient totalement transparent (affiché au survol).',
-        'mobile_dock_full_transparency_enabled' => '<span class="pi pi-exclamation-triangle text-orange-500"></span> Impacte l’ergonomie mobile. En vue photo le dock devient totalement transparent (affiché au tap).',
-    ],
+        'mobile_dock_full_transparency_enabled' => '<span class="pi pi-exclamation-triangle text-orange-500"></span> Impacte l’ergonomie mobile. En vue photo le dock devient totalement transparent (affiché au tap).',        'enable_smart_album_per_owner' => 'Only display pictures owned by the user in smart albums.',    ],
     'documentation' => [
         'version' => 'Version actuelle de Lychee',
         'check_for_updates' => 'Vérifier automatiquement les nouvelles mises à jour',
@@ -595,6 +594,5 @@ return [
         'webshop_offline' => 'Garder la boutique hors ligne (traitement des paiements désactivé)',
         'deduplicate_pinned_albums' => 'Ne montrer les albums mis en avant qu’une seule fois sur la page principale',
         'desktop_dock_full_transparency_enabled' => 'Sur la vue photo, rendre le dock totalement transparent (apparition au survol)',
-        'mobile_dock_full_transparency_enabled' => '<span class="pi pi-exclamation-triangle text-orange-500"></span> Impacte l’ergonomie mobile. Rendre le dock totalement transparent (apparition au tap).',
-    ],
+        'mobile_dock_full_transparency_enabled' => '<span class="pi pi-exclamation-triangle text-orange-500"></span> Impacte l’ergonomie mobile. Rendre le dock totalement transparent (apparition au tap).',        'enable_smart_album_per_owner' => 'This setting is only applied to logged-in users. "Smart album visibility overrides" must be disabled for this to take effect.',    ],
 ];

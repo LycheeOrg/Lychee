@@ -30,6 +30,7 @@ use App\SmartAlbums\Utils\MimicModel;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Class BaseSmartAlbum.
@@ -113,6 +114,7 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 		// If the smart album visibility override is enabled, we do not need to apply any security filter, as all photos are visible
 		// in this smart album. We still need to apply the smart album condition, though.
 		return $this->photo_query_policy->applySensitivityFilter(query: $base_query, origin: null, include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_smart_albums'))
+			->when(Configs::getValueAsBool('enable_smart_album_per_owner') && Auth::check(), fn (Builder $query) => $query->where('photos.owner_id', '=', Auth::id()))
 			->where($this->smart_photo_condition);
 	}
 
