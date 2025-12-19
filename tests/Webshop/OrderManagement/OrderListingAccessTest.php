@@ -66,7 +66,7 @@ class OrderListingAccessTest extends BaseApiWithDataTest
 		$this->order2 = Order::factory()
 			->forUser($this->userMayUpload2)
 			->withTransactionId($this->transaction_id2)
-			->withProvider(OmnipayProviderType::PAYPAL_EXPRESS)
+			->withProvider(OmnipayProviderType::PAYPAL)
 			->withStatus(PaymentStatusType::PENDING)
 			->withEmail($this->userMayUpload2->email)
 			->create();
