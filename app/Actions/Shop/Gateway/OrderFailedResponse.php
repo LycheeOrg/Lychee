@@ -13,7 +13,7 @@ class OrderFailedResponse implements ResponseInterface
 	) {
 		$error_details = $details['details'][0] ?? null;
 		$this->message = $error_details !== null
-			? ($error_details['issue'] . ' ' . $error_details['description'] . ' (' . ($this->details['debug_id'] ?? '') . ')') :
+			? ($error_details['issue'] . ' ' . $error_details['description'] . ' (' . ($details['debug_id'] ?? '') . ')') :
 			($details['error'] ?? 'Unknown error');
 	}
 

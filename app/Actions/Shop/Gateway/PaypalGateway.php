@@ -23,6 +23,8 @@ use PaypalServerSdkLib\Models\Order as PaypalOrder;
 use PaypalServerSdkLib\PaypalServerSdkClient;
 use PaypalServerSdkLib\PaypalServerSdkClientBuilder;
 
+use function Safe\json_encode;
+
 class PaypalGateway extends AbstractGateway implements GatewayInterface
 {
 	private PaypalServerSdkClient $client;
@@ -49,7 +51,7 @@ class PaypalGateway extends AbstractGateway implements GatewayInterface
 	public function initialize(array $parameters = [])
 	{
 		if (!isset($parameters['clientId']) || !isset($parameters['secret'])) {
-			return; // Do nothing.
+			return $this;
 		}
 
 		$this->client = PaypalServerSdkClientBuilder::init()
@@ -61,6 +63,8 @@ class PaypalGateway extends AbstractGateway implements GatewayInterface
 			)
 			->environment(Environment::SANDBOX)
 			->build();
+
+		return $this;
 	}
 
 	/**
@@ -144,8 +148,6 @@ class PaypalGateway extends AbstractGateway implements GatewayInterface
 	 * @param mixed $options
 	 *
 	 * @return mixed
-	 *
-	 * @throws mixed
 	 */
 	public function completePurchase($options)
 	{
@@ -156,7 +158,7 @@ class PaypalGateway extends AbstractGateway implements GatewayInterface
 		try {
 			$api_response = $this->client->getOrdersController()->captureOrder($capture_body);
 
-			/** @var PaypalOrder|array{name:string,details:object{issue:string,description:string}[],message:string,debug_id:string} $order */
+			/** @var PaypalOrder|array{name:string,details:object{issue:string,description:string}[],message:string,debug_id:string,links:string[]} $capture */
 			$capture = $api_response->getResult();
 
 			if ($capture instanceof PaypalOrder && $capture->getStatus() === 'COMPLETED') {
