@@ -358,6 +358,298 @@ class PaypalGatewayTest extends AbstractTestCase
 		$this->assertTrue(class_exists(CaptureFailedResponse::class));
 	}
 
+	/**
+	 * Test purchase method throws exception when client not initialized.
+	 *
+	 * @return void
+	 */
+	public function testPurchaseThrowsExceptionWithoutClient(): void
+	{
+		$this->expectException(LycheeLogicException::class);
+		$this->expectExceptionMessage('PayPal client not initialized');
+
+		$this->gateway->purchase(['body' => 'test']);
+	}
+
+	/**
+	 * Test purchase method returns OrderCreatedResponse on success.
+	 *
+	 * @return void
+	 */
+	public function testPurchaseReturnsOrderCreatedResponse(): void
+	{
+		// Mock PayPal Order
+		$paypalOrder = \Mockery::mock(\PaypalServerSdkLib\Models\Order::class);
+		$paypalOrder->shouldReceive('getStatus')->andReturn('CREATED');
+		$paypalOrder->shouldReceive('getId')->andReturn('test-order-id-123');
+
+		// Mock API response
+		$apiResponse = \Mockery::mock(\PaypalServerSdkLib\Http\ApiResponse::class);
+		$apiResponse->shouldReceive('getResult')->andReturn($paypalOrder);
+
+		// Mock Orders controller
+		$ordersController = \Mockery::mock(\PaypalServerSdkLib\Controllers\OrdersController::class);
+		$ordersController->shouldReceive('createOrder')
+			->once()
+			->with(\Mockery::type('array'))
+			->andReturn($apiResponse);
+
+		// Mock PayPal client
+		$client = \Mockery::mock(\PaypalServerSdkLib\PaypalServerSdkClient::class);
+		$client->shouldReceive('getOrdersController')->andReturn($ordersController);
+
+		// Set the mocked client
+		$this->gateway->setClient($client);
+
+		// Create order request
+		$orderRequest = \PaypalServerSdkLib\Models\Builders\OrderRequestBuilder::init(
+			CheckoutPaymentIntent::CAPTURE,
+			[]
+		)->build();
+
+		$response = $this->gateway->purchase(['body' => $orderRequest]);
+
+		$this->assertInstanceOf(OrderCreatedResponse::class, $response);
+		$this->assertTrue($response->isSuccessful());
+		$this->assertEquals('test-order-id-123', $response->getTransactionReference());
+	}
+
+	/**
+	 * Test purchase method returns OrderFailedResponse when status is not CREATED.
+	 *
+	 * @return void
+	 */
+	public function testPurchaseReturnsOrderFailedResponseOnInvalidStatus(): void
+	{
+		// Mock PayPal Order with non-CREATED status
+		$paypalOrder = \Mockery::mock(\PaypalServerSdkLib\Models\Order::class);
+		$paypalOrder->shouldReceive('getStatus')->andReturn('FAILED');
+		$paypalOrder->shouldReceive('getId')->andReturn('test-order-id-456');
+
+		// Mock API response
+		$apiResponse = \Mockery::mock(\PaypalServerSdkLib\Http\ApiResponse::class);
+		$apiResponse->shouldReceive('getResult')->andReturn($paypalOrder);
+
+		// Mock Orders controller
+		$ordersController = \Mockery::mock(\PaypalServerSdkLib\Controllers\OrdersController::class);
+		$ordersController->shouldReceive('createOrder')
+			->once()
+			->andReturn($apiResponse);
+
+		// Mock PayPal client
+		$client = \Mockery::mock(\PaypalServerSdkLib\PaypalServerSdkClient::class);
+		$client->shouldReceive('getOrdersController')->andReturn($ordersController);
+
+		// Set the mocked client
+		$this->gateway->setClient($client);
+
+		// Create order request
+		$orderRequest = \PaypalServerSdkLib\Models\Builders\OrderRequestBuilder::init(
+			CheckoutPaymentIntent::CAPTURE,
+			[]
+		)->build();
+
+		$response = $this->gateway->purchase(['body' => $orderRequest]);
+
+		$this->assertInstanceOf(OrderFailedResponse::class, $response);
+		$this->assertFalse($response->isSuccessful());
+	}
+
+	/**
+	 * Test purchase method returns OrderFailedResponse on exception.
+	 *
+	 * @return void
+	 */
+	public function testPurchaseReturnsOrderFailedResponseOnException(): void
+	{
+		// Mock Orders controller that throws exception
+		$ordersController = \Mockery::mock(\PaypalServerSdkLib\Controllers\OrdersController::class);
+		$ordersController->shouldReceive('createOrder')
+			->once()
+			->andThrow(new \Exception('PayPal API error'));
+
+		// Mock PayPal client
+		$client = \Mockery::mock(\PaypalServerSdkLib\PaypalServerSdkClient::class);
+		$client->shouldReceive('getOrdersController')->andReturn($ordersController);
+
+		// Set the mocked client
+		$this->gateway->setClient($client);
+
+		// Create order request
+		$orderRequest = \PaypalServerSdkLib\Models\Builders\OrderRequestBuilder::init(
+			CheckoutPaymentIntent::CAPTURE,
+			[]
+		)->build();
+
+		$response = $this->gateway->purchase(['body' => $orderRequest]);
+
+		$this->assertInstanceOf(OrderFailedResponse::class, $response);
+		$this->assertFalse($response->isSuccessful());
+		$this->assertStringContainsString('PayPal API error', $response->getMessage());
+	}
+
+	/**
+	 * Test completePurchase method throws exception when client not initialized.
+	 *
+	 * @return void
+	 */
+	public function testCompletePurchaseThrowsExceptionWithoutClient(): void
+	{
+		$this->expectException(LycheeLogicException::class);
+		$this->expectExceptionMessage('PayPal client not initialized');
+
+		$this->gateway->completePurchase(['transactionReference' => 'test-order-id']);
+	}
+
+	/**
+	 * Test completePurchase method returns CapturedResponse on success.
+	 *
+	 * @return void
+	 */
+	public function testCompletePurchaseReturnsCapturedResponse(): void
+	{
+		// Mock PayPal Order with COMPLETED status
+		$paypalOrder = \Mockery::mock(\PaypalServerSdkLib\Models\Order::class);
+		$paypalOrder->shouldReceive('getStatus')->andReturn('COMPLETED');
+		$paypalOrder->shouldReceive('getId')->andReturn('test-order-id-789');
+
+		// Mock API response
+		$apiResponse = \Mockery::mock(\PaypalServerSdkLib\Http\ApiResponse::class);
+		$apiResponse->shouldReceive('getResult')->andReturn($paypalOrder);
+
+		// Mock Orders controller
+		$ordersController = \Mockery::mock(\PaypalServerSdkLib\Controllers\OrdersController::class);
+		$ordersController->shouldReceive('captureOrder')
+			->once()
+			->with(['id' => 'test-order-id-789'])
+			->andReturn($apiResponse);
+
+		// Mock PayPal client
+		$client = \Mockery::mock(\PaypalServerSdkLib\PaypalServerSdkClient::class);
+		$client->shouldReceive('getOrdersController')->andReturn($ordersController);
+
+		// Set the mocked client
+		$this->gateway->setClient($client);
+
+		$response = $this->gateway->completePurchase(['transactionReference' => 'test-order-id-789']);
+
+		$this->assertInstanceOf(CapturedResponse::class, $response);
+		$this->assertTrue($response->isSuccessful());
+		$this->assertEquals('test-order-id-789', $response->getTransactionReference());
+	}
+
+	/**
+	 * Test completePurchase method returns CaptureFailedResponse when status is not COMPLETED.
+	 *
+	 * @return void
+	 */
+	public function testCompletePurchaseReturnsCaptureFailedResponseOnInvalidStatus(): void
+	{
+		// Mock PayPal Order with non-COMPLETED status
+		$paypalOrder = \Mockery::mock(\PaypalServerSdkLib\Models\Order::class);
+		$paypalOrder->shouldReceive('getStatus')->andReturn('PENDING');
+		$paypalOrder->shouldReceive('getId')->andReturn('test-order-id-999');
+		// Make it JSON serializable
+		$paypalOrder->shouldReceive('jsonSerialize')->andReturn(['id' => 'test-order-id-999', 'status' => 'PENDING']);
+
+		// Mock API response
+		$apiResponse = \Mockery::mock(\PaypalServerSdkLib\Http\ApiResponse::class);
+		$apiResponse->shouldReceive('getResult')->andReturn($paypalOrder);
+
+		// Mock Orders controller
+		$ordersController = \Mockery::mock(\PaypalServerSdkLib\Controllers\OrdersController::class);
+		$ordersController->shouldReceive('captureOrder')
+			->once()
+			->andReturn($apiResponse);
+
+		// Mock PayPal client
+		$client = \Mockery::mock(\PaypalServerSdkLib\PaypalServerSdkClient::class);
+		$client->shouldReceive('getOrdersController')->andReturn($ordersController);
+
+		// Set the mocked client
+		$this->gateway->setClient($client);
+
+		$response = $this->gateway->completePurchase(['transactionReference' => 'test-order-id-999']);
+
+		$this->assertInstanceOf(CaptureFailedResponse::class, $response);
+		$this->assertFalse($response->isSuccessful());
+	}
+
+	/**
+	 * Test completePurchase method returns CaptureFailedResponse on INSTRUMENT_DECLINED.
+	 *
+	 * @return void
+	 */
+	public function testCompletePurchaseReturnsCaptureFailedResponseOnInstrumentDeclined(): void
+	{
+		// Mock PayPal error response with INSTRUMENT_DECLINED
+		// Note: details is an array of objects (not arrays)
+		$errorDetails = (object) [
+			'issue' => 'INSTRUMENT_DECLINED',
+			'description' => 'The instrument presented was either declined by the processor or bank, or it cannot be used for this payment.',
+		];
+
+		$errorResponse = [
+			'name' => 'UNPROCESSABLE_ENTITY',
+			'details' => [$errorDetails],
+			'message' => 'The requested action could not be performed, semantically incorrect, or failed business validation.',
+			'debug_id' => 'abc123',
+			'links' => ['https://example.com'],
+		];
+
+		// Mock API response
+		$apiResponse = \Mockery::mock(\PaypalServerSdkLib\Http\ApiResponse::class);
+		$apiResponse->shouldReceive('getResult')->andReturn($errorResponse);
+
+		// Mock Orders controller
+		$ordersController = \Mockery::mock(\PaypalServerSdkLib\Controllers\OrdersController::class);
+		$ordersController->shouldReceive('captureOrder')
+			->once()
+			->andReturn($apiResponse);
+
+		// Mock PayPal client
+		$client = \Mockery::mock(\PaypalServerSdkLib\PaypalServerSdkClient::class);
+		$client->shouldReceive('getOrdersController')->andReturn($ordersController);
+
+		// Set the mocked client
+		$this->gateway->setClient($client);
+
+		$response = $this->gateway->completePurchase(['transactionReference' => 'test-order-id-declined']);
+
+		$this->assertInstanceOf(CaptureFailedResponse::class, $response);
+		$this->assertFalse($response->isSuccessful());
+		// The message will be "Capture failed" because the PaypalGateway flattens
+		// the error structure and uses 'error' key, which OrderFailedResponse falls back to
+		$this->assertEquals('Capture failed', $response->getMessage());
+	}
+
+	/**
+	 * Test completePurchase method returns OrderFailedResponse on exception.
+	 *
+	 * @return void
+	 */
+	public function testCompletePurchaseReturnsOrderFailedResponseOnException(): void
+	{
+		// Mock Orders controller that throws exception
+		$ordersController = \Mockery::mock(\PaypalServerSdkLib\Controllers\OrdersController::class);
+		$ordersController->shouldReceive('captureOrder')
+			->once()
+			->andThrow(new \Exception('Network timeout'));
+
+		// Mock PayPal client
+		$client = \Mockery::mock(\PaypalServerSdkLib\PaypalServerSdkClient::class);
+		$client->shouldReceive('getOrdersController')->andReturn($ordersController);
+
+		// Set the mocked client
+		$this->gateway->setClient($client);
+
+		$response = $this->gateway->completePurchase(['transactionReference' => 'test-order-id-error']);
+
+		$this->assertInstanceOf(OrderFailedResponse::class, $response);
+		$this->assertFalse($response->isSuccessful());
+		$this->assertStringContainsString('Network timeout', $response->getMessage());
+	}
+
 	public function tearDown(): void
 	{
 		\Mockery::close();
