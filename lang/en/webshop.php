@@ -79,7 +79,10 @@ return [
         "download" => "Download",
         "downloadNotAvailable" => "Download not available (yet)",
         "copiedToClipboard" => "Copied to clipboard",
-        "orderLinkCopied" => "Order link copied to clipboard"
+        "orderLinkCopied" => "Order link copied to clipboard",
+        "couldNotCopy" => "Could not copy to clipboard.",
+        "somethingWentWrong" => "Something went wrong",
+        "couldNotMarkDelivered" => "Could not mark item as delivered."
     ],
     "status" => [
         "pending" => "Pending",
@@ -208,7 +211,8 @@ return [
     ],
     "useMollie" => [
         "error" => "Error",
-        "profileNotConfigured" => "Mollie profile ID is not configured."
+        "profileNotConfigured" => "Mollie profile ID is not configured.",
+        "somethingWentWrong" => "Something went wrong with Mollie."
     ],
     "usePaypal" => [
         "error" => "Error",
