@@ -30,7 +30,8 @@ export function useStepTwo(email: Ref<undefined | string>, orderManagement: Orde
 		}
 
 		if (selectedProvider.value === "PayPal") {
-			return true; // Paypal handles validation internally
+			return false; // Paypal handles validation internally
+			// We want to disable the next button until PayPal process is complete
 		}
 
 		return isCardNumberValid() && isCardNumberNotEmpty();
@@ -59,6 +60,10 @@ export function useStepTwo(email: Ref<undefined | string>, orderManagement: Orde
 		if (selectedProvider.value === "Mollie") {
 			await processMolliePayment(handleSuccess, handleError);
 			return;
+		}
+
+		if (selectedProvider.value === "PayPal") {
+			return; // PayPal payment is handled separately
 		}
 
 		processDummyPayment(handleSuccess, handleError);

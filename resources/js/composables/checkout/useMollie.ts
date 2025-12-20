@@ -15,13 +15,17 @@ function isDarkMode(): boolean {
 	return document.body.classList.contains("dark");
 }
 
-async function waitForElement(id: string): Promise<HTMLElement> {
-	return new Promise((resolve) => {
+async function waitForElement(id: string, timeoutMs: number = 5000): Promise<HTMLElement> {
+	return new Promise((resolve, reject) => {
+		const startTime = Date.now();
 		const interval = setInterval(() => {
 			const element = document.getElementById(id);
 			if (element) {
 				clearInterval(interval);
 				resolve(element);
+			} else if (Date.now() - startTime > timeoutMs) {
+				clearInterval(interval);
+				reject(new Error(`Element with id "${id}" not found within ${timeoutMs}ms`));
 			}
 		}, 100);
 	});

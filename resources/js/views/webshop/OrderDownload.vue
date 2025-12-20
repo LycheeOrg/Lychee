@@ -244,7 +244,7 @@ function copyToClipboard() {
 				// Fallback if clipboard write fails
 				toast.add({
 					severity: "error",
-					summary: trans("toast.error"),
+					summary: trans("toasts.error"),
 					detail: "Could not copy to clipboard.",
 					life: 3000,
 				});

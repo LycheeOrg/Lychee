@@ -181,6 +181,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 				.catch((error) => {
 					// In this specific case, even though it has been possibly disabled, we really need to see the error.
 					this.is_debug_enabled = true;
+					this.is_loading = false;
 
 					const event = new CustomEvent("error", { detail: error.response.data });
 					window.dispatchEvent(event);
