@@ -79,7 +79,7 @@ export function useMollie(toast: ToastServiceMethods) {
 			toast.add({
 				severity: "error",
 				summary: trans("toasts.error"),
-				detail: trans("Something went wrong with Mollie."),
+				detail: trans("webshop.useMollie.somethingWentWrong"),
 				life: 5000,
 			});
 			return;

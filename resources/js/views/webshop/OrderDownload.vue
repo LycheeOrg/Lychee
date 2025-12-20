@@ -245,7 +245,7 @@ function copyToClipboard() {
 				toast.add({
 					severity: "error",
 					summary: trans("toasts.error"),
-					detail: "Could not copy to clipboard.",
+					detail: trans("webshop.orderDownload.couldNotCopy"),
 					life: 3000,
 				});
 			});
@@ -253,7 +253,7 @@ function copyToClipboard() {
 		toast.add({
 			severity: "error",
 			summary: trans("toasts.error"),
-			detail: trans("Could not copy to clipboard."),
+			detail: trans("webshop.orderDownload.couldNotCopy"),
 			life: 3000,
 		});
 	}
@@ -289,8 +289,8 @@ function markAsDelivered() {
 				console.error("Error marking items as delivered:", error);
 				toast.add({
 					severity: "error",
-					summary: "something went wrong",
-					detail: "Could not mark item as delivered.",
+					summary: trans("webshop.orderDownload.somethingWentWrong"),
+					detail: trans("webshop.orderDownload.couldNotMarkDelivered"),
 					life: 3000,
 				});
 			});
