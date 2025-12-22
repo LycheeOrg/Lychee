@@ -1,4 +1,4 @@
-# Adding an OAuth Provider to Lychee
+# Adding an OAuth Provider
 
 This guide explains how to add a new OAuth provider to Lychee, which uses the Laravel Socialite package along with the [Socialite Providers](https://socialiteproviders.com/) extensions.
 
@@ -164,6 +164,11 @@ For developers who want to understand the OAuth implementation in Lychee:
 
 - Authentication methods are configured in `AuthServiceProvider`, which determines available OAuth providers
 
+## Related Documentation
+
+- [Users and Authentication](../1-concepts/users.md) - Understanding user authentication in Lychee
+- [System Features](../1-concepts/system.md) - OAuth credentials and SSO integration
+
 ---
 
-*Last updated: September 3, 2025*
+*Last updated: December 22, 2025*

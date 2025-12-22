@@ -521,4 +521,4 @@ This architecture ensures reliable photo uploads while maintaining performance a
 
 ---
 
-*Last updated: August 14, 2025*
+*Last updated: December 22, 2025*

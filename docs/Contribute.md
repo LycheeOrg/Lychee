@@ -4,7 +4,13 @@ Thank you for your interest in contributing to Lychee! This guide will help you 
 
 ## Getting Started
 
-Before you start contributing, we recommend reading our [Architecture guide](backend/README.md) to understand how Lychee is structured internally. This will help you navigate the codebase more effectively.
+Before you start contributing, we recommend reviewing our documentation structure:
+- [Overview](specs/0-overview/README.md) - High-level introduction to Lychee
+- [Core Concepts](specs/1-concepts/README.md) - Domain model and fundamental concepts
+- [Reference Documentation](specs/3-reference/) - Coding conventions, frontend architecture
+- [Architecture Documentation](specs/4-architecture/) - Knowledge map and feature specs
+
+This will help you navigate the codebase more effectively.
 
 1. Fork the repository on GitHub
 2. Clone your fork locally
@@ -108,7 +114,7 @@ We follow strict coding standards for PHP development:
 - **Do not use `await` async calls** in Vue3, use `.then()` instead
 - **Do not use arrow functions** for function declarations: use `function functionName() {}` instead of `const function = () => {}`
 
-Read more here: [Our Vue3 Guide](frontend/Vue3.md)
+Read more here: [Frontend Architecture](specs/3-reference/frontend-architecture.md)
 
 ## Testing and Quality Assurance
 
@@ -193,7 +199,7 @@ If you are asked with further question to clarify, please make sure to reply wit
 If you need help or have questions:
 
 - Check the [existing documentation](https://lycheeorg.dev/docs/)
-- Read the [Architecture guide](backend/README.md) to understand how Lychee is structured internally
+- Review the [documentation structure](specs/) to understand how Lychee is organized
 - Check the already existing [discussions](https://github.com/LycheeOrg/Lychee/discussions) (closed and open).
 - Check the already existing [issues](https://github.com/LycheeOrg/Lychee/issues?q=sort%3Aupdated-desc+is%3Aissue+is%3Aopen) and [pull requests](https://github.com/LycheeOrg/Lychee/pulls?q=sort%3Aupdated-desc+is%3Apr+is%3Aopen).
 - Create a new discussion if necessary or join our [discord](https://discord.gg/JMPvuRQcTf) and post into the #help channel.
@@ -202,4 +208,4 @@ Thank you for contributing to Lychee! 🌸
 
 ---
 
-*Last updated: August 14, 2025*
+*Last updated: December 22, 2025*

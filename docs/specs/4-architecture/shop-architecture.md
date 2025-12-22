@@ -1,10 +1,12 @@
-# Shop Integration for Lychee
+# Shop Architecture
 
 This document describes the architecture and implementation details for the shop integration in Lychee, allowing users to purchase photos.
 
+---
+
 ## Overview
 
-The shop integration provides a complete e-commerce solution for Lychee, enabling photographers to monetize their work by selling photos. The system supports single-photo purchases as well as basket-based shopping for multiple items. 
+The shop integration provides a complete e-commerce solution for Lychee, enabling photographers to monetize their work by selling photos. The system supports single-photo purchases as well as basket-based shopping for multiple items.
 
 The basket functionality allows users to add photos from different albums, select different size variants and licenses, and complete the purchase in a single transaction. The system maintains the basket state across sessions, allowing users to continue their shopping experience even after leaving the site.
 
@@ -14,11 +16,20 @@ The basket functionality allows users to add photos from different albums, selec
 
 The shop integration introduces the following data models:
 
-- **Purchasable**: A model that defines whether a photo or an album is purchasable, with columns for photo_id, album_id, and pricing for different photo sizes (MEDIUM, FULL, ORIGINAL). 
-  - When album_id is set and photo_id is null, it defines an entire album as purchasable with album-level pricing
-  - When both album_id and photo_id are set, it defines photo-specific pricing that overrides album settings
-- **Order**: Represents a complete purchase transaction, including payment status, email address, and optionally user ID. An order with a PENDING status acts as a basket.
-- **OrderItem**: Represents individual photos within an order, with columns for photo_id, price_cents, and size_variant_type to specify which size variant to provide.
+#### Purchasable
+
+A model that defines whether a photo or an album is purchasable, with columns for photo_id, album_id, and pricing for different photo sizes (MEDIUM, FULL, ORIGINAL).
+
+- When `album_id` is set and `photo_id` is null, it defines an entire album as purchasable with album-level pricing
+- When both `album_id` and `photo_id` are set, it defines photo-specific pricing that overrides album settings
+
+#### Order
+
+Represents a complete purchase transaction, including payment status, email address, and optionally user ID. An order with a PENDING status acts as a basket.
+
+#### OrderItem
+
+Represents individual photos within an order, with columns for photo_id, price_cents, and size_variant_type to specify which size variant to provide.
 
 ### 2. Service Layer
 
@@ -38,7 +49,7 @@ The shop integration follows Laravel's request/response pattern with additional 
 
 ## Access Controls
 
-Only the lychee instance owner can set their album and photos as purchasable. Only the photos that are in their owned album can be set as purchasable.
+Only the Lychee instance owner can set their albums and photos as purchasable. Only the photos that are in their owned albums can be set as purchasable.
 
 ## Payment Processing
 
@@ -55,12 +66,15 @@ The shop integration uses a modular payment processing architecture that:
 
 The system supports multiple size variant options for purchase:
 
-- **MEDIUM**: Lower-priced option for digital/web use.
-- **MEDIUM2x**: Higher resolution medium option for better quality.
-- **FULL**: Medium-priced option providing the largest size available on Lychee.
-- **ORIGINAL**: Premium option providing the original file directly from the photographer (optional, requires the photographer to export the photo).
+- **MEDIUM**: Lower-priced option for digital/web use
+- **MEDIUM2x**: Higher resolution medium option for better quality
+- **FULL**: Medium-priced option providing the largest size available on Lychee
+- **ORIGINAL**: Premium option providing the original file directly from the photographer (optional, requires the photographer to export the photo)
+
+### Pricing Hierarchy
 
 Pricing for each size variant follows a hierarchical determination process:
+
 1. First, check if there's a Purchasable entry for the specific photo (photo_id set)
 2. If not found, check if there's a Purchasable entry for the album (album_id set, photo_id null)
 3. If neither is found, use the global configuration pricing
@@ -70,20 +84,24 @@ Pricing for each size variant follows a hierarchical determination process:
 
 The system offers several configuration options:
 
-- **Pricing Hierarchy**: 
-  - **Global Configuration**: Set default prices for all photo sizes (MEDIUM, FULL, ORIGINAL)
-  - **Album-level Pricing**: Override global pricing at the album level via Purchasable entries with album_id set and photo_id null
-  - **Photo-specific Pricing**: Override album pricing for specific photos via Purchasable entries with both album_id and photo_id set
-- **Currency Settings**: Configure currency display and processing.
-- **Tax Handling**: Options for tax calculation and display.
-- **Payment Gateways**: Configure available payment methods via environment variables in the .env file.
+### Pricing Hierarchy
+
+- **Global Configuration**: Set default prices for all photo sizes (MEDIUM, FULL, ORIGINAL)
+- **Album-level Pricing**: Override global pricing at the album level via Purchasable entries with album_id set and photo_id null
+- **Photo-specific Pricing**: Override album pricing for specific photos via Purchasable entries with both album_id and photo_id set
+
+### Additional Settings
+
+- **Currency Settings**: Configure currency display and processing
+- **Tax Handling**: Options for tax calculation and display
+- **Payment Gateways**: Configure available payment methods via environment variables in the .env file
 
 ## Security Considerations
 
-- **Payment Security**: Offloading payment processing to trusted third-party providers (Stripe/PayPal) to handle sensitive payment data.
-- **Download Protection**: Prevention of unauthorized access to purchased photos => use secure & temporary link.
-- **Receipt Verification**: Secure verification of purchase records.
-- **Payment Webhooks**: Secure handling of payment confirmation webhooks from payment processors.
+- **Payment Security**: Offloading payment processing to trusted third-party providers (Stripe/PayPal) to handle sensitive payment data
+- **Download Protection**: Prevention of unauthorized access to purchased photos via secure & temporary links
+- **Receipt Verification**: Secure verification of purchase records
+- **Payment Webhooks**: Secure handling of payment confirmation webhooks from payment processors
 
 ## UI Components
 
@@ -100,6 +118,7 @@ The frontend implementation consists of several key components:
 ## State Management
 
 ### Frontend State
+
 The shop functionality uses Pinia stores to manage:
 
 - **OrderManagementStore**: Shopping basket contents, order state, and basket operations
@@ -107,6 +126,7 @@ The shop functionality uses Pinia stores to manage:
 - **UserStore**: User authentication state for checkout validation
 
 ### Backend Session Management
+
 The basket functionality uses Laravel's session management:
 
 - Basket ID is stored in the session
@@ -130,14 +150,14 @@ The shop functionality integrates with Lychee at multiple levels:
 
 ### Photo Purchase Flow
 
-1. User browses photos within purchasable albums.
-2. User adds photo to basket via context menu or detail view or album view.
-3. User selects desired size (MEDIUM, FULL, or ORIGINAL if available) and license.
-4. User can continue browsing and add more photos to the basket.
-5. User can review and modify basket contents (remove items).
-6. User proceeds to checkout when ready to complete purchase.
-7. User completes payment process.
-8. System records purchase and grants download access.
+1. User browses photos within purchasable albums
+2. User adds photo to basket via context menu, detail view, or album view
+3. User selects desired size (MEDIUM, FULL, or ORIGINAL if available) and license
+4. User can continue browsing and add more photos to the basket
+5. User can review and modify basket contents (remove items)
+6. User proceeds to checkout when ready to complete purchase
+7. User completes payment process
+8. System records purchase and grants download access
 
 ### Basket Management Flow
 
@@ -151,21 +171,27 @@ The shop functionality integrates with Lychee at multiple levels:
 
 ### Photographer Flow
 
-1. Photographer uploads photos to Lychee.
-2. Photographer accesses the Purchasables management interface (`/purchasables`).
-3. Photographer sets individual photos or entire albums as purchasable.
-4. Photographer configures pricing for different size variants and license types.
-5. Photographer can enable/disable purchasable items and add descriptions.
-6. Photographer views order history and manages completed sales via Orders interface (`/orders`).
+1. Photographer uploads photos to Lychee
+2. Photographer accesses the Purchasables management interface (`/purchasables`)
+3. Photographer sets individual photos or entire albums as purchasable
+4. Photographer configures pricing for different size variants and license types
+5. Photographer can enable/disable purchasable items and add descriptions
+6. Photographer views order history and manages completed sales via Orders interface (`/orders`)
 
 ## License Management
 
 Photos can be sold with different licensing terms:
 
-- **Personal Use**: For non-commercial use by the purchaser.
-- **Commercial License**: For business and promotional use.
-- **Extended License**: For broader usage rights.
+- **Personal Use**: For non-commercial use by the purchaser
+- **Commercial License**: For business and promotional use
+- **Extended License**: For broader usage rights
+
+## Related Documentation
+
+- [Shop Implementation](../3-reference/shop-implementation.md) - Detailed reference for models, services, and API endpoints
+- [Backend Architecture](backend-architecture.md) - Overall backend structure
+- [Database Schema](../3-reference/database-schema.md) - Data model relationships
 
 ---
 
-*Last updated: September 7, 2025*
+*Last updated: December 22, 2025*

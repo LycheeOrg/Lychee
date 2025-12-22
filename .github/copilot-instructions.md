@@ -1,3 +1,11 @@
+# Quick Reference for GitHub Copilot
+
+> For comprehensive coding standards, see [docs/specs/3-reference/coding-conventions.md](../docs/specs/3-reference/coding-conventions.md)
+
+This file provides quick hints for GitHub Copilot during real-time code completion.
+
+---
+
 # Conventions for PHP
 
 - Any new file should contain the license header and has a single blank line after the opening PHP tag.

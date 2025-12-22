@@ -136,4 +136,4 @@ This trait is used by operations like merge and delete to maintain database effi
 
 ---
 
-*Last updated: August 14, 2025*
+*Last updated: December 22, 2025*

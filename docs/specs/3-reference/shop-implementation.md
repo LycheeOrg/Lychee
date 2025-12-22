@@ -554,5 +554,5 @@ Finalize → Verify PROCESSING status + provider match
 
 ---
 
-*Last updated: November 16, 2025*
+*Last updated: December 22, 2025*
 

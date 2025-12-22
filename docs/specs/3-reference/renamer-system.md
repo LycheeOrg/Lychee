@@ -1,8 +1,12 @@
-# Renamer Module Documentation
+# Renamer System
+
+This document provides technical reference for the Renamer module in Lychee, which transforms filenames during import using customizable rules.
+
+---
 
 ## Overview
 
-The Renamer module in Lychee provides functionality to create, manage, and apply rules for renaming files during the import process. It allows users to define patterns and their replacements to transform filenames based on custom rules. This module is particularly useful for standardizing filenames across a collection or replacing camera-generated prefixes with more meaningful names.
+The Renamer module provides functionality to create, manage, and apply rules for renaming files during the import process. Users can define patterns and their replacements to transform filenames based on custom rules. This is particularly useful for standardizing filenames across a collection or replacing camera-generated prefixes with more meaningful names.
 
 ## Architecture
 
@@ -31,13 +35,7 @@ The Renamer module uses a `renamer_rules` table with the following structure:
 | created_at | timestamp | Creation timestamp |
 | updated_at | timestamp | Last update timestamp |
 
-## API Endpoints
-
-The Renamer module exposes API endpoints for managing rules and testing filename transformations. Refer to the `api_v2.php` routes file for the specific implementation details of these endpoints.
-
-## Implementation Details
-
-### Mode Types
+## Mode Types
 
 The Renamer module supports three modes of operation (defined in the `RenamerModeType` enum):
 
@@ -45,11 +43,11 @@ The Renamer module supports three modes of operation (defined in the `RenamerMod
 2. **All occurrences** (`ALL`): Replaces all occurrences of the pattern.
 3. **Regular expression** (`REGEX`): Uses regular expressions for pattern matching and replacement.
 
-### Processing Order
+## Processing Order
 
 Rules are processed in order from lowest to highest `order` value, meaning rules with lower order numbers have higher priority. Only enabled rules are applied.
 
-### Global Configuration
+## Global Configuration
 
 The Renamer functionality can be controlled through several configuration settings:
 
@@ -58,10 +56,14 @@ The Renamer functionality can be controlled through several configuration settin
 3. `renamer_enforced_before`: Apply system owner's rules before user-specific rules.
 4. `renamer_enforced_after`: Apply system owner's rules after user-specific rules.
 
-### Integration Points
+## Integration Points
 
 1. **Import Process**: The Renamer module is integrated with Lychee's import process to rename files upon upload or during server-side imports.
 2. **Permission System**: The renamer functionality checks if a user has supporter status through the `Verify` class.
+
+## API Endpoints
+
+The Renamer module exposes API endpoints for managing rules and testing filename transformations. Refer to the `api_v2.php` routes file for the specific implementation details of these endpoints.
 
 ## Usage in Code
 
@@ -93,12 +95,30 @@ $rule->is_enabled = true;
 $rule->save();
 ```
 
-## Future Enhancements
+## Data Model
 
-1. **Rule Groups**: Allow grouping rules for different import types or albums.
-2. **Import Photo Integration**: Allow associating specific data to the rule: e.g., EXIF info.
-3. **User Interface**: Allow executing renamer rules directly from the UI, on an album or selected set of photos.
+### RenamerRule Model
+
+```php
+class RenamerRule extends Model
+{
+    public int $id;
+    public int $owner_id;          // User who owns this rule
+    public string $name;            // Rule name
+    public ?string $description;    // Optional description
+    public string $needle;          // Pattern to match
+    public string $replacement;     // Replacement text
+    public RenamerModeType $mode;  // FIRST, ALL, or REGEX
+    public int $order;              // Processing priority
+    public bool $is_enabled;        // Active status
+}
+```
+
+## Related Documentation
+
+- [Using Renamer](../../2-how-to/using-renamer.md) - How-to guide for adding rules and applying patterns
+- [Backend Architecture](../4-architecture/backend-architecture.md) - Overall backend structure
 
 ---
 
-*Last updated: August 21, 2025*
+*Last updated: December 22, 2025*

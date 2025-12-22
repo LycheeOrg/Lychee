@@ -268,4 +268,4 @@ The sorting is applied consistently across:
 
 ---
 
-*Last updated: August 14, 2025*
+*Last updated: December 22, 2025*

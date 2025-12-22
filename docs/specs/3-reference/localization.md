@@ -1,20 +1,14 @@
-# Lychee Localization Documentation
+# Localization Reference
 
-This document explains how localization works in Lychee, including translation management, file structure, and development practices for maintaining multiple language support.
+This document provides reference information about Lychee's localization system, including file structure, translation key conventions, and usage in code.
 
 ## Overview
 
-Lychee supports multiple languages through Laravel's built-in localization system. Translation management is handled through Weblate, a self-hosted translation platform that allows contributors to translate the application into their native languages.
-
-### Translation Platform
-
-**Weblate Instance**: https://weblate.lycheeorg.dev/
-
-Weblate provides a web-based interface for translators to contribute translations without needing to directly edit PHP files. It handles version control integration and maintains translation quality through validation rules.
+Lychee supports multiple languages through Laravel's built-in localization system. Translation management is handled through Weblate, a self-hosted translation platform at https://weblate.lycheeorg.dev/.
 
 ## Language File Structure
 
-Translations are organized in the `lang/` directory with the following structure:
+Translations are organized in the `lang/` directory:
 
 ```
 lang/
@@ -65,48 +59,17 @@ Each language directory contains the same set of PHP files that return associati
 - **`duplicate-finder.php`** - Duplicate photo detection
 - **`aspect_ratio.php`** - Aspect ratio and layout options
 
-## Development Workflow
+## Translation Key Conventions
 
-### Adding New Translation Keys
+### Naming Conventions
 
-When adding new translatable text to Lychee:
-
-1. **Add the English translation first** in the appropriate file in `lang/en/`
-2. **Use descriptive keys** that indicate the context and purpose
-3. **Copy the new key to all other language files** with the English text as placeholder
-4. **Run the test suite** to ensure consistency across all languages
-
-#### Example: Adding a New Key
-
-```php
-// lang/en/gallery.php
-return [
-    // ... existing keys
-    'new_feature_title' => 'New Feature',
-    'new_feature_description' => 'This is a description of the new feature.',
-];
-```
-
-Then copy to all other language files:
-
-```php
-// lang/fr/gallery.php (and all other languages)
-return [
-    // ... existing keys
-    'new_feature_title' => 'New Feature', // Will be translated via Weblate
-    'new_feature_description' => 'This is a description of the new feature.', // Will be translated via Weblate
-];
-```
-
-### Translation Key Guidelines
-
-#### Naming Conventions
 - Use snake_case for all keys
 - Use descriptive names that indicate context
 - Group related keys under common prefixes
 - Avoid abbreviations unless they're widely understood
 
-#### Good Examples:
+### Good Examples
+
 ```php
 'album_create_button' => 'Create Album',
 'photo_upload_success' => 'Photo uploaded successfully',
@@ -114,14 +77,16 @@ return [
 'error_network_timeout' => 'Network timeout occurred',
 ```
 
-#### Poor Examples:
+### Poor Examples
+
 ```php
 'btn' => 'Button',              // Too vague
 'msg1' => 'Success',            // Non-descriptive
 'albumcreate' => 'Create',      // Poor formatting
 ```
 
-#### Nested Structures
+### Nested Structures
+
 Use nested arrays for logical grouping:
 
 ```php
@@ -141,36 +106,52 @@ return [
 ];
 ```
 
-### Using Translations in Code
+## Using Translations in Code
 
-#### Backend (PHP/Laravel)
+### Backend (PHP/Laravel)
+
 ```php
 // Simple translation
 __('gallery.title')
 
 // Nested key access
 __('gallery.album.actions.create')
+
+// With parameters
+__('gallery.photos_count', ['count' => 5])
 ```
 
-#### Frontend (Vue.js)
+### Frontend (Vue.js)
+
 ```javascript
-// In Vue components
+// In Vue components (Composition API)
+import { trans } from "laravel-vue-i18n";
+
+// Simple translation
 $t('gallery.title')
+
+// Using trans function in script
+trans('gallery.title')
+
+// With parameters
+$t('gallery.photos_count', { count: 5 })
 ```
 
 ## Quality Assurance
 
 ### Automated Testing
 
-Lychee's test suite includes validation to ensure translation consistency:
+Lychee's test suite validates translation consistency:
 
 #### Key Consistency Tests
+
 1. **Complete Coverage**: All keys present in English must exist in other languages
 2. **No Extra Keys**: Other languages cannot have keys not present in English
 3. **File Structure**: All language directories must have the same file structure
 4. **Valid PHP Syntax**: All translation files must be valid PHP arrays
 
 #### Running Translation Tests
+
 ```bash
 # Run the full test suite (includes translation validation)
 php artisan test
@@ -180,21 +161,14 @@ php artisan test --filter TranslationTest
 ```
 
 #### Common Test Failures
+
 - **Missing keys**: A key exists in English but not in another language
 - **Extra keys**: A key exists in a translation but not in English
 - **Syntax errors**: Invalid PHP syntax in translation files
 - **Missing files**: A translation file exists in English but not in other languages
 
-### Manual Quality Checks
+### Content Guidelines
 
-#### Before Submitting Changes
-1. **Verify English content** is accurate and well-written
-2. **Check key naming** follows conventions
-3. **Ensure proper nesting** for logical grouping
-4. **Run tests** to validate consistency
-5. **Test in application** to verify context and formatting
-
-#### Content Guidelines
 - **Use clear, concise language** appropriate for the interface
 - **Maintain consistent tone** throughout the application
 - **Consider context** - where and how the text will be displayed
@@ -204,53 +178,24 @@ php artisan test --filter TranslationTest
 ## Weblate Integration
 
 ### How Weblate Works
+
 1. **Automatic Sync**: Weblate syncs with the Git repository
 2. **Translation Interface**: Translators use the web interface to submit translations
 3. **Quality Checks**: Weblate validates translations for consistency and formatting
 4. **Review Process**: Translations can be reviewed before being committed
 5. **Git Integration**: Approved translations are automatically committed back to the repository
 
-### For Translators
-- **Access**: Request access through the Lychee community or GitHub issues
-- **Context**: Use the provided context and source code references to understand usage
-- **Consistency**: Maintain consistent terminology throughout your translations
-- **Pluralization**: Handle plural forms according to your language's rules
-- **Testing**: Test your translations in the application when possible
+### Translation Platform
 
-### For Developers
-- **Source Updates**: When English text changes, update Weblate to reflect the changes
-- **New Keys**: Add new keys to the English files first, then sync with Weblate
-- **Context**: Provide clear context in key names and comments for translators
-- **Review**: Review translation pull requests for technical accuracy
+**Weblate Instance**: https://weblate.lycheeorg.dev/
 
+Weblate provides a web-based interface for translators to contribute translations without needing to directly edit PHP files. It handles version control integration and maintains translation quality through validation rules.
 
-## Contributing Translations
+## Related Documentation
 
-### Adding a New Language
-1. **Create language directory** in `lang/` using the appropriate language code
-2. **Copy all files** from `lang/en/` to the new directory
-3. **Update language list** in relevant configuration files
-4. **Add to Weblate** configuration for translation management
-5. **Test the new language** in the application
-
-### Improving Existing Translations
-1. **Access Weblate** at https://weblate.lycheeorg.dev/
-2. **Select the target language** and file to translate
-3. **Provide translations** following the guidelines above
-4. **Submit for review** through the Weblate interface
-
-### Best Practices Summary
-
-1. **Always start with English** translations
-2. **Copy new keys** to all language files immediately
-3. **Use descriptive key names** that provide context
-4. **Test thoroughly** before submitting changes
-5. **Follow Laravel conventions** for localization
-6. **Coordinate with translators** through proper channels
-7. **Keep documentation updated** as the system evolves
-
-This localization system ensures Lychee remains accessible to users worldwide while maintaining code quality and translation consistency across all supported languages.
+- [Translating Lychee](../2-how-to/translating-lychee.md) - How-to guide for adding translations and new languages
+- [Coding Conventions](coding-conventions.md) - General coding standards
 
 ---
 
-*Last updated: August 14, 2025*
+*Last updated: December 22, 2025*

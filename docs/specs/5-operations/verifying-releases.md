@@ -1,4 +1,4 @@
-# Code signing and verifying releases
+# Verifying Releases
 
 We sign every official Lychee release with Sigstore cosign to protect you against tampering and supply‑chain attacks. This page shows how to verify the authenticity and integrity of the `Lychee.zip` you download.
 
@@ -49,25 +49,25 @@ cosign verify-blob \
 	Lychee.zip
 ```
 
-Expected output includes a “Verified OK” line. If verification fails, do not install the archive; re‑download both `Lychee.zip` and its matching `Lychee.zip.sigstore.json` and try again.
+Expected output includes a "Verified OK" line. If verification fails, do not install the archive; re‑download both `Lychee.zip` and its matching `Lychee.zip.sigstore.json` and try again.
 
 Tips:
 - Ensure the `.sigstore.json` file matches the exact `Lychee.zip` version you are verifying.
 - Always download over HTTPS and from our official release page.
 
-> Note: The signature bundle contains all the data needed to verify the artifact’s integrity with your local public key. Depending on your environment, cosign may also attempt online transparency log checks. Consult `cosign verify-blob --help` if your environment blocks egress.
+> Note: The signature bundle contains all the data needed to verify the artifact's integrity with your local public key. Depending on your environment, cosign may also attempt online transparency log checks. Consult `cosign verify-blob --help` if your environment blocks egress.
 
 ## Why we use cosign instead of only PGP
 
 PGP signatures can provide integrity and authenticity, but cosign adds modern supply‑chain protections and better UX:
 
 - Transparency log (Rekor): Cosign can record signatures in a public, append‑only log, making hidden key misuse or signature replacement much harder. PGP has no equivalent, and users often cannot audit history easily.
-- CI integration and policy: Cosign fits naturally into CI/CD (attestations, provenance, policies like “only accept signatures from this key/identity”).
+- CI integration and policy: Cosign fits naturally into CI/CD (attestations, provenance, policies like "only accept signatures from this key/identity").
 - Simpler verification: A single binary and a readable bundle (`.sigstore.json`) make verification approachable without managing complex keyrings or web‑of‑trust chains.
 - Rich metadata: Cosign signatures can carry metadata/attestations (e.g., build info), enabling future automated checks beyond raw signature validity.
 - Flexible key models: Cosign supports traditional keys, hardware keys, and keyless signing (OIDC certificates). This repo currently uses a key‑based flow, but we can migrate without changing the user verification workflow.
 
-In short, PGP ensures “this file hasn’t changed since signing,” but cosign layers in transparency, policy, and modern workflows that are better aligned with today’s software‑supply‑chain practices.
+In short, PGP ensures "this file hasn't changed since signing," but cosign layers in transparency, policy, and modern workflows that are better aligned with today's software‑supply‑chain practices.
 
 ## How we sign releases (for transparency)
 
@@ -104,12 +104,12 @@ steps:
 
 ## Troubleshooting
 
-- “no matching entries were found” or verification fails:
-	- Ensure the `.sigstore.json` file corresponds to the same `Lychee.zip` you’re verifying.
+- "no matching entries were found" or verification fails:
+	- Ensure the `.sigstore.json` file corresponds to the same `Lychee.zip` you're verifying.
 	- Re‑download from the official release page; avoid third‑party mirrors.
-	- Confirm you’re using our official public key.
+	- Confirm you're using our official public key.
 - Network‑restricted environments: Review `cosign verify-blob` flags in the help output to adjust transparency‑log checks when offline.
 
 ---
 
-*Last updated: 2025-10-28*
+*Last updated: December 22, 2025*

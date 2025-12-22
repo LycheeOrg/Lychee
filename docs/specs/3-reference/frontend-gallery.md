@@ -1,4 +1,4 @@
-# Lychee Gallery Frontend Documentation
+# Frontend Gallery Views
 
 This document provides detailed information about Lychee's gallery frontend, including the different viewing modes and the comprehensive component architecture that powers the photo browsing experience.
 
@@ -506,4 +506,12 @@ All gallery modes support comprehensive keyboard shortcuts:
 
 ---
 
-*Last updated: August 14, 2025*
+## Related Documentation
+
+- [Frontend Architecture](frontend-architecture.md) - Overall frontend architecture, Vue3 patterns, and state management
+- [Frontend Layout System](frontend-layouts.md) - Photo layout algorithms and responsive design patterns
+- [Coding Conventions](coding-conventions.md) - Coding standards including Vue3/TypeScript conventions
+
+---
+
+*Last updated: December 22, 2025*

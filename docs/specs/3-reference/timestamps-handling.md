@@ -1,7 +1,9 @@
-# Timestamps and models
+# Timestamps and Models
 
 This guide contains some tricks and "do"s and "don't"s for new developer.
 In particular, it highlights some pitfalls one can easily trap into.
+
+---
 
 ## TL;DR for the Impatient
 
@@ -136,4 +138,4 @@ Taking into account the conclusion from above, the Lychee Application only uses 
 
 ---
 
-*Last updated: August 14, 2025*
+*Last updated: December 22, 2025*

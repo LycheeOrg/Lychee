@@ -1,4 +1,4 @@
-# Lychee Frontend Layout System Documentation
+# Frontend Layout System
 
 This document explains how Lychee's dynamic photo layout system works, including the four different layout algorithms and their implementation details.
 
@@ -383,8 +383,14 @@ Timeline layouts coordinate with:
 - Ensure adequate spacing for touch targets
 - Support keyboard navigation patterns
 
-This layout system provides Lychee with flexible, performant photo arrangement capabilities while maintaining clean separation of concerns and supporting modern web standards for responsive design and accessibility.
+---
+
+## Related Documentation
+
+- [Frontend Architecture](frontend-architecture.md) - Overall frontend architecture, Vue3 patterns, and state management
+- [Frontend Gallery Views](frontend-gallery.md) - Gallery interface and viewing modes
+- [Coding Conventions](coding-conventions.md) - Coding standards including Vue3/TypeScript conventions
 
 ---
 
-*Last updated: August 14, 2025*
+*Last updated: December 22, 2025*

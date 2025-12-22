@@ -431,4 +431,4 @@ Understanding this flow helps developers know where to make changes for differen
 
 ---
 
-*Last updated: August 14, 2025*
+*Last updated: December 22, 2025*
