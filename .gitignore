@@ -61,3 +61,6 @@ docker-compose.yml
 Lychee/*
 /public/embed/
 report_*
+
+# XHProf output
+public/vendor/

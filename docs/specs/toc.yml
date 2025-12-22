@@ -1,0 +1,14 @@
+- path: 0-overview
+  title: Overview
+- path: 1-concepts
+  title: Concepts
+- path: 2-how-to
+  title: How-to Guides
+- path: 3-reference
+  title: Reference
+- path: 4-architecture
+  title: Architecture
+- path: 5-operations
+  title: Operations
+- path: 6-decisions
+  title: Decisions
