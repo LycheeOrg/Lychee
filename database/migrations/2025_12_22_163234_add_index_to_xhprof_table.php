@@ -35,6 +35,10 @@ class AddIndexToXHProfTable extends Migration
 		}
 
 		Schema::table('details', function (Blueprint $table) {
+			$table->dropPrimary();
+		});
+
+		Schema::table('details', function (Blueprint $table) {
 			$table->id('idcount');
 			$table->char('id', 64)->change();
 		});
