@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2aa6daf242f8c7a2b29628da6e6190e9",
+    "content-hash": "c056d05e2b044a8171f72d2a5c4d5e7f",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -13671,6 +13671,64 @@
                 "source": "https://github.com/jsonrainbow/json-schema/tree/6.5.2"
             },
             "time": "2025-09-09T09:42:27+00:00"
+        },
+        {
+            "name": "laracraft-tech/laravel-xhprof",
+            "version": "v1.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laracraft-tech/laravel-xhprof.git",
+                "reference": "7578bbfcaa96e6fd30d1f3e48c9a71138b337b1c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laracraft-tech/laravel-xhprof/zipball/7578bbfcaa96e6fd30d1f3e48c9a71138b337b1c",
+                "reference": "7578bbfcaa96e6fd30d1f3e48c9a71138b337b1c",
+                "shasum": ""
+            },
+            "require": {
+                "laravel/framework": "^5.3|^6.0|^7.0|^8.0|^9.0|^10.0|^11.0|^12.0",
+                "php": ">=7.1"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "LaracraftTech\\LaravelXhprof\\XHProfServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "LaracraftTech\\LaravelXhprof\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Zacharias Creutznacher",
+                    "email": "zacharias@laracraft.tech",
+                    "homepage": "https://laracraft.tech"
+                }
+            ],
+            "description": "Easy XHProf setup to profile your laravel application!",
+            "homepage": "https://github.com/laracraft-tech/laravel-xhprof",
+            "keywords": [
+                "laravel",
+                "php",
+                "profile",
+                "profiler",
+                "profiling",
+                "xhprof"
+            ],
+            "support": {
+                "issues": "https://github.com/laracraft-tech/laravel-xhprof/issues",
+                "source": "https://github.com/laracraft-tech/laravel-xhprof/tree/v1.2.0"
+            },
+            "time": "2025-02-23T09:49:30+00:00"
         },
         {
             "name": "larastan/larastan",

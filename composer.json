@@ -109,6 +109,7 @@
         "filp/whoops": "^2.5",
         "friendsofphp/php-cs-fixer": "^3.3",
         "itsgoingd/clockwork": "^5.1",
+        "laracraft-tech/laravel-xhprof": "^1.2",
         "larastan/larastan": "^3.2",
         "lychee-org/phpstan-lychee": "^2.0.1",
         "mockery/mockery": "^1.5",
