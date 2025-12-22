@@ -35,6 +35,9 @@ class CopyrightTest extends AbstractTestCase
 		'app/Metadata/Laminas/Unicode.php',
 		'app/Contracts/Laminas/DecoratorInterface.php',
 		'app/Enum/Traits/DecorateBackedEnum.php',
+		'database/migrations/2025_12_22_163233_create_xhprof_table.php',
+		'database/migrations/2025_12_22_163234_add_index_to_xhprof_table.php',
+		'config/xhprof.php',
 	];
 
 	/**
