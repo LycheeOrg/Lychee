@@ -14,6 +14,10 @@ class CreateXHProfTable extends Migration
 	 */
 	public function up()
 	{
+		if (DB::connection()->getDriverName() !== 'mysql') {
+			return;
+		}
+
 		Schema::create('details', function (Blueprint $table) {
 			$table->id('idcount');
 			$table->char('id', 64);
@@ -55,6 +59,10 @@ class CreateXHProfTable extends Migration
 	 */
 	public function down()
 	{
+		if (DB::connection()->getDriverName() !== 'mysql') {
+			return;
+		}
+
 		Schema::dropIfExists('details');
 	}
 }

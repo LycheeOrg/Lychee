@@ -4,6 +4,8 @@ XHProf is a profiling tool for PHP applications. This guide explains how to inst
 
 ---
 
+**This is only possible if you are using a MySQL/MariaDB database, as the XHProf storage implementation relies on it.**
+
 ## Installation
 
 1. **Install XHProf**
