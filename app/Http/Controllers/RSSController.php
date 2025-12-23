@@ -12,7 +12,6 @@ use App\Actions\RSS\Generate;
 use App\Contracts\Exceptions\LycheeException;
 use App\Exceptions\ConfigurationException;
 use App\Http\Request;
-use App\Models\Configs;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Collection;
 use Spatie\Feed\FeedItem;

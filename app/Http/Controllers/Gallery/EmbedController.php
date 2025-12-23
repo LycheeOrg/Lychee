@@ -15,7 +15,6 @@ use App\Http\Requests\Embed\EmbededRequest;
 use App\Http\Resources\Embed\EmbedAlbumResource;
 use App\Http\Resources\Embed\EmbedStreamResource;
 use App\Models\Album;
-use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;

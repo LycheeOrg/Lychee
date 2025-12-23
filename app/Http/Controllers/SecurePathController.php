@@ -15,7 +15,6 @@ use App\Exceptions\SecurePaths\PathTraversalException;
 use App\Exceptions\SecurePaths\SignatureExpiredException;
 use App\Exceptions\SecurePaths\WrongPathException;
 use App\Http\Requests\SecurePath\SecurePathRequest;
-use App\Models\Configs;
 use App\Models\Extensions\HasUrlGenerator;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\Request;

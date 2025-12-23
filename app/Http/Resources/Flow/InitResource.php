@@ -9,9 +9,7 @@
 namespace App\Http\Resources\Flow;
 
 use App\Enum\CoverFitType;
-use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\Auth;
-use LycheeVerify\Contract\VerifyInterface;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
@@ -37,7 +35,8 @@ class InitResource extends Data
 	/**
 	 * @return void
 	 */
-	public function __construct() {
+	public function __construct()
+	{
 		$is_supporter = request()->verify()->check();
 		$this->is_mod_flow_enabled = request()->configs()->getValueAsBool('flow_enabled') && (Auth::check() || request()->configs()->getValueAsBool('flow_public'));
 		$this->is_display_open_album_button = request()->configs()->getValueAsBool('flow_display_open_album_button');

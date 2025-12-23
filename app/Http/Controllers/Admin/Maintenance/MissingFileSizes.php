@@ -11,7 +11,6 @@ namespace App\Http\Controllers\Admin\Maintenance;
 use App\Enum\StorageDiskType;
 use App\Events\AlbumRouteCacheUpdated;
 use App\Http\Requests\Maintenance\MaintenanceRequest;
-use App\Models\Configs;
 use App\Models\SizeVariant;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Log;

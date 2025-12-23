@@ -21,7 +21,6 @@ use App\Http\Requests\Profile\RegistrationRequest;
 use App\Http\Requests\Profile\UpdateProfileRequest;
 use App\Http\Resources\Models\UserResource;
 use App\Http\Resources\Models\Utils\UserToken;
-use App\Models\Configs;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;

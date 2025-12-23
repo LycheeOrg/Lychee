@@ -36,7 +36,6 @@ use App\Image\Files\UploadedFile;
 use App\Jobs\ExtractZip;
 use App\Jobs\ProcessImageJob;
 use App\Jobs\WatermarkerJob;
-use App\Models\Configs;
 use App\Models\SizeVariant;
 use App\Models\Tag;
 use App\Repositories\ConfigManager;

@@ -19,7 +19,6 @@ use App\Http\Requests\UserManagement\DeleteUserRequest;
 use App\Http\Requests\UserManagement\ManagmentListUsersRequest;
 use App\Http\Requests\UserManagement\SetUserSettingsRequest;
 use App\Http\Resources\Models\UserManagementResource;
-use App\Models\Configs;
 use App\Models\User;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Collection;

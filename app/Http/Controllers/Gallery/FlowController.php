@@ -12,7 +12,6 @@ use App\Actions\Albums\Flow;
 use App\Http\Requests\Flow\FlowRequest;
 use App\Http\Resources\Flow\FlowResource;
 use App\Http\Resources\Flow\InitResource;
-use App\Models\Configs;
 use Illuminate\Routing\Controller;
 use Spatie\LaravelData\Data;
 

@@ -11,7 +11,6 @@ namespace App\Http\Controllers\Admin\Maintenance;
 use App\Actions\Diagnostics\Pipes\Checks\StatisticsIntegrityCheck;
 use App\Http\Requests\Maintenance\MaintenanceRequest;
 use App\Http\Resources\Diagnostics\StatisticsCheckResource;
-use App\Models\Configs;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 

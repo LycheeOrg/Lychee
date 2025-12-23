@@ -14,7 +14,6 @@ use App\Http\Requests\Timeline\IdOrDatedTimelineRequest;
 use App\Http\Resources\Models\Utils\TimelineData;
 use App\Http\Resources\Timeline\InitResource;
 use App\Http\Resources\Timeline\TimelineResource;
-use App\Models\Configs;
 use App\Models\Photo;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;

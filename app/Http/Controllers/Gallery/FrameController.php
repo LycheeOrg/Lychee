@@ -13,7 +13,6 @@ use App\Exceptions\PhotoCollectionEmptyException;
 use App\Http\Requests\Frame\FrameRequest;
 use App\Http\Resources\Frame\FrameData;
 use App\Http\Resources\Models\PhotoResource;
-use App\Models\Configs;
 use App\Models\Photo;
 use App\Policies\PhotoQueryPolicy;
 use Illuminate\Routing\Controller;

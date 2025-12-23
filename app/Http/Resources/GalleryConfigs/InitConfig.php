@@ -16,7 +16,6 @@ use App\Enum\SmallLargeType;
 use App\Enum\ThumbAlbumSubtitleType;
 use App\Enum\ThumbOverlayVisibilityType;
 use App\Providers\AuthServiceProvider;
-use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\URL;
 use LycheeVerify\Verify;
@@ -109,7 +108,8 @@ class InitConfig extends Data
 	public string $default_homepage;
 	public bool $is_timeline_page_enabled = false;
 
-	public function __construct() {
+	public function __construct()
+	{
 		// Debug mode
 		$this->is_debug_enabled = config('app.debug');
 

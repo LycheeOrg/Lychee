@@ -10,7 +10,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\Jobs\ShowJobsRequest;
 use App\Http\Resources\Models\JobHistoryResource;
-use App\Models\Configs;
 use App\Models\JobHistory;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;

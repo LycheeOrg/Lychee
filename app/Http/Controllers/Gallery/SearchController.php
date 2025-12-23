@@ -17,7 +17,6 @@ use App\Http\Requests\Search\InitSearchRequest;
 use App\Http\Resources\Search\InitResource;
 use App\Http\Resources\Search\ResultsResource;
 use App\Models\Album;
-use App\Models\Configs;
 use Illuminate\Routing\Controller;
 
 /**

@@ -15,7 +15,6 @@ use App\Exceptions\MediaFileOperationException;
 use App\Http\Requests\Maintenance\CreateThumbsRequest;
 use App\Image\PlaceholderEncoder;
 use App\Image\SizeVariantDimensionHelpers;
-use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use Illuminate\Database\Eloquent\Builder;

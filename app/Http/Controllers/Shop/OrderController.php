@@ -15,7 +15,6 @@ use App\Http\Requests\Order\ListOrderRequest;
 use App\Http\Requests\Order\MarkAsDeliveredOrderRequest;
 use App\Http\Requests\Order\MarkAsPaidOrderRequest;
 use App\Http\Resources\Shop\OrderResource;
-use App\Models\Configs;
 use App\Models\OrderItem;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Cookie;

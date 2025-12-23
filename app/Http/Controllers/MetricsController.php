@@ -16,7 +16,6 @@ use App\Exceptions\UnauthorizedException;
 use App\Http\Requests\Metrics\MetricsRequest;
 use App\Http\Requests\Metrics\PhotoMetricsRequest;
 use App\Http\Resources\Models\LiveMetricsResource;
-use App\Models\Configs;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
