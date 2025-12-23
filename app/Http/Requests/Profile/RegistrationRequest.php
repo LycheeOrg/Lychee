@@ -16,7 +16,6 @@ use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasEmailTrait;
 use App\Http\Requests\Traits\HasPasswordTrait;
 use App\Http\Requests\Traits\HasUsernameTrait;
-use App\Models\Configs;
 use App\Rules\PasswordRule;
 use App\Rules\UsernameRule;
 use Illuminate\Support\Facades\Auth;
@@ -37,7 +36,7 @@ class RegistrationRequest extends BaseApiRequest implements HasUsername, HasPass
 		}
 
 		// @phpstan-ignore staticMethod.dynamicCall
-		return Configs::getValueAsBool('user_registration_enabled') || $this->hasValidSignature();
+		return $this->configs()->getValueAsBool('user_registration_enabled') || $this->hasValidSignature();
 	}
 
 	/**

@@ -8,7 +8,7 @@
 
 namespace App\Http\Requests\Traits;
 
-use Illuminate\Http\Request;
+use App\Http\Request;
 
 trait HasVisitorIdTrait
 {

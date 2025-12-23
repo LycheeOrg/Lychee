@@ -36,7 +36,7 @@ class DeleteUserRequest extends BaseApiRequest implements HasUser
 	public function rules(): array
 	{
 		return [
-			RequestAttribute::ID_ATTRIBUTE => ['required', new IntegerIDRule(false), new OwnerIdRule()],
+			RequestAttribute::ID_ATTRIBUTE => ['required', new IntegerIDRule(false), new OwnerIdRule($this->configs())],
 		];
 	}
 

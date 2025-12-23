@@ -22,7 +22,6 @@ use App\Http\Requests\Traits\HasAlbumTrait;
 use App\Http\Requests\Traits\HasDescriptionTrait;
 use App\Http\Requests\Traits\HasPhotosTrait;
 use App\Models\Album;
-use App\Models\Configs;
 use App\Models\Photo;
 use App\Rules\RandomIDRule;
 use App\Services\MoneyService;
@@ -50,7 +49,7 @@ class PurchasablePhotoRequest extends BaseApiRequest implements HasPhotos, HasAl
 			return false;
 		}
 
-		return Configs::getValueAsInt('owner_id') === $user_id;
+		return $this->configs()->getValueAsInt('owner_id') === $user_id;
 	}
 
 	/**

@@ -18,7 +18,6 @@ use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasAlbumsTrait;
 use App\Http\Requests\Traits\HasDescriptionTrait;
 use App\Models\Album;
-use App\Models\Configs;
 use App\Rules\RandomIDRule;
 use App\Services\MoneyService;
 use Illuminate\Support\Facades\Auth;
@@ -44,7 +43,7 @@ class PurchasableAlbumRequest extends BaseApiRequest implements HasAlbums, HasDe
 			return false;
 		}
 
-		return Configs::getValueAsInt('owner_id') === $user_id;
+		return $this->configs()->getValueAsInt('owner_id') === $user_id;
 	}
 
 	/**

@@ -13,7 +13,6 @@ use App\Enum\SmartAlbumType;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Factories\AlbumFactory;
 use App\Http\Request as HttpRequest;
-use App\Models\Configs;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
