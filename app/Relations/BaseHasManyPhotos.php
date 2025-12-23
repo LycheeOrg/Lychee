@@ -16,6 +16,7 @@ use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
 use App\Models\TagAlbum;
 use App\Policies\PhotoQueryPolicy;
+use App\Repositories\ConfigManager;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\Relation;
 
@@ -31,6 +32,7 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 abstract class BaseHasManyPhotos extends Relation
 {
 	protected PhotoQueryPolicy $photo_query_policy;
+	protected ConfigManager $config_manager;
 
 	public function __construct(TagAlbum|Album $owning_album)
 	{
@@ -39,6 +41,7 @@ abstract class BaseHasManyPhotos extends Relation
 		// The parent constructor calls `addConstraints` and thus our own
 		// attributes must be initialized by then
 		$this->photo_query_policy = resolve(PhotoQueryPolicy::class);
+		$this->config_manager = resolve(ConfigManager::class);
 		// This is a hack.
 		// The abstract class
 		// {@link \Illuminate\Database\Eloquent\Relations\Relation}
@@ -136,7 +139,7 @@ abstract class BaseHasManyPhotos extends Relation
 	{
 		/** @var BaseAlbum&TDeclaringModel $parent */
 		$parent = $this->parent;
-		$sorting = $parent->getEffectivePhotoSorting();
+		$sorting = $parent->getEffectivePhotoSorting($this->config_manager);
 
 		return (new SortingDecorator($this->getRelationQuery()))
 			->orderPhotosBy($sorting->column, $sorting->order)

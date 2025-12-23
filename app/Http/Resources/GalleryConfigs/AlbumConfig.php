@@ -44,7 +44,7 @@ class AlbumConfig extends Data
 	public function __construct(AbstractAlbum $album)
 	{
 		$is_accessible = Gate::check(AlbumPolicy::CAN_ACCESS, [AbstractAlbum::class, $album]);
-		$public_perm = $album->public_permissions();
+		$public_perm = $album->public_permissions(request()->configs());
 
 		$this->is_accessible = $is_accessible;
 		$this->is_base_album = $album instanceof BaseAlbum;

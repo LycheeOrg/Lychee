@@ -17,7 +17,6 @@ use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\AccessPermission;
 use App\Models\Album;
 use App\Models\BaseAlbumImpl;
-use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\User;
 use App\SmartAlbums\BaseSmartAlbum;
@@ -74,7 +73,7 @@ class AlbumPolicy extends BasePolicy
 	public function canSee(?User $user, BaseSmartAlbum $smart_album): bool
 	{
 		return ($user?->may_upload === true) ||
-			$smart_album->public_permissions() !== null;
+			$smart_album->public_permissions($this->config_manager) !== null;
 	}
 
 	/**
@@ -123,8 +122,8 @@ class AlbumPolicy extends BasePolicy
 		}
 
 		if (
-			$album->public_permissions() !== null &&
-			($album->public_permissions()->password === null ||
+			$album->public_permissions($this->config_manager) !== null &&
+			($album->public_permissions($this->config_manager)->password === null ||
 				$this->isUnlocked($album))
 		) {
 			return true;
@@ -146,11 +145,11 @@ class AlbumPolicy extends BasePolicy
 	 */
 	public function canAccessMap(?User $user, ?AbstractAlbum $album): bool
 	{
-		if (!Configs::getValueAsBool('map_display')) {
+		if (!$this->config_manager->getValueAsBool('map_display')) {
 			return false;
 		}
 
-		if ($user === null && !Configs::getValueAsBool('map_display_public')) {
+		if ($user === null && !$this->config_manager->getValueAsBool('map_display_public')) {
 			return false;
 		}
 
@@ -171,18 +170,18 @@ class AlbumPolicy extends BasePolicy
 	{
 		// The root album always uses the global setting
 		if ($abstract_album === null) {
-			return Configs::getValueAsBool('grants_download');
+			return $this->config_manager->getValueAsBool('grants_download');
 		}
 
 		// User is logged in
 		// Or User can download.
 		if (!$abstract_album instanceof BaseAlbum) {
-			return $user !== null || $abstract_album->public_permissions()?->grants_download === true;
+			return $user !== null || $abstract_album->public_permissions($this->config_manager)?->grants_download === true;
 		}
 
 		return $this->isOwner($user, $abstract_album) ||
 			$abstract_album->current_user_permissions()?->grants_download === true ||
-			$abstract_album->public_permissions()?->grants_download === true;
+			$abstract_album->public_permissions($this->config_manager)?->grants_download === true;
 	}
 
 	/**
@@ -204,7 +203,7 @@ class AlbumPolicy extends BasePolicy
 
 		return $this->isOwner($user, $abstract_album) ||
 			$abstract_album->current_user_permissions()?->grants_upload === true ||
-			$abstract_album->public_permissions()?->grants_upload === true;
+			$abstract_album->public_permissions($this->config_manager)?->grants_upload === true;
 	}
 
 	/**
@@ -241,7 +240,7 @@ class AlbumPolicy extends BasePolicy
 		if ($album instanceof BaseAlbum) {
 			return ($this->isOwner($user, $album) && $user->may_upload) ||
 				$album->current_user_permissions()?->grants_edit === true ||
-				$album->public_permissions()?->grants_edit === true;
+				$album->public_permissions($this->config_manager)?->grants_edit === true;
 		}
 
 		return false;
@@ -314,7 +313,7 @@ class AlbumPolicy extends BasePolicy
 	public function canAccessFullPhoto(?User $user, ?AbstractAlbum $abstract_album): bool
 	{
 		if ($abstract_album === null || $abstract_album instanceof BaseSmartAlbum) {
-			return Configs::getValueAsBool('grants_full_photo_access');
+			return $this->config_manager->getValueAsBool('grants_full_photo_access');
 		}
 
 		/** @var BaseAlbum $abstract_album */
@@ -322,7 +321,7 @@ class AlbumPolicy extends BasePolicy
 			return true;
 		}
 
-		return $abstract_album->public_permissions()?->grants_full_photo_access === true ||
+		return $abstract_album->public_permissions($this->config_manager)?->grants_full_photo_access === true ||
 			$abstract_album->current_user_permissions()?->grants_full_photo_access === true;
 	}
 
@@ -440,7 +439,7 @@ class AlbumPolicy extends BasePolicy
 			return true;
 		}
 
-		if (Configs::getValueAsBool('share_button_visible')) {
+		if ($this->config_manager->getValueAsBool('share_button_visible')) {
 			return true;
 		}
 
@@ -524,7 +523,7 @@ class AlbumPolicy extends BasePolicy
 	 */
 	public function canImportFromServer(User $user): bool
 	{
-		return $user->id === Configs::getValueAsInt('owner_id') &&
+		return $user->id === $this->config_manager->getValueAsInt('owner_id') &&
 			config('features.disable-import-from-server', true) === false;
 	}
 
@@ -591,7 +590,7 @@ class AlbumPolicy extends BasePolicy
 			return false;
 		}
 
-		$access_level = Configs::getValueAsEnum('metrics_access', MetricsAccess::class);
+		$access_level = $this->config_manager->getValueAsEnum('metrics_access', MetricsAccess::class);
 
 		return match ($access_level) {
 			MetricsAccess::PUBLIC => true,

@@ -29,6 +29,7 @@ use App\Models\Configs;
 use App\Policies\AlbumQueryPolicy;
 use App\Policies\PhotoQueryPolicy;
 use App\Policies\SettingsPolicy;
+use App\Repositories\ConfigManager;
 use App\Services\MoneyService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Events\QueryExecuted;
@@ -121,7 +122,8 @@ class AppServiceProvider extends ServiceProvider
 		}
 
 		try {
-			$lang = Configs::getValueAsString('lang');
+			$config_manager = new ConfigManager();
+			$lang = $config_manager->getValueAsString('lang');
 			/** @disregard P1013 Undefined method setLocale() (stupid intelephense) */
 			app()->setLocale($lang);
 			// @codeCoverageIgnoreStart

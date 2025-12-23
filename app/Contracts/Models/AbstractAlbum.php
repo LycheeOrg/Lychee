@@ -11,6 +11,7 @@ namespace App\Contracts\Models;
 use App\Models\AccessPermission;
 use App\Models\Extensions\Thumb;
 use App\Models\Photo;
+use App\Repositories\ConfigManager;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -64,5 +65,5 @@ interface AbstractAlbum
 	/**
 	 * The permissions for the public user.
 	 */
-	public function public_permissions(): AccessPermission|null;
+	public function public_permissions(ConfigManager $config_manager): AccessPermission|null;
 }

@@ -130,7 +130,7 @@ class HasManyPhotosRecursively extends BaseHasManyPhotos
 		if (!Gate::check(AlbumPolicy::CAN_ACCESS, $album)) {
 			$album->setRelation($relation, $this->related->newCollection());
 		} else {
-			$sorting = $album->getEffectivePhotoSorting();
+			$sorting = $album->getEffectivePhotoSorting($this->config_manager);
 			$photos = $photos->sortBy(
 				$sorting->column->value,
 				in_array($sorting->column, SortingDecorator::POSTPONE_COLUMNS, true) ? SORT_NATURAL | SORT_FLAG_CASE : SORT_REGULAR,

@@ -86,11 +86,11 @@ class Create
 		$default_protection_type = $this->config_manager->getValueAsEnum('default_album_protection', DefaultAlbumProtectionType::class);
 
 		if ($default_protection_type === DefaultAlbumProtectionType::PUBLIC) {
-			$album->access_permissions()->saveMany([AccessPermission::ofPublic()]);
+			$album->access_permissions()->saveMany([AccessPermission::ofPublic($this->config_manager)]);
 		}
 
 		if ($default_protection_type === DefaultAlbumProtectionType::PUBLIC_HIDDEN) {
-			$album->access_permissions()->saveMany([AccessPermission::ofPublicHidden()]);
+			$album->access_permissions()->saveMany([AccessPermission::ofPublicHidden($this->config_manager)]);
 		}
 
 		if ($default_protection_type === DefaultAlbumProtectionType::INHERIT && $parent_album !== null) {

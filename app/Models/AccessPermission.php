@@ -13,6 +13,7 @@ use App\Exceptions\ConfigurationKeyMissingException;
 use App\Models\Builders\AccessPermissionBuilder;
 use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\UTCBasedTimes;
+use App\Repositories\ConfigManager;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -148,12 +149,12 @@ class AccessPermission extends Model
 	 *
 	 * @throws ConfigurationKeyMissingException
 	 */
-	public static function ofPublic(): self
+	public static function ofPublic(ConfigManager $config_manager): self
 	{
 		return new AccessPermission([
 			APC::IS_LINK_REQUIRED => false,
-			APC::GRANTS_FULL_PHOTO_ACCESS => Configs::getValueAsBool('grants_full_photo_access'),
-			APC::GRANTS_DOWNLOAD => Configs::getValueAsBool('grants_download'),
+			APC::GRANTS_FULL_PHOTO_ACCESS => $config_manager->getValueAsBool('grants_full_photo_access'),
+			APC::GRANTS_DOWNLOAD => $config_manager->getValueAsBool('grants_download'),
 			APC::GRANTS_UPLOAD => false,
 			APC::GRANTS_EDIT => false,
 			APC::GRANTS_DELETE => false,
@@ -166,12 +167,12 @@ class AccessPermission extends Model
 	 *
 	 * @throws ConfigurationKeyMissingException
 	 */
-	public static function ofPublicHidden(): self
+	public static function ofPublicHidden(ConfigManager $config_manager): self
 	{
 		return new AccessPermission([
 			APC::IS_LINK_REQUIRED => true,
-			APC::GRANTS_FULL_PHOTO_ACCESS => Configs::getValueAsBool('grants_full_photo_access'),
-			APC::GRANTS_DOWNLOAD => Configs::getValueAsBool('grants_download'),
+			APC::GRANTS_FULL_PHOTO_ACCESS => $config_manager->getValueAsBool('grants_full_photo_access'),
+			APC::GRANTS_DOWNLOAD => $config_manager->getValueAsBool('grants_download'),
 			APC::GRANTS_UPLOAD => false,
 			APC::GRANTS_EDIT => false,
 			APC::GRANTS_DELETE => false,

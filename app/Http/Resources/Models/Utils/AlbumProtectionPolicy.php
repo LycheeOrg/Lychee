@@ -51,13 +51,13 @@ class AlbumProtectionPolicy extends Data
 	public static function ofBaseAlbum(BaseAlbum $base_album): self
 	{
 		return new self(
-			is_public: $base_album->public_permissions() !== null,
-			is_link_required: $base_album->public_permissions()?->is_link_required === true,
+			is_public: $base_album->public_permissions(request()->configs()) !== null,
+			is_link_required: $base_album->public_permissions(request()->configs())?->is_link_required === true,
 			is_nsfw: $base_album->is_nsfw,
-			grants_full_photo_access: $base_album->public_permissions()?->grants_full_photo_access === true,
-			grants_download: $base_album->public_permissions()?->grants_download === true,
-			grants_upload: $base_album->public_permissions()?->grants_upload === true,
-			is_password_required: $base_album->public_permissions()?->password !== null,
+			grants_full_photo_access: $base_album->public_permissions(request()->configs())?->grants_full_photo_access === true,
+			grants_download: $base_album->public_permissions(request()->configs())?->grants_download === true,
+			grants_upload: $base_album->public_permissions(request()->configs())?->grants_upload === true,
+			is_password_required: $base_album->public_permissions(request()->configs())?->password !== null,
 		);
 	}
 
@@ -71,11 +71,11 @@ class AlbumProtectionPolicy extends Data
 	public static function ofSmartAlbum(BaseSmartAlbum $base_smart_album): self
 	{
 		return new self(
-			is_public: $base_smart_album->public_permissions() !== null,
+			is_public: $base_smart_album->public_permissions(request()->configs()) !== null,
 			is_link_required: false,
 			is_nsfw: false,
-			grants_full_photo_access: $base_smart_album->public_permissions()?->grants_full_photo_access === true,
-			grants_download: $base_smart_album->public_permissions()?->grants_download === true,
+			grants_full_photo_access: $base_smart_album->public_permissions(request()->configs())?->grants_full_photo_access === true,
+			grants_download: $base_smart_album->public_permissions(request()->configs())?->grants_download === true,
 			grants_upload: false,
 			is_password_required: false,
 		);

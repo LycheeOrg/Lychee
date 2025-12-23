@@ -27,6 +27,7 @@ use App\Relations\HasAlbumThumb;
 use App\Relations\HasManyChildAlbums;
 use App\Relations\HasManyChildPhotos;
 use App\Relations\HasManyPhotosRecursively;
+use App\Repositories\ConfigManager;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
@@ -268,8 +269,9 @@ class Album extends BaseAlbum implements Node
 	 */
 	protected function getLicenseAttribute(string|LicenseType|null $value): LicenseType
 	{
+		$config_manager = resolve(ConfigManager::class);
 		if ($value === null || $value === 'none' || $value === LicenseType::NONE) {
-			return Configs::getValueAsEnum('default_license', LicenseType::class);
+			return $config_manager->getValueAsEnum('default_license', LicenseType::class);
 		}
 
 		if (is_string($value)) {
@@ -476,9 +478,9 @@ class Album extends BaseAlbum implements Node
 	/**
 	 * Returns the criterion acc. to which **albums** inside the album shall be sorted.
 	 */
-	public function getEffectiveAlbumSorting(): AlbumSortingCriterion
+	public function getEffectiveAlbumSorting(ConfigManager $config_manager): AlbumSortingCriterion
 	{
-		return $this->getAlbumSortingAttribute() ?? AlbumSortingCriterion::createDefault();
+		return $this->getAlbumSortingAttribute() ?? AlbumSortingCriterion::createDefault($config_manager);
 	}
 
 	/**

@@ -22,7 +22,6 @@ use App\Exceptions\Internal\ZeroModuloException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
 use App\Facades\Helpers;
-use App\Image\Files\BaseMediaFile;
 use App\Models\Builders\PhotoBuilder;
 use App\Models\Extensions\HasBidirectionalRelationships;
 use App\Models\Extensions\HasRandomIDAndLegacyTimeBasedID;
@@ -31,6 +30,8 @@ use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\ToArrayThrowsNotImplemented;
 use App\Models\Extensions\UTCBasedTimes;
 use App\Relations\HasManySizeVariants;
+use App\Repositories\ConfigManager;
+use App\Services\Image\FileExtensionService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -329,8 +330,9 @@ class Photo extends Model implements HasUTCBasedTimes
 	 */
 	protected function getLicenseAttribute(?string $license): LicenseType
 	{
+		$config_manager = resolve(ConfigManager::class);
 		if ($license === null) {
-			return Configs::getValueAsEnum('default_license', LicenseType::class);
+			return $config_manager->getValueAsEnum('default_license', LicenseType::class);
 		}
 
 		if (LicenseType::tryFrom($license) !== null && LicenseType::tryFrom($license) !== LicenseType::NONE) {
@@ -341,7 +343,7 @@ class Photo extends Model implements HasUTCBasedTimes
 		// 	return $this->album->license;
 		// }
 
-		return Configs::getValueAsEnum('default_license', LicenseType::class);
+		return $config_manager->getValueAsEnum('default_license', LicenseType::class);
 	}
 
 	/**
@@ -426,7 +428,9 @@ class Photo extends Model implements HasUTCBasedTimes
 			// @codeCoverageIgnoreEnd
 		}
 
-		return BaseMediaFile::isSupportedImageMimeType($this->type);
+		$file_extension_service = resolve(FileExtensionService::class);
+
+		return $file_extension_service->isSupportedImageMimeType($this->type);
 	}
 
 	/**
@@ -442,7 +446,9 @@ class Photo extends Model implements HasUTCBasedTimes
 			// @codeCoverageIgnoreEnd
 		}
 
-		return BaseMediaFile::isSupportedVideoMimeType($this->type);
+		$file_extension_service = resolve(FileExtensionService::class);
+
+		return $file_extension_service->isSupportedVideoMimeType($this->type);
 	}
 
 	/**

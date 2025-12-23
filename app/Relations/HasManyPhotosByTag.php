@@ -11,7 +11,6 @@ namespace App\Relations;
 use App\Contracts\Exceptions\InternalLycheeException;
 use App\Enum\OrderSortingType;
 use App\Exceptions\Internal\NotImplementedException;
-use App\Models\Configs;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\TagAlbum;
 use Illuminate\Database\Eloquent\Builder;
@@ -82,12 +81,12 @@ class HasManyPhotosByTag extends BaseHasManyPhotos
 			->all();
 		$tag_ids = array_values(array_unique($tag_ids));
 
-		if (Configs::getValueAsBool('TA_override_visibility')) {
+		if ($this->config_manager->getValueAsBool('TA_override_visibility')) {
 			$this->photo_query_policy
 				->applySensitivityFilter(
 					$this->getRelationQuery(),
 					origin: null,
-					include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_tag_albums')
+					include_nsfw: !$this->config_manager->getValueAsBool('hide_nsfw_in_tag_albums')
 				)
 				->where(fn (Builder $q) => $this->getPhotoIdsWithTags($q, $tag_ids, $album->is_and));
 		} else {
@@ -95,7 +94,7 @@ class HasManyPhotosByTag extends BaseHasManyPhotos
 				->applySearchabilityFilter(
 					$this->getRelationQuery(),
 					origin: null,
-					include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_tag_albums')
+					include_nsfw: !$this->config_manager->getValueAsBool('hide_nsfw_in_tag_albums')
 				)
 				->where(fn (Builder $q) => $this->getPhotoIdsWithTags($q, $tag_ids, $album->is_and));
 		}
@@ -158,7 +157,7 @@ class HasManyPhotosByTag extends BaseHasManyPhotos
 		}
 		/** @var TagAlbum $album */
 		$album = $albums[0];
-		$sorting = $album->getEffectivePhotoSorting();
+		$sorting = $album->getEffectivePhotoSorting($this->config_manager);
 
 		$photos = $photos->sortBy(
 			$sorting->column->value,

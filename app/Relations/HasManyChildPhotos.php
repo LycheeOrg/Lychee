@@ -17,6 +17,7 @@ use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
 use App\Policies\PhotoQueryPolicy;
+use App\Repositories\ConfigManager;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\InvalidCastException;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -27,6 +28,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class HasManyChildPhotos extends BelongsToMany
 {
 	protected PhotoQueryPolicy $photo_query_policy;
+	protected ConfigManager $config_manager;
 
 	public function __construct(Album $owning_album)
 	{
@@ -35,6 +37,7 @@ class HasManyChildPhotos extends BelongsToMany
 		// The parent constructor calls `addConstraints` and thus our own
 		// attributes must be initialized by then
 		$this->photo_query_policy = resolve(PhotoQueryPolicy::class);
+		$this->config_manager = resolve(ConfigManager::class);
 		parent::__construct(
 			query: Photo::query(),
 			parent: $owning_album,
@@ -109,7 +112,7 @@ class HasManyChildPhotos extends BelongsToMany
 			return $this->related->newCollection();
 		}
 
-		$album_sorting = $this->getParent()->getEffectivePhotoSorting();
+		$album_sorting = $this->getParent()->getEffectivePhotoSorting($this->config_manager);
 
 		/** @var SortingDecorator<Photo> */
 		$sorting_decorator = new SortingDecorator($this->query);
@@ -147,7 +150,7 @@ class HasManyChildPhotos extends BelongsToMany
 
 			if (isset($dictionary[$key])) {
 				$children_of_model = $this->related->newCollection($dictionary[$key]);
-				$sorting = $model->getEffectivePhotoSorting();
+				$sorting = $model->getEffectivePhotoSorting($this->config_manager);
 				$children_of_model = $children_of_model
 					->sortBy(
 						$sorting->column->value,

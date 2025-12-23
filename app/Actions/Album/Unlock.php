@@ -13,15 +13,15 @@ use App\Exceptions\UnauthorizedException;
 use App\Models\BaseAlbumImpl;
 use App\Models\Extensions\BaseAlbum;
 use App\Policies\AlbumPolicy;
+use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\Hash;
 
 class Unlock
 {
-	private AlbumPolicy $album_policy;
-
-	public function __construct()
-	{
-		$this->album_policy = resolve(AlbumPolicy::class);
+	public function __construct(
+		protected readonly ConfigManager $config_manager,
+		private AlbumPolicy $album_policy,
+	) {
 	}
 
 	/**
@@ -37,8 +37,8 @@ class Unlock
 	 */
 	public function do(BaseAlbum $album, string $password): void
 	{
-		if ($album->public_permissions() !== null) {
-			$album_password = $album->public_permissions()->password;
+		if ($album->public_permissions($this->config_manager) !== null) {
+			$album_password = $album->public_permissions($this->config_manager)->password;
 			if (
 				$album_password === null ||
 				$album_password === '' ||

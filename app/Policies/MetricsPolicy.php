@@ -9,14 +9,10 @@
 namespace App\Policies;
 
 use App\Enum\LiveMetricsAccess;
-use App\Models\Configs;
 use App\Models\User;
-use Illuminate\Auth\Access\HandlesAuthorization;
 
-class MetricsPolicy
+class MetricsPolicy extends BasePolicy
 {
-	use HandlesAuthorization;
-
 	public const CAN_SEE_LIVE = 'canSeeLive';
 
 	/**
@@ -24,7 +20,7 @@ class MetricsPolicy
 	 */
 	public function canSeeLive(?User $user): bool
 	{
-		$access_level = Configs::getValueAsEnum('live_metrics_access', LiveMetricsAccess::class);
+		$access_level = $this->config_manager->getValueAsEnum('live_metrics_access', LiveMetricsAccess::class);
 
 		return match ($access_level) {
 			LiveMetricsAccess::LOGGEDIN => true,

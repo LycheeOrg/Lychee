@@ -175,17 +175,18 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 			*/
 		$this->thumb ??= $this->config_manager->getValueAsBool('SA_random_thumbs')
 		// @codeCoverageIgnoreStart
-		? Thumb::createFromRandomQueryable($this->photos())
+		? Thumb::createFromRandomQueryable($this->photos(), $this->config_manager)
 		// @codeCoverageIgnoreEnd
 		: $this->thumb = Thumb::createFromQueryable(
 			$this->photos(),
-			PhotoSortingCriterion::createDefault($this->config_manager)
+			PhotoSortingCriterion::createDefault($this->config_manager),
+			$this->config_manager
 		);
 
 		return $this->thumb;
 	}
 
-	public function public_permissions(): ?AccessPermission
+	public function public_permissions(ConfigManager $config_manager): ?AccessPermission
 	{
 		return $this->public_permissions;
 	}
@@ -196,7 +197,7 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 			return;
 		}
 
-		$this->public_permissions = AccessPermission::ofPublic();
+		$this->public_permissions = AccessPermission::ofPublic($this->config_manager);
 		$this->public_permissions->base_album_id = $this->id;
 		$this->public_permissions->save();
 	}
@@ -207,7 +208,7 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 			return;
 		}
 
-		$this->public_permissions = AccessPermission::ofPublicHidden();
+		$this->public_permissions = AccessPermission::ofPublicHidden($this->config_manager);
 		$this->public_permissions->base_album_id = $this->id;
 		$this->public_permissions->save();
 	}

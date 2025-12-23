@@ -9,11 +9,17 @@
 namespace App\Policies;
 
 use App\Models\User;
+use App\Repositories\ConfigManager;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class BasePolicy
 {
 	use HandlesAuthorization;
+
+	public function __construct(
+		protected ConfigManager $config_manager,
+	) {
+	}
 
 	/**
 	 * Perform pre-authorization checks.

@@ -18,6 +18,7 @@ use App\Models\AccessPermission;
 use App\Models\BaseAlbumImpl;
 use App\Models\Statistics;
 use App\Models\User;
+use App\Repositories\ConfigManager;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -122,7 +123,7 @@ abstract class BaseAlbum extends Model implements AbstractAlbum, HasRandomID
 	/**
 	 * Returns the relationship between an album and its associated public permissions.
 	 */
-	public function public_permissions(): AccessPermission|null
+	public function public_permissions(ConfigManager $config_manager): AccessPermission|null
 	{
 		return $this->base_class->public_permissions();
 	}
@@ -147,8 +148,8 @@ abstract class BaseAlbum extends Model implements AbstractAlbum, HasRandomID
 	 *
 	 * @return PhotoSortingCriterion the attribute acc. to which **photos** inside the album shall be sorted
 	 */
-	public function getEffectivePhotoSorting(): PhotoSortingCriterion
+	public function getEffectivePhotoSorting(ConfigManager $config_manager): PhotoSortingCriterion
 	{
-		return $this->photo_sorting ?? PhotoSortingCriterion::createDefault();
+		return $this->photo_sorting ?? PhotoSortingCriterion::createDefault($config_manager);
 	}
 }

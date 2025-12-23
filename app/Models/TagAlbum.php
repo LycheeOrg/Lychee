@@ -15,6 +15,7 @@ use App\Models\Extensions\BaseAlbum;
 use App\Models\Extensions\Thumb;
 use App\Models\Extensions\ToArrayThrowsNotImplemented;
 use App\Relations\HasManyPhotosByTag;
+use App\Repositories\ConfigManager;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -141,12 +142,15 @@ class TagAlbum extends BaseAlbum
 	 */
 	protected function getThumbAttribute(): ?Thumb
 	{
+		$config_manager = resolve(ConfigManager::class);
+
 		// Note, `photos()` already applies a "security filter" and
 		// only returns photos which are accessible by the current
 		// user
 		return Thumb::createFromQueryable(
 			$this->photos(),
-			$this->getEffectivePhotoSorting()
+			$this->getEffectivePhotoSorting($config_manager),
+			$config_manager
 		);
 	}
 
