@@ -14,10 +14,10 @@ use App\Exceptions\Internal\LycheeLogicException;
 use App\Image\ColourExtractor\FarzaiExtractor;
 use App\Image\ColourExtractor\LeagueExtractor;
 use App\Models\Colour;
-use App\Models\Configs;
 use App\Models\JobHistory;
 use App\Models\Palette;
 use App\Models\Photo;
+use App\Repositories\ConfigManager;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -76,9 +76,10 @@ class ExtractColoursJob implements ShouldQueue
 
 		$file = $photo->size_variants->getOriginal()->getFile();
 
-		$extractor = match (Configs::getValueAsString('colour_extraction_driver')) {
+		$config_manager = new ConfigManager();
+		$extractor = match ($config_manager->getValueAsString('colour_extraction_driver')) {
 			'league' => new LeagueExtractor(),
-			'farzai' => new FarzaiExtractor(),
+			'farzai' => new FarzaiExtractor($config_manager),
 			default => throw new LycheeLogicException('Unsupported colour extraction driver.'),
 		};
 		$colours = $extractor->extract($file);

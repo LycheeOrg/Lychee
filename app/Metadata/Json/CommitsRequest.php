@@ -8,7 +8,7 @@
 
 namespace App\Metadata\Json;
 
-use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\Config;
 
 class CommitsRequest extends JsonRequestFunctions
@@ -19,9 +19,11 @@ class CommitsRequest extends JsonRequestFunctions
 	 */
 	public function __construct()
 	{
+		$config_manager = new ConfigManager();
+
 		parent::__construct(
 			Config::get('urls.update.git.commits'),
-			Configs::getValueAsInt('update_check_every_days')
+			$config_manager->getValueAsInt('update_check_every_days')
 		);
 	}
 }

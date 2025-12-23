@@ -16,12 +16,15 @@ use App\Image\Files\NativeLocalFile;
 use App\Models\Album;
 use App\Models\JobHistory;
 use App\Models\Photo;
+use App\Repositories\ConfigManager;
+use App\Services\Image\FileExtensionService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Str;
+use LycheeVerify\Verify;
 
 /**
  * This allows to process images on serverside while making the responses faster.
@@ -72,11 +75,15 @@ class ImportImageJob implements ShouldQueue
 
 		$copied_file = new NativeLocalFile($this->file_path);
 
-		// As the file has been uploaded, the (temporary) source file shall be
-		// deleted
+		$config_manager = new ConfigManager();
+		$verify = new Verify();
+		$file_extension_service = new FileExtensionService($config_manager);
+		// As the file has been uploaded, the (temporary) source file shall be deleted
 		$create = new Create(
-			$this->import_mode,
-			$this->intended_owner_id,
+			verify: $verify,
+			file_extension_service: $file_extension_service,
+			import_mode: $this->import_mode,
+			intended_owner_id: $this->intended_owner_id,
 		);
 
 		$album = $album_factory->findAbstractAlbumOrFail($this->album_id);

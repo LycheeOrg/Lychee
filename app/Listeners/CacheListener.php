@@ -8,7 +8,7 @@
 
 namespace App\Listeners;
 
-use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use Illuminate\Cache\Events\CacheHit;
 use Illuminate\Cache\Events\CacheMissed;
 use Illuminate\Cache\Events\KeyForgotten;
@@ -25,11 +25,13 @@ class CacheListener
 	 */
 	public function handle(CacheHit|CacheMissed|KeyForgotten|KeyWritten $event): void
 	{
+		$config_manager = new ConfigManager();
+
 		if (str_contains($event->key, 'lv:dev-lycheeOrg')) {
 			return;
 		}
 
-		if (Configs::getValueAsBool('cache_event_logging') === false) {
+		if ($config_manager->getValueAsBool('cache_event_logging') === false) {
 			return;
 		}
 

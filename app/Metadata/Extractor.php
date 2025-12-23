@@ -13,7 +13,8 @@ use App\Exceptions\ExternalComponentMissingException;
 use App\Exceptions\Handler;
 use App\Exceptions\MediaFileOperationException;
 use App\Image\Files\NativeLocalFile;
-use App\Models\Configs;
+use App\Repositories\ConfigManager;
+use App\Services\Image\FileExtensionService;
 use Carbon\Exceptions\InvalidFormatException;
 use Carbon\Exceptions\InvalidTimeZoneException;
 use Illuminate\Support\Carbon;
@@ -72,8 +73,11 @@ class Extractor
 	 */
 	public static function createFromFile(NativeLocalFile $file, int $file_last_modified_time): self
 	{
+		$config_manager = new ConfigManager();
+		$file_extension_service = new FileExtensionService($config_manager);
+
 		$metadata = new self();
-		$is_supported_video = $file->isSupportedVideo();
+		$is_supported_video = $file_extension_service->isSupportedVideo($file->getMimeType(), $file->getOriginalExtension());
 
 		try {
 			// Priority of EXIF data readers is
@@ -82,9 +86,9 @@ class Extractor
 			//  3. Imagick (not for videos, i.e. for supported photos and accepted raw files only)
 			//  4. Native PHP exif reader (last resort)
 			$reader = match (true) {
-				(Configs::hasFFmpeg() && $is_supported_video) => Reader::factory(ReaderType::FFPROBE, Configs::getValueAsString('ffprobe_path')),
-				Configs::hasExiftool() => Reader::factory(ReaderType::EXIFTOOL, Configs::getValueAsString('exiftool_path')),
-				(Configs::hasImagick() && !$is_supported_video) => Reader::factory(ReaderType::IMAGICK),
+				($config_manager->hasFFmpeg() && $is_supported_video) => Reader::factory(ReaderType::FFPROBE, $config_manager->getValueAsString('ffprobe_path')),
+				$config_manager->hasExiftool() => Reader::factory(ReaderType::EXIFTOOL, $config_manager->getValueAsString('exiftool_path')),
+				($config_manager->hasImagick() && !$is_supported_video) => Reader::factory(ReaderType::IMAGICK),
 				default => Reader::factory(ReaderType::NATIVE),
 			};
 
@@ -123,7 +127,7 @@ class Extractor
 
 		$sidecar_file = new NativeLocalFile($file->getPath() . '.xmp');
 
-		if (Configs::hasExiftool() && $sidecar_file->exists()) {
+		if ($config_manager->hasExiftool() && $sidecar_file->exists()) {
 			// @codeCoverageIgnoreStart
 			try {
 				// Don't use the same reader as the file in case it's a video
@@ -134,7 +138,7 @@ class Extractor
 				// We don't want to overwrite the media's type with the mimetype of the sidecar file
 				unset($sidecar_data['MimeType']);
 
-				if (Configs::getValueAsBool('prefer_available_xmp_metadata')) {
+				if ($config_manager->getValueAsBool('prefer_available_xmp_metadata')) {
 					$exif->setData(array_merge($exif->getData(), $sidecar_data));
 				} else {
 					$exif->setData(array_merge($sidecar_data, $exif->getData()));
@@ -168,7 +172,7 @@ class Extractor
 
 		if (
 			$taken_at === false &&
-			Configs::getValueAsBool('use_last_modified_date_when_no_exif_date')
+			$config_manager->getValueAsBool('use_last_modified_date_when_no_exif_date')
 		) {
 			$taken_at = DateTime::createFromFormat('U', "$file_last_modified_time");
 		}
@@ -306,7 +310,7 @@ class Extractor
 				//         the attribute `taken_at` which extends
 				//         \DateTimeInterface and stores the timezone.
 				if ($is_supported_video) {
-					$locals = strtolower(Configs::getValueAsString('local_takestamp_video_formats'));
+					$locals = strtolower($config_manager->getValueAsString('local_takestamp_video_formats'));
 					if (!in_array(strtolower($file->getExtension()), explode('|', $locals), true)) {
 						// This is a video format where we expect the takestamp
 						// to be provided in UTC.

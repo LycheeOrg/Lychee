@@ -12,6 +12,7 @@ use App\Enum\JobStatus;
 use App\Image\Watermarker;
 use App\Models\JobHistory;
 use App\Models\SizeVariant;
+use App\Repositories\ConfigManager;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -113,6 +114,8 @@ class WatermarkerJob implements ShouldQueue, ShouldBeUnique
 
 	protected function getWatermarker(): Watermarker
 	{
-		return new Watermarker();
+		$config_manager = new ConfigManager();
+
+		return new Watermarker($config_manager);
 	}
 }
