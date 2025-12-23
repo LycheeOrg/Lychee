@@ -19,6 +19,22 @@ class ConfigManager
 	protected array $cache = [];
 
 	/**
+	 * Validate if a key exists in the configuration.
+	 *
+	 * @param string $key
+	 *
+	 * @return bool
+	 */
+	public function hasKey(string $key): bool
+	{
+		if (count($this->cache) === 0) {
+			$this->load();
+		}
+
+		return array_key_exists($key, $this->cache);
+	}
+
+	/**
 	 * Fetch a configuration value by key.
 	 *
 	 * @param string $key

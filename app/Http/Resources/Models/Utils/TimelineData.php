@@ -15,7 +15,6 @@ use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\Internal\TimelineGranularityException;
 use App\Http\Resources\Models\PhotoResource;
 use App\Http\Resources\Models\ThumbAlbumResource;
-use App\Models\Configs;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Spatie\LaravelData\Data;
@@ -32,10 +31,10 @@ class TimelineData extends Data
 
 	public static function fromPhoto(PhotoResource $photo, TimelinePhotoGranularity $granularity): self
 	{
-		$timeline_date_format_year = Configs::getValueAsString('timeline_photo_date_format_year');
-		$timeline_date_format_month = Configs::getValueAsString('timeline_photo_date_format_month');
-		$timeline_date_format_day = Configs::getValueAsString('timeline_photo_date_format_day');
-		$timeline_date_format_hour = Configs::getValueAsString('timeline_photo_date_format_hour');
+		$timeline_date_format_year = request()->configs()->getValueAsString('timeline_photo_date_format_year');
+		$timeline_date_format_month = request()->configs()->getValueAsString('timeline_photo_date_format_month');
+		$timeline_date_format_day = request()->configs()->getValueAsString('timeline_photo_date_format_day');
+		$timeline_date_format_hour = request()->configs()->getValueAsString('timeline_photo_date_format_hour');
 
 		$format = match ($granularity) {
 			TimelinePhotoGranularity::YEAR => $photo->timeline_date_carbon()->format($timeline_date_format_year),
@@ -58,9 +57,9 @@ class TimelineData extends Data
 
 	private static function fromAlbum(ThumbAlbumResource $album, ColumnSortingType $column_sorting, TimelineAlbumGranularity $granularity): ?self
 	{
-		$timeline_date_format_year = Configs::getValueAsString('timeline_album_date_format_year');
-		$timeline_date_format_month = Configs::getValueAsString('timeline_album_date_format_month');
-		$timeline_date_format_day = Configs::getValueAsString('timeline_album_date_format_day');
+		$timeline_date_format_year = request()->configs()->getValueAsString('timeline_album_date_format_year');
+		$timeline_date_format_month = request()->configs()->getValueAsString('timeline_album_date_format_month');
+		$timeline_date_format_day = request()->configs()->getValueAsString('timeline_album_date_format_day');
 		$date = match ($column_sorting) {
 			ColumnSortingType::CREATED_AT => $album->created_at_carbon(),
 			ColumnSortingType::MAX_TAKEN_AT => $album->max_taken_at_carbon(),
@@ -122,11 +121,11 @@ class TimelineData extends Data
 
 	public static function fromDate(string $date): TimelineData
 	{
-		$granularity = Configs::getValueAsEnum('timeline_photos_granularity', TimelinePhotoGranularity::class);
-		$timeline_date_format_year = Configs::getValueAsString('timeline_quick_access_date_format_year');
-		$timeline_date_format_month = Configs::getValueAsString('timeline_quick_access_date_format_month');
-		$timeline_date_format_day = Configs::getValueAsString('timeline_quick_access_date_format_day');
-		$timeline_date_format_hour = Configs::getValueAsString('timeline_quick_access_date_format_hour');
+		$granularity = request()->configs()->getValueAsEnum('timeline_photos_granularity', TimelinePhotoGranularity::class);
+		$timeline_date_format_year = request()->configs()->getValueAsString('timeline_quick_access_date_format_year');
+		$timeline_date_format_month = request()->configs()->getValueAsString('timeline_quick_access_date_format_month');
+		$timeline_date_format_day = request()->configs()->getValueAsString('timeline_quick_access_date_format_day');
+		$timeline_date_format_hour = request()->configs()->getValueAsString('timeline_quick_access_date_format_hour');
 
 		$carbon = $granularity === TimelinePhotoGranularity::YEAR ? Carbon::createFromDate(intval($date)) : Carbon::parse($date);
 

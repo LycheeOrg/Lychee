@@ -11,6 +11,7 @@ namespace App\SmartAlbums;
 use App\Enum\SmartAlbumType;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
+use App\Repositories\ConfigManager;
 use Carbon\Exceptions\InvalidFormatException;
 use Carbon\Exceptions\InvalidTimeZoneException;
 use Illuminate\Database\Eloquent\Builder;
@@ -27,11 +28,12 @@ class OnThisDayAlbum extends BaseSmartAlbum
 	 * @throws ConfigurationKeyMissingException
 	 * @throws FrameworkException
 	 */
-	protected function __construct()
+	protected function __construct(ConfigManager $config_manager)
 	{
 		$today = Carbon::today();
 
 		parent::__construct(
+			config_manager: $config_manager,
 			id: SmartAlbumType::ON_THIS_DAY,
 			smart_condition: function (Builder $query) use ($today): void {
 				$query->where(fn (Builder $q) => $q
@@ -46,8 +48,8 @@ class OnThisDayAlbum extends BaseSmartAlbum
 		);
 	}
 
-	public static function getInstance(): self
+	public static function getInstance(ConfigManager $config_manager): self
 	{
-		return self::$instance ??= new self();
+		return self::$instance ??= new self($config_manager);
 	}
 }

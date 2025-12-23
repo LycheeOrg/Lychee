@@ -18,7 +18,6 @@ use App\Http\Resources\Traits\HasHeaderUrl;
 use App\Http\Resources\Traits\HasPrepPhotoCollection;
 use App\Http\Resources\Traits\HasTimelineData;
 use App\Models\Album;
-use App\Models\Configs;
 use App\Policies\AlbumPolicy;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -98,7 +97,7 @@ class AlbumResource extends Data
 
 		if ($this->albums->count() > 0) {
 			// setup timeline data
-			$sorting = $album->album_sorting?->column ?? Configs::getValueAsEnum('sorting_albums_col', ColumnSortingType::class);
+			$sorting = $album->album_sorting?->column ?? request()->configs()->getValueAsEnum('sorting_albums_col', ColumnSortingType::class);
 			$album_granularity = $this->getAlbumTimeline($album->album_timeline);
 			$this->albums = TimelineData::setTimeLineDataForAlbums($this->albums, $sorting, $album_granularity);
 		}
@@ -118,7 +117,7 @@ class AlbumResource extends Data
 			$this->editable = EditableBaseAlbumResource::fromModel($album);
 		}
 
-		if (Configs::getValueAsBool('metrics_enabled') && Gate::check(AlbumPolicy::CAN_READ_METRICS, [Album::class, $album])) {
+		if (request()->configs()->getValueAsBool('metrics_enabled') && Gate::check(AlbumPolicy::CAN_READ_METRICS, [Album::class, $album])) {
 			$this->statistics = AlbumStatisticsResource::fromModel($album->statistics);
 		}
 	}

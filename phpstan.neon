@@ -2,6 +2,13 @@ includes:
 	- vendor/larastan/larastan/extension.neon
 	- vendor/lychee-org/phpstan-lychee/phpstan.neon
 	- phpstan-baseline.neon
+
+services:
+    -
+        class: PHPStan\RequestReturnTypeExtension
+        tags:
+            - phpstan.broker.dynamicFunctionReturnTypeExtension
+
 parameters:
 	level: 3
 	tips:

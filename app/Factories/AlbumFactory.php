@@ -223,7 +223,7 @@ class AlbumFactory
 	 */
 	public function createSmartAlbum(SmartAlbumType $smart_album_id, bool $with_relations = true): BaseSmartAlbum
 	{
-		$smart_album = call_user_func(self::BUILTIN_SMARTS_CLASS[$smart_album_id->value] . '::getInstance');
+		$smart_album = call_user_func(self::BUILTIN_SMARTS_CLASS[$smart_album_id->value] . '::getInstance', $this->config_manager);
 		if ($with_relations) {
 			// Just try to get the photos.
 			// This loads the relation from DB and caches it.

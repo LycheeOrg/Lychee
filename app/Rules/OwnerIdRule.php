@@ -9,22 +9,27 @@
 namespace App\Rules;
 
 use App\Exceptions\UnauthorizedException;
-use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Support\Facades\Auth;
 
 final class OwnerIdRule implements ValidationRule
 {
+	public function __construct(
+		private ConfigManager $config_manager,
+	) {
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
 	public function validate(string $attribute, mixed $value, \Closure $fail): void
 	{
-		if (Configs::getValueAsInt('owner_id') !== intval($value)) {
+		if ($this->config_manager->getValueAsInt('owner_id') !== intval($value)) {
 			return;
 		}
 
-		if (Auth::id() === Configs::getValueAsInt('owner_id')) {
+		if (Auth::id() === $this->config_manager->getValueAsInt('owner_id')) {
 			return;
 		}
 

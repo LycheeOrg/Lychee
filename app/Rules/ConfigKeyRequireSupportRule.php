@@ -9,6 +9,7 @@
 namespace App\Rules;
 
 use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use Illuminate\Contracts\Validation\ValidationRule;
 use LycheeVerify\Contract\VerifyInterface;
 
@@ -18,6 +19,7 @@ final class ConfigKeyRequireSupportRule implements ValidationRule
 
 	public function __construct(
 		protected VerifyInterface $verify,
+		private ConfigManager $config_manager,
 	) {
 	}
 
@@ -32,7 +34,7 @@ final class ConfigKeyRequireSupportRule implements ValidationRule
 		}
 
 		/** @var string $value */
-		if (!array_key_exists($value, Configs::get())) {
+		if (!$this->config_manager->hasKey($value)) {
 			// This is taken care of in ConfigKeyRule
 			return;
 		}

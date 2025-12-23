@@ -13,11 +13,9 @@ use App\Factories\AlbumFactory;
 use App\Image\Watermarker;
 use App\Models\Photo;
 use App\Policies\AlbumPolicy;
-use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
-use LycheeVerify\Contract\VerifyInterface;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
@@ -32,10 +30,8 @@ class ModulesRightsResource extends Data
 	public bool $is_mod_renamer_enabled = false;
 	public bool $is_mod_webshop_enabled = false;
 
-	public function __construct(
-		protected readonly VerifyInterface $verify,
-		protected readonly ConfigManager $config_manager,
-	) {
+	public function __construct()
+	{
 		$is_logged_in = Auth::check();
 
 		$this->is_map_enabled = $this->isMapEnabled($is_logged_in);
@@ -57,8 +53,8 @@ class ModulesRightsResource extends Data
 	private function isMapEnabled(bool $is_logged_in): bool
 	{
 		$has_locations = Photo::whereNotNull('latitude')->whereNotNull('longitude')->exists();
-		$map_display = $this->config_manager->getValueAsBool('map_display');
-		$public_display = $is_logged_in || $this->config_manager->getValueAsBool('map_display_public');
+		$map_display = request()->configs()->getValueAsBool('map_display');
+		$public_display = $is_logged_in || request()->configs()->getValueAsBool('map_display_public');
 
 		return $has_locations && $map_display && $public_display;
 	}
@@ -70,19 +66,19 @@ class ModulesRightsResource extends Data
 	 */
 	private function isModFrameEnabled(): bool
 	{
-		if (!$this->config_manager->getValueAsBool('mod_frame_enabled')) {
+		if (!request()->configs()->getValueAsBool('mod_frame_enabled')) {
 			return false;
 		}
 
 		$factory = resolve(AlbumFactory::class);
 		try {
-			$random_album_id = $this->config_manager->getValueAsString('random_album_id');
+			$random_album_id = request()->configs()->getValueAsString('random_album_id');
 			$random_album_id = ($random_album_id !== '') ? $random_album_id : null;
 			$album = $factory->findNullalbleAbstractAlbumOrFail($random_album_id);
 
 			return Gate::check(AlbumPolicy::CAN_ACCESS, [AbstractAlbum::class, $album]);
 		} catch (\Throwable) {
-			Log::critical('Could not find random album for frame with ID:' . $this->config_manager->getValueAsString('random_album_id'));
+			Log::critical('Could not find random album for frame with ID:' . request()->configs()->getValueAsString('random_album_id'));
 
 			return false;
 		}
@@ -98,11 +94,11 @@ class ModulesRightsResource extends Data
 	 */
 	private function isModFlowEnabled(bool $is_logged_in): bool
 	{
-		if (!$this->config_manager->getValueAsBool('flow_enabled')) {
+		if (!request()->configs()->getValueAsBool('flow_enabled')) {
 			return false;
 		}
 
-		return $is_logged_in || $this->config_manager->getValueAsBool('flow_public');
+		return $is_logged_in || request()->configs()->getValueAsBool('flow_public');
 	}
 
 	/**
@@ -114,8 +110,8 @@ class ModulesRightsResource extends Data
 	 */
 	private function isTimelinePhotosEnabled(bool $is_logged_in): bool
 	{
-		$timeline_photos_enabled = $this->config_manager->getValueAsBool('timeline_photos_enabled');
-		$timeline_photos_public = $this->config_manager->getValueAsBool('timeline_photos_public');
+		$timeline_photos_enabled = request()->configs()->getValueAsBool('timeline_photos_enabled');
+		$timeline_photos_public = request()->configs()->getValueAsBool('timeline_photos_public');
 
 		return $timeline_photos_enabled && ($is_logged_in || $timeline_photos_public);
 	}
@@ -134,7 +130,7 @@ class ModulesRightsResource extends Data
 			return false;
 		}
 
-		if (!$this->verify->check()) {
+		if (!request()->verify()->check()) {
 			return false;
 		}
 
@@ -151,15 +147,15 @@ class ModulesRightsResource extends Data
 	 */
 	private function isRenamerEnabled(): bool
 	{
-		if (!$this->verify->check()) {
+		if (!request()->verify()->check()) {
 			return false;
 		}
 
-		if (!$this->config_manager->getValueAsBool('renamer_enabled')) {
+		if (!request()->configs()->getValueAsBool('renamer_enabled')) {
 			return false;
 		}
 
-		if ($this->config_manager->getValueAsBool('renamer_enforced') && Auth::user()?->may_administrate !== true) {
+		if (request()->configs()->getValueAsBool('renamer_enforced') && Auth::user()?->may_administrate !== true) {
 			return false;
 		}
 
@@ -177,10 +173,10 @@ class ModulesRightsResource extends Data
 			return false;
 		}
 
-		if (!$this->verify->is_pro()) {
+		if (!request()->verify()->is_pro()) {
 			return false;
 		}
 
-		return $this->config_manager->getValueAsBool('webshop_enabled');
+		return request()->configs()->getValueAsBool('webshop_enabled');
 	}
 }

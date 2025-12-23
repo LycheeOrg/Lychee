@@ -19,13 +19,13 @@ use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Exceptions\Internal\InvalidQueryModelException;
 use App\Exceptions\InvalidPropertyException;
 use App\Models\AccessPermission;
-use App\Models\Configs;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\Extensions\Thumb;
 use App\Models\Extensions\ToArrayThrowsNotImplemented;
 use App\Models\Extensions\UTCBasedTimes;
 use App\Models\Photo;
 use App\Policies\PhotoQueryPolicy;
+use App\Repositories\ConfigManager;
 use App\SmartAlbums\Utils\MimicModel;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Builder;
@@ -59,8 +59,11 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	 * @throws ConfigurationKeyMissingException
 	 * @throws FrameworkException
 	 */
-	protected function __construct(SmartAlbumType $id, \Closure $smart_condition)
-	{
+	protected function __construct(
+		protected ConfigManager $config_manager,
+		SmartAlbumType $id,
+		\Closure $smart_condition,
+	) {
 		try {
 			$this->photo_query_policy = resolve(PhotoQueryPolicy::class);
 			$this->id = $id->value;
@@ -104,15 +107,15 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	{
 		$base_query = Photo::query()->leftJoin(PA::PHOTO_ALBUM, 'photos.id', '=', PA::PHOTO_ID)->with(['size_variants', 'statistics', 'palette', 'tags']);
 
-		if (!Configs::getValueAsBool('SA_override_visibility')) {
+		if (!$this->config_manager->getValueAsBool('SA_override_visibility')) {
 			return $this->photo_query_policy
-				->applySearchabilityFilter(query: $base_query, origin: null, include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_smart_albums'))
+				->applySearchabilityFilter(query: $base_query, origin: null, include_nsfw: !$this->config_manager->getValueAsBool('hide_nsfw_in_smart_albums'))
 				->where($this->smart_photo_condition);
 		}
 
 		// If the smart album visibility override is enabled, we do not need to apply any security filter, as all photos are visible
 		// in this smart album. We still need to apply the smart album condition, though.
-		return $this->photo_query_policy->applySensitivityFilter(query: $base_query, origin: null, include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_smart_albums'))
+		return $this->photo_query_policy->applySensitivityFilter(query: $base_query, origin: null, include_nsfw: !$this->config_manager->getValueAsBool('hide_nsfw_in_smart_albums'))
 			->where($this->smart_photo_condition);
 	}
 
@@ -127,12 +130,12 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 		// Cache query result for later use
 		// (this mimics the behaviour of relations of true Eloquent models)
 		if ($this->photos === null) {
-			$sorting = PhotoSortingCriterion::createDefault();
+			$sorting = PhotoSortingCriterion::createDefault($this->config_manager);
 
 			/** @var \Illuminate\Pagination\LengthAwarePaginator<int,\App\Models\Photo> $photos */
 			$photos = (new SortingDecorator($this->photos()))
 				->orderPhotosBy($sorting->column, $sorting->order)
-				->paginate(Configs::getValueAsInt('photos_pagination_limit'));
+				->paginate($this->config_manager->getValueAsInt('photos_pagination_limit'));
 			$this->photos = $photos;
 		}
 
@@ -170,14 +173,14 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 			* only returns photos which are accessible by the current
 			* user.
 			*/
-		$this->thumb ??= Configs::getValueAsBool('SA_random_thumbs')
-			// @codeCoverageIgnoreStart
-			? Thumb::createFromRandomQueryable($this->photos())
-			// @codeCoverageIgnoreEnd
-			: $this->thumb = Thumb::createFromQueryable(
-				$this->photos(),
-				PhotoSortingCriterion::createDefault()
-			);
+		$this->thumb ??= $this->config_manager->getValueAsBool('SA_random_thumbs')
+		// @codeCoverageIgnoreStart
+		? Thumb::createFromRandomQueryable($this->photos())
+		// @codeCoverageIgnoreEnd
+		: $this->thumb = Thumb::createFromQueryable(
+			$this->photos(),
+			PhotoSortingCriterion::createDefault($this->config_manager)
+		);
 
 		return $this->thumb;
 	}

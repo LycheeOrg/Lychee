@@ -11,7 +11,7 @@ namespace App\SmartAlbums;
 use App\Enum\SmartAlbumType;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
-use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use Carbon\Exceptions\InvalidFormatException;
 use Carbon\Exceptions\InvalidTimeZoneException;
 use Illuminate\Database\Eloquent\Builder;
@@ -28,13 +28,14 @@ class RecentAlbum extends BaseSmartAlbum
 	 * @throws ConfigurationKeyMissingException
 	 * @throws FrameworkException
 	 */
-	protected function __construct()
+	protected function __construct(ConfigManager $config_manager)
 	{
 		$str_recent = $this->fromDateTime(
-			Carbon::now()->subDays(Configs::getValueAsInt('recent_age'))
+			Carbon::now()->subDays($config_manager->getValueAsInt('recent_age'))
 		);
 
 		parent::__construct(
+			config_manager: $config_manager,
 			id: SmartAlbumType::RECENT,
 			smart_condition: function (Builder $query) use ($str_recent): void {
 				$query->where('photos.created_at', '>=', $str_recent);
@@ -42,8 +43,8 @@ class RecentAlbum extends BaseSmartAlbum
 		);
 	}
 
-	public static function getInstance(): self
+	public static function getInstance(ConfigManager $config_manager): self
 	{
-		return self::$instance ??= new self();
+		return self::$instance ??= new self($config_manager);
 	}
 }

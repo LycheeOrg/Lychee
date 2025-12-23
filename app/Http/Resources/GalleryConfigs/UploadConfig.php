@@ -9,7 +9,6 @@
 namespace App\Http\Resources\GalleryConfigs;
 
 use App\Facades\Helpers;
-use App\Models\Configs;
 use Safe\Exceptions\InfoException;
 use function Safe\ini_get;
 use Spatie\LaravelData\Data;
@@ -23,13 +22,13 @@ class UploadConfig extends Data
 
 	public function __construct()
 	{
-		$this->upload_processing_limit = max(1, Configs::getValueAsInt('upload_processing_limit'));
+		$this->upload_processing_limit = max(1, request()->configs()->getValueAsInt('upload_processing_limit'));
 		$this->upload_chunk_size = self::getUploadLimit();
 	}
 
 	public static function getUploadLimit(): int
 	{
-		$size = Configs::getValueAsInt('upload_chunk_size');
+		$size = request()->configs()->getValueAsInt('upload_chunk_size');
 		if ($size === 0) {
 			try {
 				$memory_size = Helpers::convertSize(ini_get('memory_limit')) / 10;

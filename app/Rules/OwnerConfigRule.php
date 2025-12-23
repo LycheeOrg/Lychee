@@ -9,12 +9,17 @@
 namespace App\Rules;
 
 use App\Exceptions\UnauthorizedException;
-use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Support\Facades\Auth;
 
 final class OwnerConfigRule implements ValidationRule
 {
+	public function __construct(
+		private ConfigManager $config_manager,
+	) {
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -24,7 +29,7 @@ final class OwnerConfigRule implements ValidationRule
 			return;
 		}
 
-		if (Configs::getValueAsInt('owner_id') !== Auth::id()) {
+		if ($this->config_manager->getValueAsInt('owner_id') !== Auth::id()) {
 			throw new UnauthorizedException('Only the owner can change the owner_id configuration.');
 		}
 	}

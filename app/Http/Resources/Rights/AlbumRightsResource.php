@@ -11,9 +11,7 @@ namespace App\Http\Resources\Rights;
 use App\Contracts\Models\AbstractAlbum;
 use App\Models\Album;
 use App\Policies\AlbumPolicy;
-use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\Gate;
-use LycheeVerify\Contract\VerifyInterface;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
@@ -37,8 +35,6 @@ class AlbumRightsResource extends Data
 	 * Given an album, returns the access rights associated to it.
 	 */
 	public function __construct(
-		protected readonly VerifyInterface $verify,
-		protected readonly ConfigManager $config_manager,
 		?AbstractAlbum $abstract_album)
 	{
 		$this->can_edit = Gate::check(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $abstract_album]);
@@ -50,7 +46,7 @@ class AlbumRightsResource extends Data
 		$this->can_delete = Gate::check(AlbumPolicy::CAN_DELETE, [AbstractAlbum::class, $abstract_album]);
 		$this->can_transfer = Gate::check(AlbumPolicy::CAN_TRANSFER, [AbstractAlbum::class, $abstract_album]);
 		$this->can_access_original = Gate::check(AlbumPolicy::CAN_ACCESS_FULL_PHOTO, [AbstractAlbum::class, $abstract_album]);
-		$this->can_pasword_protect = !$this->config_manager->getValueAsBool('cache_enabled');
+		$this->can_pasword_protect = !request()->configs()->getValueAsBool('cache_enabled');
 		$this->can_import_from_server = Gate::check(AlbumPolicy::CAN_IMPORT_FROM_SERVER, [AbstractAlbum::class]);
 		$this->can_make_purchasable = $this->canMakePurchasable($abstract_album);
 	}
@@ -73,11 +69,11 @@ class AlbumRightsResource extends Data
 			return false;
 		}
 
-		if ($this->config_manager->getValueAsBool('webshop_enabled') === false) {
+		if (request()->configs()->getValueAsBool('webshop_enabled') === false) {
 			return false;
 		}
 
-		if (!$this->verify->is_pro()) {
+		if (!request()->verify()->is_pro()) {
 			return false;
 		}
 
