@@ -15,10 +15,11 @@ use App\Enum\PhotoThumbInfoType;
 use App\Enum\SmallLargeType;
 use App\Enum\ThumbAlbumSubtitleType;
 use App\Enum\ThumbOverlayVisibilityType;
-use App\Models\Configs;
 use App\Providers\AuthServiceProvider;
+use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\URL;
+use LycheeVerify\Contract\VerifyInterface;
 use LycheeVerify\Verify;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\LiteralTypeScriptType;
@@ -109,78 +110,80 @@ class InitConfig extends Data
 	public string $default_homepage;
 	public bool $is_timeline_page_enabled = false;
 
-	public function __construct()
-	{
+	public function __construct(
+		protected readonly VerifyInterface|Verify $verify,
+		protected readonly ConfigManager $config_manager,
+	) {
 		// Debug mode
 		$this->is_debug_enabled = config('app.debug');
 
 		// NSFW settings
-		$this->are_nsfw_visible = Configs::getValueAsBool('nsfw_visible');
-		$this->is_nsfw_background_blurred = Configs::getValueAsBool('nsfw_blur'); // blur the thumbnails
-		$this->nsfw_banner_override = Configs::getValueAsString('nsfw_banner_override'); // override the banner text.
-		$this->is_nsfw_banner_backdrop_blurred = Configs::getValueAsBool('nsfw_banner_blur_backdrop'); // blur the backdrop of the warning banner.
+		$this->are_nsfw_visible = $this->config_manager->getValueAsBool('nsfw_visible');
+		$this->is_nsfw_background_blurred = $this->config_manager->getValueAsBool('nsfw_blur'); // blur the thumbnails
+		$this->nsfw_banner_override = $this->config_manager->getValueAsString('nsfw_banner_override'); // override the banner text.
+		$this->is_nsfw_banner_backdrop_blurred = $this->config_manager->getValueAsBool('nsfw_banner_blur_backdrop'); // blur the backdrop of the warning banner.
 
 		// keybinding help popup
-		$this->show_keybinding_help_popup = Configs::getValueAsBool('show_keybinding_help_popup');
+		$this->show_keybinding_help_popup = $this->config_manager->getValueAsBool('show_keybinding_help_popup');
 
 		// Image overlay settings
-		$this->image_overlay_type = Configs::getValueAsEnum('image_overlay_type', ImageOverlayType::class);
-		$this->can_rotate = Configs::getValueAsBool('editor_enabled');
-		$this->can_autoplay = Configs::getValueAsBool('autoplay_enabled');
-		$this->is_exif_disabled = Configs::getValueAsBool('exif_disabled_for_all');
-		$this->is_favourite_enabled = Configs::getValueAsBool('client_side_favourite_enabled');
-		$this->photo_previous_next_size = Configs::getValueAsEnum('photo_previous_next_size', SmallLargeType::class);
+		$this->image_overlay_type = $this->config_manager->getValueAsEnum('image_overlay_type', ImageOverlayType::class);
+		$this->can_rotate = $this->config_manager->getValueAsBool('editor_enabled');
+		$this->can_autoplay = $this->config_manager->getValueAsBool('autoplay_enabled');
+		$this->is_exif_disabled = $this->config_manager->getValueAsBool('exif_disabled_for_all');
+		$this->is_favourite_enabled = $this->config_manager->getValueAsBool('client_side_favourite_enabled');
+		$this->photo_previous_next_size = $this->config_manager->getValueAsEnum('photo_previous_next_size', SmallLargeType::class);
 		$this->is_details_links_enabled = false;
-		if (Configs::getValueAsBool('details_links_enabled')) {
-			$this->is_details_links_enabled = !Auth::guest() || Configs::getValueAsBool('details_links_public');
+		if ($this->config_manager->getValueAsBool('details_links_enabled')) {
+			$this->is_details_links_enabled = !Auth::guest() || $this->config_manager->getValueAsBool('details_links_public');
 		}
-		$this->is_desktop_dock_full_transparency_enabled = Configs::getValueAsBool('desktop_dock_full_transparency_enabled');
-		$this->is_mobile_dock_full_transparency_enabled = Configs::getValueAsBool('mobile_dock_full_transparency_enabled');
+		$this->is_desktop_dock_full_transparency_enabled = $this->config_manager->getValueAsBool('desktop_dock_full_transparency_enabled');
+		$this->is_mobile_dock_full_transparency_enabled = $this->config_manager->getValueAsBool('mobile_dock_full_transparency_enabled');
 
 		// Thumbs configuration
-		$this->display_thumb_album_overlay = Configs::getValueAsEnum('display_thumb_album_overlay', ThumbOverlayVisibilityType::class);
-		$this->display_thumb_photo_overlay = Configs::getValueAsEnum('display_thumb_photo_overlay', ThumbOverlayVisibilityType::class);
-		$this->album_subtitle_type = Configs::getValueAsEnum('album_subtitle_type', ThumbAlbumSubtitleType::class);
-		$this->album_decoration = Configs::getValueAsEnum('album_decoration', AlbumDecorationType::class);
-		$this->album_decoration_orientation = Configs::getValueAsEnum('album_decoration_orientation', AlbumDecorationOrientation::class);
-		$this->number_albums_per_row_mobile = Configs::getValueAsInt('number_albums_per_row_mobile');
-		$this->photo_thumb_info = Configs::getValueAsEnum('photo_thumb_info', PhotoThumbInfoType::class);
-		$this->is_photo_thumb_tags_enabled = Configs::getValueAsBool('photo_thumb_tags_enabled');
+		$this->display_thumb_album_overlay = $this->config_manager->getValueAsEnum('display_thumb_album_overlay', ThumbOverlayVisibilityType::class);
+		$this->display_thumb_photo_overlay = $this->config_manager->getValueAsEnum('display_thumb_photo_overlay', ThumbOverlayVisibilityType::class);
+		$this->album_subtitle_type = $this->config_manager->getValueAsEnum('album_subtitle_type', ThumbAlbumSubtitleType::class);
+		$this->album_decoration = $this->config_manager->getValueAsEnum('album_decoration', AlbumDecorationType::class);
+		$this->album_decoration_orientation = $this->config_manager->getValueAsEnum('album_decoration_orientation', AlbumDecorationOrientation::class);
+		$this->number_albums_per_row_mobile = $this->config_manager->getValueAsInt('number_albums_per_row_mobile');
+		$this->photo_thumb_info = $this->config_manager->getValueAsEnum('photo_thumb_info', PhotoThumbInfoType::class);
+		$this->is_photo_thumb_tags_enabled = $this->config_manager->getValueAsBool('photo_thumb_tags_enabled');
 
 		// Download configuration
-		$this->is_thumb_download_enabled = Configs::getValueAsBool('disable_thumb_download') === false;
-		$this->is_thum2x_download_enabled = Configs::getValueAsBool('disable_thumb2x_download') === false;
-		$this->is_small_download_enabled = Configs::getValueAsBool('disable_small_download') === false;
-		$this->is_small2x_download_enabled = Configs::getValueAsBool('disable_small2x_download') === false;
-		$this->is_medium_download_enabled = Configs::getValueAsBool('disable_medium_download') === false;
-		$this->is_medium2x_download_enabled = Configs::getValueAsBool('disable_medium2x_download') === false;
+		$this->is_thumb_download_enabled = $this->config_manager->getValueAsBool('disable_thumb_download') === false;
+		$this->is_thum2x_download_enabled = $this->config_manager->getValueAsBool('disable_thumb2x_download') === false;
+		$this->is_small_download_enabled = $this->config_manager->getValueAsBool('disable_small_download') === false;
+		$this->is_small2x_download_enabled = $this->config_manager->getValueAsBool('disable_small2x_download') === false;
+		$this->is_medium_download_enabled = $this->config_manager->getValueAsBool('disable_medium_download') === false;
+		$this->is_medium2x_download_enabled = $this->config_manager->getValueAsBool('disable_medium2x_download') === false;
 
 		// Clockwork
 		$this->has_clockwork_in_menu();
 
 		// Slideshow settings
-		$this->slideshow_timeout = Configs::getValueAsInt('slideshow_timeout');
-		$this->is_slideshow_enabled = Configs::getValueAsBool('slideshow_enabled');
+		$this->slideshow_timeout = $this->config_manager->getValueAsInt('slideshow_timeout');
+		$this->is_slideshow_enabled = $this->config_manager->getValueAsBool('slideshow_enabled');
 
 		// Timeline settings
-		$this->is_timeline_left_border_visible = Configs::getValueAsBool('timeline_left_border_enabled');
+		$this->is_timeline_left_border_visible = $this->config_manager->getValueAsBool('timeline_left_border_enabled');
 
 		// Site title & dropbox key if logged in as admin.
-		$this->title = Configs::getValueAsString('site_title');
-		$this->dropbox_api_key = Auth::user()?->may_administrate === true ? Configs::getValueAsString('dropbox_key') : 'disabled';
+		$this->title = $this->config_manager->getValueAsString('site_title');
+		$this->dropbox_api_key = Auth::user()?->may_administrate === true ? $this->config_manager->getValueAsString('dropbox_key') : 'disabled';
 
 		$this->is_basic_auth_enabled = AuthServiceProvider::isBasicAuthEnabled();
 		$this->is_webauthn_enabled = AuthServiceProvider::isWebAuthnEnabled();
 		// User registration enabled
-		$this->is_registration_enabled = Configs::getValueAsBool('user_registration_enabled');
+		$this->is_registration_enabled = $this->config_manager->getValueAsBool('user_registration_enabled');
 
 		// Gesture settings
-		$this->is_scroll_to_navigate_photos_enabled = Configs::getValueAsBool('is_scroll_to_navigate_photos_enabled');
-		$this->is_swipe_vertically_to_go_back_enabled = Configs::getValueAsBool('is_swipe_vertically_to_go_back_enabled');
+		$this->is_scroll_to_navigate_photos_enabled = $this->config_manager->getValueAsBool('is_scroll_to_navigate_photos_enabled');
+		$this->is_swipe_vertically_to_go_back_enabled = $this->config_manager->getValueAsBool('is_swipe_vertically_to_go_back_enabled');
 
 		// Homepage
-		$this->default_homepage = Configs::getValueAsString('home_page_default');
-		$this->is_timeline_page_enabled = Configs::getValueAsBool('timeline_page_enabled');
+		$this->default_homepage = $this->config_manager->getValueAsString('home_page_default');
+		$this->is_timeline_page_enabled = $this->config_manager->getValueAsBool('timeline_page_enabled');
 
 		$this->set_supporter_properties();
 	}
@@ -211,22 +214,21 @@ class InitConfig extends Data
 	 */
 	private function set_supporter_properties()
 	{
-		$verify = resolve(Verify::class);
-		$is_supporter = $verify->is_supporter();
-		$is_pro = $verify->is_pro();
+		$is_supporter = $this->verify->is_supporter();
+		$is_pro = $this->verify->is_pro();
 
 		// We enable Lychee SE if the user is a supporter.
-		$this->is_se_enabled = $verify->validate() && $is_supporter;
+		$this->is_se_enabled = $this->verify instanceof Verify && $this->verify->validate() && $is_supporter;
 		$this->is_pro_enabled = $this->is_se_enabled && $is_pro;
 
 		// We disable preview if we are already a supporter.
-		$this->is_se_preview_enabled = !$is_supporter && Configs::getValueAsBool('enable_se_preview');
+		$this->is_se_preview_enabled = !$is_supporter && $this->config_manager->getValueAsBool('enable_se_preview');
 
 		// We hide the info if we are already a supporter (or the user requests it).
-		$this->is_se_info_hidden = $is_supporter || Configs::getValueAsBool('disable_se_call_for_actions');
+		$this->is_se_info_hidden = $is_supporter || $this->config_manager->getValueAsBool('disable_se_call_for_actions');
 
-		$this->is_live_metrics_enabled = $this->is_se_enabled && Configs::getValueAsBool('live_metrics_enabled');
+		$this->is_live_metrics_enabled = $this->is_se_enabled && $this->config_manager->getValueAsBool('live_metrics_enabled');
 
-		$this->is_se_expired = Configs::getValueAsString('license_key') !== '' && !$this->is_se_enabled;
+		$this->is_se_expired = $this->config_manager->getValueAsString('license_key') !== '' && !$this->is_se_enabled;
 	}
 }

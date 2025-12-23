@@ -10,8 +10,8 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
+use App\DTO\DiagnosticDTO;
 use App\Facades\Helpers;
-use App\Models\Configs;
 use LycheeVerify\Verify;
 use Safe\Exceptions\InfoException;
 use function Safe\ini_get;
@@ -23,20 +23,12 @@ use function Safe\preg_match;
  */
 class IniSettingsCheck implements DiagnosticPipe
 {
-	public function __construct(private Verify $verify)
-	{
-	}
-
 	/**
 	 * {@inheritDoc}
 	 */
-	public function handle(array &$data, \Closure $next): array
+	public function handle(DiagnosticDTO &$data, \Closure $next): DiagnosticDTO
 	{
-		// Check php.ini Settings
-		// Load settings
-		$settings = Configs::get();
-
-		if (!$this->verify->validate()) {
+		if ($data->verify instanceof Verify && !$data->verify->validate()) {
 			// @codeCoverageIgnoreStart
 			$data[] = DiagnosticData::warn('Your installation has been tampered. Please verify the integrity of your files.', self::class);
 			// @codeCoverageIgnoreEnd
@@ -67,7 +59,7 @@ class IniSettingsCheck implements DiagnosticPipe
 				$data[] = DiagnosticData::warn('Pictures that are rotated lose their metadata! Please install Imagick to avoid that.', self::class);
 			// @codeCoverageIgnoreEnd
 			} else {
-				if (!isset($settings['imagick'])) {
+				if ($data->config_manager->getValueAsBool('imagick') === false) {
 					// @codeCoverageIgnoreStart
 					$data[] = DiagnosticData::warn('Pictures that are rotated lose their metadata! Please enable Imagick in settings to avoid that.', self::class);
 					// @codeCoverageIgnoreEnd

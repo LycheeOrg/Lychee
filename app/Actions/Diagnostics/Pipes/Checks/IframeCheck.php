@@ -10,6 +10,7 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
+use App\DTO\DiagnosticDTO;
 use App\Facades\Helpers;
 
 class IframeCheck implements DiagnosticPipe
@@ -21,7 +22,7 @@ class IframeCheck implements DiagnosticPipe
 	 *
 	 * {@inheritDoc}
 	 */
-	public function handle(array &$data, \Closure $next): array
+	public function handle(DiagnosticDTO &$data, \Closure $next): DiagnosticDTO
 	{
 		// If the X-Frame-Options header is set to 'deny', we don't need to check anything else.
 		if (config('secure-headers.x-frame-options') === 'deny') {
@@ -30,10 +31,10 @@ class IframeCheck implements DiagnosticPipe
 
 		$extra = array_map(fn ($allow) => sprintf('Allowing %s to use Lychee in iFrame.', Helpers::censor($allow)), config('secure-headers.csp.frame-ancestors.allow'));
 		$extra[] = 'This allows Lychee to be used in iFrame, which is not recommended as it will lower the security of your session cookies.';
-		$data[] = DiagnosticData::warn('SECURITY_HEADER_CSP_FRAME_ANCESTORS is set.', self::class, $extra);
+		$data->data[] = DiagnosticData::warn('SECURITY_HEADER_CSP_FRAME_ANCESTORS is set.', self::class, $extra);
 
 		if (config('session.same_site') === 'none' && config('session.secure') === false) {
-			$data[] = DiagnosticData::error(
+			$data->data[] = DiagnosticData::error(
 				'Session same_site is set to none, but session secure is set to false.',
 				self::class,
 				['Set SESSION_SECURE_COOKIE to true in your .env file to solve this issue.']

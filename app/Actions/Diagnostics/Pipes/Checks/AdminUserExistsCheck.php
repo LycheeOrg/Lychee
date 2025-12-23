@@ -10,6 +10,7 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
+use App\DTO\DiagnosticDTO;
 use App\Models\User;
 use Illuminate\Support\Facades\Schema;
 
@@ -18,7 +19,7 @@ class AdminUserExistsCheck implements DiagnosticPipe
 	/**
 	 * {@inheritDoc}
 	 */
-	public function handle(array &$data, \Closure $next): array
+	public function handle(DiagnosticDTO &$data, \Closure $next): DiagnosticDTO
 	{
 		if (!Schema::hasTable('users')) {
 			// @codeCoverageIgnoreStart
@@ -29,7 +30,7 @@ class AdminUserExistsCheck implements DiagnosticPipe
 		$number_of_admin = User::query()->where('may_administrate', '=', true)->count();
 		if ($number_of_admin === 0) {
 			// @codeCoverageIgnoreStart
-			$data[] = DiagnosticData::error('User Admin not found in database. Please run: "php lychee:create_user {username} {password}"', self::class);
+			$data->data[] = DiagnosticData::error('User Admin not found in database. Please run: "php lychee:create_user {username} {password}"', self::class);
 			// @codeCoverageIgnoreEnd
 		}
 

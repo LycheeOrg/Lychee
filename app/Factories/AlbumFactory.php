@@ -15,6 +15,7 @@ use App\Models\Album;
 use App\Models\BaseAlbumImpl;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\TagAlbum;
+use App\Repositories\ConfigManager;
 use App\SmartAlbums\BaseSmartAlbum;
 use App\SmartAlbums\OnThisDayAlbum;
 use App\SmartAlbums\RecentAlbum;
@@ -33,6 +34,11 @@ class AlbumFactory
 		SmartAlbumType::ON_THIS_DAY->value => OnThisDayAlbum::class,
 		SmartAlbumType::UNTAGGED->value => UntaggedAlbum::class,
 	];
+
+	public function __construct(
+		protected readonly ConfigManager $config_manager,
+	) {
+	}
 
 	/**
 	 * Returns an existing instance of an album with the given ID or fails
@@ -171,7 +177,7 @@ class AlbumFactory
 			$album_query->with(['photos', 'children', 'photos.size_variants', 'photos.statistics', 'photos.palette', 'photos.tags']);
 		}
 
-		/** @var ($albums_only is true ? array<int,Album> : array<int,TagAlbum>) */
+		/** @var ($albums_only is true ? array<int,Album> : array<int,TagAlbum>)&array */
 		$tag_albums = $albums_only ? [] : $tag_album_query->findMany($album_ids)->all(); /** @phpstan-ignore varTag.type */
 
 		/** @var array<int,Album> $albums */
@@ -200,7 +206,7 @@ class AlbumFactory
 	{
 		$smart_albums = new Collection();
 		collect(SmartAlbumType::cases())
-			->filter(fn (SmartAlbumType $s) => $s->is_enabled())
+			->filter(fn (SmartAlbumType $s) => $s->is_enabled($this->config_manager))
 			->each(fn (SmartAlbumType $s) => $smart_albums->put($s->value, $this->createSmartAlbum($s, $with_relations)));
 
 		return $smart_albums;

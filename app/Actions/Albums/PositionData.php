@@ -11,19 +11,16 @@ namespace App\Actions\Albums;
 use App\Contracts\Exceptions\InternalLycheeException;
 use App\Enum\SizeVariantType;
 use App\Http\Resources\Collections\PositionDataResource;
-use App\Models\Configs;
 use App\Models\Photo;
 use App\Policies\PhotoQueryPolicy;
+use App\Repositories\ConfigManager;
 
 class PositionData
 {
-	protected PhotoQueryPolicy $photo_query_policy;
-
-	public function __construct(PhotoQueryPolicy $photo_query_policy)
-	{
-		$this->photo_query_policy = $photo_query_policy;
-		// caching to avoid further request
-		Configs::get();
+	public function __construct(
+		protected PhotoQueryPolicy $photo_query_policy,
+		protected readonly ConfigManager $config_manager,
+	) {
 	}
 
 	/**
@@ -54,7 +51,7 @@ class PositionData
 				->whereNotNull('latitude')
 				->whereNotNull('longitude'),
 			origin: null,
-			include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_map')
+			include_nsfw: !$this->config_manager->getValueAsBool('hide_nsfw_in_map')
 		);
 
 		return new PositionDataResource(null, $photo_query->get(), null);

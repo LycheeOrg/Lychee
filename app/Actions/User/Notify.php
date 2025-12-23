@@ -13,10 +13,10 @@ use App\Constants\PhotoAlbum as PA;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Album;
-use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\User;
 use App\Notifications\PhotoAdded;
+use App\Repositories\ConfigManager;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\MultipleRecordsFoundException;
 use Illuminate\Support\Facades\Auth;
@@ -24,6 +24,11 @@ use Illuminate\Support\Facades\Notification;
 
 class Notify
 {
+	public function __construct(
+		protected readonly ConfigManager $config_manager,
+	) {
+	}
+
 	/**
 	 * Notify users that a new photo has been uploaded.
 	 *
@@ -38,7 +43,7 @@ class Notify
 	 */
 	public function do(Photo $photo): void
 	{
-		if (!Configs::getValueAsBool('new_photos_notification')) {
+		if (!$this->config_manager->getValueAsBool('new_photos_notification')) {
 			return;
 		}
 

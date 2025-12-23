@@ -16,12 +16,14 @@ use App\Exceptions\UnauthenticatedException;
 use App\Exceptions\UnexpectedException;
 use App\Models\AccessPermission;
 use App\Models\Album;
-use App\Models\Configs;
+use App\Repositories\ConfigManager;
 
 class Create
 {
-	public function __construct(public readonly int $intended_owner_id)
-	{
+	public function __construct(
+		protected readonly ConfigManager $config_manager,
+		public readonly int $intended_owner_id,
+	) {
 	}
 
 	/**
@@ -81,7 +83,7 @@ class Create
 	 */
 	private function set_permissions(Album $album, ?Album $parent_album): void
 	{
-		$default_protection_type = Configs::getValueAsEnum('default_album_protection', DefaultAlbumProtectionType::class);
+		$default_protection_type = $this->config_manager->getValueAsEnum('default_album_protection', DefaultAlbumProtectionType::class);
 
 		if ($default_protection_type === DefaultAlbumProtectionType::PUBLIC) {
 			$album->access_permissions()->saveMany([AccessPermission::ofPublic()]);

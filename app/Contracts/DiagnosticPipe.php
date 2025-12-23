@@ -8,7 +8,7 @@
 
 namespace App\Contracts;
 
-use App\DTO\DiagnosticData;
+use App\DTO\DiagnosticDTO;
 
 /**
  * Basic definition of a Diagnostic pipe.
@@ -19,10 +19,10 @@ use App\DTO\DiagnosticData;
 interface DiagnosticPipe
 {
 	/**
-	 * @param DiagnosticData[]                                   &$data
-	 * @param \Closure(DiagnosticData[] $data): DiagnosticData[] $next
+	 * @param DiagnosticDTO                                &$data
+	 * @param \Closure(DiagnosticDTO $data): DiagnosticDTO $next
 	 *
-	 * @return DiagnosticData[]
+	 * @return DiagnosticDTO
 	 */
-	public function handle(array &$data, \Closure $next): array;
+	public function handle(DiagnosticDTO &$data, \Closure $next): DiagnosticDTO;
 }

@@ -38,7 +38,7 @@ jobs:
           access_token: ${{ github.token }}
 
   php_syntax_errors:
-    name: 1️⃣ PHP 8.3 - Syntax errors
+    name: 1️⃣ PHP 8.4 - Syntax errors
     runs-on: ubuntu-latest
     needs:
       - kill_previous
@@ -51,7 +51,7 @@ jobs:
       - name: Setup PHP Action
         uses: shivammathur/setup-php@44454db4f0199b8b9685a5d763dc37cbf79108e1 # 2.36.0
         with:
-          php-version: 8.3
+          php-version: 8.4
 
       - name: Checkout code
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
@@ -63,7 +63,7 @@ jobs:
         run: vendor/bin/parallel-lint --exclude .git --exclude vendor .
 
   code_style_errors:
-    name: 2️⃣ PHP 8.3 - Code Style errors
+    name: 2️⃣ PHP 8.4 - Code Style errors
     runs-on: ubuntu-latest
     needs:
       - php_syntax_errors
@@ -76,7 +76,7 @@ jobs:
       - name: Set up PHP
         uses: shivammathur/setup-php@44454db4f0199b8b9685a5d763dc37cbf79108e1 # 2.36.0
         with:
-          php-version: 8.3
+          php-version: 8.4
 
       - name: Checkout code
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
@@ -94,7 +94,7 @@ jobs:
       - php_syntax_errors
 
   phpstan:
-    name: 2️⃣ PHP 8.3 - PHPStan
+    name: 2️⃣ PHP 8.4 - PHPStan
     runs-on: ubuntu-latest
     needs:
       - php_syntax_errors
@@ -110,7 +110,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@44454db4f0199b8b9685a5d763dc37cbf79108e1 # 2.36.0
         with:
-          php-version: 8.3
+          php-version: 8.4
           coverage: none
 
       - name: Install Composer dependencies
@@ -120,7 +120,7 @@ jobs:
         run: vendor/bin/phpstan analyze
 
   license:
-    name: 2️⃣ PHP 8.3 - License Check
+    name: 2️⃣ PHP 8.4 - License Check
     runs-on: ubuntu-latest
     needs:
       - php_syntax_errors
@@ -136,7 +136,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@44454db4f0199b8b9685a5d763dc37cbf79108e1 # 2.36.0
         with:
-          php-version: 8.3
+          php-version: 8.4
           coverage: none
 
       - name: Install Composer dependencies
@@ -188,7 +188,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@44454db4f0199b8b9685a5d763dc37cbf79108e1 # 2.36.0
         with:
-          php-version: 8.3
+          php-version: 8.4
           extensions: ${{ env.extensions }}
           coverage: none
 

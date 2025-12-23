@@ -8,11 +8,19 @@
 
 namespace App\Metadata\Renamer;
 
+use App\Repositories\ConfigManager;
+use LycheeVerify\Contract\VerifyInterface;
+
 final class PhotoRenamer extends Renamer
 {
-	public function __construct(int $user_id)
-	{
+	public function __construct(
+		VerifyInterface $verify,
+		ConfigManager $config_manager,
+		int $user_id,
+	) {
 		parent::__construct(
+			verify: $verify,
+			config_manager: $config_manager,
 			user_id: $user_id,
 			is_photo: true,
 		);

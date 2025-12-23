@@ -11,10 +11,10 @@ namespace App\Contracts\Http\Requests;
 use App\Http\Resources\Editable\EditableConfigResource;
 use Illuminate\Support\Collection;
 
-interface HasConfigs
+interface HasEditableConfigs
 {
 	/**
 	 * @return Collection<int,EditableConfigResource>
 	 */
-	public function configs(): Collection;
+	public function editable_configs(): Collection;
 }

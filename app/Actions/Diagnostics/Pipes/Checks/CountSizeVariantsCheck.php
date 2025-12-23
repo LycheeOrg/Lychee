@@ -10,6 +10,7 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
+use App\DTO\DiagnosticDTO;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -22,7 +23,7 @@ class CountSizeVariantsCheck implements DiagnosticPipe
 	/**
 	 * {@inheritDoc}
 	 */
-	public function handle(array &$data, \Closure $next): array
+	public function handle(DiagnosticDTO &$data, \Closure $next): DiagnosticDTO
 	{
 		if (!Schema::hasTable('size_variants')) {
 			// @codeCoverageIgnoreStart
@@ -33,7 +34,7 @@ class CountSizeVariantsCheck implements DiagnosticPipe
 		$num = DB::table('size_variants')->where('size_variants.filesize', '=', 0)->count();
 		if ($num > 0) {
 			// @codeCoverageIgnoreStart
-			$data[] = DiagnosticData::info(
+			$data->data[] = DiagnosticData::info(
 				sprintf('Found %d small images without filesizes.', $num),
 				self::class,
 				[sprintf('You can use `php artisan lychee:variant_filesize %d` to compute them.', $num)]

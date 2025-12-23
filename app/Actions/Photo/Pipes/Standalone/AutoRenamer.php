@@ -11,6 +11,8 @@ namespace App\Actions\Photo\Pipes\Standalone;
 use App\Contracts\PhotoCreate\StandalonePipe;
 use App\DTO\PhotoCreate\StandaloneDTO;
 use App\Metadata\Renamer\PhotoRenamer;
+use App\Repositories\ConfigManager;
+use LycheeVerify\Contract\VerifyInterface;
 
 /**
  * Apply renaming rules to the photo title.
@@ -22,6 +24,12 @@ use App\Metadata\Renamer\PhotoRenamer;
  */
 class AutoRenamer implements StandalonePipe
 {
+	public function __construct(
+		protected readonly VerifyInterface $verify,
+		protected readonly ConfigManager $config_manager,
+	) {
+	}
+
 	public function handle(StandaloneDTO $state, \Closure $next): StandaloneDTO
 	{
 		// Skip if not enabled.
@@ -29,7 +37,11 @@ class AutoRenamer implements StandalonePipe
 			return $next($state);
 		}
 
-		$renamer = new PhotoRenamer($state->intended_owner_id);
+		$renamer = new PhotoRenamer(
+			verify: $this->verify,
+			config_manager: $this->config_manager,
+			user_id: $state->intended_owner_id
+		);
 		$state->photo->title = $renamer->handle($state->photo->title);
 
 		return $next($state);

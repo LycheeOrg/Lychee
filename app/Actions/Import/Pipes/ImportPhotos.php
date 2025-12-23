@@ -16,14 +16,19 @@ use App\DTO\ImportEventReport;
 use App\Image\Files\NativeLocalFile;
 use App\Jobs\ImportImageJob;
 use App\Models\Album;
-use App\Models\Configs;
 use App\Models\Photo;
+use App\Repositories\ConfigManager;
 
 class ImportPhotos implements ImportPipe
 {
 	use HasReporterTrait;
 
 	protected ImportDTO $state;
+
+	public function __construct(
+		protected readonly ConfigManager $config_manager,
+	) {
+	}
 
 	/**
 	 * Import photos from the import state.
@@ -87,7 +92,7 @@ class ImportPhotos implements ImportPipe
 	 */
 	private function filterExistingPhotos(array $image_paths, FolderNode $node): array
 	{
-		if ($node->album === null || !Configs::getValueAsBool('skip_duplicates_early')) {
+		if ($node->album === null || !$this->config_manager->getValueAsBool('skip_duplicates_early')) {
 			return $image_paths;
 		}
 

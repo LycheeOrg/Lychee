@@ -9,23 +9,24 @@
 namespace App\Actions\Diagnostics\Pipes\Infos;
 
 use App\Actions\Diagnostics\Diagnostics;
-use App\Contracts\DiagnosticStringPipe;
+use App\Contracts\DiagnosticPipe;
+use App\DTO\DiagnosticDTO;
 use Illuminate\Support\Facades\DB;
 
 /**
  * Instead of listing all Foreign key as in the Errors, we just check their number.
  */
-class CountForeignKeyInfo implements DiagnosticStringPipe
+class CountForeignKeyInfo implements DiagnosticPipe
 {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function handle(array &$data, \Closure $next): array
+	public function handle(DiagnosticDTO &$data, \Closure $next): DiagnosticDTO
 	{
 		match (DB::getDriverName()) {
-			'sqlite' => $this->sqlite($data),
-			'mysql' => $this->mysql($data),
-			'pgsql' => $this->pgsql($data),
+			'sqlite' => $this->sqlite($data->data),
+			'mysql' => $this->mysql($data->data),
+			'pgsql' => $this->pgsql($data->data),
 			// @codeCoverageIgnoreStart
 			default => '',
 			// @codeCoverageIgnoreEnd

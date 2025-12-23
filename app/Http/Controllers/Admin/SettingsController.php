@@ -51,7 +51,7 @@ class SettingsController extends Controller
 				->when(config('features.webshop') === false, fn ($q) => $q->where('key', 'NOT LIKE', 'webshop_%')),
 		])->orderBy('order', 'asc')->get();
 
-		return ConfigCategoryResource::collect($editable_configs)->filter(fn ($cat) => $cat->configs->isNotEmpty())->values();
+		return ConfigCategoryResource::collect($editable_configs->filter(fn ($cat) => $cat->configs->isNotEmpty())->values());
 	}
 
 	/**
@@ -64,7 +64,7 @@ class SettingsController extends Controller
 	 */
 	public function setConfigs(SetConfigsRequest $request, DockerVersionInfo $docker_info): Collection
 	{
-		$configs = $request->configs();
+		$configs = $request->editable_configs();
 		$configs->each(function ($config): void {
 			Configs::query()->where('key', $config->key)->update(['value' => $config->value ?? '']);
 		});

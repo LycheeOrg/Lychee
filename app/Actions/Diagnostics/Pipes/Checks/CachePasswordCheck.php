@@ -11,7 +11,7 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 use App\Constants\AccessPermissionConstants as APC;
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
-use App\Models\Configs;
+use App\DTO\DiagnosticDTO;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -23,7 +23,7 @@ class CachePasswordCheck implements DiagnosticPipe
 	/**
 	 * {@inheritDoc}
 	 */
-	public function handle(array &$data, \Closure $next): array
+	public function handle(DiagnosticDTO &$data, \Closure $next): DiagnosticDTO
 	{
 		if (!Schema::hasTable('configs')) {
 			// @codeCoverageIgnoreStart
@@ -31,9 +31,9 @@ class CachePasswordCheck implements DiagnosticPipe
 			// @codeCoverageIgnoreEnd
 		}
 
-		if (Configs::getValueAsBool('cache_enabled') && DB::table(APC::ACCESS_PERMISSIONS)->whereNotNull('password')->count() > 0) {
+		if ($data->config_manager->getValueAsBool('cache_enabled') && DB::table(APC::ACCESS_PERMISSIONS)->whereNotNull('password')->count() > 0) {
 			// @codeCoverageIgnoreStart
-			$data[] = DiagnosticData::warn('Response cache is enabled and some albums are password protected.', self::class, ['Due to response caching, unlocking those albums will reveal their content to other annonymous users.']);
+			$data->data[] = DiagnosticData::warn('Response cache is enabled and some albums are password protected.', self::class, ['Due to response caching, unlocking those albums will reveal their content to other annonymous users.']);
 			// @codeCoverageIgnoreEnd
 		}
 

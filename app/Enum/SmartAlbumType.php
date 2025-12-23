@@ -9,7 +9,7 @@
 namespace App\Enum;
 
 use App\Enum\Traits\DecorateBackedEnum;
-use App\Models\Configs;
+use App\Repositories\ConfigManager;
 
 /**
  * Enum SmartAlbumType.
@@ -29,14 +29,14 @@ enum SmartAlbumType: string
 	 *
 	 * @return bool
 	 */
-	public function is_enabled(): bool
+	public function is_enabled(ConfigManager $config_manager): bool
 	{
 		return match ($this) {
-			self::UNSORTED => Configs::getValueAsBool('enable_unsorted'),
-			self::STARRED => Configs::getValueAsBool('enable_starred'),
-			self::RECENT => Configs::getValueAsBool('enable_recent'),
-			self::ON_THIS_DAY => Configs::getValueAsBool('enable_on_this_day'),
-			self::UNTAGGED => Configs::getValueAsBool('enable_untagged'),
+			self::UNSORTED => $config_manager->getValueAsBool('enable_unsorted'),
+			self::STARRED => $config_manager->getValueAsBool('enable_starred'),
+			self::RECENT => $config_manager->getValueAsBool('enable_recent'),
+			self::ON_THIS_DAY => $config_manager->getValueAsBool('enable_on_this_day'),
+			self::UNTAGGED => $config_manager->getValueAsBool('enable_untagged'),
 		};
 	}
 }

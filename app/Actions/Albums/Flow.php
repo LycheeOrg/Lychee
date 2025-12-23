@@ -16,8 +16,8 @@ use App\Exceptions\UnexpectedException;
 use App\Factories\AlbumFactory;
 use App\Models\Album;
 use App\Models\Builders\AlbumBuilder;
-use App\Models\Configs;
 use App\Policies\AlbumQueryPolicy;
+use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\DB;
 
 final class Flow
@@ -25,6 +25,7 @@ final class Flow
 	public function __construct(
 		protected AlbumQueryPolicy $album_query_policy,
 		protected AlbumFactory $album_factory,
+		protected readonly ConfigManager $config_manager,
 	) {
 	}
 
@@ -35,14 +36,14 @@ final class Flow
 	 */
 	public function do(): AlbumBuilder
 	{
-		$flow_base = Configs::getValueAsString('flow_base');
+		$flow_base = $this->config_manager->getValueAsString('flow_base');
 		$flow_base = $flow_base === '' ? null : $flow_base;
 
 		/** @var Album|null $base */
 		$base = $this->getBase($flow_base);
 		$base_query = $this->getQuery($base, true);
 
-		$hide_nsfw = Configs::getValueAsBool('hide_nsfw_in_flow');
+		$hide_nsfw = $this->config_manager->getValueAsBool('hide_nsfw_in_flow');
 		if ($hide_nsfw) {
 			$base_query->whereNotExists(fn ($q) => $this->album_query_policy->appendRecursiveSensitiveAlbumsCondition($q, $base?->_lft, $base?->_rgt));
 		} else {
@@ -58,7 +59,7 @@ final class Flow
 		}
 
 		// Apply the security policy to the query.
-		$include_sub_albums = Configs::getValueAsBool('flow_include_sub_albums');
+		$include_sub_albums = $this->config_manager->getValueAsBool('flow_include_sub_albums');
 		if ($include_sub_albums) {
 			// Now we restrict the query to only the browsable albums.
 			$query = $this->album_query_policy->applyBrowsabilityFilter($base_query, $base?->_lft, $base?->_rgt);
@@ -67,7 +68,7 @@ final class Flow
 			$query = $this->album_query_policy->applyReachabilityFilter($base_query);
 		}
 
-		$flow_strategy = Configs::getValueAsEnum('flow_strategy', FlowStrategy::class);
+		$flow_strategy = $this->config_manager->getValueAsEnum('flow_strategy', FlowStrategy::class);
 		$order_by = match ($flow_strategy) {
 			FlowStrategy::AUTO => 'pc_base_album.created_at',
 			FlowStrategy::OPT_IN => 'pc_base_album.published_at',
@@ -106,9 +107,9 @@ final class Flow
 	 */
 	private function getQuery(Album|null $base, bool $with_relations): AlbumBuilder
 	{
-		$include_sub_albums = Configs::getValueAsBool('flow_include_sub_albums');
-		$includes_photos_children = Configs::getValueAsBool('flow_include_photos_from_children');
-		$flow_strategy = Configs::getValueAsEnum('flow_strategy', FlowStrategy::class);
+		$include_sub_albums = $this->config_manager->getValueAsBool('flow_include_sub_albums');
+		$includes_photos_children = $this->config_manager->getValueAsBool('flow_include_photos_from_children');
+		$flow_strategy = $this->config_manager->getValueAsEnum('flow_strategy', FlowStrategy::class);
 
 		$base_query = Album::query();
 		if ($with_relations) {

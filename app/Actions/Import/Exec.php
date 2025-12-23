@@ -14,7 +14,9 @@ use App\DTO\ImportEventReport;
 use App\DTO\ImportMode;
 use App\Jobs\ImportImageJob;
 use App\Models\Album;
+use App\Repositories\ConfigManager;
 use Illuminate\Pipeline\Pipeline;
+use LycheeVerify\Contract\VerifyInterface;
 use Safe\Exceptions\InfoException;
 use function Safe\ini_get;
 use function Safe\set_time_limit;
@@ -34,6 +36,8 @@ class Exec
 	 * @param bool       $is_dry_run            whether to run in dry-run mode without making changes
 	 */
 	public function __construct(
+		private VerifyInterface $verify,
+		private ConfigManager $config_manager,
 		private ImportMode $import_mode,
 		private int $intended_owner_id,
 		private bool $delete_missing_photos = false,
@@ -59,6 +63,8 @@ class Exec
 	): array {
 		try {
 			$import_photo = new ImportDTO(
+				verify: $this->verify,
+				config_manager: $this->config_manager,
 				intended_owner_id: $this->intended_owner_id,
 				import_mode: $this->import_mode,
 				parent_album: $parent_album,

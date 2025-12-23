@@ -15,9 +15,10 @@ use App\Exceptions\MassImportException;
 use App\Image\Files\BaseMediaFile;
 use App\Image\Files\DownloadedFile;
 use App\Models\Album;
-use App\Models\Configs;
 use App\Models\Photo;
+use App\Repositories\ConfigManager;
 use Illuminate\Support\Collection;
+use LycheeVerify\Contract\VerifyInterface;
 use Safe\Exceptions\InfoException;
 use function Safe\ini_get;
 use function Safe\parse_url;
@@ -25,6 +26,12 @@ use function Safe\set_time_limit;
 
 class FromUrl
 {
+	public function __construct(
+		protected readonly VerifyInterface $verify,
+		protected readonly ConfigManager $config_manager,
+	) {
+	}
+
 	/**
 	 * Imports photos from a list of URLs.
 	 *
@@ -43,12 +50,13 @@ class FromUrl
 		$result = new Collection();
 		$exceptions = [];
 		$create = new Create(
-			new ImportMode(
+			verify: $this->verify,
+			import_mode: new ImportMode(
 				delete_imported: true,
-				skip_duplicates: Configs::getValueAsBool('skip_duplicates'),
-				shall_rename_photo_title: Configs::getValueAsBool('renamer_photo_title_enabled'),
+				skip_duplicates: $this->config_manager->getValueAsBool('skip_duplicates'),
+				shall_rename_photo_title: $this->config_manager->getValueAsBool('renamer_photo_title_enabled'),
 			),
-			$intended_owner_id
+			intended_owner_id: $intended_owner_id
 		);
 
 		foreach ($urls as $url) {

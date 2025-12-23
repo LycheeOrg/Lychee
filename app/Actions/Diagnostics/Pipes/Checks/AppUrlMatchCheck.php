@@ -10,6 +10,7 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
+use App\DTO\DiagnosticDTO;
 use App\Facades\Helpers;
 use Safe\Exceptions\PcreException;
 use function Safe\preg_match;
@@ -25,13 +26,13 @@ class AppUrlMatchCheck implements DiagnosticPipe
 	 * 4. that if APP_URL is default, that the config is also using localhost. (Additional Error in the diagnostics).
 	 * {@inheritDoc}
 	 */
-	public function handle(array &$data, \Closure $next): array
+	public function handle(DiagnosticDTO &$data, \Closure $next): DiagnosticDTO
 	{
 		$config_url = config('app.url');
 		$dir_url = config('app.dir_url');
 		if (config('app.url') === 'http://localhost') {
 			// @codeCoverageIgnoreStart
-			$data[] = DiagnosticData::warn('APP_URL is still set to default, this will break access to all your images and assets if you are using Lychee behind a sub-domain.', self::class);
+			$data->data[] = DiagnosticData::warn('APP_URL is still set to default, this will break access to all your images and assets if you are using Lychee behind a sub-domain.', self::class);
 			// @codeCoverageIgnoreEnd
 		}
 
@@ -43,7 +44,7 @@ class AppUrlMatchCheck implements DiagnosticPipe
 
 		if ($bad !== '') {
 			// @codeCoverageIgnoreStart
-			$data[] = DiagnosticData::error(
+			$data->data[] = DiagnosticData::error(
 				sprintf('APP_URL (%s) contains a sub-path (%s).', $censored_app_url, $censored_bad),
 				self::class,
 				[
@@ -55,7 +56,7 @@ class AppUrlMatchCheck implements DiagnosticPipe
 
 		if ($bad !== '') {
 			// @codeCoverageIgnoreStart
-			$data[] = DiagnosticData::error(
+			$data->data[] = DiagnosticData::error(
 				sprintf('APP_URL (%s) contains a sub-path (%s).', $censored_app_url, $censored_bad),
 				self::class,
 				['This may impact your WebAuthn authentication.']
@@ -65,7 +66,7 @@ class AppUrlMatchCheck implements DiagnosticPipe
 
 		if (!$this->checkUrlMatchCurrentHost()) {
 			// @codeCoverageIgnoreStart
-			$data[] = DiagnosticData::error(
+			$data->data[] = DiagnosticData::error(
 				sprintf('APP_URL (%s) does not match the current url (%s).', $censored_app_url, $censored_current),
 				self::class,
 				['This will break WebAuthn authentication.']
@@ -76,7 +77,7 @@ class AppUrlMatchCheck implements DiagnosticPipe
 		$config_url_imgage = config('filesystems.disks.images.url');
 		if ($config_url_imgage === '') {
 			// @codeCoverageIgnoreStart
-			$data[] = DiagnosticData::error(
+			$data->data[] = DiagnosticData::error(
 				'LYCHEE_UPLOADS_URL is set and empty. This will prevent images to be displayed. Remove the line from your .env',
 				self::class
 			);
@@ -85,7 +86,7 @@ class AppUrlMatchCheck implements DiagnosticPipe
 
 		if (!str_starts_with($config_url_imgage, '/') && !str_starts_with($config_url_imgage, 'http')) {
 			// @codeCoverageIgnoreStart
-			$data[] = DiagnosticData::error(
+			$data->data[] = DiagnosticData::error(
 				'LYCHEE_UPLOADS_URL is set but starts with neither a / nor http.',
 				self::class,
 				['This will prevent images from being displayed. Remove the line from your .env']
@@ -95,7 +96,7 @@ class AppUrlMatchCheck implements DiagnosticPipe
 
 		if (($config_url . $dir_url . '/uploads') === $config_url_imgage && !$this->checkUrlMatchCurrentHost()) {
 			// @codeCoverageIgnoreStart
-			$data[] = DiagnosticData::error(
+			$data->data[] = DiagnosticData::error(
 				sprintf('APP_URL (%s) does not match the current url (%s).', $censored_app_url, $censored_current),
 				self::class,
 				['This will prevent images from being properly displayed.']

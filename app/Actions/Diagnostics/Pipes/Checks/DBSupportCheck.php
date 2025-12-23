@@ -10,6 +10,7 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
+use App\DTO\DiagnosticDTO;
 
 /**
  * Check that the database is supported.
@@ -20,7 +21,7 @@ class DBSupportCheck implements DiagnosticPipe
 	/**
 	 * {@inheritDoc}
 	 */
-	public function handle(array &$data, \Closure $next): array
+	public function handle(DiagnosticDTO &$data, \Closure $next): DiagnosticDTO
 	{
 		$db_possibilities = [
 			['mysql', 'mysqli'],
@@ -36,14 +37,14 @@ class DBSupportCheck implements DiagnosticPipe
 				$found = true;
 				if (!extension_loaded($db_possibility[1])) {
 					// @codeCoverageIgnoreStart
-					$data[] = DiagnosticData::error($db_possibility[0] . ' db driver selected and PHP ' . $db_possibility[1] . ' extension not activated', self::class);
+					$data->data[] = DiagnosticData::error($db_possibility[0] . ' db driver selected and PHP ' . $db_possibility[1] . ' extension not activated', self::class);
 					// @codeCoverageIgnoreEnd
 				}
 			}
 		}
 		if (!$found) {
 			// @codeCoverageIgnoreStart
-			$data[] = DiagnosticData::error('could not find the database solution for ' . config('database.default'), self::class);
+			$data->data[] = DiagnosticData::error('could not find the database solution for ' . config('database.default'), self::class);
 			// @codeCoverageIgnoreEnd
 		}
 

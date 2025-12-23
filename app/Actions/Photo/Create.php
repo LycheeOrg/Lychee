@@ -33,15 +33,18 @@ use App\Models\Photo;
 use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Pipeline\Pipeline;
-use LycheeVerify\Verify;
+use LycheeVerify\Contract\VerifyInterface;
 
 class Create
 {
 	/** @var ImportParam the strategy parameters prepared and compiled by this class */
 	protected ImportParam $strategy_parameters;
 
-	public function __construct(?ImportMode $import_mode, int $intended_owner_id)
-	{
+	public function __construct(
+		protected VerifyInterface $verify,
+		?ImportMode $import_mode,
+		int $intended_owner_id,
+	) {
 		$this->strategy_parameters = new ImportParam($import_mode, $intended_owner_id);
 	}
 
@@ -324,11 +327,9 @@ class Create
 	 */
 	private function checkQuota(NativeLocalFile $source_file): void
 	{
-		$verify = resolve(Verify::class);
-
 		// if the installation is not validated or
 		// if the user is not a supporter, we skip.
-		if (!$verify->validate() || !$verify->is_supporter()) {
+		if (!$this->verify->is_supporter()) {
 			return;
 		}
 

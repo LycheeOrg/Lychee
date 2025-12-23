@@ -10,8 +10,8 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
+use App\DTO\DiagnosticDTO;
 use App\Facades\Helpers;
-use App\Models\Configs;
 use Illuminate\Support\Facades\Schema;
 use function Safe\exec;
 use Spatie\ImageOptimizer\Optimizers\Cwebp;
@@ -29,7 +29,7 @@ class ImageOptCheck implements DiagnosticPipe
 	/**
 	 * {@inheritDoc}
 	 */
-	public function handle(array &$data, \Closure $next): array
+	public function handle(DiagnosticDTO &$data, \Closure $next): DiagnosticDTO
 	{
 		if (!Schema::hasTable('configs')) {
 			// @codeCoverageIgnoreStart
@@ -45,8 +45,7 @@ class ImageOptCheck implements DiagnosticPipe
 		$tools[] = new Pngquant();
 		$tools[] = new Svgo();
 
-		$settings = Configs::get();
-		if (!isset($settings['lossless_optimization']) || $settings['lossless_optimization'] !== '1') {
+		if (!$data->config_manager->getValueAsBool('lossless_optimization')) {
 			return $next($data);
 		}
 		// @codeCoverageIgnoreStart
@@ -61,11 +60,11 @@ class ImageOptCheck implements DiagnosticPipe
 			foreach ($tools as $tool) {
 				$path = exec('command -v ' . $binary_path . $tool->binaryName());
 				if ($path === '') {
-					$data[] = DiagnosticData::warn('lossless_optimization set to 1 but ' . $binary_path . $tool->binaryName() . ' not found!', self::class);
+					$data->data[] = DiagnosticData::warn('lossless_optimization set to 1 but ' . $binary_path . $tool->binaryName() . ' not found!', self::class);
 				}
 			}
 		} else {
-			$data[] = DiagnosticData::warn('lossless_optimization set to 1 but exec() is not enabled.', self::class);
+			$data->data[] = DiagnosticData::warn('lossless_optimization set to 1 but exec() is not enabled.', self::class);
 		}
 
 		return $next($data);

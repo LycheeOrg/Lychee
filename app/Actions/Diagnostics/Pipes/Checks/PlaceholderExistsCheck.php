@@ -10,6 +10,7 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
+use App\DTO\DiagnosticDTO;
 use App\Enum\SizeVariantType;
 use App\Image\SizeVariantDimensionHelpers;
 use App\Models\SizeVariant;
@@ -29,7 +30,7 @@ class PlaceholderExistsCheck implements DiagnosticPipe
 	/**
 	 * {@inheritDoc}
 	 */
-	public function handle(array &$data, \Closure $next): array
+	public function handle(DiagnosticDTO &$data, \Closure $next): DiagnosticDTO
 	{
 		if (!Schema::hasTable('configs') || !Schema::hasTable('size_variants')) {
 			// @codeCoverageIgnoreStart
@@ -69,13 +70,13 @@ class PlaceholderExistsCheck implements DiagnosticPipe
 		$num = $result->num_unencoded_placeholder;
 		if ($num > 0) {
 			// @codeCoverageIgnoreStart
-			$data[] = DiagnosticData::info(sprintf(self::INFO_MSG_UNENCODED, $num), self::class, [sprintf(self::INFO_LINE_UNENCODED, $num)]);
+			$data->data[] = DiagnosticData::info(sprintf(self::INFO_MSG_UNENCODED, $num), self::class, [sprintf(self::INFO_LINE_UNENCODED, $num)]);
 			// @codeCoverageIgnoreEnd
 		}
 
 		$num = $result->max_num_placeholder - $result->num_placeholder;
 		if ($num > 0) {
-			$data[] = DiagnosticData::info(sprintf(self::INFO_MSG_MISSING, $num), self::class, [sprintf(self::INFO_LINE_MISSING, $num)]);
+			$data->data[] = DiagnosticData::info(sprintf(self::INFO_MSG_MISSING, $num), self::class, [sprintf(self::INFO_LINE_MISSING, $num)]);
 		}
 
 		return $next($data);

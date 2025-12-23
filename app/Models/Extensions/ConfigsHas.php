@@ -20,6 +20,7 @@ trait ConfigsHas
 	/**
 	 * @return bool returns the Imagick setting
 	 */
+	#[\Deprecated('Use ConfigManager->hasImagick() instead')]
 	public static function hasImagick(): bool
 	{
 		return
@@ -30,6 +31,7 @@ trait ConfigsHas
 	/**
 	 * @return bool returns the Exiftool setting
 	 */
+	#[\Deprecated('Use ConfigManager->hasExiftool() instead')]
 	public static function hasExiftool(): bool
 	{
 		// has_exiftool has the following values:
@@ -74,6 +76,7 @@ trait ConfigsHas
 	/**
 	 * @return bool returns the FFMpeg setting
 	 */
+	#[\Deprecated('Use ConfigManager->hasFFmpeg() instead')]
 	public static function hasFFmpeg(): bool
 	{
 		// has_ffmpeg has the following values:

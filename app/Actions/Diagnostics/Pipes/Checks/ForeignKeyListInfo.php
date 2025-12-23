@@ -10,6 +10,7 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
+use App\DTO\DiagnosticDTO;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -21,16 +22,16 @@ class ForeignKeyListInfo implements DiagnosticPipe
 	/**
 	 * {@inheritDoc}
 	 */
-	public function handle(array &$data, \Closure $next): array
+	public function handle(DiagnosticDTO &$data, \Closure $next): DiagnosticDTO
 	{
 		if (config('database.list_foreign_keys') === false) {
 			return $next($data);
 		}
 
 		match (DB::getDriverName()) {
-			'sqlite' => $this->sqlite($data),
-			'mysql' => $this->mysql($data),
-			'pgsql' => $this->pgsql($data),
+			'sqlite' => $this->sqlite($data->data),
+			'mysql' => $this->mysql($data->data),
+			'pgsql' => $this->pgsql($data->data),
 			default => '',
 		};
 

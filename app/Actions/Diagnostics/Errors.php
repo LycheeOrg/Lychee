@@ -38,7 +38,10 @@ use App\Actions\Diagnostics\Pipes\Checks\UpdatableCheck;
 use App\Actions\Diagnostics\Pipes\Checks\WatermarkerEnabledCheck;
 use App\Actions\Diagnostics\Pipes\Checks\WebshopCheck;
 use App\DTO\DiagnosticData;
+use App\DTO\DiagnosticDTO;
+use App\Repositories\ConfigManager;
 use Illuminate\Pipeline\Pipeline;
+use LycheeVerify\Contract\VerifyInterface;
 
 class Errors
 {
@@ -86,17 +89,24 @@ class Errors
 	 *
 	 * @return DiagnosticData[] array of messages
 	 */
-	public function get(array $skip = []): array
-	{
+	public function get(
+		VerifyInterface $verify,
+		ConfigManager $config_manager,
+		array $skip = [],
+	): array {
 		$filtered_pipes = collect($this->pipes);
 		$this->pipes = $filtered_pipes->reject(fn ($p) => in_array((new \ReflectionClass($p))->getShortName(), $skip, true))->all();
 
-		/** @var DiagnosticData[] $errors */
-		$errors = [];
+		/** @var DiagnosticDTO<DiagnosticData> */
+		$errors = new DiagnosticDTO(
+			data: [],
+			verify: $verify,
+			config_manager: $config_manager,
+		);
 
 		return app(Pipeline::class)
 			->send($errors)
 			->through($this->pipes)
-			->thenReturn();
+			->thenReturn()->data;
 	}
 }

@@ -10,7 +10,7 @@ namespace App\Actions\InstallUpdate\Pipes;
 
 use App\Facades\Helpers;
 use App\Metadata\Versions\InstalledVersion;
-use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\Log;
 use function Safe\chdir;
 use function Safe\exec;
@@ -18,6 +18,11 @@ use function Safe\putenv;
 
 class ComposerCall extends AbstractUpdateInstallerPipe
 {
+	public function __construct(
+		protected readonly ConfigManager $config_manager,
+	) {
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -32,7 +37,7 @@ class ComposerCall extends AbstractUpdateInstallerPipe
 		$no_dev = $installed_version->isDev() ? '' : '--no-dev ';
 
 		if (Helpers::isExecAvailable()) {
-			if (Configs::getValueAsBool('apply_composer_update')) {
+			if ($this->config_manager->getValueAsBool('apply_composer_update')) {
 				// @codeCoverageIgnoreStart
 				Log::warning(__METHOD__ . ':' . __LINE__ . ' Composer is called on update.');
 

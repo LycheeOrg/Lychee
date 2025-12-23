@@ -18,11 +18,11 @@ use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Factories\AlbumFactory;
 use App\Models\Album;
 use App\Models\Builders\AlbumBuilder;
-use App\Models\Configs;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\TagAlbum;
 use App\Policies\AlbumPolicy;
 use App\Policies\AlbumQueryPolicy;
+use App\Repositories\ConfigManager;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Support\Collection as BaseCollection;
 use Illuminate\Support\Facades\Auth;
@@ -40,8 +40,9 @@ class Top
 	public function __construct(
 		private AlbumFactory $album_factory,
 		private AlbumQueryPolicy $album_query_policy,
+		protected readonly ConfigManager $config_manager,
 	) {
-		$this->sorting = AlbumSortingCriterion::createDefault();
+		$this->sorting = AlbumSortingCriterion::createDefault($config_manager);
 	}
 
 	/**
@@ -87,8 +88,8 @@ class Top
 		/** @var BaseCollection<int,Album> $pinned_albums */
 		$pinned_albums = (new SortingDecorator($pinned_album_query))
 			->orderBy(
-				Configs::getValueAsEnum('sorting_pinned_albums_col', ColumnSortingType::class),
-				Configs::getValueAsEnum('sorting_pinned_albums_order', OrderSortingType::class)
+				$this->config_manager->getValueAsEnum('sorting_pinned_albums_col', ColumnSortingType::class),
+				$this->config_manager->getValueAsEnum('sorting_pinned_albums_order', OrderSortingType::class)
 			)
 			->get();
 
@@ -96,7 +97,7 @@ class Top
 		$query = $this->album_query_policy
 			->applyVisibilityFilter(Album::query()->with(['access_permissions', 'owner'])->whereIsRoot()
 			->when(
-				Configs::getValueAsBool('deduplicate_pinned_albums'),
+				$this->config_manager->getValueAsBool('deduplicate_pinned_albums'),
 				fn ($q) => $q
 					->joinSub(DB::table('base_albums')->select(['id', 'is_pinned'])->where('is_pinned', '=', false), 'not_pinned', 'not_pinned.id', '=', 'albums.id')
 			));

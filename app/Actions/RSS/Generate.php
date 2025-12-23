@@ -12,11 +12,11 @@ use App\Constants\PhotoAlbum as PA;
 use App\Contracts\Exceptions\InternalLycheeException;
 use App\Enum\SizeVariantType;
 use App\Exceptions\Internal\FrameworkException;
-use App\Models\Configs;
 use App\Models\Extensions\HasUrlGenerator;
 use App\Models\Extensions\UTCBasedTimes;
 use App\Models\Photo;
 use App\Policies\PhotoQueryPolicy;
+use App\Repositories\ConfigManager;
 use Carbon\Exceptions\InvalidFormatException;
 use Carbon\Exceptions\UnitException;
 use Illuminate\Contracts\Container\BindingResolutionException;
@@ -34,8 +34,9 @@ class Generate
 	use UTCBasedTimes;
 
 	public function __construct(
-		protected PhotoQueryPolicy $photo_query_policy)
-	{
+		protected PhotoQueryPolicy $photo_query_policy,
+		protected readonly ConfigManager $config_manager,
+	) {
 	}
 
 	/**
@@ -71,8 +72,8 @@ class Generate
 	 */
 	public function do(): Collection
 	{
-		$rss_recent = Configs::getValueAsInt('rss_recent_days');
-		$rss_max = Configs::getValueAsInt('rss_max_items');
+		$rss_recent = $this->config_manager->getValueAsInt('rss_recent_days');
+		$rss_max = $this->config_manager->getValueAsInt('rss_max_items');
 		try {
 			$now_minus = Carbon::now()->subDays($rss_recent)->toDateTimeString();
 		} catch (UnitException|InvalidFormatException $e) {
@@ -84,7 +85,7 @@ class Generate
 			->applySearchabilityFilter(
 				query: Photo::query(),
 				origin: null,
-				include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_rss')
+				include_nsfw: !$this->config_manager->getValueAsBool('hide_nsfw_in_rss')
 			)
 			->joinSub(DB::table(PA::PHOTO_ALBUM), 'outer_' . PA::PHOTO_ALBUM, 'photos.id', '=', 'outer_' . PA::PHOTO_ID)
 			->join('base_albums', 'base_albums.id', '=', 'outer_' . PA::ALBUM_ID)

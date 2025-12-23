@@ -10,6 +10,7 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
+use App\DTO\DiagnosticDTO;
 use App\Enum\SizeVariantType;
 use App\Image\SizeVariantDimensionHelpers;
 use App\Models\SizeVariant;
@@ -35,7 +36,7 @@ class SmallMediumExistsCheck implements DiagnosticPipe
 	/**
 	 * {@inheritDoc}
 	 */
-	public function handle(array &$data, \Closure $next): array
+	public function handle(DiagnosticDTO &$data, \Closure $next): DiagnosticDTO
 	{
 		if (!Schema::hasTable('configs') || !Schema::hasTable('size_variants')) {
 			// @codeCoverageIgnoreStart
@@ -138,7 +139,7 @@ class SmallMediumExistsCheck implements DiagnosticPipe
 		$num = $result->{self::MAX_NUM_MEDIUM} - $result->{self::NUM_MEDIUM}; // @phpstan-ignore-line
 		if ($num > 0) {
 			// @codeCoverageIgnoreStart
-			$data[] = DiagnosticData::info(
+			$data->data[] = DiagnosticData::info(
 				sprintf(self::INFO_MSG, $num, SizeVariantType::MEDIUM->name()),
 				self::class,
 				[sprintf(self::INFO_LINE, SizeVariantType::MEDIUM->name(), $num)]
@@ -149,7 +150,7 @@ class SmallMediumExistsCheck implements DiagnosticPipe
 		$num = $result->{self::MAX_NUM_MEDIUM2X} - $result->{self::NUM_MEDIUM2X}; // @phpstan-ignore-line
 		if ($num > 0 && $sv_helpers->isEnabledByConfiguration(SizeVariantType::MEDIUM2X)) {
 			// @codeCoverageIgnoreStart
-			$data[] = DiagnosticData::info(
+			$data->data[] = DiagnosticData::info(
 				sprintf(self::INFO_MSG, $num, SizeVariantType::MEDIUM2X->name()),
 				self::class,
 				[sprintf(self::INFO_LINE, SizeVariantType::MEDIUM2X->name(), $num)]

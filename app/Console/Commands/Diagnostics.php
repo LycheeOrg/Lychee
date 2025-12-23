@@ -17,16 +17,13 @@ use App\DTO\DiagnosticData;
 use App\Enum\MessageType;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\UnexpectedException;
+use App\Repositories\ConfigManager;
 use Illuminate\Console\Command;
+use LycheeVerify\Verify;
 use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
 
 class Diagnostics extends Command
 {
-	/**
-	 * Add color to the command line output.
-	 */
-	private Colorize $col;
-
 	/**
 	 * The name and signature of the console command.
 	 *
@@ -48,11 +45,11 @@ class Diagnostics extends Command
 	 * @throws SymfonyConsoleException
 	 */
 	public function __construct(
-		Colorize $colorize,
+		private Verify $verify,
+		private ConfigManager $config_manager,
+		private Colorize $col,
 	) {
 		parent::__construct();
-
-		$this->col = $colorize;
 	}
 
 	/**
@@ -116,9 +113,9 @@ class Diagnostics extends Command
 		try {
 			$this->line('');
 			$this->line('');
-			$this->blockDiagnostic('Smart Diagnostics', resolve(Errors::class)->get($skip_diagnostics));
+			$this->blockDiagnostic('Smart Diagnostics', resolve(Errors::class)->get($this->verify, $this->config_manager, $skip_diagnostics));
 			$this->line('');
-			$this->block('System Information', resolve(Info::class)->get());
+			$this->block('System Information', resolve(Info::class)->get($this->verify, $this->config_manager));
 			$this->line('');
 			$this->block('Config Information', resolve(Configuration::class)->get());
 		} catch (QueryBuilderException $e) {

@@ -11,7 +11,6 @@ namespace App\Assets;
 use App\Enum\SizeVariantType;
 use App\Exceptions\InsufficientEntropyException;
 use App\Exceptions\Internal\LycheeLogicException;
-use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 
@@ -45,7 +44,7 @@ class WatermarkGroupedWithRandomSuffixNamingStrategy extends SizeVariantGroupedW
 
 		// We do not support setting a photo, as this is a watermark strategy.
 		// Instead, we set the random middle path from the size variant.
-		if (Configs::getValueAsBool('watermark_random_path')) {
+		if ($this->config_manager->getValueAsBool('watermark_random_path')) {
 			$this->cachedRndMiddlePath = self::createRndMiddlePath();
 
 			return;

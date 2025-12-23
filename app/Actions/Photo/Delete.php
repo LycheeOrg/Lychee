@@ -53,8 +53,8 @@ readonly class Delete
 	protected FileDeleter $file_deleter;
 	private PurchasableService $purchasable_service;
 
-	public function __construct()
-	{
+	public function __construct(
+	) {
 		$this->file_deleter = new FileDeleter();
 		$this->purchasable_service = resolve(PurchasableService::class);
 	}

@@ -195,6 +195,7 @@ class Configs extends Model
 	 *
 	 * @return array<string, mixed>
 	 */
+	#[\Deprecated(message: 'Use ConfigManager instance method load')]
 	public static function get(): array
 	{
 		if (count(self::$cache) > 0) {
@@ -224,6 +225,7 @@ class Configs extends Model
 	 *
 	 * @throws ConfigurationKeyMissingException if a key does not exist
 	 */
+	#[\Deprecated(message: 'Use ConfigManager instance method getValue instead')]
 	public static function getValue(string $key): int|bool|string|null
 	{
 		if (count(self::$cache) === 0) {
@@ -253,6 +255,7 @@ class Configs extends Model
 	 *
 	 * @throws ConfigurationKeyMissingException
 	 */
+	#[\Deprecated(message: 'Use ConfigManager instance method getValueAsString instead')]
 	public static function getValueAsString(string $key): string
 	{
 		return strval(self::getValue($key));
@@ -267,6 +270,7 @@ class Configs extends Model
 	 *
 	 * @throws ConfigurationKeyMissingException
 	 */
+	#[\Deprecated(message: 'Use ConfigManager instance method getValueAsInt instead')]
 	public static function getValueAsInt(string $key): int
 	{
 		return intval(self::getValue($key));
@@ -281,6 +285,7 @@ class Configs extends Model
 	 *
 	 * @throws ConfigurationKeyMissingException
 	 */
+	#[\Deprecated(message: 'Use ConfigManager instance method getValueAsBool instead')]
 	public static function getValueAsBool(string $key): bool
 	{
 		return self::getValue($key) === '1';
@@ -294,6 +299,7 @@ class Configs extends Model
 	 *
 	 * @return T|null
 	 */
+	#[\Deprecated(message: 'Use ConfigManager instance method getValueAsEnum instead')]
 	public static function getValueAsEnum(string $key, string $type): \BackedEnum|null
 	{
 		if (!function_exists('enum_exists') || !enum_exists($type) || !method_exists($type, 'tryFrom')) {
@@ -362,6 +368,7 @@ class Configs extends Model
 	/**
 	 * Reset the cache.
 	 */
+	#[\Deprecated(message: 'Use ConfigManager instance method invalidateCache instead')]
 	public static function invalidateCache(): void
 	{
 		self::$cache = [];

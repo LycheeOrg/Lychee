@@ -15,6 +15,7 @@ use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\UnauthenticatedException;
 use App\Exceptions\UnauthorizedException;
 use App\Factories\AlbumFactory;
+use App\Http\AttributesTraits;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Http\FormRequest;
@@ -22,13 +23,14 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use LycheeVerify\Contract\VerifyInterface;
-use LycheeVerify\Verify;
+use LycheeVerify\VerifyTrait;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
-abstract class BaseApiRequest extends FormRequest
+abstract class BaseApiRequest extends FormRequest implements VerifyInterface
 {
+	use VerifyTrait;
+	use AttributesTraits;
 	protected readonly AlbumFactory $album_factory;
-	protected readonly VerifyInterface $verify;
 
 	/**
 	 * @throws FrameworkException
@@ -44,7 +46,6 @@ abstract class BaseApiRequest extends FormRequest
 	) {
 		try {
 			$this->album_factory = resolve(AlbumFactory::class);
-			$this->verify = resolve(Verify::class);
 			parent::__construct($query, $request, $attributes, $cookies, $files, $server, $content);
 		} catch (BindingResolutionException $e) {
 			throw new FrameworkException('Laravel\'s provider component', $e);

@@ -39,12 +39,13 @@ use App\Jobs\WatermarkerJob;
 use App\Models\Configs;
 use App\Models\SizeVariant;
 use App\Models\Tag;
+use App\Repositories\ConfigManager;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use LycheeVerify\Verify;
+use LycheeVerify\Contract\VerifyInterface;
 
 /**
  * Controller responsible for fetching Photo Data.
@@ -74,10 +75,18 @@ class PhotoController extends Controller
 		// Last chunk
 		$meta->stage = FileStatus::PROCESSING;
 
-		return $this->process($final, $request->album(), $request->file_last_modified_time(), $meta);
+		return $this->process(
+			$request->verify(),
+			$request->configs(),
+			$final,
+			$request->album(),
+			$request->file_last_modified_time(),
+			$meta);
 	}
 
 	private function process(
+		VerifyInterface $verify,
+		ConfigManager $config_manager,
 		NativeLocalFile $final,
 		?AbstractAlbum $album,
 		?int $file_last_modified_time,
@@ -95,8 +104,8 @@ class PhotoController extends Controller
 		// End of work-around
 
 		$is_zip = strtolower(pathinfo($meta->file_name, PATHINFO_EXTENSION)) === 'zip';
-		$is_se = resolve(Verify::class)->is_supporter();
-		if ($is_se && Configs::getValueAsBool('extract_zip_on_upload') && $is_zip) {
+		$is_se = $verify->is_supporter();
+		if ($is_se && $config_manager->getValueAsBool('extract_zip_on_upload') && $is_zip) {
 			ExtractZip::dispatch($processable_file, $album?->get_id(), $file_last_modified_time);
 			// We return DONE no matter what:
 			// - if we are in sync mode, this will be executed after the job
@@ -183,7 +192,7 @@ class PhotoController extends Controller
 	 */
 	public function rotate(RotatePhotoRequest $request): PhotoResource
 	{
-		if (!Configs::getValueAsBool('editor_enabled')) {
+		if (!$request->configs->getValueAsBool('editor_enabled')) {
 			throw new ConfigurationException('support for rotation disabled by configuration');
 		}
 

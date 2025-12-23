@@ -18,15 +18,15 @@ use App\Models\Builders\TagAlbumBuilder;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\TagAlbum;
 use App\Policies\AlbumQueryPolicy;
+use App\Repositories\ConfigManager;
 use Illuminate\Database\Eloquent\Collection;
 
 class AlbumSearch
 {
-	protected AlbumQueryPolicy $albumQueryPolicy;
-
-	public function __construct(AlbumQueryPolicy $album_query_policy)
-	{
-		$this->albumQueryPolicy = $album_query_policy;
+	public function __construct(
+		protected readonly ConfigManager $config_manager,
+		protected AlbumQueryPolicy $album_query_policy,
+	) {
 	}
 
 	/**
@@ -40,12 +40,12 @@ class AlbumSearch
 	{
 		// Note: `applyVisibilityFilter` already adds a JOIN clause with `base_albums`.
 		// No need to add a second JOIN clause.
-		$album_query = $this->albumQueryPolicy->applyVisibilityFilter(
+		$album_query = $this->album_query_policy->applyVisibilityFilter(
 			TagAlbum::query()
 		);
 		$this->addSearchCondition($terms, $album_query);
 
-		$sorting = AlbumSortingCriterion::createDefault();
+		$sorting = AlbumSortingCriterion::createDefault($this->config_manager);
 
 		return (new SortingDecorator($album_query))
 			->orderBy($sorting->column, $sorting->order)
@@ -68,9 +68,9 @@ class AlbumSearch
 			->when($album !== null, fn ($q) => $q->where('albums._lft', '>=', $album->_lft)
 				->where('albums._rgt', '<=', $album->_rgt));
 		$this->addSearchCondition($terms, $album_query);
-		$this->albumQueryPolicy->applyBrowsabilityFilter($album_query);
+		$this->album_query_policy->applyBrowsabilityFilter($album_query);
 
-		$sorting = AlbumSortingCriterion::createDefault();
+		$sorting = AlbumSortingCriterion::createDefault($this->config_manager);
 
 		return (new SortingDecorator($album_query))
 			->orderBy($sorting->column, $sorting->order)

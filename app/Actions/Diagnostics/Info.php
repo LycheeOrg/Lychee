@@ -14,7 +14,10 @@ use App\Actions\Diagnostics\Pipes\Infos\ExtensionsInfo;
 use App\Actions\Diagnostics\Pipes\Infos\InstallTypeInfo;
 use App\Actions\Diagnostics\Pipes\Infos\SystemInfo;
 use App\Actions\Diagnostics\Pipes\Infos\VersionInfo;
+use App\DTO\DiagnosticDTO;
+use App\Repositories\ConfigManager;
 use Illuminate\Pipeline\Pipeline;
+use LycheeVerify\Contract\VerifyInterface;
 
 class Info
 {
@@ -38,14 +41,21 @@ class Info
 	 *
 	 * @return string[] array of messages
 	 */
-	public function get(): array
-	{
+	public function get(
+		VerifyInterface $verify,
+		ConfigManager $config_manager,
+	): array {
 		// Declare
-		$infos = [];
+		/** @var DiagnosticDTO<string> */
+		$infos = new DiagnosticDTO(
+			data: [],
+			verify: $verify,
+			config_manager: $config_manager,
+		);
 
 		return app(Pipeline::class)
 			->send($infos)
 			->through($this->pipes)
-			->thenReturn();
+			->thenReturn()->data;
 	}
 }

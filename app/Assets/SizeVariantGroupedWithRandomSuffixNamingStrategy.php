@@ -14,6 +14,7 @@ use App\Exceptions\InsufficientEntropyException;
 use App\Exceptions\Internal\LycheeAssertionError;
 use App\Image\Files\FlysystemFile;
 use App\Models\Photo;
+use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\Storage;
 use Safe\Exceptions\PcreException;
 
@@ -60,8 +61,9 @@ class SizeVariantGroupedWithRandomSuffixNamingStrategy extends BaseSizeVariantNa
 	/**
 	 * @throws InsufficientEntropyException
 	 */
-	public function __construct()
-	{
+	public function __construct(
+		protected readonly ConfigManager $config_manager,
+	) {
 		$this->cachedRndMiddlePath = self::createRndMiddlePath();
 	}
 

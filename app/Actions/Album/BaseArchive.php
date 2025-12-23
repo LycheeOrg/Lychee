@@ -16,11 +16,11 @@ use App\Exceptions\Internal\LycheeLogicException;
 use App\Image\Files\BaseMediaFile;
 use App\Image\Files\FlysystemFile;
 use App\Models\Album;
-use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\TagAlbum;
 use App\Policies\AlbumPolicy;
 use App\Policies\PhotoPolicy;
+use App\Repositories\ConfigManager;
 use App\SmartAlbums\BaseSmartAlbum;
 use Composer\InstalledVersions;
 use Composer\Semver\VersionParser;
@@ -38,6 +38,11 @@ use ZipStream\ZipStream;
 
 abstract class BaseArchive
 {
+	public function __construct(
+		protected readonly ConfigManager $config_manager,
+	) {
+	}
+
 	public const BAD_CHARS = [
 		"\x00", "\x01", "\x02", "\x03", "\x04", "\x05", "\x06", "\x07",
 		"\x08", "\x09", "\x0a", "\x0b", "\x0c", "\x0d", "\x0e", "\x0f",
@@ -51,16 +56,19 @@ abstract class BaseArchive
 	/**
 	 * Resolve which version of the archive to use.
 	 *
+	 * @param ConfigManager $config_manager
+	 *
 	 * @return BaseArchive
 	 */
-	public static function resolve(): self
-	{
+	public static function resolve(
+		ConfigManager $config_manager,
+	): self {
 		if (InstalledVersions::satisfies(new VersionParser(), 'maennchen/zipstream-php', '^3.1')) {
-			return new Archive64();
+			return new Archive64($config_manager);
 		}
 		// @codeCoverageIgnoreStart
 		if (InstalledVersions::satisfies(new VersionParser(), 'maennchen/zipstream-php', '^2.1')) {
-			return new Archive32();
+			return new Archive32($config_manager);
 		}
 
 		throw new LycheeLogicException('Unsupported version of maennchen/zipstream-php');
@@ -86,7 +94,7 @@ abstract class BaseArchive
 		// for this specific case we must allow lazy loading.
 		Model::shouldBeStrict(false);
 
-		$this->deflate_level = Configs::getValueAsInt('zip_deflate_level');
+		$this->deflate_level = $this->config_manager->getValueAsInt('zip_deflate_level');
 
 		$response_generator = function () use ($albums): void {
 			$zip = $this->createZip();

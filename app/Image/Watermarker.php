@@ -15,8 +15,8 @@ use App\Enum\SizeVariantType;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\MediaFileOperationException;
 use App\Image\Handlers\ImagickHandler;
-use App\Models\Configs;
 use App\Models\SizeVariant;
+use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
@@ -31,12 +31,13 @@ class Watermarker
 	/**
 	 * Create a watermarker.
 	 */
-	public function __construct()
-	{
+	public function __construct(
+		protected readonly ConfigManager $config_manager,
+	) {
 		$this->calculator = new CoordinateCalculator();
 
-		$is_enabled = Configs::getValueAsBool('watermark_enabled');
-		$is_imagick_enabled = Configs::getValueAsBool('imagick');
+		$is_enabled = $this->config_manager->getValueAsBool('watermark_enabled');
+		$is_imagick_enabled = $this->config_manager->getValueAsBool('imagick');
 		$is_imagick_loaded = extension_loaded('imagick');
 
 		if (!$is_enabled || !$is_imagick_enabled || !$is_imagick_loaded) {
@@ -45,7 +46,7 @@ class Watermarker
 			return;
 		}
 
-		$watermark_photo_id = Configs::getValueAsString('watermark_photo_id');
+		$watermark_photo_id = $this->config_manager->getValueAsString('watermark_photo_id');
 		if ($watermark_photo_id === '') {
 			// Watermark photo ID is not set, we cannot watermark
 			Log::error('Watermark is enabled but photo id is not set.');
@@ -80,7 +81,7 @@ class Watermarker
 	 *
 	 * @throws LycheeLogicException If trying to get a watermark path for a placeholder
 	 */
-	public static function get_path(SizeVariant $size_variant): string
+	public function get_path(SizeVariant $size_variant): string
 	{
 		// Guard against placeholders which cannot be watermarked
 		if ($size_variant->type === SizeVariantType::PLACEHOLDER) {
@@ -93,12 +94,12 @@ class Watermarker
 		}
 
 		// Apply watermark for public users if enabled
-		if (Configs::getValueAsBool('watermark_public') && Auth::guest()) {
+		if ($this->config_manager->getValueAsBool('watermark_public') && Auth::guest()) {
 			return $size_variant->short_path_watermarked;
 		}
 
 		// Apply watermark for authenticated users if enabled
-		if (Configs::getValueAsBool('watermark_logged_in_users_enabled') && Auth::check()) {
+		if ($this->config_manager->getValueAsBool('watermark_logged_in_users_enabled') && Auth::check()) {
 			return $size_variant->short_path_watermarked;
 		}
 
@@ -114,10 +115,10 @@ class Watermarker
 	 *
 	 * @return bool True if watermarked path could be used, false otherwise
 	 */
-	private static function should_use_watermarked_path(SizeVariant $size_variant): bool
+	private function should_use_watermarked_path(SizeVariant $size_variant): bool
 	{
 		// Watermarking must be enabled globally
-		if (!Configs::getValueAsBool('watermark_enabled')) {
+		if (!$this->config_manager->getValueAsBool('watermark_enabled')) {
 			return false;
 		}
 
@@ -127,7 +128,7 @@ class Watermarker
 		}
 
 		// Special case for original size variants
-		if ($size_variant->type === SizeVariantType::ORIGINAL && !Configs::getValueAsBool('watermark_original')) {
+		if ($size_variant->type === SizeVariantType::ORIGINAL && !$this->config_manager->getValueAsBool('watermark_original')) {
 			return false;
 		}
 
@@ -144,7 +145,7 @@ class Watermarker
 		}
 
 		if ($size_variant->type === SizeVariantType::PLACEHOLDER ||
-			($size_variant->type === SizeVariantType::ORIGINAL && !Configs::getValueAsBool('watermark_original'))) {
+			($size_variant->type === SizeVariantType::ORIGINAL && !$this->config_manager->getValueAsBool('watermark_original'))) {
 			return;
 		}
 

@@ -8,18 +8,18 @@
 
 namespace App\Http\Requests\Settings;
 
-use App\Contracts\Http\Requests\HasConfigs;
+use App\Contracts\Http\Requests\HasEditableConfigs;
 use App\Contracts\Http\Requests\RequestAttribute;
-use App\Http\Requests\Traits\HasConfigsTrait;
+use App\Http\Requests\Traits\HasEditableConfigsTrait;
 use App\Http\Resources\Editable\EditableConfigResource;
 use App\Rules\ConfigKeyRequireSupportRule;
 use App\Rules\ConfigKeyRule;
 use App\Rules\ConfigValueRule;
 use App\Rules\OwnerConfigRule;
 
-class SetConfigsRequest extends GetAllConfigsRequest implements HasConfigs
+class SetConfigsRequest extends GetAllConfigsRequest implements HasEditableConfigs
 {
-	use HasConfigsTrait;
+	use HasEditableConfigsTrait;
 
 	/**
 	 * Indicates if the validator should stop on the first rule failure.
@@ -51,6 +51,6 @@ class SetConfigsRequest extends GetAllConfigsRequest implements HasConfigs
 		foreach ($values[RequestAttribute::CONFIGS_ATTRIBUTE] as $config) {
 			$editable_configs[] = new EditableConfigResource($config[RequestAttribute::CONFIGS_KEY_ATTRIBUTE], $config[RequestAttribute::CONFIGS_VALUE_ATTRIBUTE]);
 		}
-		$this->configs = collect($editable_configs);
+		$this->editable_configs = collect($editable_configs);
 	}
 }

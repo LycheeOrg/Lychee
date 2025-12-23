@@ -10,11 +10,9 @@ namespace App\Http\Controllers\Admin\Maintenance;
 
 use App\Http\Requests\Maintenance\MaintenanceRequest;
 use App\Jobs\ExtractColoursJob;
-use App\Models\Configs;
 use App\Models\Photo;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Log;
-use LycheeVerify\Verify;
 
 /**
  * Handles missing palettes for photos.
@@ -28,7 +26,7 @@ class MissingPalettes extends Controller
 	 */
 	public function check(MaintenanceRequest $request): int
 	{
-		if (!resolve(Verify::class)->check() || !Configs::getValueAsBool('enable_colour_extractions')) {
+		if (!$request->verify()->check() || !$request->configs()->getValueAsBool('enable_colour_extractions')) {
 			return 0;
 		}
 
@@ -45,11 +43,11 @@ class MissingPalettes extends Controller
 	 */
 	public function do(MaintenanceRequest $request): void
 	{
-		if (!resolve(Verify::class)->check() || !Configs::getValueAsBool('enable_colour_extractions')) {
+		if (!$request->verify()->check() || !$request->configs()->getValueAsBool('enable_colour_extractions')) {
 			return;
 		}
 
-		$limit = Configs::getValueAsInt('maintenance_processing_limit');
+		$limit = $request->configs()->getValueAsInt('maintenance_processing_limit');
 		$photos = Photo::with(['size_variants'])
 			->whereDoesntHave('palette')
 			->where('type', 'like', 'image/%')

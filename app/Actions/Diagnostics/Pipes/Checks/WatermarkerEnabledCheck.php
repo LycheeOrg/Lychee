@@ -10,8 +10,8 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
+use App\DTO\DiagnosticDTO;
 use App\Enum\SizeVariantType;
-use App\Models\Configs;
 use App\Models\SizeVariant;
 use Illuminate\Support\Facades\Schema;
 
@@ -23,13 +23,13 @@ class WatermarkerEnabledCheck implements DiagnosticPipe
 	/**
 	 * {@inheritDoc}
 	 */
-	public function handle(array &$data, \Closure $next): array
+	public function handle(DiagnosticDTO &$data, \Closure $next): DiagnosticDTO
 	{
 		if (!Schema::hasTable('configs') || !Schema::hasTable('size_variants')) {
 			return $next($data);
 		}
 
-		if (!Configs::getValueAsBool('watermark_enabled')) {
+		if (!$data->config_manager->getValueAsBool('watermark_enabled')) {
 			return $next($data);
 		}
 
@@ -42,15 +42,15 @@ class WatermarkerEnabledCheck implements DiagnosticPipe
 	/**
 	 * Validate that Imagick is available and loaded..
 	 *
-	 * @param DiagnosticData[] &$data
+	 * @param DiagnosticDTO &$data
 	 *
 	 * @return void
 	 */
-	private function validateImagick(array &$data): void
+	private function validateImagick(DiagnosticDTO &$data): void
 	{
 		$is_imagick_loaded = extension_loaded('imagick');
-		if (!Configs::getValueAsBool('imagick')) {
-			$data[] = DiagnosticData::warn(
+		if (!$data->config_manager->getValueAsBool('imagick')) {
+			$data->data[] = DiagnosticData::warn(
 				'Watermarker: imagick is not enabled in your settings. Watermarking step will be skipped.',
 				self::class,
 				$is_imagick_loaded ? [] : ['Imagick is not available on your php install. Make sure the extension is loaded.']
@@ -61,7 +61,7 @@ class WatermarkerEnabledCheck implements DiagnosticPipe
 
 		if (!$is_imagick_loaded) {
 			// @codeCoverageIgnoreStart
-			$data[] = DiagnosticData::warn(
+			$data->data[] = DiagnosticData::warn(
 				'Watermarker: php imagick extension is not loaded. Watermarking step will be skipped.',
 				self::class,
 				[]
@@ -73,15 +73,15 @@ class WatermarkerEnabledCheck implements DiagnosticPipe
 	/**
 	 * Validate if the PhotoId provided is correct.
 	 *
-	 * @param DiagnosticData[] &$data
+	 * @param DiagnosticDTO &$data
 	 *
 	 * @return void
 	 */
-	private function validatePhotoId(array &$data): void
+	private function validatePhotoId(DiagnosticDTO &$data): void
 	{
-		$watermark_photo_id = Configs::getValueAsString('watermark_photo_id');
+		$watermark_photo_id = $data->config_manager->getValueAsString('watermark_photo_id');
 		if ($watermark_photo_id === '') {
-			$data[] = DiagnosticData::warn(
+			$data->data[] = DiagnosticData::warn(
 				'Watermarker: photo_id is not provided. Watermarking step will be skipped.',
 				self::class,
 				[]
@@ -96,7 +96,7 @@ class WatermarkerEnabledCheck implements DiagnosticPipe
 				->first();
 		if ($watermark === null) {
 			// If no watermark is found, we cannot watermark
-			$data[] = DiagnosticData::error(
+			$data->data[] = DiagnosticData::error(
 				'Watermarker: the photo_id provided does not match any photo. Watermarking step will be skipped.',
 				self::class,
 				[]
