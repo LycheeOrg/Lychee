@@ -11,6 +11,8 @@ namespace App\Http\Middleware\Caching;
 use App\Constants\PhotoAlbum as PA;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Events\AlbumRouteCacheUpdated;
+use App\Exceptions\Internal\LycheeLogicException;
+use App\Http\Request as HttpRequest;
 use App\Models\Configs;
 use Illuminate\Foundation\Http\Middleware\Concerns\ExcludesPaths;
 use Illuminate\Http\Request;
@@ -64,7 +66,11 @@ class AlbumRouteCacheRefresher
 			return $next($request);
 		}
 
-		if (Configs::getValueAsBool('cache_enabled') === false) {
+		if (!$request instanceof HttpRequest) {
+			throw new LycheeLogicException('Pure Illuminate\Http\Request should never reach AlbumRouteCacheRefresher middleware.');
+		}
+
+		if ($request->configs()->getValueAsBool('cache_enabled') === false) {
 			return $next($request);
 		}
 

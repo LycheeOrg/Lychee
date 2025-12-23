@@ -24,7 +24,7 @@ class MoveToS3 extends Command
 	public function __construct(
 		protected readonly ConfigManager $config_manager,
 	) {
-		return parent::__construct();
+		parent::__construct();
 	}
 	/**
 	 * The name and signature of the console command.

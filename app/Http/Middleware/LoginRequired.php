@@ -11,8 +11,9 @@ namespace App\Http\Middleware;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\LycheeInvalidArgumentException;
+use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\UnauthenticatedException;
-use App\Models\Configs;
+use App\Http\Request as HttpRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -53,12 +54,16 @@ class LoginRequired
 			return redirect()->route('gallery');
 		}
 
-		if (!Configs::getValueAsBool('login_required')) {
+		if (!$request instanceof HttpRequest) {
+			throw new LycheeLogicException('Pure Illuminate\Http\Request should never reach LoginRequired middleware.');
+		}
+
+		if (!$request->configs()->getValueAsBool('login_required')) {
 			// Login is not required. Proceed.
 			return $next($request);
 		}
 
-		if ($required_status === self::ALBUM && Configs::getValueAsBool('login_required_root_only')) {
+		if ($required_status === self::ALBUM && $request->configs()->getValueAsBool('login_required_root_only')) {
 			return $next($request);
 		}
 
