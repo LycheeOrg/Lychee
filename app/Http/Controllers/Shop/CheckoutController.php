@@ -138,7 +138,7 @@ class CheckoutController extends Controller
 		$message = 'Payment failed or was not completed.';
 
 		if ($success) {
-			OrderCompleted::dispatchIf(Configs::getValueAsBool('webshop_auto_fulfill_enabled'), $order->id);
+			OrderCompleted::dispatchIf($request->configs()->getValueAsBool('webshop_auto_fulfill_enabled'), $order->id);
 			$complete_url = URL::route('shop.checkout.complete');
 			$redirect_url = null;
 			$message = 'Payment completed successfully.';

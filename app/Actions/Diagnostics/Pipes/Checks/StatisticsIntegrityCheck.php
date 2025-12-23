@@ -12,6 +12,7 @@ use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
 use App\DTO\DiagnosticDTO;
 use App\Http\Resources\Diagnostics\StatisticsCheckResource;
+use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -24,7 +25,7 @@ class StatisticsIntegrityCheck implements DiagnosticPipe
 	 */
 	public function handle(DiagnosticDTO &$data, \Closure $next): DiagnosticDTO
 	{
-		$check = $this->get($data);
+		$check = $this->get($data->config_manager);
 
 		if ($check->missing_albums > 0) {
 			$data->data[] = DiagnosticData::warn(sprintf('There are %d albums without statistics.', $check->missing_albums), self::class,
@@ -39,10 +40,10 @@ class StatisticsIntegrityCheck implements DiagnosticPipe
 		return $next($data);
 	}
 
-	public function get(DiagnosticDTO $data): StatisticsCheckResource
+	public function get(ConfigManager $config_manager): StatisticsCheckResource
 	{
 		// Just skip the check, we don't care.
-		if (!$data->config_manager->getValueAsBool('metrics_enabled')) {
+		if (!$config_manager->getValueAsBool('metrics_enabled')) {
 			return new StatisticsCheckResource(0, 0);
 		}
 

@@ -37,21 +37,18 @@ class InitResource extends Data
 	/**
 	 * @return void
 	 */
-	public function __construct(
-		VerifyInterface $verify,
-		ConfigManager $config_manager,
-	) {
-		$is_supporter = $verify->check();
-		$this->is_mod_flow_enabled = $config_manager->getValueAsBool('flow_enabled') && (Auth::check() || $config_manager->getValueAsBool('flow_public'));
-		$this->is_display_open_album_button = $config_manager->getValueAsBool('flow_display_open_album_button');
-		$this->is_open_album_on_click = $is_supporter && $config_manager->getValueAsBool('flow_open_album_on_click');
-		$this->is_highlight_first_picture = $config_manager->getValueAsBool('flow_highlight_first_picture');
-		$this->is_image_header_enabled = $config_manager->getValueAsBool('flow_image_header_enabled');
-		$this->image_header_cover = $config_manager->getValueAsEnum('flow_image_header_cover', CoverFitType::class);
-		$this->image_header_height = $config_manager->getValueAsInt('flow_image_header_height');
-		$this->is_carousel_enabled = $config_manager->getValueAsBool('flow_carousel_enabled');
-		$this->carousel_height = $config_manager->getValueAsInt('flow_carousel_height');
-		$this->is_blur_nsfw_enabled = $config_manager->getValueAsBool('flow_blur_nsfw_enabled');
-		$this->is_compact_mode_enabled = $is_supporter && $config_manager->getValueAsBool('flow_compact_mode_enabled');
+	public function __construct() {
+		$is_supporter = request()->verify()->check();
+		$this->is_mod_flow_enabled = request()->configs()->getValueAsBool('flow_enabled') && (Auth::check() || request()->configs()->getValueAsBool('flow_public'));
+		$this->is_display_open_album_button = request()->configs()->getValueAsBool('flow_display_open_album_button');
+		$this->is_open_album_on_click = $is_supporter && request()->configs()->getValueAsBool('flow_open_album_on_click');
+		$this->is_highlight_first_picture = request()->configs()->getValueAsBool('flow_highlight_first_picture');
+		$this->is_image_header_enabled = request()->configs()->getValueAsBool('flow_image_header_enabled');
+		$this->image_header_cover = request()->configs()->getValueAsEnum('flow_image_header_cover', CoverFitType::class);
+		$this->image_header_height = request()->configs()->getValueAsInt('flow_image_header_height');
+		$this->is_carousel_enabled = request()->configs()->getValueAsBool('flow_carousel_enabled');
+		$this->carousel_height = request()->configs()->getValueAsInt('flow_carousel_height');
+		$this->is_blur_nsfw_enabled = request()->configs()->getValueAsBool('flow_blur_nsfw_enabled');
+		$this->is_compact_mode_enabled = $is_supporter && request()->configs()->getValueAsBool('flow_compact_mode_enabled');
 	}
 }

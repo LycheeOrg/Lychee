@@ -77,7 +77,7 @@ class UpdateController extends Controller
 	 */
 	public function view(UpdateRequest $request): View
 	{
-		UpdatableCheck::assertUpdatability();
+		UpdatableCheck::assertUpdatability($request->configs());
 
 		$output = $this->apply_update->run();
 

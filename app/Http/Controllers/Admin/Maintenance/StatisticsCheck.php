@@ -34,14 +34,14 @@ class StatisticsCheck extends Controller
 	public function do(MaintenanceRequest $request): StatisticsCheckResource
 	{
 		// Just skip the check, we don't care.
-		if (!Configs::getValueAsBool('metrics_enabled')) {
+		if (!$request->configs()->getValueAsBool('metrics_enabled')) {
 			return new StatisticsCheckResource(0, 0);
 		}
 
 		DB::statement('INSERT INTO statistics (photo_id) SELECT photos.id FROM photos LEFT OUTER JOIN statistics ON photos.id = photo_id WHERE statistics.id IS NULL');
 		DB::statement('INSERT INTO statistics (album_id) SELECT base_albums.id FROM base_albums LEFT OUTER JOIN statistics ON base_albums.id = album_id WHERE statistics.id IS NULL');
 
-		return $this->check->get();
+		return $this->check->get($request->configs());
 	}
 
 	/**
@@ -51,6 +51,6 @@ class StatisticsCheck extends Controller
 	 */
 	public function check(MaintenanceRequest $request): StatisticsCheckResource
 	{
-		return $this->check->get();
+		return $this->check->get($request->configs());
 	}
 }

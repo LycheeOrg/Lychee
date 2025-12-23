@@ -13,6 +13,7 @@ use App\Actions\Diagnostics\Errors;
 use App\Actions\Diagnostics\Info;
 use App\Actions\Diagnostics\Space;
 use App\Constants\AccessPermissionConstants as APC;
+use App\Http\Request;
 use App\Http\Requests\Diagnostics\DiagnosticsRequest;
 use App\Http\Resources\Diagnostics\ErrorLine;
 use App\Http\Resources\Diagnostics\Permissions;
@@ -33,9 +34,9 @@ class DiagnosticsController extends Controller
 	 *
 	 * @return array<array-key, \App\Http\Resources\Diagnostics\ErrorLine>
 	 */
-	public function errors(Errors $errors): array
+	public function errors(Request $request, Errors $errors): array
 	{
-		return ErrorLine::collect($errors->get());
+		return ErrorLine::collect($errors->get($request->verify(), $request->configs()));
 	}
 
 	/**
@@ -55,14 +56,14 @@ class DiagnosticsController extends Controller
 	/**
 	 * Get info of the installation.
 	 *
-	 * @param DiagnosticsRequest $_request
+	 * @param DiagnosticsRequest $request
 	 * @param Info               $info
 	 *
 	 * @return string[]
 	 */
-	public function info(DiagnosticsRequest $_request, Info $info): array
+	public function info(DiagnosticsRequest $request, Info $info): array
 	{
-		return $info->get();
+		return $info->get($request->verify(), $request->configs());
 	}
 
 	/**

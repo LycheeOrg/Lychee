@@ -15,6 +15,7 @@ use App\Http\Requests\Maintenance\RegisterRequest;
 use App\Http\Resources\GalleryConfigs\RegisterData;
 use App\Models\Configs;
 use Illuminate\Routing\Controller;
+use LycheeVerify\Contract\VerifyInterface;
 use LycheeVerify\Verify;
 
 class RegisterController extends Controller

@@ -271,7 +271,7 @@ class PhotoController extends Controller
 
 	private function shouldWatermark(?SizeVariant $size_variant): bool
 	{
-		if ($size_variant->type === SizeVariantType::ORIGINAL && !Configs::getValueAsBool('watermark_original')) {
+		if ($size_variant->type === SizeVariantType::ORIGINAL && !request()->configs()->getValueAsBool('watermark_original')) {
 			return false;
 		}
 

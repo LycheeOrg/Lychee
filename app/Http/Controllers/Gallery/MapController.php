@@ -49,7 +49,7 @@ class MapController extends Controller
 			return $this->root_position_data->do();
 		}
 
-		$include_sub_albums = Configs::getValueAsBool('map_include_subalbums');
+		$include_sub_albums = $request->configs()->getValueAsBool('map_include_subalbums');
 
 		return $this->album_position_data->get($album, $include_sub_albums);
 	}

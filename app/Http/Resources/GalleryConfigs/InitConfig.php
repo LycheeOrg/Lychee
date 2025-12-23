@@ -109,9 +109,7 @@ class InitConfig extends Data
 	public string $default_homepage;
 	public bool $is_timeline_page_enabled = false;
 
-	public function __construct(
-		protected readonly ConfigManager $config_manager,
-	) {
+	public function __construct() {
 		// Debug mode
 		$this->is_debug_enabled = config('app.debug');
 

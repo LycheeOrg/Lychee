@@ -30,7 +30,7 @@ class JobsController extends Controller
 		$jobs = JobHistory::with(['owner'])
 			->when(!Auth::user()->may_administrate, fn ($query) => $query->where('owner_id', '=', Auth::id()))
 			->orderBy('id', 'desc')
-			->paginate(Configs::getValueAsInt('log_max_num_line'));
+			->paginate($request->configs()->getValueAsInt('log_max_num_line'));
 
 		return JobHistoryResource::collect($jobs, PaginatedDataCollection::class);
 	}

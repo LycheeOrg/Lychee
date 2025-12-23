@@ -25,7 +25,7 @@ class FlowController extends Controller
 	 */
 	public function __invoke(FlowRequest $request, Flow $flow)
 	{
-		$pagination_limit = Configs::getValueAsInt('flow_max_items');
+		$pagination_limit = $request->configs()->getValueAsInt('flow_max_items');
 		$album_results = $flow->do()->paginate($pagination_limit);
 
 		return FlowResource::fromData($album_results);

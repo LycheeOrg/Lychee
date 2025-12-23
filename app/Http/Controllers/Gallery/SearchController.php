@@ -49,7 +49,7 @@ class SearchController extends Controller
 		$photo_results = $photo_search
 			->sqlQuery($terms, $album)
 			->orderBy(ColumnSortingPhotoType::TAKEN_AT->value, OrderSortingType::ASC->value)
-			->paginate(Configs::getValueAsInt('search_pagination_limit'));
+			->paginate($request->configs()->getValueAsInt('search_pagination_limit'));
 
 		$album_results = $album_search->queryAlbums($terms, $album);
 

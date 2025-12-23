@@ -54,7 +54,7 @@ class SecurePathController extends Controller
 			throw new WrongPathException();
 		}
 
-		if (Configs::getValueAsBool('secure_image_link_enabled')) {
+		if ($request->configs()->getValueAsBool('secure_image_link_enabled')) {
 			try {
 				$path = Crypt::decryptString($path);
 			} catch (DecryptException) {

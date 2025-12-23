@@ -78,7 +78,7 @@ class OrderController extends Controller
 			batch()->update($order_item_instance, $request->items, $key_name);
 		}
 
-		OrderCompleted::dispatchIf(Configs::getValueAsBool('webshop_manual_fulfill_enabled'), $request->order->id);
+		OrderCompleted::dispatchIf($request->configs()->getValueAsBool('webshop_manual_fulfill_enabled'), $request->order->id);
 
 		$this->order_service->markAsDelivered($request->order);
 	}
