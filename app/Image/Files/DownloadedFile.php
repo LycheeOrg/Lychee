@@ -10,7 +10,8 @@ namespace App\Image\Files;
 
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
-use App\Models\Configs;
+use App\Repositories\ConfigManager;
+use App\Services\Image\FileExtensionService;
 use Safe\Exceptions\PcreException;
 use function Safe\fclose;
 use function Safe\fopen;
@@ -34,8 +35,11 @@ class DownloadedFile extends TemporaryLocalFile
 	/**
 	 * @throws MediaFileOperationException
 	 */
-	public function __construct(string $url)
-	{
+	public function __construct(
+		ConfigManager $config_manager,
+		FileExtensionService $file_extension_service,
+		string $url,
+	) {
 		try {
 			/** @var string $path because we provide directly PHP_URL_PATH */
 			$path = parse_url($url, PHP_URL_PATH);
@@ -44,7 +48,7 @@ class DownloadedFile extends TemporaryLocalFile
 
 			$opts = [
 				'http' => [
-					'follow_location' => !Configs::getValueAsBool('import_via_url_block_redirect'),
+					'follow_location' => !$config_manager->getValueAsBool('import_via_url_block_redirect'),
 					'max_redirects' => 3,
 					'timeout' => 10.0,
 				],
@@ -77,7 +81,7 @@ class DownloadedFile extends TemporaryLocalFile
 			// In all other cases we try to guess the file type.
 			// File extension > Content-Type > Inferred MIME type
 
-			if ($extension !== '.' && self::isSupportedOrAcceptedFileExtension($extension)) {
+			if ($extension !== '.' && $file_extension_service->isSupportedOrAcceptedFileExtension($extension)) {
 				parent::__construct($extension, $basename);
 				$this->originalMimeType = $original_mime_type;
 				$this->write($download_stream);
@@ -85,8 +89,8 @@ class DownloadedFile extends TemporaryLocalFile
 
 				return;
 			}
-			if ($original_mime_type !== null && self::isSupportedMimeType($original_mime_type)) {
-				$extension = self::getDefaultFileExtensionForMimeType($original_mime_type);
+			if ($original_mime_type !== null && $file_extension_service->isSupportedMimeType($original_mime_type)) {
+				$extension = $file_extension_service->getDefaultFileExtensionForMimeType($original_mime_type);
 				parent::__construct($extension, $basename);
 				$this->originalMimeType = $original_mime_type;
 				$this->write($download_stream);
@@ -102,8 +106,8 @@ class DownloadedFile extends TemporaryLocalFile
 			rewind($temp);
 			$original_mime_type = mime_content_type($temp);
 
-			if (self::isSupportedMimeType($original_mime_type)) {
-				$extension = self::getDefaultFileExtensionForMimeType($original_mime_type);
+			if ($file_extension_service->isSupportedMimeType($original_mime_type)) {
+				$extension = $file_extension_service->getDefaultFileExtensionForMimeType($original_mime_type);
 				parent::__construct($extension, $basename);
 				$this->originalMimeType = $original_mime_type;
 				rewind($temp);

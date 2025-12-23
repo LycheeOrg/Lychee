@@ -16,7 +16,7 @@ use App\Exceptions\MediaFileOperationException;
 use App\Image\Files\FlysystemFile;
 use App\Image\Files\NativeLocalFile;
 use App\Image\StreamStat;
-use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\Log;
 use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
 
@@ -28,9 +28,10 @@ abstract class BaseImageHandler implements ImageHandlerInterface
 	/**
 	 * @throws ConfigurationKeyMissingException
 	 */
-	public function __construct()
-	{
-		$this->compression_quality = Configs::getValueAsInt('compression_quality');
+	public function __construct(
+		protected readonly ConfigManager $config_manager,
+	) {
+		$this->compression_quality = $config_manager->getValueAsInt('compression_quality');
 	}
 
 	public function __destruct()
@@ -55,9 +56,9 @@ abstract class BaseImageHandler implements ImageHandlerInterface
 	 * @throws MediaFileOperationException
 	 * @throws ConfigurationKeyMissingException
 	 */
-	protected static function applyLosslessOptimizationConditionally(MediaFile $file, bool $collect_statistics = false): ?StreamStats
+	protected function applyLosslessOptimizationConditionally(MediaFile $file, bool $collect_statistics = false): ?StreamStats
 	{
-		if (Configs::getValueAsBool('lossless_optimization')) {
+		if ($this->config_manager->getValueAsBool('lossless_optimization')) {
 			if ($file instanceof NativeLocalFile) {
 				ImageOptimizer::optimize($file->getRealPath());
 

@@ -11,10 +11,15 @@ namespace App\Image;
 use App\DTO\ImageDimension;
 use App\Enum\SizeVariantType;
 use App\Exceptions\Internal\InvalidSizeVariantException;
-use App\Models\Configs;
+use App\Repositories\ConfigManager;
 
 class SizeVariantDimensionHelpers
 {
+	public function __construct(
+		protected readonly ConfigManager $config_manager,
+	) {
+	}
+
 	/**
 	 * Determines the maximum dimensions of the designated size variant.
 	 *
@@ -61,10 +66,10 @@ class SizeVariantDimensionHelpers
 		}
 
 		return match ($size_variant) {
-			SizeVariantType::MEDIUM2X => Configs::getValueAsBool('medium_2x'),
-			SizeVariantType::SMALL2X => Configs::getValueAsBool('small_2x'),
-			SizeVariantType::THUMB2X => Configs::getValueAsBool('thumb_2x'),
-			SizeVariantType::PLACEHOLDER => Configs::getValueAsBool('low_quality_image_placeholder'),
+			SizeVariantType::MEDIUM2X => $this->config_manager->getValueAsBool('medium_2x'),
+			SizeVariantType::SMALL2X => $this->config_manager->getValueAsBool('small_2x'),
+			SizeVariantType::THUMB2X => $this->config_manager->getValueAsBool('thumb_2x'),
+			SizeVariantType::PLACEHOLDER => $this->config_manager->getValueAsBool('low_quality_image_placeholder'),
 			SizeVariantType::SMALL, SizeVariantType::MEDIUM, SizeVariantType::THUMB => true,
 			default => throw new InvalidSizeVariantException('unknown size variant: ' . $size_variant->value),
 		};
@@ -95,10 +100,10 @@ class SizeVariantDimensionHelpers
 	public function getMaxWidth(SizeVariantType $size_variant): int
 	{
 		return match ($size_variant) {
-			SizeVariantType::MEDIUM2X => 2 * Configs::getValueAsInt('medium_max_width'),
-			SizeVariantType::MEDIUM => Configs::getValueAsInt('medium_max_width'),
-			SizeVariantType::SMALL2X => 2 * Configs::getValueAsInt('small_max_width'),
-			SizeVariantType::SMALL => Configs::getValueAsInt('small_max_width'),
+			SizeVariantType::MEDIUM2X => 2 * $this->config_manager->getValueAsInt('medium_max_width'),
+			SizeVariantType::MEDIUM => $this->config_manager->getValueAsInt('medium_max_width'),
+			SizeVariantType::SMALL2X => 2 * $this->config_manager->getValueAsInt('small_max_width'),
+			SizeVariantType::SMALL => $this->config_manager->getValueAsInt('small_max_width'),
 			SizeVariantType::THUMB2X => SizeVariantDefaultFactory::THUMBNAIL2X_DIM,
 			SizeVariantType::THUMB => SizeVariantDefaultFactory::THUMBNAIL_DIM,
 			SizeVariantType::PLACEHOLDER => SizeVariantDefaultFactory::PLACEHOLDER_DIM,
@@ -112,10 +117,10 @@ class SizeVariantDimensionHelpers
 	public function getMaxHeight(SizeVariantType $size_variant): int
 	{
 		return match ($size_variant) {
-			SizeVariantType::MEDIUM2X => 2 * Configs::getValueAsInt('medium_max_height'),
-			SizeVariantType::MEDIUM => Configs::getValueAsInt('medium_max_height'),
-			SizeVariantType::SMALL2X => 2 * Configs::getValueAsInt('small_max_height'),
-			SizeVariantType::SMALL => Configs::getValueAsInt('small_max_height'),
+			SizeVariantType::MEDIUM2X => 2 * $this->config_manager->getValueAsInt('medium_max_height'),
+			SizeVariantType::MEDIUM => $this->config_manager->getValueAsInt('medium_max_height'),
+			SizeVariantType::SMALL2X => 2 * $this->config_manager->getValueAsInt('small_max_height'),
+			SizeVariantType::SMALL => $this->config_manager->getValueAsInt('small_max_height'),
 			SizeVariantType::THUMB2X => SizeVariantDefaultFactory::THUMBNAIL2X_DIM,
 			SizeVariantType::THUMB => SizeVariantDefaultFactory::THUMBNAIL_DIM,
 			SizeVariantType::PLACEHOLDER => SizeVariantDefaultFactory::PLACEHOLDER_DIM,

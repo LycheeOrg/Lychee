@@ -44,7 +44,7 @@ class SmallMediumExistsCheck implements DiagnosticPipe
 			// @codeCoverageIgnoreEnd
 		}
 
-		$sv_helpers = new SizeVariantDimensionHelpers();
+		$sv_helpers = new SizeVariantDimensionHelpers($data->config_manager);
 
 		/** @var object{num_small:int,num_medium:int,num_small2x:int,num_medium2x:int,max_num_small:int,max_num_medium:int,max_num_small2x:int,max_num_medium2x:int} $result */
 		$result = DB::query()

@@ -12,9 +12,9 @@ use App\Contracts\Exceptions\ExternalLycheeException;
 use App\Enum\SizeVariantType;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnexpectedException;
-use App\Image\Files\BaseMediaFile;
 use App\Metadata\Extractor;
 use App\Models\Photo;
+use App\Services\Image\FileExtensionService;
 use Illuminate\Console\Command;
 use Safe\Exceptions\InfoException;
 use function Safe\filemtime;
@@ -61,7 +61,7 @@ class ExifLens extends Command
 				$r->where('type', '=', SizeVariantType::ORIGINAL);
 			}])
 				->where('lens', '=', '')
-				->whereNotIn('type', BaseMediaFile::SUPPORTED_VIDEO_MIME_TYPES)
+				->whereNotIn('type', FileExtensionService::SUPPORTED_VIDEO_MIME_TYPES)
 				->offset($offset)
 				->limit($limit)
 				->get();

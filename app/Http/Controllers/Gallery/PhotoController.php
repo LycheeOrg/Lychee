@@ -195,7 +195,7 @@ class PhotoController extends Controller
 			throw new ConfigurationException('support for rotation disabled by configuration');
 		}
 
-		$rotate_strategy = new Rotate($request->photo(), $request->direction());
+		$rotate_strategy = new Rotate($request->configs(), $request->photo(), $request->direction());
 		$photo = $rotate_strategy->do();
 
 		return new PhotoResource($photo, $request->from_album());

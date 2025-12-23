@@ -254,7 +254,7 @@ class GdHandler extends BaseImageHandler
 			$file->close();
 			$in_memory_buffer->close();
 
-			return parent::applyLosslessOptimizationConditionally($file) ?? $stream_stat;
+			return $this->applyLosslessOptimizationConditionally($file) ?? $stream_stat;
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException('Failed to save image', $e);
 		}
@@ -321,7 +321,7 @@ class GdHandler extends BaseImageHandler
 			$cloned_gd_image = imagecreatetruecolor($width, $height);
 			$this->fastImageCopyResampled($cloned_gd_image, $this->gd_image, 0, 0, 0, 0, $width, $height, $src_dim->width, $src_dim->height);
 
-			$clone = new self();
+			$clone = new self($this->config_manager);
 			$clone->compression_quality = $this->compression_quality;
 			$clone->gd_image = $cloned_gd_image;
 			$clone->gd_image_type = $this->gd_image_type;
@@ -362,7 +362,7 @@ class GdHandler extends BaseImageHandler
 			$cloned_gd_image = imagecreatetruecolor($dst_dim->width, $dst_dim->height);
 			$this->fastImageCopyResampled($cloned_gd_image, $this->gd_image, 0, 0, $x, $y, $dst_dim->width, $dst_dim->height, $width, $height);
 
-			$clone = new self();
+			$clone = new self($this->config_manager);
 			$clone->compression_quality = $this->compression_quality;
 			$clone->gd_image = $cloned_gd_image;
 			$clone->gd_image_type = $this->gd_image_type;
@@ -513,7 +513,7 @@ class GdHandler extends BaseImageHandler
 			$alpha = max(0, min(127, (int) round(127 * $transparency)));
 			imagefilter($cloned_gd_image, IMG_FILTER_COLORIZE, 0, 0, 0, $alpha); // 5th arg is alpha (0 opaque .. 127 fully transparent)
 
-			$clone = new self();
+			$clone = new self($this->config_manager);
 			$clone->compression_quality = $this->compression_quality;
 			$clone->gd_image = $cloned_gd_image;
 			$clone->gd_image_type = $this->gd_image_type;

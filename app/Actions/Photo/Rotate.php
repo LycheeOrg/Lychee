@@ -27,6 +27,7 @@ use App\Image\Handlers\ImageHandler;
 use App\Image\StreamStat;
 use App\Models\Photo;
 use App\Models\SizeVariant;
+use App\Repositories\ConfigManager;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Collection;
 
@@ -50,8 +51,11 @@ class Rotate
 	 * @throws IllegalOrderOfOperationException
 	 * @throws FrameworkException
 	 */
-	public function __construct(Photo $photo, int $direction)
-	{
+	public function __construct(
+		protected readonly ConfigManager $config_manager,
+		Photo $photo,
+		int $direction,
+	) {
 		try {
 			if ($photo->isVideo()) {
 				throw new MediaFileUnsupportedException('Rotation of a video is unsupported');
@@ -88,7 +92,7 @@ class Rotate
 	public function do(): Photo
 	{
 		// Load the previous original image and rotate it
-		$image = new ImageHandler();
+		$image = new ImageHandler($this->config_manager);
 		$image->load($this->source_file);
 		try {
 			$image->rotate(90 * $this->direction);

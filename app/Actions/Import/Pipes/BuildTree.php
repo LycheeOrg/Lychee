@@ -15,7 +15,7 @@ use App\DTO\ImportEventReport;
 use App\Exceptions\FileOperationException;
 use App\Exceptions\InvalidDirectoryException;
 use App\Exceptions\ReservedDirectoryException;
-use App\Image\Files\BaseMediaFile;
+use App\Services\Image\FileExtensionService;
 use Illuminate\Support\Facades\Storage;
 use Safe\Exceptions\FilesystemException;
 use Safe\Exceptions\StringsException;
@@ -31,8 +31,9 @@ class BuildTree implements ImportPipe
 
 	private array $folder_skip_list = [];
 
-	public function __construct()
-	{
+	public function __construct(
+		protected readonly FileExtensionService $file_extension_service,
+	) {
 		// Preload the folders skip list to avoid repeated calls to Storage::path()
 		// This list contains the paths of folders that are reserved by Lychee and should not be used for imports.
 		//
@@ -173,7 +174,7 @@ class BuildTree implements ImportPipe
 			} elseif (is_file($file)) {
 				// Check if this is an image file
 				$extension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
-				if (BaseMediaFile::isSupportedOrAcceptedFileExtension('.' . $extension)) {
+				if ($this->file_extension_service->isSupportedOrAcceptedFileExtension('.' . $extension)) {
 					$node->images[] = $file;
 				}
 			}

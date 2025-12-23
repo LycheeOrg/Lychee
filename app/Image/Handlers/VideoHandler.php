@@ -16,7 +16,7 @@ use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
 use App\Image\Files\NativeLocalFile;
 use App\Image\Files\TemporaryLocalFile;
-use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use FFMpeg\Coordinate\TimeCode;
 use FFMpeg\Exception\ExecutableNotFoundException;
 use FFMpeg\Exception\InvalidArgumentException;
@@ -26,6 +26,11 @@ use FFMpeg\Media\Video;
 
 class VideoHandler
 {
+	public function __construct(
+		protected readonly ConfigManager $config_manager,
+	) {
+	}
+
 	protected ?Video $video = null;
 
 	/**
@@ -45,13 +50,13 @@ class VideoHandler
 	 */
 	public function load(NativeLocalFile $file): void
 	{
-		if (!Configs::hasFFmpeg()) {
+		if (!$this->config_manager->hasFFmpeg()) {
 			throw new ConfigurationException('FFmpeg is disabled by configuration');
 		}
 		try {
 			$ffmpeg = FFMpeg::create([
-				'ffmpeg.binaries' => Configs::getValueAsString('ffmpeg_path'),
-				'ffprobe.binaries' => Configs::getValueAsString('ffprobe_path'),
+				'ffmpeg.binaries' => $this->config_manager->getValueAsString('ffmpeg_path'),
+				'ffprobe.binaries' => $this->config_manager->getValueAsString('ffprobe_path'),
 			]);
 			$audio_or_video = $ffmpeg->open($file->getRealPath());
 			if ($audio_or_video instanceof Video) {
@@ -82,7 +87,7 @@ class VideoHandler
 			$frame->save($frame_file->getRealPath());
 
 			// Load the extracted frame into the image handler
-			$frame = new ImageHandler();
+			$frame = new ImageHandler($this->config_manager);
 			$frame->load($frame_file);
 			$frame_file->delete();
 

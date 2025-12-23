@@ -15,6 +15,7 @@ use App\Metadata\Renamer\AlbumRenamer;
 use App\Metadata\Renamer\PhotoRenamer;
 use App\Models\Album;
 use App\Repositories\ConfigManager;
+use App\Services\Image\FileExtensionService;
 use LycheeVerify\Contract\VerifyInterface;
 
 class ImportDTO
@@ -41,7 +42,8 @@ class ImportDTO
 		public readonly bool $should_execute_jobs = false,
 	) {
 		$this->album_create = new AlbumCreate($config_manager, $intended_owner_id);
-		$this->photo_create = new PhotoCreate($verify, $import_mode, $intended_owner_id);
+		$file_extension_service = new FileExtensionService($config_manager);
+		$this->photo_create = new PhotoCreate($verify, $file_extension_service, $import_mode, $intended_owner_id);
 		$this->album_renamer = new AlbumRenamer($verify, $config_manager, $intended_owner_id);
 		$this->photo_renamer = new PhotoRenamer($verify, $config_manager, $intended_owner_id);
 	}

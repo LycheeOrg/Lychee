@@ -16,7 +16,6 @@ use App\Exceptions\MediaFileOperationException;
 use App\Image\Files\NativeLocalFile;
 use App\Image\Files\TemporaryLocalFile;
 use App\ModelFunctions\MOVFormat;
-use App\Models\Configs;
 use FFMpeg\Exception\ExecutableNotFoundException;
 use FFMpeg\Exception\InvalidArgumentException;
 use FFMpeg\Exception\RuntimeException;
@@ -69,7 +68,7 @@ class GoogleMotionPictureHandler extends VideoHandler
 	 */
 	public function load(NativeLocalFile $file, int $video_length = 0): void
 	{
-		if (!Configs::hasFFmpeg()) {
+		if (!$this->config_manager->hasFFmpeg()) {
 			throw new ConfigurationException('FFmpeg is disabled by configuration');
 		}
 
@@ -83,8 +82,8 @@ class GoogleMotionPictureHandler extends VideoHandler
 			$file->close();
 
 			$ffmpeg = FFMpeg::create([
-				'ffmpeg.binaries' => Configs::getValueAsString('ffmpeg_path'),
-				'ffprobe.binaries' => Configs::getValueAsString('ffprobe_path'),
+				'ffmpeg.binaries' => $this->config_manager->getValueAsString('ffmpeg_path'),
+				'ffprobe.binaries' => $this->config_manager->getValueAsString('ffprobe_path'),
 			]);
 			$audio_or_video = $ffmpeg->open($this->working_copy->getRealPath());
 			if ($audio_or_video instanceof Video) {

@@ -12,11 +12,11 @@ use App\Actions\Photo\Create;
 use App\DTO\ImportMode;
 use App\Exceptions\Handler;
 use App\Exceptions\MassImportException;
-use App\Image\Files\BaseMediaFile;
 use App\Image\Files\DownloadedFile;
 use App\Models\Album;
 use App\Models\Photo;
 use App\Repositories\ConfigManager;
+use App\Services\Image\FileExtensionService;
 use Illuminate\Support\Collection;
 use LycheeVerify\Contract\VerifyInterface;
 use Safe\Exceptions\InfoException;
@@ -29,6 +29,7 @@ class FromUrl
 	public function __construct(
 		protected readonly VerifyInterface $verify,
 		protected readonly ConfigManager $config_manager,
+		protected readonly FileExtensionService $file_extension_service,
 	) {
 	}
 
@@ -51,6 +52,7 @@ class FromUrl
 		$exceptions = [];
 		$create = new Create(
 			verify: $this->verify,
+			file_extension_service: $this->file_extension_service,
 			import_mode: new ImportMode(
 				delete_imported: true,
 				skip_duplicates: $this->config_manager->getValueAsBool('skip_duplicates'),
@@ -75,11 +77,15 @@ class FromUrl
 				if ($extension !== '.') {
 					// Validate photo extension even when `$create->add()` will do later.
 					// This prevents us from downloading unsupported files.
-					BaseMediaFile::assertIsSupportedOrAcceptedFileExtension($extension);
+					$this->file_extension_service->assertIsSupportedOrAcceptedFileExtension($extension);
 				}
 
 				// Download file
-				$downloaded_file = new DownloadedFile($url);
+				$downloaded_file = new DownloadedFile(
+					$this->config_manager,
+					$this->file_extension_service,
+					$url
+				);
 
 				// Import photo/video/raw
 				$result->add($create->add($downloaded_file, $album));

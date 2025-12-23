@@ -31,6 +31,7 @@ use App\Exceptions\QuotaExceededException;
 use App\Image\Files\NativeLocalFile;
 use App\Models\Photo;
 use App\Models\User;
+use App\Services\Image\FileExtensionService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Pipeline\Pipeline;
 use LycheeVerify\Contract\VerifyInterface;
@@ -42,6 +43,7 @@ class Create
 
 	public function __construct(
 		protected VerifyInterface $verify,
+		protected readonly FileExtensionService $file_extension_service,
 		?ImportMode $import_mode,
 		int $intended_owner_id,
 	) {
@@ -111,11 +113,11 @@ class Create
 		}
 
 		// livePartner !== null
-		if ($source_file->isSupportedVideo()) {
+		if ($this->file_extension_service->isSupportedVideo($source_file->getMimeType(), $source_file->getOriginalExtension())) {
 			return $this->handleVideoLivePartner($init_dto);
 		}
 
-		if ($source_file->isSupportedImage()) {
+		if ($this->file_extension_service->isSupportedImage($source_file->getPath(), $source_file->getMimeType(), $source_file->getOriginalExtension())) {
 			return $this->handlePhotoLivePartner($init_dto);
 		}
 

@@ -13,9 +13,15 @@ use App\DTO\PhotoCreate\StandaloneDTO;
 use App\Exceptions\Handler;
 use App\Image\Files\TemporaryLocalFile;
 use App\Image\Handlers\GoogleMotionPictureHandler;
+use App\Repositories\ConfigManager;
 
 class ExtractGoogleMotionPictures implements StandalonePipe
 {
+	public function __construct(
+		protected readonly ConfigManager $config_manager,
+	) {
+	}
+
 	public function handle(StandaloneDTO $state, \Closure $next): StandaloneDTO
 	{
 		if ($state->exif_info->micro_video_offset === 0) {
@@ -28,7 +34,7 @@ class ExtractGoogleMotionPictures implements StandalonePipe
 		// its (potentially remote) final position
 		try {
 			$state->tmp_video_file = new TemporaryLocalFile(GoogleMotionPictureHandler::FINAL_VIDEO_FILE_EXTENSION, $state->source_file->getBasename());
-			$gmp_handler = new GoogleMotionPictureHandler();
+			$gmp_handler = new GoogleMotionPictureHandler($this->config_manager);
 			$gmp_handler->load($state->source_file, $state->exif_info->micro_video_offset);
 			$gmp_handler->saveVideoStream($state->tmp_video_file);
 		} catch (\Throwable $e) {
