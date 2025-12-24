@@ -65,10 +65,6 @@ class AlbumRouteCacheRefresher
 			return $next($request);
 		}
 
-		if (!$request instanceof HttpRequest) {
-			throw new LycheeLogicException('Pure Illuminate\Http\Request should never reach AlbumRouteCacheRefresher middleware.');
-		}
-
 		if ($request->configs()->getValueAsBool('cache_enabled') === false) {
 			return $next($request);
 		}

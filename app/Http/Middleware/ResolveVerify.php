@@ -10,6 +10,7 @@ namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
 use LycheeVerify\Contract\VerifyInterface;
+use LycheeVerify\Verify;
 
 class ResolveVerify
 {
@@ -27,6 +28,10 @@ class ResolveVerify
 
 	protected function resolveVerify(Request $request): VerifyInterface
 	{
+		$verify = new Verify();
+		app()->instance(VerifyInterface::class, $verify);
+		app()->instance(Verify::class, $verify);
+
 		return app(VerifyInterface::class);
 	}
 

@@ -14,6 +14,7 @@ use App\Assets\Helpers;
 use App\Assets\SizeVariantGroupedWithRandomSuffixNamingStrategy;
 use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
 use App\Contracts\Models\SizeVariantFactory;
+use App\Exceptions\Internal\LycheeLogicException;
 use App\Factories\AlbumFactory;
 use App\Factories\OmnipayFactory;
 use App\Image\SizeVariantDefaultFactory;
@@ -38,9 +39,13 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
+use LycheeVerify\Contract\Status;
+use LycheeVerify\Contract\VerifyInterface;
+use LycheeVerify\Verify;
 use Opcodes\LogViewer\Facades\LogViewer;
 use Safe\Exceptions\StreamException;
 use function Safe\stream_filter_register;
@@ -97,6 +102,54 @@ class AppServiceProvider extends ServiceProvider
 	 */
 	public function boot()
 	{
+		Request::macro('verify', function (): VerifyInterface {
+			if (!$this->attributes->has('verify')) {
+				throw new LycheeLogicException('request attribute "verify" is not set.');
+			}
+
+			$verify = $this->attributes->get('verify');
+
+			if ($verify instanceof VerifyInterface) {
+				return $verify;
+			}
+
+			throw new LycheeLogicException(
+				'request attribute "verify" is set but not an instance of VerifyInterface.'
+			);
+		});
+
+		Request::macro('get_status', function (): Status {
+			if (!$this->attributes->has('status')) {
+				throw new LycheeLogicException('request attribute "status" is not set.');
+			}
+
+			$status = $this->attributes->get('status');
+
+			if ($status instanceof Status) {
+				return $status;
+			}
+
+			throw new LycheeLogicException(
+				'request attribute "status" is set but not an instance of Status.'
+			);
+		});
+
+		Request::macro('configs', function (): ConfigManager {
+			if (!$this->attributes->has('configs')) {
+				throw new LycheeLogicException('request attribute "configs" is not set.');
+			}
+
+			$configs = $this->attributes->get('configs');
+
+			if ($configs instanceof ConfigManager) {
+				return $configs;
+			}
+
+			throw new LycheeLogicException(
+				'request attribute "configs" is set but not an instance of ConfigManager.'
+			);
+		});
+
 		// Prohibits: db:wipe, migrate:fresh, migrate:refresh, and migrate:reset
 		DB::prohibitDestructiveCommands(config('app.env', 'production') !== 'dev');
 
@@ -190,13 +243,13 @@ class AppServiceProvider extends ServiceProvider
 		);
 
 		$this->app->bind(
-			\Illuminate\Http\Request::class,
-			\App\Http\Request::class
+			SizeVariantFactory::class,
+			SizeVariantDefaultFactory::class
 		);
 
 		$this->app->bind(
-			SizeVariantFactory::class,
-			SizeVariantDefaultFactory::class
+			VerifyInterface::class,
+			Verify::class
 		);
 	}
 

@@ -20,27 +20,32 @@ namespace Tests\Unit\Actions\Diagnostics;
 
 use App\Actions\Diagnostics\Pipes\Checks\AuthDisabledCheck;
 use App\DTO\DiagnosticData;
+use App\DTO\DiagnosticDTO;
 use App\Enum\MessageType;
 use App\Models\User;
+use App\Repositories\ConfigManager;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Schema;
 use Tests\AbstractTestCase;
+use Tests\Constants\FreeVerifyier;
 
 class AuthDisabledCheckTest extends AbstractTestCase
 {
 	use DatabaseTransactions;
 
 	private AuthDisabledCheck $authDisabledCheck;
-	private array $data;
+	private DiagnosticDTO $data;
 	private \Closure $next;
 
 	protected function setUp(): void
 	{
 		parent::setUp();
 		$this->authDisabledCheck = new AuthDisabledCheck();
-		$this->data = [];
-		$this->next = function (array $data) {
+		$verify = new FreeVerifyier();
+		$configManager = app(ConfigManager::class);
+		$this->data = new DiagnosticDTO($verify, $configManager, []);
+		$this->next = function (DiagnosticDTO $data) {
 			return $data;
 		};
 	}
@@ -59,7 +64,7 @@ class AuthDisabledCheckTest extends AbstractTestCase
 
 		$result = $this->authDisabledCheck->handle($this->data, $this->next);
 
-		$this->assertEquals([], $result, 'Should return empty result when users table does not exist');
+		$this->assertEmpty($result->data, 'Should return empty result when users table does not exist');
 	}
 
 	/**
@@ -75,7 +80,7 @@ class AuthDisabledCheckTest extends AbstractTestCase
 
 		$result = $this->authDisabledCheck->handle($this->data, $this->next);
 
-		$this->assertEquals([], $result, 'Should return empty result when oauth_credentials table does not exist');
+		$this->assertEmpty($result->data, 'Should return empty result when oauth_credentials table does not exist');
 	}
 
 	/**
@@ -91,7 +96,7 @@ class AuthDisabledCheckTest extends AbstractTestCase
 
 		$result = $this->authDisabledCheck->handle($this->data, $this->next);
 
-		$this->assertEquals([], $result, 'Should return empty result when webauthn_credentials table does not exist');
+		$this->assertEmpty($result->data, 'Should return empty result when webauthn_credentials table does not exist');
 	}
 
 	/**
@@ -106,7 +111,7 @@ class AuthDisabledCheckTest extends AbstractTestCase
 
 		$result = $this->authDisabledCheck->handle($this->data, $this->next);
 
-		$this->assertEquals([], $result, 'Should return empty result when basic auth is enabled');
+		$this->assertEmpty($result->data, 'Should return empty result when basic auth is enabled');
 	}
 
 	/**
@@ -122,12 +127,12 @@ class AuthDisabledCheckTest extends AbstractTestCase
 
 		$result = $this->authDisabledCheck->handle($this->data, $this->next);
 
-		$this->assertCount(1, $result);
-		$this->assertInstanceOf(DiagnosticData::class, $result[0]);
-		$this->assertEquals(MessageType::ERROR, $result[0]->type);
-		$this->assertEquals('All authentication methods are disabled. Really?', $result[0]->message);
-		$this->assertEquals(AuthDisabledCheck::class, $result[0]->from);
-		$this->assertEquals([AuthDisabledCheck::INFO], $result[0]->details);
+		$this->assertCount(1, $result->data);
+		$this->assertInstanceOf(DiagnosticData::class, $result->data[0]);
+		$this->assertEquals(MessageType::ERROR, $result->data[0]->type);
+		$this->assertEquals('All authentication methods are disabled. Really?', $result->data[0]->message);
+		$this->assertEquals(AuthDisabledCheck::class, $result->data[0]->from);
+		$this->assertEquals([AuthDisabledCheck::INFO], $result->data[0]->details);
 	}
 
 	/**
@@ -150,7 +155,7 @@ class AuthDisabledCheckTest extends AbstractTestCase
 		]);
 
 		$result = $this->authDisabledCheck->handle($this->data, $this->next);
-		$this->assertEquals([], $result, 'Should return empty result when OAuth is enabled with admin users');
+		$this->assertEmpty($result->data, 'Should return empty result when OAuth is enabled with admin users');
 	}
 
 	/**
@@ -174,12 +179,12 @@ class AuthDisabledCheckTest extends AbstractTestCase
 
 		$result = $this->authDisabledCheck->handle($this->data, $this->next);
 
-		$this->assertCount(1, $result);
-		$this->assertInstanceOf(DiagnosticData::class, $result[0]);
-		$this->assertEquals(MessageType::ERROR, $result[0]->type);
-		$this->assertEquals('Basic auth and Webauthn are disabled and there are no admin user with Oauth enabled.', $result[0]->message);
-		$this->assertEquals(AuthDisabledCheck::class, $result[0]->from);
-		$this->assertEquals([AuthDisabledCheck::INFO], $result[0]->details);
+		$this->assertCount(1, $result->data);
+		$this->assertInstanceOf(DiagnosticData::class, $result->data[0]);
+		$this->assertEquals(MessageType::ERROR, $result->data[0]->type);
+		$this->assertEquals('Basic auth and Webauthn are disabled and there are no admin user with Oauth enabled.', $result->data[0]->message);
+		$this->assertEquals(AuthDisabledCheck::class, $result->data[0]->from);
+		$this->assertEquals([AuthDisabledCheck::INFO], $result->data[0]->details);
 	}
 
 	/**
@@ -191,17 +196,19 @@ class AuthDisabledCheckTest extends AbstractTestCase
 	public function testHandleWithExistingData(): void
 	{
 		$existingDiagnostic = DiagnosticData::info('Existing diagnostic', 'TestClass');
-		$this->data = [$existingDiagnostic];
+		$verify = new FreeVerifyier();
+		$configManager = app(ConfigManager::class);
+		$this->data = new DiagnosticDTO($verify, $configManager, [$existingDiagnostic]);
 
 		Config::set('features.disable-basic-auth', true);
 		Config::set('features.disable-webauthn', true);
 
 		$result = $this->authDisabledCheck->handle($this->data, $this->next);
 
-		$this->assertCount(2, $result);
-		$this->assertEquals($existingDiagnostic, $result[0]); // Should preserve existing data
-		$this->assertEquals(MessageType::ERROR, $result[1]->type);
-		$this->assertEquals('All authentication methods are disabled. Really?', $result[1]->message);
+		$this->assertCount(2, $result->data);
+		$this->assertEquals($existingDiagnostic, $result->data[0]); // Should preserve existing data
+		$this->assertEquals(MessageType::ERROR, $result->data[1]->type);
+		$this->assertEquals('All authentication methods are disabled. Really?', $result->data[1]->message);
 	}
 
 	/**
@@ -212,7 +219,7 @@ class AuthDisabledCheckTest extends AbstractTestCase
 	public function testNextClosureIsCalled(): void
 	{
 		$nextCalled = false;
-		$nextFunction = function (array $data) use (&$nextCalled) {
+		$nextFunction = function (DiagnosticDTO $data) use (&$nextCalled) {
 			$nextCalled = true;
 
 			return $data;
@@ -223,7 +230,7 @@ class AuthDisabledCheckTest extends AbstractTestCase
 		$result = $this->authDisabledCheck->handle($this->data, $nextFunction);
 
 		$this->assertTrue($nextCalled, 'Next closure should be called');
-		$this->assertIsArray($result);
+		$this->assertInstanceOf(DiagnosticDTO::class, $result);
 	}
 
 	/**
@@ -236,11 +243,13 @@ class AuthDisabledCheckTest extends AbstractTestCase
 		Config::set('features.disable-basic-auth', true);
 		Config::set('features.disable-webauthn', true);
 
-		$originalData = [];
+		$verify = new FreeVerifyier();
+		$configManager = app(ConfigManager::class);
+		$originalData = new DiagnosticDTO($verify, $configManager, []);
 		$this->authDisabledCheck->handle($originalData, $this->next);
 
-		$this->assertCount(1, $originalData, 'Original data array should be modified by reference');
-		$this->assertInstanceOf(DiagnosticData::class, $originalData[0]);
+		$this->assertCount(1, $originalData->data, 'Original data array should be modified by reference');
+		$this->assertInstanceOf(DiagnosticData::class, $originalData->data[0]);
 	}
 
 	/**

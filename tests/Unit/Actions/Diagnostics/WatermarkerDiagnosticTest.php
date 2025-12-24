@@ -19,11 +19,14 @@
 namespace Tests\Unit\Actions\Diagnostics;
 
 use App\Actions\Diagnostics\Pipes\Checks\WatermarkerEnabledCheck;
+use App\DTO\DiagnosticDTO;
 use App\Enum\MessageType;
 use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Schema;
 use Tests\AbstractTestCase;
+use Tests\Constants\FreeVerifyier;
 use Tests\Traits\RequireSE;
 
 class WatermarkerDiagnosticTest extends AbstractTestCase
@@ -32,15 +35,17 @@ class WatermarkerDiagnosticTest extends AbstractTestCase
 	use DatabaseTransactions;
 
 	private WatermarkerEnabledCheck $watermarkerCheck;
-	private array $data;
+	private DiagnosticDTO $data;
 	private \Closure $next;
 
 	protected function setUp(): void
 	{
 		parent::setUp();
 		$this->watermarkerCheck = new WatermarkerEnabledCheck();
-		$this->data = [];
-		$this->next = function (array $data) {
+		$verify = new FreeVerifyier();
+		$configManager = app(ConfigManager::class);
+		$this->data = new DiagnosticDTO($verify, $configManager, []);
+		$this->next = function (DiagnosticDTO $data) {
 			return $data;
 		};
 
@@ -60,7 +65,7 @@ class WatermarkerDiagnosticTest extends AbstractTestCase
 
 		$result = $this->watermarkerCheck->handle($this->data, $this->next);
 
-		$this->assertEquals([], $result, 'Should return empty result when tables do not exist');
+		$this->assertEmpty($result->data, 'Should return empty result when tables do not exist');
 	}
 
 	public function testHandleWhenWatermarkDisabled(): void
@@ -71,7 +76,7 @@ class WatermarkerDiagnosticTest extends AbstractTestCase
 
 		$result = $this->watermarkerCheck->handle($this->data, $this->next);
 
-		$this->assertEquals([], $result, 'Should return empty result when watermark is disabled');
+		$this->assertEmpty($result->data, 'Should return empty result when watermark is disabled');
 	}
 
 	public function testValidateImagickWhenImagickDisabledInSettings(): void
@@ -82,11 +87,11 @@ class WatermarkerDiagnosticTest extends AbstractTestCase
 
 		$result = $this->watermarkerCheck->handle($this->data, $this->next);
 
-		$this->assertCount(2, $result);
-		$this->assertEquals('Watermarker: imagick is not enabled in your settings. Watermarking step will be skipped.', $result[0]->message);
-		$this->assertEquals(MessageType::WARNING, $result[0]->type);
-		$this->assertEquals('Watermarker: photo_id is not provided. Watermarking step will be skipped.', $result[1]->message);
-		$this->assertEquals(MessageType::WARNING, $result[1]->type);
+		$this->assertCount(2, $result->data);
+		$this->assertEquals('Watermarker: imagick is not enabled in your settings. Watermarking step will be skipped.', $result->data[0]->message);
+		$this->assertEquals(MessageType::WARNING, $result->data[0]->type);
+		$this->assertEquals('Watermarker: photo_id is not provided. Watermarking step will be skipped.', $result->data[1]->message);
+		$this->assertEquals(MessageType::WARNING, $result->data[1]->type);
 	}
 
 	public function testValidateImagickWhenImagickEnabledInSettings(): void
@@ -97,8 +102,8 @@ class WatermarkerDiagnosticTest extends AbstractTestCase
 
 		$result = $this->watermarkerCheck->handle($this->data, $this->next);
 
-		$this->assertCount(1, $result);
-		$this->assertEquals('Watermarker: the photo_id provided does not match any photo. Watermarking step will be skipped.', $result[0]->message);
-		$this->assertEquals(MessageType::ERROR, $result[0]->type);
+		$this->assertCount(1, $result->data);
+		$this->assertEquals('Watermarker: the photo_id provided does not match any photo. Watermarking step will be skipped.', $result->data[0]->message);
+		$this->assertEquals(MessageType::ERROR, $result->data[0]->type);
 	}
 }

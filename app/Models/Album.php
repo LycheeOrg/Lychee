@@ -269,7 +269,7 @@ class Album extends BaseAlbum implements Node
 	 */
 	protected function getLicenseAttribute(string|LicenseType|null $value): LicenseType
 	{
-		$config_manager = resolve(ConfigManager::class);
+		$config_manager = app(ConfigManager::class);
 		if ($value === null || $value === 'none' || $value === LicenseType::NONE) {
 			return $config_manager->getValueAsEnum('default_license', LicenseType::class);
 		}

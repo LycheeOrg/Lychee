@@ -37,7 +37,7 @@ class HasManyChildPhotos extends BelongsToMany
 		// The parent constructor calls `addConstraints` and thus our own
 		// attributes must be initialized by then
 		$this->photo_query_policy = resolve(PhotoQueryPolicy::class);
-		$this->config_manager = resolve(ConfigManager::class);
+		$this->config_manager = app(ConfigManager::class);
 		parent::__construct(
 			query: Photo::query(),
 			parent: $owning_album,

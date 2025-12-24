@@ -16,12 +16,20 @@ class ResolveConfigs
 	public function handle(Request $request, \Closure $next)
 	{
 		// Compute ONCE
-		$config_manager = new ConfigManager();
+		$config_manager = $this->resolve_configs($request);
 
 		// Store for the lifetime of THIS request
 		$request->attributes->set('configs', $config_manager);
 
 		return $next($request);
+	}
+
+	public function resolve_configs(Request $request): ConfigManager
+	{
+		$config_manager = new ConfigManager();
+		app()->instance(ConfigManager::class, $config_manager);
+
+		return app(ConfigManager::class);
 	}
 }
 

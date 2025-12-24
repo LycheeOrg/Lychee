@@ -41,7 +41,7 @@ abstract class BaseHasManyPhotos extends Relation
 		// The parent constructor calls `addConstraints` and thus our own
 		// attributes must be initialized by then
 		$this->photo_query_policy = resolve(PhotoQueryPolicy::class);
-		$this->config_manager = resolve(ConfigManager::class);
+		$this->config_manager = app(ConfigManager::class);
 		// This is a hack.
 		// The abstract class
 		// {@link \Illuminate\Database\Eloquent\Relations\Relation}

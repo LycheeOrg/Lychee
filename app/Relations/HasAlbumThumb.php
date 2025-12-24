@@ -50,7 +50,7 @@ class HasAlbumThumb extends Relation
 		// attributes must be initialized by then
 		$this->album_query_policy = resolve(AlbumQueryPolicy::class);
 		$this->photo_query_policy = resolve(PhotoQueryPolicy::class);
-		$this->config_manager = resolve(ConfigManager::class);
+		$this->config_manager = app(ConfigManager::class);
 		$this->sorting = PhotoSortingCriterion::createDefault($this->config_manager);
 		parent::__construct(
 			Photo::query()

@@ -330,7 +330,7 @@ class Photo extends Model implements HasUTCBasedTimes
 	 */
 	protected function getLicenseAttribute(?string $license): LicenseType
 	{
-		$config_manager = resolve(ConfigManager::class);
+		$config_manager = app(ConfigManager::class);
 		if ($license === null) {
 			return $config_manager->getValueAsEnum('default_license', LicenseType::class);
 		}

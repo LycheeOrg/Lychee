@@ -33,7 +33,7 @@ class HasManyChildAlbums extends HasManyBidirectionally
 		// The parent constructor calls `addConstraints` and thus our own
 		// attributes must be initialized by then
 		$this->album_query_policy = resolve(AlbumQueryPolicy::class);
-		$this->config_manager = resolve(ConfigManager::class);
+		$this->config_manager = app(ConfigManager::class);
 
 		parent::__construct(
 			$owning_album->newQuery(),

@@ -142,7 +142,7 @@ class TagAlbum extends BaseAlbum
 	 */
 	protected function getThumbAttribute(): ?Thumb
 	{
-		$config_manager = resolve(ConfigManager::class);
+		$config_manager = app(ConfigManager::class);
 
 		// Note, `photos()` already applies a "security filter" and
 		// only returns photos which are accessible by the current
