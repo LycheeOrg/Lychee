@@ -192,7 +192,7 @@ class PhotoController extends Controller
 	 */
 	public function rotate(RotatePhotoRequest $request): PhotoResource
 	{
-		if (!$request->configs->getValueAsBool('editor_enabled')) {
+		if (!$request->configs()->getValueAsBool('editor_enabled')) {
 			throw new ConfigurationException('support for rotation disabled by configuration');
 		}
 

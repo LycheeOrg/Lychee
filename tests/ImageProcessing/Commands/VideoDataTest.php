@@ -50,7 +50,6 @@ class VideoDataTest extends BaseApiWithDataTest
 			->assertExitCode(0);
 
 		// Get updated video and check if thumb has been re-created
-		$this->clearCachedSmartAlbums();
 		$response = $this->getJsonWithData('Album', ['album_id' => 'unsorted']);
 		$this->assertOk($response);
 		$photo2 = $response->json('resource.photos.0');

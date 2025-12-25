@@ -57,5 +57,6 @@ $config->setRules($rules);
 $config->setIndent("\t");
 $config->setLineEnding("\n");
 $config->setFinder($finder);
+$config->setUnsupportedPhpVersionAllowed(true);
 
 return $config;

@@ -85,7 +85,7 @@ jobs:
         uses: ramsey/composer-install@3cf229dc2919194e9e36783941438d17239e8520 # 3.1.1
 
       - name: Check source code for code style errors
-        run: PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --verbose --diff --dry-run
+        run: vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --verbose --diff --dry-run
 
   check_js:
     name: 2️⃣ JS front-end

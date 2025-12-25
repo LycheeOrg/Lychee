@@ -19,7 +19,6 @@ use Illuminate\Support\Carbon;
 
 class RecentAlbum extends BaseSmartAlbum
 {
-	private static ?self $instance = null;
 	public const ID = SmartAlbumType::RECENT->value;
 
 	/**
@@ -43,8 +42,8 @@ class RecentAlbum extends BaseSmartAlbum
 		);
 	}
 
-	public static function getInstance(): self
+	public function getInstance(): self
 	{
-		return self::$instance ??= new self();
+		return new self();
 	}
 }

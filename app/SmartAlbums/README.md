@@ -186,9 +186,9 @@ Smart Albums can be individually enabled/disabled:
 Each smart album uses the singleton pattern to ensure only one instance exists:
 
 ```php
-private static ?self $instance = null;
+private ?self $instance = null;
 
-public static function getInstance(): self
+public function getInstance(): self
 {
     return self::$instance ??= new self();
 }

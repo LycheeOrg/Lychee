@@ -65,7 +65,7 @@ class TagAlbumFactory extends Factory
 	 * Configure the model factory.
 	 * We also create the associated statistics model.
 	 */
-	public function configure(): static
+	public function configure(): self
 	{
 		return $this->afterCreating(function (TagAlbum $album) {
 			Statistics::factory()->with_album($album->id)->create();

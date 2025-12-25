@@ -17,9 +17,7 @@ use App\DTO\DiagnosticData;
 use App\Enum\MessageType;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\UnexpectedException;
-use App\Repositories\ConfigManager;
 use Illuminate\Console\Command;
-use LycheeVerify\Verify;
 use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
 
 class Diagnostics extends Command
@@ -45,8 +43,6 @@ class Diagnostics extends Command
 	 * @throws SymfonyConsoleException
 	 */
 	public function __construct(
-		private Verify $verify,
-		private ConfigManager $config_manager,
 		private Colorize $col,
 	) {
 		parent::__construct();

@@ -189,7 +189,7 @@ class PhotoFactory extends Factory
 	 * Configure the model factory.
 	 * We create 7 random Size Variants and the associated statistics model.
 	 */
-	public function configure(): static
+	public function configure(): self
 	{
 		return $this->afterCreating(function (Photo $photo) {
 			Statistics::factory()->with_photo($photo->id)->create();

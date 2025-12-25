@@ -80,7 +80,7 @@ class FileExtensionService
 	];
 
 	/** @var string[] the accepted raw file extensions minus supported extensions */
-	private array $cached_accepted_raw_file_extensions = [];
+	protected array $cached_accepted_raw_file_extensions = [];
 	private ConfigManager $config_manager;
 
 	public function __construct()

@@ -48,7 +48,6 @@ abstract class BaseImageHandler extends BaseApiWithDataTest
 		$response = $this->actingAs($this->admin)->upload('Photo', filename: $filename, album_id: $this->album5->id);
 		$this->assertCreated($response);
 
-		$this->clearCachedSmartAlbums();
 		$response = $this->getJsonWithData('Album', ['album_id' => $this->album5->id]);
 		$this->assertOk($response);
 
@@ -556,7 +555,6 @@ abstract class BaseImageHandler extends BaseApiWithDataTest
 		$response = $this->actingAs($this->admin)->upload('Photo', filename: TestConstants::SAMPLE_FILE_WITHOUT_EXIF, album_id: $this->album5->id, file_last_modified_time: 0);
 		$this->assertCreated($response);
 
-		$this->clearCachedSmartAlbums();
 		$response = $this->getJsonWithData('Album', ['album_id' => $this->album5->id]);
 		$this->assertOk($response);
 		$photo = $response->json('resource.photos.0');

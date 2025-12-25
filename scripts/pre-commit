@@ -7,7 +7,6 @@ YELLOW="\033[38;5;011m"
 printf "\n${GREEN}pre commit hook start${NO_COLOR}\n"
 
 PHP_CS_FIXER="vendor/bin/php-cs-fixer"
-PHP_CS_FIXER_IGNORE_ENV=1
 
 NPM_FORMAT="node_modules/prettier"
 

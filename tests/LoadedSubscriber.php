@@ -26,8 +26,8 @@ final class LoadedSubscriber implements LoadedSubscriberInterface
 		$this->createApplication();
 		$this->migrateApplication();
 
-		app()->scoped(VerifyInterface::class, fn () => new Verify());
-		app()->scoped(ConfigManager::class, fn () => new ConfigManager());
+		app()->singleton(VerifyInterface::class, fn () => new Verify());
+		app()->singleton(ConfigManager::class, fn () => new ConfigManager());
 
 		// If there are any users in the DB, this tends to crash some tests (because we check exact count of users).
 		if (User::query()->count() > 0) {

@@ -64,7 +64,6 @@ class ExtractColoursJobTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->admin)->upload('Photo', filename: TestConstants::SAMPLE_FILE_NIGHT_IMAGE);
 		$this->assertCreated($response);
 
-		$this->clearCachedSmartAlbums();
 		$response = $this->getJsonWithData('Album', ['album_id' => 'unsorted']);
 		$this->assertOk($response);
 		$id1 = $response->json('resource.photos.0.id');

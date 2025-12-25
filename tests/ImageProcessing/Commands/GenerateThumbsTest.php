@@ -68,7 +68,6 @@ class GenerateThumbsTest extends BaseApiWithDataTest
 			->assertExitCode(0);
 
 		// Get updated photo and check if placeholder was encoded
-		$this->clearCachedSmartAlbums();
 		$response = $this->getJsonWithData('Album', ['album_id' => 'unsorted']);
 		$this->assertOk($response);
 		$photo2 = $response->json('resource.photos.0');

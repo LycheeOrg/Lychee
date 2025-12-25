@@ -46,7 +46,6 @@ class DownloadTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->admin)->upload('Photo', filename: $filename, album_id: $album_id);
 		$this->assertCreated($response);
 
-		$this->clearCachedSmartAlbums();
 		$response = $this->getJsonWithData('Album', ['album_id' => $album_id]);
 		$this->assertOk($response);
 
@@ -97,7 +96,6 @@ class DownloadTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->admin)->upload('Photo', filename: TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE, album_id: $this->album5->id, file_name: TestConstants::PHOTO_MONGOLIA_TITLE . '.jpeg');
 		$this->assertCreated($response);
 
-		$this->clearCachedSmartAlbums();
 		$response = $this->getJsonWithData('Album', ['album_id' => $this->album5->id]);
 		$this->assertOk($response);
 		$response->assertJsonCount(2, 'resource.photos');

@@ -46,9 +46,9 @@ class PurchasableFactory extends Factory
 	/**
 	 * Create a purchasable with predefined prices.
 	 *
-	 * @return static
+	 * @return self
 	 */
-	public function withPrices(): static
+	public function withPrices(): self
 	{
 		return $this->afterCreating(function (Purchasable $purchasable): void {
 			$money_service = resolve(MoneyService::class);
@@ -82,9 +82,9 @@ class PurchasableFactory extends Factory
 	 *
 	 * @param string $album_id
 	 *
-	 * @return static
+	 * @return self
 	 */
-	public function forAlbum(string $album_id): static
+	public function forAlbum(string $album_id): self
 	{
 		return $this->state(fn (array $attributes) => [
 			'album_id' => $album_id,
@@ -98,9 +98,9 @@ class PurchasableFactory extends Factory
 	 * @param string $photo_id
 	 * @param string $album_id
 	 *
-	 * @return static
+	 * @return self
 	 */
-	public function forPhoto(string $photo_id, string $album_id): static
+	public function forPhoto(string $photo_id, string $album_id): self
 	{
 		return $this->state(fn (array $attributes) => [
 			'album_id' => $album_id,
@@ -111,9 +111,9 @@ class PurchasableFactory extends Factory
 	/**
 	 * Mark the purchasable as inactive.
 	 *
-	 * @return static
+	 * @return self
 	 */
-	public function inactive(): static
+	public function inactive(): self
 	{
 		return $this->state(fn (array $attributes) => [
 			'is_active' => false,
