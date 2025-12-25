@@ -20,6 +20,7 @@ namespace Tests\ImageProcessing\Commands;
 
 use App\Enum\SizeVariantType;
 use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Testing\Assert;
 use Tests\Constants\TestConstants;
@@ -42,7 +43,8 @@ class EncodePlaceholdersTest extends BaseApiWithDataTest
 
 	public function testPlaceholderEncoding(): void
 	{
-		$originalConfig = Configs::getValueAsBool('low_quality_image_placeholder');
+		$config_manager = resolve(ConfigManager::class);
+		$originalConfig = $config_manager->getValueAsBool('low_quality_image_placeholder');
 		Configs::set('low_quality_image_placeholder', true);
 
 		$photo1 = $this->createPhoto(TestConstants::SAMPLE_FILE_NIGHT_IMAGE);

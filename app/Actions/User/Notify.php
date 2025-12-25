@@ -24,11 +24,6 @@ use Illuminate\Support\Facades\Notification;
 
 class Notify
 {
-	public function __construct(
-		protected readonly ConfigManager $config_manager,
-	) {
-	}
-
 	/**
 	 * Notify users that a new photo has been uploaded.
 	 *
@@ -43,7 +38,8 @@ class Notify
 	 */
 	public function do(Photo $photo): void
 	{
-		if (!$this->config_manager->getValueAsBool('new_photos_notification')) {
+		$config_manager = resolve(ConfigManager::class);
+		if (!$config_manager->getValueAsBool('new_photos_notification')) {
 			return;
 		}
 

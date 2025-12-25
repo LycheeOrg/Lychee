@@ -83,7 +83,8 @@ Dynamic settings stored in database via `Configs` model:
 
 ```php
 // app/Models/Configs.php
-Configs::getValueAsBool('gallery_title');
+$config_manager = resolve(ConfigManager::class);
+$config_manager->getValueAsBool('gallery_title');
 ```
 
 `Configs` class provides methods for type-safe access to configuration values:

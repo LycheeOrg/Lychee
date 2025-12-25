@@ -12,7 +12,6 @@ use App\Actions\User\Notify;
 use App\Constants\PhotoAlbum as PA;
 use App\Contracts\PhotoCreate\PhotoDTO;
 use App\Contracts\PhotoCreate\PhotoPipe;
-use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -20,11 +19,6 @@ use Illuminate\Support\Facades\DB;
  */
 class NotifyAlbums implements PhotoPipe
 {
-	public function __construct(
-		protected readonly ConfigManager $config_manager,
-	) {
-	}
-
 	public function handle(PhotoDTO $state, \Closure $next): PhotoDTO
 	{
 		$count_albums = DB::table(PA::PHOTO_ALBUM)
@@ -32,7 +26,7 @@ class NotifyAlbums implements PhotoPipe
 			->count();
 
 		if ($count_albums > 0) {
-			$notify = new Notify($this->config_manager);
+			$notify = new Notify();
 			$notify->do($state->getPhoto());
 		}
 

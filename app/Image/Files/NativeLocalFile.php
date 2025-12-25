@@ -10,7 +10,6 @@ namespace App\Image\Files;
 
 use App\Exceptions\MediaFileOperationException;
 use App\Image\StreamStat;
-use App\Services\Image\FileExtensionService;
 use function Safe\filemtime;
 use function Safe\filesize;
 use function Safe\fopen;
@@ -284,56 +283,4 @@ class NativeLocalFile extends BaseMediaFile
 		}
 		// @codeCoverageIgnoreEnd
 	}
-
-	// 	/**
-	// 	 * Checks if the file is a valid image type acc. to {@link MediaFile::SUPPORTED_PHP_EXIF_IMAGE_TYPES}.
-	// 	 *
-	// 	 * @return bool true, if the file has a valid EXIF type
-	// 	 */
-	// 	protected function hasSupportedExifImageType(
-
-	// 	): bool
-	// 	{
-	// 		try {
-	// 			return in_array(exif_imagetype($this->getPath()), FileExtensionService::SUPPORTED_PHP_EXIF_IMAGE_TYPES, true);
-	// 			// @codeCoverageIgnoreStart
-	// 		} catch (\ErrorException|MediaFileOperationException) {
-	// 			// `exif_imagetype` emit an engine error E_NOTICE, if it is unable
-	// 			// to read enough bytes from the file to determine the image type.
-	// 			// This may happen for short "raw" files.
-	// 			return false;
-	// 		}
-	// 		// @codeCoverageIgnoreEnd
-	// 	}
-
-	// 	/**
-	// 	 * Checks if the file is a supported image.
-	// 	 *
-	// 	 * @throws MediaFileOperationException
-	// 	 */
-	// 	public function isSupportedImage(FileExtensionService $file_extension_service): bool
-	// 	{
-	// 		$mime = $this->getMimeType();
-	// 		$ext = $this->getOriginalExtension();
-
-	// 		return
-	// 			$file_extension_service->isSupportedImageMimeType($mime) &&
-	// 			$file_extension_service->isSupportedImageFileExtension($ext) &&
-	// 			$this->hasSupportedExifImageType();
-	// 	}
-
-	// 	/**
-	// 	 * Checks if the file is a supported video.
-	// 	 *
-	// 	 * @throws MediaFileOperationException
-	// 	 */
-	// 	public function isSupportedVideo(FileExtensionService $file_extension_service): bool
-	// 	{
-	// 		$mime = $this->getMimeType();
-	// 		$ext = $this->getOriginalExtension();
-
-	// 		return
-	// 			$file_extension_service->isSupportedVideoMimeType($mime) &&
-	// 			$file_extension_service->isSupportedVideoFileExtension($ext);
-	// 	}
 }

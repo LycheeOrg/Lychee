@@ -25,7 +25,6 @@ use App\Exceptions\SecurePaths\WrongPathException;
 use App\Http\Controllers\SecurePathController;
 use App\Http\Requests\SecurePath\SecurePathRequest;
 use App\Models\Configs;
-use App\Repositories\ConfigManager;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\Request;
@@ -61,11 +60,6 @@ class SecurePathControllerTest extends AbstractTestCase
 	private function createMockSecurePathRequest()
 	{
 		return new class() extends SecurePathRequest {
-			public function configs()
-			{
-				return resolve(ConfigManager::class);
-			}
-
 			public function authorize(): bool
 			{
 				return true; // Always authorize for tests
@@ -128,6 +122,7 @@ class SecurePathControllerTest extends AbstractTestCase
 		// Mock configs
 		Configs::set('temporary_image_link_enabled', false);
 		Configs::set('secure_image_link_enabled', true);
+		Config::set('features.populate-request-macros', true);
 
 		$this->expectException(InvalidPayloadException::class);
 
@@ -206,6 +201,7 @@ class SecurePathControllerTest extends AbstractTestCase
 	 */
 	public function testSignatureHasNotExpiredWithExpiredTimestamp(): void
 	{
+		Config::set('features.populate-request-macros', true);
 		$expiredTimestamp = Carbon::now()->subHour()->getTimestamp();
 		$request = Request::create('/', 'GET', ['expires' => (string) $expiredTimestamp]);
 
@@ -222,6 +218,7 @@ class SecurePathControllerTest extends AbstractTestCase
 	 */
 	public function testSignatureHasNotExpiredWithValidTimestamp(): void
 	{
+		Config::set('features.populate-request-macros', true);
 		$futureTimestamp = Carbon::now()->addHour()->getTimestamp();
 		$request = Request::create('/', 'GET', ['expires' => (string) $futureTimestamp]);
 
@@ -239,6 +236,7 @@ class SecurePathControllerTest extends AbstractTestCase
 	 */
 	public function testSignatureHasNotExpiredWithNoExpiresParameter(): void
 	{
+		Config::set('features.populate-request-macros', true);
 		$request = Request::create('/', 'GET');
 
 		// Use reflection to access private method
@@ -255,6 +253,7 @@ class SecurePathControllerTest extends AbstractTestCase
 	 */
 	public function testGetUrlMethodRemovesSignatureParameter(): void
 	{
+		Config::set('features.populate-request-macros', true);
 		$request = Request::create('http://test.com/secure/path', 'GET', [
 			'expires' => '1234567890',
 			'signature' => 'test-signature',

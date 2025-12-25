@@ -15,7 +15,6 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Models\Album;
 use App\Models\Photo;
 use App\Models\Purchasable;
-use App\Repositories\ConfigManager;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -23,7 +22,6 @@ class MoveOrDuplicate
 {
 	public function __construct(
 		private PurchasableService $purchasable_service,
-		protected readonly ConfigManager $config_manager,
 	) {
 	}
 
@@ -76,7 +74,7 @@ class MoveOrDuplicate
 			}
 		}
 
-		$notify = new Notify($this->config_manager);
+		$notify = new Notify();
 		/** @var Photo $photo */
 		foreach ($photos as $photo) {
 			$notify->do($photo);

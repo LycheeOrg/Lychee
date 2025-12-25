@@ -36,8 +36,6 @@ class DownloadedFile extends TemporaryLocalFile
 	 * @throws MediaFileOperationException
 	 */
 	public function __construct(
-		ConfigManager $config_manager,
-		FileExtensionService $file_extension_service,
 		string $url,
 	) {
 		try {
@@ -46,6 +44,7 @@ class DownloadedFile extends TemporaryLocalFile
 			$basename = pathinfo($path, PATHINFO_FILENAME);
 			$extension = '.' . pathinfo($path, PATHINFO_EXTENSION);
 
+			$config_manager = resolve(ConfigManager::class);
 			$opts = [
 				'http' => [
 					'follow_location' => !$config_manager->getValueAsBool('import_via_url_block_redirect'),
@@ -81,6 +80,7 @@ class DownloadedFile extends TemporaryLocalFile
 			// In all other cases we try to guess the file type.
 			// File extension > Content-Type > Inferred MIME type
 
+			$file_extension_service = resolve(FileExtensionService::class);
 			if ($extension !== '.' && $file_extension_service->isSupportedOrAcceptedFileExtension($extension)) {
 				parent::__construct($extension, $basename);
 				$this->originalMimeType = $original_mime_type;
