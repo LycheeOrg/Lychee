@@ -51,7 +51,6 @@ class InviteUserTest extends BaseApiWithDataTest
 		Auth::logout();
 		Configs::set('user_registration_enabled', false);
 
-
 		$response = $this->putJson('Profile?' . $api_url_parts[1], [
 			'username' => 'newUser',
 			'email' => 'test@example.com',
@@ -61,6 +60,5 @@ class InviteUserTest extends BaseApiWithDataTest
 		$response->assertCreated();
 
 		Configs::set('user_registration_enabled', false);
-
 	}
 }

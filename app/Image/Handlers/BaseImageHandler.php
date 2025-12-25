@@ -22,18 +22,6 @@ use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
 
 abstract class BaseImageHandler implements ImageHandlerInterface
 {
-	/** @var int the desired compression quality, only used for JPEG during save */
-	protected int $compression_quality;
-
-	/**
-	 * @throws ConfigurationKeyMissingException
-	 */
-	public function __construct(
-		protected readonly ConfigManager $config_manager,
-	) {
-		$this->compression_quality = $this->config_manager->getValueAsInt('compression_quality');
-	}
-
 	public function __destruct()
 	{
 		$this->reset();
@@ -58,7 +46,8 @@ abstract class BaseImageHandler implements ImageHandlerInterface
 	 */
 	protected function applyLosslessOptimizationConditionally(MediaFile $file, bool $collect_statistics = false): ?StreamStats
 	{
-		if ($this->config_manager->getValueAsBool('lossless_optimization')) {
+		$config_manager = resolve(ConfigManager::class);
+		if ($config_manager->getValueAsBool('lossless_optimization')) {
 			if ($file instanceof NativeLocalFile) {
 				ImageOptimizer::optimize($file->getRealPath());
 

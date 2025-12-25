@@ -43,7 +43,6 @@ class CacheListenerTest extends AbstractTestCase
 
 		Configs::set('cache_event_logging', '0');
 
-
 		$listener = new CacheListener();
 		$listener->handle(new CacheMissed('store', 'key'));
 		$listener->handle(new CacheMissed('store', 'lv:dev-lycheeOrg'));
@@ -56,7 +55,6 @@ class CacheListenerTest extends AbstractTestCase
 
 		Configs::set('cache_event_logging', '1');
 
-
 		$listener = new CacheListener();
 		$listener->handle(new CacheMissed('store', 'key'));
 	}
@@ -67,7 +65,6 @@ class CacheListenerTest extends AbstractTestCase
 		Log::shouldReceive('info')->never();
 
 		Configs::set('cache_event_logging', '1');
-
 
 		$listener = new CacheListener();
 		$listener->handle(new CacheHit('store', 'key', 'value'));
@@ -80,7 +77,6 @@ class CacheListenerTest extends AbstractTestCase
 
 		Configs::set('cache_event_logging', '1');
 
-
 		$listener = new CacheListener();
 		$listener->handle(new KeyForgotten('store', 'key'));
 	}
@@ -92,7 +88,6 @@ class CacheListenerTest extends AbstractTestCase
 
 		Configs::set('cache_event_logging', '1');
 
-
 		$listener = new CacheListener();
 		$listener->handle(new KeyWritten('store', 'key', 'value'));
 	}
@@ -103,7 +98,6 @@ class CacheListenerTest extends AbstractTestCase
 		Log::shouldReceive('debug')->once()->with('CacheListener: Writing key api/key with value: \'value\'');
 
 		Configs::set('cache_event_logging', '1');
-
 
 		$listener = new CacheListener();
 		$listener->handle(new KeyWritten('store', 'api/key', 'value'));

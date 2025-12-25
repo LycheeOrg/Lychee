@@ -27,7 +27,6 @@ class FlowInitTest extends BaseApiWithDataTest
 	{
 		Configs::set('flow_public', false);
 
-
 		$response = $this->getJson('Flow::init');
 		$this->assertOk($response);
 		$response->assertJson([
@@ -46,7 +45,6 @@ class FlowInitTest extends BaseApiWithDataTest
 
 		Configs::set('flow_public', true);
 
-
 		$response = $this->getJson('Flow::init');
 		$this->assertOk($response);
 		$response->assertJson([
@@ -64,7 +62,6 @@ class FlowInitTest extends BaseApiWithDataTest
 		]);
 
 		Configs::set('flow_public', false);
-
 	}
 
 	public function testGetUser(): void

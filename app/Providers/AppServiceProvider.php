@@ -43,7 +43,6 @@ use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
-use LycheeVerify\Contract\Status;
 use LycheeVerify\Contract\VerifyInterface;
 use LycheeVerify\Verify;
 use Opcodes\LogViewer\Facades\LogViewer;
@@ -117,9 +116,7 @@ class AppServiceProvider extends ServiceProvider
 				return $verify;
 			}
 
-			throw new LycheeLogicException(
-				'request attribute "verify" is set but not an instance of VerifyInterface.'
-			);
+			throw new LycheeLogicException('request attribute "verify" is set but not an instance of VerifyInterface.');
 		});
 
 		Request::macro('configs', function (): ConfigManager {
@@ -137,9 +134,7 @@ class AppServiceProvider extends ServiceProvider
 				return $configs;
 			}
 
-			throw new LycheeLogicException(
-				'request attribute "configs" is set but not an instance of ConfigManager.'
-			);
+			throw new LycheeLogicException('request attribute "configs" is set but not an instance of ConfigManager.');
 		});
 
 		// Prohibits: db:wipe, migrate:fresh, migrate:refresh, and migrate:reset

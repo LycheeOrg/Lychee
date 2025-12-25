@@ -11,7 +11,6 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
 use App\Http\Resources\Diagnostics\StatisticsCheckResource;
-use App\Models\Configs;
 use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\DB;
 
@@ -22,8 +21,7 @@ class StatisticsIntegrityCheck implements DiagnosticPipe
 {
 	public function __construct(
 		protected readonly ConfigManager $config_manager,
-	)
-	{
+	) {
 	}
 
 	/**

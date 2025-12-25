@@ -11,7 +11,6 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 use App\Constants\AccessPermissionConstants as APC;
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
-use App\Models\Configs;
 use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -23,8 +22,7 @@ class CachePasswordCheck implements DiagnosticPipe
 {
 	public function __construct(
 		private ConfigManager $config_manager,
-	)
-	{
+	) {
 	}
 
 	/**

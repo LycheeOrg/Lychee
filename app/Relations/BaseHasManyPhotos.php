@@ -16,7 +16,6 @@ use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
 use App\Models\TagAlbum;
 use App\Policies\PhotoQueryPolicy;
-use App\Repositories\ConfigManager;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\Relation;
 

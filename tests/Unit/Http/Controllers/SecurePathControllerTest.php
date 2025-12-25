@@ -61,7 +61,8 @@ class SecurePathControllerTest extends AbstractTestCase
 	private function createMockSecurePathRequest()
 	{
 		return new class() extends SecurePathRequest {
-			public function configs() {
+			public function configs()
+			{
 				return resolve(ConfigManager::class);
 			}
 

@@ -28,7 +28,6 @@ class StatisticsIntegrityTest extends BaseApiWithDataTest
 	{
 		parent::setUp();
 		Configs::set('metrics_enabled', true);
-
 	}
 
 	public function tearDown(): void

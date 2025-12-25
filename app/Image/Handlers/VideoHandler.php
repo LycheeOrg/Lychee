@@ -26,11 +26,6 @@ use FFMpeg\Media\Video;
 
 class VideoHandler
 {
-	protected readonly ConfigManager $config_manager;
-	public function __construct() {
-		$this->config_manager = app(ConfigManager::class);
-	}
-
 	protected ?Video $video = null;
 
 	/**
@@ -50,13 +45,14 @@ class VideoHandler
 	 */
 	public function load(NativeLocalFile $file): void
 	{
-		if (!$this->config_manager->hasFFmpeg()) {
+		$config_manager = resolve(ConfigManager::class);
+		if (!$config_manager->hasFFmpeg()) {
 			throw new ConfigurationException('FFmpeg is disabled by configuration');
 		}
 		try {
 			$ffmpeg = FFMpeg::create([
-				'ffmpeg.binaries' => $this->config_manager->getValueAsString('ffmpeg_path'),
-				'ffprobe.binaries' => $this->config_manager->getValueAsString('ffprobe_path'),
+				'ffmpeg.binaries' => $config_manager->getValueAsString('ffmpeg_path'),
+				'ffprobe.binaries' => $config_manager->getValueAsString('ffprobe_path'),
 			]);
 			$audio_or_video = $ffmpeg->open($file->getRealPath());
 			if ($audio_or_video instanceof Video) {
@@ -87,7 +83,7 @@ class VideoHandler
 			$frame->save($frame_file->getRealPath());
 
 			// Load the extracted frame into the image handler
-			$frame = new ImageHandler($this->config_manager);
+			$frame = new ImageHandler();
 			$frame->load($frame_file);
 			$frame_file->delete();
 

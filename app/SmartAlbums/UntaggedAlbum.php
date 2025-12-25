@@ -11,7 +11,6 @@ namespace App\SmartAlbums;
 use App\Enum\SmartAlbumType;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
-use App\Repositories\ConfigManager;
 use Illuminate\Database\Eloquent\Builder;
 
 class UntaggedAlbum extends BaseSmartAlbum
@@ -23,7 +22,8 @@ class UntaggedAlbum extends BaseSmartAlbum
 	 * @throws ConfigurationKeyMissingException
 	 * @throws FrameworkException
 	 */
-	protected function __construct() {
+	protected function __construct()
+	{
 		parent::__construct(
 			id: SmartAlbumType::UNTAGGED,
 			smart_condition: fn (Builder $query) => $query->doesntHave('tags')

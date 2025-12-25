@@ -11,8 +11,6 @@ namespace App\Actions\Photo\Pipes\Standalone;
 use App\Contracts\PhotoCreate\StandalonePipe;
 use App\DTO\PhotoCreate\StandaloneDTO;
 use App\Metadata\Renamer\PhotoRenamer;
-use App\Repositories\ConfigManager;
-use LycheeVerify\Contract\VerifyInterface;
 
 /**
  * Apply renaming rules to the photo title.

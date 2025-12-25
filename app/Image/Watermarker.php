@@ -29,13 +29,11 @@ class Watermarker
 	/**
 	 * Create a watermarker.
 	 */
-	public function __construct(
-		protected readonly ConfigManager $config_manager,
-		private CoordinateCalculator $calculator,
-	) {
-
-		$is_enabled = $this->config_manager->getValueAsBool('watermark_enabled');
-		$is_imagick_enabled = $this->config_manager->getValueAsBool('imagick');
+	public function __construct()
+	{
+		$config_manager = resolve(ConfigManager::class);
+		$is_enabled = $config_manager->getValueAsBool('watermark_enabled');
+		$is_imagick_enabled = $config_manager->getValueAsBool('imagick');
 		$is_imagick_loaded = extension_loaded('imagick');
 
 		if (!$is_enabled || !$is_imagick_enabled || !$is_imagick_loaded) {
@@ -44,7 +42,7 @@ class Watermarker
 			return;
 		}
 
-		$watermark_photo_id = $this->config_manager->getValueAsString('watermark_photo_id');
+		$watermark_photo_id = $config_manager->getValueAsString('watermark_photo_id');
 		if ($watermark_photo_id === '') {
 			// Watermark photo ID is not set, we cannot watermark
 			Log::error('Watermark is enabled but photo id is not set.');
@@ -65,7 +63,7 @@ class Watermarker
 
 		$this->can_watermark = true;
 		$this->size_variant_watermark = $watermark;
-		$this->naming_strategy = new WatermarkGroupedWithRandomSuffixNamingStrategy($this->config_manager);
+		$this->naming_strategy = new WatermarkGroupedWithRandomSuffixNamingStrategy();
 	}
 
 	/**
@@ -91,13 +89,15 @@ class Watermarker
 			return $size_variant->short_path;
 		}
 
+		$config_manager = resolve(ConfigManager::class);
+
 		// Apply watermark for public users if enabled
-		if ($this->config_manager->getValueAsBool('watermark_public') && Auth::guest()) {
+		if ($config_manager->getValueAsBool('watermark_public') && Auth::guest()) {
 			return $size_variant->short_path_watermarked;
 		}
 
 		// Apply watermark for authenticated users if enabled
-		if ($this->config_manager->getValueAsBool('watermark_logged_in_users_enabled') && Auth::check()) {
+		if ($config_manager->getValueAsBool('watermark_logged_in_users_enabled') && Auth::check()) {
 			return $size_variant->short_path_watermarked;
 		}
 
@@ -115,8 +115,9 @@ class Watermarker
 	 */
 	private function should_use_watermarked_path(SizeVariant $size_variant): bool
 	{
+		$config_manager = resolve(ConfigManager::class);
 		// Watermarking must be enabled globally
-		if (!$this->config_manager->getValueAsBool('watermark_enabled')) {
+		if (!$config_manager->getValueAsBool('watermark_enabled')) {
 			return false;
 		}
 
@@ -126,7 +127,7 @@ class Watermarker
 		}
 
 		// Special case for original size variants
-		if ($size_variant->type === SizeVariantType::ORIGINAL && !$this->config_manager->getValueAsBool('watermark_original')) {
+		if ($size_variant->type === SizeVariantType::ORIGINAL && !$config_manager->getValueAsBool('watermark_original')) {
 			return false;
 		}
 
@@ -138,12 +139,14 @@ class Watermarker
 	 */
 	public function do(SizeVariant $size_variant): void
 	{
+		$config_manager = resolve(ConfigManager::class);
+
 		if (!$this->can_watermark) {
 			return;
 		}
 
 		if ($size_variant->type === SizeVariantType::PLACEHOLDER ||
-			($size_variant->type === SizeVariantType::ORIGINAL && !$this->config_manager->getValueAsBool('watermark_original'))) {
+			($size_variant->type === SizeVariantType::ORIGINAL && !$config_manager->getValueAsBool('watermark_original'))) {
 			return;
 		}
 
@@ -157,18 +160,19 @@ class Watermarker
 			/** @var ImageDimension $sv_dimentions */
 			$sv_dimentions = $size_variant_handler->getDimensions();
 
+			$calculator = new CoordinateCalculator();
 			// resize the watermark
-			$scaled_dimentions = $this->calculator->apply_scaling($sv_dimentions);
+			$scaled_dimentions = $calculator->apply_scaling($sv_dimentions);
 			$watermark_handler = $watermark_handler->cloneAndScale($scaled_dimentions);
 			$watermark_dimentions = $watermark_handler->getDimensions();
 
-			$watermark_handler = $watermark_handler->cloneAndChangeOpacity($this->calculator->get_opacity());
+			$watermark_handler = $watermark_handler->cloneAndChangeOpacity($calculator->get_opacity());
 
 			// calculate the position
-			$position = $this->calculator->get_coordinates($sv_dimentions, $watermark_dimentions);
+			$position = $calculator->get_coordinates($sv_dimentions, $watermark_dimentions);
 
 			// apply shift
-			$position = $this->calculator->apply_shift($sv_dimentions, $position);
+			$position = $calculator->apply_shift($sv_dimentions, $position);
 
 			$size_variant_handler = $size_variant_handler->cloneAndCompose($watermark_handler, $position->width, $position->height);
 			$this->naming_strategy->setFromSizeVariant($size_variant);

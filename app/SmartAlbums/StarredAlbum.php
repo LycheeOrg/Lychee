@@ -22,7 +22,8 @@ class StarredAlbum extends BaseSmartAlbum
 	 * @throws ConfigurationKeyMissingException
 	 * @throws FrameworkException
 	 */
-	protected function __construct() {
+	protected function __construct()
+	{
 		parent::__construct(
 			id: SmartAlbumType::STARRED,
 			smart_condition: fn (Builder $q) => $q->where('photos.is_starred', '=', true)

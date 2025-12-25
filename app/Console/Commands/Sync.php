@@ -20,7 +20,6 @@ use App\Repositories\ConfigManager;
 use Illuminate\Console\Command;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
-use LycheeVerify\Verify;
 use Symfony\Component\Console\Exception\ExceptionInterface;
 
 class Sync extends Command

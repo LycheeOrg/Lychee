@@ -15,6 +15,7 @@ use App\DTO\ImageDimension;
 use App\Exceptions\ImageProcessingException;
 use App\Exceptions\MediaFileOperationException;
 use App\Image\Files\InMemoryBuffer;
+use App\Repositories\ConfigManager;
 use App\Services\Image\FileExtensionService;
 use Imagick;
 
@@ -90,7 +91,9 @@ class ImagickHandler extends BaseImageHandler
 			throw new MediaFileOperationException('No image loaded');
 		}
 		try {
-			$this->im_image->setImageCompressionQuality($this->compression_quality);
+			$config_manager = resolve(ConfigManager::class);
+			$compression_quality = $config_manager->getValueAsInt('compression_quality');
+			$this->im_image->setImageCompressionQuality($compression_quality);
 			$profiles = $this->im_image->getImageProfiles('icc', true);
 			// Remove metadata to save some bytes
 			$this->im_image->stripImage();

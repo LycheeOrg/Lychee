@@ -11,8 +11,6 @@ namespace App\Http\Middleware\Caching;
 use App\Constants\PhotoAlbum as PA;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Events\AlbumRouteCacheUpdated;
-use App\Exceptions\Internal\LycheeLogicException;
-use App\Http\Request as HttpRequest;
 use Illuminate\Foundation\Http\Middleware\Concerns\ExcludesPaths;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;

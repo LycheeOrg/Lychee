@@ -11,7 +11,6 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
 use App\Enum\SizeVariantType;
-use App\Models\Configs;
 use App\Models\SizeVariant;
 use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\Schema;
@@ -23,8 +22,7 @@ class WatermarkerEnabledCheck implements DiagnosticPipe
 {
 	public function __construct(
 		protected readonly ConfigManager $config_manager,
-	)
-	{
+	) {
 	}
 
 	/**

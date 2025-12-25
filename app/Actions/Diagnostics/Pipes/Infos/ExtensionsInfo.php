@@ -11,7 +11,6 @@ namespace App\Actions\Diagnostics\Pipes\Infos;
 use App\Actions\Diagnostics\Diagnostics;
 use App\Contracts\DiagnosticStringPipe;
 use App\Facades\Helpers;
-use App\Models\Configs;
 use App\Repositories\ConfigManager;
 
 /**
@@ -21,11 +20,8 @@ class ExtensionsInfo implements DiagnosticStringPipe
 {
 	public function __construct(
 		protected readonly ConfigManager $config_manager,
-	)
-	{
+	) {
 	}
-
-
 
 	/**
 	 * {@inheritDoc}

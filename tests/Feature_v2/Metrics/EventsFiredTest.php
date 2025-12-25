@@ -29,7 +29,6 @@ class EventsFiredTest extends BaseApiWithDataTest
 		parent::setUp();
 		Configs::set('metrics_enabled', true);
 		Configs::set('metrics_logged_in_users_enabed', true);
-
 	}
 
 	public function tearDown(): void

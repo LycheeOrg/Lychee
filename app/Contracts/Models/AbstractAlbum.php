@@ -11,7 +11,6 @@ namespace App\Contracts\Models;
 use App\Models\AccessPermission;
 use App\Models\Extensions\Thumb;
 use App\Models\Photo;
-use App\Repositories\ConfigManager;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;

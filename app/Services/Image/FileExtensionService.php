@@ -83,7 +83,8 @@ class FileExtensionService
 	private array $cached_accepted_raw_file_extensions = [];
 	private ConfigManager $config_manager;
 
-	public function __construct() {
+	public function __construct()
+	{
 		$this->config_manager = app(ConfigManager::class);
 	}
 

@@ -27,7 +27,6 @@ class RegisterTest extends BaseApiWithDataTest
 	{
 		parent::setUp();
 		Configs::set('user_registration_enabled', '1');
-
 	}
 
 	public function tearDown(): void
@@ -100,7 +99,6 @@ class RegisterTest extends BaseApiWithDataTest
 	public function testRegistrationForbiddenWhenDisabled()
 	{
 		Configs::set('user_registration_enabled', '0');
-
 
 		$response = $this->putJson('/Profile', [
 			'username' => 'anotheruser',

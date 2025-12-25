@@ -10,7 +10,6 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
-use App\Models\Configs;
 use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\Schema;
 
@@ -21,8 +20,7 @@ class CacheTemporaryUrlCheck implements DiagnosticPipe
 {
 	public function __construct(
 		private ConfigManager $config_manager,
-	)
-	{
+	) {
 	}
 
 	/**

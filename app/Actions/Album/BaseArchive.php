@@ -53,7 +53,8 @@ abstract class BaseArchive
 	 *
 	 * @return BaseArchive
 	 */
-	public static function resolve(): self {
+	public static function resolve(): self
+	{
 		if (InstalledVersions::satisfies(new VersionParser(), 'maennchen/zipstream-php', '^3.1')) {
 			return new Archive64();
 		}

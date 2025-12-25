@@ -11,7 +11,6 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
 use App\Facades\Helpers;
-use App\Models\Configs;
 use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\Schema;
 use function Safe\exec;

@@ -10,9 +10,7 @@ namespace App\Http\Middleware;
 
 use App\Actions\Album\Unlock;
 use App\Enum\SmartAlbumType;
-use App\Exceptions\Internal\LycheeLogicException;
 use App\Factories\AlbumFactory;
-use App\Http\Request as HttpRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 

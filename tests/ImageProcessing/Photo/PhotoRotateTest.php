@@ -50,7 +50,6 @@ class PhotoRotateTest extends BaseApiWithDataTest
 
 		Configs::set('editor_enabled', false);
 
-
 		$response = $this->actingAs($this->userMayUpload1)->postJson('Photo::rotate', [
 			'photo_id' => $this->photo1->id,
 			'direction' => 1,
@@ -67,11 +66,9 @@ class PhotoRotateTest extends BaseApiWithDataTest
 
 		Configs::set('editor_enabled', true);
 
-
 		$this->rotate();
 
 		Configs::set('editor_enabled', false);
-
 
 		$this->tearDownRequiresImageHandler();
 	}
@@ -80,7 +77,6 @@ class PhotoRotateTest extends BaseApiWithDataTest
 	{
 		$this->setUpRequiresImagick();
 		Configs::set('editor_enabled', true);
-
 
 		$this->rotate();
 

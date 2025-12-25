@@ -18,7 +18,6 @@ use App\Exceptions\VersionControlException;
 use App\Facades\Helpers;
 use App\Metadata\Versions\GitHubVersion;
 use App\Metadata\Versions\InstalledVersion;
-use App\Models\Configs;
 use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Schema;

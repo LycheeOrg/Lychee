@@ -19,7 +19,6 @@ use App\Models\Photo;
 use App\Policies\AlbumPolicy;
 use App\Policies\AlbumQueryPolicy;
 use App\Policies\PhotoQueryPolicy;
-use App\Repositories\ConfigManager;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\Relation;

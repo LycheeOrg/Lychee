@@ -173,6 +173,7 @@ class AlbumPolicy extends BasePolicy
 		// The root album always uses the global setting
 		if ($abstract_album === null) {
 			$config_manager = app(ConfigManager::class);
+
 			return $config_manager->getValueAsBool('grants_download');
 		}
 
@@ -317,6 +318,7 @@ class AlbumPolicy extends BasePolicy
 	{
 		if ($abstract_album === null || $abstract_album instanceof BaseSmartAlbum) {
 			$config_manager = app(ConfigManager::class);
+
 			return $config_manager->getValueAsBool('grants_full_photo_access');
 		}
 
@@ -529,6 +531,7 @@ class AlbumPolicy extends BasePolicy
 	public function canImportFromServer(User $user): bool
 	{
 		$config_manager = app(ConfigManager::class);
+
 		return $user->id === $config_manager->getValueAsInt('owner_id') &&
 			config('features.disable-import-from-server', true) === false;
 	}

@@ -28,7 +28,6 @@ class AlbumSpaceTest extends BaseApiWithDataTest
 	{
 		Configs::set('cache_enabled', '0');
 
-
 		$response = $this->getJson('Statistics::albumSpace');
 		$this->assertSupporterRequired($response);
 

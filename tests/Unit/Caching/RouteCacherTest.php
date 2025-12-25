@@ -33,7 +33,6 @@ class RouteCacherTest extends AbstractTestCase
 
 		// We log to make sure to catch the specific events.
 		Configs::set('cache_event_logging', '1');
-
 	}
 
 	public function tearDown(): void

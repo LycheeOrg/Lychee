@@ -56,7 +56,6 @@ class ExtractColoursJobTest extends BaseApiWithDataTest
 
 		$this->runExtraction();
 		Configs::set('imagick', true);
-
 	}
 
 	private function runExtraction(): void
@@ -96,7 +95,6 @@ class ExtractColoursJobTest extends BaseApiWithDataTest
 
 		$this->runExtraction();
 		Configs::set('colour_extraction_driver', 'farzai');
-
 	}
 
 	public function testExtractColourWrongDriver(): void

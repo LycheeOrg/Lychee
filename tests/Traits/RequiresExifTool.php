@@ -30,7 +30,7 @@ trait RequiresExifTool
 	protected function setUpRequiresExifTool(): void
 	{
 		$config_manager = resolve(ConfigManager::class);
-		$this->hasExifToolInit = $config_manager->getValueAsBool(TestConstants::CONFIG_HAS_EXIF_TOOL);
+		$this->hasExifToolInit = $config_manager->getValueAsInt(TestConstants::CONFIG_HAS_EXIF_TOOL);
 		Configs::set(TestConstants::CONFIG_HAS_EXIF_TOOL, 2);
 		$this->hasExifTools = $config_manager->hasExiftool();
 	}

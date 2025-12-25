@@ -19,14 +19,11 @@
 namespace Tests\Unit\Actions\Diagnostics;
 
 use App\Actions\Diagnostics\Pipes\Checks\WatermarkerEnabledCheck;
-use App\DTO\DiagnosticDTO;
 use App\Enum\MessageType;
 use App\Models\Configs;
-use App\Repositories\ConfigManager;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Schema;
 use Tests\AbstractTestCase;
-use Tests\Constants\FreeVerifyier;
 use Tests\Traits\RequireSE;
 
 class WatermarkerDiagnosticTest extends AbstractTestCase

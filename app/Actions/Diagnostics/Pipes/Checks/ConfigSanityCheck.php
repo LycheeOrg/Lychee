@@ -22,8 +22,7 @@ class ConfigSanityCheck implements DiagnosticPipe
 {
 	public function __construct(
 		private ConfigManager $config_manager,
-	)
-	{
+	) {
 	}
 
 	/**

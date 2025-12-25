@@ -28,7 +28,6 @@ use App\Image\Handlers\ImageHandler;
 use App\Image\Handlers\VideoHandler;
 use App\Models\Photo;
 use App\Models\SizeVariant;
-use App\Repositories\ConfigManager;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Collection;
 

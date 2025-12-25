@@ -67,6 +67,5 @@ class TimelineTest extends BaseApiWithDataTest
 		]);
 
 		Configs::set('timeline_photos_public', '0');
-
 	}
 }

@@ -13,7 +13,6 @@ use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
 use App\Enum\OmnipayProviderType;
 use App\Factories\OmnipayFactory;
-use App\Models\Configs;
 use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\Schema;
 use LycheeVerify\Contract\Status;

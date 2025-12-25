@@ -15,7 +15,6 @@ use App\Models\Album;
 use App\Models\Builders\AlbumBuilder;
 use App\Models\Extensions\SortingDecorator;
 use App\Policies\AlbumQueryPolicy;
-use App\Repositories\ConfigManager;
 use Illuminate\Database\Eloquent\Collection;
 
 /**

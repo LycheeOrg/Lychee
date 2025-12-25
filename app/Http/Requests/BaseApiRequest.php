@@ -24,7 +24,7 @@ use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 /**
- * @method \LycheeVerify\Verify verify()
+ * @method \LycheeVerify\Verify            verify()
  * @method \App\Repositories\ConfigManager config()
  */
 abstract class BaseApiRequest extends FormRequest

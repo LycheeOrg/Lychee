@@ -11,7 +11,6 @@ namespace App\Http\Middleware;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\LycheeInvalidArgumentException;
-use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\UnauthenticatedException;
 use App\Repositories\ConfigManager;
 use Illuminate\Http\Request;

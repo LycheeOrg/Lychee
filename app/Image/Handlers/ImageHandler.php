@@ -38,9 +38,10 @@ class ImageHandler extends BaseImageHandler implements ImageHandlerInterface
 	/**
 	 * {@inheritDoc}
 	 */
-	public function __construct(ConfigManager $config_manager) {
-		parent::__construct($config_manager);
-		if ($this->config_manager->hasImagick()) {
+	public function __construct()
+	{
+		$config_manager = resolve(ConfigManager::class);
+		if ($config_manager->hasImagick()) {
 			$this->engine_classes[] = ImagickHandler::class;
 		}
 		$this->engine_classes[] = GdHandler::class;

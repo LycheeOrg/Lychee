@@ -13,7 +13,6 @@ use App\DTO\PhotoCreate\StandaloneDTO;
 use App\Exceptions\Handler;
 use App\Image\Handlers\ImageHandler;
 use App\Image\Handlers\VideoHandler;
-use App\Repositories\ConfigManager;
 
 class FetchSourceImage implements StandalonePipe
 {

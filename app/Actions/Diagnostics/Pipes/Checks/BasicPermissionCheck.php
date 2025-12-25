@@ -16,7 +16,6 @@ use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Handler;
 use App\Exceptions\Internal\InvalidConfigOption;
 use App\Facades\Helpers;
-use App\Models\Configs;
 use App\Repositories\ConfigManager;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Storage;
@@ -68,8 +67,7 @@ class BasicPermissionCheck implements DiagnosticPipe
 
 	public function __construct(
 		private ConfigManager $config_manager,
-	)
-	{
+	) {
 	}
 
 	/**

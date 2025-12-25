@@ -20,15 +20,12 @@ namespace Tests\Unit\Actions\Diagnostics;
 
 use App\Actions\Diagnostics\Pipes\Checks\AuthDisabledCheck;
 use App\DTO\DiagnosticData;
-use App\DTO\DiagnosticDTO;
 use App\Enum\MessageType;
 use App\Models\User;
-use App\Repositories\ConfigManager;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Schema;
 use Tests\AbstractTestCase;
-use Tests\Constants\FreeVerifyier;
 
 class AuthDisabledCheckTest extends AbstractTestCase
 {

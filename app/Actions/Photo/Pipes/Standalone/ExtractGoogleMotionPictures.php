@@ -13,7 +13,6 @@ use App\DTO\PhotoCreate\StandaloneDTO;
 use App\Exceptions\Handler;
 use App\Image\Files\TemporaryLocalFile;
 use App\Image\Handlers\GoogleMotionPictureHandler;
-use App\Repositories\ConfigManager;
 
 class ExtractGoogleMotionPictures implements StandalonePipe
 {

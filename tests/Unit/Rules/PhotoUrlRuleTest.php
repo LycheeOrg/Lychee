@@ -39,7 +39,6 @@ class PhotoUrlRuleTest extends AbstractTestCase
 		Configs::set('import_via_url_forbidden_ports', '1');
 		Configs::set('import_via_url_forbidden_local_ip', '1');
 		Configs::set('import_via_url_forbidden_localhost', '1');
-
 	}
 
 	public function tearDown(): void
@@ -48,7 +47,6 @@ class PhotoUrlRuleTest extends AbstractTestCase
 		Configs::set('import_via_url_forbidden_ports', '1');
 		Configs::set('import_via_url_forbidden_local_ip', '1');
 		Configs::set('import_via_url_forbidden_localhost', '1');
-
 
 		parent::tearDown();
 	}

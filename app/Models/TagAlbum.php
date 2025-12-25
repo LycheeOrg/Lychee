@@ -15,7 +15,6 @@ use App\Models\Extensions\BaseAlbum;
 use App\Models\Extensions\Thumb;
 use App\Models\Extensions\ToArrayThrowsNotImplemented;
 use App\Relations\HasManyPhotosByTag;
-use App\Repositories\ConfigManager;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;

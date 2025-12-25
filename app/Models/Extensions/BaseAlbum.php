@@ -18,7 +18,6 @@ use App\Models\AccessPermission;
 use App\Models\BaseAlbumImpl;
 use App\Models\Statistics;
 use App\Models\User;
-use App\Repositories\ConfigManager;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

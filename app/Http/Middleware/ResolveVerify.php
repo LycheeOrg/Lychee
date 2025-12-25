@@ -28,8 +28,8 @@ class ResolveVerify
 	protected function resolveVerify(Request $request): VerifyInterface
 	{
 		$verify = resolve(Verify::class);
-		app()->scoped(VerifyInterface::class, fn() => $verify);
-		app()->scoped(Verify::class, fn() => $verify);
+		app()->scoped(VerifyInterface::class, fn () => $verify);
+		app()->scoped(Verify::class, fn () => $verify);
 
 		return app(VerifyInterface::class);
 	}

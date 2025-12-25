@@ -27,7 +27,6 @@ use App\Image\Handlers\ImageHandler;
 use App\Image\StreamStat;
 use App\Models\Photo;
 use App\Models\SizeVariant;
-use App\Repositories\ConfigManager;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Collection;
 
@@ -52,7 +51,6 @@ class Rotate
 	 * @throws FrameworkException
 	 */
 	public function __construct(
-		protected readonly ConfigManager $config_manager,
 		Photo $photo,
 		int $direction,
 	) {
@@ -92,7 +90,7 @@ class Rotate
 	public function do(): Photo
 	{
 		// Load the previous original image and rotate it
-		$image = new ImageHandler($this->config_manager);
+		$image = new ImageHandler();
 		$image->load($this->source_file);
 		try {
 			$image->rotate(90 * $this->direction);

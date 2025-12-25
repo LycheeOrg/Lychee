@@ -10,7 +10,6 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
-use App\Models\Configs;
 use App\Repositories\ConfigManager;
 use LycheeVerify\Verify;
 

@@ -13,7 +13,6 @@ use App\Enum\SmartAlbumType;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Models\Photo;
-use App\Repositories\ConfigManager;
 use Illuminate\Database\Eloquent\Builder;
 
 class UnsortedAlbum extends BaseSmartAlbum
@@ -25,7 +24,8 @@ class UnsortedAlbum extends BaseSmartAlbum
 	 * @throws ConfigurationKeyMissingException
 	 * @throws FrameworkException
 	 */
-	public function __construct() {
+	public function __construct()
+	{
 		parent::__construct(
 			id: SmartAlbumType::UNSORTED,
 			smart_condition: fn (Builder $q) => $q->whereNull(PA::ALBUM_ID)

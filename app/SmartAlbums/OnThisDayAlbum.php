@@ -11,7 +11,6 @@ namespace App\SmartAlbums;
 use App\Enum\SmartAlbumType;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
-use App\Repositories\ConfigManager;
 use Carbon\Exceptions\InvalidFormatException;
 use Carbon\Exceptions\InvalidTimeZoneException;
 use Illuminate\Database\Eloquent\Builder;

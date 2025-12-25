@@ -20,12 +20,9 @@ namespace Tests\Unit\Actions\Diagnostics;
 
 use App\Actions\Diagnostics\Pipes\Checks\IframeCheck;
 use App\DTO\DiagnosticData;
-use App\DTO\DiagnosticDTO;
 use App\Enum\MessageType;
-use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\Config;
 use Tests\AbstractTestCase;
-use Tests\Constants\FreeVerifyier;
 
 class IframeCheckTest extends AbstractTestCase
 {
@@ -249,7 +246,7 @@ class IframeCheckTest extends AbstractTestCase
 		Config::set('session.same_site', 'lax');
 		Config::set('session.secure', true);
 
-		$result = $this->iframeCheck->handle($this->data, $nextFunction);
+		$this->iframeCheck->handle($this->data, $nextFunction);
 
 		$this->assertTrue($nextCalled, 'Next closure should be called');
 	}

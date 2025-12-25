@@ -26,8 +26,7 @@ class IniSettingsCheck implements DiagnosticPipe
 	public function __construct(
 		private Verify $verify,
 		protected readonly ConfigManager $config_manager,
-	)
-	{
+	) {
 	}
 
 	/**

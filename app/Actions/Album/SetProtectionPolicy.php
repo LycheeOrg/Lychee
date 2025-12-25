@@ -14,7 +14,6 @@ use App\Exceptions\ModelDBException;
 use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
 use App\Models\AccessPermission;
 use App\Models\Extensions\BaseAlbum;
-use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\Hash;
 
 /**

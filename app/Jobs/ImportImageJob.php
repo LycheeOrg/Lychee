@@ -16,15 +16,12 @@ use App\Image\Files\NativeLocalFile;
 use App\Models\Album;
 use App\Models\JobHistory;
 use App\Models\Photo;
-use App\Repositories\ConfigManager;
-use App\Services\Image\FileExtensionService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Str;
-use LycheeVerify\Verify;
 
 /**
  * This allows to process images on serverside while making the responses faster.
