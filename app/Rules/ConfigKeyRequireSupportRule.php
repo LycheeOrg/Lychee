@@ -19,7 +19,6 @@ final class ConfigKeyRequireSupportRule implements ValidationRule
 
 	public function __construct(
 		protected VerifyInterface $verify,
-		private ConfigManager $config_manager,
 	) {
 	}
 
@@ -34,7 +33,7 @@ final class ConfigKeyRequireSupportRule implements ValidationRule
 		}
 
 		/** @var string $value */
-		if (!$this->config_manager->hasKey($value)) {
+		if (!resolve(ConfigManager::class)->hasKey($value)) {
 			// This is taken care of in ConfigKeyRule
 			return;
 		}

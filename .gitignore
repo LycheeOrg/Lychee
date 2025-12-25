@@ -64,3 +64,6 @@ report_*
 
 # XHProf output
 public/vendor/
+**/caddy
+frankenphp
+frankenphp-worker.php

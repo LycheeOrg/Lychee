@@ -25,9 +25,11 @@ use App\Exceptions\SecurePaths\WrongPathException;
 use App\Http\Controllers\SecurePathController;
 use App\Http\Requests\SecurePath\SecurePathRequest;
 use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
 use Tests\AbstractTestCase;
 
@@ -59,6 +61,10 @@ class SecurePathControllerTest extends AbstractTestCase
 	private function createMockSecurePathRequest()
 	{
 		return new class() extends SecurePathRequest {
+			public function configs() {
+				return resolve(ConfigManager::class);
+			}
+
 			public function authorize(): bool
 			{
 				return true; // Always authorize for tests
@@ -103,6 +109,7 @@ class SecurePathControllerTest extends AbstractTestCase
 		// Mock configs to disable signature checking
 		Configs::set('temporary_image_link_enabled', false);
 		Configs::set('secure_image_link_enabled', false);
+		Config::set('features.populate-request-macros', true);
 
 		$this->expectException(WrongPathException::class);
 
@@ -137,6 +144,7 @@ class SecurePathControllerTest extends AbstractTestCase
 		// Mock configs
 		Configs::set('temporary_image_link_enabled', false);
 		Configs::set('secure_image_link_enabled', false);
+		Config::set('features.populate-request-macros', true);
 
 		// Mock storage to simulate path traversal
 		$maliciousPath = '../../../etc/passwd';
@@ -169,6 +177,7 @@ class SecurePathControllerTest extends AbstractTestCase
 		// Mock configs
 		Configs::set('temporary_image_link_enabled', false);
 		Configs::set('secure_image_link_enabled', false);
+		Config::set('features.populate-request-macros', true);
 
 		$nonExistentPath = 'test/nonexistent.jpg';
 		$fullPath = storage_path('app/' . $nonExistentPath);
@@ -202,8 +211,6 @@ class SecurePathControllerTest extends AbstractTestCase
 		// Use reflection to access private method
 		$reflection = new \ReflectionClass(SecurePathController::class);
 		$method = $reflection->getMethod('signatureHasNotExpired');
-		$method->setAccessible(true);
-
 		$result = $method->invoke($this->controller, $request);
 
 		$this->assertFalse($result);
@@ -220,7 +227,6 @@ class SecurePathControllerTest extends AbstractTestCase
 		// Use reflection to access private method
 		$reflection = new \ReflectionClass(SecurePathController::class);
 		$method = $reflection->getMethod('signatureHasNotExpired');
-		$method->setAccessible(true);
 
 		$result = $method->invoke($this->controller, $request);
 
@@ -237,7 +243,6 @@ class SecurePathControllerTest extends AbstractTestCase
 		// Use reflection to access private method
 		$reflection = new \ReflectionClass(SecurePathController::class);
 		$method = $reflection->getMethod('signatureHasNotExpired');
-		$method->setAccessible(true);
 
 		$result = $method->invoke($this->controller, $request);
 
@@ -258,7 +263,6 @@ class SecurePathControllerTest extends AbstractTestCase
 		// Use reflection to access private method
 		$reflection = new \ReflectionClass(SecurePathController::class);
 		$method = $reflection->getMethod('getUrl');
-		$method->setAccessible(true);
 
 		$result = $method->invoke($this->controller, $request);
 

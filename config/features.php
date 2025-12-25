@@ -128,4 +128,16 @@ return [
 	 | when the webshop is not ready yet.
 	 */
 	'webshop' => (bool) env('WEBSHOP_ENABLED', false),
+
+	/*
+	 |--------------------------------------------------------------------------
+	 | Populate Request object macros while testing
+	 |--------------------------------------------------------------------------
+	 |
+	 | This is necessary for some unit tests that rely on the Request macros
+	 | being present. In production, these macros are populated via middleware.
+	 | However, in unit tests, the middleware may not be executed, leading to
+	 | missing macros and test failures.
+	 */
+	'populate-request-macros' => (bool) env('POPULATE_REQUEST_MACROS', false),
 ];

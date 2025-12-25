@@ -8,8 +8,11 @@
 
 namespace Tests;
 
+use App\Repositories\ConfigManager;
 use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Foundation\Application;
+use LycheeVerify\Contract\VerifyInterface;
+use LycheeVerify\Verify;
 
 trait CreatesApplication
 {
@@ -23,6 +26,8 @@ trait CreatesApplication
 		$app = require __DIR__ . '/../bootstrap/app.php';
 
 		$app->make(Kernel::class)->bootstrap();
+		$app->scoped(VerifyInterface::class, fn () => new Verify());
+		$app->scoped(ConfigManager::class, fn () => new ConfigManager());
 
 		return $app;
 	}

@@ -33,13 +33,13 @@ class RouteCacherTest extends AbstractTestCase
 
 		// We log to make sure to catch the specific events.
 		Configs::where('key', 'cache_event_logging')->update(['value' => '1']);
-		Configs::invalidateCache();
+
 	}
 
 	public function tearDown(): void
 	{
 		Configs::where('key', 'cache_event_logging')->update(['value' => '0']);
-		Configs::invalidateCache();
+
 		parent::tearDown();
 	}
 

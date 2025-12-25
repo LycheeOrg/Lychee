@@ -50,7 +50,7 @@ class InviteUserTest extends BaseApiWithDataTest
 
 		Auth::logout();
 		Configs::set('user_registration_enabled', false);
-		Configs::invalidateCache();
+
 
 		$response = $this->putJson('Profile?' . $api_url_parts[1], [
 			'username' => 'newUser',
@@ -61,6 +61,6 @@ class InviteUserTest extends BaseApiWithDataTest
 		$response->assertCreated();
 
 		Configs::set('user_registration_enabled', false);
-		Configs::invalidateCache();
+
 	}
 }

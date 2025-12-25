@@ -27,6 +27,8 @@ class Kernel extends HttpKernel
 		\App\Http\Middleware\TrimStrings::class,
 		\Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
 		\Bepsvpt\SecureHeaders\SecureHeadersMiddleware::class,
+		\App\Http\Middleware\ResolveConfigs::class,
+		\App\Http\Middleware\ResolveVerify::class,
 	];
 
 	/**
@@ -45,8 +47,6 @@ class Kernel extends HttpKernel
 			\Illuminate\Session\Middleware\AuthenticateSession::class,
 			\Illuminate\View\Middleware\ShareErrorsFromSession::class,
 			\App\Http\Middleware\VerifyCsrfToken::class,
-			\App\Http\Middleware\ResolveConfigs::class,
-			\App\Http\Middleware\ResolveVerify::class,
 			\Illuminate\Routing\Middleware\SubstituteBindings::class,
 			\App\Http\Middleware\DisableCSP::class,
 		],
@@ -59,8 +59,6 @@ class Kernel extends HttpKernel
 			\Illuminate\Session\Middleware\AuthenticateSession::class,
 			\Illuminate\View\Middleware\ShareErrorsFromSession::class,
 			\App\Http\Middleware\VerifyCsrfToken::class,
-			\App\Http\Middleware\ResolveConfigs::class,
-			\App\Http\Middleware\ResolveVerify::class,
 			\Illuminate\Routing\Middleware\SubstituteBindings::class,
 			\App\Http\Middleware\DisableCSP::class,
 		],
@@ -79,8 +77,6 @@ class Kernel extends HttpKernel
 			\Illuminate\Session\Middleware\AuthenticateSession::class,
 			\Illuminate\View\Middleware\ShareErrorsFromSession::class,
 			\App\Http\Middleware\VerifyCsrfToken::class,
-			\App\Http\Middleware\ResolveConfigs::class,
-			\App\Http\Middleware\ResolveVerify::class,
 			\Illuminate\Routing\Middleware\SubstituteBindings::class,
 			\App\Http\Middleware\Latency::class,
 			'response_cache',

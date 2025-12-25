@@ -25,7 +25,7 @@ class ConfigKeyRuleTest extends AbstractTestCase
 {
 	public function testNegative(): void
 	{
-		$rule = new ConfigKeyRule();
+		$rule = resolve(ConfigKeyRule::class);
 		$msg = "don't worry";
 		$rule->validate('', 'version', function ($message) use (&$msg): void { $msg = $message; });
 		$expected = "don't worry";
@@ -34,7 +34,7 @@ class ConfigKeyRuleTest extends AbstractTestCase
 
 	public function testPositive(): void
 	{
-		$rule = new ConfigKeyRule();
+		$rule = resolve(ConfigKeyRule::class);
 		$msg = "don't worry";
 		$rule->validate('', 1234567, function ($message) use (&$msg): void { $msg = $message; });
 		$expected = "don't worry";

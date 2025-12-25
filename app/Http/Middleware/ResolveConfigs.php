@@ -26,8 +26,8 @@ class ResolveConfigs
 
 	public function resolve_configs(Request $request): ConfigManager
 	{
-		$config_manager = new ConfigManager();
-		app()->instance(ConfigManager::class, $config_manager);
+		$config = resolve(ConfigManager::class);
+		app()->scoped(ConfigManager::class, fn () => $config);
 
 		return app(ConfigManager::class);
 	}

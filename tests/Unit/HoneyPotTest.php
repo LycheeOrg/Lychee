@@ -21,11 +21,13 @@ namespace Tests\Unit;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\Response;
+use PHPUnit\Framework\Attributes\Group;
 use Tests\AbstractTestCase;
 
 /**
  * Consider refactoring this test to only check the pipes used rather than the full path each time.
  */
+#[Group('slow')]
 class HoneyPotTest extends AbstractTestCase
 {
 	use DatabaseTransactions;

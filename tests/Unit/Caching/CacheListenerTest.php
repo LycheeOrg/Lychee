@@ -32,7 +32,7 @@ class CacheListenerTest extends AbstractTestCase
 	public function tearDown(): void
 	{
 		Configs::where('key', 'cache_event_logging')->update(['value' => '0']);
-		Configs::invalidateCache();
+
 		parent::tearDown();
 	}
 
@@ -42,7 +42,7 @@ class CacheListenerTest extends AbstractTestCase
 		Log::shouldReceive('info')->never();
 
 		Configs::where('key', 'cache_event_logging')->update(['value' => '0']);
-		Configs::invalidateCache();
+
 
 		$listener = new CacheListener();
 		$listener->handle(new CacheMissed('store', 'key'));
@@ -55,7 +55,7 @@ class CacheListenerTest extends AbstractTestCase
 		Log::shouldReceive('info')->never();
 
 		Configs::where('key', 'cache_event_logging')->update(['value' => '1']);
-		Configs::invalidateCache();
+
 
 		$listener = new CacheListener();
 		$listener->handle(new CacheMissed('store', 'key'));
@@ -67,7 +67,7 @@ class CacheListenerTest extends AbstractTestCase
 		Log::shouldReceive('info')->never();
 
 		Configs::where('key', 'cache_event_logging')->update(['value' => '1']);
-		Configs::invalidateCache();
+
 
 		$listener = new CacheListener();
 		$listener->handle(new CacheHit('store', 'key', 'value'));
@@ -79,7 +79,7 @@ class CacheListenerTest extends AbstractTestCase
 		Log::shouldReceive('info')->once()->with('CacheListener: Forgetting key key');
 
 		Configs::where('key', 'cache_event_logging')->update(['value' => '1']);
-		Configs::invalidateCache();
+
 
 		$listener = new CacheListener();
 		$listener->handle(new KeyForgotten('store', 'key'));
@@ -91,7 +91,7 @@ class CacheListenerTest extends AbstractTestCase
 		Log::shouldReceive('info')->once()->with('CacheListener: Writing key key');
 
 		Configs::where('key', 'cache_event_logging')->update(['value' => '1']);
-		Configs::invalidateCache();
+
 
 		$listener = new CacheListener();
 		$listener->handle(new KeyWritten('store', 'key', 'value'));
@@ -103,7 +103,7 @@ class CacheListenerTest extends AbstractTestCase
 		Log::shouldReceive('debug')->once()->with('CacheListener: Writing key api/key with value: \'value\'');
 
 		Configs::where('key', 'cache_event_logging')->update(['value' => '1']);
-		Configs::invalidateCache();
+
 
 		$listener = new CacheListener();
 		$listener->handle(new KeyWritten('store', 'api/key', 'value'));

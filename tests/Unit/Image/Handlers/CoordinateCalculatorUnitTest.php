@@ -40,7 +40,7 @@ class CoordinateCalculatorUnitTest extends AbstractTestCase
 	{
 		parent::setUp();
 		$this->requireSe();
-		$this->calculator = new CoordinateCalculator();
+		$this->calculator = resolve(CoordinateCalculator::class);
 	}
 
 	protected function tearDown(): void

@@ -103,6 +103,10 @@ class AppServiceProvider extends ServiceProvider
 	public function boot()
 	{
 		Request::macro('verify', function (): VerifyInterface {
+			if (config('features.populate-request-macros', false) === true) {
+				return resolve(Verify::class);
+			}
+
 			if (!$this->attributes->has('verify')) {
 				throw new LycheeLogicException('request attribute "verify" is not set.');
 			}
@@ -118,23 +122,11 @@ class AppServiceProvider extends ServiceProvider
 			);
 		});
 
-		Request::macro('get_status', function (): Status {
-			if (!$this->attributes->has('status')) {
-				throw new LycheeLogicException('request attribute "status" is not set.');
-			}
-
-			$status = $this->attributes->get('status');
-
-			if ($status instanceof Status) {
-				return $status;
-			}
-
-			throw new LycheeLogicException(
-				'request attribute "status" is set but not an instance of Status.'
-			);
-		});
-
 		Request::macro('configs', function (): ConfigManager {
+			if (config('features.populate-request-macros', false) === true) {
+				return resolve(ConfigManager::class);
+			}
+
 			if (!$this->attributes->has('configs')) {
 				throw new LycheeLogicException('request attribute "configs" is not set.');
 			}

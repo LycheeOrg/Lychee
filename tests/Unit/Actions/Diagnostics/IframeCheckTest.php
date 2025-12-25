@@ -30,17 +30,15 @@ use Tests\Constants\FreeVerifyier;
 class IframeCheckTest extends AbstractTestCase
 {
 	private IframeCheck $iframeCheck;
-	private DiagnosticDTO $data;
+	private array $data;
 	private \Closure $next;
 
 	protected function setUp(): void
 	{
 		parent::setUp();
 		$this->iframeCheck = new IframeCheck();
-		$verify = new FreeVerifyier();
-		$configManager = app(ConfigManager::class);
-		$this->data = new DiagnosticDTO($verify, $configManager, []);
-		$this->next = function (DiagnosticDTO $data) {
+		$this->data = [];
+		$this->next = function (array $data) {
 			return $data;
 		};
 	}
@@ -57,7 +55,7 @@ class IframeCheckTest extends AbstractTestCase
 
 		$result = $this->iframeCheck->handle($this->data, $this->next);
 
-		$this->assertEmpty($result->data, 'Should return empty result when X-Frame-Options is deny');
+		$this->assertEmpty($result, 'Should return empty result when X-Frame-Options is deny');
 	}
 
 	/**
@@ -75,12 +73,12 @@ class IframeCheckTest extends AbstractTestCase
 
 		$result = $this->iframeCheck->handle($this->data, $this->next);
 
-		$this->assertCount(1, $result->data);
-		$this->assertInstanceOf(DiagnosticData::class, $result->data[0]);
-		$this->assertEquals(MessageType::WARNING, $result->data[0]->type);
-		$this->assertEquals('SECURITY_HEADER_CSP_FRAME_ANCESTORS is set.', $result->data[0]->message);
-		$this->assertEquals(IframeCheck::class, $result->data[0]->from);
-		$this->assertContains('This allows Lychee to be used in iFrame, which is not recommended as it will lower the security of your session cookies.', $result->data[0]->details);
+		$this->assertCount(1, $result);
+		$this->assertInstanceOf(DiagnosticData::class, $result[0]);
+		$this->assertEquals(MessageType::WARNING, $result[0]->type);
+		$this->assertEquals('SECURITY_HEADER_CSP_FRAME_ANCESTORS is set.', $result[0]->message);
+		$this->assertEquals(IframeCheck::class, $result[0]->from);
+		$this->assertContains('This allows Lychee to be used in iFrame, which is not recommended as it will lower the security of your session cookies.', $result[0]->details);
 	}
 
 	/**
@@ -98,17 +96,17 @@ class IframeCheckTest extends AbstractTestCase
 
 		$result = $this->iframeCheck->handle($this->data, $this->next);
 
-		$this->assertCount(1, $result->data);
-		$this->assertInstanceOf(DiagnosticData::class, $result->data[0]);
-		$this->assertEquals(MessageType::WARNING, $result->data[0]->type);
-		$this->assertEquals('SECURITY_HEADER_CSP_FRAME_ANCESTORS is set.', $result->data[0]->message);
-		$this->assertEquals(IframeCheck::class, $result->data[0]->from);
+		$this->assertCount(1, $result);
+		$this->assertInstanceOf(DiagnosticData::class, $result[0]);
+		$this->assertEquals(MessageType::WARNING, $result[0]->type);
+		$this->assertEquals('SECURITY_HEADER_CSP_FRAME_ANCESTORS is set.', $result[0]->message);
+		$this->assertEquals(IframeCheck::class, $result[0]->from);
 
 		// Should contain censored URLs
-		$detailsText = implode(' ', $result->data[0]->details);
+		$detailsText = implode(' ', $result[0]->details);
 		$this->assertStringContainsString('Allowing', $detailsText);
 		$this->assertStringContainsString('to use Lychee in iFrame.', $detailsText);
-		$this->assertContains('This allows Lychee to be used in iFrame, which is not recommended as it will lower the security of your session cookies.', $result->data[0]->details);
+		$this->assertContains('This allows Lychee to be used in iFrame, which is not recommended as it will lower the security of your session cookies.', $result[0]->details);
 	}
 
 	/**
@@ -126,19 +124,19 @@ class IframeCheckTest extends AbstractTestCase
 
 		$result = $this->iframeCheck->handle($this->data, $this->next);
 
-		$this->assertCount(2, $result->data);
+		$this->assertCount(2, $result);
 
 		// First diagnostic should be the warning about CSP frame ancestors
-		$this->assertInstanceOf(DiagnosticData::class, $result->data[0]);
-		$this->assertEquals(MessageType::WARNING, $result->data[0]->type);
-		$this->assertEquals('SECURITY_HEADER_CSP_FRAME_ANCESTORS is set.', $result->data[0]->message);
+		$this->assertInstanceOf(DiagnosticData::class, $result[0]);
+		$this->assertEquals(MessageType::WARNING, $result[0]->type);
+		$this->assertEquals('SECURITY_HEADER_CSP_FRAME_ANCESTORS is set.', $result[0]->message);
 
 		// Second diagnostic should be the error about session configuration
-		$this->assertInstanceOf(DiagnosticData::class, $result->data[1]);
-		$this->assertEquals(MessageType::ERROR, $result->data[1]->type);
-		$this->assertEquals('Session same_site is set to none, but session secure is set to false.', $result->data[1]->message);
-		$this->assertEquals(IframeCheck::class, $result->data[1]->from);
-		$this->assertEquals(['Set SESSION_SECURE_COOKIE to true in your .env file to solve this issue.'], $result->data[1]->details);
+		$this->assertInstanceOf(DiagnosticData::class, $result[1]);
+		$this->assertEquals(MessageType::ERROR, $result[1]->type);
+		$this->assertEquals('Session same_site is set to none, but session secure is set to false.', $result[1]->message);
+		$this->assertEquals(IframeCheck::class, $result[1]->from);
+		$this->assertEquals(['Set SESSION_SECURE_COOKIE to true in your .env file to solve this issue.'], $result[1]->details);
 	}
 
 	/**
@@ -156,10 +154,10 @@ class IframeCheckTest extends AbstractTestCase
 
 		$result = $this->iframeCheck->handle($this->data, $this->next);
 
-		$this->assertCount(1, $result->data);
-		$this->assertInstanceOf(DiagnosticData::class, $result->data[0]);
-		$this->assertEquals(MessageType::WARNING, $result->data[0]->type);
-		$this->assertEquals('SECURITY_HEADER_CSP_FRAME_ANCESTORS is set.', $result->data[0]->message);
+		$this->assertCount(1, $result);
+		$this->assertInstanceOf(DiagnosticData::class, $result[0]);
+		$this->assertEquals(MessageType::WARNING, $result[0]->type);
+		$this->assertEquals('SECURITY_HEADER_CSP_FRAME_ANCESTORS is set.', $result[0]->message);
 	}
 
 	/**
@@ -177,10 +175,10 @@ class IframeCheckTest extends AbstractTestCase
 
 		$result = $this->iframeCheck->handle($this->data, $this->next);
 
-		$this->assertCount(1, $result->data);
-		$this->assertInstanceOf(DiagnosticData::class, $result->data[0]);
-		$this->assertEquals(MessageType::WARNING, $result->data[0]->type);
-		$this->assertEquals('SECURITY_HEADER_CSP_FRAME_ANCESTORS is set.', $result->data[0]->message);
+		$this->assertCount(1, $result);
+		$this->assertInstanceOf(DiagnosticData::class, $result[0]);
+		$this->assertEquals(MessageType::WARNING, $result[0]->type);
+		$this->assertEquals('SECURITY_HEADER_CSP_FRAME_ANCESTORS is set.', $result[0]->message);
 	}
 
 	/**
@@ -192,9 +190,7 @@ class IframeCheckTest extends AbstractTestCase
 	public function testHandleWithExistingData(): void
 	{
 		$existingDiagnostic = DiagnosticData::info('Existing diagnostic', 'TestClass');
-		$verify = new FreeVerifyier();
-		$configManager = app(ConfigManager::class);
-		$this->data = new DiagnosticDTO($verify, $configManager, [$existingDiagnostic]);
+		$this->data = [$existingDiagnostic];
 
 		Config::set('secure-headers.x-frame-options', 'sameorigin');
 		Config::set('secure-headers.csp.frame-ancestors.allow', ['https://example.com']);
@@ -203,10 +199,10 @@ class IframeCheckTest extends AbstractTestCase
 
 		$result = $this->iframeCheck->handle($this->data, $this->next);
 
-		$this->assertCount(3, $result->data);
-		$this->assertEquals($existingDiagnostic, $result->data[0]); // Should preserve existing data
-		$this->assertEquals(MessageType::WARNING, $result->data[1]->type);
-		$this->assertEquals(MessageType::ERROR, $result->data[2]->type);
+		$this->assertCount(3, $result);
+		$this->assertEquals($existingDiagnostic, $result[0]); // Should preserve existing data
+		$this->assertEquals(MessageType::WARNING, $result[1]->type);
+		$this->assertEquals(MessageType::ERROR, $result[2]->type);
 	}
 
 	/**
@@ -225,14 +221,12 @@ class IframeCheckTest extends AbstractTestCase
 			Config::set('session.same_site', 'lax');
 			Config::set('session.secure', true);
 
-			$verify = new FreeVerifyier();
-			$configManager = app(ConfigManager::class);
-			$this->data = new DiagnosticDTO($verify, $configManager, []); // Reset data for each iteration
+			$this->data = []; // Reset data for each iteration
 
 			$result = $this->iframeCheck->handle($this->data, $this->next);
 
-			$this->assertCount(1, $result->data, 'Failed for X-Frame-Options value: ' . var_export($value, true));
-			$this->assertEquals(MessageType::WARNING, $result->data[0]->type);
+			$this->assertCount(1, $result, 'Failed for X-Frame-Options value: ' . var_export($value, true));
+			$this->assertEquals(MessageType::WARNING, $result[0]->type);
 		}
 	}
 
@@ -244,7 +238,7 @@ class IframeCheckTest extends AbstractTestCase
 	public function testNextClosureIsCalled(): void
 	{
 		$nextCalled = false;
-		$nextFunction = function (DiagnosticDTO $data) use (&$nextCalled) {
+		$nextFunction = function (array $data) use (&$nextCalled) {
 			$nextCalled = true;
 
 			return $data;
@@ -258,7 +252,6 @@ class IframeCheckTest extends AbstractTestCase
 		$result = $this->iframeCheck->handle($this->data, $nextFunction);
 
 		$this->assertTrue($nextCalled, 'Next closure should be called');
-		$this->assertInstanceOf(DiagnosticDTO::class, $result);
 	}
 
 	/**
@@ -273,12 +266,10 @@ class IframeCheckTest extends AbstractTestCase
 		Config::set('session.same_site', 'lax');
 		Config::set('session.secure', true);
 
-		$verify = new FreeVerifyier();
-		$configManager = app(ConfigManager::class);
-		$originalData = new DiagnosticDTO($verify, $configManager, []);
+		$originalData = [];
 		$this->iframeCheck->handle($originalData, $this->next);
 
-		$this->assertCount(1, $originalData->data, 'Original data array should be modified by reference');
-		$this->assertInstanceOf(DiagnosticData::class, $originalData->data[0]);
+		$this->assertCount(1, $originalData, 'Original data array should be modified by reference');
+		$this->assertInstanceOf(DiagnosticData::class, $originalData[0]);
 	}
 }

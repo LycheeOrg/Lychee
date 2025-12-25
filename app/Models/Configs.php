@@ -20,6 +20,7 @@ use App\Exceptions\UnexpectedException;
 use App\Models\Builders\ConfigsBuilder;
 use App\Models\Extensions\ConfigsHas;
 use App\Models\Extensions\ThrowsConsistentExceptions;
+use App\Repositories\ConfigManager;
 use BackedEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -361,7 +362,7 @@ class Configs extends Model
 			// @codeCoverageIgnoreEnd
 		} finally {
 			// invalidate cache.
-			self::$cache = [];
+			resolve(ConfigManager::class)->invalidateCache();
 		}
 	}
 

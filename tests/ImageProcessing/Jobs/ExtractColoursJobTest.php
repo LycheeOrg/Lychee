@@ -37,7 +37,7 @@ class ExtractColoursJobTest extends BaseApiWithDataTest
 	public function tearDown(): void
 	{
 		Configs::set('colour_extraction_driver', 'farzai');
-		Configs::invalidateCache();
+
 		parent::tearDown();
 	}
 
@@ -45,7 +45,7 @@ class ExtractColoursJobTest extends BaseApiWithDataTest
 	{
 		Configs::set('colour_extraction_driver', 'farzai');
 		Configs::set('imagick', true);
-		Configs::invalidateCache();
+
 		$this->runExtraction();
 	}
 
@@ -53,10 +53,10 @@ class ExtractColoursJobTest extends BaseApiWithDataTest
 	{
 		Configs::set('colour_extraction_driver', 'farzai');
 		Configs::set('imagick', false);
-		Configs::invalidateCache();
+
 		$this->runExtraction();
 		Configs::set('imagick', true);
-		Configs::invalidateCache();
+
 	}
 
 	private function runExtraction(): void
@@ -93,10 +93,10 @@ class ExtractColoursJobTest extends BaseApiWithDataTest
 	public function testExtractColoursLeague(): void
 	{
 		Configs::set('colour_extraction_driver', 'league');
-		Configs::invalidateCache();
+
 		$this->runExtraction();
 		Configs::set('colour_extraction_driver', 'farzai');
-		Configs::invalidateCache();
+
 	}
 
 	public function testExtractColourWrongDriver(): void
@@ -104,7 +104,7 @@ class ExtractColoursJobTest extends BaseApiWithDataTest
 		$this->expectException(InvalidConfigOption::class);
 
 		Configs::set('colour_extraction_driver', 'wrong_driver');
-		Configs::invalidateCache();
+
 		$job = new ExtractColoursJob($this->photo2);
 		$job->handle();
 	}

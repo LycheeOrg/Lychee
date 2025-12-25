@@ -29,7 +29,7 @@ class FlowTest extends BaseApiWithDataTest
 		$this->assertUnauthorized($response);
 
 		Configs::set('flow_public', true);
-		Configs::invalidateCache();
+
 
 		$response = $this->getJson('Flow');
 		$this->assertOk($response);
@@ -60,7 +60,7 @@ class FlowTest extends BaseApiWithDataTest
 	{
 		Configs::set('flow_public', true);
 		Configs::set('flow_base', $this->album4->id);
-		Configs::invalidateCache();
+
 
 		$response = $this->getJson('Flow');
 		$this->assertOk($response);
@@ -88,14 +88,14 @@ class FlowTest extends BaseApiWithDataTest
 
 		Configs::set('flow_public', false);
 		Configs::set('flow_base', '');
-		Configs::invalidateCache();
+
 	}
 
 	public function testGetAnonymousWithSubAlbums(): void
 	{
 		Configs::set('flow_public', true);
 		Configs::set('flow_include_sub_albums', true);
-		Configs::invalidateCache();
+
 
 		$response = $this->getJson('Flow');
 		$this->assertOk($response);
@@ -129,7 +129,7 @@ class FlowTest extends BaseApiWithDataTest
 	public function testGetUserRoot(): void
 	{
 		Configs::set('flow_include_sub_albums', false);
-		Configs::invalidateCache();
+
 
 		$response = $this->actingAs($this->userMayUpload1)->getJson('Flow');
 		$this->assertOk($response);
@@ -157,7 +157,7 @@ class FlowTest extends BaseApiWithDataTest
 	{
 		Configs::set('flow_include_sub_albums', true);
 		Configs::set('hide_nsfw_in_flow', false);
-		Configs::invalidateCache();
+
 
 		$response = $this->actingAs($this->userMayUpload1)->getJson('Flow');
 		$this->assertOk($response);
@@ -189,6 +189,6 @@ class FlowTest extends BaseApiWithDataTest
 		]);
 
 		Configs::set('hide_nsfw_in_flow', true);
-		Configs::invalidateCache();
+
 	}
 }
