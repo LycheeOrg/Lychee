@@ -31,7 +31,7 @@ class CacheListenerTest extends AbstractTestCase
 {
 	public function tearDown(): void
 	{
-		Configs::where('key', 'cache_event_logging')->update(['value' => '0']);
+		Configs::set('cache_event_logging', '0');
 
 		parent::tearDown();
 	}
@@ -41,7 +41,7 @@ class CacheListenerTest extends AbstractTestCase
 		Log::shouldReceive('debug')->never();
 		Log::shouldReceive('info')->never();
 
-		Configs::where('key', 'cache_event_logging')->update(['value' => '0']);
+		Configs::set('cache_event_logging', '0');
 
 
 		$listener = new CacheListener();
@@ -54,7 +54,7 @@ class CacheListenerTest extends AbstractTestCase
 		Log::shouldReceive('debug')->once()->with('CacheListener: Miss for key');
 		Log::shouldReceive('info')->never();
 
-		Configs::where('key', 'cache_event_logging')->update(['value' => '1']);
+		Configs::set('cache_event_logging', '1');
 
 
 		$listener = new CacheListener();
@@ -66,7 +66,7 @@ class CacheListenerTest extends AbstractTestCase
 		Log::shouldReceive('debug')->once()->with('CacheListener: Hit for key');
 		Log::shouldReceive('info')->never();
 
-		Configs::where('key', 'cache_event_logging')->update(['value' => '1']);
+		Configs::set('cache_event_logging', '1');
 
 
 		$listener = new CacheListener();
@@ -78,7 +78,7 @@ class CacheListenerTest extends AbstractTestCase
 		Log::shouldReceive('debug')->never();
 		Log::shouldReceive('info')->once()->with('CacheListener: Forgetting key key');
 
-		Configs::where('key', 'cache_event_logging')->update(['value' => '1']);
+		Configs::set('cache_event_logging', '1');
 
 
 		$listener = new CacheListener();
@@ -90,7 +90,7 @@ class CacheListenerTest extends AbstractTestCase
 		Log::shouldReceive('debug')->never();
 		Log::shouldReceive('info')->once()->with('CacheListener: Writing key key');
 
-		Configs::where('key', 'cache_event_logging')->update(['value' => '1']);
+		Configs::set('cache_event_logging', '1');
 
 
 		$listener = new CacheListener();
@@ -102,7 +102,7 @@ class CacheListenerTest extends AbstractTestCase
 		Log::shouldReceive('info')->never();
 		Log::shouldReceive('debug')->once()->with('CacheListener: Writing key api/key with value: \'value\'');
 
-		Configs::where('key', 'cache_event_logging')->update(['value' => '1']);
+		Configs::set('cache_event_logging', '1');
 
 
 		$listener = new CacheListener();

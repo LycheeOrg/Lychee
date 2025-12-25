@@ -230,7 +230,6 @@ return [
 		\SocialiteProviders\Manager\ServiceProvider::class,
 		// Barryvdh\Debugbar\ServiceProvider::class,
 		Mavinoo\Batch\BatchServiceProvider::class,
-		App\Providers\WriteOnceRequestProvider::class,
 
 		/*
 		 * Application Service Providers...

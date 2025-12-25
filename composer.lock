@@ -4171,16 +4171,16 @@
         },
         {
             "name": "lychee-org/lycheeverify",
-            "version": "2.0.5",
+            "version": "2.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/LycheeOrg/verify.git",
-                "reference": "06022cce805f52689dfb1934733f4a5a937b1415"
+                "reference": "80efbebb61ac5cc01c70f246fb9b9468e57bbd33"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/LycheeOrg/verify/zipball/06022cce805f52689dfb1934733f4a5a937b1415",
-                "reference": "06022cce805f52689dfb1934733f4a5a937b1415",
+                "url": "https://api.github.com/repos/LycheeOrg/verify/zipball/80efbebb61ac5cc01c70f246fb9b9468e57bbd33",
+                "reference": "80efbebb61ac5cc01c70f246fb9b9468e57bbd33",
                 "shasum": ""
             },
             "require": {
@@ -4249,7 +4249,7 @@
             "description": "Verification package for Lychee",
             "homepage": "https://github.com/LycheeOrg/verify",
             "support": {
-                "source": "https://github.com/LycheeOrg/verify/tree/2.0.5",
+                "source": "https://github.com/LycheeOrg/verify/tree/2.0.6",
                 "issues": "https://github.com/LycheeOrg/verify/issues"
             },
             "funding": [
@@ -4258,7 +4258,7 @@
                     "url": "https://github.com/LycheeOrg"
                 }
             ],
-            "time": "2025-12-24T18:49:12+00:00"
+            "time": "2025-12-25T17:06:50+00:00"
         },
         {
             "name": "lychee-org/nestedset",

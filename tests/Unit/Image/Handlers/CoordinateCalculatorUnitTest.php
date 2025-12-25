@@ -25,6 +25,7 @@ use App\Enum\ShiftY;
 use App\Enum\WatermarkPosition;
 use App\Image\CoordinateCalculator;
 use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\AbstractTestCase;
 use Tests\Traits\RequireSE;
@@ -40,7 +41,8 @@ class CoordinateCalculatorUnitTest extends AbstractTestCase
 	{
 		parent::setUp();
 		$this->requireSe();
-		$this->calculator = resolve(CoordinateCalculator::class);
+		$config_manager = resolve(ConfigManager::class);
+		$this->calculator = new CoordinateCalculator($config_manager);
 	}
 
 	protected function tearDown(): void

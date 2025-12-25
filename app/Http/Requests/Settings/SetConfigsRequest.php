@@ -40,8 +40,7 @@ class SetConfigsRequest extends GetAllConfigsRequest implements HasEditableConfi
 			RequestAttribute::CONFIGS_ARRAY_KEY_ATTRIBUTE => [
 				'required',
 				new ConfigKeyRule($this->configs()),
-				new ConfigKeyRequireSupportRule($this->verify(),
-					$this->configs()),
+				new ConfigKeyRequireSupportRule($this->verify()),
 				new OwnerConfigRule($this->configs()),
 			],
 			RequestAttribute::CONFIGS_ARRAY_VALUE_ATTRIBUTE => ['present', new ConfigValueRule()],

@@ -19,6 +19,7 @@
 namespace Tests\Traits;
 
 use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use Tests\Constants\TestConstants;
 
 trait RequiresFFMpeg
@@ -28,9 +29,10 @@ trait RequiresFFMpeg
 
 	protected function setUpRequiresFFMpeg(): void
 	{
-		$this->hasFFMpegInit = Configs::getValueAsInt(TestConstants::CONFIG_HAS_FFMPEG);
+		$config_manager = resolve(ConfigManager::class);
+		$this->hasFFMpegInit = $config_manager->getValueAsInt(TestConstants::CONFIG_HAS_FFMPEG);
 		Configs::set(TestConstants::CONFIG_HAS_FFMPEG, 2);
-		$this->hasFFMpeg = Configs::hasFFmpeg();
+		$this->hasFFMpeg = $config_manager->hasFFmpeg();
 	}
 
 	protected function tearDownRequiresFFMpeg(): void

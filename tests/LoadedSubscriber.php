@@ -9,7 +9,10 @@
 namespace Tests;
 
 use App\Models\User;
+use App\Repositories\ConfigManager;
 use Illuminate\Foundation\Bootstrap\HandleExceptions;
+use LycheeVerify\Contract\VerifyInterface;
+use LycheeVerify\Verify;
 use PHPUnit\Event\TestSuite\Loaded;
 use PHPUnit\Event\TestSuite\LoadedSubscriber as LoadedSubscriberInterface;
 
@@ -22,6 +25,9 @@ final class LoadedSubscriber implements LoadedSubscriberInterface
 	{
 		$this->createApplication();
 		$this->migrateApplication();
+
+		app()->scoped(VerifyInterface::class, fn () => new Verify());
+		app()->scoped(ConfigManager::class, fn () => new ConfigManager());
 
 		// If there are any users in the DB, this tends to crash some tests (because we check exact count of users).
 		if (User::query()->count() > 0) {

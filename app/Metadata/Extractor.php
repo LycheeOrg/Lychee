@@ -87,7 +87,7 @@ class Extractor
 			//  4. Native PHP exif reader (last resort)
 			$reader = match (true) {
 				($config_manager->hasFFmpeg() && $is_supported_video) => Reader::factory(ReaderType::FFPROBE, $config_manager->getValueAsString('ffprobe_path')),
-				$config_manager->hasExiftool() => Reader::factory(ReaderType::EXIFTOOL, $config_manager->getValueAsString('exiftool_path')),
+				($config_manager->hasExiftool()) => Reader::factory(ReaderType::EXIFTOOL, $config_manager->getValueAsString('exiftool_path')),
 				($config_manager->hasImagick() && !$is_supported_video) => Reader::factory(ReaderType::IMAGICK),
 				default => Reader::factory(ReaderType::NATIVE),
 			};

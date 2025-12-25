@@ -54,6 +54,7 @@ class ConfigManager
 		}
 
 		if (!array_key_exists($key, $this->cache)) {
+			// dd($this->cache, $this->cache['has_exiftool'] ?? 'n/a');
 			/*
 			 * For some reason the $default is not returned above...
 			 */
@@ -204,7 +205,6 @@ class ConfigManager
 
 			try {
 				Configs::set('has_exiftool', $has_exiftool);
-				$this->cache['has_exiftool'] = strval($has_exiftool);
 				// @codeCoverageIgnoreStart
 			} catch (InvalidConfigOption|QueryBuilderException $e) {
 				// If we could not save the detected setting, still proceed
@@ -226,7 +226,7 @@ class ConfigManager
 		// 1: ffmpeg is available
 		// 2: Not yet tested if ffmpeg is available
 
-		$has_ffmpeg = self::getValueAsInt('has_ffmpeg');
+		$has_ffmpeg = $this->getValueAsInt('has_ffmpeg');
 
 		// value not yet set -> let's see if ffmpeg is available
 		if ($has_ffmpeg === 2) {
@@ -249,7 +249,6 @@ class ConfigManager
 
 			try {
 				Configs::set('has_ffmpeg', $has_ffmpeg);
-				$this->cache['has_ffmpeg'] = strval($has_ffmpeg);
 				// @codeCoverageIgnoreStart
 			} catch (InvalidConfigOption|QueryBuilderException $e) {
 				// If we could not save the detected setting, still proceed
