@@ -11,12 +11,13 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 use App\Constants\FileSystem;
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
-use App\DTO\DiagnosticDTO;
 use App\Enum\StorageDiskType;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Handler;
 use App\Exceptions\Internal\InvalidConfigOption;
 use App\Facades\Helpers;
+use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Storage;
 use League\Flysystem\Local\LocalFilesystemAdapter;
@@ -65,10 +66,16 @@ class BasicPermissionCheck implements DiagnosticPipe
 	 */
 	protected array $anonymizePaths = [];
 
+	public function __construct(
+		private ConfigManager $config_manager,
+	)
+	{
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
-	public function handle(DiagnosticDTO &$data, \Closure $next): DiagnosticDTO
+	public function handle(array &$data, \Closure $next): array
 	{
 		$this->folders($data);
 		$this->userCSS($data);
@@ -79,11 +86,11 @@ class BasicPermissionCheck implements DiagnosticPipe
 	/**
 	 * Check all the folders with the correct permissions.
 	 *
-	 * @param DiagnosticDTO $data
+	 * @param DiagnosticData[] $data
 	 *
 	 * @return void
 	 */
-	public function folders(DiagnosticDTO &$data): void
+	public function folders(array &$data): void
 	{
 		if (!extension_loaded('posix')) {
 			// @codeCoverageIgnoreStart
@@ -153,11 +160,11 @@ class BasicPermissionCheck implements DiagnosticPipe
 	/**
 	 * Check if user.css has the correct permissions.
 	 *
-	 * @param DiagnosticDTO $data
+	 * @param DiagnosticData[] $data
 	 *
 	 * @return void
 	 */
-	public function userCSS(DiagnosticDTO &$data): void
+	public function userCSS(array &$data): void
 	{
 		$p = Storage::disk(FileSystem::DIST)->path('user.css');
 		if (!Helpers::hasPermissions($p)) {
@@ -171,7 +178,7 @@ class BasicPermissionCheck implements DiagnosticPipe
 			// @codeCoverageIgnoreEnd
 		}
 		try {
-			if ($data->config_manager->getValueAsBool('disable_recursive_permission_check')) {
+			if ($this->config_manager->getValueAsBool('disable_recursive_permission_check')) {
 				$data[] = DiagnosticData::info('Full directory permission check is disabled', self::class);
 			}
 			// @codeCoverageIgnoreStart
@@ -187,12 +194,12 @@ class BasicPermissionCheck implements DiagnosticPipe
 	 * For efficiency reasons only the directory permissions are checked,
 	 * not the permissions of every single file.
 	 *
-	 * @param string        $path the path of the directory or file to check
-	 * @param DiagnosticDTO $data the list of errors to append to
+	 * @param string           $path the path of the directory or file to check
+	 * @param DiagnosticData[] $data the list of errors to append to
 	 *
 	 * @noinspection PhpComposerExtensionStubsInspection
 	 */
-	private function checkDirectoryPermissionsRecursively(string $path, DiagnosticDTO &$data): void
+	private function checkDirectoryPermissionsRecursively(string $path, array &$data): void
 	{
 		try {
 			if (!is_dir($path)) {
@@ -205,7 +212,7 @@ class BasicPermissionCheck implements DiagnosticPipe
 				$actual_perm = fileperms($path);
 				// @codeCoverageIgnoreStart
 			} catch (FilesystemException) {
-				$data->data[] = DiagnosticData::warn(sprintf('Unable to determine permissions for %s', $this->anonymize($path)), self::class);
+				$data[] = DiagnosticData::warn(sprintf('Unable to determine permissions for %s', $this->anonymize($path)), self::class);
 
 				return;
 			}
@@ -237,7 +244,7 @@ class BasicPermissionCheck implements DiagnosticPipe
 				// @codeCoverageIgnoreStart
 				$this->numOwnerIssues++;
 				if ($this->numOwnerIssues <= self::MAX_ISSUE_REPORTS_PER_TYPE) {
-					$data->data[] = DiagnosticData::warn(sprintf('%s is owned by group %s, but should be owned by one out of %s', $this->anonymize($path), $owning_group_name, $this->groupNames), self::class);
+					$data[] = DiagnosticData::warn(sprintf('%s is owned by group %s, but should be owned by one out of %s', $this->anonymize($path), $owning_group_name, $this->groupNames), self::class);
 				}
 				// @codeCoverageIgnoreEnd
 			}
@@ -246,7 +253,7 @@ class BasicPermissionCheck implements DiagnosticPipe
 				// @codeCoverageIgnoreStart
 				$this->numPermissionIssues++;
 				if ($this->numPermissionIssues <= self::MAX_ISSUE_REPORTS_PER_TYPE) {
-					$data->data[] = DiagnosticData::warn(sprintf('%s has permissions %04o, but should have %04o', $this->anonymize($path), $actual_perm, $expected_perm), self::class);
+					$data[] = DiagnosticData::warn(sprintf('%s has permissions %04o, but should have %04o', $this->anonymize($path), $actual_perm, $expected_perm), self::class);
 				}
 				// @codeCoverageIgnoreEnd
 			}
@@ -261,14 +268,14 @@ class BasicPermissionCheck implements DiagnosticPipe
 						!is_readable($path) => 'not readable',
 						default => '',
 					};
-					$data->data[] = DiagnosticData::error(sprintf('%s is %s by %s', $this->anonymize($path), $problem, $this->groupNames), self::class);
+					$data[] = DiagnosticData::error(sprintf('%s is %s by %s', $this->anonymize($path), $problem, $this->groupNames), self::class);
 				}
 				// @codeCoverageIgnoreEnd
 			}
 
 			$dir = new \DirectoryIterator($path);
 			try {
-				if ($data->config_manager->getValueAsBool('disable_recursive_permission_check')) {
+				if ($this->config_manager->getValueAsBool('disable_recursive_permission_check')) {
 					return;
 				}
 				// @codeCoverageIgnoreStart

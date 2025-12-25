@@ -40,7 +40,6 @@ class HasAlbumThumb extends Relation
 	protected AlbumQueryPolicy $album_query_policy;
 	protected PhotoQueryPolicy $photo_query_policy;
 	protected PhotoSortingCriterion $sorting;
-	protected ConfigManager $config_manager;
 
 	public function __construct(Album $parent)
 	{
@@ -50,8 +49,7 @@ class HasAlbumThumb extends Relation
 		// attributes must be initialized by then
 		$this->album_query_policy = resolve(AlbumQueryPolicy::class);
 		$this->photo_query_policy = resolve(PhotoQueryPolicy::class);
-		$this->config_manager = app(ConfigManager::class);
-		$this->sorting = PhotoSortingCriterion::createDefault($this->config_manager);
+		$this->sorting = PhotoSortingCriterion::createDefault();
 		parent::__construct(
 			Photo::query()
 				->with(['size_variants' => (fn ($r) => Thumb::sizeVariantsFilter($r))]),
@@ -290,10 +288,10 @@ class HasAlbumThumb extends Relation
 				// `Album`always eagerly loads its cover and hence, we already
 				// have it.
 				// See {@link Album::with}
-				$album->setRelation($relation, Thumb::createFromPhoto($album->cover, $this->config_manager));
+				$album->setRelation($relation, Thumb::createFromPhoto($album->cover));
 			} elseif (isset($dictionary[$album_id])) {
 				$cover = reset($dictionary[$album_id]);
-				$album->setRelation($relation, Thumb::createFromPhoto($cover, $this->config_manager));
+				$album->setRelation($relation, Thumb::createFromPhoto($cover));
 			} else {
 				$album->setRelation($relation, null);
 			}
@@ -315,12 +313,11 @@ class HasAlbumThumb extends Relation
 		// have it.
 		// See {@link Album::with}
 		if ($album->cover_id !== null) {
-			return Thumb::createFromPhoto($album->cover, $this->config_manager);
+			return Thumb::createFromPhoto($album->cover);
 		} else {
 			return Thumb::createFromQueryable(
 				$this->getRelationQuery(),
 				$this->sorting,
-				$this->config_manager
 			);
 		}
 	}

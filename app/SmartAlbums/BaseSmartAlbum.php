@@ -54,17 +54,18 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	protected ?LengthAwarePaginator $photos = null;
 	protected \Closure $smart_photo_condition;
 	protected AccessPermission|null $public_permissions;
+	protected ConfigManager $config_manager;
 
 	/**
 	 * @throws ConfigurationKeyMissingException
 	 * @throws FrameworkException
 	 */
 	protected function __construct(
-		protected ConfigManager $config_manager,
 		SmartAlbumType $id,
 		\Closure $smart_condition,
 	) {
 		try {
+			$this->config_manager = resolve(ConfigManager::class);
 			$this->photo_query_policy = resolve(PhotoQueryPolicy::class);
 			$this->id = $id->value;
 			$this->title = __('gallery.smart_album.' . strtolower($id->name)) ?? $id->name;
@@ -130,7 +131,7 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 		// Cache query result for later use
 		// (this mimics the behaviour of relations of true Eloquent models)
 		if ($this->photos === null) {
-			$sorting = PhotoSortingCriterion::createDefault($this->config_manager);
+			$sorting = PhotoSortingCriterion::createDefault();
 
 			/** @var \Illuminate\Pagination\LengthAwarePaginator<int,\App\Models\Photo> $photos */
 			$photos = (new SortingDecorator($this->photos()))
@@ -175,18 +176,17 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 			*/
 		$this->thumb ??= $this->config_manager->getValueAsBool('SA_random_thumbs')
 		// @codeCoverageIgnoreStart
-		? Thumb::createFromRandomQueryable($this->photos(), $this->config_manager)
+		? Thumb::createFromRandomQueryable($this->photos())
 		// @codeCoverageIgnoreEnd
 		: $this->thumb = Thumb::createFromQueryable(
 			$this->photos(),
-			PhotoSortingCriterion::createDefault($this->config_manager),
-			$this->config_manager
+			PhotoSortingCriterion::createDefault()
 		);
 
 		return $this->thumb;
 	}
 
-	public function public_permissions(ConfigManager $config_manager): ?AccessPermission
+	public function public_permissions(): ?AccessPermission
 	{
 		return $this->public_permissions;
 	}
@@ -197,7 +197,7 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 			return;
 		}
 
-		$this->public_permissions = AccessPermission::ofPublic($this->config_manager);
+		$this->public_permissions = AccessPermission::ofPublic();
 		$this->public_permissions->base_album_id = $this->id;
 		$this->public_permissions->save();
 	}
@@ -208,7 +208,7 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 			return;
 		}
 
-		$this->public_permissions = AccessPermission::ofPublicHidden($this->config_manager);
+		$this->public_permissions = AccessPermission::ofPublicHidden();
 		$this->public_permissions->base_album_id = $this->id;
 		$this->public_permissions->save();
 	}

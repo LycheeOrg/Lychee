@@ -9,8 +9,7 @@
 namespace App\Actions\Diagnostics\Pipes\Infos;
 
 use App\Actions\Diagnostics\Diagnostics;
-use App\Contracts\DiagnosticPipe;
-use App\DTO\DiagnosticDTO;
+use App\Contracts\DiagnosticStringPipe;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -18,12 +17,12 @@ use Illuminate\Support\Facades\Log;
  *
  * @codeCoverageIgnore We no not check this file as it is only directed to docker.
  */
-class DockerVersionInfo implements DiagnosticPipe
+class DockerVersionInfo implements DiagnosticStringPipe
 {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function handle(DiagnosticDTO &$data, \Closure $next): DiagnosticDTO
+	public function handle(array &$data, \Closure $next): array
 	{
 		$docker = 'false';
 		if ($this->isDocker()) {
@@ -34,7 +33,7 @@ class DockerVersionInfo implements DiagnosticPipe
 			};
 		}
 
-		$data->data[] = Diagnostics::line('Docker:', $docker);
+		$data[] = Diagnostics::line('Docker:', $docker);
 
 		return $next($data);
 	}

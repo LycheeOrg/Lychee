@@ -10,8 +10,8 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
-use App\DTO\DiagnosticDTO;
 use App\Http\Resources\Diagnostics\StatisticsCheckResource;
+use App\Models\Configs;
 use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\DB;
 
@@ -20,30 +20,36 @@ use Illuminate\Support\Facades\DB;
  */
 class StatisticsIntegrityCheck implements DiagnosticPipe
 {
+	public function __construct(
+		protected readonly ConfigManager $config_manager,
+	)
+	{
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
-	public function handle(DiagnosticDTO &$data, \Closure $next): DiagnosticDTO
+	public function handle(array &$data, \Closure $next): array
 	{
-		$check = $this->get($data->config_manager);
+		$check = $this->get();
 
 		if ($check->missing_albums > 0) {
-			$data->data[] = DiagnosticData::warn(sprintf('There are %d albums without statistics.', $check->missing_albums), self::class,
+			$data[] = DiagnosticData::warn(sprintf('There are %d albums without statistics.', $check->missing_albums), self::class,
 				['Go to the maintenance page to fix this.']);
 		}
 
 		if ($check->missing_albums > 0) {
-			$data->data[] = DiagnosticData::warn(sprintf('There are %d photos without statistics.', $check->missing_photos), self::class,
+			$data[] = DiagnosticData::warn(sprintf('There are %d photos without statistics.', $check->missing_photos), self::class,
 				['Go to the maintenance page to fix this.']);
 		}
 
 		return $next($data);
 	}
 
-	public function get(ConfigManager $config_manager): StatisticsCheckResource
+	public function get(): StatisticsCheckResource
 	{
 		// Just skip the check, we don't care.
-		if (!$config_manager->getValueAsBool('metrics_enabled')) {
+		if (!$this->config_manager->getValueAsBool('metrics_enabled')) {
 			return new StatisticsCheckResource(0, 0);
 		}
 

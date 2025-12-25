@@ -10,7 +10,9 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
-use App\DTO\DiagnosticDTO;
+use App\Models\Configs;
+use App\Repositories\ConfigManager;
+use LycheeVerify\Verify;
 
 /**
  * Check whether or not it is possible to update this installation.
@@ -18,19 +20,28 @@ use App\DTO\DiagnosticDTO;
 class SupporterCheck implements DiagnosticPipe
 {
 	/**
+	 * @param Verify $verify
+	 */
+	public function __construct(
+		private Verify $verify,
+		protected readonly ConfigManager $config_manager,
+	) {
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
-	public function handle(DiagnosticDTO &$data, \Closure $next): DiagnosticDTO
+	public function handle(array &$data, \Closure $next): array
 	{
-		if ($data->config_manager->getValueAsBool('disable_se_call_for_actions')) {
+		if ($this->config_manager->getValueAsBool('disable_se_call_for_actions')) {
 			// @codeCoverageIgnoreStart
 			return $next($data);
 			// @codeCoverageIgnoreEnd
 		}
 
-		if (!$data->verify->is_supporter()) {
+		if (!$this->verify->is_supporter()) {
 			// @codeCoverageIgnoreStart
-			$data->data[] = DiagnosticData::info('Have you considered supporting Lychee? :)', self::class);
+			$data[] = DiagnosticData::info('Have you considered supporting Lychee? :)', self::class);
 			// @codeCoverageIgnoreEnd
 		}
 

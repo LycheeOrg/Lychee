@@ -9,8 +9,7 @@
 namespace App\Actions\Diagnostics\Pipes\Infos;
 
 use App\Actions\Diagnostics\Diagnostics;
-use App\Contracts\DiagnosticPipe;
-use App\DTO\DiagnosticDTO;
+use App\Contracts\DiagnosticStringPipe;
 use App\Facades\Helpers;
 use App\Http\Resources\GalleryConfigs\UploadConfig;
 use Carbon\CarbonTimeZone;
@@ -21,12 +20,12 @@ use function Safe\ini_get;
 /**
  * What system are we running on?
  */
-class SystemInfo implements DiagnosticPipe
+class SystemInfo implements DiagnosticStringPipe
 {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function handle(DiagnosticDTO &$data, \Closure $next): DiagnosticDTO
+	public function handle(array &$data, \Closure $next): array
 	{
 		// About SQL version
 		// @codeCoverageIgnoreStart
@@ -55,17 +54,17 @@ class SystemInfo implements DiagnosticPipe
 		// @codeCoverageIgnoreEnd
 
 		// Output system information
-		$data->data[] = Diagnostics::line('System:', PHP_OS);
-		$data->data[] = Diagnostics::line('PHP Version:', phpversion());
-		$data->data[] = Diagnostics::line('PHP User agent:', ini_get('user_agent'));
+		$data[] = Diagnostics::line('System:', PHP_OS);
+		$data[] = Diagnostics::line('PHP Version:', phpversion());
+		$data[] = Diagnostics::line('PHP User agent:', ini_get('user_agent'));
 		$time_zone = CarbonTimeZone::create(config('app.timezone')) ?? null;
-		$data->data[] = Diagnostics::line('Timezone:', $time_zone?->getName() ?? 'undefined');
-		$data->data[] = Diagnostics::line('Max uploaded file size:', ini_get('upload_max_filesize'));
-		$data->data[] = Diagnostics::line('Max post size:', ini_get('post_max_size'));
-		$data->data[] = Diagnostics::line('Chunk size:', Helpers::getSymbolByQuantity(UploadConfig::getUploadLimit()));
-		$data->data[] = Diagnostics::line('Max execution time: ', ini_get('max_execution_time'));
-		$data->data[] = Diagnostics::line($dbtype . ' Version:', $dbver);
-		$data->data[] = '';
+		$data[] = Diagnostics::line('Timezone:', $time_zone?->getName() ?? 'undefined');
+		$data[] = Diagnostics::line('Max uploaded file size:', ini_get('upload_max_filesize'));
+		$data[] = Diagnostics::line('Max post size:', ini_get('post_max_size'));
+		$data[] = Diagnostics::line('Chunk size:', Helpers::getSymbolByQuantity(UploadConfig::getUploadLimit()));
+		$data[] = Diagnostics::line('Max execution time: ', ini_get('max_execution_time'));
+		$data[] = Diagnostics::line($dbtype . ' Version:', $dbver);
+		$data[] = '';
 
 		return $next($data);
 	}

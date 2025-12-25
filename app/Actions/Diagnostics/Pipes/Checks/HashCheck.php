@@ -10,7 +10,6 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
-use App\DTO\DiagnosticDTO;
 use function Safe\hash_update_file;
 
 /**
@@ -21,7 +20,7 @@ class HashCheck implements DiagnosticPipe
 	/**
 	 * {@inheritDoc}
 	 */
-	public function handle(DiagnosticDTO &$data, \Closure $next): DiagnosticDTO
+	public function handle(array &$data, \Closure $next): array
 	{
 		$paths_to_scan = [
 			app_path(),
@@ -43,7 +42,7 @@ class HashCheck implements DiagnosticPipe
 		$vendor_files = $this->collectFiles([base_path('vendor')]);
 		$vendor_hash = $this->computeHash($vendor_files, 'xxh3');
 
-		$data->data[] = DiagnosticData::info('Hash: ' . $files_hash . '—' . $vendor_hash, self::class, [
+		$data[] = DiagnosticData::info('Hash: ' . $files_hash . '—' . $vendor_hash, self::class, [
 			(string) count($files) . ' files and ' . (string) count($vendor_files) . ' vendor files',
 		]);
 

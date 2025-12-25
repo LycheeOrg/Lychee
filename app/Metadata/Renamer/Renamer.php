@@ -66,12 +66,13 @@ class Renamer
 	 * @param bool|null $is_album Whether to include album rules (default: null)
 	 */
 	public function __construct(
-		VerifyInterface $verify,
-		ConfigManager $config_manager,
 		int $user_id,
 		?bool $is_photo = null,
 		?bool $is_album = null)
 	{
+		$verify = app(VerifyInterface::class);
+		$config_manager = app(ConfigManager::class);
+
 		$renamer_enabled = $config_manager->getValueAsBool('renamer_enabled');
 		$this->is_enabled = $renamer_enabled && $verify->is_supporter();
 

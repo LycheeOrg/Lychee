@@ -69,7 +69,7 @@ class Thumb
 	 * @throws InvalidPropertyException thrown, if $sortingOrder neither
 	 *                                  equals `desc` nor `asc`
 	 */
-	public static function createFromQueryable(Relation|Builder $photo_queryable, SortingCriterion $sorting, ConfigManager $config_manager): ?Thumb
+	public static function createFromQueryable(Relation|Builder $photo_queryable, SortingCriterion $sorting): ?Thumb
 	{
 		try {
 			/** @var Photo|null $cover */
@@ -80,7 +80,7 @@ class Thumb
 				->select(['photos.id', 'photos.type'])
 				->first();
 
-			return self::createFromPhoto($cover, $config_manager);
+			return self::createFromPhoto($cover);
 			// @codeCoverageIgnoreStart
 		} catch (\InvalidArgumentException $e) {
 			throw new InvalidPropertyException('Sorting order invalid', $e);
@@ -108,7 +108,7 @@ class Thumb
 	 * @codeCoverageIgnore We don't need to test that one.
 	 * Note that the inRandomOrder maybe slower than fetching length + random int.
 	 */
-	public static function createFromRandomQueryable(Relation|Builder $photo_queryable, ConfigManager $config_manager): ?Thumb
+	public static function createFromRandomQueryable(Relation|Builder $photo_queryable): ?Thumb
 	{
 		try {
 			/** @var Photo|null $cover */
@@ -118,7 +118,7 @@ class Thumb
 				->select(['photos.id', 'photos.type'])
 				->first();
 
-			return self::createFromPhoto($cover, $config_manager);
+			return self::createFromPhoto($cover);
 		} catch (\InvalidArgumentException $e) {
 			throw new InvalidPropertyException('Sorting order invalid', $e);
 		}
@@ -131,7 +131,7 @@ class Thumb
 	 *
 	 * @return Thumb|null the created thumbnail or null if null has been passed
 	 */
-	public static function createFromPhoto(?Photo $photo, ConfigManager $config_manager): ?Thumb
+	public static function createFromPhoto(?Photo $photo): ?Thumb
 	{
 		if ($photo === null) {
 			// @codeCoverageIgnoreStart
@@ -150,6 +150,7 @@ class Thumb
 			? $photo->size_variants->getSmall2x()
 			: $photo->size_variants->getThumb2x();
 
+		$config_manager = app(ConfigManager::class);
 		$placeholder = ($config_manager->getValueAsBool('low_quality_image_placeholder'))
 			? $photo->size_variants->getPlaceholder()
 			// @codeCoverageIgnoreStart

@@ -3,12 +3,6 @@ includes:
 	- vendor/lychee-org/phpstan-lychee/phpstan.neon
 	- phpstan-baseline.neon
 
-services:
-    -
-        class: PHPStan\RequestReturnTypeExtension
-        tags:
-            - phpstan.broker.dynamicFunctionReturnTypeExtension
-
 parameters:
 	level: 3
 	tips:
@@ -23,8 +17,8 @@ parameters:
 	excludePaths:
 		- app/Services/Archives # This is creating errors depending if version 2.1 or 3.1 is installed...
 	stubFiles:
-		- phpstan/stubs/image.stub
 		- phpstan/stubs/imageexception.stub
+		- phpstan/stubs/image.stub
 	ignoreErrors:
 		-
 			message: '#Cast to bool is forbidden.#'
@@ -35,3 +29,7 @@ parameters:
 		- '#Dynamic call to static method App\\Eloquent\\FixedQueryBuilder.*#'
 		- '#.*stdClass>#'
 		- '#.*contravariant.*#'
+		-
+			message: '#Dynamic call to static method App\\Http\\Requests\\.*::verify\(\)\.#'
+		-
+			message: '#Dynamic call to static method App\\Http\\Requests\\.*::configs\(\)\.#'

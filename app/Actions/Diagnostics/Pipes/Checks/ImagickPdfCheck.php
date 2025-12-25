@@ -10,7 +10,8 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
-use App\DTO\DiagnosticDTO;
+use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\Schema;
 use Safe\Exceptions\FilesystemException;
 use Safe\Exceptions\PcreException;
@@ -22,6 +23,10 @@ use function Safe\preg_match;
  */
 class ImagickPdfCheck implements DiagnosticPipe
 {
+	public function __construct(protected readonly ConfigManager $config_manager)
+	{
+	}
+
 	public const IMAGICK_POLICY_LOCATIONS = [
 		'/etc/ImageMagick-7/policy.xml',
 		'/etc/ImageMagick-6/policy.xml',
@@ -35,7 +40,7 @@ class ImagickPdfCheck implements DiagnosticPipe
 	/**
 	 * {@inheritDoc}
 	 */
-	public function handle(DiagnosticDTO &$data, \Closure $next): DiagnosticDTO
+	public function handle(array &$data, \Closure $next): array
 	{
 		if (!Schema::hasTable('configs')) {
 			// @codeCoverageIgnoreStart
@@ -43,8 +48,8 @@ class ImagickPdfCheck implements DiagnosticPipe
 			// @codeCoverageIgnoreEnd
 		}
 
-		if (!$data->config_manager->hasImagick()) {
-			$data->data[] = DiagnosticData::info('Imagick is not enabled. Thumbs will not be created for pdf files.', self::class);
+		if (!$this->config_manager->hasImagick()) {
+			$data[] = DiagnosticData::info('Imagick is not enabled. Thumbs will not be created for pdf files.', self::class);
 
 			return $next($data);
 		}
@@ -59,7 +64,7 @@ class ImagickPdfCheck implements DiagnosticPipe
 			}
 
 			if ($found_location === '') {
-				$data->data[] = DiagnosticData::warn(
+				$data[] = DiagnosticData::warn(
 					message: 'The policy.xml file does not exist at the expected location: ' . implode(' or ', self::IMAGICK_POLICY_LOCATIONS) . '.',
 					from: self::class,
 					details: self::DETAILS);
@@ -69,15 +74,15 @@ class ImagickPdfCheck implements DiagnosticPipe
 
 			$imagic_policy = file_get_contents($found_location);
 			if (1 === preg_match('/<policy domain="coder" rights="none" pattern="PDF"/', $imagic_policy)) {
-				$data->data[] = DiagnosticData::warn('Imagick is not allowed to create thumbs for pdf files.', self::class,
+				$data[] = DiagnosticData::warn('Imagick is not allowed to create thumbs for pdf files.', self::class,
 					['Verify that the ' . $found_location . ' file contains the line <policy domain="coder" rights="read|write" pattern="PDF"/> .']);
 			}
 		} catch (FilesystemException) {
-			$data->data[] = DiagnosticData::warn('Could not determine whether Imagick is allowed to work with pdf files.', self::class, self::DETAILS);
+			$data[] = DiagnosticData::warn('Could not determine whether Imagick is allowed to work with pdf files.', self::class, self::DETAILS);
 		} catch (PcreException) {
 			// Just ignore.
 		} catch (\Exception $e) {
-			$data->data[] = DiagnosticData::error('An unexpected error occurred while checking Imagick PDF support.', self::class, self::DETAILS);
+			$data[] = DiagnosticData::error('An unexpected error occurred while checking Imagick PDF support.', self::class, self::DETAILS);
 			// Just ignore all other exceptions.
 		}
 

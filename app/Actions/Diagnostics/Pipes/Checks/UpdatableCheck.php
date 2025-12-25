@@ -11,7 +11,6 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 use App\Actions\Diagnostics\Pipes\Infos\DockerVersionInfo;
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
-use App\DTO\DiagnosticDTO;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\ExternalComponentMissingException;
 use App\Exceptions\InsufficientFilesystemPermissions;
@@ -19,6 +18,7 @@ use App\Exceptions\VersionControlException;
 use App\Facades\Helpers;
 use App\Metadata\Versions\GitHubVersion;
 use App\Metadata\Versions\InstalledVersion;
+use App\Models\Configs;
 use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Schema;
@@ -38,11 +38,11 @@ class UpdatableCheck implements DiagnosticPipe
 	/**
 	 * {@inheritDoc}
 	 */
-	public function handle(DiagnosticDTO &$data, \Closure $next): DiagnosticDTO
+	public function handle(array &$data, \Closure $next): array
 	{
 		if (!$this->installed_version->isRelease() && !$this->docker_version_info->isDocker()) {
 			try {
-				self::assertUpdatability($data->config_manager);
+				self::assertUpdatability();
 				// @codeCoverageIgnoreStart
 			} catch (ExternalComponentMissingException $e) {
 				$data[] = DiagnosticData::info($e->getMessage(), self::class);
@@ -62,9 +62,10 @@ class UpdatableCheck implements DiagnosticPipe
 	 *
 	 * @return void
 	 */
-	public static function assertUpdatability(ConfigManager $config_manager): void
+	public static function assertUpdatability(): void
 	{
 		$installed_version = resolve(InstalledVersion::class);
+		$config_manager = resolve(ConfigManager::class);
 
 		// we bypass this because we don't care about the other conditions as they don't apply to the release
 		if ($installed_version->isRelease()) {

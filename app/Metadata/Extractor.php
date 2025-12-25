@@ -73,8 +73,8 @@ class Extractor
 	 */
 	public static function createFromFile(NativeLocalFile $file, int $file_last_modified_time): self
 	{
-		$config_manager = new ConfigManager();
-		$file_extension_service = new FileExtensionService($config_manager);
+		$config_manager = app(ConfigManager::class);
+		$file_extension_service = app(FileExtensionService::class);
 
 		$metadata = new self();
 		$is_supported_video = $file_extension_service->isSupportedVideo($file->getMimeType(), $file->getOriginalExtension());

@@ -15,21 +15,20 @@ use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\UnauthenticatedException;
 use App\Exceptions\UnauthorizedException;
 use App\Factories\AlbumFactory;
-use App\Http\AttributesTraits;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
-use LycheeVerify\Contract\VerifyInterface;
-use LycheeVerify\VerifyTrait;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
-abstract class BaseApiRequest extends FormRequest implements VerifyInterface
+/**
+ * @method \LycheeVerify\Verify verify()
+ * @method \App\Repositories\ConfigManager config()
+ */
+abstract class BaseApiRequest extends FormRequest
 {
-	use VerifyTrait;
-	use AttributesTraits;
 	protected readonly AlbumFactory $album_factory;
 
 	/**

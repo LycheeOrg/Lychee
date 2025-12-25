@@ -10,7 +10,6 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
-use App\DTO\DiagnosticDTO;
 use Safe\Exceptions\InfoException;
 use function Safe\ini_get;
 
@@ -22,11 +21,11 @@ class OpCacheCheck implements DiagnosticPipe
 	/**
 	 * {@inheritDoc}
 	 */
-	public function handle(DiagnosticDTO &$data, \Closure $next): DiagnosticDTO
+	public function handle(array &$data, \Closure $next): array
 	{
 		if (!$this->isOpcacheGetConfigurationAvailable()) {
 			// @codeCoverageIgnoreStart
-			$data->data[] = DiagnosticData::warn('opcache_get_configuration() is not available.', self::class, ['We are unable to check for performance optimizations.']);
+			$data[] = DiagnosticData::warn('opcache_get_configuration() is not available.', self::class, ['We are unable to check for performance optimizations.']);
 
 			return $next($data);
 			// @codeCoverageIgnoreEnd
@@ -40,7 +39,7 @@ class OpCacheCheck implements DiagnosticPipe
 			$opcache_conf['directives']['opcache.enable'] === '0'
 		) {
 			// @codeCoverageIgnoreStart
-			$data->data[] = DiagnosticData::warn('OPcache is not enabled.', self::class, ['Enabling it will improve performance.']);
+			$data[] = DiagnosticData::warn('OPcache is not enabled.', self::class, ['Enabling it will improve performance.']);
 			// @codeCoverageIgnoreEnd
 		}
 

@@ -26,9 +26,9 @@ use FFMpeg\Media\Video;
 
 class VideoHandler
 {
-	public function __construct(
-		protected readonly ConfigManager $config_manager,
-	) {
+	protected readonly ConfigManager $config_manager;
+	public function __construct() {
+		$this->config_manager = app(ConfigManager::class);
 	}
 
 	protected ?Video $video = null;

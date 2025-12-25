@@ -11,11 +11,13 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 use App\Actions\Shop\OrderService;
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
-use App\DTO\DiagnosticDTO;
 use App\Enum\OmnipayProviderType;
 use App\Factories\OmnipayFactory;
+use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\Schema;
 use LycheeVerify\Contract\Status;
+use LycheeVerify\Verify;
 
 /**
  * Check webshop configuration and environment conditions.
@@ -25,24 +27,26 @@ class WebshopCheck implements DiagnosticPipe
 	public function __construct(
 		private OmnipayFactory $factory,
 		private OrderService $order_service,
+		private Verify $verify,
+		protected readonly ConfigManager $config_manager,
 	) {
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function handle(DiagnosticDTO &$data, \Closure $next): DiagnosticDTO
+	public function handle(array &$data, \Closure $next): array
 	{
 		if (!Schema::hasTable('configs')) {
 			return $next($data);
 		}
 
-		if ($data->verify->get_status() !== Status::PRO_EDITION) {
+		if ($this->verify->get_status() !== Status::PRO_EDITION) {
 			// Webshop not available in free edition
 			return $next($data);
 		}
 
-		if (!$data->config_manager->getValueAsBool('webshop_enabled')) {
+		if (!$this->config_manager->getValueAsBool('webshop_enabled')) {
 			return $next($data);
 		}
 		// @codeCoverageIgnoreStart

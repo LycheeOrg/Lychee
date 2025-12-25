@@ -39,7 +39,7 @@ class PhotoSearch
 	public function query(array $terms): Collection
 	{
 		$query = $this->sqlQuery($terms);
-		$sorting = PhotoSortingCriterion::createDefault($this->config_manager);
+		$sorting = PhotoSortingCriterion::createDefault();
 
 		return (new SortingDecorator($query))
 			->orderBy($sorting->column, $sorting->order)->get();

@@ -110,9 +110,7 @@ class AlbumController extends Controller
 	public function createAlbum(AddAlbumRequest $request): string
 	{
 		$owner_id = Auth::id() ?? throw new UnauthenticatedException();
-		$create = new Create(
-			$request->configs(),
-			$owner_id);
+		$create = new Create($owner_id);
 
 		return $create->create($request->title(), $request->parent_album())->id;
 	}
@@ -339,7 +337,7 @@ class AlbumController extends Controller
 				AlbumDownload::dispatchIf($should_measure, $this->visitorId(), $album->get_id());
 			}
 
-			return AlbumBaseArchive::resolve($request->configs())->do($request->albums());
+			return AlbumBaseArchive::resolve()->do($request->albums());
 		}
 
 		// We dispatch one event per photo.
@@ -347,7 +345,7 @@ class AlbumController extends Controller
 			PhotoDownload::dispatchIf($should_measure && $request->from_id() !== null, $this->visitorId(), $photo->id, $request->from_id());
 		}
 
-		return PhotoBaseArchive::resolve($request->configs())->do($request->photos(), $request->sizeVariant());
+		return PhotoBaseArchive::resolve()->do($request->photos(), $request->sizeVariant());
 	}
 
 	/**

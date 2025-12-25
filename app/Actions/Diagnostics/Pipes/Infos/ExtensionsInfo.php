@@ -9,19 +9,28 @@
 namespace App\Actions\Diagnostics\Pipes\Infos;
 
 use App\Actions\Diagnostics\Diagnostics;
-use App\Contracts\DiagnosticPipe;
-use App\DTO\DiagnosticDTO;
+use App\Contracts\DiagnosticStringPipe;
 use App\Facades\Helpers;
+use App\Models\Configs;
+use App\Repositories\ConfigManager;
 
 /**
  * Info on what image processing we have available.
  */
-class ExtensionsInfo implements DiagnosticPipe
+class ExtensionsInfo implements DiagnosticStringPipe
 {
+	public function __construct(
+		protected readonly ConfigManager $config_manager,
+	)
+	{
+	}
+
+
+
 	/**
 	 * {@inheritDoc}
 	 */
-	public function handle(DiagnosticDTO &$data, \Closure $next): DiagnosticDTO
+	public function handle(array &$data, \Closure $next): array
 	{
 		// About Imagick version
 		$imagick = extension_loaded('imagick');
@@ -52,7 +61,7 @@ class ExtensionsInfo implements DiagnosticPipe
 
 		$data[] = Diagnostics::line('exec() Available:', Helpers::isExecAvailable() ? 'yes' : 'no');
 		$data[] = Diagnostics::line('Imagick Available:', (string) $imagick);
-		$data[] = Diagnostics::line('Imagick Enabled:', $data->config_manager->getValueAsString('imagick'));
+		$data[] = Diagnostics::line('Imagick Enabled:', $this->config_manager->getValueAsBool('imagick') ? 'yes' : 'no');
 		$data[] = Diagnostics::line('Imagick Version:', (string) $imagick_version);
 		$data[] = Diagnostics::line('GD Version:', $gd_version['GD Version']);
 

@@ -13,7 +13,6 @@ use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\LycheeInvalidArgumentException;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\UnauthenticatedException;
-use App\Http\Request as HttpRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -52,10 +51,6 @@ class LoginRequired
 
 		if ($required_status === self::ALWAYS) {
 			return redirect()->route('gallery');
-		}
-
-		if (!$request instanceof HttpRequest) {
-			throw new LycheeLogicException('Pure Illuminate\Http\Request should never reach LoginRequired middleware.');
 		}
 
 		if (!$request->configs()->getValueAsBool('login_required')) {

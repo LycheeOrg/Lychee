@@ -113,9 +113,9 @@ class Diagnostics extends Command
 		try {
 			$this->line('');
 			$this->line('');
-			$this->blockDiagnostic('Smart Diagnostics', resolve(Errors::class)->get($this->verify, $this->config_manager, $skip_diagnostics));
+			$this->blockDiagnostic('Smart Diagnostics', resolve(Errors::class)->get($skip_diagnostics));
 			$this->line('');
-			$this->block('System Information', resolve(Info::class)->get($this->verify, $this->config_manager));
+			$this->block('System Information', resolve(Info::class)->get());
 			$this->line('');
 			$this->block('Config Information', resolve(Configuration::class)->get());
 		} catch (QueryBuilderException $e) {

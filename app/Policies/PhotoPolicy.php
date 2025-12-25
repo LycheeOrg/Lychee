@@ -36,9 +36,7 @@ class PhotoPolicy extends BasePolicy
 	 */
 	public function __construct(
 		protected AlbumPolicy $album_policy,
-		ConfigManager $config_manager,
 	) {
-		parent::__construct($config_manager);
 	}
 
 	/**
@@ -248,7 +246,8 @@ class PhotoPolicy extends BasePolicy
 	 */
 	public function canReadMetrics(?User $user, Photo $photo): bool
 	{
-		$access_level = $this->config_manager->getValueAsEnum('metrics_access', MetricsAccess::class);
+		$config_manager = app(ConfigManager::class);
+		$access_level = $config_manager->getValueAsEnum('metrics_access', MetricsAccess::class);
 
 		return match ($access_level) {
 			MetricsAccess::PUBLIC => true,

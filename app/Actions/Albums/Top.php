@@ -42,7 +42,7 @@ class Top
 		private AlbumQueryPolicy $album_query_policy,
 		protected readonly ConfigManager $config_manager,
 	) {
-		$this->sorting = AlbumSortingCriterion::createDefault($config_manager);
+		$this->sorting = AlbumSortingCriterion::createDefault();
 	}
 
 	/**

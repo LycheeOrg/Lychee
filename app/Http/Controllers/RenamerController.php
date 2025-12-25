@@ -56,6 +56,7 @@ class RenamerController extends Controller
 			->orderBy('order', 'asc')
 			->get();
 
+		/** @disregard P1006 */
 		return RenamerRuleResource::collect($rules);
 	}
 
@@ -188,10 +189,7 @@ class RenamerController extends Controller
 		$candidate = $request->candidate;
 
 		// Create a Renamer instance for the current user
-		$renamer = new Renamer(
-			$request->verify(),
-			$request->configs(),
-			$user_id);
+		$renamer = new Renamer($user_id);
 
 		// Apply the renamer rules to the candidate string
 		$result = $renamer->handle($candidate);
@@ -214,10 +212,7 @@ class RenamerController extends Controller
 		$user_id = Auth::id();
 
 		if (count($request->photoIds()) > 0) {
-			$photo_renamer = new PhotoRenamer(
-				$request->verify(),
-				$request->configs(),
-				$user_id);
+			$photo_renamer = new PhotoRenamer($user_id);
 
 			Photo::query()
 				->whereIn('id', $request->photoIds())
@@ -236,10 +231,7 @@ class RenamerController extends Controller
 		}
 
 		if (count($request->albumIds()) > 0) {
-			$album_renamer = new AlbumRenamer(
-				$request->verify(),
-				$request->configs(),
-				$user_id);
+			$album_renamer = new AlbumRenamer($user_id);
 
 			Album::query()
 				->whereIn('id', $request->albumIds())

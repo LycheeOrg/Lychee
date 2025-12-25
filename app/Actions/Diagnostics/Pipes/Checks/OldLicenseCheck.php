@@ -10,32 +10,40 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
-use App\DTO\DiagnosticDTO;
+use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\Schema;
 use LycheeVerify\Contract\Status;
+use LycheeVerify\Verify;
 
 /**
  * Check if the current license is old or invalid.
  */
 class OldLicenseCheck implements DiagnosticPipe
 {
+	public function __construct(
+		private Verify $verify,
+		protected readonly ConfigManager $config_manager,
+	)
+	{
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
-	public function handle(DiagnosticDTO &$data, \Closure $next): DiagnosticDTO
+	public function handle(array &$data, \Closure $next): array
 	{
 		if (!Schema::hasTable('configs')) {
 			return $next($data);
 		}
 
 		// Load settings
-		$current_license = $data->config_manager->getValueAsString('license_key');
+		$current_license = $this->config_manager->getValueAsString('license_key');
 		if ($current_license === '') {
 			// No license set - skip check
 			return $next($data);
 		}
 
-		if ($data->verify->get_status() !== Status::FREE_EDITION) {
+		if ($this->verify->get_status() !== Status::FREE_EDITION) {
 			// Valid license - skip check
 			return $next($data);
 		}

@@ -10,7 +10,6 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
-use App\DTO\DiagnosticDTO;
 use Carbon\CarbonTimeZone;
 
 /**
@@ -21,12 +20,12 @@ class TimezoneCheck implements DiagnosticPipe
 	/**
 	 * {@inheritDoc}
 	 */
-	public function handle(DiagnosticDTO &$data, \Closure $next): DiagnosticDTO
+	public function handle(array &$data, \Closure $next): array
 	{
 		$timezone = CarbonTimeZone::create(config('app.timezone'));
 		if ($timezone === null) {
 			// @codeCoverageIgnoreStart
-			$data->data[] = DiagnosticData::error('Could not retrieve timezone; you might experience strange results when importing photos without explicit EXIF timezone', self::class);
+			$data[] = DiagnosticData::error('Could not retrieve timezone; you might experience strange results when importing photos without explicit EXIF timezone', self::class);
 
 			return $next($data);
 			// @codeCoverageIgnoreEnd
@@ -35,7 +34,7 @@ class TimezoneCheck implements DiagnosticPipe
 		$tz_array = explode('/', $timezone_name);
 
 		if (count($tz_array) !== 2 || $tz_array[0] === 'Etc') {
-			$data->data[] = DiagnosticData::warn('Default timezone not properly set; you might experience strange results when importing photos without explicit EXIF timezone', self::class);
+			$data[] = DiagnosticData::warn('Default timezone not properly set; you might experience strange results when importing photos without explicit EXIF timezone', self::class);
 		}
 
 		return $next($data);

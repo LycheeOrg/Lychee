@@ -13,6 +13,7 @@ use App\Enum\OrderSortingType;
 use App\Exceptions\Internal\NotImplementedException;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\TagAlbum;
+use App\Repositories\ConfigManager;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Query\Builder as BaseBuilder;
@@ -81,12 +82,13 @@ class HasManyPhotosByTag extends BaseHasManyPhotos
 			->all();
 		$tag_ids = array_values(array_unique($tag_ids));
 
-		if ($this->config_manager->getValueAsBool('TA_override_visibility')) {
+		$config_manager = app(ConfigManager::class);
+		if ($config_manager->getValueAsBool('TA_override_visibility')) {
 			$this->photo_query_policy
 				->applySensitivityFilter(
 					$this->getRelationQuery(),
 					origin: null,
-					include_nsfw: !$this->config_manager->getValueAsBool('hide_nsfw_in_tag_albums')
+					include_nsfw: !$config_manager->getValueAsBool('hide_nsfw_in_tag_albums')
 				)
 				->where(fn (Builder $q) => $this->getPhotoIdsWithTags($q, $tag_ids, $album->is_and));
 		} else {
@@ -94,7 +96,7 @@ class HasManyPhotosByTag extends BaseHasManyPhotos
 				->applySearchabilityFilter(
 					$this->getRelationQuery(),
 					origin: null,
-					include_nsfw: !$this->config_manager->getValueAsBool('hide_nsfw_in_tag_albums')
+					include_nsfw: !$config_manager->getValueAsBool('hide_nsfw_in_tag_albums')
 				)
 				->where(fn (Builder $q) => $this->getPhotoIdsWithTags($q, $tag_ids, $album->is_and));
 		}
@@ -157,7 +159,7 @@ class HasManyPhotosByTag extends BaseHasManyPhotos
 		}
 		/** @var TagAlbum $album */
 		$album = $albums[0];
-		$sorting = $album->getEffectivePhotoSorting($this->config_manager);
+		$sorting = $album->getEffectivePhotoSorting();
 
 		$photos = $photos->sortBy(
 			$sorting->column->value,

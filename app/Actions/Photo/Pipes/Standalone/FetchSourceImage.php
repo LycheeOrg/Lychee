@@ -17,22 +17,17 @@ use App\Repositories\ConfigManager;
 
 class FetchSourceImage implements StandalonePipe
 {
-	public function __construct(
-		protected readonly ConfigManager $config_manager,
-	) {
-	}
-
 	public function handle(StandaloneDTO $state, \Closure $next): StandaloneDTO
 	{
 		try {
 			if ($state->photo->isVideo()) {
-				$video_handler = new VideoHandler($this->config_manager);
+				$video_handler = new VideoHandler();
 				$video_handler->load($state->source_file);
 				$position = is_numeric($state->photo->aperture) ? floatval($state->photo->aperture) / 2 : 0.0;
 				$state->source_image = $video_handler->extractFrame($position);
 			} else {
 				// Load source image if it is a supported photo format
-				$state->source_image = new ImageHandler($this->config_manager);
+				$state->source_image = resolve(ImageHandler::class);
 				$state->source_image->load($state->source_file);
 			}
 		} catch (\Throwable $t) {

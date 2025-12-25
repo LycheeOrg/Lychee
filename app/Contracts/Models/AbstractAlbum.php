@@ -65,5 +65,5 @@ interface AbstractAlbum
 	/**
 	 * The permissions for the public user.
 	 */
-	public function public_permissions(ConfigManager $config_manager): AccessPermission|null;
+	public function public_permissions(): AccessPermission|null;
 }

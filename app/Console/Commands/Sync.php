@@ -54,7 +54,6 @@ class Sync extends Command
 	protected $description = 'Sync a directory structure to Lychee, creating albums matching the folder hierarchy';
 
 	public function __construct(
-		protected readonly Verify $verify,
 		protected readonly ConfigManager $config_manager,
 	) {
 		// Fill signature with default values from user configuration
@@ -280,8 +279,6 @@ class Sync extends Command
 		$this->line('');
 
 		$exec = new Exec(
-			verify: $this->verify,
-			config_manager: $this->config_manager,
 			import_mode: $import_mode,
 			intended_owner_id: $owner_id,
 			delete_missing_photos: $delete_missing_photos,

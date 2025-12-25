@@ -10,7 +10,6 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
-use App\DTO\DiagnosticDTO;
 use App\Models\Photo;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -26,7 +25,7 @@ class DBIntegrityCheck implements DiagnosticPipe
 	/**
 	 * {@inheritDoc}
 	 */
-	public function handle(DiagnosticDTO &$data, \Closure $next): DiagnosticDTO
+	public function handle(array &$data, \Closure $next): array
 	{
 		if (!Schema::hasTable('size_variants') || !Schema::hasTable('photos')) {
 			return $next($data);
@@ -41,7 +40,7 @@ class DBIntegrityCheck implements DiagnosticPipe
 			->get();
 
 		foreach ($photos as $photo) {
-			$data->data[] = DiagnosticData::error('Photo without Original found -- ' . $photo->title . ' in ' . ($photo->albums?->first()?->title ?? __('gallery.smart_album.unsorted')), self::class);
+			$data[] = DiagnosticData::error('Photo without Original found -- ' . $photo->title . ' in ' . ($photo->albums?->first()?->title ?? __('gallery.smart_album.unsorted')), self::class);
 		}
 
 		return $next($data);

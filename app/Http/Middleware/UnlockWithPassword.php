@@ -52,10 +52,6 @@ class UnlockWithPassword
 			return $next($request);
 		}
 
-		if (!$request instanceof HttpRequest) {
-			throw new LycheeLogicException('Pure Illuminate\Http\Request should never reach UnlockWithPassword middleware.');
-		}
-
 		if (!$request->configs()->getValueAsBool('unlock_password_photos_with_url_param')) {
 			Log::warning('password provided but unlock_password_photos_with_url_param is disabled.');
 

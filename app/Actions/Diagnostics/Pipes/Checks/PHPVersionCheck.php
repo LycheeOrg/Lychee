@@ -10,7 +10,6 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
-use App\DTO\DiagnosticDTO;
 
 /**
  * We want to make sure that our users are using the correct version of PHP.
@@ -26,11 +25,11 @@ class PHPVersionCheck implements DiagnosticPipe
 	/**
 	 * {@inheritDoc}
 	 */
-	public function handle(DiagnosticDTO &$data, \Closure $next): DiagnosticDTO
+	public function handle(array &$data, \Closure $next): array
 	{
-		$this->checkPhpVersion($data->data);
-		$this->check32Bits($data->data);
-		$this->checkExtensions($data->data);
+		$this->checkPhpVersion($data);
+		$this->check32Bits($data);
+		$this->checkExtensions($data);
 
 		return $next($data);
 	}
@@ -92,7 +91,6 @@ class PHPVersionCheck implements DiagnosticPipe
 			'libxml', // Required by dependencies
 			'mbstring', // Required by Laravel
 			'openssl', // Required by Laravel
-			'intl', // Required for currency listing
 			'pcre', // Required by dependencies
 			'PDO', // Required by Laravel
 			'Phar', // Required by dependencies

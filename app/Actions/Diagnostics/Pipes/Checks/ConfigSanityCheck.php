@@ -10,8 +10,8 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
-use App\DTO\DiagnosticDTO;
 use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\Schema;
 
 /**
@@ -20,10 +20,16 @@ use Illuminate\Support\Facades\Schema;
  */
 class ConfigSanityCheck implements DiagnosticPipe
 {
+	public function __construct(
+		private ConfigManager $config_manager,
+	)
+	{
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
-	public function handle(DiagnosticDTO &$data, \Closure $next): DiagnosticDTO
+	public function handle(array &$data, \Closure $next): array
 	{
 		if (!Schema::hasTable('configs')) {
 			// @codeCoverageIgnoreStart
@@ -40,13 +46,13 @@ class ConfigSanityCheck implements DiagnosticPipe
 	/**
 	 * Warning if the Dropbox key does not exists.
 	 *
-	 * @param DiagnosticDTO $data
+	 * @param DiagnosticData[] $data
 	 *
 	 * @return void
 	 */
-	private function checkDropBoxKeyWarning(DiagnosticDTO &$data): void
+	private function checkDropBoxKeyWarning(array &$data): void
 	{
-		$dropbox = $data->config_manager->getValueAsString('dropbox_key');
+		$dropbox = $this->config_manager->getValueAsString('dropbox_key');
 		if ($dropbox === '') {
 			// @codeCoverageIgnoreStart
 			$data[] = DiagnosticData::warn('Dropbox import not working. dropbox_key is empty.', self::class);
@@ -58,9 +64,9 @@ class ConfigSanityCheck implements DiagnosticPipe
 	/**
 	 * Sanity check of the config.
 	 *
-	 * @param DiagnosticDTO $return
+	 * @param DiagnosticData[] $return
 	 */
-	private function sanity(DiagnosticDTO &$return): void
+	private function sanity(array &$return): void
 	{
 		$configs = Configs::all(['key', 'value', 'type_range']);
 

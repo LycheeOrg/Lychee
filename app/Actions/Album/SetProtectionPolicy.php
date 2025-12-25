@@ -22,11 +22,6 @@ use Illuminate\Support\Facades\Hash;
  */
 class SetProtectionPolicy
 {
-	public function __construct(
-		protected readonly ConfigManager $config_manager,
-	) {
-	}
-
 	/**
 	 * @return void
 	 *
@@ -39,7 +34,7 @@ class SetProtectionPolicy
 		$album->is_nsfw = $protection_policy->is_nsfw;
 		$album->save();
 
-		$active_permissions = $album->public_permissions($this->config_manager);
+		$active_permissions = $album->public_permissions();
 
 		if (!$protection_policy->is_public) {
 			$active_permissions?->delete();

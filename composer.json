@@ -126,7 +126,8 @@
         ],
         "psr-4": {
             "App\\": "app/",
-            "Scripts\\": "scripts/"
+            "Scripts\\": "scripts/",
+            "PHPStan\\": "phpstan/"
         }
     },
     "autoload-dev": {

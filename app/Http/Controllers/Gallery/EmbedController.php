@@ -164,7 +164,7 @@ class EmbedController extends Controller
 				->get();
 		} else {
 			// Use album's configured sorting
-			$sorting = $album->getEffectivePhotoSorting(request()->configs());
+			$sorting = $album->getEffectivePhotoSorting();
 			$photos = (new SortingDecorator($photos_query))
 				->orderPhotosBy($sorting->column, $sorting->order)
 				->get();

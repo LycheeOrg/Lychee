@@ -156,8 +156,6 @@ class ImportFromServerController extends Controller
 		);
 
 		return new Exec(
-			verify: $request->verify(),
-			config_manager: $request->configs(),
 			import_mode: $import_mode,
 			intended_owner_id: $request->configs()->getValueAsInt('owner_id'),
 			delete_missing_photos: $request->delete_missing_photos,

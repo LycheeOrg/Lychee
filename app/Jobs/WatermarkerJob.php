@@ -114,8 +114,6 @@ class WatermarkerJob implements ShouldQueue, ShouldBeUnique
 
 	protected function getWatermarker(): Watermarker
 	{
-		$config_manager = new ConfigManager();
-
-		return new Watermarker($config_manager);
+		return resolve(Watermarker::class);
 	}
 }

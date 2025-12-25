@@ -40,7 +40,7 @@ class StatisticsCheck extends Controller
 		DB::statement('INSERT INTO statistics (photo_id) SELECT photos.id FROM photos LEFT OUTER JOIN statistics ON photos.id = photo_id WHERE statistics.id IS NULL');
 		DB::statement('INSERT INTO statistics (album_id) SELECT base_albums.id FROM base_albums LEFT OUTER JOIN statistics ON base_albums.id = album_id WHERE statistics.id IS NULL');
 
-		return $this->check->get($request->configs());
+		return $this->check->get();
 	}
 
 	/**
@@ -50,6 +50,6 @@ class StatisticsCheck extends Controller
 	 */
 	public function check(MaintenanceRequest $request): StatisticsCheckResource
 	{
-		return $this->check->get($request->configs());
+		return $this->check->get();
 	}
 }

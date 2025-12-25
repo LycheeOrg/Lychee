@@ -14,7 +14,6 @@ use App\Enum\UpdateStatus;
 use App\Metadata\Versions\FileVersion;
 use App\Metadata\Versions\GitHubVersion;
 use App\Metadata\Versions\InstalledVersion;
-use App\Repositories\ConfigManager;
 
 class CheckUpdate
 {
@@ -22,7 +21,6 @@ class CheckUpdate
 		private GitHubVersion $github_functions,
 		private InstalledVersion $installed_version,
 		private FileVersion $file_version,
-		protected readonly ConfigManager $config_manager,
 	) {
 		$this->github_functions->hydrate();
 		$this->file_version->hydrate();
@@ -53,7 +51,7 @@ class CheckUpdate
 		}
 
 		try {
-			UpdatableCheck::assertUpdatability($this->config_manager);
+			UpdatableCheck::assertUpdatability();
 			// @codeCoverageIgnoreStart
 			if (!$this->github_functions->isUpToDate()) {
 				return UpdateStatus::NOT_UP_TO_DATE;

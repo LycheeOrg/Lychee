@@ -10,7 +10,6 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
-use App\DTO\DiagnosticDTO;
 use App\Enum\SizeVariantType;
 use App\Image\SizeVariantDimensionHelpers;
 use App\Models\SizeVariant;
@@ -36,7 +35,7 @@ class SmallMediumExistsCheck implements DiagnosticPipe
 	/**
 	 * {@inheritDoc}
 	 */
-	public function handle(DiagnosticDTO &$data, \Closure $next): DiagnosticDTO
+	public function handle(array &$data, \Closure $next): array
 	{
 		if (!Schema::hasTable('configs') || !Schema::hasTable('size_variants')) {
 			// @codeCoverageIgnoreStart
@@ -44,9 +43,10 @@ class SmallMediumExistsCheck implements DiagnosticPipe
 			// @codeCoverageIgnoreEnd
 		}
 
-		$sv_helpers = new SizeVariantDimensionHelpers($data->config_manager);
+		$sv_helpers = new SizeVariantDimensionHelpers();
 
 		/** @var object{num_small:int,num_medium:int,num_small2x:int,num_medium2x:int,max_num_small:int,max_num_medium:int,max_num_small2x:int,max_num_medium2x:int} $result */
+		/** @phpstan-ignore varTag.type */
 		$result = DB::query()
 		->selectSub(
 			SizeVariant::query()
@@ -139,7 +139,7 @@ class SmallMediumExistsCheck implements DiagnosticPipe
 		$num = $result->{self::MAX_NUM_MEDIUM} - $result->{self::NUM_MEDIUM}; // @phpstan-ignore-line
 		if ($num > 0) {
 			// @codeCoverageIgnoreStart
-			$data->data[] = DiagnosticData::info(
+			$data[] = DiagnosticData::info(
 				sprintf(self::INFO_MSG, $num, SizeVariantType::MEDIUM->name()),
 				self::class,
 				[sprintf(self::INFO_LINE, SizeVariantType::MEDIUM->name(), $num)]
@@ -150,7 +150,7 @@ class SmallMediumExistsCheck implements DiagnosticPipe
 		$num = $result->{self::MAX_NUM_MEDIUM2X} - $result->{self::NUM_MEDIUM2X}; // @phpstan-ignore-line
 		if ($num > 0 && $sv_helpers->isEnabledByConfiguration(SizeVariantType::MEDIUM2X)) {
 			// @codeCoverageIgnoreStart
-			$data->data[] = DiagnosticData::info(
+			$data[] = DiagnosticData::info(
 				sprintf(self::INFO_MSG, $num, SizeVariantType::MEDIUM2X->name()),
 				self::class,
 				[sprintf(self::INFO_LINE, SizeVariantType::MEDIUM2X->name(), $num)]

@@ -65,7 +65,7 @@ class ImagickHandler extends BaseImageHandler
 			$this->im_image = new \Imagick();
 			$this->im_image->readImageFile($input_stream);
 
-			$file_extension_service = new FileExtensionService($this->config_manager);
+			$file_extension_service = app(FileExtensionService::class);
 
 			// If the file is a PDF and the user has chosen to support PDF files then try to create an image from the first page
 			if ($file->getExtension() === '.pdf' && $file_extension_service->isSupportedOrAcceptedFileExtension($file->getExtension())) {

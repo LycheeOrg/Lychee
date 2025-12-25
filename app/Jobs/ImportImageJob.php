@@ -75,13 +75,8 @@ class ImportImageJob implements ShouldQueue
 
 		$copied_file = new NativeLocalFile($this->file_path);
 
-		$config_manager = new ConfigManager();
-		$verify = new Verify();
-		$file_extension_service = new FileExtensionService($config_manager);
 		// As the file has been uploaded, the (temporary) source file shall be deleted
 		$create = new Create(
-			verify: $verify,
-			file_extension_service: $file_extension_service,
 			import_mode: $this->import_mode,
 			intended_owner_id: $this->intended_owner_id,
 		);

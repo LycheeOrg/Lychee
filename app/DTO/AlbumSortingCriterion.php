@@ -20,8 +20,9 @@ class AlbumSortingCriterion extends SortingCriterion
 	/**
 	 * @return self
 	 */
-	public static function createDefault(ConfigManager $config_manager): self
+	public static function createDefault(): self
 	{
+		$config_manager = app(ConfigManager::class);
 		$column_sorting = $config_manager->getValueAsEnum('sorting_albums_col', ColumnSortingAlbumType::class);
 		$column_sorting = $column_sorting?->toColumnSortingType();
 

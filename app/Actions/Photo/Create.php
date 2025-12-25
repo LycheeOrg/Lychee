@@ -42,8 +42,6 @@ class Create
 	protected ImportParam $strategy_parameters;
 
 	public function __construct(
-		protected VerifyInterface $verify,
-		protected readonly FileExtensionService $file_extension_service,
 		?ImportMode $import_mode,
 		int $intended_owner_id,
 	) {
@@ -113,11 +111,12 @@ class Create
 		}
 
 		// livePartner !== null
-		if ($this->file_extension_service->isSupportedVideo($source_file->getMimeType(), $source_file->getOriginalExtension())) {
+		$file_extension_service = app(FileExtensionService::class);
+		if ($file_extension_service->isSupportedVideo($source_file->getMimeType(), $source_file->getOriginalExtension())) {
 			return $this->handleVideoLivePartner($init_dto);
 		}
 
-		if ($this->file_extension_service->isSupportedImage($source_file->getPath(), $source_file->getMimeType(), $source_file->getOriginalExtension())) {
+		if ($file_extension_service->isSupportedImage($source_file->getPath(), $source_file->getMimeType(), $source_file->getOriginalExtension())) {
 			return $this->handlePhotoLivePartner($init_dto);
 		}
 
@@ -331,7 +330,8 @@ class Create
 	{
 		// if the installation is not validated or
 		// if the user is not a supporter, we skip.
-		if (!$this->verify->is_supporter()) {
+		$verify = app(VerifyInterface::class);
+		if (!$verify->is_supporter()) {
 			return;
 		}
 

@@ -38,11 +38,6 @@ use ZipStream\ZipStream;
 
 abstract class BaseArchive
 {
-	public function __construct(
-		protected readonly ConfigManager $config_manager,
-	) {
-	}
-
 	public const BAD_CHARS = [
 		"\x00", "\x01", "\x02", "\x03", "\x04", "\x05", "\x06", "\x07",
 		"\x08", "\x09", "\x0a", "\x0b", "\x0c", "\x0d", "\x0e", "\x0f",
@@ -56,19 +51,15 @@ abstract class BaseArchive
 	/**
 	 * Resolve which version of the archive to use.
 	 *
-	 * @param ConfigManager $config_manager
-	 *
 	 * @return BaseArchive
 	 */
-	public static function resolve(
-		ConfigManager $config_manager,
-	): self {
+	public static function resolve(): self {
 		if (InstalledVersions::satisfies(new VersionParser(), 'maennchen/zipstream-php', '^3.1')) {
-			return new Archive64($config_manager);
+			return new Archive64();
 		}
 		// @codeCoverageIgnoreStart
 		if (InstalledVersions::satisfies(new VersionParser(), 'maennchen/zipstream-php', '^2.1')) {
-			return new Archive32($config_manager);
+			return new Archive32();
 		}
 
 		throw new LycheeLogicException('Unsupported version of maennchen/zipstream-php');
@@ -94,7 +85,8 @@ abstract class BaseArchive
 		// for this specific case we must allow lazy loading.
 		Model::shouldBeStrict(false);
 
-		$this->deflate_level = $this->config_manager->getValueAsInt('zip_deflate_level');
+		$config_manager = app(ConfigManager::class);
+		$this->deflate_level = $config_manager->getValueAsInt('zip_deflate_level');
 
 		$response_generator = function () use ($albums): void {
 			$zip = $this->createZip();

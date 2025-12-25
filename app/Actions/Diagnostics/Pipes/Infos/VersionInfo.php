@@ -9,8 +9,7 @@
 namespace App\Actions\Diagnostics\Pipes\Infos;
 
 use App\Actions\Diagnostics\Diagnostics;
-use App\Contracts\DiagnosticPipe;
-use App\DTO\DiagnosticDTO;
+use App\Contracts\DiagnosticStringPipe;
 use App\DTO\LycheeGitInfo;
 use App\Enum\VersionChannelType;
 use App\Metadata\Versions\FileVersion;
@@ -22,12 +21,13 @@ use LycheeVerify\Verify;
 /**
  * Which version of Lychee are we using?
  */
-class VersionInfo implements DiagnosticPipe
+class VersionInfo implements DiagnosticStringPipe
 {
 	public function __construct(
 		private InstalledVersion $installed_version,
 		public FileVersion $file_version,
 		public GitHubVersion $github_functions,
+		private Verify $verify,
 	) {
 		$this->file_version->hydrate(with_remote: false);
 	}
@@ -35,7 +35,7 @@ class VersionInfo implements DiagnosticPipe
 	/**
 	 * {@inheritDoc}
 	 */
-	public function handle(DiagnosticDTO &$data, \Closure $next): DiagnosticDTO
+	public function handle(array &$data, \Closure $next): array
 	{
 		/** @var VersionChannelType $channel_name */
 		$channel_name = $this->getChannelName();
@@ -52,9 +52,9 @@ class VersionInfo implements DiagnosticPipe
 			}
 		}
 
-		$data->data[] = Diagnostics::line($this->getVersionString($data) . ' (' . $channel_name->value . '):', $lychee_info_string);
-		$data->data[] = Diagnostics::line('DB Version:', $this->installed_version->getVersion()->toString());
-		$data->data[] = '';
+		$data[] = Diagnostics::line($this->getVersionString() . ' (' . $channel_name->value . '):', $lychee_info_string);
+		$data[] = Diagnostics::line('DB Version:', $this->installed_version->getVersion()->toString());
+		$data[] = '';
 
 		return $next($data);
 	}
@@ -85,17 +85,17 @@ class VersionInfo implements DiagnosticPipe
 	 *
 	 * @return string
 	 */
-	private function getVersionString(DiagnosticDTO $data): string
+	private function getVersionString(): string
 	{
 		$lychee_version = 'Lychee';
-		$lychee_version .= match ($data->verify->get_status()) {
+		$lychee_version .= match ($this->verify->get_status()) {
 			Status::SUPPORTER_EDITION => ' SE',
 			Status::PRO_EDITION => ' Pro',
 			Status::SIGNATURE_EDITION => ' Signature',
 			default => '',
 		};
 
-		if (!$data->verify instanceof Verify || !$data->verify->validate()) {
+		if (!$this->verify->validate()) {
 			// @codeCoverageIgnoreStart
 			$lychee_version .= '*';
 			// @codeCoverageIgnoreEnd

@@ -12,7 +12,6 @@ use App\DTO\AlbumSortingCriterion;
 use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
 use App\Policies\AlbumQueryPolicy;
-use App\Repositories\ConfigManager;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
@@ -25,7 +24,6 @@ class ListAlbums
 {
 	public function __construct(
 		protected readonly AlbumQueryPolicy $album_query_policy,
-		protected readonly ConfigManager $config_manager,
 	) {
 	}
 
@@ -51,7 +49,7 @@ class ListAlbums
 						return $q;
 					})
 		);
-		$sorting = AlbumSortingCriterion::createDefault($this->config_manager);
+		$sorting = AlbumSortingCriterion::createDefault();
 		$query = (new SortingDecorator($unfiltered))
 			->orderBy($sorting->column, $sorting->order);
 

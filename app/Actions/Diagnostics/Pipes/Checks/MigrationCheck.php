@@ -10,7 +10,6 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
-use App\DTO\DiagnosticDTO;
 use App\Metadata\Versions\FileVersion;
 use App\Metadata\Versions\InstalledVersion;
 
@@ -22,17 +21,17 @@ class MigrationCheck implements DiagnosticPipe
 	/**
 	 * {@inheritDoc}
 	 */
-	public function handle(DiagnosticDTO &$data, \Closure $next): DiagnosticDTO
+	public function handle(array &$data, \Closure $next): array
 	{
 		if (!self::isUpToDate()) {
 			// @codeCoverageIgnoreStart
-			$data->data[] = DiagnosticData::error('Database is behind file version. Please apply the migrations.', self::class);
+			$data[] = DiagnosticData::error('Database is behind file version. Please apply the migrations.', self::class);
 			// @codeCoverageIgnoreEnd
 		}
 
 		if ($this->isInFuture()) {
 			// @codeCoverageIgnoreStart
-			$data->data[] = DiagnosticData::warn('Database is in advance of file version. Please check your installation.', self::class);
+			$data[] = DiagnosticData::warn('Database is in advance of file version. Please check your installation.', self::class);
 			// @codeCoverageIgnoreEnd
 		}
 

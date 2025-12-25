@@ -13,12 +13,12 @@ use App\Actions\Diagnostics\Errors;
 use App\Actions\Diagnostics\Info;
 use App\Actions\Diagnostics\Space;
 use App\Constants\AccessPermissionConstants as APC;
-use App\Http\Request;
 use App\Http\Requests\Diagnostics\DiagnosticsRequest;
 use App\Http\Resources\Diagnostics\ErrorLine;
 use App\Http\Resources\Diagnostics\Permissions;
 use App\Models\AccessPermission;
 use App\Policies\AlbumQueryPolicy;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -36,7 +36,7 @@ class DiagnosticsController extends Controller
 	 */
 	public function errors(Request $request, Errors $errors): array
 	{
-		return ErrorLine::collect($errors->get($request->verify(), $request->configs()));
+		return ErrorLine::collect($errors->get());
 	}
 
 	/**
@@ -63,7 +63,7 @@ class DiagnosticsController extends Controller
 	 */
 	public function info(DiagnosticsRequest $request, Info $info): array
 	{
-		return $info->get($request->verify(), $request->configs());
+		return $info->get();
 	}
 
 	/**

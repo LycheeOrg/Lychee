@@ -21,7 +21,6 @@ use App\Repositories\ConfigManager;
 class Create
 {
 	public function __construct(
-		protected readonly ConfigManager $config_manager,
 		public readonly int $intended_owner_id,
 	) {
 	}
@@ -83,14 +82,15 @@ class Create
 	 */
 	private function set_permissions(Album $album, ?Album $parent_album): void
 	{
-		$default_protection_type = $this->config_manager->getValueAsEnum('default_album_protection', DefaultAlbumProtectionType::class);
+		$config_manager = app(ConfigManager::class);
+		$default_protection_type = $config_manager->getValueAsEnum('default_album_protection', DefaultAlbumProtectionType::class);
 
 		if ($default_protection_type === DefaultAlbumProtectionType::PUBLIC) {
-			$album->access_permissions()->saveMany([AccessPermission::ofPublic($this->config_manager)]);
+			$album->access_permissions()->saveMany([AccessPermission::ofPublic()]);
 		}
 
 		if ($default_protection_type === DefaultAlbumProtectionType::PUBLIC_HIDDEN) {
-			$album->access_permissions()->saveMany([AccessPermission::ofPublicHidden($this->config_manager)]);
+			$album->access_permissions()->saveMany([AccessPermission::ofPublicHidden()]);
 		}
 
 		if ($default_protection_type === DefaultAlbumProtectionType::INHERIT && $parent_album !== null) {

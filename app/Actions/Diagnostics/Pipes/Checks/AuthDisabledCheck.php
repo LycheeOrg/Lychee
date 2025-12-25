@@ -10,7 +10,6 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
-use App\DTO\DiagnosticDTO;
 use App\Models\User;
 use App\Providers\AuthServiceProvider;
 use Illuminate\Support\Facades\Schema;
@@ -22,7 +21,7 @@ class AuthDisabledCheck implements DiagnosticPipe
 	/**
 	 * {@inheritDoc}
 	 */
-	public function handle(DiagnosticDTO &$data, \Closure $next): DiagnosticDTO
+	public function handle(array &$data, \Closure $next): array
 	{
 		if (!Schema::hasTable('users') || !Schema::hasTable('oauth_credentials') || !Schema::hasTable('webauthn_credentials')) {
 			// @codeCoverageIgnoreStart
@@ -38,17 +37,17 @@ class AuthDisabledCheck implements DiagnosticPipe
 		// From now on, we assume that basic auth is disabled.
 
 		if (!AuthServiceProvider::isWebAuthnEnabled() && !AuthServiceProvider::isOauthEnabled()) {
-			$data->data[] = DiagnosticData::error('All authentication methods are disabled. Really?', self::class, [self::INFO]);
+			$data[] = DiagnosticData::error('All authentication methods are disabled. Really?', self::class, [self::INFO]);
 
 			return $next($data);
 		}
 
-		$number_admin_with_oauth = AuthServiceProvider::isOauthEnabled() ? $this->oauthChecks($data->data) : 0;
-		$number_admin_with_webauthn = AuthServiceProvider::isWebAuthnEnabled() ? $this->webauthnCheck($data->data) : 0;
+		$number_admin_with_oauth = AuthServiceProvider::isOauthEnabled() ? $this->oauthChecks($data) : 0;
+		$number_admin_with_webauthn = AuthServiceProvider::isWebAuthnEnabled() ? $this->webauthnCheck($data) : 0;
 		if (($number_admin_with_oauth === 0 && AuthServiceProvider::isOauthEnabled()) &&
 			($number_admin_with_webauthn === 0 && AuthServiceProvider::isWebAuthnEnabled())
 		) {
-			$data->data[] = DiagnosticData::error('Basic auth is disabled and there are no admin user with Oauth or WebAuthn enabled.', self::class, [self::INFO]);
+			$data[] = DiagnosticData::error('Basic auth is disabled and there are no admin user with Oauth or WebAuthn enabled.', self::class, [self::INFO]);
 		}
 
 		return $next($data);

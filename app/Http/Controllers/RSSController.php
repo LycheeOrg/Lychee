@@ -11,7 +11,7 @@ namespace App\Http\Controllers;
 use App\Actions\RSS\Generate;
 use App\Contracts\Exceptions\LycheeException;
 use App\Exceptions\ConfigurationException;
-use App\Http\Request;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Collection;
 use Spatie\Feed\FeedItem;

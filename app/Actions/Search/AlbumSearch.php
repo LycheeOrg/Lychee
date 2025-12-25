@@ -18,13 +18,11 @@ use App\Models\Builders\TagAlbumBuilder;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\TagAlbum;
 use App\Policies\AlbumQueryPolicy;
-use App\Repositories\ConfigManager;
 use Illuminate\Database\Eloquent\Collection;
 
 class AlbumSearch
 {
 	public function __construct(
-		protected readonly ConfigManager $config_manager,
 		protected AlbumQueryPolicy $album_query_policy,
 	) {
 	}
@@ -45,7 +43,7 @@ class AlbumSearch
 		);
 		$this->addSearchCondition($terms, $album_query);
 
-		$sorting = AlbumSortingCriterion::createDefault($this->config_manager);
+		$sorting = AlbumSortingCriterion::createDefault();
 
 		return (new SortingDecorator($album_query))
 			->orderBy($sorting->column, $sorting->order)
@@ -70,7 +68,7 @@ class AlbumSearch
 		$this->addSearchCondition($terms, $album_query);
 		$this->album_query_policy->applyBrowsabilityFilter($album_query);
 
-		$sorting = AlbumSortingCriterion::createDefault($this->config_manager);
+		$sorting = AlbumSortingCriterion::createDefault();
 
 		return (new SortingDecorator($album_query))
 			->orderBy($sorting->column, $sorting->order)

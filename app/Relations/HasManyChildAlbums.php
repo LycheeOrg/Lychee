@@ -24,7 +24,6 @@ use Illuminate\Database\Eloquent\Collection;
 class HasManyChildAlbums extends HasManyBidirectionally
 {
 	protected AlbumQueryPolicy $album_query_policy;
-	protected ConfigManager $config_manager;
 
 	public function __construct(Album $owning_album)
 	{
@@ -33,7 +32,6 @@ class HasManyChildAlbums extends HasManyBidirectionally
 		// The parent constructor calls `addConstraints` and thus our own
 		// attributes must be initialized by then
 		$this->album_query_policy = resolve(AlbumQueryPolicy::class);
-		$this->config_manager = app(ConfigManager::class);
 
 		parent::__construct(
 			$owning_album->newQuery(),
@@ -91,7 +89,7 @@ class HasManyChildAlbums extends HasManyBidirectionally
 			return $this->related->newCollection();
 		}
 
-		$album_sorting = $this->getParent()->getEffectiveAlbumSorting($this->config_manager);
+		$album_sorting = $this->getParent()->getEffectiveAlbumSorting();
 
 		/** @var SortingDecorator<Album> */
 		$sorting_decorator = new SortingDecorator($this->query);
@@ -123,7 +121,7 @@ class HasManyChildAlbums extends HasManyBidirectionally
 			if (isset($dictionary[$key = $this->getDictionaryKey($model->getAttribute($this->localKey))])) {
 				/** @var Collection<int,Album> $children_of_model */
 				$children_of_model = $this->getRelationValue($dictionary, $key, 'many');
-				$sorting = $model->getEffectiveAlbumSorting($this->config_manager);
+				$sorting = $model->getEffectiveAlbumSorting();
 				$children_of_model = $children_of_model
 					->sortBy($sorting->column->value, SORT_NATURAL | SORT_FLAG_CASE, $sorting->order === OrderSortingType::DESC)
 					->values();

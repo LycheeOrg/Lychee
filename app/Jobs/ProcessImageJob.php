@@ -21,7 +21,6 @@ use App\Models\JobHistory;
 use App\Models\Photo;
 use App\Models\TagAlbum;
 use App\Repositories\ConfigManager;
-use App\Services\Image\FileExtensionService;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -30,7 +29,6 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
-use LycheeVerify\Verify;
 
 /**
  * This allows to process images on serverside while making the responses faster.
@@ -107,14 +105,10 @@ class ProcessImageJob implements ShouldQueue
 
 		$copied_file = new TemporaryJobFile($this->file_path, $this->original_base_name);
 
-		$config_manager = new ConfigManager();
-		$verify = new Verify();
-		$file_extension_service = new FileExtensionService($config_manager);
+		$config_manager = app(ConfigManager::class);
 
 		// As the file has been uploaded, the (temporary) source file shall be deleted
 		$create = new Create(
-			verify: $verify,
-			file_extension_service: $file_extension_service,
 			import_mode: new ImportMode(
 				delete_imported: true,
 				skip_duplicates: $config_manager->getValueAsBool('skip_duplicates'),

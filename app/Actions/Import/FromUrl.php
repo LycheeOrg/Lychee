@@ -51,8 +51,6 @@ class FromUrl
 		$result = new Collection();
 		$exceptions = [];
 		$create = new Create(
-			verify: $this->verify,
-			file_extension_service: $this->file_extension_service,
 			import_mode: new ImportMode(
 				delete_imported: true,
 				skip_duplicates: $this->config_manager->getValueAsBool('skip_duplicates'),

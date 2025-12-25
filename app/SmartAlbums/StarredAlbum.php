@@ -11,7 +11,6 @@ namespace App\SmartAlbums;
 use App\Enum\SmartAlbumType;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
-use App\Repositories\ConfigManager;
 use Illuminate\Database\Eloquent\Builder;
 
 class StarredAlbum extends BaseSmartAlbum
@@ -23,18 +22,15 @@ class StarredAlbum extends BaseSmartAlbum
 	 * @throws ConfigurationKeyMissingException
 	 * @throws FrameworkException
 	 */
-	protected function __construct(
-		ConfigManager $config_manager,
-	) {
+	protected function __construct() {
 		parent::__construct(
-			config_manager: $config_manager,
 			id: SmartAlbumType::STARRED,
 			smart_condition: fn (Builder $q) => $q->where('photos.is_starred', '=', true)
 		);
 	}
 
-	public static function getInstance(ConfigManager $config_manager): self
+	public static function getInstance(): self
 	{
-		return self::$instance ??= new self($config_manager);
+		return self::$instance ??= new self();
 	}
 }

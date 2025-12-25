@@ -15,9 +15,9 @@ use App\Repositories\ConfigManager;
 
 class SizeVariantDimensionHelpers
 {
-	public function __construct(
-		protected readonly ConfigManager $config_manager,
-	) {
+	protected ConfigManager $config_manager;
+	public function __construct() {
+		$this->config_manager = app(ConfigManager::class);
 	}
 
 	/**

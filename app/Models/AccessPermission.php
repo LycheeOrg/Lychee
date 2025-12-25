@@ -149,8 +149,9 @@ class AccessPermission extends Model
 	 *
 	 * @throws ConfigurationKeyMissingException
 	 */
-	public static function ofPublic(ConfigManager $config_manager): self
+	public static function ofPublic(): self
 	{
+		$config_manager = app(ConfigManager::class);
 		return new AccessPermission([
 			APC::IS_LINK_REQUIRED => false,
 			APC::GRANTS_FULL_PHOTO_ACCESS => $config_manager->getValueAsBool('grants_full_photo_access'),
@@ -167,8 +168,9 @@ class AccessPermission extends Model
 	 *
 	 * @throws ConfigurationKeyMissingException
 	 */
-	public static function ofPublicHidden(ConfigManager $config_manager): self
+	public static function ofPublicHidden(): self
 	{
+		$config_manager = app(ConfigManager::class);
 		return new AccessPermission([
 			APC::IS_LINK_REQUIRED => true,
 			APC::GRANTS_FULL_PHOTO_ACCESS => $config_manager->getValueAsBool('grants_full_photo_access'),

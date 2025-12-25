@@ -10,7 +10,6 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
-use App\DTO\DiagnosticDTO;
 use App\Enum\SizeVariantType;
 use App\Image\SizeVariantDimensionHelpers;
 use App\Models\SizeVariant;
@@ -30,7 +29,7 @@ class PlaceholderExistsCheck implements DiagnosticPipe
 	/**
 	 * {@inheritDoc}
 	 */
-	public function handle(DiagnosticDTO &$data, \Closure $next): DiagnosticDTO
+	public function handle(array &$data, \Closure $next): array
 	{
 		if (!Schema::hasTable('configs') || !Schema::hasTable('size_variants')) {
 			// @codeCoverageIgnoreStart
@@ -38,7 +37,7 @@ class PlaceholderExistsCheck implements DiagnosticPipe
 			// @codeCoverageIgnoreEnd
 		}
 
-		$sv_helpers = new SizeVariantDimensionHelpers($data->config_manager);
+		$sv_helpers = new SizeVariantDimensionHelpers();
 		if (!$sv_helpers->isEnabledByConfiguration(SizeVariantType::PLACEHOLDER)) {
 			// @codeCoverageIgnoreStart
 			return $next($data);
@@ -46,6 +45,7 @@ class PlaceholderExistsCheck implements DiagnosticPipe
 		}
 
 		/** @var object{num_placeholder:int,max_num_placeholder:int,num_unencoded_placeholder:int} $result */
+		/** @phpstan-ignore varTag.type */
 		$result = DB::query()
 		->selectSub(
 			SizeVariant::query()
@@ -70,13 +70,13 @@ class PlaceholderExistsCheck implements DiagnosticPipe
 		$num = $result->num_unencoded_placeholder;
 		if ($num > 0) {
 			// @codeCoverageIgnoreStart
-			$data->data[] = DiagnosticData::info(sprintf(self::INFO_MSG_UNENCODED, $num), self::class, [sprintf(self::INFO_LINE_UNENCODED, $num)]);
+			$data[] = DiagnosticData::info(sprintf(self::INFO_MSG_UNENCODED, $num), self::class, [sprintf(self::INFO_LINE_UNENCODED, $num)]);
 			// @codeCoverageIgnoreEnd
 		}
 
 		$num = $result->max_num_placeholder - $result->num_placeholder;
 		if ($num > 0) {
-			$data->data[] = DiagnosticData::info(sprintf(self::INFO_MSG_MISSING, $num), self::class, [sprintf(self::INFO_LINE_MISSING, $num)]);
+			$data[] = DiagnosticData::info(sprintf(self::INFO_MSG_MISSING, $num), self::class, [sprintf(self::INFO_LINE_MISSING, $num)]);
 		}
 
 		return $next($data);

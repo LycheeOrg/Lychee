@@ -28,14 +28,14 @@ class RecentAlbum extends BaseSmartAlbum
 	 * @throws ConfigurationKeyMissingException
 	 * @throws FrameworkException
 	 */
-	protected function __construct(ConfigManager $config_manager)
+	protected function __construct()
 	{
+		$config_manager = resolve(ConfigManager::class);
 		$str_recent = $this->fromDateTime(
 			Carbon::now()->subDays($config_manager->getValueAsInt('recent_age'))
 		);
 
 		parent::__construct(
-			config_manager: $config_manager,
 			id: SmartAlbumType::RECENT,
 			smart_condition: function (Builder $query) use ($str_recent): void {
 				$query->where('photos.created_at', '>=', $str_recent);
@@ -43,8 +43,8 @@ class RecentAlbum extends BaseSmartAlbum
 		);
 	}
 
-	public static function getInstance(ConfigManager $config_manager): self
+	public static function getInstance(): self
 	{
-		return self::$instance ??= new self($config_manager);
+		return self::$instance ??= new self();
 	}
 }

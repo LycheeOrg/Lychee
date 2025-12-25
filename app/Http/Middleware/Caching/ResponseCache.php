@@ -8,8 +8,6 @@
 
 namespace App\Http\Middleware\Caching;
 
-use App\Exceptions\Internal\LycheeLogicException;
-use App\Http\Request as HttpRequest;
 use App\Metadata\Cache\RouteCacheManager;
 use App\Metadata\Cache\RouteCacher;
 use Illuminate\Http\Request;
@@ -41,10 +39,6 @@ class ResponseCache
 		// We only cache get requests.
 		if ($request->method() !== 'GET') {
 			return $next($request);
-		}
-
-		if (!$request instanceof HttpRequest) {
-			throw new LycheeLogicException('Pure Illuminate\Http\Request should never reach ResponseCache middleware.');
 		}
 
 		if ($request->configs()->getValueAsBool('cache_enabled') === false) {

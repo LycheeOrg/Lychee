@@ -21,7 +21,6 @@ class ResolveVerify
 
 		// Store for the lifetime of THIS request
 		$request->attributes->set('verify', $verify);
-		$request->attributes->set('status', $this->resolveStatus($request));
 
 		return $next($request);
 	}
@@ -33,10 +32,5 @@ class ResolveVerify
 		app()->instance(Verify::class, $verify);
 
 		return app(VerifyInterface::class);
-	}
-
-	protected function resolveStatus(Request $request)
-	{
-		return $this->resolveVerify($request)->get_status();
 	}
 }

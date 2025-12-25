@@ -31,7 +31,7 @@ abstract class BaseImageHandler implements ImageHandlerInterface
 	public function __construct(
 		protected readonly ConfigManager $config_manager,
 	) {
-		$this->compression_quality = $config_manager->getValueAsInt('compression_quality');
+		$this->compression_quality = $this->config_manager->getValueAsInt('compression_quality');
 	}
 
 	public function __destruct()

@@ -28,12 +28,11 @@ class OnThisDayAlbum extends BaseSmartAlbum
 	 * @throws ConfigurationKeyMissingException
 	 * @throws FrameworkException
 	 */
-	protected function __construct(ConfigManager $config_manager)
+	protected function __construct()
 	{
 		$today = Carbon::today();
 
 		parent::__construct(
-			config_manager: $config_manager,
 			id: SmartAlbumType::ON_THIS_DAY,
 			smart_condition: function (Builder $query) use ($today): void {
 				$query->where(fn (Builder $q) => $q
@@ -48,8 +47,8 @@ class OnThisDayAlbum extends BaseSmartAlbum
 		);
 	}
 
-	public static function getInstance(ConfigManager $config_manager): self
+	public static function getInstance(): self
 	{
-		return self::$instance ??= new self($config_manager);
+		return self::$instance ??= new self();
 	}
 }

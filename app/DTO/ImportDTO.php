@@ -30,8 +30,6 @@ class ImportDTO
 	public array $job_bus = [];
 
 	public function __construct(
-		VerifyInterface $verify,
-		ConfigManager $config_manager,
 		public readonly int $intended_owner_id,
 		public readonly ImportMode $import_mode,
 		public readonly ?Album $parent_album,
@@ -41,11 +39,10 @@ class ImportDTO
 		public readonly bool $is_dry_run = true,
 		public readonly bool $should_execute_jobs = false,
 	) {
-		$this->album_create = new AlbumCreate($config_manager, $intended_owner_id);
-		$file_extension_service = new FileExtensionService($config_manager);
-		$this->photo_create = new PhotoCreate($verify, $file_extension_service, $import_mode, $intended_owner_id);
-		$this->album_renamer = new AlbumRenamer($verify, $config_manager, $intended_owner_id);
-		$this->photo_renamer = new PhotoRenamer($verify, $config_manager, $intended_owner_id);
+		$this->album_create = new AlbumCreate($intended_owner_id);
+		$this->photo_create = new PhotoCreate( $import_mode, $intended_owner_id);
+		$this->album_renamer = new AlbumRenamer( $intended_owner_id);
+		$this->photo_renamer = new PhotoRenamer( $intended_owner_id);
 	}
 
 	public function getAlbumCreate(): AlbumCreate

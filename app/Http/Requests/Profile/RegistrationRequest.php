@@ -35,8 +35,9 @@ class RegistrationRequest extends BaseApiRequest implements HasUsername, HasPass
 			return false;
 		}
 
-		// @phpstan-ignore staticMethod.dynamicCall
-		return $this->configs()->getValueAsBool('user_registration_enabled') || $this->hasValidSignature();
+		return $this->configs()->getValueAsBool('user_registration_enabled')
+			/** @phpstan-ignore staticMethod.dynamicCall  */
+			|| $this->hasValidSignature();
 	}
 
 	/**

@@ -97,11 +97,7 @@ class ExtractZip implements ShouldQueue
 			shall_rename_album_title: $config_manager->getValueAsBool('renamer_album_title_enabled'),
 		);
 
-		$verify = new Verify();
-
 		$exec = new Exec(
-			verify: $verify,
-			config_manager: $config_manager,
 			import_mode: $import_mode,
 			intended_owner_id: $this->user_id,
 			delete_missing_photos: false,
@@ -114,7 +110,7 @@ class ExtractZip implements ShouldQueue
 		$parent_album = $this->album_id !== null ? Album::query()->findOrFail($this->album_id) : null; // in case no ID provided -> import to root folder
 
 		// Setup File manager service for caching access to file extensions
-		$this->file_extension_service = new FileExtensionService($config_manager);
+		$this->file_extension_service = app(FileExtensionService::class);
 
 		/** @var ImportImageJob[] $jobs */
 		$jobs = [];

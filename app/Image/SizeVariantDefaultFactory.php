@@ -44,17 +44,12 @@ class SizeVariantDefaultFactory implements SizeVariantFactory
 	protected ?AbstractSizeVariantNamingStrategy $naming_strategy = null;
 	protected ?SizeVariantDimensionHelpers $sv_dimension_helpers = null;
 
-	public function __construct(
-		protected readonly ConfigManager $config_manager,
-	) {
-	}
-
 	/**
 	 * {@inheritDoc}
 	 */
 	public function init(Photo $photo, ?ImageHandlerInterface $reference_image = null, ?AbstractSizeVariantNamingStrategy $naming_strategy = null): void
 	{
-		$this->sv_dimension_helpers = new SizeVariantDimensionHelpers($this->config_manager);
+		$this->sv_dimension_helpers = new SizeVariantDimensionHelpers();
 
 		try {
 			$this->photo = $photo;
@@ -86,7 +81,7 @@ class SizeVariantDefaultFactory implements SizeVariantFactory
 		$original_file = $this->photo->size_variants->getOriginal()->getFile();
 
 		if (!$this->photo->isVideo()) {
-			$this->reference_image = new ImageHandler($this->config_manager);
+			$this->reference_image = resolve(ImageHandler::class);
 			$this->reference_image->load($original_file);
 		} else {
 			if ($original_file->isLocalFile()) {
@@ -101,7 +96,7 @@ class SizeVariantDefaultFactory implements SizeVariantFactory
 				$source_file->write($original_file->read(), false, $this->photo->type);
 			}
 
-			$video_handler = new VideoHandler($this->config_manager);
+			$video_handler = new VideoHandler();
 			$video_handler->load($source_file);
 			$position = is_numeric($this->photo->aperture) ? floatval($this->photo->aperture) / 2 : 0.0;
 			$this->reference_image = $video_handler->extractFrame($position);

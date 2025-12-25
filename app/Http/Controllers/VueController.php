@@ -96,7 +96,7 @@ class VueController extends Controller
 		if (
 			!$result &&
 			$album instanceof BaseAlbum &&
-			$album->public_permissions(request()->configs())?->password !== null
+			$album->public_permissions()?->password !== null
 		) {
 			return false;
 		}

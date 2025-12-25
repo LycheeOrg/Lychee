@@ -26,15 +26,13 @@ class Watermarker
 	private WatermarkGroupedWithRandomSuffixNamingStrategy $naming_strategy;
 	public bool $can_watermark = false;
 
-	private CoordinateCalculator $calculator;
-
 	/**
 	 * Create a watermarker.
 	 */
 	public function __construct(
 		protected readonly ConfigManager $config_manager,
+		private CoordinateCalculator $calculator,
 	) {
-		$this->calculator = new CoordinateCalculator($this->config_manager);
 
 		$is_enabled = $this->config_manager->getValueAsBool('watermark_enabled');
 		$is_imagick_enabled = $this->config_manager->getValueAsBool('imagick');
@@ -150,10 +148,10 @@ class Watermarker
 		}
 
 		try {
-			$size_variant_handler = new ImagickHandler($this->config_manager);
+			$size_variant_handler = app(ImagickHandler::class);
 			$size_variant_handler->load($size_variant->getFile());
 
-			$watermark_handler = new ImagickHandler($this->config_manager);
+			$watermark_handler = app(ImagickHandler::class);
 			$watermark_handler->load($this->size_variant_watermark->getFile());
 
 			/** @var ImageDimension $sv_dimentions */

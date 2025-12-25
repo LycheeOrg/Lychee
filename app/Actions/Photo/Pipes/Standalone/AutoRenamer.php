@@ -24,12 +24,6 @@ use LycheeVerify\Contract\VerifyInterface;
  */
 class AutoRenamer implements StandalonePipe
 {
-	public function __construct(
-		protected readonly VerifyInterface $verify,
-		protected readonly ConfigManager $config_manager,
-	) {
-	}
-
 	public function handle(StandaloneDTO $state, \Closure $next): StandaloneDTO
 	{
 		// Skip if not enabled.
@@ -38,8 +32,6 @@ class AutoRenamer implements StandalonePipe
 		}
 
 		$renamer = new PhotoRenamer(
-			verify: $this->verify,
-			config_manager: $this->config_manager,
 			user_id: $state->intended_owner_id
 		);
 		$state->photo->title = $renamer->handle($state->photo->title);

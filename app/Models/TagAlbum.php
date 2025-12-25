@@ -142,15 +142,12 @@ class TagAlbum extends BaseAlbum
 	 */
 	protected function getThumbAttribute(): ?Thumb
 	{
-		$config_manager = app(ConfigManager::class);
-
 		// Note, `photos()` already applies a "security filter" and
 		// only returns photos which are accessible by the current
 		// user
 		return Thumb::createFromQueryable(
 			$this->photos(),
-			$this->getEffectivePhotoSorting($config_manager),
-			$config_manager
+			$this->getEffectivePhotoSorting(),
 		);
 	}
 
