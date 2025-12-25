@@ -42,7 +42,7 @@ class RecentAlbum extends BaseSmartAlbum
 		);
 	}
 
-	public function getInstance(): self
+	public static function getInstance(): self
 	{
 		return new self();
 	}
