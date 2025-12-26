@@ -12,8 +12,10 @@ use App\Constants\PhotoAlbum as PA;
 use App\Enum\SmartAlbumType;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
+use App\Models\Configs;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 
 class UnsortedAlbum extends BaseSmartAlbum
 {
@@ -45,7 +47,7 @@ class UnsortedAlbum extends BaseSmartAlbum
 	 */
 	public function photos(): Builder
 	{
-		if ($this->public_permissions !== null) {
+		if ($this->public_permissions !== null && (!Auth::check() || !Configs::getValueAsBool('enable_smart_album_per_owner'))) {
 			return Photo::query()->leftJoin(PA::PHOTO_ALBUM, 'photos.id', '=', PA::PHOTO_ID)->with(['size_variants', 'statistics', 'palette', 'tags'])
 			->where($this->smart_photo_condition);
 		}
