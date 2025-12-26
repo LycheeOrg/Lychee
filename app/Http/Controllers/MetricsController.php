@@ -16,7 +16,6 @@ use App\Exceptions\UnauthorizedException;
 use App\Http\Requests\Metrics\MetricsRequest;
 use App\Http\Requests\Metrics\PhotoMetricsRequest;
 use App\Http\Resources\Models\LiveMetricsResource;
-use App\Models\Configs;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -29,7 +28,7 @@ class MetricsController extends Controller
 {
 	public function get(MetricsRequest $request, GetMetrics $get_metrics, CleanupMetrics $cleanup_metrics): Collection
 	{
-		if (Configs::getValueAsBool('live_metrics_enabled') === false) {
+		if ($request->configs()->getValueAsBool('live_metrics_enabled') === false) {
 			throw new UnauthorizedException('Live metrics are not enabled.');
 		}
 
@@ -69,7 +68,7 @@ class MetricsController extends Controller
 	 */
 	public static function shouldMeasure(): bool
 	{
-		if (Configs::getValueAsBool('metrics_enabled') === false && Configs::getValueAsBool('live_metrics_enabled') === false) {
+		if (request()->configs()->getValueAsBool('metrics_enabled') === false && request()->configs()->getValueAsBool('live_metrics_enabled') === false) {
 			return false;
 		}
 
@@ -81,6 +80,6 @@ class MetricsController extends Controller
 			return false;
 		}
 
-		return Configs::getValueAsBool('metrics_logged_in_users_enabed');
+		return request()->configs()->getValueAsBool('metrics_logged_in_users_enabed');
 	}
 }

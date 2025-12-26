@@ -46,7 +46,6 @@ class DownloadTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->admin)->upload('Photo', filename: $filename, album_id: $album_id);
 		$this->assertCreated($response);
 
-		$this->clearCachedSmartAlbums();
 		$response = $this->getJsonWithData('Album', ['album_id' => $album_id]);
 		$this->assertOk($response);
 
@@ -97,7 +96,6 @@ class DownloadTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->admin)->upload('Photo', filename: TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE, album_id: $this->album5->id, file_name: TestConstants::PHOTO_MONGOLIA_TITLE . '.jpeg');
 		$this->assertCreated($response);
 
-		$this->clearCachedSmartAlbums();
 		$response = $this->getJsonWithData('Album', ['album_id' => $this->album5->id]);
 		$this->assertOk($response);
 		$response->assertJsonCount(2, 'resource.photos');
@@ -278,73 +276,4 @@ class DownloadTest extends BaseApiWithDataTest
 			$this->album5->title . '/' . $album6->title . '/mongolia.jpeg' => ['size' => filesize(base_path(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE))],
 		]);
 	}
-
-	// 	public function testDownloadOfInvisibleUnsortedPhotoByNonOwner(): void
-	// 	{
-	// 		Auth::loginUsingId(1);
-	// 		$userID1 = $this->users_tests->add('Test user 1', 'Test password 1')->offsetGet('id');
-	// 		$userID2 = $this->users_tests->add('Test user 2', 'Test password 2')->offsetGet('id');
-	// 		Auth::logout();
-	// 		Session::flush();
-	// 		Auth::loginUsingId($userID1);
-	// 		$photoID = $this->photos_tests->upload(
-	// 			self::createUploadedFile(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE)
-	// 		)->offsetGet('id');
-	// 		Auth::logout();
-	// 		Session::flush();
-	// 		Auth::loginUsingId($userID2);
-	// 		$this->photos_tests->download([$photoID], DownloadVariantType::ORIGINAL->value, 403);
-	// 	}
-
-	// 	public function testDownloadOfPhotoInSharedDownloadableAlbum(): void
-	// 	{
-	// 		$areAlbumsDownloadable = Configs::getValueAsBool(TestConstants::CONFIG_DOWNLOADABLE);
-	// 		try {
-	// 			Configs::set(TestConstants::CONFIG_DOWNLOADABLE, true);
-	// 			Auth::loginUsingId(1);
-	// 			$userID1 = $this->users_tests->add('Test user 1', 'Test password 1')->offsetGet('id');
-	// 			$userID2 = $this->users_tests->add('Test user 2', 'Test password 2')->offsetGet('id');
-	// 			Auth::logout();
-	// 			Session::flush();
-	// 			Auth::loginUsingId($userID1);
-	// 			$albumID = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
-	// 			$photoID = $this->photos_tests->upload(
-	// 				self::createUploadedFile(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE),
-	// 				$albumID
-	// 			)->offsetGet('id');
-	// 			$this->sharing_tests->add([$albumID], [$userID2]);
-	// 			Auth::logout();
-	// 			Session::flush();
-	// 			Auth::loginUsingId($userID2);
-	// 			$this->photos_tests->download([$photoID], DownloadVariantType::ORIGINAL->value);
-	// 		} finally {
-	// 			Configs::set(TestConstants::CONFIG_DOWNLOADABLE, $areAlbumsDownloadable);
-	// 		}
-	// 	}
-
-	// 	public function testDownloadOfPhotoInSharedNonDownloadableAlbum(): void
-	// 	{
-	// 		$areAlbumsDownloadable = Configs::getValueAsBool(TestConstants::CONFIG_DOWNLOADABLE);
-	// 		try {
-	// 			Configs::set(TestConstants::CONFIG_DOWNLOADABLE, false);
-	// 			Auth::loginUsingId(1);
-	// 			$userID1 = $this->users_tests->add('Test user 1', 'Test password 1')->offsetGet('id');
-	// 			$userID2 = $this->users_tests->add('Test user 2', 'Test password 2')->offsetGet('id');
-	// 			Auth::logout();
-	// 			Session::flush();
-	// 			Auth::loginUsingId($userID1);
-	// 			$albumID = $this->albums_tests->add(null, 'Test Album')->offsetGet('id');
-	// 			$photoID = $this->photos_tests->upload(
-	// 				self::createUploadedFile(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE),
-	// 				$albumID
-	// 			)->offsetGet('id');
-	// 			$this->sharing_tests->add([$albumID], [$userID2]);
-	// 			Auth::logout();
-	// 			Session::flush();
-	// 			Auth::loginUsingId($userID2);
-	// 			$this->photos_tests->download([$photoID], DownloadVariantType::ORIGINAL->value, 403);
-	// 		} finally {
-	// 			Configs::set(TestConstants::CONFIG_DOWNLOADABLE, $areAlbumsDownloadable);
-	// 		}
-	// 	}
 }

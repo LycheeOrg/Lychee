@@ -10,7 +10,7 @@ namespace App\Metadata;
 
 use App\Exceptions\ExternalComponentFailedException;
 use App\Exceptions\LocationDecodingFailed;
-use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use Geocoder\Exception\Exception as GeocoderException;
 use Geocoder\Provider\Cache\ProviderCache;
 use Geocoder\Provider\Nominatim\Model\NominatimAddress;
@@ -36,13 +36,14 @@ class Geodecoder
 	 */
 	public static function getGeocoderProvider(): ProviderCache
 	{
+		$config_manager = app(ConfigManager::class);
 		try {
 			$stack = HandlerStack::create();
 			$stack->push(RateLimiterMiddleware::perSecond(1));
 
 			$http_client = new \GuzzleHttp\Client([
 				'handler' => $stack,
-				'timeout' => Configs::getValueAsInt('location_decoding_timeout'),
+				'timeout' => $config_manager->getValueAsInt('location_decoding_timeout'),
 			]);
 
 			$http_adapter = new \Http\Adapter\Guzzle7\Client($http_client);
@@ -64,8 +65,10 @@ class Geodecoder
 	 */
 	public static function decodeLocation(?float $latitude, ?float $longitude): ?string
 	{
+		$config_manager = app(ConfigManager::class);
+
 		// User does not want to decode location data
-		if (!Configs::getValueAsBool('location_decoding')) {
+		if (!$config_manager->getValueAsBool('location_decoding')) {
 			return null;
 		}
 		if ($latitude === null || $longitude === null) {
@@ -86,7 +89,9 @@ class Geodecoder
 	 */
 	public static function decodeLocation_core(float $latitude, float $longitude, ProviderCache $cached_provider): ?string
 	{
-		$lang = Configs::getValueAsString('lang');
+		$config_manager = app(ConfigManager::class);
+
+		$lang = $config_manager->getValueAsString('lang');
 		$geocoder = new StatefulGeocoder($cached_provider, $lang);
 		try {
 			$result_list = $geocoder->reverseQuery(ReverseQuery::fromCoordinates($latitude, $longitude));

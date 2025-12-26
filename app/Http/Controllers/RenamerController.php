@@ -56,6 +56,7 @@ class RenamerController extends Controller
 			->orderBy('order', 'asc')
 			->get();
 
+		/** @disregard P1006 */
 		return RenamerRuleResource::collect($rules);
 	}
 

@@ -26,7 +26,7 @@ class OrderItemFactory extends Factory
 	/**
 	 * The name of the factory's corresponding model.
 	 *
-	 * @var string
+	 * @var class-string<OrderItem>
 	 */
 	protected $model = OrderItem::class;
 
@@ -55,9 +55,9 @@ class OrderItemFactory extends Factory
 	 *
 	 * @param Order|int $order
 	 *
-	 * @return static
+	 * @return self
 	 */
-	public function forOrder(Order|int $order): static
+	public function forOrder(Order|int $order): self
 	{
 		$order_id = $order instanceof Order ? $order->id : $order;
 
@@ -71,9 +71,9 @@ class OrderItemFactory extends Factory
 	 *
 	 * @param Purchasable|int $purchasable
 	 *
-	 * @return static
+	 * @return self
 	 */
-	public function forPurchasable(Purchasable|int $purchasable): static
+	public function forPurchasable(Purchasable|int $purchasable): self
 	{
 		$purchasable_id = $purchasable instanceof Purchasable ? $purchasable->id : $purchasable;
 
@@ -87,12 +87,12 @@ class OrderItemFactory extends Factory
 	 *
 	 * @param Photo|string|null $photo
 	 *
-	 * @return static
+	 * @return self
 	 */
-	public function forPhoto(Photo|string|null $photo = null): static
+	public function forPhoto(Photo|string|null $photo = null): self
 	{
 		$photo_title = fake()->words(2, true) . ' Photo';
-		if ($photo instanceof string || $photo === null) {
+		if (is_string($photo) || $photo === null) {
 			$photo_id = $photo;
 		} else {
 			$photo_id = $photo->id;
@@ -110,12 +110,12 @@ class OrderItemFactory extends Factory
 	 *
 	 * @param Album|string|null $album
 	 *
-	 * @return static
+	 * @return self
 	 */
-	public function forAlbum(Album|string|null $album = null): static
+	public function forAlbum(Album|string|null $album = null): self
 	{
-		$album_title = fake()->words(2, true) . ' Ahoto';
-		if ($album instanceof string || $album === null) {
+		$album_title = fake()->words(2, true) . ' Album';
+		if (is_string($album) || $album === null) {
 			$album_id = $album;
 		} else {
 			$album_id = $album->id;
@@ -133,9 +133,9 @@ class OrderItemFactory extends Factory
 	 *
 	 * @param PurchasableLicenseType $licenseType
 	 *
-	 * @return static
+	 * @return self
 	 */
-	public function withLicenseType(PurchasableLicenseType $licenseType): static
+	public function withLicenseType(PurchasableLicenseType $licenseType): self
 	{
 		return $this->state(fn (array $attributes) => [
 			'license_type' => $licenseType,
@@ -147,9 +147,9 @@ class OrderItemFactory extends Factory
 	 *
 	 * @param PurchasableSizeVariantType $sizeVariant
 	 *
-	 * @return static
+	 * @return self
 	 */
-	public function withSizeVariant(PurchasableSizeVariantType $sizeVariant): static
+	public function withSizeVariant(PurchasableSizeVariantType $sizeVariant): self
 	{
 		return $this->state(fn (array $attributes) => [
 			'size_variant_type' => $sizeVariant,
@@ -159,9 +159,9 @@ class OrderItemFactory extends Factory
 	/**
 	 * Create an order item with personal license.
 	 *
-	 * @return static
+	 * @return self
 	 */
-	public function personalLicense(): static
+	public function personalLicense(): self
 	{
 		return $this->withLicenseType(PurchasableLicenseType::PERSONAL);
 	}
@@ -169,9 +169,9 @@ class OrderItemFactory extends Factory
 	/**
 	 * Create an order item with commercial license.
 	 *
-	 * @return static
+	 * @return self
 	 */
-	public function commercialLicense(): static
+	public function commercialLicense(): self
 	{
 		return $this->withLicenseType(PurchasableLicenseType::COMMERCIAL);
 	}
@@ -179,9 +179,9 @@ class OrderItemFactory extends Factory
 	/**
 	 * Create an order item with extended license.
 	 *
-	 * @return static
+	 * @return self
 	 */
-	public function extendedLicense(): static
+	public function extendedLicense(): self
 	{
 		return $this->withLicenseType(PurchasableLicenseType::EXTENDED);
 	}
@@ -189,9 +189,9 @@ class OrderItemFactory extends Factory
 	/**
 	 * Create an order item with medium size variant.
 	 *
-	 * @return static
+	 * @return self
 	 */
-	public function mediumSize(): static
+	public function mediumSize(): self
 	{
 		return $this->withSizeVariant(PurchasableSizeVariantType::MEDIUM);
 	}
@@ -199,9 +199,9 @@ class OrderItemFactory extends Factory
 	/**
 	 * Create an order item with medium2x size variant.
 	 *
-	 * @return static
+	 * @return self
 	 */
-	public function medium2xSize(): static
+	public function medium2xSize(): self
 	{
 		return $this->withSizeVariant(PurchasableSizeVariantType::MEDIUM2x);
 	}
@@ -209,9 +209,9 @@ class OrderItemFactory extends Factory
 	/**
 	 * Create an order item with original size variant.
 	 *
-	 * @return static
+	 * @return self
 	 */
-	public function originalSize(): static
+	public function originalSize(): self
 	{
 		return $this->withSizeVariant(PurchasableSizeVariantType::ORIGINAL);
 	}
@@ -219,9 +219,9 @@ class OrderItemFactory extends Factory
 	/**
 	 * Create an order item with full size variant.
 	 *
-	 * @return static
+	 * @return self
 	 */
-	public function fullSize(): static
+	public function fullSize(): self
 	{
 		return $this->withSizeVariant(PurchasableSizeVariantType::FULL);
 	}
@@ -231,9 +231,9 @@ class OrderItemFactory extends Factory
 	 *
 	 * @param int $cents
 	 *
-	 * @return static
+	 * @return self
 	 */
-	public function withPriceCents(int $cents): static
+	public function withPriceCents(int $cents): self
 	{
 		return $this->state(fn (array $attributes) => [
 			'price_cents' => resolve(MoneyService::class)->createFromCents($cents),
@@ -245,9 +245,9 @@ class OrderItemFactory extends Factory
 	 *
 	 * @param float $dollars
 	 *
-	 * @return static
+	 * @return self
 	 */
-	public function withPriceDollars(float $dollars): static
+	public function withPriceDollars(float $dollars): self
 	{
 		return $this->withPriceCents((int) ($dollars * 100));
 	}
@@ -257,9 +257,9 @@ class OrderItemFactory extends Factory
 	 *
 	 * @param string $title
 	 *
-	 * @return static
+	 * @return self
 	 */
-	public function withTitle(string $title): static
+	public function withTitle(string $title): self
 	{
 		return $this->state(fn (array $attributes) => [
 			'title' => $title,
@@ -271,9 +271,9 @@ class OrderItemFactory extends Factory
 	 *
 	 * @param string|null $notes
 	 *
-	 * @return static
+	 * @return self
 	 */
-	public function withNotes(string|null $notes = null): static
+	public function withNotes(string|null $notes = null): self
 	{
 		return $this->state(fn (array $attributes) => [
 			'item_notes' => $notes ?? fake()->paragraph(),

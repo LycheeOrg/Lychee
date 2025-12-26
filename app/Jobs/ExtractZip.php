@@ -14,11 +14,11 @@ use App\DTO\ImportMode;
 use App\Enum\JobStatus;
 use App\Exceptions\Internal\ZipExtractionException;
 use App\Exceptions\ZipInvalidException;
-use App\Image\Files\BaseMediaFile;
 use App\Image\Files\ProcessableJobFile;
 use App\Models\Album;
-use App\Models\Configs;
 use App\Models\JobHistory;
+use App\Repositories\ConfigManager;
+use App\Services\Image\FileExtensionService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -46,6 +46,8 @@ class ExtractZip implements ShouldQueue
 	public ?string $album_id;
 	public int $user_id;
 	public ?int $file_last_modified_time;
+
+	private FileExtensionService $file_extension_service;
 
 	/**
 	 * Create a new job instance.
@@ -83,13 +85,15 @@ class ExtractZip implements ShouldQueue
 		$path_extracted = Storage::disk('extract-jobs')->path(date('Ymd') . ' ' . $this->getExtractFolderName());
 		$this->extract_zip($path_extracted);
 
+		$config_manager = app(ConfigManager::class);
+
 		$import_mode = new ImportMode(
 			delete_imported: true,
 			skip_duplicates: false,
 			import_via_symlink: false,
 			resync_metadata: false,
-			shall_rename_photo_title: Configs::getValueAsBool('renamer_photo_title_enabled'),
-			shall_rename_album_title: Configs::getValueAsBool('renamer_album_title_enabled'),
+			shall_rename_photo_title: $config_manager->getValueAsBool('renamer_photo_title_enabled'),
+			shall_rename_album_title: $config_manager->getValueAsBool('renamer_album_title_enabled'),
 		);
 
 		$exec = new Exec(
@@ -103,6 +107,9 @@ class ExtractZip implements ShouldQueue
 
 		/** @var Album $parent_album */
 		$parent_album = $this->album_id !== null ? Album::query()->findOrFail($this->album_id) : null; // in case no ID provided -> import to root folder
+
+		// Setup File manager service for caching access to file extensions
+		$this->file_extension_service = app(FileExtensionService::class);
 
 		/** @var ImportImageJob[] $jobs */
 		$jobs = [];
@@ -142,7 +149,7 @@ class ExtractZip implements ShouldQueue
 
 			// Check if this is an image file
 			$extension = strtolower($file_info->getExtension());
-			if (BaseMediaFile::isSupportedOrAcceptedFileExtension('.' . $extension)) {
+			if ($this->file_extension_service->isSupportedOrAcceptedFileExtension('.' . $extension)) {
 				return false;
 			}
 		}

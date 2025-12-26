@@ -15,7 +15,6 @@ use App\Exceptions\MediaFileOperationException;
 use App\Http\Requests\Maintenance\CreateThumbsRequest;
 use App\Image\PlaceholderEncoder;
 use App\Image\SizeVariantDimensionHelpers;
-use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use Illuminate\Database\Eloquent\Builder;
@@ -42,7 +41,7 @@ class GenSizeVariants extends Controller
 			->whereDoesntHave('size_variants', function (Builder $query) use ($request): void {
 				$query->where('type', '=', $request->kind());
 			});
-		$photos = $photos_query->limit(Configs::getValueAsInt('maintenance_processing_limit'))->lazyById(100);
+		$photos = $photos_query->limit($request->configs()->getValueAsInt('maintenance_processing_limit'))->lazyById(100);
 
 		$generated = 0;
 		/** @var Photo $photo */

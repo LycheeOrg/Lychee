@@ -22,11 +22,9 @@ use Illuminate\Support\Facades\Auth;
 
 class PhotoQueryPolicy
 {
-	protected AlbumQueryPolicy $album_query_policy;
-
-	public function __construct()
-	{
-		$this->album_query_policy = resolve(AlbumQueryPolicy::class);
+	public function __construct(
+		protected AlbumQueryPolicy $album_query_policy,
+	) {
 	}
 
 	/**

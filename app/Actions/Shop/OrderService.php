@@ -15,11 +15,11 @@ use App\Events\OrderCompleted;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\Shop\InvalidPurchaseOptionException;
 use App\Exceptions\Shop\PhotoNotPurchasableException;
-use App\Models\Configs;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Photo;
 use App\Models\User;
+use App\Repositories\ConfigManager;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -61,6 +61,7 @@ class OrderService
 {
 	public function __construct(
 		private PurchasableService $purchasable_service,
+		protected readonly ConfigManager $config_manager,
 	) {
 	}
 
@@ -368,7 +369,7 @@ class OrderService
 		$order->markAsPaid($order->transaction_id);
 
 		// Dispatch the OrderCompleted event to fulfill post-order actions
-		OrderCompleted::dispatchIf(Configs::getValueAsBool('webshop_auto_fulfill_enabled'), $order->id);
+		OrderCompleted::dispatchIf($this->config_manager->getValueAsBool('webshop_auto_fulfill_enabled'), $order->id);
 
 		return $order;
 	}

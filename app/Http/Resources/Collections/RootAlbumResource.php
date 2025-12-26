@@ -15,7 +15,6 @@ use App\Http\Resources\GalleryConfigs\RootConfig;
 use App\Http\Resources\Models\ThumbAlbumResource;
 use App\Http\Resources\Models\Utils\TimelineData;
 use App\Http\Resources\Rights\RootAlbumRightsResource;
-use App\Models\Configs;
 use Illuminate\Support\Collection;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\LiteralTypeScriptType;
@@ -76,8 +75,8 @@ class RootAlbumResource extends Data
 		$this->tag_albums = $tag_albums;
 		$this->albums = $albums;
 		$this->pinned_albums = $pinned_albums;
-		$sorting = Configs::getValueAsEnum('sorting_albums_col', ColumnSortingType::class);
-		$album_granularity = Configs::getValueAsEnum('timeline_albums_granularity', TimelineAlbumGranularity::class);
+		$sorting = request()->configs()->getValueAsEnum('sorting_albums_col', ColumnSortingType::class);
+		$album_granularity = request()->configs()->getValueAsEnum('timeline_albums_granularity', TimelineAlbumGranularity::class);
 		$this->albums = TimelineData::setTimeLineDataForAlbums($this->albums, $sorting, $album_granularity);
 		$this->shared_albums = $shared_albums;
 		$this->config = $config;

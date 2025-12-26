@@ -11,14 +11,12 @@ namespace App\Http\Requests\UserManagement;
 use App\Contracts\Http\Requests\HasNote;
 use App\Contracts\Http\Requests\HasPassword;
 use App\Contracts\Http\Requests\HasQuotaKB;
-use App\Contracts\Http\Requests\HasSeStatusBoolean;
 use App\Contracts\Http\Requests\HasUsername;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasNoteTrait;
 use App\Http\Requests\Traits\HasPasswordTrait;
 use App\Http\Requests\Traits\HasQuotaKBTrait;
-use App\Http\Requests\Traits\HasSeStatusBooleanTrait;
 use App\Http\Requests\Traits\HasUsernameTrait;
 use App\Models\User;
 use App\Policies\UserPolicy;
@@ -29,11 +27,10 @@ use App\Rules\StringRequireSupportRule;
 use App\Rules\UsernameRule;
 use Illuminate\Support\Facades\Gate;
 
-class AddUserRequest extends BaseApiRequest implements HasUsername, HasPassword, HasSeStatusBoolean, HasQuotaKB, HasNote
+class AddUserRequest extends BaseApiRequest implements HasUsername, HasPassword, HasQuotaKB, HasNote
 {
 	use HasUsernameTrait;
 	use HasPasswordTrait;
-	use HasSeStatusBooleanTrait;
 	use HasQuotaKBTrait;
 	use HasNoteTrait;
 
@@ -59,10 +56,10 @@ class AddUserRequest extends BaseApiRequest implements HasUsername, HasPassword,
 			RequestAttribute::PASSWORD_ATTRIBUTE => ['required', new PasswordRule(false)],
 			RequestAttribute::MAY_UPLOAD_ATTRIBUTE => 'present|boolean',
 			RequestAttribute::MAY_EDIT_OWN_SETTINGS_ATTRIBUTE => 'present|boolean',
-			RequestAttribute::MAY_ADMINISTRATE => ['sometimes', 'boolean', new BooleanRequireSupportRule(false, $this->verify)],
-			RequestAttribute::HAS_QUOTA_ATTRIBUTE => ['sometimes', 'boolean', new BooleanRequireSupportRule(false, $this->verify)],
-			RequestAttribute::QUOTA_ATTRIBUTE => ['sometimes', 'int', new IntegerRequireSupportRule(0, $this->verify)],
-			RequestAttribute::NOTE_ATTRIBUTE => ['sometimes', 'string', new StringRequireSupportRule('', $this->verify)],
+			RequestAttribute::MAY_ADMINISTRATE => ['sometimes', 'boolean', new BooleanRequireSupportRule(false, $this->verify())],
+			RequestAttribute::HAS_QUOTA_ATTRIBUTE => ['sometimes', 'boolean', new BooleanRequireSupportRule(false, $this->verify())],
+			RequestAttribute::QUOTA_ATTRIBUTE => ['sometimes', 'int', new IntegerRequireSupportRule(0, $this->verify())],
+			RequestAttribute::NOTE_ATTRIBUTE => ['sometimes', 'string', new StringRequireSupportRule('', $this->verify())],
 		];
 	}
 

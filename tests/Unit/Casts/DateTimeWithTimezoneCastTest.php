@@ -58,7 +58,6 @@ class DateTimeWithTimezoneCastTest extends AbstractTestCase
 		self::expectException(LycheeInvalidArgumentException::class);
 		$cast = new DateTimeWithTimezoneCast();
 		$photo = new Photo();
-		// @phpstan-ignore-next-line this is voluntary to trigger the exception
 		$cast->set($photo, 'created_at', $this, []);
 	}
 

@@ -11,16 +11,16 @@ namespace App\Http\Requests\Traits;
 use App\Http\Resources\Editable\EditableConfigResource;
 use Illuminate\Support\Collection;
 
-trait HasConfigsTrait
+trait HasEditableConfigsTrait
 {
 	/** @var Collection<int,EditableConfigResource> */
-	protected Collection $configs;
+	protected Collection $editable_configs;
 
 	/**
 	 * @return Collection<int,EditableConfigResource>
 	 */
-	public function configs(): Collection
+	public function editable_configs(): Collection
 	{
-		return $this->configs;
+		return $this->editable_configs;
 	}
 }

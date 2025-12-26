@@ -6,12 +6,12 @@
  * Copyright (c) 2018-2025 LycheeOrg.
  */
 
-namespace App\Models\Extensions;
+namespace App\Services;
 
 use App\Enum\SizeVariantType;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\LycheeLogicException;
-use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use Illuminate\Contracts\Encryption\EncryptException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
@@ -19,8 +19,13 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use League\Flysystem\AwsS3V3\AwsS3V3Adapter;
 
-trait HasUrlGenerator
+class UrlGenerator
 {
+	public function __construct(
+		protected ConfigManager $config_manager,
+	) {
+	}
+
 	/**
 	 * Given a short, path, storage disk and size variant type, we return the URL formatted data.
 	 *
@@ -29,7 +34,7 @@ trait HasUrlGenerator
 	 * @throws \RuntimeException
 	 * @throws EncryptException
 	 */
-	public static function pathToUrl(string $short_path, string $storage_disk, SizeVariantType $type): string
+	public function pathToUrl(string $short_path, string $storage_disk, SizeVariantType $type): string
 	{
 		if ($type === SizeVariantType::PLACEHOLDER) {
 			throw new LycheeLogicException('Cannot generate URL for placeholder size variant.');
@@ -46,12 +51,12 @@ trait HasUrlGenerator
 		}
 
 		// If we do not sign the URL or we do not use secure image links, we return the URL directly.
-		if (self::shouldNotUseSignedUrl() && !Configs::getValueAsBool('secure_image_link_enabled')) {
+		if (self::shouldNotUseSignedUrl() && !$this->config_manager->getValueAsBool('secure_image_link_enabled')) {
 			return $image_disk->url($short_path);
 		}
 
 		// We we use the secure image link, we encrypt the path.
-		if (Configs::getValueAsBool('secure_image_link_enabled')) {
+		if ($this->config_manager->getValueAsBool('secure_image_link_enabled')) {
 			$short_path = Crypt::encryptString($short_path);
 		}
 
@@ -60,7 +65,7 @@ trait HasUrlGenerator
 			return Url::route('image', ['path' => $short_path]);
 		}
 
-		$temporary_image_link_life_in_seconds = Configs::getValueAsInt('temporary_image_link_life_in_seconds');
+		$temporary_image_link_life_in_seconds = $this->config_manager->getValueAsInt('temporary_image_link_life_in_seconds');
 
 		/** @disregard P1013 */
 		return URL::temporarySignedRoute('image', now()->addSeconds($temporary_image_link_life_in_seconds), ['path' => $short_path], true);
@@ -74,12 +79,12 @@ trait HasUrlGenerator
 	 *
 	 * @return bool
 	 */
-	protected static function shouldNotUseSignedUrl(): bool
+	public function shouldNotUseSignedUrl(): bool
 	{
 		return
-			!Configs::getValueAsBool('temporary_image_link_enabled') ||
-			(!Configs::getValueAsBool('temporary_image_link_when_logged_in') && Auth::user() !== null) ||
-			(!Configs::getValueAsBool('temporary_image_link_when_admin') && Auth::user()?->may_administrate === true);
+			!$this->config_manager->getValueAsBool('temporary_image_link_enabled') ||
+			(!$this->config_manager->getValueAsBool('temporary_image_link_when_logged_in') && Auth::user() !== null) ||
+			(!$this->config_manager->getValueAsBool('temporary_image_link_when_admin') && Auth::user()?->may_administrate === true);
 	}
 
 	/**
@@ -87,10 +92,10 @@ trait HasUrlGenerator
 	 *
 	 * @codeCoverageIgnore
 	 */
-	private static function getAwsUrl(string $short_path, string $storage_disk): string
+	private function getAwsUrl(string $short_path, string $storage_disk): string
 	{
 		// In order to allow a grace period, we create a new symbolic link,
-		$temporary_image_link_life_in_seconds = Configs::getValueAsInt('temporary_image_link_life_in_seconds');
+		$temporary_image_link_life_in_seconds = $this->config_manager->getValueAsInt('temporary_image_link_life_in_seconds');
 		$image_disk = Storage::disk($storage_disk);
 
 		// Return the public URL in case the S3 bucket is set to public, otherwise generate a temporary URL

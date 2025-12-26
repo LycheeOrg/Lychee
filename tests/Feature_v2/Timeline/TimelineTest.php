@@ -44,7 +44,7 @@ class TimelineTest extends BaseApiWithDataTest
 	public function testAuthorizedPublic(): void
 	{
 		Configs::set('timeline_photos_public', '1');
-		Configs::invalidateCache();
+
 		$response = $this->getJson('Timeline');
 		$this->assertOk($response);
 
@@ -67,6 +67,5 @@ class TimelineTest extends BaseApiWithDataTest
 		]);
 
 		Configs::set('timeline_photos_public', '0');
-		Configs::invalidateCache();
 	}
 }

@@ -20,7 +20,6 @@ use App\Http\Requests\Checkout\ProcessRequest;
 use App\Http\Resources\Shop\CheckoutOptionResource;
 use App\Http\Resources\Shop\CheckoutResource;
 use App\Http\Resources\Shop\OrderResource;
-use App\Models\Configs;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\URL;
@@ -138,7 +137,7 @@ class CheckoutController extends Controller
 		$message = 'Payment failed or was not completed.';
 
 		if ($success) {
-			OrderCompleted::dispatchIf(Configs::getValueAsBool('webshop_auto_fulfill_enabled'), $order->id);
+			OrderCompleted::dispatchIf($request->configs()->getValueAsBool('webshop_auto_fulfill_enabled'), $order->id);
 			$complete_url = URL::route('shop.checkout.complete');
 			$redirect_url = null;
 			$message = 'Payment completed successfully.';

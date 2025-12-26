@@ -13,7 +13,7 @@ use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
 use App\Enum\OmnipayProviderType;
 use App\Factories\OmnipayFactory;
-use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\Schema;
 use LycheeVerify\Contract\Status;
 use LycheeVerify\Verify;
@@ -27,6 +27,7 @@ class WebshopCheck implements DiagnosticPipe
 		private OmnipayFactory $factory,
 		private OrderService $order_service,
 		private Verify $verify,
+		protected readonly ConfigManager $config_manager,
 	) {
 	}
 
@@ -44,7 +45,7 @@ class WebshopCheck implements DiagnosticPipe
 			return $next($data);
 		}
 
-		if (!Configs::getValueAsBool('webshop_enabled')) {
+		if (!$this->config_manager->getValueAsBool('webshop_enabled')) {
 			return $next($data);
 		}
 		// @codeCoverageIgnoreStart

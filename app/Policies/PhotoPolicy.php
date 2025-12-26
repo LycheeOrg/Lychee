@@ -13,19 +13,15 @@ use App\Enum\MetricsAccess;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\QueryBuilderException;
-use App\Exceptions\UnauthorizedException;
 use App\Models\Album;
-use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\User;
-use Illuminate\Contracts\Container\BindingResolutionException;
+use App\Repositories\ConfigManager;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class PhotoPolicy extends BasePolicy
 {
-	protected AlbumPolicy $album_policy;
-
 	public const CAN_SEE = 'canSee';
 	public const CAN_DOWNLOAD = 'canDownload';
 	// public const CAN_DELETE = 'canDelete';
@@ -38,15 +34,9 @@ class PhotoPolicy extends BasePolicy
 	/**
 	 * @throws FrameworkException
 	 */
-	public function __construct()
-	{
-		try {
-			$this->album_policy = resolve(AlbumPolicy::class);
-			// @codeCoverageIgnoreStart
-		} catch (BindingResolutionException $e) {
-			throw new FrameworkException('Laravel\'s provider component', $e);
-		}
-		// @codeCoverageIgnoreEnd
+	public function __construct(
+		protected AlbumPolicy $album_policy,
+	) {
 	}
 
 	/**
@@ -256,7 +246,8 @@ class PhotoPolicy extends BasePolicy
 	 */
 	public function canReadMetrics(?User $user, Photo $photo): bool
 	{
-		$access_level = Configs::getValueAsEnum('metrics_access', MetricsAccess::class);
+		$config_manager = app(ConfigManager::class);
+		$access_level = $config_manager->getValueAsEnum('metrics_access', MetricsAccess::class);
 
 		return match ($access_level) {
 			MetricsAccess::PUBLIC => true,

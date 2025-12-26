@@ -12,10 +12,16 @@ use App\Exceptions\ConflictingPropertyException;
 use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\ModelDBException;
 use App\Models\User;
+use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\Hash;
 
 class Save
 {
+	public function __construct(
+		protected readonly ConfigManager $config_manager,
+	) {
+	}
+
 	/**
 	 * @param User        $user
 	 * @param string      $username
@@ -46,7 +52,7 @@ class Save
 		}
 
 		if ($quota_kb === 0) {
-			$default = \Configs::getValueAsInt('default_user_quota');
+			$default = $this->config_manager->getValueAsInt('default_user_quota');
 			$quota_kb = $default === 0 ? null : $default;
 		}
 

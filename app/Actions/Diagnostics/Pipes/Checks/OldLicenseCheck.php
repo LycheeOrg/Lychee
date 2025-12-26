@@ -10,7 +10,7 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
-use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\Schema;
 use LycheeVerify\Contract\Status;
 use LycheeVerify\Verify;
@@ -20,8 +20,10 @@ use LycheeVerify\Verify;
  */
 class OldLicenseCheck implements DiagnosticPipe
 {
-	public function __construct(private Verify $verify)
-	{
+	public function __construct(
+		private Verify $verify,
+		protected readonly ConfigManager $config_manager,
+	) {
 	}
 
 	/**
@@ -34,7 +36,7 @@ class OldLicenseCheck implements DiagnosticPipe
 		}
 
 		// Load settings
-		$current_license = Configs::getValueAsString('license_key');
+		$current_license = $this->config_manager->getValueAsString('license_key');
 		if ($current_license === '') {
 			// No license set - skip check
 			return $next($data);

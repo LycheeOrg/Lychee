@@ -38,7 +38,7 @@ class WatermarkerDiagnosticTest extends AbstractTestCase
 	protected function setUp(): void
 	{
 		parent::setUp();
-		$this->watermarkerCheck = new WatermarkerEnabledCheck();
+		$this->watermarkerCheck = resolve(WatermarkerEnabledCheck::class);
 		$this->data = [];
 		$this->next = function (array $data) {
 			return $data;
@@ -60,7 +60,7 @@ class WatermarkerDiagnosticTest extends AbstractTestCase
 
 		$result = $this->watermarkerCheck->handle($this->data, $this->next);
 
-		$this->assertEquals([], $result, 'Should return empty result when tables do not exist');
+		$this->assertEmpty($result, 'Should return empty result when tables do not exist');
 	}
 
 	public function testHandleWhenWatermarkDisabled(): void
@@ -71,7 +71,7 @@ class WatermarkerDiagnosticTest extends AbstractTestCase
 
 		$result = $this->watermarkerCheck->handle($this->data, $this->next);
 
-		$this->assertEquals([], $result, 'Should return empty result when watermark is disabled');
+		$this->assertEmpty($result, 'Should return empty result when watermark is disabled');
 	}
 
 	public function testValidateImagickWhenImagickDisabledInSettings(): void

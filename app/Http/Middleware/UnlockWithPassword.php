@@ -11,7 +11,6 @@ namespace App\Http\Middleware;
 use App\Actions\Album\Unlock;
 use App\Enum\SmartAlbumType;
 use App\Factories\AlbumFactory;
-use App\Models\Configs;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -51,7 +50,7 @@ class UnlockWithPassword
 			return $next($request);
 		}
 
-		if (!Configs::getValueAsBool('unlock_password_photos_with_url_param')) {
+		if (!$request->configs()->getValueAsBool('unlock_password_photos_with_url_param')) {
 			Log::warning('password provided but unlock_password_photos_with_url_param is disabled.');
 
 			return $next($request);

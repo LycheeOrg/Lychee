@@ -17,7 +17,6 @@ use Illuminate\Database\Eloquent\Builder;
 
 class UnsortedAlbum extends BaseSmartAlbum
 {
-	private static ?self $instance = null;
 	public const ID = SmartAlbumType::UNSORTED->value;
 
 	/**
@@ -34,7 +33,7 @@ class UnsortedAlbum extends BaseSmartAlbum
 
 	public static function getInstance(): self
 	{
-		return self::$instance ??= new self();
+		return new self();
 	}
 
 	/**

@@ -16,11 +16,11 @@ use App\Exceptions\Internal\LycheeLogicException;
 use App\Image\Files\BaseMediaFile;
 use App\Image\Files\FlysystemFile;
 use App\Models\Album;
-use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\TagAlbum;
 use App\Policies\AlbumPolicy;
 use App\Policies\PhotoPolicy;
+use App\Repositories\ConfigManager;
 use App\SmartAlbums\BaseSmartAlbum;
 use Composer\InstalledVersions;
 use Composer\Semver\VersionParser;
@@ -86,7 +86,8 @@ abstract class BaseArchive
 		// for this specific case we must allow lazy loading.
 		Model::shouldBeStrict(false);
 
-		$this->deflate_level = Configs::getValueAsInt('zip_deflate_level');
+		$config_manager = app(ConfigManager::class);
+		$this->deflate_level = $config_manager->getValueAsInt('zip_deflate_level');
 
 		$response_generator = function () use ($albums): void {
 			$zip = $this->createZip();

@@ -19,7 +19,7 @@ class StatisticsFactory extends Factory
 	/**
 	 * The name of the factory's corresponding model.
 	 *
-	 * @var string
+	 * @var class-string<Statistics>
 	 */
 	protected $model = Statistics::class;
 

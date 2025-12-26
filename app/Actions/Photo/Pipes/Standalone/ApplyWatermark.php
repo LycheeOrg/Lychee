@@ -12,7 +12,7 @@ use App\Contracts\PhotoCreate\StandalonePipe;
 use App\DTO\PhotoCreate\StandaloneDTO;
 use App\Exceptions\Handler;
 use App\Image\Watermarker;
-use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -21,13 +21,14 @@ use Illuminate\Support\Facades\Log;
 class ApplyWatermark implements StandalonePipe
 {
 	public function __construct(
-		private readonly Watermarker $watermarker,
+		protected readonly ConfigManager $config_manager,
+		protected readonly Watermarker $watermarker,
 	) {
 	}
 
 	public function handle(StandaloneDTO $state, \Closure $next): StandaloneDTO
 	{
-		if (Configs::getValueAsBool('watermark_enabled') === false) {
+		if ($this->config_manager->getValueAsBool('watermark_enabled') === false) {
 			return $next($state);
 		}
 

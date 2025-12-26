@@ -28,6 +28,7 @@ use App\Models\Configs;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
 use Tests\AbstractTestCase;
 
@@ -103,6 +104,7 @@ class SecurePathControllerTest extends AbstractTestCase
 		// Mock configs to disable signature checking
 		Configs::set('temporary_image_link_enabled', false);
 		Configs::set('secure_image_link_enabled', false);
+		Config::set('features.populate-request-macros', true);
 
 		$this->expectException(WrongPathException::class);
 
@@ -120,6 +122,7 @@ class SecurePathControllerTest extends AbstractTestCase
 		// Mock configs
 		Configs::set('temporary_image_link_enabled', false);
 		Configs::set('secure_image_link_enabled', true);
+		Config::set('features.populate-request-macros', true);
 
 		$this->expectException(InvalidPayloadException::class);
 
@@ -137,6 +140,7 @@ class SecurePathControllerTest extends AbstractTestCase
 		// Mock configs
 		Configs::set('temporary_image_link_enabled', false);
 		Configs::set('secure_image_link_enabled', false);
+		Config::set('features.populate-request-macros', true);
 
 		// Mock storage to simulate path traversal
 		$maliciousPath = '../../../etc/passwd';
@@ -169,6 +173,7 @@ class SecurePathControllerTest extends AbstractTestCase
 		// Mock configs
 		Configs::set('temporary_image_link_enabled', false);
 		Configs::set('secure_image_link_enabled', false);
+		Config::set('features.populate-request-macros', true);
 
 		$nonExistentPath = 'test/nonexistent.jpg';
 		$fullPath = storage_path('app/' . $nonExistentPath);
@@ -196,14 +201,13 @@ class SecurePathControllerTest extends AbstractTestCase
 	 */
 	public function testSignatureHasNotExpiredWithExpiredTimestamp(): void
 	{
+		Config::set('features.populate-request-macros', true);
 		$expiredTimestamp = Carbon::now()->subHour()->getTimestamp();
 		$request = Request::create('/', 'GET', ['expires' => (string) $expiredTimestamp]);
 
 		// Use reflection to access private method
 		$reflection = new \ReflectionClass(SecurePathController::class);
 		$method = $reflection->getMethod('signatureHasNotExpired');
-		$method->setAccessible(true);
-
 		$result = $method->invoke($this->controller, $request);
 
 		$this->assertFalse($result);
@@ -214,13 +218,13 @@ class SecurePathControllerTest extends AbstractTestCase
 	 */
 	public function testSignatureHasNotExpiredWithValidTimestamp(): void
 	{
+		Config::set('features.populate-request-macros', true);
 		$futureTimestamp = Carbon::now()->addHour()->getTimestamp();
 		$request = Request::create('/', 'GET', ['expires' => (string) $futureTimestamp]);
 
 		// Use reflection to access private method
 		$reflection = new \ReflectionClass(SecurePathController::class);
 		$method = $reflection->getMethod('signatureHasNotExpired');
-		$method->setAccessible(true);
 
 		$result = $method->invoke($this->controller, $request);
 
@@ -232,12 +236,12 @@ class SecurePathControllerTest extends AbstractTestCase
 	 */
 	public function testSignatureHasNotExpiredWithNoExpiresParameter(): void
 	{
+		Config::set('features.populate-request-macros', true);
 		$request = Request::create('/', 'GET');
 
 		// Use reflection to access private method
 		$reflection = new \ReflectionClass(SecurePathController::class);
 		$method = $reflection->getMethod('signatureHasNotExpired');
-		$method->setAccessible(true);
 
 		$result = $method->invoke($this->controller, $request);
 
@@ -249,6 +253,7 @@ class SecurePathControllerTest extends AbstractTestCase
 	 */
 	public function testGetUrlMethodRemovesSignatureParameter(): void
 	{
+		Config::set('features.populate-request-macros', true);
 		$request = Request::create('http://test.com/secure/path', 'GET', [
 			'expires' => '1234567890',
 			'signature' => 'test-signature',
@@ -258,7 +263,6 @@ class SecurePathControllerTest extends AbstractTestCase
 		// Use reflection to access private method
 		$reflection = new \ReflectionClass(SecurePathController::class);
 		$method = $reflection->getMethod('getUrl');
-		$method->setAccessible(true);
 
 		$result = $method->invoke($this->controller, $request);
 

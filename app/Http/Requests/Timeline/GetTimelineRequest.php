@@ -9,7 +9,6 @@
 namespace App\Http\Requests\Timeline;
 
 use App\Http\Requests\AbstractEmptyRequest;
-use App\Models\Configs;
 use Illuminate\Support\Facades\Auth;
 
 class GetTimelineRequest extends AbstractEmptyRequest
@@ -19,10 +18,10 @@ class GetTimelineRequest extends AbstractEmptyRequest
 	 */
 	public function authorize(): bool
 	{
-		if (!Auth::check() && !Configs::getValueAsBool('timeline_photos_public')) {
+		if (!Auth::check() && !$this->configs()->getValueAsBool('timeline_photos_public')) {
 			return false;
 		}
 
-		return Configs::getValueAsBool('timeline_page_enabled');
+		return $this->configs()->getValueAsBool('timeline_page_enabled');
 	}
 }

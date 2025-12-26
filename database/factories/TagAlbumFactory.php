@@ -24,7 +24,7 @@ class TagAlbumFactory extends Factory
 	/**
 	 * The name of the factory's corresponding model.
 	 *
-	 * @var string
+	 * @var class-string<TagAlbum>
 	 */
 	protected $model = TagAlbum::class;
 
@@ -47,7 +47,7 @@ class TagAlbumFactory extends Factory
 	 *
 	 * @param array<int,Tag> $tags
 	 *
-	 * @return PhotoFactory
+	 * @return TagAlbumFactory
 	 */
 	public function of_tags(array $tags): self
 	{
@@ -65,7 +65,7 @@ class TagAlbumFactory extends Factory
 	 * Configure the model factory.
 	 * We also create the associated statistics model.
 	 */
-	public function configure(): static
+	public function configure(): self
 	{
 		return $this->afterCreating(function (TagAlbum $album) {
 			Statistics::factory()->with_album($album->id)->create();

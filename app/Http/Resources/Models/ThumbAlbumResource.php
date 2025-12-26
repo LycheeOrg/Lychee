@@ -14,7 +14,6 @@ use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
 use App\Http\Resources\Models\Utils\TimelineData;
 use App\Http\Resources\Rights\AlbumRightsResource;
 use App\Models\Album;
-use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\TagAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
@@ -57,7 +56,7 @@ class ThumbAlbumResource extends Data
 
 	public function __construct(AbstractAlbum $data)
 	{
-		$date_format = Configs::getValueAsString('date_format_album_thumb');
+		$date_format = request()->configs()->getValueAsString('date_format_album_thumb');
 
 		$this->id = $data->get_id();
 		$this->thumb = ThumbResource::fromModel($data->get_thumb());
@@ -116,7 +115,7 @@ class ThumbAlbumResource extends Data
 			return;
 		}
 
-		if (Configs::getValueAsEnum('thumb_min_max_order', DateOrderingType::class) === DateOrderingType::YOUNGER_OLDER) {
+		if (request()->configs()->getValueAsEnum('thumb_min_max_order', DateOrderingType::class) === DateOrderingType::YOUNGER_OLDER) {
 			$this->formatted_min_max = $this->max_taken_at . ' - ' . $this->min_taken_at;
 		} else {
 			$this->formatted_min_max = $this->min_taken_at . ' - ' . $this->max_taken_at;

@@ -13,8 +13,8 @@ use App\Enum\ColumnSortingPhotoType;
 use App\Enum\OrderSortingType;
 use App\Enum\SizeVariantType;
 use App\Exceptions\InvalidPropertyException;
-use App\Models\Configs;
 use App\Models\Photo;
+use App\Repositories\ConfigManager;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -150,7 +150,8 @@ class Thumb
 			? $photo->size_variants->getSmall2x()
 			: $photo->size_variants->getThumb2x();
 
-		$placeholder = (Configs::getValueAsBool('low_quality_image_placeholder'))
+		$config_manager = app(ConfigManager::class);
+		$placeholder = ($config_manager->getValueAsBool('low_quality_image_placeholder'))
 			? $photo->size_variants->getPlaceholder()
 			// @codeCoverageIgnoreStart
 			: null;

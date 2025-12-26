@@ -36,7 +36,7 @@ class CreateUserGroupRequest extends BaseApiRequest implements HasDescription, H
 	{
 		return [
 			RequestAttribute::NAME_ATTRIBUTE => ['required', 'string', 'max:255'],
-			RequestAttribute::DESCRIPTION_ATTRIBUTE => ['nullable', 'string', new StringRequireSupportRule('', $this->verify)],
+			RequestAttribute::DESCRIPTION_ATTRIBUTE => ['nullable', 'string', new StringRequireSupportRule('', $this->verify())],
 		];
 	}
 

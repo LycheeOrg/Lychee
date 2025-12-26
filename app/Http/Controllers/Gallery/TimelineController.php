@@ -14,7 +14,6 @@ use App\Http\Requests\Timeline\IdOrDatedTimelineRequest;
 use App\Http\Resources\Models\Utils\TimelineData;
 use App\Http\Resources\Timeline\InitResource;
 use App\Http\Resources\Timeline\TimelineResource;
-use App\Models\Configs;
 use App\Models\Photo;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
@@ -36,7 +35,7 @@ class TimelineController extends Controller
 	 */
 	public function __invoke(IdOrDatedTimelineRequest $request, Timeline $timeline): Data
 	{
-		$pagination_limit = Configs::getValueAsInt('timeline_photos_pagination_limit');
+		$pagination_limit = $request->configs()->getValueAsInt('timeline_photos_pagination_limit');
 		$limit = max(1, $pagination_limit);
 
 		if ($request->photo() !== null) {

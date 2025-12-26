@@ -8,7 +8,6 @@
 
 namespace App\Http\Resources\GalleryConfigs;
 
-use App\Models\Configs;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
@@ -27,12 +26,12 @@ class LandingPageResource extends Data
 	public function __construct()
 	{
 		$this->footer = new FooterConfig();
-		$this->landing_page_enable = Configs::getValueAsBool('landing_page_enable');
-		$this->landing_background_landscape = Configs::getValueAsString('landing_background_landscape');
-		$this->landing_background_portrait = Configs::getValueAsString('landing_background_portrait');
-		$this->landing_subtitle = Configs::getValueAsString('landing_subtitle');
-		$this->landing_title = Configs::getValueAsString('landing_title');
-		$this->site_owner = Configs::getValueAsString('site_owner');
-		$this->site_title = Configs::getValueAsString('site_title');
+		$this->landing_page_enable = request()->configs()->getValueAsBool('landing_page_enable');
+		$this->landing_background_landscape = request()->configs()->getValueAsString('landing_background_landscape');
+		$this->landing_background_portrait = request()->configs()->getValueAsString('landing_background_portrait');
+		$this->landing_subtitle = request()->configs()->getValueAsString('landing_subtitle');
+		$this->landing_title = request()->configs()->getValueAsString('landing_title');
+		$this->site_owner = request()->configs()->getValueAsString('site_owner');
+		$this->site_title = request()->configs()->getValueAsString('site_title');
 	}
 }

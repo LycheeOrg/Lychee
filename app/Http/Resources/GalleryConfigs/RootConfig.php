@@ -11,7 +11,6 @@ namespace App\Http\Resources\GalleryConfigs;
 use App\Enum\AspectRatioCSSType;
 use App\Enum\AspectRatioType;
 use App\Enum\TimelineAlbumGranularity;
-use App\Models\Configs;
 use Illuminate\Support\Facades\Auth;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\LiteralTypeScriptType;
@@ -40,33 +39,33 @@ class RootConfig extends Data
 	{
 		$is_logged_in = Auth::check();
 
-		$timeline_albums_enabled = Configs::getValueAsBool('timeline_albums_enabled');
-		$timeline_albums_public = Configs::getValueAsBool('timeline_albums_public');
+		$timeline_albums_enabled = request()->configs()->getValueAsBool('timeline_albums_enabled');
+		$timeline_albums_public = request()->configs()->getValueAsBool('timeline_albums_public');
 		$this->is_album_timeline_enabled = $timeline_albums_enabled && ($is_logged_in || $timeline_albums_public);
-		$this->timeline_album_granularity = Configs::getValueAsEnum('timeline_albums_granularity', TimelineAlbumGranularity::class);
+		$this->timeline_album_granularity = request()->configs()->getValueAsEnum('timeline_albums_granularity', TimelineAlbumGranularity::class);
 
-		$this->is_search_accessible = $is_logged_in || Configs::getValueAsBool('search_public');
+		$this->is_search_accessible = $is_logged_in || request()->configs()->getValueAsBool('search_public');
 
-		$this->album_thumb_css_aspect_ratio = Configs::getValueAsEnum('default_album_thumb_aspect_ratio', AspectRatioType::class)->css();
-		$this->show_keybinding_help_button = Configs::getValueAsBool('show_keybinding_help_button');
-		$this->back_button_enabled = Configs::getValueAsBool('back_button_enabled');
-		$this->back_button_text = Configs::getValueAsString('back_button_text');
-		$this->back_button_url = Configs::getValueAsString('back_button_url');
+		$this->album_thumb_css_aspect_ratio = request()->configs()->getValueAsEnum('default_album_thumb_aspect_ratio', AspectRatioType::class)->css();
+		$this->show_keybinding_help_button = request()->configs()->getValueAsBool('show_keybinding_help_button');
+		$this->back_button_enabled = request()->configs()->getValueAsBool('back_button_enabled');
+		$this->back_button_text = request()->configs()->getValueAsString('back_button_text');
+		$this->back_button_url = request()->configs()->getValueAsString('back_button_url');
 
 		$this->setHeaderImageUrl();
 	}
 
 	private function setHeaderImageUrl(): void
 	{
-		if (!Configs::getValueAsBool('gallery_header_enabled')) {
+		if (!request()->configs()->getValueAsBool('gallery_header_enabled')) {
 			return;
 		}
-		if (Auth::check() && !Configs::getValueAsBool('gallery_header_logged_in_enabled')) {
+		if (Auth::check() && !request()->configs()->getValueAsBool('gallery_header_logged_in_enabled')) {
 			return;
 		}
-		$this->header_image_url = Configs::getValueAsString('gallery_header');
-		$this->is_header_bar_transparent = Configs::getValueAsBool('gallery_header_bar_transparent');
-		$this->is_header_bar_gradient = Configs::getValueAsBool('gallery_header_bar_gradient');
+		$this->header_image_url = request()->configs()->getValueAsString('gallery_header');
+		$this->is_header_bar_transparent = request()->configs()->getValueAsBool('gallery_header_bar_transparent');
+		$this->is_header_bar_gradient = request()->configs()->getValueAsBool('gallery_header_bar_gradient');
 	}
 }
 

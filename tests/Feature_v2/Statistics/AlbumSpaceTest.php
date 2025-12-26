@@ -27,7 +27,6 @@ class AlbumSpaceTest extends BaseApiWithDataTest
 	public function testAlbumSpaceTestUnauthorized(): void
 	{
 		Configs::set('cache_enabled', '0');
-		Configs::invalidateCache();
 
 		$response = $this->getJson('Statistics::albumSpace');
 		$this->assertSupporterRequired($response);

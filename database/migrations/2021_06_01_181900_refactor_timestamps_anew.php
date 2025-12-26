@@ -524,7 +524,7 @@ return new class() extends Migration {
 			->where(self::CONFIG_KEY_COL_NAME, '=', $key)
 			->first();
 
-		return $config?->{self::CONFIG_VALUE_COL_NAME} ?? ''; // @phpstan-ignore property.dynamicName
+		return $config?->{self::CONFIG_VALUE_COL_NAME} ?? '';
 	}
 
 	/**

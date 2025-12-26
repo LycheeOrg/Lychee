@@ -12,11 +12,11 @@ use App\Actions\Photo\Create;
 use App\DTO\ImportMode;
 use App\Exceptions\Handler;
 use App\Exceptions\MassImportException;
-use App\Image\Files\BaseMediaFile;
 use App\Image\Files\DownloadedFile;
 use App\Models\Album;
-use App\Models\Configs;
 use App\Models\Photo;
+use App\Repositories\ConfigManager;
+use App\Services\Image\FileExtensionService;
 use Illuminate\Support\Collection;
 use Safe\Exceptions\InfoException;
 use function Safe\ini_get;
@@ -40,17 +40,19 @@ class FromUrl
 	 */
 	public function do(array $urls, ?Album $album, int $intended_owner_id): Collection
 	{
+		$config_manager = resolve(ConfigManager::class);
 		$result = new Collection();
 		$exceptions = [];
 		$create = new Create(
-			new ImportMode(
+			import_mode: new ImportMode(
 				delete_imported: true,
-				skip_duplicates: Configs::getValueAsBool('skip_duplicates'),
-				shall_rename_photo_title: Configs::getValueAsBool('renamer_photo_title_enabled'),
+				skip_duplicates: $config_manager->getValueAsBool('skip_duplicates'),
+				shall_rename_photo_title: $config_manager->getValueAsBool('renamer_photo_title_enabled'),
 			),
-			$intended_owner_id
+			intended_owner_id: $intended_owner_id
 		);
 
+		$file_extension_service = resolve(FileExtensionService::class);
 		foreach ($urls as $url) {
 			try {
 				// Reset the execution timeout for every iteration.
@@ -67,7 +69,7 @@ class FromUrl
 				if ($extension !== '.') {
 					// Validate photo extension even when `$create->add()` will do later.
 					// This prevents us from downloading unsupported files.
-					BaseMediaFile::assertIsSupportedOrAcceptedFileExtension($extension);
+					$file_extension_service->assertIsSupportedOrAcceptedFileExtension($extension);
 				}
 
 				// Download file

@@ -113,6 +113,6 @@ class WatermarkerJob implements ShouldQueue, ShouldBeUnique
 
 	protected function getWatermarker(): Watermarker
 	{
-		return new Watermarker();
+		return resolve(Watermarker::class);
 	}
 }

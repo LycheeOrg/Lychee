@@ -13,9 +13,9 @@ use App\Contracts\Exceptions\LycheeException;
 use App\Contracts\Models\SizeVariantFactory;
 use App\Enum\SizeVariantType;
 use App\Exceptions\UnexpectedException;
-use App\Image\Files\BaseMediaFile;
 use App\Metadata\Extractor;
 use App\Models\Photo;
+use App\Services\Image\FileExtensionService;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Builder;
 use Safe\Exceptions\InfoException;
@@ -67,7 +67,7 @@ class VideoData extends Command
 
 			$photos = Photo::query()
 				->with(['size_variants'])
-				->whereIn('type', BaseMediaFile::SUPPORTED_VIDEO_MIME_TYPES)
+				->whereIn('type', FileExtensionService::SUPPORTED_VIDEO_MIME_TYPES)
 				->whereDoesntHave('size_variants', function (Builder $query): void {
 					$query->where('type', '=', SizeVariantType::THUMB);
 				})

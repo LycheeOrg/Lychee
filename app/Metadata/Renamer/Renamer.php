@@ -9,11 +9,11 @@
 namespace App\Metadata\Renamer;
 
 use App\Enum\RenamerModeType;
-use App\Models\Configs;
 use App\Models\RenamerRule;
+use App\Repositories\ConfigManager;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
-use LycheeVerify\Verify;
+use LycheeVerify\Contract\VerifyInterface;
 use function Safe\preg_replace;
 
 /**
@@ -65,15 +65,20 @@ class Renamer
 	 * @param bool|null $is_photo Whether to include photo rules (default: null)
 	 * @param bool|null $is_album Whether to include album rules (default: null)
 	 */
-	public function __construct(int $user_id, ?bool $is_photo = null, ?bool $is_album = null)
+	public function __construct(
+		int $user_id,
+		?bool $is_photo = null,
+		?bool $is_album = null)
 	{
-		$verifier = resolve(Verify::class);
-		$renamer_enabled = Configs::getValueAsBool('renamer_enabled');
-		$this->is_enabled = $renamer_enabled && $verifier->is_supporter();
+		$verify = app(VerifyInterface::class);
+		$config_manager = app(ConfigManager::class);
 
-		$enforced = Configs::getValueAsBool('renamer_enforced');
-		$before = Configs::getValueAsBool('renamer_enforced_before');
-		$after = Configs::getValueAsBool('renamer_enforced_after');
+		$renamer_enabled = $config_manager->getValueAsBool('renamer_enabled');
+		$this->is_enabled = $renamer_enabled && $verify->is_supporter();
+
+		$enforced = $config_manager->getValueAsBool('renamer_enforced');
+		$before = $config_manager->getValueAsBool('renamer_enforced_before');
+		$after = $config_manager->getValueAsBool('renamer_enforced_after');
 
 		$user_rules = RenamerRule::query()
 			->where('owner_id', $user_id)
@@ -84,7 +89,7 @@ class Renamer
 			->get();
 
 		$owner_rules = RenamerRule::query()
-			->where('owner_id', Configs::getValueAsInt('owner_id'))
+			->where('owner_id', $config_manager->getValueAsInt('owner_id'))
 			->when($is_photo !== null, fn ($query) => $query->where('is_photo_rule', $is_photo))
 			->when($is_album !== null, fn ($query) => $query->where('is_album_rule', $is_album))
 			->where('is_enabled', true)

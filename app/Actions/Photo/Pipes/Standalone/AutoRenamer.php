@@ -29,7 +29,9 @@ class AutoRenamer implements StandalonePipe
 			return $next($state);
 		}
 
-		$renamer = new PhotoRenamer($state->intended_owner_id);
+		$renamer = new PhotoRenamer(
+			user_id: $state->intended_owner_id
+		);
 		$state->photo->title = $renamer->handle($state->photo->title);
 
 		return $next($state);

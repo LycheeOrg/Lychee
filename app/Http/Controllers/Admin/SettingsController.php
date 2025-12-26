@@ -46,12 +46,12 @@ class SettingsController extends Controller
 			'configs' => fn ($query) => $query
 				->when(config('features.hide-lychee-SE', false) === true, fn ($q) => $q->where('cat', '!=', 'lychee SE'))
 				->when($docker_info->isDocker(), fn ($q) => $q->where('not_on_docker', '!=', true))
-				->when(!$request->is_se() && !Configs::getValueAsBool('enable_se_preview'), fn ($q) => $q->where('level', '=', 0))
-				->when(!$request->is_pro(), fn ($q) => $q->where('level', '<', 2))
+				->when(!$request->verify()->is_supporter() && !$request->configs()->getValueAsBool('enable_se_preview'), fn ($q) => $q->where('level', '=', 0))
+				->when(!$request->verify()->is_pro(), fn ($q) => $q->where('level', '<', 2))
 				->when(config('features.webshop') === false, fn ($q) => $q->where('key', 'NOT LIKE', 'webshop_%')),
 		])->orderBy('order', 'asc')->get();
 
-		return ConfigCategoryResource::collect($editable_configs)->filter(fn ($cat) => $cat->configs->isNotEmpty())->values();
+		return ConfigCategoryResource::collect($editable_configs->filter(fn ($cat) => $cat->configs->isNotEmpty())->values());
 	}
 
 	/**
@@ -64,12 +64,12 @@ class SettingsController extends Controller
 	 */
 	public function setConfigs(SetConfigsRequest $request, DockerVersionInfo $docker_info): Collection
 	{
-		$configs = $request->configs();
+		$configs = $request->editable_configs();
 		$configs->each(function ($config): void {
 			Configs::query()->where('key', $config->key)->update(['value' => $config->value ?? '']);
 		});
 
-		Configs::invalidateCache();
+		$request->configs()->invalidateCache();
 		TaggedRouteCacheUpdated::dispatch(CacheTag::SETTINGS);
 
 		return $this->getAll($request, $docker_info);

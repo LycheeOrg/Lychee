@@ -146,7 +146,7 @@ class TagAlbum extends BaseAlbum
 		// user
 		return Thumb::createFromQueryable(
 			$this->photos(),
-			$this->getEffectivePhotoSorting()
+			$this->getEffectivePhotoSorting(),
 		);
 	}
 

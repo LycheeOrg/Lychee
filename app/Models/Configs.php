@@ -11,19 +11,15 @@ namespace App\Models;
 use App\Enum\ConfigType;
 use App\Enum\LicenseType;
 use App\Enum\MapProviders;
-use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\InvalidConfigOption;
 use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\ModelDBException;
-use App\Exceptions\UnexpectedException;
 use App\Models\Builders\ConfigsBuilder;
-use App\Models\Extensions\ConfigsHas;
 use App\Models\Extensions\ThrowsConsistentExceptions;
-use BackedEnum;
+use App\Repositories\ConfigManager;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Facades\Log;
 
 /**
  * App\Models\Configs.
@@ -64,7 +60,6 @@ use Illuminate\Support\Facades\Log;
  */
 class Configs extends Model
 {
-	use ConfigsHas;
 	use ThrowsConsistentExceptions;
 
 	/**
@@ -78,13 +73,6 @@ class Configs extends Model
 	 *  this is a parameter for Laravel to indicate that there is no created_at, updated_at columns.
 	 */
 	public $timestamps = false;
-
-	/**
-	 * We define this as a singleton.
-	 *
-	 * @var array<string, int|bool|string|null>
-	 */
-	private static array $cache = [];
 
 	/**
 	 * @param $query
@@ -191,121 +179,6 @@ class Configs extends Model
 	}
 
 	/**
-	 * Cache and return the current settings of this Lychee installation.
-	 *
-	 * @return array<string, mixed>
-	 */
-	public static function get(): array
-	{
-		if (count(self::$cache) > 0) {
-			return self::$cache;
-		}
-
-		try {
-			self::$cache = Configs::query()
-				->select(['key', 'value'])
-				->pluck('value', 'key')
-				->all();
-			// @codeCoverageIgnoreStart
-		} catch (\Throwable) {
-			self::$cache = [];
-		}
-		// @codeCoverageIgnoreEnd
-
-		return self::$cache;
-	}
-
-	/**
-	 * The best way to request a value from the config...
-	 *
-	 * @param string $key
-	 *
-	 * @return int|bool|string|null
-	 *
-	 * @throws ConfigurationKeyMissingException if a key does not exist
-	 */
-	public static function getValue(string $key): int|bool|string|null
-	{
-		if (count(self::$cache) === 0) {
-			self::get();
-		}
-
-		if (!array_key_exists($key, self::$cache)) {
-			/*
-			 * For some reason the $default is not returned above...
-			 */
-			// @codeCoverageIgnoreStart
-			Log::critical(__METHOD__ . ':' . __LINE__ . ' ' . $key . ' does not exist in config (local) !');
-
-			throw new ConfigurationKeyMissingException($key . ' does not exist in config!');
-			// @codeCoverageIgnoreEnd
-		}
-
-		return self::$cache[$key];
-	}
-
-	/**
-	 * Get string configuration value.
-	 *
-	 * @param string $key
-	 *
-	 * @return string
-	 *
-	 * @throws ConfigurationKeyMissingException
-	 */
-	public static function getValueAsString(string $key): string
-	{
-		return strval(self::getValue($key));
-	}
-
-	/**
-	 * Get string configuration value.
-	 *
-	 * @param string $key
-	 *
-	 * @return int
-	 *
-	 * @throws ConfigurationKeyMissingException
-	 */
-	public static function getValueAsInt(string $key): int
-	{
-		return intval(self::getValue($key));
-	}
-
-	/**
-	 * Get bool configuration value.
-	 *
-	 * @param string $key
-	 *
-	 * @return bool
-	 *
-	 * @throws ConfigurationKeyMissingException
-	 */
-	public static function getValueAsBool(string $key): bool
-	{
-		return self::getValue($key) === '1';
-	}
-
-	/**
-	 * @template T of BackedEnum
-	 *
-	 * @param string          $key
-	 * @param class-string<T> $type
-	 *
-	 * @return T|null
-	 */
-	public static function getValueAsEnum(string $key, string $type): \BackedEnum|null
-	{
-		if (!function_exists('enum_exists') || !enum_exists($type) || !method_exists($type, 'tryFrom')) {
-			// @codeCoverageIgnoreStart
-			throw new UnexpectedException();
-			// @codeCoverageIgnoreEnd
-		}
-
-		return $type::tryFrom(self::getValue($key));
-	}
-
-	/**
 	 * Update Lychee configuration
 	 * Note that we must invalidate the cache now.
 	 *
@@ -355,15 +228,7 @@ class Configs extends Model
 			// @codeCoverageIgnoreEnd
 		} finally {
 			// invalidate cache.
-			self::$cache = [];
+			resolve(ConfigManager::class)->invalidateCache();
 		}
-	}
-
-	/**
-	 * Reset the cache.
-	 */
-	public static function invalidateCache(): void
-	{
-		self::$cache = [];
 	}
 }

@@ -23,7 +23,6 @@ class DBSupportCheck implements DiagnosticPipe
 	public function handle(array &$data, \Closure $next): array
 	{
 		$db_possibilities = [
-			['mysql', 'mysqli'],
 			['mysql', 'pdo_mysql'],
 			['pgsql', 'pgsql'],
 			['pgsql', 'pdo_pgsql'],

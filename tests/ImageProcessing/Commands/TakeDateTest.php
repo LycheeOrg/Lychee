@@ -55,7 +55,6 @@ class TakeDateTest extends BaseApiWithDataTest
 		])
 			->assertSuccessful();
 
-		$this->clearCachedSmartAlbums();
 		$response = $this->getJsonWithData('Album', ['album_id' => 'unsorted']);
 		$this->assertOk($response);
 		$photo2 = $response->json('resource.photos.0');

@@ -19,6 +19,7 @@
 namespace Tests\Traits;
 
 use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use Tests\Constants\TestConstants;
 
 trait RequiresExifTool
@@ -28,9 +29,10 @@ trait RequiresExifTool
 
 	protected function setUpRequiresExifTool(): void
 	{
-		$this->hasExifToolInit = Configs::getValueAsInt(TestConstants::CONFIG_HAS_EXIF_TOOL);
+		$config_manager = resolve(ConfigManager::class);
+		$this->hasExifToolInit = $config_manager->getValueAsInt(TestConstants::CONFIG_HAS_EXIF_TOOL);
 		Configs::set(TestConstants::CONFIG_HAS_EXIF_TOOL, 2);
-		$this->hasExifTools = Configs::hasExiftool();
+		$this->hasExifTools = $config_manager->hasExiftool();
 	}
 
 	protected function tearDownRequiresExifTool(): void

@@ -14,6 +14,7 @@ use App\Assets\Helpers;
 use App\Assets\SizeVariantGroupedWithRandomSuffixNamingStrategy;
 use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
 use App\Contracts\Models\SizeVariantFactory;
+use App\Exceptions\Internal\LycheeLogicException;
 use App\Factories\AlbumFactory;
 use App\Factories\OmnipayFactory;
 use App\Image\SizeVariantDefaultFactory;
@@ -29,6 +30,7 @@ use App\Models\Configs;
 use App\Policies\AlbumQueryPolicy;
 use App\Policies\PhotoQueryPolicy;
 use App\Policies\SettingsPolicy;
+use App\Repositories\ConfigManager;
 use App\Services\MoneyService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Events\QueryExecuted;
@@ -37,9 +39,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
+use LycheeVerify\Contract\VerifyInterface;
 use LycheeVerify\Verify;
 use Opcodes\LogViewer\Facades\LogViewer;
 use Safe\Exceptions\StreamException;
@@ -87,8 +91,6 @@ class AppServiceProvider extends ServiceProvider
 			GitCommits::class => GitCommits::class,
 			GitTags::class => GitTags::class,
 
-			Verify::class => Verify::class,
-
 			MoneyService::class => MoneyService::class,
 		];
 
@@ -99,6 +101,42 @@ class AppServiceProvider extends ServiceProvider
 	 */
 	public function boot()
 	{
+		Request::macro('verify', function (): VerifyInterface {
+			if (config('features.populate-request-macros', false) === true) {
+				return resolve(Verify::class);
+			}
+
+			if (!$this->attributes->has('verify')) {
+				throw new LycheeLogicException('request attribute "verify" is not set.');
+			}
+
+			$verify = $this->attributes->get('verify');
+
+			if ($verify instanceof VerifyInterface) {
+				return $verify;
+			}
+
+			throw new LycheeLogicException('request attribute "verify" is set but not an instance of VerifyInterface.');
+		});
+
+		Request::macro('configs', function (): ConfigManager {
+			if (config('features.populate-request-macros', false) === true) {
+				return resolve(ConfigManager::class);
+			}
+
+			if (!$this->attributes->has('configs')) {
+				throw new LycheeLogicException('request attribute "configs" is not set.');
+			}
+
+			$configs = $this->attributes->get('configs');
+
+			if ($configs instanceof ConfigManager) {
+				return $configs;
+			}
+
+			throw new LycheeLogicException('request attribute "configs" is set but not an instance of ConfigManager.');
+		});
+
 		// Prohibits: db:wipe, migrate:fresh, migrate:refresh, and migrate:reset
 		DB::prohibitDestructiveCommands(config('app.env', 'production') !== 'dev');
 
@@ -122,20 +160,6 @@ class AppServiceProvider extends ServiceProvider
 			DB::listen(fn ($q) => $this->logSQL($q));
 			// @codeCoverageIgnoreEnd
 		}
-
-		try {
-			$lang = Configs::getValueAsString('lang');
-			/** @disregard P1013 Undefined method setLocale() (stupid intelephense) */
-			app()->setLocale($lang);
-			// @codeCoverageIgnoreStart
-		} catch (\Throwable $e) {
-			/** Ignore.
-			 * This is necessary so that we can continue:
-			 * - if Configs table do not exists (no install),
-			 * - if the value does not exists in configs (no install),.
-			 */
-		}
-		// @codeCoverageIgnoreEnd
 
 		/**
 		 * We enforce strict mode
@@ -193,6 +217,11 @@ class AppServiceProvider extends ServiceProvider
 		$this->app->bind(
 			SizeVariantFactory::class,
 			SizeVariantDefaultFactory::class
+		);
+
+		$this->app->bind(
+			VerifyInterface::class,
+			Verify::class
 		);
 	}
 

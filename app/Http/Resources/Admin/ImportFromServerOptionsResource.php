@@ -8,7 +8,6 @@
 
 namespace App\Http\Resources\Admin;
 
-use App\Models\Configs;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
@@ -29,12 +28,12 @@ class ImportFromServerOptionsResource extends Data
 	 */
 	public function __construct()
 	{
-		$this->delete_imported = Configs::getValueAsBool('delete_imported');
-		$this->import_via_symlink = Configs::getValueAsBool('import_via_symlink');
-		$this->skip_duplicates = Configs::getValueAsBool('skip_duplicates');
+		$this->delete_imported = request()->configs()->getValueAsBool('delete_imported');
+		$this->import_via_symlink = request()->configs()->getValueAsBool('import_via_symlink');
+		$this->skip_duplicates = request()->configs()->getValueAsBool('skip_duplicates');
 		$this->resync_metadata = false; // Default value as this is not in config
-		$this->delete_missing_photos = Configs::getValueAsBool('sync_delete_missing_photos');
-		$this->delete_missing_albums = Configs::getValueAsBool('sync_delete_missing_albums');
+		$this->delete_missing_photos = request()->configs()->getValueAsBool('sync_delete_missing_photos');
+		$this->delete_missing_albums = request()->configs()->getValueAsBool('sync_delete_missing_albums');
 		$this->directory = base_path('');
 	}
 }

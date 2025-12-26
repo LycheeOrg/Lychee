@@ -13,14 +13,19 @@ use App\Enum\SizeVariantType;
 use App\Enum\StorageDiskType;
 use App\Exceptions\UnexpectedException;
 use App\Jobs\UploadSizeVariantToS3Job;
-use App\Models\Configs;
 use App\Models\SizeVariant;
+use App\Repositories\ConfigManager;
 use Illuminate\Console\Command;
 use Safe\Exceptions\InfoException;
 use function Safe\set_time_limit;
 
 class MoveToS3 extends Command
 {
+	public function __construct(
+		protected readonly ConfigManager $config_manager,
+	) {
+		parent::__construct();
+	}
 	/**
 	 * The name and signature of the console command.
 	 *
@@ -66,7 +71,7 @@ class MoveToS3 extends Command
 
 				return 0;
 			}
-			$owner_id = Configs::getValueAsInt('owner_id');
+			$owner_id = $this->config_manager->getValueAsInt('owner_id');
 			foreach ($sive_variants as $size_variant) {
 				$this->line('Moving ' . $size_variant->short_path . ' to S3.');
 				UploadSizeVariantToS3Job::dispatch($size_variant, $owner_id);

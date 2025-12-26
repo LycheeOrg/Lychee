@@ -19,6 +19,7 @@
 namespace Tests\Traits;
 
 use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use Tests\Constants\TestConstants;
 
 trait RequiresImageHandler
@@ -27,20 +28,22 @@ trait RequiresImageHandler
 
 	protected function setUpRequiresImagick(): void
 	{
-		$this->hasImagickInit = Configs::getValueAsInt(TestConstants::CONFIG_HAS_IMAGICK);
+		$config_manager = resolve(ConfigManager::class);
+		$this->hasImagickInit = $config_manager->getValueAsInt(TestConstants::CONFIG_HAS_IMAGICK);
 		Configs::set(TestConstants::CONFIG_HAS_IMAGICK, 1);
 
-		if (!Configs::hasImagick()) {
+		if (!$config_manager->hasImagick()) {
 			static::markTestSkipped('Imagick is not available. Test Skipped.');
 		}
 	}
 
 	protected function setUpRequiresGD(): void
 	{
-		$this->hasImagickInit = Configs::getValueAsInt(TestConstants::CONFIG_HAS_IMAGICK);
+		$config_manager = resolve(ConfigManager::class);
+		$this->hasImagickInit = $config_manager->getValueAsInt(TestConstants::CONFIG_HAS_IMAGICK);
 		Configs::set(TestConstants::CONFIG_HAS_IMAGICK, 0);
 
-		if (Configs::hasImagick()) {
+		if ($config_manager->hasImagick()) {
 			static::markTestSkipped('Imagick still enabled although it shouldn\'t. Test Skipped.');
 		}
 	}

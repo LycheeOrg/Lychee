@@ -72,11 +72,10 @@ class ImportImageJob implements ShouldQueue
 
 		$copied_file = new NativeLocalFile($this->file_path);
 
-		// As the file has been uploaded, the (temporary) source file shall be
-		// deleted
+		// As the file has been uploaded, the (temporary) source file shall be deleted
 		$create = new Create(
-			$this->import_mode,
-			$this->intended_owner_id,
+			import_mode: $this->import_mode,
+			intended_owner_id: $this->intended_owner_id,
 		);
 
 		$album = $album_factory->findAbstractAlbumOrFail($this->album_id);

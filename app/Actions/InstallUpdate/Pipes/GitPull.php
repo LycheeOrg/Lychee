@@ -10,7 +10,6 @@ namespace App\Actions\InstallUpdate\Pipes;
 
 use App\Facades\Helpers;
 use App\Metadata\Versions\InstalledVersion;
-use Illuminate\Support\Facades\Config;
 use function Safe\exec;
 
 class GitPull extends AbstractUpdateInstallerPipe
@@ -28,7 +27,7 @@ class GitPull extends AbstractUpdateInstallerPipe
 		}
 
 		if (Helpers::isExecAvailable()) {
-			$command = 'git pull --rebase ' . Config::get('urls.git.pull') . ' master 2>&1';
+			$command = 'git pull --rebase ' . config('urls.git.pull') . ' master 2>&1';
 			exec($command, $output);
 
 			return $next($output);

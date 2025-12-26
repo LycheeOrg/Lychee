@@ -19,13 +19,13 @@
 namespace Tests\ImageProcessing\Photo;
 
 use App\Models\Configs;
-use App\Models\Extensions\HasUrlGenerator;
+use App\Services\UrlGenerator;
 use Illuminate\Support\Facades\Auth;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
-class HasUrlGeneratorTest extends BaseApiWithDataTest
+class UrlGeneratorTest extends BaseApiWithDataTest
 {
-	use HasUrlGenerator;
+	private UrlGenerator $urlGenerator;
 
 	public function setUp(): void
 	{
@@ -34,7 +34,6 @@ class HasUrlGeneratorTest extends BaseApiWithDataTest
 		Configs::set('temporary_image_link_enabled', false);
 		Configs::set('temporary_image_link_when_logged_in', false);
 		Configs::set('temporary_image_link_when_admin', false);
-		Configs::invalidateCache();
 	}
 
 	public function tearDown(): void
@@ -42,56 +41,55 @@ class HasUrlGeneratorTest extends BaseApiWithDataTest
 		Configs::set('temporary_image_link_enabled', false);
 		Configs::set('temporary_image_link_when_logged_in', false);
 		Configs::set('temporary_image_link_when_admin', false);
-		Configs::invalidateCache();
-
 		parent::tearDown();
 	}
 
 	public function testAllFalse(): void
 	{
+		$this->urlGenerator = resolve(UrlGenerator::class);
 		self::assertNull(Auth::user());
-		self::assertTrue(self::shouldNotUseSignedUrl(), 'No user, no signed URL');
+		self::assertTrue($this->urlGenerator->shouldNotUseSignedUrl(), 'No user, no signed URL');
 
 		Auth::login($this->userMayUpload1);
-		self::assertTrue(self::shouldNotUseSignedUrl(), 'Logged in user, no signed URL');
+		self::assertTrue($this->urlGenerator->shouldNotUseSignedUrl(), 'Logged in user, no signed URL');
 		Auth::logout();
 
 		Auth::login($this->admin);
-		self::assertTrue(self::shouldNotUseSignedUrl(), 'Admin user, no signed URL');
+		self::assertTrue($this->urlGenerator->shouldNotUseSignedUrl(), 'Admin user, no signed URL');
 		Auth::logout();
 	}
 
 	public function testFalseOnlyGuest(): void
 	{
 		Configs::set('temporary_image_link_enabled', true);
-		Configs::invalidateCache();
+		$this->urlGenerator = resolve(UrlGenerator::class);
 
 		self::assertNull(Auth::user());
-		self::assertFalse(self::shouldNotUseSignedUrl(), 'No user, signed URL');
+		self::assertFalse($this->urlGenerator->shouldNotUseSignedUrl(), 'No user, signed URL');
 
 		Auth::login($this->userMayUpload1);
-		self::assertTrue(self::shouldNotUseSignedUrl(), 'Logged in user, no signed URL');
+		self::assertTrue($this->urlGenerator->shouldNotUseSignedUrl(), 'Logged in user, no signed URL');
 		Auth::logout();
 
 		Auth::login($this->admin);
-		self::assertTrue(self::shouldNotUseSignedUrl(), 'Admin user, no signed URL');
+		self::assertTrue($this->urlGenerator->shouldNotUseSignedUrl(), 'Admin user, no signed URL');
 	}
 
 	public function testFalseOnlyLoggedInAndGuest(): void
 	{
 		Configs::set('temporary_image_link_enabled', true);
 		Configs::set('temporary_image_link_when_logged_in', true);
-		Configs::invalidateCache();
+		$this->urlGenerator = resolve(UrlGenerator::class);
 
 		self::assertNull(Auth::user());
-		self::assertFalse(self::shouldNotUseSignedUrl(), 'No user, signed URL');
+		self::assertFalse($this->urlGenerator->shouldNotUseSignedUrl(), 'No user, signed URL');
 
 		Auth::login($this->userMayUpload1);
-		self::assertFalse(self::shouldNotUseSignedUrl(), 'Logged in user, signed URL');
+		self::assertFalse($this->urlGenerator->shouldNotUseSignedUrl(), 'Logged in user, signed URL');
 		Auth::logout();
 
 		Auth::login($this->admin);
-		self::assertTrue(self::shouldNotUseSignedUrl(), 'Admin user, no signed URL');
+		self::assertTrue($this->urlGenerator->shouldNotUseSignedUrl(), 'Admin user, no signed URL');
 		Auth::logout();
 	}
 
@@ -100,17 +98,17 @@ class HasUrlGeneratorTest extends BaseApiWithDataTest
 		Configs::set('temporary_image_link_enabled', true);
 		Configs::set('temporary_image_link_when_logged_in', true);
 		Configs::set('temporary_image_link_when_admin', true);
-		Configs::invalidateCache();
+		$this->urlGenerator = resolve(UrlGenerator::class);
 
 		self::assertNull(Auth::user());
-		self::assertFalse(self::shouldNotUseSignedUrl(), 'No user, signed URL');
+		self::assertFalse($this->urlGenerator->shouldNotUseSignedUrl(), 'No user, signed URL');
 
 		Auth::login($this->userMayUpload1);
-		self::assertFalse(self::shouldNotUseSignedUrl(), 'Logged in user, signed URL');
+		self::assertFalse($this->urlGenerator->shouldNotUseSignedUrl(), 'Logged in user, signed URL');
 		Auth::logout();
 
 		Auth::login($this->admin);
-		self::assertFalse(self::shouldNotUseSignedUrl(), 'Admin user, signed URL');
+		self::assertFalse($this->urlGenerator->shouldNotUseSignedUrl(), 'Admin user, signed URL');
 	}
 
 	public function testTrueEvenIfEveryone(): void
@@ -118,16 +116,16 @@ class HasUrlGeneratorTest extends BaseApiWithDataTest
 		Configs::set('temporary_image_link_enabled', false);
 		Configs::set('temporary_image_link_when_logged_in', true);
 		Configs::set('temporary_image_link_when_admin', true);
-		Configs::invalidateCache();
+		$this->urlGenerator = resolve(UrlGenerator::class);
 
 		self::assertNull(Auth::user());
-		self::assertTrue(self::shouldNotUseSignedUrl(), 'No user, no signed URL');
+		self::assertTrue($this->urlGenerator->shouldNotUseSignedUrl(), 'No user, no signed URL');
 
 		Auth::login($this->userMayUpload1);
-		self::assertTrue(self::shouldNotUseSignedUrl(), 'Logged in user, no signed URL');
+		self::assertTrue($this->urlGenerator->shouldNotUseSignedUrl(), 'Logged in user, no signed URL');
 		Auth::logout();
 
 		Auth::login($this->admin);
-		self::assertTrue(self::shouldNotUseSignedUrl(), 'Admin user, no signed URL');
+		self::assertTrue($this->urlGenerator->shouldNotUseSignedUrl(), 'Admin user, no signed URL');
 	}
 }

@@ -14,8 +14,9 @@ use App\Contracts\Image\StreamStats;
 use App\DTO\ImageDimension;
 use App\Exceptions\ImageProcessingException;
 use App\Exceptions\MediaFileOperationException;
-use App\Image\Files\BaseMediaFile;
 use App\Image\Files\InMemoryBuffer;
+use App\Repositories\ConfigManager;
+use App\Services\Image\FileExtensionService;
 use Imagick;
 
 class ImagickHandler extends BaseImageHandler
@@ -65,8 +66,10 @@ class ImagickHandler extends BaseImageHandler
 			$this->im_image = new \Imagick();
 			$this->im_image->readImageFile($input_stream);
 
+			$file_extension_service = app(FileExtensionService::class);
+
 			// If the file is a PDF and the user has chosen to support PDF files then try to create an image from the first page
-			if ($file->getExtension() === '.pdf' && BaseMediaFile::isSupportedOrAcceptedFileExtension($file->getExtension())) {
+			if ($file->getExtension() === '.pdf' && $file_extension_service->isSupportedOrAcceptedFileExtension($file->getExtension())) {
 				$this->im_image->setIteratorIndex(0);
 			}
 
@@ -88,7 +91,9 @@ class ImagickHandler extends BaseImageHandler
 			throw new MediaFileOperationException('No image loaded');
 		}
 		try {
-			$this->im_image->setImageCompressionQuality($this->compression_quality);
+			$config_manager = resolve(ConfigManager::class);
+			$compression_quality = $config_manager->getValueAsInt('compression_quality');
+			$this->im_image->setImageCompressionQuality($compression_quality);
 			$profiles = $this->im_image->getImageProfiles('icc', true);
 			// Remove metadata to save some bytes
 			$this->im_image->stripImage();
@@ -106,7 +111,7 @@ class ImagickHandler extends BaseImageHandler
 			$file->close();
 			$in_memory_buffer->close();
 
-			return parent::applyLosslessOptimizationConditionally($file, $collect_statistics) ?? $stream_stat;
+			return $this->applyLosslessOptimizationConditionally($file, $collect_statistics) ?? $stream_stat;
 			// @codeCoverageIgnoreStart
 		} catch (\ImagickException $e) {
 			throw new MediaFileOperationException('Failed to save image', $e);

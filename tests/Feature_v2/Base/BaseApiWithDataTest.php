@@ -28,7 +28,6 @@ use App\Models\Tag;
 use App\Models\TagAlbum;
 use App\Models\User;
 use App\Models\UserGroup;
-use Tests\Traits\InteractWithSmartAlbums;
 use Tests\Traits\RequiresEmptyAlbums;
 use Tests\Traits\RequiresEmptyColourPalettes;
 use Tests\Traits\RequiresEmptyGroups;
@@ -100,7 +99,6 @@ abstract class BaseApiWithDataTest extends BaseApiTest
 	use RequiresEmptyColourPalettes;
 	use RequiresEmptyLiveMetrics;
 	use RequiresEmptyWebAuthnCredentials;
-	use InteractWithSmartAlbums;
 	use RequiresEmptyGroups;
 	use RequiresEmptyTags;
 	use RequiresEmptyRenamerRules;
@@ -236,7 +234,6 @@ abstract class BaseApiWithDataTest extends BaseApiTest
 		Configs::set('owner_id', $this->admin->id);
 
 		$this->withoutVite();
-		$this->clearCachedSmartAlbums();
 	}
 
 	public function tearDown(): void

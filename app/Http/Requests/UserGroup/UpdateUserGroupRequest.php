@@ -40,7 +40,7 @@ class UpdateUserGroupRequest extends BaseApiRequest implements HasUserGroup, Has
 		return [
 			RequestAttribute::GROUP_ID => ['required', 'int'],
 			RequestAttribute::NAME_ATTRIBUTE => ['required', 'string', 'max:255'],
-			RequestAttribute::DESCRIPTION_ATTRIBUTE => ['nullable', 'string', new StringRequireSupportRule('', $this->verify)],
+			RequestAttribute::DESCRIPTION_ATTRIBUTE => ['nullable', 'string', new StringRequireSupportRule('', $this->verify())],
 		];
 	}
 

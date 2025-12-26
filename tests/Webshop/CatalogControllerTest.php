@@ -237,7 +237,7 @@ class CatalogControllerTest extends BaseApiWithDataTest
 		]);
 
 		// Create inactive purchasable
-		$inactive_purchasable = Purchasable::factory()->create([
+		Purchasable::factory()->create([
 			'album_id' => $this->album1->id,
 			'photo_id' => $this->photo1b->id,
 			'description' => 'Inactive photo',
@@ -379,7 +379,7 @@ class CatalogControllerTest extends BaseApiWithDataTest
 	public function testGetCatalogWithPrices(): void
 	{
 		// Create purchasable with prices
-		$purchasable = Purchasable::factory()->withPrices()->create([
+		Purchasable::factory()->withPrices()->create([
 			'album_id' => $this->album1->id,
 			'photo_id' => $this->photo1->id,
 			'description' => 'Photo with pricing',

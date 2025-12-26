@@ -32,7 +32,7 @@ class PhotoZipUploadTest extends BaseApiWithDataTest
 	public function setUp(): void
 	{
 		parent::setUp();
-		$this->requireSE();
+		$this->requireSe();
 		// Force the queue to be synchronous for testing
 		config(['queue.default' => 'sync']);
 	}
@@ -45,7 +45,7 @@ class PhotoZipUploadTest extends BaseApiWithDataTest
 			// Nothing to do
 		}
 
-		$this->resetSE();
+		$this->resetSe();
 		parent::tearDown();
 	}
 

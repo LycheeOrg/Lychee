@@ -316,7 +316,7 @@ class HasAlbumThumb extends Relation
 		} else {
 			return Thumb::createFromQueryable(
 				$this->getRelationQuery(),
-				$this->sorting
+				$this->sorting,
 			);
 		}
 	}

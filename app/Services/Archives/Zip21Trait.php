@@ -12,8 +12,8 @@ use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Image\Files\BaseMediaFile;
 use App\Image\Files\FlysystemFile;
-use App\Models\Configs;
 use App\Models\Photo;
+use App\Repositories\ConfigManager;
 use Composer\InstalledVersions;
 use Composer\Semver\VersionParser;
 use ZipStream\ZipStream;
@@ -35,11 +35,12 @@ trait Zip21Trait
 	protected function createZip(): ZipStream
 	{
 		if (InstalledVersions::satisfies(new VersionParser(), 'maennchen/zipstream-php', '^2.1')) {
+			$config_manager = resolve(ConfigManager::class);
 			$options = new \ZipStream\Option\Archive();
 			$options->setContentType('application/octet-stream');
 			$options->setDeflateLevel($this->deflate_level);
 			$options->setZeroHeader(true);
-			$options->setEnableZip64(Configs::getValueAsBool('zip64'));
+			$options->setEnableZip64($config_manager->getValueAsBool('zip64'));
 			$options->setSendHttpHeaders(false);
 
 			return new ZipStream('archive.zip', $options);

@@ -31,7 +31,7 @@ class PhotoUrlRuleTest extends AbstractTestCase
 	public function setUp(): void
 	{
 		parent::setUp();
-		$this->rule = new PhotoUrlRule();
+		$this->rule = resolve(PhotoUrlRule::class);
 		$this->failCalled = false;
 		$this->failMessage = '';
 
@@ -39,7 +39,6 @@ class PhotoUrlRuleTest extends AbstractTestCase
 		Configs::set('import_via_url_forbidden_ports', '1');
 		Configs::set('import_via_url_forbidden_local_ip', '1');
 		Configs::set('import_via_url_forbidden_localhost', '1');
-		Configs::invalidateCache();
 	}
 
 	public function tearDown(): void
@@ -48,7 +47,6 @@ class PhotoUrlRuleTest extends AbstractTestCase
 		Configs::set('import_via_url_forbidden_ports', '1');
 		Configs::set('import_via_url_forbidden_local_ip', '1');
 		Configs::set('import_via_url_forbidden_localhost', '1');
-		Configs::invalidateCache();
 
 		parent::tearDown();
 	}
@@ -115,7 +113,7 @@ class PhotoUrlRuleTest extends AbstractTestCase
 	public function testUnsupportedScheme(): void
 	{
 		Configs::set('import_via_url_require_https', '0');
-		Configs::invalidateCache();
+
 		$this->rule->validate('photo_url', 'ftp://example.com', fn ($m) => $this->m($m));
 		self::assertTrue($this->failCalled);
 		self::assertEquals('photo_url must be a valid HTTP or HTTPS URL.', $this->failMessage);
@@ -173,7 +171,7 @@ class PhotoUrlRuleTest extends AbstractTestCase
 		Configs::set('import_via_url_forbidden_ports', '0');
 		Configs::set('import_via_url_forbidden_local_ip', '0');
 		Configs::set('import_via_url_forbidden_localhost', '0');
-		Configs::invalidateCache();
+
 		$this->rule->validate('photo_url', 'ssh://192.168.0.1:5432', fn ($m) => $this->m($m));
 
 		self::assertTrue($this->failCalled);
@@ -189,7 +187,7 @@ class PhotoUrlRuleTest extends AbstractTestCase
 		Configs::set('import_via_url_forbidden_ports', '0');
 		Configs::set('import_via_url_forbidden_local_ip', '0');
 		Configs::set('import_via_url_forbidden_localhost', '0');
-		Configs::invalidateCache();
+
 		$this->rule->validate('photo_url', 'http://192.168.0.1:5432', fn ($m) => $this->m($m));
 
 		self::assertFalse($this->failCalled);

@@ -11,7 +11,6 @@ namespace App\Http\Resources\Models\Utils;
 use App\Enum\LicenseType;
 use App\Facades\Helpers;
 use App\Http\Resources\Models\SizeVariantResource;
-use App\Models\Configs;
 use App\Models\Photo;
 use GrahamCampbell\Markdown\Facades\Markdown;
 use Spatie\LaravelData\Data;
@@ -39,9 +38,9 @@ class PreformattedPhotoData extends Data
 
 	public function __construct(Photo $photo, ?SizeVariantResource $original = null)
 	{
-		$overlay_date_format = Configs::getValueAsString('date_format_photo_overlay');
-		$date_format_uploaded = Configs::getValueAsString('date_format_sidebar_uploaded');
-		$date_format_taken_at = Configs::getValueAsString('date_format_sidebar_taken_at');
+		$overlay_date_format = request()->configs()->getValueAsString('date_format_photo_overlay');
+		$date_format_uploaded = request()->configs()->getValueAsString('date_format_sidebar_uploaded');
+		$date_format_taken_at = request()->configs()->getValueAsString('date_format_sidebar_taken_at');
 
 		$this->created_at = $photo->created_at->format($date_format_uploaded);
 		$this->taken_at = $photo->taken_at?->format($date_format_taken_at);

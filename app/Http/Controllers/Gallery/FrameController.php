@@ -13,7 +13,6 @@ use App\Exceptions\PhotoCollectionEmptyException;
 use App\Http\Requests\Frame\FrameRequest;
 use App\Http\Resources\Frame\FrameData;
 use App\Http\Resources\Models\PhotoResource;
-use App\Models\Configs;
 use App\Models\Photo;
 use App\Policies\PhotoQueryPolicy;
 use Illuminate\Routing\Controller;
@@ -33,7 +32,7 @@ class FrameController extends Controller
 	 */
 	public function get(FrameRequest $request): FrameData
 	{
-		$timeout = Configs::getValueAsInt('mod_frame_refresh');
+		$timeout = $request->configs()->getValueAsInt('mod_frame_refresh');
 		$photo = $this->loadPhoto($request->album(), 5);
 
 		if ($photo === null) {
@@ -88,7 +87,7 @@ class FrameController extends Controller
 			$query = $this->photo_query_policy->applySearchabilityFilter(
 				query: Photo::query()->with(['albums', 'size_variants', 'palette', 'tags']),
 				origin: null,
-				include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_frame')
+				include_nsfw: !request()->configs()->getValueAsBool('hide_nsfw_in_frame')
 			);
 		} else {
 			$query = $album->photos()->with(['albums', 'size_variants', 'palette', 'tags']);

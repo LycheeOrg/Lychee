@@ -46,6 +46,7 @@ class SmallMediumExistsCheck implements DiagnosticPipe
 		$sv_helpers = new SizeVariantDimensionHelpers();
 
 		/** @var object{num_small:int,num_medium:int,num_small2x:int,num_medium2x:int,max_num_small:int,max_num_medium:int,max_num_small2x:int,max_num_medium2x:int} $result */
+		/** @phpstan-ignore varTag.type */
 		$result = DB::query()
 		->selectSub(
 			SizeVariant::query()

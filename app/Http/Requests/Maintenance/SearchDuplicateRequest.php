@@ -38,9 +38,9 @@ class SearchDuplicateRequest extends BaseApiRequest
 	public function rules(): array
 	{
 		return [
-			'with_album_constraint' => ['required', new BooleanRequireSupportRule(false, $this->verify)], // : false,
-			'with_checksum_constraint' => ['required', new BooleanRequireSupportRule(true, $this->verify)], // : true,
-			'with_title_constraint' => ['required', new BooleanRequireSupportRule(false, $this->verify)], // : false
+			'with_album_constraint' => ['required', new BooleanRequireSupportRule(false, $this->verify())], // : false,
+			'with_checksum_constraint' => ['required', new BooleanRequireSupportRule(true, $this->verify())], // : true,
+			'with_title_constraint' => ['required', new BooleanRequireSupportRule(false, $this->verify())], // : false
 		];
 	}
 

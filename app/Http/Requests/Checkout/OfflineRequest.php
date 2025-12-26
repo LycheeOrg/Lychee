@@ -12,7 +12,6 @@ use App\Contracts\Http\Requests\HasBasket;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasBasketTrait;
-use App\Models\Configs;
 
 class OfflineRequest extends BaseApiRequest implements HasBasket
 {
@@ -27,7 +26,7 @@ class OfflineRequest extends BaseApiRequest implements HasBasket
 	 */
 	public function authorize(): bool
 	{
-		return $this->order !== null && $this->order->canCheckout() && Configs::getValueAsBool('webshop_offline');
+		return $this->order !== null && $this->order->canCheckout() && $this->configs()->getValueAsBool('webshop_offline');
 	}
 
 	public function rules(): array

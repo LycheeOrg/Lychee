@@ -161,7 +161,7 @@ class CoverageTest extends AbstractTestCase
 
 	public function testJobFailing(): void
 	{
-		$userCreate = new Create();
+		$userCreate = resolve(Create::class);
 		$user = $userCreate->do(
 			'username',
 			'password',
