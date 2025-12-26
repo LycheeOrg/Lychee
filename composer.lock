@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "af32044a2c37ad141874a8c10aef82eb",
+    "content-hash": "1dfc8d5568e006e9dbfded554da316b6",
     "packages": [
         {
             "name": "apimatic/core",
@@ -4171,16 +4171,16 @@
         },
         {
             "name": "lychee-org/lycheeverify",
-            "version": "2.0.6",
+            "version": "2.0.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/LycheeOrg/verify.git",
-                "reference": "80efbebb61ac5cc01c70f246fb9b9468e57bbd33"
+                "reference": "1a85a87b9f838d1617a3a5ea4a0ba41c943dbf66"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/LycheeOrg/verify/zipball/80efbebb61ac5cc01c70f246fb9b9468e57bbd33",
-                "reference": "80efbebb61ac5cc01c70f246fb9b9468e57bbd33",
+                "url": "https://api.github.com/repos/LycheeOrg/verify/zipball/1a85a87b9f838d1617a3a5ea4a0ba41c943dbf66",
+                "reference": "1a85a87b9f838d1617a3a5ea4a0ba41c943dbf66",
                 "shasum": ""
             },
             "require": {
@@ -4249,7 +4249,7 @@
             "description": "Verification package for Lychee",
             "homepage": "https://github.com/LycheeOrg/verify",
             "support": {
-                "source": "https://github.com/LycheeOrg/verify/tree/2.0.6",
+                "source": "https://github.com/LycheeOrg/verify/tree/2.0.7",
                 "issues": "https://github.com/LycheeOrg/verify/issues"
             },
             "funding": [
@@ -4258,7 +4258,7 @@
                     "url": "https://github.com/LycheeOrg"
                 }
             ],
-            "time": "2025-12-25T17:06:50+00:00"
+            "time": "2025-12-26T00:01:22+00:00"
         },
         {
             "name": "lychee-org/nestedset",
@@ -5652,12 +5652,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/LycheeOrg/log-viewer.git",
-                "reference": "41837b09e11ae5d01c15ed1c9511a93183e2cbaf"
+                "reference": "a93c2e56c434137cf6fbd2031f10e4ddf88e8e11"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/LycheeOrg/log-viewer/zipball/41837b09e11ae5d01c15ed1c9511a93183e2cbaf",
-                "reference": "41837b09e11ae5d01c15ed1c9511a93183e2cbaf",
+                "url": "https://api.github.com/repos/LycheeOrg/log-viewer/zipball/a93c2e56c434137cf6fbd2031f10e4ddf88e8e11",
+                "reference": "a93c2e56c434137cf6fbd2031f10e4ddf88e8e11",
                 "shasum": ""
             },
             "require": {
@@ -5750,7 +5750,7 @@
                     "url": "https://www.buymeacoffee.com/arunas"
                 }
             ],
-            "time": "2025-08-28T10:09:39+00:00"
+            "time": "2025-12-26T00:08:26+00:00"
         },
         {
             "name": "opcodesio/mail-parser",
@@ -16079,16 +16079,16 @@
         },
         {
             "name": "rector/rector",
-            "version": "2.2.14",
+            "version": "2.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rectorphp/rector.git",
-                "reference": "6d56bb0e94d4df4f57a78610550ac76ab403657d"
+                "reference": "f7166355dcf47482f27be59169b0825995f51c7d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rectorphp/rector/zipball/6d56bb0e94d4df4f57a78610550ac76ab403657d",
-                "reference": "6d56bb0e94d4df4f57a78610550ac76ab403657d",
+                "url": "https://api.github.com/repos/rectorphp/rector/zipball/f7166355dcf47482f27be59169b0825995f51c7d",
+                "reference": "f7166355dcf47482f27be59169b0825995f51c7d",
                 "shasum": ""
             },
             "require": {
@@ -16127,7 +16127,7 @@
             ],
             "support": {
                 "issues": "https://github.com/rectorphp/rector/issues",
-                "source": "https://github.com/rectorphp/rector/tree/2.2.14"
+                "source": "https://github.com/rectorphp/rector/tree/2.3.0"
             },
             "funding": [
                 {
@@ -16135,7 +16135,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-12-09T10:57:55+00:00"
+            "time": "2025-12-25T22:00:18+00:00"
         },
         {
             "name": "sebastian/cli-parser",
