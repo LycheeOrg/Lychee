@@ -1,69 +1,361 @@
 
 services:
-    lychee_cache:
-        image: redis:alpine
-        security_opt:
-            - no-new-privileges:true
-        healthcheck:
-            test: ["CMD-SHELL", "redis-cli ping || exit 1"]
-        ports:
-            - ${REDIS_PORT:-6379}:${REDIS_PORT:-6379}
-        user: 1026:100
-        env_file:
-            - path: ./.env
-              required: false
-        environment:
-            - TZ=${TIMEZONE:-UTC}
-        networks:
-            - lychee
-        volumes:
-            - cache:/data:rw
-        restart: on-failure:5
+  # Laravel Backend API
+  lychee_api:
+    image: lychee-frankenphp:latest
+    # build:
+    #   context: ./app
+    #   dockerfile: Dockerfile
+    #   args:
+    #     NODE_ENV: "${NODE_ENV:-production}"
+    container_name: lychee-api
+    restart: unless-stopped
+    expose:
+      - "${APP_PORT:-8000}"
+    ports:
+      - "${APP_PORT:-8000}:8000"
 
-    lychee_db:
-        image: mariadb:10
-        security_opt:
-            - no-new-privileges:true
-        env_file:
-            - path: ./.env
-              required: false
-        environment:
-            - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD:-rootpassword}
-            - MYSQL_DATABASE=${DB_DATABASE:-lychee}
-            - MYSQL_USER=${DB_USERNAME:-lychee}
-            - MYSQL_PASSWORD=${DB_PASSWORD:-lychee}
-        expose:
-            - 3306
-        ports:
-            - 33061:${DB_PORT:-3306}
-        volumes:
-            - mysql:/var/lib/mysql
-        networks:
-            - lychee
-        restart: unless-stopped
+    # Security hardening
+    security_opt:
+      - no-new-privileges:true
+      - seccomp:unconfined  # FrankenPHP may need this; consider custom seccomp profile
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+      - DAC_OVERRIDE
+      - NET_BIND_SERVICE
+    read_only: false  # Laravel needs write access to storage/cache
+    tmpfs:
+      - /tmp:noexec,nosuid,nodev,size=100m
 
-    lychee-dev:
-        image: lychee-dev:latest
-        security_opt:
-            - no-new-privileges:true
-        ports:
-            - 90:80
-        #      - 5173:5173
-        volumes:
-#            - ./lychee/conf:/conf
-#            - ./lychee/uploads:/uploads
-#            - ./lychee/sym:/sym
-#            - ./lychee/logs:/logs
-#            - ./lychee/tmp:/lychee-tmp
-            - ./:/var/www/html/Lychee
-        env_file:
-            - path: ./.env
-              required: false
-        networks:
-            - lychee
-        restart: unless-stopped
-        depends_on:
-            - lychee_db
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    env_file:
+      - path: ./.env
+        required: true
+    environment:
+      PUID: "${PUID:-1000}"
+      PGID: "${PGID:-1000}"
+      # Application
+      APP_NAME: "${APP_NAME:-Lychee}"
+      APP_ENV: "${APP_ENV:-production}"
+      APP_DEBUG: "${APP_DEBUG:-false}"
+      APP_TIMEZONE: "${TIMEZONE:-UTC}"
+      APP_URL: "${APP_URL:-http://localhost:8000}"
+      APP_FORCE_HTTPS: "${APP_FORCE_HTTPS:-false}"
+      APP_MAINTENANCE_DRIVER: "${APP_MAINTENANCE_DRIVER:-file}"
+
+
+      # enable or disable debug bar. By default it is disabled.
+      # Do note that this disable CSP!!
+      DEBUGBAR_ENABLED: "${DEBUGBAR_ENABLED:-false}"
+
+      # enable or disable log viewer. By default it is enabled.
+      LOG_VIEWER_ENABLED: "${LOG_VIEWER_ENABLED:-true}"
+
+      # enable or disable clockwork. By default it is disabled (and not provided on non-dev build).
+      CLOCKWORK_ENABLE: "${CLOCKWORK_ENABLE:-false}"
+
+      # enable or disable latency debug: adds a specific amount of time in milliseconds to wait before processing requests.
+      # Always disabled on production environment.
+      # APP_DEBUG_LATENCY: 0
+
+      # All API requests to have the header "content-type: application/json"
+      # or "content-type: multipart/form-data" depending on the type.
+      #
+      # If you want to disable this requirement, set this to false.
+      #
+      # This requirement prevents the use of the API from the API documentation page.
+      REQUIRE_CONTENT_TYPE_ENABLED: "${REQUIRE_CONTENT_TYPE_ENABLED:-true}"
+
+      # enable s3 bucket (required in addition to needing AWS_ACCESS_KEY_ID)
+      # S3_ENABLED: true
+
+      # If you spread old links of to your albums in your Lychee instance starting with
+      # https://lychee.text/#albumID/PhotoId
+      # Set this value to true to enable redirection.
+      LEGACY_V4_REDIRECT: "${LEGACY_V4_REDIRECT:-false}"
+
+      ##############################################################################
+      # IMPORTANT: To migrate from Lychee v3 you *MUST* use the same MySQL/MariaDB #
+      #            server as v3.                                                   #
+      ##############################################################################
+
+      # Table prefix (e.g. lychee_) of a Lychee v3 instance for migration
+      # DB_OLD_LYCHEE_PREFIX:
+
+      # DB_CONNECTION can be sqlite, mysql or pgsql. For sqlite the other entries are
+      # not required, but an existing sqlite3 database may be specified if desired.
+      # In this case, please use an absolute path. DB_DATABASE may be omitted but should
+      # *not* be left blank.
+      # Note that if DB_PASSWORD includes special characters, it must be enclosed in quotes.
+      # e.g. DB_PASSWORD: "lychee!@#$%^&"
+      DB_CONNECTION: "${DB_CONNECTION:-mysql}"
+      DB_HOST: "${DB_HOST:-lychee_db}"
+      DB_PORT: "${DB_PORT:-3306}"
+      DB_DATABASE: "${DB_DATABASE:-lychee}"
+      DB_USERNAME: "${DB_USERNAME:-lychee}"
+      # Use secrets for sensitive data - see Docker secrets or vault integration
+      # DB_PASSWORD should come from .env file only
+
+      # Session configuration
+      SESSION_DRIVER: "${SESSION_DRIVER:-file}"
+      SESSION_LIFETIME: "${SESSION_LIFETIME:-120}"
+      # SESSION_DRIVER: "${SESSION_DRIVER:-database}"
+      # SESSION_LIFETIME: "${SESSION_LIFETIME:-120}"
+      # SESSION_ENCRYPT: "${SESSION_ENCRYPT:-false}"
+      # SESSION_PATH: "${SESSION_PATH:-/}"
+      # SESSION_DOMAIN: "${SESSION_DOMAIN:-null}"
+
+      # Cache
+      CACHE_STORE: "${CACHE_STORE:-file}"
+      CACHE_PREFIX: "${CACHE_PREFIX:-lychee_keygen_cache}"
+      REDIS_HOST: "lychee_cache"
+      REDIS_PASSWORD: "null"
+      REDIS_PORT: "6379"
+      # REDIS_URL=redis://<username>:<password>@<host>:<port>
+
+      # If you use Redis as cache driver, we strongly recommend
+      # to disable it for your Log Viewer.
+      # Should redis crash, you will no longer be able to access your logs.
+      LOG_VIEWER_CACHE_DRIVER: "file"
+
+      # Queue
+      QUEUE_CONNECTION: "${QUEUE_CONNECTION:-database}"
+
+      # Logging
+      LOG_CHANNEL: "${LOG_CHANNEL:-stack}"
+      LOG_STACK: "${LOG_STACK:-single}"
+      LOG_DEPRECATIONS_CHANNEL: "${LOG_DEPRECATIONS_CHANNEL:-null}"
+      LOG_LEVEL: "${LOG_LEVEL:-debug}"
+
+      # QUEUE_CONNECTION:sync
+
+      # SECURITY_HEADER_HSTS_ENABLE:false
+      # SECURITY_HEADER_CSP_CONNECT_SRC:
+      # SECURITY_HEADER_SCRIPT_SRC_ALLOW:
+      # SECURITY_HEADER_CSP_CHILD_SRC:
+      # SECURITY_HEADER_CSP_FONT_SRC:
+      # SECURITY_HEADER_CSP_FORM_ACTION:
+      # SECURITY_HEADER_CSP_FRAME_ANCESTORS:
+      # SECURITY_HEADER_CSP_FRAME_SRC:
+      # SECURITY_HEADER_CSP_IMG_SRC:
+      # SECURITY_HEADER_CSP_MEDIA_SRC:
+      # SESSION_SECURE_COOKIE:false
+
+      # MAIL_DRIVER:smtp
+      # MAIL_HOST:
+      # MAIL_PORT:
+      # MAIL_USERNAME:
+      # MAIL_PASSWORD:
+      # MAIL_ENCRYPTION:
+      # MAIL_FROM_NAME:
+      # MAIL_FROM_ADDRESS:
+
+      # TRUSTED_PROXIES=null
+
+      # Disable Basic Auth. This means that the only way to authenticate is via the API token or Oauth.
+      # This should only be toggled AFTER having set up the admin account and bound the Oauth client.
+      # DISABLE_BASIC_AUTH=false
+
+      # Disable WebAuthn. This means that the only way to authenticate is via the API token, Basic Auth or Oauth.
+      # DISABLE_WEBAUTHN=false
+
+      # Oauth token data
+      # XXX_REDIRECT_URI should be left as default unless you know exactly what you do.
+
+      # AMAZON_SIGNIN_CLIENT_ID=
+      # AMAZON_SIGNIN_SECRET=
+      # AMAZON_SIGNIN_REDIRECT_URI=/auth/amazon/redirect
+
+      # https://developer.okta.com/blog/2019/06/04/what-the-heck-is-sign-in-with-apple
+      # Note: the client secret used for "Sign In with Apple" is a JWT token that can have a maximum lifetime of 6 months.
+      # The article above explains how to generate the client secret on demand and you'll need to update this every 6 months.
+      # To generate the client secret for each request, see Generating A Client Secret For Sign In With Apple On Each Request.
+      # https://bannister.me/blog/generating-a-client-secret-for-sign-in-with-apple-on-each-request
+      # APPLE_CLIENT_ID=
+      # APPLE_CLIENT_SECRET=
+      # APPLE_REDIRECT_URI=/auth/apple/redirect
+
+      # FACEBOOK_CLIENT_ID=
+      # FACEBOOK_CLIENT_SECRET=
+      # FACEBOOK_REDIRECT_URI=/auth/facebook/redirect
+
+      # GITHUB_CLIENT_ID=
+      # GITHUB_CLIENT_SECRET=
+      # GITHUB_REDIRECT_URI=/auth/github/redirect
+
+      # GOOGLE_CLIENT_ID=
+      # GOOGLE_CLIENT_SECRET=
+      # GOOGLE_REDIRECT_URI=/auth/google/redirect
+
+      # MASTODON_DOMAIN=https://mastodon.social
+      # MASTODON_ID=
+      # MASTODON_SECRET=
+      # MASTODON_REDIRECT_URI=/auth/mastodon/redirect
+
+      # MICROSOFT_CLIENT_ID=
+      # MICROSOFT_CLIENT_SECRET=
+      # MICROSOFT_REDIRECT_URI=/auth/microsoft/redirect
+
+      # NEXTCLOUD_CLIENT_ID=
+      # NEXTCLOUD_CLIENT_SECRET=
+      # NEXTCLOUD_REDIRECT_URI=/auth/nextcloud/redirect
+      # NEXTCLOUD_BASE_URI=
+
+      # KEYCLOAK_CLIENT_ID=
+      # KEYCLOAK_CLIENT_SECRET=
+      # KEYCLOAK_REDIRECT_URI=/auth/keycloak/redirect
+      # KEYCLOAK_BASE_URL=
+      # KEYCLOAK_REALM=
+
+      # AUTHENTIK_BASE_URL=
+      # AUTHENTIK_CLIENT_ID=
+      # AUTHENTIK_CLIENT_SECRET=
+      # AUTHENTIK_REDIRECT_URI=/auth/authentik/redirect
+
+      # AUTHELIA_BASE_URL=
+      # AUTHELIA_CLIENT_ID=
+      # AUTHELIA_CLIENT_SECRET=
+      # AUTHELIA_REDIRECT_URI=/auth/authelia/redirect
+
+      # AWS support data
+
+      # AWS_ACCESS_KEY_ID=
+      # AWS_SECRET_ACCESS_KEY=
+      # AWS_DEFAULT_REGION=
+      # AWS_BUCKET=
+      # AWS_URL=
+      # AWS_ENDPOINT=
+      # AWS_IMAGE_VISIBILITY=
+      # AWS_USE_PATH_STYLE_ENDPOINT=
+
+      # DISABLE_IMPORT_FROM_SERVER=false
+
+      ###################################################################
+      # Payment integration (requires SE)                               #
+      ###################################################################
+
+      # Enable test mode (Sandbox mode) for payment gateways.
+      # In test mode, no real money transactions are done.
+      # We set it to true by default for safety. Make sure to set it to false
+      # when you go live.
+      # OMNIPAY_TEST_MODE=true
+
+      # Configuration values for Mollie integration
+      # MOLLIE_API_KEY=
+      # MOLLIE_PROFILE_ID=
+
+      # Configuration values for Stripe integration (NOT WORKING YET, MAYBE LATER)
+      # STRIPE_API_KEY=
+      # STRIPE_PUBLISHABLE_KEY=
+
+      # Configuration values for PayPal integration
+      # PAYPAL_CLIENT_ID=
+      # PAYPAL_SECRET=
+
+    volumes:
+      - ./lychee/uploads:/app/public/uploads
+      - ./lychee/storage/app:/app/storage/app
+      - ./lychee/logs:/app/storage/logs
+      - ./lychee/tmp:/app/storage/tmp
+      - .env:/app/.env:ro
+
+    depends_on:
+      lychee_db:
+        condition: service_healthy
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+    networks:
+      - lychee
+
+  lychee_cache:
+      image: redis:alpine
+      hostname: lychee_cache
+      security_opt:
+          - no-new-privileges:true
+      cap_drop:
+          - ALL
+      cap_add:
+          - SETGID
+          - SETUID
+      read_only: true
+      tmpfs:
+          - /tmp:noexec,nosuid,nodev,size=50m
+      healthcheck:
+          test: ["CMD-SHELL", "redis-cli ping || exit 1"]
+      # Removed port exposure - only accessible within Docker network
+      # ports:
+      #     - ${REDIS_PORT:-6379}:${REDIS_PORT:-6379}
+      user: 999:999  # redis user in Alpine
+      env_file:
+          - path: ./.env
+            required: false
+      environment:
+          - TZ=${TIMEZONE:-UTC}
+      networks:
+          - lychee
+      volumes:
+          - cache:/data:rw
+      restart: on-failure:5
+
+  lychee_db:
+      image: mariadb:10
+      security_opt:
+          - no-new-privileges:true
+      cap_drop:
+          - ALL
+      cap_add:
+          - SETGID
+          - SETUID
+          - DAC_OVERRIDE
+          - CHOWN
+      read_only: false  # MariaDB needs write access
+      tmpfs:
+          - /tmp:noexec,nosuid,nodev,size=200m
+          - /var/run/mysqld:noexec,nosuid,nodev,size=10m
+      env_file:
+          - path: ./.env
+            required: false
+      environment:
+          # - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+          - MYSQL_DATABASE=${DB_DATABASE:-lychee}
+          - MYSQL_USER=${DB_USERNAME:-lychee}
+          # - MYSQL_PASSWORD=${DB_PASSWORD}
+           # Secrets should come from .env file or Docker secrets
+      expose:
+          - 3306
+      # Removed host port binding - only accessible within Docker network
+      # For debugging, temporarily uncomment:
+      # ports:
+      #     - 127.0.0.1:33061:3306
+      volumes:
+          - mysql:/var/lib/mysql
+      networks:
+          - lychee
+      restart: unless-stopped
+      healthcheck:
+        test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+        interval: 5s
+        timeout: 3s
+        retries: 10
+        start_period: 10s
 
 networks:
     lychee:

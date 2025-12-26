@@ -1,0 +1,60 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# CI/CD
+.github
+
+# Coding
+.ai
+.vscode
+
+# dependencies
+composer-cache
+
+# Documentation
+README.md
+docs/
+
+# Development files
+.editorconfig
+.php-cs-fixer.php
+.php-cs-fixer.cache
+phpstan.neon
+phpunit.xml
+.phpunit.result.cache
+phpstan/*
+scripts/*
+vite/*
+
+# Node
+node_modules/
+npm-debug.log
+
+# Lychee
+/public/uploads/*
+lychee/*
+
+# Laravel
+/storage/logs/*
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+.env
+.env.*
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Tests
+tests/*
