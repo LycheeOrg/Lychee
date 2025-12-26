@@ -26,7 +26,7 @@ class FetchSourceImage implements StandalonePipe
 				$state->source_image = $video_handler->extractFrame($position);
 			} else {
 				// Load source image if it is a supported photo format
-				$state->source_image = new ImageHandler();
+				$state->source_image = resolve(ImageHandler::class);
 				$state->source_image->load($state->source_file);
 			}
 		} catch (\Throwable $t) {

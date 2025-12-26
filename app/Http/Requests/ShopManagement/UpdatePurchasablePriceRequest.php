@@ -15,7 +15,6 @@ use App\Enum\PurchasableLicenseType;
 use App\Enum\PurchasableSizeVariantType;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasDescriptionTrait;
-use App\Models\Configs;
 use App\Models\Purchasable;
 use App\Services\MoneyService;
 use Illuminate\Support\Facades\Auth;
@@ -41,7 +40,7 @@ class UpdatePurchasablePriceRequest extends BaseApiRequest implements HasDescrip
 			return false;
 		}
 
-		return Configs::getValueAsInt('owner_id') === $user_id;
+		return $this->configs()->getValueAsInt('owner_id') === $user_id;
 	}
 
 	/**

@@ -12,20 +12,19 @@ use App\Contracts\Exceptions\InternalLycheeException;
 use App\DTO\PhotoSortingCriterion;
 use App\Eloquent\FixedQueryBuilder;
 use App\Models\Album;
-use App\Models\Configs;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
 use App\Policies\PhotoQueryPolicy;
+use App\Repositories\ConfigManager;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
 class PhotoSearch
 {
-	protected PhotoQueryPolicy $photoQueryPolicy;
-
-	public function __construct(PhotoQueryPolicy $photo_query_policy)
-	{
-		$this->photoQueryPolicy = $photo_query_policy;
+	public function __construct(
+		protected readonly ConfigManager $config_manager,
+		protected PhotoQueryPolicy $photo_query_policy,
+	) {
 	}
 
 	/**
@@ -56,10 +55,10 @@ class PhotoSearch
 	 */
 	public function sqlQuery(array $terms, ?Album $album = null): Builder
 	{
-		$query = $this->photoQueryPolicy->applySearchabilityFilter(
+		$query = $this->photo_query_policy->applySearchabilityFilter(
 			query: Photo::query()->with(['albums', 'statistics', 'size_variants', 'palette', 'tags']),
 			origin: $album,
-			include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_search')
+			include_nsfw: !$this->config_manager->getValueAsBool('hide_nsfw_in_search')
 		);
 
 		foreach ($terms as $term) {

@@ -19,6 +19,7 @@
 namespace Tests\Feature_v2;
 
 use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use Exception;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
@@ -26,13 +27,13 @@ class RssTest extends BaseApiWithDataTest
 {
 	public function testRSS0(): void
 	{
+		$config_manager = resolve(ConfigManager::class);
 		// save initial value
-		$init_config_value = Configs::getValue('rss_enable');
+		$init_config_value = $config_manager->getValue('rss_enable');
 
 		try {
 			// set to 0
 			Configs::set('rss_enable', '0');
-			self::assertEquals('0', Configs::getValue('rss_enable'));
 
 			// check redirection
 			$response = $this->get('/feed');
@@ -48,12 +49,12 @@ class RssTest extends BaseApiWithDataTest
 	public function testRSS1(): void
 	{
 		// save initial value
-		$init_config_value = Configs::getValue('rss_enable');
+		$config_manager = resolve(ConfigManager::class);
+		$init_config_value = $config_manager->getValue('rss_enable');
 
 		try {
-			// set to 0
+			// set to 1
 			Configs::set('rss_enable', '1');
-			self::assertEquals('1', Configs::getValue('rss_enable'));
 
 			// check redirection
 			$response = $this->get('/feed');

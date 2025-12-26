@@ -52,7 +52,7 @@ class IframeCheckTest extends AbstractTestCase
 
 		$result = $this->iframeCheck->handle($this->data, $this->next);
 
-		$this->assertEquals([], $result, 'Should return empty result when X-Frame-Options is deny');
+		$this->assertEmpty($result, 'Should return empty result when X-Frame-Options is deny');
 	}
 
 	/**
@@ -246,10 +246,9 @@ class IframeCheckTest extends AbstractTestCase
 		Config::set('session.same_site', 'lax');
 		Config::set('session.secure', true);
 
-		$result = $this->iframeCheck->handle($this->data, $nextFunction);
+		$this->iframeCheck->handle($this->data, $nextFunction);
 
 		$this->assertTrue($nextCalled, 'Next closure should be called');
-		$this->assertIsArray($result);
 	}
 
 	/**

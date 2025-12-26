@@ -1,0 +1,111 @@
+<?php
+
+/**
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2017-2018 Tobias Reich
+ * Copyright (c) 2018-2025 LycheeOrg.
+ */
+
+namespace App\Services;
+
+use App\Enum\SizeVariantType;
+use App\Exceptions\ConfigurationKeyMissingException;
+use App\Exceptions\Internal\LycheeLogicException;
+use App\Repositories\ConfigManager;
+use Illuminate\Contracts\Encryption\EncryptException;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
+use League\Flysystem\AwsS3V3\AwsS3V3Adapter;
+
+class UrlGenerator
+{
+	public function __construct(
+		protected ConfigManager $config_manager,
+	) {
+	}
+
+	/**
+	 * Given a short, path, storage disk and size variant type, we return the URL formatted data.
+	 *
+	 * @throws \InvalidArgumentException
+	 * @throws ConfigurationKeyMissingException
+	 * @throws \RuntimeException
+	 * @throws EncryptException
+	 */
+	public function pathToUrl(string $short_path, string $storage_disk, SizeVariantType $type): string
+	{
+		if ($type === SizeVariantType::PLACEHOLDER) {
+			throw new LycheeLogicException('Cannot generate URL for placeholder size variant.');
+		}
+
+		$image_disk = Storage::disk($storage_disk);
+
+		/** @disregard P1013 */
+		$storage_adapter = $image_disk->getAdapter();
+		if ($storage_adapter instanceof AwsS3V3Adapter) {
+			// @codeCoverageIgnoreStart
+			return self::getAwsUrl($short_path, $storage_disk);
+			// @codeCoverageIgnoreEnd
+		}
+
+		// If we do not sign the URL or we do not use secure image links, we return the URL directly.
+		if (self::shouldNotUseSignedUrl() && !$this->config_manager->getValueAsBool('secure_image_link_enabled')) {
+			return $image_disk->url($short_path);
+		}
+
+		// We we use the secure image link, we encrypt the path.
+		if ($this->config_manager->getValueAsBool('secure_image_link_enabled')) {
+			$short_path = Crypt::encryptString($short_path);
+		}
+
+		// Return the url directly if we do not use signed URLs.
+		if (self::shouldNotUseSignedUrl()) {
+			return Url::route('image', ['path' => $short_path]);
+		}
+
+		$temporary_image_link_life_in_seconds = $this->config_manager->getValueAsInt('temporary_image_link_life_in_seconds');
+
+		/** @disregard P1013 */
+		return URL::temporarySignedRoute('image', now()->addSeconds($temporary_image_link_life_in_seconds), ['path' => $short_path], true);
+	}
+
+	/**
+	 * Return true if :
+	 * - image link protection is disabled
+	 * - image link protection is enabled but the user is logged in (and protection is disabled for logged in users)
+	 * - image link protection is enabled but the user is an admin
+	 *
+	 * @return bool
+	 */
+	public function shouldNotUseSignedUrl(): bool
+	{
+		return
+			!$this->config_manager->getValueAsBool('temporary_image_link_enabled') ||
+			(!$this->config_manager->getValueAsBool('temporary_image_link_when_logged_in') && Auth::user() !== null) ||
+			(!$this->config_manager->getValueAsBool('temporary_image_link_when_admin') && Auth::user()?->may_administrate === true);
+	}
+
+	/**
+	 * Retrieve the tempary url from AWS if possible.
+	 *
+	 * @codeCoverageIgnore
+	 */
+	private function getAwsUrl(string $short_path, string $storage_disk): string
+	{
+		// In order to allow a grace period, we create a new symbolic link,
+		$temporary_image_link_life_in_seconds = $this->config_manager->getValueAsInt('temporary_image_link_life_in_seconds');
+		$image_disk = Storage::disk($storage_disk);
+
+		// Return the public URL in case the S3 bucket is set to public, otherwise generate a temporary URL
+		$visibility = config('filesystems.disks.s3.visibility', 'private');
+		if ($visibility === 'public') {
+			/** @disregard P1013 */
+			return $image_disk->url($short_path);
+		}
+
+		/** @disregard P1013 */
+		return $image_disk->temporaryUrl($short_path, now()->addSeconds($temporary_image_link_life_in_seconds));
+	}
+}

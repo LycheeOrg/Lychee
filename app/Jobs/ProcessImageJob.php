@@ -17,10 +17,10 @@ use App\Factories\AlbumFactory;
 use App\Image\Files\ProcessableJobFile;
 use App\Image\Files\TemporaryJobFile;
 use App\Models\Album;
-use App\Models\Configs;
 use App\Models\JobHistory;
 use App\Models\Photo;
 use App\Models\TagAlbum;
+use App\Repositories\ConfigManager;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -105,15 +105,16 @@ class ProcessImageJob implements ShouldQueue
 
 		$copied_file = new TemporaryJobFile($this->file_path, $this->original_base_name);
 
-		// As the file has been uploaded, the (temporary) source file shall be
-		// deleted
+		$config_manager = app(ConfigManager::class);
+
+		// As the file has been uploaded, the (temporary) source file shall be deleted
 		$create = new Create(
-			new ImportMode(
+			import_mode: new ImportMode(
 				delete_imported: true,
-				skip_duplicates: Configs::getValueAsBool('skip_duplicates'),
-				shall_rename_photo_title: Configs::getValueAsBool('renamer_photo_title_enabled'),
+				skip_duplicates: $config_manager->getValueAsBool('skip_duplicates'),
+				shall_rename_photo_title: $config_manager->getValueAsBool('renamer_photo_title_enabled'),
 			),
-			$this->user_id
+			intended_owner_id: $this->user_id
 		);
 
 		$album = null;

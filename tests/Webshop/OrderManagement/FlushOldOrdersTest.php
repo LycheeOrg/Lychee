@@ -23,7 +23,7 @@ use App\Models\OrderItem;
 use App\Models\Purchasable;
 use Illuminate\Support\Str;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
-use Tests\Traits\RequireSE;
+use Tests\Traits\RequirePro;
 
 /**
  * Test class for FlushOldOrders maintenance functionality.
@@ -36,14 +36,14 @@ use Tests\Traits\RequireSE;
  */
 class FlushOldOrdersTest extends BaseApiWithDataTest
 {
-	use RequireSE;
+	use RequirePro;
 
 	protected Purchasable $purchasable1;
 
 	public function setUp(): void
 	{
 		parent::setUp();
-		$this->requireSe();
+		$this->requirePro();
 
 		// Create purchasable items for testing
 		$this->purchasable1 = Purchasable::factory()
@@ -54,7 +54,7 @@ class FlushOldOrdersTest extends BaseApiWithDataTest
 
 	public function tearDown(): void
 	{
-		$this->resetSe();
+		$this->resetPro();
 		parent::tearDown();
 	}
 

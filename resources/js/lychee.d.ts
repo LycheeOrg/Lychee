@@ -103,7 +103,7 @@ declare namespace App.Enum {
 		| "microsoft"
 		| "nextcloud"
 		| "keycloak";
-	export type OmnipayProviderType = "Dummy" | "Mollie" | "PayPal_Express" | "PayPal_ExpressInContext" | "PayPal_Pro" | "PayPal_Rest" | "Stripe";
+	export type OmnipayProviderType = "Dummy" | "Mollie" | "PayPal" | "Stripe";
 	export type OrderSortingType = "ASC" | "DESC";
 	export type PaymentStatusType = "pending" | "cancelled" | "failed" | "refunded" | "processing" | "offline" | "completed" | "closed";
 	export type PhotoLayoutType = "square" | "justified" | "masonry" | "grid";
@@ -271,6 +271,8 @@ declare namespace App.Http.Resources.Embed {
 		id: string;
 		title: string | null;
 		description: string | null;
+		is_video: boolean;
+		duration: string | null;
 		size_variants: App.Http.Resources.Models.SizeVariantsResouce;
 		exif: { [key: string]: string | null };
 	};
@@ -388,8 +390,10 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		title: string;
 		dropbox_api_key: string;
 		is_se_enabled: boolean;
+		is_pro_enabled: boolean;
 		is_se_preview_enabled: boolean;
 		is_se_info_hidden: boolean;
+		is_se_expired: boolean;
 		is_live_metrics_enabled: boolean;
 		is_basic_auth_enabled: boolean;
 		is_webauthn_enabled: boolean;
@@ -901,12 +905,15 @@ declare namespace App.Http.Resources.Shop {
 		payment_providers: App.Enum.OmnipayProviderType[];
 		mollie_profile_id: string;
 		stripe_public_key: string;
+		paypal_client_id: string;
 		is_test_mode: boolean;
+		is_lycheeorg_disclaimer_enabled: boolean;
 	};
 	export type CheckoutResource = {
 		is_success: boolean;
 		is_redirect: boolean;
 		redirect_url: string | null;
+		complete_url: string | null;
 		message: string;
 		order: App.Http.Resources.Shop.OrderResource | null;
 	};
@@ -939,6 +946,7 @@ declare namespace App.Http.Resources.Shop {
 		price: string;
 		size_variant_type: App.Enum.PurchasableSizeVariantType;
 		item_notes: string | null;
+		content_url: string | null;
 	};
 	export type OrderResource = {
 		id: number;
@@ -950,6 +958,7 @@ declare namespace App.Http.Resources.Shop {
 		amount: string;
 		paid_at: string | null;
 		created_at: string | null;
+		updated_at: string | null;
 		comment: string | null;
 		items: App.Http.Resources.Shop.OrderItemResource[] | null;
 		can_process_payment: boolean;

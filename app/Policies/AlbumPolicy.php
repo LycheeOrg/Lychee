@@ -17,9 +17,9 @@ use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\AccessPermission;
 use App\Models\Album;
 use App\Models\BaseAlbumImpl;
-use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\User;
+use App\Repositories\ConfigManager;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Support\Facades\Session;
 
@@ -146,11 +146,12 @@ class AlbumPolicy extends BasePolicy
 	 */
 	public function canAccessMap(?User $user, ?AbstractAlbum $album): bool
 	{
-		if (!Configs::getValueAsBool('map_display')) {
+		$config_manager = app(ConfigManager::class);
+		if (!$config_manager->getValueAsBool('map_display')) {
 			return false;
 		}
 
-		if ($user === null && !Configs::getValueAsBool('map_display_public')) {
+		if ($user === null && !$config_manager->getValueAsBool('map_display_public')) {
 			return false;
 		}
 
@@ -171,7 +172,9 @@ class AlbumPolicy extends BasePolicy
 	{
 		// The root album always uses the global setting
 		if ($abstract_album === null) {
-			return Configs::getValueAsBool('grants_download');
+			$config_manager = app(ConfigManager::class);
+
+			return $config_manager->getValueAsBool('grants_download');
 		}
 
 		// User is logged in
@@ -314,7 +317,9 @@ class AlbumPolicy extends BasePolicy
 	public function canAccessFullPhoto(?User $user, ?AbstractAlbum $abstract_album): bool
 	{
 		if ($abstract_album === null || $abstract_album instanceof BaseSmartAlbum) {
-			return Configs::getValueAsBool('grants_full_photo_access');
+			$config_manager = app(ConfigManager::class);
+
+			return $config_manager->getValueAsBool('grants_full_photo_access');
 		}
 
 		/** @var BaseAlbum $abstract_album */
@@ -440,7 +445,8 @@ class AlbumPolicy extends BasePolicy
 			return true;
 		}
 
-		if (Configs::getValueAsBool('share_button_visible')) {
+		$config_manager = app(ConfigManager::class);
+		if ($config_manager->getValueAsBool('share_button_visible')) {
 			return true;
 		}
 
@@ -524,7 +530,9 @@ class AlbumPolicy extends BasePolicy
 	 */
 	public function canImportFromServer(User $user): bool
 	{
-		return $user->id === Configs::getValueAsInt('owner_id') &&
+		$config_manager = app(ConfigManager::class);
+
+		return $user->id === $config_manager->getValueAsInt('owner_id') &&
 			config('features.disable-import-from-server', true) === false;
 	}
 
@@ -591,7 +599,8 @@ class AlbumPolicy extends BasePolicy
 			return false;
 		}
 
-		$access_level = Configs::getValueAsEnum('metrics_access', MetricsAccess::class);
+		$config_manager = app(ConfigManager::class);
+		$access_level = $config_manager->getValueAsEnum('metrics_access', MetricsAccess::class);
 
 		return match ($access_level) {
 			MetricsAccess::PUBLIC => true,

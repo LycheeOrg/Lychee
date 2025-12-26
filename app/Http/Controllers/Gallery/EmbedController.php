@@ -15,7 +15,6 @@ use App\Http\Requests\Embed\EmbededRequest;
 use App\Http\Resources\Embed\EmbedAlbumResource;
 use App\Http\Resources\Embed\EmbedStreamResource;
 use App\Models\Album;
-use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
@@ -86,7 +85,7 @@ class EmbedController extends Controller
 		$photos = $this->findPublicPhotos($request->limit ?? 100, $request->offset, $request->sort ?? 'desc');
 
 		// Get site title from configuration
-		$site_title = strval(Configs::getValue('site_title') ?? 'Lychee');
+		$site_title = strval($request->configs()->getValue('site_title') ?? 'Lychee');
 
 		return EmbedStreamResource::fromPhotos($site_title, $photos);
 	}
@@ -114,7 +113,7 @@ class EmbedController extends Controller
 		$this->photo_query_policy->applySearchabilityFilter(
 			query: $photos_query,
 			origin: null,
-			include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_rss')
+			include_nsfw: !request()->configs()->getValueAsBool('hide_nsfw_in_rss')
 		);
 
 		// Order by EXIF taken_at (with fallback to created_at) with specified sort order

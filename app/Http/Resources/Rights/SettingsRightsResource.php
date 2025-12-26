@@ -13,7 +13,6 @@ use App\Models\UserGroup;
 use App\Policies\SettingsPolicy;
 use App\Policies\UserGroupPolicy;
 use Illuminate\Support\Facades\Gate;
-use LycheeVerify\Verify;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
@@ -34,6 +33,6 @@ class SettingsRightsResource extends Data
 		$this->can_see_diagnostics = Gate::check(SettingsPolicy::CAN_SEE_DIAGNOSTICS, [Configs::class]);
 		$this->can_update = Gate::check(SettingsPolicy::CAN_UPDATE, [Configs::class]);
 		$this->can_access_dev_tools = Gate::check(SettingsPolicy::CAN_ACCESS_DEV_TOOLS, [Configs::class]);
-		$this->can_acess_user_groups = resolve(Verify::class)->check() && Gate::check(UserGroupPolicy::CAN_LIST, [UserGroup::class]);
+		$this->can_acess_user_groups = request()->verify()->check() && Gate::check(UserGroupPolicy::CAN_LIST, [UserGroup::class]);
 	}
 }

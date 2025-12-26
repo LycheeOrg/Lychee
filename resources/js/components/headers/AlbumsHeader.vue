@@ -61,10 +61,10 @@
 				<template v-for="(item, idx) in menu" :key="`menu-item-${idx}`">
 					<template v-if="item.type === 'link'">
 						<!-- @vue-ignore -->
-						<Button as="router-link" :to="item.to" :icon="item.icon" class="border-none" severity="secondary" text />
+						<Button as="router-link" :to="item.to" :icon="item.icon" class="border-none" :severity="item.severity ?? 'secondary'" text />
 					</template>
 					<template v-else>
-						<Button :icon="item.icon" class="border-none" severity="secondary" text @click="item.callback" />
+						<Button :icon="item.icon" class="border-none" :severity="item.severity ?? 'secondary'" text @click="item.callback" />
 					</template>
 				</template>
 				<!-- Not logged in. -->
@@ -134,6 +134,7 @@ import { useFavouriteStore } from "@/stores/FavouriteState";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
 import { useAlbumsStore } from "@/stores/AlbumsState";
 import { useUserStore } from "@/stores/UserState";
+import { useOrderManagementStore } from "@/stores/OrderManagement";
 
 const props = defineProps<{
 	title: string;
@@ -150,6 +151,7 @@ const lycheeStore = useLycheeStateStore();
 const togglableStore = useTogglablesStateStore();
 const favourites = useFavouriteStore();
 const albumsStore = useAlbumsStore();
+const orderManagementStore = useOrderManagementStore();
 
 const { dropbox_api_key, is_favourite_enabled, is_se_preview_enabled, is_live_metrics_enabled, is_registration_enabled } = storeToRefs(lycheeStore);
 const { is_login_open, is_upload_visible, is_create_album_visible, is_create_tag_album_visible, is_metrics_open } = storeToRefs(togglableStore);
@@ -234,11 +236,20 @@ type Callback = {
 type Item = {
 	icon: string;
 	if: boolean;
+	severity?: string;
 };
 type MenuRight = (Item & Link & { key: string }) | (Item & Callback & { key: string });
 
 const menu = computed(() =>
 	[
+		{
+			to: { name: "basket" },
+			type: "link",
+			icon: "pi pi-shopping-cart",
+			severity: orderManagementStore.order?.status === "processing" ? "danger" : "secondary",
+			if: orderManagementStore.hasItems,
+			key: "basket",
+		},
 		{
 			to: { name: "favourites" },
 			type: "link",

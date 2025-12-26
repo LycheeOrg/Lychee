@@ -10,7 +10,6 @@ namespace App\Http\Resources\Traits;
 
 use App\Contracts\Models\AbstractAlbum;
 use App\Http\Resources\Models\PhotoResource;
-use App\Models\Configs;
 use Illuminate\Support\Collection;
 
 /**
@@ -34,7 +33,7 @@ trait HasPrepPhotoCollection
 			$previous_photo = $photo;
 		});
 
-		if ($this->photos->count() > 1 && Configs::getValueAsBool('photos_wraparound')) {
+		if ($this->photos->count() > 1 && request()->configs()->getValueAsBool('photos_wraparound')) {
 			$this->photos->first()->previous_photo_id = $this->photos->last()->id;
 			$this->photos->last()->next_photo_id = $this->photos->first()->id;
 		}

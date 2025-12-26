@@ -25,7 +25,7 @@ class SizeVariantFactory extends Factory
 	/**
 	 * The name of the factory's corresponding model.
 	 *
-	 * @var string
+	 * @var class-string<SizeVariant>
 	 */
 	protected $model = SizeVariant::class;
 

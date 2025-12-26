@@ -85,7 +85,6 @@ class PhotoMoveTest extends BaseApiWithDataTest
 
 	public function testMovePhotoAuthorizedOwnerUnosorted(): void
 	{
-		$this->clearCachedSmartAlbums();
 		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album', ['album_id' => 'unsorted']);
 		$this->assertOk($response);
 		$response->assertJsonCount(1, 'resource.photos');
@@ -108,7 +107,6 @@ class PhotoMoveTest extends BaseApiWithDataTest
 		$response->assertJsonCount(1, 'resource.photos');
 		$response->assertDontSee($this->photo1->id);
 
-		$this->clearCachedSmartAlbums();
 		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album', ['album_id' => 'unsorted']);
 		$this->assertOk($response);
 		$response->assertJsonCount(2, 'resource.photos');

@@ -44,7 +44,7 @@ class FromUrlRequest extends BaseApiRequest implements HasAlbum
 		return [
 			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
 			RequestAttribute::URLS_ATTRIBUTE => 'required|array|min:1',
-			RequestAttribute::URLS_ATTRIBUTE . '.*' => ['required', 'string', new PhotoUrlRule()],
+			RequestAttribute::URLS_ATTRIBUTE . '.*' => ['required', 'string', new PhotoUrlRule($this->configs())],
 		];
 	}
 

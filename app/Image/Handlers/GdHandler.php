@@ -18,6 +18,7 @@ use App\Exceptions\Internal\LycheeDomainException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
 use App\Image\Files\InMemoryBuffer;
+use App\Repositories\ConfigManager;
 use Safe\Exceptions\ImageException;
 use function Safe\imagealphablending;
 use function Safe\imagecopyresampled;
@@ -241,9 +242,12 @@ class GdHandler extends BaseImageHandler
 			// and if the file supports seekable streams
 			$in_memory_buffer = new InMemoryBuffer();
 
+			$config_manager = resolve(ConfigManager::class);
+			$compression_quality = $config_manager->getValueAsInt('compression_quality');
+
 			match ($this->gd_image_type) {
 				IMAGETYPE_JPEG,
-				IMAGETYPE_JPEG2000 => imagejpeg($this->gd_image, $in_memory_buffer->stream(), $this->compression_quality),
+				IMAGETYPE_JPEG2000 => imagejpeg($this->gd_image, $in_memory_buffer->stream(), $compression_quality),
 				IMAGETYPE_PNG => imagepng($this->gd_image, $in_memory_buffer->stream()),
 				IMAGETYPE_GIF => imagegif($this->gd_image, $in_memory_buffer->stream()),
 				IMAGETYPE_WEBP => imagewebp($this->gd_image, $in_memory_buffer->stream()),
@@ -254,7 +258,7 @@ class GdHandler extends BaseImageHandler
 			$file->close();
 			$in_memory_buffer->close();
 
-			return parent::applyLosslessOptimizationConditionally($file) ?? $stream_stat;
+			return $this->applyLosslessOptimizationConditionally($file) ?? $stream_stat;
 		} catch (\ErrorException $e) {
 			throw new MediaFileOperationException('Failed to save image', $e);
 		}
@@ -322,7 +326,6 @@ class GdHandler extends BaseImageHandler
 			$this->fastImageCopyResampled($cloned_gd_image, $this->gd_image, 0, 0, 0, 0, $width, $height, $src_dim->width, $src_dim->height);
 
 			$clone = new self();
-			$clone->compression_quality = $this->compression_quality;
 			$clone->gd_image = $cloned_gd_image;
 			$clone->gd_image_type = $this->gd_image_type;
 
@@ -363,7 +366,6 @@ class GdHandler extends BaseImageHandler
 			$this->fastImageCopyResampled($cloned_gd_image, $this->gd_image, 0, 0, $x, $y, $dst_dim->width, $dst_dim->height, $width, $height);
 
 			$clone = new self();
-			$clone->compression_quality = $this->compression_quality;
 			$clone->gd_image = $cloned_gd_image;
 			$clone->gd_image_type = $this->gd_image_type;
 
@@ -514,7 +516,6 @@ class GdHandler extends BaseImageHandler
 			imagefilter($cloned_gd_image, IMG_FILTER_COLORIZE, 0, 0, 0, $alpha); // 5th arg is alpha (0 opaque .. 127 fully transparent)
 
 			$clone = new self();
-			$clone->compression_quality = $this->compression_quality;
 			$clone->gd_image = $cloned_gd_image;
 			$clone->gd_image_type = $this->gd_image_type;
 

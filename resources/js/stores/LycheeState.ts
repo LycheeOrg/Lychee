@@ -72,8 +72,10 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 
 		// Lychee Supporter Edition
 		is_se_enabled: false,
+		is_pro_enabled: false,
 		is_se_preview_enabled: false,
 		is_se_info_hidden: false,
+		is_se_expired: false,
 		is_live_metrics_enabled: false,
 
 		// Settings toggles
@@ -89,7 +91,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		is_swipe_vertically_to_go_back_enabled: true,
 	}),
 	actions: {
-		load(): Promise<void> {
+		async load(): Promise<void> {
 			// Check if already initialized
 			if (this.is_init) {
 				return Promise.resolve();
@@ -97,8 +99,13 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 
 			// semaphore to avoid multiple calls
 			if (this.is_loading) {
+				while (this.is_loading) {
+					await new Promise((resolve) => setTimeout(resolve, 100));
+				}
+
 				return Promise.resolve();
 			}
+
 			this.is_loading = true;
 
 			return InitService.fetchInitData()
@@ -143,8 +150,10 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.is_webauthn_enabled = data.is_webauthn_enabled;
 
 					this.is_se_enabled = data.is_se_enabled;
+					this.is_pro_enabled = data.is_pro_enabled;
 					this.is_se_preview_enabled = data.is_se_preview_enabled;
 					this.is_se_info_hidden = data.is_se_info_hidden;
+					this.is_se_expired = data.is_se_expired;
 					this.is_live_metrics_enabled = data.is_live_metrics_enabled;
 					this.number_albums_per_row_mobile = data.number_albums_per_row_mobile;
 					this.photo_thumb_info = data.photo_thumb_info;
@@ -172,6 +181,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 				.catch((error) => {
 					// In this specific case, even though it has been possibly disabled, we really need to see the error.
 					this.is_debug_enabled = true;
+					this.is_loading = false;
 
 					const event = new CustomEvent("error", { detail: error.response.data });
 					window.dispatchEvent(event);

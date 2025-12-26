@@ -71,7 +71,6 @@ class PhotoAddTest extends BaseApiWithDataTest
 		$response = $this->deleteJson('Photo', ['photo_ids' => [$response->json('resource.photos.0.id')], 'from_id' => 'unsorted']);
 		$this->assertNoContent($response);
 
-		$this->clearCachedSmartAlbums();
 		$response = $this->getJsonWithData('Album', ['album_id' => 'unsorted']);
 		$this->assertOk($response);
 		$response->assertJsonCount(1, 'resource.photos');
@@ -83,14 +82,12 @@ class PhotoAddTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->admin)->upload('Photo', filename: TestConstants::SAMPLE_FILE_NIGHT_IMAGE);
 		$this->assertCreated($response);
 
-		$this->clearCachedSmartAlbums();
 		$response = $this->getJsonWithData('Album', ['album_id' => 'unsorted']);
 		$this->assertOk($response);
 
 		$response = $this->actingAs($this->admin)->upload('Photo', filename: TestConstants::SAMPLE_FILE_NIGHT_IMAGE);
 		$this->assertCreated($response);
 
-		$this->clearCachedSmartAlbums();
 		$response = $this->getJsonWithData('Album', ['album_id' => 'unsorted']);
 		$this->assertOk($response);
 		$id1 = $response->json('resource.photos.0.id');
@@ -120,7 +117,6 @@ class PhotoAddTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->admin)->upload('Photo', filename: TestConstants::SAMPLE_FILE_TRAIN_VIDEO);
 		$this->assertCreated($response);
 
-		$this->clearCachedSmartAlbums();
 		$response = $this->getJsonWithData('Album', ['album_id' => 'unsorted']);
 		$this->assertOk($response);
 		$photo = $response->json('resource.photos.0');
@@ -140,7 +136,6 @@ class PhotoAddTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->admin)->upload('Photo', filename: TestConstants::SAMPLE_FILE_TRAIN_IMAGE);
 		$this->assertCreated($response);
 
-		$this->clearCachedSmartAlbums();
 		$response = $this->getJsonWithData('Album', ['album_id' => 'unsorted']);
 		$this->assertOk($response);
 		$photo = $response->json('resource.photos.0');
@@ -158,7 +153,6 @@ class PhotoAddTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->admin)->upload('Photo', filename: TestConstants::SAMPLE_FILE_GMP_IMAGE);
 		$this->assertCreated($response);
 
-		$this->clearCachedSmartAlbums();
 		$response = $this->getJsonWithData('Album', ['album_id' => 'unsorted']);
 		$this->assertOk($response);
 		$id = $response->json('resource.photos.0.id');

@@ -9,11 +9,14 @@ The `purchasables` table defines which photos or albums are available for purcha
 
 - `id`: Primary key (int)
 - `photo_id`: Foreign key to photos table (string, nullable)
-- `album_id`: Foreign key to albums table (string, nullable)
+- `album_id`: Foreign key to albums table (string, NOT NULL) - every purchasable must belong to an album
 - `description`: Public description shown to customers (string, nullable)
 - `owner_notes`: Private notes for the owner (string, nullable)  
 - `is_active`: Boolean indicating if the item is currently purchasable
+- Unique constraint on `[album_id, photo_id]` to prevent duplicates
 - No timestamps (timestamps = false)
+
+Note: When `photo_id` is NULL, the purchasable applies to the entire album. When `photo_id` is set, it defines photo-specific pricing that overrides album-level settings.
 
 ### Purchasable Prices Table
 The `purchasable_prices` table stores pricing for size variant and license combinations:
@@ -47,11 +50,13 @@ The `order_items` table represents individual items within an order:
 - `purchasable_id`: Foreign key to purchasables table (int, nullable)
 - `album_id`: Foreign key to albums table (string, nullable)
 - `photo_id`: Foreign key to photos table (string, nullable)
+- `size_variant_id`: Foreign key to size_variants table (int, nullable) - for linking fulfilled content
 - `title`: Item title at time of purchase (string)
 - `license_type`: PurchasableLicenseType enum
 - `price_cents`: Money object using MoneyCast
 - `size_variant_type`: PurchasableSizeVariantType enum
 - `item_notes`: Item-specific notes (string, nullable)
+- `download_link`: Custom download URL (string, nullable) - for FULL variants or special cases
 - No timestamps (timestamps = false)
 
 ## Models
@@ -123,17 +128,23 @@ Key attributes:
 - `purchasable_id`: Foreign key to purchasables table (nullable)
 - `album_id`: Foreign key to albums table (nullable)
 - `photo_id`: Foreign key to photos table (nullable)
+- `size_variant_id`: Foreign key to size_variants table (nullable) - set during fulfillment
 - `title`: Item title at time of purchase
 - `license_type`: PurchasableLicenseType enum
 - `price_cents`: Money object using MoneyCast
 - `size_variant_type`: PurchasableSizeVariantType enum
 - `item_notes`: Item-specific notes (nullable)
+- `download_link`: Custom download URL (nullable) - for FULL variants or special delivery
+
+Key methods:
+- `getContentUrlAttribute()`: Get the download URL for this item (uses download_link if set, otherwise size_variant's URL)
 
 Relationships:
 - `order()`: BelongsTo relationship to Order
 - `purchasable()`: BelongsTo relationship to Purchasable
 - `photo()`: BelongsTo relationship to Photo
 - `album()`: BelongsTo relationship to Album
+- `size_variant()`: BelongsTo relationship to SizeVariant
 
 ## Services
 
@@ -163,14 +174,19 @@ Key methods:
 - `getItemCount()`: Get number of items in basket
 
 ### OrderService
-Handles order creation and processing.
+Handles order creation, processing, and fulfillment.
 
 Key methods:
-- `createFromBasket(string $email)`: Create order from current basket contents
-- `processPayment(Order $order, array $paymentData)`: Process payment for an order
-- `markAsCompleted(Order $order, string $transactionId)`: Mark order as completed
-- `markAsCancelled(Order $order)`: Mark order as cancelled
-- `getByTransactionId(string $transactionId)`: Find order by transaction ID
+- `createOrder(?User $user, ?string $comment)`: Create a new order with PENDING status
+- `addPhotoToOrder(Order $order, Photo $photo, string $album_id, PurchasableSizeVariantType $size_variant, PurchasableLicenseType $license_type, ?string $notes)`: Add a photo to an order
+- `refreshBasket(Order $basket)`: Refresh order data and recalculate total
+- `getAll()`: Get all orders (filtered by user permissions)
+- `markAsPaid(Order $order)`: Mark offline order as paid and trigger fulfillment
+- `markAsDelivered(Order $order)`: Manually mark completed order as delivered (CLOSED status)
+- `clearOldOrders()`: Delete abandoned guest orders older than 2 weeks
+- `countOldOrders()`: Count orders eligible for deletion
+- `selectCompleteOrderNeedingFulfillmentQuery()`: Query builder for COMPLETED orders with unfulfilled items
+- `selectClosedOrderNeedingFulfillmentQuery()`: Query builder for CLOSED orders with unfulfilled items
 
 ### CheckoutService
 Handles the checkout process and payment integration.
@@ -181,6 +197,50 @@ Key methods:
 - `processCallback(string $provider, array $data)`: Handle payment provider callback
 - `validateOrder(Order $order)`: Validate order before payment
 - `getOfflineConfiguration()`: Get offline payment configuration
+
+## Order Fulfillment System
+
+The shop implementation includes a comprehensive fulfillment system that automatically delivers purchased content to customers.
+
+### Fulfillment Workflow
+
+1. **Order Completion**: When payment is confirmed, order status changes to COMPLETED
+2. **Auto-Fulfillment Trigger**: If `webshop_auto_fulfill_enabled` is true, OrderCompleted event is dispatched
+3. **Content Linking**: OrderCompletedListener links order items to size variants or download links
+4. **Status Update**: If all items are fulfilled, order status changes to CLOSED
+
+### OrderItem Fulfillment States
+
+An order item is considered fulfilled when EITHER:
+- `size_variant_id` is set (linked to downloadable content in Lychee)
+- `download_link` is set (custom URL for external delivery)
+
+An order item is unfulfilled when BOTH fields are NULL.
+
+### Fulfillment Methods
+
+- **Automatic**: Size variants (MEDIUM, MEDIUM2X, ORIGINAL) are linked automatically if they exist
+- **Manual**: FULL variants require photographer to export and upload, then can be:
+  - Linked to a size variant (if uploaded to Lychee)
+  - Provided via download_link (external hosting)
+  - Manually marked as delivered
+
+### Order Status Transitions
+
+- **PENDING**: Order created, items being added
+- **PROCESSING**: Payment in progress with provider
+- **OFFLINE**: Manual payment method selected, awaiting confirmation
+- **COMPLETED**: Payment received, awaiting fulfillment (some items may still be unfulfilled)
+- **CLOSED**: Payment received AND all items fulfilled/delivered
+- **CANCELLED**: Order cancelled by user or system
+- **FAILED**: Payment failed
+- **REFUNDED**: Payment refunded
+
+### Maintenance Tasks
+
+The fulfillment system includes maintenance tasks:
+- **FulfillOrders**: Processes COMPLETED and CLOSED orders to ensure all items are fulfilled
+- **FlushOldOrders**: Removes abandoned guest orders older than 2 weeks
 
 ## Pricing Hierarchy
 
@@ -301,7 +361,13 @@ All responses use Spatie Data resources with consistent structure:
 - Success responses include appropriate HTTP status codes
 - Error responses follow Laravel's validation error format
 - Money values are formatted consistently across all endpoints
+## Basket vs Order Terminology
 
+In the implementation, the distinction between "basket" and "order" is a semantic one:
+- **Basket**: An order with `status = PENDING` that can be modified (add/remove items)
+- **Order**: The same entity, but may have different statuses indicating progression through payment
+
+The `BasketService` validates that orders are in PENDING status before allowing modifications. Once payment begins, the status changes to PROCESSING, OFFLINE, or COMPLETED, and the order can no longer be modified as a basket.
 ## Size Variants and License Types
 
 ### Size Variants
@@ -445,7 +511,7 @@ The checkout process implements multiple layers of validation to ensure security
 - Order must be in a state that allows checkout (`$this->order->canCheckout()`)
 
 **Field Validation:**
-- `provider`: Must be a valid `OmnipayProviderType` enum value (DUMMY, STRIPE, PAYPAL_EXPRESS)
+- `provider`: Must be a valid `OmnipayProviderType` enum value (DUMMY, STRIPE, PAYPAL)
 - `email`: Must be a valid email format when provided
 
 **Order Checkout Eligibility (`Order::canCheckout()`):**

@@ -2,22 +2,25 @@ includes:
 	- vendor/larastan/larastan/extension.neon
 	- vendor/lychee-org/phpstan-lychee/phpstan.neon
 	- phpstan-baseline.neon
+
 parameters:
 	level: 3
 	tips:
 		treatPhpDocTypesAsCertain: false
 	treatPhpDocTypesAsCertain: true
+	checkOctaneCompatibility: true
 	paths:
 		- app
 		- config
 		- lang
+		- database/factories
 		- database/migrations
 		- scripts
 	excludePaths:
 		- app/Services/Archives # This is creating errors depending if version 2.1 or 3.1 is installed...
 	stubFiles:
-		- phpstan/stubs/image.stub
 		- phpstan/stubs/imageexception.stub
+		- phpstan/stubs/image.stub
 	ignoreErrors:
 		-
 			message: '#Cast to bool is forbidden.#'
@@ -28,3 +31,7 @@ parameters:
 		- '#Dynamic call to static method App\\Eloquent\\FixedQueryBuilder.*#'
 		- '#.*stdClass>#'
 		- '#.*contravariant.*#'
+		-
+			message: '#Dynamic call to static method App\\Http\\Requests\\.*::verify\(\)\.#'
+		-
+			message: '#Dynamic call to static method App\\Http\\Requests\\.*::configs\(\)\.#'

@@ -29,7 +29,12 @@ class SupporterVerifyier implements VerifyInterface
 		return true;
 	}
 
-	public function is_plus(): bool
+	public function is_pro(): bool
+	{
+		return false;
+	}
+
+	public function is_signature(): bool
 	{
 		return false;
 	}

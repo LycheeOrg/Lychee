@@ -7,7 +7,7 @@
 			'w-0 ltr:translate-x-full rtl:-translate-x-full': !areDetailsOpen,
 		}"
 	>
-		<Card v-if="photoStore.photo" id="lychee_sidebar" class="w-[380px] h-full ltr:pr-4 rtl:pl-4 break-words">
+		<Card v-if="photoStore.photo" id="lychee_sidebar" class="w-[380px] h-full ltr:pr-4 rtl:pl-4 wrap-break-word">
 			<template #content>
 				<div class="flex flex-col mt-8">
 					<h1 class="text-center text-2xl font-bold my-4">

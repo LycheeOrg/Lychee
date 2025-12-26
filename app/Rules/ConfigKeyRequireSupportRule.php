@@ -9,6 +9,7 @@
 namespace App\Rules;
 
 use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use Illuminate\Contracts\Validation\ValidationRule;
 use LycheeVerify\Contract\VerifyInterface;
 
@@ -32,7 +33,7 @@ final class ConfigKeyRequireSupportRule implements ValidationRule
 		}
 
 		/** @var string $value */
-		if (!array_key_exists($value, Configs::get())) {
+		if (!resolve(ConfigManager::class)->hasKey($value)) {
 			// This is taken care of in ConfigKeyRule
 			return;
 		}
@@ -41,6 +42,12 @@ final class ConfigKeyRequireSupportRule implements ValidationRule
 		$config = Configs::where('key', '=', $value)->firstOrFail();
 		if ($config->level === 1 && !$this->verify->is_supporter()) {
 			$fail('Error: This functionality is only available in the Supporter Edition of Lychee. See here: https://lycheeorg.dev/get-supporter-edition/');
+
+			return;
+		}
+
+		if ($config->level === 2 && !$this->verify->is_pro()) {
+			$fail('Error: This functionality is only available in the Pro Edition of Lychee. See here: https://lycheeorg.dev/get-supporter-edition/');
 
 			return;
 		}

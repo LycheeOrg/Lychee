@@ -10,11 +10,11 @@ namespace App\Actions\Tag;
 
 use App\Http\Resources\Models\PhotoResource;
 use App\Http\Resources\Tags\TagWithPhotosResource;
-use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\Tag;
 use App\Models\User;
 use App\Policies\PhotoQueryPolicy;
+use App\Repositories\ConfigManager;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
@@ -30,6 +30,7 @@ class GetTagWithPhotos
 {
 	public function __construct(
 		private PhotoQueryPolicy $photo_query_policy,
+		protected readonly ConfigManager $config_manager,
 	) {
 	}
 
@@ -54,7 +55,7 @@ class GetTagWithPhotos
 		$photos_query = $this->photo_query_policy->applySensitivityFilter(
 			query: $base_query,
 			origin: null,
-			include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_tag_listing')
+			include_nsfw: !$this->config_manager->getValueAsBool('hide_nsfw_in_tag_listing')
 		);
 
 		/** @var Collection<int,Photo> $photos */

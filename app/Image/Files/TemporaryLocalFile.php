@@ -39,8 +39,10 @@ class TemporaryLocalFile extends NativeLocalFile
 	 *
 	 * @throws MediaFileOperationException
 	 */
-	public function __construct(string $file_extension, string $fake_base_name = '')
-	{
+	public function __construct(
+		string $file_extension,
+		string $fake_base_name = '',
+	) {
 		$temp_file_path = $this->load($file_extension);
 		parent::__construct($temp_file_path);
 		$this->fakeBaseName = $fake_base_name;

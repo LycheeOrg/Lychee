@@ -27,13 +27,12 @@ class RegisterTest extends BaseApiWithDataTest
 	{
 		parent::setUp();
 		Configs::set('user_registration_enabled', '1');
-		Configs::invalidateCache();
 	}
 
 	public function tearDown(): void
 	{
 		Configs::set('user_registration_enabled', '1');
-		Configs::invalidateCache();
+
 		parent::tearDown();
 	}
 
@@ -100,7 +99,6 @@ class RegisterTest extends BaseApiWithDataTest
 	public function testRegistrationForbiddenWhenDisabled()
 	{
 		Configs::set('user_registration_enabled', '0');
-		Configs::invalidateCache();
 
 		$response = $this->putJson('/Profile', [
 			'username' => 'anotheruser',

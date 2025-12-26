@@ -77,6 +77,7 @@ return [
             'share' => 'مشاركة الألبوم',
             'embed' => 'تضمين الألبوم',
             'move' => 'نقل الألبوم',
+            'shop' => 'Shop Management',
             'danger' => 'منطقة الخطر',
         ],
         'hero' => [

@@ -26,7 +26,6 @@ class FlowInitTest extends BaseApiWithDataTest
 	public function testGetAnonymous(): void
 	{
 		Configs::set('flow_public', false);
-		Configs::invalidateCache();
 
 		$response = $this->getJson('Flow::init');
 		$this->assertOk($response);
@@ -45,7 +44,6 @@ class FlowInitTest extends BaseApiWithDataTest
 		]);
 
 		Configs::set('flow_public', true);
-		Configs::invalidateCache();
 
 		$response = $this->getJson('Flow::init');
 		$this->assertOk($response);
@@ -64,7 +62,6 @@ class FlowInitTest extends BaseApiWithDataTest
 		]);
 
 		Configs::set('flow_public', false);
-		Configs::invalidateCache();
 	}
 
 	public function testGetUser(): void

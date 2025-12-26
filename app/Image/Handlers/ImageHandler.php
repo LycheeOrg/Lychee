@@ -15,7 +15,7 @@ use App\DTO\ImageDimension;
 use App\Exceptions\Handler;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\MediaFileOperationException;
-use App\Models\Configs;
+use App\Repositories\ConfigManager;
 
 class ImageHandler extends BaseImageHandler implements ImageHandlerInterface
 {
@@ -40,8 +40,8 @@ class ImageHandler extends BaseImageHandler implements ImageHandlerInterface
 	 */
 	public function __construct()
 	{
-		parent::__construct();
-		if (Configs::hasImagick()) {
+		$config_manager = resolve(ConfigManager::class);
+		if ($config_manager->hasImagick()) {
 			$this->engine_classes[] = ImagickHandler::class;
 		}
 		$this->engine_classes[] = GdHandler::class;

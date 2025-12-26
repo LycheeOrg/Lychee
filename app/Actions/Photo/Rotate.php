@@ -50,8 +50,10 @@ class Rotate
 	 * @throws IllegalOrderOfOperationException
 	 * @throws FrameworkException
 	 */
-	public function __construct(Photo $photo, int $direction)
-	{
+	public function __construct(
+		Photo $photo,
+		int $direction,
+	) {
 		try {
 			if ($photo->isVideo()) {
 				throw new MediaFileUnsupportedException('Rotation of a video is unsupported');

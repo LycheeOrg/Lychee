@@ -15,7 +15,6 @@ use Illuminate\Database\Eloquent\Builder;
 
 class UntaggedAlbum extends BaseSmartAlbum
 {
-	private static ?self $instance = null;
 	public const ID = SmartAlbumType::UNTAGGED->value;
 
 	/**
@@ -32,6 +31,6 @@ class UntaggedAlbum extends BaseSmartAlbum
 
 	public static function getInstance(): self
 	{
-		return self::$instance ??= new self();
+		return new self();
 	}
 }

@@ -20,6 +20,7 @@ namespace Tests\Traits;
 
 use LycheeVerify\Contract\VerifyInterface;
 use Tests\Constants\FreeVerifyier;
+use Tests\Constants\ProVerifyier;
 use Tests\Constants\SupporterVerifyier;
 
 trait RequireSupport
@@ -32,5 +33,10 @@ trait RequireSupport
 	final protected function getSupporter(): VerifyInterface
 	{
 		return new SupporterVerifyier();
+	}
+
+	final protected function getPro(): VerifyInterface
+	{
+		return new ProVerifyier();
 	}
 }

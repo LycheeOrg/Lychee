@@ -27,7 +27,6 @@ class OverridePermissionsTest extends BaseApiWithDataTest
 	{
 		Configs::set('SA_override_visibility', true);
 		Configs::set('hide_nsfw_in_smart_albums', false);
-		Configs::invalidateCache();
 
 		$smart_albums = ['starred', 'recent', 'on_this_day', 'unsorted'];
 		foreach ($smart_albums as $album_id) {

@@ -23,11 +23,6 @@ use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleExce
 class Diagnostics extends Command
 {
 	/**
-	 * Add color to the command line output.
-	 */
-	private Colorize $col;
-
-	/**
 	 * The name and signature of the console command.
 	 *
 	 * @var string
@@ -48,11 +43,9 @@ class Diagnostics extends Command
 	 * @throws SymfonyConsoleException
 	 */
 	public function __construct(
-		Colorize $colorize,
+		private Colorize $col,
 	) {
 		parent::__construct();
-
-		$this->col = $colorize;
 	}
 
 	/**

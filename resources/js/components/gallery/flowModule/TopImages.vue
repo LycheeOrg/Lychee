@@ -9,7 +9,7 @@
 			v-for="(photo, idx) in props.photos.slice(0, 5)"
 			:key="`album-${props.albumId}-photo-${photo.id}`"
 			:class="{
-				'relative shrink-1 grow-1 flex-1/4 h-(--top-images-height)': !isShort,
+				'relative shrink grow flex-1/4 h-(--top-images-height)': !isShort,
 				'h-(--header-height)': isShort,
 			}"
 		>

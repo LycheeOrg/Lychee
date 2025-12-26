@@ -11,7 +11,7 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
 use App\Facades\Helpers;
-use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\Schema;
 use function Safe\exec;
 use Spatie\ImageOptimizer\Optimizers\Cwebp;
@@ -26,6 +26,10 @@ use Spatie\ImageOptimizer\Optimizers\Svgo;
  */
 class ImageOptCheck implements DiagnosticPipe
 {
+	public function __construct(protected ConfigManager $config_manager)
+	{
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -45,8 +49,7 @@ class ImageOptCheck implements DiagnosticPipe
 		$tools[] = new Pngquant();
 		$tools[] = new Svgo();
 
-		$settings = Configs::get();
-		if (!isset($settings['lossless_optimization']) || $settings['lossless_optimization'] !== '1') {
+		if (!$this->config_manager->getValueAsBool('lossless_optimization')) {
 			return $next($data);
 		}
 		// @codeCoverageIgnoreStart

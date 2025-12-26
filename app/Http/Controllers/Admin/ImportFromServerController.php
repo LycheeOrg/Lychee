@@ -21,7 +21,6 @@ use App\Http\Requests\Admin\ImportFromServerRequest;
 use App\Http\Resources\Admin\ImportDirectoryResource;
 use App\Http\Resources\Admin\ImportFromServerOptionsResource;
 use App\Http\Resources\Admin\ImportFromServerResource;
-use App\Models\Configs;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Log;
 
@@ -152,13 +151,13 @@ class ImportFromServerController extends Controller
 			skip_duplicates: $request->skip_duplicates,
 			import_via_symlink: $request->import_via_symlink,
 			resync_metadata: $request->resync_metadata,
-			shall_rename_photo_title: Configs::getValueAsBool('renamer_photo_title_enabled'),
-			shall_rename_album_title: Configs::getValueAsBool('renamer_album_title_enabled'),
+			shall_rename_photo_title: $request->configs()->getValueAsBool('renamer_photo_title_enabled'),
+			shall_rename_album_title: $request->configs()->getValueAsBool('renamer_album_title_enabled'),
 		);
 
 		return new Exec(
 			import_mode: $import_mode,
-			intended_owner_id: Configs::getValueAsInt('owner_id'),
+			intended_owner_id: $request->configs()->getValueAsInt('owner_id'),
 			delete_missing_photos: $request->delete_missing_photos,
 			delete_missing_albums: $request->delete_missing_albums,
 			is_dry_run: false,

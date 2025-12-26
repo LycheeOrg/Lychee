@@ -8,7 +8,7 @@
 
 namespace App\Metadata\Json;
 
-use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\Config;
 
 class ChangeLogsRequest extends ExternalRequestFunctions
@@ -19,9 +19,11 @@ class ChangeLogsRequest extends ExternalRequestFunctions
 	 */
 	public function __construct()
 	{
+		$config_manager = app(ConfigManager::class);
+
 		parent::__construct(
 			Config::get('urls.update.changelogs'),
-			Configs::getValueAsInt('update_check_every_days')
+			$config_manager->getValueAsInt('update_check_every_days')
 		);
 	}
 }

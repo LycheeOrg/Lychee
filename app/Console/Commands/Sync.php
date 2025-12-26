@@ -16,7 +16,7 @@ use App\Exceptions\EmptyFolderException;
 use App\Exceptions\InvalidDirectoryException;
 use App\Exceptions\UnexpectedException;
 use App\Models\Album;
-use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use Illuminate\Console\Command;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
@@ -52,19 +52,22 @@ class Sync extends Command
 	 */
 	protected $description = 'Sync a directory structure to Lychee, creating albums matching the folder hierarchy';
 
-	public function __construct()
-	{
+	public function __construct(
+		protected readonly ConfigManager $config_manager,
+	) {
 		// Fill signature with default values from user configuration
 		try {
+			$this->config_manager->load();
+
 			$this->signature = sprintf(
 				$this->signature,
 				DB::table('users')->where('may_administrate', true)->first()?->id ?? 1,
-				Configs::getValueAsString('delete_imported'),
-				Configs::getValueAsString('import_via_symlink'),
-				Configs::getValueAsString('skip_duplicates'),
-				Configs::getValueAsString('sync_delete_missing_photos'),
-				Configs::getValueAsString('sync_delete_missing_albums'),
-				Configs::getValueAsString('sync_dry_run'),
+				$this->config_manager->getValueAsString('delete_imported'),
+				$this->config_manager->getValueAsString('import_via_symlink'),
+				$this->config_manager->getValueAsString('skip_duplicates'),
+				$this->config_manager->getValueAsString('sync_delete_missing_photos'),
+				$this->config_manager->getValueAsString('sync_delete_missing_albums'),
+				$this->config_manager->getValueAsString('sync_dry_run'),
 			);
 		} catch (ConfigurationKeyMissingException|QueryException) {
 			// Catching this exception is necessary as artisan package:discover
@@ -213,8 +216,8 @@ class Sync extends Command
 			skip_duplicates: $skip_duplicates,
 			import_via_symlink: $import_via_symlink,
 			resync_metadata: $resync_metadata,
-			shall_rename_photo_title: Configs::getValueAsBool('renamer_photo_title_enabled'),
-			shall_rename_album_title: Configs::getValueAsBool('renamer_album_title_enabled'),
+			shall_rename_photo_title: $this->config_manager->getValueAsBool('renamer_photo_title_enabled'),
+			shall_rename_album_title: $this->config_manager->getValueAsBool('renamer_album_title_enabled'),
 		);
 	}
 

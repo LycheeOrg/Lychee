@@ -17,11 +17,9 @@ use Illuminate\Support\Facades\Hash;
 
 class Unlock
 {
-	private AlbumPolicy $album_policy;
-
-	public function __construct()
-	{
-		$this->album_policy = resolve(AlbumPolicy::class);
+	public function __construct(
+		private AlbumPolicy $album_policy,
+	) {
 	}
 
 	/**

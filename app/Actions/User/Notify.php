@@ -13,10 +13,10 @@ use App\Constants\PhotoAlbum as PA;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Album;
-use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\User;
 use App\Notifications\PhotoAdded;
+use App\Repositories\ConfigManager;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\MultipleRecordsFoundException;
 use Illuminate\Support\Facades\Auth;
@@ -38,7 +38,8 @@ class Notify
 	 */
 	public function do(Photo $photo): void
 	{
-		if (!Configs::getValueAsBool('new_photos_notification')) {
+		$config_manager = resolve(ConfigManager::class);
+		if (!$config_manager->getValueAsBool('new_photos_notification')) {
 			return;
 		}
 

@@ -13,14 +13,14 @@ use App\Models\RenamerRule;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Renamer>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\RenamerRule>
  */
 class RenamerRuleFactory extends Factory
 {
 	/**
 	 * The name of the factory's corresponding model.
 	 *
-	 * @var string
+	 * @var class-string<RenamerRule>
 	 */
 	protected $model = RenamerRule::class;
 

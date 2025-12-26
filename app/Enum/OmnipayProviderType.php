@@ -21,10 +21,7 @@ enum OmnipayProviderType: string
 
 	case DUMMY = 'Dummy';
 	case MOLLIE = 'Mollie';
-	case PAYPAL_EXPRESS = 'PayPal_Express';
-	case PAYPAL_EXPRESSINCONTEXT = 'PayPal_ExpressInContext';
-	case PAYPAL_PRO = 'PayPal_Pro';
-	case PAYPAL_REST = 'PayPal_Rest';
+	case PAYPAL = 'PayPal';
 	case STRIPE = 'Stripe';
 
 	/**
@@ -51,11 +48,8 @@ enum OmnipayProviderType: string
 		return match ($this) {
 			OmnipayProviderType::DUMMY => ['apiKey'],
 			OmnipayProviderType::MOLLIE => ['apiKey', 'profileId'],
-			OmnipayProviderType::STRIPE => ['apiKey', 'publishableKey'],
-			OmnipayProviderType::PAYPAL_REST => ['clientId', 'secret'],
-			OmnipayProviderType::PAYPAL_EXPRESS,
-			OmnipayProviderType::PAYPAL_PRO,
-			OmnipayProviderType::PAYPAL_EXPRESSINCONTEXT => ['username', 'password', 'signature'],
+			OmnipayProviderType::STRIPE => ['apiKey', 'publishableKey', 'disabled'], // we set disabled to prevent it from showing up.
+			OmnipayProviderType::PAYPAL => ['clientId', 'secret'],
 		};
 	}
 }

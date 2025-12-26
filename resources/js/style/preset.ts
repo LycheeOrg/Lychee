@@ -507,6 +507,7 @@ const LycheePrimeVueConfig: Preset = {
 					},
 					row: {
 						color: "{surface.700}",
+						hoverBackground: "color-mix(in srgb, {primary.50}, transparent 92%)",
 					},
 					bodyCell: {
 						borderColor: "{surface.300}",
@@ -517,7 +518,6 @@ const LycheePrimeVueConfig: Preset = {
 						color: "{surface.200}",
 						borderColor: "{surface.700}",
 					},
-
 					headerCell: {
 						borderColor: "{surface.700}",
 						background: "{surface.800}",
@@ -527,6 +527,8 @@ const LycheePrimeVueConfig: Preset = {
 					},
 					row: {
 						color: "{surface.300}",
+						hoverBackground: "color-mix(in srgb, {primary.50}, transparent 95%)",
+						hoverColor: "{surface.200}",
 					},
 					bodyCell: {
 						borderColor: "{surface.700}",
@@ -691,6 +693,50 @@ const LycheePrimeVueConfig: Preset = {
 					tablist: {
 						background: "transparent",
 						borderColor: "{surface.700}",
+					},
+				},
+			},
+		},
+		stepper: {
+			colorScheme: {
+				light: {
+					separator: {
+						background: "{surface.500}",
+						activeBackground: "{primary.500}",
+					},
+					stepNumber: {
+						background: "transparent",
+						activeBackground: "transparent",
+						activeBorderColor: "{primary.500}",
+						activeColor: "{primary.500}",
+					},
+					steppanel: {
+						background: "transparent",
+						color: "{surface.700}",
+					},
+					stepTitle: {
+						color: "{surface.700}",
+						activeColor: "{primary.500}",
+					},
+				},
+				dark: {
+					separator: {
+						background: "{surface.400}",
+						activeBackground: "{primary.400}",
+					},
+					stepTitle: {
+						color: "{surface.200}",
+						activeColor: "{primary.400}",
+					},
+					stepNumber: {
+						background: "transparent",
+						activeBackground: "transparent",
+						activeBorderColor: "{primary.400}",
+						activeColor: "{primary.400}",
+					},
+					steppanel: {
+						background: "transparent",
+						color: "{surface.300}",
 					},
 				},
 			},

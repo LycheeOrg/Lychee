@@ -8,7 +8,7 @@
 
 namespace App\Services;
 
-use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use Money\Currencies\ISOCurrencies;
 use Money\Currency;
 use Money\Formatter\DecimalMoneyFormatter;
@@ -21,6 +21,11 @@ use Money\Parser\DecimalMoneyParser;
  */
 class MoneyService
 {
+	public function __construct(
+		protected ConfigManager $config_manager,
+	) {
+	}
+
 	/**
 	 * Get the default currency code from config.
 	 *
@@ -28,7 +33,7 @@ class MoneyService
 	 */
 	public function getDefaultCurrencyCode(): string
 	{
-		return Configs::getValueAsString('webshop_currency');
+		return $this->config_manager->getValueAsString('webshop_currency');
 	}
 
 	/**

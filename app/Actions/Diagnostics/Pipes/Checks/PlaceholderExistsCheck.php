@@ -45,6 +45,7 @@ class PlaceholderExistsCheck implements DiagnosticPipe
 		}
 
 		/** @var object{num_placeholder:int,max_num_placeholder:int,num_unencoded_placeholder:int} $result */
+		/** @phpstan-ignore varTag.type */
 		$result = DB::query()
 		->selectSub(
 			SizeVariant::query()

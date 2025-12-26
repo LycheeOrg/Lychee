@@ -19,24 +19,24 @@
 namespace Tests\Webshop\Checkout;
 
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
-use Tests\Traits\RequireSE;
+use Tests\Traits\RequirePro;
 
 /**
  * Test cases for the CheckoutController.
  */
 class CheckoutControllerTest extends BaseApiWithDataTest
 {
-	use RequireSE;
+	use RequirePro;
 
 	public function setUp(): void
 	{
 		parent::setUp();
-		$this->requireSE();
+		$this->requirePro();
 	}
 
 	public function tearDown(): void
 	{
-		$this->resetSe();
+		$this->resetPro();
 		parent::tearDown();
 	}
 

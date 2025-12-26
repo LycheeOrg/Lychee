@@ -11,8 +11,8 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
 use App\Enum\SizeVariantType;
-use App\Models\Configs;
 use App\Models\SizeVariant;
+use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\Schema;
 
 /**
@@ -20,6 +20,11 @@ use Illuminate\Support\Facades\Schema;
  */
 class WatermarkerEnabledCheck implements DiagnosticPipe
 {
+	public function __construct(
+		protected readonly ConfigManager $config_manager,
+	) {
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -29,7 +34,7 @@ class WatermarkerEnabledCheck implements DiagnosticPipe
 			return $next($data);
 		}
 
-		if (!Configs::getValueAsBool('watermark_enabled')) {
+		if (!$this->config_manager->getValueAsBool('watermark_enabled')) {
 			return $next($data);
 		}
 
@@ -49,7 +54,7 @@ class WatermarkerEnabledCheck implements DiagnosticPipe
 	private function validateImagick(array &$data): void
 	{
 		$is_imagick_loaded = extension_loaded('imagick');
-		if (!Configs::getValueAsBool('imagick')) {
+		if (!$this->config_manager->getValueAsBool('imagick')) {
 			$data[] = DiagnosticData::warn(
 				'Watermarker: imagick is not enabled in your settings. Watermarking step will be skipped.',
 				self::class,
@@ -79,7 +84,7 @@ class WatermarkerEnabledCheck implements DiagnosticPipe
 	 */
 	private function validatePhotoId(array &$data): void
 	{
-		$watermark_photo_id = Configs::getValueAsString('watermark_photo_id');
+		$watermark_photo_id = $this->config_manager->getValueAsString('watermark_photo_id');
 		if ($watermark_photo_id === '') {
 			$data[] = DiagnosticData::warn(
 				'Watermarker: photo_id is not provided. Watermarking step will be skipped.',

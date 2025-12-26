@@ -28,7 +28,6 @@ trait CreatePhoto
 	{
 		$response = $this->actingAs($this->admin)->upload('Photo', filename: $filename);
 		$this->assertCreated($response);
-		$this->clearCachedSmartAlbums();
 		$response = $this->getJsonWithData('Album', ['album_id' => 'unsorted']);
 		$this->assertOk($response);
 

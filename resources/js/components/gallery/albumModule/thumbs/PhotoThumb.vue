@@ -39,7 +39,7 @@
 		</span>
 		<div
 			:class="{
-				'overlay w-full absolute bottom-0 m-0 bg-gradient-to-t from-[#00000066] text-shadow-sm': true,
+				'overlay w-full absolute bottom-0 m-0 bg-linear-to-t from-[#00000066] text-shadow-sm': true,
 				'opacity-0 group-hover:opacity-100 transition-all ease-out': display_thumb_photo_overlay === 'hover',
 				hidden: display_thumb_photo_overlay === 'never',
 			}"
@@ -80,9 +80,12 @@
 		>
 			<img class="absolute aspect-square w-fit h-fit" alt="play" :src="srcPlay" />
 		</div>
-		<ThumbFavourite v-if="is_favourite_enabled" :is-favourite="isFavourite" @click="toggleFavourite" />
+		<div class="absolute top-0 ltr:right-0 rtl:left-0 w-1/4 flex flex-row-reverse px-1">
+			<ThumbBuyMe :is-in-basket="isInBasket" @click="toggleBuyMe" v-if="props.isBuyable" />
+			<ThumbFavourite v-if="is_favourite_enabled" :is-favourite="isFavourite" @click="toggleFavourite" />
+		</div>
 		<!-- TODO: make me an option. -->
-		<div v-if="userStore.isLoggedIn" class="badges absolute mt-[-1px] ltr:ml-1 rtl:mr-1 top-0 lfr:left-0 rtl:right-0 flex">
+		<div v-if="userStore.isLoggedIn" class="badges absolute -mt-px ltr:ml-1 rtl:mr-1 top-0 lfr:left-0 rtl:right-0 flex">
 			<ThumbBadge v-if="props.photo.is_starred" class="bg-yellow-500" icon="star" />
 			<ThumbBadge v-if="props.isCoverId" class="bg-yellow-500" icon="folder-cover" />
 			<ThumbBadge v-if="props.isHeaderId" class="bg-slate-400 hidden sm:block" pi="image" />
@@ -100,6 +103,8 @@ import { useFavouriteStore } from "@/stores/FavouriteState";
 import ThumbFavourite from "./ThumbFavourite.vue";
 import { useRouter } from "vue-router";
 import { usePhotoRoute } from "@/composables/photo/photoRoute";
+import ThumbBuyMe from "./ThumbBuyMe.vue";
+import { useOrderManagementStore } from "@/stores/OrderManagement";
 import { useUserStore } from "@/stores/UserState";
 
 const { getNoImageIcon, getPlayIcon } = useImageHelpers();
@@ -110,6 +115,11 @@ const props = defineProps<{
 	isCoverId: boolean;
 	isHeaderId: boolean;
 	photo: App.Http.Resources.Models.PhotoResource;
+	isBuyable: boolean;
+}>();
+
+const emits = defineEmits<{
+	toggleBuyMe: [];
 }>();
 
 const router = useRouter();
@@ -117,14 +127,20 @@ const { getParentId } = usePhotoRoute(router);
 const userStore = useUserStore();
 const favourites = useFavouriteStore();
 const lycheeStore = useLycheeStateStore();
+const orderStore = useOrderManagementStore();
 const { is_favourite_enabled, display_thumb_photo_overlay, photo_thumb_info, is_photo_thumb_tags_enabled } = storeToRefs(lycheeStore);
 
 const srcPlay = ref(getPlayIcon());
 const srcNoImage = ref(getNoImageIcon());
 const isImageLoaded = ref(false);
+const photoId = ref(props.photo.id);
 
 function toggleFavourite() {
 	favourites.toggle(props.photo, getParentId());
+}
+
+function toggleBuyMe() {
+	emits("toggleBuyMe");
 }
 
 function onImageLoad() {
@@ -132,6 +148,9 @@ function onImageLoad() {
 }
 
 const isFavourite = computed(() => favourites.getPhotoIds.includes(props.photo.id));
+const isInBasket = computed(
+	() => orderStore?.order?.items?.some((item: App.Http.Resources.Shop.OrderItemResource) => item.photo_id === photoId.value) ?? false,
+);
 
 watch(
 	() => props.photo.id,
@@ -141,6 +160,7 @@ watch(
 			return;
 		}
 
+		photoId.value = newId;
 		isImageLoaded.value = false;
 	},
 );

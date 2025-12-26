@@ -156,7 +156,7 @@ class CheckoutProcessPaymentControllerTest extends BaseCheckoutControllerTest
 		$providers = [
 			OmnipayProviderType::DUMMY,
 			OmnipayProviderType::STRIPE,
-			OmnipayProviderType::PAYPAL_EXPRESS,
+			OmnipayProviderType::PAYPAL,
 		];
 
 		foreach ($providers as $provider) {

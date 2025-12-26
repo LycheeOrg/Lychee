@@ -22,6 +22,11 @@ use Kalnoy\Nestedset\Contracts\NestedSetCollection;
  */
 class ListAlbums
 {
+	public function __construct(
+		protected readonly AlbumQueryPolicy $album_query_policy,
+	) {
+	}
+
 	private const SHORTEN_BY = 80;
 
 	/**
@@ -29,8 +34,7 @@ class ListAlbums
 	 */
 	public function do(Collection $albums_filtering, ?string $parent_id, ?int $owner_id = null): array
 	{
-		$album_query_policy = resolve(AlbumQueryPolicy::class);
-		$unfiltered = $album_query_policy->applyReachabilityFilter(
+		$unfiltered = $this->album_query_policy->applyReachabilityFilter(
 			// We remove all sub albums
 			// Otherwise it would create cyclic dependency
 			Album::query()

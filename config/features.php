@@ -124,8 +124,20 @@ return [
 	 | Enable Webshop
 	 |--------------------------------------------------------------------------
 	 |
-	 | This is a feature flags to avoid shipping webshop related code
-	 | when the webshop is not ready yet.
+	 | This value determines whether the webshop feature is enabled.
+	 | Disabling it hides all webshop related features
 	 */
-	'webshop' => (bool) env('WEBSHOP_ENABLED', false),
+	'webshop' => (bool) env('WEBSHOP_ENABLED', true),
+
+	/*
+	 |--------------------------------------------------------------------------
+	 | Populate Request object macros while testing
+	 |--------------------------------------------------------------------------
+	 |
+	 | This is necessary for some unit tests that rely on the Request macros
+	 | being present. In production, these macros are populated via middleware.
+	 | However, in unit tests, the middleware may not be executed, leading to
+	 | missing macros and test failures.
+	 */
+	'populate-request-macros' => (bool) env('POPULATE_REQUEST_MACROS', false),
 ];

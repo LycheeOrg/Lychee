@@ -19,10 +19,10 @@ use App\Image\Files\FlysystemFile;
 use App\Image\Watermarker;
 use App\Models\Builders\SizeVariantBuilder;
 use App\Models\Extensions\HasBidirectionalRelationships;
-use App\Models\Extensions\HasUrlGenerator;
 use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\ToArrayThrowsNotImplemented;
 use App\Models\Extensions\UTCBasedTimes;
+use App\Services\UrlGenerator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -34,8 +34,8 @@ use Illuminate\Support\Facades\Storage;
  * Describes a size variant of a photo.
  *
  * @property int                  $id
- * @property string               $photo_id
- * @property Photo                $photo
+ * @property string|null          $photo_id
+ * @property Photo|null           $photo
  * @property SizeVariantType      $type
  * @property string               $short_path
  * @property string|null          $short_path_watermarked
@@ -76,8 +76,6 @@ class SizeVariant extends Model
 	use ToArrayThrowsNotImplemented;
 	/** @phpstan-use HasFactory<\Database\Factories\SizeVariantFactory> */
 	use HasFactory;
-
-	use HasUrlGenerator;
 
 	/**
 	 * This model has no own timestamps as it is inseparably bound to its
@@ -169,9 +167,12 @@ class SizeVariant extends Model
 			return 'data:image/webp;base64,' . $this->short_path;
 		}
 
-		$path = Watermarker::get_path($this);
+		$watermarker = resolve(Watermarker::class);
+		$path = $watermarker->get_path($this);
 
-		return self::pathToUrl(
+		$url_generator = resolve(UrlGenerator::class);
+
+		return $url_generator->pathToUrl(
 			$path,
 			$this->storage_disk->value,
 			$this->type,
@@ -186,7 +187,9 @@ class SizeVariant extends Model
 	 */
 	public function getDownloadUrlAttribute(): string
 	{
-		return self::pathToUrl(
+		$url_generator = resolve(UrlGenerator::class);
+
+		return $url_generator->pathToUrl(
 			$this->short_path,
 			$this->storage_disk->value,
 			$this->type,

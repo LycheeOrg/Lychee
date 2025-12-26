@@ -38,7 +38,7 @@
 					<label for="hasQuota" class="ltr:ml-2 rtl:mr-2 cursor-pointer">{{ $t("users.create_edit.quota") }} <SETag /></label>
 				</div>
 				<div v-if="has_quota === true" class="w-full flex items-center text-muted-color">
-					<InputText id="quotaKb" v-model="quota_kb" aria-label="quotaKb" class="!w-1/2" />
+					<InputText id="quotaKb" v-model="quota_kb" aria-label="quotaKb" class="w-1/2!" />
 					<label class="pl-4 w-1/2" for="quotaKb">{{ $t("users.create_edit.quota_kb") }}</label>
 				</div>
 				<div v-if="is_se_enabled" class="w-full flex items-center text-muted-color pt-2">

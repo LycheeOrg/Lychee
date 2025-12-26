@@ -22,7 +22,7 @@ class PurchasablePriceFactory extends Factory
 	/**
 	 * The name of the factory's corresponding model.
 	 *
-	 * @var string
+	 * @var class-string<PurchasablePrice>
 	 */
 	protected $model = PurchasablePrice::class;
 
@@ -48,9 +48,9 @@ class PurchasablePriceFactory extends Factory
 	 *
 	 * @param int $cents
 	 *
-	 * @return static
+	 * @return self
 	 */
-	public function withPrice(int $cents): static
+	public function withPrice(int $cents): self
 	{
 		return $this->state(function (array $attributes) use ($cents) {
 			$money_service = resolve(MoneyService::class);
@@ -67,9 +67,9 @@ class PurchasablePriceFactory extends Factory
 	 * @param PurchasableSizeVariantType $size_variant
 	 * @param PurchasableLicenseType     $license_type
 	 *
-	 * @return static
+	 * @return self
 	 */
-	public function withVariant(PurchasableSizeVariantType $size_variant, PurchasableLicenseType $license_type): static
+	public function withVariant(PurchasableSizeVariantType $size_variant, PurchasableLicenseType $license_type): self
 	{
 		return $this->state(fn (array $attributes) => [
 			'size_variant' => $size_variant,
