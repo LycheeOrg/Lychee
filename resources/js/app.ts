@@ -36,6 +36,8 @@ const LycheePreset = definePreset(Aura, LycheePrimeVueConfig);
 const pinia = createPinia();
 pinia.use(piniaPluginPersistedstate);
 
+const langs = import.meta.glob("../../lang/*.json");
+
 /**
  * Next, we will create a fresh Vue application instance. You may then begin
  * registering components with the application instance so they are ready
@@ -68,11 +70,11 @@ app.use(ToastService);
 app.use(ConfirmationService);
 app.use(i18nVue, {
 	resolve: async (lang: string) => {
-		if (!lang.startsWith("php")) {
-			lang = "php_" + lang;
+		const loader = langs[`../../lang/php_${lang}.json`];
+		if (!loader) {
+			throw new Error(`Missing locale: ${lang}`);
 		}
-		const langs = import.meta.glob("../../lang/*.json");
-		return await langs[`../../lang/${lang}.json`]();
+		return await loader();
 	},
 });
 

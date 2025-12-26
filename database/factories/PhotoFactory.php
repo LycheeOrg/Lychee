@@ -29,7 +29,7 @@ class PhotoFactory extends Factory
 	/**
 	 * The name of the factory's corresponding model.
 	 *
-	 * @var string
+	 * @var class-string<Photo>
 	 */
 	protected $model = Photo::class;
 
@@ -96,7 +96,7 @@ class PhotoFactory extends Factory
 	/**
 	 * Set a bunch of GPS coordinates (in Netherlands).
 	 *
-	 * @return array<string,mixed>
+	 * @return PhotoFactory
 	 */
 	public function with_GPS_coordinates(): self
 	{
@@ -112,7 +112,7 @@ class PhotoFactory extends Factory
 	/**
 	 * Set a bunch of GPS coordinates (in Netherlands).
 	 *
-	 * @return array<string,mixed>
+	 * @return PhotoFactory
 	 */
 	public function with_subGPS_coordinates(): self
 	{

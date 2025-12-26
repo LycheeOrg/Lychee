@@ -26,7 +26,7 @@ class OrderItemFactory extends Factory
 	/**
 	 * The name of the factory's corresponding model.
 	 *
-	 * @var string
+	 * @var class-string<OrderItem>
 	 */
 	protected $model = OrderItem::class;
 
@@ -92,7 +92,7 @@ class OrderItemFactory extends Factory
 	public function forPhoto(Photo|string|null $photo = null): self
 	{
 		$photo_title = fake()->words(2, true) . ' Photo';
-		if ($photo instanceof string || $photo === null) {
+		if (is_string($photo) || $photo === null) {
 			$photo_id = $photo;
 		} else {
 			$photo_id = $photo->id;
@@ -114,8 +114,8 @@ class OrderItemFactory extends Factory
 	 */
 	public function forAlbum(Album|string|null $album = null): self
 	{
-		$album_title = fake()->words(2, true) . ' Ahoto';
-		if ($album instanceof string || $album === null) {
+		$album_title = fake()->words(2, true) . ' Album';
+		if (is_string($album) || $album === null) {
 			$album_id = $album;
 		} else {
 			$album_id = $album->id;

@@ -22,7 +22,7 @@ class PurchasablePriceFactory extends Factory
 	/**
 	 * The name of the factory's corresponding model.
 	 *
-	 * @var string
+	 * @var class-string<PurchasablePrice>
 	 */
 	protected $model = PurchasablePrice::class;
 

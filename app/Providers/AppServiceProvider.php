@@ -161,21 +161,6 @@ class AppServiceProvider extends ServiceProvider
 			// @codeCoverageIgnoreEnd
 		}
 
-		try {
-			$config_manager = new ConfigManager();
-			$lang = $config_manager->getValueAsString('lang');
-			/** @disregard P1013 Undefined method setLocale() (stupid intelephense) */
-			app()->setLocale($lang);
-			// @codeCoverageIgnoreStart
-		} catch (\Throwable $e) {
-			/** Ignore.
-			 * This is necessary so that we can continue:
-			 * - if Configs table do not exists (no install),
-			 * - if the value does not exists in configs (no install),.
-			 */
-		}
-		// @codeCoverageIgnoreEnd
-
 		/**
 		 * We enforce strict mode
 		 * this has the following effect:

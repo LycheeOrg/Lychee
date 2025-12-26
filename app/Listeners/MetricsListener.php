@@ -22,7 +22,7 @@ class MetricsListener
 	 */
 	public function handle(BaseMetricsEvent $event): void
 	{
-		$config_manager = new ConfigManager();
+		$config_manager = app(ConfigManager::class);
 
 		if ($config_manager->getValueAsBool('metrics_enabled') === true) {
 			// Increment the respective metric in the database

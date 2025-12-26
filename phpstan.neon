@@ -13,6 +13,7 @@ parameters:
 		- app
 		- config
 		- lang
+		- database/factories
 		- database/migrations
 		- scripts
 	excludePaths:

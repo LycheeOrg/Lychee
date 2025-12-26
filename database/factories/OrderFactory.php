@@ -42,7 +42,7 @@ class OrderFactory extends Factory
 	/**
 	 * The name of the factory's corresponding model.
 	 *
-	 * @var string
+	 * @var class-string<Order>
 	 */
 	protected $model = Order::class;
 

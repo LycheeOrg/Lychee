@@ -43,15 +43,18 @@ class IniSettingsCheck implements DiagnosticPipe
 
 		try {
 			if (Helpers::convertSize(ini_get('upload_max_filesize')) < Helpers::convertSize(('30M'))) {
-				$data[] = DiagnosticData::warn('You may experience problems when uploading a photo of large size. Take a look in the FAQ for details.', self::class);
+				$data[] = DiagnosticData::warn('You may experience problems when uploading a photo of large size. Take a look in the FAQ for details.', self::class,
+					['upload_max_filesize is set to ' . ini_get('upload_max_filesize'), 'recommended is at least 30M']);
 			}
 			if (Helpers::convertSize(ini_get('post_max_size')) < Helpers::convertSize(('100M'))) {
-				$data[] = DiagnosticData::warn('You may experience problems when uploading a photo of large size. Take a look in the FAQ for details.', self::class);
+				$data[] = DiagnosticData::warn('You may experience problems when uploading a photo of large size. Take a look in the FAQ for details.', self::class,
+					['post_max_size is set to ' . ini_get('post_max_size'), 'recommended is at least 100M']);
 			}
 			$max_execution_time = intval(ini_get('max_execution_time'));
 			if (0 < $max_execution_time && $max_execution_time < 200) {
 				// @codeCoverageIgnoreStart
-				$data[] = DiagnosticData::warn('You may experience problems when uploading a photo of large size or handling many/large albums. Take a look in the FAQ for details.', self::class);
+				$data[] = DiagnosticData::warn('You may experience problems when uploading a photo of large size or handling many/large albums. Take a look in the FAQ for details.', self::class,
+					['max_execution_time is set to ' . ini_get('max_execution_time'), 'recommended is at least 200 seconds or 0 (no limit)']);
 				// @codeCoverageIgnoreEnd
 			}
 			if (filter_var(ini_get('allow_url_fopen'), FILTER_VALIDATE_BOOLEAN) !== true) {

@@ -76,7 +76,7 @@ class ExtractColoursJob implements ShouldQueue
 
 		$file = $photo->size_variants->getOriginal()->getFile();
 
-		$config_manager = new ConfigManager();
+		$config_manager = app(ConfigManager::class);
 		$extractor = match ($config_manager->getValueAsString('colour_extraction_driver')) {
 			'league' => new LeagueExtractor(),
 			'farzai' => new FarzaiExtractor($config_manager),

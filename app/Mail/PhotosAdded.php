@@ -31,7 +31,7 @@ class PhotosAdded extends Mailable
 	 */
 	public function __construct(array $photos)
 	{
-		$config_manager = new ConfigManager();
+		$config_manager = app(ConfigManager::class);
 		$this->photos = $photos;
 		$this->title = $config_manager->getValueAsString('site_title');
 	}

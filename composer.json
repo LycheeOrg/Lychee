@@ -121,20 +121,16 @@
         "tomasvotruba/class-leak": "^2.0"
     },
     "autoload": {
-        "classmap": [
-            "database/seeds",
-            "database/factories"
-        ],
         "psr-4": {
-            "App\\": "app/",
-            "Scripts\\": "scripts/",
-            "PHPStan\\": "phpstan/"
+            "App\\": "app/"
         }
     },
     "autoload-dev": {
         "psr-4": {
+            "Scripts\\": "scripts/",
             "Tests\\": "tests/",
-            "PHPStan\\": "phpstan/"
+            "PHPStan\\": "phpstan/",
+            "Database\\Factories\\": "database/factories/"
         }
     },
     "extra": {

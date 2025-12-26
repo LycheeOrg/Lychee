@@ -13,6 +13,11 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 
 class TagFactory extends Factory
 {
+	/**
+	 * The name of the factory's corresponding model.
+	 *
+	 * @var class-string<Tag>
+	 */
 	protected $model = Tag::class;
 
 	public function definition()

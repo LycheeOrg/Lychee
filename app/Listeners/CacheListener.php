@@ -25,7 +25,7 @@ class CacheListener
 	 */
 	public function handle(CacheHit|CacheMissed|KeyForgotten|KeyWritten $event): void
 	{
-		$config_manager = new ConfigManager();
+		$config_manager = app(ConfigManager::class);
 
 		if (str_contains($event->key, 'lv:dev-lycheeOrg')) {
 			return;

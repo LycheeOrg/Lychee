@@ -65,7 +65,7 @@ class InstalledVersion implements HasVersion, HasIsRelease
 			// @codeCoverageIgnoreEnd
 		}
 
-		$config_manager = new ConfigManager();
+		$config_manager = app(ConfigManager::class);
 
 		return Version::createFromInt($config_manager->getValueAsInt('version'));
 	}

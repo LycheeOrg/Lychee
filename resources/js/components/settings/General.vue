@@ -7,7 +7,7 @@
 				:config="dark_mode_enabled"
 				@filled="saveDarkMode"
 			/>
-			<SelectLang v-if="lang !== undefined" :label="$t('settings.system.language')" :config="lang" @filled="save" />
+			<SelectLang v-if="lang !== undefined" :label="$t('settings.system.language')" :config="lang" @filled="saveLang" />
 			<div class="flex flex-wrap justify-between">
 				<label for="pp_dialog_nsfw_visible" class="text-muted-color-emphasis">{{ $t("settings.system.nsfw_album_visibility") }}</label>
 				<ToggleSwitch id="pp_dialog_nsfw_visible" v-model="nsfwVisible" class="text-sm" @update:model-value="updateNSFW" />
@@ -250,6 +250,7 @@ import InputText from "@/components/forms/basic/InputText.vue";
 import MaintenanceService from "@/services/maintenance-service";
 import { onMounted, watch } from "vue";
 import Fieldset from "@/components/forms/basic/Fieldset.vue";
+import { loadLanguageAsync } from "laravel-vue-i18n";
 
 const toast = useToast();
 
@@ -308,6 +309,20 @@ function save(configKey: string, value: string) {
 		toast.add({ severity: "success", summary: trans("settings.toasts.change_saved"), detail: trans("settings.toasts.details"), life: 3000 });
 		emits("refresh");
 	});
+}
+
+function saveLang(configKey: string, value: string) {
+	save(configKey, value);
+
+	loadLanguageAsync(value)
+		.then(() => {
+			// Keep SPA + RTL state in sync
+			document.documentElement.lang = value;
+			document.documentElement.dir = ["ar", "fa"].includes(value) ? "rtl" : "ltr";
+		})
+		.catch((err) => {
+			console.log(`Could not load language file for ${value}`, err);
+		});
 }
 
 function load(configs: App.Http.Resources.Models.ConfigCategoryResource[]) {

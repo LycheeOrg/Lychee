@@ -85,7 +85,7 @@ class ExtractZip implements ShouldQueue
 		$path_extracted = Storage::disk('extract-jobs')->path(date('Ymd') . ' ' . $this->getExtractFolderName());
 		$this->extract_zip($path_extracted);
 
-		$config_manager = new ConfigManager();
+		$config_manager = app(ConfigManager::class);
 
 		$import_mode = new ImportMode(
 			delete_imported: true,

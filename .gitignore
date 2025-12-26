@@ -59,6 +59,7 @@ docker-compose.yml
 
 # Building stuff for releaseses
 Lychee/*
+lychee/*
 /public/embed/
 report_*
 

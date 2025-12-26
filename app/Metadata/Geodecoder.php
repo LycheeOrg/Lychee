@@ -36,7 +36,7 @@ class Geodecoder
 	 */
 	public static function getGeocoderProvider(): ProviderCache
 	{
-		$config_manager = new ConfigManager();
+		$config_manager = app(ConfigManager::class);
 		try {
 			$stack = HandlerStack::create();
 			$stack->push(RateLimiterMiddleware::perSecond(1));
@@ -65,7 +65,7 @@ class Geodecoder
 	 */
 	public static function decodeLocation(?float $latitude, ?float $longitude): ?string
 	{
-		$config_manager = new ConfigManager();
+		$config_manager = app(ConfigManager::class);
 
 		// User does not want to decode location data
 		if (!$config_manager->getValueAsBool('location_decoding')) {
@@ -89,7 +89,7 @@ class Geodecoder
 	 */
 	public static function decodeLocation_core(float $latitude, float $longitude, ProviderCache $cached_provider): ?string
 	{
-		$config_manager = new ConfigManager();
+		$config_manager = app(ConfigManager::class);
 
 		$lang = $config_manager->getValueAsString('lang');
 		$geocoder = new StatefulGeocoder($cached_provider, $lang);

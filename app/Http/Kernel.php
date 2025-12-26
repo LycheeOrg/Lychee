@@ -29,6 +29,7 @@ class Kernel extends HttpKernel
 		\Bepsvpt\SecureHeaders\SecureHeadersMiddleware::class,
 		\App\Http\Middleware\ResolveConfigs::class,
 		\App\Http\Middleware\ResolveVerify::class,
+		\App\Http\Middleware\SetLocale::class,
 	];
 
 	/**
