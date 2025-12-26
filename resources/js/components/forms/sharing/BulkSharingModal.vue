@@ -2,7 +2,7 @@
 	<Dialog v-model:visible="visible" modal pt:root:class="border-none" pt:mask:style="backdrop-filter: blur(2px)" @hide="closeCallback">
 		<template #container="{ closeCallback }">
 			<div
-				class="flex flex-col items-center gap-4 bg-gradient-to-b from-bg-300 to-bg-400 relative w-full md:w-2xl rounded-md text-muted-color pt-9"
+				class="flex flex-col items-center gap-4 bg-linear-to-b from-bg-300 to-bg-400 relative w-full md:w-2xl rounded-md text-muted-color pt-9"
 			>
 				<div class="text-muted-color-emphasis">
 					{{ $t("sharing.bulk_share_instr") }}

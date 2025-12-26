@@ -18,7 +18,7 @@
 			</ScrollPanel>
 		</template>
 		<template #footer>
-			<Button v-if="canCheck" severity="primary" class="w-full border-none" @click="check">{{ $t("maintenance.update.check-button") }}</Button>
+			<Button v-if="canCheck" severity="warn" class="w-full border-none" @click="check">{{ $t("maintenance.update.check-button") }}</Button>
 			<Button v-if="canUpdate" severity="primary" class="w-full border-none" href="/Update" target="_blank" rel="noopener">
 				{{ $t("maintenance.update.update-button") }}
 			</Button>

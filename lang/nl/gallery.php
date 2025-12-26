@@ -77,6 +77,7 @@ return [
             'share' => 'Deel Album',
             'embed' => 'Embed Album',
             'move' => 'Verplaats Album',
+            'shop' => 'Shop Management',
             'danger' => 'GEVAARZONE',
         ],
         'hero' => [

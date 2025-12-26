@@ -27,6 +27,11 @@ const Flow = () => import("@/views/gallery-panels/Flow.vue");
 const TagsManagement = () => import("@/views/TagsManagement.vue");
 const Tag = () => import("@/views/gallery-panels/Tag.vue");
 const RenamerRules = () => import("@/views/RenamerRules.vue");
+const PurchasablesList = () => import("@/views/webshop/PurchasablesList.vue");
+const BasketList = () => import("@/views/webshop/BasketList.vue");
+const CheckoutPage = () => import("@/views/webshop/CheckoutPage.vue");
+const OrderList = () => import("@/views/webshop/OrderList.vue");
+const OrderDownload = () => import("@/views/webshop/OrderDownload.vue");
 
 const routes_ = [
 	{
@@ -181,6 +186,33 @@ const routes_ = [
 		name: "register",
 		path: "/register",
 		component: RegisterPage,
+	},
+	{
+		name: "purchasables",
+		path: "/purchasables",
+		component: PurchasablesList,
+	},
+	{
+		name: "basket",
+		path: "/basket",
+		component: BasketList,
+	},
+	{
+		name: "checkout",
+		path: "/checkout/:step?",
+		component: CheckoutPage,
+		props: true,
+	},
+	{
+		name: "orders",
+		path: "/orders",
+		component: OrderList,
+	},
+	{
+		name: "order",
+		path: "/order/:orderId?/:transactionId?",
+		component: OrderDownload,
+		props: true,
 	},
 ];
 

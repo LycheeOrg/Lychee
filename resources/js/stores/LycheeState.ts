@@ -91,7 +91,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		is_swipe_vertically_to_go_back_enabled: true,
 	}),
 	actions: {
-		load(): Promise<void> {
+		async load(): Promise<void> {
 			// Check if already initialized
 			if (this.is_init) {
 				return Promise.resolve();
@@ -99,8 +99,13 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 
 			// semaphore to avoid multiple calls
 			if (this.is_loading) {
+				while (this.is_loading) {
+					await new Promise((resolve) => setTimeout(resolve, 100));
+				}
+
 				return Promise.resolve();
 			}
+
 			this.is_loading = true;
 
 			return InitService.fetchInitData()
@@ -176,6 +181,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 				.catch((error) => {
 					// In this specific case, even though it has been possibly disabled, we really need to see the error.
 					this.is_debug_enabled = true;
+					this.is_loading = false;
 
 					const event = new CustomEvent("error", { detail: error.response.data });
 					window.dispatchEvent(event);

@@ -12,7 +12,7 @@
 		</template>
 		<template #content>
 			<ScrollPanel class="w-full h-40 text-sm text-muted-color">
-				<div v-if="!loading" class="w-full text-left">
+				<div v-if="!loading" class="w-full ltr:text-left rtl:text-right">
 					{{ $t("maintenance.fix-tree.Oddness") }}: {{ data.oddness }}<br />
 					{{ $t("maintenance.fix-tree.Duplicates") }}: {{ data.duplicates }}<br />
 					{{ $t("maintenance.fix-tree.Wrong parents") }}: {{ data.wrong_parent }}<br />
