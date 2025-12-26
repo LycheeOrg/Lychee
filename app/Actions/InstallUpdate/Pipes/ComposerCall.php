@@ -8,18 +8,17 @@
 
 namespace App\Actions\InstallUpdate\Pipes;
 
+use App\Assets\CommandExecutor;
 use App\Facades\Helpers;
 use App\Metadata\Versions\InstalledVersion;
 use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\Log;
-use function Safe\chdir;
-use function Safe\exec;
-use function Safe\putenv;
 
 class ComposerCall extends AbstractUpdateInstallerPipe
 {
 	public function __construct(
 		protected readonly ConfigManager $config_manager,
+		private readonly CommandExecutor $command_executor,
 	) {
 	}
 
@@ -43,10 +42,10 @@ class ComposerCall extends AbstractUpdateInstallerPipe
 
 				// Composer\Factory::getHomeDir() method
 				// needs COMPOSER_HOME environment variable set
-				putenv('COMPOSER_HOME=' . base_path('/composer-cache'));
-				chdir(base_path());
-				exec(sprintf('composer install %s--no-progress 2>&1', $no_dev), $output);
-				chdir(base_path('public'));
+				$this->command_executor->putenv('COMPOSER_HOME=' . base_path('/composer-cache'));
+				$this->command_executor->chdir(base_path());
+				$this->command_executor->exec(sprintf('composer install %s--no-progress 2>&1', $no_dev), $output);
+				$this->command_executor->chdir(base_path('public'));
 			// @codeCoverageIgnoreEnd
 			} else {
 				$output[] = 'Composer update are always dangerous when automated.';
