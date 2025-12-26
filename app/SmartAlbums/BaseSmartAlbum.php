@@ -30,6 +30,7 @@ use App\SmartAlbums\Utils\MimicModel;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Class BaseSmartAlbum.
@@ -111,6 +112,10 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 		if (!$this->config_manager->getValueAsBool('SA_override_visibility')) {
 			return $this->photo_query_policy
 				->applySearchabilityFilter(query: $base_query, origin: null, include_nsfw: !$this->config_manager->getValueAsBool('hide_nsfw_in_smart_albums'))
+				->when(
+					$this->config_manager->getValueAsBool('enable_smart_album_per_owner') && Auth::check(),
+					fn (Builder $query) => $query->where('photos.owner_id', '=', Auth::id())
+				)
 				->where($this->smart_photo_condition);
 		}
 
