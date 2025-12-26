@@ -82,19 +82,23 @@ export const useAlbumStore = defineStore("album-store", {
 					if (data.data.resource === null) {
 						return;
 					}
+					// Reset to avoid bad surprises.
+					albumsStore.albums = [];
+					albumsStore.tagAlbums = [];
+					albumsStore.pinnedAlbums = [];
+					albumsStore.sharedAlbums = [];
+					// Load data.
 					if (data.data.config.is_model_album) {
 						this.modelAlbum = data.data.resource as App.Http.Resources.Models.AlbumResource;
 						albumsStore.albums = this.modelAlbum.albums;
 					} else if (data.data.config.is_base_album) {
 						this.tagAlbum = data.data.resource as App.Http.Resources.Models.TagAlbumResource;
-						albumsStore.albums = []; // Reset to avoid bad surprises.
 					} else {
 						this.smartAlbum = data.data.resource as App.Http.Resources.Models.SmartAlbumResource;
 						this.per_page = this.smartAlbum.per_page;
 						this.total = this.smartAlbum.total;
 						this.current_page = this.smartAlbum.current_page;
 						this.last_page = this.smartAlbum.last_page;
-						albumsStore.albums = []; // Reset to avoid bad surprises.
 					}
 					photosState.setPhotos(data.data.resource.photos, data.data.config.is_photo_timeline_enabled);
 				})
