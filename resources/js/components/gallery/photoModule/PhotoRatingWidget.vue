@@ -95,11 +95,11 @@ const props = defineProps<{
 	currentUserRating: number | null;
 }>();
 
-// Compute if rating is enabled (placeholder - will be replaced with actual config in I12a)
-const isRatingEnabled = computed(() => true);
+// Compute if rating is enabled based on config
+const isRatingEnabled = computed(() => lycheeStore.is_ratings_enabled);
 
-// Compute if metrics are enabled (placeholder - will be replaced with actual config in I12a)
-const isMetricsEnabled = computed(() => true);
+// Compute if metrics and average should be shown in details
+const isMetricsEnabled = computed(() => lycheeStore.is_rating_show_avg_in_details_enabled && lycheeStore.is_live_metrics_enabled);
 
 // Compute average rating from statistics
 const averageRating = computed(() => {

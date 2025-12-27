@@ -18,9 +18,25 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { usePhotoStore } from "@/stores/PhotoState";
+import { useLycheeStateStore } from "@/stores/LycheeState";
 
 const photoStore = usePhotoStore();
+const lycheeStore = useLycheeStateStore();
 
-// Compute if rating is enabled (placeholder - will be replaced with actual config in I12a)
-const isRatingEnabled = computed(() => true);
+// Compute if rating should be shown in photo view
+const isRatingEnabled = computed(() => {
+	if (!lycheeStore.is_ratings_enabled || !lycheeStore.is_rating_show_avg_in_photo_view_enabled) {
+		return false;
+	}
+
+	// Check view mode setting
+	const mode = lycheeStore.rating_photo_view_mode;
+	if (mode === "hidden") {
+		return false;
+	}
+
+	// For "always" or "hover" mode, show if user has rated
+	// (hover transition would be handled by CSS if needed)
+	return true;
+});
 </script>

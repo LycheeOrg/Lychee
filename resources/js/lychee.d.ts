@@ -400,6 +400,12 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		is_registration_enabled: boolean;
 		is_scroll_to_navigate_photos_enabled: boolean;
 		is_swipe_vertically_to_go_back_enabled: boolean;
+		is_ratings_enabled: boolean;
+		is_rating_show_avg_in_details_enabled: boolean;
+		is_rating_show_avg_in_photo_view_enabled: boolean;
+		rating_photo_view_mode: "always" | "hover" | "hidden";
+		is_rating_show_avg_in_album_view_enabled: boolean;
+		rating_album_view_mode: "always" | "hover" | "hidden";
 		default_homepage: string;
 		is_timeline_page_enabled: boolean;
 	};

@@ -89,6 +89,14 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		// Gesture settings
 		is_scroll_to_navigate_photos_enabled: true,
 		is_swipe_vertically_to_go_back_enabled: true,
+
+		// Rating settings
+		is_ratings_enabled: true,
+		is_rating_show_avg_in_details_enabled: true,
+		is_rating_show_avg_in_photo_view_enabled: true,
+		rating_photo_view_mode: "hover" as "always" | "hover" | "hidden",
+		is_rating_show_avg_in_album_view_enabled: true,
+		rating_album_view_mode: "hover" as "always" | "hover" | "hidden",
 	}),
 	actions: {
 		async load(): Promise<void> {
@@ -174,6 +182,13 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 
 					this.is_scroll_to_navigate_photos_enabled = data.is_scroll_to_navigate_photos_enabled;
 					this.is_swipe_vertically_to_go_back_enabled = data.is_swipe_vertically_to_go_back_enabled;
+
+					this.is_ratings_enabled = data.is_ratings_enabled;
+					this.is_rating_show_avg_in_details_enabled = data.is_rating_show_avg_in_details_enabled;
+					this.is_rating_show_avg_in_photo_view_enabled = data.is_rating_show_avg_in_photo_view_enabled;
+					this.rating_photo_view_mode = data.rating_photo_view_mode;
+					this.is_rating_show_avg_in_album_view_enabled = data.is_rating_show_avg_in_album_view_enabled;
+					this.rating_album_view_mode = data.rating_album_view_mode;
 
 					this.default_homepage = data.default_homepage;
 					this.is_timeline_page_enabled = data.is_timeline_page_enabled;

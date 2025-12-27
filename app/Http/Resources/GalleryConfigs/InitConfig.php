@@ -104,6 +104,16 @@ class InitConfig extends Data
 	public bool $is_scroll_to_navigate_photos_enabled;
 	public bool $is_swipe_vertically_to_go_back_enabled;
 
+	// Rating settings
+	public bool $is_ratings_enabled;
+	public bool $is_rating_show_avg_in_details_enabled;
+	public bool $is_rating_show_avg_in_photo_view_enabled;
+	#[LiteralTypeScriptType('"always"|"hover"|"hidden"')]
+	public string $rating_photo_view_mode;
+	public bool $is_rating_show_avg_in_album_view_enabled;
+	#[LiteralTypeScriptType('"always"|"hover"|"hidden"')]
+	public string $rating_album_view_mode;
+
 	// Homepage
 	public string $default_homepage;
 	public bool $is_timeline_page_enabled = false;
@@ -177,6 +187,14 @@ class InitConfig extends Data
 		// Gesture settings
 		$this->is_scroll_to_navigate_photos_enabled = request()->configs()->getValueAsBool('is_scroll_to_navigate_photos_enabled');
 		$this->is_swipe_vertically_to_go_back_enabled = request()->configs()->getValueAsBool('is_swipe_vertically_to_go_back_enabled');
+
+		// Rating settings
+		$this->is_ratings_enabled = request()->configs()->getValueAsBool('ratings_enabled');
+		$this->is_rating_show_avg_in_details_enabled = request()->configs()->getValueAsBool('rating_show_avg_in_details');
+		$this->is_rating_show_avg_in_photo_view_enabled = request()->configs()->getValueAsBool('rating_show_avg_in_photo_view');
+		$this->rating_photo_view_mode = request()->configs()->getValueAsString('rating_photo_view_mode');
+		$this->is_rating_show_avg_in_album_view_enabled = request()->configs()->getValueAsBool('rating_show_avg_in_album_view');
+		$this->rating_album_view_mode = request()->configs()->getValueAsString('rating_album_view_mode');
 
 		// Homepage
 		$this->default_homepage = request()->configs()->getValueAsString('home_page_default');
