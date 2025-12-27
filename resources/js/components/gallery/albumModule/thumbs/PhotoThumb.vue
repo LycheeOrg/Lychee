@@ -90,12 +90,15 @@
 			<ThumbBadge v-if="props.isCoverId" class="bg-yellow-500" icon="folder-cover" />
 			<ThumbBadge v-if="props.isHeaderId" class="bg-slate-400 hidden sm:block" pi="image" />
 		</div>
+		<!-- Rating Overlay -->
+		<ThumbRatingOverlay :current-user-rating="props.photo.current_user_rating" />
 	</a>
 </template>
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import MiniIcon from "@/components/icons/MiniIcon.vue";
 import ThumbBadge from "@/components/gallery/albumModule/thumbs/ThumbBadge.vue";
+import ThumbRatingOverlay from "@/components/gallery/albumModule/thumbs/ThumbRatingOverlay.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import { useImageHelpers } from "@/utils/Helpers";
