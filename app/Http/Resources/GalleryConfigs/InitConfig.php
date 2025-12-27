@@ -14,7 +14,6 @@ use App\Enum\ImageOverlayType;
 use App\Enum\PhotoThumbInfoType;
 use App\Enum\SmallLargeType;
 use App\Enum\ThumbAlbumSubtitleType;
-use App\Enum\ThumbOverlayVisibilityType;
 use App\Enum\VisibilityType;
 use App\Providers\AuthServiceProvider;
 use Illuminate\Support\Facades\Auth;
@@ -51,8 +50,8 @@ class InitConfig extends Data
 	public bool $is_mobile_dock_full_transparency_enabled;
 
 	// Thumbs configuration
-	public ThumbOverlayVisibilityType $display_thumb_album_overlay;
-	public ThumbOverlayVisibilityType $display_thumb_photo_overlay;
+	public VisibilityType $display_thumb_album_overlay;
+	public VisibilityType $display_thumb_photo_overlay;
 	public ThumbAlbumSubtitleType $album_subtitle_type;
 	public AlbumDecorationType $album_decoration;
 	public AlbumDecorationOrientation $album_decoration_orientation;
@@ -146,8 +145,8 @@ class InitConfig extends Data
 		$this->is_mobile_dock_full_transparency_enabled = request()->configs()->getValueAsBool('mobile_dock_full_transparency_enabled');
 
 		// Thumbs configuration
-		$this->display_thumb_album_overlay = request()->configs()->getValueAsEnum('display_thumb_album_overlay', ThumbOverlayVisibilityType::class);
-		$this->display_thumb_photo_overlay = request()->configs()->getValueAsEnum('display_thumb_photo_overlay', ThumbOverlayVisibilityType::class);
+		$this->display_thumb_album_overlay = request()->configs()->getValueAsEnum('display_thumb_album_overlay', VisibilityType::class);
+		$this->display_thumb_photo_overlay = request()->configs()->getValueAsEnum('display_thumb_photo_overlay', VisibilityType::class);
 		$this->album_subtitle_type = request()->configs()->getValueAsEnum('album_subtitle_type', ThumbAlbumSubtitleType::class);
 		$this->album_decoration = request()->configs()->getValueAsEnum('album_decoration', AlbumDecorationType::class);
 		$this->album_decoration_orientation = request()->configs()->getValueAsEnum('album_decoration_orientation', AlbumDecorationOrientation::class);

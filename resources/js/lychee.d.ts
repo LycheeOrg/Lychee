@@ -120,7 +120,6 @@ declare namespace App.Enum {
 	export type SmartAlbumType = "unsorted" | "starred" | "recent" | "on_this_day" | "untagged";
 	export type StorageDiskType = "images" | "s3";
 	export type ThumbAlbumSubtitleType = "description" | "takedate" | "creation" | "oldstyle" | "num_photos" | "num_albums" | "num_photos_albums";
-	export type ThumbOverlayVisibilityType = "never" | "always" | "hover";
 	export type TimelineAlbumGranularity = "default" | "disabled" | "year" | "month" | "day";
 	export type TimelinePhotoGranularity = "default" | "disabled" | "year" | "month" | "day" | "hour";
 	export type UpdateStatus = 0 | 1 | 2 | 3;
@@ -370,8 +369,8 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		is_details_links_enabled: boolean;
 		is_desktop_dock_full_transparency_enabled: boolean;
 		is_mobile_dock_full_transparency_enabled: boolean;
-		display_thumb_album_overlay: App.Enum.ThumbOverlayVisibilityType;
-		display_thumb_photo_overlay: App.Enum.ThumbOverlayVisibilityType;
+		display_thumb_album_overlay: App.Enum.VisibilityType;
+		display_thumb_photo_overlay: App.Enum.VisibilityType;
 		album_subtitle_type: App.Enum.ThumbAlbumSubtitleType;
 		album_decoration: App.Enum.AlbumDecorationType;
 		album_decoration_orientation: App.Enum.AlbumDecorationOrientation;
