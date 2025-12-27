@@ -20,8 +20,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string                     $photo_id
  * @property int                        $user_id
  * @property int                        $rating
- * @property \Illuminate\Support\Carbon $created_at
- * @property \Illuminate\Support\Carbon $updated_at
  * @property Photo                      $photo
  * @property User                       $user
  *
@@ -39,7 +37,6 @@ class PhotoRating extends Model
 	use ThrowsConsistentExceptions;
 	use HasFactory;
 
-	// protected $table = 'photo_ratings';
 	public $timestamps = false;
 
 	protected $fillable = [

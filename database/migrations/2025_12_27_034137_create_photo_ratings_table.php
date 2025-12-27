@@ -23,7 +23,6 @@ return new class() extends Migration {
 			$table->char('photo_id', self::RANDOM_ID_LENGTH)->index();
 			$table->unsignedInteger('user_id')->index();
 			$table->unsignedTinyInteger('rating')->comment('Rating value 1-5');
-			$table->timestamps();
 
 			// Unique constraint: one rating per user per photo
 			$table->unique(['photo_id', 'user_id']);
