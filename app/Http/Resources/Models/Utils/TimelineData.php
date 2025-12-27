@@ -16,7 +16,10 @@ use App\Exceptions\Internal\TimelineGranularityException;
 use App\Http\Resources\Models\PhotoResource;
 use App\Http\Resources\Models\ThumbAlbumResource;
 use Carbon\Carbon;
+use Carbon\Exceptions\InvalidFormatException;
 use Illuminate\Support\Collection;
+use Safe\Exceptions\PcreException;
+use function Safe\preg_match;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
@@ -55,6 +58,38 @@ class TimelineData extends Data
 		return new TimelineData(time_date: $time_date, format: $format);
 	}
 
+	/**
+	 * Attempts to parse a date from a title string.
+	 *
+	 * @param string $title The title string to parse
+	 *
+	 * @return ?Carbon The parsed Carbon date object or null if parsing fails
+	 */
+	public static function parseDateFromTitle(string $title): ?Carbon
+	{
+		// A title is expected to be in one of the following formats:
+		// "YYYY something"
+		// "YYYY-MM something"
+		// "YYYY-MM-DD something"
+		// We match the first part that looks like a date.
+		// Then use Carbon to create a date object from the matched components.
+		$pattern = '/^(\d{4})(?:-(\d{2}))?(?:-(\d{2}))?/';
+		try {
+			if (preg_match($pattern, $title, $matches) === 1) {
+				$year = intval($matches[1]);
+				$month = intval($matches[2] ?? 1);
+				$day = intval($matches[3] ?? 1);
+
+				return Carbon::createFromDate($year, $month, $day);
+			}
+
+			return null;
+		} catch (PcreException|InvalidFormatException $e) {
+			// fail silently.
+			return null;
+		}
+	}
+
 	private static function fromAlbum(ThumbAlbumResource $album, ColumnSortingType $column_sorting, TimelineAlbumGranularity $granularity): ?self
 	{
 		$timeline_date_format_year = request()->configs()->getValueAsString('timeline_album_date_format_year');
@@ -64,6 +99,8 @@ class TimelineData extends Data
 			ColumnSortingType::CREATED_AT => $album->created_at_carbon(),
 			ColumnSortingType::MAX_TAKEN_AT => $album->max_taken_at_carbon(),
 			ColumnSortingType::MIN_TAKEN_AT => $album->min_taken_at_carbon(),
+			// Parse the title as date (e.g. "2020 something" or "2020-03 something" or "2020-03-25 something")
+			ColumnSortingType::TITLE => self::parseDateFromTitle($album->title),
 			default => null,
 		};
 
