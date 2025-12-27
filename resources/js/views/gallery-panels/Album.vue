@@ -179,6 +179,7 @@ import { usePhotosStore } from "@/stores/PhotosState";
 import { useLayoutStore } from "@/stores/LayoutState";
 import { useAlbumsStore } from "@/stores/AlbumsState";
 import { useCatalogStore } from "@/stores/CatalogState";
+import { useRating } from "@/composables/photo/useRating";
 
 const { isLTR } = useLtRorRtL();
 
@@ -286,6 +287,8 @@ const { selectedPhoto, selectedAlbum, selectedPhotosIds, selectedAlbumsIds, sele
 	togglableStore,
 );
 
+const { handleRatingClick } = useRating(photoStore, toast, userStore);
+
 function goBack() {
 	if (is_slideshow_active.value) {
 		stop();
@@ -375,6 +378,12 @@ onKeyStroke("m", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && photoS
 onKeyStroke("e", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && photoStore.rights?.can_edit && toggleEdit());
 onKeyStroke("s", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && photoStore.rights?.can_edit && toggleStar());
 onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && photoStore.isLoaded && albumStore.rights?.can_delete && toggleDelete());
+onKeyStroke("0", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && handleRatingClick(photoStore.photo!.id, 0));
+onKeyStroke("1", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && handleRatingClick(photoStore.photo!.id, 1));
+onKeyStroke("2", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && handleRatingClick(photoStore.photo!.id, 2));
+onKeyStroke("3", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && handleRatingClick(photoStore.photo!.id, 3));
+onKeyStroke("4", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && handleRatingClick(photoStore.photo!.id, 4));
+onKeyStroke("5", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && handleRatingClick(photoStore.photo!.id, 5));
 
 // on key stroke escape:
 // 1. lose focus
