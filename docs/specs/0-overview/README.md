@@ -73,7 +73,7 @@ Learn more about editions at [lycheeorg.dev/get-supporter-edition](https://lyche
 ## Technical Context
 
 **Architecture**:
-- **Backend**: PHP 8.3+ with Laravel framework
+- **Backend**: PHP 8.4+ with Laravel framework
 - **Frontend**: Vue3 Composition API with TypeScript and PrimeVue components
 - **Build**: Vite for modern frontend bundling
 - **Database**: MySQL, PostgreSQL, or SQLite
@@ -83,8 +83,8 @@ Learn more about editions at [lycheeorg.dev/get-supporter-edition](https://lyche
 2. **Manual installation**: For users comfortable managing web servers and databases
 
 **Requirements**:
-- PHP 8.3+ / Laravel framework
-- Node.js 18+ (for frontend build)
+- PHP 8.4+ / Laravel framework
+- Node.js 20+ (for frontend build)
 - Web server (Apache/Nginx)
 - Database (MySQL, PostgreSQL, SQLite)
 - Basic server administration knowledge (for manual installation)

@@ -25,7 +25,7 @@ class DefaultConfig
 			| by looping through the array and run "extension_loaded" on it.
 			|
 			*/
-		'core' => ['minPhpVersion' => '8.3.0'],
+		'core' => ['minPhpVersion' => '8.4.0'],
 
 		'requirements' => [
 			'php' => [

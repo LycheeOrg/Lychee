@@ -4,7 +4,7 @@ Use this appendix to accelerate hand-offs and new-session spin-up. Update it whe
 
 ## Session Kickoff Checklist
 - [ ] Run `git status -sb` to review branch, staged changes, and repo cleanliness.
-- [ ] Confirm environment prerequisites: PHP 8.3+, Composer installed, npm/Node.js available; log the command/output in `_current-session.md` for traceability.
+- [ ] Confirm environment prerequisites: PHP 8.4+, Composer installed, npm/Node.js available; log the command/output in `_current-session.md` for traceability.
 - [ ] Review current context: latest roadmap entry, active specification, feature plan, tasks checklist, and [docs/specs/4-architecture/open-questions.md](../4-architecture/open-questions.md).
 - [ ] Confirm that the active feature spec already encodes known decisions directly in its requirements/NFR/behaviour/telemetry sections (no per-feature `## Clarifications` appendices).
 - [ ] If new clarifications arise, record them in [docs/specs/4-architecture/open-questions.md](../4-architecture/open-questions.md), pause planning until answers are agreed, then update the spec sections and mark the questions as resolved with links to those sections; create or reference an ADR for architectural or other high‑impact decisions.
@@ -27,7 +27,7 @@ Use this appendix to accelerate hand-offs and new-session spin-up. Update it whe
 ```
 You're resuming work on Lychee photo management system. Core context:
 
-- Environment: repo at /home/biv/Documents/Projects/Lychee, PHP 8.3+, Laravel framework, Vue3/TypeScript frontend. Follow docs/specs/3-reference/coding-conventions.md and AGENTS.md.
+- Environment: repo at /home/biv/Documents/Projects/Lychee, PHP 8.4+, Laravel framework, Vue3/TypeScript frontend. Follow docs/specs/3-reference/coding-conventions.md and AGENTS.md.
 - Current status: roadmap entry #[…], spec […], plan […], tasks […]. Last green build(s): [commands + date].
 - Recent increments: [brief bullet list of the last completed increments, noting key files touched and outcomes].
 - Pending scope: [next planned increments/tasks], including failing tests to stage, implementation goals, telemetry/observability requirements, and documentation updates (keep this aligned with the `## Next suggested actions` section in `docs/specs/_current-session.md`).
