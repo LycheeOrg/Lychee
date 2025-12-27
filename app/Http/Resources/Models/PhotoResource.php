@@ -114,10 +114,10 @@ class PhotoResource extends Data
 
 		// Load current user's rating if authenticated
 		if (Auth::check()) {
-			$userRating = $photo->ratings()
+			$user_rating = $photo->ratings()
 				->where('user_id', Auth::id())
 				->first();
-			$this->current_user_rating = $userRating?->rating;
+			$this->current_user_rating = $user_rating?->rating;
 		}
 	}
 

@@ -16,14 +16,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 /**
  * App\Models\PhotoRating.
  *
- * @property int    $id
- * @property string $photo_id
- * @property int    $user_id
- * @property int    $rating
+ * @property int                        $id
+ * @property string                     $photo_id
+ * @property int                        $user_id
+ * @property int                        $rating
  * @property \Illuminate\Support\Carbon $created_at
  * @property \Illuminate\Support\Carbon $updated_at
- * @property Photo  $photo
- * @property User   $user
+ * @property Photo                      $photo
+ * @property User                       $user
  *
  * @method static \Illuminate\Database\Eloquent\Builder|PhotoRating newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|PhotoRating newQuery()
@@ -37,10 +37,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class PhotoRating extends Model
 {
 	use ThrowsConsistentExceptions;
-	/** @phpstan-use HasFactory<\Database\Factories\PhotoRatingFactory> */
 	use HasFactory;
 
-	protected $table = 'photo_ratings';
+	// protected $table = 'photo_ratings';
+	public $timestamps = false;
 
 	protected $fillable = [
 		'photo_id',
@@ -56,7 +56,7 @@ class PhotoRating extends Model
 	/**
 	 * Get the photo that this rating belongs to.
 	 *
-	 * @return BelongsTo<Photo, PhotoRating>
+	 * @return BelongsTo<Photo,$this>
 	 */
 	public function photo(): BelongsTo
 	{
@@ -66,7 +66,7 @@ class PhotoRating extends Model
 	/**
 	 * Get the user who created this rating.
 	 *
-	 * @return BelongsTo<User, PhotoRating>
+	 * @return BelongsTo<User,$this>
 	 */
 	public function user(): BelongsTo
 	{
