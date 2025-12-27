@@ -278,6 +278,10 @@ const photoCallbacks = {
 			return;
 		}
 		PhotoService.setAsCover(selectedPhoto.value!.id, albumId.value);
+		// Update the album's cover_id immediately to reflect the change
+		if (albumStore.modelAlbum !== undefined) {
+			albumStore.modelAlbum.cover_id = selectedPhoto.value!.id;
+		}
 		AlbumService.clearCache(albumId.value);
 		// refresh();
 	},
@@ -286,6 +290,10 @@ const photoCallbacks = {
 			return;
 		}
 		PhotoService.setAsHeader(selectedPhoto.value!.id, albumId.value, false);
+		// Update the album's header_id immediately to reflect the change
+		if (albumStore.modelAlbum !== undefined) {
+			albumStore.modelAlbum.header_id = selectedPhoto.value!.id;
+		}
 		AlbumService.clearCache(albumId.value);
 		// refresh();
 	},

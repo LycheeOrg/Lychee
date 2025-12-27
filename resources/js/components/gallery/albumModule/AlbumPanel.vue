@@ -245,14 +245,20 @@ const photoCallbacks = {
 	setAsCover: () => {
 		if (albumStore.album === undefined) return;
 		PhotoService.setAsCover(selectedPhoto.value!.id, albumStore.album.id);
+		// Update the album's cover_id immediately to reflect the change
+		if (albumStore.modelAlbum !== undefined) {
+			albumStore.modelAlbum.cover_id = selectedPhoto.value!.id;
+		}
 		AlbumService.clearCache(albumStore.album.id);
-		emits("refresh");
 	},
 	setAsHeader: () => {
 		if (albumStore.album === undefined) return;
 		PhotoService.setAsHeader(selectedPhoto.value!.id, albumStore.album.id, false);
+		// Update the album's header_id immediately to reflect the change
+		if (albumStore.modelAlbum !== undefined) {
+			albumStore.modelAlbum.header_id = selectedPhoto.value!.id;
+		}
 		AlbumService.clearCache(albumStore.album.id);
-		emits("refresh");
 	},
 	toggleTag: toggleTag,
 	toggleRename: toggleRename,

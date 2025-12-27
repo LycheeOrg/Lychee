@@ -2,18 +2,32 @@ import AlbumService from "@/services/album-service";
 import PhotoService from "@/services/photo-service";
 import { type LycheeStateStore } from "@/stores/LycheeState";
 import { PhotoStore } from "@/stores/PhotoState";
+import { usePhotosStore } from "@/stores/PhotosState";
+import { useAlbumStore } from "@/stores/AlbumState";
 import { trans } from "laravel-vue-i18n";
 import { type ToastServiceMethods } from "primevue/toastservice";
 import { type Ref } from "vue";
 
 export function usePhotoActions(photoStore: PhotoStore, albumId: Ref<string | undefined>, toast: ToastServiceMethods, lycheeStore: LycheeStateStore) {
+	const photosStore = usePhotosStore();
+	const albumStore = useAlbumStore();
+
 	function toggleStar() {
 		if (photoStore.photo === undefined) {
 			return;
 		}
 
-		PhotoService.star([photoStore.photo.id], !photoStore.photo.is_starred).then(() => {
-			photoStore.photo!.is_starred = !photoStore.photo!.is_starred;
+		const newStarValue = !photoStore.photo.is_starred;
+		PhotoService.star([photoStore.photo.id], newStarValue).then(() => {
+			// Update the current photo store
+			photoStore.photo!.is_starred = newStarValue;
+
+			// Update the photo in the album list (photosStore) to keep it in sync
+			const photoIndex = photosStore.photos.findIndex((p) => p.id === photoStore.photo!.id);
+			if (photoIndex !== -1) {
+				photosStore.photos[photoIndex].is_starred = newStarValue;
+			}
+
 			AlbumService.clearCache(albumId.value);
 		});
 	}
@@ -52,6 +66,11 @@ export function usePhotoActions(photoStore: PhotoStore, albumId: Ref<string | un
 		}
 
 		PhotoService.setAsHeader(photoStore.photo.id, albumId.value, false).then(() => {
+			// Update the album's header_id to reflect the change
+			if (albumStore.modelAlbum !== undefined) {
+				albumStore.modelAlbum.header_id = photoStore.photo!.id;
+			}
+
 			toast.add({ severity: "success", summary: trans("toasts.success"), detail: trans("gallery.photo.actions.header_set"), life: 2000 });
 			AlbumService.clearCache(albumId.value);
 			// refresh();

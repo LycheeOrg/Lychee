@@ -1,10 +1,12 @@
 import PhotoService from "@/services/photo-service";
 import { PhotoStore } from "@/stores/PhotoState";
+import { usePhotosStore } from "@/stores/PhotosState";
 import { UserStore } from "@/stores/UserState";
 import { ToastServiceMethods } from "primevue/toastservice";
 import { ref } from "vue";
 
 export function useRating(photoStore: PhotoStore, toast: ToastServiceMethods, userStore: UserStore) {
+	const photosStore = usePhotosStore();
 	const loading = ref(false);
 	const hoverRating = ref<number | null>(null);
 
@@ -23,9 +25,15 @@ export function useRating(photoStore: PhotoStore, toast: ToastServiceMethods, us
 
 		PhotoService.setRating(photoId, rating)
 			.then((response) => {
+				// Update only the rating field in the current photo store
 				if (photoStore.photo !== null && photoStore.photo !== undefined) {
-					// Update photo store with new photo data (includes updated rating)
-					photoStore.photo = response.data;
+					photoStore.photo.rating = response.data.rating;
+				}
+
+				// Update only the rating field in the album list (photosStore) to keep it in sync
+				const photoIndex = photosStore.photos.findIndex((p) => p.id === photoId);
+				if (photoIndex !== -1) {
+					photosStore.photos[photoIndex].rating = response.data.rating;
 				}
 
 				// Show success message
