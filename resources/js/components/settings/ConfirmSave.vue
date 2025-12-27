@@ -83,7 +83,6 @@ const props = defineProps<{
 	areAllSettingsEnabled: boolean;
 }>();
 
-
 const { isLTR } = useLtRorRtL();
 
 const lycheeStore = useLycheeStateStore();

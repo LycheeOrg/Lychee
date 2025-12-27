@@ -1,17 +1,18 @@
 <template>
 	<div
-		v-if="isRatingEnabled && photoStore.photo && photoStore.photo.current_user_rating !== null"
-		class="absolute top-7 ltr:right-7 rtl:left-7 flex items-center gap-1 text-shadow pointer-events-none"
+		v-if="isRatingEnabled && !are_details_open && displayedRating > 0"
+		:class="{
+			'absolute bottom-0 w-full sm:w-1/2 left-1/2 -translate-x-1/2 z-20 sm:h-1/8 h-14': true,
+			'lg:hover:opacity-100 transition-opacity duration-500 ease-in-out': isHoverMode && !isTouchDevice(),
+			'opacity-50 lg:opacity-20': isHoverMode && !isTouchDevice() && !isFullTransparency,
+			'opacity-75': isHoverMode && isTouchDevice() && !isFullTransparency,
+			'opacity-0': isHoverMode && isFullTransparency,
+			hidden: is_slideshow_active,
+		}"
 	>
-		<i
-			v-for="rating in [1, 2, 3, 4, 5]"
-			:key="`overlay-star-${rating}`"
-			:class="{
-				'pi pi-star-fill text-yellow-500': rating <= (photoStore.photo.current_user_rating || 0),
-				'pi pi-star text-gray-400': rating > (photoStore.photo.current_user_rating || 0),
-			}"
-			class="text-xl"
-		/>
+		<div class="absolute left-1/2 -translate-1/2 bottom-7 flex items-center gap-1 text-shadow">
+			<StarRow :rating="displayedRating" size="large" />
+		</div>
 	</div>
 </template>
 
@@ -19,24 +20,41 @@
 import { computed } from "vue";
 import { usePhotoStore } from "@/stores/PhotoState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
+import { isTouchDevice } from "@/utils/keybindings-utils";
+import { useTogglablesStateStore } from "@/stores/ModalsState";
+import { storeToRefs } from "pinia";
+import StarRow from "@/components/icons/StarRow.vue";
 
 const photoStore = usePhotoStore();
 const lycheeStore = useLycheeStateStore();
+const togglableStore = useTogglablesStateStore();
+
+const { is_slideshow_active, are_details_open } = storeToRefs(togglableStore);
+
+// Compute which rating should be shown on thumbnails
+const displayedRating = computed(() => {
+	if (lycheeStore.is_rating_show_avg_in_photo_view_enabled) {
+		return photoStore.photo?.rating?.rating_avg ?? 0;
+	}
+	return photoStore.photo?.rating?.rating_user ?? 0;
+});
 
 // Compute if rating should be shown in photo view
 const isRatingEnabled = computed(() => {
-	if (!lycheeStore.is_ratings_enabled || !lycheeStore.is_rating_show_avg_in_photo_view_enabled) {
+	if (photoStore.photo?.rating === null) {
 		return false;
 	}
-
-	// Check view mode setting
-	const mode = lycheeStore.rating_photo_view_mode;
-	if (mode === "never") {
+	if (lycheeStore.rating_photo_view_mode === "never") {
 		return false;
 	}
-
-	// For "always" or "hover" mode, show if user has rated
-	// (hover transition would be handled by CSS if needed)
 	return true;
+});
+
+const isHoverMode = computed(() => lycheeStore.rating_photo_view_mode === "hover");
+const isFullTransparency = computed(() => {
+	if (isTouchDevice()) {
+		return lycheeStore.is_mobile_dock_full_transparency_enabled;
+	}
+	return lycheeStore.is_desktop_dock_full_transparency_enabled;
 });
 </script>

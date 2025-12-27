@@ -21,7 +21,7 @@ class PhotoRatingResource extends Data
 	public function __construct(
 		public int $rating_user = 0,
 		public int $rating_count = 0,
-		public ?float $rating_avg = null,
+		public float $rating_avg = 0,
 	) {
 	}
 

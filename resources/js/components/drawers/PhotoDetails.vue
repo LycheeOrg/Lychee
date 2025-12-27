@@ -3,11 +3,11 @@
 		id="lychee_sidebar_container"
 		:class="{
 			'h-full relative transition-all overflow-x-clip overflow-y-scroll bg-bg-800': true,
-			'w-[380px]': areDetailsOpen,
+			'w-95': areDetailsOpen,
 			'w-0 ltr:translate-x-full rtl:-translate-x-full': !areDetailsOpen,
 		}"
 	>
-		<Card v-if="photoStore.photo" id="lychee_sidebar" class="w-[380px] h-full ltr:pr-4 rtl:pl-4 wrap-break-word">
+		<Card v-if="photoStore.photo" id="lychee_sidebar" class="w-95 h-full ltr:pr-4 rtl:pl-4 wrap-break-word">
 			<template #content>
 				<div class="flex flex-col mt-8">
 					<h1 class="text-center text-2xl font-bold my-4">
@@ -188,10 +188,10 @@
 
 					<!-- Photo Rating Widget -->
 					<PhotoRatingWidget
-						v-if="photoStore.photo"
+						v-if="photoStore.photo.rating"
 						:photo-id="photoStore.photo.id"
-						:statistics="photoStore.photo.statistics"
-						:current-user-rating="photoStore.photo.current_user_rating"
+						:rating="photoStore.photo.rating"
+						:key="`rating-${photoStore.photo.id}`"
 					/>
 
 					<LinksInclude v-if="is_details_links_enabled" />

@@ -25,7 +25,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int         $shared_count
  * @property int         $rating_sum
  * @property int         $rating_count
- * @property float|null  $rating_avg
+ * @property float       $rating_avg
  *
  * @method static StatisticsBuilder|Statistics addSelect($column)
  * @method static StatisticsBuilder|Statistics join(string $table, string $first, string $operator = null, string $second = null, string $type = 'inner', string $where = false)
@@ -79,16 +79,12 @@ class Statistics extends Model
 
 	/**
 	 * Get the average rating (sum / count).
-	 * Returns null if no ratings exist.
+	 * Returns 0 if no ratings exist.
 	 *
-	 * @return float|null
+	 * @return float
 	 */
-	protected function getRatingAvgAttribute(): ?float
+	protected function getRatingAvgAttribute(): float
 	{
-		if ($this->rating_count === null || $this->rating_count === 0) {
-			return null;
-		}
-
-		return round($this->rating_sum / $this->rating_count, 2);
+		return $this->rating_count === 0 ? 0 : round($this->rating_sum / $this->rating_count, 2);
 	}
 }

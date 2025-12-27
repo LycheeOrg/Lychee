@@ -37,8 +37,8 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		show_keybinding_help_popup: false,
 
 		// album stuff
-		display_thumb_album_overlay: "always" as App.Enum.ThumbOverlayVisibilityType,
-		display_thumb_photo_overlay: "always" as App.Enum.ThumbOverlayVisibilityType,
+		display_thumb_album_overlay: "always" as App.Enum.VisibilityType,
+		display_thumb_photo_overlay: "always" as App.Enum.VisibilityType,
 		album_subtitle_type: "OLDSTYLE" as App.Enum.ThumbAlbumSubtitleType,
 		album_decoration: "LAYERS" as App.Enum.AlbumDecorationType,
 		album_decoration_orientation: "ROW" as App.Enum.AlbumDecorationOrientation,
@@ -91,12 +91,11 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		is_swipe_vertically_to_go_back_enabled: true,
 
 		// Rating settings
-		is_ratings_enabled: true,
-		is_rating_show_avg_in_details_enabled: true,
-		is_rating_show_avg_in_photo_view_enabled: true,
-		rating_photo_view_mode: "hover" as App.Enum.VisibilityType,
-		is_rating_show_avg_in_album_view_enabled: true,
-		rating_album_view_mode: "hover" as App.Enum.VisibilityType,
+		is_rating_show_avg_in_details_enabled: false,
+		is_rating_show_avg_in_photo_view_enabled: false,
+		rating_photo_view_mode: "never" as App.Enum.VisibilityType,
+		is_rating_show_avg_in_album_view_enabled: false,
+		rating_album_view_mode: "never" as App.Enum.VisibilityType,
 	}),
 	actions: {
 		async load(): Promise<void> {
@@ -183,7 +182,6 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.is_scroll_to_navigate_photos_enabled = data.is_scroll_to_navigate_photos_enabled;
 					this.is_swipe_vertically_to_go_back_enabled = data.is_swipe_vertically_to_go_back_enabled;
 
-					this.is_ratings_enabled = data.is_ratings_enabled;
 					this.is_rating_show_avg_in_details_enabled = data.is_rating_show_avg_in_details_enabled;
 					this.is_rating_show_avg_in_photo_view_enabled = data.is_rating_show_avg_in_photo_view_enabled;
 					this.rating_photo_view_mode = data.rating_photo_view_mode;

@@ -1,43 +1,30 @@
 <template>
-	<div v-if="isRatingEnabled" class="mt-4">
+	<div class="mt-4">
 		<h2 class="text-muted-color-emphasis text-base font-bold mb-2">{{ $t("gallery.photo.rating.header") }}</h2>
 
-		<!-- Average rating display (when metrics enabled) -->
-		<div v-if="isMetricsEnabled && statistics && statistics.rating_count > 0" class="flex items-center gap-2 mb-3">
-			<div class="flex items-center">
-				<i
-					v-for="index in 5"
-					:key="`avg-star-${index}`"
-					:class="{
-						'pi pi-star-fill text-yellow-500': index <= Math.floor(averageRating),
-						'pi pi-star-half-fill text-yellow-500':
-							index === Math.ceil(averageRating) && averageRating % 1 >= 0.25 && averageRating % 1 < 0.75,
-						'pi pi-star text-gray-400':
-							index > Math.ceil(averageRating) || (index === Math.ceil(averageRating) && averageRating % 1 < 0.25),
-					}"
-					class="text-lg"
-				/>
-			</div>
+		<!-- Average rating display -->
+		<div v-if="lycheeStore.is_rating_show_avg_in_details_enabled && props.rating.rating_count > 0" class="flex items-center gap-2 mb-3">
+			<StarRow :rating="props.rating.rating_avg" size="medium" />
 			<span class="text-sm text-muted-color">
-				{{ averageRating.toFixed(1) }} ({{ statistics.rating_count }}
-				{{ statistics.rating_count === 1 ? $t("gallery.photo.rating.rating") : $t("gallery.photo.rating.ratings") }})
+				{{ props.rating.rating_avg.toFixed(1) }} ({{ props.rating.rating_count }}
+				{{ props.rating.rating_count === 1 ? $t("gallery.photo.rating.rating") : $t("gallery.photo.rating.ratings") }})
 			</span>
 		</div>
 
 		<!-- Your rating section -->
-		<div class="mb-2">
+		<div class="mb-2" v-if="userStore.user !== undefined">
 			<span class="text-sm text-muted-color-emphasis">{{ $t("gallery.photo.rating.your_rating") }}:</span>
 		</div>
 
 		<!-- Rating buttons -->
-		<div class="flex items-center gap-1">
+		<div class="flex items-center gap-1" v-if="userStore.user !== undefined">
 			<!-- Remove rating button (0) -->
 			<button
-				:disabled="loading || currentUserRating === null"
+				:disabled="loading || props.rating.rating_user === 0"
 				:class="{
 					'px-2 py-1 text-sm rounded transition-colors': true,
-					'bg-red-600 hover:bg-red-700 text-white': currentUserRating !== null && !loading,
-					'bg-gray-500 text-gray-300 cursor-not-allowed': loading || currentUserRating === null,
+					'bg-red-600 hover:bg-red-700 text-white': props.rating.rating_user > 0 && !loading,
+					'bg-gray-500 text-gray-300 cursor-not-allowed': loading || props.rating.rating_user === 0,
 				}"
 				@click="handleRatingClick(0)"
 			>
@@ -60,8 +47,8 @@
 			>
 				<i
 					:class="{
-						'pi pi-star-fill text-yellow-500': rating <= (hoverRating || currentUserRating || 0),
-						'pi pi-star text-gray-400': rating > (hoverRating || currentUserRating || 0),
+						'pi pi-star-fill text-sky-500': rating <= (hoverRating ?? props.rating.rating_user),
+						'pi pi-star text-muted-color': rating > (hoverRating ?? props.rating.rating_user),
 					}"
 				/>
 			</button>
@@ -76,14 +63,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref } from "vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { usePhotoStore } from "@/stores/PhotoState";
 import { useToast } from "primevue/usetoast";
 import PhotoService from "@/services/photo-service";
+import { useUserStore } from "@/stores/UserState";
+import StarRow from "@/components/icons/StarRow.vue";
 
 const lycheeStore = useLycheeStateStore();
 const photoStore = usePhotoStore();
+const userStore = useUserStore();
 const toast = useToast();
 
 const loading = ref(false);
@@ -91,23 +81,8 @@ const hoverRating = ref<number | null>(null);
 
 const props = defineProps<{
 	photoId: string;
-	statistics: App.Http.Resources.Models.PhotoStatisticsResource | null;
-	currentUserRating: number | null;
+	rating: App.Http.Resources.Models.PhotoRatingResource;
 }>();
-
-// Compute if rating is enabled based on config
-const isRatingEnabled = computed(() => lycheeStore.is_ratings_enabled);
-
-// Compute if metrics and average should be shown in details
-const isMetricsEnabled = computed(() => lycheeStore.is_rating_show_avg_in_details_enabled && lycheeStore.is_live_metrics_enabled);
-
-// Compute average rating from statistics
-const averageRating = computed(() => {
-	if (!props.statistics || props.statistics.rating_count === 0) {
-		return 0;
-	}
-	return props.statistics.rating_avg || 0;
-});
 
 function handleMouseEnter(rating: number) {
 	if (!loading.value) {

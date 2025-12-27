@@ -105,7 +105,6 @@ class InitConfig extends Data
 	public bool $is_swipe_vertically_to_go_back_enabled;
 
 	// Rating settings
-	public bool $is_ratings_enabled;
 	public bool $is_rating_show_avg_in_details_enabled;
 	public bool $is_rating_show_avg_in_photo_view_enabled;
 	public VisibilityType $rating_photo_view_mode;
@@ -187,7 +186,6 @@ class InitConfig extends Data
 		$this->is_swipe_vertically_to_go_back_enabled = request()->configs()->getValueAsBool('is_swipe_vertically_to_go_back_enabled');
 
 		// Rating settings
-		$this->is_ratings_enabled = request()->configs()->getValueAsBool('ratings_enabled');
 		$this->is_rating_show_avg_in_details_enabled = request()->configs()->getValueAsBool('rating_show_avg_in_details');
 		$this->is_rating_show_avg_in_photo_view_enabled = request()->configs()->getValueAsBool('rating_show_avg_in_photo_view');
 		$this->rating_photo_view_mode = request()->configs()->getValueAsEnum('rating_photo_view_mode', VisibilityType::class);

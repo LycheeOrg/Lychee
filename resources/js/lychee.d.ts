@@ -400,7 +400,6 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		is_registration_enabled: boolean;
 		is_scroll_to_navigate_photos_enabled: boolean;
 		is_swipe_vertically_to_go_back_enabled: boolean;
-		is_ratings_enabled: boolean;
 		is_rating_show_avg_in_details_enabled: boolean;
 		is_rating_show_avg_in_photo_view_enabled: boolean;
 		rating_photo_view_mode: App.Enum.VisibilityType;
@@ -553,7 +552,7 @@ declare namespace App.Http.Resources.Models {
 	export type PhotoRatingResource = {
 		rating_user: number;
 		rating_count: number;
-		rating_avg: number | null;
+		rating_avg: number;
 	};
 	export type PhotoResource = {
 		id: string;
