@@ -16,12 +16,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 /**
  * App\Models\PhotoRating.
  *
- * @property int                        $id
- * @property string                     $photo_id
- * @property int                        $user_id
- * @property int                        $rating
- * @property Photo                      $photo
- * @property User                       $user
+ * @property int    $id
+ * @property string $photo_id
+ * @property int    $user_id
+ * @property int    $rating
+ * @property Photo  $photo
+ * @property User   $user
  *
  * @method static \Illuminate\Database\Eloquent\Builder|PhotoRating newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|PhotoRating newQuery()
