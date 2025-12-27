@@ -24,7 +24,7 @@ This will help you navigate the codebase more effectively.
 
 ### Prerequisites
 
-- PHP 8.3 or higher
+- PHP 8.4 or higher
 - php extensions:
   - `php-curl`
   - `php-mbstring`

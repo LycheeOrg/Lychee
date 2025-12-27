@@ -6,11 +6,11 @@ This document provides a comprehensive overview of Lychee's backend architecture
 
 ## Overview
 
-Lychee's backend is built on the **Laravel framework** (PHP 8.3+) with a clean architecture pattern that emphasizes separation of concerns, reusability, and maintainability. The architecture follows Laravel's MVC pattern enhanced with additional layers for business logic, authorization, and data transformation.
+Lychee's backend is built on the **Laravel framework** (PHP 8.4+) with a clean architecture pattern that emphasizes separation of concerns, reusability, and maintainability. The architecture follows Laravel's MVC pattern enhanced with additional layers for business logic, authorization, and data transformation.
 
 ### Technology Stack
 
-- **Backend**: PHP 8.3+, Laravel Framework
+- **Backend**: PHP 8.4+, Laravel Framework
 - **Database**: MySQL, MariaDB, PostgreSQL, or SQLite
 - **Build Tools**: Composer
 - **Image Processing**: GD, ImageMagick

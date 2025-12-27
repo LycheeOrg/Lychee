@@ -72,7 +72,7 @@ Allows Lychee users to embed their public photo albums on external websites usin
 ### Technology Stack
 
 **Backend**:
-- Laravel 11.x (PHP 8.3+)
+- Laravel 13.x (PHP 8.4+)
 - New API endpoint: `GET /api/v2/Embed/{albumId}`
 - CORS configuration for cross-origin access
 
