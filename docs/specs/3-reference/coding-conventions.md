@@ -143,6 +143,27 @@ When dealing with monetary values:
   $price = 10.99;  // Float - prone to rounding errors
   ```
 
+### Database Transactions
+
+- **Preferred:** Use `DB::transaction(callable)` for database transactions instead of manually calling `DB::beginTransaction()`, `DB::commit()`, and `DB::rollback()`. This ensures that transactions are handled more cleanly and reduces the risk of forgetting to commit or rollback.
+
+```php
+// ✅ Correct
+DB::transaction(function () {
+    // Perform database operations
+});
+
+// ❌ Incorrect
+DB::beginTransaction();
+try {
+    // Perform database operations
+    DB::commit();
+} catch (Exception $e) {
+    DB::rollback();
+    throw $e;
+}
+```
+
 ## Vue3/TypeScript Conventions
 
 ### Component Structure
@@ -297,4 +318,4 @@ Before committing frontend changes:
 
 ---
 
-*Last updated: December 21, 2025*
+*Last updated: December 27, 2025*

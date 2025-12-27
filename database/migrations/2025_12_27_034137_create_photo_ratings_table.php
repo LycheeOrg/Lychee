@@ -21,7 +21,7 @@ return new class() extends Migration {
 		Schema::create('photo_ratings', function (Blueprint $table) {
 			$table->id();
 			$table->char('photo_id', self::RANDOM_ID_LENGTH)->index();
-			$table->unsignedBigInteger('user_id')->index();
+			$table->unsignedInteger('user_id')->index();
 			$table->unsignedTinyInteger('rating')->comment('Rating value 1-5');
 			$table->timestamps();
 
