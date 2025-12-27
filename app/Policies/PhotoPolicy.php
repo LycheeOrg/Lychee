@@ -30,6 +30,7 @@ class PhotoPolicy extends BasePolicy
 	public const CAN_ACCESS_FULL_PHOTO = 'canAccessFullPhoto';
 	public const CAN_DELETE_BY_ID = 'canDeleteById';
 	public const CAN_READ_METRICS = 'canReadMetrics';
+	public const CAN_READ_RATINGS = 'canReadRatings';
 
 	/**
 	 * @throws FrameworkException
@@ -256,6 +257,25 @@ class PhotoPolicy extends BasePolicy
 			MetricsAccess::ADMIN => $user?->may_administrate === true,
 			default => false,
 		};
+	}
+
+	/**
+	 * @param User|null $user
+	 * @param Photo     $photo
+	 *
+	 * @return bool
+	 */
+	public function canReadRatings(?User $user, Photo $photo): bool
+	{
+		$config_manager = app(ConfigManager::class);
+		// Rating are disabled globally
+		if (!$config_manager->getValueAsBool('ratings_enabled')) {
+			return false;
+		}
+
+		// Note that this will bypass the setting 'rating_show_only_when_user_rated'
+		// It is up to the admin to decide whether anonymous users can see ratings at all.
+		return ($user !== null) || $config_manager->getValueAsBool('ratings_public');
 	}
 
 	/**

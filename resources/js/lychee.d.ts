@@ -550,6 +550,11 @@ declare namespace App.Http.Resources.Models {
 		title: string;
 		url: string | null;
 	};
+	export type PhotoRatingResource = {
+		rating_user: number;
+		rating_count: number;
+		rating_avg: number | null;
+	};
 	export type PhotoResource = {
 		id: string;
 		album_id: string | null;
@@ -588,7 +593,7 @@ declare namespace App.Http.Resources.Models {
 		timeline: App.Http.Resources.Models.Utils.TimelineData | null;
 		palette: App.Http.Resources.Models.ColourPaletteResource | null;
 		statistics: App.Http.Resources.Models.PhotoStatisticsResource | null;
-		current_user_rating: number | null;
+		rating: App.Http.Resources.Models.PhotoRatingResource | null;
 	};
 	export type PhotoStatisticsResource = {
 		visit_count: number;

@@ -33,7 +33,7 @@ return new class() extends Migration {
 				'is_expert' => false,
 			],
 			[
-				'key' => 'rating_is_public',
+				'key' => 'rating_public',
 				'value' => '0',
 				'cat' => self::CAT,
 				'type_range' => self::BOOL,
