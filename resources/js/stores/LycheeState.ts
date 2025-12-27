@@ -94,9 +94,9 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		is_ratings_enabled: true,
 		is_rating_show_avg_in_details_enabled: true,
 		is_rating_show_avg_in_photo_view_enabled: true,
-		rating_photo_view_mode: "hover" as "always" | "hover" | "hidden",
+		rating_photo_view_mode: "hover" as App.Enum.VisibilityType,
 		is_rating_show_avg_in_album_view_enabled: true,
-		rating_album_view_mode: "hover" as "always" | "hover" | "hidden",
+		rating_album_view_mode: "hover" as App.Enum.VisibilityType,
 	}),
 	actions: {
 		async load(): Promise<void> {

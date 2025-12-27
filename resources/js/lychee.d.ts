@@ -126,6 +126,7 @@ declare namespace App.Enum {
 	export type UpdateStatus = 0 | 1 | 2 | 3;
 	export type UserGroupRole = "member" | "admin";
 	export type VersionChannelType = "release" | "git" | "tag";
+	export type VisibilityType = "never" | "always" | "hover";
 	export type WatermarkPosition = "top-left" | "top" | "top-right" | "left" | "center" | "right" | "bottom-left" | "bottom" | "bottom-right";
 }
 declare namespace App.Http.Resources.Admin {
@@ -403,9 +404,9 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		is_ratings_enabled: boolean;
 		is_rating_show_avg_in_details_enabled: boolean;
 		is_rating_show_avg_in_photo_view_enabled: boolean;
-		rating_photo_view_mode: "always" | "hover" | "hidden";
+		rating_photo_view_mode: App.Enum.VisibilityType;
 		is_rating_show_avg_in_album_view_enabled: boolean;
-		rating_album_view_mode: "always" | "hover" | "hidden";
+		rating_album_view_mode: App.Enum.VisibilityType;
 		default_homepage: string;
 		is_timeline_page_enabled: boolean;
 	};

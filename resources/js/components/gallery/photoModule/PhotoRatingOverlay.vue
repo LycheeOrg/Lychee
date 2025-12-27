@@ -31,7 +31,7 @@ const isRatingEnabled = computed(() => {
 
 	// Check view mode setting
 	const mode = lycheeStore.rating_photo_view_mode;
-	if (mode === "hidden") {
+	if (mode === "never") {
 		return false;
 	}
 
