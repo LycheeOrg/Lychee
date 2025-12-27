@@ -1,7 +1,7 @@
 # Feature 001 – Photo Star Rating – Implementation Tasks
 
 _Linked plan:_ [plan.md](plan.md)
-_Status:_ In Progress (Backend I1-I6, I10-I11 Complete ✅ | Frontend I7-I9d Complete ✅)
+_Status:_ In Progress (Backend I1-I6, I10-I11 Complete ✅ | Frontend I7-I9d, I12a Complete ✅ | Documentation I12, I13 Remaining)
 _Last updated:_ 2025-12-27
 
 ## Task Overview
@@ -513,31 +513,32 @@ npm run dev
 
 ---
 
-### I12a – Config Settings for Rating Visibility ⏳
+### I12a – Config Settings for Rating Visibility ✅
 **Estimated:** 60 minutes
 **Dependencies:** I8, I9a, I9c
-**Status:** Not started
+**Status:** Complete
 
 **Deliverables:**
-- [ ] Backend: Migration to add 6 config rows (Q001-11)
-  - [ ] `ratings_enabled` (bool, default: true) - master switch
-  - [ ] `rating_show_avg_in_details` (bool, default: true)
-  - [ ] `rating_show_avg_in_photo_view` (bool, default: true)
-  - [ ] `rating_photo_view_mode` (enum: always|hover|hidden, default: hover)
-  - [ ] `rating_show_avg_in_album_view` (bool, default: true)
-  - [ ] `rating_album_view_mode` (enum: always|hover|hidden, default: hover)
-  - [ ] Update `/Photo::rate` to check `ratings_enabled` (403 if disabled)
-- [ ] Frontend: Add to Lychee store
-  - [ ] Add 6 settings
-  - [ ] TypeScript types for RatingViewMode
-  - [ ] Getters
-- [ ] Update components to respect settings
-  - [ ] All: Check `ratings_enabled`
-  - [ ] PhotoRatingWidget: Check `rating_show_avg_in_details`, metrics_enabled (Q001-12)
-  - [ ] ThumbRatingOverlay: Check avg setting and mode
-  - [ ] PhotoRatingOverlay: Check avg setting and mode
-- [ ] Test all combinations
-- [ ] Default configuration (Q001-25)
+- [x] Backend: Migration to add 6 config rows (Q001-11)
+  - [x] `ratings_enabled` (bool, default: true) - master switch
+  - [x] `rating_show_avg_in_details` (bool, default: true)
+  - [x] `rating_show_avg_in_photo_view` (bool, default: true)
+  - [x] `rating_photo_view_mode` (enum: always|hover|never, default: hover) - using VisibilityType enum
+  - [x] `rating_show_avg_in_album_view` (bool, default: true)
+  - [x] `rating_album_view_mode` (enum: always|hover|never, default: hover) - using VisibilityType enum
+  - [x] Update `/Photo::rate` to check `ratings_enabled` (throws ConfigurationException if disabled)
+  - [x] Use BaseConfigMigration pattern
+  - [x] Created VisibilityType enum for type safety
+- [x] Frontend: Add to Lychee store
+  - [x] Add 6 settings to LycheeState
+  - [x] TypeScript types auto-generated via typescript:transform
+  - [x] Properties populated in load() action
+- [x] Update components to respect settings
+  - [x] PhotoRatingWidget: Check `ratings_enabled` and `rating_show_avg_in_details`, metrics_enabled
+  - [x] ThumbRatingOverlay: Check `ratings_enabled`, `rating_show_avg_in_album_view`, and `rating_album_view_mode`
+  - [x] PhotoRatingOverlay: Check `ratings_enabled`, `rating_show_avg_in_photo_view`, and `rating_photo_view_mode`
+- [x] InitConfig resource exposes all 6 settings
+- [x] All quality gates pass (PHPStan, php-cs-fixer, TypeScript, Prettier)
 
 **Exit Criteria:**
 - ✅ All 6 settings implemented
