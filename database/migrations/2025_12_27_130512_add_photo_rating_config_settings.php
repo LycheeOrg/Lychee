@@ -33,6 +33,19 @@ return new class() extends Migration {
 				'is_expert' => false,
 			],
 			[
+				'key' => 'rating_is_public',
+				'value' => '0',
+				'cat' => self::CAT,
+				'type_range' => self::BOOL,
+				'is_secret' => false,
+				'description' => 'Make photo ratings public',
+				'details' => 'Allow all users (including non-logged-in visitors) to see photo ratings',
+				'level' => 1,
+				'not_on_docker' => false,
+				'order' => 2,
+				'is_expert' => false,
+			],
+			[
 				'key' => 'rating_show_only_when_user_rated',
 				'value' => '0',
 				'cat' => self::CAT,
@@ -42,7 +55,7 @@ return new class() extends Migration {
 				'details' => 'Only display ratings (user or average) after the user has submitted their own rating',
 				'level' => 1,
 				'not_on_docker' => false,
-				'order' => 2,
+				'order' => 3,
 				'is_expert' => false,
 			],
 			[
@@ -55,7 +68,7 @@ return new class() extends Migration {
 				'details' => 'Display average rating and rating count in the photo details sidebar instead of user rating',
 				'level' => 0,
 				'not_on_docker' => false,
-				'order' => 3,
+				'order' => 4,
 				'is_expert' => false,
 			],
 			[
@@ -68,7 +81,7 @@ return new class() extends Migration {
 				'details' => 'Controls visibility of rating overlay: always visible, on hover, or never',
 				'level' => 1,
 				'not_on_docker' => false,
-				'order' => 4,
+				'order' => 5,
 				'is_expert' => false,
 			],
 			[
@@ -81,7 +94,7 @@ return new class() extends Migration {
 				'details' => 'Display average rating when viewing a photo in full-size mode instead of the user rating',
 				'level' => 1,
 				'not_on_docker' => false,
-				'order' => 5,
+				'order' => 6,
 				'is_expert' => false,
 			],
 			[
@@ -94,7 +107,7 @@ return new class() extends Migration {
 				'details' => 'Controls visibility of rating on thumbnails: always visible, on hover, or never',
 				'level' => 1,
 				'not_on_docker' => false,
-				'order' => 6,
+				'order' => 7,
 				'is_expert' => false,
 			],
 			[
@@ -107,7 +120,7 @@ return new class() extends Migration {
 				'details' => 'Display average rating on photo thumbnails in album view instead of the user rating',
 				'level' => 0,
 				'not_on_docker' => false,
-				'order' => 7,
+				'order' => 8,
 				'is_expert' => false,
 			],
 		];
