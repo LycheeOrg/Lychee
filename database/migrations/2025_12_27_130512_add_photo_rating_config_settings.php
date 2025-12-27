@@ -6,20 +6,22 @@
  * Copyright (c) 2018-2025 LycheeOrg.
  */
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\DB;
+use App\Models\Extensions\BaseConfigMigration;
 
-return new class() extends Migration {
+return new class() extends BaseConfigMigration {
 	public const CAT = 'Gallery';
 
-	private function getConfigs(): array
+	/**
+	 * @return array<int,array{key:string,value:string,is_secret:bool,cat:string,type_range:string,description:string,details?:string,order?:int,not_on_docker?:bool,is_expert?:bool,level?:int}>
+	 */
+	public function getConfigs(): array
 	{
 		return [
 			[
 				'key' => 'ratings_enabled',
 				'value' => '1',
 				'cat' => self::CAT,
-				'type_range' => '0|1',
+				'type_range' => self::BOOL,
 				'is_secret' => false,
 				'description' => 'Enable photo rating feature',
 				'details' => 'Master switch to enable or disable the photo rating feature entirely',
@@ -32,7 +34,7 @@ return new class() extends Migration {
 				'key' => 'rating_show_avg_in_details',
 				'value' => '1',
 				'cat' => self::CAT,
-				'type_range' => '0|1',
+				'type_range' => self::BOOL,
 				'is_secret' => false,
 				'description' => 'Show average rating in photo details drawer',
 				'details' => 'Display average rating and rating count in the photo details sidebar',
@@ -45,7 +47,7 @@ return new class() extends Migration {
 				'key' => 'rating_show_avg_in_photo_view',
 				'value' => '1',
 				'cat' => self::CAT,
-				'type_range' => '0|1',
+				'type_range' => self::BOOL,
 				'is_secret' => false,
 				'description' => 'Show average rating in full photo view',
 				'details' => 'Display average rating when viewing a photo in full-size mode',
@@ -71,7 +73,7 @@ return new class() extends Migration {
 				'key' => 'rating_show_avg_in_album_view',
 				'value' => '1',
 				'cat' => self::CAT,
-				'type_range' => '0|1',
+				'type_range' => self::BOOL,
 				'is_secret' => false,
 				'description' => 'Show average rating on photo thumbnails',
 				'details' => 'Display average rating on photo thumbnails in album view',
@@ -94,22 +96,5 @@ return new class() extends Migration {
 				'is_expert' => false,
 			],
 		];
-	}
-
-	/**
-	 * Run the migrations.
-	 */
-	public function up(): void
-	{
-		DB::table('configs')->insert($this->getConfigs());
-	}
-
-	/**
-	 * Reverse the migrations.
-	 */
-	public function down(): void
-	{
-		$keys = collect($this->getConfigs())->map(fn ($v) => $v['key'])->all();
-		DB::table('configs')->whereIn('key', $keys)->delete();
 	}
 };
