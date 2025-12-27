@@ -16,6 +16,7 @@ use App\Exceptions\Internal\TimelineGranularityException;
 use App\Http\Resources\Models\PhotoResource;
 use App\Http\Resources\Models\ThumbAlbumResource;
 use Carbon\Carbon;
+use Carbon\Exceptions\InvalidFormatException;
 use Illuminate\Support\Collection;
 use Safe\Exceptions\PcreException;
 use function Safe\preg_match;
@@ -64,7 +65,7 @@ class TimelineData extends Data
 	 *
 	 * @return ?Carbon The parsed Carbon date object or null if parsing fails
 	 */
-	private static function parseDateFromTitle(string $title): ?Carbon
+	public static function parseDateFromTitle(string $title): ?Carbon
 	{
 		// A title is expected to be in one of the following formats:
 		// "YYYY something"
@@ -83,7 +84,7 @@ class TimelineData extends Data
 			}
 
 			return null;
-		} catch (PcreException $e) {
+		} catch (PcreException|InvalidFormatException $e) {
 			// fail silently.
 			return null;
 		}
