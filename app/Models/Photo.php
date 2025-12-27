@@ -235,6 +235,8 @@ class Photo extends Model implements HasUTCBasedTimes
 	 * Get all ratings for this photo.
 	 *
 	 * @return HasMany<PhotoRating,$this>
+	 *
+	 * @codeCoverageIgnore Just a simple relationship - Not used yet.
 	 */
 	public function ratings(): HasMany
 	{
@@ -248,7 +250,9 @@ class Photo extends Model implements HasUTCBasedTimes
 	 */
 	public function rating(): HasOne
 	{
-		return $this->hasOne(PhotoRating::class)->where('user_id', '=', Auth::id() ?? '');
+		return $this->hasOne(PhotoRating::class)
+			->when(Auth::check(), fn ($query) => $query->where('user_id', '=', Auth::id()))
+			->when(!Auth::check(), fn ($query) => $query->whereNull('user_id'));
 	}
 
 	/**
