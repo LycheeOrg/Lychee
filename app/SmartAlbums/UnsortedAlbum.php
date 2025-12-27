@@ -48,7 +48,7 @@ class UnsortedAlbum extends BaseSmartAlbum
 	{
 		$config_manager = resolve(ConfigManager::class);
 		if ($this->public_permissions !== null && (!Auth::check() || !$config_manager->getValueAsBool('enable_smart_album_per_owner'))) {
-			return Photo::query()->leftJoin(PA::PHOTO_ALBUM, 'photos.id', '=', PA::PHOTO_ID)->with(['size_variants', 'statistics', 'palette', 'tags'])
+			return Photo::query()->leftJoin(PA::PHOTO_ALBUM, 'photos.id', '=', PA::PHOTO_ID)->with(['size_variants', 'statistics', 'palette', 'tags', 'rating'])
 			->where($this->smart_photo_condition);
 		}
 

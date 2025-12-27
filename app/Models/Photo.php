@@ -40,6 +40,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use function Safe\preg_match;
@@ -238,6 +239,16 @@ class Photo extends Model implements HasUTCBasedTimes
 	public function ratings(): HasMany
 	{
 		return $this->hasMany(PhotoRating::class, 'photo_id', 'id');
+	}
+
+	/**
+	 * Get all ratings for this photo.
+	 *
+	 * @return HasOne<PhotoRating,$this>
+	 */
+	public function rating(): HasOne
+	{
+		return $this->hasOne(PhotoRating::class)->where('user_id', '=', Auth::id() ?? '');
 	}
 
 	/**
