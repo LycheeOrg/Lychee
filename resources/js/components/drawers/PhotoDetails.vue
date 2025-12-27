@@ -185,6 +185,15 @@
 							</div>
 						</div>
 					</template>
+
+					<!-- Photo Rating Widget -->
+					<PhotoRatingWidget
+						v-if="photoStore.photo"
+						:photo-id="photoStore.photo.id"
+						:statistics="photoStore.photo.statistics"
+						:current-user-rating="photoStore.photo.current_user_rating"
+					/>
+
 					<LinksInclude v-if="is_details_links_enabled" />
 				</div>
 			</template>
@@ -197,6 +206,7 @@ import Card from "primevue/card";
 import MapInclude from "@/components/gallery/photoModule/MapInclude.vue";
 import MiniIcon from "@/components/icons/MiniIcon.vue";
 import ColourSquare from "@/components/gallery/photoModule/ColourSquare.vue";
+import PhotoRatingWidget from "@/components/gallery/photoModule/PhotoRatingWidget.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import LinksInclude from "@/components/gallery/photoModule/LinksInclude.vue";
 import { storeToRefs } from "pinia";
