@@ -181,7 +181,7 @@ class PhotoController extends Controller
 	 */
 	public function rate(SetPhotoRatingRequest $request, Rating $rating): PhotoResource
 	{
-		if (!$request->configs()->getValueAsBool('ratings_enabled')) {
+		if (!$request->configs()->getValueAsBool('rating_enabled')) {
 			throw new ConfigurationException('photo rating feature is disabled by configuration');
 		}
 

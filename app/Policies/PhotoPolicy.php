@@ -269,13 +269,13 @@ class PhotoPolicy extends BasePolicy
 	{
 		$config_manager = app(ConfigManager::class);
 		// Rating are disabled globally
-		if (!$config_manager->getValueAsBool('ratings_enabled')) {
+		if (!$config_manager->getValueAsBool('rating_enabled')) {
 			return false;
 		}
 
 		// Note that this will bypass the setting 'rating_show_only_when_user_rated'
 		// It is up to the admin to decide whether anonymous users can see ratings at all.
-		return ($user !== null) || $config_manager->getValueAsBool('ratings_public');
+		return ($user !== null) || $config_manager->getValueAsBool('rating_public');
 	}
 
 	/**

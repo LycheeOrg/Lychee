@@ -20,7 +20,7 @@ return new class() extends Migration {
 	{
 		return [
 			[
-				'key' => 'ratings_enabled',
+				'key' => 'rating_enabled',
 				'value' => '1',
 				'cat' => self::CAT,
 				'type_range' => self::BOOL,
