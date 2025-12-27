@@ -193,6 +193,12 @@ try {
 
 - **Composition API:** Use TypeScript with Composition API for Vue3.
 
+- **Type generation:** TypeScript types for PHP resources are automatically generated. After modifying PHP resource classes (e.g., `PhotoResource`, `PhotoStatisticsResource`), run:
+  ```bash
+  php artisan typescript:transform
+  ```
+  This generates TypeScript definitions in `resources/js/lychee.d.ts` from PHP DTOs, resources, and enums. The generated types are automatically available in the `App.*` namespace (e.g., `App.Http.Resources.Models.PhotoResource`).
+
 - **Function declarations:** Use regular function declarations, not arrow functions.
   ```typescript
   // ✅ Correct

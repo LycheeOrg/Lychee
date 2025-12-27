@@ -582,12 +582,15 @@ declare namespace App.Http.Resources.Models {
 		timeline: App.Http.Resources.Models.Utils.TimelineData | null;
 		palette: App.Http.Resources.Models.ColourPaletteResource | null;
 		statistics: App.Http.Resources.Models.PhotoStatisticsResource | null;
+		current_user_rating: number | null;
 	};
 	export type PhotoStatisticsResource = {
 		visit_count: number;
 		download_count: number;
 		favourite_count: number;
 		shared_count: number;
+		rating_count: number;
+		rating_avg: number | null;
 	};
 	export type RenamerRuleResource = {
 		id: number;

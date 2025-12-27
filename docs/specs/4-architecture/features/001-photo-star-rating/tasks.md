@@ -1,7 +1,7 @@
 # Feature 001 – Photo Star Rating – Implementation Tasks
 
 _Linked plan:_ [plan.md](plan.md)
-_Status:_ In Progress (Backend I1-I6, I10-I11 Complete ✅)
+_Status:_ In Progress (Backend I1-I6, I10-I11 Complete ✅ | Frontend I7 Complete ✅)
 _Last updated:_ 2025-12-27
 
 ## Task Overview
@@ -290,22 +290,23 @@ make phpstan
 
 ## Frontend Tasks (Increments I7-I9d, I12a)
 
-### I7 – Frontend Service Layer ⏳
+### I7 – Frontend Service Layer ✅
 **Estimated:** 45 minutes
 **Dependencies:** I5
-**Status:** Not started
+**Status:** Complete
 
 **Deliverables:**
-- [ ] Update `resources/js/services/photo-service.ts`
-  - [ ] Add method: `setRating(photo_id: string, rating: 0|1|2|3|4|5): Promise<AxiosResponse<PhotoResource>>`
-- [ ] Update TypeScript PhotoResource interface
-  - [ ] Add rating_avg?: number
-  - [ ] Add rating_count: number
-  - [ ] Add user_rating?: number (1-5)
+- [x] Update `resources/js/services/photo-service.ts`
+  - [x] Add method: `setRating(photo_id: string, rating: 0|1|2|3|4|5): Promise<AxiosResponse<PhotoResource>>`
+- [x] Update TypeScript PhotoResource interface (auto-generated via `php artisan typescript:transform`)
+  - [x] Add rating_avg?: number | null
+  - [x] Add rating_count: number
+  - [x] Add current_user_rating?: number | null (0-5)
+- [x] Document typescript:transform command in coding-conventions.md
 
 **Exit Criteria:**
 - ✅ Service method compiles
-- ✅ Types are correct
+- ✅ Types are correct (auto-generated from PHP resources)
 - ✅ Format passes
 
 **Commands:**
