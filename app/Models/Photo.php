@@ -231,6 +231,16 @@ class Photo extends Model implements HasUTCBasedTimes
 	}
 
 	/**
+	 * Get all ratings for this photo.
+	 *
+	 * @return HasMany<PhotoRating,$this>
+	 */
+	public function ratings(): HasMany
+	{
+		return $this->hasMany(PhotoRating::class, 'photo_id', 'id');
+	}
+
+	/**
 	 * Returns the relationship between a photo and its associated color palette.
 	 *
 	 * This is a one-to-one relationship where each photo can have one palette

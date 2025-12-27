@@ -66,6 +66,7 @@ class PhotoResource extends Data
 	private Carbon $timeline_data_carbon;
 
 	public ?PhotoStatisticsResource $statistics = null;
+	public ?int $current_user_rating = null;
 
 	public function __construct(Photo $photo, ?AbstractAlbum $album)
 	{
@@ -109,6 +110,14 @@ class PhotoResource extends Data
 
 		if (request()->configs()->getValueAsBool('metrics_enabled') && Gate::check(PhotoPolicy::CAN_READ_METRICS, [Photo::class, $photo])) {
 			$this->statistics = PhotoStatisticsResource::fromModel($photo->statistics);
+		}
+
+		// Load current user's rating if authenticated
+		if (Auth::check()) {
+			$userRating = $photo->ratings()
+				->where('user_id', Auth::id())
+				->first();
+			$this->current_user_rating = $userRating?->rating;
 		}
 	}
 

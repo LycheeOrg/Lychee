@@ -17,6 +17,7 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Enum\FileStatus;
 use App\Enum\SizeVariantType;
 use App\Exceptions\ConfigurationException;
+use App\Exceptions\ConflictingPropertyException;
 use App\Http\Requests\Photo\CopyPhotosRequest;
 use App\Http\Requests\Photo\DeletePhotosRequest;
 use App\Http\Requests\Photo\EditPhotoRequest;
@@ -24,6 +25,7 @@ use App\Http\Requests\Photo\FromUrlRequest;
 use App\Http\Requests\Photo\MovePhotosRequest;
 use App\Http\Requests\Photo\RenamePhotoRequest;
 use App\Http\Requests\Photo\RotatePhotoRequest;
+use App\Http\Requests\Photo\SetPhotoRatingRequest;
 use App\Http\Requests\Photo\SetPhotosStarredRequest;
 use App\Http\Requests\Photo\SetPhotosTagsRequest;
 use App\Http\Requests\Photo\UploadPhotoRequest;
@@ -36,7 +38,9 @@ use App\Image\Files\UploadedFile;
 use App\Jobs\ExtractZip;
 use App\Jobs\ProcessImageJob;
 use App\Jobs\WatermarkerJob;
+use App\Models\PhotoRating;
 use App\Models\SizeVariant;
+use App\Models\Statistics;
 use App\Models\Tag;
 use App\Repositories\ConfigManager;
 use Illuminate\Routing\Controller;
@@ -163,6 +167,89 @@ class PhotoController extends Controller
 		foreach ($request->photos() as $photo) {
 			$photo->is_starred = $request->isStarred();
 			$photo->save();
+		}
+	}
+
+	/**
+	 * Set the rating for a photo.
+	 *
+	 * @param SetPhotoRatingRequest $request
+	 *
+	 * @return PhotoResource
+	 *
+	 * @throws ConflictingPropertyException
+	 */
+	public function rate(SetPhotoRatingRequest $request): PhotoResource
+	{
+		try {
+			DB::beginTransaction();
+
+			$photo = $request->photo();
+			$user = Auth::user();
+			$rating = $request->rating();
+
+			// Ensure statistics record exists atomically (Q001-07)
+			$statistics = Statistics::firstOrCreate(
+				['photo_id' => $photo->id],
+				[
+					'album_id' => null,
+					'visit_count' => 0,
+					'download_count' => 0,
+					'favourite_count' => 0,
+					'shared_count' => 0,
+					'rating_sum' => 0,
+					'rating_count' => 0,
+				]
+			);
+
+			if ($rating > 0) {
+				// Find existing rating by this user for this photo
+				$existingRating = PhotoRating::where('photo_id', $photo->id)
+					->where('user_id', $user->id)
+					->first();
+
+				if ($existingRating !== null) {
+					// Update: adjust statistics delta
+					$delta = $rating - $existingRating->rating;
+					$statistics->rating_sum += $delta;
+					$existingRating->rating = $rating;
+					$existingRating->save();
+				} else {
+					// Insert: create new rating and increment statistics
+					PhotoRating::create([
+						'photo_id' => $photo->id,
+						'user_id' => $user->id,
+						'rating' => $rating,
+					]);
+					$statistics->rating_sum += $rating;
+					$statistics->rating_count += 1;
+				}
+
+				$statistics->save();
+			} else {
+				// Rating == 0: remove rating (idempotent, Q001-06)
+				$existingRating = PhotoRating::where('photo_id', $photo->id)
+					->where('user_id', $user->id)
+					->first();
+
+				if ($existingRating !== null) {
+					$statistics->rating_sum -= $existingRating->rating;
+					$statistics->rating_count -= 1;
+					$statistics->save();
+					$existingRating->delete();
+				}
+				// If no existing rating, do nothing (idempotent)
+			}
+
+			DB::commit();
+
+			// Reload photo with fresh statistics
+			$photo->refresh();
+
+			return new PhotoResource($photo, null);
+		} catch (\Throwable $e) {
+			DB::rollBack();
+			throw new ConflictingPropertyException('Failed to update photo rating due to a conflict. Please try again.', $e);
 		}
 	}
 
