@@ -40,7 +40,9 @@ class PhotoResourceRatingTest extends BaseApiWithDataTest
 
 		$this->assertCreated($response);
 		$response->assertJson([
-			'current_user_rating' => 4,
+			'rating' => [
+				'rating_user' => 4,
+			],
 		]);
 	}
 
@@ -53,7 +55,7 @@ class PhotoResourceRatingTest extends BaseApiWithDataTest
 		]);
 
 		$this->assertCreated($response);
-		$response->assertJsonPath('current_user_rating', 3);
+		$response->assertJsonPath('rating.rating_user', 3);
 	}
 
 	public function testPhotoResourceIncludesRatingStatisticsWhenMetricsEnabled(): void
@@ -100,7 +102,7 @@ class PhotoResourceRatingTest extends BaseApiWithDataTest
 
 		$this->assertCreated($response);
 		$response->assertJson([
-			'statistics' => [
+			'rating' => [
 				'rating_count' => 2,
 				'rating_avg' => 4.0,
 			],
@@ -124,7 +126,9 @@ class PhotoResourceRatingTest extends BaseApiWithDataTest
 
 		$this->assertCreated($response);
 		$response->assertJson([
-			'current_user_rating' => 5,
+			'rating' => [
+				'rating_user' => 5,
+			],
 		]);
 	}
 
@@ -145,7 +149,9 @@ class PhotoResourceRatingTest extends BaseApiWithDataTest
 
 		$this->assertCreated($response);
 		$response->assertJson([
-			'current_user_rating' => null,
+			'rating' => [
+				'rating_user' => 0,
+			],
 		]);
 	}
 
