@@ -1,7 +1,7 @@
 # Feature 001 – Photo Star Rating – Implementation Tasks
 
 _Linked plan:_ [plan.md](plan.md)
-_Status:_ **COMPLETE** ✅ (All 18 increments delivered and tested)
+_Status:_ Feature Complete ✅ | Performance Optimization (I14) Remaining ⚠️
 _Last updated:_ 2025-12-27
 
 ## Task Overview
@@ -611,6 +611,72 @@ npm run format
 php artisan test
 npm run check
 make phpstan
+```
+
+---
+
+### I14 – Performance Optimization (N+1 Query Fix) ⏳
+**Estimated:** 90 minutes
+**Dependencies:** I6 (PhotoResource)
+**Status:** Not started
+**Priority:** High - Performance issue
+
+**Problem:**
+Currently, the `PhotoResource` fetches the current user's rating individually for each photo, causing an N+1 query problem when loading collections (albums, search results, etc.).
+
+**Deliverables:**
+- [ ] Add eager loading capability to PhotoResource
+  - [ ] Detect if ratings are already loaded on collection
+  - [ ] Add `loadMissing(['ratings'])` when needed
+  - [ ] Filter ratings to current user in memory instead of separate query
+- [ ] Update controllers to eager load ratings
+  - [ ] AlbumController: `$photos->load('ratings')` before resource creation
+  - [ ] SearchController: Eager load on photo collections
+  - [ ] Any other endpoints returning photo collections
+- [ ] Performance testing
+  - [ ] Measure queries before/after with 100 photos
+  - [ ] Verify N+1 eliminated using Laravel Debugbar or Telescope
+  - [ ] Document query count improvement
+- [ ] Add test for eager loading
+  - [ ] Test that collections don't trigger N+1
+  - [ ] Test that single photo still works
+
+**Implementation Strategy:**
+```php
+// In PhotoResource constructor:
+if (!$photo->relationLoaded('ratings')) {
+    $photo->loadMissing('ratings');
+}
+
+// Then filter in memory:
+$this->current_user_rating = $photo->ratings
+    ->where('user_id', Auth::id())
+    ->first()
+    ?->rating;
+```
+
+**Alternative Approach (More Efficient):**
+```php
+// In controllers returning collections:
+$photos = Photo::with(['ratings' => function ($query) {
+    $query->where('user_id', Auth::id());
+}])->get();
+
+// In PhotoResource:
+$this->current_user_rating = $photo->ratings->first()?->rating;
+```
+
+**Exit Criteria:**
+- ✅ N+1 query eliminated for photo collections
+- ✅ Single photo endpoints still work correctly
+- ✅ Performance improvement documented
+- ✅ Tests verify no regression
+
+**Commands:**
+```bash
+php artisan test --filter PhotoResource
+make phpstan
+vendor/bin/php-cs-fixer fix
 ```
 
 ---
