@@ -14,13 +14,13 @@ _Last updated:_ 2025-12-28
 - Container starts in worker mode when `LYCHEE_MODE=worker` is set (FR-002-01)
 - Worker processes jobs from configured queue connection continuously (FR-002-02)
 - Default web mode remains unchanged for backward compatibility (FR-002-03)
-- Multi-container docker-compose deployment works with shared database and storage (S-002-07)
+- Multi-container docker compose deployment works with shared database and storage (S-002-07)
 - Worker gracefully handles SIGTERM, completing in-flight jobs (NFR-002-01)
 
 **Quality Bars:**
 - All 7 scenarios (S-002-01 through S-002-07) pass integration tests
 - Entrypoint script remains POSIX sh compliant (NFR-002-02)
-- Documentation includes working docker-compose examples (NFR-002-03)
+- Documentation includes working docker compose examples (NFR-002-03)
 - Logs output to stdout/stderr for container orchestration (NFR-002-04)
 
 ## Scope Alignment
@@ -59,7 +59,7 @@ _Last updated:_ 2025-12-28
 - Laravel's built-in queue logging (job processing, failures)
 
 **Fixtures:**
-- `docker-compose.yaml` (lychee_worker service): Worker service added to existing compose file
+- `docker compose.yaml` (lychee_worker service): Worker service added to existing compose file
 
 ## Assumptions & Risks
 
@@ -76,14 +76,14 @@ _Last updated:_ 2025-12-28
 | **R1:** Entrypoint script shell portability issues (bashisms) | Worker mode fails on Alpine/busybox sh | Use shellcheck during development (I2), test in Docker Alpine environment before commit |
 | **R2:** Invalid `LYCHEE_MODE` values cause silent failures | Container starts in wrong mode or crashes | Validate mode value explicitly, log error, exit with non-zero status (S-002-04) |
 | **R3:** SIGTERM handling fails, leaving orphaned jobs | Jobs incomplete or duplicated on worker restart | Test signal handling explicitly (I4), verify Laravel's graceful shutdown works |
-| **R4:** Documentation examples don't match production needs | Operators struggle with deployment | Include realistic docker-compose example with Redis, MySQL, shared volumes (I5) |
+| **R4:** Documentation examples don't match production needs | Operators struggle with deployment | Include realistic docker compose example with Redis, MySQL, shared volumes (I5) |
 | **R5:** Queue connection configuration unclear | Workers can't connect to Redis/database | Document required `.env` variables clearly, validate connection before starting worker (FR-002-02) |
 
 ## Implementation Drift Gate
 
 **Evidence Collection:**
 - After each increment: run integration tests for affected scenarios
-- Before final merge: execute full docker-compose example, verify both modes start and process work
+- Before final merge: execute full docker compose example, verify both modes start and process work
 - Shellcheck output for entrypoint.sh (zero warnings)
 - Docker build logs (successful multi-stage build)
 
@@ -104,8 +104,8 @@ docker build -t lychee-worker-test .
 docker run -e LYCHEE_MODE=worker -e QUEUE_CONNECTION=database lychee-worker-test
 
 # Multi-container deployment test
-docker-compose up -d
-docker-compose logs -f lychee_worker
+docker compose up -d
+docker compose logs -f lychee_worker
 ```
 
 ## Increment Map
@@ -259,17 +259,17 @@ docker run -e LYCHEE_MODE=worker -e QUEUE_CONNECTION=redis \
 ---
 
 ### **I3 – Docker Compose Worker Service Extension**
-**Goal:** Extend existing docker-compose.yaml with optional worker service.
+**Goal:** Extend existing docker compose.yaml with optional worker service.
 
 **Preconditions:**
 - I1 completed (mode detection works)
-- Existing [docker-compose.yaml](docker-compose.yaml) has lychee_api service configured
+- Existing [docker compose.yaml](docker compose.yaml) has lychee_api service configured
 
 **Steps:**
-1. **Research:** Review existing docker-compose.yaml structure (lychee_api, lychee_db, lychee_cache)
-2. **Implement:** Add worker service to existing `docker-compose.yaml`:
+1. **Research:** Review existing docker compose.yaml structure (lychee_api, lychee_db, lychee_cache)
+2. **Implement:** Add worker service to existing `docker compose.yaml`:
    ```yaml
-   # Add this service to the existing docker-compose.yaml
+   # Add this service to the existing docker compose.yaml
    # after the lychee_api service definition
 
    lychee_worker:
@@ -367,40 +367,40 @@ docker run -e LYCHEE_MODE=worker -e QUEUE_CONNECTION=redis \
    **Important:** To use Redis for queue (recommended for production):
    - Set `QUEUE_CONNECTION=redis` in `.env`
    - Ensure `lychee_cache` service is running
-3. **Test:** Run `docker-compose up -d lychee_worker`
+3. **Test:** Run `docker compose up -d lychee_worker`
 4. **Verify:**
    - Web service (lychee_api) runs normally with Octane (check logs: "Starting Lychee in web mode")
    - Worker service (lychee_worker) starts queue:work (check logs: "Starting Lychee in worker mode")
    - Dispatch test job via web, verify worker processes it
-   - Test auto-restart: `docker-compose exec lychee_worker pkill -f queue:work` → verify container restarts process
-5. **Document:** Add inline comments explaining worker configuration in docker-compose.yaml
+   - Test auto-restart: `docker compose exec lychee_worker pkill -f queue:work` → verify container restarts process
+5. **Document:** Add inline comments explaining worker configuration in docker compose.yaml
 
 **Commands:**
 ```bash
 # Start worker (lychee_api already running)
-docker-compose up -d lychee_worker
+docker compose up -d lychee_worker
 
 # Check logs
-docker-compose logs -f lychee_api   # Web mode
-docker-compose logs -f lychee_worker # Worker mode
+docker compose logs -f lychee_api   # Web mode
+docker compose logs -f lychee_worker # Worker mode
 
 # Dispatch test job (via web service)
-docker-compose exec lychee_api php artisan tinker
+docker compose exec lychee_api php artisan tinker
 # >>> dispatch(new \App\Jobs\ExtractColoursJob(1));
 
 # Verify worker processed it
-docker-compose logs lychee_worker | grep ExtractColoursJob
+docker compose logs lychee_worker | grep ExtractColoursJob
 
 # Test auto-restart (kill worker process inside container)
-docker-compose exec lychee_worker pkill -f queue:work
+docker compose exec lychee_worker pkill -f queue:work
 sleep 5
-docker-compose ps lychee_worker  # Should show "Up" (restarted)
+docker compose ps lychee_worker  # Should show "Up" (restarted)
 
 # Scale workers (run 3 worker containers)
-docker-compose up -d --scale lychee_worker=3
+docker compose up -d --scale lychee_worker=3
 
 # Stop worker
-docker-compose stop lychee_worker
+docker compose stop lychee_worker
 ```
 
 **Exit Criteria:**
@@ -432,18 +432,18 @@ docker-compose stop lychee_worker
 **Commands:**
 ```bash
 # Integration test
-docker-compose -f docker-compose.worker-example.yaml up -d worker
+docker compose -f docker compose.worker-example.yaml up -d worker
 
 # Dispatch long job
-docker-compose exec web php artisan tinker
+docker compose exec web php artisan tinker
 # >>> dispatch(new \App\Jobs\TestLongRunningJob(10)); // 10 second job
 
 # Send SIGTERM after 2 seconds
 sleep 2
-docker-compose kill -s SIGTERM worker
+docker compose kill -s SIGTERM worker
 
 # Verify job completed
-docker-compose logs worker | grep "Job completed"
+docker compose logs worker | grep "Job completed"
 ```
 
 **Exit Criteria:**
@@ -466,7 +466,7 @@ docker-compose logs worker | grep "Job completed"
    - Overview: why use worker mode
    - Environment variables: `LYCHEE_MODE`, `QUEUE_CONNECTION`, Redis/database config
    - Docker Compose deployment example
-   - Scaling workers: `docker-compose up -d --scale worker=3`
+   - Scaling workers: `docker compose up -d --scale worker=3`
    - Monitoring: checking logs, job queue depth
    - Troubleshooting: common issues (connection failures, permissions)
 2. **Update knowledge map:** [docs/specs/4-architecture/knowledge-map.md](../../knowledge-map.md)
@@ -600,9 +600,9 @@ npm run check
 docker build -t lychee-worker .
 
 # Integration
-docker-compose -f docker-compose.worker-example.yaml up -d
+docker compose -f docker compose.worker-example.yaml up -d
 # Manual verification of web + worker services
-docker-compose -f docker-compose.worker-example.yaml down -v
+docker compose -f docker compose.worker-example.yaml down -v
 ```
 
 ## Follow-ups / Backlog
@@ -626,5 +626,6 @@ docker-compose -f docker-compose.worker-example.yaml down -v
 
 ---
 
-**Plan Status:** Draft
-**Next Steps:** Execute Analysis Gate, then proceed with I1 (Entrypoint Script Mode Detection)
+**Plan Status:** ✅ Complete
+**Completion Date:** 2025-12-28
+**Next Steps:** Feature 002 is production-ready. Operators can deploy worker mode via docker compose.yaml (lychee_worker service).

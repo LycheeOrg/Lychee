@@ -121,7 +121,7 @@ services:
 
       # Cache
       CACHE_STORE: "${CACHE_STORE:-file}"
-      CACHE_PREFIX: "${CACHE_PREFIX:-lychee_keygen_cache}"
+      CACHE_PREFIX: "${CACHE_PREFIX:-lychee_cache}"
       REDIS_HOST: "lychee_cache"
       REDIS_PASSWORD: "null"
       REDIS_PORT: "6379"
@@ -141,8 +141,6 @@ services:
       LOG_DEPRECATIONS_CHANNEL: "${LOG_DEPRECATIONS_CHANNEL:-null}"
       LOG_LEVEL: "${LOG_LEVEL:-debug}"
       LOG_STDOUT: "${LOG_STDOUT:-true}"
-
-      # QUEUE_CONNECTION:sync
 
       # SECURITY_HEADER_HSTS_ENABLE:false
       # SECURITY_HEADER_CSP_CONNECT_SRC:
@@ -287,6 +285,131 @@ services:
 
     networks:
       - lychee
+
+  # Queue Worker Service (disabled by default)
+  # Uncomment to enable horizontal scaling of background job processing
+  lychee_worker:
+    image: lychee-frankenphp:latest
+    # build:
+    #   context: ./app
+    #   dockerfile: Dockerfile
+    #   args:
+    #     NODE_ENV: "${NODE_ENV:-production}"
+    container_name: lychee-worker
+    restart: unless-stopped  # Auto-restart at container level (outer layer)
+
+    # Security hardening (match lychee_api)
+    security_opt:
+      - no-new-privileges:true
+      - seccomp:unconfined
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+      - DAC_OVERRIDE
+    read_only: false  # Laravel needs write access to storage/cache
+    tmpfs:
+      - /tmp:noexec,nosuid,nodev,size=100m
+
+    # Resource limits (adjust based on workload)
+    # Workers typically need less CPU but more memory for image processing
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+    env_file:
+      - path: ./.env
+        required: true
+    environment:
+      PUID: "${PUID:-1000}"
+      PGID: "${PGID:-1000}"
+
+      # WORKER MODE CONFIGURATION
+      # Set LYCHEE_MODE=worker to enable queue worker mode
+      LYCHEE_MODE: worker
+
+      # Queue configuration (CRITICAL for worker mode)
+      # Recommended: redis for production (faster, better concurrency)
+      # Alternative: database (no Redis dependency)
+      QUEUE_CONNECTION: "${QUEUE_CONNECTION:-database}"
+
+      # Queue priority (optional)
+      # Process high-priority jobs first, then default, then low
+      # Example: QUEUE_NAMES=high,default,low
+      # QUEUE_NAMES: "${QUEUE_NAMES:-default}"
+
+      # Worker restart interval (optional)
+      # Restart worker after N seconds to mitigate memory leaks
+      # Default: 3600 seconds (1 hour)
+      # WORKER_MAX_TIME: "${WORKER_MAX_TIME:-3600}"
+
+      # Application (inherit from lychee_api)
+      APP_NAME: "${APP_NAME:-Lychee}"
+      APP_ENV: "${APP_ENV:-production}"
+      APP_DEBUG: "${APP_DEBUG:-false}"
+      APP_TIMEZONE: "${TIMEZONE:-UTC}"
+      APP_URL: "${APP_URL:-http://localhost:8000}"
+
+      # Database (same as lychee_api - shared database required)
+      DB_CONNECTION: "${DB_CONNECTION:-mysql}"
+      DB_HOST: "${DB_HOST:-lychee_db}"
+      DB_PORT: "${DB_PORT:-3306}"
+      DB_DATABASE: "${DB_DATABASE:-lychee}"
+      DB_USERNAME: "${DB_USERNAME:-lychee}"
+      # DB_PASSWORD comes from .env file
+
+      # Redis (if using redis queue driver)
+      # Must point to same Redis instance as lychee_api
+      REDIS_HOST: "lychee_cache"
+      REDIS_PASSWORD: "null"
+      REDIS_PORT: "6379"
+
+      # Cache (same as lychee_api)
+      CACHE_STORE: "${CACHE_STORE:-file}"
+      CACHE_PREFIX: "${CACHE_PREFIX:-lychee_cache}"
+
+      # Logging (output to stdout/stderr for container log aggregation)
+      LOG_CHANNEL: "${LOG_CHANNEL:-stack}"
+      LOG_STACK: "${LOG_STACK:-single}"
+      LOG_LEVEL: "${LOG_LEVEL:-debug}"
+      LOG_STDOUT: "${LOG_STDOUT:-true}"
+
+    # Shared volumes with lychee_api (CRITICAL for photo processing)
+    # Workers need access to the same uploads and storage as web service
+    volumes:
+      - ./lychee/uploads:/app/public/uploads
+      - ./lychee/storage/app:/app/storage/app
+      - ./lychee/logs:/app/storage/logs
+      - ./lychee/tmp:/app/storage/tmp
+      - .env:/app/.env:ro
+
+    depends_on:
+      lychee_db:
+        condition: service_healthy
+
+    # Worker health check
+    # Verifies queue:work process is running
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -f 'queue:work' || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s  # Give worker time to start up
+
+    networks:
+      - lychee
+  #
+  # SCALING WORKERS:
+  # To run multiple worker containers (horizontal scaling):
+  #   docker compose up -d --scale lychee_worker=3
+  # This will create 3 worker containers processing jobs in parallel.
 
   lychee_cache:
       image: redis:alpine
