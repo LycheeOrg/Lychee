@@ -20,12 +20,12 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
-	| Force HTTPS
+	| Log 404 errors
 	|--------------------------------------------------------------------------
 	|
-	| When running behind a proxy, it may be necessary for the urls to be
-	| set as https for the reverse translation. You should set this if you
-	| want to force the https scheme.
+	| When enabled, all 404 errors are logged to the log file.
+	| This can be useful to track broken links or attempted attacks.
+	| True by default, so it can be set to false to avoid too large log files.
 	*/
 	'log_404_errors' => (bool) env('LOG_404_ERRORS', true),
 

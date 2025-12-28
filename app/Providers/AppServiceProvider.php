@@ -227,8 +227,6 @@ class AppServiceProvider extends ServiceProvider
 				// @codeCoverageIgnoreEnd
 			}
 
-			Log::error('LogViewer access requested by user ID ' . (Auth::guest() ? 'guest' : Auth::id()));
-
 			// return true to allow viewing the Log Viewer.
 			return !Auth::guest() && Gate::check(SettingsPolicy::CAN_SEE_LOGS, Configs::class);
 		});
@@ -344,7 +342,7 @@ class AppServiceProvider extends ServiceProvider
 
 		// Clean up after each request
 		Octane::tick('flush-memory', fn () => $this->flushMemory())
-			->seconds(60);
+			->every(100);
 
 		Event::listen(RequestTerminated::class, function (): void {
 			// Flush all log handlers

@@ -81,7 +81,6 @@ RUN apk add --no-cache \
     pdo_pgsql \
     gd \
     zip \
-    pcntl \
     bcmath \
     sodium \
     opcache \
