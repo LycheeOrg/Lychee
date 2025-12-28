@@ -6,9 +6,184 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 | Question ID | Feature | Priority | Summary | Status | Opened | Updated |
 |-------------|---------|----------|---------|--------|--------|---------|
-| _No open questions currently tracked_ | | | | | | |
+| Q-003-09 | Feature 003 | HIGH | Multi-user cover selection strategy for computed_cover_id | Open | 2025-12-28 | 2025-12-28 |
 
 ## Question Details
+
+### Q-003-09: Multi-user Cover Selection Strategy for computed_cover_id
+
+**Context:**
+
+Lychee is a multi-user system with per-user access control. [HasAlbumThumb.php](app/Relations/HasAlbumThumb.php:203-210, 226-229) currently computes cover photos **at query time** by applying `PhotoQueryPolicy::appendSearchabilityConditions` and `AlbumQueryPolicy::appendAccessibilityConditions` based on the authenticated user.
+
+**Scenario:**
+- User A has access to Album X
+- Album X contains Album Y (to which User A has NO access)
+- Album Y contains photos that should NOT be visible to User A
+- Current behavior: User A sees a cover photo dynamically filtered to only photos they can access
+- Proposed Feature 003: Store a single `computed_cover_id` per album in the database
+
+**Problem:**
+
+If we store a single `computed_cover_id` per album, we have two mutually exclusive options:
+1. **Store admin's view** (photos visible to admin) - may leak private photos to restricted users
+2. **Store most-restricted view** (photos visible to ALL users) - may show no cover for some users who DO have access to some photos
+
+**Question:**
+
+How should `computed_cover_id` be selected and stored in a multi-user environment?
+
+**Options:**
+
+**Option A: Keep cover computation dynamic (do NOT pre-compute computed_cover_id)**
+- **How it works:** Store and pre-compute `max_taken_at`, `min_taken_at`, `num_children`, `num_photos` (these are user-agnostic aggregates), but keep cover selection dynamic per-user via HasAlbumThumb
+- **Pros:**
+  - Preserves existing security model (no photo leakage risk)
+  - No schema changes for cover selection
+  - Simpler implementation (4 columns instead of 5)
+- **Cons:**
+  - Still requires 1 subquery per album for cover (partial performance gain vs. current 4 subqueries)
+  - Feature 003 doesn't achieve full "eliminate all virtual columns" goal
+
+**Option B: Store admin-perspective computed_cover_id with runtime filtering**
+- **How it works:** `RecomputeAlbumStatsJob` computes cover as if admin is viewing (no filters), stores in `computed_cover_id`. At query time, `HasAlbumThumb::getResults()` checks if `computed_cover_id` photo is visible to current user; if not, falls back to dynamic query.
+- **Pros:**
+  - Works for most users (non-restricted users get fast path)
+  - No photo leakage (runtime check enforces security)
+  - Eventual consistency for cover updates
+- **Cons:**
+  - Complex implementation (dual-path: fast for admin/non-restricted, slow fallback for restricted users)
+  - May show "no cover" for restricted users even when photos exist (if admin-selected cover is invisible to them)
+  - Wasted computation/storage if many users have restricted access
+
+**Option C: Per-user computed cover (new schema: user_album_covers table)**
+- **How it works:** Create `user_album_covers` table with `(user_id, album_id, computed_cover_id)`. Recompute cover per-user on album mutations. Query joins this table.
+- **Pros:**
+  - Each user sees correct cover
+  - Fully pre-computed (no runtime queries)
+- **Cons:**
+  - Significant schema complexity (new table, composite keys)
+  - Storage explosion (N users × M albums)
+  - Recomputation complexity (must recompute for ALL users on every album change)
+  - Defeats performance goal (storage/computation overhead likely exceeds current virtual column cost)
+
+**Option D: Store most-accessible cover with user-group filtering**
+- **How it works:** Identify "least privileged user group" or "public photos only" as the filter criterion. Store `computed_cover_id` for this least-common-denominator view.
+- **Pros:**
+  - Single stored value (simple schema)
+  - Guaranteed safe (no private photo leakage)
+- **Cons:**
+  - May show "no cover" for many users who DO have access to other photos
+  - Requires user group analysis logic (complex, may not align with Lychee's granular per-photo ACLs)
+
+**Impact:**
+
+- **Modules affected:** Application layer (Album model, HasAlbumThumb), Domain layer (cover selection policy), Persistence (migration, computed_cover_id column usage)
+- **NFR impact:** If cover remains dynamic (Option A), NFR-003-01 must be revised to account for 1 subquery per album (vs. current 4)
+- **Security impact:** Options B/C/D introduce risk of photo leakage if implemented incorrectly
+- **ADR required:** High-impact decision affecting security model and performance goals
+
+---
+
+### ~~Q-003-01: Recomputation Job Queue Priority~~ ✅ RESOLVED
+
+**Decision:** Option A - Use default queue, rely on worker scaling
+**Rationale:** Simpler configuration, standard Laravel pattern, natural backpressure signaling. Operators scale worker count to meet 30-second consistency target.
+**Updated in spec:** FR-003-02, JOB-003-01
+
+---
+
+### ~~Q-003-02: Backfill Execution Strategy During Migration~~ ✅ RESOLVED
+
+**Decision:** Option A - Manual trigger after migration (with `lychee:` prefix requirement)
+**Rationale:** Operator controls timing during maintenance window, migration completes quickly, aligns with dual-read fallback pattern. All Lychee commands use `lychee:` namespace.
+**Updated in spec:** FR-003-06, CLI-003-01, Migration Strategy appendix
+**ADR:** ADR-0003-album-computed-fields-precomputation.md
+
+---
+
+### ~~Q-003-03: Concurrent Album Mutation Deduplication~~ ✅ RESOLVED
+
+**Decision:** Option A - Laravel WithoutOverlapping middleware
+**Rationale:** Built-in Laravel feature (same as Feature 002 Q-002-03), prevents wasted work, automatic lock release, simple implementation.
+**Updated in spec:** FR-003-02, JOB-003-01
+**ADR:** ADR-0003-album-computed-fields-precomputation.md
+
+---
+
+### ~~Q-003-04: Cover Selection Race Condition Handling~~ ✅ RESOLVED
+
+**Decision:** Option A - Foreign key ON DELETE SET NULL (already in spec)
+**Rationale:** Database handles automatically, simple, eventual consistency. Photo deletion events trigger recomputation for parent albums.
+**Updated in spec:** FR-003-02 (added photo deletion event trigger), Migration Strategy appendix (FK constraint confirmed)
+
+---
+
+### ~~Q-003-05: Propagation Chain Failure Handling~~ ✅ RESOLVED
+
+**Decision:** Option A - Stop propagation, log error, manual recovery
+**Rationale:** Prevents cascading errors, clear failure boundary, operator can investigate root cause before retrying via `lychee:recompute-album-stats`.
+**Updated in spec:** FR-003-02, CLI-003-02
+**ADR:** ADR-0003-album-computed-fields-precomputation.md
+
+---
+
+### ~~Q-003-06: Soft-Deleted Photo Exclusion from Computations~~ ✅ RESOLVED
+
+**Decision:** N/A - Lychee does not use soft deletes
+**Rationale:** Per user clarification, Lychee does not implement soft delete pattern for photos. Hard deletes only.
+**Updated in spec:** FR-003-02 (removed soft-delete references)
+
+---
+
+### ~~Q-003-07: NULL taken_at Handling in Min/Max Calculations~~ ✅ RESOLVED
+
+**Decision:** Option A - Ignore NULL taken_at, use SQL MIN/MAX directly
+**Rationale:** Mirrors existing AlbumBuilder.php behavior (lines 111, 125). SQL MIN/MAX ignores NULLs by default. Semantically correct (taken_at unknown = exclude from range).
+**Updated in spec:** FR-003-02 validation path
+
+---
+
+### ~~Q-003-08: Migration Rollback Strategy for Multi-Phase Deployment~~ ✅ RESOLVED
+
+**Decision:** Option B - Full rollback with down() migration
+**Rationale:** Clean schema restoration, simple one-command rollback. Trade-off: data loss if backfill ran, but values can be regenerated. Critical constraint: do NOT rollback after Phase 4 cleanup.
+**Updated in spec:** FR-003-06, Migration Strategy appendix (new Rollback Strategy section)
+**ADR:** ADR-0003-album-computed-fields-precomputation.md
+
+---
+
+### ~~Q-002-01: Worker Auto-Restart Queue Priority~~ ✅ RESOLVED
+
+**Decision:** Option A - Support multiple queue workers with priority via QUEUE_NAMES environment variable
+**Rationale:** Allows time-sensitive jobs to be prioritized, standard Laravel pattern, operator flexibility.
+**Updated in spec:** FR-002-02, DO-002-02, CLI-002-01, Spec DSL, Queue Connection Configuration appendix
+
+---
+
+### ~~Q-002-02: Worker Max-Time Configurability~~ ✅ RESOLVED
+
+**Decision:** Option A - Configurable with sensible default via WORKER_MAX_TIME environment variable
+**Rationale:** Operators can tune for their workload, no code changes needed to adjust restart interval.
+**Updated in spec:** FR-002-02, DO-002-03, CLI-002-01, Spec DSL, Queue Connection Configuration appendix
+
+---
+
+### ~~Q-002-03: Job Deduplication for Concurrent Mutations~~ ✅ RESOLVED
+
+**Decision:** Option A - Laravel job middleware with deduplication using WithoutOverlapping
+**Rationale:** Built-in Laravel feature, prevents wasted work, automatic lock release.
+**Updated in spec:** NFR-002-05, Documentation Deliverables
+
+---
+
+### ~~Q-002-04: Worker Healthcheck Failure Behavior~~ ✅ RESOLVED
+
+**Decision:** Option B - Healthcheck tracks restart count, fail after 10 restarts in 5 minutes
+**Rationale:** Orchestrator can restart container if worker is fundamentally broken, prevents infinite crash loops.
+**Updated in spec:** FR-002-05
+
+---
 
 ### ~~Q001-07: Statistics Record Creation Strategy~~ ✅ RESOLVED
 
