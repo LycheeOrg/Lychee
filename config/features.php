@@ -20,6 +20,17 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
+	| Force HTTPS
+	|--------------------------------------------------------------------------
+	|
+	| When running behind a proxy, it may be necessary for the urls to be
+	| set as https for the reverse translation. You should set this if you
+	| want to force the https scheme.
+	*/
+	'log_404_errors' => (bool) env('LOG_404_ERRORS', true),
+
+	/*
+	|--------------------------------------------------------------------------
 	| Enable v4 redirections
 	|--------------------------------------------------------------------------
 	|

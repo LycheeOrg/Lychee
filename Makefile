@@ -160,13 +160,14 @@ gen_typescript_types:
 class-leak:
 	vendor/bin/class-leak check app database/migrations config --skip-type Illuminate\\View\\Component
 
-docker-build-base-image:
-	docker build -t lychee-base:latest ./docker/base
+docker-build:
+	docker build -t lychee-frankenphp .
 
-docker-build-dev-image:
-	docker build ./docker/dev -t lychee-dev:latest
+docker-build-no-cache:
+	docker build -t lychee-frankenphp . --no-cache
 
-docker-build-dev: docker-build-base-image docker-build-dev-image
+docker-run:
+	docker compose up
 
 test_pgsql_v2:
 	docker compose -f docker-compose-pgsql.yaml up -d

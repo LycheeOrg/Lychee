@@ -355,7 +355,7 @@ class ArrayToTextTable implements \Stringable
 	 */
 	protected static function valueToLines(?string $value): array
 	{
-		return explode("\n", $value);
+		return explode("\n", $value ?? '');
 	}
 
 	protected static function mb_str_pad(

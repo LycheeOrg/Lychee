@@ -32,19 +32,20 @@ use App\Policies\PhotoQueryPolicy;
 use App\Policies\SettingsPolicy;
 use App\Repositories\ConfigManager;
 use App\Services\MoneyService;
-use Laravel\Octane\Facades\Octane;
-use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
+use Laravel\Octane\Events\RequestTerminated;
+use Laravel\Octane\Facades\Octane;
 use LycheeVerify\Contract\VerifyInterface;
 use LycheeVerify\Verify;
 use Opcodes\LogViewer\Facades\LogViewer;
@@ -183,7 +184,7 @@ class AppServiceProvider extends ServiceProvider
 	}
 
 	/**
-	 * Register database configuration
+	 * Register database configuration.
 	 *
 	 * @return void
 	 */
@@ -208,11 +209,12 @@ class AppServiceProvider extends ServiceProvider
 	}
 
 	/**
-	 * Set up the callable for accessing LogViewer
+	 * Set up the callable for accessing LogViewer.
 	 *
 	 * @return void
 	 */
-	private function registerLoggerAccess(): void {
+	private function registerLoggerAccess(): void
+	{
 		/**
 		 * Set up the Authorization layer for accessing Logs in LogViewer.
 		 */
@@ -224,6 +226,8 @@ class AppServiceProvider extends ServiceProvider
 				return true;
 				// @codeCoverageIgnoreEnd
 			}
+
+			Log::error('LogViewer access requested by user ID ' . (Auth::guest() ? 'guest' : Auth::id()));
 
 			// return true to allow viewing the Log Viewer.
 			return !Auth::guest() && Gate::check(SettingsPolicy::CAN_SEE_LOGS, Configs::class);
@@ -290,7 +294,7 @@ class AppServiceProvider extends ServiceProvider
 	 */
 	private function registerHttpAndResponseConfiguration(): void
 	{
-	/**
+		/**
 		 * By default resources are wrapping results in a 'data' attribute.
 		 * We disable that.
 		 */
@@ -304,7 +308,6 @@ class AppServiceProvider extends ServiceProvider
 			URL::forceScheme('https');
 			// @codeCoverageIgnoreEnd
 		}
-
 	}
 
 	/**
@@ -328,6 +331,13 @@ class AppServiceProvider extends ServiceProvider
 
 	private function registerOctaneSettings(): void
 	{
+		// Force flush logs after each request in Octane
+		if (app()->bound('octane') === false) {
+			Log::info('Octane is not bound, skipping Octane specific settings.');
+
+			return;
+		}
+
 		// Reset DB connections after each request to prevent timeouts
 		Octane::tick('octane-db-ping', fn () => $this->pingDatabaseConnections())
 			->seconds(30);
@@ -335,6 +345,13 @@ class AppServiceProvider extends ServiceProvider
 		// Clean up after each request
 		Octane::tick('flush-memory', fn () => $this->flushMemory())
 			->seconds(60);
+
+		Event::listen(RequestTerminated::class, function (): void {
+			// Flush all log handlers
+			foreach (Log::getHandlers() as $handler) {
+				$handler->close();
+			}
+		});
 	}
 
 	protected function pingDatabaseConnections(): void
@@ -344,7 +361,7 @@ class AppServiceProvider extends ServiceProvider
 		foreach (array_keys($connections) as $name) {
 			try {
 				DB::connection($name)->getPdo();
-			} catch (Exception $e) {
+			} catch (\Exception $e) {
 				DB::purge($name);
 				DB::reconnect($name);
 			}

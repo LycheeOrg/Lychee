@@ -76,7 +76,7 @@ class ThumbAlbumResource extends Data
 			$this->created_at_carbon = $data->created_at;
 			$this->created_at = $this->created_at_carbon->format($date_format);
 			$policy = AlbumProtectionPolicy::ofBaseAlbum($data);
-			$this->description = Str::limit($data->description, 100);
+			$this->description = $data->description === null ? null : Str::limit($data->description, 100);
 			$this->owner = $data->owner->username;
 		}
 

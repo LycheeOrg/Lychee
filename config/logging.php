@@ -26,7 +26,7 @@ return [
 	*/
 
 	'deprecations' => [
-		'channel' => env('LOG_DEPRECATIONS_CHANNEL', 'null'),
+		'channel' => env('LOG_DEPRECATIONS_CHANNEL', 'deprecations'),
 		'trace' => false,
 	],
 
@@ -48,9 +48,41 @@ return [
 	'channels' => [
 		'stack' => [
 			'driver' => 'stack',
-			'channels' => ['debug-daily', 'error', 'warning',  'notice'],
+			'channels' => [
+				env('LOG_STDOUT', false) ? 'stdout' : null,
+				'debug-daily',
+				'error',
+				'warning',
+				'notice',
+			],
 		],
 
+		// NEW: Stdout for container logs
+		'stdout' => [
+			'driver' => 'monolog',
+			'level' => env('LOG_LEVEL', 'debug'),
+			'handler' => \Monolog\Handler\StreamHandler::class,
+			'formatter' => env('LOG_STDERR_FORMATTER'),
+			'with' => [
+				'stream' => 'php://stdout',
+			],
+			'processors' => [
+				// Adds extra context
+				\Monolog\Processor\WebProcessor::class,
+				\Monolog\Processor\MemoryUsageProcessor::class,
+			],
+		],
+
+		// Alternative: stderr for error-level logs
+		'stderr' => [
+			'driver' => 'monolog',
+			'level' => 'error',
+			'handler' => \Monolog\Handler\StreamHandler::class,
+			'formatter' => env('LOG_STDERR_FORMATTER'),
+			'with' => [
+				'stream' => 'php://stderr',
+			],
+		],
 		// Whatever debug log is needed
 		// Mostly SQL requests
 		'debug-daily' => [
@@ -87,6 +119,12 @@ return [
 			'path' => storage_path('logs/login.log'),
 			'driver' => 'single',
 			'level' => 'info',
+		],
+
+		'deprecations' => [
+			'driver' => 'single',
+			'path' => storage_path('logs/deprecations.log'),
+			'level' => 'debug',
 		],
 	],
 ];
