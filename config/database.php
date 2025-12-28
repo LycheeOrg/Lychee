@@ -108,6 +108,7 @@ return [
 			'engine' => 'InnoDB ROW_FORMAT=DYNAMIC',
 			'options' => extension_loaded('pdo_mysql') ? array_filter([
 				PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+				PDO::ATTR_PERSISTENT => true, // Critical for Octane
 			],
 				fn ($elem) => ($elem !== null && $elem !== ''),
 			) : [],
