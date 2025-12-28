@@ -2,8 +2,9 @@
 
 - **Status:** Accepted
 - **Date:** 2025-12-28
+- **Last updated:** 2025-12-28
 - **Related features/specs:** Feature 003 (docs/specs/4-architecture/features/003-album-computed-fields/spec.md)
-- **Related open questions:** Q-003-02, Q-003-03, Q-003-05, Q-003-08 (resolved)
+- **Related open questions:** Q-003-02, Q-003-03, Q-003-05, Q-003-08, Q-003-09 (resolved)
 
 ## Context
 
@@ -15,8 +16,9 @@ Feature 003 addresses this by pre-computing these values into physical database 
 2. **Job deduplication** for concurrent album mutations (bulk uploads)
 3. **Propagation failure handling** when jobs fail mid-tree
 4. **Migration rollback strategy** for multi-phase deployments
+5. **Multi-user cover selection strategy** for pre-computed automatic cover IDs
 
-These decisions affect multiple modules: application layer (Laravel models, events), domain layer (album aggregates), persistence layer (migrations, database schema), and CLI (artisan commands).
+These decisions affect multiple modules: application layer (Laravel models, events), domain layer (album aggregates), persistence layer (migrations, database schema), CLI (artisan commands), and security layer (photo visibility policies).
 
 ## Decision
 
@@ -42,9 +44,17 @@ If a recomputation job fails after 3 retries, do NOT dispatch parent job. Log er
 
 ### 4. Full Rollback with down() Migration (Q-003-08)
 
-Migration `down()` method drops all 5 columns (max_taken_at, min_taken_at, num_children, num_photos, computed_cover_id) and foreign key constraint. Safe during Phase 1-2 (before backfill). If backfill already ran, rollback discards computed data (acceptable, regenerable). **CRITICAL:** Do NOT rollback after Phase 4 cleanup (virtual column code removed).
+Migration `down()` method drops all 6 columns (max_taken_at, min_taken_at, num_children, num_photos, auto_cover_id_max_privilege, auto_cover_id_least_privilege) and both foreign key constraints. Safe during Phase 1-2 (before backfill). If backfill already ran, rollback discards computed data (acceptable, regenerable). **CRITICAL:** Do NOT rollback after Phase 4 cleanup (virtual column code removed).
 
 **Rationale:** Clean schema restoration, simple one-command rollback (`php artisan migrate:rollback`). Trade-off: data loss if backfill ran, but computed values can be regenerated. Safer than forward-only approach for early-stage deployment issues.
+
+### 5. Dual Automatic Cover IDs with Privilege-Based Selection (Q-003-09)
+
+Store two automatic cover IDs per album: `auto_cover_id_max_privilege` (admin/owner view, no access filters) and `auto_cover_id_least_privilege` (public view, all restrictive filters applied). Display logic selects at query time based on user permissions: admin/owner sees max-privilege cover, other users see least-privilege cover.
+
+**Rationale:** Balances performance (pre-computation, no subqueries) with security (no private photo leakage). Simple schema (2 columns vs. per-user table or runtime filtering complexity). Guaranteed safe: least-privilege cover NEVER exposes photos invisible to restricted users. Good UX: admin/owner always sees best possible cover (may include private photos), other users see safe public cover (may be NULL if no public photos exist). At query time, selecting the appropriate cover is a simple conditional column read (no database queries).
+
+**Trade-offs:** Double storage for cover IDs (2 columns instead of 1), recomputation job must run cover selection twice (once with filters, once without). However, this overhead is minimal compared to runtime subquery cost (eliminated) and complexity of alternatives (per-user table, runtime filtering with fallback).
 
 ## Consequences
 
@@ -86,11 +96,21 @@ Migration `down()` method drops all 5 columns (max_taken_at, min_taken_at, num_c
 - **Option A: Forward-only with revert commits** – Safe (no data loss), but leaves schema cruft (unused columns), requires revert commit (not instant)
 - **Option C: Blue-green deployment with feature flag** – Instant rollback, no data loss, but code complexity (dual implementation), increases scope significantly
 
+### Q-003-09: Multi-User Cover Selection
+
+- **Option A: Keep cover dynamic (do NOT pre-compute)** – Preserves security model, but still requires 1 subquery per album (partial performance gain only)
+- **Option B: Store admin-perspective cover with runtime filtering** – Fast for most users, but complex dual-path implementation (fallback on restricted users), may show "no cover" when photos exist
+- **Option C: Per-user computed cover (user_album_covers table)** – Perfect per-user experience, but storage explosion (N users × M albums), defeats performance goal, recomputation complexity
+
 ## Security / Privacy Impact
 
-- **No direct security impact:** Computed fields contain same data as virtual columns (album stats, cover photo ID). No new PII introduced.
-- **Integrity protection:** Foreign key constraint (`computed_cover_id REFERENCES photos.id ON DELETE SET NULL`) prevents dangling references.
-- **Cover selection visibility:** Maintains existing AlbumQueryPolicy/PhotoQueryPolicy filters (NFR-003-05). Cover must not leak private photos.
+- **No direct security impact:** Computed fields contain same data as virtual columns (album stats, cover photo IDs). No new PII introduced.
+- **Integrity protection:** Foreign key constraints (`auto_cover_id_max_privilege` and `auto_cover_id_least_privilege` REFERENCES photos.id ON DELETE SET NULL) prevent dangling references.
+- **Cover selection visibility (Q-003-09):** Dual-cover approach GUARANTEES no private photo leakage:
+  - `auto_cover_id_least_privilege`: Computed WITH all restrictive filters (`PhotoQueryPolicy::appendSearchabilityConditions`, `AlbumQueryPolicy::appendAccessibilityConditions`). Shown to non-admin, non-owner users. NEVER contains photos invisible to public.
+  - `auto_cover_id_max_privilege`: Computed WITHOUT filters (admin view). Shown ONLY to admin/owner. May contain private photos.
+  - Display logic enforces separation at query time (simple conditional, no database queries).
+- **Album ownership checking:** Display logic must correctly identify album owners (user who created album or any parent album owner in tree) to determine whether to show max-privilege cover.
 
 ## Operational Impact
 
@@ -120,7 +140,8 @@ Migration `down()` method drops all 5 columns (max_taken_at, min_taken_at, num_c
 
 ## Links
 
-- Related spec sections: [docs/specs/4-architecture/features/003-album-computed-fields/spec.md#functional-requirements](docs/specs/4-architecture/features/003-album-computed-fields/spec.md#functional-requirements) (FR-003-02, FR-003-06), [Migration Strategy appendix](docs/specs/4-architecture/features/003-album-computed-fields/spec.md#migration-strategy)
-- Related open questions (resolved): Q-003-02, Q-003-03, Q-003-05, Q-003-08 in [docs/specs/4-architecture/open-questions.md](docs/specs/4-architecture/open-questions.md)
+- Related spec sections: [docs/specs/4-architecture/features/003-album-computed-fields/spec.md#functional-requirements](docs/specs/4-architecture/features/003-album-computed-fields/spec.md#functional-requirements) (FR-003-01, FR-003-02, FR-003-04, FR-003-06, FR-003-07), [NFR-003-05](docs/specs/4-architecture/features/003-album-computed-fields/spec.md#non-functional-requirements), [Migration Strategy appendix](docs/specs/4-architecture/features/003-album-computed-fields/spec.md#migration-strategy), [Cover Selection Logic appendix](docs/specs/4-architecture/features/003-album-computed-fields/spec.md#cover-selection-logic)
+- Related open questions (resolved): Q-003-02, Q-003-03, Q-003-05, Q-003-08, Q-003-09 in [docs/specs/4-architecture/open-questions.md](docs/specs/4-architecture/open-questions.md)
 - AlbumBuilder virtual column logic: [app/Models/Builders/AlbumBuilder.php:109-174](app/Models/Builders/AlbumBuilder.php#L109-L174)
+- HasAlbumThumb cover selection logic: [app/Relations/HasAlbumThumb.php:193-211, 226-229](app/Relations/HasAlbumThumb.php#L193-L211)
 - Feature 002 Worker Mode (WithoutOverlapping precedent): [docs/specs/4-architecture/features/002-worker-mode/spec.md](docs/specs/4-architecture/features/002-worker-mode/spec.md)
