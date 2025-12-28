@@ -14,6 +14,7 @@ use Dedoc\Scramble\Scramble;
 use Illuminate\Foundation\Events\DiagnosingHealth;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\DB;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,7 +44,7 @@ Route::get('/octane-health', function () {
 	];
 
     // Check for memory pressure
-    if (memory_get_usage() > 0.8 * Helpers::convertSize(ini_get('memory_limit'))) {
+    if (memory_get_usage(true) > 0.8 * Helpers::convertSize(ini_get('memory_limit'))) {
         $status['status'] = 'warning';
         $status['warning'] = 'High memory usage';
     }
