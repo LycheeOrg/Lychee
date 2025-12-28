@@ -62,7 +62,7 @@ return [
 			'driver' => 'monolog',
 			'level' => env('LOG_LEVEL', 'debug'),
 			'handler' => \Monolog\Handler\StreamHandler::class,
-			'formatter' => env('LOG_STDERR_FORMATTER'),
+		    'formatter' => \Monolog\Formatter\LineFormatter::class,
 			'with' => [
 				'stream' => 'php://stdout',
 			],
@@ -78,7 +78,7 @@ return [
 			'driver' => 'monolog',
 			'level' => 'error',
 			'handler' => \Monolog\Handler\StreamHandler::class,
-			'formatter' => env('LOG_STDERR_FORMATTER'),
+			'formatter' => \Monolog\Formatter\LineFormatter::class,
 			'with' => [
 				'stream' => 'php://stderr',
 			],
