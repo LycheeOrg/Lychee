@@ -49,7 +49,7 @@ return [
 		'stack' => [
 			'driver' => 'stack',
 			'channels' => [
-				env('LOG_STDOUT', false) ? 'stdout_logging' : null,
+				// env('LOG_STDOUT', false) ? 'stdout_logging' : null,
 				'debug-daily',
 				'error',
 				'warning',
@@ -57,32 +57,32 @@ return [
 			],
 		],
 
-		// NEW: Stdout for container logs
-		'stdout_logging' => [
-			'driver' => 'monolog',
-			'level' => env('LOG_LEVEL', 'debug'),
-			'handler' => \Monolog\Handler\StreamHandler::class,
-			'formatter' => \Monolog\Formatter\LineFormatter::class,
-			'with' => [
-				'stream' => 'php://stdout',
-			],
-			'processors' => [
-				// Adds extra context
-				\Monolog\Processor\WebProcessor::class,
-				\Monolog\Processor\MemoryUsageProcessor::class,
-			],
-		],
+		// // NEW: Stdout for container logs
+		// 'stdout_logging' => [
+		// 	'driver' => 'monolog',
+		// 	'level' => env('LOG_LEVEL', 'debug'),
+		// 	'handler' => \Monolog\Handler\StreamHandler::class,
+		// 	'formatter' => \Monolog\Formatter\LineFormatter::class,
+		// 	'with' => [
+		// 		'stream' => 'php://stdout',
+		// 	],
+		// 	'processors' => [
+		// 		// Adds extra context
+		// 		\Monolog\Processor\WebProcessor::class,
+		// 		\Monolog\Processor\MemoryUsageProcessor::class,
+		// 	],
+		// ],
 
-		// Alternative: stderr for error-level logs
-		'stderr_logging' => [
-			'driver' => 'monolog',
-			'level' => 'error',
-			'handler' => \Monolog\Handler\StreamHandler::class,
-			'formatter' => \Monolog\Formatter\LineFormatter::class,
-			'with' => [
-				'stream' => 'php://stderr',
-			],
-		],
+		// // Alternative: stderr for error-level logs
+		// 'stderr_logging' => [
+		// 	'driver' => 'monolog',
+		// 	'level' => 'error',
+		// 	'handler' => \Monolog\Handler\StreamHandler::class,
+		// 	'formatter' => \Monolog\Formatter\LineFormatter::class,
+		// 	'with' => [
+		// 		'stream' => 'php://stderr',
+		// 	],
+		// ],
 
 		// Whatever debug log is needed
 		// Mostly SQL requests
