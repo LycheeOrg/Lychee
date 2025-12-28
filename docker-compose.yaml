@@ -63,6 +63,8 @@ services:
       # enable or disable log viewer. By default it is enabled.
       LOG_VIEWER_ENABLED: "${LOG_VIEWER_ENABLED:-true}"
 
+      LOG_404_ERRORS: "${LOG_404_ERRORS:-true}"
+
       # enable or disable clockwork. By default it is disabled (and not provided on non-dev build).
       CLOCKWORK_ENABLE: "${CLOCKWORK_ENABLE:-false}"
 
@@ -138,6 +140,7 @@ services:
       LOG_STACK: "${LOG_STACK:-single}"
       LOG_DEPRECATIONS_CHANNEL: "${LOG_DEPRECATIONS_CHANNEL:-null}"
       LOG_LEVEL: "${LOG_LEVEL:-debug}"
+      LOG_STDOUT: "${LOG_STDOUT:-true}"
 
       # QUEUE_CONNECTION:sync
 
@@ -276,7 +279,7 @@ services:
         condition: service_healthy
 
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8000/up"]
       interval: 10s
       timeout: 5s
       retries: 5

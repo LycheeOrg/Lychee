@@ -13,6 +13,7 @@ WORKDIR /app
 COPY composer.json composer.lock ./
 
 # Install dependencies (no dev packages for production)
+# Remove markdown and test directories to slim down the image
 RUN composer install \
     --no-dev \
     --no-interaction \
@@ -20,7 +21,10 @@ RUN composer install \
     --no-scripts \
     --prefer-dist \
     --optimize-autoloader \
-    --ignore-platform-reqs
+    --ignore-platform-reqs \
+    && find vendor \
+    \( -iname "*.md" -o -iname "test" -o -iname "tests" \) \
+    -exec rm -rf {} +
 
 # ============================================================================
 # Stage 2: Node.js Build for Frontend Assets
@@ -63,32 +67,30 @@ LABEL org.opencontainers.image.source="https://github.com/LycheeOrg/Lychee"
 # hadolint ignore=DL3018
 RUN apk add --no-cache \
     exiftool \
-	shadow \
+    shadow \
     ffmpeg \
     gd \
     grep \
     imagemagick \
     jpegoptim \
-	netcat-openbsd \
-	unzip \
+    netcat-openbsd \
+    unzip \
     curl \
     && install-php-extensions \
     pdo_mysql \
     pdo_pgsql \
     gd \
     zip \
-	dom \
     bcmath \
     sodium \
     opcache \
     pcntl \
-	exif \
-	imagick \
-	intl \
-	redis \
-	tokenizer \
-	&& rm -rf /var/cache/apk/* \
-	&& apk del shadow
+    exif \
+    imagick \
+    intl \
+    redis \
+    tokenizer \
+    && rm -rf /var/cache/apk/*
 
 WORKDIR /app
 
@@ -111,18 +113,18 @@ RUN mkdir -p storage/framework/cache \
     && chown -R www-data:www-data storage bootstrap/cache public/dist \
     && chmod -R 750 storage bootstrap/cache \
     && chmod -R 755 public/dist \
-	&& touch /app/frankenphp_target \
-	&& touch /app/public/dist/user.css \
-	&& touch /app/public/dist/custom.js \
-	&& chown www-data:www-data /app/public/dist/user.css /app/public/dist/custom.js \
-	&& chmod 644 /app/public/dist/user.css /app/public/dist/custom.js \
-	&& cp $PHP_INI_DIR/php.ini-production $PHP_INI_DIR/php.ini \
+    && touch /app/frankenphp_target \
+    && touch /app/public/dist/user.css \
+    && touch /app/public/dist/custom.js \
+    && chown www-data:www-data /app/public/dist/user.css /app/public/dist/custom.js \
+    && chmod 644 /app/public/dist/user.css /app/public/dist/custom.js \
+    && cp $PHP_INI_DIR/php.ini-production $PHP_INI_DIR/php.ini \
     && echo "upload_max_filesize=110M" > $PHP_INI_DIR/conf.d/custom.ini \
     && echo "post_max_size=110M" >> $PHP_INI_DIR/conf.d/custom.ini \
-	&& echo "max_execution_time=3000" >> $PHP_INI_DIR/conf.d/custom.ini \
-	&& echo "expose_php=Off" >> $PHP_INI_DIR/conf.d/custom.ini \
-	&& echo "display_errors=Off" >> $PHP_INI_DIR/conf.d/custom.ini \
-	&& echo "log_errors=On" >> $PHP_INI_DIR/conf.d/custom.ini
+    && echo "max_execution_time=3000" >> $PHP_INI_DIR/conf.d/custom.ini \
+    && echo "expose_php=Off" >> $PHP_INI_DIR/conf.d/custom.ini \
+    && echo "display_errors=Off" >> $PHP_INI_DIR/conf.d/custom.ini \
+    && echo "log_errors=On" >> $PHP_INI_DIR/conf.d/custom.ini
 
 # Copy entrypoint and validation scripts
 COPY docker/scripts/entrypoint.sh /usr/local/bin/entrypoint.sh

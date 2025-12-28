@@ -33,6 +33,7 @@ use Psr\Container\NotFoundExceptionInterface;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Lychee's custom exception handler.
@@ -135,6 +136,10 @@ class Handler extends ExceptionHandler
 		// Cache the application path to avoid multiple function calls
 		// and potential exceptions in `report()`
 		$this->appPath = app_path();
+
+		if (config('features.log_404_errors') === false) {
+			$this->dontReport[] = NotFoundHttpException::class;
+		}
 	}
 
 	/**

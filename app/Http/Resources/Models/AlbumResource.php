@@ -79,7 +79,7 @@ class AlbumResource extends Data
 		$this->track_url = $album->track_url;
 		$this->license = $album->license->localization();
 		// TODO: Investigate later why this string is 24 characters long.
-		$this->header_id = trim($album->header_id);
+		$this->header_id = $album->header_id !== null ? trim($album->header_id) : null;
 
 		// children
 		$this->parent_id = $album->parent_id;

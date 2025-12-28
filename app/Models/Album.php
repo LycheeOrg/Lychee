@@ -386,7 +386,7 @@ class Album extends BaseAlbum implements Node
 	 */
 	protected function getAlbumTimelineAttribute(): ?TimelineAlbumGranularity
 	{
-		return TimelineAlbumGranularity::tryFrom($this->attributes['album_timeline']);
+		return TimelineAlbumGranularity::tryFrom($this->attributes['album_timeline'] ?? '');
 	}
 
 	/**

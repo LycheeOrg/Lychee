@@ -20,6 +20,17 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
+	| Log 404 errors
+	|--------------------------------------------------------------------------
+	|
+	| When enabled, all 404 errors are logged to the log file.
+	| This can be useful to track broken links or attempted attacks.
+	| True by default, so it can be set to false to avoid too large log files.
+	*/
+	'log_404_errors' => (bool) env('LOG_404_ERRORS', true),
+
+	/*
+	|--------------------------------------------------------------------------
 	| Enable v4 redirections
 	|--------------------------------------------------------------------------
 	|

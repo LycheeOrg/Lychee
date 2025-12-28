@@ -96,7 +96,8 @@
         "spatie/laravel-image-optimizer": "^1.8",
         "spatie/laravel-typescript-transformer": "^2.4",
         "symfony/cache": "^v7.1.5",
-        "thecodingmachine/safe": "^3.3"
+        "thecodingmachine/safe": "^3.3",
+        "itsgoingd/clockwork": "^5.1"
     },
     "require-dev": {
         "ext-imagick": "*",
@@ -109,7 +110,6 @@
         "fakerphp/faker": "^1.23.0",
         "filp/whoops": "^2.5",
         "friendsofphp/php-cs-fixer": "^3.3",
-        "itsgoingd/clockwork": "^5.1",
         "laracraft-tech/laravel-xhprof": "^1.2",
         "larastan/larastan": "^3.2",
         "lychee-org/phpstan-lychee": "^2.0.1",
