@@ -133,6 +133,8 @@ RUN chmod +x /usr/local/bin/entrypoint.sh /usr/local/bin/validate-env.sh /usr/lo
 # Expose port 8000 (Octane)
 EXPOSE 8000
 
+USER www-data
+
 # Set entrypoint
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
