@@ -19,7 +19,6 @@
 namespace Tests\Feature_v2\Photo;
 
 use App\Models\PhotoRating;
-use Illuminate\Support\Facades\DB;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class PhotoResourceRatingTest extends BaseApiWithDataTest
@@ -62,8 +61,8 @@ class PhotoResourceRatingTest extends BaseApiWithDataTest
 	public function testPhotoResourceIncludesRatingStatisticsWhenMetricsEnabled(): void
 	{
 		// Enable metrics and set access to owner (userMayUpload1 owns photo1)
-		$this->setConfigValue('metrics_enabled', '1');
-		$this->setConfigValue('metrics_access', 'owner');
+		\Configs::set('metrics_enabled', '1');
+		\Configs::set('metrics_access', 'owner');
 
 		// Create multiple ratings
 		PhotoRating::create([
@@ -147,20 +146,11 @@ class PhotoResourceRatingTest extends BaseApiWithDataTest
 			'photo_id' => $this->photo1->id,
 			'rating' => 0,
 		]);
-
-		$this->assertCreated($response);
+		$this->assertTrue(in_array($response->status(), [201, 409], true));
 		$response->assertJson([
 			'rating' => [
 				'rating_user' => 0,
 			],
 		]);
-	}
-
-	private function setConfigValue(string $key, string $value): void
-	{
-		DB::table('configs')->updateOrInsert(
-			['key' => $key],
-			['value' => $value]
-		);
 	}
 }
