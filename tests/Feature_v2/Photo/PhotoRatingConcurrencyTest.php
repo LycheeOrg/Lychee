@@ -31,6 +31,12 @@ class PhotoRatingConcurrencyTest extends BaseApiWithDataTest
 	 */
 	public function testUniqueConstraintPreventsDuplicateRatings(): void
 	{
+		if (DB::getDriverName() === 'pgsql') {
+			$this->markTestSkipped('This test is only relevant for SQLite databases.');
+
+			return;
+		}
+
 		// Create initial rating
 		PhotoRating::create([
 			'photo_id' => $this->photo1->id,
