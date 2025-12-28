@@ -11,12 +11,14 @@ namespace App\Http\Controllers\Gallery;
 use App\Actions\Import\FromUrl;
 use App\Actions\Photo\Delete;
 use App\Actions\Photo\MoveOrDuplicate;
+use App\Actions\Photo\Rating;
 use App\Actions\Photo\Rotate;
 use App\Constants\FileSystem;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\FileStatus;
 use App\Enum\SizeVariantType;
 use App\Exceptions\ConfigurationException;
+use App\Exceptions\ConflictingPropertyException;
 use App\Http\Requests\Photo\CopyPhotosRequest;
 use App\Http\Requests\Photo\DeletePhotosRequest;
 use App\Http\Requests\Photo\EditPhotoRequest;
@@ -24,6 +26,7 @@ use App\Http\Requests\Photo\FromUrlRequest;
 use App\Http\Requests\Photo\MovePhotosRequest;
 use App\Http\Requests\Photo\RenamePhotoRequest;
 use App\Http\Requests\Photo\RotatePhotoRequest;
+use App\Http\Requests\Photo\SetPhotoRatingRequest;
 use App\Http\Requests\Photo\SetPhotosStarredRequest;
 use App\Http\Requests\Photo\SetPhotosTagsRequest;
 use App\Http\Requests\Photo\UploadPhotoRequest;
@@ -164,6 +167,30 @@ class PhotoController extends Controller
 			$photo->is_starred = $request->isStarred();
 			$photo->save();
 		}
+	}
+
+	/**
+	 * Set the rating for a photo.
+	 *
+	 * @param SetPhotoRatingRequest $request
+	 * @param Rating                $rating
+	 *
+	 * @return PhotoResource
+	 *
+	 * @throws ConflictingPropertyException
+	 */
+	public function rate(SetPhotoRatingRequest $request, Rating $rating): PhotoResource
+	{
+		/** @var \App\Models\User $user */
+		$user = Auth::user();
+
+		$photo = $rating->do(
+			$request->photo(),
+			$user,
+			$request->rating()
+		);
+
+		return new PhotoResource($photo, null);
 	}
 
 	/**
