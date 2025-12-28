@@ -120,12 +120,12 @@ declare namespace App.Enum {
 	export type SmartAlbumType = "unsorted" | "starred" | "recent" | "on_this_day" | "untagged";
 	export type StorageDiskType = "images" | "s3";
 	export type ThumbAlbumSubtitleType = "description" | "takedate" | "creation" | "oldstyle" | "num_photos" | "num_albums" | "num_photos_albums";
-	export type ThumbOverlayVisibilityType = "never" | "always" | "hover";
 	export type TimelineAlbumGranularity = "default" | "disabled" | "year" | "month" | "day";
 	export type TimelinePhotoGranularity = "default" | "disabled" | "year" | "month" | "day" | "hour";
 	export type UpdateStatus = 0 | 1 | 2 | 3;
 	export type UserGroupRole = "member" | "admin";
 	export type VersionChannelType = "release" | "git" | "tag";
+	export type VisibilityType = "never" | "always" | "hover";
 	export type WatermarkPosition = "top-left" | "top" | "top-right" | "left" | "center" | "right" | "bottom-left" | "bottom" | "bottom-right";
 }
 declare namespace App.Http.Resources.Admin {
@@ -369,8 +369,8 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		is_details_links_enabled: boolean;
 		is_desktop_dock_full_transparency_enabled: boolean;
 		is_mobile_dock_full_transparency_enabled: boolean;
-		display_thumb_album_overlay: App.Enum.ThumbOverlayVisibilityType;
-		display_thumb_photo_overlay: App.Enum.ThumbOverlayVisibilityType;
+		display_thumb_album_overlay: App.Enum.VisibilityType;
+		display_thumb_photo_overlay: App.Enum.VisibilityType;
 		album_subtitle_type: App.Enum.ThumbAlbumSubtitleType;
 		album_decoration: App.Enum.AlbumDecorationType;
 		album_decoration_orientation: App.Enum.AlbumDecorationOrientation;
@@ -400,6 +400,11 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		is_registration_enabled: boolean;
 		is_scroll_to_navigate_photos_enabled: boolean;
 		is_swipe_vertically_to_go_back_enabled: boolean;
+		is_rating_show_avg_in_details_enabled: boolean;
+		is_rating_show_avg_in_photo_view_enabled: boolean;
+		rating_photo_view_mode: App.Enum.VisibilityType;
+		is_rating_show_avg_in_album_view_enabled: boolean;
+		rating_album_view_mode: App.Enum.VisibilityType;
 		default_homepage: string;
 		is_timeline_page_enabled: boolean;
 	};
@@ -544,6 +549,11 @@ declare namespace App.Http.Resources.Models {
 		title: string;
 		url: string | null;
 	};
+	export type PhotoRatingResource = {
+		rating_user: number;
+		rating_count: number;
+		rating_avg: number;
+	};
 	export type PhotoResource = {
 		id: string;
 		album_id: string | null;
@@ -582,12 +592,15 @@ declare namespace App.Http.Resources.Models {
 		timeline: App.Http.Resources.Models.Utils.TimelineData | null;
 		palette: App.Http.Resources.Models.ColourPaletteResource | null;
 		statistics: App.Http.Resources.Models.PhotoStatisticsResource | null;
+		rating: App.Http.Resources.Models.PhotoRatingResource | null;
 	};
 	export type PhotoStatisticsResource = {
 		visit_count: number;
 		download_count: number;
 		favourite_count: number;
 		shared_count: number;
+		rating_count: number;
+		rating_avg: number | null;
 	};
 	export type RenamerRuleResource = {
 		id: number;

@@ -9,11 +9,11 @@
 namespace App\Enum;
 
 /**
- * Enum ThumbOverlayVisibilityType.
+ * Enum VisibilityType.
  *
- * All the allowed display possibilities of the overlay on thumbs
+ * All the allowed visibility modes for UI elements
  */
-enum ThumbOverlayVisibilityType: string
+enum VisibilityType: string
 {
 	case NEVER = 'never';
 	case ALWAYS = 'always';

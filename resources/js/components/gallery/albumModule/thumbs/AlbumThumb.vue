@@ -75,7 +75,7 @@ import { useAlbumsStore } from "@/stores/AlbumsState";
 export type AlbumThumbConfig = {
 	album_thumb_css_aspect_ratio: string;
 	album_subtitle_type: App.Enum.ThumbAlbumSubtitleType;
-	display_thumb_album_overlay: App.Enum.ThumbOverlayVisibilityType;
+	display_thumb_album_overlay: App.Enum.VisibilityType;
 	album_decoration: App.Enum.AlbumDecorationType;
 	album_decoration_orientation: App.Enum.AlbumDecorationOrientation;
 };

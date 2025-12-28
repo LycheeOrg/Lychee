@@ -56,7 +56,7 @@ class PhotoSearch
 	public function sqlQuery(array $terms, ?Album $album = null): Builder
 	{
 		$query = $this->photo_query_policy->applySearchabilityFilter(
-			query: Photo::query()->with(['albums', 'statistics', 'size_variants', 'palette', 'tags']),
+			query: Photo::query()->with(['albums', 'statistics', 'size_variants', 'palette', 'tags', 'rating']),
 			origin: $album,
 			include_nsfw: !$this->config_manager->getValueAsBool('hide_nsfw_in_search')
 		);

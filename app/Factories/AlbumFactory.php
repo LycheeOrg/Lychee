@@ -104,8 +104,8 @@ class AlbumFactory
 		$tag_album_query = TagAlbum::query();
 
 		if ($with_relations) {
-			$album_query->with(['access_permissions', 'photos', 'children', 'children.owner', 'photos.size_variants', 'photos.statistics', 'photos.palette', 'photos.tags']);
-			$tag_album_query->with(['tags', 'photos', 'photos.size_variants', 'photos.statistics', 'photos.palette', 'photos.tags']);
+			$album_query->with(['access_permissions', 'photos', 'children', 'children.owner', 'photos.size_variants', 'photos.statistics', 'photos.palette', 'photos.tags', 'photos.rating']);
+			$tag_album_query->with(['tags', 'photos', 'photos.size_variants', 'photos.statistics', 'photos.palette', 'photos.tags', 'photos.rating']);
 		}
 
 		$ret = $album_query->find($album_id) ?? $tag_album_query->find($album_id);
@@ -173,8 +173,8 @@ class AlbumFactory
 		$album_query = Album::query();
 
 		if ($with_relations) {
-			$tag_album_query->with(['tags', 'photos', 'photos.size_variants', 'photos.statistics', 'photos.palette', 'photos.tags']);
-			$album_query->with(['photos', 'children', 'photos.size_variants', 'photos.statistics', 'photos.palette', 'photos.tags']);
+			$tag_album_query->with(['tags', 'photos', 'photos.size_variants', 'photos.statistics', 'photos.palette', 'photos.tags', 'photos.rating']);
+			$album_query->with(['photos', 'children', 'photos.size_variants', 'photos.statistics', 'photos.palette', 'photos.tags', 'photos.rating']);
 		}
 
 		/** @var ($albums_only is true ? array<int,Album> : array<int,TagAlbum>)&array */

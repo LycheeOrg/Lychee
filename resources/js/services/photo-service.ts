@@ -76,6 +76,10 @@ const PhotoService = {
 	watermark(photo_ids: string[]): Promise<AxiosResponse> {
 		return axios.post(`${Constants.getApiUrl()}Photo::watermark`, { photo_ids: photo_ids });
 	},
+
+	setRating(photo_id: string, rating: 0 | 1 | 2 | 3 | 4 | 5): Promise<AxiosResponse<App.Http.Resources.Models.PhotoResource>> {
+		return axios.post(`${Constants.getApiUrl()}Photo::setRating`, { photo_id: photo_id, rating: rating });
+	},
 };
 
 export default PhotoService;

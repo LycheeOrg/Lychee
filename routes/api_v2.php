@@ -139,6 +139,7 @@ Route::patch('/Photo::tags', [Gallery\PhotoController::class, 'tags']);
 Route::post('/Photo::move', [Gallery\PhotoController::class, 'move']);
 Route::post('/Photo::copy', [Gallery\PhotoController::class, 'copy']);
 Route::post('/Photo::star', [Gallery\PhotoController::class, 'star']);
+Route::post('/Photo::setRating', [Gallery\PhotoController::class, 'rate']);
 Route::post('/Photo::rotate', [Gallery\PhotoController::class, 'rotate']);
 Route::post('/Photo::watermark', [Gallery\PhotoController::class, 'watermark'])->middleware('support:se');
 Route::delete('/Photo', [Gallery\PhotoController::class, 'delete']);

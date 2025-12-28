@@ -26,6 +26,7 @@
 				:style="photoStore.nextStyle"
 			/>
 			<Overlay v-if="!is_exif_disabled && photoStore.imageViewMode !== ImageViewMode.Pdf" />
+			<PhotoRatingOverlay />
 			<Dock
 				v-if="photoStore.rights?.can_edit && !is_photo_edit_open"
 				:is-narrow-menu="photoStore.imageViewMode === ImageViewMode.Pdf"
@@ -47,6 +48,7 @@ import { storeToRefs } from "pinia";
 import { onMounted } from "vue";
 import NextPrevious from "./NextPrevious.vue";
 import Overlay from "./Overlay.vue";
+import PhotoRatingOverlay from "./PhotoRatingOverlay.vue";
 import PhotoDetails from "@/components/drawers/PhotoDetails.vue";
 import PhotoHeader from "@/components/headers/PhotoHeader.vue";
 import Dock from "./Dock.vue";

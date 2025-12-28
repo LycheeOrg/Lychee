@@ -36,6 +36,7 @@ class PositionData
 				},
 				'palette',
 				'tags',
+				'rating',
 			])
 			->whereNotNull('latitude')
 			->whereNotNull('longitude');

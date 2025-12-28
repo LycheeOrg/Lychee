@@ -26,6 +26,7 @@ System users with authentication and ownership relationships.
 **Relationships:**
 - Has many `Album` (owned albums)
 - Has many `Photo` (owned photos)
+- Has many `PhotoRating`
 - Belongs to `UserGroup` (SE edition)
 - Has many `OauthCredential`
 
@@ -97,6 +98,8 @@ Individual photos with metadata, EXIF data, and file information.
 - Has many `SizeVariant`
 - Has one `Palette`
 - Has many `Tag` through `photo_tag` pivot table
+- Has many `PhotoRating`
+- Has one `PhotoStatistics` (virtual relationship for aggregated metrics)
 
 #### SizeVariant
 Different size versions of photos (original, medium, small, thumb).
@@ -122,6 +125,25 @@ Color palette information extracted from photos.
 
 **Relationships:**
 - Belongs to `Photo`
+
+#### PhotoRating
+User ratings for photos on a 1-5 star scale.
+
+**Key Fields:**
+- `photo_id`: Foreign key to Photo
+- `user_id`: Foreign key to User
+- `rating`: Integer rating value (1-5)
+
+**Unique Constraint:**
+- Composite unique index on (`photo_id`, `user_id`) - one rating per user per photo
+
+**Relationships:**
+- Belongs to `Photo`
+- Belongs to `User`
+
+**Statistics:**
+- Average rating and count are computed via `PhotoStatistics` model
+- Current user's rating is exposed through `PhotoResource`
 
 ### Configuration and System Models
 

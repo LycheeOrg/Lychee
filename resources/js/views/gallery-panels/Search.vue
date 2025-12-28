@@ -278,6 +278,10 @@ const photoCallbacks = {
 			return;
 		}
 		PhotoService.setAsCover(selectedPhoto.value!.id, albumId.value);
+		// Update the album's cover_id immediately to reflect the change (toggle behavior)
+		if (albumStore.modelAlbum !== undefined) {
+			albumStore.modelAlbum.cover_id = albumStore.modelAlbum.cover_id === selectedPhoto.value!.id ? null : selectedPhoto.value!.id;
+		}
 		AlbumService.clearCache(albumId.value);
 		// refresh();
 	},
@@ -286,6 +290,21 @@ const photoCallbacks = {
 			return;
 		}
 		PhotoService.setAsHeader(selectedPhoto.value!.id, albumId.value, false);
+		// Update the album's header_id immediately to reflect the change (toggle behavior)
+		const isToggleOff = albumStore.modelAlbum?.header_id === selectedPhoto.value!.id;
+		if (albumStore.modelAlbum !== undefined) {
+			albumStore.modelAlbum.header_id = isToggleOff ? null : selectedPhoto.value!.id;
+		}
+		// Update the header image URL in the album's preFormattedData
+		if (albumStore.album?.preFormattedData) {
+			if (isToggleOff) {
+				albumStore.album.preFormattedData.url = null;
+			} else {
+				// Use medium or small variant for the header image
+				const headerUrl = selectedPhoto.value!.size_variants.medium?.url ?? selectedPhoto.value!.size_variants.small?.url ?? null;
+				albumStore.album.preFormattedData.url = headerUrl;
+			}
+		}
 		AlbumService.clearCache(albumId.value);
 		// refresh();
 	},

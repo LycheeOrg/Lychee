@@ -45,7 +45,7 @@ class GetTagWithPhotos
 		$user = Auth::user();
 
 		$base_query = Photo::query()
-			->with(['size_variants', 'statistics', 'palette', 'tags'])
+			->with(['size_variants', 'statistics', 'palette', 'tags', 'rating'])
 			->when(
 				$user->may_administrate === false,
 				fn ($q) => $q->where('photos.owner_id', Auth::id())

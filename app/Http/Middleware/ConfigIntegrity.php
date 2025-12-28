@@ -91,6 +91,11 @@ class ConfigIntegrity
 		'flow_carousel_height',
 		'date_format_flow_published',
 		'date_format_flow_min_max',
+		'rating_public',
+		'rating_show_only_when_user_rated',
+		'rating_photo_view_mode',
+		'rating_show_avg_in_photo_view',
+		'rating_album_view_mode',
 	];
 
 	public const PRO_FIELDS = [

@@ -37,6 +37,8 @@ class StatisticsFactory extends Factory
 			'download_count' => 0,
 			'favourite_count' => 0,
 			'shared_count' => 0,
+			'rating_sum' => 0,
+			'rating_count' => 0,
 		];
 	}
 
