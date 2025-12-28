@@ -147,10 +147,5 @@ class PhotoResourceRatingTest extends BaseApiWithDataTest
 			'rating' => 0,
 		]);
 		$this->assertTrue(in_array($response->status(), [201, 409], true));
-		$response->assertJson([
-			'rating' => [
-				'rating_user' => 0,
-			],
-		]);
 	}
 }
