@@ -342,7 +342,7 @@ class AppServiceProvider extends ServiceProvider
 
 		// Clean up after each request
 		Octane::tick('flush-memory', fn () => $this->flushMemory())
-			->every(100);
+			->seconds(100);
 
 		Event::listen(RequestTerminated::class, function (): void {
 			// Flush all log handlers
