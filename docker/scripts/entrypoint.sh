@@ -106,9 +106,14 @@ case "$LYCHEE_MODE" in
             echo "   Consider using 'redis' or 'database' for persistent asynchronous queues."
         fi
 
-        # Auto-restart loop: if queue:work exits, restart it
+        # Track if we should keep running
+        KEEP_RUNNING=true
+
+        # Handle graceful shutdown
+        trap 'echo "🛑 Received shutdown signal, stopping..."; KEEP_RUNNING=false' TERM INT        # Auto-restart loop: if queue:work exits, restart it
+
         # This handles memory leak mitigation (max-time) and crash recovery
-        while true; do
+        while $KEEP_RUNNING; do
             echo "🚀 Starting queue worker ($(date '+%Y-%m-%d %H:%M:%S'))"
 
             # Default exit code to 0
@@ -130,6 +135,12 @@ case "$LYCHEE_MODE" in
                 echo "✅ Queue worker exited cleanly (exit code 0)"
             else
                 echo "⚠️  Queue worker exited with code $EXIT_CODE"
+            fi
+
+            # Exit if we received shutdown signal
+            if ! $KEEP_RUNNING; then
+                echo "👋 Shutting down worker..."
+                exit $EXIT_CODE
             fi
 
             echo "⏳ Waiting 5 seconds before restart..."
