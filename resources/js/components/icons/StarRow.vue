@@ -30,7 +30,7 @@
 			<i
 				:class="{
 					absolute: true,
-					'pi pi-star-fill text-amber-500': index <= Math.floor(props.rating),
+					'pi pi-star-fill text-amber-500': index <= Math.floor(props.rating) || (index === Math.ceil(props.rating) && props.rating % 1 >= 0.75),
 					'text-xs': props.size === 'small',
 					'text-lg': props.size === 'medium',
 					'text-xl': props.size === 'large',

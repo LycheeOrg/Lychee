@@ -19,6 +19,7 @@
 namespace Tests\Feature_v2\Photo;
 
 use App\Models\PhotoRating;
+use Illuminate\Support\Facades\DB;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class PhotoResourceRatingTest extends BaseApiWithDataTest
@@ -157,7 +158,7 @@ class PhotoResourceRatingTest extends BaseApiWithDataTest
 
 	private function setConfigValue(string $key, string $value): void
 	{
-		\DB::table('configs')->updateOrInsert(
+		DB::table('configs')->updateOrInsert(
 			['key' => $key],
 			['value' => $value]
 		);

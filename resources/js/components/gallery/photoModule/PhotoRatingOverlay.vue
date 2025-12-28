@@ -10,7 +10,7 @@
 			hidden: is_slideshow_active,
 		}"
 	>
-		<div class="absolute left-1/2 -translate-1/2 bottom-7 flex items-center gap-1 text-shadow">
+		<div class="absolute left-1/2 -translate-x-1/2 bottom-7 flex items-center gap-1 text-shadow">
 			<StarRow :rating="displayedRating" size="large" />
 		</div>
 	</div>
