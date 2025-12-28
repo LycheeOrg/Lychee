@@ -32,6 +32,7 @@ use App\Policies\PhotoQueryPolicy;
 use App\Policies\SettingsPolicy;
 use App\Repositories\ConfigManager;
 use App\Services\MoneyService;
+use Laravel\Octane\Facades\Octane;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Events\QueryExecuted;
