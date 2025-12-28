@@ -250,6 +250,7 @@ class Photo extends Model implements HasUTCBasedTimes
 	 */
 	public function rating(): HasOne
 	{
+		/** @phpstan-ignore return.type (because of when() method used in the return statement) */
 		return $this->hasOne(PhotoRating::class)
 			->when(Auth::check(), fn ($query) => $query->where('user_id', '=', Auth::id()))
 			->when(!Auth::check(), fn ($query) => $query->whereNull('user_id'));

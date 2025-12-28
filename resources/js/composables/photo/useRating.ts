@@ -2,6 +2,7 @@ import PhotoService from "@/services/photo-service";
 import { PhotoStore } from "@/stores/PhotoState";
 import { usePhotosStore } from "@/stores/PhotosState";
 import { UserStore } from "@/stores/UserState";
+import { trans } from "laravel-vue-i18n";
 import { ToastServiceMethods } from "primevue/toastservice";
 import { ref } from "vue";
 
@@ -40,8 +41,8 @@ export function useRating(photoStore: PhotoStore, toast: ToastServiceMethods, us
 				const message = rating === 0 ? "gallery.photo.rating.removed" : "gallery.photo.rating.saved";
 				toast.add({
 					severity: "success",
-					summary: "Success",
-					detail: message,
+					summary: trans("toasts.success"),
+					detail: trans(message),
 					life: 3000,
 				});
 			})
@@ -61,8 +62,8 @@ export function useRating(photoStore: PhotoStore, toast: ToastServiceMethods, us
 
 				toast.add({
 					severity: "error",
-					summary: "Error",
-					detail: errorMessage,
+					summary: trans("toasts.error"),
+					detail: trans(errorMessage),
 					life: 5000,
 				});
 			})
