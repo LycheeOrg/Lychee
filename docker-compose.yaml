@@ -265,6 +265,7 @@ services:
       # PAYPAL_SECRET=
 
     volumes:
+      # - ../Lychee/public/uploads:/app/public/uploads
       - ./lychee/uploads:/app/public/uploads
       - ./lychee/storage/app:/app/storage/app
       - ./lychee/logs:/app/storage/logs

@@ -108,10 +108,15 @@ return [
 			'engine' => 'InnoDB ROW_FORMAT=DYNAMIC',
 			'options' => extension_loaded('pdo_mysql') ? array_filter([
 				PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
-				PDO::ATTR_PERSISTENT => true, // Critical for Octane
+				PDO::ATTR_TIMEOUT => 5, // Connection timeout
+				PDO::ATTR_PERSISTENT => false, // NEVER use persistent connections with Octane
+				PDO::MYSQL_ATTR_INIT_COMMAND => "SET SESSION wait_timeout=28800", // 8 hours
+			]) : [],
+			'sticky' => true,
+			'pool' => [
+				'min_connections' => env('DB_POOL_MIN', 1),
+				'max_connections' => env('DB_POOL_MAX', 10),
 			],
-				fn ($elem) => ($elem !== null && $elem !== ''),
-			) : [],
 			// Ensure a deterministic SQL mode for MySQL/MariaDB.
 			// Don't rely on accidentally correct, system-wide settings of the
 			// DB service.

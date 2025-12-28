@@ -12,6 +12,8 @@
 
 # dependencies
 composer-cache
+vendor/
+node_modules/
 
 # Documentation
 README.md
@@ -21,19 +23,36 @@ docs/
 .editorconfig
 .php-cs-fixer.php
 .php-cs-fixer.cache
+.gitattributes
+.gitignore
+.php-cs-fixer.php
+.phpstaorm.meta.php
+.prettierrc.json
+AGENTS.md
+codecov.yml
+CONTRIBUTING.md
+Dockerfile
+eslint.config.js
+Makefile
+osv-scanner.toml
+phpstan-baseline.neon
 phpstan.neon
+phpunit.ci.xml
 phpunit.xml
 .phpunit.result.cache
+rector.php
+sonar-project.properties
 phpstan/*
 scripts/*
 vite/*
+# Local testing @ildyria
+public/uploads-bck/*
 
 # Node
 node_modules/
 npm-debug.log
 
-# Lychee
-/public/uploads/*
+# Mapping for database and config used by docker compose
 lychee/*
 
 # Laravel
@@ -46,6 +65,8 @@ lychee/*
 !.env.example
 
 # IDE
+.ai/
+.claude/
 .vscode/
 .idea/
 *.swp

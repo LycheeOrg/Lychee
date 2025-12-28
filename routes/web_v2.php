@@ -9,6 +9,7 @@
 namespace App\Http\Controllers;
 
 use App\Enum\OauthProvidersType;
+use App\Facades\Helpers;
 use Dedoc\Scramble\Scramble;
 use Illuminate\Foundation\Events\DiagnosingHealth;
 use Illuminate\Support\Facades\Event;
@@ -31,6 +32,23 @@ Route::get('/up', function () {
 	Event::dispatch(new DiagnosingHealth());
 
 	return view('health-up');
+});
+Route::get('/octane-health', function () {
+    $status = [
+        'status' => 'healthy',
+        'memory' => memory_get_usage(true) / 1024 / 1024 . ' MB',
+        'memory_limit' => ini_get('memory_limit'),
+        'db_connected' => DB::connection()->getPdo() !== null,
+		'warning' => null,
+	];
+
+    // Check for memory pressure
+    if (memory_get_usage() > 0.8 * Helpers::convertSize(ini_get('memory_limit'))) {
+        $status['status'] = 'warning';
+        $status['warning'] = 'High memory usage';
+    }
+
+	return response()->json($status);
 });
 
 Route::get('/', VueController::class)->name('home')->middleware(['migration:complete']);
