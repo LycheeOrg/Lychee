@@ -66,9 +66,21 @@ export function usePhotoActions(photoStore: PhotoStore, albumId: Ref<string | un
 		}
 
 		PhotoService.setAsHeader(photoStore.photo.id, albumId.value, false).then(() => {
-			// Update the album's header_id to reflect the change
+			// Update the album's header_id to reflect the change (toggle behavior)
+			const isToggleOff = albumStore.modelAlbum?.header_id === photoStore.photo!.id;
 			if (albumStore.modelAlbum !== undefined) {
-				albumStore.modelAlbum.header_id = photoStore.photo!.id;
+				albumStore.modelAlbum.header_id = isToggleOff ? null : photoStore.photo!.id;
+			}
+
+			// Update the header image URL in the album's preFormattedData
+			if (albumStore.album?.preFormattedData) {
+				if (isToggleOff) {
+					albumStore.album.preFormattedData.url = null;
+				} else {
+					// Use medium or small variant for the header image
+					const headerUrl = photoStore.photo!.size_variants.medium?.url ?? photoStore.photo!.size_variants.small?.url ?? null;
+					albumStore.album.preFormattedData.url = headerUrl;
+				}
 			}
 
 			toast.add({ severity: "success", summary: trans("toasts.success"), detail: trans("gallery.photo.actions.header_set"), life: 2000 });

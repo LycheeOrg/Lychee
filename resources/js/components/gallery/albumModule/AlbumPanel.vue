@@ -234,29 +234,52 @@ const albumPanelConfig = computed<AlbumThumbConfig>(() => ({
 const photoCallbacks = {
 	star: () => {
 		PhotoService.star(selectedPhotosIds.value, true);
+		// Update the photos in the store immediately to reflect the change
+		selectedPhotosIds.value.forEach((photoId) => {
+			const photo = photosStore.photos.find((p) => p.id === photoId);
+			if (photo) {
+				photo.is_starred = true;
+			}
+		});
 		AlbumService.clearCache(albumStore.album?.id);
-		emits("refresh");
 	},
 	unstar: () => {
 		PhotoService.star(selectedPhotosIds.value, false);
+		// Update the photos in the store immediately to reflect the change
+		selectedPhotosIds.value.forEach((photoId) => {
+			const photo = photosStore.photos.find((p) => p.id === photoId);
+			if (photo) {
+				photo.is_starred = false;
+			}
+		});
 		AlbumService.clearCache(albumStore.album?.id);
-		emits("refresh");
 	},
 	setAsCover: () => {
 		if (albumStore.album === undefined) return;
 		PhotoService.setAsCover(selectedPhoto.value!.id, albumStore.album.id);
-		// Update the album's cover_id immediately to reflect the change
+		// Update the album's cover_id immediately to reflect the change (toggle behavior)
 		if (albumStore.modelAlbum !== undefined) {
-			albumStore.modelAlbum.cover_id = selectedPhoto.value!.id;
+			albumStore.modelAlbum.cover_id = albumStore.modelAlbum.cover_id === selectedPhoto.value!.id ? null : selectedPhoto.value!.id;
 		}
 		AlbumService.clearCache(albumStore.album.id);
 	},
 	setAsHeader: () => {
 		if (albumStore.album === undefined) return;
 		PhotoService.setAsHeader(selectedPhoto.value!.id, albumStore.album.id, false);
-		// Update the album's header_id immediately to reflect the change
+		// Update the album's header_id immediately to reflect the change (toggle behavior)
+		const isToggleOff = albumStore.modelAlbum?.header_id === selectedPhoto.value!.id;
 		if (albumStore.modelAlbum !== undefined) {
-			albumStore.modelAlbum.header_id = selectedPhoto.value!.id;
+			albumStore.modelAlbum.header_id = isToggleOff ? null : selectedPhoto.value!.id;
+		}
+		// Update the header image URL in the album's preFormattedData
+		if (albumStore.album.preFormattedData) {
+			if (isToggleOff) {
+				albumStore.album.preFormattedData.url = null;
+			} else {
+				// Use medium or small variant for the header image
+				const headerUrl = selectedPhoto.value!.size_variants.medium?.url ?? selectedPhoto.value!.size_variants.small?.url ?? null;
+				albumStore.album.preFormattedData.url = headerUrl;
+			}
 		}
 		AlbumService.clearCache(albumStore.album.id);
 	},
@@ -289,6 +312,11 @@ const albumCallbacks = {
 		if (albumStore.album === undefined) return;
 		if (selectedAlbum.value?.thumb?.id === undefined) return;
 		PhotoService.setAsCover(selectedAlbum.value!.thumb?.id, albumStore.album.id);
+		// Update the album's cover_id immediately to reflect the change (toggle behavior)
+		if (albumStore.modelAlbum !== undefined) {
+			albumStore.modelAlbum.cover_id =
+				albumStore.modelAlbum.cover_id === selectedAlbum.value!.thumb?.id ? null : selectedAlbum.value!.thumb?.id;
+		}
 		AlbumService.clearCache(albumStore.album.id);
 		emits("refresh");
 	},
