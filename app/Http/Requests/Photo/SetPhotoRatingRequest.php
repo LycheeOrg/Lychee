@@ -15,6 +15,7 @@ use App\Http\Requests\Traits\HasPhotoTrait;
 use App\Models\Photo;
 use App\Policies\PhotoPolicy;
 use App\Rules\RandomIDRule;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
 /**
@@ -31,6 +32,14 @@ class SetPhotoRatingRequest extends BaseApiRequest implements HasPhoto
 	 */
 	public function authorize(): bool
 	{
+		if (!$this->configs()->getValueAsBool('rating_enabled')) {
+			return false;
+		}
+
+		if (Auth::guest()) {
+			return false;
+		}
+
 		return Gate::check(PhotoPolicy::CAN_SEE, [Photo::class, $this->photo]);
 	}
 
@@ -53,7 +62,7 @@ class SetPhotoRatingRequest extends BaseApiRequest implements HasPhoto
 		/** @var ?string $photo_id */
 		$photo_id = $values[RequestAttribute::PHOTO_ID_ATTRIBUTE];
 		$this->photo = Photo::query()
-			->with(['albums'])
+			->with(['albums', 'rating'])
 			->findOrFail($photo_id);
 		$this->rating = intval($values[RequestAttribute::RATING_ATTRIBUTE]);
 	}
