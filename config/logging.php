@@ -90,6 +90,11 @@ return [
 			'path' => storage_path('logs/daily.log'),
 			'driver' => 'daily',
 			'level' => 'debug',
+			'processors' => [
+				// Adds extra context
+				\Monolog\Processor\WebProcessor::class,
+				\Monolog\Processor\MemoryUsageProcessor::class,
+			],
 		],
 
 		// Something went wrong
