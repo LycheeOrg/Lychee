@@ -25,6 +25,13 @@ This document tracks modules, dependencies, and architectural relationships acro
 - **Listeners** (`app/Listeners/`) - Event handlers
 - **Jobs** (`app/Jobs/`) - Asynchronous task definitions
 - **Notifications** (`app/Notifications/`) - User notification logic
+- **Worker Mode** (`docker/scripts/entrypoint.sh`) - Container mode selection for horizontal scaling
+  - **Web Mode** (default): Runs FrankenPHP/Octane web server for handling HTTP requests
+  - **Worker Mode**: Runs Laravel `queue:work` for background job processing
+  - **Mode Selection**: Controlled by `LYCHEE_MODE` environment variable (`web` | `worker`)
+  - **Auto-Restart**: Worker mode includes automatic restart loop for memory leak mitigation
+  - **Configuration**: `QUEUE_NAMES` (queue priority), `WORKER_MAX_TIME` (restart interval)
+  - **Deployment**: See [deploy-worker-mode.md](../2-how-to/deploy-worker-mode.md) for docker compose examples
 
 ### Frontend (Vue3/TypeScript)
 

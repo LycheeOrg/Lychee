@@ -140,4 +140,8 @@ EXPOSE 8000
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
 # Default command: run Octane with FrankenPHP
+# Container mode is controlled by LYCHEE_MODE environment variable:
+# - "web" (default): Runs FrankenPHP/Octane web server (this CMD)
+# - "worker": Runs Laravel queue worker (entrypoint.sh overrides CMD)
+# See docs/specs/2-how-to/deploy-worker-mode.md for deployment guide
 CMD ["php", "artisan", "octane:start", "--server=frankenphp", "--host=0.0.0.0", "--port=8000"]

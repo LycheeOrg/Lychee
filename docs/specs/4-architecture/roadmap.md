@@ -6,7 +6,7 @@ High-level planning document for Lychee features and architectural initiatives.
 
 | Feature ID | Name | Status | Priority | Assignee | Started | Updated |
 |------------|------|--------|----------|----------|---------|---------|
-| 002 | Worker Mode Support | Planning | P1 | - | 2025-12-28 | 2025-12-28 |
+| 002 | Worker Mode Support | In Progress | P1 | - | 2025-12-28 | 2025-12-28 |
 | 003 | Album Computed Fields Pre-computation | Planning | P1 | - | 2025-12-28 | 2025-12-28 |
 
 ## Completed Features

@@ -77,5 +77,67 @@ php artisan view:cache
 
 echo "✅ Application ready!"
 
-# Execute the main command
-exec "$@"
+# Detect LYCHEE_MODE and execute appropriate command
+LYCHEE_MODE=${LYCHEE_MODE:-web}
+
+case "$LYCHEE_MODE" in
+    web)
+        echo "🌐 Starting Lychee in web mode..."
+        # Execute the main command (from Dockerfile CMD: octane:start)
+        exec "$@"
+        ;;
+    worker)
+        echo "⚙️  Starting Lychee in worker mode..."
+        echo "🔄 Auto-restart enabled: worker will restart if it exits"
+
+        # Get queue configuration from environment
+        QUEUE_NAMES=${QUEUE_NAMES:-default}
+        WORKER_MAX_TIME=${WORKER_MAX_TIME:-3600}
+        QUEUE_CONNECTION=${QUEUE_CONNECTION:-sync}
+
+        echo "📋 Queue names: $QUEUE_NAMES"
+        echo "⏱️  Max time: ${WORKER_MAX_TIME}s"
+        echo "📡 Queue connection: $QUEUE_CONNECTION"
+
+        # Warn if using sync driver (not recommended for worker mode)
+        if [ "$QUEUE_CONNECTION" = "sync" ]; then
+            echo "⚠️  WARNING: QUEUE_CONNECTION=sync is not recommended for worker mode."
+            echo "   Jobs will run synchronously, defeating the purpose of a queue worker."
+            echo "   Consider using 'redis' or 'database' for persistent asynchronous queues."
+        fi
+
+        # Auto-restart loop: if queue:work exits, restart it
+        # This handles memory leak mitigation (max-time) and crash recovery
+        while true; do
+            echo "🚀 Starting queue worker ($(date '+%Y-%m-%d %H:%M:%S'))"
+
+            # Run queue worker with standard options
+            # --tries=3: retry failed jobs up to 3 times
+            # --timeout=3600: kill job if it runs longer than 1 hour
+            # --sleep=3: sleep 3 seconds when queue is empty
+            # --max-time=$WORKER_MAX_TIME: restart worker after N seconds (memory leak mitigation)
+            php artisan queue:work \
+                --queue="$QUEUE_NAMES" \
+                --tries=3 \
+                --timeout=3600 \
+                --sleep=3 \
+                --max-time="$WORKER_MAX_TIME" || EXIT_CODE=$?
+
+            # Default exit code to 0 if not set
+            EXIT_CODE=${EXIT_CODE:-0}
+
+            if [ $EXIT_CODE -eq 0 ]; then
+                echo "✅ Queue worker exited cleanly (exit code 0)"
+            else
+                echo "⚠️  Queue worker exited with code $EXIT_CODE"
+            fi
+
+            echo "⏳ Waiting 5 seconds before restart..."
+            sleep 5
+        done
+        ;;
+    *)
+        echo "❌ ERROR: Invalid LYCHEE_MODE: $LYCHEE_MODE. Must be 'web' or 'worker'."
+        exit 1
+        ;;
+esac

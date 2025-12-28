@@ -33,7 +33,7 @@ Enable Lychee containers to operate in two distinct modes using the same Docker 
 |----|-------------|--------------|-----------------|--------------|--------------------|--------|
 | FR-002-01 | Container must detect `LYCHEE_MODE` environment variable and branch execution accordingly | When `LYCHEE_MODE=worker`, container starts `php artisan queue:work` instead of Octane. When unset or `LYCHEE_MODE=web`, container starts Octane (default). | Container must validate `LYCHEE_MODE` is either `worker`, `web`, or unset. Log validation result to stdout. | If `LYCHEE_MODE` contains invalid value, log error and exit with non-zero status code. | Log startup mode selection: `Starting Lychee in [worker\|web] mode`. No PII. | Docker deployment requirements, Laravel queue system documentation |
 | FR-002-02 | Worker mode must execute Laravel queue:work with configurable queue priority and max-time | Execute `php artisan queue:work --queue=$QUEUE_NAMES --tries=3 --timeout=3600 --max-time=$WORKER_MAX_TIME` in infinite loop. `QUEUE_NAMES` defaults to "default" but supports priority queues (e.g., "high,default,low"). `WORKER_MAX_TIME` defaults to 3600 seconds. If worker exits (crash, max-time reached), entrypoint automatically restarts after 5-second delay. | Worker respects `QUEUE_CONNECTION`, `QUEUE_NAMES` (comma-separated), `WORKER_MAX_TIME` from `.env`. Auto-restart loop logs exit codes and restart events. | If queue connection fails, log error (redact credentials), wait 5 seconds, retry. Container restart policy (`restart: unless-stopped`) provides outer restart layer. | Log worker lifecycle: `Starting queue worker on queues: $QUEUE_NAMES (max-time: $WORKER_MAX_TIME)`, `Queue worker exited with code N`, `Waiting 5 seconds before restart`. | Q-002-01 (queue priority), Q-002-02 (max-time configurability), Laravel queue:work documentation |
-| FR-002-03 | Web mode must remain default behavior when `LYCHEE_MODE` is unset | Container starts Octane with FrankenPHP exactly as before this feature. No behavioral changes. | Verify entrypoint script defaults to web mode when `LYCHEE_MODE` is not present. Test with existing docker-compose configurations. | N/A (default path) | Existing Octane startup logs unchanged. | Backward compatibility requirement |
+| FR-002-03 | Web mode must remain default behavior when `LYCHEE_MODE` is unset | Container starts Octane with FrankenPHP exactly as before this feature. No behavioral changes. | Verify entrypoint script defaults to web mode when `LYCHEE_MODE` is not present. Test with existing docker compose configurations. | N/A (default path) | Existing Octane startup logs unchanged. | Backward compatibility requirement |
 | FR-002-04 | Both modes must share identical Laravel environment setup | Database migrations, config caching, and permission checks run identically in both modes before mode-specific command execution. | Entrypoint script must complete common setup (migrations, config:cache, permissions-check.sh) before branching to mode-specific commands. | If common setup fails, both modes must exit with error (existing behavior). | Existing migration/cache logs apply to both modes. | Shared Laravel application state requirement |
 | FR-002-05 | Worker healthcheck must track restart failures and trigger container restart after threshold | Healthcheck writes restart count to `/tmp/worker-restarts` with timestamp. If >10 restarts occur within 5 minutes, healthcheck exits 1 to trigger container restart. Reset counter after 5 minutes of stable operation. | Healthcheck script: `pgrep -f 'queue:work' && check_restart_count || exit 1`. Restart count increments on each worker restart detected in logs. | If worker crash-loops (>10 restarts in 5min), container becomes unhealthy, orchestrator restarts container, logs cleared for fresh debugging. | Log healthcheck failures: `Worker crash-looping detected: N restarts in 5 minutes, failing healthcheck`. | Q-002-04 (healthcheck failure behavior Option B) |
 
@@ -43,7 +43,7 @@ Enable Lychee containers to operate in two distinct modes using the same Docker 
 |----|-------------|--------|-------------|--------------|--------|
 | NFR-002-01 | Worker containers must gracefully handle shutdown signals | Queue workers need to finish in-flight jobs during rolling updates to prevent data corruption | Worker must trap SIGTERM and allow current job to complete (up to timeout) before exiting | Docker signal handling, Laravel queue:work graceful shutdown | Container orchestration best practices |
 | NFR-002-02 | Entrypoint script must remain shell-portable (POSIX sh) | Minimal base image (Alpine) uses busybox sh, not bash | Script must use only POSIX-compliant syntax (no bashisms) | Existing entrypoint.sh standards | Current Dockerfile uses Alpine base image |
-| NFR-002-03 | Documentation must include docker-compose examples for multi-container deployment | Operators need clear guidance on deploying separate web and worker services | Provide example docker-compose.yaml showing web + worker services with shared configuration | None | Operational clarity |
+| NFR-002-03 | Documentation must include docker compose examples for multi-container deployment | Operators need clear guidance on deploying separate web and worker services | Provide example docker compose.yaml showing web + worker services with shared configuration | None | Operational clarity |
 | NFR-002-04 | Worker mode must log to stdout/stderr for container log aggregation | Container orchestrators collect logs from stdout/stderr | All worker output (job processing, errors) must go to stdout/stderr, not files | Laravel logging configuration | Twelve-factor app logging principles |
 | NFR-002-05 | Queue jobs must support deduplication for concurrent mutations | Album stats recomputation jobs (Feature 003) must not queue duplicate jobs when multiple concurrent photo uploads occur | Jobs use Laravel's WithoutOverlapping middleware with resource ID as lock key | Redis for lock storage (if CACHE_STORE=redis), otherwise database | Q-002-03 (job deduplication Option A) |
 
@@ -60,7 +60,7 @@ Not applicable – this feature has no user-facing UI changes. Configuration is 
 | S-002-04 | Start container with `LYCHEE_MODE=invalid`: Entrypoint logs error "Invalid LYCHEE_MODE: invalid. Must be 'web' or 'worker'.", exits with status 1 |
 | S-002-05 | Worker receives SIGTERM during job processing: Worker completes current job (if within timeout), then exits cleanly |
 | S-002-06 | Worker fails to connect to queue (Redis/database down): Logs connection error, exits with non-zero status for restart |
-| S-002-07 | Multi-container deployment (docker-compose): One service runs web mode, another runs worker mode, both share database and storage volumes |
+| S-002-07 | Multi-container deployment (docker compose): One service runs web mode, another runs worker mode, both share database and storage volumes |
 
 ## Test Strategy
 - **Infrastructure:** Shell script tests for entrypoint.sh mode detection logic (validate branching, error handling)
@@ -68,7 +68,7 @@ Not applicable – this feature has no user-facing UI changes. Configuration is 
   - Build image, run with various `LYCHEE_MODE` values, assert correct process starts
   - Verify signal handling by sending SIGTERM to worker container
 - **Application:** Existing queue job tests remain unchanged (jobs must work in both modes)
-- **Docs:** Validate docker-compose examples start successfully
+- **Docs:** Validate docker compose examples start successfully
 
 ## Interface & Contract Catalogue
 
@@ -97,7 +97,7 @@ Not applicable – no API changes.
 ### Fixtures & Sample Data
 | ID | Path | Purpose |
 |----|------|---------|
-| FX-002-01 | `docker-compose.yaml` (lychee_worker service) | Worker service configuration extending existing compose file |
+| FX-002-01 | `docker compose.yaml` (lychee_worker service) | Worker service configuration extending existing compose file |
 
 ### UI States
 Not applicable – no UI changes.
@@ -123,7 +123,7 @@ All logs output to stdout/stderr for aggregation by container orchestrators.
 4. Update Dockerfile comments to document `LYCHEE_MODE` behavior
 
 ## Fixtures & Sample Data
-- `docker-compose.yaml` (lychee_worker service): Worker service extending existing compose configuration
+- `docker compose.yaml` (lychee_worker service): Worker service extending existing compose configuration
 - Shell script test fixtures for entrypoint.sh validation
 - Auto-restart loop test: shell script to verify worker restarts on process exit
 
@@ -179,7 +179,7 @@ telemetry_events:
 
 fixtures:
   - id: FX-002-01
-    path: docker-compose.yaml
+    path: docker compose.yaml
     service: lychee_worker
     description: Worker service added to existing compose file
 ```
