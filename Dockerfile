@@ -87,8 +87,7 @@ RUN apk add --no-cache \
 	intl \
 	redis \
 	tokenizer \
-	&& rm -rf /var/cache/apk/* \
-	&& apk del shadow
+	&& rm -rf /var/cache/apk/*
 
 WORKDIR /app
 

@@ -46,7 +46,7 @@ if [ "$PGID" -lt 33 ] || [ "$PGID" -gt 65534 ]; then
     exit 1
 fi
 
-# Only modify user/group if shadow package is available (it's removed in production)
+# Only modify user/group if shadow package is available
 if command -v usermod >/dev/null 2>&1; then
     if [ "$(id -u www-data)" -ne "$PUID" ]; then
         usermod -o -u "$PUID" www-data
