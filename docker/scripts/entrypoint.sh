@@ -111,6 +111,9 @@ case "$LYCHEE_MODE" in
         while true; do
             echo "🚀 Starting queue worker ($(date '+%Y-%m-%d %H:%M:%S'))"
 
+            # Default exit code to 0
+            EXIT_CODE=0
+
             # Run queue worker with standard options
             # --tries=3: retry failed jobs up to 3 times
             # --timeout=3600: kill job if it runs longer than 1 hour
@@ -122,9 +125,6 @@ case "$LYCHEE_MODE" in
                 --timeout=3600 \
                 --sleep=3 \
                 --max-time="$WORKER_MAX_TIME" || EXIT_CODE=$?
-
-            # Default exit code to 0 if not set
-            EXIT_CODE=${EXIT_CODE:-0}
 
             if [ $EXIT_CODE -eq 0 ]; then
                 echo "✅ Queue worker exited cleanly (exit code 0)"
