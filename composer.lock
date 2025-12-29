@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bc2a2174984e2f2d91eddd8c6cecd61b",
+    "content-hash": "d4f71a2a18327404f599dd82518dd680",
     "packages": [
         {
             "name": "apimatic/core",
@@ -727,16 +727,16 @@
         },
         {
             "name": "dedoc/scramble",
-            "version": "v0.13.9",
+            "version": "v0.13.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dedoc/scramble.git",
-                "reference": "cdefa2d17bff15e9e618d497a33d3fb4d15d9095"
+                "reference": "fd73178629c0a5ddc59eeac4fd605d4820b60f11"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dedoc/scramble/zipball/cdefa2d17bff15e9e618d497a33d3fb4d15d9095",
-                "reference": "cdefa2d17bff15e9e618d497a33d3fb4d15d9095",
+                "url": "https://api.github.com/repos/dedoc/scramble/zipball/fd73178629c0a5ddc59eeac4fd605d4820b60f11",
+                "reference": "fd73178629c0a5ddc59eeac4fd605d4820b60f11",
                 "shasum": ""
             },
             "require": {
@@ -795,7 +795,7 @@
             ],
             "support": {
                 "issues": "https://github.com/dedoc/scramble/issues",
-                "source": "https://github.com/dedoc/scramble/tree/v0.13.9"
+                "source": "https://github.com/dedoc/scramble/tree/v0.13.10"
             },
             "funding": [
                 {
@@ -803,7 +803,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-12-27T18:18:04+00:00"
+            "time": "2025-12-29T08:30:07+00:00"
         },
         {
             "name": "dflydev/dot-access-data",
@@ -4338,31 +4338,31 @@
         },
         {
             "name": "lychee-org/nestedset",
-            "version": "v10.0.3",
+            "version": "11.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/LycheeOrg/laravel-nestedset.git",
-                "reference": "d8c1e3b00db77e069c1d6989d2cb9a99a95dd42b"
+                "reference": "a338e47ededffb211d92a6f31dbb429a409f0717"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/LycheeOrg/laravel-nestedset/zipball/d8c1e3b00db77e069c1d6989d2cb9a99a95dd42b",
-                "reference": "d8c1e3b00db77e069c1d6989d2cb9a99a95dd42b",
+                "url": "https://api.github.com/repos/LycheeOrg/laravel-nestedset/zipball/a338e47ededffb211d92a6f31dbb429a409f0717",
+                "reference": "a338e47ededffb211d92a6f31dbb429a409f0717",
                 "shasum": ""
             },
             "require": {
-                "illuminate/database": "^11.0|^12.0",
-                "illuminate/events": "^11.0|^12.0",
-                "illuminate/support": "^11.0|^12.0",
-                "php": "^8.3"
+                "illuminate/database": "^12.0",
+                "illuminate/events": "^12.0",
+                "illuminate/support": "^12.0",
+                "php": "^8.4"
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^3.3",
                 "larastan/larastan": "^3.2",
                 "lychee-org/phpstan-lychee": "^2.0.1",
-                "orchestra/testbench": "^9.0",
+                "orchestra/testbench": "^10.0",
                 "php-parallel-lint/php-parallel-lint": "^1.2",
-                "phpunit/phpunit": "^10.5"
+                "phpunit/phpunit": "^11.0"
             },
             "type": "library",
             "extra": {
@@ -4396,9 +4396,9 @@
                 "nsm"
             ],
             "support": {
-                "source": "https://github.com/LycheeOrg/laravel-nestedset/tree/v10.0.3"
+                "source": "https://github.com/LycheeOrg/laravel-nestedset/tree/11.0.0"
             },
-            "time": "2025-09-30T08:34:52+00:00"
+            "time": "2025-12-23T09:48:41+00:00"
         },
         {
             "name": "lychee-org/php-exif",
@@ -6002,20 +6002,20 @@
         },
         {
             "name": "paypal/paypal-server-sdk",
-            "version": "1.1.0",
+            "version": "2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/paypal/PayPal-PHP-Server-SDK.git",
-                "reference": "3964c1732b1815fa8cf8aee37069ccc4e95d9572"
+                "reference": "7d751fa920fec77353593d6190ff9653d5ae90ce"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paypal/PayPal-PHP-Server-SDK/zipball/3964c1732b1815fa8cf8aee37069ccc4e95d9572",
-                "reference": "3964c1732b1815fa8cf8aee37069ccc4e95d9572",
+                "url": "https://api.github.com/repos/paypal/PayPal-PHP-Server-SDK/zipball/7d751fa920fec77353593d6190ff9653d5ae90ce",
+                "reference": "7d751fa920fec77353593d6190ff9653d5ae90ce",
                 "shasum": ""
             },
             "require": {
-                "apimatic/core": "~0.3.13",
+                "apimatic/core": "~0.3.16",
                 "apimatic/core-interfaces": "~0.1.5",
                 "apimatic/unirest-php": "^4.0.6",
                 "ext-curl": "*",
@@ -6040,9 +6040,9 @@
             "homepage": "https://github.com/paypal/PayPal-PHP-Server-SDK",
             "support": {
                 "issues": "https://github.com/paypal/PayPal-PHP-Server-SDK/issues",
-                "source": "https://github.com/paypal/PayPal-PHP-Server-SDK/tree/1.1.0"
+                "source": "https://github.com/paypal/PayPal-PHP-Server-SDK/tree/2.1.0"
             },
-            "time": "2025-05-27T17:46:31+00:00"
+            "time": "2025-12-04T21:51:20+00:00"
         },
         {
             "name": "php-ffmpeg/php-ffmpeg",
