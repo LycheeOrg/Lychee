@@ -24,6 +24,7 @@ use App\Models\Extensions\Thumb;
 use App\Models\Extensions\ToArrayThrowsNotImplemented;
 use App\Models\Extensions\UTCBasedTimes;
 use App\Models\Photo;
+use App\Policies\AlbumPolicy;
 use App\Policies\PhotoQueryPolicy;
 use App\Repositories\ConfigManager;
 use App\SmartAlbums\Utils\MimicModel;
@@ -107,11 +108,14 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	 */
 	public function photos(): Builder
 	{
+		$user = Auth::user();
+		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
+
 		$base_query = Photo::query()->leftJoin(PA::PHOTO_ALBUM, 'photos.id', '=', PA::PHOTO_ID)->with(['size_variants', 'statistics', 'palette', 'tags', 'rating']);
 
 		if (!$this->config_manager->getValueAsBool('SA_override_visibility')) {
 			return $this->photo_query_policy
-				->applySearchabilityFilter(query: $base_query, origin: null, include_nsfw: !$this->config_manager->getValueAsBool('hide_nsfw_in_smart_albums'))
+				->applySearchabilityFilter(query: $base_query, user: $user, unlocked_album_ids: $unlocked_album_ids, origin: null, include_nsfw: !$this->config_manager->getValueAsBool('hide_nsfw_in_smart_albums'))
 				->when(
 					$this->config_manager->getValueAsBool('enable_smart_album_per_owner') && Auth::check(),
 					fn (Builder $query) => $query->where('photos.owner_id', '=', Auth::id())
@@ -121,7 +125,7 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 
 		// If the smart album visibility override is enabled, we do not need to apply any security filter, as all photos are visible
 		// in this smart album. We still need to apply the smart album condition, though.
-		return $this->photo_query_policy->applySensitivityFilter(query: $base_query, origin: null, include_nsfw: !$this->config_manager->getValueAsBool('hide_nsfw_in_smart_albums'))
+		return $this->photo_query_policy->applySensitivityFilter(query: $base_query, user: $user, origin: null, include_nsfw: !$this->config_manager->getValueAsBool('hide_nsfw_in_smart_albums'))
 			->where($this->smart_photo_condition);
 	}
 

@@ -87,9 +87,14 @@ class HasAlbumThumb extends Relation
 				// @phpstan-ignore-next-line
 				$this->where('photos.id', '=', $album->cover_id);
 			} else {
+				$user = Auth::user();
+				$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
+
 				$this->photo_query_policy
 					->applySearchabilityFilter(
 						query: $this->getRelationQuery(),
+						user: $user,
+						unlocked_album_ids: $unlocked_album_ids,
 						origin: $album,
 						include_nsfw: $album->is_nsfw);
 			}
@@ -200,32 +205,38 @@ class HasAlbumThumb extends Relation
 			->orderBy('photos.' . $this->sorting->column->value, $this->sorting->order->value)
 			->limit(1);
 
-		if (Auth::user()?->may_administrate !== true) {
-			$best_photo_id_select->where(function (BaseBuilder $query2): void {
+		$user = Auth::user();
+		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
+
+		if ($user?->may_administrate !== true) {
+			$best_photo_id_select->where(function (BaseBuilder $query2) use ($user, $unlocked_album_ids): void {
 				$this->photo_query_policy->appendSearchabilityConditions(
 					$query2,
+					$user,
+					$unlocked_album_ids,
 					'covered_albums._lft',
 					'covered_albums._rgt'
 				);
 			});
 		}
 
-		$album2_cover = function (BaseBuilder $builder) use ($best_photo_id_select, $album_keys): void {
+		$album2_cover = function (BaseBuilder $builder) use ($best_photo_id_select, $album_keys, $user, $unlocked_album_ids): void {
 			$builder
 				->from('albums as covered_albums')
 				->join('base_albums', 'base_albums.id', '=', 'covered_albums.id');
 
 			$this->album_query_policy->joinSubComputedAccessPermissions(
 				query: $builder,
+				user: $user,
 				second: 'base_albums.id'
 			);
 
 			$builder->select(['covered_albums.id AS album_id'])
 				->addSelect(['photo_id' => $best_photo_id_select])
 				->whereIn('covered_albums.id', $album_keys);
-			if (Auth::user()?->may_administrate !== true) {
-				$builder->where(function (BaseBuilder $q): void {
-					$this->album_query_policy->appendAccessibilityConditions($q);
+			if ($user?->may_administrate !== true) {
+				$builder->where(function (BaseBuilder $q) use ($user, $unlocked_album_ids): void {
+					$this->album_query_policy->appendAccessibilityConditions($q, $user, $unlocked_album_ids);
 				});
 			}
 		};

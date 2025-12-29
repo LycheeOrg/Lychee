@@ -16,6 +16,7 @@ use App\Models\Extensions\SortingDecorator;
 use App\Policies\AlbumPolicy;
 use App\Policies\AlbumQueryPolicy;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
 /**
@@ -83,9 +84,14 @@ class HasManyPhotosRecursively extends BaseHasManyPhotos
 			throw new NotImplementedException('eagerly fetching all photos of an album is not implemented for multiple albums');
 		}
 
+		$user = Auth::user();
+		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
+
 		$this->photo_query_policy
 			->applySearchabilityFilter(
 				query: $this->getRelationQuery(),
+				user: $user,
+				unlocked_album_ids: $unlocked_album_ids,
 				origin: $albums[0],
 				include_nsfw: true
 			);

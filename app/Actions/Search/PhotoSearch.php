@@ -14,10 +14,12 @@ use App\Eloquent\FixedQueryBuilder;
 use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
+use App\Policies\AlbumPolicy;
 use App\Policies\PhotoQueryPolicy;
 use App\Repositories\ConfigManager;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Auth;
 
 class PhotoSearch
 {
@@ -55,8 +57,13 @@ class PhotoSearch
 	 */
 	public function sqlQuery(array $terms, ?Album $album = null): Builder
 	{
+		$user = Auth::user();
+		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
+
 		$query = $this->photo_query_policy->applySearchabilityFilter(
 			query: Photo::query()->with(['albums', 'statistics', 'size_variants', 'palette', 'tags', 'rating']),
+			user: $user,
+			unlocked_album_ids: $unlocked_album_ids,
 			origin: $album,
 			include_nsfw: !$this->config_manager->getValueAsBool('hide_nsfw_in_search')
 		);

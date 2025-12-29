@@ -12,8 +12,10 @@ use App\Contracts\Exceptions\InternalLycheeException;
 use App\Enum\SizeVariantType;
 use App\Http\Resources\Collections\PositionDataResource;
 use App\Models\Photo;
+use App\Policies\AlbumPolicy;
 use App\Policies\PhotoQueryPolicy;
 use App\Repositories\ConfigManager;
+use Illuminate\Support\Facades\Auth;
 
 class PositionData
 {
@@ -32,6 +34,9 @@ class PositionData
 	 */
 	public function do(): PositionDataResource
 	{
+		$user = Auth::user();
+		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
+
 		$photo_query = $this->photo_query_policy->applySearchabilityFilter(
 			query: Photo::query()
 				->with([
@@ -51,6 +56,8 @@ class PositionData
 				])
 				->whereNotNull('latitude')
 				->whereNotNull('longitude'),
+			user: $user,
+			unlocked_album_ids: $unlocked_album_ids,
 			origin: null,
 			include_nsfw: !$this->config_manager->getValueAsBool('hide_nsfw_in_map')
 		);

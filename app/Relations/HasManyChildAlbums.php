@@ -16,6 +16,7 @@ use App\Models\Builders\AlbumBuilder;
 use App\Models\Extensions\SortingDecorator;
 use App\Policies\AlbumQueryPolicy;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * @extends HasManyBidirectionally<Album,Album>
@@ -61,7 +62,8 @@ class HasManyChildAlbums extends HasManyBidirectionally
 	{
 		if (static::$constraints) {
 			parent::addConstraints();
-			$this->album_query_policy->applyVisibilityFilter($this->getRelationQuery());
+			$user = Auth::user();
+			$this->album_query_policy->applyVisibilityFilter($this->getRelationQuery(), $user);
 		}
 	}
 
@@ -73,7 +75,8 @@ class HasManyChildAlbums extends HasManyBidirectionally
 	public function addEagerConstraints(array $models)
 	{
 		parent::addEagerConstraints($models);
-		$this->album_query_policy->applyVisibilityFilter($this->getRelationQuery());
+		$user = Auth::user();
+		$this->album_query_policy->applyVisibilityFilter($this->getRelationQuery(), $user);
 	}
 
 	/**
