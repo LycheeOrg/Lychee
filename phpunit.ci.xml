@@ -23,6 +23,9 @@
     <testsuite name="ImageProcessing">
       <directory suffix="Test.php">./tests/ImageProcessing</directory>
     </testsuite>
+    <testsuite name="Precomputing">
+      <directory suffix="Test.php">./tests/Precomputing</directory>
+    </testsuite>
     <testsuite name="Webshop">
       <directory suffix="Test.php">./tests/Webshop</directory>
       <exclude>./tests/Webshop/Checkout/BaseCheckoutControllerTest.php</exclude>

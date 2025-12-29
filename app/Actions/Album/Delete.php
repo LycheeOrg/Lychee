@@ -14,6 +14,7 @@ use App\Constants\AccessPermissionConstants as APC;
 use App\Contracts\Exceptions\InternalLycheeException;
 use App\Enum\SmartAlbumType;
 use App\Enum\StorageDiskType;
+use App\Events\AlbumDeleted;
 use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\ModelDBException;
@@ -90,6 +91,9 @@ class Delete
 				->select(['id', 'parent_id', '_lft', '_rgt', 'track_short_path'])
 				->findMany($album_ids);
 
+			// Collect unique parent IDs BEFORE deletion for event dispatching
+			$parent_ids = $albums->pluck('parent_id')->filter()->unique()->values()->all();
+
 			$recursive_album_ids = $albums->pluck('id')->all(); // only IDs which refer to regular albums are incubators for recursive IDs
 			$recursive_album_tracks = $albums->pluck('track_short_path');
 
@@ -145,6 +149,11 @@ class Delete
 				})
 				->whereNotIn(APC::ACCESS_PERMISSIONS . '.' . APC::BASE_ALBUM_ID, SmartAlbumType::values())
 				->delete();
+
+			// Dispatch events for parent albums to trigger recomputation
+			foreach ($parent_ids as $parent_id) {
+				AlbumDeleted::dispatch($parent_id);
+			}
 
 			return $file_deleter;
 			// @codeCoverageIgnoreStart

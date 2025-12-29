@@ -18,7 +18,8 @@ return new class() extends Migration {
 	 */
 	public function up(): void
 	{
-		Schema::table('base_albums', function (Blueprint $table) {
+		// Also add columns to albums table for Album model
+		Schema::table('albums', function (Blueprint $table) {
 			// Date range fields (nullable - empty albums have NULL)
 			$table->dateTime('max_taken_at')->nullable();
 			$table->dateTime('min_taken_at')->nullable();
@@ -49,7 +50,7 @@ return new class() extends Migration {
 	 */
 	public function down(): void
 	{
-		Schema::table('base_albums', function (Blueprint $table) {
+		Schema::table('albums', function (Blueprint $table) {
 			// Drop foreign keys first
 			$table->dropForeign(['auto_cover_id_least_privilege']);
 			$table->dropForeign(['auto_cover_id_max_privilege']);

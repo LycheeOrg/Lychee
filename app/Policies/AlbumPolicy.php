@@ -21,6 +21,7 @@ use App\Models\Extensions\BaseAlbum;
 use App\Models\User;
 use App\Repositories\ConfigManager;
 use App\SmartAlbums\BaseSmartAlbum;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
 class AlbumPolicy extends BasePolicy
@@ -57,6 +58,33 @@ class AlbumPolicy extends BasePolicy
 	public function isOwner(?User $user, BaseAlbum|BaseAlbumImpl $album): bool
 	{
 		return $user !== null && $album->owner_id === $user->id;
+	}
+
+	/**
+	 * Checks whether the user owns the album or any ancestor using nested set query.
+	 *
+	 * This is used for determining whether to display the max-privilege cover
+	 * (which may include photos the current user can see because they own a parent album).
+	 *
+	 * @param User|null $user
+	 * @param Album     $album
+	 *
+	 * @return bool
+	 */
+	public function isOwnerOrAncestorOwner(?User $user, Album $album): bool
+	{
+		if ($user === null) {
+			return false;
+		}
+
+		// Check if user owns this album or any ancestor using nested set
+		$count = DB::table('base_albums')
+			->where('owner_id', '=', $user->id)
+			->where('_lft', '<=', $album->_lft)
+			->where('_rgt', '>=', $album->_rgt)
+			->count();
+
+		return $count > 0;
 	}
 
 	/**

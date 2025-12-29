@@ -51,11 +51,8 @@ final class Flow
 			// This will be used to determine if the album should be blurred.
 			$base_query->addVirtualIsRecursiveNSFW();
 
-			// Due to the way the virtual columns are added in AlbumBuilder::getModel(), we need to add them here.
-			$base_query->addVirtualMinTakenAt();
-			$base_query->addVirtualMaxTakenAt();
-			$base_query->addVirtualNumChildren();
-			$base_query->addVirtualNumPhotos();
+			// Note: min_taken_at, max_taken_at, num_children, and num_photos are now
+			// physical columns populated by RecomputeAlbumStatsJob and automatically selected.
 		}
 
 		// Apply the security policy to the query.

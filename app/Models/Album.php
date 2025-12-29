@@ -28,13 +28,13 @@ use App\Relations\HasManyChildAlbums;
 use App\Relations\HasManyChildPhotos;
 use App\Relations\HasManyPhotosRecursively;
 use App\Repositories\ConfigManager;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Http\UploadedFile;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Kalnoy\Nestedset\Collection as NSCollection;
 use Kalnoy\Nestedset\Contracts\Node;
@@ -51,8 +51,8 @@ use Kalnoy\Nestedset\NodeTrait;
  * @property int                      $num_children                  The number of children.
  * @property Collection<int,Photo>    $all_photos
  * @property int                      $num_photos                    The number of photos in this album (excluding photos in subalbums).
- * @property Carbon|null           $max_taken_at                  Maximum taken_at timestamp of all photos in album and descendants.
- * @property Carbon|null           $min_taken_at                  Minimum taken_at timestamp of all photos in album and descendants.
+ * @property Carbon|null              $max_taken_at                  Maximum taken_at timestamp of all photos in album and descendants.
+ * @property Carbon|null              $min_taken_at                  Minimum taken_at timestamp of all photos in album and descendants.
  * @property string|null              $auto_cover_id_max_privilege   Automatically selected cover photo ID (admin/owner view).
  * @property string|null              $auto_cover_id_least_privilege Automatically selected cover photo ID (most restrictive view).
  * @property LicenseType              $license
@@ -357,15 +357,6 @@ class Album extends BaseAlbum implements Node
 					->whereBetween('albums._lft', [$lft + 1, $rgt - 1]);
 			})
 			->update(['owner_id' => $this->owner_id]);
-		// TODO: FIX ME This is no longer correct.
-		// Photo::query()
-		// 	->whereExists(function (BaseBuilder $q) use ($lft, $rgt): void {
-		// 		$q
-		// 			->from('albums')
-		// 			->whereColumn('photos.album_id', '=', 'albums.id') // ! column no longer exists!
-		// 			->whereBetween('albums._lft', [$lft, $rgt]);
-		// 	})
-		// 	->update(['owner_id' => $this->owner_id]);
 	}
 
 	/**

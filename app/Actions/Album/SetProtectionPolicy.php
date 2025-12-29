@@ -8,6 +8,7 @@
 
 namespace App\Actions\Album;
 
+use App\Events\AlbumSaved;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\ModelDBException;
@@ -30,8 +31,15 @@ class SetProtectionPolicy
 	 */
 	public function do(BaseAlbum $album, AlbumProtectionPolicy $protection_policy, bool $shall_set_password, ?string $password): void
 	{
+		$old_is_nsfw = $album->is_nsfw;
 		$album->is_nsfw = $protection_policy->is_nsfw;
 		$album->save();
+
+		// Dispatch event if NSFW status changed and album is a regular Album
+		AlbumSaved::dispatchIf(
+			$old_is_nsfw !== $protection_policy->is_nsfw && $album instanceof \App\Models\Album,
+			$album
+		);
 
 		$active_permissions = $album->public_permissions();
 
