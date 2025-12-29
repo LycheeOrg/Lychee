@@ -13,6 +13,7 @@ use App\Eloquent\FixedQueryBuilder;
 use App\Models\Album;
 use App\Models\Extensions\Thumb;
 use App\Models\Photo;
+use App\Models\User;
 use App\Policies\AlbumPolicy;
 use App\Policies\PhotoQueryPolicy;
 use Illuminate\Database\Eloquent\Builder;
