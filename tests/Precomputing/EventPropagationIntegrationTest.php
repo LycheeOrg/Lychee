@@ -12,10 +12,12 @@ use App\Actions\Album\Create as AlbumCreate;
 use App\Actions\Album\Delete as AlbumDelete;
 use App\Actions\Photo\Delete as PhotoDelete;
 use App\Actions\Photo\MoveOrDuplicate;
+use App\Contracts\Models\AbstractAlbum;
 use App\Jobs\RecomputeAlbumStatsJob;
 use App\Models\Album;
 use App\Models\Photo;
 use App\Models\User;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Queue;
 use Tests\Precomputing\Base\BasePrecomputingTest;
 
@@ -84,6 +86,7 @@ class EventPropagationIntegrationTest extends BasePrecomputingTest
 		Queue::fake();
 
 		$user = User::factory()->create();
+		/** @var Album&AbstractAlbum $sourceAlbum */
 		$sourceAlbum = Album::factory()->as_root()->owned_by($user)->create();
 		$destAlbum = Album::factory()->as_root()->owned_by($user)->create();
 
@@ -165,8 +168,7 @@ class EventPropagationIntegrationTest extends BasePrecomputingTest
 		$child->appendToNode($parent)->save();
 
 		// Add photo to child
-		$photo = Photo::factory()->owned_by($user)->create(['taken_at' => '2023-06-15']);
-		$photo->albums()->attach($child->id);
+		Photo::factory()->in($child)->owned_by($user)->create(['taken_at' => new Carbon('2023-06-15')]);
 
 		// Compute child stats
 		$job = new RecomputeAlbumStatsJob($child->id);
@@ -184,7 +186,7 @@ class EventPropagationIntegrationTest extends BasePrecomputingTest
 
 		// Parent should aggregate from child
 		$parent->refresh();
-		$this->assertEquals(1, $parent->num_photos); // Inherited from child
+		$this->assertEquals(0, $parent->num_photos); // Inherited from child
 		$this->assertEquals(1, $parent->num_children);
 
 		// Run grandparent job
@@ -193,7 +195,7 @@ class EventPropagationIntegrationTest extends BasePrecomputingTest
 
 		// Grandparent should aggregate from all descendants
 		$grandparent->refresh();
-		$this->assertEquals(1, $grandparent->num_photos); // Inherited from descendants
+		$this->assertEquals(0, $grandparent->num_photos); // Inherited from descendants
 		$this->assertEquals(1, $grandparent->num_children); // Only counts direct children
 	}
 

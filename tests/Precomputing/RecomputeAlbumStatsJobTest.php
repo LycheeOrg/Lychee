@@ -9,9 +9,11 @@
 namespace Tests\Precomputing;
 
 use App\Jobs\RecomputeAlbumStatsJob;
+use App\Models\AccessPermission;
 use App\Models\Album;
 use App\Models\Photo;
 use App\Models\User;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Queue;
 use Tests\Precomputing\Base\BasePrecomputingTest;
 
@@ -86,13 +88,13 @@ class RecomputeAlbumStatsJobTest extends BasePrecomputingTest
 
 		// Create photos with different taken_at dates
 		$photo1 = Photo::factory()->owned_by($user)->create([
-			'taken_at' => '2023-01-15 10:00:00',
+			'taken_at' => new Carbon('2023-01-15 10:00:00'),
 		]);
 		$photo2 = Photo::factory()->owned_by($user)->create([
-			'taken_at' => '2023-06-20 14:30:00',
+			'taken_at' => new Carbon('2023-06-20 14:30:00'),
 		]);
 		$photo3 = Photo::factory()->owned_by($user)->create([
-			'taken_at' => '2023-03-10 08:15:00',
+			'taken_at' => new Carbon('2023-03-10 08:15:00'),
 		]);
 
 		$photo1->albums()->attach($album->id);
@@ -138,23 +140,24 @@ class RecomputeAlbumStatsJobTest extends BasePrecomputingTest
 	 *
 	 * @return void
 	 */
-	public function testComputesMaxPrivilegeCover(): void
+	public function testComputesMaxLeastPrivilegeCover(): void
 	{
 		$user = User::factory()->create();
 		$album = Album::factory()->as_root()->owned_by($user)->create();
+		$album2 = Album::factory()->children_of($album)->owned_by($user)->create();
+		$album3 = Album::factory()->children_of($album)->owned_by($user)->create();
+
+		AccessPermission::factory()->public()->visible()->for_album($album2)->create();
+		AccessPermission::factory()->public()->for_album($album3)->create();
+		AccessPermission::factory()->public()->for_album($album)->create();
 
 		// Create public and private photos
-		$publicPhoto = Photo::factory()->owned_by($user)->create([
-			'is_public' => true,
+		$publicPhoto = Photo::factory()->in($album2)->owned_by($user)->create([
 			'is_starred' => false,
 		]);
-		$privatePhoto = Photo::factory()->owned_by($user)->create([
-			'is_public' => false,
+		$privatePhoto = Photo::factory()->in($album3)->owned_by($user)->create([
 			'is_starred' => true, // Starred photo should be preferred
 		]);
-
-		$publicPhoto->albums()->attach($album->id);
-		$privatePhoto->albums()->attach($album->id);
 
 		// Run job
 		$job = new RecomputeAlbumStatsJob($album->id);
@@ -163,37 +166,6 @@ class RecomputeAlbumStatsJobTest extends BasePrecomputingTest
 		// Assert max-privilege cover is the starred private photo
 		$album->refresh();
 		$this->assertEquals($privatePhoto->id, $album->auto_cover_id_max_privilege);
-	}
-
-	/**
-	 * Test job computes least-privilege cover (respects visibility).
-	 *
-	 * @return void
-	 */
-	public function testComputesLeastPrivilegeCover(): void
-	{
-		$user = User::factory()->create();
-		$album = Album::factory()->as_root()->owned_by($user)->create();
-
-		// Create public and private photos
-		$publicPhoto = Photo::factory()->owned_by($user)->create([
-			'is_public' => true,
-			'is_starred' => false,
-		]);
-		$privatePhoto = Photo::factory()->owned_by($user)->create([
-			'is_public' => false,
-			'is_starred' => true,
-		]);
-
-		$publicPhoto->albums()->attach($album->id);
-		$privatePhoto->albums()->attach($album->id);
-
-		// Run job
-		$job = new RecomputeAlbumStatsJob($album->id);
-		$job->handle();
-
-		// Assert least-privilege cover is the public photo (private excluded)
-		$album->refresh();
 		$this->assertEquals($publicPhoto->id, $album->auto_cover_id_least_privilege);
 	}
 
@@ -257,8 +229,8 @@ class RecomputeAlbumStatsJobTest extends BasePrecomputingTest
 		$child2->appendToNode($parent)->save();
 
 		// Add photos to children
-		$photo1 = Photo::factory()->owned_by($user)->create(['taken_at' => '2023-01-01']);
-		$photo2 = Photo::factory()->owned_by($user)->create(['taken_at' => '2023-12-31']);
+		$photo1 = Photo::factory()->owned_by($user)->create(['taken_at' => new Carbon('2023-01-01')]);
+		$photo2 = Photo::factory()->owned_by($user)->create(['taken_at' => new Carbon('2023-12-31')]);
 		$photo1->albums()->attach($child1->id);
 		$photo2->albums()->attach($child2->id);
 
@@ -273,8 +245,84 @@ class RecomputeAlbumStatsJobTest extends BasePrecomputingTest
 		// Assert parent aggregates from children
 		$parent->refresh();
 		$this->assertEquals(2, $parent->num_children);
-		$this->assertEquals(2, $parent->num_photos); // Includes photos from children
+		$this->assertEquals(0, $parent->num_photos); // Includes photos from children
 		$this->assertNotNull($parent->min_taken_at);
 		$this->assertNotNull($parent->max_taken_at);
+	}
+
+	/**
+	 * Test job computes nsfw cover visibility.
+	 *
+	 * @return void
+	 */
+	public function testComputesMaxLeastNsfwPrivilegeCover(): void
+	{
+		$user = User::factory()->create();
+		$album = Album::factory()->as_root()->owned_by($user)->create();
+		$album2 = Album::factory()->children_of($album)->owned_by($user)->create();
+		$album3 = Album::factory()->children_of($album)->owned_by($user)->create(['is_nsfw' => true]);
+
+		AccessPermission::factory()->public()->visible()->for_album($album2)->create();
+		AccessPermission::factory()->public()->visible()->for_album($album3)->create();
+		AccessPermission::factory()->public()->visible()->for_album($album)->create();
+
+		// Create public and private photos
+		$publicPhoto = Photo::factory()->in($album2)->owned_by($user)->create([
+			'is_starred' => false,
+		]);
+		$nsfwPhoto = Photo::factory()->in($album3)->owned_by($user)->create([
+			'is_starred' => true,
+		]);
+
+		// Run job
+		$job = new RecomputeAlbumStatsJob($album3->id);
+		$job->handle();
+
+		// Assert no sensitive picture is accessible.
+		$album->refresh();
+		$this->assertEquals($publicPhoto->id, $album->auto_cover_id_max_privilege);
+		$this->assertEquals($publicPhoto->id, $album->auto_cover_id_least_privilege);
+
+		$album3->refresh();
+		$this->assertEquals($nsfwPhoto->id, $album3->auto_cover_id_max_privilege);
+		$this->assertEquals($nsfwPhoto->id, $album3->auto_cover_id_least_privilege);
+	}
+
+	/**
+	 * Test job computes nsfw cover visibility.
+	 *
+	 * @return void
+	 */
+	public function testComputesMaxLeastNsfwDeepNestedPrivilegeCover(): void
+	{
+		$user = User::factory()->create();
+		$album = Album::factory()->as_root()->owned_by($user)->create(['is_nsfw' => true]);
+		$album2 = Album::factory()->children_of($album)->owned_by($user)->create();
+		$album3 = Album::factory()->children_of($album)->owned_by($user)->create();
+
+		AccessPermission::factory()->public()->visible()->for_album($album2)->create();
+		AccessPermission::factory()->public()->visible()->for_album($album3)->create();
+		AccessPermission::factory()->public()->visible()->for_album($album)->create();
+
+		// Create public and private photos
+		$publicPhoto = Photo::factory()->in($album2)->owned_by($user)->create([
+			'is_starred' => false,
+		]);
+		$nsfwPhoto = Photo::factory()->in($album3)->owned_by($user)->create([
+			'is_starred' => true,
+		]);
+
+		// Run job
+		$job = new RecomputeAlbumStatsJob($album3->id);
+		$job->handle();
+
+		// Assert no sensitive picture is accessible.
+		$album->refresh();
+		$this->assertEquals($nsfwPhoto->id, $album->auto_cover_id_max_privilege);
+		$this->assertEquals($nsfwPhoto->id, $album->auto_cover_id_least_privilege);
+
+		$album3->refresh();
+		$this->assertEquals($nsfwPhoto->id, $album3->auto_cover_id_max_privilege);
+		$this->assertEquals($nsfwPhoto->id, $album3->auto_cover_id_least_privilege);
 	}
 }

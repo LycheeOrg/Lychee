@@ -19,6 +19,7 @@
 namespace Tests\Feature_v2\Base;
 
 use App\Enum\UserGroupRole;
+use App\Jobs\RecomputeAlbumStatsJob;
 use App\Models\AccessPermission;
 use App\Models\Album;
 use App\Models\Configs;
@@ -230,6 +231,17 @@ abstract class BaseApiWithDataTest extends BaseApiTest
 			->create();
 
 		$this->album5 = Album::factory()->as_root()->owned_by($this->admin)->create();
+
+		$job = new RecomputeAlbumStatsJob($this->subAlbum1->id);
+		$job->handle();
+		$job = new RecomputeAlbumStatsJob($this->subAlbum2->id);
+		$job->handle();
+		$job = new RecomputeAlbumStatsJob($this->subAlbum1->id);
+		$job->handle();
+		$job = new RecomputeAlbumStatsJob($this->subAlbum4->id);
+		$job->handle();
+		$job = new RecomputeAlbumStatsJob($this->album5->id);
+		$job->handle();
 
 		Configs::set('owner_id', $this->admin->id);
 
