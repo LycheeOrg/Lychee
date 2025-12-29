@@ -9,16 +9,19 @@
 namespace App\Jobs;
 
 use App\Constants\PhotoAlbum as PA;
+use App\DTO\PhotoSortingCriterion;
 use App\Models\Album;
 use App\Policies\AlbumQueryPolicy;
 use App\Policies\PhotoQueryPolicy;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\Middleware\WithoutOverlapping;
+use Illuminate\Queue\Middleware\Skip;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -37,6 +40,8 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 	use Queueable;
 	use SerializesModels;
 
+	private string $jobId;
+
 	/**
 	 * Number of times to retry the job.
 	 *
@@ -50,6 +55,13 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 	public function __construct(
 		public string $album_id,
 	) {
+        $this->jobId = uniqid('job_', true);
+
+		// Register this as the latest job for this album
+        Cache::put(
+            "album_stats_latest_job:" . $this->album_id,
+            $this->jobId
+		);
 	}
 
 	/**
@@ -57,12 +69,20 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 	 *
 	 * @return array<int,object>
 	 */
-	public function middleware(): array
-	{
-		return [
-			(new WithoutOverlapping($this->album_id))->releaseAfter(60),
-		];
-	}
+    public function middleware(): array
+    {
+        return [
+            Skip::when(fn() => $this->hasNewerJobQueued()),
+        ];
+    }
+
+    protected function hasNewerJobQueued(): bool
+    {
+        $cacheKey = "album_stats_latest_job:" . $this->album_id;
+        $latestJobId = Cache::get($cacheKey);
+
+        return $latestJobId !== $this->jobId || $latestJobId === null;
+    }
 
 	/**
 	 * Execute the job.
@@ -72,10 +92,14 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 	public function handle(): void
 	{
 		Log::info("Recomputing stats for album {$this->album_id}");
+        Cache::forget("album_stats_latest_job:{$this->album_id}");
 
 		try {
 			DB::transaction(function () {
-				$album = Album::query()->findOrFail($this->album_id);
+				$album = Album::query()->addVirtualIsRecursiveNSFW()->findOrFail($this->album_id);
+
+				// Get recursive NSFW status
+				$is_nsfw_context = $album->is_recursive_nsfw;
 
 				// Compute counts
 				$album->num_children = $this->computeNumChildren($album);
@@ -87,10 +111,11 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 				$album->max_taken_at = $dates['max'];
 
 				// Compute cover IDs (simplified for now - will be enhanced in I3)
-				$album->auto_cover_id_max_privilege = $this->computeMaxPrivilegeCover($album);
-				$album->auto_cover_id_least_privilege = $this->computeLeastPrivilegeCover($album);
+				$album->auto_cover_id_max_privilege = $this->computeMaxPrivilegeCover($album, $is_nsfw_context);
+				$album->auto_cover_id_least_privilege = $this->computeLeastPrivilegeCover($album, $is_nsfw_context);
 
 				// Save without dispatching events to avoid infinite loop
+				/** @disregard */
 				$album->saveQuietly();
 
 				// Propagate to parent if exists
@@ -142,10 +167,44 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 	 *
 	 * @param Album $album
 	 *
-	 * @return array{min: \Carbon\Carbon|null, max: \Carbon\Carbon|null}
+	 * @return array{min:Carbon|null,max:Carbon|null}
 	 */
 	private function computeTakenAtRange(Album $album): array
 	{
+		// Note:
+		//  1. The order of JOINS is important.
+		//     Although `JOIN` is cumulative, i.e.
+		//     `photos JOIN albums` and `albums JOIN photos`
+		//     should be identical, it is not with respect to the
+		//     MySQL query optimizer.
+		//     For an efficient query it is paramount, that the
+		//     query first filters out all child albums and then
+		//     selects the most/least recent photo within the child
+		//     albums.
+		//     If the JOIN starts with photos, MySQL first selects
+		//     all photos of the entire gallery.
+		//  2. The query must use the aggregation functions
+		//     `MIN`/`MAX`, we must not use `ORDER BY ... LIMIT 1`.
+		//     Otherwise, the MySQL optimizer first selects the
+		//     photos and then joins with albums (i.e. the same
+		//     effect as above).
+		//     The background is rather difficult to explain, but is
+		//     due to MySQL's "Limit Query Optimization"
+		//     (https://dev.mysql.com/doc/refman/8.0/en/limit-optimization.html).
+		//     Basically, if MySQL sees an `ORDER BY ... LIMIT ...`
+		//     construction and has an applicable index for that,
+		//     MySQL's built-in heuristic chooses that index with high
+		//     priority and does not consider any alternatives.
+		//     In this specific case, this heuristic fails splendidly.
+		//
+		// Further note, that PostgreSQL's optimizer is not affected
+		// by any of these tricks.
+		// The optimized query plan for PostgreSQL is always the same.
+		// Good PosgreSQL :-)
+		//
+		// We must not use `Album::query->` to start the query, but
+		// use a non-Eloquent query here to avoid an infinite loop
+		// with this query builder.
 		$result = DB::table('albums', 'a')
 			->join(PA::PHOTO_ALBUM, 'a.id', '=', PA::ALBUM_ID)
 			->join('photos', PA::PHOTO_ID, '=', 'photos.id')
@@ -156,27 +215,9 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 			->first();
 
 		return [
-			'min' => $result?->min_taken_at ? new \Carbon\Carbon($result->min_taken_at) : null,
-			'max' => $result?->max_taken_at ? new \Carbon\Carbon($result->max_taken_at) : null,
+			'min' => $result?->min_taken_at ? new Carbon($result->min_taken_at) : null,
+			'max' => $result?->max_taken_at ? new Carbon($result->max_taken_at) : null,
 		];
-	}
-
-	/**
-	 * Check if album is in NSFW context (album or any parent is NSFW).
-	 *
-	 * @param Album $album
-	 *
-	 * @return bool
-	 */
-	private function isInNSFWContext(Album $album): bool
-	{
-		$count = DB::table('base_albums')
-			->where('is_nsfw', '=', true)
-			->where('_lft', '<=', $album->_lft)
-			->where('_rgt', '>=', $album->_rgt)
-			->count();
-
-		return $count > 0;
 	}
 
 	/**
@@ -187,13 +228,12 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 	 * Ordering: is_starred DESC, then taken_at DESC, then id ASC.
 	 *
 	 * @param Album $album
+	 * @param bool  $is_nsfw_context
 	 *
 	 * @return string|null
 	 */
-	private function computeMaxPrivilegeCover(Album $album): ?string
+	private function computeMaxPrivilegeCover(Album $album, bool $is_nsfw_context): ?string
 	{
-		$is_nsfw_context = $this->isInNSFWContext($album);
-
 		$query = DB::table('albums', 'a')
 			->join(PA::PHOTO_ALBUM, 'a.id', '=', PA::ALBUM_ID)
 			->join('photos', PA::PHOTO_ID, '=', 'photos.id')
@@ -207,18 +247,19 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 			$query->whereNotExists(function (BaseBuilder $q) use ($album) {
 				$q->select(DB::raw(1))
 					->from('albums as nsfw_album')
+					->join('base_albums as ba_nsfw', 'nsfw_album.id', '=', 'ba_nsfw.id')
 					->join(PA::PHOTO_ALBUM . ' as pa_nsfw', 'nsfw_album.id', '=', 'pa_nsfw.album_id')
 					->whereColumn('pa_nsfw.photo_id', '=', 'photos.id')
-					->where('nsfw_album.is_nsfw', '=', true)
+					->where('ba_nsfw.is_nsfw', '=', '1')
 					->where('nsfw_album._lft', '>=', $album->_lft)
 					->where('nsfw_album._rgt', '<=', $album->_rgt);
 			});
 		}
 
+		$sorting = $album->getEffectiveAlbumSorting();
 		$result = $query
 			->orderByDesc('photos.is_starred')
-			->orderByDesc('photos.taken_at')
-			->orderBy('photos.id', 'asc')
+			->orderBy($sorting->column->value, $sorting->order->value)
 			->select('photos.id')
 			->first();
 
@@ -234,12 +275,12 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 	 * Ordering: is_starred DESC, then taken_at DESC, then id ASC.
 	 *
 	 * @param Album $album
+	 * @param bool  $is_nsfw_context
 	 *
 	 * @return string|null
 	 */
-	private function computeLeastPrivilegeCover(Album $album): ?string
+	private function computeLeastPrivilegeCover(Album $album, bool $is_nsfw_context): ?string
 	{
-		$is_nsfw_context = $this->isInNSFWContext($album);
 		$photo_query_policy = resolve(PhotoQueryPolicy::class);
 		$album_query_policy = resolve(AlbumQueryPolicy::class);
 		$album_lft = $album->_lft;
@@ -276,10 +317,10 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 			});
 		}
 
+		$sorting = $album->getEffectiveAlbumSorting();
 		$result = $query
 			->orderByDesc('photos.is_starred')
-			->orderByDesc('photos.taken_at')
-			->orderBy('photos.id', 'asc')
+			->orderBy($sorting->column->value, $sorting->order->value)
 			->select('photos.id')
 			->first();
 
