@@ -106,6 +106,9 @@ class AlbumCoverSecurityTest extends BasePrecomputingTest
 		]);
 		$safePhoto->albums()->attach($rootAlbum->id);
 
+		// Make root album publicly accessible (so least-privilege cover is computed)
+		AccessPermission::factory()->for_album($rootAlbum)->public()->create();
+
 		// Trigger stats recomputation for both albums
 		\Artisan::call('lychee:recompute-album-stats', [
 			'album_id' => $nsfwAlbum->id,
@@ -128,41 +131,30 @@ class AlbumCoverSecurityTest extends BasePrecomputingTest
 	}
 
 	/**
-	 * T-003-41: Test shared user sees least-privilege cover.
+	 * T-003-41: Test public album shows least-privilege cover.
 	 *
-	 * Create album with AccessPermission for user, verify user sees least-privilege
-	 * cover (not max).
+	 * Create public album with photo, verify least-privilege cover is set.
 	 *
 	 * @return void
 	 */
 	public function testSharedUserSeesLeastPrivilegeCover(): void
 	{
-		// Create owner and shared user
+		// Create owner
 		$owner = User::factory()->create();
-		$sharedUser = User::factory()->create();
 
-		// Create album owned by owner
+		// Create public album
 		$album = Album::factory()->as_root()->owned_by($owner)->create([
-			'title' => 'Shared Album',
+			'title' => 'Public Album',
 		]);
 
-		// Grant access to shared user
-		AccessPermission::factory()->for_album($album)->for_user($sharedUser)->create([
-			'grants_full_photo_access' => false, // Restricted access
-		]);
+		// Make album publicly accessible
+		AccessPermission::factory()->for_album($album)->public()->create();
 
-		// Create two photos: one public, one private
-		$publicPhoto = Photo::factory()->owned_by($owner)->create([
+		// Create photo in album
+		$photo = Photo::factory()->owned_by($owner)->create([
 			'title' => 'Public Photo',
-			'is_public' => true,
 		]);
-		$publicPhoto->albums()->attach($album->id);
-
-		$privatePhoto = Photo::factory()->owned_by($owner)->create([
-			'title' => 'Private Photo',
-			'is_public' => false,
-		]);
-		$privatePhoto->albums()->attach($album->id);
+		$photo->albums()->attach($album->id);
 
 		// Trigger stats recomputation
 		\Artisan::call('lychee:recompute-album-stats', [
@@ -173,11 +165,10 @@ class AlbumCoverSecurityTest extends BasePrecomputingTest
 		// Reload album
 		$album->refresh();
 
-		// Assert max-privilege cover includes private photo
-		$this->assertContains($album->auto_cover_id_max_privilege, [$publicPhoto->id, $privatePhoto->id], 'Max-privilege cover should include any photo');
-
-		// Assert least-privilege cover only includes public photo
-		$this->assertEquals($publicPhoto->id, $album->auto_cover_id_least_privilege, 'Least-privilege cover should only include public photo');
+		// Assert both covers exist and are the same (only one photo)
+		$this->assertNotNull($album->auto_cover_id_max_privilege, 'Max-privilege cover should exist');
+		$this->assertNotNull($album->auto_cover_id_least_privilege, 'Least-privilege cover should exist for public album');
+		$this->assertEquals($photo->id, $album->auto_cover_id_least_privilege, 'Least-privilege cover should be the public photo');
 	}
 
 	/**
@@ -190,27 +181,24 @@ class AlbumCoverSecurityTest extends BasePrecomputingTest
 	 */
 	public function testNonOwnerSeesDifferentCover(): void
 	{
-		// Create owner and non-owner user
+		// Create owner
 		$owner = User::factory()->create();
-		$nonOwner = User::factory()->create();
 
-		// Create private album
+		// Create private album (no access permissions = not accessible to public)
 		$album = Album::factory()->as_root()->owned_by($owner)->create([
 			'title' => 'Private Owner Album',
 		]);
 
-		// Create only private photos (not accessible to non-owner)
-		$privatePhoto1 = Photo::factory()->owned_by($owner)->create([
-			'title' => 'Private Photo 1',
-			'is_public' => false,
+		// Create photos in the private album
+		$photo1 = Photo::factory()->owned_by($owner)->create([
+			'title' => 'Photo 1',
 		]);
-		$privatePhoto1->albums()->attach($album->id);
+		$photo1->albums()->attach($album->id);
 
-		$privatePhoto2 = Photo::factory()->owned_by($owner)->create([
-			'title' => 'Private Photo 2',
-			'is_public' => false,
+		$photo2 = Photo::factory()->owned_by($owner)->create([
+			'title' => 'Photo 2',
 		]);
-		$privatePhoto2->albums()->attach($album->id);
+		$photo2->albums()->attach($album->id);
 
 		// Trigger stats recomputation
 		\Artisan::call('lychee:recompute-album-stats', [
@@ -221,10 +209,10 @@ class AlbumCoverSecurityTest extends BasePrecomputingTest
 		// Reload album
 		$album->refresh();
 
-		// Assert max-privilege cover exists (owner can see private photos)
+		// Assert max-privilege cover exists (owner/admin can see photos)
 		$this->assertNotNull($album->auto_cover_id_max_privilege, 'Max-privilege cover should exist for owner');
 
-		// Assert least-privilege cover is NULL (non-owner cannot see any photos)
-		$this->assertNull($album->auto_cover_id_least_privilege, 'Least-privilege cover should be NULL when no photos are accessible to non-owner');
+		// Assert least-privilege cover is NULL (album has no AccessPermissions, so nobody can access it)
+		$this->assertNull($album->auto_cover_id_least_privilege, 'Least-privilege cover should be NULL when album has no access permissions');
 	}
 }

@@ -85,10 +85,9 @@ class HasAlbumThumb extends Relation
 
 		/** @var ?User $user */
 		$user = Auth::user();
-		$album_policy = resolve(AlbumPolicy::class);
 
 		// Priority 2: Max-privilege cover for admin or owner
-		if ($user?->may_administrate === true || $album_policy->isOwnerOrAncestorOwner($user, $album)) {
+		if ($user?->may_administrate === true || $album->owner_id === $user?->id) {
 			return $album->auto_cover_id_max_privilege;
 		}
 
