@@ -273,7 +273,7 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 	 */
 	private function computeMaxPrivilegeCover(Album $album, bool $is_nsfw_context): ?string
 	{
-		$admin_user = User::query()->where('is_admin', '=', true)->first();
+		$admin_user = User::query()->where('may_administrate', '=', true)->first();
 
 		return $this->getPhotoIdForUser($album, $admin_user, $is_nsfw_context);
 	}
