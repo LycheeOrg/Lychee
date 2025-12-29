@@ -15,11 +15,13 @@ use App\Enum\TimelinePhotoGranularity;
 use App\Exceptions\Internal\LycheeInvalidArgumentException;
 use App\Exceptions\Internal\TimelineGranularityException;
 use App\Models\Photo;
+use App\Policies\AlbumPolicy;
 use App\Policies\PhotoQueryPolicy;
 use App\Repositories\ConfigManager;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class Timeline
@@ -42,6 +44,9 @@ class Timeline
 	 */
 	public function do(): Builder
 	{
+		$user = Auth::user();
+		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
+
 		$order = $this->config_manager->getValueAsEnum('timeline_photos_order', ColumnSortingPhotoType::class);
 
 		// Safe default (should not be needed).
@@ -53,6 +58,8 @@ class Timeline
 
 		return $this->photo_query_policy->applySearchabilityFilter(
 			query: Photo::query()->with(['statistics', 'size_variants', 'statistics', 'palette', 'tags', 'rating']),
+			user: $user,
+			unlocked_album_ids: $unlocked_album_ids,
 			origin: null,
 			include_nsfw: !$this->config_manager->getValueAsBool('hide_nsfw_in_timeline')
 		)->orderBy($order->value, OrderSortingType::DESC->value);
@@ -68,6 +75,9 @@ class Timeline
 	 */
 	public function countYoungerFromDate(Carbon $date): int
 	{
+		$user = Auth::user();
+		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
+
 		$order = $this->config_manager->getValueAsEnum('timeline_photos_order', ColumnSortingPhotoType::class);
 
 		$granularity = $this->config_manager->getValueAsEnum('timeline_photos_granularity', TimelinePhotoGranularity::class);
@@ -91,6 +101,8 @@ class Timeline
 			query: Photo::query()
 				->where($order->value, '>=', $date_offset)
 				->whereNotNull($order->value),
+			user: $user,
+			unlocked_album_ids: $unlocked_album_ids,
 			origin: null,
 			include_nsfw: !$this->config_manager->getValueAsBool('hide_nsfw_in_timeline')
 		)->count();
@@ -106,6 +118,9 @@ class Timeline
 	 */
 	public function countYoungerFromPhoto(Photo $photo): int
 	{
+		$user = Auth::user();
+		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
+
 		$order = $this->config_manager->getValueAsEnum('timeline_photos_order', ColumnSortingPhotoType::class);
 
 		// Safe default (should not be needed).
@@ -125,6 +140,8 @@ class Timeline
 					second: 'photos.' . $order->value
 				)
 				->whereNotNull('photos.' . $order->value),
+			user: $user,
+			unlocked_album_ids: $unlocked_album_ids,
 			origin: null,
 			include_nsfw: !$this->config_manager->getValueAsBool('hide_nsfw_in_timeline')
 		)->count();
@@ -137,6 +154,9 @@ class Timeline
 	 */
 	public function dates(): Collection
 	{
+		$user = Auth::user();
+		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
+
 		$order = $this->config_manager->getValueAsEnum('timeline_photos_order', ColumnSortingPhotoType::class);
 
 		// Safe default (should not be needed).
@@ -170,6 +190,8 @@ class Timeline
 
 				->selectRaw(sprintf($formatter, $order->value, $date_format) . ' as date')
 				->whereNotNull($order->value),
+			user: $user,
+			unlocked_album_ids: $unlocked_album_ids,
 			origin: null,
 			include_nsfw: !$this->config_manager->getValueAsBool('hide_nsfw_in_timeline')
 		)->groupBy('date')

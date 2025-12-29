@@ -14,8 +14,10 @@ use App\Http\Requests\Frame\FrameRequest;
 use App\Http\Resources\Frame\FrameData;
 use App\Http\Resources\Models\PhotoResource;
 use App\Models\Photo;
+use App\Policies\AlbumPolicy;
 use App\Policies\PhotoQueryPolicy;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class FrameController extends Controller
 {
@@ -84,8 +86,13 @@ class FrameController extends Controller
 
 		// default query
 		if ($album === null) {
+			$user = Auth::user();
+			$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
+
 			$query = $this->photo_query_policy->applySearchabilityFilter(
 				query: Photo::query()->with(['albums', 'size_variants', 'palette', 'tags', 'rating']),
+				user: $user,
+				unlocked_album_ids: $unlocked_album_ids,
 				origin: null,
 				include_nsfw: !request()->configs()->getValueAsBool('hide_nsfw_in_frame')
 			);

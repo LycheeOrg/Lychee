@@ -66,6 +66,9 @@ class Top
 	 */
 	public function get(): TopAlbumDTO
 	{
+		$user = Auth::user();
+		$user_id = $user?->id;
+
 		// Do not eagerly load the relation `photos` for each smart album.
 		// On the albums overview, we only need a thumbnail for each album.
 		/** @var BaseCollection<int,BaseSmartAlbum> $smart_albums */
@@ -74,7 +77,7 @@ class Top
 			->filter(fn ($smart_album) => Gate::check(AlbumPolicy::CAN_SEE, $smart_album));
 
 		$tag_album_query = $this->album_query_policy
-			->applyVisibilityFilter(TagAlbum::query()->with(['access_permissions', 'owner']));
+			->applyVisibilityFilter(TagAlbum::query()->with(['access_permissions', 'owner']), $user);
 
 		/** @var BaseCollection<int,TagAlbum> $tag_albums */
 		$tag_albums = (new SortingDecorator($tag_album_query))
@@ -83,7 +86,7 @@ class Top
 
 		$pinned_album_query = $this->album_query_policy
 			->applyVisibilityFilter(Album::query()->with(['access_permissions', 'owner'])
-			->joinSub(DB::table('base_albums')->select(['id', 'is_pinned'])->where('is_pinned', '=', true), 'pinned', 'pinned.id', '=', 'albums.id'));
+			->joinSub(DB::table('base_albums')->select(['id', 'is_pinned'])->where('is_pinned', '=', true), 'pinned', 'pinned.id', '=', 'albums.id'), $user);
 
 		/** @var BaseCollection<int,Album> $pinned_albums */
 		$pinned_albums = (new SortingDecorator($pinned_album_query))
@@ -100,9 +103,7 @@ class Top
 				$this->config_manager->getValueAsBool('deduplicate_pinned_albums'),
 				fn ($q) => $q
 					->joinSub(DB::table('base_albums')->select(['id', 'is_pinned'])->where('is_pinned', '=', false), 'not_pinned', 'not_pinned.id', '=', 'albums.id')
-			));
-
-		$user_id = Auth::id();
+			), $user);
 		if ($user_id !== null) {
 			// For authenticated users we group albums by ownership.
 			$albums = (new SortingDecorator($query))

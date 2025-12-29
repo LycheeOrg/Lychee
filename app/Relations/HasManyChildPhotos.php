@@ -16,10 +16,12 @@ use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
+use App\Policies\AlbumPolicy;
 use App\Policies\PhotoQueryPolicy;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\InvalidCastException;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * @extends BelongsToMany<Photo,Album>
@@ -81,7 +83,9 @@ class HasManyChildPhotos extends BelongsToMany
 
 		if (static::$constraints) {
 			$this->addWhereConstraints();
-			$this->photo_query_policy->applyVisibilityFilter($this->getRelationQuery());
+			$user = Auth::user();
+			$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
+			$this->photo_query_policy->applyVisibilityFilter($this->getRelationQuery(), $user, $unlocked_album_ids);
 		}
 	}
 
@@ -93,7 +97,9 @@ class HasManyChildPhotos extends BelongsToMany
 	public function addEagerConstraints(array $models)
 	{
 		parent::addEagerConstraints($models);
-		$this->photo_query_policy->applyVisibilityFilter($this->getRelationQuery());
+		$user = Auth::user();
+		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
+		$this->photo_query_policy->applyVisibilityFilter($this->getRelationQuery(), $user, $unlocked_album_ids);
 	}
 
 	/**

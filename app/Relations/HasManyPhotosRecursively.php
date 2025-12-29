@@ -83,9 +83,14 @@ class HasManyPhotosRecursively extends BaseHasManyPhotos
 			throw new NotImplementedException('eagerly fetching all photos of an album is not implemented for multiple albums');
 		}
 
+		$user = \Illuminate\Support\Facades\Auth::user();
+		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
+
 		$this->photo_query_policy
 			->applySearchabilityFilter(
 				query: $this->getRelationQuery(),
+				user: $user,
+				unlocked_album_ids: $unlocked_album_ids,
 				origin: $albums[0],
 				include_nsfw: true
 			);

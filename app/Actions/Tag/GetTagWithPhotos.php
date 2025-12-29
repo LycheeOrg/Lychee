@@ -54,6 +54,7 @@ class GetTagWithPhotos
 
 		$photos_query = $this->photo_query_policy->applySensitivityFilter(
 			query: $base_query,
+			user: $user,
 			origin: null,
 			include_nsfw: !$this->config_manager->getValueAsBool('hide_nsfw_in_tag_listing')
 		);

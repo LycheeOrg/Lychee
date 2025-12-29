@@ -16,8 +16,10 @@ use App\Exceptions\UnexpectedException;
 use App\Factories\AlbumFactory;
 use App\Models\Album;
 use App\Models\Builders\AlbumBuilder;
+use App\Policies\AlbumPolicy;
 use App\Policies\AlbumQueryPolicy;
 use App\Repositories\ConfigManager;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 final class Flow
@@ -36,6 +38,9 @@ final class Flow
 	 */
 	public function do(): AlbumBuilder
 	{
+		$user = Auth::user();
+		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
+
 		$flow_base = $this->config_manager->getValueAsString('flow_base');
 		$flow_base = $flow_base === '' ? null : $flow_base;
 
@@ -62,10 +67,10 @@ final class Flow
 		$include_sub_albums = $this->config_manager->getValueAsBool('flow_include_sub_albums');
 		if ($include_sub_albums) {
 			// Now we restrict the query to only the browsable albums.
-			$query = $this->album_query_policy->applyBrowsabilityFilter($base_query, $base?->_lft, $base?->_rgt);
+			$query = $this->album_query_policy->applyBrowsabilityFilter($base_query, $user, $unlocked_album_ids, $base?->_lft, $base?->_rgt);
 		} else {
 			// We could also use browsable filter here, but reachability filter is faster.
-			$query = $this->album_query_policy->applyReachabilityFilter($base_query);
+			$query = $this->album_query_policy->applyReachabilityFilter($base_query, $user, $unlocked_album_ids);
 		}
 
 		$flow_strategy = $this->config_manager->getValueAsEnum('flow_strategy', FlowStrategy::class);
