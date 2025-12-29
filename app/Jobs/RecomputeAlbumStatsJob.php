@@ -12,8 +12,10 @@ use App\Constants\AccessPermissionConstants as APC;
 use App\Constants\PhotoAlbum as PA;
 use App\Models\AccessPermission;
 use App\Models\Album;
+use App\Models\Builders\AlbumBuilder;
 use App\Models\Photo;
 use App\Models\User;
+use App\Policies\AlbumQueryPolicy;
 use App\Policies\PhotoQueryPolicy;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
@@ -97,10 +99,20 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 
 		try {
 			DB::transaction(function (): void {
-				$album = Album::query()->addVirtualIsRecursiveNSFW()->findOrFail($this->album_id);
 
-				// Get recursive NSFW status
-				$is_nsfw_context = $album->is_recursive_nsfw;
+				// Fetch the album.
+				$album = Album::where('id', '=', $this->album_id)->first();
+				if ($album === null) {
+					Log::warning("Album {$this->album_id} not found, skipping recompute.");
+					return;
+				}
+
+				$is_nsfw_context = DB::table('albums')
+					->leftJoin('base_albums as base', 'albums.id', '=', 'base.id')
+					->where('base.is_nsfw', '=', true)
+					->where('albums._lft', '<=', $album->_lft)
+					->where('albums._rgt', '>=', $album->_rgt)
+					->count() > 0;
 
 				// Compute counts
 				$album->num_children = $this->computeNumChildren($album);
