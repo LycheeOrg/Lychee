@@ -8,8 +8,8 @@
 
 namespace App\Jobs;
 
-use App\Constants\PhotoAlbum as PA;
 use App\Constants\AccessPermissionConstants as APC;
+use App\Constants\PhotoAlbum as PA;
 use App\Models\AccessPermission;
 use App\Models\Album;
 use App\Models\Photo;
@@ -224,10 +224,11 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 	/**
 	 * Compute the photo id given a user and NSFW context for an album.
 	 *
-	 * @param Album $album
-	 * @param null|User $user
-	 * @param bool $is_nsfw_context
-	 * @return null|string
+	 * @param Album     $album
+	 * @param User|null $user
+	 * @param bool      $is_nsfw_context
+	 *
+	 * @return string|null
 	 */
 	private function getPhotoIdForUser(Album $album, ?User $user, bool $is_nsfw_context): ?string
 	{
@@ -263,6 +264,7 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 	private function computeMaxPrivilegeCover(Album $album, bool $is_nsfw_context): ?string
 	{
 		$admin_user = User::query()->where('is_admin', '=', true)->first();
+
 		return $this->getPhotoIdForUser($album, $admin_user, $is_nsfw_context);
 	}
 
@@ -281,7 +283,6 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 	 */
 	private function computeLeastPrivilegeCover(Album $album, bool $is_nsfw_context): ?string
 	{
-
 		// First figure out who can access this folder.
 		// Then apply those access rules to the photo selection.
 		//
@@ -319,13 +320,13 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 		if ($permissions->count() === 1 && $permissions->first()->user_id !== null) {
 			// Single user can access this album
 			$user = User::query()->find($permissions->first()->user_id);
+
 			return $this->getPhotoIdForUser($album, $user, $is_nsfw_context);
 		}
 
 		// Album is not public visible and multiple permissions exist => Consider it publically accessible
 		return $this->getPhotoIdForUser($album, null, $is_nsfw_context);
 	}
-
 
 	/**
 	 * Handle job failure after all retries exhausted.
