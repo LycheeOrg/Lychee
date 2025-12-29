@@ -29,7 +29,7 @@ import { useAlbumStore } from "@/stores/AlbumState";
 import { useCatalogStore } from "@/stores/CatalogState";
 
 const props = defineProps<{
-	photos: { [key: number]: App.Http.Resources.Models.PhotoResource };
+	photos: App.Http.Resources.Models.PhotoResource[];
 	selectedPhotos: string[];
 	iter: number;
 	groupIdx: number;

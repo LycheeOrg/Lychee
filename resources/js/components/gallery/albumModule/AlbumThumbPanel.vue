@@ -70,7 +70,7 @@ const { are_nsfw_visible, is_timeline_left_border_visible, is_debug_enabled } = 
 
 const props = defineProps<{
 	header: string;
-	albums: { [key: number]: App.Http.Resources.Models.ThumbAlbumResource };
+	albums: App.Http.Resources.Models.ThumbAlbumResource[];
 	isAlone: boolean;
 	idxShift: number;
 	selectedAlbums: string[];
