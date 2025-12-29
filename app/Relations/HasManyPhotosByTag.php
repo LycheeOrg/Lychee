@@ -82,11 +82,15 @@ class HasManyPhotosByTag extends BaseHasManyPhotos
 			->all();
 		$tag_ids = array_values(array_unique($tag_ids));
 
+		$user = \Illuminate\Support\Facades\Auth::user();
+		$unlocked_album_ids = \App\Policies\AlbumPolicy::getUnlockedAlbumIDs();
+
 		$config_manager = app(ConfigManager::class);
 		if ($config_manager->getValueAsBool('TA_override_visibility')) {
 			$this->photo_query_policy
 				->applySensitivityFilter(
-					$this->getRelationQuery(),
+					query: $this->getRelationQuery(),
+					user: $user,
 					origin: null,
 					include_nsfw: !$config_manager->getValueAsBool('hide_nsfw_in_tag_albums')
 				)
@@ -94,7 +98,9 @@ class HasManyPhotosByTag extends BaseHasManyPhotos
 		} else {
 			$this->photo_query_policy
 				->applySearchabilityFilter(
-					$this->getRelationQuery(),
+					query: $this->getRelationQuery(),
+					user: $user,
+					unlocked_album_ids: $unlocked_album_ids,
 					origin: null,
 					include_nsfw: !$config_manager->getValueAsBool('hide_nsfw_in_tag_albums')
 				)

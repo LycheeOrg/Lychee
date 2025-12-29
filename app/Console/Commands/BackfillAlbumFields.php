@@ -69,7 +69,7 @@ class BackfillAlbumFields extends Command
 
 		Album::query()
 			->orderBy('_lft', 'asc')
-			->chunk($chunk_size, function (\Illuminate\Database\Eloquent\Collection $albums) use ($dry_run, &$processed, $bar) {
+			->chunk($chunk_size, function (\Illuminate\Database\Eloquent\Collection $albums) use ($dry_run, &$processed, $bar): void {
 				/** @var Album $album */
 				foreach ($albums as $album) {
 					if (!$dry_run) {

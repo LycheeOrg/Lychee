@@ -14,6 +14,7 @@ use App\Enum\SizeVariantType;
 use App\Exceptions\Internal\FrameworkException;
 use App\Models\Extensions\UTCBasedTimes;
 use App\Models\Photo;
+use App\Policies\AlbumPolicy;
 use App\Policies\PhotoQueryPolicy;
 use App\Repositories\ConfigManager;
 use App\Services\UrlGenerator;
@@ -22,6 +23,7 @@ use Carbon\Exceptions\UnitException;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Spatie\Feed\FeedItem;
 
@@ -72,6 +74,9 @@ class Generate
 	 */
 	public function do(): Collection
 	{
+		$user = Auth::user();
+		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
+
 		$rss_recent = $this->config_manager->getValueAsInt('rss_recent_days');
 		$rss_max = $this->config_manager->getValueAsInt('rss_max_items');
 		try {
@@ -84,6 +89,8 @@ class Generate
 		$photos = $this->photo_query_policy
 			->applySearchabilityFilter(
 				query: Photo::query(),
+				user: $user,
+				unlocked_album_ids: $unlocked_album_ids,
 				origin: null,
 				include_nsfw: !$this->config_manager->getValueAsBool('hide_nsfw_in_rss')
 			)

@@ -9,7 +9,6 @@
 namespace App\Jobs;
 
 use App\Constants\PhotoAlbum as PA;
-use App\DTO\PhotoSortingCriterion;
 use App\Models\Album;
 use App\Policies\AlbumQueryPolicy;
 use App\Policies\PhotoQueryPolicy;
@@ -55,12 +54,12 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 	public function __construct(
 		public string $album_id,
 	) {
-        $this->jobId = uniqid('job_', true);
+		$this->jobId = uniqid('job_', true);
 
 		// Register this as the latest job for this album
-        Cache::put(
-            "album_stats_latest_job:" . $this->album_id,
-            $this->jobId
+		Cache::put(
+			'album_stats_latest_job:' . $this->album_id,
+			$this->jobId
 		);
 	}
 
@@ -69,20 +68,20 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 	 *
 	 * @return array<int,object>
 	 */
-    public function middleware(): array
-    {
-        return [
-            Skip::when(fn() => $this->hasNewerJobQueued()),
-        ];
-    }
+	public function middleware(): array
+	{
+		return [
+			Skip::when(fn () => $this->hasNewerJobQueued()),
+		];
+	}
 
-    protected function hasNewerJobQueued(): bool
-    {
-        $cacheKey = "album_stats_latest_job:" . $this->album_id;
-        $latestJobId = Cache::get($cacheKey);
+	protected function hasNewerJobQueued(): bool
+	{
+		$cache_key = 'album_stats_latest_job:' . $this->album_id;
+		$latest_job_id = Cache::get($cache_key);
 
-        return $latestJobId !== $this->jobId || $latestJobId === null;
-    }
+		return $latest_job_id !== $this->jobId || $latest_job_id === null;
+	}
 
 	/**
 	 * Execute the job.
@@ -92,10 +91,10 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 	public function handle(): void
 	{
 		Log::info("Recomputing stats for album {$this->album_id}");
-        Cache::forget("album_stats_latest_job:{$this->album_id}");
+		Cache::forget("album_stats_latest_job:{$this->album_id}");
 
 		try {
-			DB::transaction(function () {
+			DB::transaction(function (): void {
 				$album = Album::query()->addVirtualIsRecursiveNSFW()->findOrFail($this->album_id);
 
 				// Get recursive NSFW status
@@ -244,7 +243,7 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 		if (!$is_nsfw_context) {
 			// Not in NSFW context - exclude photos that belong to NSFW albums
 			// A photo is NSFW if it belongs to any album marked as is_nsfw=true
-			$query->whereNotExists(function (BaseBuilder $q) use ($album) {
+			$query->whereNotExists(function (BaseBuilder $q) use ($album): void {
 				$q->select(DB::raw(1))
 					->from('albums as nsfw_album')
 					->join('base_albums as ba_nsfw', 'nsfw_album.id', '=', 'ba_nsfw.id')
@@ -293,12 +292,12 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 			->where('a._rgt', '<=', $album_rgt);
 
 		// Apply access control filters for public photos only
-		$query->where(function (BaseBuilder $q) use ($photo_query_policy, $album_lft, $album_rgt) {
+		$query->where(function (BaseBuilder $q) use ($photo_query_policy, $album_lft, $album_rgt): void {
 			$photo_query_policy->appendSearchabilityConditions($q, $album_lft, $album_rgt);
 		});
 
 		// Apply album accessibility conditions
-		$query->where(function (BaseBuilder $q) use ($album_query_policy) {
+		$query->where(function (BaseBuilder $q) use ($album_query_policy): void {
 			$album_query_policy->appendAccessibilityConditions($q);
 		});
 
@@ -306,7 +305,7 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 		if (!$is_nsfw_context) {
 			// Not in NSFW context - exclude photos that belong to NSFW albums
 			// A photo is NSFW if it belongs to any album marked as is_nsfw=true
-			$query->whereNotExists(function (BaseBuilder $q) use ($album) {
+			$query->whereNotExists(function (BaseBuilder $q) use ($album): void {
 				$q->select(DB::raw(1))
 					->from('albums as nsfw_album')
 					->join(PA::PHOTO_ALBUM . ' as pa_nsfw', 'nsfw_album.id', '=', 'pa_nsfw.album_id')

@@ -18,8 +18,10 @@ use App\Models\Album;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
+use App\Policies\AlbumPolicy;
 use App\Policies\PhotoQueryPolicy;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -104,6 +106,9 @@ class EmbedController extends Controller
 	 */
 	private function findPublicPhotos(int $limit, int $offset, string $sort): \Illuminate\Support\Collection
 	{
+		$user = Auth::user();
+		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
+
 		// Start with base photo query
 		$photos_query = Photo::query();
 
@@ -112,6 +117,8 @@ class EmbedController extends Controller
 		// No origin album context (null) means search across all albums
 		$this->photo_query_policy->applySearchabilityFilter(
 			query: $photos_query,
+			user: $user,
+			unlocked_album_ids: $unlocked_album_ids,
 			origin: null,
 			include_nsfw: !request()->configs()->getValueAsBool('hide_nsfw_in_rss')
 		);

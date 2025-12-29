@@ -15,10 +15,10 @@ use App\Exceptions\Internal\InvalidQueryModelException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Album;
 use App\Models\Photo;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Database\Query\JoinClause;
-use Illuminate\Support\Facades\Auth;
 
 class PhotoQueryPolicy
 {
@@ -42,26 +42,28 @@ class PhotoQueryPolicy
 	 *  - the photo is public
 	 *
 	 * @param FixedQueryBuilder<Photo> $query
+	 * @param User|null                $user               the current user, or null if not authenticated
+	 * @param string[]                 $unlocked_album_ids array of unlocked album IDs
 	 *
 	 * @return FixedQueryBuilder<Photo>
 	 *
 	 * @throws InternalLycheeException
 	 */
-	public function applyVisibilityFilter(FixedQueryBuilder $query): FixedQueryBuilder
+	public function applyVisibilityFilter(FixedQueryBuilder $query, ?User $user, array $unlocked_album_ids): FixedQueryBuilder
 	{
-		$this->prepareModelQueryOrFail($query, false, true);
+		$this->prepareModelQueryOrFail($query, false, true, $user);
 
-		if (Auth::user()?->may_administrate === true) {
+		if ($user?->may_administrate === true) {
 			return $query;
 		}
 
-		$user_id = Auth::id();
+		$user_id = $user?->id;
 
 		// We must wrap everything into an outer query to avoid any undesired
 		// effects in case that the original query already contains an
 		// "OR"-clause.
-		$visibility_sub_query = function (FixedQueryBuilder $query2) use ($user_id): void {
-			$this->album_query_policy->appendAccessibilityConditions($query2->getQuery());
+		$visibility_sub_query = function (FixedQueryBuilder $query2) use ($user, $unlocked_album_ids, $user_id): void {
+			$this->album_query_policy->appendAccessibilityConditions($query2->getQuery(), $user, $unlocked_album_ids);
 			if ($user_id !== null) {
 				$query2->orWhere('photos.owner_id', '=', $user_id);
 			}
@@ -92,17 +94,19 @@ class PhotoQueryPolicy
 	 * The method simply assumes that the user has already legitimately
 	 * accessed the origin album, if the caller provides an album model.
 	 *
-	 * @param FixedQueryBuilder<Photo> $query        the photo query which shall be restricted
-	 * @param Album|null               $origin       the optional top album which is used as a search base
-	 * @param bool                     $include_nsfw include also the photos in sensitive albums
+	 * @param FixedQueryBuilder<Photo> $query              the photo query which shall be restricted
+	 * @param User|null                $user               the current user, or null if not authenticated
+	 * @param string[]                 $unlocked_album_ids array of unlocked album IDs
+	 * @param Album|null               $origin             the optional top album which is used as a search base
+	 * @param bool                     $include_nsfw       include also the photos in sensitive albums
 	 *
 	 * @return FixedQueryBuilder<Photo> the restricted photo query
 	 *
 	 * @throws InternalLycheeException
 	 */
-	public function applySearchabilityFilter(FixedQueryBuilder $query, ?Album $origin = null, bool $include_nsfw = true): FixedQueryBuilder
+	public function applySearchabilityFilter(FixedQueryBuilder $query, ?User $user, array $unlocked_album_ids, ?Album $origin = null, bool $include_nsfw = true): FixedQueryBuilder
 	{
-		$this->prepareModelQueryOrFail($query, true, false);
+		$this->prepareModelQueryOrFail($query, true, false, $user);
 
 		// If origin is set, also restrict the search result for admin
 		// to photos which are in albums below origin.
@@ -114,16 +118,18 @@ class PhotoQueryPolicy
 		}
 
 		if (!$include_nsfw) {
-			$query->where(fn (Builder $query) => $this->appendSensitivityConditions($query->getQuery(), $origin?->_lft, $origin?->_rgt));
+			$query->where(fn (Builder $query) => $this->appendSensitivityConditions($query->getQuery(), $user, $origin?->_lft, $origin?->_rgt));
 		}
 
-		if (Auth::user()?->may_administrate === true) {
+		if ($user?->may_administrate === true) {
 			return $query;
 		}
 
-		return $query->where(function (Builder $query) use ($origin): void {
+		return $query->where(function (Builder $query) use ($user, $unlocked_album_ids, $origin): void {
 			$this->appendSearchabilityConditions(
 				$query->getQuery(),
+				$user,
+				$unlocked_album_ids,
 				$origin?->_lft,
 				$origin?->_rgt
 			);
@@ -134,17 +140,19 @@ class PhotoQueryPolicy
 	 * Restricts the photo query to only non sensitive photos.
 	 *
 	 * @param FixedQueryBuilder $query
+	 * @param User|null         $user
 	 * @param Album|null        $origin
+	 * @param bool              $include_nsfw
 	 *
 	 * @return FixedQueryBuilder
 	 */
-	public function applySensitivityFilter(FixedQueryBuilder $query, ?Album $origin = null, bool $include_nsfw = true): FixedQueryBuilder
+	public function applySensitivityFilter(FixedQueryBuilder $query, ?User $user, ?Album $origin = null, bool $include_nsfw = true): FixedQueryBuilder
 	{
 		if ($include_nsfw) {
 			return $query;
 		}
 
-		$this->prepareModelQueryOrFail($query, true, false);
+		$this->prepareModelQueryOrFail($query, true, false, $user);
 
 		// If origin is set, also restrict the search result for admin
 		// to photos which are in albums below origin.
@@ -155,7 +163,7 @@ class PhotoQueryPolicy
 				->where('albums._rgt', '<=', $origin->_rgt);
 		}
 
-		return $query->where(fn (Builder $query) => $this->appendSensitivityConditions($query->getQuery(), $origin?->_lft, $origin?->_rgt));
+		return $query->where(fn (Builder $query) => $this->appendSensitivityConditions($query->getQuery(), $user, $origin?->_lft, $origin?->_rgt));
 	}
 
 	/**
@@ -176,24 +184,26 @@ class PhotoQueryPolicy
 	 * Moreover, the raw clauses are added.
 	 * They are not wrapped into a nesting braces `()`.
 	 *
-	 * @param BaseBuilder     $query        the photo query which shall be restricted
-	 * @param int|string|null $origin_left  optionally constraints the search base;
-	 *                                      an integer value is interpreted a raw left bound of the search base;
-	 *                                      a string value is interpreted as a reference to a column which shall be used as a left bound
-	 * @param int|string|null $origin_right like `$origin_left` but for the right bound
+	 * @param BaseBuilder     $query              the photo query which shall be restricted
+	 * @param User|null       $user               the current user, or null if not authenticated
+	 * @param string[]        $unlocked_album_ids array of unlocked album IDs
+	 * @param int|string|null $origin_left        optionally constraints the search base;
+	 *                                            an integer value is interpreted a raw left bound of the search base;
+	 *                                            a string value is interpreted as a reference to a column which shall be used as a left bound
+	 * @param int|string|null $origin_right       like `$origin_left` but for the right bound
 	 *
 	 * @return BaseBuilder the restricted photo query
 	 *
 	 * @throws QueryBuilderException
 	 */
-	public function appendSearchabilityConditions(BaseBuilder $query, int|string|null $origin_left, int|string|null $origin_right): BaseBuilder
+	public function appendSearchabilityConditions(BaseBuilder $query, ?User $user, array $unlocked_album_ids, int|string|null $origin_left, int|string|null $origin_right): BaseBuilder
 	{
-		$user_id = Auth::id();
+		$user_id = $user?->id;
 
 		try {
 			// there must be no unreachable album between the origin and the photo
-			$query->whereNotExists(function (BaseBuilder $q) use ($origin_left, $origin_right): void {
-				$this->album_query_policy->appendUnreachableAlbumsCondition($q, $origin_left, $origin_right);
+			$query->whereNotExists(function (BaseBuilder $q) use ($user, $unlocked_album_ids, $origin_left, $origin_right): void {
+				$this->album_query_policy->appendUnreachableAlbumsCondition($q, $origin_left, $origin_right, $user, $unlocked_album_ids);
 			});
 
 			// Special care needs to be taken for unsorted photo, i.e. photos on
@@ -233,15 +243,18 @@ class PhotoQueryPolicy
 	 * Moreover, the raw clauses are added.
 	 * They are not wrapped into a nesting braces `()`.
 	 *
-	 * @param BaseBuilder $query the photo query which shall be restricted
+	 * @param BaseBuilder     $query        the photo query which shall be restricted
+	 * @param User|null       $user         the current user, or null if not authenticated
+	 * @param int|string|null $origin_left  left boundary
+	 * @param int|string|null $origin_right right boundary
 	 *
 	 * @return BaseBuilder the restricted photo query
 	 *
 	 * @throws QueryBuilderException
 	 */
-	private function appendSensitivityConditions(BaseBuilder $query, int|string|null $origin_left, int|string|null $origin_right): BaseBuilder
+	private function appendSensitivityConditions(BaseBuilder $query, ?User $user, int|string|null $origin_left, int|string|null $origin_right): BaseBuilder
 	{
-		$user_id = Auth::id();
+		$user_id = $user?->id;
 
 		try {
 			// there must be no unreachable album between the origin and the photo
@@ -277,10 +290,11 @@ class PhotoQueryPolicy
 	 * @param FixedQueryBuilder<Photo> $query           the query to prepare
 	 * @param bool                     $add_albums      if true, joins photo query with (parent) albums
 	 * @param bool                     $add_base_albums if true, joins photos query with (parent) base albums
+	 * @param User|null                $user            the current user, or null if not authenticated
 	 *
 	 * @throws InternalLycheeException
 	 */
-	private function prepareModelQueryOrFail(FixedQueryBuilder $query, bool $add_albums, bool $add_base_albums): void
+	private function prepareModelQueryOrFail(FixedQueryBuilder $query, bool $add_albums, bool $add_base_albums, ?User $user): void
 	{
 		$model = $query->getModel();
 		$base_query = $query->getQuery();
@@ -330,7 +344,11 @@ class PhotoQueryPolicy
 		// Necessary to apply the visibiliy/search conditions
 		$this->album_query_policy->joinSubComputedAccessPermissions(
 			query: $query,
-			second: PA::ALBUM_ID
+			second: PA::ALBUM_ID,
+			type: 'left',
+			prefix: '',
+			full: false,
+			user: $user
 		);
 	}
 }

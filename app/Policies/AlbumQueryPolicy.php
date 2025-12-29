@@ -22,7 +22,6 @@ use App\Models\TagAlbum;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as BaseBuilder;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -47,21 +46,22 @@ class AlbumQueryPolicy
 	 *
 	 * @template TQuery of AlbumBuilder|FixedQueryBuilder<TagAlbum>|FixedQueryBuilder<Album>
 	 *
-	 * @param TQuery $query
+	 * @param TQuery    $query
+	 * @param User|null $user  the current user, or null if not authenticated
 	 *
 	 * @return TQuery
 	 *
 	 * @throws InternalLycheeException
 	 */
-	public function applyVisibilityFilter(AlbumBuilder|FixedQueryBuilder $query): AlbumBuilder|TagAlbumBuilder|FixedQueryBuilder
+	public function applyVisibilityFilter(AlbumBuilder|FixedQueryBuilder $query, ?User $user): AlbumBuilder|TagAlbumBuilder|FixedQueryBuilder
 	{
-		$this->prepareModelQueryOrFail($query);
+		$this->prepareModelQueryOrFail($query, $user);
 
-		if (Auth::user()?->may_administrate === true) {
+		if ($user?->may_administrate === true) {
 			return $query;
 		}
 
-		$user_id = Auth::id();
+		$user_id = $user?->id;
 
 		// We must wrap everything into an outer query to avoid any undesired
 		// effects in case that the original query already contains an
@@ -101,15 +101,16 @@ class AlbumQueryPolicy
 	 * Note this makes use of the fact that when an album is NOT shared nor public, the value of is_link_required is NULL.
 	 *
 	 * @param BaseBuilder $query
+	 * @param User|null   $user               the current user, or null if not authenticated
+	 * @param string[]    $unlocked_album_ids array of unlocked album IDs
 	 *
 	 * @return BaseBuilder
 	 *
 	 * @throws InternalLycheeException
 	 */
-	public function appendAccessibilityConditions(BaseBuilder $query): BaseBuilder
+	public function appendAccessibilityConditions(BaseBuilder $query, ?User $user, array $unlocked_album_ids): BaseBuilder
 	{
-		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
-		$user_id = Auth::id();
+		$user_id = $user?->id;
 
 		try {
 			$query
@@ -159,22 +160,23 @@ class AlbumQueryPolicy
 	 *  - the album does not require a direct link, is public and has been unlocked
 	 *
 	 * @param AlbumBuilder $query
+	 * @param User|null    $user               the current user, or null if not authenticated
+	 * @param string[]     $unlocked_album_ids array of unlocked album IDs
 	 *
 	 * @return AlbumBuilder
 	 *
 	 * @throws QueryBuilderException
 	 * @throws InvalidQueryModelException
 	 */
-	public function applyReachabilityFilter(AlbumBuilder $query): AlbumBuilder
+	public function applyReachabilityFilter(AlbumBuilder $query, ?User $user, array $unlocked_album_ids): AlbumBuilder
 	{
-		$this->prepareModelQueryOrFail($query);
+		$this->prepareModelQueryOrFail($query, $user);
 
-		if (Auth::user()?->may_administrate === true) {
+		if ($user?->may_administrate === true) {
 			return $query;
 		}
 
-		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
-		$user_id = Auth::id();
+		$user_id = $user?->id;
 
 		// We must wrap everything into an outer query to avoid any undesired
 		// effects in case that the original query already contains an
@@ -242,13 +244,17 @@ class AlbumQueryPolicy
 	 * of the origin), the runtime is O(n), but for a high tree (the nodes are
 	 * basically a sequence), the runtime is O(n²).
 	 *
-	 * @param AlbumBuilder $query the album query which shall be restricted
+	 * @param AlbumBuilder    $query              the album query which shall be restricted
+	 * @param User|null       $user               the current user, or null if not authenticated
+	 * @param string[]        $unlocked_album_ids array of unlocked album IDs
+	 * @param int|string|null $origin_left        left boundary
+	 * @param int|string|null $origin_right       right boundary
 	 *
 	 * @return AlbumBuilder the restricted album query
 	 *
 	 * @throws InternalLycheeException
 	 */
-	public function applyBrowsabilityFilter(AlbumBuilder $query, int|string|null $origin_left = null, int|string|null $origin_right = null): AlbumBuilder
+	public function applyBrowsabilityFilter(AlbumBuilder $query, ?User $user, array $unlocked_album_ids, int|string|null $origin_left = null, int|string|null $origin_right = null): AlbumBuilder
 	{
 		if (gettype($origin_left) !== gettype($origin_right)) {
 			throw new LycheeInvalidArgumentException('$origin_left and $origin_right must simultaneously either be integers, strings or null');
@@ -259,14 +265,14 @@ class AlbumQueryPolicy
 			throw new LycheeInvalidArgumentException('the given query does not query for albums');
 		}
 
-		if (Auth::user()?->may_administrate === true) {
+		if ($user?->may_administrate === true) {
 			return $query;
 		}
 
 		// Ensures that only those albums of the original query are
 		// returned for which a path from the origin to the album exist
 		// such that there are no blocked albums on the path to the album.
-		return $query->whereNotExists(fn (BaseBuilder $q) => $this->appendUnreachableAlbumsCondition($q, $origin_left, $origin_right));
+		return $query->whereNotExists(fn (BaseBuilder $q) => $this->appendUnreachableAlbumsCondition($q, $origin_left, $origin_right, $user, $unlocked_album_ids));
 	}
 
 	/**
@@ -293,36 +299,37 @@ class AlbumQueryPolicy
 	 * Moreover, the raw clauses are added.
 	 * They are not wrapped into a nesting braces `()`.
 	 *
-	 * @param BaseBuilder     $builder      the album query which shall be restricted
-	 * @param int|string|null $origin_left  optionally constraints the search base;
-	 *                                      an integer value is interpreted a raw left bound of the search base;
-	 *                                      a string value is interpreted as a reference to a column which shall be used as a left bound
-	 * @param int|string|null $origin_right like `$origin_left` but for the right bound
+	 * @param BaseBuilder     $builder            the album query which shall be restricted
+	 * @param int|string|null $origin_left        optionally constraints the search base;
+	 *                                            an integer value is interpreted a raw left bound of the search base;
+	 *                                            a string value is interpreted as a reference to a column which shall be used as a left bound
+	 * @param int|string|null $origin_right       like `$origin_left` but for the right bound
+	 * @param User|null       $user               the current user, or null if not authenticated
+	 * @param string[]        $unlocked_album_ids array of unlocked album IDs
 	 *
 	 * @return BaseBuilder
 	 *
 	 * @throws InternalLycheeException
 	 */
-	public function appendUnreachableAlbumsCondition(BaseBuilder $builder, int|string|null $origin_left, int|string|null $origin_right): BaseBuilder
+	public function appendUnreachableAlbumsCondition(BaseBuilder $builder, int|string|null $origin_left, int|string|null $origin_right, ?User $user, array $unlocked_album_ids): BaseBuilder
 	{
 		if (gettype($origin_left) !== gettype($origin_right)) {
 			throw new LycheeInvalidArgumentException('$origin_left and $origin_right must simultaneously either be integers, strings or null');
 		}
 
-		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
-		$user_id = Auth::id();
+		$user_id = $user?->id;
 
 		try {
 			// There are inner albums ...
 			$builder
 				->from('albums', 'inner')
 				->when(
-					Auth::check(),
+					$user !== null,
 					fn ($q) => $this->joinBaseAlbumOwnerId($q, 'inner.id', 'inner_', false)
 				);
 
 			// WE MUST JOIN LEFT HERE
-			$this->joinSubComputedAccessPermissions($builder, 'inner.id', 'left', 'inner_');
+			$this->joinSubComputedAccessPermissions($builder, 'inner.id', 'left', 'inner_', false, $user);
 
 			// ... on the path from the origin ...
 			if (is_int($origin_left)) {
@@ -451,11 +458,12 @@ class AlbumQueryPolicy
 	 * Throws an exception if the given query does not query for an album.
 	 *
 	 * @param AlbumBuilder|FixedQueryBuilder<TagAlbum>|FixedQueryBuilder<Album> $query
+	 * @param User|null                                                         $user  the current user, or null if not authenticated
 	 *
 	 * @throws QueryBuilderException
 	 * @throws InvalidQueryModelException
 	 */
-	private function prepareModelQueryOrFail(AlbumBuilder|FixedQueryBuilder $query): void
+	private function prepareModelQueryOrFail(AlbumBuilder|FixedQueryBuilder $query, ?User $user): void
 	{
 		$model = $query->getModel();
 		$table = $query->getQuery()->from;
@@ -485,7 +493,7 @@ class AlbumQueryPolicy
 		}
 
 		// We MUST use left here because otherwise we are preventing any non shared album to be visible
-		$this->joinSubComputedAccessPermissions($query, $table . '.id', 'left');
+		$this->joinSubComputedAccessPermissions($query, $table . '.id', 'left', '', false, $user);
 	}
 
 	/**
@@ -500,9 +508,12 @@ class AlbumQueryPolicy
 	 * - grants_edit => MAX as the shared setting takes priority
 	 * - grants_delete => MAX as the shared setting takes priority
 	 *
+	 * @param bool      $full whether to select full columns
+	 * @param User|null $user the current user, or null if not authenticated
+	 *
 	 * @return BaseBuilder
 	 */
-	private function getComputedAccessPermissionSubQuery(bool $full = false): BaseBuilder
+	private function getComputedAccessPermissionSubQuery(bool $full = false, ?User $user = null): BaseBuilder
 	{
 		$select = [
 			APC::BASE_ALBUM_ID,
@@ -518,12 +529,10 @@ class AlbumQueryPolicy
 			$select[] = APC::GRANTS_UPLOAD;
 			$select[] = APC::USER_ID;
 		}
-		if (Auth::guest()) {
+		if ($user === null) {
 			return DB::table('access_permissions', APC::COMPUTED_ACCESS_PERMISSIONS)->select($select)->whereNull(APC::USER_ID)->whereNull(APC::USER_GROUP_ID);
 		}
 
-		/** @var User $user */
-		$user = Auth::user();
 		// Collect the user groups of the current user.
 		/** @var int[] $user_groups */
 		$user_groups = $user->user_groups->map(fn ($g) => $g->id)->all();
@@ -569,9 +578,10 @@ class AlbumQueryPolicy
 	 *
 	 * @param AlbumBuilder|FixedQueryBuilder<TagAlbum>|FixedQueryBuilder<Album>|FixedQueryBuilder<\App\Models\Photo>|BaseBuilder $query  query to join to
 	 * @param string                                                                                                             $second id to link with
-	 * @param string                                                                                                             $prefix prefix in the future queries
 	 * @param string                                                                                                             $type   left|inner
+	 * @param string                                                                                                             $prefix prefix in the future queries
 	 * @param bool                                                                                                               $full   Select most columns instead of just restricted
+	 * @param User|null                                                                                                          $user   the current user, or null if not authenticated
 	 *
 	 * @return void
 	 *
@@ -583,9 +593,10 @@ class AlbumQueryPolicy
 		string $type = 'left',
 		string $prefix = '',
 		bool $full = false,
+		?User $user = null,
 	): void {
 		$query->joinSub(
-			query: $this->getComputedAccessPermissionSubQuery($full),
+			query: $this->getComputedAccessPermissionSubQuery($full, $user),
 			as: $prefix . APC::COMPUTED_ACCESS_PERMISSIONS,
 			first: $prefix . APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::BASE_ALBUM_ID,
 			operator: '=',

@@ -115,9 +115,14 @@ class HasAlbumThumb extends Relation
 				$this->where('photos.id', '=', $cover_id);
 			} else {
 				// Fallback to legacy behavior if no cover available
+				$user = Auth::user();
+				$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
+
 				$this->photo_query_policy
 					->applySearchabilityFilter(
 						query: $this->getRelationQuery(),
+						user: $user,
+						unlocked_album_ids: $unlocked_album_ids,
 						origin: $album,
 						include_nsfw: $album->is_nsfw);
 			}

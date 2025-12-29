@@ -11,8 +11,10 @@ namespace App\Actions\Album;
 use App\DTO\AlbumSortingCriterion;
 use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
+use App\Policies\AlbumPolicy;
 use App\Policies\AlbumQueryPolicy;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use Kalnoy\Nestedset\Contracts\NestedSetCollection;
@@ -34,6 +36,9 @@ class ListAlbums
 	 */
 	public function do(Collection $albums_filtering, ?string $parent_id, ?int $owner_id = null): array
 	{
+		$user = Auth::user();
+		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
+
 		$unfiltered = $this->album_query_policy->applyReachabilityFilter(
 			// We remove all sub albums
 			// Otherwise it would create cyclic dependency
@@ -47,7 +52,9 @@ class ListAlbums
 						);
 
 						return $q;
-					})
+					}),
+			$user,
+			$unlocked_album_ids
 		);
 		$sorting = AlbumSortingCriterion::createDefault();
 		$query = (new SortingDecorator($unfiltered))

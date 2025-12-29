@@ -8,7 +8,6 @@
 
 namespace App\Models\Builders;
 
-use App\Contracts\Exceptions\InternalLycheeException;
 use App\Eloquent\FixedQueryBuilderTrait;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Album;
