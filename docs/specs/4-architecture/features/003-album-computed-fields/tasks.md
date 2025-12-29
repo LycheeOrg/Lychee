@@ -12,13 +12,13 @@ _Last updated: 2025-12-29_
 
 ### Increment 1: Database Migration
 
-- [ ] T-003-01 – Create migration file for computed fields (FR-003-01).
+- [x] T-003-01 – Create migration file for computed fields (FR-003-01).
   _Intent:_ Generate migration file with correct timestamp, set up up()/down() structure.
   _Verification commands:_
   - `ls database/migrations/*_add_computed_fields_to_albums.php` (file exists)
   _Notes:_ Migration must be reversible per Q-003-08 resolution.
 
-- [ ] T-003-02 – Implement migration up() method (FR-003-01).
+- [x] T-003-02 – Implement migration up() method (FR-003-01).
   _Intent:_ Add 6 columns with correct types/nullability/defaults, add foreign key constraints.
   _Verification commands:_
   - `php artisan migrate --pretend` (preview SQL)
@@ -27,7 +27,7 @@ _Last updated: 2025-12-29_
   - `make phpstan`
   _Notes:_ Columns: `max_taken_at` (datetime, nullable), `min_taken_at` (datetime, nullable), `num_children` (int, default 0), `num_photos` (int, default 0), `auto_cover_id_max_privilege` (string/char(24), nullable, FK to photos.id ON DELETE SET NULL), `auto_cover_id_least_privilege` (string/char(24), nullable, FK to photos.id ON DELETE SET NULL).
 
-- [ ] T-003-03 – Implement migration down() method (FR-003-01, Q-003-08).
+- [x] T-003-03 – Implement migration down() method (FR-003-01, Q-003-08).
   _Intent:_ Drop foreign keys first, then drop all 6 columns (reverse order).
   _Verification commands:_
   - `php artisan migrate:rollback --pretend` (preview SQL)
@@ -36,14 +36,14 @@ _Last updated: 2025-12-29_
   - `make phpstan`
   _Notes:_ Must cleanly reverse migration for rollback safety.
 
-- [ ] T-003-04 – Update Album model properties and casts (FR-003-01).
+- [x] T-003-04 – Update Album model properties and casts (FR-003-01).
   _Intent:_ Add 6 new properties to Album model with correct types, add casts for datetime/integer/string.
   _Verification commands:_
   - `make phpstan` (verify no type errors)
   - `php artisan test --filter=AlbumModelTest` (if model test exists)
   _Notes:_ Casts: `max_taken_at` => 'datetime', `min_taken_at` => 'datetime', `num_children` => 'integer', `num_photos` => 'integer', cover IDs as strings.
 
-- [ ] T-003-05 – Write unit test for migration idempotency (FR-003-01).
+- [x] T-003-05 – Write unit test for migration idempotency (FR-003-01).
   _Intent:_ Test that migration up/down can be run multiple times without errors.
   _Verification commands:_
   - `php artisan test --filter=AddComputedFieldsToAlbumsMigrationTest`

@@ -34,6 +34,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Http\UploadedFile;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Kalnoy\Nestedset\Collection as NSCollection;
 use Kalnoy\Nestedset\Contracts\Node;
@@ -47,9 +48,13 @@ use Kalnoy\Nestedset\NodeTrait;
  * @property string|null              $parent_id
  * @property Album|null               $parent
  * @property Collection<int,Album>    $children
- * @property int                      $num_children             The number of children.
+ * @property int                      $num_children                  The number of children.
  * @property Collection<int,Photo>    $all_photos
- * @property int                      $num_photos               The number of photos in this album (excluding photos in subalbums).
+ * @property int                      $num_photos                    The number of photos in this album (excluding photos in subalbums).
+ * @property Carbon|null           $max_taken_at                  Maximum taken_at timestamp of all photos in album and descendants.
+ * @property Carbon|null           $min_taken_at                  Minimum taken_at timestamp of all photos in album and descendants.
+ * @property string|null              $auto_cover_id_max_privilege   Automatically selected cover photo ID (admin/owner view).
+ * @property string|null              $auto_cover_id_least_privilege Automatically selected cover photo ID (most restrictive view).
  * @property LicenseType              $license
  * @property string|null              $cover_id
  * @property Photo|null               $cover
@@ -63,7 +68,7 @@ use Kalnoy\Nestedset\NodeTrait;
  * @property int                      $_rgt
  * @property BaseAlbumImpl            $base_class
  * @property User|null                $owner
- * @property bool                     $is_recursive_nsfw        /!\ This attribute is not loaded by default.
+ * @property bool                     $is_recursive_nsfw             /!\ This attribute is not loaded by default.
  *
  * @method static AlbumBuilder|Album query()                       Begin querying the model.
  * @method static AlbumBuilder|Album with(array|string $relations) Begin querying the model with eager loading.
@@ -168,6 +173,12 @@ class Album extends BaseAlbum implements Node
 		'_rgt' => null,
 		'album_sorting_col' => null,
 		'album_sorting_order' => null,
+		'max_taken_at' => null,
+		'min_taken_at' => null,
+		'num_children' => 0,
+		'num_photos' => 0,
+		'auto_cover_id_max_privilege' => null,
+		'auto_cover_id_least_privilege' => null,
 	];
 
 	/**
@@ -178,6 +189,8 @@ class Album extends BaseAlbum implements Node
 		'max_taken_at' => 'datetime',
 		'num_children' => 'integer',
 		'num_photos' => 'integer',
+		'auto_cover_id_max_privilege' => 'string',
+		'auto_cover_id_least_privilege' => 'string',
 		'is_recursive_nsfw' => 'boolean',
 		'album_thumb_aspect_ratio' => AspectRatioType::class,
 		'album_timeline' => TimelineAlbumGranularity::class,
