@@ -12,10 +12,8 @@ use App\Constants\AccessPermissionConstants as APC;
 use App\Constants\PhotoAlbum as PA;
 use App\Models\AccessPermission;
 use App\Models\Album;
-use App\Models\Builders\AlbumBuilder;
 use App\Models\Photo;
 use App\Models\User;
-use App\Policies\AlbumQueryPolicy;
 use App\Policies\PhotoQueryPolicy;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
@@ -99,11 +97,11 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 
 		try {
 			DB::transaction(function (): void {
-
 				// Fetch the album.
 				$album = Album::where('id', '=', $this->album_id)->first();
 				if ($album === null) {
 					Log::warning("Album {$this->album_id} not found, skipping recompute.");
+
 					return;
 				}
 
