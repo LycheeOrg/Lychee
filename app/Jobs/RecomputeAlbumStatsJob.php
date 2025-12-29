@@ -9,13 +9,15 @@
 namespace App\Jobs;
 
 use App\Constants\PhotoAlbum as PA;
+use App\Constants\AccessPermissionConstants as APC;
+use App\Models\AccessPermission;
 use App\Models\Album;
-use App\Policies\AlbumQueryPolicy;
+use App\Models\Photo;
+use App\Models\User;
 use App\Policies\PhotoQueryPolicy;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\Skip;
@@ -220,6 +222,33 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 	}
 
 	/**
+	 * Compute the photo id given a user and NSFW context for an album.
+	 *
+	 * @param Album $album
+	 * @param null|User $user
+	 * @param bool $is_nsfw_context
+	 * @return null|string
+	 */
+	private function getPhotoIdForUser(Album $album, ?User $user, bool $is_nsfw_context): ?string
+	{
+		$photo_query_policy = resolve(PhotoQueryPolicy::class);
+		$sorting = $album->getEffectiveAlbumSorting();
+		$result = $photo_query_policy
+			->applySearchabilityFilter(
+				query: Photo::query(),
+				user: $user,
+				unlocked_album_ids: [],
+				origin: $album,
+				include_nsfw: $is_nsfw_context)
+			->orderByDesc('photos.is_starred')
+			->orderBy($sorting->column->value, $sorting->order->value)
+			->select('photos.id')
+			->first();
+
+		return $result?->id;
+	}
+
+	/**
 	 * Compute max-privilege cover (admin/owner view).
 	 *
 	 * Selects best photo from album + descendants with NO access filters.
@@ -233,36 +262,8 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 	 */
 	private function computeMaxPrivilegeCover(Album $album, bool $is_nsfw_context): ?string
 	{
-		$query = DB::table('albums', 'a')
-			->join(PA::PHOTO_ALBUM, 'a.id', '=', PA::ALBUM_ID)
-			->join('photos', PA::PHOTO_ID, '=', 'photos.id')
-			->where('a._lft', '>=', $album->_lft)
-			->where('a._rgt', '<=', $album->_rgt);
-
-		// Apply NSFW filtering based on context
-		if (!$is_nsfw_context) {
-			// Not in NSFW context - exclude photos that belong to NSFW albums
-			// A photo is NSFW if it belongs to any album marked as is_nsfw=true
-			$query->whereNotExists(function (BaseBuilder $q) use ($album): void {
-				$q->select(DB::raw(1))
-					->from('albums as nsfw_album')
-					->join('base_albums as ba_nsfw', 'nsfw_album.id', '=', 'ba_nsfw.id')
-					->join(PA::PHOTO_ALBUM . ' as pa_nsfw', 'nsfw_album.id', '=', 'pa_nsfw.album_id')
-					->whereColumn('pa_nsfw.photo_id', '=', 'photos.id')
-					->where('ba_nsfw.is_nsfw', '=', '1')
-					->where('nsfw_album._lft', '>=', $album->_lft)
-					->where('nsfw_album._rgt', '<=', $album->_rgt);
-			});
-		}
-
-		$sorting = $album->getEffectiveAlbumSorting();
-		$result = $query
-			->orderByDesc('photos.is_starred')
-			->orderBy($sorting->column->value, $sorting->order->value)
-			->select('photos.id')
-			->first();
-
-		return $result?->id;
+		$admin_user = User::query()->where('is_admin', '=', true)->first();
+		return $this->getPhotoIdForUser($album, $admin_user, $is_nsfw_context);
 	}
 
 	/**
@@ -280,51 +281,51 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 	 */
 	private function computeLeastPrivilegeCover(Album $album, bool $is_nsfw_context): ?string
 	{
-		$photo_query_policy = resolve(PhotoQueryPolicy::class);
-		$album_query_policy = resolve(AlbumQueryPolicy::class);
-		$album_lft = $album->_lft;
-		$album_rgt = $album->_rgt;
 
-		$query = DB::table('albums', 'a')
-			->join(PA::PHOTO_ALBUM, 'a.id', '=', PA::ALBUM_ID)
-			->join('photos', PA::PHOTO_ID, '=', 'photos.id')
-			->where('a._lft', '>=', $album_lft)
-			->where('a._rgt', '<=', $album_rgt);
+		// First figure out who can access this folder.
+		// Then apply those access rules to the photo selection.
+		//
+		// If the album is public VISIBLE, we only want public photos
+		// => $user = null
+		//
+		// If the album is public INVISIBLE, this means that the public user will not see the cover
+		// photo either, so we need to check if there are any users who can see the album.
+		//
+		// If there are no such users, the cover photo is null.
+		// return null
+		//
+		// If there is only a single user who can see the album, we want to find photos
+		// that are visible to that user. (kind of an edge case -- but possible)
+		// => $user = that user
+		//
+		// If there are more than a single user who can see this album,
+		// We consider this album as public, and look for photos Inside
+		// => $user = null
 
-		// Apply access control filters for public photos only
-		$query->where(function (BaseBuilder $q) use ($photo_query_policy, $album_lft, $album_rgt): void {
-			$photo_query_policy->appendSearchabilityConditions($q, $album_lft, $album_rgt);
-		});
-
-		// Apply album accessibility conditions
-		$query->where(function (BaseBuilder $q) use ($album_query_policy): void {
-			$album_query_policy->appendAccessibilityConditions($q);
-		});
-
-		// Apply NSFW filtering based on context
-		if (!$is_nsfw_context) {
-			// Not in NSFW context - exclude photos that belong to NSFW albums
-			// A photo is NSFW if it belongs to any album marked as is_nsfw=true
-			$query->whereNotExists(function (BaseBuilder $q) use ($album): void {
-				$q->select(DB::raw(1))
-					->from('albums as nsfw_album')
-					->join(PA::PHOTO_ALBUM . ' as pa_nsfw', 'nsfw_album.id', '=', 'pa_nsfw.album_id')
-					->whereColumn('pa_nsfw.photo_id', '=', 'photos.id')
-					->where('nsfw_album.is_nsfw', '=', true)
-					->where('nsfw_album._lft', '>=', $album->_lft)
-					->where('nsfw_album._rgt', '<=', $album->_rgt);
-			});
+		// ->toBase() to avoid casting to AccessPermission models.
+		$permissions = AccessPermission::query()->where(APC::BASE_ALBUM_ID, '=', $album->id)->toBase()->get();
+		if ($permissions->isEmpty()) {
+			// No users can access this album, does not matters.
+			return null;
 		}
 
-		$sorting = $album->getEffectiveAlbumSorting();
-		$result = $query
-			->orderByDesc('photos.is_starred')
-			->orderBy($sorting->column->value, $sorting->order->value)
-			->select('photos.id')
-			->first();
+		if ($permissions->some(fn (AccessPermission $perm) => $perm->user_id === null && $perm->user_group_id === null && $perm->is_link_required === false)) {
+			// Album is public visible
+			return $this->getPhotoIdForUser($album, null, $is_nsfw_context);
+		}
 
-		return $result?->id;
+		// Album is not public visible
+		// Find out who can access this album
+		if ($permissions->count() === 1 && $permissions->first()->user_id !== null) {
+			// Single user can access this album
+			$user = User::query()->find($permissions->first()->user_id);
+			return $this->getPhotoIdForUser($album, $user, $is_nsfw_context);
+		}
+
+		// Album is not public visible and multiple permissions exist => Consider it publically accessible
+		return $this->getPhotoIdForUser($album, null, $is_nsfw_context);
 	}
+
 
 	/**
 	 * Handle job failure after all retries exhausted.
