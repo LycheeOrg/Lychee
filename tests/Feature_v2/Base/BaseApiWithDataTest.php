@@ -243,7 +243,6 @@ abstract class BaseApiWithDataTest extends BaseApiTest
 			$job->handle();
 		}
 
-
 		Configs::set('owner_id', $this->admin->id);
 
 		$this->withoutVite();
