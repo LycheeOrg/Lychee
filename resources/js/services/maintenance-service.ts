@@ -122,6 +122,12 @@ const MaintenanceService = {
 	fulfillPrecomputeDo(): Promise<AxiosResponse> {
 		return axios.post(`${Constants.getApiUrl()}Maintenance::fulfillPrecompute`, {});
 	},
+	flushQueueCheck(): Promise<AxiosResponse<number>> {
+		return axios.get(`${Constants.getApiUrl()}Maintenance::flushQueue`, { data: {} });
+	},
+	flushQueueDo(): Promise<AxiosResponse> {
+		return axios.post(`${Constants.getApiUrl()}Maintenance::flushQueue`, {});
+	},
 };
 
 export default MaintenanceService;

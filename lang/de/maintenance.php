@@ -88,4 +88,9 @@ return [
         'description' => 'Found %d albums with missing precomputed fields.<br/><br/>Equivalent to running: php artisan lychee:backfill-album-fields',
         'button' => 'Compute fields',
     ],
+    'flush-queue' => [
+        'title' => 'Flush Queue',
+        'description' => 'Found %d pending jobs in the queue.<br/><br/>CAUTION: Clearing the queue will permanently delete all pending jobs. This cannot be undone.',
+        'button' => 'Clear queue',
+    ],
 ];
