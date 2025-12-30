@@ -259,7 +259,7 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 		$sorting = $album->getEffectivePhotoSorting();
 		$result = $photo_query_policy
 			->applySearchabilityFilter(
-				query: Photo::query(),
+				query: Photo::query()->select('photos.id'),
 				user: $user,
 				unlocked_album_ids: [],
 				origin: $album,
@@ -267,9 +267,7 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 			->orderBy('photos.is_starred', 'desc')
 			->orderBy($sorting->column->value, $sorting->order->value)
 			->select('photos.id')
-			->get();
-
-		$result = $result->first();
+			->first();
 
 		return $result?->id;
 	}

@@ -53,23 +53,24 @@ class FulfillPreCompute extends Controller
 		$queue_connection = Config::get('queue.default', 'sync');
 		$is_sync = $queue_connection === 'sync';
 
-		$query = $this->getAlbumsNeedingComputation();
+		$query = $this->getAlbumsNeedingComputation()->orderBy('_lft', 'desc');
 
 		if ($is_sync) {
 			// For sync queue, process in chunks by _lft DESC (leaf to root)
 			// This reduces re-computation as parents are processed before children
-			$albums = $query->orderBy('_lft', 'desc')->limit(50)->toBase()->get(['id']);
+			$albums = $query->limit(50)->toBase()->get(['id']);
 			$albums->each(function ($album): void {
 				RecomputeAlbumStatsJob::dispatch($album->id);
 			});
 		} else {
 			// For async queue, dispatch all jobs at once
 			// The queue worker will handle them
-			$albums = $query->get(['id']);
-			/** @phpstan-ignore method.notFound */
-			$albums->each(function ($album): void {
-				RecomputeAlbumStatsJob::dispatch($album->id);
-			});
+			$query->toBase()
+				->select(['id'])
+				->lazy(500)
+				->each(function ($album): void {
+					RecomputeAlbumStatsJob::dispatch($album->id);
+				});
 		}
 	}
 

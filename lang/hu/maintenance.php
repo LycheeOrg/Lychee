@@ -87,7 +87,7 @@ return [
     ],
     'fulfill-precompute' => [
         'title' => 'Album Precomputed Fields',
-        'description' => 'Found %d albums with missing precomputed fields.<br/><br/>This will backfill computed fields (min/max taken_at, num_children, num_photos, cover IDs) for all albums. Equivalent to running: php artisan lychee:backfill-album-fields',
+        'description' => 'Found %d albums with missing precomputed fields.<br/><br/>Equivalent to running: php artisan lychee:backfill-album-fields',
         'button' => 'Compute fields',
     ],
 ];
