@@ -182,7 +182,7 @@ abstract class BaseApiWithDataTest extends BaseApiTest
 		$this->tag_test = Tag::factory()->with_name('test')->create();
 
 		$this->album1 = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
-		$this->photo1 = Photo::factory()->owned_by($this->userMayUpload1)->with_GPS_coordinates()->with_tags([$this->tag_test])->with_palette()->in($this->album1)->create(['is_starred' => true]);
+		$this->photo1 = Photo::factory()->owned_by($this->userMayUpload1)->with_GPS_coordinates()->with_tags([$this->tag_test])->with_palette()->in($this->album1)->create();
 		$this->palette1 = $this->photo1->palette;
 		$this->photo1b = Photo::factory()->owned_by($this->userMayUpload1)->with_subGPS_coordinates()->in($this->album1)->create();
 		$this->subAlbum1 = Album::factory()->children_of($this->album1)->owned_by($this->userMayUpload1)->create();
@@ -232,16 +232,17 @@ abstract class BaseApiWithDataTest extends BaseApiTest
 
 		$this->album5 = Album::factory()->as_root()->owned_by($this->admin)->create();
 
-		$job = new RecomputeAlbumStatsJob($this->subAlbum1->id);
-		$job->handle();
-		$job = new RecomputeAlbumStatsJob($this->subAlbum2->id);
-		$job->handle();
-		$job = new RecomputeAlbumStatsJob($this->album3->id);
-		$job->handle();
-		$job = new RecomputeAlbumStatsJob($this->subAlbum4->id);
-		$job->handle();
-		$job = new RecomputeAlbumStatsJob($this->album5->id);
-		$job->handle();
+		$jobs = [
+			new RecomputeAlbumStatsJob($this->subAlbum1->id),
+			new RecomputeAlbumStatsJob($this->subAlbum2->id),
+			new RecomputeAlbumStatsJob($this->album3->id),
+			new RecomputeAlbumStatsJob($this->subAlbum4->id),
+			new RecomputeAlbumStatsJob($this->album5->id),
+		];
+		foreach ($jobs as $job) {
+			$job->handle();
+		}
+
 
 		Configs::set('owner_id', $this->admin->id);
 
