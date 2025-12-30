@@ -116,6 +116,12 @@ const MaintenanceService = {
 	fulfillOrdersDo(): Promise<AxiosResponse> {
 		return axios.post(`${Constants.getApiUrl()}Maintenance::fulfillOrders`, {});
 	},
+	fulfillPrecomputeCheck(): Promise<AxiosResponse<number>> {
+		return axios.get(`${Constants.getApiUrl()}Maintenance::fulfillPrecompute`, { data: {} });
+	},
+	fulfillPrecomputeDo(): Promise<AxiosResponse> {
+		return axios.post(`${Constants.getApiUrl()}Maintenance::fulfillPrecompute`, {});
+	},
 };
 
 export default MaintenanceService;

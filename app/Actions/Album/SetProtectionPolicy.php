@@ -8,6 +8,7 @@
 
 namespace App\Actions\Album;
 
+use App\Events\AlbumSaved;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\ModelDBException;
@@ -34,9 +35,11 @@ class SetProtectionPolicy
 		$album->save();
 
 		$active_permissions = $album->public_permissions();
-
 		if (!$protection_policy->is_public) {
 			$active_permissions?->delete();
+
+			// Just dispatch if something changed.
+			AlbumSaved::dispatch($album);
 
 			return;
 		}
@@ -62,5 +65,7 @@ class SetProtectionPolicy
 		}
 		$active_permissions->base_album_id = $album->get_id();
 		$active_permissions->save();
+
+		AlbumSaved::dispatch($album);
 	}
 }

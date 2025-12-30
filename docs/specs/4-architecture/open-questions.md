@@ -6,82 +6,15 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 | Question ID | Feature | Priority | Summary | Status | Opened | Updated |
 |-------------|---------|----------|---------|--------|--------|---------|
-| Q-003-09 | Feature 003 | HIGH | Multi-user cover selection strategy for computed_cover_id | Open | 2025-12-28 | 2025-12-28 |
 
 ## Question Details
 
-### Q-003-09: Multi-user Cover Selection Strategy for computed_cover_id
+### ~~Q-003-09: Multi-user Cover Selection Strategy for computed_cover_id~~ ✅ RESOLVED
 
-**Context:**
-
-Lychee is a multi-user system with per-user access control. [HasAlbumThumb.php](app/Relations/HasAlbumThumb.php:203-210, 226-229) currently computes cover photos **at query time** by applying `PhotoQueryPolicy::appendSearchabilityConditions` and `AlbumQueryPolicy::appendAccessibilityConditions` based on the authenticated user.
-
-**Scenario:**
-- User A has access to Album X
-- Album X contains Album Y (to which User A has NO access)
-- Album Y contains photos that should NOT be visible to User A
-- Current behavior: User A sees a cover photo dynamically filtered to only photos they can access
-- Proposed Feature 003: Store a single `computed_cover_id` per album in the database
-
-**Problem:**
-
-If we store a single `computed_cover_id` per album, we have two mutually exclusive options:
-1. **Store admin's view** (photos visible to admin) - may leak private photos to restricted users
-2. **Store most-restricted view** (photos visible to ALL users) - may show no cover for some users who DO have access to some photos
-
-**Question:**
-
-How should `computed_cover_id` be selected and stored in a multi-user environment?
-
-**Options:**
-
-**Option A: Keep cover computation dynamic (do NOT pre-compute computed_cover_id)**
-- **How it works:** Store and pre-compute `max_taken_at`, `min_taken_at`, `num_children`, `num_photos` (these are user-agnostic aggregates), but keep cover selection dynamic per-user via HasAlbumThumb
-- **Pros:**
-  - Preserves existing security model (no photo leakage risk)
-  - No schema changes for cover selection
-  - Simpler implementation (4 columns instead of 5)
-- **Cons:**
-  - Still requires 1 subquery per album for cover (partial performance gain vs. current 4 subqueries)
-  - Feature 003 doesn't achieve full "eliminate all virtual columns" goal
-
-**Option B: Store admin-perspective computed_cover_id with runtime filtering**
-- **How it works:** `RecomputeAlbumStatsJob` computes cover as if admin is viewing (no filters), stores in `computed_cover_id`. At query time, `HasAlbumThumb::getResults()` checks if `computed_cover_id` photo is visible to current user; if not, falls back to dynamic query.
-- **Pros:**
-  - Works for most users (non-restricted users get fast path)
-  - No photo leakage (runtime check enforces security)
-  - Eventual consistency for cover updates
-- **Cons:**
-  - Complex implementation (dual-path: fast for admin/non-restricted, slow fallback for restricted users)
-  - May show "no cover" for restricted users even when photos exist (if admin-selected cover is invisible to them)
-  - Wasted computation/storage if many users have restricted access
-
-**Option C: Per-user computed cover (new schema: user_album_covers table)**
-- **How it works:** Create `user_album_covers` table with `(user_id, album_id, computed_cover_id)`. Recompute cover per-user on album mutations. Query joins this table.
-- **Pros:**
-  - Each user sees correct cover
-  - Fully pre-computed (no runtime queries)
-- **Cons:**
-  - Significant schema complexity (new table, composite keys)
-  - Storage explosion (N users × M albums)
-  - Recomputation complexity (must recompute for ALL users on every album change)
-  - Defeats performance goal (storage/computation overhead likely exceeds current virtual column cost)
-
-**Option D: Store most-accessible cover with user-group filtering**
-- **How it works:** Identify "least privileged user group" or "public photos only" as the filter criterion. Store `computed_cover_id` for this least-common-denominator view.
-- **Pros:**
-  - Single stored value (simple schema)
-  - Guaranteed safe (no private photo leakage)
-- **Cons:**
-  - May show "no cover" for many users who DO have access to other photos
-  - Requires user group analysis logic (complex, may not align with Lychee's granular per-photo ACLs)
-
-**Impact:**
-
-- **Modules affected:** Application layer (Album model, HasAlbumThumb), Domain layer (cover selection policy), Persistence (migration, computed_cover_id column usage)
-- **NFR impact:** If cover remains dynamic (Option A), NFR-003-01 must be revised to account for 1 subquery per album (vs. current 4)
-- **Security impact:** Options B/C/D introduce risk of photo leakage if implemented incorrectly
-- **ADR required:** High-impact decision affecting security model and performance goals
+**Decision:** Option D - Store dual cover IDs with privilege-based selection (`auto_cover_id_max_privilege` and `auto_cover_id_least_privilege`)
+**Rationale:** Balances performance (pre-computation) with security (no photo leakage). Two cover IDs stored per album: one for admin/owner view (max privilege), one for public view (least privilege). Display logic selects appropriate cover based on user permissions at query time (simple column read, no subquery). Simple schema (2 columns vs. per-user table), guaranteed safe (least-privilege cover never leaks private photos), good UX (admin/owner sees best possible cover).
+**Updated in spec:** FR-003-01, FR-003-02, FR-003-04, FR-003-07, NFR-003-05, DO-003-03, DO-003-04, Migration Strategy, Cover Selection Logic appendix
+**ADR:** ADR-0003-album-computed-fields-precomputation.md (to be updated with Q-003-09 resolution)
 
 ---
 

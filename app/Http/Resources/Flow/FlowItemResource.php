@@ -16,6 +16,7 @@ use App\Http\Resources\Traits\HasPrepPhotoCollection;
 use App\Models\Album;
 use App\Policies\AlbumPolicy;
 use GrahamCampbell\Markdown\Facades\Markdown;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -72,6 +73,9 @@ class FlowItemResource extends Data
 
 		$format_date = request()->configs()->getValueAsString('date_format_flow_published');
 		$published_created_at = $album->published_at ?? $album->created_at;
+		if (is_string($published_created_at)) {
+			$published_created_at = new Carbon($published_created_at);
+		}
 		$this->diff_published_created_at = $published_created_at->diffForHumans();
 		$this->published_created_at = $published_created_at->format($format_date);
 

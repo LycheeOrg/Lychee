@@ -97,17 +97,21 @@ class PhotoZipUploadTest extends BaseApiWithDataTest
 
 		$response = $this->actingAs($this->admin)->getJsonWithData('Album', ['album_id' => $this->album5->id]);
 		$this->assertOk($response);
-		$night_id = $response->json('resource.albums.0.id');
-		$response->assertJsonPath('resource.albums.0.title', 'night');
-		$sunset_id = $response->json('resource.albums.1.id');
-		$response->assertJsonPath('resource.albums.1.title', 'sunset');
+		$response->assertJsonCount(2, 'resource.albums');
+		$albums = $response->json('resource.albums');
+		$idx_night = array_search('night', array_column($albums, 'title'), true);
+		$idx_sunset = array_search('sunset', array_column($albums, 'title'), true);
+		$this->assertIsInt($idx_night);
+		$this->assertIsInt($idx_sunset);
+		$id_night = $albums[$idx_night]['id'];
+		$id_sunset = $albums[$idx_sunset]['id'];
 
-		$response = $this->actingAs($this->admin)->getJsonWithData('Album', ['album_id' => $night_id]);
+		$response = $this->actingAs($this->admin)->getJsonWithData('Album', ['album_id' => $id_night]);
 		$this->assertOk($response);
 		$response->assertJsonCount(1, 'resource.photos');
 		$response->assertJsonPath('resource.photos.0.title', 'night');
 
-		$response = $this->actingAs($this->admin)->getJsonWithData('Album', ['album_id' => $sunset_id]);
+		$response = $this->actingAs($this->admin)->getJsonWithData('Album', ['album_id' => $id_sunset]);
 		$this->assertOk($response);
 		$response->assertJsonCount(1, 'resource.photos');
 		$response->assertJsonPath('resource.photos.0.title', 'sunset');

@@ -151,6 +151,9 @@ test_install:
 test_ImageProcessing:
 	vendor/bin/phpunit --testsuite ImageProcessing --stop-on-failure --stop-on-error --no-coverage --log-junit report_imageprocessing.xml
 
+test_precomputing:
+	vendor/bin/phpunit --testsuite Precomputing --stop-on-failure --stop-on-error --no-coverage --log-junit report_precomputing.xml
+
 test_v2:
 	vendor/bin/phpunit --testsuite Feature_v2 --stop-on-failure --stop-on-error --no-coverage --log-junit report_v2.xml
 

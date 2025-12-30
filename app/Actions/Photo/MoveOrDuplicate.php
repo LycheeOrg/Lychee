@@ -12,6 +12,8 @@ use App\Actions\Shop\PurchasableService;
 use App\Actions\User\Notify;
 use App\Constants\PhotoAlbum as PA;
 use App\Contracts\Models\AbstractAlbum;
+use App\Events\PhotoDeleted;
+use App\Events\PhotoSaved;
 use App\Models\Album;
 use App\Models\Photo;
 use App\Models\Purchasable;
@@ -50,6 +52,9 @@ class MoveOrDuplicate
 				->delete();
 		}
 
+		// Dispatch event for source album (photos removed)
+		PhotoDeleted::dispatchIf($from_album !== null, $from_album?->get_id());
+
 		if ($to_album !== null) {
 			// Delete the existing links at destination (avoid duplicates key contraint)
 			// If $from === to this operation is not needed.
@@ -60,6 +65,12 @@ class MoveOrDuplicate
 
 			// Add the new links.
 			DB::table(PA::PHOTO_ALBUM)->insert(array_map(fn (string $id) => ['photo_id' => $id, 'album_id' => $to_album->id], $photos_ids));
+
+			// Dispatch event for destination album (photos added)
+			// Note: We dispatch PhotoSaved for each photo to trigger recomputation
+			foreach ($photos as $photo) {
+				PhotoSaved::dispatch($photo);
+			}
 		}
 
 		// In case of move, we need to remove the header_id of said photos.

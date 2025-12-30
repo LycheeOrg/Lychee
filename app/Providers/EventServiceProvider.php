@@ -8,7 +8,9 @@
 
 namespace App\Providers;
 
+use App\Events\AlbumDeleted;
 use App\Events\AlbumRouteCacheUpdated;
+use App\Events\AlbumSaved;
 use App\Events\Metrics\AlbumDownload;
 use App\Events\Metrics\AlbumShared;
 use App\Events\Metrics\AlbumVisit;
@@ -17,11 +19,15 @@ use App\Events\Metrics\PhotoFavourite;
 use App\Events\Metrics\PhotoShared;
 use App\Events\Metrics\PhotoVisit;
 use App\Events\OrderCompleted;
+use App\Events\PhotoDeleted;
+use App\Events\PhotoSaved;
 use App\Events\TaggedRouteCacheUpdated;
 use App\Listeners\AlbumCacheCleaner;
 use App\Listeners\CacheListener;
 use App\Listeners\MetricsListener;
 use App\Listeners\OrderCompletedListener;
+use App\Listeners\RecomputeAlbumStatsOnAlbumChange;
+use App\Listeners\RecomputeAlbumStatsOnPhotoChange;
 use App\Listeners\TaggedRouteCacheCleaner;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Cache\Events\CacheHit;
@@ -92,5 +98,10 @@ class EventServiceProvider extends ServiceProvider
 		Event::listen(PhotoVisit::class, MetricsListener::class . '@handle');
 
 		Event::listen(OrderCompleted::class, OrderCompletedListener::class . '@handle');
+
+		Event::listen(PhotoSaved::class, RecomputeAlbumStatsOnPhotoChange::class . '@handlePhotoSaved');
+		Event::listen(PhotoDeleted::class, RecomputeAlbumStatsOnPhotoChange::class . '@handlePhotoDeleted');
+		Event::listen(AlbumSaved::class, RecomputeAlbumStatsOnAlbumChange::class . '@handleAlbumSaved');
+		Event::listen(AlbumDeleted::class, RecomputeAlbumStatsOnAlbumChange::class . '@handleAlbumDeleted');
 	}
 }

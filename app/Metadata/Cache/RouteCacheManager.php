@@ -85,6 +85,7 @@ final readonly class RouteCacheManager
 			'api/v2/Maintenance::missingPalettes' => false,
 			'api/v2/Maintenance::oldOrders' => false,
 			'api/v2/Maintenance::fulfillOrders' => false,
+			'api/v2/Maintenance::fulfillPrecompute' => false,
 
 			'api/v2/Map' => new RouteCacheConfig(tag: CacheTag::GALLERY, user_dependant: true, extra: [RequestAttribute::ALBUM_ID_ATTRIBUTE]),
 			'api/v2/Map::provider' => new RouteCacheConfig(tag: CacheTag::SETTINGS),

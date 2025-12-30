@@ -10,6 +10,7 @@ namespace App\Actions\Album;
 
 use App\Constants\AccessPermissionConstants as APC;
 use App\Enum\DefaultAlbumProtectionType;
+use App\Events\AlbumSaved;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
@@ -42,6 +43,9 @@ class Create
 		$album->save();
 		$this->set_permissions($album, $parent_album);
 		$this->setStatistics($album);
+
+		// Dispatch event for album stats recomputation
+		AlbumSaved::dispatch($album);
 
 		return $album;
 	}

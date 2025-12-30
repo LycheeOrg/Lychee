@@ -55,12 +55,6 @@ final class Flow
 			// In this specific case we want to know if an album is recursive NSFW.
 			// This will be used to determine if the album should be blurred.
 			$base_query->addVirtualIsRecursiveNSFW();
-
-			// Due to the way the virtual columns are added in AlbumBuilder::getModel(), we need to add them here.
-			$base_query->addVirtualMinTakenAt();
-			$base_query->addVirtualMaxTakenAt();
-			$base_query->addVirtualNumChildren();
-			$base_query->addVirtualNumPhotos();
 		}
 
 		// Apply the security policy to the query.

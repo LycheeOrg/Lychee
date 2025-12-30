@@ -30,6 +30,7 @@
 		<MaintenanceFilesize />
 		<MaintenanceOldOrders />
 		<MaintenanceFulfillOrders />
+		<MaintenanceFulfillPrecompute />
 		<MaintenanceMissingPalettes />
 		<StatisticsIntegrity />
 		<MaintenanceCleaning path="filesystems.disks.extract-jobs.root" />
@@ -53,4 +54,5 @@ import StatisticsIntegrity from "@/components/maintenance/StatisticsIntegrity.vu
 import MaintenanceMissingPalettes from "@/components/maintenance/MaintenanceMissingPalettes.vue";
 import MaintenanceOldOrders from "@/components/maintenance/MaintenanceOldOrders.vue";
 import MaintenanceFulfillOrders from "@/components/maintenance/MaintenanceFulfillOrders.vue";
+import MaintenanceFulfillPrecompute from "@/components/maintenance/MaintenanceFulfillPrecompute.vue";
 </script>
