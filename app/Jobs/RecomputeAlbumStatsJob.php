@@ -83,7 +83,13 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 		$cache_key = 'album_stats_latest_job:' . $this->album_id;
 		$latest_job_id = Cache::get($cache_key);
 
-		return $latest_job_id !== null || $latest_job_id !== $this->jobId;
+		// We skip if there is no newer job, or if the latest job is not this one
+		$has_newer_job = $latest_job_id !== null && $latest_job_id !== $this->jobId;
+		if ($has_newer_job) {
+			Log::info("Skipping job {$this->jobId} for album {$this->album_id} due to newer job {$latest_job_id} queued.");
+		}
+
+		return $has_newer_job;
 	}
 
 	/**
@@ -95,6 +101,14 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 	{
 		Log::info("Recomputing stats for album {$this->album_id}");
 		Cache::forget("album_stats_latest_job:{$this->album_id}");
+
+		// This is a safety check to avoid recomputing albums
+		// when no admin user exists.
+		if (DB::table('users')->where('may_administrate', '=', true)->count() === 0) {
+			Log::error("No admin user exists, skipping recompute for album {$this->album_id}.");
+
+			return;
+		}
 
 		try {
 			DB::transaction(function (): void {
@@ -125,14 +139,12 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 				// Compute cover IDs (simplified for now - will be enhanced in I3)
 				$album->auto_cover_id_max_privilege = $this->computeMaxPrivilegeCover($album, $is_nsfw_context);
 				$album->auto_cover_id_least_privilege = $this->computeLeastPrivilegeCover($album, $is_nsfw_context);
-
-				// Save without dispatching events to avoid infinite loop
-				/** @disregard */
-				$album->saveQuietly();
+				Log::debug("Computed covers for album {$album->id}: max_privilege=" . ($album->auto_cover_id_max_privilege ?? 'null') . ', least_privilege=' . ($album->auto_cover_id_least_privilege ?? 'null'));
+				$album->save();
 
 				// Propagate to parent if exists
 				if ($album->parent_id !== null) {
-					Log::info("Propagating to parent {$album->parent_id}");
+					Log::debug("Propagating to parent {$album->parent_id}");
 					self::dispatch($album->parent_id);
 				}
 			});
@@ -252,7 +264,7 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 				unlocked_album_ids: [],
 				origin: $album,
 				include_nsfw: $is_nsfw_context)
-			->orderByDesc('photos.is_starred')
+			->orderBy('photos.is_starred', 'desc')
 			->orderBy($sorting->column->value, $sorting->order->value)
 			->select('photos.id')
 			->get();

@@ -12,7 +12,9 @@ use App\Jobs\RecomputeAlbumStatsJob;
 use App\Models\Album;
 use App\Models\Photo;
 use App\Models\User;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Queue;
 use Tests\Precomputing\Base\BasePrecomputingTest;
 
@@ -41,22 +43,16 @@ class DeepNestingPropagationTest extends BasePrecomputingTest
 		$albums[0] = Album::factory()->as_root()->owned_by($user)->create(['title' => 'Level 0 (Root)']);
 
 		for ($i = 1; $i <= 4; $i++) {
-			$albums[$i] = Album::factory()->owned_by($user)->create(['title' => "Level $i"]);
-			$albums[$i]->appendToNode($albums[$i - 1])->save();
+			$albums[$i] = Album::factory()->children_of($albums[$i - 1])->owned_by($user)->create(['title' => "Level $i"]);
 		}
 
 		// Add photo to leaf album (Level 4)
-		$photo = Photo::factory()->owned_by($user)->create([
+		$photo = Photo::factory()->in($albums[4])->owned_by($user)->create([
 			'is_starred' => true,
+			'taken_at' => new Carbon('2023-12-25 10:00:00'),
 		]);
-		$photo->albums()->attach($albums[4]->id);
 
-		// Update taken_at using DB query to bypass cast
-		DB::table('photos')->where('id', $photo->id)->update([
-			'taken_at' => '2023-12-25 10:00:00',
-		]);
-		$photo->refresh();
-
+		Log::info('## Starting recomputation from leaf album');
 		// Manually dispatch job for leaf (simulates event trigger)
 		$job = new RecomputeAlbumStatsJob($albums[4]->id);
 		$job->handle();
@@ -64,6 +60,7 @@ class DeepNestingPropagationTest extends BasePrecomputingTest
 		// Propagation should have dispatched jobs up the tree
 		// Manually run each level's job to simulate queue processing
 		for ($i = 3; $i >= 0; $i--) {
+			Log::info('## Starting recomputation ' . $albums[$i]->id);
 			$parentJob = new RecomputeAlbumStatsJob($albums[$i]->id);
 			$parentJob->handle();
 		}

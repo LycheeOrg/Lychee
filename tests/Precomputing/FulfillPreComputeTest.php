@@ -52,10 +52,11 @@ class FulfillPreComputeTest extends BasePrecomputingTest
 	 */
 	public function testUser(): void
 	{
-		$response = $this->actingAs($this->userLocked)->getJsonWithData('Maintenance::fulfillPrecompute');
+		$user = User::factory()->create();
+		$response = $this->actingAs($user)->getJsonWithData('Maintenance::fulfillPrecompute');
 		$this->assertForbidden($response);
 
-		$response = $this->actingAs($this->userLocked)->postJson('Maintenance::fulfillPrecompute');
+		$response = $this->actingAs($user)->postJson('Maintenance::fulfillPrecompute');
 		$this->assertForbidden($response);
 	}
 
