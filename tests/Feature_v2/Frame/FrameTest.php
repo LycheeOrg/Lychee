@@ -24,6 +24,10 @@ class FrameTest extends BaseApiWithDataTest
 {
 	public function testErrors(): void
 	{
+		// Remove the star from photo1 to ensure that there are no starred photos
+		$this->photo1->is_starred = false;
+		$this->photo1->save();
+
 		$response = $this->getJson('Frame');
 		$this->assertUnauthorized($response);
 
@@ -45,6 +49,10 @@ class FrameTest extends BaseApiWithDataTest
 
 	public function testException(): void
 	{
+		// Remove the star from photo1 to ensure that there are no starred photos
+		$this->photo1->is_starred = false;
+		$this->photo1->save();
+
 		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Frame', ['album_id' => null]);
 		$this->assertStatus($response, 500);
 		$response->assertSee('PhotoCollectionEmptyException');
