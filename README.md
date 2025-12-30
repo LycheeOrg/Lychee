@@ -23,6 +23,10 @@ Lychee is a free, open-source photo-management tool that runs on your server or 
 
 For even more advanced features, consider the Supporter Edition (SE). The SE version offers additional functionality to enhance your experience. Learn more about the Supporter Edition and its benefits [here](https://lycheeorg.dev/get-supporter-edition).
 
+## ⚠️ Upgrade Notice to Version 7.0
+
+**Version 7.0 introduces significant changes on the docker image.** Please refer to our [Upgrade Guide](https://lycheeorg.test/docs/upgrade.html#upgrading-lychee-docker-installations-from-v6-to-v7) for detailed instructions on how to upgrade from previous versions.
+
 ## Support the Team
 
 We aim to maintain a free open-source photography library with high quality of code.<br>
@@ -46,13 +50,13 @@ There are three deployment options available. The simplest is **Docker deploymen
 
 ### Docker deployment
 
-An official Docker image can be found at [LycheeOrg/Lychee-Docker](https://github.com/LycheeOrg/Lychee-Docker) or on Docker Hub as [lycheeorg/lychee](https://hub.docker.com/r/lycheeorg/lychee).
+An official Docker image can be found at [LycheeOrg/Lychee](https://github.com/LycheeOrg/Lychee-Docker/pkgs/container/lychee) or on Docker Hub as [lycheeorg/lychee](https://hub.docker.com/r/lycheeorg/lychee).
 
 ### File-based deployment
 
 Copy the extracted Zip file from https://github.com/LycheeOrg/Lychee/releases to your webserver.
 
-If you feel like checking the authenticity of our releases, we advise you to read our [Verifying Releases documentation](docs/specs/5-operations/verifying-releases.md).
+If you feel like checking the authenticity of our releases, we advise you to read our [Verifying Releases documentation &#187;](docs/specs/5-operations/verifying-releases.md).
 
 ### Build from Source deployment
 
@@ -66,7 +70,7 @@ To run Lychee, everything you need is a web-server with PHP 8.4 or later and a d
 6. Generate your secret key with `php artisan key:generate`
 7. Migrate your database with `php artisan migrate` to create a new database or migrate an existing Lychee installation to the latest framework.
 
-See detailed instructions on the [Installation](https://lycheeorg.dev/docs/installation.html) page of our documentation.
+See detailed instructions on the [Installation  &#187;](https://lycheeorg.dev/docs/installation.html) page of our documentation.
 
 ### Update
 
