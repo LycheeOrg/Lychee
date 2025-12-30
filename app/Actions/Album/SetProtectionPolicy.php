@@ -66,7 +66,6 @@ class SetProtectionPolicy
 		$active_permissions->base_album_id = $album->get_id();
 		$active_permissions->save();
 
-		// Dispatch event if NSFW status changed and album is a regular Album
 		AlbumSaved::dispatch($album);
 	}
 }

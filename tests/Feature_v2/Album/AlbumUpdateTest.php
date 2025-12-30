@@ -453,7 +453,7 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 		self::assertCount(0, $response->json('smart_albums'));
 		$response->assertSee($this->album1->id);
 		$albums = $response->json('albums');
-		$idx = array_search($this->album1->id, array_column($albums, 'id'));
+		$idx = array_search($this->album1->id, array_column($albums, 'id'), true);
 		$response->assertJsonPath("albums.$idx.id", $this->album1->id);
 		$response->assertJsonPath("albums.$idx.title", $this->album1->title);
 		$response->assertJsonPath("albums.$idx.description", null);
@@ -528,7 +528,7 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 		self::assertCount(0, $response->json('smart_albums'));
 		$response->assertSee($this->album1->id);
 		$albums = $response->json('albums');
-		$idx = array_search($this->album1->id, array_column($albums, 'id'));
+		$idx = array_search($this->album1->id, array_column($albums, 'id'), true);
 		$response->assertJsonPath("albums.$idx.id", $this->album1->id);
 		$response->assertJsonPath("albums.$idx.title", $this->album1->title);
 		$response->assertJsonPath("albums.$idx.description", null);

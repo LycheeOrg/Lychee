@@ -21,7 +21,6 @@ use App\Models\Extensions\BaseAlbum;
 use App\Models\User;
 use App\Repositories\ConfigManager;
 use App\SmartAlbums\BaseSmartAlbum;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
 class AlbumPolicy extends BasePolicy

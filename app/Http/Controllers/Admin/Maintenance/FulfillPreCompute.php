@@ -56,7 +56,7 @@ class FulfillPreCompute extends Controller
 		$query = $this->getAlbumsNeedingComputation();
 
 		if ($is_sync) {
-			// For sync queue, process in chunks by _lft DESC (root to leaf)
+			// For sync queue, process in chunks by _lft DESC (leaf to root)
 			// This reduces re-computation as parents are processed before children
 			$albums = $query->orderBy('_lft', 'desc')->limit(50)->toBase()->get(['id']);
 			$albums->each(function ($album): void {

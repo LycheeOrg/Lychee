@@ -245,7 +245,7 @@ class RecomputeAlbumStatsJobTest extends BasePrecomputingTest
 		// Assert parent aggregates from children
 		$parent->refresh();
 		$this->assertEquals(2, $parent->num_children);
-		$this->assertEquals(0, $parent->num_photos); // Includes photos from children
+		$this->assertEquals(0, $parent->num_photos); // exclude photos from children
 		$this->assertNotNull($parent->min_taken_at);
 		$this->assertNotNull($parent->max_taken_at);
 	}

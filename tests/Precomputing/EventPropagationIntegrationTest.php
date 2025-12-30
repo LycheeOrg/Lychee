@@ -193,7 +193,7 @@ class EventPropagationIntegrationTest extends BasePrecomputingTest
 		$grandparentJob = new RecomputeAlbumStatsJob($grandparent->id);
 		$grandparentJob->handle();
 
-		// Grandparent should aggregate from all descendants
+		// Grandparent should aggregate from children only
 		$grandparent->refresh();
 		$this->assertEquals(0, $grandparent->num_photos); // Inherited from descendants
 		$this->assertEquals(1, $grandparent->num_children); // Only counts direct children
@@ -236,7 +236,7 @@ class EventPropagationIntegrationTest extends BasePrecomputingTest
 	 *
 	 * @return void
 	 */
-	public function testNoRecomputationWhenNSFWUnchanged(): void
+	public function testAlwaysRecomputationWhenNSFWUnchanged(): void
 	{
 		Queue::fake();
 
