@@ -14,7 +14,6 @@ use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\ModelDBException;
 use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
 use App\Models\AccessPermission;
-use App\Models\Album;
 use App\Models\Extensions\BaseAlbum;
 use Illuminate\Support\Facades\Hash;
 
@@ -32,20 +31,15 @@ class SetProtectionPolicy
 	 */
 	public function do(BaseAlbum $album, AlbumProtectionPolicy $protection_policy, bool $shall_set_password, ?string $password): void
 	{
-		$old_is_nsfw = $album->is_nsfw;
 		$album->is_nsfw = $protection_policy->is_nsfw;
 		$album->save();
 
 		$active_permissions = $album->public_permissions();
-
 		if (!$protection_policy->is_public) {
 			$active_permissions?->delete();
 
-			// Dispatch event if NSFW status changed and album is a regular Album
-			AlbumSaved::dispatchIf(
-				$old_is_nsfw !== $protection_policy->is_nsfw && $album instanceof Album,
-				$album
-			);
+			// Just dispatch if something changed.
+			AlbumSaved::dispatch($album);
 
 			return;
 		}
@@ -73,9 +67,6 @@ class SetProtectionPolicy
 		$active_permissions->save();
 
 		// Dispatch event if NSFW status changed and album is a regular Album
-		AlbumSaved::dispatchIf(
-			$old_is_nsfw !== $protection_policy->is_nsfw && $album instanceof Album,
-			$album
-		);
+		AlbumSaved::dispatch($album);
 	}
 }

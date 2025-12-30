@@ -12,6 +12,7 @@ use App\Models\AccessPermission;
 use App\Models\Album;
 use App\Models\Photo;
 use App\Models\User;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Tests\Precomputing\Base\BasePrecomputingTest;
 
@@ -53,7 +54,7 @@ class AlbumCoverSecurityTest extends BasePrecomputingTest
 		$photo->albums()->attach($album->id);
 
 		// Trigger stats recomputation
-		\Artisan::call('lychee:recompute-album-stats', [
+		Artisan::call('lychee:recompute-album-stats', [
 			'album_id' => $album->id,
 			'--sync' => true,
 		]);

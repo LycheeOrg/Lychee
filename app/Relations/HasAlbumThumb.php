@@ -222,13 +222,20 @@ class HasAlbumThumb extends Relation
 			return null;
 		}
 
+		// We do not execute a query, if `cover_id` is set, because `Album`
+		// is always eagerly loaded with its cover and hence, we already
+		// have it.
+		// See {@link Album::with}
 		$cover_id = $this->selectCoverIdForAlbum($album);
+		if ($cover_id === $album->cover_id) {
+			return Thumb::createFromPhoto($album->cover);
+		}
 
 		if ($cover_id !== null) {
 			// Use pre-computed cover ID (explicit, max-privilege, or least-privilege)
 			$photo = Photo::query()->with(['size_variants' => (fn ($r) => Thumb::sizeVariantsFilter($r))])->find($cover_id);
 
-			return $photo !== null ? Thumb::createFromPhoto($photo) : null;
+			return Thumb::createFromPhoto($photo);
 		} else {
 			// Fallback to legacy query if no cover available
 			return Thumb::createFromQueryable(

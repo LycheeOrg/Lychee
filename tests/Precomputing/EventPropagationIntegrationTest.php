@@ -226,7 +226,6 @@ class EventPropagationIntegrationTest extends BasePrecomputingTest
 		$action = new \App\Actions\Album\SetProtectionPolicy();
 		$action->do($album, $protectionPolicy, false, null);
 
-		// Assert job was dispatched (NSFW changed)
 		Queue::assertPushed(RecomputeAlbumStatsJob::class, function ($job) use ($album) {
 			return $job->album_id === $album->id;
 		});
@@ -259,7 +258,8 @@ class EventPropagationIntegrationTest extends BasePrecomputingTest
 		$action = new \App\Actions\Album\SetProtectionPolicy();
 		$action->do($album, $protectionPolicy, false, null);
 
-		// Assert no job dispatched (NSFW unchanged)
-		Queue::assertNothingPushed();
+		Queue::assertPushed(RecomputeAlbumStatsJob::class, function ($job) use ($album) {
+			return $job->album_id === $album->id;
+		});
 	}
 }
