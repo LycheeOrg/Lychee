@@ -82,7 +82,7 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 		$cache_key = 'album_stats_latest_job:' . $this->album_id;
 		$latest_job_id = Cache::get($cache_key);
 
-		return $latest_job_id !== $this->jobId || $latest_job_id === null;
+		return $latest_job_id !== null || $latest_job_id !== $this->jobId;
 	}
 
 	/**
