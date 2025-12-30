@@ -61,7 +61,8 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 		// Register this as the latest job for this album
 		Cache::put(
 			'album_stats_latest_job:' . $this->album_id,
-			$this->jobId
+			$this->jobId,
+			ttl: now()->plus(days: 1)
 		);
 	}
 
