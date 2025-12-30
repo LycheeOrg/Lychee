@@ -64,18 +64,14 @@ echo "  User GID: $(id -g www-data)"
 echo "🧹 Clearing bootstrap cache..."
 rm -rf bootstrap/cache/*.php
 
-# Run database migrations
-echo "🔄 Running database migrations..."
-php artisan migrate --force
-
-# Clear and cache configuration
-echo "🧹 Optimizing application..."
-php artisan config:clear
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
-
-echo "✅ Application ready!"
+# Check for /conf/.env file - this indicates misconfiguration
+if [ -f "/conf/.env" ]; then
+    echo "❌ ERROR: /conf/.env file detected"
+    echo "   Containers should not have mounted .env files at /conf/.env"
+    echo "   Please check your docker-compose.yml configuration"
+	echo "   See https://lycheeorg.github.io/docs/upgrade.html"
+    exit 1
+fi
 
 # Detect LYCHEE_MODE and execute appropriate command
 LYCHEE_MODE=${LYCHEE_MODE:-web}
@@ -83,11 +79,50 @@ LYCHEE_MODE=${LYCHEE_MODE:-web}
 case "$LYCHEE_MODE" in
     web)
         echo "🌐 Starting Lychee in web mode..."
+
+        # Run database migrations (only in web mode to avoid race conditions)
+        echo "🔄 Running database migrations..."
+        php artisan migrate --force
+
+        # Clear and cache configuration
+        echo "🧹 Optimizing application..."
+        php artisan config:clear
+        php artisan config:cache
+        php artisan route:cache
+        php artisan view:cache
+
+        echo "✅ Application ready!"
+
         # Execute the main command (from Dockerfile CMD: octane:start)
         exec "$@"
         ;;
     worker)
         echo "⚙️  Starting Lychee in worker mode..."
+
+        # Check for pending migrations (wait for web container to complete them)
+        max_migration_attempts=720  # 1h max (720*5s)
+        migration_attempt=0
+
+        while [ "$migration_attempt" -lt "$max_migration_attempts" ]; do
+            # Check if there are pending migrations
+            # php artisan migrate:status returns exit code 0 if all migrations are run
+            # We check for "Pending" in the output to detect pending migrations
+            if php artisan migrate:status 2>/dev/null | grep -q "Pending"; then
+                migration_attempt=$((migration_attempt + 1))
+                echo "⏳ Pending migrations detected (attempt $migration_attempt/$max_migration_attempts)"
+                echo "   Waiting 5 seconds for web container to complete migrations..."
+                sleep 5
+            else
+                echo "✅ All migrations are up to date"
+                break
+            fi
+        done
+
+        if [ "$migration_attempt" -eq "$max_migration_attempts" ]; then
+            echo "⚠️  WARNING: Migrations still pending after ${max_migration_attempts} attempts (1 hour)"
+            echo "   Starting worker anyway - this may cause issues if migrations are required"
+        fi
+
         echo "🔄 Auto-restart enabled: worker will restart if it exits"
 
         # Get queue configuration from environment
@@ -110,8 +145,9 @@ case "$LYCHEE_MODE" in
         KEEP_RUNNING=true
 
         # Handle graceful shutdown
-        trap 'echo "🛑 Received shutdown signal, stopping..."; KEEP_RUNNING=false' TERM INT        # Auto-restart loop: if queue:work exits, restart it
+        trap 'echo "🛑 Received shutdown signal, stopping..."; KEEP_RUNNING=false' TERM INT
 
+        # Auto-restart loop: if queue:work exits, restart it
         # This handles memory leak mitigation (max-time) and crash recovery
         while $KEEP_RUNNING; do
             echo "🚀 Starting queue worker ($(date '+%Y-%m-%d %H:%M:%S'))"
