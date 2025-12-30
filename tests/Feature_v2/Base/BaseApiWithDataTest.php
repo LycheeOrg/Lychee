@@ -236,7 +236,7 @@ abstract class BaseApiWithDataTest extends BaseApiTest
 		$job->handle();
 		$job = new RecomputeAlbumStatsJob($this->subAlbum2->id);
 		$job->handle();
-		$job = new RecomputeAlbumStatsJob($this->subAlbum1->id);
+		$job = new RecomputeAlbumStatsJob($this->album3->id);
 		$job->handle();
 		$job = new RecomputeAlbumStatsJob($this->subAlbum4->id);
 		$job->handle();

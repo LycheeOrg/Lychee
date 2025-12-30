@@ -111,7 +111,7 @@ class EventPropagationIntegrationTest extends BasePrecomputingTest
 	 *
 	 * @return void
 	 */
-	public function testAlbumCreationTriggersParentRecomputation(): void
+	public function testAlbumCreationTriggersRecomputation(): void
 	{
 		Queue::fake();
 
