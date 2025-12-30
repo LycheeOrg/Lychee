@@ -101,15 +101,17 @@ class PhotoZipUploadTest extends BaseApiWithDataTest
 		$albums = $response->json('resource.albums');
 		$idx_night = array_search('night', array_column($albums, 'title'), true);
 		$idx_sunset = array_search('sunset', array_column($albums, 'title'), true);
-		$this->assertIsString($idx_night);
-		$this->assertIsString($idx_sunset);
+		$this->assertIsInt($idx_night);
+		$this->assertIsInt($idx_sunset);
+		$id_night = $albums[$idx_night]['id'];
+		$id_sunset = $albums[$idx_sunset]['id'];
 
-		$response = $this->actingAs($this->admin)->getJsonWithData('Album', ['album_id' => $idx_night]);
+		$response = $this->actingAs($this->admin)->getJsonWithData('Album', ['album_id' => $id_night]);
 		$this->assertOk($response);
 		$response->assertJsonCount(1, 'resource.photos');
 		$response->assertJsonPath('resource.photos.0.title', 'night');
 
-		$response = $this->actingAs($this->admin)->getJsonWithData('Album', ['album_id' => $idx_sunset]);
+		$response = $this->actingAs($this->admin)->getJsonWithData('Album', ['album_id' => $id_sunset]);
 		$this->assertOk($response);
 		$response->assertJsonCount(1, 'resource.photos');
 		$response->assertJsonPath('resource.photos.0.title', 'sunset');
