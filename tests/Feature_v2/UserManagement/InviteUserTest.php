@@ -20,7 +20,6 @@ namespace Tests\Feature_v2\UserManagement;
 
 use App\Models\Configs;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\URL;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class InviteUserTest extends BaseApiWithDataTest
@@ -38,19 +37,15 @@ class InviteUserTest extends BaseApiWithDataTest
 	{
 		$response = $this->actingAs($this->admin)->getJson('UserManagement::invite');
 		$this->assertOk($response);
-		$api_url = URL::temporarySignedRoute('register-api', now()->addDays(7));
-		$api_url_parts = explode('?', $api_url);
-		$url = route('register') . '?' . $api_url_parts[1];
-
-		$response->assertJson(
-			[
-				'invitation_link' => $url,
-				'valid_for' => 7,
-			]);
+		$this->assertEquals(7, $response->json('valid_for'));
+		$this->assertStringStartsWith(route('register'), $response->json('invitation_link'));
+		$this->assertStringContainsString('expires', $response->json('invitation_link'));
+		$this->assertStringContainsString('signature', $response->json('invitation_link'));
 
 		Auth::logout();
 		Configs::set('user_registration_enabled', false);
 
+		$api_url_parts = explode('?', $response->json('invitation_link'));
 		$response = $this->putJson('Profile?' . $api_url_parts[1], [
 			'username' => 'newUser',
 			'email' => 'test@example.com',
