@@ -58,9 +58,8 @@ class FulfillPreCompute extends Controller
 		if ($is_sync) {
 			// For sync queue, process in chunks by _lft DESC (root to leaf)
 			// This reduces re-computation as parents are processed before children
-			$albums = $query->orderBy('_lft', 'desc')->limit(50)->get(['id']);
-			/** @phpstan-ignore method.notFound */
-			$albums->each(function (Album $album): void {
+			$albums = $query->orderBy('_lft', 'desc')->limit(50)->toBase()->get(['id']);
+			$albums->each(function ($album): void {
 				RecomputeAlbumStatsJob::dispatch($album->id);
 			});
 		} else {
@@ -68,7 +67,7 @@ class FulfillPreCompute extends Controller
 			// The queue worker will handle them
 			$albums = $query->get(['id']);
 			/** @phpstan-ignore method.notFound */
-			$albums->each(function (Album $album): void {
+			$albums->each(function ($album): void {
 				RecomputeAlbumStatsJob::dispatch($album->id);
 			});
 		}
