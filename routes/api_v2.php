@@ -282,6 +282,8 @@ Route::get('/Maintenance::fulfillOrders', [Admin\Maintenance\FulfillOrders::clas
 Route::post('/Maintenance::fulfillOrders', [Admin\Maintenance\FulfillOrders::class, 'do']);
 Route::get('/Maintenance::fulfillPrecompute', [Admin\Maintenance\FulfillPreCompute::class, 'check']);
 Route::post('/Maintenance::fulfillPrecompute', [Admin\Maintenance\FulfillPreCompute::class, 'do']);
+Route::get('/Maintenance::flushQueue', [Admin\Maintenance\FlushQueue::class, 'check']);
+Route::post('/Maintenance::flushQueue', [Admin\Maintenance\FlushQueue::class, 'do']);
 
 /**
  * STATISTICS.

@@ -34,7 +34,7 @@ return [
 	|
 	*/
 
-	'enabled' => env('LOG_VIEWER_ENABLED', true),
+	'enabled' => env('LOG_VIEWER_ENABLED', false),
 
 	'api_only' => env('LOG_VIEWER_API_ONLY', false),
 

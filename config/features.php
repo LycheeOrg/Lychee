@@ -48,7 +48,7 @@ return [
 	|
 	| Log Viewer can be disabled, so it's no longer accessible via browser.
 	*/
-	'log-viewer' => (bool) env('LOG_VIEWER_ENABLED', true),
+	'log-viewer' => (bool) env('LOG_VIEWER_ENABLED', false),
 
 	/*
 	|--------------------------------------------------------------------------

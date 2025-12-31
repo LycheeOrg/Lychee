@@ -7,7 +7,7 @@
 	>
 		<template #title>
 			<div class="text-center">
-				{{ $t("maintenance.fulfill-precompute.title") }}
+				{{ $t("maintenance.flush-queue.title") }}
 			</div>
 		</template>
 		<template #content>
@@ -16,8 +16,8 @@
 				<ProgressSpinner v-if="loading" class="w-full"></ProgressSpinner>
 			</ScrollPanel>
 			<div class="flex gap-4 mt-1">
-				<Button v-if="data > 0 && !loading" severity="primary" class="w-full border-none" @click="exec">
-					{{ $t("maintenance.fulfill-precompute.button") }}
+				<Button v-if="data > 0 && !loading" severity="danger" class="w-full border-none" @click="exec">
+					{{ $t("maintenance.flush-queue.button") }}
 				</Button>
 			</div>
 		</template>
@@ -40,12 +40,12 @@ const loading = ref(false);
 const toast = useToast();
 
 const description = computed(() => {
-	return sprintf(trans("maintenance.fulfill-precompute.description"), data.value);
+	return sprintf(trans("maintenance.flush-queue.description"), data.value);
 });
 
 function load() {
 	loading.value = true;
-	MaintenanceService.fulfillPrecomputeCheck()
+	MaintenanceService.flushQueueCheck()
 		.then((response) => {
 			data.value = response.data;
 			loading.value = false;
@@ -58,7 +58,7 @@ function load() {
 
 function exec() {
 	loading.value = true;
-	MaintenanceService.fulfillPrecomputeDo()
+	MaintenanceService.flushQueueDo()
 		.then(() => {
 			toast.add({ severity: "success", summary: trans("toasts.success"), life: 3000 });
 			loading.value = false;

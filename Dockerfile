@@ -61,7 +61,15 @@ FROM dunglas/frankenphp:php8.4-alpine@sha256:49654aea8f2b9bc225bde6d89c901105450
 ARG USER=appuser
 
 LABEL maintainer="lycheeorg"
+LABEL org.opencontainers.image.title="Lychee"
+LABEL org.opencontainers.image.description="Self-hosted photo management system done right."
+LABEL org.opencontainers.image.authors="LycheeOrg"
+LABEL org.opencontainers.image.vendor="LycheeOrg"
 LABEL org.opencontainers.image.source="https://github.com/LycheeOrg/Lychee"
+LABEL org.opencontainers.image.url="https://lycheeorg.github.io"
+LABEL org.opencontainers.image.documentation="https://lycheeorg.dev/docs"
+LABEL org.opencontainers.image.licenses="MIT"
+LABEL org.opencontainers.image.base.name="dunglas/frankenphp:php8.4-alpine"
 
 # Install system utilities and PHP extensions
 # hadolint ignore=DL3018
