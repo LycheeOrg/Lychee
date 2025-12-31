@@ -10,8 +10,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
 return new class() extends Migration {
-
-	const CAT = 'Mod Webshop';
+	public const CAT = 'Mod Webshop';
 
 	/**
 	 * Run the migrations.
@@ -29,7 +28,6 @@ return new class() extends Migration {
 				'order' => 25,
 			],
 		]);
-
 
 		DB::table('configs')->where('key', 'LIKE', 'webshop_%')->update(['cat' => self::CAT]);
 	}
