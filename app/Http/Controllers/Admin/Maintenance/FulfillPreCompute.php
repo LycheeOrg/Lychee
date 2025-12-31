@@ -53,7 +53,9 @@ class FulfillPreCompute extends Controller
 		$queue_connection = Config::get('queue.default', 'sync');
 		$is_sync = $queue_connection === 'sync';
 
-		$query = $this->getAlbumsNeedingComputation()->orderBy('_lft', 'desc');
+		$query = $this->getAlbumsNeedingComputation()
+			->whereRaw("_lft = _rgt - 1") // Only leaf albums
+			->orderBy('_lft', 'desc');
 
 		if ($is_sync) {
 			// For sync queue, process in chunks by _lft DESC (leaf to root)
