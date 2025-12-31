@@ -49,7 +49,7 @@ There are three deployment options available. The simplest is **Docker deploymen
 
 ### Docker deployment
 
-An official Docker image can be found at [LycheeOrg/Lychee](https://github.com/LycheeOrg/Lychee-Docker/pkgs/container/lychee) or on Docker Hub as [lycheeorg/lychee](https://hub.docker.com/r/lycheeorg/lychee).
+An official Docker image can be found at [LycheeOrg/Lychee](https://github.com/LycheeOrg/Lychee/pkgs/container/lychee) or on Docker Hub as [lycheeorg/lychee](https://hub.docker.com/r/lycheeorg/lychee).
 
 ### File-based deployment
 
@@ -111,19 +111,8 @@ In order to use the new photos email notification you will need to have configur
 
 Take a look at the [Documentation](https://lycheeorg.dev/docs/), particularly the [FAQ](https://lycheeorg.dev/docs/faq_troubleshooting.html) if you have problems. Discovered a bug? Please create an issue [here](https://github.com/LycheeOrg/Lychee/issues) on GitHub! You can also contact us directly on [gitter (login with your github account)](https://gitter.im/LycheeOrg/Lobby) or on [discord &#187;][discord].
 
-## Notice: `master` & `alpha` branches
-
-As LycheeOrg is a very small team, we do not have many maintainers. Most of us have an active work/family life, and as a result, it is no longer possible for us to apply proper 4-eyes principle in the coding reviews.
-
-In order to keep our high code quality, the following changes have been applied.
-
-- `master` stays as a stable branch and contains 4-eyes peer-reviewed pull-requests.
-- `alpha` contains the latest changes (i.e. the above mentionned PR) merged with minimal review.
-
-With this change, we hope to strike a balance between decently paced development (on `alpha`) and maintaining a robust core (on `master`).
-
-On Docker, `nightly`/`dev` continues to refer to the latest `master` commit.
-The `alpha` tag is updated daily with the content of the associated branch.
+On Docker, `edge` is used to refer to the latest `master` commit.
+And `latest` is used to refer to the latest stable release.
 
 That being said, if you like the gallery and would like to contribute, do not hesitate to open pull request. If you would like to see more functionalities added and help us push Lychee, [Join the team!](https://lycheeorg.dev/docs/contributions.html#joining-the-team)
 
