@@ -11,13 +11,11 @@ on:
       - '**/*.md'
       - 'public/dist/*.js'
       - 'public/dist/**/*.js'
-      - 'public/Lychee-front'
   pull_request:
     paths-ignore:
       - '**/*.md'
       - 'public/dist/*.js'
       - 'public/dist/**/*.js'
-      - 'public/Lychee-front'
   # Allow manually triggering the workflow.
   workflow_dispatch:
 
@@ -189,9 +187,9 @@ jobs:
   docker-build:
     name:  4️⃣ Build Docker Image
     runs-on: ubuntu-latest
-    if: >
-      (github.ref == 'refs/heads/master' && github.event_name == 'push') ||
-      (startsWith(github.ref, 'refs/tags/') && github.event_name == 'push')
+    # if: >
+    #   (github.ref == 'refs/heads/master' && github.event_name == 'push') ||
+    #   (startsWith(github.ref, 'refs/tags/') && github.event_name == 'push')
     needs:
       - docker_check
     permissions:
@@ -207,6 +205,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3.7.0
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f #v3.12.0
 
@@ -217,11 +218,20 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      -
+        name: Login to DockerHub
+        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
       - name: Extract metadata (tags, labels)
         id: meta
         uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5.10.0
         with:
-          images: ghcr.io/${{ github.repository }}
+          images: |
+            ${{ github.repository }}
+            ghcr.io/${{ github.repository }}
           flavor: |
               latest=${{ startsWith(github.ref, 'refs/tags/') }}
           tags: |
@@ -236,6 +246,7 @@ jobs:
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
         with:
           push: true
+          platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
