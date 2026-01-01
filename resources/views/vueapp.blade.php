@@ -35,7 +35,7 @@
 </script>
 @endif
 {{-- End of work around... --}}
-@if((Configs::get()['dark_mode_enabled'] ?? '1') == '1')
+@if(resolve(\App\Repositories\ConfigManager::class)->getValueAsBool('dark_mode_enabled'))
     <body class="antialiased dark">
 @else
     <body class="antialiased">
