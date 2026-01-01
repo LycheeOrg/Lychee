@@ -35,86 +35,77 @@ Through [contributions, donations, and sponsorship](https://github.com/sponsors/
 
 ## Contributing
 
-Want to help improve Lychee? We welcome contributions from the community! Whether you're fixing bugs, adding features, or improving documentation, your help is appreciated.
-
-Check out our [Contribution Guide](docs/Contribute.md) to get started with:
-- Setting up your development environment
-- Understanding our coding standards
-- Running tests and quality checks
-- Submitting pull requests
+Contributions welcome! Check out our [Contribution Guide](docs/Contribute.md) and [documentation](https://github.com/LycheeOrg/Lychee/tree/master/docs) for setup, coding standards, and PR guidelines.
 
 ## Installation
 
-There are three deployment options available. The simplest is **Docker deployment**, as all dependencies are already predefined and configured.
+### Docker (Recommended)
 
-### Docker deployment
+The easiest way to deploy Lychee with all dependencies configured:
 
-An official Docker image can be found at [LycheeOrg/Lychee](https://github.com/LycheeOrg/Lychee/pkgs/container/lychee) or on Docker Hub as [lycheeorg/lychee](https://hub.docker.com/r/lycheeorg/lychee).
+```yaml
+services:
+  lychee:
+    image: lycheeorg/lychee
+    container_name: lychee
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./lychee/uploads:/app/public/uploads
+      - ./lychee/storage:/app/storage
+      - .env:/app/.env:ro
+    environment:
+      APP_URL: http://localhost:8000
+      DB_CONNECTION: mysql
+      DB_HOST: lychee_db
+      DB_PORT: 3306
+      DB_DATABASE: lychee
+      DB_USERNAME: lychee
+      DB_PASSWORD: lychee_password
+    depends_on:
+      lychee_db:
+        condition: service_healthy
+    restart: unless-stopped
 
-### File-based deployment
+  lychee_db:
+    image: mariadb:11
+    container_name: lychee_db
+    environment:
+      MYSQL_DATABASE: lychee
+      MYSQL_USER: lychee
+      MYSQL_PASSWORD: lychee_password
+      MYSQL_ROOT_PASSWORD: root_password
+    volumes:
+      - lychee_db:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
 
-Copy the extracted Zip file from https://github.com/LycheeOrg/Lychee/releases to your webserver.
+volumes:
+  lychee_db:
+```
 
-If you feel like checking the authenticity of our releases, we advise you to read our [Verifying Releases documentation &#187;](docs/specs/5-operations/verifying-releases.md).
+**Images:** [GitHub Container Registry](https://github.com/LycheeOrg/Lychee/pkgs/container/lychee) | [Docker Hub](https://hub.docker.com/r/lycheeorg/lychee)
 
-### Build from Source deployment
+### Other Installation Methods
 
-To run Lychee, everything you need is a web-server with PHP 8.4 or later and a database (MySQL/MariaDB, PostgreSQL or SQLite). Follow the instructions to install Lychee on your server. This version of Lychee is built on the Laravel framework. To install:
+- **Pre-built releases:** Download from [GitHub Releases](https://github.com/LycheeOrg/Lychee/releases)
+- **From source:** Requires PHP 8.4+, Composer, and npm
 
-1. Clone this repo to your server and set the web root to `lychee/public`
-2. Run `composer install --no-dev` to install dependencies
-3. Run `npm install` to install node dependencies
-4. Run `npm run build` to build the front-end
-5. Copy `.env.example` as `.env` and edit it to match your parameters
-6. Generate your secret key with `php artisan key:generate`
-7. Migrate your database with `php artisan migrate` to create a new database or migrate an existing Lychee installation to the latest framework.
-
-See detailed instructions on the [Installation  &#187;](https://lycheeorg.dev/docs/installation.html) page of our documentation.
-
-### Update
-
-Updating is as easy as it should be. [Update &#187;](https://lycheeorg.dev/docs/update.html)
-
-## Configuration
-
-### Settings
-
-Sign in and click the gear in the top left corner to change your settings. [Settings &#187;][1]
-
-### Advanced Features
-
-Lychee is ready to use straight after installation, but some features require a little more configuration.
-
-## Documentation
-
-### Keyboard Shortcuts
-
-These shortcuts will help you to use Lychee even faster. [Keyboard Shortcuts &#187;](https://lycheeorg.dev/docs/keyboard.html)
-
-### Dropbox import
-
-In order to use the Dropbox import from your server, you need a valid drop-ins app key from [their website](https://www.dropbox.com/developers/saver). Lychee will ask you for this key, the first time you try to use the import. Want to change your code? Take a look at [the settings][1] of Lychee.
-
-### Twitter Cards
-
-Lychee supports [Twitter Cards](https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/abouts-cards) and [Open Graph](http://opengraphprotocol.org) for shared images (not albums). In order to use Twitter Cards you need to request an approval for your domain. Simply share an image with Lychee, copy its link and paste it in [Twitter's Card Validator](https://cards-dev.twitter.com/validator).
-
-### ImageMagick
-
-Lychee uses [ImageMagick](https://www.imagemagick.org) when installed on your server. In this case you will benefit from a faster processing of your uploads, better looking thumbnails and intermediate sized images for small screen devices. You can disable the usage of [ImageMagick](https://www.imagemagick.org) in the [settings][1].
-
-### New Photos Email Notification
-
-In order to use the new photos email notification you will need to have configured the **MAIL_** variables in your .env to your mail provider & [setup cron](https://laravel.com/docs/scheduling#running-the-scheduler). Once that is complete you then toggle **Send new photos notification emails** in the [settings][1]. Your users will be able to opt-in to the email notifications by entering their email address in the **Notifications** setting in the sidebar. Photo notifications will be grouped and sent out once a week to the site admin, album owner & anyone who the album is shared with, if their email has been added. The admin or user who added the photo to an album, will not receive a email notification for the photos they added.
+For detailed installation, configuration, and update instructions, see our **[Documentation](https://lycheeorg.dev/docs/)**.
 
 ## Troubleshooting
 
-Take a look at the [Documentation](https://lycheeorg.dev/docs/), particularly the [FAQ](https://lycheeorg.dev/docs/faq_troubleshooting.html) if you have problems. Discovered a bug? Please create an issue [here](https://github.com/LycheeOrg/Lychee/issues) on GitHub! You can also contact us directly on [gitter (login with your github account)](https://gitter.im/LycheeOrg/Lobby) or on [discord &#187;][discord].
+- **[Documentation](https://lycheeorg.dev/docs/)** - Complete guides and FAQ
+- **[GitHub Issues](https://github.com/LycheeOrg/Lychee/issues)** - Report bugs
+- **[Discord][discord]** or **[Gitter](https://gitter.im/LycheeOrg/Lobby)** - Community support
 
-On Docker, `edge` is used to refer to the latest `master` commit.
-And `latest` is used to refer to the latest stable release.
-
-That being said, if you like the gallery and would like to contribute, do not hesitate to open pull request. If you would like to see more functionalities added and help us push Lychee, [Join the team!](https://lycheeorg.dev/docs/contributions.html#joining-the-team)
+### Docker Tags
+- `latest` - Latest stable release
+- `edge` - Latest development build from master
 
 ## Open Source Community Support
 
@@ -122,7 +113,6 @@ That being said, if you like the gallery and would like to contribute, do not he
 
 We would like to thank Jetbrains for supporting us with their [Open Source Development - Community Support][jetbrains-opensource] program.
 
-[1]: https://lycheeorg.dev/docs/settings.html
 [build-status-shield]: https://img.shields.io/github/actions/workflow/status/LycheeOrg/Lychee/CICD.yml?branch=master
 [codecov-shield]: https://codecov.io/gh/LycheeOrg/Lychee/branch/master/graph/badge.svg
 [release-shield]: https://img.shields.io/github/release/LycheeOrg/Lychee.svg
