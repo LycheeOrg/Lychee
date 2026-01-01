@@ -11,7 +11,7 @@ body:
     attributes:
       label: Lychee version
       description: Which version of Lychee are you using? Please provide the full version, e.g. v6.6.5.
-      placeholder: v6.6.5
+      placeholder: v7.0.1
     validations:
       required: true
 
@@ -31,8 +31,8 @@ body:
     attributes:
       label: Which PHP version are you using?
       options:
+        - PHP 8.5
         - PHP 8.4
-        - PHP 8.3
     validations:
       required: true
 
