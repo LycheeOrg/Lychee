@@ -61,7 +61,7 @@ class CheckoutFinalizeOrCancelControllerTest extends BaseCheckoutControllerTest
 			'card' => [
 				'number' => self::VALID_CARD_NUMBER_SUCCESS,
 				'expiryMonth' => '12',
-				'expiryYear' => '2025',
+				'expiryYear' => date("Y"),
 				'cvv' => '123',
 			],
 		]);
@@ -270,7 +270,7 @@ class CheckoutFinalizeOrCancelControllerTest extends BaseCheckoutControllerTest
 				'card' => [
 					'number' => self::VALID_CARD_NUMBER_SUCCESS,
 					'expiryMonth' => '12',
-					'expiryYear' => '2025',
+					'expiryYear' => date("Y"),
 					'cvv' => '123',
 				],
 			],
@@ -316,7 +316,7 @@ class CheckoutFinalizeOrCancelControllerTest extends BaseCheckoutControllerTest
 			'card' => [
 				'number' => self::VALID_CARD_NUMBER_SUCCESS,
 				'expiryMonth' => '12',
-				'expiryYear' => '2025',
+				'expiryYear' => date("Y"),
 				'cvv' => '123',
 			],
 		]);
@@ -546,7 +546,7 @@ class CheckoutFinalizeOrCancelControllerTest extends BaseCheckoutControllerTest
 			'card' => [
 				'number' => self::VALID_CARD_NUMBER_SUCCESS,
 				'expiryMonth' => '12',
-				'expiryYear' => '2025',
+				'expiryYear' => date("Y"),
 				'cvv' => '123',
 			],
 		]);

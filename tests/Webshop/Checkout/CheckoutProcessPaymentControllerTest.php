@@ -49,7 +49,7 @@ class CheckoutProcessPaymentControllerTest extends BaseCheckoutControllerTest
 				'card' => [
 					'number' => self::VALID_CARD_NUMBER_SUCCESS, // Success on Even numbers.
 					'expiryMonth' => '12',
-					'expiryYear' => '2025',
+					'expiryYear' => date("Y"),
 					'cvv' => '123',
 				],
 			],
@@ -112,7 +112,7 @@ class CheckoutProcessPaymentControllerTest extends BaseCheckoutControllerTest
 				'card' => [
 					'number' => self::VALID_CARD_NUMBER_SUCCESS,
 					'expiryMonth' => '12',
-					'expiryYear' => '2025',
+					'expiryYear' => date("Y"),
 					'cvv' => '123',
 					'cardholder_name' => 'John Doe',
 				],
@@ -171,7 +171,7 @@ class CheckoutProcessPaymentControllerTest extends BaseCheckoutControllerTest
 					'card' => [
 						'number' => self::VALID_CARD_NUMBER_SUCCESS,
 						'expiryMonth' => '12',
-						'expiryYear' => '2025',
+						'expiryYear' => date("Y"),
 						'cvv' => '123',
 					],
 				],
@@ -203,7 +203,7 @@ class CheckoutProcessPaymentControllerTest extends BaseCheckoutControllerTest
 				'card' => [
 					'number' => self::VALID_CARD_NUMBER_FAIL, // Failure on odd numbers for DUMMY provider
 					'expiryMonth' => '12',
-					'expiryYear' => '2025',
+					'expiryYear' => date("Y"),
 					'cvv' => '123',
 				],
 			],
@@ -290,7 +290,7 @@ class CheckoutProcessPaymentControllerTest extends BaseCheckoutControllerTest
 				'card' => [
 					'number' => self::VALID_CARD_NUMBER_SUCCESS,
 					'expiryMonth' => '12',
-					'expiryYear' => '2025',
+					'expiryYear' => date("Y"),
 					'cvv' => '123',
 				],
 			],
@@ -320,7 +320,7 @@ class CheckoutProcessPaymentControllerTest extends BaseCheckoutControllerTest
 				'card' => [
 					'number' => self::VALID_CARD_NUMBER_SUCCESS,
 					'expiryMonth' => '12',
-					'expiryYear' => '2025',
+					'expiryYear' => date("Y"),
 					'cvv' => '123',
 				],
 			],
