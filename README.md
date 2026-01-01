@@ -46,7 +46,7 @@ The easiest way to deploy Lychee with all dependencies configured:
 ```yaml
 services:
   lychee:
-    image: lycheeorg/lychee
+    image: ghcr.io/lycheeorg/lychee:latest
     container_name: lychee
     ports:
       - "8000:8000"
@@ -90,6 +90,10 @@ volumes:
 
 **Images:** [GitHub Container Registry](https://github.com/LycheeOrg/Lychee/pkgs/container/lychee) | [Docker Hub](https://hub.docker.com/r/lycheeorg/lychee)
 
+**Docker Tags:**
+- `latest` - Latest stable release
+- `edge` - Latest development build from master
+
 ### Other Installation Methods
 
 - **Pre-built releases:** Download from [GitHub Releases](https://github.com/LycheeOrg/Lychee/releases)
@@ -102,10 +106,6 @@ For detailed installation, configuration, and update instructions, see our **[Do
 - **[Documentation](https://lycheeorg.dev/docs/)** - Complete guides and FAQ
 - **[GitHub Issues](https://github.com/LycheeOrg/Lychee/issues)** - Report bugs
 - **[Discord][discord]** or **[Gitter](https://gitter.im/LycheeOrg/Lobby)** - Community support
-
-### Docker Tags
-- `latest` - Latest stable release
-- `edge` - Latest development build from master
 
 ## Open Source Community Support
 
