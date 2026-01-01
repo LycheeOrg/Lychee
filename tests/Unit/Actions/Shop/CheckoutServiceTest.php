@@ -467,7 +467,7 @@ class CheckoutServiceTest extends AbstractTestCase
 			'card' => [
 				'number' => '4111111111111111',
 				'expiryMonth' => '12',
-				'expiryYear' => date("Y"),
+				'expiryYear' => date('Y'),
 				'cvv' => '123',
 			],
 		];
