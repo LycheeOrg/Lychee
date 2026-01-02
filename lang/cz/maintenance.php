@@ -20,6 +20,7 @@ return [
         'duplicates-title' => 'Title duplicates per album',
         'duplicates-per-album' => 'Duplicates per album',
         'show' => 'Show duplicates',
+        'load' => 'Load counts',
     ],
     'fix-jobs' => [
         'title' => 'Fixing Jobs History',
