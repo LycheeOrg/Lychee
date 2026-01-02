@@ -17,9 +17,10 @@ return [
         'title' => 'Duplicates',
         'description' => 'This module counts potential duplicates betwen pictures.',
         'duplicates-all' => 'Duplicates over all albums',
-        'duplicates-title' => 'Title duplicates per album',
+        'duplicates-title' => 'Title duplicates duplicate-finderper album',
         'duplicates-per-album' => 'Duplicates per album',
         'show' => 'Show duplicates',
+        'load' => 'Load counts',
     ],
     'fix-jobs' => [
         'title' => 'Fixing Jobs History',

@@ -21,6 +21,7 @@ return [
         'duplicates-title' => '每个相册中的标题重复项',
         'duplicates-per-album' => '每个相册中的重复项',
         'show' => '显示重复项',
+        'load' => 'Load counts',
     ],
     'fix-jobs' => [
         'title' => '修复任务历史',

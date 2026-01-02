@@ -20,6 +20,7 @@ return [
         'duplicates-title' => 'Titel-Duplikate pro Album',
         'duplicates-per-album' => 'Duplikate pro Album',
         'show' => 'Duplikate anzeigen',
+        'load' => 'Load counts',
     ],
     'fix-jobs' => [
         'title' => 'Korrigieren des Auftragsverlaufs',

@@ -21,6 +21,7 @@ return [
         'duplicates-title' => 'Duplikaty tytułów na album',
         'duplicates-per-album' => 'Duplikaty na album',
         'show' => 'Pokaż duplikaty',
+        'load' => 'Load counts',
     ],
     'fix-jobs' => [
         'title' => 'Naprawianie historii zadań',

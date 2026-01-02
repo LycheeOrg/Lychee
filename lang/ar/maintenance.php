@@ -20,6 +20,7 @@ return [
         'duplicates-title' => 'تكرارات العنوان لكل ألبوم',
         'duplicates-per-album' => 'التكرارات لكل ألبوم',
         'show' => 'عرض التكرارات',
+        'load' => 'Load counts',
     ],
     'fix-jobs' => [
         'title' => 'إصلاح سجل الوظائف',

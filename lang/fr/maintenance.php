@@ -21,6 +21,7 @@ return [
         'duplicates-title' => 'Doublons de titre par album',
         'duplicates-per-album' => 'Doublons par album',
         'show' => 'Afficher les doublons',
+        'load' => 'Compter les doublons',
     ],
     'fix-jobs' => [
         'title' => 'Correction de l’historique des tâches',
