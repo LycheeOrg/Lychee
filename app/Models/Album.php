@@ -60,6 +60,7 @@ use Kalnoy\Nestedset\NodeTrait;
  * @property Photo|null               $cover
  * @property string|null              $header_id
  * @property Photo|null               $header
+ * @property AlbumSizeStatistics|null $sizeStatistics                Pre-computed size statistics for this album.
  * @property string|null              $track_short_path
  * @property string|null              $track_url
  * @property AspectRatioType|null     $album_thumb_aspect_ratio
@@ -273,6 +274,16 @@ class Album extends BaseAlbum implements Node
 	public function header(): HasOne
 	{
 		return $this->hasOne(Photo::class, 'id', 'header_id');
+	}
+
+	/**
+	 * Return the relationship between an album and its size statistics.
+	 *
+	 * @return HasOne<AlbumSizeStatistics,$this>
+	 */
+	public function sizeStatistics(): HasOne
+	{
+		return $this->hasOne(AlbumSizeStatistics::class, 'album_id', 'id');
 	}
 
 	/**
