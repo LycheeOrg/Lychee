@@ -128,20 +128,20 @@ _Last updated: 2026-01-02_
 
 ### I5 – Event Listeners
 
-- [ ] T-004-18 – Create listener for photo mutation events (FR-004-02, S-004-01, S-004-02, S-004-05).
+- [x] T-004-18 – Create listener for photo mutation events (FR-004-02, S-004-01, S-004-02, S-004-05).
   _Intent:_ Listen to PhotoCreated, PhotoDeleted, PhotoMoved; dispatch job.
   _Verification commands:_
   - Create `app/Listeners/RecomputeAlbumSizeOnPhotoMutation.php`
   - Extract album_id from event payload
   - `RecomputeAlbumSizeJob::dispatch($album_id)`
 
-- [ ] T-004-19 – Create listener for size variant mutation events (FR-004-02, S-004-04).
+- [x] T-004-19 – Create listener for size variant mutation events (FR-004-02, S-004-04).
   _Intent:_ Listen to SizeVariantCreated, SizeVariantDeleted, SizeVariantRegenerated; dispatch job.
   _Verification commands:_
   - Create `app/Listeners/RecomputeAlbumSizeOnVariantMutation.php`
   - Fetch variant's photo, get album_id(s), dispatch jobs
 
-- [ ] T-004-20 – Register listeners in EventServiceProvider.
+- [x] T-004-20 – Register listeners in EventServiceProvider.
   _Intent:_ Hook listeners to events.
   _Verification commands:_
   - Edit `app/Providers/EventServiceProvider.php`
