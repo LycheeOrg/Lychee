@@ -62,39 +62,39 @@ _Last updated: 2026-01-02_
 
 ### I3 – RecomputeAlbumSizeJob Core
 
-- [ ] T-004-08 – Create RecomputeAlbumSizeJob class skeleton (FR-004-02).
+- [x] T-004-08 – Create RecomputeAlbumSizeJob class skeleton (FR-004-02).
   _Intent:_ Job class with constructor, traits, properties.
   _Verification commands:_
   - Create `app/Jobs/RecomputeAlbumSizeJob.php`
   - Implement ShouldQueue, add traits
 
-- [ ] T-004-09 – Implement constructor with unique job ID and cache storage (FR-004-02, Q-004-03 resolution).
+- [x] T-004-09 – Implement constructor with unique job ID and cache storage (FR-004-02, Q-004-03 resolution).
   _Intent:_ Generate `uniqid('job_', true)`, store in cache `album_size_latest_job:{album_id}` with TTL 1 day.
   _Verification commands:_
   - Test job construction
   - Verify cache key set
 
-- [ ] T-004-10 – Implement Skip middleware with hasNewerJobQueued() (FR-004-02, Q-004-03 resolution).
+- [x] T-004-10 – Implement Skip middleware with hasNewerJobQueued() (FR-004-02, Q-004-03 resolution).
   _Intent:_ Reuse Feature 003 pattern: `Skip::when(fn() => hasNewerJobQueued())`.
   _Verification commands:_
   - Implement `middleware()` method
   - Implement `hasNewerJobQueued()` checking cache
   - Log skip events
 
-- [ ] T-004-11 – Implement handle(): fetch album, compute sizes (FR-004-02, S-004-01, S-004-13).
+- [x] T-004-11 – Implement handle(): fetch album, compute sizes (FR-004-02, S-004-01, S-004-13).
   _Intent:_ Core computation logic: query size_variants for album's photos, GROUP BY type, SUM filesize, exclude PLACEHOLDER (type 7).
   _Verification commands:_
   - Implement handle() method
   - Query: `size_variants JOIN photo_album WHERE album_id, WHERE type != 7, GROUP BY type, SUM filesize`
   - Build size array (initialize all 7 to 0, populate from query)
 
-- [ ] T-004-12 – Implement updateOrCreate for album_size_statistics (FR-004-02).
+- [x] T-004-12 – Implement updateOrCreate for album_size_statistics (FR-004-02).
   _Intent:_ Save computed sizes via `AlbumSizeStatistics::updateOrCreate()`.
   _Verification commands:_
   - Wrap in DB transaction
   - Call `updateOrCreate(['album_id' => $album->id], $size_array)`
 
-- [ ] T-004-13 – Implement failed() method and retry logic (FR-004-02).
+- [x] T-004-13 – Implement failed() method and retry logic (FR-004-02).
   _Intent:_ Set `$tries = 3`, log permanent failure in `failed()`.
   _Verification commands:_
   - Set `public $tries = 3`
@@ -108,7 +108,7 @@ _Last updated: 2026-01-02_
 
 ### I4 – Propagation Logic
 
-- [ ] T-004-15 – Add parent propagation after successful save (FR-004-02, S-004-09).
+- [x] T-004-15 – Add parent propagation after successful save (FR-004-02, S-004-09).
   _Intent:_ Dispatch job for parent album after updating current album.
   _Verification commands:_
   - Check `if ($album->parent_id !== null)`
