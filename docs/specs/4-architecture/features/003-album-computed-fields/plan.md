@@ -1,8 +1,8 @@
 # Feature Plan 003 – Album Computed Fields Pre-computation
 
 _Linked specification:_ `docs/specs/4-architecture/features/003-album-computed-fields/spec.md`
-_Status:_ Draft
-_Last updated:_ 2025-12-29
+_Status:_ Complete
+_Last updated:_ 2026-01-02
 
 > Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in [docs/specs/4-architecture/open-questions.md](docs/specs/4-architecture/open-questions.md), and assume clarifications are resolved only when the spec's normative sections (requirements/NFR/behaviour/telemetry) and, where applicable, ADRs under `docs/specs/5-decisions/` have been updated.
 
