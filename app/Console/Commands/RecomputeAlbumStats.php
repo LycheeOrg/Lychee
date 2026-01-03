@@ -69,8 +69,7 @@ class RecomputeAlbumStats extends Command
 			// Run synchronously
 			$this->info('Running synchronously...');
 			try {
-				$job = new RecomputeAlbumStatsJob($album_id);
-				$job->handle();
+				RecomputeAlbumStatsJob::dispatchSync($album_id, true);
 
 				$this->info('✓ Stats recomputed successfully');
 				Log::info("Manual recompute completed for album {$album_id}");
@@ -85,7 +84,7 @@ class RecomputeAlbumStats extends Command
 		}
 
 		// Dispatch job to queue
-		RecomputeAlbumStatsJob::dispatch($album_id);
+		RecomputeAlbumStatsJob::dispatch($album_id, true);
 
 		$this->info('✓ Job dispatched to queue');
 		$this->info('  Note: Stats will be updated when the queue worker processes the job');
@@ -137,7 +136,8 @@ class RecomputeAlbumStats extends Command
 				foreach ($albums as $album) {
 					if (!$dry_run) {
 						// Dispatch job to recompute stats for this album
-						RecomputeAlbumStatsJob::dispatch($album->id);
+						// We do not propagate to parent here to avoid redundant jobs
+						RecomputeAlbumStatsJob::dispatch($album->id, false);
 					}
 
 					$processed++;

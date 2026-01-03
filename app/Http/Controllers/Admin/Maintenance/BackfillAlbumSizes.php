@@ -58,7 +58,7 @@ class BackfillAlbumSizes extends Controller
 			// This allows parent propagation to work correctly
 			$albums = $query->limit(50)->toBase()->get(['id']);
 			$albums->each(function ($album): void {
-				RecomputeAlbumSizeJob::dispatch($album->id);
+				RecomputeAlbumSizeJob::dispatch($album->id, false);
 			});
 		} else {
 			// For async queue, dispatch all jobs at once
@@ -67,7 +67,7 @@ class BackfillAlbumSizes extends Controller
 				->select(['id'])
 				->lazy(500)
 				->each(function ($album): void {
-					RecomputeAlbumSizeJob::dispatch($album->id);
+					RecomputeAlbumSizeJob::dispatch($album->id, false);
 				});
 		}
 	}

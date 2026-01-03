@@ -6,7 +6,7 @@
  * Copyright (c) 2018-2026 LycheeOrg.
  */
 
-namespace Tests\Precomputing;
+namespace Tests\Precomputing\SizeComputations;
 
 use App\Jobs\RecomputeAlbumSizeJob;
 use App\Models\Album;

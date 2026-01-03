@@ -6,7 +6,7 @@
  * Copyright (c) 2018-2026 LycheeOrg.
  */
 
-namespace Tests\Precomputing;
+namespace Tests\Precomputing\SizeComputations;
 
 use App\Enum\SizeVariantType;
 use App\Jobs\RecomputeAlbumSizeJob;
@@ -107,8 +107,7 @@ class RecomputeAlbumSizeJobTest extends BasePrecomputingTest
 		$album = Album::factory()->as_root()->owned_by($user)->create();
 
 		// Run job on empty album
-		$job = new RecomputeAlbumSizeJob($album->id);
-		$job->handle();
+		RecomputeAlbumSizeJob::dispatchSync($album->id);
 
 		// Assert all sizes are zero
 		$stats = AlbumSizeStatistics::find($album->id);
@@ -175,8 +174,7 @@ class RecomputeAlbumSizeJobTest extends BasePrecomputingTest
 		}
 
 		// Run job
-		$job = new RecomputeAlbumSizeJob($album->id);
-		$job->handle();
+		RecomputeAlbumSizeJob::dispatchSync($album->id);
 
 		// Assert sizes summed across all photos (each variant type appears 3 times)
 		$stats = AlbumSizeStatistics::find($album->id);
@@ -199,16 +197,14 @@ class RecomputeAlbumSizeJobTest extends BasePrecomputingTest
 		$photo->albums()->attach($album->id);
 
 		// Run job first time
-		$job1 = new RecomputeAlbumSizeJob($album->id);
-		$job1->handle();
+		RecomputeAlbumSizeJob::dispatchSync($album->id);
 
 		$stats1 = AlbumSizeStatistics::find($album->id);
 		$originalSize1 = $stats1->size_original;
 		$this->assertGreaterThan(0, $originalSize1);
 
 		// Run job second time (should update, not create new row)
-		$job2 = new RecomputeAlbumSizeJob($album->id);
-		$job2->handle();
+		RecomputeAlbumSizeJob::dispatchSync($album->id);
 
 		// Assert statistics still correct, still only one row
 		$stats2 = AlbumSizeStatistics::find($album->id);

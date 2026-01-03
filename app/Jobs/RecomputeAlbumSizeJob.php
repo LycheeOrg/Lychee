@@ -50,6 +50,7 @@ class RecomputeAlbumSizeJob implements ShouldQueue
 	 */
 	public function __construct(
 		public string $album_id,
+		public bool $propagate_to_parent = true,
 	) {
 		$this->jobId = uniqid('job_', true);
 
@@ -98,33 +99,31 @@ class RecomputeAlbumSizeJob implements ShouldQueue
 		Cache::forget("album_size_latest_job:{$this->album_id}");
 
 		try {
-			DB::transaction(function (): void {
-				// Fetch the album
-				$album = Album::where('id', '=', $this->album_id)->first();
-				if ($album === null) {
-					Log::warning("Album {$this->album_id} not found, skipping recompute.");
+			// Fetch the album
+			$album = Album::where('id', '=', $this->album_id)->first();
+			if ($album === null) {
+				Log::warning("Album {$this->album_id} not found, skipping recompute.");
 
-					return;
-				}
+				return;
+			}
 
-				// Compute sizes by querying size_variants for photos in this album (direct children only)
-				// Exclude PLACEHOLDER (type 7) from all size calculations
-				$sizes = $this->computeSizes($album);
+			// Compute sizes by querying size_variants for photos in this album (direct children only)
+			// Exclude PLACEHOLDER (type 7) from all size calculations
+			$sizes = $this->computeSizes($album);
 
-				// Update or create statistics row
-				AlbumSizeStatistics::updateOrCreate(
-					['album_id' => $album->id],
-					$sizes
-				);
+			// Update or create statistics row
+			AlbumSizeStatistics::updateOrCreate(
+				['album_id' => $album->id],
+				$sizes
+			);
 
-				Log::debug("Updated size statistics for album {$album->id}");
+			Log::debug("Updated size statistics for album {$album->id}");
 
-				// Propagate to parent if exists
-				if ($album->parent_id !== null) {
-					Log::debug("Propagating to parent {$album->parent_id}");
-					self::dispatch($album->parent_id);
-				}
-			});
+			// Propagate to parent if exists
+			if ($album->parent_id !== null && $this->propagate_to_parent) {
+				Log::debug("Propagating to parent {$album->parent_id}");
+				self::dispatch($album->parent_id);
+			}
 		} catch (\Exception $e) {
 			Log::error("Propagation stopped at album {$this->album_id} due to failure: " . $e->getMessage());
 

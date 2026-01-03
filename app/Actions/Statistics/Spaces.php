@@ -144,7 +144,7 @@ final class Spaces
 	 * Return size statistics per album.
 	 *
 	 * Uses pre-computed album_size_statistics table for performance.
-	 * Falls back to runtime calculation if statistics are missing.
+	 * Albums without statistics will report size as 0.
 	 *
 	 * @param string|null $album_id
 	 * @param int|null    $owner_id

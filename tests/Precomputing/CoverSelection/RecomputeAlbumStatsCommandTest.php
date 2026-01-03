@@ -65,8 +65,6 @@ class RecomputeAlbumStatsCommandTest extends BasePrecomputingTest
 	 */
 	public function testSyncModeExecutesImmediately(): void
 	{
-		Queue::fake();
-
 		$user = User::factory()->create();
 		$album = Album::factory()->as_root()->owned_by($user)->create();
 
@@ -82,9 +80,6 @@ class RecomputeAlbumStatsCommandTest extends BasePrecomputingTest
 			'--sync' => true,
 		])
 			->assertExitCode(0);
-
-		// Job should NOT be queued (executed synchronously)
-		Queue::assertNotPushed(\App\Jobs\RecomputeAlbumStatsJob::class);
 
 		$album->refresh();
 

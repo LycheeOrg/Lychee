@@ -55,6 +55,7 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 	 */
 	public function __construct(
 		public string $album_id,
+		public bool $propagate_to_parent = true,
 	) {
 		$this->jobId = uniqid('job_', true);
 
@@ -142,7 +143,7 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 			$album->save();
 
 			// Propagate to parent if exists
-			if ($album->parent_id !== null) {
+			if ($album->parent_id !== null && $this->propagate_to_parent) {
 				Log::debug("Propagating to parent {$album->parent_id}");
 				self::dispatch($album->parent_id);
 			}
