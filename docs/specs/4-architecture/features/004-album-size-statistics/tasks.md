@@ -55,10 +55,10 @@ _Last updated: 2026-01-02_
   - Add `belongsTo(Album::class)` in AlbumSizeStatistics
   - Add `hasOne(AlbumSizeStatistics::class)` in Album
 
-- [ ] T-004-07 – Write unit test for AlbumSizeStatistics model.
+- [x] T-004-07 – Write unit test for AlbumSizeStatistics model.
   _Intent:_ Test model creation, relationships, fillable fields.
   _Verification commands:_
-  - `php artisan test --filter AlbumSizeStatisticsModelTest`
+  - `php artisan test --filter AlbumSizeStatisticsTest`
 
 ### I3 – RecomputeAlbumSizeJob Core
 
