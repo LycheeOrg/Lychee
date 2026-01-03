@@ -6,7 +6,7 @@
  * Copyright (c) 2018-2026 LycheeOrg.
  */
 
-namespace Tests\Precomputing;
+namespace Tests\Precomputing\CoverSelection;
 
 use App\Jobs\RecomputeAlbumStatsJob;
 use App\Models\Album;
@@ -149,7 +149,7 @@ class DeepNestingPropagationTest extends BasePrecomputingTest
 			$photo->albums()->attach($leaf->id);
 
 			// Update taken_at using DB query to bypass cast
-			\DB::table('photos')->where('id', $photo->id)->update(['taken_at' => $date]);
+			DB::table('photos')->where('id', $photo->id)->update(['taken_at' => $date]);
 			$photo->refresh();
 			$photos[] = $photo;
 		}
@@ -221,7 +221,7 @@ class DeepNestingPropagationTest extends BasePrecomputingTest
 		$photoA->albums()->attach($leafA->id);
 
 		// Update taken_at using DB query to bypass cast
-		\DB::table('photos')->where('id', $photoA->id)->update(['taken_at' => '2023-05-01']);
+		DB::table('photos')->where('id', $photoA->id)->update(['taken_at' => '2023-05-01']);
 		$photoA->refresh();
 
 		// Run propagation from LeafA

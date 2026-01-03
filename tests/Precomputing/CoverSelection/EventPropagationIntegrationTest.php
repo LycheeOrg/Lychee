@@ -6,7 +6,7 @@
  * Copyright (c) 2018-2026 LycheeOrg.
  */
 
-namespace Tests\Precomputing;
+namespace Tests\Precomputing\CoverSelection;
 
 use App\Actions\Album\Create as AlbumCreate;
 use App\Actions\Album\Delete as AlbumDelete;
@@ -204,7 +204,7 @@ class EventPropagationIntegrationTest extends BasePrecomputingTest
 	 *
 	 * @return void
 	 */
-	public function testNSFWChangeTriggersRecomputation(): void
+	public function testNsfwChangeTriggersRecomputation(): void
 	{
 		Queue::fake();
 

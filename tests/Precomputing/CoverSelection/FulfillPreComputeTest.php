@@ -16,7 +16,7 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Precomputing;
+namespace Tests\Precomputing\CoverSelection;
 
 use App\Jobs\RecomputeAlbumStatsJob;
 use App\Models\Album;
