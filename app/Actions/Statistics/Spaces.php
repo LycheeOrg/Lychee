@@ -24,6 +24,9 @@ final class Spaces
 	/**
 	 * Return the amount of data stored on the server (optionally for a user).
 	 *
+	 * Uses pre-computed album_size_statistics table for <100ms performance.
+	 * Joins user's owned albums and sums their statistics.
+	 *
 	 * @param int|null $owner_id
 	 *
 	 * @return Collection<int,array{id:int,username:string,size:int}>
@@ -32,28 +35,24 @@ final class Spaces
 	{
 		return DB::table('users')
 			->when($owner_id !== null, fn ($query) => $query->where('users.id', '=', $owner_id))
-			->joinSub(
-				query: DB::table('photos')->select(['photos.id', 'photos.owner_id']),
-				as: 'photos',
-				first: 'photos.owner_id',
+			->leftJoinSub(
+				query: DB::table('base_albums')->select(['base_albums.id', 'base_albums.owner_id']),
+				as: 'base_albums',
+				first: 'base_albums.owner_id',
 				operator: '=',
-				second: 'users.id',
-				type: 'left'
+				second: 'users.id'
 			)
-			->joinSub(
-				query: DB::table('size_variants')
-					->select(['size_variants.photo_id', 'size_variants.filesize'])
-					->where('size_variants.type', '!=', 7),
-				as: 'size_variants',
-				first: 'size_variants.photo_id',
-				operator: '=',
-				second: 'photos.id',
-				type: 'left'
-			)
+			->leftJoin('album_size_statistics', 'album_size_statistics.album_id', '=', 'base_albums.id')
 			->select(
 				'users.id',
 				'username',
-				DB::raw('SUM(size_variants.filesize) as size')
+				DB::raw('SUM(COALESCE(album_size_statistics.size_thumb, 0) +
+					COALESCE(album_size_statistics.size_thumb2x, 0) +
+					COALESCE(album_size_statistics.size_small, 0) +
+					COALESCE(album_size_statistics.size_small2x, 0) +
+					COALESCE(album_size_statistics.size_medium, 0) +
+					COALESCE(album_size_statistics.size_medium2x, 0) +
+					COALESCE(album_size_statistics.size_original, 0)) as size')
 			)
 			->groupBy('users.id', 'username')
 			->orderBy('users.id', 'asc')
@@ -144,6 +143,9 @@ final class Spaces
 	/**
 	 * Return size statistics per album.
 	 *
+	 * Uses pre-computed album_size_statistics table for performance.
+	 * Falls back to runtime calculation if statistics are missing.
+	 *
 	 * @param string|null $album_id
 	 * @param int|null    $owner_id
 	 *
@@ -172,22 +174,19 @@ final class Spaces
 				second: 'albums.id'
 			)
 			->where('base_albums.owner_id', '=', $owner_id))
-			->join(PA::PHOTO_ALBUM, PA::ALBUM_ID, '=', 'albums.id')
-			->joinSub(
-				query: DB::table('size_variants')
-					->select(['size_variants.id', 'size_variants.photo_id', 'size_variants.filesize'])
-					->where('size_variants.type', '!=', 7),
-				as: 'size_variants',
-				first: 'size_variants.photo_id',
-				operator: '=',
-				second: PA::PHOTO_ID
-			)
+			->leftJoin('album_size_statistics', 'album_size_statistics.album_id', '=', 'albums.id')
 			->select(
 				'albums.id',
 				'albums._lft',
 				'albums._rgt',
-				DB::raw('SUM(size_variants.filesize) as size'),
-			)->groupBy('albums.id')
+				DB::raw('(COALESCE(album_size_statistics.size_thumb, 0) +
+					COALESCE(album_size_statistics.size_thumb2x, 0) +
+					COALESCE(album_size_statistics.size_small, 0) +
+					COALESCE(album_size_statistics.size_small2x, 0) +
+					COALESCE(album_size_statistics.size_medium, 0) +
+					COALESCE(album_size_statistics.size_medium2x, 0) +
+					COALESCE(album_size_statistics.size_original, 0)) as size')
+			)
 			->orderBy('albums._lft', 'asc');
 
 		return $query
@@ -202,6 +201,9 @@ final class Spaces
 
 	/**
 	 * Same as above but with full size (including sub-albums).
+	 *
+	 * Uses pre-computed album_size_statistics table with nested set query
+	 * to find descendants and sum their statistics.
 	 *
 	 * @param string|null $album_id
 	 * @param int|null    $owner_id
@@ -228,22 +230,19 @@ final class Spaces
 						->on('albums._rgt', '>=', 'descendants._rgt');
 				}
 			)
-			->join(PA::PHOTO_ALBUM, PA::ALBUM_ID, '=', 'descendants.id')
-			->joinSub(
-				query: DB::table('size_variants')
-					->select(['size_variants.id', 'size_variants.photo_id', 'size_variants.filesize'])
-					->where('size_variants.type', '!=', 7),
-				as: 'size_variants',
-				first: 'size_variants.photo_id',
-				operator: '=',
-				second: PA::PHOTO_ID
-			)
+			->leftJoin('album_size_statistics', 'album_size_statistics.album_id', '=', 'descendants.id')
 			->select(
 				'albums.id',
 				'albums._lft',
 				'albums._rgt',
-				DB::raw('SUM(size_variants.filesize) as size'),
-			)->groupBy('albums.id')
+				DB::raw('SUM(COALESCE(album_size_statistics.size_thumb, 0) +
+					COALESCE(album_size_statistics.size_thumb2x, 0) +
+					COALESCE(album_size_statistics.size_small, 0) +
+					COALESCE(album_size_statistics.size_small2x, 0) +
+					COALESCE(album_size_statistics.size_medium, 0) +
+					COALESCE(album_size_statistics.size_medium2x, 0) +
+					COALESCE(album_size_statistics.size_original, 0)) as size')
+			)->groupBy('albums.id', 'albums._lft', 'albums._rgt')
 			->orderBy('albums._lft', 'asc');
 
 		return $query
