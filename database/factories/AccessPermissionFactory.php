@@ -45,6 +45,13 @@ class AccessPermissionFactory extends Factory
 		];
 	}
 
+	/**
+	 * Make the AccessPermission public (i.e., not tied to any user or user group).
+	 * However, by default, it still requires a link to access. Use ->visible() to
+	 * make it actually visible in listings.
+	 *
+	 * This has an impact on how thumbs are computed.
+	 */
 	public function public()
 	{
 		return $this->state(function (array $attributes) {
@@ -133,6 +140,9 @@ class AccessPermissionFactory extends Factory
 		});
 	}
 
+	/**
+	 * Make the AccessPermission not require a link: actually visible in listings.
+	 */
 	public function visible()
 	{
 		return $this->state(function (array $attributes) {

@@ -14,6 +14,12 @@ This document tracks modules, dependencies, and architectural relationships acro
 
 #### Domain Layer
 - **Models** (`app/Models/`) - Eloquent ORM models for database entities
+  - **Album Model** - Nested set tree structure with pre-computed statistical fields:
+    - `num_children` - Count of direct child albums
+    - `num_photos` - Count of photos directly in this album (not descendants)
+    - `min_taken_at`, `max_taken_at` - Date range of photos in album + descendants
+    - `auto_cover_id_max_privilege` - Cover photo for admin/owner view (ignores access control)
+    - `auto_cover_id_least_privilege` - Cover photo for public view (respects PhotoQueryPolicy + AlbumQueryPolicy)
 - **Services** (`app/Services/`) - Business logic and orchestration
 - **Actions** (`app/Actions/`) - Single-responsibility command objects
 - **DTOs** (`app/DTO/`) - Data transfer objects (Spatie Data)
@@ -22,8 +28,17 @@ This document tracks modules, dependencies, and architectural relationships acro
 #### Infrastructure Layer
 - **Repositories** - Data access abstraction (if used)
 - **Events** (`app/Events/`) - Domain event definitions
+  - `PhotoSaved`, `PhotoDeleted` - Trigger album stats recomputation when photos change
+  - `AlbumSaved`, `AlbumDeleted` - Trigger parent album stats recomputation when album structure changes
 - **Listeners** (`app/Listeners/`) - Event handlers
+  - `RecomputeAlbumStatsOnPhotoChange` - Dispatches recomputation job for photo's album
+  - `RecomputeAlbumStatsOnAlbumChange` - Dispatches recomputation job for parent album
 - **Jobs** (`app/Jobs/`) - Asynchronous task definitions
+  - `RecomputeAlbumStatsJob` - Recomputes album statistics and propagates changes to ancestors
+    - Uses `WithoutOverlapping` middleware (keyed by album_id) to prevent concurrent updates
+    - Atomic transaction with 3 retries + exponential backoff
+    - Propagates to parent album after successful update (cascades to root)
+    - Stops propagation on failure (logs error, does not dispatch parent job)
 - **Notifications** (`app/Notifications/`) - User notification logic
 - **Worker Mode** (`docker/scripts/entrypoint.sh`) - Container mode selection for horizontal scaling
   - **Web Mode** (default): Runs FrankenPHP/Octane web server for handling HTTP requests
@@ -77,6 +92,25 @@ This document tracks modules, dependencies, and architectural relationships acro
 4. Model/Repository → Database
 5. Resource/DTO → Response Transform
 6. HTTP Response
+
+### Album Statistics Pre-computation (Event-Driven)
+Replaces on-the-fly virtual column computation with physical database fields updated asynchronously:
+
+1. **Mutation Events** - Photo/album changes trigger domain events
+   - Photo: created, deleted, updated (taken_at, is_starred, NSFW status changes)
+   - Album: created, deleted, moved, NSFW status changes
+2. **Event Listeners** - Dispatch `RecomputeAlbumStatsJob` for affected album
+3. **Job Execution** - Recomputes 6 fields in database transaction:
+   - Count fields: `num_children`, `num_photos`
+   - Date range: `min_taken_at`, `max_taken_at` (recursive descendants)
+   - Dual covers: `auto_cover_id_max_privilege` (admin view), `auto_cover_id_least_privilege` (public view)
+4. **Propagation** - After successful update, job dispatches itself for parent album → cascades to root
+5. **Failure Handling** - On failure (after 3 retries), logs error and stops propagation
+6. **CLI Commands**:
+   - `lychee:recompute-album-stats` - Unified command: with album_id for single-album recompute, without album_id for bulk backfill of all albums
+   - `lychee:recompute-album-stats {album_id}` - Manual recovery after propagation failures
+
+**Benefits**: 50%+ query time reduction for album listings, removes expensive nested set JOINs from read path
 
 ### Naming Conventions
 - PHP: snake_case for variables, PSR-4 for classes
@@ -153,4 +187,4 @@ This document tracks modules, dependencies, and architectural relationships acro
 
 ---
 
-*Last updated: December 22, 2025*
+*Last updated: January 2, 2026*

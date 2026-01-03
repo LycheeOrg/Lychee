@@ -20,6 +20,7 @@ return [
         'duplicates-title' => 'موارد تکراری عنوان در هر آلبوم',
         'duplicates-per-album' => 'موارد تکراری در هر آلبوم',
         'show' => 'نمایش موارد تکراری',
+        'load' => 'Load counts',
     ],
     'fix-jobs' => [
         'title' => 'اصلاح تاریخچه وظایف',

@@ -26,7 +26,7 @@ We adopt an **event-driven pre-computation architecture** with the following str
 
 ### 1. Manual Backfill Execution (Q-003-02)
 
-Migration adds columns only; operator manually runs `php artisan lychee:backfill-album-fields` during maintenance window. Code includes dual-read fallback (uses virtual columns if computed columns are NULL) until backfill completes.
+Migration adds columns only; operator manually runs `php artisan lychee:recompute-album-stats` (bulk mode, without album_id) during maintenance window. Code includes dual-read fallback (uses virtual columns if computed columns are NULL) until backfill completes.
 
 **Rationale:** Operator controls timing (low-traffic period), migration completes quickly (<1 minute vs. 10 minutes for 100k albums), safer rollback (no data loss), aligns with dual-read pattern. All Lychee commands use `lychee:` namespace convention.
 
@@ -122,7 +122,7 @@ Store two automatic cover IDs per album: `auto_cover_id_max_privilege` (admin/ow
 
 ### Maintenance
 
-- **Manual backfill:** Operator must run `php artisan lychee:backfill-album-fields` after migration during maintenance window
+- **Manual backfill:** Operator must run `php artisan lychee:recompute-album-stats` (without album_id) after migration during maintenance window
 - **Manual recovery:** Operator must run `php artisan lychee:recompute-album-stats {album_id}` for propagation failures
 - **Rollback window:** Safe rollback only during Phase 1-2 (before Phase 4 cleanup removes virtual column code)
 

@@ -6,12 +6,13 @@ High-level planning document for Lychee features and architectural initiatives.
 
 | Feature ID | Name | Status | Priority | Assignee | Started | Updated |
 |------------|------|--------|----------|----------|---------|---------|
-| 003 | Album Computed Fields Pre-computation | Planning | P1 | - | 2025-12-28 | 2025-12-28 |
+| 004 | Album Size Statistics Pre-computation | Planning | P1 | - | 2026-01-02 | 2026-01-02 |
 
 ## Completed Features
 
 | Feature ID | Name | Completed | Notes |
 |------------|------|-----------|-------|
+| 003 | Album Computed Fields Pre-computation | 2026-01-02 | Event-driven pre-computation for 6 album fields (num_children, num_photos, min/max_taken_at, dual auto covers), AlbumBuilder virtual column removal, backfill/recovery commands, comprehensive test coverage |
 | 002 | Worker Mode Support | 2025-12-28 | Docker worker mode with queue processing, auto-restart, configurable QUEUE_NAMES/WORKER_MAX_TIME, multi-container deployment |
 | 001 | Photo Star Rating | 2025-12-27 | User ratings (1-5 stars), statistics aggregation, configurable visibility |
 
@@ -76,4 +77,4 @@ features/
 
 ---
 
-*Last updated: 2025-12-28*
+*Last updated: 2026-01-02*

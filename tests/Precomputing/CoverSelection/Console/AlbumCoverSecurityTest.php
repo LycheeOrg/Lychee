@@ -6,7 +6,7 @@
  * Copyright (c) 2018-2026 LycheeOrg.
  */
 
-namespace Tests\Precomputing;
+namespace Tests\Precomputing\CoverSelection\Console;
 
 use App\Models\AccessPermission;
 use App\Models\Album;
@@ -75,7 +75,7 @@ class AlbumCoverSecurityTest extends BasePrecomputingTest
 	 *
 	 * @return void
 	 */
-	public function testNSFWBoundaries(): void
+	public function testNsfwBoundaries(): void
 	{
 		// Create user
 		$user = User::factory()->create();
@@ -111,11 +111,11 @@ class AlbumCoverSecurityTest extends BasePrecomputingTest
 		AccessPermission::factory()->for_album($rootAlbum)->public()->create();
 
 		// Trigger stats recomputation for both albums
-		\Artisan::call('lychee:recompute-album-stats', [
+		Artisan::call('lychee:recompute-album-stats', [
 			'album_id' => $nsfwAlbum->id,
 			'--sync' => true,
 		]);
-		\Artisan::call('lychee:recompute-album-stats', [
+		Artisan::call('lychee:recompute-album-stats', [
 			'album_id' => $rootAlbum->id,
 			'--sync' => true,
 		]);
@@ -158,7 +158,7 @@ class AlbumCoverSecurityTest extends BasePrecomputingTest
 		$photo->albums()->attach($album->id);
 
 		// Trigger stats recomputation
-		\Artisan::call('lychee:recompute-album-stats', [
+		Artisan::call('lychee:recompute-album-stats', [
 			'album_id' => $album->id,
 			'--sync' => true,
 		]);
@@ -202,7 +202,7 @@ class AlbumCoverSecurityTest extends BasePrecomputingTest
 		$photo2->albums()->attach($album->id);
 
 		// Trigger stats recomputation
-		\Artisan::call('lychee:recompute-album-stats', [
+		Artisan::call('lychee:recompute-album-stats', [
 			'album_id' => $album->id,
 			'--sync' => true,
 		]);

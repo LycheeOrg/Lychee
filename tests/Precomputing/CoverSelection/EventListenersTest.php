@@ -6,7 +6,7 @@
  * Copyright (c) 2018-2026 LycheeOrg.
  */
 
-namespace Tests\Precomputing;
+namespace Tests\Precomputing\CoverSelection;
 
 use App\Events\AlbumDeleted;
 use App\Events\AlbumSaved;

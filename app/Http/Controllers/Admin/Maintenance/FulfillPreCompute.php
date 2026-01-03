@@ -50,11 +50,9 @@ class FulfillPreCompute extends Controller
 	 */
 	public function do(MaintenanceRequest $request): void
 	{
-		$queue_connection = Config::get('queue.default', 'sync');
-		$is_sync = $queue_connection === 'sync';
+		$is_sync = Config::get('queue.default', 'sync') === 'sync';
 
 		$query = $this->getAlbumsNeedingComputation()
-			->whereRaw('_lft = _rgt - 1') // Only leaf albums
 			->orderBy('_lft', 'desc');
 
 		if ($is_sync) {
@@ -109,11 +107,15 @@ class FulfillPreCompute extends Controller
 	private function getAlbumsNeedingComputation(): Builder
 	{
 		return Album::query()
-			->whereNull('max_taken_at')
-			->whereNull('min_taken_at')
-			->where('num_children', 0)
-			->where('num_photos', 0)
-			->whereNull('auto_cover_id_max_privilege')
-			->whereNull('auto_cover_id_least_privilege');
+			->where(fn (Builder $q) => $q
+				->whereNull('max_taken_at')
+				->whereNull('min_taken_at')
+				->where('num_children', 0)
+				->where('num_photos', 0)
+			)
+			->orWhere(fn (Builder $q) => $q
+				->whereNull('auto_cover_id_max_privilege')
+				->whereNull('auto_cover_id_least_privilege')
+			);
 	}
 }

@@ -20,6 +20,7 @@ return [
         'duplicates-title' => 'Дубликаты по заголовкам альбомов',
         'duplicates-per-album' => 'Дубликаты по альбомам',
         'show' => 'Показать дубликаты',
+        'load' => 'Load counts',
     ],
     'fix-jobs' => [
         'title' => 'Исправление истории задач',

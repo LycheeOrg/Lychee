@@ -20,6 +20,7 @@ return [
         'duplicates-title' => 'Titelduplicaten per album',
         'duplicates-per-album' => 'Duplicaten per album',
         'show' => 'Toon duplicaten',
+        'load' => 'Load counts',
     ],
     'fix-jobs' => [
         'title' => 'Taakgeschiedenis herstellen',
