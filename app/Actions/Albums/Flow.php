@@ -112,7 +112,13 @@ final class Flow
 
 		$base_query = Album::query();
 		if ($with_relations) {
-			$base_query->with(['cover', 'cover.size_variants', 'statistics', 'photos', 'photos.statistics', 'photos.size_variants', 'photos.palette', 'photos.tags', 'photos.rating']);
+			$base_query->with([
+				'cover', 'cover.size_variants',
+				'max_privilege_cover', 'max_privilege_cover.size_variants',
+				'min_privilege_cover', 'min_privilege_cover.size_variants',
+				'statistics',
+				'photos',
+				'photos.statistics', 'photos.size_variants', 'photos.palette', 'photos.tags', 'photos.rating']);
 		}
 
 		// Only join what we need for ordering.
