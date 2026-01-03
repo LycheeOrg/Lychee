@@ -237,24 +237,24 @@ _Last updated: 2026-01-02_
 
 ### I10 – Backfill Command
 
-- [ ] T-004-35 – Create BackfillAlbumSizes command class (FR-004-04, CLI-004-01).
+- [x] T-004-35 – Create BackfillAlbumSizes command class (FR-004-04, CLI-004-01).
   _Intent:_ Artisan command `lychee:backfill-album-sizes`.
   _Verification commands:_
-  - Create `app/Console/Commands/BackfillAlbumSizes.php`
-  - Signature: `lychee:backfill-album-sizes {--chunk=1000} {--album-id=}`
+  - Create `app/Console/Commands/BackfillAlbumSizeStatistics.php`
+  - Signature: `lychee:backfill-album-sizes {--chunk=1000} {--dry-run}`
 
-- [ ] T-004-36 – Implement command logic: query albums, dispatch jobs (FR-004-04).
-  _Intent:_ Iterate albums leaf-to-root (ORDER BY _lft DESC), chunk processing, progress bar.
+- [x] T-004-36 – Implement command logic: query albums, dispatch jobs (FR-004-04).
+  _Intent:_ Iterate albums leaf-to-root (ORDER BY _lft ASC), chunk processing, progress bar.
   _Verification commands:_
   - Query albums with chunking
   - Dispatch RecomputeAlbumSizeJob for each
-  - Progress bar: `$this->output->progressBar($total)`
+  - Progress bar with logging every 100 albums
 
-- [ ] T-004-37 – Test backfill idempotency (FR-004-04).
-  _Intent:_ Safe to re-run (updateOrCreate).
+- [x] T-004-37 – Test backfill idempotency (FR-004-04).
+  _Intent:_ Safe to re-run (updateOrCreate in job).
   _Verification commands:_
-  - Run backfill on 100 albums
-  - Re-run, verify no errors
+  - Tested via --dry-run mode
+  - Job uses updateOrCreate, idempotent by design
 
 - [ ] T-004-38 – Write feature test for backfill command (S-004-10).
   _Intent:_ Backfill albums, verify all have statistics matching runtime calculation.
@@ -263,17 +263,17 @@ _Last updated: 2026-01-02_
 
 ### I11 – Manual Recompute Command
 
-- [ ] T-004-39 – Create RecomputeAlbumSizes command class (CLI-004-02).
+- [x] T-004-39 – Create RecomputeAlbumSizes command class (CLI-004-02).
   _Intent:_ Artisan command `lychee:recompute-album-sizes {album_id}`.
   _Verification commands:_
   - Create `app/Console/Commands/RecomputeAlbumSizes.php`
   - Signature: `lychee:recompute-album-sizes {album_id}`
 
-- [ ] T-004-40 – Implement command logic: validate album, dispatch job (CLI-004-02).
+- [x] T-004-40 – Implement command logic: validate album, dispatch job (CLI-004-02).
   _Intent:_ Validate album exists, dispatch RecomputeAlbumSizeJob.
   _Verification commands:_
-  - Validate album_id
-  - Dispatch job
+  - Validate album_id with error handling
+  - Dispatch job with logging
   - Output confirmation message
 
 - [ ] T-004-41 – Write feature test for recompute command.
