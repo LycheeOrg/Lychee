@@ -51,7 +51,7 @@ class MoveOrDuplicate
 				->where(PA::ALBUM_ID, '=', $from_album->get_id())
 				->delete();
 
-			// Dispatch event for destination album (photos added)
+			// Dispatch event for origin album (photos moved out)
 			AlbumSaved::dispatchIf($from_album instanceof Album, $from_album);
 		}
 

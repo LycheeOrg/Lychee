@@ -84,7 +84,7 @@ class BackfillAlbumSizes extends Controller
 	 */
 	public function check(MaintenanceRequest $request): int
 	{
-		if (Config::get('queue.default', 'sync') === 'sync') {
+		if (Config::get('queue.default', 'sync') !== 'sync') {
 			return -1;
 		}
 
