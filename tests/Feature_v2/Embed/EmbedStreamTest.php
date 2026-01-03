@@ -185,7 +185,7 @@ class EmbedStreamTest extends BaseApiWithDataTest
 	/**
 	 * Test NSFW filtering when enabled.
 	 */
-	public function testNSFWFilteringWhenEnabled(): void
+	public function testNsfwFilteringWhenEnabled(): void
 	{
 		// Create a new public NSFW album with a photo
 		$nsfwAlbum = Album::factory()->as_root()->owned_by($this->userLocked)->create([

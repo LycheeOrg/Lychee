@@ -1,25 +1,12 @@
 <?php
 
-/*
- * Copyright (C) 2025 Lychee contributors
- *
- * This file is part of Lychee.
- *
- * Lychee is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Lychee is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Lychee. If not, see <https://www.gnu.org/licenses/>.
+/**
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2017-2018 Tobias Reich
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
-namespace Tests\Feature\Console;
+namespace Tests\Precomputing\CoverSelection;
 
 use App\Models\Album;
 use App\Models\Photo;

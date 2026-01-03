@@ -1,30 +1,18 @@
 <?php
 
-/*
- * Copyright (C) 2025 Lychee contributors
- *
- * This file is part of Lychee.
- *
- * Lychee is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Lychee is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Lychee. If not, see <https://www.gnu.org/licenses/>.
+/**
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2017-2018 Tobias Reich
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
-namespace Tests\Feature;
+namespace Tests\Precomputing\CoverSelection\Console;
 
 use App\Models\Album;
 use App\Models\Photo;
 use App\Models\User;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Artisan;
 use Tests\Precomputing\Base\BasePrecomputingTest;
 
 /**
@@ -53,12 +41,12 @@ class AlbumMutationScenariosTest extends BasePrecomputingTest
 
 		// Upload photo
 		$photo = Photo::factory()->owned_by($user)->create([
-			'taken_at' => new Carbon('2023-06-15 10:00:00'),
+			'taken_at' => new Carbon('2023-06-15 10:00:00', 'UTC'),
 		]);
 		$photo->albums()->attach($album->id);
 
 		// Trigger recomputation (in real app, event listener does this)
-		\Artisan::call('lychee:recompute-album-stats', [
+		Artisan::call('lychee:recompute-album-stats', [
 			'album_id' => $album->id,
 			'--sync' => true,
 		]);
@@ -79,11 +67,11 @@ class AlbumMutationScenariosTest extends BasePrecomputingTest
 		$album = Album::factory()->as_root()->owned_by($user)->create();
 
 		$photo = Photo::factory()->owned_by($user)->create([
-			'taken_at' => new Carbon('2023-06-15 10:00:00'),
+			'taken_at' => new Carbon('2023-06-15 10:00:00', 'UTC'),
 		]);
 		$photo->albums()->attach($album->id);
 
-		\Artisan::call('lychee:recompute-album-stats', [
+		Artisan::call('lychee:recompute-album-stats', [
 			'album_id' => $album->id,
 			'--sync' => true,
 		]);
@@ -94,7 +82,7 @@ class AlbumMutationScenariosTest extends BasePrecomputingTest
 		// Delete photo
 		$photo->albums()->detach($album->id);
 
-		\Artisan::call('lychee:recompute-album-stats', [
+		Artisan::call('lychee:recompute-album-stats', [
 			'album_id' => $album->id,
 			'--sync' => true,
 		]);
@@ -115,11 +103,11 @@ class AlbumMutationScenariosTest extends BasePrecomputingTest
 		$album = Album::factory()->as_root()->owned_by($user)->create();
 
 		$photo1 = Photo::factory()->owned_by($user)->create([
-			'taken_at' => new Carbon('2023-06-15 10:00:00'),
+			'taken_at' => new Carbon('2023-06-15 10:00:00', 'UTC'),
 		]);
 		$photo1->albums()->attach($album->id);
 
-		\Artisan::call('lychee:recompute-album-stats', [
+		Artisan::call('lychee:recompute-album-stats', [
 			'album_id' => $album->id,
 			'--sync' => true,
 		]);
@@ -130,11 +118,11 @@ class AlbumMutationScenariosTest extends BasePrecomputingTest
 
 		// Upload older photo
 		$photo2 = Photo::factory()->owned_by($user)->create([
-			'taken_at' => new Carbon('2023-01-10 08:00:00'),
+			'taken_at' => new Carbon('2023-01-10 08:00:00', 'UTC'),
 		]);
 		$photo2->albums()->attach($album->id);
 
-		\Artisan::call('lychee:recompute-album-stats', [
+		Artisan::call('lychee:recompute-album-stats', [
 			'album_id' => $album->id,
 			'--sync' => true,
 		]);
@@ -155,11 +143,11 @@ class AlbumMutationScenariosTest extends BasePrecomputingTest
 		$album = Album::factory()->as_root()->owned_by($user)->create();
 
 		$photo1 = Photo::factory()->owned_by($user)->create([
-			'taken_at' => new Carbon('2023-06-15 10:00:00'),
+			'taken_at' => new Carbon('2023-06-15 10:00:00', 'UTC'),
 		]);
 		$photo1->albums()->attach($album->id);
 
-		\Artisan::call('lychee:recompute-album-stats', [
+		Artisan::call('lychee:recompute-album-stats', [
 			'album_id' => $album->id,
 			'--sync' => true,
 		]);
@@ -170,11 +158,11 @@ class AlbumMutationScenariosTest extends BasePrecomputingTest
 
 		// Upload newer photo
 		$photo2 = Photo::factory()->owned_by($user)->create([
-			'taken_at' => new Carbon('2023-12-25 18:00:00'),
+			'taken_at' => new Carbon('2023-12-25 18:00:00', 'UTC'),
 		]);
 		$photo2->albums()->attach($album->id);
 
-		\Artisan::call('lychee:recompute-album-stats', [
+		Artisan::call('lychee:recompute-album-stats', [
 			'album_id' => $album->id,
 			'--sync' => true,
 		]);
@@ -200,7 +188,7 @@ class AlbumMutationScenariosTest extends BasePrecomputingTest
 		$child = Album::factory()->owned_by($user)->create();
 		$child->appendToNode($parent)->save();
 
-		\Artisan::call('lychee:recompute-album-stats', [
+		Artisan::call('lychee:recompute-album-stats', [
 			'album_id' => $parent->id,
 			'--sync' => true,
 		]);
@@ -222,7 +210,7 @@ class AlbumMutationScenariosTest extends BasePrecomputingTest
 		$child = Album::factory()->owned_by($user)->create(['title' => 'Child']);
 		$child->appendToNode($parent1)->save();
 
-		\Artisan::call('lychee:recompute-album-stats', [
+		Artisan::call('lychee:recompute-album-stats', [
 			'album_id' => $parent1->id,
 			'--sync' => true,
 		]);
@@ -233,11 +221,11 @@ class AlbumMutationScenariosTest extends BasePrecomputingTest
 		// Move child to parent2
 		$child->appendToNode($parent2)->save();
 
-		\Artisan::call('lychee:recompute-album-stats', [
+		Artisan::call('lychee:recompute-album-stats', [
 			'album_id' => $parent1->id,
 			'--sync' => true,
 		]);
-		\Artisan::call('lychee:recompute-album-stats', [
+		Artisan::call('lychee:recompute-album-stats', [
 			'album_id' => $parent2->id,
 			'--sync' => true,
 		]);
@@ -259,7 +247,7 @@ class AlbumMutationScenariosTest extends BasePrecomputingTest
 		$child = Album::factory()->owned_by($user)->create();
 		$child->appendToNode($parent)->save();
 
-		\Artisan::call('lychee:recompute-album-stats', [
+		Artisan::call('lychee:recompute-album-stats', [
 			'album_id' => $parent->id,
 			'--sync' => true,
 		]);
@@ -270,7 +258,7 @@ class AlbumMutationScenariosTest extends BasePrecomputingTest
 		// Delete child
 		$child->delete();
 
-		\Artisan::call('lychee:recompute-album-stats', [
+		Artisan::call('lychee:recompute-album-stats', [
 			'album_id' => $parent->id,
 			'--sync' => true,
 		]);
@@ -290,17 +278,17 @@ class AlbumMutationScenariosTest extends BasePrecomputingTest
 
 		$photo1 = Photo::factory()->owned_by($user)->create([
 			'is_starred' => false,
-			'taken_at' => new Carbon('2023-01-01 10:00:00'),
+			'taken_at' => new Carbon('2023-12-31 10:00:00', 'UTC'),
 		]);
 		$photo2 = Photo::factory()->owned_by($user)->create([
 			'is_starred' => false,
-			'taken_at' => new Carbon('2023-12-31 10:00:00'),
+			'taken_at' => new Carbon('2023-01-31 10:00:00', 'UTC'),
 		]);
 
 		$photo1->albums()->attach($album->id);
 		$photo2->albums()->attach($album->id);
 
-		\Artisan::call('lychee:recompute-album-stats', [
+		Artisan::call('lychee:recompute-album-stats', [
 			'album_id' => $album->id,
 			'--sync' => true,
 		]);
@@ -312,7 +300,7 @@ class AlbumMutationScenariosTest extends BasePrecomputingTest
 		$photo1->is_starred = true;
 		$photo1->save();
 
-		\Artisan::call('lychee:recompute-album-stats', [
+		Artisan::call('lychee:recompute-album-stats', [
 			'album_id' => $album->id,
 			'--sync' => true,
 		]);
@@ -338,16 +326,8 @@ class AlbumMutationScenariosTest extends BasePrecomputingTest
 		$grandchild = Album::factory()->owned_by($user)->create(['title' => 'Grandchild']);
 		$grandchild->appendToNode($child)->save();
 
-		\Artisan::call('lychee:recompute-album-stats', [
+		Artisan::call('lychee:recompute-album-stats', [
 			'album_id' => $grandchild->id,
-			'--sync' => true,
-		]);
-		\Artisan::call('lychee:recompute-album-stats', [
-			'album_id' => $child->id,
-			'--sync' => true,
-		]);
-		\Artisan::call('lychee:recompute-album-stats', [
-			'album_id' => $root->id,
 			'--sync' => true,
 		]);
 
@@ -356,21 +336,13 @@ class AlbumMutationScenariosTest extends BasePrecomputingTest
 
 		// Add photo to grandchild
 		$photo = Photo::factory()->owned_by($user)->create([
-			'taken_at' => new Carbon('2023-06-15 10:00:00'),
+			'taken_at' => new Carbon('2023-06-15 10:00:00', 'UTC'),
 		]);
 		$photo->albums()->attach($grandchild->id);
 
-		// Recompute from grandchild up (simulating propagation)
-		\Artisan::call('lychee:recompute-album-stats', [
+		// Recompute from grandchild up
+		Artisan::call('lychee:recompute-album-stats', [
 			'album_id' => $grandchild->id,
-			'--sync' => true,
-		]);
-		\Artisan::call('lychee:recompute-album-stats', [
-			'album_id' => $child->id,
-			'--sync' => true,
-		]);
-		\Artisan::call('lychee:recompute-album-stats', [
-			'album_id' => $root->id,
 			'--sync' => true,
 		]);
 

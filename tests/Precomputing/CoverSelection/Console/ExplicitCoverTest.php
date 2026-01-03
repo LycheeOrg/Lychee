@@ -1,30 +1,18 @@
 <?php
 
-/*
- * Copyright (C) 2025 Lychee contributors
- *
- * This file is part of Lychee.
- *
- * Lychee is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Lychee is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Lychee. If not, see <https://www.gnu.org/licenses/>.
+/**
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2017-2018 Tobias Reich
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
-namespace Tests\Feature;
+namespace Tests\Precomputing\CoverSelection\Console;
 
 use App\Models\Album;
 use App\Models\Photo;
 use App\Models\User;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Artisan;
 use Tests\Precomputing\Base\BasePrecomputingTest;
 
 /**
@@ -60,7 +48,7 @@ class ExplicitCoverTest extends BasePrecomputingTest
 		$photo2->albums()->attach($album->id);
 
 		// Recompute to get automatic covers
-		\Artisan::call('lychee:recompute-album-stats', [
+		Artisan::call('lychee:recompute-album-stats', [
 			'album_id' => $album->id,
 			'--sync' => true,
 		]);
@@ -102,7 +90,7 @@ class ExplicitCoverTest extends BasePrecomputingTest
 		$photo2->albums()->attach($album->id);
 
 		// Recompute
-		\Artisan::call('lychee:recompute-album-stats', [
+		Artisan::call('lychee:recompute-album-stats', [
 			'album_id' => $album->id,
 			'--sync' => true,
 		]);
@@ -114,7 +102,8 @@ class ExplicitCoverTest extends BasePrecomputingTest
 
 		// But automatic covers should be set
 		$this->assertEquals($photo2->id, $album->auto_cover_id_max_privilege);
-		$this->assertNotNull($album->auto_cover_id_least_privilege);
+		// There is no least options since the album is NOT shared.
+		$this->assertNull($album->auto_cover_id_least_privilege);
 	}
 
 	/**
@@ -137,7 +126,7 @@ class ExplicitCoverTest extends BasePrecomputingTest
 		$photo1->albums()->attach($album->id);
 		$photo2->albums()->attach($album->id);
 
-		\Artisan::call('lychee:recompute-album-stats', [
+		Artisan::call('lychee:recompute-album-stats', [
 			'album_id' => $album->id,
 			'--sync' => true,
 		]);
@@ -178,7 +167,7 @@ class ExplicitCoverTest extends BasePrecomputingTest
 		$album->save();
 
 		// Recompute stats
-		\Artisan::call('lychee:recompute-album-stats', [
+		Artisan::call('lychee:recompute-album-stats', [
 			'album_id' => $album->id,
 			'--sync' => true,
 		]);
@@ -190,6 +179,7 @@ class ExplicitCoverTest extends BasePrecomputingTest
 
 		// But automatic covers should be computed
 		$this->assertNotNull($album->auto_cover_id_max_privilege);
-		$this->assertNotNull($album->auto_cover_id_least_privilege);
+		// There is no least options since the album is NOT shared.
+		$this->assertNull($album->auto_cover_id_least_privilege);
 	}
 }

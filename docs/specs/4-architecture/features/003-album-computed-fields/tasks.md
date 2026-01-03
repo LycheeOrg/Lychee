@@ -106,7 +106,7 @@ _Last updated: 2026-01-03_
 - [x] T-003-13 – Implement NSFW context detection for covers (FR-003-04, S-003-14, S-003-15, S-003-16).
   _Intent:_ Add helper to check if album or any parent has is_nsfw=true using nested set query. Apply NSFW filtering to both cover selection methods.
   _Verification commands:_
-  - `php artisan test --filter=CoverSelectionTest::testNSFWContextDetection`
+  - `php artisan test --filter=CoverSelectionTest::testNsfwContextDetection`
   - `make phpstan`
   _Notes:_ Query: `SELECT COUNT(*) FROM base_albums WHERE is_nsfw=1 AND _lft <= :album_lft AND _rgt >= :album_rgt`. If count > 0, album is in NSFW context (allow NSFW photos). Otherwise exclude NSFW photos. **COMPLETED:** Implemented isInNSFWContext() helper in RecomputeAlbumStatsJob, applied to both cover selection methods.
 
@@ -341,7 +341,7 @@ _Last updated: 2026-01-03_
 - [x] T-003-40 – Test NSFW boundary scenarios (S-003-14, S-003-15, S-003-16).
   _Intent:_ Test non-NSFW album excludes NSFW sub-album photos, NSFW album allows NSFW photos, NSFW parent context applies to children.
   _Verification commands:_
-  - `php artisan test --filter=AlbumCoverSecurityTest::testNSFWBoundaries`
+  - `php artisan test --filter=AlbumCoverSecurityTest::testNsfwBoundaries`
   - `make phpstan`
   _Notes:_ Create nested NSFW/non-NSFW album structures, verify cover selection respects boundaries. **COMPLETED:** Implemented test with nested NSFW/safe album structure, verifies NSFW photos excluded from safe album least-privilege covers.
 

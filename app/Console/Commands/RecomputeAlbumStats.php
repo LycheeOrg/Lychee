@@ -43,9 +43,9 @@ class RecomputeAlbumStats extends Command
 		// Dual behavior: with album_id = single-album mode, without = bulk mode
 		if ($album_id !== null) {
 			return $this->handleSingleAlbum($album_id);
-		} else {
-			return $this->handleBulkBackfill();
 		}
+
+		return $this->handleBulkBackfill();
 	}
 
 	/**
@@ -82,16 +82,16 @@ class RecomputeAlbumStats extends Command
 
 				return Command::FAILURE;
 			}
-		} else {
-			// Dispatch job to queue
-			RecomputeAlbumStatsJob::dispatch($album_id);
-
-			$this->info('✓ Job dispatched to queue');
-			$this->info('  Note: Stats will be updated when the queue worker processes the job');
-			Log::info("Manual recompute job dispatched for album {$album_id}");
-
-			return Command::SUCCESS;
 		}
+
+		// Dispatch job to queue
+		RecomputeAlbumStatsJob::dispatch($album_id);
+
+		$this->info('✓ Job dispatched to queue');
+		$this->info('  Note: Stats will be updated when the queue worker processes the job');
+		Log::info("Manual recompute job dispatched for album {$album_id}");
+
+		return Command::SUCCESS;
 	}
 
 	/**

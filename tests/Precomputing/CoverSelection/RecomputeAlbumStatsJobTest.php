@@ -6,7 +6,7 @@
  * Copyright (c) 2018-2026 LycheeOrg.
  */
 
-namespace Tests\Precomputing;
+namespace Tests\Precomputing\CoverSelection;
 
 use App\Jobs\RecomputeAlbumStatsJob;
 use App\Models\AccessPermission;
@@ -88,13 +88,13 @@ class RecomputeAlbumStatsJobTest extends BasePrecomputingTest
 
 		// Create photos with different taken_at dates
 		$photo1 = Photo::factory()->owned_by($user)->create([
-			'taken_at' => new Carbon('2023-01-15 10:00:00'),
+			'taken_at' => new Carbon('2023-01-15 10:00:00', 'UTC'),
 		]);
 		$photo2 = Photo::factory()->owned_by($user)->create([
-			'taken_at' => new Carbon('2023-06-20 14:30:00'),
+			'taken_at' => new Carbon('2023-06-20 14:30:00', 'UTC'),
 		]);
 		$photo3 = Photo::factory()->owned_by($user)->create([
-			'taken_at' => new Carbon('2023-03-10 08:15:00'),
+			'taken_at' => new Carbon('2023-03-10 08:15:00', 'UTC'),
 		]);
 
 		$photo1->albums()->attach($album->id);

@@ -1,31 +1,19 @@
 <?php
 
-/*
- * Copyright (C) 2025 Lychee contributors
- *
- * This file is part of Lychee.
- *
- * Lychee is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Lychee is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Lychee. If not, see <https://www.gnu.org/licenses/>.
+/**
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2017-2018 Tobias Reich
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
-namespace Tests\Feature;
+namespace Tests\Precomputing\CoverSelection\Console;
 
 use App\Models\AccessPermission;
 use App\Models\Album;
 use App\Models\Photo;
 use App\Models\User;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Tests\Precomputing\Base\BasePrecomputingTest;
 
@@ -68,7 +56,7 @@ class CoverDisplayPermissionTest extends BasePrecomputingTest
 		AccessPermission::factory()->for_album($album)->public()->create();
 
 		// Recompute
-		\Artisan::call('lychee:recompute-album-stats', [
+		Artisan::call('lychee:recompute-album-stats', [
 			'album_id' => $album->id,
 			'--sync' => true,
 		]);
@@ -104,7 +92,7 @@ class CoverDisplayPermissionTest extends BasePrecomputingTest
 		$photo1->albums()->attach($album->id);
 		$photo2->albums()->attach($album->id);
 
-		\Artisan::call('lychee:recompute-album-stats', [
+		Artisan::call('lychee:recompute-album-stats', [
 			'album_id' => $album->id,
 			'--sync' => true,
 		]);
@@ -134,7 +122,7 @@ class CoverDisplayPermissionTest extends BasePrecomputingTest
 		]);
 		$privatePhoto->albums()->attach($album->id);
 
-		\Artisan::call('lychee:recompute-album-stats', [
+		Artisan::call('lychee:recompute-album-stats', [
 			'album_id' => $album->id,
 			'--sync' => true,
 		]);
@@ -179,7 +167,7 @@ class CoverDisplayPermissionTest extends BasePrecomputingTest
 		// Grant shared access to specific user
 		AccessPermission::factory()->for_album($album)->for_user($sharedUser)->create();
 
-		\Artisan::call('lychee:recompute-album-stats', [
+		Artisan::call('lychee:recompute-album-stats', [
 			'album_id' => $album->id,
 			'--sync' => true,
 		]);
@@ -209,7 +197,7 @@ class CoverDisplayPermissionTest extends BasePrecomputingTest
 
 		AccessPermission::factory()->for_album($album)->public()->create();
 
-		\Artisan::call('lychee:recompute-album-stats', [
+		Artisan::call('lychee:recompute-album-stats', [
 			'album_id' => $album->id,
 			'--sync' => true,
 		]);

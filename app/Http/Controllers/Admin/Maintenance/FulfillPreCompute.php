@@ -109,11 +109,15 @@ class FulfillPreCompute extends Controller
 	private function getAlbumsNeedingComputation(): Builder
 	{
 		return Album::query()
-			->whereNull('max_taken_at')
-			->whereNull('min_taken_at')
-			->where('num_children', 0)
-			->where('num_photos', 0)
-			->whereNull('auto_cover_id_max_privilege')
-			->whereNull('auto_cover_id_least_privilege');
+			->where(fn(Builder $q) => $q
+				->whereNull('max_taken_at')
+				->whereNull('min_taken_at')
+				->where('num_children', 0)
+				->where('num_photos', 0)
+			)
+			->orWhere(fn(Builder $q) => $q
+				->whereNull('auto_cover_id_max_privilege')
+				->whereNull('auto_cover_id_least_privilege')
+		);
 	}
 }
