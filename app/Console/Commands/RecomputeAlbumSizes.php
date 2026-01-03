@@ -107,7 +107,7 @@ class RecomputeAlbumSizes extends Command
 			return Command::FAILURE;
 		}
 
-		$this->info('Starting album fields backfill...');
+		$this->info('Starting album sizes backfill...');
 		if ($dry_run) {
 			$this->warn('DRY RUN MODE - No changes will be made');
 		}
