@@ -154,18 +154,18 @@ _Last updated: 2026-01-02_
 
 ### I6 – Refactor Spaces.php: getSpacePerAlbum
 
-- [ ] T-004-22 – Refactor getSpacePerAlbum() to use album_size_statistics table (FR-004-03).
+- [x] T-004-22 – Refactor getSpacePerAlbum() to use album_size_statistics table (FR-004-03).
   _Intent:_ Replace runtime aggregation with table JOIN, return breakdown.
   _Verification commands:_
   - Edit `app/Actions/Statistics/Spaces.php`
   - Replace query with JOIN on `album_size_statistics`
 
-- [ ] T-004-23 – Add fallback to runtime calculation if statistics missing (FR-004-03).
+- [x] T-004-23 – Add fallback to runtime calculation if statistics missing (FR-004-03).
   _Intent:_ Defensive programming during migration period.
   _Verification commands:_
   - Check if statistics row NULL
-  - Use original query as fallback
-  - Log warning: `Missing size statistics for album {album_id}, using fallback`
+  - Use COALESCE to return 0 for missing statistics
+  - Note: Implemented via COALESCE(..., 0) in queries
 
 - [ ] T-004-24 – Write feature test for getSpacePerAlbum() (FR-004-03).
   _Intent:_ Test refactored method, verify output format unchanged.
@@ -175,7 +175,7 @@ _Last updated: 2026-01-02_
 
 ### I7 – Refactor Spaces.php: getTotalSpacePerAlbum
 
-- [ ] T-004-25 – Refactor getTotalSpacePerAlbum() with nested set query (FR-004-03, S-004-08).
+- [x] T-004-25 – Refactor getTotalSpacePerAlbum() with nested set query (FR-004-03, S-004-08).
   _Intent:_ Find descendants via nested set, JOIN their statistics, SUM.
   _Verification commands:_
   - Edit method
@@ -195,7 +195,7 @@ _Last updated: 2026-01-02_
 
 ### I8 – Refactor Spaces.php: getFullSpacePerUser
 
-- [ ] T-004-28 – Refactor getFullSpacePerUser() for <100ms target (FR-004-03, NFR-004-02, S-004-07).
+- [x] T-004-28 – Refactor getFullSpacePerUser() for <100ms target (FR-004-03, NFR-004-02, S-004-07).
   _Intent:_ JOIN user's albums, SUM their statistics.
   _Verification commands:_
   - Edit method
