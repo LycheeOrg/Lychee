@@ -192,9 +192,9 @@ class HasAlbumThumb extends Relation
 				// loaded via the `cover` relation of `Album`.
 				$album->setRelation($relation, Thumb::createFromPhoto($album->cover));
 			} elseif ($cover_type === 'auto_cover_id_max_privilege' && $album->auto_cover_id_max_privilege !== null) {
-				$album->setRelation($relation, Thumb::createFromPhoto($album->max_priviledge_cover));
+				$album->setRelation($relation, Thumb::createFromPhoto($album->max_privilege_cover));
 			} elseif ($cover_type === 'auto_cover_id_least_privilege' && $album->auto_cover_id_least_privilege !== null) {
-				$album->setRelation($relation, Thumb::createFromPhoto($album->min_priviledge_cover));
+				$album->setRelation($relation, Thumb::createFromPhoto($album->min_privilege_cover));
 			} else {
 				$album->setRelation($relation, null);
 			}
@@ -221,9 +221,9 @@ class HasAlbumThumb extends Relation
 			// loaded via the `cover` relation of `Album`.
 			return Thumb::createFromPhoto($album->cover);
 		} elseif ($cover_type === 'auto_cover_id_max_privilege' && $album->auto_cover_id_max_privilege !== null) {
-			return Thumb::createFromPhoto($album->max_priviledge_cover);
+			return Thumb::createFromPhoto($album->max_privilege_cover);
 		} elseif ($cover_type === 'auto_cover_id_least_privilege' && $album->auto_cover_id_least_privilege !== null) {
-			return Thumb::createFromPhoto($album->min_priviledge_cover);
+			return Thumb::createFromPhoto($album->min_privilege_cover);
 		} else {
 			return Thumb::createFromQueryable(
 				$this->getRelationQuery(),

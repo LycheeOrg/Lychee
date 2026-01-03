@@ -87,7 +87,7 @@ class Delete
 			/** @var Collection<int,Album> $albums */
 			/** @phpstan-ignore varTag.type (False positive, NestedSetCollection requires Eloquent Collection) */
 			$albums = Album::query()
-				->without(['cover', 'thumb', 'min_priviledge_cover', 'max_priviledge_cover'])
+				->without(['cover', 'thumb', 'min_privilege_cover', 'max_privilege_cover'])
 				->select(['id', 'parent_id', '_lft', '_rgt', 'track_short_path'])
 				->findMany($album_ids);
 
@@ -100,7 +100,7 @@ class Delete
 			/** @var Album $album */
 			foreach ($albums as $album) {
 				// Collect all (aka recursive) sub-albums in each album
-				$sub_albums = $album->descendants()->getQuery()->without(['cover', 'thumb', 'min_priviledge_cover', 'max_priviledge_cover'])->select(['id', 'track_short_path'])->get();
+				$sub_albums = $album->descendants()->getQuery()->without(['cover', 'thumb', 'min_privilege_cover', 'max_privilege_cover'])->select(['id', 'track_short_path'])->get();
 				$recursive_album_ids = array_merge($recursive_album_ids, $sub_albums->pluck('id')->all());
 				$recursive_album_tracks = $recursive_album_tracks->merge($sub_albums->pluck('track_short_path'));
 			}
