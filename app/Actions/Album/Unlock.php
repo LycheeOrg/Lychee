@@ -13,6 +13,7 @@ use App\Exceptions\UnauthorizedException;
 use App\Models\BaseAlbumImpl;
 use App\Models\Extensions\BaseAlbum;
 use App\Policies\AlbumPolicy;
+use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\Hash;
 
 class Unlock
@@ -45,6 +46,9 @@ class Unlock
 				return;
 			}
 			if (Hash::check($password, $album_password)) {
+				$this->album_policy->unlock($album); // unlock the album
+
+				// propage the unlock to all albums with the same password
 				$this->propagate($password);
 
 				return;
@@ -60,6 +64,12 @@ class Unlock
 	 */
 	private function propagate(string $password): void
 	{
+		// Only propagate if the option is enabled
+		$config_manager = app(ConfigManager::class);
+		if ($config_manager->getValueAsBool('enable_propagate_unlock_option') === false) {
+			return;
+		}
+
 		// We add all the albums that the password unlocks so that the
 		// user is not repeatedly asked to enter the password as they
 		// browse through the hierarchy.  This should be safe as the
