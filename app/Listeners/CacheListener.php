@@ -31,7 +31,12 @@ class CacheListener
 			return;
 		}
 
-		if ($config_manager->getValueAsBool('cache_event_logging') === false) {
+		try {
+			if ($config_manager->getValueAsBool('cache_event_logging') === false) {
+				return;
+			}
+		} catch (\Exception) {
+			// In case of any error (e.g., during initial setup), we do not log cache events.
 			return;
 		}
 
