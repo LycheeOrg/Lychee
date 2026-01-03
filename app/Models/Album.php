@@ -54,7 +54,9 @@ use Kalnoy\Nestedset\NodeTrait;
  * @property Carbon|null              $max_taken_at                  Maximum taken_at timestamp of all photos in album and descendants.
  * @property Carbon|null              $min_taken_at                  Minimum taken_at timestamp of all photos in album and descendants.
  * @property string|null              $auto_cover_id_max_privilege   Automatically selected cover photo ID (admin/owner view).
+ * @property Photo|null               $max_priviledge_cover
  * @property string|null              $auto_cover_id_least_privilege Automatically selected cover photo ID (most restrictive view).
+ * @property Photo|null               $min_priviledge_cover
  * @property LicenseType              $license
  * @property string|null              $cover_id
  * @property Photo|null               $cover
@@ -201,7 +203,12 @@ class Album extends BaseAlbum implements Node
 	/**
 	 * The relationships that should always be eagerly loaded by default.
 	 */
-	protected $with = ['cover', 'cover.size_variants', 'thumb'];
+	protected $with = [
+		'cover', 'cover.size_variants',
+		'min_priviledge_cover', 'min_priviledge_cover.size_variants',
+		'max_priviledge_cover', 'max_priviledge_cover.size_variants',
+		'thumb',
+	];
 
 	/**
 	 * Return the relationship between this album and photos which are
@@ -263,6 +270,26 @@ class Album extends BaseAlbum implements Node
 	public function cover(): HasOne
 	{
 		return $this->hasOne(Photo::class, 'id', 'cover_id');
+	}
+
+	/**
+	 * Return the relationship between an album and its min-privilege cover.
+	 *
+	 * @return HasOne<Photo,$this>
+	 */
+	public function min_priviledge_cover(): HasOne
+	{
+		return $this->hasOne(Photo::class, 'id', 'auto_cover_id_least_privilege');
+	}
+
+	/**
+	 * Return the relationship between an album and its max-privilege cover.
+	 *
+	 * @return HasOne<Photo,$this>
+	 */
+	public function max_priviledge_cover(): HasOne
+	{
+		return $this->hasOne(Photo::class, 'id', 'auto_cover_id_max_privilege');
 	}
 
 	/**

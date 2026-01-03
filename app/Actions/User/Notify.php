@@ -46,7 +46,7 @@ class Notify
 		// Admin user is always notified
 		$users = User::query()->where('may_administrate', '=', true)->get();
 
-		$albums = Album::query()->without(['thumbs', 'statistics', 'cover'])->join(PA::PHOTO_ALBUM, PA::ALBUM_ID, '=', 'album.id')
+		$albums = Album::query()->without(['thumbs', 'statistics', 'cover', 'min_priviledge_cover', 'max_priviledge_cover'])->join(PA::PHOTO_ALBUM, PA::ALBUM_ID, '=', 'album.id')
 			->where(PA::PHOTO_ID, '=', $photo->id)
 			->get();
 
