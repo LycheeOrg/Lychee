@@ -83,6 +83,6 @@ class ImportFromServerTest extends BaseApiWithDataTest
 
 		// Check that jobs were created
 		$this->assertGreaterThan(0, $response->json('job_count'));
-		Queue::assertCount($response->json('job_count') + 1); // +1 for the preprocessing job
+		Queue::assertCount($response->json('job_count') + 2); // +2 for the preprocessing job
 	}
 }
