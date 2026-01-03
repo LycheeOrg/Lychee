@@ -11,6 +11,8 @@ namespace App\DTO;
 use App\Actions\Album\Create as AlbumCreate;
 use App\Actions\Photo\Create as PhotoCreate;
 use App\Jobs\ImportImageJob;
+use App\Jobs\RecomputeAlbumSizeJob;
+use App\Jobs\RecomputeAlbumStatsJob;
 use App\Metadata\Renamer\AlbumRenamer;
 use App\Metadata\Renamer\PhotoRenamer;
 use App\Models\Album;
@@ -23,7 +25,7 @@ class ImportDTO
 	protected AlbumRenamer $album_renamer;
 	protected PhotoRenamer $photo_renamer;
 
-	/** @var ImportImageJob[] */
+	/** @var (ImportImageJob|RecomputeAlbumSizeJob|RecomputeAlbumStatsJob)[] */
 	public array $job_bus = [];
 
 	public function __construct(
