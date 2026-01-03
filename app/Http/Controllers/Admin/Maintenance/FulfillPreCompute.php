@@ -50,8 +50,7 @@ class FulfillPreCompute extends Controller
 	 */
 	public function do(MaintenanceRequest $request): void
 	{
-		$queue_connection = Config::get('queue.default', 'sync');
-		$is_sync = $queue_connection === 'sync';
+		$is_sync = Config::get('queue.default', 'sync') === 'sync';
 
 		$query = $this->getAlbumsNeedingComputation()
 			->orderBy('_lft', 'desc');
