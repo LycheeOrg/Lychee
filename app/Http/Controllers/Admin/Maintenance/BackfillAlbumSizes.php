@@ -29,6 +29,8 @@ use Illuminate\Support\Facades\Config;
  * - If queue is NOT 'sync': Dispatches all jobs at once, queue worker handles them
  *
  * Safe to run multiple times (idempotent). Already computed albums are skipped.
+ *
+ * Note that if we are using queues then this module can be used to force recomputing the statistics.
  */
 class BackfillAlbumSizes extends Controller
 {
@@ -46,11 +48,9 @@ class BackfillAlbumSizes extends Controller
 	 */
 	public function do(MaintenanceRequest $request): void
 	{
-		$queue_connection = Config::get('queue.default', 'sync');
-		$is_sync = $queue_connection === 'sync';
-
+		$is_sync = Config::get('queue.default', 'sync') === 'sync';
 		$query = Album::query()
-			->whereDoesntHave('sizeStatistics')
+			->when($is_sync, fn ($q) => $q->whereDoesntHave('sizeStatistics'))
 			->orderBy('_lft', 'asc'); // Leaf-to-root order for proper propagation
 
 		if ($is_sync) {
@@ -84,6 +84,10 @@ class BackfillAlbumSizes extends Controller
 	 */
 	public function check(MaintenanceRequest $request): int
 	{
+		if (Config::get('queue.default', 'sync') === 'sync') {
+			return -1;
+		}
+
 		return Album::query()
 			->whereDoesntHave('sizeStatistics')
 			->count();

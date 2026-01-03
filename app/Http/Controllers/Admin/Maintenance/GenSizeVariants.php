@@ -11,6 +11,7 @@ namespace App\Http\Controllers\Admin\Maintenance;
 use App\Contracts\Models\SizeVariantFactory;
 use App\Enum\SizeVariantType;
 use App\Events\AlbumRouteCacheUpdated;
+use App\Events\PhotoSaved;
 use App\Exceptions\MediaFileOperationException;
 use App\Http\Requests\Maintenance\CreateThumbsRequest;
 use App\Image\PlaceholderEncoder;
@@ -62,6 +63,8 @@ class GenSizeVariants extends Controller
 			} catch (MediaFileOperationException $e) {
 				Log::error('Failed to create ' . $request->kind()->value . ' for photo id ' . $photo->id . '');
 			}
+			// recompute the sizes.
+			PhotoSaved::dispatch($photo->id);
 
 			AlbumRouteCacheUpdated::dispatch();
 			// @codeCoverageIgnoreEnd
