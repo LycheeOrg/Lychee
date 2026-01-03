@@ -37,12 +37,12 @@ use Tests\Precomputing\Base\BasePrecomputingTest;
  * - S-003-15: NSFW album should allow NSFW photos in its covers
  * - S-003-16: NSFW parent context should apply to all child albums (children can use NSFW photos)
  */
-class CoverSelectionNSFWTest extends BasePrecomputingTest
+class CoverSelectionNsfwTest extends BasePrecomputingTest
 {
 	/**
 	 * Test S-003-14: Non-NSFW album excludes NSFW sub-album photos from covers.
 	 */
-	public function testNonNSFWAlbumExcludesNSFWSubAlbumPhotos(): void
+	public function testNonNsfwAlbumExcludesNsfwSubAlbumPhotos(): void
 	{
 		Auth::login($this->admin);
 
@@ -76,7 +76,8 @@ class CoverSelectionNSFWTest extends BasePrecomputingTest
 		$nsfwPhoto->albums()->attach($nsfwChild->id);
 
 		// Make album publicly accessible for least-privilege computation
-		AccessPermission::factory()->for_album($safeParent)->public()->create();
+		AccessPermission::factory()->for_album($safeParent)->public()->visible()->create();
+		AccessPermission::factory()->for_album($nsfwChild)->public()->visible()->create();
 
 		// Recompute stats for parent (covers descendants)
 		$job = new RecomputeAlbumStatsJob($safeParent->id);
@@ -84,17 +85,15 @@ class CoverSelectionNSFWTest extends BasePrecomputingTest
 
 		$safeParent->refresh();
 
-		// Max-privilege cover can see all photos (including NSFW child)
-		$this->assertEquals($nsfwPhoto->id, $safeParent->auto_cover_id_max_privilege, 'Max-privilege cover should include NSFW photo (starred, newer)');
-
-		// Least-privilege cover should EXCLUDE NSFW child photos (parent is NOT in NSFW context)
-		$this->assertEquals($safePhoto->id, $safeParent->auto_cover_id_least_privilege, 'Least-privilege cover should exclude NSFW sub-album photos when parent is not NSFW');
+		// Safe album (no NSFW parent) should ALWAYS exclude NSFW photos for BOTH privilege levels
+		$this->assertEquals($safePhoto->id, $safeParent->auto_cover_id_max_privilege, 'Max-privilege cover should ALSO exclude NSFW sub-album photos when parent is safe (no NSFW parent)');
+		$this->assertEquals($safePhoto->id, $safeParent->auto_cover_id_least_privilege, 'Least-privilege cover should exclude NSFW sub-album photos when parent is safe (no NSFW parent)');
 	}
 
 	/**
 	 * Test S-003-15: NSFW album allows NSFW photos in its covers.
 	 */
-	public function testNSFWAlbumAllowsNSFWPhotosInCovers(): void
+	public function testNsfwAlbumAllowsNsfwPhotosInCovers(): void
 	{
 		Auth::login($this->admin);
 
@@ -127,7 +126,8 @@ class CoverSelectionNSFWTest extends BasePrecomputingTest
 		$nsfwPhoto->albums()->attach($nsfwChild->id);
 
 		// Make album publicly accessible
-		AccessPermission::factory()->for_album($nsfwParent)->public()->create();
+		AccessPermission::factory()->for_album($nsfwParent)->public()->visible()->create();
+		AccessPermission::factory()->for_album($nsfwChild)->public()->visible()->create();
 
 		// Recompute stats
 		$job = new RecomputeAlbumStatsJob($nsfwParent->id);
@@ -143,7 +143,7 @@ class CoverSelectionNSFWTest extends BasePrecomputingTest
 	/**
 	 * Test S-003-16: NSFW parent context applies to all child albums.
 	 */
-	public function testNSFWParentContextAppliesToChildren(): void
+	public function testNsfwParentContextAppliesToChildren(): void
 	{
 		Auth::login($this->admin);
 
@@ -190,7 +190,9 @@ class CoverSelectionNSFWTest extends BasePrecomputingTest
 		$nsfwPhoto->albums()->attach($nsfwSubChild->id);
 
 		// Make album publicly accessible
-		AccessPermission::factory()->for_album($safeParent)->public()->create();
+		AccessPermission::factory()->for_album($safeParent)->public()->visible()->create();
+		AccessPermission::factory()->for_album($safeChild)->public()->visible()->create();
+		AccessPermission::factory()->for_album($nsfwSubChild)->public()->visible()->create();
 
 		// Recompute stats for safe parent (should inherit NSFW context from grandparent)
 		$job = new RecomputeAlbumStatsJob($safeParent->id);
@@ -206,7 +208,7 @@ class CoverSelectionNSFWTest extends BasePrecomputingTest
 	/**
 	 * Test complex NSFW hierarchy with multiple branches.
 	 */
-	public function testComplexNSFWHierarchy(): void
+	public function testComplexNsfwHierarchy(): void
 	{
 		Auth::login($this->admin);
 
@@ -247,7 +249,9 @@ class CoverSelectionNSFWTest extends BasePrecomputingTest
 		$safePhoto->albums()->attach($safeBranch->id);
 
 		// Make album publicly accessible
-		AccessPermission::factory()->for_album($root)->public()->create();
+		AccessPermission::factory()->for_album($root)->public()->visible()->create();
+		AccessPermission::factory()->for_album($safeBranch)->public()->visible()->create();
+		AccessPermission::factory()->for_album($nsfwBranch)->public()->visible()->create();
 
 		// Recompute root
 		$job = new RecomputeAlbumStatsJob($root->id);
@@ -255,17 +259,15 @@ class CoverSelectionNSFWTest extends BasePrecomputingTest
 
 		$root->refresh();
 
-		// Max-privilege should prefer NSFW photo (starred, newer)
-		$this->assertEquals($nsfwPhoto->id, $root->auto_cover_id_max_privilege, 'Max-privilege cover should prefer NSFW photo from NSFW branch');
-
-		// Least-privilege should only see safe branch photo (root is NOT in NSFW context)
-		$this->assertEquals($safePhoto->id, $root->auto_cover_id_least_privilege, 'Least-privilege cover should exclude NSFW branch photos when root is not NSFW');
+		// Safe root (no NSFW parent) should ALWAYS exclude NSFW photos for BOTH privilege levels
+		$this->assertEquals($safePhoto->id, $root->auto_cover_id_max_privilege, 'Max-privilege cover should ALSO exclude NSFW branch photos when root is safe (no NSFW parent)');
+		$this->assertEquals($safePhoto->id, $root->auto_cover_id_least_privilege, 'Least-privilege cover should exclude NSFW branch photos when root is safe (no NSFW parent)');
 	}
 
 	/**
 	 * Test that NSFW filtering respects album-level NSFW status.
 	 */
-	public function testAlbumLevelNSFWFiltering(): void
+	public function testAlbumLevelNsfwFiltering(): void
 	{
 		Auth::login($this->admin);
 
@@ -299,7 +301,8 @@ class CoverSelectionNSFWTest extends BasePrecomputingTest
 		$nsfwPhoto->albums()->attach($nsfwAlbum->id);
 
 		// Make album publicly accessible
-		AccessPermission::factory()->for_album($album)->public()->create();
+		AccessPermission::factory()->for_album($album)->public()->visible()->create();
+		AccessPermission::factory()->for_album($nsfwAlbum)->public()->visible()->create();
 
 		// Recompute parent album
 		$job = new RecomputeAlbumStatsJob($album->id);
@@ -307,10 +310,8 @@ class CoverSelectionNSFWTest extends BasePrecomputingTest
 
 		$album->refresh();
 
-		// Max-privilege should prefer NSFW photo (starred, newer)
-		$this->assertEquals($nsfwPhoto->id, $album->auto_cover_id_max_privilege);
-
-		// Least-privilege should exclude NSFW photo (parent album is not NSFW)
-		$this->assertEquals($safePhoto->id, $album->auto_cover_id_least_privilege);
+		// Safe album (no NSFW parent) should ALWAYS exclude NSFW photos for BOTH privilege levels
+		$this->assertEquals($safePhoto->id, $album->auto_cover_id_max_privilege, 'Max-privilege cover should ALSO exclude NSFW photos when album is safe (no NSFW parent)');
+		$this->assertEquals($safePhoto->id, $album->auto_cover_id_least_privilege, 'Least-privilege cover should exclude NSFW photos when album is safe (no NSFW parent)');
 	}
 }
