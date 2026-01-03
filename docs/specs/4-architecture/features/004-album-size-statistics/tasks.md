@@ -115,12 +115,12 @@ _Last updated: 2026-01-02_
   - Log propagation
   - `self::dispatch($album->parent_id)`
 
-- [ ] T-004-16 – Write feature test for 3-level nested propagation (S-004-09).
+- [x] T-004-16 – Write feature test for 3-level nested propagation (S-004-09).
   _Intent:_ Create grandparent→parent→child tree, dispatch job for child, verify all 3 updated.
   _Verification commands:_
   - `php artisan test --filter AlbumSizePropagationTest`
 
-- [ ] T-004-17 – Test propagation stops on failure (FR-004-02).
+- [x] T-004-17 – Test propagation stops on failure (FR-004-02).
   _Intent:_ Mock exception during save, verify parent job NOT dispatched, failed() called.
   _Verification commands:_
   - Test with mock exception
@@ -147,7 +147,7 @@ _Last updated: 2026-01-02_
   - Edit `app/Providers/EventServiceProvider.php`
   - Add listener mappings
 
-- [ ] T-004-21 – Write feature tests for event-driven recomputation (S-004-01, S-004-04, S-004-05).
+- [x] T-004-21 – Write feature tests for event-driven recomputation (S-004-01, S-004-04, S-004-05).
   _Intent:_ Upload photo, regenerate variant, move photo; verify jobs dispatched and statistics updated.
   _Verification commands:_
   - `php artisan test --filter AlbumSizeEventListenerTest`
