@@ -11,6 +11,7 @@ namespace App\Listeners;
 use App\Events\PhotoDeleted;
 use App\Events\PhotoSaved;
 use App\Jobs\RecomputeAlbumSizeJob;
+use App\Models\Photo;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -39,13 +40,13 @@ class RecomputeAlbumSizeOnPhotoMutation
 	 */
 	public function handlePhotoSaved(PhotoSaved $event): void
 	{
-		$photo = $event->photo;
+		$photo = Photo::findOrFail($event->photo_id);
 
 		// Get all albums this photo belongs to (many-to-many relationship)
 		$album_ids = $photo->albums()->pluck('id');
 
 		foreach ($album_ids as $album_id) {
-			Log::debug("Photo {$photo->id} saved, dispatching size recompute for album {$album_id}");
+			Log::debug("Photo {$event->photo_id} saved, dispatching size recompute for album {$album_id}");
 			RecomputeAlbumSizeJob::dispatch($album_id);
 		}
 	}

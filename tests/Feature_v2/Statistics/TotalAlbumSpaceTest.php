@@ -48,6 +48,6 @@ class TotalAlbumSpaceTest extends BaseApiWithDataTest
 
 		$response = $this->actingAs($this->admin)->getJson('Statistics::totalAlbumSpace');
 		$this->assertOk($response);
-		self::assertCount(7, $response->json());
+		self::assertCount(8, $response->json());
 	}
 }

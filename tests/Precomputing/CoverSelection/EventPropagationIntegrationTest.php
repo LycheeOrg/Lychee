@@ -44,7 +44,7 @@ class EventPropagationIntegrationTest extends BasePrecomputingTest
 
 		// The Photo::save() in factory should have dispatched PhotoSaved
 		// But we need to manually dispatch since the event is in the pipeline
-		\App\Events\PhotoSaved::dispatch($photo);
+		\App\Events\PhotoSaved::dispatch($photo->id);
 
 		// Assert job was dispatched
 		Queue::assertPushed(RecomputeAlbumStatsJob::class, function ($job) use ($album) {

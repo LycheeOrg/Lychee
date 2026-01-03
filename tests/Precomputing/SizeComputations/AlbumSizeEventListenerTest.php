@@ -45,7 +45,7 @@ class AlbumSizeEventListenerTest extends BasePrecomputingTest
 		$photo->albums()->attach($album->id);
 
 		// Dispatch PhotoSaved event
-		\App\Events\PhotoSaved::dispatch($photo);
+		\App\Events\PhotoSaved::dispatch($photo->id);
 
 		// Assert RecomputeAlbumSizeJob was dispatched for the album
 		Queue::assertPushed(RecomputeAlbumSizeJob::class, function ($job) use ($album) {
@@ -194,7 +194,7 @@ class AlbumSizeEventListenerTest extends BasePrecomputingTest
 		$photo->albums()->attach([$album1->id, $album2->id]);
 
 		// Update photo (triggers PhotoSaved)
-		\App\Events\PhotoSaved::dispatch($photo);
+		\App\Events\PhotoSaved::dispatch($photo->id);
 
 		// Assert jobs dispatched for both albums
 		Queue::assertPushed(RecomputeAlbumSizeJob::class, function ($job) use ($album1) {

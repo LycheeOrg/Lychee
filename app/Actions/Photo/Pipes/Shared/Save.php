@@ -23,7 +23,7 @@ class Save implements PhotoPipe
 		$state->getPhoto()->tags()->sync($state->getTags()->pluck('id')->all());
 
 		// Dispatch event for album stats recomputation
-		PhotoSaved::dispatch($state->getPhoto());
+		PhotoSaved::dispatch($state->getPhoto()->id);
 
 		return $next($state);
 	}

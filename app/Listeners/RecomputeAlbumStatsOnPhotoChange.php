@@ -28,7 +28,7 @@ class RecomputeAlbumStatsOnPhotoChange
 	{
 		// Get all albums this photo belongs to
 		$album_ids = DB::table(PA::PHOTO_ALBUM)
-			->where('photo_id', '=', $event->photo->id)
+			->where('photo_id', '=', $event->photo_id)
 			->pluck('album_id')
 			->all();
 
@@ -37,7 +37,7 @@ class RecomputeAlbumStatsOnPhotoChange
 			return;
 		}
 
-		Log::info("Photo {$event->photo->id} saved, dispatching recompute jobs for " . count($album_ids) . ' album(s)');
+		Log::info("Photo {$event->photo_id} saved, dispatching recompute jobs for " . count($album_ids) . ' album(s)');
 		foreach ($album_ids as $album_id) {
 			RecomputeAlbumStatsJob::dispatch($album_id);
 		}

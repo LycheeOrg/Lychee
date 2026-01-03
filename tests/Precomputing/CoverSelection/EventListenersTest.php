@@ -43,7 +43,7 @@ class EventListenersTest extends BasePrecomputingTest
 		$photo->albums()->attach([$album1->id, $album2->id]);
 
 		// Dispatch PhotoSaved event
-		$event = new PhotoSaved($photo);
+		$event = new PhotoSaved($photo->id);
 		$listener = new RecomputeAlbumStatsOnPhotoChange();
 		$listener->handlePhotoSaved($event);
 
@@ -71,7 +71,7 @@ class EventListenersTest extends BasePrecomputingTest
 		// Photo not attached to any album
 
 		// Dispatch PhotoSaved event
-		$event = new PhotoSaved($photo);
+		$event = new PhotoSaved($photo->id);
 		$listener = new RecomputeAlbumStatsOnPhotoChange();
 		$listener->handlePhotoSaved($event);
 
