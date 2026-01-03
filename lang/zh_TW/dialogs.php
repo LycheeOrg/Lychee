@@ -71,7 +71,7 @@ return [
         'enter_license' => '在下方輸入您的授權鑰匙：',
         'license_key' => '授權鑰匙',
         'invalid_license' => '無效的授權鑰匙。',
-        'expired_license' => 'Your license key has expired. Empty the field or get a new one at <a href="https://keygen.lycheeorg.dev" class="text-primary-500 underline">keygen.lycheeorg.dev</a>.',
+        'expired_license' => 'Your license key has expired. Empty the field or get a new one at <a href="https://keygen.lycheeorg.dev" class="text-primary-500 underline" target="_blank" rel="noopener noreferrer">keygen.lycheeorg.dev</a>.',
         'register' => '註冊',
     ],
     'share_album' => [

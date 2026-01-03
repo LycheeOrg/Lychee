@@ -71,7 +71,7 @@ return [
         'enter_license' => 'أدخل مفتاح الترخيص الخاص بك أدناه:',
         'license_key' => 'مفتاح الترخيص',
         'invalid_license' => 'مفتاح ترخيص غير صالح.',
-        'expired_license' => 'Your license key has expired. Empty the field or get a new one at <a href="https://keygen.lycheeorg.dev" class="text-primary-500 underline">keygen.lycheeorg.dev</a>.',
+        'expired_license' => 'Your license key has expired. Empty the field or get a new one at <a href="https://keygen.lycheeorg.dev" class="text-primary-500 underline" target="_blank" rel="noopener noreferrer">keygen.lycheeorg.dev</a>.',
         'register' => 'تسجيل',
     ],
     'share_album' => [

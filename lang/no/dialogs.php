@@ -71,7 +71,7 @@ return [
         'enter_license' => 'Skriv inn lisensnøkkelen din nedenfor:',
         'license_key' => 'Lisensnøkkel',
         'invalid_license' => 'Ugyldig lisensnøkkel.',
-        'expired_license' => 'Your license key has expired. Empty the field or get a new one at <a href="https://keygen.lycheeorg.dev" class="text-primary-500 underline">keygen.lycheeorg.dev</a>.',
+        'expired_license' => 'Your license key has expired. Empty the field or get a new one at <a href="https://keygen.lycheeorg.dev" class="text-primary-500 underline" target="_blank" rel="noopener noreferrer">keygen.lycheeorg.dev</a>.',
         'register' => 'Registrer',
     ],
     'share_album' => [
