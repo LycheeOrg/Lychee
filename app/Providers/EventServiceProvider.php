@@ -27,7 +27,6 @@ use App\Listeners\CacheListener;
 use App\Listeners\MetricsListener;
 use App\Listeners\OrderCompletedListener;
 use App\Listeners\RecomputeAlbumSizeOnPhotoMutation;
-use App\Listeners\RecomputeAlbumSizeOnVariantMutation;
 use App\Listeners\RecomputeAlbumStatsOnAlbumChange;
 use App\Listeners\RecomputeAlbumStatsOnPhotoChange;
 use App\Listeners\TaggedRouteCacheCleaner;
@@ -109,7 +108,5 @@ class EventServiceProvider extends ServiceProvider
 		// Album size statistics recomputation (Feature 004)
 		Event::listen(PhotoSaved::class, RecomputeAlbumSizeOnPhotoMutation::class . '@handlePhotoSaved');
 		Event::listen(PhotoDeleted::class, RecomputeAlbumSizeOnPhotoMutation::class . '@handlePhotoDeleted');
-		Event::listen('eloquent.saved: App\Models\SizeVariant', RecomputeAlbumSizeOnVariantMutation::class . '@handleVariantSaved');
-		Event::listen('eloquent.deleted: App\Models\SizeVariant', RecomputeAlbumSizeOnVariantMutation::class . '@handleVariantDeleted');
 	}
 }
