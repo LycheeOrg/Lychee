@@ -104,6 +104,7 @@ class SizeVariantFactory extends Factory
 			'short_path' => $type->name() . '/' . $url,
 			'width' => $dimensions['width'],
 			'height' => $dimensions['height'],
+			'filesize' => $dimensions['filesize'],
 			'ratio' => 1.5,
 			'storage_disk' => 'images',
 		]);
