@@ -20,7 +20,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
 /**
@@ -65,6 +64,31 @@ class HasAlbumThumb extends Relation
 	}
 
 	/**
+	 * Determine the cover type to use for the album.
+	 *
+	 * @param Album $album
+	 *
+	 * @return string
+	 */
+	protected function getCoverTypeForAlbum(Album $album): string
+	{
+		if ($album->cover_id !== null) {
+			return 'cover_id';
+		}
+
+		/** @var ?User $user */
+		$user = Auth::user();
+
+		// Priority 2: Max-privilege cover for admin or owner
+		if ($user?->may_administrate === true || $album->owner_id === $user?->id) {
+			return 'auto_cover_id_max_privilege';
+		}
+
+		// Priority 3: Least-privilege cover for public
+		return 'auto_cover_id_least_privilege';
+	}
+
+	/**
 	 * Select the appropriate cover ID based on user privileges.
 	 *
 	 * Priority:
@@ -78,21 +102,12 @@ class HasAlbumThumb extends Relation
 	 */
 	protected function selectCoverIdForAlbum(Album $album): ?string
 	{
-		// Priority 1: Explicit cover
-		if ($album->cover_id !== null) {
-			return $album->cover_id;
-		}
-
-		/** @var ?User $user */
-		$user = Auth::user();
-
-		// Priority 2: Max-privilege cover for admin or owner
-		if ($user?->may_administrate === true || $album->owner_id === $user?->id) {
-			return $album->auto_cover_id_max_privilege;
-		}
-
-		// Priority 3: Least-privilege cover for public
-		return $album->auto_cover_id_least_privilege;
+		return match ($this->getCoverTypeForAlbum($album)) {
+			'cover_id' => $album->cover_id,
+			'auto_cover_id_max_privilege' => $album->auto_cover_id_max_privilege,
+			'auto_cover_id_least_privilege' => $album->auto_cover_id_least_privilege,
+			default => null,
+		};
 	}
 
 	/**
@@ -130,42 +145,17 @@ class HasAlbumThumb extends Relation
 	}
 
 	/**
-	 * Builds a query to eagerly load the thumbnails of a sequence of albums.
-	 *
-	 * Now uses pre-computed cover IDs (auto_cover_id_max_privilege and
-	 * auto_cover_id_least_privilege) instead of expensive runtime queries.
+	 * We do not eager load any covers.
+	 * This relation is only meaningful for single albums.
+	 * In case of multiple album we use the preloaded values from
+	 * `cover_id`, `auto_cover_id_max_privilege`, and `auto_cover_id_least_privilege`.
 	 *
 	 * @param array<Album> $models
 	 */
 	public function addEagerConstraints(array $models): void
 	{
-		// Build mapping of album_id => cover_id for each album
-		$album_to_cover = [];
-		foreach ($models as $album) {
-			$cover_id = $this->selectCoverIdForAlbum($album);
-			if ($cover_id !== null) {
-				$album_to_cover[$album->id] = $cover_id;
-			}
-		}
-
-		if (count($album_to_cover) === 0) {
-			// No covers to load - make query return empty result
-			$this->getRelationQuery()->whereRaw('1 = 0');
-
-			return;
-		}
-
-		// Select photos with their album association
-		$this->getRelationQuery()
-			->select([
-				'photos.id as id',
-				'photos.type as type',
-				DB::raw('CASE ' .
-					collect($album_to_cover)->map(fn ($cover_id, $album_id) => "WHEN photos.id = '$cover_id' THEN '$album_id'"
-					)->implode(' ') .
-					' END as covered_album_id'),
-			])
-			->whereIn('photos.id', array_values($album_to_cover));
+		// No covers to load - make query return empty result
+		$this->getRelationQuery()->whereRaw('1 = 0');
 	}
 
 	/**
@@ -194,18 +184,17 @@ class HasAlbumThumb extends Relation
 	 */
 	public function match(array $models, Collection $results, $relation): array
 	{
-		$dictionary = $results->mapToDictionary(function ($result) {
-			/** @var Photo&object{covered_album_id: string} $result */
-			return [$result->covered_album_id => $result];
-		})->all();
-
-		// Match photos to albums using the covered_album_id
 		/** @var Album $album */
 		foreach ($models as $album) {
-			$album_id = $album->id;
-			if (isset($dictionary[$album_id])) {
-				$cover = reset($dictionary[$album_id]);
-				$album->setRelation($relation, Thumb::createFromPhoto($cover));
+			$cover_type = $this->getCoverTypeForAlbum($album);
+			if ($cover_type === 'cover_id' && $album->cover_id !== null) {
+				// We do not need to do anything here, because we already have the cover
+				// loaded via the `cover` relation of `Album`.
+				$album->setRelation($relation, Thumb::createFromPhoto($album->cover));
+			} elseif ($cover_type === 'auto_cover_id_max_privilege' && $album->auto_cover_id_max_privilege !== null) {
+				$album->setRelation($relation, Thumb::createFromPhoto($album->max_privilege_cover));
+			} elseif ($cover_type === 'auto_cover_id_least_privilege' && $album->auto_cover_id_least_privilege !== null) {
+				$album->setRelation($relation, Thumb::createFromPhoto($album->min_privilege_cover));
 			} else {
 				$album->setRelation($relation, null);
 			}
@@ -226,21 +215,19 @@ class HasAlbumThumb extends Relation
 		// is always eagerly loaded with its cover and hence, we already
 		// have it.
 		// See {@link Album::with}
-		$cover_id = $this->selectCoverIdForAlbum($album);
-		if ($cover_id === $album->cover_id) {
+		$cover_type = $this->getCoverTypeForAlbum($album);
+		if ($cover_type === 'cover_id' && $album->cover_id !== null) {
+			// We do not need to do anything here, because we already have the cover
+			// loaded via the `cover` relation of `Album`.
 			return Thumb::createFromPhoto($album->cover);
-		}
-
-		if ($cover_id !== null) {
-			// Use pre-computed cover ID (explicit, max-privilege, or least-privilege)
-			$photo = Photo::query()->with(['size_variants' => (fn ($r) => Thumb::sizeVariantsFilter($r))])->find($cover_id);
-
-			return Thumb::createFromPhoto($photo);
+		} elseif ($cover_type === 'auto_cover_id_max_privilege' && $album->auto_cover_id_max_privilege !== null) {
+			return Thumb::createFromPhoto($album->max_privilege_cover);
+		} elseif ($cover_type === 'auto_cover_id_least_privilege' && $album->auto_cover_id_least_privilege !== null) {
+			return Thumb::createFromPhoto($album->min_privilege_cover);
 		} else {
-			// Fallback to legacy query if no cover available
 			return Thumb::createFromQueryable(
 				$this->getRelationQuery(),
-				$this->sorting,
+				$this->sorting
 			);
 		}
 	}
