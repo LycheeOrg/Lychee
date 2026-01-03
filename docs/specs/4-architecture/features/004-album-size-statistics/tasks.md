@@ -100,11 +100,11 @@ _Last updated: 2026-01-02_
   - Set `public $tries = 3`
   - Implement `failed(\Throwable $exception)` with log
 
-- [ ] T-004-14 – Write unit test for job: compute sizes correctly (S-004-01, S-004-03, S-004-13).
+- [x] T-004-14 – Write unit test for job: compute sizes correctly (S-004-01, S-004-03, S-004-13).
   _Intent:_ Mock album with photos/variants, run job, assert statistics computed.
   _Verification commands:_
   - `php artisan test --filter RecomputeAlbumSizeJobTest`
-  - Test scenarios: empty album, partial variants, PLACEHOLDER exclusion
+  - Test scenarios: empty album, partial variants, PLACEHOLDER exclusion, propagation
 
 ### I4 – Propagation Logic
 
