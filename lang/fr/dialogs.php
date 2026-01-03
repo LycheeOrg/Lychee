@@ -71,7 +71,7 @@ return [
         'enter_license' => 'Entrez votre clé de licence ci-dessous :',
         'license_key' => 'Clé de licence',
         'invalid_license' => 'Clé de licence invalide.',
-        'expired_license' => 'Your license key has expired. Empty the field or get a new one at <a href="https://keygen.lycheeorg.dev" class="text-primary-500 underline">keygen.lycheeorg.dev</a>.',
+        'expired_license' => 'Your license key has expired. Empty the field or get a new one at <a href="https://keygen.lycheeorg.dev" class="text-primary-500 underline" target="_blank" rel="noopener noreferrer">keygen.lycheeorg.dev</a>.',
         'register' => 'Enregistrer',
     ],
     'share_album' => [
