@@ -128,6 +128,12 @@ const MaintenanceService = {
 	flushQueueDo(): Promise<AxiosResponse> {
 		return axios.post(`${Constants.getApiUrl()}Maintenance::flushQueue`, {});
 	},
+	backfillAlbumSizesCheck(): Promise<AxiosResponse<number>> {
+		return axios.get(`${Constants.getApiUrl()}Maintenance::backfillAlbumSizes`, { data: {} });
+	},
+	backfillAlbumSizesDo(): Promise<AxiosResponse> {
+		return axios.post(`${Constants.getApiUrl()}Maintenance::backfillAlbumSizes`, {});
+	},
 };
 
 export default MaintenanceService;

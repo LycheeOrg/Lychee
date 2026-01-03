@@ -32,6 +32,9 @@ trait RequiresExifTool
 		$config_manager = resolve(ConfigManager::class);
 		$this->hasExifToolInit = $config_manager->getValueAsInt(TestConstants::CONFIG_HAS_EXIF_TOOL);
 		Configs::set(TestConstants::CONFIG_HAS_EXIF_TOOL, 2);
+
+		// Refresh...
+		$config_manager = resolve(ConfigManager::class);
 		$this->hasExifTools = $config_manager->hasExiftool();
 	}
 

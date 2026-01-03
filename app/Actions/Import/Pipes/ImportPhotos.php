@@ -15,6 +15,8 @@ use App\DTO\ImportDTO;
 use App\DTO\ImportEventReport;
 use App\Image\Files\NativeLocalFile;
 use App\Jobs\ImportImageJob;
+use App\Jobs\RecomputeAlbumSizeJob;
+use App\Jobs\RecomputeAlbumStatsJob;
 use App\Models\Album;
 use App\Models\Photo;
 use App\Repositories\ConfigManager;
@@ -79,6 +81,12 @@ class ImportPhotos implements ImportPipe
 
 		foreach ($image_paths as $idx => $image_path) {
 			$this->importSingleImage($image_path, $node->album, $idx / $total * 100);
+		}
+
+		// Dispatch recompute jobs for the album after importing photos
+		if ($node->album !== null) {
+			$this->state->job_bus[] = new RecomputeAlbumSizeJob($node->album?->id);
+			$this->state->job_bus[] = new RecomputeAlbumStatsJob($node->album?->id);
 		}
 	}
 

@@ -32,6 +32,9 @@ trait RequiresFFMpeg
 		$config_manager = resolve(ConfigManager::class);
 		$this->hasFFMpegInit = $config_manager->getValueAsInt(TestConstants::CONFIG_HAS_FFMPEG);
 		Configs::set(TestConstants::CONFIG_HAS_FFMPEG, 2);
+
+		// Refresh...
+		$config_manager = resolve(ConfigManager::class);
 		$this->hasFFMpeg = $config_manager->hasFFmpeg();
 	}
 

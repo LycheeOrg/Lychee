@@ -8,19 +8,19 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\RecomputeAlbumStatsJob;
+use App\Jobs\RecomputeAlbumSizeJob;
 use App\Models\Album;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
-class RecomputeAlbumStats extends Command
+class RecomputeAlbumSizes extends Command
 {
 	/**
 	 * The name and signature of the console command.
 	 *
 	 * @var string
 	 */
-	protected $signature = 'lychee:recompute-album-stats
+	protected $signature = 'lychee:recompute-album-sizes
 							{album_id? : Optional album ID for single-album mode}
 							{--sync : Run synchronously (single-album mode only)}
 							{--dry-run : Preview without making changes (bulk mode only)}
@@ -31,7 +31,7 @@ class RecomputeAlbumStats extends Command
 	 *
 	 * @var string
 	 */
-	protected $description = 'Recompute album stats. With album_id: recompute single album. Without album_id: bulk backfill all albums.';
+	protected $description = 'Recompute size statistics. With album_id: recompute single album. Without album_id: bulk backfill all albums.';
 
 	/**
 	 * Execute the console command.
@@ -63,20 +63,20 @@ class RecomputeAlbumStats extends Command
 			return Command::FAILURE;
 		}
 
-		$this->info("Recomputing stats for album: {$album->title} (ID: {$album_id})");
+		$this->info("Recomputing sizes statistics for album: {$album->title} (ID: {$album_id})");
 
 		if ($sync) {
 			// Run synchronously
 			$this->info('Running synchronously...');
 			try {
-				RecomputeAlbumStatsJob::dispatchSync($album_id, true);
+				RecomputeAlbumSizeJob::dispatchSync($album_id);
 
-				$this->info('✓ Stats recomputed successfully');
+				$this->info('✓ Sizes statistics recomputed successfully');
 				Log::info("Manual recompute completed for album {$album_id}");
 
 				return Command::SUCCESS;
 			} catch (\Exception $e) {
-				$this->error('✗ Failed to recompute stats: ' . $e->getMessage());
+				$this->error('✗ Failed to recompute sizes statistics: ' . $e->getMessage());
 				Log::error("Manual recompute failed for album {$album_id}: " . $e->getMessage());
 
 				return Command::FAILURE;
@@ -84,10 +84,10 @@ class RecomputeAlbumStats extends Command
 		}
 
 		// Dispatch job to queue
-		RecomputeAlbumStatsJob::dispatch($album_id, true);
+		RecomputeAlbumSizeJob::dispatch($album_id, true);
 
 		$this->info('✓ Job dispatched to queue');
-		$this->info('  Note: Stats will be updated when the queue worker processes the job');
+		$this->info('  Note: Sizes statistics will be updated when the queue worker processes the job');
 		Log::info("Manual recompute job dispatched for album {$album_id}");
 
 		return Command::SUCCESS;
@@ -107,7 +107,7 @@ class RecomputeAlbumStats extends Command
 			return Command::FAILURE;
 		}
 
-		$this->info('Starting album fields backfill...');
+		$this->info('Starting album sizes backfill...');
 		if ($dry_run) {
 			$this->warn('DRY RUN MODE - No changes will be made');
 		}
@@ -131,13 +131,12 @@ class RecomputeAlbumStats extends Command
 
 		Album::query()
 			->orderBy('_lft', 'asc')
-			->chunk($chunk_size, function (\Illuminate\Database\Eloquent\Collection $albums) use ($dry_run, &$processed, $bar): void {
-				/** @var Album $album */
+			->toBase()
+			->chunk($chunk_size, function ($albums) use ($dry_run, &$processed, $bar): void {
 				foreach ($albums as $album) {
 					if (!$dry_run) {
 						// Dispatch job to recompute stats for this album
-						// We do not propagate to parent here to avoid redundant jobs
-						RecomputeAlbumStatsJob::dispatch($album->id, false);
+						RecomputeAlbumSizeJob::dispatch($album->id, false);
 					}
 
 					$processed++;
@@ -157,7 +156,7 @@ class RecomputeAlbumStats extends Command
 		if ($dry_run) {
 			$this->info("DRY RUN: Would have dispatched {$processed} jobs");
 		} else {
-			$this->info("Dispatched {$processed} jobs to recompute album stats");
+			$this->info("Dispatched {$processed} jobs to recompute album sizes statistics");
 			$this->info('Jobs will be processed by the queue worker');
 			$this->warn('Note: This operation may take some time for large galleries');
 		}

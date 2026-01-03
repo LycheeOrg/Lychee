@@ -56,6 +56,6 @@ class AlbumSpaceTest extends BaseApiWithDataTest
 
 		$response = $this->withoutMiddleware(VerifySupporterStatus::class)->actingAs($this->admin)->getJson('Statistics::albumSpace');
 		$this->assertOk($response);
-		self::assertCount(7, $response->json());
+		self::assertCount(8, $response->json());
 	}
 }

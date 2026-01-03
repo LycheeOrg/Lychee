@@ -12,8 +12,8 @@ use App\Actions\Shop\PurchasableService;
 use App\Actions\User\Notify;
 use App\Constants\PhotoAlbum as PA;
 use App\Contracts\Models\AbstractAlbum;
+use App\Events\AlbumSaved;
 use App\Events\PhotoDeleted;
-use App\Events\PhotoSaved;
 use App\Models\Album;
 use App\Models\Photo;
 use App\Models\Purchasable;
@@ -50,6 +50,9 @@ class MoveOrDuplicate
 				->whereIn(PA::PHOTO_ID, $photos_ids)
 				->where(PA::ALBUM_ID, '=', $from_album->get_id())
 				->delete();
+
+			// Dispatch event for origin album (photos moved out)
+			AlbumSaved::dispatchIf($from_album instanceof Album, $from_album);
 		}
 
 		// Dispatch event for source album (photos removed)
@@ -67,10 +70,7 @@ class MoveOrDuplicate
 			DB::table(PA::PHOTO_ALBUM)->insert(array_map(fn (string $id) => ['photo_id' => $id, 'album_id' => $to_album->id], $photos_ids));
 
 			// Dispatch event for destination album (photos added)
-			// Note: We dispatch PhotoSaved for each photo to trigger recomputation
-			foreach ($photos as $photo) {
-				PhotoSaved::dispatch($photo);
-			}
+			AlbumSaved::dispatchIf($to_album instanceof Album, $to_album);
 		}
 
 		// In case of move, we need to remove the header_id of said photos.

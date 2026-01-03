@@ -58,18 +58,20 @@ class FulfillPreCompute extends Controller
 		if ($is_sync) {
 			// For sync queue, process in chunks by _lft DESC (leaf to root)
 			// This reduces re-computation as parents are processed before children
-			$albums = $query->limit(50)->toBase()->get(['id']);
+			// We do not propagate to parent here to avoid redundant jobs
+			$albums = $query->limit(100)->toBase()->get(['id']);
 			$albums->each(function ($album): void {
-				RecomputeAlbumStatsJob::dispatch($album->id);
+				RecomputeAlbumStatsJob::dispatch($album->id, false);
 			});
 		} else {
 			// For async queue, dispatch all jobs at once
+			// We do not propagate to parent here to avoid redundant jobs
 			// The queue worker will handle them
 			$query->toBase()
 				->select(['id'])
 				->lazy(500)
 				->each(function ($album): void {
-					RecomputeAlbumStatsJob::dispatch($album->id);
+					RecomputeAlbumStatsJob::dispatch($album->id, false);
 				});
 		}
 	}

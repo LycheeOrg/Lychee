@@ -8,7 +8,6 @@
 
 namespace App\Events;
 
-use App\Models\Photo;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
@@ -20,7 +19,7 @@ class PhotoSaved
 	/**
 	 * Create a new event instance.
 	 */
-	public function __construct(public Photo $photo)
+	public function __construct(public string $photo_id)
 	{
 	}
 }

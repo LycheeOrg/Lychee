@@ -31,6 +31,7 @@
 		<MaintenanceOldOrders />
 		<MaintenanceFulfillOrders />
 		<MaintenanceFulfillPrecompute />
+		<MaintenanceBackfillAlbumSizes />
 		<MaintenanceFlushQueue />
 		<MaintenanceMissingPalettes />
 		<StatisticsIntegrity />
@@ -56,5 +57,6 @@ import MaintenanceMissingPalettes from "@/components/maintenance/MaintenanceMiss
 import MaintenanceOldOrders from "@/components/maintenance/MaintenanceOldOrders.vue";
 import MaintenanceFulfillOrders from "@/components/maintenance/MaintenanceFulfillOrders.vue";
 import MaintenanceFulfillPrecompute from "@/components/maintenance/MaintenanceFulfillPrecompute.vue";
+import MaintenanceBackfillAlbumSizes from "@/components/maintenance/MaintenanceBackfillAlbumSizes.vue";
 import MaintenanceFlushQueue from "@/components/maintenance/MaintenanceFlushQueue.vue";
 </script>

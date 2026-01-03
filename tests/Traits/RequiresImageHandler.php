@@ -32,6 +32,8 @@ trait RequiresImageHandler
 		$this->hasImagickInit = $config_manager->getValueAsInt(TestConstants::CONFIG_HAS_IMAGICK);
 		Configs::set(TestConstants::CONFIG_HAS_IMAGICK, 1);
 
+		// Refresh...
+		$config_manager = resolve(ConfigManager::class);
 		if (!$config_manager->hasImagick()) {
 			static::markTestSkipped('Imagick is not available. Test Skipped.');
 		}

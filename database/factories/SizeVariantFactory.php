@@ -60,4 +60,67 @@ class SizeVariantFactory extends Factory
 			['type' => SizeVariantType::THUMB, 'short_path' => SizeVariantType::THUMB->name() . '/' . $url, 'ratio' => 1.5, 'height' => 200, 'width' => 200, 'filesize' => 40_000, 'storage_disk' => 'images'],
 		));
 	}
+
+	/**
+	 * Set the photo for this size variant.
+	 *
+	 * @param \App\Models\Photo $photo
+	 *
+	 * @return self
+	 */
+	public function for_photo($photo): self
+	{
+		return $this->state([
+			'photo_id' => $photo->id,
+		]);
+	}
+
+	/**
+	 * Set the variant type.
+	 *
+	 * @param SizeVariantType $type
+	 *
+	 * @return self
+	 */
+	public function type(SizeVariantType $type): self
+	{
+		$hash = fake()->sha1();
+		$url = substr($hash, 0, 2) . '/' . substr($hash, 2, 2) . '/' . substr($hash, 4) . '.jpg';
+
+		// Set appropriate dimensions based on type
+		$dimensions = match ($type) {
+			SizeVariantType::ORIGINAL => ['width' => self::W * 8, 'height' => self::H * 8, 'filesize' => 64 * self::FS],
+			SizeVariantType::MEDIUM2X => ['width' => self::W * 6, 'height' => self::H * 6, 'filesize' => 36 * self::FS],
+			SizeVariantType::MEDIUM => ['width' => self::W * 3, 'height' => self::H * 3, 'filesize' => 9 * self::FS],
+			SizeVariantType::SMALL2X => ['width' => self::W * 2, 'height' => self::H * 2, 'filesize' => 4 * self::FS],
+			SizeVariantType::SMALL => ['width' => self::W, 'height' => self::H, 'filesize' => self::FS],
+			SizeVariantType::THUMB2X => ['width' => 400, 'height' => 400, 'filesize' => 160_000],
+			SizeVariantType::THUMB => ['width' => 200, 'height' => 200, 'filesize' => 40_000],
+			SizeVariantType::PLACEHOLDER => ['width' => 32, 'height' => 32, 'filesize' => 1000],
+		};
+
+		return $this->state([
+			'type' => $type,
+			'short_path' => $type->name() . '/' . $url,
+			'width' => $dimensions['width'],
+			'height' => $dimensions['height'],
+			'filesize' => $dimensions['filesize'],
+			'ratio' => 1.5,
+			'storage_disk' => 'images',
+		]);
+	}
+
+	/**
+	 * Set the filesize.
+	 *
+	 * @param int $size
+	 *
+	 * @return self
+	 */
+	public function with_size(int $size): self
+	{
+		return $this->state([
+			'filesize' => $size,
+		]);
+	}
 }

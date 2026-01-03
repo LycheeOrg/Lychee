@@ -10,6 +10,7 @@ namespace App\Http\Controllers\Admin\Maintenance;
 
 use App\Enum\StorageDiskType;
 use App\Events\AlbumRouteCacheUpdated;
+use App\Events\PhotoSaved;
 use App\Http\Requests\Maintenance\MaintenanceRequest;
 use App\Models\SizeVariant;
 use Illuminate\Routing\Controller;
@@ -50,6 +51,7 @@ class MissingFileSizes extends Controller
 						Log::error('Failed to update filesize for ' . $variant_file->getRelativePath() . '.');
 					} else {
 						$generated++;
+						PhotoSaved::dispatch($variant->photo_id);
 					}
 				} catch (UnableToRetrieveMetadata) {
 					Log::error($variant->id . ' : Failed to get filesize for ' . $variant_file->getRelativePath() . '.');

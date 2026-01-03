@@ -26,6 +26,8 @@ use App\Listeners\AlbumCacheCleaner;
 use App\Listeners\CacheListener;
 use App\Listeners\MetricsListener;
 use App\Listeners\OrderCompletedListener;
+use App\Listeners\RecomputeAlbumSizeOnAlbumChange;
+use App\Listeners\RecomputeAlbumSizeOnPhotoMutation;
 use App\Listeners\RecomputeAlbumStatsOnAlbumChange;
 use App\Listeners\RecomputeAlbumStatsOnPhotoChange;
 use App\Listeners\TaggedRouteCacheCleaner;
@@ -103,5 +105,10 @@ class EventServiceProvider extends ServiceProvider
 		Event::listen(PhotoDeleted::class, RecomputeAlbumStatsOnPhotoChange::class . '@handlePhotoDeleted');
 		Event::listen(AlbumSaved::class, RecomputeAlbumStatsOnAlbumChange::class . '@handleAlbumSaved');
 		Event::listen(AlbumDeleted::class, RecomputeAlbumStatsOnAlbumChange::class . '@handleAlbumDeleted');
+
+		Event::listen(PhotoSaved::class, RecomputeAlbumSizeOnPhotoMutation::class . '@handlePhotoSaved');
+		Event::listen(PhotoDeleted::class, RecomputeAlbumSizeOnPhotoMutation::class . '@handlePhotoDeleted');
+		Event::listen(AlbumSaved::class, RecomputeAlbumSizeOnAlbumChange::class . '@handleAlbumSaved');
+		Event::listen(AlbumDeleted::class, RecomputeAlbumSizeOnAlbumChange::class . '@handleAlbumDeleted');
 	}
 }
