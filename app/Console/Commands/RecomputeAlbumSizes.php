@@ -131,8 +131,8 @@ class RecomputeAlbumSizes extends Command
 
 		Album::query()
 			->orderBy('_lft', 'asc')
+			->toBase()
 			->chunk($chunk_size, function ($albums) use ($dry_run, &$processed, $bar): void {
-				/** @var Album $album */
 				foreach ($albums as $album) {
 					if (!$dry_run) {
 						// Dispatch job to recompute stats for this album
