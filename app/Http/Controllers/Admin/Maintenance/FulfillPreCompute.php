@@ -54,7 +54,6 @@ class FulfillPreCompute extends Controller
 		$is_sync = $queue_connection === 'sync';
 
 		$query = $this->getAlbumsNeedingComputation()
-			->whereRaw('_lft = _rgt - 1') // Only leaf albums
 			->orderBy('_lft', 'desc');
 
 		if ($is_sync) {
