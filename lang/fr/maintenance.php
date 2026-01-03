@@ -94,4 +94,9 @@ return [
         'description' => 'Found %d pending jobs in the queue.<br/><br/>CAUTION: Clearing the queue will permanently delete all pending jobs. This cannot be undone.',
         'button' => 'Clear queue',
     ],
+    'backfill-album-sizes' => [
+        'title' => 'Album Size Statistics',
+        'description' => 'Found %d albums without size statistics.<br/><br/>Equivalent to running: php artisan lychee:backfill-album-sizes',
+        'button' => 'Compute sizes',
+    ],
 ];
