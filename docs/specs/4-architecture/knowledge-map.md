@@ -107,7 +107,7 @@ Replaces on-the-fly virtual column computation with physical database fields upd
 4. **Propagation** - After successful update, job dispatches itself for parent album → cascades to root
 5. **Failure Handling** - On failure (after 3 retries), logs error and stops propagation
 6. **CLI Commands**:
-   - `lychee:backfill-album-fields` - One-time backfill for existing albums (post-migration)
+   - `lychee:recompute-album-stats` - Unified command: with album_id for single-album recompute, without album_id for bulk backfill of all albums
    - `lychee:recompute-album-stats {album_id}` - Manual recovery after propagation failures
 
 **Benefits**: 50%+ query time reduction for album listings, removes expensive nested set JOINs from read path

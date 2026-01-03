@@ -1,8 +1,8 @@
 # Feature Plan 003 – Album Computed Fields Pre-computation
 
 _Linked specification:_ `docs/specs/4-architecture/features/003-album-computed-fields/spec.md`
-_Status:_ Complete
-_Last updated:_ 2026-01-02
+_Status:_ In Progress
+_Last updated:_ 2026-01-03
 
 > Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in [docs/specs/4-architecture/open-questions.md](docs/specs/4-architecture/open-questions.md), and assume clarifications are resolved only when the spec's normative sections (requirements/NFR/behaviour/telemetry) and, where applicable, ADRs under `docs/specs/5-decisions/` have been updated.
 
@@ -319,7 +319,7 @@ Execute drift gate checklist from [docs/specs/5-operations/analysis-gate-checkli
 ---
 
 ### I9 – Backfill Command (FR-003-06, NFR-003-03)
-**Goal:** Create artisan command to populate computed fields for existing albums.
+**Goal:** Create artisan command to populate computed fields for existing albums (bulk mode without album_id).
 
 **Preconditions:** I2-I3 complete (job logic ready).
 
@@ -345,28 +345,33 @@ Execute drift gate checklist from [docs/specs/5-operations/analysis-gate-checkli
 
 **Estimated Duration:** 75 minutes
 
+**Status:** COMPLETE (will be merged into unified command in I15)
+
 ---
 
 ### I10 – Manual Recovery Command (CLI-003-02)
-**Goal:** Create command for debugging/recovery after propagation failures.
+**Goal:** Create command for debugging/recovery after propagation failures (single-album mode with album_id).
 
 **Preconditions:** I2-I5 complete (job logic ready).
 
 **Steps:**
 1. Create `app/Console/Commands/RecomputeAlbumStats.php`
 2. Implement handle() accepting `{album_id}` argument
-3. Dispatch `RecomputeAlbumStatsJob(album_id)` or run sync
+3. Dispatch `RecomputeAlbumStatsJob(album_id)` or run sync with `--sync` flag
 4. Output status message
 5. Write test in `tests/Precomputing/RecomputeAlbumStatsCommandTest.php`: verify command dispatches job correctly
 
 **Commands:**
 - `php artisan lychee:recompute-album-stats {album_id}`
+- `php artisan lychee:recompute-album-stats {album_id} --sync`
 - `php artisan test --testsuite=Precomputing --filter=RecomputeAlbumStatsCommandTest`
 - `make phpstan`
 
 **Exit:** Recovery command works, useful for manual intervention.
 
 **Estimated Duration:** 30 minutes
+
+**Status:** COMPLETE (will be merged into unified command in I15)
 
 ---
 
@@ -464,6 +469,45 @@ Execute drift gate checklist from [docs/specs/5-operations/analysis-gate-checkli
 **Exit:** All documentation current, roadmap updated.
 
 **Estimated Duration:** 45 minutes
+
+---
+
+### I15 – Merge Commands (FR-003-06)
+**Goal:** Merge BackfillAlbumFields and RecomputeAlbumStats commands into single unified `lychee:recompute-album-stats` command.
+
+**Preconditions:** I9-I10 complete (both commands exist and work independently).
+
+**Steps:**
+1. Update `RecomputeAlbumStats.php` to accept optional album_id argument
+2. Implement dual behavior:
+   - **With album_id:** Single-album recompute mode (existing behavior from I10)
+     - Supports `--sync` flag for synchronous execution
+     - Validates album exists, dispatches job or runs synchronously
+   - **Without album_id:** Bulk backfill mode (behavior from BackfillAlbumFields I9)
+     - Iterates all albums ordered by `_lft` ASC
+     - Supports `--dry-run` and `--chunk=N` options
+     - Shows progress bar, dispatches jobs for each album
+3. Update command signature: `lychee:recompute-album-stats {album_id? : Optional album ID for single-album mode}`
+4. Delete `BackfillAlbumFields.php` command file
+5. Update command registration in Kernel (remove BackfillAlbumFields)
+6. Update tests:
+   - Merge test cases from both command test files
+   - Test both modes (with/without album_id)
+   - Test all flags (`--sync`, `--dry-run`, `--chunk`)
+7. Update spec.md FR-003-06 to document merged command (already done)
+
+**Commands:**
+- `php artisan lychee:recompute-album-stats` (bulk mode)
+- `php artisan lychee:recompute-album-stats --dry-run` (preview bulk)
+- `php artisan lychee:recompute-album-stats --chunk=100` (custom chunk size)
+- `php artisan lychee:recompute-album-stats {album_id}` (single album, async)
+- `php artisan lychee:recompute-album-stats {album_id} --sync` (single album, sync)
+- `php artisan test --testsuite=Precomputing --filter=RecomputeAlbumStatsCommandTest`
+- `make phpstan`
+
+**Exit:** Single unified command handles both use cases, old command deleted, tests pass.
+
+**Estimated Duration:** 60 minutes
 
 ---
 

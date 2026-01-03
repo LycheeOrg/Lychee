@@ -1,7 +1,7 @@
 # Feature 003 Tasks – Album Computed Fields Pre-computation
 
-_Status: Draft_
-_Last updated: 2025-12-29_
+_Status: In Progress_
+_Last updated: 2026-01-03_
 
 > Keep this checklist aligned with the feature plan increments. Stage tests before implementation, record verification commands beside each task, and prefer bite-sized entries (≤90 minutes).
 > **Mark tasks `[x]` immediately** after each one passes verification—do not batch completions. Update the roadmap status when all tasks are done.
@@ -416,6 +416,69 @@ _Last updated: 2025-12-29_
   _Verification commands:_
   - Review `docs/specs/4-architecture/features/003-album-computed-fields/plan.md`
   _Notes:_ Change status from "Draft" to "Complete", update "Last updated" field.
+
+### Increment 15: Merge Commands
+
+- [x] T-003-53 – Update RecomputeAlbumStats command to accept optional album_id (FR-003-06).
+  _Intent:_ Modify signature to make album_id optional, prepare for dual behavior.
+  _Verification commands:_
+  - `php artisan list | grep recompute-album-stats` (verify signature)
+  - `make phpstan`
+  _Notes:_ Update signature to: `lychee:recompute-album-stats {album_id? : Optional album ID for single-album mode}`. Keep existing options (--sync).
+
+- [x] T-003-54 – Implement bulk backfill mode when album_id is null (FR-003-06).
+  _Intent:_ Add logic to detect when album_id is not provided, implement bulk processing from BackfillAlbumFields.
+  _Verification commands:_
+  - `php artisan lychee:recompute-album-stats --dry-run` (preview bulk mode)
+  - `php artisan lychee:recompute-album-stats --chunk=10` (test bulk with small chunk)
+  - `make phpstan`
+  _Notes:_ Add `--dry-run` and `--chunk=N` options. Load all albums ordered by `_lft` ASC, process in chunks, dispatch jobs, show progress bar. Copy implementation from BackfillAlbumFields::handle().
+
+- [x] T-003-55 – Update command description and help text (FR-003-06).
+  _Intent:_ Document dual behavior in command description.
+  _Verification commands:_
+  - `php artisan help lychee:recompute-album-stats` (verify help text)
+  - `make phpstan`
+  _Notes:_ Description should explain: "Recompute album stats for a specific album (with album_id) or all albums (bulk backfill mode). Supports --sync for single-album synchronous execution, --dry-run and --chunk for bulk mode."
+
+- [x] T-003-56 – Delete BackfillAlbumFields.php command (FR-003-06).
+  _Intent:_ Remove obsolete command file, remove from Kernel registration.
+  _Verification commands:_
+  - `ls app/Console/Commands/BackfillAlbumFields.php` (should not exist)
+  - `php artisan list | grep backfill-album-fields` (should not appear)
+  - `make phpstan`
+  _Notes:_ Delete file: `app/Console/Commands/BackfillAlbumFields.php`. Verify Kernel does not reference it.
+
+- [x] T-003-57 – Merge tests from both command test files (FR-003-06).
+  _Intent:_ Consolidate test coverage for both modes (with/without album_id) in single test file.
+  _Verification commands:_
+  - `php artisan test --filter=RecomputeAlbumStatsCommandTest`
+  - `make phpstan`
+  _Notes:_ Update `tests/Feature/Console/RecomputeAlbumStatsCommandTest.php` to include test cases from BackfillAlbumFieldsCommandTest.php. Test scenarios: (1) single-album async, (2) single-album sync, (3) bulk mode, (4) bulk dry-run, (5) bulk with custom chunk size, (6) invalid album_id, (7) empty gallery, (8) nested albums.
+
+- [x] T-003-58 – Delete BackfillAlbumFieldsCommandTest.php (FR-003-06).
+  _Intent:_ Remove obsolete test file after merging test cases.
+  _Verification commands:_
+  - `ls tests/Feature/Console/BackfillAlbumFieldsCommandTest.php` (should not exist)
+  - `php artisan test` (verify all tests still pass)
+  - `make phpstan`
+  _Notes:_ Delete file: `tests/Feature/Console/BackfillAlbumFieldsCommandTest.php`. All test coverage should now be in RecomputeAlbumStatsCommandTest.php.
+
+- [x] T-003-59 – Update documentation references (FR-003-06).
+  _Intent:_ Find and update any documentation referring to the old `lychee:backfill-album-fields` command.
+  _Verification commands:_
+  - `grep -r "backfill-album-fields" docs/`
+  - `grep -r "BackfillAlbumFields" docs/`
+  - `make phpstan`
+  _Notes:_ Update any references in knowledge-map.md, ADR-0003, or other docs to use `lychee:recompute-album-stats` instead. Update spec.md to reflect merged command (already done).
+
+- [x] T-003-60 – Run full test suite after merge (FR-003-06).
+  _Intent:_ Verify command merge did not introduce regressions.
+  _Verification commands:_
+  - `php artisan test` (full suite must pass)
+  - `make phpstan`
+  - `vendor/bin/php-cs-fixer fix`
+  _Notes:_ All tests must pass. Verify both modes work correctly via manual testing if needed. **COMPLETED:** PHPStan passed with no errors. PHP-CS-Fixer passed. Test suite passed: 13 tests, 676 assertions.
 
 ## Notes / TODOs
 
