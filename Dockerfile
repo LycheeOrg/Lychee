@@ -56,7 +56,7 @@ RUN npm run build
 # ============================================================================
 # Stage 3: Production FrankenPHP Image
 # ============================================================================
-FROM dunglas/frankenphp:php8.4-alpine@sha256:49654aea8f2b9bc225bde6d89c9011054505ca2ed3e9874b251035128518b491
+FROM dunglas/frankenphp:php8.5-trixie@sha256:7082c1dfeb256a5dd65961e790253aad859e8fd7ff2f38e54d43f81c0735fafe
 
 ARG USER=appuser
 
@@ -69,16 +69,14 @@ LABEL org.opencontainers.image.source="https://github.com/LycheeOrg/Lychee"
 LABEL org.opencontainers.image.url="https://lycheeorg.github.io"
 LABEL org.opencontainers.image.documentation="https://lycheeorg.dev/docs"
 LABEL org.opencontainers.image.licenses="MIT"
-LABEL org.opencontainers.image.base.name="dunglas/frankenphp:php8.4-alpine"
+LABEL org.opencontainers.image.base.name="dunglas/frankenphp:php8.5-trixie"
 
 # Install system utilities and PHP extensions
-# hadolint ignore=DL3018
-RUN apk add --no-cache \
-    exiftool \
-    shadow \
+# hadolint ignore=DL3008,DL3009
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+    libimage-exiftool-perl \
     ffmpeg \
-    gd \
-    grep \
     imagemagick \
     jpegoptim \
     netcat-openbsd \
@@ -99,7 +97,7 @@ RUN apk add --no-cache \
     intl \
     redis \
     tokenizer \
-    && rm -rf /var/cache/apk/*
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
