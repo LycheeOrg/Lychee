@@ -53,7 +53,7 @@ class CoverDisplayPermissionTest extends BasePrecomputingTest
 		$privatePhoto->albums()->attach($album->id);
 
 		// Make album publicly accessible (so least-privilege cover is meaningful)
-		AccessPermission::factory()->for_album($album)->public()->create();
+		AccessPermission::factory()->for_album($album)->public()->visible()->create();
 
 		// Recompute
 		Artisan::call('lychee:recompute-album-stats', [
