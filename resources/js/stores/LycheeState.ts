@@ -42,6 +42,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		album_subtitle_type: "OLDSTYLE" as App.Enum.ThumbAlbumSubtitleType,
 		album_decoration: "LAYERS" as App.Enum.AlbumDecorationType,
 		album_decoration_orientation: "ROW" as App.Enum.AlbumDecorationOrientation,
+		album_view_mode: "grid" as App.Enum.AlbumLayoutType,
 		number_albums_per_row_mobile: 3 as 1 | 2 | 3,
 		photo_thumb_info: "title" as App.Enum.PhotoThumbInfoType,
 		is_photo_thumb_tags_enabled: false,
@@ -165,6 +166,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.number_albums_per_row_mobile = data.number_albums_per_row_mobile;
 					this.photo_thumb_info = data.photo_thumb_info;
 					this.is_photo_thumb_tags_enabled = data.is_photo_thumb_tags_enabled;
+					this.album_view_mode = data.album_layout;
 
 					this.is_thumb_download_enabled = data.is_thumb_download_enabled;
 					this.is_thum2x_download_enabled = data.is_thum2x_download_enabled;

@@ -12,20 +12,20 @@ _Last updated: 2026-01-04_
 
 ### Increment I1 – Backend Config Migration
 
-- [ ] T-005-01 – Create migration file for album_layout config (FR-005-04, S-005-03).
+- [x] T-005-01 – Create migration file for album_layout config (FR-005-04, S-005-03).
   _Intent:_ Create `database/migrations/2026_01_04_000000_add_album_layout_config.php` using BaseConfigMigration pattern.
   _Verification commands:_
   - `php artisan migrate:status` (migration appears in list)
   - File exists and follows BaseConfigMigration structure
   _Notes:_ Use `type_range: 'grid|list'` to auto-create dropdown in admin UI. Reference IMPLEMENTATION-SNIPPETS.md for exact code.
 
-- [ ] T-005-02 – Configure migration parameters (FR-005-04).
+- [x] T-005-02 – Configure migration parameters (FR-005-04).
   _Intent:_ Set config parameters: key='album_layout', value='grid', cat='Gallery', type_range='grid|list', description, details, is_expert=false, order=50.
   _Verification commands:_
   - Code matches pattern in IMPLEMENTATION-SNIPPETS.md
   _Notes:_ Ensure `is_expert: false` so all admins can access it, not just expert mode.
 
-- [ ] T-005-03 – Run migration and verify config entry (FR-005-04).
+- [x] T-005-03 – Run migration and verify config entry (FR-005-04).
   _Intent:_ Execute migration, verify new config row in configs table via admin UI or database query.
   _Verification commands:_
   - `php artisan migrate`
@@ -37,28 +37,28 @@ _Last updated: 2026-01-04_
 
 ### Increment I2 – InitConfig.php Modification
 
-- [ ] T-005-04 – Add album_layout property to InitConfig.php (FR-005-04, S-005-04).
+- [x] T-005-04 – Add album_layout property to InitConfig.php (FR-005-04, S-005-04).
   _Intent:_ Add `public string $album_layout;` property to `app/Http/Resources/GalleryConfigs/InitConfig.php` (line ~48, after album decoration settings).
   _Verification commands:_
   - `./vendor/bin/phpstan analyze` (static analysis passes)
   - `php artisan test` (no regressions)
   _Notes:_ Follow existing pattern for other config properties.
 
-- [ ] T-005-05 – Initialize album_layout in InitConfig constructor (FR-005-04, S-005-04).
+- [x] T-005-05 – Initialize album_layout in InitConfig constructor (FR-005-04, S-005-04).
   _Intent:_ Add `$this->album_layout = request()->configs()->getValueAsString('album_layout');` in constructor (line ~154, after is_photo_thumb_tags_enabled).
   _Verification commands:_
   - `./vendor/bin/phpstan analyze`
   - `php artisan test`
   _Notes:_ Ensure initialization order matches other config properties.
 
-- [ ] T-005-06 – Verify TypeScript type generation (FR-005-04).
+- [x] T-005-06 – Verify TypeScript type generation (FR-005-04).
   _Intent:_ Run TypeScript transformer to generate types from InitConfig.php, verify `album_layout: "grid" | "list"` appears in generated types.
   _Verification commands:_
   - `php artisan typescript:transform` (or equivalent command)
   - Check generated TypeScript types include album_layout property
   _Notes:_ Spatie TypeScriptTransformer should auto-generate from PHP class.
 
-- [ ] T-005-07 – Test InitConfig API endpoint (FR-005-04, S-005-04).
+- [x] T-005-07 – Test InitConfig API endpoint (FR-005-04, S-005-04).
   _Intent:_ Verify `GET /api/Gallery::Init` returns album_layout in response JSON.
   _Verification commands:_
   - `php artisan serve` → `curl http://localhost/api/Gallery::Init` → verify album_layout appears
@@ -69,20 +69,20 @@ _Last updated: 2026-01-04_
 
 ### Increment I3 – LycheeState Store Modifications
 
-- [ ] T-005-08 – Add album_view_mode state property to LycheeState.ts (FR-005-04, NFR-005-01, S-005-03, S-005-04).
+- [x] T-005-08 – Add album_view_mode state property to LycheeState.ts (FR-005-04, NFR-005-01, S-005-03, S-005-04).
   _Intent:_ Add `album_view_mode: "grid" as "grid" | "list",` to state object (line ~46, after album_decoration_orientation).
   _Verification commands:_
   - `npm run check` (TypeScript compilation)
   _Notes:_ Property should be reactive, accessible directly (no getter/action needed).
 
-- [ ] T-005-09 – Initialize album_view_mode from InitConfig data (FR-005-04, S-005-04).
+- [x] T-005-09 – Initialize album_view_mode from InitConfig data (FR-005-04, S-005-04).
   _Intent:_ Add `this.album_view_mode = data.album_layout;` in load() action (line ~167, after is_photo_thumb_tags_enabled).
   _Verification commands:_
   - `npm run check`
   - Manual test: Start app, inspect LycheeState in Vue DevTools → album_view_mode should match backend config default
   _Notes:_ No localStorage, no actions—just direct initialization from InitConfig.
 
-- [ ] T-005-10 – Test state initialization (S-005-04, S-005-15).
+- [x] T-005-10 – Test state initialization (S-005-04, S-005-15).
   _Intent:_ Verify album_view_mode initializes to 'grid' by default, updates if admin changes backend config.
   _Verification commands:_
   - `npm run dev` → Browser DevTools → Vue DevTools → Pinia store → LycheeState → album_view_mode should be 'grid'
@@ -93,55 +93,55 @@ _Last updated: 2026-01-04_
 
 ### Increment I4 – AlbumListItem Component
 
-- [ ] T-005-11 – Create AlbumListItem.vue component skeleton (FR-005-01, FR-005-02).
+- [x] T-005-11 – Create AlbumListItem.vue component skeleton (FR-005-01, FR-005-02).
   _Intent:_ Create new file `resources/js/components/gallery/albumModule/AlbumListItem.vue` with basic Vue 3 Composition API structure, props interface (album: AlbumResource, isSelected: boolean).
   _Verification commands:_
   - `npm run check` (TypeScript compilation)
   _Notes:_ Import AlbumResource type. Reference IMPLEMENTATION-SNIPPETS.md for exact code.
 
-- [ ] T-005-12 – Implement AlbumListItem template structure (FR-005-01, FR-005-02, FR-005-09, S-005-05, S-005-16, S-005-17).
+- [x] T-005-12 – Implement AlbumListItem template structure (FR-005-01, FR-005-02, FR-005-09, S-005-05, S-005-16, S-005-17).
   _Intent:_ Add template: thumbnail (router-link), title + inline counts container (responsive: md:flex-row for wide screens, flex-col for narrow), conditional rendering for zero counts (v-if="num_photos > 0", v-if="num_children > 0").
   _Verification commands:_
   - `npm run check`
   - `npm run dev` (visual inspection)
   _Notes:_ Use RTL-aware Tailwind classes: `ltr:flex-row rtl:flex-row-reverse`, `ltr:text-left rtl:text-right`.
 
-- [ ] T-005-13 – Add zero-count hiding logic (FR-005-09, S-005-16, S-005-17).
+- [x] T-005-13 – Add zero-count hiding logic (FR-005-09, S-005-16, S-005-17).
   _Intent:_ Only render photo count if `album.num_photos > 0`, only render sub-album count if `album.num_children > 0`.
   _Verification commands:_
   - `npm run dev` → Test with album with 0 photos → count should not appear
   - Test with album with 0 sub-albums → count should not appear
   _Notes:_ Use `v-if` conditions on count span elements.
 
-- [ ] T-005-14 – Add responsive inline layout (FR-005-09, S-005-18, S-005-19).
+- [x] T-005-14 – Add responsive inline layout (FR-005-09, S-005-18, S-005-19).
   _Intent:_ Title + counts container uses `md:flex-row md:items-center md:gap-2` for wide screens (inline), `flex-col` for narrow screens (stacked).
   _Verification commands:_
   - `npm run dev` → Resize browser to wide (≥768px) → title and counts on same line
   - Resize to narrow (<768px) → counts stack below title
   _Notes:_ Test at 320px, 768px, 1024px viewports.
 
-- [ ] T-005-15 – Add styling to AlbumListItem (FR-005-01, FR-005-06, FR-005-07).
+- [x] T-005-15 – Add styling to AlbumListItem (FR-005-01, FR-005-06, FR-005-07).
   _Intent:_ Apply Tailwind CSS: hover state, border separator, responsive thumbnail sizes (64px desktop, 64px mobile), selection state styling.
   _Verification commands:_
   - `npm run format`
   - `npm run dev` (visual inspection)
   _Notes:_ Classes: `hover:bg-gray-100 dark:hover:bg-gray-800`, `border-b border-gray-200 dark:border-gray-700`, `w-16 h-16` for thumbnail, `bg-primary-100 dark:bg-primary-900 ring-2 ring-primary-500` when isSelected=true.
 
-- [ ] T-005-16 – Add badge display to AlbumListItem (FR-005-05, S-005-08).
+- [x] T-005-16 – Add badge display to AlbumListItem (FR-005-05, S-005-08).
   _Intent:_ Display policy badges (NSFW, password, public) if album.policy exists.
   _Verification commands:_
   - `npm run check`
   - `npm run dev` (test with albums that have badges)
   _Notes:_ Reuse badge logic pattern from AlbumThumb.vue or create shared badge component.
 
-- [ ] T-005-17 – Add click and context menu event emission (FR-005-07, S-005-12).
+- [x] T-005-17 – Add click and context menu event emission (FR-005-07, S-005-12).
   _Intent:_ Emit 'clicked' event with MouseEvent + album on @click, emit 'contexted' event on @contextmenu.prevent.
   _Verification commands:_
   - `npm run check`
   - Manual test: Click album → should navigate normally, Ctrl+Click → should select
   _Notes:_ Events bubble to parent for selection handling.
 
-- [ ] T-005-18 – Write unit tests for AlbumListItem (S-005-05, S-005-06, S-005-07, S-005-08, S-005-16, S-005-17).
+- [x] T-005-18 – Write unit tests for AlbumListItem (S-005-05, S-005-06, S-005-07, S-005-08, S-005-16, S-005-17).
   _Intent:_ Test rendering with sample album data, long album names, 0 photos/sub-albums (counts hidden), badge display, selection styling, responsive layout.
   _Verification commands:_
   - `npm run check`
@@ -151,27 +151,27 @@ _Last updated: 2026-01-04_
 
 ### Increment I5 – AlbumListView Component
 
-- [ ] T-005-19 – Create AlbumListView.vue component skeleton (FR-005-01).
+- [x] T-005-19 – Create AlbumListView.vue component skeleton (FR-005-01).
   _Intent:_ Create new file `resources/js/components/gallery/albumModule/AlbumListView.vue` with props interface (albums: AlbumResource[], selectedIds: string[]).
   _Verification commands:_
   - `npm run check`
   _Notes:_ Import AlbumListItem component. Reference IMPLEMENTATION-SNIPPETS.md.
 
-- [ ] T-005-20 – Implement AlbumListView template with v-for loop (FR-005-01, S-005-05).
+- [x] T-005-20 – Implement AlbumListView template with v-for loop (FR-005-01, S-005-05).
   _Intent:_ Render AlbumListItem for each album in albums array, pass selectedIds prop, emit album-clicked and album-contexted events.
   _Verification commands:_
   - `npm run check`
   - `npm run dev` (test with sample albums)
   _Notes:_ Use flex column layout: `flex flex-col gap-0`.
 
-- [ ] T-005-21 – Add event forwarding to AlbumListView (FR-005-07, FR-005-08, S-005-12, S-005-13).
+- [x] T-005-21 – Add event forwarding to AlbumListView (FR-005-07, FR-005-08, S-005-12, S-005-13).
   _Intent:_ Forward 'clicked' and 'contexted' events from AlbumListItem to parent, enabling selection and drag-select.
   _Verification commands:_
   - `npm run check`
   - Manual test: Verify selection works with Ctrl/Cmd/Shift modifiers
   _Notes:_ Parent (AlbumThumbPanel) handles selection logic.
 
-- [ ] T-005-22 – Write unit tests for AlbumListView (S-005-06, S-005-13).
+- [x] T-005-22 – Write unit tests for AlbumListView (S-005-06, S-005-13).
   _Intent:_ Test rendering multiple albums, empty state, props passing to AlbumListItem, event emission.
   _Verification commands:_
   - `npm run check`
@@ -181,26 +181,26 @@ _Last updated: 2026-01-04_
 
 ### Increment I6 – AlbumThumbPanel Modifications
 
-- [ ] T-005-23 – Import AlbumListView and LycheeState in AlbumThumbPanel.vue (S-005-01, S-005-02).
+- [x] T-005-23 – Import AlbumListView and LycheeState in AlbumThumbPanel.vue (S-005-01, S-005-02).
   _Intent:_ Add necessary imports to conditionally render grid or list view.
   _Verification commands:_
   - `npm run check`
   _Notes:_ Read existing AlbumThumbPanel.vue to understand structure before modifying.
 
-- [ ] T-005-24 – Add LycheeState access in AlbumThumbPanel.vue (S-005-04).
+- [x] T-005-24 – Add LycheeState access in AlbumThumbPanel.vue (S-005-04).
   _Intent:_ Add `const lycheeStore = useLycheeStateStore();` in script setup.
   _Verification commands:_
   - `npm run check`
   _Notes:_ Access album_view_mode via `lycheeStore.album_view_mode`.
 
-- [ ] T-005-25 – Update AlbumThumbPanel template to conditionally render grid or list (S-005-01, S-005-02, S-005-14).
+- [x] T-005-25 – Update AlbumThumbPanel template to conditionally render grid or list (S-005-01, S-005-02, S-005-14).
   _Intent:_ Use v-if to render AlbumListView when `lycheeStore.album_view_mode === 'list'`, AlbumThumbPanelList when mode === 'grid' (v-else).
   _Verification commands:_
   - `npm run check`
   - `npm run dev` (manually toggle view mode via AlbumHero buttons, verify switch)
   _Notes:_ Ensure both components receive same props (albums array, selectedIds, event handlers).
 
-- [ ] T-005-26 – Verify selection state persists across view switches (FR-005-07, S-005-14).
+- [x] T-005-26 – Verify selection state persists across view switches (FR-005-07, S-005-14).
   _Intent:_ Select albums in grid view, switch to list view → selection persists. Select in list, switch to grid → selection persists.
   _Verification commands:_
   - `npm run dev` (manual testing)
@@ -210,39 +210,39 @@ _Last updated: 2026-01-04_
 
 ### Increment I7 – AlbumHero Toggle Buttons
 
-- [ ] T-005-27 – Add imports to AlbumHero.vue (FR-005-03, S-005-01, S-005-02).
+- [x] T-005-27 – Add imports to AlbumHero.vue (FR-005-03, S-005-01, S-005-02).
   _Intent:_ Import `useLycheeStateStore` from `@/stores/LycheeState`.
   _Verification commands:_
   - `npm run check`
   _Notes:_ Follow existing import pattern in AlbumHero.vue.
 
-- [ ] T-005-28 – Add setup logic to AlbumHero.vue (FR-005-03).
+- [x] T-005-28 – Add setup logic to AlbumHero.vue (FR-005-03).
   _Intent:_ Add `const lycheeStore = useLycheeStateStore();` and `toggleAlbumView(mode: "grid" | "list")` function that sets `lycheeStore.album_view_mode = mode;`.
   _Verification commands:_
   - `npm run check`
   _Notes:_ Reference IMPLEMENTATION-SNIPPETS.md for exact code.
 
-- [ ] T-005-29 – Add grid and list toggle button elements to AlbumHero.vue (FR-005-03, S-005-01, S-005-02).
+- [x] T-005-29 – Add grid and list toggle button elements to AlbumHero.vue (FR-005-03, S-005-01, S-005-02).
   _Intent:_ Add two `<Button>` elements in the icon row (line ~33) with PrimeVue icons `pi pi-th-large` (grid) and `pi pi-list` (list).
   _Verification commands:_
   - `npm run check`
   - `npm run dev` (visual inspection - buttons appear in icon row)
   _Notes:_ Use PrimeVue Button component with `text`, `class="border-none"`, severity based on active state.
 
-- [ ] T-005-30 – Add click handlers to toggle buttons in AlbumHero.vue (FR-005-03, S-005-01, S-005-02).
+- [x] T-005-30 – Add click handlers to toggle buttons in AlbumHero.vue (FR-005-03, S-005-01, S-005-02).
   _Intent:_ Implement @click handlers that call `toggleAlbumView('grid')` and `toggleAlbumView('list')`.
   _Verification commands:_
   - `npm run check`
   - `npm run dev` (click buttons, verify view switches instantly)
   _Notes:_ Verify reactivity works immediately (no page reload needed).
 
-- [ ] T-005-31 – Add active state styling to toggle buttons in AlbumHero.vue (FR-005-03, UI-005-01, UI-005-02).
+- [x] T-005-31 – Add active state styling to toggle buttons in AlbumHero.vue (FR-005-03, UI-005-01, UI-005-02).
   _Intent:_ Apply severity="primary" when button is active (current view mode), severity="secondary" otherwise.
   _Verification commands:_
   - `npm run dev` (visual inspection - active button highlighted)
   _Notes:_ Use ternary in severity prop: `:severity="lycheeStore.album_view_mode === 'grid' ? 'primary' : 'secondary'"`.
 
-- [ ] T-005-32 – Add aria-labels and aria-pressed to toggle buttons (NFR-005-03, UI-005-03).
+- [x] T-005-32 – Add aria-labels and aria-pressed to toggle buttons (NFR-005-03, UI-005-03).
   _Intent:_ Add accessibility attributes: `:aria-label="$t('view.grid')"` / `:aria-label="$t('view.list')"`, `:aria-pressed` based on active state.
   _Verification commands:_
   - `npm run check`
@@ -253,26 +253,26 @@ _Last updated: 2026-01-04_
 
 ### Increment I8 – AlbumsHeader Toggle Buttons
 
-- [ ] T-005-33 – Add imports to AlbumsHeader.vue (FR-005-03, S-005-01, S-005-02).
+- [x] T-005-33 – Add imports to AlbumsHeader.vue (FR-005-03, S-005-01, S-005-02).
   _Intent:_ Import `useLycheeStateStore` from `@/stores/LycheeState`.
   _Verification commands:_
   - `npm run check`
   _Notes:_ Check existing imports in AlbumsHeader.vue.
 
-- [ ] T-005-34 – Add setup logic to AlbumsHeader.vue (FR-005-03).
+- [x] T-005-34 – Add setup logic to AlbumsHeader.vue (FR-005-03).
   _Intent:_ Add `const lycheeStore = useLycheeStateStore();`, `toggleToGrid()` function, `toggleToList()` function.
   _Verification commands:_
   - `npm run check`
   _Notes:_ Reference IMPLEMENTATION-SNIPPETS.md for exact code (line ~150).
 
-- [ ] T-005-35 – Add grid and list toggle items to menu computed property (FR-005-03, S-005-01, S-005-02).
+- [x] T-005-35 – Add grid and list toggle items to menu computed property (FR-005-03, S-005-01, S-005-02).
   _Intent:_ Add two menu items to `menu` computed property (line ~243, before search button): icon="pi pi-th-large", type="fn", callback=toggleToGrid, severity based on active state.
   _Verification commands:_
   - `npm run check`
   - `npm run dev` (verify buttons appear in AlbumsHeader menu)
   _Notes:_ Follow existing menu item pattern, use `if: true` to always show, `key: "view_grid"` and `key: "view_list"`.
 
-- [ ] T-005-36 – Test AlbumsHeader toggle buttons (FR-005-03, S-005-01, S-005-02).
+- [x] T-005-36 – Test AlbumsHeader toggle buttons (FR-005-03, S-005-01, S-005-02).
   _Intent:_ Click grid/list toggles in AlbumsHeader → all album panels switch views.
   _Verification commands:_
   - `npm run dev` (manual testing on Albums page)
