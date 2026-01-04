@@ -1,6 +1,6 @@
 <template>
 	<Card
-		v-if="data !== undefined && data > 0"
+		v-if="data !== undefined && data !== 0"
 		class="min-h-40 dark:bg-surface-800 shadow shadow-surface-950/30 rounded-lg relative"
 		pt:body:class="min-h-40 h-full"
 		pt:content:class="h-full flex justify-between flex-col"
@@ -16,7 +16,7 @@
 				<ProgressSpinner v-if="loading" class="w-full"></ProgressSpinner>
 			</ScrollPanel>
 			<div class="flex gap-4 mt-1">
-				<Button v-if="data !== 0 && data !== undefined && !loading" severity="primary" class="w-full border-none" @click="exec">
+				<Button v-if="data !== 0 && !loading" severity="primary" class="w-full border-none" @click="exec">
 					{{ $t("maintenance.backfill-album-sizes.button") }}
 				</Button>
 			</div>
