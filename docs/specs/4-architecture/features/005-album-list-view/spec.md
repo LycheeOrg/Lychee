@@ -2,7 +2,7 @@
 
 | Field | Value |
 |-------|-------|
-| Status | Draft (Refined 2026-01-04) |
+| Status | Implemented |
 | Last updated | 2026-01-04 |
 | Owners | Agent |
 | Linked plan | `docs/specs/4-architecture/features/005-album-list-view/plan.md` |

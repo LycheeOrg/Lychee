@@ -332,19 +332,19 @@ _Last updated: 2026-01-04_
 
 ### Increment I11 – Responsive Mobile Layout Testing
 
-- [ ] T-005-44 – Test list view on 320px viewport (FR-005-06, S-005-09, S-005-18).
+- [x] T-005-44 – Test list view on 320px viewport (FR-005-06, S-005-09, S-005-18).
   _Intent:_ Verify layout doesn't overflow, thumbnails display at 64px, album names wrap, counts stack below title.
   _Verification commands:_
   - `npm run dev` (browser DevTools responsive mode, set to 320px width)
   _Notes:_ Make CSS adjustments if needed.
 
-- [ ] T-005-45 – Test list view on 375px and 768px viewports (FR-005-06, S-005-09, S-005-19).
+- [x] T-005-45 – Test list view on 375px and 768px viewports (FR-005-06, S-005-09, S-005-19).
   _Intent:_ Verify responsive behavior at common mobile breakpoints, counts inline at ≥768px, stacked at <768px.
   _Verification commands:_
   - `npm run dev` (test multiple viewport sizes)
   _Notes:_ Capture screenshots for documentation.
 
-- [ ] T-005-46 – Test toggle buttons on mobile viewports (FR-005-03, S-005-09).
+- [x] T-005-46 – Test toggle buttons on mobile viewports (FR-005-03, S-005-09).
   _Intent:_ Verify toggle buttons remain usable and don't crowd header on mobile.
   _Verification commands:_
   - `npm run dev` (mobile testing)
@@ -354,19 +354,19 @@ _Last updated: 2026-01-04_
 
 ### Increment I12 – Zero Count Hiding Testing
 
-- [ ] T-005-47 – Test album with 0 photos in list view (FR-005-09, S-005-16).
+- [x] T-005-47 – Test album with 0 photos in list view (FR-005-09, S-005-16).
   _Intent:_ Display album with num_photos=0 in list view → photo count should not appear.
   _Verification commands:_
   - `npm run dev` (test with album data where num_photos=0)
   _Notes:_ Create test album or modify fixture data.
 
-- [ ] T-005-48 – Test album with 0 sub-albums in list view (FR-005-09, S-005-17).
+- [x] T-005-48 – Test album with 0 sub-albums in list view (FR-005-09, S-005-17).
   _Intent:_ Display album with num_children=0 in list view → sub-album count should not appear.
   _Verification commands:_
   - `npm run dev` (test with album data where num_children=0)
   _Notes:_ Verify v-if conditions work correctly.
 
-- [ ] T-005-49 – Test album with both 0 photos and 0 sub-albums (FR-005-09, S-005-16, S-005-17).
+- [x] T-005-49 – Test album with both 0 photos and 0 sub-albums (FR-005-09, S-005-16, S-005-17).
   _Intent:_ Display empty album → no counts appear, layout remains clean.
   _Verification commands:_
   - `npm run dev` (visual inspection)
@@ -376,19 +376,19 @@ _Last updated: 2026-01-04_
 
 ### Increment I13 – Page Reload Behavior Testing
 
-- [ ] T-005-50 – Test default view mode on first load (FR-005-04, S-005-04).
+- [x] T-005-50 – Test default view mode on first load (FR-005-04, S-005-04).
   _Intent:_ Fresh user (no session) loads app → view mode defaults to admin-configured value (grid).
   _Verification commands:_
   - `npm run dev` → Clear session/cookies → Reload page → Verify grid view
   _Notes:_ Check InitConfig returns default 'grid' from backend.
 
-- [ ] T-005-51 – Test session-only preference (no persistence) (FR-005-04, S-005-15).
+- [x] T-005-51 – Test session-only preference (no persistence) (FR-005-04, S-005-15).
   _Intent:_ Toggle to list view → reload page → resets to admin default (grid).
   _Verification commands:_
   - `npm run dev` → Toggle to list → Reload page → Verify resets to grid
   _Notes:_ Verify NO localStorage entry created for album_view_mode.
 
-- [ ] T-005-52 – Test admin config change propagation (FR-005-04, S-005-20).
+- [x] T-005-52 – Test admin config change propagation (FR-005-04, S-005-20).
   _Intent:_ Admin changes default from grid to list → users reload page → new default is list.
   _Verification commands:_
   - Change backend config to 'list' → `npm run dev` → Reload page → Verify list view
@@ -426,19 +426,19 @@ _Last updated: 2026-01-04_
 
 ### Increment I15 – Backend Tests
 
-- [ ] T-005-57 – Write test for album_layout config default value (FR-005-04).
+- [x] T-005-57 – Write test for album_layout config default value (FR-005-04).
   _Intent:_ Test config defaults to 'grid' after migration runs.
   _Verification commands:_
   - `php artisan test`
   _Notes:_ Query configs table, assert album_layout='grid'.
 
-- [ ] T-005-58 – Write test for album_layout enum validation (FR-005-04).
+- [x] T-005-58 – Write test for album_layout enum validation (FR-005-04).
   _Intent:_ Test config rejects invalid values (not 'grid' or 'list').
   _Verification commands:_
   - `php artisan test`
   _Notes:_ Attempt to set invalid value, expect validation error.
 
-- [ ] T-005-59 – Write test for InitConfig includes album_layout (FR-005-04).
+- [x] T-005-59 – Write test for InitConfig includes album_layout (FR-005-04).
   _Intent:_ Test GET /api/Gallery::Init response includes album_layout property.
   _Verification commands:_
   - `php artisan test` (API test)
@@ -448,25 +448,25 @@ _Last updated: 2026-01-04_
 
 ### Increment I16 – Integration Testing & Visual Regression
 
-- [ ] T-005-60 – Manual integration testing: toggle between views (S-005-01, S-005-02).
+- [x] T-005-60 – Manual integration testing: toggle between views (S-005-01, S-005-02).
   _Intent:_ Load album page, click list toggle, verify switch, click grid toggle, verify switch back.
   _Verification commands:_
   - `npm run dev` (manual testing)
   _Notes:_ Test with real album data, various album counts.
 
-- [ ] T-005-61 – Manual integration testing: selection across views (S-005-14).
+- [x] T-005-61 – Manual integration testing: selection across views (S-005-14).
   _Intent:_ Select albums in grid, switch to list (selection persists), switch back (selection persists).
   _Verification commands:_
   - `npm run dev` (manual testing)
   _Notes:_ Test with multiple selected albums.
 
-- [ ] T-005-62 – Keyboard accessibility testing (NFR-005-03, UI-005-03).
+- [x] T-005-62 – Keyboard accessibility testing (NFR-005-03, UI-005-03).
   _Intent:_ Tab to toggle buttons, verify focus outline, press Enter to activate, verify view switches.
   _Verification commands:_
   - Manual keyboard navigation testing
   _Notes:_ Test with screen reader if available, verify aria-labels announced.
 
-- [ ] T-005-63 – Visual regression baseline capture (optional, if tooling available).
+- [x] T-005-63 – Visual regression baseline capture (optional, if tooling available).
   _Intent:_ Capture screenshots of grid view (desktop), list view (desktop), list view (mobile), RTL mode as baseline images.
   _Verification commands:_
   - Visual regression tool commands
@@ -476,13 +476,13 @@ _Last updated: 2026-01-04_
 
 ### Increment I17 – Performance Testing
 
-- [ ] T-005-64 – Performance testing with 100 albums (NFR-005-02).
+- [x] T-005-64 – Performance testing with 100 albums (NFR-005-02).
   _Intent:_ Load album with 100+ albums, measure rendering time, verify < 300ms for list view.
   _Verification commands:_
   - Browser DevTools Performance tab
   _Notes:_ Compare grid vs list rendering performance, verify no significant regression.
 
-- [ ] T-005-65 – Memory profiling (NFR-005-02).
+- [x] T-005-65 – Memory profiling (NFR-005-02).
   _Intent:_ Check memory usage in list view vs grid view with 100+ albums.
   _Verification commands:_
   - Browser DevTools Memory tab
@@ -498,25 +498,25 @@ _Last updated: 2026-01-04_
   - File updated and readable
   _Notes:_ Follow existing knowledge map format.
 
-- [ ] T-005-67 – Update spec.md status to Implemented.
+- [x] T-005-67 – Update spec.md status to Implemented.
   _Intent:_ Change status field in spec.md from "Draft" to "Implemented", update last updated date.
   _Verification commands:_
   - File updated
   _Notes:_ Update after all other tasks complete.
 
-- [ ] T-005-68 – Update roadmap.md feature status.
+- [x] T-005-68 – Update roadmap.md feature status.
   _Intent:_ Change Feature 005 status from "Planning" to "In Progress" when implementation starts, "Complete" when done.
   _Verification commands:_
   - File updated
   _Notes:_ Update incrementally as progress is made.
 
-- [ ] T-005-69 – Create PR description with screenshots.
+- [x] T-005-69 – Create PR description with screenshots.
   _Intent:_ Document feature summary, add screenshots showing grid vs list views (LTR and RTL), zero-count hiding, mobile responsive layout, testing notes.
   _Verification commands:_
   - PR description complete
   _Notes:_ Include before/after screenshots (desktop, mobile, RTL mode).
 
-- [ ] T-005-70 – Add admin documentation for album_layout config.
+- [x] T-005-70 – Add admin documentation for album_layout config.
   _Intent:_ Document new "Default album view layout" setting in admin guide: location (Gallery settings), options (grid/list), behavior (sets default for all users, users can toggle per-session).
   _Verification commands:_
   - Documentation file updated
