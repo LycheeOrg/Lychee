@@ -15,6 +15,7 @@ declare namespace App.DTO {
 declare namespace App.Enum {
 	export type AlbumDecorationOrientation = "row" | "row-reverse" | "column" | "column-reverse";
 	export type AlbumDecorationType = "none" | "layers" | "album" | "photo" | "all";
+	export type AlbumLayoutType = "list" | "grid";
 	export type AspectRatioCSSType = "aspect-5x4" | "aspect-4x5" | "aspect-3x2" | "aspect-square" | "aspect-2x3" | "aspect-video";
 	export type AspectRatioType = "5/4" | "3/2" | "1/1" | "2/3" | "4/5" | "16/9";
 	export type CacheTag = "gallery" | "auth" | "user" | "settings" | "statistics" | "users";
@@ -377,6 +378,7 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		number_albums_per_row_mobile: 1 | 2 | 3;
 		photo_thumb_info: App.Enum.PhotoThumbInfoType;
 		is_photo_thumb_tags_enabled: boolean;
+		album_layout: App.Enum.AlbumLayoutType;
 		is_thumb_download_enabled: boolean;
 		is_thum2x_download_enabled: boolean;
 		is_small_download_enabled: boolean;
