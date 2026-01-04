@@ -45,11 +45,11 @@ class SetParent implements SharedPipe
 			// Avoid unnecessary DB request, when we access the album of a
 			// photo later (e.g. when a notification is sent).
 			$state->photo->load('albums');
-		}
 
-		// Dispatch event for album stats recomputation
-		// This must be done after SetParent so the photo_album relationship exists
-		PhotoSaved::dispatch($state->photo->id);
+			// Dispatch event for album stats recomputation
+			// This must be done after SetParent so the photo_album relationship exists
+			PhotoSaved::dispatch($state->photo->id);
+		}
 
 		return $next($state);
 	}
