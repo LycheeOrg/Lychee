@@ -22,7 +22,7 @@
 			}"
 			:data-album-id="album.id"
 		>
-			<AlbumThumbImage class="group-hover:border-primary-500" :thumb="album.thumb" :is-password-protected="album.is_password_required" />
+			<AlbumThumbImage class="border-none! hover:scale-800 hover:z-30" :thumb="album.thumb" :is-password-protected="album.is_password_required" />
 		</router-link>
 
 		<!-- Content (title + counts) -->
