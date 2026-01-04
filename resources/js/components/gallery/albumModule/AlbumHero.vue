@@ -108,7 +108,6 @@
 							class="border-none"
 							severity="secondary"
 							text
-							:aria-label="$t('view.grid')"
 							@click="toggleAlbumView('grid')"
 						/>
 						<Button
@@ -117,7 +116,6 @@
 							class="border-none"
 							severity="secondary"
 							text
-							:aria-label="$t('view.list')"
 							@click="toggleAlbumView('list')"
 						/>
 
