@@ -23,7 +23,7 @@
 			:data-album-id="album.id"
 		>
 			<AlbumThumbImage
-				class="border-none! hover:scale-800 hover:z-30 top-0 left-0"
+				class="border-none! hover:scale-800 hover:ltr:-translate-x-full hover:rtl:translate-x-full  ltr:origin-left rtl:origin-right hover:z-30 top-0 left-0"
 				:thumb="album.thumb"
 				:is-password-protected="album.is_password_required"
 			/>
