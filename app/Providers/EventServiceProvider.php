@@ -24,6 +24,7 @@ use App\Events\PhotoSaved;
 use App\Events\TaggedRouteCacheUpdated;
 use App\Listeners\AlbumCacheCleaner;
 use App\Listeners\CacheListener;
+use App\Listeners\LogQueryTimeout;
 use App\Listeners\MetricsListener;
 use App\Listeners\OrderCompletedListener;
 use App\Listeners\RecomputeAlbumSizeOnAlbumChange;
@@ -36,6 +37,7 @@ use Illuminate\Cache\Events\CacheHit;
 use Illuminate\Cache\Events\CacheMissed;
 use Illuminate\Cache\Events\KeyForgotten;
 use Illuminate\Cache\Events\KeyWritten;
+use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Event;
 use SocialiteProviders\Amazon\AmazonExtendSocialite;
@@ -90,6 +92,11 @@ class EventServiceProvider extends ServiceProvider
 
 		Event::listen(AlbumRouteCacheUpdated::class, AlbumCacheCleaner::class . '@handle');
 		Event::listen(TaggedRouteCacheUpdated::class, TaggedRouteCacheCleaner::class . '@handle');
+
+		// Log slow/timeout SQL queries when DB_LOG_SQL is enabled
+		if (config('database.db_log_sql', false) === true) {
+			Event::listen(QueryExecuted::class, LogQueryTimeout::class . '@handle');
+		}
 
 		Event::listen(AlbumDownload::class, MetricsListener::class . '@handle');
 		Event::listen(AlbumShared::class, MetricsListener::class . '@handle');
