@@ -10,7 +10,6 @@ namespace App\Actions\Photo\Pipes\Shared;
 
 use App\Contracts\PhotoCreate\PhotoDTO;
 use App\Contracts\PhotoCreate\PhotoPipe;
-use App\Events\PhotoSaved;
 
 /**
  * Persist current Photo object into database.
