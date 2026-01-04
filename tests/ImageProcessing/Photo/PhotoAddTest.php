@@ -18,6 +18,9 @@
 
 namespace Tests\ImageProcessing\Photo;
 
+use App\Jobs\RecomputeAlbumSizeJob;
+use App\Jobs\RecomputeAlbumStatsJob;
+use Illuminate\Support\Facades\Queue;
 use Tests\Constants\TestConstants;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
@@ -158,5 +161,33 @@ class PhotoAddTest extends BaseApiWithDataTest
 		$id = $response->json('resource.photos.0.id');
 		$response = $this->deleteJson('Photo', ['photo_ids' => [$id], 'from_id' => 'unsorted']);
 		$this->assertNoContent($response);
+	}
+
+	public function testPhotoUploadDispatchesJobs(): void
+	{
+		// Fake only the recompute jobs, not the ProcessImageJob
+		// This allows the photo upload to complete while capturing the recompute job dispatches
+		Queue::fake([
+			RecomputeAlbumStatsJob::class,
+			RecomputeAlbumSizeJob::class,
+		]);
+
+		$this->catchFailureSilence = [];
+
+		// Upload a photo to an album
+		$response = $this->actingAs($this->admin)->upload('Photo', filename: TestConstants::SAMPLE_FILE_NIGHT_IMAGE, album_id: $this->album1->id);
+		$this->assertCreated($response);
+
+		// Assert that RecomputeAlbumStatsJob was dispatched for the album
+		Queue::assertPushed(RecomputeAlbumStatsJob::class, function (RecomputeAlbumStatsJob $job) {
+			return $job->album_id === $this->album1->id;
+		});
+
+		// Assert that RecomputeAlbumSizeJob was dispatched for the album
+		Queue::assertPushed(RecomputeAlbumSizeJob::class, function (RecomputeAlbumSizeJob $job) {
+			return $job->album_id === $this->album1->id;
+		});
+
+		$this->catchFailureSilence = ["App\Exceptions\MediaFileOperationException"];
 	}
 }
