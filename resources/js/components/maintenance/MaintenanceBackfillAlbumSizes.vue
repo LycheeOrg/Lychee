@@ -16,7 +16,7 @@
 				<ProgressSpinner v-if="loading" class="w-full"></ProgressSpinner>
 			</ScrollPanel>
 			<div class="flex gap-4 mt-1">
-				<Button v-if="data !== 0 && data !== undefined && !loading" severity="primary" class="w-full border-none" @click="exec">
+				<Button v-if="data !== 0 && !loading" severity="primary" class="w-full border-none" @click="exec">
 					{{ $t("maintenance.backfill-album-sizes.button") }}
 				</Button>
 			</div>
