@@ -28,6 +28,7 @@ use App\Models\TagAlbum;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Query\Builder as BaseBuilder;
+use Illuminate\Support\Facades\DB;
 use Safe\Exceptions\ArrayException;
 
 /**
@@ -87,7 +88,7 @@ class Delete
 			/** @var Collection<int,Album> $albums */
 			/** @phpstan-ignore varTag.type (False positive, NestedSetCollection requires Eloquent Collection) */
 			$albums = Album::query()
-				->without(['cover', 'thumb', 'min_privilege_cover', 'max_privilege_cover'])
+				->without(['cover', 'thumb', 'min_privilege_cover', 'max_privilege_cover', 'owner', 'access_permissions', 'statistics'])
 				->select(['id', 'parent_id', '_lft', '_rgt', 'track_short_path'])
 				->findMany($album_ids);
 
@@ -100,7 +101,11 @@ class Delete
 			/** @var Album $album */
 			foreach ($albums as $album) {
 				// Collect all (aka recursive) sub-albums in each album
-				$sub_albums = $album->descendants()->getQuery()->without(['cover', 'thumb', 'min_privilege_cover', 'max_privilege_cover'])->select(['id', 'track_short_path'])->get();
+				// Use DB::table directly to avoid any Eloquent overhead and eager loading
+				$sub_albums = DB::table('albums')
+					->select(['id', 'track_short_path'])
+					->whereBetween('_lft', [$album->_lft + 1, $album->_rgt - 1])
+					->get();
 				$recursive_album_ids = array_merge($recursive_album_ids, $sub_albums->pluck('id')->all());
 				$recursive_album_tracks = $recursive_album_tracks->merge($sub_albums->pluck('track_short_path'));
 			}
