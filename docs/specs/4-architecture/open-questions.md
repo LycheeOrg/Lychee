@@ -6,8 +6,339 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 | Question ID | Feature | Priority | Summary | Status | Opened | Updated |
 |-------------|---------|----------|---------|--------|--------|---------|
+| Q-007-01 | 007 | High | Pagination strategy (offset vs cursor) and page size configuration | Open | 2026-01-03 | 2026-01-03 |
+| Q-007-02 | 007 | High | API endpoint design (new endpoints vs modify existing) | Open | 2026-01-03 | 2026-01-03 |
+| Q-007-03 | 007 | Medium | Frontend loading strategy (load-more vs page navigation) | Open | 2026-01-03 | 2026-01-03 |
+| Q-007-04 | 007 | Medium | Config key naming and default values | Open | 2026-01-03 | 2026-01-03 |
+| Q-007-05 | 007 | Medium | Refactoring scope (extract album/photo fetching logic) | Open | 2026-01-03 | 2026-01-03 |
+| Q-007-06 | 007 | Low | Backward compatibility strategy for existing clients | Open | 2026-01-03 | 2026-01-03 |
 
 ## Question Details
+
+### Q-007-01: Pagination Strategy (Offset vs Cursor) and Page Size Configuration
+
+**Context:** Currently, sub-albums and photos are fetched in one request. Need to implement pagination with configurable page size stored in configs table.
+
+**Question:** What pagination strategy should be used, and how should page size be configured?
+
+**Options (ordered by preference):**
+
+**Option A: Offset-based pagination with config table page size (Recommended)**
+- **Strategy:** Use LIMIT/OFFSET SQL pagination (e.g., `?page=2&per_page=50`)
+- **Config:** Store `albums_per_page` and `photos_per_page` in configs table
+- **API Response:** Return `{data: [], current_page, last_page, total, per_page}`
+- **Pros:**
+  - Simple implementation (standard Laravel pagination)
+  - Easy to navigate to specific page (page numbers)
+  - Standard REST pattern
+  - Admin can configure page size via UI
+- **Cons:**
+  - Performance degrades on very large offsets (page 10000+)
+  - Can skip/duplicate items if data changes between requests
+
+**Option B: Cursor-based pagination**
+- **Strategy:** Use cursor/keyset pagination (e.g., `?cursor=abc123`)
+- **API Response:** Return `{data: [], next_cursor, has_more}`
+- **Pros:**
+  - Better performance for large datasets
+  - No skip/duplicate issues with data changes
+  - Efficient for infinite scroll
+- **Cons:**
+  - Cannot jump to specific page
+  - More complex implementation
+  - Harder to show total pages/items
+
+**Option C: Hybrid (offset for albums, cursor for photos)**
+- **Strategy:** Offset for sub-albums (usually small), cursor for photos (can be large)
+- **Pros:**
+  - Optimized for each use case
+- **Cons:**
+  - Inconsistent API design
+  - More complex implementation
+
+**Impact:** High - defines core API architecture and database query patterns
+
+---
+
+### Q-007-02: API Endpoint Design (New Endpoints vs Modify Existing)
+
+**Context:** Current album endpoint likely returns full nested data (children + photos). Need to decide how to expose paginated data.
+
+**Question:** Should we create new endpoints for pagination or modify existing endpoints?
+
+**Options (ordered by preference):**
+
+**Option A: Modify existing endpoints with optional pagination params (Recommended)**
+- **Approach:** Add optional `?page=N&per_page=M` params to existing `/api/albums/{id}` endpoint
+- **Behavior:** If pagination params present → return paginated data, else → return all (backward compat)
+- **Pros:**
+  - Single endpoint for both use cases
+  - Backward compatible (existing clients work unchanged)
+  - Simple frontend migration (add params when ready)
+- **Cons:**
+  - Endpoint behavior varies based on params
+  - May return different response structure (paginated vs non-paginated)
+
+**Option B: New paginated endpoints (e.g., `/api/albums/{id}/children`, `/api/albums/{id}/photos`)**
+- **Approach:** Create separate endpoints for fetching children and photos with built-in pagination
+- **Pros:**
+  - Clear separation of concerns
+  - Consistent response structure (always paginated)
+  - Can optimize queries independently
+  - Easier to document (single responsibility)
+- **Cons:**
+  - More endpoints to maintain
+  - Existing clients must migrate to new endpoints
+  - May duplicate some logic
+
+**Option C: Versioned API (e.g., `/api/v2/albums/{id}` with pagination built-in)**
+- **Approach:** Create v2 API with pagination as default
+- **Pros:**
+  - Clean break from legacy API
+  - Can redesign response structure
+- **Cons:**
+  - Major version bump
+  - Must maintain two API versions
+  - Complex migration
+
+**Impact:** High - affects API design, backward compatibility, and frontend migration strategy
+
+---
+
+### Q-007-03: Frontend Loading Strategy (Load-More vs Page Navigation)
+
+**Context:** Frontend needs to display paginated sub-albums and photos. Need UI pattern for loading additional data.
+
+**Question:** What frontend loading pattern should be used?
+
+**Options (ordered by preference):**
+
+**Option A: Infinite scroll / "Load More" button (Recommended)**
+- **UI:** Scroll to bottom or click "Load More" → fetch next page and append to grid
+- **State:** Track current page, append new items to existing array
+- **Pros:**
+  - Smooth UX (no page refresh)
+  - Works well with grid layouts
+  - Common pattern for photo galleries
+  - Good for mobile
+- **Cons:**
+  - No way to jump to specific page
+  - Browser back button doesn't work well
+  - Can accumulate many items in memory
+
+**Option B: Traditional page navigation (1, 2, 3 buttons)**
+- **UI:** Page number buttons at bottom, click to load specific page
+- **State:** Replace current items with new page items
+- **Pros:**
+  - Can jump to specific page
+  - Fixed memory usage (always N items)
+  - Clear page boundaries
+- **Cons:**
+  - Jarring UX (grid reloads on page change)
+  - Less common for photo galleries
+  - Requires total count for page numbers
+
+**Option C: Hybrid (Load More for photos, page navigation for albums)**
+- **UI:** Albums use page navigation, photos use infinite scroll
+- **Pros:**
+  - Optimized for each use case
+- **Cons:**
+  - Inconsistent UX
+  - More complex implementation
+
+**Impact:** Medium - affects UX and frontend implementation complexity
+
+---
+
+### Q-007-04: Config Key Naming and Default Values
+
+**Context:** Pagination page size will be stored in configs table. Need to define key names and defaults.
+
+**Question:** What should the config keys be named, and what are sensible default values?
+
+**Options (ordered by preference):**
+
+**Option A: Separate keys for albums and photos (Recommended)**
+- **Keys:**
+  - `albums_per_page` (default: 50)
+  - `photos_per_page` (default: 100)
+- **Pros:**
+  - Flexible (can tune each independently)
+  - Clear naming
+  - Albums usually fewer, can have smaller page size
+- **Cons:**
+  - Two config keys to manage
+
+**Option B: Single global pagination config**
+- **Keys:**
+  - `items_per_page` (default: 50)
+- **Pros:**
+  - Single config value
+  - Simpler
+- **Cons:**
+  - Less flexible (albums and photos have different characteristics)
+  - May not be optimal for both
+
+**Option C: Multiple granular configs**
+- **Keys:**
+  - `sub_albums_per_page` (default: 30)
+  - `photos_per_page` (default: 100)
+  - `search_results_per_page` (default: 50)
+- **Pros:**
+  - Very flexible
+- **Cons:**
+  - Many config keys
+  - Complex to manage
+
+**Default Values Rationale:**
+- Albums: 50 (sub-albums are usually fewer, 50 is comfortable)
+- Photos: 100 (photos can be many, 100 fills typical screen on desktop grid)
+
+**Impact:** Low - config naming is easy to change, but defaults affect UX
+
+---
+
+### Q-007-05: Refactoring Scope (Extract Album/Photo Fetching Logic)
+
+**Context:** User mentioned "consider extracting the logic that fetches albums/photos instead of full album data." This suggests refactoring data fetching into separate methods/classes.
+
+**Question:** How much refactoring should be done to extract fetching logic?
+
+**Options (ordered by preference):**
+
+**Option A: Extract to dedicated query classes/services (Recommended)**
+- **Approach:** Create `AlbumQueryService` and `PhotoQueryService` classes with methods like:
+  - `getChildren(albumId, page, perPage)`
+  - `getPhotos(albumId, page, perPage)`
+  - `getAlbumMetadata(albumId)` (lightweight, no children/photos)
+- **Pros:**
+  - Clean separation of concerns
+  - Reusable query logic
+  - Easier to test
+  - Can optimize queries independently
+- **Cons:**
+  - More classes to maintain
+  - Initial refactoring effort
+
+**Option B: Extract to repository pattern methods**
+- **Approach:** Add methods to `AlbumRepository`, `PhotoRepository`:
+  - `AlbumRepository::getChildrenPaginated(albumId, page, perPage)`
+  - `PhotoRepository::getPhotosPaginated(albumId, page, perPage)`
+- **Pros:**
+  - Follows repository pattern
+  - Centralized data access
+- **Cons:**
+  - May bloat repository classes
+  - Repositories already have many methods
+
+**Option C: Minimal refactoring (add pagination to existing methods)**
+- **Approach:** Modify existing controller methods to add pagination, no major refactoring
+- **Pros:**
+  - Faster implementation
+  - Less code churn
+- **Cons:**
+  - Doesn't improve code organization
+  - Misses opportunity to clean up data fetching
+
+**Impact:** Medium - affects code architecture and maintainability
+
+---
+
+### Q-007-06: Backward Compatibility Strategy for Existing Clients
+
+**Context:** Existing API clients (mobile apps, third-party integrations) may rely on current API returning all data. Need compatibility strategy.
+
+**Question:** How should we ensure existing clients don't break?
+
+**Options (ordered by preference):**
+
+**Option A: Pagination optional (params-based) - backward compatible (Recommended)**
+- **Behavior:** If `?page` param absent → return all data (current behavior), if present → return paginated
+- **Pros:**
+  - Fully backward compatible
+  - Existing clients work unchanged
+  - Gradual migration
+- **Cons:**
+  - Two code paths to maintain
+  - "Return all" path may be slow for large datasets
+
+**Option B: Always paginate, default to very high page size**
+- **Behavior:** Always return paginated response, default `per_page=1000` (effectively "all" for most cases)
+- **Pros:**
+  - Consistent response structure
+  - Forces pagination for all clients
+- **Cons:**
+  - May break clients expecting different response structure
+  - High default page size defeats purpose
+
+**Option C: Breaking change with deprecation period**
+- **Behavior:** Announce API change, give clients 3-6 months to migrate, then enforce pagination
+- **Pros:**
+  - Clean break, no legacy code paths
+  - Forces clients to adopt pagination
+- **Cons:**
+  - Breaks existing clients
+  - Requires coordination with users
+
+**Impact:** Medium - affects deployment strategy and user impact
+
+---
+
+### ~~Q-006-01: Filter UI Control Design and Interaction Pattern~~ ✅ RESOLVED
+
+**Decision:** Option D - Hover star list with minimum threshold filtering and toggle-off
+**Rationale:** User specified custom interaction: Display 5 hoverable stars. Empty stars = no filtering. Click on star N = show photos with rating ≥ N (minimum threshold). Click same star again = remove filtering. Combines visual clarity of inline stars with flexible threshold filtering.
+**Updated in spec:** FR-006-01, FR-006-02, FR-006-03, UI mockup section
+
+---
+
+### ~~Q-006-02: Filter Behavior for Unrated Photos~~ ✅ RESOLVED
+
+**Decision:** Addressed by Q-006-01 decision
+**Rationale:** Minimum threshold filtering (≥ N stars) inherently excludes unrated photos (which have no rating value). Empty stars (no filter) shows all photos including unrated.
+**Updated in spec:** FR-006-02, filtering logic section
+
+---
+
+### ~~Q-006-03: Filter State Persistence Strategy~~ ✅ RESOLVED
+
+**Decision:** Custom - State store persistence (like NSFW visibility)
+**Rationale:** User specified to keep selection in state store, similar to existing NSFW visibility pattern. State persists during session but managed by Pinia store, not localStorage (follows existing Lychee patterns for view state).
+**Updated in spec:** FR-006-04, NFR-006-01
+
+---
+
+### ~~Q-006-04: Multi-Rating Filter Support (AND vs OR)~~ ✅ RESOLVED
+
+**Decision:** Option C - Range filter (minimum threshold) as explained in Q-006-01
+**Rationale:** User clarified in Q-006-01 that clicking star N shows photos with rating ≥ N (3+ stars shows 3, 4, 5 star photos). Simple single-selection UI with flexible filtering capability.
+**Updated in spec:** FR-006-01, FR-006-02, filtering algorithm section
+
+---
+
+### ~~Q-005-01: List View Layout Structure and Information Display~~ ✅ RESOLVED
+
+**Decision:** Option A - Windows Details View Pattern
+**Rationale:** Familiar file manager pattern with horizontal row layout: `[Thumb 64px] [Album Name - Full] [X photos] [Y sub-albums]`. Scannable, information-dense, shows full untruncated album names.
+**Updated in spec:** FR-005-01, FR-005-02, UI mockup section
+
+---
+
+### ~~Q-005-02: Toggle Control Placement and Styling~~ ✅ RESOLVED
+
+**Decision:** Custom - AlbumHero.vue icon row (same line as statistics/download toggles)
+**Rationale:** User specified placement on the same line as the statistics and download toggle buttons in AlbumHero.vue (line 33, flex-row-reverse container). Follows existing icon pattern with px-3 spacing and hover animations.
+**Updated in spec:** FR-005-03, UI implementation section
+
+---
+
+### ~~Q-005-03: View Preference Persistence Strategy~~ ✅ RESOLVED
+
+**Decision:** Option B - LocalStorage/session-only (no backend)
+**Rationale:** Simple implementation, no backend changes needed, fast toggle response. User preference stored in browser localStorage per-device.
+**Updated in spec:** FR-005-04, NFR-005-01
+
+---
 
 ### ~~Q-003-09: Multi-user Cover Selection Strategy for computed_cover_id~~ ✅ RESOLVED
 
