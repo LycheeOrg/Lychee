@@ -17,18 +17,21 @@
 		}"
 		:data-album-id="props.album.id"
 	>
+		<!-- the v-if="!togglableStore.isDragging" is a work around to avoid weird behaviour in RTL mode. -->
 		<AlbumThumbImage
-			class="group-hover:border-primary-500 group-hover:-rotate-2 group-hover:-translate-x-3 group-hover:translate-y-2"
+			v-if="!togglableStore.isDragging"
+			class="group-hover:border-primary-500 top-0 left-0 group-hover:-rotate-2 group-hover:-translate-x-3 group-hover:translate-y-2"
 			:thumb="props.album.thumb"
 			:is-password-protected="props.album.is_password_required"
 		/>
 		<AlbumThumbImage
-			class="group-hover:border-primary-500 group-hover:rotate-6 group-hover:translate-x-3 group-hover:-translate-y-2"
+			v-if="!togglableStore.isDragging"
+			class="group-hover:border-primary-500 top-0 left-0 group-hover:rotate-6 group-hover:translate-x-3 group-hover:-translate-y-2"
 			:thumb="props.album.thumb"
 			:is-password-protected="props.album.is_password_required"
 		/>
 		<AlbumThumbImage
-			class="group-hover:border-primary-500"
+			class="group-hover:border-primary-500 top-0 left-0"
 			:thumb="props.album.thumb"
 			:class="cssClass"
 			:is-selectable="isSelectable"

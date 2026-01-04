@@ -25,7 +25,7 @@ export const useCatalogStore = defineStore("catalog-store", {
 				return Promise.resolve();
 			}
 
-			if (this.albumId === ALL || this.albumId === undefined) {
+			if (this.albumId === ALL || this.albumId === undefined || this.albumId.length < 24) {
 				return Promise.resolve();
 			}
 
