@@ -54,7 +54,7 @@ COPY vite.config.ts vite.embed.config.ts tsconfig.json ./
 RUN npm run build
 
 
-FROM debian:bookworm-slim AS base
+FROM debian:trixie-slim@sha256:4bcb9db66237237d03b55b969271728dd3d955eaaa254b9db8a3db94550b1885 AS base
 
 LABEL maintainer="lycheeorg"
 LABEL org.opencontainers.image.title="Lychee"
@@ -65,7 +65,7 @@ LABEL org.opencontainers.image.source="https://github.com/LycheeOrg/Lychee"
 LABEL org.opencontainers.image.url="https://lycheeorg.github.io"
 LABEL org.opencontainers.image.documentation="https://lycheeorg.dev/docs"
 LABEL org.opencontainers.image.licenses="MIT"
-LABEL org.opencontainers.image.base.name="debian:bookworm-slim"
+LABEL org.opencontainers.image.base.name="debian:trixie-slim"
 
 # Environment variables
 ENV PUID='1000'
@@ -74,6 +74,7 @@ ENV PHP_TZ=UTC
 
 # https://stackoverflow.com/questions/53377176/change-imagemagick-policy-on-a-dockerfile (for the sed on policy.xml)
 # Install base dependencies, add user and group, clone the repo and install php libraries
+# hadolint ignore=DL3008
 RUN \
 	set -ev && \
 	apt-get update && \
