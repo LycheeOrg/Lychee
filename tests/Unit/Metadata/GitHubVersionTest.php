@@ -26,14 +26,13 @@ use App\Metadata\Versions\Remote\GitCommits;
 use App\Metadata\Versions\Remote\GitTags;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
-use Mockery;
 use Tests\AbstractTestCase;
 
 class GitHubVersionTest extends AbstractTestCase
 {
 	protected function tearDown(): void
 	{
-		Mockery::close();
+		\Mockery::close();
 		parent::tearDown();
 	}
 
@@ -51,7 +50,7 @@ class GitHubVersionTest extends AbstractTestCase
 
 		Log::shouldReceive('warning')
 			->once()
-			->with(Mockery::pattern('/Could not read.*\.git\/HEAD/'));
+			->with(\Mockery::pattern('/Could not read.*\.git\/HEAD/'));
 
 		$version = new GitHubVersion();
 		$version->hydrate(false, true);
@@ -85,7 +84,7 @@ class GitHubVersionTest extends AbstractTestCase
 			->once()
 			->andReturn($commitContent);
 
-		$mockCommits = Mockery::mock(GitCommits::class);
+		$mockCommits = \Mockery::mock(GitCommits::class);
 		$this->app->instance(GitCommits::class, $mockCommits);
 
 		$version = new GitHubVersion();
@@ -124,7 +123,7 @@ class GitHubVersionTest extends AbstractTestCase
 			->once()
 			->andReturn($commitContent);
 
-		$mockRequest = Mockery::mock(CommitsRequest::class);
+		$mockRequest = \Mockery::mock(CommitsRequest::class);
 		$mockRequest->shouldReceive('get_json')
 			->with(true)
 			->andReturn($remoteData);
@@ -154,7 +153,7 @@ class GitHubVersionTest extends AbstractTestCase
 			->twice()
 			->andReturn($headContent);
 
-		$mockTags = Mockery::mock(GitTags::class);
+		$mockTags = \Mockery::mock(GitTags::class);
 		$this->app->instance(GitTags::class, $mockTags);
 
 		$version = new GitHubVersion();
@@ -184,7 +183,7 @@ class GitHubVersionTest extends AbstractTestCase
 			->twice()
 			->andReturn($headContent);
 
-		$mockRequest = Mockery::mock(TagsRequest::class);
+		$mockRequest = \Mockery::mock(TagsRequest::class);
 		$mockRequest->shouldReceive('get_json')
 			->with(true)
 			->andReturn($remoteData);
@@ -220,7 +219,7 @@ class GitHubVersionTest extends AbstractTestCase
 			->twice()
 			->andReturn($headContent);
 
-		$mockRequest = Mockery::mock(TagsRequest::class);
+		$mockRequest = \Mockery::mock(TagsRequest::class);
 		$mockRequest->shouldReceive('get_json')
 			->with(true)
 			->andReturn($remoteData);
@@ -260,7 +259,7 @@ class GitHubVersionTest extends AbstractTestCase
 			->once()
 			->andReturn($commitContent);
 
-		$mockCommits = Mockery::mock(GitCommits::class);
+		$mockCommits = \Mockery::mock(GitCommits::class);
 		$this->app->instance(GitCommits::class, $mockCommits);
 
 		$version = new GitHubVersion();
@@ -283,7 +282,7 @@ class GitHubVersionTest extends AbstractTestCase
 			->twice()
 			->andReturn($headContent);
 
-		$mockTags = Mockery::mock(GitTags::class);
+		$mockTags = \Mockery::mock(GitTags::class);
 		$this->app->instance(GitTags::class, $mockTags);
 
 		$version = new GitHubVersion();
@@ -317,7 +316,7 @@ class GitHubVersionTest extends AbstractTestCase
 			->once()
 			->andReturn($commitContent);
 
-		$mockCommits = Mockery::mock(GitCommits::class);
+		$mockCommits = \Mockery::mock(GitCommits::class);
 		$this->app->instance(GitCommits::class, $mockCommits);
 
 		$version = new GitHubVersion();
@@ -351,7 +350,7 @@ class GitHubVersionTest extends AbstractTestCase
 			->once()
 			->andReturn($commitContent);
 
-		$mockCommits = Mockery::mock(GitCommits::class);
+		$mockCommits = \Mockery::mock(GitCommits::class);
 		$this->app->instance(GitCommits::class, $mockCommits);
 
 		$version = new GitHubVersion();
@@ -409,7 +408,7 @@ class GitHubVersionTest extends AbstractTestCase
 			->once()
 			->andReturn($commitContent);
 
-		$mockRequest = Mockery::mock(CommitsRequest::class);
+		$mockRequest = \Mockery::mock(CommitsRequest::class);
 		$mockRequest->shouldReceive('get_json')
 			->with(true)
 			->andReturn($remoteData);
@@ -454,7 +453,7 @@ class GitHubVersionTest extends AbstractTestCase
 			->once()
 			->andReturn($commitContent);
 
-		$mockRequest = Mockery::mock(CommitsRequest::class);
+		$mockRequest = \Mockery::mock(CommitsRequest::class);
 		$mockRequest->shouldReceive('get_json')
 			->with(true)
 			->andReturn($remoteData);
@@ -518,7 +517,7 @@ class GitHubVersionTest extends AbstractTestCase
 			->once()
 			->andReturn($commitContent);
 
-		$mockRequest = Mockery::mock(CommitsRequest::class);
+		$mockRequest = \Mockery::mock(CommitsRequest::class);
 		$mockRequest->shouldReceive('get_json')
 			->with(true)
 			->andReturn($remoteData);
@@ -563,7 +562,7 @@ class GitHubVersionTest extends AbstractTestCase
 			->once()
 			->andReturn($commitContent);
 
-		$mockRequest = Mockery::mock(CommitsRequest::class);
+		$mockRequest = \Mockery::mock(CommitsRequest::class);
 		$mockRequest->shouldReceive('get_json')
 			->with(true)
 			->andReturn($remoteData);
@@ -604,7 +603,7 @@ class GitHubVersionTest extends AbstractTestCase
 			->once()
 			->andReturn($commitContent);
 
-		$mockRequest = Mockery::mock(CommitsRequest::class);
+		$mockRequest = \Mockery::mock(CommitsRequest::class);
 		$mockRequest->shouldReceive('get_json')
 			->with(true)
 			->andReturn($remoteData);
@@ -644,7 +643,7 @@ class GitHubVersionTest extends AbstractTestCase
 			->once()
 			->andReturn($commitContent);
 
-		$mockCommits = Mockery::mock(GitCommits::class);
+		$mockCommits = \Mockery::mock(GitCommits::class);
 		$this->app->instance(GitCommits::class, $mockCommits);
 
 		Helpers::shouldReceive('hasFullPermissions')
@@ -688,7 +687,7 @@ class GitHubVersionTest extends AbstractTestCase
 			->once()
 			->andReturn($commitContent);
 
-		$mockCommits = Mockery::mock(GitCommits::class);
+		$mockCommits = \Mockery::mock(GitCommits::class);
 		$this->app->instance(GitCommits::class, $mockCommits);
 
 		Helpers::shouldReceive('hasFullPermissions')
@@ -716,7 +715,7 @@ class GitHubVersionTest extends AbstractTestCase
 			->twice()
 			->andReturn($headContent);
 
-		$mockTags = Mockery::mock(GitTags::class);
+		$mockTags = \Mockery::mock(GitTags::class);
 		$this->app->instance(GitTags::class, $mockTags);
 
 		Helpers::shouldReceive('hasFullPermissions')
@@ -756,9 +755,9 @@ class GitHubVersionTest extends AbstractTestCase
 
 		Log::shouldReceive('warning')
 			->once()
-			->with(Mockery::pattern('/Could not read.*\.git\/refs\/heads\/master/'));
+			->with(\Mockery::pattern('/Could not read.*\.git\/refs\/heads\/master/'));
 
-		$mockCommits = Mockery::mock(GitCommits::class);
+		$mockCommits = \Mockery::mock(GitCommits::class);
 		$this->app->instance(GitCommits::class, $mockCommits);
 
 		$version = new GitHubVersion();
@@ -793,7 +792,7 @@ class GitHubVersionTest extends AbstractTestCase
 			->once()
 			->andReturn($commitContent);
 
-		$mockCommits = Mockery::mock(GitCommits::class);
+		$mockCommits = \Mockery::mock(GitCommits::class);
 		$mockCommits->shouldNotReceive('fetchRemote');
 		$this->app->instance(GitCommits::class, $mockCommits);
 
