@@ -94,9 +94,7 @@ RUN apt-get update \
     pcntl \
     exif \
     imagick \
-    intl \
     redis \
-    tokenizer \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
