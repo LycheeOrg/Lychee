@@ -4,6 +4,7 @@
 		:class="{
 			'bg-primary-100 dark:bg-primary-900/50': isSelected,
 		}"
+		:data-album-id="album.id"
 		@click="$emit('clicked', $event, album)"
 		@contextmenu.prevent="$emit('contexted', $event, album)"
 	>
@@ -20,10 +21,9 @@
 				'aspect-square': 'aspect-square' === aspectRatio,
 				'aspect-video': 'aspect-video' === aspectRatio,
 			}"
-			:data-album-id="album.id"
 		>
 			<AlbumThumbImage
-				class="border-none! hover:scale-800 hover:ltr:-translate-x-full hover:rtl:translate-x-full  ltr:origin-left rtl:origin-right hover:z-30 top-0 left-0"
+				class="border-none! hover:scale-800 hover:ltr:-translate-x-full hover:rtl:translate-x-full ltr:origin-left rtl:origin-right hover:z-30 top-0 left-0"
 				:thumb="album.thumb"
 				:is-password-protected="album.is_password_required"
 			/>

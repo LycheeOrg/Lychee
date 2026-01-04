@@ -316,7 +316,7 @@ _Last updated: 2026-01-04_
   - `npm run dev` (manual testing with Shift+Click)
   _Notes:_ Test both forwards and backwards range selection.
 
-- [ ] T-005-42 – Test drag-select in list view (FR-005-08, S-005-13).
+- [x] T-005-42 – Test drag-select in list view (FR-005-08, S-005-13).
   _Intent:_ Click and drag over multiple albums → SelectDrag overlay appears, albums within overlay are selected.
   _Verification commands:_
   - `npm run dev` (manual testing with mouse drag)

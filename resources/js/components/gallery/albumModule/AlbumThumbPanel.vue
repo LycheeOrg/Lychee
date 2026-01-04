@@ -36,9 +36,7 @@
 			:align="isLTR() ? 'left' : 'right'"
 		>
 			<template #content="slotProps">
-				<div
-					:dir="isLTR() ? 'ltr': 'rtl'"
-					class="flex flex-wrap flex-row shrink w-full justify-start gap-1 sm:gap-2 md:gap-4 pb-8">
+				<div :dir="isLTR() ? 'ltr' : 'rtl'" class="flex flex-wrap flex-row shrink w-full justify-start gap-1 sm:gap-2 md:gap-4 pb-8">
 					<div class="w-full ltr:text-left rtl:text-right font-semibold text-muted-color-emphasis text-lg">{{ slotProps.item.header }}</div>
 
 					<!-- List view -->
