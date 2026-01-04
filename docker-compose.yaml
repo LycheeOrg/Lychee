@@ -394,6 +394,8 @@ services:
     depends_on:
       lychee_db:
         condition: service_healthy
+      lychee_api:
+        condition: service_healthy
 
     # Worker health check
     # Verifies queue:work process is running

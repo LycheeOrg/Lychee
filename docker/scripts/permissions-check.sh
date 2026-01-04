@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/usr/bin/env bash
 # shellcheck disable=SC3040
-set -euo
+set -euo pipefail
 
 echo "🔍 Validating permissions..."
 

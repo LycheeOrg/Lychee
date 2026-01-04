@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/usr/bin/env bash
 # shellcheck disable=SC3040
-set -euo
+set -euo pipefail
 
 # Check if admin user creation is requested
 if [ -n "${ADMIN_USER:-}" ]; then

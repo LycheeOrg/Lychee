@@ -1,11 +1,15 @@
-#!/bin/sh
+#!/usr/bin/env bash
 # shellcheck disable=SC3040
-set -euo
+set -euo pipefail
 
 echo "🚀 Starting Lychee entrypoint..."
 
 # Run environment validation
 /usr/local/bin/validate-env.sh
+
+# This is commended for now as FrankenPHP uses native env vars
+# And we are double checking that php also has access to them
+# If php is complaining, then we can re-enable this.
 
 # Dump environment variables to .env file for Laravel (only if not using FrankenPHP)
 # if [ ! -f "/app/frankenphp_target" ]; then
