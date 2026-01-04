@@ -188,6 +188,14 @@ function openSearch() {
 	router.push({ name: "search" });
 }
 
+function toggleToGrid() {
+	lycheeStore.album_view_mode = "grid";
+}
+
+function toggleToList() {
+	lycheeStore.album_view_mode = "list";
+}
+
 onKeyStroke("n", () => !shouldIgnoreKeystroke() && albumsStore.rootRights?.can_upload && (is_create_album_visible.value = true));
 onKeyStroke("u", () => !shouldIgnoreKeystroke() && albumsStore.rootRights?.can_upload && (is_upload_visible.value = true));
 onKeyStroke("/", () => !shouldIgnoreKeystroke() && albumsStore.rootConfig?.is_search_accessible && openSearch());
@@ -256,6 +264,20 @@ const menu = computed(() =>
 			icon: "pi pi-heart",
 			if: userStore.isLoggedIn && is_favourite_enabled.value && (favourites.photos?.length ?? 0) > 0,
 			key: "favourites",
+		},
+		{
+			icon: "pi pi-th-large",
+			type: "fn",
+			callback: toggleToGrid,
+			if: lycheeStore.album_view_mode === "list",
+			key: "view_grid",
+		},
+		{
+			icon: "pi pi-list",
+			type: "fn",
+			callback: toggleToList,
+			if: lycheeStore.album_view_mode === "grid",
+			key: "view_list",
 		},
 		{
 			icon: "pi pi-search",
