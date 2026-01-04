@@ -152,7 +152,7 @@ COPY docker/scripts/create-admin-user.sh /usr/local/bin/create-admin-user.sh
 COPY docker/scripts/permissions-check.sh /usr/local/bin/permissions-check.sh
 COPY docker/scripts/dump-env.sh /usr/local/bin/dump-env.sh
 COPY docker/nginx.conf /etc/nginx/nginx.conf
-RUN chmod +x /usr/local/bin/entrypoint.sh /usr/local/bin/validate-env.sh /usr/local/bin/permissions-check.sh /usr/local/bin/create-admin-user.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh /usr/local/bin/validate-env.sh /usr/local/bin/permissions-check.sh /usr/local/bin/create-admin-user.sh /usr/local/bin/dump-env.sh
 
 # Expose port 8000 (Octane)
 EXPOSE 8000
