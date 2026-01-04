@@ -15,16 +15,16 @@ COPY composer.json composer.lock ./
 # Install dependencies (no dev packages for production)
 # Remove markdown and test directories to slim down the image
 RUN composer install \
-    --no-dev \
-    --no-interaction \
-    --no-progress \
-    --no-scripts \
-    --prefer-dist \
-    --optimize-autoloader \
-    --ignore-platform-reqs \
-    && find vendor \
-    \( -iname "*.md" -o -iname "test" -o -iname "tests" \) \
-    -exec rm -rf {} +
+	--no-dev \
+	--no-interaction \
+	--no-progress \
+	--no-scripts \
+	--prefer-dist \
+	--optimize-autoloader \
+	--ignore-platform-reqs \
+	&& find vendor \
+	\( -iname "*.md" -o -iname "test" -o -iname "tests" \) \
+	-exec rm -rf {} +
 
 # ============================================================================
 # Stage 2: Node.js Build for Frontend Assets
@@ -75,48 +75,48 @@ ENV PHP_TZ=UTC
 # https://stackoverflow.com/questions/53377176/change-imagemagick-policy-on-a-dockerfile (for the sed on policy.xml)
 # Install base dependencies, add user and group, clone the repo and install php libraries
 RUN \
-    set -ev && \
-    apt-get update && \
-    apt-get upgrade -qy && \
-    apt-get install -qy --no-install-recommends\
-    ca-certificates \
-    curl \
-    apt-transport-https && \
-    curl -sSLo /tmp/debsuryorg-archive-keyring.deb https://packages.sury.org/debsuryorg-archive-keyring.deb && \
-    dpkg -i /tmp/debsuryorg-archive-keyring.deb && \
-    sh -c 'echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.org/php/ bookworm main" > /etc/apt/sources.list.d/php.list' && \
-    apt-get update && \
-    apt-get install -qy --no-install-recommends \
-    adduser \
-    nginx-light \
-    php8.5-mysql \
-    php8.5-pgsql \
-    php8.5-sqlite3 \
-    php8.5-imagick \
-    php8.5-mbstring \
-    php8.5-gd \
-    php8.5-xml \
-    php8.5-zip \
-    php8.5-fpm \
-    php8.5-redis \
-    php8.5-bcmath \
-    php8.5-intl \
+	set -ev && \
+	apt-get update && \
+	apt-get upgrade -qy && \
+	apt-get install -qy --no-install-recommends\
+	ca-certificates \
+	curl \
+	apt-transport-https && \
+	curl -sSLo /tmp/debsuryorg-archive-keyring.deb https://packages.sury.org/debsuryorg-archive-keyring.deb && \
+	dpkg -i /tmp/debsuryorg-archive-keyring.deb && \
+	sh -c 'echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.org/php/ bookworm main" > /etc/apt/sources.list.d/php.list' && \
+	apt-get update && \
+	apt-get install -qy --no-install-recommends \
+	adduser \
+	nginx-light \
+	php8.5-mysql \
+	php8.5-pgsql \
+	php8.5-sqlite3 \
+	php8.5-imagick \
+	php8.5-mbstring \
+	php8.5-gd \
+	php8.5-xml \
+	php8.5-zip \
+	php8.5-fpm \
+	php8.5-redis \
+	php8.5-bcmath \
+	php8.5-intl \
 	netcat-openbsd \
-    libimage-exiftool-perl \
-    ffmpeg \
-    jpegoptim \
-    optipng \
-    pngquant \
-    gifsicle \
-    webp \
-    cron \
-    ghostscript && \
-    sed -i 's/<policy domain="coder" rights="none" pattern="PDF" \/>/<policy domain="coder" rights="read|write" pattern="PDF" \/>/g' /etc/ImageMagick-6/policy.xml && \
-    usermod -o -u "$PUID" "www-data" && \
-    groupmod -o -g "$PGID" "www-data" && \
-    echo "* * * * * www-data cd /app && php artisan schedule:run >> /dev/null 2>&1" >> /etc/crontab && \
-    apt-get clean -qy && \
-    rm -rf /var/lib/apt/lists/*
+	libimage-exiftool-perl \
+	ffmpeg \
+	jpegoptim \
+	optipng \
+	pngquant \
+	gifsicle \
+	webp \
+	cron \
+	ghostscript && \
+	sed -i 's/<policy domain="coder" rights="none" pattern="PDF" \/>/<policy domain="coder" rights="read|write" pattern="PDF" \/>/g' /etc/ImageMagick-6/policy.xml && \
+	usermod -o -u "$PUID" "www-data" && \
+	groupmod -o -g "$PGID" "www-data" && \
+	echo "* * * * * www-data cd /app && php artisan schedule:run >> /dev/null 2>&1" >> /etc/crontab && \
+	apt-get clean -qy && \
+	rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
@@ -131,19 +131,19 @@ COPY --from=node --chown=www-data:www-data /app/public/build ./public/build
 
 # Ensure storage and bootstrap/cache are writable with minimal permissions
 RUN mkdir -p storage/framework/cache \
-    storage/framework/sessions \
-    storage/framework/views \
-    storage/logs \
-    bootstrap/cache \
-    public/dist \
-    && chown -R www-data:www-data storage bootstrap/cache public/dist \
-    && chmod -R 750 storage bootstrap/cache \
-    && chmod -R 755 public/dist \
-    && touch /app/docker_target \
-    && touch /app/public/dist/user.css \
-    && touch /app/public/dist/custom.js \
-    && chown www-data:www-data /app/public/dist/user.css /app/public/dist/custom.js \
-    && chmod 644 /app/public/dist/user.css /app/public/dist/custom.js
+	storage/framework/sessions \
+	storage/framework/views \
+	storage/logs \
+	bootstrap/cache \
+	public/dist \
+	&& chown -R www-data:www-data storage bootstrap/cache public/dist \
+	&& chmod -R 750 storage bootstrap/cache \
+	&& chmod -R 755 public/dist \
+	&& touch /app/docker_target \
+	&& touch /app/public/dist/user.css \
+	&& touch /app/public/dist/custom.js \
+	&& chown www-data:www-data /app/public/dist/user.css /app/public/dist/custom.js \
+	&& chmod 644 /app/public/dist/user.css /app/public/dist/custom.js
 
 # Copy entrypoint and validation scripts
 COPY docker/scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
