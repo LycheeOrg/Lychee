@@ -1,6 +1,6 @@
 #!/bin/sh
 # shellcheck disable=SC3040
-set -euo pipefail
+set -euo
 
 echo "🔍 Validating environment variables..."
 

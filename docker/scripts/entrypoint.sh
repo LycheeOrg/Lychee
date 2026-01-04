@@ -1,11 +1,18 @@
 #!/bin/sh
 # shellcheck disable=SC3040
-set -euo pipefail
+set -euo
 
 echo "🚀 Starting Lychee entrypoint..."
 
 # Run environment validation
 /usr/local/bin/validate-env.sh
+
+# Dump environment variables to .env file for Laravel (only if not using FrankenPHP)
+# if [ ! -f "/app/frankenphp_target" ]; then
+#     /usr/local/bin/dump-env.sh
+# else
+#     echo "ℹ️  Skipping .env dump (FrankenPHP uses native environment variables)"
+# fi
 
 # Wait for database to be ready
 if [ "${DB_CONNECTION:-}" = "mysql" ] || [ "${DB_CONNECTION:-}" = "pgsql" ]; then
@@ -46,14 +53,18 @@ if [ "$PGID" -lt 33 ] || [ "$PGID" -gt 65534 ]; then
     exit 1
 fi
 
-# Only modify user/group if shadow package is available
-if command -v usermod >/dev/null 2>&1; then
-    if [ "$(id -u www-data)" -ne "$PUID" ]; then
-        usermod -o -u "$PUID" www-data
-    fi
-    if [ "$(id -g www-data)" -ne "$PGID" ]; then
-        groupmod -o -g "$PGID" www-data
-    fi
+if pgrep -u www-data >/dev/null; then
+  echo "www-data has running processes; skipping usermod"
+else
+	if command -v usermod >/dev/null 2>&1; then
+	# Only modify user/group if shadow package is available
+		if [ "$(id -u www-data)" -ne "$PUID" ]; then
+			usermod -o -u "$PUID" www-data
+		fi
+		if [ "$(id -g www-data)" -ne "$PGID" ]; then
+			groupmod -o -g "$PGID" www-data
+		fi
+	fi
 fi
 echo "  User UID: $(id -u www-data)"
 echo "  User GID: $(id -g www-data)"
@@ -92,6 +103,13 @@ case "$LYCHEE_MODE" in
         php artisan view:cache
 
         echo "✅ Application ready!"
+
+
+		if [ ! -f "/app/frankenphp_target" ]; then
+		# Start PHP-FPM and Nginx for traditional Docker setup
+			echo "🚀 Starting PHP-FPM..."
+			php-fpm8.5
+		fi
 
         # Execute the main command (from Dockerfile CMD: octane:start)
         exec "$@"
