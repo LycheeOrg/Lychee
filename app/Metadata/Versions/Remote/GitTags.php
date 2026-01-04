@@ -28,7 +28,7 @@ use App\Metadata\Versions\Trimable;
  *    "node_id": "MDM6UmVmMTQzOTc1ODA0OnJlZnMvdGFncy92NC42LjMtUkMx"
  *  },]
  */
-final class GitTags extends AbstractGitRemote implements GitRemote
+class GitTags extends AbstractGitRemote implements GitRemote
 {
 	use Trimable;
 
