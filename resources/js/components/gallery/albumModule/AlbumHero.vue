@@ -110,14 +110,7 @@
 							text
 							@click="toggleAlbumView('grid')"
 						/>
-						<Button
-							v-else
-							icon="pi pi-list"
-							class="border-none"
-							severity="secondary"
-							text
-							@click="toggleAlbumView('list')"
-						/>
+						<Button v-else icon="pi pi-list" class="border-none" severity="secondary" text @click="toggleAlbumView('list')" />
 
 						<template v-if="isTouchDevice() && userStore.isLoggedIn">
 							<a
