@@ -165,6 +165,6 @@ ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 #     chmod +x /inject.sh && \
 #     if [ ! -e /run/php ] ; then mkdir /run/php ; fi
 
-HEALTHCHECK CMD curl --fail http://localhost:80/ || exit 1
+HEALTHCHECK CMD curl --fail http://localhost:8000/ || exit 1
 
 CMD [ "nginx" ]
