@@ -282,19 +282,19 @@ _Last updated: 2026-01-04_
 
 ### Increment I9 – RTL Layout Testing
 
-- [ ] T-005-37 – Enable RTL mode for testing (FR-005-01, S-005-11).
+- [x] T-005-37 – Enable RTL mode for testing (FR-005-01, S-005-11).
   _Intent:_ Configure application to RTL mode (change `dir="rtl"` in HTML or use app settings).
   _Verification commands:_
   - Manual inspection in browser
   _Notes:_ Check if Lychee has RTL mode setting in config or needs manual HTML attribute.
 
-- [ ] T-005-38 – Test list view RTL alignment (FR-005-01, S-005-11).
+- [x] T-005-38 – Test list view RTL alignment (FR-005-01, S-005-11).
   _Intent:_ Verify list rows are right-aligned in RTL mode: thumbnails on right side, text flows right-to-left.
   _Verification commands:_
   - `npm run dev` (visual inspection in RTL mode)
   _Notes:_ Verify `ltr:flex-row rtl:flex-row-reverse` and `ltr:text-left rtl:text-right` classes work correctly.
 
-- [ ] T-005-39 – Test toggle buttons in RTL mode (FR-005-03).
+- [x] T-005-39 – Test toggle buttons in RTL mode (FR-005-03).
   _Intent:_ Verify toggle buttons remain usable and correctly positioned in RTL layout.
   _Verification commands:_
   - `npm run dev` (RTL mode testing)
@@ -304,13 +304,13 @@ _Last updated: 2026-01-04_
 
 ### Increment I10 – Selection & Drag-Select Testing
 
-- [ ] T-005-40 – Test single album selection in list view (FR-005-07, S-005-12).
+- [x] T-005-40 – Test single album selection in list view (FR-005-07, S-005-12).
   _Intent:_ Click album with Ctrl (Windows/Linux) or Cmd (macOS) in list view → album selected (highlighted).
   _Verification commands:_
   - `npm run dev` (manual testing with Ctrl+Click and Cmd+Click)
   _Notes:_ Verify selection styling appears (`bg-primary-100 ring-2 ring-primary-500`).
 
-- [ ] T-005-41 – Test range selection in list view (FR-005-07, S-005-12).
+- [x] T-005-41 – Test range selection in list view (FR-005-07, S-005-12).
   _Intent:_ Click first album, Shift+Click third album → all albums in range selected.
   _Verification commands:_
   - `npm run dev` (manual testing with Shift+Click)
@@ -322,7 +322,7 @@ _Last updated: 2026-01-04_
   - `npm run dev` (manual testing with mouse drag)
   _Notes:_ Verify SelectDrag component overlay positions correctly over list rows.
 
-- [ ] T-005-43 – Test selection state persists across view switches (FR-005-07, S-005-14).
+- [x] T-005-43 – Test selection state persists across view switches (FR-005-07, S-005-14).
   _Intent:_ Select albums in grid view → switch to list → selection persists. Select albums in list → switch to grid → selection persists.
   _Verification commands:_
   - `npm run dev` (manual testing)

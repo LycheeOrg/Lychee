@@ -1,7 +1,5 @@
 <template>
-	<span
-		class="inline-block ltr:ml-1 rtl:mr-1 text-center"
-	>
+	<span class="inline-block ltr:ml-1 rtl:mr-1 text-center">
 		<i v-if="props.pi" :class="piClass" />
 		<svg v-if="props.icon" class="iconic inline w-4 h-4" :class="props.class">
 			<use :xlink:href="iconHref" />

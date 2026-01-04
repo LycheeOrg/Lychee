@@ -7,18 +7,17 @@
 		class="border-0 w-full"
 		:class="paddingTopClass"
 	>
-		<!-- List view -->
-		<AlbumListView
-			v-if="album_view_mode === 'list'"
-			:albums="props.albums"
-			:selected-ids="props.selectedAlbums"
-			@album-clicked="propagateClickedFromList"
-			@album-contexted="propagateMenuOpenFromList"
-		/>
-
 		<!-- Grid view (existing) -->
-		<div v-else class="flex flex-wrap flex-row shrink w-full justify-start gap-1 sm:gap-2 md:gap-4 pt-4">
+		<div class="flex flex-wrap flex-row shrink w-full justify-start gap-1 sm:gap-2 md:gap-4 pt-4">
+			<AlbumListView
+				v-if="album_view_mode === 'list'"
+				:albums="props.albums"
+				:selected-ids="props.selectedAlbums"
+				@album-clicked="propagateClickedFromList"
+				@album-contexted="propagateMenuOpenFromList"
+			/>
 			<AlbumThumbPanelList
+				v-else
 				:albums="props.albums"
 				:idx-shift="props.idxShift"
 				:iter="0"
@@ -28,23 +27,19 @@
 			/>
 		</div>
 	</Panel>
-	<Panel
-		v-else
-		:header="'Timeline'"
-		:toggleable="!isAlone"
-		:pt:header:class="headerClass"
-		class="border-0 w-full"
-		>
+	<Panel v-else :header="'Timeline'" :toggleable="!isAlone" :pt:header:class="headerClass" class="border-0 w-full">
 		<Timeline
-			v-if="is_timeline_left_border_visible"
+			v-if="isLeftBorderVisible"
 			:value="albumsTimeLine"
 			:pt:eventopposite:class="'hidden'"
 			class="mt-4"
 			:align="isLTR() ? 'left' : 'right'"
 		>
 			<template #content="slotProps">
-				<div class="flex flex-wrap flex-row shrink w-full justify-start gap-1 sm:gap-2 md:gap-4 pb-8">
-					<div class="w-full text-left font-semibold text-muted-color-emphasis text-lg">{{ slotProps.item.header }}</div>
+				<div
+					:dir="isLTR() ? 'ltr': 'rtl'"
+					class="flex flex-wrap flex-row shrink w-full justify-start gap-1 sm:gap-2 md:gap-4 pb-8">
+					<div class="w-full ltr:text-left rtl:text-right font-semibold text-muted-color-emphasis text-lg">{{ slotProps.item.header }}</div>
 
 					<!-- List view -->
 					<AlbumListView
@@ -107,6 +102,7 @@ import { storeToRefs } from "pinia";
 import AlbumThumbPanelList from "./AlbumThumbPanelList.vue";
 import AlbumListView from "./AlbumListView.vue";
 import { useLtRorRtL } from "@/utils/Helpers";
+import { isTouchDevice } from "@/utils/keybindings-utils";
 
 const { isLTR } = useLtRorRtL();
 
@@ -159,12 +155,15 @@ const albumsTimeLine = computed<SplitData<App.Http.Resources.Models.ThumbAlbumRe
 
 const isTimeline = computed(() => props.isTimeline && albumsTimeLine.value.length > 1);
 
+// We do not show the left border on touch devices (mostly phones) due to limited real estate.
+const isLeftBorderVisible = computed(() => is_timeline_left_border_visible.value && !isTouchDevice());
+
 const headerClass = computed(() => {
 	return props.isAlone ? "hidden" : "";
 });
 
 const paddingTopClass = computed(() => {
-	return props.isAlone && lycheeStore.album_view_mode === 'list' ? "pt-4" : "pt-0";
+	return props.isAlone && lycheeStore.album_view_mode === "list" ? "pt-4" : "pt-0";
 });
 
 function split(albums: App.Http.Resources.Models.ThumbAlbumResource[]) {

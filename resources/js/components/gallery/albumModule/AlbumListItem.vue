@@ -1,6 +1,6 @@
 <template>
 	<div
-		class="group flex items-center gap-4 px-3 py-0.5 cursor-pointer hover:bg-primary-400/10 ltr:flex-row rtl:flex-row-reverse"
+		class="group flex items-center gap-4 px-3 py-0.5 cursor-pointer hover:bg-primary-400/10 flex-row"
 		:class="{
 			'bg-primary-100 dark:bg-primary-900/50': isSelected,
 		}"
@@ -10,7 +10,7 @@
 		<!-- Thumbnail -->
 		<router-link
 			:to="{ name: 'album', params: { albumId: album.id } }"
-			class="relative block h-5"
+			class="relative block h-8 md:h-5"
 			:class="{
 				blurred: lycheeStore.is_nsfw_background_blurred && album.is_nsfw,
 				'aspect-4x5': 'aspect-4x5' === aspectRatio,
@@ -22,13 +22,18 @@
 			}"
 			:data-album-id="album.id"
 		>
-			<AlbumThumbImage class="border-none! hover:scale-800 hover:z-30" :thumb="album.thumb" :is-password-protected="album.is_password_required" />
+			<AlbumThumbImage
+				class="border-none! hover:scale-800 hover:z-30 top-0 left-0"
+				:thumb="album.thumb"
+				:is-password-protected="album.is_password_required"
+			/>
 		</router-link>
 
 		<!-- Content (title + counts) -->
 		<router-link
 			:to="{ name: 'album', params: { albumId: album.id } }"
-			class="flex-1 min-w-0 flex flex-col md:flex-row md:items-center md:gap-4 ltr:text-left rtl:text-right">
+			class="flex-1 min-w-0 flex flex-col md:flex-row md:items-center md:gap-4 ltr:text-left rtl:text-right"
+		>
 			<!-- Title -->
 			<span class="text-muted-color-emphasis font-medium truncate md:truncate-none">
 				{{ album.title }}
