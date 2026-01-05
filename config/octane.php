@@ -211,5 +211,5 @@ return [
 	|
 	*/
 
-	'max_execution_time' => intval(env('PHP_MAX_EXECUTION_TIME', 3000))/100,
+	'max_execution_time' => intval(env('PHP_MAX_EXECUTION_TIME', 30)),
 ];
