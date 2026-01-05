@@ -28,9 +28,13 @@ return new class() extends Migration {
 	public function up(): void
 	{
 		// Step 1: Drop the existing foreign key constraint on size_variants.photo_id
-		Schema::table('size_variants', function (Blueprint $table) {
-			$table->dropForeign(['photo_id']);
-		});
+		try {
+			Schema::table('size_variants', function (Blueprint $table) {
+				$table->dropForeign(['photo_id']);
+			});
+		} catch (\Exception $e) {
+			// If the foreign key does not exist, we can safely ignore the error
+		}
 
 		// Step 2: Make photo_id nullable in size_variants
 		Schema::table('size_variants', function (Blueprint $table) {
