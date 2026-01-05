@@ -4,8 +4,6 @@
 
 name: Clean up old packages
 on:
-  # To guarantee Maintained check is occasionally updated. See
-  # https://github.com/ossf/scorecard/blob/main/docs/checks.md#maintained
   schedule:
     - cron: '00 05 * * *'
   push:
