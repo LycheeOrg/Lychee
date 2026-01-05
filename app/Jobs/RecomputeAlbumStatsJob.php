@@ -87,7 +87,7 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 		// We skip if there is no newer job, or if the latest job is not this one
 		$has_newer_job = $latest_job_id !== null && $latest_job_id !== $this->jobId;
 		if ($has_newer_job) {
-			Log::info("Skipping job {$this->jobId} for album {$this->album_id} due to newer job {$latest_job_id} queued.");
+			Log::channel('jobs')->debug("Skipping job {$this->jobId} for album {$this->album_id} due to newer job {$latest_job_id} queued.");
 		}
 
 		return $has_newer_job;
@@ -100,13 +100,13 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 	 */
 	public function handle(): void
 	{
-		Log::info("Recomputing stats for album {$this->album_id}");
+		Log::channel('jobs')->info("Recomputing stats for album {$this->album_id}");
 		Cache::forget("album_stats_latest_job:{$this->album_id}");
 
 		// This is a safety check to avoid recomputing albums
 		// when no admin user exists.
 		if (DB::table('users')->where('may_administrate', '=', true)->count() === 0) {
-			Log::error("No admin user exists, skipping recompute for album {$this->album_id}.");
+			Log::channel('jobs')->critical("No admin user exists, skipping recompute for album {$this->album_id}.");
 
 			return;
 		}
@@ -115,7 +115,7 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 			// Fetch the album.
 			$album = Album::where('id', '=', $this->album_id)->first();
 			if ($album === null) {
-				Log::warning("Album {$this->album_id} not found, skipping recompute.");
+				Log::channel('jobs')->warning("Album {$this->album_id} not found, skipping recompute.");
 
 				return;
 			}
@@ -139,16 +139,16 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 			// Compute cover IDs (simplified for now - will be enhanced in I3)
 			$album->auto_cover_id_max_privilege = $this->computeMaxPrivilegeCover($album, $is_nsfw_context);
 			$album->auto_cover_id_least_privilege = $this->computeLeastPrivilegeCover($album, $is_nsfw_context);
-			Log::debug("Computed covers for album {$album->id}: max_privilege=" . ($album->auto_cover_id_max_privilege ?? 'null') . ', least_privilege=' . ($album->auto_cover_id_least_privilege ?? 'null'));
+			Log::channel('jobs')->debug("Computed covers for album {$album->id}: max_privilege=" . ($album->auto_cover_id_max_privilege ?? 'null') . ', least_privilege=' . ($album->auto_cover_id_least_privilege ?? 'null'));
 			$album->save();
 
 			// Propagate to parent if exists
 			if ($album->parent_id !== null && $this->propagate_to_parent) {
-				Log::debug("Propagating to parent {$album->parent_id}");
+				Log::channel('jobs')->debug("Propagating to parent {$album->parent_id}");
 				self::dispatch($album->parent_id);
 			}
 		} catch (\Exception $e) {
-			Log::error("Propagation stopped at album {$this->album_id} due to failure: " . $e->getMessage());
+			Log::channel('jobs')->error("Propagation stopped at album {$this->album_id} due to failure: " . $e->getMessage());
 
 			throw $e;
 		}
@@ -359,7 +359,7 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 	 */
 	public function failed(\Throwable $exception): void
 	{
-		Log::error("Job failed permanently for album {$this->album_id}: " . $exception->getMessage());
+		Log::channel('jobs')->error("Job failed permanently for album {$this->album_id}: " . $exception->getMessage());
 		// Do NOT dispatch parent job on failure - propagation stops here
 	}
 }

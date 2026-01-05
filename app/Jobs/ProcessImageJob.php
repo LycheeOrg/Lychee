@@ -28,6 +28,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 /**
@@ -102,6 +103,7 @@ class ProcessImageJob implements ShouldQueue
 	{
 		$this->history->status = JobStatus::STARTED;
 		$this->history->save();
+		Log::channel('jobs')->info($this->history->job);
 
 		$copied_file = new TemporaryJobFile($this->file_path, $this->original_base_name);
 

@@ -77,6 +77,7 @@ class ExtractZip implements ShouldQueue
 	 */
 	public function handle(): void
 	{
+		Log::channel('jobs')->info("Starting extraction job for file {$this->original_base_name}.");
 		$this->history->status = JobStatus::STARTED;
 		$this->history->save();
 
@@ -130,7 +131,7 @@ class ExtractZip implements ShouldQueue
 				// @codeCoverageIgnoreStart
 			} catch (\Throwable $e) {
 				// Fail silently if dispatched sync.
-				Log::error(__LINE__ . ':' . __FILE__ . ' ' . $e->getMessage(), $e->getTrace());
+				Log::channel('jobs')->error(__LINE__ . ':' . __FILE__ . ' ' . $e->getMessage(), $e->getTrace());
 			}
 			// @codeCoverageIgnoreEnd
 		}
@@ -192,7 +193,7 @@ class ExtractZip implements ShouldQueue
 			$zip->close();
 
 			if (count($unsafe_entries) > 0) {
-				Log::critical('Zip file ' . $this->file_path . ' contains unsafe entries.', $unsafe_entries);
+				Log::channel('jobs')->critical('Zip file ' . $this->file_path . ' contains unsafe entries.', $unsafe_entries);
 
 				$this->history->status = JobStatus::FAILURE;
 				$this->history->save();
