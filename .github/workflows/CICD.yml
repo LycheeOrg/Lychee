@@ -249,8 +249,8 @@ jobs:
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=image-frankenphp
+          cache-to: type=gha,scope=image-frankenphp,mode=max
           build-args: |
             NODE_ENV=production
 
@@ -359,8 +359,8 @@ jobs:
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=image-legacy
+          cache-to: type=gha,scope=image-legacy,mode=max
           build-args: |
             NODE_ENV=production
 
