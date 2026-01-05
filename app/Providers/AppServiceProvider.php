@@ -32,6 +32,7 @@ use App\Policies\PhotoQueryPolicy;
 use App\Policies\SettingsPolicy;
 use App\Repositories\ConfigManager;
 use App\Services\MoneyService;
+use Illuminate\Database\Connection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -257,7 +258,7 @@ class AppServiceProvider extends ServiceProvider
 	/**
 	 * @codeCoverageIgnore
 	 */
-	private function logSQLStart(string $sql, array $bindings, string $connection): void
+	private function logSQLStart(string $sql, array $bindings, Connection $connection): void
 	{
 		$uri = request()?->getRequestUri() ?? '';
 		// Quick exit
@@ -289,7 +290,7 @@ class AppServiceProvider extends ServiceProvider
 		$msg = 'START: ' . $sql . ' [' . implode(', ', $bindings) . ']';
 
 		$context = [
-			'connection' => $connection,
+			'connection' => $connection->getDriverName(),
 			'url' => request()?->fullUrl() ?? 'N/A',
 		];
 
@@ -326,7 +327,7 @@ class AppServiceProvider extends ServiceProvider
 			config('database.explain', false) === false ||
 			!Str::contains($query->sql, 'select')
 		) {
-			Log::debug($msg);
+			Log::warning($msg);
 
 			return;
 		}
@@ -350,7 +351,7 @@ class AppServiceProvider extends ServiceProvider
 		$msg .= Str::repeat('-', 20) . PHP_EOL;
 		$msg .= $sql_with_bindings . PHP_EOL;
 		$msg .= $renderer->getTable($explain);
-		Log::debug($msg);
+		Log::warning($msg);
 	}
 
 	/**

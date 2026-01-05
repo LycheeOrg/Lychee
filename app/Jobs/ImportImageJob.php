@@ -21,6 +21,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 /**
@@ -67,6 +68,7 @@ class ImportImageJob implements ShouldQueue
 	 */
 	public function handle(AlbumFactory $album_factory): Photo
 	{
+		Log::channel('jobs')->info($this->history->job);
 		$this->history->status = JobStatus::STARTED;
 		$this->history->save();
 

@@ -101,7 +101,7 @@ class WatermarkerJob implements ShouldQueue, ShouldBeUnique
 		if ($th->getCode() === 999) {
 			$this->release();
 		} else {
-			Log::error(__LINE__ . ':' . __FILE__ . ' Watermark failed for ' . $this->variant->short_path,
+			Log::channel('jobs')->error(__LINE__ . ':' . __FILE__ . ' Watermark failed for ' . $this->variant->short_path,
 				[
 					'variant_id' => $this->variant->id,
 					'path' => $this->variant->short_path,

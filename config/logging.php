@@ -132,5 +132,22 @@ return [
 			'path' => storage_path('logs/deprecations.log'),
 			'level' => 'debug',
 		],
+
+		// Specific channel for job logs (e.g., to debug queue issues)
+		'jobs' => [
+			'driver' => 'stack',
+			'channels' => [
+				'jobs-daily',
+				'error',
+				'warning',
+			],
+		],
+
+		// Specific channel for job logs (e.g., to debug queue issues)
+		'jobs-daily' => [
+			'driver' => 'daily',
+			'path' => storage_path('logs/jobs.log'),
+			'level' => 'debug',
+		],
 	],
 ];

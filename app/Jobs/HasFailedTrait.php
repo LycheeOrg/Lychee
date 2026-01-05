@@ -28,7 +28,7 @@ trait HasFailedTrait
 		if ($th->getCode() === 999) {
 			$this->release();
 		} else {
-			Log::error(__LINE__ . ':' . __FILE__ . ' ' . $th->getMessage(), $th->getTrace());
+			Log::channel('jobs')->error(__LINE__ . ':' . __FILE__ . ' ' . $th->getMessage(), $th->getTrace());
 		}
 	}
 }

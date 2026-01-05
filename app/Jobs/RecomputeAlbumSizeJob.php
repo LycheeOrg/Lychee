@@ -82,7 +82,7 @@ class RecomputeAlbumSizeJob implements ShouldQueue
 		// We skip if there is a newer job queued (latest job ID is different from this one)
 		$has_newer_job = $latest_job_id !== null && $latest_job_id !== $this->jobId;
 		if ($has_newer_job) {
-			Log::info("Skipping job {$this->jobId} for album {$this->album_id} due to newer job {$latest_job_id} queued.");
+			Log::channel('jobs')->debug("Skipping job {$this->jobId} for album {$this->album_id} due to newer job {$latest_job_id} queued.");
 		}
 
 		return $has_newer_job;
@@ -95,7 +95,7 @@ class RecomputeAlbumSizeJob implements ShouldQueue
 	 */
 	public function handle(): void
 	{
-		Log::info("Recomputing sizes for album {$this->album_id} (job {$this->jobId})");
+		Log::channel('jobs')->info("Recomputing sizes for album {$this->album_id} (job {$this->jobId})");
 		Cache::forget("album_size_latest_job:{$this->album_id}");
 
 		try {
@@ -117,15 +117,15 @@ class RecomputeAlbumSizeJob implements ShouldQueue
 				$sizes
 			);
 
-			Log::debug("Updated size statistics for album {$album->id}");
+			Log::channel('jobs')->debug("Updated size statistics for album {$album->id}");
 
 			// Propagate to parent if exists
 			if ($album->parent_id !== null && $this->propagate_to_parent) {
-				Log::debug("Propagating to parent {$album->parent_id}");
+				Log::channel('jobs')->debug("Propagating to parent {$album->parent_id}");
 				self::dispatch($album->parent_id);
 			}
 		} catch (\Exception $e) {
-			Log::error("Propagation stopped at album {$this->album_id} due to failure: " . $e->getMessage());
+			Log::channel('jobs')->error("Propagation stopped at album {$this->album_id} due to failure: " . $e->getMessage());
 
 			throw $e;
 		}
@@ -188,7 +188,7 @@ class RecomputeAlbumSizeJob implements ShouldQueue
 	 */
 	public function failed(\Throwable $exception): void
 	{
-		Log::error("Job failed permanently for album {$this->album_id}: " . $exception->getMessage());
+		Log::channel('jobs')->error("Job failed permanently for album {$this->album_id}: " . $exception->getMessage());
 		// Do NOT dispatch parent job on failure - propagation stops here
 	}
 }
