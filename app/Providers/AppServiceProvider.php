@@ -194,7 +194,29 @@ class AppServiceProvider extends ServiceProvider
 		DB::prohibitDestructiveCommands(config('app.env', 'production') !== 'dev');
 		if (config('database.db_log_sql', false) === true) {
 			// @codeCoverageIgnoreStart
-			DB::listen(fn ($q) => $this->logSQL($q));
+			// Log queries when they start
+			DB::beforeExecuting(fn ($sql, $bindings, $connection) => $this->logSQLStart($sql, $bindings, $connection));
+
+			// Log queries as they execute (for successful queries)
+			DB::listen(fn (QueryExecuted $q): null => $this->logSQL($q));
+
+			// Register shutdown function to catch queries that timeout
+			// This logs queries that were running when PHP times out
+			register_shutdown_function(function (): void {
+				$error = error_get_last();
+				if ($error !== null && in_array($error['type'], [E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_RECOVERABLE_ERROR], true)) {
+					// Check if it's a timeout error
+					if (str_contains($error['message'], 'Maximum execution time') || str_contains($error['message'], 'timeout')) {
+						Log::error('🔥 PHP TIMEOUT DETECTED', [
+							'error' => $error['message'],
+							'file' => $error['file'],
+							'line' => $error['line'],
+							'url' => request()?->fullUrl() ?? 'N/A',
+							'method' => request()?->method() ?? 'N/A',
+						]);
+					}
+				}
+			});
 			// @codeCoverageIgnoreEnd
 		}
 
@@ -230,6 +252,52 @@ class AppServiceProvider extends ServiceProvider
 			// return true to allow viewing the Log Viewer.
 			return !Auth::guest() && Gate::check(SettingsPolicy::CAN_SEE_LOGS, Configs::class);
 		});
+	}
+
+	/**
+	 * @codeCoverageIgnore
+	 */
+	private function logSQLStart(string $sql, array $bindings, string $connection): void
+	{
+		$uri = request()?->getRequestUri() ?? '';
+		// Quick exit
+		if (
+			Str::contains($uri, 'logs', true) ||
+			Str::contains($sql, $this->ignore_log_SQL)
+		) {
+			return;
+		}
+
+		// Get the call stack to find where the query originated
+		$trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 15);
+		$caller = null;
+
+		// Skip framework internals and find the first app file
+		foreach ($trace as $frame) {
+			if (isset($frame['file']) &&
+				!Str::contains($frame['file'], 'vendor/') &&
+				!Str::contains($frame['file'], 'AppServiceProvider.php')) {
+				$caller = [
+					'file' => str_replace(base_path() . '/', '', $frame['file']),
+					'line' => $frame['line'] ?? 0,
+				];
+				break;
+			}
+		}
+
+		// Get message with binding
+		$msg = 'START: ' . $sql . ' [' . implode(', ', $bindings) . ']';
+
+		$context = [
+			'connection' => $connection,
+			'url' => request()?->fullUrl() ?? 'N/A',
+		];
+
+		if ($caller !== null) {
+			$context['origin'] = $caller['file'] . ':' . $caller['line'];
+		}
+
+		Log::debug($msg, $context);
 	}
 
 	/**
