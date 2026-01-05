@@ -80,7 +80,7 @@ class ImportPhotos implements ImportPipe
 		}
 
 		foreach ($image_paths as $idx => $image_path) {
-			$this->importSingleImage($image_path, $node->album, $idx / $total * 100);
+			$this->importSingleImage($image_path, $node->album, intval($idx / $total * 100));
 		}
 
 		// Dispatch recompute jobs for the album after importing photos
