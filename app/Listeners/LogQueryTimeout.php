@@ -9,7 +9,6 @@
 namespace App\Listeners;
 
 use Illuminate\Database\Events\QueryExecuted;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -20,8 +19,6 @@ use Illuminate\Support\Facades\Log;
  */
 class LogQueryTimeout
 {
-	private const CACHE_PREFIX = 'query_tracking_';
-
 	/**
 	 * Handle the event when a query is executed.
 	 *
@@ -34,13 +31,6 @@ class LogQueryTimeout
 		$max_execution_time = config('octane.max_execution_time', 30) * 1000; // convert to ms
 		$critical_threshold = $max_execution_time * 0.9; // 90% of timeout
 		$warning_threshold = $max_execution_time * 0.7; // 70% of timeout
-
-		// Generate a unique key for this query
-		$query_hash = md5($event->sql . serialize($event->bindings));
-		$cache_key = self::CACHE_PREFIX . $query_hash;
-
-		// Remove from cache (it completed)
-		Cache::forget($cache_key);
 
 		// Log if query is dangerously slow
 		if ($event->time >= $critical_threshold) {

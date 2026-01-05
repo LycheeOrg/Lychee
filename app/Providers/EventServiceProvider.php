@@ -94,9 +94,11 @@ class EventServiceProvider extends ServiceProvider
 		Event::listen(TaggedRouteCacheUpdated::class, TaggedRouteCacheCleaner::class . '@handle');
 
 		// Log slow/timeout SQL queries when DB_LOG_SQL is enabled
+		// @codeCoverageIgnoreStart
 		if (config('database.db_log_sql', false) === true) {
 			Event::listen(QueryExecuted::class, LogQueryTimeout::class . '@handle');
 		}
+		// @codeCoverageIgnoreEnd
 
 		Event::listen(AlbumDownload::class, MetricsListener::class . '@handle');
 		Event::listen(AlbumShared::class, MetricsListener::class . '@handle');

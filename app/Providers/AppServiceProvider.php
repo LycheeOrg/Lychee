@@ -259,9 +259,10 @@ class AppServiceProvider extends ServiceProvider
 	 */
 	private function logSQLStart(string $sql, array $bindings, string $connection): void
 	{
+		$uri = request()?->getRequestUri() ?? '';
 		// Quick exit
 		if (
-			Str::contains(request()->getRequestUri(), 'logs', true) ||
+			Str::contains($uri, 'logs', true) ||
 			Str::contains($sql, $this->ignore_log_SQL)
 		) {
 			return;

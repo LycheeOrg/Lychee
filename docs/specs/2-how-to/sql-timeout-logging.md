@@ -46,7 +46,7 @@ The max execution time is configured in `config/octane.php`:
 The `logSQL()` method logs queries after they complete with severity based on execution time:
 - **Debug**: Normal slow queries (>100ms)
 - **Warning**: Queries taking >1 second
-- **Error**: Queries approaching timeout (>80% of max_execution_time)
+- **Error**: Queries approaching timeout (>90% of max_execution_time)
 
 ### 2. Timeout Detection Listener
 
