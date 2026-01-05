@@ -1,0 +1,171 @@
+# Lychee - Laravel Backend Dockerfile
+# Multi-stage build with Laravel Octane + FrankenPHP
+ARG NODE_ENV=production
+
+# ============================================================================
+# Stage 1: Composer Dependencies
+# ============================================================================
+FROM composer:2.8@sha256:5248900ab8b5f7f880c2d62180e40960cd87f60149ec9a1abfd62ac72a02577c AS composer
+
+WORKDIR /app
+
+# Copy composer files first for layer caching
+COPY composer.json composer.lock ./
+
+# Install dependencies (no dev packages for production)
+# Remove markdown and test directories to slim down the image
+RUN composer install \
+	--no-dev \
+	--no-interaction \
+	--no-progress \
+	--no-scripts \
+	--prefer-dist \
+	--optimize-autoloader \
+	--ignore-platform-reqs \
+	&& find vendor \
+	\( -iname "*.md" -o -iname "test" -o -iname "tests" \) \
+	-exec rm -rf {} +
+
+# ============================================================================
+# Stage 2: Node.js Build for Frontend Assets
+# ============================================================================
+FROM node:20-alpine@sha256:658d0f63e501824d6c23e06d4bb95c71e7d704537c9d9272f488ac03a370d448 AS node
+
+# Build argument to control dev vs production build
+ARG NODE_ENV
+ENV NODE_ENV=$NODE_ENV
+
+WORKDIR /app
+
+# Copy package files for layer caching
+COPY package.json package-lock.json ./
+
+# Install dependencies
+RUN npm ci --no-audit
+
+# Copy frontend source
+COPY resources/ ./resources/
+COPY public/ ./public/
+COPY lang/ ./lang/
+COPY vite.config.ts vite.embed.config.ts tsconfig.json ./
+
+# Build frontend assets
+# When NODE_ENV=development, Vite sets import.meta.env.DEV=true
+RUN npm run build
+
+
+FROM debian:bookworm-slim@sha256:d5d3f9c23164ea16f31852f95bd5959aad1c5e854332fe00f7b3a20fcc9f635c AS base
+
+LABEL maintainer="lycheeorg"
+LABEL org.opencontainers.image.title="Lychee"
+LABEL org.opencontainers.image.description="Self-hosted photo management system done right."
+LABEL org.opencontainers.image.authors="LycheeOrg"
+LABEL org.opencontainers.image.vendor="LycheeOrg"
+LABEL org.opencontainers.image.source="https://github.com/LycheeOrg/Lychee"
+LABEL org.opencontainers.image.url="https://lycheeorg.github.io"
+LABEL org.opencontainers.image.documentation="https://lycheeorg.dev/docs"
+LABEL org.opencontainers.image.licenses="MIT"
+LABEL org.opencontainers.image.base.name="debian:bookworm-slim"
+
+# Environment variables
+ENV PUID='1000'
+ENV PGID='1000'
+ENV PHP_TZ=UTC
+
+# https://stackoverflow.com/questions/53377176/change-imagemagick-policy-on-a-dockerfile (for the sed on policy.xml)
+# Install base dependencies, add user and group, clone the repo and install php libraries
+# hadolint ignore=DL3008
+RUN \
+	set -ev && \
+	apt-get update && \
+	apt-get upgrade -qy && \
+	apt-get install -qy --no-install-recommends\
+	ca-certificates \
+	curl \
+	apt-transport-https && \
+	curl -sSLo /tmp/debsuryorg-archive-keyring.deb https://packages.sury.org/debsuryorg-archive-keyring.deb && \
+	dpkg -i /tmp/debsuryorg-archive-keyring.deb && \
+	sh -c 'echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.org/php/ bookworm main" > /etc/apt/sources.list.d/php.list' && \
+	apt-get update && \
+	apt-get install -qy --no-install-recommends \
+	adduser \
+	nginx-light \
+	php8.5-mysql \
+	php8.5-pgsql \
+	php8.5-sqlite3 \
+	php8.5-imagick \
+	php8.5-mbstring \
+	php8.5-gd \
+	php8.5-xml \
+	php8.5-zip \
+	php8.5-fpm \
+	php8.5-redis \
+	php8.5-bcmath \
+	php8.5-intl \
+	netcat-openbsd \
+	libimage-exiftool-perl \
+	ffmpeg \
+	jpegoptim \
+	optipng \
+	pngquant \
+	gifsicle \
+	webp \
+	cron \
+	ghostscript && \
+	sed -i 's/<policy domain="coder" rights="none" pattern="PDF" \/>/<policy domain="coder" rights="read|write" pattern="PDF" \/>/g' /etc/ImageMagick-6/policy.xml && \
+	usermod -o -u "$PUID" "www-data" && \
+	groupmod -o -g "$PGID" "www-data" && \
+	echo "* * * * * www-data cd /app && php artisan schedule:run >> /dev/null 2>&1" >> /etc/crontab && \
+	apt-get clean -qy && \
+	rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Copy application code
+COPY --chown=www-data:www-data . .
+
+# Copy vendor from composer stage
+COPY --from=composer --chown=www-data:www-data /app/vendor ./vendor
+
+# Copy built frontend assets from node stage
+COPY --from=node --chown=www-data:www-data /app/public/build ./public/build
+
+# Ensure storage and bootstrap/cache are writable with minimal permissions
+RUN mkdir -p storage/framework/cache \
+	storage/framework/sessions \
+	storage/framework/views \
+	storage/logs \
+	bootstrap/cache \
+	public/dist \
+	&& chown -R www-data:www-data storage bootstrap/cache public/dist \
+	&& chmod -R 750 storage bootstrap/cache \
+	&& chmod -R 755 public/dist \
+	&& touch /app/docker_target \
+	&& touch /app/public/dist/user.css \
+	&& touch /app/public/dist/custom.js \
+	&& chown www-data:www-data /app/public/dist/user.css /app/public/dist/custom.js \
+	&& chmod 644 /app/public/dist/user.css /app/public/dist/custom.js
+
+# Copy entrypoint and validation scripts
+COPY docker/scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY docker/scripts/validate-env.sh /usr/local/bin/validate-env.sh
+COPY docker/scripts/create-admin-user.sh /usr/local/bin/create-admin-user.sh
+COPY docker/scripts/permissions-check.sh /usr/local/bin/permissions-check.sh
+COPY docker/scripts/dump-env.sh /usr/local/bin/dump-env.sh
+COPY docker/nginx.conf /etc/nginx/nginx.conf
+RUN chmod +x /usr/local/bin/entrypoint.sh /usr/local/bin/validate-env.sh /usr/local/bin/permissions-check.sh /usr/local/bin/create-admin-user.sh /usr/local/bin/dump-env.sh
+
+# Expose port 8000 (Octane)
+EXPOSE 8000
+
+# Set entrypoint
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+
+
+# RUN chmod +x /entrypoint.sh && \
+#     chmod +x /inject.sh && \
+#     if [ ! -e /run/php ] ; then mkdir /run/php ; fi
+
+HEALTHCHECK CMD curl --fail http://localhost:8000/ || exit 1
+
+CMD [ "nginx" ]

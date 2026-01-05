@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 # shellcheck disable=SC3040
 set -euo pipefail
 
@@ -7,8 +7,8 @@ echo "🔍 Validating permissions..."
 # Safely check SKIP_PERMISSIONS_CHECKS
 skip_check="${SKIP_PERMISSIONS_CHECKS:-no}"
 if [ "$skip_check" = "yes" ] || [ "$skip_check" = "YES" ]; then
-	echo "⚠️ WARNING: Skipping permissions check"
-	exit 0
+  echo "⚠️ WARNING: Skipping permissions check"
+  exit 0
 fi
 
 echo "⏰ Set Permissions (this may take a while)..."

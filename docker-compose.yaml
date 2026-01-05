@@ -3,6 +3,7 @@ services:
   # Laravel Backend API
   lychee_api:
     image: lychee-frankenphp:latest
+    # image: lychee-legacy:latest
     # build:
     #   context: ./app
     #   dockerfile: Dockerfile
@@ -131,6 +132,7 @@ services:
       # to disable it for your Log Viewer.
       # Should redis crash, you will no longer be able to access your logs.
       LOG_VIEWER_CACHE_DRIVER: "file"
+      SKIP_PERMISSIONS_CHECKS: "yes"
 
       # Queue
       QUEUE_CONNECTION: "${QUEUE_CONNECTION:-database}"
@@ -270,7 +272,6 @@ services:
       - ./lychee/storage/app:/app/storage/app
       - ./lychee/logs:/app/storage/logs
       - ./lychee/tmp:/app/storage/tmp
-      - .env:/app/.env:ro
 
     depends_on:
       lychee_db:
@@ -392,6 +393,8 @@ services:
 
     depends_on:
       lychee_db:
+        condition: service_healthy
+      lychee_api:
         condition: service_healthy
 
     # Worker health check
