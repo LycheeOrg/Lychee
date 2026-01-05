@@ -71,8 +71,8 @@ A shutdown function that catches when PHP times out entirely, logging:
 
 Logs are written to different files based on severity:
 
-- `storage/logs/errors.log` - Critical/slow queries (>80% timeout)
-- `storage/logs/warning.log` - Slow queries (>70% timeout or >1s)
+- `storage/logs/errors.log` - Critical/slow queries (>90% timeout)
+- `storage/logs/warning.log` - Slow queries (>80% timeout or >1s)
 - `storage/logs/daily.log` - All SQL queries (when DB_LOG_SQL=true)
 
 ## Example Log Entries
