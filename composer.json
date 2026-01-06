@@ -67,6 +67,7 @@
         "lychee-org/nestedset": "^10.0.3",
         "lychee-org/php-exif": "^1.0.4",
         "maennchen/zipstream-php": "^2.1 || ^3.1",
+        "maestroerror/php-heic-to-jpg": "^1.0",
         "mavinoo/laravel-batch": "^2.4",
         "moneyphp/money": "^4.7",
         "omnipay/dummy": "^3.0",

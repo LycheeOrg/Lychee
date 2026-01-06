@@ -11,6 +11,8 @@ namespace App\Actions\Photo\Convert;
 use App\Contracts\Image\ConvertMediaFileInterface;
 use App\Image\Files\NativeLocalFile;
 use App\Image\Files\TemporaryJobFile;
+use Http\Client\Exception;
+use Maestroerror\HeicToJpg;
 use Safe\Exceptions\FilesystemException;
 use function Safe\unlink;
 
@@ -45,10 +47,14 @@ class HeifToJpeg implements ConvertMediaFileInterface
 	/**
 	 * @throws \Exception
 	 */
-	public function storeNewImage(\Imagick $image_instance, string $store_to_path): void
+	public function storeNewImage(\Imagick|HeicToJpg $image_instance, string $store_to_path): void
 	{
 		try {
-			$image_instance->writeImage($store_to_path);
+			if ($image_instance instanceof \Imagick) {
+				$image_instance->writeImage($store_to_path);
+			} elseif ($image_instance instanceof HeicToJpg) {
+				$image_instance->saveAs($store_to_path);
+			}
 		} catch (\ImagickException $e) {
 			throw new \Exception('Failed to store converted image');
 		}
@@ -69,7 +75,7 @@ class HeifToJpeg implements ConvertMediaFileInterface
 	/**
 	 * @throws \Exception
 	 */
-	private function convertToJpeg(string $path): \Imagick
+	private function convertToJpeg(string $path): \Imagick|HeicToJpg
 	{
 		try {
 			$img = new \Imagick($path);
@@ -86,6 +92,8 @@ class HeifToJpeg implements ConvertMediaFileInterface
 
 			return $img;
 		} catch (\ImagickException $e) {
+			return HeicToJpg::convert($path);
+		} catch (Exception $e) {
 			throw new \Exception('Failed to convert HEIC/HEIF to JPEG. ' . $e->getMessage());
 		}
 	}

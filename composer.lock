@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2aa6daf242f8c7a2b29628da6e6190e9",
+    "content-hash": "2fb7a60e496ff9387302035acdadf2e1",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -4098,6 +4098,91 @@
                 }
             ],
             "time": "2025-07-17T11:15:13+00:00"
+        },
+        {
+            "name": "maestroerror/heif-converter",
+            "version": "0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/MaestroError/heif-converter-image.git",
+                "reference": "714f3e6c2c18f85ffe3495057874cb01ca89ce63"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/MaestroError/heif-converter-image/zipball/714f3e6c2c18f85ffe3495057874cb01ca89ce63",
+                "reference": "714f3e6c2c18f85ffe3495057874cb01ca89ce63",
+                "shasum": ""
+            },
+            "bin": [
+                "bin/heif-converter-linux",
+                "bin/heif-converter-windows",
+                "bin/heif-converter-macos"
+            ],
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "maestroerror",
+                    "email": "revaz.gh@gmail.com"
+                }
+            ],
+            "description": "versatile command-line application, along with a Docker image, that offers an easy and efficient way to convert HEIC (and AVIF) images to other common formats like JPEG and PNG",
+            "support": {
+                "issues": "https://github.com/MaestroError/heif-converter-image/issues",
+                "source": "https://github.com/MaestroError/heif-converter-image/tree/0.2"
+            },
+            "time": "2023-06-23T18:10:40+00:00"
+        },
+        {
+            "name": "maestroerror/php-heic-to-jpg",
+            "version": "v1.0.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/MaestroError/php-heic-to-jpg.git",
+                "reference": "e41dded77a7eb7b99496ff5965640a4698a19cab"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/MaestroError/php-heic-to-jpg/zipball/e41dded77a7eb7b99496ff5965640a4698a19cab",
+                "reference": "e41dded77a7eb7b99496ff5965640a4698a19cab",
+                "shasum": ""
+            },
+            "require": {
+                "maestroerror/heif-converter": "0.2",
+                "php": ">=7.4"
+            },
+            "require-dev": {
+                "pestphp/pest": "2.x-dev"
+            },
+            "bin": [
+                "bin/heicToJpg",
+                "bin/heicToJpgWin"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Maestroerror\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "maestroerror",
+                    "email": "revaz.gh@gmail.com"
+                }
+            ],
+            "description": "Converts HEIC/HEIF image to JPG type, without any dependencies",
+            "support": {
+                "issues": "https://github.com/MaestroError/php-heic-to-jpg/issues",
+                "source": "https://github.com/MaestroError/php-heic-to-jpg/tree/v1.0.8"
+            },
+            "time": "2025-06-04T15:17:54+00:00"
         },
         {
             "name": "mavinoo/laravel-batch",
