@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Actions\Diagnostics\Pipes\Checks;
@@ -23,7 +23,6 @@ class DBSupportCheck implements DiagnosticPipe
 	public function handle(array &$data, \Closure $next): array
 	{
 		$db_possibilities = [
-			['mysql', 'mysqli'],
 			['mysql', 'pdo_mysql'],
 			['pgsql', 'pgsql'],
 			['pgsql', 'pdo_pgsql'],

@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Actions\Photo\Pipes\Shared;
@@ -11,7 +11,7 @@ namespace App\Actions\Photo\Pipes\Shared;
 use App\Contracts\PhotoCreate\PhotoDTO;
 use App\Contracts\PhotoCreate\PhotoPipe;
 use App\Jobs\ExtractColoursJob;
-use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -19,9 +19,14 @@ use Illuminate\Support\Facades\Log;
  */
 class ExtractColourPalette implements PhotoPipe
 {
+	public function __construct(
+		protected readonly ConfigManager $config_manager,
+	) {
+	}
+
 	public function handle(PhotoDTO $state, \Closure $next): PhotoDTO
 	{
-		if (!Configs::getValueAsBool('enable_colour_extractions')) {
+		if (!$this->config_manager->getValueAsBool('enable_colour_extractions')) {
 			return $next($state);
 		}
 

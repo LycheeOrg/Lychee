@@ -26,7 +26,7 @@ return [
 	*/
 
 	'deprecations' => [
-		'channel' => env('LOG_DEPRECATIONS_CHANNEL', 'null'),
+		'channel' => env('LOG_DEPRECATIONS_CHANNEL', 'deprecations'),
 		'trace' => false,
 	],
 
@@ -48,8 +48,41 @@ return [
 	'channels' => [
 		'stack' => [
 			'driver' => 'stack',
-			'channels' => ['debug-daily', 'error', 'warning',  'notice'],
+			'channels' => [
+				// env('LOG_STDOUT', false) ? 'stdout_logging' : null,
+				'debug-daily',
+				'error',
+				'warning',
+				'notice',
+			],
 		],
+
+		// // NEW: Stdout for container logs
+		// 'stdout_logging' => [
+		// 	'driver' => 'monolog',
+		// 	'level' => env('LOG_LEVEL', 'debug'),
+		// 	'handler' => \Monolog\Handler\StreamHandler::class,
+		// 	'formatter' => \Monolog\Formatter\LineFormatter::class,
+		// 	'with' => [
+		// 		'stream' => 'php://stdout',
+		// 	],
+		// 	'processors' => [
+		// 		// Adds extra context
+		// 		\Monolog\Processor\WebProcessor::class,
+		// 		\Monolog\Processor\MemoryUsageProcessor::class,
+		// 	],
+		// ],
+
+		// // Alternative: stderr for error-level logs
+		// 'stderr_logging' => [
+		// 	'driver' => 'monolog',
+		// 	'level' => 'error',
+		// 	'handler' => \Monolog\Handler\StreamHandler::class,
+		// 	'formatter' => \Monolog\Formatter\LineFormatter::class,
+		// 	'with' => [
+		// 		'stream' => 'php://stderr',
+		// 	],
+		// ],
 
 		// Whatever debug log is needed
 		// Mostly SQL requests
@@ -57,6 +90,11 @@ return [
 			'path' => storage_path('logs/daily.log'),
 			'driver' => 'daily',
 			'level' => 'debug',
+			'processors' => [
+				// Adds extra context
+				\Monolog\Processor\WebProcessor::class,
+				\Monolog\Processor\MemoryUsageProcessor::class,
+			],
 		],
 
 		// Something went wrong
@@ -87,6 +125,29 @@ return [
 			'path' => storage_path('logs/login.log'),
 			'driver' => 'single',
 			'level' => 'info',
+		],
+
+		'deprecations' => [
+			'driver' => 'single',
+			'path' => storage_path('logs/deprecations.log'),
+			'level' => 'debug',
+		],
+
+		// Specific channel for job logs (e.g., to debug queue issues)
+		'jobs' => [
+			'driver' => 'stack',
+			'channels' => [
+				'jobs-daily',
+				'error',
+				'warning',
+			],
+		],
+
+		// Specific channel for job logs (e.g., to debug queue issues)
+		'jobs-daily' => [
+			'driver' => 'daily',
+			'path' => storage_path('logs/jobs.log'),
+			'level' => 'debug',
 		],
 	],
 ];

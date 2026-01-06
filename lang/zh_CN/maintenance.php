@@ -1,5 +1,4 @@
 <?php
-
 return [
     /*
     |--------------------------------------------------------------------------
@@ -21,6 +20,7 @@ return [
         'duplicates-title' => '每个相册中的标题重复项',
         'duplicates-per-album' => '每个相册中的重复项',
         'show' => '显示重复项',
+        'load' => 'Load counts',
     ],
     'fix-jobs' => [
         'title' => '修复任务历史',
@@ -73,5 +73,30 @@ return [
         'title' => '清除缓存',
         'description' => '清除所有用户的缓存以解决失效问题。',
         'button' => '清除',
+    ],
+    'old-orders' => [
+        'title' => 'Old Orders',
+        'description' => 'Found %d old orders.<br/><br/>An old order is older than 14 days, that have no associated user and are either still pending payment or have no items in them.',
+        'button' => 'Delete old orders',
+    ],
+    'fulfill-orders' => [
+        'title' => 'Orders to fulfill',
+        'description' => 'Found %d orders with content that has not been made available.<br/><br/>Click on the button to assign content when possible.',
+        'button' => 'Fulfill orders',
+    ],
+    'fulfill-precompute' => [
+        'title' => 'Album Precomputed Fields',
+        'description' => 'Found %d albums with missing precomputed fields.<br/><br/>Equivalent to running: php artisan lychee:backfill-album-fields',
+        'button' => 'Compute fields',
+    ],
+    'flush-queue' => [
+        'title' => 'Flush Queue',
+        'description' => 'Found %d pending jobs in the queue.<br/><br/>CAUTION: Clearing the queue will permanently delete all pending jobs. This cannot be undone.',
+        'button' => 'Clear queue',
+    ],
+    'backfill-album-sizes' => [
+        'title' => 'Album Size Statistics',
+        'description' => 'Found %d albums without size statistics.<br/><br/>Equivalent to running: php artisan lychee:backfill-album-sizes',
+        'button' => 'Compute sizes',
     ],
 ];

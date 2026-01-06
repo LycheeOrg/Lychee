@@ -1,4 +1,5 @@
 <template>
+	<BuyMeDialog />
 	<div class="h-svh overflow-y-hidden flex flex-col">
 		<!-- Trick to avoid the scroll bar to appear on the right when switching to full screen -->
 		<AlbumHeader
@@ -71,6 +72,7 @@
 					@clicked="photoClick"
 					@selected="photoSelect"
 					@contexted="photoMenuOpen"
+					@toggle-buy-me="toggleBuyMe"
 				/>
 				<div v-if="photosStore.photos.length > 0 && albumStore.hasPagination" class="flex justify-center w-full">
 					<Paginator
@@ -128,14 +130,20 @@ import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { usePhotoRoute } from "@/composables/photo/photoRoute";
 import { useRouter } from "vue-router";
 import SelectDrag from "@/components/forms/album/SelectDrag.vue";
+import { useOrderManagementStore } from "@/stores/OrderManagement";
+import { useBuyMeActions } from "@/composables/album/buyMeActions";
 import Paginator from "primevue/paginator";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { usePhotosStore } from "@/stores/PhotosState";
 import { useAlbumsStore } from "@/stores/AlbumsState";
 import { useUserStore } from "@/stores/UserState";
 import { useLayoutStore } from "@/stores/LayoutState";
+import { useCatalogStore } from "@/stores/CatalogState";
+import BuyMeDialog from "@/components/forms/gallery-dialogs/BuyMeDialog.vue";
+import { useToast } from "primevue/usetoast";
 
 const router = useRouter();
+const toast = useToast();
 
 const props = defineProps<{
 	isPhotoOpen: boolean;
@@ -145,10 +153,12 @@ const props = defineProps<{
 const userStore = useUserStore();
 const albumStore = useAlbumStore();
 const photosStore = usePhotosStore();
+const catalogStore = useCatalogStore();
 const albumsStore = useAlbumsStore();
 const layoutStore = useLayoutStore();
 const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
+const orderManagement = useOrderManagementStore();
 
 const emits = defineEmits<{
 	refresh: [];
@@ -175,6 +185,8 @@ const {
 	toggleCopy,
 	toggleUpload,
 } = useGalleryModals(togglableStore);
+
+const { toggleBuyMe } = useBuyMeActions(albumStore, orderManagement, catalogStore, toast);
 
 const {
 	selectedPhotosIdx,
@@ -222,25 +234,54 @@ const albumPanelConfig = computed<AlbumThumbConfig>(() => ({
 const photoCallbacks = {
 	star: () => {
 		PhotoService.star(selectedPhotosIds.value, true);
+		// Update the photos in the store immediately to reflect the change
+		selectedPhotosIds.value.forEach((photoId) => {
+			const photo = photosStore.photos.find((p) => p.id === photoId);
+			if (photo) {
+				photo.is_starred = true;
+			}
+		});
 		AlbumService.clearCache(albumStore.album?.id);
-		emits("refresh");
 	},
 	unstar: () => {
 		PhotoService.star(selectedPhotosIds.value, false);
+		// Update the photos in the store immediately to reflect the change
+		selectedPhotosIds.value.forEach((photoId) => {
+			const photo = photosStore.photos.find((p) => p.id === photoId);
+			if (photo) {
+				photo.is_starred = false;
+			}
+		});
 		AlbumService.clearCache(albumStore.album?.id);
-		emits("refresh");
 	},
 	setAsCover: () => {
 		if (albumStore.album === undefined) return;
 		PhotoService.setAsCover(selectedPhoto.value!.id, albumStore.album.id);
+		// Update the album's cover_id immediately to reflect the change (toggle behavior)
+		if (albumStore.modelAlbum !== undefined) {
+			albumStore.modelAlbum.cover_id = albumStore.modelAlbum.cover_id === selectedPhoto.value!.id ? null : selectedPhoto.value!.id;
+		}
 		AlbumService.clearCache(albumStore.album.id);
-		emits("refresh");
 	},
 	setAsHeader: () => {
 		if (albumStore.album === undefined) return;
 		PhotoService.setAsHeader(selectedPhoto.value!.id, albumStore.album.id, false);
+		// Update the album's header_id immediately to reflect the change (toggle behavior)
+		const isToggleOff = albumStore.modelAlbum?.header_id === selectedPhoto.value!.id;
+		if (albumStore.modelAlbum !== undefined) {
+			albumStore.modelAlbum.header_id = isToggleOff ? null : selectedPhoto.value!.id;
+		}
+		// Update the header image URL in the album's preFormattedData
+		if (albumStore.album.preFormattedData) {
+			if (isToggleOff) {
+				albumStore.album.preFormattedData.url = null;
+			} else {
+				// Use medium or small variant for the header image
+				const headerUrl = selectedPhoto.value!.size_variants.medium?.url ?? selectedPhoto.value!.size_variants.small?.url ?? null;
+				albumStore.album.preFormattedData.url = headerUrl;
+			}
+		}
 		AlbumService.clearCache(albumStore.album.id);
-		emits("refresh");
 	},
 	toggleTag: toggleTag,
 	toggleRename: toggleRename,
@@ -271,6 +312,11 @@ const albumCallbacks = {
 		if (albumStore.album === undefined) return;
 		if (selectedAlbum.value?.thumb?.id === undefined) return;
 		PhotoService.setAsCover(selectedAlbum.value!.thumb?.id, albumStore.album.id);
+		// Update the album's cover_id immediately to reflect the change (toggle behavior)
+		if (albumStore.modelAlbum !== undefined) {
+			albumStore.modelAlbum.cover_id =
+				albumStore.modelAlbum.cover_id === selectedAlbum.value!.thumb?.id ? null : selectedAlbum.value!.thumb?.id;
+		}
 		AlbumService.clearCache(albumStore.album.id);
 		emits("refresh");
 	},

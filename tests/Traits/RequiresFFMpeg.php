@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 /**
@@ -19,6 +19,7 @@
 namespace Tests\Traits;
 
 use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use Tests\Constants\TestConstants;
 
 trait RequiresFFMpeg
@@ -28,9 +29,13 @@ trait RequiresFFMpeg
 
 	protected function setUpRequiresFFMpeg(): void
 	{
-		$this->hasFFMpegInit = Configs::getValueAsInt(TestConstants::CONFIG_HAS_FFMPEG);
+		$config_manager = resolve(ConfigManager::class);
+		$this->hasFFMpegInit = $config_manager->getValueAsInt(TestConstants::CONFIG_HAS_FFMPEG);
 		Configs::set(TestConstants::CONFIG_HAS_FFMPEG, 2);
-		$this->hasFFMpeg = Configs::hasFFmpeg();
+
+		// Refresh...
+		$config_manager = resolve(ConfigManager::class);
+		$this->hasFFMpeg = $config_manager->hasFFmpeg();
 	}
 
 	protected function tearDownRequiresFFMpeg(): void

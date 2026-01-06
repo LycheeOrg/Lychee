@@ -300,6 +300,7 @@ return [
         'deduplicate_pinned_albums' => 'Deduplicate featured albums.',
         'desktop_dock_full_transparency_enabled' => 'Enable dock full transparency for desktop.',
         'mobile_dock_full_transparency_enabled' => 'Enable dock transparency for mobile,',
+        'enable_smart_album_per_owner' => 'Only display pictures owned by the user in smart albums.',
     ],
     'details' => [
         'version' => '',
@@ -596,5 +597,6 @@ return [
         'deduplicate_pinned_albums' => 'Featured albums will only appear once on the main gallery page.',
         'desktop_dock_full_transparency_enabled' => 'On the photo view, actions on top of the page are slightly transparent. Enable this to have them fully transparent and only appear on hover.',
         'mobile_dock_full_transparency_enabled' => '<span class="pi pi-exclamation-triangle text-orange-500"></span> This will impact usability on mobile. On the photo view, actions on top of the page are slightly transparent. Enable this to have them fully transparent and only appear on tap.',
+        'enable_smart_album_per_owner' => 'This setting is only applied to logged-in users. "Smart album visibility overrides" must be disabled for this to take effect.',
     ],
 ];

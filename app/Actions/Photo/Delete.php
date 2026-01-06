@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Actions\Photo;
@@ -11,6 +11,7 @@ namespace App\Actions\Photo;
 use App\Actions\Shop\PurchasableService;
 use App\Constants\PhotoAlbum as PA;
 use App\Enum\SizeVariantType;
+use App\Events\PhotoDeleted;
 use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\Internal\QueryBuilderException;
@@ -53,8 +54,8 @@ readonly class Delete
 	protected FileDeleter $file_deleter;
 	private PurchasableService $purchasable_service;
 
-	public function __construct()
-	{
+	public function __construct(
+	) {
 		$this->file_deleter = new FileDeleter();
 		$this->purchasable_service = resolve(PurchasableService::class);
 	}
@@ -91,6 +92,9 @@ readonly class Delete
 	{
 		$this->validateArguments($photo_ids, $from_id, $album_ids);
 
+		// Collect affected album IDs BEFORE deletion for event dispatching
+		$affected_album_ids = $this->collectAffectedAlbumIds($photo_ids, $from_id, $album_ids);
+
 		// First find out which photos do not have an album.
 		// Those will be deleted.
 		$unsorted_photo_ids = $this->collectUnsortedPhotos($photo_ids);
@@ -124,6 +128,11 @@ readonly class Delete
 		// @codeCoverageIgnoreEnd
 		Album::query()->whereIn('header_id', $photo_ids)->update(['header_id' => null]);
 
+		// Dispatch events for affected albums to trigger recomputation
+		foreach ($affected_album_ids as $album_id) {
+			PhotoDeleted::dispatch($album_id);
+		}
+
 		return $this->file_deleter;
 	}
 
@@ -147,6 +156,32 @@ readonly class Delete
 			count($album_ids) !== 0 && $from_id !== null => throw new LycheeLogicException('The $from_id must not be provided with the $album_ids.'),
 			default => null, // do nothing :)
 		};
+	}
+
+	/**
+	 * Collect album IDs that will be affected by photo deletion.
+	 * This must be called BEFORE photos are deleted.
+	 *
+	 * @param string[]    $photo_ids
+	 * @param string|null $from_id
+	 * @param string[]    $album_ids
+	 *
+	 * @return string[] album IDs that need stats recomputation
+	 */
+	private function collectAffectedAlbumIds(array $photo_ids, string|null $from_id, array $album_ids): array
+	{
+		if (count($album_ids) > 0) {
+			// Deleting from specific albums
+			return $album_ids;
+		}
+
+		if (count($photo_ids) > 0 && $from_id !== null) {
+			// Deleting specific photos from a specific album
+			return [$from_id];
+		}
+
+		// No albums affected
+		return [];
 	}
 
 	/**
@@ -230,8 +265,10 @@ readonly class Delete
 						->on('dup.checksum', '=', 'p.checksum')
 						->whereNotIn('dup.id', $photo_ids);
 				})
+				->leftJoin('order_items as oi', 'oi.size_variant_id', '=', 'sv.id')
 				->whereIn('p.id', $photo_ids)
 				->whereNull('dup.id')
+				->whereNull('oi.id')
 				->get();
 			$this->file_deleter->addSizeVariants($size_variants);
 			// @codeCoverageIgnoreStart
@@ -309,6 +346,11 @@ readonly class Delete
 			if (count($photo_ids) !== 0) {
 				SizeVariant::query()
 					->whereIn('size_variants.photo_id', $photo_ids)
+					->whereNotExists(function (BaseBuilder $query): void {
+						$query
+							->from('order_items')
+							->whereColumn('order_items.size_variant_id', '=', 'size_variants.id');
+					})
 					->delete();
 			}
 			if (count($album_ids) !== 0) {
@@ -319,6 +361,11 @@ readonly class Delete
 							->whereColumn('p.id', '=', 'size_variants.photo_id')
 							->leftJoin(PA::PHOTO_ALBUM, PA::PHOTO_ID, '=', 'p.id')
 							->whereIn(PA::ALBUM_ID, $album_ids);
+					})
+					->whereNotExists(function (BaseBuilder $query): void {
+						$query
+							->from('order_items')
+							->whereColumn('order_items.size_variant_id', '=', 'size_variants.id');
 					})
 					->delete();
 			}

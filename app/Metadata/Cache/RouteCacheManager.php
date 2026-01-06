@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Metadata\Cache;
@@ -85,7 +85,9 @@ final readonly class RouteCacheManager
 			'api/v2/Maintenance::missingPalettes' => false,
 			'api/v2/Maintenance::oldOrders' => false,
 			'api/v2/Maintenance::fulfillOrders' => false,
-
+			'api/v2/Maintenance::fulfillPrecompute' => false,
+			'api/v2/Maintenance::flushQueue' => false,
+			'api/v2/Maintenance::backfillAlbumSizes' => false,
 			'api/v2/Map' => new RouteCacheConfig(tag: CacheTag::GALLERY, user_dependant: true, extra: [RequestAttribute::ALBUM_ID_ATTRIBUTE]),
 			'api/v2/Map::provider' => new RouteCacheConfig(tag: CacheTag::SETTINGS),
 			'api/v2/Oauth' => new RouteCacheConfig(tag: CacheTag::USER, user_dependant: true),

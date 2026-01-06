@@ -3,12 +3,12 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Mail;
 
-use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
@@ -31,8 +31,9 @@ class PhotosAdded extends Mailable
 	 */
 	public function __construct(array $photos)
 	{
+		$config_manager = app(ConfigManager::class);
 		$this->photos = $photos;
-		$this->title = Configs::getValueAsString('site_title');
+		$this->title = $config_manager->getValueAsString('site_title');
 	}
 
 	/**

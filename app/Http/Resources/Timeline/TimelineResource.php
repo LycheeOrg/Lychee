@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Http\Resources\Timeline;
@@ -12,7 +12,6 @@ use App\Enum\TimelinePhotoGranularity;
 use App\Http\Resources\Models\PhotoResource;
 use App\Http\Resources\Models\Utils\TimelineData;
 use App\Http\Resources\Traits\HasPrepPhotoCollection;
-use App\Models\Configs;
 use App\Models\Photo;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\Pagination\Paginator;
@@ -65,7 +64,7 @@ class TimelineResource extends Data
 			$photo->previous_photo_id = $previous_photo?->id;
 			$previous_photo = $photo;
 		});
-		$photo_granularity = Configs::getValueAsEnum('timeline_photos_granularity', TimelinePhotoGranularity::class);
+		$photo_granularity = request()->configs()->getValueAsEnum('timeline_photos_granularity', TimelinePhotoGranularity::class);
 		$this->photos = TimelineData::setTimeLineDataForPhotos($this->photos, $photo_granularity);
 	}
 

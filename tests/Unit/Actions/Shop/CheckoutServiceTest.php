@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 /**
@@ -467,7 +467,7 @@ class CheckoutServiceTest extends AbstractTestCase
 			'card' => [
 				'number' => '4111111111111111',
 				'expiryMonth' => '12',
-				'expiryYear' => '2025',
+				'expiryYear' => date('Y'),
 				'cvv' => '123',
 			],
 		];

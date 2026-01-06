@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 /**
@@ -21,11 +21,13 @@ namespace Tests\Unit;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\Response;
+use PHPUnit\Framework\Attributes\Group;
 use Tests\AbstractTestCase;
 
 /**
  * Consider refactoring this test to only check the pipes used rather than the full path each time.
  */
+#[Group('slow')]
 class HoneyPotTest extends AbstractTestCase
 {
 	use DatabaseTransactions;

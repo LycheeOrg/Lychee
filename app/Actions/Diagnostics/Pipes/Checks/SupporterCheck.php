@@ -3,14 +3,14 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
-use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use LycheeVerify\Verify;
 
 /**
@@ -18,15 +18,13 @@ use LycheeVerify\Verify;
  */
 class SupporterCheck implements DiagnosticPipe
 {
-	private Verify $verify;
-
 	/**
 	 * @param Verify $verify
 	 */
 	public function __construct(
-		Verify $verify,
+		private Verify $verify,
+		protected readonly ConfigManager $config_manager,
 	) {
-		$this->verify = $verify;
 	}
 
 	/**
@@ -34,7 +32,7 @@ class SupporterCheck implements DiagnosticPipe
 	 */
 	public function handle(array &$data, \Closure $next): array
 	{
-		if (Configs::getValueAsBool('disable_se_call_for_actions')) {
+		if ($this->config_manager->getValueAsBool('disable_se_call_for_actions')) {
 			// @codeCoverageIgnoreStart
 			return $next($data);
 			// @codeCoverageIgnoreEnd

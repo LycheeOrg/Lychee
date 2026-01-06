@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Http\Middleware\Caching;
@@ -11,7 +11,6 @@ namespace App\Http\Middleware\Caching;
 use App\Constants\PhotoAlbum as PA;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Events\AlbumRouteCacheUpdated;
-use App\Models\Configs;
 use Illuminate\Foundation\Http\Middleware\Concerns\ExcludesPaths;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -64,7 +63,7 @@ class AlbumRouteCacheRefresher
 			return $next($request);
 		}
 
-		if (Configs::getValueAsBool('cache_enabled') === false) {
+		if ($request->configs()->getValueAsBool('cache_enabled') === false) {
 			return $next($request);
 		}
 

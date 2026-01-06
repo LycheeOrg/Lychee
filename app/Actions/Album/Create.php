@@ -3,25 +3,27 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Actions\Album;
 
 use App\Constants\AccessPermissionConstants as APC;
 use App\Enum\DefaultAlbumProtectionType;
+use App\Events\AlbumSaved;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
 use App\Exceptions\UnexpectedException;
 use App\Models\AccessPermission;
 use App\Models\Album;
-use App\Models\Configs;
+use App\Repositories\ConfigManager;
 
 class Create
 {
-	public function __construct(public readonly int $intended_owner_id)
-	{
+	public function __construct(
+		public readonly int $intended_owner_id,
+	) {
 	}
 
 	/**
@@ -41,6 +43,9 @@ class Create
 		$album->save();
 		$this->set_permissions($album, $parent_album);
 		$this->setStatistics($album);
+
+		// Dispatch event for album stats recomputation
+		AlbumSaved::dispatch($album);
 
 		return $album;
 	}
@@ -81,7 +86,8 @@ class Create
 	 */
 	private function set_permissions(Album $album, ?Album $parent_album): void
 	{
-		$default_protection_type = Configs::getValueAsEnum('default_album_protection', DefaultAlbumProtectionType::class);
+		$config_manager = app(ConfigManager::class);
+		$default_protection_type = $config_manager->getValueAsEnum('default_album_protection', DefaultAlbumProtectionType::class);
 
 		if ($default_protection_type === DefaultAlbumProtectionType::PUBLIC) {
 			$album->access_permissions()->saveMany([AccessPermission::ofPublic()]);
@@ -148,6 +154,8 @@ class Create
 			'download_count' => 0,
 			'favourite_count' => 0,
 			'shared_count' => 0,
+			'rating_sum' => 0,
+			'rating_count' => 0,
 		]);
 	}
 }

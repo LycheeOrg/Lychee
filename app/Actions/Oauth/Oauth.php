@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Actions\Oauth;
@@ -13,9 +13,9 @@ use App\Enum\OauthProvidersType;
 use App\Exceptions\Internal\LycheeInvalidArgumentException;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\UnauthorizedException;
-use App\Models\Configs;
 use App\Models\OauthCredential;
 use App\Models\User;
+use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Laravel\Socialite\Contracts\User as ContractsUser;
@@ -28,6 +28,11 @@ use Laravel\Socialite\Facades\Socialite;
 class Oauth
 {
 	public const OAUTH_REGISTER = 'register';
+
+	public function __construct(
+		protected readonly ConfigManager $config_manager,
+	) {
+	}
 
 	/**
 	 * Provide a valid provider Enum from string.
@@ -68,7 +73,7 @@ class Oauth
 			return true;
 		}
 
-		if (!Configs::getValueAsBool('oauth_create_user_on_first_attempt')) {
+		if (!$this->config_manager->getValueAsBool('oauth_create_user_on_first_attempt')) {
 			throw new UnauthorizedException('User not found!');
 		}
 
@@ -85,8 +90,8 @@ class Oauth
 			username: $user->getName() ?? $user->getEmail() ?? $user->getId(),
 			email: $user->getEmail(),
 			password: strtr(base64_encode(random_bytes(8)), '+/', '-_'),
-			may_upload: Configs::getValueAsBool('grant_new_user_upload_rights'),
-			may_edit_own_settings: Configs::getValueAsBool('grant_new_user_modification_rights'));
+			may_upload: $this->config_manager->getValueAsBool('grant_new_user_upload_rights'),
+			may_edit_own_settings: $this->config_manager->getValueAsBool('grant_new_user_modification_rights'));
 
 		Auth::login($new_user);
 

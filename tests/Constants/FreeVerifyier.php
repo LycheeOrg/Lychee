@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace Tests\Constants;
@@ -29,7 +29,12 @@ class FreeVerifyier implements VerifyInterface
 		return false;
 	}
 
-	public function is_plus(): bool
+	public function is_pro(): bool
+	{
+		return false;
+	}
+
+	public function is_signature(): bool
 	{
 		return false;
 	}

@@ -3,11 +3,12 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Factories;
 
+use App\Actions\Shop\Gateway\PaypalGateway;
 use App\Enum\OmnipayProviderType;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\Shop\ProviderConfigurationNotFoundException;
@@ -27,7 +28,10 @@ class OmnipayFactory
 	 */
 	public function create_gateway(OmnipayProviderType $provider): GatewayInterface
 	{
-		$gateway = Omnipay::create($provider->value);
+		$gateway = match ($provider) {
+			OmnipayProviderType::PAYPAL => new PaypalGateway(), // home backed...
+			default => Omnipay::create($provider->value),
+		};
 
 		$gateway = $this->initialize_gateway($gateway, $provider);
 

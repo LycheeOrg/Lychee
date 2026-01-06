@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Http\Resources\GalleryConfigs;
@@ -16,9 +16,9 @@ use App\Enum\TimelineAlbumGranularity;
 use App\Enum\TimelinePhotoGranularity;
 use App\Http\Resources\Traits\HasTimelineData;
 use App\Models\Album;
-use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
 use App\Policies\AlbumPolicy;
+use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Spatie\LaravelData\Data;
@@ -44,6 +44,7 @@ class AlbumConfig extends Data
 
 	public function __construct(AbstractAlbum $album)
 	{
+		$config_manager = app(ConfigManager::class);
 		$is_accessible = Gate::check(AlbumPolicy::CAN_ACCESS, [AbstractAlbum::class, $album]);
 		$public_perm = $album->public_permissions();
 
@@ -54,22 +55,22 @@ class AlbumConfig extends Data
 		$this->is_nsfw_warning_visible =
 			$album instanceof BaseAlbum &&
 			$album->is_nsfw &&
-			(Auth::check() ? Configs::getValueAsBool('nsfw_warning_admin') : Configs::getValueAsBool('nsfw_warning'));
+			(Auth::check() ? $config_manager->getValueAsBool('nsfw_warning_admin') : $config_manager->getValueAsBool('nsfw_warning'));
 
 		$this->setIsMapAccessible();
 		$this->setIsSearchAccessible($this->is_base_album);
-		$this->is_mod_frame_enabled = Configs::getValueAsBool('mod_frame_enabled') && $album->get_photos()->count() > 0;
+		$this->is_mod_frame_enabled = $config_manager->getValueAsBool('mod_frame_enabled') && $album->get_photos()->count() > 0;
 		if ($album instanceof Album && $album->album_thumb_aspect_ratio !== null) {
 			$this->album_thumb_css_aspect_ratio = $album->album_thumb_aspect_ratio->css();
 		} else {
-			$this->album_thumb_css_aspect_ratio = Configs::getValueAsEnum('default_album_thumb_aspect_ratio', AspectRatioType::class)->css();
+			$this->album_thumb_css_aspect_ratio = $config_manager->getValueAsEnum('default_album_thumb_aspect_ratio', AspectRatioType::class)->css();
 		}
 
-		$this->photo_layout = (($album instanceof BaseAlbum) ? $album->photo_layout : null) ?? Configs::getValueAsEnum('layout', PhotoLayoutType::class);
+		$this->photo_layout = (($album instanceof BaseAlbum) ? $album->photo_layout : null) ?? $config_manager->getValueAsEnum('layout', PhotoLayoutType::class);
 
 		// Set default values.
-		$this->is_photo_timeline_enabled = Configs::getValueAsBool('timeline_photos_enabled');
-		$this->is_album_timeline_enabled = Configs::getValueAsBool('timeline_albums_enabled');
+		$this->is_photo_timeline_enabled = $config_manager->getValueAsBool('timeline_photos_enabled');
+		$this->is_album_timeline_enabled = $config_manager->getValueAsBool('timeline_albums_enabled');
 
 		if ($album instanceof Album) {
 			$this->is_album_timeline_enabled = $album->album_timeline !== null || $this->is_album_timeline_enabled;
@@ -82,19 +83,20 @@ class AlbumConfig extends Data
 		}
 
 		// Masking to require login for timeline or allow it to be public.
-		$this->is_photo_timeline_enabled = $this->is_photo_timeline_enabled && (Configs::getValueAsBool('timeline_photos_public') || Auth::check());
-		$this->is_album_timeline_enabled = $this->is_album_timeline_enabled && (Configs::getValueAsBool('timeline_albums_public') || Auth::check());
+		$this->is_photo_timeline_enabled = $this->is_photo_timeline_enabled && ($config_manager->getValueAsBool('timeline_photos_public') || Auth::check());
+		$this->is_album_timeline_enabled = $this->is_album_timeline_enabled && ($config_manager->getValueAsBool('timeline_albums_public') || Auth::check());
 	}
 
 	public function setIsMapAccessible(): void
 	{
-		$map_display = Configs::getValueAsBool('map_display');
-		$public_display = Auth::check() || Configs::getValueAsBool('map_display_public');
+		$config_manager = app(ConfigManager::class);
+		$map_display = $config_manager->getValueAsBool('map_display');
+		$public_display = Auth::check() || $config_manager->getValueAsBool('map_display_public');
 		$this->is_map_accessible = $map_display && $public_display;
 	}
 
 	public function setIsSearchAccessible(bool $is_base_album): void
 	{
-		$this->is_search_accessible = (Auth::check() || Configs::getValueAsBool('search_public')) && $is_base_album;
+		$this->is_search_accessible = (Auth::check() || app(ConfigManager::class)->getValueAsBool('search_public')) && $is_base_album;
 	}
 }

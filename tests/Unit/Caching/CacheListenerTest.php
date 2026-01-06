@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 /**
@@ -31,8 +31,8 @@ class CacheListenerTest extends AbstractTestCase
 {
 	public function tearDown(): void
 	{
-		Configs::where('key', 'cache_event_logging')->update(['value' => '0']);
-		Configs::invalidateCache();
+		Configs::set('cache_event_logging', '0');
+
 		parent::tearDown();
 	}
 
@@ -41,8 +41,7 @@ class CacheListenerTest extends AbstractTestCase
 		Log::shouldReceive('debug')->never();
 		Log::shouldReceive('info')->never();
 
-		Configs::where('key', 'cache_event_logging')->update(['value' => '0']);
-		Configs::invalidateCache();
+		Configs::set('cache_event_logging', '0');
 
 		$listener = new CacheListener();
 		$listener->handle(new CacheMissed('store', 'key'));
@@ -54,8 +53,7 @@ class CacheListenerTest extends AbstractTestCase
 		Log::shouldReceive('debug')->once()->with('CacheListener: Miss for key');
 		Log::shouldReceive('info')->never();
 
-		Configs::where('key', 'cache_event_logging')->update(['value' => '1']);
-		Configs::invalidateCache();
+		Configs::set('cache_event_logging', '1');
 
 		$listener = new CacheListener();
 		$listener->handle(new CacheMissed('store', 'key'));
@@ -66,8 +64,7 @@ class CacheListenerTest extends AbstractTestCase
 		Log::shouldReceive('debug')->once()->with('CacheListener: Hit for key');
 		Log::shouldReceive('info')->never();
 
-		Configs::where('key', 'cache_event_logging')->update(['value' => '1']);
-		Configs::invalidateCache();
+		Configs::set('cache_event_logging', '1');
 
 		$listener = new CacheListener();
 		$listener->handle(new CacheHit('store', 'key', 'value'));
@@ -78,8 +75,7 @@ class CacheListenerTest extends AbstractTestCase
 		Log::shouldReceive('debug')->never();
 		Log::shouldReceive('info')->once()->with('CacheListener: Forgetting key key');
 
-		Configs::where('key', 'cache_event_logging')->update(['value' => '1']);
-		Configs::invalidateCache();
+		Configs::set('cache_event_logging', '1');
 
 		$listener = new CacheListener();
 		$listener->handle(new KeyForgotten('store', 'key'));
@@ -90,8 +86,7 @@ class CacheListenerTest extends AbstractTestCase
 		Log::shouldReceive('debug')->never();
 		Log::shouldReceive('info')->once()->with('CacheListener: Writing key key');
 
-		Configs::where('key', 'cache_event_logging')->update(['value' => '1']);
-		Configs::invalidateCache();
+		Configs::set('cache_event_logging', '1');
 
 		$listener = new CacheListener();
 		$listener->handle(new KeyWritten('store', 'key', 'value'));
@@ -102,8 +97,7 @@ class CacheListenerTest extends AbstractTestCase
 		Log::shouldReceive('info')->never();
 		Log::shouldReceive('debug')->once()->with('CacheListener: Writing key api/key with value: \'value\'');
 
-		Configs::where('key', 'cache_event_logging')->update(['value' => '1']);
-		Configs::invalidateCache();
+		Configs::set('cache_event_logging', '1');
 
 		$listener = new CacheListener();
 		$listener->handle(new KeyWritten('store', 'api/key', 'value'));

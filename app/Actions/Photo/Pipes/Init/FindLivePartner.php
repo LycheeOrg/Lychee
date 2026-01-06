@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Actions\Photo\Pipes\Init;
@@ -13,14 +13,19 @@ use App\Contracts\PhotoCreate\InitPipe;
 use App\DTO\PhotoCreate\InitDTO;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\LycheeAssertionError;
-use App\Image\Files\BaseMediaFile;
 use App\Models\Photo;
+use App\Services\Image\FileExtensionService;
 
 /**
  * Try to link live photo components together.
  */
 class FindLivePartner implements InitPipe
 {
+	public function __construct(
+		private FileExtensionService $file_extension_service,
+	) {
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -41,8 +46,8 @@ class FindLivePartner implements InitPipe
 			// different kind then the uploaded media.
 			if (
 				$state->live_partner !== null && !(
-					BaseMediaFile::isSupportedImageMimeType($state->exif_info->type) && $state->live_partner->isVideo() ||
-					BaseMediaFile::isSupportedVideoMimeType($state->exif_info->type) && $state->live_partner->isPhoto()
+					$this->file_extension_service->isSupportedImageMimeType($state->exif_info->type) && $state->live_partner->isVideo() ||
+					$this->file_extension_service->isSupportedVideoMimeType($state->exif_info->type) && $state->live_partner->isPhoto()
 				)
 			) {
 				$state->live_partner = null;

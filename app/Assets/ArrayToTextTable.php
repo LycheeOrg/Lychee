@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 /**
@@ -355,7 +355,7 @@ class ArrayToTextTable implements \Stringable
 	 */
 	protected static function valueToLines(?string $value): array
 	{
-		return explode("\n", $value);
+		return explode("\n", $value ?? '');
 	}
 
 	protected static function mb_str_pad(

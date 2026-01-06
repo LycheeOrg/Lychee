@@ -95,7 +95,7 @@ test:
 formatting: rector
 	@rm .php_cs.cache 2> /dev/null || true
 	@if [ -x "vendor/bin/php-cs-fixer" ]; then \
-		PHP_CS_FIXER_IGNORE_ENV=1 ./vendor/bin/php-cs-fixer fix -v --config=.php-cs-fixer.php; \
+		./vendor/bin/php-cs-fixer fix -v --config=.php-cs-fixer.php; \
 	else \
 		echo ""; \
 		echo "Please install php-cs-fixer:"; \
@@ -151,6 +151,9 @@ test_install:
 test_ImageProcessing:
 	vendor/bin/phpunit --testsuite ImageProcessing --stop-on-failure --stop-on-error --no-coverage --log-junit report_imageprocessing.xml
 
+test_precomputing:
+	vendor/bin/phpunit --testsuite Precomputing --stop-on-failure --stop-on-error --no-coverage --log-junit report_precomputing.xml
+
 test_v2:
 	vendor/bin/phpunit --testsuite Feature_v2 --stop-on-failure --stop-on-error --no-coverage --log-junit report_v2.xml
 
@@ -160,13 +163,14 @@ gen_typescript_types:
 class-leak:
 	vendor/bin/class-leak check app database/migrations config --skip-type Illuminate\\View\\Component
 
-docker-build-base-image:
-	docker build -t lychee-base:latest ./docker/base
+docker-build:
+	docker build -t lychee-frankenphp .
 
-docker-build-dev-image:
-	docker build ./docker/dev -t lychee-dev:latest
+docker-build-no-cache:
+	docker build -t lychee-frankenphp . --no-cache
 
-docker-build-dev: docker-build-base-image docker-build-dev-image
+docker-run:
+	docker compose up
 
 test_pgsql_v2:
 	docker compose -f docker-compose-pgsql.yaml up -d

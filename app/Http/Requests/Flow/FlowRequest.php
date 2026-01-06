@@ -3,13 +3,12 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Http\Requests\Flow;
 
 use App\Http\Requests\AbstractEmptyRequest;
-use App\Models\Configs;
 use Illuminate\Support\Facades\Auth;
 
 class FlowRequest extends AbstractEmptyRequest
@@ -21,8 +20,8 @@ class FlowRequest extends AbstractEmptyRequest
 	 */
 	public function authorize(): bool
 	{
-		$flow_enabled = Configs::getValueAsBool('flow_enabled');
-		$flow_public = Configs::getValueAsBool('flow_public');
+		$flow_enabled = $this->configs()->getValueAsBool('flow_enabled');
+		$flow_public = $this->configs()->getValueAsBool('flow_public');
 
 		// If user is logged in, flow must be enabled
 		if (Auth::check()) {

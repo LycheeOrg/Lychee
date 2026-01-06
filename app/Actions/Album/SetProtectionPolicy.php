@@ -3,11 +3,12 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Actions\Album;
 
+use App\Events\AlbumSaved;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\ModelDBException;
@@ -34,9 +35,11 @@ class SetProtectionPolicy
 		$album->save();
 
 		$active_permissions = $album->public_permissions();
-
 		if (!$protection_policy->is_public) {
 			$active_permissions?->delete();
+
+			// Just dispatch if something changed.
+			AlbumSaved::dispatch($album);
 
 			return;
 		}
@@ -62,5 +65,7 @@ class SetProtectionPolicy
 		}
 		$active_permissions->base_album_id = $album->get_id();
 		$active_permissions->save();
+
+		AlbumSaved::dispatch($album);
 	}
 }

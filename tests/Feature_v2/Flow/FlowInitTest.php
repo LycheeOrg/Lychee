@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 /**
@@ -26,7 +26,6 @@ class FlowInitTest extends BaseApiWithDataTest
 	public function testGetAnonymous(): void
 	{
 		Configs::set('flow_public', false);
-		Configs::invalidateCache();
 
 		$response = $this->getJson('Flow::init');
 		$this->assertOk($response);
@@ -45,7 +44,6 @@ class FlowInitTest extends BaseApiWithDataTest
 		]);
 
 		Configs::set('flow_public', true);
-		Configs::invalidateCache();
 
 		$response = $this->getJson('Flow::init');
 		$this->assertOk($response);
@@ -64,7 +62,6 @@ class FlowInitTest extends BaseApiWithDataTest
 		]);
 
 		Configs::set('flow_public', false);
-		Configs::invalidateCache();
 	}
 
 	public function testGetUser(): void

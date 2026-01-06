@@ -3,13 +3,13 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Http\Resources\GalleryConfigs;
 
 use App\Facades\Helpers;
-use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use Safe\Exceptions\InfoException;
 use function Safe\ini_get;
 use Spatie\LaravelData\Data;
@@ -23,13 +23,15 @@ class UploadConfig extends Data
 
 	public function __construct()
 	{
-		$this->upload_processing_limit = max(1, Configs::getValueAsInt('upload_processing_limit'));
+		$config_manager = resolve(ConfigManager::class);
+		$this->upload_processing_limit = max(1, $config_manager->getValueAsInt('upload_processing_limit'));
 		$this->upload_chunk_size = self::getUploadLimit();
 	}
 
 	public static function getUploadLimit(): int
 	{
-		$size = Configs::getValueAsInt('upload_chunk_size');
+		$config_manager = resolve(ConfigManager::class);
+		$size = $config_manager->getValueAsInt('upload_chunk_size');
 		if ($size === 0) {
 			try {
 				$memory_size = Helpers::convertSize(ini_get('memory_limit')) / 10;

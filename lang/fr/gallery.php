@@ -77,6 +77,7 @@ return [
             'share' => 'Partager l’album',
             'embed' => 'Embed Album',
             'move' => 'Déplacer l’album',
+            'shop' => 'Shop Management',
             'danger' => 'ZONE DANGEREUSE',
         ],
         'hero' => [
@@ -180,6 +181,19 @@ return [
             'set_created_at' => 'Définir la date de téléversement',
             'set_taken_at' => 'Définir la date de prise de vue',
             'set_taken_at_info' => 'Une étoile %s sera affichée si cette date n’est pas la date EXIF d’origine.<br>Décochez la case et enregistrez pour revenir à la date d’origine.',
+        ],
+        'rating' => [
+            'header' => 'Rating',
+            'rating' => 'rating',
+            'ratings' => 'ratings',
+            'your_rating' => 'Your rating',
+            'saving' => 'Saving rating...',
+            'removed' => 'Rating removed',
+            'saved' => 'Rating saved',
+            'error' => 'Failed to save rating',
+            'error_unauthorized' => 'You must be logged in to rate photos',
+            'error_forbidden' => 'You do not have permission to rate this photo',
+            'error_not_found' => 'Photo not found',
         ],
     ],
     'nsfw' => [

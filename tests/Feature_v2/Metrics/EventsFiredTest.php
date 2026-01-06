@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 /**
@@ -29,14 +29,13 @@ class EventsFiredTest extends BaseApiWithDataTest
 		parent::setUp();
 		Configs::set('metrics_enabled', true);
 		Configs::set('metrics_logged_in_users_enabed', true);
-		Configs::invalidateCache();
 	}
 
 	public function tearDown(): void
 	{
 		Configs::set('metrics_logged_in_users_enabed', false);
 		Configs::set('metrics_enabled', false);
-		Configs::invalidateCache();
+
 		parent::tearDown();
 	}
 

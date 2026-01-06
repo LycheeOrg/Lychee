@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Image;
@@ -13,7 +13,7 @@ use App\Enum\ShiftType;
 use App\Enum\ShiftX;
 use App\Enum\ShiftY;
 use App\Enum\WatermarkPosition;
-use App\Models\Configs;
+use App\Repositories\ConfigManager;
 
 /**
  * CoordinateCalculator class for handling watermark positioning and transformations.
@@ -35,7 +35,8 @@ class CoordinateCalculator
 	 */
 	public function apply_scaling(ImageDimension $dimentions): ImageDimension
 	{
-		$val = Configs::getValueAsInt('watermark_size');
+		$config_manager = resolve(ConfigManager::class);
+		$val = $config_manager->getValueAsInt('watermark_size');
 		$val = $this->to_percent($val, 1);
 
 		return new ImageDimension(intval($dimentions->width * $val), intval($dimentions->height * $val));
@@ -51,7 +52,8 @@ class CoordinateCalculator
 	 */
 	public function get_opacity(): float
 	{
-		$val = Configs::getValueAsInt('watermark_opacity');
+		$config_manager = resolve(ConfigManager::class);
+		$val = $config_manager->getValueAsInt('watermark_opacity');
 
 		return $this->to_percent($val, 1);
 	}
@@ -70,7 +72,8 @@ class CoordinateCalculator
 	 */
 	public function get_coordinates(ImageDimension $dimensions_img, ImageDimension $dimensions_watermark): ImageDimension
 	{
-		$val = Configs::getValueAsEnum('watermark_position', WatermarkPosition::class);
+		$config_manager = resolve(ConfigManager::class);
+		$val = $config_manager->getValueAsEnum('watermark_position', WatermarkPosition::class);
 
 		$x = match ($val) {
 			WatermarkPosition::TOP_LEFT, WatermarkPosition::LEFT, WatermarkPosition::BOTTOM_LEFT => 0,
@@ -104,11 +107,12 @@ class CoordinateCalculator
 	 */
 	public function apply_shift(ImageDimension $dimensions_img, ImageDimension $coordinates): ImageDimension
 	{
-		$shift_type = Configs::getValueAsEnum('watermark_shift_type', ShiftType::class);
-		$x_direction = Configs::getValueAsEnum('watermark_shift_x_direction', ShiftX::class) === ShiftX::LEFT ? -1 : 1;
-		$y_direction = Configs::getValueAsEnum('watermark_shift_y_direction', ShiftY::class) === ShiftY::UP ? -1 : 1;
-		$x_shift = Configs::getValueAsInt('watermark_shift_x');
-		$y_shift = Configs::getValueAsInt('watermark_shift_y');
+		$config_manager = resolve(ConfigManager::class);
+		$shift_type = $config_manager->getValueAsEnum('watermark_shift_type', ShiftType::class);
+		$x_direction = $config_manager->getValueAsEnum('watermark_shift_x_direction', ShiftX::class) === ShiftX::LEFT ? -1 : 1;
+		$y_direction = $config_manager->getValueAsEnum('watermark_shift_y_direction', ShiftY::class) === ShiftY::UP ? -1 : 1;
+		$x_shift = $config_manager->getValueAsInt('watermark_shift_x');
+		$y_shift = $config_manager->getValueAsInt('watermark_shift_y');
 
 		if ($shift_type === ShiftType::RELATIVE) {
 			$x_percent = $this->to_percent($x_shift);

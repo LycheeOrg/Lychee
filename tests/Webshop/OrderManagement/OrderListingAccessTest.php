@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 /**
@@ -23,7 +23,7 @@ use App\Enum\PaymentStatusType;
 use App\Models\Order;
 use Illuminate\Support\Str;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
-use Tests\Traits\RequireSE;
+use Tests\Traits\RequirePro;
 
 /**
  * Test class for OrderController listing and access functionality.
@@ -36,7 +36,7 @@ use Tests\Traits\RequireSE;
  */
 class OrderListingAccessTest extends BaseApiWithDataTest
 {
-	use RequireSE;
+	use RequirePro;
 
 	private Order $order1;
 	private Order $order2;
@@ -47,7 +47,7 @@ class OrderListingAccessTest extends BaseApiWithDataTest
 	public function setUp(): void
 	{
 		parent::setUp();
-		$this->requireSe();
+		$this->requirePro();
 
 		// Create orders for different scenarios
 		$this->transaction_id1 = Str::uuid()->toString();
@@ -66,7 +66,7 @@ class OrderListingAccessTest extends BaseApiWithDataTest
 		$this->order2 = Order::factory()
 			->forUser($this->userMayUpload2)
 			->withTransactionId($this->transaction_id2)
-			->withProvider(OmnipayProviderType::PAYPAL_EXPRESS)
+			->withProvider(OmnipayProviderType::PAYPAL)
 			->withStatus(PaymentStatusType::PENDING)
 			->withEmail($this->userMayUpload2->email)
 			->create();
@@ -82,7 +82,7 @@ class OrderListingAccessTest extends BaseApiWithDataTest
 
 	public function tearDown(): void
 	{
-		$this->resetSe();
+		$this->resetPro();
 		parent::tearDown();
 	}
 

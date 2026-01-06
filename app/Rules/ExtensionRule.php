@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Rules;
@@ -30,7 +30,7 @@ final class ExtensionRule implements DataAwareRule, ValidationRule
 	 *
 	 * @param array<string,mixed> $data
 	 */
-	public function setData(array $data): static
+	public function setData(array $data): self
 	{
 		$this->data = $data;
 

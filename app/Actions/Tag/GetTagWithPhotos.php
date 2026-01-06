@@ -3,18 +3,18 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Actions\Tag;
 
 use App\Http\Resources\Models\PhotoResource;
 use App\Http\Resources\Tags\TagWithPhotosResource;
-use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\Tag;
 use App\Models\User;
 use App\Policies\PhotoQueryPolicy;
+use App\Repositories\ConfigManager;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
@@ -30,6 +30,7 @@ class GetTagWithPhotos
 {
 	public function __construct(
 		private PhotoQueryPolicy $photo_query_policy,
+		protected readonly ConfigManager $config_manager,
 	) {
 	}
 
@@ -44,7 +45,7 @@ class GetTagWithPhotos
 		$user = Auth::user();
 
 		$base_query = Photo::query()
-			->with(['size_variants', 'statistics', 'palette', 'tags'])
+			->with(['size_variants', 'statistics', 'palette', 'tags', 'rating'])
 			->when(
 				$user->may_administrate === false,
 				fn ($q) => $q->where('photos.owner_id', Auth::id())
@@ -53,8 +54,9 @@ class GetTagWithPhotos
 
 		$photos_query = $this->photo_query_policy->applySensitivityFilter(
 			query: $base_query,
+			user: $user,
 			origin: null,
-			include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_tag_listing')
+			include_nsfw: !$this->config_manager->getValueAsBool('hide_nsfw_in_tag_listing')
 		);
 
 		/** @var Collection<int,Photo> $photos */

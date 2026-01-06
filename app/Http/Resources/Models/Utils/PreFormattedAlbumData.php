@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Http\Resources\Models\Utils;
@@ -12,7 +12,6 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Enum\DateOrderingType;
 use App\Enum\LicenseType;
 use App\Models\Album;
-use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
 use GrahamCampbell\Markdown\Facades\Markdown;
 use Spatie\LaravelData\Data;
@@ -36,8 +35,8 @@ class PreFormattedAlbumData extends Data
 
 	public function __construct(AbstractAlbum $album, ?string $url)
 	{
-		$min_max_date_format = Configs::getValueAsString('date_format_hero_min_max');
-		$create_date_format = Configs::getValueAsString('date_format_hero_created_at');
+		$min_max_date_format = request()->configs()->getValueAsString('date_format_hero_min_max');
+		$create_date_format = request()->configs()->getValueAsString('date_format_hero_created_at');
 		$this->url = $url;
 		$this->title = $album->get_title();
 		if ($album instanceof BaseAlbum) {
@@ -66,7 +65,7 @@ class PreFormattedAlbumData extends Data
 			return;
 		}
 
-		if (Configs::getValueAsEnum('header_min_max_order', DateOrderingType::class) === DateOrderingType::YOUNGER_OLDER) {
+		if (request()->configs()->getValueAsEnum('header_min_max_order', DateOrderingType::class) === DateOrderingType::YOUNGER_OLDER) {
 			$this->min_max_text = $this->max_taken_at . ' - ' . $this->min_taken_at;
 		} else {
 			$this->min_max_text = $this->min_taken_at . ' - ' . $this->max_taken_at;

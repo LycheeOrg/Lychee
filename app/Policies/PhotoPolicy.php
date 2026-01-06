@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Policies;
@@ -13,19 +13,15 @@ use App\Enum\MetricsAccess;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\QueryBuilderException;
-use App\Exceptions\UnauthorizedException;
 use App\Models\Album;
-use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\User;
-use Illuminate\Contracts\Container\BindingResolutionException;
+use App\Repositories\ConfigManager;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class PhotoPolicy extends BasePolicy
 {
-	protected AlbumPolicy $album_policy;
-
 	public const CAN_SEE = 'canSee';
 	public const CAN_DOWNLOAD = 'canDownload';
 	// public const CAN_DELETE = 'canDelete';
@@ -34,19 +30,14 @@ class PhotoPolicy extends BasePolicy
 	public const CAN_ACCESS_FULL_PHOTO = 'canAccessFullPhoto';
 	public const CAN_DELETE_BY_ID = 'canDeleteById';
 	public const CAN_READ_METRICS = 'canReadMetrics';
+	public const CAN_READ_RATINGS = 'canReadRatings';
 
 	/**
 	 * @throws FrameworkException
 	 */
-	public function __construct()
-	{
-		try {
-			$this->album_policy = resolve(AlbumPolicy::class);
-			// @codeCoverageIgnoreStart
-		} catch (BindingResolutionException $e) {
-			throw new FrameworkException('Laravel\'s provider component', $e);
-		}
-		// @codeCoverageIgnoreEnd
+	public function __construct(
+		protected AlbumPolicy $album_policy,
+	) {
 	}
 
 	/**
@@ -256,7 +247,8 @@ class PhotoPolicy extends BasePolicy
 	 */
 	public function canReadMetrics(?User $user, Photo $photo): bool
 	{
-		$access_level = Configs::getValueAsEnum('metrics_access', MetricsAccess::class);
+		$config_manager = app(ConfigManager::class);
+		$access_level = $config_manager->getValueAsEnum('metrics_access', MetricsAccess::class);
 
 		return match ($access_level) {
 			MetricsAccess::PUBLIC => true,
@@ -265,6 +257,25 @@ class PhotoPolicy extends BasePolicy
 			MetricsAccess::ADMIN => $user?->may_administrate === true,
 			default => false,
 		};
+	}
+
+	/**
+	 * @param User|null $user
+	 * @param Photo     $photo
+	 *
+	 * @return bool
+	 */
+	public function canReadRatings(?User $user, Photo $photo): bool
+	{
+		$config_manager = app(ConfigManager::class);
+		// Rating are disabled globally
+		if (!$config_manager->getValueAsBool('rating_enabled')) {
+			return false;
+		}
+
+		// Note that this will bypass the setting 'rating_show_only_when_user_rated'
+		// It is up to the admin to decide whether anonymous users can see ratings at all.
+		return ($user !== null) || $config_manager->getValueAsBool('rating_public');
 	}
 
 	/**

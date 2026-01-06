@@ -67,8 +67,8 @@
 ### Technology Stack
 
 **Backend**:
-- Laravel 11.x (existing)
-- PHP 8.3+
+- Laravel 12.x (existing)
+- PHP 8.4+
 - Existing Lychee models and services
 
 **Widget**:

@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Http\Controllers\Shop;
@@ -15,7 +15,6 @@ use App\Http\Requests\Order\ListOrderRequest;
 use App\Http\Requests\Order\MarkAsDeliveredOrderRequest;
 use App\Http\Requests\Order\MarkAsPaidOrderRequest;
 use App\Http\Resources\Shop\OrderResource;
-use App\Models\Configs;
 use App\Models\OrderItem;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Cookie;
@@ -78,7 +77,7 @@ class OrderController extends Controller
 			batch()->update($order_item_instance, $request->items, $key_name);
 		}
 
-		OrderCompleted::dispatchIf(Configs::getValueAsBool('webshop_manual_fulfill_enabled'), $request->order->id);
+		OrderCompleted::dispatchIf($request->configs()->getValueAsBool('webshop_manual_fulfill_enabled'), $request->order->id);
 
 		$this->order_service->markAsDelivered($request->order);
 	}

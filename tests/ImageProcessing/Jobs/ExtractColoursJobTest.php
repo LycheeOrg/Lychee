@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 /**
@@ -37,7 +37,7 @@ class ExtractColoursJobTest extends BaseApiWithDataTest
 	public function tearDown(): void
 	{
 		Configs::set('colour_extraction_driver', 'farzai');
-		Configs::invalidateCache();
+
 		parent::tearDown();
 	}
 
@@ -45,7 +45,7 @@ class ExtractColoursJobTest extends BaseApiWithDataTest
 	{
 		Configs::set('colour_extraction_driver', 'farzai');
 		Configs::set('imagick', true);
-		Configs::invalidateCache();
+
 		$this->runExtraction();
 	}
 
@@ -53,10 +53,9 @@ class ExtractColoursJobTest extends BaseApiWithDataTest
 	{
 		Configs::set('colour_extraction_driver', 'farzai');
 		Configs::set('imagick', false);
-		Configs::invalidateCache();
+
 		$this->runExtraction();
 		Configs::set('imagick', true);
-		Configs::invalidateCache();
 	}
 
 	private function runExtraction(): void
@@ -65,7 +64,6 @@ class ExtractColoursJobTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->admin)->upload('Photo', filename: TestConstants::SAMPLE_FILE_NIGHT_IMAGE);
 		$this->assertCreated($response);
 
-		$this->clearCachedSmartAlbums();
 		$response = $this->getJsonWithData('Album', ['album_id' => 'unsorted']);
 		$this->assertOk($response);
 		$id1 = $response->json('resource.photos.0.id');
@@ -93,10 +91,9 @@ class ExtractColoursJobTest extends BaseApiWithDataTest
 	public function testExtractColoursLeague(): void
 	{
 		Configs::set('colour_extraction_driver', 'league');
-		Configs::invalidateCache();
+
 		$this->runExtraction();
 		Configs::set('colour_extraction_driver', 'farzai');
-		Configs::invalidateCache();
 	}
 
 	public function testExtractColourWrongDriver(): void
@@ -104,7 +101,7 @@ class ExtractColoursJobTest extends BaseApiWithDataTest
 		$this->expectException(InvalidConfigOption::class);
 
 		Configs::set('colour_extraction_driver', 'wrong_driver');
-		Configs::invalidateCache();
+
 		$job = new ExtractColoursJob($this->photo2);
 		$job->handle();
 	}

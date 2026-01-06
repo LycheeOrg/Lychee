@@ -3,15 +3,15 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Http\Controllers\Admin\Maintenance;
 
 use App\Enum\StorageDiskType;
 use App\Events\AlbumRouteCacheUpdated;
+use App\Events\PhotoSaved;
 use App\Http\Requests\Maintenance\MaintenanceRequest;
-use App\Models\Configs;
 use App\Models\SizeVariant;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Log;
@@ -37,7 +37,7 @@ class MissingFileSizes extends Controller
 			->where('filesize', '=', 0)
 			->orderBy('id');
 		// Internally, only holds $limit entries at once
-		$variants = $variants_query->limit(Configs::getValueAsInt('maintenance_processing_limit'))->lazyById(100);
+		$variants = $variants_query->limit($request->configs()->getValueAsInt('maintenance_processing_limit'))->lazyById(100);
 
 		$generated = 0;
 
@@ -51,6 +51,7 @@ class MissingFileSizes extends Controller
 						Log::error('Failed to update filesize for ' . $variant_file->getRelativePath() . '.');
 					} else {
 						$generated++;
+						PhotoSaved::dispatch($variant->photo_id);
 					}
 				} catch (UnableToRetrieveMetadata) {
 					Log::error($variant->id . ' : Failed to get filesize for ' . $variant_file->getRelativePath() . '.');

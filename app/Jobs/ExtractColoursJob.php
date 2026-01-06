@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Jobs;
@@ -14,15 +14,16 @@ use App\Exceptions\Internal\LycheeLogicException;
 use App\Image\ColourExtractor\FarzaiExtractor;
 use App\Image\ColourExtractor\LeagueExtractor;
 use App\Models\Colour;
-use App\Models\Configs;
 use App\Models\JobHistory;
 use App\Models\Palette;
 use App\Models\Photo;
+use App\Repositories\ConfigManager;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 /**
@@ -62,6 +63,7 @@ class ExtractColoursJob implements ShouldQueue
 	 */
 	public function handle(): Photo
 	{
+		Log::channel('jobs')->info("Starting colour extraction job for photo ID {$this->photo_id}.");
 		$this->history->status = JobStatus::STARTED;
 		$this->history->save();
 
@@ -76,9 +78,10 @@ class ExtractColoursJob implements ShouldQueue
 
 		$file = $photo->size_variants->getOriginal()->getFile();
 
-		$extractor = match (Configs::getValueAsString('colour_extraction_driver')) {
+		$config_manager = app(ConfigManager::class);
+		$extractor = match ($config_manager->getValueAsString('colour_extraction_driver')) {
 			'league' => new LeagueExtractor(),
-			'farzai' => new FarzaiExtractor(),
+			'farzai' => new FarzaiExtractor($config_manager),
 			default => throw new LycheeLogicException('Unsupported colour extraction driver.'),
 		};
 		$colours = $extractor->extract($file);

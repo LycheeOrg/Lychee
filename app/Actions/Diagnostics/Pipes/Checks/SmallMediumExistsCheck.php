@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Actions\Diagnostics\Pipes\Checks;
@@ -46,6 +46,7 @@ class SmallMediumExistsCheck implements DiagnosticPipe
 		$sv_helpers = new SizeVariantDimensionHelpers();
 
 		/** @var object{num_small:int,num_medium:int,num_small2x:int,num_medium2x:int,max_num_small:int,max_num_medium:int,max_num_small2x:int,max_num_medium2x:int} $result */
+		/** @phpstan-ignore varTag.type */
 		$result = DB::query()
 		->selectSub(
 			SizeVariant::query()

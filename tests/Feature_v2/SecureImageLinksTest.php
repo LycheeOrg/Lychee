@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 /**
@@ -27,20 +27,17 @@ class SecureImageLinksTest extends BaseApiWithDataTest
 	private function setSecureLink()
 	{
 		Configs::set('secure_image_link_enabled', '1');
-		Configs::invalidateCache();
 	}
 
 	private function setTemporaryLink()
 	{
 		Configs::set('temporary_image_link_enabled', '1');
-		Configs::invalidateCache();
 	}
 
 	public function tearDown(): void
 	{
 		Configs::set('temporary_image_link_enabled', '0');
 		Configs::set('secure_image_link_enabled', '0');
-		Configs::invalidateCache();
 		parent::tearDown();
 	}
 
@@ -119,7 +116,6 @@ class SecureImageLinksTest extends BaseApiWithDataTest
 	{
 		Configs::set('temporary_image_link_enabled', '0');
 		Configs::set('secure_image_link_enabled', '0');
-		Configs::invalidateCache();
 
 		$broken_url = URL::route('image', ['path' => 'broken_path']);
 		$response = $this->get($broken_url);

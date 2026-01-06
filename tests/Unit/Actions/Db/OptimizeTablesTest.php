@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 /**
@@ -32,6 +32,6 @@ class OptimizeTablesTest extends AbstractTestCase
 	{
 		$optimize = new OptimizeTables();
 		$output = count($optimize->do());
-		self::assertTrue(in_array($output, [3, 34], true), 'OptimizeTables should return either 3 or 30: ' . $output);
+		self::assertTrue(in_array($output, [3, 36, 37], true), 'OptimizeTables should return either 3 or 36 or 37: ' . $output);
 	}
 }

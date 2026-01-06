@@ -1,6 +1,8 @@
 <?php
 
-use Opcodes\LogViewer\LogLevels\LevelClass;
+use Opcodes\LogViewer\Enums\SortingMethod;
+use Opcodes\LogViewer\Enums\SortingOrder;
+use Opcodes\LogViewer\Enums\Theme;
 
 if (!function_exists('renv')) {
 	function renv(string $cst, ?string $default = null): string
@@ -32,7 +34,11 @@ return [
 	|
 	*/
 
-	'enabled' => env('LOG_VIEWER_ENABLED', true),
+	'enabled' => env('LOG_VIEWER_ENABLED', false),
+
+	'api_only' => env('LOG_VIEWER_API_ONLY', false),
+
+	'require_auth_in_production' => true,
 
 	/*
 	|--------------------------------------------------------------------------
@@ -54,6 +60,16 @@ return [
 	*/
 
 	'route_path' => 'Logs',
+
+	/*
+	|--------------------------------------------------------------------------
+	| Log Viewer Assets Path
+	|--------------------------------------------------------------------------
+	| The path to the Log Viewer assets.
+	|
+	*/
+
+	'assets_path' => 'vendor/log-viewer',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -115,6 +131,8 @@ return [
 		\App\Http\Middleware\VerifyCsrfToken::class,
 		\Opcodes\LogViewer\Http\Middleware\AuthorizeLogViewer::class,
 	],
+
+	'api_stateful_domains' => env('LOG_VIEWER_API_STATEFUL_DOMAINS') ? explode(',', env('LOG_VIEWER_API_STATEFUL_DOMAINS')) : null,
 
 	/*
 	|--------------------------------------------------------------------------
@@ -179,6 +197,18 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
+	| Hide unknown files.
+	|--------------------------------------------------------------------------
+	| The include/exclude options above might catch files which are not
+	| logs supported by Log Viewer. In that case, you can hide them
+	| from the UI and API calls by setting this to true.
+	|
+	*/
+
+	'hide_unknown_files' => true,
+
+	/*
+	|--------------------------------------------------------------------------
 	|  Shorter stack trace filters.
 	|--------------------------------------------------------------------------
 	| Lines containing any of these strings will be excluded from the full log.
@@ -194,35 +224,6 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
-	| Log matching patterns
-	|--------------------------------------------------------------------------
-	| Regexes for matching log files
-	|
-	*/
-
-	'patterns' => [
-		'laravel' => [
-			'log_matching_regex' => '/^\[(\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}\.?(\d{6}([\+-]\d\d:\d\d)?)?)\].*/',
-
-			/**
-			 * This pattern, used for processing Laravel logs, returns these results:
-			 * $matches[0] - the full log line being tested.
-			 * $matches[1] - full timestamp between the square brackets (includes microseconds and timezone offset)
-			 * $matches[2] - timestamp microseconds, if available
-			 * $matches[3] - timestamp timezone offset, if available
-			 * $matches[4] - contents between timestamp and the severity level
-			 * $matches[5] - environment (local, production, etc)
-			 * $matches[6] - log severity (info, debug, error, etc)
-			 * $matches[7] - the log text, the rest of the text.
-			 */
-			'log_parsing_regex' => '/^\[(\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}\.?(\d{6}([\+-]\d\d:\d\d)?)?)\](.*?(\w+)\.|.*?)('
-				. implode('|', array_filter(LevelClass::caseValues(), fn ($elem) => ($elem !== null && $elem !== '')))
-				. ')?: (.*?)( in [\/].*?:[0-9]+)?$/is',
-		],
-	],
-
-	/*
-	|--------------------------------------------------------------------------
 	| Cache driver
 	|--------------------------------------------------------------------------
 	| Cache driver to use for storing the log indices. Indices are used to speed up
@@ -234,6 +235,19 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
+	| Cache key prefix
+	|--------------------------------------------------------------------------
+	| Log Viewer prefixes all the cache keys created with this value. If for
+	| some reason you would like to change this prefix, you can do so here.
+	| The format of Log Viewer cache keys is:
+	| {prefix}:{version}:{rest-of-the-key}
+	|
+	*/
+
+	'cache_key_prefix' => 'lv',
+
+	/*
+	|--------------------------------------------------------------------------
 	| Chunk size when scanning log files lazily
 	|--------------------------------------------------------------------------
 	| The size in MB of files to scan before updating the progress bar when searching across all files.
@@ -241,4 +255,78 @@ return [
 	*/
 
 	'lazy_scan_chunk_size_in_mb' => 50,
+
+	'strip_extracted_context' => true,
+
+	/*
+	|--------------------------------------------------------------------------
+	| Per page options
+	|--------------------------------------------------------------------------
+	| Define the available options for number of results per page
+	|
+	*/
+
+	'per_page_options' => [10, 25, 50, 100, 250, 500],
+
+	/*
+	|--------------------------------------------------------------------------
+	| Default settings for Log Viewer
+	|--------------------------------------------------------------------------
+	| These settings determine the default behaviour of Log Viewer. Many of
+	| these can be persisted for the user in their browser's localStorage,
+	| if the `use_local_storage` option is set to true.
+	|
+	*/
+
+	'defaults' => [
+		// Whether to use browser's localStorage to store user preferences.
+		// If true, user preferences saved in the browser will take precedence over the defaults below.
+		'use_local_storage' => true,
+
+		// Method to sort the folders. Other options: `Alphabetical`, `ModifiedTime`
+		'folder_sorting_method' => SortingMethod::ModifiedTime,
+
+		// Order to sort the folders. Other options: `Ascending`, `Descending`
+		'folder_sorting_order' => SortingOrder::Descending,
+
+		// Method for sorting log-files into directories. Other options: `Alphabetical`, `ModifiedTime`
+		'file_sorting_method' => SortingMethod::ModifiedTime,
+
+		// Order to sort the logs. Other options: `Ascending`, `Descending`
+		'log_sorting_order' => SortingOrder::Descending,
+
+		// Number of results per page. Must be one of the above `per_page_options` values
+		'per_page' => 25,
+
+		// Color scheme for the Log Viewer. Other options: `System`, `Light`, `Dark`
+		'theme' => Theme::System,
+
+		// Whether to enable `Shorter Stack Traces` option by default
+		'shorter_stack_traces' => false,
+	],
+
+	/*
+	|--------------------------------------------------------------------------
+	| Exclude IP from identifiers
+	|--------------------------------------------------------------------------
+	| By default, file and folder identifiers include the server's IP address
+	| to ensure uniqueness. In load-balanced environments with shared storage,
+	| this can cause "No results" errors. Set to true to exclude IP addresses
+	| from identifier generation for consistent results across servers.
+	|
+	*/
+
+	'exclude_ip_from_identifiers' => env('LOG_VIEWER_EXCLUDE_IP_FROM_IDENTIFIERS', false),
+
+	/*
+	|--------------------------------------------------------------------------
+	| Root folder prefix
+	|--------------------------------------------------------------------------
+	| The prefix for log files inside Laravel's `storage/logs` folder.
+	| Log Viewer does not show the full path to these files in the UI,
+	| but only the filename prefixed with this value.
+	|
+	*/
+
+	'root_folder_prefix' => 'root',
 ];

@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Console\Commands;
@@ -22,11 +22,6 @@ use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleExce
 
 class Diagnostics extends Command
 {
-	/**
-	 * Add color to the command line output.
-	 */
-	private Colorize $col;
-
 	/**
 	 * The name and signature of the console command.
 	 *
@@ -48,11 +43,9 @@ class Diagnostics extends Command
 	 * @throws SymfonyConsoleException
 	 */
 	public function __construct(
-		Colorize $colorize,
+		private Colorize $col,
 	) {
 		parent::__construct();
-
-		$this->col = $colorize;
 	}
 
 	/**

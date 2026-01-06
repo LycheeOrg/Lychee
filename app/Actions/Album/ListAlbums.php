@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Actions\Album;
@@ -11,8 +11,10 @@ namespace App\Actions\Album;
 use App\DTO\AlbumSortingCriterion;
 use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
+use App\Policies\AlbumPolicy;
 use App\Policies\AlbumQueryPolicy;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use Kalnoy\Nestedset\Contracts\NestedSetCollection;
@@ -22,6 +24,11 @@ use Kalnoy\Nestedset\Contracts\NestedSetCollection;
  */
 class ListAlbums
 {
+	public function __construct(
+		protected readonly AlbumQueryPolicy $album_query_policy,
+	) {
+	}
+
 	private const SHORTEN_BY = 80;
 
 	/**
@@ -29,8 +36,10 @@ class ListAlbums
 	 */
 	public function do(Collection $albums_filtering, ?string $parent_id, ?int $owner_id = null): array
 	{
-		$album_query_policy = resolve(AlbumQueryPolicy::class);
-		$unfiltered = $album_query_policy->applyReachabilityFilter(
+		$user = Auth::user();
+		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
+
+		$unfiltered = $this->album_query_policy->applyReachabilityFilter(
 			// We remove all sub albums
 			// Otherwise it would create cyclic dependency
 			Album::query()
@@ -43,7 +52,9 @@ class ListAlbums
 						);
 
 						return $q;
-					})
+					}),
+			$user,
+			$unlocked_album_ids
 		);
 		$sorting = AlbumSortingCriterion::createDefault();
 		$query = (new SortingDecorator($unfiltered))

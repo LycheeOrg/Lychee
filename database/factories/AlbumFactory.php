@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace Database\Factories;
@@ -23,7 +23,7 @@ class AlbumFactory extends Factory
 	/**
 	 * The name of the factory's corresponding model.
 	 *
-	 * @var string
+	 * @var class-string<Album>
 	 */
 	protected $model = Album::class;
 
@@ -81,7 +81,7 @@ class AlbumFactory extends Factory
 	 * Configure the model factory.
 	 * We also create the associated statistics model.
 	 */
-	public function configure(): static
+	public function configure(): self
 	{
 		return $this->afterCreating(function (Album $album) {
 			Statistics::factory()->with_album($album->id)->create();

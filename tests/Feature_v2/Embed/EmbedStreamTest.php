@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 /**
@@ -22,6 +22,7 @@ use App\Models\AccessPermission;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Photo;
+use App\Repositories\ConfigManager;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 /**
@@ -184,7 +185,7 @@ class EmbedStreamTest extends BaseApiWithDataTest
 	/**
 	 * Test NSFW filtering when enabled.
 	 */
-	public function testNSFWFilteringWhenEnabled(): void
+	public function testNsfwFilteringWhenEnabled(): void
 	{
 		// Create a new public NSFW album with a photo
 		$nsfwAlbum = Album::factory()->as_root()->owned_by($this->userLocked)->create([
@@ -196,7 +197,8 @@ class EmbedStreamTest extends BaseApiWithDataTest
 		$nsfwPhoto = Photo::factory()->owned_by($this->userLocked)->with_GPS_coordinates()->in($nsfwAlbum)->create();
 
 		// Enable NSFW hiding in RSS
-		$originalHideNsfw = Configs::getValueAsBool('hide_nsfw_in_rss');
+		$config_manager = resolve(ConfigManager::class);
+		$originalHideNsfw = $config_manager->getValueAsBool('hide_nsfw_in_rss');
 		Configs::set('hide_nsfw_in_rss', '1');
 
 		$response = $this->getJson('Embed/stream');

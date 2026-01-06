@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Actions\Photo;
@@ -31,17 +31,20 @@ use App\Exceptions\QuotaExceededException;
 use App\Image\Files\NativeLocalFile;
 use App\Models\Photo;
 use App\Models\User;
+use App\Services\Image\FileExtensionService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Pipeline\Pipeline;
-use LycheeVerify\Verify;
+use LycheeVerify\Contract\VerifyInterface;
 
 class Create
 {
 	/** @var ImportParam the strategy parameters prepared and compiled by this class */
 	protected ImportParam $strategy_parameters;
 
-	public function __construct(?ImportMode $import_mode, int $intended_owner_id)
-	{
+	public function __construct(
+		?ImportMode $import_mode,
+		int $intended_owner_id,
+	) {
 		$this->strategy_parameters = new ImportParam($import_mode, $intended_owner_id);
 	}
 
@@ -109,11 +112,12 @@ class Create
 		}
 
 		// livePartner !== null
-		if ($source_file->isSupportedVideo()) {
+		$file_extension_service = app(FileExtensionService::class);
+		if ($file_extension_service->isSupportedVideo($source_file->getMimeType(), $source_file->getOriginalExtension())) {
 			return $this->handleVideoLivePartner($init_dto);
 		}
 
-		if ($source_file->isSupportedImage()) {
+		if ($file_extension_service->isSupportedImage($source_file->getPath(), $source_file->getMimeType(), $source_file->getOriginalExtension())) {
 			return $this->handlePhotoLivePartner($init_dto);
 		}
 
@@ -325,11 +329,10 @@ class Create
 	 */
 	private function checkQuota(NativeLocalFile $source_file): void
 	{
-		$verify = resolve(Verify::class);
-
 		// if the installation is not validated or
 		// if the user is not a supporter, we skip.
-		if (!$verify->validate() || !$verify->is_supporter()) {
+		$verify = app(VerifyInterface::class);
+		if (!$verify->is_supporter()) {
 			return;
 		}
 

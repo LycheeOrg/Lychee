@@ -3,13 +3,12 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Http\Requests\SecurePath;
 
 use App\Http\Requests\AbstractEmptyRequest;
-use App\Models\Configs;
 
 class SecurePathRequest extends AbstractEmptyRequest
 {
@@ -24,7 +23,7 @@ class SecurePathRequest extends AbstractEmptyRequest
 
 		// This should guarantee that only paths that should be shared are accessible.
 
-		return Configs::getValueAsBool('secure_image_link_enabled') ||
-			Configs::getValueAsBool('temporary_image_link_enabled');
+		return $this->configs()->getValueAsBool('secure_image_link_enabled') ||
+			$this->configs()->getValueAsBool('temporary_image_link_enabled');
 	}
 }

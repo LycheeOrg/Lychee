@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Assets;
@@ -11,9 +11,9 @@ namespace App\Assets;
 use App\Enum\SizeVariantType;
 use App\Exceptions\InsufficientEntropyException;
 use App\Exceptions\Internal\LycheeLogicException;
-use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\SizeVariant;
+use App\Repositories\ConfigManager;
 
 /**
  * We extend the SizeVariant naming strategy for watermarks.
@@ -45,7 +45,8 @@ class WatermarkGroupedWithRandomSuffixNamingStrategy extends SizeVariantGroupedW
 
 		// We do not support setting a photo, as this is a watermark strategy.
 		// Instead, we set the random middle path from the size variant.
-		if (Configs::getValueAsBool('watermark_random_path')) {
+		$config_manager = resolve(ConfigManager::class);
+		if ($config_manager->getValueAsBool('watermark_random_path')) {
 			$this->cachedRndMiddlePath = self::createRndMiddlePath();
 
 			return;

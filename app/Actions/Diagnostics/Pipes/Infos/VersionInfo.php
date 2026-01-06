@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Actions\Diagnostics\Pipes\Infos;
@@ -90,7 +90,8 @@ class VersionInfo implements DiagnosticStringPipe
 		$lychee_version = 'Lychee';
 		$lychee_version .= match ($this->verify->get_status()) {
 			Status::SUPPORTER_EDITION => ' SE',
-			Status::PLUS_EDITION => ' Plus',
+			Status::PRO_EDITION => ' Pro',
+			Status::SIGNATURE_EDITION => ' Signature',
 			default => '',
 		};
 

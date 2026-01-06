@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Http\Resources\Timeline;
@@ -11,7 +11,6 @@ namespace App\Http\Resources\Timeline;
 use App\Enum\PhotoLayoutType;
 use App\Http\Resources\GalleryConfigs\RootConfig;
 use App\Http\Resources\Rights\RootAlbumRightsResource;
-use App\Models\Configs;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
@@ -28,8 +27,8 @@ class InitResource extends Data
 
 	public function __construct()
 	{
-		$this->photo_layout = Configs::getValueAsEnum('timeline_photos_layout', PhotoLayoutType::class);
-		$this->is_timeline_page_enabled = Configs::getValueAsBool('timeline_page_enabled');
+		$this->photo_layout = request()->configs()->getValueAsEnum('timeline_photos_layout', PhotoLayoutType::class);
+		$this->is_timeline_page_enabled = request()->configs()->getValueAsBool('timeline_page_enabled');
 		$this->config = new RootConfig();
 		$this->rights = new RootAlbumRightsResource();
 	}

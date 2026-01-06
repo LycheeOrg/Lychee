@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 /**
@@ -21,7 +21,6 @@ namespace Tests\Webshop\Checkout;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Enum\OmnipayProviderType;
 use App\Enum\PaymentStatusType;
-use Illuminate\Support\Facades\Cookie;
 
 /**
  * Test class for CheckoutController CreateSession functionality.
@@ -231,7 +230,7 @@ class CheckoutCreateSessionControllerTest extends BaseCheckoutControllerTest
 		$providers = [
 			OmnipayProviderType::DUMMY,
 			OmnipayProviderType::STRIPE,
-			OmnipayProviderType::PAYPAL_EXPRESS,
+			OmnipayProviderType::PAYPAL,
 		];
 
 		foreach ($providers as $provider) {

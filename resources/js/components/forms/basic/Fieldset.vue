@@ -11,7 +11,6 @@
 </template>
 <script setup lang="ts">
 import Fieldset from "primevue/fieldset";
-import { defineProps } from "vue";
 
 const props = defineProps<{
 	legend?: string;

@@ -48,7 +48,7 @@ $rules = [
 		'only_booleans' => true,
 		'position' => 'end',
 	],
-	// 'header_comment' => ['header' => "SPDX-License-Identifier: MIT\nCopyright (c) 2017-2018 Tobias Reich\nCopyright (c) 2018-2025 LycheeOrg", 'comment_type' => 'PHPDoc', 'location' => 'after_open', 'separate' => 'bottom'],
+	// 'header_comment' => ['header' => "SPDX-License-Identifier: MIT\nCopyright (c) 2017-2018 Tobias Reich\nCopyright (c) 2018-2026 LycheeOrg", 'comment_type' => 'PHPDoc', 'location' => 'after_open', 'separate' => 'bottom'],
 ];
 $config = new PhpCsFixer\Config();
 
@@ -57,5 +57,6 @@ $config->setRules($rules);
 $config->setIndent("\t");
 $config->setLineEnding("\n");
 $config->setFinder($finder);
+$config->setUnsupportedPhpVersionAllowed(true);
 
 return $config;

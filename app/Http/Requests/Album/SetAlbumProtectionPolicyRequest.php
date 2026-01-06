@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Http\Requests\Album;
@@ -57,7 +57,7 @@ class SetAlbumProtectionPolicyRequest extends BaseApiRequest implements HasAbstr
 			RequestAttribute::IS_NSFW_ATTRIBUTE => 'required|boolean',
 			RequestAttribute::GRANTS_DOWNLOAD_ATTRIBUTE => 'required|boolean',
 			RequestAttribute::GRANTS_FULL_PHOTO_ACCESS_ATTRIBUTE => 'required|boolean',
-			RequestAttribute::GRANTS_UPLOAD_ATTRIBUTE => ['required', 'boolean', new BooleanRequireSupportRule(false, $this->verify)],
+			RequestAttribute::GRANTS_UPLOAD_ATTRIBUTE => ['required', 'boolean', new BooleanRequireSupportRule(false, $this->verify())],
 		];
 	}
 

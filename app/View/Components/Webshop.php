@@ -3,17 +3,15 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\View\Components;
 
 use App\Exceptions\ConfigurationKeyMissingException;
-use App\Models\Configs;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\View\Component;
 use Illuminate\View\View;
-use LycheeVerify\Verify;
 
 /**
  * Webshop component.
@@ -32,9 +30,9 @@ class Webshop extends Component
 	 */
 	public function __construct()
 	{
-		$is_supporter = resolve(Verify::class)->check();
+		$is_supporter = request()->verify()->check();
 
-		$this->enable = $is_supporter && !Configs::getValueAsBool('webshop_offline') && Configs::getValueAsBool('webshop_enabled');
+		$this->enable = $is_supporter && !request()->configs()->getValueAsBool('webshop_offline') && request()->configs()->getValueAsBool('webshop_enabled');
 		$this->with_mollie = config('omnipay.Mollie.apiKey') !== '' && config('omnipay.Mollie.apiKey') !== null;
 		$this->with_stripe = config('omnipay.Stripe.apiKey') !== '' && config('omnipay.Stripe.apiKey') !== null;
 	}

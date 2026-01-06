@@ -21,10 +21,22 @@ trim_trailing_whitespace = false
 indent_style = tab
 indent_size = 4
 
+[*.sh]
+indent_style = space
+indent_size = 2
+
 [*.yml]
 indent_style = space
 indent_size = 2
 
 [lang/**.php]
+indent_style = space
+indent_size = 4
+
+[docker-compose.yaml]
+indent_style = space
+indent_size = 2
+
+[Dockerfile]
 indent_style = space
 indent_size = 4

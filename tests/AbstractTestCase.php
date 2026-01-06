@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 /**
@@ -18,8 +18,8 @@
 
 namespace Tests;
 
-use App\Models\Configs;
 use App\Models\Photo;
+use App\Repositories\ConfigManager;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
@@ -112,8 +112,9 @@ abstract class AbstractTestCase extends BaseTestCase
 	 */
 	protected static function getRecentPhotoIDs(): BaseCollection
 	{
+		$config_manager = resolve(ConfigManager::class);
 		$strRecent = Carbon::now()
-			->subDays(Configs::getValueAsInt('recent_age'))
+			->subDays($config_manager->getValueAsInt('recent_age'))
 			->setTimezone('UTC')
 			->format('Y-m-d H:i:s');
 		$recentFilter = function (Builder $query) use ($strRecent): void {

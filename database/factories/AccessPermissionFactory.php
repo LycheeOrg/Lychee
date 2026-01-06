@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace Database\Factories;
@@ -23,7 +23,7 @@ class AccessPermissionFactory extends Factory
 	/**
 	 * The name of the factory's corresponding model.
 	 *
-	 * @var string
+	 * @var class-string<AccessPermission>
 	 */
 	protected $model = AccessPermission::class;
 
@@ -45,6 +45,13 @@ class AccessPermissionFactory extends Factory
 		];
 	}
 
+	/**
+	 * Make the AccessPermission public (i.e., not tied to any user or user group).
+	 * However, by default, it still requires a link to access. Use ->visible() to
+	 * make it actually visible in listings.
+	 *
+	 * This has an impact on how thumbs are computed.
+	 */
 	public function public()
 	{
 		return $this->state(function (array $attributes) {
@@ -133,6 +140,9 @@ class AccessPermissionFactory extends Factory
 		});
 	}
 
+	/**
+	 * Make the AccessPermission not require a link: actually visible in listings.
+	 */
 	public function visible()
 	{
 		return $this->state(function (array $attributes) {

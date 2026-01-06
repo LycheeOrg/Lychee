@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Http\Requests\Timeline;
@@ -13,7 +13,6 @@ use App\Contracts\Http\Requests\RequestAttribute;
 use App\Enum\TimelinePhotoGranularity;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasPhotoTrait;
-use App\Models\Configs;
 use App\Models\Photo;
 use App\Rules\RandomIDRule;
 use Illuminate\Support\Carbon;
@@ -32,7 +31,7 @@ class IdOrDatedTimelineRequest extends BaseApiRequest implements HasPhoto
 	 */
 	public function rules(): array
 	{
-		$granularity = Configs::getValueAsEnum('timeline_photos_granularity', TimelinePhotoGranularity::class);
+		$granularity = $this->configs()->getValueAsEnum('timeline_photos_granularity', TimelinePhotoGranularity::class);
 		$format = $granularity->format();
 
 		return [
@@ -49,11 +48,11 @@ class IdOrDatedTimelineRequest extends BaseApiRequest implements HasPhoto
 	 */
 	public function authorize(): bool
 	{
-		if (!Auth::check() && !Configs::getValueAsBool('timeline_photos_public')) {
+		if (!Auth::check() && !$this->configs()->getValueAsBool('timeline_photos_public')) {
 			return false;
 		}
 
-		return Configs::getValueAsBool('timeline_page_enabled');
+		return $this->configs()->getValueAsBool('timeline_page_enabled');
 	}
 
 	/**
@@ -65,7 +64,7 @@ class IdOrDatedTimelineRequest extends BaseApiRequest implements HasPhoto
 	{
 		// We only set this one if it is not null
 		if (isset($values[RequestAttribute::DATE_ATTRIBUTE])) {
-			$granularity = Configs::getValueAsEnum('timeline_photos_granularity', TimelinePhotoGranularity::class);
+			$granularity = $this->configs()->getValueAsEnum('timeline_photos_granularity', TimelinePhotoGranularity::class);
 			$format = $granularity->format();
 
 			// Validate format.

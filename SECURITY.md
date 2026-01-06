@@ -10,7 +10,7 @@ Those are the versions where we accept vulnerability reports.
 | master           | :heavy_check_mark: |
 | latest release   | :white_check_mark: |
 | < latest release | :x:                |
-| < 6.0            | :x:                |
+| < 7.0            | :x:                |
 
 ## Reporting a Vulnerability
 

@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Actions\Shop;
@@ -17,7 +17,9 @@ use App\Models\Album;
 use App\Models\Order;
 use App\Models\Photo;
 use App\Models\User;
+use App\Policies\AlbumPolicy;
 use App\Policies\AlbumQueryPolicy;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -139,7 +141,12 @@ class BasketService
 		// up with photos that are purchasable but in albums that the user cannot see.
 		// This would lead to inconsistencies in the OrderItems.
 		if ($include_subalbums) {
-			$albums_ids = $this->album_query_policy->applyBrowsabilityFilter(Album::query()->select('id'), $album->_lft, $album->_rgt)->pluck('id')->toArray();
+			$albums_ids = $this->album_query_policy->applyBrowsabilityFilter(
+				query: Album::query()->select('id'),
+				user: Auth::user(),
+				unlocked_album_ids: AlbumPolicy::getUnlockedAlbumIDs(),
+				origin_left: $album->_lft,
+				origin_right: $album->_rgt)->pluck('id')->toArray();
 		} else {
 			$albums_ids = [$album->id];
 		}

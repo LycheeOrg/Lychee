@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 /**
@@ -20,6 +20,7 @@ namespace Tests\ImageProcessing\Image\Handlers;
 
 use App\Facades\Helpers;
 use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use function Safe\date;
@@ -48,7 +49,6 @@ abstract class BaseImageHandler extends BaseApiWithDataTest
 		$response = $this->actingAs($this->admin)->upload('Photo', filename: $filename, album_id: $this->album5->id);
 		$this->assertCreated($response);
 
-		$this->clearCachedSmartAlbums();
 		$response = $this->getJsonWithData('Album', ['album_id' => $this->album5->id]);
 		$this->assertOk($response);
 
@@ -106,9 +106,10 @@ abstract class BaseImageHandler extends BaseApiWithDataTest
 	 */
 	public function testUploadWithPlaceholder(): void
 	{
-		$init_config_value1 = Configs::getValue('low_quality_image_placeholder');
+		$config_manager = resolve(ConfigManager::class);
+		$init_config_value1 = $config_manager->getValue('low_quality_image_placeholder');
 		Configs::set('low_quality_image_placeholder', '1');
-		static::assertEquals('1', Configs::getValue('low_quality_image_placeholder'));
+		static::assertEquals('1', $config_manager->getValue('low_quality_image_placeholder'));
 
 		$response = $this->uploadImage(TestConstants::SAMPLE_FILE_NIGHT_IMAGE);
 		$photo = $response->json('resource.photos.0');
@@ -410,10 +411,11 @@ abstract class BaseImageHandler extends BaseApiWithDataTest
 	 */
 	public function testVideoUploadWithoutFFmpeg(): void
 	{
-		$hasExifTool = Configs::getValueAsInt(TestConstants::CONFIG_HAS_EXIF_TOOL);
+		$config_manager = resolve(ConfigManager::class);
+		$hasExifTool = $config_manager->getValueAsInt(TestConstants::CONFIG_HAS_EXIF_TOOL);
 		Configs::set(TestConstants::CONFIG_HAS_EXIF_TOOL, 0);
 
-		$hasFFMpeg = Configs::getValueAsInt(TestConstants::CONFIG_HAS_FFMPEG);
+		$hasFFMpeg = $config_manager->getValueAsInt(TestConstants::CONFIG_HAS_FFMPEG);
 		Configs::set(TestConstants::CONFIG_HAS_FFMPEG, 0);
 
 		file_put_contents(storage_path('logs/daily-' . date('Y-m-d') . '.log'), '');
@@ -456,7 +458,8 @@ abstract class BaseImageHandler extends BaseApiWithDataTest
 	 */
 	public function testPhotoUploadWithUndefinedExifTag(): void
 	{
-		$hasExifTool = Configs::getValueAsBool(TestConstants::CONFIG_HAS_EXIF_TOOL);
+		$config_manager = resolve(ConfigManager::class);
+		$hasExifTool = $config_manager->getValueAsBool(TestConstants::CONFIG_HAS_EXIF_TOOL);
 		Configs::set(TestConstants::CONFIG_HAS_EXIF_TOOL, false);
 
 		$response = $this->uploadImage(TestConstants::SAMPLE_FILE_UNDEFINED_EXIF_TAG);
@@ -515,7 +518,8 @@ abstract class BaseImageHandler extends BaseApiWithDataTest
 
 	public function testUploadMultibyteTitleWithoutExifTool(): void
 	{
-		$hasExifTool = Configs::getValueAsBool(TestConstants::CONFIG_HAS_EXIF_TOOL);
+		$config_manager = resolve(ConfigManager::class);
+		$hasExifTool = $config_manager->getValueAsBool(TestConstants::CONFIG_HAS_EXIF_TOOL);
 		Configs::set(TestConstants::CONFIG_HAS_EXIF_TOOL, false);
 		$this->testUploadMultibyteTitle();
 		Configs::set(TestConstants::CONFIG_HAS_EXIF_TOOL, $hasExifTool);
@@ -529,7 +533,8 @@ abstract class BaseImageHandler extends BaseApiWithDataTest
 	 */
 	public function testTakenAtForPhotoUploadWithoutExif(): void
 	{
-		$useLastModifiedDate = Configs::getValueAsBool(TestConstants::CONFIG_USE_LAST_MODIFIED_DATE_WHEN_NO_EXIF);
+		$config_manager = resolve(ConfigManager::class);
+		$useLastModifiedDate = $config_manager->getValueAsBool(TestConstants::CONFIG_USE_LAST_MODIFIED_DATE_WHEN_NO_EXIF);
 		Configs::set(TestConstants::CONFIG_USE_LAST_MODIFIED_DATE_WHEN_NO_EXIF, true);
 
 		$response = $this->uploadImage(TestConstants::SAMPLE_FILE_WITHOUT_EXIF);
@@ -549,14 +554,14 @@ abstract class BaseImageHandler extends BaseApiWithDataTest
 	 */
 	public function testTakenAtForPhotoUploadWithoutExif2(): void
 	{
-		$useLastModifiedDate = Configs::getValueAsBool(TestConstants::CONFIG_USE_LAST_MODIFIED_DATE_WHEN_NO_EXIF);
+		$config_manager = resolve(ConfigManager::class);
+		$useLastModifiedDate = $config_manager->getValueAsBool(TestConstants::CONFIG_USE_LAST_MODIFIED_DATE_WHEN_NO_EXIF);
 		Configs::set(TestConstants::CONFIG_USE_LAST_MODIFIED_DATE_WHEN_NO_EXIF, true);
 
 		$this->catchFailureSilence = [];
 		$response = $this->actingAs($this->admin)->upload('Photo', filename: TestConstants::SAMPLE_FILE_WITHOUT_EXIF, album_id: $this->album5->id, file_last_modified_time: 0);
 		$this->assertCreated($response);
 
-		$this->clearCachedSmartAlbums();
 		$response = $this->getJsonWithData('Album', ['album_id' => $this->album5->id]);
 		$this->assertOk($response);
 		$photo = $response->json('resource.photos.0');
@@ -590,7 +595,8 @@ abstract class BaseImageHandler extends BaseApiWithDataTest
 	 */
 	public function testTakenAtForPhotoUploadWithExif(): void
 	{
-		$useLastModifiedDate = Configs::getValueAsBool(TestConstants::CONFIG_USE_LAST_MODIFIED_DATE_WHEN_NO_EXIF);
+		$config_manager = resolve(ConfigManager::class);
+		$useLastModifiedDate = $config_manager->getValueAsBool(TestConstants::CONFIG_USE_LAST_MODIFIED_DATE_WHEN_NO_EXIF);
 		Configs::set(TestConstants::CONFIG_USE_LAST_MODIFIED_DATE_WHEN_NO_EXIF, true);
 
 		$response = $this->uploadImage(TestConstants::SAMPLE_FILE_NIGHT_IMAGE);

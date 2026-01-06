@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Http\Middleware;
@@ -12,7 +12,7 @@ use App\Exceptions\ConfigurationException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\LycheeInvalidArgumentException;
 use App\Exceptions\UnauthenticatedException;
-use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -53,12 +53,13 @@ class LoginRequired
 			return redirect()->route('gallery');
 		}
 
-		if (!Configs::getValueAsBool('login_required')) {
+		$config_manager = resolve(ConfigManager::class);
+		if (!$config_manager->getValueAsBool('login_required')) {
 			// Login is not required. Proceed.
 			return $next($request);
 		}
 
-		if ($required_status === self::ALBUM && Configs::getValueAsBool('login_required_root_only')) {
+		if ($required_status === self::ALBUM && $config_manager->getValueAsBool('login_required_root_only')) {
 			return $next($request);
 		}
 

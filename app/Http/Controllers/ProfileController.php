@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Http\Controllers;
@@ -21,7 +21,6 @@ use App\Http\Requests\Profile\RegistrationRequest;
 use App\Http\Requests\Profile\UpdateProfileRequest;
 use App\Http\Resources\Models\UserResource;
 use App\Http\Resources\Models\Utils\UserToken;
-use App\Models\Configs;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
@@ -40,8 +39,8 @@ class ProfileController extends Controller
 			username: $request->username(),
 			password: $request->password(),
 			email: $request->email(),
-			may_upload: Configs::getValueAsBool('grant_new_user_upload_rights'),
-			may_edit_own_settings: Configs::getValueAsBool('grant_new_user_modification_rights'),
+			may_upload: $request->configs()->getValueAsBool('grant_new_user_upload_rights'),
+			may_edit_own_settings: $request->configs()->getValueAsBool('grant_new_user_modification_rights'),
 			quota_kb: 0,
 		);
 
@@ -61,7 +60,7 @@ class ProfileController extends Controller
 
 		if ($request->username() !== null &&
 			$request->username() !== '' &&
-			Configs::getValueAsBool('allow_username_change')) {
+			$request->configs()->getValueAsBool('allow_username_change')) {
 			$update_login->updateUsername($current_user, $request->username(), $request->ip());
 		}
 

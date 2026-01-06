@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 return [
@@ -17,6 +17,17 @@ return [
 	| want to force the https scheme.
 	*/
 	'force_https' => (bool) env('APP_FORCE_HTTPS', false),
+
+	/*
+	|--------------------------------------------------------------------------
+	| Log 404 errors
+	|--------------------------------------------------------------------------
+	|
+	| When enabled, all 404 errors are logged to the log file.
+	| This can be useful to track broken links or attempted attacks.
+	| True by default, so it can be set to false to avoid too large log files.
+	*/
+	'log_404_errors' => (bool) env('LOG_404_ERRORS', true),
 
 	/*
 	|--------------------------------------------------------------------------
@@ -37,7 +48,7 @@ return [
 	|
 	| Log Viewer can be disabled, so it's no longer accessible via browser.
 	*/
-	'log-viewer' => (bool) env('LOG_VIEWER_ENABLED', true),
+	'log-viewer' => (bool) env('LOG_VIEWER_ENABLED', false),
 
 	/*
 	|--------------------------------------------------------------------------
@@ -124,8 +135,20 @@ return [
 	 | Enable Webshop
 	 |--------------------------------------------------------------------------
 	 |
-	 | This is a feature flags to avoid shipping webshop related code
-	 | when the webshop is not ready yet.
+	 | This value determines whether the webshop feature is enabled.
+	 | Disabling it hides all webshop related features
 	 */
-	'webshop' => (bool) env('WEBSHOP_ENABLED', false),
+	'webshop' => (bool) env('WEBSHOP_ENABLED', true),
+
+	/*
+	 |--------------------------------------------------------------------------
+	 | Populate Request object macros while testing
+	 |--------------------------------------------------------------------------
+	 |
+	 | This is necessary for some unit tests that rely on the Request macros
+	 | being present. In production, these macros are populated via middleware.
+	 | However, in unit tests, the middleware may not be executed, leading to
+	 | missing macros and test failures.
+	 */
+	'populate-request-macros' => (bool) env('POPULATE_REQUEST_MACROS', false),
 ];

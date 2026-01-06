@@ -3,16 +3,21 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Rules;
 
-use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use Illuminate\Contracts\Validation\ValidationRule;
 
 final class ConfigKeyRule implements ValidationRule
 {
+	public function __construct(
+		private ConfigManager $config_manager,
+	) {
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -25,7 +30,7 @@ final class ConfigKeyRule implements ValidationRule
 		}
 
 		/** @var string $value */
-		if (!array_key_exists($value, Configs::get())) {
+		if (!$this->config_manager->hasKey($value)) {
 			$fail($attribute . ' is not a valid configuration key.');
 
 			return;

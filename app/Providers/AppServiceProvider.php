@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Providers;
@@ -14,6 +14,7 @@ use App\Assets\Helpers;
 use App\Assets\SizeVariantGroupedWithRandomSuffixNamingStrategy;
 use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
 use App\Contracts\Models\SizeVariantFactory;
+use App\Exceptions\Internal\LycheeLogicException;
 use App\Factories\AlbumFactory;
 use App\Factories\OmnipayFactory;
 use App\Image\SizeVariantDefaultFactory;
@@ -29,17 +30,24 @@ use App\Models\Configs;
 use App\Policies\AlbumQueryPolicy;
 use App\Policies\PhotoQueryPolicy;
 use App\Policies\SettingsPolicy;
+use App\Repositories\ConfigManager;
 use App\Services\MoneyService;
+use Illuminate\Database\Connection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
+use Laravel\Octane\Events\RequestTerminated;
+use Laravel\Octane\Facades\Octane;
+use LycheeVerify\Contract\VerifyInterface;
 use LycheeVerify\Verify;
 use Opcodes\LogViewer\Facades\LogViewer;
 use Safe\Exceptions\StreamException;
@@ -87,8 +95,6 @@ class AppServiceProvider extends ServiceProvider
 			GitCommits::class => GitCommits::class,
 			GitTags::class => GitTags::class,
 
-			Verify::class => Verify::class,
-
 			MoneyService::class => MoneyService::class,
 		];
 
@@ -99,78 +105,55 @@ class AppServiceProvider extends ServiceProvider
 	 */
 	public function boot()
 	{
-		// Prohibits: db:wipe, migrate:fresh, migrate:refresh, and migrate:reset
-		DB::prohibitDestructiveCommands(config('app.env', 'production') !== 'dev');
+		$this->registerMacros();
+		$this->registerDatabaseOptions();
+		$this->registerLoggerAccess();
+		$this->registerHttpAndResponseConfiguration();
+		$this->registerStreamFilters();
+		$this->registerOctaneSettings();
+	}
 
-		/**
-		 * By default resources are wrapping results in a 'data' attribute.
-		 * We disable that.
-		 */
-		JsonResource::withoutWrapping();
-
-		/**
-		 * We force URL to HTTPS if requested in .env via APP_FORCE_HTTPS.
-		 */
-		if (config('features.force_https') === true) {
-			// @codeCoverageIgnoreStart
-			URL::forceScheme('https');
-			// @codeCoverageIgnoreEnd
-		}
-
-		if (config('database.db_log_sql', false) === true) {
-			// @codeCoverageIgnoreStart
-			DB::listen(fn ($q) => $this->logSQL($q));
-			// @codeCoverageIgnoreEnd
-		}
-
-		try {
-			$lang = Configs::getValueAsString('lang');
-			/** @disregard P1013 Undefined method setLocale() (stupid intelephense) */
-			app()->setLocale($lang);
-			// @codeCoverageIgnoreStart
-		} catch (\Throwable $e) {
-			/** Ignore.
-			 * This is necessary so that we can continue:
-			 * - if Configs table do not exists (no install),
-			 * - if the value does not exists in configs (no install),.
-			 */
-		}
-		// @codeCoverageIgnoreEnd
-
-		/**
-		 * We enforce strict mode
-		 * this has the following effect:
-		 * - lazy loading is disabled
-		 * - non-fillable attributes on creation of model are not discarded but throw an error
-		 * - prevents accessing missing attributes.
-		 */
-		Model::shouldBeStrict();
-
-		try {
-			stream_filter_register(
-				StreamStatFilter::REGISTERED_NAME,
-				StreamStatFilter::class
-			);
-		} catch (StreamException) {
-			// We ignore any error here, because Laravel calls the `boot`
-			// method several times and any subsequent attempt to register a
-			// filter for the same name anew will fail.
-		}
-
-		/**
-		 * Set up the Authorization layer for accessing Logs in LogViewer.
-		 */
-		LogViewer::auth(function ($request) {
-			// Allow to bypass when debug is ON and when env is dev
-			// At this point, it is no longer our fault if the Lychee admin have their logs publically accessible.
-			if (config('app.debug', false) === true && config('app.env', 'production') === 'dev') {
-				// @codeCoverageIgnoreStart
-				return true;
-				// @codeCoverageIgnoreEnd
+	/**
+	 * Register the macros that are used for the requests.
+	 *
+	 * @return void
+	 */
+	private function registerMacros(): void
+	{
+		Request::macro('verify', function (): VerifyInterface {
+			if (config('features.populate-request-macros', false) === true) {
+				return resolve(Verify::class);
 			}
 
-			// return true to allow viewing the Log Viewer.
-			return Auth::authenticate() !== null && Gate::check(SettingsPolicy::CAN_SEE_LOGS, Configs::class);
+			if (!$this->attributes->has('verify')) {
+				throw new LycheeLogicException('request attribute "verify" is not set.');
+			}
+
+			$verify = $this->attributes->get('verify');
+
+			if ($verify instanceof VerifyInterface) {
+				return $verify;
+			}
+
+			throw new LycheeLogicException('request attribute "verify" is set but not an instance of VerifyInterface.');
+		});
+
+		Request::macro('configs', function (): ConfigManager {
+			if (config('features.populate-request-macros', false) === true) {
+				return resolve(ConfigManager::class);
+			}
+
+			if (!$this->attributes->has('configs')) {
+				throw new LycheeLogicException('request attribute "configs" is not set.');
+			}
+
+			$configs = $this->attributes->get('configs');
+
+			if ($configs instanceof ConfigManager) {
+				return $configs;
+			}
+
+			throw new LycheeLogicException('request attribute "configs" is set but not an instance of ConfigManager.');
 		});
 	}
 
@@ -194,6 +177,128 @@ class AppServiceProvider extends ServiceProvider
 			SizeVariantFactory::class,
 			SizeVariantDefaultFactory::class
 		);
+
+		$this->app->bind(
+			VerifyInterface::class,
+			Verify::class
+		);
+	}
+
+	/**
+	 * Register database configuration.
+	 *
+	 * @return void
+	 */
+	private function registerDatabaseOptions(): void
+	{
+		// Prohibits: db:wipe, migrate:fresh, migrate:refresh, and migrate:reset
+		DB::prohibitDestructiveCommands(config('app.env', 'production') !== 'dev');
+		if (config('database.db_log_sql', false) === true) {
+			// @codeCoverageIgnoreStart
+			// Log queries when they start
+			DB::beforeExecuting(fn ($sql, $bindings, $connection) => $this->logSQLStart($sql, $bindings, $connection));
+
+			// Log queries as they execute (for successful queries)
+			DB::listen(fn (QueryExecuted $q): null => $this->logSQL($q));
+
+			// Register shutdown function to catch queries that timeout
+			// This logs queries that were running when PHP times out
+			register_shutdown_function(function (): void {
+				$error = error_get_last();
+				if ($error !== null && in_array($error['type'], [E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_RECOVERABLE_ERROR], true)) {
+					// Check if it's a timeout error
+					if (str_contains($error['message'], 'Maximum execution time') || str_contains($error['message'], 'timeout')) {
+						Log::error('🔥 PHP TIMEOUT DETECTED', [
+							'error' => $error['message'],
+							'file' => $error['file'],
+							'line' => $error['line'],
+							'url' => request()?->fullUrl() ?? 'N/A',
+							'method' => request()?->method() ?? 'N/A',
+						]);
+					}
+				}
+			});
+			// @codeCoverageIgnoreEnd
+		}
+
+		/**
+		 * We enforce strict mode
+		 * this has the following effect:
+		 * - lazy loading is disabled
+		 * - non-fillable attributes on creation of model are not discarded but throw an error
+		 * - prevents accessing missing attributes.
+		 */
+		Model::shouldBeStrict();
+	}
+
+	/**
+	 * Set up the callable for accessing LogViewer.
+	 *
+	 * @return void
+	 */
+	private function registerLoggerAccess(): void
+	{
+		/**
+		 * Set up the Authorization layer for accessing Logs in LogViewer.
+		 */
+		LogViewer::auth(function ($request) {
+			// Allow to bypass when debug is ON and when env is dev
+			// At this point, it is no longer our fault if the Lychee admin have their logs publically accessible.
+			if (config('app.debug', false) === true && config('app.env', 'production') === 'dev') {
+				// @codeCoverageIgnoreStart
+				return true;
+				// @codeCoverageIgnoreEnd
+			}
+
+			// return true to allow viewing the Log Viewer.
+			return !Auth::guest() && Gate::check(SettingsPolicy::CAN_SEE_LOGS, Configs::class);
+		});
+	}
+
+	/**
+	 * @codeCoverageIgnore
+	 */
+	private function logSQLStart(string $sql, array $bindings, Connection $connection): void
+	{
+		$uri = request()?->getRequestUri() ?? '';
+		// Quick exit
+		if (
+			Str::contains($uri, 'logs', true) ||
+			Str::contains($sql, $this->ignore_log_SQL)
+		) {
+			return;
+		}
+
+		// Get the call stack to find where the query originated
+		$trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 15);
+		$caller = null;
+
+		// Skip framework internals and find the first app file
+		foreach ($trace as $frame) {
+			if (isset($frame['file']) &&
+				!Str::contains($frame['file'], 'vendor/') &&
+				!Str::contains($frame['file'], 'AppServiceProvider.php')) {
+				$caller = [
+					'file' => str_replace(base_path() . '/', '', $frame['file']),
+					'line' => $frame['line'] ?? 0,
+				];
+				break;
+			}
+		}
+
+		// Get message with binding
+		$msg = 'START: ' . $sql . ' [' . implode(', ', $bindings) . ']';
+
+		$context = [
+			'connection' => $connection->getDriverName(),
+			'url' => request()?->fullUrl() ?? 'N/A',
+		];
+
+		if ($caller !== null) {
+			$context['origin'] = $caller['file'] . ':' . $caller['line'];
+		}
+
+		Log::debug($msg, $context);
 	}
 
 	/**
@@ -222,7 +327,7 @@ class AppServiceProvider extends ServiceProvider
 			config('database.explain', false) === false ||
 			!Str::contains($query->sql, 'select')
 		) {
-			Log::debug($msg);
+			Log::warning($msg);
 
 			return;
 		}
@@ -246,6 +351,94 @@ class AppServiceProvider extends ServiceProvider
 		$msg .= Str::repeat('-', 20) . PHP_EOL;
 		$msg .= $sql_with_bindings . PHP_EOL;
 		$msg .= $renderer->getTable($explain);
-		Log::debug($msg);
+		Log::warning($msg);
+	}
+
+	/**
+	 * We do not want the JSON to be wrapped and we enfore https if configured so.
+	 *
+	 * @return void
+	 */
+	private function registerHttpAndResponseConfiguration(): void
+	{
+		/**
+		 * By default resources are wrapping results in a 'data' attribute.
+		 * We disable that.
+		 */
+		JsonResource::withoutWrapping();
+
+		/**
+		 * We force URL to HTTPS if requested in .env via APP_FORCE_HTTPS.
+		 */
+		if (config('features.force_https') === true) {
+			// @codeCoverageIgnoreStart
+			URL::forceScheme('https');
+			// @codeCoverageIgnoreEnd
+		}
+	}
+
+	/**
+	 * Used to figure out the hash value of a photo for example...
+	 *
+	 * @return void
+	 */
+	private function registerStreamFilters(): void
+	{
+		try {
+			stream_filter_register(
+				StreamStatFilter::REGISTERED_NAME,
+				StreamStatFilter::class
+			);
+		} catch (StreamException) {
+			// We ignore any error here, because Laravel calls the `boot`
+			// method several times and any subsequent attempt to register a
+			// filter for the same name anew will fail.
+		}
+	}
+
+	private function registerOctaneSettings(): void
+	{
+		// Force flush logs after each request in Octane
+		if (app()->bound('octane') === false) {
+			Log::info('Octane is not bound, skipping Octane specific settings.');
+
+			return;
+		}
+
+		// Reset DB connections after each request to prevent timeouts
+		Octane::tick('octane-db-ping', fn () => $this->pingDatabaseConnections())
+			->seconds(30);
+
+		// Clean up after each request
+		Octane::tick('flush-memory', fn () => $this->flushMemory())
+			->seconds(100);
+
+		Event::listen(RequestTerminated::class, function (): void {
+			// Flush all log handlers
+			foreach (Log::getHandlers() as $handler) {
+				$handler->close();
+			}
+		});
+	}
+
+	protected function pingDatabaseConnections(): void
+	{
+		$connections = config('database.connections');
+
+		foreach (array_keys($connections) as $name) {
+			try {
+				DB::connection($name)->getPdo();
+			} catch (\Exception $e) {
+				DB::purge($name);
+				DB::reconnect($name);
+			}
+		}
+	}
+
+	protected function flushMemory(): void
+	{
+		if (gc_enabled()) {
+			gc_collect_cycles();
+		}
 	}
 }

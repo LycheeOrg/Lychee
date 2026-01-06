@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Actions\Photo;
@@ -14,23 +14,27 @@ use App\Enum\OrderSortingType;
 use App\Enum\TimelinePhotoGranularity;
 use App\Exceptions\Internal\LycheeInvalidArgumentException;
 use App\Exceptions\Internal\TimelineGranularityException;
-use App\Models\Configs;
 use App\Models\Photo;
+use App\Policies\AlbumPolicy;
 use App\Policies\PhotoQueryPolicy;
+use App\Repositories\ConfigManager;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class Timeline
 {
 	protected PhotoQueryPolicy $photo_query_policy;
-	private TimelinePhotoGranularity $photo_granularity;
+	protected TimelinePhotoGranularity $photo_granularity;
 
-	public function __construct(PhotoQueryPolicy $photo_query_policy)
-	{
+	public function __construct(
+		PhotoQueryPolicy $photo_query_policy,
+		protected ConfigManager $config_manager,
+	) {
 		$this->photo_query_policy = $photo_query_policy;
-		$this->photo_granularity = Configs::getValueAsEnum('timeline_photos_granularity', TimelinePhotoGranularity::class);
+		$this->photo_granularity = $this->config_manager->getValueAsEnum('timeline_photos_granularity', TimelinePhotoGranularity::class);
 	}
 
 	/**
@@ -40,7 +44,10 @@ class Timeline
 	 */
 	public function do(): Builder
 	{
-		$order = Configs::getValueAsEnum('timeline_photos_order', ColumnSortingPhotoType::class);
+		$user = Auth::user();
+		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
+
+		$order = $this->config_manager->getValueAsEnum('timeline_photos_order', ColumnSortingPhotoType::class);
 
 		// Safe default (should not be needed).
 		// @codeCoverageIgnoreStart
@@ -50,9 +57,11 @@ class Timeline
 		// @codeCoverageIgnoreEnd
 
 		return $this->photo_query_policy->applySearchabilityFilter(
-			query: Photo::query()->with(['statistics', 'size_variants', 'statistics', 'palette', 'tags']),
+			query: Photo::query()->with(['statistics', 'size_variants', 'statistics', 'palette', 'tags', 'rating']),
+			user: $user,
+			unlocked_album_ids: $unlocked_album_ids,
 			origin: null,
-			include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_timeline')
+			include_nsfw: !$this->config_manager->getValueAsBool('hide_nsfw_in_timeline')
 		)->orderBy($order->value, OrderSortingType::DESC->value);
 	}
 
@@ -66,9 +75,12 @@ class Timeline
 	 */
 	public function countYoungerFromDate(Carbon $date): int
 	{
-		$order = Configs::getValueAsEnum('timeline_photos_order', ColumnSortingPhotoType::class);
+		$user = Auth::user();
+		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
 
-		$granularity = Configs::getValueAsEnum('timeline_photos_granularity', TimelinePhotoGranularity::class);
+		$order = $this->config_manager->getValueAsEnum('timeline_photos_order', ColumnSortingPhotoType::class);
+
+		$granularity = $this->config_manager->getValueAsEnum('timeline_photos_granularity', TimelinePhotoGranularity::class);
 
 		$date_offset = match ($granularity) {
 			TimelinePhotoGranularity::YEAR => $date->addYear(),
@@ -89,8 +101,10 @@ class Timeline
 			query: Photo::query()
 				->where($order->value, '>=', $date_offset)
 				->whereNotNull($order->value),
+			user: $user,
+			unlocked_album_ids: $unlocked_album_ids,
 			origin: null,
-			include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_timeline')
+			include_nsfw: !$this->config_manager->getValueAsBool('hide_nsfw_in_timeline')
 		)->count();
 	}
 
@@ -104,7 +118,10 @@ class Timeline
 	 */
 	public function countYoungerFromPhoto(Photo $photo): int
 	{
-		$order = Configs::getValueAsEnum('timeline_photos_order', ColumnSortingPhotoType::class);
+		$user = Auth::user();
+		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
+
+		$order = $this->config_manager->getValueAsEnum('timeline_photos_order', ColumnSortingPhotoType::class);
 
 		// Safe default (should not be needed).
 		// @codeCoverageIgnoreStart
@@ -123,8 +140,10 @@ class Timeline
 					second: 'photos.' . $order->value
 				)
 				->whereNotNull('photos.' . $order->value),
+			user: $user,
+			unlocked_album_ids: $unlocked_album_ids,
 			origin: null,
-			include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_timeline')
+			include_nsfw: !$this->config_manager->getValueAsBool('hide_nsfw_in_timeline')
 		)->count();
 	}
 
@@ -135,7 +154,10 @@ class Timeline
 	 */
 	public function dates(): Collection
 	{
-		$order = Configs::getValueAsEnum('timeline_photos_order', ColumnSortingPhotoType::class);
+		$user = Auth::user();
+		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
+
+		$order = $this->config_manager->getValueAsEnum('timeline_photos_order', ColumnSortingPhotoType::class);
 
 		// Safe default (should not be needed).
 		// @codeCoverageIgnoreStart
@@ -168,8 +190,10 @@ class Timeline
 
 				->selectRaw(sprintf($formatter, $order->value, $date_format) . ' as date')
 				->whereNotNull($order->value),
+			user: $user,
+			unlocked_album_ids: $unlocked_album_ids,
 			origin: null,
-			include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_timeline')
+			include_nsfw: !$this->config_manager->getValueAsBool('hide_nsfw_in_timeline')
 		)->groupBy('date')
 			->orderBy('date', OrderSortingType::DESC->value)
 			->pluck('date');

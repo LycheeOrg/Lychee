@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 /**
@@ -24,6 +24,7 @@ use App\Http\Middleware\LoginRequired;
 use App\Models\Configs;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
 use Tests\AbstractTestCase;
 
 class LoginRequiredTest extends AbstractTestCase
@@ -32,8 +33,9 @@ class LoginRequiredTest extends AbstractTestCase
 
 	public function testExceptionLoginRequired(): void
 	{
-		Configs::where('key', 'login_required')->update(['value' => '1']);
-		Configs::invalidateCache();
+		Config::set('features.populate-request-macros', true);
+		Configs::set('login_required', '1');
+
 		$request = $this->mock(Request::class);
 		$middleware = new LoginRequired();
 		$this->assertThrows(fn () => $middleware->handle($request, fn () => 1, 'root'), UnauthenticatedException::class);
@@ -41,9 +43,10 @@ class LoginRequiredTest extends AbstractTestCase
 
 	public function testExceptionLoginNotRequired(): void
 	{
-		Configs::where('key', 'login_required')->update(['value' => '1']);
-		Configs::where('key', 'login_required_root_only')->update(['value' => '1']);
-		Configs::invalidateCache();
+		Config::set('features.populate-request-macros', true);
+		Configs::set('login_required', '1');
+		Configs::set('login_required_root_only', '1');
+
 		$request = $this->mock(Request::class);
 		$middleware = new LoginRequired();
 		self::assertEquals(1, $middleware->handle($request, fn () => 1, 'album'));
@@ -51,8 +54,9 @@ class LoginRequiredTest extends AbstractTestCase
 
 	public function testExceptionWrongParam(): void
 	{
-		Configs::where('key', 'login_required')->update(['value' => '1']);
-		Configs::invalidateCache();
+		Config::set('features.populate-request-macros', true);
+		Configs::set('login_required', '1');
+
 		$request = $this->mock(Request::class);
 
 		$middleware = new LoginRequired();

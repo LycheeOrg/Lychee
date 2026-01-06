@@ -103,6 +103,37 @@ const MaintenanceService = {
 	statisticsIntegrityCheckDo(): Promise<AxiosResponse> {
 		return axios.post(`${Constants.getApiUrl()}Maintenance::statisticsIntegrity`, {});
 	},
+
+	oldOrdersCheck(): Promise<AxiosResponse<number>> {
+		return axios.get(`${Constants.getApiUrl()}Maintenance::oldOrders`, { data: {} });
+	},
+	oldOrdersDo(): Promise<AxiosResponse> {
+		return axios.post(`${Constants.getApiUrl()}Maintenance::oldOrders`, {});
+	},
+	fulfillOrdersCheck(): Promise<AxiosResponse<number>> {
+		return axios.get(`${Constants.getApiUrl()}Maintenance::fulfillOrders`, { data: {} });
+	},
+	fulfillOrdersDo(): Promise<AxiosResponse> {
+		return axios.post(`${Constants.getApiUrl()}Maintenance::fulfillOrders`, {});
+	},
+	fulfillPrecomputeCheck(): Promise<AxiosResponse<number>> {
+		return axios.get(`${Constants.getApiUrl()}Maintenance::fulfillPrecompute`, { data: {} });
+	},
+	fulfillPrecomputeDo(): Promise<AxiosResponse> {
+		return axios.post(`${Constants.getApiUrl()}Maintenance::fulfillPrecompute`, {});
+	},
+	flushQueueCheck(): Promise<AxiosResponse<number>> {
+		return axios.get(`${Constants.getApiUrl()}Maintenance::flushQueue`, { data: {} });
+	},
+	flushQueueDo(): Promise<AxiosResponse> {
+		return axios.post(`${Constants.getApiUrl()}Maintenance::flushQueue`, {});
+	},
+	backfillAlbumSizesCheck(): Promise<AxiosResponse<number>> {
+		return axios.get(`${Constants.getApiUrl()}Maintenance::backfillAlbumSizes`, { data: {} });
+	},
+	backfillAlbumSizesDo(): Promise<AxiosResponse> {
+		return axios.post(`${Constants.getApiUrl()}Maintenance::backfillAlbumSizes`, {});
+	},
 };
 
 export default MaintenanceService;

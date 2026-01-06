@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Metadata\Versions\Remote;
@@ -28,7 +28,7 @@ use App\Metadata\Versions\Trimable;
  *    "node_id": "MDM6UmVmMTQzOTc1ODA0OnJlZnMvdGFncy92NC42LjMtUkMx"
  *  },]
  */
-final class GitTags extends AbstractGitRemote implements GitRemote
+class GitTags extends AbstractGitRemote implements GitRemote
 {
 	use Trimable;
 

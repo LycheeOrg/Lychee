@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Http\Requests;
@@ -21,14 +21,15 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
-use LycheeVerify\Contract\VerifyInterface;
-use LycheeVerify\Verify;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
+/**
+ * @method \LycheeVerify\Verify            verify()
+ * @method \App\Repositories\ConfigManager config()
+ */
 abstract class BaseApiRequest extends FormRequest
 {
 	protected readonly AlbumFactory $album_factory;
-	protected readonly VerifyInterface $verify;
 
 	/**
 	 * @throws FrameworkException
@@ -44,7 +45,6 @@ abstract class BaseApiRequest extends FormRequest
 	) {
 		try {
 			$this->album_factory = resolve(AlbumFactory::class);
-			$this->verify = resolve(Verify::class);
 			parent::__construct($query, $request, $attributes, $cookies, $files, $server, $content);
 		} catch (BindingResolutionException $e) {
 			throw new FrameworkException('Laravel\'s provider component', $e);

@@ -76,6 +76,7 @@ return [
             'share' => 'Поделиться альбомом',
             'embed' => 'Embed Album',
             'move' => 'Переместить альбом',
+            'shop' => 'Shop Management',
             'danger' => 'ОПАСНОЕ МЕСТО',
         ],
         'hero' => [
@@ -179,6 +180,19 @@ return [
             'set_created_at' => 'Установить дату загрузки',
             'set_taken_at' => 'Установить дату съемки',
             'set_taken_at_info' => 'При установке будет отображаться звезда %s, чтобы указать, что эта дата отличается от оригинальной EXIF даты.<br>Снимите галочку и сохраните, чтобы сбросить на оригинальную дату.',
+        ],
+        'rating' => [
+            'header' => 'Rating',
+            'rating' => 'rating',
+            'ratings' => 'ratings',
+            'your_rating' => 'Your rating',
+            'saving' => 'Saving rating...',
+            'removed' => 'Rating removed',
+            'saved' => 'Rating saved',
+            'error' => 'Failed to save rating',
+            'error_unauthorized' => 'You must be logged in to rate photos',
+            'error_forbidden' => 'You do not have permission to rate this photo',
+            'error_not_found' => 'Photo not found',
         ],
     ],
     'nsfw' => [

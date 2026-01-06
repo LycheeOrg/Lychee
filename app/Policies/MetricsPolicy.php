@@ -3,20 +3,17 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Policies;
 
 use App\Enum\LiveMetricsAccess;
-use App\Models\Configs;
 use App\Models\User;
-use Illuminate\Auth\Access\HandlesAuthorization;
+use App\Repositories\ConfigManager;
 
-class MetricsPolicy
+class MetricsPolicy extends BasePolicy
 {
-	use HandlesAuthorization;
-
 	public const CAN_SEE_LIVE = 'canSeeLive';
 
 	/**
@@ -24,7 +21,8 @@ class MetricsPolicy
 	 */
 	public function canSeeLive(?User $user): bool
 	{
-		$access_level = Configs::getValueAsEnum('live_metrics_access', LiveMetricsAccess::class);
+		$config_manager = app(ConfigManager::class);
+		$access_level = $config_manager->getValueAsEnum('live_metrics_access', LiveMetricsAccess::class);
 
 		return match ($access_level) {
 			LiveMetricsAccess::LOGGEDIN => true,

@@ -20,8 +20,8 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - 8.3
           - 8.4
+          - 8.5
         sql-versions:
           - mariadb
           - postgresql
@@ -32,6 +32,7 @@ jobs:
           - Install
           - Webshop
           - ImageProcessing
+          - Precomputing
         exclude:
         # Some skips to reduce the number of runs
           - php-version: 8.4
@@ -42,6 +43,8 @@ jobs:
             test-suite: Webshop
           - php-version: 8.4
             test-suite: ImageProcessing
+          - php-version: 8.4
+            test-suite: Precomputing
     # Service containers to run with `container-job`
     services:
       # Label used to access the service container
@@ -65,7 +68,7 @@ jobs:
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@df199fb7be9f65074067a9eb93f12bb4c5547cf2 # v2.13.3
+        uses: step-security/harden-runner@20cf305ff2072d973412fa9b1e3a4f227bda3c76 # v2.14.0
         with:
           egress-policy: audit
 
@@ -112,6 +115,6 @@ jobs:
         run: php artisan migrate:rollback
 
       - name: Codecov
-        uses: codecov/codecov-action@5a1091511ad55cbe89839c7260b706298ca349f7 # v5.5.1
+        uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de # v5.5.2
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

@@ -3,55 +3,43 @@ name: Integrate
 # Run this workflow every time a new commit pushed to your repository
 on:
   push:
+    branches:
+      - master
+    tags:
+      - '*'
     paths-ignore:
       - '**/*.md'
       - 'public/dist/*.js'
       - 'public/dist/**/*.js'
-      - 'public/Lychee-front'
   pull_request:
     paths-ignore:
       - '**/*.md'
       - 'public/dist/*.js'
       - 'public/dist/**/*.js'
-      - 'public/Lychee-front'
   # Allow manually triggering the workflow.
   workflow_dispatch:
 
 # Declare default permissions as read only.
 permissions: read-all
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ !contains(github.ref, 'master') && !startsWith(github.ref, 'refs/tags/') }} # Only cancel previous runs on non-master/non-tag branches.
+
 jobs:
-  kill_previous:
-    name: 0️⃣ Kill previous runs
-    runs-on: ubuntu-latest
-    # We want to run on external PRs, but not on our own internal PRs as they'll be run by the push to the branch.
-    if: (github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository)
-    steps:
-      - name: Harden Runner
-        uses: step-security/harden-runner@df199fb7be9f65074067a9eb93f12bb4c5547cf2 # v2.13.3
-        with:
-          egress-policy: audit
-
-      - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@85880fa0301c86cca9da44039ee3bb12d3bedbfa # 0.12.1
-        with:
-          access_token: ${{ github.token }}
-
   php_syntax_errors:
-    name: 1️⃣ PHP 8.3 - Syntax errors
+    name: 0️⃣ PHP 8.4 - Syntax errors
     runs-on: ubuntu-latest
-    needs:
-      - kill_previous
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@df199fb7be9f65074067a9eb93f12bb4c5547cf2 # v2.13.3
+        uses: step-security/harden-runner@20cf305ff2072d973412fa9b1e3a4f227bda3c76 # v2.14.0
         with:
           egress-policy: audit
 
       - name: Setup PHP Action
         uses: shivammathur/setup-php@44454db4f0199b8b9685a5d763dc37cbf79108e1 # 2.36.0
         with:
-          php-version: 8.3
+          php-version: 8.4
 
       - name: Checkout code
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
@@ -62,21 +50,25 @@ jobs:
       - name: Check source code for syntax errors
         run: vendor/bin/parallel-lint --exclude .git --exclude vendor .
 
+  check_js:
+    name: 0️⃣ JS front-end
+    uses: ./.github/workflows/js_check.yml
+
   code_style_errors:
-    name: 2️⃣ PHP 8.3 - Code Style errors
+    name: 1️⃣ PHP 8.4 - Code Style errors
     runs-on: ubuntu-latest
     needs:
       - php_syntax_errors
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@df199fb7be9f65074067a9eb93f12bb4c5547cf2 # v2.13.3
+        uses: step-security/harden-runner@20cf305ff2072d973412fa9b1e3a4f227bda3c76 # v2.14.0
         with:
           egress-policy: audit
 
       - name: Set up PHP
         uses: shivammathur/setup-php@44454db4f0199b8b9685a5d763dc37cbf79108e1 # 2.36.0
         with:
-          php-version: 8.3
+          php-version: 8.4
 
       - name: Checkout code
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
@@ -85,22 +77,16 @@ jobs:
         uses: ramsey/composer-install@3cf229dc2919194e9e36783941438d17239e8520 # 3.1.1
 
       - name: Check source code for code style errors
-        run: PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --verbose --diff --dry-run
-
-  check_js:
-    name: 2️⃣ JS front-end
-    uses: ./.github/workflows/js_check.yml
-    needs:
-      - php_syntax_errors
+        run: vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --verbose --diff --dry-run
 
   phpstan:
-    name: 2️⃣ PHP 8.3 - PHPStan
+    name: 1️⃣ PHP 8.4 - PHPStan
     runs-on: ubuntu-latest
     needs:
       - php_syntax_errors
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@df199fb7be9f65074067a9eb93f12bb4c5547cf2 # v2.13.3
+        uses: step-security/harden-runner@20cf305ff2072d973412fa9b1e3a4f227bda3c76 # v2.14.0
         with:
           egress-policy: audit
 
@@ -110,7 +96,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@44454db4f0199b8b9685a5d763dc37cbf79108e1 # 2.36.0
         with:
-          php-version: 8.3
+          php-version: 8.4
           coverage: none
 
       - name: Install Composer dependencies
@@ -120,13 +106,13 @@ jobs:
         run: vendor/bin/phpstan analyze
 
   license:
-    name: 2️⃣ PHP 8.3 - License Check
+    name: 1️⃣ PHP 8.4 - License Check
     runs-on: ubuntu-latest
     needs:
       - php_syntax_errors
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@df199fb7be9f65074067a9eb93f12bb4c5547cf2 # v2.13.3
+        uses: step-security/harden-runner@20cf305ff2072d973412fa9b1e3a4f227bda3c76 # v2.14.0
         with:
           egress-policy: audit
 
@@ -136,7 +122,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@44454db4f0199b8b9685a5d763dc37cbf79108e1 # 2.36.0
         with:
-          php-version: 8.3
+          php-version: 8.4
           coverage: none
 
       - name: Install Composer dependencies
@@ -147,7 +133,7 @@ jobs:
         run: vendor/bin/composer-license-checker check -b GPL-2.0-or-later -b GPL-2.0-only -b GPL-3.0-only -b GPL-3.0-or-later -b AGPL-1.0-only -b AGPL-1.0-or-later -b AGPL-3.0-only -b AGPL-3.0-or-later -b LGPL-2.0-only -b LGPL-2.0-or-later -b LGPL-2.1-only -b LGPL-2.1-or-later -b LGPL-3.0-only -b LGPL-3.0-or-later --no-dev
 
   tests:
-    name:  2️⃣ PHP tests
+    name: 1️⃣ PHP tests
     needs:
       - php_syntax_errors
     uses: ./.github/workflows/php_tests.yml
@@ -155,13 +141,231 @@ jobs:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   dist:
-    name:  3️⃣ PHP dist
+    name: 2️⃣ PHP dist
     needs:
       - code_style_errors
     uses: ./.github/workflows/php_dist.yml
 
+  docker_check:
+    name: 3️⃣ Dockerfile Lint
+    runs-on: ubuntu-latest
+    needs:
+      - phpstan
+      - check_js
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@20cf305ff2072d973412fa9b1e3a4f227bda3c76 # v2.14.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout code
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f #v3.12.0
+
+      - name: Docker Lint
+        uses: hadolint/hadolint-action@2332a7b74a6de0dda2e2221d575162eba76ba5e5 # v3.3.0
+        with:
+          dockerfile: ./Dockerfile
+          failure-threshold: warning
+
+      - name: Build Docker image locally
+        run: docker build -t lychee:local .
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@b6643a29fecd7f34b3597bc6acb0a98b03d33ff8 # v0.33.1
+        with:
+          image-ref: lychee:local
+          format: 'table'
+          exit-code: 1
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+
+  docker_build:
+    name:  4️⃣ Build Docker Image
+    runs-on: ubuntu-latest
+    if: >
+      (github.ref == 'refs/heads/master' && github.event_name == 'push') ||
+      (startsWith(github.ref, 'refs/tags/') && github.event_name == 'push')
+    needs:
+      - docker_check
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@20cf305ff2072d973412fa9b1e3a4f227bda3c76 # v2.14.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout code
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3.7.0
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f #v3.12.0
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      -
+        name: Login to DockerHub
+        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels)
+        id: meta
+        uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5.10.0
+        with:
+          images: |
+            ${{ github.repository }}
+            ghcr.io/${{ github.repository }}
+          flavor: |
+            latest=${{ startsWith(github.ref, 'refs/tags/') }}
+          tags: |
+            # define default branch
+            type=edge,branch=master
+            # branch event
+            type=ref,event=branch
+            # tag event
+            type=ref,event=tag
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
+        with:
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=image-frankenphp
+          cache-to: type=gha,scope=image-frankenphp,mode=max
+          build-args: |
+            NODE_ENV=production
+
+  docker_legacy_check:
+    name: 3️⃣ Legacy Dockerfile Lint
+    runs-on: ubuntu-latest
+    needs:
+      - phpstan
+      - check_js
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@20cf305ff2072d973412fa9b1e3a4f227bda3c76 # v2.14.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout code
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f #v3.12.0
+
+      - name: Docker Lint
+        uses: hadolint/hadolint-action@2332a7b74a6de0dda2e2221d575162eba76ba5e5 # v3.3.0
+        with:
+          dockerfile: ./Dockerfile-legacy
+          failure-threshold: warning
+
+      - name: Build Docker image locally
+        run: docker build -f Dockerfile-legacy -t lychee:local-legacy .
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@b6643a29fecd7f34b3597bc6acb0a98b03d33ff8 # v0.33.1
+        with:
+          image-ref: lychee:local-legacy
+          format: 'table'
+          exit-code: 1
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+
+  docker_legacy_build:
+    name:  4️⃣ Build Legacy Docker Image
+    runs-on: ubuntu-latest
+    if: >
+      (github.ref == 'refs/heads/master' && github.event_name == 'push') ||
+      (startsWith(github.ref, 'refs/tags/') && github.event_name == 'push')
+    needs:
+      - docker_legacy_check
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@20cf305ff2072d973412fa9b1e3a4f227bda3c76 # v2.14.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout code
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3.7.0
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f #v3.12.0
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      -
+        name: Login to DockerHub
+        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels)
+        id: meta
+        uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5.10.0
+        with:
+          images: |
+            ${{ github.repository }}
+            ghcr.io/${{ github.repository }}
+          flavor: |
+            latest=${{ startsWith(github.ref, 'refs/tags/') }}
+            suffix=-legacy,onlatest=true
+          tags: |
+            # define default branch
+            type=edge,branch=master
+            # branch event
+            type=ref,event=branch
+            # tag event
+            type=ref,event=tag
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
+        with:
+          push: true
+          file: Dockerfile-legacy
+          platforms: linux/amd64,linux/arm64
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=image-legacy
+          cache-to: type=gha,scope=image-legacy,mode=max
+          build-args: |
+            NODE_ENV=production
+
   createArtifact:
-    name: 4️⃣ Build Artifact
+    name: 3️⃣ Build Artifact
     if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')
     needs:
       - phpstan
@@ -178,7 +382,7 @@ jobs:
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@df199fb7be9f65074067a9eb93f12bb4c5547cf2 # v2.13.3
+        uses: step-security/harden-runner@20cf305ff2072d973412fa9b1e3a4f227bda3c76 # v2.14.0
         with:
           egress-policy: audit
 
@@ -188,7 +392,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@44454db4f0199b8b9685a5d763dc37cbf79108e1 # 2.36.0
         with:
-          php-version: 8.3
+          php-version: 8.4
           extensions: ${{ env.extensions }}
           coverage: none
 
@@ -202,14 +406,14 @@ jobs:
           make clean dist
 
       - name: Upload build artifact
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: Lychee.zip
           path: Lychee.zip
           if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
 
       - name: Attest
-        uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a # v3.0.0
+        uses: actions/attest-build-provenance@00014ed6ed5efc5b1ab7f7f34a39eb55d41aa4f8 # v3.1.0
         with:
           # Path to the artifact serving as the subject of the attestation. Must
           # specify exactly one of "subject-path" or "subject-digest". May contain a
@@ -241,7 +445,7 @@ jobs:
 
 
   release:
-    name: 5️⃣ Release
+    name: 4️⃣ Release
     if: startsWith(github.ref, 'refs/tags/')
     needs:
       - createArtifact
@@ -257,7 +461,7 @@ jobs:
         uses: sigstore/cosign-installer@faadad0cce49287aee09b3a48701e75088a2c6ad # v4.0.0
 
       - name: Download generated artifact
-        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
         with:
           name: Lychee.zip
 

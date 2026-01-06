@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Jobs;
@@ -17,10 +17,10 @@ use App\Factories\AlbumFactory;
 use App\Image\Files\ProcessableJobFile;
 use App\Image\Files\TemporaryJobFile;
 use App\Models\Album;
-use App\Models\Configs;
 use App\Models\JobHistory;
 use App\Models\Photo;
 use App\Models\TagAlbum;
+use App\Repositories\ConfigManager;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -28,6 +28,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 /**
@@ -102,18 +103,20 @@ class ProcessImageJob implements ShouldQueue
 	{
 		$this->history->status = JobStatus::STARTED;
 		$this->history->save();
+		Log::channel('jobs')->info($this->history->job);
 
 		$copied_file = new TemporaryJobFile($this->file_path, $this->original_base_name);
 
-		// As the file has been uploaded, the (temporary) source file shall be
-		// deleted
+		$config_manager = app(ConfigManager::class);
+
+		// As the file has been uploaded, the (temporary) source file shall be deleted
 		$create = new Create(
-			new ImportMode(
+			import_mode: new ImportMode(
 				delete_imported: true,
-				skip_duplicates: Configs::getValueAsBool('skip_duplicates'),
-				shall_rename_photo_title: Configs::getValueAsBool('renamer_photo_title_enabled'),
+				skip_duplicates: $config_manager->getValueAsBool('skip_duplicates'),
+				shall_rename_photo_title: $config_manager->getValueAsBool('renamer_photo_title_enabled'),
 			),
-			$this->user_id
+			intended_owner_id: $this->user_id
 		);
 
 		$album = null;

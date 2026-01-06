@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Actions\Diagnostics\Pipes\Checks;
@@ -11,7 +11,7 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
 use App\Http\Resources\Diagnostics\StatisticsCheckResource;
-use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -19,6 +19,11 @@ use Illuminate\Support\Facades\DB;
  */
 class StatisticsIntegrityCheck implements DiagnosticPipe
 {
+	public function __construct(
+		protected readonly ConfigManager $config_manager,
+	) {
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -42,7 +47,7 @@ class StatisticsIntegrityCheck implements DiagnosticPipe
 	public function get(): StatisticsCheckResource
 	{
 		// Just skip the check, we don't care.
-		if (!Configs::getValueAsBool('metrics_enabled')) {
+		if (!$this->config_manager->getValueAsBool('metrics_enabled')) {
 			return new StatisticsCheckResource(0, 0);
 		}
 

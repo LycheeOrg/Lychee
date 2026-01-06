@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Actions\Diagnostics\Pipes\Checks;
@@ -16,7 +16,7 @@ use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Handler;
 use App\Exceptions\Internal\InvalidConfigOption;
 use App\Facades\Helpers;
-use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Storage;
 use League\Flysystem\Local\LocalFilesystemAdapter;
@@ -64,6 +64,11 @@ class BasicPermissionCheck implements DiagnosticPipe
 	 * @var array<int,string> Matching list of anonymized paths
 	 */
 	protected array $anonymizePaths = [];
+
+	public function __construct(
+		private ConfigManager $config_manager,
+	) {
+	}
 
 	/**
 	 * {@inheritDoc}
@@ -171,7 +176,7 @@ class BasicPermissionCheck implements DiagnosticPipe
 			// @codeCoverageIgnoreEnd
 		}
 		try {
-			if (Configs::getValueAsBool('disable_recursive_permission_check')) {
+			if ($this->config_manager->getValueAsBool('disable_recursive_permission_check')) {
 				$data[] = DiagnosticData::info('Full directory permission check is disabled', self::class);
 			}
 			// @codeCoverageIgnoreStart
@@ -268,7 +273,7 @@ class BasicPermissionCheck implements DiagnosticPipe
 
 			$dir = new \DirectoryIterator($path);
 			try {
-				if (Configs::getValueAsBool('disable_recursive_permission_check')) {
+				if ($this->config_manager->getValueAsBool('disable_recursive_permission_check')) {
 					return;
 				}
 				// @codeCoverageIgnoreStart

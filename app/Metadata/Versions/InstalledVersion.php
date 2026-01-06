@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Metadata\Versions;
@@ -12,7 +12,7 @@ use App\Contracts\Versions\HasIsRelease;
 use App\Contracts\Versions\HasVersion;
 use App\DTO\Version;
 use App\Exceptions\ConfigurationKeyMissingException;
-use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
 
@@ -65,6 +65,8 @@ class InstalledVersion implements HasVersion, HasIsRelease
 			// @codeCoverageIgnoreEnd
 		}
 
-		return Version::createFromInt(Configs::getValueAsInt('version'));
+		$config_manager = app(ConfigManager::class);
+
+		return Version::createFromInt($config_manager->getValueAsInt('version'));
 	}
 }

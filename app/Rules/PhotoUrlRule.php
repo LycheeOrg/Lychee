@@ -3,18 +3,23 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Rules;
 
-use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Safe\Exceptions\UrlException;
 use function Safe\parse_url;
 
 final class PhotoUrlRule implements ValidationRule
 {
+	public function __construct(
+		private ConfigManager $config_manager,
+	) {
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -54,7 +59,7 @@ final class PhotoUrlRule implements ValidationRule
 		$port = $url['port'] ?? null;
 
 		if (
-			Configs::getValueAsBool('import_via_url_require_https') &&
+			$this->config_manager->getValueAsBool('import_via_url_require_https') &&
 			$scheme !== 'https'
 		) {
 			$fail($attribute . ' must be a valid HTTPS URL.');
@@ -69,7 +74,7 @@ final class PhotoUrlRule implements ValidationRule
 		}
 
 		if (
-			Configs::getValueAsBool('import_via_url_forbidden_ports') &&
+			$this->config_manager->getValueAsBool('import_via_url_forbidden_ports') &&
 			$port !== null &&
 			!in_array($port, [80, 443], true)
 		) {
@@ -79,7 +84,7 @@ final class PhotoUrlRule implements ValidationRule
 		}
 
 		if (
-			Configs::getValueAsBool('import_via_url_forbidden_local_ip') &&
+			$this->config_manager->getValueAsBool('import_via_url_forbidden_local_ip') &&
 			filter_var($host, FILTER_VALIDATE_IP) !== false &&
 			filter_var($host, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE) === false
 		) {
@@ -89,7 +94,7 @@ final class PhotoUrlRule implements ValidationRule
 		}
 
 		if (
-			Configs::getValueAsBool('import_via_url_forbidden_localhost') &&
+			$this->config_manager->getValueAsBool('import_via_url_forbidden_localhost') &&
 			$host === 'localhost'
 		) {
 			$fail($attribute . ' must not be localhost.');

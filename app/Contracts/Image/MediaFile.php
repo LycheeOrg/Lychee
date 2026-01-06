@@ -3,13 +3,12 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Contracts\Image;
 
 use App\Exceptions\MediaFileOperationException;
-use App\Exceptions\MediaFileUnsupportedException;
 
 /**
  * Class `MediaFile` provides the common interface of all file-like classes.
@@ -147,78 +146,4 @@ interface MediaFile extends BinaryBlob
 	 * @return string
 	 */
 	public function getOriginalBasename(): string;
-
-	/**
-	 * Checks if the given MIME type designates a supported image type.
-	 *
-	 * @param string $mime_type the MIME type
-	 *
-	 * @return bool
-	 */
-	public static function isSupportedImageMimeType(string $mime_type): bool;
-
-	/**
-	 * Checks if the given MIME type designates a supported video type.
-	 *
-	 * @param string $mime_type the MIME type
-	 *
-	 * @return bool
-	 */
-	public static function isSupportedVideoMimeType(string $mime_type): bool;
-
-	/**
-	 * Checks if the given file extension is a supported image extension.
-	 *
-	 * @param string $extension the file extension
-	 *
-	 * @return bool
-	 */
-	public static function isSupportedImageFileExtension(string $extension): bool;
-
-	/**
-	 * Checks if the given file extension is a supported image extension.
-	 *
-	 * @param string $extension the file extension
-	 *
-	 * @return bool
-	 */
-	public static function isSupportedVideoFileExtension(string $extension): bool;
-
-	/**
-	 * Checks if the given file extension is supported.
-	 *
-	 * @param string $extension the file extension
-	 *
-	 * @return bool
-	 */
-	public static function isSupportedFileExtension(string $extension): bool;
-
-	/**
-	 * Checks if the given extension is accepted as raw.
-	 *
-	 * @param string $extension the file extension
-	 *
-	 * @return bool
-	 */
-	public static function isAcceptedRawFileExtension(string $extension): bool;
-
-	/**
-	 * Check if the given extension is supported or accepted.
-	 *
-	 * @param string $extension the file extension
-	 *
-	 * @return bool
-	 */
-	public static function isSupportedOrAcceptedFileExtension(string $extension): bool;
-
-	/**
-	 * Asserts that the given extension is supported or accepted.
-	 *
-	 * @param string $extension the file extension
-	 *
-	 * @return void
-	 *
-	 * @throws MediaFileUnsupportedException
-	 */
-	public static function assertIsSupportedOrAcceptedFileExtension(string $extension): void;
 }

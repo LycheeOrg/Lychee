@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 /**
@@ -167,7 +167,6 @@ class AlbumsTest extends BaseApiWithDataTest
 	public function testPinnedAlbumsDeduplicationTrue(): void
 	{
 		Configs::set('deduplicate_pinned_albums', true);
-		Configs::invalidateCache();
 
 		// Pin album1
 		$this->actingAs($this->userMayUpload1)->patchJson('Album::setPinned', [
@@ -191,13 +190,11 @@ class AlbumsTest extends BaseApiWithDataTest
 		self::assertNotContains($this->album1->id, $albumIds, 'Album1 should NOT be in regular albums when pinned');
 
 		Configs::set('deduplicate_pinned_albums', false);
-		Configs::invalidateCache();
 	}
 
 	public function testPinnedAlbumsDeduplicationFalse(): void
 	{
 		Configs::set('deduplicate_pinned_albums', false);
-		Configs::invalidateCache();
 
 		// Pin album1
 		$this->actingAs($this->userMayUpload1)->patchJson('Album::setPinned', [
@@ -221,6 +218,5 @@ class AlbumsTest extends BaseApiWithDataTest
 		self::assertContains($this->album1->id, $albumIds, 'Album1 should be in regular albums even when pinned');
 
 		Configs::set('deduplicate_pinned_albums', false);
-		Configs::invalidateCache();
 	}
 }

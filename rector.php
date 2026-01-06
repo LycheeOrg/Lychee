@@ -32,6 +32,9 @@ $rectorConfig->withRules([
     __DIR__ . '/app/Metadata/Laminas/Unicode.php',
 
     // Ignore all the test directory for now...
-    __DIR__ . '/tests/*'
+    __DIR__ . '/tests/*',
+	// Ignore all hprof related files
+	__DIR__ . '/public/vendor/xhprof/*',
+
 ]);
 return $rectorConfig;

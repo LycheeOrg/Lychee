@@ -3,26 +3,31 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Image\ColourExtractor;
 
 use App\Contracts\Image\ColourPaletteExtractorInterface;
 use App\Image\Files\FlysystemFile;
-use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use Farzai\ColorPalette\ColorExtractorFactory;
 use Farzai\ColorPalette\Contracts\ColorInterface;
 use Farzai\ColorPalette\Contracts\ColorPaletteInterface;
 
 class FarzaiExtractor implements ColourPaletteExtractorInterface
 {
+	public function __construct(
+		private ConfigManager $config_manager)
+	{
+	}
+
 	/**
 	 * @return 'gd'|'imagick'
 	 */
 	private function getImageHandler(): string
 	{
-		if (Configs::hasImagick()) {
+		if ($this->config_manager->hasImagick()) {
 			return 'imagick';
 		}
 

@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 /**
@@ -28,13 +28,12 @@ class StatisticsIntegrityTest extends BaseApiWithDataTest
 	{
 		parent::setUp();
 		Configs::set('metrics_enabled', true);
-		Configs::invalidateCache();
 	}
 
 	public function tearDown(): void
 	{
 		Configs::set('metrics_enabled', false);
-		Configs::invalidateCache();
+
 		parent::tearDown();
 	}
 
@@ -74,7 +73,7 @@ class StatisticsIntegrityTest extends BaseApiWithDataTest
 	public function testAdminWithDisabledMetrics(): void
 	{
 		Configs::set('metrics_enabled', false);
-		Configs::invalidateCache();
+
 		DB::table('statistics')->truncate();
 		$response = $this->actingAs($this->admin)->getJsonWithData('Maintenance::statisticsIntegrity', []);
 		$this->assertOk($response);

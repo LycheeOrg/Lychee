@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 /**
@@ -31,6 +31,9 @@ use App\Exceptions\Internal\LycheeInvalidArgumentException;
 use App\Factories\AlbumFactory;
 use App\Image\Files\ProcessableJobFile;
 use App\Jobs\ProcessImageJob;
+use App\Models\Album;
+use App\Models\User;
+use App\Relations\HasAlbumThumb;
 use App\SmartAlbums\UnsortedAlbum;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
@@ -161,7 +164,7 @@ class CoverageTest extends AbstractTestCase
 
 	public function testJobFailing(): void
 	{
-		$userCreate = new Create();
+		$userCreate = resolve(Create::class);
 		$user = $userCreate->do(
 			'username',
 			'password',
@@ -186,5 +189,173 @@ class CoverageTest extends AbstractTestCase
 		Auth::logout();
 		$user->delete();
 		self::assertTrue(true);
+	}
+
+	public function testHasAlbumThumbCoverTypeForExplicitCover(): void
+	{
+		// Mock album with explicit cover_id
+		$album = \Mockery::mock(Album::class)->makePartial();
+		$album->cover_id = 'explicit-cover-id';
+		$album->auto_cover_id_max_privilege = 'max-priv-id';
+		$album->auto_cover_id_least_privilege = 'least-priv-id';
+
+		$relation = new HasAlbumThumb($album);
+		$method = new \ReflectionMethod(HasAlbumThumb::class, 'getCoverTypeForAlbum');
+
+		$cover_type = $method->invoke($relation, $album);
+		self::assertEquals('cover_id', $cover_type);
+	}
+
+	public function testHasAlbumThumbCoverTypeForAdminUser(): void
+	{
+		// Mock admin user
+		$admin = \Mockery::mock(User::class)->makePartial();
+		$admin->id = 1;
+		$admin->may_administrate = true;
+
+		Auth::shouldReceive('user')->andReturn($admin);
+
+		// Mock album without explicit cover
+		$album = \Mockery::mock(Album::class)->makePartial();
+		$album->cover_id = null;
+		$album->owner_id = 999;
+		$album->auto_cover_id_max_privilege = 'max-priv-id';
+		$album->auto_cover_id_least_privilege = 'least-priv-id';
+
+		$relation = new HasAlbumThumb($album);
+		$method = new \ReflectionMethod(HasAlbumThumb::class, 'getCoverTypeForAlbum');
+
+		$cover_type = $method->invoke($relation, $album);
+		self::assertEquals('auto_cover_id_max_privilege', $cover_type);
+	}
+
+	public function testHasAlbumThumbCoverTypeForOwner(): void
+	{
+		// Mock owner user
+		$owner = \Mockery::mock(User::class)->makePartial();
+		$owner->id = 42;
+		$owner->may_administrate = false;
+
+		Auth::shouldReceive('user')->andReturn($owner);
+
+		// Mock album owned by user
+		$album = \Mockery::mock(Album::class)->makePartial();
+		$album->cover_id = null;
+		$album->owner_id = 42;
+		$album->auto_cover_id_max_privilege = 'max-priv-id';
+		$album->auto_cover_id_least_privilege = 'least-priv-id';
+
+		$relation = new HasAlbumThumb($album);
+		$method = new \ReflectionMethod(HasAlbumThumb::class, 'getCoverTypeForAlbum');
+
+		$cover_type = $method->invoke($relation, $album);
+		self::assertEquals('auto_cover_id_max_privilege', $cover_type);
+	}
+
+	public function testHasAlbumThumbCoverTypeForPublicUser(): void
+	{
+		// Mock no authenticated user (public view)
+		Auth::shouldReceive('user')->andReturn(null);
+
+		// Mock album without explicit cover
+		$album = \Mockery::mock(Album::class)->makePartial();
+		$album->cover_id = null;
+		$album->owner_id = 999;
+		$album->auto_cover_id_max_privilege = 'max-priv-id';
+		$album->auto_cover_id_least_privilege = 'least-priv-id';
+
+		$relation = new HasAlbumThumb($album);
+		$method = new \ReflectionMethod(HasAlbumThumb::class, 'getCoverTypeForAlbum');
+
+		$cover_type = $method->invoke($relation, $album);
+		self::assertEquals('auto_cover_id_least_privilege', $cover_type);
+	}
+
+	public function testHasAlbumThumbSelectCoverIdWithExplicitCover(): void
+	{
+		$album = \Mockery::mock(Album::class)->makePartial();
+		$album->cover_id = 'explicit-cover-id';
+		$album->auto_cover_id_max_privilege = 'max-priv-id';
+		$album->auto_cover_id_least_privilege = 'least-priv-id';
+
+		$relation = new HasAlbumThumb($album);
+		$method = new \ReflectionMethod(HasAlbumThumb::class, 'selectCoverIdForAlbum');
+
+		$selected_id = $method->invoke($relation, $album);
+		self::assertEquals('explicit-cover-id', $selected_id);
+	}
+
+	public function testHasAlbumThumbSelectCoverIdWithMaxPrivilege(): void
+	{
+		// Mock admin user
+		$admin = \Mockery::mock(User::class)->makePartial();
+		$admin->id = 1;
+		$admin->may_administrate = true;
+
+		Auth::shouldReceive('user')->andReturn($admin);
+
+		$album = \Mockery::mock(Album::class)->makePartial();
+		$album->cover_id = null;
+		$album->owner_id = 999;
+		$album->auto_cover_id_max_privilege = 'max-priv-id';
+		$album->auto_cover_id_least_privilege = 'least-priv-id';
+
+		$relation = new HasAlbumThumb($album);
+		$method = new \ReflectionMethod(HasAlbumThumb::class, 'selectCoverIdForAlbum');
+
+		$selected_id = $method->invoke($relation, $album);
+		self::assertEquals('max-priv-id', $selected_id);
+	}
+
+	public function testHasAlbumThumbSelectCoverIdWithLeastPrivilege(): void
+	{
+		// Mock no authenticated user (public view)
+		Auth::shouldReceive('user')->andReturn(null);
+
+		$album = \Mockery::mock(Album::class)->makePartial();
+		$album->cover_id = null;
+		$album->owner_id = 999;
+		$album->auto_cover_id_max_privilege = 'max-priv-id';
+		$album->auto_cover_id_least_privilege = 'least-priv-id';
+
+		$relation = new HasAlbumThumb($album);
+		$method = new \ReflectionMethod(HasAlbumThumb::class, 'selectCoverIdForAlbum');
+
+		$selected_id = $method->invoke($relation, $album);
+		self::assertEquals('least-priv-id', $selected_id);
+	}
+
+	public function testHasAlbumThumbSelectCoverIdReturnsNull(): void
+	{
+		// Mock no authenticated user (public view)
+		Auth::shouldReceive('user')->andReturn(null);
+
+		// Test the case where no cover IDs are available
+		// We can't instantiate HasAlbumThumb when all covers are null because
+		// it triggers the fallback query in addConstraints() which requires DB.
+		// Instead, we test the logic by verifying getCoverTypeForAlbum returns
+		// the expected type and that selectCoverIdForAlbum would return null.
+
+		$album = \Mockery::mock(Album::class)->makePartial();
+		$album->cover_id = null;
+		$album->auto_cover_id_max_privilege = null;
+		$album->auto_cover_id_least_privilege = null;
+		$album->is_nsfw = false;
+		$album->shouldReceive('getAttribute')
+			->with('owner_id')
+			->andReturn(999);
+
+		// Use a different album with non-null cover for the parent so
+		// HasAlbumThumb can be instantiated without triggering DB query
+		$parentAlbum = \Mockery::mock(Album::class)->makePartial();
+		$parentAlbum->cover_id = 'some-cover-id';  // Non-null to avoid fallback
+		$parentAlbum->is_nsfw = false;
+
+		$relation = new HasAlbumThumb($parentAlbum);
+		$method = new \ReflectionMethod(HasAlbumThumb::class, 'selectCoverIdForAlbum');
+
+		// Test with the album that has null covers
+		$selected_id = $method->invoke($relation, $album);
+		self::assertNull($selected_id);
 	}
 }

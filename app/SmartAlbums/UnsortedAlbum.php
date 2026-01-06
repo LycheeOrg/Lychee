@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\SmartAlbums;
@@ -13,11 +13,12 @@ use App\Enum\SmartAlbumType;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Models\Photo;
+use App\Repositories\ConfigManager;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 
 class UnsortedAlbum extends BaseSmartAlbum
 {
-	private static ?self $instance = null;
 	public const ID = SmartAlbumType::UNSORTED->value;
 
 	/**
@@ -34,7 +35,7 @@ class UnsortedAlbum extends BaseSmartAlbum
 
 	public static function getInstance(): self
 	{
-		return self::$instance ??= new self();
+		return new self();
 	}
 
 	/**
@@ -45,8 +46,9 @@ class UnsortedAlbum extends BaseSmartAlbum
 	 */
 	public function photos(): Builder
 	{
-		if ($this->public_permissions !== null) {
-			return Photo::query()->leftJoin(PA::PHOTO_ALBUM, 'photos.id', '=', PA::PHOTO_ID)->with(['size_variants', 'statistics', 'palette', 'tags'])
+		$config_manager = resolve(ConfigManager::class);
+		if ($this->public_permissions !== null && (!Auth::check() || !$config_manager->getValueAsBool('enable_smart_album_per_owner'))) {
+			return Photo::query()->leftJoin(PA::PHOTO_ALBUM, 'photos.id', '=', PA::PHOTO_ID)->with(['size_variants', 'statistics', 'palette', 'tags', 'rating'])
 			->where($this->smart_photo_condition);
 		}
 

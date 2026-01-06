@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 use Illuminate\Database\Migrations\Migration;
@@ -524,7 +524,7 @@ return new class() extends Migration {
 			->where(self::CONFIG_KEY_COL_NAME, '=', $key)
 			->first();
 
-		return $config?->{self::CONFIG_VALUE_COL_NAME} ?? ''; // @phpstan-ignore property.dynamicName
+		return $config?->{self::CONFIG_VALUE_COL_NAME} ?? '';
 	}
 
 	/**

@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\View\Components;
@@ -13,7 +13,6 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Http\Resources\Traits\HasHeaderUrl;
 use App\Models\Album;
-use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo;
 use Illuminate\Contracts\Container\BindingResolutionException;
@@ -51,9 +50,9 @@ class Meta extends Component
 	public function __construct()
 	{
 		// default data
-		$this->site_owner = Configs::getValueAsString('site_owner');
+		$this->site_owner = request()->configs()->getValueAsString('site_owner');
 		$this->page_url = url()->current();
-		$this->rss_enable = Configs::getValueAsBool('rss_enable');
+		$this->rss_enable = request()->configs()->getValueAsBool('rss_enable');
 		$this->user_css_url = self::getUserCustomFiles('user.css');
 		$this->user_js_url = self::getUserCustomFiles('custom.js');
 
@@ -66,9 +65,9 @@ class Meta extends Component
 			$this->base_url = url(config('app.dir_url') . '/');
 		}
 
-		$this->page_title = Configs::getValueAsString('site_title');
+		$this->page_title = request()->configs()->getValueAsString('site_title');
 		$this->page_description = '';
-		$this->image_url = Configs::getValueAsString('landing_background_landscape');
+		$this->image_url = request()->configs()->getValueAsString('landing_background_landscape');
 
 		// processing photo and album data
 		if (session()->has('access')) {
@@ -91,14 +90,14 @@ class Meta extends Component
 		if ($this->album !== null) {
 			$this->page_title = $this->album->get_title();
 			if ($this->album instanceof BaseAlbum) {
-				$this->page_description = $this->album->description ?? Configs::getValueAsString('site_title');
+				$this->page_description = $this->album->description ?? request()->configs()->getValueAsString('site_title');
 			}
 			$this->image_url = $this->getHeaderUrl($this->album) ?? $this->image_url;
 		}
 
 		if ($this->photo !== null) {
 			$this->page_title = $this->photo->title;
-			$this->page_description = $this->photo->description ?? Configs::getValueAsString('site_title');
+			$this->page_description = $this->photo->description ?? request()->configs()->getValueAsString('site_title');
 			$this->image_url = $this->photo->size_variants->getMedium()?->url ?? $this->photo->size_variants->getSmall()?->url ?? $this->image_url;
 		}
 	}

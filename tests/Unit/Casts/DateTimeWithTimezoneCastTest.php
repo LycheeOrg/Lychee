@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 /**
@@ -58,7 +58,6 @@ class DateTimeWithTimezoneCastTest extends AbstractTestCase
 		self::expectException(LycheeInvalidArgumentException::class);
 		$cast = new DateTimeWithTimezoneCast();
 		$photo = new Photo();
-		// @phpstan-ignore-next-line this is voluntary to trigger the exception
 		$cast->set($photo, 'created_at', $this, []);
 	}
 

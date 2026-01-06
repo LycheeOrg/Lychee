@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Http\Resources\Models;
@@ -14,7 +14,6 @@ use App\Http\Resources\Models\Utils\PreComputedPhotoData;
 use App\Http\Resources\Models\Utils\PreformattedPhotoData;
 use App\Http\Resources\Models\Utils\TimelineData;
 use App\Http\Resources\Rights\PhotoRightsResource;
-use App\Models\Configs;
 use App\Models\Photo;
 use App\Policies\PhotoPolicy;
 use Illuminate\Support\Carbon;
@@ -67,6 +66,7 @@ class PhotoResource extends Data
 	private Carbon $timeline_data_carbon;
 
 	public ?PhotoStatisticsResource $statistics = null;
+	public ?PhotoRatingResource $rating = null;
 
 	public function __construct(Photo $photo, ?AbstractAlbum $album)
 	{
@@ -96,7 +96,7 @@ class PhotoResource extends Data
 		$this->tags = $photo->tags->pluck('name')->all();
 		$this->taken_at = $photo->taken_at?->toIso8601String();
 		$this->taken_at_orig_tz = $photo->taken_at_orig_tz;
-		$this->title = (Configs::getValueAsBool('file_name_hidden') && Auth::guest()) ? '' : $photo->title;
+		$this->title = (request()->configs()->getValueAsBool('file_name_hidden') && Auth::guest()) ? '' : $photo->title;
 		$this->type = $photo->type;
 		$this->updated_at = $photo->updated_at->toIso8601String();
 		$this->rights = new PhotoRightsResource($album);
@@ -108,19 +108,22 @@ class PhotoResource extends Data
 
 		$this->timeline_data_carbon = $photo->taken_at ?? $photo->created_at;
 
-		if (Configs::getValueAsBool('metrics_enabled') && Gate::check(PhotoPolicy::CAN_READ_METRICS, [Photo::class, $photo])) {
+		if (request()->configs()->getValueAsBool('metrics_enabled') && Gate::check(PhotoPolicy::CAN_READ_METRICS, [Photo::class, $photo])) {
 			$this->statistics = PhotoStatisticsResource::fromModel($photo->statistics);
+		}
+
+		if (Gate::check(PhotoPolicy::CAN_READ_RATINGS, [Photo::class, $photo])) {
+			$this->rating = PhotoRatingResource::fromModel(
+				$photo->statistics,
+				$photo->rating,
+				request()->configs(),
+			);
 		}
 	}
 
-	// public static function fromModel(Photo $photo): PhotoResource
-	// {
-	// 	return new self($photo);
-	// }
-
 	private function setLocation(Photo $photo): void
 	{
-		$show_location = Configs::getValueAsBool('location_show') && (Auth::check() || Configs::getValueAsBool('location_show_public'));
+		$show_location = request()->configs()->getValueAsBool('location_show') && (Auth::check() || request()->configs()->getValueAsBool('location_show_public'));
 		$this->location = $show_location ? $photo->location : null;
 	}
 

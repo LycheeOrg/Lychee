@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Actions\Photo\Pipes\Standalone;
@@ -26,7 +26,7 @@ class FetchSourceImage implements StandalonePipe
 				$state->source_image = $video_handler->extractFrame($position);
 			} else {
 				// Load source image if it is a supported photo format
-				$state->source_image = new ImageHandler();
+				$state->source_image = resolve(ImageHandler::class);
 				$state->source_image->load($state->source_file);
 			}
 		} catch (\Throwable $t) {

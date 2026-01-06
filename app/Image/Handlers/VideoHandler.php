@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Image\Handlers;
@@ -16,7 +16,7 @@ use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
 use App\Image\Files\NativeLocalFile;
 use App\Image\Files\TemporaryLocalFile;
-use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use FFMpeg\Coordinate\TimeCode;
 use FFMpeg\Exception\ExecutableNotFoundException;
 use FFMpeg\Exception\InvalidArgumentException;
@@ -45,13 +45,14 @@ class VideoHandler
 	 */
 	public function load(NativeLocalFile $file): void
 	{
-		if (!Configs::hasFFmpeg()) {
+		$config_manager = resolve(ConfigManager::class);
+		if (!$config_manager->hasFFmpeg()) {
 			throw new ConfigurationException('FFmpeg is disabled by configuration');
 		}
 		try {
 			$ffmpeg = FFMpeg::create([
-				'ffmpeg.binaries' => Configs::getValueAsString('ffmpeg_path'),
-				'ffprobe.binaries' => Configs::getValueAsString('ffprobe_path'),
+				'ffmpeg.binaries' => $config_manager->getValueAsString('ffmpeg_path'),
+				'ffprobe.binaries' => $config_manager->getValueAsString('ffprobe_path'),
 			]);
 			$audio_or_video = $ffmpeg->open($file->getRealPath());
 			if ($audio_or_video instanceof Video) {

@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Http\Controllers\Shop;
@@ -12,6 +12,7 @@ use App\Http\Requests\Catalog\GetCatalogRequest;
 use App\Http\Resources\Shop\CatalogResource;
 use App\Models\Album;
 use App\Models\Purchasable;
+use App\Policies\AlbumPolicy;
 use App\Policies\AlbumQueryPolicy;
 use Illuminate\Routing\Controller;
 
@@ -43,9 +44,15 @@ class CatalogController extends Controller
 			->where('is_active', true)
 			->get();
 
+		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
 		$children_purchasables = Purchasable::query()
 			->whereNull('photo_id')
-			->whereIn('album_id', $this->album_query_policy->applyBrowsabilityFilter(Album::query()->where('parent_id', $album->id)->select('id'), $album->_lft, $album->_rgt))
+			->whereIn('album_id', $this->album_query_policy->applyBrowsabilityFilter(
+				query: Album::query()->where('parent_id', $album->id)->select('id'),
+				user: $request->user(),
+				unlocked_album_ids: $unlocked_album_ids,
+				origin_left: $album->_lft,
+				origin_right: $album->_rgt))
 			->where('is_active', true)
 			->get();
 

@@ -3,20 +3,18 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Http\Requests\Photo;
 
 use App\Contracts\Http\Requests\HasAbstractAlbum;
-use App\Contracts\Http\Requests\HasSeStatusBoolean;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\FileStatus;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\Authorize\AuthorizeCanEditAlbumTrait;
 use App\Http\Requests\Traits\HasAbstractAlbumTrait;
-use App\Http\Requests\Traits\HasSeStatusBooleanTrait;
 use App\Http\Resources\Editable\UploadMetaResource;
 use App\Policies\AlbumPolicy;
 use App\Rules\AlbumIDRule;
@@ -25,11 +23,10 @@ use App\Rules\FileUuidRule;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Gate;
 
-class UploadPhotoRequest extends BaseApiRequest implements HasAbstractAlbum, HasSeStatusBoolean
+class UploadPhotoRequest extends BaseApiRequest implements HasAbstractAlbum
 {
 	use HasAbstractAlbumTrait;
 	use AuthorizeCanEditAlbumTrait;
-	use HasSeStatusBooleanTrait;
 
 	protected ?int $file_last_modified_time;
 	// protected UploadedFile $file;

@@ -3,12 +3,11 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Http\Resources\Shop;
 
-use App\Models\Configs;
 use App\Models\Purchasable;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\LiteralTypeScriptType;
@@ -38,7 +37,7 @@ class PurchasableResource extends Data
 			album_id: $item->album_id,
 			photo_id: $item->photo_id,
 			prices: $item->prices->map(PriceResource::fromModel(...))->toArray(),
-			description: $item->description ?? Configs::getValueAsString('webshop_default_description'),
+			description: $item->description ?? request()->configs()->getValueAsString('webshop_default_description'),
 			is_active: $item->is_active,
 		);
 	}

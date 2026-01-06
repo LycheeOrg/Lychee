@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Http\Controllers\Gallery;
@@ -17,7 +17,6 @@ use App\Http\Requests\Search\InitSearchRequest;
 use App\Http\Resources\Search\InitResource;
 use App\Http\Resources\Search\ResultsResource;
 use App\Models\Album;
-use App\Models\Configs;
 use Illuminate\Routing\Controller;
 
 /**
@@ -49,7 +48,7 @@ class SearchController extends Controller
 		$photo_results = $photo_search
 			->sqlQuery($terms, $album)
 			->orderBy(ColumnSortingPhotoType::TAKEN_AT->value, OrderSortingType::ASC->value)
-			->paginate(Configs::getValueAsInt('search_pagination_limit'));
+			->paginate($request->configs()->getValueAsInt('search_pagination_limit'));
 
 		$album_results = $album_search->queryAlbums($terms, $album);
 

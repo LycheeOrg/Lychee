@@ -59,5 +59,12 @@ docker-compose.yml
 
 # Building stuff for releaseses
 Lychee/*
+lychee/*
 /public/embed/
 report_*
+
+# XHProf output
+public/vendor/
+**/caddy
+frankenphp
+frankenphp-worker.php

@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 declare(strict_types=1);
@@ -25,6 +25,7 @@ use App\Rules\DescriptionRule;
 use App\Rules\EnumRequireSupportRule;
 use App\Rules\RandomIDRule;
 use App\Rules\TitleRule;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
 use Tests\Unit\Http\Requests\Base\BaseRequestTest;
@@ -41,6 +42,7 @@ class UpdateTagAlbumRequestTest extends BaseRequestTest
 	public function testAuthorization()
 	{
 		$tagalbumMock = $this->createMock(TagAlbum::class);
+		Config::set('features.populate-request-macros', true);
 
 		Gate::shouldReceive('check')
 			->with(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $tagalbumMock])
@@ -77,6 +79,7 @@ class UpdateTagAlbumRequestTest extends BaseRequestTest
 	public function testRules(): void
 	{
 		$request = new UpdateTagAlbumRequest();
+		Config::set('features.populate-request-macros', true);
 
 		$rules = $request->rules();
 

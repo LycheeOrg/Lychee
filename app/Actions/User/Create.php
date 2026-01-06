@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Actions\User;
@@ -11,12 +11,17 @@ namespace App\Actions\User;
 use App\Exceptions\ConflictingPropertyException;
 use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\ModelDBException;
-use App\Models\Configs;
 use App\Models\User;
+use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\Hash;
 
 class Create
 {
+	public function __construct(
+		protected readonly ConfigManager $config_manager,
+	) {
+	}
+
 	/**
 	 * @throws InvalidPropertyException
 	 * @throws ModelDBException
@@ -35,7 +40,7 @@ class Create
 			throw new ConflictingPropertyException('Username already exists');
 		}
 		if ($quota_kb === 0) {
-			$default = Configs::getValueAsInt('default_user_quota');
+			$default = $this->config_manager->getValueAsInt('default_user_quota');
 			$quota_kb = $default === 0 ? null : $default;
 		}
 		$user = new User();

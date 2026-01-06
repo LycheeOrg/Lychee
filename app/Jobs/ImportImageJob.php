@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Jobs;
@@ -21,6 +21,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 /**
@@ -67,16 +68,16 @@ class ImportImageJob implements ShouldQueue
 	 */
 	public function handle(AlbumFactory $album_factory): Photo
 	{
+		Log::channel('jobs')->info($this->history->job);
 		$this->history->status = JobStatus::STARTED;
 		$this->history->save();
 
 		$copied_file = new NativeLocalFile($this->file_path);
 
-		// As the file has been uploaded, the (temporary) source file shall be
-		// deleted
+		// As the file has been uploaded, the (temporary) source file shall be deleted
 		$create = new Create(
-			$this->import_mode,
-			$this->intended_owner_id,
+			import_mode: $this->import_mode,
+			intended_owner_id: $this->intended_owner_id,
 		);
 
 		$album = $album_factory->findAbstractAlbumOrFail($this->album_id);

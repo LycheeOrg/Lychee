@@ -13,22 +13,25 @@
 			'aspect-3x2': 'aspect-3x2' === aspectRatio,
 			'aspect-square': 'aspect-square' === aspectRatio,
 			'aspect-video': 'aspect-video' === aspectRatio,
-			'!opacity-25 ': cannotInteractWhileDragging,
+			'opacity-25! ': cannotInteractWhileDragging,
 		}"
 		:data-album-id="props.album.id"
 	>
+		<!-- the v-if="!togglableStore.isDragging" is a work around to avoid weird behaviour in RTL mode. -->
 		<AlbumThumbImage
-			class="group-hover:border-primary-500 group-hover:-rotate-2 group-hover:-translate-x-3 group-hover:translate-y-2"
+			v-if="!togglableStore.isDragging"
+			class="group-hover:border-primary-500 top-0 left-0 group-hover:-rotate-2 group-hover:-translate-x-3 group-hover:translate-y-2"
 			:thumb="props.album.thumb"
 			:is-password-protected="props.album.is_password_required"
 		/>
 		<AlbumThumbImage
-			class="group-hover:border-primary-500 group-hover:rotate-6 group-hover:translate-x-3 group-hover:-translate-y-2"
+			v-if="!togglableStore.isDragging"
+			class="group-hover:border-primary-500 top-0 left-0 group-hover:rotate-6 group-hover:translate-x-3 group-hover:-translate-y-2"
 			:thumb="props.album.thumb"
 			:is-password-protected="props.album.is_password_required"
 		/>
 		<AlbumThumbImage
-			class="group-hover:border-primary-500"
+			class="group-hover:border-primary-500 top-0 left-0"
 			:thumb="props.album.thumb"
 			:class="cssClass"
 			:is-selectable="isSelectable"
@@ -38,7 +41,7 @@
 		<span v-if="props.album.thumb?.type.includes('video')" class="w-full h-full absolute hover:opacity-70 transition-opacity duration-300">
 			<img class="h-full w-full" alt="play" :src="getPlayIcon()" />
 		</span>
-		<div v-if="userStore.isLoggedIn" class="badges absolute mt-[-1px] ml-1 top-0 left-0 flex">
+		<div v-if="userStore.isLoggedIn" class="badges absolute -mt-px ml-1 top-0 left-0 flex">
 			<ThumbBadge v-if="props.album.is_nsfw" class="bg-[#ff82ee]" icon="warning" />
 			<ThumbBadge v-if="props.album.id === 'starred'" class="bg-yellow-500" icon="star" />
 			<ThumbBadge v-if="props.album.id === 'unsorted'" class="bg-red-700" icon="list" />
@@ -75,7 +78,7 @@ import { useAlbumsStore } from "@/stores/AlbumsState";
 export type AlbumThumbConfig = {
 	album_thumb_css_aspect_ratio: string;
 	album_subtitle_type: App.Enum.ThumbAlbumSubtitleType;
-	display_thumb_album_overlay: App.Enum.ThumbOverlayVisibilityType;
+	display_thumb_album_overlay: App.Enum.VisibilityType;
 	album_decoration: App.Enum.AlbumDecorationType;
 	album_decoration_orientation: App.Enum.AlbumDecorationOrientation;
 };

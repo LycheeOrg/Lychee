@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace Database\Factories;
@@ -19,7 +19,7 @@ class StatisticsFactory extends Factory
 	/**
 	 * The name of the factory's corresponding model.
 	 *
-	 * @var string
+	 * @var class-string<Statistics>
 	 */
 	protected $model = Statistics::class;
 
@@ -37,6 +37,8 @@ class StatisticsFactory extends Factory
 			'download_count' => 0,
 			'favourite_count' => 0,
 			'shared_count' => 0,
+			'rating_sum' => 0,
+			'rating_count' => 0,
 		];
 	}
 

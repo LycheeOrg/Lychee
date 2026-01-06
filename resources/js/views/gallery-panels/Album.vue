@@ -24,7 +24,6 @@
 		@toggle-edit="toggleEdit"
 		@open-search="openSearch"
 		@go-back="goBack"
-		:total="albumStore.total"
 		:first="(albumStore.current_page - 1) * albumStore.per_page"
 		@update:first="
 			(val) => {
@@ -173,11 +172,14 @@ import { useLtRorRtL } from "@/utils/Helpers";
 import ImportFromLink from "@/components/modals/ImportFromLink.vue";
 import DropBox from "@/components/modals/DropBox.vue";
 import ImportFromServer from "@/components/modals/ImportFromServer.vue";
+import { useOrderManagementStore } from "@/stores/OrderManagement";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { usePhotoStore } from "@/stores/PhotoState";
 import { usePhotosStore } from "@/stores/PhotosState";
 import { useLayoutStore } from "@/stores/LayoutState";
 import { useAlbumsStore } from "@/stores/AlbumsState";
+import { useCatalogStore } from "@/stores/CatalogState";
+import { useRating } from "@/composables/photo/useRating";
 
 const { isLTR } = useLtRorRtL();
 
@@ -200,19 +202,27 @@ const userStore = useUserStore();
 const albumStore = useAlbumStore();
 const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
+const orderManagement = useOrderManagementStore();
 const photoStore = usePhotoStore();
 const albumsStore = useAlbumsStore();
 const photosStore = usePhotosStore();
 const layoutStore = useLayoutStore();
+const catalogStore = useCatalogStore();
 
 async function load() {
 	await Promise.allSettled([layoutStore.load(), lycheeStore.load(), userStore.load(), albumStore.load()]);
+	catalogStore.albumId = albumId.value;
+	catalogStore.load();
+	orderManagement.load();
 	photoStore.photoId = photoId.value;
 	photoStore.load();
 }
 
 async function refresh(isDelete: boolean = false) {
 	await Promise.allSettled([layoutStore.load(), lycheeStore.load(), userStore.refresh(), albumStore.refresh()]);
+	catalogStore.albumId = albumId.value;
+	catalogStore.load();
+	orderManagement.load();
 	if (isDelete) {
 		// If we have deleted a photo, we need to reset the photo store
 		router.push({ name: albumRoutes().album, params: { albumId: albumId.value } });
@@ -276,6 +286,8 @@ const { selectedPhoto, selectedAlbum, selectedPhotosIds, selectedAlbumsIds, sele
 	albumsStore,
 	togglableStore,
 );
+
+const { handleRatingClick } = useRating(photoStore, toast, userStore);
 
 function goBack() {
 	if (is_slideshow_active.value) {
@@ -366,6 +378,12 @@ onKeyStroke("m", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && photoS
 onKeyStroke("e", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && photoStore.rights?.can_edit && toggleEdit());
 onKeyStroke("s", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && photoStore.rights?.can_edit && toggleStar());
 onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && photoStore.isLoaded && albumStore.rights?.can_delete && toggleDelete());
+onKeyStroke("0", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && handleRatingClick(photoStore.photo!.id, 0));
+onKeyStroke("1", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && handleRatingClick(photoStore.photo!.id, 1));
+onKeyStroke("2", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && handleRatingClick(photoStore.photo!.id, 2));
+onKeyStroke("3", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && handleRatingClick(photoStore.photo!.id, 3));
+onKeyStroke("4", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && handleRatingClick(photoStore.photo!.id, 4));
+onKeyStroke("5", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && handleRatingClick(photoStore.photo!.id, 5));
 
 // on key stroke escape:
 // 1. lose focus

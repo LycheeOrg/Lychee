@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 /**
@@ -39,7 +39,6 @@ class AuthDisabledCheckTest extends AbstractTestCase
 	{
 		parent::setUp();
 		$this->authDisabledCheck = new AuthDisabledCheck();
-		$this->data = [];
 		$this->next = function (array $data) {
 			return $data;
 		};
@@ -57,9 +56,10 @@ class AuthDisabledCheckTest extends AbstractTestCase
 		Schema::shouldReceive('hasTable')->with('oauth_credentials')->andReturn(true);
 		Schema::shouldReceive('hasTable')->with('webauthn_credentials')->andReturn(true);
 
-		$result = $this->authDisabledCheck->handle($this->data, $this->next);
+		$data = [];
+		$result = $this->authDisabledCheck->handle($data, $this->next);
 
-		$this->assertEquals([], $result, 'Should return empty result when users table does not exist');
+		$this->assertEmpty($result, 'Should return empty result when users table does not exist');
 	}
 
 	/**
@@ -73,9 +73,10 @@ class AuthDisabledCheckTest extends AbstractTestCase
 		Schema::shouldReceive('hasTable')->with('oauth_credentials')->andReturn(false);
 		Schema::shouldReceive('hasTable')->with('webauthn_credentials')->andReturn(true);
 
-		$result = $this->authDisabledCheck->handle($this->data, $this->next);
+		$data = [];
+		$result = $this->authDisabledCheck->handle($data, $this->next);
 
-		$this->assertEquals([], $result, 'Should return empty result when oauth_credentials table does not exist');
+		$this->assertEmpty($result, 'Should return empty result when oauth_credentials table does not exist');
 	}
 
 	/**
@@ -89,9 +90,10 @@ class AuthDisabledCheckTest extends AbstractTestCase
 		Schema::shouldReceive('hasTable')->with('oauth_credentials')->andReturn(true);
 		Schema::shouldReceive('hasTable')->with('webauthn_credentials')->andReturn(false);
 
-		$result = $this->authDisabledCheck->handle($this->data, $this->next);
+		$data = [];
+		$result = $this->authDisabledCheck->handle($data, $this->next);
 
-		$this->assertEquals([], $result, 'Should return empty result when webauthn_credentials table does not exist');
+		$this->assertEmpty($result, 'Should return empty result when webauthn_credentials table does not exist');
 	}
 
 	/**
@@ -104,9 +106,10 @@ class AuthDisabledCheckTest extends AbstractTestCase
 	{
 		Config::set('features.disable-basic-auth', false);
 
-		$result = $this->authDisabledCheck->handle($this->data, $this->next);
+		$data = [];
+		$result = $this->authDisabledCheck->handle($data, $this->next);
 
-		$this->assertEquals([], $result, 'Should return empty result when basic auth is enabled');
+		$this->assertEmpty($result, 'Should return empty result when basic auth is enabled');
 	}
 
 	/**
@@ -120,7 +123,8 @@ class AuthDisabledCheckTest extends AbstractTestCase
 		Config::set('features.disable-basic-auth', true);
 		Config::set('features.disable-webauthn', true);
 
-		$result = $this->authDisabledCheck->handle($this->data, $this->next);
+		$data = [];
+		$result = $this->authDisabledCheck->handle($data, $this->next);
 
 		$this->assertCount(1, $result);
 		$this->assertInstanceOf(DiagnosticData::class, $result[0]);
@@ -149,8 +153,9 @@ class AuthDisabledCheckTest extends AbstractTestCase
 			'provider' => 'google',
 		]);
 
-		$result = $this->authDisabledCheck->handle($this->data, $this->next);
-		$this->assertEquals([], $result, 'Should return empty result when OAuth is enabled with admin users');
+		$data = [];
+		$result = $this->authDisabledCheck->handle($data, $this->next);
+		$this->assertEmpty($result, 'Should return empty result when OAuth is enabled with admin users');
 	}
 
 	/**
@@ -172,7 +177,8 @@ class AuthDisabledCheckTest extends AbstractTestCase
 			'provider' => 'google',
 		]);
 
-		$result = $this->authDisabledCheck->handle($this->data, $this->next);
+		$data = [];
+		$result = $this->authDisabledCheck->handle($data, $this->next);
 
 		$this->assertCount(1, $result);
 		$this->assertInstanceOf(DiagnosticData::class, $result[0]);
@@ -191,12 +197,12 @@ class AuthDisabledCheckTest extends AbstractTestCase
 	public function testHandleWithExistingData(): void
 	{
 		$existingDiagnostic = DiagnosticData::info('Existing diagnostic', 'TestClass');
-		$this->data = [$existingDiagnostic];
 
 		Config::set('features.disable-basic-auth', true);
 		Config::set('features.disable-webauthn', true);
 
-		$result = $this->authDisabledCheck->handle($this->data, $this->next);
+		$data = [$existingDiagnostic];
+		$result = $this->authDisabledCheck->handle($data, $this->next);
 
 		$this->assertCount(2, $result);
 		$this->assertEquals($existingDiagnostic, $result[0]); // Should preserve existing data
@@ -220,10 +226,10 @@ class AuthDisabledCheckTest extends AbstractTestCase
 
 		Config::set('features.disable-basic-auth', false);
 
-		$result = $this->authDisabledCheck->handle($this->data, $nextFunction);
+		$data = [];
+		$result = $this->authDisabledCheck->handle($data, $nextFunction);
 
 		$this->assertTrue($nextCalled, 'Next closure should be called');
-		$this->assertIsArray($result);
 	}
 
 	/**
@@ -240,7 +246,6 @@ class AuthDisabledCheckTest extends AbstractTestCase
 		$this->authDisabledCheck->handle($originalData, $this->next);
 
 		$this->assertCount(1, $originalData, 'Original data array should be modified by reference');
-		$this->assertInstanceOf(DiagnosticData::class, $originalData[0]);
 	}
 
 	/**

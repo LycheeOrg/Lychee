@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace Tests\ImageProcessing\Import;
@@ -38,6 +38,6 @@ class ImportFromServerBrowseTest extends BaseApiWithDataTest
 		// We have to sort in order to have a predictable order for the test.
 		// The order returned by the filesystem is not predictable.
 		sort($content);
-		self::assertEquals(['..', 'Constants', 'Feature_v2',  'ImageProcessing', 'Install', 'Samples', 'Traits', 'Unit', 'Webshop'], $content);
+		self::assertEquals(['..', 'Constants', 'Feature_v2',  'ImageProcessing', 'Install', 'Precomputing', 'Samples', 'Traits', 'Unit', 'Webshop', 'docker'], $content);
 	}
 }

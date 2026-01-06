@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Actions\InstallUpdate;
@@ -25,7 +25,7 @@ class DefaultConfig
 			| by looping through the array and run "extension_loaded" on it.
 			|
 			*/
-		'core' => ['minPhpVersion' => '8.3.0'],
+		'core' => ['minPhpVersion' => '8.4.0'],
 
 		'requirements' => [
 			'php' => [

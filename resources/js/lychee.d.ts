@@ -15,6 +15,7 @@ declare namespace App.DTO {
 declare namespace App.Enum {
 	export type AlbumDecorationOrientation = "row" | "row-reverse" | "column" | "column-reverse";
 	export type AlbumDecorationType = "none" | "layers" | "album" | "photo" | "all";
+	export type AlbumLayoutType = "list" | "grid";
 	export type AspectRatioCSSType = "aspect-5x4" | "aspect-4x5" | "aspect-3x2" | "aspect-square" | "aspect-2x3" | "aspect-video";
 	export type AspectRatioType = "5/4" | "3/2" | "1/1" | "2/3" | "4/5" | "16/9";
 	export type CacheTag = "gallery" | "auth" | "user" | "settings" | "statistics" | "users";
@@ -103,7 +104,7 @@ declare namespace App.Enum {
 		| "microsoft"
 		| "nextcloud"
 		| "keycloak";
-	export type OmnipayProviderType = "Dummy" | "Mollie" | "PayPal_Express" | "PayPal_ExpressInContext" | "PayPal_Pro" | "PayPal_Rest" | "Stripe";
+	export type OmnipayProviderType = "Dummy" | "Mollie" | "PayPal" | "Stripe";
 	export type OrderSortingType = "ASC" | "DESC";
 	export type PaymentStatusType = "pending" | "cancelled" | "failed" | "refunded" | "processing" | "offline" | "completed" | "closed";
 	export type PhotoLayoutType = "square" | "justified" | "masonry" | "grid";
@@ -120,12 +121,12 @@ declare namespace App.Enum {
 	export type SmartAlbumType = "unsorted" | "starred" | "recent" | "on_this_day" | "untagged";
 	export type StorageDiskType = "images" | "s3";
 	export type ThumbAlbumSubtitleType = "description" | "takedate" | "creation" | "oldstyle" | "num_photos" | "num_albums" | "num_photos_albums";
-	export type ThumbOverlayVisibilityType = "never" | "always" | "hover";
 	export type TimelineAlbumGranularity = "default" | "disabled" | "year" | "month" | "day";
 	export type TimelinePhotoGranularity = "default" | "disabled" | "year" | "month" | "day" | "hour";
 	export type UpdateStatus = 0 | 1 | 2 | 3;
 	export type UserGroupRole = "member" | "admin";
 	export type VersionChannelType = "release" | "git" | "tag";
+	export type VisibilityType = "never" | "always" | "hover";
 	export type WatermarkPosition = "top-left" | "top" | "top-right" | "left" | "center" | "right" | "bottom-left" | "bottom" | "bottom-right";
 }
 declare namespace App.Http.Resources.Admin {
@@ -271,6 +272,8 @@ declare namespace App.Http.Resources.Embed {
 		id: string;
 		title: string | null;
 		description: string | null;
+		is_video: boolean;
+		duration: string | null;
 		size_variants: App.Http.Resources.Models.SizeVariantsResouce;
 		exif: { [key: string]: string | null };
 	};
@@ -367,14 +370,15 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		is_details_links_enabled: boolean;
 		is_desktop_dock_full_transparency_enabled: boolean;
 		is_mobile_dock_full_transparency_enabled: boolean;
-		display_thumb_album_overlay: App.Enum.ThumbOverlayVisibilityType;
-		display_thumb_photo_overlay: App.Enum.ThumbOverlayVisibilityType;
+		display_thumb_album_overlay: App.Enum.VisibilityType;
+		display_thumb_photo_overlay: App.Enum.VisibilityType;
 		album_subtitle_type: App.Enum.ThumbAlbumSubtitleType;
 		album_decoration: App.Enum.AlbumDecorationType;
 		album_decoration_orientation: App.Enum.AlbumDecorationOrientation;
 		number_albums_per_row_mobile: 1 | 2 | 3;
 		photo_thumb_info: App.Enum.PhotoThumbInfoType;
 		is_photo_thumb_tags_enabled: boolean;
+		album_layout: App.Enum.AlbumLayoutType;
 		is_thumb_download_enabled: boolean;
 		is_thum2x_download_enabled: boolean;
 		is_small_download_enabled: boolean;
@@ -388,14 +392,21 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		title: string;
 		dropbox_api_key: string;
 		is_se_enabled: boolean;
+		is_pro_enabled: boolean;
 		is_se_preview_enabled: boolean;
 		is_se_info_hidden: boolean;
+		is_se_expired: boolean;
 		is_live_metrics_enabled: boolean;
 		is_basic_auth_enabled: boolean;
 		is_webauthn_enabled: boolean;
 		is_registration_enabled: boolean;
 		is_scroll_to_navigate_photos_enabled: boolean;
 		is_swipe_vertically_to_go_back_enabled: boolean;
+		is_rating_show_avg_in_details_enabled: boolean;
+		is_rating_show_avg_in_photo_view_enabled: boolean;
+		rating_photo_view_mode: App.Enum.VisibilityType;
+		is_rating_show_avg_in_album_view_enabled: boolean;
+		rating_album_view_mode: App.Enum.VisibilityType;
 		default_homepage: string;
 		is_timeline_page_enabled: boolean;
 	};
@@ -540,6 +551,11 @@ declare namespace App.Http.Resources.Models {
 		title: string;
 		url: string | null;
 	};
+	export type PhotoRatingResource = {
+		rating_user: number;
+		rating_count: number;
+		rating_avg: number;
+	};
 	export type PhotoResource = {
 		id: string;
 		album_id: string | null;
@@ -578,12 +594,15 @@ declare namespace App.Http.Resources.Models {
 		timeline: App.Http.Resources.Models.Utils.TimelineData | null;
 		palette: App.Http.Resources.Models.ColourPaletteResource | null;
 		statistics: App.Http.Resources.Models.PhotoStatisticsResource | null;
+		rating: App.Http.Resources.Models.PhotoRatingResource | null;
 	};
 	export type PhotoStatisticsResource = {
 		visit_count: number;
 		download_count: number;
 		favourite_count: number;
 		shared_count: number;
+		rating_count: number;
+		rating_avg: number | null;
 	};
 	export type RenamerRuleResource = {
 		id: number;
@@ -901,12 +920,15 @@ declare namespace App.Http.Resources.Shop {
 		payment_providers: App.Enum.OmnipayProviderType[];
 		mollie_profile_id: string;
 		stripe_public_key: string;
+		paypal_client_id: string;
 		is_test_mode: boolean;
+		is_lycheeorg_disclaimer_enabled: boolean;
 	};
 	export type CheckoutResource = {
 		is_success: boolean;
 		is_redirect: boolean;
 		redirect_url: string | null;
+		complete_url: string | null;
 		message: string;
 		order: App.Http.Resources.Shop.OrderResource | null;
 	};
@@ -939,6 +961,7 @@ declare namespace App.Http.Resources.Shop {
 		price: string;
 		size_variant_type: App.Enum.PurchasableSizeVariantType;
 		item_notes: string | null;
+		content_url: string | null;
 	};
 	export type OrderResource = {
 		id: number;
@@ -950,6 +973,7 @@ declare namespace App.Http.Resources.Shop {
 		amount: string;
 		paid_at: string | null;
 		created_at: string | null;
+		updated_at: string | null;
 		comment: string | null;
 		items: App.Http.Resources.Shop.OrderItemResource[] | null;
 		can_process_payment: boolean;

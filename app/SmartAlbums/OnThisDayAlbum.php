@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\SmartAlbums;
@@ -18,7 +18,6 @@ use Illuminate\Support\Carbon;
 
 class OnThisDayAlbum extends BaseSmartAlbum
 {
-	private static ?self $instance = null;
 	public const ID = SmartAlbumType::ON_THIS_DAY->value;
 
 	/**
@@ -48,6 +47,6 @@ class OnThisDayAlbum extends BaseSmartAlbum
 
 	public static function getInstance(): self
 	{
-		return self::$instance ??= new self();
+		return new self();
 	}
 }

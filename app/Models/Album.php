@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Models;
@@ -27,6 +27,8 @@ use App\Relations\HasAlbumThumb;
 use App\Relations\HasManyChildAlbums;
 use App\Relations\HasManyChildPhotos;
 use App\Relations\HasManyPhotosRecursively;
+use App\Repositories\ConfigManager;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
@@ -46,14 +48,21 @@ use Kalnoy\Nestedset\NodeTrait;
  * @property string|null              $parent_id
  * @property Album|null               $parent
  * @property Collection<int,Album>    $children
- * @property int                      $num_children             The number of children.
+ * @property int                      $num_children                  The number of children.
  * @property Collection<int,Photo>    $all_photos
- * @property int                      $num_photos               The number of photos in this album (excluding photos in subalbums).
+ * @property int                      $num_photos                    The number of photos in this album (excluding photos in subalbums).
+ * @property Carbon|null              $max_taken_at                  Maximum taken_at timestamp of all photos in album and descendants.
+ * @property Carbon|null              $min_taken_at                  Minimum taken_at timestamp of all photos in album and descendants.
+ * @property string|null              $auto_cover_id_max_privilege   Automatically selected cover photo ID (admin/owner view).
+ * @property Photo|null               $max_privilege_cover
+ * @property string|null              $auto_cover_id_least_privilege Automatically selected cover photo ID (most restrictive view).
+ * @property Photo|null               $min_privilege_cover
  * @property LicenseType              $license
  * @property string|null              $cover_id
  * @property Photo|null               $cover
  * @property string|null              $header_id
  * @property Photo|null               $header
+ * @property AlbumSizeStatistics|null $sizeStatistics                Pre-computed size statistics for this album.
  * @property string|null              $track_short_path
  * @property string|null              $track_url
  * @property AspectRatioType|null     $album_thumb_aspect_ratio
@@ -62,7 +71,7 @@ use Kalnoy\Nestedset\NodeTrait;
  * @property int                      $_rgt
  * @property BaseAlbumImpl            $base_class
  * @property User|null                $owner
- * @property bool                     $is_recursive_nsfw        /!\ This attribute is not loaded by default.
+ * @property bool                     $is_recursive_nsfw             /!\ This attribute is not loaded by default.
  *
  * @method static AlbumBuilder|Album query()                       Begin querying the model.
  * @method static AlbumBuilder|Album with(array|string $relations) Begin querying the model with eager loading.
@@ -167,6 +176,12 @@ class Album extends BaseAlbum implements Node
 		'_rgt' => null,
 		'album_sorting_col' => null,
 		'album_sorting_order' => null,
+		'max_taken_at' => null,
+		'min_taken_at' => null,
+		'num_children' => 0,
+		'num_photos' => 0,
+		'auto_cover_id_max_privilege' => null,
+		'auto_cover_id_least_privilege' => null,
 	];
 
 	/**
@@ -177,6 +192,8 @@ class Album extends BaseAlbum implements Node
 		'max_taken_at' => 'datetime',
 		'num_children' => 'integer',
 		'num_photos' => 'integer',
+		'auto_cover_id_max_privilege' => 'string',
+		'auto_cover_id_least_privilege' => 'string',
 		'is_recursive_nsfw' => 'boolean',
 		'album_thumb_aspect_ratio' => AspectRatioType::class,
 		'album_timeline' => TimelineAlbumGranularity::class,
@@ -187,7 +204,12 @@ class Album extends BaseAlbum implements Node
 	/**
 	 * The relationships that should always be eagerly loaded by default.
 	 */
-	protected $with = ['cover', 'cover.size_variants', 'thumb'];
+	protected $with = [
+		'cover', 'cover.size_variants',
+		'min_privilege_cover', 'min_privilege_cover.size_variants',
+		'max_privilege_cover', 'max_privilege_cover.size_variants',
+		'thumb',
+	];
 
 	/**
 	 * Return the relationship between this album and photos which are
@@ -252,6 +274,26 @@ class Album extends BaseAlbum implements Node
 	}
 
 	/**
+	 * Return the relationship between an album and its min-privilege cover.
+	 *
+	 * @return HasOne<Photo,$this>
+	 */
+	public function min_privilege_cover(): HasOne
+	{
+		return $this->hasOne(Photo::class, 'id', 'auto_cover_id_least_privilege');
+	}
+
+	/**
+	 * Return the relationship between an album and its max-privilege cover.
+	 *
+	 * @return HasOne<Photo,$this>
+	 */
+	public function max_privilege_cover(): HasOne
+	{
+		return $this->hasOne(Photo::class, 'id', 'auto_cover_id_max_privilege');
+	}
+
+	/**
 	 * Return the relationship between an album and its header.
 	 *
 	 * @return HasOne<Photo,$this>
@@ -262,14 +304,25 @@ class Album extends BaseAlbum implements Node
 	}
 
 	/**
+	 * Return the relationship between an album and its size statistics.
+	 *
+	 * @return HasOne<AlbumSizeStatistics,$this>
+	 */
+	public function sizeStatistics(): HasOne
+	{
+		return $this->hasOne(AlbumSizeStatistics::class, 'album_id', 'id');
+	}
+
+	/**
 	 * Return the License used by the album.
 	 *
 	 * @throws ConfigurationKeyMissingException
 	 */
 	protected function getLicenseAttribute(string|LicenseType|null $value): LicenseType
 	{
+		$config_manager = app(ConfigManager::class);
 		if ($value === null || $value === 'none' || $value === LicenseType::NONE) {
-			return Configs::getValueAsEnum('default_license', LicenseType::class);
+			return $config_manager->getValueAsEnum('default_license', LicenseType::class);
 		}
 
 		if (is_string($value)) {
@@ -342,15 +395,6 @@ class Album extends BaseAlbum implements Node
 					->whereBetween('albums._lft', [$lft + 1, $rgt - 1]);
 			})
 			->update(['owner_id' => $this->owner_id]);
-		// TODO: FIX ME This is no longer correct.
-		// Photo::query()
-		// 	->whereExists(function (BaseBuilder $q) use ($lft, $rgt): void {
-		// 		$q
-		// 			->from('albums')
-		// 			->whereColumn('photos.album_id', '=', 'albums.id') // ! column no longer exists!
-		// 			->whereBetween('albums._lft', [$lft, $rgt]);
-		// 	})
-		// 	->update(['owner_id' => $this->owner_id]);
 	}
 
 	/**
@@ -384,7 +428,7 @@ class Album extends BaseAlbum implements Node
 	 */
 	protected function getAlbumTimelineAttribute(): ?TimelineAlbumGranularity
 	{
-		return TimelineAlbumGranularity::tryFrom($this->attributes['album_timeline']);
+		return TimelineAlbumGranularity::tryFrom($this->attributes['album_timeline'] ?? '');
 	}
 
 	/**

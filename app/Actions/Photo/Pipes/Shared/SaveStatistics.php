@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Actions\Photo\Pipes\Shared;
@@ -26,6 +26,8 @@ class SaveStatistics implements PhotoPipe
 				'download_count' => 0,
 				'favourite_count' => 0,
 				'shared_count' => 0,
+				'rating_sum' => 0,
+				'rating_count' => 0,
 			]);
 
 			$state->getPhoto()->setRelation('statistics', $stats);

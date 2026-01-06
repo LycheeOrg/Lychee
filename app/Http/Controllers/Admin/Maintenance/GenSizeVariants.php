@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Http\Controllers\Admin\Maintenance;
@@ -11,11 +11,11 @@ namespace App\Http\Controllers\Admin\Maintenance;
 use App\Contracts\Models\SizeVariantFactory;
 use App\Enum\SizeVariantType;
 use App\Events\AlbumRouteCacheUpdated;
+use App\Events\PhotoSaved;
 use App\Exceptions\MediaFileOperationException;
 use App\Http\Requests\Maintenance\CreateThumbsRequest;
 use App\Image\PlaceholderEncoder;
 use App\Image\SizeVariantDimensionHelpers;
-use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use Illuminate\Database\Eloquent\Builder;
@@ -42,7 +42,7 @@ class GenSizeVariants extends Controller
 			->whereDoesntHave('size_variants', function (Builder $query) use ($request): void {
 				$query->where('type', '=', $request->kind());
 			});
-		$photos = $photos_query->limit(Configs::getValueAsInt('maintenance_processing_limit'))->lazyById(100);
+		$photos = $photos_query->limit($request->configs()->getValueAsInt('maintenance_processing_limit'))->lazyById(100);
 
 		$generated = 0;
 		/** @var Photo $photo */
@@ -63,6 +63,8 @@ class GenSizeVariants extends Controller
 			} catch (MediaFileOperationException $e) {
 				Log::error('Failed to create ' . $request->kind()->value . ' for photo id ' . $photo->id . '');
 			}
+			// recompute the sizes.
+			PhotoSaved::dispatch($photo->id);
 
 			AlbumRouteCacheUpdated::dispatch();
 			// @codeCoverageIgnoreEnd

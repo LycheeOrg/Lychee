@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Http\Resources\Traits;
@@ -12,7 +12,6 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Enum\SizeVariantType;
 use App\Http\Controllers\Gallery\AlbumController;
 use App\Models\Album;
-use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -22,7 +21,7 @@ trait HasHeaderUrl
 {
 	protected function getHeaderUrl(AbstractAlbum $album): ?string
 	{
-		if (Configs::getValueAsBool('use_album_compact_header')) {
+		if (request()->configs()->getValueAsBool('use_album_compact_header')) {
 			return null;
 		}
 

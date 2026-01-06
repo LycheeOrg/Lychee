@@ -3,12 +3,11 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Http\Resources\Models;
 
-use App\Models\Configs;
 use App\Models\User;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
@@ -39,7 +38,7 @@ class UserManagementResource extends Data
 	{
 		$this->id = $user->id;
 		$this->username = $user->username;
-		$this->is_owner = $user->may_administrate && $user->id === Configs::getValueAsInt('owner_id');
+		$this->is_owner = $user->may_administrate && $user->id === request()->configs()->getValueAsInt('owner_id');
 		$this->may_administrate = $user->may_administrate;
 		$this->may_upload = $user->may_upload || $user->may_administrate;
 		$this->may_edit_own_settings = $user->may_edit_own_settings || $user->may_administrate;

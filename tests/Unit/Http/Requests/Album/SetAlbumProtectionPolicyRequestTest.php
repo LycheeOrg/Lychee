@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 declare(strict_types=1);
@@ -17,6 +17,7 @@ use App\Policies\AlbumPolicy;
 use App\Rules\AlbumIDRule;
 use App\Rules\BooleanRequireSupportRule;
 use App\Rules\PasswordRule;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Gate;
 use Tests\Unit\Http\Requests\Base\BaseRequestTest;
 
@@ -34,6 +35,7 @@ class SetAlbumProtectionPolicyRequestTest extends BaseRequestTest
 
 	public function testRules(): void
 	{
+		Config::set('features.populate-request-macros', true);
 		$request = new SetAlbumProtectionPolicyRequest();
 
 		$rules = $request->rules();

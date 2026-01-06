@@ -77,6 +77,7 @@ return [
             'share' => 'Del Album',
             'embed' => 'Embed Album',
             'move' => 'Flytt Album',
+            'shop' => 'Shop Management',
             'danger' => 'FARESONE',
         ],
         'hero' => [
@@ -180,6 +181,19 @@ return [
             'set_created_at' => 'Angi opplastingsdato',
             'set_taken_at' => 'Set Taken Date',
             'set_taken_at_info' => 'When set, a star %s will be displayed to indicate that this date is not the original EXIF date.<br>Untick the checkbox and save to reset to the original date.',
+        ],
+        'rating' => [
+            'header' => 'Rating',
+            'rating' => 'rating',
+            'ratings' => 'ratings',
+            'your_rating' => 'Your rating',
+            'saving' => 'Saving rating...',
+            'removed' => 'Rating removed',
+            'saved' => 'Rating saved',
+            'error' => 'Failed to save rating',
+            'error_unauthorized' => 'You must be logged in to rate photos',
+            'error_forbidden' => 'You do not have permission to rate this photo',
+            'error_not_found' => 'Photo not found',
         ],
     ],
     'nsfw' => [

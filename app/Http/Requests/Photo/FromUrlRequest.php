@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Http\Requests\Photo;
@@ -44,7 +44,7 @@ class FromUrlRequest extends BaseApiRequest implements HasAlbum
 		return [
 			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
 			RequestAttribute::URLS_ATTRIBUTE => 'required|array|min:1',
-			RequestAttribute::URLS_ATTRIBUTE . '.*' => ['required', 'string', new PhotoUrlRule()],
+			RequestAttribute::URLS_ATTRIBUTE . '.*' => ['required', 'string', new PhotoUrlRule($this->configs())],
 		];
 	}
 

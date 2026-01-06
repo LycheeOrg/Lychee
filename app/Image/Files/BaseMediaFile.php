@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Image\Files;
@@ -11,8 +11,6 @@ namespace App\Image\Files;
 use App\Contracts\Image\MediaFile;
 use App\Contracts\Image\StreamStats;
 use App\Exceptions\MediaFileOperationException;
-use App\Exceptions\MediaFileUnsupportedException;
-use App\Models\Configs;
 
 /**
  * Class `MediaFile` provides the common interface of all file-like classes.
@@ -35,74 +33,6 @@ use App\Models\Configs;
  */
 abstract class BaseMediaFile extends AbstractBinaryBlob implements MediaFile
 {
-	public const SUPPORTED_PHP_EXIF_IMAGE_TYPES = [
-		IMAGETYPE_GIF,
-		IMAGETYPE_JPEG,
-		IMAGETYPE_PNG,
-		IMAGETYPE_WEBP,
-	];
-
-	public const SUPPORTED_IMAGE_FILE_EXTENSIONS = [
-		'.jpg',
-		'.jpeg',
-		'.png',
-		'.gif',
-		'.webp',
-	];
-
-	public const SUPPORTED_VIDEO_FILE_EXTENSIONS = [
-		'.avi',
-		'.m4v',
-		'.mov',
-		'.mp4',
-		'.mpg',
-		'.ogv',
-		'.webm',
-		'.wmv',
-	];
-
-	public const SUPPORTED_IMAGE_MIME_TYPES = [
-		'image/gif',
-		'image/jpeg',
-		'image/png',
-		'image/webp',
-	];
-
-	public const SUPPORTED_VIDEO_MIME_TYPES = [
-		'video/mp4',
-		'video/mpeg',
-		'image/x-tga', // mpg; will be corrected by the metadata extractor
-		'video/ogg',
-		'video/webm',
-		'video/quicktime',
-		'video/x-ms-asf', // wmv file
-		'video/x-ms-wmv', // wmv file
-		'video/x-msvideo', // Avi
-		'video/x-m4v', // Avi
-		'application/octet-stream', // Some mp4 files; will be corrected by the metadata extractor
-	];
-
-	public const MIME_TYPES_TO_FILE_EXTENSIONS = [
-		'image/gif' => '.gif',
-		'image/jpeg' => '.jpg',
-		'image/png' => '.png',
-		'image/webp' => '.webp',
-		'video/mp4' => '.mp4',
-		'video/mpeg' => '.mpg',
-		'image/x-tga' => '.mpg',
-		'video/ogg' => '.ogv',
-		'video/webm' => '.webm',
-		'video/quicktime' => '.mov',
-		'video/x-ms-asf' => '.wmv',
-		'video/x-ms-wmv' => '.wmv',
-		'video/x-msvideo' => '.avi',
-		'video/x-m4v' => '.avi',
-		'application/octet-stream' => '.mp4',
-	];
-
-	/** @var string[] the accepted raw file extensions minus supported extensions */
-	private static array $cachedAcceptedRawFileExtensions = [];
-
 	/**
 	 * Writes the content of the provided stream into the file.
 	 *
@@ -209,147 +139,5 @@ abstract class BaseMediaFile extends AbstractBinaryBlob implements MediaFile
 	public function getOriginalBasename(): string
 	{
 		return $this->getBasename();
-	}
-
-	/**
-	 * Checks if the given MIME type designates a supported image type.
-	 *
-	 * @param string $mime_type the MIME type
-	 */
-	public static function isSupportedImageMimeType(string $mime_type): bool
-	{
-		return in_array($mime_type, self::SUPPORTED_IMAGE_MIME_TYPES, true);
-	}
-
-	/**
-	 * Checks if the given MIME type designates a supported video type.
-	 *
-	 * @param string $mime_type the MIME type
-	 */
-	public static function isSupportedVideoMimeType(string $mime_type): bool
-	{
-		return in_array($mime_type, self::SUPPORTED_VIDEO_MIME_TYPES, true);
-	}
-
-	/**
-	 * Checks if the given file extension is a supported image extension.
-	 *
-	 * @param string $extension the file extension
-	 */
-	public static function isSupportedImageFileExtension(string $extension): bool
-	{
-		return in_array(strtolower($extension), self::SUPPORTED_IMAGE_FILE_EXTENSIONS, true);
-	}
-
-	/**
-	 * Checks if the given file extension is a supported image extension.
-	 *
-	 * @param string $extension the file extension
-	 */
-	public static function isSupportedVideoFileExtension(string $extension): bool
-	{
-		return in_array(strtolower($extension), self::SUPPORTED_VIDEO_FILE_EXTENSIONS, true);
-	}
-
-	/**
-	 * Checks if the given file extension is supported.
-	 *
-	 * @param string $extension the file extension
-	 */
-	public static function isSupportedFileExtension(string $extension): bool
-	{
-		return
-			self::isSupportedImageFileExtension($extension) ||
-			self::isSupportedVideoFileExtension($extension);
-	}
-
-	/**
-	 * Returns {@link MediaFile::$cachedAcceptedRawFileExtensions} and creates it, if necessary.
-	 *
-	 * @return string[]
-	 */
-	protected static function getSanitizedAcceptedRawFileExtensions(): array
-	{
-		if (count(self::$cachedAcceptedRawFileExtensions) === 0) {
-			$tmp = explode('|', strtolower(Configs::getValueAsString('raw_formats')));
-
-			// We imagick is enabeld, then we can allow PDF files.
-			if (Configs::hasImagick()) {
-				$tmp[] = '.pdf';
-			}
-
-			// Explode may return `false` on error
-			// Our supported file extensions always take precedence over any
-			// custom configured extension
-			self::$cachedAcceptedRawFileExtensions = array_diff($tmp, self::SUPPORTED_IMAGE_FILE_EXTENSIONS, self::SUPPORTED_VIDEO_FILE_EXTENSIONS);
-		}
-
-		return self::$cachedAcceptedRawFileExtensions;
-	}
-
-	/**
-	 * Checks if the given extension is accepted as raw.
-	 *
-	 * @param string $extension the file extension
-	 */
-	public static function isAcceptedRawFileExtension(string $extension): bool
-	{
-		return in_array(
-			strtolower($extension),
-			self::getSanitizedAcceptedRawFileExtensions(),
-			true
-		);
-	}
-
-	/**
-	 * Check if the given extension is supported or accepted.
-	 *
-	 * @param string $extension the file extension
-	 */
-	public static function isSupportedOrAcceptedFileExtension(string $extension): bool
-	{
-		return
-			self::isSupportedFileExtension($extension) ||
-			self::isAcceptedRawFileExtension($extension);
-	}
-
-	/**
-	 * Asserts that the given extension is supported or accepted.
-	 *
-	 * @param string $extension the file extension
-	 *
-	 * @throws MediaFileUnsupportedException
-	 */
-	public static function assertIsSupportedOrAcceptedFileExtension(string $extension): void
-	{
-		if (!self::isSupportedOrAcceptedFileExtension($extension)) {
-			// @codeCoverageIgnoreStart
-			throw new MediaFileUnsupportedException(MediaFileUnsupportedException::DEFAULT_MESSAGE . ' (bad extension: ' . $extension . ')');
-			// @codeCoverageIgnoreEnd
-		}
-	}
-
-	/**
-	 * Check if the given mimetype is supported or accepted.
-	 *
-	 * @param ?string $mime_type the file mimetype
-	 */
-	public static function isSupportedMimeType(?string $mime_type): bool
-	{
-		return
-			self::isSupportedImageMimeType($mime_type) ||
-			self::isSupportedVideoMimeType($mime_type);
-	}
-
-	/**
-	 * Returns the default file extension for the given MIME type or an empty string if there is no default extension.
-	 *
-	 * @param string $mime_type a MIME type
-	 *
-	 * @return string the default file extension for the given MIME type
-	 */
-	public static function getDefaultFileExtensionForMimeType(string $mime_type): string
-	{
-		return self::MIME_TYPES_TO_FILE_EXTENSIONS[strtolower($mime_type)] ?? '';
 	}
 }

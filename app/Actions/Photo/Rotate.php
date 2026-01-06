@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Actions\Photo;
@@ -50,8 +50,10 @@ class Rotate
 	 * @throws IllegalOrderOfOperationException
 	 * @throws FrameworkException
 	 */
-	public function __construct(Photo $photo, int $direction)
-	{
+	public function __construct(
+		Photo $photo,
+		int $direction,
+	) {
 		try {
 			if ($photo->isVideo()) {
 				throw new MediaFileUnsupportedException('Rotation of a video is unsupported');

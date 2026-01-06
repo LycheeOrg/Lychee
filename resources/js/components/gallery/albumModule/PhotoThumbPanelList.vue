@@ -9,13 +9,15 @@
 				:is-header-id="albumStore.modelAlbum?.header_id === photo.id"
 				@click="maySelect(idx + props.iter, $event)"
 				@contextmenu.prevent="menuOpen(idx + props.iter, $event)"
+				:is-buyable="isBuyable"
+				@toggleBuyMe="emits('toggleBuyMe', photo.id)"
 			/>
 		</template>
 	</div>
 </template>
 <script setup lang="ts">
 import { useLayouts, type TimelineData } from "@/layouts/PhotoLayout";
-import { onMounted, onUnmounted, onUpdated, watch } from "vue";
+import { computed, onMounted, onUnmounted, onUpdated, watch } from "vue";
 import PhotoThumb from "./thumbs/PhotoThumb.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
@@ -24,9 +26,10 @@ import { useDebounceFn } from "@vueuse/core";
 import { useRoute } from "vue-router";
 import { useLayoutStore } from "@/stores/LayoutState";
 import { useAlbumStore } from "@/stores/AlbumState";
+import { useCatalogStore } from "@/stores/CatalogState";
 
 const props = defineProps<{
-	photos: { [key: number]: App.Http.Resources.Models.PhotoResource };
+	photos: App.Http.Resources.Models.PhotoResource[];
 	selectedPhotos: string[];
 	iter: number;
 	groupIdx: number;
@@ -36,7 +39,9 @@ const props = defineProps<{
 const lycheeStore = useLycheeStateStore();
 const layoutStore = useLayoutStore();
 const albumStore = useAlbumStore();
+const catalogStore = useCatalogStore();
 
+const isBuyable = computed(() => catalogStore.catalog?.album_purchasable !== undefined && catalogStore.catalog.album_purchasable !== null);
 const { is_timeline_left_border_visible } = storeToRefs(lycheeStore);
 
 const route = useRoute();
@@ -50,7 +55,9 @@ const emits = defineEmits<{
 	clicked: [idx: number, event: MouseEvent];
 	selected: [idx: number, event: MouseEvent];
 	contexted: [idx: number, event: MouseEvent];
+	toggleBuyMe: [idx: string];
 }>();
+
 function maySelect(idx: number, e: MouseEvent) {
 	if (ctrlKeyState.value || metaKeyState.value || shiftKeyState.value) {
 		emits("selected", idx, e);

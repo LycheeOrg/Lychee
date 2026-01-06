@@ -3,14 +3,14 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
-use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\Schema;
 
 /**
@@ -18,6 +18,11 @@ use Illuminate\Support\Facades\Schema;
  */
 class CacheTemporaryUrlCheck implements DiagnosticPipe
 {
+	public function __construct(
+		private ConfigManager $config_manager,
+	) {
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -27,16 +32,16 @@ class CacheTemporaryUrlCheck implements DiagnosticPipe
 			return $next($data);
 		}
 
-		if (!Configs::getValueAsBool('cache_enabled')) {
+		if (!$this->config_manager->getValueAsBool('cache_enabled')) {
 			return $next($data);
 		}
 
-		if (!Configs::getValueAsBool('temporary_image_link_enabled')) {
+		if (!$this->config_manager->getValueAsBool('temporary_image_link_enabled')) {
 			return $next($data);
 		}
 
-		$cache_ttl_in_seconds = Configs::getValueAsInt('cache_ttl');
-		$temporary_image_link_life_in_seconds = Configs::getValueAsInt('temporary_image_link_life_in_seconds');
+		$cache_ttl_in_seconds = $this->config_manager->getValueAsInt('cache_ttl');
+		$temporary_image_link_life_in_seconds = $this->config_manager->getValueAsInt('temporary_image_link_life_in_seconds');
 
 		if ($cache_ttl_in_seconds > $temporary_image_link_life_in_seconds) {
 			$data[] = DiagnosticData::error('Response cache lifetime is longer than Image temporary URL lifetime.', self::class,

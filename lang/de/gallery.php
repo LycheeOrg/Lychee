@@ -76,6 +76,7 @@ return [
             'share' => 'Album teilen',
             'embed' => 'Embed Album',
             'move' => 'Album verschieben',
+            'shop' => 'Shop Management',
             'danger' => 'GEFAHRENZONE',
         ],
         'hero' => [
@@ -179,6 +180,19 @@ return [
             'set_created_at' => 'Upload-Datum festlegen',
             'set_taken_at' => 'Aufnahmedatum festlegen',
             'set_taken_at_info' => 'Wenn diese Option aktiviert ist, wird ein Sternchen %s angezeigt, um darauf hinzuweisen, dass es sich bei diesem Datum nicht um das ursprüngliche EXIF-Datum handelt.<br>Deaktivieren des Kontrollkästchens und speichern stellt das ursprüngliche Datum wieder her.',
+        ],
+        'rating' => [
+            'header' => 'Rating',
+            'rating' => 'rating',
+            'ratings' => 'ratings',
+            'your_rating' => 'Your rating',
+            'saving' => 'Saving rating...',
+            'removed' => 'Rating removed',
+            'saved' => 'Rating saved',
+            'error' => 'Failed to save rating',
+            'error_unauthorized' => 'You must be logged in to rate photos',
+            'error_forbidden' => 'You do not have permission to rate this photo',
+            'error_not_found' => 'Photo not found',
         ],
     ],
     'nsfw' => [

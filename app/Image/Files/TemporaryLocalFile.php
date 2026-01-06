@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Image\Files;
@@ -39,8 +39,10 @@ class TemporaryLocalFile extends NativeLocalFile
 	 *
 	 * @throws MediaFileOperationException
 	 */
-	public function __construct(string $file_extension, string $fake_base_name = '')
-	{
+	public function __construct(
+		string $file_extension,
+		string $fake_base_name = '',
+	) {
 		$temp_file_path = $this->load($file_extension);
 		parent::__construct($temp_file_path);
 		$this->fakeBaseName = $fake_base_name;

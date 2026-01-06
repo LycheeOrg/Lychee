@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Actions\Diagnostics\Pipes\Checks;
@@ -18,7 +18,7 @@ use App\Exceptions\VersionControlException;
 use App\Facades\Helpers;
 use App\Metadata\Versions\GitHubVersion;
 use App\Metadata\Versions\InstalledVersion;
-use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Schema;
 use function Safe\exec;
@@ -64,6 +64,7 @@ class UpdatableCheck implements DiagnosticPipe
 	public static function assertUpdatability(): void
 	{
 		$installed_version = resolve(InstalledVersion::class);
+		$config_manager = resolve(ConfigManager::class);
 
 		// we bypass this because we don't care about the other conditions as they don't apply to the release
 		if ($installed_version->isRelease()) {
@@ -77,7 +78,7 @@ class UpdatableCheck implements DiagnosticPipe
 			// @codeCoverageIgnoreEnd
 		}
 
-		if (!Configs::getValueAsBool('allow_online_git_pull')) {
+		if (!$config_manager->getValueAsBool('allow_online_git_pull')) {
 			// @codeCoverageIgnoreStart
 			throw new ConfigurationException('Online updates are disabled by configuration');
 			// @codeCoverageIgnoreEnd

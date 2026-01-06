@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Http\Requests\UserManagement;
@@ -36,7 +36,7 @@ class DeleteUserRequest extends BaseApiRequest implements HasUser
 	public function rules(): array
 	{
 		return [
-			RequestAttribute::ID_ATTRIBUTE => ['required', new IntegerIDRule(false), new OwnerIdRule()],
+			RequestAttribute::ID_ATTRIBUTE => ['required', new IntegerIDRule(false), new OwnerIdRule($this->configs())],
 		];
 	}
 

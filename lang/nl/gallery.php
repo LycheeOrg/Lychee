@@ -77,6 +77,7 @@ return [
             'share' => 'Deel Album',
             'embed' => 'Embed Album',
             'move' => 'Verplaats Album',
+            'shop' => 'Shop Management',
             'danger' => 'GEVAARZONE',
         ],
         'hero' => [
@@ -180,6 +181,19 @@ return [
             'set_created_at' => 'Uploaddatum instellen',
             'set_taken_at' => 'Opnamedatum instellen',
             'set_taken_at_info' => 'Wanneer ingesteld, wordt een ster %s weergegeven om aan te geven dat deze datum niet de originele EXIF-datum is.<br>Vink het selectievakje uit en sla op om terug te keren naar de originele datum.',
+        ],
+        'rating' => [
+            'header' => 'Rating',
+            'rating' => 'rating',
+            'ratings' => 'ratings',
+            'your_rating' => 'Your rating',
+            'saving' => 'Saving rating...',
+            'removed' => 'Rating removed',
+            'saved' => 'Rating saved',
+            'error' => 'Failed to save rating',
+            'error_unauthorized' => 'You must be logged in to rate photos',
+            'error_forbidden' => 'You do not have permission to rate this photo',
+            'error_not_found' => 'Photo not found',
         ],
     ],
     'nsfw' => [

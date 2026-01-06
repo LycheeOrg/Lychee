@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 /**
@@ -25,7 +25,7 @@ use Tests\AbstractTestCase;
 
 class CopyrightTest extends AbstractTestCase
 {
-	public const COPYRIGHT = "<?php\n\n/**\n * SPDX-License-Identifier: MIT\n * Copyright (c) 2017-2018 Tobias Reich\n * Copyright (c) 2018-2025 LycheeOrg.\n */\n";
+	public const COPYRIGHT = "<?php\n\n/**\n * SPDX-License-Identifier: MIT\n * Copyright (c) 2017-2018 Tobias Reich\n * Copyright (c) 2018-2026 LycheeOrg.\n */\n";
 	private ConsoleSectionOutput $msgSection;
 	private bool $failed = false;
 	private int $length = 0;
@@ -35,6 +35,9 @@ class CopyrightTest extends AbstractTestCase
 		'app/Metadata/Laminas/Unicode.php',
 		'app/Contracts/Laminas/DecoratorInterface.php',
 		'app/Enum/Traits/DecorateBackedEnum.php',
+		'database/migrations/2025_12_22_163233_create_xhprof_table.php',
+		'database/migrations/2025_12_22_163234_add_index_to_xhprof_table.php',
+		'config/xhprof.php',
 	];
 
 	/**

@@ -3,28 +3,23 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Relations;
 
-use App\Constants\PhotoAlbum as PA;
 use App\DTO\PhotoSortingCriterion;
 use App\Eloquent\FixedQueryBuilder;
-use App\Enum\ColumnSortingPhotoType;
-use App\Enum\OrderSortingType;
 use App\Models\Album;
 use App\Models\Extensions\Thumb;
 use App\Models\Photo;
+use App\Models\User;
 use App\Policies\AlbumPolicy;
-use App\Policies\AlbumQueryPolicy;
 use App\Policies\PhotoQueryPolicy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\Relation;
-use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
 /**
@@ -36,7 +31,6 @@ use Illuminate\Support\Facades\Gate;
  */
 class HasAlbumThumb extends Relation
 {
-	protected AlbumQueryPolicy $album_query_policy;
 	protected PhotoQueryPolicy $photo_query_policy;
 	protected PhotoSortingCriterion $sorting;
 
@@ -46,7 +40,6 @@ class HasAlbumThumb extends Relation
 		// the parent constructor.
 		// The parent constructor calls `addConstraints` and thus our own
 		// attributes must be initialized by then
-		$this->album_query_policy = resolve(AlbumQueryPolicy::class);
 		$this->photo_query_policy = resolve(PhotoQueryPolicy::class);
 		$this->sorting = PhotoSortingCriterion::createDefault();
 		parent::__construct(
@@ -71,25 +64,80 @@ class HasAlbumThumb extends Relation
 	}
 
 	/**
+	 * Determine the cover type to use for the album.
+	 *
+	 * @param Album $album
+	 *
+	 * @return string
+	 */
+	protected function getCoverTypeForAlbum(Album $album): string
+	{
+		if ($album->cover_id !== null) {
+			return 'cover_id';
+		}
+
+		/** @var ?User $user */
+		$user = Auth::user();
+
+		// Priority 2: Max-privilege cover for admin or owner
+		if ($user?->may_administrate === true || $album->owner_id === $user?->id) {
+			return 'auto_cover_id_max_privilege';
+		}
+
+		// Priority 3: Least-privilege cover for public
+		return 'auto_cover_id_least_privilege';
+	}
+
+	/**
+	 * Select the appropriate cover ID based on user privileges.
+	 *
+	 * Priority:
+	 * 1. Explicit cover_id (if set)
+	 * 2. auto_cover_id_max_privilege (if admin or owns album/ancestor)
+	 * 3. auto_cover_id_least_privilege (public view)
+	 *
+	 * @param Album $album
+	 *
+	 * @return string|null
+	 */
+	protected function selectCoverIdForAlbum(Album $album): ?string
+	{
+		return match ($this->getCoverTypeForAlbum($album)) {
+			'cover_id' => $album->cover_id,
+			'auto_cover_id_max_privilege' => $album->auto_cover_id_max_privilege,
+			'auto_cover_id_least_privilege' => $album->auto_cover_id_least_privilege,
+			default => null,
+		};
+	}
+
+	/**
 	 * Adds the constraints for a single album.
 	 *
-	 * If the album has set an explicit cover, then we simply search for that
-	 * photo.
-	 * Else, we search for all photos which are (recursive) descendants of the
-	 * given album.
+	 * Determines which cover photo to use based on priority:
+	 * 1. Explicit cover_id (if set)
+	 * 2. auto_cover_id_max_privilege (if user is admin or owns album/ancestor)
+	 * 3. auto_cover_id_least_privilege (public view)
 	 */
 	public function addConstraints(): void
 	{
 		if (static::$constraints) {
 			/** @var Album $album */
 			$album = $this->parent;
-			if ($album->cover_id !== null) {
+			$cover_id = $this->selectCoverIdForAlbum($album);
+
+			if ($cover_id !== null) {
 				// @phpstan-ignore-next-line
-				$this->where('photos.id', '=', $album->cover_id);
+				$this->where('photos.id', '=', $cover_id);
 			} else {
+				// Fallback to legacy behavior if no cover available
+				$user = Auth::user();
+				$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
+
 				$this->photo_query_policy
 					->applySearchabilityFilter(
 						query: $this->getRelationQuery(),
+						user: $user,
+						unlocked_album_ids: $unlocked_album_ids,
 						origin: $album,
 						include_nsfw: $album->is_nsfw);
 			}
@@ -97,152 +145,17 @@ class HasAlbumThumb extends Relation
 	}
 
 	/**
-	 * Builds a query to eagerly load the thumbnails of a sequence of albums.
-	 *
-	 * Note, the query is not as efficient as it could be, but it is the
-	 * best query we can construct which is portable to MySQL, PostgreSQl and
-	 * SQLite.
-	 * The inefficiency comes from the inner, correlated value sub-query
-	 * `bestPhotoIDSelect`.
-	 * This value query refers the outer query through `covered_albums` and
-	 * thus needs to be executed for every result.
-	 * Moreover, the temporary query table `$album2Cover` is an in-memory
-	 * table and thus does not provide any indexes.
-	 *
-	 * A faster approach would be to first JOIN the tables, then sort the
-	 * result and finally pick the first result of each group based on
-	 * identical `covered_album_id`.
-	 * The approach "join first (with everything), filter last" is faster,
-	 * because the DBMS can use its indexes.
-	 *
-	 * For PostgreSQL we could use the `DISTINCT ON`-clause to achieve the
-	 * result:
-	 *
-	 *     SELECT DISTINCT ON (covered_album_id)
-	 *       covered_albums.id AS covered_album_id,
-	 *       photos.id         AS id,
-	 *       photos.type       AS type
-	 *     FROM covered_albums
-	 *     LEFT JOIN
-	 *       (
-	 *         photos
-	 *         LEFT JOIN albums
-	 *         ON (albums.id = photos.album_id)
-	 *       )
-	 *     ON (
-	 *       albums._lft >= covered_albums._lft AND
-	 *       albums._rgt <= covered_albums._rgt AND
-	 *       "complicated searchability filter goes here"
-	 *     )
-	 *     WHERE covered_albums.id IN $albumKeys
-	 *     ORDER BY album_id ASC, photos.is_starred DESC, photos.created_at DESC
-	 *
-	 * For PostgreSQL see ["SELECT - DISTINCT Clause"](https://www.postgresql.org/docs/13/sql-select.html#SQL-DISTINCT).
-	 *
-	 * But `DISTINCT ON` is provided by neither MySQL nor SQLite.
-	 * For the latter two, the following non-SQL-conformant query could be
-	 * used:
-	 *
-	 *     SELECT
-	 *       covered_albums.id  AS covered_album_id,
-	 *       photos.id          AS id,
-	 *       photos.type        AS type
-	 *     FROM covered_albums
-	 *     LEFT JOIN
-	 *       (
-	 *         photos
-	 *         LEFT JOIN albums
-	 *         ON (albums.id = photos.album_id)
-	 *       )
-	 *     ON (
-	 *       albums._lft >= covered_albums._lft AND
-	 *       albums._rgt <= covered_albums._rgt AND
-	 *       "complicated seachability filter goes here"
-	 *     )
-	 *     WHERE covered_albums.id IN $albumKeys
-	 *     ORDER BY album_id ASC, photos.is_starred DESC, photos.created_at DESC
-	 *     GROUP BY album_id
-	 *
-	 * Instead of enforcing distinct results for `covered_album_id`, the result
-	 * is grouped by `covered_album_id`.
-	 * Note that this is not SQL-compliant, because the `SELECT` clause
-	 * contains two columns (`photo.id` and `photo.type`) which are neither
-	 * part of the `GROUP BY`-clause nor aggregates.
-	 * However, MySQL and SQLite relax this constraint and return the
-	 * column values of the first row of a group.
-	 * This is exactly the specified behaviour of `DISTINCT ON`.
-	 * For SQLite see "[Quirks, Caveats, and Gotchas In SQLite, Sec. 6](https://www.sqlite.org/quirks.html)"
-	 *
-	 * TODO: If the following query is too slow for large installation, we must write two separate implementations for PostgreSQL and MySQL/SQLite as outlined above.
+	 * We do not eager load any covers.
+	 * This relation is only meaningful for single albums.
+	 * In case of multiple album we use the preloaded values from
+	 * `cover_id`, `auto_cover_id_max_privilege`, and `auto_cover_id_least_privilege`.
 	 *
 	 * @param array<Album> $models
 	 */
 	public function addEagerConstraints(array $models): void
 	{
-		// We only use those `Album` models which have not set an explicit
-		// cover.
-		// Albums with explicit covers are treated separately in
-		// method `match`.
-		$album_keys = collect($models)
-			->whereNull('cover_id')
-			->unique('id', true)
-			->sortBy('id')
-			->map(fn (Album $album) => $album->getKey())
-			->values();
-
-		$best_photo_id_select = DB::table(PA::PHOTO_ALBUM)
-			->select(PA::PHOTO_ID)
-			->join('photos', 'photos.id', '=', PA::PHOTO_ID)
-			->join('albums', 'albums.id', '=', PA::ALBUM_ID)
-			->whereColumn('albums._lft', '>=', 'covered_albums._lft')
-			->whereColumn('albums._rgt', '<=', 'covered_albums._rgt')
-			->orderBy('photos.' . ColumnSortingPhotoType::IS_STARRED->value, OrderSortingType::DESC->value)
-			->orderBy('photos.' . $this->sorting->column->value, $this->sorting->order->value)
-			->limit(1);
-
-		if (Auth::user()?->may_administrate !== true) {
-			$best_photo_id_select->where(function (BaseBuilder $query2): void {
-				$this->photo_query_policy->appendSearchabilityConditions(
-					$query2,
-					'covered_albums._lft',
-					'covered_albums._rgt'
-				);
-			});
-		}
-
-		$album2_cover = function (BaseBuilder $builder) use ($best_photo_id_select, $album_keys): void {
-			$builder
-				->from('albums as covered_albums')
-				->join('base_albums', 'base_albums.id', '=', 'covered_albums.id');
-
-			$this->album_query_policy->joinSubComputedAccessPermissions(
-				query: $builder,
-				second: 'base_albums.id'
-			);
-
-			$builder->select(['covered_albums.id AS album_id'])
-				->addSelect(['photo_id' => $best_photo_id_select])
-				->whereIn('covered_albums.id', $album_keys);
-			if (Auth::user()?->may_administrate !== true) {
-				$builder->where(function (BaseBuilder $q): void {
-					$this->album_query_policy->appendAccessibilityConditions($q);
-				});
-			}
-		};
-
-		$this->getRelationQuery()
-			->select([
-				'covers.id as id',
-				'covers.type as type',
-				'album_2_cover.album_id as covered_album_id',
-			])
-			->from($album2_cover, 'album_2_cover')
-			->join(
-				'photos as covers',
-				'covers.id',
-				'=',
-				'album_2_cover.photo_id'
-			);
+		// No covers to load - make query return empty result
+		$this->getRelationQuery()->whereRaw('1 = 0');
 	}
 
 	/**
@@ -271,26 +184,17 @@ class HasAlbumThumb extends Relation
 	 */
 	public function match(array $models, Collection $results, $relation): array
 	{
-		$dictionary = $results->mapToDictionary(function ($result) {
-			/** @var Photo&object{covered_album_id: int} $result */
-			return [$result->covered_album_id => $result];
-		})->all();
-
-		// Once we have the dictionary we can simply spin through the parent models to
-		// link them up with their children using the keyed dictionary to make the
-		// matching very convenient and easy work. Then we'll just return them.
 		/** @var Album $album */
 		foreach ($models as $album) {
-			$album_id = $album->id;
-			if ($album->cover_id !== null) {
-				// We do not execute a query, if `cover_id` is set, because
-				// `Album`always eagerly loads its cover and hence, we already
-				// have it.
-				// See {@link Album::with}
+			$cover_type = $this->getCoverTypeForAlbum($album);
+			if ($cover_type === 'cover_id' && $album->cover_id !== null) {
+				// We do not need to do anything here, because we already have the cover
+				// loaded via the `cover` relation of `Album`.
 				$album->setRelation($relation, Thumb::createFromPhoto($album->cover));
-			} elseif (isset($dictionary[$album_id])) {
-				$cover = reset($dictionary[$album_id]);
-				$album->setRelation($relation, Thumb::createFromPhoto($cover));
+			} elseif ($cover_type === 'auto_cover_id_max_privilege' && $album->auto_cover_id_max_privilege !== null) {
+				$album->setRelation($relation, Thumb::createFromPhoto($album->max_privilege_cover));
+			} elseif ($cover_type === 'auto_cover_id_least_privilege' && $album->auto_cover_id_least_privilege !== null) {
+				$album->setRelation($relation, Thumb::createFromPhoto($album->min_privilege_cover));
 			} else {
 				$album->setRelation($relation, null);
 			}
@@ -311,8 +215,15 @@ class HasAlbumThumb extends Relation
 		// is always eagerly loaded with its cover and hence, we already
 		// have it.
 		// See {@link Album::with}
-		if ($album->cover_id !== null) {
+		$cover_type = $this->getCoverTypeForAlbum($album);
+		if ($cover_type === 'cover_id' && $album->cover_id !== null) {
+			// We do not need to do anything here, because we already have the cover
+			// loaded via the `cover` relation of `Album`.
 			return Thumb::createFromPhoto($album->cover);
+		} elseif ($cover_type === 'auto_cover_id_max_privilege' && $album->auto_cover_id_max_privilege !== null) {
+			return Thumb::createFromPhoto($album->max_privilege_cover);
+		} elseif ($cover_type === 'auto_cover_id_least_privilege' && $album->auto_cover_id_least_privilege !== null) {
+			return Thumb::createFromPhoto($album->min_privilege_cover);
 		} else {
 			return Thumb::createFromQueryable(
 				$this->getRelationQuery(),

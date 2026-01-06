@@ -19,7 +19,7 @@ const lycheeStore = useLycheeStateStore();
 const { are_nsfw_visible } = storeToRefs(lycheeStore);
 
 const props = defineProps<{
-	albums: { [key: number]: App.Http.Resources.Models.ThumbAlbumResource };
+	albums: App.Http.Resources.Models.ThumbAlbumResource[];
 	iter: number;
 	idxShift: number;
 	selectedAlbums: string[];

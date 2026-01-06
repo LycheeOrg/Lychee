@@ -3,12 +3,11 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Http\Resources\Statistics;
 
-use App\Models\Configs;
 use Illuminate\Support\Collection;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
@@ -32,9 +31,9 @@ class CountsData extends Data
 	public function __construct(Collection $data, string $min_taken_at, string $min_created_at)
 	{
 		$this->data = $data->map(fn ($v) => new DayCount($v->date, $v->uploads))->all();
-		$this->low_number_of_shoots_per_day = Configs::getValueAsInt('low_number_of_shoots_per_day');
-		$this->medium_number_of_shoots_per_day = Configs::getValueAsInt('medium_number_of_shoots_per_day');
-		$this->high_number_of_shoots_per_day = Configs::getValueAsInt('high_number_of_shoots_per_day');
+		$this->low_number_of_shoots_per_day = request()->configs()->getValueAsInt('low_number_of_shoots_per_day');
+		$this->medium_number_of_shoots_per_day = request()->configs()->getValueAsInt('medium_number_of_shoots_per_day');
+		$this->high_number_of_shoots_per_day = request()->configs()->getValueAsInt('high_number_of_shoots_per_day');
 		$this->min_created_at = substr($min_created_at, 0, 4); // we only need the year
 		$this->min_taken_at = substr($min_taken_at, 0, 4); // we only need the year
 	}

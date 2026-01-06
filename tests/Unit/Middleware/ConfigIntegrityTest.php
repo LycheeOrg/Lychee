@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 /**
@@ -37,10 +37,20 @@ class ConfigIntegrityTest extends AbstractTestCase
 
 	public function testConfiguration(): void
 	{
+		// Check SE keys
 		$keys = DB::table('configs')->select('key')->where('level', '=', '1')->pluck('key')->all();
 		foreach ($keys as $key) {
 			if (!in_array($key, ConfigIntegrity::SE_FIELDS, true)) {
-				$this->msgSection->writeln(sprintf('<comment>Error:</comment> Key %s is not in the list of keys.', $key));
+				$this->msgSection->writeln(sprintf('<comment>Error:</comment> Key %s is not in the list of supporter keys.', $key));
+				$this->failed = true;
+			}
+		}
+
+		// Check Pro keys
+		$keys = DB::table('configs')->select('key')->where('level', '=', '2')->pluck('key')->all();
+		foreach ($keys as $key) {
+			if (!in_array($key, ConfigIntegrity::PRO_FIELDS, true)) {
+				$this->msgSection->writeln(sprintf('<comment>Error:</comment> Key %s is not in the list of pro keys.', $key));
 				$this->failed = true;
 			}
 		}
@@ -53,6 +63,15 @@ class ConfigIntegrityTest extends AbstractTestCase
 		/** @var string[] $keys */
 		$keys = DB::table('configs')->select('key')->where('level', '=', '1')->pluck('key')->all();
 		foreach (ConfigIntegrity::SE_FIELDS as $key) {
+			if (!in_array($key, $keys, true)) {
+				$this->msgSection->writeln(sprintf('<comment>Error:</comment> Key %s is not in the database.', $key));
+				$this->failed = true;
+			}
+		}
+
+		/** @var string[] $keys */
+		$keys = DB::table('configs')->select('key')->where('level', '=', '2')->pluck('key')->all();
+		foreach (ConfigIntegrity::PRO_FIELDS as $key) {
 			if (!in_array($key, $keys, true)) {
 				$this->msgSection->writeln(sprintf('<comment>Error:</comment> Key %s is not in the database.', $key));
 				$this->failed = true;

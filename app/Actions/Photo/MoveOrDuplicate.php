@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Actions\Photo;
@@ -12,6 +12,8 @@ use App\Actions\Shop\PurchasableService;
 use App\Actions\User\Notify;
 use App\Constants\PhotoAlbum as PA;
 use App\Contracts\Models\AbstractAlbum;
+use App\Events\AlbumSaved;
+use App\Events\PhotoDeleted;
 use App\Models\Album;
 use App\Models\Photo;
 use App\Models\Purchasable;
@@ -48,7 +50,13 @@ class MoveOrDuplicate
 				->whereIn(PA::PHOTO_ID, $photos_ids)
 				->where(PA::ALBUM_ID, '=', $from_album->get_id())
 				->delete();
+
+			// Dispatch event for origin album (photos moved out)
+			AlbumSaved::dispatchIf($from_album instanceof Album, $from_album);
 		}
+
+		// Dispatch event for source album (photos removed)
+		PhotoDeleted::dispatchIf($from_album !== null, $from_album?->get_id());
 
 		if ($to_album !== null) {
 			// Delete the existing links at destination (avoid duplicates key contraint)
@@ -60,6 +68,9 @@ class MoveOrDuplicate
 
 			// Add the new links.
 			DB::table(PA::PHOTO_ALBUM)->insert(array_map(fn (string $id) => ['photo_id' => $id, 'album_id' => $to_album->id], $photos_ids));
+
+			// Dispatch event for destination album (photos added)
+			AlbumSaved::dispatchIf($to_album instanceof Album, $to_album);
 		}
 
 		// In case of move, we need to remove the header_id of said photos.

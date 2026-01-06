@@ -3,14 +3,14 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
-use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\Schema;
 use Safe\Exceptions\FilesystemException;
 use Safe\Exceptions\PcreException;
@@ -22,6 +22,10 @@ use function Safe\preg_match;
  */
 class ImagickPdfCheck implements DiagnosticPipe
 {
+	public function __construct(protected readonly ConfigManager $config_manager)
+	{
+	}
+
 	public const IMAGICK_POLICY_LOCATIONS = [
 		'/etc/ImageMagick-7/policy.xml',
 		'/etc/ImageMagick-6/policy.xml',
@@ -43,7 +47,7 @@ class ImagickPdfCheck implements DiagnosticPipe
 			// @codeCoverageIgnoreEnd
 		}
 
-		if (!Configs::hasImagick()) {
+		if (!$this->config_manager->hasImagick()) {
 			$data[] = DiagnosticData::info('Imagick is not enabled. Thumbs will not be created for pdf files.', self::class);
 
 			return $next($data);

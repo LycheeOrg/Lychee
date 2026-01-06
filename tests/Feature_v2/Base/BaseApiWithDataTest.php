@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 /**
@@ -19,6 +19,7 @@
 namespace Tests\Feature_v2\Base;
 
 use App\Enum\UserGroupRole;
+use App\Jobs\RecomputeAlbumStatsJob;
 use App\Models\AccessPermission;
 use App\Models\Album;
 use App\Models\Configs;
@@ -28,7 +29,6 @@ use App\Models\Tag;
 use App\Models\TagAlbum;
 use App\Models\User;
 use App\Models\UserGroup;
-use Tests\Traits\InteractWithSmartAlbums;
 use Tests\Traits\RequiresEmptyAlbums;
 use Tests\Traits\RequiresEmptyColourPalettes;
 use Tests\Traits\RequiresEmptyGroups;
@@ -100,7 +100,6 @@ abstract class BaseApiWithDataTest extends BaseApiTest
 	use RequiresEmptyColourPalettes;
 	use RequiresEmptyLiveMetrics;
 	use RequiresEmptyWebAuthnCredentials;
-	use InteractWithSmartAlbums;
 	use RequiresEmptyGroups;
 	use RequiresEmptyTags;
 	use RequiresEmptyRenamerRules;
@@ -233,10 +232,20 @@ abstract class BaseApiWithDataTest extends BaseApiTest
 
 		$this->album5 = Album::factory()->as_root()->owned_by($this->admin)->create();
 
+		$jobs = [
+			new RecomputeAlbumStatsJob($this->subAlbum1->id),
+			new RecomputeAlbumStatsJob($this->subAlbum2->id),
+			new RecomputeAlbumStatsJob($this->album3->id),
+			new RecomputeAlbumStatsJob($this->subAlbum4->id),
+			new RecomputeAlbumStatsJob($this->album5->id),
+		];
+		foreach ($jobs as $job) {
+			$job->handle();
+		}
+
 		Configs::set('owner_id', $this->admin->id);
 
 		$this->withoutVite();
-		$this->clearCachedSmartAlbums();
 	}
 
 	public function tearDown(): void

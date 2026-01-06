@@ -77,6 +77,7 @@ return [
             'share' => 'مشاركة الألبوم',
             'embed' => 'تضمين الألبوم',
             'move' => 'نقل الألبوم',
+            'shop' => 'Shop Management',
             'danger' => 'منطقة الخطر',
         ],
         'hero' => [
@@ -180,6 +181,19 @@ return [
             'set_created_at' => 'تعيين تاريخ الرفع',
             'set_taken_at' => 'تعيين تاريخ الالتقاط',
             'set_taken_at_info' => 'عند التعيين، سيتم عرض نجمة %s للإشارة إلى أن هذا التاريخ ليس تاريخ EXIF الأصلي.<br>قم بإلغاء تحديد خانة الاختيار هذه واحفظ لت reset إلى التاريخ الأصلي.',
+        ],
+        'rating' => [
+            'header' => 'Rating',
+            'rating' => 'rating',
+            'ratings' => 'ratings',
+            'your_rating' => 'Your rating',
+            'saving' => 'Saving rating...',
+            'removed' => 'Rating removed',
+            'saved' => 'Rating saved',
+            'error' => 'Failed to save rating',
+            'error_unauthorized' => 'You must be logged in to rate photos',
+            'error_forbidden' => 'You do not have permission to rate this photo',
+            'error_not_found' => 'Photo not found',
         ],
     ],
     'nsfw' => [

@@ -3,12 +3,14 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Providers;
 
+use App\Events\AlbumDeleted;
 use App\Events\AlbumRouteCacheUpdated;
+use App\Events\AlbumSaved;
 use App\Events\Metrics\AlbumDownload;
 use App\Events\Metrics\AlbumShared;
 use App\Events\Metrics\AlbumVisit;
@@ -17,17 +19,25 @@ use App\Events\Metrics\PhotoFavourite;
 use App\Events\Metrics\PhotoShared;
 use App\Events\Metrics\PhotoVisit;
 use App\Events\OrderCompleted;
+use App\Events\PhotoDeleted;
+use App\Events\PhotoSaved;
 use App\Events\TaggedRouteCacheUpdated;
 use App\Listeners\AlbumCacheCleaner;
 use App\Listeners\CacheListener;
+use App\Listeners\LogQueryTimeout;
 use App\Listeners\MetricsListener;
 use App\Listeners\OrderCompletedListener;
+use App\Listeners\RecomputeAlbumSizeOnAlbumChange;
+use App\Listeners\RecomputeAlbumSizeOnPhotoMutation;
+use App\Listeners\RecomputeAlbumStatsOnAlbumChange;
+use App\Listeners\RecomputeAlbumStatsOnPhotoChange;
 use App\Listeners\TaggedRouteCacheCleaner;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Cache\Events\CacheHit;
 use Illuminate\Cache\Events\CacheMissed;
 use Illuminate\Cache\Events\KeyForgotten;
 use Illuminate\Cache\Events\KeyWritten;
+use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Event;
 use SocialiteProviders\Amazon\AmazonExtendSocialite;
@@ -83,6 +93,13 @@ class EventServiceProvider extends ServiceProvider
 		Event::listen(AlbumRouteCacheUpdated::class, AlbumCacheCleaner::class . '@handle');
 		Event::listen(TaggedRouteCacheUpdated::class, TaggedRouteCacheCleaner::class . '@handle');
 
+		// Log slow/timeout SQL queries when DB_LOG_SQL is enabled
+		// @codeCoverageIgnoreStart
+		if (config('database.db_log_sql', false) === true) {
+			Event::listen(QueryExecuted::class, LogQueryTimeout::class . '@handle');
+		}
+		// @codeCoverageIgnoreEnd
+
 		Event::listen(AlbumDownload::class, MetricsListener::class . '@handle');
 		Event::listen(AlbumShared::class, MetricsListener::class . '@handle');
 		Event::listen(AlbumVisit::class, MetricsListener::class . '@handle');
@@ -92,5 +109,15 @@ class EventServiceProvider extends ServiceProvider
 		Event::listen(PhotoVisit::class, MetricsListener::class . '@handle');
 
 		Event::listen(OrderCompleted::class, OrderCompletedListener::class . '@handle');
+
+		Event::listen(PhotoSaved::class, RecomputeAlbumStatsOnPhotoChange::class . '@handlePhotoSaved');
+		Event::listen(PhotoDeleted::class, RecomputeAlbumStatsOnPhotoChange::class . '@handlePhotoDeleted');
+		Event::listen(AlbumSaved::class, RecomputeAlbumStatsOnAlbumChange::class . '@handleAlbumSaved');
+		Event::listen(AlbumDeleted::class, RecomputeAlbumStatsOnAlbumChange::class . '@handleAlbumDeleted');
+
+		Event::listen(PhotoSaved::class, RecomputeAlbumSizeOnPhotoMutation::class . '@handlePhotoSaved');
+		Event::listen(PhotoDeleted::class, RecomputeAlbumSizeOnPhotoMutation::class . '@handlePhotoDeleted');
+		Event::listen(AlbumSaved::class, RecomputeAlbumSizeOnAlbumChange::class . '@handleAlbumSaved');
+		Event::listen(AlbumDeleted::class, RecomputeAlbumSizeOnAlbumChange::class . '@handleAlbumDeleted');
 	}
 }

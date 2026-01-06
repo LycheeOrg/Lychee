@@ -77,6 +77,7 @@ return [
             'share' => 'اشتراک‌گذاری آلبوم',
             'embed' => 'Embed Album',
             'move' => 'انتقال آلبوم',
+            'shop' => 'Shop Management',
             'danger' => 'منطقه خطر',
         ],
         'hero' => [
@@ -180,6 +181,19 @@ return [
             'set_created_at' => 'تنظیم تاریخ بارگذاری',
             'set_taken_at' => 'تنظیم تاریخ ثبت',
             'set_taken_at_info' => 'در صورت تنظیم، یک ستاره %s نمایش داده می‌شود تا نشان دهد این تاریخ، تاریخ اصلی EXIF نیست.<br>برای بازنشانی به تاریخ اصلی، تیک را بردارید و ذخیره کنید.',
+        ],
+        'rating' => [
+            'header' => 'Rating',
+            'rating' => 'rating',
+            'ratings' => 'ratings',
+            'your_rating' => 'Your rating',
+            'saving' => 'Saving rating...',
+            'removed' => 'Rating removed',
+            'saved' => 'Rating saved',
+            'error' => 'Failed to save rating',
+            'error_unauthorized' => 'You must be logged in to rate photos',
+            'error_forbidden' => 'You do not have permission to rate this photo',
+            'error_not_found' => 'Photo not found',
         ],
     ],
     'nsfw' => [

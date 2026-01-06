@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Actions\RSS;
@@ -12,16 +12,18 @@ use App\Constants\PhotoAlbum as PA;
 use App\Contracts\Exceptions\InternalLycheeException;
 use App\Enum\SizeVariantType;
 use App\Exceptions\Internal\FrameworkException;
-use App\Models\Configs;
-use App\Models\Extensions\HasUrlGenerator;
 use App\Models\Extensions\UTCBasedTimes;
 use App\Models\Photo;
+use App\Policies\AlbumPolicy;
 use App\Policies\PhotoQueryPolicy;
+use App\Repositories\ConfigManager;
+use App\Services\UrlGenerator;
 use Carbon\Exceptions\InvalidFormatException;
 use Carbon\Exceptions\UnitException;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Spatie\Feed\FeedItem;
 
@@ -30,12 +32,13 @@ use Spatie\Feed\FeedItem;
  */
 class Generate
 {
-	use HasUrlGenerator;
 	use UTCBasedTimes;
 
 	public function __construct(
-		protected PhotoQueryPolicy $photo_query_policy)
-	{
+		protected PhotoQueryPolicy $photo_query_policy,
+		protected readonly ConfigManager $config_manager,
+		protected readonly UrlGenerator $url_generator,
+	) {
 	}
 
 	/**
@@ -54,7 +57,7 @@ class Generate
 			'summary' => $data->description ?? '',
 			'updated' => $this->asDateTime($data->updated_at),
 			'link' => $page_link,
-			'enclosure' => self::pathToUrl($data->short_path, $data->storage_disk, SizeVariantType::ORIGINAL),
+			'enclosure' => $this->url_generator->pathToUrl($data->short_path, $data->storage_disk, SizeVariantType::ORIGINAL),
 			'enclosureType' => $data->type,
 			'enclosureLength' => $data->filesize,
 			'authorName' => $data->username,
@@ -71,8 +74,11 @@ class Generate
 	 */
 	public function do(): Collection
 	{
-		$rss_recent = Configs::getValueAsInt('rss_recent_days');
-		$rss_max = Configs::getValueAsInt('rss_max_items');
+		$user = Auth::user();
+		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
+
+		$rss_recent = $this->config_manager->getValueAsInt('rss_recent_days');
+		$rss_max = $this->config_manager->getValueAsInt('rss_max_items');
 		try {
 			$now_minus = Carbon::now()->subDays($rss_recent)->toDateTimeString();
 		} catch (UnitException|InvalidFormatException $e) {
@@ -83,8 +89,10 @@ class Generate
 		$photos = $this->photo_query_policy
 			->applySearchabilityFilter(
 				query: Photo::query(),
+				user: $user,
+				unlocked_album_ids: $unlocked_album_ids,
 				origin: null,
-				include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_rss')
+				include_nsfw: !$this->config_manager->getValueAsBool('hide_nsfw_in_rss')
 			)
 			->joinSub(DB::table(PA::PHOTO_ALBUM), 'outer_' . PA::PHOTO_ALBUM, 'photos.id', '=', 'outer_' . PA::PHOTO_ID)
 			->join('base_albums', 'base_albums.id', '=', 'outer_' . PA::ALBUM_ID)

@@ -1,5 +1,4 @@
 <?php
-
 return [
     /*
     |--------------------------------------------------------------------------
@@ -21,6 +20,7 @@ return [
         'duplicates-title' => 'Duplikaty tytułów na album',
         'duplicates-per-album' => 'Duplikaty na album',
         'show' => 'Pokaż duplikaty',
+        'load' => 'Load counts',
     ],
     'fix-jobs' => [
         'title' => 'Naprawianie historii zadań',
@@ -49,7 +49,7 @@ return [
     ],
     'optimize' => [
         'title' => 'Optymalizacja bazy danych',
-        'description' => 'Jeśli zauważysz spowolnienie w instalacji, może to być spowodowane tym, że baza danych 
+        'description' => 'Jeśli zauważysz spowolnienie w instalacji, może to być spowodowane tym, że baza danych
         nie ma wszystkich potrzebnych indeksów.',
         'button' => 'Optymalizacja bazy danych',
     ],
@@ -74,5 +74,30 @@ return [
         'title' => 'Opróżnianie pamięci podręcznej',
         'description' => 'Opróżnianie pamięci podręcznej każdego użytkownika w celu rozwiązania problemów z unieważnianiem.',
         'button' => 'Opróżnianie',
+    ],
+    'old-orders' => [
+        'title' => 'Old Orders',
+        'description' => 'Found %d old orders.<br/><br/>An old order is older than 14 days, that have no associated user and are either still pending payment or have no items in them.',
+        'button' => 'Delete old orders',
+    ],
+    'fulfill-orders' => [
+        'title' => 'Orders to fulfill',
+        'description' => 'Found %d orders with content that has not been made available.<br/><br/>Click on the button to assign content when possible.',
+        'button' => 'Fulfill orders',
+    ],
+    'fulfill-precompute' => [
+        'title' => 'Album Precomputed Fields',
+        'description' => 'Found %d albums with missing precomputed fields.<br/><br/>Equivalent to running: php artisan lychee:backfill-album-fields',
+        'button' => 'Compute fields',
+    ],
+    'flush-queue' => [
+        'title' => 'Flush Queue',
+        'description' => 'Found %d pending jobs in the queue.<br/><br/>CAUTION: Clearing the queue will permanently delete all pending jobs. This cannot be undone.',
+        'button' => 'Clear queue',
+    ],
+    'backfill-album-sizes' => [
+        'title' => 'Album Size Statistics',
+        'description' => 'Found %d albums without size statistics.<br/><br/>Equivalent to running: php artisan lychee:backfill-album-sizes',
+        'button' => 'Compute sizes',
     ],
 ];

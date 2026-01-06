@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Relations;
@@ -11,9 +11,9 @@ namespace App\Relations;
 use App\Contracts\Exceptions\InternalLycheeException;
 use App\Enum\OrderSortingType;
 use App\Exceptions\Internal\NotImplementedException;
-use App\Models\Configs;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\TagAlbum;
+use App\Repositories\ConfigManager;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Query\Builder as BaseBuilder;
@@ -82,20 +82,27 @@ class HasManyPhotosByTag extends BaseHasManyPhotos
 			->all();
 		$tag_ids = array_values(array_unique($tag_ids));
 
-		if (Configs::getValueAsBool('TA_override_visibility')) {
+		$user = \Illuminate\Support\Facades\Auth::user();
+		$unlocked_album_ids = \App\Policies\AlbumPolicy::getUnlockedAlbumIDs();
+
+		$config_manager = app(ConfigManager::class);
+		if ($config_manager->getValueAsBool('TA_override_visibility')) {
 			$this->photo_query_policy
 				->applySensitivityFilter(
-					$this->getRelationQuery(),
+					query: $this->getRelationQuery(),
+					user: $user,
 					origin: null,
-					include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_tag_albums')
+					include_nsfw: !$config_manager->getValueAsBool('hide_nsfw_in_tag_albums')
 				)
 				->where(fn (Builder $q) => $this->getPhotoIdsWithTags($q, $tag_ids, $album->is_and));
 		} else {
 			$this->photo_query_policy
 				->applySearchabilityFilter(
-					$this->getRelationQuery(),
+					query: $this->getRelationQuery(),
+					user: $user,
+					unlocked_album_ids: $unlocked_album_ids,
 					origin: null,
-					include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_tag_albums')
+					include_nsfw: !$config_manager->getValueAsBool('hide_nsfw_in_tag_albums')
 				)
 				->where(fn (Builder $q) => $this->getPhotoIdsWithTags($q, $tag_ids, $album->is_and));
 		}

@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Http\Requests\UserGroup;
@@ -36,7 +36,7 @@ class CreateUserGroupRequest extends BaseApiRequest implements HasDescription, H
 	{
 		return [
 			RequestAttribute::NAME_ATTRIBUTE => ['required', 'string', 'max:255'],
-			RequestAttribute::DESCRIPTION_ATTRIBUTE => ['nullable', 'string', new StringRequireSupportRule('', $this->verify)],
+			RequestAttribute::DESCRIPTION_ATTRIBUTE => ['nullable', 'string', new StringRequireSupportRule('', $this->verify())],
 		];
 	}
 

@@ -3,17 +3,19 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Http\Controllers\Admin\Maintenance;
 
 use App\Enum\CacheTag;
 use App\Events\TaggedRouteCacheUpdated;
+use App\Exceptions\Internal\LycheeLogicException;
 use App\Http\Requests\Maintenance\RegisterRequest;
 use App\Http\Resources\GalleryConfigs\RegisterData;
 use App\Models\Configs;
 use Illuminate\Routing\Controller;
+use LycheeVerify\Contract\VerifyInterface;
 use LycheeVerify\Verify;
 
 class RegisterController extends Controller
@@ -29,11 +31,15 @@ class RegisterController extends Controller
 	{
 		Configs::set('license_key', $request->key()->getValue());
 
-		// Verify is a singleton which has already been initialized in RegisterRequest.
-		// As a result, we need to reset it after setting the license key.
-		app()->instance(Verify::class, null);
+		/** @var Verify|VerifyInterface $verify */
+		$verify = $request->verify();
 
-		$verify = resolve(Verify::class);
+		if (!$verify instanceof Verify) {
+			// This should never happen, but let's be safe.
+			throw new LycheeLogicException('Verify instance could not be resolved.');
+		}
+
+		$verify->reset_status();
 		$is_supporter = $verify->is_supporter();
 		if ($is_supporter) {
 			// @codeCoverageIgnoreStart
@@ -44,7 +50,7 @@ class RegisterController extends Controller
 
 		// Not valid, reset the key.
 		Configs::set('license_key', '');
-		app()->instance(Verify::class, null);
+		$verify->reset_status();
 
 		TaggedRouteCacheUpdated::dispatch(CacheTag::SETTINGS);
 

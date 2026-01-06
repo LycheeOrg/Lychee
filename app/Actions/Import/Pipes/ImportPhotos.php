@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Actions\Import\Pipes;
@@ -15,15 +15,22 @@ use App\DTO\ImportDTO;
 use App\DTO\ImportEventReport;
 use App\Image\Files\NativeLocalFile;
 use App\Jobs\ImportImageJob;
+use App\Jobs\RecomputeAlbumSizeJob;
+use App\Jobs\RecomputeAlbumStatsJob;
 use App\Models\Album;
-use App\Models\Configs;
 use App\Models\Photo;
+use App\Repositories\ConfigManager;
 
 class ImportPhotos implements ImportPipe
 {
 	use HasReporterTrait;
 
 	protected ImportDTO $state;
+
+	public function __construct(
+		protected readonly ConfigManager $config_manager,
+	) {
+	}
 
 	/**
 	 * Import photos from the import state.
@@ -73,7 +80,13 @@ class ImportPhotos implements ImportPipe
 		}
 
 		foreach ($image_paths as $idx => $image_path) {
-			$this->importSingleImage($image_path, $node->album, $idx / $total * 100);
+			$this->importSingleImage($image_path, $node->album, intval($idx / $total * 100));
+		}
+
+		// Dispatch recompute jobs for the album after importing photos
+		if ($node->album !== null) {
+			$this->state->job_bus[] = new RecomputeAlbumSizeJob($node->album?->id);
+			$this->state->job_bus[] = new RecomputeAlbumStatsJob($node->album?->id);
 		}
 	}
 
@@ -87,7 +100,7 @@ class ImportPhotos implements ImportPipe
 	 */
 	private function filterExistingPhotos(array $image_paths, FolderNode $node): array
 	{
-		if ($node->album === null || !Configs::getValueAsBool('skip_duplicates_early')) {
+		if ($node->album === null || !$this->config_manager->getValueAsBool('skip_duplicates_early')) {
 			return $image_paths;
 		}
 

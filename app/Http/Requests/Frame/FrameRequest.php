@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Http\Requests\Frame;
@@ -14,7 +14,6 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Exceptions\UnauthorizedException;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasAbstractAlbumTrait;
-use App\Models\Configs;
 use App\Policies\AlbumPolicy;
 use App\Rules\AlbumIDRule;
 use Illuminate\Support\Facades\Gate;
@@ -46,11 +45,11 @@ class FrameRequest extends BaseApiRequest implements HasAbstractAlbum
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		if (!Configs::getValueAsBool('mod_frame_enabled')) {
+		if (!$this->configs()->getValueAsBool('mod_frame_enabled')) {
 			throw new UnauthorizedException();
 		}
 
-		$random_album_id = Configs::getValueAsString('random_album_id');
+		$random_album_id = $this->configs()->getValueAsString('random_album_id');
 		$album_id = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE] ?? (($random_album_id !== '') ? $random_album_id : null);
 		$this->album = $this->album_factory->findNullalbleAbstractAlbumOrFail($album_id);
 	}

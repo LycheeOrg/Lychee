@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Http\Controllers;
@@ -15,15 +15,13 @@ use App\Exceptions\SecurePaths\PathTraversalException;
 use App\Exceptions\SecurePaths\SignatureExpiredException;
 use App\Exceptions\SecurePaths\WrongPathException;
 use App\Http\Requests\SecurePath\SecurePathRequest;
-use App\Models\Configs;
-use App\Models\Extensions\HasUrlGenerator;
+use App\Services\UrlGenerator;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Crypt;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
@@ -32,18 +30,18 @@ use Illuminate\Support\Facades\Storage;
  */
 class SecurePathController extends Controller
 {
-	use HasUrlGenerator;
-
 	public function __invoke(SecurePathRequest $request, ?string $path)
 	{
+		$url_generator = new UrlGenerator($request->configs());
+
 		// First we verify that the request has not expired.
-		if (!self::shouldNotUseSignedUrl() && !$this->signatureHasNotExpired($request)) {
+		if (!$url_generator->shouldNotUseSignedUrl() && !$this->signatureHasNotExpired($request)) {
 			throw new SignatureExpiredException();
 		}
 
 		// Then we verify that the request has a valid signature.
 		// @phpstan-ignore staticMethod.dynamicCall (laravel magic strikes again)
-		if (!self::shouldNotUseSignedUrl() && !$request->hasValidSignature()) {
+		if (!$url_generator->shouldNotUseSignedUrl() && !$request->hasValidSignature()) {
 			Log::error('Invalid signature for secure path request. Verify that the url generated for the image match.', [
 				'candidate url' => $this->getUrl($request),
 			]);
@@ -54,7 +52,7 @@ class SecurePathController extends Controller
 			throw new WrongPathException();
 		}
 
-		if (Configs::getValueAsBool('secure_image_link_enabled')) {
+		if ($request->configs()->getValueAsBool('secure_image_link_enabled')) {
 			try {
 				$path = Crypt::decryptString($path);
 			} catch (DecryptException) {

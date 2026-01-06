@@ -3,12 +3,11 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Http\Resources\GalleryConfigs;
 
-use App\Models\Configs;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
@@ -23,10 +22,10 @@ class PhotoLayoutConfig extends Data
 
 	public function __construct()
 	{
-		$this->photo_layout_justified_row_height = Configs::getValueAsInt('photo_layout_justified_row_height');
-		$this->photo_layout_masonry_column_width = Configs::getValueAsInt('photo_layout_masonry_column_width');
-		$this->photo_layout_grid_column_width = Configs::getValueAsInt('photo_layout_grid_column_width');
-		$this->photo_layout_square_column_width = Configs::getValueAsInt('photo_layout_square_column_width');
-		$this->photo_layout_gap = Configs::getValueAsInt('photo_layout_gap');
+		$this->photo_layout_justified_row_height = request()->configs()->getValueAsInt('photo_layout_justified_row_height');
+		$this->photo_layout_masonry_column_width = request()->configs()->getValueAsInt('photo_layout_masonry_column_width');
+		$this->photo_layout_grid_column_width = request()->configs()->getValueAsInt('photo_layout_grid_column_width');
+		$this->photo_layout_square_column_width = request()->configs()->getValueAsInt('photo_layout_square_column_width');
+		$this->photo_layout_gap = request()->configs()->getValueAsInt('photo_layout_gap');
 	}
 }

@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Http\Requests\Search;
@@ -15,7 +15,6 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasAbstractAlbumTrait;
 use App\Http\Requests\Traits\HasTermsTrait;
-use App\Models\Configs;
 use App\Policies\AlbumPolicy;
 use App\Rules\RandomIDRule;
 use Illuminate\Support\Facades\Auth;
@@ -33,7 +32,7 @@ class GetSearchRequest extends BaseApiRequest implements HasAbstractAlbum, HasTe
 	 */
 	public function authorize(): bool
 	{
-		if (!Auth::check() && !Configs::getValueAsBool('search_public')) {
+		if (!Auth::check() && !$this->configs()->getValueAsBool('search_public')) {
 			return false;
 		}
 

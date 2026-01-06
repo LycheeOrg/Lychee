@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace Tests\ImageProcessing\Import;
@@ -83,6 +83,6 @@ class ImportFromServerTest extends BaseApiWithDataTest
 
 		// Check that jobs were created
 		$this->assertGreaterThan(0, $response->json('job_count'));
-		Queue::assertCount($response->json('job_count'));
+		Queue::assertCount($response->json('job_count') + 2); // +2 for the preprocessing jobs: RecomputeAlbumSizeJob and RecomputeAlbumStatsJob
 	}
 }

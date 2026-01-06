@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Actions\Photo\Pipes\Standalone;
@@ -18,10 +18,15 @@ use App\Exceptions\ConfigurationException;
 use App\Exceptions\Handler;
 use App\Exceptions\MediaFileOperationException;
 use App\Image\StreamStat;
-use App\Models\Configs;
+use App\Repositories\ConfigManager;
 
 class PlacePhoto implements StandalonePipe
 {
+	public function __construct(
+		protected readonly ConfigManager $config_manager,
+	) {
+	}
+
 	public function handle(StandaloneDTO $state, \Closure $next): StandaloneDTO
 	{
 		// Create target file and symlink/copy/move source file to target.
@@ -84,7 +89,7 @@ class PlacePhoto implements StandalonePipe
 				\Safe\symlink($source_path, $target_path);
 				$stream_stat = StreamStat::createFromLocalFile($state->source_file);
 			} else {
-				$shall_normalize = Configs::getValueAsBool('auto_fix_orientation') &&
+				$shall_normalize = $this->config_manager->getValueAsBool('auto_fix_orientation') &&
 					$state->source_image !== null &&
 					$state->exif_info->orientation !== 1;
 

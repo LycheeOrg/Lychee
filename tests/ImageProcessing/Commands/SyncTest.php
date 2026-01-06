@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 /**
@@ -44,7 +44,6 @@ class SyncTest extends BaseApiWithDataTest
 		Configs::set('skip_duplicates_early', '1');
 		Configs::set('sync_delete_missing_photos', '1');
 		Configs::set('sync_delete_missing_albums', '1');
-		Configs::invalidateCache();
 
 		$this->artisan(self::COMMAND, [
 			'--import_via_symlink' => '1',
@@ -78,6 +77,5 @@ class SyncTest extends BaseApiWithDataTest
 		Configs::set('skip_duplicates_early', '0');
 		Configs::set('sync_delete_missing_photos', '0');
 		Configs::set('sync_delete_missing_albums', '0');
-		Configs::invalidateCache();
 	}
 }

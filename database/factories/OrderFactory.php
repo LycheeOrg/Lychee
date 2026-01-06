@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace Database\Factories;
@@ -42,7 +42,7 @@ class OrderFactory extends Factory
 	/**
 	 * The name of the factory's corresponding model.
 	 *
-	 * @var string
+	 * @var class-string<Order>
 	 */
 	protected $model = Order::class;
 
@@ -65,7 +65,7 @@ class OrderFactory extends Factory
 		];
 	}
 
-	public function withTransactionId(string $transaction_id): static
+	public function withTransactionId(string $transaction_id): self
 	{
 		return $this->state(fn (array $attributes) => [
 			'transaction_id' => $transaction_id,
@@ -77,9 +77,9 @@ class OrderFactory extends Factory
 	 *
 	 * @param OmnipayProviderType $provider
 	 *
-	 * @return static
+	 * @return self
 	 */
-	public function withProvider(OmnipayProviderType $provider): static
+	public function withProvider(OmnipayProviderType $provider): self
 	{
 		return $this->state(fn (array $attributes) => [
 			'provider' => $provider,
@@ -91,9 +91,9 @@ class OrderFactory extends Factory
 	 *
 	 * @param PaymentStatusType $status
 	 *
-	 * @return static
+	 * @return self
 	 */
-	public function withStatus(PaymentStatusType $status): static
+	public function withStatus(PaymentStatusType $status): self
 	{
 		return $this->state(fn (array $attributes) => [
 			'status' => $status,
@@ -105,9 +105,9 @@ class OrderFactory extends Factory
 	 *
 	 * @param User|int|null $user
 	 *
-	 * @return static
+	 * @return self
 	 */
-	public function forUser(User|int|null $user = null): static
+	public function forUser(User|int|null $user = null): self
 	{
 		$user_id = $user instanceof User ? $user->id : $user;
 		$user_id = $user_id ?? User::factory()->create()->id;
@@ -122,9 +122,9 @@ class OrderFactory extends Factory
 	 *
 	 * @param string|null $email
 	 *
-	 * @return static
+	 * @return self
 	 */
-	public function withEmail(string|null $email = null): static
+	public function withEmail(string|null $email = null): self
 	{
 		return $this->state(fn (array $attributes) => [
 			'email' => $email ?? fake()->email(),
@@ -134,9 +134,9 @@ class OrderFactory extends Factory
 	/**
 	 * Create a pending order (default state).
 	 *
-	 * @return static
+	 * @return self
 	 */
-	public function pending(): static
+	public function pending(): self
 	{
 		return $this->withStatus(PaymentStatusType::PENDING);
 	}
@@ -144,9 +144,9 @@ class OrderFactory extends Factory
 	/**
 	 * Create a processing order.
 	 *
-	 * @return static
+	 * @return self
 	 */
-	public function processing(): static
+	public function processing(): self
 	{
 		return $this->withStatus(PaymentStatusType::PROCESSING)
 			->withProvider(OmnipayProviderType::DUMMY);
@@ -155,9 +155,9 @@ class OrderFactory extends Factory
 	/**
 	 * Create an offline order.
 	 *
-	 * @return static
+	 * @return self
 	 */
-	public function offline(): static
+	public function offline(): self
 	{
 		return $this->withStatus(PaymentStatusType::OFFLINE);
 	}
@@ -165,9 +165,9 @@ class OrderFactory extends Factory
 	/**
 	 * Create a completed order.
 	 *
-	 * @return static
+	 * @return self
 	 */
-	public function completed(): static
+	public function completed(): self
 	{
 		return $this->withStatus(PaymentStatusType::COMPLETED)
 			->withProvider(OmnipayProviderType::DUMMY)
@@ -179,9 +179,9 @@ class OrderFactory extends Factory
 	/**
 	 * Create a closed order.
 	 *
-	 * @return static
+	 * @return self
 	 */
-	public function closed(): static
+	public function closed(): self
 	{
 		return $this->withStatus(PaymentStatusType::CLOSED)
 			->state(fn (array $attributes) => [
@@ -192,9 +192,9 @@ class OrderFactory extends Factory
 	/**
 	 * Create a failed order.
 	 *
-	 * @return static
+	 * @return self
 	 */
-	public function failed(): static
+	public function failed(): self
 	{
 		return $this->withStatus(PaymentStatusType::FAILED)
 			->withProvider(OmnipayProviderType::DUMMY);
@@ -203,9 +203,9 @@ class OrderFactory extends Factory
 	/**
 	 * Create a cancelled order.
 	 *
-	 * @return static
+	 * @return self
 	 */
-	public function cancelled(): static
+	public function cancelled(): self
 	{
 		return $this->withStatus(PaymentStatusType::CANCELLED)
 			->withProvider(OmnipayProviderType::DUMMY);
@@ -214,9 +214,9 @@ class OrderFactory extends Factory
 	/**
 	 * Create an order that can checkout (has email or user).
 	 *
-	 * @return static
+	 * @return self
 	 */
-	public function canCheckout(): static
+	public function canCheckout(): self
 	{
 		return $this->has(OrderItem::factory()->forPhoto()->fullSize()->count(1))->pending()->withEmail();
 	}
@@ -224,9 +224,9 @@ class OrderFactory extends Factory
 	/**
 	 * Create an order that can process payment (can checkout + has provider).
 	 *
-	 * @return static
+	 * @return self
 	 */
-	public function canProcessPayment(): static
+	public function canProcessPayment(): self
 	{
 		return $this->canCheckout()->withProvider(OmnipayProviderType::DUMMY);
 	}
@@ -236,9 +236,9 @@ class OrderFactory extends Factory
 	 *
 	 * @param int $cents
 	 *
-	 * @return static
+	 * @return self
 	 */
-	public function withAmountCents(int $cents): static
+	public function withAmountCents(int $cents): self
 	{
 		return $this->state(fn (array $attributes) => [
 			'amount_cents' => resolve(MoneyService::class)->createFromCents($cents),

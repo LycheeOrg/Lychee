@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Actions\Import\Pipes;
@@ -11,6 +11,7 @@ namespace App\Actions\Import\Pipes;
 use App\Contracts\Import\ImportPipe;
 use App\DTO\ImportDTO;
 use App\DTO\ImportEventReport;
+use App\Jobs\ImportImageJob;
 
 class ExecuteBatch implements ImportPipe
 {
@@ -37,11 +38,13 @@ class ExecuteBatch implements ImportPipe
 		foreach ($state->job_bus as $idx => $job) {
 			try {
 				$progress = (int) (($idx + 1) * 100 / $total);
-				$this->report(ImportEventReport::createDebug('imported', $job->file_path, 'Processing... ' . $progress . '%'));
+				$path = ($job instanceof ImportImageJob) ? $job->file_path : get_class($job);
+				$this->report(ImportEventReport::createDebug('imported', $path, 'Processing... ' . $progress . '%'));
 				dispatch($job);
 				// @codeCoverageIgnoreStart
 			} catch (\Throwable $e) {
-				$this->report(ImportEventReport::createFromException($e, $job->file_path));
+				$path = ($job instanceof ImportImageJob) ? $job->file_path : get_class($job);
+				$this->report(ImportEventReport::createFromException($e, $path));
 			}
 			// @codeCoverageIgnoreEnd
 		}

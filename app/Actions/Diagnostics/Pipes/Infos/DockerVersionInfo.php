@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Actions\Diagnostics\Pipes\Infos;
@@ -29,6 +29,7 @@ class DockerVersionInfo implements DiagnosticStringPipe
 			$docker = match (true) {
 				$this->isLinuxServer() => 'linuxserver.io',
 				$this->isLycheeOrg() => 'lycheeorg',
+				$this->isLycheeFrankenPHP() => 'lycheeorg-frankenphp',
 				default => 'custom',
 			};
 		}
@@ -56,7 +57,7 @@ class DockerVersionInfo implements DiagnosticStringPipe
 	}
 
 	/**
-	 * Check if we are running in Docker.
+	 * Check if we are running a LinuxServer.io Docker image.
 	 *
 	 * @return bool
 	 */
@@ -66,12 +67,22 @@ class DockerVersionInfo implements DiagnosticStringPipe
 	}
 
 	/**
-	 * Check if we are running in Docker.
+	 * Check if we are running a LycheeOrg Lychee-Docker image.
 	 *
 	 * @return bool
 	 */
 	private function isLycheeOrg(): bool
 	{
 		return is_file(base_path('/docker_target'));
+	}
+
+	/**
+	 * Check if we are running a LycheeOrg Lychee image (frankenphp).
+	 *
+	 * @return bool
+	 */
+	private function isLycheeFrankenPHP(): bool
+	{
+		return is_file(base_path('/frankenphp_target'));
 	}
 }

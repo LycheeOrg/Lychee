@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Http\Controllers\Admin\Maintenance;
@@ -15,6 +15,7 @@ use App\Http\Requests\Maintenance\MaintenanceRequest;
 use App\Http\Resources\Diagnostics\AlbumTree;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Maybe the album tree is broken.
@@ -28,9 +29,12 @@ class FullTree extends Controller
 	 */
 	public function do(FullTreeUpdateRequest $request): void
 	{
-		$key_name = 'id';
-		$album_instance = new Album();
-		batch()->update($album_instance, $request->albums(), $key_name);
+		// Wrap this in a transaction to ensure atomicity
+		DB::transaction(function () use ($request): void {
+			$key_name = 'id';
+			$album_instance = new Album();
+			batch()->update($album_instance, $request->albums(), $key_name);
+		});
 
 		AlbumRouteCacheUpdated::dispatch();
 	}

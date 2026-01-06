@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Actions\Diagnostics\Pipes\Checks;
@@ -11,6 +11,7 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
 use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\Schema;
 
 /**
@@ -19,6 +20,11 @@ use Illuminate\Support\Facades\Schema;
  */
 class ConfigSanityCheck implements DiagnosticPipe
 {
+	public function __construct(
+		private ConfigManager $config_manager,
+	) {
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -45,7 +51,7 @@ class ConfigSanityCheck implements DiagnosticPipe
 	 */
 	private function checkDropBoxKeyWarning(array &$data): void
 	{
-		$dropbox = Configs::getValueAsString('dropbox_key');
+		$dropbox = $this->config_manager->getValueAsString('dropbox_key');
 		if ($dropbox === '') {
 			// @codeCoverageIgnoreStart
 			$data[] = DiagnosticData::warn('Dropbox import not working. dropbox_key is empty.', self::class);

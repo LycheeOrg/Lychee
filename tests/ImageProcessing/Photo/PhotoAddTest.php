@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 /**
@@ -18,6 +18,9 @@
 
 namespace Tests\ImageProcessing\Photo;
 
+use App\Jobs\RecomputeAlbumSizeJob;
+use App\Jobs\RecomputeAlbumStatsJob;
+use Illuminate\Support\Facades\Queue;
 use Tests\Constants\TestConstants;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
@@ -71,7 +74,6 @@ class PhotoAddTest extends BaseApiWithDataTest
 		$response = $this->deleteJson('Photo', ['photo_ids' => [$response->json('resource.photos.0.id')], 'from_id' => 'unsorted']);
 		$this->assertNoContent($response);
 
-		$this->clearCachedSmartAlbums();
 		$response = $this->getJsonWithData('Album', ['album_id' => 'unsorted']);
 		$this->assertOk($response);
 		$response->assertJsonCount(1, 'resource.photos');
@@ -83,14 +85,12 @@ class PhotoAddTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->admin)->upload('Photo', filename: TestConstants::SAMPLE_FILE_NIGHT_IMAGE);
 		$this->assertCreated($response);
 
-		$this->clearCachedSmartAlbums();
 		$response = $this->getJsonWithData('Album', ['album_id' => 'unsorted']);
 		$this->assertOk($response);
 
 		$response = $this->actingAs($this->admin)->upload('Photo', filename: TestConstants::SAMPLE_FILE_NIGHT_IMAGE);
 		$this->assertCreated($response);
 
-		$this->clearCachedSmartAlbums();
 		$response = $this->getJsonWithData('Album', ['album_id' => 'unsorted']);
 		$this->assertOk($response);
 		$id1 = $response->json('resource.photos.0.id');
@@ -120,7 +120,6 @@ class PhotoAddTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->admin)->upload('Photo', filename: TestConstants::SAMPLE_FILE_TRAIN_VIDEO);
 		$this->assertCreated($response);
 
-		$this->clearCachedSmartAlbums();
 		$response = $this->getJsonWithData('Album', ['album_id' => 'unsorted']);
 		$this->assertOk($response);
 		$photo = $response->json('resource.photos.0');
@@ -140,7 +139,6 @@ class PhotoAddTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->admin)->upload('Photo', filename: TestConstants::SAMPLE_FILE_TRAIN_IMAGE);
 		$this->assertCreated($response);
 
-		$this->clearCachedSmartAlbums();
 		$response = $this->getJsonWithData('Album', ['album_id' => 'unsorted']);
 		$this->assertOk($response);
 		$photo = $response->json('resource.photos.0');
@@ -158,11 +156,38 @@ class PhotoAddTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->admin)->upload('Photo', filename: TestConstants::SAMPLE_FILE_GMP_IMAGE);
 		$this->assertCreated($response);
 
-		$this->clearCachedSmartAlbums();
 		$response = $this->getJsonWithData('Album', ['album_id' => 'unsorted']);
 		$this->assertOk($response);
 		$id = $response->json('resource.photos.0.id');
 		$response = $this->deleteJson('Photo', ['photo_ids' => [$id], 'from_id' => 'unsorted']);
 		$this->assertNoContent($response);
+	}
+
+	public function testPhotoUploadDispatchesJobs(): void
+	{
+		// Fake only the recompute jobs, not the ProcessImageJob
+		// This allows the photo upload to complete while capturing the recompute job dispatches
+		Queue::fake([
+			RecomputeAlbumStatsJob::class,
+			RecomputeAlbumSizeJob::class,
+		]);
+
+		$this->catchFailureSilence = [];
+
+		// Upload a photo to an album
+		$response = $this->actingAs($this->admin)->upload('Photo', filename: TestConstants::SAMPLE_FILE_NIGHT_IMAGE, album_id: $this->album1->id);
+		$this->assertCreated($response);
+
+		// Assert that RecomputeAlbumStatsJob was dispatched for the album
+		Queue::assertPushed(RecomputeAlbumStatsJob::class, function (RecomputeAlbumStatsJob $job) {
+			return $job->album_id === $this->album1->id;
+		});
+
+		// Assert that RecomputeAlbumSizeJob was dispatched for the album
+		Queue::assertPushed(RecomputeAlbumSizeJob::class, function (RecomputeAlbumSizeJob $job) {
+			return $job->album_id === $this->album1->id;
+		});
+
+		$this->catchFailureSilence = ["App\Exceptions\MediaFileOperationException"];
 	}
 }

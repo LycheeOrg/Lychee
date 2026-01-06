@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 /**
@@ -27,7 +27,6 @@ class AlbumSpaceTest extends BaseApiWithDataTest
 	public function testAlbumSpaceTestUnauthorized(): void
 	{
 		Configs::set('cache_enabled', '0');
-		Configs::invalidateCache();
 
 		$response = $this->getJson('Statistics::albumSpace');
 		$this->assertSupporterRequired($response);
@@ -57,6 +56,6 @@ class AlbumSpaceTest extends BaseApiWithDataTest
 
 		$response = $this->withoutMiddleware(VerifySupporterStatus::class)->actingAs($this->admin)->getJson('Statistics::albumSpace');
 		$this->assertOk($response);
-		self::assertCount(7, $response->json());
+		self::assertCount(8, $response->json());
 	}
 }

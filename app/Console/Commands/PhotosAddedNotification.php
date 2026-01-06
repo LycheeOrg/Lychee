@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Console\Commands;
@@ -11,9 +11,9 @@ namespace App\Console\Commands;
 use App\Constants\PhotoAlbum as PA;
 use App\Mail\PhotosAdded;
 use App\Models\BaseAlbumImpl;
-use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\User;
+use App\Repositories\ConfigManager;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
@@ -35,12 +35,18 @@ class PhotosAddedNotification extends Command
 	 */
 	protected $description = 'Send email notifications for newly added photos';
 
+	public function __construct(
+		protected readonly ConfigManager $config_manager,
+	) {
+		parent::__construct();
+	}
+
 	/**
 	 * Execute the console command.
 	 */
 	public function handle(): int
 	{
-		if (!Configs::getValueAsBool('new_photos_notification')) {
+		if (!$this->config_manager->getValueAsBool('new_photos_notification')) {
 			return 0;
 		}
 		$users = User::query()->whereNotNull('email')->get();

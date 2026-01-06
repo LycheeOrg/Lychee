@@ -3,12 +3,13 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Http\Controllers\Shop;
 
 use App\Actions\Shop\CheckoutService;
+use App\Enum\OmnipayProviderType;
 use App\Enum\PaymentStatusType;
 use App\Events\OrderCompleted;
 use App\Http\Requests\Checkout\CancelRequest;
@@ -19,7 +20,6 @@ use App\Http\Requests\Checkout\ProcessRequest;
 use App\Http\Resources\Shop\CheckoutOptionResource;
 use App\Http\Resources\Shop\CheckoutResource;
 use App\Http\Resources\Shop\OrderResource;
-use App\Models\Configs;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\URL;
@@ -124,18 +124,38 @@ class CheckoutController extends Controller
 	 *
 	 * @param FinalizeRequest $request The request containing return data from the payment provider
 	 *
-	 * @return RedirectResponse The redirection response
+	 * @return RedirectResponse|CheckoutResource The redirection response or checkout resource (PayPal)
 	 */
-	public function finalize(FinalizeRequest $request, string $provider, string $transaction_id): RedirectResponse
+	public function finalize(FinalizeRequest $request, string $provider, string $transaction_id): RedirectResponse|CheckoutResource
 	{
 		/** @disregard P1013 */
 		$order = $this->checkout_service->handlePaymentReturn($request->basket(), $request->provider_type());
 
-		if ($order->status !== PaymentStatusType::COMPLETED) {
-			return redirect()->route('shop.checkout.failed');
+		$success = $order->status === PaymentStatusType::COMPLETED;
+		$complete_url = null;
+		$redirect_url = route('shop.checkout.failed');
+		$message = 'Payment failed or was not completed.';
+
+		if ($success) {
+			OrderCompleted::dispatchIf($request->configs()->getValueAsBool('webshop_auto_fulfill_enabled'), $order->id);
+			$complete_url = URL::route('shop.checkout.complete');
+			$redirect_url = null;
+			$message = 'Payment completed successfully.';
 		}
 
-		OrderCompleted::dispatchIf(Configs::getValueAsBool('webshop_auto_fulfill_enabled'), $order->id);
+		if ($order->provider === OmnipayProviderType::PAYPAL) {
+			return new CheckoutResource(
+				is_success: $success,
+				complete_url: $complete_url,
+				redirect_url: $redirect_url,
+				message: $message,
+				order: OrderResource::fromModel($order),
+			);
+		}
+
+		if (!$success) {
+			return redirect()->route('shop.checkout.failed');
+		}
 
 		return redirect()->route('shop.checkout.complete');
 	}
@@ -143,15 +163,25 @@ class CheckoutController extends Controller
 	/**
 	 * Handle cancellation of the payment process.
 	 *
-	 * @return RedirectResponse The cancellation response
+	 * @return RedirectResponse|CheckoutResource The cancellation response
 	 */
-	public function cancel(CancelRequest $request): RedirectResponse
+	public function cancel(CancelRequest $request): RedirectResponse|CheckoutResource
 	{
 		$order = $request->basket();
 
 		// Mark the order as cancelled
 		$order->status = PaymentStatusType::CANCELLED;
 		$order->save();
+
+		if ($order->provider === OmnipayProviderType::PAYPAL) {
+			return new CheckoutResource(
+				is_success: true,
+				is_redirect: false,
+				redirect_url: route('shop.checkout.cancelled'),
+				message: 'cancelled by user',
+				order: OrderResource::fromModel($order),
+			);
+		}
 
 		return redirect()->route('shop.checkout.cancelled');
 	}

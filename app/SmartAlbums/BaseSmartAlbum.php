@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\SmartAlbums;
@@ -19,17 +19,19 @@ use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Exceptions\Internal\InvalidQueryModelException;
 use App\Exceptions\InvalidPropertyException;
 use App\Models\AccessPermission;
-use App\Models\Configs;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\Extensions\Thumb;
 use App\Models\Extensions\ToArrayThrowsNotImplemented;
 use App\Models\Extensions\UTCBasedTimes;
 use App\Models\Photo;
+use App\Policies\AlbumPolicy;
 use App\Policies\PhotoQueryPolicy;
+use App\Repositories\ConfigManager;
 use App\SmartAlbums\Utils\MimicModel;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Class BaseSmartAlbum.
@@ -54,14 +56,18 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	protected ?LengthAwarePaginator $photos = null;
 	protected \Closure $smart_photo_condition;
 	protected AccessPermission|null $public_permissions;
+	protected ConfigManager $config_manager;
 
 	/**
 	 * @throws ConfigurationKeyMissingException
 	 * @throws FrameworkException
 	 */
-	protected function __construct(SmartAlbumType $id, \Closure $smart_condition)
-	{
+	protected function __construct(
+		SmartAlbumType $id,
+		\Closure $smart_condition,
+	) {
 		try {
+			$this->config_manager = resolve(ConfigManager::class);
 			$this->photo_query_policy = resolve(PhotoQueryPolicy::class);
 			$this->id = $id->value;
 			$this->title = __('gallery.smart_album.' . strtolower($id->name)) ?? $id->name;
@@ -102,17 +108,24 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	 */
 	public function photos(): Builder
 	{
-		$base_query = Photo::query()->leftJoin(PA::PHOTO_ALBUM, 'photos.id', '=', PA::PHOTO_ID)->with(['size_variants', 'statistics', 'palette', 'tags']);
+		$user = Auth::user();
+		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
 
-		if (!Configs::getValueAsBool('SA_override_visibility')) {
+		$base_query = Photo::query()->leftJoin(PA::PHOTO_ALBUM, 'photos.id', '=', PA::PHOTO_ID)->with(['size_variants', 'statistics', 'palette', 'tags', 'rating']);
+
+		if (!$this->config_manager->getValueAsBool('SA_override_visibility')) {
 			return $this->photo_query_policy
-				->applySearchabilityFilter(query: $base_query, origin: null, include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_smart_albums'))
+				->applySearchabilityFilter(query: $base_query, user: $user, unlocked_album_ids: $unlocked_album_ids, origin: null, include_nsfw: !$this->config_manager->getValueAsBool('hide_nsfw_in_smart_albums'))
+				->when(
+					$this->config_manager->getValueAsBool('enable_smart_album_per_owner') && Auth::check(),
+					fn (Builder $query) => $query->where('photos.owner_id', '=', Auth::id())
+				)
 				->where($this->smart_photo_condition);
 		}
 
 		// If the smart album visibility override is enabled, we do not need to apply any security filter, as all photos are visible
 		// in this smart album. We still need to apply the smart album condition, though.
-		return $this->photo_query_policy->applySensitivityFilter(query: $base_query, origin: null, include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_smart_albums'))
+		return $this->photo_query_policy->applySensitivityFilter(query: $base_query, user: $user, origin: null, include_nsfw: !$this->config_manager->getValueAsBool('hide_nsfw_in_smart_albums'))
 			->where($this->smart_photo_condition);
 	}
 
@@ -132,7 +145,7 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 			/** @var \Illuminate\Pagination\LengthAwarePaginator<int,\App\Models\Photo> $photos */
 			$photos = (new SortingDecorator($this->photos()))
 				->orderPhotosBy($sorting->column, $sorting->order)
-				->paginate(Configs::getValueAsInt('photos_pagination_limit'));
+				->paginate($this->config_manager->getValueAsInt('photos_pagination_limit'));
 			$this->photos = $photos;
 		}
 
@@ -170,14 +183,14 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 			* only returns photos which are accessible by the current
 			* user.
 			*/
-		$this->thumb ??= Configs::getValueAsBool('SA_random_thumbs')
-			// @codeCoverageIgnoreStart
-			? Thumb::createFromRandomQueryable($this->photos())
-			// @codeCoverageIgnoreEnd
-			: $this->thumb = Thumb::createFromQueryable(
-				$this->photos(),
-				PhotoSortingCriterion::createDefault()
-			);
+		$this->thumb ??= $this->config_manager->getValueAsBool('SA_random_thumbs')
+		// @codeCoverageIgnoreStart
+		? Thumb::createFromRandomQueryable($this->photos())
+		// @codeCoverageIgnoreEnd
+		: $this->thumb = Thumb::createFromQueryable(
+			$this->photos(),
+			PhotoSortingCriterion::createDefault()
+		);
 
 		return $this->thumb;
 	}

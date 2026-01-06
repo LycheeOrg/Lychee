@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Actions\Photo\Pipes\Standalone;
@@ -29,7 +29,9 @@ class AutoRenamer implements StandalonePipe
 			return $next($state);
 		}
 
-		$renamer = new PhotoRenamer($state->intended_owner_id);
+		$renamer = new PhotoRenamer(
+			user_id: $state->intended_owner_id
+		);
 		$state->photo->title = $renamer->handle($state->photo->title);
 
 		return $next($state);

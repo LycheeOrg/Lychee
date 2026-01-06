@@ -71,6 +71,7 @@ return [
         'enter_license' => 'کلید لایسنس خود را در زیر وارد کنید:',
         'license_key' => 'کلید لایسنس',
         'invalid_license' => 'کلید لایسنس نامعتبر.',
+        'expired_license' => 'Your license key has expired. Empty the field or get a new one at <a href="https://keygen.lycheeorg.dev" class="text-primary-500 underline" target="_blank" rel="noopener noreferrer">keygen.lycheeorg.dev</a>.',
         'register' => 'ثبت‌نام',
     ],
     'share_album' => [

@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 /**
@@ -20,7 +20,7 @@ namespace Tests\Webshop;
 
 use App\Models\Purchasable;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
-use Tests\Traits\RequireSE;
+use Tests\Traits\RequirePro;
 
 /**
  * Test class for CatalogController.
@@ -34,18 +34,18 @@ use Tests\Traits\RequireSE;
  */
 class CatalogControllerTest extends BaseApiWithDataTest
 {
-	use RequireSE;
+	use RequirePro;
 
 	public function setUp(): void
 	{
 		parent::setUp();
 
-		$this->requireSe();
+		$this->requirePro();
 	}
 
 	public function tearDown(): void
 	{
-		$this->resetSe();
+		$this->resetPro();
 		parent::tearDown();
 	}
 
@@ -237,7 +237,7 @@ class CatalogControllerTest extends BaseApiWithDataTest
 		]);
 
 		// Create inactive purchasable
-		$inactive_purchasable = Purchasable::factory()->create([
+		Purchasable::factory()->create([
 			'album_id' => $this->album1->id,
 			'photo_id' => $this->photo1b->id,
 			'description' => 'Inactive photo',
@@ -379,7 +379,7 @@ class CatalogControllerTest extends BaseApiWithDataTest
 	public function testGetCatalogWithPrices(): void
 	{
 		// Create purchasable with prices
-		$purchasable = Purchasable::factory()->withPrices()->create([
+		Purchasable::factory()->withPrices()->create([
 			'album_id' => $this->album1->id,
 			'photo_id' => $this->photo1->id,
 			'description' => 'Photo with pricing',

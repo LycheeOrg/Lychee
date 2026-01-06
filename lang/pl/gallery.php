@@ -77,6 +77,7 @@ return [
             'share' => 'Udostępnij album',
             'embed' => 'Embed Album',
             'move' => 'Przenieś album',
+            'shop' => 'Shop Management',
             'danger' => 'STREFA RYZYKOWNA',
         ],
         'hero' => [
@@ -180,6 +181,19 @@ return [
             'set_created_at' => 'Ustaw datę przesłania',
             'set_taken_at' => 'Ustaw datę wykonania',
             'set_taken_at_info' => 'Po ustawieniu wyświetlona zostanie gwiazdka %s wskazująca, że ta data nie jest oryginalną datą EXIF.<br>Zaznacz pole wyboru i zapisz, aby zresetować do oryginalnej daty.',
+        ],
+        'rating' => [
+            'header' => 'Rating',
+            'rating' => 'rating',
+            'ratings' => 'ratings',
+            'your_rating' => 'Your rating',
+            'saving' => 'Saving rating...',
+            'removed' => 'Rating removed',
+            'saved' => 'Rating saved',
+            'error' => 'Failed to save rating',
+            'error_unauthorized' => 'You must be logged in to rate photos',
+            'error_forbidden' => 'You do not have permission to rate this photo',
+            'error_not_found' => 'Photo not found',
         ],
     ],
     'nsfw' => [

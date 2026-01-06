@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Actions\Diagnostics\Pipes\Checks;
@@ -13,8 +13,10 @@ use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
 use App\Enum\OmnipayProviderType;
 use App\Factories\OmnipayFactory;
-use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\Schema;
+use LycheeVerify\Contract\Status;
+use LycheeVerify\Verify;
 
 /**
  * Check webshop configuration and environment conditions.
@@ -24,6 +26,8 @@ class WebshopCheck implements DiagnosticPipe
 	public function __construct(
 		private OmnipayFactory $factory,
 		private OrderService $order_service,
+		private Verify $verify,
+		protected readonly ConfigManager $config_manager,
 	) {
 	}
 
@@ -36,7 +40,12 @@ class WebshopCheck implements DiagnosticPipe
 			return $next($data);
 		}
 
-		if (!Configs::getValueAsBool('webshop_enabled')) {
+		if ($this->verify->get_status() !== Status::PRO_EDITION) {
+			// Webshop not available in free edition
+			return $next($data);
+		}
+
+		if (!$this->config_manager->getValueAsBool('webshop_enabled')) {
 			return $next($data);
 		}
 		// @codeCoverageIgnoreStart

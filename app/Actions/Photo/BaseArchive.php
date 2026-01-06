@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Actions\Photo;
@@ -18,8 +18,8 @@ use App\Exceptions\Internal\InvalidSizeVariantException;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Image\Files\BaseMediaFile;
 use App\Image\Files\FlysystemFile;
-use App\Models\Configs;
 use App\Models\Photo;
+use App\Repositories\ConfigManager;
 use Composer\InstalledVersions;
 use Composer\Semver\VersionParser;
 use Illuminate\Support\Collection;
@@ -164,7 +164,8 @@ abstract class BaseArchive
 	 */
 	protected function zip(Collection $photos, DownloadVariantType $download_variant): StreamedResponse
 	{
-		$this->deflate_level = Configs::getValueAsInt('zip_deflate_level');
+		$config_manager = app(ConfigManager::class);
+		$this->deflate_level = $config_manager->getValueAsInt('zip_deflate_level');
 
 		$response_generator = function () use ($download_variant, $photos): void {
 			$zip = $this->createZip();

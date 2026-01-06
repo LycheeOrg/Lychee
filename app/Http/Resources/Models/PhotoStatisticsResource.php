@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Http\Resources\Models;
@@ -20,6 +20,8 @@ class PhotoStatisticsResource extends Data
 		public int $download_count = 0,
 		public int $favourite_count = 0,
 		public int $shared_count = 0,
+		public int $rating_count = 0,
+		public ?float $rating_avg = null,
 	) {
 	}
 
@@ -34,6 +36,8 @@ class PhotoStatisticsResource extends Data
 			$stats->download_count,
 			$stats->favourite_count,
 			$stats->shared_count,
+			$stats->rating_count,
+			$stats->rating_avg,
 		);
 	}
 }

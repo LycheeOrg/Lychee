@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Actions\Albums;
@@ -11,19 +11,18 @@ namespace App\Actions\Albums;
 use App\Contracts\Exceptions\InternalLycheeException;
 use App\Enum\SizeVariantType;
 use App\Http\Resources\Collections\PositionDataResource;
-use App\Models\Configs;
 use App\Models\Photo;
+use App\Policies\AlbumPolicy;
 use App\Policies\PhotoQueryPolicy;
+use App\Repositories\ConfigManager;
+use Illuminate\Support\Facades\Auth;
 
 class PositionData
 {
-	protected PhotoQueryPolicy $photo_query_policy;
-
-	public function __construct(PhotoQueryPolicy $photo_query_policy)
-	{
-		$this->photo_query_policy = $photo_query_policy;
-		// caching to avoid further request
-		Configs::get();
+	public function __construct(
+		protected PhotoQueryPolicy $photo_query_policy,
+		protected readonly ConfigManager $config_manager,
+	) {
 	}
 
 	/**
@@ -35,6 +34,9 @@ class PositionData
 	 */
 	public function do(): PositionDataResource
 	{
+		$user = Auth::user();
+		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
+
 		$photo_query = $this->photo_query_policy->applySearchabilityFilter(
 			query: Photo::query()
 				->with([
@@ -50,11 +52,14 @@ class PositionData
 					},
 					'palette',
 					'tags',
+					'rating',
 				])
 				->whereNotNull('latitude')
 				->whereNotNull('longitude'),
+			user: $user,
+			unlocked_album_ids: $unlocked_album_ids,
 			origin: null,
-			include_nsfw: !Configs::getValueAsBool('hide_nsfw_in_map')
+			include_nsfw: !$this->config_manager->getValueAsBool('hide_nsfw_in_map')
 		);
 
 		return new PositionDataResource(null, $photo_query->get(), null);

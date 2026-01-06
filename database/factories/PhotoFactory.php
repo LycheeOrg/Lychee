@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace Database\Factories;
@@ -29,7 +29,7 @@ class PhotoFactory extends Factory
 	/**
 	 * The name of the factory's corresponding model.
 	 *
-	 * @var string
+	 * @var class-string<Photo>
 	 */
 	protected $model = Photo::class;
 
@@ -96,7 +96,7 @@ class PhotoFactory extends Factory
 	/**
 	 * Set a bunch of GPS coordinates (in Netherlands).
 	 *
-	 * @return array<string,mixed>
+	 * @return PhotoFactory
 	 */
 	public function with_GPS_coordinates(): self
 	{
@@ -112,7 +112,7 @@ class PhotoFactory extends Factory
 	/**
 	 * Set a bunch of GPS coordinates (in Netherlands).
 	 *
-	 * @return array<string,mixed>
+	 * @return PhotoFactory
 	 */
 	public function with_subGPS_coordinates(): self
 	{
@@ -189,7 +189,7 @@ class PhotoFactory extends Factory
 	 * Configure the model factory.
 	 * We create 7 random Size Variants and the associated statistics model.
 	 */
-	public function configure(): static
+	public function configure(): self
 	{
 		return $this->afterCreating(function (Photo $photo) {
 			Statistics::factory()->with_photo($photo->id)->create();

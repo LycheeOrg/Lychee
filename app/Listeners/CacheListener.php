@@ -3,12 +3,12 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Listeners;
 
-use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use Illuminate\Cache\Events\CacheHit;
 use Illuminate\Cache\Events\CacheMissed;
 use Illuminate\Cache\Events\KeyForgotten;
@@ -25,11 +25,18 @@ class CacheListener
 	 */
 	public function handle(CacheHit|CacheMissed|KeyForgotten|KeyWritten $event): void
 	{
+		$config_manager = app(ConfigManager::class);
+
 		if (str_contains($event->key, 'lv:dev-lycheeOrg')) {
 			return;
 		}
 
-		if (Configs::getValueAsBool('cache_event_logging') === false) {
+		try {
+			if ($config_manager->getValueAsBool('cache_event_logging') === false) {
+				return;
+			}
+		} catch (\Exception) {
+			// In case of any error (e.g., during initial setup), we do not log cache events.
 			return;
 		}
 

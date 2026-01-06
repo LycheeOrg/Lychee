@@ -3,15 +3,15 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Image\ColourExtractor;
 
 use App\Exceptions\MediaFileOperationException;
-use App\Image\Files\BaseMediaFile;
 use App\Image\Files\FlysystemFile;
 use App\Image\Files\InMemoryBuffer;
+use App\Services\Image\FileExtensionService;
 use Farzai\ColorPalette\Contracts\ImageInterface;
 use Farzai\ColorPalette\Images\GdImage;
 use Farzai\ColorPalette\Images\ImagickImage;
@@ -106,8 +106,9 @@ class ImageFactoryForColourExtraction
 			$image = new \Imagick();
 			$image->readImageFile($input_stream);
 
+			$file_extension_service = resolve(FileExtensionService::class);
 			// If the file is a PDF and the user has chosen to support PDF files then try to create an image from the first page
-			if ($file->getExtension() === '.pdf' && BaseMediaFile::isSupportedOrAcceptedFileExtension($file->getExtension())) {
+			if ($file->getExtension() === '.pdf' && $file_extension_service->isSupportedOrAcceptedFileExtension($file->getExtension())) {
 				// @codeCoverageIgnoreStart
 				$image->setIteratorIndex(0);
 				// @codeCoverageIgnoreEnd

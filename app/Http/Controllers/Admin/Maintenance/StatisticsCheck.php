@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Http\Controllers\Admin\Maintenance;
@@ -11,7 +11,6 @@ namespace App\Http\Controllers\Admin\Maintenance;
 use App\Actions\Diagnostics\Pipes\Checks\StatisticsIntegrityCheck;
 use App\Http\Requests\Maintenance\MaintenanceRequest;
 use App\Http\Resources\Diagnostics\StatisticsCheckResource;
-use App\Models\Configs;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 
@@ -34,7 +33,7 @@ class StatisticsCheck extends Controller
 	public function do(MaintenanceRequest $request): StatisticsCheckResource
 	{
 		// Just skip the check, we don't care.
-		if (!Configs::getValueAsBool('metrics_enabled')) {
+		if (!$request->configs()->getValueAsBool('metrics_enabled')) {
 			return new StatisticsCheckResource(0, 0);
 		}
 

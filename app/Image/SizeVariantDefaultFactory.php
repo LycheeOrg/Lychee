@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Image;
@@ -80,7 +80,7 @@ class SizeVariantDefaultFactory implements SizeVariantFactory
 		$original_file = $this->photo->size_variants->getOriginal()->getFile();
 
 		if (!$this->photo->isVideo()) {
-			$this->reference_image = new ImageHandler();
+			$this->reference_image = resolve(ImageHandler::class);
 			$this->reference_image->load($original_file);
 		} else {
 			if ($original_file->isLocalFile()) {

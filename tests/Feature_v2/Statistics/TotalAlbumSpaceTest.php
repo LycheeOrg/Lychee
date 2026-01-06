@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 /**
@@ -48,6 +48,6 @@ class TotalAlbumSpaceTest extends BaseApiWithDataTest
 
 		$response = $this->actingAs($this->admin)->getJson('Statistics::totalAlbumSpace');
 		$this->assertOk($response);
-		self::assertCount(7, $response->json());
+		self::assertCount(8, $response->json());
 	}
 }

@@ -37,11 +37,12 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		show_keybinding_help_popup: false,
 
 		// album stuff
-		display_thumb_album_overlay: "always" as App.Enum.ThumbOverlayVisibilityType,
-		display_thumb_photo_overlay: "always" as App.Enum.ThumbOverlayVisibilityType,
+		display_thumb_album_overlay: "always" as App.Enum.VisibilityType,
+		display_thumb_photo_overlay: "always" as App.Enum.VisibilityType,
 		album_subtitle_type: "OLDSTYLE" as App.Enum.ThumbAlbumSubtitleType,
 		album_decoration: "LAYERS" as App.Enum.AlbumDecorationType,
 		album_decoration_orientation: "ROW" as App.Enum.AlbumDecorationOrientation,
+		album_view_mode: "grid" as App.Enum.AlbumLayoutType,
 		number_albums_per_row_mobile: 3 as 1 | 2 | 3,
 		photo_thumb_info: "title" as App.Enum.PhotoThumbInfoType,
 		is_photo_thumb_tags_enabled: false,
@@ -72,8 +73,10 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 
 		// Lychee Supporter Edition
 		is_se_enabled: false,
+		is_pro_enabled: false,
 		is_se_preview_enabled: false,
 		is_se_info_hidden: false,
+		is_se_expired: false,
 		is_live_metrics_enabled: false,
 
 		// Settings toggles
@@ -87,9 +90,16 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		// Gesture settings
 		is_scroll_to_navigate_photos_enabled: true,
 		is_swipe_vertically_to_go_back_enabled: true,
+
+		// Rating settings
+		is_rating_show_avg_in_details_enabled: false,
+		is_rating_show_avg_in_photo_view_enabled: false,
+		rating_photo_view_mode: "never" as App.Enum.VisibilityType,
+		is_rating_show_avg_in_album_view_enabled: false,
+		rating_album_view_mode: "never" as App.Enum.VisibilityType,
 	}),
 	actions: {
-		load(): Promise<void> {
+		async load(): Promise<void> {
 			// Check if already initialized
 			if (this.is_init) {
 				return Promise.resolve();
@@ -97,8 +107,13 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 
 			// semaphore to avoid multiple calls
 			if (this.is_loading) {
+				while (this.is_loading) {
+					await new Promise((resolve) => setTimeout(resolve, 100));
+				}
+
 				return Promise.resolve();
 			}
+
 			this.is_loading = true;
 
 			return InitService.fetchInitData()
@@ -143,12 +158,15 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.is_webauthn_enabled = data.is_webauthn_enabled;
 
 					this.is_se_enabled = data.is_se_enabled;
+					this.is_pro_enabled = data.is_pro_enabled;
 					this.is_se_preview_enabled = data.is_se_preview_enabled;
 					this.is_se_info_hidden = data.is_se_info_hidden;
+					this.is_se_expired = data.is_se_expired;
 					this.is_live_metrics_enabled = data.is_live_metrics_enabled;
 					this.number_albums_per_row_mobile = data.number_albums_per_row_mobile;
 					this.photo_thumb_info = data.photo_thumb_info;
 					this.is_photo_thumb_tags_enabled = data.is_photo_thumb_tags_enabled;
+					this.album_view_mode = data.album_layout;
 
 					this.is_thumb_download_enabled = data.is_thumb_download_enabled;
 					this.is_thum2x_download_enabled = data.is_thum2x_download_enabled;
@@ -166,12 +184,19 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.is_scroll_to_navigate_photos_enabled = data.is_scroll_to_navigate_photos_enabled;
 					this.is_swipe_vertically_to_go_back_enabled = data.is_swipe_vertically_to_go_back_enabled;
 
+					this.is_rating_show_avg_in_details_enabled = data.is_rating_show_avg_in_details_enabled;
+					this.is_rating_show_avg_in_photo_view_enabled = data.is_rating_show_avg_in_photo_view_enabled;
+					this.rating_photo_view_mode = data.rating_photo_view_mode;
+					this.is_rating_show_avg_in_album_view_enabled = data.is_rating_show_avg_in_album_view_enabled;
+					this.rating_album_view_mode = data.rating_album_view_mode;
+
 					this.default_homepage = data.default_homepage;
 					this.is_timeline_page_enabled = data.is_timeline_page_enabled;
 				})
 				.catch((error) => {
 					// In this specific case, even though it has been possibly disabled, we really need to see the error.
 					this.is_debug_enabled = true;
+					this.is_loading = false;
 
 					const event = new CustomEvent("error", { detail: error.response.data });
 					window.dispatchEvent(event);

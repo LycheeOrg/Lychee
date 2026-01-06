@@ -77,6 +77,7 @@ return [
             'share' => '分享相册',
             'embed' => 'Embed Album',
             'move' => '移动相册',
+            'shop' => 'Shop Management',
             'danger' => '危险操作',
         ],
         'hero' => [
@@ -180,6 +181,19 @@ return [
             'set_created_at' => '设置上传日期',
             'set_taken_at' => '设置拍摄日期',
             'set_taken_at_info' => '设置后，将显示星号 %s 表示此日期不是原始 EXIF 日期。<br>取消选中复选框并保存以重置为原始日期。',
+        ],
+        'rating' => [
+            'header' => 'Rating',
+            'rating' => 'rating',
+            'ratings' => 'ratings',
+            'your_rating' => 'Your rating',
+            'saving' => 'Saving rating...',
+            'removed' => 'Rating removed',
+            'saved' => 'Rating saved',
+            'error' => 'Failed to save rating',
+            'error_unauthorized' => 'You must be logged in to rate photos',
+            'error_forbidden' => 'You do not have permission to rate this photo',
+            'error_not_found' => 'Photo not found',
         ],
     ],
     'nsfw' => [

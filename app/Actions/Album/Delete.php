@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Actions\Album;
@@ -14,6 +14,7 @@ use App\Constants\AccessPermissionConstants as APC;
 use App\Contracts\Exceptions\InternalLycheeException;
 use App\Enum\SmartAlbumType;
 use App\Enum\StorageDiskType;
+use App\Events\AlbumDeleted;
 use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\ModelDBException;
@@ -27,6 +28,7 @@ use App\Models\TagAlbum;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Query\Builder as BaseBuilder;
+use Illuminate\Support\Facades\DB;
 use Safe\Exceptions\ArrayException;
 
 /**
@@ -86,9 +88,12 @@ class Delete
 			/** @var Collection<int,Album> $albums */
 			/** @phpstan-ignore varTag.type (False positive, NestedSetCollection requires Eloquent Collection) */
 			$albums = Album::query()
-				->without(['cover', 'thumb'])
+				->without(['cover', 'thumb', 'min_privilege_cover', 'max_privilege_cover', 'owner', 'access_permissions', 'statistics'])
 				->select(['id', 'parent_id', '_lft', '_rgt', 'track_short_path'])
 				->findMany($album_ids);
+
+			// Collect unique parent IDs BEFORE deletion for event dispatching
+			$parent_ids = $albums->pluck('parent_id')->filter()->unique()->values()->all();
 
 			$recursive_album_ids = $albums->pluck('id')->all(); // only IDs which refer to regular albums are incubators for recursive IDs
 			$recursive_album_tracks = $albums->pluck('track_short_path');
@@ -96,7 +101,11 @@ class Delete
 			/** @var Album $album */
 			foreach ($albums as $album) {
 				// Collect all (aka recursive) sub-albums in each album
-				$sub_albums = $album->descendants()->getQuery()->without(['cover', 'thumb'])->select(['id', 'track_short_path'])->get();
+				// Use DB::table directly to avoid any Eloquent overhead and eager loading
+				$sub_albums = DB::table('albums')
+					->select(['id', 'track_short_path'])
+					->whereBetween('_lft', [$album->_lft + 1, $album->_rgt - 1])
+					->get();
 				$recursive_album_ids = array_merge($recursive_album_ids, $sub_albums->pluck('id')->all());
 				$recursive_album_tracks = $recursive_album_tracks->merge($sub_albums->pluck('track_short_path'));
 			}
@@ -145,6 +154,11 @@ class Delete
 				})
 				->whereNotIn(APC::ACCESS_PERMISSIONS . '.' . APC::BASE_ALBUM_ID, SmartAlbumType::values())
 				->delete();
+
+			// Dispatch events for parent albums to trigger recomputation
+			foreach ($parent_ids as $parent_id) {
+				AlbumDeleted::dispatch($parent_id);
+			}
 
 			return $file_deleter;
 			// @codeCoverageIgnoreStart

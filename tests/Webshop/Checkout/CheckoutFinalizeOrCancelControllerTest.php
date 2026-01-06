@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 /**
@@ -18,6 +18,7 @@
 
 namespace Tests\Webshop\Checkout;
 
+use App\Actions\Shop\CheckoutService;
 use App\Enum\OmnipayProviderType;
 use App\Enum\PaymentStatusType;
 use Illuminate\Support\Facades\Session;
@@ -60,7 +61,7 @@ class CheckoutFinalizeOrCancelControllerTest extends BaseCheckoutControllerTest
 			'card' => [
 				'number' => self::VALID_CARD_NUMBER_SUCCESS,
 				'expiryMonth' => '12',
-				'expiryYear' => '2025',
+				'expiryYear' => date('Y'),
 				'cvv' => '123',
 			],
 		]);
@@ -151,6 +152,104 @@ class CheckoutFinalizeOrCancelControllerTest extends BaseCheckoutControllerTest
 	}
 
 	/**
+	 * Test cancelling PayPal payment successfully returns CheckoutResource.
+	 *
+	 * @return void
+	 */
+	public function testCancelPaypalPaymentSuccess(): void
+	{
+		$this->test_order->status = PaymentStatusType::PROCESSING;
+		$this->test_order->provider = OmnipayProviderType::PAYPAL;
+		$this->test_order->save();
+
+		$transaction_id = $this->test_order->transaction_id;
+
+		$response = $this->get('/api/v2/Shop/Checkout/Cancel/' . $transaction_id);
+
+		// For PayPal, it should return JSON (CheckoutResource), not a redirect
+		$this->assertOk($response);
+		$response->assertJson([
+			'is_success' => true,
+			'complete_url' => null,
+			'redirect_url' => route('shop.checkout.cancelled'),
+			'message' => 'cancelled by user',
+		]);
+
+		// Verify order was marked as cancelled
+		$this->assertDatabaseHas('orders', [
+			'id' => $this->test_order->id,
+			'status' => PaymentStatusType::CANCELLED->value,
+		]);
+	}
+
+	/**
+	 * Test cancelling PayPal payment with invalid transaction ID.
+	 *
+	 * @return void
+	 */
+	public function testCancelPaypalPaymentInvalidTransactionId(): void
+	{
+		$invalid_transaction_id = 'invalid-transaction-id';
+
+		$response = $this->get('/api/v2/Shop/Checkout/Cancel/' . $invalid_transaction_id);
+
+		$this->assertNotFound($response);
+	}
+
+	/**
+	 * Test that PayPal cancellation returns CheckoutResource, not RedirectResponse.
+	 *
+	 * @return void
+	 */
+	public function testCancelPaypalReturnsJsonNotRedirect(): void
+	{
+		$this->test_order->status = PaymentStatusType::PROCESSING;
+		$this->test_order->provider = OmnipayProviderType::PAYPAL;
+		$this->test_order->save();
+
+		$transaction_id = $this->test_order->transaction_id;
+
+		$response = $this->get('/api/v2/Shop/Checkout/Cancel/' . $transaction_id);
+
+		// For PayPal, verify it returns JSON content type, not a redirect
+		$this->assertOk($response);
+		$response->assertHeader('Content-Type', 'application/json');
+
+		// Verify the response structure matches CheckoutResource
+		$response->assertJsonStructure([
+			'is_success',
+			'complete_url',
+			'redirect_url',
+			'message',
+			'order' => [
+				'id',
+				'transaction_id',
+				'status',
+			],
+		]);
+	}
+
+	/**
+	 * Test that non-PayPal provider cancellation still returns redirect.
+	 *
+	 * @return void
+	 */
+	public function testCancelNonPayPalReturnsRedirect(): void
+	{
+		$this->test_order->status = PaymentStatusType::PROCESSING;
+		$this->test_order->provider = OmnipayProviderType::DUMMY;
+		$this->test_order->save();
+
+		$transaction_id = $this->test_order->transaction_id;
+
+		$response = $this->get('/api/v2/Shop/Checkout/Cancel/' . $transaction_id);
+
+		// For non-PayPal providers, it should still return a redirect
+		$this->assertRedirect($response);
+		$response->assertRedirect(route('shop.checkout.cancelled'));
+	}
+
+	/**
 	 * Test complete checkout flow.
 	 *
 	 * @return void
@@ -171,7 +270,7 @@ class CheckoutFinalizeOrCancelControllerTest extends BaseCheckoutControllerTest
 				'card' => [
 					'number' => self::VALID_CARD_NUMBER_SUCCESS,
 					'expiryMonth' => '12',
-					'expiryYear' => '2025',
+					'expiryYear' => date('Y'),
 					'cvv' => '123',
 				],
 			],
@@ -217,7 +316,7 @@ class CheckoutFinalizeOrCancelControllerTest extends BaseCheckoutControllerTest
 			'card' => [
 				'number' => self::VALID_CARD_NUMBER_SUCCESS,
 				'expiryMonth' => '12',
-				'expiryYear' => '2025',
+				'expiryYear' => date('Y'),
 				'cvv' => '123',
 			],
 		]);
@@ -226,5 +325,242 @@ class CheckoutFinalizeOrCancelControllerTest extends BaseCheckoutControllerTest
 
 		$this->assertRedirect($response);
 		$response->assertRedirect(route('shop.checkout.complete'));
+	}
+
+	/**
+	 * Test finalizing PayPal payment successfully returns CheckoutResource.
+	 *
+	 * @return void
+	 */
+	public function testFinalizePaypalPaymentSuccess(): void
+	{
+		// Mock the CheckoutService
+		$mockCheckoutService = \Mockery::mock(CheckoutService::class);
+
+		// Set up order in processing state with PayPal provider
+		$this->test_order->status = PaymentStatusType::PROCESSING;
+		$this->test_order->provider = OmnipayProviderType::PAYPAL;
+		$this->test_order->save();
+
+		// Mock handlePaymentReturn to update order status to COMPLETED
+		$mockCheckoutService->shouldReceive('handlePaymentReturn')
+			->once()
+			->andReturnUsing(function ($order, $provider) {
+				$order->status = PaymentStatusType::COMPLETED;
+				$order->save();
+
+				return $order;
+			});
+
+		// Bind the mock to the service container
+		$this->app->instance(CheckoutService::class, $mockCheckoutService);
+
+		$provider = OmnipayProviderType::PAYPAL->value;
+		$transaction_id = $this->test_order->transaction_id;
+
+		$response = $this->get('/api/v2/Shop/Checkout/Finalize/' . $provider . '/' . $transaction_id);
+
+		// For PayPal, it should return JSON (CheckoutResource), not a redirect
+		$this->assertOk($response);
+		$response->assertJson([
+			'is_success' => true,
+			'complete_url' => route('shop.checkout.complete'),
+			'redirect_url' => null,
+			'message' => 'Payment completed successfully.',
+		]);
+
+		// Verify order status was updated to COMPLETED
+		$this->assertDatabaseHas('orders', [
+			'id' => $this->test_order->id,
+			'status' => PaymentStatusType::COMPLETED->value,
+		]);
+	}
+
+	/**
+	 * Test finalizing PayPal payment failure returns CheckoutResource.
+	 *
+	 * @return void
+	 */
+	public function testFinalizePaypalPaymentFailure(): void
+	{
+		// Mock the CheckoutService
+		$mockCheckoutService = \Mockery::mock(CheckoutService::class);
+
+		// Set up order in processing state with PayPal provider
+		$this->test_order->status = PaymentStatusType::PROCESSING;
+		$this->test_order->provider = OmnipayProviderType::PAYPAL;
+		$this->test_order->save();
+
+		// Mock handlePaymentReturn to return order with PROCESSING status (failed payment)
+		$mockCheckoutService->shouldReceive('handlePaymentReturn')
+			->once()
+			->andReturnUsing(function ($order, $provider) {
+				// Return a fresh instance to ensure attributes are loaded
+				return $this->test_order;
+			});
+
+		// Bind the mock to the service container
+		$this->app->instance(CheckoutService::class, $mockCheckoutService);
+
+		$provider = OmnipayProviderType::PAYPAL->value;
+		$transaction_id = $this->test_order->transaction_id;
+
+		$response = $this->get('/api/v2/Shop/Checkout/Finalize/' . $provider . '/' . $transaction_id);
+
+		// For PayPal, it should return JSON (CheckoutResource), not a redirect
+		$response->assertStatus(400);
+		$response->assertJson([
+			'is_success' => false,
+			'complete_url' => null,
+			'redirect_url' => route('shop.checkout.failed'),
+			'message' => 'Payment failed or was not completed.',
+		]);
+
+		// Verify order status was NOT updated to COMPLETED
+		$this->assertDatabaseHas('orders', [
+			'id' => $this->test_order->id,
+			'status' => PaymentStatusType::PROCESSING->value,
+		]);
+	}
+
+	/**
+	 * Test finalizing PayPal payment with cancelled status.
+	 *
+	 * @return void
+	 */
+	public function testFinalizePaypalPaymentCancelled(): void
+	{
+		// Mock the CheckoutService
+		$mockCheckoutService = \Mockery::mock(CheckoutService::class);
+
+		// Set up order in processing state with PayPal provider
+		$this->test_order->status = PaymentStatusType::PROCESSING;
+		$this->test_order->provider = OmnipayProviderType::PAYPAL;
+		$this->test_order->save();
+
+		// Mock handlePaymentReturn to update order status to CANCELLED
+		$mockCheckoutService->shouldReceive('handlePaymentReturn')
+			->once()
+			->andReturnUsing(function ($order, $provider) {
+				$order->status = PaymentStatusType::CANCELLED;
+				$order->save();
+
+				// Return a fresh instance to ensure attributes are loaded properly
+				return $order->fresh();
+			});
+
+		// Bind the mock to the service container
+		$this->app->instance(CheckoutService::class, $mockCheckoutService);
+
+		$provider = OmnipayProviderType::PAYPAL->value;
+		$transaction_id = $this->test_order->transaction_id;
+
+		$response = $this->get('/api/v2/Shop/Checkout/Finalize/' . $provider . '/' . $transaction_id);
+
+		// For PayPal, it should return JSON (CheckoutResource), not a redirect
+		$response->assertStatus(400);
+		$response->assertJson([
+			'is_success' => false,
+			'complete_url' => null,
+			'redirect_url' => route('shop.checkout.failed'),
+			'message' => 'Payment failed or was not completed.',
+		]);
+
+		// Verify order status was updated to CANCELLED
+		$this->assertDatabaseHas('orders', [
+			'id' => $this->test_order->id,
+			'status' => PaymentStatusType::CANCELLED->value,
+		]);
+	}
+
+	/**
+	 * Test that PayPal finalization returns CheckoutResource, not RedirectResponse.
+	 *
+	 * @return void
+	 */
+	public function testFinalizePaypalReturnsJsonNotRedirect(): void
+	{
+		// Mock the CheckoutService
+		$mockCheckoutService = \Mockery::mock(CheckoutService::class);
+
+		// Set up order in processing state with PayPal provider
+		$this->test_order->status = PaymentStatusType::PROCESSING;
+		$this->test_order->provider = OmnipayProviderType::PAYPAL;
+		$this->test_order->save();
+
+		// Mock handlePaymentReturn to update order status to COMPLETED
+		$mockCheckoutService->shouldReceive('handlePaymentReturn')
+			->once()
+			->andReturnUsing(function ($order, $provider) {
+				$order->status = PaymentStatusType::COMPLETED;
+				$order->save();
+
+				return $order;
+			});
+
+		// Bind the mock to the service container
+		$this->app->instance(CheckoutService::class, $mockCheckoutService);
+
+		$provider = OmnipayProviderType::PAYPAL->value;
+		$transaction_id = $this->test_order->transaction_id;
+
+		$response = $this->get('/api/v2/Shop/Checkout/Finalize/' . $provider . '/' . $transaction_id);
+
+		// For PayPal, verify it returns JSON content type, not a redirect
+		$this->assertOk($response);
+		$response->assertHeader('Content-Type', 'application/json');
+
+		// Verify the response structure matches CheckoutResource
+		$response->assertJsonStructure([
+			'is_success',
+			'complete_url',
+			'redirect_url',
+			'message',
+			'order' => [
+				'id',
+				'transaction_id',
+				'status',
+			],
+		]);
+	}
+
+	/**
+	 * Test that non-PayPal provider still returns redirect.
+	 *
+	 * @return void
+	 */
+	public function testFinalizeNonPayPalReturnsRedirect(): void
+	{
+		// Set up order in processing state with DUMMY provider (not PayPal)
+		$this->test_order->status = PaymentStatusType::PROCESSING;
+		$this->test_order->provider = OmnipayProviderType::DUMMY;
+		$this->test_order->save();
+
+		$provider = OmnipayProviderType::DUMMY->value;
+		$transaction_id = $this->test_order->transaction_id;
+
+		Session::put('metadata.' . $this->test_order->id, [
+			'payment_id' => 'dummy-payment-123',
+			'status' => 'completed',
+			'transactionReference' => $this->test_order->transaction_id,
+			'card' => [
+				'number' => self::VALID_CARD_NUMBER_SUCCESS,
+				'expiryMonth' => '12',
+				'expiryYear' => date('Y'),
+				'cvv' => '123',
+			],
+		]);
+
+		$response = $this->get('/api/v2/Shop/Checkout/Finalize/' . $provider . '/' . $transaction_id);
+
+		// For non-PayPal providers, it should still return a redirect
+		$this->assertRedirect($response);
+		$response->assertRedirect(route('shop.checkout.complete'));
+	}
+
+	public function tearDown(): void
+	{
+		\Mockery::close();
+		parent::tearDown();
 	}
 }

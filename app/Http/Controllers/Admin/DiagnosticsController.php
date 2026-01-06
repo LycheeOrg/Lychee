@@ -3,7 +3,7 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Http\Controllers\Admin;
@@ -18,6 +18,7 @@ use App\Http\Resources\Diagnostics\ErrorLine;
 use App\Http\Resources\Diagnostics\Permissions;
 use App\Models\AccessPermission;
 use App\Policies\AlbumQueryPolicy;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -33,7 +34,7 @@ class DiagnosticsController extends Controller
 	 *
 	 * @return array<array-key, \App\Http\Resources\Diagnostics\ErrorLine>
 	 */
-	public function errors(Errors $errors): array
+	public function errors(Request $request, Errors $errors): array
 	{
 		return ErrorLine::collect($errors->get());
 	}
@@ -55,12 +56,12 @@ class DiagnosticsController extends Controller
 	/**
 	 * Get info of the installation.
 	 *
-	 * @param DiagnosticsRequest $_request
+	 * @param DiagnosticsRequest $request
 	 * @param Info               $info
 	 *
 	 * @return string[]
 	 */
-	public function info(DiagnosticsRequest $_request, Info $info): array
+	public function info(DiagnosticsRequest $request, Info $info): array
 	{
 		return $info->get();
 	}

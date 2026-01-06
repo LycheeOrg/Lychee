@@ -3,14 +3,13 @@
 /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
- * Copyright (c) 2018-2025 LycheeOrg.
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 namespace App\Http\Middleware\Caching;
 
 use App\Metadata\Cache\RouteCacheManager;
 use App\Metadata\Cache\RouteCacher;
-use App\Models\Configs;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -42,7 +41,7 @@ class ResponseCache
 			return $next($request);
 		}
 
-		if (Configs::getValueAsBool('cache_enabled') === false) {
+		if ($request->configs()->getValueAsBool('cache_enabled') === false) {
 			return $next($request);
 		}
 
@@ -61,6 +60,6 @@ class ResponseCache
 			$extras[] = $request->input($extra) ?? '';
 		}
 
-		return $this->route_cacher->remember($key, $uri, Configs::getValueAsInt('cache_ttl'), fn () => $next($request), $extras);
+		return $this->route_cacher->remember($key, $uri, $request->configs()->getValueAsInt('cache_ttl'), fn () => $next($request), $extras);
 	}
 }
