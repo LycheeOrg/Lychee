@@ -21,7 +21,7 @@ return new class extends Migration {
 	public function up(): void
 	{
 		Schema::table('photos', function (Blueprint $table) {
-			DB::statement('ALTER TABLE `photos` MODIFY `title` TEXT');
+			$table->string('title', 1000)->change();
 		});
 	}
 
