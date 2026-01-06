@@ -24,10 +24,10 @@ class HeifToJpeg implements ConvertMediaFileInterface
 	public function handle(NativeLocalFile $tmp_file): TemporaryJobFile
 	{
 		try {
-			$base_name = $tmp_file->getBasename();
 			$path = $tmp_file->getRealPath();
 			$pathinfo = pathinfo($path);
-			$new_path = $pathinfo['dirname'] . '/' . $base_name . '.jpg';
+			$file_name = $pathinfo['filename'];
+			$new_path = $pathinfo['dirname'] . '/' . $file_name . '.jpg';
 
 			// Convert to Jpeg
 			$imagick_converted = $this->convertToJpeg($path);
@@ -55,7 +55,7 @@ class HeifToJpeg implements ConvertMediaFileInterface
 			} elseif ($image_instance instanceof HeicToJpg) {
 				$image_instance->saveAs($store_to_path);
 			}
-		} catch (\ImagickException $e) {
+		} catch (\ImagickException|\Exception $e) {
 			throw new \Exception('Failed to store converted image');
 		}
 	}

@@ -3,16 +3,9 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-
-require_once 'TemporaryModels/OptimizeTables.php';
+use Illuminate\Support\Facades\DB;
 
 return new class() extends Migration {
-	private OptimizeTables $optimize;
-
-	public function __construct()
-	{
-		$this->optimize = new OptimizeTables();
-	}
 
 	/**
 	 * Run the migrations.
@@ -26,7 +19,7 @@ return new class() extends Migration {
 			}
 
 			// Change to text
-			$table->text('title')->change();
+			$table->text('title')->nullable()->change();
 
 			// Recreate the index with a key length for the TEXT column
 			$table->index(['old_album_id', 'is_starred', DB::raw('title(100)')], 'photos_album_id_is_starred_title_index');
@@ -44,9 +37,10 @@ return new class() extends Migration {
 				$table->dropIndex('photos_album_id_is_starred_title_index');
 			}
 
+			// Change to varchar
 			$table->string('title', 100)->nullable()->change();
 
-			$table->index(['album_id', 'is_starred', 'title']);
+			$table->index(['odl_album_id', 'is_starred', 'title'], 'photos_album_id_is_starred_title_index');
 		});
 	}
 };

@@ -8,25 +8,40 @@
 
 namespace App\Actions\Photo\Convert;
 
+use App\Contracts\Image\ConvertMediaFileInterface;
 use App\Enum\ConvertableImageType;
 
 class ImageTypeFactory
 {
-	public ?string $convertionClass = null;
+	public ?string $conversionClass = null;
 
 	public function __construct(string $extension)
 	{
-		$this->convertionClass = match (true) {
+		$this->conversionClass = match (true) {
 			ConvertableImageType::isHeifImageType($extension) => 'HeifToJpeg',
 			// TODO: Add more convertion types/classes
 			default => null,
 		};
 	}
 
-	public function make(): mixed
+	public function make(): ConvertMediaFileInterface
 	{
-		$class = 'App\Actions\Photo\Convert\\' . $this->convertionClass;
+		if ($this->conversionClass === null) {
+			throw new \RuntimeException('No conversion class available for this file type');
+		}
 
-		return new $class();
+		$class = 'App\Actions\Photo\Convert\\' . $this->conversionClass;
+
+		if (!class_exists($class)) {
+			throw new \RuntimeException("Converter class {$class} does not exist");
+		}
+
+		$instance = new $class();
+
+		if (!$instance instanceof ConvertMediaFileInterface) {
+			throw new \RuntimeException("Converter class {$class} must implement ConvertMediaFileInterface");
+		}
+
+		return $instance;
 	}
 }
