@@ -1,5 +1,10 @@
 <?php
 
+/**
+* SPDX-License-Identifier: MIT
+* Copyright (c) 2017-2025 Lychee Contributors.
+*/
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
@@ -39,7 +44,7 @@ return new class() extends Migration {
 			// Change to varchar
 			$table->string('title', 100)->nullable()->change();
 
-			$table->index(['odl_album_id', 'is_starred', 'title'], 'photos_album_id_is_starred_title_index');
+			$table->index(['old_album_id', 'is_starred', 'title'], 'photos_album_id_is_starred_title_index');
 		});
 	}
 };

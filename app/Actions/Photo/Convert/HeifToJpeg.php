@@ -56,7 +56,7 @@ class HeifToJpeg implements ConvertMediaFileInterface
 				$image_instance->saveAs($store_to_path);
 			}
 		} catch (\ImagickException|\Exception $e) {
-			throw new \Exception('Failed to store converted image');
+			throw new \Exception('Failed to store converted image: ' . $e->getMessage());
 		}
 	}
 
@@ -68,7 +68,7 @@ class HeifToJpeg implements ConvertMediaFileInterface
 		try {
 			unlink($path);
 		} catch (FilesystemException $e) {
-			throw new \Exception('Failed to delete old file');
+			throw new \Exception('Failed to delete old file: ' . $e->getMessage());
 		}
 	}
 
