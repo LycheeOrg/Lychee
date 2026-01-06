@@ -2,7 +2,8 @@
 
 /**
  * SPDX-License-Identifier: MIT
- * Copyright (c) 2017-2025 Lychee Contributors.
+ * Copyright (c) 2017-2018 Tobias Reich
+ * Copyright (c) 2018-2026 LycheeOrg.
  */
 
 use Illuminate\Database\Migrations\Migration;
@@ -26,7 +27,12 @@ return new class() extends Migration {
 			$table->text('title')->nullable()->change();
 
 			// Recreate the index with a key length for the TEXT column
-			$table->index(['old_album_id', 'is_starred', DB::raw('title(100)')], 'photos_album_id_is_starred_title_index');
+			$driver = DB::getDriverName();
+			if ($driver !== 'sqlite') {
+				$table->index(['old_album_id', 'is_starred', DB::raw('title(100)')], 'photos_album_id_is_starred_title_index');
+			} else {
+				$table->index(['old_album_id', 'is_starred', 'title'], 'photos_album_id_is_starred_title_index');
+			}
 		});
 	}
 
