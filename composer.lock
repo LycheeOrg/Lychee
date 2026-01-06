@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d4f71a2a18327404f599dd82518dd680",
+    "content-hash": "9bf5180208f3169b96141a5501084066",
     "packages": [
         {
             "name": "apimatic/core",
@@ -279,16 +279,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.369.3",
+            "version": "3.369.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "11d11bd6b5b0fc2b8e1ee1b5b758360dc2671a33"
+                "reference": "8678ee11ac680d462fabbecb455112a17aa7728d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/11d11bd6b5b0fc2b8e1ee1b5b758360dc2671a33",
-                "reference": "11d11bd6b5b0fc2b8e1ee1b5b758360dc2671a33",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/8678ee11ac680d462fabbecb455112a17aa7728d",
+                "reference": "8678ee11ac680d462fabbecb455112a17aa7728d",
                 "shasum": ""
             },
             "require": {
@@ -370,9 +370,9 @@
             "support": {
                 "forum": "https://github.com/aws/aws-sdk-php/discussions",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.369.3"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.369.7"
             },
-            "time": "2025-12-26T19:10:15+00:00"
+            "time": "2026-01-05T19:05:14+00:00"
         },
         {
             "name": "bepsvpt/secure-headers",
@@ -4572,6 +4572,91 @@
                 }
             ],
             "time": "2025-12-10T09:58:31+00:00"
+        },
+        {
+            "name": "maestroerror/heif-converter",
+            "version": "0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/MaestroError/heif-converter-image.git",
+                "reference": "714f3e6c2c18f85ffe3495057874cb01ca89ce63"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/MaestroError/heif-converter-image/zipball/714f3e6c2c18f85ffe3495057874cb01ca89ce63",
+                "reference": "714f3e6c2c18f85ffe3495057874cb01ca89ce63",
+                "shasum": ""
+            },
+            "bin": [
+                "bin/heif-converter-linux",
+                "bin/heif-converter-windows",
+                "bin/heif-converter-macos"
+            ],
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "maestroerror",
+                    "email": "revaz.gh@gmail.com"
+                }
+            ],
+            "description": "versatile command-line application, along with a Docker image, that offers an easy and efficient way to convert HEIC (and AVIF) images to other common formats like JPEG and PNG",
+            "support": {
+                "issues": "https://github.com/MaestroError/heif-converter-image/issues",
+                "source": "https://github.com/MaestroError/heif-converter-image/tree/0.2"
+            },
+            "time": "2023-06-23T18:10:40+00:00"
+        },
+        {
+            "name": "maestroerror/php-heic-to-jpg",
+            "version": "v1.0.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/MaestroError/php-heic-to-jpg.git",
+                "reference": "e41dded77a7eb7b99496ff5965640a4698a19cab"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/MaestroError/php-heic-to-jpg/zipball/e41dded77a7eb7b99496ff5965640a4698a19cab",
+                "reference": "e41dded77a7eb7b99496ff5965640a4698a19cab",
+                "shasum": ""
+            },
+            "require": {
+                "maestroerror/heif-converter": "0.2",
+                "php": ">=7.4"
+            },
+            "require-dev": {
+                "pestphp/pest": "2.x-dev"
+            },
+            "bin": [
+                "bin/heicToJpg",
+                "bin/heicToJpgWin"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Maestroerror\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "maestroerror",
+                    "email": "revaz.gh@gmail.com"
+                }
+            ],
+            "description": "Converts HEIC/HEIF image to JPG type, without any dependencies",
+            "support": {
+                "issues": "https://github.com/MaestroError/php-heic-to-jpg/issues",
+                "source": "https://github.com/MaestroError/php-heic-to-jpg/tree/v1.0.8"
+            },
+            "time": "2025-06-04T15:17:54+00:00"
         },
         {
             "name": "mavinoo/laravel-batch",
@@ -9097,16 +9182,16 @@
         },
         {
             "name": "symfony/cache",
-            "version": "v7.4.1",
+            "version": "v7.4.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/cache.git",
-                "reference": "21e0755783bbbab58f2bb6a7a57896d21d27a366"
+                "reference": "642117d18bc56832e74b68235359ccefab03dd11"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/cache/zipball/21e0755783bbbab58f2bb6a7a57896d21d27a366",
-                "reference": "21e0755783bbbab58f2bb6a7a57896d21d27a366",
+                "url": "https://api.github.com/repos/symfony/cache/zipball/642117d18bc56832e74b68235359ccefab03dd11",
+                "reference": "642117d18bc56832e74b68235359ccefab03dd11",
                 "shasum": ""
             },
             "require": {
@@ -9177,7 +9262,7 @@
                 "psr6"
             ],
             "support": {
-                "source": "https://github.com/symfony/cache/tree/v7.4.1"
+                "source": "https://github.com/symfony/cache/tree/v7.4.3"
             },
             "funding": [
                 {
@@ -9197,7 +9282,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-12-04T18:11:45+00:00"
+            "time": "2025-12-28T10:45:24+00:00"
         },
         {
             "name": "symfony/cache-contracts",
@@ -9969,16 +10054,16 @@
         },
         {
             "name": "symfony/http-client",
-            "version": "v7.4.1",
+            "version": "v7.4.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/http-client.git",
-                "reference": "26cc224ea7103dda90e9694d9e139a389092d007"
+                "reference": "d01dfac1e0dc99f18da48b18101c23ce57929616"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/http-client/zipball/26cc224ea7103dda90e9694d9e139a389092d007",
-                "reference": "26cc224ea7103dda90e9694d9e139a389092d007",
+                "url": "https://api.github.com/repos/symfony/http-client/zipball/d01dfac1e0dc99f18da48b18101c23ce57929616",
+                "reference": "d01dfac1e0dc99f18da48b18101c23ce57929616",
                 "shasum": ""
             },
             "require": {
@@ -10046,7 +10131,7 @@
                 "http"
             ],
             "support": {
-                "source": "https://github.com/symfony/http-client/tree/v7.4.1"
+                "source": "https://github.com/symfony/http-client/tree/v7.4.3"
             },
             "funding": [
                 {
@@ -10066,7 +10151,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-12-04T21:12:57+00:00"
+            "time": "2025-12-23T14:50:43+00:00"
         },
         {
             "name": "symfony/http-client-contracts",
@@ -14112,16 +14197,16 @@
         },
         {
             "name": "justinrainbow/json-schema",
-            "version": "6.6.3",
+            "version": "6.6.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jsonrainbow/json-schema.git",
-                "reference": "134e98916fa2f663afa623970af345cd788e8967"
+                "reference": "2eeb75d21cf73211335888e7f5e6fd7440723ec7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jsonrainbow/json-schema/zipball/134e98916fa2f663afa623970af345cd788e8967",
-                "reference": "134e98916fa2f663afa623970af345cd788e8967",
+                "url": "https://api.github.com/repos/jsonrainbow/json-schema/zipball/2eeb75d21cf73211335888e7f5e6fd7440723ec7",
+                "reference": "2eeb75d21cf73211335888e7f5e6fd7440723ec7",
                 "shasum": ""
             },
             "require": {
@@ -14181,9 +14266,9 @@
             ],
             "support": {
                 "issues": "https://github.com/jsonrainbow/json-schema/issues",
-                "source": "https://github.com/jsonrainbow/json-schema/tree/6.6.3"
+                "source": "https://github.com/jsonrainbow/json-schema/tree/6.6.4"
             },
-            "time": "2025-12-02T10:21:33+00:00"
+            "time": "2025-12-19T15:01:32+00:00"
         },
         {
             "name": "laracraft-tech/laravel-xhprof",
@@ -17786,23 +17871,23 @@
         },
         {
             "name": "symplify/phpstan-rules",
-            "version": "14.9.5",
+            "version": "14.9.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symplify/phpstan-rules.git",
-                "reference": "8557736b5e7b8c10f68e6c6f0692b5dce305d307"
+                "reference": "5ea4bbd9357cba253aada506dd96d37d7069ac3b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symplify/phpstan-rules/zipball/8557736b5e7b8c10f68e6c6f0692b5dce305d307",
-                "reference": "8557736b5e7b8c10f68e6c6f0692b5dce305d307",
+                "url": "https://api.github.com/repos/symplify/phpstan-rules/zipball/5ea4bbd9357cba253aada506dd96d37d7069ac3b",
+                "reference": "5ea4bbd9357cba253aada506dd96d37d7069ac3b",
                 "shasum": ""
             },
             "require": {
                 "nette/utils": "^3.2|^4.0",
                 "php": "^7.4|^8.0",
-                "phpstan/phpstan": "^2.1.22",
-                "webmozart/assert": "^1.11"
+                "phpstan/phpstan": "^2.1.33",
+                "webmozart/assert": "^1.12 || ^2.0"
             },
             "type": "phpstan-extension",
             "extra": {
@@ -17827,7 +17912,7 @@
             "description": "Set of Symplify rules for PHPStan",
             "support": {
                 "issues": "https://github.com/symplify/phpstan-rules/issues",
-                "source": "https://github.com/symplify/phpstan-rules/tree/14.9.5"
+                "source": "https://github.com/symplify/phpstan-rules/tree/14.9.11"
             },
             "funding": [
                 {
@@ -17839,7 +17924,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-12-08T15:34:48+00:00"
+            "time": "2026-01-05T13:53:59+00:00"
         },
         {
             "name": "thecodingmachine/phpstan-safe-rule",
