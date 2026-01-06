@@ -21,7 +21,14 @@ return new class extends Migration {
 	public function up(): void
 	{
 		Schema::table('photos', function (Blueprint $table) {
-			$table->string('title', 1000)->change();
+			// Drop the existing index
+			$table->dropIndex('photos_album_id_is_starred_title_index');
+
+			// Change to text
+			$table->text('title')->change();
+
+			// Recreate the index with a key length for the TEXT column
+			$table->index(['old_album_id', 'is_starred', DB::raw('title(100)')], 'photos_album_id_is_starred_title_index');
 		});
 	}
 
@@ -31,7 +38,12 @@ return new class extends Migration {
 	public function down(): void
 	{
 		Schema::table('photos', function (Blueprint $table) {
-			$table->string('title', 100)->change();
+			// Drop the existing index
+			$table->dropIndex('photos_album_id_is_starred_title_index');
+
+			$table->string('title', 100)->nullable()->change();
+
+			$table->index(['album_id', 'is_starred', 'title']);
 		});
 	}
 };
