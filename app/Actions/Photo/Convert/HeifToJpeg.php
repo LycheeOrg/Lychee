@@ -73,6 +73,8 @@ class HeifToJpeg implements ConvertMediaFileInterface
 	}
 
 	/**
+	 * Try ImageMagick, if fails try php-heic-to-jpg package because ImageMagick fails to convert newer IPhone images.
+	 *
 	 * @throws \Exception
 	 */
 	private function convertToJpeg(string $path): \Imagick|HeicToJpg
