@@ -1,9 +1,9 @@
 <?php
 
 /**
-* SPDX-License-Identifier: MIT
-* Copyright (c) 2017-2025 Lychee Contributors.
-*/
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2017-2025 Lychee Contributors.
+ */
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
