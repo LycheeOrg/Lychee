@@ -130,8 +130,8 @@ RUN mkdir -p storage/framework/cache \
     && cp $PHP_INI_DIR/php.ini-production $PHP_INI_DIR/php.ini \
     && echo "upload_max_filesize=110M" > $PHP_INI_DIR/conf.d/custom.ini \
     && echo "post_max_size=110M" >> $PHP_INI_DIR/conf.d/custom.ini \
-    && echo "memory_limit=\${PHP_MEMORY_LIMIT}" >> $PHP_INI_DIR/conf.d/custom.ini \
-    && echo "max_execution_time=\${PHP_MAX_EXECUTION_TIME:-30}" >> $PHP_INI_DIR/conf.d/custom.ini \
+    && echo "memory_limit=\${PHP_MEMORY_LIMIT:-1024M}" >> $PHP_INI_DIR/conf.d/custom.ini \
+    && echo "max_execution_time=\${PHP_MAX_EXECUTION_TIME:-3000}" >> $PHP_INI_DIR/conf.d/custom.ini \
     && echo "expose_php=Off" >> $PHP_INI_DIR/conf.d/custom.ini \
     && echo "display_errors=Off" >> $PHP_INI_DIR/conf.d/custom.ini \
     && echo "log_errors=On" >> $PHP_INI_DIR/conf.d/custom.ini
