@@ -6,8 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 require_once 'TemporaryModels/OptimizeTables.php';
 
-return new class extends Migration {
-
+return new class() extends Migration {
 	private OptimizeTables $optimize;
 
 	public function __construct()
@@ -22,7 +21,9 @@ return new class extends Migration {
 	{
 		Schema::table('photos', function (Blueprint $table) {
 			// Drop the existing index
-			$table->dropIndex('photos_album_id_is_starred_title_index');
+			if (Schema::hasIndex('photos', 'photos_album_id_is_starred_title_index')) {
+				$table->dropIndex('photos_album_id_is_starred_title_index');
+			}
 
 			// Change to text
 			$table->text('title')->change();
@@ -39,7 +40,9 @@ return new class extends Migration {
 	{
 		Schema::table('photos', function (Blueprint $table) {
 			// Drop the existing index
-			$table->dropIndex('photos_album_id_is_starred_title_index');
+			if (Schema::hasIndex('photos', 'photos_album_id_is_starred_title_index')) {
+				$table->dropIndex('photos_album_id_is_starred_title_index');
+			}
 
 			$table->string('title', 100)->nullable()->change();
 
