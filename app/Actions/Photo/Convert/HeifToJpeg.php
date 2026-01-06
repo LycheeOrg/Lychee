@@ -92,9 +92,11 @@ class HeifToJpeg implements ConvertMediaFileInterface
 
 			return $img;
 		} catch (\ImagickException $e) {
-			return HeicToJpg::convert($path);
-		} catch (Exception $e) {
-			throw new \Exception('Failed to convert HEIC/HEIF to JPEG. ' . $e->getMessage());
+			try {
+				return HeicToJpg::convert($path);
+			} catch (Exception $exception) {
+				throw new \Exception('Failed to convert HEIC/HEIF to JPEG. ' . $e->getMessage() . ' ' . $exception->getMessage());
+			}
 		}
 	}
 }
