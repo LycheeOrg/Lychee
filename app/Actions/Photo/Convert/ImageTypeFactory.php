@@ -13,7 +13,7 @@ use App\Enum\ConvertableImageType;
 
 class ImageTypeFactory
 {
-	public ?string $conversionClass = null;
+	public readonly ?string $conversionClass;
 
 	public function __construct(string $extension)
 	{

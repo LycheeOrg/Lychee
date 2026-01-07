@@ -18,7 +18,7 @@ class ConvertUnsupportedMedia implements InitPipe
 	/**
 	 * Tries to convert the file to a supported format.
 	 *
-	 * @throws \Exception
+	 * @throws CannotConvertMediaFileException
 	 */
 	public function handle(InitDTO $state, \Closure $next): InitDTO
 	{
