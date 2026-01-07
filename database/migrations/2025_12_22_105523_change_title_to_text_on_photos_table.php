@@ -28,9 +28,11 @@ return new class() extends Migration {
 
 			// Recreate the index with a key length for the TEXT column
 			$driver = DB::getDriverName();
-			if ($driver !== 'sqlite') {
+			if ($driver === 'mysql') {
 				$table->index(['old_album_id', 'is_starred', DB::raw('title(100)')], 'photos_album_id_is_starred_title_index');
-			} else {
+			} elseif ($driver === 'pgsql') {
+				DB::statement('CREATE INDEX photos_album_id_is_starred_title_index ON photos (old_album_id, is_starred, LEFT(title, 100))');
+			} elseif ($driver === 'sqlite') {
 				$table->index(['old_album_id', 'is_starred', 'title'], 'photos_album_id_is_starred_title_index');
 			}
 		});
