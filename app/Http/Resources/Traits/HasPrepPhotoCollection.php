@@ -33,9 +33,10 @@ trait HasPrepPhotoCollection
 			$previous_photo = $photo;
 		});
 
-		if ($this->photos->count() > 1 && request()->configs()->getValueAsBool('photos_wraparound')) {
-			$this->photos->first()->previous_photo_id = $this->photos->last()->id;
-			$this->photos->last()->next_photo_id = $this->photos->first()->id;
-		}
+		// Photo wrap-around is disabled for now.
+		// if ($this->photos->count() > 1 && request()->configs()->getValueAsBool('photos_wraparound')) {
+		// 	$this->photos->first()->previous_photo_id = $this->photos->last()->id;
+		// 	$this->photos->last()->next_photo_id = $this->photos->first()->id;
+		// }
 	}
 }

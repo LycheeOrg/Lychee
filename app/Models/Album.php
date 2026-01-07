@@ -556,4 +556,46 @@ class Album extends BaseAlbum implements Node
 			->where('purchasables.is_active', true)
 			->whereNull('purchasables.photo_id');
 	}
+
+	// /**
+	//  * Get paginated child albums.
+	//  *
+	//  * Returns a paginated list of child albums using the album's configured sorting criteria.
+	//  * Used by the /Album/{id}/albums pagination endpoint.
+	//  *
+	//  * @param int $perPage number of albums per page
+	//  * @param int $page    page number (1-indexed)
+	//  *
+	//  * @return \Illuminate\Pagination\LengthAwarePaginator<Album>
+	//  *
+	//  * @throws \App\Exceptions\Internal\InvalidOrderDirectionException
+	//  */
+	// public function getChildrenPaginated(int $perPage, int $page = 1): \Illuminate\Pagination\LengthAwarePaginator
+	// {
+	// 	$album_repository = resolve(\App\Repositories\AlbumRepository::class);
+	// 	$album_sorting = $this->getEffectiveAlbumSorting();
+
+	// 	return $album_repository->getChildrenPaginated($this->id, $album_sorting, $perPage, $page);
+	// }
+
+	// /**
+	//  * Get paginated photos.
+	//  *
+	//  * Returns a paginated list of photos using the album's configured sorting criteria.
+	//  * Used by the /Album/{id}/photos pagination endpoint.
+	//  *
+	//  * @param int $perPage number of photos per page
+	//  * @param int $page    page number (1-indexed)
+	//  *
+	//  * @return \Illuminate\Pagination\LengthAwarePaginator<Photo>
+	//  *
+	//  * @throws \App\Exceptions\Internal\InvalidOrderDirectionException
+	//  */
+	// public function getPhotosPaginated(int $perPage, int $page = 1): \Illuminate\Pagination\LengthAwarePaginator
+	// {
+	// 	$photo_repository = resolve(\App\Repositories\PhotoRepository::class);
+	// 	$photo_sorting = $this->getEffectivePhotoSorting();
+
+	// 	return $photo_repository->getPhotosForAlbumPaginated($this->id, $photo_sorting, $perPage, $page);
+	// }
 }

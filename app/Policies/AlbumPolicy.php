@@ -30,6 +30,7 @@ class AlbumPolicy extends BasePolicy
 	public const IS_OWNER = 'isOwner';
 	public const CAN_SEE = 'canSee';
 	public const CAN_ACCESS = 'canAccess';
+	public const CAN_ACCESS_ID = 'canAccessById';
 	public const CAN_ACCESS_FULL_PHOTO = 'canAccessFullPhoto';
 	public const CAN_ACCESS_MAP = 'canAccessMap';
 	public const CAN_DOWNLOAD = 'canDownload';
