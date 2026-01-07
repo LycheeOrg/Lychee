@@ -24,7 +24,7 @@
         "@types/qrcode": "^1.5.6",
         "@types/sprintf-js": "^1.1.4",
         "@typescript-eslint/parser": "^8.52.0",
-        "@vitest/eslint-plugin": "^1.6.5",
+        "@vitest/eslint-plugin": "^1.6.6",
         "@vue/eslint-config-prettier": "^10.2.0",
         "@vue/eslint-config-typescript": "^14.6.0",
         "@vue/test-utils": "^2.4.6",
@@ -34,7 +34,7 @@
         "eslint-plugin-vue": "~10.6.2",
         "jsdom": "^27.4.0",
         "prettier": "3.7.4",
-        "sass": "^1.97.1",
+        "sass": "^1.97.2",
         "vue-tsc": "^3.2.2"
     },
     "dependencies": {
