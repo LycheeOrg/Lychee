@@ -6,11 +6,7 @@ import { useAlbumActions } from "@/composables/album/albumActions";
 import { PhotosStore } from "@/stores/PhotosState";
 import { AlbumsStore } from "@/stores/AlbumsState";
 
-export function useSelection(
-	photosStore: PhotosStore,
-	albumsStore: AlbumsStore,
-	togglableStore: TogglablesStateStore) {
-
+export function useSelection(photosStore: PhotosStore, albumsStore: AlbumsStore, togglableStore: TogglablesStateStore) {
 	const { canInteractAlbum, canInteractPhoto } = useAlbumActions();
 
 	const { selectedPhotosIdx, selectedAlbumsIdx } = storeToRefs(togglableStore);

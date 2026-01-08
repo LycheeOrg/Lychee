@@ -1,7 +1,6 @@
 import { useAlbumStore } from "@/stores/AlbumState";
 
 export function useAlbumActions() {
-
 	const albumStore = useAlbumStore();
 
 	function canInteractAlbum(album: App.Http.Resources.Models.ThumbAlbumResource): boolean {

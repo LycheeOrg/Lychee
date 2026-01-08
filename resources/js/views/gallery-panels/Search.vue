@@ -391,11 +391,7 @@ onKeyStroke("Escape", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && i
 onKeyStroke("m", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && albumStore.rights?.can_edit && toggleMove());
 onKeyStroke(
 	"e",
-	() =>
-		!shouldIgnoreKeystroke() &&
-		photoStore.isLoaded &&
-		albumStore.rights?.can_edit &&
-		(is_photo_edit_open.value = !is_photo_edit_open.value),
+	() => !shouldIgnoreKeystroke() && photoStore.isLoaded && albumStore.rights?.can_edit && (is_photo_edit_open.value = !is_photo_edit_open.value),
 );
 onKeyStroke("s", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && albumStore.rights?.can_edit && toggleStar());
 onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && photoStore.isLoaded && albumStore.album?.rights.can_delete && toggleDelete());
