@@ -10,9 +10,7 @@ namespace App\Http\Resources\Traits;
 
 use App\Http\Resources\Models\PhotoResource;
 use App\Models\Photo;
-use App\Policies\PhotoPolicy;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Gate;
 
 /**
  * @property ?Collection<int,PhotoResource> $photos
@@ -21,7 +19,11 @@ trait HasPrepPhotoCollection
 {
 	private function toPhotoResources(Collection $photos, ?string $album_id, bool $should_downgrade): Collection
 	{
-		return $photos->map(fn ($photo) => new PhotoResource($photo, $album_id, !Gate::check(PhotoPolicy::CAN_ACCESS_FULL_PHOTO, [Photo::class, $photo])));
+		return $photos->map(fn ($photo) => new PhotoResource(
+			photo: $photo,
+			album_id: $album_id,
+			should_downgrade_size_variants: $should_downgrade,
+		));
 	}
 
 	private function prepPhotosCollection(): void
