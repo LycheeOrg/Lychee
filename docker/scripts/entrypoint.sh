@@ -44,8 +44,8 @@ if [ "${DB_CONNECTION:-}" = "mysql" ] || [ "${DB_CONNECTION:-}" = "pgsql" ]; the
 fi
 
 echo "Validating and setting PUID/PGID"
-PUID=${PUID:-33}
-PGID=${PGID:-33}
+PUID=${PUID:-82}
+PGID=${PGID:-82}
 
 # Validate PUID/PGID are within safe ranges (no root, within system limits)
 if [ "$PUID" -lt 33 ] || [ "$PUID" -gt 65534 ]; then
@@ -75,6 +75,17 @@ echo "  User GID: $(id -g www-data)"
 
 /usr/local/bin/permissions-check.sh
 
+# Helper function to run commands as www-data
+run_as_www() {
+  if command -v gosu >/dev/null 2>&1; then
+    gosu www-data "$@"
+  elif command -v su-exec >/dev/null 2>&1; then
+    su-exec www-data "$@"
+  else
+    su -s /bin/sh www-data -c "$*"
+  fi
+}
+
 # Clear any cached config from development
 echo "🧹 Clearing bootstrap cache..."
 rm -rf bootstrap/cache/*.php
@@ -97,18 +108,25 @@ web)
 
   # Run database migrations (only in web mode to avoid race conditions)
   echo "🔄 Running database migrations..."
-  php artisan migrate --force
+  run_as_www php artisan migrate --force
 
   # Clear and cache configuration
   echo "🧹 Optimizing application..."
-  php artisan config:clear
-  php artisan config:cache
-  php artisan route:clear
-  php artisan route:cache
-  php artisan view:clear
-  php artisan view:cache
+  run_as_www php artisan config:clear
+  run_as_www php artisan config:cache
+  run_as_www php artisan route:clear
+  run_as_www php artisan route:cache
+  run_as_www php artisan view:clear
+  run_as_www php artisan view:cache
 
   echo "✅ Application ready!"
+
+  # Ensure public directory is writable for FrankenPHP worker file
+  # (needed when volumes override container permissions)
+  if [ -d "/app/public" ]; then
+    chown www-data:www-data /app/public
+    chmod 755 /app/public
+  fi
 
   if [ ! -f "/app/frankenphp_target" ]; then
     # Start PHP-FPM and Nginx for traditional Docker setup
@@ -116,8 +134,14 @@ web)
     php-fpm8.5
   fi
 
-  # Execute the main command (from Dockerfile CMD: octane:start)
-  exec "$@"
+  # Execute the main command (from Dockerfile CMD: octane:start) as www-data
+  if command -v gosu >/dev/null 2>&1; then
+    exec gosu www-data "$@"
+  elif command -v su-exec >/dev/null 2>&1; then
+    exec su-exec www-data "$@"
+  else
+    exec su -s /bin/sh www-data -c "$*"
+  fi
   ;;
 worker)
   echo "⚙️  Starting Lychee in worker mode..."
@@ -130,7 +154,7 @@ worker)
     # Check if there are pending migrations
     # php artisan migrate:status returns exit code 0 if all migrations are run
     # We check for "Pending" in the output to detect pending migrations
-    if php artisan migrate:status 2>/dev/null | grep -q "Pending"; then
+    if run_as_www php artisan migrate:status 2>/dev/null | grep -q "Pending"; then
       migration_attempt=$((migration_attempt + 1))
       echo "⏳ Pending migrations detected (attempt $migration_attempt/$max_migration_attempts)"
       echo "   Waiting 5 seconds for web container to complete migrations..."
@@ -183,7 +207,7 @@ worker)
     # --timeout=3600: kill job if it runs longer than 1 hour
     # --sleep=3: sleep 3 seconds when queue is empty
     # --max-time=$WORKER_MAX_TIME: restart worker after N seconds (memory leak mitigation)
-    php artisan queue:work \
+    run_as_www php artisan queue:work \
       --queue="$QUEUE_NAMES" \
       --tries=3 \
       --timeout=3600 \
