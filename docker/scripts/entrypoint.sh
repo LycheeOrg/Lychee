@@ -121,13 +121,6 @@ web)
 
   echo "✅ Application ready!"
 
-  # Ensure public directory is writable for FrankenPHP worker file
-  # (needed when volumes override container permissions)
-  if [ -d "/app/public" ]; then
-    chown www-data:www-data /app/public
-    chmod 755 /app/public
-  fi
-
   if [ ! -f "/app/frankenphp_target" ]; then
     # Start PHP-FPM and Nginx for traditional Docker setup
     echo "🚀 Starting PHP-FPM..."
