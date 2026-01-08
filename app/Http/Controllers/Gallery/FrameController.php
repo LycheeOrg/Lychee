@@ -15,9 +15,11 @@ use App\Http\Resources\Frame\FrameData;
 use App\Http\Resources\Models\PhotoResource;
 use App\Models\Photo;
 use App\Policies\AlbumPolicy;
+use App\Policies\PhotoPolicy;
 use App\Policies\PhotoQueryPolicy;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class FrameController extends Controller
 {
@@ -64,7 +66,7 @@ class FrameController extends Controller
 	{
 		$photo = $this->loadPhoto($request->album(), 5);
 
-		return new PhotoResource($photo, $request->album());
+		return new PhotoResource($photo, $request->album()?->get_id(), !Gate::check(PhotoPolicy::CAN_ACCESS_FULL_PHOTO, [Photo::class, $photo]));
 	}
 
 	/**

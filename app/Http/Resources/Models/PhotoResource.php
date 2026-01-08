@@ -8,7 +8,6 @@
 
 namespace App\Http\Resources\Models;
 
-use App\Contracts\Models\AbstractAlbum;
 use App\Enum\LicenseType;
 use App\Http\Resources\Models\Utils\PreComputedPhotoData;
 use App\Http\Resources\Models\Utils\PreformattedPhotoData;
@@ -55,7 +54,6 @@ class PhotoResource extends Data
 	public string $title;
 	public string $type;
 	public string $updated_at;
-	public PhotoRightsResource $rights;
 	public ?string $next_photo_id;
 	public ?string $previous_photo_id;
 	public PreformattedPhotoData $preformatted;
@@ -68,10 +66,10 @@ class PhotoResource extends Data
 	public ?PhotoStatisticsResource $statistics = null;
 	public ?PhotoRatingResource $rating = null;
 
-	public function __construct(Photo $photo, ?AbstractAlbum $album)
+	public function __construct(Photo $photo, ?string $album_id, bool $should_downgrade_size_variants)
 	{
 		$this->id = $photo->id;
-		$this->album_id = $album?->get_id() ?? null;
+		$this->album_id = $album_id;
 		$this->altitude = $photo->altitude;
 		$this->aperture = $photo->aperture;
 		$this->checksum = $photo->checksum;
@@ -92,14 +90,13 @@ class PhotoResource extends Data
 		$this->model = $photo->model;
 		$this->original_checksum = $photo->original_checksum;
 		$this->shutter = $photo->shutter;
-		$this->size_variants = new SizeVariantsResouce($photo, $album);
+		$this->size_variants = new SizeVariantsResouce($photo, $should_downgrade_size_variants);
 		$this->tags = $photo->tags->pluck('name')->all();
 		$this->taken_at = $photo->taken_at?->toIso8601String();
 		$this->taken_at_orig_tz = $photo->taken_at_orig_tz;
 		$this->title = (request()->configs()->getValueAsBool('file_name_hidden') && Auth::guest()) ? '' : $photo->title;
 		$this->type = $photo->type;
 		$this->updated_at = $photo->updated_at->toIso8601String();
-		$this->rights = new PhotoRightsResource($album);
 		$this->next_photo_id = null;
 		$this->previous_photo_id = null;
 		$this->preformatted = new PreformattedPhotoData($photo, $this->size_variants->original);

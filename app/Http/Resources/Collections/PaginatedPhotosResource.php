@@ -8,12 +8,11 @@
 
 namespace App\Http\Resources\Collections;
 
-use App\Contracts\Models\AbstractAlbum;
+use App\Enum\TimelinePhotoGranularity;
 use App\Http\Resources\Models\PhotoResource;
 use App\Http\Resources\Models\Utils\TimelineData;
 use App\Http\Resources\Traits\HasPrepPhotoCollection;
 use App\Http\Resources\Traits\HasTimelineData;
-use App\Models\Album;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Spatie\LaravelData\Data;
@@ -37,11 +36,12 @@ class PaginatedPhotosResource extends Data
 
 	/**
 	 * @param ?LengthAwarePaginator<\App\Models\Photo> $paginated_photos
-	 * @param AbstractAlbum                            $album            the album context for photo resources
+	 * @param string|null                              $album_id          the album ID for photo resources
+	 * @param TimelinePhotoGranularity|null            $photo_timeline    the timeline granularity setting
 	 */
-	public function __construct(?LengthAwarePaginator $paginated_photos, AbstractAlbum $album)
+	public function __construct(?LengthAwarePaginator $paginated_photos, ?string $album_id, ?TimelinePhotoGranularity $photo_timeline = null)
 	{
-		$this->photos = $this->toPhotoResources(collect($paginated_photos?->items() ?? []), $album);
+		$this->photos = $this->toPhotoResources(collect($paginated_photos?->items() ?? []), $album_id);
 		$this->current_page = $paginated_photos?->currentPage() ?? 1;
 		$this->last_page = $paginated_photos?->lastPage() ?? 1;
 		$this->per_page = $paginated_photos?->perPage() ?? 0;
@@ -49,12 +49,12 @@ class PaginatedPhotosResource extends Data
 
 		$this->prepPhotosCollection();
 
-		if ($album instanceof Album === false) {
+		if ($photo_timeline === null) {
 			return;
 		}
 
 		// setup timeline data
-		$photo_granularity = $this->getPhotoTimeline($album->photo_timeline);
+		$photo_granularity = $this->getPhotoTimeline($photo_timeline);
 		$this->photos = TimelineData::setTimeLineDataForPhotos($this->photos, $photo_granularity);
 	}
 }

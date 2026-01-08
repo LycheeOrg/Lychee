@@ -49,7 +49,7 @@ class AlbumPhotosController extends Controller
 
 			return new PaginatedPhotosResource(
 				$photos,
-				$album,
+				$album->get_id(),
 			);
 		}
 
@@ -58,13 +58,14 @@ class AlbumPhotosController extends Controller
 
 			return new PaginatedPhotosResource(
 				$photos,
-				$album,
+				$album->id,
+				$album->photo_timeline,
 			);
 		}
 
 		/** @var Album $album */
 		$paginator = $this->photo_repository->getPhotosForAlbumPaginated($album->id, $album->getEffectivePhotoSorting(), $per_page);
 
-		return new PaginatedPhotosResource($paginator, $album);
+		return new PaginatedPhotosResource($paginator, $album->id, $album->photo_timeline);
 	}
 }

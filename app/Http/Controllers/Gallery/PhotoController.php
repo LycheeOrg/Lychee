@@ -39,13 +39,16 @@ use App\Image\Files\UploadedFile;
 use App\Jobs\ExtractZip;
 use App\Jobs\ProcessImageJob;
 use App\Jobs\WatermarkerJob;
+use App\Models\Photo;
 use App\Models\SizeVariant;
 use App\Models\Tag;
+use App\Policies\PhotoPolicy;
 use App\Repositories\ConfigManager;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use LycheeVerify\Contract\VerifyInterface;
 
@@ -155,7 +158,7 @@ class PhotoController extends Controller
 
 		$photo->save();
 
-		return new PhotoResource($photo, $request->from_album());
+		return new PhotoResource($photo, $request->from_album()?->get_id(), !Gate::check(PhotoPolicy::CAN_ACCESS_FULL_PHOTO, [Photo::class, $photo]));
 	}
 
 	/**
@@ -190,7 +193,7 @@ class PhotoController extends Controller
 			$request->rating()
 		);
 
-		return new PhotoResource($photo, null);
+		return new PhotoResource($photo, null, !Gate::check(PhotoPolicy::CAN_ACCESS_FULL_PHOTO, [Photo::class, $photo]));
 	}
 
 	/**
@@ -226,7 +229,7 @@ class PhotoController extends Controller
 		$rotate_strategy = new Rotate($request->photo(), $request->direction());
 		$photo = $rotate_strategy->do();
 
-		return new PhotoResource($photo, $request->from_album());
+		return new PhotoResource($photo, $request->from_album()?->get_id(), !Gate::check(PhotoPolicy::CAN_ACCESS_FULL_PHOTO, [Photo::class, $photo]));
 	}
 
 	/**

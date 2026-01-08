@@ -69,7 +69,7 @@
 				}
 			"
 		/>
-		<PhotoEdit v-if="photoStore.photo.rights.can_edit" v-model:visible="is_photo_edit_open" />
+		<PhotoEdit v-if="albumStore.rights?.can_edit" v-model:visible="is_photo_edit_open" />
 		<MoveDialog v-model:visible="is_move_visible" @moved="refresh" />
 		<DeleteDialog v-model:visible="is_delete_visible" @deleted="refresh" />
 	</template>
@@ -388,16 +388,16 @@ onKeyStroke("f", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && toggla
 onKeyStroke("Escape", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && is_slideshow_active.value && stop());
 
 // Priviledged Photo operations
-onKeyStroke("m", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && photoStore.photo?.rights.can_edit && toggleMove());
+onKeyStroke("m", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && albumStore.rights?.can_edit && toggleMove());
 onKeyStroke(
 	"e",
 	() =>
 		!shouldIgnoreKeystroke() &&
 		photoStore.isLoaded &&
-		photoStore.photo?.rights.can_edit &&
+		albumStore.rights?.can_edit &&
 		(is_photo_edit_open.value = !is_photo_edit_open.value),
 );
-onKeyStroke("s", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && photoStore.photo?.rights.can_edit && toggleStar());
+onKeyStroke("s", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && albumStore.rights?.can_edit && toggleStar());
 onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && photoStore.isLoaded && albumStore.album?.rights.can_delete && toggleDelete());
 
 // on key stroke escape:

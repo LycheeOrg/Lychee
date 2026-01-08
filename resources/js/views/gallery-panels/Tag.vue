@@ -25,7 +25,7 @@
 
 	<!-- Dialogs -->
 	<template v-if="photoStore.isLoaded">
-		<PhotoEdit v-if="photoStore.rights?.can_edit" v-model:visible="is_photo_edit_open" />
+		<!-- <PhotoEdit v-if="photoStore.rights?.can_edit" v-model:visible="is_photo_edit_open" /> -->
 		<MoveDialog v-model:visible="is_move_visible" :photo="photoStore.photo" @moved="refresh" />
 		<DeleteDialog v-model:visible="is_delete_visible" :photo="photoStore.photo" @deleted="refresh" />
 	</template>
@@ -90,7 +90,7 @@
 	</template>
 </template>
 <script setup lang="ts">
-import PhotoEdit from "@/components/drawers/PhotoEdit.vue";
+// import PhotoEdit from "@/components/drawers/PhotoEdit.vue";
 import DeleteDialog from "@/components/forms/gallery-dialogs/DeleteDialog.vue";
 import MoveDialog from "@/components/forms/gallery-dialogs/MoveDialog.vue";
 import RenameDialog from "@/components/forms/gallery-dialogs/RenameDialog.vue";
@@ -194,13 +194,13 @@ function toggleDetails() {
 	are_details_open.value = !are_details_open.value;
 }
 
-function toggleEdit() {
-	if (photoStore.isLoaded) {
-		are_details_open.value = false;
-		is_photo_edit_open.value = !is_photo_edit_open.value;
-		return;
-	}
-}
+// function toggleEdit() {
+// 	if (photoStore.isLoaded) {
+// 		are_details_open.value = false;
+// 		is_photo_edit_open.value = !is_photo_edit_open.value;
+// 		return;
+// 	}
+// }
 
 // Album operations
 onKeyStroke("h", () => !shouldIgnoreKeystroke() && !photoStore.isLoaded && (are_nsfw_visible.value = !are_nsfw_visible.value));
@@ -229,9 +229,9 @@ onKeyStroke("m", () => !shouldIgnoreKeystroke() && !photoStore.isLoaded && hasSe
 onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && !photoStore.isLoaded && hasSelection() && toggleDelete());
 
 // Priviledged Photo operations
-onKeyStroke("m", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && photoStore.rights?.can_edit && toggleMove());
-onKeyStroke("e", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && photoStore.rights?.can_edit && toggleEdit());
-onKeyStroke("s", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && photoStore.rights?.can_edit && toggleStar());
+// onKeyStroke("m", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && photoStore.rights?.can_edit && toggleMove());
+// onKeyStroke("e", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && photoStore.rights?.can_edit && toggleEdit());
+// onKeyStroke("s", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && photoStore.rights?.can_edit && toggleStar());
 onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && photoStore.isLoaded && toggleDelete());
 
 // on key stroke escape:

@@ -85,7 +85,7 @@ class AlbumResource extends Data
 		$this->parent_id = $album->parent_id;
 		$this->has_albums = !$album->isLeaf();
 		$this->albums = $album->relationLoaded('children') ? ThumbAlbumResource::collect($album->children) : null;
-		$this->photos = $album->relationLoaded('photos') ? $this->toPhotoResources($album->photos, $album) : null;
+		$this->photos = $album->relationLoaded('photos') ? $this->toPhotoResources($album->photos, $album->id) : null;
 		if ($this->photos !== null) {
 			// Prep collection with first and last link + which id is next.
 			$this->prepPhotosCollection();

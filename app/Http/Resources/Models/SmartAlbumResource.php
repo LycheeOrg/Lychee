@@ -52,7 +52,7 @@ class SmartAlbumResource extends Data
 		$photos = $smart_album->relationLoaded('photos') ? $smart_album->getPhotos() : null;
 
 		if ($photos !== null) {
-			$this->photos = $this->toPhotoResources(collect($photos->items()), $smart_album);
+			$this->photos = $this->toPhotoResources(collect($photos->items()), $smart_album->get_id());
 			$this->current_page = $photos->currentPage();
 			$this->last_page = $photos->lastPage();
 			$this->per_page = $photos->perPage();

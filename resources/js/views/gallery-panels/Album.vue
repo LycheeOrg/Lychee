@@ -52,7 +52,7 @@
 	/>
 	<!-- Dialogs -->
 	<template v-if="photoStore.isLoaded">
-		<PhotoEdit v-if="photoStore.rights?.can_edit" v-model:visible="is_photo_edit_open" />
+		<PhotoEdit v-if="albumStore.rights?.can_edit" v-model:visible="is_photo_edit_open" />
 		<MoveDialog v-model:visible="is_move_visible" @moved="refresh" />
 		<DeleteDialog v-model:visible="is_delete_visible" @deleted="refresh(true)" />
 	</template>
@@ -374,9 +374,9 @@ onKeyStroke(
 );
 
 // Priviledged Photo operations
-onKeyStroke("m", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && photoStore.rights?.can_edit && toggleMove());
-onKeyStroke("e", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && photoStore.rights?.can_edit && toggleEdit());
-onKeyStroke("s", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && photoStore.rights?.can_edit && toggleStar());
+onKeyStroke("m", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && albumStore.rights?.can_edit && toggleMove());
+onKeyStroke("e", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && albumStore.rights?.can_edit && toggleEdit());
+onKeyStroke("s", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && albumStore.rights?.can_edit && toggleStar());
 onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && photoStore.isLoaded && albumStore.rights?.can_delete && toggleDelete());
 onKeyStroke("0", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && handleRatingClick(photoStore.photo!.id, 0));
 onKeyStroke("1", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && handleRatingClick(photoStore.photo!.id, 1));

@@ -23,7 +23,7 @@
 						@click="emits('toggleSlideShow')"
 					/>
 					<Button
-						v-if="photoStore.photo.rights.can_access_full_photo && photoStore.photo.size_variants.original?.url"
+						v-if="albumStore.rights?.can_access_original && photoStore.photo.size_variants.original?.url"
 						text
 						icon="pi pi-window-maximize"
 						class="ltr:mr-2 rtl:ml-2 font-bold"
@@ -31,7 +31,7 @@
 						@click="openInNewTab(photoStore.photo.size_variants.original.url)"
 					/>
 					<Button
-						v-if="photoStore.photo.rights.can_download"
+						v-if="albumStore.rights?.can_download"
 						text
 						icon="pi pi-cloud-download"
 						class="ltr:mr-2 rtl:ml-2"
@@ -39,7 +39,7 @@
 						@click="isDownloadOpen = !isDownloadOpen"
 					/>
 					<Button
-						v-if="photoStore.photo.rights.can_edit"
+						v-if="albumStore.rights?.can_edit"
 						text
 						icon="pi pi-pencil"
 						class="ltr:mr-2 rtl:ml-2"
@@ -70,6 +70,7 @@ import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import GoBack from "./GoBack.vue";
 import { usePhotoStore } from "@/stores/PhotoState";
+import { useAlbumStore } from "@/stores/AlbumState";
 
 const emits = defineEmits<{
 	toggleDetails: [];
@@ -79,6 +80,7 @@ const emits = defineEmits<{
 }>();
 
 const photoStore = usePhotoStore();
+const albumStore = useAlbumStore();
 const togglableStore = useTogglablesStateStore();
 const { is_full_screen, is_photo_edit_open, are_details_open, is_slideshow_active } = storeToRefs(togglableStore);
 const isDownloadOpen = ref(false);

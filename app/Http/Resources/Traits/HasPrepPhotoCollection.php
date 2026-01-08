@@ -8,18 +8,20 @@
 
 namespace App\Http\Resources\Traits;
 
-use App\Contracts\Models\AbstractAlbum;
 use App\Http\Resources\Models\PhotoResource;
+use App\Models\Photo;
+use App\Policies\PhotoPolicy;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Gate;
 
 /**
  * @property ?Collection<int,PhotoResource> $photos
  */
 trait HasPrepPhotoCollection
 {
-	private function toPhotoResources(Collection $photos, ?AbstractAlbum $album): Collection
+	private function toPhotoResources(Collection $photos, ?string $album_id): Collection
 	{
-		return $photos->map(fn ($photo) => new PhotoResource($photo, $album));
+		return $photos->map(fn ($photo) => new PhotoResource($photo, $album_id, !Gate::check(PhotoPolicy::CAN_ACCESS_FULL_PHOTO, [Photo::class, $photo])));
 	}
 
 	private function prepPhotosCollection(): void

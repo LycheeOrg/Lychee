@@ -28,12 +28,10 @@ class SizeVariantsResouce extends Data
 	public ?SizeVariantResource $thumb;
 	public ?SizeVariantResource $placeholder;
 
-	public function __construct(Photo $photo, ?AbstractAlbum $album)
+	public function __construct(Photo $photo, bool $should_downgrade)
 	{
 		$size_variants = $photo->relationLoaded('size_variants') ? $photo->size_variants : null;
-		$downgrade = !Gate::check(AlbumPolicy::CAN_ACCESS_FULL_PHOTO, [AbstractAlbum::class, $album]) &&
-			!$photo->isVideo() &&
-			$size_variants?->hasMedium() === true;
+		$downgrade = $should_downgrade && !$photo->isVideo() && $size_variants?->hasMedium() === true;
 
 		$original = $size_variants?->getSizeVariant(SizeVariantType::ORIGINAL);
 		$medium = $size_variants?->getSizeVariant(SizeVariantType::MEDIUM);

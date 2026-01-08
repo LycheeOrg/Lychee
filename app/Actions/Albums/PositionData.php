@@ -62,6 +62,6 @@ class PositionData
 			include_nsfw: !$this->config_manager->getValueAsBool('hide_nsfw_in_map')
 		);
 
-		return new PositionDataResource(null, $photo_query->get(), null);
+		return new PositionDataResource(null, null, $photo_query->get(), null);
 	}
 }

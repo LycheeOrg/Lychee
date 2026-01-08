@@ -67,7 +67,7 @@ class TagAlbumResource extends Data
 		$this->copyright = $tag_album->copyright;
 
 		// children
-		$this->photos = $tag_album->relationLoaded('photos') ? $this->toPhotoResources($tag_album->photos, $tag_album) : null;
+		$this->photos = $tag_album->relationLoaded('photos') ? $this->toPhotoResources($tag_album->photos, $tag_album->id) : null;
 		if ($this->photos !== null) {
 			// Prep collection with first and last link + which id is next.
 			$this->prepPhotosCollection();

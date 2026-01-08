@@ -28,7 +28,7 @@
 			<Overlay v-if="!is_exif_disabled && photoStore.imageViewMode !== ImageViewMode.Pdf" />
 			<PhotoRatingOverlay />
 			<Dock
-				v-if="photoStore.rights?.can_edit && !is_photo_edit_open"
+				v-if="albumStore.rights?.can_edit && !is_photo_edit_open"
 				:is-narrow-menu="photoStore.imageViewMode === ImageViewMode.Pdf"
 				@toggle-star="emits('toggleStar')"
 				@set-album-header="emits('setAlbumHeader')"
@@ -57,10 +57,12 @@ import { onUnmounted } from "vue";
 import { useDebounceFn } from "@vueuse/core";
 import PhotoBox from "./PhotoBox.vue";
 import { ImageViewMode, usePhotoStore } from "@/stores/PhotoState";
+import { useAlbumStore } from "@/stores/AlbumState";
 
 const lycheeStore = useLycheeStateStore();
 const togglableStore = useTogglablesStateStore();
 const photoStore = usePhotoStore();
+const albumStore = useAlbumStore();
 
 const { is_exif_disabled, is_scroll_to_navigate_photos_enabled } = storeToRefs(lycheeStore);
 const { is_photo_edit_open, is_slideshow_active, are_details_open } = storeToRefs(togglableStore);
