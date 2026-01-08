@@ -13,12 +13,10 @@ use App\Http\Resources\Tags\TagWithPhotosResource;
 use App\Models\Photo;
 use App\Models\Tag;
 use App\Models\User;
-use App\Policies\PhotoPolicy;
 use App\Policies\PhotoQueryPolicy;
 use App\Repositories\ConfigManager;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
 
 /**
  * GetTagWithPhotos retrieves a tag along with its associated photos.
@@ -63,7 +61,11 @@ class GetTagWithPhotos
 
 		/** @var Collection<int,Photo> $photos */
 		$photos = $photos_query->get();
-		$photo_resources = $photos->map(fn ($photo) => new PhotoResource($photo, null, !Gate::check(PhotoPolicy::CAN_ACCESS_FULL_PHOTO, [Photo::class, $photo])));
+		$photo_resources = $photos->map(fn ($photo) => new PhotoResource(
+			photo: $photo,
+			album_id: null,
+			should_downgrade_size_variants: $user->may_administrate !== true && $user->id !== $photo->owner_id
+		));
 
 		return new TagWithPhotosResource(
 			id: $tag->id,

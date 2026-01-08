@@ -158,7 +158,11 @@ class PhotoController extends Controller
 
 		$photo->save();
 
-		return new PhotoResource($photo, $request->from_album()?->get_id(), !Gate::check(PhotoPolicy::CAN_ACCESS_FULL_PHOTO, [Photo::class, $photo]));
+		return new PhotoResource(
+			photo: $photo,
+			album_id: $request->from_album()?->get_id(),
+			should_downgrade_size_variants: !Gate::check(PhotoPolicy::CAN_ACCESS_FULL_PHOTO, [Photo::class, $photo])
+		);
 	}
 
 	/**
@@ -193,7 +197,11 @@ class PhotoController extends Controller
 			$request->rating()
 		);
 
-		return new PhotoResource($photo, null, !Gate::check(PhotoPolicy::CAN_ACCESS_FULL_PHOTO, [Photo::class, $photo]));
+		return new PhotoResource(
+			photo: $photo,
+			album_id: null,
+			should_downgrade_size_variants: !Gate::check(PhotoPolicy::CAN_ACCESS_FULL_PHOTO, [Photo::class, $photo])
+		);
 	}
 
 	/**
@@ -229,7 +237,11 @@ class PhotoController extends Controller
 		$rotate_strategy = new Rotate($request->photo(), $request->direction());
 		$photo = $rotate_strategy->do();
 
-		return new PhotoResource($photo, $request->from_album()?->get_id(), !Gate::check(PhotoPolicy::CAN_ACCESS_FULL_PHOTO, [Photo::class, $photo]));
+		return new PhotoResource(
+			photo: $photo,
+			album_id: $request->from_album()?->get_id(),
+			should_downgrade_size_variants: !Gate::check(PhotoPolicy::CAN_ACCESS_FULL_PHOTO, [Photo::class, $photo])
+		);
 	}
 
 	/**

@@ -8,14 +8,18 @@
 
 namespace App\Http\Controllers\Gallery;
 
+use App\Contracts\Models\AbstractAlbum;
+use App\Enum\TimelinePhotoGranularity;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Http\Requests\Album\GetAlbumPhotosRequest;
 use App\Http\Resources\Collections\PaginatedPhotosResource;
 use App\Models\Album;
 use App\Models\TagAlbum;
+use App\Repositories\ConfigManager;
 use App\Repositories\PhotoRepository;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Gate;
 
 /**
  * Controller for returning paginated photos.
@@ -47,25 +51,34 @@ class AlbumPhotosController extends Controller
 			/** @disregard P1006 */
 			$photos = $album->relationLoaded('photos') ? $album->getPhotos() : null;
 
+			$config_manager = resolve(ConfigManager::class);
+
 			return new PaginatedPhotosResource(
-				$photos,
-				$album->get_id(),
+				paginated_photos: $photos,
+				album_id: $album->get_id(),
+				should_downgrade: !$config_manager->getValueAsBool('grants_full_photo_access'),
+				photo_timeline: $config_manager->getValueAsEnum('timeline_photo_granularity', TimelinePhotoGranularity::class),
 			);
 		}
-
+		// grants_full_photo_access
 		if ($album instanceof TagAlbum) {
 			$photos = $album->relationLoaded('photos') ? $album->photos : null;
 
 			return new PaginatedPhotosResource(
-				$photos,
-				$album->id,
-				$album->photo_timeline,
+				paginated_photos: $photos,
+				album_id: $album->id,
+				should_downgrade: Gate::check(\AlbumPolicy::CAN_ACCESS_FULL_PHOTO, [AbstractAlbum::class, $album]) === false,
+				photo_timeline: $album->photo_timeline,
 			);
 		}
 
 		/** @var Album $album */
 		$paginator = $this->photo_repository->getPhotosForAlbumPaginated($album->id, $album->getEffectivePhotoSorting(), $per_page);
 
-		return new PaginatedPhotosResource($paginator, $album->id, $album->photo_timeline);
+		return new PaginatedPhotosResource(
+			paginated_photos: $paginator,
+			album_id: $album->id,
+			should_downgrade: Gate::check(\AlbumPolicy::CAN_ACCESS_FULL_PHOTO, [AbstractAlbum::class, $album]) === false,
+			photo_timeline: $album->photo_timeline);
 	}
 }

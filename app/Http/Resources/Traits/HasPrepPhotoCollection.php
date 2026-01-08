@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Gate;
  */
 trait HasPrepPhotoCollection
 {
-	private function toPhotoResources(Collection $photos, ?string $album_id): Collection
+	private function toPhotoResources(Collection $photos, ?string $album_id, bool $should_downgrade): Collection
 	{
 		return $photos->map(fn ($photo) => new PhotoResource($photo, $album_id, !Gate::check(PhotoPolicy::CAN_ACCESS_FULL_PHOTO, [Photo::class, $photo])));
 	}

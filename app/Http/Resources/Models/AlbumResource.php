@@ -8,6 +8,7 @@
 
 namespace App\Http\Resources\Models;
 
+use App\Contracts\Models\AbstractAlbum;
 use App\Enum\ColumnSortingType;
 use App\Http\Resources\Editable\EditableBaseAlbumResource;
 use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
@@ -85,7 +86,11 @@ class AlbumResource extends Data
 		$this->parent_id = $album->parent_id;
 		$this->has_albums = !$album->isLeaf();
 		$this->albums = $album->relationLoaded('children') ? ThumbAlbumResource::collect($album->children) : null;
-		$this->photos = $album->relationLoaded('photos') ? $this->toPhotoResources($album->photos, $album->id) : null;
+		$this->photos = $album->relationLoaded('photos') ? $this->toPhotoResources(
+			photos: $album->photos,
+			album_id: $album->id,
+			should_downgrade: !Gate::check(AlbumPolicy::CAN_ACCESS_FULL_PHOTO, [AbstractAlbum::class, $album]),
+		) : null;
 		if ($this->photos !== null) {
 			// Prep collection with first and last link + which id is next.
 			$this->prepPhotosCollection();

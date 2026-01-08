@@ -62,6 +62,12 @@ class PositionData
 			include_nsfw: !$this->config_manager->getValueAsBool('hide_nsfw_in_map')
 		);
 
-		return new PositionDataResource(null, null, $photo_query->get(), null);
+		return new PositionDataResource(
+			album_id: null,
+			title: null,
+			photos: $photo_query->get(),
+			track_url: null,
+			should_downgrade: !$this->config_manager->getValueAsBool('grants_full_photo_access'),
+		);
 	}
 }

@@ -66,7 +66,11 @@ class FrameController extends Controller
 	{
 		$photo = $this->loadPhoto($request->album(), 5);
 
-		return new PhotoResource($photo, $request->album()?->get_id(), !Gate::check(PhotoPolicy::CAN_ACCESS_FULL_PHOTO, [Photo::class, $photo]));
+		return new PhotoResource(
+			photo: $photo,
+			album_id: $request->album()?->get_id(),
+			should_downgrade_size_variants: !Gate::check(PhotoPolicy::CAN_ACCESS_FULL_PHOTO, [Photo::class, $photo]),
+		);
 	}
 
 	/**

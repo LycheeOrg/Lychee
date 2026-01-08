@@ -108,14 +108,21 @@ class FlowItemResource extends Data
 			// Really NOT recommended!
 			// @codeCoverageIgnoreStart
 			$album->load(['all_photos', 'all_photos.size_variants', 'all_photos.palette', 'all_photos.statistics']);
-			$this->photos = $this->toPhotoResources($album->all_photos, $album->id);
+			$this->photos = $this->toPhotoResources(
+				photos: $album->all_photos,
+				album_id: $album->id,
+				should_downgrade: !Gate::check(AlbumPolicy::CAN_ACCESS_FULL_PHOTO, [AbstractAlbum::class, $album]));
 
 			return;
 			// @codeCoverageIgnoreEnd
 		}
 
 		if ($album->photos !== null && !$album->photos->isEmpty()) {
-			$this->photos = $this->toPhotoResources($album->photos, $album->id);
+			$this->photos = $this->toPhotoResources(
+				photos: $album->photos,
+				album_id: $album->id,
+				should_downgrade: !Gate::check(AlbumPolicy::CAN_ACCESS_FULL_PHOTO, [AbstractAlbum::class, $album]),
+			);
 
 			return;
 		}

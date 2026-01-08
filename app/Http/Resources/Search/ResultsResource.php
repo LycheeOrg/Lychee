@@ -13,11 +13,9 @@ use App\Http\Resources\Models\ThumbAlbumResource;
 use App\Http\Resources\Traits\HasPrepPhotoCollection;
 use App\Models\Album;
 use App\Models\Photo;
-use App\Policies\PhotoPolicy;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Gate;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\LiteralTypeScriptType;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
@@ -71,15 +69,20 @@ class ResultsResource extends Data
 	 * @param Collection<int,Album>           $albums
 	 * @param LengthAwarePaginator<int,Photo> $photos
 	 * @param string|null                     $album_id
+	 * @param bool                            $should_downgrade
 	 *
 	 * @return ResultsResource
 	 */
-	public static function fromData(Collection $albums, LengthAwarePaginator $photos, ?string $album_id): self
+	public static function fromData(Collection $albums, LengthAwarePaginator $photos, ?string $album_id, bool $should_downgrade): self
 	{
 		/** @disregard Undefined method through() (stupid intelephense) */ return new self(
 			albums: ThumbAlbumResource::collect($albums),
 			/** @phpstan-ignore method.notFound (this methods exists, it's in the doc...) */
-			photos: $photos->through(fn ($p) => new PhotoResource($p, $album_id, !Gate::check(PhotoPolicy::CAN_ACCESS_FULL_PHOTO, [Photo::class, $p]))),
+			photos: $photos->through(fn ($p) => new PhotoResource(
+				photo: $p,
+				album_id: $album_id,
+				should_downgrade_size_variants: $should_downgrade,
+			)),
 		);
 	}
 }

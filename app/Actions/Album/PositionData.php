@@ -12,7 +12,9 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Enum\SizeVariantType;
 use App\Http\Resources\Collections\PositionDataResource;
 use App\Models\Album;
+use App\Policies\AlbumPolicy;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Gate;
 
 class PositionData
 {
@@ -41,6 +43,12 @@ class PositionData
 			->whereNotNull('latitude')
 			->whereNotNull('longitude');
 
-		return new PositionDataResource($album->get_id(), $album->get_title(), $photo_relation->get(), $album instanceof Album ? $album->track_url : null);
+		return new PositionDataResource(
+			album_id: $album->get_id(),
+			title: $album->get_title(),
+			photos: $photo_relation->get(),
+			track_url: $album instanceof Album ? $album->track_url : null,
+			should_downgrade: Gate::check(AlbumPolicy::CAN_ACCESS_FULL_PHOTO, [AbstractAlbum::class, $album]) === false,
+		);
 	}
 }

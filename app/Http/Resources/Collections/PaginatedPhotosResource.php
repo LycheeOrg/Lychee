@@ -36,12 +36,20 @@ class PaginatedPhotosResource extends Data
 
 	/**
 	 * @param ?LengthAwarePaginator<\App\Models\Photo> $paginated_photos
-	 * @param string|null                              $album_id          the album ID for photo resources
-	 * @param TimelinePhotoGranularity|null            $photo_timeline    the timeline granularity setting
+	 * @param string|null                              $album_id         the album ID for photo resources
+	 * @param TimelinePhotoGranularity|null            $photo_timeline   the timeline granularity setting
 	 */
-	public function __construct(?LengthAwarePaginator $paginated_photos, ?string $album_id, ?TimelinePhotoGranularity $photo_timeline = null)
-	{
-		$this->photos = $this->toPhotoResources(collect($paginated_photos?->items() ?? []), $album_id);
+	public function __construct(
+		?LengthAwarePaginator $paginated_photos,
+		?string $album_id,
+		bool $should_downgrade,
+		?TimelinePhotoGranularity $photo_timeline = null,
+	) {
+		$this->photos = $this->toPhotoResources(
+			photos: collect($paginated_photos?->items() ?? []),
+			album_id: $album_id,
+			should_downgrade: $should_downgrade
+		);
 		$this->current_page = $paginated_photos?->currentPage() ?? 1;
 		$this->last_page = $paginated_photos?->lastPage() ?? 1;
 		$this->per_page = $paginated_photos?->perPage() ?? 0;

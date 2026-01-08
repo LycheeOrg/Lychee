@@ -33,7 +33,7 @@ class AlbumRepository
 	 *
 	 * @param string|null           $album_id the parent album ID (null for root albums)
 	 * @param AlbumSortingCriterion $sorting  the sorting criteria
-	 * @param int                   $per_page  number of albums per page
+	 * @param int                   $per_page number of albums per page
 	 *
 	 * @return LengthAwarePaginator<Album>
 	 *

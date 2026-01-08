@@ -8,11 +8,8 @@
 
 namespace App\Http\Resources\Models;
 
-use App\Contracts\Models\AbstractAlbum;
 use App\Enum\SizeVariantType;
 use App\Models\Photo;
-use App\Policies\AlbumPolicy;
-use Illuminate\Support\Facades\Gate;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 

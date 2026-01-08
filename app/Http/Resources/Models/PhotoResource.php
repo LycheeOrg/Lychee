@@ -12,7 +12,6 @@ use App\Enum\LicenseType;
 use App\Http\Resources\Models\Utils\PreComputedPhotoData;
 use App\Http\Resources\Models\Utils\PreformattedPhotoData;
 use App\Http\Resources\Models\Utils\TimelineData;
-use App\Http\Resources\Rights\PhotoRightsResource;
 use App\Models\Photo;
 use App\Policies\PhotoPolicy;
 use Illuminate\Support\Carbon;
