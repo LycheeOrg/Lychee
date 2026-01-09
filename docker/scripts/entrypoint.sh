@@ -140,7 +140,9 @@ web)
   elif command -v su-exec >/dev/null 2>&1; then
     exec su-exec www-data "$@"
   else
-    exec su -s /bin/sh www-data -c "$*"
+    # We die
+    echo "❌ ERROR: Neither gosu nor su-exec found to switch user"
+    exit 1
   fi
   ;;
 worker)
