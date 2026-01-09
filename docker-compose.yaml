@@ -2,8 +2,8 @@
 services:
   # Laravel Backend API
   lychee_api:
-    image: lychee-frankenphp:latest
-    # image: lychee-legacy:latest
+    # image: lychee-frankenphp:latest
+    image: lychee-legacy:latest
     # build:
     #   context: ./app
     #   dockerfile: Dockerfile
@@ -45,6 +45,14 @@ services:
       - path: ./.env
         required: true
     environment:
+      # User and Group IDs for the www-data user inside the container
+      # Note that this will impact your permissions on mounted volumes.
+      # By default Lychee does not run as root inside the container.
+      #
+      # Ensure that the PUID and PGID match the owner of the mounted volumes
+      # to avoid permission issues.
+      #
+      # You can also set it to 33 (www-data) if your files are owned by www-data.
       PUID: "${PUID:-1000}"
       PGID: "${PGID:-1000}"
       # Application

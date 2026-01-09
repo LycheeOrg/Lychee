@@ -90,6 +90,11 @@ web)
     # Just to make sure.
     composer dump-autoload --optimize --no-scripts --no-dev
 
+    # Ajust permissions for Nginx
+    chown -R www-data:www-data /var/lib/nginx /var/log/nginx
+    # yeah it is disgusting but nginx needs it.
+	  chmod 666 /dev/stdout /dev/stderr
+
     # Start PHP-FPM and Nginx for traditional Docker setup
     echo "🚀 Starting PHP-FPM..."
     php-fpm8.5
