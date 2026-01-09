@@ -5,6 +5,7 @@ import { ToastServiceMethods } from "primevue/toastservice";
 import { ref } from "vue";
 import { trans } from "laravel-vue-i18n";
 import { sprintf } from "sprintf-js";
+import { PhotosStore } from "@/stores/PhotosState";
 
 const buyablePhotoId = ref<string | undefined>(undefined);
 const buyableAlbumId = ref<string | undefined>(undefined);
@@ -13,6 +14,7 @@ const showBuyMeDialog = ref(false);
 
 export function useBuyMeActions(
 	albumStore: AlbumStore,
+	photosStore: PhotosStore,
 	orderManagement: OrderManagementStateStore,
 	catalogStore: CatalogStore,
 	toast: ToastServiceMethods,
@@ -35,7 +37,7 @@ export function useBuyMeActions(
 			return;
 		}
 
-		const photoToAdd = albumStore.album?.photos.find((p) => p.id === idx);
+		const photoToAdd = photosStore.photos.find((p) => p.id === idx);
 		if (photoToAdd === undefined) {
 			// Photo not found
 			return;
@@ -83,7 +85,7 @@ export function useBuyMeActions(
 			return;
 		}
 
-		const photo = albumStore.album?.photos.find((p) => p.id === buyablePhotoId.value);
+		const photo = photosStore.photos.find((p) => p.id === buyablePhotoId.value);
 		if (photo === undefined) {
 			return;
 		}

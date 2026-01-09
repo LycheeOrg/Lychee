@@ -10,10 +10,9 @@ export type AlbumStore = ReturnType<typeof useAlbumStore>;
 export const useAlbumStore = defineStore("album-store", {
 	state: () => ({
 		albumId: undefined as string | undefined,
-		modelAlbum: undefined as App.Http.Resources.Models.AlbumResource | undefined,
-		tagAlbum: undefined as App.Http.Resources.Models.TagAlbumResource | undefined,
-		smartAlbum: undefined as App.Http.Resources.Models.SmartAlbumResource | undefined,
-		albumHead: undefined as App.Http.Resources.Models.HeadAlbumResource | undefined,
+		modelAlbum: undefined as App.Http.Resources.Models.HeadAlbumResource | undefined,
+		tagAlbum: undefined as App.Http.Resources.Models.HeadTagAlbumResource | undefined,
+		smartAlbum: undefined as App.Http.Resources.Models.HeadSmartAlbumResource | undefined,
 
 		isPasswordProtected: false as boolean,
 		config: undefined as App.Http.Resources.GalleryConfigs.AlbumConfig | undefined,
@@ -53,7 +52,6 @@ export const useAlbumStore = defineStore("album-store", {
 			this.modelAlbum = undefined;
 			this.tagAlbum = undefined;
 			this.smartAlbum = undefined;
-			this.albumHead = undefined;
 			this.isPasswordProtected = false;
 			this.config = undefined;
 			this.isLoading = false;
@@ -79,6 +77,7 @@ export const useAlbumStore = defineStore("album-store", {
 			}
 
 			const requestedAlbumId = this.albumId;
+			this._loadingAlbumId = requestedAlbumId;
 			this.isLoading = true;
 
 			return AlbumService.getHead(requestedAlbumId)
@@ -86,10 +85,26 @@ export const useAlbumStore = defineStore("album-store", {
 					if (this.albumId !== requestedAlbumId) {
 						return;
 					}
-					// HeadAlbumResource includes config as a property
-					this.albumHead = data.data;
-					this.config = data.data.config;
+
+					// Exit early if the albumId changed while we were loading
+					// (e.g. user clicked on another album, or went back/forward in history)
+					// In that case, we don't want to override the state with the old album.
 					this.isPasswordProtected = false;
+					if (this._loadingAlbumId !== requestedAlbumId) {
+						return;
+					}
+
+					if (data.data.config.is_model_album) {
+						this.config = data.data.config;
+						this.modelAlbum = data.data.resource as App.Http.Resources.Models.HeadAlbumResource;
+					} else {
+						this.config = data.data.config;
+						if (data.data.config.is_base_album) {
+							this.tagAlbum = data.data.resource as App.Http.Resources.Models.HeadTagAlbumResource;
+						} else {
+							this.smartAlbum = data.data.resource as App.Http.Resources.Models.HeadSmartAlbumResource;
+						}
+					}
 				})
 				.catch((error) => {
 					if (this.albumId !== requestedAlbumId) {
@@ -106,7 +121,10 @@ export const useAlbumStore = defineStore("album-store", {
 					}
 				})
 				.finally(() => {
-					this.isLoading = false;
+					if (this._loadingAlbumId === requestedAlbumId) {
+						this._loadingAlbumId = undefined;
+						this.isLoading = false;
+					}
 				});
 		},
 
@@ -194,45 +212,7 @@ export const useAlbumStore = defineStore("album-store", {
 			return this.loadAlbums(this.albums_current_page + 1, true);
 		},
 
-		// Load album using new paginated endpoints (for regular albums only)
-		// This loads head metadata, first page of albums, and first page of photos in parallel
-		async loadPaginated(): Promise<void> {
-			const albumsStore = useAlbumsStore();
-			const photosState = usePhotosStore();
-
-			if (this.albumId === ALL || this.albumId === undefined) {
-				return;
-			}
-
-			// Check if already loaded
-			if (this.albumId === this.albumHead?.id) {
-				return;
-			}
-
-			this.isLoading = true;
-
-			try {
-				// Load head metadata first to get config
-				await this.loadHead();
-
-				// If not a model album (regular album), fall back to legacy load
-				if (!this.config?.is_model_album) {
-					this.isLoading = false;
-					return this.load();
-				}
-
-				// Reset albums/photos stores before loading new data
-				albumsStore.albums = [];
-				photosState.reset();
-
-				// Load first page of albums and photos in parallel
-				await Promise.all([this.loadAlbums(1, false), this.loadPhotos(1, false)]);
-			} finally {
-				this.isLoading = false;
-			}
-		},
-
-		load(): Promise<void> {
+		async load(): Promise<void> {
 			const togglableState = useTogglablesStateStore();
 			const photosState = usePhotosStore();
 			const albumsStore = useAlbumsStore();
@@ -252,13 +232,11 @@ export const useAlbumStore = defineStore("album-store", {
 			}
 
 			const requestedAlbumId = this.albumId;
-			const requestedPage = this.current_page;
 			this._loadingAlbumId = requestedAlbumId;
-			this._loadingPage = requestedPage;
 			this.isLoading = true;
 
-			return AlbumService.get(requestedAlbumId, requestedPage)
-				.then((data) => {
+			return AlbumService.getHead(requestedAlbumId)
+				.then(async (data) => {
 					this.isPasswordProtected = false;
 					this.config = undefined;
 					this.modelAlbum = undefined;
@@ -268,36 +246,30 @@ export const useAlbumStore = defineStore("album-store", {
 					// Exit early if the albumId changed while we were loading
 					// (e.g. user clicked on another album, or went back/forward in history)
 					// In that case, we don't want to override the state with the old album.
-					if (this._loadingAlbumId !== requestedAlbumId || this._loadingPage !== requestedPage) {
+					if (this._loadingAlbumId !== requestedAlbumId) {
 						return;
 					}
 
-					this.config = data.data.config;
-					if (data.data.resource === null) {
-						return;
-					}
 					// Reset to avoid bad surprises.
-					albumsStore.albums = [];
-					albumsStore.tagAlbums = [];
-					albumsStore.pinnedAlbums = [];
-					albumsStore.sharedAlbums = [];
-					// Load data.
+					albumsStore.reset();
+					photosState.reset();
+
 					if (data.data.config.is_model_album) {
-						this.modelAlbum = data.data.resource as App.Http.Resources.Models.AlbumResource;
-						albumsStore.albums = this.modelAlbum.albums;
-					} else if (data.data.config.is_base_album) {
-						this.tagAlbum = data.data.resource as App.Http.Resources.Models.TagAlbumResource;
+						await Promise.all([this.loadAlbums(1, false), this.loadPhotos(1, false)]);
+						this.config = data.data.config;
+						this.modelAlbum = data.data.resource as App.Http.Resources.Models.HeadAlbumResource;
 					} else {
-						this.smartAlbum = data.data.resource as App.Http.Resources.Models.SmartAlbumResource;
-						this.per_page = this.smartAlbum.per_page;
-						this.total = this.smartAlbum.total;
-						this.current_page = this.smartAlbum.current_page;
-						this.last_page = this.smartAlbum.last_page;
+						await this.loadPhotos(1, false);
+						this.config = data.data.config;
+						if (data.data.config.is_base_album) {
+							this.tagAlbum = data.data.resource as App.Http.Resources.Models.HeadTagAlbumResource;
+						} else {
+							this.smartAlbum = data.data.resource as App.Http.Resources.Models.HeadSmartAlbumResource;
+						}
 					}
-					photosState.setPhotos(data.data.resource.photos, data.data.config.is_photo_timeline_enabled);
 				})
 				.catch((error) => {
-					if (this._loadingAlbumId !== requestedAlbumId || this._loadingPage !== requestedPage) {
+					if (this._loadingAlbumId !== requestedAlbumId) {
 						return;
 					}
 					if (error.response && error.response.status === 401 && error.response.data.message === "Password required") {
@@ -322,17 +294,17 @@ export const useAlbumStore = defineStore("album-store", {
 		album(
 			state,
 		):
-			| App.Http.Resources.Models.AlbumResource
-			| App.Http.Resources.Models.SmartAlbumResource
-			| App.Http.Resources.Models.TagAlbumResource
+			| App.Http.Resources.Models.HeadAlbumResource
+			| App.Http.Resources.Models.HeadSmartAlbumResource
+			| App.Http.Resources.Models.HeadTagAlbumResource
 			| undefined {
 			return state.modelAlbum || state.tagAlbum || state.smartAlbum;
 		},
-		tagOrModelAlbum(state): App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.TagAlbumResource | undefined {
+		tagOrModelAlbum(state): App.Http.Resources.Models.HeadAlbumResource | App.Http.Resources.Models.HeadTagAlbumResource | undefined {
 			return state.modelAlbum || state.tagAlbum;
 		},
 		rights(state): App.Http.Resources.Rights.AlbumRightsResource | undefined {
-			return (state.modelAlbum || state.tagAlbum || state.smartAlbum || state.albumHead)?.rights ?? undefined;
+			return (state.modelAlbum || state.tagAlbum || state.smartAlbum)?.rights ?? undefined;
 		},
 		isLoaded(): boolean {
 			return this.config !== undefined && this.album !== undefined;

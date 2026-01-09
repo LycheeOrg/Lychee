@@ -206,7 +206,7 @@ const {
 	toggleUpload,
 } = useGalleryModals(togglableStore);
 
-const { toggleBuyMe } = useBuyMeActions(albumStore, orderManagement, catalogStore, toast);
+const { toggleBuyMe } = useBuyMeActions(albumStore, photosStore, orderManagement, catalogStore, toast);
 
 const {
 	selectedPhotosIdx,

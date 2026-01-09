@@ -1,7 +1,7 @@
 <template>
 	<Dialog v-model:visible="visible" pt:root:class="border-none" modal :dismissable-mask="true" @close="visible = false">
 		<template #container="{ closeCallback }">
-			<div class="flex flex-col relative md:w-[500px] max-w-[500px] text-sm rounded-md pt-9 text-muted-color">
+			<div class="flex flex-col relative md:w-125 max-w-125 text-sm rounded-md pt-9 text-muted-color">
 				<p class="px-9 mb-4 text-center text-muted-color-emphasis text-wrap" v-html="$t('sharing.propagate_help')"></p>
 				<p class="px-9 mb-8 text-center text-wrap" v-html="$t('sharing.propagate_default')"></p>
 				<div class="flex items-start w-full ltr:pr-9 ltr:pl-16 rtl:pl-9 rtl:pr-16">
@@ -40,7 +40,7 @@ import Checkbox from "primevue/checkbox";
 import Button from "primevue/button";
 
 const props = defineProps<{
-	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.TagAlbumResource;
+	album: App.Http.Resources.Models.HeadAlbumResource | App.Http.Resources.Models.HeadTagAlbumResource;
 }>();
 
 const visible = defineModel("visible", { type: Boolean, required: true });

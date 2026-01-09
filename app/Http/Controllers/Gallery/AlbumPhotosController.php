@@ -57,7 +57,7 @@ class AlbumPhotosController extends Controller
 				paginated_photos: $photos,
 				album_id: $album->get_id(),
 				should_downgrade: !$config_manager->getValueAsBool('grants_full_photo_access'),
-				photo_timeline: $config_manager->getValueAsEnum('timeline_photo_granularity', TimelinePhotoGranularity::class),
+				photo_timeline: $config_manager->getValueAsEnum('timeline_photos_granularity', TimelinePhotoGranularity::class),
 			);
 		}
 		// grants_full_photo_access

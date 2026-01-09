@@ -47,6 +47,7 @@ class AlbumRepository
 	): LengthAwarePaginator {
 		// Build query for child albums
 		$query = Album::query()
+			->with(['owner'])
 			->where('parent_id', '=', $album_id);
 
 		// Apply visibility filter

@@ -48,14 +48,16 @@ import { useBuyMeActions } from "@/composables/album/buyMeActions";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { useCatalogStore } from "@/stores/CatalogState";
 import { useOrderManagementStore } from "@/stores/OrderManagement";
+import { usePhotosStore } from "@/stores/PhotosState";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
 import { useToast } from "primevue/usetoast";
 
 const albumStore = useAlbumStore();
+const photosStore = usePhotosStore();
 const orderManagement = useOrderManagementStore();
 const catalogStore = useCatalogStore();
 const toast = useToast();
 
-const { prices, addPhotoToOrder, showBuyMeDialog, resetBuyMeDialog } = useBuyMeActions(albumStore, orderManagement, catalogStore, toast);
+const { prices, addPhotoToOrder, showBuyMeDialog, resetBuyMeDialog } = useBuyMeActions(albumStore, photosStore, orderManagement, catalogStore, toast);
 </script>

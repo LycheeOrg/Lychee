@@ -4,9 +4,9 @@ import { computed, Ref, ref } from "vue";
 export type Selectors = {
 	config?: Ref<App.Http.Resources.GalleryConfigs.AlbumConfig | undefined>;
 	album?: Ref<
-		| App.Http.Resources.Models.AlbumResource
-		| App.Http.Resources.Models.TagAlbumResource
-		| App.Http.Resources.Models.SmartAlbumResource
+		| App.Http.Resources.Models.HeadAlbumResource
+		| App.Http.Resources.Models.HeadTagAlbumResource
+		| App.Http.Resources.Models.HeadSmartAlbumResource
 		| undefined
 	>;
 	selectedPhotosIdx?: Ref<number[]>;
