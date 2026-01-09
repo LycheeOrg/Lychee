@@ -515,6 +515,7 @@ declare namespace App.Http.Resources.Models {
 		editable: App.Http.Resources.Editable.EditableBaseAlbumResource | null;
 		is_pinned: boolean;
 		statistics: App.Http.Resources.Models.AlbumStatisticsResource | null;
+		config: App.Http.Resources.GalleryConfigs.AlbumConfig;
 	};
 	export type AlbumResource = {
 		id: string;

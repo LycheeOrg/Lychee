@@ -52,6 +52,15 @@
 					@clicked="albumClick"
 					@contexted="albumMenuOpen"
 				/>
+				<!-- New pagination for albums (via /Album::albums endpoint) -->
+				<PaginationLoadMore
+					v-if="albumsStore.albums.length > 0 && albumStore.hasAlbumsPagination"
+					:loading="albumStore.albums_loading"
+					:has-more="albumStore.hasMoreAlbums"
+					:remaining="albumStore.albumsRemainingCount"
+					resource-type="albums"
+					@load-more="albumStore.loadMoreAlbums()"
+				/>
 				<div v-if="photosStore.photos.length > 0 && albumStore.hasPagination" class="flex justify-center w-full -mb-[100%]">
 					<Paginator
 						v-model:first="firstValue"
@@ -74,6 +83,7 @@
 					@contexted="photoMenuOpen"
 					@toggle-buy-me="toggleBuyMe"
 				/>
+				<!-- Legacy pagination for Smart albums (via /Album endpoint) -->
 				<div v-if="photosStore.photos.length > 0 && albumStore.hasPagination" class="flex justify-center w-full">
 					<Paginator
 						v-model:first="firstValue"
@@ -83,6 +93,15 @@
 						:pt:pcRowPerPageDropdown:class="'hidden'"
 					/>
 				</div>
+				<!-- New pagination for photos (via /Album::photos endpoint) -->
+				<PaginationLoadMore
+					v-if="photosStore.photos.length > 0 && albumStore.hasPhotosPagination"
+					:loading="albumStore.photos_loading"
+					:has-more="albumStore.hasMorePhotos"
+					:remaining="albumStore.photosRemainingCount"
+					resource-type="photos"
+					@load-more="albumStore.loadMorePhotos()"
+				/>
 				<ScrollTop v-if="!props.isPhotoOpen" target="parent" />
 				<GalleryFooter v-once />
 			</div>
@@ -141,6 +160,7 @@ import { useLayoutStore } from "@/stores/LayoutState";
 import { useCatalogStore } from "@/stores/CatalogState";
 import BuyMeDialog from "@/components/forms/gallery-dialogs/BuyMeDialog.vue";
 import { useToast } from "primevue/usetoast";
+import PaginationLoadMore from "@/components/pagination/PaginationLoadMore.vue";
 
 const router = useRouter();
 const toast = useToast();

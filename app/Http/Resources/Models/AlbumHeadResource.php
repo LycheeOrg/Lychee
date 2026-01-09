@@ -9,6 +9,7 @@
 namespace App\Http\Resources\Models;
 
 use App\Http\Resources\Editable\EditableBaseAlbumResource;
+use App\Http\Resources\GalleryConfigs\AlbumConfig;
 use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
 use App\Http\Resources\Models\Utils\PreFormattedAlbumData;
 use App\Http\Resources\Rights\AlbumRightsResource;
@@ -55,6 +56,9 @@ class AlbumHeadResource extends Data
 
 	public ?AlbumStatisticsResource $statistics = null;
 
+	// config for frontend rendering
+	public AlbumConfig $config;
+
 	public function __construct(Album $album)
 	{
 		$this->id = $album->id;
@@ -93,6 +97,9 @@ class AlbumHeadResource extends Data
 		if (request()->configs()->getValueAsBool('metrics_enabled') && Gate::check(AlbumPolicy::CAN_READ_METRICS, [Album::class, $album])) {
 			$this->statistics = AlbumStatisticsResource::fromModel($album->statistics);
 		}
+
+		// config for frontend rendering
+		$this->config = new AlbumConfig($album);
 	}
 
 	public static function fromModel(Album $album): AlbumHeadResource

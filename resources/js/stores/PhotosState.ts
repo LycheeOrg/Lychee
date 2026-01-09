@@ -28,6 +28,34 @@ export const usePhotosStore = defineStore("photos-store", {
 				this.photosTimeline = undefined;
 			}
 		},
+		appendPhotos(photos: App.Http.Resources.Models.PhotoResource[], isTimeline: boolean) {
+			if (isTimeline) {
+				// Append new photos to timeline and re-merge
+				const newTimelinePhotos = spliter(
+					photos,
+					(p: App.Http.Resources.Models.PhotoResource) => p.timeline?.time_date ?? "",
+					(p: App.Http.Resources.Models.PhotoResource) => p.timeline?.format ?? "Others",
+				);
+				// Merge existing timeline with new timeline data
+				if (this.photosTimeline) {
+					// Append new timeline groups or merge into existing ones
+					for (const newGroup of newTimelinePhotos) {
+						const existingGroup = this.photosTimeline.find((g) => g.header === newGroup.header);
+						if (existingGroup) {
+							existingGroup.data = [...existingGroup.data, ...newGroup.data];
+						} else {
+							this.photosTimeline.push(newGroup);
+						}
+					}
+				} else {
+					this.photosTimeline = newTimelinePhotos;
+				}
+				this.photos = merge(this.photosTimeline);
+			} else {
+				// Simply append photos to the existing array
+				this.photos = [...this.photos, ...photos];
+			}
+		},
 	},
 	getters: {},
 });

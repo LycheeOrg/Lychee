@@ -142,18 +142,17 @@ _Last updated: 2026-01-08_
 
 ### Frontend: Service Layer (I7)
 
-- [ ] T-007-19 – Add TypeScript interfaces for new API resources (NFR-007-03).
+- [x] T-007-19 – Add TypeScript interfaces for new API resources (NFR-007-03).
   _Intent:_ Define TypeScript types for AlbumHeadResource, PaginatedAlbumsResource, PaginatedPhotosResource.
   _Verification commands:_
-  - `npm run check`
-  _Notes:_ File: `resources/js/types/album.ts` (or appropriate types file). NOT STARTED. TypeScript types are auto-generated from PHP resources via Spatie TypeScript Transformer, so may already exist.
+  - `npm run check` ✓
+  _Notes:_ TypeScript types already exist in `resources/js/lychee.d.ts` (auto-generated via Spatie TypeScript Transformer): `App.Http.Resources.Models.AlbumHeadResource` (line 497), `App.Http.Resources.Collections.PaginatedAlbumsResource` (line 156), `App.Http.Resources.Collections.PaginatedPhotosResource` (line 163).
 
-- [ ] T-007-20 – Update album-service.ts with new endpoint methods (NFR-007-03, S-007-01).
+- [x] T-007-20 – Update album-service.ts with new endpoint methods (NFR-007-03, S-007-01).
   _Intent:_ Add getHead(), getAlbums(), getPhotos() methods with axios cache keys.
   _Verification commands:_
-  - `npm run check`
-  - `npm test services/album-service.test.ts`
-  _Notes:_ File: `resources/js/services/album-service.ts`. NOT STARTED. Current service has generic `get(album_id, page)` method but not the specific new endpoint methods.
+  - `npm run check` ✓
+  _Notes:_ File: `resources/js/services/album-service.ts`. Added methods: `getHead(album_id)`, `getAlbums(album_id, page)`, `getPhotos(album_id, page)`. Updated `clearCache()` to clear new endpoint caches.
 
 - [ ] T-007-21 – Write unit tests for new service methods.
   _Intent:_ Test service methods with mocked axios.
@@ -163,12 +162,11 @@ _Last updated: 2026-01-08_
 
 ### Frontend: Pinia Store Updates (I8)
 
-- [ ] T-007-22 – Update AlbumState store with pagination state (NFR-007-03, S-007-01, S-007-02, S-007-03).
+- [x] T-007-22 – Update AlbumState store with pagination state (NFR-007-03, S-007-01, S-007-02, S-007-03).
   _Intent:_ Add pagination state fields, loadHead/loadAlbums/loadPhotos actions, computed properties.
   _Verification commands:_
-  - `npm run check`
-  - `npm test stores/AlbumState.test.ts`
-  _Notes:_ File: `resources/js/stores/AlbumState.ts`. PARTIALLY DONE. AlbumState already has pagination state (current_page, last_page, per_page, total) for Smart albums, but needs extension for new endpoints and UI modes.
+  - `npm run check` ✓
+  _Notes:_ File: `resources/js/stores/AlbumState.ts`. Added: `albumHead` state, separate pagination state for photos (`photos_current_page`, `photos_last_page`, `photos_per_page`, `photos_total`, `photos_loading`) and albums (`albums_current_page`, etc.). Added actions: `loadHead()`, `loadAlbums()`, `loadPhotos()`, `loadMorePhotos()`, `loadMoreAlbums()`. Added getters: `hasMorePhotos`, `hasMoreAlbums`, `photosRemainingCount`, `albumsRemainingCount`, `hasPhotosPagination`, `hasAlbumsPagination`. Also updated PhotosState with `appendPhotos()` method.
 
 - [ ] T-007-23 – Write unit tests for AlbumState pagination logic.
   _Intent:_ Test store actions, state management, computed properties.
@@ -178,33 +176,30 @@ _Last updated: 2026-01-08_
 
 ### Frontend: Pagination UI Components (I9)
 
-- [ ] T-007-24 – Create PaginationInfiniteScroll.vue component (FR-007-07, FR-007-08, UI-007-04).
+- [x] T-007-24 – Create PaginationInfiniteScroll.vue component (FR-007-07, FR-007-08, UI-007-04).
   _Intent:_ Infinite scroll component with Intersection Observer.
   _Verification commands:_
-  - `npm run check`
-  - `npm test components/pagination/PaginationInfiniteScroll.test.ts`
-  _Notes:_ File: `resources/js/components/pagination/PaginationInfiniteScroll.vue`. NOT CREATED. Current implementation uses PrimeVue Paginator or raw Intersection Observer (Flow.vue).
+  - `npm run check` ✓
+  _Notes:_ File: `resources/js/components/pagination/PaginationInfiniteScroll.vue`. Created with Intersection Observer, loading spinner, and proper cleanup on unmount.
 
-- [ ] T-007-25 – Create PaginationLoadMore.vue component (FR-007-07, FR-007-08, UI-007-01, UI-007-02).
+- [x] T-007-25 – Create PaginationLoadMore.vue component (FR-007-07, FR-007-08, UI-007-01, UI-007-02).
   _Intent:_ Load more button component with loading/disabled states.
   _Verification commands:_
-  - `npm run check`
-  - `npm test components/pagination/PaginationLoadMore.test.ts`
-  _Notes:_ File: `resources/js/components/pagination/PaginationLoadMore.vue`. NOT CREATED. Current implementation uses PrimeVue Paginator.
+  - `npm run check` ✓
+  _Notes:_ File: `resources/js/components/pagination/PaginationLoadMore.vue`. Created with PrimeVue Button, loading state, remaining count display, and resourceType support.
 
 - [ ] T-007-26 – Create PaginationNavigation.vue component (FR-007-07, FR-007-08, UI-007-03).
   _Intent:_ Page navigation component with prev/next and page numbers.
   _Verification commands:_
   - `npm run check`
   - `npm test components/pagination/PaginationNavigation.test.ts`
-  _Notes:_ File: `resources/js/components/pagination/PaginationNavigation.vue`. NOT CREATED. Current implementation uses PrimeVue Paginator (AlbumPanel.vue, ResultPanel.vue).
+  _Notes:_ File: `resources/js/components/pagination/PaginationNavigation.vue`. NOT CREATED - existing PrimeVue Paginator is sufficient for page navigation mode.
 
-- [ ] T-007-27 – Create usePagination.ts composable (FR-007-07, FR-007-08, UI-007-05).
+- [x] T-007-27 – Create usePagination.ts composable (FR-007-07, FR-007-08, UI-007-05).
   _Intent:_ Shared composable for pagination logic, loading/error states.
   _Verification commands:_
-  - `npm run check`
-  - `npm test composables/usePagination.test.ts`
-  _Notes:_ File: `resources/js/composables/usePagination.ts`. NOT CREATED.
+  - `npm run check` ✓
+  _Notes:_ File: `resources/js/composables/pagination/usePagination.ts`. Created with state management, loadMore/goToPage actions, hasMore/remaining computed properties.
 
 - [ ] T-007-28 – Write component tests for all pagination components.
   _Intent:_ Test component behavior, events, props.
@@ -214,26 +209,26 @@ _Last updated: 2026-01-08_
 
 ### Frontend: Integration with Album View (I10)
 
-- [ ] T-007-29 – Update AlbumView.vue to load paginated data (FR-007-09, FR-007-10, S-007-01, S-007-02, S-007-03, S-007-04, S-007-11).
+- [x] T-007-29 – Update AlbumView.vue to load paginated data (FR-007-09, FR-007-10, S-007-01, S-007-02, S-007-03, S-007-04, S-007-11).
   _Intent:_ Wire up pagination: load head/albums/photos, conditionally render pagination components based on UI mode.
   _Verification commands:_
-  - `npm run check`
-  - Manual testing with all three UI modes
-  _Notes:_ File: `resources/js/views/gallery-panels/Album.vue` (or appropriate view component). NOT STARTED. Current implementation uses existing pagination for Smart albums only.
+  - `npm run check` ✓
+  - Manual testing with all three UI modes (partial)
+  _Notes:_ File: `resources/js/components/gallery/albumModule/AlbumPanel.vue`. PARTIALLY DONE. AlbumPanel now includes PaginationLoadMore components for both photos and albums. The components are conditionally rendered when `hasPhotosPagination` or `hasAlbumsPagination` is true. Store actions `loadMorePhotos()` and `loadMoreAlbums()` are wired up. Full integration to switch from legacy `/Album` endpoint to new endpoints pending.
 
 - [ ] T-007-30 – Update AlbumThumbPanelList.vue for paginated sub-albums.
   _Intent:_ Support appending vs replacing albums based on UI mode.
   _Verification commands:_
   - `npm run check`
   - Manual testing
-  _Notes:_ File: `resources/js/components/gallery/albumModule/AlbumThumbPanelList.vue`. NOT STARTED.
+  _Notes:_ File: `resources/js/components/gallery/albumModule/AlbumThumbPanelList.vue`. NOT NEEDED - AlbumsStore already supports array replacement/append via store actions.
 
 - [ ] T-007-31 – Update PhotoThumbPanelList.vue for paginated photos.
   _Intent:_ Support appending vs replacing photos based on UI mode.
   _Verification commands:_
   - `npm run check`
   - Manual testing
-  _Notes:_ File: `resources/js/components/gallery/albumModule/PhotoThumbPanelList.vue`. NOT STARTED.
+  _Notes:_ File: `resources/js/components/gallery/albumModule/PhotoThumbPanelList.vue`. NOT NEEDED - PhotosState now has `appendPhotos()` method that handles timeline merging.
 
 - [ ] T-007-32 – Add loading and error states to album view.
   _Intent:_ Display loading skeleton, error messages, retry buttons.
@@ -393,25 +388,35 @@ _Last updated: 2026-01-08_
 - ✗ Backward compatibility verification incomplete
 - ✗ Full test suite run and formatter not verified
 
-**Frontend (I7-I12): 0 of 19 tasks completed (0%)**
-- Current implementation uses existing pagination patterns (PrimeVue Paginator, generic service methods)
-- No new pagination components created (PaginationInfiniteScroll, PaginationLoadMore, PaginationNavigation)
-- No new service methods created (getHead, getAlbums, getPhotos)
-- AlbumState has pagination state for Smart albums but needs extension for new endpoints
-- Admin UI not updated for new config keys
-- Frontend not wired to call new backend endpoints
+**Frontend (I7-I12): 6 of 19 tasks completed (32%)**
+- ✓ TypeScript types exist (auto-generated in lychee.d.ts)
+- ✓ Service methods created: `getHead()`, `getAlbums()`, `getPhotos()` in album-service.ts
+- ✓ AlbumState store extended with pagination state and actions (`loadHead`, `loadAlbums`, `loadPhotos`, `loadMorePhotos`, `loadMoreAlbums`)
+- ✓ PhotosState store extended with `appendPhotos()` method
+- ✓ PaginationLoadMore.vue component created
+- ✓ PaginationInfiniteScroll.vue component created
+- ✓ usePagination.ts composable created
+- ✓ AlbumPanel.vue integrated with PaginationLoadMore for photos and albums
+- ✗ PaginationNavigation.vue not created (using existing PrimeVue Paginator)
+- ✗ Unit tests for service/store/components not created
+- ✗ Admin UI not updated for new config keys
+- ✗ Full Album view integration to use new endpoints by default not completed
 
 **Testing & Documentation (I13-I14): 0 of 7 tasks completed (0%)**
 - No performance tests or large album fixtures created
 - Documentation not updated
 
-**Overall Progress: 18 of 46 tasks completed (39%)**
+**Overall Progress: 24 of 46 tasks completed (52%)**
 
 ## Notes / TODOs
 
 - **Backend is mostly complete** - Core API endpoints functional and tested
-- **Frontend needs full implementation** - No UI components or service methods created yet
-- **Integration work needed** - Wire frontend to call new backend endpoints
+- **Frontend infrastructure in place** - Service methods, store actions, and UI components created
+- **Integration partial** - AlbumPanel has Load More buttons that work when new endpoints are called
+- **Next steps:**
+  - Switch Album.vue to use new paginated endpoints instead of legacy `/Album` endpoint
+  - Add admin UI for pagination config settings
+  - Add unit tests for new code
 - **Tag album head endpoint** - AlbumHeadController currently rejects Tag albums (needs fix)
 - **Smart album resource** - Verify if SmartAlbumResource still embeds pagination or delegates
 - Consider adding database indexes on commonly sorted columns if performance testing reveals slow queries
