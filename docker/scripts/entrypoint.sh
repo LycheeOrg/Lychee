@@ -4,8 +4,11 @@ set -euo pipefail
 
 echo "🚀 Starting Lychee entrypoint..."
 
+# Run configuration file check
+/usr/local/bin/00-conf-check.sh
+
 # Run environment validation
-/usr/local/bin/validate-env.sh
+/usr/local/bin/01-validate-env.sh
 
 # This is commended for now as FrankenPHP uses native env vars
 # And we are double checking that php also has access to them
@@ -13,67 +16,19 @@ echo "🚀 Starting Lychee entrypoint..."
 
 # Dump environment variables to .env file for Laravel (only if not using FrankenPHP)
 # if [ ! -f "/app/frankenphp_target" ]; then
-#     /usr/local/bin/dump-env.sh
+#     /usr/local/bin/02-dump-env.sh
 # else
 #     echo "ℹ️  Skipping .env dump (FrankenPHP uses native environment variables)"
 # fi
 
 # Wait for database to be ready
-if [ "${DB_CONNECTION:-}" = "mysql" ] || [ "${DB_CONNECTION:-}" = "pgsql" ]; then
-  echo "⏳ Waiting for database to be ready..."
+/usr/local/bin/03-db-check.sh
 
-  max_attempts=30
-  attempt=0
+# Setup user permissions
+/usr/local/bin/04-user-setup.sh
 
-  while [ "$attempt" -lt "$max_attempts" ]; do
-    if nc -z "${DB_HOST}" "${DB_PORT}" 2>/dev/null; then
-      echo "✅ Database port is open!"
-      sleep 2 # Give it a moment to fully initialize
-      break
-    fi
-
-    attempt=$((attempt + 1))
-    echo "   Attempt $attempt/$max_attempts... (waiting 2s)"
-    sleep 2
-  done
-
-  if [ "$attempt" -eq "$max_attempts" ]; then
-    echo "❌ ERROR: Database connection timeout"
-    exit 1
-  fi
-fi
-
-echo "Validating and setting PUID/PGID"
-PUID=${PUID:-33}
-PGID=${PGID:-33}
-
-# Validate PUID/PGID are within safe ranges (no root, within system limits)
-if [ "$PUID" -lt 33 ] || [ "$PUID" -gt 65534 ]; then
-  echo "❌ ERROR: PUID must be between 33 and 65534 (got: $PUID)"
-  exit 1
-fi
-if [ "$PGID" -lt 33 ] || [ "$PGID" -gt 65534 ]; then
-  echo "❌ ERROR: PGID must be between 33 and 65534 (got: $PGID)"
-  exit 1
-fi
-
-if pgrep -u www-data >/dev/null; then
-  echo "www-data has running processes; skipping usermod"
-else
-  if command -v usermod >/dev/null 2>&1; then
-    # Only modify user/group if shadow package is available
-    if [ "$(id -u www-data)" -ne "$PUID" ]; then
-      usermod -o -u "$PUID" www-data
-    fi
-    if [ "$(id -g www-data)" -ne "$PGID" ]; then
-      groupmod -o -g "$PGID" www-data
-    fi
-  fi
-fi
-echo "  User UID: $(id -u www-data)"
-echo "  User GID: $(id -g www-data)"
-
-/usr/local/bin/permissions-check.sh
+# Check and set permissions
+/usr/local/bin/05-permissions-check.sh
 
 echo "Checking RUN_AS_ROOT setting"
 RUN_AS_ROOT=${RUN_AS_ROOT:-no}
@@ -108,15 +63,6 @@ run_as_www() {
 # Clear any cached config from development
 echo "🧹 Clearing bootstrap cache..."
 rm -rf bootstrap/cache/*.php
-
-# Check for /conf/.env file - this indicates misconfiguration
-if [ -f "/conf/.env" ]; then
-  echo "❌ ERROR: /conf/.env file detected"
-  echo "   Containers should not have mounted .env files at /conf/.env"
-  echo "   Please check your docker-compose.yml configuration"
-  echo "   See https://lycheeorg.github.io/docs/upgrade.html"
-  exit 1
-fi
 
 # Detect LYCHEE_MODE and execute appropriate command
 LYCHEE_MODE=${LYCHEE_MODE:-web}

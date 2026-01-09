@@ -21,6 +21,7 @@ find /app/storage -type d \( ! -user "www-data" -o ! -group "www-data" \) -exec 
 find /app/bootstrap/cache -type d \( ! -user "www-data" -o ! -group "www-data" \) -exec chown "www-data":"www-data" {} +
 find /app/public/uploads -type d \( ! -user "www-data" -o ! -group "www-data" \) -exec chown "www-data":"www-data" {} + 2>/dev/null || true
 find /app/public/dist -type d \( ! -user "www-data" -o ! -group "www-data" \) -exec chown "www-data":"www-data" {} + 2>/dev/null || true
+find /app/public -type d \( ! -user "www-data" -o ! -group "www-data" \) -exec chown "www-data":"www-data" {} + 2>/dev/null || true
 
 # Set restrictive permissions: 750 for directories (owner+group only, no world access)
 find /app/storage -type d \( ! -perm 750 \) -exec chmod 750 {} + 2>/dev/null || true
