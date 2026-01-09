@@ -83,6 +83,8 @@ RUN apt-get update \
     unzip \
     curl \
     bash \
+	ghostscript \
+	&& sed -i '/<\/policymap>/i \  <policy domain="coder" rights="read|write" pattern="PDF" \/>' /etc/ImageMagick-7/policy.xml \
     && install-php-extensions \
     pdo_mysql \
     pdo_pgsql \
@@ -95,6 +97,7 @@ RUN apt-get update \
     exif \
     imagick \
     redis \
+	&& apt-get clean -qy \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -124,8 +127,8 @@ RUN mkdir -p storage/framework/cache \
     && chown www-data:www-data /app/public/dist/user.css /app/public/dist/custom.js \
     && chmod 644 /app/public/dist/user.css /app/public/dist/custom.js \
     && cp $PHP_INI_DIR/php.ini-production $PHP_INI_DIR/php.ini \
-    && echo "upload_max_filesize=110M" > $PHP_INI_DIR/conf.d/custom.ini \
-    && echo "post_max_size=110M" >> $PHP_INI_DIR/conf.d/custom.ini \
+    && echo "upload_max_filesize=128M" > $PHP_INI_DIR/conf.d/custom.ini \
+    && echo "post_max_size=128M" >> $PHP_INI_DIR/conf.d/custom.ini \
     && echo "memory_limit=\${PHP_MEMORY_LIMIT:-1024M}" >> $PHP_INI_DIR/conf.d/custom.ini \
     && echo "max_execution_time=\${PHP_MAX_EXECUTION_TIME:-3000}" >> $PHP_INI_DIR/conf.d/custom.ini \
     && echo "expose_php=Off" >> $PHP_INI_DIR/conf.d/custom.ini \
