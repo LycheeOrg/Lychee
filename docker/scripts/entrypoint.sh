@@ -92,10 +92,10 @@ run_as_www() {
     return
   fi
 
-  # Use gosu if available (Alpine)
+  # Use gosu if available (Debian)
   if command -v gosu >/dev/null 2>&1; then
     gosu www-data "$@"
-  # Use su-exec if available (Debian)
+  # Use su-exec if available (Alpine)
   elif command -v su-exec >/dev/null 2>&1; then
     su-exec www-data "$@"
   else
