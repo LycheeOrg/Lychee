@@ -25,6 +25,7 @@ fi
 if [ -z "${APP_KEY:-}" ]; then
   echo "❌ ERROR: APP_KEY is not set"
   echo "   Set it via APP_KEY environment variable, APP_KEY_FILE, or /app/.env"
+  echo "   You can generate one with: 'echo \"APP_KEY=base64:\$(openssl rand -base64 32)\"' or 'php artisan key:generate --show'"
   exit 1
 fi
 
@@ -37,12 +38,12 @@ set -e
 
 if [ "${BASE64_EXIT}" -ne 0 ] || [ "${KEY_BYTE_COUNT}" -eq 0 ]; then
   echo "❌ ERROR: APP_KEY contains invalid base64 data"
-  echo "   Generate one with: 'openssl rand -base64 32' or php artisan key:generate --show"
+  echo "   Generate one with: 'echo \"APP_KEY=base64:\$(openssl rand -base64 32)\"' or 'php artisan key:generate --show'"
   exit 1
 fi
 if [ "${KEY_BYTE_COUNT}" -ne 32 ]; then
   echo "❌ ERROR: APP_KEY must be exactly 32 bytes when decoded (got: ${KEY_BYTE_COUNT} bytes)"
-  echo "   Generate one with: 'openssl rand -base64 32' or php artisan key:generate --show"
+  echo "   Generate one with: 'echo \"APP_KEY=base64:\$(openssl rand -base64 32)\"' or 'php artisan key:generate --show'"
   exit 1
 fi
 
