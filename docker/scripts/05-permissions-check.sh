@@ -4,8 +4,14 @@ set -euo pipefail
 
 echo "🔍 Validating permissions..."
 
+# Ensure critical directories have correct rights
+chown -R www-data:www-data /app/storage/bootstrap /app/storage/debugbar /app/storage/framework
+chown www-data:www-data /app/storage
+chown www-data:www-data /app/public
+
 # Safely check SKIP_PERMISSIONS_CHECKS
 skip_check="${SKIP_PERMISSIONS_CHECKS:-no}"
+
 if [ "$skip_check" = "yes" ] || [ "$skip_check" = "YES" ]; then
   echo "⚠️ WARNING: Skipping permissions check"
   exit 0
