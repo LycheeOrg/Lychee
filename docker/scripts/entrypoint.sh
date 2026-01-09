@@ -75,8 +75,23 @@ echo "  User GID: $(id -g www-data)"
 
 /usr/local/bin/permissions-check.sh
 
+echo "Checking RUN_AS_ROOT setting"
+RUN_AS_ROOT=${RUN_AS_ROOT:-no}
+if [ "$RUN_AS_ROOT" = "yes" ]; then
+  echo "⚠️  WARNING: Running as root (RUN_AS_ROOT=yes)"
+  echo "   This is not recommended for production environments"
+else
+  echo "✅ Will drop privileges to www-data user"
+fi
+
 # Helper function to run commands as www-data
 run_as_www() {
+  # If RUN_AS_ROOT is set to yes, run directly without switching user
+  if [ "$RUN_AS_ROOT" = "yes" ]; then
+    "$@"
+    return
+  fi
+
   # Use gosu if available (Alpine)
   if command -v gosu >/dev/null 2>&1; then
     gosu www-data "$@"
@@ -135,7 +150,9 @@ web)
   fi
 
   # Execute the main command (from Dockerfile CMD: octane:start) as www-data
-  if command -v gosu >/dev/null 2>&1; then
+  if [ "$RUN_AS_ROOT" = "yes" ]; then
+    exec "$@"
+  elif command -v gosu >/dev/null 2>&1; then
     exec gosu www-data "$@"
   elif command -v su-exec >/dev/null 2>&1; then
     exec su-exec www-data "$@"
