@@ -22,11 +22,11 @@ _Last updated: 2026-01-08_
 
 ### Backend: Album Head Endpoint (I2)
 
-- [x] T-007-02 – Create AlbumHeadResource class (FR-007-01, API-007-01).
+- [x] T-007-02 – Create HeadAlbumResource class (FR-007-01, API-007-01).
   _Intent:_ API resource for lightweight album metadata without children/photos arrays.
   _Verification commands:_
   - `make phpstan` ✓
-  _Notes:_ File: `app/Http/Resources/Models/AlbumHeadResource.php`. Fields: id, title, description, num_photos, num_children, thumb, rights, owner_name, copyright, policy, editable, statistics. Resource created and verified.
+  _Notes:_ File: `app/Http/Resources/Models/HeadAlbumResource.php`. Fields: id, title, description, num_photos, num_children, thumb, rights, owner_name, copyright, policy, editable, statistics. Resource created and verified.
 
 - [x] T-007-03 – Create AlbumHeadController and route (FR-007-01, API-007-01, S-007-01).
   _Intent:_ Controller method and route for GET `/Album::head`.
@@ -143,10 +143,10 @@ _Last updated: 2026-01-08_
 ### Frontend: Service Layer (I7)
 
 - [x] T-007-19 – Add TypeScript interfaces for new API resources (NFR-007-03).
-  _Intent:_ Define TypeScript types for AlbumHeadResource, PaginatedAlbumsResource, PaginatedPhotosResource.
+  _Intent:_ Define TypeScript types for HeadAlbumResource, PaginatedAlbumsResource, PaginatedPhotosResource.
   _Verification commands:_
   - `npm run check` ✓
-  _Notes:_ TypeScript types already exist in `resources/js/lychee.d.ts` (auto-generated via Spatie TypeScript Transformer): `App.Http.Resources.Models.AlbumHeadResource` (line 497), `App.Http.Resources.Collections.PaginatedAlbumsResource` (line 156), `App.Http.Resources.Collections.PaginatedPhotosResource` (line 163).
+  _Notes:_ TypeScript types already exist in `resources/js/lychee.d.ts` (auto-generated via Spatie TypeScript Transformer): `App.Http.Resources.Models.HeadAlbumResource` (line 497), `App.Http.Resources.Collections.PaginatedAlbumsResource` (line 156), `App.Http.Resources.Collections.PaginatedPhotosResource` (line 163).
 
 - [x] T-007-20 – Update album-service.ts with new endpoint methods (NFR-007-03, S-007-01).
   _Intent:_ Add getHead(), getAlbums(), getPhotos() methods with axios cache keys.
@@ -375,7 +375,7 @@ _Last updated: 2026-01-08_
 
 **Backend (I1-I6): 18 of 20 tasks completed (90%)**
 - ✓ Migration created and run
-- ✓ All API resources created (AlbumHeadResource, PaginatedAlbumsResource, PaginatedPhotosResource)
+- ✓ All API resources created (HeadAlbumResource, PaginatedAlbumsResource, PaginatedPhotosResource)
 - ✓ All controllers created (AlbumHeadController, AlbumChildrenController, AlbumPhotosController)
 - ✓ All request validators created (GetAlbumChildrenRequest, GetAlbumPhotosRequest)
 - ✓ All routes registered (`/Album::head`, `/Album::albums`, `/Album::photos`)

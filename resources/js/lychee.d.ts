@@ -494,29 +494,6 @@ declare namespace App.Http.Resources.Models {
 		grants_edit: boolean;
 		grants_delete: boolean;
 	};
-	export type AlbumHeadResource = {
-		id: string;
-		title: string;
-		owner_name: string | null;
-		description: string | null;
-		copyright: string | null;
-		track_url: string | null;
-		license: string;
-		header_id: string | null;
-		parent_id: string | null;
-		has_albums: boolean;
-		num_children: number;
-		num_photos: number;
-		cover_id: string | null;
-		thumb: App.Http.Resources.Models.ThumbResource | null;
-		policy: App.Http.Resources.Models.Utils.AlbumProtectionPolicy;
-		rights: App.Http.Resources.Rights.AlbumRightsResource;
-		preFormattedData: App.Http.Resources.Models.Utils.PreFormattedAlbumData;
-		editable: App.Http.Resources.Editable.EditableBaseAlbumResource | null;
-		is_pinned: boolean;
-		statistics: App.Http.Resources.Models.AlbumStatisticsResource | null;
-		config: App.Http.Resources.GalleryConfigs.AlbumConfig;
-	};
 	export type AlbumResource = {
 		id: string;
 		title: string;
@@ -567,6 +544,56 @@ declare namespace App.Http.Resources.Models {
 		is_expert: boolean;
 		require_se: boolean;
 		order: number | null;
+	};
+	export type HeadAbstractAlbumResource = {
+		config: App.Http.Resources.GalleryConfigs.AlbumConfig;
+		resource:
+			| App.Http.Resources.Models.HeadAlbumResource
+			| App.Http.Resources.Models.HeadSmartAlbumResource
+			| App.Http.Resources.Models.HeadTagAlbumResource;
+	};
+	export type HeadAlbumResource = {
+		id: string;
+		title: string;
+		owner_name: string | null;
+		description: string | null;
+		copyright: string | null;
+		track_url: string | null;
+		license: string;
+		header_id: string | null;
+		parent_id: string | null;
+		has_albums: boolean;
+		num_children: number;
+		num_photos: number;
+		cover_id: string | null;
+		policy: App.Http.Resources.Models.Utils.AlbumProtectionPolicy;
+		rights: App.Http.Resources.Rights.AlbumRightsResource;
+		preFormattedData: App.Http.Resources.Models.Utils.PreFormattedAlbumData;
+		editable: App.Http.Resources.Editable.EditableBaseAlbumResource | null;
+		is_pinned: boolean;
+		statistics: App.Http.Resources.Models.AlbumStatisticsResource | null;
+	};
+	export type HeadSmartAlbumResource = {
+		id: string;
+		title: string;
+		policy: App.Http.Resources.Models.Utils.AlbumProtectionPolicy;
+		rights: App.Http.Resources.Rights.AlbumRightsResource;
+		preFormattedData: App.Http.Resources.Models.Utils.PreFormattedAlbumData;
+		statistics: null | null;
+	};
+	export type HeadTagAlbumResource = {
+		id: string;
+		title: string;
+		owner_name: string | null;
+		copyright: string | null;
+		is_tag_album: boolean;
+		show_tags: Array<string>;
+		photos: App.Http.Resources.Models.PhotoResource[];
+		policy: App.Http.Resources.Models.Utils.AlbumProtectionPolicy;
+		rights: App.Http.Resources.Rights.AlbumRightsResource;
+		preFormattedData: App.Http.Resources.Models.Utils.PreFormattedAlbumData;
+		editable: App.Http.Resources.Editable.EditableBaseAlbumResource | null;
+		statistics: App.Http.Resources.Models.AlbumStatisticsResource | null;
 	};
 	export type JobHistoryResource = {
 		username: string;

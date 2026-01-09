@@ -13,7 +13,7 @@ export const useAlbumStore = defineStore("album-store", {
 		modelAlbum: undefined as App.Http.Resources.Models.AlbumResource | undefined,
 		tagAlbum: undefined as App.Http.Resources.Models.TagAlbumResource | undefined,
 		smartAlbum: undefined as App.Http.Resources.Models.SmartAlbumResource | undefined,
-		albumHead: undefined as App.Http.Resources.Models.AlbumHeadResource | undefined,
+		albumHead: undefined as App.Http.Resources.Models.HeadAlbumResource | undefined,
 
 		isPasswordProtected: false as boolean,
 		config: undefined as App.Http.Resources.GalleryConfigs.AlbumConfig | undefined,
@@ -86,7 +86,7 @@ export const useAlbumStore = defineStore("album-store", {
 					if (this.albumId !== requestedAlbumId) {
 						return;
 					}
-					// AlbumHeadResource includes config as a property
+					// HeadAlbumResource includes config as a property
 					this.albumHead = data.data;
 					this.config = data.data.config;
 					this.isPasswordProtected = false;

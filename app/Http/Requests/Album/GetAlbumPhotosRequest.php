@@ -19,6 +19,7 @@ use App\Models\Album;
 use App\Models\TagAlbum;
 use App\Policies\AlbumPolicy;
 use App\Rules\AlbumIDRule;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Gate;
 
 /**
@@ -63,9 +64,7 @@ class GetAlbumPhotosRequest extends BaseApiRequest implements HasAbstractAlbum
 		$smart_id = SmartAlbumType::tryFrom($values[RequestAttribute::ALBUM_ID_ATTRIBUTE]);
 
 		if ($smart_id !== null) {
-			resolve(AlbumFactory::class)->createSmartAlbum($smart_id, false);
-			// Smart albums are not supported here
-			$this->album = null;
+			$this->album = resolve(AlbumFactory::class)->createSmartAlbum($smart_id, false);
 
 			return;
 		}
@@ -78,8 +77,13 @@ class GetAlbumPhotosRequest extends BaseApiRequest implements HasAbstractAlbum
 			'thumb',
 			'owner',
 			'statistics',
-		])->find($values[RequestAttribute::ALBUM_ID_ATTRIBUTE]) ??
-		TagAlbum::findOrFail($values[RequestAttribute::ALBUM_ID_ATTRIBUTE]);
+		])->find($values[RequestAttribute::ALBUM_ID_ATTRIBUTE]);
+
+		// Load tag album if not found as regular album
+		$this->album ??= TagAlbum::find($values[RequestAttribute::ALBUM_ID_ATTRIBUTE]);
+
+		// If neither found, throw ModelNotFoundException
+		$this->album ??= throw new ModelNotFoundException();
 	}
 
 	public function page(): int

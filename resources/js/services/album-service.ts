@@ -101,7 +101,7 @@ const AlbumService = {
 		});
 	},
 
-	getHead(album_id: string): Promise<AxiosResponse<App.Http.Resources.Models.AlbumHeadResource>> {
+	getHead(album_id: string): Promise<AxiosResponse<App.Http.Resources.Models.HeadAbstractAlbumResource>> {
 		const requester = axios as unknown as AxiosCacheInstance;
 		return requester.get(`${Constants.getApiUrl()}Album::head`, {
 			params: { album_id: album_id },

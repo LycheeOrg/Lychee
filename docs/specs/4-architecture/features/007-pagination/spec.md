@@ -179,13 +179,13 @@ Affected modules: application (controllers/services), REST API (v2 endpoints), d
 | DO-007-01 | PaginationConfig: sub_albums_per_page (int, default 30), photos_per_page (int, default 100), search_results_per_page (int, default 50) | application, REST |
 | DO-007-02 | PaginationUIModeConfig: photos_pagination_ui_mode (enum: infinite_scroll, load_more_button, page_navigation), albums_pagination_ui_mode (enum, same options) | application, REST, UI |
 | DO-007-03 | PaginationMetadata: current_page (int), last_page (int), per_page (int), total (int) | application, REST, UI |
-| DO-007-04 | AlbumHeadResource: Album metadata without children/photos arrays (id, title, description, counts, thumb, rights) | application, REST |
+| DO-007-04 | HeadAlbumResource: Album metadata without children/photos arrays (id, title, description, counts, thumb, rights) | application, REST |
 
 ### API Routes / Services
 
 | ID | Transport | Description | Notes |
 |----|-----------|-------------|-------|
-| API-007-01 | GET /Album/{id}/head | Fetch album metadata without children/photos | Lightweight endpoint, returns AlbumHeadResource |
+| API-007-01 | GET /Album/{id}/head | Fetch album metadata without children/photos | Lightweight endpoint, returns HeadAlbumResource |
 | API-007-02 | GET /Album/{id}/albums?page={n} | Fetch paginated sub-albums | Page defaults to 1 if absent, returns PaginatedAlbumsResource |
 | API-007-03 | GET /Album/{id}/photos?page={n} | Fetch paginated photos | Page defaults to 1 if absent, returns PaginatedPhotosResource |
 | API-007-04 | GET /Album?album_id={id} (unchanged) | Fetch full album data (legacy) | Backward compatibility, no pagination, returns AlbumResource |
@@ -274,7 +274,7 @@ domain_objects:
       - name: total
         type: integer
   - id: DO-007-04
-    name: AlbumHeadResource
+    name: HeadAlbumResource
     description: Album metadata without children/photos arrays
     fields:
       - name: id
@@ -298,7 +298,7 @@ routes:
     path: /Album/{id}/head
     parameters:
       - id: string (required, path parameter)
-    response: AlbumHeadResource
+    response: HeadAlbumResource
   - id: API-007-02
     method: GET
     path: /Album/{id}/albums
@@ -373,7 +373,7 @@ The `SortingDecorator::paginate()` method handles hybrid SQL + PHP sorting effic
 
 ### API Response Structure Examples
 
-**NEW: AlbumHeadResource (GET /Album/{id}/head):**
+**NEW: HeadAlbumResource (GET /Album/{id}/head):**
 ```json
 {
   "id": "abc123",

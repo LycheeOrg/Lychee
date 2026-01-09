@@ -28,7 +28,7 @@ _Last updated:_ 2026-01-07
 - Frontend UI components for three pagination modes
 - Repository methods for paginated queries
 - Migration for new config keys with default values
-- API resources: `AlbumHeadResource`, `PaginatedPhotosResource`, `PaginatedAlbumsResource`
+- API resources: `HeadAlbumResource`, `PaginatedPhotosResource`, `PaginatedAlbumsResource`
 - Feature tests for new endpoints
 
 **Out of scope:**
@@ -123,18 +123,18 @@ _Maps to:_ FR-007-05, FR-007-06, FR-007-07, FR-007-08, NFR-007-05
 
 ---
 
-### I2 – AlbumHeadResource & `/Album/{id}/head` Endpoint
+### I2 – HeadAlbumResource & `/Album/{id}/head` Endpoint
 _Goal:_ Create lightweight endpoint that returns album metadata without children/photos.
 
 _Preconditions:_ I1 complete.
 
 _Steps:_
-1. Create `AlbumHeadResource` API resource class
+1. Create `HeadAlbumResource` API resource class
    - Fields: id, title, description, num_photos, num_children, thumb, rights
    - No `albums` or `photos` arrays
 2. Create `AlbumHeadController@get` method
    - Load album with only necessary relations (thumb, rights)
-   - Return `AlbumHeadResource`
+   - Return `HeadAlbumResource`
 3. Add route: `GET /Album/{id}/head` in `routes/api_v2.php`
 4. Add middleware: `login_required:album`, `cache_control`
 5. Write feature test: `AlbumHeadEndpointTest`
@@ -293,7 +293,7 @@ _Steps:_
    - `getPhotos(albumId, page)` → GET `/Album/{id}/photos?page={page}`
 2. Update axios cache keys to include page numbers
 3. Add TypeScript interfaces for new response structures:
-   - `AlbumHeadResource`
+   - `HeadAlbumResource`
    - `PaginatedAlbumsResource`
    - `PaginatedPhotosResource`
 4. Write unit tests for service methods (mock axios)

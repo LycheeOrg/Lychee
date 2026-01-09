@@ -9,7 +9,6 @@
 namespace App\Http\Resources\Models;
 
 use App\Http\Resources\Editable\EditableBaseAlbumResource;
-use App\Http\Resources\GalleryConfigs\AlbumConfig;
 use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
 use App\Http\Resources\Models\Utils\PreFormattedAlbumData;
 use App\Http\Resources\Rights\AlbumRightsResource;
@@ -22,7 +21,7 @@ use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 #[TypeScript()]
-class AlbumHeadResource extends Data
+class HeadAlbumResource extends Data
 {
 	use HasHeaderUrl;
 
@@ -45,7 +44,6 @@ class AlbumHeadResource extends Data
 
 	// thumb
 	public ?string $cover_id;
-	public ?ThumbResource $thumb;
 
 	// security
 	public AlbumProtectionPolicy $policy;
@@ -55,9 +53,6 @@ class AlbumHeadResource extends Data
 	public bool $is_pinned;
 
 	public ?AlbumStatisticsResource $statistics = null;
-
-	// config for frontend rendering
-	public AlbumConfig $config;
 
 	public function __construct(Album $album)
 	{
@@ -81,7 +76,6 @@ class AlbumHeadResource extends Data
 
 		// thumb
 		$this->cover_id = $album->cover_id;
-		$this->thumb = ThumbResource::fromModel($album->thumb);
 
 		// security
 		$this->policy = AlbumProtectionPolicy::ofBaseAlbum($album);
@@ -97,12 +91,9 @@ class AlbumHeadResource extends Data
 		if (request()->configs()->getValueAsBool('metrics_enabled') && Gate::check(AlbumPolicy::CAN_READ_METRICS, [Album::class, $album])) {
 			$this->statistics = AlbumStatisticsResource::fromModel($album->statistics);
 		}
-
-		// config for frontend rendering
-		$this->config = new AlbumConfig($album);
 	}
 
-	public static function fromModel(Album $album): AlbumHeadResource
+	public static function fromModel(Album $album): HeadAlbumResource
 	{
 		return new self($album);
 	}
