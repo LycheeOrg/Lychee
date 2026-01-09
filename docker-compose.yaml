@@ -2,8 +2,8 @@
 services:
   # Laravel Backend API
   lychee_api:
-    # image: lychee-frankenphp:latest
-    image: lychee-legacy:latest
+    image: lychee-frankenphp:latest
+    # image: lychee-legacy:latest
     # build:
     #   context: ./app
     #   dockerfile: Dockerfile
