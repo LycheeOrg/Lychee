@@ -122,6 +122,9 @@ web)
   echo "✅ Application ready!"
 
   if [ ! -f "/app/frankenphp_target" ]; then
+    # Just to make sure.
+    composer dump-autoload --optimize --no-scripts --no-dev
+
     # Start PHP-FPM and Nginx for traditional Docker setup
     echo "🚀 Starting PHP-FPM..."
     php-fpm8.5
