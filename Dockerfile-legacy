@@ -112,6 +112,7 @@ RUN \
 	gifsicle \
 	webp \
 	cron \
+	composer \
 	ghostscript && \
 	sed -i 's/<policy domain="coder" rights="none" pattern="PDF" \/>/<policy domain="coder" rights="read|write" pattern="PDF" \/>/g' /etc/ImageMagick-6/policy.xml && \
 	usermod -o -u "$PUID" "www-data" && \

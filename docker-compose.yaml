@@ -291,6 +291,7 @@ services:
   # Uncomment to enable horizontal scaling of background job processing
   lychee_worker:
     image: lychee-frankenphp:latest
+    # image: lychee-legacy:latest
     # build:
     #   context: ./app
     #   dockerfile: Dockerfile
