@@ -4,8 +4,14 @@ set -euo pipefail
 
 echo "🔍 Validating permissions..."
 
+# Ensure critical directories have correct rights
+chown -R www-data:www-data /app/storage/bootstrap /app/storage/debugbar /app/storage/framework
+chown www-data:www-data /app/storage
+chown www-data:www-data /app/public
+
 # Safely check SKIP_PERMISSIONS_CHECKS
 skip_check="${SKIP_PERMISSIONS_CHECKS:-no}"
+
 if [ "$skip_check" = "yes" ] || [ "$skip_check" = "YES" ]; then
   echo "⚠️ WARNING: Skipping permissions check"
   exit 0
@@ -21,6 +27,7 @@ find /app/storage -type d \( ! -user "www-data" -o ! -group "www-data" \) -exec 
 find /app/bootstrap/cache -type d \( ! -user "www-data" -o ! -group "www-data" \) -exec chown "www-data":"www-data" {} +
 find /app/public/uploads -type d \( ! -user "www-data" -o ! -group "www-data" \) -exec chown "www-data":"www-data" {} + 2>/dev/null || true
 find /app/public/dist -type d \( ! -user "www-data" -o ! -group "www-data" \) -exec chown "www-data":"www-data" {} + 2>/dev/null || true
+find /app/public -type d \( ! -user "www-data" -o ! -group "www-data" \) -exec chown "www-data":"www-data" {} + 2>/dev/null || true
 
 # Set restrictive permissions: 750 for directories (owner+group only, no world access)
 find /app/storage -type d \( ! -perm 750 \) -exec chmod 750 {} + 2>/dev/null || true

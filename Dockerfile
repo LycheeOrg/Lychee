@@ -79,10 +79,12 @@ RUN apt-get update \
     ffmpeg \
     imagemagick \
     jpegoptim \
+    procps \
     netcat-openbsd \
     unzip \
     curl \
     bash \
+    gosu \
 	ghostscript \
 	&& sed -i '/<\/policymap>/i \  <policy domain="coder" rights="read|write" pattern="PDF" \/>' /etc/ImageMagick-7/policy.xml \
     && install-php-extensions \
@@ -118,7 +120,7 @@ RUN mkdir -p storage/framework/cache \
     storage/logs \
     bootstrap/cache \
     public/dist \
-    && chown -R www-data:www-data storage bootstrap/cache public/dist \
+    && chown -R www-data:www-data storage bootstrap/cache public \
     && chmod -R 750 storage bootstrap/cache \
     && chmod -R 755 public/dist \
     && touch /app/frankenphp_target \
@@ -136,11 +138,23 @@ RUN mkdir -p storage/framework/cache \
     && echo "log_errors=On" >> $PHP_INI_DIR/conf.d/custom.ini
 
 # Copy entrypoint and validation scripts
-COPY docker/scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
-COPY docker/scripts/validate-env.sh /usr/local/bin/validate-env.sh
+COPY docker/scripts/00-conf-check.sh /usr/local/bin/00-conf-check.sh
+COPY docker/scripts/01-validate-env.sh /usr/local/bin/01-validate-env.sh
+COPY docker/scripts/02-dump-env.sh /usr/local/bin/02-dump-env.sh
+COPY docker/scripts/03-db-check.sh /usr/local/bin/03-db-check.sh
+COPY docker/scripts/04-user-setup.sh /usr/local/bin/04-user-setup.sh
+COPY docker/scripts/05-permissions-check.sh /usr/local/bin/05-permissions-check.sh
 COPY docker/scripts/create-admin-user.sh /usr/local/bin/create-admin-user.sh
-COPY docker/scripts/permissions-check.sh /usr/local/bin/permissions-check.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh /usr/local/bin/validate-env.sh /usr/local/bin/permissions-check.sh /usr/local/bin/create-admin-user.sh
+COPY docker/scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
+
+RUN chmod +x /usr/local/bin/00-conf-check.sh \
+    /usr/local/bin/01-validate-env.sh \
+    /usr/local/bin/02-dump-env.sh \
+    /usr/local/bin/03-db-check.sh \
+    /usr/local/bin/04-user-setup.sh \
+    /usr/local/bin/05-permissions-check.sh \
+    /usr/local/bin/create-admin-user.sh \
+    /usr/local/bin/entrypoint.sh
 
 # Expose port 8000 (Octane)
 EXPOSE 8000

@@ -53,8 +53,8 @@ COPY vite.config.ts vite.embed.config.ts tsconfig.json ./
 # When NODE_ENV=development, Vite sets import.meta.env.DEV=true
 RUN npm run build
 
-# TODO: migrade to trixie once php8.5-zip is fixed.
-# TODO: Fix Imagick sed once we updat the version of Imagick.
+# TODO: migrate to trixie once php8.5-zip is fixed.
+# TODO: Fix Imagick sed once we update the version of Imagick.
 FROM debian:bookworm-slim@sha256:d5d3f9c23164ea16f31852f95bd5959aad1c5e854332fe00f7b3a20fcc9f635c AS base
 
 LABEL maintainer="lycheeorg"
@@ -90,6 +90,8 @@ RUN \
 	apt-get update && \
 	apt-get install -qy --no-install-recommends \
 	adduser \
+	procps \
+    gosu \
 	nginx-light \
 	php8.5-mysql \
 	php8.5-pgsql \
@@ -149,13 +151,29 @@ RUN mkdir -p storage/framework/cache \
 	&& chmod 644 /app/public/dist/user.css /app/public/dist/custom.js
 
 # Copy entrypoint and validation scripts
-COPY docker/scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
-COPY docker/scripts/validate-env.sh /usr/local/bin/validate-env.sh
+
+# Copy entrypoint and validation scripts
+COPY docker/scripts/00-conf-check.sh /usr/local/bin/00-conf-check.sh
+COPY docker/scripts/01-validate-env.sh /usr/local/bin/01-validate-env.sh
+COPY docker/scripts/02-dump-env.sh /usr/local/bin/02-dump-env.sh
+COPY docker/scripts/03-db-check.sh /usr/local/bin/03-db-check.sh
+COPY docker/scripts/04-user-setup.sh /usr/local/bin/04-user-setup.sh
+COPY docker/scripts/05-permissions-check.sh /usr/local/bin/05-permissions-check.sh
 COPY docker/scripts/create-admin-user.sh /usr/local/bin/create-admin-user.sh
-COPY docker/scripts/permissions-check.sh /usr/local/bin/permissions-check.sh
-COPY docker/scripts/dump-env.sh /usr/local/bin/dump-env.sh
+COPY docker/scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
+
+RUN chmod +x /usr/local/bin/00-conf-check.sh \
+    /usr/local/bin/01-validate-env.sh \
+    /usr/local/bin/02-dump-env.sh \
+    /usr/local/bin/03-db-check.sh \
+    /usr/local/bin/04-user-setup.sh \
+    /usr/local/bin/05-permissions-check.sh \
+    /usr/local/bin/create-admin-user.sh \
+    /usr/local/bin/entrypoint.sh \
+	&& mkdir -p /run/php
+
 COPY docker/nginx.conf /etc/nginx/nginx.conf
-RUN chmod +x /usr/local/bin/entrypoint.sh /usr/local/bin/validate-env.sh /usr/local/bin/permissions-check.sh /usr/local/bin/create-admin-user.sh /usr/local/bin/dump-env.sh
+
 
 # Expose port 8000 (Octane)
 EXPOSE 8000

@@ -4,8 +4,11 @@ set -euo pipefail
 
 echo "🚀 Starting Lychee entrypoint..."
 
+# Run configuration file check
+/usr/local/bin/00-conf-check.sh
+
 # Run environment validation
-/usr/local/bin/validate-env.sh
+/usr/local/bin/01-validate-env.sh
 
 # This is commended for now as FrankenPHP uses native env vars
 # And we are double checking that php also has access to them
@@ -13,80 +16,53 @@ echo "🚀 Starting Lychee entrypoint..."
 
 # Dump environment variables to .env file for Laravel (only if not using FrankenPHP)
 # if [ ! -f "/app/frankenphp_target" ]; then
-#     /usr/local/bin/dump-env.sh
+#     /usr/local/bin/02-dump-env.sh
 # else
 #     echo "ℹ️  Skipping .env dump (FrankenPHP uses native environment variables)"
 # fi
 
 # Wait for database to be ready
-if [ "${DB_CONNECTION:-}" = "mysql" ] || [ "${DB_CONNECTION:-}" = "pgsql" ]; then
-  echo "⏳ Waiting for database to be ready..."
+/usr/local/bin/03-db-check.sh
 
-  max_attempts=30
-  attempt=0
+# Setup user permissions
+/usr/local/bin/04-user-setup.sh
 
-  while [ "$attempt" -lt "$max_attempts" ]; do
-    if nc -z "${DB_HOST}" "${DB_PORT}" 2>/dev/null; then
-      echo "✅ Database port is open!"
-      sleep 2 # Give it a moment to fully initialize
-      break
-    fi
+# Check and set permissions
+/usr/local/bin/05-permissions-check.sh
 
-    attempt=$((attempt + 1))
-    echo "   Attempt $attempt/$max_attempts... (waiting 2s)"
-    sleep 2
-  done
+echo "Checking RUN_AS_ROOT setting"
+RUN_AS_ROOT=${RUN_AS_ROOT:-no}
+if [ "$RUN_AS_ROOT" = "yes" ]; then
+  echo "⚠️  WARNING: Running as root (RUN_AS_ROOT=yes)"
+  echo "   This is not recommended for production environments"
+else
+  echo "✅ Will drop privileges to www-data user"
+fi
 
-  if [ "$attempt" -eq "$max_attempts" ]; then
-    echo "❌ ERROR: Database connection timeout"
+# Helper function to run commands as www-data
+run_as_www() {
+  # If RUN_AS_ROOT is set to yes, run directly without switching user
+  if [ "$RUN_AS_ROOT" = "yes" ]; then
+    "$@"
+    return
+  fi
+
+  # Use gosu if available (Debian)
+  if command -v gosu >/dev/null 2>&1; then
+    gosu www-data "$@"
+  # Use su-exec if available (Alpine)
+  elif command -v su-exec >/dev/null 2>&1; then
+    su-exec www-data "$@"
+  else
+    # We die
+    echo "❌ ERROR: Neither gosu nor su-exec found to switch user"
     exit 1
   fi
-fi
-
-echo "Validating and setting PUID/PGID"
-PUID=${PUID:-33}
-PGID=${PGID:-33}
-
-# Validate PUID/PGID are within safe ranges (no root, within system limits)
-if [ "$PUID" -lt 33 ] || [ "$PUID" -gt 65534 ]; then
-  echo "❌ ERROR: PUID must be between 33 and 65534 (got: $PUID)"
-  exit 1
-fi
-if [ "$PGID" -lt 33 ] || [ "$PGID" -gt 65534 ]; then
-  echo "❌ ERROR: PGID must be between 33 and 65534 (got: $PGID)"
-  exit 1
-fi
-
-if pgrep -u www-data >/dev/null; then
-  echo "www-data has running processes; skipping usermod"
-else
-  if command -v usermod >/dev/null 2>&1; then
-    # Only modify user/group if shadow package is available
-    if [ "$(id -u www-data)" -ne "$PUID" ]; then
-      usermod -o -u "$PUID" www-data
-    fi
-    if [ "$(id -g www-data)" -ne "$PGID" ]; then
-      groupmod -o -g "$PGID" www-data
-    fi
-  fi
-fi
-echo "  User UID: $(id -u www-data)"
-echo "  User GID: $(id -g www-data)"
-
-/usr/local/bin/permissions-check.sh
+}
 
 # Clear any cached config from development
 echo "🧹 Clearing bootstrap cache..."
 rm -rf bootstrap/cache/*.php
-
-# Check for /conf/.env file - this indicates misconfiguration
-if [ -f "/conf/.env" ]; then
-  echo "❌ ERROR: /conf/.env file detected"
-  echo "   Containers should not have mounted .env files at /conf/.env"
-  echo "   Please check your docker-compose.yml configuration"
-  echo "   See https://lycheeorg.github.io/docs/upgrade.html"
-  exit 1
-fi
 
 # Detect LYCHEE_MODE and execute appropriate command
 LYCHEE_MODE=${LYCHEE_MODE:-web}
@@ -97,16 +73,16 @@ web)
 
   # Run database migrations (only in web mode to avoid race conditions)
   echo "🔄 Running database migrations..."
-  php artisan migrate --force
+  run_as_www php artisan migrate --force
 
   # Clear and cache configuration
   echo "🧹 Optimizing application..."
-  php artisan config:clear
-  php artisan config:cache
-  php artisan route:clear
-  php artisan route:cache
-  php artisan view:clear
-  php artisan view:cache
+  run_as_www php artisan config:clear
+  run_as_www php artisan config:cache
+  run_as_www php artisan route:clear
+  run_as_www php artisan route:cache
+  run_as_www php artisan view:clear
+  run_as_www php artisan view:cache
 
   echo "✅ Application ready!"
 
@@ -114,13 +90,28 @@ web)
     # Just to make sure.
     composer dump-autoload --optimize --no-scripts --no-dev
 
+    # Ajust permissions for Nginx
+    chown -R www-data:www-data /var/lib/nginx /var/log/nginx
+    # yeah it is disgusting but nginx needs it.
+	  chmod 666 /dev/stdout /dev/stderr
+
     # Start PHP-FPM and Nginx for traditional Docker setup
     echo "🚀 Starting PHP-FPM..."
     php-fpm8.5
   fi
 
-  # Execute the main command (from Dockerfile CMD: octane:start)
-  exec "$@"
+  # Execute the main command (from Dockerfile CMD: octane:start) as www-data
+  if [ "$RUN_AS_ROOT" = "yes" ]; then
+    exec "$@"
+  elif command -v gosu >/dev/null 2>&1; then
+    exec gosu www-data "$@"
+  elif command -v su-exec >/dev/null 2>&1; then
+    exec su-exec www-data "$@"
+  else
+    # We die
+    echo "❌ ERROR: Neither gosu nor su-exec found to switch user"
+    exit 1
+  fi
   ;;
 worker)
   echo "⚙️  Starting Lychee in worker mode..."
@@ -133,7 +124,7 @@ worker)
     # Check if there are pending migrations
     # php artisan migrate:status returns exit code 0 if all migrations are run
     # We check for "Pending" in the output to detect pending migrations
-    if php artisan migrate:status 2>/dev/null | grep -q "Pending"; then
+    if run_as_www php artisan migrate:status 2>/dev/null | grep -q "Pending"; then
       migration_attempt=$((migration_attempt + 1))
       echo "⏳ Pending migrations detected (attempt $migration_attempt/$max_migration_attempts)"
       echo "   Waiting 5 seconds for web container to complete migrations..."
@@ -186,7 +177,7 @@ worker)
     # --timeout=3600: kill job if it runs longer than 1 hour
     # --sleep=3: sleep 3 seconds when queue is empty
     # --max-time=$WORKER_MAX_TIME: restart worker after N seconds (memory leak mitigation)
-    php artisan queue:work \
+    run_as_www php artisan queue:work \
       --queue="$QUEUE_NAMES" \
       --tries=3 \
       --timeout=3600 \

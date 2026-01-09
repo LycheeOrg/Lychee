@@ -25,13 +25,25 @@ fi
 if [ -z "${APP_KEY:-}" ]; then
   echo "❌ ERROR: APP_KEY is not set"
   echo "   Set it via APP_KEY environment variable, APP_KEY_FILE, or /app/.env"
+  echo "   You can generate one with: 'echo \"APP_KEY=base64:\$(openssl rand -base64 32)\"' or 'php artisan key:generate --show'"
   exit 1
 fi
 
-# Validate APP_KEY format (should be base64:... for Laravel)
-if ! echo "${APP_KEY}" | grep -qE '^base64:.{32,}'; then
-  echo "❌ ERROR: APP_KEY must be in format 'base64:...' with sufficient length"
-  echo "   Generate one with: php artisan key:generate --show"
+# Validate APP_KEY is exactly 32 bytes when decoded
+# Temporarily disable errexit to handle base64 failure gracefully
+set +e
+KEY_BYTE_COUNT=$(echo "${APP_KEY#base64:}" | base64 -d 2>/dev/null | wc -c)
+BASE64_EXIT=$?
+set -e
+
+if [ "${BASE64_EXIT}" -ne 0 ] || [ "${KEY_BYTE_COUNT}" -eq 0 ]; then
+  echo "❌ ERROR: APP_KEY contains invalid base64 data"
+  echo "   Generate one with: 'echo \"APP_KEY=base64:\$(openssl rand -base64 32)\"' or 'php artisan key:generate --show'"
+  exit 1
+fi
+if [ "${KEY_BYTE_COUNT}" -ne 32 ]; then
+  echo "❌ ERROR: APP_KEY must be exactly 32 bytes when decoded (got: ${KEY_BYTE_COUNT} bytes)"
+  echo "   Generate one with: 'echo \"APP_KEY=base64:\$(openssl rand -base64 32)\"' or 'php artisan key:generate --show'"
   exit 1
 fi
 
@@ -41,6 +53,7 @@ fi
 
 if [ -z "${DB_CONNECTION:-}" ]; then
   echo "❌ ERROR: DB_CONNECTION is not set"
+  sleep 10
   exit 1
 fi
 
@@ -51,6 +64,7 @@ mysql | pgsql | sqlite)
   ;;
 *)
   echo "❌ ERROR: DB_CONNECTION must be mysql, pgsql, or sqlite (got: ${DB_CONNECTION})"
+  sleep 10
   exit 1
   ;;
 esac
