@@ -44,8 +44,8 @@ if [ "${DB_CONNECTION:-}" = "mysql" ] || [ "${DB_CONNECTION:-}" = "pgsql" ]; the
 fi
 
 echo "Validating and setting PUID/PGID"
-PUID=${PUID:-82}
-PGID=${PGID:-82}
+PUID=${PUID:-33}
+PGID=${PGID:-33}
 
 # Validate PUID/PGID are within safe ranges (no root, within system limits)
 if [ "$PUID" -lt 33 ] || [ "$PUID" -gt 65534 ]; then
@@ -77,12 +77,16 @@ echo "  User GID: $(id -g www-data)"
 
 # Helper function to run commands as www-data
 run_as_www() {
+  # Use gosu if available (Alpine)
   if command -v gosu >/dev/null 2>&1; then
     gosu www-data "$@"
+  # Use su-exec if available (Debian)
   elif command -v su-exec >/dev/null 2>&1; then
     su-exec www-data "$@"
   else
-    su -s /bin/sh www-data -c "$*"
+    # We die
+    echo "❌ ERROR: Neither gosu nor su-exec found to switch user"
+    exit 1
   fi
 }
 
