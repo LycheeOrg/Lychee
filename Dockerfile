@@ -83,6 +83,7 @@ RUN apt-get update \
     unzip \
     curl \
     bash \
+    gosu \
 	ghostscript \
 	&& sed -i '/<\/policymap>/i \  <policy domain="coder" rights="read|write" pattern="PDF" \/>' /etc/ImageMagick-7/policy.xml \
     && install-php-extensions \

@@ -90,6 +90,7 @@ RUN \
 	apt-get update && \
 	apt-get install -qy --no-install-recommends \
 	adduser \
+    gosu \
 	nginx-light \
 	php8.5-mysql \
 	php8.5-pgsql \
