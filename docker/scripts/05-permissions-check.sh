@@ -6,6 +6,7 @@ echo "🔍 Validating permissions..."
 
 # Ensure critical directories have correct rights
 chown -R www-data:www-data /app/storage/bootstrap /app/storage/debugbar /app/storage/framework
+chown -R www-data:www-data /app/bootstrap/cache
 chown www-data:www-data /app/storage
 chown www-data:www-data /app/public
 
@@ -20,6 +21,7 @@ find /app/bootstrap/cache -type d \( ! -perm 750 \) -exec chmod 750 {} + 2>/dev/
 
 # Files: 640 for sensitive, 644 for public
 find /app/storage -type f \( ! -perm 640 \) -exec chmod 640 {} + 2>/dev/null || true
+find /app/bootstrap/cache -type f \( ! -perm 640 \) -exec chmod 640 {} + 2>/dev/null || true
 echo "✅ Permissions set securely"
 
 # Safely check SKIP_PERMISSIONS_CHECKS
