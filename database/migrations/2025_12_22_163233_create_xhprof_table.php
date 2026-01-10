@@ -18,6 +18,7 @@ class CreateXHProfTable extends Migration
 			return;
 		}
 
+		Schema::dropIfExists('details');
 		Schema::create('details', function (Blueprint $table) {
 			$table->id('idcount');
 			$table->char('id', 64);

@@ -324,17 +324,17 @@ _Last updated: 2026-01-10_
 
 ### Documentation (I14)
 
-- [ ] T-007-39 – Update knowledge-map.md with pagination documentation.
+- [x] T-007-39 – Update knowledge-map.md with pagination documentation.
   _Intent:_ Document new endpoints, config keys, pagination flow.
   _Verification commands:_
   - N/A (manual review)
-  _Notes:_ File: `docs/specs/4-architecture/knowledge-map.md`. NOT STARTED.
+  _Notes:_ File: `docs/specs/4-architecture/knowledge-map.md`. Added "Album Pagination (Feature 007)" section under Architectural Patterns with backend/frontend architecture, configuration keys, and data flow documentation.
 
-- [ ] T-007-40 – Create/update API documentation for new endpoints.
+- [x] T-007-40 – Create/update API documentation for new endpoints.
   _Intent:_ Document `/Album::head`, `/Album::albums`, `/Album::photos` with examples.
   _Verification commands:_
   - N/A (manual review)
-  _Notes:_ Include request/response examples from spec appendix. NOT STARTED.
+  _Notes:_ File: `docs/specs/3-reference/api-design.md`. Added "Pagination Endpoints" section with full documentation for all three endpoints including parameters, response examples, response codes, configuration table, and best practices.
 
 - [ ] T-007-41 – Add inline code comments for pagination logic.
   _Intent:_ Document repository methods, frontend composables.
@@ -342,11 +342,11 @@ _Last updated: 2026-01-10_
   - N/A (manual review)
   _Notes:_ Focus on non-obvious logic and edge cases. Backend has inline comments, frontend NOT STARTED.
 
-- [ ] T-007-42 – Update admin guide with configuration instructions.
+- [x] T-007-42 – Update admin guide with configuration instructions.
   _Intent:_ Document how to configure pagination settings.
   _Verification commands:_
   - N/A (manual review)
-  _Notes:_ Include screenshots if possible. NOT STARTED.
+  _Notes:_ File: `docs/specs/2-how-to/configure-pagination.md`. Created comprehensive guide covering all four pagination settings, UI mode descriptions, admin panel instructions, database configuration, environment variables, best practices for different scenarios, and troubleshooting tips.
 
 ### Final Verification
 
@@ -402,11 +402,15 @@ _Last updated: 2026-01-10_
 - ✗ Loading/error states not fully implemented
 - ✗ Manual testing of all UI modes not completed
 
-**Testing & Documentation (I13-I14): 0 of 7 tasks completed (0%)**
-- No performance tests or large album fixtures created
-- Documentation not updated
+**Testing & Documentation (I13-I14): 3 of 7 tasks completed (43%)**
+- ✓ Knowledge map updated with pagination architecture
+- ✓ API documentation updated with endpoint details
+- ✓ Admin guide created for configuration
+- ✗ Performance tests skipped (per user directive)
+- ✗ Large album fixtures not created
+- ✗ Inline code comments not added to frontend
 
-**Overall Progress: 32 of 46 tasks completed (70%)**
+**Overall Progress: 35 of 46 tasks completed (76%)**
 
 ## Notes / TODOs
 
