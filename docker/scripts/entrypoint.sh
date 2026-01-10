@@ -5,10 +5,10 @@ set -euo pipefail
 echo "🚀 Starting Lychee entrypoint..."
 
 # Run configuration file check
-/usr/local/bin/00-conf-check.sh
+source /usr/local/bin/00-conf-check.sh
 
 # Run environment validation
-/usr/local/bin/01-validate-env.sh
+source /usr/local/bin/01-validate-env.sh
 
 # This is commended for now as FrankenPHP uses native env vars
 # And we are double checking that php also has access to them
@@ -22,13 +22,13 @@ echo "🚀 Starting Lychee entrypoint..."
 # fi
 
 # Wait for database to be ready
-/usr/local/bin/03-db-check.sh
+source /usr/local/bin/03-db-check.sh
 
 # Setup user permissions
-/usr/local/bin/04-user-setup.sh
+source /usr/local/bin/04-user-setup.sh
 
 # Check and set permissions
-/usr/local/bin/05-permissions-check.sh
+source /usr/local/bin/05-permissions-check.sh
 
 echo "Checking RUN_AS_ROOT setting"
 RUN_AS_ROOT=${RUN_AS_ROOT:-no}
