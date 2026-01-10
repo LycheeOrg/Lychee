@@ -14,6 +14,7 @@ use App\Http\Requests\Album\GetAlbumPhotosRequest;
 use App\Http\Resources\Collections\PaginatedPhotosResource;
 use App\Models\Album;
 use App\Models\TagAlbum;
+use App\Policies\AlbumPolicy;
 use App\Repositories\ConfigManager;
 use App\Repositories\PhotoRepository;
 use App\SmartAlbums\BaseSmartAlbum;
@@ -59,9 +60,10 @@ class AlbumPhotosController extends Controller
 			$config_manager = resolve(ConfigManager::class);
 
 			return new PaginatedPhotosResource(
-				paginated_photos: $album->photos()->paginate($config_manager->getValueAsInt('photos_per_page')),
+				/** @phpstan-ignore method.private (It is NOT private and it works.) */
+				paginated_photos: $album->photos()->with(['size_variants', 'tags', 'palette', 'statistics', 'rating'])->paginate($config_manager->getValueAsInt('photos_per_page')),
 				album_id: $album->id,
-				should_downgrade: Gate::check(\AlbumPolicy::CAN_ACCESS_FULL_PHOTO, [AbstractAlbum::class, $album]) === false,
+				should_downgrade: Gate::check(AlbumPolicy::CAN_ACCESS_FULL_PHOTO, [AbstractAlbum::class, $album]) === false,
 				photo_timeline: $album->photo_timeline,
 			);
 		}
@@ -72,7 +74,7 @@ class AlbumPhotosController extends Controller
 		return new PaginatedPhotosResource(
 			paginated_photos: $paginator,
 			album_id: $album->id,
-			should_downgrade: Gate::check(\AlbumPolicy::CAN_ACCESS_FULL_PHOTO, [AbstractAlbum::class, $album]) === false,
+			should_downgrade: Gate::check(AlbumPolicy::CAN_ACCESS_FULL_PHOTO, [AbstractAlbum::class, $album]) === false,
 			photo_timeline: $album->photo_timeline);
 	}
 }
