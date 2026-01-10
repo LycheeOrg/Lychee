@@ -20,6 +20,10 @@ enum ColumnSortingType: string
 	case TITLE = 'title';
 	case DESCRIPTION = 'description';
 
+	// We sort those at the database level.
+	case TITLE_STRICT = 'title_strict';
+	case DESCRIPTION_STRICT = 'description_strict';
+
 	// from albums
 	case MIN_TAKEN_AT = 'min_taken_at';
 	case MAX_TAKEN_AT = 'max_taken_at';

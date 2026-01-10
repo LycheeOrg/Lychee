@@ -24,6 +24,10 @@ enum ColumnSortingPhotoType: string
 	case TITLE = 'title';
 	case DESCRIPTION = 'description';
 
+	// We sort those at the database level.
+	case TITLE_STRICT = 'title_strict';
+	case DESCRIPTION_STRICT = 'description_strict';
+
 	case TAKEN_AT = 'taken_at';
 	case IS_STARRED = 'is_starred';
 	case TYPE = 'type';

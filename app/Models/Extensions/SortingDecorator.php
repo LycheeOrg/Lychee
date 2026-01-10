@@ -151,7 +151,9 @@ class SortingDecorator
 		// requires natural sorting.
 		try {
 			for ($i = $this->pivot_idx + 1; $i < count($this->order_by); $i++) {
-				$this->base_builder->orderBy($this->order_by[$i]['column'], $this->order_by[$i]['direction']);
+				$column = $this->order_by[$i]['column'];
+				$column_sorting_name = str_replace('_strict', '', $column);
+				$this->base_builder->orderBy($column_sorting_name, $this->order_by[$i]['direction']);
 			}
 			// @codeCoverageIgnoreStart
 		} catch (\InvalidArgumentException) {
@@ -175,6 +177,7 @@ class SortingDecorator
 
 			// This conversion is necessary
 			$column_sorting_name = str_replace('photos.', '', $column);
+			$column_sorting_name = str_replace('_strict', '', $column_sorting_name);
 			$column_sorting_type = ColumnSortingType::tryFrom($column_sorting_name) ?? ColumnSortingType::CREATED_AT;
 
 			$options = in_array($column_sorting_type, self::POSTPONE_COLUMNS, true) ? SORT_NATURAL | SORT_FLAG_CASE : SORT_REGULAR;
@@ -207,7 +210,10 @@ class SortingDecorator
 		// requires natural sorting.
 		try {
 			for ($i = $this->pivot_idx + 1; $i < count($this->order_by); $i++) {
-				$this->base_builder->orderBy($this->order_by[$i]['column'], $this->order_by[$i]['direction']);
+				$column = $this->order_by[$i]['column'];
+				$column_sorting_name = str_replace('_strict', '', $column);
+				$column_sorting_name = str_replace('_strict', '', $column_sorting_name);
+				$this->base_builder->orderBy($column_sorting_name, $this->order_by[$i]['direction']);
 			}
 			// @codeCoverageIgnoreStart
 		} catch (\InvalidArgumentException) {
@@ -233,6 +239,7 @@ class SortingDecorator
 
 			// This conversion is necessary
 			$column_sorting_name = str_replace('photos.', '', $column);
+			$column_sorting_name = str_replace('_strict', '', $column_sorting_name);
 			$column_sorting_type = ColumnSortingType::tryFrom($column_sorting_name) ?? ColumnSortingType::CREATED_AT;
 
 			$options = in_array($column_sorting_type, self::POSTPONE_COLUMNS, true) ? SORT_NATURAL | SORT_FLAG_CASE : SORT_REGULAR;

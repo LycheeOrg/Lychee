@@ -19,13 +19,32 @@ declare namespace App.Enum {
 	export type AspectRatioCSSType = "aspect-5x4" | "aspect-4x5" | "aspect-3x2" | "aspect-square" | "aspect-2x3" | "aspect-video";
 	export type AspectRatioType = "5/4" | "3/2" | "1/1" | "2/3" | "4/5" | "16/9";
 	export type CacheTag = "gallery" | "auth" | "user" | "settings" | "statistics" | "users";
-	export type ColumnSortingAlbumType = "owner_id" | "created_at" | "title" | "description" | "min_taken_at" | "max_taken_at";
-	export type ColumnSortingPhotoType = "owner_id" | "created_at" | "title" | "description" | "taken_at" | "is_starred" | "type";
+	export type ColumnSortingAlbumType =
+		| "owner_id"
+		| "created_at"
+		| "title"
+		| "description"
+		| "title_strict"
+		| "description_strict"
+		| "min_taken_at"
+		| "max_taken_at";
+	export type ColumnSortingPhotoType =
+		| "owner_id"
+		| "created_at"
+		| "title"
+		| "description"
+		| "title_strict"
+		| "description_strict"
+		| "taken_at"
+		| "is_starred"
+		| "type";
 	export type ColumnSortingType =
 		| "owner_id"
 		| "created_at"
 		| "title"
 		| "description"
+		| "title_strict"
+		| "description_strict"
 		| "min_taken_at"
 		| "max_taken_at"
 		| "taken_at"
@@ -594,7 +613,6 @@ declare namespace App.Http.Resources.Models {
 		copyright: string | null;
 		is_tag_album: boolean;
 		show_tags: Array<string>;
-		photos: App.Http.Resources.Models.PhotoResource[];
 		policy: App.Http.Resources.Models.Utils.AlbumProtectionPolicy;
 		rights: App.Http.Resources.Rights.AlbumRightsResource;
 		preFormattedData: App.Http.Resources.Models.Utils.PreFormattedAlbumData;
