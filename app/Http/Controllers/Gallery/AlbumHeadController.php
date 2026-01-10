@@ -39,8 +39,6 @@ class AlbumHeadController extends Controller
 	 * @param GetAlbumHeadRequest $request the request with validated album_id
 	 *
 	 * @return HeadAbstractAlbumResource album metadata (counts, thumb, rights, config) without children/photos arrays
-	 *
-	 * @throws LycheeLogicException if album is not a regular Album (Smart/Tag albums not supported)
 	 */
 	public function get(GetAlbumHeadRequest $request): HeadAbstractAlbumResource
 	{
