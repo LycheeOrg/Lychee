@@ -126,6 +126,12 @@ export const timelineAlbumGranularityOptions: SelectOption<App.Enum.TimelineAlbu
 	{ value: "day", label: "gallery.timeline.day" },
 ];
 
+export const paginationUiModeOptions: SelectOption<App.Enum.PaginationMode>[] = [
+	{ value: "infinite_scroll", label: "gallery.pagination.infinite_scroll" },
+	{ value: "load_more_button", label: "gallery.pagination.load_more_button" },
+	{ value: "page_navigation", label: "gallery.pagination.page_navigation" },
+];
+
 export const timeZoneOptions: SelectOption<string>[] = [
 	{ value: "-12:00", label: "-12:00 Uninhabited areas (Baker Island)" },
 	{ value: "-11:00", label: "-11:00 Niue Time" },
@@ -329,5 +335,9 @@ export const SelectBuilders = {
 		value: string | App.Enum.TimelineAlbumGranularity | undefined,
 	): SelectOption<App.Enum.TimelineAlbumGranularity> | undefined {
 		return timelineAlbumGranularityOptions.find((option) => option.value === value) || undefined;
+	},
+
+	buildPaginationUiMode(value: string | App.Enum.PaginationMode): SelectOption<string> | undefined {
+		return paginationUiModeOptions.find((option) => option.value === value) || undefined;
 	},
 };

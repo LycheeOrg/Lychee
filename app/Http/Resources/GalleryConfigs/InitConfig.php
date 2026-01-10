@@ -12,6 +12,7 @@ use App\Enum\AlbumDecorationOrientation;
 use App\Enum\AlbumDecorationType;
 use App\Enum\AlbumLayoutType;
 use App\Enum\ImageOverlayType;
+use App\Enum\PaginationMode;
 use App\Enum\PhotoThumbInfoType;
 use App\Enum\SmallLargeType;
 use App\Enum\ThumbAlbumSubtitleType;
@@ -119,6 +120,12 @@ class InitConfig extends Data
 	public string $default_homepage;
 	public bool $is_timeline_page_enabled = false;
 
+	// Pagination settings
+	public PaginationMode $photos_pagination_mode;
+	public PaginationMode $albums_pagination_mode;
+	public int $photos_per_page;
+	public int $albums_per_page;
+
 	public function __construct()
 	{
 		// Debug mode
@@ -200,6 +207,12 @@ class InitConfig extends Data
 		// Homepage
 		$this->default_homepage = request()->configs()->getValueAsString('home_page_default');
 		$this->is_timeline_page_enabled = request()->configs()->getValueAsBool('timeline_page_enabled');
+
+		// Pagination settings
+		$this->photos_pagination_mode = request()->configs()->getValueAsEnum('photos_pagination_ui_mode', PaginationMode::class);
+		$this->albums_pagination_mode = request()->configs()->getValueAsEnum('albums_pagination_ui_mode', PaginationMode::class);
+		$this->photos_per_page = request()->configs()->getValueAsInt('photos_per_page');
+		$this->albums_per_page = request()->configs()->getValueAsInt('sub_albums_per_page');
 
 		$this->set_supporter_properties();
 	}
