@@ -22,7 +22,7 @@ _Last updated:_ 2026-01-07
 
 **In scope:**
 - New REST API endpoints: `/Album/{id}/head`, `/Album/{id}/albums`, `/Album/{id}/photos`
-- Pagination config keys: `sub_albums_per_page`, `photos_per_page`, `search_results_per_page`
+- Pagination config keys: `albums_per_page`, `photos_per_page`
 - UI mode config keys: `photos_pagination_ui_mode`, `albums_pagination_ui_mode`
 - Frontend pagination state management in Pinia stores
 - Frontend UI components for three pagination modes
@@ -104,9 +104,8 @@ _Preconditions:_ Config table exists and supports string/enum types.
 _Steps:_
 1. Create migration: `2026_01_07_add_pagination_config_keys`
 2. Add config keys:
-   - `sub_albums_per_page` (integer, default 30, range 1-1000)
+   - `albums_per_page` (integer, default 30, range 1-1000)
    - `photos_per_page` (integer, default 100, range 1-1000)
-   - `search_results_per_page` (integer, default 50, range 1-1000)
    - `photos_pagination_ui_mode` (enum: infinite_scroll, load_more_button, page_navigation, default: infinite_scroll)
    - `albums_pagination_ui_mode` (enum: same as above, default: infinite_scroll)
 3. Add validation rules for config keys in relevant validators
@@ -193,7 +192,7 @@ _Steps:_
    - Structure: `{data: [...], current_page, last_page, per_page, total}`
 2. Create `AlbumChildrenController@get` method
    - Load album
-   - Get `sub_albums_per_page` from config
+   - Get `albums_per_page` from config
    - Get `page` from request, default to 1
    - Call `$album->getChildrenPaginated($perPage, $page)`
    - Return `PaginatedAlbumsResource`
@@ -404,9 +403,8 @@ _Preconditions:_ I1 complete (config keys exist).
 _Steps:_
 1. Locate admin settings page/component
 2. Add input fields for page size configs:
-   - `sub_albums_per_page` (number input, 1-1000)
+   - `albums_per_page` (number input, 1-1000)
    - `photos_per_page` (number input, 1-1000)
-   - `search_results_per_page` (number input, 1-1000)
 3. Add dropdown selects for UI mode configs:
    - `photos_pagination_ui_mode` (infinite_scroll, load_more_button, page_navigation)
    - `albums_pagination_ui_mode` (same options)

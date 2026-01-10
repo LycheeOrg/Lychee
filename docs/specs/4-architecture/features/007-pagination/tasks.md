@@ -18,7 +18,7 @@ _Last updated: 2026-01-10_
   - `php artisan migrate` ✓
   - `php artisan migrate:rollback` ✓
   - `php artisan test --filter=ConfigTest` (assumed passing)
-  _Notes:_ Migration file: `2026_01_07_add_pagination_config_keys.php`. Config keys: `sub_albums_per_page=30`, `photos_per_page=100`, `search_results_per_page=50`, `photos_pagination_ui_mode=infinite_scroll`, `albums_pagination_ui_mode=infinite_scroll`. Migration has been run successfully (verified via migrate:status).
+  _Notes:_ Migration file: `2026_01_07_add_pagination_config_keys.php`. Config keys: `albums_per_page=30`, `photos_per_page=100`, `photos_pagination_ui_mode=infinite_scroll`, `albums_pagination_ui_mode=infinite_scroll`. Migration has been run successfully (verified via migrate:status).
 
 ### Backend: Album Head Endpoint (I2)
 
@@ -249,7 +249,7 @@ _Last updated: 2026-01-10_
   _Verification commands:_
   - `npm run check` ✓
   - Manual testing: save configs, verify UI updates
-  _Notes:_ COMPLETE. Added `paginationUiModeOptions` and `buildPaginationUiMode` to `resources/js/config/constants.ts`. Added `SelectOptionsField` mappings for `photos_pagination_ui_mode` and `albums_pagination_ui_mode` in `resources/js/components/settings/ConfigGroup.vue`. Added translation keys in `lang/en/gallery.php`. Created `app/Enum/PaginationMode.php` enum. Page size configs (`sub_albums_per_page`, `photos_per_page`, `search_results_per_page`) use existing `NumberField` via generic `int` type handling.
+  _Notes:_ COMPLETE. Added `paginationUiModeOptions` and `buildPaginationUiMode` to `resources/js/config/constants.ts`. Added `SelectOptionsField` mappings for `photos_pagination_ui_mode` and `albums_pagination_ui_mode` in `resources/js/components/settings/ConfigGroup.vue`. Added translation keys in `lang/en/gallery.php`. Created `app/Enum/PaginationMode.php` enum. Page size configs (`albums_per_page`, `photos_per_page`) use existing `NumberField` via generic `int` type handling.
 
 - [ ] T-007-35 – Run full frontend quality gate.
   _Intent:_ Ensure all frontend code passes quality checks.

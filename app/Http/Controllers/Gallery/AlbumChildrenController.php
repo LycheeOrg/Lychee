@@ -36,7 +36,7 @@ class AlbumChildrenController extends Controller
 	public function get(GetAlbumChildrenRequest $request): PaginatedAlbumsResource
 	{
 		$album = $request->album();
-		$per_page = $request->configs()->getValueAsInt('sub_albums_per_page');
+		$per_page = $request->configs()->getValueAsInt('albums_per_page');
 		$sorting_criterion = $album->getEffectiveAlbumSorting();
 
 		$paginator = $this->album_repository->getChildrenPaginated($album->id, $sorting_criterion, $per_page);

@@ -149,7 +149,7 @@ export const useAlbumStore = defineStore("album-store", {
 					} else {
 						albumsStore.albums = data.data.data;
 					}
-					console.log(`albums: ${albumsStore.albums.length}/${data.data.total}`);
+					console.debug(`albums: ${albumsStore.albums.length}/${data.data.total}`);
 					this.albums_current_page = data.data.current_page;
 					this.albums_last_page = data.data.last_page;
 					this.albums_per_page = data.data.per_page;
@@ -184,7 +184,7 @@ export const useAlbumStore = defineStore("album-store", {
 					} else {
 						photosState.setPhotos(data.data.photos, this.config?.is_photo_timeline_enabled ?? false);
 					}
-					console.log(`photos: ${photosState.photos.length}/${data.data.total}`);
+					console.debug(`photos: ${photosState.photos.length}/${data.data.total}`);
 					this.photos_current_page = data.data.current_page;
 					this.photos_last_page = data.data.last_page;
 					this.photos_per_page = data.data.per_page;
@@ -200,6 +200,10 @@ export const useAlbumStore = defineStore("album-store", {
 
 		// Load next page of photos (for infinite scroll / load more)
 		loadMorePhotos(): Promise<void> {
+			// Guard against duplicate requests while loading
+			if (this.photos_loading) {
+				return Promise.resolve();
+			}
 			if (this.photos_current_page >= this.photos_last_page) {
 				return Promise.resolve();
 			}
@@ -208,6 +212,10 @@ export const useAlbumStore = defineStore("album-store", {
 
 		// Load next page of albums (for infinite scroll / load more)
 		loadMoreAlbums(): Promise<void> {
+			// Guard against duplicate requests while loading
+			if (this.albums_loading) {
+				return Promise.resolve();
+			}
 			if (this.albums_current_page >= this.albums_last_page) {
 				return Promise.resolve();
 			}

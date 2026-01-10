@@ -103,6 +103,8 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		albums_pagination_mode: "infinite_scroll" as App.Enum.PaginationMode,
 		photos_per_page: 100,
 		albums_per_page: 30,
+		photos_infinite_scroll_threshold: 10,
+		albums_infinite_scroll_threshold: 10,
 	}),
 	actions: {
 		async load(): Promise<void> {
@@ -203,6 +205,8 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.albums_pagination_mode = data.albums_pagination_mode;
 					this.photos_per_page = data.photos_per_page;
 					this.albums_per_page = data.albums_per_page;
+					this.photos_infinite_scroll_threshold = data.photos_infinite_scroll_threshold;
+					this.albums_infinite_scroll_threshold = data.albums_infinite_scroll_threshold;
 				})
 				.catch((error) => {
 					// In this specific case, even though it has been possibly disabled, we really need to see the error.

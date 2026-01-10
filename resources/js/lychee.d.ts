@@ -427,6 +427,8 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		albums_pagination_mode: App.Enum.PaginationMode;
 		photos_per_page: number;
 		albums_per_page: number;
+		photos_infinite_scroll_threshold: number;
+		albums_infinite_scroll_threshold: number;
 	};
 	export type LandingPageResource = {
 		landing_page_enable: boolean;

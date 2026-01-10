@@ -125,6 +125,8 @@ class InitConfig extends Data
 	public PaginationMode $albums_pagination_mode;
 	public int $photos_per_page;
 	public int $albums_per_page;
+	public int $photos_infinite_scroll_threshold;
+	public int $albums_infinite_scroll_threshold;
 
 	public function __construct()
 	{
@@ -212,7 +214,9 @@ class InitConfig extends Data
 		$this->photos_pagination_mode = request()->configs()->getValueAsEnum('photos_pagination_ui_mode', PaginationMode::class);
 		$this->albums_pagination_mode = request()->configs()->getValueAsEnum('albums_pagination_ui_mode', PaginationMode::class);
 		$this->photos_per_page = request()->configs()->getValueAsInt('photos_per_page');
-		$this->albums_per_page = request()->configs()->getValueAsInt('sub_albums_per_page');
+		$this->albums_per_page = request()->configs()->getValueAsInt('albums_per_page');
+		$this->photos_infinite_scroll_threshold = request()->configs()->getValueAsInt('photos_infinite_scroll_threshold');
+		$this->albums_infinite_scroll_threshold = request()->configs()->getValueAsInt('albums_infinite_scroll_threshold');
 
 		$this->set_supporter_properties();
 	}

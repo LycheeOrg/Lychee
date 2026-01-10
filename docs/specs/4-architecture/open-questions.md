@@ -41,7 +41,7 @@ _All Feature 007 questions have been resolved and moved to the resolved section 
 ### ~~Q-007-04: Config Key Naming and Default Values~~ ✅ RESOLVED
 
 **Decision:** Option C - Multiple granular configs
-**Rationale:** User specified: `sub_albums_per_page` (default 30), `photos_per_page` (default 100), `search_results_per_page` (default 50). Flexible tuning for different resource types with appropriate defaults based on typical usage patterns.
+**Rationale:** User specified: `albums_per_page` (default 30), `photos_per_page` (default 100), Flexible tuning for different resource types with appropriate defaults based on typical usage patterns.
 **Updated in spec:** FR-007-06, NFR-007-05, DO-007-01
 
 ---

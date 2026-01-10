@@ -48,7 +48,7 @@ Affected modules: application (controllers/services), REST API (v2 endpoints), d
 | FR-007-03 | Fetch paginated album photos | GET `/Album/{id}/photos?page=2` returns page 2 of photos with pagination metadata | Validate `page` parameter is positive integer, default to 1 if missing | Return 422 if page parameter is invalid | None | Owner directive Q-007-02 |
 | FR-007-04 | Return pagination metadata in API responses | Include `current_page`, `last_page`, `per_page`, `total` in paginated responses | Verify metadata is accurate (current_page matches request, total matches query count) | N/A | None | Standard REST pagination pattern |
 | FR-007-05 | Support configurable page size via config table | Admin can configure page size settings (see FR-007-06 for config keys) | Validate page size values are positive integers (1-1000) | Reject invalid config values via validation rules | None | Owner directive Q-007-04 |
-| FR-007-06 | Multiple granular pagination config keys | Admin can configure: `sub_albums_per_page` (default 30), `photos_per_page` (default 100), `search_results_per_page` (default 50) | Each config key validated independently | Reject invalid values, fall back to defaults | None | Owner directive Q-007-04 Option C |
+| FR-007-06 | Multiple granular pagination config keys | Admin can configure: `albums_per_page` (default 30), `photos_per_page` (default 100) | Each config key validated independently | Reject invalid values, fall back to defaults | None | Owner directive Q-007-04 Option C |
 | FR-007-07 | Configurable UI loading strategy for photos | Admin can configure `photos_pagination_ui_mode` with options: "infinite_scroll" (default), "load_more_button", "page_navigation" | Validate mode is one of allowed values | Fall back to "infinite_scroll" default | None | Owner directive Q-007-03 |
 | FR-007-08 | Configurable UI loading strategy for albums | Admin can configure `albums_pagination_ui_mode` with options: "infinite_scroll" (default), "load_more_button", "page_navigation" | Validate mode is one of allowed values | Fall back to "infinite_scroll" default | None | Owner directive Q-007-03 |
 | FR-007-09 | First page always loaded on album open | When album loads, automatically fetch `/Album/{id}/head`, `/Album/{id}/albums?page=1`, `/Album/{id}/photos?page=1` | N/A | N/A | None | Owner directive Q-007-03 |
@@ -66,7 +66,7 @@ Affected modules: application (controllers/services), REST API (v2 endpoints), d
 | NFR-007-02 | Pagination metadata calculation must be efficient | Avoid expensive COUNT(*) queries on every request | Consider caching total counts for large albums | Laravel LengthAwarePaginator | Performance requirement |
 | NFR-007-03 | Frontend state management must support pagination per resource type | Clean separation, support multiple UI modes | Pagination state stored in Pinia stores (AlbumState, PhotosState) with UI mode support | Pinia stores, album-service.ts | Architectural consistency Q-007-03 |
 | NFR-007-04 | New endpoints must not break existing API clients | Backward compatibility | Existing `/Album` endpoint unchanged, tests continue to pass | Legacy endpoint preserved | API stability Q-007-02 |
-| NFR-007-05 | Config settings must be validated with sensible defaults | Data integrity, prevent misconfiguration | Defaults: sub_albums_per_page=30, photos_per_page=100, search_results_per_page=50, UI modes with validated enums | Configs table, validation rules | Operational safety Q-007-04 |
+| NFR-007-05 | Config settings must be validated with sensible defaults | Data integrity, prevent misconfiguration | Defaults: albums_per_page=30, photos_per_page=100, UI modes with validated enums | Configs table, validation rules | Operational safety Q-007-04 |
 | NFR-007-06 | Code duplication acceptable for new endpoints | Avoid refactoring complexity, minimize test changes | New controllers/methods can duplicate logic from existing `/Album` implementation | Repository pattern methods | Owner directive Q-007-05 |
 
 ## UI / Interaction Mock-ups
@@ -154,7 +154,7 @@ Affected modules: application (controllers/services), REST API (v2 endpoints), d
 | S-007-07 | User navigates to smart album (Recent) → Uses existing SmartAlbum pagination (unchanged) |
 | S-007-08 | API client uses legacy `/Album?album_id=X` → Returns full album data (no pagination, backward compat) |
 | S-007-09 | API client uses new `/Album/{id}/photos` without page param → Returns first page (page defaults to 1) |
-| S-007-10 | Admin configures custom page sizes (sub_albums_per_page=20, photos_per_page=50) → New endpoints use custom values |
+| S-007-10 | Admin configures custom page sizes (albums_per_page=20, photos_per_page=50) → New endpoints use custom values |
 | S-007-11 | Admin configures UI mode (photos: infinite_scroll, albums: page_navigation) → Frontend renders appropriate UI controls |
 | S-007-12 | User requests page beyond available data (page=999) → Returns empty items array with correct metadata (current_page=999, total unchanged) |
 | S-007-13 | Concurrent users load same album → Each receives correct paginated data without conflicts |
@@ -176,7 +176,7 @@ Affected modules: application (controllers/services), REST API (v2 endpoints), d
 
 | ID | Description | Modules |
 |----|-------------|---------|
-| DO-007-01 | PaginationConfig: sub_albums_per_page (int, default 30), photos_per_page (int, default 100), search_results_per_page (int, default 50) | application, REST |
+| DO-007-01 | PaginationConfig: albums_per_page (int, default 30), photos_per_page (int, default 100) | application, REST |
 | DO-007-02 | PaginationUIModeConfig: photos_pagination_ui_mode (enum: infinite_scroll, load_more_button, page_navigation), albums_pagination_ui_mode (enum, same options) | application, REST, UI |
 | DO-007-03 | PaginationMetadata: current_page (int), last_page (int), per_page (int), total (int) | application, REST, UI |
 | DO-007-04 | HeadAlbumResource: Album metadata without children/photos arrays (id, title, description, counts, thumb, rights) | application, REST |
@@ -239,7 +239,7 @@ domain_objects:
   - id: DO-007-01
     name: PaginationConfig
     fields:
-      - name: sub_albums_per_page
+      - name: albums_per_page
         type: integer
         constraints: "1-1000"
         default: 30
@@ -247,10 +247,6 @@ domain_objects:
         type: integer
         constraints: "1-1000"
         default: 100
-      - name: search_results_per_page
-        type: integer
-        constraints: "1-1000"
-        default: 50
   - id: DO-007-02
     name: PaginationUIModeConfig
     fields:
@@ -452,6 +448,6 @@ All open questions (Q-007-01 through Q-007-06) have been resolved:
 - **Q-007-01:** Offset-based pagination with config table storage (Option A)
 - **Q-007-02:** Create new separate endpoints (Option B): `/Album/{id}/head`, `/Album/{id}/albums`, `/Album/{id}/photos`
 - **Q-007-03:** Configurable UI modes with infinite scroll as default for both photos and albums
-- **Q-007-04:** Multiple granular config keys (Option C): `sub_albums_per_page=30`, `photos_per_page=100`, `search_results_per_page=50`
+- **Q-007-04:** Multiple granular config keys (Option C): `albums_per_page=30`, `photos_per_page=100`
 - **Q-007-05:** Use repository pattern methods (Option B), code duplication acceptable
 - **Q-007-06:** New endpoints default page=1, existing `/Album` endpoint unchanged for backward compatibility
