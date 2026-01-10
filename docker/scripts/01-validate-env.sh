@@ -11,9 +11,15 @@ echo "🔍 Validating environment variables..."
 # Check if APP_KEY exists, with fallback mechanisms
 if [ -z "${APP_KEY:-}" ]; then
   # Check if APP_KEY_FILE is set and load from file
-  if [ -n "${APP_KEY_FILE:-}" ] && [ -f "$APP_KEY_FILE" ]; then
-    APP_KEY=$(cat "$APP_KEY_FILE")
-    export APP_KEY
+  if [ -n "${APP_KEY_FILE:-}" ]; then
+    if [ -f "$APP_KEY_FILE" ]; then
+      APP_KEY=$(cat "$APP_KEY_FILE")
+      export APP_KEY
+      echo "✅ Loaded APP_KEY from file: ${APP_KEY_FILE}"
+    else
+      echo "❌ ERROR: APP_KEY_FILE is set but file does not exist: ${APP_KEY_FILE}"
+      exit 1
+    fi
   # Fallback to /app/.env if it exists
   elif [ -f "/app/.env" ]; then
     APP_KEY=$(grep "^APP_KEY=" /app/.env | cut -d= -f2- | tr -d '"' | tr -d "'")
@@ -87,15 +93,24 @@ if [ "${DB_CONNECTION}" = "mysql" ] || [ "${DB_CONNECTION}" = "pgsql" ]; then
   # Check if DB_PASSWORD exists, with fallback mechanisms
   if [ -z "${DB_PASSWORD:-}" ]; then
     # Check if DB_PASSWORD_FILE is set and load from file
-    if [ -n "${DB_PASSWORD_FILE:-}" ] && [ -f "$DB_PASSWORD_FILE" ]; then
-      DB_PASSWORD=$(cat "$DB_PASSWORD_FILE")
-      export DB_PASSWORD
+    if [ -n "${DB_PASSWORD_FILE:-}" ]; then
+      if [ -f "$DB_PASSWORD_FILE" ]; then
+        DB_PASSWORD=$(cat "$DB_PASSWORD_FILE")
+        export DB_PASSWORD
+        echo "✅ Loaded DB_PASSWORD from file: ${DB_PASSWORD_FILE}"
+        echo "DB_PASSWORD: ${DB_PASSWORD}"
+      else
+        echo "❌ ERROR: DB_PASSWORD_FILE is set but file does not exist: ${DB_PASSWORD_FILE}"
+        exit 1
+      fi
     # Fallback to /app/.env if it exists
     elif [ -f "/app/.env" ]; then
       DB_PASSWORD=$(grep "^DB_PASSWORD=" /app/.env | cut -d= -f2- | tr -d '"' | tr -d "'")
       export DB_PASSWORD
     fi
   fi
+
+
 
   # Error out if DB_PASSWORD is still empty
   if [ -z "${DB_PASSWORD:-}" ]; then

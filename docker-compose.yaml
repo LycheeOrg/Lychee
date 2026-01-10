@@ -1,7 +1,35 @@
 
+# Docker Compose configuration for Lychee application with FrankenPHP backend
+# Version: 2026-01-10
+
+# You can set up secrets files for sensitive data like database passwords.
+# Create a 'secrets' directory and add files 'db_password' and 'db_master_password'
+# with appropriate permissions (readable only by the owner).
+# Then uncomment the 'secrets' section below.
+
+# secrets:
+#   db_password:
+#     file: ./secrets/db_password
+#   db_master_password:
+#     file: ./secrets/db_master_password
+#   app_key:
+#     file: ./secrets/app_key
+
 services:
-  # Laravel Backend API
+  ##########################################################################################
+  # Lychee API Service and frontend.
+  ##########################################################################################
   lychee_api:
+    # There are two main images: `latest` and `edge`.
+    # `latest` is mapped to the last published version
+    # `edge` is mapped to the last build on master branch (may be unstable)
+    #
+    # There are also other images available which uses nginx as a base instead of FrankenPHP:
+    # - ghcr.io/lycheeorg/lychee:latest-legacy
+    # - ghcr.io/lycheeorg/lychee:edge-legacy
+    # image: ghcr.io/lycheeorg/lychee:edge
+
+    # The following lines are for development purposes only.
     image: lychee-frankenphp:latest
     # image: lychee-legacy:latest
     # build:
@@ -9,6 +37,8 @@ services:
     #   dockerfile: Dockerfile
     #   args:
     #     NODE_ENV: "${NODE_ENV:-production}"
+
+    # Set up a container name for easier identification
     container_name: lychee-api
     restart: unless-stopped
     expose:
@@ -41,9 +71,20 @@ services:
         reservations:
           cpus: '0.5'
           memory: 512M
+
+    # To configure Lychee, you can do it via:
+    # - environment variables (see the environment section below)
+    # - .env file (recommended for sensitive data)
+    # - mapping .env file to /app/.env (not necessary anymore if you use env_file)
     env_file:
       - path: ./.env
-        required: true
+
+    # If you use docker secrets, uncomment the following lines and
+    # create the secrets files as described at the top of this file.
+    # secrets:
+    #   - db_password
+    #   - app_key
+
     environment:
       # User and Group IDs for the www-data user inside the container
       # Note that this will impact your permissions on mounted volumes.
@@ -55,6 +96,17 @@ services:
       # You can also set it to 33 (www-data) if your files are owned by www-data.
       PUID: "${PUID:-1000}"
       PGID: "${PGID:-1000}"
+
+      # Or you can activate the following to run as root inside the container. (not recommended)
+      # RUN_AS_ROOT: "yes"
+
+      # Application Key
+      # You can either set it here directly (not recommended for security reasons)
+      # Or load it from .env file
+      # or use Docker secrets as shown above.
+      APP_KEY: "${APP_KEY:-}"
+      # APP_KEY_FILE: "/run/secrets/app_key"
+
       # Application
       APP_NAME: "${APP_NAME:-Lychee}"
       APP_ENV: "${APP_ENV:-production}"
@@ -64,14 +116,17 @@ services:
       APP_FORCE_HTTPS: "${APP_FORCE_HTTPS:-false}"
       APP_MAINTENANCE_DRIVER: "${APP_MAINTENANCE_DRIVER:-file}"
 
-
       # enable or disable debug bar. By default it is disabled.
       # Do note that this disable CSP!!
-      DEBUGBAR_ENABLED: "${DEBUGBAR_ENABLED:-false}"
+      # DEBUGBAR_ENABLED: "${DEBUGBAR_ENABLED:-false}"
 
       # enable or disable log viewer. By default it is enabled.
+      # Unfortunately, log viewer is not available in production due to an upstream bug. :(
+      # you will need to set APP_ENV=local to enable it.
       LOG_VIEWER_ENABLED: "${LOG_VIEWER_ENABLED:-true}"
 
+      # Sometimes 404 errors are very noisy in the logs.
+      # You can disable logging them by setting this to false.
       LOG_404_ERRORS: "${LOG_404_ERRORS:-true}"
 
       # enable or disable clockwork. By default it is disabled (and not provided on non-dev build).
@@ -87,7 +142,7 @@ services:
       # If you want to disable this requirement, set this to false.
       #
       # This requirement prevents the use of the API from the API documentation page.
-      REQUIRE_CONTENT_TYPE_ENABLED: "${REQUIRE_CONTENT_TYPE_ENABLED:-true}"
+      # REQUIRE_CONTENT_TYPE_ENABLED: "${REQUIRE_CONTENT_TYPE_ENABLED:-true}"
 
       # enable s3 bucket (required in addition to needing AWS_ACCESS_KEY_ID)
       # S3_ENABLED: true
@@ -95,7 +150,7 @@ services:
       # If you spread old links of to your albums in your Lychee instance starting with
       # https://lychee.text/#albumID/PhotoId
       # Set this value to true to enable redirection.
-      LEGACY_V4_REDIRECT: "${LEGACY_V4_REDIRECT:-false}"
+      # LEGACY_V4_REDIRECT: "${LEGACY_V4_REDIRECT:-false}"
 
       ##############################################################################
       # IMPORTANT: To migrate from Lychee v3 you *MUST* use the same MySQL/MariaDB #
@@ -109,6 +164,7 @@ services:
       # not required, but an existing sqlite3 database may be specified if desired.
       # In this case, please use an absolute path. DB_DATABASE may be omitted but should
       # *not* be left blank.
+      #
       # Note that if DB_PASSWORD includes special characters, it must be enclosed in quotes.
       # e.g. DB_PASSWORD: "lychee!@#$%^&"
       DB_CONNECTION: "${DB_CONNECTION:-mysql}"
@@ -116,8 +172,13 @@ services:
       DB_PORT: "${DB_PORT:-3306}"
       DB_DATABASE: "${DB_DATABASE:-lychee}"
       DB_USERNAME: "${DB_USERNAME:-lychee}"
+
       # Use secrets for sensitive data - see Docker secrets or vault integration
       # DB_PASSWORD should come from .env file only
+      DB_PASSWORD: "${DB_PASSWORD:-password}"
+      #
+      # Or you can uncomment the following line to use DB_PASSWORD_FILE from secrets
+      # DB_PASSWORD_FILE: "/run/secrets/db_password"
 
       # Session configuration
       SESSION_DRIVER: "${SESSION_DRIVER:-file}"
@@ -131,26 +192,37 @@ services:
       # Cache
       CACHE_STORE: "${CACHE_STORE:-file}"
       CACHE_PREFIX: "${CACHE_PREFIX:-lychee_cache}"
-      REDIS_HOST: "lychee_cache"
-      REDIS_PASSWORD: "null"
-      REDIS_PORT: "6379"
+      # REDIS_HOST: "lychee_cache"
+      # REDIS_PASSWORD: "null"
+      # REDIS_PORT: "6379"
       # REDIS_URL=redis://<username>:<password>@<host>:<port>
 
       # If you use Redis as cache driver, we strongly recommend
       # to disable it for your Log Viewer.
       # Should redis crash, you will no longer be able to access your logs.
       LOG_VIEWER_CACHE_DRIVER: "file"
+
+      # When booting the application, if you have a lot of photos,
+      # Lychee will check the permissions of all files and folders.
+      # This may take a while (even hours depending on the number of photos...)
+      # If you are sure that your permissions are correct, you can skip these checks
+      # by setting the following to "yes".
       SKIP_PERMISSIONS_CHECKS: "yes"
 
       # Queue
-      QUEUE_CONNECTION: "${QUEUE_CONNECTION:-database}"
+      # The default value for QUEUE_CONNECTION is 'sync', this means that jobs are
+      # executed immediately (synchronously) when dispatched.
+      #
+      # For improved reactivity of Lychee we recommend to use a worker.
+      # You can use either 'database' or 'redis' as queue driver (but in the later you need to enable redis).
+      # QUEUE_CONNECTION: "${QUEUE_CONNECTION:-database}"
 
-      # Logging
-      LOG_CHANNEL: "${LOG_CHANNEL:-stack}"
-      LOG_STACK: "${LOG_STACK:-single}"
-      LOG_DEPRECATIONS_CHANNEL: "${LOG_DEPRECATIONS_CHANNEL:-null}"
-      LOG_LEVEL: "${LOG_LEVEL:-debug}"
-      LOG_STDOUT: "${LOG_STDOUT:-true}"
+      # Logging Stuff.
+      # LOG_CHANNEL: "${LOG_CHANNEL:-stack}"
+      # LOG_STACK: "${LOG_STACK:-single}"
+      # LOG_DEPRECATIONS_CHANNEL: "${LOG_DEPRECATIONS_CHANNEL:-null}"
+      # LOG_LEVEL: "${LOG_LEVEL:-debug}"
+      # LOG_STDOUT: "${LOG_STDOUT:-true}"
 
       # SECURITY_HEADER_HSTS_ENABLE:false
       # SECURITY_HEADER_CSP_CONNECT_SRC:
@@ -276,9 +348,13 @@ services:
       # PAYPAL_SECRET=
 
     volumes:
+      # Mount local directories for persistent storage
+      # Uploads : where your photos are going to be stored
       - ./lychee/uploads:/app/public/uploads
-      - ./lychee/storage/app:/app/storage/app
+      # Logs: to see what went wrong (or right)
       - ./lychee/logs:/app/storage/logs
+      # Temporary files: where your uploads are stored temporarily
+      # while waiting for jobs to process them.
       - ./lychee/tmp:/app/storage/tmp
 
     depends_on:
@@ -295,16 +371,14 @@ services:
     networks:
       - lychee
 
+  ##########################################################################################
   # Queue Worker Service (disabled by default)
+  ##########################################################################################
+  #
   # Uncomment to enable horizontal scaling of background job processing
+  # THIS IS PRETTY MUCH THE SAME CONFIGURATION AS lychee_api WITH A SINGLE MINOR MODIFICATIONS
   lychee_worker:
-    image: lychee-frankenphp:latest
-    # image: lychee-legacy:latest
-    # build:
-    #   context: ./app
-    #   dockerfile: Dockerfile
-    #   args:
-    #     NODE_ENV: "${NODE_ENV:-production}"
+    image: ghcr.io/lycheeorg/lychee:edge
     container_name: lychee-worker
     restart: unless-stopped  # Auto-restart at container level (outer layer)
 
@@ -336,14 +410,24 @@ services:
 
     env_file:
       - path: ./.env
-        required: true
-    environment:
-      PUID: "${PUID:-1000}"
-      PGID: "${PGID:-1000}"
 
-      # WORKER MODE CONFIGURATION
+    # secrets:
+    #   - db_password
+    #   - app_key
+
+    environment:
+      ##########################################################################################
+      # Enable WORKER MODE
+      ##########################################################################################
+      #
+      # THIS VALUE HERE IS THE MOST IMPORTANT ONE.
+      # IF LYCHEE_MODE IS NOT SET TO WORKER, THE CONTAINER WILL BE A DUPLICATE OF lychee_api.
       # Set LYCHEE_MODE=worker to enable queue worker mode
       LYCHEE_MODE: worker
+
+      # User and Group IDs (match lychee_api)
+      PUID: "${PUID:-1000}"
+      PGID: "${PGID:-1000}"
 
       # Queue configuration (CRITICAL for worker mode)
       # Recommended: redis for production (faster, better concurrency)
@@ -360,10 +444,14 @@ services:
       # Default: 3600 seconds (1 hour)
       # WORKER_MAX_TIME: "${WORKER_MAX_TIME:-3600}"
 
+      # Application Key (match lychee_api)
+      APP_KEY: "${APP_KEY:-}"
+      # APP_KEY_FILE: "/run/secrets/app_key"
+
       # Application (inherit from lychee_api)
       APP_NAME: "${APP_NAME:-Lychee}"
       APP_ENV: "${APP_ENV:-production}"
-      APP_DEBUG: "${APP_DEBUG:-false}"
+      # APP_DEBUG: "${APP_DEBUG:-false}"
       APP_TIMEZONE: "${TIMEZONE:-UTC}"
       APP_URL: "${APP_URL:-http://localhost:8000}"
 
@@ -373,32 +461,37 @@ services:
       DB_PORT: "${DB_PORT:-3306}"
       DB_DATABASE: "${DB_DATABASE:-lychee}"
       DB_USERNAME: "${DB_USERNAME:-lychee}"
-      # DB_PASSWORD comes from .env file
+
+      # Use secrets for sensitive data - see Docker secrets or vault integration
+      # DB_PASSWORD should come from .env file only
+      DB_PASSWORD: "${DB_PASSWORD:-password}"
+      #
+      # Or you can uncomment the following line to use DB_PASSWORD_FILE from secrets
+      # DB_PASSWORD_FILE: "/run/secrets/db_password"
 
       # Redis (if using redis queue driver)
       # Must point to same Redis instance as lychee_api
-      REDIS_HOST: "lychee_cache"
-      REDIS_PASSWORD: "null"
-      REDIS_PORT: "6379"
+      # REDIS_HOST: "lychee_cache"
+      # REDIS_PASSWORD: "null"
+      # REDIS_PORT: "6379"
+      # REDIS_URL=redis://<username>:<password>@<host>:<port>
 
       # Cache (same as lychee_api)
       CACHE_STORE: "${CACHE_STORE:-file}"
       CACHE_PREFIX: "${CACHE_PREFIX:-lychee_cache}"
 
       # Logging (output to stdout/stderr for container log aggregation)
-      LOG_CHANNEL: "${LOG_CHANNEL:-stack}"
-      LOG_STACK: "${LOG_STACK:-single}"
-      LOG_LEVEL: "${LOG_LEVEL:-debug}"
-      LOG_STDOUT: "${LOG_STDOUT:-true}"
+      # LOG_CHANNEL: "${LOG_CHANNEL:-stack}"
+      # LOG_STACK: "${LOG_STACK:-single}"
+      # LOG_LEVEL: "${LOG_LEVEL:-debug}"
+      # LOG_STDOUT: "${LOG_STDOUT:-true}"
 
     # Shared volumes with lychee_api (CRITICAL for photo processing)
     # Workers need access to the same uploads and storage as web service
     volumes:
       - ./lychee/uploads:/app/public/uploads
-      - ./lychee/storage/app:/app/storage/app
       - ./lychee/logs:/app/storage/logs
       - ./lychee/tmp:/app/storage/tmp
-      - .env:/app/.env:ro
 
     depends_on:
       lychee_db:
@@ -471,12 +564,16 @@ services:
       env_file:
           - path: ./.env
             required: false
+      # secrets:
+      #     - db_master_password
+      #     - db_password
       environment:
-          # - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+          - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD:-rootpassword}
+          # - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db_master_password
           - MYSQL_DATABASE=${DB_DATABASE:-lychee}
           - MYSQL_USER=${DB_USERNAME:-lychee}
-          # - MYSQL_PASSWORD=${DB_PASSWORD}
-           # Secrets should come from .env file or Docker secrets
+          - MYSQL_PASSWORD=${DB_PASSWORD:-password}
+          # - MYSQL_PASSWORD_FILE=/run/secrets/db_password
       expose:
           - 3306
       # Removed host port binding - only accessible within Docker network
