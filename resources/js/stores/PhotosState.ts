@@ -14,6 +14,21 @@ export const usePhotosStore = defineStore("photos-store", {
 			this.photos = [];
 			this.photosTimeline = undefined;
 		},
+		/**
+		 * Rebuild navigation links for all photos based on their current order.
+		 * This ensures next_photo_id and previous_photo_id are always correct,
+		 * especially after timeline merge operations that reorder photos.
+		 */
+		rebuildNavigationLinks() {
+			for (let i = 0; i < this.photos.length; i++) {
+				const currentPhoto = this.photos[i];
+				const previousPhoto = i > 0 ? this.photos[i - 1] : null;
+				const nextPhoto = i < this.photos.length - 1 ? this.photos[i + 1] : null;
+
+				currentPhoto.previous_photo_id = previousPhoto?.id ?? null;
+				currentPhoto.next_photo_id = nextPhoto?.id ?? null;
+			}
+		},
 		setPhotos(photos: App.Http.Resources.Models.PhotoResource[], isTimeline: boolean) {
 			if (isTimeline) {
 				this.photosTimeline = spliter(
@@ -22,6 +37,8 @@ export const usePhotosStore = defineStore("photos-store", {
 					(p: App.Http.Resources.Models.PhotoResource) => p.timeline?.format ?? "Others",
 				);
 				this.photos = merge(this.photosTimeline);
+				// Rebuild navigation links after timeline merge since photos were reordered
+				this.rebuildNavigationLinks();
 			} else {
 				// We are not using the timeline, so we can just use the photos as is.
 				this.photos = photos;
@@ -37,9 +54,6 @@ export const usePhotosStore = defineStore("photos-store", {
 		 * Without this fix, navigating between photos would break at page boundaries.
 		 */
 		appendPhotos(photos: App.Http.Resources.Models.PhotoResource[], isTimeline: boolean) {
-			// Remember where the old photos end so we can fix the boundary link after merging
-			const oldPhotoCount = this.photos.length;
-
 			if (isTimeline) {
 				// Append new photos to timeline and re-merge
 				const newTimelinePhotos = spliter(
@@ -62,21 +76,24 @@ export const usePhotosStore = defineStore("photos-store", {
 					this.photosTimeline = newTimelinePhotos;
 				}
 				this.photos = merge(this.photosTimeline);
+				// Rebuild all navigation links after timeline merge since photos were reordered
+				this.rebuildNavigationLinks();
 			} else {
+				// Remember where the old photos end so we can fix the boundary link
+				const oldPhotoCount = this.photos.length;
 				// Simply append photos to the existing array
 				this.photos = [...this.photos, ...photos];
-			}
 
-			// Fix navigation links at the boundary between old and new photos
-			// This must be done AFTER the array operations because timeline mode reorders photos
-			if (oldPhotoCount > 0 && oldPhotoCount < this.photos.length) {
-				const lastOldPhoto = this.photos[oldPhotoCount - 1];
-				const firstNewPhoto = this.photos[oldPhotoCount];
+				// Fix navigation links at the boundary between old and new photos
+				if (oldPhotoCount > 0 && oldPhotoCount < this.photos.length) {
+					const lastOldPhoto = this.photos[oldPhotoCount - 1];
+					const firstNewPhoto = this.photos[oldPhotoCount];
 
-				// Connect the last old photo to the first new photo
-				lastOldPhoto.next_photo_id = firstNewPhoto.id;
-				// Connect the first new photo back to the last old photo
-				firstNewPhoto.previous_photo_id = lastOldPhoto.id;
+					// Connect the last old photo to the first new photo
+					lastOldPhoto.next_photo_id = firstNewPhoto.id;
+					// Connect the first new photo back to the last old photo
+					firstNewPhoto.previous_photo_id = lastOldPhoto.id;
+				}
 			}
 		},
 	},
