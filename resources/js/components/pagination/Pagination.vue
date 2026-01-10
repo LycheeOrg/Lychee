@@ -1,11 +1,6 @@
 <template>
 	<!-- Infinite Scroll Mode -->
-	<PaginationInfiniteScroll
-		v-if="mode === 'infinite_scroll'"
-		:loading="loading"
-		:has-more="hasMore"
-		@load-more="emit('loadMore')"
-	/>
+	<PaginationInfiniteScroll v-if="mode === 'infinite_scroll'" :loading="loading" :has-more="hasMore" @load-more="emit('loadMore')" />
 
 	<!-- Load More Button Mode -->
 	<PaginationLoadMore

@@ -17,7 +17,7 @@
 				<div class="my-2 h-10 flex">
 					<FloatLabel variant="on">
 						<Select
-							id="photoSortingColumn"
+							label-id="photoSortingColumn"
 							v-model="photoSortingColumn"
 							class="w-56 border-none"
 							:options="photoSortingColumnsOptions"
@@ -39,7 +39,7 @@
 					</FloatLabel>
 					<FloatLabel variant="on">
 						<Select
-							id="photoSortingOrder"
+							label-id="photoSortingOrder"
 							v-model="photoSortingOrder"
 							class="w-56 border-none"
 							:options="sortingOrdersOptions"
@@ -64,7 +64,7 @@
 					<div class="my-2 h-10 flex">
 						<FloatLabel variant="on">
 							<Select
-								id="albumSortingColumn"
+								label-id="albumSortingColumn"
 								v-model="albumSortingColumn"
 								class="w-56 border-none"
 								:options="albumSortingColumnsOptions"
@@ -86,7 +86,7 @@
 						</FloatLabel>
 						<FloatLabel variant="on">
 							<Select
-								id="albumSortingOrder"
+								label-id="albumSortingOrder"
 								v-model="albumSortingOrder"
 								class="w-56 border-none"
 								:options="sortingOrdersOptions"
@@ -110,7 +110,7 @@
 					<div class="h-10 my-2">
 						<FloatLabel variant="on">
 							<Select
-								id="header"
+								label-id="header"
 								v-model="header_id"
 								class="w-72 border-none"
 								:options="headersOptions"
@@ -143,7 +143,14 @@
 					</div>
 					<div class="h-10 my-2">
 						<FloatLabel variant="on">
-							<Select id="license" v-model="license" class="w-72 border-none" :options="licenseOptions" option-label="label" show-clear>
+							<Select
+								label-id="license"
+								v-model="license"
+								class="w-72 border-none"
+								:options="licenseOptions"
+								option-label="label"
+								show-clear
+							>
 								<template #value="slotProps">
 									<div v-if="slotProps.value" class="flex items-center">
 										<div>{{ $t(slotProps.value.label) }}</div>
@@ -167,7 +174,7 @@
 					<div class="sm:h-10 my-2 pt-4 flex flex-wrap gap-y-4">
 						<FloatLabel variant="on">
 							<Select
-								id="aspectRatio"
+								label-id="aspectRatio"
 								v-model="aspectRatio"
 								class="w-72 border-none"
 								:options="aspectRationOptions"
@@ -189,7 +196,7 @@
 						</FloatLabel>
 						<FloatLabel variant="on">
 							<Select
-								id="albumTimeline"
+								label-id="albumTimeline"
 								v-model="albumTimeline"
 								class="w-72 border-none"
 								:options="albumTimelineOptions"
@@ -214,7 +221,7 @@
 				<div class="sm:h-10 my-2 pt-4 flex flex-wrap gap-y-4">
 					<FloatLabel variant="on">
 						<Select
-							id="photoLayout"
+							label-id="photoLayout"
 							v-model="photoLayout"
 							class="w-72 border-none"
 							:options="photoLayoutOptions"
@@ -236,7 +243,7 @@
 					</FloatLabel>
 					<FloatLabel variant="on">
 						<Select
-							id="photoTimeline"
+							label-id="photoTimeline"
 							v-model="photoTimeline"
 							class="w-72 border-none"
 							:options="photoTimelineOptions"

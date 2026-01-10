@@ -24,13 +24,6 @@
 		@toggle-edit="toggleEdit"
 		@open-search="openSearch"
 		@go-back="goBack"
-		:first="(albumStore.current_page - 1) * albumStore.per_page"
-		@update:first="
-			(val) => {
-				albumStore.current_page = Math.floor(val / albumStore.per_page) + 1;
-				refresh();
-			}
-		"
 	/>
 
 	<!-- Photo panel -->

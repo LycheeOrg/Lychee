@@ -149,6 +149,7 @@ export const useAlbumStore = defineStore("album-store", {
 					} else {
 						albumsStore.albums = data.data.data;
 					}
+					console.log(`albums: ${albumsStore.albums.length}/${data.data.total}`);
 					this.albums_current_page = data.data.current_page;
 					this.albums_last_page = data.data.last_page;
 					this.albums_per_page = data.data.per_page;
@@ -183,6 +184,7 @@ export const useAlbumStore = defineStore("album-store", {
 					} else {
 						photosState.setPhotos(data.data.photos, this.config?.is_photo_timeline_enabled ?? false);
 					}
+					console.log(`photos: ${photosState.photos.length}/${data.data.total}`);
 					this.photos_current_page = data.data.current_page;
 					this.photos_last_page = data.data.last_page;
 					this.photos_per_page = data.data.per_page;
