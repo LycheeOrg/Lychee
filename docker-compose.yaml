@@ -207,7 +207,7 @@ services:
       # This may take a while (even hours depending on the number of photos...)
       # If you are sure that your permissions are correct, you can skip these checks
       # by setting the following to "yes".
-      SKIP_PERMISSIONS_CHECKS: "yes"
+      # SKIP_PERMISSIONS_CHECKS: "yes"
 
       # Queue
       # The default value for QUEUE_CONNECTION is 'sync', this means that jobs are
@@ -429,6 +429,9 @@ services:
       PUID: "${PUID:-1000}"
       PGID: "${PGID:-1000}"
 
+      # Or you can activate the following to run as root inside the container. (not recommended)
+      # RUN_AS_ROOT: "yes"
+
       # Queue configuration (CRITICAL for worker mode)
       # Recommended: redis for production (faster, better concurrency)
       # Alternative: database (no Redis dependency)
@@ -485,6 +488,13 @@ services:
       # LOG_STACK: "${LOG_STACK:-single}"
       # LOG_LEVEL: "${LOG_LEVEL:-debug}"
       # LOG_STDOUT: "${LOG_STDOUT:-true}"
+
+      # When booting the application, if you have a lot of photos,
+      # Lychee will check the permissions of all files and folders.
+      # This may take a while (even hours depending on the number of photos...)
+      # If you are sure that your permissions are correct, you can skip these checks
+      # by setting the following to "yes".
+      # SKIP_PERMISSIONS_CHECKS: "yes"
 
     # Shared volumes with lychee_api (CRITICAL for photo processing)
     # Workers need access to the same uploads and storage as web service

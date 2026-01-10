@@ -98,7 +98,6 @@ if [ "${DB_CONNECTION}" = "mysql" ] || [ "${DB_CONNECTION}" = "pgsql" ]; then
         DB_PASSWORD=$(cat "$DB_PASSWORD_FILE")
         export DB_PASSWORD
         echo "✅ Loaded DB_PASSWORD from file: ${DB_PASSWORD_FILE}"
-        echo "DB_PASSWORD: ${DB_PASSWORD}"
       else
         echo "❌ ERROR: DB_PASSWORD_FILE is set but file does not exist: ${DB_PASSWORD_FILE}"
         exit 1
