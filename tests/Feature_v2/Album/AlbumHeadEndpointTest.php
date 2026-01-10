@@ -94,4 +94,116 @@ class AlbumHeadEndpointTest extends BaseApiWithDataTest
 			'message' => 'The album id field is required.',
 		]);
 	}
+
+	public function testGetTagAlbumHeadSuccess(): void
+	{
+		// Test with tag album as owner
+		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album::head', ['album_id' => $this->tagAlbum1->id]);
+		$this->assertOk($response);
+		$response->assertJson([
+			'resource' => [
+				'id' => $this->tagAlbum1->id,
+				'title' => $this->tagAlbum1->title,
+			],
+		]);
+
+		// Verify NO children/photos arrays
+		$response->assertJsonMissing(['albums', 'photos']);
+	}
+
+	public function testGetTagAlbumHeadUnauthorized(): void
+	{
+		// Test with private tag album as anonymous user
+		$response = $this->getJsonWithData('Album::head', ['album_id' => $this->tagAlbum1->id]);
+		$this->assertUnauthorized($response);
+	}
+
+	public function testGetTagAlbumHeadForbidden(): void
+	{
+		// Test with private tag album as different user
+		$response = $this->actingAs($this->userLocked)->getJsonWithData('Album::head', ['album_id' => $this->tagAlbum1->id]);
+		$this->assertForbidden($response);
+	}
+
+	public function testGetSmartAlbumUnsortedHeadSuccess(): void
+	{
+		// Test with unsorted smart album as owner
+		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album::head', ['album_id' => 'unsorted']);
+		$this->assertOk($response);
+		$response->assertJson([
+			'resource' => [
+				'id' => 'unsorted',
+			],
+		]);
+
+		// Verify NO children/photos arrays
+		$response->assertJsonMissing(['albums', 'photos']);
+	}
+
+	public function testGetSmartAlbumStarredHeadSuccess(): void
+	{
+		// Test with starred smart album as owner
+		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album::head', ['album_id' => 'starred']);
+		$this->assertOk($response);
+		$response->assertJson([
+			'resource' => [
+				'id' => 'starred',
+			],
+		]);
+
+		// Verify NO children/photos arrays
+		$response->assertJsonMissing(['albums', 'photos']);
+	}
+
+	public function testGetSmartAlbumRecentHeadSuccess(): void
+	{
+		// Test with recent smart album as owner
+		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album::head', ['album_id' => 'recent']);
+		$this->assertOk($response);
+		$response->assertJson([
+			'resource' => [
+				'id' => 'recent',
+			],
+		]);
+
+		// Verify NO children/photos arrays
+		$response->assertJsonMissing(['albums', 'photos']);
+	}
+
+	public function testGetSmartAlbumOnThisDayHeadSuccess(): void
+	{
+		// Test with on_this_day smart album as owner
+		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album::head', ['album_id' => 'on_this_day']);
+		$this->assertOk($response);
+		$response->assertJson([
+			'resource' => [
+				'id' => 'on_this_day',
+			],
+		]);
+
+		// Verify NO children/photos arrays
+		$response->assertJsonMissing(['albums', 'photos']);
+	}
+
+	public function testGetSmartAlbumUntaggedHeadSuccess(): void
+	{
+		// Test with untagged smart album as owner
+		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album::head', ['album_id' => 'untagged']);
+		$this->assertOk($response);
+		$response->assertJson([
+			'resource' => [
+				'id' => 'untagged',
+			],
+		]);
+
+		// Verify NO children/photos arrays
+		$response->assertJsonMissing(['albums', 'photos']);
+	}
+
+	public function testGetSmartAlbumHeadUnauthorized(): void
+	{
+		// Test with smart album as anonymous user (should fail)
+		$response = $this->getJsonWithData('Album::head', ['album_id' => 'unsorted']);
+		$this->assertUnauthorized($response);
+	}
 }
