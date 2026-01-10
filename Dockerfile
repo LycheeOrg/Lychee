@@ -75,6 +75,7 @@ LABEL org.opencontainers.image.base.name="dunglas/frankenphp:php8.5-trixie"
 # hadolint ignore=DL3008,DL3009
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
+    linux-libc-dev \
     libimage-exiftool-perl \
     ffmpeg \
     imagemagick \
