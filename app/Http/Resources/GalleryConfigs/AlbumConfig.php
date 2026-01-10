@@ -31,7 +31,6 @@ class AlbumConfig extends Data
 
 	public bool $is_base_album;
 	public bool $is_model_album;
-	public bool $is_accessible;
 	public bool $is_password_protected;
 	public bool $is_map_accessible;
 	public bool $is_mod_frame_enabled;
@@ -48,7 +47,6 @@ class AlbumConfig extends Data
 		$is_accessible = Gate::check(AlbumPolicy::CAN_ACCESS, [AbstractAlbum::class, $album]);
 		$public_perm = $album->public_permissions();
 
-		$this->is_accessible = $is_accessible;
 		$this->is_base_album = $album instanceof BaseAlbum;
 		$this->is_model_album = $album instanceof Album;
 		$this->is_password_protected = !$is_accessible && $public_perm?->password !== null;

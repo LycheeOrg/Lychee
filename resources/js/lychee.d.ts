@@ -346,7 +346,6 @@ declare namespace App.Http.Resources.GalleryConfigs {
 	export type AlbumConfig = {
 		is_base_album: boolean;
 		is_model_album: boolean;
-		is_accessible: boolean;
 		is_password_protected: boolean;
 		is_map_accessible: boolean;
 		is_mod_frame_enabled: boolean;

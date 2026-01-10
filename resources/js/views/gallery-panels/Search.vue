@@ -206,7 +206,6 @@ const configForMenu = computed<App.Http.Resources.GalleryConfigs.AlbumConfig>(()
 	return {
 		is_base_album: false,
 		is_model_album: false,
-		is_accessible: true,
 		is_password_protected: false,
 		is_map_accessible: false,
 		is_mod_frame_enabled: false,

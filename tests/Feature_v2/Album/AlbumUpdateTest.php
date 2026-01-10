@@ -144,7 +144,6 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 			'config' => [
 				'is_base_album' => true,
 				'is_model_album' => false,
-				'is_accessible' => true,
 				'is_password_protected' => false,
 				'is_search_accessible' => true,
 			],

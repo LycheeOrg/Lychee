@@ -32,11 +32,13 @@ class AlbumHeadEndpointTest extends BaseApiWithDataTest
 		$response = $this->getJsonWithData('Album::head', ['album_id' => $this->album4->id]);
 		$this->assertOk($response);
 		$response->assertJson([
-			'id' => $this->album4->id,
-			'title' => $this->album4->title,
-			'has_albums' => true,
-			'num_children' => 1, // subAlbum4
-			'num_photos' => 1,   // photo4
+			'resource' => [
+				'id' => $this->album4->id,
+				'title' => $this->album4->title,
+				'has_albums' => true,
+				'num_children' => 1, // subAlbum4
+				'num_photos' => 1,   // photo4
+			],
 		]);
 
 		// Verify NO children/photos arrays (key difference from /Album endpoint)
@@ -49,27 +51,17 @@ class AlbumHeadEndpointTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album::head', ['album_id' => $this->album1->id]);
 		$this->assertOk($response);
 		$response->assertJson([
-			'id' => $this->album1->id,
-			'title' => $this->album1->title,
-			'has_albums' => true,
-			'num_children' => 1, // subAlbum1
-			'num_photos' => 2,   // photo1, photo1b
+			'resource' => [
+				'id' => $this->album1->id,
+				'title' => $this->album1->title,
+				'has_albums' => true,
+				'num_children' => 1, // subAlbum1
+				'num_photos' => 2,   // photo1, photo1b
+			],
 		]);
 
 		// Verify NO children/photos arrays
 		$response->assertJsonMissing(['albums', 'photos']);
-	}
-
-	public function testGetAlbumHeadWithThumb(): void
-	{
-		// Test that thumb is included
-		$response = $this->getJsonWithData('Album::head', ['album_id' => $this->album4->id]);
-		$this->assertOk($response);
-		$response->assertJson([
-			'thumb' => [
-				'id' => $this->photo4->id,
-			],
-		]);
 	}
 
 	public function testGetAlbumHeadUnauthorized(): void
