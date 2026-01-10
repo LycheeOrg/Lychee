@@ -4,6 +4,7 @@ import { defineStore } from "pinia";
 import { useTogglablesStateStore } from "./ModalsState";
 import { usePhotosStore } from "./PhotosState";
 import { useAlbumsStore } from "./AlbumsState";
+import { useLycheeStateStore } from "./LycheeState";
 
 export type AlbumStore = ReturnType<typeof useAlbumStore>;
 
@@ -176,7 +177,9 @@ export const useAlbumStore = defineStore("album-store", {
 					} else {
 						albumsStore.albums = data.data.data;
 					}
-					console.debug(`albums: ${albumsStore.albums.length}/${data.data.total}`);
+					if (useLycheeStateStore().is_debug_enabled) {
+						console.debug(`albums: ${albumsStore.albums.length}/${data.data.total}`);
+					}
 					this.albums_current_page = data.data.current_page;
 					this.albums_last_page = data.data.last_page;
 					this.albums_per_page = data.data.per_page;
@@ -224,7 +227,9 @@ export const useAlbumStore = defineStore("album-store", {
 					} else {
 						photosState.setPhotos(data.data.photos, this.config?.is_photo_timeline_enabled ?? false);
 					}
-					console.debug(`photos: ${photosState.photos.length}/${data.data.total}`);
+					if (useLycheeStateStore().is_debug_enabled) {
+						console.debug(`photos: ${photosState.photos.length}/${data.data.total}`);
+					}
 					this.photos_current_page = data.data.current_page;
 					this.photos_last_page = data.data.last_page;
 					this.photos_per_page = data.data.per_page;

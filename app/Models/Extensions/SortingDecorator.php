@@ -211,7 +211,6 @@ class SortingDecorator
 		try {
 			for ($i = $this->pivot_idx + 1; $i < count($this->order_by); $i++) {
 				$column = $this->order_by[$i]['column'];
-				$column_sorting_name = str_replace('_strict', '', $column);
 				$column_sorting_name = str_replace('_strict', '', $column_sorting_name);
 				$this->base_builder->orderBy($column_sorting_name, $this->order_by[$i]['direction']);
 			}

@@ -97,7 +97,9 @@ function setupObserver() {
 	// Find the scroll container (e.g., #galleryView)
 	scrollContainer = findScrollContainer(sentinel.value);
 	const rootMargin = getRootMargin();
-	console.debug("[InfiniteScroll] scroll container:", scrollContainer?.id || scrollContainer?.tagName || "viewport", "rootMargin:", rootMargin);
+	if (LycheeState.is_debug_enabled) {
+		console.debug("[InfiniteScroll] scroll container:", scrollContainer?.id || scrollContainer?.tagName || "viewport", "rootMargin:", rootMargin);
+	}
 
 	observer = new IntersectionObserver(handleIntersect, {
 		root: scrollContainer,
@@ -147,7 +149,9 @@ watch(
 watch(
 	() => props.loading,
 	(loading, wasLoading) => {
-		console.debug(`[InfiniteScroll] loading changed: ${wasLoading} -> ${loading}, hasMore=${props.hasMore}`);
+		if (LycheeState.is_debug_enabled) {
+			console.debug(`[InfiniteScroll] loading changed: ${wasLoading} -> ${loading}, hasMore=${props.hasMore}`);
+		}
 		if (wasLoading && !loading && props.hasMore && sentinel.value) {
 			// Check if sentinel is still in view after loading completed
 			const sentinelRect = sentinel.value.getBoundingClientRect();
@@ -162,9 +166,13 @@ watch(
 				inView = sentinelRect.top < window.innerHeight + rootMarginPx;
 			}
 
-			console.debug(`[InfiniteScroll] post-load check: sentinel.top=${sentinelRect.top}, margin=${rootMarginPx}, inView=${inView}`);
+			if (LycheeState.is_debug_enabled) {
+				console.debug(`[InfiniteScroll] post-load check: sentinel.top=${sentinelRect.top}, margin=${rootMarginPx}, inView=${inView}`);
+			}
 			if (inView && !isEmitting) {
-				console.debug("[InfiniteScroll] => emitting loadMore (post-load)");
+				if (LycheeState.is_debug_enabled) {
+					console.debug("[InfiniteScroll] => emitting loadMore (post-load)");
+				}
 				isEmitting = true;
 				emit("loadMore");
 				requestAnimationFrame(() => {

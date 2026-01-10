@@ -78,7 +78,7 @@ class Watermarker
 	 */
 	private function check_watermark_image(): bool
 	{
-		if ($this->size_variant_watermark !== null && $this->size_variant_watermark->id === $this->watermark_photo_id) {
+		if ($this->size_variant_watermark !== null && $this->size_variant_watermark->photo_id === $this->watermark_photo_id) {
 			return true;
 		}
 
