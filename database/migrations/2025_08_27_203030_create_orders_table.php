@@ -16,6 +16,7 @@ return new class() extends Migration {
 	 */
 	public function up(): void
 	{
+		Schema::dropIfExists('order_items'); // Reset in case of an error during development
 		Schema::dropIfExists('orders'); // Reset in case of an error during development
 
 		Schema::create('orders', function (Blueprint $table) {

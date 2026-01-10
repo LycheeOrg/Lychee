@@ -39,8 +39,6 @@ class GetAlbumPhotosRequest extends BaseApiRequest implements HasAbstractAlbum
 	public function authorize(): bool
 	{
 		return Gate::check(AlbumPolicy::CAN_ACCESS, [AbstractAlbum::class, $this->album]);
-
-		return $result;
 	}
 
 	/**
@@ -64,7 +62,7 @@ class GetAlbumPhotosRequest extends BaseApiRequest implements HasAbstractAlbum
 		$smart_id = SmartAlbumType::tryFrom($values[RequestAttribute::ALBUM_ID_ATTRIBUTE]);
 
 		if ($smart_id !== null) {
-			$this->album = resolve(AlbumFactory::class)->createSmartAlbum($smart_id, false);
+			$this->album = resolve(AlbumFactory::class)->createSmartAlbum($smart_id, true);
 
 			return;
 		}

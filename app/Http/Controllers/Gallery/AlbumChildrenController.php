@@ -23,7 +23,6 @@ class AlbumChildrenController extends Controller
 	public function __construct(
 		private AlbumRepository $album_repository,
 	) {
-		// Prevent instantiation
 	}
 
 	/**

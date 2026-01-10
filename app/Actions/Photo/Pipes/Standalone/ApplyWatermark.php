@@ -35,7 +35,7 @@ class ApplyWatermark implements StandalonePipe
 		/**
 		 * If watermark is enabled but we detected it is not possible, skip but add log warning.
 		 */
-		if (!$this->watermarker->can_watermark) {
+		if (!$this->watermarker->can_watermark()) {
 			Log::error('Could not generate watermark. Please make sure you have Imagick enabled and the watermark photo Id is set.');
 
 			return $next($state);

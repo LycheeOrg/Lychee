@@ -28,7 +28,18 @@ export const usePhotosStore = defineStore("photos-store", {
 				this.photosTimeline = undefined;
 			}
 		},
+		/**
+		 * Append new photos to the existing collection.
+		 * Handles both timeline and non-timeline modes.
+		 *
+		 * Critical: Fixes navigation links (next_photo_id/previous_photo_id) between
+		 * the last photo of the existing collection and the first photo of the new batch.
+		 * Without this fix, navigating between photos would break at page boundaries.
+		 */
 		appendPhotos(photos: App.Http.Resources.Models.PhotoResource[], isTimeline: boolean) {
+			// Remember where the old photos end so we can fix the boundary link after merging
+			const oldPhotoCount = this.photos.length;
+
 			if (isTimeline) {
 				// Append new photos to timeline and re-merge
 				const newTimelinePhotos = spliter(
@@ -54,6 +65,18 @@ export const usePhotosStore = defineStore("photos-store", {
 			} else {
 				// Simply append photos to the existing array
 				this.photos = [...this.photos, ...photos];
+			}
+
+			// Fix navigation links at the boundary between old and new photos
+			// This must be done AFTER the array operations because timeline mode reorders photos
+			if (oldPhotoCount > 0 && oldPhotoCount < this.photos.length) {
+				const lastOldPhoto = this.photos[oldPhotoCount - 1];
+				const firstNewPhoto = this.photos[oldPhotoCount];
+
+				// Connect the last old photo to the first new photo
+				lastOldPhoto.next_photo_id = firstNewPhoto.id;
+				// Connect the first new photo back to the last old photo
+				firstNewPhoto.previous_photo_id = lastOldPhoto.id;
 			}
 		},
 	},

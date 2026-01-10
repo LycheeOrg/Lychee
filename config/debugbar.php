@@ -139,7 +139,7 @@ return [
 		],
 		'db' => [
 			'with_params' => true, // Render SQL with the parameters substituted
-			'backtrace' => true, // Use a backtrace to find the origin of the query in your files.
+			'backtrace' => 8, // (use to be true, but by using an integer we extend the trace) Use a backtrace to find the origin of the query in your files.
 			'timeline' => false, // Add the queries to the timeline
 			'explain' => [ // Show EXPLAIN output on queries
 				'enabled' => false,

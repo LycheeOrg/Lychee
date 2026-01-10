@@ -10,11 +10,11 @@ namespace App\Http\Controllers\Gallery;
 
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\TimelinePhotoGranularity;
-use App\Exceptions\Internal\LycheeLogicException;
 use App\Http\Requests\Album\GetAlbumPhotosRequest;
 use App\Http\Resources\Collections\PaginatedPhotosResource;
 use App\Models\Album;
 use App\Models\TagAlbum;
+use App\Policies\AlbumPolicy;
 use App\Repositories\ConfigManager;
 use App\Repositories\PhotoRepository;
 use App\SmartAlbums\BaseSmartAlbum;
@@ -38,8 +38,6 @@ class AlbumPhotosController extends Controller
 	 * @param GetAlbumPhotosRequest $request the request with validated album_id and page
 	 *
 	 * @return PaginatedPhotosResource paginated list of photos with metadata
-	 *
-	 * @throws LycheeLogicException if album is not a regular Album (Smart/Tag albums not supported)
 	 */
 	public function get(GetAlbumPhotosRequest $request): PaginatedPhotosResource
 	{
@@ -48,13 +46,10 @@ class AlbumPhotosController extends Controller
 		$per_page = $request->configs()->getValueAsInt('photos_per_page');
 
 		if ($album instanceof BaseSmartAlbum) {
-			/** @disregard P1006 */
-			$photos = $album->relationLoaded('photos') ? $album->getPhotos() : null;
-
 			$config_manager = resolve(ConfigManager::class);
 
 			return new PaginatedPhotosResource(
-				paginated_photos: $photos,
+				paginated_photos: $album->getPhotos(),
 				album_id: $album->get_id(),
 				should_downgrade: !$config_manager->getValueAsBool('grants_full_photo_access'),
 				photo_timeline: $config_manager->getValueAsEnum('timeline_photos_granularity', TimelinePhotoGranularity::class),
@@ -62,12 +57,13 @@ class AlbumPhotosController extends Controller
 		}
 		// grants_full_photo_access
 		if ($album instanceof TagAlbum) {
-			$photos = $album->relationLoaded('photos') ? $album->photos : null;
+			$config_manager = resolve(ConfigManager::class);
 
 			return new PaginatedPhotosResource(
-				paginated_photos: $photos,
+				/** @phpstan-ignore method.private (It is NOT private and it works.) */
+				paginated_photos: $album->photos()->with(['size_variants', 'tags', 'palette', 'statistics', 'rating'])->paginate($config_manager->getValueAsInt('photos_per_page')),
 				album_id: $album->id,
-				should_downgrade: Gate::check(\AlbumPolicy::CAN_ACCESS_FULL_PHOTO, [AbstractAlbum::class, $album]) === false,
+				should_downgrade: Gate::check(AlbumPolicy::CAN_ACCESS_FULL_PHOTO, [AbstractAlbum::class, $album]) === false,
 				photo_timeline: $album->photo_timeline,
 			);
 		}
@@ -78,7 +74,7 @@ class AlbumPhotosController extends Controller
 		return new PaginatedPhotosResource(
 			paginated_photos: $paginator,
 			album_id: $album->id,
-			should_downgrade: Gate::check(\AlbumPolicy::CAN_ACCESS_FULL_PHOTO, [AbstractAlbum::class, $album]) === false,
+			should_downgrade: Gate::check(AlbumPolicy::CAN_ACCESS_FULL_PHOTO, [AbstractAlbum::class, $album]) === false,
 			photo_timeline: $album->photo_timeline);
 	}
 }

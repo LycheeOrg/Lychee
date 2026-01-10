@@ -15,11 +15,9 @@ use App\Http\Resources\Rights\AlbumRightsResource;
 use App\Http\Resources\Traits\HasHeaderUrl;
 use App\Models\TagAlbum;
 use App\Policies\AlbumPolicy;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Spatie\LaravelData\Data;
-use Spatie\TypeScriptTransformer\Attributes\LiteralTypeScriptType;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 #[TypeScript()]
@@ -35,10 +33,6 @@ class HeadTagAlbumResource extends Data
 
 	/** @var string[] */
 	public array $show_tags;
-
-	/** @var ?Collection<int,PhotoResource> */
-	#[LiteralTypeScriptType('App.Http.Resources.Models.PhotoResource[]')]
-	public ?Collection $photos;
 
 	// security
 	public AlbumProtectionPolicy $policy;

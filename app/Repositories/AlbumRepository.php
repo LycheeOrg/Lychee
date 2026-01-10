@@ -48,6 +48,7 @@ class AlbumRepository
 		// Build query for child albums
 		$query = Album::query()
 			->with(['owner'])
+			->without(['thumb']) // Yes we do NOT want them yet.
 			->where('parent_id', '=', $album_id);
 
 		// Apply visibility filter

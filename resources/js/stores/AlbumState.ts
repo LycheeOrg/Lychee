@@ -68,7 +68,17 @@ export const useAlbumStore = defineStore("album-store", {
 			this.albums_loading = false;
 		},
 
-		// Load album head metadata (without children/photos)
+		/**
+		 * Load album metadata without children/photos arrays.
+		 * Uses the new /Album::head pagination endpoint for efficient loading.
+		 *
+		 * Handles:
+		 * - Model albums (regular albums with children and photos)
+		 * - Tag albums (albums based on photo tags)
+		 * - Smart albums (Recent, Starred, On This Day, Unsorted, Untagged)
+		 * - Password-protected albums
+		 * - Race conditions when user navigates quickly between albums
+		 */
 		loadHead(): Promise<void> {
 			const togglableState = useTogglablesStateStore();
 
@@ -76,12 +86,15 @@ export const useAlbumStore = defineStore("album-store", {
 				return Promise.resolve();
 			}
 
+			// Capture the album ID we're loading to detect race conditions
 			const requestedAlbumId = this.albumId;
+			// Track which album is currently being loaded
 			this._loadingAlbumId = requestedAlbumId;
 			this.isLoading = true;
 
 			return AlbumService.getHead(requestedAlbumId)
 				.then((data) => {
+					// Race condition check #1: User navigated away while request was in flight
 					if (this.albumId !== requestedAlbumId) {
 						return;
 					}
@@ -90,6 +103,7 @@ export const useAlbumStore = defineStore("album-store", {
 					// (e.g. user clicked on another album, or went back/forward in history)
 					// In that case, we don't want to override the state with the old album.
 					this.isPasswordProtected = false;
+					// Race condition check #2: Another load() call started for a different album
 					if (this._loadingAlbumId !== requestedAlbumId) {
 						return;
 					}
@@ -128,7 +142,16 @@ export const useAlbumStore = defineStore("album-store", {
 				});
 		},
 
-		// Load paginated child albums
+		/**
+		 * Load paginated child albums for the current album.
+		 *
+		 * @param page - Page number to load (1-indexed)
+		 * @param append - If true, merge with existing albums; if false, replace them
+		 *
+		 * The append parameter is critical for different UI modes:
+		 * - append=false: Used when loading first page or navigating to specific page
+		 * - append=true: Used by infinite scroll and "Load More" button
+		 */
 		loadAlbums(page: number = 1, append: boolean = false): Promise<void> {
 			const albumsStore = useAlbumsStore();
 
@@ -136,14 +159,18 @@ export const useAlbumStore = defineStore("album-store", {
 				return Promise.resolve();
 			}
 
+			// Capture current album ID to detect navigation during loading
 			const requestedAlbumId = this.albumId;
 			this.albums_loading = true;
 
 			return AlbumService.getAlbums(requestedAlbumId, page)
 				.then((data) => {
+					// Race condition guard: Don't update state if user navigated away
 					if (this.albumId !== requestedAlbumId) {
 						return;
 					}
+					// Append mode: Merge new albums with existing (for infinite scroll/load more)
+					// Replace mode: Show only the new page (for page navigation)
 					if (append) {
 						albumsStore.albums = [...albumsStore.albums, ...data.data.data];
 					} else {
@@ -163,7 +190,16 @@ export const useAlbumStore = defineStore("album-store", {
 				});
 		},
 
-		// Load paginated photos
+		/**
+		 * Load paginated photos for the current album.
+		 *
+		 * @param page - Page number to load (1-indexed)
+		 * @param append - If true, merge with existing photos; if false, replace them
+		 *
+		 * Handles timeline mode: When append=true and timeline is enabled,
+		 * PhotosState.appendPhotos() intelligently merges photos into existing
+		 * timeline groups rather than creating duplicate date headers.
+		 */
 		loadPhotos(page: number = 1, append: boolean = false): Promise<void> {
 			const photosState = usePhotosStore();
 
@@ -171,14 +207,18 @@ export const useAlbumStore = defineStore("album-store", {
 				return Promise.resolve();
 			}
 
+			// Capture current album ID to detect navigation during loading
 			const requestedAlbumId = this.albumId;
 			this.photos_loading = true;
 
 			return AlbumService.getPhotos(requestedAlbumId, page)
 				.then((data) => {
+					// Race condition guard: Don't update state if user navigated away
 					if (this.albumId !== requestedAlbumId) {
 						return;
 					}
+					// appendPhotos handles timeline merging for append=true
+					// setPhotos replaces all photos and rebuilds timeline for append=false
 					if (append) {
 						photosState.appendPhotos(data.data.photos, this.config?.is_photo_timeline_enabled ?? false);
 					} else {
@@ -198,27 +238,45 @@ export const useAlbumStore = defineStore("album-store", {
 				});
 		},
 
-		// Load next page of photos (for infinite scroll / load more)
+		/**
+		 * Convenience method to load the next page of photos.
+		 * Used by infinite scroll and "Load More" button components.
+		 *
+		 * Guards prevent:
+		 * - Loading while already loading (rapid scrolling/clicking)
+		 * - Loading beyond last page (when all content is loaded)
+		 */
 		loadMorePhotos(): Promise<void> {
 			// Guard against duplicate requests while loading
 			if (this.photos_loading) {
 				return Promise.resolve();
 			}
+			// Guard against loading beyond last page
 			if (this.photos_current_page >= this.photos_last_page) {
 				return Promise.resolve();
 			}
+			// Load next page with append=true to merge with existing photos
 			return this.loadPhotos(this.photos_current_page + 1, true);
 		},
 
-		// Load next page of albums (for infinite scroll / load more)
+		/**
+		 * Convenience method to load the next page of albums.
+		 * Used by infinite scroll and "Load More" button components.
+		 *
+		 * Guards prevent:
+		 * - Loading while already loading (rapid scrolling/clicking)
+		 * - Loading beyond last page (when all content is loaded)
+		 */
 		loadMoreAlbums(): Promise<void> {
 			// Guard against duplicate requests while loading
 			if (this.albums_loading) {
 				return Promise.resolve();
 			}
+			// Guard against loading beyond last page
 			if (this.albums_current_page >= this.albums_last_page) {
 				return Promise.resolve();
 			}
+			// Load next page with append=true to merge with existing albums
 			return this.loadAlbums(this.albums_current_page + 1, true);
 		},
 
@@ -260,20 +318,25 @@ export const useAlbumStore = defineStore("album-store", {
 						return;
 					}
 
-					// Reset to avoid bad surprises.
+					// Clear existing data to avoid showing stale content from previous album
 					albumsStore.reset();
 					photosState.reset();
 
+					// Model albums (regular albums): Load both children and photos in parallel
+					// This is efficient because they're independent queries
 					if (data.data.config.is_model_album) {
-						await Promise.all([this.loadAlbums(1, false), this.loadPhotos(1, false)]);
 						this.config = data.data.config;
+						await Promise.all([this.loadAlbums(1, false), this.loadPhotos(1, false)]);
 						this.modelAlbum = data.data.resource as App.Http.Resources.Models.HeadAlbumResource;
 					} else {
+						// Tag/Smart albums: Only load photos (they don't have child albums)
 						await this.loadPhotos(1, false);
 						this.config = data.data.config;
 						if (data.data.config.is_base_album) {
+							// Tag album: Photos filtered by tag
 							this.tagAlbum = data.data.resource as App.Http.Resources.Models.HeadTagAlbumResource;
 						} else {
+							// Smart album: Recent, Starred, On This Day, Unsorted, Untagged
 							this.smartAlbum = data.data.resource as App.Http.Resources.Models.HeadSmartAlbumResource;
 						}
 					}
