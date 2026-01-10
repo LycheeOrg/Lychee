@@ -67,6 +67,15 @@ return [
         'day' => '日',
         'hour' => '时',
     ],
+    'pagination' => [
+        'infinite_scroll' => 'Infinite scroll',
+        'load_more_button' => 'Load more button',
+        'page_navigation' => 'Page navigation',
+        'loading' => 'Loading...',
+        'load_more' => 'Load More',
+        'load_more_photos' => 'Load More (%s photos remaining)',
+        'load_more_albums' => 'Load More (%s albums remaining)',
+    ],
     'album' => [
         'header_albums' => '相册',
         'header_photos' => '照片',

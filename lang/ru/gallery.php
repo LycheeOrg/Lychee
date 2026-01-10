@@ -66,6 +66,15 @@ return [
         'day' => 'День',
         'hour' => 'Час',
     ],
+    'pagination' => [
+        'infinite_scroll' => 'Infinite scroll',
+        'load_more_button' => 'Load more button',
+        'page_navigation' => 'Page navigation',
+        'loading' => 'Loading...',
+        'load_more' => 'Load More',
+        'load_more_photos' => 'Load More (%s photos remaining)',
+        'load_more_albums' => 'Load More (%s albums remaining)',
+    ],
     'album' => [
         'header_albums' => 'Альбомы',
         'header_photos' => 'Фотографии',
