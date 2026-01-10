@@ -87,9 +87,6 @@ web)
   echo "✅ Application ready!"
 
   if [ ! -f "/app/frankenphp_target" ]; then
-    # Just to make sure.
-    composer dump-autoload --optimize --no-scripts --no-dev
-
     # Ajust permissions for Nginx
     chown -R www-data:www-data /var/lib/nginx /var/log/nginx
     # yeah it is disgusting but nginx needs it.
