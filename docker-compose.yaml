@@ -27,10 +27,10 @@ services:
     # There are also other images available which uses nginx as a base instead of FrankenPHP:
     # - ghcr.io/lycheeorg/lychee:latest-legacy
     # - ghcr.io/lycheeorg/lychee:edge-legacy
-    # image: ghcr.io/lycheeorg/lychee:edge
+    image: ghcr.io/lycheeorg/lychee:latest
 
     # The following lines are for development purposes only.
-    image: lychee-frankenphp:latest
+    # image: lychee-frankenphp:latest
     # image: lychee-legacy:latest
     # build:
     #   context: ./app
@@ -378,7 +378,7 @@ services:
   # Uncomment to enable horizontal scaling of background job processing
   # THIS IS PRETTY MUCH THE SAME CONFIGURATION AS lychee_api WITH A SINGLE MINOR MODIFICATIONS
   lychee_worker:
-    image: ghcr.io/lycheeorg/lychee:edge
+    image: ghcr.io/lycheeorg/lychee:latest
     container_name: lychee-worker
     restart: unless-stopped  # Auto-restart at container level (outer layer)
 
