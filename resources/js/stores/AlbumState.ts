@@ -40,9 +40,6 @@ export const useAlbumStore = defineStore("album-store", {
 		albums_per_page: 0,
 		albums_total: 0,
 		albums_loading: false as boolean,
-
-		// Flag to use new paginated endpoints
-		usePaginatedEndpoints: false as boolean,
 	}),
 	actions: {
 		refresh(): Promise<void> {

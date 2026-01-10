@@ -181,7 +181,9 @@ const emits = defineEmits<{
 }>();
 
 const { is_se_enabled } = storeToRefs(lycheeStore);
-const noData = computed(() => albumsStore.albums.length === 0 && photosStore.photos.length === 0);
+const noData = computed(() => {
+	return albumsStore.albums.length === 0 && photosStore.photos.length === 0;
+});
 
 const {
 	is_share_album_visible,
@@ -219,12 +221,10 @@ function photoClick(idx: number, _e: MouseEvent) {
 }
 
 function goToPhotosPage(page: number) {
-	photosStore.reset();
 	albumStore.loadPhotos(page, false);
 }
 
 function goToAlbumsPage(page: number) {
-	albumsStore.reset();
 	albumStore.loadAlbums(page, false);
 }
 
@@ -345,7 +345,7 @@ const albumCallbacks = {
 const computedAlbum = computed(() => albumStore.album);
 const computedConfig = computed(() => albumStore.config);
 
-const { menu, Menu, photoMenuOpen, albumMenuOpen } = useContextMenu(
+const { Menu, photoMenuOpen, albumMenuOpen } = useContextMenu(
 	{
 		config: computedConfig,
 		album: computedAlbum,
