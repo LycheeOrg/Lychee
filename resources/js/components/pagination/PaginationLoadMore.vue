@@ -5,7 +5,9 @@
 </template>
 <script setup lang="ts">
 import { computed } from "vue";
+import { sprintf } from "sprintf-js";
 import Button from "primevue/button";
+import { trans } from "laravel-vue-i18n";
 
 const props = defineProps<{
 	loading: boolean;
@@ -22,12 +24,12 @@ const emit = defineEmits<{
 
 const buttonLabel = computed(() => {
 	if (props.loading) {
-		return props.loadingLabel ?? "Loading...";
+		return props.loadingLabel ?? trans("gallery.pagination.loading");
 	}
 	if (props.remaining !== undefined && props.remaining > 0) {
-		const type = props.resourceType === "albums" ? "albums" : "photos";
-		return `Load More (${props.remaining} ${type} remaining)`;
+		const key = props.resourceType === "albums" ? "gallery.pagination.load_more_albums" : "gallery.pagination.load_more_photos";
+		return sprintf(trans(key), props.remaining);
 	}
-	return props.loadMoreLabel ?? "Load More";
+	return props.loadMoreLabel ?? trans("gallery.pagination.load_more");
 });
 </script>
