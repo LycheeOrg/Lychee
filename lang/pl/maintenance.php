@@ -87,7 +87,7 @@ return [
     ],
     'fulfill-precompute' => [
         'title' => 'Album Precomputed Fields',
-        'description' => 'Found %d albums with missing precomputed fields.<br/><br/>Equivalent to running: php artisan lychee:backfill-album-fields',
+        'description' => 'Found %d albums with missing precomputed fields.<br/><br/>Equivalent to running: php artisan lychee:recompute-album-fields',
         'button' => 'Compute fields',
     ],
     'flush-queue' => [
@@ -97,7 +97,7 @@ return [
     ],
     'backfill-album-sizes' => [
         'title' => 'Album Size Statistics',
-        'description' => 'Found %d albums without size statistics.<br/><br/>Equivalent to running: php artisan lychee:backfill-album-sizes',
+        'description' => 'Found %d albums without size statistics.<br/><br/>Equivalent to running: php artisan lychee:recompute-album-sizes',
         'button' => 'Compute sizes',
     ],
 ];

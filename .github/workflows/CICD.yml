@@ -194,7 +194,7 @@ jobs:
     if: >
       (github.ref == 'refs/heads/master' && github.event_name == 'push') ||
       (startsWith(github.ref, 'refs/tags/') && github.event_name == 'push')  ||
-      (github.event_name == 'push' && github.repository_owner == 'LycheeOrg' && contains(github.event.head_commit.message, '[docker]'))
+      (github.event_name == 'pull_request' && github.repository_owner == 'LycheeOrg' && contains(github.event.head_commit.message, '[docker]'))
     needs:
       - docker_check
     permissions:
@@ -303,7 +303,7 @@ jobs:
     if: >
       (github.ref == 'refs/heads/master' && github.event_name == 'push') ||
       (startsWith(github.ref, 'refs/tags/') && github.event_name == 'push') ||
-      (github.event_name == 'push' && github.repository_owner == 'LycheeOrg' && contains(github.event.head_commit.message, '[docker]'))
+      (github.event_name == 'pull_request' && github.repository_owner == 'LycheeOrg' && contains(github.event.head_commit.message, '[docker]'))
     needs:
       - docker_legacy_check
     permissions:

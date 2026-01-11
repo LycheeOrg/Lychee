@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Config;
  * BackfillAlbumSizes - Maintenance controller for backfilling album size statistics.
  *
  * This controller is equivalent to running the artisan command:
- * php artisan lychee:backfill-album-sizes
+ * php artisan lychee:recompute-album-sizes
  *
  * It processes albums that are missing size statistics and dispatches jobs
  * to compute storage size breakdowns by variant type.
