@@ -15,6 +15,7 @@ use App\Http\Resources\Models\Utils\TimelineData;
 use App\Http\Resources\Rights\AlbumRightsResource;
 use App\Http\Resources\Traits\HasHeaderUrl;
 use App\Http\Resources\Traits\HasPrepPhotoCollection;
+use App\Repositories\ConfigManager;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Support\Collection;
 use Spatie\LaravelData\Data;
@@ -51,8 +52,13 @@ class SmartAlbumResource extends Data
 		/** @disregard P1006 */
 		$photos = $smart_album->relationLoaded('photos') ? $smart_album->getPhotos() : null;
 
+		$config_manager = resolve(ConfigManager::class);
 		if ($photos !== null) {
-			$this->photos = $this->toPhotoResources(collect($photos->items()), $smart_album);
+			$this->photos = $this->toPhotoResources(
+				photos: collect($photos->items()),
+				album_id: $smart_album->get_id(),
+				should_downgrade: !$config_manager->getValueAsBool('grants_full_photo_access'),
+			);
 			$this->current_page = $photos->currentPage();
 			$this->last_page = $photos->lastPage();
 			$this->per_page = $photos->perPage();

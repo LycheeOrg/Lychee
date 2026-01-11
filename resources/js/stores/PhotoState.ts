@@ -65,9 +65,6 @@ export const usePhotoStore = defineStore("photo-store", {
 		hasNext(): boolean {
 			return this.photo?.next_photo_id !== null && this.photo?.next_photo_id !== undefined;
 		},
-		rights(): App.Http.Resources.Rights.PhotoRightsResource | undefined {
-			return this.photo?.rights;
-		},
 		// For displaying purposes
 		style(): string {
 			if (!this.photo?.precomputed.is_livephoto) {

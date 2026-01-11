@@ -13,6 +13,8 @@ export const photoSortingColumnsOptions: SelectOption<App.Enum.ColumnSortingPhot
 	{ value: "taken_at", label: "gallery.sort.photo_select_2" },
 	{ value: "title", label: "gallery.sort.photo_select_3" },
 	{ value: "description", label: "gallery.sort.photo_select_4" },
+	{ value: "title_strict", label: "gallery.sort.photo_select_3_strict" },
+	{ value: "description_strict", label: "gallery.sort.photo_select_4_strict" },
 	{ value: "is_starred", label: "gallery.sort.photo_select_6" },
 	{ value: "type", label: "gallery.sort.photo_select_7" },
 ];
@@ -26,6 +28,8 @@ export const albumSortingColumnsOptions: SelectOption<App.Enum.ColumnSortingAlbu
 	{ value: "created_at", label: "gallery.sort.album_select_1" },
 	{ value: "title", label: "gallery.sort.album_select_2" },
 	{ value: "description", label: "gallery.sort.album_select_3" },
+	{ value: "title_strict", label: "gallery.sort.album_select_2_strict" },
+	{ value: "description_strict", label: "gallery.sort.album_select_3_strict" },
 	{ value: "min_taken_at", label: "gallery.sort.album_select_6" },
 	{ value: "max_taken_at", label: "gallery.sort.album_select_5" },
 ];
@@ -124,6 +128,12 @@ export const timelineAlbumGranularityOptions: SelectOption<App.Enum.TimelineAlbu
 	{ value: "year", label: "gallery.timeline.year" },
 	{ value: "month", label: "gallery.timeline.month" },
 	{ value: "day", label: "gallery.timeline.day" },
+];
+
+export const paginationUiModeOptions: SelectOption<App.Enum.PaginationMode>[] = [
+	{ value: "infinite_scroll", label: "gallery.pagination.infinite_scroll" },
+	{ value: "load_more_button", label: "gallery.pagination.load_more_button" },
+	{ value: "page_navigation", label: "gallery.pagination.page_navigation" },
 ];
 
 export const timeZoneOptions: SelectOption<string>[] = [
@@ -329,5 +339,9 @@ export const SelectBuilders = {
 		value: string | App.Enum.TimelineAlbumGranularity | undefined,
 	): SelectOption<App.Enum.TimelineAlbumGranularity> | undefined {
 		return timelineAlbumGranularityOptions.find((option) => option.value === value) || undefined;
+	},
+
+	buildPaginationUiMode(value: string | App.Enum.PaginationMode): SelectOption<App.Enum.PaginationMode> | undefined {
+		return paginationUiModeOptions.find((option) => option.value === value) || undefined;
 	},
 };

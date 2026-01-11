@@ -64,6 +64,8 @@ class RequestAttribute
 	public const ALBUM_TIMELINE_ALBUM = 'album_timeline';
 	public const ALBUM_TIMELINE_PHOTO = 'photo_timeline';
 
+	public const PAGE_ATTRIBUTE = 'page';
+
 	public const PERMISSION_ID = 'perm_id';
 	public const IS_COMPACT_ATTRIBUTE = 'is_compact';
 	public const IS_NSFW_ATTRIBUTE = 'is_nsfw';

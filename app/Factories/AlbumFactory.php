@@ -100,11 +100,11 @@ class AlbumFactory
 	 */
 	public function findBaseAlbumOrFail(string $album_id, bool $with_relations = true): BaseAlbum
 	{
-		$album_query = Album::query();
-		$tag_album_query = TagAlbum::query();
+		$album_query = Album::query()->with(['access_permissions']);
+		$tag_album_query = TagAlbum::query()->with(['access_permissions']);
 
 		if ($with_relations) {
-			$album_query->with(['access_permissions', 'photos', 'children', 'children.owner', 'photos.size_variants', 'photos.statistics', 'photos.palette', 'photos.tags', 'photos.rating']);
+			$album_query->with(['photos', 'children', 'children.owner', 'photos.size_variants', 'photos.statistics', 'photos.palette', 'photos.tags', 'photos.rating']);
 			$tag_album_query->with(['tags', 'photos', 'photos.size_variants', 'photos.statistics', 'photos.palette', 'photos.tags', 'photos.rating']);
 		}
 

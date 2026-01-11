@@ -16,6 +16,7 @@ return new class() extends Migration {
 	 */
 	public function up(): void
 	{
+		Schema::dropIfExists('album_size_statistics');
 		Schema::create('album_size_statistics', function (Blueprint $table) {
 			// Primary key and foreign key to albums table
 			$table->char('album_id', 24)->primary();

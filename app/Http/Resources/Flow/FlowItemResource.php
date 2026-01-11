@@ -8,6 +8,7 @@
 
 namespace App\Http\Resources\Flow;
 
+use App\Contracts\Models\AbstractAlbum;
 use App\Enum\DateOrderingType;
 use App\Http\Resources\Models\AlbumStatisticsResource;
 use App\Http\Resources\Models\PhotoResource;
@@ -61,7 +62,8 @@ class FlowItemResource extends Data
 		$this->description = Markdown::convert(trim($album->description ?? ''))->getContent();
 
 		$this->setPhotos($album);
-		$this->cover = $album->cover !== null ? new SizeVariantsResouce($album->cover, $album) : null;
+		$should_downgrade = $album->cover !== null && !Gate::check(AlbumPolicy::CAN_ACCESS_FULL_PHOTO, [AbstractAlbum::class, $album]);
+		$this->cover = $album->cover !== null ? new SizeVariantsResouce($album->cover, $should_downgrade) : null;
 
 		// We use the short circuiting operator here to avoid checking is_recursive_nsfw if we hide them already.
 		$this->is_nsfw = request()->configs()->getValueAsBool('hide_nsfw_in_flow') === false && $album->is_recursive_nsfw;
@@ -106,14 +108,21 @@ class FlowItemResource extends Data
 			// Really NOT recommended!
 			// @codeCoverageIgnoreStart
 			$album->load(['all_photos', 'all_photos.size_variants', 'all_photos.palette', 'all_photos.statistics']);
-			$this->photos = $this->toPhotoResources($album->all_photos, $album);
+			$this->photos = $this->toPhotoResources(
+				photos: $album->all_photos,
+				album_id: $album->id,
+				should_downgrade: !Gate::check(AlbumPolicy::CAN_ACCESS_FULL_PHOTO, [AbstractAlbum::class, $album]));
 
 			return;
 			// @codeCoverageIgnoreEnd
 		}
 
 		if ($album->photos !== null && !$album->photos->isEmpty()) {
-			$this->photos = $this->toPhotoResources($album->photos, $album);
+			$this->photos = $this->toPhotoResources(
+				photos: $album->photos,
+				album_id: $album->id,
+				should_downgrade: !Gate::check(AlbumPolicy::CAN_ACCESS_FULL_PHOTO, [AbstractAlbum::class, $album]),
+			);
 
 			return;
 		}

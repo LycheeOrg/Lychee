@@ -59,7 +59,7 @@ class WatermarkerTest extends BaseImageHandler
 	public function testWatermarkerInitNoSetting()
 	{
 		$watermarker = new Watermarker();
-		self::assertEquals(false, $watermarker->can_watermark);
+		self::assertEquals(false, $watermarker->can_watermark());
 	}
 
 	public function testWatermarkerInitWithImagick()
@@ -67,7 +67,7 @@ class WatermarkerTest extends BaseImageHandler
 		Configs::set('watermark_enabled', true);
 		Configs::set('imagick', true);
 		$watermarker = new Watermarker();
-		self::assertEquals(false, $watermarker->can_watermark);
+		self::assertEquals(false, $watermarker->can_watermark());
 	}
 
 	public function testWatermarkerInitWithImagickAndWrongImage()
@@ -76,7 +76,7 @@ class WatermarkerTest extends BaseImageHandler
 		Configs::set('imagick', true);
 		Configs::set('watermark_photo_id', 'some id');
 		$watermarker = new Watermarker();
-		self::assertEquals(false, $watermarker->can_watermark);
+		self::assertEquals(false, $watermarker->can_watermark());
 	}
 
 	public function testWatermarkerInitWithImagickAndImage()
@@ -85,7 +85,7 @@ class WatermarkerTest extends BaseImageHandler
 		Configs::set('imagick', true);
 		Configs::set('watermark_photo_id', $this->photo1->id);
 		$watermarker = new Watermarker();
-		self::assertEquals(true, $watermarker->can_watermark);
+		self::assertEquals(true, $watermarker->can_watermark());
 	}
 
 	/**
@@ -115,7 +115,7 @@ class WatermarkerTest extends BaseImageHandler
 		Configs::set('watermark_logged_in_users_enabled', true);
 		Configs::set('watermark_public', false);
 		$watermarker = new Watermarker();
-		self::assertEquals(true, $watermarker->can_watermark);
+		self::assertEquals(true, $watermarker->can_watermark());
 
 		// Watermarker is enabled, Let's F-ing goooo.
 		$response = $this->uploadImage(TestConstants::SAMPLE_FILE_NIGHT_IMAGE);
@@ -181,7 +181,7 @@ class WatermarkerTest extends BaseImageHandler
 		Configs::set('watermark_random_path', false);
 		Configs::set('watermark_public', true);
 		$watermarker = new Watermarker();
-		self::assertEquals(true, $watermarker->can_watermark);
+		self::assertEquals(true, $watermarker->can_watermark());
 
 		// Watermarker is enabled, Let's F-ing goooo.
 		$response = $this->uploadImage(TestConstants::SAMPLE_FILE_NIGHT_IMAGE);

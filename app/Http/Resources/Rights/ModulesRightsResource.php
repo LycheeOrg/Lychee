@@ -134,7 +134,7 @@ class ModulesRightsResource extends Data
 			return false;
 		}
 
-		return resolve(Watermarker::class)->can_watermark;
+		return resolve(Watermarker::class)->can_watermark();
 	}
 
 	/**

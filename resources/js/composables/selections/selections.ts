@@ -6,9 +6,9 @@ import { useAlbumActions } from "@/composables/album/albumActions";
 import { PhotosStore } from "@/stores/PhotosState";
 import { AlbumsStore } from "@/stores/AlbumsState";
 
-const { canInteractAlbum, canInteractPhoto } = useAlbumActions();
-
 export function useSelection(photosStore: PhotosStore, albumsStore: AlbumsStore, togglableStore: TogglablesStateStore) {
+	const { canInteractAlbum, canInteractPhoto } = useAlbumActions();
+
 	const { selectedPhotosIdx, selectedAlbumsIdx } = storeToRefs(togglableStore);
 	const selectedPhoto = computed<App.Http.Resources.Models.PhotoResource | undefined>(() =>
 		selectedPhotosIdx.value.length === 1 ? (photosStore.photos[selectedPhotosIdx.value[0]] ?? undefined) : undefined,
@@ -80,7 +80,7 @@ export function useSelection(photosStore: PhotosStore, albumsStore: AlbumsStore,
 		e.preventDefault();
 		e.stopPropagation();
 
-		if (photosStore.photos.length === 0 || canInteractPhoto(photosStore.photos[idx]) === false) {
+		if (photosStore.photos.length === 0 || canInteractPhoto() === false) {
 			return;
 		}
 

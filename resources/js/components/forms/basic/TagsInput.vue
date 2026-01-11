@@ -1,6 +1,7 @@
 <template>
 	<AutoComplete
 		id="tags"
+		input-id="tags"
 		v-model="modelValue"
 		:suggestions="filteredTags"
 		:force-selection="true"

@@ -61,7 +61,11 @@ class GetTagWithPhotos
 
 		/** @var Collection<int,Photo> $photos */
 		$photos = $photos_query->get();
-		$photo_resources = $photos->map(fn ($photo) => new PhotoResource($photo, null));
+		$photo_resources = $photos->map(fn ($photo) => new PhotoResource(
+			photo: $photo,
+			album_id: null,
+			should_downgrade_size_variants: $user->may_administrate !== true && $user->id !== $photo->owner_id
+		));
 
 		return new TagWithPhotosResource(
 			id: $tag->id,

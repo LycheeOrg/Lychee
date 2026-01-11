@@ -19,13 +19,32 @@ declare namespace App.Enum {
 	export type AspectRatioCSSType = "aspect-5x4" | "aspect-4x5" | "aspect-3x2" | "aspect-square" | "aspect-2x3" | "aspect-video";
 	export type AspectRatioType = "5/4" | "3/2" | "1/1" | "2/3" | "4/5" | "16/9";
 	export type CacheTag = "gallery" | "auth" | "user" | "settings" | "statistics" | "users";
-	export type ColumnSortingAlbumType = "owner_id" | "created_at" | "title" | "description" | "min_taken_at" | "max_taken_at";
-	export type ColumnSortingPhotoType = "owner_id" | "created_at" | "title" | "description" | "taken_at" | "is_starred" | "type";
+	export type ColumnSortingAlbumType =
+		| "owner_id"
+		| "created_at"
+		| "title"
+		| "description"
+		| "title_strict"
+		| "description_strict"
+		| "min_taken_at"
+		| "max_taken_at";
+	export type ColumnSortingPhotoType =
+		| "owner_id"
+		| "created_at"
+		| "title"
+		| "description"
+		| "title_strict"
+		| "description_strict"
+		| "taken_at"
+		| "is_starred"
+		| "type";
 	export type ColumnSortingType =
 		| "owner_id"
 		| "created_at"
 		| "title"
 		| "description"
+		| "title_strict"
+		| "description_strict"
 		| "min_taken_at"
 		| "max_taken_at"
 		| "taken_at"
@@ -106,6 +125,7 @@ declare namespace App.Enum {
 		| "keycloak";
 	export type OmnipayProviderType = "Dummy" | "Mollie" | "PayPal" | "Stripe";
 	export type OrderSortingType = "ASC" | "DESC";
+	export type PaginationMode = "infinite_scroll" | "load_more_button" | "page_navigation";
 	export type PaymentStatusType = "pending" | "cancelled" | "failed" | "refunded" | "processing" | "offline" | "completed" | "closed";
 	export type PhotoLayoutType = "square" | "justified" | "masonry" | "grid";
 	export type PhotoThumbInfoType = "title" | "description";
@@ -153,6 +173,20 @@ declare namespace App.Http.Resources.Admin {
 	};
 }
 declare namespace App.Http.Resources.Collections {
+	export type PaginatedAlbumsResource = {
+		data: App.Http.Resources.Models.ThumbAlbumResource[];
+		current_page: number;
+		last_page: number;
+		per_page: number;
+		total: number;
+	};
+	export type PaginatedPhotosResource = {
+		photos: App.Http.Resources.Models.PhotoResource[];
+		current_page: number;
+		last_page: number;
+		per_page: number;
+		total: number;
+	};
 	export type PositionDataResource = {
 		id: string | null;
 		title: string | null;
@@ -332,7 +366,6 @@ declare namespace App.Http.Resources.GalleryConfigs {
 	export type AlbumConfig = {
 		is_base_album: boolean;
 		is_model_album: boolean;
-		is_accessible: boolean;
 		is_password_protected: boolean;
 		is_map_accessible: boolean;
 		is_mod_frame_enabled: boolean;
@@ -409,6 +442,12 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		rating_album_view_mode: App.Enum.VisibilityType;
 		default_homepage: string;
 		is_timeline_page_enabled: boolean;
+		photos_pagination_mode: App.Enum.PaginationMode;
+		albums_pagination_mode: App.Enum.PaginationMode;
+		photos_per_page: number;
+		albums_per_page: number;
+		photos_infinite_scroll_threshold: number;
+		albums_infinite_scroll_threshold: number;
 	};
 	export type LandingPageResource = {
 		landing_page_enable: boolean;
@@ -531,6 +570,55 @@ declare namespace App.Http.Resources.Models {
 		require_se: boolean;
 		order: number | null;
 	};
+	export type HeadAbstractAlbumResource = {
+		config: App.Http.Resources.GalleryConfigs.AlbumConfig;
+		resource:
+			| App.Http.Resources.Models.HeadAlbumResource
+			| App.Http.Resources.Models.HeadSmartAlbumResource
+			| App.Http.Resources.Models.HeadTagAlbumResource;
+	};
+	export type HeadAlbumResource = {
+		id: string;
+		title: string;
+		owner_name: string | null;
+		description: string | null;
+		copyright: string | null;
+		track_url: string | null;
+		license: string;
+		header_id: string | null;
+		parent_id: string | null;
+		has_albums: boolean;
+		num_children: number;
+		num_photos: number;
+		cover_id: string | null;
+		policy: App.Http.Resources.Models.Utils.AlbumProtectionPolicy;
+		rights: App.Http.Resources.Rights.AlbumRightsResource;
+		preFormattedData: App.Http.Resources.Models.Utils.PreFormattedAlbumData;
+		editable: App.Http.Resources.Editable.EditableBaseAlbumResource | null;
+		is_pinned: boolean;
+		statistics: App.Http.Resources.Models.AlbumStatisticsResource | null;
+	};
+	export type HeadSmartAlbumResource = {
+		id: string;
+		title: string;
+		policy: App.Http.Resources.Models.Utils.AlbumProtectionPolicy;
+		rights: App.Http.Resources.Rights.AlbumRightsResource;
+		preFormattedData: App.Http.Resources.Models.Utils.PreFormattedAlbumData;
+		statistics: null | null;
+	};
+	export type HeadTagAlbumResource = {
+		id: string;
+		title: string;
+		owner_name: string | null;
+		copyright: string | null;
+		is_tag_album: boolean;
+		show_tags: Array<string>;
+		policy: App.Http.Resources.Models.Utils.AlbumProtectionPolicy;
+		rights: App.Http.Resources.Rights.AlbumRightsResource;
+		preFormattedData: App.Http.Resources.Models.Utils.PreFormattedAlbumData;
+		editable: App.Http.Resources.Editable.EditableBaseAlbumResource | null;
+		statistics: App.Http.Resources.Models.AlbumStatisticsResource | null;
+	};
 	export type JobHistoryResource = {
 		username: string;
 		status: "ready" | "success" | "failure" | "started";
@@ -586,7 +674,6 @@ declare namespace App.Http.Resources.Models {
 		title: string;
 		type: string;
 		updated_at: string;
-		rights: App.Http.Resources.Rights.PhotoRightsResource;
 		next_photo_id: string | null;
 		previous_photo_id: string | null;
 		preformatted: App.Http.Resources.Models.Utils.PreformattedPhotoData;

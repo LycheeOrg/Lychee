@@ -29,25 +29,30 @@ class EmbedStreamResource extends Data
 	public Collection $photos;
 
 	/**
-	 * @param string     $site_title The site title to display
-	 * @param Collection $photos     Collection of Photo models
+	 * @param string     $site_title       The site title to display
+	 * @param Collection $photos           Collection of Photo models
+	 * @param bool       $should_downgrade Whether to downgrade image quality for size variants
 	 */
-	public function __construct(string $site_title, Collection $photos)
+	public function __construct(string $site_title, Collection $photos, bool $should_downgrade)
 	{
 		$this->site_title = $site_title;
-		$this->photos = $photos->map(fn ($photo) => EmbedPhotoResource::fromModel($photo));
+		$this->photos = $photos->map(fn ($photo) => EmbedPhotoResource::fromModel(
+			photo: $photo,
+			should_downgrade: $should_downgrade,
+		));
 	}
 
 	/**
 	 * Create resource from photo collection.
 	 *
-	 * @param string     $site_title The site title to display
-	 * @param Collection $photos     Collection of Photo models
+	 * @param string     $site_title       The site title to display
+	 * @param Collection $photos           Collection of Photo models
+	 * @param bool       $should_downgrade Whether to downgrade image quality for size variants
 	 *
 	 * @return self
 	 */
-	public static function fromPhotos(string $site_title, Collection $photos): self
+	public static function fromPhotos(string $site_title, Collection $photos, bool $should_downgrade): self
 	{
-		return new self($site_title, $photos);
+		return new self($site_title, $photos, $should_downgrade);
 	}
 }

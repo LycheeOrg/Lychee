@@ -124,6 +124,22 @@
 						@reset="reset"
 					/>
 					<SelectOptionsField
+						v-else-if="config.key === 'photos_pagination_ui_mode'"
+						:config="config"
+						:options="paginationUiModeOptions"
+						:mapper="SelectBuilders.buildPaginationUiMode"
+						@filled="filled"
+						@reset="reset"
+					/>
+					<SelectOptionsField
+						v-else-if="config.key === 'albums_pagination_ui_mode'"
+						:config="config"
+						:options="paginationUiModeOptions"
+						:mapper="SelectBuilders.buildPaginationUiMode"
+						@filled="filled"
+						@reset="reset"
+					/>
+					<SelectOptionsField
 						v-else-if="config.type === 'currency'"
 						:config="config"
 						:options="currencyOptions"
@@ -167,6 +183,7 @@ import {
 	mapProvidersOptions,
 	toolsOptions,
 	currencyOptions,
+	paginationUiModeOptions,
 } from "@/config/constants";
 import StringField from "@/components/forms/settings/StringField.vue";
 import BoolField from "@/components/forms/settings/BoolField.vue";

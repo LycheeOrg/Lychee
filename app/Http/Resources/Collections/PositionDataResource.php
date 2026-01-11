@@ -8,7 +8,6 @@
 
 namespace App\Http\Resources\Collections;
 
-use App\Contracts\Models\AbstractAlbum;
 use App\Http\Resources\Models\PhotoResource;
 use App\Http\Resources\Traits\HasPrepPhotoCollection;
 use Illuminate\Support\Collection;
@@ -32,18 +31,26 @@ class PositionDataResource extends Data
 	public ?Collection $photos;
 
 	/**
-	 * @param AbstractAlbum|null                $album     the album; `null` for root album
-	 * @param Collection<int,\App\Models\Photo> $photos    the collection of photos with position data to be shown on map
-	 * @param string|null                       $track_url the URL of the album's track
+	 * @param string|null                       $album_id         the album ID; `null` for root album
+	 * @param string|null                       $title            the album title
+	 * @param Collection<int,\App\Models\Photo> $photos           the collection of photos with position data to be shown on map
+	 * @param string|null                       $track_url        the URL of the album's track
+	 * @param bool                              $should_downgrade whether size variants should be downgraded
 	 */
 	public function __construct(
-		?AbstractAlbum $album,
+		?string $album_id,
+		?string $title,
 		Collection $photos,
 		?string $track_url,
+		bool $should_downgrade,
 	) {
-		$this->id = $album?->get_id();
-		$this->title = $album?->get_title();
+		$this->id = $album_id;
+		$this->title = $title;
 		$this->track_url = $track_url;
-		$this->photos = $this->toPhotoResources($photos, $album);
+		$this->photos = $this->toPhotoResources(
+			photos: $photos,
+			album_id: $album_id,
+			should_downgrade: $should_downgrade,
+		);
 	}
 }
