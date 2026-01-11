@@ -71,10 +71,6 @@ case "$LYCHEE_MODE" in
 web)
   echo "🌐 Starting Lychee in web mode..."
 
-  # Run database migrations (only in web mode to avoid race conditions)
-  echo "🔄 Running database migrations..."
-  run_as_www php artisan migrate --force
-
   # Clear and cache configuration
   echo "🧹 Optimizing application..."
   run_as_www php artisan config:clear
@@ -83,6 +79,10 @@ web)
   run_as_www php artisan route:cache
   run_as_www php artisan view:clear
   run_as_www php artisan view:cache
+
+  # Run database migrations (only in web mode to avoid race conditions)
+  echo "🔄 Running database migrations..."
+  run_as_www php artisan migrate --force
 
   echo "✅ Application ready!"
 
