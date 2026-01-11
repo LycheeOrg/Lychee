@@ -139,16 +139,12 @@ jobs:
     uses: ./.github/workflows/php_tests.yml
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-    if: >
-      (github.event_name == 'push' && !contains(github.event.head_commit.message, '[skip-php]'))
 
   dist:
     name: 2️⃣ PHP dist
     needs:
       - code_style_errors
     uses: ./.github/workflows/php_dist.yml
-    if: >
-      (github.event_name == 'push' && !contains(github.event.head_commit.message, '[skip-php]'))
 
   docker_check:
     name: 3️⃣ Dockerfile Lint
@@ -193,8 +189,8 @@ jobs:
     runs-on: ubuntu-latest
     if: >
       (github.ref == 'refs/heads/master' && github.event_name == 'push') ||
-      (startsWith(github.ref, 'refs/tags/') && github.event_name == 'push')  ||
-      (github.event_name == 'pull_request' && github.repository_owner == 'LycheeOrg' && contains(github.event.head_commit.message, '[docker]'))
+      (startsWith(github.ref, 'refs/tags/') && github.event_name == 'push') ||
+      (github.event_name == 'workflow_dispatch')
     needs:
       - docker_check
     permissions:
@@ -303,7 +299,7 @@ jobs:
     if: >
       (github.ref == 'refs/heads/master' && github.event_name == 'push') ||
       (startsWith(github.ref, 'refs/tags/') && github.event_name == 'push') ||
-      (github.event_name == 'pull_request' && github.repository_owner == 'LycheeOrg' && contains(github.event.head_commit.message, '[docker]'))
+      (github.event_name == 'workflow_dispatch')
     needs:
       - docker_legacy_check
     permissions:
