@@ -155,7 +155,10 @@ RUN chmod +x /usr/local/bin/00-conf-check.sh \
     /usr/local/bin/04-user-setup.sh \
     /usr/local/bin/05-permissions-check.sh \
     /usr/local/bin/create-admin-user.sh \
-    /usr/local/bin/entrypoint.sh
+    /usr/local/bin/entrypoint.sh \
+    && mkdir -p /data /config \
+    && chown -R www-data:www-data /data /config \
+    && chmod -R 775 /data /config
 
 # Expose port 8000 (Octane)
 EXPOSE 8000
