@@ -122,8 +122,8 @@ RUN mkdir -p storage/framework/cache \
     bootstrap/cache \
     public/dist \
     && chown -R www-data:www-data storage bootstrap/cache public \
-    && chmod -R 750 storage bootstrap/cache \
-    && chmod -R 755 public/dist \
+    && chmod -R 777 storage bootstrap/cache \
+    && chmod -R 775 public/dist \
     && touch /app/frankenphp_target \
     && touch /app/public/dist/user.css \
     && touch /app/public/dist/custom.js \

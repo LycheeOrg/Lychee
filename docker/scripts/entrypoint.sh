@@ -71,6 +71,43 @@ case "$LYCHEE_MODE" in
 web)
   echo "🌐 Starting Lychee in web mode..."
 
+  # echo "✅ Running mounted file"
+  # echo "/app/storage/"
+  # ls -lola /app/storage/
+  # echo "------------"
+  # echo "/app/storage/bootstrap/"
+  # ls -lola /app/storage/bootstrap/
+  # echo "------------"
+  # echo "/app/storage/bootstrap/cache/"
+  # ls -lola /app/storage/bootstrap/cache/
+
+  # echo " Destination"
+  # echo "/app/bootstrap/"
+  # ls -lola /app/bootstrap/
+
+  # echo "------------"
+  # echo "/app/bootstrap/cache/"
+  # ls -lola /app/bootstrap/cache/
+
+  # echo "===================== As www-data ====================="
+
+  # echo "/app/storage/"
+  # run_as_www ls -lola /app/storage/
+  # echo "------------"
+  # echo "/app/storage/bootstrap/"
+  # run_as_www ls -lola /app/storage/bootstrap/
+  # echo "------------"
+  # echo "/app/storage/bootstrap/cache/"
+  # run_as_www ls -lola /app/storage/bootstrap/cache/
+
+  # echo " Destination"
+  # echo "/app/bootstrap/"
+  # run_as_www ls -lola /app/bootstrap/
+
+  # echo "------------"
+  # echo "/app/bootstrap/cache/"
+  # run_as_www ls -lola /app/bootstrap/cache/
+
   # Clear and cache configuration
   echo "🧹 Optimizing application..."
   run_as_www php artisan config:clear
