@@ -165,6 +165,157 @@ Lychee uses route-based versioning:
 - **v2 API**: Current version (`/api/v2/...`)
 - Future versions can be added without breaking existing integrations
 
+## Pagination Endpoints
+
+Lychee implements offset-based pagination for albums and photos to efficiently handle large collections. Three dedicated endpoints allow incremental data loading:
+
+### Album Head Endpoint
+
+**GET** `/api/v2/Album::head`
+
+Returns album metadata without loading children or photos. Lightweight endpoint for initial album information.
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| album_id | string | Yes | Album ID (supports regular, Smart, and Tag albums) |
+
+**Response:** `HeadAlbumResource`
+```json
+{
+  "id": "abc123",
+  "title": "Vacation 2025",
+  "description": "Summer vacation photos",
+  "num_photos": 450,
+  "num_children": 12,
+  "thumb": {
+    "id": "photo123",
+    "type": "photo",
+    "thumb": "https://...",
+    "thumb2x": "https://..."
+  },
+  "rights": {
+    "can_edit": true,
+    "can_share": true,
+    "can_download": true
+  }
+}
+```
+
+**Response Codes:**
+| Code | Description |
+|------|-------------|
+| 200 | Success |
+| 403 | Forbidden - User lacks access to album |
+| 404 | Not Found - Album does not exist |
+
+### Paginated Albums Endpoint
+
+**GET** `/api/v2/Album::albums`
+
+Returns paginated child albums for a parent album.
+
+**Parameters:**
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| album_id | string | Yes | - | Parent album ID |
+| page | integer | No | 1 | Page number (1-indexed) |
+
+**Response:** `PaginatedAlbumsResource`
+```json
+{
+  "data": [
+    {
+      "id": "album1",
+      "title": "Beach",
+      "num_photos": 45,
+      "thumb": {...}
+    }
+  ],
+  "current_page": 1,
+  "last_page": 2,
+  "per_page": 30,
+  "total": 42
+}
+```
+
+**Response Codes:**
+| Code | Description |
+|------|-------------|
+| 200 | Success (empty data array if page exceeds available pages) |
+| 403 | Forbidden - User lacks access to album |
+| 404 | Not Found - Album does not exist |
+| 422 | Unprocessable Entity - Invalid page parameter |
+
+### Paginated Photos Endpoint
+
+**GET** `/api/v2/Album::photos`
+
+Returns paginated photos for an album. Supports regular albums, Smart albums (Recent, Starred, etc.), and Tag albums.
+
+**Parameters:**
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| album_id | string | Yes | - | Album ID (regular, Smart, or Tag album) |
+| page | integer | No | 1 | Page number (1-indexed) |
+
+**Response:** `PaginatedPhotosResource`
+```json
+{
+  "data": [
+    {
+      "id": "photo1",
+      "title": "Beach sunset",
+      "taken_at": "2025-07-15T18:30:00Z",
+      "size_variants": {...},
+      "tags": ["vacation", "sunset"]
+    }
+  ],
+  "current_page": 1,
+  "last_page": 5,
+  "per_page": 100,
+  "total": 450,
+  "timeline": {...}
+}
+```
+
+**Response Codes:**
+| Code | Description |
+|------|-------------|
+| 200 | Success (empty data array if page exceeds available pages) |
+| 403 | Forbidden - User lacks access to album |
+| 404 | Not Found - Album does not exist |
+| 422 | Unprocessable Entity - Invalid page parameter |
+
+### Pagination Configuration
+
+Page sizes and UI modes are configurable via the admin settings panel or directly in the `configs` table:
+
+| Config Key | Type | Default | Description |
+|------------|------|---------|-------------|
+| albums_per_page | integer (1-1000) | 30 | Number of child albums per page |
+| photos_per_page | integer (1-1000) | 100 | Number of photos per page |
+| albums_pagination_ui_mode | enum | infinite_scroll | UI mode for album pagination |
+| photos_pagination_ui_mode | enum | infinite_scroll | UI mode for photo pagination |
+
+**UI Mode Options:**
+- `infinite_scroll` - Auto-load next page on scroll (default)
+- `load_more_button` - Manual "Load More" button
+- `page_navigation` - Traditional page number navigation
+
+### Pagination Best Practices
+
+1. **Initial Load:** Call all three endpoints in parallel when opening an album:
+   - `/Album::head` for metadata
+   - `/Album::albums?page=1` for first page of children
+   - `/Album::photos?page=1` for first page of photos
+
+2. **Incremental Loading:** Use the `last_page` field to determine if more pages exist before requesting.
+
+3. **Empty Results:** Requesting a page beyond available data returns an empty `data` array with correct `total` count.
+
+4. **Backward Compatibility:** The legacy `/Album` endpoint remains unchanged and returns full album data without pagination.
+
 ## Related Documentation
 
 - [Backend Architecture](../4-architecture/backend-architecture.md) - Overall backend structure
@@ -173,4 +324,4 @@ Lychee uses route-based versioning:
 
 ---
 
-*Last updated: December 22, 2025*
+*Last updated: January 10, 2026*

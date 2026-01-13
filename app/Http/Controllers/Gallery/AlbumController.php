@@ -88,16 +88,14 @@ class AlbumController extends Controller
 		$config = new AlbumConfig($request->album());
 		$album_resource = null;
 
-		if ($config->is_accessible) {
-			$album_resource = match (true) {
-				$request->album() instanceof BaseSmartAlbum => new SmartAlbumResource($request->album()),
-				$request->album() instanceof TagAlbum => new TagAlbumResource($request->album()),
-				$request->album() instanceof Album => new AlbumResource($request->album()),
-				// @codeCoverageIgnoreStart
-				default => throw new LycheeLogicException('This should not happen'),
-				// @codeCoverageIgnoreEnd
-			};
-		}
+		$album_resource = match (true) {
+			$request->album() instanceof BaseSmartAlbum => new SmartAlbumResource($request->album()),
+			$request->album() instanceof TagAlbum => new TagAlbumResource($request->album()),
+			$request->album() instanceof Album => new AlbumResource($request->album()),
+			// @codeCoverageIgnoreStart
+			default => throw new LycheeLogicException('This should not happen'),
+			// @codeCoverageIgnoreEnd
+		};
 
 		AlbumVisit::dispatchIf((MetricsController::shouldMeasure() && $request->album() instanceof BaseAlbum), $this->visitorId(), $request->album()->get_id());
 

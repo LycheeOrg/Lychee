@@ -8,11 +8,8 @@
 
 namespace App\Http\Resources\Models;
 
-use App\Contracts\Models\AbstractAlbum;
 use App\Enum\SizeVariantType;
 use App\Models\Photo;
-use App\Policies\AlbumPolicy;
-use Illuminate\Support\Facades\Gate;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
@@ -28,12 +25,10 @@ class SizeVariantsResouce extends Data
 	public ?SizeVariantResource $thumb;
 	public ?SizeVariantResource $placeholder;
 
-	public function __construct(Photo $photo, ?AbstractAlbum $album)
+	public function __construct(Photo $photo, bool $should_downgrade)
 	{
 		$size_variants = $photo->relationLoaded('size_variants') ? $photo->size_variants : null;
-		$downgrade = !Gate::check(AlbumPolicy::CAN_ACCESS_FULL_PHOTO, [AbstractAlbum::class, $album]) &&
-			!$photo->isVideo() &&
-			$size_variants?->hasMedium() === true;
+		$downgrade = $should_downgrade && !$photo->isVideo() && $size_variants?->hasMedium() === true;
 
 		$original = $size_variants?->getSizeVariant(SizeVariantType::ORIGINAL);
 		$medium = $size_variants?->getSizeVariant(SizeVariantType::MEDIUM);

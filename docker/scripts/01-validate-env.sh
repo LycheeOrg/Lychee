@@ -11,9 +11,15 @@ echo "🔍 Validating environment variables..."
 # Check if APP_KEY exists, with fallback mechanisms
 if [ -z "${APP_KEY:-}" ]; then
   # Check if APP_KEY_FILE is set and load from file
-  if [ -n "${APP_KEY_FILE:-}" ] && [ -f "$APP_KEY_FILE" ]; then
-    APP_KEY=$(cat "$APP_KEY_FILE")
-    export APP_KEY
+  if [ -n "${APP_KEY_FILE:-}" ]; then
+    if [ -f "$APP_KEY_FILE" ]; then
+      APP_KEY=$(cat "$APP_KEY_FILE")
+      export APP_KEY
+      echo "✅ Loaded APP_KEY from file: ${APP_KEY_FILE}"
+    else
+      echo "❌ ERROR: APP_KEY_FILE is set but file does not exist: ${APP_KEY_FILE}"
+      exit 1
+    fi
   # Fallback to /app/.env if it exists
   elif [ -f "/app/.env" ]; then
     APP_KEY=$(grep "^APP_KEY=" /app/.env | cut -d= -f2- | tr -d '"' | tr -d "'")
@@ -25,13 +31,25 @@ fi
 if [ -z "${APP_KEY:-}" ]; then
   echo "❌ ERROR: APP_KEY is not set"
   echo "   Set it via APP_KEY environment variable, APP_KEY_FILE, or /app/.env"
+  echo "   You can generate one with: 'echo \"APP_KEY=base64:\$(openssl rand -base64 32)\"' or 'php artisan key:generate --show'"
   exit 1
 fi
 
-# Validate APP_KEY format (should be base64:... for Laravel)
-if ! echo "${APP_KEY}" | grep -qE '^base64:.{32,}'; then
-  echo "❌ ERROR: APP_KEY must be in format 'base64:...' with sufficient length"
-  echo "   Generate one with: php artisan key:generate --show"
+# Validate APP_KEY is exactly 32 bytes when decoded
+# Temporarily disable errexit to handle base64 failure gracefully
+set +e
+KEY_BYTE_COUNT=$(echo "${APP_KEY#base64:}" | base64 -d 2>/dev/null | wc -c)
+BASE64_EXIT=$?
+set -e
+
+if [ "${BASE64_EXIT}" -ne 0 ] || [ "${KEY_BYTE_COUNT}" -eq 0 ]; then
+  echo "❌ ERROR: APP_KEY contains invalid base64 data"
+  echo "   Generate one with: 'echo \"APP_KEY=base64:\$(openssl rand -base64 32)\"' or 'php artisan key:generate --show'"
+  exit 1
+fi
+if [ "${KEY_BYTE_COUNT}" -ne 32 ]; then
+  echo "❌ ERROR: APP_KEY must be exactly 32 bytes when decoded (got: ${KEY_BYTE_COUNT} bytes)"
+  echo "   Generate one with: 'echo \"APP_KEY=base64:\$(openssl rand -base64 32)\"' or 'php artisan key:generate --show'"
   exit 1
 fi
 
@@ -41,6 +59,7 @@ fi
 
 if [ -z "${DB_CONNECTION:-}" ]; then
   echo "❌ ERROR: DB_CONNECTION is not set"
+  sleep 10
   exit 1
 fi
 
@@ -51,6 +70,7 @@ mysql | pgsql | sqlite)
   ;;
 *)
   echo "❌ ERROR: DB_CONNECTION must be mysql, pgsql, or sqlite (got: ${DB_CONNECTION})"
+  sleep 10
   exit 1
   ;;
 esac
@@ -73,15 +93,23 @@ if [ "${DB_CONNECTION}" = "mysql" ] || [ "${DB_CONNECTION}" = "pgsql" ]; then
   # Check if DB_PASSWORD exists, with fallback mechanisms
   if [ -z "${DB_PASSWORD:-}" ]; then
     # Check if DB_PASSWORD_FILE is set and load from file
-    if [ -n "${DB_PASSWORD_FILE:-}" ] && [ -f "$DB_PASSWORD_FILE" ]; then
-      DB_PASSWORD=$(cat "$DB_PASSWORD_FILE")
-      export DB_PASSWORD
+    if [ -n "${DB_PASSWORD_FILE:-}" ]; then
+      if [ -f "$DB_PASSWORD_FILE" ]; then
+        DB_PASSWORD=$(cat "$DB_PASSWORD_FILE")
+        export DB_PASSWORD
+        echo "✅ Loaded DB_PASSWORD from file: ${DB_PASSWORD_FILE}"
+      else
+        echo "❌ ERROR: DB_PASSWORD_FILE is set but file does not exist: ${DB_PASSWORD_FILE}"
+        exit 1
+      fi
     # Fallback to /app/.env if it exists
     elif [ -f "/app/.env" ]; then
       DB_PASSWORD=$(grep "^DB_PASSWORD=" /app/.env | cut -d= -f2- | tr -d '"' | tr -d "'")
       export DB_PASSWORD
     fi
   fi
+
+
 
   # Error out if DB_PASSWORD is still empty
   if [ -z "${DB_PASSWORD:-}" ]; then

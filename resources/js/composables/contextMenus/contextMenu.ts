@@ -1,11 +1,12 @@
+import { useAlbumStore } from "@/stores/AlbumState";
 import { computed, Ref, ref } from "vue";
 
 export type Selectors = {
 	config?: Ref<App.Http.Resources.GalleryConfigs.AlbumConfig | undefined>;
 	album?: Ref<
-		| App.Http.Resources.Models.AlbumResource
-		| App.Http.Resources.Models.TagAlbumResource
-		| App.Http.Resources.Models.SmartAlbumResource
+		| App.Http.Resources.Models.HeadAlbumResource
+		| App.Http.Resources.Models.HeadTagAlbumResource
+		| App.Http.Resources.Models.HeadSmartAlbumResource
 		| undefined
 	>;
 	selectedPhotosIdx?: Ref<number[]>;
@@ -48,10 +49,6 @@ type MenuItem = {
 };
 
 // Helpers functions to reduce.
-function canEdit(accumulator: boolean, currentValue: App.Http.Resources.Models.ThumbAlbumResource | App.Http.Resources.Models.PhotoResource) {
-	return accumulator && currentValue.rights.can_edit;
-}
-
 function canMove(accumulator: boolean, currentValue: App.Http.Resources.Models.ThumbAlbumResource) {
 	return accumulator && currentValue.rights.can_move;
 }
@@ -60,7 +57,7 @@ function canDelete(accumulator: boolean, currentValue: App.Http.Resources.Models
 	return accumulator && currentValue.rights.can_delete;
 }
 
-function canDownload(accumulator: boolean, currentValue: App.Http.Resources.Models.ThumbAlbumResource | App.Http.Resources.Models.PhotoResource) {
+function canDownload(accumulator: boolean, currentValue: App.Http.Resources.Models.ThumbAlbumResource) {
 	return accumulator && currentValue.rights.can_download;
 }
 
@@ -84,27 +81,28 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 	});
 
 	// Define the photo Menu when only one photo is selected
-	function photoMenu() {
+	function photoMenu(): MenuItem[] {
 		if (selectors.selectedPhoto === undefined) {
 			return [];
 		}
 
 		const menuItems = [];
 		const selectedPhoto = selectors.selectedPhoto.value as App.Http.Resources.Models.PhotoResource;
+		const albumStore = useAlbumStore();
 
 		if (selectedPhoto.is_starred) {
 			menuItems.push({
 				label: "gallery.menus.unstar",
 				icon: "pi pi-star",
 				callback: photoCallbacks.unstar,
-				access: selectedPhoto.rights.can_edit,
+				access: albumStore.rights?.can_edit ?? false,
 			});
 		} else {
 			menuItems.push({
 				label: "gallery.menus.star",
 				icon: "pi pi-star",
 				callback: photoCallbacks.star,
-				access: selectedPhoto.rights.can_edit,
+				access: albumStore.rights?.can_edit ?? false,
 			});
 		}
 
@@ -139,29 +137,29 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 					label: "gallery.menus.tag",
 					icon: "pi pi-tag",
 					callback: photoCallbacks.toggleTag,
-					access: selectedPhoto.rights.can_edit,
+					access: albumStore.rights?.can_edit ?? false,
 				},
 				{
 					is_divider: true,
-					access: selectedPhoto.rights.can_edit,
+					access: albumStore.rights?.can_edit ?? false,
 				},
 				{
 					label: "gallery.menus.rename",
 					icon: "pi pi-pen-to-square",
 					callback: photoCallbacks.toggleRename,
-					access: selectedPhoto.rights.can_edit,
+					access: albumStore.rights?.can_edit ?? false,
 				},
 				{
 					label: "gallery.menus.copy_to",
 					icon: "pi pi-copy",
 					callback: photoCallbacks.toggleCopyTo,
-					access: selectedPhoto.rights.can_edit,
+					access: albumStore.rights?.can_edit ?? false,
 				},
 				{
 					label: "gallery.menus.move",
 					icon: "pi pi-folder",
 					callback: photoCallbacks.toggleMove,
-					access: selectedPhoto.rights.can_edit,
+					access: albumStore.rights?.can_edit ?? false,
 				},
 				{
 					label: "gallery.menus.delete",
@@ -173,7 +171,7 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 					label: "gallery.menus.download",
 					icon: "pi pi-cloud-download",
 					callback: photoCallbacks.toggleDownload,
-					access: selectedPhoto.rights.can_download,
+					access: albumStore.rights?.can_download ?? false,
 				},
 			],
 		);
@@ -182,25 +180,26 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 	}
 
 	// Define the photo Menu when multiple photos are selected
-	function photosMenu() {
+	function photosMenu(): MenuItem[] {
 		if (selectors.selectedPhotos === undefined) {
 			return [];
 		}
 
 		const menuItems = [];
+		const albumStore = useAlbumStore();
 		if (selectors.selectedPhotos.value.reduce((acc, photo) => acc && photo.is_starred, true)) {
 			menuItems.push({
 				label: "gallery.menus.unstar_all",
 				icon: "pi pi-star",
 				callback: photoCallbacks.unstar,
-				access: selectors.selectedPhotos.value.reduce(canEdit, true),
+				access: albumStore.rights?.can_edit ?? false,
 			});
 		} else {
 			menuItems.push({
 				label: "gallery.menus.star_all",
 				icon: "pi pi-star",
 				callback: photoCallbacks.star,
-				access: selectors.selectedPhotos.value.reduce(canEdit, true),
+				access: albumStore.rights?.can_edit ?? false,
 			});
 		}
 
@@ -210,35 +209,35 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 					label: "gallery.menus.tag_all",
 					icon: "pi pi-tag",
 					callback: photoCallbacks.toggleTag,
-					access: selectors.selectedPhotos.value.reduce(canEdit, true),
+					access: albumStore.rights?.can_edit ?? false,
 				},
 				{
 					is_divider: true,
-					access: selectors.selectedPhotos.value.reduce(canEdit, true),
+					access: albumStore.rights?.can_edit ?? false,
 				},
 				{
 					label: "gallery.menus.copy_all_to",
 					icon: "pi pi-copy",
 					callback: photoCallbacks.toggleCopyTo,
-					access: selectors.selectedPhotos.value.reduce(canEdit, true),
+					access: albumStore.rights?.can_edit ?? false,
 				},
 				{
 					label: "gallery.menus.move_all",
 					icon: "pi pi-folder",
 					callback: photoCallbacks.toggleMove,
-					access: selectors.selectedPhotos.value.reduce(canEdit, true),
+					access: albumStore.rights?.can_edit ?? false,
 				},
 				{
 					label: "gallery.menus.delete_all",
 					icon: "pi pi-trash",
 					callback: photoCallbacks.toggleDelete,
-					access: selectors.selectedPhotos.value.reduce(canEdit, true),
+					access: albumStore.rights?.can_edit ?? false,
 				},
 				{
 					label: "gallery.menus.download_all",
 					icon: "pi pi-cloud-download",
 					callback: photoCallbacks.toggleDownload,
-					access: selectors.selectedPhotos.value.reduce(canDownload, true),
+					access: albumStore.rights?.can_download ?? false,
 				},
 			],
 		);

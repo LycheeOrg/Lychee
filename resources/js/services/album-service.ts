@@ -64,9 +64,15 @@ const AlbumService = {
 			// @ts-expect-error  we now what we are doing here.
 			axiosWithCache.storage.clear();
 		} else {
+			// Clear legacy endpoint cache
 			for (let page = 1; page <= 10; page++) {
-				axiosWithCache.storage.remove(`album_${album_id}_page${page}`); // reasonable limit to 10 pages (5000 photos)
-				// Later we will need to implement a more sophisticated cache clearing strategy.
+				axiosWithCache.storage.remove(`album_${album_id}_page${page}`);
+			}
+			// Clear new paginated endpoint caches
+			axiosWithCache.storage.remove(`album_head_${album_id}`);
+			for (let page = 1; page <= 50; page++) {
+				axiosWithCache.storage.remove(`album_albums_${album_id}_page${page}`);
+				axiosWithCache.storage.remove(`album_photos_${album_id}_page${page}`);
 			}
 		}
 	},
@@ -92,6 +98,33 @@ const AlbumService = {
 			params: params,
 			data: {},
 			id: `album_${album_id}_page${page ?? 1}`,
+		});
+	},
+
+	getHead(album_id: string): Promise<AxiosResponse<App.Http.Resources.Models.HeadAbstractAlbumResource>> {
+		const requester = axios as unknown as AxiosCacheInstance;
+		return requester.get(`${Constants.getApiUrl()}Album::head`, {
+			params: { album_id: album_id },
+			data: {},
+			id: `album_head_${album_id}`,
+		});
+	},
+
+	getAlbums(album_id: string, page: number = 1): Promise<AxiosResponse<App.Http.Resources.Collections.PaginatedAlbumsResource>> {
+		const requester = axios as unknown as AxiosCacheInstance;
+		return requester.get(`${Constants.getApiUrl()}Album::albums`, {
+			params: { album_id: album_id, page: page },
+			data: {},
+			id: `album_albums_${album_id}_page${page}`,
+		});
+	},
+
+	getPhotos(album_id: string, page: number = 1): Promise<AxiosResponse<App.Http.Resources.Collections.PaginatedPhotosResource>> {
+		const requester = axios as unknown as AxiosCacheInstance;
+		return requester.get(`${Constants.getApiUrl()}Album::photos`, {
+			params: { album_id: album_id, page: page },
+			data: {},
+			id: `album_photos_${album_id}_page${page}`,
 		});
 	},
 

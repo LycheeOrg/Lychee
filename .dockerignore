@@ -45,6 +45,7 @@ sonar-project.properties
 phpstan/*
 scripts/*
 vite/*
+secrets/*
 # Local testing @ildyria
 public/uploads-bck/*
 

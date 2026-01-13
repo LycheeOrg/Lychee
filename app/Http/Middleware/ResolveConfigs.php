@@ -8,6 +8,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Image\Watermarker;
 use App\Repositories\ConfigManager;
 use Illuminate\Http\Request;
 
@@ -28,6 +29,9 @@ class ResolveConfigs
 	{
 		$config = resolve(ConfigManager::class);
 		app()->scoped(ConfigManager::class, fn () => $config);
+
+		$watermarker = new Watermarker();
+		app()->scoped(Watermarker::class, fn () => $watermarker);
 
 		return app(ConfigManager::class);
 	}

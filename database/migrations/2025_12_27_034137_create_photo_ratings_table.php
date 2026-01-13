@@ -18,6 +18,7 @@ return new class() extends Migration {
 	 */
 	public function up(): void
 	{
+		Schema::dropIfExists('photo_ratings');
 		Schema::create('photo_ratings', function (Blueprint $table) {
 			$table->id();
 			$table->char('photo_id', self::RANDOM_ID_LENGTH)->index();

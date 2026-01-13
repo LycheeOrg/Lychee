@@ -63,7 +63,7 @@ import Button from "primevue/button";
 import { type UserOrGroup, type UserOrGroupId } from "@/stores/UsersAndGroupsState";
 
 const props = defineProps<{
-	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.TagAlbumResource;
+	album: App.Http.Resources.Models.HeadAlbumResource | App.Http.Resources.Models.HeadTagAlbumResource;
 	filteredUsersIds?: UserOrGroupId[];
 }>();
 

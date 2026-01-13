@@ -100,7 +100,8 @@ class TimelineData extends Data
 			ColumnSortingType::MAX_TAKEN_AT => $album->max_taken_at_carbon(),
 			ColumnSortingType::MIN_TAKEN_AT => $album->min_taken_at_carbon(),
 			// Parse the title as date (e.g. "2020 something" or "2020-03 something" or "2020-03-25 something")
-			ColumnSortingType::TITLE => self::parseDateFromTitle(trim($album->title)),
+			ColumnSortingType::TITLE,
+			ColumnSortingType::TITLE_STRICT => self::parseDateFromTitle(trim($album->title)),
 			default => null,
 		};
 

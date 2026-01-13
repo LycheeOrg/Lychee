@@ -189,7 +189,8 @@ jobs:
     runs-on: ubuntu-latest
     if: >
       (github.ref == 'refs/heads/master' && github.event_name == 'push') ||
-      (startsWith(github.ref, 'refs/tags/') && github.event_name == 'push')
+      (startsWith(github.ref, 'refs/tags/') && github.event_name == 'push') ||
+      (github.event_name == 'workflow_dispatch')
     needs:
       - docker_check
     permissions:
@@ -297,7 +298,8 @@ jobs:
     runs-on: ubuntu-latest
     if: >
       (github.ref == 'refs/heads/master' && github.event_name == 'push') ||
-      (startsWith(github.ref, 'refs/tags/') && github.event_name == 'push')
+      (startsWith(github.ref, 'refs/tags/') && github.event_name == 'push') ||
+      (github.event_name == 'workflow_dispatch')
     needs:
       - docker_legacy_check
     permissions:

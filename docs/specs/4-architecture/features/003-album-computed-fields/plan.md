@@ -34,7 +34,7 @@ _Last updated:_ 2026-01-03
 - NSFW context handling for cover selection (S-003-14, S-003-15, S-003-16)
 - Album ownership checking for cover display (nested set query for ancestor ownership)
 - AlbumBuilder virtual column removal (FR-003-05)
-- Backfill command `lychee:backfill-album-fields` (FR-003-06)
+- Backfill command `lychee:recompute-album-fields` (FR-003-06)
 - Manual recovery command `lychee:recompute-album-stats` (CLI-003-02)
 - Migration rollback strategy (Q-003-08 resolution)
 - Test coverage for all 18 scenarios plus security/performance tests
@@ -336,8 +336,8 @@ Execute drift gate checklist from [docs/specs/5-operations/analysis-gate-checkli
 4. Write test in `tests/Precomputing/BackfillCommandTest.php`: create albums, run backfill, verify computed values correct
 
 **Commands:**
-- `php artisan lychee:backfill-album-fields --dry-run`
-- `php artisan lychee:backfill-album-fields --chunk=100` (test run)
+- `php artisan lychee:recompute-album-fields --dry-run`
+- `php artisan lychee:recompute-album-fields --chunk=100` (test run)
 - `php artisan test --testsuite=Precomputing --filter=BackfillCommandTest`
 - `make phpstan`
 

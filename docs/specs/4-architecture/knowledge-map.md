@@ -93,6 +93,37 @@ This document tracks modules, dependencies, and architectural relationships acro
 5. Resource/DTO → Response Transform
 6. HTTP Response
 
+### Album Pagination (Feature 007)
+Implements offset-based pagination for albums and photos to efficiently handle large collections:
+
+**Backend Architecture:**
+1. **Separate Endpoints** - Three new endpoints replace monolithic album loading:
+   - `GET /Album::head` - Album metadata without children/photos (HeadAlbumResource)
+   - `GET /Album::albums?page={n}` - Paginated child albums (PaginatedAlbumsResource)
+   - `GET /Album::photos?page={n}` - Paginated photos (PaginatedPhotosResource)
+2. **Repository Methods** - `AlbumRepository::getChildrenPaginated()` and `PhotoRepository::getPhotosForAlbumPaginated()` use SortingDecorator for efficient queries
+3. **Album Type Support** - Works with regular albums, Smart albums (Recent, Starred), and Tag albums
+4. **Backward Compatibility** - Legacy `/Album` endpoint unchanged, returns full album data
+
+**Frontend Architecture:**
+1. **Service Layer** - `album-service.ts` provides `getHead()`, `getAlbums()`, `getPhotos()` methods
+2. **State Management** - `AlbumState` store manages pagination state (current_page, last_page, per_page, total) for both photos and albums
+3. **UI Components**:
+   - `PaginationLoadMore.vue` - "Load More (N remaining)" button
+   - `PaginationInfiniteScroll.vue` - Intersection Observer auto-loading
+   - `usePagination.ts` composable for shared logic
+
+**Configuration (configs table):**
+- `albums_per_page` (integer, default: 30) - Child albums per page
+- `photos_per_page` (integer, default: 100) - Photos per page
+- `albums_pagination_ui_mode` (enum: infinite_scroll, load_more_button, page_navigation)
+- `photos_pagination_ui_mode` (enum: infinite_scroll, load_more_button, page_navigation)
+
+**Data Flow:**
+1. Album open → Frontend calls `getHead()`, `getAlbums(page=1)`, `getPhotos(page=1)` in parallel
+2. User interaction (scroll/button/page) → Frontend calls `getPhotos(page=N)` or `getAlbums(page=N)`
+3. Response includes pagination metadata: `{data: [...], current_page, last_page, per_page, total}`
+
 ### Album Statistics Pre-computation (Event-Driven)
 Replaces on-the-fly virtual column computation with physical database fields updated asynchronously:
 
@@ -148,6 +179,7 @@ Replaces on-the-fly virtual column computation with physical database fields upd
 
 ### How-To Guides
 - [Add OAuth Provider](../2-how-to/add-oauth-provider.md) - Step-by-step OAuth integration
+- [Configure Pagination](../2-how-to/configure-pagination.md) - Album and photo pagination settings
 - [Translating Lychee](../2-how-to/translating-lychee.md) - Translation guide for developers and translators
 - [Using Renamer](../2-how-to/using-renamer.md) - Filename transformation during import
 
@@ -187,4 +219,4 @@ Replaces on-the-fly virtual column computation with physical database fields upd
 
 ---
 
-*Last updated: January 2, 2026*
+*Last updated: January 10, 2026*

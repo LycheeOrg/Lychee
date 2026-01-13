@@ -8,8 +8,8 @@
 
 namespace App\Http\Resources\Traits;
 
-use App\Contracts\Models\AbstractAlbum;
 use App\Http\Resources\Models\PhotoResource;
+use App\Models\Photo;
 use Illuminate\Support\Collection;
 
 /**
@@ -17,9 +17,13 @@ use Illuminate\Support\Collection;
  */
 trait HasPrepPhotoCollection
 {
-	private function toPhotoResources(Collection $photos, ?AbstractAlbum $album): Collection
+	private function toPhotoResources(Collection $photos, ?string $album_id, bool $should_downgrade): Collection
 	{
-		return $photos->map(fn ($photo) => new PhotoResource($photo, $album));
+		return $photos->map(fn ($photo) => new PhotoResource(
+			photo: $photo,
+			album_id: $album_id,
+			should_downgrade_size_variants: $should_downgrade,
+		));
 	}
 
 	private function prepPhotosCollection(): void
@@ -33,9 +37,10 @@ trait HasPrepPhotoCollection
 			$previous_photo = $photo;
 		});
 
-		if ($this->photos->count() > 1 && request()->configs()->getValueAsBool('photos_wraparound')) {
-			$this->photos->first()->previous_photo_id = $this->photos->last()->id;
-			$this->photos->last()->next_photo_id = $this->photos->first()->id;
-		}
+		// Photo wrap-around is disabled for now.
+		// if ($this->photos->count() > 1 && request()->configs()->getValueAsBool('photos_wraparound')) {
+		// 	$this->photos->first()->previous_photo_id = $this->photos->last()->id;
+		// 	$this->photos->last()->next_photo_id = $this->photos->first()->id;
+		// }
 	}
 }

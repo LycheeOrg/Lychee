@@ -62,7 +62,6 @@ class AlbumSetHeaderTest extends BaseApiWithDataTest
 			'config' => [
 				'is_base_album' => true,
 				'is_model_album' => true,
-				'is_accessible' => true,
 				'is_password_protected' => false,
 				'is_search_accessible' => true,
 			],
@@ -87,7 +86,6 @@ class AlbumSetHeaderTest extends BaseApiWithDataTest
 			'config' => [
 				'is_base_album' => true,
 				'is_model_album' => true,
-				'is_accessible' => true,
 				'is_password_protected' => false,
 				'is_search_accessible' => true,
 			],
@@ -115,7 +113,6 @@ class AlbumSetHeaderTest extends BaseApiWithDataTest
 			'config' => [
 				'is_base_album' => true,
 				'is_model_album' => true,
-				'is_accessible' => true,
 				'is_password_protected' => false,
 				'is_search_accessible' => true,
 			],
@@ -140,7 +137,6 @@ class AlbumSetHeaderTest extends BaseApiWithDataTest
 			'config' => [
 				'is_base_album' => true,
 				'is_model_album' => true,
-				'is_accessible' => true,
 				'is_password_protected' => false,
 				'is_search_accessible' => true,
 			],

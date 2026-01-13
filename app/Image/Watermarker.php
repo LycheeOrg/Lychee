@@ -22,14 +22,32 @@ use Illuminate\Support\Facades\Log;
 
 class Watermarker
 {
-	private SizeVariant $size_variant_watermark;
+	private string $watermark_photo_id = '';
+	private ?SizeVariant $size_variant_watermark = null;
 	private WatermarkGroupedWithRandomSuffixNamingStrategy $naming_strategy;
-	public bool $can_watermark = false;
 
 	/**
 	 * Create a watermarker.
 	 */
 	public function __construct()
+	{
+		$this->naming_strategy = new WatermarkGroupedWithRandomSuffixNamingStrategy();
+
+		if (!$this->is_watermark_enabled()) {
+			return;
+		}
+
+		if (!$this->check_watermark_image()) {
+			return;
+		}
+	}
+
+	/**
+	 * Check if configuration is set to allow watermark.
+	 *
+	 * @return bool
+	 */
+	private function is_watermark_enabled(): bool
 	{
 		$config_manager = resolve(ConfigManager::class);
 		$is_enabled = $config_manager->getValueAsBool('watermark_enabled');
@@ -39,31 +57,57 @@ class Watermarker
 		if (!$is_enabled || !$is_imagick_enabled || !$is_imagick_loaded) {
 			// If watermarking is not enabled or Imagick is not available, we cannot watermark
 			// Exit now.
-			return;
+			return false;
 		}
 
-		$watermark_photo_id = $config_manager->getValueAsString('watermark_photo_id');
-		if ($watermark_photo_id === '') {
+		$this->watermark_photo_id = $config_manager->getValueAsString('watermark_photo_id');
+		if ($this->watermark_photo_id === '') {
 			// Watermark photo ID is not set, we cannot watermark
 			Log::error('Watermark is enabled but photo id is not set.');
 
-			return;
+			return false;
 		}
 
+		return true;
+	}
+
+	/**
+	 * Check and load the watermark image.
+	 *
+	 * @return bool true if watermark image is loaded, false if it is not usable
+	 */
+	private function check_watermark_image(): bool
+	{
+		if ($this->size_variant_watermark !== null && $this->size_variant_watermark->photo_id === $this->watermark_photo_id) {
+			return true;
+		}
+
+		// If the id is different or the image is null, we fetch the image.
 		$watermark = SizeVariant::query()
-			->where('photo_id', '=', $watermark_photo_id)
+			->where('photo_id', '=', $this->watermark_photo_id)
 			->where('type', '=', SizeVariantType::ORIGINAL->value)
 			->first();
+
 		if ($watermark === null) {
 			// If no watermark is found, we cannot watermark
-			Log::error('Watermark original size_variant not found for id:' . $watermark_photo_id);
+			Log::error('Watermark original size_variant not found for id:' . $this->watermark_photo_id);
 
-			return;
+			return false;
 		}
 
-		$this->can_watermark = true;
 		$this->size_variant_watermark = $watermark;
-		$this->naming_strategy = new WatermarkGroupedWithRandomSuffixNamingStrategy();
+
+		return true;
+	}
+
+	/**
+	 * Check if we can watermark images.
+	 *
+	 * @return bool true if watermarking is possible
+	 */
+	public function can_watermark(): bool
+	{
+		return $this->is_watermark_enabled() && $this->check_watermark_image();
 	}
 
 	/**
@@ -139,12 +183,15 @@ class Watermarker
 	 */
 	public function do(SizeVariant $size_variant): void
 	{
-		$config_manager = resolve(ConfigManager::class);
-
-		if (!$this->can_watermark) {
+		if (!$this->is_watermark_enabled()) {
 			return;
 		}
 
+		if (!$this->check_watermark_image()) {
+			return;
+		}
+
+		$config_manager = resolve(ConfigManager::class);
 		if ($size_variant->type === SizeVariantType::PLACEHOLDER ||
 			($size_variant->type === SizeVariantType::ORIGINAL && !$config_manager->getValueAsBool('watermark_original'))) {
 			return;

@@ -52,15 +52,21 @@
 					@clicked="albumClick"
 					@contexted="albumMenuOpen"
 				/>
-				<div v-if="photosStore.photos.length > 0 && albumStore.hasPagination" class="flex justify-center w-full -mb-[100%]">
-					<Paginator
-						v-model:first="firstValue"
-						:rows="albumStore.per_page"
-						:total-records="albumStore.total"
-						:always-show="false"
-						:pt:pcRowPerPageDropdown:class="'hidden'"
-					/>
-				</div>
+				<!-- Pagination for albums -->
+				<Pagination
+					v-if="albumsStore.albums.length > 0 && albumStore.hasAlbumsPagination"
+					:mode="lycheeStore.albums_pagination_mode"
+					:loading="albumStore.albums_loading"
+					:has-more="albumStore.hasMoreAlbums"
+					:current-page="albumStore.albums_current_page"
+					:last-page="albumStore.albums_last_page"
+					:per-page="albumStore.albums_per_page"
+					:total="albumStore.albums_total"
+					:remaining="albumStore.albumsRemainingCount"
+					resource-type="albums"
+					@load-more="albumStore.loadMoreAlbums()"
+					@go-to-page="goToAlbumsPage"
+				/>
 				<PhotoThumbPanel
 					v-if="layoutStore.config && photosStore.photos.length > 0"
 					header="gallery.album.header_photos"
@@ -74,15 +80,21 @@
 					@contexted="photoMenuOpen"
 					@toggle-buy-me="toggleBuyMe"
 				/>
-				<div v-if="photosStore.photos.length > 0 && albumStore.hasPagination" class="flex justify-center w-full">
-					<Paginator
-						v-model:first="firstValue"
-						:rows="albumStore.per_page"
-						:total-records="albumStore.total"
-						:always-show="false"
-						:pt:pcRowPerPageDropdown:class="'hidden'"
-					/>
-				</div>
+				<!-- Pagination for photos -->
+				<Pagination
+					v-if="photosStore.photos.length > 0 && albumStore.hasPhotosPagination"
+					:mode="lycheeStore.photos_pagination_mode"
+					:loading="albumStore.photos_loading"
+					:has-more="albumStore.hasMorePhotos"
+					:current-page="albumStore.photos_current_page"
+					:last-page="albumStore.photos_last_page"
+					:per-page="albumStore.photos_per_page"
+					:total="albumStore.photos_total"
+					:remaining="albumStore.photosRemainingCount"
+					resource-type="photos"
+					@load-more="albumStore.loadMorePhotos()"
+					@go-to-page="goToPhotosPage"
+				/>
 				<ScrollTop v-if="!props.isPhotoOpen" target="parent" />
 				<GalleryFooter v-once />
 			</div>
@@ -132,7 +144,6 @@ import { useRouter } from "vue-router";
 import SelectDrag from "@/components/forms/album/SelectDrag.vue";
 import { useOrderManagementStore } from "@/stores/OrderManagement";
 import { useBuyMeActions } from "@/composables/album/buyMeActions";
-import Paginator from "primevue/paginator";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { usePhotosStore } from "@/stores/PhotosState";
 import { useAlbumsStore } from "@/stores/AlbumsState";
@@ -141,13 +152,13 @@ import { useLayoutStore } from "@/stores/LayoutState";
 import { useCatalogStore } from "@/stores/CatalogState";
 import BuyMeDialog from "@/components/forms/gallery-dialogs/BuyMeDialog.vue";
 import { useToast } from "primevue/usetoast";
+import Pagination from "@/components/pagination/Pagination.vue";
 
 const router = useRouter();
 const toast = useToast();
 
 const props = defineProps<{
 	isPhotoOpen: boolean;
-	first: number | undefined;
 }>();
 
 const userStore = useUserStore();
@@ -167,11 +178,12 @@ const emits = defineEmits<{
 	scrollToTop: [];
 	openSearch: [];
 	goBack: [];
-	"update:first": [value: number];
 }>();
 
 const { is_se_enabled } = storeToRefs(lycheeStore);
-const noData = computed(() => albumsStore.albums.length === 0 && photosStore.photos.length === 0);
+const noData = computed(() => {
+	return albumsStore.albums.length === 0 && photosStore.photos.length === 0;
+});
 
 const {
 	is_share_album_visible,
@@ -186,7 +198,7 @@ const {
 	toggleUpload,
 } = useGalleryModals(togglableStore);
 
-const { toggleBuyMe } = useBuyMeActions(albumStore, orderManagement, catalogStore, toast);
+const { toggleBuyMe } = useBuyMeActions(albumStore, photosStore, orderManagement, catalogStore, toast);
 
 const {
 	selectedPhotosIdx,
@@ -208,20 +220,20 @@ function photoClick(idx: number, _e: MouseEvent) {
 	router.push(photoRoute(photosStore.photos[idx].id));
 }
 
+function goToPhotosPage(page: number) {
+	albumStore.loadPhotos(page, false);
+}
+
+function goToAlbumsPage(page: number) {
+	albumStore.loadAlbums(page, false);
+}
+
 const areStatisticsOpen = ref(false);
 function toggleStatistics() {
 	if (is_se_enabled) {
 		areStatisticsOpen.value = !areStatisticsOpen.value;
 	}
 }
-
-const firstValue = computed({
-	get: () => props.first,
-	set: (val: number) => {
-		albumStore.current_page = val;
-		emits("update:first", val);
-	},
-});
 
 const albumPanelConfig = computed<AlbumThumbConfig>(() => ({
 	album_thumb_css_aspect_ratio: albumStore.config?.album_thumb_css_aspect_ratio ?? "aspect-square",

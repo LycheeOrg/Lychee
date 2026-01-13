@@ -3,7 +3,7 @@
 		<template #content>
 			<form>
 				<div class="h-12">
-					<ToggleSwitch v-model="is_public" class="ltr:mr-2 rtl:ml-2 translate-y-1" @change="save" />
+					<ToggleSwitch v-model="is_public" input-id="pp_dialog_public_check" class="ltr:mr-2 rtl:ml-2 translate-y-1" @change="save" />
 					<label for="pp_dialog_public_check" class="font-bold">{{ $t("dialogs.visibility.public") }}</label>
 					<p class="my-1.5">{{ $t("dialogs.visibility.public_expl") }}</p>
 				</div>

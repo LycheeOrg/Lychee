@@ -238,10 +238,10 @@ _Last updated: 2026-01-02_
 ### I10 – Backfill Command
 
 - [x] T-004-35 – Create BackfillAlbumSizes command class (FR-004-04, CLI-004-01).
-  _Intent:_ Artisan command `lychee:backfill-album-sizes`.
+  _Intent:_ Artisan command `lychee:recompute-album-sizes`.
   _Verification commands:_
   - Create `app/Console/Commands/BackfillAlbumSizeStatistics.php`
-  - Signature: `lychee:backfill-album-sizes {--chunk=1000} {--dry-run}`
+  - Signature: `lychee:recompute-album-sizes {--chunk=1000} {--dry-run}`
 
 - [x] T-004-36 – Implement command logic: query albums, dispatch jobs (FR-004-04).
   _Intent:_ Iterate albums leaf-to-root (ORDER BY _lft ASC), chunk processing, progress bar.
@@ -393,7 +393,7 @@ _Last updated: 2026-01-02_
   _Intent:_ Execute migration, backfill all albums.
   _Verification commands:_
   - `php artisan migrate`
-  - `php artisan lychee:backfill-album-sizes`
+  - `php artisan lychee:recompute-album-sizes`
 
 - [ ] T-004-64 – Benchmark queries after migration (verify improvement).
   _Intent:_ Measure same queries, calculate reduction percentage.

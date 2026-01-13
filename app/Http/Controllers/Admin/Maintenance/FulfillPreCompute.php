@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Config;
  * FulfillPreCompute - Maintenance controller for backfilling album precomputed fields.
  *
  * This controller is equivalent to running the artisan command:
- * php artisan lychee:backfill-album-fields
+ * php artisan lychee:recompute-album-fields
  *
  * It processes albums where ALL precomputed fields are null and dispatches
  * jobs to compute:

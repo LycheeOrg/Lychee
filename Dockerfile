@@ -56,7 +56,7 @@ RUN npm run build
 # ============================================================================
 # Stage 3: Production FrankenPHP Image
 # ============================================================================
-FROM dunglas/frankenphp:php8.4-alpine@sha256:49654aea8f2b9bc225bde6d89c9011054505ca2ed3e9874b251035128518b491
+FROM dunglas/frankenphp:php8.5-trixie@sha256:7082c1dfeb256a5dd65961e790253aad859e8fd7ff2f38e54d43f81c0735fafe
 
 ARG USER=appuser
 
@@ -69,22 +69,25 @@ LABEL org.opencontainers.image.source="https://github.com/LycheeOrg/Lychee"
 LABEL org.opencontainers.image.url="https://lycheeorg.github.io"
 LABEL org.opencontainers.image.documentation="https://lycheeorg.dev/docs"
 LABEL org.opencontainers.image.licenses="MIT"
-LABEL org.opencontainers.image.base.name="dunglas/frankenphp:php8.4-alpine"
+LABEL org.opencontainers.image.base.name="dunglas/frankenphp:php8.5-trixie"
 
 # Install system utilities and PHP extensions
-# hadolint ignore=DL3018
-RUN apk add --no-cache \
-    exiftool \
-    shadow \
+# hadolint ignore=DL3008,DL3009
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+    linux-libc-dev \
+    libimage-exiftool-perl \
     ffmpeg \
-    gd \
-    grep \
     imagemagick \
     jpegoptim \
+    procps \
     netcat-openbsd \
     unzip \
     curl \
     bash \
+    gosu \
+	ghostscript \
+	&& sed -i '/<\/policymap>/i \  <policy domain="coder" rights="read|write" pattern="PDF" \/>' /etc/ImageMagick-7/policy.xml \
     && install-php-extensions \
     pdo_mysql \
     pdo_pgsql \
@@ -96,10 +99,9 @@ RUN apk add --no-cache \
     pcntl \
     exif \
     imagick \
-    intl \
     redis \
-    tokenizer \
-    && rm -rf /var/cache/apk/*
+	&& apt-get clean -qy \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
@@ -119,28 +121,44 @@ RUN mkdir -p storage/framework/cache \
     storage/logs \
     bootstrap/cache \
     public/dist \
-    && chown -R www-data:www-data storage bootstrap/cache public/dist \
-    && chmod -R 750 storage bootstrap/cache \
-    && chmod -R 755 public/dist \
+    && chown -R www-data:www-data storage bootstrap/cache public \
+    && chmod -R 777 storage bootstrap/cache \
+    && chmod -R 775 public/dist \
     && touch /app/frankenphp_target \
     && touch /app/public/dist/user.css \
     && touch /app/public/dist/custom.js \
     && chown www-data:www-data /app/public/dist/user.css /app/public/dist/custom.js \
     && chmod 644 /app/public/dist/user.css /app/public/dist/custom.js \
     && cp $PHP_INI_DIR/php.ini-production $PHP_INI_DIR/php.ini \
-    && echo "upload_max_filesize=110M" > $PHP_INI_DIR/conf.d/custom.ini \
-    && echo "post_max_size=110M" >> $PHP_INI_DIR/conf.d/custom.ini \
-    && echo "max_execution_time=3000" >> $PHP_INI_DIR/conf.d/custom.ini \
+    && echo "upload_max_filesize=128M" > $PHP_INI_DIR/conf.d/custom.ini \
+    && echo "post_max_size=128M" >> $PHP_INI_DIR/conf.d/custom.ini \
+    && echo "memory_limit=\${PHP_MEMORY_LIMIT:-1024M}" >> $PHP_INI_DIR/conf.d/custom.ini \
+    && echo "max_execution_time=\${PHP_MAX_EXECUTION_TIME:-3000}" >> $PHP_INI_DIR/conf.d/custom.ini \
     && echo "expose_php=Off" >> $PHP_INI_DIR/conf.d/custom.ini \
     && echo "display_errors=Off" >> $PHP_INI_DIR/conf.d/custom.ini \
     && echo "log_errors=On" >> $PHP_INI_DIR/conf.d/custom.ini
 
 # Copy entrypoint and validation scripts
-COPY docker/scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
-COPY docker/scripts/validate-env.sh /usr/local/bin/validate-env.sh
+COPY docker/scripts/00-conf-check.sh /usr/local/bin/00-conf-check.sh
+COPY docker/scripts/01-validate-env.sh /usr/local/bin/01-validate-env.sh
+COPY docker/scripts/02-dump-env.sh /usr/local/bin/02-dump-env.sh
+COPY docker/scripts/03-db-check.sh /usr/local/bin/03-db-check.sh
+COPY docker/scripts/04-user-setup.sh /usr/local/bin/04-user-setup.sh
+COPY docker/scripts/05-permissions-check.sh /usr/local/bin/05-permissions-check.sh
 COPY docker/scripts/create-admin-user.sh /usr/local/bin/create-admin-user.sh
-COPY docker/scripts/permissions-check.sh /usr/local/bin/permissions-check.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh /usr/local/bin/validate-env.sh /usr/local/bin/permissions-check.sh /usr/local/bin/create-admin-user.sh
+COPY docker/scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
+
+RUN chmod +x /usr/local/bin/00-conf-check.sh \
+    /usr/local/bin/01-validate-env.sh \
+    /usr/local/bin/02-dump-env.sh \
+    /usr/local/bin/03-db-check.sh \
+    /usr/local/bin/04-user-setup.sh \
+    /usr/local/bin/05-permissions-check.sh \
+    /usr/local/bin/create-admin-user.sh \
+    /usr/local/bin/entrypoint.sh \
+    && mkdir -p /data /config \
+    && chown -R www-data:www-data /data /config \
+    && chmod -R 775 /data /config
 
 # Expose port 8000 (Octane)
 EXPOSE 8000

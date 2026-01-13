@@ -32,7 +32,6 @@ use Illuminate\Support\Facades\Gate;
 class HasAlbumThumb extends Relation
 {
 	protected PhotoQueryPolicy $photo_query_policy;
-	protected PhotoSortingCriterion $sorting;
 
 	public function __construct(Album $parent)
 	{
@@ -41,7 +40,6 @@ class HasAlbumThumb extends Relation
 		// The parent constructor calls `addConstraints` and thus our own
 		// attributes must be initialized by then
 		$this->photo_query_policy = resolve(PhotoQueryPolicy::class);
-		$this->sorting = PhotoSortingCriterion::createDefault();
 		parent::__construct(
 			Photo::query()
 				->with(['size_variants' => (fn ($r) => Thumb::sizeVariantsFilter($r))]),
@@ -227,7 +225,7 @@ class HasAlbumThumb extends Relation
 		} else {
 			return Thumb::createFromQueryable(
 				$this->getRelationQuery(),
-				$this->sorting
+				PhotoSortingCriterion::createDefault()
 			);
 		}
 	}
