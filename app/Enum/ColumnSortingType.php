@@ -32,4 +32,16 @@ enum ColumnSortingType: string
 	case TAKEN_AT = 'taken_at';
 	case IS_STARRED = 'is_starred';
 	case TYPE = 'type';
+
+	/**
+	 * Convert into actual column name.
+	 */
+	public function toColumn(): string
+	{
+		return match ($this) {
+			self::TITLE_STRICT => 'title',
+			self::DESCRIPTION_STRICT => 'description',
+			default => $this->value,
+		};
+	}
 }

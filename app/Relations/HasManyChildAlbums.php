@@ -125,7 +125,7 @@ class HasManyChildAlbums extends HasManyBidirectionally
 				$children_of_model = $this->getRelationValue($dictionary, $key, 'many');
 				$sorting = $model->getEffectiveAlbumSorting();
 				$children_of_model = $children_of_model
-					->sortBy($sorting->column->value, SORT_NATURAL | SORT_FLAG_CASE, $sorting->order === OrderSortingType::DESC)
+					->sortBy($sorting->column->toColumn(), SORT_NATURAL | SORT_FLAG_CASE, $sorting->order === OrderSortingType::DESC)
 					->values();
 				$model->setRelation($relation, $children_of_model);
 				// This is the newly added code which sets this method apart

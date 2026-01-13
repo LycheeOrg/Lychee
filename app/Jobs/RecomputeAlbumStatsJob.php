@@ -264,7 +264,7 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 				origin: $album,
 				include_nsfw: $is_nsfw_context)
 			->orderBy('photos.is_starred', 'desc')
-			->orderBy($sorting->column->value, $sorting->order->value)
+			->orderBy($sorting->column->toColumn(), $sorting->order->value)
 			->select('photos.id')
 			->first();
 
