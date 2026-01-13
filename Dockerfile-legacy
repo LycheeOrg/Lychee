@@ -172,7 +172,6 @@ RUN chmod +x /usr/local/bin/00-conf-check.sh \
     /usr/local/bin/entrypoint.sh \
     && mkdir -p /run/php \
     && mkdir -p /data /config \
-    && chown -R www-data:www-data /data /config \
     && chmod -R 775 /data /config
 
 
