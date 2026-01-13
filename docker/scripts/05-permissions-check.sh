@@ -10,8 +10,10 @@ chown -R www-data:www-data /app/bootstrap/cache
 chown www-data:www-data /app/storage
 chown www-data:www-data /app/public
 
-chown -R www-data:www-data /data /config
-chmod -R 775 /data /config
+# echo "who am i"
+# id
+# chown -R www-data:www-data /data /config
+# chmod -R 775 /data /config
 
 echo "⏰ Set Permissions for Lychee folders..."
 # Ensure www-data owns necessary directories
