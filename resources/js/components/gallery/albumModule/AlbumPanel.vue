@@ -345,7 +345,7 @@ const albumCallbacks = {
 const computedAlbum = computed(() => albumStore.album);
 const computedConfig = computed(() => albumStore.config);
 
-const { Menu, photoMenuOpen, albumMenuOpen } = useContextMenu(
+const { menu, Menu, photoMenuOpen, albumMenuOpen } = useContextMenu(
 	{
 		config: computedConfig,
 		album: computedAlbum,
