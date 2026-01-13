@@ -73,43 +73,7 @@ web)
 
   # Run database migrations (only in web mode to avoid race conditions)
   echo "🔄 Running database migrations..."
-
-  # echo "✅ Running mounted file"
-  # echo "/app/storage/"
-  # ls -lola /app/storage/
-  # echo "------------"
-  # echo "/app/storage/bootstrap/"
-  # ls -lola /app/storage/bootstrap/
-  # echo "------------"
-  # echo "/app/storage/bootstrap/cache/"
-  # ls -lola /app/storage/bootstrap/cache/
-
-  # echo " Destination"
-  # echo "/app/bootstrap/"
-  # ls -lola /app/bootstrap/
-
-  # echo "------------"
-  # echo "/app/bootstrap/cache/"
-  # ls -lola /app/bootstrap/cache/
-
-  # echo "===================== As www-data ====================="
-
-  # echo "/app/storage/"
-  # run_as_www ls -lola /app/storage/
-  # echo "------------"
-  # echo "/app/storage/bootstrap/"
-  # run_as_www ls -lola /app/storage/bootstrap/
-  # echo "------------"
-  # echo "/app/storage/bootstrap/cache/"
-  # run_as_www ls -lola /app/storage/bootstrap/cache/
-
-  # echo " Destination"
-  # echo "/app/bootstrap/"
-  # run_as_www ls -lola /app/bootstrap/
-
-  # echo "------------"
-  # echo "/app/bootstrap/cache/"
-  # run_as_www ls -lola /app/bootstrap/cache/
+  run_as_www php artisan migrate --force
 
   # Clear and cache configuration
   echo "🧹 Optimizing application..."
@@ -119,8 +83,6 @@ web)
   run_as_www php artisan route:cache
   run_as_www php artisan view:clear
   run_as_www php artisan view:cache
-
-  run_as_www php artisan migrate --force
 
   echo "✅ Application ready!"
 
