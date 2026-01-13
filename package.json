@@ -52,7 +52,7 @@
         "@vueuse/components": "^14.1.0",
         "@vueuse/core": "^14.0.0",
         "axios": "^1.13.2",
-        "axios-cache-interceptor": "^1.11.2",
+        "axios-cache-interceptor": "^1.11.3",
         "justified-layout": "^4.1.0",
         "laravel-vite-plugin": "^2.0.1",
         "laravel-vue-i18n": "^2.7.8",
