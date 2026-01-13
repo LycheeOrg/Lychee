@@ -122,8 +122,8 @@ RUN mkdir -p storage/framework/cache \
     bootstrap/cache \
     public/dist \
     && chown -R www-data:www-data storage bootstrap/cache public \
-    && chmod -R 750 storage bootstrap/cache \
-    && chmod -R 755 public/dist \
+    && chmod -R 777 storage bootstrap/cache \
+    && chmod -R 775 public/dist \
     && touch /app/frankenphp_target \
     && touch /app/public/dist/user.css \
     && touch /app/public/dist/custom.js \
@@ -155,7 +155,10 @@ RUN chmod +x /usr/local/bin/00-conf-check.sh \
     /usr/local/bin/04-user-setup.sh \
     /usr/local/bin/05-permissions-check.sh \
     /usr/local/bin/create-admin-user.sh \
-    /usr/local/bin/entrypoint.sh
+    /usr/local/bin/entrypoint.sh \
+    && mkdir -p /data /config \
+    && chown -R www-data:www-data /data /config \
+    && chmod -R 775 /data /config
 
 # Expose port 8000 (Octane)
 EXPOSE 8000

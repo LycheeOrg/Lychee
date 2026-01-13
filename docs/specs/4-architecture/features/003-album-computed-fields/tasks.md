@@ -271,7 +271,7 @@ _Last updated: 2026-01-03_
 ### Increment 9: Backfill Command
 
 - [x] T-003-31 – Create BackfillAlbumFields artisan command (FR-003-06, CLI-003-01).
-  _Intent:_ Generate command class with signature `lychee:backfill-album-fields`.
+  _Intent:_ Generate command class with signature `lychee:recompute-album-fields`.
   _Verification commands:_
   - `php artisan list | grep backfill-album-fields`
   - `make phpstan`
@@ -280,15 +280,15 @@ _Last updated: 2026-01-03_
 - [x] T-003-32 – Implement backfill handle() method (FR-003-06, NFR-003-03).
   _Intent:_ Load albums ordered by _lft ASC, process in chunks, compute stats, save. Show progress bar.
   _Verification commands:_
-  - `php artisan lychee:backfill-album-fields --dry-run` (preview mode)
-  - `php artisan lychee:backfill-album-fields --chunk=10` (test run)
+  - `php artisan lychee:recompute-album-fields --dry-run` (preview mode)
+  - `php artisan lychee:recompute-album-fields --chunk=10` (test run)
   - `make phpstan`
   _Notes:_ Options: `--dry-run` (preview only), `--chunk=N` (batch size, default 1000). Use progress bar. Make idempotent (check if already computed, skip or recompute). **COMPLETED:** Implemented handle() with chunked processing, progress bar, and dry-run support.
 
 - [x] T-003-33 – Add telemetry logging for backfill (TE-003-03).
   _Intent:_ Log backfill progress (processed count, total count, percentage).
   _Verification commands:_
-  - `php artisan lychee:backfill-album-fields --chunk=10` (check logs)
+  - `php artisan lychee:recompute-album-fields --chunk=10` (check logs)
   - `make phpstan`
   _Notes:_ Log messages: "Backfilled {count}/{total} albums ({percentage}%)". No PII. **COMPLETED:** Added logging at 100-album intervals and completion.
 
@@ -465,7 +465,7 @@ _Last updated: 2026-01-03_
   _Notes:_ Delete file: `tests/Feature/Console/BackfillAlbumFieldsCommandTest.php`. All test coverage should now be in RecomputeAlbumStatsCommandTest.php.
 
 - [x] T-003-59 – Update documentation references (FR-003-06).
-  _Intent:_ Find and update any documentation referring to the old `lychee:backfill-album-fields` command.
+  _Intent:_ Find and update any documentation referring to the old `lychee:recompute-album-fields` command.
   _Verification commands:_
   - `grep -r "backfill-album-fields" docs/`
   - `grep -r "BackfillAlbumFields" docs/`

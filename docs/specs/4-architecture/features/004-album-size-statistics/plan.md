@@ -30,7 +30,7 @@ _Last updated:_ 2026-01-02
 - Event listeners for photo/album/variant mutations triggering recomputation
 - Propagation logic: recompute parent albums recursively up to root
 - Refactor `Spaces.php` methods to read from table instead of runtime aggregation
-- Artisan command `lychee:backfill-album-sizes` for migration
+- Artisan command `lychee:recompute-album-sizes` for migration
 - Artisan command `lychee:recompute-album-sizes {album_id}` for manual recovery
 - Maintenance UI button to trigger backfill (similar to "Generate Size Variants")
 - Fallback logic: if statistics row missing, use runtime calculation (defensive)
@@ -250,11 +250,11 @@ _Last updated:_ 2026-01-02
 - **Exit:** All Spaces.php methods optimized, tests pass
 
 ### **I10 – Backfill Command: CLI Implementation**
-- **Goal:** Implement `lychee:backfill-album-sizes` command, per FR-004-04
+- **Goal:** Implement `lychee:recompute-album-sizes` command, per FR-004-04
 - **Preconditions:** I3, I4 complete (job must work)
 - **Steps:**
   1. Create `app/Console/Commands/BackfillAlbumSizes.php` extending `Command`
-  2. Signature: `lychee:backfill-album-sizes {--chunk=1000} {--album-id=}`
+  2. Signature: `lychee:recompute-album-sizes {--chunk=1000} {--album-id=}`
   3. Logic:
      - Query all albums ORDER BY `_lft` DESC (leaf-to-root)
      - If `--album-id` provided, filter to that album and ancestors
@@ -267,7 +267,7 @@ _Last updated:_ 2026-01-02
   5. Write test: backfill 100 albums, verify all have statistics
   6. Test partial backfill: backfill half, re-run, verify idempotent
 - **Commands:**
-  - `php artisan lychee:backfill-album-sizes`
+  - `php artisan lychee:recompute-album-sizes`
   - `php artisan test --filter BackfillAlbumSizesCommandTest`
 - **Exit:** Command works, idempotent, test passes
 
