@@ -30,11 +30,7 @@ class ConvertUnsupportedMedia implements InitPipe
 			return $next($state);
 		}
 
-		try {
-			$state->source_file = $factory->make()->handle($state->source_file);
-		} catch (\Exception $exception) {
-			throw new CannotConvertMediaFileException($exception->getMessage(), $exception);
-		}
+		$state->source_file = $factory->make()->handle($state->source_file);
 
 		return $next($state);
 	}

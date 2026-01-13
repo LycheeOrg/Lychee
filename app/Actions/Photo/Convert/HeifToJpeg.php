@@ -8,97 +8,57 @@
 
 namespace App\Actions\Photo\Convert;
 
-use App\Contracts\Image\ConvertMediaFileInterface;
+use App\Exceptions\CannotConvertMediaFileException;
 use App\Image\Files\NativeLocalFile;
 use App\Image\Files\TemporaryJobFile;
+use App\Repositories\ConfigManager;
 use Http\Client\Exception;
-use Maestroerror\HeicToJpg;
-use Safe\Exceptions\FilesystemException;
-use function Safe\unlink;
 
-class HeifToJpeg implements ConvertMediaFileInterface
+class HeifToJpeg
 {
+
+	public function __construct(
+		private ConfigManager $config_manager,
+	)
+	{
+	}
+
 	/**
 	 * @throws \Exception
 	 */
 	public function handle(NativeLocalFile $tmp_file): TemporaryJobFile
 	{
-		try {
-			$path = $tmp_file->getRealPath();
-			$pathinfo = pathinfo($path);
-			$file_name = $pathinfo['filename'];
-			$new_path = $pathinfo['dirname'] . '/' . $file_name . '.jpg';
-
-			// Convert to Jpeg
-			$imagick_converted = $this->convertToJpeg($path);
-
-			// Store converted image
-			$this->storeNewImage($imagick_converted, $new_path);
-
-			// Delete old file
-			$this->deleteOldFile($path);
-
-			return new TemporaryJobFile($new_path);
-		} catch (\Exception $e) {
-			throw new \Exception('Failed to convert HEIC/HEIF to JPEG. ' . $e->getMessage());
+		if ($this->config_manager->hasImagick() === false) {
+			throw new CannotConvertMediaFileException('Imagick is not available.');
 		}
-	}
 
-	/**
-	 * @throws \Exception
-	 */
-	public function storeNewImage(\Imagick|HeicToJpg $image_instance, string $store_to_path): void
-	{
+		$path = $tmp_file->getRealPath();
+		$pathinfo = pathinfo($path);
+		$file_name = $pathinfo['filename'];
+		$new_path = $pathinfo['dirname'] . '/' . $file_name . '.jpg';
+
+		// Convert to Jpeg
 		try {
-			if ($image_instance instanceof \Imagick) {
-				$image_instance->writeImage($store_to_path);
-			} elseif ($image_instance instanceof HeicToJpg) {
-				$image_instance->saveAs($store_to_path);
-			}
-		} catch (\ImagickException|\Exception $e) {
-			throw new \Exception('Failed to store converted image: ' . $e->getMessage());
-		}
-	}
 
-	/**
-	 * @throws \Exception
-	 */
-	public function deleteOldFile(string $path): void
-	{
-		try {
-			unlink($path);
-		} catch (FilesystemException $e) {
-			throw new \Exception('Failed to delete old file: ' . $e->getMessage());
-		}
-	}
+			$imagick_converted = new \Imagick($path);
 
-	/**
-	 * Try ImageMagick, if fails try php-heic-to-jpg package because ImageMagick fails to convert newer IPhone images.
-	 *
-	 * @throws \Exception
-	 */
-	private function convertToJpeg(string $path): \Imagick|HeicToJpg
-	{
-		try {
-			$img = new \Imagick($path);
-
-			if ($img->getNumberImages() > 1) {
-				$img->setIteratorIndex(0);
+			if ($imagick_converted->getNumberImages() > 1) {
+				$imagick_converted->setIteratorIndex(0);
 			}
 
-			$img->setImageFormat('jpeg');
-			$img->setImageCompression(\Imagick::COMPRESSION_JPEG);
-			$img->setImageCompressionQuality(92);
+			$imagick_converted->setImageFormat('jpeg');
+			$imagick_converted->setImageCompression(\Imagick::COMPRESSION_JPEG);
+			$imagick_converted->setImageCompressionQuality(92);
 
-			$img->autoOrient();
-
-			return $img;
+			$imagick_converted->autoOrient();
+			$imagick_converted->writeImage($new_path);
 		} catch (\ImagickException $e) {
-			try {
-				return HeicToJpg::convert($path);
-			} catch (Exception $exception) {
-				throw new \Exception('Failed to convert HEIC/HEIF to JPEG. ' . $e->getMessage() . ' ' . $exception->getMessage());
-			}
+			throw new CannotConvertMediaFileException('Failed to convert HEIC/HEIF to JPEG.', $e);
 		}
+
+		// Delete old file
+		$tmp_file->delete();
+
+		return new TemporaryJobFile($new_path);
 	}
 }

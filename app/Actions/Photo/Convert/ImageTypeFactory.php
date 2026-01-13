@@ -18,7 +18,7 @@ class ImageTypeFactory
 	public function __construct(string $extension)
 	{
 		$this->conversionClass = match (true) {
-			ConvertableImageType::isHeifImageType($extension) => 'HeifToJpeg',
+			ConvertableImageType::isHeifImageType($extension) => HeifToJpeg::class,
 			// TODO: Add more convertion types/classes
 			default => null,
 		};
@@ -30,17 +30,7 @@ class ImageTypeFactory
 			throw new \RuntimeException('No conversion class available for this file type');
 		}
 
-		$class = 'App\Actions\Photo\Convert\\' . $this->conversionClass;
-
-		if (!class_exists($class)) {
-			throw new \RuntimeException("Converter class {$class} does not exist");
-		}
-
-		$instance = new $class();
-
-		if (!$instance instanceof ConvertMediaFileInterface) {
-			throw new \RuntimeException("Converter class {$class} must implement ConvertMediaFileInterface");
-		}
+		$instance = new $this->conversionClass();
 
 		return $instance;
 	}
