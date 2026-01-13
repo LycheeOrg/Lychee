@@ -76,7 +76,7 @@ class Thumb
 			$cover = $photo_queryable
 				->withOnly(['size_variants' => (fn ($r) => self::sizeVariantsFilter($r))])
 				->orderBy('photos.' . ColumnSortingPhotoType::IS_STARRED->value, OrderSortingType::DESC->value)
-				->orderBy('photos.' . $sorting->column->value, $sorting->order->value)
+				->orderBy('photos.' . $sorting->column->toColumn(), $sorting->order->value)
 				->select(['photos.id', 'photos.type'])
 				->first();
 

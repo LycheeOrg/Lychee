@@ -36,4 +36,13 @@ enum ColumnSortingAlbumType: string
 	{
 		return ColumnSortingType::from($this->value);
 	}
+
+	public function toColumn(): string
+	{
+		return match ($this) {
+			self::TITLE_STRICT => 'title',
+			self::DESCRIPTION_STRICT => 'description',
+			default => $this->value,
+		};
+	}
 }

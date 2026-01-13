@@ -168,7 +168,7 @@ class HasManyPhotosByTag extends BaseHasManyPhotos
 		$sorting = $album->getEffectivePhotoSorting();
 
 		$photos = $photos->sortBy(
-			$sorting->column->value,
+			$sorting->column->toColumn(),
 			in_array($sorting->column, SortingDecorator::POSTPONE_COLUMNS, true) ? SORT_NATURAL | SORT_FLAG_CASE : SORT_REGULAR,
 			$sorting->order === OrderSortingType::DESC
 		)->values();
