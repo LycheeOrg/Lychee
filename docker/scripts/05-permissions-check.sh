@@ -12,7 +12,7 @@ chown www-data:www-data /app/public
 
 # echo "who am i"
 # id
-# chown -R www-data:www-data /data /config
+chown -R www-data:www-data /data /config
 # chmod -R 775 /data /config
 
 echo "⏰ Set Permissions for Lychee folders..."
