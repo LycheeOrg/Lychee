@@ -62,6 +62,10 @@ return [
         'grid' => 'Z aspektem, siatka',
         'filmstrip' => 'Taśma filmowa',
     ],
+    'filter' => [
+        'by_rating' => 'Filter by star rating',
+        'n_stars_or_higher' => 'Filter by :n stars or higher',
+    ],
     'overlay' => [
         'none' => 'Brak',
         'exif' => 'Dane EXIF',

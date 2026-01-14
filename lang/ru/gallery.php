@@ -61,6 +61,10 @@ return [
         'grid' => 'С пропорциями, сетка',
         'filmstrip' => 'Плёнка',
     ],
+    'filter' => [
+        'by_rating' => 'Filter by star rating',
+        'n_stars_or_higher' => 'Filter by :n stars or higher',
+    ],
     'overlay' => [
         'none' => 'Нет',
         'exif' => 'Данные EXIF',

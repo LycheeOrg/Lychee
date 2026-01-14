@@ -61,6 +61,10 @@ return [
         'grid' => 'Mit Seitenverhältnis, Raster',
         'filmstrip' => 'Filmstreifen',
     ],
+    'filter' => [
+        'by_rating' => 'Filter by star rating',
+        'n_stars_or_higher' => 'Filter by :n stars or higher',
+    ],
     'overlay' => [
         'none' => 'Keine',
         'exif' => 'EXIF-Daten',

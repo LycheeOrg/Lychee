@@ -62,6 +62,10 @@ return [
         'grid' => 'Met aspect, raster',
         'filmstrip' => 'Filmstrip',
     ],
+    'filter' => [
+        'by_rating' => 'Filter by star rating',
+        'n_stars_or_higher' => 'Filter by :n stars or higher',
+    ],
     'overlay' => [
         'none' => 'Geen',
         'exif' => 'EXIF-gegevens',

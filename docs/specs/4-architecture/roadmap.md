@@ -6,8 +6,6 @@ High-level planning document for Lychee features and architectural initiatives.
 
 | Feature ID | Name | Status | Priority | Assignee | Started | Updated |
 |------------|------|--------|----------|----------|---------|---------|
-| 009 | Rating Ordering and Smart Albums | Planning | P2 | Agent | 2026-01-16 | 2026-01-16 |
-| 007 | Photos and Albums Pagination | In Progress | P1 | Agent | 2026-01-07 | 2026-01-08 |
 | 004 | Album Size Statistics Pre-computation | Planning | P1 | - | 2026-01-02 | 2026-01-02 |
 
 ## Paused Features
@@ -20,6 +18,8 @@ High-level planning document for Lychee features and architectural initiatives.
 
 | Feature ID | Name | Completed | Notes |
 |------------|------|-----------|-------|
+| 007 | Photos and Albums Pagination | 2026-01-14 | Client-side pagination for photos and albums, configurable page size, preserve state across navigation, optimized rendering performance |
+| 006 | Photo Star Rating Filter | 2026-01-14 | Frontend filter control (5 clickable stars) for minimum rating threshold, toggle on/off behavior, Pinia state persistence, keyboard accessible, filters photos in album view |
 | 005 | Album List View Toggle | 2026-01-04 | Toggle between grid/card and list view for albums, admin-configurable default, session-only user preference, full RTL support, drag-select compatible |
 | 003 | Album Computed Fields Pre-computation | 2026-01-02 | Event-driven pre-computation for 6 album fields (num_children, num_photos, min/max_taken_at, dual auto covers), AlbumBuilder virtual column removal, backfill/recovery commands, comprehensive test coverage |
 | 002 | Worker Mode Support | 2025-12-28 | Docker worker mode with queue processing, auto-restart, configurable QUEUE_NAMES/WORKER_MAX_TIME, multi-container deployment |
@@ -86,4 +86,4 @@ features/
 
 ---
 
-*Last updated: 2026-01-16*
+*Last updated: 2026-01-21*

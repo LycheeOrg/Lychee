@@ -2,8 +2,8 @@
 
 | Field | Value |
 |-------|-------|
-| Status | Draft |
-| Last updated | 2026-01-03 |
+| Status | Implemented |
+| Last updated | 2026-01-14 |
 | Owners | Agent |
 | Linked plan | `docs/specs/4-architecture/features/006-photo-rating-filter/plan.md` |
 | Linked tasks | `docs/specs/4-architecture/features/006-photo-rating-filter/tasks.md` |

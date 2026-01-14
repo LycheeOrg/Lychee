@@ -4,15 +4,22 @@ const { spliter, merge } = useSplitter();
 
 export type PhotosStore = ReturnType<typeof usePhotosStore>;
 
+export type PhotoRatingFilter = null | 1 | 2 | 3 | 4 | 5;
+
 export const usePhotosStore = defineStore("photos-store", {
 	state: () => ({
 		photos: [] as App.Http.Resources.Models.PhotoResource[],
 		photosTimeline: undefined as SplitData<App.Http.Resources.Models.PhotoResource>[] | undefined,
+		photoRatingFilter: null as PhotoRatingFilter,
 	}),
 	actions: {
 		reset() {
 			this.photos = [];
 			this.photosTimeline = undefined;
+			this.photoRatingFilter = null;
+		},
+		setPhotoRatingFilter(rating: PhotoRatingFilter) {
+			this.photoRatingFilter = rating;
 		},
 		/**
 		 * Rebuild navigation links for all photos based on their current order.
@@ -97,5 +104,42 @@ export const usePhotosStore = defineStore("photos-store", {
 			}
 		},
 	},
-	getters: {},
+	getters: {
+		/**
+		 * Check if any photo in the collection has a user rating.
+		 * Used to determine whether to show the rating filter UI.
+		 */
+		hasRatedPhotos(): boolean {
+			return this.photos.some((p) => p.rating !== null && p.rating.rating_user > 0);
+		},
+		/**
+		 * Get filtered photos based on the current rating filter.
+		 * Returns all photos if no filter is active or no rated photos exist.
+		 */
+		filteredPhotos(): App.Http.Resources.Models.PhotoResource[] {
+			if (this.photoRatingFilter === null || !this.hasRatedPhotos) {
+				return this.photos;
+			}
+			return this.photos.filter((p) => p.rating !== null && p.rating.rating_user >= (this.photoRatingFilter as number));
+		},
+		/**
+		 * Get filtered timeline data based on the current rating filter.
+		 * Returns undefined if no timeline data exists.
+		 */
+		filteredPhotosTimeline(): SplitData<App.Http.Resources.Models.PhotoResource>[] | undefined {
+			if (this.photosTimeline === undefined) {
+				return undefined;
+			}
+			if (this.photoRatingFilter === null || !this.hasRatedPhotos) {
+				return this.photosTimeline;
+			}
+			const filter = this.photoRatingFilter as number;
+			return this.photosTimeline
+				.map((group) => ({
+					...group,
+					data: group.data.filter((p) => p.rating !== null && p.rating.rating_user >= filter),
+				}))
+				.filter((group) => group.data.length > 0);
+		},
+	},
 });

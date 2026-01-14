@@ -70,8 +70,8 @@
 				<PhotoThumbPanel
 					v-if="layoutStore.config && photosStore.photos.length > 0"
 					header="gallery.album.header_photos"
-					:photos="photosStore.photos"
-					:photos-timeline="photosStore.photosTimeline"
+					:photos="photosStore.filteredPhotos"
+					:photos-timeline="photosStore.filteredPhotosTimeline"
 					:selected-photos="selectedPhotosIds"
 					:is-timeline="albumStore.config.is_photo_timeline_enabled"
 					:with-control="true"
@@ -217,7 +217,7 @@ const {
 const { photoRoute, getParentId } = usePhotoRoute(router);
 
 function photoClick(idx: number, _e: MouseEvent) {
-	router.push(photoRoute(photosStore.photos[idx].id));
+	router.push(photoRoute(photosStore.filteredPhotos[idx].id));
 }
 
 function goToPhotosPage(page: number) {
