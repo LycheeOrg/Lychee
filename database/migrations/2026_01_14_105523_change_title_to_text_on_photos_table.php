@@ -23,18 +23,11 @@ return new class() extends Migration {
 				$table->dropIndex('photos_album_id_is_starred_title_index');
 			}
 
-			// Change to text
-			$table->text('title')->nullable()->change();
+			// Change to varchar 300 to support longer titles (though should not be necessary)
+			// We do not use TEXT as the data will be stored on a different page which would slow down queries
+			$table->string('title', 300)->nullable()->change();
 
-			// Recreate the index with a key length for the TEXT column
-			$driver = DB::getDriverName();
-			if ($driver === 'mysql') {
-				$table->index(['old_album_id', 'is_starred', DB::raw('title(100)')], 'photos_album_id_is_starred_title_index');
-			} elseif ($driver === 'pgsql') {
-				DB::statement('CREATE INDEX photos_album_id_is_starred_title_index ON photos (old_album_id, is_starred, LEFT(title, 100))');
-			} elseif ($driver === 'sqlite') {
-				$table->index(['old_album_id', 'is_starred', 'title'], 'photos_album_id_is_starred_title_index');
-			}
+			$table->index(['is_starred', 'title', 'taken_at', 'created_at'], 'photos_is_starred_title_taken_created_index');
 		});
 	}
 
@@ -45,8 +38,8 @@ return new class() extends Migration {
 	{
 		Schema::table('photos', function (Blueprint $table) {
 			// Drop the existing index
-			if (Schema::hasIndex('photos', 'photos_album_id_is_starred_title_index')) {
-				$table->dropIndex('photos_album_id_is_starred_title_index');
+			if (Schema::hasIndex('photos', 'photos_is_starred_title_taken_created_index')) {
+				$table->dropIndex('photos_is_starred_title_taken_created_index');
 			}
 
 			// Change to varchar
