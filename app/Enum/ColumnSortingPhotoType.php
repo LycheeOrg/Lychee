@@ -41,4 +41,16 @@ enum ColumnSortingPhotoType: string
 	{
 		return ColumnSortingType::from($this->value);
 	}
+
+	/**
+	 * Convert into actual column name.
+	 */
+	public function toColumn(): string
+	{
+		return match ($this) {
+			self::TITLE_STRICT => 'title',
+			self::DESCRIPTION_STRICT => 'description',
+			default => $this->value,
+		};
+	}
 }

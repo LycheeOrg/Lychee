@@ -62,7 +62,7 @@ class Timeline
 			unlocked_album_ids: $unlocked_album_ids,
 			origin: null,
 			include_nsfw: !$this->config_manager->getValueAsBool('hide_nsfw_in_timeline')
-		)->orderBy($order->value, OrderSortingType::DESC->value);
+		)->orderBy($order->toColumn(), OrderSortingType::DESC->value);
 	}
 
 	/**
@@ -99,8 +99,8 @@ class Timeline
 
 		return $this->photo_query_policy->applySearchabilityFilter(
 			query: Photo::query()
-				->where($order->value, '>=', $date_offset)
-				->whereNotNull($order->value),
+				->where($order->toColumn(), '>=', $date_offset)
+				->whereNotNull($order->toColumn()),
 			user: $user,
 			unlocked_album_ids: $unlocked_album_ids,
 			origin: null,
@@ -133,13 +133,13 @@ class Timeline
 		return $this->photo_query_policy->applySearchabilityFilter(
 			query: Photo::query()
 				->joinSub(
-					query: Photo::query()->select($order->value)->where('id', $photo->id),
+					query: Photo::query()->select($order->toColumn())->where('id', $photo->id),
 					as: 'sub',
-					first: 'sub.' . $order->value,
+					first: 'sub.' . $order->toColumn(),
 					operator: '<',
-					second: 'photos.' . $order->value
+					second: 'photos.' . $order->toColumn()
 				)
-				->whereNotNull('photos.' . $order->value),
+				->whereNotNull('photos.' . $order->toColumn()),
 			user: $user,
 			unlocked_album_ids: $unlocked_album_ids,
 			origin: null,
@@ -188,8 +188,8 @@ class Timeline
 		return $this->photo_query_policy->applySearchabilityFilter(
 			query: Photo::query()
 
-				->selectRaw(sprintf($formatter, $order->value, $date_format) . ' as date')
-				->whereNotNull($order->value),
+				->selectRaw(sprintf($formatter, $order->toColumn(), $date_format) . ' as date')
+				->whereNotNull($order->toColumn()),
 			user: $user,
 			unlocked_album_ids: $unlocked_album_ids,
 			origin: null,
