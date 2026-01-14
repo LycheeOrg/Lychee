@@ -80,6 +80,7 @@ class Create
 		);
 
 		$pre_pipes = [
+			Init\ConvertUnsupportedMedia::class,
 			Init\AssertSupportedMedia::class,
 			Init\FetchLastModifiedTime::class,
 			Init\MayLoadFileMetadata::class,
