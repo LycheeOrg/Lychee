@@ -8,19 +8,17 @@
 
 namespace App\Actions\Photo\Convert;
 
+use App\Contracts\PhotoCreate\PhotoConverter;
 use App\Exceptions\CannotConvertMediaFileException;
 use App\Image\Files\NativeLocalFile;
 use App\Image\Files\TemporaryJobFile;
 use App\Repositories\ConfigManager;
-use Http\Client\Exception;
 
-class HeifToJpeg
+class HeifToJpeg implements PhotoConverter
 {
-
 	public function __construct(
 		private ConfigManager $config_manager,
-	)
-	{
+	) {
 	}
 
 	/**
@@ -39,7 +37,6 @@ class HeifToJpeg
 
 		// Convert to Jpeg
 		try {
-
 			$imagick_converted = new \Imagick($path);
 
 			if ($imagick_converted->getNumberImages() > 1) {

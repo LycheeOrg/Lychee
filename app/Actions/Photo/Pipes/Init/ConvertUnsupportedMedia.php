@@ -8,7 +8,7 @@
 
 namespace App\Actions\Photo\Pipes\Init;
 
-use App\Actions\Photo\Convert\ImageTypeFactory;
+use App\Actions\Photo\Convert\PhotoConverterFactory;
 use App\Contracts\PhotoCreate\InitPipe;
 use App\DTO\PhotoCreate\InitDTO;
 use App\Exceptions\CannotConvertMediaFileException;
@@ -24,13 +24,13 @@ class ConvertUnsupportedMedia implements InitPipe
 	{
 		$ext = ltrim($state->source_file->getOriginalExtension(), '.');
 
-		$factory = new ImageTypeFactory($ext);
-
-		if ($factory->conversionClass === null) {
+		$factory = new PhotoConverterFactory();
+		$converter = $factory->make($ext);
+		if ($converter === null) {
 			return $next($state);
 		}
 
-		$state->source_file = $factory->make()->handle($state->source_file);
+		$state->source_file = $converter->handle($state->source_file);
 
 		return $next($state);
 	}
