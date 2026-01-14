@@ -19,6 +19,8 @@ class TestConstants
 	public const MIME_TYPE_IMG_TIFF = 'image/tiff';
 	public const MIME_TYPE_IMG_WEBP = 'image/webp';
 	public const MIME_TYPE_IMG_XCF = 'image/x-xcf';
+	public const MIME_TYPE_IMG_HEIC = 'image/heic';
+	public const MIME_TYPE_IMG_HEIF = 'image/heif';
 	public const MIME_TYPE_VID_MP4 = 'video/mp4';
 	public const MIME_TYPE_VID_QUICKTIME = 'video/quicktime';
 	public const MIME_TYPE_APP_ZIP = 'application/zip';
@@ -53,6 +55,8 @@ class TestConstants
 	public const SAMPLE_FILE_WEBP = 'tests/Samples/webp.webp';
 	public const SAMPLE_FILE_WITHOUT_EXIF = 'tests/Samples/without_exif.jpg';
 	public const SAMPLE_FILE_XCF = 'tests/Samples/xcf.xcf';
+	public const SAMPLE_FILE_HEIC = 'tests/Samples/classic-car.heic';
+	public const SAMPLE_FILE_HEIF = 'tests/Samples/sewing-threads.heic';
 
 	public const SAMPLE_FILES_2_MIME = [
 		self::SAMPLE_FILE_AARHUS => self::MIME_TYPE_IMG_JPEG,
@@ -80,6 +84,8 @@ class TestConstants
 		self::SAMPLE_FILE_WITHOUT_EXIF => self::MIME_TYPE_IMG_JPEG,
 		self::SAMPLE_FILE_XCF => self::MIME_TYPE_IMG_XCF,
 		self::SAMPLE_TEST_ZIP => self::MIME_TYPE_APP_ZIP,
+		self::SAMPLE_FILE_HEIC => self::MIME_TYPE_IMG_HEIC,
+		self::SAMPLE_FILE_HEIF => self::MIME_TYPE_IMG_HEIF,
 	];
 
 	public const CONFIG_ALBUMS_SORTING_COL = 'sorting_albums_col';

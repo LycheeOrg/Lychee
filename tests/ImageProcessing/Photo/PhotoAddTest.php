@@ -162,6 +162,32 @@ class PhotoAddTest extends BaseApiWithDataTest
 		$this->assertNoContent($response);
 	}
 
+	public function testHeicPicture(): void
+	{
+		$this->catchFailureSilence = [];
+		$response = $this->actingAs($this->admin)->upload('Photo', filename: TestConstants::SAMPLE_FILE_HEIC);
+		$this->assertCreated($response);
+
+		$response = $this->getJsonWithData('Album', ['album_id' => 'unsorted']);
+		$this->assertOk($response);
+		$id = $response->json('resource.photos.0.id');
+		$response = $this->deleteJson('Photo', ['photo_ids' => [$id], 'from_id' => 'unsorted']);
+		$this->assertNoContent($response);
+	}
+
+	public function testHeifPicture(): void
+	{
+		$this->catchFailureSilence = [];
+		$response = $this->actingAs($this->admin)->upload('Photo', filename: TestConstants::SAMPLE_FILE_HEIF);
+		$this->assertCreated($response);
+
+		$response = $this->getJsonWithData('Album', ['album_id' => 'unsorted']);
+		$this->assertOk($response);
+		$id = $response->json('resource.photos.0.id');
+		$response = $this->deleteJson('Photo', ['photo_ids' => [$id], 'from_id' => 'unsorted']);
+		$this->assertNoContent($response);
+	}
+
 	public function testPhotoUploadDispatchesJobs(): void
 	{
 		// Fake only the recompute jobs, not the ProcessImageJob

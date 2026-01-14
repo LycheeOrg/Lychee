@@ -20,6 +20,7 @@ class FileExtensionService
 		IMAGETYPE_PNG,
 		IMAGETYPE_WEBP,
 		IMAGETYPE_AVIF,
+		20, // IMAGETYPE_HEIF;
 	];
 
 	public const SUPPORTED_IMAGE_FILE_EXTENSIONS = [
@@ -29,6 +30,8 @@ class FileExtensionService
 		'.gif',
 		'.webp',
 		'.avif',
+		'.heic',
+		'.heif',
 	];
 
 	public const SUPPORTED_VIDEO_FILE_EXTENSIONS = [
@@ -48,6 +51,8 @@ class FileExtensionService
 		'image/png',
 		'image/webp',
 		'image/avif',
+		'image/heif',
+		'image/heic',
 	];
 
 	public const SUPPORTED_VIDEO_MIME_TYPES = [
@@ -70,6 +75,8 @@ class FileExtensionService
 		'image/png' => '.png',
 		'image/webp' => '.webp',
 		'image/avif' => '.avif',
+		'image/heif' => '.heif',
+		'image/heic' => '.heic',
 		'video/mp4' => '.mp4',
 		'video/mpeg' => '.mpg',
 		'image/x-tga' => '.mpg',
