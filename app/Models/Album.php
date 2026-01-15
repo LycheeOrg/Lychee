@@ -412,7 +412,7 @@ class Album extends BaseAlbum implements Node
 	 */
 	protected function getAlbumThumbAspectRatioAttribute(): ?AspectRatioType
 	{
-		return AspectRatioType::tryFrom($this->attributes['album_thumb_aspect_ratio'] ?? '1/1');
+		return AspectRatioType::tryFrom($this->attributes['album_thumb_aspect_ratio'] ?? '');
 	}
 
 	/**
