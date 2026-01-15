@@ -11,6 +11,10 @@ return [
     'pinned_albums' => 'Album được ghim',
     'albums' => 'Albums',
     'root' => 'Albums',
+    'tabs' => [
+        'my_albums' => 'My Albums',
+        'shared_with_me' => 'Shared with Me',
+    ],
     'favourites' => 'Favourites',
     'original' => 'Original',
     'medium' => 'Medium',

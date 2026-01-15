@@ -11,6 +11,10 @@ return [
     'pinned_albums' => '置顶相册',
     'albums' => '相册',
     'root' => '相册',
+    'tabs' => [
+        'my_albums' => 'My Albums',
+        'shared_with_me' => 'Shared with Me',
+    ],
     'favourites' => 'Favourites',
     'original' => '原图',
     'medium' => '中等',

@@ -11,6 +11,10 @@ return [
     'pinned_albums' => 'Vastgepinde albums',
     'albums' => 'Albums',
     'root' => 'Albums',
+    'tabs' => [
+        'my_albums' => 'My Albums',
+        'shared_with_me' => 'Shared with Me',
+    ],
     'favourites' => 'Favorieten',
     'original' => 'Origineel',
     'medium' => 'Middelgroot',

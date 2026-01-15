@@ -10,6 +10,10 @@ return [
     'pinned_albums' => 'Закреплённые альбомы',
     'albums' => 'Альбомы',
     'root' => 'Альбомы',
+    'tabs' => [
+        'my_albums' => 'My Albums',
+        'shared_with_me' => 'Shared with Me',
+    ],
     'favourites' => 'Избранные',
     'original' => 'Оригинал',
     'medium' => 'Средний',

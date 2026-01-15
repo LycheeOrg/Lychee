@@ -11,6 +11,10 @@ return [
     'pinned_albums' => 'Albums épinglés',
     'albums' => 'Albums',
     'root' => 'Albums',
+    'tabs' => [
+        'my_albums' => 'My Albums',
+        'shared_with_me' => 'Shared with Me',
+    ],
     'favourites' => 'Photo favorites',
     'original' => 'Original',
     'medium' => 'Moyen',
