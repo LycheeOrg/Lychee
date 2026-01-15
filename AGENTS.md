@@ -1,4 +1,3 @@
-
 ## Before You Code
 - **Clarify ambiguity first.** Do not plan or implement until every requirement is understood. Ask the user, record unresolved items in [docs/specs/4-architecture/open-questions.md](docs/specs/4-architecture/open-questions.md), and wait for answers. Capture accepted answers by updating the relevant specification’s requirements/NFR/behaviour/telemetry sections so the spec remains the single source of truth for behaviour.
   - **No-direct-question rule:** Never ask the user for clarification, approval, or a decision in chat until the matching open question is logged (table row + Question Details entry). Treat violations as blockers—stop work, add the missing entry, then resume the conversation by referencing that question ID.
@@ -87,3 +86,38 @@
 - Update/close entries in [docs/specs/4-architecture/open-questions.md](docs/specs/4-architecture/open-questions.md).
 - Summarise any lasting decisions in the appropriate ADR (if applicable).
 - Publish prompt and tool usage notes alongside the feature plan update so future agents understand how the iteration unfolded.
+
+## CRITICAL: Database Rules
+
+### NEVER RUN THESE COMMANDS:
+- `php artisan migrate:fresh` - **WILL DESTROY THE PRODUCTION DATABASE**
+- `php artisan migrate:reset` - **WILL DESTROY THE PRODUCTION DATABASE**
+- `php artisan db:wipe` - **WILL DESTROY THE PRODUCTION DATABASE**
+- Any command that resets or wipes the database
+
+### Why This Matters:
+The test suite uses SQLite (`database/database.sqlite`) as configured in `phpunit.xml`:
+```xml
+<env name="DB_CONNECTION" value="sqlite"/>
+<env name="DB_DATABASE" value="database/database.sqlite"/>
+```
+
+However, the main application uses a **different database** (typically MySQL/PostgreSQL). Running migration commands without specifying the test database will affect the **production/development database**.
+
+### Safe Database Operations:
+1. **Running tests**: Just run `php artisan test` - migrations are applied automatically to the SQLite test database
+2. **Resetting test database**: Delete and recreate `database/database.sqlite` file only
+3. **New migrations**: Create the migration file, then run tests - they will be applied automatically
+
+### If You Need to Reset the Test Database:
+```bash
+rm database/database.sqlite
+touch database/database.sqlite
+# Then run tests - migrations will be applied automatically
+```
+
+## Testing
+
+- Run tests with: `php artisan test --filter=TestName`
+- Tests use `DatabaseTransactions` trait - changes are rolled back after each test
+- The test database is separate from the development database

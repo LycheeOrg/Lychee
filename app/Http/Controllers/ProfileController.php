@@ -19,6 +19,7 @@ use App\Exceptions\UnauthenticatedException;
 use App\Http\Requests\Profile\ChangeTokenRequest;
 use App\Http\Requests\Profile\RegistrationRequest;
 use App\Http\Requests\Profile\UpdateProfileRequest;
+use App\Http\Requests\Profile\UpdateSharedAlbumsVisibilityRequest;
 use App\Http\Resources\Models\UserResource;
 use App\Http\Resources\Models\Utils\UserToken;
 use App\Models\User;
@@ -113,5 +114,21 @@ class ProfileController extends Controller
 		$token_disable->do();
 
 		TaggedRouteCacheUpdated::dispatch(CacheTag::USER);
+	}
+
+	/**
+	 * Update the shared albums visibility preference of the current user.
+	 */
+	public function updateSharedAlbumsVisibility(UpdateSharedAlbumsVisibilityRequest $request): UserResource
+	{
+		/** @var User $current_user */
+		$current_user = Auth::user();
+
+		$current_user->shared_albums_visibility = $request->sharedAlbumsVisibility();
+		$current_user->save();
+
+		TaggedRouteCacheUpdated::dispatch(CacheTag::USER);
+
+		return new UserResource($current_user);
 	}
 }

@@ -9,6 +9,7 @@ import { useUserStore } from "./UserState";
 import { Router } from "vue-router";
 const { spliter } = useSplitter();
 
+export type { SplitData };
 export type AlbumsStore = ReturnType<typeof useAlbumsStore>;
 
 export const useAlbumsStore = defineStore("albums-store", {

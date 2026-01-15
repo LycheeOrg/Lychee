@@ -171,6 +171,7 @@ Route::get('/Auth::config', [AuthController::class, 'getConfig']);
  * USER.
  */
 Route::post('/Profile::update', [ProfileController::class, 'update']);
+Route::post('/Profile::updateSharedAlbumsVisibility', [ProfileController::class, 'updateSharedAlbumsVisibility']);
 Route::post('/Profile::resetToken', [ProfileController::class, 'resetToken']);
 Route::post('/Profile::unsetToken', [ProfileController::class, 'unsetToken']);
 Route::put('/Profile', [ProfileController::class, 'register'])->name('register-api');
