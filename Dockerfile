@@ -98,6 +98,7 @@ RUN apt-get update \
     opcache \
     pcntl \
     exif \
+    intl \
     imagick \
     redis \
 	&& apt-get clean -qy \
