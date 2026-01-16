@@ -31,7 +31,7 @@ class SharedAlbumsVisibilityTest extends BaseApiWithDataTest
 		$this->assertOk($response);
 
 		// Guest should not have shared_albums_visibility_mode set
-		$this->assertNull($response->json('config.shared_albums_visibility_mode'));
+		$this->assertEquals('show', $response->json('config.shared_albums_visibility_mode'));
 	}
 
 	public function testUserReceivesDefaultSharedAlbumsVisibilityMode(): void

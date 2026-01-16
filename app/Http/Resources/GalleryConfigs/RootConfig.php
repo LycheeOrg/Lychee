@@ -82,7 +82,7 @@ class RootConfig extends Data
 			return;
 		}
 
-		$this->shared_albums_visibility_mode = $user->shared_albums_visibility->tooSharedAlbumsVisibility();
+		$this->shared_albums_visibility_mode = $user->shared_albums_visibility->toSharedAlbumsVisibility();
 	}
 }
 

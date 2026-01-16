@@ -24,14 +24,14 @@ enum UserSharedAlbumsVisibility: string
 	case SEPARATE_SHARED_ONLY = 'separate_shared_only';
 	case HIDE = 'hide';
 
-	public function tooSharedAlbumsVisibility(): SharedAlbumsVisibility
+	public function toSharedAlbumsVisibility(): SharedAlbumsVisibility
 	{
 		return match ($this) {
 			self::SHOW => SharedAlbumsVisibility::SHOW,
 			self::SEPARATE => SharedAlbumsVisibility::SEPARATE,
 			self::SEPARATE_SHARED_ONLY => SharedAlbumsVisibility::SEPARATE_SHARED_ONLY,
 			self::HIDE => SharedAlbumsVisibility::HIDE,
-			self::DEFAULT => resolve(ConfigManager::class)->getValueAsEnum('shared_albums_visibility', SharedAlbumsVisibility::class),
+			self::DEFAULT => resolve(ConfigManager::class)->getValueAsEnum('shared_albums_visibility_default', SharedAlbumsVisibility::class),
 		};
 	}
 }
