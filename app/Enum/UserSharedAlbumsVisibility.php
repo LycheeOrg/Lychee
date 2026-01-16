@@ -8,6 +8,8 @@
 
 namespace App\Enum;
 
+use App\Repositories\ConfigManager;
+
 /**
  * Enum UserSharedAlbumsVisibility.
  *
@@ -21,4 +23,15 @@ enum UserSharedAlbumsVisibility: string
 	case SEPARATE = 'separate';
 	case SEPARATE_SHARED_ONLY = 'separate_shared_only';
 	case HIDE = 'hide';
+
+	public function tooSharedAlbumsVisibility(): SharedAlbumsVisibility
+	{
+		return match ($this) {
+			self::SHOW => SharedAlbumsVisibility::SHOW,
+			self::SEPARATE => SharedAlbumsVisibility::SEPARATE,
+			self::SEPARATE_SHARED_ONLY => SharedAlbumsVisibility::SEPARATE_SHARED_ONLY,
+			self::HIDE => SharedAlbumsVisibility::HIDE,
+			self::DEFAULT => resolve(ConfigManager::class)->getValueAsEnum('shared_albums_visibility', SharedAlbumsVisibility::class),
+		};
+	}
 }

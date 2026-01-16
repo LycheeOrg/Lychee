@@ -2,12 +2,11 @@ import axios, { type AxiosResponse } from "axios";
 import Constants from "./constants";
 
 export type UpdateProfileRequest = {
-	old_password: string | null;
+	old_password: string;
 	username: string | null;
 	password: string | null;
 	password_confirmation: string | null;
 	email: string | null;
-	shared_albums_visibility?: App.Enum.UserSharedAlbumsVisibility;
 };
 
 const ProfileService = {

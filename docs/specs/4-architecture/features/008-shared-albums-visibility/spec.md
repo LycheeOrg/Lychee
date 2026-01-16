@@ -48,7 +48,7 @@ Affected modules: database (migrations for config + user preference column), app
 | FR-008-06 | SEPARATE mode behavior | Gallery shows two tabs: "My Albums" and "Shared with Me"; public albums from other owners included in "Shared with Me" | Tab visible only when shared_albums exist | N/A | None | User request |
 | FR-008-07 | SEPARATE-SHARED-ONLY mode behavior | Gallery shows two tabs: "My Albums" and "Shared with Me"; only non-public shared albums shown in "Shared with Me" tab (excludes public albums from other owners) | Tab visible only when non-public shared albums exist | N/A | None | User request |
 | FR-008-08 | HIDE mode behavior | Shared albums not displayed at all on gallery page; only owned albums shown | N/A | N/A | None | User request |
-| FR-008-09 | User can update their preference | PUT `/User::updateSettings` accepts `shared_albums_visibility` field | Validate field value | Return 422 if invalid value | None | User request |
+| FR-008-09 | User can update their preference | POST `/Profile::updateSharedAlbumsVisibility` accepts `shared_albums_visibility` field | Validate field value | Return 422 if invalid value | None | User request |
 | FR-008-10 | Server config default value | Default server config is `show` to maintain backward compatibility | N/A | N/A | None | Backward compatibility |
 
 ## Non-Functional Requirements
@@ -245,7 +245,7 @@ When user has no shared albums, tab bar is hidden and behaves like SHOW mode.
 
 | ID | Transport | Description | Notes |
 |----|-----------|-------------|-------|
-| API-008-01 | PUT /User::updateSettings | Update user settings including shared_albums_visibility | Existing endpoint, new field |
+| API-008-01 | POST /Profile::updateSharedAlbumsVisibility | Update user's shared albums visibility preference | Dedicated endpoint for this setting |
 | API-008-02 | GET /Gallery::Init | Returns RootConfig with shared_albums_visibility_mode | Existing endpoint, new field in response |
 
 ### CLI Commands / Flags
@@ -317,12 +317,12 @@ domain_objects:
 
 routes:
   - id: API-008-01
-    method: PUT
-    path: /User::updateSettings
+    method: POST
+    path: /Profile::updateSharedAlbumsVisibility
     parameters:
-      - shared_albums_visibility: UserSharedAlbumsVisibility (optional)
+      - shared_albums_visibility: UserSharedAlbumsVisibility (required)
     response: UserResource
-    notes: Existing endpoint with new optional field
+    notes: Dedicated endpoint for updating shared albums visibility preference
   - id: API-008-02
     method: GET
     path: /Gallery::Init

@@ -354,7 +354,7 @@ onKeyStroke("k", () => !shouldIgnoreKeystroke() && !userStore.isLoggedIn && (is_
 const can_upload = computed(() => albumsStore.rootRights?.can_upload === true);
 
 // Shared albums visibility mode handling
-const sharedAlbumsVisibilityMode = computed(() => albumsStore.rootConfig?.shared_albums_visibility_mode ?? "separate");
+const sharedAlbumsVisibilityMode = computed(() => albumsStore.rootConfig?.shared_albums_visibility_mode ?? "show");
 
 // Active tab for tabbed view
 const activeTab = ref<string>("my-albums");

@@ -12,7 +12,6 @@ use App\Enum\AspectRatioCSSType;
 use App\Enum\AspectRatioType;
 use App\Enum\SharedAlbumsVisibility;
 use App\Enum\TimelineAlbumGranularity;
-use App\Enum\UserSharedAlbumsVisibility;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Spatie\LaravelData\Data;
@@ -38,7 +37,7 @@ class RootConfig extends Data
 	public bool $is_header_bar_transparent = false;
 	public bool $is_header_bar_gradient = false;
 
-	public ?SharedAlbumsVisibility $shared_albums_visibility_mode = null;
+	public SharedAlbumsVisibility $shared_albums_visibility_mode = SharedAlbumsVisibility::SHOW;
 
 	public function __construct()
 	{
@@ -83,18 +82,7 @@ class RootConfig extends Data
 			return;
 		}
 
-		$user_preference = $user->shared_albums_visibility;
-
-		if ($user_preference === UserSharedAlbumsVisibility::DEFAULT) {
-			// Use server default
-			$this->shared_albums_visibility_mode = request()->configs()->getValueAsEnum(
-				'shared_albums_visibility_default',
-				SharedAlbumsVisibility::class
-			);
-		} else {
-			// Use user preference (map from UserSharedAlbumsVisibility to SharedAlbumsVisibility)
-			$this->shared_albums_visibility_mode = SharedAlbumsVisibility::from($user_preference->value);
-		}
+		$this->shared_albums_visibility_mode = $user->shared_albums_visibility->tooSharedAlbumsVisibility();
 	}
 }
 
