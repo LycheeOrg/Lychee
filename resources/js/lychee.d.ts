@@ -62,6 +62,7 @@ declare namespace App.Enum {
 		| "license"
 		| "map_provider"
 		| "currency";
+	export type ConvertableImageType = "heic" | "heif";
 	export type CountType = "taken_at" | "created_at";
 	export type CoverFitType = "cover" | "fit";
 	export type DateOrderingType = "older_younger" | "younger_older";
@@ -133,6 +134,7 @@ declare namespace App.Enum {
 	export type PurchasableSizeVariantType = "medium" | "medium2x" | "original" | "full";
 	export type RenamerModeType = "first" | "all" | "regex" | "trim" | "strtolower" | "strtoupper" | "ucwords" | "ucfirst";
 	export type SeverityType = "emergency" | "alert" | "critical" | "error" | "warning" | "notice" | "info" | "debug";
+	export type SharedAlbumsVisibility = "show" | "separate" | "separate_shared_only" | "hide";
 	export type ShiftType = "relative" | "absolute";
 	export type ShiftX = "left" | "right";
 	export type ShiftY = "up" | "down";
@@ -145,6 +147,7 @@ declare namespace App.Enum {
 	export type TimelinePhotoGranularity = "default" | "disabled" | "year" | "month" | "day" | "hour";
 	export type UpdateStatus = 0 | 1 | 2 | 3;
 	export type UserGroupRole = "member" | "admin";
+	export type UserSharedAlbumsVisibility = "default" | "show" | "separate" | "separate_shared_only" | "hide";
 	export type VersionChannelType = "release" | "git" | "tag";
 	export type VisibilityType = "never" | "always" | "hover";
 	export type WatermarkPosition = "top-left" | "top" | "top-right" | "left" | "center" | "right" | "bottom-left" | "bottom" | "bottom-right";
@@ -485,6 +488,7 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		header_image_url: string;
 		is_header_bar_transparent: boolean;
 		is_header_bar_gradient: boolean;
+		shared_albums_visibility_mode: App.Enum.SharedAlbumsVisibility;
 	};
 	export type SettingsConfig = {
 		default_old_settings: boolean;
@@ -815,6 +819,7 @@ declare namespace App.Http.Resources.Models {
 		has_token: boolean | null;
 		username: string | null;
 		email: string | null;
+		shared_albums_visibility: App.Enum.UserSharedAlbumsVisibility;
 	};
 	export type WebAuthnResource = {
 		id: string;

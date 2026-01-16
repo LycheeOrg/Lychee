@@ -56,4 +56,23 @@ return [
         'credential_registred' => 'Registration successful!',
         '5_chars' => 'At least 5 chars.',
     ],
+    'preferences' => [
+        'header' => 'Preferences',
+        'save' => 'Save Preference',
+        'reset' => 'Reset',
+        'change_saved' => 'Preference saved!',
+    ],
+    'shared_albums' => [
+        'instruction' => 'Choose how shared albums (albums from other users) appear in your gallery:',
+        'mode_default' => 'Use Server Default',
+        'mode_default_desc' => 'Inherit the server\'s default visibility mode.',
+        'mode_show' => 'Show Inline',
+        'mode_show_desc' => 'Shared albums appear below your own albums.',
+        'mode_separate' => 'Separate Tabs',
+        'mode_separate_desc' => 'View albums in separate "My Albums" and "Shared with Me" tabs.',
+        'mode_separate_shared_only' => 'Shared Only',
+        'mode_separate_shared_only_desc' => 'Separate tabs showing only directly shared albums (excludes public albums).',
+        'mode_hide' => 'Hide',
+        'mode_hide_desc' => 'Don\'t show any shared albums.',
+    ],
 ];

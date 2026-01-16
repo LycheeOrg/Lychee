@@ -10,7 +10,9 @@ namespace App\Http\Resources\GalleryConfigs;
 
 use App\Enum\AspectRatioCSSType;
 use App\Enum\AspectRatioType;
+use App\Enum\SharedAlbumsVisibility;
 use App\Enum\TimelineAlbumGranularity;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\LiteralTypeScriptType;
@@ -35,6 +37,8 @@ class RootConfig extends Data
 	public bool $is_header_bar_transparent = false;
 	public bool $is_header_bar_gradient = false;
 
+	public SharedAlbumsVisibility $shared_albums_visibility_mode = SharedAlbumsVisibility::SHOW;
+
 	public function __construct()
 	{
 		$is_logged_in = Auth::check();
@@ -53,6 +57,7 @@ class RootConfig extends Data
 		$this->back_button_url = request()->configs()->getValueAsString('back_button_url');
 
 		$this->setHeaderImageUrl();
+		$this->setSharedAlbumsVisibilityMode();
 	}
 
 	private function setHeaderImageUrl(): void
@@ -66,6 +71,18 @@ class RootConfig extends Data
 		$this->header_image_url = request()->configs()->getValueAsString('gallery_header');
 		$this->is_header_bar_transparent = request()->configs()->getValueAsBool('gallery_header_bar_transparent');
 		$this->is_header_bar_gradient = request()->configs()->getValueAsBool('gallery_header_bar_gradient');
+	}
+
+	private function setSharedAlbumsVisibilityMode(): void
+	{
+		/** @var User|null $user */
+		$user = Auth::user();
+		if ($user === null) {
+			// For guests, shared albums visibility is not applicable
+			return;
+		}
+
+		$this->shared_albums_visibility_mode = $user->shared_albums_visibility->toSharedAlbumsVisibility();
 	}
 }
 

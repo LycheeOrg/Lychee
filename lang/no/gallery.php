@@ -11,6 +11,10 @@ return [
     'pinned_albums' => 'Festede album',
     'albums' => 'Album',
     'root' => 'Album',
+    'tabs' => [
+        'my_albums' => 'My Albums',
+        'shared_with_me' => 'Shared with Me',
+    ],
     'favourites' => 'Favoritter',
     'original' => 'Original',
     'medium' => 'Medium',

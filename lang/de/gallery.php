@@ -10,6 +10,10 @@ return [
     'pinned_albums' => 'Vorgeschlagene Alben',
     'albums' => 'Alben',
     'root' => 'Alben',
+    'tabs' => [
+        'my_albums' => 'My Albums',
+        'shared_with_me' => 'Shared with Me',
+    ],
     'favourites' => 'Favoriten',
     'original' => 'Original',
     'medium' => 'Mittel',

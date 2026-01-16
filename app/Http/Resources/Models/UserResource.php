@@ -8,6 +8,7 @@
 
 namespace App\Http\Resources\Models;
 
+use App\Enum\UserSharedAlbumsVisibility;
 use App\Models\User;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
@@ -19,6 +20,7 @@ class UserResource extends Data
 	public ?bool $has_token;
 	public ?string $username;
 	public ?string $email;
+	public UserSharedAlbumsVisibility $shared_albums_visibility;
 
 	public function __construct(?User $user)
 	{
@@ -26,5 +28,6 @@ class UserResource extends Data
 		$this->has_token = $user?->token !== null;
 		$this->username = $user?->username;
 		$this->email = $user?->email;
+		$this->shared_albums_visibility = $user?->shared_albums_visibility ?? UserSharedAlbumsVisibility::DEFAULT;
 	}
 }

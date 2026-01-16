@@ -10,6 +10,10 @@ return [
     'pinned_albums' => 'الألبومات المثبتة',
     'albums' => 'الألبومات',
     'root' => 'الألبومات',
+    'tabs' => [
+        'my_albums' => 'My Albums',
+        'shared_with_me' => 'Shared with Me',
+    ],
     'favourites' => 'المفضلة',
     'original' => 'الأصلي',
     'medium' => 'متوسط',

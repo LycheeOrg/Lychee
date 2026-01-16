@@ -13,6 +13,9 @@ const ProfileService = {
 	update(data: UpdateProfileRequest): Promise<AxiosResponse<App.Http.Resources.Models.UserResource>> {
 		return axios.post(`${Constants.getApiUrl()}Profile::update`, data);
 	},
+	updateSharedAlbumsVisibility(visibility: App.Enum.UserSharedAlbumsVisibility): Promise<AxiosResponse<App.Http.Resources.Models.UserResource>> {
+		return axios.post(`${Constants.getApiUrl()}Profile::updateSharedAlbumsVisibility`, { shared_albums_visibility: visibility });
+	},
 	resetToken(): Promise<AxiosResponse<App.Http.Resources.Models.Utils.UserToken>> {
 		return axios.post(`${Constants.getApiUrl()}Profile::resetToken`, {});
 	},
