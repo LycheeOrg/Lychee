@@ -51,10 +51,10 @@ class UnratedAlbumTest extends BaseApiWithDataTest
 		$this->assertEquals('3.0000', $this->photo2->rating_avg);
 
 		// Get unrated smart album
-		$response = $this->actingAs($this->admin)->getJsonWithData('Album', ['album_id' => 'unrated']);
+		$response = $this->actingAs($this->admin)->getJsonWithData('Album::photos', ['album_id' => 'unrated']);
 		$this->assertOk($response);
 
-		$photos = $response->json('resource.photos');
+		$photos = $response->json('photos');
 
 		// Verify photo1 (unrated) is present
 		$photoIds = collect($photos)->pluck('id')->all();
@@ -72,10 +72,10 @@ class UnratedAlbumTest extends BaseApiWithDataTest
 		Configs::set('enable_unrated', '1');
 
 		// Initially photo1 is unrated
-		$response = $this->actingAs($this->admin)->getJsonWithData('Album', ['album_id' => 'unrated']);
+		$response = $this->actingAs($this->admin)->getJsonWithData('Album::photos', ['album_id' => 'unrated']);
 		$this->assertOk($response);
 
-		$initialPhotos = collect($response->json('resource.photos'))->pluck('id')->all();
+		$initialPhotos = collect($response->json('photos'))->pluck('id')->all();
 		$this->assertContains($this->photo1->id, $initialPhotos, 'Photo1 should be in UnratedAlbum initially');
 
 		// Rate photo1
@@ -85,10 +85,10 @@ class UnratedAlbumTest extends BaseApiWithDataTest
 		]);
 
 		// Verify photo1 is no longer in unrated album
-		$response = $this->actingAs($this->admin)->getJsonWithData('Album', ['album_id' => 'unrated']);
+		$response = $this->actingAs($this->admin)->getJsonWithData('Album::photos', ['album_id' => 'unrated']);
 		$this->assertOk($response);
 
-		$updatedPhotos = collect($response->json('resource.photos'))->pluck('id')->all();
+		$updatedPhotos = collect($response->json('photos'))->pluck('id')->all();
 		$this->assertNotContains($this->photo1->id, $updatedPhotos, 'Photo1 should NOT be in UnratedAlbum after rating');
 
 		// Remove rating
@@ -98,10 +98,10 @@ class UnratedAlbumTest extends BaseApiWithDataTest
 		]);
 
 		// Verify photo1 is back in unrated album
-		$response = $this->actingAs($this->admin)->getJsonWithData('Album', ['album_id' => 'unrated']);
+		$response = $this->actingAs($this->admin)->getJsonWithData('Album::photos', ['album_id' => 'unrated']);
 		$this->assertOk($response);
 
-		$finalPhotos = collect($response->json('resource.photos'))->pluck('id')->all();
+		$finalPhotos = collect($response->json('photos'))->pluck('id')->all();
 		$this->assertContains($this->photo1->id, $finalPhotos, 'Photo1 should be back in UnratedAlbum after removing rating');
 	}
 

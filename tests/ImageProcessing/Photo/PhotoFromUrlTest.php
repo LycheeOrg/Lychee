@@ -55,23 +55,21 @@ class PhotoFromUrlTest extends BaseApiWithDataTest
 		]);
 		$this->assertOk($response);
 
-		$response = $this->getJsonWithData('Album', ['album_id' => $this->album5->id]);
+		$response = $this->getJsonWithData('Album::photos', ['album_id' => $this->album5->id]);
 		$this->assertOk($response);
 
 		$response->assertJson([
-			'resource' => [
-				'photos' => [[
-					'title' => 'mongolia',
-					'type' => TestConstants::MIME_TYPE_IMG_JPEG,
-					'size_variants' => [
-						'original' => [
-							'width' => 1280,
-							'height' => 850,
-							'filesize' => '196.60 KB',
-						],
+			'photos' => [[
+				'title' => 'mongolia',
+				'type' => TestConstants::MIME_TYPE_IMG_JPEG,
+				'size_variants' => [
+					'original' => [
+						'width' => 1280,
+						'height' => 850,
+						'filesize' => '196.60 KB',
 					],
-				]],
-			],
+				],
+			]],
 		]);
 	}
 
@@ -83,23 +81,21 @@ class PhotoFromUrlTest extends BaseApiWithDataTest
 		]);
 		$this->assertOk($response);
 
-		$response = $this->getJsonWithData('Album', ['album_id' => $this->album5->id]);
+		$response = $this->getJsonWithData('Album::photos', ['album_id' => $this->album5->id]);
 		$this->assertOk($response);
 
 		$response->assertJson([
-			'resource' => [
-				'photos' => [[
-					'title' => 'mongolia',
-					'type' => TestConstants::MIME_TYPE_IMG_JPEG,
-					'size_variants' => [
-						'original' => [
-							'width' => 1280,
-							'height' => 850,
-							'filesize' => '196.60 KB',
-						],
+			'photos' => [[
+				'title' => 'mongolia',
+				'type' => TestConstants::MIME_TYPE_IMG_JPEG,
+				'size_variants' => [
+					'original' => [
+						'width' => 1280,
+						'height' => 850,
+						'filesize' => '196.60 KB',
 					],
-				]],
-			],
+				],
+			]],
 		]);
 	}
 }

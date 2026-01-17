@@ -58,10 +58,10 @@ class RatingSmartAlbumSortTest extends BaseApiWithDataTest
 		]);
 
 		// Get one_star smart album
-		$response = $this->actingAs($this->admin)->getJsonWithData('Album', ['album_id' => 'one_star']);
+		$response = $this->actingAs($this->admin)->getJsonWithData('Album::photos', ['album_id' => 'one_star']);
 		$this->assertOk($response);
 
-		$photos = $response->json('resource.photos');
+		$photos = $response->json('photos');
 		$ratings = collect($photos)->pluck('rating.rating_avg')->map('floatval')->all();
 
 		// Should have 2 photos in 1-star range (both with rating 1.0)

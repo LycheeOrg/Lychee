@@ -109,9 +109,9 @@ class PhotoRotateTest extends BaseApiWithDataTest
 		]);
 		$this->assertOk($response);
 
-		$response = $this->actingAs($this->userMayUpload2)->getJsonWithData('Album', ['album_id' => $new_album_id]);
+		$response = $this->actingAs($this->userMayUpload2)->getJsonWithData('Album::photos', ['album_id' => $new_album_id]);
 		$this->assertOk($response);
-		$id1 = $response->json('resource.photos.0.id');
+		$id1 = $response->json('photos.0.id');
 
 		$response = $this->actingAs($this->userMayUpload2)->postJson('Photo::rotate', [
 			'photo_id' => $id1,

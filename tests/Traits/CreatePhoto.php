@@ -28,9 +28,9 @@ trait CreatePhoto
 	{
 		$response = $this->actingAs($this->admin)->upload('Photo', filename: $filename);
 		$this->assertCreated($response);
-		$response = $this->getJsonWithData('Album', ['album_id' => 'unsorted']);
+		$response = $this->getJsonWithData('Album::photos', ['album_id' => 'unsorted']);
 		$this->assertOk($response);
 
-		return $response->json('resource.photos.0');
+		return $response->json('photos.0');
 	}
 }

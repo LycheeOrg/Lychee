@@ -98,7 +98,7 @@ class WatermarkerTest extends BaseImageHandler
 	public function testWatermarkerWorksNoOriginal(): void
 	{
 		$response = $this->uploadImage(TestConstants::SAMPLE_FILE_PNG);
-		$photo = $response->json('resource.photos.0');
+		$photo = $response->json('photos.0');
 		$photoId = $photo['id'];
 
 		$response = $this->actingAs($this->admin)->postJson('Photo::move', [
@@ -119,7 +119,7 @@ class WatermarkerTest extends BaseImageHandler
 
 		// Watermarker is enabled, Let's F-ing goooo.
 		$response = $this->uploadImage(TestConstants::SAMPLE_FILE_NIGHT_IMAGE);
-		$photo = $response->json('resource.photos.0');
+		$photo = $response->json('photos.0');
 
 		self::assertStringEndsWith('_wmk.jpeg', $photo['size_variants']['thumb']['url']);
 		self::assertStringEndsWith('_wmk.jpeg', $photo['size_variants']['thumb2x']['url']);
@@ -132,10 +132,10 @@ class WatermarkerTest extends BaseImageHandler
 		// Public can access album 5.
 		AccessPermission::factory()->public()->visible()->grants_full_photo()->for_album($this->album5)->create();
 		Auth::logout();
-		$response = $this->getJsonWithData('Album', ['album_id' => $this->album5->id]);
+		$response = $this->getJsonWithData('Album::photos', ['album_id' => $this->album5->id]);
 		$this->assertOk($response);
 
-		$photo2 = $response->json('resource.photos.0');
+		$photo2 = $response->json('photos.0');
 		self::assertStringEndsNotWith('_wmk.jpeg', $photo2['size_variants']['thumb']['url']);
 		self::assertStringEndsNotWith('_wmk.jpeg', $photo2['size_variants']['thumb2x']['url']);
 		self::assertStringEndsNotWith('_wmk.jpeg', $photo2['size_variants']['small']['url']);
@@ -163,7 +163,7 @@ class WatermarkerTest extends BaseImageHandler
 	public function testWatermarkerWorksOriginal(): void
 	{
 		$response = $this->uploadImage(TestConstants::SAMPLE_FILE_PNG);
-		$photo = $response->json('resource.photos.0');
+		$photo = $response->json('photos.0');
 		$photoId = $photo['id'];
 
 		$response = $this->actingAs($this->admin)->postJson('Photo::move', [
@@ -185,7 +185,7 @@ class WatermarkerTest extends BaseImageHandler
 
 		// Watermarker is enabled, Let's F-ing goooo.
 		$response = $this->uploadImage(TestConstants::SAMPLE_FILE_NIGHT_IMAGE);
-		$photo = $response->json('resource.photos.0');
+		$photo = $response->json('photos.0');
 
 		self::assertStringEndsNotWith('_wmk.jpeg', $photo['size_variants']['thumb']['url']);
 		self::assertStringEndsNotWith('_wmk.jpeg', $photo['size_variants']['thumb2x']['url']);
@@ -198,10 +198,10 @@ class WatermarkerTest extends BaseImageHandler
 		// Public can access album 5.
 		AccessPermission::factory()->public()->visible()->grants_full_photo()->for_album($this->album5)->create();
 		Auth::logout();
-		$response = $this->getJsonWithData('Album', ['album_id' => $this->album5->id]);
+		$response = $this->getJsonWithData('Album::photos', ['album_id' => $this->album5->id]);
 		$this->assertOk($response);
 
-		$photo2 = $response->json('resource.photos.0');
+		$photo2 = $response->json('photos.0');
 		self::assertStringEndsWith('_wmk.jpeg', $photo2['size_variants']['thumb']['url']);
 		self::assertStringEndsWith('_wmk.jpeg', $photo2['size_variants']['thumb2x']['url']);
 		self::assertStringEndsWith('_wmk.jpeg', $photo2['size_variants']['small']['url']);

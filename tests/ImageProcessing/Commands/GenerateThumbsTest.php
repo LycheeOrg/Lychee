@@ -68,9 +68,9 @@ class GenerateThumbsTest extends BaseApiWithDataTest
 			->assertExitCode(0);
 
 		// Get updated photo and check if placeholder was encoded
-		$response = $this->getJsonWithData('Album', ['album_id' => 'unsorted']);
+		$response = $this->getJsonWithData('Album::photos', ['album_id' => 'unsorted']);
 		$this->assertOk($response);
-		$photo2 = $response->json('resource.photos.0');
+		$photo2 = $response->json('photos.0');
 		self::assertNotNull($photo2['size_variants']['small']);
 		self::assertEquals($photo1['size_variants']['small']['width'], $photo2['size_variants']['small']['width']);
 		self::assertEquals($photo1['size_variants']['small']['height'], $photo2['size_variants']['small']['height']);

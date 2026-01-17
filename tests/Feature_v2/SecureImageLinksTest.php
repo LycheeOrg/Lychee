@@ -44,9 +44,9 @@ class SecureImageLinksTest extends BaseApiWithDataTest
 	public function testSignedImage(): void
 	{
 		$this->setTemporaryLink();
-		$response = $this->getJsonWithData('Album', ['album_id' => $this->album4->id]);
+		$response = $this->getJsonWithData('Album::photos', ['album_id' => $this->album4->id]);
 		$this->assertOk($response);
-		$url = $response->json('resource.photos.0.size_variants.medium.url');
+		$url = $response->json('photos.0.size_variants.medium.url');
 		$this->assertStringContainsString('/image/medium/', $url);
 
 		$response = $this->get($url);
@@ -66,9 +66,9 @@ class SecureImageLinksTest extends BaseApiWithDataTest
 	public function testBrokenSignature(): void
 	{
 		$this->setTemporaryLink();
-		$response = $this->getJsonWithData('Album', ['album_id' => $this->album4->id]);
+		$response = $this->getJsonWithData('Album::photos', ['album_id' => $this->album4->id]);
 		$this->assertOk($response);
-		$url = $response->json('resource.photos.0.size_variants.medium.url');
+		$url = $response->json('photos.0.size_variants.medium.url');
 		$this->assertStringContainsString('/image/medium/', $url);
 
 		$unsigned_url = explode('?', $url)[0];
@@ -79,9 +79,9 @@ class SecureImageLinksTest extends BaseApiWithDataTest
 	public function testBrokenSignature2(): void
 	{
 		$this->setTemporaryLink();
-		$response = $this->getJsonWithData('Album', ['album_id' => $this->album4->id]);
+		$response = $this->getJsonWithData('Album::photos', ['album_id' => $this->album4->id]);
 		$this->assertOk($response);
-		$url = $response->json('resource.photos.0.size_variants.medium.url');
+		$url = $response->json('photos.0.size_variants.medium.url');
 		$this->assertStringContainsString('/image/medium/', $url);
 
 		$unsigned_url = explode('?', $url)[0];
@@ -93,9 +93,9 @@ class SecureImageLinksTest extends BaseApiWithDataTest
 	{
 		$this->setSecureLink();
 
-		$response = $this->getJsonWithData('Album', ['album_id' => $this->album4->id]);
+		$response = $this->getJsonWithData('Album::photos', ['album_id' => $this->album4->id]);
 		$this->assertOk($response);
-		$url = $response->json('resource.photos.0.size_variants.medium.url');
+		$url = $response->json('photos.0.size_variants.medium.url');
 		$this->assertStringContainsString('/image/', $url);
 
 		$response = $this->get($url);

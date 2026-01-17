@@ -46,7 +46,7 @@ class DownloadTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->admin)->upload('Photo', filename: $filename, album_id: $album_id);
 		$this->assertCreated($response);
 
-		$response = $this->getJsonWithData('Album', ['album_id' => $album_id]);
+		$response = $this->getJsonWithData('Album::photos', ['album_id' => $album_id]);
 		$this->assertOk($response);
 
 		return $response;
@@ -60,7 +60,7 @@ class DownloadTest extends BaseApiWithDataTest
 	public function testSinglePhotoDownload(): void
 	{
 		$response = $this->uploadImage(filename: TestConstants::SAMPLE_FILE_NIGHT_IMAGE, album_id: $this->album5->id);
-		$photo = $response->json('resource.photos.0');
+		$photo = $response->json('photos.0');
 
 		$photoArchiveResponse = $this->download(
 			photo_ids: [$photo['id']],
@@ -96,12 +96,12 @@ class DownloadTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->admin)->upload('Photo', filename: TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE, album_id: $this->album5->id, file_name: TestConstants::PHOTO_MONGOLIA_TITLE . '.jpeg');
 		$this->assertCreated($response);
 
-		$response = $this->getJsonWithData('Album', ['album_id' => $this->album5->id]);
+		$response = $this->getJsonWithData('Album::photos', ['album_id' => $this->album5->id]);
 		$this->assertOk($response);
-		$response->assertJsonCount(2, 'resource.photos');
+		$response->assertJsonCount(2, 'photos');
 
 		$photoArchiveResponse = $this->download(
-			photo_ids: [$response->json('resource.photos.0.id'), $response->json('resource.photos.1.id')],
+			photo_ids: [$response->json('photos.0.id'), $response->json('photos.1.id')],
 			from_id: $this->album5->id,
 			kind: DownloadVariantType::ORIGINAL
 		);
@@ -124,7 +124,7 @@ class DownloadTest extends BaseApiWithDataTest
 		static::assertHasFFMpegOrSkip();
 
 		$response = $this->uploadImage(filename: TestConstants::SAMPLE_FILE_GMP_IMAGE, album_id: $this->album5->id);
-		$photo = $response->json('resource.photos.0');
+		$photo = $response->json('photos.0');
 
 		$photoArchiveResponse = $this->download(
 			photo_ids: [$photo['id']],
@@ -162,9 +162,9 @@ class DownloadTest extends BaseApiWithDataTest
 		);
 		$this->assertCreated($response);
 
-		$response = $this->getJsonWithData('Album', ['album_id' => $this->album5->id]);
+		$response = $this->getJsonWithData('Album::photos', ['album_id' => $this->album5->id]);
 		$this->assertOk($response);
-		$photo = $response->json('resource.photos.0');
+		$photo = $response->json('photos.0');
 
 		// $this->postJson('Photo::copy', [
 		// 	'photo_ids' => [$photo['id']],
@@ -185,15 +185,15 @@ class DownloadTest extends BaseApiWithDataTest
 		]);
 		$this->assertNoContent($response);
 
-		$response = $this->getJsonWithData('Album', ['album_id' => $this->album5->id]);
+		$response = $this->getJsonWithData('Album::photos', ['album_id' => $this->album5->id]);
 		$this->assertOk($response);
-		$response->assertJsonCount(2, 'resource.photos');
+		$response->assertJsonCount(2, 'photos');
 
-		$photoID1 = $response->json('resource.photos.0.id');
-		$photoID2a = $response->json('resource.photos.1.id');
+		$photoID1 = $response->json('photos.0.id');
+		$photoID2a = $response->json('photos.1.id');
 
-		$response->assertJsonPath('resource.photos.0.title', TestConstants::PHOTO_NIGHT_TITLE . '.jpeg');
-		$response->assertJsonPath('resource.photos.1.title', TestConstants::PHOTO_NIGHT_TITLE . '.jpeg');
+		$response->assertJsonPath('photos.0.title', TestConstants::PHOTO_NIGHT_TITLE . '.jpeg');
+		$response->assertJsonPath('photos.1.title', TestConstants::PHOTO_NIGHT_TITLE . '.jpeg');
 
 		$photoArchiveResponse = $this->download([$photoID1, $photoID2a], kind: DownloadVariantType::ORIGINAL);
 
@@ -212,11 +212,11 @@ class DownloadTest extends BaseApiWithDataTest
 		);
 		$this->assertCreated($response);
 
-		$response = $this->getJsonWithData('Album', ['album_id' => $this->album5->id]);
+		$response = $this->getJsonWithData('Album::photos', ['album_id' => $this->album5->id]);
 		$this->assertOk($response);
-		$response->assertJsonCount(1, 'resource.photos');
+		$response->assertJsonCount(1, 'photos');
 
-		$id = $response->json('resource.photos.0.id');
+		$id = $response->json('photos.0.id');
 
 		$download = $this->download(
 			photo_ids: [$id],
@@ -260,13 +260,15 @@ class DownloadTest extends BaseApiWithDataTest
 		);
 		$this->assertCreated($response);
 
-		$response = $this->getJsonWithData('Album', ['album_id' => $this->album5->id]);
+		$response = $this->getJsonWithData('Album::photos', ['album_id' => $this->album5->id]);
 		$this->assertOk($response);
-		$response->assertJsonCount(1, 'resource.photos');
-		$response->assertJsonCount(1, 'resource.albums');
-		$response = $this->getJsonWithData('Album', ['album_id' => $album6->id]);
+		$response->assertJsonCount(1, 'photos');
+		$response = $this->getJsonWithData('Album::albums', ['album_id' => $this->album5->id]);
 		$this->assertOk($response);
-		$response->assertJsonCount(1, 'resource.photos');
+		$response->assertJsonCount(1, 'data');
+		$response = $this->getJsonWithData('Album::photos', ['album_id' => $album6->id]);
+		$this->assertOk($response);
+		$response->assertJsonCount(1, 'photos');
 
 		$photoArchiveResponse = $this->download(album_ids: [$this->album5->id]);
 

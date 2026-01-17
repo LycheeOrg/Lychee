@@ -64,9 +64,9 @@ class EncodePlaceholdersTest extends BaseApiWithDataTest
 			->assertExitCode(0);
 
 		// Get updated photo and check if placeholder was encoded
-		$response = $this->getJsonWithData('Album', ['album_id' => 'unsorted']);
+		$response = $this->getJsonWithData('Album::photos', ['album_id' => 'unsorted']);
 		$this->assertOk($response);
-		$photo2 = $response->json('resource.photos.0');
+		$photo2 = $response->json('photos.0');
 
 		// check for the file signature in the decoded base64 data.
 		Assert::assertStringContainsString('WEBPVP8', \Safe\base64_decode($photo2['size_variants']['placeholder']['url']));
