@@ -138,7 +138,8 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 		]);
 		$this->assertOk($response);
 
-		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album', ['album_id' => $this->tagAlbum1->id]);
+		// Verify album head metadata
+		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album::head', ['album_id' => $this->tagAlbum1->id]);
 		$this->assertOk($response);
 		$response->assertJson([
 			'config' => [
@@ -151,10 +152,13 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 				'id' => $this->tagAlbum1->id,
 				'title' => 'title', // from modified above.
 				'show_tags' => ['tag1', 'tag2'],
-				'photos' => [],
 			],
 		]);
-		self::assertCount(0, $response->json('resource.photos'));
+
+		// Verify photos are empty (tags changed, so photo1 no longer matches)
+		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album::photos', ['album_id' => $this->tagAlbum1->id]);
+		$this->assertOk($response);
+		self::assertCount(0, $response->json('photos'));
 	}
 
 	public function testUpdateAlbumIsPinned(): void

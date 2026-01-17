@@ -41,7 +41,7 @@ class EventsFiredTest extends BaseApiWithDataTest
 
 	public function testVisitSharedAlbum(): void
 	{
-		$response = $this->getJsonWithData('Album', ['album_id' => $this->album4->id]);
+		$response = $this->getJsonWithData('Album::head', ['album_id' => $this->album4->id]);
 		$this->assertOk($response);
 		$this->assertEquals(1, Statistics::where('album_id', $this->album4->id)->firstOrFail()->visit_count);
 
@@ -69,7 +69,7 @@ class EventsFiredTest extends BaseApiWithDataTest
 	public function testLoggedInUser(): void
 	{
 		$this->actingAs($this->userMayUpload1);
-		$response = $this->getJsonWithData('Album', ['album_id' => $this->album1->id]);
+		$response = $this->getJsonWithData('Album::head', ['album_id' => $this->album1->id]);
 		$this->assertOk($response);
 		$this->assertEquals(1, Statistics::where('album_id', $this->album1->id)->firstOrFail()->visit_count);
 
@@ -81,7 +81,7 @@ class EventsFiredTest extends BaseApiWithDataTest
 	public function testAdminuser(): void
 	{
 		$this->actingAs($this->admin);
-		$response = $this->getJsonWithData('Album', ['album_id' => $this->album1->id]);
+		$response = $this->getJsonWithData('Album::head', ['album_id' => $this->album1->id]);
 		$this->assertOk($response);
 		$this->assertEquals(0, Statistics::where('album_id', $this->album1->id)->firstOrFail()->visit_count);
 

@@ -73,10 +73,10 @@ class RatingThresholdAlbumsTest extends BaseApiWithDataTest
 		]);
 
 		// Get three_stars smart album
-		$response = $this->actingAs($this->admin)->getJsonWithData('Album', ['album_id' => 'three_stars']);
+		$response = $this->actingAs($this->admin)->getJsonWithData('Album::photos', ['album_id' => 'three_stars']);
 		$this->assertOk($response);
 
-		$photoIds = collect($response->json('resource.photos'))->pluck('id')->all();
+		$photoIds = collect($response->json('photos'))->pluck('id')->all();
 
 		// Verify photo1 (3.5 average) is present
 		$this->assertContains($this->photo1->id, $photoIds, 'Photo with 3.5 rating should be in ThreeStarsAlbum');
@@ -108,10 +108,10 @@ class RatingThresholdAlbumsTest extends BaseApiWithDataTest
 		$this->assertEquals('3.0000', $this->photo1->rating_avg);
 
 		// Get three_stars smart album
-		$response = $this->actingAs($this->admin)->getJsonWithData('Album', ['album_id' => 'three_stars']);
+		$response = $this->actingAs($this->admin)->getJsonWithData('Album::photos', ['album_id' => 'three_stars']);
 		$this->assertOk($response);
 
-		$photoIds = collect($response->json('resource.photos'))->pluck('id')->all();
+		$photoIds = collect($response->json('photos'))->pluck('id')->all();
 
 		// Photo with exactly 3.0 should be in 3★+ album
 		$this->assertContains($this->photo1->id, $photoIds, 'Photo with exactly 3.0 rating should be in ThreeStarsAlbum (boundary included)');
@@ -151,10 +151,10 @@ class RatingThresholdAlbumsTest extends BaseApiWithDataTest
 		]);
 
 		// Get four_stars smart album
-		$response = $this->actingAs($this->admin)->getJsonWithData('Album', ['album_id' => 'four_stars']);
+		$response = $this->actingAs($this->admin)->getJsonWithData('Album::photos', ['album_id' => 'four_stars']);
 		$this->assertOk($response);
 
-		$photoIds = collect($response->json('resource.photos'))->pluck('id')->all();
+		$photoIds = collect($response->json('photos'))->pluck('id')->all();
 
 		// Verify photo1 (4.5 average) is present
 		$this->assertContains($this->photo1->id, $photoIds, 'Photo with 4.5 rating should be in FourStarsAlbum');
@@ -183,10 +183,10 @@ class RatingThresholdAlbumsTest extends BaseApiWithDataTest
 		$this->assertEquals('4.0000', $this->photo1->rating_avg);
 
 		// Get four_stars smart album
-		$response = $this->actingAs($this->admin)->getJsonWithData('Album', ['album_id' => 'four_stars']);
+		$response = $this->actingAs($this->admin)->getJsonWithData('Album::photos', ['album_id' => 'four_stars']);
 		$this->assertOk($response);
 
-		$photoIds = collect($response->json('resource.photos'))->pluck('id')->all();
+		$photoIds = collect($response->json('photos'))->pluck('id')->all();
 
 		// Photo with exactly 4.0 should be in 4★+ album
 		$this->assertContains($this->photo1->id, $photoIds, 'Photo with exactly 4.0 rating should be in FourStarsAlbum (boundary included)');
@@ -226,10 +226,10 @@ class RatingThresholdAlbumsTest extends BaseApiWithDataTest
 		]);
 
 		// Get five_stars smart album
-		$response = $this->actingAs($this->admin)->getJsonWithData('Album', ['album_id' => 'five_stars']);
+		$response = $this->actingAs($this->admin)->getJsonWithData('Album::photos', ['album_id' => 'five_stars']);
 		$this->assertOk($response);
 
-		$photoIds = collect($response->json('resource.photos'))->pluck('id')->all();
+		$photoIds = collect($response->json('photos'))->pluck('id')->all();
 
 		// Verify photo1 (5.0 average) is present
 		$this->assertContains($this->photo1->id, $photoIds, 'Photo with 5.0 rating should be in FiveStarsAlbum');
@@ -268,10 +268,10 @@ class RatingThresholdAlbumsTest extends BaseApiWithDataTest
 		$this->assertEquals('4.6667', $this->photo1->rating_avg);
 
 		// Get five_stars smart album
-		$response = $this->actingAs($this->admin)->getJsonWithData('Album', ['album_id' => 'five_stars']);
+		$response = $this->actingAs($this->admin)->getJsonWithData('Album::photos', ['album_id' => 'five_stars']);
 		$this->assertOk($response);
 
-		$photoIds = collect($response->json('resource.photos'))->pluck('id')->all();
+		$photoIds = collect($response->json('photos'))->pluck('id')->all();
 
 		// Photo with 4.6667 average should NOT be in 5★ album
 		$this->assertNotContains($this->photo1->id, $photoIds, 'Photo with less than perfect 5.0 rating should NOT be in FiveStarsAlbum');

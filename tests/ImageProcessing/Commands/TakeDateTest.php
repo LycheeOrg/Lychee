@@ -55,9 +55,9 @@ class TakeDateTest extends BaseApiWithDataTest
 		])
 			->assertSuccessful();
 
-		$response = $this->getJsonWithData('Album', ['album_id' => 'unsorted']);
+		$response = $this->getJsonWithData('Album::photos', ['album_id' => 'unsorted']);
 		$this->assertOk($response);
-		$photo2 = $response->json('resource.photos.0');
+		$photo2 = $response->json('photos.0');
 
 		$file_time = \Safe\filemtime(public_path($this->dropUrlPrefix($photo2['size_variants']['original']['url'])));
 		$carbon = new Carbon($photo2['created_at']);

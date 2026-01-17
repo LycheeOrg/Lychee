@@ -52,7 +52,7 @@ class AlbumMergeTest extends BaseApiWithDataTest
 		$response->assertSee($this->album1->id);
 		$response->assertDontSee($this->album2->id);
 
-		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album', ['album_id' => $this->album1->id]);
+		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album::albums', ['album_id' => $this->album1->id]);
 		$this->assertOk($response);
 		$response->assertSee($this->subAlbum1->id);
 		$response->assertSee($this->subAlbum2->id);

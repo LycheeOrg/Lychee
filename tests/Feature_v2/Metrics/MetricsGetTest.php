@@ -69,7 +69,7 @@ class MetricsGetTest extends BaseApiWithDataTest
 		Configs::set('live_metrics_enabled', true);
 		Configs::set('live_metrics_access', LiveMetricsAccess::LOGGEDIN);
 
-		$response = $this->getJsonWithData('Album', ['album_id' => $this->album4->id]);
+		$response = $this->getJsonWithData('Album::head', ['album_id' => $this->album4->id]);
 		$this->assertOk($response); // 1: - viewed album4
 		$response = $this->get('gallery/' . $this->album4->id);
 		$this->assertOk($response); // 2: - shared album4
@@ -81,12 +81,12 @@ class MetricsGetTest extends BaseApiWithDataTest
 		$this->assertOk($response); // 5: shared photo4
 
 		$this->assertEquals(5, LiveMetrics::count());
-		$response = $this->actingAs($this->userLocked)->getJsonWithData('Album', ['album_id' => $this->album4->id]);
+		$response = $this->actingAs($this->userLocked)->getJsonWithData('Album::head', ['album_id' => $this->album4->id]);
 		$this->assertEquals(5, LiveMetrics::count()); // Still 5: We do not count the logged in users yet.
 		Configs::set('metrics_logged_in_users_enabed', true);
-		$response = $this->actingAs($this->userLocked)->getJsonWithData('Album', ['album_id' => $this->album4->id]);
+		$response = $this->actingAs($this->userLocked)->getJsonWithData('Album::head', ['album_id' => $this->album4->id]);
 		$this->assertEquals(6, LiveMetrics::count()); // 6: We do count the logged in users now.
-		$response = $this->actingAs($this->admin)->getJsonWithData('Album', ['album_id' => $this->album4->id]);
+		$response = $this->actingAs($this->admin)->getJsonWithData('Album::head', ['album_id' => $this->album4->id]);
 		$this->assertEquals(6, LiveMetrics::count()); // Still 6: We do not count the admin user though.
 
 		// Now we check/fetch the metrics data.

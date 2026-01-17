@@ -49,10 +49,10 @@ class BestPicturesAlbumTest extends BaseApiWithDataTest
 		]);
 
 		// Get best_pictures smart album
-		$response = $this->actingAs($this->admin)->getJsonWithData('Album', ['album_id' => 'best_pictures']);
+		$response = $this->actingAs($this->admin)->getJsonWithData('Album::photos', ['album_id' => 'best_pictures']);
 		$this->assertOk($response);
 
-		$photoIds = collect($response->json('resource.photos'))->pluck('id')->all();
+		$photoIds = collect($response->json('photos'))->pluck('id')->all();
 
 		// Should contain top 2 rated photos
 		$this->assertContains($this->photo1->id, $photoIds, 'Photo1 (5★) should be in BestPicturesAlbum');
@@ -84,10 +84,10 @@ class BestPicturesAlbumTest extends BaseApiWithDataTest
 		]);
 
 		// Get best_pictures smart album
-		$response = $this->actingAs($this->admin)->getJsonWithData('Album', ['album_id' => 'best_pictures']);
+		$response = $this->actingAs($this->admin)->getJsonWithData('Album::photos', ['album_id' => 'best_pictures']);
 		$this->assertOk($response);
 
-		$photoIds = collect($response->json('resource.photos'))->pluck('id')->all();
+		$photoIds = collect($response->json('photos'))->pluck('id')->all();
 
 		// Should contain both top-rated photos (even if > N)
 		$this->assertContains($this->photo1->id, $photoIds, 'Photo1 (5★) should be in BestPicturesAlbum');

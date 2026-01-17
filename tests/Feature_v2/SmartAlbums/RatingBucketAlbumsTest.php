@@ -61,10 +61,10 @@ class RatingBucketAlbumsTest extends BaseApiWithDataTest
 		// Don't rate photo3 at all
 
 		// Get one_star smart album
-		$response = $this->actingAs($this->admin)->getJsonWithData('Album', ['album_id' => 'one_star']);
+		$response = $this->actingAs($this->admin)->getJsonWithData('Album::photos', ['album_id' => 'one_star']);
 		$this->assertOk($response);
 
-		$photoIds = collect($response->json('resource.photos'))->pluck('id')->all();
+		$photoIds = collect($response->json('photos'))->pluck('id')->all();
 
 		// Verify photo1 (1.5 average) is present
 		$this->assertContains($this->photo1->id, $photoIds, 'Photo with 1.5 rating should be in OneStarAlbum');
@@ -97,10 +97,10 @@ class RatingBucketAlbumsTest extends BaseApiWithDataTest
 		$this->assertEquals('2.0000', $this->photo1->rating_avg);
 
 		// Get one_star smart album
-		$response = $this->actingAs($this->admin)->getJsonWithData('Album', ['album_id' => 'one_star']);
+		$response = $this->actingAs($this->admin)->getJsonWithData('Album::photos', ['album_id' => 'one_star']);
 		$this->assertOk($response);
 
-		$photoIds = collect($response->json('resource.photos'))->pluck('id')->all();
+		$photoIds = collect($response->json('photos'))->pluck('id')->all();
 
 		// Photo with exactly 2.0 should NOT be in 1★ album
 		$this->assertNotContains($this->photo1->id, $photoIds, 'Photo with exactly 2.0 rating should NOT be in OneStarAlbum (boundary excluded)');
@@ -123,10 +123,10 @@ class RatingBucketAlbumsTest extends BaseApiWithDataTest
 		$this->assertEquals('1.0000', $this->photo1->rating_avg);
 
 		// Get one_star smart album
-		$response = $this->actingAs($this->admin)->getJsonWithData('Album', ['album_id' => 'one_star']);
+		$response = $this->actingAs($this->admin)->getJsonWithData('Album::photos', ['album_id' => 'one_star']);
 		$this->assertOk($response);
 
-		$photoIds = collect($response->json('resource.photos'))->pluck('id')->all();
+		$photoIds = collect($response->json('photos'))->pluck('id')->all();
 
 		// Photo with exactly 1.0 should be in 1★ album
 		$this->assertContains($this->photo1->id, $photoIds, 'Photo with exactly 1.0 rating should be in OneStarAlbum (boundary included)');
@@ -170,10 +170,10 @@ class RatingBucketAlbumsTest extends BaseApiWithDataTest
 		]);
 
 		// Get two_stars smart album
-		$response = $this->actingAs($this->admin)->getJsonWithData('Album', ['album_id' => 'two_stars']);
+		$response = $this->actingAs($this->admin)->getJsonWithData('Album::photos', ['album_id' => 'two_stars']);
 		$this->assertOk($response);
 
-		$photoIds = collect($response->json('resource.photos'))->pluck('id')->all();
+		$photoIds = collect($response->json('photos'))->pluck('id')->all();
 
 		// Verify photo1 (2.5 average) is present
 		$this->assertContains($this->photo1->id, $photoIds, 'Photo with 2.5 rating should be in TwoStarsAlbum');
@@ -202,10 +202,10 @@ class RatingBucketAlbumsTest extends BaseApiWithDataTest
 		$this->assertEquals('2.0000', $this->photo1->rating_avg);
 
 		// Get two_stars smart album
-		$response = $this->actingAs($this->admin)->getJsonWithData('Album', ['album_id' => 'two_stars']);
+		$response = $this->actingAs($this->admin)->getJsonWithData('Album::photos', ['album_id' => 'two_stars']);
 		$this->assertOk($response);
 
-		$photoIds = collect($response->json('resource.photos'))->pluck('id')->all();
+		$photoIds = collect($response->json('photos'))->pluck('id')->all();
 
 		// Photo with exactly 2.0 should be in 2★ album
 		$this->assertContains($this->photo1->id, $photoIds, 'Photo with exactly 2.0 rating should be in TwoStarsAlbum (boundary included)');
@@ -228,10 +228,10 @@ class RatingBucketAlbumsTest extends BaseApiWithDataTest
 		$this->assertEquals('3.0000', $this->photo1->rating_avg);
 
 		// Get two_stars smart album
-		$response = $this->actingAs($this->admin)->getJsonWithData('Album', ['album_id' => 'two_stars']);
+		$response = $this->actingAs($this->admin)->getJsonWithData('Album::photos', ['album_id' => 'two_stars']);
 		$this->assertOk($response);
 
-		$photoIds = collect($response->json('resource.photos'))->pluck('id')->all();
+		$photoIds = collect($response->json('photos'))->pluck('id')->all();
 
 		// Photo with exactly 3.0 should NOT be in 2★ album
 		$this->assertNotContains($this->photo1->id, $photoIds, 'Photo with exactly 3.0 rating should NOT be in TwoStarsAlbum (boundary excluded)');

@@ -51,7 +51,8 @@ class PhotoAddTest extends BaseApiWithDataTest
 		$this->assertCreated($response);
 		$this->catchFailureSilence = ["App\Exceptions\MediaFileOperationException"];
 
-		$response = $this->getJsonWithData('Album', ['album_id' => 'unsorted']);
+		// Check album metadata
+		$response = $this->getJsonWithData('Album::head', ['album_id' => 'unsorted']);
 		$this->assertOk($response);
 		$response->assertJson([
 			'config' => [
@@ -63,19 +64,25 @@ class PhotoAddTest extends BaseApiWithDataTest
 			'resource' => [
 				'id' => 'unsorted',
 				'title' => 'Unsorted',
-				'photos' => [
-					[
-						'title' => TestConstants::SAMPLE_FILE_NIGHT_IMAGE,
-					],
+			],
+		]);
+
+		// Check photos
+		$response = $this->getJsonWithData('Album::photos', ['album_id' => 'unsorted']);
+		$this->assertOk($response);
+		$response->assertJson([
+			'photos' => [
+				[
+					'title' => TestConstants::SAMPLE_FILE_NIGHT_IMAGE,
 				],
 			],
 		]);
-		$response = $this->deleteJson('Photo', ['photo_ids' => [$response->json('resource.photos.0.id')], 'from_id' => 'unsorted']);
+		$response = $this->deleteJson('Photo', ['photo_ids' => [$response->json('photos.0.id')], 'from_id' => 'unsorted']);
 		$this->assertNoContent($response);
 
-		$response = $this->getJsonWithData('Album', ['album_id' => 'unsorted']);
+		$response = $this->getJsonWithData('Album::photos', ['album_id' => 'unsorted']);
 		$this->assertOk($response);
-		$response->assertJsonCount(1, 'resource.photos');
+		$response->assertJsonCount(1, 'photos');
 	}
 
 	public function testDuplicate(): void
@@ -84,16 +91,16 @@ class PhotoAddTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->admin)->upload('Photo', filename: TestConstants::SAMPLE_FILE_NIGHT_IMAGE);
 		$this->assertCreated($response);
 
-		$response = $this->getJsonWithData('Album', ['album_id' => 'unsorted']);
+		$response = $this->getJsonWithData('Album::photos', ['album_id' => 'unsorted']);
 		$this->assertOk($response);
 
 		$response = $this->actingAs($this->admin)->upload('Photo', filename: TestConstants::SAMPLE_FILE_NIGHT_IMAGE);
 		$this->assertCreated($response);
 
-		$response = $this->getJsonWithData('Album', ['album_id' => 'unsorted']);
+		$response = $this->getJsonWithData('Album::photos', ['album_id' => 'unsorted']);
 		$this->assertOk($response);
-		$id1 = $response->json('resource.photos.0.id');
-		$id2 = $response->json('resource.photos.1.id');
+		$id1 = $response->json('photos.0.id');
+		$id2 = $response->json('photos.1.id');
 
 		self::assertNotEquals($id1, $id2);
 
@@ -119,9 +126,9 @@ class PhotoAddTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->admin)->upload('Photo', filename: TestConstants::SAMPLE_FILE_TRAIN_VIDEO);
 		$this->assertCreated($response);
 
-		$response = $this->getJsonWithData('Album', ['album_id' => 'unsorted']);
+		$response = $this->getJsonWithData('Album::photos', ['album_id' => 'unsorted']);
 		$this->assertOk($response);
-		$photo = $response->json('resource.photos.0');
+		$photo = $response->json('photos.0');
 
 		self::assertEquals('E905E6C6-C747-4805-942F-9904A0281F02', $photo['live_photo_content_id']);
 
@@ -138,9 +145,9 @@ class PhotoAddTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->admin)->upload('Photo', filename: TestConstants::SAMPLE_FILE_TRAIN_IMAGE);
 		$this->assertCreated($response);
 
-		$response = $this->getJsonWithData('Album', ['album_id' => 'unsorted']);
+		$response = $this->getJsonWithData('Album::photos', ['album_id' => 'unsorted']);
 		$this->assertOk($response);
-		$photo = $response->json('resource.photos.0');
+		$photo = $response->json('photos.0');
 
 		self::assertEquals('E905E6C6-C747-4805-942F-9904A0281F02', $photo['live_photo_content_id']);
 
@@ -155,9 +162,9 @@ class PhotoAddTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->admin)->upload('Photo', filename: TestConstants::SAMPLE_FILE_GMP_IMAGE);
 		$this->assertCreated($response);
 
-		$response = $this->getJsonWithData('Album', ['album_id' => 'unsorted']);
+		$response = $this->getJsonWithData('Album::photos', ['album_id' => 'unsorted']);
 		$this->assertOk($response);
-		$id = $response->json('resource.photos.0.id');
+		$id = $response->json('photos.0.id');
 		$response = $this->deleteJson('Photo', ['photo_ids' => [$id], 'from_id' => 'unsorted']);
 		$this->assertNoContent($response);
 	}
@@ -168,9 +175,9 @@ class PhotoAddTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->admin)->upload('Photo', filename: TestConstants::SAMPLE_FILE_HEIC);
 		$this->assertCreated($response);
 
-		$response = $this->getJsonWithData('Album', ['album_id' => 'unsorted']);
+		$response = $this->getJsonWithData('Album::photos', ['album_id' => 'unsorted']);
 		$this->assertOk($response);
-		$id = $response->json('resource.photos.0.id');
+		$id = $response->json('photos.0.id');
 		$response = $this->deleteJson('Photo', ['photo_ids' => [$id], 'from_id' => 'unsorted']);
 		$this->assertNoContent($response);
 	}
@@ -181,9 +188,9 @@ class PhotoAddTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->admin)->upload('Photo', filename: TestConstants::SAMPLE_FILE_HEIF);
 		$this->assertCreated($response);
 
-		$response = $this->getJsonWithData('Album', ['album_id' => 'unsorted']);
+		$response = $this->getJsonWithData('Album::photos', ['album_id' => 'unsorted']);
 		$this->assertOk($response);
-		$id = $response->json('resource.photos.0.id');
+		$id = $response->json('photos.0.id');
 		$response = $this->deleteJson('Photo', ['photo_ids' => [$id], 'from_id' => 'unsorted']);
 		$this->assertNoContent($response);
 	}

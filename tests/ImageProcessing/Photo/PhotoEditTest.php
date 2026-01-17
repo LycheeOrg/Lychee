@@ -70,18 +70,18 @@ class PhotoEditTest extends BaseApiWithDataTest
 		]);
 		$this->assertOk($response);
 
-		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album', ['album_id' => $this->album1->id]);
+		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album::photos', ['album_id' => $this->album1->id]);
 		$this->assertOk($response);
-		$photo0 = $response->json('resource.photos.0');
+		$photo0 = $response->json('photos.0');
 		$idx = $photo0['id'] === $this->photo1->id ? 0 : 1;
 
-		$response->assertJsonPath('resource.photos.' . $idx . '.id', $this->photo1->id);
-		$response->assertJsonPath('resource.photos.' . $idx . '.title', 'new title');
-		$response->assertJsonPath('resource.photos.' . $idx . '.description', 'new description');
-		$response->assertJsonPath('resource.photos.' . $idx . '.tags', ['tag1']);
-		$response->assertJsonPath('resource.photos.' . $idx . '.license', 'none');
-		$response->assertJsonPath('resource.photos.' . $idx . '.created_at', '2021-01-01T00:00:00+00:00');
-		$response->assertJsonPath('resource.photos.' . $idx . '.precomputed.is_taken_at_modified', false);
+		$response->assertJsonPath('photos.' . $idx . '.id', $this->photo1->id);
+		$response->assertJsonPath('photos.' . $idx . '.title', 'new title');
+		$response->assertJsonPath('photos.' . $idx . '.description', 'new description');
+		$response->assertJsonPath('photos.' . $idx . '.tags', ['tag1']);
+		$response->assertJsonPath('photos.' . $idx . '.license', 'none');
+		$response->assertJsonPath('photos.' . $idx . '.created_at', '2021-01-01T00:00:00+00:00');
+		$response->assertJsonPath('photos.' . $idx . '.precomputed.is_taken_at_modified', false);
 
 		// Test setting taken_at
 		$response = $this->actingAs($this->userMayUpload1)->patchJson('Photo', [
@@ -96,19 +96,19 @@ class PhotoEditTest extends BaseApiWithDataTest
 		]);
 		$this->assertOk($response);
 
-		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album', ['album_id' => $this->album1->id]);
+		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album::photos', ['album_id' => $this->album1->id]);
 		$this->assertOk($response);
 
-		$photo0 = $response->json('resource.photos.0');
+		$photo0 = $response->json('photos.0');
 		$idx = $photo0['id'] === $this->photo1->id ? 0 : 1;
-		$response->assertJsonPath('resource.photos.' . $idx . '.id', $this->photo1->id);
-		$response->assertJsonPath('resource.photos.' . $idx . '.title', 'new title');
-		$response->assertJsonPath('resource.photos.' . $idx . '.description', 'new description');
-		$response->assertJsonPath('resource.photos.' . $idx . '.tags', ['tag1']);
-		$response->assertJsonPath('resource.photos.' . $idx . '.license', 'none');
-		$response->assertJsonPath('resource.photos.' . $idx . '.created_at', '2021-01-01T00:00:00+00:00');
-		$response->assertJsonPath('resource.photos.' . $idx . '.taken_at', '2021-01-01T00:00:00+00:00');
-		$response->assertJsonPath('resource.photos.' . $idx . '.precomputed.is_taken_at_modified', true);
+		$response->assertJsonPath('photos.' . $idx . '.id', $this->photo1->id);
+		$response->assertJsonPath('photos.' . $idx . '.title', 'new title');
+		$response->assertJsonPath('photos.' . $idx . '.description', 'new description');
+		$response->assertJsonPath('photos.' . $idx . '.tags', ['tag1']);
+		$response->assertJsonPath('photos.' . $idx . '.license', 'none');
+		$response->assertJsonPath('photos.' . $idx . '.created_at', '2021-01-01T00:00:00+00:00');
+		$response->assertJsonPath('photos.' . $idx . '.taken_at', '2021-01-01T00:00:00+00:00');
+		$response->assertJsonPath('photos.' . $idx . '.precomputed.is_taken_at_modified', true);
 
 		// Reset taken_at
 		$response = $this->actingAs($this->userMayUpload1)->patchJson('Photo', [
@@ -123,18 +123,18 @@ class PhotoEditTest extends BaseApiWithDataTest
 		]);
 		$this->assertOk($response);
 
-		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album', ['album_id' => $this->album1->id]);
+		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album::photos', ['album_id' => $this->album1->id]);
 		$this->assertOk($response);
 
-		$photo0 = $response->json('resource.photos.0');
+		$photo0 = $response->json('photos.0');
 		$idx = $photo0['id'] === $this->photo1->id ? 0 : 1;
-		$response->assertJsonPath('resource.photos.' . $idx . '.id', $this->photo1->id);
-		$response->assertJsonPath('resource.photos.' . $idx . '.title', 'new title');
-		$response->assertJsonPath('resource.photos.' . $idx . '.description', 'new description');
-		$response->assertJsonPath('resource.photos.' . $idx . '.tags', ['tag1']);
-		$response->assertJsonPath('resource.photos.' . $idx . '.license', 'none');
-		$response->assertJsonPath('resource.photos.' . $idx . '.created_at', '2021-01-01T00:00:00+00:00');
-		$response->assertJsonPath('resource.photos.' . $idx . '.precomputed.is_taken_at_modified', false);
+		$response->assertJsonPath('photos.' . $idx . '.id', $this->photo1->id);
+		$response->assertJsonPath('photos.' . $idx . '.title', 'new title');
+		$response->assertJsonPath('photos.' . $idx . '.description', 'new description');
+		$response->assertJsonPath('photos.' . $idx . '.tags', ['tag1']);
+		$response->assertJsonPath('photos.' . $idx . '.license', 'none');
+		$response->assertJsonPath('photos.' . $idx . '.created_at', '2021-01-01T00:00:00+00:00');
+		$response->assertJsonPath('photos.' . $idx . '.precomputed.is_taken_at_modified', false);
 	}
 
 	public function testEditPhotoAuthorizedOwnerNullTakenDate(): void
@@ -154,19 +154,19 @@ class PhotoEditTest extends BaseApiWithDataTest
 		]);
 		$this->assertOk($response);
 
-		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album', ['album_id' => $this->album1->id]);
+		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album::photos', ['album_id' => $this->album1->id]);
 		$this->assertOk($response);
-		$photo0 = $response->json('resource.photos.0');
+		$photo0 = $response->json('photos.0');
 		$idx = $photo0['id'] === $this->photo1->id ? 0 : 1;
 
-		$response->assertJsonPath('resource.photos.' . $idx . '.id', $this->photo1->id);
-		$response->assertJsonPath('resource.photos.' . $idx . '.title', 'new title');
-		$response->assertJsonPath('resource.photos.' . $idx . '.description', 'new description');
-		$response->assertJsonPath('resource.photos.' . $idx . '.tags', ['tag1']);
-		$response->assertJsonPath('resource.photos.' . $idx . '.license', 'none');
-		$response->assertJsonPath('resource.photos.' . $idx . '.created_at', '2021-01-01T00:00:00+00:00');
-		$response->assertJsonPath('resource.photos.' . $idx . '.taken_at', null);
-		$response->assertJsonPath('resource.photos.' . $idx . '.precomputed.is_taken_at_modified', false);
+		$response->assertJsonPath('photos.' . $idx . '.id', $this->photo1->id);
+		$response->assertJsonPath('photos.' . $idx . '.title', 'new title');
+		$response->assertJsonPath('photos.' . $idx . '.description', 'new description');
+		$response->assertJsonPath('photos.' . $idx . '.tags', ['tag1']);
+		$response->assertJsonPath('photos.' . $idx . '.license', 'none');
+		$response->assertJsonPath('photos.' . $idx . '.created_at', '2021-01-01T00:00:00+00:00');
+		$response->assertJsonPath('photos.' . $idx . '.taken_at', null);
+		$response->assertJsonPath('photos.' . $idx . '.precomputed.is_taken_at_modified', false);
 
 		// Test setting taken_at
 		$response = $this->actingAs($this->userMayUpload1)->patchJson('Photo', [
@@ -181,19 +181,19 @@ class PhotoEditTest extends BaseApiWithDataTest
 		]);
 		$this->assertOk($response);
 
-		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album', ['album_id' => $this->album1->id]);
+		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album::photos', ['album_id' => $this->album1->id]);
 		$this->assertOk($response);
 
-		$photo0 = $response->json('resource.photos.0');
+		$photo0 = $response->json('photos.0');
 		$idx = $photo0['id'] === $this->photo1->id ? 0 : 1;
-		$response->assertJsonPath('resource.photos.' . $idx . '.id', $this->photo1->id);
-		$response->assertJsonPath('resource.photos.' . $idx . '.title', 'new title');
-		$response->assertJsonPath('resource.photos.' . $idx . '.description', 'new description');
-		$response->assertJsonPath('resource.photos.' . $idx . '.tags', ['tag1']);
-		$response->assertJsonPath('resource.photos.' . $idx . '.license', 'none');
-		$response->assertJsonPath('resource.photos.' . $idx . '.created_at', '2021-01-01T00:00:00+00:00');
-		$response->assertJsonPath('resource.photos.' . $idx . '.taken_at', '2021-01-01T00:00:00+00:00');
-		$response->assertJsonPath('resource.photos.' . $idx . '.precomputed.is_taken_at_modified', true);
+		$response->assertJsonPath('photos.' . $idx . '.id', $this->photo1->id);
+		$response->assertJsonPath('photos.' . $idx . '.title', 'new title');
+		$response->assertJsonPath('photos.' . $idx . '.description', 'new description');
+		$response->assertJsonPath('photos.' . $idx . '.tags', ['tag1']);
+		$response->assertJsonPath('photos.' . $idx . '.license', 'none');
+		$response->assertJsonPath('photos.' . $idx . '.created_at', '2021-01-01T00:00:00+00:00');
+		$response->assertJsonPath('photos.' . $idx . '.taken_at', '2021-01-01T00:00:00+00:00');
+		$response->assertJsonPath('photos.' . $idx . '.precomputed.is_taken_at_modified', true);
 
 		// Reset taken_at
 		$response = $this->actingAs($this->userMayUpload1)->patchJson('Photo', [
@@ -208,18 +208,18 @@ class PhotoEditTest extends BaseApiWithDataTest
 		]);
 		$this->assertOk($response);
 
-		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album', ['album_id' => $this->album1->id]);
+		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album::photos', ['album_id' => $this->album1->id]);
 		$this->assertOk($response);
 
-		$photo0 = $response->json('resource.photos.0');
+		$photo0 = $response->json('photos.0');
 		$idx = $photo0['id'] === $this->photo1->id ? 0 : 1;
-		$response->assertJsonPath('resource.photos.' . $idx . '.id', $this->photo1->id);
-		$response->assertJsonPath('resource.photos.' . $idx . '.title', 'new title');
-		$response->assertJsonPath('resource.photos.' . $idx . '.description', 'new description');
-		$response->assertJsonPath('resource.photos.' . $idx . '.tags', ['tag1']);
-		$response->assertJsonPath('resource.photos.' . $idx . '.license', 'none');
-		$response->assertJsonPath('resource.photos.' . $idx . '.created_at', '2021-01-01T00:00:00+00:00');
-		$response->assertJsonPath('resource.photos.' . $idx . '.taken_at', null);
-		$response->assertJsonPath('resource.photos.' . $idx . '.precomputed.is_taken_at_modified', false);
+		$response->assertJsonPath('photos.' . $idx . '.id', $this->photo1->id);
+		$response->assertJsonPath('photos.' . $idx . '.title', 'new title');
+		$response->assertJsonPath('photos.' . $idx . '.description', 'new description');
+		$response->assertJsonPath('photos.' . $idx . '.tags', ['tag1']);
+		$response->assertJsonPath('photos.' . $idx . '.license', 'none');
+		$response->assertJsonPath('photos.' . $idx . '.created_at', '2021-01-01T00:00:00+00:00');
+		$response->assertJsonPath('photos.' . $idx . '.taken_at', null);
+		$response->assertJsonPath('photos.' . $idx . '.precomputed.is_taken_at_modified', false);
 	}
 }
