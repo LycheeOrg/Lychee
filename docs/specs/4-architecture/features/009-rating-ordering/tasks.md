@@ -214,20 +214,6 @@ _Last updated: 2026-01-16_
   - Manual verification
   _Notes:_ Keys: unrated, one_star, two_stars, three_stars, four_stars, five_stars, best_pictures. COMPLETED: All translations already present.
 
-## Increment I12 – Backfill Artisan Command
-
-- [x] T-009-35 – Create lychee:sync-rating-avg artisan command (CLI-009-01).
-  _Intent:_ Backfill rating_avg for existing photos from statistics.
-  _Verification commands:_
-  - `php artisan lychee:sync-rating-avg`
-  - `make phpstan`
-
-- [x] T-009-36 – Write test for sync-rating-avg command (CLI-009-01).
-  _Intent:_ Test command correctly backfills rating_avg values.
-  _Verification commands:_
-  - `php artisan test --filter=SyncRatingAvgCommandTest`
-  _Notes:_ COMPLETED: All 4 tests passing (sync, dry-run, skip unrated, already synchronized).
-
 ## Increment I13 – Integration Tests
 
 - [ ] T-009-37 – Write integration test for smart album API responses (S-009-12, S-009-13).

@@ -216,12 +216,6 @@ This feature extends the photo rating system (Feature 001) with sorting capabili
 | API-009-02 | GET /Album/{smart_album_id} | Fetch individual rating smart album | Same as existing smart albums |
 | API-009-03 | POST /Album::setSmartProtectionPolicy | Set public/private for rating smart albums | Existing endpoint, new album IDs supported |
 
-### CLI Commands / Flags
-
-| ID | Command | Behaviour |
-|----|---------|-----------|
-| CLI-009-01 | `php artisan lychee:sync-rating-avg` | Backfill rating_avg column from existing rating_sum/rating_count. For migration of existing installations. |
-
 ### Telemetry Events
 
 Not applicable (no telemetry for this feature).
@@ -366,11 +360,6 @@ sorting:
   - column: rating
     order: COALESCE(rating_avg, -1) DESC
     description: Sort by average rating, highest first, unrated last. COALESCE pattern for cross-database index usage.
-
-cli_commands:
-  - id: CLI-009-01
-    command: php artisan lychee:sync-rating-avg
-    description: Backfill rating_avg from statistics for existing installations
 ```
 
 ## Appendix

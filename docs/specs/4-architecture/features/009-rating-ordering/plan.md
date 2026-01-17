@@ -34,7 +34,6 @@ _Last updated:_ 2026-01-16
 - Register new smart albums in `AlbumFactory`
 - Add 8 config settings for enable/disable and best_pictures_count
 - Add language translations for smart album titles
-- Artisan command for backfilling `rating_avg`
 
 **Out of scope:**
 - Changes to the rating system itself (Feature 001)
@@ -68,7 +67,7 @@ _Last updated:_ 2026-01-16
 |------|--------|------------|
 | Performance of Best Pictures tie-inclusion query | Medium | Use subquery for Nth rating, then single WHERE; add index |
 | Database compatibility for NULL handling | Low | Use `COALESCE(rating_avg, -1) DESC` for cross-database index usage per Q-009-06 |
-| Migration on large databases | Medium | Make migration additive; backfill via artisan command |
+| Migration on large databases | Medium | Make migration additive with backfill |
 | Enum extension breaking existing code | Low | Follow existing pattern; add cases at end |
 
 ## Implementation Drift Gate
@@ -320,28 +319,6 @@ _Exit:_ Smart album titles localized.
 
 ---
 
-### I12 – Backfill Artisan Command
-_Goal:_ Create command to backfill rating_avg for existing installations.
-
-_Preconditions:_ I1, I2 complete.
-
-_Steps:_
-1. Create `php artisan lychee:sync-rating-avg` command
-2. Iterate all photos with statistics
-3. Calculate and set `rating_avg = rating_sum / rating_count` or NULL
-4. Add progress bar and completion message
-5. Write test for command
-
-_Commands:_
-```bash
-php artisan lychee:sync-rating-avg
-php artisan test --filter=SyncRatingAvgCommandTest
-```
-
-_Exit:_ Command backfills rating_avg for all existing photos.
-
----
-
 ### I13 – Integration Tests
 _Goal:_ End-to-end tests for smart album API and access control.
 
@@ -425,7 +402,6 @@ _To be completed before implementation begins._
 - [ ] Enable/disable configs work for all albums
 - [ ] Public/private access control works
 - [ ] Best Pictures tie-inclusion verified
-- [ ] Backfill command works for existing data
 - [ ] All tests pass (`php artisan test`)
 - [ ] PHPStan level 6 passes
 - [ ] php-cs-fixer clean
