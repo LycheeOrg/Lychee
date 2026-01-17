@@ -58,7 +58,7 @@ class AlbumsTest extends BaseApiWithDataTest
 	{
 		$response = $this->actingAs($this->userMayUpload1)->getJson('Albums');
 		$this->assertOk($response);
-		self::assertCount(5, $response->json('smart_albums'));
+		self::assertCount(7, $response->json('smart_albums'));
 		$response->assertSee($this->album1->id);
 		$response->assertSee($this->album4->id);
 		$response->assertJson([

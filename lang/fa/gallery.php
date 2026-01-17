@@ -46,6 +46,13 @@ return [
         'public' => 'عمومی',
         'on_this_day' => 'در این روز',
         'untagged' => 'Untagged',
+        'unrated' => 'Unrated',
+        'one_star' => '1 Star',
+        'two_stars' => '2 Stars',
+        'three_stars' => '3+ Stars',
+        'four_stars' => '4+ Stars',
+        'five_stars' => '5 Stars',
+        'best_pictures' => 'Best Pictures',
     ],
     'layout' => [
         'squares' => 'تصویر کوچک مربعی',

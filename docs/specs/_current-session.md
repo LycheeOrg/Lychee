@@ -1,108 +1,74 @@
 # Current Session
 
-_Last updated: 2026-01-03_
+_Last updated: 2026-01-16_
 
 ## Active Features
 
-**Feature 006 – Photo Star Rating Filter**
-- Status: Planning (spec, plan, tasks created)
+**Feature 009 – Rating Ordering and Smart Albums**
+- Status: Planning (spec, plan, tasks complete)
 - Priority: P2
-- Started: 2026-01-03
+- Started: 2026-01-16
 - Dependency: Feature 001 (Photo Star Rating)
-
-**Feature 005 – Album List View Toggle**
-- Status: Planning (spec, plan, tasks created)
-- Priority: P2
-- Started: 2026-01-03
+- Note: Best Pictures smart album requires Lychee SE license
 
 ## Session Summary
 
-Created Feature 006 specification, implementation plan, and task checklist for adding a star rating filter to the photo panel.
+Created Feature 009 specification for rating ordering and rating-based smart albums.
 
-### Feature 006: Photo Star Rating Filter
+### Feature 009: Rating Ordering and Smart Albums
 
 **User Request:**
-Add quick filtering of photos in the current album by star rating. Requirements:
-- Filter control positioned to the left of photo layout selection buttons
-- Frontend-only filtering (no backend changes)
-- Display 5 hoverable stars
-- Click star N to filter photos with rating ≥ N (minimum threshold)
-- Click same star again to remove filter (toggle behavior)
-- Only show filter when at least one photo has a rating
-- Only apply filtering when filter is active AND rated photos exist
-- Keep selection in state store (like NSFW visibility)
+- Add `rating_avg` column to photos for sorting
+- Add "Sort by Rating" option
+- Create 6 rating smart albums: Unrated, 1★, 2★, 3★, 4★, 5★
+- Create Best Pictures smart album with configurable cutoff
+- Each smart album has enable/disable and public/private settings
 
 **Decisions Made:**
-- **Q-006-01:** UI uses hover star list with minimum threshold filtering and toggle-off
-- **Q-006-02:** Unrated photos excluded from filtered results (minimum threshold logic)
-- **Q-006-03:** Filter state persisted in Pinia store (like NSFW visibility), not localStorage
-- **Q-006-04:** Minimum threshold filtering (≥ N stars) rather than exact match
+- **Q-009-01:** Option B - Add denormalized `rating_avg` column to photos table (fast indexed sorting)
+- **Q-009-02:** Option C - Hybrid threshold logic (1★/2★ exact buckets, 3★+ threshold)
+- **Q-009-03:** Option B - Top N by rating with ties included
+- **Q-009-04:** Rating smart albums sorted by rating DESC
+
+**Smart Album Logic:**
+| Album | Condition |
+|-------|-----------|
+| Unrated | `rating_avg IS NULL` |
+| 1★ | `1.0 <= rating_avg < 2.0` |
+| 2★ | `2.0 <= rating_avg < 3.0` |
+| 3★+ | `rating_avg >= 3.0` |
+| 4★+ | `rating_avg >= 4.0` |
+| 5★ | `rating_avg >= 5.0` |
+| Best Pictures | Top N by rating (ties included) |
 
 **Deliverables Created:**
-1. [docs/specs/4-architecture/features/006-photo-rating-filter/spec.md](docs/specs/4-architecture/features/006-photo-rating-filter/spec.md)
-2. [docs/specs/4-architecture/features/006-photo-rating-filter/plan.md](docs/specs/4-architecture/features/006-photo-rating-filter/plan.md)
-3. [docs/specs/4-architecture/features/006-photo-rating-filter/tasks.md](docs/specs/4-architecture/features/006-photo-rating-filter/tasks.md)
-4. Updated [docs/specs/4-architecture/roadmap.md](docs/specs/4-architecture/roadmap.md) with Feature 006
+1. [docs/specs/4-architecture/features/009-rating-ordering/spec.md](docs/specs/4-architecture/features/009-rating-ordering/spec.md)
+2. [docs/specs/4-architecture/features/009-rating-ordering/plan.md](docs/specs/4-architecture/features/009-rating-ordering/plan.md)
+3. [docs/specs/4-architecture/features/009-rating-ordering/tasks.md](docs/specs/4-architecture/features/009-rating-ordering/tasks.md)
+4. Updated [docs/specs/4-architecture/roadmap.md](docs/specs/4-architecture/roadmap.md) with Feature 009
 5. Updated [docs/specs/4-architecture/open-questions.md](docs/specs/4-architecture/open-questions.md) with resolved questions
 
-## Implementation Overview
-
-**Components to Modify:**
-- `PhotoThumbPanelControl.vue` - Add 5-star filter control before layout buttons
-- `PhotosState.ts` - Add photo_rating_filter state (null | 1-5)
-
-**Key Implementation Details:**
-- Frontend-only feature (no backend/API changes)
-- Filter state stored in Pinia PhotosState store (session-only persistence)
-- Client-side filtering via computed property (≥ threshold logic)
-- Conditional rendering: filter only visible when hasRatedPhotos === true
-- Toggle behavior: click star N → set filter, click again → clear filter
-- Visual feedback: stars 1-N filled when filter = N
-- Keyboard accessible with ARIA attributes
-
-**Filtering Logic:**
-```typescript
-const filteredPhotos = computed(() => {
-  const filter = photosStore.photoRatingFilter;
-  const hasRated = photos.value.some(p => p.user_rating > 0);
-
-  if (filter === null || !hasRated) {
-    return photos.value;
-  }
-
-  return photos.value.filter(p =>
-    p.user_rating !== null &&
-    p.user_rating >= filter
-  );
-});
-```
-
-**Dependencies:**
-- **Feature 001 (Photo Star Rating):** Required for user_rating field. Must be complete before Feature 006 implementation.
+**Paused:**
+- Feature 006 (Photo Star Rating Filter) - paused per user request
 
 ## Next Steps
 
-1. Verify Feature 001 (Photo Star Rating) is complete
-2. Run analysis gate checklist (see [plan.md](docs/specs/4-architecture/features/006-photo-rating-filter/plan.md))
-3. Begin implementation following [tasks.md](docs/specs/4-architecture/features/006-photo-rating-filter/tasks.md)
-4. Start with Increment I1 (PhotosState store modifications)
-5. Follow test-first approach where applicable
+1. Run analysis gate checklist
+2. Begin implementation starting with I1 (Database Schema)
 
 ## Open Questions
 
-None - all questions (Q-006-01, Q-006-02, Q-006-03, Q-006-04) resolved.
+None - all questions (Q-009-01 through Q-009-04) resolved.
 
 ## References
 
-**Feature 006:**
-- Feature spec: [006-photo-rating-filter/spec.md](docs/specs/4-architecture/features/006-photo-rating-filter/spec.md)
-- Implementation plan: [006-photo-rating-filter/plan.md](docs/specs/4-architecture/features/006-photo-rating-filter/plan.md)
-- Task checklist: [006-photo-rating-filter/tasks.md](docs/specs/4-architecture/features/006-photo-rating-filter/tasks.md)
+**Feature 009:**
+- Feature spec: [009-rating-ordering/spec.md](docs/specs/4-architecture/features/009-rating-ordering/spec.md)
+- Implementation plan: [009-rating-ordering/plan.md](docs/specs/4-architecture/features/009-rating-ordering/plan.md)
+- Task checklist: [009-rating-ordering/tasks.md](docs/specs/4-architecture/features/009-rating-ordering/tasks.md)
 
-**Feature 005:**
-- Feature spec: [005-album-list-view/spec.md](docs/specs/4-architecture/features/005-album-list-view/spec.md)
-- Implementation plan: [005-album-list-view/plan.md](docs/specs/4-architecture/features/005-album-list-view/plan.md)
-- Task checklist: [005-album-list-view/tasks.md](docs/specs/4-architecture/features/005-album-list-view/tasks.md)
+**Paused:**
+- Feature 006 spec: [006-photo-rating-filter/spec.md](docs/specs/4-architecture/features/006-photo-rating-filter/spec.md)
 
 **Common:**
 - Roadmap: [roadmap.md](docs/specs/4-architecture/roadmap.md)
@@ -112,8 +78,11 @@ None - all questions (Q-006-01, Q-006-02, Q-006-03, Q-006-04) resolved.
 
 **Session Context for Handoff:**
 
-Two features created in this session:
-1. **Feature 005 (Album List View Toggle):** Frontend-only list view for albums with toggle in AlbumHero, localStorage persistence.
-2. **Feature 006 (Photo Star Rating Filter):** Frontend-only minimum threshold filter for photos with 5-star control in PhotoThumbPanelControl, Pinia store persistence, depends on Feature 001.
+Feature 009 (Rating Ordering and Smart Albums) fully planned. Key design decisions:
+1. Denormalized `rating_avg` column on photos table for sorting performance
+2. Hybrid threshold logic for rating smart albums (1★/2★ exact, 3★+ cumulative)
+3. Best Pictures shows top N photos with ties included (Lychee SE only)
+4. All rating smart albums sorted by rating DESC
+5. 44 tasks organized into 14 increments
 
-Both features are fully planned with specs, plans, and task checklists following AGENTS.md workflow. Both are frontend-only (no backend changes). Feature 006 has blocking dependency on Feature 001 (Photo Star Rating) for user_rating field.
+Feature 006 (Photo Star Rating Filter) paused. Ready to begin implementation of Feature 009.

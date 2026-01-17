@@ -32,6 +32,7 @@ enum ColumnSortingType: string
 	case TAKEN_AT = 'taken_at';
 	case IS_STARRED = 'is_starred';
 	case TYPE = 'type';
+	case RATING_AVG = 'rating_avg';
 
 	/**
 	 * Convert into actual column name.
@@ -42,6 +43,30 @@ enum ColumnSortingType: string
 			self::TITLE_STRICT => 'title',
 			self::DESCRIPTION_STRICT => 'description',
 			default => $this->value,
+		};
+	}
+
+	/**
+	 * Check if this column requires special raw SQL ordering.
+	 * Used for columns that need COALESCE or other SQL functions.
+	 */
+	public function requiresRawOrdering(): bool
+	{
+		return $this === self::RATING_AVG;
+	}
+
+	/**
+	 * Get the raw SQL ordering expression for this column.
+	 * Only applicable when requiresRawOrdering() returns true.
+	 *
+	 * @param string $prefix Optional table prefix (e.g., 'photos.')
+	 */
+	public function getRawOrderExpression(string $prefix = ''): string
+	{
+		return match ($this) {
+			// COALESCE pushes NULLs to end by using -1 as sentinel (Q-009-06)
+			self::RATING_AVG => 'COALESCE(' . $prefix . 'rating_avg, -1)',
+			default => $prefix . $this->toColumn(),
 		};
 	}
 }

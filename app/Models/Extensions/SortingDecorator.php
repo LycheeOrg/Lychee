@@ -67,7 +67,7 @@ class SortingDecorator
 	 * The mixed case with some pre-sorting on the SQL layer and final sorting
 	 * on the software layer is more complicated.
 	 *
-	 * @var array<int,array{column:string,direction:string}>
+	 * @var array<int,array{column:string,direction:string,type:ColumnSortingType,prefix:string}>
 	 */
 	protected array $order_by = [];
 
@@ -102,6 +102,8 @@ class SortingDecorator
 		$this->order_by[] = [
 			'column' => $column->toColumn(),
 			'direction' => $direction->value,
+			'type' => $column,
+			'prefix' => '',
 		];
 
 		if (in_array($column, self::POSTPONE_COLUMNS, true)) {
@@ -127,6 +129,8 @@ class SortingDecorator
 		$this->order_by[] = [
 			'column' => 'photos.' . $column->toColumn(),
 			'direction' => $direction->value,
+			'type' => $column,
+			'prefix' => 'photos.',
 		];
 
 		if (in_array($column, self::POSTPONE_COLUMNS, true)) {
@@ -149,7 +153,17 @@ class SortingDecorator
 			for ($i = $this->pivot_idx + 1; $i < count($this->order_by); $i++) {
 				$column = $this->order_by[$i]['column'];
 				$column_sorting_name = str_replace('_strict', '', $column);
-				$this->base_builder->orderBy($column_sorting_name, $this->order_by[$i]['direction']);
+				$column_type = $this->order_by[$i]['type'];
+				$prefix = $this->order_by[$i]['prefix'];
+				$direction = $this->order_by[$i]['direction'];
+
+				// Check if this column requires raw SQL ordering (e.g., COALESCE for rating)
+				if ($column_type->requiresRawOrdering()) {
+					$raw_expression = $column_type->getRawOrderExpression($prefix);
+					$this->base_builder->orderByRaw($raw_expression . ' ' . $direction);
+				} else {
+					$this->base_builder->orderBy($column_sorting_name, $direction);
+				}
 			}
 			// @codeCoverageIgnoreStart
 		} catch (\InvalidArgumentException) {

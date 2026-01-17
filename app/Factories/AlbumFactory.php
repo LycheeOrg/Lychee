@@ -17,9 +17,16 @@ use App\Models\Extensions\BaseAlbum;
 use App\Models\TagAlbum;
 use App\Repositories\ConfigManager;
 use App\SmartAlbums\BaseSmartAlbum;
+use App\SmartAlbums\BestPicturesAlbum;
+use App\SmartAlbums\FiveStarsAlbum;
+use App\SmartAlbums\FourStarsAlbum;
+use App\SmartAlbums\OneStarAlbum;
 use App\SmartAlbums\OnThisDayAlbum;
 use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
+use App\SmartAlbums\ThreeStarsAlbum;
+use App\SmartAlbums\TwoStarsAlbum;
+use App\SmartAlbums\UnratedAlbum;
 use App\SmartAlbums\UnsortedAlbum;
 use App\SmartAlbums\UntaggedAlbum;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -33,6 +40,13 @@ class AlbumFactory
 		SmartAlbumType::RECENT->value => RecentAlbum::class,
 		SmartAlbumType::ON_THIS_DAY->value => OnThisDayAlbum::class,
 		SmartAlbumType::UNTAGGED->value => UntaggedAlbum::class,
+		SmartAlbumType::UNRATED->value => UnratedAlbum::class,
+		SmartAlbumType::ONE_STAR->value => OneStarAlbum::class,
+		SmartAlbumType::TWO_STARS->value => TwoStarsAlbum::class,
+		SmartAlbumType::THREE_STARS->value => ThreeStarsAlbum::class,
+		SmartAlbumType::FOUR_STARS->value => FourStarsAlbum::class,
+		SmartAlbumType::FIVE_STARS->value => FiveStarsAlbum::class,
+		SmartAlbumType::BEST_PICTURES->value => BestPicturesAlbum::class,
 	];
 
 	public function __construct(
