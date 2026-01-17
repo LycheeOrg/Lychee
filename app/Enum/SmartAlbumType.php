@@ -24,8 +24,6 @@ enum SmartAlbumType: string
 	case RECENT = 'recent';
 	case ON_THIS_DAY = 'on_this_day';
 	case UNTAGGED = 'untagged';
-
-	// Rating-based smart albums (Feature 009)
 	case UNRATED = 'unrated';
 	case ONE_STAR = 'one_star';
 	case TWO_STARS = 'two_stars';
@@ -47,7 +45,6 @@ enum SmartAlbumType: string
 			self::RECENT => $config_manager->getValueAsBool('enable_recent'),
 			self::ON_THIS_DAY => $config_manager->getValueAsBool('enable_on_this_day'),
 			self::UNTAGGED => $config_manager->getValueAsBool('enable_untagged'),
-			// Rating-based smart albums (Feature 009)
 			self::UNRATED => $config_manager->getValueAsBool('enable_unrated'),
 			self::ONE_STAR => $config_manager->getValueAsBool('enable_1_star'),
 			self::TWO_STARS => $config_manager->getValueAsBool('enable_2_stars'),

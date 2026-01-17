@@ -10,6 +10,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+require_once 'TemporaryModels/RatedPhoto.php';
+
 return new class() extends Migration {
 	private const TABLE = 'photos';
 	private const COL_RATING_AVG = 'rating_avg';
@@ -26,6 +28,39 @@ return new class() extends Migration {
 
 			// Add index for efficient sorting by rating (FR-009-02, NFR-009-01)
 			$table->index(self::COL_RATING_AVG);
+		});
+
+		// Count photos that need updating
+		$photosToUpdate = DB::table('photos')
+			->join('statistics', 'photos.id', '=', 'statistics.photo_id')
+			->where('statistics.rating_count', '>', 0)
+			->count();
+
+		if ($photosToUpdate === 0) {
+			return;
+		}
+
+		DB::transaction(function () {
+			// Process in chunks to avoid memory issues
+			DB::table('photos')
+				->join('statistics', 'photos.id', '=', 'statistics.photo_id')
+				->where('statistics.rating_count', '>', 0)
+				->select('photos.id', 'statistics.rating_sum', 'statistics.rating_count')
+				->orderBy('photos.id')
+				->chunk(100, function ($photos) {
+					$update = $photos->map(function ($photo) {
+						$ratingAvg = round($photo->rating_sum / $photo->rating_count, 4);
+
+						return [
+							'id' => $photo->id,
+							'rating_avg' => $ratingAvg,
+						];
+					})->all();
+
+					$key_name = 'id';
+					$photo_instance = new RatedPhoto();
+					batch()->update($photo_instance, $update, $key_name);
+				});
 		});
 	}
 

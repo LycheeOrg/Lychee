@@ -40,7 +40,6 @@ class AlbumFactory
 		SmartAlbumType::RECENT->value => RecentAlbum::class,
 		SmartAlbumType::ON_THIS_DAY->value => OnThisDayAlbum::class,
 		SmartAlbumType::UNTAGGED->value => UntaggedAlbum::class,
-		// Rating-based smart albums (Feature 009)
 		SmartAlbumType::UNRATED->value => UnratedAlbum::class,
 		SmartAlbumType::ONE_STAR->value => OneStarAlbum::class,
 		SmartAlbumType::TWO_STARS->value => TwoStarsAlbum::class,

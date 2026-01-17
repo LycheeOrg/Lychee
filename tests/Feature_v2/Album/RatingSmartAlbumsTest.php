@@ -32,15 +32,13 @@ use Tests\Feature_v2\Base\BaseApiWithDataTest;
 use Tests\Traits\RequireSupport;
 
 /**
- * Tests for rating-based smart album filtering (Feature 009).
- *
  * T-009-15: UnratedAlbum
  * T-009-17: OneStarAlbum
  * T-009-19: TwoStarsAlbum
  * T-009-21: ThreeStarsAlbum
  * T-009-23: FourStarsAlbum
  * T-009-25: FiveStarsAlbum
- * T-009-27,28,29: BestPicturesAlbum
+ * T-009-27,28,29: BestPicturesAlbum.
  */
 class RatingSmartAlbumsTest extends BaseApiWithDataTest
 {

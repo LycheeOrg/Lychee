@@ -9,10 +9,14 @@
 namespace App\SmartAlbums;
 
 use App\DTO\PhotoSortingCriterion;
+use App\Enum\ColumnSortingPhotoType;
+use App\Enum\OrderSortingType;
 use App\Enum\SmartAlbumType;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
+use App\Models\Extensions\SortingDecorator;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 /**
  * Smart album containing photos with 4+ star rating (rating_avg >= 4.0).
@@ -42,18 +46,18 @@ class FourStarsAlbum extends BaseSmartAlbum
 	/**
 	 * Override sorting: FourStarsAlbum sorts by rating_avg DESC.
 	 */
-	protected function getPhotosAttribute(): \Illuminate\Pagination\LengthAwarePaginator
+	protected function getPhotosAttribute(): LengthAwarePaginator
 	{
 		if ($this->photos !== null) {
 			return $this->photos;
 		}
 
 		$sorting = new PhotoSortingCriterion(
-			column: \App\Enum\ColumnSortingPhotoType::RATING_AVG->toColumnSortingType(),
-			order: \App\Enum\OrderSortingType::DESC
+			column: ColumnSortingPhotoType::RATING_AVG->toColumnSortingType(),
+			order: OrderSortingType::DESC
 		);
 
-		$photos = (new \App\Models\Extensions\SortingDecorator($this->photos()))
+		$photos = (new SortingDecorator($this->photos()))
 			->orderPhotosBy($sorting->column, $sorting->order)
 			->paginate($this->config_manager->getValueAsInt('photos_pagination_limit'));
 		$this->photos = $photos;

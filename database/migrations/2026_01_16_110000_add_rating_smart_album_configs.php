@@ -6,13 +6,10 @@
  * Copyright (c) 2018-2026 LycheeOrg.
  */
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\DB;
+use App\Models\Extensions\BaseConfigMigration;
 
-return new class() extends Migration {
-	public const CAT = 'Mod Smart Albums';
-	public const BOOL = '0|1';
-	public const POSITIVE = 'positive';
+return new class() extends BaseConfigMigration {
+	public const CAT = 'Smart Albums';
 
 	/**
 	 * @return array<int,array{key:string,value:string,is_secret:bool,cat:string,type_range:string,description:string,details?:string,order?:int,not_on_docker?:bool,is_expert?:bool,level?:int}>
@@ -22,7 +19,7 @@ return new class() extends Migration {
 		return [
 			[
 				'key' => 'enable_unrated',
-				'value' => '1',
+				'value' => '0',
 				'cat' => self::CAT,
 				'type_range' => self::BOOL,
 				'is_secret' => false,
@@ -30,12 +27,12 @@ return new class() extends Migration {
 				'details' => 'Show smart album containing photos without any ratings',
 				'level' => 0,
 				'not_on_docker' => false,
-				'order' => 20,
+				'order' => 40,
 				'is_expert' => false,
 			],
 			[
 				'key' => 'enable_1_star',
-				'value' => '1',
+				'value' => '0',
 				'cat' => self::CAT,
 				'type_range' => self::BOOL,
 				'is_secret' => false,
@@ -43,12 +40,12 @@ return new class() extends Migration {
 				'details' => 'Show smart album containing photos rated 1.0 to <2.0 stars',
 				'level' => 0,
 				'not_on_docker' => false,
-				'order' => 21,
+				'order' => 41,
 				'is_expert' => false,
 			],
 			[
 				'key' => 'enable_2_stars',
-				'value' => '1',
+				'value' => '0',
 				'cat' => self::CAT,
 				'type_range' => self::BOOL,
 				'is_secret' => false,
@@ -56,12 +53,12 @@ return new class() extends Migration {
 				'details' => 'Show smart album containing photos rated 2.0 to <3.0 stars',
 				'level' => 0,
 				'not_on_docker' => false,
-				'order' => 22,
+				'order' => 42,
 				'is_expert' => false,
 			],
 			[
 				'key' => 'enable_3_stars',
-				'value' => '1',
+				'value' => '0',
 				'cat' => self::CAT,
 				'type_range' => self::BOOL,
 				'is_secret' => false,
@@ -69,7 +66,7 @@ return new class() extends Migration {
 				'details' => 'Show smart album containing photos rated 3.0 stars or higher',
 				'level' => 0,
 				'not_on_docker' => false,
-				'order' => 23,
+				'order' => 43,
 				'is_expert' => false,
 			],
 			[
@@ -82,7 +79,7 @@ return new class() extends Migration {
 				'details' => 'Show smart album containing photos rated 4.0 stars or higher',
 				'level' => 0,
 				'not_on_docker' => false,
-				'order' => 24,
+				'order' => 44,
 				'is_expert' => false,
 			],
 			[
@@ -95,7 +92,7 @@ return new class() extends Migration {
 				'details' => 'Show smart album containing photos with perfect 5.0 rating',
 				'level' => 0,
 				'not_on_docker' => false,
-				'order' => 25,
+				'order' => 45,
 				'is_expert' => false,
 			],
 			[
@@ -106,9 +103,9 @@ return new class() extends Migration {
 				'is_secret' => false,
 				'description' => 'Enable Best Pictures smart album (Lychee SE)',
 				'details' => 'Show smart album containing top-rated photos. Requires Lychee SE license.',
-				'level' => 0,
+				'level' => 1,
 				'not_on_docker' => false,
-				'order' => 26,
+				'order' => 46,
 				'is_expert' => false,
 			],
 			[
@@ -119,28 +116,11 @@ return new class() extends Migration {
 				'is_secret' => false,
 				'description' => 'Best Pictures album photo count',
 				'details' => 'Number of top-rated photos to show in Best Pictures album. Photos tied at the cutoff are included.',
-				'level' => 0,
+				'level' => 1,
 				'not_on_docker' => false,
-				'order' => 27,
+				'order' => 47,
 				'is_expert' => false,
 			],
 		];
-	}
-
-	/**
-	 * Run the migrations.
-	 */
-	public function up(): void
-	{
-		DB::table('configs')->insert($this->getConfigs());
-	}
-
-	/**
-	 * Reverse the migrations.
-	 */
-	public function down(): void
-	{
-		$keys = collect($this->getConfigs())->map(fn ($v) => $v['key'])->all();
-		DB::table('configs')->whereIn('key', $keys)->delete();
 	}
 };
