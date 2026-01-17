@@ -90,6 +90,13 @@ class Rating
 					}
 					// If no existing rating, do nothing (idempotent)
 				}
+
+				// Sync rating_avg to photo (FR-009-14, Q-009-05)
+				// Calculate average with 4 decimal precision or NULL if no ratings
+				$photo->rating_avg = $statistics->rating_count > 0
+					? number_format($statistics->rating_sum / $statistics->rating_count, 4, '.', '')
+					: null;
+				$photo->save();
 			});
 
 			// Reload photo with fresh statistics

@@ -6,9 +6,61 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 | Question ID | Feature | Priority | Summary | Status | Opened | Updated |
 |-------------|---------|----------|---------|--------|--------|---------|
-| _No active questions_ | | | | | | |
+| (none) | - | - | - | - | - | - |
 
 ## Question Details
+
+(No active questions)
+
+---
+
+### ~~Q-009-05: rating_avg Decimal Precision~~ ✅ RESOLVED
+
+**Decision:** Option B - DECIMAL(5,4) with 4 decimal places
+**Rationale:** Very fine granularity (0.0001 increments) ensures minimal ties when sorting photos by rating. Handles edge cases with many ratings producing fractional averages.
+**Updated in spec:** FR-009-01, DO-009-01, migration strategy, round() precision
+
+---
+
+### ~~Q-009-06: NULLS LAST Cross-Database Strategy~~ ✅ RESOLVED
+
+**Decision:** Simple indexed ORDER BY with COALESCE pattern for fastest performance
+**Rationale:** User specified "fastest ordering possible with indexing." Using `COALESCE(rating_avg, -1) DESC` allows the query to use the index on `rating_avg` efficiently across all databases. Since ratings are always positive (1-5), -1 as sentinel value is safe and pushes NULLs to the end.
+**Updated in spec:** FR-009-02, sorting strategy, SortingDecorator implementation
+
+---
+
+### ~~Q-009-01: Average Rating Storage Strategy~~ ✅ RESOLVED
+
+**Decision:** Option B - Add denormalized rating_avg column to photos table
+**Rationale:** Fast indexed sorting with simple ORDER BY. Application logic will keep it in sync when ratings are updated (same transaction as rating_sum/rating_count updates).
+**Updated in spec:** FR-009-01, DO-009-01, migration strategy
+
+---
+
+### ~~Q-009-02: Rating Smart Album Threshold Logic~~ ✅ RESOLVED
+
+**Decision:** Option C - Hybrid (threshold for 3★+, exact for 1★-2★)
+**Rationale:** Matches user's explicit statement that "3_stars album will contain all photos rated 3 stars or above." Low ratings (1★, 2★) use exact buckets so photos only appear in one album; high ratings (3★+) use threshold for cumulative view.
+**Updated in spec:** FR-009-03 through FR-009-08, smart album filtering logic
+
+---
+
+### ~~Q-009-03: Best Pictures Cutoff Behavior~~ ✅ RESOLVED
+
+**Decision:** Option B - Top N by rating, include ties
+**Rationale:** Fair behavior that doesn't arbitrarily exclude photos with the same rating as the Nth photo. May show more than N photos if ties exist, but ensures no photo is unfairly excluded.
+**Updated in spec:** FR-009-09, Best Pictures smart album logic
+
+---
+
+### ~~Q-009-04: Smart Album Sorting Default~~ ✅ RESOLVED
+
+**Decision:** Custom - Rating smart albums and Best Pictures sorted by rating DESC
+**Rationale:** Shows highest-rated photos first, which is the natural expectation for rating-based albums.
+**Updated in spec:** FR-009-10, NFR-009-03
+
+---
 
 ### ~~Q-008-01: User Preference Storage Location~~ ✅ RESOLVED
 

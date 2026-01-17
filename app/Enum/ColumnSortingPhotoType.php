@@ -31,6 +31,7 @@ enum ColumnSortingPhotoType: string
 	case TAKEN_AT = 'taken_at';
 	case IS_STARRED = 'is_starred';
 	case TYPE = 'type';
+	case RATING_AVG = 'rating_avg';
 
 	/**
 	 * Convert into Column Sorting type.

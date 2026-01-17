@@ -6,9 +6,15 @@ High-level planning document for Lychee features and architectural initiatives.
 
 | Feature ID | Name | Status | Priority | Assignee | Started | Updated |
 |------------|------|--------|----------|----------|---------|---------|
+| 009 | Rating Ordering and Smart Albums | Planning | P2 | Agent | 2026-01-16 | 2026-01-16 |
 | 007 | Photos and Albums Pagination | In Progress | P1 | Agent | 2026-01-07 | 2026-01-08 |
-| 006 | Photo Star Rating Filter | Planning | P2 | Agent | 2026-01-03 | 2026-01-03 |
 | 004 | Album Size Statistics Pre-computation | Planning | P1 | - | 2026-01-02 | 2026-01-02 |
+
+## Paused Features
+
+| Feature ID | Name | Status | Priority | Reason | Paused Date |
+|------------|------|--------|----------|--------|-------------|
+| 006 | Photo Star Rating Filter | Paused | P2 | User requested pause for Feature 009 | 2026-01-16 |
 
 ## Completed Features
 
@@ -80,4 +86,4 @@ features/
 
 ---
 
-*Last updated: 2026-01-08*
+*Last updated: 2026-01-16*

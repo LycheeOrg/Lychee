@@ -71,6 +71,7 @@ use function Safe\preg_match;
  * @property Carbon|null           $initial_taken_at
  * @property string|null           $initial_taken_at_orig_tz
  * @property bool                  $is_starred
+ * @property string|null           $rating_avg
  * @property string|null           $live_photo_short_path
  * @property string|null           $live_photo_url
  * @property string                $checksum
@@ -168,6 +169,7 @@ class Photo extends Model implements HasUTCBasedTimes
 		'longitude' => 'float',
 		'altitude' => 'float',
 		'img_direction' => 'float',
+		'rating_avg' => 'decimal:4',
 	];
 
 	/**
