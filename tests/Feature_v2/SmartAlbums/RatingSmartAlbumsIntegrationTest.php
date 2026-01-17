@@ -28,12 +28,14 @@ use Tests\Feature_v2\Base\BaseApiWithDataTest;
  */
 class RatingSmartAlbumsIntegrationTest extends BaseApiWithDataTest
 {
-	public function setUp(): void {
+	public function setUp(): void
+	{
 		parent::setUp();
 		$this->requireSe();
 	}
 
-	public function tearDown(): void {
+	public function tearDown(): void
+	{
 		$this->resetSe();
 		parent::tearDown();
 	}

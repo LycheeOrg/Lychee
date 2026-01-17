@@ -216,48 +216,44 @@ _Last updated: 2026-01-16_
 
 ## Increment I13 – Integration Tests
 
-- [ ] T-009-37 – Write integration test for smart album API responses (S-009-12, S-009-13).
+- [x] T-009-37 – Write integration test for smart album API responses (S-009-12, S-009-13).
   _Intent:_ Test API returns new smart albums, enable/disable works.
   _Verification commands:_
   - `php artisan test --filter=RatingSmartAlbumsIntegrationTest`
-  _Notes:_ BLOCKED - Requires API routes `/api/v2/gallery/albums` and `/api/v2/smart-album/{album}` from earlier tasks
 
-- [ ] T-009-38 – Write integration test for smart album access control (S-009-14, S-009-15).
+- [x] T-009-38 – Write integration test for smart album access control (S-009-14, S-009-15).
   _Intent:_ Test public/private access control for rating smart albums.
   _Verification commands:_
   - `php artisan test --filter=RatingSmartAlbumsIntegrationTest`
-  _Notes:_ BLOCKED - Requires API routes and `public_smart_albums` config from earlier tasks
 
-- [ ] T-009-39 – Write integration test for photo access permissions (S-009-18).
+- [x] T-009-39 – Write integration test for photo access permissions (S-009-18).
   _Intent:_ Test smart albums respect photo access permissions.
   _Verification commands:_
   - `php artisan test --filter=RatingSmartAlbumsIntegrationTest`
-  _Notes:_ BLOCKED - Requires API routes from earlier tasks
 
-- [ ] T-009-40 – Write integration test for NSFW filtering (S-009-19).
+- [x] T-009-40 – Write integration test for NSFW filtering (S-009-19).
   _Intent:_ Test smart albums respect NSFW filtering settings.
   _Verification commands:_
   - `php artisan test --filter=RatingSmartAlbumsIntegrationTest`
-  _Notes:_ BLOCKED - Requires API routes from earlier tasks
 
 ## Increment I14 – Quality Gate
 
-- [ ] T-009-41 – Run php-cs-fixer on all modified files (NFR-009-04).
+- [x] T-009-41 – Run php-cs-fixer on all modified files (NFR-009-04).
   _Intent:_ Ensure code style compliance.
   _Verification commands:_
   - `vendor/bin/php-cs-fixer fix`
 
-- [ ] T-009-42 – Run full test suite (NFR-009-06).
+- [x] T-009-42 – Run full test suite (NFR-009-06).
   _Intent:_ Ensure no regressions.
   _Verification commands:_
   - `php artisan test`
 
-- [ ] T-009-43 – Run PHPStan level 6 (NFR-009-04).
+- [x] T-009-43 – Run PHPStan level 6 (NFR-009-04).
   _Intent:_ Ensure static analysis passes.
   _Verification commands:_
   - `make phpstan`
 
-- [ ] T-009-44 – Update roadmap to Complete.
+- [x] T-009-44 – Update roadmap to Complete.
   _Intent:_ Mark feature as complete in roadmap.
   _Verification commands:_
   - Manual verification
