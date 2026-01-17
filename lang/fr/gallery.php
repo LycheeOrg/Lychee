@@ -1,5 +1,4 @@
 <?php
-
 return [
     /*
     |--------------------------------------------------------------------------
@@ -12,8 +11,8 @@ return [
     'albums' => 'Albums',
     'root' => 'Albums',
     'tabs' => [
-        'my_albums' => 'My Albums',
-        'shared_with_me' => 'Shared with Me',
+        'my_albums' => 'Mes albums',
+        'shared_with_me' => 'Partagé avec moi',
     ],
     'favourites' => 'Photo favorites',
     'original' => 'Original',
@@ -79,13 +78,13 @@ return [
         'hour' => 'Heure',
     ],
     'pagination' => [
-        'infinite_scroll' => 'Infinite scroll',
+        'infinite_scroll' => 'Defilement infini',
         'load_more_button' => 'Load more button',
         'page_navigation' => 'Page navigation',
-        'loading' => 'Loading...',
-        'load_more' => 'Load More',
-        'load_more_photos' => 'Load More (%s photos remaining)',
-        'load_more_albums' => 'Load More (%s albums remaining)',
+        'loading' => 'Chargement en cours...',
+        'load_more' => 'Charger plus',
+        'load_more_photos' => 'Charger plus (%s photos restantes)',
+        'load_more_albums' => 'Charger plus  (%s albums restant)',
     ],
     'album' => [
         'header_albums' => 'Albums',
@@ -97,7 +96,7 @@ return [
             'share' => 'Partager l’album',
             'embed' => 'Embed Album',
             'move' => 'Déplacer l’album',
-            'shop' => 'Shop Management',
+            'shop' => 'Gestion de la boutique',
             'danger' => 'ZONE DANGEREUSE',
         ],
         'hero' => [
@@ -204,8 +203,8 @@ return [
         ],
         'rating' => [
             'header' => 'Rating',
-            'rating' => 'rating',
-            'ratings' => 'ratings',
+            'rating' => 'notation',
+            'ratings' => 'notations',
             'your_rating' => 'Your rating',
             'saving' => 'Saving rating...',
             'removed' => 'Rating removed',
@@ -213,7 +212,7 @@ return [
             'error' => 'Failed to save rating',
             'error_unauthorized' => 'You must be logged in to rate photos',
             'error_forbidden' => 'You do not have permission to rate this photo',
-            'error_not_found' => 'Photo not found',
+            'error_not_found' => 'Photo non trouvée',
         ],
     ],
     'nsfw' => [
