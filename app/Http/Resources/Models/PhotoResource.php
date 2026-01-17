@@ -108,7 +108,8 @@ class PhotoResource extends Data
 			$this->statistics = PhotoStatisticsResource::fromModel($photo->statistics);
 		}
 
-		if (Gate::check(PhotoPolicy::CAN_READ_RATINGS, [Photo::class, $photo])) {
+		if (request()->configs()->getValueAsBool('rating_enabled') &&
+			Gate::check(PhotoPolicy::CAN_READ_RATINGS, [Photo::class, $photo])) {
 			$this->rating = PhotoRatingResource::fromModel(
 				$photo->statistics,
 				$photo->rating,

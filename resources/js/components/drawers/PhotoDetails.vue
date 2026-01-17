@@ -71,7 +71,7 @@
 						<h2 v-if="photoStore.photo.tags.length > 0" class="text-muted-color-emphasis text-base font-bold mt-4 mb-1">
 							{{ $t("gallery.photo.details.tags") }}
 						</h2>
-						<span class="pb-2">
+						<span class="pb-2 flex flex-wrap">
 							<a
 								v-for="tag in photoStore.photo.tags"
 								:key="`tag-${tag}`"
