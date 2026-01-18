@@ -9,7 +9,7 @@
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Model class specific for running the migration of rating average.
+ * Model class specific for running the migration of updating structure of photo table from focal/aperture to fps/duration.
  * We cannot use the Model directly as we need to make sure that all migrations can be run in sequence
  * without depending on the app code.
  */
