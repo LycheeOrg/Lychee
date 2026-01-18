@@ -32,13 +32,13 @@
 						<template v-for="config in configs" :key="config.cat">
 							<Fieldset
 								v-if="tab === config.cat"
-								:legend="config.name"
+								:legend="tCatName({ key: config.cat, name: config.name })"
 								class="border-b-0 ltr:border-r-0 rtl:border-l-0 ltr:rounded-r-none rtl:rounded-l-none rounded-b-none pb-20 h-full"
 							>
 								<div
-									v-if="config.description"
+									v-if="tCatDesc({ key: config.cat, description: config.description })"
 									class="configDescription w-full text-muted-color-emphasis pl-6 pb-8"
-									v-html="config.description"
+									v-html="tCatDesc({ key: config.cat, description: config.description })"
 								></div>
 								<ConfigGroup :configs="config.configs" @filled="update" @reset="reset" />
 							</Fieldset>
@@ -72,6 +72,7 @@ import CssJs from "@/components/settings/CssJs.vue";
 import { useRoute, useRouter } from "vue-router";
 import { watch } from "vue";
 import Fieldset from "@/components/forms/basic/Fieldset.vue";
+import { useTranslation } from "@/composables/useTranslation";
 
 const props = defineProps<{
 	tab: string | undefined;
@@ -87,6 +88,7 @@ const hash = ref("");
 const modified = ref<App.Http.Resources.Editable.EditableConfigResource[]>([]);
 
 const { spliter } = useSplitter();
+const { tCatName, tCatDesc } = useTranslation();
 
 const isCollapsed = computed(() => {
 	return tab.value === "" || tab.value === "CssJs";
@@ -143,7 +145,7 @@ const menu = computed(() => {
 			label: trans(c.header),
 			items: c.data.map((item) => {
 				return {
-					label: item.name,
+					label: tCatName({ key: item.cat, name: item.name }),
 					command: () => router.push({ name: "settings", params: { tab: item.cat } }),
 				};
 			}),
