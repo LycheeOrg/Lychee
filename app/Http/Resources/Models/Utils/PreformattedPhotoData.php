@@ -63,7 +63,7 @@ class PreformattedPhotoData extends Data
 		$this->shutter = str_replace('s', 'sec', $photo->shutter ?? '');
 		$this->aperture = str_replace('f/', '', $photo->aperture ?? '');
 		$this->iso = sprintf(__('gallery.photo.details.iso'), $photo->iso);
-		$this->lens = ($photo->lens === '' || $photo->lens === null) ? '' : sprintf('(%s)', $photo->lens);
+		$this->lens = $photo->lens ?? '';
 
 		$this->duration = Helpers::secondsToHMS(intval($photo->aperture));
 		$this->fps = $photo->focal === null ? $photo->focal . ' fps' : '';

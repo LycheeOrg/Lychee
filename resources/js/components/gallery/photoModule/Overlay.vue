@@ -30,7 +30,7 @@
 			{{ photoStore.photo.preformatted.shutter }} at &fnof; / {{ photoStore.photo.preformatted.aperture }},
 			{{ photoStore.photo.preformatted.iso }}
 			<br />
-			{{ photoStore.photo.preformatted.focal }} {{ photoStore.photo.preformatted.lens }}
+			{{ photoStore.photo.preformatted.focal }} {{ photoStore.photo.preformatted.lens ? '(' + photoStore.photo.preformatted.lens + ')' : '' }}
 		</p>
 	</div>
 </template>
