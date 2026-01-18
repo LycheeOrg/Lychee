@@ -83,12 +83,9 @@ class Delete
 		try {
 			// Only regular albums are owners of photos, so we only need to
 			// find all photos in those and their descendants
-			// Only load necessary attributes for tree; in particular avoid
-			// loading expensive `min_taken_at` and `max_taken_at`.
-			/** @var Collection<int,Album> $albums */
-			/** @phpstan-ignore varTag.type (False positive, NestedSetCollection requires Eloquent Collection) */
-			$albums = Album::query()
-				->without(['cover', 'thumb', 'min_privilege_cover', 'max_privilege_cover', 'owner', 'access_permissions', 'statistics'])
+			// Only load necessary attributes for tree.
+			/** @var Collection<int,object{id:string,parent_id:string|null,_lft:int,_rgt:int,track_short_path:string|null}> $albums */
+			$albums = DB::table('albums')
 				->select(['id', 'parent_id', '_lft', '_rgt', 'track_short_path'])
 				->findMany($album_ids);
 
