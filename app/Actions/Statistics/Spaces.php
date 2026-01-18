@@ -92,28 +92,63 @@ final class Spaces
 			->first();
 
 		// Query 2: Get sizes from size_variants for photos NOT in any album
-		$unalbummed_photos_query = DB::table('size_variants')
-			->joinSub(
-				query: DB::table('photos')->select(['photos.id', 'photos.owner_id']),
-				as: 'photos',
-				first: 'photos.id',
-				operator: '=',
-				second: 'size_variants.photo_id'
+		// SELECT
+		//     `size_variants_select`.`type`,
+		//     SUM(size_variants_select.filesize) as size
+		// FROM
+		//     (
+		//         SELECT
+		//             `size_variants`.`type`,
+		//             `size_variants`.`filesize`
+		//         FROM
+		//             `size_variants`
+		//             left join `photo_album` on `photo_album`.`photo_id` = `size_variants`.`photo_id`
+		//         WHERE
+		//             `photo_album`.`album_id` IS NULL
+		//     ) as `size_variants_select`
+		// WHERE
+		//     `size_variants_select`.`type` != 7
+		// GROUP BY
+		//     `size_variants_select`.`type`;
+		// With 3285540 size_variants, this takes ~33s on a DB on a SSD
+		//
+
+		// This simpler version takes 8~9s instead.
+		// SELECT
+		//     `size_variants`.`type`,
+		//     `size_variants`.`filesize`
+		// FROM
+		//     `size_variants`
+		//     left join `photo_album` on `photo_album`.`photo_id` = `size_variants`.`photo_id`
+		// WHERE
+		//     `photo_album`.`album_id` IS NULL;
+		//
+		// We do the grouping in PHP, this will be faster.
+		$size_variants = DB::table('size_variants')
+			->select('size_variants.type', 'size_variants.filesize')
+			->leftJoin(PA::PHOTO_ALBUM, PA::PHOTO_ID, '=', 'size_variants.photo_id')
+			->whereNull(PA::ALBUM_ID)
+			->when($owner_id !== null,
+				fn ($query) => $query->joinSub(
+					query: DB::table('photos')
+						->select(['photos.id', 'photos.owner_id'])
+						->where('photos.owner_id', '=', $owner_id),
+					as: 'photos',
+					first: 'photos.id',
+					operator: '=',
+					second: 'size_variants.photo_id'
+				)
 			)
-			->whereNotExists(function ($query): void {
-				$query->select(DB::raw(1))
-					->from(PA::PHOTO_ALBUM)
-					->whereColumn(PA::PHOTO_ID, '=', 'size_variants.photo_id');
-			})
-			->when($owner_id !== null, fn ($query) => $query->where('photos.owner_id', '=', $owner_id))
-			->where('size_variants.type', '!=', 7)
-			->select(
-				'size_variants.type',
-				DB::raw('SUM(size_variants.filesize) as size')
-			)
-			->groupBy('size_variants.type')
-			->get()
-			->keyBy('type');
+			->get();
+
+		$accumulator = [];
+		foreach ($size_variants as $item) {
+			if ($item->type === SizeVariantType::PLACEHOLDER->value) {
+				// skip the placeholders variants
+				continue;
+			}
+			$accumulator[$item->type] = ($accumulator[$item->type] ?? 0) + intval($item->filesize);
+		}
 
 		// Combine results by SizeVariantType
 		$combined = [
@@ -127,8 +162,8 @@ final class Spaces
 		];
 
 		// Add unalbummed photo sizes
-		foreach ($unalbummed_photos_query as $type => $item) {
-			$combined[$type] = ($combined[$type] ?? 0) + intval($item->size);
+		foreach ($accumulator as $type => $item) {
+			$combined[$type] += intval($item);
 		}
 
 		// Convert to collection and filter out zero sizes
