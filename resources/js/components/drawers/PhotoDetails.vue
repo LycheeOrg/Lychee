@@ -20,7 +20,7 @@
 						</div>
 						<div class="flex flex-col">
 							<span class="font-bold text-lg">{{ photoStore.photo.title }}</span>
-							<div class="flex gap-3 text-muted-color text-sm">
+							<div class="flex gap-3 text-muted-color text-sm" id="photo-details-resolution-filesize">
 								<span v-if="photoStore.photo.preformatted.resolution" dir="ltr">{{ photoStore.photo.preformatted.resolution }}</span>
 								<span v-if="photoStore.photo.precomputed.is_video && photoStore.photo.preformatted.duration">
 									{{ photoStore.photo.preformatted.duration }}
@@ -41,13 +41,13 @@
 					</div>
 					<!-- Dates stuff -->
 					<div class="flex-col text-muted-color">
-						<div class="flex gap-1 items-center">
+						<div class="flex gap-1 items-center" id="photo-details-created-at">
 							<span class="w-6 inline-block">
 								<i v-tooltip="$t('gallery.photo.details.uploaded')" class="pi pi-file-arrow-up" />
 							</span>
 							<span class="text-sm">{{ photoStore.photo.preformatted.created_at }}</span>
 						</div>
-						<div v-if="photoStore.photo.preformatted.taken_at" class="flex gap-1 items-start">
+						<div v-if="photoStore.photo.preformatted.taken_at" class="flex gap-1 items-start" id="photo-details-taken-at">
 							<span class="w-6 inline-block">
 								<i v-tooltip="$t('gallery.photo.details.captured')" class="pi pi-camera w-6 pt-1 inline-block" />
 							</span>
