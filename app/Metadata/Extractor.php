@@ -47,6 +47,8 @@ class Extractor
 	public ?string $model = null;
 	public ?string $shutter = null;
 	public ?string $focal = null;
+	public ?string $duration = null;
+	public ?string $fps = null;
 	public ?Carbon $taken_at = null;
 	public ?string $lens = null;
 	/** @var string[] */
@@ -457,9 +459,8 @@ class Extractor
 				$metadata->focal = round(floatval($metadata->focal)) . self::SUFFIX_MM_UNIT;
 			}
 		} else {
-			// Media is a video: Reuse (exploit) fields aperture and focal for duration and framerate
-			$metadata->aperture = ($exif->getDuration() !== false) ? $exif->getDuration() : null;
-			$metadata->focal = ($exif->getFramerate() !== false) ? $exif->getFramerate() : null;
+			$metadata->duration = ($exif->getDuration() !== false) ? $exif->getDuration() : null;
+			$metadata->fps = ($exif->getFramerate() !== false) ? $exif->getFramerate() : null;
 		}
 
 		if ($metadata->title === null || $metadata->title === '') {

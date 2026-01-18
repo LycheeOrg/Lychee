@@ -40,8 +40,8 @@ class EmbedPhotoResource extends Data
 		$this->is_video = $photo->isVideo();
 
 		// For videos, aperture field stores duration in seconds
-		$this->duration = $this->is_video && $photo->aperture !== null
-			? app(Helpers::class)->secondsToHMS(intval($photo->aperture))
+		$this->duration = $photo->duration !== null
+			? app(Helpers::class)->secondsToHMS(intval($photo->duration))
 			: null;
 
 		// Reuse existing SizeVariantsResouce instead of duplicating logic

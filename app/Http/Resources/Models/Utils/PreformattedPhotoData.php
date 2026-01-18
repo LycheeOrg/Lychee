@@ -65,8 +65,8 @@ class PreformattedPhotoData extends Data
 		$this->iso = sprintf(__('gallery.photo.details.iso'), $photo->iso);
 		$this->lens = $photo->lens ?? '';
 
-		$this->duration = Helpers::secondsToHMS(intval($photo->aperture));
-		$this->fps = $photo->focal === null ? $photo->focal . ' fps' : '';
+		$this->duration = Helpers::secondsToHMS(intval($photo->duration));
+		$this->fps = $photo->fps === null ? $photo->fps . ' fps' : '';
 
 		$this->filesize = $original?->filesize ?? '0';
 		$this->resolution = $original?->width . ' x ' . $original?->height;
