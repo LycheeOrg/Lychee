@@ -106,7 +106,7 @@ final class Spaces
 				second: 'size_variants.photo_id'
 			)
 			// This LEFT JOIN + IS NULL emulates NOT EXISTS for better performance
-			->join(PA::PHOTO_ALBUM, PA::PHOTO_ID, '=', 'size_variants.photo_id')
+			->leftJoin(PA::PHOTO_ALBUM, PA::PHOTO_ID, '=', 'size_variants.photo_id')
 			->whereNull(PA::ALBUM_ID)
 			// Alternative NOT EXISTS approach (WAY SLOWER on large datasets (400k photos): 16s vs <1 ms)
 			// ->whereNotExists(function ($query): void {
