@@ -71,13 +71,13 @@ abstract class BaseImageHandler extends BaseApiWithDataTest
 			2019, 6, 1, 1, 28, 25, '+02:00'
 		);
 		$photo = $response->json('photos.0');
-		self::assertEquals('f/2.8', $photo['aperture']);
-		self::assertEquals('16 mm', $photo['focal']);
-		self::assertEquals('1250', $photo['iso']);
-		self::assertEquals('EF16-35mm f/2.8L USM', $photo['lens']);
-		self::assertEquals('Canon', $photo['make']);
-		self::assertEquals('Canon EOS R', $photo['model']);
-		self::assertEquals('30 s', $photo['shutter']);
+		self::assertEquals('2.8', $photo['preformatted']['aperture']);
+		self::assertEquals('16 mm', $photo['preformatted']['focal']);
+		self::assertEquals('ISO 1250', $photo['preformatted']['iso']);
+		self::assertEquals('EF16-35mm f/2.8L USM', $photo['preformatted']['lens']);
+		self::assertEquals('Canon', $photo['preformatted']['make']);
+		self::assertEquals('Canon EOS R', $photo['preformatted']['model']);
+		self::assertEquals('30 sec', $photo['preformatted']['shutter']);
 		self::assertEquals($taken_at->format('Y-m-d\TH:i:sP'), $photo['taken_at']);
 		self::assertEquals($taken_at->getTimezone()->getName(), $photo['taken_at_orig_tz']);
 		self::assertEquals('tests/Samples/night.jpg', $photo['title']);
@@ -465,13 +465,13 @@ abstract class BaseImageHandler extends BaseApiWithDataTest
 		$response = $this->uploadImage(TestConstants::SAMPLE_FILE_UNDEFINED_EXIF_TAG);
 		$photo = $response->json('photos.0');
 
-		self::assertEquals('f/10.0', $photo['aperture']);
-		self::assertEquals('70 mm', $photo['focal']);
-		self::assertEquals('100', $photo['iso']);
-		self::assertEquals('17-70mm F2.8-4 DC MACRO OS HSM | Contemporary 013', $photo['lens']);
-		self::assertEquals('Canon', $photo['make']);
-		self::assertEquals('Canon EOS 100D', $photo['model']);
-		self::assertEquals('1/250 s', $photo['shutter']);
+		self::assertEquals('10.0', $photo['preformatted']['aperture']);
+		self::assertEquals('70 mm', $photo['preformatted']['focal']);
+		self::assertEquals('ISO 100', $photo['preformatted']['iso']);
+		self::assertEquals('17-70mm F2.8-4 DC MACRO OS HSM | Contemporary 013', $photo['preformatted']['lens']);
+		self::assertEquals('Canon', $photo['preformatted']['make']);
+		self::assertEquals('Canon EOS 100D', $photo['preformatted']['model']);
+		self::assertEquals('1/250 sec', $photo['preformatted']['shutter']);
 		self::assertEquals(TestConstants::MIME_TYPE_IMG_JPEG, $photo['type']);
 		self::assertEquals(3059, $photo['size_variants']['original']['width']);
 		self::assertEquals(2083, $photo['size_variants']['original']['height']);
@@ -499,13 +499,13 @@ abstract class BaseImageHandler extends BaseApiWithDataTest
 		$photo = $response->json('photos.0');
 
 		self::assertEquals('tests/Samples/fin de journée.jpg', $photo['title']);
-		self::assertEquals('f/8.0', $photo['aperture']);
-		self::assertEquals('200 mm', $photo['focal']);
-		self::assertEquals('400', $photo['iso']);
-		self::assertEquals('EF70-200mm f/2.8L IS USM', $photo['lens']);
-		self::assertEquals('Canon', $photo['make']);
-		self::assertEquals('Canon EOS R5', $photo['model']);
-		self::assertEquals('1/320 s', $photo['shutter']);
+		self::assertEquals('8.0', $photo['preformatted']['aperture']);
+		self::assertEquals('200 mm', $photo['preformatted']['focal']);
+		self::assertEquals('ISO 400', $photo['preformatted']['iso']);
+		self::assertEquals('EF70-200mm f/2.8L IS USM', $photo['preformatted']['lens']);
+		self::assertEquals('Canon', $photo['preformatted']['make']);
+		self::assertEquals('Canon EOS R5', $photo['preformatted']['model']);
+		self::assertEquals('1/320 sec', $photo['preformatted']['shutter']);
 		self::assertEquals(TestConstants::MIME_TYPE_IMG_JPEG, $photo['type']);
 		self::assertEquals(914, $photo['size_variants']['original']['width']);
 		self::assertEquals(1625, $photo['size_variants']['original']['height']);

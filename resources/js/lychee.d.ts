@@ -37,7 +37,8 @@ declare namespace App.Enum {
 		| "description_strict"
 		| "taken_at"
 		| "is_starred"
-		| "type";
+		| "type"
+		| "rating_avg";
 	export type ColumnSortingType =
 		| "owner_id"
 		| "created_at"
@@ -49,7 +50,8 @@ declare namespace App.Enum {
 		| "max_taken_at"
 		| "taken_at"
 		| "is_starred"
-		| "type";
+		| "type"
+		| "rating_avg";
 	export type ConfigType =
 		| "int"
 		| "positive"
@@ -140,7 +142,19 @@ declare namespace App.Enum {
 	export type ShiftY = "up" | "down";
 	export type SizeVariantType = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 	export type SmallLargeType = "small" | "large";
-	export type SmartAlbumType = "unsorted" | "starred" | "recent" | "on_this_day" | "untagged";
+	export type SmartAlbumType =
+		| "unsorted"
+		| "starred"
+		| "recent"
+		| "on_this_day"
+		| "untagged"
+		| "unrated"
+		| "one_star"
+		| "two_stars"
+		| "three_stars"
+		| "four_stars"
+		| "five_stars"
+		| "best_pictures";
 	export type StorageDiskType = "images" | "s3";
 	export type ThumbAlbumSubtitleType = "description" | "takedate" | "creation" | "oldstyle" | "num_photos" | "num_albums" | "num_photos_albums";
 	export type TimelineAlbumGranularity = "default" | "disabled" | "year" | "month" | "day";
@@ -651,26 +665,15 @@ declare namespace App.Http.Resources.Models {
 	export type PhotoResource = {
 		id: string;
 		album_id: string | null;
-		altitude: number | null;
-		aperture: string | null;
 		checksum: string;
 		created_at: string;
 		description: string;
-		focal: string | null;
 		is_starred: boolean;
-		iso: string | null;
-		latitude: number | null;
-		lens: string | null;
 		license: App.Enum.LicenseType;
 		live_photo_checksum: string | null;
 		live_photo_content_id: string | null;
 		live_photo_url: string | null;
-		location: string | null;
-		longitude: number | null;
-		make: string | null;
-		model: string | null;
 		original_checksum: string;
-		shutter: string | null;
 		size_variants: App.Http.Resources.Models.SizeVariantsResouce;
 		tags: Array<string>;
 		taken_at: string | null;
@@ -860,6 +863,9 @@ declare namespace App.Http.Resources.Models.Utils {
 		has_exif: boolean;
 		has_location: boolean;
 		is_taken_at_modified: boolean;
+		latitude: number | null;
+		longitude: number | null;
+		altitude: number | null;
 	};
 	export type PreFormattedAlbumData = {
 		url: string | null;
@@ -877,10 +883,13 @@ declare namespace App.Http.Resources.Models.Utils {
 		created_at: string;
 		taken_at: string | null;
 		date_overlay: string;
+		make: string | null;
+		model: string | null;
 		shutter: string;
 		aperture: string;
 		iso: string;
 		lens: string;
+		focal: string;
 		duration: string;
 		fps: string;
 		filesize: string;
@@ -888,6 +897,7 @@ declare namespace App.Http.Resources.Models.Utils {
 		latitude: string | null;
 		longitude: string | null;
 		altitude: string | null;
+		location: string | null;
 		license: string;
 		description: string;
 	};

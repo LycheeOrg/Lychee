@@ -52,6 +52,10 @@ class ModulesRightsResource extends Data
 	 */
 	private function isMapEnabled(bool $is_logged_in): bool
 	{
+		// Disabled if EXIF display is off: We cannot at the same time hide EXIF and show maps
+		if (request()->configs()->getValueAsBool('display_exif_data') === false) {
+			return false;
+		}
 		$has_locations = Photo::whereNotNull('latitude')->whereNotNull('longitude')->exists();
 		$map_display = request()->configs()->getValueAsBool('map_display');
 		$public_display = $is_logged_in || request()->configs()->getValueAsBool('map_display_public');

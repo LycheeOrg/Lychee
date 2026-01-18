@@ -195,10 +195,10 @@ function addContentsToMap() {
 	let max_lng: number | null = null;
 
 	data.value.photos.forEach(function (element: App.Http.Resources.Models.PhotoResource) {
-		if (element.latitude || element.longitude) {
+		if (element.precomputed.latitude || element.precomputed.longitude) {
 			photos.push({
-				lat: element.latitude,
-				lng: element.longitude,
+				lat: element.precomputed.latitude,
+				lng: element.precomputed.longitude,
 				thumbnail: element.size_variants.thumb?.url ?? "img/placeholder.png",
 				thumbnail2x: element.size_variants.thumb2x?.url,
 				url: element.size_variants.small?.url ?? element.size_variants.medium?.url ?? "",
@@ -210,17 +210,17 @@ function addContentsToMap() {
 			});
 
 			// Update min/max lat/lng
-			if (element.latitude !== null && (min_lat === null || min_lat > element.latitude)) {
-				min_lat = element.latitude;
+			if (element.precomputed.latitude !== null && (min_lat === null || min_lat > element.precomputed.latitude)) {
+				min_lat = element.precomputed.latitude;
 			}
-			if (element.longitude !== null && (min_lng === null || min_lng > element.longitude)) {
-				min_lng = element.longitude;
+			if (element.precomputed.longitude !== null && (min_lng === null || min_lng > element.precomputed.longitude)) {
+				min_lng = element.precomputed.longitude;
 			}
-			if (element.latitude !== null && (max_lat === null || max_lat < element.latitude)) {
-				max_lat = element.latitude;
+			if (element.precomputed.latitude !== null && (max_lat === null || max_lat < element.precomputed.latitude)) {
+				max_lat = element.precomputed.latitude;
 			}
-			if (element.longitude !== null && (max_lng === null || max_lng < element.longitude)) {
-				max_lng = element.longitude;
+			if (element.precomputed.longitude !== null && (max_lng === null || max_lng < element.precomputed.longitude)) {
+				max_lng = element.precomputed.longitude;
 			}
 		}
 	});

@@ -36,22 +36,22 @@ export function useAlbumsStatistics() {
 				continue;
 			}
 
-			if (photo.iso) {
-				stats.iso[photo.iso] = stats.iso[photo.iso] ? stats.iso[photo.iso] + 1 : 1;
+			if (photo.preformatted.iso) {
+				stats.iso[photo.preformatted.iso] = stats.iso[photo.preformatted.iso] ? stats.iso[photo.preformatted.iso] + 1 : 1;
 			}
-			if (photo.focal) {
-				stats.focal[photo.focal] = stats.focal[photo.focal] ? stats.focal[photo.focal] + 1 : 1;
+			if (photo.preformatted.focal) {
+				stats.focal[photo.preformatted.focal] = stats.focal[photo.preformatted.focal] ? stats.focal[photo.preformatted.focal] + 1 : 1;
 			}
 			if (photo.preformatted.aperture) {
 				stats.aperture["ƒ / " + photo.preformatted.aperture] = stats.aperture["ƒ / " + photo.preformatted.aperture]
 					? stats.aperture["ƒ / " + photo.preformatted.aperture] + 1
 					: 1;
 			}
-			if (photo.lens) {
-				stats.lens[photo.lens] = stats.lens[photo.lens] ? stats.lens[photo.lens] + 1 : 1;
+			if (photo.preformatted.lens) {
+				stats.lens[photo.preformatted.lens] = stats.lens[photo.preformatted.lens] ? stats.lens[photo.preformatted.lens] + 1 : 1;
 			}
-			if (photo.model) {
-				stats.model[photo.model] = stats.model[photo.model] ? stats.model[photo.model] + 1 : 1;
+			if (photo.preformatted.model) {
+				stats.model[photo.preformatted.model] = stats.model[photo.preformatted.model] ? stats.model[photo.preformatted.model] + 1 : 1;
 			}
 			if (photo.preformatted.shutter) {
 				stats.shutter[photo.preformatted.shutter] = stats.shutter[photo.preformatted.shutter]
