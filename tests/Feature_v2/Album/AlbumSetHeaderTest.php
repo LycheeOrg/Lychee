@@ -56,7 +56,7 @@ class AlbumSetHeaderTest extends BaseApiWithDataTest
 		]);
 		$this->assertNoContent($response);
 
-		$response = $this->getJsonWithData('Album', ['album_id' => $this->album1->id]);
+		$response = $this->getJsonWithData('Album::head', ['album_id' => $this->album1->id]);
 		$this->assertOk($response);
 		$response->assertJson([
 			'config' => [
@@ -80,7 +80,7 @@ class AlbumSetHeaderTest extends BaseApiWithDataTest
 		]);
 		$this->assertNoContent($response);
 
-		$response = $this->getJsonWithData('Album', ['album_id' => $this->album1->id]);
+		$response = $this->getJsonWithData('Album::head', ['album_id' => $this->album1->id]);
 		$this->assertOk($response);
 		$response->assertJson([
 			'config' => [
@@ -107,7 +107,7 @@ class AlbumSetHeaderTest extends BaseApiWithDataTest
 		]);
 		$this->assertNoContent($response);
 
-		$response = $this->getJsonWithData('Album', ['album_id' => $this->album1->id]);
+		$response = $this->getJsonWithData('Album::head', ['album_id' => $this->album1->id]);
 		$this->assertOk($response);
 		$response->assertJson([
 			'config' => [
@@ -131,7 +131,7 @@ class AlbumSetHeaderTest extends BaseApiWithDataTest
 		]);
 		$this->assertNoContent($response);
 
-		$response = $this->getJsonWithData('Album', ['album_id' => $this->album1->id]);
+		$response = $this->getJsonWithData('Album::head', ['album_id' => $this->album1->id]);
 		$this->assertOk($response);
 		$response->assertJson([
 			'config' => [

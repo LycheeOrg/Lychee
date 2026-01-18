@@ -83,6 +83,7 @@ class AlbumController extends Controller
 	/**
 	 * Provided an albumID, returns the album.
 	 */
+	#[\Deprecated('Use AlbumHeadController::get to fetch album metadata without children/photos')]
 	public function get(GetAlbumRequest $request): AbstractAlbumResource
 	{
 		$config = new AlbumConfig($request->album());

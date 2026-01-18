@@ -46,6 +46,13 @@ return [
         'public' => 'Публичные',
         'on_this_day' => 'В этот день',
         'untagged' => 'Без меток',
+        'unrated' => 'Unrated',
+        'one_star' => '1 Star',
+        'two_stars' => '2 Stars',
+        'three_stars' => '3+ Stars',
+        'four_stars' => '4+ Stars',
+        'five_stars' => '5 Stars',
+        'best_pictures' => 'Best Pictures',
     ],
     'layout' => [
         'squares' => 'Квадратные миниатюры',

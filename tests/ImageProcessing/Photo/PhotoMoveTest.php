@@ -54,9 +54,9 @@ class PhotoMoveTest extends BaseApiWithDataTest
 		]);
 		$this->assertForbidden($response);
 
-		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album', ['album_id' => $this->album1->id]);
+		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album::photos', ['album_id' => $this->album1->id]);
 		$this->assertOk($response);
-		$response->assertJsonCount(2, 'resource.photos');
+		$response->assertJsonCount(2, 'photos');
 
 		$response = $this->actingAs($this->userMayUpload1)->postJson('Photo::move', [
 			'from_id' => $this->album1->id,
@@ -65,19 +65,16 @@ class PhotoMoveTest extends BaseApiWithDataTest
 		]);
 		$this->assertNoContent($response);
 
-		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album', ['album_id' => $this->album1->id]);
+		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album::photos', ['album_id' => $this->album1->id]);
 		$this->assertOk($response);
-		$response->assertJsonCount(1, 'resource.photos');
+		$response->assertJsonCount(1, 'photos');
 
-		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album', ['album_id' => $this->subAlbum1->id]);
+		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album::photos', ['album_id' => $this->subAlbum1->id]);
 		$this->assertOk($response);
 		$response->assertJson([
-			'config' => [],
-			'resource' => [
-				'photos' => [
-					[
-						'id' => $this->photo1->id,
-					],
+			'photos' => [
+				[
+					'id' => $this->photo1->id,
 				],
 			],
 		]);
@@ -85,14 +82,14 @@ class PhotoMoveTest extends BaseApiWithDataTest
 
 	public function testMovePhotoAuthorizedOwnerUnosorted(): void
 	{
-		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album', ['album_id' => 'unsorted']);
+		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album::photos', ['album_id' => 'unsorted']);
 		$this->assertOk($response);
-		$response->assertJsonCount(1, 'resource.photos');
+		$response->assertJsonCount(1, 'photos');
 		$response->assertDontSee($this->photo1->id);
 
-		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album', ['album_id' => $this->album1->id]);
+		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album::photos', ['album_id' => $this->album1->id]);
 		$this->assertOk($response);
-		$response->assertJsonCount(2, 'resource.photos');
+		$response->assertJsonCount(2, 'photos');
 		$response->assertSee($this->photo1->id);
 
 		$response = $this->actingAs($this->userMayUpload1)->postJson('Photo::move', [
@@ -102,14 +99,14 @@ class PhotoMoveTest extends BaseApiWithDataTest
 		]);
 		$this->assertNoContent($response);
 
-		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album', ['album_id' => $this->album1->id]);
+		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album::photos', ['album_id' => $this->album1->id]);
 		$this->assertOk($response);
-		$response->assertJsonCount(1, 'resource.photos');
+		$response->assertJsonCount(1, 'photos');
 		$response->assertDontSee($this->photo1->id);
 
-		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album', ['album_id' => 'unsorted']);
+		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album::photos', ['album_id' => 'unsorted']);
 		$this->assertOk($response);
-		$response->assertJsonCount(2, 'resource.photos');
+		$response->assertJsonCount(2, 'photos');
 		$response->assertSee($this->photo1->id);
 
 		$response = $this->actingAs($this->userMayUpload1)->postJson('Photo::move', [

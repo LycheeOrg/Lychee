@@ -33,7 +33,8 @@ class AlbumTest extends BaseApiWithDataTest
 
 	public function testGetAnon(): void
 	{
-		$response = $this->getJsonWithData('Album', ['album_id' => $this->album4->id]);
+		// Test album head (metadata)
+		$response = $this->getJsonWithData('Album::head', ['album_id' => $this->album4->id]);
 		$this->assertOk($response);
 		$response->assertJson([
 			'config' => [
@@ -45,20 +46,32 @@ class AlbumTest extends BaseApiWithDataTest
 			'resource' => [
 				'id' => $this->album4->id,
 				'title' => $this->album4->title,
-				'albums' => [
-					[
-						'id' => $this->subAlbum4->id,
-						'title' => $this->subAlbum4->title,
-						'is_public' => true,
-						'thumb' => [
-							'id' => $this->subPhoto4->id,
-						],
+			],
+		]);
+
+		// Test child albums
+		$response = $this->getJsonWithData('Album::albums', ['album_id' => $this->album4->id]);
+		$this->assertOk($response);
+		$response->assertJson([
+			'data' => [
+				[
+					'id' => $this->subAlbum4->id,
+					'title' => $this->subAlbum4->title,
+					'is_public' => true,
+					'thumb' => [
+						'id' => $this->subPhoto4->id,
 					],
 				],
-				'photos' => [
-					[
-						'id' => $this->photo4->id,
-					],
+			],
+		]);
+
+		// Test photos
+		$response = $this->getJsonWithData('Album::photos', ['album_id' => $this->album4->id]);
+		$this->assertOk($response);
+		$response->assertJson([
+			'photos' => [
+				[
+					'id' => $this->photo4->id,
 				],
 			],
 		]);
@@ -66,7 +79,8 @@ class AlbumTest extends BaseApiWithDataTest
 
 	public function testGetAsGroup(): void
 	{
-		$response = $this->actingAs($this->userWithGroup1)->getJsonWithData('Album', ['album_id' => $this->album1->id]);
+		// Test album head (metadata)
+		$response = $this->actingAs($this->userWithGroup1)->getJsonWithData('Album::head', ['album_id' => $this->album1->id]);
 		$this->assertOk($response);
 		$response->assertJson([
 			'config' => [
@@ -78,25 +92,34 @@ class AlbumTest extends BaseApiWithDataTest
 			'resource' => [
 				'id' => $this->album1->id,
 				'title' => $this->album1->title,
-				'albums' => [],
-				'photos' => [
-					[
-						'id' => $this->photo1->id,
-					],
-					[
-						'id' => $this->photo1b->id,
-					],
-				],
 			],
 		]);
 
-		$response->assertJsonCount(0, 'resource.albums');
-		$response->assertJsonCount(2, 'resource.photos');
+		// Test child albums (should be empty for group user - they don't see subAlbum1)
+		$response = $this->actingAs($this->userWithGroup1)->getJsonWithData('Album::albums', ['album_id' => $this->album1->id]);
+		$this->assertOk($response);
+		$response->assertJsonCount(0, 'data');
+
+		// Test photos
+		$response = $this->actingAs($this->userWithGroup1)->getJsonWithData('Album::photos', ['album_id' => $this->album1->id]);
+		$this->assertOk($response);
+		$response->assertJsonCount(2, 'photos');
+		$response->assertJson([
+			'photos' => [
+				[
+					'id' => $this->photo1->id,
+				],
+				[
+					'id' => $this->photo1b->id,
+				],
+			],
+		]);
 	}
 
 	public function testGetAsOwner(): void
 	{
-		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album', ['album_id' => $this->tagAlbum1->id]);
+		// Test tag album head (metadata)
+		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album::head', ['album_id' => $this->tagAlbum1->id]);
 		$this->assertOk($response);
 		$response->assertJson([
 			'config' => [
@@ -109,10 +132,16 @@ class AlbumTest extends BaseApiWithDataTest
 				'id' => $this->tagAlbum1->id,
 				'title' => $this->tagAlbum1->title,
 				'show_tags' => [$this->tag_test->name],
-				'photos' => [
-					[
-						'id' => $this->photo1->id,
-					],
+			],
+		]);
+
+		// Test tag album photos
+		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album::photos', ['album_id' => $this->tagAlbum1->id]);
+		$this->assertOk($response);
+		$response->assertJson([
+			'photos' => [
+				[
+					'id' => $this->photo1->id,
 				],
 			],
 		]);
@@ -121,11 +150,11 @@ class AlbumTest extends BaseApiWithDataTest
 	public function testGetUnauthorizedOrForbidden(): void
 	{
 		// Unauthorized if not logged in.
-		$response = $this->getJsonWithData('Album', ['album_id' => $this->album1->id]);
+		$response = $this->getJsonWithData('Album::head', ['album_id' => $this->album1->id]);
 		$this->assertUnauthorized($response);
 
 		// Forbidden if logged in.
-		$response = $this->actingAs($this->userLocked)->getJsonWithData('Album', ['album_id' => $this->album1->id]);
+		$response = $this->actingAs($this->userLocked)->getJsonWithData('Album::head', ['album_id' => $this->album1->id]);
 		$this->assertForbidden($response);
 	}
 }

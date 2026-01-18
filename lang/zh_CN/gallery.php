@@ -47,6 +47,13 @@ return [
         'public' => '公开',
         'on_this_day' => '历史上的今天',
         'untagged' => 'Untagged',
+        'unrated' => 'Unrated',
+        'one_star' => '1 Star',
+        'two_stars' => '2 Stars',
+        'three_stars' => '3+ Stars',
+        'four_stars' => '4+ Stars',
+        'five_stars' => '5 Stars',
+        'best_pictures' => 'Best Pictures',
     ],
     'layout' => [
         'squares' => '方形缩略图',

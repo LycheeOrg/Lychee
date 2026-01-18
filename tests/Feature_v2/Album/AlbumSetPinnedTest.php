@@ -50,7 +50,7 @@ class AlbumSetPinnedTest extends BaseApiWithDataTest
 		$this->assertNoContent($response);
 
 		// Verify the album is pinned
-		$response = $this->getJsonWithData('Album', ['album_id' => $this->album1->id]);
+		$response = $this->getJsonWithData('Album::head', ['album_id' => $this->album1->id]);
 		$this->assertOk($response);
 		$response->assertJson([
 			'config' => [],
@@ -68,7 +68,7 @@ class AlbumSetPinnedTest extends BaseApiWithDataTest
 		$this->assertNoContent($response);
 
 		// Verify the album is unpinned
-		$response = $this->getJsonWithData('Album', ['album_id' => $this->album1->id]);
+		$response = $this->getJsonWithData('Album::head', ['album_id' => $this->album1->id]);
 		$this->assertOk($response);
 		$response->assertJson([
 			'config' => [],
@@ -89,7 +89,7 @@ class AlbumSetPinnedTest extends BaseApiWithDataTest
 		$this->assertNoContent($response);
 
 		// Verify the album is pinned
-		$response = $this->getJsonWithData('Album', ['album_id' => $this->album1->id]);
+		$response = $this->getJsonWithData('Album::head', ['album_id' => $this->album1->id]);
 		$this->assertOk($response);
 		$response->assertJson([
 			'config' => [],

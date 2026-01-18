@@ -51,7 +51,7 @@ class AlbumCreateTest extends BaseApiWithDataTest
 		$new_album_id = $response->getOriginalContent();
 		$this->assertEquals(1, Statistics::where('album_id', $new_album_id)->count());
 
-		$response = $this->getJsonWithData('Album', ['album_id' => $this->album1->id]);
+		$response = $this->getJsonWithData('Album::albums', ['album_id' => $this->album1->id]);
 		$this->assertOk($response);
 		$response->assertSee($new_album_id);
 	}
@@ -65,7 +65,7 @@ class AlbumCreateTest extends BaseApiWithDataTest
 		self::assertEquals(200, $response->getStatusCode());
 		$new_album_id = $response->getOriginalContent();
 
-		$response = $this->getJsonWithData('Album', ['album_id' => $this->album1->id]);
+		$response = $this->getJsonWithData('Album::albums', ['album_id' => $this->album1->id]);
 		$this->assertOk($response);
 		$response->assertSee($new_album_id);
 		$this->assertEquals(1, Statistics::where('album_id', $new_album_id)->count());

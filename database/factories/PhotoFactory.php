@@ -62,6 +62,7 @@ class PhotoFactory extends Factory
 			'checksum' => sha1(rand()),
 			'original_checksum' => sha1(rand()),
 			'license' => 'none',
+			'rating_avg' => null,
 			'created_at' => now(),
 			'updated_at' => now(),
 		];
