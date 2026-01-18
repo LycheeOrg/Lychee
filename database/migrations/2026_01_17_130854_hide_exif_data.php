@@ -23,7 +23,7 @@ return new class() extends BaseConfigMigration {
 				'cat' => self::MOD_GALLERY,
 				'type_range' => self::BOOL,
 				'description' => 'Display exif data.',
-				'details' => 'Exif data will not be displayed to guest or logged in users.',
+				'details' => 'Exif data will not be displayed in the UI.',
 				'is_secret' => true,
 				'is_expert' => true,
 				'order' => 70,

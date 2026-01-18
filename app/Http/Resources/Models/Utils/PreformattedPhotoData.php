@@ -36,7 +36,7 @@ class PreformattedPhotoData extends Data
 	public string $license;
 	public string $description;
 
-	public function __construct(Photo $photo, ?SizeVariantResource $original = null)
+	public function __construct(Photo $photo, bool $include_exif_data, ?SizeVariantResource $original = null)
 	{
 		$overlay_date_format = request()->configs()->getValueAsString('date_format_photo_overlay');
 		$date_format_uploaded = request()->configs()->getValueAsString('date_format_sidebar_uploaded');
@@ -45,6 +45,24 @@ class PreformattedPhotoData extends Data
 		$this->created_at = $photo->created_at->format($date_format_uploaded);
 		$this->taken_at = $photo->taken_at?->format($date_format_taken_at);
 		$this->date_overlay = ($photo->taken_at ?? $photo->created_at)->format($overlay_date_format) ?? '';
+		$this->description = ($photo->description ?? '') === '' ? '' : Markdown::convert($photo->description)->getContent();
+		$this->license = $photo->license !== LicenseType::NONE ? $photo->license->localization() : '';
+
+		if (!$include_exif_data) {
+			$this->shutter = '';
+			$this->aperture = '';
+			$this->iso = '';
+			$this->lens = '';
+			$this->duration = '';
+			$this->fps = '';
+			$this->filesize = '0';
+			$this->resolution = '';
+			$this->latitude = null;
+			$this->longitude = null;
+			$this->altitude = null;
+
+			return;
+		}
 
 		$this->shutter = str_replace('s', 'sec', $photo->shutter ?? '');
 		$this->aperture = str_replace('f/', '', $photo->aperture ?? '');
@@ -59,7 +77,5 @@ class PreformattedPhotoData extends Data
 		$this->latitude = Helpers::decimalToDegreeMinutesSeconds($photo->latitude, true);
 		$this->longitude = Helpers::decimalToDegreeMinutesSeconds($photo->longitude, false);
 		$this->altitude = $photo->altitude !== null ? round($photo->altitude, 1) . 'm' : null;
-		$this->license = $photo->license !== LicenseType::NONE ? $photo->license->localization() : '';
-		$this->description = ($photo->description ?? '') === '' ? '' : Markdown::convert($photo->description)->getContent();
 	}
 }

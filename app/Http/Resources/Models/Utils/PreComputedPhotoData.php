@@ -23,14 +23,14 @@ class PreComputedPhotoData extends Data
 	public bool $has_location;
 	public bool $is_taken_at_modified;
 
-	public function __construct(Photo $photo)
+	public function __construct(Photo $photo, bool $include_exif_data)
 	{
 		$this->is_video = $photo->isVideo();
 		$this->is_raw = $photo->isRaw();
 		$this->is_livephoto = $photo->live_photo_url !== null;
 		$this->is_camera_date = $photo->taken_at !== null;
-		$this->has_exif = $this->genExifHash($photo) !== '';
-		$this->has_location = $this->has_location($photo);
+		$this->has_exif = $include_exif_data && $this->genExifHash($photo) !== '';
+		$this->has_location = $include_exif_data && $this->has_location($photo);
 		// if taken_at is null, it is for sure not modified.
 		// if taken_at is not null, then it is modified if initial_taken_at is null or if taken_at is different from initial_taken_at.
 		$this->is_taken_at_modified = $photo->taken_at !== null && ($photo->initial_taken_at === null || $photo->taken_at->notEqualTo($photo->initial_taken_at));

@@ -98,8 +98,9 @@ class PhotoResource extends Data
 		$this->updated_at = $photo->updated_at->toIso8601String();
 		$this->next_photo_id = null;
 		$this->previous_photo_id = null;
-		$this->preformatted = new PreformattedPhotoData($photo, $this->size_variants->original);
-		$this->precomputed = new PreComputedPhotoData($photo);
+		$include_exif_data = request()->configs()->getValueAsBool('display_exif_data');
+		$this->preformatted = new PreformattedPhotoData($photo, $include_exif_data, $this->size_variants->original);
+		$this->precomputed = new PreComputedPhotoData($photo, $include_exif_data);
 		$this->palette = ColourPaletteResource::fromModel($photo->palette);
 
 		$this->timeline_data_carbon = $photo->taken_at ?? $photo->created_at;
