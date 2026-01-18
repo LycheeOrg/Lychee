@@ -143,7 +143,7 @@ final class Spaces
 
 		$accumulator = [];
 		foreach ($size_variants as $item) {
-			if ($item->type == SizeVariantType::PLACEHOLDER->value) {
+			if ($item->type === SizeVariantType::PLACEHOLDER->value) {
 				// skip the placeholders variants
 				continue;
 			}
@@ -163,7 +163,7 @@ final class Spaces
 
 		// Add unalbummed photo sizes
 		foreach ($accumulator as $type => $item) {
-			$combined[$type] = $combined[$type] + intval($item->size);
+			$combined[$type] += intval($item);
 		}
 
 		// Convert to collection and filter out zero sizes
