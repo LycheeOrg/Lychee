@@ -29,7 +29,7 @@ class PreformattedPhotoData extends Data
 	public string $aperture = '';
 	public string $iso = '';
 	public string $lens = '';
-	public string $focal = '';
+	public ?string $focal = null;
 	public string $duration = '';
 	public string $fps = '';
 	public string $filesize = '';

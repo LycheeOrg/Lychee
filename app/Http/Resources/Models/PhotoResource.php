@@ -25,26 +25,15 @@ class PhotoResource extends Data
 {
 	public string $id;
 	public ?string $album_id;
-	// public ?float $altitude;
-	// public ?string $aperture;
 	public string $checksum;
 	public string $created_at;
 	public string $description;
-	// public ?string $focal;
 	public bool $is_starred;
-	// public ?string $iso;
-	// public ?float $latitude;
-	// public ?string $lens;
 	public LicenseType $license;
 	public ?string $live_photo_checksum;
 	public ?string $live_photo_content_id;
 	public ?string $live_photo_url;
-	// public ?string $location;
-	// public ?float $longitude;
-	// public ?string $make;
-	// public ?string $model;
 	public string $original_checksum;
-	// public ?string $shutter;
 	public SizeVariantsResouce $size_variants;
 	/** @var string[] */
 	public array $tags;
@@ -69,8 +58,6 @@ class PhotoResource extends Data
 	{
 		$this->id = $photo->id;
 		$this->album_id = $album_id;
-		// $this->altitude = $photo->altitude;
-		// $this->aperture = $photo->aperture;
 		$this->checksum = $photo->checksum;
 		$this->created_at = $photo->created_at->toIso8601String();
 		$this->description = $photo->description ?? '';
