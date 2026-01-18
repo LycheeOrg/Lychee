@@ -17,7 +17,7 @@
 					v-for="(configGroup, key) in props.configs"
 					:id="key"
 					:key="key"
-					:legend="configGroup.name"
+					:legend="tCatName({key: configGroup.cat, name: configGroup.name})"
 					:toggleable="true"
 					class="mb-4 hover:border-primary-500 pt-2"
 				>
@@ -35,6 +35,9 @@ import scrollSpy from "@sidsbrmnn/scrollspy";
 import ConfigGroup from "./ConfigGroup.vue";
 import { onMounted } from "vue";
 import Fieldset from "@/components/forms/basic/Fieldset.vue";
+import { useTranslation } from "@/composables/useTranslation";
+
+const { tCatName } = useTranslation();
 
 const props = defineProps<{
 	configs: App.Http.Resources.Models.ConfigCategoryResource[];
@@ -62,7 +65,7 @@ const sections = computed(function () {
 	}
 	return props.configs.map((c, key) => {
 		return {
-			label: c.name,
+			label: tCatName({ key: c.cat, name: c.name }),
 			link: "#" + key,
 		};
 	});

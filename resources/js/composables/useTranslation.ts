@@ -18,9 +18,19 @@ export function useTranslation() {
 		return t("all_settings.details." + config.key, config.details);
 	}
 
+	function tCatName(config: { key: string; name: string }): string {
+		return t("all_settings.category_name." + config.key, config.name);
+	}
+
+	function tCatDesc(config: { key: string; description: string }): string {
+		return t("all_settings.category_description." + config.key, config.description);
+	}
+
 	return {
 		t,
 		tDoc,
 		tDetails,
+		tCatName,
+		tCatDesc,
 	};
 }
