@@ -173,7 +173,9 @@ function toggleAlbumView(mode: "grid" | "list") {
 	lycheeStore.album_view_mode = mode;
 }
 
-const hasCoordinates = computed(() => photosStore.photos.some((photo) => photo.latitude !== null && photo.longitude !== null));
+const hasCoordinates = computed(() =>
+	photosStore.photos.some((photo) => photo.precomputed.latitude !== null && photo.precomputed.longitude !== null),
+);
 
 const isWatermarkerEnabled = computed(
 	() =>

@@ -19,9 +19,12 @@ class PreComputedPhotoData extends Data
 	public bool $is_raw;
 	public bool $is_livephoto;
 	public bool $is_camera_date;
-	public bool $has_exif;
-	public bool $has_location;
+	public bool $has_exif = false;
+	public bool $has_location = false;
 	public bool $is_taken_at_modified;
+	public ?float $latitude = null;
+	public ?float $longitude = null;
+	public ?float $altitude = null;
 
 	public function __construct(Photo $photo, bool $include_exif_data)
 	{
@@ -29,11 +32,17 @@ class PreComputedPhotoData extends Data
 		$this->is_raw = $photo->isRaw();
 		$this->is_livephoto = $photo->live_photo_url !== null;
 		$this->is_camera_date = $photo->taken_at !== null;
-		$this->has_exif = $include_exif_data && $this->genExifHash($photo) !== '';
-		$this->has_location = $include_exif_data && $this->has_location($photo);
 		// if taken_at is null, it is for sure not modified.
 		// if taken_at is not null, then it is modified if initial_taken_at is null or if taken_at is different from initial_taken_at.
 		$this->is_taken_at_modified = $photo->taken_at !== null && ($photo->initial_taken_at === null || $photo->taken_at->notEqualTo($photo->initial_taken_at));
+		if (!$include_exif_data) {
+			return;
+		}
+		$this->has_exif = $this->genExifHash($photo) !== '';
+		$this->has_location = $this->has_location($photo);
+		$this->latitude = $photo->latitude;
+		$this->longitude = $photo->longitude;
+		$this->altitude = $photo->altitude;
 	}
 
 	private function has_location(Photo $photo): bool

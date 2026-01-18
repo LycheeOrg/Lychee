@@ -13,6 +13,7 @@ use App\Facades\Helpers;
 use App\Http\Resources\Models\SizeVariantResource;
 use App\Models\Photo;
 use GrahamCampbell\Markdown\Facades\Markdown;
+use Illuminate\Support\Facades\Auth;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
@@ -22,18 +23,22 @@ class PreformattedPhotoData extends Data
 	public string $created_at;
 	public ?string $taken_at;
 	public string $date_overlay;
-	public string $shutter;
-	public string $aperture;
-	public string $iso;
-	public string $lens;
-	public string $duration;
-	public string $fps;
-	public string $filesize;
-	public string $resolution;
-	public ?string $latitude;
-	public ?string $longitude;
-	public ?string $altitude;
-	public string $license;
+	public ?string $make = null;
+	public ?string $model = null;
+	public string $shutter = '';
+	public string $aperture = '';
+	public string $iso = '';
+	public string $lens = '';
+	public string $focal = '';
+	public string $duration = '';
+	public string $fps = '';
+	public string $filesize = '';
+	public string $resolution = '';
+	public ?string $latitude = null;
+	public ?string $longitude = null;
+	public ?string $altitude = null;
+	public ?string $location = null;
+	public string $license = '';
 	public string $description;
 
 	public function __construct(Photo $photo, bool $include_exif_data, ?SizeVariantResource $original = null)
@@ -49,21 +54,12 @@ class PreformattedPhotoData extends Data
 		$this->license = $photo->license !== LicenseType::NONE ? $photo->license->localization() : '';
 
 		if (!$include_exif_data) {
-			$this->shutter = '';
-			$this->aperture = '';
-			$this->iso = '';
-			$this->lens = '';
-			$this->duration = '';
-			$this->fps = '';
-			$this->filesize = '0';
-			$this->resolution = '';
-			$this->latitude = null;
-			$this->longitude = null;
-			$this->altitude = null;
-
 			return;
 		}
 
+		$this->make = $photo->make;
+		$this->model = $photo->model;
+		$this->focal = $photo->focal;
 		$this->shutter = str_replace('s', 'sec', $photo->shutter ?? '');
 		$this->aperture = str_replace('f/', '', $photo->aperture ?? '');
 		$this->iso = sprintf(__('gallery.photo.details.iso'), $photo->iso);
@@ -77,5 +73,8 @@ class PreformattedPhotoData extends Data
 		$this->latitude = Helpers::decimalToDegreeMinutesSeconds($photo->latitude, true);
 		$this->longitude = Helpers::decimalToDegreeMinutesSeconds($photo->longitude, false);
 		$this->altitude = $photo->altitude !== null ? round($photo->altitude, 1) . 'm' : null;
+
+		$show_location = request()->configs()->getValueAsBool('location_show') && (Auth::check() || request()->configs()->getValueAsBool('location_show_public'));
+		$this->location = $show_location ? $photo->location : null;
 	}
 }

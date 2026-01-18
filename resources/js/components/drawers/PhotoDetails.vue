@@ -88,21 +88,21 @@
 							{{ $t("gallery.photo.details.exif_data") }}
 						</h2>
 						<div class="flex flex-wrap text-muted-color gap-y-0.5">
-							<div v-if="photoStore.photo.model" class="flex w-full gap-2 items-center">
+							<div v-if="photoStore.photo.preformatted.model" class="flex w-full gap-2 items-center">
 								<img
 									v-tooltip.right="$t('gallery.photo.details.type')"
 									src="../../../img/icons/camera.png"
 									class="dark:invert opacity-50 w-6 h-6"
 								/>
-								<span class="text-sm">{{ photoStore.photo.model }}</span>
+								<span class="text-sm">{{ photoStore.photo.preformatted.model }}</span>
 							</div>
-							<div v-if="photoStore.photo.lens" class="flex w-full gap-2 mb-2">
+							<div v-if="photoStore.photo.preformatted.lens" class="flex w-full gap-2 mb-2">
 								<img
 									v-tooltip.right="$t('gallery.photo.details.lens')"
 									src="../../../img/icons/lens.png"
 									class="dark:invert opacity-50 w-6 h-6"
 								/>
-								<span class="text-sm">{{ photoStore.photo.lens }}</span>
+								<span class="text-sm">{{ photoStore.photo.preformatted.lens }}</span>
 							</div>
 							<div class="flex w-1/2 gap-2 items-center">
 								<MiniIcon v-tooltip.right="$t('gallery.photo.details.aperture')" icon="aperture" class="h-4 w-6" />
@@ -114,7 +114,7 @@
 									src="../../../img/icons/focal.png"
 									class="dark:invert opacity-50 w-6 h-5"
 								/>
-								<span class="text-sm" dir="ltr">{{ photoStore.photo.focal }}</span>
+								<span class="text-sm" dir="ltr">{{ photoStore.photo.preformatted.focal }}</span>
 							</div>
 							<div class="flex w-1/2 gap-2 items-center">
 								<i
@@ -125,7 +125,7 @@
 							</div>
 							<div class="flex w-1/2 gap-2 items-center">
 								<img src="../../../img/icons/iso.png" class="dark:invert opacity-50 w-6 h-6" />
-								<span class="text-sm">{{ photoStore.photo.iso }}</span>
+								<span class="text-sm">{{ photoStore.photo.preformatted.iso }}</span>
 							</div>
 						</div>
 					</template>
@@ -137,7 +137,11 @@
 					<h2 v-if="photoStore.photo.precomputed.has_location" class="col-span-2 text-muted-color-emphasis text-base font-bold mt-4 mb-1">
 						{{ $t("gallery.photo.details.location") }}
 					</h2>
-					<MapInclude v-if="props.isMapVisible" :latitude="photoStore.photo.latitude" :longitude="photoStore.photo.longitude" />
+					<MapInclude
+						v-if="props.isMapVisible"
+						:latitude="photoStore.photo.precomputed.latitude"
+						:longitude="photoStore.photo.precomputed.longitude"
+					/>
 					<template v-if="photoStore.photo.precomputed.has_location">
 						<div class="flex gap-x-2 text-muted-color">
 							<span v-if="photoStore.photo.preformatted.latitude" class="w-full text-sm">{{
@@ -150,8 +154,8 @@
 								photoStore.photo.preformatted.altitude
 							}}</span>
 						</div>
-						<div v-if="photoStore.photo.location" class="text-sm">
-							{{ photoStore.photo.location }}
+						<div v-if="photoStore.photo.preformatted.location" class="text-sm">
+							{{ photoStore.photo.preformatted.location }}
 						</div>
 					</template>
 

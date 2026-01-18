@@ -25,26 +25,26 @@ class PhotoResource extends Data
 {
 	public string $id;
 	public ?string $album_id;
-	public ?float $altitude;
-	public ?string $aperture;
+	// public ?float $altitude;
+	// public ?string $aperture;
 	public string $checksum;
 	public string $created_at;
 	public string $description;
-	public ?string $focal;
+	// public ?string $focal;
 	public bool $is_starred;
-	public ?string $iso;
-	public ?float $latitude;
-	public ?string $lens;
+	// public ?string $iso;
+	// public ?float $latitude;
+	// public ?string $lens;
 	public LicenseType $license;
 	public ?string $live_photo_checksum;
 	public ?string $live_photo_content_id;
 	public ?string $live_photo_url;
-	public ?string $location;
-	public ?float $longitude;
-	public ?string $make;
-	public ?string $model;
+	// public ?string $location;
+	// public ?float $longitude;
+	// public ?string $make;
+	// public ?string $model;
 	public string $original_checksum;
-	public ?string $shutter;
+	// public ?string $shutter;
 	public SizeVariantsResouce $size_variants;
 	/** @var string[] */
 	public array $tags;
@@ -69,26 +69,17 @@ class PhotoResource extends Data
 	{
 		$this->id = $photo->id;
 		$this->album_id = $album_id;
-		$this->altitude = $photo->altitude;
-		$this->aperture = $photo->aperture;
+		// $this->altitude = $photo->altitude;
+		// $this->aperture = $photo->aperture;
 		$this->checksum = $photo->checksum;
 		$this->created_at = $photo->created_at->toIso8601String();
 		$this->description = $photo->description ?? '';
-		$this->focal = $photo->focal;
 		$this->is_starred = $photo->is_starred;
-		$this->iso = $photo->iso;
-		$this->latitude = $photo->latitude;
-		$this->lens = $photo->lens;
 		$this->license = $photo->license;
 		$this->live_photo_checksum = $photo->live_photo_checksum;
 		$this->live_photo_content_id = $photo->live_photo_content_id;
 		$this->live_photo_url = $photo->live_photo_url;
-		$this->setLocation($photo);
-		$this->longitude = $photo->longitude;
-		$this->make = $photo->make;
-		$this->model = $photo->model;
 		$this->original_checksum = $photo->original_checksum;
-		$this->shutter = $photo->shutter;
 		$this->size_variants = new SizeVariantsResouce($photo, $should_downgrade_size_variants);
 		$this->tags = $photo->tags->pluck('name')->all();
 		$this->taken_at = $photo->taken_at?->toIso8601String();
@@ -117,12 +108,6 @@ class PhotoResource extends Data
 				request()->configs(),
 			);
 		}
-	}
-
-	private function setLocation(Photo $photo): void
-	{
-		$show_location = request()->configs()->getValueAsBool('location_show') && (Auth::check() || request()->configs()->getValueAsBool('location_show_public'));
-		$this->location = $show_location ? $photo->location : null;
 	}
 
 	/**
