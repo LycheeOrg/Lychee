@@ -1,5 +1,4 @@
 <?php
-
 return [
     /*
     |--------------------------------------------------------------------------
@@ -58,10 +57,10 @@ return [
         '5_chars' => 'Au moins 5 caractères.',
     ],
     'preferences' => [
-        'header' => 'Preferences',
-        'save' => 'Save Preference',
-        'reset' => 'Reset',
-        'change_saved' => 'Preference saved!',
+        'header' => 'Préférences',
+        'save' => 'Enregistrer les préférences',
+        'reset' => 'Réinitialiser',
+        'change_saved' => 'Préférences enregistrées !',
     ],
     'shared_albums' => [
         'instruction' => 'Choose how shared albums (albums from other users) appear in your gallery:',
@@ -73,7 +72,7 @@ return [
         'mode_separate_desc' => 'View albums in separate "My Albums" and "Shared with Me" tabs.',
         'mode_separate_shared_only' => 'Shared Only',
         'mode_separate_shared_only_desc' => 'Separate tabs showing only directly shared albums (excludes public albums).',
-        'mode_hide' => 'Hide',
+        'mode_hide' => 'Masquer',
         'mode_hide_desc' => 'Don\'t show any shared albums.',
     ],
 ];
