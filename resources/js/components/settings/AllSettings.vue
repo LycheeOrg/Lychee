@@ -17,7 +17,7 @@
 					v-for="(configGroup, key) in props.configs"
 					:id="key"
 					:key="key"
-					:legend="tCatName({key: configGroup.cat, name: configGroup.name})"
+					:legend="tCatName({ key: configGroup.cat, name: configGroup.name })"
 					:toggleable="true"
 					class="mb-4 hover:border-primary-500 pt-2"
 				>

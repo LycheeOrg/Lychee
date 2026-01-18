@@ -61,9 +61,11 @@
 	</div>
 	<div v-else class="sticky z-30 w-full top-0 flex bg-white dark:bg-surface-800 h-auto lg:h-11">
 		<Message severity="warn" class="w-full ltr:rounded-r-none rtl:rounded-l-none">{{ $t("settings.all.change_detected") }}</Message>
-		<Button class="bg-danger-800 border-none text-white font-bold px-8 hover:bg-danger-700 rtl:rounded-r-none ltr:rounded-l-none" @click="emits('save')">{{
-			$t("settings.all.save")
-		}}</Button>
+		<Button
+			class="bg-danger-800 border-none text-white font-bold px-8 hover:bg-danger-700 rtl:rounded-r-none ltr:rounded-l-none"
+			@click="emits('save')"
+			>{{ $t("settings.all.save") }}</Button
+		>
 	</div>
 </template>
 <script setup lang="ts">

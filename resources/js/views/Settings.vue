@@ -32,13 +32,13 @@
 						<template v-for="config in configs" :key="config.cat">
 							<Fieldset
 								v-if="tab === config.cat"
-								:legend="tCatName({key: config.cat, name: config.name})"
+								:legend="tCatName({ key: config.cat, name: config.name })"
 								class="border-b-0 ltr:border-r-0 rtl:border-l-0 ltr:rounded-r-none rtl:rounded-l-none rounded-b-none pb-20 h-full"
 							>
 								<div
-									v-if="tCatDesc({ key: config.cat, description: config.description})"
+									v-if="tCatDesc({ key: config.cat, description: config.description })"
 									class="configDescription w-full text-muted-color-emphasis pl-6 pb-8"
-									v-html="tCatDesc({ key: config.cat, description: config.description})"
+									v-html="tCatDesc({ key: config.cat, description: config.description })"
 								></div>
 								<ConfigGroup :configs="config.configs" @filled="update" @reset="reset" />
 							</Fieldset>
@@ -145,7 +145,7 @@ const menu = computed(() => {
 			label: trans(c.header),
 			items: c.data.map((item) => {
 				return {
-					label: tCatName({ key: item.cat, name: item.name}),
+					label: tCatName({ key: item.cat, name: item.name }),
 					command: () => router.push({ name: "settings", params: { tab: item.cat } }),
 				};
 			}),
