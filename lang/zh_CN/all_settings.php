@@ -514,7 +514,7 @@ return [
         'maintenance_processing_limit' => 'Larger number will process more items in one go, but may cause timeouts.',
         'disable_recursive_permission_check' => 'Diagnostic page can be slow when there are many albums and photos. This option disables the recursive permission check for speed.',
         'exif_disabled_for_all' => '<span class="pi pi-exclamation-triangle text-orange-500"></span> This will not remove the data from the API end-point.',
-        'display_exif_data' => 'Exif data will not be displayed in the UI.',
+        'display_exif_data' => 'If disabled, Exif data will not be displayed in the UI.',
         'file_name_hidden' => 'Logged in user will still have access to the title.',
         'client_side_favourite_enabled' => 'The favourites are persisted in the browser local storage.',
         'default_old_settings' => '',
