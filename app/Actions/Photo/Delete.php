@@ -213,6 +213,7 @@ readonly class Delete
 			->whereIn('p.id', $photo_ids)
 			->where('sv.storage_disk', '=', $storage_disk->value)
 			->whereNotIn('sv.id', $exclude_ids)
+			->toBase()
 			->get();
 	}
 

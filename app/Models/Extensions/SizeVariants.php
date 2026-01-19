@@ -260,7 +260,7 @@ class SizeVariants
 		$this->thumb = null;
 		$this->placeholder = null;
 
-		(new Delete())->do(array_diff($ids, [null]))->do();
+		(new Delete())->do(array_diff($ids, [null]));
 	}
 
 	/**

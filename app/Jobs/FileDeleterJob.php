@@ -61,7 +61,7 @@ class FileDeleterJob implements ShouldQueue
 		$is_local_disk = $disk->getAdapter() instanceof LocalFilesystemAdapter;
 		if ($is_local_disk) {
 			foreach ($this->file_list as $file) {
-				Log::channel('jobs')->debug("Delete {$file}.");
+				Log::channel('jobs')->debug("Local delete {$file}.");
 				try {
 					$absolute_path = $disk->path($file);
 					// Note, `file_exist` returns `false` for existing,
@@ -81,7 +81,7 @@ class FileDeleterJob implements ShouldQueue
 			// @codeCoverageIgnoreStart
 			// If the disk is not local, we can assume that each file is a regular file
 			foreach ($this->file_list as $file) {
-				Log::channel('jobs')->debug("Delete {$file}.");
+				Log::channel('jobs')->debug("S3 delete {$file}.");
 				try {
 					if ($disk->exists($file)) {
 						if (!$disk->delete($file)) {

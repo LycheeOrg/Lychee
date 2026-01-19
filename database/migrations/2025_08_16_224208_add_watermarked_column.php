@@ -7,7 +7,7 @@
  */
 
 use App\Enum\StorageDiskType;
-use App\Image\FileDeleter;
+use App\Jobs\FileDeleterJob;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
@@ -17,13 +17,11 @@ use Symfony\Component\Console\Output\ConsoleSectionOutput;
 return new class() extends Migration {
 	private ConsoleOutput $output;
 	private ConsoleSectionOutput $msg_section;
-	private FileDeleter $file_deleter;
 
 	public function __construct()
 	{
 		$this->output = new ConsoleOutput();
 		$this->msg_section = $this->output->section();
-		$this->file_deleter = new FileDeleter();
 	}
 
 	public const SHORT_PATH_WATERMARKED = 'short_path_watermarked';
@@ -60,16 +58,16 @@ return new class() extends Migration {
 			->where('storage_disk', '=', StorageDiskType::S3->value)
 			->pluck('short_path_watermarked');
 
-		if (!$files_to_delete_local->isEmpty()) {
-			$this->file_deleter->addFiles($files_to_delete_local, StorageDiskType::LOCAL->value);
-		}
-
-		if (!$files_to_delete_s3->isEmpty()) {
-			$this->file_deleter->addFiles($files_to_delete_s3, StorageDiskType::S3->value);
-		}
-
 		try {
-			$this->file_deleter->do();
+			if (!$files_to_delete_local->isEmpty()) {
+				$job = new FileDeleterJob(StorageDiskType::LOCAL, $files_to_delete_local->all());
+				$job->handle();
+			}
+
+			if (!$files_to_delete_s3->isEmpty()) {
+				$job = new FileDeleterJob(StorageDiskType::S3, $files_to_delete_s3->all());
+				$job->handle();
+			}
 		} catch (Throwable $e) {
 			$this->msg_section->writeln('<error>error:</error> Some watermarked files could not be deleted: ' . $e->getMessage());
 		}
