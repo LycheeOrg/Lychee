@@ -24,6 +24,7 @@ return [
         'check' => 'Sprawdź',
         'apply' => 'Zastosuj',
     ],
+    'no-changes' => 'Brak zmian do zastosowania.',
     'table' => [
         'title' => 'Tytuł',
         'left' => 'Lewa',

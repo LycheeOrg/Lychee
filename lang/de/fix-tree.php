@@ -23,6 +23,7 @@ return [
         'check' => 'Prüfen',
         'apply' => 'Anwenden',
     ],
+    'no-changes' => 'Keine Änderungen anzuwenden.',
     'table' => [
         'title' => 'Titel',
         'left' => 'Links',
