@@ -25,7 +25,6 @@ use App\Models\Album;
 use App\Models\BaseAlbumImpl;
 use App\Models\Statistics;
 use App\Models\TagAlbum;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Support\Facades\DB;
@@ -87,7 +86,8 @@ class Delete
 			/** @var Collection<int,object{id:string,parent_id:string|null,_lft:int,_rgt:int,track_short_path:string|null}> $albums */
 			$albums = DB::table('albums')
 				->select(['id', 'parent_id', '_lft', '_rgt', 'track_short_path'])
-				->whereIn('id', $album_ids);
+				->whereIn('id', $album_ids)
+				->get();
 
 			// Collect unique parent IDs BEFORE deletion for event dispatching
 			$parent_ids = $albums->pluck('parent_id')->filter()->unique()->values()->all();
@@ -202,14 +202,14 @@ class Delete
 	 * The latter is more efficient, because we do not reload models
 	 * from the DB.
 	 *
-	 * @param Collection<int,Album> $albums
+	 * @param \Illuminate\Support\Collection<int,object{id:string,_lft:int,_rgt:int}> $albums
 	 *
 	 * @return void
 	 *
 	 * @throws ModelNotFoundException
 	 * @throws QueryBuilderException
 	 */
-	private function deleteSubForest(Collection $albums): void
+	private function deleteSubForest(\Illuminate\Support\Collection $albums): void
 	{
 		if ($albums->isEmpty()) {
 			return;
@@ -220,13 +220,15 @@ class Delete
 		$delete_query = Album::query();
 		// First collect all albums to delete in a single query and
 		// memorize which indices need to be updated later.
-		/** @var Album $album */
+		/** @var object{id:string,_lft:int,_rgt:int} $album */
 		foreach ($albums as $album) {
 			$pending_gaps_to_make[] = [
-				'lft' => $album->getLft(),
-				'rgt' => $album->getRgt(),
+				'lft' => $album->_lft,
+				'rgt' => $album->_rgt,
 			];
-			$delete_query->whereDescendantOf($album, 'or', false, true);
+			// Use whereNodeBetween instead of whereDescendantOf since we have plain objects
+			// The bounds are [$lft, $rgt] to include self (andSelf = true)
+			$delete_query->whereNodeBetween([$album->_lft, $album->_rgt], 'or');
 		}
 		// For MySQL deletion must be done in correct order otherwise the
 		// foreign key constraint to `parent_id` fails.
