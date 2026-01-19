@@ -87,7 +87,7 @@ class Delete
 			/** @var Collection<int,object{id:string,parent_id:string|null,_lft:int,_rgt:int,track_short_path:string|null}> $albums */
 			$albums = DB::table('albums')
 				->select(['id', 'parent_id', '_lft', '_rgt', 'track_short_path'])
-				->findMany($album_ids);
+				->whereIn('id', $album_ids);
 
 			// Collect unique parent IDs BEFORE deletion for event dispatching
 			$parent_ids = $albums->pluck('parent_id')->filter()->unique()->values()->all();
