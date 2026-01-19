@@ -503,8 +503,7 @@ class Photo extends Model implements HasUTCBasedTimes
 		// Delete all the links to the photo.
 		DB::table(PA::PHOTO_ALBUM)->where('photo_id', $this->id)->delete();
 		// Clean up the files.
-		$file_deleter = (new Delete())->do([$this->id], SmartAlbumType::UNSORTED->value);
+		(new Delete())->do([$this->id], SmartAlbumType::UNSORTED->value);
 		$this->exists = false;
-		$file_deleter->do();
 	}
 }

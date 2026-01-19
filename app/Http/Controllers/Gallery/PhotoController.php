@@ -45,7 +45,6 @@ use App\Models\Tag;
 use App\Policies\PhotoPolicy;
 use App\Repositories\ConfigManager;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -221,8 +220,7 @@ class PhotoController extends Controller
 	 */
 	public function delete(DeletePhotosRequest $request, Delete $delete): void
 	{
-		$file_deleter = $delete->do($request->photoIds(), $request->from_id());
-		App::terminating(fn () => $file_deleter->do());
+		$delete->do($request->photoIds(), $request->from_id());
 	}
 
 	/**

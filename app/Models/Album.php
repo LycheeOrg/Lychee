@@ -340,9 +340,8 @@ class Album extends BaseAlbum implements Node
 	 */
 	public function performDeleteOnModel(): void
 	{
-		$file_deleter = (new Delete())->do([$this->id]);
+		(new Delete())->do([$this->id]);
 		$this->exists = false;
-		$file_deleter->do();
 	}
 
 	/**

@@ -66,8 +66,6 @@ class Merge
 		// Now we delete the source albums
 		// We must use the special `Delete` action in order to not break the
 		// tree.
-		// The returned `FileDeleter` can be ignored as all photos have been
-		// moved to the new location.
 		(new Delete())->do($albums->pluck('id')->values()->all());
 
 		$target_album->fixOwnershipOfChildren();

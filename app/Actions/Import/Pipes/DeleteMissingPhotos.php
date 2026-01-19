@@ -166,8 +166,7 @@ class DeleteMissingPhotos implements ImportPipe
 
 		// Execute the deletion
 		$delete = new Delete();
-		$file_deleter = $delete->do($photos_to_delete->pluck('id')->all(), $node->album->id);
-		$file_deleter->do();
+		$delete->do($photos_to_delete->pluck('id')->all(), $node->album->id);
 
 		$this->report(ImportEventReport::createError('deleted_missing', $node->name, "Deleted $count missing photos"));
 	}

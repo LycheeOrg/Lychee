@@ -11,18 +11,13 @@ namespace App\Actions\Photo;
 use App\Actions\Shop\PurchasableService;
 use App\Constants\PhotoAlbum as PA;
 use App\Enum\SizeVariantType;
+use App\Enum\StorageDiskType;
 use App\Events\PhotoDeleted;
-use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\ModelDBException;
-use App\Image\FileDeleter;
-use App\Models\Album;
-use App\Models\Palette;
-use App\Models\Photo;
+use App\Jobs\FileDeleterJob;
 use App\Models\SizeVariant;
-use App\Models\Statistics;
-use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -51,13 +46,67 @@ use Illuminate\Support\Facades\DB;
  */
 readonly class Delete
 {
-	protected FileDeleter $file_deleter;
 	private PurchasableService $purchasable_service;
 
 	public function __construct(
 	) {
-		$this->file_deleter = new FileDeleter();
 		$this->purchasable_service = resolve(PurchasableService::class);
+	}
+
+	/**
+	 * Delete the designated photos.
+	 * There is no check for album dependencies. This has already be done.
+	 * This is a force delete.
+	 *
+	 * HOWEVER, the size_variants may not be deleted directly if they are used in other photos.
+	 * TODO: deal with the deduplication logic on the file level. That was a mistake.
+	 *
+	 * @param array $photo_ids Photos to deleted
+	 *
+	 * @return array
+	 */
+	public function forceDelete(array $photo_ids): array
+	{
+		// We do not check the purchasable service as they have already been deleted by the caller.
+		if (count($photo_ids) === 0) {
+			return [];
+		}
+
+		// Reset headers and covers pointing to deleted photos
+		DB::table('albums')->whereIn('header_id', $photo_ids)->update(['header_id' => null]);
+		DB::table('albums')->whereIn('cover_id', $photo_ids)->update(['cover_id' => null]);
+
+		// Collect size variants to be deleted
+		// ! Risk of memory exhaustion if too many photos are deleted at once !
+		$size_variants_local = $this->collectSizeVariantPathsByPhotoID($photo_ids, StorageDiskType::LOCAL);
+		$short_paths_local = $size_variants_local->pluck('short_path')->all();
+		$short_path_watermarked_local = $size_variants_local->pluck('short_path_watermarked')->all();
+
+		$size_variants_s3 = $this->collectSizeVariantPathsByPhotoID($photo_ids, StorageDiskType::S3);
+		$short_paths_s3 = $size_variants_s3->pluck('short_path')->all();
+		$short_path_watermarked_s3 = $size_variants_s3->pluck('short_path_watermarked')->all();
+
+		$live_photo_short_paths_local = $this->collectLivePhotoPathsByPhotoID($photo_ids, StorageDiskType::LOCAL)->pluck('live_photo_short_path')->all();
+		$live_photo_short_paths_s3 = $this->collectLivePhotoPathsByPhotoID($photo_ids, StorageDiskType::S3)->pluck('live_photo_short_path')->all();
+
+		$delete_jobs = [];
+		$delete_jobs[] = new FileDeleterJob(StorageDiskType::LOCAL, $short_paths_local);
+		$delete_jobs[] = new FileDeleterJob(StorageDiskType::LOCAL, $short_path_watermarked_local);
+		$delete_jobs[] = new FileDeleterJob(StorageDiskType::LOCAL, $live_photo_short_paths_local);
+		$delete_jobs[] = new FileDeleterJob(StorageDiskType::S3, $short_paths_s3);
+		$delete_jobs[] = new FileDeleterJob(StorageDiskType::S3, $short_path_watermarked_s3);
+		$delete_jobs[] = new FileDeleterJob(StorageDiskType::S3, $live_photo_short_paths_s3);
+
+		// Now delete DB records
+		// ! If we are deleting more than a few 1000 photos at once, we may run into
+		// ! SQL query size limits. In that case, we need to chunk the deletion.
+		DB::table('size_variants')->whereIn('photo_id', $photo_ids)->delete();
+		DB::table('statistics')->whereIn('photo_id', $photo_ids)->delete();
+		DB::table('palettes')->whereIn('photo_id', $photo_ids)->delete();
+		DB::table('photo_album')->whereIn('photo_id', $photo_ids)->delete(); // Just to be sure.
+		DB::table('photos')->whereIn('id', $photo_ids)->delete();
+
+		return $delete_jobs;
 	}
 
 	/**
@@ -82,157 +131,55 @@ readonly class Delete
 	 *
 	 * @param string[]    $photo_ids the photo IDs
 	 * @param string|null $from_id   the ID of the album from which the photos are deleted
-	 * @param string[]    $album_ids the album IDs
-	 *
-	 * @return FileDeleter contains the collected files which became obsolete
 	 *
 	 * @throws ModelDBException
 	 */
-	public function do(array $photo_ids, string|null $from_id, array $album_ids = []): FileDeleter
+	public function do(array $photo_ids, string|null $from_id): void
 	{
-		$this->validateArguments($photo_ids, $from_id, $album_ids);
-
-		// Collect affected album IDs BEFORE deletion for event dispatching
-		$affected_album_ids = $this->collectAffectedAlbumIds($photo_ids, $from_id, $album_ids);
+		if ($from_id === null) {
+			throw new LycheeLogicException('The $from_id must be provided with the $photo_ids.');
+		}
+		if (count($photo_ids) === 0) {
+			return;
+		}
 
 		// First find out which photos do not have an album.
 		// Those will be deleted.
-		$unsorted_photo_ids = $this->collectUnsortedPhotos($photo_ids);
-		$photo_ids = $this->collectPhotosInAlbums($photo_ids);
-
-		if (count($photo_ids) > 0) {
-			// We delete the photos which are in the from and listed in albums.
-			DB::table(PA::PHOTO_ALBUM)->whereIn(PA::PHOTO_ID, $photo_ids)->where(PA::ALBUM_ID, '=', $from_id)->delete();
-		} else {
-			$photo_ids = $this->collectPhotosInAlbumsByAlbumID($album_ids);
-			// We delete the photos which are in the from and listed in albums.
-			DB::table(PA::PHOTO_ALBUM)->whereIn(PA::ALBUM_ID, $album_ids)->delete();
-		}
-
-		// Now that the relation is destroyed, we need to figure out which photos really need to be deleted:
-		// Those are the ones that were previously in albums but not anymore.
-		$photo_ids = $this->collectUnsortedPhotos($photo_ids);
-		$photo_ids = array_merge($photo_ids, $unsorted_photo_ids);
-
-		try {
-			$album_ids_containing = array_merge($album_ids, $from_id === null ? [] : [$from_id]);
-			$this->purchasable_service->deleteMulitplePhotoPurchasables($photo_ids, $album_ids_containing);
-
-			$this->collectSizeVariantPathsByPhotoID($photo_ids);
-			$this->collectLivePhotoPathsByPhotoID($photo_ids);
-			$this->deleteDBRecords($photo_ids, $album_ids);
-			// @codeCoverageIgnoreStart
-		} catch (QueryBuilderException $e) {
-			throw ModelDBException::create('photos', 'deleting', $e);
-		}
-		// @codeCoverageIgnoreEnd
-		Album::query()->whereIn('header_id', $photo_ids)->update(['header_id' => null]);
-
-		// Dispatch events for affected albums to trigger recomputation
-		foreach ($affected_album_ids as $album_id) {
-			PhotoDeleted::dispatch($album_id);
-		}
-
-		return $this->file_deleter;
-	}
-
-	/**
-	 * We make sure that only the valid code path are used to ensure the integrity
-	 * of the database.
-	 *
-	 * @param array       $photo_ids
-	 * @param string|null $from_id
-	 * @param array       $album_ids
-	 *
-	 * @return void
-	 *
-	 * @throws LycheeLogicException
-	 */
-	private function validateArguments(array $photo_ids, string|null $from_id, array $album_ids): void
-	{
-		match (true) {
-			count($photo_ids) !== 0 && count($album_ids) !== 0 => throw new LycheeLogicException('Only one of the arguments [$photo_ids, $album_ids] must be set.'),
-			count($photo_ids) !== 0 && $from_id === null => throw new LycheeLogicException('The $from_id must be provided with the $photo_ids.'),
-			count($album_ids) !== 0 && $from_id !== null => throw new LycheeLogicException('The $from_id must not be provided with the $album_ids.'),
-			default => null, // do nothing :)
-		};
-	}
-
-	/**
-	 * Collect album IDs that will be affected by photo deletion.
-	 * This must be called BEFORE photos are deleted.
-	 *
-	 * @param string[]    $photo_ids
-	 * @param string|null $from_id
-	 * @param string[]    $album_ids
-	 *
-	 * @return string[] album IDs that need stats recomputation
-	 */
-	private function collectAffectedAlbumIds(array $photo_ids, string|null $from_id, array $album_ids): array
-	{
-		if (count($album_ids) > 0) {
-			// Deleting from specific albums
-			return $album_ids;
-		}
-
-		if (count($photo_ids) > 0 && $from_id !== null) {
-			// Deleting specific photos from a specific album
-			return [$from_id];
-		}
-
-		// No albums affected
-		return [];
-	}
-
-	/**
-	 * We select all photos which are not in an album and in the preselection.
-	 *
-	 * @param string[] $photo_ids
-	 *
-	 * @return string[] Photo IDs
-	 */
-	private function collectUnsortedPhotos(array $photo_ids): array
-	{
-		if (count($photo_ids) === 0) {
-			return [];
-		}
-
-		return Photo::query()->leftJoin(PA::PHOTO_ALBUM, PA::PHOTO_ID, '=', 'photos.id')
+		$unsorted_photo_ids = DB::table('photos')
+			->leftJoin(PA::PHOTO_ALBUM, PA::PHOTO_ID, '=', 'photos.id')
 			->whereIn('photos.id', $photo_ids)
 			->whereNull(PA::ALBUM_ID)
-			->select(['photos.id'])->toBase()->pluck('id')->all();
-	}
+			->select(['photos.id'])->pluck('id')->all();
 
-	/**
-	 * We select all the photos which are in an album and in the preselection.
-	 *
-	 * @param string[] $photo_ids
-	 *
-	 * @return string[] photo IDs
-	 */
-	private function collectPhotosInAlbums(array $photo_ids): array
-	{
-		if (count($photo_ids) === 0) {
-			return [];
+		// Next we find all photos which are in albums.
+		$photo_ids = DB::table(PA::PHOTO_ALBUM)->whereIn(PA::PHOTO_ID, $photo_ids)->select([PA::PHOTO_ID])->pluck('photo_id')->all();
+
+		// Now we need to figure out those who are in other albums.
+		$photo_ids_in_other_albums = DB::table(PA::PHOTO_ALBUM)
+			->whereIn(PA::PHOTO_ID, $photo_ids)
+			->where(PA::ALBUM_ID, '!=', $from_id)
+			->distinct()
+			->select([PA::PHOTO_ID])->pluck('photo_id')->all();
+
+		// Substract those from the list of photos to be deleted the photos which
+		// are still in other albums.
+		$delete_photo_ids = array_diff($photo_ids, $photo_ids_in_other_albums);
+
+		// Finally, add the unsorted photos to be deleted.
+		$delete_photo_ids = array_merge($delete_photo_ids, $unsorted_photo_ids);
+
+		// We delete the photos which are in the from and listed in albums.
+		DB::table(PA::PHOTO_ALBUM)->whereIn(PA::PHOTO_ID, $photo_ids)->where(PA::ALBUM_ID, '=', $from_id)->delete();
+
+		$this->purchasable_service->deleteMulitplePhotoPurchasables($photo_ids, [$from_id]);
+		$jobs = $this->forceDelete($delete_photo_ids);
+
+		// Dispatch events for affected albums to trigger recomputation
+		PhotoDeleted::dispatch($from_id);
+
+		foreach ($jobs as $job) {
+			dispatch($job);
 		}
-
-		return DB::table(PA::PHOTO_ALBUM)->whereIn(PA::PHOTO_ID, $photo_ids)->select([PA::PHOTO_ID])->pluck('photo_id')->all();
-	}
-
-	/**
-	 * We select all the photos which are in a list of albums.
-	 *
-	 * @param string[] $album_ids
-	 *
-	 * @return string[] photo IDs
-	 */
-	private function collectPhotosInAlbumsByAlbumID(array $album_ids): array
-	{
-		if (count($album_ids) === 0) {
-			return [];
-		}
-
-		return DB::table(PA::PHOTO_ALBUM)->whereIn(PA::ALBUM_ID, $album_ids)->select([PA::PHOTO_ID])->pluck('photo_id')->all();
 	}
 
 	/**
@@ -242,40 +189,31 @@ readonly class Delete
 	 * Size variants which belong to a photo which has a duplicate that is
 	 * not going to be deleted are skipped.
 	 *
-	 * @param array<int,string> $photo_ids the photo IDs
+	 * @param array<int,string> $photo_ids    the photo IDs
+	 * @param StorageDiskType   $storage_disk the storage disk to filter for (null = all)
 	 *
-	 * @return void
+	 * @return Collection<int,SizeVariant> the size variants to be deleted
 	 *
 	 * @throws QueryBuilderException
 	 */
-	private function collectSizeVariantPathsByPhotoID(array $photo_ids): void
+	private function collectSizeVariantPathsByPhotoID(array $photo_ids, StorageDiskType $storage_disk): Collection
 	{
-		try {
-			if (count($photo_ids) === 0) {
-				return;
-			}
-
-			// Maybe consider doing multiple queries for the different storage types.
-			$size_variants = SizeVariant::query()
-				->from('size_variants as sv')
-				->select(['sv.short_path', 'sv.short_path_watermarked', 'sv.storage_disk'])
-				->join('photos as p', 'p.id', '=', 'sv.photo_id')
-				->leftJoin('photos as dup', function (JoinClause $join) use ($photo_ids): void {
-					$join
-						->on('dup.checksum', '=', 'p.checksum')
-						->whereNotIn('dup.id', $photo_ids);
-				})
-				->leftJoin('order_items as oi', 'oi.size_variant_id', '=', 'sv.id')
-				->whereIn('p.id', $photo_ids)
-				->whereNull('dup.id')
-				->whereNull('oi.id')
-				->get();
-			$this->file_deleter->addSizeVariants($size_variants);
-			// @codeCoverageIgnoreStart
-		} catch (\InvalidArgumentException $e) {
-			throw LycheeAssertionError::createFromUnexpectedException($e);
+		if (count($photo_ids) === 0) {
+			return collect([]);
 		}
-		// @codeCoverageIgnoreEnd
+
+		// Maybe consider doing multiple queries for the different storage types.
+		$exclude_ids = DB::table('order_items')->select(['size_variant_id'])->pluck('size_variant_id')->all();
+
+		// Maybe consider doing multiple queries for the different storage types.
+		return SizeVariant::query()
+			->from('size_variants as sv')
+			->select(['sv.short_path', 'sv.short_path_watermarked'])
+			->join('photos as p', 'p.id', '=', 'sv.photo_id')
+			->whereIn('p.id', $photo_ids)
+			->where('sv.storage_disk', '=', $storage_disk->value)
+			->whereNotIn('sv.id', $exclude_ids)
+			->get();
 	}
 
 	/**
@@ -285,129 +223,29 @@ readonly class Delete
 	 * Live photos which have a duplicate that is not going to be deleted are
 	 * skipped.
 	 *
-	 * @param array<int,string> $photo_ids the photo IDs
+	 * @param array<int,string> $photo_ids    the photo IDs
+	 * @param StorageDiskType   $storage_disk the storage disk to filter for (null = all)
 	 *
-	 * @return void
-	 *
-	 * @throws QueryBuilderException
-	 */
-	private function collectLivePhotoPathsByPhotoID(array $photo_ids)
-	{
-		try {
-			if (count($photo_ids) === 0) {
-				return;
-			}
-
-			/** @var Collection<int,object{live_photo_short_path:string,storage_disk:string}> $live_photo_short_paths */
-			$live_photo_short_paths = DB::table('photos', 'p')
-				->select(['p.live_photo_short_path', 'sv.storage_disk'])
-				->join('size_variants as sv', function (JoinClause $join): void {
-					$join
-						->on('sv.photo_id', '=', 'p.id')
-						->where('sv.type', '=', SizeVariantType::ORIGINAL);
-				})
-				->leftJoin('photos as dup', function (JoinClause $join) use ($photo_ids): void {
-					$join
-						->on('dup.live_photo_checksum', '=', 'p.live_photo_checksum')
-						->whereNotIn('dup.id', $photo_ids);
-				})
-				->whereIn('p.id', $photo_ids)
-				->whereNull('dup.id')
-				->whereNotNull('p.live_photo_short_path')
-				->get(['p.live_photo_short_path', 'sv.storage_disk']);
-
-			$live_variants_short_paths_grouped = $live_photo_short_paths->groupBy('storage_disk');
-			$live_variants_short_paths_grouped->each(
-				fn ($live_variants_short_paths, $disk) => $this->file_deleter->addFiles($live_variants_short_paths->map(fn ($lv) => $lv->live_photo_short_path), $disk)
-			);
-			// @codeCoverageIgnoreStart
-		} catch (\InvalidArgumentException $e) {
-			throw LycheeAssertionError::createFromUnexpectedException($e);
-		}
-		// @codeCoverageIgnoreEnd
-	}
-
-	/**
-	 * Deletes the records from DB.
-	 *
-	 * The records are deleted in such an order that foreign keys are not
-	 * broken.
-	 *
-	 * @param array<int,string> $photo_ids the photo IDs
-	 * @param array<int,string> $album_ids the album IDs
-	 *
-	 * @return void
+	 * @return Collection<int,object{live_photo_short_path:string}> the live photo short paths to be deleted
 	 *
 	 * @throws QueryBuilderException
 	 */
-	private function deleteDBRecords(array $photo_ids, array $album_ids): void
+	private function collectLivePhotoPathsByPhotoID(array $photo_ids, StorageDiskType $storage_disk): Collection
 	{
-		try {
-			if (count($photo_ids) !== 0) {
-				SizeVariant::query()
-					->whereIn('size_variants.photo_id', $photo_ids)
-					->whereNotExists(function (BaseBuilder $query): void {
-						$query
-							->from('order_items')
-							->whereColumn('order_items.size_variant_id', '=', 'size_variants.id');
-					})
-					->delete();
-			}
-			if (count($album_ids) !== 0) {
-				SizeVariant::query()
-					->whereExists(function (BaseBuilder $query) use ($album_ids): void {
-						$query
-							->from('photos', 'p')
-							->whereColumn('p.id', '=', 'size_variants.photo_id')
-							->leftJoin(PA::PHOTO_ALBUM, PA::PHOTO_ID, '=', 'p.id')
-							->whereIn(PA::ALBUM_ID, $album_ids);
-					})
-					->whereNotExists(function (BaseBuilder $query): void {
-						$query
-							->from('order_items')
-							->whereColumn('order_items.size_variant_id', '=', 'size_variants.id');
-					})
-					->delete();
-			}
-			if (count($photo_ids) !== 0) {
-				Statistics::query()
-					->whereIn('photo_id', $photo_ids)
-					->delete();
-			}
-			if (count($album_ids) !== 0) {
-				Statistics::query()
-					->whereExists(function (BaseBuilder $query) use ($album_ids): void {
-						$query
-							->from('photos', 'p')
-							->whereColumn('p.id', '=', 'statistics.photo_id')
-							->leftJoin(PA::PHOTO_ALBUM, PA::PHOTO_ID, '=', 'p.id')
-							->whereIn(PA::ALBUM_ID, $album_ids);
-					})
-					->delete();
-			}
-			if (count($photo_ids) !== 0) {
-				Palette::query()
-					->whereIn('photo_id', $photo_ids)
-					->delete();
-			}
-			if (count($album_ids) !== 0) {
-				Palette::query()
-					->whereExists(function (BaseBuilder $query) use ($album_ids): void {
-						$query
-							->from('photos', 'p')
-							->whereColumn('p.id', '=', 'palettes.photo_id')
-							->leftJoin(PA::PHOTO_ALBUM, PA::PHOTO_ID, '=', 'p.id')
-							->whereIn(PA::ALBUM_ID, $album_ids);
-					})
-					->delete();
-			}
-			if (count($photo_ids) !== 0) {
-				Photo::query()->whereIn('id', $photo_ids)->delete();
-			}
-			// @codeCoverageIgnoreStart
-		} catch (\InvalidArgumentException $e) {
-			throw LycheeAssertionError::createFromUnexpectedException($e);
+		if (count($photo_ids) === 0) {
+			return collect([]);
 		}
-		// @codeCoverageIgnoreEnd
+
+		return DB::table('photos', 'p')
+			->select(['p.live_photo_short_path'])
+			->join('size_variants as sv', function (JoinClause $join): void {
+				$join
+					->on('sv.photo_id', '=', 'p.id')
+					->where('sv.type', '=', SizeVariantType::ORIGINAL);
+			})
+			->whereIn('p.id', $photo_ids)
+			->whereNotNull('p.live_photo_short_path')
+			->where('sv.storage_disk', '=', $storage_disk->value)
+			->get();
 	}
 }
