@@ -18,6 +18,7 @@ use App\Events\AlbumDeleted;
 use App\Exceptions\CorruptedTreeException;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
+use App\Jobs\CheckTreeState;
 use App\Jobs\FileDeleterJob;
 use App\Models\Album;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -251,7 +252,8 @@ class Delete
 	 */
 	public function validateBeforeDelete(): void
 	{
-		$stats = Album::query()->countErrors();
+		$check = new CheckTreeState();
+		$stats = $check->handle();
 		if ((($stats['oddness'] ?? 0) > 0) ||
 			(($stats['duplicates'] ?? 0) > 0) ||
 			(($stats['wrong_parent'] ?? 0) > 0) ||
