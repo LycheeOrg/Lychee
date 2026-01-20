@@ -5,6 +5,7 @@ export type UpdateTreeData = {
 	id: string;
 	_lft: number;
 	_rgt: number;
+	parent_id: string | null;
 };
 
 const MaintenanceService = {

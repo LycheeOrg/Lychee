@@ -110,7 +110,7 @@ const toast = useToast();
 const albumIds = ref<string[]>([]);
 const isLoading = ref(true);
 
-const { isValidated, validate, prepareAlbums, check, incrementLft, incrementRgt, decrementLft, decrementRgt } = useTreeOperations(
+const { isValidated, validate, prepareAlbums, check, incrementLft, incrementRgt, decrementLft, decrementRgt, getModifiedAlbums } = useTreeOperations(
 	originalAlbums,
 	albums,
 	toast,
@@ -146,14 +146,16 @@ function apply() {
 		return;
 	}
 
-	const data = albums.value.map((a) => {
-		return {
-			id: a.id,
-			_lft: a._lft,
-			_rgt: a._rgt,
-			parent_id: a.parent_id,
-		};
-	});
+	const data = getModifiedAlbums();
+
+	if (data.length === 0) {
+		toast.add({
+			severity: "info",
+			summary: trans("fix-tree.no-changes"),
+			life: 3000,
+		});
+		return;
+	}
 
 	MaintenanceService.updateFullTree(data).then(() => {
 		AlbumService.clearCache();

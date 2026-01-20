@@ -23,6 +23,7 @@ return [
         'check' => 'Comprobar',
         'apply' => 'Aplicar',
     ],
+    'no-changes' => 'No hay cambios que aplicar.',
     'table' => [
         'title' => 'Título',
         'left' => 'Izquierda',
