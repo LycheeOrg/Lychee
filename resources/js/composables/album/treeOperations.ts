@@ -76,18 +76,20 @@ export function useTreeOperations(
 		return errors.value.length === 0;
 	}
 
-	function prepareAlbums() {
-		if (originalAlbums.value === undefined) {
+	function prepareAlbums(sourceAlbums?: App.Http.Resources.Diagnostics.AlbumTree[]) {
+		// Use provided source, or fall back to originalAlbums for initial load
+		const source = sourceAlbums ?? originalAlbums.value;
+		if (source === undefined) {
 			return;
 		}
 
 		// Build duplicate detection sets in O(n) instead of O(n²)
-		const { duplicateLfts, duplicateRgts } = buildDuplicateSets(originalAlbums.value);
+		const { duplicateLfts, duplicateRgts } = buildDuplicateSets(source);
 
 		albums.value = [];
 
 		const pile = [] as AlbumPile[];
-		for (const album of originalAlbums.value) {
+		for (const album of source) {
 			const trimmedId = album.id.slice(0, 6);
 			const trimmedParentId = (album.parent_id ?? "root").slice(0, 6);
 			const isDuplicate_lft = duplicateLfts.has(album._lft);
@@ -167,8 +169,12 @@ export function useTreeOperations(
 	}
 
 	function check() {
-		originalAlbums.value = albums.value?.sort((a, b) => a._lft - b._lft);
-		prepareAlbums();
+		if (albums.value === undefined) {
+			return;
+		}
+		// Sort current albums and revalidate without overwriting the baseline
+		const sortedAlbums = albums.value.sort((a, b) => a._lft - b._lft);
+		prepareAlbums(sortedAlbums);
 		errors.value.forEach((e) => toast.add({ severity: "error", summary: trans("toasts.error"), detail: e, life: 3000 }));
 	}
 
