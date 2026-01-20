@@ -57,9 +57,15 @@ class Delete
 	 */
 	public function do(array $sv_ids): void
 	{
+		if (count($sv_ids) === 0) {
+			return;
+		}
+
 		try {
 			// Maybe consider doing multiple queries for the different storage types.
 			$exclude_ids = DB::table('order_items')->select(['size_variant_id'])->pluck('size_variant_id')->all();
+
+			$ids_to_delete = array_diff($sv_ids, $exclude_ids);
 
 			// Maybe consider doing multiple queries for the different storage types.
 			$size_variants_local = SizeVariant::query()
@@ -67,7 +73,7 @@ class Delete
 				->select(['sv.short_path', 'sv.short_path_watermarked'])
 				->join('photos as p', 'p.id', '=', 'sv.photo_id')
 				->where('sv.storage_disk', '=', StorageDiskType::LOCAL->value)
-				->whereNotIn('sv.id', $exclude_ids)
+				->whereIn('sv.id', $ids_to_delete)
 				->toBase()
 				->get();
 
@@ -76,7 +82,7 @@ class Delete
 				->select(['sv.short_path', 'sv.short_path_watermarked'])
 				->join('photos as p', 'p.id', '=', 'sv.photo_id')
 				->where('sv.storage_disk', '=', StorageDiskType::S3->value)
-				->whereNotIn('sv.id', $exclude_ids)
+				->whereIn('sv.id', $ids_to_delete)
 				->toBase()
 				->get();
 

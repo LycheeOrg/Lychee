@@ -47,6 +47,7 @@ return new class() extends Migration {
 			DB::table('purchasables')->whereIn('photo_id', $photos_ids)->whereNotIn('album_id', $album_ids)->update(['photo_id' => $photo_to_keep]);
 
 			// Delete the remaining links
++			DB::table('size_variants')->whereIn('photo_id', $photos_ids)->delete();
 			DB::table('purchasables')->whereIn('photo_id', $photos_ids)->delete();
 			DB::table('statistics')->whereIn('photo_id', $photos_ids)->delete();
 			DB::table('photo_album')->whereIn('photo_id', $photos_ids)->delete();

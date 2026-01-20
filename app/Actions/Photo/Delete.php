@@ -58,9 +58,6 @@ readonly class Delete
 	 * There is no check for album dependencies. This has already be done.
 	 * This is a force delete.
 	 *
-	 * HOWEVER, the size_variants may not be deleted directly if they are used in other photos.
-	 * TODO: deal with the deduplication logic on the file level. That was a mistake.
-	 *
 	 * @param array $photo_ids Photos to deleted
 	 *
 	 * @return array
