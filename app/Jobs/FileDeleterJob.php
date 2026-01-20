@@ -52,8 +52,13 @@ class FileDeleterJob implements ShouldQueue
 	 */
 	public function handle(): void
 	{
-		$first_exception = null;
+		if ($this->file_list === []) {
+			Log::channel('jobs')->debug('No files to delete.');
 
+			return;
+		}
+
+		$first_exception = null;
 		$disk = Storage::disk($this->storage_type->value);
 
 		// If the disk uses the local driver, we use low-level routines as

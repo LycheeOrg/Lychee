@@ -81,8 +81,10 @@ class Delete
 				->get();
 
 			$jobs = [];
-			$jobs[] = new FileDeleterJob(StorageDiskType::LOCAL, $size_variants_local->pluck('short_path')->all());
-			$jobs[] = new FileDeleterJob(StorageDiskType::S3, $size_variants_s3->pluck('short_path')->all());
+			$jobs[] = new FileDeleterJob(StorageDiskType::LOCAL, $size_variants_local->pluck('short_path')->filter()->all());
+			$jobs[] = new FileDeleterJob(StorageDiskType::LOCAL, $size_variants_local->pluck('short_path_watermarked')->filter()->all());
+			$jobs[] = new FileDeleterJob(StorageDiskType::S3, $size_variants_s3->pluck('short_path')->filter()->all());
+			$jobs[] = new FileDeleterJob(StorageDiskType::S3, $size_variants_s3->pluck('short_path_watermarked')->filter()->all());
 
 			SizeVariant::query()
 				->whereIn('id', $sv_ids)

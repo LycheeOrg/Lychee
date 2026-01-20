@@ -80,11 +80,11 @@ readonly class Delete
 		// ! Risk of memory exhaustion if too many photos are deleted at once !
 		$size_variants_local = $this->collectSizeVariantPathsByPhotoID($photo_ids, StorageDiskType::LOCAL);
 		$short_paths_local = $size_variants_local->pluck('short_path')->all();
-		$short_path_watermarked_local = $size_variants_local->pluck('short_path_watermarked')->all();
+		$short_path_watermarked_local = $size_variants_local->pluck('short_path_watermarked')->filter()->all();
 
 		$size_variants_s3 = $this->collectSizeVariantPathsByPhotoID($photo_ids, StorageDiskType::S3);
 		$short_paths_s3 = $size_variants_s3->pluck('short_path')->all();
-		$short_path_watermarked_s3 = $size_variants_s3->pluck('short_path_watermarked')->all();
+		$short_path_watermarked_s3 = $size_variants_s3->pluck('short_path_watermarked')->filter()->all();
 
 		$live_photo_short_paths_local = $this->collectLivePhotoPathsByPhotoID($photo_ids, StorageDiskType::LOCAL)->pluck('live_photo_short_path')->all();
 		$live_photo_short_paths_s3 = $this->collectLivePhotoPathsByPhotoID($photo_ids, StorageDiskType::S3)->pluck('live_photo_short_path')->all();
