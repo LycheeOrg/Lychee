@@ -24,6 +24,7 @@ return [
         'check' => '检查',
         'apply' => '应用',
     ],
+    'no-changes' => '没有需要应用的更改。',
     'table' => [
         'title' => '标题',
         'left' => '左值',

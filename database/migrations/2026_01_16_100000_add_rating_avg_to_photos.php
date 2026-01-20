@@ -47,7 +47,7 @@ return new class() extends Migration {
 				->where('statistics.rating_count', '>', 0)
 				->select('photos.id', 'statistics.rating_sum', 'statistics.rating_count')
 				->orderBy('photos.id')
-				->chunk(100, function ($photos) {
+				->chunkById(100, function ($photos) {
 					$update = $photos->map(function ($photo) {
 						$ratingAvg = round($photo->rating_sum / $photo->rating_count, 4);
 
@@ -60,7 +60,7 @@ return new class() extends Migration {
 					$key_name = 'id';
 					$photo_instance = new RatedPhoto();
 					batch()->update($photo_instance, $update, $key_name);
-				});
+				}, 'id');
 		});
 	}
 

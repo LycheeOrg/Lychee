@@ -32,14 +32,14 @@ return [
         'landing_title' => 'Überschrift der Startseite',
         'landing_subtitle' => 'Untertitel auf der Startseite',
         'sm_facebook_url' => 'URL des Facebook-Profils',
-        'sm_flickr_url' => 'Url of flickr profile',
-        'sm_twitter_url' => 'Url of X profile (formerly Twitter)',
-        'sm_instagram_url' => 'Url of instagram profile',
-        'sm_youtube_url' => 'Url of youtube profile',
+        'sm_flickr_url' => 'Url des flickr Profils',
+        'sm_twitter_url' => 'Url des X Profils (ehemals Twitter)',
+        'sm_instagram_url' => 'Url des instagram Profils',
+        'sm_youtube_url' => 'Url des youtube Profils',
         'thumb_2x' => 'Enable 2x size of square thumbs',
         'small_2x' => 'Enable 2x size of small thumbs',
         'medium_2x' => 'Enable 2x size of medium pictures',
-        'site_title' => 'Website title',
+        'site_title' => 'Webseitentitel',
         'footer_show_copyright' => 'Display copyright in footer.',
         'site_copyright_begin' => 'Initial year of copyright',
         'site_copyright_end' => 'Last year of copyright',
@@ -657,7 +657,6 @@ return [
         'webshop_auto_fulfill_enabled' => 'Once a payment is completed, the content is automatically made available to the user when possible.',
         'webshop_manual_fulfill_enabled' => 'When "Mark as Delivered" is clicked, the content is automatically made available to the user when possible.',
     ],
-
     'category_name' => [
         'config' => 'Basics',
         'lychee SE' => 'Lychee SE',
@@ -686,7 +685,6 @@ return [
         'Mod Rating' => 'Photo star rating',
         'Mod Webshop' => 'Webshop',
     ],
-
     'category_description' => [
         'config' => '',
         'lychee SE' => 'Unlock the full capabilities of Lychee with the <a href="https://lycheeorg.dev/get-supporter-edition/" class="text-primary-500 font-bold underline">Supporter Edition</a>. Get exclusive features and support the development of Lychee. Sponsor LycheeOrg on GitHub and get your License key <a href="https://github.com/sponsors/LycheeOrg" class="text-primary-500 font-bold underline">here</a>.',

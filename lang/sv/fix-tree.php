@@ -24,6 +24,7 @@ return [
         'check' => 'Check',
         'apply' => 'Apply',
     ],
+    'no-changes' => 'No changes to apply.',
     'table' => [
         'title' => 'Title',
         'left' => 'Left',

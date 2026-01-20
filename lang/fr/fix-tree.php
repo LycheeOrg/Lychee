@@ -24,6 +24,7 @@ return [
         'check' => 'Vérifier',
         'apply' => 'Appliquer',
     ],
+    'no-changes' => 'Aucune modification à appliquer.',
     'table' => [
         'title' => 'Titre',
         'left' => 'Gauche',

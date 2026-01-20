@@ -23,6 +23,7 @@ return [
         'check' => 'Controleren',
         'apply' => 'Toepassen',
     ],
+    'no-changes' => 'Geen wijzigingen om toe te passen.',
     'table' => [
         'title' => 'Titel',
         'left' => 'Links',
