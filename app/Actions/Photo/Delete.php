@@ -73,13 +73,16 @@ readonly class Delete
 		DB::table('albums')->whereIn('header_id', $photo_ids)->update(['header_id' => null]);
 		DB::table('albums')->whereIn('cover_id', $photo_ids)->update(['cover_id' => null]);
 
+		// Maybe consider doing multiple queries for the different storage types.
+		$exclude_size_variants_ids = DB::table('order_items')->select(['size_variant_id'])->pluck('size_variant_id')->all();
+
 		// Collect size variants to be deleted
 		// ! Risk of memory exhaustion if too many photos are deleted at once !
-		$size_variants_local = $this->collectSizeVariantPathsByPhotoID($photo_ids, StorageDiskType::LOCAL);
+		$size_variants_local = $this->collectSizeVariantPathsByPhotoID($photo_ids, StorageDiskType::LOCAL, $exclude_size_variants_ids);
 		$short_paths_local = $size_variants_local->pluck('short_path')->all();
 		$short_path_watermarked_local = $size_variants_local->pluck('short_path_watermarked')->filter()->all();
 
-		$size_variants_s3 = $this->collectSizeVariantPathsByPhotoID($photo_ids, StorageDiskType::S3);
+		$size_variants_s3 = $this->collectSizeVariantPathsByPhotoID($photo_ids, StorageDiskType::S3, $exclude_size_variants_ids);
 		$short_paths_s3 = $size_variants_s3->pluck('short_path')->all();
 		$short_path_watermarked_s3 = $size_variants_s3->pluck('short_path_watermarked')->filter()->all();
 
@@ -97,6 +100,10 @@ readonly class Delete
 		// Now delete DB records
 		// ! If we are deleting more than a few 1000 photos at once, we may run into
 		// ! SQL query size limits. In that case, we need to chunk the deletion.
+
+		// Those we are keeping.
+		DB::table('size_variants')->whereIn('id', $exclude_size_variants_ids)->update(['photo_id' => null]);
+		// Those we delete
 		DB::table('size_variants')->whereIn('photo_id', $photo_ids)->delete();
 		DB::table('statistics')->whereIn('photo_id', $photo_ids)->delete();
 		DB::table('palettes')->whereIn('photo_id', $photo_ids)->delete();
@@ -186,30 +193,27 @@ readonly class Delete
 	 * Size variants which belong to a photo which has a duplicate that is
 	 * not going to be deleted are skipped.
 	 *
-	 * @param array<int,string> $photo_ids    the photo IDs
-	 * @param StorageDiskType   $storage_disk the storage disk to filter for (null = all)
+	 * @param array<int,string> $photo_ids                 the photo IDs
+	 * @param StorageDiskType   $storage_disk              the storage disk to filter for (null = all)
+	 * @param array<int,string> $exclude_size_variants_ids size variant IDs to be excluded
 	 *
 	 * @return Collection<int,SizeVariant> the size variants to be deleted
 	 *
 	 * @throws QueryBuilderException
 	 */
-	private function collectSizeVariantPathsByPhotoID(array $photo_ids, StorageDiskType $storage_disk): Collection
+	private function collectSizeVariantPathsByPhotoID(array $photo_ids, StorageDiskType $storage_disk, array $exclude_size_variants_ids): Collection
 	{
 		if (count($photo_ids) === 0) {
 			return collect([]);
 		}
 
-		// Maybe consider doing multiple queries for the different storage types.
-		$exclude_ids = DB::table('order_items')->select(['size_variant_id'])->pluck('size_variant_id')->all();
-
-		// Maybe consider doing multiple queries for the different storage types.
 		return SizeVariant::query()
 			->from('size_variants as sv')
 			->select(['sv.short_path', 'sv.short_path_watermarked'])
 			->join('photos as p', 'p.id', '=', 'sv.photo_id')
 			->whereIn('p.id', $photo_ids)
 			->where('sv.storage_disk', '=', $storage_disk->value)
-			->whereNotIn('sv.id', $exclude_ids)
+			->whereNotIn('sv.id', $exclude_size_variants_ids)
 			->toBase()
 			->get();
 	}

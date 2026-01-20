@@ -46,6 +46,7 @@ final class AlbumsToBeDeleteDTO
 			DB::table('live_metrics')->whereIn('album_id', $this->album_ids)->delete();
 			DB::table('access_permissions')->whereIn('base_album_id', $this->album_ids)->delete();
 			DB::table('statistics')->whereIn('album_id', $this->album_ids)->delete();
+			DB::table('album_size_statistics')->whereIn('album_id', $this->album_ids)->delete();
 			DB::table('albums')->whereIn('id', $this->album_ids)->orderBy('_lft', 'desc')->delete();
 			DB::table('base_albums')->whereIn('id', $this->album_ids)->delete();
 

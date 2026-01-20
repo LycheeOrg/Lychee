@@ -89,12 +89,13 @@ class Delete
 
 		$photos_to_delete = $this->findAllPhotosToDelete($albums_to_delete->album_ids);
 
-		// Nuke the albums.
-		$albums_to_delete->executeDelete();
-
 		// Nuke the photos.
 		$photo_delete_action = resolve(PhotoDelete::class);
 		$jobs = $photo_delete_action->forceDelete($photos_to_delete);
+
+		// Nuke the albums.
+		$albums_to_delete->executeDelete();
+
 		foreach ($jobs as $job) {
 			$this->jobs[] = $job;
 		}
@@ -148,7 +149,7 @@ class Delete
 			->get();
 
 		// Potential photos to be deleted
-		$photos_ids = $photos_ids_occurances_in_album->pluck(PA::PHOTO_ID)->all();
+		$photos_ids = $photos_ids_occurances_in_album->pluck('photo_id')->all();
 
 		// We select all the photos which are impacted: we want to know if they are only occuring in those albums or not.
 		// Note that photos which are only in the deleted albums can be deleted fully.
