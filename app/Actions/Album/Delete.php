@@ -12,7 +12,8 @@ use App\Actions\Photo\Delete as PhotoDelete;
 use App\Actions\Shop\PurchasableService;
 use App\Constants\AccessPermissionConstants as APC;
 use App\Constants\PhotoAlbum as PA;
-use App\DTO\Delete\AlbumsToBeDeleteDTO;
+use App\DTO\Delete\AlbumsToBeDeletedDTO;
+use App\DTO\Delete\PhotosToBeDeletedDTO;
 use App\Enum\StorageDiskType;
 use App\Events\AlbumDeleted;
 use App\Exceptions\CorruptedTreeException;
@@ -87,11 +88,10 @@ class Delete
 
 		$this->jobs[] = new FileDeleterJob(StorageDiskType::LOCAL, $albums_to_delete->tracks->all());
 
-		$photos_to_delete = $this->findAllPhotosToDelete($albums_to_delete->album_ids);
+		$photos_to_be_deleted = $this->findAllPhotosToDelete($albums_to_delete->album_ids);
 
 		// Nuke the photos.
-		$photo_delete_action = resolve(PhotoDelete::class);
-		$jobs = $photo_delete_action->forceDelete($photos_to_delete);
+		$jobs = $photos_to_be_deleted->executeDelete();
 
 		// Nuke the albums.
 		$albums_to_delete->executeDelete();
@@ -134,9 +134,9 @@ class Delete
 	 *
 	 * @param string[] $album_ids that are being deleted
 	 *
-	 * @return string[] of photo IDs that can be deleted fully
+	 * @return PhotosToBeDeletedDTO of photo IDs that can be deleted fully
 	 */
-	public function findAllPhotosToDelete(array $album_ids): array
+	public function findAllPhotosToDelete(array $album_ids): PhotosToBeDeletedDTO
 	{
 		// First collect which pictures needs to be potentially deleted.
 		// ! RISK OF MEMOY EXHAUSTION !
@@ -192,7 +192,11 @@ class Delete
 			$idx_total++;
 		}
 
-		return $photos_to_delete_fully;
+		return new PhotosToBeDeletedDTO(
+			force_delete_photo_ids: $photos_to_delete_fully,
+			soft_delete_photo_ids: $photos_to_detach,
+			album_ids: $album_ids,
+		);
 	}
 
 	/**
@@ -200,9 +204,9 @@ class Delete
 	 *
 	 * @param array $album_ids
 	 *
-	 * @return AlbumsToBeDeleteDTO
+	 * @return AlbumsToBeDeletedDTO
 	 */
-	private function findAllAlbumsToDelete(array $album_ids): AlbumsToBeDeleteDTO
+	private function findAllAlbumsToDelete(array $album_ids): AlbumsToBeDeletedDTO
 	{
 		// First gather the gaps that will be made:
 		$gaps = $this->getGaps($album_ids);
@@ -236,7 +240,7 @@ class Delete
 		// prune the null values
 		$recursive_album_tracks = $recursive_album_tracks->filter(fn ($val) => $val !== null);
 
-		return new AlbumsToBeDeleteDTO(
+		return new AlbumsToBeDeletedDTO(
 			parent_ids: $parent_ids,
 			album_ids: $recursive_album_ids,
 			tracks: $recursive_album_tracks,
