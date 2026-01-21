@@ -1,0 +1,130 @@
+# Docker Compose configuration for Lychee application with FrankenPHP backend
+# Version: 2026-01-10
+
+x-base-lychee-setup: &base-lychee-setup
+  image: ghcr.io/lycheeorg/lychee:latest
+  restart: unless-stopped  # Auto-restart at container level (outer layer)
+
+  # Security hardening
+  security_opt:
+    - no-new-privileges:true
+    - seccomp:unconfined  # FrankenPHP may need this; consider custom seccomp profile
+  cap_drop:
+    - ALL
+  cap_add:
+    - CHOWN
+    - SETGID
+    - SETUID
+    - DAC_OVERRIDE
+    - NET_BIND_SERVICE
+  read_only: false  # Laravel needs write access to storage/cache
+  tmpfs:
+    - /tmp:noexec,nosuid,nodev,size=100m
+  volumes:
+    - ./lychee/uploads:/app/public/uploads
+    - ./lychee/logs:/app/storage/logs
+    - ./lychee/tmp:/app/storage/tmp
+  networks:
+    - lychee
+
+x-common-env: &common-env
+  PUID: "${PUID:-1000}"
+  PGID: "${PGID:-1000}"
+  APP_KEY: "base64:ucMiFCbfQZUFOxrQz1x9C0OBJeLCCCAieZmnEHXmyGI="
+  APP_NAME: "${APP_NAME:-Lychee}"
+  APP_ENV: "${APP_ENV:-production}"
+  APP_TIMEZONE: "${TIMEZONE:-UTC}"
+  APP_URL: "${APP_URL:-http://localhost:8000}"
+  APP_FORCE_HTTPS: "${APP_FORCE_HTTPS:-false}"
+  DB_CONNECTION: "${DB_CONNECTION:-mysql}"
+  DB_HOST: "${DB_HOST:-lychee_db}"
+  DB_PORT: "${DB_PORT:-3306}"
+  DB_DATABASE: "${DB_DATABASE:-lychee}"
+  DB_USERNAME: "${DB_USERNAME:-lychee}"
+  DB_PASSWORD: "${DB_PASSWORD:-password}"
+  SESSION_DRIVER: "${SESSION_DRIVER:-file}"
+  SESSION_LIFETIME: "${SESSION_LIFETIME:-120}"
+  QUEUE_CONNECTION: "${QUEUE_CONNECTION:-database}"
+
+services:
+  lychee_api:
+    <<: *base-lychee-setup
+    container_name: lychee-api
+    expose:
+      - "${APP_PORT:-8000}"
+    ports:
+      - "${APP_PORT:-8000}:8000"
+    environment:
+      <<: *common-env
+      # Enable WORKER MODE
+    depends_on:
+      lychee_db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/up"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  lychee_worker:
+    <<: *base-lychee-setup
+    container_name: lychee-worker
+    environment:
+      <<: *common-env
+      # Enable WORKER MODE
+      LYCHEE_MODE: worker
+
+    depends_on:
+      lychee_db:
+        condition: service_healthy
+      lychee_api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -f 'queue:work' || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s  # Give worker time to start up
+
+  lychee_db:
+      image: mariadb:10
+      security_opt:
+          - no-new-privileges:true
+      cap_drop:
+          - ALL
+      cap_add:
+          - SETGID
+          - SETUID
+          - DAC_OVERRIDE
+          - CHOWN
+      read_only: false  # MariaDB needs write access
+      tmpfs:
+          - /tmp:noexec,nosuid,nodev,size=200m
+          - /var/run/mysqld:noexec,nosuid,nodev,size=10m
+      environment:
+          - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD:-rootpassword}
+          - MYSQL_DATABASE=${DB_DATABASE:-lychee}
+          - MYSQL_USER=${DB_USERNAME:-lychee}
+          - MYSQL_PASSWORD=${DB_PASSWORD:-password}
+      expose:
+          - 3306
+      volumes:
+          - mysql:/var/lib/mysql
+      networks:
+          - lychee
+      restart: unless-stopped
+      healthcheck:
+        test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+        interval: 5s
+        timeout: 3s
+        retries: 10
+        start_period: 10s
+
+networks:
+    lychee:
+
+volumes:
+    mysql:
+        name: lychee_prod_mysql
+        driver: local
