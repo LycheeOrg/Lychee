@@ -9,11 +9,12 @@
 namespace App\DTO\Delete;
 
 use App\Actions\Shop\PurchasableService;
+use App\Exceptions\Internal\LycheeLogicException;
 use App\Models\Album;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
-final class AlbumsToBeDeleteDTO
+final class AlbumsToBeDeletedDTO
 {
 	/**
 	 * Container for all Albums and associated Tracks to be deleted.
@@ -41,6 +42,11 @@ final class AlbumsToBeDeleteDTO
 	public function executeDelete()
 	{
 		DB::transaction(function (): void {
+			// Safety checks
+			if (DB::table('photo_album')->whereIn('album_id', $this->album_ids)->count() > 0) {
+				throw new LycheeLogicException('There are still photos linked to the albums to be deleted.');
+			}
+
 			$purchasable_service = resolve(PurchasableService::class);
 			$purchasable_service->deleteMultipleAlbumPurchasables($this->album_ids);
 			DB::table('live_metrics')->whereIn('album_id', $this->album_ids)->delete();
