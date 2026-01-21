@@ -41,6 +41,17 @@ Contributions welcome! Check out our [Contribution Guide](docs/Contribute.md) an
 
 ## Installation
 
+### Quick Try (Docker)
+
+Want to quickly test Lychee? Use the minimal docker-compose template:
+
+```bash
+curl -O https://raw.githubusercontent.com/LycheeOrg/Lychee/master/docker-compose.minimal.yaml
+docker compose -f docker-compose.minimal.yaml up -d
+```
+
+Then open http://localhost:8000 in your browser. This setup includes a separate worker container for background jobs.
+
 ### Docker (Recommended)
 
 The easiest way to deploy Lychee with all dependencies configured:

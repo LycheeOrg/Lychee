@@ -83,7 +83,6 @@ Individual photos with metadata, EXIF data, and file information.
 - `id`: Primary key
 - `title`: Photo title
 - `description`: Optional description
-- `album_id`: Foreign key to Album (nullable)
 - `owner_id`: Foreign key to User
 - `type`: MIME type
 - `original_checksum`: SHA-256 checksum
@@ -93,13 +92,13 @@ Individual photos with metadata, EXIF data, and file information.
 - `latitude`, `longitude`: GPS coordinates
 
 **Relationships:**
-- Belongs to `Album`
+- Belongs to many `Album` through `photo_album` pivot table (many-to-many)
 - Belongs to `User` (owner)
 - Has many `SizeVariant`
 - Has one `Palette`
-- Has many `Tag` through `photo_tag` pivot table
+- Has many `Tag` through `photos_tags` pivot table
 - Has many `PhotoRating`
-- Has one `PhotoStatistics` (virtual relationship for aggregated metrics)
+- Has one `Statistics` (visit/download tracking)
 
 #### SizeVariant
 Different size versions of photos (original, medium, small, thumb).
@@ -228,10 +227,11 @@ This dual approach allows Lychee to provide:
 - **Users**: Own albums and photos, belong to user groups (SE edition)
 
 ### Many-to-Many
-- **Tags**: Many-to-many with photos through `photo_tag` pivot table
+- **Photos-Albums**: Many-to-many through `photo_album` pivot table (photos can belong to multiple albums)
+- **Tags**: Many-to-many with photos through `photos_tags` pivot table
 
 ### One-to-Many
-- **Photos**: Belong to one album, owned by one user
+- **Photos**: Owned by one user (but can belong to multiple albums)
 - **Size Variants**: Multiple variants per photo
 - **Access Permissions**: Multiple permissions per album
 
@@ -258,4 +258,4 @@ Eager loading enforced with `Model::shouldBeStrict()`, which throws an exception
 
 ---
 
-*Last updated: December 22, 2025*
+*Last updated: January 21, 2026*

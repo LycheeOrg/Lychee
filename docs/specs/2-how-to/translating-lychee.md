@@ -37,7 +37,7 @@ return [
 Ensure consistency across all languages:
 
 ```bash
-php artisan test --filter TranslationTest
+php artisan test --filter LangTest
 ```
 
 ### Best Practices for Developers
@@ -217,4 +217,4 @@ This localization system ensures Lychee remains accessible to users worldwide wh
 
 ---
 
-*Last updated: December 22, 2025*
+*Last updated: January 21, 2026*

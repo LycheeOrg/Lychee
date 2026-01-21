@@ -72,7 +72,8 @@ Album
   ├─ has children → Albums (self-referencing, nested tree)
   ├─ owned by → User (many-to-one)
   ├─ has → AccessPermissions (one-to-many)
-  ├─ has → Statistics (one-to-one)
+  ├─ has → AlbumSizeStatistics (one-to-one) - size/count aggregates
+  ├─ has → Statistics (one-to-one) - visit/download tracking
   └─ can be → Purchasable (one-to-one)
 
 Photo
@@ -132,4 +133,4 @@ Now that you understand Lychee's core concepts:
 
 ---
 
-*Last updated: December 22, 2025*
+*Last updated: January 21, 2026*

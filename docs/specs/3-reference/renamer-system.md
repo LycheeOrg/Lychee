@@ -14,7 +14,7 @@ The Renamer module provides functionality to create, manage, and apply rules for
 
 1. **Renamer Class**: Located in `App\Metadata\Renamer`, this is the main class that handles the application of renamer rules to strings.
 2. **RenamerRule Model**: Represents a single renaming rule in the database.
-3. **RenamerModeType Enum**: Defines the available replacement modes (FIRST, ALL, REGEX).
+3. **RenamerModeType Enum**: Defines the available modes (FIRST, ALL, REGEX, TRIM, LOWER, UPPER, UCWORDS, UCFIRST).
 4. **RenamerController**: Handles API requests for managing renaming rules.
 
 ### Database Schema
@@ -25,23 +25,31 @@ The Renamer module uses a `renamer_rules` table with the following structure:
 |--------|------|-------------|
 | id | bigint | Primary key |
 | owner_id | bigint | Foreign key to the user who owns this rule |
-| name | string | Name of the rule |
-| description | string | Optional description of what the rule does |
-| needle | string | The string to find (pattern to match) |
-| replacement | string | The replacement text |
-| mode | enum | Mode of operation (FIRST, ALL, REGEX) |
 | order | int | Processing order (lower numbers processed first) |
+| rule | string | Name/identifier of the rule |
+| description | string | Optional description of what the rule does |
+| needle | string | The string to find (pattern to match) - ignored for case/trim modes |
+| replacement | string | The replacement text - ignored for case/trim modes |
+| mode | enum | Mode of operation (FIRST, ALL, REGEX, TRIM, LOWER, UPPER, UCWORDS, UCFIRST) |
 | is_enabled | boolean | Whether the rule is active |
-| created_at | timestamp | Creation timestamp |
-| updated_at | timestamp | Last update timestamp |
+| is_photo_rule | boolean | Whether to apply rule to photo filenames |
+| is_album_rule | boolean | Whether to apply rule to album titles |
 
 ## Mode Types
 
-The Renamer module supports three modes of operation (defined in the `RenamerModeType` enum):
+The Renamer module supports eight modes of operation (defined in the `RenamerModeType` enum):
 
+**Replacement Modes** (use needle/replacement fields):
 1. **First occurrence** (`FIRST`): Replaces only the first occurrence of the pattern.
 2. **All occurrences** (`ALL`): Replaces all occurrences of the pattern.
 3. **Regular expression** (`REGEX`): Uses regular expressions for pattern matching and replacement.
+
+**Transformation Modes** (ignore needle/replacement fields):
+4. **Trim** (`TRIM`): Removes leading and trailing whitespace.
+5. **Lowercase** (`LOWER`): Converts entire string to lowercase.
+6. **Uppercase** (`UPPER`): Converts entire string to uppercase.
+7. **Uppercase words** (`UCWORDS`): Capitalizes the first letter of each word.
+8. **Uppercase first** (`UCFIRST`): Capitalizes only the first letter of the string.
 
 ## Processing Order
 
@@ -85,13 +93,15 @@ $newFilenames = $renamer->handleMany(['IMG_1234.jpg', 'DSC_5678.jpg']);
 ```php
 $rule = new RenamerRule();
 $rule->owner_id = Auth::id(); // Current user's ID
-$rule->name = 'Replace IMG_';
+$rule->rule = 'Replace IMG_';
 $rule->description = 'Replaces IMG_ with Photo_';
 $rule->needle = 'IMG_';
 $rule->replacement = 'Photo_';
 $rule->mode = RenamerModeType::FIRST;
 $rule->order = 1;
 $rule->is_enabled = true;
+$rule->is_photo_rule = true;   // Apply to photo filenames
+$rule->is_album_rule = false;  // Don't apply to album titles
 $rule->save();
 ```
 
@@ -103,14 +113,16 @@ $rule->save();
 class RenamerRule extends Model
 {
     public int $id;
-    public int $owner_id;          // User who owns this rule
-    public string $name;            // Rule name
-    public ?string $description;    // Optional description
-    public string $needle;          // Pattern to match
-    public string $replacement;     // Replacement text
-    public RenamerModeType $mode;  // FIRST, ALL, or REGEX
+    public int $owner_id;           // User who owns this rule
     public int $order;              // Processing priority
+    public string $rule;            // Rule name/identifier
+    public ?string $description;    // Optional description
+    public string $needle;          // Pattern to match (ignored for transformation modes)
+    public string $replacement;     // Replacement text (ignored for transformation modes)
+    public RenamerModeType $mode;   // FIRST, ALL, REGEX, TRIM, LOWER, UPPER, UCWORDS, or UCFIRST
     public bool $is_enabled;        // Active status
+    public bool $is_photo_rule;     // Apply to photo filenames
+    public bool $is_album_rule;     // Apply to album titles
 }
 ```
 
@@ -121,4 +133,4 @@ class RenamerRule extends Model
 
 ---
 
-*Last updated: December 22, 2025*
+*Last updated: January 21, 2026*

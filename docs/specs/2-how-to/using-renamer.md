@@ -18,11 +18,12 @@ The Renamer module allows you to automatically transform filenames during import
 To create a basic replacement rule:
 
 1. Access the Renamer API or use the admin interface
-2. Define the pattern to find (needle)
-3. Specify the replacement text
-4. Choose the replacement mode (FIRST, ALL, or REGEX)
+2. Define the pattern to find (needle) - not needed for case/trim modes
+3. Specify the replacement text - not needed for case/trim modes
+4. Choose the replacement mode (FIRST, ALL, REGEX, TRIM, LOWER, UPPER, UCWORDS, or UCFIRST)
 5. Set the processing order
 6. Enable the rule
+7. Optionally set `is_photo_rule` and/or `is_album_rule` to control where the rule applies
 
 ### Example: Replace Camera Prefix
 
@@ -31,13 +32,15 @@ Replace `IMG_` with `Photo_`:
 ```php
 $rule = new RenamerRule();
 $rule->owner_id = Auth::id();
-$rule->name = 'Replace IMG_';
+$rule->rule = 'Replace IMG_';
 $rule->description = 'Replaces IMG_ with Photo_';
 $rule->needle = 'IMG_';
 $rule->replacement = 'Photo_';
 $rule->mode = RenamerModeType::FIRST;  // Only replace first occurrence
 $rule->order = 1;
 $rule->is_enabled = true;
+$rule->is_photo_rule = true;   // Apply to photo filenames
+$rule->is_album_rule = false;  // Don't apply to album titles
 $rule->save();
 ```
 
@@ -50,7 +53,7 @@ Replace all underscores with spaces:
 ```php
 $rule = new RenamerRule();
 $rule->owner_id = Auth::id();
-$rule->name = 'Underscores to Spaces';
+$rule->rule = 'Underscores to Spaces';
 $rule->description = 'Replace all underscores with spaces';
 $rule->needle = '_';
 $rule->replacement = ' ';
@@ -69,7 +72,7 @@ Use regex to add a date prefix:
 ```php
 $rule = new RenamerRule();
 $rule->owner_id = Auth::id();
-$rule->name = 'Add Date Prefix';
+$rule->rule = 'Add Date Prefix';
 $rule->description = 'Extract date from filename and move to beginning';
 $rule->needle = '/^(.+)_(\d{4}-\d{2}-\d{2})(.+)$/';
 $rule->replacement = '$2_$1$3';
@@ -80,6 +83,39 @@ $rule->save();
 ```
 
 **Result**: `vacation_2024-06-15_beach.jpg` becomes `2024-06-15_vacation_beach.jpg`
+
+### Example: Transform Case
+
+Use case transformation modes (needle/replacement are ignored for these):
+
+```php
+// Convert to lowercase
+$rule = new RenamerRule();
+$rule->owner_id = Auth::id();
+$rule->rule = 'Lowercase';
+$rule->description = 'Convert filename to lowercase';
+$rule->mode = RenamerModeType::LOWER;
+$rule->order = 4;
+$rule->is_enabled = true;
+$rule->save();
+```
+
+**Result**: `VACATION_Photo.jpg` becomes `vacation_photo.jpg`
+
+### Example: Trim Whitespace
+
+```php
+$rule = new RenamerRule();
+$rule->owner_id = Auth::id();
+$rule->rule = 'Trim spaces';
+$rule->description = 'Remove leading/trailing whitespace';
+$rule->mode = RenamerModeType::TRIM;
+$rule->order = 5;
+$rule->is_enabled = true;
+$rule->save();
+```
+
+**Result**: `  photo name.jpg  ` becomes `photo name.jpg`
 
 ## Applying Patterns
 
@@ -259,4 +295,4 @@ Ensure:
 
 ---
 
-*Last updated: December 22, 2025*
+*Last updated: January 21, 2026*

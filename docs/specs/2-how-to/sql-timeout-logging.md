@@ -41,7 +41,7 @@ The max execution time is configured in `config/octane.php`:
 
 ### 1. Query Execution Logging
 
-**Location**: [app/Providers/AppServiceProvider.php:238-300](app/Providers/AppServiceProvider.php#L238-L300)
+**Location**: [app/Providers/AppServiceProvider.php:261-350](app/Providers/AppServiceProvider.php#L261-L350)
 
 The `logSQL()` method logs queries after they complete with severity based on execution time:
 - **Debug**: Normal slow queries (>100ms)
@@ -52,7 +52,7 @@ The `logSQL()` method logs queries after they complete with severity based on ex
 
 **Location**: [app/Listeners/LogQueryTimeout.php](app/Listeners/LogQueryTimeout.php)
 
-Registered in [app/Providers/EventServiceProvider.php:97-99](app/Providers/EventServiceProvider.php#L97-L99)
+Registered in [app/Providers/EventServiceProvider.php:99](app/Providers/EventServiceProvider.php#L99)
 
 This listener provides detailed logging for queries that exceed warning/critical thresholds:
 - **70% threshold**: WARNING level log
@@ -60,7 +60,7 @@ This listener provides detailed logging for queries that exceed warning/critical
 
 ### 3. PHP Timeout Handler
 
-**Location**: [app/Providers/AppServiceProvider.php:200-216](app/Providers/AppServiceProvider.php#L200-L216)
+**Location**: [app/Providers/AppServiceProvider.php:204-220](app/Providers/AppServiceProvider.php#L204-L220)
 
 A shutdown function that catches when PHP times out entirely, logging:
 - Error message
@@ -125,7 +125,7 @@ PDO::MYSQL_ATTR_INIT_COMMAND => 'SET SESSION wait_timeout=28800', // 8 hours
 
 ### Octane Database Ping
 
-The AppServiceProvider pings database connections every 30 seconds to prevent timeouts: [app/Providers/AppServiceProvider.php:340-341](app/Providers/AppServiceProvider.php#L340-L341)
+The AppServiceProvider pings database connections every 30 seconds to prevent timeouts: [app/Providers/AppServiceProvider.php:409-424](app/Providers/AppServiceProvider.php#L409-L424)
 
 ## Viewing Logs
 

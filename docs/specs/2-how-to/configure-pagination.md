@@ -1,7 +1,7 @@
 # How-To: Configure Album and Photo Pagination
 
 **Author:** Lychee Team
-**Last Updated:** 2026-01-10
+**Last Updated:** 2026-01-21
 **Feature:** 007-pagination
 **Related:** [Feature 007 Spec](../4-architecture/features/007-pagination/spec.md)
 
@@ -20,7 +20,7 @@ Pagination improves performance and user experience for large galleries:
 
 ## Configuration Settings
 
-Pagination is configured through four settings in the admin panel under **Settings > Gallery**.
+Pagination is configured through six settings in the admin panel under **Settings > Gallery**.
 
 ### Page Size Settings
 
@@ -96,6 +96,32 @@ Controls how users load additional album pages. Same options as photos.
 | Type | Enum |
 | Options | infinite_scroll, load_more_button, page_navigation |
 | Default | infinite_scroll |
+| Location | Settings > Gallery |
+
+### Infinite Scroll Threshold Settings
+
+These settings control when the next page loads during infinite scroll mode.
+
+#### photos_infinite_scroll_threshold
+
+Controls how early to trigger loading the next page of photos.
+
+| Property | Value |
+|----------|-------|
+| Type | Integer |
+| Default | 2 |
+| Location | Settings > Gallery |
+
+The value represents the number of viewport heights from the bottom of the page at which to trigger loading. A higher value means earlier loading (preloading more content), but may load unnecessary data if the user doesn't scroll that far.
+
+#### albums_infinite_scroll_threshold
+
+Controls how early to trigger loading the next page of albums. Same behavior as photos threshold.
+
+| Property | Value |
+|----------|-------|
+| Type | Integer |
+| Default | 2 |
 | Location | Settings > Gallery |
 
 ## Configuring via Admin Panel
