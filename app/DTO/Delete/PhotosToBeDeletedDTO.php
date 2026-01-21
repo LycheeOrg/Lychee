@@ -12,8 +12,8 @@ use App\Enum\SizeVariantType;
 use App\Enum\StorageDiskType;
 use App\Jobs\FileDeleterJob;
 use App\Models\SizeVariant;
-use Illuminate\Support\Collection;
 use Illuminate\Database\Query\JoinClause;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 final class PhotosToBeDeletedDTO
@@ -21,9 +21,9 @@ final class PhotosToBeDeletedDTO
 	/**
 	 * Container for all Albums and associated Tracks to be deleted.
 	 *
-	 * @param string[]                 $force_delete_photo_ids the photo IDs to be force deleted => removed from storage etc.
-	 * @param string[]                 $soft_delete_photo_ids  the photos IDs to be soft deleted => only the link between the album and IDs to be removed
-	 * @param string[] 			   $album_ids              the IDs of all albums to be deleted (including descendants)
+	 * @param string[] $force_delete_photo_ids the photo IDs to be force deleted => removed from storage etc
+	 * @param string[] $soft_delete_photo_ids  the photos IDs to be soft deleted => only the link between the album and IDs to be removed
+	 * @param string[] $album_ids              the IDs of all albums to be deleted (including descendants)
 	 *
 	 * @return void
 	 */
@@ -31,7 +31,8 @@ final class PhotosToBeDeletedDTO
 		public array $force_delete_photo_ids,
 		public array $soft_delete_photo_ids,
 		public array $album_ids,
-	) {}
+	) {
+	}
 
 	/**
 	 * Delete the designated photos.
@@ -44,7 +45,7 @@ final class PhotosToBeDeletedDTO
 	{
 		$delete_jobs = [];
 
-		DB::transaction(function () use (&$delete_jobs) : void {
+		DB::transaction(function () use (&$delete_jobs): void {
 			$this->softDelete();
 			$delete_jobs = $this->forceDelete();
 		});
@@ -126,7 +127,7 @@ final class PhotosToBeDeletedDTO
 		return $delete_jobs;
 	}
 
-		/**
+	/**
 	 * Collects all short paths of size variants which shall be deleted from
 	 * disk.
 	 *
@@ -138,8 +139,6 @@ final class PhotosToBeDeletedDTO
 	 * @param array<int,string> $exclude_size_variants_ids size variant IDs to be excluded
 	 *
 	 * @return Collection<int,SizeVariant> the size variants to be deleted
-	 *
-	 * @throws QueryBuilderException
 	 */
 	private function collectSizeVariantPathsByPhotoID(array $photo_ids, StorageDiskType $storage_disk, array $exclude_size_variants_ids): Collection
 	{
@@ -169,8 +168,6 @@ final class PhotosToBeDeletedDTO
 	 * @param StorageDiskType   $storage_disk the storage disk to filter for (null = all)
 	 *
 	 * @return Collection<int,object{live_photo_short_path:string}> the live photo short paths to be deleted
-	 *
-	 * @throws QueryBuilderException
 	 */
 	private function collectLivePhotoPathsByPhotoID(array $photo_ids, StorageDiskType $storage_disk): Collection
 	{

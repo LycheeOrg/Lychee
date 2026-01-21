@@ -8,7 +8,6 @@
 
 namespace App\Actions\Album;
 
-use App\Actions\Photo\Delete as PhotoDelete;
 use App\Actions\Shop\PurchasableService;
 use App\Constants\AccessPermissionConstants as APC;
 use App\Constants\PhotoAlbum as PA;

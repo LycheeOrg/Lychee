@@ -11,16 +11,9 @@ namespace App\Actions\Photo;
 use App\Actions\Shop\PurchasableService;
 use App\Constants\PhotoAlbum as PA;
 use App\DTO\Delete\PhotosToBeDeletedDTO;
-use App\Enum\SizeVariantType;
-use App\Enum\StorageDiskType;
 use App\Events\PhotoDeleted;
 use App\Exceptions\Internal\LycheeLogicException;
-use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\ModelDBException;
-use App\Jobs\FileDeleterJob;
-use App\Models\SizeVariant;
-use Illuminate\Database\Query\JoinClause;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 /**
