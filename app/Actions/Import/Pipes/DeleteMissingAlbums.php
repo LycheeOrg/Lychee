@@ -157,8 +157,7 @@ class DeleteMissingAlbums implements ImportPipe
 
 		// Execute the deletion
 		$delete = new Delete();
-		$file_deleter = $delete->do($albums_to_delete->pluck('id')->all());
-		$file_deleter->do();
+		$delete->do($albums_to_delete->pluck('id')->all());
 
 		$this->report(ImportEventReport::createError('deleted_missing_albums', $node->name, "Deleted $count albums"));
 	}

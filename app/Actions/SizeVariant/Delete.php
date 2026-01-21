@@ -8,12 +8,13 @@
 
 namespace App\Actions\SizeVariant;
 
+use App\Enum\StorageDiskType;
 use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\ModelDBException;
-use App\Image\FileDeleter;
+use App\Jobs\FileDeleterJob;
 use App\Models\SizeVariant;
-use Illuminate\Database\Query\JoinClause;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Deletes the size variants with the designated IDs **efficiently**.
@@ -50,36 +51,56 @@ class Delete
 	 *
 	 * @param int[] $sv_ids the size variant IDs
 	 *
-	 * @return FileDeleter contains the collected files which became obsolete
+	 * @return void
 	 *
 	 * @throws ModelDBException
 	 */
-	public function do(array $sv_ids): FileDeleter
+	public function do(array $sv_ids): void
 	{
-		try {
-			$file_deleter = new FileDeleter();
+		if (count($sv_ids) === 0) {
+			return;
+		}
 
-			// Get all short paths of size variants which are going to be deleted.
-			// But exclude those short paths which are duplicated by a size
-			// variant which is not going to be deleted.
-			$size_variants = SizeVariant::query()
+		try {
+			// Maybe consider doing multiple queries for the different storage types.
+			$exclude_ids = DB::table('order_items')->select(['size_variant_id'])->pluck('size_variant_id')->all();
+
+			$ids_to_delete = array_diff($sv_ids, $exclude_ids);
+
+			// Maybe consider doing multiple queries for the different storage types.
+			$size_variants_local = SizeVariant::query()
 				->from('size_variants as sv')
-				->select(['sv.short_path', 'sv.storage_disk'])
-				->leftJoin('size_variants as dup', function (JoinClause $join) use ($sv_ids): void {
-					$join
-						->on('dup.short_path', '=', 'sv.short_path')
-						->whereNotIn('dup.id', $sv_ids);
-				})
-				->whereIn('sv.id', $sv_ids)
-				->whereNull('dup.id')
+				->select(['sv.short_path', 'sv.short_path_watermarked'])
+				->join('photos as p', 'p.id', '=', 'sv.photo_id')
+				->where('sv.storage_disk', '=', StorageDiskType::LOCAL->value)
+				->whereIn('sv.id', $ids_to_delete)
+				->toBase()
 				->get();
-			$file_deleter->addSizeVariants($size_variants);
+
+			$size_variants_s3 = SizeVariant::query()
+				->from('size_variants as sv')
+				->select(['sv.short_path', 'sv.short_path_watermarked'])
+				->join('photos as p', 'p.id', '=', 'sv.photo_id')
+				->where('sv.storage_disk', '=', StorageDiskType::S3->value)
+				->whereIn('sv.id', $ids_to_delete)
+				->toBase()
+				->get();
+
+			$jobs = [];
+			$jobs[] = new FileDeleterJob(StorageDiskType::LOCAL, $size_variants_local->pluck('short_path')->filter()->all());
+			$jobs[] = new FileDeleterJob(StorageDiskType::LOCAL, $size_variants_local->pluck('short_path_watermarked')->filter()->all());
+			$jobs[] = new FileDeleterJob(StorageDiskType::S3, $size_variants_s3->pluck('short_path')->filter()->all());
+			$jobs[] = new FileDeleterJob(StorageDiskType::S3, $size_variants_s3->pluck('short_path_watermarked')->filter()->all());
 
 			SizeVariant::query()
 				->whereIn('id', $sv_ids)
+				->whereNotIn('id', $exclude_ids)
 				->delete();
 
-			return $file_deleter;
+			foreach ($jobs as $job) {
+				dispatch($job);
+			}
+
 			// @codeCoverageIgnoreStart
 		} catch (QueryBuilderException $e) {
 			throw ModelDBException::create('size variants', 'deleting', $e);

@@ -11,6 +11,7 @@ namespace App\Actions\Album;
 use App\DTO\AlbumSortingCriterion;
 use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
+use App\Models\User;
 use App\Policies\AlbumPolicy;
 use App\Policies\AlbumQueryPolicy;
 use Illuminate\Support\Collection;
@@ -36,6 +37,7 @@ class ListAlbums
 	 */
 	public function do(Collection $albums_filtering, ?string $parent_id, ?int $owner_id = null): array
 	{
+		/** @var ?User $user */
 		$user = Auth::user();
 		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
 

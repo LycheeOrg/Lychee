@@ -67,7 +67,6 @@ use App\Models\Tag;
 use App\Models\TagAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -243,8 +242,7 @@ class AlbumController extends Controller
 	 */
 	public function delete(DeleteAlbumsRequest $request, Delete $delete): void
 	{
-		$file_deleter = $delete->do($request->albumIds());
-		App::terminating(fn () => $file_deleter->do());
+		$delete->do($request->albumIds());
 	}
 
 	/**

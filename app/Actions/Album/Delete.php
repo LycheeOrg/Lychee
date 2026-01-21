@@ -11,25 +11,19 @@ namespace App\Actions\Album;
 use App\Actions\Photo\Delete as PhotoDelete;
 use App\Actions\Shop\PurchasableService;
 use App\Constants\AccessPermissionConstants as APC;
-use App\Contracts\Exceptions\InternalLycheeException;
-use App\Enum\SmartAlbumType;
+use App\Constants\PhotoAlbum as PA;
+use App\DTO\Delete\AlbumsToBeDeleteDTO;
 use App\Enum\StorageDiskType;
 use App\Events\AlbumDeleted;
-use App\Exceptions\Internal\LycheeAssertionError;
-use App\Exceptions\Internal\QueryBuilderException;
+use App\Exceptions\CorruptedTreeException;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
-use App\Image\FileDeleter;
-use App\Models\AccessPermission;
+use App\Jobs\CheckTreeState;
+use App\Jobs\FileDeleterJob;
 use App\Models\Album;
-use App\Models\BaseAlbumImpl;
-use App\Models\Statistics;
-use App\Models\TagAlbum;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Database\Query\Builder as BaseBuilder;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Safe\Exceptions\ArrayException;
 
 /**
  * Deletes the albums with the designated IDs **efficiently**.
@@ -55,12 +49,7 @@ use Safe\Exceptions\ArrayException;
  */
 class Delete
 {
-	private PurchasableService $purchasable_service;
-
-	public function __construct(
-	) {
-		$this->purchasable_service = resolve(PurchasableService::class);
-	}
+	private array $jobs = [];
 
 	/**
 	 * Deletes the designated albums (tag albums and regular albums) from the DB.
@@ -72,178 +61,228 @@ class Delete
 	 *
 	 * @param string[] $album_ids the album IDs (contains IDs of regular _and_ tag albums)
 	 *
-	 * @return FileDeleter contains the collected files which became obsolete
+	 * @return void contains the collected files which became obsolete
 	 *
 	 * @throws ModelDBException
 	 * @throws ModelNotFoundException
 	 * @throws UnauthenticatedException
 	 */
-	public function do(array $album_ids): FileDeleter
+	public function do(array $album_ids): void
 	{
-		try {
-			// Only regular albums are owners of photos, so we only need to
-			// find all photos in those and their descendants
-			// Only load necessary attributes for tree; in particular avoid
-			// loading expensive `min_taken_at` and `max_taken_at`.
-			/** @var Collection<int,Album> $albums */
-			/** @phpstan-ignore varTag.type (False positive, NestedSetCollection requires Eloquent Collection) */
-			$albums = Album::query()
-				->without(['cover', 'thumb', 'min_privilege_cover', 'max_privilege_cover', 'owner', 'access_permissions', 'statistics'])
-				->select(['id', 'parent_id', '_lft', '_rgt', 'track_short_path'])
-				->findMany($album_ids);
+		$tag_albums_ids = DB::table('tag_albums')->whereIn('id', $album_ids)->select('id')->pluck('id')->all();
 
-			// Collect unique parent IDs BEFORE deletion for event dispatching
-			$parent_ids = $albums->pluck('parent_id')->filter()->unique()->values()->all();
+		$this->deleteTagAlbums($tag_albums_ids);
 
-			$recursive_album_ids = $albums->pluck('id')->all(); // only IDs which refer to regular albums are incubators for recursive IDs
-			$recursive_album_tracks = $albums->pluck('track_short_path');
-
-			/** @var Album $album */
-			foreach ($albums as $album) {
-				// Collect all (aka recursive) sub-albums in each album
-				// Use DB::table directly to avoid any Eloquent overhead and eager loading
-				$sub_albums = DB::table('albums')
-					->select(['id', 'track_short_path'])
-					->whereBetween('_lft', [$album->_lft + 1, $album->_rgt - 1])
-					->get();
-				$recursive_album_ids = array_merge($recursive_album_ids, $sub_albums->pluck('id')->all());
-				$recursive_album_tracks = $recursive_album_tracks->merge($sub_albums->pluck('track_short_path'));
-			}
-			// prune the null values
-			$recursive_album_tracks = $recursive_album_tracks->filter(fn ($val) => $val !== null);
-
-			// Delete the photos from DB and obtain the list of files which need
-			// to be deleted later
-			$file_deleter = (new PhotoDelete())->do([], null, $recursive_album_ids);
-			$file_deleter->addFiles($recursive_album_tracks, StorageDiskType::LOCAL->value);
-
-			// Remove the sub-forest spanned by the regular albums
-			$this->deleteSubForest($albums);
-			TagAlbum::query()->whereIn('id', $album_ids)->delete();
-
-			// Note, we may need to delete more base albums than those whose
-			// ID is in `$albumIDs`.
-			// As we might have deleted more regular albums as part of a subtree
-			// we simply delete all base albums who neither have an associated
-			// (regular) album or tag album.
-			BaseAlbumImpl::query()->whereNotExists(function (BaseBuilder $base_builder): void {
-				$base_builder->from('albums')->whereColumn('albums.id', '=', 'base_albums.id');
-			})->whereNotExists(function (BaseBuilder $base_builder): void {
-				$base_builder->from('tag_albums')->whereColumn('tag_albums.id', '=', 'base_albums.id');
-			})->delete();
-
-			// We remove the statistics for the albums.
-			Statistics::query()
-				->whereNotNull('album_id') // Only target the statistics for albums
-				->whereNotExists(fn (BaseBuilder $base_builder) => $base_builder
-						->from('base_albums')
-						->whereColumn('base_albums.id', '=', 'statistics.album_id')
-				)->delete();
-
-			// We remove the purchasable items.
-			$this->purchasable_service->deleteMultipleAlbumPurchasables($album_ids);
-
-			// We also delete the permissions & sharing.
-			// Note that we explicitly avoid the smart albums.
-			AccessPermission::query()
-				->whereNotExists(function (BaseBuilder $base_builder): void {
-					$base_builder->from('albums')->whereColumn('albums.id', '=', APC::ACCESS_PERMISSIONS . '.' . APC::BASE_ALBUM_ID);
-				})
-				->whereNotExists(function (BaseBuilder $base_builder): void {
-					$base_builder->from('tag_albums')->whereColumn('tag_albums.id', '=', APC::ACCESS_PERMISSIONS . '.' . APC::BASE_ALBUM_ID);
-				})
-				->whereNotIn(APC::ACCESS_PERMISSIONS . '.' . APC::BASE_ALBUM_ID, SmartAlbumType::values())
-				->delete();
-
-			// Dispatch events for parent albums to trigger recomputation
-			foreach ($parent_ids as $parent_id) {
-				AlbumDeleted::dispatch($parent_id);
-			}
-
-			return $file_deleter;
-			// @codeCoverageIgnoreStart
-		} catch (QueryBuilderException|InternalLycheeException $e) {
-			try {
-				// if anything goes wrong, don't leave the tree in an inconsistent state
-				Album::query()->fixTree();
-			} catch (\Throwable) {
-				// Sic! We cannot do anything about the inner exception
-			}
-			throw ModelDBException::create('albums', 'deleting', $e);
-		} catch (\InvalidArgumentException|ArrayException $e) {
-			try {
-				// if anything goes wrong, don't leave the tree in an inconsistent state
-				Album::query()->fixTree();
-			} catch (\Throwable) {
-				// Sic! We cannot do anything about the inner exception
-			}
-			throw LycheeAssertionError::createFromUnexpectedException($e);
-		}
-		// @codeCoverageIgnoreEnd
-	}
-
-	/**
-	 * Deletes the given set of regular albums incl. their descendants from DB.
-	 *
-	 * This is ugly as hell and is mostly copy & pasted from
-	 * {@link \Kalnoy\Nestedset\NodeTrait} with adoptions.
-	 * I really liked the code of master@0199212 ways better, but it was
-	 * simply too inefficient
-	 *
-	 * This code also fixes a bug when more than one album with
-	 * sub-albums is deleted, i.e. if we delete a "sub-forest".
-	 * The original code (of the nested set model) updates the
-	 * (lft,rgt)-indices on the DB level for every single deletion.
-	 * However, this way deletion of the second albums fails, if the
-	 * second album has already been hydrated earlier, because the
-	 * indices of the already hydrated models and the indices in the
-	 * DB are out-of-sync.
-	 * Either all remaining models needs to be re-hydrated aka
-	 * "refreshed" from the (already updated) DB after every single
-	 * deletion or the update of the DB needs to be postponed until
-	 * all models have been deleted.
-	 * The latter is more efficient, because we do not reload models
-	 * from the DB.
-	 *
-	 * @param Collection<int,Album> $albums
-	 *
-	 * @return void
-	 *
-	 * @throws ModelNotFoundException
-	 * @throws QueryBuilderException
-	 */
-	private function deleteSubForest(Collection $albums): void
-	{
-		if ($albums->isEmpty()) {
+		$album_ids = array_diff($album_ids, $tag_albums_ids);
+		// Nothing else to do. Woop woop.
+		if (count($album_ids) === 0) {
 			return;
 		}
 
-		/** @var array<array{lft: int, rgt:int}> $pending_gaps_to_make */
-		$pending_gaps_to_make = [];
-		$delete_query = Album::query();
-		// First collect all albums to delete in a single query and
-		// memorize which indices need to be updated later.
+		// Validate the tree before deleting anything
+		$this->validateBeforeDelete();
+
+		// Now can handle the regular albums
+		$albums_to_delete = $this->findAllAlbumsToDelete($album_ids);
+
+		$this->jobs[] = new FileDeleterJob(StorageDiskType::LOCAL, $albums_to_delete->tracks->all());
+
+		$photos_to_delete = $this->findAllPhotosToDelete($albums_to_delete->album_ids);
+
+		// Nuke the photos.
+		$photo_delete_action = resolve(PhotoDelete::class);
+		$jobs = $photo_delete_action->forceDelete($photos_to_delete);
+
+		// Nuke the albums.
+		$albums_to_delete->executeDelete();
+
+		foreach ($jobs as $job) {
+			$this->jobs[] = $job;
+		}
+
+		// Dispatch events for parent albums to trigger recomputation
+		foreach ($albums_to_delete->parent_ids as $parent_id) {
+			AlbumDeleted::dispatch($parent_id);
+		}
+
+		// Dispatch the file deletion jobs
+		foreach ($this->jobs as $job) {
+			dispatch($job);
+		}
+	}
+
+	/**
+	 * Delete tag albums and dependencies.
+	 *
+	 * @param array $tag_album_ids
+	 *
+	 * @return void
+	 */
+	private function deleteTagAlbums(array $tag_album_ids): void
+	{
+		$purchasable_service = resolve(PurchasableService::class);
+		$purchasable_service->deleteMultipleAlbumPurchasables($tag_album_ids);
+		DB::table('live_metrics')->whereIn('album_id', $tag_album_ids)->delete();
+		DB::table(APC::ACCESS_PERMISSIONS)->whereIn(APC::BASE_ALBUM_ID, $tag_album_ids)->delete();
+		DB::table('statistics')->whereIn('album_id', $tag_album_ids)->delete();
+		DB::table('tag_albums')->whereIn('id', $tag_album_ids)->delete();
+		DB::table('base_albums')->whereIn('id', $tag_album_ids)->delete();
+	}
+
+	/**
+	 * We fetch all the photos that actually need to be deleted.
+	 *
+	 * @param string[] $album_ids that are being deleted
+	 *
+	 * @return string[] of photo IDs that can be deleted fully
+	 */
+	public function findAllPhotosToDelete(array $album_ids): array
+	{
+		// First collect which pictures needs to be potentially deleted.
+		// ! RISK OF MEMOY EXHAUSTION !
+		/** @var Collection<int,object{photo_id:string,album_count:int}> $photos_ids_occurances_in_album */
+		$photos_ids_occurances_in_album = DB::table(PA::PHOTO_ALBUM)
+			->whereIn(PA::ALBUM_ID, $album_ids)
+			->select([PA::PHOTO_ID, DB::raw('COUNT(*) AS album_count')])
+			->groupBy(PA::PHOTO_ID)
+			->orderBy(PA::PHOTO_ID, 'asc')
+			->get();
+
+		// Potential photos to be deleted
+		$photos_ids = $photos_ids_occurances_in_album->pluck('photo_id')->all();
+
+		// We select all the photos which are impacted: we want to know if they are only occuring in those albums or not.
+		// Note that photos which are only in the deleted albums can be deleted fully.
+		/** @var Collection<int,object{photo_id:string,album_count:int}> $photos_ids_occurances */
+		$photos_ids_occurances = DB::table(PA::PHOTO_ALBUM)
+			->whereIn(PA::PHOTO_ID, $photos_ids)
+			->select([PA::PHOTO_ID, DB::raw('COUNT(*) AS album_count')])
+			->groupBy(PA::PHOTO_ID)
+			->orderBy(PA::PHOTO_ID, 'asc')
+			->get();
+
+		// Now we need to zip those two collections to determine which photos can be deleted fully.
+		$photos_to_delete_fully = [];
+		$photos_to_detach = [];
+		$idx_in_album = 0;
+		$idx_total = 0;
+		$count_in_album = $photos_ids_occurances_in_album->count();
+		$count_total = $photos_ids_occurances->count();
+		while ($idx_in_album < $count_in_album && $idx_total < $count_total) {
+			$photo_in_album = $photos_ids_occurances_in_album[$idx_in_album];
+			$photo_total = $photos_ids_occurances[$idx_total];
+			if ($photo_in_album->photo_id !== $photo_total->photo_id) {
+				// This should never happen
+				if ($photo_in_album->photo_id < $photo_total->photo_id) {
+					$idx_in_album++;
+				} else {
+					$idx_total++;
+				}
+				continue;
+			}
+
+			$occ_in_deleting_albums = intval($photo_in_album->album_count);
+			$photo_total_count = intval($photo_total->album_count);
+			if ($photo_total_count === $occ_in_deleting_albums) {
+				$photos_to_delete_fully[] = $photo_in_album->photo_id;
+			} else {
+				$photos_to_detach[] = $photo_in_album->photo_id;
+			}
+			$idx_in_album++;
+			$idx_total++;
+		}
+
+		return $photos_to_delete_fully;
+	}
+
+	/**
+	 * Find all albums we want to delete (sub trees).
+	 *
+	 * @param array $album_ids
+	 *
+	 * @return AlbumsToBeDeleteDTO
+	 */
+	private function findAllAlbumsToDelete(array $album_ids): AlbumsToBeDeleteDTO
+	{
+		// First gather the gaps that will be made:
+		$gaps = $this->getGaps($album_ids);
+
+		// Only regular albums are owners of photos, so we only need to
+		// find all photos in those and their descendants
+		// Only load necessary attributes for tree.
+		/** @var Collection<int,object{id:string,parent_id:string|null,_lft:int,_rgt:int,track_short_path:string|null}> $albums */
+		$albums = DB::table('albums')
+			->select(['id', 'parent_id', '_lft', '_rgt', 'track_short_path'])
+			->whereIn('id', $album_ids)
+			->get();
+
+		// Collect unique parent IDs BEFORE deletion for event dispatching
+		$parent_ids = $albums->pluck('parent_id')->filter()->unique()->values()->all();
+
+		$recursive_album_ids = $albums->pluck('id')->all(); // only IDs which refer to regular albums are incubators for recursive IDs
+		$recursive_album_tracks = $albums->pluck('track_short_path');
+
 		/** @var Album $album */
 		foreach ($albums as $album) {
-			$pending_gaps_to_make[] = [
-				'lft' => $album->getLft(),
-				'rgt' => $album->getRgt(),
+			// Collect all (aka recursive) sub-albums in each album
+			// Use DB::table directly to avoid any Eloquent overhead and eager loading
+			$sub_albums = DB::table('albums')
+				->select(['id', 'track_short_path'])
+				->whereBetween('_lft', [$album->_lft + 1, $album->_rgt - 1])
+				->get();
+			$recursive_album_ids = array_merge($recursive_album_ids, $sub_albums->pluck('id')->all());
+			$recursive_album_tracks = $recursive_album_tracks->merge($sub_albums->pluck('track_short_path'));
+		}
+		// prune the null values
+		$recursive_album_tracks = $recursive_album_tracks->filter(fn ($val) => $val !== null);
+
+		return new AlbumsToBeDeleteDTO(
+			parent_ids: $parent_ids,
+			album_ids: $recursive_album_ids,
+			tracks: $recursive_album_tracks,
+			gaps: $gaps
+		);
+	}
+
+	/**
+	 * Validates that the album tree is correct before deleting albums.
+	 * This will avoid issues later.
+	 *
+	 * @return void
+	 *
+	 * @throws CorruptedTreeException if the album tree is corrupted
+	 */
+	public function validateBeforeDelete(): void
+	{
+		$check = new CheckTreeState();
+		$stats = $check->handle();
+		if ((($stats['oddness'] ?? 0) > 0) ||
+			(($stats['duplicates'] ?? 0) > 0) ||
+			(($stats['wrong_parent'] ?? 0) > 0) ||
+			(($stats['missing_parent'] ?? 0) > 0)) {
+			throw new CorruptedTreeException('Cannot delete albums: album tree is corrupted.');
+		}
+	}
+
+	/**
+	 * Gather the gaps that need to be made.
+	 *
+	 * @param string[] $album_ids
+	 *
+	 * @return array{lft:int,rgt:int}[] an array of gaps to be collapsed
+	 */
+	public function getGaps(array $album_ids): array
+	{
+		$gaps = [];
+		/** @var Collection<int,object{_lft:int,_rgt:int}> $albums */
+		$albums = DB::table('albums')->whereIn('id', $album_ids)->select(['_lft', '_rgt'])->get();
+		foreach ($albums as $album) {
+			$gaps[] = [
+				'lft' => $album->_lft,
+				'rgt' => $album->_rgt,
 			];
-			$delete_query->whereDescendantOf($album, 'or', false, true);
 		}
-		// For MySQL deletion must be done in correct order otherwise the
-		// foreign key constraint to `parent_id` fails.
-		$delete_query->orderBy('_lft', 'desc')->delete();
-		// _After all_ albums have been deleted, remove the gaps which
-		// have been created by the removed albums.
-		// Note, the gaps must be removed beginning with the highest
-		// values first otherwise the later indices won't be correct.
-		// To save some DB queries, we could implement a "makeMultiGap".
-		usort($pending_gaps_to_make, fn ($a, $b) => $b['lft'] <=> $a['lft']);
-		foreach ($pending_gaps_to_make as $pending_gap) {
-			$height = $pending_gap['rgt'] - $pending_gap['lft'] + 1;
-			(new Album())->newNestedSetQuery()->makeGap($pending_gap['rgt'] + 1, -$height);
-			Album::$actionsPerformed++;
-		}
+
+		return $gaps;
 	}
 }

@@ -11,6 +11,7 @@ namespace App\Http\Controllers\Gallery;
 use App\Actions\Albums\Top;
 use App\Http\Resources\Collections\RootAlbumResource;
 use App\Http\Resources\GalleryConfigs\RootConfig;
+use App\Jobs\CheckTreeState;
 use Illuminate\Routing\Controller;
 
 /**
@@ -25,6 +26,11 @@ class AlbumsController extends Controller
 	 */
 	public function get(Top $top): RootAlbumResource
 	{
+		// On first load, we check the tree state in the background.
+		// This ensures that any potential issues are identified and can be addressed
+		// without impacting the user's initial experience.
+		CheckTreeState::dispatchAfterResponse();
+
 		return RootAlbumResource::fromDTO($top->get(), new RootConfig());
 	}
 }

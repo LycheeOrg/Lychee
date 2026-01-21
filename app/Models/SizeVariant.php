@@ -217,9 +217,8 @@ class SizeVariant extends Model
 	 */
 	protected function performDeleteOnModel(): void
 	{
-		$file_deleter = (new Delete())->do([$this->id]);
+		(new Delete())->do([$this->id]);
 		$this->exists = false;
-		$file_deleter->do();
 	}
 
 	public function toDataResource(bool $no_url = false): SizeVariantResource
