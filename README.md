@@ -37,6 +37,8 @@ Through [contributions, donations, and sponsorship](https://github.com/sponsors/
 
 Contributions welcome! Check out our [Contribution Guide](docs/Contribute.md) and [documentation](https://github.com/LycheeOrg/Lychee/tree/master/docs) for setup, coding standards, and PR guidelines.
 
+**AI-assisted contributions** are permitted — see our [AI/Claude Guidelines](docs/Contribute.md#using-aiclaude-for-contributions) and [AGENTS.md](AGENTS.md) for the Specification-Driven Development workflow.
+
 ## Installation
 
 ### Docker (Recommended)

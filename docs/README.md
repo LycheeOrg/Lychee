@@ -66,6 +66,8 @@ Documentation is organized following the [Diátaxis framework](https://diataxis.
 ### Contributing
 - [Contribution Guide](Contribute.md) - How to contribute to Lychee
 - [Coding Conventions](specs/3-reference/coding-conventions.md) - PHP and Vue3 coding standards
+- [AI/Claude Guidelines](Contribute.md#using-aiclaude-for-contributions) - Guidelines for AI-assisted development
+- [AGENTS.md](../AGENTS.md) - Instructions for AI agents working on this codebase
 
 ## Additional Resources
 
@@ -77,4 +79,4 @@ For more information about Lychee:
 
 ---
 
-*Last updated: December 22, 2025*
+*Last updated: January 21, 2026*

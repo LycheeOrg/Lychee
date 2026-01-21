@@ -177,6 +177,68 @@ git push origin feature/your-feature-name
    - References to any related issues
    - Screenshots (if applicable for UI changes)
 
+## Using AI/Claude for Contributions
+
+AI-assisted development is permitted and welcomed. However, contributions using AI tools must follow our **Specification-Driven Development (SDD)** workflow:
+
+### Guidelines
+
+1. **Read [AGENTS.md](../AGENTS.md) first** — This file contains the instructions that guide AI agents working on this codebase. It defines the workflow, guardrails, and expectations for AI-assisted development.
+
+2. **Follow Spec-Driven Development** — AI-generated code must be anchored in explicit specifications:
+   - Start by creating or updating the feature specification at `docs/specs/4-architecture/features/<NNN>-<feature-name>/spec.md`
+   - Generate a feature plan (`plan.md`) and tasks checklist (`tasks.md`)
+   - Write tests before implementation (test-first cadence)
+   - Use the templates in `docs/specs/templates/` for consistency
+
+3. **Understand before generating** — AI tools should explore and understand the existing codebase before proposing changes. Use the documentation structure in `docs/specs/` to build context.
+
+4. **Quality gates still apply** — All AI-generated code must pass the same quality checks as human-written code:
+   - PHPStan static analysis
+   - Full test suite
+   - Code formatting (php-cs-fixer, Prettier)
+   - TypeScript type checking
+
+5. **Review and understand all output** — Contributors are responsible for understanding and validating any AI-generated code before submitting. Do not submit code you don't understand.
+
+6. **Document open questions** — When AI encounters ambiguity, log questions in `docs/specs/4-architecture/open-questions.md` and wait for clarification before proceeding.
+
+### Recommended AI Models
+
+We recommend using **Claude Sonnet or Claude Opus** for AI-assisted contributions. Avoid free-tier models from GitHub Copilot as they tend to hallucinate heavily and struggle to follow structured task files.
+
+When using **Claude Code**, reference `@AGENTS.md` as the first step in your conversation to guide the agent through the SDD workflow.
+
+### Two-PR Workflow (Recommended)
+
+For SDD contributions, we recommend splitting your work into **two pull requests**:
+
+1. **Specification PR** — Submit the spec, plan, and tasks files first. This allows maintainers to review the proposed approach before implementation begins.
+2. **Implementation PR** — Once the specification is approved, submit the implementation that builds from the approved spec.
+
+This workflow ensures that:
+- The specification can be reviewed and refined before any code is written
+- Time and resources are not wasted on implementations that don't align with project goals
+- The spec serves as a clear contract for what the implementation should deliver
+
+### Small Fixes Exception
+
+The full SDD workflow is not required for trivial changes such as:
+- Typo fixes
+- Single-line bug fixes with obvious solutions
+- Minor documentation corrections
+- Simple configuration changes
+
+For these cases, a direct PR without specifications is acceptable. Use your judgment — if the change requires design decisions or affects multiple files, use SDD.
+
+### Why SDD with AI?
+
+Specification-Driven Development ensures that AI-assisted contributions:
+- Are traceable back to explicit requirements
+- Follow established architectural patterns
+- Maintain test coverage organically
+- Don't introduce undocumented behavior or "magic" code
+
 ## Pull Request Guidelines
 
 - Keep your changes focused and atomic
@@ -208,4 +270,4 @@ Thank you for contributing to Lychee! 🌸
 
 ---
 
-*Last updated: December 22, 2025*
+*Last updated: January 21, 2026*
