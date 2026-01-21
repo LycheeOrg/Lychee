@@ -182,7 +182,8 @@ class Delete
 			}
 
 			$occ_in_deleting_albums = intval($photo_in_album->album_count);
-			if ($photo_total->album_count === intval($occ_in_deleting_albums)) {
+			$photo_total_count = intval($photo_total->album_count);
+			if ($photo_total_count === $occ_in_deleting_albums) {
 				$photos_to_delete_fully[] = $photo_in_album->photo_id;
 			} else {
 				$photos_to_detach[] = $photo_in_album->photo_id;
