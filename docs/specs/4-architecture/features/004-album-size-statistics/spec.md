@@ -2,8 +2,8 @@
 
 | Field | Value |
 |-------|-------|
-| Status | Draft |
-| Last updated | 2026-01-02 |
+| Status | Implemented |
+| Last updated | 2026-01-21 |
 | Owners | Lychee Team |
 | Linked plan | `docs/specs/4-architecture/features/004-album-size-statistics/plan.md` |
 | Linked tasks | `docs/specs/4-architecture/features/004-album-size-statistics/tasks.md` |

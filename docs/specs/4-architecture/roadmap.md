@@ -4,23 +4,25 @@ High-level planning document for Lychee features and architectural initiatives.
 
 ## Active Features
 
-| Feature ID | Name | Status | Priority | Assignee | Started | Updated |
-|------------|------|--------|----------|----------|---------|---------|
-| 004 | Album Size Statistics Pre-computation | Planning | P1 | - | 2026-01-02 | 2026-01-02 |
+| Feature ID | Name | Status | Priority | Assignee | Started | Updated | Progress |
+|------------|------|--------|----------|----------|---------|---------|----------|
+| 009 | Rating Ordering and Smart Albums | In Progress | P2 | Agent | 2026-01-16 | 2026-01-21 | ~95% - Missing: sorting dropdown UI option in constants.ts |
+| 008 | Shared Albums Visibility Control | In Progress | P2 | Agent | 2026-01-15 | 2026-01-21 | ~85% - Missing: server-side filtering enforcement, admin config UI |
 
 ## Paused Features
 
 | Feature ID | Name | Status | Priority | Reason | Paused Date |
 |------------|------|--------|----------|--------|-------------|
-| 006 | Photo Star Rating Filter | Paused | P2 | User requested pause for Feature 009 | 2026-01-16 |
+| - | - | - | - | - | - |
 
 ## Completed Features
 
 | Feature ID | Name | Completed | Notes |
 |------------|------|-----------|-------|
-| 007 | Photos and Albums Pagination | 2026-01-14 | Client-side pagination for photos and albums, configurable page size, preserve state across navigation, optimized rendering performance |
+| 007 | Photos and Albums Pagination | 2026-01-14 | New paginated API endpoints (/Album/{id}/head, /albums, /photos), configurable page sizes, three UI modes (infinite scroll, load more, page navigation), Smart/Tag album support |
 | 006 | Photo Star Rating Filter | 2026-01-14 | Frontend filter control (5 clickable stars) for minimum rating threshold, toggle on/off behavior, Pinia state persistence, keyboard accessible, filters photos in album view |
 | 005 | Album List View Toggle | 2026-01-04 | Toggle between grid/card and list view for albums, admin-configurable default, session-only user preference, full RTL support, drag-select compatible |
+| 004 | Album Size Statistics Pre-computation | 2026-01-02 | Pre-computed album_size_statistics table with 7 size variant columns, RecomputeAlbumSizeJob with deduplication, Spaces.php refactored to use pre-computed values, event-driven updates |
 | 003 | Album Computed Fields Pre-computation | 2026-01-02 | Event-driven pre-computation for 6 album fields (num_children, num_photos, min/max_taken_at, dual auto covers), AlbumBuilder virtual column removal, backfill/recovery commands, comprehensive test coverage |
 | 002 | Worker Mode Support | 2025-12-28 | Docker worker mode with queue processing, auto-restart, configurable QUEUE_NAMES/WORKER_MAX_TIME, multi-container deployment |
 | 001 | Photo Star Rating | 2025-12-27 | User ratings (1-5 stars), statistics aggregation, configurable visibility |

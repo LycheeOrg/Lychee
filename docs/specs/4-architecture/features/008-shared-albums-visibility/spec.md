@@ -2,8 +2,8 @@
 
 | Field | Value |
 |-------|-------|
-| Status | Draft |
-| Last updated | 2026-01-15 |
+| Status | In Progress (~85%) |
+| Last updated | 2026-01-21 |
 | Owners | Agent |
 | Linked plan | `docs/specs/4-architecture/features/008-shared-albums-visibility/plan.md` |
 | Linked tasks | `docs/specs/4-architecture/features/008-shared-albums-visibility/tasks.md` |
