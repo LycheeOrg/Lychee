@@ -30,6 +30,7 @@ x-base-lychee-setup: &base-lychee-setup
 x-common-env: &common-env
   PUID: "${PUID:-1000}"
   PGID: "${PGID:-1000}"
+  # REPLACE ME WITH YOUR VALUE GENERATED WITH `openssl rand -base64 32`
   APP_KEY: "base64:ucMiFCbfQZUFOxrQz1x9C0OBJeLCCCAieZmnEHXmyGI="
   APP_NAME: "${APP_NAME:-Lychee}"
   APP_ENV: "${APP_ENV:-production}"
