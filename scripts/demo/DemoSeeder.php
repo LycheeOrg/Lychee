@@ -58,9 +58,6 @@ class DemoSeeder extends Seeder
 		Configs::set('nsfw_banner_blur_backdrop', true);
 		Configs::set('nsfw_visible', true);
 		Configs::set('nsfw_warning', true);
-		Configs::set('allow_online_git_pull', false);
-		Configs::set('force_migration_in_production', false);
-		Configs::set('apply_composer_update', false);
 		Configs::set('landing_page_enable', true);
 		Configs::set('landing_title', 'Lychee demo');
 		Configs::set('landing_subtitle', 'admin account: admin admin');
