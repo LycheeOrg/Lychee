@@ -32,7 +32,7 @@ class DemoSeeder extends Seeder
 			grants_upload: false,
 			is_password_required: false,
 		);
-		/** @var Album $tulipAlbum */
+		/** @var Album $tulip_album */
 		$tulip_album = Album::query()
 			->select(['albums.*'])
 			->join('base_albums', 'base_albums.id', '=', 'albums.id')
@@ -48,7 +48,7 @@ class DemoSeeder extends Seeder
 			grants_upload: false,
 			is_password_required: false,
 		);
-		/** @var Album $catAlbum */
+		/** @var Album $cat_album */
 		$cat_album = Album::query()
 			->select(['albums.*'])
 			->join('base_albums', 'base_albums.id', '=', 'albums.id')
