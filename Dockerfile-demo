@@ -1,0 +1,49 @@
+# ============================================================================
+# Build on top of Current Lychee
+# ============================================================================
+FROM ghcr.io/lycheeorg/lychee:latest@sha256:04a45b4579f614e8e06e3902b0731e859b960532f32bb9c6cb59725947ab2181
+COPY --from=composer:2.8@sha256:5248900ab8b5f7f880c2d62180e40960cd87f60149ec9a1abfd62ac72a02577c /usr/bin/composer /usr/local/bin/composer
+
+RUN touch database/database.sqlite \
+    && DB_CONNECTION=sqlite php /app/artisan migrate --force \
+    && DB_CONNECTION=sqlite php /app/artisan lychee:create_user admin admin --may-administrate \
+    && DB_CONNECTION=sqlite php /app/artisan lychee:create_user user password \
+	&& mkdir -p /app/database/seeders \
+	&& curl -o database/seeders/DemoSeeder.php https://raw.githubusercontent.com/LycheeOrg/Lychee/refs/heads/master/scripts/demo/DemoSeeder.php \
+	&& php -r '$json = json_decode(file_get_contents("composer.json"), true); $json["autoload"]["classmap"][] = "database/seeders"; file_put_contents("composer.json", json_encode($json, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));' \
+	&& composer dump-autoload --optimize \
+	&& mkdir -p import/Cat \
+	&& mkdir -p import/Tulips \
+	&& curl -o import/Cat/_r5_2179.jpg https://raw.githubusercontent.com/LycheeOrg/Lychee/refs/heads/master/scripts/demo/import/Cat/_r5_2179.jpg \
+	&& curl -o import/Cat/_r5_2185.jpg https://raw.githubusercontent.com/LycheeOrg/Lychee/refs/heads/master/scripts/demo/import/Cat/_r5_2185.jpg \
+	&& curl -o import/Cat/_r5_2190.jpg https://raw.githubusercontent.com/LycheeOrg/Lychee/refs/heads/master/scripts/demo/import/Cat/_r5_2190.jpg \
+	&& curl -o import/Cat/_r5_2199.jpg https://raw.githubusercontent.com/LycheeOrg/Lychee/refs/heads/master/scripts/demo/import/Cat/_r5_2199.jpg \
+	&& curl -o import/Cat/_r5_2360.jpg https://raw.githubusercontent.com/LycheeOrg/Lychee/refs/heads/master/scripts/demo/import/Cat/_r5_2360.jpg \
+	&& curl -o import/Cat/_r5_2364.jpg https://raw.githubusercontent.com/LycheeOrg/Lychee/refs/heads/master/scripts/demo/import/Cat/_r5_2364.jpg \
+	&& curl -o import/Cat/_r5_2273.jpg https://raw.githubusercontent.com/LycheeOrg/Lychee/refs/heads/master/scripts/demo/import/Cat/_r5_2373.jpg \
+	&& curl -o import/Cat/_r5_2375.jpg https://raw.githubusercontent.com/LycheeOrg/Lychee/refs/heads/master/scripts/demo/import/Cat/_r5_2375.jpg \
+	&& curl -o import/Cat/_r5_2402.jpg https://raw.githubusercontent.com/LycheeOrg/Lychee/refs/heads/master/scripts/demo/import/Cat/_r5_2402.jpg \
+	&& curl -o import/Tulips/_R5_9638.jpg https://raw.githubusercontent.com/LycheeOrg/Lychee/refs/heads/master/scripts/demo/import/Tulips/_R5_9638.jpg \
+	&& curl -o import/Tulips/_R5_9643.jpg https://raw.githubusercontent.com/LycheeOrg/Lychee/refs/heads/master/scripts/demo/import/Tulips/_R5_9643.jpg \
+	&& curl -o import/Tulips/_R5_9644.jpg https://raw.githubusercontent.com/LycheeOrg/Lychee/refs/heads/master/scripts/demo/import/Tulips/_R5_9644.jpg \
+	&& curl -o import/Tulips/_R5_9646.jpg https://raw.githubusercontent.com/LycheeOrg/Lychee/refs/heads/master/scripts/demo/import/Tulips/_R5_9646.jpg \
+	&& curl -o import/Tulips/_R5_9648.jpg https://raw.githubusercontent.com/LycheeOrg/Lychee/refs/heads/master/scripts/demo/import/Tulips/_R5_9648.jpg \
+	&& curl -o import/Tulips/_R5_9638.jpg https://raw.githubusercontent.com/LycheeOrg/Lychee/refs/heads/master/scripts/demo/import/Tulips/_R5_9638.jpg \
+	&& curl -o import/Tulips/_R5_9651.jpg https://raw.githubusercontent.com/LycheeOrg/Lychee/refs/heads/master/scripts/demo/import/Tulips/_R5_9651.jpg \
+	&& curl -o import/Tulips/_R5_9652.jpg https://raw.githubusercontent.com/LycheeOrg/Lychee/refs/heads/master/scripts/demo/import/Tulips/_R5_9652.jpg \
+	&& curl -o import/Tulips/_R5_9655.jpg https://raw.githubusercontent.com/LycheeOrg/Lychee/refs/heads/master/scripts/demo/import/Tulips/_R5_9655.jpg \
+	&& curl -o import/Tulips/_R5_9657.jpg https://raw.githubusercontent.com/LycheeOrg/Lychee/refs/heads/master/scripts/demo/import/Tulips/_R5_9657.jpg \
+	&& curl -o import/Tulips/_R5_9658.jpg https://raw.githubusercontent.com/LycheeOrg/Lychee/refs/heads/master/scripts/demo/import/Tulips/_R5_9658.jpg \
+	&& curl -o import/Tulips/_R5_9664.jpg https://raw.githubusercontent.com/LycheeOrg/Lychee/refs/heads/master/scripts/demo/import/Tulips/_R5_9664.jpg \
+	&& curl -o import/Tulips/_R5_9666.jpg https://raw.githubusercontent.com/LycheeOrg/Lychee/refs/heads/master/scripts/demo/import/Tulips/_R5_9666.jpg \
+	&& curl -o import/Tulips/_R5_9667.jpg https://raw.githubusercontent.com/LycheeOrg/Lychee/refs/heads/master/scripts/demo/import/Tulips/_R5_9667.jpg \
+	&& curl -o import/Tulips/_R5_9669.jpg https://raw.githubusercontent.com/LycheeOrg/Lychee/refs/heads/master/scripts/demo/import/Tulips/_R5_9669.jpg \
+	&& curl -o import/Tulips/_R5_9671.jpg https://raw.githubusercontent.com/LycheeOrg/Lychee/refs/heads/master/scripts/demo/import/Tulips/_R5_9671.jpg \
+	&& curl -o import/Tulips/_R5_9676.jpg https://raw.githubusercontent.com/LycheeOrg/Lychee/refs/heads/master/scripts/demo/import/Tulips/_R5_9676.jpg \
+	&& curl -o import/Tulips/_R5_9678.jpg https://raw.githubusercontent.com/LycheeOrg/Lychee/refs/heads/master/scripts/demo/import/Tulips/_R5_9678.jpg \
+    && DB_CONNECTION=sqlite php /app/artisan lychee:sync import/Cat --skip_duplicates=1 --delete_imported=1 \
+    && DB_CONNECTION=sqlite php /app/artisan lychee:sync import/Tulips --skip_duplicates=1 --delete_imported=1 \
+    && DB_CONNECTION=sqlite php /app/artisan db:seed --class=DemoSeeder --force \
+	&& mkdir -p /app/storage/logs \
+	&& mkdir -p /app/storage/tmp \
+	&& chmod -R 777 /app/storage/*

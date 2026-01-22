@@ -1,0 +1,56 @@
+# Docker Compose configuration for Lychee application with FrankenPHP backend
+# Version: 2026-01-10
+
+services:
+  lychee_api:
+    build:
+      context: .
+      dockerfile: Dockerfile-demo
+    restart: unless-stopped  # Auto-restart at container level (outer layer)
+
+    # Security hardening
+    security_opt:
+      - no-new-privileges:true
+      - seccomp:unconfined  # FrankenPHP may need this; consider custom seccomp profile
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+      - DAC_OVERRIDE
+      - NET_BIND_SERVICE
+    read_only: false  # Laravel needs write access to storage/cache
+    tmpfs:
+      - /tmp:noexec,nosuid,nodev,size=1000m
+    networks:
+      - lychee
+    container_name: lychee-demo
+    expose:
+      - "${APP_PORT:-8000}"
+    ports:
+      - "${APP_PORT:-8000}:8000"
+    environment:
+      APP_KEY: "base64:ucMiFCbfQZUFOxrQz1x9C0OBJeLCCCAieZmnEHXmyGI="
+      APP_NAME: "Lychee-demo"
+      APP_ENV: "production"
+      APP_TIMEZONE: "UTC"
+      APP_URL: "http://localhost:8000"
+      DB_CONNECTION: "sqlite"
+      SESSION_DRIVER: "file"
+      SESSION_LIFETIME: "15"
+      QUEUE_CONNECTION: "sync"
+      CLOCKWORK_ENABLE: "false"
+      DEBUGBAR_ENABLED: "false"
+      LOG_VIEWER_ENABLED: "false"
+      DISABLE_IMPORT_FROM_SERVER: "true"
+      RUN_AS_ROOT: "yes"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/up"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+networks:
+    lychee:
