@@ -24,6 +24,11 @@ export function useRating(photoStore: PhotoStore, toast: ToastServiceMethods, us
 
 		loading.value = true;
 
+		if (photoStore.photo.rating.rating_user === rating) {
+			// If the clicked rating is the same as the current rating, remove the rating
+			rating = 0;
+		}
+
 		PhotoService.setRating(photoId, rating)
 			.then((response) => {
 				// Update only the rating field in the current photo store
@@ -43,7 +48,7 @@ export function useRating(photoStore: PhotoStore, toast: ToastServiceMethods, us
 					severity: "success",
 					summary: trans("toasts.success"),
 					detail: trans(message),
-					life: 3000,
+					life: 1000,
 				});
 			})
 			.catch((error) => {

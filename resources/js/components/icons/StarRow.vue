@@ -8,7 +8,7 @@
 		}"
 	>
 		<span
-			class="block"
+			class="block px-0.5"
 			v-for="index in 5"
 			:key="`avg-star-${index}`"
 			:class="{
