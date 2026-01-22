@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2017-2018 Tobias Reich
+ * Copyright (c) 2018-2026 LycheeOrg.
+ */
+
 namespace Database\Seeders;
 
 use App\Actions\Album\SetProtectionPolicy;
@@ -15,9 +21,9 @@ class DemoSeeder extends Seeder
 	 */
 	public function run(): void
 	{
-		$setProtections = new SetProtectionPolicy();
+		$set_protections = new SetProtectionPolicy();
 
-		$tulipsProtectionPolicy = new AlbumProtectionPolicy(
+		$tulips_protection_policy = new AlbumProtectionPolicy(
 			is_public: true,
 			is_link_required: false,
 			is_nsfw: false,
@@ -27,13 +33,13 @@ class DemoSeeder extends Seeder
 			is_password_required: false,
 		);
 		/** @var Album $tulipAlbum */
-		$tulipAlbum = Album::query()
+		$tulip_album = Album::query()
 			->select(['albums.*'])
 			->join('base_albums', 'base_albums.id', '=', 'albums.id')
 			->where('title', '=', 'Tulips')->first();
-		$setProtections->do($tulipAlbum, $tulipsProtectionPolicy, false, null);
+		$set_protections->do($tulip_album, $tulips_protection_policy, false, null);
 
-		$catProtectionPolicy = new AlbumProtectionPolicy(
+		$cat_protection_policy = new AlbumProtectionPolicy(
 			is_public: true,
 			is_link_required: false,
 			is_nsfw: true,
@@ -43,11 +49,11 @@ class DemoSeeder extends Seeder
 			is_password_required: false,
 		);
 		/** @var Album $catAlbum */
-		$catAlbum = Album::query()
+		$cat_album = Album::query()
 			->select(['albums.*'])
 			->join('base_albums', 'base_albums.id', '=', 'albums.id')
 			->where('title', '=', 'Cat')->first();
-		$setProtections->do($catAlbum, $catProtectionPolicy, false, null);
+		$set_protections->do($cat_album, $cat_protection_policy, false, null);
 
 		Configs::set('nsfw_banner_blur_backdrop', true);
 		Configs::set('nsfw_visible', true);
