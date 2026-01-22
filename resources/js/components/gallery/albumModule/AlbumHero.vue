@@ -103,14 +103,21 @@
 
 						<!-- Album view toggle buttons -->
 						<Button
-							v-if="lycheeStore.album_view_mode === 'list'"
+							v-if="lycheeStore.album_view_mode === 'list' && albumsStore.albums.length > 0"
 							icon="pi pi-th-large"
 							class="border-none"
 							severity="secondary"
 							text
 							@click="toggleAlbumView('grid')"
 						/>
-						<Button v-else icon="pi pi-list" class="border-none" severity="secondary" text @click="toggleAlbumView('list')" />
+						<Button
+							v-else-if="albumsStore.albums.length > 0"
+							icon="pi pi-list"
+							class="border-none"
+							severity="secondary"
+							text
+							@click="toggleAlbumView('list')"
+						/>
 
 						<template v-if="isTouchDevice() && userStore.isLoggedIn">
 							<a
