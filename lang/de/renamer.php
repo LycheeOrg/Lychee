@@ -104,4 +104,6 @@ return [
     'test_original' => 'Original',
     'test_result' => 'Result',
     'test_failed' => 'Failed to test renamer rules',
+    'apply_photo_rules' => 'Apply photo rules',
+    'apply_album_rules' => 'Apply album rules',
 ];
