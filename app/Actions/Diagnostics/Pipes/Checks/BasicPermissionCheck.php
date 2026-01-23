@@ -220,7 +220,6 @@ class BasicPermissionCheck implements DiagnosticPipe
 			// `fileperms` also returns the higher bits of the inode mode.
 			// Hence, we must AND it with 07777 to only get what we are
 			// interested in
-
 			// Edit 2026-01-23: Ignore sticky bit in permission checks
 			$actual_perm &= self::WITHOUT_STICKY_BIT;
 			$owning_group_id_or_false = filegroup($path);

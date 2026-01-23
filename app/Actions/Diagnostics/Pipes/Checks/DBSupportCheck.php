@@ -42,7 +42,7 @@ class DBSupportCheck implements DiagnosticPipe
 		}
 		if (!$found) {
 			// @codeCoverageIgnoreStart
-			$data[] = DiagnosticData::error(config('database.default', 'sqlite') . ' db driver selected and PHP ' . implode(' or ', $db_possibility[config('database.default', 'sqlite')]) . ' extensions not activated', self::class);
+			$data[] = DiagnosticData::error(config('database.default', 'sqlite') . ' db driver selected and PHP ' . implode(' or ', $db_possibilities[config('database.default', 'sqlite')]) . ' extensions not activated', self::class);
 			// @codeCoverageIgnoreEnd
 		}
 
