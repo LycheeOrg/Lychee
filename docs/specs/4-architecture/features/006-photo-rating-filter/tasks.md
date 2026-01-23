@@ -1,7 +1,7 @@
 # Feature 006 Tasks – Photo Star Rating Filter
 
-_Status: Draft_
-_Last updated: 2026-01-03_
+_Status: Implemented_
+_Last updated: 2026-01-14_
 
 > Keep this checklist aligned with the feature plan increments. Stage tests before implementation, record verification commands beside each task, and prefer bite-sized entries (≤90 minutes).
 > **Mark tasks `[x]` immediately** after each one passes verification—do not batch completions. Update the roadmap status when all tasks are done.
@@ -12,31 +12,31 @@ _Last updated: 2026-01-03_
 
 ### Increment I1 – PhotosState Store Modifications
 
-- [ ] T-006-01 – Locate and read PhotosState.ts store structure (FR-006-04).
+- [x] T-006-01 – Locate and read PhotosState.ts store structure (FR-006-04).
   _Intent:_ Understand existing PhotosState store to plan modifications.
   _Verification commands:_
   - File read and structure understood
   _Notes:_ Verify store exists at expected location, note existing properties and patterns.
 
-- [ ] T-006-02 – Add photo_rating_filter state property to PhotosState.ts (FR-006-04, S-006-08).
+- [x] T-006-02 – Add photo_rating_filter state property to PhotosState.ts (FR-006-04, S-006-08).
   _Intent:_ Add `photo_rating_filter: null | 1 | 2 | 3 | 4 | 5` property with default value `null`.
   _Verification commands:_
   - `npm run check` (TypeScript compilation)
   _Notes:_ Property should be reactive, type-safe.
 
-- [ ] T-006-03 – Add photoRatingFilter getter to PhotosState.ts (FR-006-04).
+- [x] T-006-03 – Add photoRatingFilter getter to PhotosState.ts (FR-006-04).
   _Intent:_ Implement getter for accessing filter state.
   _Verification commands:_
   - `npm run check`
   _Notes:_ Use computed or simple getter pattern matching existing store patterns.
 
-- [ ] T-006-04 – Add setPhotoRatingFilter action to PhotosState.ts (FR-006-04, S-006-03, S-006-06).
+- [x] T-006-04 – Add setPhotoRatingFilter action to PhotosState.ts (FR-006-04, S-006-03, S-006-06).
   _Intent:_ Implement action `setPhotoRatingFilter(rating: null | 1 | 2 | 3 | 4 | 5)` that updates filter state.
   _Verification commands:_
   - `npm run check`
   _Notes:_ Action should be type-safe, accept null to clear filter.
 
-- [ ] T-006-05 – Write unit tests for PhotosState filter state (S-006-08, S-006-09).
+- [x] T-006-05 – Write unit tests for PhotosState filter state (S-006-08, S-006-09).
   _Intent:_ Test default value (null), setPhotoRatingFilter updates state correctly.
   _Verification commands:_
   - `npm run check` (includes unit tests)
@@ -46,32 +46,32 @@ _Last updated: 2026-01-03_
 
 ### Increment I2 – Filtering Logic Computed Property
 
-- [ ] T-006-06 – Identify photo list rendering location (FR-006-02, FR-006-05).
+- [x] T-006-06 – Identify photo list rendering location (FR-006-02, FR-006-05).
   _Intent:_ Find where photo array is rendered (PhotoThumbPanel.vue or parent component).
   _Verification commands:_
   - File located and structure understood
   _Notes:_ May be in PhotoPanel.vue, PhotoThumbPanel.vue, or similar.
 
-- [ ] T-006-07 – Add hasRatedPhotos computed property (FR-006-01, S-006-01, S-006-02).
+- [x] T-006-07 – Add hasRatedPhotos computed property (FR-006-01, S-006-01, S-006-02).
   _Intent:_ Create computed property that checks if any photo has user_rating > 0.
   _Verification commands:_
   - `npm run check`
   _Notes:_ `photos.value.some(p => p.user_rating && p.user_rating > 0)`.
 
-- [ ] T-006-08 – Add filteredPhotos computed property (FR-006-02, FR-006-05, NFR-006-01, S-006-03, S-006-04, S-006-05).
+- [x] T-006-08 – Add filteredPhotos computed property (FR-006-02, FR-006-05, NFR-006-01, S-006-03, S-006-04, S-006-05).
   _Intent:_ Create computed property that filters photos by minimum rating threshold.
   _Verification commands:_
   - `npm run check`
   - `npm run dev` (manual testing with mock data)
   _Notes:_ Logic: if filter === null OR no rated photos → all photos; else → photos.filter(p => p.user_rating >= filter).
 
-- [ ] T-006-09 – Update photo grid rendering to use filteredPhotos (FR-006-02, FR-006-05).
+- [x] T-006-09 – Update photo grid rendering to use filteredPhotos (FR-006-02, FR-006-05).
   _Intent:_ Change photo grid component to render filteredPhotos instead of photos array.
   _Verification commands:_
   - `npm run dev` (verify grid updates when filter changes)
   _Notes:_ May need to pass filteredPhotos as prop or use computed directly.
 
-- [ ] T-006-10 – Write unit tests for filtering logic (S-006-03, S-006-04, S-006-05, S-006-07).
+- [x] T-006-10 – Write unit tests for filtering logic (S-006-03, S-006-04, S-006-05, S-006-07).
   _Intent:_ Test filter null → all photos, filter 3 → ≥3 stars, filter 5 → only 5 stars, no rated photos → all photos.
   _Verification commands:_
   - `npm run check`
@@ -81,32 +81,32 @@ _Last updated: 2026-01-03_
 
 ### Increment I3 – Star Filter Control Component Structure
 
-- [ ] T-006-11 – Read PhotoThumbPanelControl.vue structure (FR-006-07).
+- [x] T-006-11 – Read PhotoThumbPanelControl.vue structure (FR-006-07).
   _Intent:_ Understand existing PhotoThumbPanelControl.vue layout and button structure.
   _Verification commands:_
   - File read and structure understood
   _Notes:_ Note location of layout buttons, spacing, styling patterns.
 
-- [ ] T-006-12 – Import PhotosState store in PhotoThumbPanelControl.vue (FR-006-04).
+- [x] T-006-12 – Import PhotosState store in PhotoThumbPanelControl.vue (FR-006-04).
   _Intent:_ Import and setup PhotosState store to access filter state.
   _Verification commands:_
   - `npm run check`
   _Notes:_ Use `const photosStore = usePhotosStateStore()` or similar pattern.
 
-- [ ] T-006-13 – Add hasRatedPhotos computed property to PhotoThumbPanelControl.vue (FR-006-01, S-006-01, S-006-02).
+- [x] T-006-13 – Add hasRatedPhotos computed property to PhotoThumbPanelControl.vue (FR-006-01, S-006-01, S-006-02).
   _Intent:_ Add computed property to detect if any photo has rating.
   _Verification commands:_
   - `npm run check`
   _Notes:_ May need to access photos array via props or store.
 
-- [ ] T-006-14 – Add star filter template structure to PhotoThumbPanelControl.vue (FR-006-01, FR-006-07).
+- [x] T-006-14 – Add star filter template structure to PhotoThumbPanelControl.vue (FR-006-01, FR-006-07).
   _Intent:_ Add div with v-if="hasRatedPhotos", render 5 star buttons with v-for.
   _Verification commands:_
   - `npm run check`
   - `npm run dev` (visual inspection - stars appear when rated photos exist)
   _Notes:_ Position before layout buttons, use role="group" and aria-label.
 
-- [ ] T-006-15 – Add ARIA attributes to star filter group (NFR-006-02).
+- [x] T-006-15 – Add ARIA attributes to star filter group (NFR-006-02).
   _Intent:_ Add role="group", aria-label="Filter by star rating" to star filter container.
   _Verification commands:_
   - `npm run check`
@@ -116,26 +116,26 @@ _Last updated: 2026-01-03_
 
 ### Increment I4 – Star Click Interaction (Toggle Behavior)
 
-- [ ] T-006-16 – Implement handleStarClick method (FR-006-02, FR-006-03, S-006-03, S-006-06).
+- [x] T-006-16 – Implement handleStarClick method (FR-006-02, FR-006-03, S-006-03, S-006-06).
   _Intent:_ Add click handler that toggles filter (if current === clicked → clear, else → set).
   _Verification commands:_
   - `npm run check`
   - `npm run dev` (test click behavior)
   _Notes:_ Call photosStore.setPhotoRatingFilter(star) or (null).
 
-- [ ] T-006-17 – Implement starIconClass method (FR-006-06).
+- [x] T-006-17 – Implement starIconClass method (FR-006-06).
   _Intent:_ Return filled or empty star icon class based on filter state.
   _Verification commands:_
   - `npm run dev` (visual inspection - correct stars filled)
   _Notes:_ If star <= filter → filled ('pi pi-star-fill'), else → empty ('pi pi-star').
 
-- [ ] T-006-18 – Add star icon styling (FR-006-06).
+- [x] T-006-18 – Add star icon styling (FR-006-06).
   _Intent:_ Apply Tailwind classes for filled/empty stars (yellow vs gray).
   _Verification commands:_
   - `npm run dev` (visual inspection)
   _Notes:_ Filled: `text-yellow-500`, empty: `text-gray-300 dark:text-gray-600`.
 
-- [ ] T-006-19 – Test star click toggle behavior manually (S-006-03, S-006-06, S-006-07).
+- [x] T-006-19 – Test star click toggle behavior manually (S-006-03, S-006-06, S-006-07).
   _Intent:_ Manually test: click star 3 → filter ≥3, click star 3 again → clear filter.
   _Verification commands:_
   - `npm run dev` (manual testing)
@@ -145,19 +145,19 @@ _Last updated: 2026-01-03_
 
 ### Increment I5 – Hover and Visual Feedback
 
-- [ ] T-006-20 – Add hover styling to star buttons (FR-006-06, UI-006-04).
+- [x] T-006-20 – Add hover styling to star buttons (FR-006-06, UI-006-04).
   _Intent:_ Add hover effects: color preview, scale transform.
   _Verification commands:_
   - `npm run dev` (hover over stars, verify visual feedback)
   _Notes:_ Classes: `hover:text-yellow-400 hover:scale-110 transition-transform duration-150`.
 
-- [ ] T-006-21 – Add focus styling for keyboard navigation (NFR-006-02).
+- [x] T-006-21 – Add focus styling for keyboard navigation (NFR-006-02).
   _Intent:_ Add visible focus outline for keyboard users.
   _Verification commands:_
   - `npm run dev` (tab to star filter, verify focus outline visible)
   _Notes:_ Classes: `focus:outline-none focus:ring-2 focus:ring-primary`.
 
-- [ ] T-006-22 – Ensure touch targets are ≥44px on mobile (NFR-006-02).
+- [x] T-006-22 – Ensure touch targets are ≥44px on mobile (NFR-006-02).
   _Intent:_ Add padding to star buttons to meet minimum touch target size.
   _Verification commands:_
   - `npm run dev` (test in browser DevTools responsive mode)
@@ -167,20 +167,20 @@ _Last updated: 2026-01-03_
 
 ### Increment I6 – Keyboard Accessibility
 
-- [ ] T-006-23 – Add aria-label and aria-pressed to each star button (NFR-006-02, UI-006-05).
+- [x] T-006-23 – Add aria-label and aria-pressed to each star button (NFR-006-02, UI-006-05).
   _Intent:_ Add accessibility attributes: aria-label="Filter by N stars or higher", aria-pressed based on active state.
   _Verification commands:_
   - `npm run check`
   - Manual screen reader testing (if available)
   _Notes:_ aria-pressed="true" when filter === star, else "false".
 
-- [ ] T-006-24 – Implement keyboard event handlers (Arrow keys, Enter, Space) (NFR-006-02, UI-006-05).
+- [x] T-006-24 – Implement keyboard event handlers (Arrow keys, Enter, Space) (NFR-006-02, UI-006-05).
   _Intent:_ Add @keydown handler for arrow key navigation and Enter/Space activation.
   _Verification commands:_
   - Manual keyboard testing (Tab, Arrow Left/Right, Enter)
   _Notes:_ Arrow Right → focus next star, Arrow Left → focus prev star, Enter/Space → click.
 
-- [ ] T-006-25 – Test keyboard navigation flow (NFR-006-02).
+- [x] T-006-25 – Test keyboard navigation flow (NFR-006-02).
   _Intent:_ Test full keyboard workflow: Tab to filter, Arrow keys to select star, Enter to activate, Tab out.
   _Verification commands:_
   - Manual keyboard testing
@@ -370,4 +370,4 @@ _Last updated: 2026-01-03_
 
 ---
 
-_Last updated: 2026-01-03_
+_Last updated: 2026-01-14_

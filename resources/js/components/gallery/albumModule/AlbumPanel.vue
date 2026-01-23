@@ -46,11 +46,10 @@
 					:albums="albumsStore.albums"
 					:config="albumPanelConfig"
 					:is-alone="photosStore.photos.length === 0"
-					:idx-shift="0"
 					:selected-albums="selectedAlbumsIds"
 					:is-timeline="albumStore.config.is_album_timeline_enabled"
-					@clicked="albumClick"
-					@contexted="albumMenuOpen"
+					@clicked="albumSelect"
+					@contexted="contextMenuAlbumOpen"
 				/>
 				<!-- Pagination for albums -->
 				<Pagination
@@ -70,14 +69,14 @@
 				<PhotoThumbPanel
 					v-if="layoutStore.config && photosStore.photos.length > 0"
 					header="gallery.album.header_photos"
-					:photos="photosStore.photos"
-					:photos-timeline="photosStore.photosTimeline"
+					:photos="photosStore.filteredPhotos"
+					:photos-timeline="photosStore.filteredPhotosTimeline"
 					:selected-photos="selectedPhotosIds"
 					:is-timeline="albumStore.config.is_photo_timeline_enabled"
 					:with-control="true"
 					@clicked="photoClick"
 					@selected="photoSelect"
-					@contexted="photoMenuOpen"
+					@contexted="contextMenuPhotoOpen"
 					@toggle-buy-me="toggleBuyMe"
 				/>
 				<!-- Pagination for photos -->
@@ -200,24 +199,13 @@ const {
 
 const { toggleBuyMe } = useBuyMeActions(albumStore, photosStore, orderManagement, catalogStore, toast);
 
-const {
-	selectedPhotosIdx,
-	selectedAlbumsIdx,
-	selectedPhoto,
-	selectedAlbum,
-	selectedPhotos,
-	selectedAlbums,
-	selectedPhotosIds,
-	selectedAlbumsIds,
-	photoSelect,
-	albumClick,
-	unselect,
-} = useSelection(photosStore, albumsStore, togglableStore);
+const { selectedPhoto, selectedAlbum, selectedPhotos, selectedAlbums, selectedPhotosIds, selectedAlbumsIds, photoSelect, albumSelect, unselect } =
+	useSelection(photosStore, albumsStore, togglableStore);
 
 const { photoRoute, getParentId } = usePhotoRoute(router);
 
-function photoClick(idx: number, _e: MouseEvent) {
-	router.push(photoRoute(photosStore.photos[idx].id));
+function photoClick(photoId: string, _e: MouseEvent) {
+	router.push(photoRoute(photoId));
 }
 
 function goToPhotosPage(page: number) {
@@ -345,16 +333,21 @@ const albumCallbacks = {
 const computedAlbum = computed(() => albumStore.album);
 const computedConfig = computed(() => albumStore.config);
 
-const { menu, Menu, photoMenuOpen, albumMenuOpen } = useContextMenu(
+const {
+	menu,
+	Menu,
+	photoMenuOpen: contextMenuPhotoOpen,
+	albumMenuOpen: contextMenuAlbumOpen,
+} = useContextMenu(
 	{
 		config: computedConfig,
 		album: computedAlbum,
 		selectedPhoto: selectedPhoto,
 		selectedPhotos: selectedPhotos,
-		selectedPhotosIdx: selectedPhotosIdx,
+		selectedPhotosIds: selectedPhotosIds,
 		selectedAlbum: selectedAlbum,
 		selectedAlbums: selectedAlbums,
-		selectedAlbumIdx: selectedAlbumsIdx,
+		selectedAlbumsIds: selectedAlbumsIds,
 	},
 	photoCallbacks,
 	albumCallbacks,

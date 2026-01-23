@@ -61,6 +61,10 @@ return [
         'grid' => 'Grille avec proportions',
         'filmstrip' => 'Pellicule',
     ],
+    'filter' => [
+        'by_rating' => 'Filter by star rating',
+        'n_stars_or_higher' => 'Filter by :n stars or higher',
+    ],
     'overlay' => [
         'none' => 'Aucun',
         'exif' => 'Données EXIF',

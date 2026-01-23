@@ -2,8 +2,8 @@
 
 | Field | Value |
 |-------|-------|
-| Status | Draft |
-| Last updated | 2025-12-28 |
+| Status | Implemented |
+| Last updated | 2026-01-21 |
 | Owners | Lychee Team |
 | Linked plan | `docs/specs/4-architecture/features/002-worker-mode/plan.md` |
 | Linked tasks | `docs/specs/4-architecture/features/002-worker-mode/tasks.md` |

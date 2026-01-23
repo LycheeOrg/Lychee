@@ -61,6 +61,10 @@ return [
         'grid' => 'مع النسبة، شبكة',
         'filmstrip' => 'شريط فيلم',
     ],
+    'filter' => [
+        'by_rating' => 'Filter by star rating',
+        'n_stars_or_higher' => 'Filter by :n stars or higher',
+    ],
     'overlay' => [
         'none' => 'لا شيء',
         'exif' => 'بيانات EXIF',

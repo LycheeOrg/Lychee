@@ -9,55 +9,59 @@ import { AlbumsStore } from "@/stores/AlbumsState";
 export function useSelection(photosStore: PhotosStore, albumsStore: AlbumsStore, togglableStore: TogglablesStateStore) {
 	const { canInteractAlbum, canInteractPhoto } = useAlbumActions();
 
-	const { selectedPhotosIdx, selectedAlbumsIdx } = storeToRefs(togglableStore);
+	const { selectedPhotosIds, selectedAlbumsIds } = storeToRefs(togglableStore);
 	const selectedPhoto = computed<App.Http.Resources.Models.PhotoResource | undefined>(() =>
-		selectedPhotosIdx.value.length === 1 ? (photosStore.photos[selectedPhotosIdx.value[0]] ?? undefined) : undefined,
+		selectedPhotosIds.value.length === 1 ? (photosStore.photos.find((p) => p.id === selectedPhotosIds.value[0]) ?? undefined) : undefined,
 	);
 	const selectedAlbum = computed<App.Http.Resources.Models.ThumbAlbumResource | undefined>(() =>
-		selectedAlbumsIdx.value.length === 1 ? (albumsStore.selectableAlbums[selectedAlbumsIdx.value[0]] ?? undefined) : undefined,
+		selectedAlbumsIds.value.length === 1
+			? (albumsStore.selectableAlbums.find((a) => a.id === selectedAlbumsIds.value[0]) ?? undefined)
+			: undefined,
 	);
 	const selectedPhotos = computed<App.Http.Resources.Models.PhotoResource[]>(
-		() => photosStore.photos.filter((_, idx) => selectedPhotosIdx.value.includes(idx)) ?? [],
+		() => photosStore.photos.filter((p) => selectedPhotosIds.value.includes(p.id)) ?? [],
 	);
 	const selectedAlbums = computed<App.Http.Resources.Models.ThumbAlbumResource[]>(
-		() => albumsStore.selectableAlbums?.filter((_, idx) => selectedAlbumsIdx.value.includes(idx)) ?? [],
+		() => albumsStore.selectableAlbums?.filter((a) => selectedAlbumsIds.value.includes(a.id)) ?? [],
 	);
-	const selectedPhotosIds = computed(() => selectedPhotos.value.map((p) => p.id));
-	const selectedAlbumsIds = computed(() => selectedAlbums.value.map((a) => a.id));
 
-	// We save the last clicked index so we can do selections with shift.
-	const lastPhotoClicked = ref<number | undefined>(undefined);
-	const lastAlbumClicked = ref<number | undefined>(undefined);
+	// We save the last clicked photo/album ID so we can do selections with shift.
+	const lastPhotoClicked = ref<string | undefined>(undefined);
+	const lastAlbumClicked = ref<string | undefined>(undefined);
 
-	function isPhotoSelected(idx: number) {
-		return selectedPhotosIdx.value.includes(idx);
+	function isPhotoSelected(photoId: string) {
+		return selectedPhotosIds.value.includes(photoId);
 	}
-	function isAlbumSelected(idx: number) {
-		return selectedAlbumsIdx.value.includes(idx);
+	function isAlbumSelected(albumId: string) {
+		return selectedAlbumsIds.value.includes(albumId);
 	}
 
 	function hasSelection(): boolean {
-		return selectedPhotosIdx.value.length > 0 || selectedAlbumsIdx.value.length > 0;
+		return selectedPhotosIds.value.length > 0 || selectedAlbumsIds.value.length > 0;
 	}
 
 	function unselect(): void {
-		selectedAlbumsIdx.value = [];
-		selectedPhotosIdx.value = [];
+		selectedAlbumsIds.value = [];
+		selectedPhotosIds.value = [];
 	}
 
-	function addToPhotoSelection(idx: number): void {
-		selectedPhotosIdx.value.push(idx);
+	function addToPhotoSelection(photoId: string): void {
+		if (!selectedPhotosIds.value.includes(photoId)) {
+			selectedPhotosIds.value.push(photoId);
+		}
 	}
-	function removeFromPhotoSelection(idx: number): void {
-		selectedPhotosIdx.value = selectedPhotosIdx.value.filter((i) => i !== idx);
-	}
-
-	function addToAlbumSelection(idx: number): void {
-		selectedAlbumsIdx.value.push(idx);
+	function removeFromPhotoSelection(photoId: string): void {
+		selectedPhotosIds.value = selectedPhotosIds.value.filter((id) => id !== photoId);
 	}
 
-	function removeFromAlbumSelection(idx: number): void {
-		selectedAlbumsIdx.value = selectedAlbumsIdx.value.filter((i) => i !== idx);
+	function addToAlbumSelection(albumId: string): void {
+		if (!selectedAlbumsIds.value.includes(albumId)) {
+			selectedAlbumsIds.value.push(albumId);
+		}
+	}
+
+	function removeFromAlbumSelection(albumId: string): void {
+		selectedAlbumsIds.value = selectedAlbumsIds.value.filter((id) => id !== albumId);
 	}
 
 	function getMouseModifiers(e: MouseEvent): { isMod: boolean; isShift: boolean } {
@@ -66,9 +70,9 @@ export function useSelection(photosStore: PhotosStore, albumsStore: AlbumsStore,
 		return { isMod, isShift: e.shiftKey };
 	}
 
-	function photoSelect(idx: number, e: MouseEvent): void {
+	function photoSelect(photoId: string, e: MouseEvent): void {
 		// clear the Album selection.
-		selectedAlbumsIdx.value = [];
+		selectedAlbumsIds.value = [];
 
 		// we do not support CTRL + SHIFT
 		const { isMod, isShift } = getMouseModifiers(e);
@@ -80,62 +84,74 @@ export function useSelection(photosStore: PhotosStore, albumsStore: AlbumsStore,
 		e.preventDefault();
 		e.stopPropagation();
 
-		if (photosStore.photos.length === 0 || canInteractPhoto() === false) {
+		if (photosStore.filteredPhotos.length === 0 || canInteractPhoto() === false) {
 			return;
 		}
 
 		if (isMod) {
-			handlePhotoCtrl(idx, e);
+			handlePhotoCtrl(photoId);
 			return;
 		}
 
 		if (isShift) {
-			handlePhotoShift(idx, e);
+			handlePhotoShift(photoId);
 			return;
 		}
 	}
 
-	function handlePhotoCtrl(idx: number, _e: Event): void {
-		if (isPhotoSelected(idx)) {
-			removeFromPhotoSelection(idx);
+	function handlePhotoCtrl(photoId: string): void {
+		if (isPhotoSelected(photoId)) {
+			removeFromPhotoSelection(photoId);
 		} else {
-			addToPhotoSelection(idx);
+			addToPhotoSelection(photoId);
 		}
-		lastPhotoClicked.value = idx;
+		lastPhotoClicked.value = photoId;
 	}
 
-	function handlePhotoShift(idx: number, _e: Event): void {
+	function handlePhotoShift(photoId: string): void {
 		if (selectedPhotos.value.length === 0) {
-			addToPhotoSelection(idx);
-			lastPhotoClicked.value = idx;
+			addToPhotoSelection(photoId);
+			lastPhotoClicked.value = photoId;
 			return;
 		}
 
-		// Picture is selected.
-		// We remove all pictures from latest click till current idx
-		if (isPhotoSelected(idx)) {
-			// @ts-expect-error lastPhotoClicked is always defined here
-			const idx_min = Math.min(lastPhotoClicked.value, idx);
-			// @ts-expect-error lastPhotoClicked is always defined here
-			const idx_max = Math.max(lastPhotoClicked.value, idx);
-			for (let i = idx_min; i <= idx_max; i++) {
-				removeFromPhotoSelection(i);
+		// Find indices in the filtered photos array for range selection
+		const filteredPhotos = photosStore.filteredPhotos;
+		const currentIdx = filteredPhotos.findIndex((p) => p.id === photoId);
+		const lastIdx = lastPhotoClicked.value !== undefined ? filteredPhotos.findIndex((p) => p.id === lastPhotoClicked.value) : -1;
+
+		if (currentIdx === -1) {
+			// Photo not found in filtered list
+			return;
+		}
+
+		// Photo is selected - remove range
+		if (isPhotoSelected(photoId)) {
+			if (lastIdx === -1) {
+				removeFromPhotoSelection(photoId);
+			} else {
+				const idx_min = Math.min(lastIdx, currentIdx);
+				const idx_max = Math.max(lastIdx, currentIdx);
+				for (let i = idx_min; i <= idx_max; i++) {
+					removeFromPhotoSelection(filteredPhotos[i].id);
+				}
 			}
-		} else if (lastPhotoClicked.value === undefined) {
-			addToPhotoSelection(idx);
+		} else if (lastIdx === -1) {
+			addToPhotoSelection(photoId);
 		} else {
-			const idx_min = Math.min(lastPhotoClicked.value, idx);
-			const idx_max = Math.max(lastPhotoClicked.value, idx);
+			// Add range
+			const idx_min = Math.min(lastIdx, currentIdx);
+			const idx_max = Math.max(lastIdx, currentIdx);
 			for (let i = idx_min; i <= idx_max; i++) {
-				addToPhotoSelection(i);
+				addToPhotoSelection(filteredPhotos[i].id);
 			}
 		}
-		lastPhotoClicked.value = idx;
+		lastPhotoClicked.value = photoId;
 	}
 
-	function albumClick(idx: number, e: MouseEvent): void {
+	function albumSelect(albumId: string, e: MouseEvent): void {
 		// clear the Photo selection.
-		selectedPhotosIdx.value = [];
+		selectedPhotosIds.value = [];
 
 		// we do not support CTRL + SHIFT
 		const { isMod, isShift } = getMouseModifiers(e);
@@ -147,100 +163,108 @@ export function useSelection(photosStore: PhotosStore, albumsStore: AlbumsStore,
 		e.preventDefault();
 		e.stopPropagation();
 
-		if (canInteractAlbum(albumsStore.selectableAlbums[idx]) === false) {
+		const album = albumsStore.selectableAlbums.find((a) => a.id === albumId);
+		if (!album || canInteractAlbum(album) === false) {
 			return;
 		}
 
 		if (isMod) {
-			handleAlbumCtrl(idx, e);
+			handleAlbumCtrl(albumId);
 			return;
 		}
 
 		if (isShift) {
-			handleAlbumShift(idx, e);
+			handleAlbumShift(albumId);
 			return;
 		}
 	}
 
-	function handleAlbumCtrl(idx: number, _e: Event): void {
-		if (isAlbumSelected(idx)) {
-			removeFromAlbumSelection(idx);
+	function handleAlbumCtrl(albumId: string): void {
+		if (isAlbumSelected(albumId)) {
+			removeFromAlbumSelection(albumId);
 		} else {
-			addToAlbumSelection(idx);
+			addToAlbumSelection(albumId);
 		}
-		lastAlbumClicked.value = idx;
+		lastAlbumClicked.value = albumId;
 	}
 
-	function handleAlbumShift(idx: number, _e: Event): void {
+	function handleAlbumShift(albumId: string): void {
 		if (selectedAlbums.value.length === 0) {
-			addToAlbumSelection(idx);
-			lastAlbumClicked.value = idx;
+			addToAlbumSelection(albumId);
+			lastAlbumClicked.value = albumId;
 			return;
 		}
 
-		// Album is selected.
-		// We remove all albums from latest click till current idx
-		if (isAlbumSelected(idx)) {
-			// @ts-expect-error lastAlbumClicked is always defined here
-			const idx_min = Math.min(lastAlbumClicked.value, idx);
-			// @ts-expect-error lastAlbumClicked is always defined here
-			const idx_max = Math.max(lastAlbumClicked.value, idx);
-			for (let i = idx_min; i <= idx_max; i++) {
-				removeFromAlbumSelection(i);
+		// Find indices in the selectableAlbums array for range selection
+		const albums = albumsStore.selectableAlbums;
+		const currentIdx = albums.findIndex((a) => a.id === albumId);
+		const lastIdx = lastAlbumClicked.value !== undefined ? albums.findIndex((a) => a.id === lastAlbumClicked.value) : -1;
+
+		if (currentIdx === -1) {
+			// Album not found
+			return;
+		}
+
+		// Album is selected - remove range
+		if (isAlbumSelected(albumId)) {
+			if (lastIdx === -1) {
+				removeFromAlbumSelection(albumId);
+			} else {
+				const idx_min = Math.min(lastIdx, currentIdx);
+				const idx_max = Math.max(lastIdx, currentIdx);
+				for (let i = idx_min; i <= idx_max; i++) {
+					removeFromAlbumSelection(albums[i].id);
+				}
 			}
-		} else if (lastAlbumClicked.value === undefined) {
-			addToAlbumSelection(idx);
+		} else if (lastIdx === -1) {
+			addToAlbumSelection(albumId);
 		} else {
-			const idx_min = Math.min(lastAlbumClicked.value, idx);
-			const idx_max = Math.max(lastAlbumClicked.value, idx);
+			// Add range
+			const idx_min = Math.min(lastIdx, currentIdx);
+			const idx_max = Math.max(lastIdx, currentIdx);
 			for (let i = idx_min; i <= idx_max; i++) {
-				addToAlbumSelection(i);
+				addToAlbumSelection(albums[i].id);
 			}
 		}
-		lastAlbumClicked.value = idx;
-	}
-
-	function getKeysFromPredicate<A>(items: A[], predicate: (i: A) => boolean): number[] {
-		return Array.from(items.keys()).filter((k: number) => predicate(items[k]));
+		lastAlbumClicked.value = albumId;
 	}
 
 	function selectEverything(): void {
-		if (selectedPhotosIdx.value.length === photosStore.photos.length && albumsStore.selectableAlbums.length > 0) {
+		const filteredPhotos = photosStore.filteredPhotos;
+		if (selectedPhotosIds.value.length === filteredPhotos.length && albumsStore.selectableAlbums.length > 0) {
 			// Flip and select albums
-			selectedPhotosIdx.value = [];
-			selectedAlbumsIdx.value = getKeysFromPredicate(albumsStore.selectableAlbums, canInteractAlbum);
+			selectedPhotosIds.value = [];
+			selectedAlbumsIds.value = albumsStore.selectableAlbums.filter(canInteractAlbum).map((a) => a.id);
 			return;
 		}
-		if (selectedAlbumsIdx.value.length === albumsStore.selectableAlbums.length && photosStore.photos.length > 0) {
-			selectedAlbumsIdx.value = [];
-			selectedPhotosIdx.value = getKeysFromPredicate(photosStore.photos, canInteractPhoto);
+		if (selectedAlbumsIds.value.length === albumsStore.selectableAlbums.length && filteredPhotos.length > 0) {
+			selectedAlbumsIds.value = [];
+			selectedPhotosIds.value = filteredPhotos.filter(canInteractPhoto).map((p) => p.id);
 			// Flip and select photos
 			return;
 		}
-		if (selectedAlbumsIdx.value.length > 0 && albumsStore.selectableAlbums.length > 0) {
-			selectedAlbumsIdx.value = getKeysFromPredicate(albumsStore.selectableAlbums, canInteractAlbum);
+		if (selectedAlbumsIds.value.length > 0 && albumsStore.selectableAlbums.length > 0) {
+			selectedAlbumsIds.value = albumsStore.selectableAlbums.filter(canInteractAlbum).map((a) => a.id);
 			return;
 		}
-		if (photosStore.photos.length > 0) {
-			selectedPhotosIdx.value = getKeysFromPredicate(photosStore.photos, canInteractPhoto);
+		if (filteredPhotos.length > 0) {
+			selectedPhotosIds.value = filteredPhotos.filter(canInteractPhoto).map((p) => p.id);
 			return;
 		}
 		if (albumsStore.selectableAlbums.length > 0) {
-			selectedAlbumsIdx.value = getKeysFromPredicate(albumsStore.selectableAlbums, canInteractAlbum);
+			selectedAlbumsIds.value = albumsStore.selectableAlbums.filter(canInteractAlbum).map((a) => a.id);
 		}
 	}
 
 	return {
 		selectedPhoto,
 		selectedAlbum,
-		selectedPhotosIdx,
-		selectedAlbumsIdx,
-		selectedPhotos,
-		selectedAlbums,
 		selectedPhotosIds,
 		selectedAlbumsIds,
+		selectedPhotos,
+		selectedAlbums,
 		photoSelect,
-		albumClick,
+		albumSelect,
 		selectEverything,
 		unselect,
 		hasSelection,

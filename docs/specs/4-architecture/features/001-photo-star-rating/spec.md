@@ -2,8 +2,8 @@
 
 | Field | Value |
 |-------|-------|
-| Status | Draft |
-| Last updated | 2025-12-27 |
+| Status | Implemented |
+| Last updated | 2026-01-21 |
 | Owners | User |
 | Linked plan | `docs/specs/4-architecture/features/001-photo-star-rating/plan.md` |
 | Linked tasks | `docs/specs/4-architecture/features/001-photo-star-rating/tasks.md` |

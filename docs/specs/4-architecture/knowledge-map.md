@@ -53,6 +53,11 @@ This document tracks modules, dependencies, and architectural relationships acro
 #### Components
 - **UI Components** (`resources/js/components/`) - PrimeVue-based interface elements
   - Gallery components (album, photo, flow, search modules)
+    - **PhotoThumbPanelControl** - Layout selector with star rating filter (Feature 006)
+      - 5 clickable stars for minimum rating threshold filter
+      - Conditional rendering (hidden when no rated photos)
+      - Toggle behavior (click same star to clear)
+      - Keyboard accessible (Arrow keys, Enter/Space)
   - Forms, modals, drawers, settings components
 - **Views** (`resources/js/views/`) - Page-level Vue components
   - Gallery views: Albums, Album, Favourites, Flow, Frame, Map, Search
@@ -65,6 +70,11 @@ This document tracks modules, dependencies, and architectural relationships acro
 #### State Management
 - **Pinia Stores** (`resources/js/stores/`) - Centralized state management
   - Auth, LycheeState, LeftMenuState, ModalsState, FlowState, FavouriteState
+  - **PhotosState** - Photos collection management with rating filter support:
+    - `photoRatingFilter` - Current filter setting (null | 1-5)
+    - `hasRatedPhotos` getter - Checks if any photo has user rating
+    - `filteredPhotos` getter - Returns photos filtered by minimum rating threshold
+    - `filteredPhotosTimeline` getter - Returns timeline-grouped photos filtered by rating
 - Vue3 reactive state and composables
 
 #### Routing
@@ -219,4 +229,4 @@ Replaces on-the-fly virtual column computation with physical database fields upd
 
 ---
 
-*Last updated: January 10, 2026*
+*Last updated: January 14, 2026*

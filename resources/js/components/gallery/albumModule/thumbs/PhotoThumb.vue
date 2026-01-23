@@ -33,7 +33,7 @@
 				"
 				data-overlay="false"
 				draggable="false"
-				:loading="props.isLazy ? 'lazy' : 'eager'"
+				loading="lazy"
 				@load="onImageLoad"
 			/>
 		</span>
@@ -112,7 +112,6 @@ const { getNoImageIcon, getPlayIcon } = useImageHelpers();
 
 const props = defineProps<{
 	isSelected: boolean;
-	isLazy: boolean;
 	isCoverId: boolean;
 	isHeaderId: boolean;
 	photo: App.Http.Resources.Models.PhotoResource;

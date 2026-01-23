@@ -62,6 +62,10 @@ return [
         'grid' => 'Con aspecto, cuadrícula',
         'filmstrip' => 'Tira de película',
     ],
+    'filter' => [
+        'by_rating' => 'Filter by star rating',
+        'n_stars_or_higher' => 'Filter by :n stars or higher',
+    ],
     'overlay' => [
         'none' => 'Ninguno',
         'exif' => 'Datos EXIF',

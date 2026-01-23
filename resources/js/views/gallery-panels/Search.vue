@@ -247,17 +247,11 @@ const {
 	toggleCopy,
 } = useGalleryModals(togglableStore);
 
-const {
-	selectedPhotosIdx,
-	selectedAlbumsIdx,
-	selectedPhoto,
-	selectedAlbum,
-	selectedPhotos,
-	selectedAlbums,
-	selectedPhotosIds,
-	selectedAlbumsIds,
-	unselect,
-} = useSelection(photosStore, albumsStore, togglableStore);
+const { selectedPhoto, selectedAlbum, selectedPhotos, selectedAlbums, selectedPhotosIds, selectedAlbumsIds, unselect } = useSelection(
+	photosStore,
+	albumsStore,
+	togglableStore,
+);
 
 const { toggleStar, rotatePhotoCCW, rotatePhotoCW, setAlbumHeader, rotateOverlay } = usePhotoActions(photoStore, albumId, toast, lycheeStore);
 
@@ -331,10 +325,10 @@ const selectors = {
 	album: album,
 	selectedPhoto: selectedPhoto,
 	selectedPhotos: selectedPhotos,
-	selectedPhotosIdx: selectedPhotosIdx,
+	selectedPhotosIds: selectedPhotosIds,
 	selectedAlbum: selectedAlbum,
 	selectedAlbums: selectedAlbums,
-	selectedAlbumIdx: selectedAlbumsIdx,
+	selectedAlbumsIds: selectedAlbumsIds,
 };
 
 const albumPanelConfig = computed<AlbumThumbConfig>(() => ({

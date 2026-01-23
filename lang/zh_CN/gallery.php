@@ -62,6 +62,10 @@ return [
         'grid' => '等比例网格',
         'filmstrip' => '胶片条',
     ],
+    'filter' => [
+        'by_rating' => 'Filter by star rating',
+        'n_stars_or_higher' => 'Filter by :n stars or higher',
+    ],
     'overlay' => [
         'none' => '无',
         'exif' => 'EXIF 数据',

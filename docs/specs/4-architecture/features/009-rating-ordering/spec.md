@@ -2,8 +2,8 @@
 
 | Field | Value |
 |-------|-------|
-| Status | Draft |
-| Last updated | 2026-01-16 |
+| Status | In Progress (~95%) |
+| Last updated | 2026-01-21 |
 | Owners | Agent |
 | Linked plan | `docs/specs/4-architecture/features/009-rating-ordering/plan.md` |
 | Linked tasks | `docs/specs/4-architecture/features/009-rating-ordering/tasks.md` |

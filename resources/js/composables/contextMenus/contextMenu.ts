@@ -9,10 +9,10 @@ export type Selectors = {
 		| App.Http.Resources.Models.HeadSmartAlbumResource
 		| undefined
 	>;
-	selectedPhotosIdx?: Ref<number[]>;
+	selectedPhotosIds?: Ref<string[]>;
 	selectedPhoto?: Ref<App.Http.Resources.Models.PhotoResource | undefined>;
 	selectedPhotos?: Ref<App.Http.Resources.Models.PhotoResource[]>;
-	selectedAlbumIdx?: Ref<number[]>;
+	selectedAlbumsIds?: Ref<string[]>;
 	selectedAlbum?: Ref<App.Http.Resources.Models.ThumbAlbumResource | undefined>;
 	selectedAlbums?: Ref<App.Http.Resources.Models.ThumbAlbumResource[]>;
 };
@@ -335,20 +335,20 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 		];
 	}
 
-	function photoMenuOpen(idx: number, e: MouseEvent): void {
+	function photoMenuOpen(photoId: string, e: MouseEvent): void {
 		// Clear up Album selection (if any)
-		if (selectors.selectedAlbumIdx !== undefined) {
-			selectors.selectedAlbumIdx.value = [];
+		if (selectors.selectedAlbumsIds !== undefined) {
+			selectors.selectedAlbumsIds.value = [];
 		}
 
-		if (selectors.selectedPhotosIdx === undefined) {
+		if (selectors.selectedPhotosIds === undefined) {
 			return;
 		}
 
 		// Check if photo was selected already.
 		// If not, we replace entire selection.
-		if (!selectors.selectedPhotosIdx.value.includes(idx)) {
-			selectors.selectedPhotosIdx.value = [idx]; // This allows to add to selection photos which should not be selected.
+		if (!selectors.selectedPhotosIds.value.includes(photoId)) {
+			selectors.selectedPhotosIds.value = [photoId]; // This allows to add to selection photos which should not be selected.
 			// Fix me later.
 		}
 
@@ -356,20 +356,20 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 		menu.value.show(e);
 	}
 
-	function albumMenuOpen(idx: number, e: MouseEvent): void {
+	function albumMenuOpen(albumId: string, e: MouseEvent): void {
 		// Clear up Photo selection (if any)
-		if (selectors.selectedPhotosIdx !== undefined) {
-			selectors.selectedPhotosIdx.value = [];
+		if (selectors.selectedPhotosIds !== undefined) {
+			selectors.selectedPhotosIds.value = [];
 		}
 
-		if (selectors.selectedAlbumIdx === undefined) {
+		if (selectors.selectedAlbumsIds === undefined) {
 			return;
 		}
 
 		// Check if album was selected already.
 		// If not, we replace entire selection.
-		if (!selectors.selectedAlbumIdx.value.includes(idx)) {
-			selectors.selectedAlbumIdx.value = [idx]; // This allows to add to the selection albums which should not be selected.
+		if (!selectors.selectedAlbumsIds.value.includes(albumId)) {
+			selectors.selectedAlbumsIds.value = [albumId]; // This allows to add to the selection albums which should not be selected.
 			// Fix me later.
 		}
 
