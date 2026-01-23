@@ -26,11 +26,11 @@
 							<div class="grid grid-cols-2">
 								<div class="flex gap-2 items-center">
 									<ToggleSwitch v-model="is_photo" input-id="is_photo_toggle_test" />
-									<label class="text-muted-color-emphasis" for="is_photo_toggle_test">{{ "Apply photo rules" }}</label>
+									<label class="text-muted-color-emphasis" for="is_photo_toggle_test">{{ $t("renamer.apply_photo_rules") }}</label>
 								</div>
 								<div class="flex gap-2 items-center">
 									<ToggleSwitch v-model="is_album" input-id="is_album_toggle_test" />
-									<label class="text-muted-color-emphasis" for="is_album_toggle_test">{{ "Apply album rules" }}</label>
+									<label class="text-muted-color-emphasis" for="is_album_toggle_test">{{ $t("renamer.apply_album_rules") }}</label>
 								</div>
 							</div>
 							<ProgressBar v-if="isTestLoading" mode="indeterminate" class="w-full" />

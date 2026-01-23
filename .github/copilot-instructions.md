@@ -49,3 +49,9 @@ When dealing with monetary values in PHP, it's crucial to handle them with preci
 we use the `moneyphp/money` library, which provides a robust way to manage monetary values and currencies.
 
 Never use floats or doubles to represent monetary values. Instead, use integers to represent the smallest currency unit (e.g., cents for USD). This means that $10.99 should be stored as 1099 (cents).
+
+# Translations
+
+Translations files are located in the `resources/lang/` directory. Use snake_case for keys and group related translations in nested arrays.
+Ignore all the the `lang/*.json` files as they are auto generated
+and not tracked in git.

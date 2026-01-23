@@ -104,4 +104,6 @@ return [
     'test_original' => 'اصلی',
     'test_result' => 'نتیجه',
     'test_failed' => 'آزمایش قوانین تغییر نام ناموفق بود',
+    'apply_photo_rules' => 'Apply photo rules',
+    'apply_album_rules' => 'Apply album rules',
 ];
