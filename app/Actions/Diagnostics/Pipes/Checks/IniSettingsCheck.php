@@ -51,7 +51,7 @@ class IniSettingsCheck implements DiagnosticPipe
 					['post_max_size is set to ' . ini_get('post_max_size'), 'recommended is at least 100M']);
 			}
 			$max_execution_time = intval(ini_get('max_execution_time'));
-			if (0 < $max_execution_time && $max_execution_time < 200) {
+			if (config('queue.default', 'sync') === 'sync' && 0 < $max_execution_time && $max_execution_time < 200) {
 				// @codeCoverageIgnoreStart
 				$data[] = DiagnosticData::warn('You may experience problems when uploading a photo of large size or handling many/large albums. Take a look in the FAQ for details.', self::class,
 					['max_execution_time is set to ' . ini_get('max_execution_time'), 'recommended is at least 200 seconds or 0 (no limit)']);
