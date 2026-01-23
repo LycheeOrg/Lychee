@@ -25,6 +25,8 @@ export type UpdateRenamerRuleRequest = CreateRenamerRuleRequest & {
 
 export type TestRenamerRequest = {
 	candidate: string;
+	is_photo: boolean;
+	is_album: boolean;
 };
 
 export type TestRenamerResponse = {

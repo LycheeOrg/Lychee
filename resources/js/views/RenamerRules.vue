@@ -23,6 +23,16 @@
 									{{ $t("renamer.test_input_placeholder") }}
 								</label>
 							</FloatLabel>
+							<div class="grid grid-cols-2">
+								<div class="flex gap-2 items-center">
+									<ToggleSwitch v-model="is_photo" input-id="is_photo_toggle_test" />
+									<label class="text-muted-color-emphasis" for="is_photo_toggle_test">{{ "Apply photo rules" }}</label>
+								</div>
+								<div class="flex gap-2 items-center">
+									<ToggleSwitch v-model="is_album" input-id="is_album_toggle_test" />
+									<label class="text-muted-color-emphasis" for="is_album_toggle_test">{{ "Apply album rules" }}</label>
+								</div>
+							</div>
 							<ProgressBar v-if="isTestLoading" mode="indeterminate" class="w-full" />
 							<div v-if="testResult !== null" class="grid grid-cols-1 md:grid-cols-2 gap-4">
 								<div>
@@ -121,6 +131,7 @@ import InputText from "@/components/forms/basic/InputText.vue";
 import Card from "primevue/card";
 import FloatLabel from "primevue/floatlabel";
 import ProgressBar from "primevue/progressbar";
+import ToggleSwitch from "primevue/toggleswitch";
 
 const rules = ref<App.Http.Resources.Models.RenamerRuleResource[] | undefined>(undefined);
 const showCreateModal = ref(false);
@@ -130,6 +141,8 @@ const selectedRule = ref<App.Http.Resources.Models.RenamerRuleResource | undefin
 const testInput = ref("");
 const testResult = ref<TestRenamerResponse | null>(null);
 const isTestLoading = ref(false);
+const is_photo = ref(true);
+const is_album = ref(true);
 const testError = ref<string | null>(null);
 let testTimeout: NodeJS.Timeout | null = null;
 
@@ -160,7 +173,7 @@ function performTest() {
 	isTestLoading.value = true;
 	testError.value = null;
 
-	RenamerService.test({ candidate: testInput.value })
+	RenamerService.test({ candidate: testInput.value, is_photo: is_photo.value, is_album: is_album.value })
 		.then((response) => {
 			testResult.value = response.data;
 		})
