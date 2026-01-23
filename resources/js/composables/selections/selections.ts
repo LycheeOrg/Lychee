@@ -11,13 +11,13 @@ export function useSelection(photosStore: PhotosStore, albumsStore: AlbumsStore,
 
 	const { selectedPhotosIdx, selectedAlbumsIdx } = storeToRefs(togglableStore);
 	const selectedPhoto = computed<App.Http.Resources.Models.PhotoResource | undefined>(() =>
-		selectedPhotosIdx.value.length === 1 ? (photosStore.photos[selectedPhotosIdx.value[0]] ?? undefined) : undefined,
+		selectedPhotosIdx.value.length === 1 ? (photosStore.filteredPhotos[selectedPhotosIdx.value[0]] ?? undefined) : undefined,
 	);
 	const selectedAlbum = computed<App.Http.Resources.Models.ThumbAlbumResource | undefined>(() =>
 		selectedAlbumsIdx.value.length === 1 ? (albumsStore.selectableAlbums[selectedAlbumsIdx.value[0]] ?? undefined) : undefined,
 	);
 	const selectedPhotos = computed<App.Http.Resources.Models.PhotoResource[]>(
-		() => photosStore.photos.filter((_, idx) => selectedPhotosIdx.value.includes(idx)) ?? [],
+		() => photosStore.filteredPhotos.filter((_, idx) => selectedPhotosIdx.value.includes(idx)) ?? [],
 	);
 	const selectedAlbums = computed<App.Http.Resources.Models.ThumbAlbumResource[]>(
 		() => albumsStore.selectableAlbums?.filter((_, idx) => selectedAlbumsIdx.value.includes(idx)) ?? [],
@@ -80,7 +80,7 @@ export function useSelection(photosStore: PhotosStore, albumsStore: AlbumsStore,
 		e.preventDefault();
 		e.stopPropagation();
 
-		if (photosStore.photos.length === 0 || canInteractPhoto() === false) {
+		if (photosStore.filteredPhotos.length === 0 || canInteractPhoto() === false) {
 			return;
 		}
 
@@ -205,15 +205,15 @@ export function useSelection(photosStore: PhotosStore, albumsStore: AlbumsStore,
 	}
 
 	function selectEverything(): void {
-		if (selectedPhotosIdx.value.length === photosStore.photos.length && albumsStore.selectableAlbums.length > 0) {
+		if (selectedPhotosIdx.value.length === photosStore.filteredPhotos.length && albumsStore.selectableAlbums.length > 0) {
 			// Flip and select albums
 			selectedPhotosIdx.value = [];
 			selectedAlbumsIdx.value = getKeysFromPredicate(albumsStore.selectableAlbums, canInteractAlbum);
 			return;
 		}
-		if (selectedAlbumsIdx.value.length === albumsStore.selectableAlbums.length && photosStore.photos.length > 0) {
+		if (selectedAlbumsIdx.value.length === albumsStore.selectableAlbums.length && photosStore.filteredPhotos.length > 0) {
 			selectedAlbumsIdx.value = [];
-			selectedPhotosIdx.value = getKeysFromPredicate(photosStore.photos, canInteractPhoto);
+			selectedPhotosIdx.value = getKeysFromPredicate(photosStore.filteredPhotos, canInteractPhoto);
 			// Flip and select photos
 			return;
 		}
@@ -221,8 +221,8 @@ export function useSelection(photosStore: PhotosStore, albumsStore: AlbumsStore,
 			selectedAlbumsIdx.value = getKeysFromPredicate(albumsStore.selectableAlbums, canInteractAlbum);
 			return;
 		}
-		if (photosStore.photos.length > 0) {
-			selectedPhotosIdx.value = getKeysFromPredicate(photosStore.photos, canInteractPhoto);
+		if (photosStore.filteredPhotos.length > 0) {
+			selectedPhotosIdx.value = getKeysFromPredicate(photosStore.filteredPhotos, canInteractPhoto);
 			return;
 		}
 		if (albumsStore.selectableAlbums.length > 0) {
