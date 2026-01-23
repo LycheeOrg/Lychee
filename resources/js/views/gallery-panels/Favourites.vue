@@ -72,8 +72,10 @@ const photos = computed(() => favourites.photos ?? []);
 
 const { selectedPhotosIds } = useSelection(photosStore, albumsStore, togglableStore);
 
-function photoClick(idx: number, _e: MouseEvent) {
-	router.push({ name: "album", params: { albumId: photos.value[idx].album_id ?? ALL, photoId: photos.value[idx].id } });
+function photoClick(photoId: string, _e: MouseEvent) {
+	const photo = photos.value.find((p) => p.id === photoId);
+	if (!photo) return;
+	router.push({ name: "album", params: { albumId: photo.album_id ?? ALL, photoId: photo.id } });
 }
 
 onKeyStroke("f", () => !shouldIgnoreKeystroke() && togglableStore.toggleFullScreen());

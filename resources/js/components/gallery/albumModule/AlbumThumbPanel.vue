@@ -19,11 +19,10 @@
 			<AlbumThumbPanelList
 				v-else
 				:albums="props.albums"
-				:idx-shift="props.idxShift"
-				:iter="0"
+				:is-interactive="props.isInteractive"
 				:selected-albums="props.selectedAlbums"
-				@clicked="propagateClicked"
-				@contexted="propagateMenuOpen"
+				@clicked="(id, e) => emits('clicked', id, e)"
+				@contexted="(id, e) => emits('contexted', id, e)"
 			/>
 		</div>
 	</Panel>
@@ -51,11 +50,10 @@
 					<AlbumThumbPanelList
 						v-else
 						:albums="slotProps.item.data"
-						:idx-shift="props.idxShift"
-						:iter="slotProps.item.iter"
+						:is-interactive="props.isInteractive"
 						:selected-albums="props.selectedAlbums"
-						@clicked="propagateClicked"
-						@contexted="propagateMenuOpen"
+						@clicked="(id, e) => emits('clicked', id, e)"
+						@contexted="(id, e) => emits('contexted', id, e)"
 					/>
 				</div>
 			</template>
@@ -79,11 +77,10 @@
 					<AlbumThumbPanelList
 						v-else
 						:albums="albumTimeline.data"
-						:idx-shift="props.idxShift"
-						:iter="albumTimeline.iter"
+						:is-interactive="props.isInteractive"
 						:selected-albums="props.selectedAlbums"
-						@clicked="propagateClicked"
-						@contexted="propagateMenuOpen"
+						@clicked="(id, e) => emits('clicked', id, e)"
+						@contexted="(id, e) => emits('contexted', id, e)"
 					/>
 				</div>
 			</template>
@@ -111,40 +108,26 @@ const props = defineProps<{
 	header: string;
 	albums: App.Http.Resources.Models.ThumbAlbumResource[];
 	isAlone: boolean;
-	idxShift: number;
+	isInteractive?: boolean;
 	selectedAlbums: string[];
 	isTimeline: boolean;
 }>();
 
 // bubble up.
 const emits = defineEmits<{
-	clicked: [idx: number, event: MouseEvent];
-	contexted: [idx: number, event: MouseEvent];
+	clicked: [id: string, event: MouseEvent];
+	contexted: [id: string, event: MouseEvent];
 }>();
 
 const { spliter, verifyOrder } = useSplitter();
 
-const propagateClicked = (idx: number, e: MouseEvent) => {
-	emits("clicked", idx, e);
-};
-
-const propagateMenuOpen = (idx: number, e: MouseEvent) => {
-	emits("contexted", idx, e);
-};
-
-// Handlers for list view - convert album object to index
+// Handlers for list view - emit album ID directly
 const propagateClickedFromList = (e: MouseEvent, album: App.Http.Resources.Models.ThumbAlbumResource) => {
-	const idx = props.albums.findIndex((a) => a.id === album.id);
-	if (idx !== -1) {
-		emits("clicked", idx + props.idxShift, e);
-	}
+	emits("clicked", album.id, e);
 };
 
 const propagateMenuOpenFromList = (e: MouseEvent, album: App.Http.Resources.Models.ThumbAlbumResource) => {
-	const idx = props.albums.findIndex((a) => a.id === album.id);
-	if (idx !== -1) {
-		emits("contexted", idx + props.idxShift, e);
-	}
+	emits("contexted", album.id, e);
 };
 
 const albumsTimeLine = computed<SplitData<App.Http.Resources.Models.ThumbAlbumResource>[]>(() =>

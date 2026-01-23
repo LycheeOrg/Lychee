@@ -24,7 +24,7 @@
 			:album="undefined"
 			:albums="albumsStore.smartAlbums"
 			:is-alone="!albumsStore.albums.length"
-			:idx-shift="-1"
+			:is-interactive="false"
 			:selected-albums="[]"
 			:is-timeline="false"
 		/>
@@ -52,10 +52,9 @@
 								:album="null"
 								:albums="albumsStore.pinnedAlbums"
 								:is-alone="!displayAlbums.length"
-								:idx-shift="0"
 								:selected-albums="selectedAlbumsIds"
-								@clicked="albumClick"
-								@contexted="albumMenuOpen"
+								@clicked="albumSelect"
+								@contexted="contextMenuAlbumOpen"
 							/>
 						</template>
 						<template v-if="displayAlbums.length > 0">
@@ -65,10 +64,9 @@
 								:album="null"
 								:albums="displayAlbums"
 								:is-alone="!albumsStore.pinnedAlbums.length"
-								:idx-shift="albumsStore.pinnedAlbums.length"
 								:selected-albums="selectedAlbumsIds"
-								@clicked="albumClick"
-								@contexted="albumMenuOpen"
+								@clicked="albumSelect"
+								@contexted="contextMenuAlbumOpen"
 							/>
 						</template>
 					</TabPanel>
@@ -79,11 +77,10 @@
 								:album="undefined"
 								:albums="sharedAlbum.data"
 								:is-alone="displaySharedAlbums.length === 1"
-								:idx-shift="sharedAlbum.iter"
 								:selected-albums="selectedAlbumsIds"
 								:is-timeline="false"
-								@clicked="albumClick"
-								@contexted="albumMenuOpen"
+								@clicked="albumSelect"
+								@contexted="contextMenuAlbumOpen"
 							/>
 						</template>
 					</TabPanel>
@@ -100,10 +97,9 @@
 					:album="null"
 					:albums="albumsStore.pinnedAlbums"
 					:is-alone="!shouldShowSharedAlbums && !albumsStore.smartAlbums.length && !displayAlbums.length"
-					:idx-shift="0"
 					:selected-albums="selectedAlbumsIds"
-					@clicked="albumClick"
-					@contexted="albumMenuOpen"
+					@clicked="albumSelect"
+					@contexted="contextMenuAlbumOpen"
 				/>
 			</template>
 			<template v-if="displayAlbums.length > 0">
@@ -113,10 +109,9 @@
 					:album="null"
 					:albums="displayAlbums"
 					:is-alone="!shouldShowSharedAlbums && !albumsStore.smartAlbums.length && !albumsStore.pinnedAlbums.length"
-					:idx-shift="albumsStore.pinnedAlbums.length"
 					:selected-albums="selectedAlbumsIds"
-					@clicked="albumClick"
-					@contexted="albumMenuOpen"
+					@clicked="albumSelect"
+					@contexted="contextMenuAlbumOpen"
 				/>
 			</template>
 			<template v-for="sharedAlbum in displaySharedAlbums" :key="sharedAlbum.header">
@@ -126,11 +121,10 @@
 					:album="undefined"
 					:albums="sharedAlbum.data"
 					:is-alone="!displayAlbums.length"
-					:idx-shift="sharedAlbum.iter"
 					:selected-albums="selectedAlbumsIds"
 					:is-timeline="false"
-					@clicked="albumClick"
-					@contexted="albumMenuOpen"
+					@clicked="albumSelect"
+					@contexted="contextMenuAlbumOpen"
 				/>
 			</template>
 		</template>
@@ -284,7 +278,7 @@ const {
 } = storeToRefs(togglableStore);
 const { are_nsfw_visible, title } = storeToRefs(lycheeStore);
 
-const { selectedAlbum, selectedAlbumsIdx, selectedAlbums, selectedAlbumsIds, albumClick, selectEverything, unselect, hasSelection } = useSelection(
+const { selectedAlbum, selectedAlbums, selectedAlbumsIds, albumSelect, selectEverything, unselect, hasSelection } = useSelection(
 	photosStore,
 	albumsStore,
 	togglableStore,
@@ -326,11 +320,15 @@ const albumCallbacks = {
 	},
 };
 
-const { menu, Menu, albumMenuOpen } = useContextMenu(
+const {
+	menu,
+	Menu,
+	albumMenuOpen: contextMenuAlbumOpen,
+} = useContextMenu(
 	{
 		selectedAlbum: selectedAlbum,
 		selectedAlbums: selectedAlbums,
-		selectedAlbumIdx: selectedAlbumsIdx,
+		selectedAlbumsIds: selectedAlbumsIds,
 	},
 	EmptyPhotoCallbacks,
 	albumCallbacks,

@@ -1,14 +1,13 @@
 <template>
 	<div :id="'photoListing' + props.groupIdx" class="relative flex flex-wrap flex-row shrink w-full justify-start align-top">
-		<template v-for="(photo, idx) in props.photos" :key="photo.id">
+		<template v-for="photo in props.photos" :key="photo.id">
 			<PhotoThumb
 				:photo="photo"
 				:is-selected="props.selectedPhotos.includes(photo.id)"
-				:is-lazy="idx + props.iter > 10"
 				:is-cover-id="albumStore.modelAlbum?.cover_id === photo.id"
 				:is-header-id="albumStore.modelAlbum?.header_id === photo.id"
-				@click="maySelect(idx + props.iter, $event)"
-				@contextmenu.prevent="menuOpen(idx + props.iter, $event)"
+				@click="(e: MouseEvent) => maySelect(photo.id, e)"
+				@contextmenu.prevent="(e: MouseEvent) => menuOpen(photo.id, e)"
 				:is-buyable="isBuyable"
 				@toggleBuyMe="emits('toggleBuyMe', photo.id)"
 			/>
@@ -31,7 +30,6 @@ import { useCatalogStore } from "@/stores/CatalogState";
 const props = defineProps<{
 	photos: App.Http.Resources.Models.PhotoResource[];
 	selectedPhotos: string[];
-	iter: number;
 	groupIdx: number;
 	isTimeline?: boolean;
 }>();
@@ -52,21 +50,21 @@ const timelineData: TimelineData = {
 };
 
 const emits = defineEmits<{
-	clicked: [idx: number, event: MouseEvent];
-	selected: [idx: number, event: MouseEvent];
-	contexted: [idx: number, event: MouseEvent];
-	toggleBuyMe: [idx: string];
+	clicked: [id: string, event: MouseEvent];
+	selected: [id: string, event: MouseEvent];
+	contexted: [id: string, event: MouseEvent];
+	toggleBuyMe: [id: string];
 }>();
 
-function maySelect(idx: number, e: MouseEvent) {
+function maySelect(id: string, e: MouseEvent) {
 	if (ctrlKeyState.value || metaKeyState.value || shiftKeyState.value) {
-		emits("selected", idx, e);
+		emits("selected", id, e);
 		return;
 	}
-	emits("clicked", idx, e);
+	emits("clicked", id, e);
 }
-function menuOpen(idx: number, e: MouseEvent) {
-	emits("contexted", idx, e);
+function menuOpen(id: string, e: MouseEvent) {
+	emits("contexted", id, e);
 }
 
 // Layouts stuff

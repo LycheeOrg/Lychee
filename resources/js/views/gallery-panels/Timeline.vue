@@ -25,8 +25,8 @@
 			:photos-timeline="photosStore.photosTimeline"
 			:selected-photos="selectedPhotosIds"
 			@clicked="photoClick"
-			@selected="photoSelect"
-			@contexted="photoMenuOpen"
+			@selected="selectPhoto"
+			@contexted="contextMenuPhotoOpen"
 			:is-timeline="true"
 			:with-control="false"
 			:pt:header:class="'hidden'"
@@ -213,11 +213,13 @@ const { slideshow_timeout } = storeToRefs(lycheeStore);
 const { is_full_screen, is_login_open, is_upload_visible, list_upload_files, is_slideshow_active, is_photo_edit_open, are_details_open } =
 	storeToRefs(togglableStore);
 
-const { selectedPhotosIdx, selectedPhoto, selectedPhotos, selectedPhotosIds, photoSelect, unselect } = useSelection(
-	photosStore,
-	albumsStore,
-	togglableStore,
-);
+const {
+	selectedPhoto,
+	selectedPhotos,
+	selectedPhotosIds,
+	photoSelect: selectPhoto,
+	unselect,
+} = useSelection(photosStore, albumsStore, togglableStore);
 
 const { photoRoute } = usePhotoRoute(router);
 
@@ -227,8 +229,8 @@ function onIntersectionObserver([entry]: IntersectionObserverEntry[]) {
 	}
 }
 
-function photoClick(idx: number, _e: MouseEvent) {
-	router.push(photoRoute(photosStore.photos[idx].id));
+function photoClick(photoId: string, _e: MouseEvent) {
+	router.push(photoRoute(photoId));
 }
 
 const albumId = ref(undefined);
@@ -342,11 +344,15 @@ const photoCallbacks = {
 	toggleDownload: () => {},
 };
 
-const { menu, Menu, photoMenuOpen } = useContextMenu(
+const {
+	menu,
+	Menu,
+	photoMenuOpen: contextMenuPhotoOpen,
+} = useContextMenu(
 	{
 		selectedPhoto: selectedPhoto,
 		selectedPhotos: selectedPhotos,
-		selectedPhotosIdx: selectedPhotosIdx,
+		selectedPhotosIds: selectedPhotosIds,
 	},
 	photoCallbacks,
 	EmptyAlbumCallbacks,

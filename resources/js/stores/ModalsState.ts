@@ -49,8 +49,8 @@ export const useTogglablesStateStore = defineStore("togglables-store", {
 		is_keybindings_help_open: false,
 
 		// Selections Ids
-		selectedPhotosIdx: [] as number[],
-		selectedAlbumsIdx: [] as number[],
+		selectedPhotosIds: [] as string[],
+		selectedAlbumsIds: [] as string[],
 
 		// Selections via Click and Drag
 		isDragging: false,

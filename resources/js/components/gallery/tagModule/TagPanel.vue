@@ -27,8 +27,8 @@
 				:selected-photos="selectedPhotosIds"
 				:with-control="true"
 				@clicked="photoClick"
-				@selected="photoSelect"
-				@contexted="photoMenuOpen"
+				@selected="selectPhoto"
+				@contexted="contextMenuPhotoOpen"
 			/>
 			<GalleryFooter v-once />
 			<ScrollTop v-if="!photoStore.isLoaded" target="parent" />
@@ -84,12 +84,12 @@ const emits = defineEmits<{
 
 const { toggleDelete, toggleMove, toggleRename, toggleTag, toggleCopy } = useGalleryModals(togglableStore);
 
-const { selectedPhotosIdx, selectedPhoto, selectedPhotos, selectedPhotosIds, photoSelect } = useSelection(photosStore, albumsStore, togglableStore);
+const { selectedPhoto, selectedPhotos, selectedPhotosIds, photoSelect: selectPhoto } = useSelection(photosStore, albumsStore, togglableStore);
 
 const { photoRoute, getParentId } = usePhotoRoute(router);
 
-function photoClick(idx: number, _e: MouseEvent) {
-	router.push(photoRoute(photosStore.photos[idx].id));
+function photoClick(photoId: string, _e: MouseEvent) {
+	router.push(photoRoute(photoId));
 }
 
 const photoCallbacks = {
@@ -125,11 +125,15 @@ const albumCallbacks = {
 	togglePin: () => {},
 };
 
-const { menu, Menu, photoMenuOpen } = useContextMenu(
+const {
+	menu,
+	Menu,
+	photoMenuOpen: contextMenuPhotoOpen,
+} = useContextMenu(
 	{
 		selectedPhoto: selectedPhoto,
 		selectedPhotos: selectedPhotos,
-		selectedPhotosIdx: selectedPhotosIdx,
+		selectedPhotosIds: selectedPhotosIds,
 	},
 	photoCallbacks,
 	albumCallbacks,

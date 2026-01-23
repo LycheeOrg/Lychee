@@ -43,9 +43,9 @@ export function useDragAndSelect(
 		photo_boxes: [] as Bounding[],
 		album_boxes: [] as Bounding[],
 
-		// We store the current selection indices to restore them after the selection is done.
-		currentPhotoSelectionIdx: [] as number[],
-		currentAlbumSelectionIdx: [] as number[],
+		// We store the current selection IDs to restore them after the selection is done.
+		currentPhotoSelectionIds: [] as string[],
+		currentAlbumSelectionIds: [] as string[],
 	};
 
 	function get_max_width() {
@@ -134,18 +134,18 @@ export function useDragAndSelect(
 
 		// If we do not have the shift or control key pressed, erase the selection immediately.
 		if (!modKey().value && !shiftKeyState.value) {
-			togglableStore.selectedPhotosIdx = [];
-			togglableStore.selectedAlbumsIdx = [];
+			togglableStore.selectedPhotosIds = [];
+			togglableStore.selectedAlbumsIds = [];
 		}
 
 		cache.max_height = get_max_height();
 		cache.max_width = get_max_width();
 		cache.photo_boxes = getBoxes("data-photo-id");
 		cache.album_boxes = getBoxes("data-album-id");
-		// We use slide to Copy the array: https://stackoverflow.com/questions/7486085/copy-array-by-value
+		// We use slice to Copy the array: https://stackoverflow.com/questions/7486085/copy-array-by-value
 		// Otherwise that would be a reference to the original array and we would modify it.
-		cache.currentPhotoSelectionIdx = togglableStore.selectedPhotosIdx.slice();
-		cache.currentAlbumSelectionIdx = togglableStore.selectedAlbumsIdx.slice();
+		cache.currentPhotoSelectionIds = togglableStore.selectedPhotosIds.slice();
+		cache.currentAlbumSelectionIds = togglableStore.selectedAlbumsIds.slice();
 
 		initialPosition.value = {
 			top: y(e.pageY),
@@ -208,30 +208,35 @@ export function useDragAndSelect(
 
 		const photos_intersected = cache.photo_boxes.filter((b) => isIntersecting(b, selector)).map((b) => b.id);
 		if (photos_intersected.length > 0) {
-			const selectedPhotos = reduceIntersection(photos_intersected, photosStore.photos, canInteractPhoto);
+			const selectedPhotoIds = reduceIntersection(photos_intersected, photosStore.photos, canInteractPhoto);
 
-			togglableStore.selectedPhotosIdx = cache.currentPhotoSelectionIdx.concat(selectedPhotos);
-			togglableStore.selectedAlbumsIdx = [];
+			togglableStore.selectedPhotosIds = cache.currentPhotoSelectionIds.concat(selectedPhotoIds);
+			togglableStore.selectedAlbumsIds = [];
 			return;
 		}
 
 		const albums_intersected = cache.album_boxes.filter((b) => isIntersecting(b, selector)).map((b) => b.id);
 		if (albums_intersected.length > 0) {
-			const selectedAlbums = reduceIntersection(albums_intersected, albumsStore.selectableAlbums, canInteractAlbum);
-			togglableStore.selectedAlbumsIdx = cache.currentAlbumSelectionIdx.concat(selectedAlbums);
-			togglableStore.selectedPhotosIdx = [];
+			const selectedAlbumIds = reduceIntersection(albums_intersected, albumsStore.selectableAlbums, canInteractAlbum);
+			togglableStore.selectedAlbumsIds = cache.currentAlbumSelectionIds.concat(selectedAlbumIds);
+			togglableStore.selectedPhotosIds = [];
 			return;
 		}
 
-		togglableStore.selectedPhotosIdx = cache.currentPhotoSelectionIdx;
-		togglableStore.selectedAlbumsIdx = cache.currentAlbumSelectionIdx;
+		togglableStore.selectedPhotosIds = cache.currentPhotoSelectionIds;
+		togglableStore.selectedAlbumsIds = cache.currentAlbumSelectionIds;
 	}
 
-	function reduceIntersection<Model>(intersection: string[], selectables: ({ id: string } & Model)[], validator: (i: Model) => boolean): number[] {
-		return intersection.reduce((result: number[], id) => {
-			const idx = selectables.findIndex((p) => p.id === id && validator(p));
-			if (idx !== -1 && idx !== undefined) {
-				result.push(idx);
+	// Returns IDs (string[]) of items that are in the intersection and pass the validator
+	function reduceIntersection<Model extends { id: string }>(
+		intersection: string[],
+		selectables: Model[],
+		validator: (i: Model) => boolean,
+	): string[] {
+		return intersection.reduce((result: string[], id) => {
+			const item = selectables.find((p) => p.id === id && validator(p));
+			if (item) {
+				result.push(item.id);
 			}
 			return result;
 		}, []);

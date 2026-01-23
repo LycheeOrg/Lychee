@@ -1,12 +1,12 @@
 <template>
-	<template v-for="(album, idx) in props.albums" :key="`album-thumb-${idx + props.iter + props.idxShift}`">
+	<template v-for="album in props.albums" :key="`album-thumb-${album.id}`">
 		<AlbumThumb
 			v-if="!album.is_nsfw || are_nsfw_visible"
 			:album="album"
 			:cover_id="null"
 			:is-selected="props.selectedAlbums.includes(album.id)"
-			@click="maySelect(idx + props.iter + props.idxShift, $event)"
-			@contextmenu.prevent="menuOpen(idx + props.iter + props.idxShift, $event)"
+			@click="(e: MouseEvent) => maySelect(album.id, e)"
+			@contextmenu.prevent="(e: MouseEvent) => menuOpen(album.id, e)"
 		/>
 	</template>
 </template>
@@ -20,28 +20,27 @@ const { are_nsfw_visible } = storeToRefs(lycheeStore);
 
 const props = defineProps<{
 	albums: App.Http.Resources.Models.ThumbAlbumResource[];
-	iter: number;
-	idxShift: number;
+	isInteractive?: boolean;
 	selectedAlbums: string[];
 }>();
 
 // bubble up.
 const emits = defineEmits<{
-	clicked: [idx: number, event: MouseEvent];
-	contexted: [idx: number, event: MouseEvent];
+	clicked: [id: string, event: MouseEvent];
+	contexted: [id: string, event: MouseEvent];
 }>();
 
-const maySelect = (idx: number, e: MouseEvent) => {
-	if (props.idxShift < 0) {
+const maySelect = (id: string, e: MouseEvent) => {
+	if (props.isInteractive === false) {
 		return;
 	}
-	emits("clicked", idx, e);
+	emits("clicked", id, e);
 };
 
-const menuOpen = (idx: number, e: MouseEvent) => {
-	if (props.idxShift < 0) {
+const menuOpen = (id: string, e: MouseEvent) => {
+	if (props.isInteractive === false) {
 		return;
 	}
-	emits("contexted", idx, e);
+	emits("contexted", id, e);
 };
 </script>

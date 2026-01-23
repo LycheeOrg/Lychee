@@ -4,11 +4,10 @@
 		:header="albumHeader"
 		:albums="albumsStore.albums"
 		:is-alone="false"
-		:idx-shift="0"
 		:selected-albums="selectedAlbumsIds"
 		:is-timeline="false"
-		@clicked="albumClick"
-		@contexted="albumMenuOpen"
+		@clicked="albumSelect"
+		@contexted="contextMenuAlbumOpen"
 	/>
 	<div v-if="photosStore.photos.length > 0" class="flex justify-center w-full">
 		<Paginator v-model:first="first" :total-records="searchStore.total" :rows="rows" :always-show="false" @update:first="emits('refresh')" />
@@ -23,8 +22,8 @@
 		:with-control="true"
 		:catalog="undefined"
 		@clicked="photoClick"
-		@selected="photoSelect"
-		@contexted="photoMenuOpen"
+		@selected="selectPhoto"
+		@contexted="contextMenuPhotoOpen"
 	/>
 	<div v-if="photosStore.photos.length > 0" class="flex justify-center w-full">
 		<Paginator v-model:first="first" :total-records="searchStore.total" :rows="rows" :always-show="false" @update:first="emits('refresh')" />
@@ -98,11 +97,16 @@ const emits = defineEmits<{
 
 const { photoRoute } = usePhotoRoute(router);
 
-function photoClick(idx: number, _e: MouseEvent) {
-	router.push(photoRoute(photosStore.photos[idx].id));
+function photoClick(photoId: string, _e: MouseEvent) {
+	router.push(photoRoute(photoId));
 }
 
-const { selectedPhotosIds, selectedAlbumsIds, photoSelect, albumClick } = useSelection(photosStore, albumsStore, togglableStore);
+const { selectedPhotosIds, selectedAlbumsIds, photoSelect: selectPhoto, albumSelect } = useSelection(photosStore, albumsStore, togglableStore);
 
-const { menu, Menu, photoMenuOpen, albumMenuOpen } = useContextMenu(props.selectors, props.photoCallbacks, props.albumCallbacks);
+const {
+	menu,
+	Menu,
+	photoMenuOpen: contextMenuPhotoOpen,
+	albumMenuOpen: contextMenuAlbumOpen,
+} = useContextMenu(props.selectors, props.photoCallbacks, props.albumCallbacks);
 </script>
