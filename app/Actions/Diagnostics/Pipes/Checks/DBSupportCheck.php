@@ -23,26 +23,25 @@ class DBSupportCheck implements DiagnosticPipe
 	public function handle(array &$data, \Closure $next): array
 	{
 		$db_possibilities = [
-			['mysql', 'pdo_mysql'],
-			['pgsql', 'pgsql'],
-			['pgsql', 'pdo_pgsql'],
-			['sqlite', 'sqlite3'],
+			'mysql' => ['mysql', 'mysqli', 'pdo_mysql'],
+			'pgsql' => ['pdo_pgsql', 'pgsql'],
+			'sqlite' => ['sqlite3'],
 		];
 
+		if (!array_key_exists(config('database.default', 'sqlite'), $db_possibilities)) {
+			// @codeCoverageIgnoreStart
+			$data[] = DiagnosticData::error('database type ' . config('database.default', 'sqlite') . ' is not supported by Lychee', self::class);
+			return $next($data);
+		}
+		// @codeCoverageIgnoreEnd
+
 		$found = false;
-		foreach ($db_possibilities as $db_possibility) {
-			if (config('database.default') === $db_possibility[0]) {
-				$found = true;
-				if (!extension_loaded($db_possibility[1])) {
-					// @codeCoverageIgnoreStart
-					$data[] = DiagnosticData::error($db_possibility[0] . ' db driver selected and PHP ' . $db_possibility[1] . ' extension not activated', self::class);
-					// @codeCoverageIgnoreEnd
-				}
-			}
+		foreach ($db_possibilities[config('database.default', 'sqlite')] as $db_possibility) {
+			$found = $found || extension_loaded($db_possibility);
 		}
 		if (!$found) {
 			// @codeCoverageIgnoreStart
-			$data[] = DiagnosticData::error('could not find the database solution for ' . config('database.default'), self::class);
+			$data[] = DiagnosticData::error(config('database.default', 'sqlite') . ' db driver selected and PHP ' . join(" or ",$db_possibility[config('database.default', 'sqlite')]) . ' extensions not activated', self::class);
 			// @codeCoverageIgnoreEnd
 		}
 
