@@ -14,7 +14,7 @@
 			<StarRow :rating="displayedRating" size="large" />
 		</div>
 		<div
-			v-if="userStore.user !== undefined && photoStore?.photo && photoStore?.photo.rating"
+			v-if="userStore.isLoggedIn && photoStore?.photo && photoStore?.photo.rating"
 			class="absolute left-1/2 -translate-x-1/2 bottom-7 text-shadow"
 		>
 			<!-- Star rating buttons (1-5) -->
