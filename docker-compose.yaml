@@ -366,6 +366,14 @@ services:
     environment:
       <<: *common-env
 
+      # Performance tuning for FRANKENPHP
+      # For the legacy setup using the -legacy tags, these values are not used.
+
+      # Increase PHP max execution time (in seconds) for long running operations like imports.
+      # We recommend you leave those as is and use database/redis queue with a worker for long operations.
+      # PHP_MAX_EXECUTION_TIME: 3000
+      # LYCHEE_MAX_EXECUTION_TIME: 30
+
     depends_on:
       lychee_db:
         condition: service_healthy
