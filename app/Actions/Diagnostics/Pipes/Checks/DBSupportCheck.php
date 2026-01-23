@@ -31,6 +31,7 @@ class DBSupportCheck implements DiagnosticPipe
 		if (!array_key_exists(config('database.default', 'sqlite'), $db_possibilities)) {
 			// @codeCoverageIgnoreStart
 			$data[] = DiagnosticData::error('database type ' . config('database.default', 'sqlite') . ' is not supported by Lychee', self::class);
+
 			return $next($data);
 		}
 		// @codeCoverageIgnoreEnd
@@ -41,7 +42,7 @@ class DBSupportCheck implements DiagnosticPipe
 		}
 		if (!$found) {
 			// @codeCoverageIgnoreStart
-			$data[] = DiagnosticData::error(config('database.default', 'sqlite') . ' db driver selected and PHP ' . join(" or ",$db_possibility[config('database.default', 'sqlite')]) . ' extensions not activated', self::class);
+			$data[] = DiagnosticData::error(config('database.default', 'sqlite') . ' db driver selected and PHP ' . implode(' or ', $db_possibility[config('database.default', 'sqlite')]) . ' extensions not activated', self::class);
 			// @codeCoverageIgnoreEnd
 		}
 

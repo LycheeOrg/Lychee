@@ -38,6 +38,7 @@ class BasicPermissionCheck implements DiagnosticPipe
 {
 	public const MAX_ISSUE_REPORTS_PER_TYPE = 5;
 	public const READ_WRITE_ALL = 07777;
+	public const WITHOUT_STICKY_BIT = 0777;
 
 	/**
 	 * @var int[] IDs of all (POSIX) groups to which the process belongs
@@ -219,7 +220,9 @@ class BasicPermissionCheck implements DiagnosticPipe
 			// `fileperms` also returns the higher bits of the inode mode.
 			// Hence, we must AND it with 07777 to only get what we are
 			// interested in
-			$actual_perm &= self::READ_WRITE_ALL;
+
+			// Edit 2026-01-23: Ignore sticky bit in permission checks
+			$actual_perm &= self::WITHOUT_STICKY_BIT;
 			$owning_group_id_or_false = filegroup($path);
 			if ($owning_group_id_or_false !== false) {
 				try {
@@ -236,7 +239,7 @@ class BasicPermissionCheck implements DiagnosticPipe
 			}
 			/** @var string $owning_group_name */
 			$owning_group_name = $owning_group_name_or_false === false ? '<unknown>' : $owning_group_name_or_false['name'];
-			$expected_perm = self::getConfiguredDirectoryPerm();
+			$expected_perm = self::WITHOUT_STICKY_BIT & self::getConfiguredDirectoryPerm();
 
 			if (!in_array($owning_group_id_or_false, $this->groupIDs, true)) {
 				// @codeCoverageIgnoreStart
