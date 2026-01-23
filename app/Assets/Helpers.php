@@ -94,6 +94,10 @@ class Helpers
 	 */
 	public function getSymbolByQuantity(float $bytes): string
 	{
+		if ($bytes <= 0) {
+			return '0 B';
+		}
+
 		$symbols = [
 			'B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB',
 		];
