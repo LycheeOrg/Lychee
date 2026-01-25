@@ -8,6 +8,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\User\ProvisionLdapUser;
+use App\DTO\LdapConfiguration;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
 use App\Http\Requests\Session\LoginRequest;
@@ -15,8 +17,10 @@ use App\Http\Resources\Models\UserResource;
 use App\Http\Resources\Rights\GlobalRightsResource;
 use App\Http\Resources\Root\AuthConfig;
 use App\Models\User;
+use App\Services\Auth\LdapService;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 
@@ -37,16 +41,28 @@ class AuthController extends Controller
 	 */
 	public function login(LoginRequest $request): void
 	{
-		if (Auth::attempt([
-			'username' => $request->username(),
-			'password' => $request->password(),
-		])) {
-			Log::channel('login')->notice(__METHOD__ . ':' . __LINE__ . ' -- User (' . $request->username() . ') has logged in from ' . $request->ip());
+		$username = $request->username();
+		$password = $request->password();
+		$ip = $request->ip();
+
+		// Try LDAP authentication first if enabled
+		if ($this->isLdapEnabled() && $this->attemptLdapLogin($username, $password)) {
+			Log::channel('login')->notice(__METHOD__ . ':' . __LINE__ . ' -- User (' . $username . ') has logged in via LDAP from ' . $ip);
 
 			return;
 		}
 
-		Log::channel('login')->error(__METHOD__ . ':' . __LINE__ . ' -- User (' . $request->username() . ') has tried to log in from ' . $request->ip());
+		// Fallback to local authentication
+		if (Auth::attempt([
+			'username' => $username,
+			'password' => $password,
+		])) {
+			Log::channel('login')->notice(__METHOD__ . ':' . __LINE__ . ' -- User (' . $username . ') has logged in from ' . $ip);
+
+			return;
+		}
+
+		Log::channel('login')->error(__METHOD__ . ':' . __LINE__ . ' -- User (' . $username . ') has tried to log in from ' . $ip);
 		throw new UnauthenticatedException('Unknown user or invalid password');
 	}
 
@@ -90,5 +106,53 @@ class AuthController extends Controller
 	public function getConfig(): AuthConfig
 	{
 		return new AuthConfig();
+	}
+
+	/**
+	 * Check if LDAP authentication is enabled.
+	 *
+	 * @return bool
+	 */
+	private function isLdapEnabled(): bool
+	{
+		return Config::get('ldap.auth.enabled', false) === true;
+	}
+
+	/**
+	 * Attempt LDAP authentication and provision user.
+	 *
+	 * @param string $username LDAP username
+	 * @param string $password User password
+	 *
+	 * @return bool True if authentication succeeded, false otherwise
+	 */
+	private function attemptLdapLogin(string $username, string $password): bool
+	{
+		try {
+			// Create LDAP configuration and service
+			$ldapConfig = new LdapConfiguration();
+			$ldapService = new LdapService($ldapConfig);
+
+			// Authenticate against LDAP
+			$ldapUser = $ldapService->authenticate($username, $password);
+
+			if ($ldapUser === null) {
+				return false;
+			}
+
+			// Provision (create or update) local user
+			$provisionAction = new ProvisionLdapUser($ldapService);
+			$user = $provisionAction->do($ldapUser);
+
+			// Log the user in
+			Auth::login($user);
+
+			return true;
+		} catch (\Throwable $e) {
+			// LDAP authentication failed, log and return false
+			Log::channel('login')->warning(__METHOD__ . ':' . __LINE__ . ' -- LDAP authentication failed: ' . $e->getMessage());
+
+			return false;
+		}
 	}
 }
