@@ -41,6 +41,7 @@ use function Safe\mb_convert_encoding;
  * @property Carbon                                                $created_at
  * @property Carbon                                                $updated_at
  * @property string                                                $username
+ * @property string|null                                           $display_name
  * @property string|null                                           $password
  * @property string|null                                           $email
  * @property bool                                                  $may_administrate
@@ -103,6 +104,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	 */
 	protected $fillable = [
 		'username',
+		'display_name',
 		'password',
 		'email',
 	];
