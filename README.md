@@ -37,7 +37,20 @@ Through [contributions, donations, and sponsorship](https://github.com/sponsors/
 
 Contributions welcome! Check out our [Contribution Guide](docs/Contribute.md) and [documentation](https://github.com/LycheeOrg/Lychee/tree/master/docs) for setup, coding standards, and PR guidelines.
 
+**AI-assisted contributions** are permitted — see our [AI/Claude Guidelines](docs/Contribute.md#using-aiclaude-for-contributions) and [AGENTS.md](AGENTS.md) for the Specification-Driven Development workflow.
+
 ## Installation
+
+### Quick Try (Docker)
+
+Want to quickly test Lychee? Use the minimal docker-compose template:
+
+```bash
+curl -O https://raw.githubusercontent.com/LycheeOrg/Lychee/master/docker-compose.minimal.yaml
+docker compose -f docker-compose.minimal.yaml up -d
+```
+
+Then open http://localhost:8000 in your browser. This setup includes a separate worker container for background jobs.
 
 ### Docker (Recommended)
 

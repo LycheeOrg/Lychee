@@ -39,25 +39,30 @@ lang/
 
 Each language directory contains the same set of PHP files that return associative arrays of translation keys:
 
-- **`gallery.php`** - Main gallery interface, albums, photos, and navigation
-- **`settings.php`** - Application settings and configuration options
-- **`dialogs.php`** - Modal dialogs, confirmations, and user interactions
-- **`toasts.php`** - Notification messages and alerts
-- **`sharing.php`** - Album and photo sharing functionality
-- **`profile.php`** - User profile management
-- **`users.php`** - User management (admin features)
-- **`user-groups.php`** - User group management
-- **`statistics.php`** - Statistics and analytics displays
-- **`maintenance.php`** - Maintenance mode and system operations
-- **`jobs.php`** - Background job status and management
-- **`diagnostics.php`** - System diagnostics and health checks
-- **`changelogs.php`** - Version history and update information
-- **`left-menu.php`** - Left sidebar navigation menu
-- **`landing.php`** - Landing page content
-- **`flow.php`** - Photo flow/timeline interface
-- **`fix-tree.php`** - Album tree maintenance utilities
-- **`duplicate-finder.php`** - Duplicate photo detection
+- **`all_settings.php`** - Comprehensive settings labels and descriptions
 - **`aspect_ratio.php`** - Aspect ratio and layout options
+- **`changelogs.php`** - Version history and update information
+- **`diagnostics.php`** - System diagnostics and health checks
+- **`dialogs.php`** - Modal dialogs, confirmations, and user interactions
+- **`duplicate-finder.php`** - Duplicate photo detection
+- **`fix-tree.php`** - Album tree maintenance utilities
+- **`flow.php`** - Photo flow/timeline interface
+- **`gallery.php`** - Main gallery interface, albums, photos, and navigation
+- **`import_from_server.php`** - Server-side import functionality
+- **`jobs.php`** - Background job status and management
+- **`landing.php`** - Landing page content
+- **`left-menu.php`** - Left sidebar navigation menu
+- **`maintenance.php`** - Maintenance mode and system operations
+- **`profile.php`** - User profile management
+- **`renamer.php`** - Filename renaming rules interface
+- **`settings.php`** - Application settings and configuration options
+- **`sharing.php`** - Album and photo sharing functionality
+- **`statistics.php`** - Statistics and analytics displays
+- **`tags.php`** - Tag management interface
+- **`toasts.php`** - Notification messages and alerts
+- **`user-groups.php`** - User group management
+- **`users.php`** - User management (admin features)
+- **`webshop.php`** - E-commerce and webshop functionality
 
 ## Translation Key Conventions
 
@@ -157,7 +162,7 @@ Lychee's test suite validates translation consistency:
 php artisan test
 
 # Run specific translation tests
-php artisan test --filter TranslationTest
+php artisan test --filter LangTest
 ```
 
 #### Common Test Failures
@@ -198,4 +203,4 @@ Weblate provides a web-based interface for translators to contribute translation
 
 ---
 
-*Last updated: December 22, 2025*
+*Last updated: January 21, 2026*

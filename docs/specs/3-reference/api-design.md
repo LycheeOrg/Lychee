@@ -297,6 +297,8 @@ Page sizes and UI modes are configurable via the admin settings panel or directl
 | photos_per_page | integer (1-1000) | 100 | Number of photos per page |
 | albums_pagination_ui_mode | enum | infinite_scroll | UI mode for album pagination |
 | photos_pagination_ui_mode | enum | infinite_scroll | UI mode for photo pagination |
+| albums_infinite_scroll_threshold | integer | 2 | Viewport heights from bottom to trigger album loading |
+| photos_infinite_scroll_threshold | integer | 2 | Viewport heights from bottom to trigger photo loading |
 
 **UI Mode Options:**
 - `infinite_scroll` - Auto-load next page on scroll (default)
@@ -324,4 +326,4 @@ Page sizes and UI modes are configurable via the admin settings panel or directl
 
 ---
 
-*Last updated: January 10, 2026*
+*Last updated: January 21, 2026*
