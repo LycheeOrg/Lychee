@@ -23,7 +23,7 @@ use LdapRecord\Container;
  *
  * Group membership queries are separate public methods called by ProvisionLdapUser.
  */
-final class LdapService
+class LdapService
 {
 	private Connection $connection;
 
