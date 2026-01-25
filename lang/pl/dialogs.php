@@ -157,7 +157,11 @@ return [
         'info' => 'Wprowadź tytuł nowego albumu:',
         'title' => 'tytuł',
         'create' => 'Utwórz album',
-    ],
+        'visibility_private' => 'Ten album będzie prywatny (widoczny tylko dla Ciebie)',
+        'visibility_public' => 'Ten album będzie publiczny (widoczny dla wszystkich)',
+        'visibility_public_hidden' => 'Ten album będzie publiczny, ale ukryty z list',
+        'visibility_inherit' => 'Ten album odziedziczy widoczność od albumu nadrzednego',
+        'visibility_inherit_no_parent' => 'Ten album będzie prywatny (brak albumu nadrzednego)',    ],
     'new_tag_album' => [
         'menu' => 'Utwórz album ze znacznikami',
         'info' => 'Wprowadź tytuł nowego tagu albumu:',

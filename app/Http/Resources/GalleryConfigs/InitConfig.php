@@ -11,6 +11,7 @@ namespace App\Http\Resources\GalleryConfigs;
 use App\Enum\AlbumDecorationOrientation;
 use App\Enum\AlbumDecorationType;
 use App\Enum\AlbumLayoutType;
+use App\Enum\DefaultAlbumProtectionType;
 use App\Enum\ImageOverlayType;
 use App\Enum\PaginationMode;
 use App\Enum\PhotoThumbInfoType;
@@ -128,6 +129,9 @@ class InitConfig extends Data
 	public int $photos_infinite_scroll_threshold;
 	public int $albums_infinite_scroll_threshold;
 
+	// Album settings
+	public DefaultAlbumProtectionType $default_album_protection;
+
 	public function __construct()
 	{
 		// Debug mode
@@ -217,6 +221,9 @@ class InitConfig extends Data
 		$this->albums_per_page = request()->configs()->getValueAsInt('albums_per_page');
 		$this->photos_infinite_scroll_threshold = request()->configs()->getValueAsInt('photos_infinite_scroll_threshold');
 		$this->albums_infinite_scroll_threshold = request()->configs()->getValueAsInt('albums_infinite_scroll_threshold');
+
+		// Album settings
+		$this->default_album_protection = request()->configs()->getValueAsEnum('default_album_protection', DefaultAlbumProtectionType::class);
 
 		$this->set_supporter_properties();
 	}

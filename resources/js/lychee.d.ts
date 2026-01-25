@@ -69,7 +69,7 @@ declare namespace App.Enum {
 	export type CoverFitType = "cover" | "fit";
 	export type DateOrderingType = "older_younger" | "younger_older";
 	export type DbDriverType = "mysql" | "pgsql" | "sqlite";
-	export type DefaultAlbumProtectionType = 1 | 2 | 3 | 4;
+	export type DefaultAlbumProtectionType = "private" | "public" | "inherit" | "public_hidden";
 	export type DownloadVariantType = "LIVEPHOTOVIDEO" | "ORIGINAL" | "MEDIUM2X" | "MEDIUM" | "SMALL2X" | "SMALL" | "THUMB2X" | "THUMB";
 	export type FileStatus = "uploading" | "processing" | "ready" | "skipped" | "done" | "error";
 	export type FlowStrategy = "auto" | "opt-in";
@@ -465,6 +465,7 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		albums_per_page: number;
 		photos_infinite_scroll_threshold: number;
 		albums_infinite_scroll_threshold: number;
+		default_album_protection: App.Enum.DefaultAlbumProtectionType;
 	};
 	export type LandingPageResource = {
 		landing_page_enable: boolean;
@@ -889,7 +890,7 @@ declare namespace App.Http.Resources.Models.Utils {
 		aperture: string;
 		iso: string;
 		lens: string;
-		focal: string;
+		focal: string | null;
 		duration: string;
 		fps: string;
 		filesize: string;
