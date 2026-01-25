@@ -157,7 +157,11 @@ return [
         'info' => 'Voer een titel in voor het nieuwe album:',
         'title' => 'titel',
         'create' => 'Album Aanmaken',
-    ],
+        'visibility_private' => 'Dit album is privé (alleen zichtbaar voor jou)',
+        'visibility_public' => 'Dit album is openbaar (zichtbaar voor iedereen)',
+        'visibility_public_hidden' => 'Dit album is openbaar maar verborgen in lijsten',
+        'visibility_inherit' => 'Dit album erft de zichtbaarheid van het hoofdalbum',
+        'visibility_inherit_no_parent' => 'Dit album is privé (geen hoofdalbum)',    ],
     'new_tag_album' => [
         'menu' => 'Tag Album Aanmaken',
         'info' => 'Voer een titel in voor het nieuwe tag album:',

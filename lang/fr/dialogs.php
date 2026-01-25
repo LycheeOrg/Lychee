@@ -157,6 +157,11 @@ return [
         'info' => 'Entrez un titre pour le nouvel album :',
         'title' => 'titre',
         'create' => 'Créer l’album',
+        'visibility_private' => 'Cet album sera privé (visible uniquement pour vous)',
+        'visibility_public' => 'Cet album sera public (visible par tous)',
+        'visibility_public_hidden' => 'Cet album sera public mais masqué des listes',
+        'visibility_inherit' => 'Cet album héritera de la visibilité de l’album parent',
+        'visibility_inherit_no_parent' => 'Cet album sera privé (pas d’album parent)',
     ],
     'new_tag_album' => [
         'menu' => 'Créer un album par étiquette',

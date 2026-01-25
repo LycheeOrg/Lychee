@@ -157,6 +157,11 @@ return [
         'info' => 'Einen Titel für das neue Album angeben:',
         'title' => 'Titel',
         'create' => 'Album erstellen',
+        'visibility_private' => 'Dieses Album wird privat sein (nur für Sie sichtbar)',
+        'visibility_public' => 'Dieses Album wird öffentlich sein (für alle sichtbar)',
+        'visibility_public_hidden' => 'Dieses Album wird öffentlich, aber verborgen sein',
+        'visibility_inherit' => 'Dieses Album erbt die Sichtbarkeit vom übergeordneten Album',
+        'visibility_inherit_no_parent' => 'Dieses Album wird privat sein (kein übergeordnetes Album vorhanden)',
     ],
     'new_tag_album' => [
         'menu' => 'Tag Album erstellen',

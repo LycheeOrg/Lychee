@@ -14,6 +14,10 @@
 						<InputText id="title" v-model="title" />
 						<label for="title">{{ $t("dialogs.new_album.title") }}</label>
 					</FloatLabel>
+					<div v-if="visibilityInfo" class="text-xs text-muted-color mt-2">
+						<i class="pi pi-info-circle mr-1"></i>
+						{{ $t(visibilityInfo) }}
+					</div>
 				</div>
 				<div class="flex items-center mt-9">
 					<Button severity="secondary" class="w-full font-bold border-none rounded-bl-xl" @click="closeCallback">
@@ -40,6 +44,7 @@ import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { storeToRefs } from "pinia";
 import { onKeyPressed } from "@vueuse/core";
 import { usePhotoRoute } from "@/composables/photo/photoRoute";
+import { useLycheeStateStore } from "@/stores/LycheeState";
 
 const togglableStore = useTogglablesStateStore();
 const { is_create_album_visible } = storeToRefs(togglableStore);
@@ -47,8 +52,27 @@ const router = useRouter();
 const { getParentId } = usePhotoRoute(router);
 
 const toast = useToast();
+const lycheeState = useLycheeStateStore();
 
 const title = ref<string | undefined>(undefined);
+
+const visibilityInfo = computed(() => {
+	const protection = lycheeState.default_album_protection;
+	const parentId = getParentId();
+
+	switch (protection) {
+		case "private":
+			return "dialogs.new_album.visibility_private";
+		case "public":
+			return "dialogs.new_album.visibility_public";
+		case "public_hidden":
+			return "dialogs.new_album.visibility_public_hidden";
+		case "inherit":
+			return parentId ? "dialogs.new_album.visibility_inherit" : "dialogs.new_album.visibility_inherit_no_parent";
+		default:
+			return null;
+	}
+});
 
 const isValid = computed(() => title.value !== undefined && title.value.length > 0 && title.value.length <= 100);
 

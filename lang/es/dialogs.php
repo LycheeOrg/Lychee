@@ -157,7 +157,11 @@ return [
         'info' => 'Introduzca un título para el nuevo álbum:',
         'title' => 'título',
         'create' => 'Crear álbum',
-    ],
+        'visibility_private' => 'Este álbum será privado (visible solo para ti)',
+        'visibility_public' => 'Este álbum será público (visible para todos)',
+        'visibility_public_hidden' => 'Este álbum será público pero oculto en listas',
+        'visibility_inherit' => 'Este álbum heredará la visibilidad del álbum padre',
+        'visibility_inherit_no_parent' => 'Este álbum será privado (sin álbum padre)',    ],
     'new_tag_album' => [
         'menu' => 'Crear álbum de etiquetas',
         'info' => 'Introduzca un título para el nuevo álbum de etiquetas:',

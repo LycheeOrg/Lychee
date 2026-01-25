@@ -157,7 +157,11 @@ return [
         'info' => '輸入新的相簿標題：',
         'title' => '標題',
         'create' => '建立相簿',
-    ],
+        'visibility_private' => '此相簿將被設為私密（只有你可見）',
+        'visibility_public' => '此相簿將被設為公開（所有人可見）',
+        'visibility_public_hidden' => '此相簿將被設為公開但隱藏於列表中',
+        'visibility_inherit' => '此相簿將繼承父相簿的可見性',
+        'visibility_inherit_no_parent' => '此相簿將被設為私密（沒有父相簿）',    ],
     'new_tag_album' => [
         'menu' => '建立相簿標籤',
         'info' => '輸入新的相簿標籤名稱：',
