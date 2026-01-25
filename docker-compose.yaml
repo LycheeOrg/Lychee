@@ -258,6 +258,58 @@ x-common-env: &common-env
   # Disable WebAuthn. This means that the only way to authenticate is via the API token, Basic Auth or Oauth.
   # DISABLE_WEBAUTHN=false
 
+  ###################################################################
+  # LDAP Authentication (enterprise directory integration)         #
+  ###################################################################
+
+  # Enable LDAP authentication alongside or instead of basic auth
+  # LDAP_ENABLED=false
+
+  # LDAP Server connection settings
+  # LDAP_HOST=ldap.example.com
+  # LDAP_PORT=389
+  # For LDAPS (LDAP over SSL), use port 636
+  # LDAP_PORT=636
+
+  # Base DN for LDAP searches (e.g., dc=example,dc=com or dc=corp,dc=example,dc=com)
+  # LDAP_BASE_DN=dc=example,dc=com
+
+  # Service account credentials for LDAP bind
+  # This account needs read-only access to user and group attributes
+  # LDAP_BIND_DN=cn=lychee-service,ou=services,dc=example,dc=com
+  # LDAP_BIND_PASSWORD=securepassword
+
+  # LDAP user search filter (%s is replaced with username)
+  # For OpenLDAP:
+  # LDAP_USER_FILTER=(&(objectClass=person)(uid=%s))
+  # For Active Directory:
+  # LDAP_USER_FILTER=(&(objectClass=user)(sAMAccountName=%s))
+
+  # LDAP attribute mapping (maps LDAP attributes to Lychee user fields)
+  # OpenLDAP defaults:
+  # LDAP_ATTR_USERNAME=uid
+  # LDAP_ATTR_EMAIL=mail
+  # LDAP_ATTR_DISPLAY_NAME=displayName
+  # Active Directory alternatives:
+  # LDAP_ATTR_USERNAME=sAMAccountName
+  # LDAP_ATTR_EMAIL=userPrincipalName
+  # LDAP_ATTR_DISPLAY_NAME=displayName
+
+  # Admin role mapping via LDAP group
+  # Users in this group will have may_administrate=true
+  # LDAP_ADMIN_GROUP_DN=cn=lychee-admins,ou=groups,dc=example,dc=com
+
+  # Auto-provision users on first LDAP login
+  # If false, users must be pre-created in Lychee before they can log in via LDAP
+  # LDAP_AUTO_PROVISION=true
+
+  # TLS/SSL settings for secure LDAP connections
+  # LDAP_USE_TLS=true
+  # LDAP_TLS_VERIFY_PEER=true
+
+  # Connection timeout in seconds
+  # LDAP_CONNECTION_TIMEOUT=5
+
   # Oauth token data
   # XXX_REDIRECT_URI should be left as default unless you know exactly what you do.
 

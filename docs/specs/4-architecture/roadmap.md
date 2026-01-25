@@ -6,6 +6,7 @@ High-level planning document for Lychee features and architectural initiatives.
 
 | Feature ID | Name | Status | Priority | Assignee | Started | Updated | Progress |
 |------------|------|--------|----------|----------|---------|---------|----------|
+| 010 | LDAP Authentication Support | Planning | P1 | Agent | 2026-01-25 | 2026-01-25 | 5% - Spec, plan, and tasks complete; awaiting dependency approval |
 | 009 | Rating Ordering and Smart Albums | In Progress | P2 | Agent | 2026-01-16 | 2026-01-21 | ~95% - Missing: sorting dropdown UI option in constants.ts |
 | 008 | Shared Albums Visibility Control | In Progress | P2 | Agent | 2026-01-15 | 2026-01-21 | ~85% - Missing: server-side filtering enforcement, admin config UI |
 
