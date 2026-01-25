@@ -102,4 +102,18 @@ class LdapServiceTest extends AbstractTestCase
 		// Will test via Feature tests in I7 instead
 		$this->markTestIncomplete('Deferred to integration tests (I7)');
 	}
+
+	public function testRetrieveAttributesSuccess(): void
+	{
+		// Test attribute retrieval (email, display_name)
+		// This test will verify in integration tests (I7)
+		$this->markTestIncomplete('Deferred to integration tests (I7)');
+	}
+
+	public function testRetrieveAttributesMissing(): void
+	{
+		// Test attribute retrieval when attributes are not present in LDAP
+		// This test will verify in integration tests (I7)
+		$this->markTestIncomplete('Deferred to integration tests (I7)');
+	}
 }

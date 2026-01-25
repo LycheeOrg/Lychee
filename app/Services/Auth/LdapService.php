@@ -58,10 +58,15 @@ final class LdapService
 			// Step 3: Bind with user DN and password
 			$this->connection->auth()->attempt($userDn, $password);
 
-			// Step 4: Return minimal LdapUser (attributes added in I3)
+			// Step 4: Retrieve user attributes (email, display_name)
+			$attributes = $this->retrieveAttributes($userDn);
+
+			// Step 5: Return LdapUser with attributes
 			return new LdapUser(
 				username: $username,
-				userDn: $userDn
+				userDn: $userDn,
+				email: $attributes['email'],
+				display_name: $attributes['display_name']
 			);
 		} catch (\Throwable $e) {
 			// Authentication failed (bind error, connection error, etc.)
@@ -167,7 +172,27 @@ final class LdapService
 	 */
 	private function retrieveAttributes(string $userDn): array
 	{
-		// TODO: Implement in I3
-		return ['email' => null, 'display_name' => null];
+		// Query LDAP for user entry by DN
+		$result = $this->connection->query()
+			->setDn($userDn)
+			->read()
+			->first();
+
+		if ($result === null) {
+			return ['email' => null, 'display_name' => null];
+		}
+
+		// Extract configured attributes (LDAP attributes are arrays, get first value)
+		$emailAttr = $this->config->attr_email;
+		$displayNameAttr = $this->config->attr_display_name;
+
+		// Get first value from LDAP multi-value attributes
+		$emailValues = $result->getAttribute($emailAttr);
+		$displayNameValues = $result->getAttribute($displayNameAttr);
+
+		return [
+			'email' => is_array($emailValues) && count($emailValues) > 0 ? $emailValues[0] : null,
+			'display_name' => is_array($displayNameValues) && count($displayNameValues) > 0 ? $displayNameValues[0] : null,
+		];
 	}
 }
