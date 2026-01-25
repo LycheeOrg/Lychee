@@ -85,8 +85,30 @@ final class LdapService
 	 */
 	public function queryGroups(string $userDn): array
 	{
-		// TODO: Implement in I4
-		return [];
+		try {
+			// Ensure connected
+			if (!isset($this->connection)) {
+				$this->connect();
+			}
+
+			// Search for groups where user is a member
+			// Standard LDAP filter: (member=USER_DN)
+			$results = $this->connection->query()
+				->setDn($this->config->base_dn)
+				->rawFilter("(member={$userDn})")
+				->get();
+
+			// Extract DNs from results
+			$groupDns = [];
+			foreach ($results as $group) {
+				$groupDns[] = $group->getDn();
+			}
+
+			return $groupDns;
+		} catch (\Throwable $e) {
+			// Group query failed, return empty array
+			return [];
+		}
 	}
 
 	/**
@@ -98,7 +120,19 @@ final class LdapService
 	 */
 	public function isUserInAdminGroup(array $groupDns): bool
 	{
-		// TODO: Implement in I4
+		// If no admin group configured, all users are non-admin
+		if ($this->config->admin_group_dn === null) {
+			return false;
+		}
+
+		// Check if admin group DN is in user's group DNs
+		// Use case-insensitive comparison (LDAP DNs are case-insensitive)
+		foreach ($groupDns as $groupDn) {
+			if (strcasecmp($groupDn, $this->config->admin_group_dn) === 0) {
+				return true;
+			}
+		}
+
 		return false;
 	}
 

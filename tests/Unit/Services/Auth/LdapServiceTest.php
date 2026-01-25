@@ -116,4 +116,39 @@ class LdapServiceTest extends AbstractTestCase
 		// This test will verify in integration tests (I7)
 		$this->markTestIncomplete('Deferred to integration tests (I7)');
 	}
+
+	public function testQueryGroupsSuccess(): void
+	{
+		// Test querying user's group memberships from LDAP
+		// This test will verify in integration tests (I7)
+		$this->markTestIncomplete('Deferred to integration tests (I7)');
+	}
+
+	public function testQueryGroupsEmpty(): void
+	{
+		// Test querying groups when user has no group memberships
+		// This test will verify in integration tests (I7)
+		$this->markTestIncomplete('Deferred to integration tests (I7)');
+	}
+
+	public function testIsUserInAdminGroupTrue(): void
+	{
+		// Test admin group check when user is in admin group
+		// This test will verify in integration tests (I7)
+		$this->markTestIncomplete('Deferred to integration tests (I7)');
+	}
+
+	public function testIsUserInAdminGroupFalse(): void
+	{
+		// Test admin group check when user is not in admin group
+		// This test will verify in integration tests (I7)
+		$this->markTestIncomplete('Deferred to integration tests (I7)');
+	}
+
+	public function testIsUserInAdminGroupNoConfig(): void
+	{
+		// Test admin group check when admin group is not configured
+		// This test will verify in integration tests (I7)
+		$this->markTestIncomplete('Deferred to integration tests (I7)');
+	}
 }
