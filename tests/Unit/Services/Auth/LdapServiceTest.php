@@ -352,5 +352,46 @@ class LdapServiceTest extends AbstractTestCase
 		$this->assertFalse($service2->isUserInAdminGroup($groupDns1));
 		$this->assertTrue($service2->isUserInAdminGroup($groupDns2));
 	}
+
+	// ===== DEPENDENCY INJECTION TESTS =====
+
+	public function testServiceAcceptsInjectedConnection(): void
+	{
+		$mockConnection = \Mockery::mock(\LdapRecord\Connection::class);
+		$config = new LdapConfiguration();
+
+		$service = new LdapService($config, $mockConnection);
+
+		$this->assertInstanceOf(LdapService::class, $service);
+	}
+
+	// Note: Full mocking of the authenticate() method is complex because it calls private connect() method
+	// which attempts to create a real LDAP connection. Integration tests (with real/test LDAP server)
+	// provide better coverage for authentication flows. The tests below focus on pure logic paths.
+
+	public function testServiceConstructorAcceptsNullConnection(): void
+	{
+		$config = new LdapConfiguration();
+		$service = new LdapService($config, null);
+
+		$this->assertInstanceOf(LdapService::class, $service);
+	}
+
+	public function testServiceConstructorWithConfiguration(): void
+	{
+		// Test that service stores config correctly by using it in isUserInAdminGroup
+		config(['ldap.auth.admin_group_dn' => 'cn=test-admins,dc=test,dc=local']);
+		$config = new LdapConfiguration();
+		$service = new LdapService($config);
+
+		$groups = ['cn=test-admins,dc=test,dc=local'];
+		$this->assertTrue($service->isUserInAdminGroup($groups));
+	}
+
+	protected function tearDown(): void
+	{
+		\Mockery::close();
+		parent::tearDown();
+	}
 }
 
