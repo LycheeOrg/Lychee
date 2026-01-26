@@ -43,6 +43,7 @@ use function Safe\mb_convert_encoding;
  * @property string                                                $username
  * @property string|null                                           $display_name
  * @property string|null                                           $password
+ * @property bool                                                  $is_ldap
  * @property string|null                                           $email
  * @property bool                                                  $may_administrate
  * @property bool                                                  $may_upload
@@ -116,6 +117,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		'id' => 'integer',
 		'created_at' => 'datetime',
 		'updated_at' => 'datetime',
+		'is_ldap' => 'boolean',
 		'may_administrate' => 'boolean',
 		'may_upload' => 'boolean',
 		'may_edit_own_settings' => 'boolean',
@@ -197,7 +199,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	public function getNameAttribute(): string
 	{
 		// If strings starts by '$2y$', it is very likely that it's a blowfish hash.
-		return substr($this->username, 0, 4) === '$2y$' ? 'Admin' : $this->username;
+		return substr($this->username, 0, 4) === '$2y$' ? 'Admin' : $this->display_name ?? $this->username;
 	}
 
 	/**

@@ -19,6 +19,7 @@ return [
         'change' => 'Inloggegevens wijzigen',
         'api_token' => 'API-token …',
         'missing_fields' => 'Ontbrekende velden',
+        'ldap_managed' => 'Gebruikerslogingegevens worden beheerd door LDAP.',
     ],
     'register' => [
         'username_exists' => 'Gebruikersnaam bestaat al.',

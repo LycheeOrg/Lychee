@@ -94,6 +94,9 @@ class ProvisionLdapUser
 		// Set random password (user authenticates via LDAP, not local password)
 		$user->password = Hash::make(bin2hex(random_bytes(32)));
 
+		// Mark as LDAP-managed user
+		$user->is_ldap = true;
+
 		// Default permissions for LDAP users
 		$user->may_upload = true;
 		$user->may_edit_own_settings = true;
@@ -110,6 +113,9 @@ class ProvisionLdapUser
 	 */
 	private function updateUserAttributes(User $user, LdapUser $ldapUser): void
 	{
+		// Ensure LDAP flag is set (for existing users that may have been created before this feature)
+		$user->is_ldap = true;
+
 		// Update email if provided by LDAP
 		if ($ldapUser->email !== null) {
 			$user->email = $ldapUser->email;

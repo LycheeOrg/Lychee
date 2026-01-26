@@ -2,7 +2,7 @@
 
 _Linked specification:_ `docs/specs/4-architecture/features/010-ldap-support/spec.md`  
 _Status:_ Draft  
-_Last updated:_ 2026-01-25
+_Last updated:_ 2026-01-26
 
 > Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in [docs/specs/4-architecture/open-questions.md](../../open-questions.md), and assume clarifications are resolved only when the spec's normative sections (requirements/NFR/behaviour/telemetry) and, where applicable, ADRs under `docs/specs/6-decisions/` have been updated.
 
@@ -345,22 +345,67 @@ Before implementation begins, verify:
   5. Update `README.md` to mention LDAP support
 - _Exit:_ All documentation complete and reviewed
 
-### I11 – Quality Gate and Final Testing (60 min)
+### I11 – LDAP User Differentiation (60 min)
+
+- _Goal:_ Add `is_ldap` column, expose to frontend, disable credential editing for LDAP users
+- _Preconditions:_ I10 complete
+- _Spec coverage:_ FR-010-08, COL-010-02, UI-010-04, UI-010-05, S-010-11, S-010-12, S-010-13
+- _Steps:_
+  1. Migration already created: `2026_01_26_add_is_ldap_to_users_table.php` ✅
+  2. Update `App\Models\User`:
+     - Add `@property bool $is_ldap` to docblock
+     - Confirm `'is_ldap' => 'boolean'` in `$casts` array (already done)
+  3. Update `App\Actions\Auth\ProvisionLdapUser`:
+     - Set `is_ldap = true` when creating new LDAP users
+     - Keep `is_ldap = true` when updating existing LDAP users
+  4. Update `App\Http\Resources\Models\UserResource`:
+     - Add `public bool $is_ldap` property
+     - Set in constructor: `$this->is_ldap = $user?->is_ldap ?? false`
+  5. Update `App\Http\Requests\UserManagement\SetUserSettingsRequest`:
+     - Add validation rule to reject username/password changes when user `is_ldap = true`
+     - Return appropriate validation error message
+  6. Run `php artisan typescript:transform` to generate TypeScript types
+  7. Update frontend profile page (search for profile/settings components):
+     - Check `userStore.user?.is_ldap` flag
+     - Disable username/password input fields if `is_ldap === true`
+     - Show message: "User login information are LDAP managed"
+  8. Write tests:
+     - Unit test: LDAP provisioning sets `is_ldap = true`
+     - Feature test: `/api/Auth::user` includes `is_ldap` in response
+     - Feature test: Updating LDAP user credentials returns validation error
+     - Feature test: Updating non-LDAP user credentials succeeds
+- _Tests:_
+  - `tests/Unit/Actions/Auth/ProvisionLdapUserTest.php::testSetsIsLdapFlag`
+  - `tests/Feature_v2/Auth/LdapAuthenticationTest.php::testAuthUserIncludesIsLdapFlag`
+  - `tests/Feature_v2/UserManagement/SetUserSettingsRequestTest.php::testRejectsLdapUserCredentialChanges`
+  - `tests/Feature_v2/UserManagement/SetUserSettingsRequestTest.php::testAllowsNonLdapUserCredentialChanges`
+- _Commands:_
+  - `php artisan migrate`
+  - `php artisan typescript:transform`
+  - `php artisan test --filter=ProvisionLdapUserTest::testSetsIsLdapFlag`
+  - `php artisan test --filter=LdapAuthenticationTest::testAuthUserIncludesIsLdapFlag`
+  - `php artisan test --filter=SetUserSettingsRequestTest`
+- _Exit:_ `is_ldap` column added; flag set during provisioning; frontend disables credential editing; validation rejects LDAP user updates; all tests pass
+
+### I12 – Quality Gate and Final Testing (60 min)
 
 - _Goal:_ Run full quality gate and verify all requirements
-- _Preconditions:_ I10 complete
+- _Preconditions:_ I11 complete
 - _Spec coverage:_ All FRs, NFRs, Scenarios
 - _Steps:_
   1. Run full test suite: `php artisan test`
   2. Run PHPStan: `make phpstan`
   3. Run PHP CS Fixer: `vendor/bin/php-cs-fixer fix`
-  4. Verify all scenarios (S-010-01 through S-010-10) covered by tests
-  5. Review telemetry events in logs
-  6. Test against actual LDAP server (if available)
-  7. Security review: ensure no passwords logged or stored
+  4. Run frontend checks: `npm run check`, `npm run format`
+  5. Verify all scenarios (S-010-01 through S-010-13) covered by tests
+  6. Review telemetry events in logs
+  7. Test against actual LDAP server (if available)
+  8. Security review: ensure no passwords logged or stored
 - _Commands:_
   - `vendor/bin/php-cs-fixer fix`
+  - `npm run format`
   - `php artisan test`
+  - `npm run check`
   - `make phpstan`
 - _Exit:_ All quality gates pass; feature complete
 
@@ -378,6 +423,12 @@ Before implementation begins, verify:
 | S-010-08 | I7 - testAutoProvisionDisabled | Provisioning toggle |
 | S-010-09 | I7 - testCustomAttributeMapping | Configurable attributes |
 | S-010-10 | I7 - testTlsRequiredButUnavailable | TLS enforcement |
+| S-010-11 | I11 - Frontend test (manual/E2E) | LDAP user profile credential editing disabled |
+| S-010-12 | I11 - testRejectsLdapUserCredentialChanges | Admin updating LDAP user validation |
+| S-010-13 | I11 - testAllowsNonLdapUserCredentialChanges | Local user credential editing works |
+| S-010-11 | I11 - Frontend test (manual/E2E) | LDAP user profile credential editing disabled |
+| S-010-12 | I11 - testRejectsLdapUserCredentialChanges | Admin updating LDAP user validation |
+| S-010-13 | I11 - testAllowsNonLdapUserCredentialChanges | Local user credential editing works |
 
 ## Analysis Gate
 
@@ -396,16 +447,20 @@ Before implementation begins, verify:
 - [x] Composer dependency approval: `ldaprecord/laravel`
 - [x] Testing strategy determined: LdapRecord test utilities
 - [ ] Failing tests staged for all scenarios before implementation
-
-**Reviewer:** TBD  
-**Date:** TBD
-
-## Exit Criteria
-
-- [ ] All functional requirements (FR-010-01 through FR-010-07) implemented and tested
+8) implemented and tested
 - [ ] All non-functional requirements (NFR-010-01 through NFR-010-06) verified
-- [ ] All scenarios (S-010-01 through S-010-10) covered by passing tests
+- [ ] All scenarios (S-010-01 through S-010-13) covered by passing tests
 - [ ] All telemetry events (TE-010-01 through TE-010-08) implemented
+- [ ] Full test suite passes (`php artisan test`)
+- [ ] Frontend checks pass (`npm run check`)
+- [ ] PHPStan level 6 passes (`make phpstan`)
+- [ ] Code formatting passes (`vendor/bin/php-cs-fixer fix`, `npm run format`)
+- [ ] TypeScript types generated (`php artisan typescript:transform`)
+- [ ] Documentation complete (`.env.example`, `docs/ldap-setup.md`, knowledge map, README)
+- [ ] Security review: no passwords logged or stored
+- [ ] Backward compatibility verified: existing basic auth users unaffected
+- [ ] LDAP user credential editing disabled in profile UI
+- [ ] Validation rejects LDAP user credential changes via API
 - [ ] Full test suite passes (`php artisan test`)
 - [ ] PHPStan level 6 passes (`make phpstan`)
 - [ ] Code formatting passes (`vendor/bin/php-cs-fixer fix`)
@@ -425,4 +480,4 @@ Before implementation begins, verify:
 
 ---
 
-*Last updated: 2026-01-25*
+*Last updated: 2026-01-26*

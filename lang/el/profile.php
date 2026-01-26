@@ -20,6 +20,7 @@ return [
         'change' => 'Change Login',
         'api_token' => 'API Token ...',
         'missing_fields' => 'Missing fields',
+        'ldap_managed' => 'Οι πληροφορίες σύνδεσης χρήστη διαχειρίζονται από το LDAP.',
     ],
     'register' => [
         'username_exists' => 'Username already exists.',

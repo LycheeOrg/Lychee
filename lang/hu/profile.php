@@ -20,6 +20,7 @@ return [
         'change' => 'Change Login',
         'api_token' => 'API Token ...',
         'missing_fields' => 'Missing fields',
+        'ldap_managed' => 'A felhasználói bejelentkezési adatokat az LDAP kezeli.',
     ],
     'token' => [
         'unavailable' => 'You have already viewed this token.',

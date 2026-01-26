@@ -43,6 +43,7 @@ class UserFactory extends Factory
 			'may_upload' => false,
 			'email' => $this->faker->unique()->email(),
 			'token' => null,
+			'is_ldap' => false,
 			'remember_token' => null,
 			'may_edit_own_settings' => true,
 			'shared_albums_visibility' => UserSharedAlbumsVisibility::DEFAULT->value,

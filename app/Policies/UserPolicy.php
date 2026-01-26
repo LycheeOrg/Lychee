@@ -42,6 +42,6 @@ class UserPolicy extends BasePolicy
 	 */
 	public function canEdit(User $user): bool
 	{
-		return $user->may_edit_own_settings;
+		return $user->may_edit_own_settings && !$user->is_ldap;
 	}
 }

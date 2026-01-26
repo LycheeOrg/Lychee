@@ -19,6 +19,7 @@ return [
         'change' => 'Change Login',
         'api_token' => 'API Token …',
         'missing_fields' => 'Missing fields',
+        'ldap_managed' => 'User login information are LDAP managed.',
     ],
     'register' => [
         'username_exists' => 'Username already exists.',

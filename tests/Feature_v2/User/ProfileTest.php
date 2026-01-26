@@ -18,6 +18,7 @@
 
 namespace Tests\Feature_v2\User;
 
+use App\Models\User;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class ProfileTest extends BaseApiWithDataTest
@@ -132,5 +133,96 @@ class ProfileTest extends BaseApiWithDataTest
 
 		$response = $this->actingAs($this->userMayUpload1)->postJson('Profile::unsetToken', []);
 		$this->assertNoContent($response);
+	}
+
+	public function testLdapUserCannotUpdateUsername(): void
+	{
+		// Create an LDAP user
+		$ldapUser = User::factory()->create([
+			'username' => 'ldapuser',
+			'password' => bcrypt('password'),
+			'is_ldap' => true,
+			'may_edit_own_settings' => true,
+		]);
+
+		// Attempt to update username - should be forbidden
+		$response = $this->actingAs($ldapUser)->postJson('Profile::update', [
+			'old_password' => 'password',
+			'username' => 'newusername',
+			'email' => '',
+		]);
+		$this->assertForbidden($response);
+	}
+
+	public function testLdapUserCannotUpdatePassword(): void
+	{
+		// Create an LDAP user
+		$ldapUser = User::factory()->create([
+			'username' => 'ldapuser',
+			'password' => bcrypt('password'),
+			'is_ldap' => true,
+			'may_edit_own_settings' => true,
+		]);
+
+		// Attempt to update password - should be forbidden
+		$response = $this->actingAs($ldapUser)->postJson('Profile::update', [
+			'old_password' => 'password',
+			'username' => 'ldapuser',
+			'password' => 'newpassword',
+			'password_confirmation' => 'newpassword',
+			'email' => '',
+		]);
+		$this->assertForbidden($response);
+	}
+
+	public function testLdapUserCannotResetToken(): void
+	{
+		// Create an LDAP user
+		$ldapUser = User::factory()->create([
+			'username' => 'ldapuser',
+			'password' => bcrypt('password'),
+			'is_ldap' => true,
+			'may_edit_own_settings' => true,
+		]);
+
+		// Attempt to reset token - should be forbidden
+		$response = $this->actingAs($ldapUser)->postJson('Profile::resetToken', []);
+		$this->assertForbidden($response);
+	}
+
+	public function testLdapUserCannotUnsetToken(): void
+	{
+		// Create an LDAP user
+		$ldapUser = User::factory()->create([
+			'username' => 'ldapuser',
+			'password' => bcrypt('password'),
+			'is_ldap' => true,
+			'may_edit_own_settings' => true,
+		]);
+
+		// Attempt to unset token - should be forbidden
+		$response = $this->actingAs($ldapUser)->postJson('Profile::unsetToken', []);
+		$this->assertForbidden($response);
+	}
+
+	public function testNonLdapUserCanStillUpdateProfile(): void
+	{
+		// Verify that non-LDAP users can still update their profile
+		$regularUser = User::factory()->create([
+			'username' => 'regularuser',
+			'password' => bcrypt('password'),
+			'is_ldap' => false,
+			'may_edit_own_settings' => true,
+		]);
+
+		// Should succeed
+		$response = $this->actingAs($regularUser)->postJson('Profile::update', [
+			'old_password' => 'password',
+			'username' => 'newregularuser',
+			'password' => 'newpassword',
+			'password_confirmation' => 'newpassword',
+			'email' => '',
+		]);
+		$this->assertCreated($response);
 	}
 }

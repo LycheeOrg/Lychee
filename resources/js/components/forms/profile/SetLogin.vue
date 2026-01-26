@@ -6,53 +6,66 @@
 		class="mb-4 hover:border-primary-500 pt-2 max-w-xl mx-auto"
 	>
 		<form>
-			<div v-if="is_basic_auth_enabled" class="w-full mb-6">
-				<div class="pb-4">
-					{{ $t("profile.login.enter_current_password") }}
-				</div>
-				<FloatLabel variant="on">
-					<InputPassword id="oldPassword" v-model="oldPassword" :invalid="!oldPassword && hasChanged" />
-					<label for="oldPassword">{{ $t("profile.login.current_password") }}</label>
-				</FloatLabel>
-			</div>
-			<div v-if="is_basic_auth_enabled" class="w-full mb-6">
-				<div class="pb-4">
-					{{ $t("profile.login.credentials_update") }}
-				</div>
-				<FloatLabel variant="on">
-					<InputText id="username" v-model="username" />
-					<label for="username">{{ $t("profile.login.username") }}</label>
-				</FloatLabel>
-				<FloatLabel class="mt-4" variant="on">
-					<InputPassword id="password" v-model="password" />
-					<label for="password">{{ $t("profile.login.new_password") }}</label>
-				</FloatLabel>
-				<FloatLabel class="mt-4" variant="on">
-					<InputPassword id="password_confirmation" v-model="password_confirmation" :invalid="password !== password_confirmation" />
-					<label for="password_confirmation">{{ $t("profile.login.confirm_new_password") }}</label>
-				</FloatLabel>
-			</div>
-			<div class="w-full">
-				<div class="pb-4">
-					{{ $t("profile.login.email_instruction") }}
-				</div>
-				<FloatLabel variant="on">
-					<InputText id="email" v-model="email" />
-					<label for="email">{{ $t("profile.login.email") }}</label>
-				</FloatLabel>
-			</div>
-			<div class="flex w-full mt-4">
-				<Button severity="contrast" class="w-full font-bold border-none shrink rounded-none ltr:rounded-l-xl rtl:rounded-r-xl" @click="save">
-					{{ $t("profile.login.change") }}
-				</Button>
-				<Button
-					severity="secondary"
-					class="w-full font-bold border-none shrink rounded-none ltr:rounded-r-xl rtl:rounded-l-xl"
-					@click="isApiTokenOpen = !isApiTokenOpen"
-				>
+			<div v-if="user.is_ldap" class="w-full p-4 text-muted-color">
+				<i class="pi pi-info-circle ltr:mr-2 rlt:ml-2"></i>
+				<span>{{ $t("profile.login.ldap_managed") }}</span>
+				<Button severity="secondary" class="w-full font-bold border-none shrink rounded-xl mt-4" @click="isApiTokenOpen = !isApiTokenOpen">
 					{{ $t("profile.login.api_token") }}
 				</Button>
 			</div>
+			<template v-else>
+				<div v-if="is_basic_auth_enabled" class="w-full mb-6">
+					<div class="pb-4">
+						{{ $t("profile.login.enter_current_password") }}
+					</div>
+					<FloatLabel variant="on">
+						<InputPassword id="oldPassword" v-model="oldPassword" :invalid="!oldPassword && hasChanged" />
+						<label for="oldPassword">{{ $t("profile.login.current_password") }}</label>
+					</FloatLabel>
+				</div>
+				<div v-if="is_basic_auth_enabled" class="w-full mb-6">
+					<div class="pb-4">
+						{{ $t("profile.login.credentials_update") }}
+					</div>
+					<FloatLabel variant="on">
+						<InputText id="username" v-model="username" />
+						<label for="username">{{ $t("profile.login.username") }}</label>
+					</FloatLabel>
+					<FloatLabel class="mt-4" variant="on">
+						<InputPassword id="password" v-model="password" />
+						<label for="password">{{ $t("profile.login.new_password") }}</label>
+					</FloatLabel>
+					<FloatLabel class="mt-4" variant="on">
+						<InputPassword id="password_confirmation" v-model="password_confirmation" :invalid="password !== password_confirmation" />
+						<label for="password_confirmation">{{ $t("profile.login.confirm_new_password") }}</label>
+					</FloatLabel>
+				</div>
+				<div class="w-full">
+					<div class="pb-4">
+						{{ $t("profile.login.email_instruction") }}
+					</div>
+					<FloatLabel variant="on">
+						<InputText id="email" v-model="email" />
+						<label for="email">{{ $t("profile.login.email") }}</label>
+					</FloatLabel>
+				</div>
+				<div class="flex w-full mt-4">
+					<Button
+						severity="contrast"
+						class="w-full font-bold border-none shrink rounded-none ltr:rounded-l-xl rtl:rounded-r-xl"
+						@click="save"
+					>
+						{{ $t("profile.login.change") }}
+					</Button>
+					<Button
+						severity="secondary"
+						class="w-full font-bold border-none shrink rounded-none ltr:rounded-r-xl rtl:rounded-l-xl"
+						@click="isApiTokenOpen = !isApiTokenOpen"
+					>
+						{{ $t("profile.login.api_token") }}
+					</Button>
+				</div>
+			</template>
 		</form>
 	</Fieldset>
 	<ApiToken v-model="isApiTokenOpen" />

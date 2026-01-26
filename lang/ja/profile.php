@@ -20,6 +20,7 @@ return [
         'change' => 'Change Login',
         'api_token' => 'API Token ...',
         'missing_fields' => 'Missing fields',
+        'ldap_managed' => 'ユーザーのログイン情報はLDAPで管理されています。',
     ],
     'register' => [
         'username_exists' => 'Username already exists.',

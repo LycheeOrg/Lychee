@@ -20,6 +20,7 @@ return [
         'change' => 'Change Login',
         'api_token' => 'API Token ...',
         'missing_fields' => 'Missing fields',
+        'ldap_managed' => 'Prihlasovacie údaje používateľa sú spravované pomocou LDAP.',
     ],
     'register' => [
         'username_exists' => 'Username already exists.',

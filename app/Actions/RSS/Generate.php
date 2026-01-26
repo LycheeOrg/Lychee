@@ -60,7 +60,7 @@ class Generate
 			'enclosure' => $this->url_generator->pathToUrl($data->short_path, $data->storage_disk, SizeVariantType::ORIGINAL),
 			'enclosureType' => $data->type,
 			'enclosureLength' => $data->filesize,
-			'authorName' => $data->username,
+			'authorName' => $data->display_name ?? $data->username,
 			'category' => [$data->album_title],
 		];
 
@@ -110,7 +110,9 @@ class Generate
 				'size_variants.short_path',
 				'size_variants.filesize',
 				'size_variants.storage_disk',
-				'users.username']
+				'users.username',
+				'users.display_name',
+			]
 			)
 			->where('photos.created_at', '>=', $now_minus)
 			->limit($rss_max)
