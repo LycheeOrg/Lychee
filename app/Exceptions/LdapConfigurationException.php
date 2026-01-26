@@ -8,14 +8,15 @@
 
 namespace App\Exceptions;
 
+use Exception;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Exception thrown when LDAP authentication fails.
+ * Exception thrown when LDAP is mis configured.
  *
- * This includes invalid credentials, bind failures, and user not found.
+ * This includes network timeouts, DNS failures, and TLS errors.
  */
-class LdapAuthenticationException extends BaseLycheeException
+class LdapConfigurationException extends BaseLycheeException
 {
 	/**
 	 * Create a new exception instance.
@@ -23,8 +24,8 @@ class LdapAuthenticationException extends BaseLycheeException
 	 * @param string          $message  User-friendly error message
 	 * @param \Throwable|null $previous Underlying exception
 	 */
-	public function __construct(string $message = 'LDAP authentication failed', ?\Throwable $previous = null)
+	public function __construct(string $message = 'Your configuration is invalid', ?\Throwable $previous = null)
 	{
-		parent::__construct(Response::HTTP_FORBIDDEN, $message, $previous);
+		parent::__construct(Response::HTTP_INTERNAL_SERVER_ERROR, $message, $previous);
 	}
 }

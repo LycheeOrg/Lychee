@@ -8,6 +8,7 @@
 
 namespace App\DTO;
 
+use App\Exceptions\LdapConfigurationException;
 use Illuminate\Support\Facades\Config;
 
 /**
@@ -34,7 +35,7 @@ final class LdapConfiguration
 	public readonly int $connection_timeout;
 
 	/**
-	 * @throws \InvalidArgumentException if required LDAP config missing
+	 * @throws LdapConfigurationException if required LDAP config missing
 	 */
 	public function __construct()
 	{
@@ -71,12 +72,12 @@ final class LdapConfiguration
 	 * @param mixed  $value   The configuration value
 	 * @param string $envName Environment variable name for error messages
 	 *
-	 * @throws \InvalidArgumentException if value is null or empty
+	 * @throws LdapConfigurationException if value is null or empty
 	 */
 	private function requireString(mixed $value, string $envName): string
 	{
 		if ($value === null || $value === '') {
-			throw new \InvalidArgumentException("LDAP configuration error: {$envName} is required but not set");
+			throw new LdapConfigurationException("LDAP configuration error: {$envName} is required but not set");
 		}
 
 		return (string) $value;
@@ -88,12 +89,12 @@ final class LdapConfiguration
 	 * @param mixed  $value   The configuration value
 	 * @param string $envName Environment variable name for error messages
 	 *
-	 * @throws \InvalidArgumentException if value is null or not a valid integer
+	 * @throws LdapConfigurationException if value is null or not a valid integer
 	 */
 	private function requireInt(mixed $value, string $envName): int
 	{
 		if ($value === null || !is_numeric($value)) {
-			throw new \InvalidArgumentException("LDAP configuration error: {$envName} is required but not set or invalid");
+			throw new LdapConfigurationException("LDAP configuration error: {$envName} is required but not set or invalid");
 		}
 
 		return (int) $value;

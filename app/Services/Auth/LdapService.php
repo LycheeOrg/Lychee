@@ -10,6 +10,7 @@ namespace App\Services\Auth;
 
 use App\DTO\LdapConfiguration;
 use App\DTO\LdapUser;
+use App\Exceptions\LdapConfigurationException;
 use App\Exceptions\LdapConnectionException;
 use Illuminate\Support\Facades\Log;
 use LdapRecord\Connection;
@@ -138,7 +139,7 @@ class LdapService
 			// Extract DNs from results
 			$groupDns = [];
 			foreach ($results as $group) {
-				$groupDns[] = $group->getDn();
+				$groupDns[] = $group['dn'];
 			}
 
 			Log::debug('LDAP groups retrieved', [
@@ -257,6 +258,10 @@ class LdapService
 	{
 		// Build search filter (replace %s with username)
 		$filter = str_replace('%s', $username, $this->config->user_filter);
+		Log::debug('LDAP searching for user', [
+			'username' => $username,
+			'filter' => $filter,
+		]);
 
 		// Search for user
 		$results = $this->connection->query()
@@ -265,12 +270,12 @@ class LdapService
 			->limit(1)
 			->get();
 
-		if ($results->count() === 0) {
+		if ($results === null || count($results) === 0) {
 			return null;
 		}
 
 		// Return DN of first match
-		return $results->first()->getDn();
+		return $results[0]['dn'];
 	}
 
 	/**
@@ -296,9 +301,16 @@ class LdapService
 		$emailAttr = $this->config->attr_email;
 		$displayNameAttr = $this->config->attr_display_name;
 
+		Log::debug('LDAP retrieving attributes', [
+			'dn' => $userDn,
+			'email_attr' => $emailAttr,
+			'display_name_attr' => $displayNameAttr,
+			'result' => $result,
+		]);
+
 		// Get first value from LDAP multi-value attributes
-		$emailValues = $result->getAttribute($emailAttr);
-		$displayNameValues = $result->getAttribute($displayNameAttr);
+		$emailValues = $result[$emailAttr] ?? throw new LdapConfigurationException("Email attribute '{$emailAttr}' not found in LDAP entry.");
+		$displayNameValues = $result[$displayNameAttr] ?? throw new LdapConfigurationException("Display name attribute '{$displayNameAttr}' not found in LDAP entry.");
 
 		return [
 			'email' => is_array($emailValues) && count($emailValues) > 0 ? $emailValues[0] : null,

@@ -63,13 +63,17 @@ class UserGroupPolicy extends BasePolicy
 	/**
 	 * This defines if a user can edit the user group.
 	 *
-	 * @param User      $user
-	 * @param UserGroup $user_group
+	 * @param User       $user
+	 * @param ?UserGroup $user_group
 	 *
 	 * @return bool
 	 */
-	public function canEdit(User $user, UserGroup $user_group): bool
+	public function canEdit(User $user, ?UserGroup $user_group = null): bool
 	{
+		if ($user_group === null) {
+			return $user->user_groups()->wherePivot('role', 'admin')->exists();
+		}
+
 		// Check if the user has the 'admin' role in the user group using the UserGroupRole enum
 		return $user_group->users()->where('user_id', $user->id)->wherePivot('role', UserGroupRole::ADMIN->value)->exists();
 	}

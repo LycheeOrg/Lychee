@@ -8,14 +8,14 @@
 
 namespace App\Exceptions;
 
-use Exception;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Exception thrown when LDAP connection fails.
  *
  * This includes network timeouts, DNS failures, and TLS errors.
  */
-class LdapConnectionException extends \Exception
+class LdapConnectionException extends BaseLycheeException
 {
 	/**
 	 * Create a new exception instance.
@@ -25,6 +25,6 @@ class LdapConnectionException extends \Exception
 	 */
 	public function __construct(string $message = 'Unable to connect to LDAP server', ?\Throwable $previous = null)
 	{
-		parent::__construct($message, 0, $previous);
+		parent::__construct(Response::HTTP_INTERNAL_SERVER_ERROR, $message, $previous);
 	}
 }
