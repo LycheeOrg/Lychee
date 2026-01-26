@@ -12,6 +12,7 @@ use App\DTO\LdapUser;
 use App\Models\User;
 use App\Services\Auth\LdapService;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Provision (create or update) local User from LDAP authentication data.
@@ -35,8 +36,14 @@ class ProvisionLdapUser
 	 */
 	public function do(LdapUser $ldapUser): User
 	{
+		Log::debug('Provisioning LDAP user', [
+			'username' => $ldapUser->username,
+			'dn' => $ldapUser->userDn,
+		]);
+
 		// Step 1: Find or create user
 		$user = $this->findOrCreateUser($ldapUser);
+		$isNewUser = !$user->exists;
 
 		// Step 2: Update user attributes from LDAP
 		$this->updateUserAttributes($user, $ldapUser);
@@ -46,6 +53,13 @@ class ProvisionLdapUser
 
 		// Save changes
 		$user->save();
+
+		Log::info('LDAP user provisioned', [
+			'user_id' => $user->id,
+			'username' => $user->username,
+			'is_new' => $isNewUser,
+			'is_admin' => $user->may_administrate,
+		]);
 
 		return $user;
 	}
@@ -63,8 +77,15 @@ class ProvisionLdapUser
 		$user = User::query()->where('username', '=', $ldapUser->username)->first();
 
 		if ($user !== null) {
+			Log::debug('Found existing LDAP user', [
+				'user_id' => $user->id,
+				'username' => $user->username,
+			]);
+
 			return $user;
 		}
+
+		Log::debug('Creating new LDAP user', ['username' => $ldapUser->username]);
 
 		// Create new user
 		$user = new User();
