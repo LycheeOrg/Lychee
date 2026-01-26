@@ -21,8 +21,22 @@ This document tracks modules, dependencies, and architectural relationships acro
     - `auto_cover_id_max_privilege` - Cover photo for admin/owner view (ignores access control)
     - `auto_cover_id_least_privilege` - Cover photo for public view (respects PhotoQueryPolicy + AlbumQueryPolicy)
 - **Services** (`app/Services/`) - Business logic and orchestration
+  - **LDAP Service** (`app/Services/Auth/LdapService.php`) - Enterprise directory integration (wrapper over LdapRecord)
+    - Search-first authentication pattern: searches for user by username → gets DN → binds with DN + password
+    - Attribute retrieval: syncs email and display_name from LDAP
+    - Group membership queries for role assignment
+    - TLS/SSL support with configurable certificate validation
+    - Graceful error handling with connection timeout (default: 5 seconds)
+    - Dependencies: LdapRecord Laravel package, php-ldap extension
 - **Actions** (`app/Actions/`) - Single-responsibility command objects
+  - **ProvisionLdapUser** (`app/Actions/User/ProvisionLdapUser.php`) - Auto-provision users from LDAP
+    - Creates or updates local user from LdapUser DTO
+    - Syncs attributes (email, display_name) on each login
+    - Queries LDAP groups to assign admin role (`may_administrate`)
+    - Sets random password for LDAP users (local password not used)
 - **DTOs** (`app/DTO/`) - Data transfer objects (Spatie Data)
+  - **LdapConfiguration** (`app/DTO/LdapConfiguration.php`) - Validates LDAP environment variables
+  - **LdapUser** (`app/DTO/LdapUser.php`) - LDAP authentication result (username, userDn, email, display_name)
 - **Enums** (`app/Enum/`) - Type-safe enumeration classes
 
 #### Infrastructure Layer
@@ -86,6 +100,8 @@ This document tracks modules, dependencies, and architectural relationships acro
 - **Laravel Framework** - Web application framework
 - **Spatie Data** - DTOs and data transformation
 - **moneyphp/money** - Monetary value handling
+- **LdapRecord Laravel** - LDAP/Active Directory integration (v3.4.2)
+  - Dependency: php-ldap PHP extension required
 
 ### Frontend Dependencies
 - **Vue3** - Progressive JavaScript framework (Composition API)
@@ -102,6 +118,29 @@ This document tracks modules, dependencies, and architectural relationships acro
 4. Model/Repository → Database
 5. Resource/DTO → Response Transform
 6. HTTP Response
+
+### LDAP Authentication Flow
+LDAP-first authentication with automatic fallback to local credentials:
+
+1. **Login Request** → `AuthController::login()` receives username/password
+2. **LDAP Attempt** (if enabled):
+   - `LdapService::authenticate()` uses search-first pattern:
+     - Connect to LDAP server with service account
+     - Search for user by username (gets DN)
+     - Bind with user DN + password
+     - Retrieve attributes (email, display_name)
+   - Returns `LdapUser` DTO or null
+3. **User Provisioning** (on LDAP success):
+   - `ProvisionLdapUser` action creates/updates local user
+   - Queries LDAP groups via `LdapService::queryGroups()`
+   - Assigns admin role if user in `LDAP_ADMIN_GROUP_DN`
+   - Syncs attributes from LDAP
+4. **Local Fallback** (if LDAP fails or disabled):
+   - Standard Laravel `Auth::attempt()` with local credentials
+5. **Graceful Degradation**:
+   - LDAP connection errors trigger automatic fallback to local auth
+   - All errors logged with contextual data (username, host, error message)
+   - User-friendly error messages (no LDAP implementation details)
 
 ### Album Pagination (Feature 007)
 Implements offset-based pagination for albums and photos to efficiently handle large collections:
