@@ -22,7 +22,6 @@ use App\Services\Auth\LdapService;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 
@@ -120,9 +119,9 @@ class AuthController extends Controller
 	 *
 	 * @return bool
 	 */
-	private function isLdapEnabled(Request $request): bool
+	protected function isLdapEnabled(Request $request): bool
 	{
-		return $request->verify()->is_supporter() && Config::get('ldap.auth.enabled', false) === true;
+		return $request->verify()->is_supporter() && config('ldap.auth.enabled', false) === true;
 	}
 
 	/**

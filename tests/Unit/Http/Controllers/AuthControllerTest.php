@@ -20,7 +20,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Request;
+use Symfony\Component\HttpFoundation\Request as HttpFoundationRequest;
 use Tests\AbstractTestCase;
+use Tests\Constants\FreeVerifyier;
+use Tests\Constants\SupporterVerifyier;
 
 /**
  * Unit tests for AuthController LDAP functionality.
@@ -67,7 +71,8 @@ class AuthControllerTest extends AbstractTestCase
 		$request->shouldReceive('username')->andReturn('localuser');
 		$request->shouldReceive('password')->andReturn('localpassword');
 		$request->shouldReceive('ip')->andReturn('127.0.0.1');
-		$request->shouldReceive('verify->is_supporter')->andReturn(true);
+		// Not clean: totally a work around, verify should return a Verify interface.
+		$request->shouldReceive('verify')->andReturn(new SupporterVerifyier());
 
 		// Login should succeed with local auth
 		$this->controller->login($request);
@@ -90,7 +95,8 @@ class AuthControllerTest extends AbstractTestCase
 		$request->shouldReceive('username')->andReturn('localuser');
 		$request->shouldReceive('password')->andReturn('localpassword');
 		$request->shouldReceive('ip')->andReturn('127.0.0.1');
-		$request->shouldReceive('verify->is_supporter')->andReturn(false);
+		// Not clean: totally a work around, verify should return a Verify interface.
+		$request->shouldReceive('verify')->andReturn(new FreeVerifyier());
 
 		// Login should succeed with local auth
 		$this->controller->login($request);
@@ -113,7 +119,7 @@ class AuthControllerTest extends AbstractTestCase
 		$request->shouldReceive('username')->andReturn('invaliduser');
 		$request->shouldReceive('password')->andReturn('wrongpassword');
 		$request->shouldReceive('ip')->andReturn('127.0.0.1');
-		$request->shouldReceive('verify->is_supporter')->andReturn(false);
+		$request->shouldReceive('verify')->andReturn(new FreeVerifyier());
 
 		// Expect authentication exception
 		$this->expectException(UnauthenticatedException::class);
@@ -170,12 +176,19 @@ class AuthControllerTest extends AbstractTestCase
 
 	public function testLoginWithLdapSuccessful(): void
 	{
-		Log::shouldReceive('channel')->andReturnSelf();
-		Log::shouldReceive('notice')->once();
+		// Mock login channel logs
+		Log::shouldReceive('channel')->with('login')->andReturnSelf();
+		Log::shouldReceive('notice')->zeroOrMoreTimes();
+
+		// Mock default channel logs (used by ProvisionLdapUser)
 		Log::shouldReceive('debug')->zeroOrMoreTimes();
+		Log::shouldReceive('info')->zeroOrMoreTimes();
+		Log::shouldReceive('error')->never();
+		Log::shouldReceive('warning')->never();
 
 		// Enable LDAP
-		Config::set('ldap.auth.enabled', true);
+		// Config::set('ldap.auth.enabled', true);
+		config('ldap.auth.enabled', true);
 		$this->setUpLdapConfig();
 
 		// Create mock LDAP service
@@ -210,6 +223,11 @@ class AuthControllerTest extends AbstractTestCase
 				$this->mockService = $mockService;
 			}
 
+			protected function isLdapEnabled(HttpFoundationRequest $request): bool
+			{
+				return true;
+			}
+
 			protected function getLdapService(): LdapService
 			{
 				return $this->mockService;
@@ -221,7 +239,8 @@ class AuthControllerTest extends AbstractTestCase
 		$request->shouldReceive('username')->andReturn('ldapuser');
 		$request->shouldReceive('password')->andReturn('ldappassword');
 		$request->shouldReceive('ip')->andReturn('127.0.0.1');
-		$request->shouldReceive('verify->is_supporter')->andReturn(true);
+		// Not clean: totally a work around, verify should return a Verify interface.
+		$request->shouldReceive('verify')->andReturn(new SupporterVerifyier());
 
 		// Login should succeed via LDAP
 		$controller->login($request);
@@ -237,9 +256,10 @@ class AuthControllerTest extends AbstractTestCase
 		Log::shouldReceive('channel')->andReturnSelf();
 		Log::shouldReceive('notice')->once();
 		Log::shouldReceive('debug')->zeroOrMoreTimes();
+		Log::shouldReceive('error')->never();
+		Log::shouldReceive('warning')->never();
 
 		// Enable LDAP
-		Config::set('ldap.auth.enabled', true);
 		$this->setUpLdapConfig();
 
 		// Create mock LDAP service that returns null (auth failed)
@@ -259,6 +279,11 @@ class AuthControllerTest extends AbstractTestCase
 				$this->mockService = $mockService;
 			}
 
+			protected function isLdapEnabled(HttpFoundationRequest $request): bool
+			{
+				return true;
+			}
+
 			protected function getLdapService(): LdapService
 			{
 				return $this->mockService;
@@ -270,7 +295,7 @@ class AuthControllerTest extends AbstractTestCase
 		$request->shouldReceive('username')->andReturn('localuser');
 		$request->shouldReceive('password')->andReturn('localpassword');
 		$request->shouldReceive('ip')->andReturn('127.0.0.1');
-		$request->shouldReceive('verify->is_supporter')->andReturn(true);
+		$request->shouldReceive('verify')->andReturn(new SupporterVerifyier());
 
 		// Login should fall back to local auth
 		$controller->login($request);
@@ -288,7 +313,6 @@ class AuthControllerTest extends AbstractTestCase
 		Log::shouldReceive('error')->once();
 
 		// Enable LDAP
-		Config::set('ldap.auth.enabled', true);
 		$this->setUpLdapConfig();
 
 		// Create mock LDAP service that throws connection exception
@@ -307,6 +331,11 @@ class AuthControllerTest extends AbstractTestCase
 				$this->mockService = $mockService;
 			}
 
+			protected function isLdapEnabled(HttpFoundationRequest $request): bool
+			{
+				return true;
+			}
+
 			protected function getLdapService(): LdapService
 			{
 				return $this->mockService;
@@ -318,7 +347,8 @@ class AuthControllerTest extends AbstractTestCase
 		$request->shouldReceive('username')->andReturn('localuser');
 		$request->shouldReceive('password')->andReturn('localpassword');
 		$request->shouldReceive('ip')->andReturn('127.0.0.1');
-		$request->shouldReceive('verify->is_supporter')->andReturn(true);
+		// Not clean: totally a work around, verify should return a Verify interface.
+		$request->shouldReceive('verify')->andReturn(new SupporterVerifyier());
 
 		// Login should fall back to local auth
 		$controller->login($request);
@@ -332,9 +362,11 @@ class AuthControllerTest extends AbstractTestCase
 	{
 		Log::shouldReceive('channel')->andReturnSelf();
 		Log::shouldReceive('error')->once();
+		Log::shouldReceive('warning')->never();
+		Log::shouldReceive('notice')->never();
+		Log::shouldReceive('debug')->zeroOrMoreTimes();
 
 		// Enable LDAP
-		Config::set('ldap.auth.enabled', true);
 		$this->setUpLdapConfig();
 
 		// Create mock LDAP service that returns null
@@ -353,6 +385,11 @@ class AuthControllerTest extends AbstractTestCase
 				$this->mockService = $mockService;
 			}
 
+			protected function isLdapEnabled(HttpFoundationRequest $request): bool
+			{
+				return true;
+			}
+
 			protected function getLdapService(): LdapService
 			{
 				return $this->mockService;
@@ -364,7 +401,8 @@ class AuthControllerTest extends AbstractTestCase
 		$request->shouldReceive('username')->andReturn('invaliduser');
 		$request->shouldReceive('password')->andReturn('wrongpassword');
 		$request->shouldReceive('ip')->andReturn('127.0.0.1');
-		$request->shouldReceive('verify->is_supporter')->andReturn(true);
+		// Not clean: totally a work around, verify should return a Verify interface.
+		$request->shouldReceive('verify')->andReturn(new SupporterVerifyier());
 
 		// Expect authentication exception
 		$this->expectException(UnauthenticatedException::class);
@@ -378,9 +416,10 @@ class AuthControllerTest extends AbstractTestCase
 		Log::shouldReceive('channel')->andReturnSelf();
 		Log::shouldReceive('warning')->once();
 		Log::shouldReceive('notice')->once();
+		Log::shouldReceive('error')->never();
+		Log::shouldReceive('debug')->zeroOrMoreTimes();
 
 		// Enable LDAP
-		Config::set('ldap.auth.enabled', true);
 		$this->setUpLdapConfig();
 
 		// Create mock LDAP service that authenticates but provisioning fails
@@ -411,6 +450,11 @@ class AuthControllerTest extends AbstractTestCase
 				$this->mockService = $mockService;
 			}
 
+			protected function isLdapEnabled(HttpFoundationRequest $request): bool
+			{
+				return true;
+			}
+
 			protected function getLdapService(): LdapService
 			{
 				return $this->mockService;
@@ -422,7 +466,8 @@ class AuthControllerTest extends AbstractTestCase
 		$request->shouldReceive('username')->andReturn('localuser');
 		$request->shouldReceive('password')->andReturn('localpassword');
 		$request->shouldReceive('ip')->andReturn('127.0.0.1');
-		$request->shouldReceive('verify->is_supporter')->andReturn(true);
+		// Not clean: totally a work around, verify should return a Verify interface.
+		$request->shouldReceive('verify')->andReturn(new SupporterVerifyier());
 
 		// Login should fall back to local auth
 		$controller->login($request);
@@ -436,9 +481,11 @@ class AuthControllerTest extends AbstractTestCase
 	{
 		Log::shouldReceive('channel')->andReturnSelf();
 		Log::shouldReceive('notice')->once();
+		Log::shouldReceive('error')->never();
+		Log::shouldReceive('warning')->never();
+		Log::shouldReceive('debug')->zeroOrMoreTimes();
 
 		// Enable LDAP
-		Config::set('ldap.auth.enabled', true);
 		$this->setUpLdapConfig();
 
 		// Mock request (not a supporter, so LDAP won't be tried)
@@ -446,7 +493,7 @@ class AuthControllerTest extends AbstractTestCase
 		$request->shouldReceive('username')->andReturn('localuser');
 		$request->shouldReceive('password')->andReturn('localpassword');
 		$request->shouldReceive('ip')->andReturn('127.0.0.1');
-		$request->shouldReceive('verify->is_supporter')->andReturn(false);
+		$request->shouldReceive('verify')->andReturn(new FreeVerifyier());
 
 		// Login should go directly to local auth
 		$this->controller->login($request);
