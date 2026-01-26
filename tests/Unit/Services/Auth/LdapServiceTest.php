@@ -9,20 +9,26 @@
 namespace Tests\Unit\Services\Auth;
 
 use App\DTO\LdapConfiguration;
+use App\Exceptions\LdapConnectionException;
 use App\Services\Auth\LdapService;
-use LdapRecord\Testing\ConnectionFake;
-use LdapRecord\Testing\DirectoryFake;
+use Illuminate\Support\Facades\Log;
 use Tests\AbstractTestCase;
 
 /**
  * Unit tests for LdapService.
  *
- * Uses LdapRecord's DirectoryFake for mocking LDAP responses.
+ * Note: Full LDAP mocking is complex with LdapRecord. These tests focus on:
+ * - Pure logic (isUserInAdminGroup)
+ * - Configuration handling
+ * - Error paths that don't require real LDAP connection
+ * - Public API contracts
+ *
+ * Integration tests (LdapAuthTest, ProvisionLdapUserTest) provide coverage
+ * for the LDAP connection and authentication flows.
  */
 class LdapServiceTest extends AbstractTestCase
 {
 	private LdapService $service;
-	private ConnectionFake $fake;
 
 	protected function setUp(): void
 	{
@@ -37,10 +43,8 @@ class LdapServiceTest extends AbstractTestCase
 				'username' => 'cn=admin,dc=test,dc=local',
 				'password' => 'adminpass',
 				'timeout' => 5,
-				'use_tls' => true,
-				'options' => [
-					LDAP_OPT_X_TLS_REQUIRE_CERT => LDAP_OPT_X_TLS_DEMAND,
-				],
+				'use_tls' => false, // Disable TLS for unit tests
+				'options' => [],
 			],
 			'ldap.auth' => [
 				'enabled' => true,
@@ -55,100 +59,307 @@ class LdapServiceTest extends AbstractTestCase
 			],
 		]);
 
-		// Setup DirectoryFake before creating service
-		$this->fake = DirectoryFake::setup('default');
-
 		$this->service = new LdapService(new LdapConfiguration());
 	}
 
-	public function testConnectSuccess(): void
-	{
-		// Test connection succeeds
-		// This test will fail until connect() is implemented
-		$this->markTestIncomplete('Implement connect() method first');
-	}
-
-	public function testConnectTlsRequired(): void
-	{
-		// Test that TLS is enforced
-		// This test will fail until connect() is implemented with TLS validation
-		$this->markTestIncomplete('Implement connect() with TLS validation first');
-	}
-
-	public function testSearchUserSuccess(): void
-	{
-		// Test user search returns DN
-		// This test will fail until searchUser() is implemented
-		$this->markTestIncomplete('Implement searchUser() method first');
-	}
-
-	public function testSearchUserNotFound(): void
-	{
-		// Test user search returns null when user not found
-		// This test will fail until searchUser() handles not found case
-		$this->markTestIncomplete('Implement searchUser() not-found handling first');
-	}
-
-	public function testAuthenticateBindSuccess(): void
-	{
-		// TODO: Integration test required - unit testing LDAP with mocks is complex
-		// Will test via Feature tests in I7 instead
-		$this->markTestIncomplete('Deferred to integration tests (I7)');
-	}
-
-	public function testAuthenticateBindFailure(): void
-	{
-		// TODO: Integration test required - unit testing LDAP with mocks is complex
-		// Will test via Feature tests in I7 instead
-		$this->markTestIncomplete('Deferred to integration tests (I7)');
-	}
-
-	public function testRetrieveAttributesSuccess(): void
-	{
-		// Test attribute retrieval (email, display_name)
-		// This test will verify in integration tests (I7)
-		$this->markTestIncomplete('Deferred to integration tests (I7)');
-	}
-
-	public function testRetrieveAttributesMissing(): void
-	{
-		// Test attribute retrieval when attributes are not present in LDAP
-		// This test will verify in integration tests (I7)
-		$this->markTestIncomplete('Deferred to integration tests (I7)');
-	}
-
-	public function testQueryGroupsSuccess(): void
-	{
-		// Test querying user's group memberships from LDAP
-		// This test will verify in integration tests (I7)
-		$this->markTestIncomplete('Deferred to integration tests (I7)');
-	}
-
-	public function testQueryGroupsEmpty(): void
-	{
-		// Test querying groups when user has no group memberships
-		// This test will verify in integration tests (I7)
-		$this->markTestIncomplete('Deferred to integration tests (I7)');
-	}
+	// ===== GROUP LOGIC TESTS (Pure Logic - High Coverage) =====
 
 	public function testIsUserInAdminGroupTrue(): void
 	{
-		// Test admin group check when user is in admin group
-		// This test will verify in integration tests (I7)
-		$this->markTestIncomplete('Deferred to integration tests (I7)');
+		$groupDns = [
+			'cn=users,ou=groups,dc=test,dc=local',
+			'cn=admins,ou=groups,dc=test,dc=local',
+			'cn=developers,ou=groups,dc=test,dc=local',
+		];
+
+		$isAdmin = $this->service->isUserInAdminGroup($groupDns);
+
+		$this->assertTrue($isAdmin);
 	}
 
 	public function testIsUserInAdminGroupFalse(): void
 	{
-		// Test admin group check when user is not in admin group
-		// This test will verify in integration tests (I7)
-		$this->markTestIncomplete('Deferred to integration tests (I7)');
+		$groupDns = [
+			'cn=users,ou=groups,dc=test,dc=local',
+			'cn=developers,ou=groups,dc=test,dc=local',
+		];
+
+		$isAdmin = $this->service->isUserInAdminGroup($groupDns);
+
+		$this->assertFalse($isAdmin);
+	}
+
+	public function testIsUserInAdminGroupCaseInsensitive(): void
+	{
+		// LDAP DNs are case-insensitive - test different case variations
+		$groupDns = [
+			'CN=Admins,OU=Groups,DC=Test,DC=Local', // All uppercase
+		];
+
+		$isAdmin = $this->service->isUserInAdminGroup($groupDns);
+
+		$this->assertTrue($isAdmin, 'Should match admin group regardless of case');
+	}
+
+	public function testIsUserInAdminGroupMixedCase(): void
+	{
+		// Test with mixed case variations
+		$groupDns = [
+			'cn=Users,ou=GROUPS,dc=test,DC=local',
+			'CN=admins,OU=groups,DC=TEST,dc=LOCAL', // Mixed case admin group
+		];
+
+		$isAdmin = $this->service->isUserInAdminGroup($groupDns);
+
+		$this->assertTrue($isAdmin, 'Should match admin group with mixed case');
+	}
+
+	public function testIsUserInAdminGroupEmptyArray(): void
+	{
+		$isAdmin = $this->service->isUserInAdminGroup([]);
+
+		$this->assertFalse($isAdmin, 'Empty group list should return false');
 	}
 
 	public function testIsUserInAdminGroupNoConfig(): void
 	{
-		// Test admin group check when admin group is not configured
-		// This test will verify in integration tests (I7)
-		$this->markTestIncomplete('Deferred to integration tests (I7)');
+		// Configure without admin group
+		config(['ldap.auth.admin_group_dn' => null]);
+
+		// Recreate service with new config
+		$service = new LdapService(new LdapConfiguration());
+
+		$groupDns = [
+			'cn=admins,ou=groups,dc=test,dc=local',
+			'cn=superadmins,ou=groups,dc=test,dc=local',
+		];
+
+		$isAdmin = $service->isUserInAdminGroup($groupDns);
+
+		$this->assertFalse($isAdmin, 'Should return false when admin group not configured');
+	}
+
+	public function testIsUserInAdminGroupEmptyConfig(): void
+	{
+		// Configure with empty string
+		config(['ldap.auth.admin_group_dn' => '']);
+
+		$service = new LdapService(new LdapConfiguration());
+		$isAdmin = $service->isUserInAdminGroup(['cn=admins,ou=groups,dc=test,dc=local']);
+
+		$this->assertFalse($isAdmin, 'Empty admin group DN should return false');
+	}
+
+	public function testIsUserInAdminGroupPartialMatch(): void
+	{
+		// Test that partial matches don't count
+		$groupDns = [
+			'cn=admin-users,ou=groups,dc=test,dc=local', // Contains 'admin' but not exact match
+			'cn=administrators,ou=groups,dc=test,dc=local', // Different word
+		];
+
+		$isAdmin = $this->service->isUserInAdminGroup($groupDns);
+
+		$this->assertFalse($isAdmin, 'Partial matches should not count as admin');
+	}
+
+	// ===== CONFIGURATION TESTS =====
+
+	public function testServiceAcceptsConfiguration(): void
+	{
+		// Test that service can be created with valid configuration
+		$config = new LdapConfiguration();
+		$service = new LdapService($config);
+
+		$this->assertInstanceOf(LdapService::class, $service);
+	}
+
+	public function testServiceWithCustomConfiguration(): void
+	{
+		// Test with custom AD-style configuration
+		config([
+			'ldap.auth' => [
+				'enabled' => true,
+				'auto_provision' => true,
+				'user_filter' => '(&(objectClass=user)(sAMAccountName=%s))',
+				'attributes' => [
+					'username' => 'sAMAccountName',
+					'email' => 'userPrincipalName',
+					'display_name' => 'cn',
+				],
+				'admin_group_dn' => 'CN=Domain Admins,CN=Users,DC=example,DC=com',
+			],
+		]);
+
+		$config = new LdapConfiguration();
+		$service = new LdapService($config);
+
+		// Test admin group matching with AD-style DN
+		$groupDns = ['CN=Domain Admins,CN=Users,DC=example,DC=com'];
+		$this->assertTrue($service->isUserInAdminGroup($groupDns));
+	}
+
+	// ===== ERROR HANDLING TESTS =====
+
+	public function testAuthenticateWithInvalidHostThrowsConnectionException(): void
+	{
+		// Configure with invalid host that will fail to connect
+		config(['ldap.connections.default.hosts' => ['invalid.nonexistent.local']]);
+		config(['ldap.connections.default.timeout' => 1]); // Short timeout
+
+		$service = new LdapService(new LdapConfiguration());
+
+		// Expect LdapConnectionException when connection fails
+		$this->expectException(LdapConnectionException::class);
+		$this->expectExceptionMessage('Unable to connect to LDAP server');
+
+		$service->authenticate('testuser', 'password');
+	}
+
+	public function testAuthenticateLogsAttempt(): void
+	{
+		// Enable log capture - allow all log calls
+		Log::shouldReceive('debug')->atLeast()->once();
+		Log::shouldReceive('notice')->zeroOrMoreTimes();
+		Log::shouldReceive('warning')->zeroOrMoreTimes();
+		Log::shouldReceive('info')->zeroOrMoreTimes();
+		Log::shouldReceive('error')->atLeast()->once();
+
+		// This will throw LdapConnectionException (invalid host)
+		try {
+			$this->service->authenticate('testuser', 'password');
+			$this->fail('Should have thrown LdapConnectionException');
+		} catch (LdapConnectionException $e) {
+			// Expected - LdapConnectionException should be re-thrown
+			$this->assertStringContainsString('Unable to connect to LDAP server', $e->getMessage());
+		}
+	}
+
+	public function testQueryGroupsWithInvalidDnReturnsEmpty(): void
+	{
+		// queryGroups catches exceptions and returns empty array
+		// This tests the error handling path
+		Log::shouldReceive('debug')->zeroOrMoreTimes();
+		Log::shouldReceive('warning')
+			->once()
+			->withArgs(function ($message, $context) {
+				return $message === 'LDAP group query failed' &&
+					   isset($context['dn']) &&
+					   isset($context['error']);
+			});
+
+		$groups = $this->service->queryGroups('invalid-dn');
+
+		$this->assertIsArray($groups);
+		$this->assertEmpty($groups, 'Should return empty array on error');
+	}
+
+	// ===== EDGE CASE TESTS =====
+
+	public function testIsUserInAdminGroupWithWhitespace(): void
+	{
+		// Test DNs with extra whitespace
+		$groupDns = [
+			'cn = admins , ou = groups , dc = test , dc = local', // Spaces around values
+		];
+
+		// This should NOT match because LDAP DNs are whitespace-sensitive
+		$isAdmin = $this->service->isUserInAdminGroup($groupDns);
+
+		$this->assertFalse($isAdmin, 'DNs with extra whitespace should not match');
+	}
+
+	public function testIsUserInAdminGroupWithSpecialCharacters(): void
+	{
+		// Configure admin group with special characters
+		config(['ldap.auth.admin_group_dn' => 'cn=admin-group_v2.0,ou=groups,dc=test,dc=local']);
+
+		$service = new LdapService(new LdapConfiguration());
+
+		$groupDns = [
+			'cn=admin-group_v2.0,ou=groups,dc=test,dc=local',
+		];
+
+		$isAdmin = $service->isUserInAdminGroup($groupDns);
+
+		$this->assertTrue($isAdmin, 'Should handle special characters in DN');
+	}
+
+	public function testIsUserInAdminGroupWithUnicodeCharacters(): void
+	{
+		// Configure admin group with unicode characters
+		config(['ldap.auth.admin_group_dn' => 'cn=管理者,ou=groups,dc=test,dc=local']);
+
+		$service = new LdapService(new LdapConfiguration());
+
+		$groupDns = [
+			'cn=管理者,ou=groups,dc=test,dc=local',
+		];
+
+		$isAdmin = $service->isUserInAdminGroup($groupDns);
+
+		$this->assertTrue($isAdmin, 'Should handle unicode characters in DN');
+	}
+
+	public function testIsUserInAdminGroupWithManyGroups(): void
+	{
+		// Test performance with large number of groups
+		$groupDns = [];
+		for ($i = 0; $i < 100; $i++) {
+			$groupDns[] = "cn=group{$i},ou=groups,dc=test,dc=local";
+		}
+		// Add admin group at the end
+		$groupDns[] = 'cn=admins,ou=groups,dc=test,dc=local';
+
+		$isAdmin = $this->service->isUserInAdminGroup($groupDns);
+
+		$this->assertTrue($isAdmin, 'Should find admin group in large list');
+	}
+
+	public function testIsUserInAdminGroupFirstPosition(): void
+	{
+		// Admin group is first in list
+		$groupDns = [
+			'cn=admins,ou=groups,dc=test,dc=local',
+			'cn=users,ou=groups,dc=test,dc=local',
+		];
+
+		$isAdmin = $this->service->isUserInAdminGroup($groupDns);
+
+		$this->assertTrue($isAdmin, 'Should match admin group in first position');
+	}
+
+	public function testIsUserInAdminGroupLastPosition(): void
+	{
+		// Admin group is last in list
+		$groupDns = [
+			'cn=users,ou=groups,dc=test,dc=local',
+			'cn=developers,ou=groups,dc=test,dc=local',
+			'cn=admins,ou=groups,dc=test,dc=local',
+		];
+
+		$isAdmin = $this->service->isUserInAdminGroup($groupDns);
+
+		$this->assertTrue($isAdmin, 'Should match admin group in last position');
+	}
+
+	public function testMultipleServiceInstancesIndependent(): void
+	{
+		// Test that multiple service instances work independently
+		$service1 = new LdapService(new LdapConfiguration());
+
+		config(['ldap.auth.admin_group_dn' => 'cn=different-admins,ou=groups,dc=test,dc=local']);
+		$service2 = new LdapService(new LdapConfiguration());
+
+		$groupDns1 = ['cn=admins,ou=groups,dc=test,dc=local'];
+		$groupDns2 = ['cn=different-admins,ou=groups,dc=test,dc=local'];
+
+		// Each service should use its own configuration
+		$this->assertTrue($service1->isUserInAdminGroup($groupDns1));
+		$this->assertFalse($service1->isUserInAdminGroup($groupDns2));
+
+		$this->assertFalse($service2->isUserInAdminGroup($groupDns1));
+		$this->assertTrue($service2->isUserInAdminGroup($groupDns2));
 	}
 }
+
