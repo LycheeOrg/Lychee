@@ -10,6 +10,7 @@ namespace App\Http\Controllers;
 
 use App\Actions\User\ProvisionLdapUser;
 use App\DTO\LdapConfiguration;
+use App\Exceptions\LdapConnectionException;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
 use App\Http\Requests\Session\LoginRequest;
@@ -46,10 +47,17 @@ class AuthController extends Controller
 		$ip = $request->ip();
 
 		// Try LDAP authentication first if enabled
-		if ($this->isLdapEnabled() && $this->attemptLdapLogin($username, $password)) {
-			Log::channel('login')->notice(__METHOD__ . ':' . __LINE__ . ' -- User (' . $username . ') has logged in via LDAP from ' . $ip);
+		if ($this->isLdapEnabled()) {
+			try {
+				if ($this->attemptLdapLogin($username, $password)) {
+					Log::channel('login')->notice(__METHOD__ . ':' . __LINE__ . ' -- User (' . $username . ') has logged in via LDAP from ' . $ip);
 
-			return;
+					return;
+				}
+			} catch (LdapConnectionException $e) {
+				// LDAP server unreachable - fall through to local auth if enabled
+				Log::channel('login')->warning(__METHOD__ . ':' . __LINE__ . ' -- LDAP server unreachable, falling back to local auth for user (' . $username . ') from ' . $ip);
+			}
 		}
 
 		// Fallback to local authentication
@@ -137,6 +145,7 @@ class AuthController extends Controller
 			$ldapUser = $ldapService->authenticate($username, $password);
 
 			if ($ldapUser === null) {
+				// Invalid credentials or user not found
 				return false;
 			}
 
@@ -148,9 +157,21 @@ class AuthController extends Controller
 			Auth::login($user);
 
 			return true;
+		} catch (LdapConnectionException $e) {
+			// LDAP server unreachable - log with connection context
+			Log::channel('login')->error(__METHOD__ . ':' . __LINE__ . ' -- LDAP server unreachable: ' . $e->getMessage(), [
+				'username' => $username,
+				'exception' => get_class($e),
+			]);
+
+			// Rethrow to allow graceful degradation to local auth
+			throw $e;
 		} catch (\Throwable $e) {
-			// LDAP authentication failed, log and return false
-			Log::channel('login')->warning(__METHOD__ . ':' . __LINE__ . ' -- LDAP authentication failed: ' . $e->getMessage());
+			// Other LDAP errors (configuration, provisioning, etc.) - log and return false
+			Log::channel('login')->warning(__METHOD__ . ':' . __LINE__ . ' -- LDAP authentication failed: ' . $e->getMessage(), [
+				'username' => $username,
+				'exception' => get_class($e),
+			]);
 
 			return false;
 		}

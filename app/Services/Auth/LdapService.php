@@ -10,6 +10,7 @@ namespace App\Services\Auth;
 
 use App\DTO\LdapConfiguration;
 use App\DTO\LdapUser;
+use App\Exceptions\LdapConnectionException;
 use Illuminate\Support\Facades\Log;
 use LdapRecord\Connection;
 use LdapRecord\Container;
@@ -66,7 +67,11 @@ class LdapService
 			Log::debug('LDAP user found', ['username' => $username, 'dn' => $userDn]);
 
 			// Step 3: Bind with user DN and password
-			$this->connection->auth()->attempt($userDn, $password);
+			if (!$this->connection->auth()->attempt($userDn, $password)) {
+				Log::notice('LDAP bind failed - invalid credentials', ['username' => $username]);
+
+				return null;
+			}
 			Log::debug('LDAP bind successful', ['dn' => $userDn]);
 
 			// Step 4: Retrieve user attributes (email, display_name)
@@ -84,8 +89,16 @@ class LdapService
 				email: $attributes['email'],
 				display_name: $attributes['display_name']
 			);
+		} catch (LdapConnectionException $e) {
+			// Connection errors are re-thrown for caller to handle graceful degradation
+			Log::error('LDAP connection error during authentication', [
+				'username' => $username,
+				'error' => $e->getMessage(),
+			]);
+
+			throw $e;
 		} catch (\Throwable $e) {
-			// Authentication failed (bind error, connection error, etc.)
+			// Other errors (bind failures, search errors) return null
 			Log::warning('LDAP authentication failed', [
 				'username' => $username,
 				'error' => $e->getMessage(),
@@ -184,7 +197,7 @@ class LdapService
 	/**
 	 * Establish LDAP connection with TLS enforcement.
 	 *
-	 * @throws \LdapRecord\Auth\BindException if connection fails
+	 * @throws LdapConnectionException if connection fails
 	 */
 	private function connect(): void
 	{
@@ -192,27 +205,45 @@ class LdapService
 			return; // Already connected
 		}
 
-		// Create connection from config
-		$this->connection = new Connection([
-			'hosts' => [$this->config->host],
-			'port' => $this->config->port,
-			'base_dn' => $this->config->base_dn,
-			'username' => $this->config->bind_dn,
-			'password' => $this->config->bind_password,
-			'timeout' => $this->config->connection_timeout,
-			'use_tls' => $this->config->use_tls,
-			'options' => [
-				LDAP_OPT_X_TLS_REQUIRE_CERT => $this->config->tls_verify_peer
-					? LDAP_OPT_X_TLS_DEMAND
-					: LDAP_OPT_X_TLS_ALLOW,
-			],
-		]);
+		try {
+			// Create connection from config
+			$this->connection = new Connection([
+				'hosts' => [$this->config->host],
+				'port' => $this->config->port,
+				'base_dn' => $this->config->base_dn,
+				'username' => $this->config->bind_dn,
+				'password' => $this->config->bind_password,
+				'timeout' => $this->config->connection_timeout,
+				'use_tls' => $this->config->use_tls,
+				'options' => [
+					LDAP_OPT_X_TLS_REQUIRE_CERT => $this->config->tls_verify_peer
+						? LDAP_OPT_X_TLS_DEMAND
+						: LDAP_OPT_X_TLS_ALLOW,
+				],
+			]);
 
-		// Add connection to container for LdapRecord to use
-		Container::addConnection($this->connection, 'default');
+			// Add connection to container for LdapRecord to use
+			Container::addConnection($this->connection, 'default');
 
-		// Bind with service account
-		$this->connection->connect();
+			// Bind with service account
+			$this->connection->connect();
+
+			Log::debug('LDAP connection successful', [
+				'host' => $this->config->host,
+				'port' => $this->config->port,
+				'use_tls' => $this->config->use_tls,
+			]);
+		} catch (\Throwable $e) {
+			// Wrap any connection errors in LdapConnectionException
+			Log::error('LDAP connection failed', [
+				'host' => $this->config->host,
+				'port' => $this->config->port,
+				'error' => $e->getMessage(),
+				'exception' => get_class($e),
+			]);
+
+			throw new LdapConnectionException('Unable to connect to LDAP server. Please check your network connection and LDAP configuration.', $e);
+		}
 	}
 
 	/**
