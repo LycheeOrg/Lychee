@@ -46,18 +46,16 @@ class AuthController extends Controller
 		$password = $request->password();
 		$ip = $request->ip();
 
-		// Try LDAP authentication first if enabled
-		if ($this->isLdapEnabled()) {
-			try {
-				if ($this->attemptLdapLogin($username, $password)) {
-					Log::channel('login')->notice(__METHOD__ . ':' . __LINE__ . ' -- User (' . $username . ') has logged in via LDAP from ' . $ip);
+		try {
+			// Try LDAP authentication first if enabled
+			if ($this->isLdapEnabled() && $this->attemptLdapLogin($username, $password)) {
+				Log::channel('login')->notice(__METHOD__ . ':' . __LINE__ . ' -- User (' . $username . ') has logged in via LDAP from ' . $ip);
 
-					return;
-				}
-			} catch (LdapConnectionException $e) {
-				// LDAP server unreachable - fall through to local auth if enabled
-				Log::channel('login')->warning(__METHOD__ . ':' . __LINE__ . ' -- LDAP server unreachable, falling back to local auth for user (' . $username . ') from ' . $ip);
+				return;
 			}
+		} catch (LdapConnectionException $e) {
+			// LDAP server unreachable - fall through to local auth if enabled
+			Log::channel('login')->warning(__METHOD__ . ':' . __LINE__ . ' -- LDAP server unreachable, falling back to local auth for user (' . $username . ') from ' . $ip);
 		}
 
 		// Fallback to local authentication
