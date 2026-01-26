@@ -28,10 +28,10 @@ use LdapRecord\Container;
  */
 class LdapService
 {
-	private Connection $connection;
-
 	public function __construct(
 		private readonly LdapConfiguration $config,
+		// The connection is made modifiable, default to null so we can test it.
+		private ?Connection $connection = null,
 	) {
 	}
 
@@ -125,7 +125,7 @@ class LdapService
 
 		try {
 			// Ensure connected
-			if (!isset($this->connection)) {
+			if ($this->connection === null) {
 				$this->connect();
 			}
 
@@ -202,7 +202,7 @@ class LdapService
 	 */
 	private function connect(): void
 	{
-		if (isset($this->connection)) {
+		if ($this->connection !== null) {
 			return; // Already connected
 		}
 
