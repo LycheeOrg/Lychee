@@ -137,8 +137,7 @@ class AuthController extends Controller
 	{
 		try {
 			// Create LDAP configuration and service
-			$ldapConfig = new LdapConfiguration();
-			$ldapService = new LdapService($ldapConfig);
+			$ldapService = $this->getLdapService();
 
 			// Authenticate against LDAP
 			$ldapUser = $ldapService->authenticate($username, $password);
@@ -174,5 +173,17 @@ class AuthController extends Controller
 
 			return false;
 		}
+	}
+
+	/**
+	 * Return the LDAP service to allow for testing.
+	 *
+	 * @return LdapService
+	 */
+	protected function getLdapService(): LdapService
+	{
+		$ldapConfig = new LdapConfiguration();
+
+		return new LdapService($ldapConfig);
 	}
 }

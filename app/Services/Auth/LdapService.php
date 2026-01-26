@@ -206,6 +206,7 @@ class LdapService
 			return; // Already connected
 		}
 
+		// @codeCoverageIgnoreStart
 		try {
 			// Create connection from config
 			$this->connection = new Connection([
@@ -245,6 +246,7 @@ class LdapService
 
 			throw new LdapConnectionException('Unable to connect to LDAP server. Please check your network connection and LDAP configuration.', $e);
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**

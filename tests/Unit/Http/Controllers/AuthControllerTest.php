@@ -8,10 +8,13 @@
 
 namespace Tests\Unit\Http\Controllers;
 
+use App\DTO\LdapUser;
+use App\Exceptions\LdapConnectionException;
 use App\Exceptions\UnauthenticatedException;
 use App\Http\Controllers\AuthController;
 use App\Http\Requests\Session\LoginRequest;
 use App\Models\User;
+use App\Services\Auth\LdapService;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
@@ -163,6 +166,317 @@ class AuthControllerTest extends AbstractTestCase
 
 		// Verify config is returned
 		$this->assertNotNull($config);
+	}
+
+	public function testLoginWithLdapSuccessful(): void
+	{
+		Log::shouldReceive('channel')->andReturnSelf();
+		Log::shouldReceive('notice')->once();
+		Log::shouldReceive('debug')->zeroOrMoreTimes();
+
+		// Enable LDAP
+		Config::set('ldap.auth.enabled', true);
+		$this->setUpLdapConfig();
+
+		// Create mock LDAP service
+		$ldapService = \Mockery::mock(LdapService::class);
+
+		$ldapUser = new LdapUser(
+			username: 'ldapuser',
+			userDn: 'uid=ldapuser,ou=users,dc=example,dc=com',
+			email: 'ldap@example.com',
+			display_name: 'LDAP User'
+		);
+
+		$ldapService->shouldReceive('authenticate')
+			->once()
+			->with('ldapuser', 'ldappassword')
+			->andReturn($ldapUser);
+
+		$ldapService->shouldReceive('queryGroups')
+			->once()
+			->andReturn([]);
+
+		$ldapService->shouldReceive('isUserInAdminGroup')
+			->once()
+			->andReturn(false);
+
+		// Create controller that returns our mocked service
+		$controller = new class($ldapService) extends AuthController {
+			private LdapService $mockService;
+
+			public function __construct(LdapService $mockService)
+			{
+				$this->mockService = $mockService;
+			}
+
+			protected function getLdapService(): LdapService
+			{
+				return $this->mockService;
+			}
+		};
+
+		// Mock request
+		$request = \Mockery::mock(LoginRequest::class);
+		$request->shouldReceive('username')->andReturn('ldapuser');
+		$request->shouldReceive('password')->andReturn('ldappassword');
+		$request->shouldReceive('ip')->andReturn('127.0.0.1');
+		$request->shouldReceive('verify->is_supporter')->andReturn(true);
+
+		// Login should succeed via LDAP
+		$controller->login($request);
+
+		// Verify user is authenticated
+		$this->assertTrue(Auth::check());
+		$this->assertSame('ldapuser', Auth::user()->username);
+		$this->assertSame('ldap@example.com', Auth::user()->email);
+	}
+
+	public function testLoginWithLdapFailureFallsBackToLocal(): void
+	{
+		Log::shouldReceive('channel')->andReturnSelf();
+		Log::shouldReceive('notice')->once();
+		Log::shouldReceive('debug')->zeroOrMoreTimes();
+
+		// Enable LDAP
+		Config::set('ldap.auth.enabled', true);
+		$this->setUpLdapConfig();
+
+		// Create mock LDAP service that returns null (auth failed)
+		$ldapService = \Mockery::mock(LdapService::class);
+
+		$ldapService->shouldReceive('authenticate')
+			->once()
+			->with('localuser', 'localpassword')
+			->andReturn(null);
+
+		// Create controller that returns our mocked service
+		$controller = new class($ldapService) extends AuthController {
+			private LdapService $mockService;
+
+			public function __construct(LdapService $mockService)
+			{
+				$this->mockService = $mockService;
+			}
+
+			protected function getLdapService(): LdapService
+			{
+				return $this->mockService;
+			}
+		};
+
+		// Mock request
+		$request = \Mockery::mock(LoginRequest::class);
+		$request->shouldReceive('username')->andReturn('localuser');
+		$request->shouldReceive('password')->andReturn('localpassword');
+		$request->shouldReceive('ip')->andReturn('127.0.0.1');
+		$request->shouldReceive('verify->is_supporter')->andReturn(true);
+
+		// Login should fall back to local auth
+		$controller->login($request);
+
+		// Verify user is authenticated via local auth
+		$this->assertTrue(Auth::check());
+		$this->assertSame('localuser', Auth::user()->username);
+	}
+
+	public function testLoginWithLdapConnectionErrorFallsBackToLocal(): void
+	{
+		Log::shouldReceive('channel')->andReturnSelf();
+		Log::shouldReceive('warning')->once();
+		Log::shouldReceive('notice')->once();
+		Log::shouldReceive('error')->once();
+
+		// Enable LDAP
+		Config::set('ldap.auth.enabled', true);
+		$this->setUpLdapConfig();
+
+		// Create mock LDAP service that throws connection exception
+		$ldapService = \Mockery::mock(LdapService::class);
+
+		$ldapService->shouldReceive('authenticate')
+			->once()
+			->andThrow(new LdapConnectionException('LDAP server unreachable'));
+
+		// Create controller that returns our mocked service
+		$controller = new class($ldapService) extends AuthController {
+			private LdapService $mockService;
+
+			public function __construct(LdapService $mockService)
+			{
+				$this->mockService = $mockService;
+			}
+
+			protected function getLdapService(): LdapService
+			{
+				return $this->mockService;
+			}
+		};
+
+		// Mock request
+		$request = \Mockery::mock(LoginRequest::class);
+		$request->shouldReceive('username')->andReturn('localuser');
+		$request->shouldReceive('password')->andReturn('localpassword');
+		$request->shouldReceive('ip')->andReturn('127.0.0.1');
+		$request->shouldReceive('verify->is_supporter')->andReturn(true);
+
+		// Login should fall back to local auth
+		$controller->login($request);
+
+		// Verify user is authenticated via local auth
+		$this->assertTrue(Auth::check());
+		$this->assertSame('localuser', Auth::user()->username);
+	}
+
+	public function testLoginFailsWhenBothLdapAndLocalFail(): void
+	{
+		Log::shouldReceive('channel')->andReturnSelf();
+		Log::shouldReceive('error')->once();
+
+		// Enable LDAP
+		Config::set('ldap.auth.enabled', true);
+		$this->setUpLdapConfig();
+
+		// Create mock LDAP service that returns null
+		$ldapService = \Mockery::mock(LdapService::class);
+
+		$ldapService->shouldReceive('authenticate')
+			->once()
+			->andReturn(null);
+
+		// Create controller that returns our mocked service
+		$controller = new class($ldapService) extends AuthController {
+			private LdapService $mockService;
+
+			public function __construct(LdapService $mockService)
+			{
+				$this->mockService = $mockService;
+			}
+
+			protected function getLdapService(): LdapService
+			{
+				return $this->mockService;
+			}
+		};
+
+		// Mock request with invalid credentials
+		$request = \Mockery::mock(LoginRequest::class);
+		$request->shouldReceive('username')->andReturn('invaliduser');
+		$request->shouldReceive('password')->andReturn('wrongpassword');
+		$request->shouldReceive('ip')->andReturn('127.0.0.1');
+		$request->shouldReceive('verify->is_supporter')->andReturn(true);
+
+		// Expect authentication exception
+		$this->expectException(UnauthenticatedException::class);
+		$this->expectExceptionMessage('Unknown user or invalid password');
+
+		$controller->login($request);
+	}
+
+	public function testLoginWithLdapProvisioningError(): void
+	{
+		Log::shouldReceive('channel')->andReturnSelf();
+		Log::shouldReceive('warning')->once();
+		Log::shouldReceive('notice')->once();
+
+		// Enable LDAP
+		Config::set('ldap.auth.enabled', true);
+		$this->setUpLdapConfig();
+
+		// Create mock LDAP service that authenticates but provisioning fails
+		$ldapService = \Mockery::mock(LdapService::class);
+
+		$ldapUser = new LdapUser(
+			username: 'ldapuser',
+			userDn: 'uid=ldapuser,ou=users,dc=example,dc=com',
+			email: 'ldap@example.com',
+			display_name: 'LDAP User'
+		);
+
+		$ldapService->shouldReceive('authenticate')
+			->once()
+			->andReturn($ldapUser);
+
+		// queryGroups throws an exception (simulating provisioning error)
+		$ldapService->shouldReceive('queryGroups')
+			->once()
+			->andThrow(new \Exception('Provisioning failed'));
+
+		// Create controller that returns our mocked service
+		$controller = new class($ldapService) extends AuthController {
+			private LdapService $mockService;
+
+			public function __construct(LdapService $mockService)
+			{
+				$this->mockService = $mockService;
+			}
+
+			protected function getLdapService(): LdapService
+			{
+				return $this->mockService;
+			}
+		};
+
+		// Mock request
+		$request = \Mockery::mock(LoginRequest::class);
+		$request->shouldReceive('username')->andReturn('localuser');
+		$request->shouldReceive('password')->andReturn('localpassword');
+		$request->shouldReceive('ip')->andReturn('127.0.0.1');
+		$request->shouldReceive('verify->is_supporter')->andReturn(true);
+
+		// Login should fall back to local auth
+		$controller->login($request);
+
+		// Verify user is authenticated via local auth
+		$this->assertTrue(Auth::check());
+		$this->assertSame('localuser', Auth::user()->username);
+	}
+
+	public function testLoginWithLdapEnabledButNotSupporter(): void
+	{
+		Log::shouldReceive('channel')->andReturnSelf();
+		Log::shouldReceive('notice')->once();
+
+		// Enable LDAP
+		Config::set('ldap.auth.enabled', true);
+		$this->setUpLdapConfig();
+
+		// Mock request (not a supporter, so LDAP won't be tried)
+		$request = \Mockery::mock(LoginRequest::class);
+		$request->shouldReceive('username')->andReturn('localuser');
+		$request->shouldReceive('password')->andReturn('localpassword');
+		$request->shouldReceive('ip')->andReturn('127.0.0.1');
+		$request->shouldReceive('verify->is_supporter')->andReturn(false);
+
+		// Login should go directly to local auth
+		$this->controller->login($request);
+
+		// Verify user is authenticated via local auth
+		$this->assertTrue(Auth::check());
+		$this->assertSame('localuser', Auth::user()->username);
+	}
+
+	/**
+	 * Set up minimal LDAP configuration for tests.
+	 */
+	private function setUpLdapConfig(): void
+	{
+		Config::set('ldap.connections.default', [
+			'hosts' => ['ldap.example.com'],
+			'port' => 389,
+			'base_dn' => 'dc=example,dc=com',
+			'username' => 'cn=admin,dc=example,dc=com',
+			'password' => 'adminpass',
+		]);
+
+		Config::set('ldap.auth', [
+			'user_filter' => '(uid=%s)',
+			'attributes' => [
+				'username' => 'uid',
+				'email' => 'mail',
+				'display_name' => 'cn',
+			],
+		]);
 	}
 
 	protected function tearDown(): void
