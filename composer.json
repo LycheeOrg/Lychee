@@ -74,7 +74,7 @@
         "omnipay/mollie": "^5.5",
         "omnipay/stripe": "^3.2",
         "opcodesio/log-viewer": "dev-lycheeOrg",
-        "paypal/paypal-server-sdk": "2.1.0",
+        "paypal/paypal-server-sdk": "2.2.0",
         "php-ffmpeg/php-ffmpeg": "^1.0",
         "php-http/guzzle7-adapter": "^1.0",
         "php-http/message": "^1.12",
