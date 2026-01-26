@@ -19,6 +19,7 @@ use App\Http\Resources\Rights\GlobalRightsResource;
 use App\Http\Resources\Root\AuthConfig;
 use App\Models\User;
 use App\Services\Auth\LdapService;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
@@ -48,7 +49,7 @@ class AuthController extends Controller
 
 		try {
 			// Try LDAP authentication first if enabled
-			if ($this->isLdapEnabled() && $this->attemptLdapLogin($username, $password)) {
+			if ($this->isLdapEnabled($request) && $this->attemptLdapLogin($username, $password)) {
 				Log::channel('login')->notice(__METHOD__ . ':' . __LINE__ . ' -- User (' . $username . ') has logged in via LDAP from ' . $ip);
 
 				return;
@@ -119,9 +120,9 @@ class AuthController extends Controller
 	 *
 	 * @return bool
 	 */
-	private function isLdapEnabled(): bool
+	private function isLdapEnabled(Request $request): bool
 	{
-		return Config::get('ldap.auth.enabled', false) === true;
+		return $request->verify()->is_supporter() && Config::get('ldap.auth.enabled', false) === true;
 	}
 
 	/**
