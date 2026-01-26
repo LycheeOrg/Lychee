@@ -44,17 +44,17 @@
         "@paypal/paypal-js": "^9.2.0",
         "@primeuix/themes": "^2.0.3",
         "@sidsbrmnn/scrollspy": "^1.1.0",
-        "@stripe/stripe-js": "^8.6.3",
+        "@stripe/stripe-js": "^8.6.4",
         "@tailwindcss/typography": "^0.5.19",
         "@tailwindcss/vite": "^4.1.18",
         "@types/dropbox-chooser": "^1.0.8",
         "@types/justified-layout": "^4.1.4",
         "@vueuse/components": "^14.1.0",
         "@vueuse/core": "^14.0.0",
-        "axios": "^1.13.2",
-        "axios-cache-interceptor": "^1.11.3",
+        "axios": "^1.13.3",
+        "axios-cache-interceptor": "^1.11.4",
         "justified-layout": "^4.1.0",
-        "laravel-vite-plugin": "^2.0.1",
+        "laravel-vite-plugin": "^2.1.0",
         "laravel-vue-i18n": "^2.7.8",
         "leaflet": "^1.9.4",
         "leaflet-gpx": "^2.2.0",
@@ -82,7 +82,7 @@
     "optionalDependencies": {
         "@tailwindcss/oxide-linux-arm64-gnu": "^4.1.0",
         "@tailwindcss/oxide-linux-x64-gnu": "^4.1.0",
-        "lightningcss-linux-x64-gnu": "^1.30.2"
+        "lightningcss-linux-x64-gnu": "^1.31.1"
     },
     "browserslist": [
         "defaults and fully supports es6-module"
