@@ -659,6 +659,7 @@ return [
         'webshop_lycheeorg_disclaimer_enabled' => 'Lychee is provided under MIT license without any warranties. Disabling this option removes the disclaimer from the order page.',
         'webshop_auto_fulfill_enabled' => 'Once a payment is completed, the content is automatically made available to the user when possible.',
         'webshop_manual_fulfill_enabled' => 'When "Mark as Delivered" is clicked, the content is automatically made available to the user when possible.',
+        'enable_photo_details_always_open' => 'When opening the photo view, the photo details drawer is always visible.',
     ],
 
     'category_name' => [
