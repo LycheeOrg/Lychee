@@ -332,6 +332,7 @@ return [
         'webshop_lycheeorg_disclaimer_enabled' => 'Enable LycheeOrg non-liability disclaimer',
         'webshop_auto_fulfill_enabled' => 'Enable auto-fulfillment of orders.',
         'webshop_manual_fulfill_enabled' => 'Enable auto-fulfillment of orders on manual action.',
+        'enable_photo_details_always_open' => 'Photo details always visible.',
     ],
     'details' => [
         'version' => '',
