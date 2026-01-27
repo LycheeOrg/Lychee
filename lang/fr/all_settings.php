@@ -330,6 +330,7 @@ return [
         'webshop_lycheeorg_disclaimer_enabled' => 'Lychee est fourni sous licence MIT sans aucune garantie. La désactivation de cette option supprime la clause de non-responsabilité de la page de commande.',
         'webshop_auto_fulfill_enabled' => 'Enable auto-fulfillment of orders.',
         'webshop_manual_fulfill_enabled' => 'Enable auto-fulfillment of orders on manual action.',
+        'enable_photo_details_always_open' => 'Photo details always visible.',
     ],
     'documentation' => [
         'version' => 'Version actuelle de Lychee',
@@ -656,6 +657,7 @@ return [
         'webshop_lycheeorg_disclaimer_enabled' => 'Activer la clause de non-responsabilité de LycheeOrg',
         'webshop_auto_fulfill_enabled' => 'Once a payment is completed, the content is automatically made available to the user when possible.',
         'webshop_manual_fulfill_enabled' => 'When "Mark as Delivered" is clicked, the content is automatically made available to the user when possible.',
+        'enable_photo_details_always_open' => 'When opening the photo view, the photo details drawer is always visible.',
     ],
     'category_name' => [
         'config' => 'Les bases',

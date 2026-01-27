@@ -1,5 +1,6 @@
 import InitService from "@/services/init-service";
 import { defineStore } from "pinia";
+import { useTogglablesStateStore } from "./ModalsState";
 
 export type LycheeStateStore = ReturnType<typeof useLycheeStateStore>;
 
@@ -32,6 +33,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		is_details_links_enabled: false,
 		is_desktop_dock_full_transparency_enabled: false,
 		is_mobile_dock_full_transparency_enabled: false,
+		is_photo_details_always_open: false,
 
 		// keybinding help
 		show_keybinding_help_popup: false,
@@ -187,6 +189,10 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.is_details_links_enabled = data.is_details_links_enabled;
 					this.is_desktop_dock_full_transparency_enabled = data.is_desktop_dock_full_transparency_enabled;
 					this.is_mobile_dock_full_transparency_enabled = data.is_mobile_dock_full_transparency_enabled;
+					this.is_photo_details_always_open = data.is_photo_details_always_open;
+					const togglableStore = useTogglablesStateStore();
+					// Initialize the details togglable according to the always open config
+					togglableStore.are_details_open = data.is_photo_details_always_open;
 
 					this.is_registration_enabled = data.is_registration_enabled;
 

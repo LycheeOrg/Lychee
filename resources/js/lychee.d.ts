@@ -420,6 +420,7 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		is_details_links_enabled: boolean;
 		is_desktop_dock_full_transparency_enabled: boolean;
 		is_mobile_dock_full_transparency_enabled: boolean;
+		is_photo_details_always_open: boolean;
 		display_thumb_album_overlay: App.Enum.VisibilityType;
 		display_thumb_photo_overlay: App.Enum.VisibilityType;
 		album_subtitle_type: App.Enum.ThumbAlbumSubtitleType;
