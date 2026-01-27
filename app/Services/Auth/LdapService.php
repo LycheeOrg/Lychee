@@ -59,26 +59,26 @@ class LdapService
 			Log::debug('LDAP connection established', ['host' => $this->config->host]);
 
 			// Step 2: Search for user to get DN
-			$userDn = $this->searchUser($username);
-			if ($userDn === null) {
+			$user_dn = $this->searchUser($username);
+			if ($user_dn === null) {
 				Log::notice('LDAP user not found', ['username' => $username]);
 
 				return null;
 			}
-			Log::debug('LDAP user found', ['username' => $username, 'dn' => $userDn]);
+			Log::debug('LDAP user found', ['username' => $username, 'dn' => $user_dn]);
 
 			// Step 3: Bind with user DN and password
-			if (!$this->connection->auth()->attempt($userDn, $password)) {
+			if (!$this->connection->auth()->attempt($user_dn, $password)) {
 				Log::notice('LDAP bind failed - invalid credentials', ['username' => $username]);
 
 				return null;
 			}
-			Log::debug('LDAP bind successful', ['dn' => $userDn]);
+			Log::debug('LDAP bind successful', ['dn' => $user_dn]);
 
 			// Step 4: Retrieve user attributes (email, display_name)
-			$attributes = $this->retrieveAttributes($userDn);
+			$attributes = $this->retrieveAttributes($user_dn);
 			Log::debug('LDAP attributes retrieved', [
-				'dn' => $userDn,
+				'dn' => $user_dn,
 				'has_email' => $attributes['email'] !== null,
 				'has_display_name' => $attributes['display_name'] !== null,
 			]);
@@ -86,7 +86,7 @@ class LdapService
 			// Step 5: Return LdapUser with attributes
 			return new LdapUser(
 				username: $username,
-				userDn: $userDn,
+				userDn: $user_dn,
 				email: $attributes['email'],
 				display_name: $attributes['display_name']
 			);
@@ -115,13 +115,13 @@ class LdapService
 	 *
 	 * Called by ProvisionLdapUser during user creation/update, NOT during authentication.
 	 *
-	 * @param string $userDn User's Distinguished Name
+	 * @param string $user_dn User's Distinguished Name
 	 *
 	 * @return array<string> Array of group DNs
 	 */
-	public function queryGroups(string $userDn): array
+	public function queryGroups(string $user_dn): array
 	{
-		Log::debug('LDAP querying user groups', ['dn' => $userDn]);
+		Log::debug('LDAP querying user groups', ['dn' => $user_dn]);
 
 		try {
 			// Ensure connected
@@ -131,27 +131,28 @@ class LdapService
 
 			// Search for groups where user is a member
 			// Standard LDAP filter: (member=USER_DN)
+			$escaped_user_dn = ldap_escape($user_dn, '', LDAP_ESCAPE_FILTER);
 			$results = $this->connection->query()
 				->setDn($this->config->base_dn)
-				->rawFilter("(member={$userDn})")
+				->rawFilter("(member={$escaped_user_dn})")
 				->get();
 
 			// Extract DNs from results
-			$groupDns = [];
+			$group_dns = [];
 			foreach ($results as $group) {
-				$groupDns[] = $group['dn'];
+				$group_dns[] = $group['dn'];
 			}
 
 			Log::debug('LDAP groups retrieved', [
-				'dn' => $userDn,
-				'group_count' => count($groupDns),
+				'dn' => $user_dn,
+				'group_count' => count($group_dns),
 			]);
 
-			return $groupDns;
+			return $group_dns;
 		} catch (\Throwable $e) {
 			// Group query failed, return empty array
 			Log::warning('LDAP group query failed', [
-				'dn' => $userDn,
+				'dn' => $user_dn,
 				'error' => $e->getMessage(),
 			]);
 
@@ -162,11 +163,11 @@ class LdapService
 	/**
 	 * Check if user is in admin group.
 	 *
-	 * @param array<string> $groupDns User's group DNs from queryGroups()
+	 * @param array<string> $group_dns User's group DNs from queryGroups()
 	 *
 	 * @return bool True if user in admin group, false otherwise (default non-admin)
 	 */
-	public function isUserInAdminGroup(array $groupDns): bool
+	public function isUserInAdminGroup(array $group_dns): bool
 	{
 		// If no admin group configured, all users are non-admin
 		if ($this->config->admin_group_dn === null) {
@@ -177,7 +178,7 @@ class LdapService
 
 		// Check if admin group DN is in user's group DNs
 		// Use case-insensitive comparison (LDAP DNs are case-insensitive)
-		foreach ($groupDns as $groupDn) {
+		foreach ($group_dns as $groupDn) {
 			if (strcasecmp($groupDn, $this->config->admin_group_dn) === 0) {
 				Log::info('LDAP user is admin', [
 					'admin_group_dn' => $this->config->admin_group_dn,
@@ -189,7 +190,7 @@ class LdapService
 
 		Log::debug('LDAP user is not admin', [
 			'admin_group_dn' => $this->config->admin_group_dn,
-			'user_groups' => count($groupDns),
+			'user_groups' => count($group_dns),
 		]);
 
 		return false;
@@ -284,15 +285,15 @@ class LdapService
 	/**
 	 * Retrieve user attributes after successful bind.
 	 *
-	 * @param string $userDn User's Distinguished Name
+	 * @param string $user_dn User's Distinguished Name
 	 *
 	 * @return array{email: string|null, display_name: string|null} User attributes
 	 */
-	private function retrieveAttributes(string $userDn): array
+	private function retrieveAttributes(string $user_dn): array
 	{
 		// Query LDAP for user entry by DN
 		$result = $this->connection->query()
-			->setDn($userDn)
+			->setDn($user_dn)
 			->read()
 			->first();
 
@@ -305,7 +306,7 @@ class LdapService
 		$displayNameAttr = $this->config->attr_display_name;
 
 		Log::debug('LDAP retrieving attributes', [
-			'dn' => $userDn,
+			'dn' => $user_dn,
 			'email_attr' => $emailAttr,
 			'display_name_attr' => $displayNameAttr,
 			'result' => config('app.debug', false) === true ? $result : array_keys($result),

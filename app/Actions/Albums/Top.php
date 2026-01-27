@@ -67,7 +67,7 @@ class Top
 	 */
 	public function get(): TopAlbumDTO
 	{
-		/** @var User $user */
+		/** @var ?User $user */
 		$user = Auth::user();
 		$user_id = $user?->id;
 

@@ -24,11 +24,11 @@ class LdapConfigurationTest extends AbstractTestCase
 	{
 		// Set up valid LDAP configuration
 		Config::set('ldap.connections.default', [
-			'hosts' => ['ldap.example.com'],
+			'hosts' => ['ldap.mycompany.local'],
 			'port' => 389,
-			'base_dn' => 'dc=example,dc=com',
-			'username' => 'cn=admin,dc=example,dc=com',
-			'password' => 'adminpass',
+			'base_dn' => 'dc=mycompany,dc=local',
+			'username' => 'cn=lychee-bind,ou=services,dc=mycompany,dc=local',
+			'password' => 'secretpassword123',
 			'timeout' => 5,
 			'use_tls' => true,
 			'options' => [
@@ -43,7 +43,7 @@ class LdapConfigurationTest extends AbstractTestCase
 				'email' => 'mail',
 				'display_name' => 'cn',
 			],
-			'admin_group_dn' => 'cn=admins,ou=groups,dc=example,dc=com',
+			'admin_group_dn' => 'cn=admins,ou=groups,dc=mycompany,dc=local',
 			'auto_provision' => true,
 		]);
 
@@ -51,16 +51,16 @@ class LdapConfigurationTest extends AbstractTestCase
 		$config = new LdapConfiguration();
 
 		// Verify all fields loaded correctly
-		$this->assertSame('ldap.example.com', $config->host);
+		$this->assertSame('ldap.mycompany.local', $config->host);
 		$this->assertSame(389, $config->port);
-		$this->assertSame('dc=example,dc=com', $config->base_dn);
-		$this->assertSame('cn=admin,dc=example,dc=com', $config->bind_dn);
-		$this->assertSame('adminpass', $config->bind_password);
+		$this->assertSame('dc=mycompany,dc=local', $config->base_dn);
+		$this->assertSame('cn=lychee-bind,ou=services,dc=mycompany,dc=local', $config->bind_dn);
+		$this->assertSame('secretpassword123', $config->bind_password);
 		$this->assertSame('(uid=%s)', $config->user_filter);
 		$this->assertSame('uid', $config->attr_username);
 		$this->assertSame('mail', $config->attr_email);
 		$this->assertSame('cn', $config->attr_display_name);
-		$this->assertSame('cn=admins,ou=groups,dc=example,dc=com', $config->admin_group_dn);
+		$this->assertSame('cn=admins,ou=groups,dc=mycompany,dc=local', $config->admin_group_dn);
 		$this->assertTrue($config->auto_provision);
 		$this->assertTrue($config->use_tls);
 		$this->assertTrue($config->tls_verify_peer);
@@ -71,11 +71,11 @@ class LdapConfigurationTest extends AbstractTestCase
 	{
 		// Set up LDAP configuration with TLS verification disabled
 		Config::set('ldap.connections.default', [
-			'hosts' => ['ldap.example.com'],
+			'hosts' => ['ldap.mycompany.local'],
 			'port' => 389,
-			'base_dn' => 'dc=example,dc=com',
-			'username' => 'cn=admin,dc=example,dc=com',
-			'password' => 'adminpass',
+			'base_dn' => 'dc=mycompany,dc=local',
+			'username' => 'cn=lychee-bind,ou=services,dc=mycompany,dc=local',
+			'password' => 'secretpassword123',
 			'timeout' => 5,
 			'use_tls' => true,
 			'options' => [
@@ -102,11 +102,11 @@ class LdapConfigurationTest extends AbstractTestCase
 	{
 		// Set up minimal LDAP configuration (missing optional fields)
 		Config::set('ldap.connections.default', [
-			'hosts' => ['ldap.example.com'],
-			'port' => 389,
-			'base_dn' => 'dc=example,dc=com',
-			'username' => 'cn=admin,dc=example,dc=com',
-			'password' => 'adminpass',
+			'hosts' => ['ldap.mycompany.local'],
+			'port' => 636,
+			'base_dn' => 'dc=mycompany,dc=local',
+			'username' => 'cn=lychee-bind,ou=services,dc=mycompany,dc=local',
+			'password' => 'secretpassword123',
 		]);
 
 		Config::set('ldap.auth', [
@@ -130,11 +130,11 @@ class LdapConfigurationTest extends AbstractTestCase
 	public function testMissingHostThrowsException(): void
 	{
 		Config::set('ldap.connections.default', [
-			'hosts' => [],
+			'hosts' => ['ldap.example.com'],
 			'port' => 389,
-			'base_dn' => 'dc=example,dc=com',
-			'username' => 'cn=admin,dc=example,dc=com',
-			'password' => 'adminpass',
+			'base_dn' => 'dc=mycompany,dc=local',
+			'username' => 'cn=lychee-bind,ou=services,dc=mycompany,dc=local',
+			'password' => 'secretpassword123',
 		]);
 
 		Config::set('ldap.auth', [
@@ -155,10 +155,10 @@ class LdapConfigurationTest extends AbstractTestCase
 	public function testMissingPortThrowsException(): void
 	{
 		Config::set('ldap.connections.default', [
-			'hosts' => ['ldap.example.com'],
-			'base_dn' => 'dc=example,dc=com',
-			'username' => 'cn=admin,dc=example,dc=com',
-			'password' => 'adminpass',
+			'hosts' => ['ldap.mycompany.local'],
+			'base_dn' => 'dc=mycompany,dc=local',
+			'username' => 'cn=lychee-bind,ou=services,dc=mycompany,dc=local',
+			'password' => 'secretpassword123',
 		]);
 
 		Config::set('ldap.auth', [
@@ -179,10 +179,10 @@ class LdapConfigurationTest extends AbstractTestCase
 	public function testMissingBaseDnThrowsException(): void
 	{
 		Config::set('ldap.connections.default', [
-			'hosts' => ['ldap.example.com'],
+			'hosts' => ['ldap.mycompany.local'],
 			'port' => 389,
-			'username' => 'cn=admin,dc=example,dc=com',
-			'password' => 'adminpass',
+			'username' => 'cn=lychee-bind,ou=services,dc=mycompany,dc=local',
+			'password' => 'secretpassword123',
 		]);
 
 		Config::set('ldap.auth', [
@@ -203,10 +203,10 @@ class LdapConfigurationTest extends AbstractTestCase
 	public function testMissingBindDnThrowsException(): void
 	{
 		Config::set('ldap.connections.default', [
-			'hosts' => ['ldap.example.com'],
+			'hosts' => ['ldap.mycompany.local'],
 			'port' => 389,
-			'base_dn' => 'dc=example,dc=com',
-			'password' => 'adminpass',
+			'base_dn' => 'dc=mycompany,dc=local',
+			'password' => 'secretpassword123',
 		]);
 
 		Config::set('ldap.auth', [
@@ -227,10 +227,10 @@ class LdapConfigurationTest extends AbstractTestCase
 	public function testMissingBindPasswordThrowsException(): void
 	{
 		Config::set('ldap.connections.default', [
-			'hosts' => ['ldap.example.com'],
+			'hosts' => ['ldap.mycompany.local'],
 			'port' => 389,
-			'base_dn' => 'dc=example,dc=com',
-			'username' => 'cn=admin,dc=example,dc=com',
+			'base_dn' => 'dc=mycompany,dc=local',
+			'username' => 'cn=lychee-bind,ou=services,dc=mycompany,dc=local',
 		]);
 
 		Config::set('ldap.auth', [
@@ -251,11 +251,11 @@ class LdapConfigurationTest extends AbstractTestCase
 	public function testMissingUserFilterThrowsException(): void
 	{
 		Config::set('ldap.connections.default', [
-			'hosts' => ['ldap.example.com'],
+			'hosts' => ['ldap.mycompany.local'],
 			'port' => 389,
-			'base_dn' => 'dc=example,dc=com',
-			'username' => 'cn=admin,dc=example,dc=com',
-			'password' => 'adminpass',
+			'base_dn' => 'dc=mycompany,dc=local',
+			'username' => 'cn=lychee-bind,ou=services,dc=mycompany,dc=local',
+			'password' => 'secretpassword123',
 		]);
 
 		Config::set('ldap.auth', [
@@ -275,11 +275,11 @@ class LdapConfigurationTest extends AbstractTestCase
 	public function testMissingUsernameAttributeThrowsException(): void
 	{
 		Config::set('ldap.connections.default', [
-			'hosts' => ['ldap.example.com'],
+			'hosts' => ['ldap.mycompany.local'],
 			'port' => 389,
-			'base_dn' => 'dc=example,dc=com',
-			'username' => 'cn=admin,dc=example,dc=com',
-			'password' => 'adminpass',
+			'base_dn' => 'dc=mycompany,dc=local',
+			'username' => 'cn=lychee-bind,ou=services,dc=mycompany,dc=local',
+			'password' => 'secretpassword123',
 		]);
 
 		Config::set('ldap.auth', [
@@ -299,11 +299,11 @@ class LdapConfigurationTest extends AbstractTestCase
 	public function testMissingEmailAttributeThrowsException(): void
 	{
 		Config::set('ldap.connections.default', [
-			'hosts' => ['ldap.example.com'],
+			'hosts' => ['ldap.mycompany.local'],
 			'port' => 389,
-			'base_dn' => 'dc=example,dc=com',
-			'username' => 'cn=admin,dc=example,dc=com',
-			'password' => 'adminpass',
+			'base_dn' => 'dc=mycompany,dc=local',
+			'username' => 'cn=lychee-bind,ou=services,dc=mycompany,dc=local',
+			'password' => 'secretpassword123',
 		]);
 
 		Config::set('ldap.auth', [
@@ -323,11 +323,11 @@ class LdapConfigurationTest extends AbstractTestCase
 	public function testMissingDisplayNameAttributeThrowsException(): void
 	{
 		Config::set('ldap.connections.default', [
-			'hosts' => ['ldap.example.com'],
+			'hosts' => ['ldap.mycompany.local'],
 			'port' => 389,
-			'base_dn' => 'dc=example,dc=com',
-			'username' => 'cn=admin,dc=example,dc=com',
-			'password' => 'adminpass',
+			'base_dn' => 'dc=mycompany,dc=local',
+			'username' => 'cn=lychee-bind,ou=services,dc=mycompany,dc=local',
+			'password' => 'secretpassword123',
 		]);
 
 		Config::set('ldap.auth', [
@@ -372,11 +372,11 @@ class LdapConfigurationTest extends AbstractTestCase
 	public function testInvalidPortThrowsException(): void
 	{
 		Config::set('ldap.connections.default', [
-			'hosts' => ['ldap.example.com'],
+			'hosts' => ['ldap.mycompany.local'],
 			'port' => 'not-a-number',
-			'base_dn' => 'dc=example,dc=com',
-			'username' => 'cn=admin,dc=example,dc=com',
-			'password' => 'adminpass',
+			'base_dn' => 'dc=mycompany,dc=local',
+			'username' => 'cn=lychee-bind,ou=services,dc=mycompany,dc=local',
+			'password' => 'secretpassword123',
 		]);
 
 		Config::set('ldap.auth', [

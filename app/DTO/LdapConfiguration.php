@@ -41,7 +41,7 @@ final class LdapConfiguration
 	{
 		// Validate required connection settings
 		$this->host = $this->requireString(config('ldap.connections.default.hosts')[0], 'LDAP_HOST', 'ldap.example.com');
-		$this->port = $this->requireInt(config('ldap.connections.default.port'), 'LDAP_PORT', 389);
+		$this->port = $this->requireInt(config('ldap.connections.default.port'), 'LDAP_PORT');
 		$this->base_dn = $this->requireString(config('ldap.connections.default.base_dn'), 'LDAP_BASE_DN', 'dc=example,dc=com');
 		$this->bind_dn = $this->requireString(config('ldap.connections.default.username'), 'LDAP_BIND_DN', 'cn=bind-user,dc=example,dc=com');
 		$this->bind_password = $this->requireString(config('ldap.connections.default.password'), 'LDAP_BIND_PASSWORD');

@@ -29,11 +29,11 @@ class LdapServiceTest extends AbstractTestCase
 	{
 		// Set up valid LDAP configuration for tests
 		Config::set('ldap.connections.default', [
-			'hosts' => ['ldap.example.com'],
+			'hosts' => ['ldap.mycompany.local'],
 			'port' => 389,
-			'base_dn' => 'dc=example,dc=com',
-			'username' => 'cn=admin,dc=example,dc=com',
-			'password' => 'adminpass',
+			'base_dn' => 'dc=mycompany,dc=local',
+			'username' => 'cn=lychee-bind,ou=services,dc=mycompany,dc=local',
+			'password' => 'secretpassword123',
 			'timeout' => 5,
 			'use_tls' => true,
 			'options' => [
@@ -48,7 +48,7 @@ class LdapServiceTest extends AbstractTestCase
 				'email' => 'mail',
 				'display_name' => 'cn',
 			],
-			'admin_group_dn' => 'cn=admins,ou=groups,dc=example,dc=com',
+			'admin_group_dn' => 'cn=admins,ou=groups,dc=mycompany,dc=local',
 			'auto_provision' => true,
 		]);
 
@@ -81,7 +81,7 @@ class LdapServiceTest extends AbstractTestCase
 		// Setup search query builder
 		$searchQueryBuilder->expects($this->once())
 			->method('setDn')
-			->with('dc=example,dc=com')
+			->with('dc=mycompany,dc=local')
 			->willReturnSelf();
 
 		$searchQueryBuilder->expects($this->once())
@@ -96,7 +96,7 @@ class LdapServiceTest extends AbstractTestCase
 
 		// Mock search results
 		$searchResults = [
-			['dn' => 'uid=testuser,ou=users,dc=example,dc=com'],
+			['dn' => 'uid=testuser,ou=users,dc=mycompany,dc=local'],
 		];
 		$searchQueryBuilder->expects($this->once())
 			->method('get')
@@ -110,13 +110,13 @@ class LdapServiceTest extends AbstractTestCase
 
 		$authGuard->expects($this->once())
 			->method('attempt')
-			->with('uid=testuser,ou=users,dc=example,dc=com', 'password123')
+			->with('uid=testuser,ou=users,dc=mycompany,dc=local', 'password123')
 			->willReturn(true);
 
 		// Setup attribute query builder
 		$attrQueryBuilder->expects($this->once())
 			->method('setDn')
-			->with('uid=testuser,ou=users,dc=example,dc=com')
+			->with('uid=testuser,ou=users,dc=mycompany,dc=local')
 			->willReturnSelf();
 
 		$attrQueryBuilder->expects($this->once())
@@ -125,8 +125,8 @@ class LdapServiceTest extends AbstractTestCase
 
 		// Mock attribute results
 		$attrResult = [
-			'dn' => 'uid=testuser,ou=users,dc=example,dc=com',
-			'mail' => ['test@example.com'],
+			'dn' => 'uid=testuser,ou=users,dc=mycompany,dc=local',
+			'mail' => ['test@mycompany.local'],
 			'cn' => ['Test User'],
 		];
 		$attrQueryBuilder->expects($this->once())
@@ -142,8 +142,8 @@ class LdapServiceTest extends AbstractTestCase
 		// Verify result
 		$this->assertNotNull($ldapUser);
 		$this->assertSame('testuser', $ldapUser->username);
-		$this->assertSame('uid=testuser,ou=users,dc=example,dc=com', $ldapUser->userDn);
-		$this->assertSame('test@example.com', $ldapUser->email);
+		$this->assertSame('uid=testuser,ou=users,dc=mycompany,dc=local', $ldapUser->userDn);
+		$this->assertSame('test@mycompany.local', $ldapUser->email);
 		$this->assertSame('Test User', $ldapUser->display_name);
 	}
 
@@ -167,7 +167,7 @@ class LdapServiceTest extends AbstractTestCase
 
 		$queryBuilder->expects($this->once())
 			->method('setDn')
-			->with('dc=example,dc=com')
+			->with('dc=mycompany,dc=local')
 			->willReturnSelf();
 
 		$queryBuilder->expects($this->once())
@@ -214,7 +214,7 @@ class LdapServiceTest extends AbstractTestCase
 
 		$queryBuilder->expects($this->once())
 			->method('setDn')
-			->with('dc=example,dc=com')
+			->with('dc=mycompany,dc=local')
 			->willReturnSelf();
 
 		$queryBuilder->expects($this->once())
@@ -229,7 +229,7 @@ class LdapServiceTest extends AbstractTestCase
 
 		// Mock search results
 		$searchResults = [
-			['dn' => 'uid=testuser,ou=users,dc=example,dc=com'],
+			['dn' => 'uid=testuser,ou=users,dc=mycompany,dc=local'],
 		];
 		$queryBuilder->expects($this->once())
 			->method('get')
@@ -243,7 +243,7 @@ class LdapServiceTest extends AbstractTestCase
 
 		$authGuard->expects($this->once())
 			->method('attempt')
-			->with('uid=testuser,ou=users,dc=example,dc=com', 'wrongpassword')
+			->with('uid=testuser,ou=users,dc=mycompany,dc=local', 'wrongpassword')
 			->willReturn(false);
 
 		// Create service with mocked connection
@@ -295,18 +295,18 @@ class LdapServiceTest extends AbstractTestCase
 
 		$queryBuilder->expects($this->once())
 			->method('setDn')
-			->with('dc=example,dc=com')
+			->with('dc=mycompany,dc=local')
 			->willReturnSelf();
 
 		$queryBuilder->expects($this->once())
 			->method('rawFilter')
-			->with('(member=uid=testuser,ou=users,dc=example,dc=com)')
+			->with('(member=uid=testuser,ou=users,dc=mycompany,dc=local)')
 			->willReturnSelf();
 
 		// Mock group results
 		$groupResults = [
-			['dn' => 'cn=admins,ou=groups,dc=example,dc=com'],
-			['dn' => 'cn=users,ou=groups,dc=example,dc=com'],
+			['dn' => 'cn=admins,ou=groups,dc=mycompany,dc=local'],
+			['dn' => 'cn=users,ou=groups,dc=mycompany,dc=local'],
 		];
 		$queryBuilder->expects($this->once())
 			->method('get')
@@ -316,12 +316,12 @@ class LdapServiceTest extends AbstractTestCase
 		$service = new LdapService($config, $connection);
 
 		// Query groups
-		$groups = $service->queryGroups('uid=testuser,ou=users,dc=example,dc=com');
+		$groups = $service->queryGroups('uid=testuser,ou=users,dc=mycompany,dc=local');
 
 		// Verify result
 		$this->assertCount(2, $groups);
-		$this->assertSame('cn=admins,ou=groups,dc=example,dc=com', $groups[0]);
-		$this->assertSame('cn=users,ou=groups,dc=example,dc=com', $groups[1]);
+		$this->assertSame('cn=admins,ou=groups,dc=mycompany,dc=local', $groups[0]);
+		$this->assertSame('cn=users,ou=groups,dc=mycompany,dc=local', $groups[1]);
 	}
 
 	public function testQueryGroupsReturnsEmptyArrayOnError(): void
@@ -341,7 +341,7 @@ class LdapServiceTest extends AbstractTestCase
 		$service = new LdapService($config, $connection);
 
 		// Query groups
-		$groups = $service->queryGroups('uid=testuser,ou=users,dc=example,dc=com');
+		$groups = $service->queryGroups('uid=testuser,ou=users,dc=mycompany,dc=local');
 
 		// Verify result (empty array on error)
 		$this->assertSame([], $groups);
@@ -357,8 +357,8 @@ class LdapServiceTest extends AbstractTestCase
 
 		// User is in admin group
 		$groupDns = [
-			'cn=admins,ou=groups,dc=example,dc=com',
-			'cn=users,ou=groups,dc=example,dc=com',
+			'cn=admins,ou=groups,dc=mycompany,dc=local',
+			'cn=users,ou=groups,dc=mycompany,dc=local',
 		];
 
 		$isAdmin = $service->isUserInAdminGroup($groupDns);
@@ -376,8 +376,8 @@ class LdapServiceTest extends AbstractTestCase
 
 		// User is not in admin group
 		$groupDns = [
-			'cn=users,ou=groups,dc=example,dc=com',
-			'cn=developers,ou=groups,dc=example,dc=com',
+			'cn=users,ou=groups,dc=mycompany,dc=local',
+			'cn=developers,ou=groups,dc=mycompany,dc=local',
 		];
 
 		$isAdmin = $service->isUserInAdminGroup($groupDns);
@@ -391,11 +391,11 @@ class LdapServiceTest extends AbstractTestCase
 
 		// Set up config without admin group
 		Config::set('ldap.connections.default', [
-			'hosts' => ['ldap.example.com'],
+			'hosts' => ['ldap.testorg.local'],
 			'port' => 389,
-			'base_dn' => 'dc=example,dc=com',
-			'username' => 'cn=admin,dc=example,dc=com',
-			'password' => 'adminpass',
+			'base_dn' => 'dc=testorg,dc=local',
+			'username' => 'cn=lychee-bind,ou=services,dc=testorg,dc=local',
+			'password' => 'secretPassword789',
 		]);
 
 		Config::set('ldap.auth', [
@@ -412,7 +412,7 @@ class LdapServiceTest extends AbstractTestCase
 
 		// Even if user is in admin group, should return false (no admin group configured)
 		$groupDns = [
-			'cn=admins,ou=groups,dc=example,dc=com',
+			'cn=admins,ou=groups,dc=mycompany,dc=local',
 		];
 
 		$isAdmin = $service->isUserInAdminGroup($groupDns);
@@ -429,7 +429,7 @@ class LdapServiceTest extends AbstractTestCase
 
 		// User is in admin group (different case)
 		$groupDns = [
-			'CN=Admins,OU=Groups,DC=Example,DC=Com',
+			'CN=Admins,OU=Groups,DC=Mycompany,DC=Local',
 		];
 
 		$isAdmin = $service->isUserInAdminGroup($groupDns);
@@ -458,7 +458,7 @@ class LdapServiceTest extends AbstractTestCase
 		// Setup search query
 		$searchQueryBuilder->expects($this->once())
 			->method('setDn')
-			->with('dc=example,dc=com')
+			->with('dc=mycompany,dc=local')
 			->willReturnSelf();
 
 		$searchQueryBuilder->expects($this->once())
@@ -472,7 +472,7 @@ class LdapServiceTest extends AbstractTestCase
 			->willReturnSelf();
 
 		$searchResults = [
-			['dn' => 'uid=testuser,ou=users,dc=example,dc=com'],
+			['dn' => 'uid=testuser,ou=users,dc=mycompany,dc=local'],
 		];
 		$searchQueryBuilder->expects($this->once())
 			->method('get')
@@ -491,7 +491,7 @@ class LdapServiceTest extends AbstractTestCase
 		// Setup attribute query (missing email)
 		$attrQueryBuilder->expects($this->once())
 			->method('setDn')
-			->with('uid=testuser,ou=users,dc=example,dc=com')
+			->with('uid=testuser,ou=users,dc=mycompany,dc=local')
 			->willReturnSelf();
 
 		$attrQueryBuilder->expects($this->once())
@@ -500,7 +500,7 @@ class LdapServiceTest extends AbstractTestCase
 
 		// Mock attribute results (missing mail attribute)
 		$attrResult = [
-			'dn' => 'uid=testuser,ou=users,dc=example,dc=com',
+			'dn' => 'uid=testuser,ou=users,dc=mycompany,dc=local',
 			'cn' => ['Test User'],
 		];
 		$attrQueryBuilder->expects($this->once())
@@ -536,7 +536,7 @@ class LdapServiceTest extends AbstractTestCase
 		// Setup search query
 		$searchQueryBuilder->expects($this->once())
 			->method('setDn')
-			->with('dc=example,dc=com')
+			->with('dc=mycompany,dc=local')
 			->willReturnSelf();
 
 		$searchQueryBuilder->expects($this->once())
@@ -550,7 +550,7 @@ class LdapServiceTest extends AbstractTestCase
 			->willReturnSelf();
 
 		$searchResults = [
-			['dn' => 'uid=testuser,ou=users,dc=example,dc=com'],
+			['dn' => 'uid=testuser,ou=users,dc=mycompany,dc=local'],
 		];
 		$searchQueryBuilder->expects($this->once())
 			->method('get')
@@ -569,7 +569,7 @@ class LdapServiceTest extends AbstractTestCase
 		// Setup attribute query (missing display name)
 		$attrQueryBuilder->expects($this->once())
 			->method('setDn')
-			->with('uid=testuser,ou=users,dc=example,dc=com')
+			->with('uid=testuser,ou=users,dc=mycompany,dc=local')
 			->willReturnSelf();
 
 		$attrQueryBuilder->expects($this->once())
@@ -578,8 +578,8 @@ class LdapServiceTest extends AbstractTestCase
 
 		// Mock attribute results (missing cn attribute)
 		$attrResult = [
-			'dn' => 'uid=testuser,ou=users,dc=example,dc=com',
-			'mail' => ['test@example.com'],
+			'dn' => 'uid=testuser,ou=users,dc=mycompany,dc=local',
+			'mail' => ['test@mycompany.local'],
 		];
 		$attrQueryBuilder->expects($this->once())
 			->method('first')
