@@ -103,7 +103,7 @@
         "ext-imagick": "*",
         "ext-posix": "*",
         "ext-zip": "*",
-        "barryvdh/laravel-debugbar": "^3.13",
+        "barryvdh/laravel-debugbar": "^4.0",
         "barryvdh/laravel-ide-helper": "^3.0",
         "brianium/paratest": "^7.4",
         "dominikb/composer-license-checker": "^2.7",
