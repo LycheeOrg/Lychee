@@ -389,7 +389,7 @@ onKeyStroke("Escape", () => {
 		return;
 	}
 
-	if (are_details_open.value) {
+	if (are_details_open.value && lycheeStore.is_photo_details_always_open === false) {
 		are_details_open.value = false;
 		return;
 	}
