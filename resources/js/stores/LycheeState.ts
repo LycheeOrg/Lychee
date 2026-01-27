@@ -37,6 +37,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		show_keybinding_help_popup: false,
 
 		// album stuff
+		default_album_protection: "private" as App.Enum.DefaultAlbumProtectionType,
 		display_thumb_album_overlay: "always" as App.Enum.VisibilityType,
 		display_thumb_photo_overlay: "always" as App.Enum.VisibilityType,
 		album_subtitle_type: "OLDSTYLE" as App.Enum.ThumbAlbumSubtitleType,
@@ -207,6 +208,8 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.albums_per_page = data.albums_per_page;
 					this.photos_infinite_scroll_threshold = data.photos_infinite_scroll_threshold;
 					this.albums_infinite_scroll_threshold = data.albums_infinite_scroll_threshold;
+
+					this.default_album_protection = data.default_album_protection;
 				})
 				.catch((error) => {
 					// In this specific case, even though it has been possibly disabled, we really need to see the error.

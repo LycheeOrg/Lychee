@@ -11,10 +11,10 @@ namespace App\Enum;
 /**
  * Enum DefaultAlbumProtectionType.
  */
-enum DefaultAlbumProtectionType: int
+enum DefaultAlbumProtectionType: string
 {
-	case PRIVATE = 1;
-	case PUBLIC = 2;
-	case INHERIT = 3;
-	case PUBLIC_HIDDEN = 4;
+	case PRIVATE = 'private';
+	case PUBLIC = 'public';
+	case INHERIT = 'inherit';
+	case PUBLIC_HIDDEN = 'public_hidden';
 }

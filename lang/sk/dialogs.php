@@ -157,6 +157,11 @@ return [
         'info' => 'Enter a title for the new album:',
         'title' => 'title',
         'create' => 'Create Album',
+        'visibility_private' => 'This album will be private (visible only to you)',
+        'visibility_public' => 'This album will be public (visible to everyone)',
+        'visibility_public_hidden' => 'This album will be public but hidden from listings',
+        'visibility_inherit' => 'This album will inherit visibility from its parent',
+        'visibility_inherit_no_parent' => 'This album will be private (no parent to inherit from)',
     ],
     'new_tag_album' => [
         'menu' => 'Create Tag Album',

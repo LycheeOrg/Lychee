@@ -17,7 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class CannotConvertMediaFileException extends BaseLycheeException
 {
-	public const string DEFAULT_MESSAGE = 'Cannot convert media file to another format';
+	public const DEFAULT_MESSAGE = 'Cannot convert media file to another format';
 
 	public function __construct(string $msg = self::DEFAULT_MESSAGE, ?\Throwable $previous = null)
 	{

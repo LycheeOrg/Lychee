@@ -157,6 +157,11 @@ return [
         'info' => '请输入新相册的标题：',
         'title' => '标题',
         'create' => '创建相册',
+        'visibility_private' => 'This album will be private (visible only to you)',
+        'visibility_public' => 'This album will be public (visible to everyone)',
+        'visibility_public_hidden' => 'This album will be public but hidden from listings',
+        'visibility_inherit' => 'This album will inherit visibility from its parent',
+        'visibility_inherit_no_parent' => 'This album will be private (no parent to inherit from)',
     ],
     'new_tag_album' => [
         'menu' => '创建标签相册',
