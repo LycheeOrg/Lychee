@@ -60,7 +60,7 @@ return new class() extends Migration {
 					$key_name = 'id';
 					$photo_instance = new RatedPhoto();
 					batch()->update($photo_instance, $update, $key_name);
-				}, 'id');
+				}, 'photos.id');
 		});
 	}
 
