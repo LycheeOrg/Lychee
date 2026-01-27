@@ -228,7 +228,6 @@ return [
 		 */
 
 		\SocialiteProviders\Manager\ServiceProvider::class,
-		// Barryvdh\Debugbar\ServiceProvider::class,
 		Mavinoo\Batch\BatchServiceProvider::class,
 
 		/*
@@ -253,7 +252,6 @@ return [
 	*/
 
 	'aliases' => Facade::defaultAliases()->merge([
-		'DebugBar' => Barryvdh\Debugbar\Facades\Debugbar::class,
 		'Helpers' => App\Facades\Helpers::class,
 		'Features' => App\Assets\Features::class,
 		// Aliases for easier access in the blade templates

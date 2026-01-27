@@ -41,7 +41,7 @@ class ProvisionLdapUserTest extends AbstractTestCase
 		// Mock LDAP user data
 		$ldapUser = new LdapUser(
 			username: 'testuser',
-			userDn: 'uid=testuser,ou=users,dc=test,dc=local',
+			user_dn: 'uid=testuser,ou=users,dc=test,dc=local',
 			email: 'test@example.com',
 			display_name: 'Test User'
 		);
@@ -88,7 +88,7 @@ class ProvisionLdapUserTest extends AbstractTestCase
 		// Mock LDAP user data with updated attributes
 		$ldapUser = new LdapUser(
 			username: 'testuser',
-			userDn: 'uid=testuser,ou=users,dc=test,dc=local',
+			user_dn: 'uid=testuser,ou=users,dc=test,dc=local',
 			email: 'new@example.com',
 			display_name: 'New Name'
 		);
@@ -121,7 +121,7 @@ class ProvisionLdapUserTest extends AbstractTestCase
 		// Mock LDAP user data
 		$ldapUser = new LdapUser(
 			username: 'adminuser',
-			userDn: 'uid=adminuser,ou=users,dc=test,dc=local',
+			user_dn: 'uid=adminuser,ou=users,dc=test,dc=local',
 			email: 'admin@example.com',
 			display_name: 'Admin User'
 		);
@@ -161,7 +161,7 @@ class ProvisionLdapUserTest extends AbstractTestCase
 		// Mock LDAP user data with missing attributes
 		$ldapUser = new LdapUser(
 			username: 'testuser',
-			userDn: 'uid=testuser,ou=users,dc=test,dc=local',
+			user_dn: 'uid=testuser,ou=users,dc=test,dc=local',
 			email: null,
 			display_name: null
 		);
@@ -192,7 +192,7 @@ class ProvisionLdapUserTest extends AbstractTestCase
 		// Mock LDAP user data without email
 		$ldapUser = new LdapUser(
 			username: 'nomail',
-			userDn: 'uid=nomail,ou=users,dc=test,dc=local',
+			user_dn: 'uid=nomail,ou=users,dc=test,dc=local',
 			email: null,
 			display_name: 'No Mail User'
 		);
@@ -220,7 +220,7 @@ class ProvisionLdapUserTest extends AbstractTestCase
 		// Mock LDAP user data without display name
 		$ldapUser = new LdapUser(
 			username: 'nodisplay',
-			userDn: 'uid=nodisplay,ou=users,dc=test,dc=local',
+			user_dn: 'uid=nodisplay,ou=users,dc=test,dc=local',
 			email: 'nodisplay@example.com',
 			display_name: null
 		);
@@ -259,7 +259,7 @@ class ProvisionLdapUserTest extends AbstractTestCase
 		// Mock LDAP user data
 		$ldapUser = new LdapUser(
 			username: 'demoted',
-			userDn: 'uid=demoted,ou=users,dc=test,dc=local',
+			user_dn: 'uid=demoted,ou=users,dc=test,dc=local',
 			email: 'demoted@example.com',
 			display_name: 'Demoted User'
 		);
@@ -297,7 +297,7 @@ class ProvisionLdapUserTest extends AbstractTestCase
 		// Mock LDAP user data
 		$ldapUser = new LdapUser(
 			username: 'promoted',
-			userDn: 'uid=promoted,ou=users,dc=test,dc=local',
+			user_dn: 'uid=promoted,ou=users,dc=test,dc=local',
 			email: 'promoted@example.com',
 			display_name: 'Promoted User'
 		);
@@ -324,7 +324,7 @@ class ProvisionLdapUserTest extends AbstractTestCase
 		// Mock LDAP user data
 		$ldapUser = new LdapUser(
 			username: 'multigroup',
-			userDn: 'uid=multigroup,ou=users,dc=test,dc=local',
+			user_dn: 'uid=multigroup,ou=users,dc=test,dc=local',
 			email: 'multi@example.com',
 			display_name: 'Multi Group User'
 		);
@@ -356,7 +356,7 @@ class ProvisionLdapUserTest extends AbstractTestCase
 		// Mock LDAP user data
 		$ldapUser = new LdapUser(
 			username: 'newrandom',
-			userDn: 'uid=newrandom,ou=users,dc=test,dc=local',
+			user_dn: 'uid=newrandom,ou=users,dc=test,dc=local',
 			email: 'random@example.com',
 			display_name: 'Random Pass User'
 		);

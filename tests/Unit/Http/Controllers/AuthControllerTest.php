@@ -195,7 +195,7 @@ class AuthControllerTest extends AbstractTestCase
 
 		$ldapUser = new LdapUser(
 			username: 'ldapuser',
-			userDn: 'uid=ldapuser,ou=users,dc=example,dc=com',
+			user_dn: 'uid=ldapuser,ou=users,dc=example,dc=com',
 			email: 'ldap@example.com',
 			display_name: 'LDAP User'
 		);
@@ -426,7 +426,7 @@ class AuthControllerTest extends AbstractTestCase
 
 		$ldapUser = new LdapUser(
 			username: 'ldapuser',
-			userDn: 'uid=ldapuser,ou=users,dc=example,dc=com',
+			user_dn: 'uid=ldapuser,ou=users,dc=example,dc=com',
 			email: 'ldap@example.com',
 			display_name: 'LDAP User'
 		);

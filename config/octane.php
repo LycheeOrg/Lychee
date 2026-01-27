@@ -128,6 +128,7 @@ return [
 	],
 
 	'flush' => [
+		\Fruitcake\LaravelDebugbar\LaravelDebugbar::class,
 	],
 
 	/*

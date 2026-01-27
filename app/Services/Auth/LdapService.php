@@ -86,7 +86,7 @@ class LdapService
 			// Step 5: Return LdapUser with attributes
 			return new LdapUser(
 				username: $username,
-				userDn: $user_dn,
+				user_dn: $user_dn,
 				email: $attributes['email'],
 				display_name: $attributes['display_name']
 			);
