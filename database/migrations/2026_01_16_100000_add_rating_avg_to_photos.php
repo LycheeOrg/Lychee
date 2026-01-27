@@ -21,26 +21,28 @@ return new class() extends Migration {
 	 */
 	public function up(): void
 	{
-		Schema::table(self::TABLE, function (Blueprint $table) {
-			// Add rating_avg column with 4 decimal places for fine granularity (Q-009-05)
-			// DECIMAL(5,4) allows values 0.0000-9.9999, sufficient for 1.0-5.0 rating averages
-			$table->decimal(self::COL_RATING_AVG, 5, 4)->nullable()->after('is_starred');
+		if (!Schema::hasColumn(self::TABLE, self::COL_RATING_AVG)) {
+			Schema::table(self::TABLE, function (Blueprint $table) {
+				// Add rating_avg column with 4 decimal places for fine granularity (Q-009-05)
+				// DECIMAL(5,4) allows values 0.0000-9.9999, sufficient for 1.0-5.0 rating averages
+				$table->decimal(self::COL_RATING_AVG, 5, 4)->nullable()->after('is_starred');
 
-			// Add index for efficient sorting by rating (FR-009-02, NFR-009-01)
-			$table->index(self::COL_RATING_AVG);
-		});
-
-		// Count photos that need updating
-		$photosToUpdate = DB::table('photos')
-			->join('statistics', 'photos.id', '=', 'statistics.photo_id')
-			->where('statistics.rating_count', '>', 0)
-			->count();
-
-		if ($photosToUpdate === 0) {
-			return;
+				// Add index for efficient sorting by rating (FR-009-02, NFR-009-01)
+				$table->index(self::COL_RATING_AVG);
+			});
 		}
 
 		DB::transaction(function () {
+			// Count photos that need updating
+			$photosToUpdate = DB::table('photos')
+				->join('statistics', 'photos.id', '=', 'statistics.photo_id')
+				->where('statistics.rating_count', '>', 0)
+				->count();
+
+			if ($photosToUpdate === 0) {
+				return;
+			}
+
 			// Process in chunks to avoid memory issues
 			DB::table('photos')
 				->join('statistics', 'photos.id', '=', 'statistics.photo_id')
@@ -60,7 +62,7 @@ return new class() extends Migration {
 					$key_name = 'id';
 					$photo_instance = new RatedPhoto();
 					batch()->update($photo_instance, $update, $key_name);
-				}, 'photos.id');
+				}, 'photos.id', 'id');
 		});
 	}
 
