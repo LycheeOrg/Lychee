@@ -143,8 +143,8 @@ class DownloadedFile extends TemporaryLocalFile
 		parent::getMimeType();
 		if ($this->cachedMimeType === 'application/octet-stream' && $fallback_to_client_mime_type) {
 			return $this->originalMimeType;
-		} else {
-			return $this->cachedMimeType;
 		}
+
+		return $this->cachedMimeType;
 	}
 }

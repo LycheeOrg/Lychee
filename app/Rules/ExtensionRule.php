@@ -23,7 +23,7 @@ final class ExtensionRule implements DataAwareRule, ValidationRule
 	 *
 	 * @var array<string,mixed>
 	 */
-	protected $data = [];
+	private $data = [];
 
 	/**
 	 * Set the data under validation.

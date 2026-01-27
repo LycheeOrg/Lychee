@@ -25,9 +25,9 @@ use Illuminate\Support\Facades\DB;
 final class Flow
 {
 	public function __construct(
-		protected AlbumQueryPolicy $album_query_policy,
-		protected AlbumFactory $album_factory,
-		protected readonly ConfigManager $config_manager,
+		private AlbumQueryPolicy $album_query_policy,
+		private AlbumFactory $album_factory,
+		private readonly ConfigManager $config_manager,
 	) {
 	}
 

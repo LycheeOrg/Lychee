@@ -19,6 +19,7 @@ return [
         'change' => 'Cambiar inicio de sesión',
         'api_token' => 'Token API …',
         'missing_fields' => 'Campos faltantes',
+        'ldap_managed' => 'La información de inicio de sesión del usuario está gestionada por LDAP.',
     ],
     'register' => [
         'username_exists' => 'El nombre de usuario ya existe.',

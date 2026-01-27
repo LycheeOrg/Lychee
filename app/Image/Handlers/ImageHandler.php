@@ -70,9 +70,8 @@ class ImageHandler extends BaseImageHandler implements ImageHandlerInterface
 					$this->engine->load($file);
 
 					return;
-				} else {
-					throw new LycheeLogicException('$engine is not an instance of ImageHandlerInterface');
 				}
+				throw new LycheeLogicException('$engine is not an instance of ImageHandlerInterface');
 			} catch (\Throwable $e) {
 				// Report the error to the log, but don't fail yet.
 				Handler::reportSafely($e);

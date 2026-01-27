@@ -20,6 +20,7 @@ class UserResource extends Data
 	public ?bool $has_token;
 	public ?string $username;
 	public ?string $email;
+	public bool $is_ldap;
 	public UserSharedAlbumsVisibility $shared_albums_visibility;
 
 	public function __construct(?User $user)
@@ -28,6 +29,7 @@ class UserResource extends Data
 		$this->has_token = $user?->token !== null;
 		$this->username = $user?->username;
 		$this->email = $user?->email;
+		$this->is_ldap = $user?->is_ldap ?? false;
 		$this->shared_albums_visibility = $user?->shared_albums_visibility ?? UserSharedAlbumsVisibility::DEFAULT;
 	}
 }

@@ -20,6 +20,7 @@ return [
         'change' => 'تغيير تسجيل الدخول',
         'api_token' => 'رمز API …',
         'missing_fields' => 'حقول مفقودة',
+        'ldap_managed' => 'معلومات تسجيل دخول المستخدم تتم إدارتها بواسطة LDAP.',
     ],
     'register' => [
         'username_exists' => 'اسم المستخدم موجود بالفعل.',

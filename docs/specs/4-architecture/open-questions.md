@@ -14,11 +14,239 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 ---
 
-### ~~Q-009-05: rating_avg Decimal Precision~~ ✅ RESOLVED
+### ~~Q-010-12: TLS/StartTLS Configuration~~ ✅ RESOLVED
 
-**Decision:** Option B - DECIMAL(5,4) with 4 decimal places
-**Rationale:** Very fine granularity (0.0001 increments) ensures minimal ties when sorting photos by rating. Handles edge cases with many ratings producing fractional averages.
-**Updated in spec:** FR-009-01, DO-009-01, migration strategy, round() precision
+**Decision:** Option A - Single `LDAP_USE_TLS` flag, protocol determined by port
+**Rationale:** Simpler configuration with fewer env vars. Protocol auto-detected: port 636 = LDAPS, port 389 = StartTLS. Documentation in .env.example clarifies both scenarios.
+**Updated in spec:** ENV-010-13, I10 documentation deliverables
+
+---
+
+### ~~Q-010-11: Authentication Flow Sequence~~ ✅ RESOLVED
+
+**Decision:** Option A - Search-first pattern (username → search → DN → bind → groups)
+**Rationale:** Flexible approach supporting diverse LDAP schemas. Flow: 1) User submits username+password, 2) Search LDAP using `LDAP_USER_FILTER`, 3) Get userDn from search result, 4) Bind with userDn+password, 5) Query groups using userDn, 6) Retrieve user attributes.
+**Updated in spec:** FR-010-01, I2 LdapService `authenticate()` method, I4 `getUserGroups()` signature
+
+---
+
+### ~~Q-010-10: Testing Strategy~~ ✅ RESOLVED
+
+**Decision:** Option A - LdapRecord testing utilities for unit tests, skip Docker integration tests
+**Rationale:** Fast unit tests using LdapRecord's `DirectoryEmulator` or test helpers. Mock LDAP responses at service boundary. Docker integration tests deferred to future enhancement.
+**Updated in spec:** I2-I7 test implementation, no Docker CI configuration needed
+
+---
+
+### ~~Q-010-09: Connection Pooling Implementation~~ ✅ RESOLVED
+
+**Decision:** Option A - Configure LdapRecord's built-in connection management
+**Rationale:** Leverage existing, tested library features. Configure timeouts and connection caching via LdapRecord config. No custom pooling code needed.
+**Updated in spec:** I2 implementation approach, NFR-010-04
+
+---
+
+### ~~Q-010-08: LdapConfiguration DTO Purpose~~ ✅ RESOLVED
+
+**Decision:** Option A - LdapConfiguration validates/transforms .env values
+**Rationale:** Clean validation layer providing type-safe value object. Single source of truth: .env → LdapConfiguration::fromEnv() validates → values passed to LdapRecord config. Prevents invalid config, provides testability.
+**Updated in spec:** I1 LdapConfiguration DTO implementation, validation strategy
+
+---
+
+### ~~Q-010-07: LdapRecord Integration Strategy~~ ✅ RESOLVED
+
+**Decision:** Option A - Service layer wrapping LdapRecord
+**Rationale:** Better separation of concerns and testability. `LdapService` acts as facade/adapter over LdapRecord's Connection and query builder. Business logic abstracted from LDAP library details. Easier to test (mock LdapService interface) and swap libraries if needed.
+**Updated in spec:** I2-I5 architecture, LdapService design as wrapper pattern
+
+---
+
+### ~~Q-010-07: LdapRecord Integration Strategy~~ (ARCHIVED - moved above)
+
+**Question:** How should `App\Services\Auth\LdapService` integrate with LdapRecord?
+
+- **Option A (Recommended):** Service layer wrapping LdapRecord
+  - Create `LdapService` as a facade/adapter over LdapRecord's `Connection`, `Model`, and query builder
+  - Business logic lives in `LdapService`, LDAP library details abstracted
+  - Easier testing (mock LdapService interface)
+  - Easier to swap LDAP libraries in future if needed
+  
+- **Option B:** Direct LdapRecord usage throughout codebase
+  - AuthController and Actions call LdapRecord directly
+  - Less abstraction, fewer layers
+  - Tighter coupling to LdapRecord API
+  - Testing requires mocking LdapRecord classes
+
+**Pros/Cons:**
+- **A:** Better separation of concerns, testability; adds abstraction layer
+- **B:** Simpler, fewer files; harder to test, tight coupling
+
+**Impact:** HIGH - affects architecture, testing strategy, and implementation complexity across all increments (I2-I5)
+
+---
+
+### Q-010-08: LdapConfiguration DTO Purpose
+
+**Question:** What is the relationship between `App\DTO\LdapConfiguration` and LdapRecord's `config/ldap.php`?
+
+- **Option A (Recommended):** LdapConfiguration validates/transforms .env values
+  - `LdapConfiguration` is a validated value object created from .env variables
+  - Values are passed to LdapRecord's config at runtime
+  - Single source of truth: .env → LdapConfiguration → LdapRecord config
+  - Validation happens in DTO constructor
+  
+- **Option B:** LdapConfiguration duplicates LdapRecord config
+  - Separate parallel configuration system
+  - Risk of config drift between two systems
+  - More complex synchronization
+
+**Pros/Cons:**
+- **A:** Clean validation layer, no duplication; .env values must be transformed
+- **B:** More flexible; potential sync issues, redundant config
+
+**Impact:** MEDIUM - affects I1 configuration setup and validation strategy
+
+---
+
+### Q-010-09: Connection Pooling Implementation
+
+**Question:** What does "implement connection pooling logic" mean given LdapRecord already manages connections?
+
+- **Option A (Recommended):** Configure LdapRecord's built-in connection management
+  - Use LdapRecord's connection caching and reuse features
+  - Configure timeouts via LdapRecord config
+  - No custom pooling code needed
+  
+- **Option B:** Build custom connection pool
+  - Implement connection reuse, timeout, retry logic manually
+  - More control over pool behavior
+  - Significant additional complexity
+
+**Pros/Cons:**
+- **A:** Leverage existing, tested library feature; less code
+- **B:** Full control; reinventing the wheel, higher maintenance
+
+**Impact:** MEDIUM - affects I2 implementation complexity and testing
+
+---
+
+### Q-010-10: Testing Strategy for LDAP Operations
+
+**Question:** How should LDAP server responses be mocked for deterministic testing?
+
+- **Option A (Recommended):** LdapRecord's testing utilities for unit tests + optional Docker for integration
+  - Use LdapRecord's `DirectoryEmulator` or test helpers for unit tests
+  - Mock LDAP responses at service boundary
+  - Optional: `rroemhild/test-openldap` Docker image for integration tests
+  
+- **Option B:** Docker LDAP server for all tests
+  - Realistic LDAP server in test environment
+  - Slower test execution
+  - More complex CI setup
+  
+- **Option C:** PHP mock/stub classes only
+  - Fastest execution
+  - May not catch library integration issues
+  - No LdapRecord-specific testing utilities
+
+**Pros/Cons:**
+- **A:** Fast unit tests + realistic integration tests; best of both worlds
+- **B:** Most realistic; slowest, most complex
+- **C:** Simplest, fastest; least realistic
+
+**Impact:** MEDIUM - affects I2-I7 test implementation and CI configuration
+
+---
+
+### Q-010-11: Authentication Flow Sequence
+
+**Question:** What is the complete flow from username to group membership, including how userDn is obtained?
+
+Need to clarify the sequence:
+1. User submits username + password
+2. How do we get the userDn? 
+   - **Option A:** Search for user first (`LDAP_USER_FILTER`) → get DN → bind with DN + password
+   - **Option B:** Construct DN from username (e.g., `uid={username},ou=people,dc=example,dc=com`) → bind directly
+3. After successful bind, query groups using userDn
+4. Retrieve user attributes
+5. Map groups to roles
+
+**Recommended:** Option A (search-first pattern) for flexibility with diverse LDAP schemas
+
+**Impact:** HIGH - affects I2-I4 implementation, especially `bind()` and `getUserGroups()` method signatures
+
+---
+
+### Q-010-12: TLS/StartTLS Configuration Clarity
+
+**Question:** Does `LDAP_USE_TLS=true` cover both LDAPS (port 636) and StartTLS (port 389), or do we need separate configuration?
+
+- **Option A (Recommended):** Single `LDAP_USE_TLS` flag, protocol determined by port
+  - `LDAP_USE_TLS=true` + `LDAP_PORT=636` → LDAPS (SSL/TLS from start)
+  - `LDAP_USE_TLS=true` + `LDAP_PORT=389` → StartTLS (upgrade connection)
+  - `LDAP_USE_TLS=false` → plaintext (dev only)
+  - Document both scenarios in .env.example
+  
+- **Option B:** Separate flags for LDAPS and StartTLS
+  - `LDAP_USE_LDAPS=true` for port 636
+  - `LDAP_USE_STARTTLS=true` for port 389
+  - More explicit configuration
+  - More environment variables
+
+**Pros/Cons:**
+- **A:** Simpler configuration, fewer env vars; requires clear documentation
+- **B:** More explicit; more complex, more env vars
+
+**Impact:** MEDIUM - affects I1 configuration, I2 TLS implementation, and documentation
+
+---
+
+### ~~Q-010-06: Configuration Method~~ ✅ RESOLVED
+
+**Decision:** Option A - Environment variables only
+**Rationale:** LDAP is an expert/power-user setting; .env configuration is appropriate and avoids database complexity.
+**Updated in spec:** All configuration options use .env variables, NFR-010-01
+
+---
+
+### ~~Q-010-05: Password Storage~~ ✅ RESOLVED
+
+**Decision:** Option A - Don't store LDAP passwords
+**Rationale:** Most secure approach; authenticate only against LDAP server without password duplication.
+**Updated in spec:** FR-010-01, authentication flow, security model
+
+---
+
+### ~~Q-010-04: User Attribute Mapping~~ ✅ RESOLVED
+
+**Decision:** Option C - Defaults with optional override via .env
+**Rationale:** Provides sensible defaults (uid→username, mail→email, displayName→display_name) with .env configuration for LDAP schemas that differ.
+**Updated in spec:** FR-010-02, attribute mapping configuration
+
+---
+
+### ~~Q-010-03: LDAP Group Mapping~~ ✅ RESOLVED
+
+**Decision:** Option B - Map LDAP groups to Lychee roles (admin/user)
+**Rationale:** Allows admin role assignment via LDAP groups; provides automatic role sync without complex user group management.
+**Updated in spec:** FR-010-03, role mapping configuration
+
+---
+
+### ~~Q-010-02: User Provisioning~~ ✅ RESOLVED
+
+**Decision:** Option C - User provisioning configurable via .env
+**Rationale:** Flexibility for different deployment scenarios; allows auto-create or pre-existing-only mode via configuration.
+**Updated in spec:** FR-010-04, user provisioning behavior
+
+---
+
+### ~~Q-010-01: LDAP Authentication Method~~ ✅ RESOLVED
+
+**Decision:** Option C - Both basic auth and LDAP independently configurable via .env
+**Rationale:** Maximum flexibility; allows deployments to use LDAP-only, basic-only, or both. LDAP enablement controlled by .env variables.
+**Updated in spec:** FR-010-05, authentication method selection
 
 ---
 

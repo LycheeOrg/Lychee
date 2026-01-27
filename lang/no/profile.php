@@ -19,6 +19,7 @@ return [
         'change' => 'Endre pålogging',
         'api_token' => 'API-token …',
         'missing_fields' => 'Manglende felt',
+        'ldap_managed' => 'Brukerens påloggingsinformasjon administreres av LDAP.',
     ],
     'register' => [
         'username_exists' => 'Brukernavnet finnes allerede.',

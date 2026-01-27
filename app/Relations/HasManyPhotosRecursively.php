@@ -106,9 +106,9 @@ class HasManyPhotosRecursively extends BaseHasManyPhotos
 		$album = $this->parent;
 		if ($album === null || !Gate::check(AlbumPolicy::CAN_ACCESS, $album)) {
 			return $this->related->newCollection();
-		} else {
-			return parent::getResults();
 		}
+
+		return parent::getResults();
 	}
 
 	/**

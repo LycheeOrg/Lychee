@@ -26,9 +26,9 @@ final class EnumRequireSupportRule implements ValidationRule
 	 * @return void
 	 */
 	public function __construct(
-		protected mixed $type,
-		protected array $expected,
-		protected VerifyInterface $verify)
+		private mixed $type,
+		private array $expected,
+		private VerifyInterface $verify)
 	{
 	}
 
@@ -66,7 +66,7 @@ final class EnumRequireSupportRule implements ValidationRule
 	 *
 	 * @return bool
 	 */
-	protected function isDesirable($value)
+	private function isDesirable($value)
 	{
 		return in_array(needle: $value, haystack: $this->expected, strict: true);
 	}

@@ -20,6 +20,7 @@ return [
         'change' => 'Zmień login',
         'api_token' => 'Token API ...',
         'missing_fields' => 'Brakujące pola',
+        'ldap_managed' => 'Informacje logowania użytkownika są zarządzane przez LDAP.',
     ],
     'register' => [
         'username_exists' => 'Nazwa użytkownika już istnieje.',

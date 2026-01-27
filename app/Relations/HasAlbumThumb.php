@@ -222,11 +222,11 @@ class HasAlbumThumb extends Relation
 			return Thumb::createFromPhoto($album->max_privilege_cover);
 		} elseif ($cover_type === 'auto_cover_id_least_privilege' && $album->auto_cover_id_least_privilege !== null) {
 			return Thumb::createFromPhoto($album->min_privilege_cover);
-		} else {
-			return Thumb::createFromQueryable(
-				$this->getRelationQuery(),
-				PhotoSortingCriterion::createDefault()
-			);
 		}
+
+		return Thumb::createFromQueryable(
+			$this->getRelationQuery(),
+			PhotoSortingCriterion::createDefault()
+		);
 	}
 }

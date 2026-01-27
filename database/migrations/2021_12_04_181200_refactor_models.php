@@ -1072,9 +1072,9 @@ return new class() extends Migration {
 				return 'is_public';
 			} elseif ($sortingCol === 'star') {
 				return 'is_starred';
-			} else {
-				return $sortingCol;
 			}
+
+			return $sortingCol;
 		};
 		foreach ($albums as $album) {
 			$pgBar->advance();
@@ -1243,9 +1243,9 @@ return new class() extends Migration {
 				return 'public';
 			} elseif ($sortingCol === 'is_starred') {
 				return 'star';
-			} else {
-				return $sortingCol;
 			}
+
+			return $sortingCol;
 		};
 		foreach ($baseAlbums as $oldBaseAlbum) {
 			$pgBar->advance();
@@ -1756,9 +1756,9 @@ return new class() extends Migration {
 			return true;
 		} elseif ($variantType === self::VARIANT_THUMB2X) {
 			return $photo->thumb2x !== '' && $photo->thumb2x !== null;
-		} else {
-			return $this->getWidth($photo, $variantType) !== 0;
 		}
+
+		return $this->getWidth($photo, $variantType) !== 0;
 	}
 
 	private function generateKey(): string

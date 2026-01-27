@@ -19,6 +19,7 @@ return [
         'change' => 'Change Login',
         'api_token' => 'API Token ...',
         'missing_fields' => 'Missing fields',
+        'ldap_managed' => '使用者登入資訊由 LDAP 管理。',
     ],
     'register' => [
         'username_exists' => 'Username already exists.',

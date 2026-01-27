@@ -19,6 +19,7 @@ return [
         'change' => 'تأیید تغییرات',
         'api_token' => 'توکن API …',
         'missing_fields' => 'فیلدهای ناقص',
+        'ldap_managed' => 'اطلاعات ورود کاربر توسط LDAP مدیریت می‌شود.',
     ],
     'register' => [
         'username_exists' => 'Username already exists.',

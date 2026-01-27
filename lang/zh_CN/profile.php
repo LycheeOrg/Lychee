@@ -20,6 +20,7 @@ return [
         'change' => '修改登录信息',
         'api_token' => 'API 令牌...',
         'missing_fields' => '缺少必填项',
+        'ldap_managed' => '用户登录信息由 LDAP 管理。',
     ],
     'register' => [
         'username_exists' => '用户名已存在。',

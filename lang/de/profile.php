@@ -19,6 +19,7 @@ return [
         'change' => 'Anmeldung ändern',
         'api_token' => 'API Token …',
         'missing_fields' => 'Fehlende Felder',
+        'ldap_managed' => 'Benutzer-Anmeldeinformationen werden über LDAP verwaltet.',
     ],
     'register' => [
         'username_exists' => 'Benutzername existiert bereits.',

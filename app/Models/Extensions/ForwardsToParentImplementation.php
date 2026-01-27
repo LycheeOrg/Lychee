@@ -372,16 +372,15 @@ trait ForwardsToParentImplementation
 				$this->setRelation('base_class', $base_model);
 
 				return $base_model;
-			} else {
-				// This model exists, but the relation to the base class
-				// has not yet been loaded.
-				// Load it now.
-				if ($primary_key === null) {
-					throw new FailedModelAssumptionException('the model allegedly exists, but we don\'t have a primary key, cannot load base model');
-				}
-
-				return $this->getRelationshipFromMethod('base_class');
 			}
+			// This model exists, but the relation to the base class
+			// has not yet been loaded.
+			// Load it now.
+			if ($primary_key === null) {
+				throw new FailedModelAssumptionException('the model allegedly exists, but we don\'t have a primary key, cannot load base model');
+			}
+
+			return $this->getRelationshipFromMethod('base_class');
 		}
 
 		// If the "attribute" exists as a method on the model, we will just assume

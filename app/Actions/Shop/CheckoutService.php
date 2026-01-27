@@ -125,16 +125,15 @@ class CheckoutService
 					is_success: true,
 					is_redirect: false,
 				);
-			} else {
-				// Payment failed
-				$order->status = PaymentStatusType::FAILED;
-				$order->save();
-
-				return new CheckoutDTO(
-					is_success: false,
-					message: $response->getMessage(),
-				);
 			}
+			// Payment failed
+			$order->status = PaymentStatusType::FAILED;
+			$order->save();
+
+			return new CheckoutDTO(
+				is_success: false,
+				message: $response->getMessage(),
+			);
 		} catch (\Exception|InvalidCreditCardException $e) {
 			Log::error('Error processing payment: ' . $e->getMessage(), [
 				'order_id' => $order->id,
@@ -191,9 +190,8 @@ class CheckoutService
 			$response = $gateway->completePurchase($metadata)->send();
 			if ($response->isSuccessful()) {
 				return $this->completePayment($order, $response);
-			} else {
-				Log::warning('Payment was not successful for order ' . $order->transaction_id);
 			}
+			Log::warning('Payment was not successful for order ' . $order->transaction_id);
 		} catch (\Exception $e) {
 			Log::error('Error handling payment return: ' . $e->getMessage(), [
 				'provider' => $provider,

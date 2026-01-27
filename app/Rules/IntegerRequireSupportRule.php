@@ -17,8 +17,8 @@ use LycheeVerify\Contract\VerifyInterface;
 final class IntegerRequireSupportRule implements ValidationRule
 {
 	public function __construct(
-		protected int $expected,
-		protected VerifyInterface $verify,
+		private int $expected,
+		private VerifyInterface $verify,
 	) {
 	}
 

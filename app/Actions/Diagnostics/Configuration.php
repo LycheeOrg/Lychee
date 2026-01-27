@@ -38,10 +38,10 @@ class Configuration
 			if (is_null($setting->value)) {
 				// @codeCoverageIgnoreStart
 				return 'Error: ' . $setting->key . ' has a NULL value!';
-			// @codeCoverageIgnoreEnd
-			} else {
-				return Diagnostics::line($setting->key . ':', $setting->value);
+				// @codeCoverageIgnoreEnd
 			}
+
+			return Diagnostics::line($setting->key . ':', $setting->value);
 		})->all();
 	}
 

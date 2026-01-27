@@ -66,9 +66,9 @@ class AdminSetterHandler implements HttpExceptionHandler
 				}
 
 				return $redirect_response;
-			} else {
-				return $default_response;
 			}
+
+			return $default_response;
 		} catch (\Throwable) {
 			return $default_response;
 		}

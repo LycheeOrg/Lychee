@@ -19,6 +19,7 @@ return [
         'change' => 'Modifier l’identifiant',
         'api_token' => 'Jeton API …',
         'missing_fields' => 'Champs manquants',
+        'ldap_managed' => 'Les informations de connexion de l’utilisateur sont gérées par LDAP.',
     ],
     'register' => [
         'username_exists' => 'Le nom d’utilisateur existe déjà.',

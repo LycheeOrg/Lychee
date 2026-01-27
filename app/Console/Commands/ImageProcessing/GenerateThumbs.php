@@ -140,9 +140,8 @@ class GenerateThumbs extends Command
 		} catch (LycheeException|SymfonyConsoleException $e) {
 			if ($e instanceof ExternalLycheeException) {
 				throw $e;
-			} else {
-				throw new UnexpectedException($e);
 			}
+			throw new UnexpectedException($e);
 		}
 	}
 }

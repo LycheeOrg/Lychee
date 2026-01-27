@@ -17,8 +17,8 @@ use LycheeVerify\Contract\VerifyInterface;
 final class StringRequireSupportRule implements ValidationRule
 {
 	public function __construct(
-		protected mixed $expected,
-		protected VerifyInterface $verify)
+		private mixed $expected,
+		private VerifyInterface $verify)
 	{
 		$this->verify = $verify;
 		$this->expected = $expected === '' ? null : $expected;

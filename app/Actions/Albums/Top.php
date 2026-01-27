@@ -20,6 +20,7 @@ use App\Models\Album;
 use App\Models\Builders\AlbumBuilder;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\TagAlbum;
+use App\Models\User;
 use App\Policies\AlbumPolicy;
 use App\Policies\AlbumQueryPolicy;
 use App\Repositories\ConfigManager;
@@ -66,6 +67,7 @@ class Top
 	 */
 	public function get(): TopAlbumDTO
 	{
+		/** @var ?User $user */
 		$user = Auth::user();
 		$user_id = $user?->id;
 
@@ -119,19 +121,18 @@ class Top
 				pinned_albums: $pinned_albums,
 				albums: $a->values(),
 				shared_albums: $b->values());
-		} else {
-			// For anonymous users we don't want to implicitly expose
-			// ownership via sorting.
-			/** @var BaseCollection<int,Album> */
-			$albums = (new SortingDecorator($query))
-				->orderBy($this->sorting->column, $this->sorting->order)
-				->get();
-
-			return new TopAlbumDTO(
-				smart_albums: $smart_albums,
-				tag_albums: $tag_albums,
-				pinned_albums: $pinned_albums,
-				albums: $albums);
 		}
+		// For anonymous users we don't want to implicitly expose
+		// ownership via sorting.
+		/** @var BaseCollection<int,Album> */
+		$albums = (new SortingDecorator($query))
+			->orderBy($this->sorting->column, $this->sorting->order)
+			->get();
+
+		return new TopAlbumDTO(
+			smart_albums: $smart_albums,
+			tag_albums: $tag_albums,
+			pinned_albums: $pinned_albums,
+			albums: $albums);
 	}
 }

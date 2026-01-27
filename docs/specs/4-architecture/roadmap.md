@@ -19,6 +19,7 @@ High-level planning document for Lychee features and architectural initiatives.
 
 | Feature ID | Name | Completed | Notes |
 |------------|------|-----------|-------|
+| 010 | LDAP Authentication Support | 2026-01-26 | Enterprise directory integration with auto-provisioning, role mapping via groups, TLS/SSL support, graceful degradation to local auth, comprehensive logging, full documentation (11 increments: I1-I11 complete) |
 | 007 | Photos and Albums Pagination | 2026-01-14 | New paginated API endpoints (/Album/{id}/head, /albums, /photos), configurable page sizes, three UI modes (infinite scroll, load more, page navigation), Smart/Tag album support |
 | 006 | Photo Star Rating Filter | 2026-01-14 | Frontend filter control (5 clickable stars) for minimum rating threshold, toggle on/off behavior, Pinia state persistence, keyboard accessible, filters photos in album view |
 | 005 | Album List View Toggle | 2026-01-04 | Toggle between grid/card and list view for albums, admin-configurable default, session-only user preference, full RTL support, drag-select compatible |
@@ -88,4 +89,4 @@ features/
 
 ---
 
-*Last updated: 2026-01-21*
+*Last updated: 2026-01-26*

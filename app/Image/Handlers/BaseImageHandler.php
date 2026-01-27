@@ -57,13 +57,12 @@ abstract class BaseImageHandler implements ImageHandlerInterface
 				ImageOptimizer::optimize($local_file->getRealPath());
 
 				return $collect_statistics ? StreamStat::createFromLocalFile($local_file) : null;
-			} else {
-				Log::warning(__METHOD__ . ':' . __LINE__ . ' Skipping lossless optimization; optimization is requested by configuration but only supported for local files');
-
-				return null;
 			}
-		} else {
+			Log::warning(__METHOD__ . ':' . __LINE__ . ' Skipping lossless optimization; optimization is requested by configuration but only supported for local files');
+
 			return null;
 		}
+
+		return null;
 	}
 }

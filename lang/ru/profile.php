@@ -19,6 +19,7 @@ return [
         'change' => 'Изменить логин',
         'api_token' => 'API Токен …',
         'missing_fields' => 'Отсутствуют поля',
+        'ldap_managed' => 'Информация для входа пользователя управляется LDAP.',
     ],
     'register' => [
         'username_exists' => 'Имя пользователя уже существует.',
