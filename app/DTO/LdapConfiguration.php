@@ -39,23 +39,21 @@ final class LdapConfiguration
 	 */
 	public function __construct()
 	{
-		$connection = Config::get('ldap.connections.default');
-		$auth = Config::get('ldap.auth');
-
 		// Validate required connection settings
-		$this->host = $this->requireString($connection['hosts'][0] ?? null, 'LDAP_HOST');
-		$this->port = $this->requireInt($connection['port'] ?? null, 'LDAP_PORT');
-		$this->base_dn = $this->requireString($connection['base_dn'] ?? null, 'LDAP_BASE_DN');
-		$this->bind_dn = $this->requireString($connection['username'] ?? null, 'LDAP_BIND_DN');
-		$this->bind_password = $this->requireString($connection['password'] ?? null, 'LDAP_BIND_PASSWORD');
-		$this->connection_timeout = $connection['timeout'] ?? 5;
-		$this->use_tls = $connection['use_tls'] ?? true;
+		$this->host = $this->requireString(config('ldap.connections.default.hosts')[0], 'LDAP_HOST', 'ldap.example.com');
+		$this->port = $this->requireInt(config('ldap.connections.default.port'), 'LDAP_PORT', 389);
+		$this->base_dn = $this->requireString(config('ldap.connections.default.base_dn'), 'LDAP_BASE_DN', 'dc=example,dc=com');
+		$this->bind_dn = $this->requireString(config('ldap.connections.default.username'), 'LDAP_BIND_DN', 'cn=bind-user,dc=example,dc=com');
+		$this->bind_password = $this->requireString(config('ldap.connections.default.password'), 'LDAP_BIND_PASSWORD');
+		$this->connection_timeout = config('ldap.connections.default.timeout', 5);
+		$this->use_tls = config('ldap.connections.default.use_tls', true);
 
 		// Extract TLS verification from options array
-		$optTlsRequireCert = $connection['options'][LDAP_OPT_X_TLS_REQUIRE_CERT] ?? LDAP_OPT_X_TLS_DEMAND;
+		$optTlsRequireCert = config('ldap.connections.default.options')[LDAP_OPT_X_TLS_REQUIRE_CERT] ?? LDAP_OPT_X_TLS_DEMAND;
 		$this->tls_verify_peer = $optTlsRequireCert === LDAP_OPT_X_TLS_DEMAND;
 
 		// Validate authentication settings
+		$auth = Config::get('ldap.auth');
 		$this->user_filter = $this->requireString($auth['user_filter'] ?? null, 'LDAP_USER_FILTER');
 		$this->attr_username = $this->requireString($auth['attributes']['username'] ?? null, 'LDAP_ATTR_USERNAME');
 		$this->attr_email = $this->requireString($auth['attributes']['email'] ?? null, 'LDAP_ATTR_EMAIL');
@@ -71,12 +69,13 @@ final class LdapConfiguration
 	 *
 	 * @param mixed  $value   The configuration value
 	 * @param string $envName Environment variable name for error messages
+	 * @param string $default Default value if not set
 	 *
 	 * @throws LdapConfigurationException if value is null or empty
 	 */
-	private function requireString(mixed $value, string $envName): string
+	private function requireString(mixed $value, string $envName, string $default = ''): string
 	{
-		if ($value === null || $value === '') {
+		if ($value === null || $value === '' || $value === $default) {
 			throw new LdapConfigurationException("LDAP configuration error: {$envName} is required but not set");
 		}
 
@@ -88,10 +87,11 @@ final class LdapConfiguration
 	 *
 	 * @param mixed  $value   The configuration value
 	 * @param string $envName Environment variable name for error messages
+	 * @param int    $default Default value if not set
 	 *
 	 * @throws LdapConfigurationException if value is null or not a valid integer
 	 */
-	private function requireInt(mixed $value, string $envName): int
+	private function requireInt(mixed $value, string $envName, ?int $default = null): int
 	{
 		if ($value === null || !is_numeric($value)) {
 			throw new LdapConfigurationException("LDAP configuration error: {$envName} is required but not set or invalid");

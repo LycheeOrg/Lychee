@@ -7,7 +7,7 @@
 	>
 		<form>
 			<div v-if="user.is_ldap" class="w-full p-4 text-muted-color">
-				<i class="pi pi-info-circle ltr:mr-2 rlt:ml-2"></i>
+				<i class="pi pi-info-circle ltr:mr-2 rtl:ml-2"></i>
 				<span>{{ $t("profile.login.ldap_managed") }}</span>
 				<Button severity="secondary" class="w-full font-bold border-none shrink rounded-xl mt-4" @click="isApiTokenOpen = !isApiTokenOpen">
 					{{ $t("profile.login.api_token") }}

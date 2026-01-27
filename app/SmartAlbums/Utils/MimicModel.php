@@ -49,9 +49,8 @@ trait MimicModel
 		} elseif (property_exists($this, $studly_key)) {
 			/** @phpstan-ignore-next-line PhpStan does not like variadic calls */
 			return $this->{$studly_key};
-		} else {
-			throw new LycheeInvalidArgumentException('neither property nor getter method exist for [' . $getter . '/' . $key . '/' . $studly_key . ']');
 		}
+		throw new LycheeInvalidArgumentException('neither property nor getter method exist for [' . $getter . '/' . $key . '/' . $studly_key . ']');
 	}
 
 	/**

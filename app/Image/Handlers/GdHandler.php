@@ -170,9 +170,9 @@ class GdHandler extends BaseImageHandler
 			$gd_img_stat = getimagesizefromstring($img_binary);
 			if ($gd_img_stat === false) {
 				throw ImageException::createFromPhpError();
-			} else {
-				$this->gd_image_type = $gd_img_stat[2];
 			}
+			$this->gd_image_type = $gd_img_stat[2];
+
 			if (!in_array($this->gd_image_type, self::SUPPORTED_IMAGE_TYPES, true)) {
 				$this->reset();
 				throw new MediaFileUnsupportedException('Type of photo is not supported');
@@ -206,13 +206,12 @@ class GdHandler extends BaseImageHandler
 						// something went wrong catastrophically, throw the
 						// exception as `exif_read_data` would have done without @
 						throw $exception;
-					} else {
-						// exif_read_data() returned an array and has been able
-						// to extract some useful data, but still reported a
-						// warning; don't throw the exception, but log it and
-						// proceed
-						Handler::reportSafely($exception);
 					}
+					// exif_read_data() returned an array and has been able
+					// to extract some useful data, but still reported a
+					// warning; don't throw the exception, but log it and
+					// proceed
+					Handler::reportSafely($exception);
 				}
 
 				// Auto-rotate image

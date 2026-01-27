@@ -77,10 +77,9 @@ class ProcessImageJob implements ShouldQueue
 		$user_id = Auth::user()?->id;
 		if ($user_id === null && ($album === null || $album instanceof BaseSmartAlbum)) {
 			throw new OwnerRequiredException();
-		} else {
-			/** @var Album|TagAlbum $album */
-			$this->user_id = $user_id ?? $album?->owner_id ?? throw new OwnerRequiredException();
 		}
+		/** @var Album|TagAlbum $album */
+		$this->user_id = $user_id ?? $album?->owner_id ?? throw new OwnerRequiredException();
 
 		$this->file_last_modified_time = $file_last_modified_time;
 

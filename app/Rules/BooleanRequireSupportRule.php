@@ -17,8 +17,8 @@ use LycheeVerify\Contract\VerifyInterface;
 final class BooleanRequireSupportRule implements ValidationRule
 {
 	public function __construct(
-		protected bool $expected,
-		protected VerifyInterface $verify)
+		private bool $expected,
+		private VerifyInterface $verify)
 	{
 	}
 

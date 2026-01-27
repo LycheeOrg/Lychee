@@ -44,23 +44,21 @@ class DiskUsage
 				return intval($size);
 			} // If on a Windows Host (WIN32, WINNT, Windows)
 			// @codeCoverageIgnoreStart
-			else {
-				if (extension_loaded('com_dotnet')) {
-					$obj = new \COM('scripting.filesystemobject');
-					/** @phpstan-ignore-next-line phpstan does not know about com_extension & its methods*/
-					$ref = $obj->getfolder($dir);
-					$total_size = $ref->size;
-					$obj = null;
 
-					return $total_size;
-				}
+			if (extension_loaded('com_dotnet')) {
+				$obj = new \COM('scripting.filesystemobject');
+				/** @phpstan-ignore-next-line phpstan does not know about com_extension & its methods*/
+				$ref = $obj->getfolder($dir);
+				$total_size = $ref->size;
+				$obj = null;
+
+				return $total_size;
 			}
 
 			return 0;
-		} else {
-			if (is_file($dir) === true) {
-				return filesize($dir);
-			}
+		}
+		if (is_file($dir) === true) {
+			return filesize($dir);
 		}
 
 		return 0;

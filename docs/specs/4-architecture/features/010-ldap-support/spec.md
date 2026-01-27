@@ -316,13 +316,6 @@ domain_objects:
         type: string
         nullable: true
         description: "User-friendly name from LDAP displayNa
-      - name: is_ldap
-        type: boolean
-        default: true
-        description: "Flag indicating LDAP-managed user; prevents credential editing"me/cn; may have duplicates; fallback to username if missing"
-      - name: groups
-        type: array<string>
-        description: "List of group DNs the user belongs to"
 
 routes:
   - id: API-010-01

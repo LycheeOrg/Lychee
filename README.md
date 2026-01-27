@@ -20,8 +20,6 @@
 
 Lychee is a free, open-source photo-management tool that runs on your server or web space. Installation is quick and easy, taking just seconds. With Lychee, you can upload, manage, and share your photos seamlessly, just like using a native application. It comes with all the essential features you need, ensuring your photos are stored securely. Read more on our [website](https://LycheeOrg.dev).
 
-Lychee supports **LDAP/Active Directory authentication** for enterprise deployments, enabling seamless integration with existing user directories. See [docs/ldap-setup.md](docs/ldap-setup.md) for configuration details.
-
 For even more advanced features, consider the Supporter Edition (SE). The SE version offers additional functionality to enhance your experience. Learn more about the Supporter Edition and its benefits [here](https://lycheeorg.dev/get-supporter-edition).
 
 ## ⚠️ Upgrade Notice to Version 7.0

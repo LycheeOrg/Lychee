@@ -259,7 +259,8 @@ class LdapService
 	private function searchUser(string $username): ?string
 	{
 		// Build search filter (replace %s with username)
-		$filter = str_replace('%s', $username, $this->config->user_filter);
+		$escaped_username = ldap_escape($username, '', LDAP_ESCAPE_FILTER);
+		$filter = str_replace('%s', $escaped_username, $this->config->user_filter);
 		Log::debug('LDAP searching for user', [
 			'username' => $username,
 			'filter' => $filter,
@@ -307,7 +308,7 @@ class LdapService
 			'dn' => $userDn,
 			'email_attr' => $emailAttr,
 			'display_name_attr' => $displayNameAttr,
-			'result' => $result,
+			'result' => config('app.debug', false) === true ? $result : array_keys($result),
 		]);
 
 		// Get first value from LDAP multi-value attributes

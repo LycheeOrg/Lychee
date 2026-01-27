@@ -60,7 +60,9 @@ class Generate
 			'enclosure' => $this->url_generator->pathToUrl($data->short_path, $data->storage_disk, SizeVariantType::ORIGINAL),
 			'enclosureType' => $data->type,
 			'enclosureLength' => $data->filesize,
-			'authorName' => $data->display_name ?? $data->username,
+			'authorName' => ($data->display_name !== null && $data->display_name !== '')
+				? $data->display_name
+				: $data->username,
 			'category' => [$data->album_title],
 		];
 

@@ -49,7 +49,7 @@ Enable enterprise users to authenticate against LDAP/Active Directory servers, a
   - `App\Services\Auth\LdapService` (new) - Service layer wrapping LdapRecord Connection and query builder
   - `App\DTO\LdapConfiguration` (new) - Validates/transforms .env values before passing to LdapRecord (Q-010-08)
   - `App\DTO\LdapUser` (new) - LDAP user data transfer object
-  - `App\Actions\Auth\ProvisionLdapUser` (new) - User provisioning action
+  - `App\Actions\User\ProvisionLdapUser` (new) - User provisioning action
   - `App\Http\Controllers\AuthController` (modified)
   - `App\Providers\AuthServiceProvider` (modified)
   - `App\Models\User` (potentially modified for LDAP user tracking)
@@ -201,7 +201,7 @@ Before implementation begins, verify:
 - _Preconditions:_ I4 complete (LdapService::queryGroups() and isUserInAdminGroup() available)
 - _Spec coverage:_ FR-010-04, FR-010-03, S-010-01, S-010-02
 - _Steps:_
-  1. Create `App\Actions\Auth\ProvisionLdapUser` action accepting LdapUser DTO and LdapService
+  1. Create `App\Actions\User\ProvisionLdapUser` action accepting LdapUser DTO and LdapService
   2. Implement logic to find existing user by username or create new user
   3. Sync attributes from LdapUser DTO:
      - `username` (unique identifier, required)
@@ -215,14 +215,14 @@ Before implementation begins, verify:
   5. Respect `LDAP_AUTO_PROVISION` config (reject if disabled and user doesn't exist)
   6. Write unit tests for first-time provisioning, existing user updates, and role assignment
 - _Tests:_
-  - `tests/Unit/Actions/Auth/ProvisionLdapUserTest.php::testCreateNewUser`
-  - `tests/Unit/Actions/Auth/ProvisionLdapUserTest.php::testCreateNewUserWithDisplayName`
-  - `tests/Unit/Actions/Auth/ProvisionLdapUserTest.php::testCreateNewUserDisplayNameFallback`
-  - `tests/Unit/Actions/Auth/ProvisionLdapUserTest.php::testUpdateExistingUser`
-  - `tests/Unit/Actions/Auth/ProvisionLdapUserTest.php::testUpdateExistingUserRoleChange`
-  - `tests/Unit/Actions/Auth/ProvisionLdapUserTest.php::testAutoProvisionDisabled`
-  - `tests/Unit/Actions/Auth/ProvisionLdapUserTest.php::testAdminRoleAssignedFromGroup`
-  - `tests/Unit/Actions/Auth/ProvisionLdapUserTest.php::testRegularUserRole`
+  - `tests/Unit/Actions/User/ProvisionLdapUserTest.php::testCreateNewUser`
+  - `tests/Unit/Actions/User/ProvisionLdapUserTest.php::testCreateNewUserWithDisplayName`
+  - `tests/Unit/Actions/User/ProvisionLdapUserTest.php::testCreateNewUserDisplayNameFallback`
+  - `tests/Unit/Actions/User/ProvisionLdapUserTest.php::testUpdateExistingUser`
+  - `tests/Unit/Actions/User/ProvisionLdapUserTest.php::testUpdateExistingUserRoleChange`
+  - `tests/Unit/Actions/User/ProvisionLdapUserTest.php::testAutoProvisionDisabled`
+  - `tests/Unit/Actions/User/ProvisionLdapUserTest.php::testAdminRoleAssignedFromGroup`
+  - `tests/Unit/Actions/User/ProvisionLdapUserTest.php::testRegularUserRole`
 - _Commands:_ `php artisan test --filter=ProvisionLdapUserTest`
 - _Exit:_ User provisioning working; groups queried during provisioning; role assignment from LDAP groups working; auto-provision toggle tested
 
@@ -355,7 +355,7 @@ Before implementation begins, verify:
   2. Update `App\Models\User`:
      - Add `@property bool $is_ldap` to docblock
      - Confirm `'is_ldap' => 'boolean'` in `$casts` array (already done)
-  3. Update `App\Actions\Auth\ProvisionLdapUser`:
+  3. Update `App\Actions\User\ProvisionLdapUser`:
      - Set `is_ldap = true` when creating new LDAP users
      - Keep `is_ldap = true` when updating existing LDAP users
   4. Update `App\Http\Resources\Models\UserResource`:
@@ -375,7 +375,7 @@ Before implementation begins, verify:
      - Feature test: Updating LDAP user credentials returns validation error
      - Feature test: Updating non-LDAP user credentials succeeds
 - _Tests:_
-  - `tests/Unit/Actions/Auth/ProvisionLdapUserTest.php::testSetsIsLdapFlag`
+  - `tests/Unit/Actions/User/ProvisionLdapUserTest.php::testSetsIsLdapFlag`
   - `tests/Feature_v2/Auth/LdapAuthenticationTest.php::testAuthUserIncludesIsLdapFlag`
   - `tests/Feature_v2/UserManagement/SetUserSettingsRequestTest.php::testRejectsLdapUserCredentialChanges`
   - `tests/Feature_v2/UserManagement/SetUserSettingsRequestTest.php::testAllowsNonLdapUserCredentialChanges`

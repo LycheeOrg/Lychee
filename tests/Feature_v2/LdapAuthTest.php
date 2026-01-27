@@ -85,7 +85,7 @@ class LdapAuthTest extends BaseApiWithDataTest
 		$this->assertSame('ldap.test.local', Config::get('ldap.connections.default.hosts.0'));
 	}
 
-	public function testLocalAuthStillWorksWhenLdapEnabled(): void
+	public function testLocalAuthStillWorksWhenLdapDisabled(): void
 	{
 		// Keep LDAP disabled to avoid connection attempts
 		Config::set('ldap.auth.enabled', false);

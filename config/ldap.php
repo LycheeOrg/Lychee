@@ -24,13 +24,13 @@ return [
 			'timeout' => env('LDAP_CONNECTION_TIMEOUT', 5),
 
 			// TLS/SSL settings
-			'use_tls' => env('LDAP_USE_TLS', true),
+			'use_tls' => (bool) env('LDAP_USE_TLS', true),
 			'use_ssl' => env('LDAP_PORT', 389) === 636, // Auto-detect LDAPS from port
 
 			// Additional connection options
 			'options' => [
 				// TLS certificate verification
-				LDAP_OPT_X_TLS_REQUIRE_CERT => env('LDAP_TLS_VERIFY_PEER', true)
+				LDAP_OPT_X_TLS_REQUIRE_CERT => ((bool) env('LDAP_TLS_VERIFY_PEER', true))
 					? LDAP_OPT_X_TLS_DEMAND
 					: LDAP_OPT_X_TLS_ALLOW,
 			],
@@ -49,10 +49,10 @@ return [
 
 	'auth' => [
 		// Enable LDAP authentication
-		'enabled' => env('LDAP_ENABLED', false),
+		'enabled' => (bool) env('LDAP_ENABLED', false),
 
 		// Auto-provision users on first LDAP login
-		'auto_provision' => env('LDAP_AUTO_PROVISION', true),
+		'auto_provision' => (bool) env('LDAP_AUTO_PROVISION', true),
 
 		// LDAP user search filter (%s is replaced with username)
 		// OpenLDAP: (&(objectClass=person)(uid=%s))
@@ -80,5 +80,5 @@ return [
 	|
 	*/
 
-	'logging' => env('LDAP_LOGGING', false),
+	'logging' => (bool) env('LDAP_LOGGING', false),
 ];

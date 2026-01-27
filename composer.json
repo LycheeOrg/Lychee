@@ -52,7 +52,7 @@
         "bepsvpt/secure-headers": "^9.0",
         "composer/semver": "^3.4",
         "dedoc/scramble": "^0.13.1",
-        "directorytree/ldaprecord-laravel": "^3.0",
+        "directorytree/ldaprecord-laravel": "^3.4.2",
         "doctrine/dbal": "^3.9",
         "farzai/color-palette": "^1.0",
         "geocoder-php/cache-provider": "^4.4",

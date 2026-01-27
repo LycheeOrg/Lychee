@@ -9,6 +9,7 @@
 namespace App\Actions\User;
 
 use App\DTO\LdapUser;
+use App\Exceptions\LdapAuthenticationException;
 use App\Models\User;
 use App\Services\Auth\LdapService;
 use Illuminate\Support\Facades\Hash;
@@ -38,7 +39,7 @@ class ProvisionLdapUser
 	{
 		Log::debug('Provisioning LDAP user', [
 			'username' => $ldapUser->username,
-			'dn' => $ldapUser->userDn,
+			'dn' => config('app.debug', false) === true ? $ldapUser->userDn : '***',
 		]);
 
 		// Step 1: Find or create user
@@ -83,6 +84,10 @@ class ProvisionLdapUser
 			]);
 
 			return $user;
+		}
+
+		if (config('ldap.auth.auto_provision', true) !== true) {
+			throw new LdapAuthenticationException('LDAP auto-provisioning is disabled for new users.');
 		}
 
 		Log::debug('Creating new LDAP user', ['username' => $ldapUser->username]);

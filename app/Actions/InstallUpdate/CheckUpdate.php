@@ -55,9 +55,10 @@ class CheckUpdate
 			// @codeCoverageIgnoreStart
 			if (!$this->github_functions->isUpToDate()) {
 				return UpdateStatus::NOT_UP_TO_DATE;
-			} else {
-				return UpdateStatus::UP_TO_DATE;
 			}
+
+			return UpdateStatus::UP_TO_DATE;
+
 			// @codeCoverageIgnoreEnd
 			// @codeCoverageIgnoreStart
 		} catch (\Exception $e) {

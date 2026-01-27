@@ -187,8 +187,7 @@ class AuthControllerTest extends AbstractTestCase
 		Log::shouldReceive('warning')->never();
 
 		// Enable LDAP
-		// Config::set('ldap.auth.enabled', true);
-		config('ldap.auth.enabled', true);
+		Config::set('ldap.auth.enabled', true);
 		$this->setUpLdapConfig();
 
 		// Create mock LDAP service

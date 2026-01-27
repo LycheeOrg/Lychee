@@ -123,9 +123,8 @@ class VideoData extends Command
 		} catch (SymfonyConsoleException|LycheeException|\InvalidArgumentException $e) {
 			if ($e instanceof ExternalLycheeException) {
 				throw $e;
-			} else {
-				throw new UnexpectedException($e);
 			}
+			throw new UnexpectedException($e);
 		}
 	}
 }
