@@ -18,13 +18,13 @@ final class LdapUser
 {
 	/**
 	 * @param string      $username     Unique LDAP identifier (uid/sAMAccountName) for login
-	 * @param string      $userDn       Distinguished Name from LDAP search
+	 * @param string      $user_dn      Distinguished Name from LDAP search
 	 * @param string|null $email        Email address (nullable if LDAP attribute missing)
 	 * @param string|null $display_name User-friendly name (nullable, fallback to username during provisioning)
 	 */
 	public function __construct(
 		public readonly string $username,
-		public readonly string $userDn,
+		public readonly string $user_dn,
 		public readonly ?string $email = null,
 		public readonly ?string $display_name = null,
 	) {

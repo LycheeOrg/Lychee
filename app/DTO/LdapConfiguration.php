@@ -49,8 +49,8 @@ final class LdapConfiguration
 		$this->use_tls = config('ldap.connections.default.use_tls', true);
 
 		// Extract TLS verification from options array
-		$optTlsRequireCert = config('ldap.connections.default.options')[LDAP_OPT_X_TLS_REQUIRE_CERT] ?? LDAP_OPT_X_TLS_DEMAND;
-		$this->tls_verify_peer = $optTlsRequireCert === LDAP_OPT_X_TLS_DEMAND;
+		$opt_tls_require_cert = config('ldap.connections.default.options')[LDAP_OPT_X_TLS_REQUIRE_CERT] ?? LDAP_OPT_X_TLS_DEMAND;
+		$this->tls_verify_peer = $opt_tls_require_cert === LDAP_OPT_X_TLS_DEMAND;
 
 		// Validate authentication settings
 		$auth = Config::get('ldap.auth');
@@ -67,16 +67,16 @@ final class LdapConfiguration
 	/**
 	 * Validate that a string configuration value is present.
 	 *
-	 * @param mixed  $value   The configuration value
-	 * @param string $envName Environment variable name for error messages
-	 * @param string $default Default value if not set
+	 * @param mixed  $value    The configuration value
+	 * @param string $env_name Environment variable name for error messages
+	 * @param string $default  Default value if not set
 	 *
 	 * @throws LdapConfigurationException if value is null or empty
 	 */
-	private function requireString(mixed $value, string $envName, string $default = ''): string
+	private function requireString(mixed $value, string $env_name, string $default = ''): string
 	{
 		if ($value === null || $value === '' || $value === $default) {
-			throw new LdapConfigurationException("LDAP configuration error: {$envName} is required but not set");
+			throw new LdapConfigurationException("LDAP configuration error: {$env_name} is required but not set");
 		}
 
 		return (string) $value;
@@ -85,16 +85,15 @@ final class LdapConfiguration
 	/**
 	 * Validate that an integer configuration value is present and valid.
 	 *
-	 * @param mixed  $value   The configuration value
-	 * @param string $envName Environment variable name for error messages
-	 * @param int    $default Default value if not set
+	 * @param mixed  $value    The configuration value
+	 * @param string $env_name Environment variable name for error messages
 	 *
 	 * @throws LdapConfigurationException if value is null or not a valid integer
 	 */
-	private function requireInt(mixed $value, string $envName, ?int $default = null): int
+	private function requireInt(mixed $value, string $env_name): int
 	{
 		if ($value === null || !is_numeric($value)) {
-			throw new LdapConfigurationException("LDAP configuration error: {$envName} is required but not set or invalid");
+			throw new LdapConfigurationException("LDAP configuration error: {$env_name} is required but not set or invalid");
 		}
 
 		return (int) $value;

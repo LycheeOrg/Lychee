@@ -136,19 +136,19 @@ class AuthController extends Controller
 	{
 		try {
 			// Create LDAP configuration and service
-			$ldapService = $this->getLdapService();
+			$ldap_service = $this->getLdapService();
 
 			// Authenticate against LDAP
-			$ldapUser = $ldapService->authenticate($username, $password);
+			$ldap_user = $ldap_service->authenticate($username, $password);
 
-			if ($ldapUser === null) {
+			if ($ldap_user === null) {
 				// Invalid credentials or user not found
 				return false;
 			}
 
 			// Provision (create or update) local user
-			$provisionAction = new ProvisionLdapUser($ldapService);
-			$user = $provisionAction->do($ldapUser);
+			$provision_action = new ProvisionLdapUser($ldap_service);
+			$user = $provision_action->do($ldap_user);
 
 			// Log the user in
 			Auth::login($user);
@@ -181,8 +181,8 @@ class AuthController extends Controller
 	 */
 	protected function getLdapService(): LdapService
 	{
-		$ldapConfig = new LdapConfiguration();
+		$ldap_config = new LdapConfiguration();
 
-		return new LdapService($ldapConfig);
+		return new LdapService($ldap_config);
 	}
 }

@@ -24,33 +24,33 @@ use Illuminate\Support\Facades\Log;
 class ProvisionLdapUser
 {
 	public function __construct(
-		private readonly LdapService $ldapService,
+		private readonly LdapService $ldap_service,
 	) {
 	}
 
 	/**
 	 * Find or create user, sync attributes and admin status.
 	 *
-	 * @param LdapUser $ldapUser LDAP authentication data
+	 * @param LdapUser $ldap_user LDAP authentication data
 	 *
 	 * @return User Local user (created or updated)
 	 */
-	public function do(LdapUser $ldapUser): User
+	public function do(LdapUser $ldap_user): User
 	{
 		Log::debug('Provisioning LDAP user', [
-			'username' => $ldapUser->username,
-			'dn' => config('app.debug', false) === true ? $ldapUser->userDn : '***',
+			'username' => $ldap_user->username,
+			'dn' => config('app.debug', false) === true ? $ldap_user->user_dn : '***',
 		]);
 
 		// Step 1: Find or create user
-		$user = $this->findOrCreateUser($ldapUser);
-		$isNewUser = !$user->exists;
+		$user = $this->findOrCreateUser($ldap_user);
+		$is_new_user = !$user->exists;
 
 		// Step 2: Update user attributes from LDAP
-		$this->updateUserAttributes($user, $ldapUser);
+		$this->updateUserAttributes($user, $ldap_user);
 
 		// Step 3: Sync admin status based on LDAP groups
-		$this->syncAdminStatus($user, $ldapUser->userDn);
+		$this->syncAdminStatus($user, $ldap_user->user_dn);
 
 		// Save changes
 		$user->save();
@@ -58,7 +58,7 @@ class ProvisionLdapUser
 		Log::info('LDAP user provisioned', [
 			'user_id' => $user->id,
 			'username' => $user->username,
-			'is_new' => $isNewUser,
+			'is_new' => $is_new_user,
 			'is_admin' => $user->may_administrate,
 		]);
 
@@ -68,14 +68,14 @@ class ProvisionLdapUser
 	/**
 	 * Find existing user or create new one.
 	 *
-	 * @param LdapUser $ldapUser LDAP authentication data
+	 * @param LdapUser $ldap_user LDAP authentication data
 	 *
 	 * @return User Existing or new user (not yet saved)
 	 */
-	private function findOrCreateUser(LdapUser $ldapUser): User
+	private function findOrCreateUser(LdapUser $ldap_user): User
 	{
 		// Try to find by username
-		$user = User::query()->where('username', '=', $ldapUser->username)->first();
+		$user = User::query()->where('username', '=', $ldap_user->username)->first();
 
 		if ($user !== null) {
 			Log::debug('Found existing LDAP user', [
@@ -90,11 +90,11 @@ class ProvisionLdapUser
 			throw new LdapAuthenticationException('LDAP auto-provisioning is disabled for new users.');
 		}
 
-		Log::debug('Creating new LDAP user', ['username' => $ldapUser->username]);
+		Log::debug('Creating new LDAP user', ['username' => $ldap_user->username]);
 
 		// Create new user
 		$user = new User();
-		$user->username = $ldapUser->username;
+		$user->username = $ldap_user->username;
 
 		// Set random password (user authenticates via LDAP, not local password)
 		$user->password = Hash::make(bin2hex(random_bytes(32)));
@@ -113,40 +113,40 @@ class ProvisionLdapUser
 	/**
 	 * Update user attributes from LDAP data.
 	 *
-	 * @param User     $user     Local user to update
-	 * @param LdapUser $ldapUser LDAP authentication data
+	 * @param User     $user      Local user to update
+	 * @param LdapUser $ldap_user LDAP authentication data
 	 */
-	private function updateUserAttributes(User $user, LdapUser $ldapUser): void
+	private function updateUserAttributes(User $user, LdapUser $ldap_user): void
 	{
 		// Ensure LDAP flag is set (for existing users that may have been created before this feature)
 		$user->is_ldap = true;
 
 		// Update email if provided by LDAP
-		if ($ldapUser->email !== null) {
-			$user->email = $ldapUser->email;
+		if ($ldap_user->email !== null) {
+			$user->email = $ldap_user->email;
 		}
 
 		// Update display name if provided by LDAP
-		if ($ldapUser->display_name !== null) {
-			$user->display_name = $ldapUser->display_name;
+		if ($ldap_user->display_name !== null) {
+			$user->display_name = $ldap_user->display_name;
 		}
 	}
 
 	/**
 	 * Sync admin status based on LDAP group membership.
 	 *
-	 * @param User   $user   Local user to update
-	 * @param string $userDn User's LDAP DN
+	 * @param User   $user    Local user to update
+	 * @param string $user_dn User's LDAP DN
 	 */
-	private function syncAdminStatus(User $user, string $userDn): void
+	private function syncAdminStatus(User $user, string $user_dn): void
 	{
 		// Query user's LDAP groups
-		$groupDns = $this->ldapService->queryGroups($userDn);
+		$group_dns = $this->ldap_service->queryGroups($user_dn);
 
 		// Check if user is in admin group
-		$isAdmin = $this->ldapService->isUserInAdminGroup($groupDns);
+		$is_admin = $this->ldap_service->isUserInAdminGroup($group_dns);
 
 		// Update admin flag
-		$user->may_administrate = $isAdmin;
+		$user->may_administrate = $is_admin;
 	}
 }
