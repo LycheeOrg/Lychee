@@ -142,7 +142,7 @@ class LdapServiceTest extends AbstractTestCase
 		// Verify result
 		$this->assertNotNull($ldapUser);
 		$this->assertSame('testuser', $ldapUser->username);
-		$this->assertSame('uid=testuser,ou=users,dc=mycompany,dc=local', $ldapUser->userDn);
+		$this->assertSame('uid=testuser,ou=users,dc=mycompany,dc=local', $ldapUser->user_dn);
 		$this->assertSame('test@mycompany.local', $ldapUser->email);
 		$this->assertSame('Test User', $ldapUser->display_name);
 	}
