@@ -71,7 +71,7 @@ class SmartAlbumTypeTest extends AbstractTestCase
 	public function testEnumCount(): void
 	{
 		$cases = SmartAlbumType::cases();
-		self::assertCount(12, $cases);
+		self::assertCount(14, $cases);
 	}
 
 	/**
