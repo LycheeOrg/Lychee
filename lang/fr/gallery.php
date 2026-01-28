@@ -53,6 +53,8 @@ return [
         'four_stars' => '4+ étoiles',
         'five_stars' => '5 étoiles',
         'best_pictures' => 'Best Pictures',
+        'my_rated_pictures' => 'My Rated Pictures',
+        'my_best_pictures' => 'My Best Pictures',
     ],
     'layout' => [
         'squares' => 'Vignettes carrées',

@@ -10,6 +10,7 @@ namespace App\Enum;
 
 use App\Enum\Traits\DecorateBackedEnum;
 use App\Repositories\ConfigManager;
+use Illuminate\Support\Facades\Auth;
 use LycheeVerify\Contract\VerifyInterface;
 
 /**
@@ -31,6 +32,8 @@ enum SmartAlbumType: string
 	case FOUR_STARS = 'four_stars';
 	case FIVE_STARS = 'five_stars';
 	case BEST_PICTURES = 'best_pictures';
+	case MY_RATED_PICTURES = 'my_rated_pictures';
+	case MY_BEST_PICTURES = 'my_best_pictures';
 
 	/**
 	 * Return whether the smart album is enabled.
@@ -53,6 +56,10 @@ enum SmartAlbumType: string
 			self::FIVE_STARS => $config_manager->getValueAsBool('enable_5_stars'),
 			// Best Pictures requires both config AND Lychee SE license
 			self::BEST_PICTURES => $config_manager->getValueAsBool('enable_best_pictures') && $this->isLycheeSEActive(),
+			// My Rated Pictures shows all photos the user has rated (authenticated users only)
+			self::MY_RATED_PICTURES => Auth::check() && $config_manager->getValueAsBool('enable_my_rated_pictures'),
+			// My Best Pictures requires authenticated user, config, AND Lychee SE license
+			self::MY_BEST_PICTURES => Auth::check() && $config_manager->getValueAsBool('enable_my_best_pictures') && $this->isLycheeSEActive(),
 		};
 	}
 
@@ -70,5 +77,30 @@ enum SmartAlbumType: string
 			// If verification service is not available, default to disabled
 			return false;
 		}
+	}
+
+	/**
+	 * Whether the album requires the user to have upload rights.
+	 *
+	 * @return bool
+	 */
+	public function require_upload_rights(): bool
+	{
+		return match ($this) {
+			self::UNSORTED,
+			self::STARRED,
+			self::RECENT,
+			self::ON_THIS_DAY,
+			self::UNRATED,
+			self::UNTAGGED => true,
+			self::ONE_STAR,
+			self::TWO_STARS,
+			self::THREE_STARS,
+			self::FOUR_STARS,
+			self::FIVE_STARS,
+			self::BEST_PICTURES,
+			self::MY_RATED_PICTURES,
+			self::MY_BEST_PICTURES => false,
+		};
 	}
 }
