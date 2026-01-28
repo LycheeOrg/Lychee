@@ -20,6 +20,8 @@ use App\SmartAlbums\BaseSmartAlbum;
 use App\SmartAlbums\BestPicturesAlbum;
 use App\SmartAlbums\FiveStarsAlbum;
 use App\SmartAlbums\FourStarsAlbum;
+use App\SmartAlbums\MyBestPicturesAlbum;
+use App\SmartAlbums\MyRatedPicturesAlbum;
 use App\SmartAlbums\OneStarAlbum;
 use App\SmartAlbums\OnThisDayAlbum;
 use App\SmartAlbums\RecentAlbum;
@@ -47,6 +49,8 @@ class AlbumFactory
 		SmartAlbumType::FOUR_STARS->value => FourStarsAlbum::class,
 		SmartAlbumType::FIVE_STARS->value => FiveStarsAlbum::class,
 		SmartAlbumType::BEST_PICTURES->value => BestPicturesAlbum::class,
+		SmartAlbumType::MY_RATED_PICTURES->value => MyRatedPicturesAlbum::class,
+		SmartAlbumType::MY_BEST_PICTURES->value => MyBestPicturesAlbum::class,
 	];
 
 	public function __construct(
