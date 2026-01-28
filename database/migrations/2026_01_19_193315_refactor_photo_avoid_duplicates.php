@@ -43,11 +43,25 @@ return new class() extends Migration {
 			$photo_to_keep = array_shift($photos_ids);
 			// Check if there are any references to those photos in photo_album, statistics, purchasables
 			$album_ids = DB::table('photo_album')->where('photo_id', $photo_to_keep)->select('album_id')->pluck('album_id')->all();
-			DB::table('photo_album')->whereIn('photo_id', $photos_ids)->whereNotIn('album_id', $album_ids)->update(['photo_id' => $photo_to_keep]);
-			DB::table('purchasables')->whereIn('photo_id', $photos_ids)->whereNotIn('album_id', $album_ids)->update(['photo_id' => $photo_to_keep]);
+
+			// We have to use a foreach here because we want to catch the exceptions individually
+			foreach ($photos_ids as $photo_id) {
+				try {
+					DB::table('photo_album')->where('photo_id', '=', $photo_id)->whereNotIn('album_id', $album_ids)->update(['photo_id' => $photo_to_keep]);
+				} catch (\Exception) {
+					// If this crashes this meeans that the link already exists between the photo and the album.
+					// We ignore it.
+				}
+
+				try {
+					DB::table('purchasables')->where('photo_id', '=', $photo_id)->whereNotIn('album_id', $album_ids)->update(['photo_id' => $photo_to_keep]);
+				} catch (\Exception) {
+					// Same shit as above. :)
+				}
+			}
 
 			// Delete the remaining links
-			+DB::table('size_variants')->whereIn('photo_id', $photos_ids)->delete();
+			DB::table('size_variants')->whereIn('photo_id', $photos_ids)->delete();
 			DB::table('purchasables')->whereIn('photo_id', $photos_ids)->delete();
 			DB::table('statistics')->whereIn('photo_id', $photos_ids)->delete();
 			DB::table('photo_album')->whereIn('photo_id', $photos_ids)->delete();
