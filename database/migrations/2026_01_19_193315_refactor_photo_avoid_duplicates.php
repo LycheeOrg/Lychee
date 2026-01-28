@@ -49,7 +49,7 @@ return new class() extends Migration {
 				try {
 					DB::table('photo_album')->where('photo_id', '=', $photo_id)->whereNotIn('album_id', $album_ids)->update(['photo_id' => $photo_to_keep]);
 				} catch (\Exception) {
-					// If this crashes this meeans that the link already exists between the photo and the album.
+					// If this crashes this means that the link already exists between the photo and the album.
 					// We ignore it.
 				}
 
