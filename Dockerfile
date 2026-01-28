@@ -94,6 +94,7 @@ RUN apt-get update \
     gd \
     zip \
     bcmath \
+    ldap \
     sodium \
     opcache \
     pcntl \
