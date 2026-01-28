@@ -26,6 +26,7 @@ class VerifyCsrfToken extends Middleware
 		'/api/Session::init',
 		'/api/v2/Zip',
 		'/api/v2/Shop/Checkout/Finalize/*',
+		'/api/v2/Photo::random',
 	];
 
 	/**
