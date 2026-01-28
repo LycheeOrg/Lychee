@@ -105,6 +105,7 @@ RUN \
 	php8.5-redis \
 	php8.5-bcmath \
 	php8.5-intl \
+	php8.5-ldap \
 	netcat-openbsd \
 	libimage-exiftool-perl \
 	ffmpeg \
