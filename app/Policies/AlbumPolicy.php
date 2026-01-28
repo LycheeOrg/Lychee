@@ -74,7 +74,7 @@ class AlbumPolicy extends BasePolicy
 	public function canSee(?User $user, BaseSmartAlbum $smart_album): bool
 	{
 		// We do not require upload rights for all albums
-		$require_upload_rights = SmartAlbumType::from($smart_album->id)->require_upload_rights();
+		$require_upload_rights = SmartAlbumType::from($smart_album->get_id())->require_upload_rights();
 
 		return ($user?->may_upload === true) ||
 			($user?->may_upload === false && !$require_upload_rights) ||
