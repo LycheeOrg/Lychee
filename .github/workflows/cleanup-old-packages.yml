@@ -9,6 +9,9 @@ on:
   push:
     branches: [ "master" ]
 
+# Declare default permissions as read only.
+permissions: read-all
+
 jobs:
   clean-up-old-packages:
     runs-on: ubuntu-latest
