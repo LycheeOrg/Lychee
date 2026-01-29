@@ -55,6 +55,8 @@ class CoverageTest extends AbstractTestCase
 			'FOUR_STARS',
 			'FIVE_STARS',
 			'BEST_PICTURES',
+			'MY_RATED_PICTURES',
+			'MY_BEST_PICTURES',
 		], SmartAlbumType::names());
 		self::assertEquals([
 			'UNSORTED' => 'unsorted',
@@ -69,6 +71,8 @@ class CoverageTest extends AbstractTestCase
 			'FOUR_STARS' => 'four_stars',
 			'FIVE_STARS' => 'five_stars',
 			'BEST_PICTURES' => 'best_pictures',
+			'MY_RATED_PICTURES' => 'my_rated_pictures',
+			'MY_BEST_PICTURES' => 'my_best_pictures',
 		], SmartAlbumType::array());
 
 		self::assertEquals('failure', JobStatus::FAILURE->name());

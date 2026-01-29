@@ -98,6 +98,8 @@ class ConfigIntegrity
 		'rating_album_view_mode',
 		'enable_best_pictures',
 		'best_pictures_count',
+		'enable_my_best_pictures',
+		'my_best_pictures_count',
 	];
 
 	public const PRO_FIELDS = [

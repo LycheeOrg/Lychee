@@ -14,6 +14,74 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 ---
 
+### ~~Q-011-02: Default Sort Order for My Rated Pictures Album~~ ✅ RESOLVED
+
+**Decision:** Option A - Sort by rating DESC, then by created_at DESC
+**Rationale:** Shows highest-rated photos first, consistent with "favorites" concept. Most intuitive for users wanting to see their best-rated photos at the top.
+**Updated in spec:** FR-011-01, query implementation details
+
+---
+
+### ~~Q-011-01: Config Key Naming for My Best Pictures Count~~ ✅ RESOLVED
+
+**Decision:** Option A - Separate config key `my_best_pictures_count`
+**Rationale:** Allows independent configuration. Users might want different counts for overall best pictures vs personal favorites. Clearer semantics with each album having its own setting.
+**Updated in spec:** CFG-011-03, DO-011-02 implementation
+
+---
+
+### Q-011-01: Config Key Naming for My Best Pictures Count
+
+**Question:** Should "My Best Pictures" use a separate config key from "Best Pictures" count, or share the same `best_pictures_count` config?
+
+- **Option A (Recommended):** Separate config key `my_best_pictures_count`
+  - Allows independent configuration of the two albums
+  - Users might want different counts (e.g., top 50 overall vs top 20 personal favorites)
+  - Clearer semantics: each album has its own count setting
+  - Requires new config entry in database/config system
+  
+- **Option B:** Share existing `best_pictures_count` config
+  - Simpler configuration (one less setting)
+  - Both albums show same count
+  - Less flexible for users
+  - No code changes to config system needed
+
+**Pros/Cons:**
+- **A:** More flexible, clearer intent; adds one config key
+- **B:** Simpler, less config; less flexible, potentially confusing
+
+**Impact:** MEDIUM - affects config system, admin UI (if implemented), user experience
+
+---
+
+### Q-011-02: Default Sort Order for My Rated Pictures Album
+
+**Question:** What should be the default sort order for "My Rated Pictures" album?
+
+- **Option A (Recommended):** Sort by rating DESC, then by created_at DESC
+  - Shows highest-rated photos first
+  - Consistent with "best pictures" concept
+  - Users likely want to see their favorites at top
+  
+- **Option B:** Sort by created_at DESC (recently rated first)
+  - Shows most recently rated photos first
+  - Consistent with "Recent" album pattern
+  - Good for reviewing recent rating activity
+  
+- **Option C:** Use default photo sorting (from user preferences)
+  - Respects user's chosen sort order
+  - Most flexible
+  - Might not match user expectations for a "rated" album
+
+**Pros/Cons:**
+- **A:** Most intuitive for "favorites" view; opinionated
+- **B:** Good for activity tracking; less relevant for "best" concept
+- **C:** Most flexible; potentially confusing
+
+**Impact:** MEDIUM - affects user experience, query implementation, consistency with other smart albums
+
+---
+
 ### ~~Q-010-12: TLS/StartTLS Configuration~~ ✅ RESOLVED
 
 **Decision:** Option A - Single `LDAP_USE_TLS` flag, protocol determined by port

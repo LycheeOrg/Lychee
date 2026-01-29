@@ -24,6 +24,7 @@ use App\Models\Extensions\Thumb;
 use App\Models\Extensions\ToArrayThrowsNotImplemented;
 use App\Models\Extensions\UTCBasedTimes;
 use App\Models\Photo;
+use App\Models\User;
 use App\Policies\AlbumPolicy;
 use App\Policies\PhotoQueryPolicy;
 use App\Repositories\ConfigManager;
@@ -108,6 +109,7 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	 */
 	public function photos(): Builder
 	{
+		/** @var ?User $user */
 		$user = Auth::user();
 		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
 
