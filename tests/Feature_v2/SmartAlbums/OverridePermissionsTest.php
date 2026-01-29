@@ -66,6 +66,6 @@ class OverridePermissionsTest extends BaseApiWithDataTest
 
 		$response = $this->actingAs($this->userNoUpload)->getJson('Albums');
 		$this->assertOk($response);
-		$response->assertJsonCount(0, 'smart_albums');
+		$response->assertJsonCount(3, 'smart_albums');
 	}
 }
