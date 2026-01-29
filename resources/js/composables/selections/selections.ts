@@ -149,7 +149,7 @@ export function useSelection(photosStore: PhotosStore, albumsStore: AlbumsStore,
 		lastPhotoClicked.value = photoId;
 	}
 
-	function albumSelect(albumId: string, e: MouseEvent): void {
+	function albumSelect(e: MouseEvent, albumId: string): void {
 		// clear the Photo selection.
 		selectedPhotosIds.value = [];
 

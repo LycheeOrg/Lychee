@@ -356,7 +356,7 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 		menu.value.show(e);
 	}
 
-	function albumMenuOpen(albumId: string, e: MouseEvent): void {
+	function albumMenuOpen(e: MouseEvent, albumId: string): void {
 		// Clear up Photo selection (if any)
 		if (selectors.selectedPhotosIds !== undefined) {
 			selectors.selectedPhotosIds.value = [];

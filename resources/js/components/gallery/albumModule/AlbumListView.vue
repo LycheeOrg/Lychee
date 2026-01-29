@@ -5,8 +5,8 @@
 				v-if="!album.is_nsfw || are_nsfw_visible"
 				:album="album"
 				:is-selected="selectedIds.includes(album.id)"
-				@clicked="(event, album) => $emit('album-clicked', event, album)"
-				@contexted="(event, album) => $emit('album-contexted', event, album)"
+				@clicked="propagateClicked"
+				@contexted="propagateContexted"
 			/>
 		</template>
 	</div>
@@ -16,16 +16,19 @@
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import AlbumListItem from "./AlbumListItem.vue";
 import { storeToRefs } from "pinia";
+import { usePropagateAlbumEvents } from "@/composables/album/propagateEvents";
 
 const props = defineProps<{
 	albums: App.Http.Resources.Models.ThumbAlbumResource[];
 	selectedIds: string[];
 }>();
 
-defineEmits<{
-	"album-clicked": [event: MouseEvent, album: App.Http.Resources.Models.ThumbAlbumResource];
-	"album-contexted": [event: MouseEvent, album: App.Http.Resources.Models.ThumbAlbumResource];
+const emits = defineEmits<{
+	clicked: [event: MouseEvent, id: string];
+	contexted: [event: MouseEvent, id: string];
 }>();
+
+const { propagateClicked, propagateContexted } = usePropagateAlbumEvents(emits);
 
 const lycheeStore = useLycheeStateStore();
 const { are_nsfw_visible } = storeToRefs(lycheeStore);

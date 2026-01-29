@@ -13,16 +13,15 @@
 				v-if="album_view_mode === 'list'"
 				:albums="props.albums"
 				:selected-ids="props.selectedAlbums"
-				@album-clicked="propagateClickedFromList"
-				@album-contexted="propagateMenuOpenFromList"
+				@clicked="propagateClicked"
+				@contexted="propagateContexted"
 			/>
 			<AlbumThumbPanelList
 				v-else
 				:albums="props.albums"
-				:is-interactive="props.isInteractive"
 				:selected-albums="props.selectedAlbums"
-				@clicked="(id, e) => emits('clicked', id, e)"
-				@contexted="(id, e) => emits('contexted', id, e)"
+				@clicked="propagateClicked"
+				@contexted="propagateContexted"
 			/>
 		</div>
 	</Panel>
@@ -43,17 +42,16 @@
 						v-if="album_view_mode === 'list'"
 						:albums="slotProps.item.data"
 						:selected-ids="props.selectedAlbums"
-						@album-clicked="propagateClickedFromList"
-						@album-contexted="propagateMenuOpenFromList"
+						@clicked="propagateClicked"
+						@contexted="propagateContexted"
 					/>
 
 					<AlbumThumbPanelList
 						v-else
 						:albums="slotProps.item.data"
-						:is-interactive="props.isInteractive"
 						:selected-albums="props.selectedAlbums"
-						@clicked="(id, e) => emits('clicked', id, e)"
-						@contexted="(id, e) => emits('contexted', id, e)"
+						@clicked="propagateClicked"
+						@contexted="propagateContexted"
 					/>
 				</div>
 			</template>
@@ -70,17 +68,16 @@
 						v-if="album_view_mode === 'list'"
 						:albums="albumTimeline.data"
 						:selected-ids="props.selectedAlbums"
-						@album-clicked="propagateClickedFromList"
-						@album-contexted="propagateMenuOpenFromList"
+						@clicked="propagateClicked"
+						@contexted="propagateContexted"
 					/>
 
 					<AlbumThumbPanelList
 						v-else
 						:albums="albumTimeline.data"
-						:is-interactive="props.isInteractive"
 						:selected-albums="props.selectedAlbums"
-						@clicked="(id, e) => emits('clicked', id, e)"
-						@contexted="(id, e) => emits('contexted', id, e)"
+						@clicked="propagateClicked"
+						@contexted="propagateContexted"
 					/>
 				</div>
 			</template>
@@ -98,6 +95,7 @@ import AlbumThumbPanelList from "./AlbumThumbPanelList.vue";
 import AlbumListView from "./AlbumListView.vue";
 import { useLtRorRtL } from "@/utils/Helpers";
 import { isTouchDevice } from "@/utils/keybindings-utils";
+import { usePropagateAlbumEvents } from "@/composables/album/propagateEvents";
 
 const { isLTR } = useLtRorRtL();
 
@@ -108,27 +106,18 @@ const props = defineProps<{
 	header: string;
 	albums: App.Http.Resources.Models.ThumbAlbumResource[];
 	isAlone: boolean;
-	isInteractive?: boolean;
 	selectedAlbums: string[];
 	isTimeline: boolean;
 }>();
 
 // bubble up.
 const emits = defineEmits<{
-	clicked: [id: string, event: MouseEvent];
-	contexted: [id: string, event: MouseEvent];
+	clicked: [event: MouseEvent, id: string];
+	contexted: [event: MouseEvent, id: string];
 }>();
+const { propagateClicked, propagateContexted } = usePropagateAlbumEvents(emits);
 
 const { spliter, verifyOrder } = useSplitter();
-
-// Handlers for list view - emit album ID directly
-const propagateClickedFromList = (e: MouseEvent, album: App.Http.Resources.Models.ThumbAlbumResource) => {
-	emits("clicked", album.id, e);
-};
-
-const propagateMenuOpenFromList = (e: MouseEvent, album: App.Http.Resources.Models.ThumbAlbumResource) => {
-	emits("contexted", album.id, e);
-};
 
 const albumsTimeLine = computed<SplitData<App.Http.Resources.Models.ThumbAlbumResource>[]>(() =>
 	split(props.albums as App.Http.Resources.Models.ThumbAlbumResource[]),
