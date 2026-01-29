@@ -17,6 +17,7 @@ use App\Models\Photo;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Smart album containing the top N highest-rated photos by the current user.
@@ -109,7 +110,7 @@ class MyBestPicturesAlbum extends BaseSmartAlbum
 		$user_id = Auth::id() ?? 0;
 
 		// Get the Nth highest rating from current user
-		$nth_rating = \DB::table('photo_ratings')
+		$nth_rating = DB::table('photo_ratings')
 			->where('user_id', '=', $user_id)
 			->join('photos', 'photo_ratings.photo_id', '=', 'photos.id')
 			->orderBy('photo_ratings.rating', 'DESC')
@@ -120,7 +121,7 @@ class MyBestPicturesAlbum extends BaseSmartAlbum
 		if ($nth_rating === null) {
 			// Fewer than N photos with ratings from this user exist
 			// Get the lowest rating among existing rated photos from this user
-			$lowest_rating = \DB::table('photo_ratings')
+			$lowest_rating = DB::table('photo_ratings')
 				->where('user_id', '=', $user_id)
 				->join('photos', 'photo_ratings.photo_id', '=', 'photos.id')
 				->orderBy('photo_ratings.rating', 'ASC')
