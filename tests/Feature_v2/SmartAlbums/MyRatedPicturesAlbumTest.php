@@ -19,6 +19,7 @@
 namespace Tests\Feature_v2\SmartAlbums;
 
 use App\Models\Configs;
+use Illuminate\Support\Facades\DB;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 /**
@@ -139,7 +140,8 @@ class MyRatedPicturesAlbumTest extends BaseApiWithDataTest
 
 		// userMayUpload1 rates photo2 (owned by userMayUpload2, in album2 which userMayUpload1 does not have access to)
 		// Note: photo2 is in album2 which is private to userMayUpload2
-		$this->actingAs($this->userMayUpload1)->postJson('Photo::setRating', [
+		DB::table('photo_ratings')->insert([
+			'user_id' => $this->userMayUpload1->id,
 			'photo_id' => $this->photo2->id,
 			'rating' => 4,
 		]);
