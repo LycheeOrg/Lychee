@@ -91,7 +91,7 @@ class PreformattedPhotoData extends Data
 
 	private function set_location(Photo $photo): void
 	{
-		if (request()->configs()->getValueAsBool('gps_coordinate_display') === false) {
+		if (request()->configs()->getValueAsBool('location_show') === false) {
 			return;
 		}
 		if (Auth::guest() && request()->configs()->getValueAsBool('location_show_public') === false) {

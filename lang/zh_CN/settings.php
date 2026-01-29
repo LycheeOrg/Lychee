@@ -67,8 +67,10 @@ return [
         'map_include_subalbums' => '在地图上包含子相册的照片',
         'location_decoding' => '使用 GPS 位置解码',
         'location_show' => '显示从 GPS 坐标提取的位置',
-        'location_show_public' => '匿名用户可以访问从 GPS 坐标提取的位置',        'gps_coordinate_display' => 'Display the GPS coordinates',
-        'gps_coordinate_display_public' => 'Allow anonymous users to access the GPS coordinates',    ],
+        'location_show_public' => '匿名用户可以访问从 GPS 坐标提取的位置',
+        'gps_coordinate_display' => 'Display the GPS coordinates',
+        'gps_coordinate_display_public' => 'Allow anonymous users to access the GPS coordinates',
+    ],
     'cssjs' => [
         'header' => 'Custom CSS & Js',
         'change_css' => '修改 CSS',
