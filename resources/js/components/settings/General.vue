@@ -217,6 +217,18 @@
 				:config="location_show_public"
 				@filled="save"
 			/>
+			<BoolField
+				v-if="gps_coordinate_display !== undefined"
+				:label="$t('settings.geolocation.gps_coordinate_display')"
+				:config="gps_coordinate_display"
+				@filled="save"
+			/>
+			<BoolField
+				v-if="gps_coordinate_display_public !== undefined"
+				:label="$t('settings.geolocation.gps_coordinate_display_public')"
+				:config="gps_coordinate_display_public"
+				@filled="save"
+			/>
 		</div>
 	</Fieldset>
 </template>
@@ -284,6 +296,8 @@ const map_include_subalbums = ref<App.Http.Resources.Models.ConfigResource | und
 const location_decoding = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined);
 const location_show = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined);
 const location_show_public = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined);
+const gps_coordinate_display = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined);
+const gps_coordinate_display_public = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined);
 
 const disable_se_call_for_actions = ref<boolean | undefined>(undefined);
 const enable_se_preview = ref<boolean | undefined>(undefined);
@@ -353,6 +367,8 @@ function load(configs: App.Http.Resources.Models.ConfigCategoryResource[]) {
 	location_decoding.value = configurations.find((config) => config.key === "location_decoding");
 	location_show.value = configurations.find((config) => config.key === "location_show");
 	location_show_public.value = configurations.find((config) => config.key === "location_show_public");
+	gps_coordinate_display.value = configurations.find((config) => config.key === "gps_coordinate_display");
+	gps_coordinate_display_public.value = configurations.find((config) => config.key === "gps_coordinate_display_public");
 
 	disable_se_call_for_actions.value = configurations.find((config) => config.key === "disable_se_call_for_actions")?.value === "1";
 	enable_se_preview.value = configurations.find((config) => config.key === "enable_se_preview")?.value === "1";

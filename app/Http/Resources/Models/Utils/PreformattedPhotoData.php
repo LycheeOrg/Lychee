@@ -70,11 +70,33 @@ class PreformattedPhotoData extends Data
 
 		$this->filesize = $original?->filesize ?? '0';
 		$this->resolution = $original?->width . ' x ' . $original?->height;
+
+		$this->set_gps_coordinates($photo);
+		$this->set_location($photo);
+	}
+
+	private function set_gps_coordinates(Photo $photo): void
+	{
+		if (request()->configs()->getValueAsBool('gps_coordinate_display') === false) {
+			return;
+		}
+		if (Auth::guest() && request()->configs()->getValueAsBool('gps_coordinate_display_public') === false) {
+			return;
+		}
+
 		$this->latitude = Helpers::decimalToDegreeMinutesSeconds($photo->latitude, true);
 		$this->longitude = Helpers::decimalToDegreeMinutesSeconds($photo->longitude, false);
 		$this->altitude = $photo->altitude !== null ? round($photo->altitude, 1) . 'm' : null;
+	}
 
-		$show_location = request()->configs()->getValueAsBool('location_show') && (Auth::check() || request()->configs()->getValueAsBool('location_show_public'));
-		$this->location = $show_location ? $photo->location : null;
+	private function set_location(Photo $photo): void
+	{
+		if (request()->configs()->getValueAsBool('location_show') === false) {
+			return;
+		}
+		if (Auth::guest() && request()->configs()->getValueAsBool('location_show_public') === false) {
+			return;
+		}
+		$this->location = $photo->location;
 	}
 }
