@@ -67,8 +67,8 @@ return [
         'map_include_subalbums' => 'Zawiera zdjęcia podrzędnych albumów na mapie',
         'location_decoding' => 'Korzystanie z dekodowania lokalizacji GPS',
         'location_show' => 'Pokaż lokalizację wyodrębnioną ze współrzędnych GPS',
-        'location_show_public' => 'Anonimowi użytkownicy mogą uzyskać dostęp do lokalizacji wyodrębnionej ze współrzędnych GPS',
-    ],
+        'location_show_public' => 'Anonimowi użytkownicy mogą uzyskać dostęp do lokalizacji wyodrębnionej ze współrzędnych GPS',        'gps_coordinate_display' => 'Display the GPS coordinates',
+        'gps_coordinate_display_public' => 'Allow anonymous users to access the GPS coordinates',    ],
     'cssjs' => [
         'header' => 'Custom CSS & Js',
         'change_css' => 'Zmiana CSS',

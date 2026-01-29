@@ -9,6 +9,7 @@
 namespace App\Http\Resources\Models\Utils;
 
 use App\Models\Photo;
+use Illuminate\Support\Facades\Auth;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
@@ -40,9 +41,7 @@ class PreComputedPhotoData extends Data
 		}
 		$this->has_exif = $this->genExifHash($photo) !== '';
 		$this->has_location = $this->has_location($photo);
-		$this->latitude = $photo->latitude;
-		$this->longitude = $photo->longitude;
-		$this->altitude = $photo->altitude;
+		$this->set_gps_coordinates($photo);
 	}
 
 	private function has_location(Photo $photo): bool
@@ -64,5 +63,19 @@ class PreComputedPhotoData extends Data
 		$exif_hash .= $photo->iso;
 
 		return $exif_hash;
+	}
+
+	private function set_gps_coordinates(Photo $photo): void
+	{
+		if (request()->configs()->getValueAsBool('gps_coordinate_display') === false) {
+			return;
+		}
+		if (Auth::guest() && request()->configs()->getValueAsBool('gps_coordinate_display_public') === false) {
+			return;
+		}
+
+		$this->latitude = $photo->latitude;
+		$this->longitude = $photo->longitude;
+		$this->altitude = $photo->altitude;
 	}
 }

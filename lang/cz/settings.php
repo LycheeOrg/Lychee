@@ -67,6 +67,8 @@ return [
         'location_decoding' => 'Use GPS location decoding',
         'location_show' => 'Show location extracted from GPS coordinates',
         'location_show_public' => 'Anonymous users can access the extracted location from GPS coordinates',
+        'gps_coordinate_display' => 'Display the GPS coordinates',
+        'gps_coordinate_display_public' => 'Allow anonymous users to access the GPS coordinates',
     ],
     'cssjs' => [
         'header' => 'Custom CSS & Js',

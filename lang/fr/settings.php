@@ -68,6 +68,8 @@ return [
         'location_decoding' => 'Utiliser le décodage de position GPS',
         'location_show' => 'Afficher la localisation extraite des coordonnées GPS',
         'location_show_public' => 'Les utilisateurs anonymes peuvent accéder à la localisation extraite',
+        'gps_coordinate_display' => 'Display the GPS coordinates',
+        'gps_coordinate_display_public' => 'Allow anonymous users to access the GPS coordinates',
     ],
     'cssjs' => [
         'header' => 'CSS & JS personnalisés',

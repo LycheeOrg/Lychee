@@ -68,6 +68,8 @@ return [
         'location_decoding' => 'استخدام فك تشفير موقع GPS',
         'location_show' => 'عرض الموقع المستخرج من إحداثيات GPS',
         'location_show_public' => 'يمكن للمستخدمين المجهولين الوصول إلى الموقع المستخرج من إحداثيات GPS',
+        'gps_coordinate_display' => 'Display the GPS coordinates',
+        'gps_coordinate_display_public' => 'Allow anonymous users to access the GPS coordinates',
     ],
     'cssjs' => [
         'header' => 'CSS وJs مخصص',

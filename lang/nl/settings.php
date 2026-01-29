@@ -66,8 +66,8 @@ return [
         'map_include_subalbums' => 'Inclusief foto’s van de subalbums op de kaart',
         'location_decoding' => 'Gebruik GPS-locatiecodering',
         'location_show' => 'Toon locatie geëxtraheerd uit GPS-coördinaten',
-        'location_show_public' => 'Anonieme gebruikers kunnen de geëxtraheerde locatie van GPS-coördinaten openen',
-    ],
+        'location_show_public' => 'Anonieme gebruikers kunnen de geëxtraheerde locatie van GPS-coördinaten openen',        'gps_coordinate_display' => 'Display the GPS coordinates',
+        'gps_coordinate_display_public' => 'Allow anonymous users to access the GPS coordinates',    ],
     'cssjs' => [
         'header' => 'Aangepaste CSS & Js',
         'change_css' => 'CSS wijzigen',
