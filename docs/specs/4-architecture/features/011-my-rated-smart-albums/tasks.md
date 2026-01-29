@@ -57,38 +57,38 @@
 - [x] Run `make phpstan` to verify
 
 ### I6 – Unit Tests for MyRatedPicturesAlbum
-- [ ] Create tests/Feature_v2/SmartAlbums/MyRatedPicturesAlbumTest.php
-- [ ] Add license header
-- [ ] Extend BaseApiWithDataTest
-- [ ] Test S-011-01: Authenticated user sees rated photos
-- [ ] Test S-011-03: Guest user cannot see album (hidden from list)
-- [ ] Test S-011-05: User with 0 ratings gets empty
-- [ ] Test S-011-06: Rate photo, appears in album
-- [ ] Test S-011-12: Private photo respects permissions
-- [ ] Test sorting: rating DESC, created_at DESC
-- [ ] Run `php artisan test --filter=MyRatedPicturesAlbumTest`
+- [x] Create tests/Feature_v2/SmartAlbums/MyRatedPicturesAlbumTest.php
+- [x] Add license header
+- [x] Extend BaseApiWithDataTest
+- [x] Test S-011-01: Authenticated user sees rated photos
+- [x] Test S-011-03: Guest user cannot see album (hidden from list)
+- [x] Test S-011-05: User with 0 ratings gets empty
+- [x] Test S-011-06: Rate photo, appears in album
+- [x] Test S-011-12: Private photo respects permissions
+- [x] Test sorting: rating DESC, created_at DESC
+- [x] Run `php artisan test --filter=MyRatedPicturesAlbumTest`
 
 ### I7 – Unit Tests for MyBestPicturesAlbum
-- [ ] Create tests/Feature_v2/SmartAlbums/MyBestPicturesAlbumTest.php
-- [ ] Add license header
-- [ ] Extend BaseApiWithDataTest
-- [ ] Test S-011-02: Top N with ties
-- [ ] Test S-011-04: Guest user cannot see album (hidden from list)
-- [ ] Test S-011-07: All same rating, all included
-- [ ] Test S-011-08: Exact N photos, no ties
-- [ ] Test S-011-09: Tie at cutoff, all included
-- [ ] Test S-011-11: No SE license, album disabled
-- [ ] Run `php artisan test --filter=MyBestPicturesAlbumTest`
+- [x] Create tests/Feature_v2/SmartAlbums/MyBestPicturesAlbumTest.php
+- [x] Add license header
+- [x] Extend BaseApiWithDataTest
+- [x] Test S-011-02: Top N with ties
+- [x] Test S-011-04: Guest user cannot see album (hidden from list)
+- [x] Test S-011-07: All same rating, all included
+- [x] Test S-011-08: Exact N photos, no ties
+- [x] Test S-011-09: Tie at cutoff, all included
+- [x] Test S-011-11: No SE license, album disabled
+- [x] Run `php artisan test --filter=MyBestPicturesAlbumTest`
 
 ### I8 – Integration Tests
-- [ ] Create tests/Feature_v2/SmartAlbums/MyRatedSmartAlbumsIntegrationTest.php
-- [ ] Add license header
-- [ ] Extend BaseApiWithDataTest
-- [ ] Test S-011-10: Config enable/disable
-- [ ] Test S-011-11: SE license requirement
-- [ ] Test S-011-12: Photo visibility filtering
-- [ ] Test rating update interaction
-- [ ] Run `php artisan test --filter=MyRatedSmartAlbumsIntegrationTest`
+- [x] Create tests/Feature_v2/SmartAlbums/MyRatedSmartAlbumsIntegrationTest.php
+- [x] Add license header
+- [x] Extend BaseApiWithDataTest
+- [x] Test S-011-10: Config enable/disable
+- [x] Test S-011-11: SE license requirement
+- [x] Test S-011-12: Photo visibility filtering
+- [x] Test rating update interaction
+- [x] Run `php artisan test --filter=MyRatedSmartAlbumsIntegrationTest`
 
 ### I9 – Quality Gate & Documentation
 - [ ] Run `vendor/bin/php-cs-fixer fix`
