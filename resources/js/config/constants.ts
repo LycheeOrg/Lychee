@@ -87,9 +87,10 @@ export const photoLayoutOptions: SelectOption<App.Enum.PhotoLayoutType>[] = [
 ];
 
 export const defaultAlbumProtectionOptions: SelectOption<string>[] = [
-	{ value: "1", label: "gallery.albums_protection.private" },
-	{ value: "2", label: "gallery.albums_protection.public" },
-	{ value: "3", label: "gallery.albums_protection.inherit_from_parent" },
+	{ value: "private", label: "gallery.albums_protection.private" },
+	{ value: "public", label: "gallery.albums_protection.public" },
+	{ value: "inherit", label: "gallery.albums_protection.inherit_from_parent" },
+	{ value: "public_hidden", label: "gallery.albums_protection.public_but_hidden" },
 ];
 
 export const mapProvidersOptions: SelectOption<App.Enum.MapProviders>[] = [
