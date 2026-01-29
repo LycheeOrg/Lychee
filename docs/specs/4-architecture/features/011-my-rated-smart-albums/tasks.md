@@ -3,8 +3,8 @@
 | Field | Value |
 |-------|-------|
 | Feature ID | 011 |
-| Status | In Progress |
-| Last updated | 2026-01-28 |
+| Status | Completed |
+| Last updated | 2026-01-29 |
 | Linked spec | [spec.md](./spec.md) |
 | Linked plan | [plan.md](./plan.md) |
 
@@ -91,13 +91,13 @@
 - [x] Run `php artisan test --filter=MyRatedSmartAlbumsIntegrationTest`
 
 ### I9 – Quality Gate & Documentation
-- [ ] Run `vendor/bin/php-cs-fixer fix`
-- [ ] Run `php artisan test` (all tests)
-- [ ] Run `make phpstan` (verify level 6)
-- [ ] Update knowledge map if architectural changes
-- [ ] Mark all tasks complete
-- [ ] Update roadmap status to Complete
-- [ ] Commit with conventional commit message
+- [x] Run `vendor/bin/php-cs-fixer fix`
+- [x] Run `php artisan test` (all tests)
+- [x] Run `make phpstan` (verify level 6)
+- [x] Update knowledge map if architectural changes
+- [x] Mark all tasks complete
+- [x] Update roadmap status to Complete
+- [x] Commit with conventional commit message
 
 ## Notes
 
