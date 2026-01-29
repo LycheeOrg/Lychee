@@ -54,6 +54,8 @@ return [
         'four_stars' => '4+ Stars',
         'five_stars' => '5 Stars',
         'best_pictures' => 'Best Pictures',
+        'my_rated_pictures' => 'My Rated Pictures',
+        'my_best_pictures' => 'My Best Pictures',
     ],
     'layout' => [
         'squares' => 'Miniaturas cuadradas',
