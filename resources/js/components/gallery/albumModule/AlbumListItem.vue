@@ -5,8 +5,8 @@
 			'bg-primary-100 dark:bg-primary-900/50': isSelected,
 		}"
 		:data-album-id="album.id"
-		@click="$emit('clicked', $event, album)"
-		@contextmenu.prevent="$emit('contexted', $event, album)"
+		@click="propagateClicked($event, album.id)"
+		@contextmenu.prevent="propagateContexted($event, album.id)"
 	>
 		<!-- Thumbnail -->
 		<router-link
@@ -78,6 +78,7 @@ import { useAlbumStore } from "@/stores/AlbumState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useAlbumsStore } from "@/stores/AlbumsState";
 import ListBadge from "./thumbs/ListBadge.vue";
+import { usePropagateAlbumEvents } from "@/composables/album/propagateEvents";
 
 const albumStore = useAlbumStore();
 const albumsStore = useAlbumsStore();
@@ -89,10 +90,12 @@ defineProps<{
 	isSelected: boolean;
 }>();
 
-defineEmits<{
-	clicked: [event: MouseEvent, album: App.Http.Resources.Models.ThumbAlbumResource];
-	contexted: [event: MouseEvent, album: App.Http.Resources.Models.ThumbAlbumResource];
+const emits = defineEmits<{
+	clicked: [event: MouseEvent, id: string];
+	contexted: [event: MouseEvent, id: string];
 }>();
+
+const { propagateClicked, propagateContexted } = usePropagateAlbumEvents(emits);
 
 const aspectRatio = computed(
 	() => albumStore.config?.album_thumb_css_aspect_ratio ?? albumsStore.rootConfig?.album_thumb_css_aspect_ratio ?? "aspect-square",

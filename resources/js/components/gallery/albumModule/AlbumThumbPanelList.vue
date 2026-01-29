@@ -5,13 +5,14 @@
 			:album="album"
 			:cover_id="null"
 			:is-selected="props.selectedAlbums.includes(album.id)"
-			@click="(e: MouseEvent) => maySelect(album.id, e)"
-			@contextmenu.prevent="(e: MouseEvent) => menuOpen(album.id, e)"
+			@click="propagateClicked($event, album.id)"
+			@contextmenu.prevent="propagateContexted($event, album.id)"
 		/>
 	</template>
 </template>
 <script setup lang="ts">
 import AlbumThumb from "@/components/gallery/albumModule/thumbs/AlbumThumb.vue";
+import { usePropagateAlbumEvents } from "@/composables/album/propagateEvents";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 
@@ -20,27 +21,14 @@ const { are_nsfw_visible } = storeToRefs(lycheeStore);
 
 const props = defineProps<{
 	albums: App.Http.Resources.Models.ThumbAlbumResource[];
-	isInteractive?: boolean;
 	selectedAlbums: string[];
 }>();
 
 // bubble up.
 const emits = defineEmits<{
-	clicked: [id: string, event: MouseEvent];
-	contexted: [id: string, event: MouseEvent];
+	clicked: [event: MouseEvent, id: string];
+	contexted: [event: MouseEvent, id: string];
 }>();
 
-const maySelect = (id: string, e: MouseEvent) => {
-	if (props.isInteractive === false) {
-		return;
-	}
-	emits("clicked", id, e);
-};
-
-const menuOpen = (id: string, e: MouseEvent) => {
-	if (props.isInteractive === false) {
-		return;
-	}
-	emits("contexted", id, e);
-};
+const { propagateClicked, propagateContexted } = usePropagateAlbumEvents(emits);
 </script>
