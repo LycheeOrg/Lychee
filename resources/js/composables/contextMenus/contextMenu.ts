@@ -165,7 +165,7 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 					label: "gallery.menus.delete",
 					icon: "pi pi-trash",
 					callback: photoCallbacks.toggleDelete,
-					access: selectors.album?.value?.rights.can_delete ?? false,
+					access: albumStore.tagAlbum === undefined && (selectors.album?.value?.rights.can_delete ?? false),
 				},
 				{
 					label: "gallery.menus.download",
@@ -231,7 +231,7 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 					label: "gallery.menus.delete_all",
 					icon: "pi pi-trash",
 					callback: photoCallbacks.toggleDelete,
-					access: albumStore.rights?.can_edit ?? false,
+					access: albumStore.tagAlbum === undefined && (albumStore.rights?.can_edit ?? false),
 				},
 				{
 					label: "gallery.menus.download_all",

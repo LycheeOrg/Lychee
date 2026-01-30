@@ -170,8 +170,7 @@ return [
         'create' => 'Crear álbum de etiquetas',
     ],
     'delete_album' => [
-        'confirmation' => '¿Estás seguro de que deseas eliminar el álbum “%s” y todas las fotos que contiene?',
-        'confirmation_multiple' => '¿Estás seguro de que deseas eliminar los %d álbumes seleccionados y todas las fotos que contienen?',
+        'confirmation' => '¿Estás seguro de que deseas eliminar el álbum “%s” y todas las fotos que contiene?',        'confirmation_tag' => '¿Estás seguro de que deseas eliminar el álbum "%s"?',        'confirmation_multiple' => '¿Estás seguro de que deseas eliminar los %d álbumes seleccionados y todas las fotos que contienen?',
         'warning' => '¡Esta acción no se puede deshacer!',
         'delete' => 'Eliminar álbum y fotos',
     ],

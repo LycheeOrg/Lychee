@@ -172,6 +172,7 @@ return [
     ],
     'delete_album' => [
         'confirmation' => 'Confirmez-vous la suppression de l’album « %s » et de toutes les photos qu’il contient ?',
+        'confirmation_tag' => 'Confirmez-vous la suppression de l’album « %s » ?',
         'confirmation_multiple' => 'Êtes-vous sûr de vouloir supprimer les %d albums sélectionnés et toutes les photos qu’ils contiennent ?',
         'warning' => 'Cette action est irréversible !',
         'delete' => 'Supprimer l’album et les photos',

@@ -171,6 +171,7 @@ return [
     ],
     'delete_album' => [
         'confirmation' => '您確定要刪除相簿%s及其中所包含的相片嗎？',
+        'confirmation_tag' => '您確定要刪除相簿%s嗎？',
         'confirmation_multiple' => '您確定要刪除所有 %d 已選相簿及其中所包含的照片嗎？',
         'warning' => '此操作無法復原！',
         'delete' => '刪除相簿及相片',
