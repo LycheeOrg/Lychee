@@ -2,7 +2,7 @@
 	<Card class="sm:p-4 xl:px-9 max-w-3xl" :pt:body:class="'p-0'">
 		<template #content>
 			<p class="mb-4 text-center">
-				{{ sprintf($t("dialogs.delete_album.confirmation"), albumStore.album?.title) }}<br />
+				{{ confirm }}<br />
 				<span class="text-warning-700">
 					<i class="pi pi-exclamation-triangle ltr:mr-2 rtl:ml-2" />{{ $t("dialogs.delete_album.warning") }}
 				</span>
@@ -22,6 +22,8 @@ import AlbumService from "@/services/album-service";
 import { sprintf } from "sprintf-js";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { usePhotosStore } from "@/stores/PhotosState";
+import { computed } from "vue";
+import { trans } from "laravel-vue-i18n";
 
 const albumStore = useAlbumStore();
 const photosStore = usePhotosStore();
@@ -31,6 +33,13 @@ const router = useRouter();
 const emits = defineEmits<{
 	deleted: [];
 }>();
+
+const confirm = computed(() => {
+	if (albumStore.modelAlbum) {
+		return sprintf(trans("dialogs.delete_album.confirmation"), albumStore.album?.title);
+	}
+	return sprintf(trans("dialogs.delete_album.confirmation_tag"), albumStore.album?.title);
+});
 
 function execute() {
 	if (albumStore.album === undefined) {

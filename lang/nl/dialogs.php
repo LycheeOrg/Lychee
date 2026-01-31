@@ -170,8 +170,7 @@ return [
         'create' => 'Tag Album Aanmaken',
     ],
     'delete_album' => [
-        'confirmation' => 'Weet u zeker dat u het album “%s” en al de foto’s die het bevat wilt verwijderen?',
-        'confirmation_multiple' => 'Weet u zeker dat u alle %d geselecteerde albums en al de foto’s die ze bevatten wilt verwijderen?',
+        'confirmation' => 'Weet u zeker dat u het album “%s” en al de foto’s die het bevat wilt verwijderen?',        'confirmation_tag' => 'Weet u zeker dat u het album "%s" wilt verwijderen?',        'confirmation_multiple' => 'Weet u zeker dat u alle %d geselecteerde albums en al de foto’s die ze bevatten wilt verwijderen?',
         'warning' => 'Deze actie kan niet ongedaan worden gemaakt!',
         'delete' => 'Album en Foto’s Verwijderen',
     ],

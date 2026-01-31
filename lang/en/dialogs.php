@@ -173,6 +173,7 @@ return [
     ],
     'delete_album' => [
         'confirmation' => 'Are you sure you want to delete the album "%s" and all of the photos it contains?',
+        'confirmation_tag' => 'Are you sure you want to delete the album "%s"?',
         'confirmation_multiple' => 'Are you sure you want to delete all %d selected albums and all of the photos they contain?',
         'warning' => 'This action can not be undone!',
         'delete' => 'Delete Album and Photos',
