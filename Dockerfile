@@ -56,7 +56,7 @@ RUN npm run build
 # ============================================================================
 # Stage 3: Production FrankenPHP Image
 # ============================================================================
-FROM dunglas/frankenphp:php8.5-trixie@sha256:7082c1dfeb256a5dd65961e790253aad859e8fd7ff2f38e54d43f81c0735fafe
+FROM dunglas/frankenphp:php8.5-trixie@sha256:7a696b697a8a16ce19f9488485d2f3b613ef590d3a3391d98f835292da191419
 
 ARG USER=appuser
 
