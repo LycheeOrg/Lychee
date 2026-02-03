@@ -145,7 +145,7 @@ abstract class BaseArchive
 	 */
 	private static function createZipTitle(Collection $albums): string
 	{
-		return $albums->containsOneItem() ?
+		return $albums->hasSole() ?
 			self::createValidTitle($albums->first()->get_title()) :
 			'Albums';
 	}
