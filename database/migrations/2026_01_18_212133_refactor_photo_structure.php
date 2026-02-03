@@ -19,10 +19,13 @@ return new class() extends Migration {
 	 */
 	public function up(): void
 	{
-		Schema::table('photos', function (Blueprint $table) {
-			$table->string('duration')->nullable()->after('focal');
-			$table->string('fps')->nullable()->after('duration');
-		});
+
+		if (!Schema::hasColumn('photos', 'duration')) {
+			Schema::table('photos', function (Blueprint $table) {
+				$table->string('duration')->nullable()->after('focal');
+				$table->string('fps')->nullable()->after('duration');
+			});
+		}
 
 		DB::transaction(function () {
 			DB::table('photos')->select('id', 'aperture', 'focal')
