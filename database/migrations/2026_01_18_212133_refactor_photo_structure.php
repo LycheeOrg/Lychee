@@ -19,7 +19,6 @@ return new class() extends Migration {
 	 */
 	public function up(): void
 	{
-
 		if (!Schema::hasColumn('photos', 'duration')) {
 			Schema::table('photos', function (Blueprint $table) {
 				$table->string('duration')->nullable()->after('focal');
