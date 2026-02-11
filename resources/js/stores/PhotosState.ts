@@ -8,9 +8,11 @@ export type PhotoRatingFilter = null | 1 | 2 | 3 | 4 | 5;
 
 export const usePhotosStore = defineStore("photos-store", {
 	state: () => ({
+		allPhotos: [] as App.Http.Resources.Models.PhotoResource[],
 		photos: [] as App.Http.Resources.Models.PhotoResource[],
 		photosTimeline: undefined as SplitData<App.Http.Resources.Models.PhotoResource>[] | undefined,
 		photoRatingFilter: null as PhotoRatingFilter,
+		starredPhotosCount: 0,
 	}),
 	actions: {
 		reset() {
@@ -51,6 +53,8 @@ export const usePhotosStore = defineStore("photos-store", {
 				this.photos = photos;
 				this.photosTimeline = undefined;
 			}
+			this.allPhotos = this.photos;
+			this.starredPhotosCount = photos.filter(p => p.is_starred ).length;
 		},
 		/**
 		 * Append new photos to the existing collection.
@@ -103,6 +107,20 @@ export const usePhotosStore = defineStore("photos-store", {
 				}
 			}
 		},
+		filterPhotos(filter: any) {
+			this.photos = this.allPhotos.filter(photo => {
+				if (!filter) {
+					return photo;
+				}
+
+				for (const key in filter) {
+					if ((photo as any)[key] !== filter[key]) {
+						return false;
+					}
+				}
+				return photo;
+			});
+		}
 	},
 	getters: {
 		/**

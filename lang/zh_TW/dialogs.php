@@ -251,4 +251,7 @@ return [
         'reload' => '重新載入',
         'go_to_gallery' => '前往至展示頁面',
     ],
+    'selectedImages' => [
+        'namesCopied' => 'The names of the selected images have been copied!',
+    ],
 ];

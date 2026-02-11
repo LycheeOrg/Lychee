@@ -31,6 +31,7 @@ class PhotoPolicy extends BasePolicy
 	public const CAN_DELETE_BY_ID = 'canDeleteById';
 	public const CAN_READ_METRICS = 'canReadMetrics';
 	public const CAN_READ_RATINGS = 'canReadRatings';
+	public const CAN_STAR = 'canStar';
 
 	/**
 	 * @throws FrameworkException
@@ -276,6 +277,31 @@ class PhotoPolicy extends BasePolicy
 		// Note that this will bypass the setting 'rating_show_only_when_user_rated'
 		// It is up to the admin to decide whether anonymous users can see ratings at all.
 		return ($user !== null) || $config_manager->getValueAsBool('rating_public');
+	}
+
+	/**
+	 * Checks whether the photo can be starred by the current user.
+	 *
+	 * A photo is called _starred_ if the current user is allowed to star
+	 * the photo.
+	 * A photo is _starred_ if any of the following conditions hold
+	 * (OR-clause)
+	 *
+	 *  - the user is an admin
+	 *  - the user is the owner of the photo
+	 *
+	 * @param User|null $user
+	 * @param Photo $photo
+	 *
+	 * @return bool
+	 */
+	public function canStar(?User $user, Photo $photo)
+	{
+		if ($this->isOwner($user, $photo)) {
+			return true;
+		}
+
+		return ($this->hasAlbums($photo) && $this->reduction($photo->albums, fn ($a) => $this->album_policy->canStar($user, $a)));
 	}
 
 	/**

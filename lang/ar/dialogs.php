@@ -251,4 +251,7 @@ return [
         'reload' => 'إعادة تحميل',
         'go_to_gallery' => 'الذهاب إلى المعرض',
     ],
+    'selectedImages' => [
+        'namesCopied' => 'The names of the selected images have been copied!',
+    ],
 ];

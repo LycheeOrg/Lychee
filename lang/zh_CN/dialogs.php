@@ -252,4 +252,7 @@ return [
         'reload' => '刷新',
         'go_to_gallery' => '返回相册',
     ],
+    'selectedImages' => [
+        'namesCopied' => 'The names of the selected images have been copied!',
+    ],
 ];

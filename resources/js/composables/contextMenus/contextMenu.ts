@@ -95,14 +95,14 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 				label: "gallery.menus.unstar",
 				icon: "pi pi-star",
 				callback: photoCallbacks.unstar,
-				access: albumStore.rights?.can_edit ?? false,
+				access: albumStore.rights?.can_star ?? false,
 			});
 		} else {
 			menuItems.push({
 				label: "gallery.menus.star",
 				icon: "pi pi-star",
 				callback: photoCallbacks.star,
-				access: albumStore.rights?.can_edit ?? false,
+				access: albumStore.rights?.can_star ?? false,
 			});
 		}
 
@@ -192,14 +192,14 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 				label: "gallery.menus.unstar_all",
 				icon: "pi pi-star",
 				callback: photoCallbacks.unstar,
-				access: albumStore.rights?.can_edit ?? false,
+				access: albumStore.rights?.can_star ?? false,
 			});
 		} else {
 			menuItems.push({
 				label: "gallery.menus.star_all",
 				icon: "pi pi-star",
 				callback: photoCallbacks.star,
-				access: albumStore.rights?.can_edit ?? false,
+				access: albumStore.rights?.can_star ?? false,
 			});
 		}
 

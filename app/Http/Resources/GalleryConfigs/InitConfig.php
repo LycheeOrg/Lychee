@@ -15,6 +15,7 @@ use App\Enum\DefaultAlbumProtectionType;
 use App\Enum\ImageOverlayType;
 use App\Enum\PaginationMode;
 use App\Enum\PhotoThumbInfoType;
+use App\Enum\PhotoVisibilityType;
 use App\Enum\SmallLargeType;
 use App\Enum\ThumbAlbumSubtitleType;
 use App\Enum\VisibilityType;
@@ -132,6 +133,7 @@ class InitConfig extends Data
 
 	// Album settings
 	public DefaultAlbumProtectionType $default_album_protection;
+	public PhotoVisibilityType $photos_star_visibility;
 
 	public function __construct()
 	{
@@ -226,6 +228,7 @@ class InitConfig extends Data
 
 		// Album settings
 		$this->default_album_protection = request()->configs()->getValueAsEnum('default_album_protection', DefaultAlbumProtectionType::class);
+		$this->photos_star_visibility = request()->configs()->getValueAsEnum('photos_star_visibility', PhotoVisibilityType::class);
 
 		$this->set_supporter_properties();
 	}

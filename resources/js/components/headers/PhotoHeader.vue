@@ -13,7 +13,17 @@
 				<GoBack @go-back="emits('goBack')" />
 			</template>
 			<template #end>
-				<div :class="is_slideshow_active ? 'hidden' : 'flex'">
+        <Button
+          v-if="!albumStore.rights?.can_edit && albumStore.rights?.can_star"
+          text
+          v-tooltip.bottom="photoStore.photo.is_starred ? $t('gallery.photo.actions.unstar') : $t('gallery.photo.actions.star')"
+          :icon="photoStore.photo.is_starred ? 'pi pi-star-fill' : 'pi pi-star'"
+          class="ltr:mr-2 rtl:ml-2"
+          :class="photoStore.photo.is_starred ? '[&>span]:text-yellow-500 lg:hover:[&>span]:text-yellow-100' : '[&>span]:text-white lg:hover:[&>span]:text-yellow-500'"
+          severity="secondary"
+          @click="emits('toggleStar')"
+        />
+        <div :class="is_slideshow_active ? 'hidden' : 'flex'">
 					<Button
 						v-if="is_slideshow_enabled"
 						text
@@ -77,6 +87,7 @@ const emits = defineEmits<{
 	toggleEdit: [];
 	toggleSlideShow: [];
 	goBack: [];
+  toggleStar: [];
 }>();
 
 const photoStore = usePhotoStore();

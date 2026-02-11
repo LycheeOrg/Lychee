@@ -251,4 +251,7 @@ return [
         'reload' => 'Przeładuj',
         'go_to_gallery' => 'Przejdź do galerii',
     ],
+    'selectedImages' => [
+        'namesCopied' => 'The names of the selected images have been copied!',
+    ],
 ];

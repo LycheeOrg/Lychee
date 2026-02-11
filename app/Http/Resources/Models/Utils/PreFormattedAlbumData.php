@@ -40,10 +40,10 @@ class PreFormattedAlbumData extends Data
 		$this->url = $url;
 		$this->title = $album->get_title();
 		if ($album instanceof BaseAlbum) {
-			$this->min_taken_at = $album->min_taken_at?->format($min_max_date_format);
-			$this->max_taken_at = $album->max_taken_at?->format($min_max_date_format);
+			$this->min_taken_at = $album->min_taken_at?->translatedFormat($min_max_date_format);
+			$this->max_taken_at = $album->max_taken_at?->translatedFormat($min_max_date_format);
 			$this->formatMinMaxDate();
-			$this->created_at = $album->created_at->format($create_date_format);
+			$this->created_at = $album->created_at->translatedFormat($create_date_format);
 			$this->description = Markdown::convert(trim($album->description ?? ''))->getContent();
 			$this->copyright = $album->copyright;
 		}

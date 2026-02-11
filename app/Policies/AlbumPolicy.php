@@ -45,6 +45,7 @@ class AlbumPolicy extends BasePolicy
 	public const CAN_SHARE_ID = 'canShareById';
 	public const CAN_READ_METRICS = 'canReadMetrics';
 	public const CAN_MAKE_PURCHASABLE = 'canMakePurchasable';
+	public const CAN_STAR = 'canStar';
 
 	/**
 	 * This ensures that current album is owned by current user.
@@ -73,12 +74,7 @@ class AlbumPolicy extends BasePolicy
 	 */
 	public function canSee(?User $user, BaseSmartAlbum $smart_album): bool
 	{
-		// We do not require upload rights for all albums
-		$require_upload_rights = SmartAlbumType::from($smart_album->get_id())->require_upload_rights();
-
 		return ($user?->may_upload === true) ||
-			($user?->may_upload === false && !$require_upload_rights) ||
-			// if $user is null then we require that the album is public.
 			$smart_album->public_permissions() !== null;
 	}
 
@@ -627,6 +623,41 @@ class AlbumPolicy extends BasePolicy
 	 */
 	public function canMakePurchasable(User $user): bool
 	{
+		return false;
+	}
+
+	/**
+	 * Checks whether the photos in the album can be starred by the current user.
+	 *
+	 * An album is called _starable_ if the current user is allowed to star
+	 * the album's photos.
+	 * This also covers adding new photos to an album.
+	 * An album is _starable_ if any of the following conditions hold
+	 * (OR-clause)
+	 *
+	 *  - the user is an admin
+	 *  - the user is the owner of the album
+	 *
+	 * @param User               $user
+	 * @param AbstractAlbum|null $album the album; `null` designates the root album
+	 *
+	 * @return bool
+	 */
+	public function canStar(?User $user, AbstractAlbum $album)
+	{
+		if ($this->isOwner($user, $album)) {
+			return true;
+		}
+
+		$config_manager = app(ConfigManager::class);
+		if ($user !== null && $config_manager->getValueAsString('photos_star_visibility') === 'authenticated') {
+			return true;
+		}
+
+		if ($user === null && $config_manager->getValueAsString('photos_star_visibility') === 'anonymous' && $album->public_permissions()) {
+			return true;
+		}
+
 		return false;
 	}
 }

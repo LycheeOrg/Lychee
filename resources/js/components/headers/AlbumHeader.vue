@@ -16,7 +16,25 @@
 		</template>
 
 		<template #end>
-			<router-link v-if="orderManagementStore.hasItems" v-tooltip.bottom="'Basket'" :to="{ name: 'basket' }" class="hidden sm:block">
+      <Button
+          v-if="photos_star_visibility === 'anonymous' || (photos_star_visibility === 'authenticated' && userStore.isLoggedIn)"
+          :title="'Show starred images'"
+          :icon="albumStore.showStarredOnly ? 'pi pi-star-fill' : 'pi pi-star'"
+          :label="String(photosStore.starredPhotosCount)"
+          class="border-none hover:text-color"
+          severity="secondary"
+          text
+          @click="emits('showStarredImages')"
+      />
+      <Button
+          v-if="albumStore.album.rights?.can_edit"
+          icon="pi pi-clone"
+          class="border-none hover:text-color"
+          severity="secondary"
+          text
+          @click="emits('showSelected')"
+      />
+      <router-link v-if="orderManagementStore.hasItems" v-tooltip.bottom="'Basket'" :to="{ name: 'basket' }" class="hidden sm:block">
 				<Button
 					icon="pi pi-shopping-cart"
 					class="border-none"
@@ -82,14 +100,18 @@ import GoBack from "./GoBack.vue";
 import { onMounted } from "vue";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { useOrderManagementStore } from "@/stores/OrderManagement";
+import { useUserStore } from "@/stores/UserState";
+import { usePhotosStore } from "@/stores/PhotosState";
 
 const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
 const favourites = useFavouriteStore();
 const albumStore = useAlbumStore();
 const orderManagementStore = useOrderManagementStore();
+const userStore = useUserStore();
+const photosStore = usePhotosStore();
 
-const { dropbox_api_key, is_favourite_enabled } = storeToRefs(lycheeStore);
+const { dropbox_api_key, is_favourite_enabled, photos_star_visibility } = storeToRefs(lycheeStore);
 const { is_album_edit_open, is_full_screen } = storeToRefs(togglableStore);
 
 const { toggleCreateAlbum, toggleImportFromLink, toggleImportFromDropbox, toggleUpload, toggleImportFromServer } = useGalleryModals(togglableStore);
@@ -99,6 +121,8 @@ const emits = defineEmits<{
 	toggleEdit: [];
 	goBack: [];
 	openSearch: [];
+  showStarredImages: [];
+  showSelected: [];
 }>();
 
 function toggleUploadTrack() {
