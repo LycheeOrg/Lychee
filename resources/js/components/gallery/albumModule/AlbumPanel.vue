@@ -331,30 +331,30 @@ const albumCallbacks = {
 		AlbumService.download(selectedAlbumsIds.value);
 	},
 	togglePin: togglePin,
-  toggleStarred: () => {
-    if (!albumStore.album?.id) return;
-    if (albumStore.showStarredOnly) {
-      albumStore.setShowStarredOnly(false);
-      photosStore.filterPhotos(null)
-    } else {
-      albumStore.setShowStarredOnly(true);
-      photosStore.filterPhotos({is_starred: true});
-    }
+	toggleStarred: () => {
+		if (!albumStore.album?.id) return;
+		if (albumStore.showStarredOnly) {
+			albumStore.setShowStarredOnly(false);
+			photosStore.filterPhotos(null);
+		} else {
+			albumStore.setShowStarredOnly(true);
+			photosStore.filterPhotos({ is_starred: true });
+		}
 
-    unselect();
-  },
-  copyStarred: () => {
-    const selected:any = photosStore.photos.filter(p => p.is_starred);
-    const selectedNames = selected.map(p => p.title.split('.')[0]).join(", ");
-    navigator.clipboard.writeText(selectedNames).then(() =>
-        toast.add({
-          severity: "info",
-          summary: "Info",
-          detail: trans("dialogs.selectedImages.namesCopied") + '. ' + selectedNames,
-          life: 3000
-        })
-    );
-  },
+		unselect();
+	},
+	copyStarred: () => {
+		const selected: any = photosStore.photos.filter((p) => p.is_starred);
+		const selectedNames = selected.map((p) => p.title.split(".")[0]).join(", ");
+		navigator.clipboard.writeText(selectedNames).then(() =>
+			toast.add({
+				severity: "info",
+				summary: "Info",
+				detail: trans("dialogs.selectedImages.namesCopied") + ". " + selectedNames,
+				life: 3000,
+			}),
+		);
+	},
 };
 
 const computedAlbum = computed(() => albumStore.album);

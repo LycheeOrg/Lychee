@@ -291,7 +291,7 @@ class PhotoPolicy extends BasePolicy
 	 *  - the user is the owner of the photo
 	 *
 	 * @param User|null $user
-	 * @param Photo $photo
+	 * @param Photo     $photo
 	 *
 	 * @return bool
 	 */

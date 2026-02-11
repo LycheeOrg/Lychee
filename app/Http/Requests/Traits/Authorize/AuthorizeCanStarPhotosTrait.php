@@ -27,7 +27,8 @@ trait AuthorizeCanStarPhotosTrait
 			if (!Gate::check(PhotoPolicy::CAN_STAR, $photo)) {
 				return false;
 			}
-			return true;
 		}
+
+		return true;
 	}
 }

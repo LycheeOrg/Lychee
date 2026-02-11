@@ -54,7 +54,7 @@ export const usePhotosStore = defineStore("photos-store", {
 				this.photosTimeline = undefined;
 			}
 			this.allPhotos = this.photos;
-			this.starredPhotosCount = photos.filter(p => p.is_starred ).length;
+			this.starredPhotosCount = photos.filter((p) => p.is_starred).length;
 		},
 		/**
 		 * Append new photos to the existing collection.
@@ -108,7 +108,7 @@ export const usePhotosStore = defineStore("photos-store", {
 			}
 		},
 		filterPhotos(filter: any) {
-			this.photos = this.allPhotos.filter(photo => {
+			this.photos = this.allPhotos.filter((photo) => {
 				if (!filter) {
 					return photo;
 				}
@@ -120,7 +120,7 @@ export const usePhotosStore = defineStore("photos-store", {
 				}
 				return photo;
 			});
-		}
+		},
 	},
 	getters: {
 		/**

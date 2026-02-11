@@ -468,7 +468,7 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		photos_infinite_scroll_threshold: number;
 		albums_infinite_scroll_threshold: number;
 		default_album_protection: App.Enum.DefaultAlbumProtectionType;
-        photos_star_visibility: App.Enum.PhotoVisibilityType;
+		photos_star_visibility: App.Enum.PhotoVisibilityType;
 	};
 	export type LandingPageResource = {
 		landing_page_enable: boolean;

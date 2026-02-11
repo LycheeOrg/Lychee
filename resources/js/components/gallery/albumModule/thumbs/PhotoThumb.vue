@@ -84,7 +84,14 @@
 		</div>
 		<!-- TODO: make me an option. -->
 		<div class="badges absolute -mt-px ltr:ml-1 rtl:mr-1 top-0 ltr:left-0 rtl:right-0 flex">
-			<ThumbBadge v-if="(photos_star_visibility === 'anonymous' || (photos_star_visibility === 'authenticated' && userStore.isLoggedIn)) && props.photo.is_starred" class="bg-yellow-500" icon="star" />
+			<ThumbBadge
+				v-if="
+					(photos_star_visibility === 'anonymous' || (photos_star_visibility === 'authenticated' && userStore.isLoggedIn)) &&
+					props.photo.is_starred
+				"
+				class="bg-yellow-500"
+				icon="star"
+			/>
 			<ThumbBadge v-if="userStore.isLoggedIn && props.isCoverId" class="bg-yellow-500" icon="folder-cover" />
 			<ThumbBadge v-if="userStore.isLoggedIn && props.isHeaderId" class="bg-slate-400 hidden sm:block" pi="image" />
 		</div>
@@ -128,9 +135,14 @@ const userStore = useUserStore();
 const favourites = useFavouriteStore();
 const lycheeStore = useLycheeStateStore();
 const orderStore = useOrderManagementStore();
-const { is_favourite_enabled, display_thumb_photo_overlay, photo_thumb_info,
-	is_photo_thumb_tags_enabled, rating_album_view_mode, photos_star_visibility
- } = storeToRefs(lycheeStore);
+const {
+	is_favourite_enabled,
+	display_thumb_photo_overlay,
+	photo_thumb_info,
+	is_photo_thumb_tags_enabled,
+	rating_album_view_mode,
+	photos_star_visibility,
+} = storeToRefs(lycheeStore);
 const srcPlay = ref(getPlayIcon());
 const srcNoImage = ref(getNoImageIcon());
 const isImageLoaded = ref(false);

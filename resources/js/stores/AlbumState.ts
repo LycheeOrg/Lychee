@@ -368,7 +368,7 @@ export const useAlbumStore = defineStore("album-store", {
 		},
 		setShowStarredOnly(value: boolean) {
 			this.showStarredOnly = value;
-		}
+		},
 	},
 	getters: {
 		album(
@@ -415,6 +415,6 @@ export const useAlbumStore = defineStore("album-store", {
 		},
 		showStarredOnlyValue(): boolean {
 			return this.showStarredOnly;
-		}
+		},
 	},
 });

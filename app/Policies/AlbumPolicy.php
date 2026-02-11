@@ -638,12 +638,12 @@ class AlbumPolicy extends BasePolicy
 	 *  - the user is an admin
 	 *  - the user is the owner of the album
 	 *
-	 * @param User               $user
-	 * @param AbstractAlbum|null $album the album; `null` designates the root album
+	 * @param User      $user
+	 * @param BaseAlbum $album the album; `null` designates the root album
 	 *
 	 * @return bool
 	 */
-	public function canStar(?User $user, AbstractAlbum $album)
+	public function canStar(?User $user, BaseAlbum $album): bool
 	{
 		if ($this->isOwner($user, $album)) {
 			return true;
@@ -654,7 +654,7 @@ class AlbumPolicy extends BasePolicy
 			return true;
 		}
 
-		if ($user === null && $config_manager->getValueAsString('photos_star_visibility') === 'anonymous' && $album->public_permissions()) {
+		if ($user === null && $config_manager->getValueAsString('photos_star_visibility') === 'anonymous' && $album->public_permissions() !== null) {
 			return true;
 		}
 

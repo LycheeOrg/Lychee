@@ -16,25 +16,25 @@
 		</template>
 
 		<template #end>
-      <Button
-          v-if="photos_star_visibility === 'anonymous' || (photos_star_visibility === 'authenticated' && userStore.isLoggedIn)"
-          :title="'Show starred images'"
-          :icon="albumStore.showStarredOnly ? 'pi pi-star-fill' : 'pi pi-star'"
-          :label="String(photosStore.starredPhotosCount)"
-          class="border-none hover:text-color"
-          severity="secondary"
-          text
-          @click="emits('showStarredImages')"
-      />
-      <Button
-          v-if="albumStore.album.rights?.can_edit"
-          icon="pi pi-clone"
-          class="border-none hover:text-color"
-          severity="secondary"
-          text
-          @click="emits('showSelected')"
-      />
-      <router-link v-if="orderManagementStore.hasItems" v-tooltip.bottom="'Basket'" :to="{ name: 'basket' }" class="hidden sm:block">
+			<Button
+				v-if="photos_star_visibility === 'anonymous' || (photos_star_visibility === 'authenticated' && userStore.isLoggedIn)"
+				:title="'Show starred images'"
+				:icon="albumStore.showStarredOnly ? 'pi pi-star-fill' : 'pi pi-star'"
+				:label="String(photosStore.starredPhotosCount)"
+				class="border-none hover:text-color"
+				severity="secondary"
+				text
+				@click="emits('showStarredImages')"
+			/>
+			<Button
+				v-if="albumStore.album.rights?.can_edit"
+				icon="pi pi-clone"
+				class="border-none hover:text-color"
+				severity="secondary"
+				text
+				@click="emits('showSelected')"
+			/>
+			<router-link v-if="orderManagementStore.hasItems" v-tooltip.bottom="'Basket'" :to="{ name: 'basket' }" class="hidden sm:block">
 				<Button
 					icon="pi pi-shopping-cart"
 					class="border-none"
@@ -121,8 +121,8 @@ const emits = defineEmits<{
 	toggleEdit: [];
 	goBack: [];
 	openSearch: [];
-  showStarredImages: [];
-  showSelected: [];
+	showStarredImages: [];
+	showSelected: [];
 }>();
 
 function toggleUploadTrack() {
