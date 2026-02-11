@@ -1,0 +1,3 @@
+# True positive but we expect Lychee to be run behind a reverse proxy that is taking care of the cryptography and TLS configuration.
+# Waiting of frankenphp to update the golang dependencies
+CVE-2026-25793
