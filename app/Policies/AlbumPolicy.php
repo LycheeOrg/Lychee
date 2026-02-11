@@ -639,13 +639,13 @@ class AlbumPolicy extends BasePolicy
 	 *  - the user is the owner of the album
 	 *
 	 * @param User      $user
-	 * @param BaseAlbum $album the album; `null` designates the root album
+	 * @param AbstractAlbum $album the album; `null` designates the root album
 	 *
 	 * @return bool
 	 */
-	public function canStar(?User $user, BaseAlbum $album): bool
-	{
-		if ($this->isOwner($user, $album)) {
+	public function canStar(?User $user, AbstractAlbum $album): bool
+    {
+		if ($album instanceof BaseAlbum && $this->isOwner($user, $album)) {
 			return true;
 		}
 
