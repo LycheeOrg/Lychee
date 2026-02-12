@@ -184,30 +184,30 @@ class EmbedAlbumTest extends BaseApiWithDataTest
 		// album4 is public, owned by userLocked, contains photo4
 		// Add a photo owned by a different user to the same album
 		/** @disregard */
-		$otherPhoto = Photo::factory()->owned_by($this->userMayUpload1)->with_GPS_coordinates()->in($this->album4)->create();
+		$other_photo = Photo::factory()->owned_by($this->userMayUpload1)->with_GPS_coordinates()->in($this->album4)->create();
 
 		// Without author filter: should return both photos
 		$response = $this->getJson('Embed/' . $this->album4->id);
 		$this->assertOk($response);
-		$allPhotoIds = collect($response->json('photos'))->pluck('id')->toArray();
-		$this->assertContains($this->photo4->id, $allPhotoIds);
-		$this->assertContains($otherPhoto->id, $allPhotoIds);
+		$all_photo_ids = collect($response->json('photos'))->pluck('id')->toArray();
+		$this->assertContains($this->photo4->id, $all_photo_ids);
+		$this->assertContains($other_photo->id, $all_photo_ids);
 
 		// With author filter: should return only the matching user's photo
 		$response = $this->getJson('Embed/' . $this->album4->id . '?author=' . $this->userLocked->username);
 		$this->assertOk($response);
-		$filteredPhotoIds = collect($response->json('photos'))->pluck('id')->toArray();
-		$this->assertContains($this->photo4->id, $filteredPhotoIds);
-		$this->assertNotContains($otherPhoto->id, $filteredPhotoIds);
+		$filtered_photo_ids = collect($response->json('photos'))->pluck('id')->toArray();
+		$this->assertContains($this->photo4->id, $filtered_photo_ids);
+		$this->assertNotContains($other_photo->id, $filtered_photo_ids);
 
 		// Verify photo_count reflects the filtered count
 		$response->assertJson([
 			'album' => [
-				'photo_count' => count($filteredPhotoIds),
+				'photo_count' => count($filtered_photo_ids),
 			],
 		]);
 
-		$otherPhoto->delete();
+		$other_photo->delete();
 	}
 
 	/**
@@ -218,23 +218,23 @@ class EmbedAlbumTest extends BaseApiWithDataTest
 		// album4 is public, owned by userLocked, contains photo4
 		// Add a photo owned by a different user to the same album
 		/** @disregard */
-		$otherPhoto = Photo::factory()->owned_by($this->userMayUpload1)->with_GPS_coordinates()->in($this->album4)->create();
+		$other_photo = Photo::factory()->owned_by($this->userMayUpload1)->with_GPS_coordinates()->in($this->album4)->create();
 
 		// Filter by both authors: should return photos from both users
 		$response = $this->getJson('Embed/' . $this->album4->id . '?author=' . $this->userLocked->username . ',' . $this->userMayUpload1->username);
 		$this->assertOk($response);
-		$photoIds = collect($response->json('photos'))->pluck('id')->toArray();
-		$this->assertContains($this->photo4->id, $photoIds, 'photo4 owned by userLocked should be included');
-		$this->assertContains($otherPhoto->id, $photoIds, 'otherPhoto owned by userMayUpload1 should be included');
+		$photo_ids = collect($response->json('photos'))->pluck('id')->toArray();
+		$this->assertContains($this->photo4->id, $photo_ids, 'photo4 owned by userLocked should be included');
+		$this->assertContains($other_photo->id, $photo_ids, 'other_photo owned by userMayUpload1 should be included');
 
 		// Filter by only one author: should exclude the other
 		$response = $this->getJson('Embed/' . $this->album4->id . '?author=' . $this->userMayUpload1->username);
 		$this->assertOk($response);
-		$filteredIds = collect($response->json('photos'))->pluck('id')->toArray();
-		$this->assertContains($otherPhoto->id, $filteredIds);
-		$this->assertNotContains($this->photo4->id, $filteredIds);
+		$filtered_ids = collect($response->json('photos'))->pluck('id')->toArray();
+		$this->assertContains($other_photo->id, $filtered_ids);
+		$this->assertNotContains($this->photo4->id, $filtered_ids);
 
-		$otherPhoto->delete();
+		$other_photo->delete();
 	}
 
 	/**
