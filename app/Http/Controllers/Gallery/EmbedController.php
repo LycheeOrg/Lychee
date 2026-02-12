@@ -57,7 +57,7 @@ class EmbedController extends Controller
 		/** @var Album $album */
 		$album = $request->album() ?? throw new LycheeLogicException('Album should be set in EmbededRequest');
 
-		$this->loadAlbumPhotos($album, $request->limit, $request->offset, $request->sort, $request->author);
+		$this->loadAlbumPhotos($album, $request->limit, $request->offset, $request->sort, $request->authors);
 
 		return EmbedAlbumResource::fromModel($album);
 	}
@@ -84,7 +84,7 @@ class EmbedController extends Controller
 	 */
 	public function getPublicStream(EmbededRequest $request): EmbedStreamResource
 	{
-		$photos = $this->findPublicPhotos($request->limit ?? 100, $request->offset, $request->sort ?? 'desc', $request->author);
+		$photos = $this->findPublicPhotos($request->limit ?? 100, $request->offset, $request->sort ?? 'desc', $request->authors);
 
 		// Get site title from configuration
 		$site_title = strval($request->configs()->getValue('site_title') ?? 'Lychee');
@@ -98,14 +98,14 @@ class EmbedController extends Controller
 	 * Uses PhotoQueryPolicy to filter photos based on public accessibility.
 	 * Only includes photos from albums that are browsable without authentication.
 	 *
-	 * @param int         $limit  Maximum number of photos to return
-	 * @param int         $offset Number of photos to skip
-	 * @param string      $sort   Sort order ('asc' or 'desc')
-	 * @param string|null $author Optional username to filter photos by uploader
+	 * @param int           $limit   Maximum number of photos to return
+	 * @param int           $offset  Number of photos to skip
+	 * @param string        $sort    Sort order ('asc' or 'desc')
+	 * @param string[]|null $authors Optional usernames to filter photos by uploader
 	 *
 	 * @return \Illuminate\Support\Collection Collection of Photo models with size_variants loaded
 	 */
-	private function findPublicPhotos(int $limit, int $offset, string $sort, ?string $author = null): \Illuminate\Support\Collection
+	private function findPublicPhotos(int $limit, int $offset, string $sort, ?array $authors = null): \Illuminate\Support\Collection
 	{
 		$user = Auth::user();
 		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
@@ -125,8 +125,8 @@ class EmbedController extends Controller
 		);
 
 		// Filter by author (uploader username) if specified
-		if ($author !== null) {
-			$photos_query->whereHas('owner', fn ($q) => $q->where('username', $author));
+		if ($authors !== null) {
+			$photos_query->whereHas('owner', fn ($q) => $q->whereIn('username', $authors));
 		}
 
 		// Order by EXIF taken_at (with fallback to created_at) with specified sort order
@@ -150,15 +150,15 @@ class EmbedController extends Controller
 	 * photos, applying pagination and sorting. It also sets the photos_count
 	 * attribute to the total number of photos in the album.
 	 *
-	 * @param BaseAlbum   $album  The album to load photos for
-	 * @param int|null    $limit  Maximum number of photos to load (null = all)
-	 * @param int         $offset Number of photos to skip
-	 * @param string|null $sort   Sort order override ('asc' or 'desc', null = use album default)
-	 * @param string|null $author Optional username to filter photos by uploader
+	 * @param BaseAlbum     $album   The album to load photos for
+	 * @param int|null      $limit   Maximum number of photos to load (null = all)
+	 * @param int           $offset  Number of photos to skip
+	 * @param string|null   $sort    Sort order override ('asc' or 'desc', null = use album default)
+	 * @param string[]|null $authors Optional usernames to filter photos by uploader
 	 */
-	private function loadAlbumPhotos(BaseAlbum $album, ?int $limit = null, int $offset = 0, ?string $sort = null, ?string $author = null): void
+	private function loadAlbumPhotos(BaseAlbum $album, ?int $limit = null, int $offset = 0, ?string $sort = null, ?array $authors = null): void
 	{
-		$author_filter = fn ($q) => $author !== null ? $q->whereHas('owner', fn ($q2) => $q2->where('username', $author)) : $q;
+		$author_filter = fn ($q) => $authors !== null ? $q->whereHas('owner', fn ($q2) => $q2->whereIn('username', $authors)) : $q;
 
 		$total_photos = $author_filter($album->photos()->getQuery())->count();
 

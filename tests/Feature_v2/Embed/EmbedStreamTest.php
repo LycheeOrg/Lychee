@@ -339,6 +339,33 @@ class EmbedStreamTest extends BaseApiWithDataTest
 	}
 
 	/**
+	 * Test that comma-separated author filter returns photos from multiple users.
+	 */
+	public function testMultiAuthorFilterReturnsPhotosFromBothUsers(): void
+	{
+		// Add a photo owned by userMayUpload1 in a public album
+		/** @disregard */
+		$otherPhoto = Photo::factory()->owned_by($this->userMayUpload1)->with_GPS_coordinates()->in($this->album4)->create();
+
+		// Filter by both authors
+		$response = $this->getJson('Embed/stream?author=' . $this->userLocked->username . ',' . $this->userMayUpload1->username);
+		$this->assertOk($response);
+
+		$photoIds = collect($response->json('photos'))->pluck('id')->toArray();
+		$this->assertContains($this->photo4->id, $photoIds, 'photo4 owned by userLocked should be included');
+		$this->assertContains($otherPhoto->id, $photoIds, 'otherPhoto owned by userMayUpload1 should be included');
+
+		// Filter by only userMayUpload1: should exclude userLocked's photos
+		$response = $this->getJson('Embed/stream?author=' . $this->userMayUpload1->username);
+		$this->assertOk($response);
+		$filteredIds = collect($response->json('photos'))->pluck('id')->toArray();
+		$this->assertContains($otherPhoto->id, $filteredIds, 'otherPhoto should be included');
+		$this->assertNotContains($this->photo4->id, $filteredIds, 'photo4 should not be included when filtering by other user');
+
+		$otherPhoto->delete();
+	}
+
+	/**
 	 * Test that author filter with non-existent username returns empty.
 	 */
 	public function testAuthorFilterNonExistentUserReturnsEmpty(): void
