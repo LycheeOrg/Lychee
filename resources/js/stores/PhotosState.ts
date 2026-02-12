@@ -56,6 +56,9 @@ export const usePhotosStore = defineStore("photos-store", {
 				this.photosTimeline = undefined;
 			}
 			this.allPhotos = this.photos;
+			if (this.activeFilter !== null) {
+				this.performFilter();
+			}
 		},
 		/**
 		 * Append new photos to the existing collection.
@@ -92,14 +95,14 @@ export const usePhotosStore = defineStore("photos-store", {
 				this.rebuildNavigationLinks();
 			} else {
 				// Remember where the old photos end so we can fix the boundary link
-				const oldPhotoCount = this.photos.length;
+				const oldPhotoCount = this.allPhotos.length;
 				// Simply append photos to the existing array
-				this.photos = [...this.photos, ...photos];
+				this.photos = [...this.allPhotos, ...photos];
 
 				// Fix navigation links at the boundary between old and new photos
-				if (oldPhotoCount > 0 && oldPhotoCount < this.photos.length) {
-					const lastOldPhoto = this.photos[oldPhotoCount - 1];
-					const firstNewPhoto = this.photos[oldPhotoCount];
+				if (oldPhotoCount > 0 && oldPhotoCount < this.allPhotos.length) {
+					const lastOldPhoto = this.allPhotos[oldPhotoCount - 1];
+					const firstNewPhoto = this.allPhotos[oldPhotoCount];
 
 					// Connect the last old photo to the first new photo
 					lastOldPhoto.next_photo_id = firstNewPhoto.id;
@@ -108,6 +111,9 @@ export const usePhotosStore = defineStore("photos-store", {
 				}
 			}
 			this.allPhotos = this.photos;
+			if (this.activeFilter !== null) {
+				this.performFilter();
+			}
 		},
 		filterPhotos(filter: Record<string, unknown> | null) {
 			this.activeFilter = filter;
@@ -134,6 +140,8 @@ export const usePhotosStore = defineStore("photos-store", {
 					(p: App.Http.Resources.Models.PhotoResource) => p.timeline?.format ?? "Others",
 				);
 			}
+			//Rebuild navigation links for filtered photos
+			this.rebuildNavigationLinks();
 		},
 	},
 	getters: {
