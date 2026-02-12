@@ -361,7 +361,7 @@ onMounted(() => {
 		// Fetch public stream
 		const limit = props.config.maxPhotos === "none" ? 500 : props.config.maxPhotos;
 		const sort = props.config.sortOrder ?? "desc";
-		loadPromise = apiClient.fetchStream(limit, 0, sort).then((streamData) => ({
+		loadPromise = apiClient.fetchStream(limit, 0, sort, props.config.author).then((streamData) => ({
 			album: {
 				id: "",
 				title: "Public Photo Stream",
@@ -378,7 +378,7 @@ onMounted(() => {
 		} else {
 			const limit = props.config.maxPhotos === "none" ? undefined : props.config.maxPhotos;
 			const sort = props.config.sortOrder; // Pass undefined if not set (use album default)
-			loadPromise = apiClient.fetchAlbum(props.config.albumId, limit, 0, sort);
+			loadPromise = apiClient.fetchAlbum(props.config.albumId, limit, 0, sort, props.config.author);
 		}
 	}
 

@@ -194,6 +194,11 @@
                     <input type="text" id="albumId" placeholder="abc123">
                 </div>
 
+                <div class="form-group">
+                    <label for="author">Author Filter (username(s), optional)</label>
+                    <input type="text" id="author" placeholder="e.g. admin or admin,alice">
+                </div>
+
                 <div class="grid-2">
                     <div class="form-group">
                         <label for="layout">Layout</label>
@@ -349,6 +354,15 @@
      data-mode="stream"
      data-layout="masonry"
      data-max-photos="50"&gt;
+&lt;/div&gt;
+
+&lt;!-- Stream Mode filtered by author --&gt;
+&lt;div data-lychee-embed
+     data-api-url="https://your-lychee.com"
+     data-mode="stream"
+     data-layout="justified"
+     data-author="admin"
+     data-max-photos="30"&gt;
 &lt;/div&gt;</div>
         </div>
     </div>
@@ -409,6 +423,7 @@
             const showDescription = document.getElementById('showDescription').checked;
             const showCaptions = document.getElementById('showCaptions').checked;
             const showExif = document.getElementById('showExif').checked;
+            const author = document.getElementById('author').value.trim();
 
             // Create embed element
             const embedDiv = document.createElement('div');
@@ -428,6 +443,9 @@
             embedDiv.setAttribute('data-show-description', showDescription);
             embedDiv.setAttribute('data-show-captions', showCaptions);
             embedDiv.setAttribute('data-show-exif', showExif);
+            if (author) {
+                embedDiv.setAttribute('data-author', author);
+            }
 
             container.appendChild(embedDiv);
 
@@ -450,6 +468,11 @@
             // Add albumId only for album mode
             if (mode === 'album') {
                 widgetConfig.albumId = albumId;
+            }
+
+            // Add author filter if specified
+            if (author) {
+                widgetConfig.author = author;
             }
 
             // Initialize widget

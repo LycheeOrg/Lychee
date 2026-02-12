@@ -318,6 +318,93 @@ class EmbedStreamTest extends BaseApiWithDataTest
 	}
 
 	/**
+	 * Test that author filter returns only photos by the specified user.
+	 */
+	public function testAuthorFilterReturnsOnlyMatchingPhotos(): void
+	{
+		// Add a photo owned by a different user to the same public album
+		/** @disregard */
+		$other_photo = Photo::factory()->owned_by($this->userMayUpload1)->with_GPS_coordinates()->in($this->album4)->create();
+
+		// Without author filter: should include the other user's photo
+		$response = $this->getJson('Embed/stream');
+		$this->assertOk($response);
+		$all_photo_ids = collect($response->json('photos'))->pluck('id')->toArray();
+		$this->assertContains($other_photo->id, $all_photo_ids);
+
+		// With author filter: should return only userLocked's photos
+		$response = $this->getJson('Embed/stream?author=' . $this->userLocked->username);
+		$this->assertOk($response);
+
+		$data = $response->json();
+		$photo_ids = collect($data['photos'])->pluck('id')->toArray();
+
+		$this->assertContains($this->photo4->id, $photo_ids, 'photo4 owned by userLocked should be included');
+		$this->assertContains($this->subPhoto4->id, $photo_ids, 'subPhoto4 owned by userLocked should be included');
+		$this->assertNotContains($other_photo->id, $photo_ids, 'other_photo owned by userMayUpload1 should be excluded');
+
+		$other_photo->delete();
+	}
+
+	/**
+	 * Test that comma-separated author filter returns photos from multiple users.
+	 */
+	public function testMultiAuthorFilterReturnsPhotosFromBothUsers(): void
+	{
+		// Add a photo owned by userMayUpload1 in a public album
+		/** @disregard */
+		$other_photo = Photo::factory()->owned_by($this->userMayUpload1)->with_GPS_coordinates()->in($this->album4)->create();
+
+		// Filter by both authors
+		$response = $this->getJson('Embed/stream?author=' . $this->userLocked->username . ',' . $this->userMayUpload1->username);
+		$this->assertOk($response);
+
+		$photo_ids = collect($response->json('photos'))->pluck('id')->toArray();
+		$this->assertContains($this->photo4->id, $photo_ids, 'photo4 owned by userLocked should be included');
+		$this->assertContains($other_photo->id, $photo_ids, 'other_photo owned by userMayUpload1 should be included');
+
+		// Filter by only userMayUpload1: should exclude userLocked's photos
+		$response = $this->getJson('Embed/stream?author=' . $this->userMayUpload1->username);
+		$this->assertOk($response);
+		$filtered_ids = collect($response->json('photos'))->pluck('id')->toArray();
+		$this->assertContains($other_photo->id, $filtered_ids, 'other_photo should be included');
+		$this->assertNotContains($this->photo4->id, $filtered_ids, 'photo4 should not be included when filtering by other user');
+
+		$other_photo->delete();
+	}
+
+	/**
+	 * Test that author filter with non-existent username returns empty.
+	 */
+	public function testAuthorFilterNonExistentUserReturnsEmpty(): void
+	{
+		$response = $this->getJson('Embed/stream?author=nonexistentuser99');
+		$this->assertOk($response);
+
+		$data = $response->json();
+		$this->assertCount(0, $data['photos'], 'Non-existent author should return no photos');
+	}
+
+	/**
+	 * Test that author filter works with pagination.
+	 */
+	public function testAuthorFilterWithPagination(): void
+	{
+		$response = $this->getJson('Embed/stream?author=' . $this->userLocked->username . '&limit=1');
+		$this->assertOk($response);
+
+		$data = $response->json();
+		$this->assertCount(1, $data['photos'], 'Should return exactly 1 photo with author filter and limit=1');
+
+		$photo_ids = collect($data['photos'])->pluck('id')->toArray();
+		// The single returned photo should be owned by userLocked
+		$this->assertTrue(
+			in_array($this->photo4->id, $photo_ids, true) || in_array($this->subPhoto4->id, $photo_ids, true),
+			'Returned photo should be one of userLocked\'s public photos'
+		);
+	}
+
+	/**
 	 * Test that CORS headers are present.
 	 */
 	public function testCorsHeadersPresent(): void
