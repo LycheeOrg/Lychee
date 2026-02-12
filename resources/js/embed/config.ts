@@ -117,6 +117,7 @@ export function validateConfig(config: Partial<EmbedConfig>): EmbedConfig {
 		showCaptions: config.showCaptions ?? DEFAULT_CONFIG.showCaptions!,
 		showExif: config.showExif ?? DEFAULT_CONFIG.showExif!,
 		headerPlacement,
+		author: config.author,
 		containerClass: config.containerClass,
 	};
 }
@@ -214,6 +215,11 @@ export function parseDataAttributes(element: HTMLElement): Partial<EmbedConfig> 
 	// Header placement
 	if (element.dataset.headerPlacement) {
 		config.headerPlacement = element.dataset.headerPlacement as HeaderPlacement;
+	}
+
+	// Author filter
+	if (element.dataset.author) {
+		config.author = element.dataset.author;
 	}
 
 	// Custom class

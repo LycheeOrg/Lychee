@@ -318,6 +318,58 @@ class EmbedStreamTest extends BaseApiWithDataTest
 	}
 
 	/**
+	 * Test that author filter returns only photos by the specified user.
+	 */
+	public function testAuthorFilterReturnsOnlyMatchingPhotos(): void
+	{
+		// photo4 and subPhoto4 are public, both owned by userLocked
+		$response = $this->getJson('Embed/stream?author=' . $this->userLocked->username);
+		$this->assertOk($response);
+
+		$data = $response->json();
+		$photoIds = collect($data['photos'])->pluck('id')->toArray();
+
+		// Photos owned by userLocked in public albums should be included
+		$this->assertContains($this->photo4->id, $photoIds, 'photo4 owned by userLocked should be included');
+		$this->assertContains($this->subPhoto4->id, $photoIds, 'subPhoto4 owned by userLocked should be included');
+
+		// Photos owned by other users should NOT be included (they are also in private albums,
+		// but the author filter should exclude them regardless)
+		$this->assertNotContains($this->photo1->id, $photoIds, 'photo1 owned by userMayUpload1 should not be included');
+	}
+
+	/**
+	 * Test that author filter with non-existent username returns empty.
+	 */
+	public function testAuthorFilterNonExistentUserReturnsEmpty(): void
+	{
+		$response = $this->getJson('Embed/stream?author=nonexistentuser99');
+		$this->assertOk($response);
+
+		$data = $response->json();
+		$this->assertCount(0, $data['photos'], 'Non-existent author should return no photos');
+	}
+
+	/**
+	 * Test that author filter works with pagination.
+	 */
+	public function testAuthorFilterWithPagination(): void
+	{
+		$response = $this->getJson('Embed/stream?author=' . $this->userLocked->username . '&limit=1');
+		$this->assertOk($response);
+
+		$data = $response->json();
+		$this->assertCount(1, $data['photos'], 'Should return exactly 1 photo with author filter and limit=1');
+
+		$photoIds = collect($data['photos'])->pluck('id')->toArray();
+		// The single returned photo should be owned by userLocked
+		$this->assertTrue(
+			in_array($this->photo4->id, $photoIds) || in_array($this->subPhoto4->id, $photoIds),
+			'Returned photo should be one of userLocked\'s public photos'
+		);
+	}
+
+	/**
 	 * Test that CORS headers are present.
 	 */
 	public function testCorsHeadersPresent(): void

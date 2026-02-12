@@ -22,6 +22,7 @@ class EmbededRequest extends BaseApiRequest implements HasBaseAlbum
 	public ?int $limit = null;
 	public int $offset = 0;
 	public ?string $sort = null;
+	public ?string $author = null;
 
 	/**
 	 * Determine if the user is authorized to make this request.
@@ -75,6 +76,12 @@ class EmbededRequest extends BaseApiRequest implements HasBaseAlbum
 			$this->sort = null; // Invalid value, use default
 		} else {
 			$this->sort = $sort;
+		}
+
+		// Parse author filter
+		$author = $this->query('author', null);
+		if ($author !== null && is_string($author) && $author !== '') {
+			$this->author = $author;
 		}
 
 		$album_id = $this->route(RequestAttribute::ALBUM_ID_ATTRIBUTE, null);

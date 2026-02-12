@@ -20,6 +20,7 @@ namespace Tests\Feature_v2\Embed;
 
 use App\Models\AccessPermission;
 use App\Models\Album;
+use App\Models\Photo;
 use Illuminate\Support\Facades\Hash;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
@@ -173,5 +174,55 @@ class EmbedAlbumTest extends BaseApiWithDataTest
 	{
 		$response = $this->getJson('Embed/non-existent-id');
 		$this->assertNotFound($response);
+	}
+
+	/**
+	 * Test that author filter returns only photos by the specified user.
+	 */
+	public function testAuthorFilterReturnsOnlyMatchingPhotos(): void
+	{
+		// album4 is public, owned by userLocked, contains photo4
+		// Add a photo owned by a different user to the same album
+		/** @disregard */
+		$otherPhoto = Photo::factory()->owned_by($this->userMayUpload1)->with_GPS_coordinates()->in($this->album4)->create();
+
+		// Without author filter: should return both photos
+		$response = $this->getJson('Embed/' . $this->album4->id);
+		$this->assertOk($response);
+		$allPhotoIds = collect($response->json('photos'))->pluck('id')->toArray();
+		$this->assertContains($this->photo4->id, $allPhotoIds);
+		$this->assertContains($otherPhoto->id, $allPhotoIds);
+
+		// With author filter: should return only the matching user's photo
+		$response = $this->getJson('Embed/' . $this->album4->id . '?author=' . $this->userLocked->username);
+		$this->assertOk($response);
+		$filteredPhotoIds = collect($response->json('photos'))->pluck('id')->toArray();
+		$this->assertContains($this->photo4->id, $filteredPhotoIds);
+		$this->assertNotContains($otherPhoto->id, $filteredPhotoIds);
+
+		// Verify photo_count reflects the filtered count
+		$response->assertJson([
+			'album' => [
+				'photo_count' => count($filteredPhotoIds),
+			],
+		]);
+
+		$otherPhoto->delete();
+	}
+
+	/**
+	 * Test that author filter with non-existent username returns empty photos.
+	 */
+	public function testAuthorFilterNonExistentUserReturnsEmpty(): void
+	{
+		$response = $this->getJson('Embed/' . $this->album4->id . '?author=nonexistentuser99');
+		$this->assertOk($response);
+
+		$response->assertJson([
+			'album' => [
+				'photo_count' => 0,
+			],
+			'photos' => [],
+		]);
 	}
 }
