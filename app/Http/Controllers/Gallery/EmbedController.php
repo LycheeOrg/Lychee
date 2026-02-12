@@ -125,9 +125,7 @@ class EmbedController extends Controller
 		);
 
 		// Filter by author (uploader username) if specified
-		if ($authors !== null) {
-			$photos_query->whereHas('owner', fn ($q) => $q->whereIn('username', $authors));
-		}
+		$photos_query->when($authors !== null, fn ($q) => $q->whereHas('owner', fn ($q2) => $q2->whereIn('username', $authors)));
 
 		// Order by EXIF taken_at (with fallback to created_at) with specified sort order
 		// Convert string to enum
@@ -158,11 +156,12 @@ class EmbedController extends Controller
 	 */
 	private function loadAlbumPhotos(BaseAlbum $album, ?int $limit = null, int $offset = 0, ?string $sort = null, ?array $authors = null): void
 	{
-		$author_filter = fn ($q) => $authors !== null ? $q->whereHas('owner', fn ($q2) => $q2->whereIn('username', $authors)) : $q;
+		$total_photos = $album->photos()->getQuery()
+			->when($authors !== null, fn ($q) => $q->whereHas('owner', fn ($q2) => $q2->whereIn('username', $authors)))
+			->count();
 
-		$total_photos = $author_filter($album->photos()->getQuery())->count();
-
-		$photos_query = $author_filter($album->photos()->getQuery());
+		$photos_query = $album->photos()->getQuery()
+			->when($authors !== null, fn ($q) => $q->whereHas('owner', fn ($q2) => $q2->whereIn('username', $authors)));
 
 		// Apply pagination if requested
 		if ($limit !== null) {
