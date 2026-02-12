@@ -391,7 +391,7 @@ class EmbedStreamTest extends BaseApiWithDataTest
 		$photoIds = collect($data['photos'])->pluck('id')->toArray();
 		// The single returned photo should be owned by userLocked
 		$this->assertTrue(
-			in_array($this->photo4->id, $photoIds) || in_array($this->subPhoto4->id, $photoIds),
+			in_array($this->photo4->id, $photoIds, true) || in_array($this->subPhoto4->id, $photoIds, true),
 			'Returned photo should be one of userLocked\'s public photos'
 		);
 	}
