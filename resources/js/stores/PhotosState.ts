@@ -69,6 +69,9 @@ export const usePhotosStore = defineStore("photos-store", {
 		 * Without this fix, navigating between photos would break at page boundaries.
 		 */
 		appendPhotos(photos: App.Http.Resources.Models.PhotoResource[], isTimeline: boolean) {
+			// Simply append photos to the existing array
+			this.allPhotos = [...this.allPhotos, ...photos];
+
 			if (isTimeline) {
 				// Append new photos to timeline and re-merge
 				const newTimelinePhotos = spliter(
@@ -95,14 +98,13 @@ export const usePhotosStore = defineStore("photos-store", {
 				this.rebuildNavigationLinks();
 			} else {
 				// Remember where the old photos end so we can fix the boundary link
-				const oldPhotoCount = this.allPhotos.length;
-				// Simply append photos to the existing array
-				this.photos = [...this.allPhotos, ...photos];
+				const oldPhotoCount = this.photos.length;
+				this.photos = [...this.photos, ...photos];
 
 				// Fix navigation links at the boundary between old and new photos
-				if (oldPhotoCount > 0 && oldPhotoCount < this.allPhotos.length) {
-					const lastOldPhoto = this.allPhotos[oldPhotoCount - 1];
-					const firstNewPhoto = this.allPhotos[oldPhotoCount];
+				if (oldPhotoCount > 0 && oldPhotoCount < this.photos.length) {
+					const lastOldPhoto = this.photos[oldPhotoCount - 1];
+					const firstNewPhoto = this.photos[oldPhotoCount];
 
 					// Connect the last old photo to the first new photo
 					lastOldPhoto.next_photo_id = firstNewPhoto.id;
@@ -110,7 +112,7 @@ export const usePhotosStore = defineStore("photos-store", {
 					firstNewPhoto.previous_photo_id = lastOldPhoto.id;
 				}
 			}
-			this.allPhotos = this.photos;
+
 			if (this.activeFilter !== null) {
 				this.performFilter();
 			}
