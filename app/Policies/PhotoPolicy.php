@@ -289,13 +289,14 @@ class PhotoPolicy extends BasePolicy
 	 *
 	 *  - the user is an admin
 	 *  - the user is the owner of the photo
+	 *  - the user is neither, but settings are allowing for anonymous users to star photos
 	 *
 	 * @param User|null $user
 	 * @param Photo     $photo
 	 *
 	 * @return bool
 	 */
-	public function canStar(?User $user, Photo $photo)
+	public function canStar(?User $user, Photo $photo): bool
 	{
 		if ($this->isOwner($user, $photo)) {
 			return true;

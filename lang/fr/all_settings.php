@@ -345,7 +345,7 @@ return [
         'sorting_photos_order' => 'Ordre utilisé par défaut pour trier les photos',
         'sorting_albums_col' => 'Colonne utilisée par défaut pour trier les albums',
         'sorting_albums_order' => 'Ordre utilisé par défaut pour trier les albums',
-        'photos_star_visibility' => 'Who can see and set star flag to photo',
+        'photos_star_visibility' => 'Who can see and set the star flag on a photo',
         'imagick' => 'Activer le traitement via Imagick',
         'dropbox_key' => 'Clé API Dropbox',
         'skip_duplicates' => 'Ignorer les doublons lors de l’import',

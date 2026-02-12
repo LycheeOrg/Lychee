@@ -12,7 +12,7 @@ return [
         'sorting_photos_order' => 'Standardordner für die Sortierung von Fotos genutzt',
         'sorting_albums_col' => 'Standardspalten für die Albumsortierung gewählt',
         'sorting_albums_order' => 'Standardordner für die Albensortierung gewählt',
-        'photos_star_visibility' => 'Who can see and set star flag to photo',
+        'photos_star_visibility' => 'Who can see and set the star flag on a photo',
         'imagick' => 'Bildverarbeitung aktivieren',
         'dropbox_key' => 'Dropbox API Schlüssel',
         'skip_duplicates' => 'Duplikate beim Import überspringen, falls vorhanden.',

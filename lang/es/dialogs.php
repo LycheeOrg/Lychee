@@ -249,7 +249,7 @@ return [
         'reload' => 'Recargar',
         'go_to_gallery' => 'Ir a la galería',
     ],
-    'selectedImages' => [
-        'namesCopied' => 'The names of the selected images have been copied!',
+    'selected_images' => [
+        'names_copied' => 'The names of the selected images have been copied!',
     ],
 ];

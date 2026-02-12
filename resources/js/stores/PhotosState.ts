@@ -11,14 +11,16 @@ export const usePhotosStore = defineStore("photos-store", {
 		allPhotos: [] as App.Http.Resources.Models.PhotoResource[],
 		photos: [] as App.Http.Resources.Models.PhotoResource[],
 		photosTimeline: undefined as SplitData<App.Http.Resources.Models.PhotoResource>[] | undefined,
+		activeFilter: null as Record<string, unknown> | null,
 		photoRatingFilter: null as PhotoRatingFilter,
-		starredPhotosCount: 0,
 	}),
 	actions: {
 		reset() {
 			this.photos = [];
+			this.allPhotos = [];
 			this.photosTimeline = undefined;
 			this.photoRatingFilter = null;
+			this.activeFilter = null;
 		},
 		setPhotoRatingFilter(rating: PhotoRatingFilter) {
 			this.photoRatingFilter = rating;
@@ -54,7 +56,6 @@ export const usePhotosStore = defineStore("photos-store", {
 				this.photosTimeline = undefined;
 			}
 			this.allPhotos = this.photos;
-			this.starredPhotosCount = photos.filter((p) => p.is_starred).length;
 		},
 		/**
 		 * Append new photos to the existing collection.
@@ -106,23 +107,39 @@ export const usePhotosStore = defineStore("photos-store", {
 					firstNewPhoto.previous_photo_id = lastOldPhoto.id;
 				}
 			}
+			this.allPhotos = this.photos;
 		},
-		filterPhotos(filter: any) {
+		filterPhotos(filter: Record<string, unknown> | null) {
+			this.activeFilter = filter;
+			this.performFilter();
+		},
+		performFilter() {
+			const filter = this.activeFilter;
 			this.photos = this.allPhotos.filter((photo) => {
 				if (!filter) {
-					return photo;
+					return true;
 				}
 
 				for (const key in filter) {
-					if ((photo as any)[key] !== filter[key]) {
+					if ((photo as Record<string, unknown>)[key] !== filter[key]) {
 						return false;
 					}
 				}
-				return photo;
+				return true;
 			});
+			if (this.photosTimeline !== undefined) {
+				this.photosTimeline = spliter(
+					this.photos,
+					(p: App.Http.Resources.Models.PhotoResource) => p.timeline?.time_date ?? "",
+					(p: App.Http.Resources.Models.PhotoResource) => p.timeline?.format ?? "Others",
+				);
+			}
 		},
 	},
 	getters: {
+		starredPhotosCount(): number {
+			return this.photos.filter((p) => p.is_starred).length;
+		},
 		/**
 		 * Check if any photo in the collection has a user rating.
 		 * Used to determine whether to show the rating filter UI.

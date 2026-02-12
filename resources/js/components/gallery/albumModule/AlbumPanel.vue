@@ -244,6 +244,7 @@ const photoCallbacks = {
 				photo.is_starred = true;
 			}
 		});
+		photosStore.performFilter();
 		AlbumService.clearCache(albumStore.album?.id);
 	},
 	unstar: () => {
@@ -255,6 +256,7 @@ const photoCallbacks = {
 				photo.is_starred = false;
 			}
 		});
+		photosStore.performFilter();
 		AlbumService.clearCache(albumStore.album?.id);
 	},
 	setAsCover: () => {
@@ -344,16 +346,31 @@ const albumCallbacks = {
 		unselect();
 	},
 	copyStarred: () => {
-		const selected: any = photosStore.photos.filter((p) => p.is_starred);
-		const selectedNames = selected.map((p) => p.title.split(".")[0]).join(", ");
-		navigator.clipboard.writeText(selectedNames).then(() =>
-			toast.add({
-				severity: "info",
-				summary: "Info",
-				detail: trans("dialogs.selectedImages.namesCopied") + ". " + selectedNames,
-				life: 3000,
-			}),
-		);
+		const starred = photosStore.photos.filter((p) => p.is_starred);
+		const selectedNames = starred
+			.map((p) => {
+				const dotIndex = p.title.lastIndexOf(".");
+				return dotIndex > 0 ? p.title.substring(0, dotIndex) : p.title;
+			})
+			.join(", ");
+		navigator.clipboard
+			.writeText(selectedNames)
+			.then(() =>
+				toast.add({
+					severity: "info",
+					summary: "Info",
+					detail: trans("dialogs.selected_images.names_copied") + ". " + selectedNames,
+					life: 3000,
+				}),
+			)
+			.catch(() =>
+				toast.add({
+					severity: "error",
+					summary: "Error",
+					detail: "Failed to copy to clipboard",
+					life: 3000,
+				}),
+			);
 	},
 };
 

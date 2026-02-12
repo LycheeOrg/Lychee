@@ -96,6 +96,8 @@ return [
     'album' => [
         'header_albums' => 'Албуми',
         'header_photos' => 'Снимки',
+        'show_starred' => 'Филтрирай отбелязаните снимки',
+        'copy_starred_names' => 'Копирай имената на маркираните снимки',
         'no_results' => 'Няма какво да се покаже',
         'upload' => 'Качване на снимки',
         'tabs' => [

@@ -11,6 +11,7 @@ namespace App\Policies;
 use App\Constants\AccessPermissionConstants as APC;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\MetricsAccess;
+use App\Enum\PhotoVisibilityType;
 use App\Enum\SmartAlbumType;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\QueryBuilderException;
@@ -631,30 +632,33 @@ class AlbumPolicy extends BasePolicy
 	 *
 	 * An album is called _starable_ if the current user is allowed to star
 	 * the album's photos.
-	 * This also covers adding new photos to an album.
 	 * An album is _starable_ if any of the following conditions hold
 	 * (OR-clause)
 	 *
 	 *  - the user is an admin
 	 *  - the user is the owner of the album
+	 *  - the user is authenticated and visibility is set to 'authenticated'
+	 *  - visibility is set to 'anonymous' and the album has public permissions
 	 *
-	 * @param User      $user
-	 * @param AbstractAlbum $album the album; `null` designates the root album
+	 * @param User|null     $user
+	 * @param AbstractAlbum $album the album
 	 *
 	 * @return bool
 	 */
 	public function canStar(?User $user, AbstractAlbum $album): bool
-    {
+	{
 		if ($album instanceof BaseAlbum && $this->isOwner($user, $album)) {
 			return true;
 		}
 
 		$config_manager = app(ConfigManager::class);
-		if ($user !== null && $config_manager->getValueAsString('photos_star_visibility') === 'authenticated') {
+		$visibility = $config_manager->getValueAsEnum('photos_star_visibility', PhotoVisibilityType::class);
+
+		if ($user !== null && $visibility === PhotoVisibilityType::AUTHENTICATED) {
 			return true;
 		}
 
-		if ($user === null && $config_manager->getValueAsString('photos_star_visibility') === 'anonymous' && $album->public_permissions() !== null) {
+		if ($visibility === PhotoVisibilityType::ANONYMOUS && $album->public_permissions() !== null) {
 			return true;
 		}
 

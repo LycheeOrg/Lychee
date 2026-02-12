@@ -96,6 +96,8 @@ return [
     'album' => [
         'header_albums' => 'Álbumes',
         'header_photos' => 'Fotos',
+        'show_starred' => 'Filter starred images',
+        'copy_starred_names' => 'Copy starred photo names to clipboard',
         'no_results' => 'No hay nada que ver aquí',
         'upload' => 'Subir fotos',
         'tabs' => [

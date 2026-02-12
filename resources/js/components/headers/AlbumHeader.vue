@@ -17,8 +17,10 @@
 
 		<template #end>
 			<Button
-				v-if="photos_star_visibility === 'anonymous' || (photos_star_visibility === 'authenticated' && userStore.isLoggedIn)"
-				:title="'Show starred images'"
+				v-if="
+					is_se_enabled && (photos_star_visibility === 'anonymous' || (photos_star_visibility === 'authenticated' && userStore.isLoggedIn))
+				"
+				v-tooltip.bottom="$t('gallery.album.show_starred')"
 				:icon="albumStore.showStarredOnly ? 'pi pi-star-fill' : 'pi pi-star'"
 				:label="String(photosStore.starredPhotosCount)"
 				class="border-none hover:text-color"
@@ -27,8 +29,9 @@
 				@click="emits('showStarredImages')"
 			/>
 			<Button
-				v-if="albumStore.album.rights?.can_edit"
-				icon="pi pi-clone"
+				v-if="is_se_enabled && albumStore.album.rights?.can_edit"
+				v-tooltip.bottom="$t('gallery.album.copy_starred_names')"
+				icon="pi pi-copy"
 				class="border-none hover:text-color"
 				severity="secondary"
 				text
@@ -111,7 +114,7 @@ const orderManagementStore = useOrderManagementStore();
 const userStore = useUserStore();
 const photosStore = usePhotosStore();
 
-const { dropbox_api_key, is_favourite_enabled, photos_star_visibility } = storeToRefs(lycheeStore);
+const { dropbox_api_key, is_favourite_enabled, photos_star_visibility, is_se_enabled } = storeToRefs(lycheeStore);
 const { is_album_edit_open, is_full_screen } = storeToRefs(togglableStore);
 
 const { toggleCreateAlbum, toggleImportFromLink, toggleImportFromDropbox, toggleUpload, toggleImportFromServer } = useGalleryModals(togglableStore);
