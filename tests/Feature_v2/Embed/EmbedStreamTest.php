@@ -322,20 +322,28 @@ class EmbedStreamTest extends BaseApiWithDataTest
 	 */
 	public function testAuthorFilterReturnsOnlyMatchingPhotos(): void
 	{
-		// photo4 and subPhoto4 are public, both owned by userLocked
+		// Add a photo owned by a different user to the same public album
+		/** @disregard */
+		$otherPhoto = Photo::factory()->owned_by($this->userMayUpload1)->with_GPS_coordinates()->in($this->album4)->create();
+
+		// Without author filter: should include the other user's photo
+		$response = $this->getJson('Embed/stream');
+		$this->assertOk($response);
+		$allPhotoIds = collect($response->json('photos'))->pluck('id')->toArray();
+		$this->assertContains($otherPhoto->id, $allPhotoIds);
+
+		// With author filter: should return only userLocked's photos
 		$response = $this->getJson('Embed/stream?author=' . $this->userLocked->username);
 		$this->assertOk($response);
 
 		$data = $response->json();
 		$photoIds = collect($data['photos'])->pluck('id')->toArray();
 
-		// Photos owned by userLocked in public albums should be included
 		$this->assertContains($this->photo4->id, $photoIds, 'photo4 owned by userLocked should be included');
 		$this->assertContains($this->subPhoto4->id, $photoIds, 'subPhoto4 owned by userLocked should be included');
+		$this->assertNotContains($otherPhoto->id, $photoIds, 'otherPhoto owned by userMayUpload1 should be excluded');
 
-		// Photos owned by other users should NOT be included (they are also in private albums,
-		// but the author filter should exclude them regardless)
-		$this->assertNotContains($this->photo1->id, $photoIds, 'photo1 owned by userMayUpload1 should not be included');
+		$otherPhoto->delete();
 	}
 
 	/**
