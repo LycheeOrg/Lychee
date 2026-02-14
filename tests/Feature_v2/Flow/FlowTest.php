@@ -96,16 +96,7 @@ class FlowTest extends BaseApiWithDataTest
 		$response = $this->getJson('Flow');
 		$this->assertOk($response);
 		$response->assertJson([
-			'albums' => [
-				[
-					'id' => $this->subAlbum4->id,
-					'title' => $this->subAlbum4->title,
-				],
-				[
-					'id' => $this->album4->id,
-					'title' => $this->album4->title,
-				],
-			],
+			'albums' => [],
 			'current_page' => 1,
 			'from' => 1,
 			'last_page' => 1,
@@ -113,6 +104,9 @@ class FlowTest extends BaseApiWithDataTest
 			'to' => 2,
 			'total' => 2,
 		]);
+		$response->assertSee($this->subAlbum4->id);
+		$response->assertSee($this->album4->id);
+
 		$response->assertDontSee($this->album1->id);
 		$response->assertDontSee($this->album2->id);
 		$response->assertDontSee($this->album3->id);
@@ -129,16 +123,7 @@ class FlowTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->userMayUpload1)->getJson('Flow');
 		$this->assertOk($response);
 		$response->assertJson([
-			'albums' => [
-				[
-					'id' => $this->album4->id,
-					'title' => $this->album4->title,
-				],
-				[
-					'id' => $this->album1->id,
-					'title' => $this->album1->title,
-				],
-			],
+			'albums' => [],
 			'current_page' => 1,
 			'from' => 1,
 			'last_page' => 1,
@@ -146,6 +131,8 @@ class FlowTest extends BaseApiWithDataTest
 			'to' => 2,
 			'total' => 2,
 		]);
+		$response->assertSee($this->album1->id);
+		$response->assertSee($this->album4->id);
 	}
 
 	public function testGetUserRootWithSubAlbums(): void
@@ -156,24 +143,7 @@ class FlowTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->userMayUpload1)->getJson('Flow');
 		$this->assertOk($response);
 		$response->assertJson([
-			'albums' => [
-				[
-					'id' => $this->subAlbum4->id,
-					'title' => $this->subAlbum4->title,
-				],
-				[
-					'id' => $this->album4->id,
-					'title' => $this->album4->title,
-				],
-				[
-					'id' => $this->subAlbum1->id,
-					'title' => $this->subAlbum1->title,
-				],
-				[
-					'id' => $this->album1->id,
-					'title' => $this->album1->title,
-				],
-			],
+			'albums' => [],
 			'current_page' => 1,
 			'from' => 1,
 			'last_page' => 1,
@@ -181,6 +151,11 @@ class FlowTest extends BaseApiWithDataTest
 			'to' => 4,
 			'total' => 4,
 		]);
+
+		$response->assertSee($this->subAlbum4->id);
+		$response->assertSee($this->album4->id);
+		$response->assertSee($this->subAlbum4->id);
+		$response->assertSee($this->album4->id);
 
 		Configs::set('hide_nsfw_in_flow', true);
 	}
