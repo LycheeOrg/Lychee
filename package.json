@@ -29,7 +29,7 @@
         "@vue/eslint-config-typescript": "^14.6.0",
         "@vue/test-utils": "^2.4.6",
         "@vue/tsconfig": "^0.8.1",
-        "eslint": "^10.0.0",
+        "eslint": "^9.0.0",
         "eslint-plugin-no-relative-import-paths": "^1.6.1",
         "eslint-plugin-vue": "~10.8.0",
         "jsdom": "^28.0.0",
