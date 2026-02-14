@@ -157,7 +157,6 @@ class FlowTest extends BaseApiWithDataTest
 		$response->assertSee($this->subAlbum4->id);
 		$response->assertSee($this->album4->id);
 
-
 		Configs::set('hide_nsfw_in_flow', true);
 	}
 }
