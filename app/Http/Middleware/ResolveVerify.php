@@ -9,6 +9,7 @@
 namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 use LycheeVerify\Contract\VerifyInterface;
 use LycheeVerify\Verify;
 
@@ -16,6 +17,15 @@ class ResolveVerify
 {
 	public function handle(Request $request, \Closure $next)
 	{
+		try {
+			if (!Schema::hasTable('configs')) {
+				return $next($request);
+			}
+			// @codeCoverageIgnoreStart
+		} catch (\Throwable) {
+			return $next($request);
+		}
+
 		// Compute ONCE
 		$verify = $this->resolveVerify($request);
 
