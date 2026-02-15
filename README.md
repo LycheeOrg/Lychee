@@ -65,8 +65,8 @@ services:
       - "8000:8000"
     volumes:
       - ./lychee/uploads:/app/public/uploads
-      - ./lychee/storage:/app/storage
-      - .env:/app/.env:ro
+      - ./lychee/logs:/app/storage/logs
+      - ./lychee/tmp:/app/storage/tmp
     environment:
       APP_URL: http://localhost:8000
       DB_CONNECTION: mysql
@@ -75,6 +75,8 @@ services:
       DB_DATABASE: lychee
       DB_USERNAME: lychee
       DB_PASSWORD: lychee_password
+	  # Generate the APP_KEY with `echo "base64:$(openssl rand -base64 32)"` and set it here (without the < >)
+      # APP_KEY: base64:<result of 'openssl rand -base64 32'>
     depends_on:
       lychee_db:
         condition: service_healthy
