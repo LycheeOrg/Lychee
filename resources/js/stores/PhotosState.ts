@@ -141,6 +141,7 @@ export const usePhotosStore = defineStore("photos-store", {
 					(p: App.Http.Resources.Models.PhotoResource) => p.timeline?.time_date ?? "",
 					(p: App.Http.Resources.Models.PhotoResource) => p.timeline?.format ?? "Others",
 				);
+				this.photos = merge(this.photosTimeline);
 			}
 			//Rebuild navigation links for filtered photos
 			this.rebuildNavigationLinks();
