@@ -80,8 +80,8 @@ class HeadAlbumResource extends Data
 		// security
 		$this->policy = AlbumProtectionPolicy::ofBaseAlbum($album);
 		$this->rights = new AlbumRightsResource($album);
-		$url = $this->getHeaderUrl($album);
-		$this->preFormattedData = new PreFormattedAlbumData($album, $url);
+		$header = $this->getHeader($album);
+		$this->preFormattedData = new PreFormattedAlbumData($album, $header);
 		$this->is_pinned = $album->is_pinned;
 
 		if ($this->rights->can_edit) {

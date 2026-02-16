@@ -87,8 +87,8 @@ class TagAlbumResource extends Data
 		// security
 		$this->policy = AlbumProtectionPolicy::ofBaseAlbum($tag_album);
 		$this->rights = new AlbumRightsResource($tag_album);
-		$url = $this->getHeaderUrl($tag_album);
-		$this->preFormattedData = new PreFormattedAlbumData($tag_album, $url);
+		$header = $this->getHeader($tag_album);
+		$this->preFormattedData = new PreFormattedAlbumData($tag_album, $header);
 
 		if ($this->rights->can_edit) {
 			$this->editable = EditableBaseAlbumResource::fromModel($tag_album);

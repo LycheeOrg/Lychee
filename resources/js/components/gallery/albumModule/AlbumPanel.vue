@@ -32,6 +32,7 @@
 					@open-embed-code="toggleEmbedCode"
 					@open-statistics="toggleStatistics"
 					@toggle-slide-show="emits('toggleSlideShow')"
+					@scroll-to-pictures="albumCallbacks.scrollToPaginatorTop"
 				/>
 				<template v-if="is_se_enabled && userStore.isLoggedIn">
 					<AlbumStatistics
@@ -78,6 +79,7 @@
 					@selected="photoSelect"
 					@contexted="contextMenuPhotoOpen"
 					@toggle-buy-me="toggleBuyMe"
+					ref="photoPanel"
 				/>
 				<!-- Pagination for photos -->
 				<Pagination
@@ -116,7 +118,7 @@
 	</div>
 </template>
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, ComponentPublicInstance } from "vue";
 import AlbumThumbPanel from "@/components/gallery/albumModule/AlbumThumbPanel.vue";
 import PhotoThumbPanel from "@/components/gallery/albumModule/PhotoThumbPanel.vue";
 import ShareAlbum from "@/components/modals/ShareAlbum.vue";
@@ -152,6 +154,7 @@ import { useCatalogStore } from "@/stores/CatalogState";
 import BuyMeDialog from "@/components/forms/gallery-dialogs/BuyMeDialog.vue";
 import { useToast } from "primevue/usetoast";
 import Pagination from "@/components/pagination/Pagination.vue";
+import { trans } from "laravel-vue-i18n";
 
 const router = useRouter();
 const toast = useToast();
@@ -307,6 +310,8 @@ function togglePin() {
 	});
 }
 
+const paginatorTop = ref<HTMLDivElement | null>(null);
+
 const albumCallbacks = {
 	setAsCover: () => {
 		if (albumStore.album === undefined) return;
@@ -328,10 +333,16 @@ const albumCallbacks = {
 		AlbumService.download(selectedAlbumsIds.value);
 	},
 	togglePin: togglePin,
+	scrollToPaginatorTop: () => {
+		if (photoPanel.value) {
+			photoPanel.value.$el.scrollIntoView({ behavior: "smooth" });
+		}
+	},
 };
 
 const computedAlbum = computed(() => albumStore.album);
 const computedConfig = computed(() => albumStore.config);
+const photoPanel = ref<ComponentPublicInstance | null>(null);
 
 const {
 	menu,

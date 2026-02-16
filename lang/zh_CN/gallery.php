@@ -115,6 +115,9 @@ return [
             'share' => '分享相册',
             'embed' => 'Embed Album',
             'stats_only_se' => '统计功能仅在支持者版本中可用',
+            'edit' => 'Edit',
+            'save' => 'Save',
+            'open_gallery' => 'Open gallery',
         ],
         'stats' => [
             'number_of_visits' => 'Number of visits',
@@ -144,6 +147,26 @@ return [
             'show_tags' => '设置要显示的标签',
             'tags_required' => '标签为必填项。',
             'all_tags_must_match' => '所有标签必须匹配。',
+        ],
+        'title' => [
+            'style' => 'Style',
+            'position' => 'Position',
+            'position_options' => [
+                 'top_left' => 'Top Left',
+                 'top_right' => 'Top Right',
+                 'center' => 'Center',
+                 'bottom_left' => 'Bottom Left',
+                 'bottom_right' => 'Bottom Right',
+            ],
+            'style_options' => [
+                 'white' => 'White',
+                 'black' => 'Black',
+                 'color_1' => 'Color 1',
+                 'color_2' => 'Color 2',
+                 'color_3' => 'Color 3',
+                 'color_4' => 'Color 4',
+                 'color_5' => 'Color 5',
+            ],
         ],
     ],
     'photo' => [

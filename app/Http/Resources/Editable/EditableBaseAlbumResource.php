@@ -10,6 +10,8 @@ namespace App\Http\Resources\Editable;
 
 use App\DTO\AlbumSortingCriterion;
 use App\DTO\PhotoSortingCriterion;
+use App\Enum\AlbumTitleColor;
+use App\Enum\AlbumTitlePosition;
 use App\Enum\AspectRatioType;
 use App\Enum\LicenseType;
 use App\Enum\PhotoLayoutType;
@@ -36,6 +38,8 @@ class EditableBaseAlbumResource extends Data
 	public ?string $cover_id;
 	public ?TimelineAlbumGranularity $album_timeline;
 	public ?TimelinePhotoGranularity $photo_timeline;
+	public ?AlbumTitleColor $title_color;
+	public ?AlbumTitlePosition $title_position;
 	/** @var string[] */
 	public array $tags = [];
 	public bool $is_and = true;
@@ -58,6 +62,8 @@ class EditableBaseAlbumResource extends Data
 		$this->album_timeline = null;
 		$this->photo_timeline = $album->photo_timeline;
 		$this->is_pinned = $album->is_pinned;
+		$this->title_color = null;
+		$this->title_position = null;
 
 		if ($album instanceof Album) {
 			$this->is_model_album = true;
@@ -67,6 +73,8 @@ class EditableBaseAlbumResource extends Data
 			$this->cover_id = $album->cover_id;
 			$this->aspect_ratio = $album->album_thumb_aspect_ratio;
 			$this->album_timeline = $album->album_timeline;
+			$this->title_color = $album->title_color;
+			$this->title_position = $album->title_position;
 		}
 
 		if ($album instanceof TagAlbum) {

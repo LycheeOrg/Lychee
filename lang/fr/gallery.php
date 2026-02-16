@@ -114,6 +114,9 @@ return [
             'share' => 'Partager l’album',
             'embed' => 'Embed Album',
             'stats_only_se' => 'Statistiques disponibles dans l’édition Supporter',
+            'edit' => 'Edit',
+            'save' => 'Save',
+            'open_gallery' => 'Open gallery',
         ],
         'stats' => [
             'number_of_visits' => 'Nombre de visites',
@@ -143,6 +146,26 @@ return [
             'show_tags' => 'Définir les étiquettes à afficher',
             'tags_required' => 'Les étiquettes sont obligatoires.',
             'all_tags_must_match' => 'Toutes les étiquettes doivent être présentes.',
+        ],
+        'title' => [
+            'style' => 'Style',
+            'position' => 'Position',
+            'position_options' => [
+                 'top_left' => 'Top Left',
+                 'top_right' => 'Top Right',
+                 'center' => 'Center',
+                 'bottom_left' => 'Bottom Left',
+                 'bottom_right' => 'Bottom Right',
+            ],
+            'style_options' => [
+                 'white' => 'White',
+                 'black' => 'Black',
+                 'color_1' => 'Color 1',
+                 'color_2' => 'Color 2',
+                 'color_3' => 'Color 3',
+                 'color_4' => 'Color 4',
+                 'color_5' => 'Color 5',
+            ],
         ],
     ],
     'photo' => [

@@ -8,4 +8,6 @@ return [
     */
     'error' => '错误',
     'success' => '成功',
+    'album_updated' => 'Album updated',
+    'update_failed' => 'Failed to update album',
 ];

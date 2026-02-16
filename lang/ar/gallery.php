@@ -114,6 +114,9 @@ return [
             'share' => 'مشاركة الألبوم',
             'embed' => 'Embed Album',
             'stats_only_se' => 'الإحصائيات متاحة في إصدار الدعم فقط',
+            'edit' => 'Edit',
+            'save' => 'Save',
+            'open_gallery' => 'Open gallery',
         ],
         'stats' => [
             'number_of_visits' => 'عدد الزيارات',
@@ -143,6 +146,26 @@ return [
             'show_tags' => 'تعيين العلامات للعرض',
             'tags_required' => 'العلامات مطلوبة.',
             'all_tags_must_match' => 'يجب أن تتطابق جميع العلامات.',
+        ],
+        'title' => [
+            'style' => 'Style',
+            'position' => 'Position',
+            'position_options' => [
+                 'top_left' => 'Top Left',
+                 'top_right' => 'Top Right',
+                 'center' => 'Center',
+                 'bottom_left' => 'Bottom Left',
+                 'bottom_right' => 'Bottom Right',
+            ],
+            'style_options' => [
+                 'white' => 'White',
+                 'black' => 'Black',
+                 'color_1' => 'Color 1',
+                 'color_2' => 'Color 2',
+                 'color_3' => 'Color 3',
+                 'color_4' => 'Color 4',
+                 'color_5' => 'Color 5',
+            ],
         ],
     ],
     'photo' => [

@@ -115,6 +115,9 @@ return [
             'share' => 'Compartir álbum',
             'embed' => 'Embed Album',
             'stats_only_se' => 'Estadísticas disponibles en la Supporter Edition',
+            'edit' => 'Edit',
+            'save' => 'Save',
+            'open_gallery' => 'Open gallery',
         ],
         'stats' => [
             'number_of_visits' => 'Número de visitas',
@@ -144,6 +147,26 @@ return [
             'show_tags' => 'Establecer etiquetas para mostrar',
             'tags_required' => 'Se requieren etiquetas.',
             'all_tags_must_match' => 'Todas las etiquetas deben coincidir.',
+        ],
+        'title' => [
+            'style' => 'Style',
+            'position' => 'Position',
+            'position_options' => [
+                 'top_left' => 'Top Left',
+                 'top_right' => 'Top Right',
+                 'center' => 'Center',
+                 'bottom_left' => 'Bottom Left',
+                 'bottom_right' => 'Bottom Right',
+            ],
+            'style_options' => [
+                 'white' => 'White',
+                 'black' => 'Black',
+                 'color_1' => 'Color 1',
+                 'color_2' => 'Color 2',
+                 'color_3' => 'Color 3',
+                 'color_4' => 'Color 4',
+                 'color_5' => 'Color 5',
+            ],
         ],
     ],
     'photo' => [

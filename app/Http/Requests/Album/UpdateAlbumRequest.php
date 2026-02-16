@@ -22,10 +22,13 @@ use App\Contracts\Http\Requests\HasPhotoSortingCriterion;
 use App\Contracts\Http\Requests\HasTimelineAlbum;
 use App\Contracts\Http\Requests\HasTimelinePhoto;
 use App\Contracts\Http\Requests\HasTitle;
+use App\Contracts\Http\Requests\HasTitleCustomization;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Models\AbstractAlbum;
 use App\DTO\AlbumSortingCriterion;
 use App\DTO\PhotoSortingCriterion;
+use App\Enum\AlbumTitleColor;
+use App\Enum\AlbumTitlePosition;
 use App\Enum\AspectRatioType;
 use App\Enum\ColumnSortingAlbumType;
 use App\Enum\ColumnSortingPhotoType;
@@ -48,6 +51,7 @@ use App\Http\Requests\Traits\HasPhotoSortingCriterionTrait;
 use App\Http\Requests\Traits\HasPhotoTrait;
 use App\Http\Requests\Traits\HasTimelineAlbumTrait;
 use App\Http\Requests\Traits\HasTimelinePhotoTrait;
+use App\Http\Requests\Traits\HasTitleCustomizationTrait;
 use App\Http\Requests\Traits\HasTitleTrait;
 use App\Models\Album;
 use App\Models\Photo;
@@ -62,7 +66,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Validation\ValidationException;
 
-class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, HasDescription, HasLicense, HasPhotoSortingCriterion, HasAlbumSortingCriterion, HasCopyright, HasPhoto, HasCompactBoolean, HasPhotoLayout, HasTimelineAlbum, HasTimelinePhoto, HasIsPinned
+class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, HasDescription, HasLicense, HasPhotoSortingCriterion, HasAlbumSortingCriterion, HasCopyright, HasPhoto, HasCompactBoolean, HasPhotoLayout, HasTimelineAlbum, HasTimelinePhoto, HasIsPinned, HasTitleCustomization
 {
 	use HasAlbumTrait;
 	use HasLicenseTrait;
@@ -78,6 +82,7 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 	use HasTimelineAlbumTrait;
 	use HasTimelinePhotoTrait;
 	use HasIsPinnedTrait;
+	use HasTitleCustomizationTrait;
 
 	public function authorize(): bool
 	{
@@ -122,6 +127,8 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 			RequestAttribute::HEADER_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
 			RequestAttribute::ALBUM_TIMELINE_ALBUM => ['present', 'nullable', new Enum(TimelineAlbumGranularity::class), new EnumRequireSupportRule(TimelinePhotoGranularity::class, [TimelinePhotoGranularity::DEFAULT, TimelinePhotoGranularity::DISABLED], $this->verify())],
 			RequestAttribute::ALBUM_TIMELINE_PHOTO => ['present', 'nullable', new Enum(TimelinePhotoGranularity::class), new EnumRequireSupportRule(TimelinePhotoGranularity::class, [TimelinePhotoGranularity::DEFAULT, TimelinePhotoGranularity::DISABLED], $this->verify())],
+			RequestAttribute::ALBUM_TITLE_COLOR_ATTRIBUTE => ['present', 'nullable', new Enum(AlbumTitleColor::class), new EnumRequireSupportRule(AlbumTitleColor::class, [AlbumTitleColor::WHITE], $this->verify())],
+			RequestAttribute::ALBUM_TITLE_POSITION_ATTRIBUTE => ['present', 'nullable', new Enum(AlbumTitlePosition::class), new EnumRequireSupportRule(AlbumTitlePosition::class, [AlbumTitlePosition::TOP_LEFT], $this->verify())],
 		];
 	}
 
@@ -161,6 +168,8 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 		$this->photo_layout = PhotoLayoutType::tryFrom($values[RequestAttribute::ALBUM_PHOTO_LAYOUT]);
 		$this->album_timeline = TimelineAlbumGranularity::tryFrom($values[RequestAttribute::ALBUM_TIMELINE_ALBUM]);
 		$this->photo_timeline = TimelinePhotoGranularity::tryFrom($values[RequestAttribute::ALBUM_TIMELINE_PHOTO]);
+		$this->title_color = AlbumTitleColor::tryFrom($values[RequestAttribute::ALBUM_TITLE_COLOR_ATTRIBUTE]);
+		$this->title_position = AlbumTitlePosition::tryFrom($values[RequestAttribute::ALBUM_TITLE_POSITION_ATTRIBUTE]);
 
 		$this->copyright = $values[RequestAttribute::COPYRIGHT_ATTRIBUTE];
 

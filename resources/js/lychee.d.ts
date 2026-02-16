@@ -15,7 +15,10 @@ declare namespace App.DTO {
 declare namespace App.Enum {
 	export type AlbumDecorationOrientation = "row" | "row-reverse" | "column" | "column-reverse";
 	export type AlbumDecorationType = "none" | "layers" | "album" | "photo" | "all";
+	export type AlbumHeaderSize = "half_screen" | "full_screen";
 	export type AlbumLayoutType = "list" | "grid";
+	export type AlbumTitleColor = "white" | "black" | "color1" | "color2" | "color3" | "color4" | "color5";
+	export type AlbumTitlePosition = "top_left" | "top_right" | "bottom_left" | "bottom_right" | "center";
 	export type AspectRatioCSSType = "aspect-5x4" | "aspect-4x5" | "aspect-3x2" | "aspect-square" | "aspect-2x3" | "aspect-video";
 	export type AspectRatioType = "5/4" | "3/2" | "1/1" | "2/3" | "4/5" | "16/9";
 	export type CacheTag = "gallery" | "auth" | "user" | "settings" | "statistics" | "users";
@@ -154,7 +157,9 @@ declare namespace App.Enum {
 		| "three_stars"
 		| "four_stars"
 		| "five_stars"
-		| "best_pictures";
+		| "best_pictures"
+		| "my_rated_pictures"
+		| "my_best_pictures";
 	export type StorageDiskType = "images" | "s3";
 	export type ThumbAlbumSubtitleType = "description" | "takedate" | "creation" | "oldstyle" | "num_photos" | "num_albums" | "num_photos_albums";
 	export type TimelineAlbumGranularity = "default" | "disabled" | "year" | "month" | "day";
@@ -288,6 +293,8 @@ declare namespace App.Http.Resources.Editable {
 		cover_id: string | null;
 		album_timeline: App.Enum.TimelineAlbumGranularity | null;
 		photo_timeline: App.Enum.TimelinePhotoGranularity | null;
+		title_color: App.Enum.AlbumTitleColor | null;
+		title_position: App.Enum.AlbumTitlePosition | null;
 		tags: Array<string>;
 		is_and: boolean;
 		is_model_album: boolean;
@@ -467,6 +474,8 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		photos_infinite_scroll_threshold: number;
 		albums_infinite_scroll_threshold: number;
 		default_album_protection: App.Enum.DefaultAlbumProtectionType;
+		is_album_enhanced_display_enabled: boolean;
+		album_header_size: App.Enum.AlbumHeaderSize;
 	};
 	export type LandingPageResource = {
 		landing_page_enable: boolean;
@@ -881,6 +890,7 @@ declare namespace App.Http.Resources.Models.Utils {
 		created_at: string | null;
 		description: string | null;
 		copyright: string | null;
+		palette: Array<any> | null;
 	};
 	export type PreformattedPhotoData = {
 		created_at: string;

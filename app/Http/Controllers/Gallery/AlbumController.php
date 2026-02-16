@@ -147,6 +147,8 @@ class AlbumController extends Controller
 
 		$album->album_timeline = $request->album_timeline();
 		$album->photo_timeline = $request->photo_timeline();
+		$album->title_color = $request->titleColor();
+		$album->title_position = $request->titlePosition();
 
 		$album = $set_header->do(
 			album: $album,

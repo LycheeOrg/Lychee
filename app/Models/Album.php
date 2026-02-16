@@ -10,6 +10,8 @@ namespace App\Models;
 
 use App\Actions\Album\Delete;
 use App\DTO\AlbumSortingCriterion;
+use App\Enum\AlbumTitleColor;
+use App\Enum\AlbumTitlePosition;
 use App\Enum\AspectRatioType;
 use App\Enum\ColumnSortingType;
 use App\Enum\LicenseType;
@@ -196,6 +198,8 @@ class Album extends BaseAlbum implements Node
 		'auto_cover_id_least_privilege' => 'string',
 		'is_recursive_nsfw' => 'boolean',
 		'album_thumb_aspect_ratio' => AspectRatioType::class,
+		'title_color' => AlbumTitleColor::class,
+		'title_position' => AlbumTitlePosition::class,
 		'album_timeline' => TimelineAlbumGranularity::class,
 		'_lft' => 'integer',
 		'_rgt' => 'integer',
@@ -436,6 +440,52 @@ class Album extends BaseAlbum implements Node
 	protected function setAlbumTimelineAttribute(?TimelineAlbumGranularity $album_timeline): void
 	{
 		$this->attributes['album_timeline'] = $album_timeline?->value;
+	}
+
+	/**
+	 * Get the color palette from the album's cover photo.
+	 */
+	public function getCoverPalette(): ?Palette
+	{
+		return $this->cover?->palette;
+	}
+
+	/**
+	 * Get the computed title color as hex string based on title_color setting.
+	 * Returns white/black hex or palette color if available.
+	 */
+	public function getComputedTitleColor(): string
+	{
+		// Default to white if not set
+		if ($this->title_color === null) {
+			return '#ffffff';
+		}
+
+		$value = $this->title_color->value;
+
+		// Handle basic colors
+		if ($value === 'white') {
+			return '#ffffff';
+		}
+		if ($value === 'black') {
+			return '#000000';
+		}
+
+		// Handle palette colors (color1 through color5)
+		if (str_starts_with($value, 'color')) {
+			$idx = (int) str_replace('color', '', $value); // 1-5
+			$palette = $this->getCoverPalette();
+
+			if ($palette === null) {
+				return '#ffffff';
+			}
+
+			$field = 'colour_' . $idx;
+
+			return $palette->$field ?? '#ffffff';
+		}
+
+		return '#ffffff';
 	}
 
 	/**

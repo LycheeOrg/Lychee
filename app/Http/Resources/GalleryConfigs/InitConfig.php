@@ -10,6 +10,7 @@ namespace App\Http\Resources\GalleryConfigs;
 
 use App\Enum\AlbumDecorationOrientation;
 use App\Enum\AlbumDecorationType;
+use App\Enum\AlbumHeaderSize;
 use App\Enum\AlbumLayoutType;
 use App\Enum\DefaultAlbumProtectionType;
 use App\Enum\ImageOverlayType;
@@ -133,6 +134,10 @@ class InitConfig extends Data
 	// Album settings
 	public DefaultAlbumProtectionType $default_album_protection;
 
+	// Enhanced Album Display
+	public bool $is_album_enhanced_display_enabled;
+	public AlbumHeaderSize $album_header_size;
+
 	public function __construct()
 	{
 		// Debug mode
@@ -226,6 +231,10 @@ class InitConfig extends Data
 
 		// Album settings
 		$this->default_album_protection = request()->configs()->getValueAsEnum('default_album_protection', DefaultAlbumProtectionType::class);
+
+		// Enhanced Album Display
+		$this->is_album_enhanced_display_enabled = request()->configs()->getValueAsBool('album_enhanced_display_enable');
+		$this->album_header_size = request()->configs()->getValueAsEnum('album_header_size', AlbumHeaderSize::class);
 
 		$this->set_supporter_properties();
 	}

@@ -115,6 +115,9 @@ return [
             'share' => 'Udostępnij album',
             'embed' => 'Embed Album',
             'stats_only_se' => 'Statystyki dostępne w Supporter Edition',
+            'edit' => 'Edit',
+            'save' => 'Save',
+            'open_gallery' => 'Open gallery',
         ],
         'stats' => [
             'number_of_visits' => 'Number of visits',
@@ -144,6 +147,26 @@ return [
             'show_tags' => 'Ustawianie wyświetlania tagów',
             'tags_required' => 'Wymagane są znaczniki.',
             'all_tags_must_match' => 'Wszystkie znaczniki muszą pasować.',
+        ],
+        'title' => [
+            'style' => 'Style',
+            'position' => 'Position',
+            'position_options' => [
+                 'top_left' => 'Top Left',
+                 'top_right' => 'Top Right',
+                 'center' => 'Center',
+                 'bottom_left' => 'Bottom Left',
+                 'bottom_right' => 'Bottom Right',
+            ],
+            'style_options' => [
+                 'white' => 'White',
+                 'black' => 'Black',
+                 'color_1' => 'Color 1',
+                 'color_2' => 'Color 2',
+                 'color_3' => 'Color 3',
+                 'color_4' => 'Color 4',
+                 'color_5' => 'Color 5',
+            ],
         ],
     ],
     'photo' => [
