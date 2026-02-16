@@ -173,6 +173,6 @@ docker-run:
 	docker compose up
 
 test_pgsql_v2:
-	docker compose -f docker-compose-pgsql.yaml up -d
+	docker compose -f docs/specs/2-how-to/docker-compose/docker-compose-pgsql.yaml up -d
 	vendor/bin/phpunit --testsuite Feature_v2 --stop-on-failure --stop-on-error --no-coverage --log-junit report_v2.xml --configuration phpunit.pgsql.xml
-	docker compose down
+	docker compose -f docs/specs/2-how-to/docker-compose/docker-compose-pgsql.yaml down
