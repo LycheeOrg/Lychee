@@ -56,7 +56,7 @@ RUN npm run build
 # ============================================================================
 # Stage 3: Production FrankenPHP Image
 # ============================================================================
-FROM dunglas/frankenphp:php8.5-trixie@sha256:a7d406a6227987e83bde778d81f72be787cacb6ad3d96aade85bd5e463a89732
+FROM dunglas/frankenphp:php8.5-trixie@sha256:f66466767d1c95587621a8ffb7912dea1165fa45e1c2cdcd0997f872d037b96f
 
 ARG USER=appuser
 
@@ -115,6 +115,7 @@ COPY --from=composer --chown=www-data:www-data /app/vendor ./vendor
 
 # Copy built frontend assets from node stage
 COPY --from=node --chown=www-data:www-data /app/public/build ./public/build
+COPY --from=node --chown=www-data:www-data /app/public/embed ./public/embed
 
 # Ensure storage and bootstrap/cache are writable with minimal permissions
 RUN mkdir -p storage/framework/cache \
