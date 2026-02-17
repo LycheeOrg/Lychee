@@ -52,6 +52,7 @@ class StreamStat implements StreamStats
 	{
 		try {
 			$checksum = hash_file(StreamStatFilter::HASH_ALGO_NAME, $file->getPath());
+
 			return new StreamStat($file->getFilesize(), $checksum);
 			// @codeCoverageIgnoreStart
 		} catch (\Throwable $e) {
