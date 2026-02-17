@@ -11,11 +11,21 @@ namespace App\Http\Middleware;
 use App\Image\Watermarker;
 use App\Repositories\ConfigManager;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 
 class ResolveConfigs
 {
 	public function handle(Request $request, \Closure $next)
 	{
+		try {
+			if (!Schema::hasTable('configs')) {
+				return $next($request);
+			}
+			// @codeCoverageIgnoreStart
+		} catch (\Throwable) {
+			return $next($request);
+		}
+
 		// Compute ONCE
 		$config_manager = $this->resolve_configs($request);
 

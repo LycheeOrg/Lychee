@@ -58,6 +58,8 @@ export interface EmbedConfig {
 	showExif?: boolean;
 	/** Header placement: 'top' (full header), 'bottom' (simple link), or 'none' */
 	headerPlacement?: HeaderPlacement;
+	/** Filter photos by uploader username */
+	author?: string;
 	/** Custom CSS class for widget container */
 	containerClass?: string;
 }

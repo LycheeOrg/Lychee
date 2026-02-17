@@ -1,1 +1,0 @@
-This folder contains reference documentation that is primarily intended for AI agents working in this codebase.

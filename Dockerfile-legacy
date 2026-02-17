@@ -134,6 +134,7 @@ COPY --from=composer --chown=www-data:www-data /app/vendor ./vendor
 
 # Copy built frontend assets from node stage
 COPY --from=node --chown=www-data:www-data /app/public/build ./public/build
+COPY --from=node --chown=www-data:www-data /app/public/embed ./public/embed
 
 # Ensure storage and bootstrap/cache are writable with minimal permissions
 RUN mkdir -p storage/framework/cache \
