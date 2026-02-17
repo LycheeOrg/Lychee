@@ -77,12 +77,12 @@ return new class() extends Migration {
 		])->lazyById();
 
 		foreach ($photos as $photo) {
-			$created_at = $this->downgradeDatetime($photo->{self::PHOTO_CREATED_AT_COL_NAME});  // @phpstan-ignore property.dynamicName
-			$updated_at = $this->downgradeDatetime($photo->{self::PHOTO_UPDATED_AT_COL_NAME});  // @phpstan-ignore property.dynamicName
+			$created_at = $this->downgradeDatetime($photo->{self::PHOTO_CREATED_AT_COL_NAME});
+			$updated_at = $this->downgradeDatetime($photo->{self::PHOTO_UPDATED_AT_COL_NAME});
 			$takestamp = $this->convertDatetime(
-				$photo->{self::PHOTO_TAKEN_AT_COL_NAME}, // @phpstan-ignore property.dynamicName
+				$photo->{self::PHOTO_TAKEN_AT_COL_NAME},
 				self::DB_TIMEZONE_NAME,
-				$photo->{self::PHOTO_TAKEN_AT_TZ_COL_NAME} // @phpstan-ignore property.dynamicName
+				$photo->{self::PHOTO_TAKEN_AT_TZ_COL_NAME}
 			);
 
 			DB::table(self::PHOTOS_TABLE_NAME)->where(self::ID_COL_NAME, '=', $photo->id)->update([
@@ -221,7 +221,7 @@ return new class() extends Migration {
 			->where(self::CONFIG_KEY_COL_NAME, '=', $key)
 			->first();
 
-		return $config->{self::CONFIG_VALUE_COL_NAME}; // @phpstan-ignore property.dynamicName
+		return $config->{self::CONFIG_VALUE_COL_NAME};
 	}
 
 	/**
