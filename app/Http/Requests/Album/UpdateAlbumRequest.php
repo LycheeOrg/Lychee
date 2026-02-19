@@ -14,6 +14,7 @@ use App\Contracts\Http\Requests\HasAlbumSortingCriterion;
 use App\Contracts\Http\Requests\HasCompactBoolean;
 use App\Contracts\Http\Requests\HasCopyright;
 use App\Contracts\Http\Requests\HasDescription;
+use App\Contracts\Http\Requests\HasHeaderFocus;
 use App\Contracts\Http\Requests\HasIsPinned;
 use App\Contracts\Http\Requests\HasLicense;
 use App\Contracts\Http\Requests\HasPhoto;
@@ -44,6 +45,7 @@ use App\Http\Requests\Traits\HasAspectRatioTrait;
 use App\Http\Requests\Traits\HasCompactBooleanTrait;
 use App\Http\Requests\Traits\HasCopyrightTrait;
 use App\Http\Requests\Traits\HasDescriptionTrait;
+use App\Http\Requests\Traits\HasHeaderFocusTrait;
 use App\Http\Requests\Traits\HasIsPinnedTrait;
 use App\Http\Requests\Traits\HasLicenseTrait;
 use App\Http\Requests\Traits\HasPhotoLayoutTrait;
@@ -66,7 +68,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Validation\ValidationException;
 
-class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, HasDescription, HasLicense, HasPhotoSortingCriterion, HasAlbumSortingCriterion, HasCopyright, HasPhoto, HasCompactBoolean, HasPhotoLayout, HasTimelineAlbum, HasTimelinePhoto, HasIsPinned, HasTitleCustomization
+class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, HasDescription, HasLicense, HasPhotoSortingCriterion, HasAlbumSortingCriterion, HasCopyright, HasPhoto, HasCompactBoolean, HasPhotoLayout, HasTimelineAlbum, HasTimelinePhoto, HasIsPinned, HasTitleCustomization, HasHeaderFocus
 {
 	use HasAlbumTrait;
 	use HasLicenseTrait;
@@ -83,6 +85,7 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 	use HasTimelinePhotoTrait;
 	use HasIsPinnedTrait;
 	use HasTitleCustomizationTrait;
+	use HasHeaderFocusTrait;
 
 	public function authorize(): bool
 	{
@@ -95,6 +98,25 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 					->where(PA::PHOTO_ID, $this->photo->id)
 					->count() > 0)
 			);
+	}
+
+	/**
+	 * Prepare the data for validation.
+	 */
+	protected function prepareForValidation(): void
+	{
+		if ($this->has(RequestAttribute::HEADER_PHOTO_FOCUS_ATTRIBUTE)) {
+			$focus = $this->input(RequestAttribute::HEADER_PHOTO_FOCUS_ATTRIBUTE);
+			if (is_array($focus)) {
+				if (isset($focus['x'])) {
+					$focus['x'] = max(-1.0, min(1.0, floatval($focus['x'])));
+				}
+				if (isset($focus['y'])) {
+					$focus['y'] = max(-1.0, min(1.0, floatval($focus['y'])));
+				}
+				$this->merge([RequestAttribute::HEADER_PHOTO_FOCUS_ATTRIBUTE => $focus]);
+			}
+		}
 	}
 
 	/**
@@ -129,6 +151,9 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 			RequestAttribute::ALBUM_TIMELINE_PHOTO => ['present', 'nullable', new Enum(TimelinePhotoGranularity::class), new EnumRequireSupportRule(TimelinePhotoGranularity::class, [TimelinePhotoGranularity::DEFAULT, TimelinePhotoGranularity::DISABLED], $this->verify())],
 			RequestAttribute::ALBUM_TITLE_COLOR_ATTRIBUTE => ['present', 'nullable', new Enum(AlbumTitleColor::class), new EnumRequireSupportRule(AlbumTitleColor::class, [AlbumTitleColor::WHITE], $this->verify())],
 			RequestAttribute::ALBUM_TITLE_POSITION_ATTRIBUTE => ['present', 'nullable', new Enum(AlbumTitlePosition::class), new EnumRequireSupportRule(AlbumTitlePosition::class, [AlbumTitlePosition::TOP_LEFT], $this->verify())],
+			RequestAttribute::HEADER_PHOTO_FOCUS_ATTRIBUTE => ['nullable', 'array'],
+			RequestAttribute::HEADER_PHOTO_FOCUS_ATTRIBUTE . '.x' => ['required_with:' . RequestAttribute::HEADER_PHOTO_FOCUS_ATTRIBUTE, 'numeric', 'between:-1,1'],
+			RequestAttribute::HEADER_PHOTO_FOCUS_ATTRIBUTE . '.y' => ['required_with:' . RequestAttribute::HEADER_PHOTO_FOCUS_ATTRIBUTE, 'numeric', 'between:-1,1'],
 		];
 	}
 
@@ -168,8 +193,12 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 		$this->photo_layout = PhotoLayoutType::tryFrom($values[RequestAttribute::ALBUM_PHOTO_LAYOUT]);
 		$this->album_timeline = TimelineAlbumGranularity::tryFrom($values[RequestAttribute::ALBUM_TIMELINE_ALBUM]);
 		$this->photo_timeline = TimelinePhotoGranularity::tryFrom($values[RequestAttribute::ALBUM_TIMELINE_PHOTO]);
-		$this->title_color = AlbumTitleColor::tryFrom($values[RequestAttribute::ALBUM_TITLE_COLOR_ATTRIBUTE]);
-		$this->title_position = AlbumTitlePosition::tryFrom($values[RequestAttribute::ALBUM_TITLE_POSITION_ATTRIBUTE]);
+		$this->title_color = $values[RequestAttribute::ALBUM_TITLE_COLOR_ATTRIBUTE] === null ? null : AlbumTitleColor::tryFrom($values[RequestAttribute::ALBUM_TITLE_COLOR_ATTRIBUTE]);
+		$this->title_position = $values[RequestAttribute::ALBUM_TITLE_POSITION_ATTRIBUTE] === null ? null : AlbumTitlePosition::tryFrom($values[RequestAttribute::ALBUM_TITLE_POSITION_ATTRIBUTE]);
+
+		if (array_key_exists(RequestAttribute::HEADER_PHOTO_FOCUS_ATTRIBUTE, $values)) {
+			$this->header_photo_focus = $values[RequestAttribute::HEADER_PHOTO_FOCUS_ATTRIBUTE];
+		}
 
 		$this->copyright = $values[RequestAttribute::COPYRIGHT_ATTRIBUTE];
 

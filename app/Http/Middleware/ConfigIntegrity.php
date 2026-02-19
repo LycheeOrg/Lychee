@@ -116,6 +116,9 @@ class ConfigIntegrity
 		'webshop_lycheeorg_disclaimer_enabled',
 		'webshop_auto_fulfill_enabled',
 		'webshop_manual_fulfill_enabled',
+		'photos_star_visibility',
+		'album_enhanced_display_enable',
+		'album_header_size',
 	];
 
 	/**

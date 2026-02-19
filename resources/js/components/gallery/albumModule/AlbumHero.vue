@@ -4,7 +4,11 @@
 		:album="albumStore.album"
 		@scroll-to-pictures="emits('scrollToPictures')"
 	/>
-	<Card class="w-full" v-if="albumStore.album">
+	<Card
+		class="w-full"
+		v-if="albumStore.album"
+		:class="{ '-mt-24 z-10 relative bg-color: var(--p-panel-header-background);': album_header_size !== 'half_screen' }"
+	>
 		<template #content>
 			<div class="w-full flex flex-row-reverse items-start">
 				<div class="order-1 flex flex-col w-full">
@@ -171,7 +175,7 @@ const albumStore = useAlbumStore();
 const albumsStore = useAlbumsStore();
 const photosStore = usePhotosStore();
 
-const { is_se_enabled, is_se_preview_enabled, are_nsfw_visible, is_slideshow_enabled } = storeToRefs(lycheeStore);
+const { is_se_enabled, is_se_preview_enabled, are_nsfw_visible, is_slideshow_enabled, album_header_size } = storeToRefs(lycheeStore);
 
 function toggleAlbumView(mode: "grid" | "list") {
 	lycheeStore.album_view_mode = mode;

@@ -28,8 +28,14 @@ class SetHeader
 	{
 		if ($is_compact) {
 			$album->header_id = AlbumController::COMPACT_HEADER;
+			$album->header_photo_focus = null;
 		} else {
+			$old_header_id = $album->header_id;
 			$album->header_id = ($album->header_id !== $photo?->id || $shall_override) ? $photo?->id : null;
+
+			if ($old_header_id !== $album->header_id) {
+				$album->header_photo_focus = null;
+			}
 		}
 		$album->save();
 

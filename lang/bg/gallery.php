@@ -11,6 +11,10 @@ return [
     'pinned_albums' => 'Избрани албуми',
     'albums' => 'Албуми',
     'root' => 'Албуми',
+    'set_focus' => 'Задай фокус',
+    'set_header_focus' => 'Задай фокус на заглавката',
+    'done' => 'Готово',
+    'cancel' => 'Отказ',
     'tabs' => [
         'my_albums' => 'Моите албуми',
         'shared_with_me' => 'Споделени с мен',

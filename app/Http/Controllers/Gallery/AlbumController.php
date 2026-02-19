@@ -21,6 +21,8 @@ use App\Actions\Album\SetSmartProtectionPolicy;
 use App\Actions\Album\Transfer;
 use App\Actions\Album\Unlock;
 use App\Actions\Photo\BaseArchive as PhotoBaseArchive;
+use App\Enum\AlbumTitleColor;
+use App\Enum\AlbumTitlePosition;
 use App\Enum\SizeVariantType;
 use App\Events\AlbumRouteCacheUpdated;
 use App\Events\Metrics\AlbumDownload;
@@ -147,8 +149,9 @@ class AlbumController extends Controller
 
 		$album->album_timeline = $request->album_timeline();
 		$album->photo_timeline = $request->photo_timeline();
-		$album->title_color = $request->titleColor();
-		$album->title_position = $request->titlePosition();
+		$album->title_color = $request->titleColor() ?? AlbumTitleColor::WHITE;
+		$album->title_position = $request->titlePosition() ?? AlbumTitlePosition::TOP_LEFT;
+		$album->header_photo_focus = $request->headerPhotoFocus();
 
 		$album = $set_header->do(
 			album: $album,
@@ -293,6 +296,7 @@ class AlbumController extends Controller
 	{
 		$album = $request->album();
 		$album->cover_id = ($album->cover_id === $request->photo()->id) ? null : $request->photo()->id;
+		$album->header_photo_focus = null;
 		$album->save();
 	}
 

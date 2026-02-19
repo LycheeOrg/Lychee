@@ -10,6 +10,10 @@ return [
     'smart_albums' => 'Smart Albums',
     'pinned_albums' => 'Featured Albums',
     'albums' => 'Albums',
+    'set_focus' => 'Set Focus',
+    'set_header_focus' => 'Set Header Focus',
+    'done' => 'Done',
+    'cancel' => 'Cancel',
     'root' => 'Albums',
     'tabs' => [
         'my_albums' => 'My Albums',

@@ -40,6 +40,7 @@ class EditableBaseAlbumResource extends Data
 	public ?TimelinePhotoGranularity $photo_timeline;
 	public ?AlbumTitleColor $title_color;
 	public ?AlbumTitlePosition $title_position;
+	public ?array $header_photo_focus;
 	/** @var string[] */
 	public array $tags = [];
 	public bool $is_and = true;
@@ -64,6 +65,7 @@ class EditableBaseAlbumResource extends Data
 		$this->is_pinned = $album->is_pinned;
 		$this->title_color = null;
 		$this->title_position = null;
+		$this->header_photo_focus = null;
 
 		if ($album instanceof Album) {
 			$this->is_model_album = true;
@@ -75,6 +77,7 @@ class EditableBaseAlbumResource extends Data
 			$this->album_timeline = $album->album_timeline;
 			$this->title_color = $album->title_color;
 			$this->title_position = $album->title_position;
+			$this->header_photo_focus = $album->header_photo_focus;
 		}
 
 		if ($album instanceof TagAlbum) {

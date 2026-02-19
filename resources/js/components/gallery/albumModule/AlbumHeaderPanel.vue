@@ -13,24 +13,43 @@
 			</div>
 		</template>
 		<template v-if="is_album_enhanced_display_enabled">
-			<AlbumHeaderImage :src="albumStore.album.preFormattedData.url" />
-			<button
-				v-if="albumStore.rights?.can_edit && mode === 'normal'"
-				@click="enableEditMode"
-				class="absolute right-1 top-1 bg-(--p-toolbar-background)/60 rounded-lg px-2 py-1 text-white hover:bg-white/30 cursor-pointer z-100"
-			>
-				{{ $t("gallery.album.hero.edit") }}
-			</button>
-			<button
-				v-if="albumStore.rights?.can_edit && mode === 'edit'"
-				@click="saveChanges"
-				class="absolute right-1 top-1 bg-(--p-toolbar-background)/60 rounded-lg pl-2 pr-2 pt-1 pb-1 text-white cursor-pointer z-100"
-			>
-				{{ $t("gallery.album.hero.save") }}
-			</button>
+			<AlbumHeaderImage :src="albumStore.album.preFormattedData.url" :focus-x="focusX" :focus-y="focusY" />
+			<div class="absolute right-1 top-1 flex flex-col gap-2 z-100">
+				<button
+					v-if="albumStore.rights?.can_edit && mode === 'normal'"
+					@click="enableEditMode"
+					class="bg-(--p-toolbar-background)/60 rounded-lg px-2 py-1 text-white hover:bg-white/30 cursor-pointer"
+				>
+					{{ $t("gallery.album.hero.edit") }}
+				</button>
+				<template v-if="albumStore.rights?.can_edit && mode === 'edit'">
+					<button
+						@click="saveChanges"
+						class="bg-(--p-toolbar-background)/60 rounded-lg px-2 py-1 text-white hover:bg-white/30 cursor-pointer"
+					>
+						{{ $t("gallery.album.hero.save") }}
+					</button>
+					<button
+						@click="isFocusPickerVisible = true"
+						class="bg-(--p-toolbar-background)/60 rounded-lg px-2 py-1 text-white hover:bg-white/30 cursor-pointer"
+					>
+						{{ $t("gallery.set_focus") }}
+					</button>
+				</template>
+			</div>
+
+			<HeaderFocusPicker
+				v-if="isFocusPickerVisible"
+				:src="albumStore.album.preFormattedData.url"
+				:focus-x="focusX"
+				:focus-y="focusY"
+				@update:focus="updateFocus"
+				@close="isFocusPickerVisible = false"
+				@cancel="cancelFocus"
+			/>
 			<div
 				id="coverDetails"
-				class="relative text-shadow-sm w-full bg-linear-to-b from-black/20 via-80% h-full transition-all duration-300 grid"
+				class="relative text-shadow-sm w-full bg-linear-to-b from-black/20 via-transparent via-80% to-black/40 h-full transition-all duration-300 grid"
 				:class="positionClasses"
 			>
 				<div class="relative">
@@ -90,15 +109,17 @@
 						{{ $t("gallery.album.hero.open_gallery") }}
 					</button>
 				</div>
-				<a
-					v-if="initdata"
-					href="https://example.com"
-					class="author text-center w-full uppercase font-semibold"
-					:style="{ color: selectedColor }"
-				>
-					{{ initdata.landing_title }}</a
-				>
 			</div>
+			<span
+				v-if="initdata"
+				:class="[
+					'author text-center w-full uppercase absolute left-0 z-50 text-shadow-sm',
+					album_header_size === 'half_screen' ? 'bottom-6' : 'bottom-28',
+				]"
+				:style="{ color: selectedColor }"
+			>
+				{{ initdata.landing_title }}
+			</span>
 		</template>
 	</div>
 </template>
@@ -109,6 +130,7 @@ import { useAlbumStore } from "@/stores/AlbumState";
 import AlbumService, { UpdateAbumData } from "@/services/album-service";
 import HeaderEditButton from "./HeaderEditButton.vue";
 import AlbumHeaderImage from "./AlbumHeaderImage.vue";
+import HeaderFocusPicker from "./HeaderFocusPicker.vue";
 import InitService from "@/services/init-service";
 import { storeToRefs } from "pinia";
 import { useLycheeStateStore } from "@/stores/LycheeState";
@@ -133,8 +155,8 @@ const props = defineProps<{
 const POSITION_CLASSES = {
 	"top-left": "justify-items-start items-start text-left pt-20 pl-20",
 	"top-right": "justify-items-end items-start text-right pt-20 pr-20",
-	"bottom-left": "justify-items-start items-end text-left pb-20 pl-20",
-	"bottom-right": "justify-items-end items-end text-right pb-20 pr-20",
+	"bottom-left": "justify-items-start items-end text-left pb-40 pl-20",
+	"bottom-right": "justify-items-end items-end text-right pb-40 pr-20",
 	center: "justify-items-center items-center text-center",
 };
 
@@ -168,6 +190,10 @@ let position = ref<keyof typeof POSITION_CLASSES>("top-left");
 let mode = ref("normal");
 const positionClasses = computed(() => POSITION_CLASSES[position.value]);
 
+const isFocusPickerVisible = ref(false);
+const focusX = ref<number | null>(null);
+const focusY = ref<number | null>(null);
+
 function initFromProps() {
 	if (props.album.editable?.title_color) {
 		const colorEnum = props.album.editable.title_color;
@@ -186,6 +212,14 @@ function initFromProps() {
 		if (key) {
 			position.value = key as keyof typeof POSITION_CLASSES;
 		}
+	}
+
+	if (props.album.editable?.header_photo_focus) {
+		focusX.value = props.album.editable.header_photo_focus.x;
+		focusY.value = props.album.editable.header_photo_focus.y;
+	} else {
+		focusX.value = null;
+		focusY.value = null;
 	}
 }
 
@@ -231,6 +265,7 @@ function saveChanges() {
 		photo_timeline: data.photo_timeline ?? null,
 		title_color: COLOR_ENUMS[selectedColorIndex.value],
 		title_position: POSITION_ENUMS[position.value],
+		header_photo_focus: focusX.value !== null && focusY.value !== null ? { x: focusX.value, y: focusY.value } : null,
 	};
 
 	AlbumService.updateAlbum(payload)
@@ -244,6 +279,17 @@ function saveChanges() {
 			console.error(e);
 			toast.add({ severity: "error", summary: trans("toasts.error"), detail: trans("toasts.update_failed"), life: 3000 });
 		});
+}
+
+function updateFocus(x: number, y: number) {
+	focusX.value = x;
+	focusY.value = y;
+}
+
+function cancelFocus() {
+	isFocusPickerVisible.value = false;
+	// Revert to saved state
+	initFromProps();
 }
 
 function setPosition(newPosition: string) {

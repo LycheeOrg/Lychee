@@ -35,6 +35,7 @@ class HeadAlbumResource extends Data
 	public ?string $track_url;
 	public string $license;
 	public ?string $header_id;
+	public ?array $header_photo_focus;
 
 	// children counts (no actual children/photos arrays)
 	public ?string $parent_id;
@@ -67,6 +68,7 @@ class HeadAlbumResource extends Data
 		$this->license = $album->license->localization();
 		// TODO: Investigate later why this string is 24 characters long.
 		$this->header_id = $album->header_id !== null ? trim($album->header_id) : null;
+		$this->header_photo_focus = $album->header_photo_focus;
 
 		// children counts only
 		$this->parent_id = $album->parent_id;

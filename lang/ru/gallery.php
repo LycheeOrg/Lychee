@@ -10,6 +10,10 @@ return [
     'pinned_albums' => 'Закреплённые альбомы',
     'albums' => 'Альбомы',
     'root' => 'Альбомы',
+    'set_focus' => 'Set Focus',
+    'set_header_focus' => 'Set Header Focus',
+    'done' => 'Done',
+    'cancel' => 'Cancel',
     'tabs' => [
         'my_albums' => 'My Albums',
         'shared_with_me' => 'Shared with Me',

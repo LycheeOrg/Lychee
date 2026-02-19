@@ -11,6 +11,10 @@ return [
     'pinned_albums' => 'Álbumes fijados',
     'albums' => 'Álbumes',
     'root' => 'Álbumes',
+    'set_focus' => 'Set Focus',
+    'set_header_focus' => 'Set Header Focus',
+    'done' => 'Done',
+    'cancel' => 'Cancel',
     'tabs' => [
         'my_albums' => 'My Albums',
         'shared_with_me' => 'Shared with Me',

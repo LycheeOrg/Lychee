@@ -10,6 +10,10 @@ return [
     'pinned_albums' => 'Albums épinglés',
     'albums' => 'Albums',
     'root' => 'Albums',
+    'set_focus' => 'Set Focus',
+    'set_header_focus' => 'Set Header Focus',
+    'done' => 'Done',
+    'cancel' => 'Cancel',
     'tabs' => [
         'my_albums' => 'Mes albums',
         'shared_with_me' => 'Partagé avec moi',
