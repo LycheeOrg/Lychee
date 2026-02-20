@@ -9,11 +9,11 @@
 namespace App\Enum;
 
 /**
- * Enum PhotoVisibilityType.
+ * Enum PhotoHighlightVisibilityType.
  *
  * Options used to configure visibility of star flag in photos.
  */
-enum PhotoVisibilityType: string
+enum PhotoHighlightVisibilityType: string
 {
 	case ANONYMOUS = 'anonymous';
 	case AUTHENTICATED = 'authenticated';

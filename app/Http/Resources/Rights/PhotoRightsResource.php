@@ -21,7 +21,6 @@ class PhotoRightsResource extends Data
 	public bool $can_edit;
 	public bool $can_download;
 	public bool $can_access_full_photo;
-	public bool $can_star;
 
 	/**
 	 * Given a photo, returns the access rights associated to it.
@@ -35,6 +34,5 @@ class PhotoRightsResource extends Data
 		$this->can_edit = Gate::check(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, $album]);
 		$this->can_download = Gate::check(AlbumPolicy::CAN_DOWNLOAD, [AbstractAlbum::class, $album]);
 		$this->can_access_full_photo = Gate::check(AlbumPolicy::CAN_ACCESS_FULL_PHOTO, [AbstractAlbum::class, $album]);
-		$this->can_star = Gate::check(AlbumPolicy::CAN_STAR, [AbstractAlbum::class, $album]);
 	}
 }

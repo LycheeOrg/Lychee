@@ -49,7 +49,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		number_albums_per_row_mobile: 3 as 1 | 2 | 3,
 		photo_thumb_info: "title" as App.Enum.PhotoThumbInfoType,
 		is_photo_thumb_tags_enabled: false,
-		photos_star_visibility: "authenticated" as App.Enum.PhotoVisibilityType,
+		photos_star_visibility: "authenticated" as App.Enum.PhotoHighlightVisibilityType,
 
 		// Download settings
 		is_thumb_download_enabled: false,

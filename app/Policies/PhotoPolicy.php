@@ -298,11 +298,15 @@ class PhotoPolicy extends BasePolicy
 	 */
 	public function canStar(?User $user, Photo $photo): bool
 	{
-		if ($this->isOwner($user, $photo)) {
+		if ($user !== null && $this->canEdit($user, $photo)) {
 			return true;
 		}
 
-		return ($this->hasAlbums($photo) && $this->reduction($photo->albums, fn ($a) => $this->album_policy->canStar($user, $a)));
+		if ($this->hasAlbums($photo)) {
+			return $this->reduction($photo->albums, fn ($a) => $this->album_policy->canStar($user, $a));
+		}
+
+		return $this->album_policy->canStar($user, null);
 	}
 
 	/**

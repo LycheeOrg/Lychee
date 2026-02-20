@@ -4,23 +4,19 @@ const { spliter, merge } = useSplitter();
 
 export type PhotosStore = ReturnType<typeof usePhotosStore>;
 
-export type PhotoRatingFilter = null | 1 | 2 | 3 | 4 | 5;
+export type PhotoRatingFilter = null | 1 | 2 | 3 | 4 | 5 | "starred";
 
 export const usePhotosStore = defineStore("photos-store", {
 	state: () => ({
-		allPhotos: [] as App.Http.Resources.Models.PhotoResource[],
 		photos: [] as App.Http.Resources.Models.PhotoResource[],
 		photosTimeline: undefined as SplitData<App.Http.Resources.Models.PhotoResource>[] | undefined,
-		activeFilter: null as Record<string, unknown> | null,
 		photoRatingFilter: null as PhotoRatingFilter,
 	}),
 	actions: {
 		reset() {
 			this.photos = [];
-			this.allPhotos = [];
 			this.photosTimeline = undefined;
 			this.photoRatingFilter = null;
-			this.activeFilter = null;
 		},
 		setPhotoRatingFilter(rating: PhotoRatingFilter) {
 			this.photoRatingFilter = rating;
@@ -55,10 +51,6 @@ export const usePhotosStore = defineStore("photos-store", {
 				this.photos = photos;
 				this.photosTimeline = undefined;
 			}
-			this.allPhotos = this.photos;
-			if (this.activeFilter !== null) {
-				this.performFilter();
-			}
 		},
 		/**
 		 * Append new photos to the existing collection.
@@ -70,7 +62,7 @@ export const usePhotosStore = defineStore("photos-store", {
 		 */
 		appendPhotos(photos: App.Http.Resources.Models.PhotoResource[], isTimeline: boolean) {
 			// Simply append photos to the existing array
-			this.allPhotos = [...this.allPhotos, ...photos];
+			this.photos = [...this.photos, ...photos];
 
 			if (isTimeline) {
 				// Append new photos to timeline and re-merge
@@ -112,39 +104,6 @@ export const usePhotosStore = defineStore("photos-store", {
 					firstNewPhoto.previous_photo_id = lastOldPhoto.id;
 				}
 			}
-
-			if (this.activeFilter !== null) {
-				this.performFilter();
-			}
-		},
-		filterPhotos(filter: Record<string, unknown> | null) {
-			this.activeFilter = filter;
-			this.performFilter();
-		},
-		performFilter() {
-			const filter = this.activeFilter;
-			this.photos = this.allPhotos.filter((photo) => {
-				if (!filter) {
-					return true;
-				}
-
-				for (const key in filter) {
-					if ((photo as Record<string, unknown>)[key] !== filter[key]) {
-						return false;
-					}
-				}
-				return true;
-			});
-			if (this.photosTimeline !== undefined) {
-				this.photosTimeline = spliter(
-					this.photos,
-					(p: App.Http.Resources.Models.PhotoResource) => p.timeline?.time_date ?? "",
-					(p: App.Http.Resources.Models.PhotoResource) => p.timeline?.format ?? "Others",
-				);
-				this.photos = merge(this.photosTimeline);
-			}
-			//Rebuild navigation links for filtered photos
-			this.rebuildNavigationLinks();
 		},
 	},
 	getters: {
@@ -159,24 +118,41 @@ export const usePhotosStore = defineStore("photos-store", {
 			return this.photos.some((p) => p.rating !== null && p.rating.rating_user > 0);
 		},
 		/**
-		 * Get filtered photos based on the current rating filter.
-		 * Returns all photos if no filter is active or no rated photos exist.
+		 * Get filtered photos based on the current rating filter or starred photos filter.
+		 * Returns all photos if no filter is active or no photos matches the filter.
 		 */
 		filteredPhotos(): App.Http.Resources.Models.PhotoResource[] {
-			if (this.photoRatingFilter === null || !this.hasRatedPhotos) {
+			if (this.photoRatingFilter === null) {
+				return this.photos;
+			}
+
+			if (this.photoRatingFilter === "starred") {
+				return this.photos.filter((p) => p.is_starred);
+			}
+
+			if (!this.hasRatedPhotos && !this.starredPhotosCount) {
 				return this.photos;
 			}
 			return this.photos.filter((p) => p.rating !== null && p.rating.rating_user >= (this.photoRatingFilter as number));
 		},
 		/**
-		 * Get filtered timeline data based on the current rating filter.
+		 * Get filtered timeline data based on the current rating filter or starred photos filter.
 		 * Returns undefined if no timeline data exists.
 		 */
 		filteredPhotosTimeline(): SplitData<App.Http.Resources.Models.PhotoResource>[] | undefined {
 			if (this.photosTimeline === undefined) {
 				return undefined;
 			}
-			if (this.photoRatingFilter === null || !this.hasRatedPhotos) {
+			if (this.photoRatingFilter === "starred") {
+				return this.photosTimeline
+					.map((group) => ({
+						...group,
+						data: group.data.filter((p) => p.is_starred),
+					}))
+					.filter((group) => group.data.length > 0);
+			}
+
+			if (this.photoRatingFilter === null || (!this.hasRatedPhotos && !this.starredPhotosCount)) {
 				return this.photosTimeline;
 			}
 			const filter = this.photoRatingFilter as number;

@@ -11,7 +11,7 @@ namespace App\Policies;
 use App\Constants\AccessPermissionConstants as APC;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\MetricsAccess;
-use App\Enum\PhotoVisibilityType;
+use App\Enum\PhotoHighlightVisibilityType;
 use App\Enum\SmartAlbumType;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\QueryBuilderException;
@@ -639,27 +639,38 @@ class AlbumPolicy extends BasePolicy
 	 *  - the user is the owner of the album
 	 *  - the user is authenticated and visibility is set to 'authenticated'
 	 *  - visibility is set to 'anonymous' and the album has public permissions
+	 *  - visibility is set to 'anonymous' and the album is shared with the user
 	 *
 	 * @param User|null     $user
 	 * @param AbstractAlbum $album the album
 	 *
 	 * @return bool
 	 */
-	public function canStar(?User $user, AbstractAlbum $album): bool
+	public function canStar(?User $user, ?AbstractAlbum $album = null): bool
 	{
 		if ($album instanceof BaseAlbum && $this->isOwner($user, $album)) {
 			return true;
 		}
 
 		$config_manager = app(ConfigManager::class);
-		$visibility = $config_manager->getValueAsEnum('photos_star_visibility', PhotoVisibilityType::class);
+		$visibility = $config_manager->getValueAsEnum('photos_star_visibility', PhotoHighlightVisibilityType::class);
 
-		if ($user !== null && $visibility === PhotoVisibilityType::AUTHENTICATED) {
+		if ($user !== null && $visibility === PhotoHighlightVisibilityType::AUTHENTICATED) {
 			return true;
 		}
 
-		if ($visibility === PhotoVisibilityType::ANONYMOUS && $album->public_permissions() !== null) {
-			return true;
+		if ($visibility === PhotoHighlightVisibilityType::ANONYMOUS) {
+			if ($album === null) {
+				return true;
+			}
+
+			if ($album->public_permissions() !== null) {
+				return true;
+			}
+
+			if ($album->current_user_permissions() !== null) {
+				return true;
+			}
 		}
 
 		return false;

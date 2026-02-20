@@ -30,7 +30,6 @@ class AlbumRightsResource extends Data
 	public bool $can_pasword_protect = false;
 	public bool $can_import_from_server = false;
 	public bool $can_make_purchasable = false;
-	public bool $can_star = false;
 
 	/**
 	 * Given an album, returns the access rights associated to it.
@@ -50,7 +49,6 @@ class AlbumRightsResource extends Data
 		$this->can_pasword_protect = !request()->configs()->getValueAsBool('cache_enabled');
 		$this->can_import_from_server = Gate::check(AlbumPolicy::CAN_IMPORT_FROM_SERVER, [AbstractAlbum::class]);
 		$this->can_make_purchasable = $this->canMakePurchasable($abstract_album);
-		$this->can_star = Gate::check(AlbumPolicy::CAN_STAR, [AbstractAlbum::class, $abstract_album]);
 	}
 
 	/**

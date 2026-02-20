@@ -70,7 +70,6 @@ declare namespace App.Enum {
 	export type DateOrderingType = "older_younger" | "younger_older";
 	export type DbDriverType = "mysql" | "pgsql" | "sqlite";
 	export type DefaultAlbumProtectionType = "private" | "public" | "inherit" | "public_hidden";
-	export type PhotoVisibilityType = "anonymous" | "authenticated";
 	export type DownloadVariantType = "LIVEPHOTOVIDEO" | "ORIGINAL" | "MEDIUM2X" | "MEDIUM" | "SMALL2X" | "SMALL" | "THUMB2X" | "THUMB";
 	export type FileStatus = "uploading" | "processing" | "ready" | "skipped" | "done" | "error";
 	export type FlowStrategy = "auto" | "opt-in";
@@ -131,6 +130,7 @@ declare namespace App.Enum {
 	export type OrderSortingType = "ASC" | "DESC";
 	export type PaginationMode = "infinite_scroll" | "load_more_button" | "page_navigation";
 	export type PaymentStatusType = "pending" | "cancelled" | "failed" | "refunded" | "processing" | "offline" | "completed" | "closed";
+	export type PhotoHighlightVisibilityType = "anonymous" | "authenticated";
 	export type PhotoLayoutType = "square" | "justified" | "masonry" | "grid";
 	export type PhotoThumbInfoType = "title" | "description";
 	export type PurchasableLicenseType = "personal" | "commercial" | "extended";
@@ -155,7 +155,9 @@ declare namespace App.Enum {
 		| "three_stars"
 		| "four_stars"
 		| "five_stars"
-		| "best_pictures";
+		| "best_pictures"
+		| "my_rated_pictures"
+		| "my_best_pictures";
 	export type StorageDiskType = "images" | "s3";
 	export type ThumbAlbumSubtitleType = "description" | "takedate" | "creation" | "oldstyle" | "num_photos" | "num_albums" | "num_photos_albums";
 	export type TimelineAlbumGranularity = "default" | "disabled" | "year" | "month" | "day";
@@ -468,7 +470,7 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		photos_infinite_scroll_threshold: number;
 		albums_infinite_scroll_threshold: number;
 		default_album_protection: App.Enum.DefaultAlbumProtectionType;
-		photos_star_visibility: App.Enum.PhotoVisibilityType;
+		photos_star_visibility: App.Enum.PhotoHighlightVisibilityType;
 	};
 	export type LandingPageResource = {
 		landing_page_enable: boolean;
@@ -935,7 +937,6 @@ declare namespace App.Http.Resources.Rights {
 		can_pasword_protect: boolean;
 		can_import_from_server: boolean;
 		can_make_purchasable: boolean;
-		can_star: boolean;
 	};
 	export type GlobalRightsResource = {
 		root_album: App.Http.Resources.Rights.RootAlbumRightsResource;
@@ -957,13 +958,13 @@ declare namespace App.Http.Resources.Rights {
 		can_edit: boolean;
 		can_download: boolean;
 		can_access_full_photo: boolean;
-		can_star: boolean;
 	};
 	export type RootAlbumRightsResource = {
 		can_edit: boolean;
 		can_upload: boolean;
 		can_see_live_metrics: boolean;
 		can_import_from_server: boolean;
+		can_star: boolean;
 	};
 	export type SettingsRightsResource = {
 		can_edit: boolean;

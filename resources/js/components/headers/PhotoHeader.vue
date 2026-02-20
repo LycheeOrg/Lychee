@@ -14,7 +14,7 @@
 			</template>
 			<template #end>
 				<Button
-					v-if="!albumStore.rights?.can_edit && albumStore.rights?.can_star"
+					v-if="!albumStore.rights?.can_edit && leftMenuStore.initData?.root_album?.can_star"
 					text
 					v-tooltip.bottom="photoStore.photo.is_starred ? $t('gallery.photo.actions.unstar') : $t('gallery.photo.actions.star')"
 					:icon="photoStore.photo.is_starred ? 'pi pi-star-fill' : 'pi pi-star'"
@@ -85,6 +85,7 @@ import { useLycheeStateStore } from "@/stores/LycheeState";
 import GoBack from "./GoBack.vue";
 import { usePhotoStore } from "@/stores/PhotoState";
 import { useAlbumStore } from "@/stores/AlbumState";
+import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
 
 const emits = defineEmits<{
 	toggleDetails: [];
@@ -100,6 +101,7 @@ const togglableStore = useTogglablesStateStore();
 const { is_full_screen, is_photo_edit_open, are_details_open, is_slideshow_active } = storeToRefs(togglableStore);
 const isDownloadOpen = ref(false);
 const lycheeStore = useLycheeStateStore();
+const leftMenuStore = useLeftMenuStateStore();
 const { is_exif_disabled, is_slideshow_enabled } = storeToRefs(lycheeStore);
 
 function openInNewTab(url: string) {

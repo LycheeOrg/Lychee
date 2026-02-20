@@ -27,7 +27,6 @@ export function usePhotoActions(photoStore: PhotoStore, albumId: Ref<string | un
 			if (photoIndex !== -1) {
 				photosStore.photos[photoIndex].is_starred = newStarValue;
 			}
-			photosStore.performFilter();
 
 			AlbumService.clearCache(albumId.value);
 		});

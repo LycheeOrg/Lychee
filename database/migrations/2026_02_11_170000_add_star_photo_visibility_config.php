@@ -6,10 +6,9 @@
  * Copyright (c) 2018-2026 LycheeOrg.
  */
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\DB;
+use App\Models\Extensions\BaseConfigMigration;
 
-return new class() extends Migration {
+return new class() extends BaseConfigMigration {
 	public const GALLERY = 'Gallery';
 	public const VALUES = 'anonymous|authenticated';
 
@@ -33,26 +32,5 @@ return new class() extends Migration {
 				'level' => 2,
 			],
 		];
-	}
-
-	/**
-	 * Run the migrations.
-	 *
-	 *  @codeCoverageIgnore Tested but before CI run...
-	 */
-	final public function up(): void
-	{
-		DB::table('configs')->insert($this->getConfigs());
-	}
-
-	/**
-	 * Reverse the migrations.
-	 *
-	 * @codeCoverageIgnore Tested but after CI run...
-	 */
-	final public function down(): void
-	{
-		$keys = collect($this->getConfigs())->map(fn ($v) => $v['key'])->all();
-		DB::table('configs')->whereIn('key', $keys)->delete();
 	}
 };

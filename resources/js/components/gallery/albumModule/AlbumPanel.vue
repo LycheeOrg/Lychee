@@ -244,7 +244,6 @@ const photoCallbacks = {
 				photo.is_starred = true;
 			}
 		});
-		photosStore.performFilter();
 		AlbumService.clearCache(albumStore.album?.id);
 	},
 	unstar: () => {
@@ -256,7 +255,6 @@ const photoCallbacks = {
 				photo.is_starred = false;
 			}
 		});
-		photosStore.performFilter();
 		AlbumService.clearCache(albumStore.album?.id);
 	},
 	setAsCover: () => {
@@ -337,10 +335,10 @@ const albumCallbacks = {
 		if (!albumStore.album?.id) return;
 		if (albumStore.showStarredOnly) {
 			albumStore.setShowStarredOnly(false);
-			photosStore.filterPhotos(null);
+			photosStore.setPhotoRatingFilter(null);
 		} else {
 			albumStore.setShowStarredOnly(true);
-			photosStore.filterPhotos({ is_starred: true });
+			photosStore.setPhotoRatingFilter("starred");
 		}
 
 		unselect();
