@@ -653,7 +653,7 @@ class AlbumPolicy extends BasePolicy
 	 */
 	public function canStar(?User $user, ?AbstractAlbum $album = null): bool
 	{
-		if ($album instanceof BaseAlbum && $this->canEdit($user, $album)) {
+		if ($album instanceof BaseAlbum && $user !== null && $this->canEdit($user, $album)) {
 			return true;
 		}
 
