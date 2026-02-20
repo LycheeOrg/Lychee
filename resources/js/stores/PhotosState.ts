@@ -61,9 +61,6 @@ export const usePhotosStore = defineStore("photos-store", {
 		 * Without this fix, navigating between photos would break at page boundaries.
 		 */
 		appendPhotos(photos: App.Http.Resources.Models.PhotoResource[], isTimeline: boolean) {
-			// Simply append photos to the existing array
-			this.photos = [...this.photos, ...photos];
-
 			if (isTimeline) {
 				// Append new photos to timeline and re-merge
 				const newTimelinePhotos = spliter(
@@ -91,6 +88,7 @@ export const usePhotosStore = defineStore("photos-store", {
 			} else {
 				// Remember where the old photos end so we can fix the boundary link
 				const oldPhotoCount = this.photos.length;
+				// Simply append photos to the existing array
 				this.photos = [...this.photos, ...photos];
 
 				// Fix navigation links at the boundary between old and new photos
