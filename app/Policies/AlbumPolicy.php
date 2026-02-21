@@ -628,14 +628,14 @@ class AlbumPolicy extends BasePolicy
 	 *
 	 * @return bool
 	 */
-	public function canStar(?User $user, AbstractAlbum $album): bool
+	public function canStar(?User $user, ?AbstractAlbum $album): bool
 	{
 		if ($album !== null) {
 			throw new LycheeLogicException('The canStar method of AlbumPolicy is only used for the global definition and should not be used to validate whether an album is starrable or not.');
 		}
 
 		$config_manager = app(ConfigManager::class);
-		$visibility = $config_manager->getValueAsEnum('albums_star_visibility', PhotoHighlightVisibilityType::class);
+		$visibility = $config_manager->getValueAsEnum('photos_star_visibility', PhotoHighlightVisibilityType::class);
 
 		return match ($visibility) {
 			PhotoHighlightVisibilityType::ANONYMOUS => true,
