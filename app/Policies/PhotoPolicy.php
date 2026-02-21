@@ -10,6 +10,7 @@ namespace App\Policies;
 
 use App\Constants\PhotoAlbum as PA;
 use App\Enum\MetricsAccess;
+use App\Enum\PhotoHighlightVisibilityType;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\QueryBuilderException;
@@ -24,7 +25,6 @@ class PhotoPolicy extends BasePolicy
 {
 	public const CAN_SEE = 'canSee';
 	public const CAN_DOWNLOAD = 'canDownload';
-	// public const CAN_DELETE = 'canDelete';
 	public const CAN_EDIT = 'canEdit';
 	public const CAN_EDIT_ID = 'canEditById';
 	public const CAN_ACCESS_FULL_PHOTO = 'canAccessFullPhoto';
@@ -175,25 +175,6 @@ class PhotoPolicy extends BasePolicy
 	}
 
 	/**
-	 * Checks whether the photo is deletable le by the current user.
-	 *
-	 * @param Photo $photo
-	 *
-	 * @return bool
-	 */
-	// public function canDelete(User $user, Photo $photo)
-	// {
-	// 	if ($this->isOwner($user, $photo)) {
-	// 		return true;
-	// 	}
-
-	// 	// TODO: refactor me.
-	// 	throw new UnauthorizedException('You are not allowed to delete this photo (yet).');
-
-	// 	return $this->canSee($user, $photo) && $this->album_policy->canDelete($user, $photo->album);
-	// }
-
-	/**
 	 * Checks whether the designated photos are deletable by the current user.
 	 *
 	 * @param User     $user
@@ -284,12 +265,14 @@ class PhotoPolicy extends BasePolicy
 	 *
 	 * A photo is called _starred_ if the current user is allowed to star
 	 * the photo.
-	 * A photo is _starred_ if any of the following conditions hold
+	 * A photo can be _starred_ if any of the following conditions hold
 	 * (OR-clause)
 	 *
-	 *  - the user is an admin
-	 *  - the user is the owner of the photo
-	 *  - the user is neither, but settings are allowing for anonymous users to star photos
+	 * - the settings is set to allow anonymous users to star photos
+	 * - the settings is set to allow authenticated users to star photos and the user is authenticated
+	 * - the settings is set to allow editors to star photos and the user is an editor
+	 * - the user is the owner of the photo (checked via canEdit method)
+	 * - the user is admin (checked by before method)
 	 *
 	 * @param User|null $user
 	 * @param Photo     $photo
@@ -298,15 +281,15 @@ class PhotoPolicy extends BasePolicy
 	 */
 	public function canStar(?User $user, Photo $photo): bool
 	{
-		if ($user !== null && $this->canEdit($user, $photo)) {
-			return true;
-		}
+		$config_manager = app(ConfigManager::class);
+		$visibility = $config_manager->getValueAsEnum('photos_star_visibility', PhotoHighlightVisibilityType::class);
 
-		if ($this->hasAlbums($photo)) {
-			return $this->reduction($photo->albums, fn ($a) => $this->album_policy->canStar($user, $a));
-		}
-
-		return $this->album_policy->canStar($user, null);
+		return match ($visibility) {
+			PhotoHighlightVisibilityType::ANONYMOUS => true,
+			PhotoHighlightVisibilityType::AUTHENTICATED => $user !== null,
+			PhotoHighlightVisibilityType::EDITOR => $user !== null && $this->canEdit($user, $photo),
+			default => false,
+		};
 	}
 
 	/**

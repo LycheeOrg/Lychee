@@ -14,6 +14,7 @@ use App\Enum\MetricsAccess;
 use App\Enum\PhotoHighlightVisibilityType;
 use App\Enum\SmartAlbumType;
 use App\Exceptions\ConfigurationKeyMissingException;
+use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\AccessPermission;
 use App\Models\Album;
@@ -619,6 +620,31 @@ class AlbumPolicy extends BasePolicy
 	}
 
 	/**
+	 * This is only used for the global defition and should not be used to validate whether an album is
+	 * starrable or not.
+	 *
+	 * @param User|null     $user
+	 * @param AbstractAlbum $album
+	 *
+	 * @return bool
+	 */
+	public function canStar(?User $user, AbstractAlbum $album): bool
+	{
+		if ($album !== null) {
+			throw new LycheeLogicException('The canStar method of AlbumPolicy is only used for the global definition and should not be used to validate whether an album is starrable or not.');
+		}
+
+		$config_manager = app(ConfigManager::class);
+		$visibility = $config_manager->getValueAsEnum('albums_star_visibility', PhotoHighlightVisibilityType::class);
+
+		return match ($visibility) {
+			PhotoHighlightVisibilityType::ANONYMOUS => true,
+			PhotoHighlightVisibilityType::AUTHENTICATED => $user !== null,
+			default => false, // This is the editor case, this is taken over directly by the canEdit in the front-end.
+		};
+	}
+
+	/**
 	 * Check whether the user can make the album purchasable.
 	 * Only admins can do that, so we return false here.
 	 * Admin case is handled by the before() method in BasePolicy.
@@ -629,51 +655,6 @@ class AlbumPolicy extends BasePolicy
 	 */
 	public function canMakePurchasable(User $user): bool
 	{
-		return false;
-	}
-
-	/**
-	 * Checks whether the photos in the album can be starred by the current user.
-	 *
-	 * An album is called _starable_ if the current user is allowed to star
-	 * the album's photos.
-	 * An album is _starable_ if any of the following conditions hold
-	 * (OR-clause)
-	 *
-	 *  - the user is an admin
-	 *  - the user is the owner of the album
-	 *  - the user is authenticated and visibility is set to 'authenticated'
-	 *  - visibility is set to 'anonymous' and the album has public permissions
-	 *  - visibility is set to 'anonymous' and the album is shared with the user
-	 *
-	 * @param User|null     $user
-	 * @param AbstractAlbum $album the album
-	 *
-	 * @return bool
-	 */
-	public function canStar(?User $user, ?AbstractAlbum $album = null): bool
-	{
-		if ($album instanceof BaseAlbum && $user !== null && $this->canEdit($user, $album)) {
-			return true;
-		}
-
-		$config_manager = app(ConfigManager::class);
-		$visibility = $config_manager->getValueAsEnum('photos_star_visibility', PhotoHighlightVisibilityType::class);
-
-		if ($user !== null && $visibility === PhotoHighlightVisibilityType::AUTHENTICATED) {
-			return true;
-		}
-
-		if ($visibility === PhotoHighlightVisibilityType::ANONYMOUS) {
-			if ($album === null) {
-				return true;
-			}
-
-			if ($album->public_permissions() !== null) {
-				return true;
-			}
-		}
-
 		return false;
 	}
 }

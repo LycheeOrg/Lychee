@@ -49,7 +49,6 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		number_albums_per_row_mobile: 3 as 1 | 2 | 3,
 		photo_thumb_info: "title" as App.Enum.PhotoThumbInfoType,
 		is_photo_thumb_tags_enabled: false,
-		photos_star_visibility: "authenticated" as App.Enum.PhotoHighlightVisibilityType,
 
 		// Download settings
 		is_thumb_download_enabled: false,
@@ -208,7 +207,6 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 
 					this.default_homepage = data.default_homepage;
 					this.is_timeline_page_enabled = data.is_timeline_page_enabled;
-					this.photos_star_visibility = data.photos_star_visibility;
 
 					this.photos_pagination_mode = data.photos_pagination_mode;
 					this.albums_pagination_mode = data.albums_pagination_mode;

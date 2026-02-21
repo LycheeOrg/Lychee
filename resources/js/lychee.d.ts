@@ -130,7 +130,7 @@ declare namespace App.Enum {
 	export type OrderSortingType = "ASC" | "DESC";
 	export type PaginationMode = "infinite_scroll" | "load_more_button" | "page_navigation";
 	export type PaymentStatusType = "pending" | "cancelled" | "failed" | "refunded" | "processing" | "offline" | "completed" | "closed";
-	export type PhotoHighlightVisibilityType = "anonymous" | "authenticated";
+	export type PhotoHighlightVisibilityType = "anonymous" | "authenticated" | "editor";
 	export type PhotoLayoutType = "square" | "justified" | "masonry" | "grid";
 	export type PhotoThumbInfoType = "title" | "description";
 	export type PurchasableLicenseType = "personal" | "commercial" | "extended";

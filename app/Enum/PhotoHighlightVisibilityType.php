@@ -17,4 +17,5 @@ enum PhotoHighlightVisibilityType: string
 {
 	case ANONYMOUS = 'anonymous';
 	case AUTHENTICATED = 'authenticated';
+	case EDITOR = 'editor';
 }

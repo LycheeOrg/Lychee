@@ -10,7 +10,7 @@ use App\Models\Extensions\BaseConfigMigration;
 
 return new class() extends BaseConfigMigration {
 	public const GALLERY = 'Gallery';
-	public const VALUES = 'anonymous|authenticated';
+	public const VALUES = 'anonymous|authenticated|editor';
 
 	/**
 	 * @return array<int,array{key:string,value:string,is_secret:bool,cat:string,type_range:string,description:string,order?:int,not_on_docker?:bool,is_expert?:bool,level?:int}>
@@ -20,7 +20,7 @@ return new class() extends BaseConfigMigration {
 		return [
 			[
 				'key' => 'photos_star_visibility',
-				'value' => 'authenticated',
+				'value' => 'editor',
 				'cat' => self::GALLERY,
 				'type_range' => self::VALUES,
 				'description' => 'Who can see and star photos.',

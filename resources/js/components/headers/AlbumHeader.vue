@@ -17,9 +17,7 @@
 
 		<template #end>
 			<Button
-				v-if="
-					is_se_enabled && (photos_star_visibility === 'anonymous' || (photos_star_visibility === 'authenticated' && userStore.isLoggedIn))
-				"
+				v-if="is_se_enabled && (albumsStore.rootRights?.can_star || albumStore.album.rights?.can_edit)"
 				v-tooltip.bottom="$t('gallery.album.show_starred')"
 				:icon="albumStore.showStarredOnly ? 'pi pi-star-fill' : 'pi pi-star'"
 				:label="String(photosStore.starredPhotosCount)"
@@ -103,18 +101,18 @@ import GoBack from "./GoBack.vue";
 import { onMounted } from "vue";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { useOrderManagementStore } from "@/stores/OrderManagement";
-import { useUserStore } from "@/stores/UserState";
 import { usePhotosStore } from "@/stores/PhotosState";
+import { useAlbumsStore } from "@/stores/AlbumsState";
 
 const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
 const favourites = useFavouriteStore();
 const albumStore = useAlbumStore();
 const orderManagementStore = useOrderManagementStore();
-const userStore = useUserStore();
 const photosStore = usePhotosStore();
+const albumsStore = useAlbumsStore();
 
-const { dropbox_api_key, is_favourite_enabled, photos_star_visibility, is_se_enabled } = storeToRefs(lycheeStore);
+const { dropbox_api_key, is_favourite_enabled, is_se_enabled } = storeToRefs(lycheeStore);
 const { is_album_edit_open, is_full_screen } = storeToRefs(togglableStore);
 
 const { toggleCreateAlbum, toggleImportFromLink, toggleImportFromDropbox, toggleUpload, toggleImportFromServer } = useGalleryModals(togglableStore);

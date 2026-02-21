@@ -85,10 +85,7 @@
 		<!-- TODO: make me an option. -->
 		<div class="badges absolute -mt-px ltr:ml-1 rtl:mr-1 top-0 ltr:left-0 rtl:right-0 flex">
 			<ThumbBadge
-				v-if="
-					(photos_star_visibility === 'anonymous' || (photos_star_visibility === 'authenticated' && userStore.isLoggedIn)) &&
-					props.photo.is_starred
-				"
+				v-if="(albumsStore.rootRights?.can_star || albumStore.rights?.can_edit) && props.photo.is_starred"
 				class="bg-yellow-500"
 				icon="star"
 			/>
@@ -114,6 +111,8 @@ import { usePhotoRoute } from "@/composables/photo/photoRoute";
 import ThumbBuyMe from "./ThumbBuyMe.vue";
 import { useOrderManagementStore } from "@/stores/OrderManagement";
 import { useUserStore } from "@/stores/UserState";
+import { useAlbumsStore } from "@/stores/AlbumsState";
+import { useAlbumStore } from "@/stores/AlbumState";
 
 const { getNoImageIcon, getPlayIcon } = useImageHelpers();
 
@@ -135,14 +134,10 @@ const userStore = useUserStore();
 const favourites = useFavouriteStore();
 const lycheeStore = useLycheeStateStore();
 const orderStore = useOrderManagementStore();
-const {
-	is_favourite_enabled,
-	display_thumb_photo_overlay,
-	photo_thumb_info,
-	is_photo_thumb_tags_enabled,
-	rating_album_view_mode,
-	photos_star_visibility,
-} = storeToRefs(lycheeStore);
+const albumsStore = useAlbumsStore();
+const albumStore = useAlbumStore();
+const { is_favourite_enabled, display_thumb_photo_overlay, photo_thumb_info, is_photo_thumb_tags_enabled, rating_album_view_mode } =
+	storeToRefs(lycheeStore);
 const srcPlay = ref(getPlayIcon());
 const srcNoImage = ref(getNoImageIcon());
 const isImageLoaded = ref(false);
