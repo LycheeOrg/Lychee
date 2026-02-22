@@ -1,7 +1,7 @@
 <template>
 	<div
 		v-if="albumStore.album && albumStore.album.preFormattedData.url"
-		:class="['w-full', album_header_size == 'half_screen' ? 'h-1/2' : 'h-full', 'relative', album_header_size]"
+		:class="['w-full', album_header_size === 'half_screen' ? 'h-1/2' : 'h-full', 'relative', album_header_size]"
 	>
 		<template v-if="!is_album_enhanced_display_enabled">
 			<img class="absolute block top-0 left-0 w-full h-full object-cover object-center z-0" :src="albumStore.album.preFormattedData.url" />
@@ -78,7 +78,7 @@
 						<i :class="['pi', 'pi-chevron-right']" />
 					</button>
 					<div
-						v-if="mode == 'edit'"
+						v-if="mode === 'edit'"
 						class="bg-(--p-toolbar-background)/60 text-white rounded-lg p-1 flex flex-row grow relative left-1/2 -translate-x-1/2 absolute top-5 -translate-y-1/2 z-10 w-70"
 					>
 						<HeaderEditButton @setPosition="setPosition('top-left')" :position="'top-left'" />
@@ -185,9 +185,9 @@ const POSITION_ENUMS: Record<string, App.Enum.AlbumTitlePosition> = {
 	center: "center",
 };
 
-let selectedColorIndex = ref(0);
-let position = ref<keyof typeof POSITION_CLASSES>("top-left");
-let mode = ref("normal");
+const selectedColorIndex = ref(0);
+const position = ref<keyof typeof POSITION_CLASSES>("top-left");
+const mode = ref("normal");
 const positionClasses = computed(() => POSITION_CLASSES[position.value]);
 
 const isFocusPickerVisible = ref(false);

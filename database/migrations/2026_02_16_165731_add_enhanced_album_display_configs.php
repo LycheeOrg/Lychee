@@ -6,8 +6,7 @@
  * Copyright (c) 2018-2026 LycheeOrg.
  */
 
-use App\Migrations\BaseConfigMigration;
-use Illuminate\Support\Facades\DB;
+use App\Models\Extensions\BaseConfigMigration;
 
 return new class() extends BaseConfigMigration {
 	public const BOOL = '0|1';

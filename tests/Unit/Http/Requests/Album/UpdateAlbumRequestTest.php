@@ -79,7 +79,6 @@ class UpdateAlbumRequestTest extends BaseRequestTest
 			RequestAttribute::ALBUM_PHOTO_LAYOUT => PhotoLayoutType::JUSTIFIED->value,
 			RequestAttribute::COPYRIGHT_ATTRIBUTE => 'Copyright (c) 2017-2018 Tobias Reich',
 			RequestAttribute::ALBUM_TIMELINE_ALBUM => TimelineAlbumGranularity::DEFAULT->value,
-			RequestAttribute::ALBUM_TIMELINE_ALBUM => TimelineAlbumGranularity::DEFAULT->value,
 			RequestAttribute::ALBUM_TIMELINE_PHOTO => TimelineAlbumGranularity::DAY->value,
 			RequestAttribute::ALBUM_TITLE_COLOR_ATTRIBUTE => AlbumTitleColor::WHITE->value,
 			RequestAttribute::ALBUM_TITLE_POSITION_ATTRIBUTE => AlbumTitlePosition::TOP_LEFT->value,

@@ -182,7 +182,6 @@ class Album extends BaseAlbum implements Node
 		'min_taken_at' => null,
 		'num_children' => 0,
 		'num_photos' => 0,
-		'num_photos' => 0,
 		'header_photo_focus' => null,
 		'auto_cover_id_max_privilege' => null,
 		'auto_cover_id_least_privilege' => null,

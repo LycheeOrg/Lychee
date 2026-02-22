@@ -140,7 +140,7 @@
 							</Select>
 							<label for="header">{{ $t("gallery.album.properties.header") }}</label>
 						</FloatLabel>
-						<FloatLabel variant="on" v-if="header_id && header_id.id != 'compact'">
+						<FloatLabel variant="on" v-if="header_id && header_id.id !== 'compact'">
 							<Select
 								label-id="albumCoverTitleStyle"
 								v-model="albumCoverTitleStyle"
@@ -162,7 +162,7 @@
 							</Select>
 							<label for="albumCoverTitleStyle">{{ $t("gallery.album.title.style") }}</label>
 						</FloatLabel>
-						<FloatLabel variant="on" v-if="header_id && header_id.id != 'compact'">
+						<FloatLabel variant="on" v-if="header_id && header_id.id !== 'compact'">
 							<Select
 								label-id="albumCoverTitlePosition"
 								v-model="albumCoverTitlePosition"
@@ -500,6 +500,7 @@ function saveAlbum() {
 		is_pinned: albumStore.tagOrModelAlbum?.editable?.is_pinned ?? false,
 		title_color: albumCoverTitleStyle.value?.value ?? null,
 		title_position: albumCoverTitlePosition.value?.value ?? null,
+		header_photo_focus: albumStore.tagOrModelAlbum?.editable?.header_photo_focus ?? null,
 	};
 	AlbumService.updateAlbum(data).then(() => {
 		toast.add({ severity: "success", summary: trans("toasts.success"), life: 3000 });
