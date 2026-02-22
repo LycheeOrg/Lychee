@@ -10,6 +10,10 @@ return [
     'pinned_albums' => 'آلبوم‌های سنجاق‌شده',
     'albums' => 'آلبوم‌ها',
     'root' => 'آلبوم‌ها',
+    'set_focus' => 'Set Focus',
+    'set_header_focus' => 'Set Header Focus',
+    'done' => 'Done',
+    'cancel' => 'Cancel',
     'tabs' => [
         'my_albums' => 'My Albums',
         'shared_with_me' => 'Shared with Me',
@@ -116,6 +120,9 @@ return [
             'share' => 'اشتراک‌گذاری آلبوم',
             'embed' => 'Embed Album',
             'stats_only_se' => 'آمار فقط در نسخه حامیان در دسترس است',
+            'edit' => 'Edit',
+            'save' => 'Save',
+            'open_gallery' => 'Open gallery',
         ],
         'stats' => [
             'number_of_visits' => 'تعداد بازدیدها',
@@ -145,6 +152,26 @@ return [
             'show_tags' => 'تنظیم برچسب‌های قابل نمایش',
             'tags_required' => 'برچسب‌ها الزامی هستند.',
             'all_tags_must_match' => 'همه برچسب‌ها باید مطابقت داشته باشند.',
+        ],
+        'title' => [
+            'style' => 'Style',
+            'position' => 'Position',
+            'position_options' => [
+                 'top_left' => 'Top Left',
+                 'top_right' => 'Top Right',
+                 'center' => 'Center',
+                 'bottom_left' => 'Bottom Left',
+                 'bottom_right' => 'Bottom Right',
+            ],
+            'style_options' => [
+                 'white' => 'White',
+                 'black' => 'Black',
+                 'color_1' => 'Color 1',
+                 'color_2' => 'Color 2',
+                 'color_3' => 'Color 3',
+                 'color_4' => 'Color 4',
+                 'color_5' => 'Color 5',
+            ],
         ],
     ],
     'photo' => [

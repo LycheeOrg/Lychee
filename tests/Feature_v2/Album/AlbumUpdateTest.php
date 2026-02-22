@@ -41,6 +41,9 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 			'header_id' => null,
 			'album_timeline' => null,
 			'photo_timeline' => null,
+			'header_photo_focus' => null,
+			'title_color' => 'white',
+			'title_position' => 'top_left',
 		]);
 		$this->assertUnauthorized($response);
 
@@ -61,6 +64,9 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 			'header_id' => null,
 			'album_timeline' => null,
 			'photo_timeline' => null,
+			'header_photo_focus' => null,
+			'title_color' => 'white',
+			'title_position' => 'top_left',
 		]);
 		$this->assertForbidden($response);
 	}
@@ -84,6 +90,9 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 			'header_id' => null,
 			'album_timeline' => null,
 			'photo_timeline' => null,
+			'header_photo_focus' => null,
+			'title_color' => 'white',
+			'title_position' => 'top_left',
 		]);
 		$this->assertOk($response);
 	}
@@ -181,6 +190,9 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 			'header_id' => null,
 			'album_timeline' => null,
 			'photo_timeline' => null,
+			'header_photo_focus' => null,
+			'title_color' => 'white',
+			'title_position' => 'top_left',
 		]);
 		$this->assertOk($response);
 
@@ -228,6 +240,9 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 			'header_id' => null,
 			'album_timeline' => null,
 			'photo_timeline' => null,
+			'header_photo_focus' => null,
+			'title_color' => 'white',
+			'title_position' => 'top_left',
 		]);
 		$this->assertOk($response);
 
@@ -278,6 +293,9 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 			'header_id' => null,
 			'album_timeline' => null,
 			'photo_timeline' => null,
+			'header_photo_focus' => null,
+			'title_color' => 'white',
+			'title_position' => 'top_left',
 		]);
 		$this->assertUnauthorized($response);
 
@@ -315,6 +333,9 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 			'header_id' => null,
 			'album_timeline' => null,
 			'photo_timeline' => null,
+			'header_photo_focus' => null,
+			'title_color' => 'white',
+			'title_position' => 'top_left',
 		]);
 		$this->assertForbidden($response);
 

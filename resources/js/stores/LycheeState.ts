@@ -50,6 +50,10 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		photo_thumb_info: "title" as App.Enum.PhotoThumbInfoType,
 		is_photo_thumb_tags_enabled: false,
 
+		// Enhanced Album Display
+		is_album_enhanced_display_enabled: false,
+		album_header_size: "half_screen" as App.Enum.AlbumHeaderSize,
+
 		// Download settings
 		is_thumb_download_enabled: false,
 		is_thum2x_download_enabled: false,
@@ -154,6 +158,9 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.album_subtitle_type = data.album_subtitle_type;
 					this.album_decoration = data.album_decoration;
 					this.album_decoration_orientation = data.album_decoration_orientation;
+
+					this.is_album_enhanced_display_enabled = data.is_album_enhanced_display_enabled;
+					this.album_header_size = data.album_header_size;
 
 					this.clockwork_url = data.clockwork_url;
 

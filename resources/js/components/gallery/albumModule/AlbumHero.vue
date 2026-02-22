@@ -1,14 +1,14 @@
 <template>
-	<div v-if="albumStore.album && albumStore.album.preFormattedData.url" class="w-full h-1/2 relative">
-		<img class="absolute block top-0 left-0 w-full h-full object-cover object-center z-0" :src="albumStore.album.preFormattedData.url" />
-		<div class="h-full ltr:pl-7 rtl:pr-7 pt-7 relative text-shadow-sm w-full bg-linear-to-b from-black/20 via-80%">
-			<h1 class="font-bold text-4xl text-surface-0">{{ albumStore.album.title }}</h1>
-			<span v-if="albumStore.album.preFormattedData.min_max_text" class="text-surface-200 text-sm">
-				{{ albumStore.album.preFormattedData.min_max_text }}
-			</span>
-		</div>
-	</div>
-	<Card class="w-full" v-if="albumStore.album">
+	<AlbumHeaderPanel
+		v-if="albumStore.album && albumStore.album.preFormattedData.url"
+		:album="albumStore.album"
+		@scroll-to-pictures="emits('scrollToPictures')"
+	/>
+	<Card
+		class="w-full"
+		v-if="albumStore.album"
+		:class="{ '-mt-24 z-10 relative bg-color: var(--p-panel-header-background);': album_header_size !== 'half_screen' }"
+	>
 		<template #content>
 			<div class="w-full flex flex-row-reverse items-start">
 				<div class="order-1 flex flex-col w-full">
@@ -165,6 +165,7 @@ import { trans } from "laravel-vue-i18n";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { usePhotosStore } from "@/stores/PhotosState";
 import { useAlbumsStore } from "@/stores/AlbumsState";
+import AlbumHeaderPanel from "./AlbumHeaderPanel.vue";
 
 const toast = useToast();
 const userStore = useUserStore();
@@ -174,7 +175,7 @@ const albumStore = useAlbumStore();
 const albumsStore = useAlbumsStore();
 const photosStore = usePhotosStore();
 
-const { is_se_enabled, is_se_preview_enabled, are_nsfw_visible, is_slideshow_enabled } = storeToRefs(lycheeStore);
+const { is_se_enabled, is_se_preview_enabled, are_nsfw_visible, is_slideshow_enabled, album_header_size } = storeToRefs(lycheeStore);
 
 function toggleAlbumView(mode: "grid" | "list") {
 	lycheeStore.album_view_mode = mode;
@@ -220,6 +221,7 @@ const emits = defineEmits<{
 	openStatistics: [];
 	toggleSlideShow: [];
 	openEmbedCode: [];
+	scrollToPictures: [];
 }>();
 
 // Check if album is embeddable (public, no password, no link requirement)

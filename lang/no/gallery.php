@@ -11,6 +11,10 @@ return [
     'pinned_albums' => 'Festede album',
     'albums' => 'Album',
     'root' => 'Album',
+    'set_focus' => 'Set Focus',
+    'set_header_focus' => 'Set Header Focus',
+    'done' => 'Done',
+    'cancel' => 'Cancel',
     'tabs' => [
         'my_albums' => 'My Albums',
         'shared_with_me' => 'Shared with Me',
@@ -117,6 +121,9 @@ return [
             'share' => 'Del Album',
             'embed' => 'Embed Album',
             'stats_only_se' => 'Statistikk tilgjengelig i Supporter Edition',
+            'edit' => 'Edit',
+            'save' => 'Save',
+            'open_gallery' => 'Open gallery',
         ],
         'stats' => [
             'number_of_visits' => 'Antall besøk',
@@ -146,6 +153,26 @@ return [
             'show_tags' => 'Set tags to show',
             'tags_required' => 'Tagger er obligatoriske.',
             'all_tags_must_match' => 'Alle taggene må samsvare.',
+        ],
+        'title' => [
+            'style' => 'Style',
+            'position' => 'Position',
+            'position_options' => [
+                 'top_left' => 'Top Left',
+                 'top_right' => 'Top Right',
+                 'center' => 'Center',
+                 'bottom_left' => 'Bottom Left',
+                 'bottom_right' => 'Bottom Right',
+            ],
+            'style_options' => [
+                 'white' => 'White',
+                 'black' => 'Black',
+                 'color_1' => 'Color 1',
+                 'color_2' => 'Color 2',
+                 'color_3' => 'Color 3',
+                 'color_4' => 'Color 4',
+                 'color_5' => 'Color 5',
+            ],
         ],
     ],
     'photo' => [

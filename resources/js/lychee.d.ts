@@ -15,7 +15,10 @@ declare namespace App.DTO {
 declare namespace App.Enum {
 	export type AlbumDecorationOrientation = "row" | "row-reverse" | "column" | "column-reverse";
 	export type AlbumDecorationType = "none" | "layers" | "album" | "photo" | "all";
+	export type AlbumHeaderSize = "half_screen" | "full_screen";
 	export type AlbumLayoutType = "list" | "grid";
+	export type AlbumTitleColor = "white" | "black" | "color1" | "color2" | "color3" | "color4" | "color5";
+	export type AlbumTitlePosition = "top_left" | "top_right" | "bottom_left" | "bottom_right" | "center";
 	export type AspectRatioCSSType = "aspect-5x4" | "aspect-4x5" | "aspect-3x2" | "aspect-square" | "aspect-2x3" | "aspect-video";
 	export type AspectRatioType = "5/4" | "3/2" | "1/1" | "2/3" | "4/5" | "16/9";
 	export type CacheTag = "gallery" | "auth" | "user" | "settings" | "statistics" | "users";
@@ -291,6 +294,9 @@ declare namespace App.Http.Resources.Editable {
 		cover_id: string | null;
 		album_timeline: App.Enum.TimelineAlbumGranularity | null;
 		photo_timeline: App.Enum.TimelinePhotoGranularity | null;
+		title_color: App.Enum.AlbumTitleColor | null;
+		title_position: App.Enum.AlbumTitlePosition | null;
+		header_photo_focus: { x: number; y: number } | null;
 		tags: Array<string>;
 		is_and: boolean;
 		is_model_album: boolean;
@@ -470,6 +476,8 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		photos_infinite_scroll_threshold: number;
 		albums_infinite_scroll_threshold: number;
 		default_album_protection: App.Enum.DefaultAlbumProtectionType;
+		is_album_enhanced_display_enabled: boolean;
+		album_header_size: App.Enum.AlbumHeaderSize;
 		photos_star_visibility: App.Enum.PhotoHighlightVisibilityType;
 	};
 	export type LandingPageResource = {
@@ -885,6 +893,7 @@ declare namespace App.Http.Resources.Models.Utils {
 		created_at: string | null;
 		description: string | null;
 		copyright: string | null;
+		palette: Array<any> | null;
 	};
 	export type PreformattedPhotoData = {
 		created_at: string;

@@ -102,7 +102,7 @@ class Tag extends Model
 
 		if (count($missing_tags) > 0) {
 			// Create missing tags
-			self::insert(array_map(fn ($name) => ['name' => $name], $missing_tags));
+			self::insertOrIgnore(array_map(fn ($name) => ['name' => $name], $missing_tags));
 			$existing_tags = $existing_tags->merge(self::whereIn('name', $missing_tags)->get());
 		}
 

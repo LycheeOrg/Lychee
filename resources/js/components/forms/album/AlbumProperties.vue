@@ -19,7 +19,7 @@
 						<Select
 							label-id="photoSortingColumn"
 							v-model="photoSortingColumn"
-							class="w-56 border-none"
+							class="w-62 border-none"
 							:options="photoSortingColumnsOptions"
 							option-label="label"
 							show-clear
@@ -41,7 +41,7 @@
 						<Select
 							label-id="photoSortingOrder"
 							v-model="photoSortingOrder"
-							class="w-56 border-none"
+							class="w-62 border-none"
 							:options="sortingOrdersOptions"
 							option-label="label"
 							show-clear
@@ -66,7 +66,7 @@
 							<Select
 								label-id="albumSortingColumn"
 								v-model="albumSortingColumn"
-								class="w-56 border-none"
+								class="w-62 border-none"
 								:options="albumSortingColumnsOptions"
 								option-label="label"
 								show-clear
@@ -88,7 +88,7 @@
 							<Select
 								label-id="albumSortingOrder"
 								v-model="albumSortingOrder"
-								class="w-56 border-none"
+								class="w-62 border-none"
 								:options="sortingOrdersOptions"
 								option-label="label"
 								show-clear
@@ -107,12 +107,12 @@
 							<label for="albumSortingOrder">{{ $t("gallery.album.properties.asc/desc") }}</label>
 						</FloatLabel>
 					</div>
-					<div class="h-10 my-2">
+					<div class="h-10 my-2 flex">
 						<FloatLabel variant="on">
 							<Select
 								label-id="header"
 								v-model="header_id"
-								class="w-72 border-none"
+								class="w-90 border-none"
 								:options="headersOptions"
 								option-label="title"
 								show-clear
@@ -139,6 +139,50 @@
 								</template>
 							</Select>
 							<label for="header">{{ $t("gallery.album.properties.header") }}</label>
+						</FloatLabel>
+						<FloatLabel variant="on" v-if="header_id && header_id.id !== 'compact'">
+							<Select
+								label-id="albumCoverTitleStyle"
+								v-model="albumCoverTitleStyle"
+								class="w-62 border-none"
+								:options="albumCoverTitleStyleOptions"
+								option-label="label"
+								show-clear
+							>
+								<template #value="slotProps">
+									<div v-if="slotProps.value" class="flex items-center">
+										<div>{{ $t(slotProps.value.label) }}</div>
+									</div>
+								</template>
+								<template #option="slotProps">
+									<div class="flex items-center">
+										<div>{{ $t(slotProps.option.label) }}</div>
+									</div>
+								</template>
+							</Select>
+							<label for="albumCoverTitleStyle">{{ $t("gallery.album.title.style") }}</label>
+						</FloatLabel>
+						<FloatLabel variant="on" v-if="header_id && header_id.id !== 'compact'">
+							<Select
+								label-id="albumCoverTitlePosition"
+								v-model="albumCoverTitlePosition"
+								class="w-62 border-none"
+								:options="albumCoverTitlePositionOptions"
+								option-label="label"
+								show-clear
+							>
+								<template #value="slotProps">
+									<div v-if="slotProps.value" class="flex items-center">
+										<div>{{ $t(slotProps.value.label) }}</div>
+									</div>
+								</template>
+								<template #option="slotProps">
+									<div class="flex items-center">
+										<div>{{ $t(slotProps.option.label) }}</div>
+									</div>
+								</template>
+							</Select>
+							<label for="albumCoverTitlePosition">{{ $t("gallery.album.title.position") }}</label>
 						</FloatLabel>
 					</div>
 					<div class="h-10 my-2">
@@ -304,6 +348,8 @@ import {
 	SelectBuilders,
 	timelinePhotoGranularityOptions,
 	timelineAlbumGranularityOptions,
+	albumCoverTitlePositionOptions,
+	albumCoverTitleStyleOptions,
 } from "@/config/constants";
 import { useToast } from "primevue/usetoast";
 import { trans } from "laravel-vue-i18n";
@@ -335,6 +381,8 @@ const photoSortingColumn = ref<SelectOption<App.Enum.ColumnSortingPhotoType> | u
 const photoSortingOrder = ref<SelectOption<App.Enum.OrderSortingType> | undefined>(undefined);
 const albumSortingColumn = ref<SelectOption<App.Enum.ColumnSortingAlbumType> | undefined>(undefined);
 const albumSortingOrder = ref<SelectOption<App.Enum.OrderSortingType> | undefined>(undefined);
+const albumCoverTitleStyle = ref<SelectOption<App.Enum.AlbumTitleColor> | undefined>(undefined);
+const albumCoverTitlePosition = ref<SelectOption<App.Enum.AlbumTitlePosition> | undefined>(undefined);
 const photoLayout = ref<SelectOption<App.Enum.PhotoLayoutType> | undefined>(undefined);
 const photoTimeline = ref<SelectOption<App.Enum.TimelinePhotoGranularity> | undefined>(undefined);
 const albumTimeline = ref<SelectOption<App.Enum.TimelineAlbumGranularity> | undefined>(undefined);
@@ -413,6 +461,8 @@ function load(editable: App.Http.Resources.Editable.EditableBaseAlbumResource, p
 	header_id.value = buildHeaderId(editable.header_id, photos);
 	tags.value = editable.tags;
 	is_and.value = editable.is_and ?? false;
+	albumCoverTitleStyle.value = SelectBuilders.buildAlbumCoverTitleStyle(editable.title_color ?? undefined);
+	albumCoverTitlePosition.value = SelectBuilders.buildAlbumCoverTitlePosition(editable.title_position ?? undefined);
 }
 
 onMounted(() => {
@@ -448,10 +498,14 @@ function saveAlbum() {
 		album_timeline: albumTimeline.value?.value ?? null,
 		photo_timeline: photoTimeline.value?.value ?? null,
 		is_pinned: albumStore.tagOrModelAlbum?.editable?.is_pinned ?? false,
+		title_color: albumCoverTitleStyle.value?.value ?? null,
+		title_position: albumCoverTitlePosition.value?.value ?? null,
+		header_photo_focus: albumStore.tagOrModelAlbum?.editable?.header_photo_focus ?? null,
 	};
 	AlbumService.updateAlbum(data).then(() => {
 		toast.add({ severity: "success", summary: trans("toasts.success"), life: 3000 });
 		AlbumService.clearCache(albumId.value);
+		albumStore.loadHead();
 	});
 }
 
@@ -477,6 +531,7 @@ function saveTagAlbum() {
 	AlbumService.updateTag(data).then(() => {
 		toast.add({ severity: "success", summary: trans("toasts.success"), life: 3000 });
 		AlbumService.clearCache(albumId.value);
+		albumStore.loadHead();
 	});
 }
 

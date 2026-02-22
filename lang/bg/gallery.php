@@ -11,6 +11,10 @@ return [
     'pinned_albums' => 'Избрани албуми',
     'albums' => 'Албуми',
     'root' => 'Албуми',
+    'set_focus' => 'Задай фокус',
+    'set_header_focus' => 'Задай фокус на заглавката',
+    'done' => 'Готово',
+    'cancel' => 'Отказ',
     'tabs' => [
         'my_albums' => 'Моите албуми',
         'shared_with_me' => 'Споделени с мен',
@@ -117,6 +121,9 @@ return [
             'share' => 'Сподели албума',
             'embed' => 'Вгради албума',
             'stats_only_se' => 'Статистиката е налична в Supporter Edition',
+            'edit' => 'Редактирай',
+            'save' => 'Запази',
+            'open_gallery' => 'Отвори галерията',
         ],
         'stats' => [
             'number_of_visits' => 'Брой посещения',
@@ -146,6 +153,26 @@ return [
             'show_tags' => 'Задай тагове за показване',
             'tags_required' => 'Таговете са задължителни.',
             'all_tags_must_match' => 'Всички тагове трябва да съвпадат.',
+        ],
+        'title' => [
+            'style' => 'Цвят на заглавието',
+            'position' => 'Позиция на заглавието',
+            'position_options' => [
+                 'top_left' => 'Горе ляво',
+                 'top_right' => 'Горе дясно',
+                 'center' => 'Център',
+                 'bottom_left' => 'Долу ляво',
+                 'bottom_right' => 'Долу дясно',
+            ],
+            'style_options' => [
+                 'white' => 'Бял',
+                 'black' => 'Черен',
+                 'color_1' => 'Цвят 1',
+                 'color_2' => 'Цвят 2',
+                 'color_3' => 'Цвят 3',
+                 'color_4' => 'Цвят 4',
+                 'color_5' => 'Цвят 5',
+            ],
         ],
     ],
     'photo' => [

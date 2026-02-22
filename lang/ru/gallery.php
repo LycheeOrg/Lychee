@@ -10,6 +10,10 @@ return [
     'pinned_albums' => 'Закреплённые альбомы',
     'albums' => 'Альбомы',
     'root' => 'Альбомы',
+    'set_focus' => 'Set Focus',
+    'set_header_focus' => 'Set Header Focus',
+    'done' => 'Done',
+    'cancel' => 'Cancel',
     'tabs' => [
         'my_albums' => 'My Albums',
         'shared_with_me' => 'Shared with Me',
@@ -116,6 +120,9 @@ return [
             'share' => 'Поделиться альбомом',
             'embed' => 'Embed Album',
             'stats_only_se' => 'Статистика доступна в версии для поддерживающих пользователей',
+            'edit' => 'Edit',
+            'save' => 'Save',
+            'open_gallery' => 'Open gallery',
         ],
         'stats' => [
             'number_of_visits' => 'Кол-во посещений',
@@ -145,6 +152,26 @@ return [
             'show_tags' => 'Установить отображаемые теги',
             'tags_required' => 'Теги обязательны.',
             'all_tags_must_match' => 'Все теги должны совпадать.',
+        ],
+        'title' => [
+            'style' => 'Style',
+            'position' => 'Position',
+            'position_options' => [
+                 'top_left' => 'Top Left',
+                 'top_right' => 'Top Right',
+                 'center' => 'Center',
+                 'bottom_left' => 'Bottom Left',
+                 'bottom_right' => 'Bottom Right',
+            ],
+            'style_options' => [
+                 'white' => 'White',
+                 'black' => 'Black',
+                 'color_1' => 'Color 1',
+                 'color_2' => 'Color 2',
+                 'color_3' => 'Color 3',
+                 'color_4' => 'Color 4',
+                 'color_5' => 'Color 5',
+            ],
         ],
     ],
     'photo' => [

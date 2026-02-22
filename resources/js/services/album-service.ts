@@ -30,6 +30,9 @@ export type UpdateAbumData = {
 	is_pinned: boolean;
 	album_timeline: App.Enum.TimelineAlbumGranularity | null;
 	photo_timeline: App.Enum.TimelinePhotoGranularity | null;
+	title_color: App.Enum.AlbumTitleColor | null;
+	title_position: App.Enum.AlbumTitlePosition | null;
+	header_photo_focus: { x: number; y: number } | null;
 };
 
 export type UpdateTagAlbumData = {

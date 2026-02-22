@@ -13,6 +13,8 @@ namespace Tests\Unit\Http\Requests\Album;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Models\AbstractAlbum;
 use App\DTO\PhotoSortingCriterion;
+use App\Enum\AlbumTitleColor;
+use App\Enum\AlbumTitlePosition;
 use App\Enum\AspectRatioType;
 use App\Enum\ColumnSortingAlbumType;
 use App\Enum\ColumnSortingPhotoType;
@@ -78,6 +80,9 @@ class UpdateAlbumRequestTest extends BaseRequestTest
 			RequestAttribute::COPYRIGHT_ATTRIBUTE => 'Copyright (c) 2017-2018 Tobias Reich',
 			RequestAttribute::ALBUM_TIMELINE_ALBUM => TimelineAlbumGranularity::DEFAULT->value,
 			RequestAttribute::ALBUM_TIMELINE_PHOTO => TimelineAlbumGranularity::DAY->value,
+			RequestAttribute::ALBUM_TITLE_COLOR_ATTRIBUTE => AlbumTitleColor::WHITE->value,
+			RequestAttribute::ALBUM_TITLE_POSITION_ATTRIBUTE => AlbumTitlePosition::TOP_LEFT->value,
+			RequestAttribute::HEADER_PHOTO_FOCUS_ATTRIBUTE => null,
 			//			RequestAttribute::ALBUM_PHOTO_LAYOUT => PhotoSortingCriterion::ALBUM_PHOTO_LAYOUT_GRID->value,
 		]);
 
@@ -116,6 +121,11 @@ class UpdateAlbumRequestTest extends BaseRequestTest
 			RequestAttribute::HEADER_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
 			RequestAttribute::ALBUM_TIMELINE_ALBUM => ['present', 'nullable', new Enum(TimelineAlbumGranularity::class), new EnumRequireSupportRule(TimelinePhotoGranularity::class, [TimelinePhotoGranularity::DEFAULT, TimelinePhotoGranularity::DISABLED], $this->mock_verify)],
 			RequestAttribute::ALBUM_TIMELINE_PHOTO => ['present', 'nullable', new Enum(TimelinePhotoGranularity::class), new EnumRequireSupportRule(TimelinePhotoGranularity::class, [TimelinePhotoGranularity::DEFAULT, TimelinePhotoGranularity::DISABLED], $this->mock_verify)],
+			RequestAttribute::ALBUM_TITLE_COLOR_ATTRIBUTE => ['present', 'nullable', new Enum(AlbumTitleColor::class), new EnumRequireSupportRule(AlbumTitleColor::class, [AlbumTitleColor::WHITE], $this->mock_verify)],
+			RequestAttribute::ALBUM_TITLE_POSITION_ATTRIBUTE => ['present', 'nullable', new Enum(AlbumTitlePosition::class), new EnumRequireSupportRule(AlbumTitlePosition::class, [AlbumTitlePosition::TOP_LEFT], $this->mock_verify)],
+			RequestAttribute::HEADER_PHOTO_FOCUS_ATTRIBUTE => ['nullable', 'array'],
+			RequestAttribute::HEADER_PHOTO_FOCUS_ATTRIBUTE . '.x' => ['required_with:' . RequestAttribute::HEADER_PHOTO_FOCUS_ATTRIBUTE, 'numeric', 'between:-1,1'],
+			RequestAttribute::HEADER_PHOTO_FOCUS_ATTRIBUTE . '.y' => ['required_with:' . RequestAttribute::HEADER_PHOTO_FOCUS_ATTRIBUTE, 'numeric', 'between:-1,1'],
 		];
 		$this->assertCount(count($expectedRuleMap), $rules); // only validating the first 7 rules & the GRANTS_UPLOAD_ATTRIBUTE is tested afterwards
 

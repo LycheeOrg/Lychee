@@ -19,7 +19,7 @@ use Illuminate\Support\Collection;
 
 trait HasHeaderUrl
 {
-	protected function getHeaderUrl(AbstractAlbum $album): ?string
+	protected function getHeader(AbstractAlbum $album): ?SizeVariant
 	{
 		if (request()->configs()->getValueAsBool('use_album_compact_header')) {
 			return null;
@@ -37,20 +37,21 @@ trait HasHeaderUrl
 		return $this->getByQuery($album);
 	}
 
-	private function getByQuery(AbstractAlbum $album): ?string
+	private function getByQuery(AbstractAlbum $album): ?SizeVariant
 	{
 		$header_size_variant = null;
 
 		if ($album instanceof Album && $album->header_id !== null) {
 			$header_size_variant = SizeVariant::query()
+				->with('photo.palette')
 				->where('photo_id', '=', $album->header_id)
-				->whereIn('type', [SizeVariantType::MEDIUM, SizeVariantType::SMALL2X, SizeVariantType::SMALL])
+				->whereIn('type', [SizeVariantType::MEDIUM2X, SizeVariantType::SMALL2X, SizeVariantType::SMALL])
 				->orderBy('type', 'asc')
 				->first();
 		}
 
 		if ($header_size_variant !== null) {
-			return $header_size_variant->url;
+			return $header_size_variant;
 		}
 
 		/** @var Collection<int,Photo>|LengthAwarePaginator<int,Photo> $photos */
@@ -63,7 +64,7 @@ trait HasHeaderUrl
 			->when($photos instanceof Collection, function ($query) use ($photos): void {
 				$query->whereBelongsTo($photos);
 			})
-			->where('ratio', '>', 1)->whereIn('type', [SizeVariantType::MEDIUM, SizeVariantType::SMALL2X, SizeVariantType::SMALL]);
+			->where('ratio', '>', 1)->whereIn('type', [SizeVariantType::MEDIUM2X, SizeVariantType::SMALL2X, SizeVariantType::SMALL]);
 		$num = $query_ratio->count() - 1;
 		$photo = $num >= 0 ? $query_ratio->skip(rand(0, $num))->first() : null;
 
@@ -77,15 +78,16 @@ trait HasHeaderUrl
 				->when($photos instanceof Collection, function ($query) use ($photos): void {
 					$query->whereBelongsTo($photos);
 				})
-				->whereIn('type', [SizeVariantType::MEDIUM, SizeVariantType::SMALL2X, SizeVariantType::SMALL]);
+				->whereIn('type', [SizeVariantType::MEDIUM2X, SizeVariantType::SMALL2X, SizeVariantType::SMALL]);
 			$num = $query->count() - 1;
 			$photo = $query->skip(rand(0, $num))->first();
 		}
 
 		return $photo === null ? null : SizeVariant::query()
+			->with('photo.palette')
 			->where('photo_id', '=', $photo->photo_id)
-			->where('type', '>', 1)
+			->where('type', '>', 0)
 			->orderBy('type', 'asc')
-			->first()?->url;
+			->first();
 	}
 }

@@ -92,7 +92,7 @@ class Meta extends Component
 			if ($this->album instanceof BaseAlbum) {
 				$this->page_description = $this->album->description ?? request()->configs()->getValueAsString('site_title');
 			}
-			$this->image_url = $this->getHeaderUrl($this->album) ?? $this->image_url;
+			$this->image_url = $this->getHeader($this->album)?->url ?? $this->image_url;
 		}
 
 		if ($this->photo !== null) {

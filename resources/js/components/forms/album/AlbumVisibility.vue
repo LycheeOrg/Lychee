@@ -1,9 +1,9 @@
 <template>
-	<Card class="text-sm p-4 xl:px-9 sm:min-w-lg" :pt:body:class="'p-0'">
+	<Card class="text-sm p-4 xl:px-9 w-full xl:basis-1/3 xl:min-w-0" :pt:body:class="'p-0'">
 		<template #content>
 			<form>
 				<div class="h-12">
-					<ToggleSwitch v-model="is_public" input-id="pp_dialog_public_check" class="ltr:mr-2 rtl:ml-2 translate-y-1" @change="save" />
+					<ToggleSwitch v-model="is_public" class="ltr:mr-2 rtl:ml-2 translate-y-1" @change="save" />
 					<label for="pp_dialog_public_check" class="font-bold">{{ $t("dialogs.visibility.public") }}</label>
 					<p class="my-1.5">{{ $t("dialogs.visibility.public_expl") }}</p>
 				</div>
