@@ -6,10 +6,10 @@
  * Copyright (c) 2018-2026 LycheeOrg.
  */
 
-use Illuminate\Database\Migrations\Migration;
+use App\Migrations\BaseConfigMigration;
 use Illuminate\Support\Facades\DB;
 
-return new class() extends Migration {
+return new class() extends BaseConfigMigration {
 	public const BOOL = '0|1';
 	public const HEADER_SIZE = 'half_screen|full_screen';
 	public const CAT_GALLERY = 'Gallery';
@@ -41,22 +41,5 @@ return new class() extends Migration {
 				'level' => 2,
 			],
 		];
-	}
-
-	/**
-	 * Run the migrations.
-	 */
-	public function up(): void
-	{
-		DB::table('configs')->insert($this->getConfigs());
-	}
-
-	/**
-	 * Reverse the migrations.
-	 */
-	public function down(): void
-	{
-		$keys = collect($this->getConfigs())->map(fn ($v) => $v['key'])->all();
-		DB::table('configs')->whereIn('key', $keys)->delete();
 	}
 };
