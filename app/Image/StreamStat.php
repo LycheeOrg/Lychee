@@ -11,6 +11,7 @@ namespace App\Image;
 use App\Contracts\Image\StreamStats;
 use App\Exceptions\MediaFileOperationException;
 use App\Image\Files\NativeLocalFile;
+use function Safe\hash_file;
 
 /**
  * Class `StreamStat` holds statistics about a read/written (image) stream.
@@ -50,18 +51,11 @@ class StreamStat implements StreamStats
 	public static function createFromLocalFile(NativeLocalFile $file): StreamStat
 	{
 		try {
-			error_clear_last();
 			$checksum = hash_file(StreamStatFilter::HASH_ALGO_NAME, $file->getPath());
-			if ($checksum === false) {
-				// @codeCoverageIgnoreStart
-				$error = error_get_last();
-				throw new \ErrorException($error['message'] ?? 'An error occurred', 0, $error['type'] ?? 1);
-				// @codeCoverageIgnoreEnd
-			}
 
 			return new StreamStat($file->getFilesize(), $checksum);
 			// @codeCoverageIgnoreStart
-		} catch (\ErrorException $e) {
+		} catch (\Throwable $e) {
 			throw new MediaFileOperationException($e->getMessage(), $e);
 		}
 		// @codeCoverageIgnoreEnd

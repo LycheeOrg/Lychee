@@ -59,10 +59,10 @@ return new class() extends Migration {
 		])->lazyById();
 
 		foreach ($photos as $photo) {
-			$this->convertUp($photo->{self::SMALL_COL_NAME}, $smallWidth, $smallHeight); /** @phpstan-ignore-line */
-			$this->convertUp($photo->{self::SMALL2X_COL_NAME}, $small2xWidth, $small2xHeight); /** @phpstan-ignore-line */
-			$this->convertUp($photo->{self::MEDIUM_COL_NAME}, $mediumWidth, $mediumHeight); /** @phpstan-ignore-line */
-			$this->convertUp($photo->{self::MEDIUM2X_COL_NAME}, $medium2xWidth, $medium2xHeight); /** @phpstan-ignore-line */
+			$this->convertUp($photo->{self::SMALL_COL_NAME}, $smallWidth, $smallHeight);
+			$this->convertUp($photo->{self::SMALL2X_COL_NAME}, $small2xWidth, $small2xHeight);
+			$this->convertUp($photo->{self::MEDIUM_COL_NAME}, $mediumWidth, $mediumHeight);
+			$this->convertUp($photo->{self::MEDIUM2X_COL_NAME}, $medium2xWidth, $medium2xHeight);
 			DB::table(self::PHOTOS_TABLE_NAME)->where(self::ID_COL_NAME, '=', $photo->id)->update([
 				self::SMALL_WIDTH_COL_NAME => $smallWidth,
 				self::SMALL_HEIGHT_COL_NAME => $smallHeight,
@@ -126,13 +126,9 @@ return new class() extends Migration {
 		])->lazyById();
 
 		foreach ($photos as $photo) {
-			/** @phpstan-ignore-next-line */
 			$smallSize = $this->convertDown($photo->{self::SMALL_WIDTH_COL_NAME}, $photo->{self::SMALL_HEIGHT_COL_NAME});
-			/** @phpstan-ignore-next-line */
 			$small2xSize = $this->convertDown($photo->{self::SMALL2X_WIDTH_COL_NAME}, $photo->{self::SMALL2X_HEIGHT_COL_NAME});
-			/** @phpstan-ignore-next-line */
 			$mediumSize = $this->convertDown($photo->{self::MEDIUM_WIDTH_COL_NAME}, $photo->{self::MEDIUM_HEIGHT_COL_NAME});
-			/** @phpstan-ignore-next-line */
 			$medium2xSize = $this->convertDown($photo->{self::MEDIUM2X_WIDTH_COL_NAME}, $photo->{self::MEDIUM2X_HEIGHT_COL_NAME});
 
 			DB::table(self::PHOTOS_TABLE_NAME)->where(self::ID_COL_NAME, '=', $photo->id)->update([
