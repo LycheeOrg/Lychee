@@ -58,7 +58,7 @@
 		<!-- Badges (if any) -->
 		<div class="flex gap-1">
 			<ListBadge v-if="album.is_nsfw" class="fill-[#ff82ee]" icon="warning" />
-			<ListBadge v-if="album.id === 'starred'" class="fill-yellow-500" icon="star" />
+			<ListBadge v-if="album.id === 'highlighted'" class="fill-yellow-500" icon="star" />
 			<ListBadge v-if="album.id === 'unsorted'" class="fill-red-700" icon="list" />
 			<ListBadge v-if="album.id === 'recent'" class="fill-blue-700" icon="clock" />
 			<ListBadge v-if="album.id === 'on_this_day'" class="fill-green-600" icon="calendar" />

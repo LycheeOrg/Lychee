@@ -85,7 +85,7 @@
 		<!-- TODO: make me an option. -->
 		<div class="badges absolute -mt-px ltr:ml-1 rtl:mr-1 top-0 ltr:left-0 rtl:right-0 flex">
 			<ThumbBadge
-				v-if="(albumsStore.rootRights?.can_star || albumStore.rights?.can_edit) && props.photo.is_starred"
+				v-if="(albumsStore.rootRights?.can_star || albumStore.rights?.can_edit) && props.photo.is_highlighted"
 				class="bg-yellow-500"
 				icon="star"
 			/>

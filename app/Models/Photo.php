@@ -70,7 +70,7 @@ use function Safe\preg_match;
  * @property string|null           $taken_at_orig_tz
  * @property Carbon|null           $initial_taken_at
  * @property string|null           $initial_taken_at_orig_tz
- * @property bool                  $is_starred
+ * @property bool                  $is_highlighted
  * @property string|null           $rating_avg
  * @property string|null           $live_photo_short_path
  * @property string|null           $live_photo_url
@@ -108,7 +108,7 @@ use function Safe\preg_match;
  * @method static PhotoBuilder|Photo whereId($value)
  * @method static PhotoBuilder|Photo whereImgDirection($value)
  * @method static PhotoBuilder|Photo whereIn(string $column, string $values, string $boolean = 'and', string $not = false)
- * @method static PhotoBuilder|Photo whereIsStarred($value)
+ * @method static PhotoBuilder|Photo whereIsHighlighted($value)
  * @method static PhotoBuilder|Photo whereIso($value)
  * @method static PhotoBuilder|Photo whereLatitude($value)
  * @method static PhotoBuilder|Photo whereLegacyId($value)
@@ -164,7 +164,7 @@ class Photo extends Model implements HasUTCBasedTimes
 		'live_photo_url' => MustNotSetCast::class . ':live_photo_short_path',
 		'taken_at_mod' => 'datetime',
 		'owner_id' => 'integer',
-		'is_starred' => 'boolean',
+		'is_highlighted' => 'boolean',
 		'latitude' => 'float',
 		'longitude' => 'float',
 		'altitude' => 'float',

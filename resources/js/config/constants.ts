@@ -15,7 +15,7 @@ export const photoSortingColumnsOptions: SelectOption<App.Enum.ColumnSortingPhot
 	{ value: "description", label: "gallery.sort.photo_select_4" },
 	{ value: "title_strict", label: "gallery.sort.photo_select_3_strict" },
 	{ value: "description_strict", label: "gallery.sort.photo_select_4_strict" },
-	{ value: "is_starred", label: "gallery.sort.photo_select_6" },
+	{ value: "is_highlighted", label: "gallery.sort.photo_select_6" },
 	{ value: "type", label: "gallery.sort.photo_select_7" },
 ];
 

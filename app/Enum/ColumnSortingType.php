@@ -30,7 +30,7 @@ enum ColumnSortingType: string
 
 	// from photos
 	case TAKEN_AT = 'taken_at';
-	case IS_STARRED = 'is_starred';
+	case IS_HIGHLIGHTED = 'is_highlighted';
 	case TYPE = 'type';
 	case RATING_AVG = 'rating_avg';
 

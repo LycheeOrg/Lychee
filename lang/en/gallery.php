@@ -42,7 +42,7 @@ return [
     ],
     'smart_album' => [
         'unsorted' => 'Unsorted',
-        'starred' => 'Starred',
+        'highlighted' => 'Highlighted',
         'recent' => 'Recent',
         'public' => 'Public',
         'on_this_day' => 'On This Day',
@@ -96,8 +96,8 @@ return [
     'album' => [
         'header_albums' => 'Albums',
         'header_photos' => 'Photos',
-        'show_starred' => 'Filter starred images',
-        'copy_starred_names' => 'Copy starred photo names to clipboard',
+        'show_highlighted' => 'Filter highlighted images',
+        'copy_highlighted_names' => 'Copy highlighted photo names to clipboard',
         'no_results' => 'Nothing to see here',
         'upload' => 'Upload photos',
         'tabs' => [
@@ -150,8 +150,8 @@ return [
     ],
     'photo' => [
         'actions' => [
-            'star' => 'Star',
-            'unstar' => 'Unstar',
+            'highlight' => 'Highlight',
+            'unhighlight' => 'Unhighlight',
             'set_album_header' => 'Set as album header',
             'move' => 'Move',
             'delete' => 'Delete',
@@ -230,10 +230,10 @@ return [
         'consent' => 'Tap to consent.',
     ],
     'menus' => [
-        'star' => 'Star',
-        'unstar' => 'Unstar',
-        'star_all' => 'Star Selected',
-        'unstar_all' => 'Unstar Selected',
+        'highlight' => 'Highlight',
+        'unhighlight' => 'Unhighlight',
+        'highlight_all' => 'Highlight Selected',
+        'unhighlight_all' => 'Unhighlight Selected',
         'tag' => 'Tag',
         'tag_all' => 'Tag Selected',
         'set_cover' => 'Set Album Cover',

@@ -42,7 +42,7 @@ return [
     ],
     'smart_album' => [
         'unsorted' => '未分类',
-        'starred' => '已标星',
+        'highlighted' => '已标星',
         'recent' => '最近',
         'public' => '公开',
         'on_this_day' => '历史上的今天',
@@ -96,8 +96,8 @@ return [
     'album' => [
         'header_albums' => '相册',
         'header_photos' => '照片',
-        'show_starred' => 'Filter starred images',
-        'copy_starred_names' => 'Copy starred photo names to clipboard',
+        'show_highlighted' => 'Filter starred images',
+        'copy_highlighted_names' => 'Copy starred photo names to clipboard',
         'no_results' => '这里什么都没有',
         'upload' => '上传照片',
         'tabs' => [
@@ -150,8 +150,8 @@ return [
     ],
     'photo' => [
         'actions' => [
-            'star' => '标星',
-            'unstar' => '取消标星',
+            'highlight' => '标星',
+            'unhighlight' => '取消标星',
             'set_album_header' => '设为相册页眉图片',
             'move' => '移动',
             'delete' => '删除',
@@ -230,10 +230,10 @@ return [
         'consent' => '点击确认查看。',
     ],
     'menus' => [
-        'star' => '标星',
-        'unstar' => '取消标星',
-        'star_all' => '标星所选',
-        'unstar_all' => '取消标星所选',
+        'highlight' => '标星',
+        'unhighlight' => '取消标星',
+        'highlight_all' => '标星所选',
+        'unhighlight_all' => '取消标星所选',
         'tag' => '标签',
         'tag_all' => '为所选添加标签',
         'set_cover' => '设为相册封面',

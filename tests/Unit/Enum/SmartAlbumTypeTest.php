@@ -50,7 +50,7 @@ class SmartAlbumTypeTest extends AbstractTestCase
 	{
 		// Original smart albums
 		self::assertEquals('unsorted', SmartAlbumType::UNSORTED->value);
-		self::assertEquals('starred', SmartAlbumType::STARRED->value);
+		self::assertEquals('highlighted', SmartAlbumType::HIGHLIGHTED->value);
 		self::assertEquals('recent', SmartAlbumType::RECENT->value);
 		self::assertEquals('on_this_day', SmartAlbumType::ON_THIS_DAY->value);
 		self::assertEquals('untagged', SmartAlbumType::UNTAGGED->value);

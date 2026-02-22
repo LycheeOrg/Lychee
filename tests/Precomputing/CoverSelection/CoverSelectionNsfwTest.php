@@ -49,7 +49,7 @@ class CoverSelectionNsfwTest extends BasePrecomputingTest
 		// Create safe photo in parent (older, not starred)
 		$safePhoto = Photo::factory()->owned_by($this->admin)->create([
 			'title' => 'Safe Photo',
-			'is_starred' => false,
+			'is_highlighted' => false,
 			'taken_at' => new Carbon('2023-01-01 10:00:00'),
 		]);
 		$safePhoto->albums()->attach($safeParent->id);
@@ -57,7 +57,7 @@ class CoverSelectionNsfwTest extends BasePrecomputingTest
 		// Create NSFW photo in child (starred, newer - would be preferred if NSFW allowed)
 		$nsfwPhoto = Photo::factory()->owned_by($this->admin)->create([
 			'title' => 'NSFW Photo',
-			'is_starred' => true,
+			'is_highlighted' => true,
 			'taken_at' => new Carbon('2023-12-31 10:00:00'),
 		]);
 		$nsfwPhoto->albums()->attach($nsfwChild->id);
@@ -93,7 +93,7 @@ class CoverSelectionNsfwTest extends BasePrecomputingTest
 		// Create safe photo (older, not starred)
 		$safePhoto = Photo::factory()->owned_by($this->admin)->create([
 			'title' => 'Safe Photo',
-			'is_starred' => false,
+			'is_highlighted' => false,
 			'taken_at' => new Carbon('2023-01-01 10:00:00'),
 		]);
 		$safePhoto->albums()->attach($nsfwParent->id);
@@ -107,7 +107,7 @@ class CoverSelectionNsfwTest extends BasePrecomputingTest
 
 		$nsfwPhoto = Photo::factory()->owned_by($this->admin)->create([
 			'title' => 'NSFW Photo',
-			'is_starred' => true,
+			'is_highlighted' => true,
 			'taken_at' => new Carbon('2023-12-31 10:00:00'),
 		]);
 		$nsfwPhoto->albums()->attach($nsfwChild->id);
@@ -157,7 +157,7 @@ class CoverSelectionNsfwTest extends BasePrecomputingTest
 		// Create safe photo in child
 		$safePhoto = Photo::factory()->owned_by($this->admin)->create([
 			'title' => 'Safe Photo',
-			'is_starred' => false,
+			'is_highlighted' => false,
 			'taken_at' => new Carbon('2023-01-01 10:00:00'),
 		]);
 		$safePhoto->albums()->attach($safeChild->id);
@@ -171,7 +171,7 @@ class CoverSelectionNsfwTest extends BasePrecomputingTest
 
 		$nsfwPhoto = Photo::factory()->owned_by($this->admin)->create([
 			'title' => 'NSFW Photo',
-			'is_starred' => true,
+			'is_highlighted' => true,
 			'taken_at' => new Carbon('2023-12-31 10:00:00'),
 		]);
 		$nsfwPhoto->albums()->attach($nsfwSubChild->id);
@@ -222,7 +222,7 @@ class CoverSelectionNsfwTest extends BasePrecomputingTest
 		// Add NSFW photo to NSFW branch (starred, newer)
 		$nsfwPhoto = Photo::factory()->owned_by($this->admin)->create([
 			'title' => 'NSFW Photo',
-			'is_starred' => true,
+			'is_highlighted' => true,
 			'taken_at' => new Carbon('2023-12-31 10:00:00'),
 		]);
 		$nsfwPhoto->albums()->attach($nsfwBranch->id);
@@ -230,7 +230,7 @@ class CoverSelectionNsfwTest extends BasePrecomputingTest
 		// Add safe photo to safe branch (older, not starred)
 		$safePhoto = Photo::factory()->owned_by($this->admin)->create([
 			'title' => 'Safe Photo',
-			'is_starred' => false,
+			'is_highlighted' => false,
 			'taken_at' => new Carbon('2023-01-01 10:00:00'),
 		]);
 		$safePhoto->albums()->attach($safeBranch->id);
@@ -267,7 +267,7 @@ class CoverSelectionNsfwTest extends BasePrecomputingTest
 		// Create safe photo
 		$safePhoto = Photo::factory()->owned_by($this->admin)->create([
 			'title' => 'Safe Photo',
-			'is_starred' => false,
+			'is_highlighted' => false,
 			'taken_at' => new Carbon('2023-01-01 10:00:00'),
 		]);
 		$safePhoto->albums()->attach($album->id);
@@ -282,7 +282,7 @@ class CoverSelectionNsfwTest extends BasePrecomputingTest
 		// Create NSFW photo in NSFW sub-album (starred, newer)
 		$nsfwPhoto = Photo::factory()->owned_by($this->admin)->create([
 			'title' => 'NSFW Photo',
-			'is_starred' => true,
+			'is_highlighted' => true,
 			'taken_at' => new Carbon('2023-12-31 10:00:00'),
 		]);
 		$nsfwPhoto->albums()->attach($nsfwAlbum->id);

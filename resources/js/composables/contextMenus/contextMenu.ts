@@ -92,16 +92,16 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 		const albumStore = useAlbumStore();
 		const leftMenuStore = useLeftMenuStateStore();
 
-		if (selectedPhoto.is_starred) {
+		if (selectedPhoto.is_highlighted) {
 			menuItems.push({
-				label: "gallery.menus.unstar",
+				label: "gallery.menus.unhighlight",
 				icon: "pi pi-star",
 				callback: photoCallbacks.unstar,
 				access: leftMenuStore.initData?.root_album?.can_star ?? false,
 			});
 		} else {
 			menuItems.push({
-				label: "gallery.menus.star",
+				label: "gallery.menus.highlight",
 				icon: "pi pi-star",
 				callback: photoCallbacks.star,
 				access: leftMenuStore.initData?.root_album?.can_star ?? false,
@@ -190,16 +190,18 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 		const menuItems = [];
 		const albumStore = useAlbumStore();
 		const leftMenuStore = useLeftMenuStateStore();
-		if (selectors.selectedPhotos.value.reduce((acc: boolean, photo: App.Http.Resources.Models.PhotoResource) => acc && photo.is_starred, true)) {
+		if (
+			selectors.selectedPhotos.value.reduce((acc: boolean, photo: App.Http.Resources.Models.PhotoResource) => acc && photo.is_highlighted, true)
+		) {
 			menuItems.push({
-				label: "gallery.menus.unstar_all",
+				label: "gallery.menus.unhighlight_all",
 				icon: "pi pi-star",
 				callback: photoCallbacks.unstar,
 				access: leftMenuStore.initData?.root_album?.can_star ?? false,
 			});
 		} else {
 			menuItems.push({
-				label: "gallery.menus.star_all",
+				label: "gallery.menus.highlight_all",
 				icon: "pi pi-star",
 				callback: photoCallbacks.star,
 				access: leftMenuStore.initData?.root_album?.can_star ?? false,

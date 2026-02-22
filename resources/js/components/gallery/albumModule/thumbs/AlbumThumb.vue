@@ -43,7 +43,7 @@
 		</span>
 		<div v-if="userStore.isLoggedIn" class="badges absolute -mt-px ml-1 top-0 left-0 flex">
 			<ThumbBadge v-if="props.album.is_nsfw" class="bg-[#ff82ee]" icon="warning" />
-			<ThumbBadge v-if="props.album.id === 'starred'" class="bg-yellow-500" icon="star" />
+			<ThumbBadge v-if="props.album.id === 'highlighted'" class="bg-yellow-500" icon="star" />
 			<ThumbBadge v-if="props.album.id === 'unsorted'" class="bg-red-700" icon="list" />
 			<ThumbBadge v-if="props.album.id === 'recent'" class="bg-blue-700" icon="clock" />
 			<ThumbBadge v-if="props.album.id === 'on_this_day'" class="bg-green-600" icon="calendar" />

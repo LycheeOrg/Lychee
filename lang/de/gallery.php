@@ -41,7 +41,7 @@ return [
     ],
     'smart_album' => [
         'unsorted' => 'Unsortiert',
-        'starred' => 'Als Favorit markiert',
+        'highlighted' => 'Als Favorit markiert',
         'recent' => 'Neueste',
         'public' => 'Öffentlich',
         'on_this_day' => 'An diesem Tag',
@@ -95,8 +95,8 @@ return [
     'album' => [
         'header_albums' => 'Alben',
         'header_photos' => 'Fotos',
-        'show_starred' => 'Filter starred images',
-        'copy_starred_names' => 'Copy starred photo names to clipboard',
+        'show_highlighted' => 'Filter starred images',
+        'copy_highlighted_names' => 'Copy starred photo names to clipboard',
         'no_results' => 'Hier gibt es nichts zu sehen',
         'upload' => 'Fotos hochladen',
         'tabs' => [
@@ -149,8 +149,8 @@ return [
     ],
     'photo' => [
         'actions' => [
-            'star' => 'Mit Stern bewerten',
-            'unstar' => 'Stern entfernen',
+            'highlight' => 'Mit Stern bewerten',
+            'unhighlight' => 'Stern entfernen',
             'set_album_header' => 'Als Album Header festlegen',
             'move' => 'Verschieben',
             'delete' => 'Löschen',
@@ -229,10 +229,10 @@ return [
         'consent' => 'Tippen zum Einverständnis.',
     ],
     'menus' => [
-        'star' => 'Favorit hinzufügen',
-        'unstar' => 'Favorit entfernen',
-        'star_all' => 'Ausgewähltes als Favorit markieren',
-        'unstar_all' => 'Bei ausgewähltem Favoritenmarkierung entfernen',
+        'highlight' => 'Favorit hinzufügen',
+        'unhighlight' => 'Favorit entfernen',
+        'highlight_all' => 'Ausgewähltes als Favorit markieren',
+        'unhighlight_all' => 'Bei ausgewähltem Favoritenmarkierung entfernen',
         'tag' => 'Tag',
         'tag_all' => 'Ausgewähltes taggen',
         'set_cover' => 'Album Cover festlegen',

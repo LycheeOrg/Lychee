@@ -20,12 +20,12 @@ use App\SmartAlbums\BaseSmartAlbum;
 use App\SmartAlbums\BestPicturesAlbum;
 use App\SmartAlbums\FiveStarsAlbum;
 use App\SmartAlbums\FourStarsAlbum;
+use App\SmartAlbums\HighlightedAlbum;
 use App\SmartAlbums\MyBestPicturesAlbum;
 use App\SmartAlbums\MyRatedPicturesAlbum;
 use App\SmartAlbums\OneStarAlbum;
 use App\SmartAlbums\OnThisDayAlbum;
 use App\SmartAlbums\RecentAlbum;
-use App\SmartAlbums\StarredAlbum;
 use App\SmartAlbums\ThreeStarsAlbum;
 use App\SmartAlbums\TwoStarsAlbum;
 use App\SmartAlbums\UnratedAlbum;
@@ -38,7 +38,7 @@ class AlbumFactory
 {
 	public const BUILTIN_SMARTS_CLASS = [
 		SmartAlbumType::UNSORTED->value => UnsortedAlbum::class,
-		SmartAlbumType::STARRED->value => StarredAlbum::class,
+		SmartAlbumType::HIGHLIGHTED->value => HighlightedAlbum::class,
 		SmartAlbumType::RECENT->value => RecentAlbum::class,
 		SmartAlbumType::ON_THIS_DAY->value => OnThisDayAlbum::class,
 		SmartAlbumType::UNTAGGED->value => UntaggedAlbum::class,

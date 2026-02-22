@@ -24,9 +24,9 @@ class SetPhotosStarredRequest extends BaseApiRequest implements HasPhotos
 	use HasPhotosTrait;
 	use AuthorizeCanStarPhotosTrait;
 
-	public const IS_STARRED_ATTRIBUTE = 'is_starred';
+	public const IS_HIGHLIGHTED_ATTRIBUTE = 'is_highlighted';
 
-	protected bool $is_starred = false;
+	protected bool $is_highlighted = false;
 
 	/**
 	 * {@inheritDoc}
@@ -36,7 +36,7 @@ class SetPhotosStarredRequest extends BaseApiRequest implements HasPhotos
 		return [
 			RequestAttribute::PHOTO_IDS_ATTRIBUTE => 'required|array|min:1',
 			RequestAttribute::PHOTO_IDS_ATTRIBUTE . '.*' => ['required', new RandomIDRule(false)],
-			RequestAttribute::IS_STARRED_ATTRIBUTE => 'required|boolean',
+			RequestAttribute::IS_HIGHLIGHTED_ATTRIBUTE => 'required|boolean',
 		];
 	}
 
@@ -50,11 +50,11 @@ class SetPhotosStarredRequest extends BaseApiRequest implements HasPhotos
 		$this->photos = Photo::query()
 			->with(['size_variants', 'albums'])
 			->findOrFail($photos_ids);
-		$this->is_starred = static::toBoolean($values[RequestAttribute::IS_STARRED_ATTRIBUTE]);
+		$this->is_highlighted = static::toBoolean($values[RequestAttribute::IS_HIGHLIGHTED_ATTRIBUTE]);
 	}
 
-	public function isStarred(): bool
+	public function isHighlighted(): bool
 	{
-		return $this->is_starred;
+		return $this->is_highlighted;
 	}
 }

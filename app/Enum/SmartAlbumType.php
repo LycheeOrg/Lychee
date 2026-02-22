@@ -21,7 +21,7 @@ enum SmartAlbumType: string
 	use DecorateBackedEnum;
 
 	case UNSORTED = 'unsorted';
-	case STARRED = 'starred';
+	case HIGHLIGHTED = 'highlighted';
 	case RECENT = 'recent';
 	case ON_THIS_DAY = 'on_this_day';
 	case UNTAGGED = 'untagged';
@@ -44,7 +44,7 @@ enum SmartAlbumType: string
 	{
 		return match ($this) {
 			self::UNSORTED => $config_manager->getValueAsBool('enable_unsorted'),
-			self::STARRED => $config_manager->getValueAsBool('enable_starred'),
+			self::HIGHLIGHTED => $config_manager->getValueAsBool('enable_highlighted'),
 			self::RECENT => $config_manager->getValueAsBool('enable_recent'),
 			self::ON_THIS_DAY => $config_manager->getValueAsBool('enable_on_this_day'),
 			self::UNTAGGED => $config_manager->getValueAsBool('enable_untagged'),
@@ -88,7 +88,7 @@ enum SmartAlbumType: string
 	{
 		return match ($this) {
 			self::UNSORTED,
-			self::STARRED,
+			self::HIGHLIGHTED,
 			self::RECENT,
 			self::ON_THIS_DAY,
 			self::UNRATED,

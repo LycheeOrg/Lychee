@@ -23,8 +23,8 @@ class InitDTO
 	// Indicates the intended owner of the image.
 	public readonly int $intended_owner_id;
 
-	// Indicates whether the new photo shall be starred.
-	public bool $is_starred = false;
+	// Indicates whether the new photo shall be highlighted.
+	public bool $is_highlighted = false;
 
 	// The extracted EXIF information (populated during init phase).
 	public ?Extractor $exif_info;
@@ -53,7 +53,7 @@ class InitDTO
 		$this->source_file = $source_file;
 		$this->import_mode = $parameters->import_mode;
 		$this->intended_owner_id = $parameters->intended_owner_id;
-		$this->is_starred = $parameters->is_starred;
+		$this->is_highlighted = $parameters->is_highlighted;
 		$this->exif_info = $parameters->exif_info;
 		$this->album = $album;
 		$this->file_last_modified_time = $file_last_modified_time;

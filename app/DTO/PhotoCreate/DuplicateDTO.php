@@ -30,8 +30,8 @@ class DuplicateDTO implements PhotoDTO
 		// Indicates the intended owner of the image.
 		public readonly int $intended_owner_id,
 
-		// Indicates whether the new photo shall be starred.
-		public readonly bool $is_starred,
+		// Indicates whether the new photo shall be highlighted.
+		public readonly bool $is_highlighted,
 
 		// The extracted EXIF information (populated during init phase).
 		public readonly ?Extractor $exif_info,
@@ -51,7 +51,7 @@ class DuplicateDTO implements PhotoDTO
 			shall_resync_metadata: $init_dto->import_mode->shall_resync_metadata,
 			shall_skip_duplicates: $init_dto->import_mode->shall_skip_duplicates,
 			intended_owner_id: $init_dto->intended_owner_id,
-			is_starred: $init_dto->is_starred,
+			is_highlighted: $init_dto->is_highlighted,
 			exif_info: $init_dto->exif_info,
 			album: $init_dto->album,
 			photo: $init_dto->duplicate,

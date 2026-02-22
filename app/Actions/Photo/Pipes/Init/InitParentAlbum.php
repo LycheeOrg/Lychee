@@ -13,7 +13,7 @@ use App\DTO\PhotoCreate\InitDTO;
 use App\Exceptions\InvalidPropertyException;
 use App\Models\Album;
 use App\SmartAlbums\BaseSmartAlbum;
-use App\SmartAlbums\StarredAlbum;
+use App\SmartAlbums\HighlightedAlbum;
 
 /**
  * Init album.
@@ -32,8 +32,8 @@ class InitParentAlbum implements InitPipe
 		}
 
 		if ($state->album instanceof BaseSmartAlbum) {
-			if ($state->album instanceof StarredAlbum) {
-				$state->is_starred = true;
+			if ($state->album instanceof HighlightedAlbum) {
+				$state->is_highlighted = true;
 			}
 
 			$state->album = null;

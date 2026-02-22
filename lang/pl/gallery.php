@@ -42,7 +42,7 @@ return [
     ],
     'smart_album' => [
         'unsorted' => 'Nieposortowane',
-        'starred' => 'Wyróżniony',
+        'highlighted' => 'Wyróżniony',
         'recent' => 'Najnowsze',
         'public' => 'Publiczny',
         'on_this_day' => 'W tym dniu',
@@ -96,8 +96,8 @@ return [
     'album' => [
         'header_albums' => 'Albumy',
         'header_photos' => 'Zdjęcia',
-        'show_starred' => 'Filter starred images',
-        'copy_starred_names' => 'Copy starred photo names to clipboard',
+        'show_highlighted' => 'Filter starred images',
+        'copy_highlighted_names' => 'Copy starred photo names to clipboard',
         'no_results' => 'Nie ma tu nic do oglądania',
         'upload' => 'Przesyłanie zdjęć',
         'tabs' => [
@@ -150,8 +150,8 @@ return [
     ],
     'photo' => [
         'actions' => [
-            'star' => 'Wyróżnienie',
-            'unstar' => 'Cofnij wyróżnienie',
+            'highlight' => 'Wyróżnienie',
+            'unhighlight' => 'Cofnij wyróżnienie',
             'set_album_header' => 'Ustaw jako nagłówek albumu',
             'move' => 'Przenieś',
             'delete' => 'Usuń',
@@ -230,10 +230,10 @@ return [
         'consent' => 'Kliknij, aby wyrazić zgodę.',
     ],
     'menus' => [
-        'star' => 'Wyróżnienie',
-        'unstar' => 'Cofnij wyróżnienie',
-        'star_all' => 'Wybrano wyróżnienie',
-        'unstar_all' => 'Cofnij wyróżnienie dla zaznaczonych',
+        'highlight' => 'Wyróżnienie',
+        'unhighlight' => 'Cofnij wyróżnienie',
+        'highlight_all' => 'Wybrano wyróżnienie',
+        'unhighlight_all' => 'Cofnij wyróżnienie dla zaznaczonych',
         'tag' => 'Tag',
         'tag_all' => 'Otaguj zaznaczone',
         'set_cover' => 'Ustaw okładkę albumu',

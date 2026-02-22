@@ -13,9 +13,9 @@ use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
 use Illuminate\Database\Eloquent\Builder;
 
-class StarredAlbum extends BaseSmartAlbum
+class HighlightedAlbum extends BaseSmartAlbum
 {
-	public const ID = SmartAlbumType::STARRED->value;
+	public const ID = SmartAlbumType::HIGHLIGHTED->value;
 
 	/**
 	 * @throws ConfigurationKeyMissingException
@@ -24,8 +24,8 @@ class StarredAlbum extends BaseSmartAlbum
 	protected function __construct()
 	{
 		parent::__construct(
-			id: SmartAlbumType::STARRED,
-			smart_condition: fn (Builder $q) => $q->where('photos.is_starred', '=', true)
+			id: SmartAlbumType::HIGHLIGHTED,
+			smart_condition: fn (Builder $q) => $q->where('photos.is_highlighted', '=', true)
 		);
 	}
 

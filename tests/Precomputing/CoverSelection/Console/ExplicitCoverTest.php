@@ -35,12 +35,12 @@ class ExplicitCoverTest extends BasePrecomputingTest
 		// Create two photos
 		$photo1 = Photo::factory()->owned_by($user)->create([
 			'title' => 'Photo 1',
-			'is_starred' => true,
+			'is_highlighted' => true,
 			'taken_at' => new Carbon('2023-12-31 10:00:00'), // Newer, starred - would be auto-selected
 		]);
 		$photo2 = Photo::factory()->owned_by($user)->create([
 			'title' => 'Photo 2',
-			'is_starred' => false,
+			'is_highlighted' => false,
 			'taken_at' => new Carbon('2023-01-01 10:00:00'), // Older, not starred
 		]);
 
@@ -78,11 +78,11 @@ class ExplicitCoverTest extends BasePrecomputingTest
 		]);
 
 		$photo1 = Photo::factory()->owned_by($user)->create([
-			'is_starred' => false,
+			'is_highlighted' => false,
 			'taken_at' => new Carbon('2023-01-01 10:00:00'),
 		]);
 		$photo2 = Photo::factory()->owned_by($user)->create([
-			'is_starred' => true,
+			'is_highlighted' => true,
 			'taken_at' => new Carbon('2023-12-31 10:00:00'), // Starred, newer
 		]);
 
@@ -115,11 +115,11 @@ class ExplicitCoverTest extends BasePrecomputingTest
 		$album = Album::factory()->as_root()->owned_by($user)->create();
 
 		$photo1 = Photo::factory()->owned_by($user)->create([
-			'is_starred' => true,
+			'is_highlighted' => true,
 			'taken_at' => new Carbon('2023-12-31 10:00:00'),
 		]);
 		$photo2 = Photo::factory()->owned_by($user)->create([
-			'is_starred' => false,
+			'is_highlighted' => false,
 			'taken_at' => new Carbon('2023-01-01 10:00:00'),
 		]);
 

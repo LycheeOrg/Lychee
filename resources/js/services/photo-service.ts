@@ -49,8 +49,8 @@ const PhotoService = {
 		return axios.delete(`${Constants.getApiUrl()}Photo`, { data: { photo_ids: photo_ids, from_id: from_id } });
 	},
 
-	star(photo_ids: string[], is_starred: boolean): Promise<AxiosResponse> {
-		return axios.post(`${Constants.getApiUrl()}Photo::star`, { photo_ids: photo_ids, is_starred: is_starred });
+	star(photo_ids: string[], is_highlighted: boolean): Promise<AxiosResponse> {
+		return axios.post(`${Constants.getApiUrl()}Photo::star`, { photo_ids: photo_ids, is_highlighted: is_highlighted });
 	},
 
 	duplicate(destination_id: string | null, photo_ids: string[]): Promise<AxiosResponse> {

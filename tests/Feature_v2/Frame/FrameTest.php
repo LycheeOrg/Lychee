@@ -54,7 +54,7 @@ class FrameTest extends BaseApiWithDataTest
 	{
 		$response = $this->actingAs($this->userMayUpload1)->postJson('Photo::star', [
 			'photo_ids' => [$this->photo1->id],
-			'is_starred' => true,
+			'is_highlighted' => true,
 		]);
 		$this->assertNoContent($response);
 

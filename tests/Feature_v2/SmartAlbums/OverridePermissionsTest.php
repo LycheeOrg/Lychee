@@ -28,7 +28,7 @@ class OverridePermissionsTest extends BaseApiWithDataTest
 		Configs::set('SA_override_visibility', true);
 		Configs::set('hide_nsfw_in_smart_albums', false);
 
-		$smart_albums = ['starred', 'recent', 'on_this_day', 'unsorted'];
+		$smart_albums = ['highlighted', 'recent', 'on_this_day', 'unsorted'];
 		foreach ($smart_albums as $album_id) {
 			$response = $this->actingAs($this->admin)->postJson('Album::updateProtectionPolicy', [
 				'album_id' => $album_id,
@@ -46,7 +46,7 @@ class OverridePermissionsTest extends BaseApiWithDataTest
 		$this->assertOk($response);
 		$response->assertJson(['smart_albums' => [
 			['id' => 'unsorted', 'title' => 'Unsorted'],
-			['id' => 'starred', 'title' => 'Starred'],
+			['id' => 'highlighted', 'title' => 'Highlighted'],
 			['id' => 'recent', 'title' => 'Recent'],
 			['id' => 'on_this_day', 'title' => 'On This Day'],
 		]]);

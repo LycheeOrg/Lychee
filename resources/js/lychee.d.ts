@@ -36,7 +36,7 @@ declare namespace App.Enum {
 		| "title_strict"
 		| "description_strict"
 		| "taken_at"
-		| "is_starred"
+		| "is_highlighted"
 		| "type"
 		| "rating_avg";
 	export type ColumnSortingType =
@@ -49,7 +49,7 @@ declare namespace App.Enum {
 		| "min_taken_at"
 		| "max_taken_at"
 		| "taken_at"
-		| "is_starred"
+		| "is_highlighted"
 		| "type"
 		| "rating_avg";
 	export type ConfigType =
@@ -674,7 +674,7 @@ declare namespace App.Http.Resources.Models {
 		checksum: string;
 		created_at: string;
 		description: string;
-		is_starred: boolean;
+		is_highlighted: boolean;
 		license: App.Enum.LicenseType;
 		live_photo_checksum: string | null;
 		live_photo_content_id: string | null;

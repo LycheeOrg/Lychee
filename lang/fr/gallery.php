@@ -41,7 +41,7 @@ return [
     ],
     'smart_album' => [
         'unsorted' => 'Non trié',
-        'starred' => 'Favoris',
+        'highlighted' => 'Favoris',
         'recent' => 'Récents',
         'public' => 'Publics',
         'on_this_day' => 'Ce jour-là',
@@ -95,8 +95,8 @@ return [
     'album' => [
         'header_albums' => 'Albums',
         'header_photos' => 'Photos',
-        'show_starred' => 'Filter starred images',
-        'copy_starred_names' => 'Copy starred photo names to clipboard',
+        'show_highlighted' => 'Filter starred images',
+        'copy_highlighted_names' => 'Copy starred photo names to clipboard',
         'no_results' => 'Rien à voir ici',
         'upload' => 'Téléverser des photos',
         'tabs' => [
@@ -149,8 +149,8 @@ return [
     ],
     'photo' => [
         'actions' => [
-            'star' => 'Favori',
-            'unstar' => 'Retirer des favoris',
+            'highlight' => 'Favori',
+            'unhighlight' => 'Retirer des favoris',
             'set_album_header' => 'Définir comme en-tête d’album',
             'move' => 'Déplacer',
             'delete' => 'Supprimer',
@@ -229,10 +229,10 @@ return [
         'consent' => 'Appuyez pour consentir.',
     ],
     'menus' => [
-        'star' => 'Favori',
-        'unstar' => 'Retirer des favoris',
-        'star_all' => 'Mettre en favoris',
-        'unstar_all' => 'Retirer la sélection des favoris',
+        'highlight' => 'Favori',
+        'unhighlight' => 'Retirer des favoris',
+        'highlight_all' => 'Mettre en favoris',
+        'unhighlight_all' => 'Retirer la sélection des favoris',
         'tag' => 'Étiqueter',
         'tag_all' => 'Étiqueter la sélection',
         'set_cover' => 'Définir la couverture',

@@ -41,7 +41,7 @@ return [
     ],
     'smart_album' => [
         'unsorted' => 'مرتب نشده',
-        'starred' => 'ستاره‌دار',
+        'highlighted' => 'ستاره‌دار',
         'recent' => 'اخیر',
         'public' => 'عمومی',
         'on_this_day' => 'در این روز',
@@ -95,8 +95,8 @@ return [
     'album' => [
         'header_albums' => 'آلبوم‌ها',
         'header_photos' => 'عکس‌ها',
-        'show_starred' => 'Filter starred images',
-        'copy_starred_names' => 'Copy starred photo names to clipboard',
+        'show_highlighted' => 'Filter starred images',
+        'copy_highlighted_names' => 'Copy starred photo names to clipboard',
         'no_results' => 'اینجا چیزی برای نمایش نیست',
         'upload' => 'بارگذاری عکس‌ها',
         'tabs' => [
@@ -149,8 +149,8 @@ return [
     ],
     'photo' => [
         'actions' => [
-            'star' => 'ستاره‌دار',
-            'unstar' => 'بدون ستاره',
+            'highlight' => 'ستاره‌دار',
+            'unhighlight' => 'بدون ستاره',
             'set_album_header' => 'تنظیم به عنوان هدر آلبوم',
             'move' => 'انتقال',
             'delete' => 'حذف',
@@ -229,10 +229,10 @@ return [
         'consent' => 'برای تأیید لمس کنید.',
     ],
     'menus' => [
-        'star' => 'ستاره‌دار',
-        'unstar' => 'بدون ستاره',
-        'star_all' => 'ستاره‌دار کردن انتخاب شده‌ها',
-        'unstar_all' => 'حذف ستاره از انتخاب شده‌ها',
+        'highlight' => 'ستاره‌دار',
+        'unhighlight' => 'بدون ستاره',
+        'highlight_all' => 'ستاره‌دار کردن انتخاب شده‌ها',
+        'unhighlight_all' => 'حذف ستاره از انتخاب شده‌ها',
         'tag' => 'برچسب',
         'tag_all' => 'برچسب‌گذاری انتخاب شده‌ها',
         'set_cover' => 'تنظیم جلد آلبوم',

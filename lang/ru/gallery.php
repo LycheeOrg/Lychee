@@ -41,7 +41,7 @@ return [
     ],
     'smart_album' => [
         'unsorted' => 'Неотсортированные',
-        'starred' => 'Избранные',
+        'highlighted' => 'Избранные',
         'recent' => 'Недавние',
         'public' => 'Публичные',
         'on_this_day' => 'В этот день',
@@ -95,8 +95,8 @@ return [
     'album' => [
         'header_albums' => 'Альбомы',
         'header_photos' => 'Фотографии',
-        'show_starred' => 'Filter starred images',
-        'copy_starred_names' => 'Copy starred photo names to clipboard',
+        'show_highlighted' => 'Filter starred images',
+        'copy_highlighted_names' => 'Copy starred photo names to clipboard',
         'no_results' => 'Здесь ничего нет',
         'upload' => 'Загрузить фотографии',
         'tabs' => [
@@ -149,8 +149,8 @@ return [
     ],
     'photo' => [
         'actions' => [
-            'star' => 'Добавить в избранное',
-            'unstar' => 'Убрать из избранного',
+            'highlight' => 'Добавить в избранное',
+            'unhighlight' => 'Убрать из избранного',
             'set_album_header' => 'Установить как заголовок альбома',
             'move' => 'Переместить',
             'delete' => 'Удалить',
@@ -229,10 +229,10 @@ return [
         'consent' => 'Нажмите для согласия.',
     ],
     'menus' => [
-        'star' => 'Добавить в избранное',
-        'unstar' => 'Убрать из избранного',
-        'star_all' => 'Добавить все в избранное',
-        'unstar_all' => 'Убрать все из избранного',
+        'highlight' => 'Добавить в избранное',
+        'unhighlight' => 'Убрать из избранного',
+        'highlight_all' => 'Добавить все в избранное',
+        'unhighlight_all' => 'Убрать все из избранного',
         'tag' => 'Тег',
         'tag_all' => 'Тегировать все',
         'set_cover' => 'Установить обложку альбома',

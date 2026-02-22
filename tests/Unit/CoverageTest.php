@@ -44,7 +44,7 @@ class CoverageTest extends AbstractTestCase
 	public function testBackEnumStuff(): void
 	{
 		self::assertEquals(['UNSORTED',
-			'STARRED',
+			'HIGHLIGHTED',
 			'RECENT',
 			'ON_THIS_DAY',
 			'UNTAGGED',
@@ -60,7 +60,7 @@ class CoverageTest extends AbstractTestCase
 		], SmartAlbumType::names());
 		self::assertEquals([
 			'UNSORTED' => 'unsorted',
-			'STARRED' => 'starred',
+			'HIGHLIGHTED' => 'highlighted',
 			'RECENT' => 'recent',
 			'ON_THIS_DAY' => 'on_this_day',
 			'UNTAGGED' => 'untagged',

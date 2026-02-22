@@ -17,7 +17,7 @@ class SetStarred implements SharedPipe
 	public function handle(DuplicateDTO|StandaloneDTO $state, \Closure $next): DuplicateDTO|StandaloneDTO
 	{
 		// Adopt settings of duplicated photo acc. to target album
-		$state->photo->is_starred = $state->is_starred;
+		$state->photo->is_highlighted = $state->is_highlighted;
 
 		return $next($state);
 	}

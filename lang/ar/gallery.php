@@ -41,7 +41,7 @@ return [
     ],
     'smart_album' => [
         'unsorted' => 'غير مصنف',
-        'starred' => 'المميزة',
+        'highlighted' => 'المميزة',
         'recent' => 'الأحدث',
         'public' => 'عام',
         'on_this_day' => 'في هذا اليوم',
@@ -95,8 +95,8 @@ return [
     'album' => [
         'header_albums' => 'الألبومات',
         'header_photos' => 'الصور',
-        'show_starred' => 'Filter starred images',
-        'copy_starred_names' => 'Copy starred photo names to clipboard',
+        'show_highlighted' => 'Filter starred images',
+        'copy_highlighted_names' => 'Copy starred photo names to clipboard',
         'no_results' => 'لا يوجد شيء هنا',
         'upload' => 'رفع الصور',
         'tabs' => [
@@ -149,8 +149,8 @@ return [
     ],
     'photo' => [
         'actions' => [
-            'star' => 'تمييز',
-            'unstar' => 'إلغاء التمييز',
+            'highlight' => 'تمييز',
+            'unhighlight' => 'إلغاء التمييز',
             'set_album_header' => 'تعيين كعنوان ألبوم',
             'move' => 'نقل',
             'delete' => 'حذف',
@@ -229,10 +229,10 @@ return [
         'consent' => 'اضغط للموافقة.',
     ],
     'menus' => [
-        'star' => 'تمييز',
-        'unstar' => 'إلغاء التمييز',
-        'star_all' => 'تمييز المحدد',
-        'unstar_all' => 'إلغاء تمييز المحدد',
+        'highlight' => 'تمييز',
+        'unhighlight' => 'إلغاء التمييز',
+        'highlight_all' => 'تمييز المحدد',
+        'unhighlight_all' => 'إلغاء تمييز المحدد',
         'tag' => 'علامة',
         'tag_all' => 'تعيين علامة للمحدد',
         'set_cover' => 'تعيين غلاف الألبوم',

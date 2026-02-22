@@ -17,15 +17,15 @@ export function usePhotoActions(photoStore: PhotoStore, albumId: Ref<string | un
 			return;
 		}
 
-		const newStarValue = !photoStore.photo.is_starred;
+		const newStarValue = !photoStore.photo.is_highlighted;
 		PhotoService.star([photoStore.photo.id], newStarValue).then(() => {
 			// Update the current photo store
-			photoStore.photo!.is_starred = newStarValue;
+			photoStore.photo!.is_highlighted = newStarValue;
 
 			// Update the photo in the album list (photosStore) to keep it in sync
 			const photoIndex = photosStore.photos.findIndex((p) => p.id === photoStore.photo!.id);
 			if (photoIndex !== -1) {
-				photosStore.photos[photoIndex].is_starred = newStarValue;
+				photosStore.photos[photoIndex].is_highlighted = newStarValue;
 			}
 
 			AlbumService.clearCache(albumId.value);

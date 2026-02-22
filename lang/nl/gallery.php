@@ -42,7 +42,7 @@ return [
     ],
     'smart_album' => [
         'unsorted' => 'Ongesorteerd',
-        'starred' => 'Gemarkeerd',
+        'highlighted' => 'Gemarkeerd',
         'recent' => 'Recent',
         'public' => 'Openbaar',
         'on_this_day' => 'Op deze dag',
@@ -96,8 +96,8 @@ return [
     'album' => [
         'header_albums' => 'Albums',
         'header_photos' => 'Foto’s',
-        'show_starred' => 'Filter starred images',
-        'copy_starred_names' => 'Copy starred photo names to clipboard',
+        'show_highlighted' => 'Filter starred images',
+        'copy_highlighted_names' => 'Copy starred photo names to clipboard',
         'no_results' => 'Niets te zien hier',
         'upload' => 'Foto’s uploaden',
         'tabs' => [
@@ -150,8 +150,8 @@ return [
     ],
     'photo' => [
         'actions' => [
-            'star' => 'Ster',
-            'unstar' => 'Ster verwijderen',
+            'highlight' => 'Ster',
+            'unhighlight' => 'Ster verwijderen',
             'set_album_header' => 'Instellen als albumkop',
             'move' => 'Verplaatsen',
             'delete' => 'Verwijderen',
@@ -230,10 +230,10 @@ return [
         'consent' => 'Tik om toestemming te geven.',
     ],
     'menus' => [
-        'star' => 'Ster',
-        'unstar' => 'Ster verwijderen',
-        'star_all' => 'Alles sterren',
-        'unstar_all' => 'Sterren verwijderen',
+        'highlight' => 'Ster',
+        'unhighlight' => 'Ster verwijderen',
+        'highlight_all' => 'Alles sterren',
+        'unhighlight_all' => 'Sterren verwijderen',
         'tag' => 'Tag',
         'tag_all' => 'Alle tags',
         'set_cover' => 'Stel albumhoes in',

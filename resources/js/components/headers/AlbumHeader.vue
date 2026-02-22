@@ -18,9 +18,9 @@
 		<template #end>
 			<Button
 				v-if="is_se_enabled && (albumsStore.rootRights?.can_star || albumStore.album.rights?.can_edit)"
-				v-tooltip.bottom="$t('gallery.album.show_starred')"
+				v-tooltip.bottom="$t('gallery.album.show_highlighted')"
 				:icon="albumStore.showStarredOnly ? 'pi pi-star-fill' : 'pi pi-star'"
-				:label="String(photosStore.starredPhotosCount)"
+				:label="String(photosStore.highlightedPhotosCount)"
 				class="border-none hover:text-color"
 				severity="secondary"
 				text
@@ -28,7 +28,7 @@
 			/>
 			<Button
 				v-if="is_se_enabled && albumStore.album.rights?.can_edit"
-				v-tooltip.bottom="$t('gallery.album.copy_starred_names')"
+				v-tooltip.bottom="$t('gallery.album.copy_highlighted_names')"
 				icon="pi pi-copy"
 				class="border-none hover:text-color"
 				severity="secondary"

@@ -263,7 +263,7 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 				unlocked_album_ids: [],
 				origin: $album,
 				include_nsfw: $is_nsfw_context)
-			->orderBy('photos.is_starred', 'desc')
+			->orderBy('photos.is_highlighted', 'desc')
 			->orderBy($sorting->column->toColumn(), $sorting->order->value)
 			->select('photos.id')
 			->first();
@@ -276,7 +276,7 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 	 *
 	 * Selects best photo from album + descendants with NO access filters.
 	 * Applies NSFW context: if album/parent is NSFW, allow NSFW photos; else exclude.
-	 * Ordering: is_starred DESC, then taken_at DESC, then id ASC.
+	 * Ordering: is_highlighted DESC, then taken_at DESC, then id ASC.
 	 *
 	 * @param Album $album
 	 * @param bool  $is_nsfw_context
@@ -296,7 +296,7 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 	 * Selects best photo from album + descendants WITH access control filters.
 	 * Only includes photos visible to all users (public photos).
 	 * Applies NSFW context: if album/parent is NSFW, allow NSFW photos; else exclude.
-	 * Ordering: is_starred DESC, then taken_at DESC, then id ASC.
+	 * Ordering: is_highlighted DESC, then taken_at DESC, then id ASC.
 	 *
 	 * @param Album $album
 	 * @param bool  $is_nsfw_context

@@ -241,7 +241,7 @@ const photoCallbacks = {
 		selectedPhotosIds.value.forEach((photoId) => {
 			const photo = photosStore.photos.find((p) => p.id === photoId);
 			if (photo) {
-				photo.is_starred = true;
+				photo.is_highlighted = true;
 			}
 		});
 		AlbumService.clearCache(albumStore.album?.id);
@@ -252,7 +252,7 @@ const photoCallbacks = {
 		selectedPhotosIds.value.forEach((photoId) => {
 			const photo = photosStore.photos.find((p) => p.id === photoId);
 			if (photo) {
-				photo.is_starred = false;
+				photo.is_highlighted = false;
 			}
 		});
 		AlbumService.clearCache(albumStore.album?.id);
@@ -338,13 +338,13 @@ const albumCallbacks = {
 			photosStore.setPhotoRatingFilter(null);
 		} else {
 			albumStore.setShowStarredOnly(true);
-			photosStore.setPhotoRatingFilter("starred");
+			photosStore.setPhotoRatingFilter("highlighted");
 		}
 
 		unselect();
 	},
 	copyStarred: () => {
-		const starred = photosStore.photos.filter((p) => p.is_starred);
+		const starred = photosStore.photos.filter((p) => p.is_highlighted);
 		const selectedNames = starred
 			.map((p) => {
 				const dotIndex = p.title.lastIndexOf(".");

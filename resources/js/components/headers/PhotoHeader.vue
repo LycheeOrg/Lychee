@@ -16,11 +16,13 @@
 				<Button
 					v-if="!albumStore.rights?.can_edit && leftMenuStore.initData?.root_album?.can_star"
 					text
-					v-tooltip.bottom="photoStore.photo.is_starred ? $t('gallery.photo.actions.unstar') : $t('gallery.photo.actions.star')"
-					:icon="photoStore.photo.is_starred ? 'pi pi-star-fill' : 'pi pi-star'"
+					v-tooltip.bottom="
+						photoStore.photo.is_highlighted ? $t('gallery.photo.actions.unhighlight') : $t('gallery.photo.actions.highlight')
+					"
+					:icon="photoStore.photo.is_highlighted ? 'pi pi-star-fill' : 'pi pi-star'"
 					class="ltr:mr-2 rtl:ml-2"
 					:class="
-						photoStore.photo.is_starred
+						photoStore.photo.is_highlighted
 							? '[&>span]:text-yellow-500 lg:hover:[&>span]:text-yellow-100'
 							: '[&>span]:text-white lg:hover:[&>span]:text-yellow-500'
 					"

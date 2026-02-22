@@ -17,7 +17,7 @@ final class ImportParam
 	 * @param ImportMode     $import_mode
 	 * @param int            $intended_owner_id indicates the intended owner of the image
 	 * @param Album|null     $album
-	 * @param bool           $is_starred        indicates whether the new photo shall be starred
+	 * @param bool           $is_highlighted    indicates whether the new photo shall be highlighted
 	 * @param Extractor|null $exif_info         the extracted EXIF information
 	 *
 	 * @return void
@@ -26,7 +26,7 @@ final class ImportParam
 		public ImportMode $import_mode,
 		public int $intended_owner_id,
 		public Album|null $album = null,
-		public bool $is_starred = false,
+		public bool $is_highlighted = false,
 		public Extractor|null $exif_info = null,
 	) {
 	}

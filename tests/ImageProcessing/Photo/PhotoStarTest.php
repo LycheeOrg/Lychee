@@ -34,13 +34,13 @@ class PhotoStarTest extends BaseApiWithDataTest
 
 		$response = $this->postJson('Photo::star', [
 			'photo_ids' => [$this->photo1->id],
-			'is_starred' => true,
+			'is_highlighted' => true,
 		]);
 		$this->assertUnauthorized($response);
 
 		$response = $this->actingAs($this->userNoUpload)->postJson('Photo::star', [
 			'photo_ids' => [$this->photo1->id],
-			'is_starred' => true,
+			'is_highlighted' => true,
 		]);
 		$this->assertForbidden($response);
 	}
@@ -55,13 +55,13 @@ class PhotoStarTest extends BaseApiWithDataTest
 
 		$response = $this->postJson('Photo::star', [
 			'photo_ids' => [$this->photo1->id],
-			'is_starred' => true,
+			'is_highlighted' => true,
 		]);
 		$this->assertNoContent($response);
 
 		$response = $this->actingAs($this->userNoUpload)->postJson('Photo::star', [
 			'photo_ids' => [$this->photo1->id],
-			'is_starred' => true,
+			'is_highlighted' => true,
 		]);
 		$this->assertNoContent($response);
 	}
@@ -75,13 +75,13 @@ class PhotoStarTest extends BaseApiWithDataTest
 
 		$response = $this->postJson('Photo::star', [
 			'photo_ids' => [$this->photo1->id],
-			'is_starred' => true,
+			'is_highlighted' => true,
 		]);
 		$this->assertUnauthorized($response);
 
 		$response = $this->actingAs($this->userNoUpload)->postJson('Photo::star', [
 			'photo_ids' => [$this->photo1->id],
-			'is_starred' => true,
+			'is_highlighted' => true,
 		]);
 		// Under AUTHENTICATED visibility, any logged-in user can star
 		$this->assertNoContent($response);
@@ -94,7 +94,7 @@ class PhotoStarTest extends BaseApiWithDataTest
 
 		$response = $this->actingAs($this->userMayUpload1)->postJson('Photo::star', [
 			'photo_ids' => [$this->photo1->id],
-			'is_starred' => true,
+			'is_highlighted' => true,
 		]);
 		$this->assertNoContent($response);
 
@@ -104,7 +104,7 @@ class PhotoStarTest extends BaseApiWithDataTest
 			'photos' => [
 				[
 					'id' => $this->photo1->id,
-					'is_starred' => true,
+					'is_highlighted' => true,
 				],
 			],
 		]);

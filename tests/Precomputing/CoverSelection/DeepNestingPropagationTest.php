@@ -48,7 +48,7 @@ class DeepNestingPropagationTest extends BasePrecomputingTest
 
 		// Add photo to leaf album (Level 4)
 		$photo = Photo::factory()->in($albums[4])->owned_by($user)->create([
-			'is_starred' => true,
+			'is_highlighted' => true,
 			'taken_at' => new Carbon('2023-12-25 10:00:00'),
 		]);
 

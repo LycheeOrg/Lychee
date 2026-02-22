@@ -84,7 +84,7 @@ class RequestAttribute
 
 	public const FILE_ATTRIBUTE = 'file';
 	public const SHALL_OVERRIDE_ATTRIBUTE = 'shall_override';
-	public const IS_STARRED_ATTRIBUTE = 'is_starred';
+	public const IS_HIGHLIGHTED_ATTRIBUTE = 'is_highlighted';
 	public const RATING_ATTRIBUTE = 'rating';
 	public const DIRECTION_ATTRIBUTE = 'direction';
 

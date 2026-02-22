@@ -143,11 +143,11 @@ class AlbumHeadEndpointTest extends BaseApiWithDataTest
 	public function testGetSmartAlbumStarredHeadSuccess(): void
 	{
 		// Test with starred smart album as owner
-		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album::head', ['album_id' => 'starred']);
+		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album::head', ['album_id' => 'highlighted']);
 		$this->assertOk($response);
 		$response->assertJson([
 			'resource' => [
-				'id' => 'starred',
+				'id' => 'highlighted',
 			],
 		]);
 

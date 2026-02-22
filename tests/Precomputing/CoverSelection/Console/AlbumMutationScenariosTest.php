@@ -277,11 +277,11 @@ class AlbumMutationScenariosTest extends BasePrecomputingTest
 		$album = Album::factory()->as_root()->owned_by($user)->create();
 
 		$photo1 = Photo::factory()->owned_by($user)->create([
-			'is_starred' => false,
+			'is_highlighted' => false,
 			'taken_at' => new Carbon('2023-12-31 10:00:00', 'UTC'),
 		]);
 		$photo2 = Photo::factory()->owned_by($user)->create([
-			'is_starred' => false,
+			'is_highlighted' => false,
 			'taken_at' => new Carbon('2023-01-31 10:00:00', 'UTC'),
 		]);
 
@@ -297,7 +297,7 @@ class AlbumMutationScenariosTest extends BasePrecomputingTest
 		$oldCover = $album->auto_cover_id_max_privilege;
 
 		// Star the older photo
-		$photo1->is_starred = true;
+		$photo1->is_highlighted = true;
 		$photo1->save();
 
 		Artisan::call('lychee:recompute-album-stats', [

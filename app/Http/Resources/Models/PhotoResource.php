@@ -28,7 +28,7 @@ class PhotoResource extends Data
 	public string $checksum;
 	public string $created_at;
 	public string $description;
-	public bool $is_starred;
+	public bool $is_highlighted;
 	public LicenseType $license;
 	public ?string $live_photo_checksum;
 	public ?string $live_photo_content_id;
@@ -61,7 +61,7 @@ class PhotoResource extends Data
 		$this->checksum = $photo->checksum;
 		$this->created_at = $photo->created_at->toIso8601String();
 		$this->description = $photo->description ?? '';
-		$this->is_starred = $photo->is_starred;
+		$this->is_highlighted = $photo->is_highlighted;
 		$this->license = $photo->license;
 		$this->live_photo_checksum = $photo->live_photo_checksum;
 		$this->live_photo_content_id = $photo->live_photo_content_id;

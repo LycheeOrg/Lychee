@@ -16,9 +16,9 @@
 	>
 		<span class="absolute left-1/2 -translate-x-1/2 p-1 min-w-[25%] w-full filter-shadow text-center">
 			<DockButton
-				v-tooltip.bottom="photoStore.photo.is_starred ? $t('gallery.photo.actions.unstar') : $t('gallery.photo.actions.star')"
+				v-tooltip.bottom="photoStore.photo.is_highlighted ? $t('gallery.photo.actions.unhighlight') : $t('gallery.photo.actions.highlight')"
 				icon="star"
-				:class="photoStore.photo.is_starred ? 'fill-yellow-500 lg:hover:fill-yellow-100' : 'fill-white lg:hover:fill-yellow-500'"
+				:class="photoStore.photo.is_highlighted ? 'fill-yellow-500 lg:hover:fill-yellow-100' : 'fill-white lg:hover:fill-yellow-500'"
 				@click="emits('toggleStar')"
 			/>
 			<DockButton
