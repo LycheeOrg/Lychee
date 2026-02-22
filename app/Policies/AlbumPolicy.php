@@ -11,8 +11,10 @@ namespace App\Policies;
 use App\Constants\AccessPermissionConstants as APC;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\MetricsAccess;
+use App\Enum\PhotoHighlightVisibilityType;
 use App\Enum\SmartAlbumType;
 use App\Exceptions\ConfigurationKeyMissingException;
+use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\AccessPermission;
 use App\Models\Album;
@@ -45,6 +47,7 @@ class AlbumPolicy extends BasePolicy
 	public const CAN_SHARE_ID = 'canShareById';
 	public const CAN_READ_METRICS = 'canReadMetrics';
 	public const CAN_MAKE_PURCHASABLE = 'canMakePurchasable';
+	public const CAN_STAR = 'canStar';
 
 	/**
 	 * This ensures that current album is owned by current user.
@@ -613,6 +616,31 @@ class AlbumPolicy extends BasePolicy
 			MetricsAccess::OWNER => $user !== null && $album->owner_id === $user->id,
 			MetricsAccess::ADMIN => $user?->may_administrate === true,
 			default => false,
+		};
+	}
+
+	/**
+	 * This is only used for the global defition and should not be used to validate whether an album is
+	 * starrable or not.
+	 *
+	 * @param User|null     $user
+	 * @param AbstractAlbum $album
+	 *
+	 * @return bool
+	 */
+	public function canStar(?User $user, ?AbstractAlbum $album): bool
+	{
+		if ($album !== null) {
+			throw new LycheeLogicException('The canStar method of AlbumPolicy is only used for the global definition and should not be used to validate whether an album is starrable or not.');
+		}
+
+		$config_manager = app(ConfigManager::class);
+		$visibility = $config_manager->getValueAsEnum('photos_star_visibility', PhotoHighlightVisibilityType::class);
+
+		return match ($visibility) {
+			PhotoHighlightVisibilityType::ANONYMOUS => true,
+			PhotoHighlightVisibilityType::AUTHENTICATED => $user !== null,
+			default => false, // This is the editor case, this is taken over directly by the canEdit in the front-end.
 		};
 	}
 

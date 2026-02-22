@@ -10,6 +10,7 @@ namespace App\Policies;
 
 use App\Constants\PhotoAlbum as PA;
 use App\Enum\MetricsAccess;
+use App\Enum\PhotoHighlightVisibilityType;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\QueryBuilderException;
@@ -24,13 +25,13 @@ class PhotoPolicy extends BasePolicy
 {
 	public const CAN_SEE = 'canSee';
 	public const CAN_DOWNLOAD = 'canDownload';
-	// public const CAN_DELETE = 'canDelete';
 	public const CAN_EDIT = 'canEdit';
 	public const CAN_EDIT_ID = 'canEditById';
 	public const CAN_ACCESS_FULL_PHOTO = 'canAccessFullPhoto';
 	public const CAN_DELETE_BY_ID = 'canDeleteById';
 	public const CAN_READ_METRICS = 'canReadMetrics';
 	public const CAN_READ_RATINGS = 'canReadRatings';
+	public const CAN_STAR = 'canStar';
 
 	/**
 	 * @throws FrameworkException
@@ -174,25 +175,6 @@ class PhotoPolicy extends BasePolicy
 	}
 
 	/**
-	 * Checks whether the photo is deletable le by the current user.
-	 *
-	 * @param Photo $photo
-	 *
-	 * @return bool
-	 */
-	// public function canDelete(User $user, Photo $photo)
-	// {
-	// 	if ($this->isOwner($user, $photo)) {
-	// 		return true;
-	// 	}
-
-	// 	// TODO: refactor me.
-	// 	throw new UnauthorizedException('You are not allowed to delete this photo (yet).');
-
-	// 	return $this->canSee($user, $photo) && $this->album_policy->canDelete($user, $photo->album);
-	// }
-
-	/**
 	 * Checks whether the designated photos are deletable by the current user.
 	 *
 	 * @param User     $user
@@ -276,6 +258,38 @@ class PhotoPolicy extends BasePolicy
 		// Note that this will bypass the setting 'rating_show_only_when_user_rated'
 		// It is up to the admin to decide whether anonymous users can see ratings at all.
 		return ($user !== null) || $config_manager->getValueAsBool('rating_public');
+	}
+
+	/**
+	 * Checks whether the photo can be starred by the current user.
+	 *
+	 * A photo is called _starred_ if the current user is allowed to star
+	 * the photo.
+	 * A photo can be _starred_ if any of the following conditions hold
+	 * (OR-clause)
+	 *
+	 * - the settings is set to allow anonymous users to star photos
+	 * - the settings is set to allow authenticated users to star photos and the user is authenticated
+	 * - the settings is set to allow editors to star photos and the user is an editor
+	 * - the user is the owner of the photo (checked via canEdit method)
+	 * - the user is admin (checked by before method)
+	 *
+	 * @param User|null $user
+	 * @param Photo     $photo
+	 *
+	 * @return bool
+	 */
+	public function canStar(?User $user, Photo $photo): bool
+	{
+		$config_manager = app(ConfigManager::class);
+		$visibility = $config_manager->getValueAsEnum('photos_star_visibility', PhotoHighlightVisibilityType::class);
+
+		return match ($visibility) {
+			PhotoHighlightVisibilityType::ANONYMOUS => true,
+			PhotoHighlightVisibilityType::AUTHENTICATED => $user !== null,
+			PhotoHighlightVisibilityType::EDITOR => $user !== null && $this->canEdit($user, $photo),
+			default => false,
+		};
 	}
 
 	/**

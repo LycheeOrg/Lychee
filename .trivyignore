@@ -1,3 +1,9 @@
 # True positive but we expect Lychee to be run behind a reverse proxy that is taking care of the cryptography and TLS configuration.
 # Waiting of frankenphp to update the golang dependencies
 CVE-2026-25793
+# This CVE is stupid and disputed.
+# The "vulnerability" is that php-jwt accepts short HMAC keys without validation.
+# This is not a library bug — key management is the caller's responsibility.
+# PHP's own hash_hmac() and openssl_sign() behave identically and have no CVEs for this.
+# NVD agrees — hence the Disputed tag and no score from NIST.
+CVE-2025-45769
