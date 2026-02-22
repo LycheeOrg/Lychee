@@ -236,7 +236,7 @@ const albumPanelConfig = computed<AlbumThumbConfig>(() => ({
 
 const photoCallbacks = {
 	star: () => {
-		PhotoService.star(selectedPhotosIds.value, true);
+		PhotoService.highlight(selectedPhotosIds.value, true);
 		// Update the photos in the store immediately to reflect the change
 		selectedPhotosIds.value.forEach((photoId) => {
 			const photo = photosStore.photos.find((p) => p.id === photoId);
@@ -247,7 +247,7 @@ const photoCallbacks = {
 		AlbumService.clearCache(albumStore.album?.id);
 	},
 	unstar: () => {
-		PhotoService.star(selectedPhotosIds.value, false);
+		PhotoService.highlight(selectedPhotosIds.value, false);
 		// Update the photos in the store immediately to reflect the change
 		selectedPhotosIds.value.forEach((photoId) => {
 			const photo = photosStore.photos.find((p) => p.id === photoId);

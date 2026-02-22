@@ -18,7 +18,7 @@ export function usePhotoActions(photoStore: PhotoStore, albumId: Ref<string | un
 		}
 
 		const newStarValue = !photoStore.photo.is_highlighted;
-		PhotoService.star([photoStore.photo.id], newStarValue).then(() => {
+		PhotoService.highlight([photoStore.photo.id], newStarValue).then(() => {
 			// Update the current photo store
 			photoStore.photo!.is_highlighted = newStarValue;
 

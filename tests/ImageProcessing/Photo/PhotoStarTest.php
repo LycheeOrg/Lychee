@@ -29,16 +29,16 @@ class PhotoStarTest extends BaseApiWithDataTest
 		// With anonymous visibility (and album1 not public), non-owning users cannot star
 		Configs::set('photos_star_visibility', PhotoHighlightVisibilityType::EDITOR->value);
 
-		$response = $this->postJson('Photo::star', []);
+		$response = $this->postJson('Photo::highlight', []);
 		$this->assertUnprocessable($response);
 
-		$response = $this->postJson('Photo::star', [
+		$response = $this->postJson('Photo::highlight', [
 			'photo_ids' => [$this->photo1->id],
 			'is_highlighted' => true,
 		]);
 		$this->assertUnauthorized($response);
 
-		$response = $this->actingAs($this->userNoUpload)->postJson('Photo::star', [
+		$response = $this->actingAs($this->userNoUpload)->postJson('Photo::highlight', [
 			'photo_ids' => [$this->photo1->id],
 			'is_highlighted' => true,
 		]);
@@ -50,16 +50,16 @@ class PhotoStarTest extends BaseApiWithDataTest
 		// With anonymous visibility (and album1 not public), non-owning users cannot star
 		Configs::set('photos_star_visibility', PhotoHighlightVisibilityType::ANONYMOUS->value);
 
-		$response = $this->postJson('Photo::star', []);
+		$response = $this->postJson('Photo::highlight', []);
 		$this->assertUnprocessable($response);
 
-		$response = $this->postJson('Photo::star', [
+		$response = $this->postJson('Photo::highlight', [
 			'photo_ids' => [$this->photo1->id],
 			'is_highlighted' => true,
 		]);
 		$this->assertNoContent($response);
 
-		$response = $this->actingAs($this->userNoUpload)->postJson('Photo::star', [
+		$response = $this->actingAs($this->userNoUpload)->postJson('Photo::highlight', [
 			'photo_ids' => [$this->photo1->id],
 			'is_highlighted' => true,
 		]);
@@ -70,16 +70,16 @@ class PhotoStarTest extends BaseApiWithDataTest
 	{
 		Configs::set('photos_star_visibility', PhotoHighlightVisibilityType::AUTHENTICATED->value);
 
-		$response = $this->postJson('Photo::star', []);
+		$response = $this->postJson('Photo::highlight', []);
 		$this->assertUnprocessable($response);
 
-		$response = $this->postJson('Photo::star', [
+		$response = $this->postJson('Photo::highlight', [
 			'photo_ids' => [$this->photo1->id],
 			'is_highlighted' => true,
 		]);
 		$this->assertUnauthorized($response);
 
-		$response = $this->actingAs($this->userNoUpload)->postJson('Photo::star', [
+		$response = $this->actingAs($this->userNoUpload)->postJson('Photo::highlight', [
 			'photo_ids' => [$this->photo1->id],
 			'is_highlighted' => true,
 		]);
@@ -89,10 +89,10 @@ class PhotoStarTest extends BaseApiWithDataTest
 
 	public function testSetStarPhotoAuthorizedOwner(): void
 	{
-		$response = $this->actingAs($this->userMayUpload1)->postJson('Photo::star', []);
+		$response = $this->actingAs($this->userMayUpload1)->postJson('Photo::highlight', []);
 		$this->assertUnprocessable($response);
 
-		$response = $this->actingAs($this->userMayUpload1)->postJson('Photo::star', [
+		$response = $this->actingAs($this->userMayUpload1)->postJson('Photo::highlight', [
 			'photo_ids' => [$this->photo1->id],
 			'is_highlighted' => true,
 		]);

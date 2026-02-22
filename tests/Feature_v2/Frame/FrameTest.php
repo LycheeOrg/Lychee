@@ -52,7 +52,7 @@ class FrameTest extends BaseApiWithDataTest
 
 	public function testRandom(): void
 	{
-		$response = $this->actingAs($this->userMayUpload1)->postJson('Photo::star', [
+		$response = $this->actingAs($this->userMayUpload1)->postJson('Photo::highlight', [
 			'photo_ids' => [$this->photo1->id],
 			'is_highlighted' => true,
 		]);

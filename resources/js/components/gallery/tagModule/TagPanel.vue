@@ -94,12 +94,12 @@ function photoClick(photoId: string, _e: MouseEvent) {
 
 const photoCallbacks = {
 	star: () => {
-		PhotoService.star(selectedPhotosIds.value, true);
+		PhotoService.highlight(selectedPhotosIds.value, true);
 		AlbumService.clearCache();
 		emits("refresh");
 	},
 	unstar: () => {
-		PhotoService.star(selectedPhotosIds.value, false);
+		PhotoService.highlight(selectedPhotosIds.value, false);
 		AlbumService.clearCache();
 		emits("refresh");
 	},

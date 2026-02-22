@@ -325,12 +325,12 @@ const {
 
 const photoCallbacks = {
 	star: () => {
-		PhotoService.star(selectedPhotosIds.value, true);
+		PhotoService.highlight(selectedPhotosIds.value, true);
 		AlbumService.clearCache();
 		refresh();
 	},
 	unstar: () => {
-		PhotoService.star(selectedPhotosIds.value, false);
+		PhotoService.highlight(selectedPhotosIds.value, false);
 		AlbumService.clearCache();
 		refresh();
 	},

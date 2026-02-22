@@ -17,9 +17,9 @@ use App\Models\Photo;
 use App\Rules\RandomIDRule;
 
 /**
- * Class SetPhotosStarredRequest.
+ * Class SetPhotosHighlightedRequest.
  */
-class SetPhotosStarredRequest extends BaseApiRequest implements HasPhotos
+class SetPhotosHighlightedRequest extends BaseApiRequest implements HasPhotos
 {
 	use HasPhotosTrait;
 	use AuthorizeCanStarPhotosTrait;
