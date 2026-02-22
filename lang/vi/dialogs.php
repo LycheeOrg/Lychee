@@ -250,4 +250,7 @@ return [
         'reload' => 'Reload',
         'go_to_gallery' => 'Go to the Gallery',
     ],
+    'selected_images' => [
+        'names_copied' => 'The names of the selected images have been copied!',
+    ],
 ];

@@ -130,6 +130,7 @@ declare namespace App.Enum {
 	export type OrderSortingType = "ASC" | "DESC";
 	export type PaginationMode = "infinite_scroll" | "load_more_button" | "page_navigation";
 	export type PaymentStatusType = "pending" | "cancelled" | "failed" | "refunded" | "processing" | "offline" | "completed" | "closed";
+	export type PhotoHighlightVisibilityType = "anonymous" | "authenticated" | "editor";
 	export type PhotoLayoutType = "square" | "justified" | "masonry" | "grid";
 	export type PhotoThumbInfoType = "title" | "description";
 	export type PurchasableLicenseType = "personal" | "commercial" | "extended";
@@ -154,7 +155,9 @@ declare namespace App.Enum {
 		| "three_stars"
 		| "four_stars"
 		| "five_stars"
-		| "best_pictures";
+		| "best_pictures"
+		| "my_rated_pictures"
+		| "my_best_pictures";
 	export type StorageDiskType = "images" | "s3";
 	export type ThumbAlbumSubtitleType = "description" | "takedate" | "creation" | "oldstyle" | "num_photos" | "num_albums" | "num_photos_albums";
 	export type TimelineAlbumGranularity = "default" | "disabled" | "year" | "month" | "day";
@@ -467,6 +470,7 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		photos_infinite_scroll_threshold: number;
 		albums_infinite_scroll_threshold: number;
 		default_album_protection: App.Enum.DefaultAlbumProtectionType;
+		photos_star_visibility: App.Enum.PhotoHighlightVisibilityType;
 	};
 	export type LandingPageResource = {
 		landing_page_enable: boolean;
@@ -960,6 +964,7 @@ declare namespace App.Http.Resources.Rights {
 		can_upload: boolean;
 		can_see_live_metrics: boolean;
 		can_import_from_server: boolean;
+		can_star: boolean;
 	};
 	export type SettingsRightsResource = {
 		can_edit: boolean;

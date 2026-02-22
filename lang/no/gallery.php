@@ -96,6 +96,8 @@ return [
     'album' => [
         'header_albums' => 'Album',
         'header_photos' => 'Bilder',
+        'show_starred' => 'Filter starred images',
+        'copy_starred_names' => 'Copy starred photo names to clipboard',
         'no_results' => 'Ingenting å se her',
         'upload' => 'Last opp bilder',
         'tabs' => [

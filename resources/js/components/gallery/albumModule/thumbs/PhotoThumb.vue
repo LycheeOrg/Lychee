@@ -83,10 +83,14 @@
 			<ThumbFavourite v-if="is_favourite_enabled" :is-favourite="isFavourite" @click="toggleFavourite" />
 		</div>
 		<!-- TODO: make me an option. -->
-		<div v-if="userStore.isLoggedIn" class="badges absolute -mt-px ltr:ml-1 rtl:mr-1 top-0 ltr:left-0 rtl:right-0 flex">
-			<ThumbBadge v-if="props.photo.is_starred" class="bg-yellow-500" icon="star" />
-			<ThumbBadge v-if="props.isCoverId" class="bg-yellow-500" icon="folder-cover" />
-			<ThumbBadge v-if="props.isHeaderId" class="bg-slate-400 hidden sm:block" pi="image" />
+		<div class="badges absolute -mt-px ltr:ml-1 rtl:mr-1 top-0 ltr:left-0 rtl:right-0 flex">
+			<ThumbBadge
+				v-if="(albumsStore.rootRights?.can_star || albumStore.rights?.can_edit) && props.photo.is_starred"
+				class="bg-yellow-500"
+				icon="star"
+			/>
+			<ThumbBadge v-if="userStore.isLoggedIn && props.isCoverId" class="bg-yellow-500" icon="folder-cover" />
+			<ThumbBadge v-if="userStore.isLoggedIn && props.isHeaderId" class="bg-slate-400 hidden sm:block" pi="image" />
 		</div>
 		<!-- Rating Overlay -->
 		<ThumbRatingOverlay v-if="rating_album_view_mode !== 'never' && props.photo.rating !== null" :rating="props.photo.rating" />
@@ -107,6 +111,8 @@ import { usePhotoRoute } from "@/composables/photo/photoRoute";
 import ThumbBuyMe from "./ThumbBuyMe.vue";
 import { useOrderManagementStore } from "@/stores/OrderManagement";
 import { useUserStore } from "@/stores/UserState";
+import { useAlbumsStore } from "@/stores/AlbumsState";
+import { useAlbumStore } from "@/stores/AlbumState";
 
 const { getNoImageIcon, getPlayIcon } = useImageHelpers();
 
@@ -128,9 +134,10 @@ const userStore = useUserStore();
 const favourites = useFavouriteStore();
 const lycheeStore = useLycheeStateStore();
 const orderStore = useOrderManagementStore();
+const albumsStore = useAlbumsStore();
+const albumStore = useAlbumStore();
 const { is_favourite_enabled, display_thumb_photo_overlay, photo_thumb_info, is_photo_thumb_tags_enabled, rating_album_view_mode } =
 	storeToRefs(lycheeStore);
-
 const srcPlay = ref(getPlayIcon());
 const srcNoImage = ref(getNoImageIcon());
 const isImageLoaded = ref(false);

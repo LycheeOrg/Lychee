@@ -1,4 +1,5 @@
 import { useAlbumStore } from "@/stores/AlbumState";
+import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
 import { computed, Ref, ref } from "vue";
 
 export type Selectors = {
@@ -89,20 +90,21 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 		const menuItems = [];
 		const selectedPhoto = selectors.selectedPhoto.value as App.Http.Resources.Models.PhotoResource;
 		const albumStore = useAlbumStore();
+		const leftMenuStore = useLeftMenuStateStore();
 
 		if (selectedPhoto.is_starred) {
 			menuItems.push({
 				label: "gallery.menus.unstar",
 				icon: "pi pi-star",
 				callback: photoCallbacks.unstar,
-				access: albumStore.rights?.can_edit ?? false,
+				access: leftMenuStore.initData?.root_album?.can_star ?? false,
 			});
 		} else {
 			menuItems.push({
 				label: "gallery.menus.star",
 				icon: "pi pi-star",
 				callback: photoCallbacks.star,
-				access: albumStore.rights?.can_edit ?? false,
+				access: leftMenuStore.initData?.root_album?.can_star ?? false,
 			});
 		}
 
@@ -187,19 +189,20 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 
 		const menuItems = [];
 		const albumStore = useAlbumStore();
-		if (selectors.selectedPhotos.value.reduce((acc, photo) => acc && photo.is_starred, true)) {
+		const leftMenuStore = useLeftMenuStateStore();
+		if (selectors.selectedPhotos.value.reduce((acc: boolean, photo: App.Http.Resources.Models.PhotoResource) => acc && photo.is_starred, true)) {
 			menuItems.push({
 				label: "gallery.menus.unstar_all",
 				icon: "pi pi-star",
 				callback: photoCallbacks.unstar,
-				access: albumStore.rights?.can_edit ?? false,
+				access: leftMenuStore.initData?.root_album?.can_star ?? false,
 			});
 		} else {
 			menuItems.push({
 				label: "gallery.menus.star_all",
 				icon: "pi pi-star",
 				callback: photoCallbacks.star,
-				access: albumStore.rights?.can_edit ?? false,
+				access: leftMenuStore.initData?.root_album?.can_star ?? false,
 			});
 		}
 

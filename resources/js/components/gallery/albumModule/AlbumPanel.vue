@@ -8,6 +8,8 @@
 			@toggle-edit="emits('toggleEdit')"
 			@open-search="emits('openSearch')"
 			@go-back="emits('goBack')"
+			@show-starred-images="albumCallbacks.toggleStarred()"
+			@show-selected="albumCallbacks.copyStarred()"
 		/>
 		<template v-if="albumStore.album && albumStore.config && userStore.isLoaded">
 			<div id="galleryView" class="relative flex flex-wrap content-start w-full justify-start overflow-y-auto h-full select-none">
@@ -152,6 +154,7 @@ import { useCatalogStore } from "@/stores/CatalogState";
 import BuyMeDialog from "@/components/forms/gallery-dialogs/BuyMeDialog.vue";
 import { useToast } from "primevue/usetoast";
 import Pagination from "@/components/pagination/Pagination.vue";
+import { trans } from "laravel-vue-i18n";
 
 const router = useRouter();
 const toast = useToast();
@@ -328,6 +331,45 @@ const albumCallbacks = {
 		AlbumService.download(selectedAlbumsIds.value);
 	},
 	togglePin: togglePin,
+	toggleStarred: () => {
+		if (!albumStore.album?.id) return;
+		if (albumStore.showStarredOnly) {
+			albumStore.setShowStarredOnly(false);
+			photosStore.setPhotoRatingFilter(null);
+		} else {
+			albumStore.setShowStarredOnly(true);
+			photosStore.setPhotoRatingFilter("starred");
+		}
+
+		unselect();
+	},
+	copyStarred: () => {
+		const starred = photosStore.photos.filter((p) => p.is_starred);
+		const selectedNames = starred
+			.map((p) => {
+				const dotIndex = p.title.lastIndexOf(".");
+				return dotIndex > 0 ? p.title.substring(0, dotIndex) : p.title;
+			})
+			.join(", ");
+		navigator.clipboard
+			.writeText(selectedNames)
+			.then(() =>
+				toast.add({
+					severity: "info",
+					summary: "Info",
+					detail: trans("dialogs.selected_images.names_copied") + ". " + selectedNames,
+					life: 3000,
+				}),
+			)
+			.catch(() =>
+				toast.add({
+					severity: "error",
+					summary: "Error",
+					detail: "Failed to copy to clipboard",
+					life: 3000,
+				}),
+			);
+	},
 };
 
 const computedAlbum = computed(() => albumStore.album);

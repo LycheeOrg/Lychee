@@ -80,7 +80,7 @@ function handleKeyDown(event: KeyboardEvent, star: number): void {
  */
 function starIconClass(star: number): string {
 	const filter = photosStore.photoRatingFilter;
-	const filled = filter !== null && star <= filter;
+	const filled = typeof filter === "number" && star <= filter;
 	return filled ? "pi pi-star-fill text-yellow-500 text-base" : "pi pi-star text-neutral-400 dark:text-neutral-500 hover:text-yellow-400 text-base";
 }
 </script>

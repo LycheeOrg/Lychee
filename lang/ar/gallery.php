@@ -95,6 +95,8 @@ return [
     'album' => [
         'header_albums' => 'الألبومات',
         'header_photos' => 'الصور',
+        'show_starred' => 'Filter starred images',
+        'copy_starred_names' => 'Copy starred photo names to clipboard',
         'no_results' => 'لا يوجد شيء هنا',
         'upload' => 'رفع الصور',
         'tabs' => [

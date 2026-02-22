@@ -95,6 +95,8 @@ return [
     'album' => [
         'header_albums' => 'آلبوم‌ها',
         'header_photos' => 'عکس‌ها',
+        'show_starred' => 'Filter starred images',
+        'copy_starred_names' => 'Copy starred photo names to clipboard',
         'no_results' => 'اینجا چیزی برای نمایش نیست',
         'upload' => 'بارگذاری عکس‌ها',
         'tabs' => [

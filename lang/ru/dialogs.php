@@ -249,4 +249,7 @@ return [
         'reload' => 'Перезагрузить',
         'go_to_gallery' => 'Перейти в галерею',
     ],
+    'selected_images' => [
+        'names_copied' => 'The names of the selected images have been copied!',
+    ],
 ];

@@ -26,6 +26,7 @@ export const useAlbumStore = defineStore("album-store", {
 		last_page: 0,
 		per_page: 0,
 		total: 0,
+		showStarredOnly: false,
 
 		// New pagination state for photos (via /Album::photos endpoint)
 		photos_current_page: 1,
@@ -53,6 +54,7 @@ export const useAlbumStore = defineStore("album-store", {
 			this.isPasswordProtected = false;
 			this.config = undefined;
 			this.isLoading = false;
+			this.showStarredOnly = false;
 			// Reset pagination state
 			this.photos_current_page = 1;
 			this.photos_last_page = 0;
@@ -364,6 +366,9 @@ export const useAlbumStore = defineStore("album-store", {
 					}
 				});
 		},
+		setShowStarredOnly(value: boolean) {
+			this.showStarredOnly = value;
+		},
 	},
 	getters: {
 		album(
@@ -407,6 +412,9 @@ export const useAlbumStore = defineStore("album-store", {
 		},
 		hasAlbumsPagination(state): boolean {
 			return state.albums_last_page > 0;
+		},
+		showStarredOnlyValue(): boolean {
+			return this.showStarredOnly;
 		},
 	},
 });
