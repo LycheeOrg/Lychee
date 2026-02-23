@@ -245,9 +245,9 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	/**
 	 * Returns the relationship between an album and its associated permissions.
 	 *
-	 * @return hasMany<AccessPermission,$this>
+	 * @return HasMany<AccessPermission,$this>
 	 */
-	public function access_permissions(): hasMany
+	public function access_permissions(): HasMany
 	{
 		return $this->hasMany(AccessPermission::class, APC::BASE_ALBUM_ID, 'id');
 	}
