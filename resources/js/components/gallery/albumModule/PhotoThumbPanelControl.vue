@@ -1,6 +1,20 @@
 <template>
 	<!-- Star Rating Filter (visible only when rated photos exist) -->
 	<div
+		class="inline-flex items-center gap-0.5 pr-2 mr-2 border-r border-neutral-300 dark:border-neutral-600 h-8"
+		v-if="lycheeStore.is_se_enabled && (albumsStore.rootRights?.can_highlight || albumStore.album?.rights?.can_edit)"
+	>
+		<Button
+			v-tooltip.bottom="$t('gallery.album.show_highlighted')"
+			:icon="photosStore.photoRatingFilter === 'highlighted' ? 'pi pi-flag-fill' : 'pi pi-flag'"
+			:label="String(photosStore.highlightedPhotosCount)"
+			class="border-none hover:text-color"
+			severity="secondary"
+			text
+			@click="handleShowStarredClick"
+		/>
+	</div>
+	<div
 		v-if="photosStore.hasRatedPhotos"
 		role="group"
 		:aria-label="$t('gallery.filter.by_rating')"
@@ -36,13 +50,20 @@
 </template>
 <script setup lang="ts">
 import MiniIcon from "@/components/icons/MiniIcon.vue";
+import { useAlbumsStore } from "@/stores/AlbumsState";
+import { useAlbumStore } from "@/stores/AlbumState";
 import { useLayoutStore } from "@/stores/LayoutState";
+import { useLycheeStateStore } from "@/stores/LycheeState";
 import { usePhotosStore, type PhotoRatingFilter } from "@/stores/PhotosState";
 import { storeToRefs } from "pinia";
+import Button from "primevue/button";
 import { ref, type Ref } from "vue";
 
 const layoutStore = useLayoutStore();
 const photosStore = usePhotosStore();
+const lycheeStore = useLycheeStateStore();
+const albumsStore = useAlbumsStore();
+const albumStore = useAlbumStore();
 const { layout } = storeToRefs(layoutStore);
 
 const starButtons: Ref<HTMLButtonElement[]> = ref([]);
@@ -56,6 +77,14 @@ function handleStarClick(star: number): void {
 		photosStore.setPhotoRatingFilter(null);
 	} else {
 		photosStore.setPhotoRatingFilter(star as PhotoRatingFilter);
+	}
+}
+
+function handleShowStarredClick(): void {
+	if (photosStore.photoRatingFilter === "highlighted") {
+		photosStore.setPhotoRatingFilter(null);
+	} else {
+		photosStore.setPhotoRatingFilter("highlighted");
 	}
 }
 

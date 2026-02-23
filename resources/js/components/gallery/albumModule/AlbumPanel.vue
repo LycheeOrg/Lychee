@@ -8,7 +8,6 @@
 			@toggle-edit="emits('toggleEdit')"
 			@open-search="emits('openSearch')"
 			@go-back="emits('goBack')"
-			@show-starred-images="albumCallbacks.toggleStarred()"
 			@show-selected="albumCallbacks.copyStarred()"
 		/>
 		<template v-if="albumStore.album && albumStore.config && userStore.isLoaded">
@@ -331,18 +330,6 @@ const albumCallbacks = {
 		AlbumService.download(selectedAlbumsIds.value);
 	},
 	togglePin: togglePin,
-	toggleStarred: () => {
-		if (!albumStore.album?.id) return;
-		if (albumStore.showStarredOnly) {
-			albumStore.setShowStarredOnly(false);
-			photosStore.setPhotoRatingFilter(null);
-		} else {
-			albumStore.setShowStarredOnly(true);
-			photosStore.setPhotoRatingFilter("highlighted");
-		}
-
-		unselect();
-	},
 	copyStarred: () => {
 		const starred = photosStore.photos.filter((p) => p.is_highlighted);
 		const selectedNames = starred
