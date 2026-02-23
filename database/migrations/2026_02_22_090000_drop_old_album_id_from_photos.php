@@ -11,6 +11,8 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
+require_once 'TemporaryModels/OptimizeTables.php';
+
 /**
  * Drop the legacy old_album_id column from the photos table.
  *
@@ -52,6 +54,7 @@ return new class() extends Migration {
 			$this->optimize->dropIndexIfExists($table, 'photos_album_id_is_starred_created_at_index');
 			$this->optimize->dropIndexIfExists($table, 'photos_album_id_is_starred_taken_at_index');
 			$this->optimize->dropIndexIfExists($table, 'photos_album_id_is_starred_type_index');
+			$this->optimize->dropIndexIfExists($table, 'photos_album_id_is_starred_description_index');
 			$this->optimize->dropIndexIfExists($table, 'photos_album_id_is_starred_description(128)_index');
 		});
 
