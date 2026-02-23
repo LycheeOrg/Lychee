@@ -12,7 +12,7 @@ export function usePhotoActions(photoStore: PhotoStore, albumId: Ref<string | un
 	const photosStore = usePhotosStore();
 	const albumStore = useAlbumStore();
 
-	function toggleStar() {
+	function toggleHighlight() {
 		if (photoStore.photo === undefined) {
 			return;
 		}
@@ -100,7 +100,7 @@ export function usePhotoActions(photoStore: PhotoStore, albumId: Ref<string | un
 	}
 
 	return {
-		toggleStar,
+		toggleHighlight,
 		rotatePhotoCCW,
 		rotatePhotoCW,
 		setAlbumHeader,

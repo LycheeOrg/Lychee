@@ -11,7 +11,7 @@ namespace App\Http\Requests\Photo;
 use App\Contracts\Http\Requests\HasPhotos;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Traits\Authorize\AuthorizeCanStarPhotosTrait;
+use App\Http\Requests\Traits\Authorize\AuthorizeCanHighlightPhotosTrait;
 use App\Http\Requests\Traits\HasPhotosTrait;
 use App\Models\Photo;
 use App\Rules\RandomIDRule;
@@ -22,7 +22,7 @@ use App\Rules\RandomIDRule;
 class SetPhotosHighlightedRequest extends BaseApiRequest implements HasPhotos
 {
 	use HasPhotosTrait;
-	use AuthorizeCanStarPhotosTrait;
+	use AuthorizeCanHighlightPhotosTrait;
 
 	public const IS_HIGHLIGHTED_ATTRIBUTE = 'is_highlighted';
 

@@ -964,7 +964,7 @@ declare namespace App.Http.Resources.Rights {
 		can_upload: boolean;
 		can_see_live_metrics: boolean;
 		can_import_from_server: boolean;
-		can_star: boolean;
+		can_highlight: boolean;
 	};
 	export type SettingsRightsResource = {
 		can_edit: boolean;

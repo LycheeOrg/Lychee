@@ -1,6 +1,6 @@
 <template>
 	<div v-if="photoStore.photo" class="absolute z-20 top-0 left-0 w-full flex h-full overflow-hidden bg-black">
-		<PhotoHeader @toggle-slide-show="emits('toggleSlideShow')" @go-back="emits('goBack')" @toggle-star="emits('toggleStar')" />
+		<PhotoHeader @toggle-slide-show="emits('toggleSlideShow')" @go-back="emits('goBack')" @toggle-star="emits('toggleHighlight')" />
 		<div class="w-0 flex-auto relative">
 			<div class="animate-zoomIn w-full h-full">
 				<Transition :name="photoStore.transition">
@@ -30,7 +30,7 @@
 			<Dock
 				v-if="albumStore.rights?.can_edit && !is_photo_edit_open"
 				:is-narrow-menu="photoStore.imageViewMode === ImageViewMode.Pdf"
-				@toggle-star="emits('toggleStar')"
+				@toggle-star="emits('toggleHighlight')"
 				@set-album-header="emits('setAlbumHeader')"
 				@rotate-photo-c-c-w="emits('rotatePhotoCCW')"
 				@rotate-photo-c-w="emits('rotatePhotoCW')"
@@ -72,7 +72,7 @@ const props = defineProps<{
 }>();
 
 const emits = defineEmits<{
-	toggleStar: [];
+	toggleHighlight: [];
 	setAlbumHeader: [];
 	rotatePhotoCCW: [];
 	rotatePhotoCW: [];

@@ -16,10 +16,18 @@
 	>
 		<span class="absolute left-1/2 -translate-x-1/2 p-1 min-w-[25%] w-full filter-shadow text-center">
 			<DockButton
-				v-tooltip.bottom="photoStore.photo.is_highlighted ? $t('gallery.photo.actions.unhighlight') : $t('gallery.photo.actions.highlight')"
-				icon="star"
-				:class="photoStore.photo.is_highlighted ? 'fill-yellow-500 lg:hover:fill-yellow-100' : 'fill-white lg:hover:fill-yellow-500'"
-				@click="emits('toggleStar')"
+				v-if="photoStore.photo.is_highlighted"
+				v-tooltip.bottom="$t('gallery.photo.actions.unhighlight')"
+				pi="flag-fill"
+				class="text-yellow-500 lg:hover:text-yellow-100"
+				@click="emits('toggleHighlight')"
+			/>
+			<DockButton
+				v-else
+				v-tooltip.bottom="$t('gallery.photo.actions.highlight')"
+				pi="flag"
+				class="text-white lg:hover:text-yellow-500"
+				@click="emits('toggleHighlight')"
 			/>
 			<DockButton
 				v-tooltip.bottom="$t('gallery.photo.actions.set_album_header')"
@@ -31,7 +39,7 @@
 			<DockButton
 				v-if="isWatermarkerEnabled"
 				v-tooltip.bottom="'Watermark'"
-				pi="pi-barcode"
+				pi="barcode"
 				class="lg:hover:text-primary-500 text-white"
 				@click="watermark"
 			/>
@@ -116,7 +124,7 @@ function needSizeVariantsWatermark(sizeVariants: App.Http.Resources.Models.SizeV
 }
 
 const emits = defineEmits<{
-	toggleStar: [];
+	toggleHighlight: [];
 	setAlbumHeader: [];
 	rotatePhotoCCW: [];
 	rotatePhotoCW: [];

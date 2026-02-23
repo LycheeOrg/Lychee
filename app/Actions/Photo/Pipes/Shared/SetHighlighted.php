@@ -12,7 +12,7 @@ use App\Contracts\PhotoCreate\SharedPipe;
 use App\DTO\PhotoCreate\DuplicateDTO;
 use App\DTO\PhotoCreate\StandaloneDTO;
 
-class SetStarred implements SharedPipe
+class SetHighlighted implements SharedPipe
 {
 	public function handle(DuplicateDTO|StandaloneDTO $state, \Closure $next): DuplicateDTO|StandaloneDTO
 	{

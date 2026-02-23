@@ -23,7 +23,7 @@ class RootAlbumRightsResource extends Data
 	public bool $can_upload;
 	public bool $can_see_live_metrics;
 	public bool $can_import_from_server;
-	public bool $can_star;
+	public bool $can_highlight;
 
 	public function __construct()
 	{
@@ -31,6 +31,6 @@ class RootAlbumRightsResource extends Data
 		$this->can_upload = Gate::check(AlbumPolicy::CAN_UPLOAD, [AbstractAlbum::class, null]);
 		$this->can_see_live_metrics = Gate::check(MetricsPolicy::CAN_SEE_LIVE, LiveMetrics::class);
 		$this->can_import_from_server = Gate::check(AlbumPolicy::CAN_IMPORT_FROM_SERVER, [AbstractAlbum::class]);
-		$this->can_star = Gate::check(AlbumPolicy::CAN_STAR, [AbstractAlbum::class, null]);
+		$this->can_highlight = Gate::check(AlbumPolicy::CAN_HIGHLIGHT, [AbstractAlbum::class, null]);
 	}
 }

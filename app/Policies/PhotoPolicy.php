@@ -31,7 +31,7 @@ class PhotoPolicy extends BasePolicy
 	public const CAN_DELETE_BY_ID = 'canDeleteById';
 	public const CAN_READ_METRICS = 'canReadMetrics';
 	public const CAN_READ_RATINGS = 'canReadRatings';
-	public const CAN_STAR = 'canStar';
+	public const CAN_HIGHLIGHT = 'canHighlight';
 
 	/**
 	 * @throws FrameworkException
@@ -279,7 +279,7 @@ class PhotoPolicy extends BasePolicy
 	 *
 	 * @return bool
 	 */
-	public function canStar(?User $user, Photo $photo): bool
+	public function canHighlight(?User $user, Photo $photo): bool
 	{
 		$config_manager = app(ConfigManager::class);
 		$visibility = $config_manager->getValueAsEnum('photos_star_visibility', PhotoHighlightVisibilityType::class);

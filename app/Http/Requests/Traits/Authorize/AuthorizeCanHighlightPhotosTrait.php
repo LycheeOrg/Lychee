@@ -13,9 +13,9 @@ use App\Policies\PhotoPolicy;
 use Illuminate\Support\Facades\Gate;
 
 /**
- * Determines if the user is authorized to modify star selection of the designated photos.
+ * Determines if the user is authorized to modify highlight selection of the designated photos.
  */
-trait AuthorizeCanStarPhotosTrait
+trait AuthorizeCanHighlightPhotosTrait
 {
 	/**
 	 * {@inheritDoc}
@@ -24,7 +24,7 @@ trait AuthorizeCanStarPhotosTrait
 	{
 		/** @var Photo $photo */
 		foreach ($this->photos as $photo) {
-			if (!Gate::check(PhotoPolicy::CAN_STAR, $photo)) {
+			if (!Gate::check(PhotoPolicy::CAN_HIGHLIGHT, $photo)) {
 				return false;
 			}
 		}

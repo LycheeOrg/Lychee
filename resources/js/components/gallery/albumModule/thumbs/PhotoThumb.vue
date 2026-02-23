@@ -85,9 +85,9 @@
 		<!-- TODO: make me an option. -->
 		<div class="badges absolute -mt-px ltr:ml-1 rtl:mr-1 top-0 ltr:left-0 rtl:right-0 flex">
 			<ThumbBadge
-				v-if="(albumsStore.rootRights?.can_star || albumStore.rights?.can_edit) && props.photo.is_highlighted"
+				v-if="(albumsStore.rootRights?.can_highlight || albumStore.rights?.can_edit) && props.photo.is_highlighted"
 				class="bg-yellow-500"
-				icon="star"
+				icon="flag-fill"
 			/>
 			<ThumbBadge v-if="userStore.isLoggedIn && props.isCoverId" class="bg-yellow-500" icon="folder-cover" />
 			<ThumbBadge v-if="userStore.isLoggedIn && props.isHeaderId" class="bg-slate-400 hidden sm:block" pi="image" />

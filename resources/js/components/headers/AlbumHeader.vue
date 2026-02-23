@@ -17,7 +17,7 @@
 
 		<template #end>
 			<Button
-				v-if="is_se_enabled && (albumsStore.rootRights?.can_star || albumStore.album.rights?.can_edit)"
+				v-if="is_se_enabled && (albumsStore.rootRights?.can_highlight || albumStore.album.rights?.can_edit)"
 				v-tooltip.bottom="$t('gallery.album.show_highlighted')"
 				:icon="albumStore.showStarredOnly ? 'pi pi-star-fill' : 'pi pi-star'"
 				:label="String(photosStore.highlightedPhotosCount)"

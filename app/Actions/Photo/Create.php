@@ -144,7 +144,7 @@ class Create
 			$pipes[] = Duplicate\SaveIfDirty::class;
 		}
 		$pipes[] = Duplicate\ThrowSkipDuplicate::class;
-		$pipes[] = Shared\SetStarred::class;
+		$pipes[] = Shared\SetHighlighted::class;
 		$pipes[] = Shared\Save::class;
 		$pipes[] = Shared\SetParent::class;
 		$pipes[] = Shared\SaveStatistics::class;
@@ -170,7 +170,7 @@ class Create
 			Standalone\FixTimeStamps::class,
 			Standalone\InitNamingStrategy::class,
 			Shared\HydrateMetadata::class,
-			Shared\SetStarred::class,
+			Shared\SetHighlighted::class,
 			Shared\SetOwnership::class,
 			Standalone\SetOriginalChecksum::class,
 			Standalone\FetchSourceImage::class,
@@ -264,7 +264,7 @@ class Create
 			Standalone\FixTimeStamps::class,
 			Standalone\InitNamingStrategy::class,
 			Shared\HydrateMetadata::class,
-			Shared\SetStarred::class,
+			Shared\SetHighlighted::class,
 			Shared\SetOwnership::class,
 			Standalone\SetOriginalChecksum::class,
 			Standalone\FetchSourceImage::class,

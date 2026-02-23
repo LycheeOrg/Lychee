@@ -14,7 +14,7 @@
 			</template>
 			<template #end>
 				<Button
-					v-if="!albumStore.rights?.can_edit && leftMenuStore.initData?.root_album?.can_star"
+					v-if="!albumStore.rights?.can_edit && leftMenuStore.initData?.root_album?.can_highlight"
 					text
 					v-tooltip.bottom="
 						photoStore.photo.is_highlighted ? $t('gallery.photo.actions.unhighlight') : $t('gallery.photo.actions.highlight')
@@ -27,7 +27,7 @@
 							: '[&>span]:text-white lg:hover:[&>span]:text-yellow-500'
 					"
 					severity="secondary"
-					@click="emits('toggleStar')"
+					@click="emits('toggleHighlight')"
 				/>
 				<div :class="is_slideshow_active ? 'hidden' : 'flex'">
 					<Button
@@ -94,7 +94,7 @@ const emits = defineEmits<{
 	toggleEdit: [];
 	toggleSlideShow: [];
 	goBack: [];
-	toggleStar: [];
+	toggleHighlight: [];
 }>();
 
 const photoStore = usePhotoStore();

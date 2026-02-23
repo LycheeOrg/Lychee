@@ -37,15 +37,6 @@ return new class() extends Migration {
 	}
 
 	/**
-	 * Which album_id column name is current in the photos table.
-	 * Some deployments have renamed album_id → old_album_id.
-	 */
-	private function albumIdCol(): string
-	{
-		return Schema::hasColumn(self::TABLE, 'album_id') ? 'album_id' : 'old_album_id';
-	}
-
-	/**
 	 * Run the migrations.
 	 */
 	public function up(): void
@@ -62,6 +53,7 @@ return new class() extends Migration {
 					->select(['id', 'owner_id'])
 					->orderBy('id')
 					->chunk(500, function ($photos) {
+						$insert = [];
 						foreach ($photos as $photo) {
 							$exists = DB::table('photo_ratings')
 								->where('photo_id', '=', $photo->id)
@@ -72,22 +64,25 @@ return new class() extends Migration {
 								continue;
 							}
 
-							// Insert the 5-star rating
-							DB::table('photo_ratings')->insert([
+							$insert = [
 								'photo_id' => $photo->id,
 								'user_id' => $photo->owner_id,
 								'rating' => 5,
-							]);
-
-							// Update statistics aggregate
-							DB::table('statistics')
-								->where('photo_id', '=', $photo->id)
-								->increment('rating_sum', 5);
-
-							DB::table('statistics')
-								->where('photo_id', '=', $photo->id)
-								->increment('rating_count', 1);
+							];
 						}
+
+						// Insert the 5-star rating
+						DB::table('photo_ratings')->insert($insert);
+
+						// Update statistics aggregate
+						$photo_ids = array_column($insert, 'photo_id');
+						DB::table('statistics')
+							->whereIn('photo_id', $photo_ids)
+							->increment('rating_sum', 5);
+
+						DB::table('statistics')
+							->whereIn('photo_id', $photo_ids)
+							->increment('rating_count', 1);
 					});
 			});
 		}
@@ -126,28 +121,18 @@ return new class() extends Migration {
 			});
 		}
 
-		$albumId = $this->albumIdCol();
-		Schema::table(self::TABLE, function (Blueprint $table) use ($albumId) {
+		Schema::table(self::TABLE, function (Blueprint $table) {
 			$this->optimize->dropIndexIfExists($table, 'photos_album_id_is_highlighted_index');
-			$table->index([$albumId, self::NEW_COL], 'photos_album_id_is_highlighted_index');
+			$table->index([self::NEW_COL], 'photos_album_id_is_highlighted_index');
 			$this->optimize->dropIndexIfExists($table, 'photos_album_id_is_highlighted_created_at_index');
-			$table->index([$albumId, self::NEW_COL, 'created_at'], 'photos_album_id_is_highlighted_created_at_index');
+			$table->index([self::NEW_COL, 'created_at'], 'photos_album_id_is_highlighted_created_at_index');
 			$this->optimize->dropIndexIfExists($table, 'photos_album_id_is_highlighted_taken_at_index');
-			$table->index([$albumId, self::NEW_COL, 'taken_at'], 'photos_album_id_is_highlighted_taken_at_index');
+			$table->index([self::NEW_COL, 'taken_at'], 'photos_album_id_is_highlighted_taken_at_index');
 			$this->optimize->dropIndexIfExists($table, 'photos_album_id_is_highlighted_type_index');
-			$table->index([$albumId, self::NEW_COL, 'type'], 'photos_album_id_is_highlighted_type_index');
+			$table->index([self::NEW_COL, 'type'], 'photos_album_id_is_highlighted_type_index');
 			$this->optimize->dropIndexIfExists($table, 'photos_is_highlighted_title_taken_created_index');
 			$table->index([self::NEW_COL, 'title', 'taken_at', 'created_at'], 'photos_is_highlighted_title_taken_created_index');
 		});
-
-		// SQLite does not support prefix-length indexes; skip for MySQL only
-		if (DB::getDriverName() === 'mysql') {
-			$albumId = $this->albumIdCol();
-			Schema::table(self::TABLE, function (Blueprint $table) {
-				$this->optimize->dropIndexIfExists($table, 'photos_album_id_is_highlighted_description_128_index');
-			});
-			DB::statement("ALTER TABLE `photos` ADD INDEX `photos_album_id_is_highlighted_description_128_index`(`{$albumId}`, `is_highlighted`, `description`(128))");
-		}
 
 		// ----------------------------------------------------------------
 		// Step 4: Rename enable_starred config key → enable_highlighted
@@ -196,18 +181,16 @@ return new class() extends Migration {
 		// ----------------------------------------------------------------
 		// Step 3: Recreate original is_starred indexes
 		// ----------------------------------------------------------------
-		$albumId = $this->albumIdCol();
-		Schema::table(self::TABLE, function (Blueprint $table) use ($albumId) {
-			$table->index([$albumId, self::OLD_COL], 'photos_album_id_is_starred_index');
-			$table->index([$albumId, self::OLD_COL, 'created_at'], 'photos_album_id_is_starred_created_at_index');
-			$table->index([$albumId, self::OLD_COL, 'taken_at'], 'photos_album_id_is_starred_taken_at_index');
-			$table->index([$albumId, self::OLD_COL, 'type'], 'photos_album_id_is_starred_type_index');
+		Schema::table(self::TABLE, function (Blueprint $table) {
+			$table->index([self::OLD_COL], 'photos_album_id_is_starred_index');
+			$table->index([self::OLD_COL, 'created_at'], 'photos_album_id_is_starred_created_at_index');
+			$table->index([self::OLD_COL, 'taken_at'], 'photos_album_id_is_starred_taken_at_index');
+			$table->index([self::OLD_COL, 'type'], 'photos_album_id_is_starred_type_index');
 			$table->index([self::OLD_COL, 'title', 'taken_at', 'created_at'], 'photos_is_starred_title_taken_created_index');
 		});
 
 		if (DB::getDriverName() === 'mysql') {
-			$albumId = $this->albumIdCol();
-			DB::statement("ALTER TABLE `photos` ADD INDEX `photos_album_id_is_starred_description(128)_index`(`{$albumId}`, `is_starred`, `description`(128))");
+			DB::statement('ALTER TABLE `photos` ADD INDEX `photos_album_id_is_starred_description(128)_index`(`is_starred`, `description`(128))');
 		}
 
 		// ----------------------------------------------------------------

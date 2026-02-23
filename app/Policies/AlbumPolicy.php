@@ -47,7 +47,7 @@ class AlbumPolicy extends BasePolicy
 	public const CAN_SHARE_ID = 'canShareById';
 	public const CAN_READ_METRICS = 'canReadMetrics';
 	public const CAN_MAKE_PURCHASABLE = 'canMakePurchasable';
-	public const CAN_STAR = 'canStar';
+	public const CAN_HIGHLIGHT = 'canHighlight';
 
 	/**
 	 * This ensures that current album is owned by current user.
@@ -628,10 +628,10 @@ class AlbumPolicy extends BasePolicy
 	 *
 	 * @return bool
 	 */
-	public function canStar(?User $user, ?AbstractAlbum $album): bool
+	public function canHighlight(?User $user, ?AbstractAlbum $album): bool
 	{
 		if ($album !== null) {
-			throw new LycheeLogicException('The canStar method of AlbumPolicy is only used for the global definition and should not be used to validate whether an album is starrable or not.');
+			throw new LycheeLogicException('The canHighlight method of AlbumPolicy is only used for the global definition and should not be used to validate whether an album is highlightable or not.');
 		}
 
 		$config_manager = app(ConfigManager::class);

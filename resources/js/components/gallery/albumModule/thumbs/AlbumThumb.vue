@@ -43,11 +43,19 @@
 		</span>
 		<div v-if="userStore.isLoggedIn" class="badges absolute -mt-px ml-1 top-0 left-0 flex">
 			<ThumbBadge v-if="props.album.is_nsfw" class="bg-[#ff82ee]" icon="warning" />
-			<ThumbBadge v-if="props.album.id === 'highlighted'" class="bg-yellow-500" icon="star" />
+			<ThumbBadge v-if="props.album.id === 'highlighted'" class="bg-yellow-500" pi="flag-fill" />
 			<ThumbBadge v-if="props.album.id === 'unsorted'" class="bg-red-700" icon="list" />
 			<ThumbBadge v-if="props.album.id === 'recent'" class="bg-blue-700" icon="clock" />
 			<ThumbBadge v-if="props.album.id === 'on_this_day'" class="bg-green-600" icon="calendar" />
 			<ThumbBadge v-if="props.album.id === 'untagged'" class="bg-gray-500" icon="tags" />
+			<ThumbBadge v-if="props.album.id === 'one_star'" class="bg-yellow-500" icon="star-1" />
+			<ThumbBadge v-if="props.album.id === 'two_stars'" class="bg-yellow-500" icon="star-2" />
+			<ThumbBadge v-if="props.album.id === 'three_stars'" class="bg-yellow-500" icon="star-3" />
+			<ThumbBadge v-if="props.album.id === 'four_stars'" class="bg-yellow-500" icon="star-4" />
+			<ThumbBadge v-if="props.album.id === 'five_stars'" class="bg-yellow-500" icon="star-5" />
+			<ThumbBadge v-if="props.album.id === 'best_pictures'" class="bg-cyan-500" pi="trophy" />
+			<ThumbBadge v-if="props.album.id === 'my_rated_pictures'" class="bg-orange-500" pi="trophy" />
+			<ThumbBadge v-if="props.album.id === 'my_best_pictures'" class="bg-yellow-500" pi="trophy" />
 			<ThumbBadge v-if="props.album.is_public" :class="props.album.is_link_required ? 'bg-orange-400' : 'bg-green-600'" icon="eye" />
 			<ThumbBadge v-if="props.album.is_password_required && props.album.thumb === null" class="bg-orange-400" icon="lock-locked" />
 			<ThumbBadge v-if="props.album.is_password_required && props.album.thumb !== null" class="bg-red-700" icon="lock-unlocked" />

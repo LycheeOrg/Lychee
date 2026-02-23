@@ -14,7 +14,7 @@
 		@rotate-photo-c-w="rotatePhotoCW"
 		@rotate-photo-c-c-w="rotatePhotoCCW"
 		@set-album-header="setAlbumHeader"
-		@toggle-star="toggleStar"
+		@toggle-star="toggleHighlight"
 		@toggle-move="toggleMove"
 		@toggle-delete="toggleDelete"
 		@updated="refresh"
@@ -162,7 +162,7 @@ const { setScroll } = useScrollable(togglableStore, tagStringId);
 const { is_delete_visible, toggleDelete, is_move_visible, toggleMove, is_rename_visible, is_tag_visible, is_copy_visible } =
 	useGalleryModals(togglableStore);
 
-const { toggleStar, rotatePhotoCCW, rotatePhotoCW, setAlbumHeader, rotateOverlay } = usePhotoActions(photoStore, nullId, toast, lycheeStore);
+const { toggleHighlight, rotatePhotoCCW, rotatePhotoCW, setAlbumHeader, rotateOverlay } = usePhotoActions(photoStore, nullId, toast, lycheeStore);
 
 const { getNext, getPrevious } = getNextPreviousPhoto(router, photoStore);
 const { slideshow, next, previous, stop } = useSlideshowFunction(1000, is_slideshow_active, slideshow_timeout, videoElement, getNext, getPrevious);
@@ -231,7 +231,7 @@ onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && !photoSto
 // Priviledged Photo operations
 // onKeyStroke("m", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && photoStore.rights?.can_edit && toggleMove());
 // onKeyStroke("e", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && photoStore.rights?.can_edit && toggleEdit());
-// onKeyStroke("s", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && photoStore.rights?.can_edit && toggleStar());
+// onKeyStroke("s", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && photoStore.rights?.can_edit && toggleHighlight());
 onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && photoStore.isLoaded && toggleDelete());
 
 // on key stroke escape:

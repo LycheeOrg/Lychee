@@ -97,14 +97,14 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 				label: "gallery.menus.unhighlight",
 				icon: "pi pi-star",
 				callback: photoCallbacks.unstar,
-				access: leftMenuStore.initData?.root_album?.can_star ?? false,
+				access: leftMenuStore.initData?.root_album?.can_highlight ?? false,
 			});
 		} else {
 			menuItems.push({
 				label: "gallery.menus.highlight",
 				icon: "pi pi-star",
 				callback: photoCallbacks.star,
-				access: leftMenuStore.initData?.root_album?.can_star ?? false,
+				access: leftMenuStore.initData?.root_album?.can_highlight ?? false,
 			});
 		}
 
@@ -197,14 +197,14 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 				label: "gallery.menus.unhighlight_all",
 				icon: "pi pi-star",
 				callback: photoCallbacks.unstar,
-				access: leftMenuStore.initData?.root_album?.can_star ?? false,
+				access: leftMenuStore.initData?.root_album?.can_highlight ?? false,
 			});
 		} else {
 			menuItems.push({
 				label: "gallery.menus.highlight_all",
 				icon: "pi pi-star",
 				callback: photoCallbacks.star,
-				access: leftMenuStore.initData?.root_album?.can_star ?? false,
+				access: leftMenuStore.initData?.root_album?.can_highlight ?? false,
 			});
 		}
 
