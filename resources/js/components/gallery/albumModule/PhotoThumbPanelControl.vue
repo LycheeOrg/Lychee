@@ -11,7 +11,7 @@
 			class="border-none hover:text-color"
 			severity="secondary"
 			text
-			@click="handleShowStarredClick"
+			@click="handleShowHighlightedClick"
 		/>
 	</div>
 	<div
@@ -80,7 +80,7 @@ function handleStarClick(star: number): void {
 	}
 }
 
-function handleShowStarredClick(): void {
+function handleShowHighlightedClick(): void {
 	if (photosStore.photoRatingFilter === "highlighted") {
 		photosStore.setPhotoRatingFilter(null);
 	} else {

@@ -8,7 +8,7 @@
 			@toggle-edit="emits('toggleEdit')"
 			@open-search="emits('openSearch')"
 			@go-back="emits('goBack')"
-			@show-selected="albumCallbacks.copyStarred()"
+			@show-selected="albumCallbacks.copyHighlighted()"
 		/>
 		<template v-if="albumStore.album && albumStore.config && userStore.isLoaded">
 			<div id="galleryView" class="relative flex flex-wrap content-start w-full justify-start overflow-y-auto h-full select-none">
@@ -330,9 +330,9 @@ const albumCallbacks = {
 		AlbumService.download(selectedAlbumsIds.value);
 	},
 	togglePin: togglePin,
-	copyStarred: () => {
-		const starred = photosStore.photos.filter((p) => p.is_highlighted);
-		const selectedNames = starred
+	copyHighlighted: () => {
+		const highlighted = photosStore.photos.filter((p) => p.is_highlighted);
+		const selectedNames = highlighted
 			.map((p) => {
 				const dotIndex = p.title.lastIndexOf(".");
 				return dotIndex > 0 ? p.title.substring(0, dotIndex) : p.title;

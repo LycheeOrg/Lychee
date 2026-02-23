@@ -96,8 +96,8 @@ return [
     'album' => [
         'header_albums' => '相册',
         'header_photos' => '照片',
-        'show_highlighted' => 'Filter starred images',
-        'copy_highlighted_names' => 'Copy starred photo names to clipboard',
+        'show_highlighted' => 'Filter highlighted images',
+        'copy_highlighted_names' => 'Copy highlighted photo names to clipboard',
         'no_results' => '这里什么都没有',
         'upload' => '上传照片',
         'tabs' => [

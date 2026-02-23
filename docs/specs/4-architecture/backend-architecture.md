@@ -246,7 +246,7 @@ For detailed examples of how requests flow through this architecture, see:
 ## Module Documentation
 
 - [Renamer System](../3-reference/renamer-system.md) - Filename transformation during import
-- [Smart Albums](../../../app/SmartAlbums/README.md) - Dynamic album system (Recent, Starred, On This Day, Unsorted)
+- [Smart Albums](../../../app/SmartAlbums/README.md) - Dynamic album system (Recent, Highlighted, On This Day, Unsorted)
 - [Photo Actions](../../../app/Actions/Photo/README.md) - Photo pipeline with processing stages
 
 ## Related Documentation

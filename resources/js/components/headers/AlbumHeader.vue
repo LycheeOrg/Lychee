@@ -108,7 +108,6 @@ const emits = defineEmits<{
 	toggleEdit: [];
 	goBack: [];
 	openSearch: [];
-	showStarredImages: [];
 	showSelected: [];
 }>();
 

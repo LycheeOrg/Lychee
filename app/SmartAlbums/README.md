@@ -1,6 +1,6 @@
 # Lychee Smart Albums Documentation
 
-Smart Albums are virtual, dynamically-generated albums in Lychee that automatically contain photos based on specific criteria. Unlike regular albums where photos are explicitly assigned, Smart Albums collect photos that match certain conditions like being starred, recently uploaded, or unassigned to any album.
+Smart Albums are virtual, dynamically-generated albums in Lychee that automatically contain photos based on specific criteria. Unlike regular albums where photos are explicitly assigned, Smart Albums collect photos that match certain conditions like being highlighted, recently uploaded, or unassigned to any album.
 
 ## Overview
 
@@ -69,19 +69,19 @@ $query->where('photos.created_at', '>=', $recent_cutoff_date);
 
 **Behavior**: Shows photos uploaded within the configured number of days from the current date.
 
-### 2. Starred Album (`StarredAlbum`)
+### 2. Highlighted Album (`HighlightedAlbum`)
 
-**Purpose**: Contains all photos marked as starred by users.
+**Purpose**: Contains all photos marked as highlighted by users.
 
 **Filtering Logic**:
 ```php
-$query->where('photos.is_starred', '=', true);
+$query->where('photos.is_highlighted', '=', true);
 ```
 
 **Configuration**:
-- `enable_starred`: Enable/disable the Starred album
+- `enable_highlighted`: Enable/disable the Highlighted album
 
-**Behavior**: Shows all photos with the `is_starred` flag set to true, regardless of their album assignment.
+**Behavior**: Shows all photos with the `is_highlighted` flag set to true, regardless of their album assignment.
 
 ### 3. On This Day Album (`OnThisDayAlbum`)
 
@@ -167,7 +167,7 @@ Smart Albums can be individually enabled/disabled:
 ```php
 // In Configs table
 'enable_unsorted'     => true/false
-'enable_starred'      => true/false  
+'enable_highlighted'  => true/false  
 'enable_recent'       => true/false
 'enable_on_this_day'  => true/false
 'enable_untagged'     => true/false
@@ -219,7 +219,7 @@ $this->title = __('gallery.smart_album.' . strtolower($id->name)) ?? $id->name;
 
 Translation keys in `lang/{locale}/gallery.php`:
 - `gallery.smart_album.unsorted`
-- `gallery.smart_album.starred`
+- `gallery.smart_album.highlighted`
 - `gallery.smart_album.recent`
 - `gallery.smart_album.on_this_day`
 - `gallery.smart_album.untagged`

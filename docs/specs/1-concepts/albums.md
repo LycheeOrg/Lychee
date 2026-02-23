@@ -199,7 +199,7 @@ Tag Album: "portrait"
 Virtual collections that don't persist to database tables but are generated dynamically by the system:
 
 - **Recent**: Recently uploaded/modified photos
-- **Starred**: User's favorited photos  
+- **Highlighted**: User's favorited photos  
 - **Public**: All publicly accessible photos
 - **Unsorted**: Photos not in any user album
 - **On This Day**: Photos from this date in past years
@@ -217,9 +217,9 @@ Virtual collections that don't persist to database tables but are generated dyna
 - Configurable time window
 - Dynamic query-based
 
-**Starred:**
-- Photos marked as favorites (`is_starred = true`)
-- User-specific (only your starred photos)
+**Highlighted:**
+- Photos marked as favorites (`is_highlighted = true`)
+- User-specific (only your highlighted photos)
 - Quick access to best shots
 
 **Public:**

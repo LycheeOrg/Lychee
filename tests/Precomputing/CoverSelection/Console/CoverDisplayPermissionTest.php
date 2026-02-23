@@ -48,7 +48,7 @@ class CoverDisplayPermissionTest extends BasePrecomputingTest
 		$privatePhoto = Photo::factory()->owned_by($owner)->create([
 			'title' => 'Private Photo',
 			'is_highlighted' => true,
-			'taken_at' => new Carbon('2023-12-31 10:00:00'), // Starred, newer
+			'taken_at' => new Carbon('2023-12-31 10:00:00'), // highlighted, newer
 		]);
 		$privatePhoto->albums()->attach($album->id);
 
@@ -63,7 +63,7 @@ class CoverDisplayPermissionTest extends BasePrecomputingTest
 
 		$album->refresh();
 
-		// Admin should see max-privilege cover (privatePhoto, starred + newer)
+		// Admin should see max-privilege cover (privatePhoto, highlighted + newer)
 		Auth::login($this->admin);
 		$this->assertEquals($privatePhoto->id, $album->auto_cover_id_max_privilege);
 
@@ -101,7 +101,7 @@ class CoverDisplayPermissionTest extends BasePrecomputingTest
 
 		Auth::login($owner);
 
-		// Owner should see max-privilege cover (photo2, starred + newer)
+		// Owner should see max-privilege cover (photo2, highlighted + newer)
 		$this->assertEquals($photo2->id, $album->auto_cover_id_max_privilege);
 	}
 

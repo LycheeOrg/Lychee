@@ -130,7 +130,7 @@ Store two automatic cover IDs per album: `auto_cover_id_max_privilege` (admin/ow
 
 - **Read-path improvement:** 50%+ reduction in album list query time (measured via NFR-003-01: <5 seconds for 1000 photos)
 - **Write-path overhead:** Job dispatch on every photo/album mutation. Queue worker resource usage increases proportionally to mutation rate.
-- **Database indexes required:** `_lft`, `_rgt`, `taken_at`, `is_starred` (already exist for virtual columns)
+- **Database indexes required:** `_lft`, `_rgt`, `taken_at`, `is_highlighted` (already exist for virtual columns)
 
 ### Runbooks
 

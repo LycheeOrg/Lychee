@@ -125,7 +125,7 @@ return [
         'SA_random_thumbs' => 'Use random thumbs instead of stared/sorting order.',
         'login_required' => 'Require user to login to access gallery.',
         'enable_unsorted' => 'Enable Unsorted smart album.',
-        'enable_highlighted' => 'Enable Starred smart album.',
+        'enable_highlighted' => 'Enable Highlighted smart album.',
         'enable_recent' => 'Enable Recent uploads smart album.',
         'enable_on_this_day' => 'Enable On this day smart album.',
         'enable_unrated' => 'Show smart album containing photos without any ratings.',

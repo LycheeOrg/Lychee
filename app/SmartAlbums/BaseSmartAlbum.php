@@ -41,7 +41,7 @@ use Illuminate\Support\Facades\Auth;
  * be created nor deleted, but always exist.
  * Smart albums are never explicit "parent albums" of photos.
  * Photos belong to these albums due to certain properties like being
- * starred, being recently added, etc.
+ * highlighted, being recently added, etc.
  */
 abstract class BaseSmartAlbum implements AbstractAlbum
 {

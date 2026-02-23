@@ -569,7 +569,7 @@ const hasPhoto = computed(() => selectedPhoto.value !== undefined)
 // Arrays with computed filters
 const photos = ref<Photo[]>([])
 const favoritePhotos = computed(() => 
-  photos.value.filter(photo => photo.is_starred)
+  photos.value.filter(photo => photo.is_highlighted)
 )
 
 // Complex state with multiple refs

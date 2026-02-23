@@ -100,10 +100,6 @@ class TestConstants
 	public const CONFIG_MAP_INCLUDE_SUBALBUMS = 'map_include_subalbums';
 	public const CONFIG_PHOTOS_SORTING_COL = 'sorting_photos_col';
 	public const CONFIG_PHOTOS_SORTING_ORDER = 'sorting_photos_order';
-	public const CONFIG_PUBLIC_RECENT = 'public_recent';
-	public const CONFIG_PUBLIC_SEARCH = 'search_public';
-	public const CONFIG_PUBLIC_STARRED = 'public_starred';
-	public const CONFIG_PUBLIC_ON_THIS_DAY = 'public_on_this_day';
 	public const CONFIG_RAW_FORMATS = 'raw_formats';
 	public const CONFIG_USE_LAST_MODIFIED_DATE_WHEN_NO_EXIF = 'use_last_modified_date_when_no_exif_date';
 

@@ -95,8 +95,8 @@ return [
     'album' => [
         'header_albums' => 'Albums',
         'header_photos' => 'Photos',
-        'show_highlighted' => 'Filter starred images',
-        'copy_highlighted_names' => 'Copy starred photo names to clipboard',
+        'show_highlighted' => 'Filter highlighted images',
+        'copy_highlighted_names' => 'Copy highlighted photo names to clipboard',
         'no_results' => 'Rien à voir ici',
         'upload' => 'Téléverser des photos',
         'tabs' => [

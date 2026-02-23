@@ -87,7 +87,7 @@ Individual photos with metadata, EXIF data, and file information.
 - `type`: MIME type
 - `original_checksum`: SHA-256 checksum
 - `is_public`: Public visibility flag
-- `is_starred`: Favorite flag
+- `is_highlighted`: Favorite flag
 - `taken_at`: Photo capture timestamp
 - `latitude`, `longitude`: GPS coordinates
 
@@ -206,9 +206,9 @@ System performance and usage metrics.
 
 **Smart Albums** (extending `BaseSmartAlbum`):
 - Virtual albums that exist only in memory
-- Photos are included based on dynamic criteria (starred, recent, etc.)
+- Photos are included based on dynamic criteria (highlighted, recent, etc.)
 - Cannot be created or deleted by users - they always exist when enabled
-- Types: Recent, Starred, On This Day, Unsorted
+- Types: Recent, Highlighted, On This Day, Unsorted
 
 For detailed information about Smart Albums, see [app/SmartAlbums/README.md](../../../app/SmartAlbums/README.md).
 
@@ -243,7 +243,7 @@ Proper indexing on frequently queried columns:
 - Foreign keys (`owner_id`, `album_id`, `user_id`)
 - Nested set boundaries (`_lft`, `_rgt`)
 - Timestamps (`taken_at`, `created_at`)
-- Visibility flags (`is_public`, `is_starred`)
+- Visibility flags (`is_public`, `is_highlighted`)
 
 ### N+1 Query Prevention
 

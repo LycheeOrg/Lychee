@@ -42,7 +42,7 @@ return [
     ],
     'smart_album' => [
         'unsorted' => 'Unsorted',
-        'highlighted' => 'Starred',
+        'highlighted' => 'Highlighted',
         'recent' => 'Recent',
         'public' => 'Public',
         'on_this_day' => 'On This Day',
@@ -96,8 +96,8 @@ return [
     'album' => [
         'header_albums' => 'Albums',
         'header_photos' => 'Photos',
-        'show_highlighted' => 'Filter starred images',
-        'copy_highlighted_names' => 'Copy starred photo names to clipboard',
+        'show_highlighted' => 'Filter highlighted images',
+        'copy_highlighted_names' => 'Copy highlighted photo names to clipboard',
         'no_results' => 'Nothing to see here',
         'upload' => 'Upload photos',
         'tabs' => [

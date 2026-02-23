@@ -231,7 +231,7 @@ class AlbumPolicy extends BasePolicy
 	 *  - the user has the upload privilege and is the owner of the album
 	 *
 	 * Note about built-in smart albums:
-	 * The built-in smart albums (starred, public, recent, unsorted) do not
+	 * The built-in smart albums (highlighted, public, recent, unsorted) do not
 	 * have any editable properties.
 	 * Hence, it is pointless whether a smart album is editable or not.
 	 * In order to silently ignore/skip this condition for smart albums,

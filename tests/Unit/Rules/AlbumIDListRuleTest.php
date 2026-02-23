@@ -30,7 +30,7 @@ class AlbumIDListRuleTest extends AbstractTestCase
 		$msg = '';
 		$rule->validate('attr', null, function ($message) use (&$msg): void { $msg = $message; });
 		$expected = ':attribute must be a comma-separated string of strings with either ' .
-			RandomID::ID_LENGTH . ' characters each or one of the built-in IDs unsorted, starred, recent, on_this_day, untagged, unrated, one_star, two_stars, three_stars, four_stars, five_stars, best_pictures, my_rated_pictures, my_best_pictures';
+			RandomID::ID_LENGTH . ' characters each or one of the built-in IDs unsorted, highlighted, recent, on_this_day, untagged, unrated, one_star, two_stars, three_stars, four_stars, five_stars, best_pictures, my_rated_pictures, my_best_pictures';
 
 		self::assertEquals($expected, $msg);
 	}

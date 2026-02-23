@@ -163,7 +163,7 @@ class RecomputeAlbumStatsJobTest extends BasePrecomputingTest
 		$job = new RecomputeAlbumStatsJob($album->id);
 		$job->handle();
 
-		// Assert max-privilege cover is the starred private photo
+		// Assert max-privilege cover is the highlighted private photo
 		$album->refresh();
 		$this->assertEquals($privatePhoto->id, $album->auto_cover_id_max_privilege);
 		$this->assertEquals($publicPhoto->id, $album->auto_cover_id_least_privilege);

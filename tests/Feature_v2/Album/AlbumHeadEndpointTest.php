@@ -140,9 +140,9 @@ class AlbumHeadEndpointTest extends BaseApiWithDataTest
 		$response->assertJsonMissing(['albums', 'photos']);
 	}
 
-	public function testGetSmartAlbumStarredHeadSuccess(): void
+	public function testGetSmartAlbumHighlightedHeadSuccess(): void
 	{
-		// Test with starred smart album as owner
+		// Test with highlighted smart album as owner
 		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album::head', ['album_id' => 'highlighted']);
 		$this->assertOk($response);
 		$response->assertJson([

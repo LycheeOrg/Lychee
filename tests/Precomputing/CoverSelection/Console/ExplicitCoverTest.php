@@ -36,12 +36,12 @@ class ExplicitCoverTest extends BasePrecomputingTest
 		$photo1 = Photo::factory()->owned_by($user)->create([
 			'title' => 'Photo 1',
 			'is_highlighted' => true,
-			'taken_at' => new Carbon('2023-12-31 10:00:00'), // Newer, starred - would be auto-selected
+			'taken_at' => new Carbon('2023-12-31 10:00:00'), // Newer, highlighted - would be auto-selected
 		]);
 		$photo2 = Photo::factory()->owned_by($user)->create([
 			'title' => 'Photo 2',
 			'is_highlighted' => false,
-			'taken_at' => new Carbon('2023-01-01 10:00:00'), // Older, not starred
+			'taken_at' => new Carbon('2023-01-01 10:00:00'), // Older, not highlighted
 		]);
 
 		$photo1->albums()->attach($album->id);
@@ -55,7 +55,7 @@ class ExplicitCoverTest extends BasePrecomputingTest
 
 		$album->refresh();
 
-		// Automatic cover should be photo1 (starred, newer)
+		// Automatic cover should be photo1 (highlighted, newer)
 		$this->assertEquals($photo1->id, $album->auto_cover_id_max_privilege);
 
 		// Set explicit cover to photo2
@@ -83,7 +83,7 @@ class ExplicitCoverTest extends BasePrecomputingTest
 		]);
 		$photo2 = Photo::factory()->owned_by($user)->create([
 			'is_highlighted' => true,
-			'taken_at' => new Carbon('2023-12-31 10:00:00'), // Starred, newer
+			'taken_at' => new Carbon('2023-12-31 10:00:00'), // highlighted, newer
 		]);
 
 		$photo1->albums()->attach($album->id);

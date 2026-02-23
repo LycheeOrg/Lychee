@@ -11,7 +11,7 @@ Lychee provides multiple specialized viewing modes, each optimized for different
 **Purpose**: Root gallery view showing all albums, smart albums, and collections.
 
 **Key Features:**
-- **Smart Albums**: Recent, Starred, Shared, Tagged albums displayed at the top
+- **Smart Albums**: Recent, Highlighted, Shared, Tagged albums displayed at the top
 - **Pinned Albums**: User-pinned albums for quick access
 - **Shared Albums**: Albums shared with the current user
 - **Regular Albums**: All other user albums in hierarchical view
@@ -315,7 +315,7 @@ The album module handles all album-related UI components and interactions.
 
 **`ThumbBadge.vue`**
 - Badge component for thumbnails
-- Status indicators (starred, edited, etc.)
+- Status indicators (highlighted, edited, etc.)
 - Customizable colors and icons
 - Positioned overlays
 

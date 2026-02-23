@@ -261,11 +261,11 @@ class PhotoPolicy extends BasePolicy
 	}
 
 	/**
-	 * Checks whether the photo can be starred by the current user.
+	 * Checks whether the photo can be highlighted by the current user.
 	 *
-	 * A photo is called _starred_ if the current user is allowed to star
+	 * A photo is called _highlighted_ if the current user is allowed to star
 	 * the photo.
-	 * A photo can be _starred_ if any of the following conditions hold
+	 * A photo can be _highlighted_ if any of the following conditions hold
 	 * (OR-clause)
 	 *
 	 * - the settings is set to allow anonymous users to star photos

@@ -145,7 +145,7 @@ declare namespace App.Enum {
 	export type SmallLargeType = "small" | "large";
 	export type SmartAlbumType =
 		| "unsorted"
-		| "starred"
+		| "highlighted"
 		| "recent"
 		| "on_this_day"
 		| "untagged"

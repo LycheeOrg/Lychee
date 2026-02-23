@@ -30,7 +30,7 @@ A **Photo** is the fundamental content unit in Lychee. Each photo represents a s
 - **Original checksum**: SHA-256 hash of originally uploaded file
 - **Filesize**: Size in bytes
 - **Owner**: User who uploaded the photo
-- **Is starred**: Favorite/bookmark flag
+- **Is highlighted**: Favorite/bookmark flag
 
 **Temporal Data:**
 - **Created at**: When uploaded to Lychee

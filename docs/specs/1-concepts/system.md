@@ -25,7 +25,7 @@ This document explains statistics, job tracking, OAuth credentials, and system c
 - **album_id**: Link to Album (nullable, either photo or album)
 - **visit_count**: Number of times viewed
 - **download_count**: Number of downloads
-- **favourite_count**: How many users starred/favorited
+- **favourite_count**: How many users highlighted/favorited
 - **shared_count**: Number of times shared
 
 **Model Properties:**

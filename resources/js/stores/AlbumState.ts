@@ -26,7 +26,6 @@ export const useAlbumStore = defineStore("album-store", {
 		last_page: 0,
 		per_page: 0,
 		total: 0,
-		showStarredOnly: false,
 
 		// New pagination state for photos (via /Album::photos endpoint)
 		photos_current_page: 1,
@@ -54,7 +53,6 @@ export const useAlbumStore = defineStore("album-store", {
 			this.isPasswordProtected = false;
 			this.config = undefined;
 			this.isLoading = false;
-			this.showStarredOnly = false;
 			// Reset pagination state
 			this.photos_current_page = 1;
 			this.photos_last_page = 0;
@@ -75,7 +73,7 @@ export const useAlbumStore = defineStore("album-store", {
 		 * Handles:
 		 * - Model albums (regular albums with children and photos)
 		 * - Tag albums (albums based on photo tags)
-		 * - Smart albums (Recent, Starred, On This Day, Unsorted, Untagged)
+		 * - Smart albums (Recent, Highlighted, On This Day, Unsorted, Untagged)
 		 * - Password-protected albums
 		 * - Race conditions when user navigates quickly between albums
 		 */
@@ -340,7 +338,7 @@ export const useAlbumStore = defineStore("album-store", {
 							// Tag album: Photos filtered by tag
 							this.tagAlbum = data.data.resource as App.Http.Resources.Models.HeadTagAlbumResource;
 						} else {
-							// Smart album: Recent, Starred, On This Day, Unsorted, Untagged
+							// Smart album: Recent, Highlighted, On This Day, Unsorted, Untagged
 							this.smartAlbum = data.data.resource as App.Http.Resources.Models.HeadSmartAlbumResource;
 						}
 					}
@@ -365,9 +363,6 @@ export const useAlbumStore = defineStore("album-store", {
 						this.isLoading = false;
 					}
 				});
-		},
-		setShowStarredOnly(value: boolean) {
-			this.showStarredOnly = value;
 		},
 	},
 	getters: {
@@ -412,9 +407,6 @@ export const useAlbumStore = defineStore("album-store", {
 		},
 		hasAlbumsPagination(state): boolean {
 			return state.albums_last_page > 0;
-		},
-		showStarredOnlyValue(): boolean {
-			return this.showStarredOnly;
 		},
 	},
 });

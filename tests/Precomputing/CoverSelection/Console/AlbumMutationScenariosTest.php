@@ -307,7 +307,7 @@ class AlbumMutationScenariosTest extends BasePrecomputingTest
 
 		$album->refresh();
 
-		// Cover should change to starred photo (starred takes priority over taken_at)
+		// Cover should change to highlighted photo (highlighted takes priority over taken_at)
 		$this->assertNotEquals($oldCover, $album->auto_cover_id_max_privilege);
 		$this->assertEquals($photo1->id, $album->auto_cover_id_max_privilege);
 	}

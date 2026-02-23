@@ -151,7 +151,7 @@ Implements offset-based pagination for albums and photos to efficiently handle l
    - `GET /Album::albums?page={n}` - Paginated child albums (PaginatedAlbumsResource)
    - `GET /Album::photos?page={n}` - Paginated photos (PaginatedPhotosResource)
 2. **Repository Methods** - `AlbumRepository::getChildrenPaginated()` and `PhotoRepository::getPhotosForAlbumPaginated()` use SortingDecorator for efficient queries
-3. **Album Type Support** - Works with regular albums, Smart albums (Recent, Starred), and Tag albums
+3. **Album Type Support** - Works with regular albums, Smart albums (Recent, Highlighted), and Tag albums
 4. **Backward Compatibility** - Legacy `/Album` endpoint unchanged, returns full album data
 
 **Frontend Architecture:**
@@ -177,7 +177,7 @@ Implements offset-based pagination for albums and photos to efficiently handle l
 Replaces on-the-fly virtual column computation with physical database fields updated asynchronously:
 
 1. **Mutation Events** - Photo/album changes trigger domain events
-   - Photo: created, deleted, updated (taken_at, is_starred, NSFW status changes)
+   - Photo: created, deleted, updated (taken_at, is_highlighted, NSFW status changes)
    - Album: created, deleted, moved, NSFW status changes
 2. **Event Listeners** - Dispatch `RecomputeAlbumStatsJob` for affected album
 3. **Job Execution** - Recomputes 6 fields in database transaction:
