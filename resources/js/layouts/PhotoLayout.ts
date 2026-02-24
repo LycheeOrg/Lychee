@@ -29,6 +29,22 @@ export function useLayouts(
 
 		const align = isLTR() ? "left" : "right";
 
+		// For list view, reset the container height to auto and clear child inline styles
+		if (layoutState.layout === "list") {
+			photoListing.style.height = "auto";
+			// Clear positioning styles from children that were set by other layouts
+			const gridItems = [...photoListing.childNodes].filter((item) => item.nodeType === 1) as HTMLElement[];
+			gridItems.forEach((item) => {
+				item.style.position = "";
+				item.style.top = "";
+				item.style.left = "";
+				item.style.right = "";
+				item.style.width = "";
+				item.style.height = "";
+			});
+			return;
+		}
+
 		switch (layoutState.layout) {
 			case "square":
 				return useSquare(

@@ -62,6 +62,7 @@ return [
         'masonry' => 'Mit Seitenverhältnis, masonry',
         'grid' => 'Mit Seitenverhältnis, Raster',
         'filmstrip' => 'Filmstreifen',
+        'list' => 'Listenansicht',
     ],
     'filter' => [
         'by_rating' => 'Filter by star rating',

@@ -63,6 +63,7 @@ return [
         'masonry' => 'Z aspektem, cegiełki',
         'grid' => 'Z aspektem, siatka',
         'filmstrip' => 'Taśma filmowa',
+        'list' => 'Widok listy',
     ],
     'filter' => [
         'by_rating' => 'Filter by star rating',

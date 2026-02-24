@@ -62,6 +62,7 @@ return [
         'masonry' => 'با نسبت، آجری',
         'grid' => 'با نسبت، شبکه‌ای',
         'filmstrip' => 'نوار فیلم',
+        'list' => 'نمای فهرست',
     ],
     'filter' => [
         'by_rating' => 'Filter by star rating',

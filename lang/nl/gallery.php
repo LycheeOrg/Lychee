@@ -63,6 +63,7 @@ return [
         'masonry' => 'Met aspect, metselwerk',
         'grid' => 'Met aspect, raster',
         'filmstrip' => 'Filmstrip',
+        'list' => 'Lijstweergave',
     ],
     'filter' => [
         'by_rating' => 'Filter by star rating',

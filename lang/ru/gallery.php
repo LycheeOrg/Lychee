@@ -62,6 +62,7 @@ return [
         'masonry' => 'С пропорциями, кладка',
         'grid' => 'С пропорциями, сетка',
         'filmstrip' => 'Плёнка',
+        'list' => 'Список',
     ],
     'filter' => [
         'by_rating' => 'Filter by star rating',

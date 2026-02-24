@@ -62,6 +62,7 @@ return [
         'masonry' => 'Masonry avec proportions',
         'grid' => 'Grille avec proportions',
         'filmstrip' => 'Pellicule',
+        'list' => 'Vue liste',
     ],
     'filter' => [
         'by_rating' => 'Filter by star rating',

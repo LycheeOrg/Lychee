@@ -47,6 +47,9 @@
 	<a class="px-1 cursor-pointer group hidden sm:inline-block h-8" :title="$t('gallery.layout.grid')" @click="layout = 'grid'">
 		<MiniIcon icon="grid" fill="fill-transparent" :class="layoutStore.gridClass" />
 	</a>
+	<a class="px-1 cursor-pointer group hidden sm:inline-block h-8" :title="$t('gallery.layout.list')" @click="layout = 'list'">
+		<MiniIcon icon="list" fill="" :class="layoutStore.listClass" />
+	</a>
 </template>
 <script setup lang="ts">
 import MiniIcon from "@/components/icons/MiniIcon.vue";

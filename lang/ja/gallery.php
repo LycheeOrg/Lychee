@@ -63,6 +63,7 @@ return [
         'masonry' => 'With aspect, masonry',
         'grid' => 'With aspect, grid',
         'filmstrip' => 'Filmstrip',
+        'list' => 'リスト表示',
     ],
     'filter' => [
         'by_rating' => 'Filter by star rating',
