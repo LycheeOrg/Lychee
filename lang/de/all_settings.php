@@ -122,7 +122,7 @@ return [
         'back_button_enabled' => 'Enable/disable back button on gallery',
         'back_button_text' => 'Text of the back button (will be positioned opposite to Login)',
         'back_button_url' => 'Link of the back button',
-        'SA_random_thumbs' => 'Use random thumbs instead of stared/sorting order.',
+        'SA_random_thumbs' => 'Use random thumbs instead of highlighted/sorting order.',
         'login_required' => 'Require user to login to access gallery.',
         'enable_unsorted' => 'Enable Unsorted smart album.',
         'enable_highlighted' => 'Enable Highlighted smart album.',

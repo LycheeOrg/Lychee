@@ -43,7 +43,7 @@
 			@rotate-photo-c-w="rotatePhotoCW"
 			@rotate-photo-c-c-w="rotatePhotoCCW"
 			@set-album-header="setAlbumHeader"
-			@toggle-star="toggleHighlight"
+			@toggle-highlight="toggleHighlight"
 			@toggle-move="toggleMove"
 			@toggle-delete="toggleDelete"
 			@go-back="goBack"

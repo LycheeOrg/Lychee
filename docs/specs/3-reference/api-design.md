@@ -326,4 +326,4 @@ Page sizes and UI modes are configurable via the admin settings panel or directl
 
 ---
 
-*Last updated: January 21, 2026*
+*Last updated: February 24, 2026*

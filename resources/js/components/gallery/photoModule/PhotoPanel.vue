@@ -1,6 +1,6 @@
 <template>
 	<div v-if="photoStore.photo" class="absolute z-20 top-0 left-0 w-full flex h-full overflow-hidden bg-black">
-		<PhotoHeader @toggle-slide-show="emits('toggleSlideShow')" @go-back="emits('goBack')" @toggle-star="emits('toggleHighlight')" />
+		<PhotoHeader @toggle-slide-show="emits('toggleSlideShow')" @go-back="emits('goBack')" @toggle-highlight="emits('toggleHighlight')" />
 		<div class="w-0 flex-auto relative">
 			<div class="animate-zoomIn w-full h-full">
 				<Transition :name="photoStore.transition">

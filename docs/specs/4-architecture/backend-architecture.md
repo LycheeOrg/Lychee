@@ -258,4 +258,4 @@ For detailed examples of how requests flow through this architecture, see:
 
 ---
 
-*Last updated: December 22, 2025*
+*Last updated: February 24, 2026*

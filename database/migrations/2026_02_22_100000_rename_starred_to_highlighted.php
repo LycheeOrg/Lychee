@@ -64,7 +64,7 @@ return new class() extends Migration {
 								continue;
 							}
 
-							$insert = [
+							$insert[] = [
 								'photo_id' => $photo->id,
 								'user_id' => $photo->owner_id,
 								'rating' => 5,
@@ -150,6 +150,13 @@ return new class() extends Migration {
 				'type_range' => DB::raw("REPLACE(type_range, 'is_starred', 'is_highlighted')"),
 			]);
 
+		DB::table('configs')
+			->where('key', '=', 'sorting_photos_col')
+			->where('value', '=', 'is_starred')
+			->update([
+				'value' => 'is_highlighted',
+			]);
+
 		// ----------------------------------------------------------------
 		// Step 6: Update random_album_id to use highlighted
 		// ----------------------------------------------------------------
@@ -217,6 +224,12 @@ return new class() extends Migration {
 			->where('key', '=', 'sorting_photos_col')
 			->update([
 				'type_range' => DB::raw("REPLACE(type_range, 'is_highlighted', 'is_starred')"),
+			]);
+		DB::table('configs')
+			->where('key', '=', 'sorting_photos_col')
+			->where('value', '=', 'is_highlighted')
+			->update([
+				'value' => 'is_starred',
 			]);
 
 		// ----------------------------------------------------------------
