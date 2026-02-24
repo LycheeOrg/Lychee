@@ -124,18 +124,18 @@ _Last updated: 2026-02-24_
 
 ### Increment I6 – Frontend: Add toggle to UploadPanel
 
-- [ ] T-015-14 – Add watermark toggle state to UploadPanel (FR-015-01, FR-015-03).  
+- [x] T-015-14 – Add watermark toggle state to UploadPanel (FR-015-01, FR-015-03).  
   _Intent:_ Add `applyWatermark` ref, default true, manage toggle state.  
   _Verification commands:_  
   - `npm run check`  
-  _Notes:_ State persists for upload session, reset on modal close.
+  _Notes:_ State resets to true on modal close.
 
-- [ ] T-015-15 – Add toggle UI component to UploadPanel (FR-015-01, S-015-07).  
+- [x] T-015-15 – Add toggle UI component to UploadPanel (FR-015-01, S-015-07).  
   _Intent:_ Add PrimeVue InputSwitch with label, conditional visibility, disabled state.  
   _Verification commands:_  
   - `npm run format`  
   - `npm run check`  
-  _Notes:_ Show only when `setup.value?.can_watermark_optout`. Disable during uploads.
+  _Notes:_ Shows only when `setup?.can_watermark_optout`. Disabled when `showCancel` (uploads in progress).
 
 ### Increment I7 – Frontend: Pass watermark flag in upload service
 

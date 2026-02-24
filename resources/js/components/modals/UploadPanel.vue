@@ -45,6 +45,10 @@
 						<em class="italic text-muted-color-emphasis hover:text-muted-color">{{ $t("dialogs.upload.drag") }}</em>
 					</label>
 					<input id="myFiles" type="file" multiple class="hidden" @change="upload" />
+					<div v-if="setup?.can_watermark_optout" class="flex items-center justify-center gap-2 mt-4">
+						<label for="watermark-toggle" class="cursor-pointer">{{ $t("dialogs.upload.apply_watermark") }}</label>
+						<InputSwitch id="watermark-toggle" v-model="applyWatermark" :disabled="showCancel" />
+					</div>
 				</div>
 			</div>
 			<div v-else>
@@ -84,6 +88,7 @@
 <script setup lang="ts">
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
+import InputSwitch from "primevue/inputswitch";
 import { computed, onMounted, onUnmounted, Ref, ref, watch } from "vue";
 import UploadingLine from "@/components/forms/upload/UploadingLine.vue";
 import ScrollPanel from "primevue/scrollpanel";
@@ -100,6 +105,7 @@ const route = useRoute();
 
 const setup = ref<App.Http.Resources.GalleryConfigs.UploadConfig | undefined>(undefined);
 const albumId = ref(route.params.albumId ?? (null as string | null)) as Ref<string | null>;
+const applyWatermark = ref(true);
 
 const emits = defineEmits<{
 	refresh: [];
@@ -188,6 +194,7 @@ function cancel() {
 function close() {
 	list_upload_files.value = [];
 	is_upload_visible.value = false;
+	applyWatermark.value = true; // Reset to default on close
 }
 
 watch(
