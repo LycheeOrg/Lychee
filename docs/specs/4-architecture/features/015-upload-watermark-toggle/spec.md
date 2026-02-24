@@ -1,13 +1,13 @@
-# Feature 014 – Upload Watermark Toggle
+# Feature 015 – Upload Watermark Toggle
 
 | Field | Value |
 |-------|-------|
 | Status | Draft |
 | Last updated | 2026-02-24 |
 | Owners | User |
-| Linked plan | `docs/specs/4-architecture/features/014-upload-watermark-toggle/plan.md` |
-| Linked tasks | `docs/specs/4-architecture/features/014-upload-watermark-toggle/tasks.md` |
-| Roadmap entry | #014 |
+| Linked plan | `docs/specs/4-architecture/features/015-upload-watermark-toggle/plan.md` |
+| Linked tasks | `docs/specs/4-architecture/features/015-upload-watermark-toggle/tasks.md` |
+| Roadmap entry | #015 |
 
 > Guardrail: This specification is the single normative source of truth for the feature. Track high- and medium-impact questions in [docs/specs/4-architecture/open-questions.md](../../open-questions.md), encode resolved answers directly in the Requirements/NFR/Behaviour/UI/Telemetry sections below (no per-feature `## Clarifications` sections), and use ADRs under `docs/specs/5-decisions/` for architecturally significant clarifications (referencing their IDs from the relevant spec sections).
 

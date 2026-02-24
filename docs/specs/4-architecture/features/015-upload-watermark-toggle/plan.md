@@ -1,6 +1,6 @@
-# Feature Plan 014 – Upload Watermark Toggle
+# Feature Plan 015 – Upload Watermark Toggle
 
-_Linked specification:_ `docs/specs/4-architecture/features/014-upload-watermark-toggle/spec.md`  
+_Linked specification:_ `docs/specs/4-architecture/features/015-upload-watermark-toggle/spec.md`  
 _Status:_ Draft  
 _Last updated:_ 2026-02-24
 
