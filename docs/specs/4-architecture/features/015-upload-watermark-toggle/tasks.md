@@ -115,12 +115,12 @@ _Last updated: 2026-02-24_
 
 ### Increment I5 – Frontend: Extend TypeScript types
 
-- [ ] T-015-13 – Regenerate TypeScript types (FR-015-04, FR-015-08).  
+- [x] T-015-13 – Regenerate TypeScript types (FR-015-04, FR-015-08).  
   _Intent:_ Run type generation to include `is_watermarker_enabled` and `can_watermark_optout` in UploadConfig type.  
   _Verification commands:_  
   - `php artisan typescript:transform`  
   - `npm run check`  
-  _Notes:_ Verify lychee.d.ts updated with new properties.
+  _Notes:_ Verified lychee.d.ts updated with new properties at lines 422-423.
 
 ### Increment I6 – Frontend: Add toggle to UploadPanel
 
