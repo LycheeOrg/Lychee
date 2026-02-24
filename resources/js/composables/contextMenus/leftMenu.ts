@@ -205,7 +205,7 @@ export function useLeftMenu(
 						label: "left-menu.api",
 						icon: "book",
 						access: initData.value.settings.can_edit ?? false,
-						url: "/docs/api",
+						url: Constants.BASE_URL + "/docs/api",
 					},
 					{
 						label: "left-menu.source_code",
