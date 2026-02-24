@@ -28,6 +28,11 @@ class ApplyWatermark implements StandalonePipe
 
 	public function handle(StandaloneDTO $state, \Closure $next): StandaloneDTO
 	{
+		// Skip if user explicitly opted out
+		if ($state->apply_watermark === false) {
+			return $next($state);
+		}
+
 		if ($this->config_manager->getValueAsBool('watermark_enabled') === false) {
 			return $next($state);
 		}

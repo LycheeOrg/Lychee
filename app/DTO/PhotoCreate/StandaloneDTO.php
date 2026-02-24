@@ -46,6 +46,8 @@ class StandaloneDTO implements PhotoDTO
 		public readonly bool $shall_import_via_symlink,
 		public readonly bool $shall_delete_imported,
 		public readonly bool $shall_rename_photo_title,
+		// Whether to apply watermark (null = use global setting, true = force apply, false = skip).
+		public readonly ?bool $apply_watermark,
 	) {
 		$this->tags = new Collection();
 	}
@@ -62,6 +64,7 @@ class StandaloneDTO implements PhotoDTO
 			shall_import_via_symlink: $init_dto->import_mode->shall_import_via_symlink,
 			shall_delete_imported: $init_dto->import_mode->shall_delete_imported,
 			shall_rename_photo_title: $init_dto->import_mode->shall_rename_photo_title,
+			apply_watermark: $init_dto->apply_watermark,
 		);
 	}
 

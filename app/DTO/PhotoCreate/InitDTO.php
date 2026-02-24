@@ -29,6 +29,9 @@ class InitDTO
 	// The extracted EXIF information (populated during init phase).
 	public ?Extractor $exif_info;
 
+	// Whether to apply watermark (null = use global setting, true = force apply, false = skip).
+	public ?bool $apply_watermark = null;
+
 	// The intended parent album
 	public ?AbstractAlbum $album = null;
 
@@ -55,6 +58,7 @@ class InitDTO
 		$this->intended_owner_id = $parameters->intended_owner_id;
 		$this->is_highlighted = $parameters->is_highlighted;
 		$this->exif_info = $parameters->exif_info;
+		$this->apply_watermark = $parameters->apply_watermark;
 		$this->album = $album;
 		$this->file_last_modified_time = $file_last_modified_time;
 	}

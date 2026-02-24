@@ -19,6 +19,7 @@ final class ImportParam
 	 * @param Album|null     $album
 	 * @param bool           $is_highlighted    indicates whether the new photo shall be highlighted
 	 * @param Extractor|null $exif_info         the extracted EXIF information
+	 * @param bool|null      $apply_watermark   whether to apply watermark (null = use global setting)
 	 *
 	 * @return void
 	 */
@@ -28,6 +29,7 @@ final class ImportParam
 		public Album|null $album = null,
 		public bool $is_highlighted = false,
 		public Extractor|null $exif_info = null,
+		public ?bool $apply_watermark = null,
 	) {
 	}
 }

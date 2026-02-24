@@ -12,14 +12,14 @@ _Last updated: 2026-02-24_
 
 ### Increment I0 – Backend: Add watermark_optout_disabled config
 
-- [ ] T-015-01 – Create migration for `watermark_optout_disabled` config (FR-015-07, S-015-08).  
+- [x] T-015-01 – Create migration for `watermark_optout_disabled` config (FR-015-07, S-015-08).  
   _Intent:_ Add config entry to `configs` table with default value 0 (false).  
   _Verification commands:_  
   - `php artisan migrate`  
   - `php artisan test --filter=Config`  
   _Notes:_ Category: Mod Watermarker. Type string: 0 (bool). Description: "Disable watermark opt-out during upload".
 
-- [ ] T-015-02 – Verify config value can be read and updated.  
+- [x] T-015-02 – Verify config value can be read and updated.  
   _Intent:_ Ensure Configs::getValueAsBool() works for new config.  
   _Verification commands:_  
   - `make phpstan`  
@@ -28,13 +28,13 @@ _Last updated: 2026-02-24_
 
 ### Increment I1 – Backend: Extend UploadConfig with watermarker status
 
-- [ ] T-015-03 – Add feature test for UploadConfig watermarker status (FR-015-04, FR-015-08, S-015-03, S-015-04, S-015-08).  
+- [x] T-015-03 – Add feature test for UploadConfig watermarker status (FR-015-04, FR-015-08, S-015-03, S-015-04, S-015-08).  
   _Intent:_ Write failing test that verifies `is_watermarker_enabled` and `can_watermark_optout` are returned in UploadConfig response.  
   _Verification commands:_  
   - `php artisan test --filter=UploadConfig`  
   _Notes:_ Test should verify: true when all conditions met, false when any condition missing, `can_watermark_optout` respects `watermark_optout_disabled`.
 
-- [ ] T-015-04 – Add `is_watermarker_enabled` and `can_watermark_optout` properties to UploadConfig.php (FR-015-04, FR-015-08).  
+- [x] T-015-04 – Add `is_watermarker_enabled` and `can_watermark_optout` properties to UploadConfig.php (FR-015-04, FR-015-08).  
   _Intent:_ Implement computed properties checking: `watermark_enabled` config, `watermark_photo_id` set, Imagick available, and `watermark_optout_disabled`.  
   _Verification commands:_  
   - `php artisan test --filter=UploadConfig`  
@@ -44,13 +44,13 @@ _Last updated: 2026-02-24_
 
 ### Increment I2 – Backend: Add watermark flag to upload request
 
-- [ ] T-015-05 – Add feature test for upload with apply_watermark parameter (FR-015-02, FR-015-06, S-015-05).  
+- [x] T-015-05 – Add feature test for upload with apply_watermark parameter (FR-015-02, FR-015-06, S-015-05).  
   _Intent:_ Write tests for upload with apply_watermark true/false/missing.  
   _Verification commands:_  
   - `php artisan test --filter=UploadPhotoRequest`  
   _Notes:_ Missing parameter should not cause validation error (optional field).
 
-- [ ] T-015-06 – Add apply_watermark validation to UploadPhotoRequest.php (FR-015-06).  
+- [x] T-015-06 – Add apply_watermark validation to UploadPhotoRequest.php (FR-015-06).  
   _Intent:_ Add validation rule and accessor method for apply_watermark parameter.  
   _Verification commands:_  
   - `php artisan test --filter=UploadPhotoRequest`  
@@ -59,20 +59,20 @@ _Last updated: 2026-02-24_
 
 ### Increment I3 – Backend: Pass watermark flag to ProcessImageJob
 
-- [ ] T-015-07 – Add unit test for ProcessImageJob with watermark flag (FR-015-05).  
+- [x] T-015-07 – Add unit test for ProcessImageJob with watermark flag (FR-015-05).  
   _Intent:_ Write test verifying ProcessImageJob stores and uses apply_watermark parameter.  
   _Verification commands:_  
   - `php artisan test --filter=ProcessImageJob`  
   _Notes:_ Test constructor, serialization, and handle method.
 
-- [ ] T-015-08 – Extend ProcessImageJob to accept apply_watermark parameter (FR-015-05).  
+- [x] T-015-08 – Extend ProcessImageJob to accept apply_watermark parameter (FR-015-05).  
   _Intent:_ Add nullable bool parameter to constructor, store in property, pass to pipeline.  
   _Verification commands:_  
   - `php artisan test --filter=ProcessImageJob`  
   - `make phpstan`  
   _Notes:_ Parameter should be serialized for queue processing.
 
-- [ ] T-015-09 – Update PhotoController to pass watermark flag to job (FR-015-02, FR-015-05, FR-015-09).  
+- [x] T-015-09 – Update PhotoController to pass watermark flag to job (FR-015-02, FR-015-05, FR-015-09).  
   _Intent:_ Get apply_watermark from request, enforce `watermark_optout_disabled` restriction, and pass to ProcessImageJob::dispatch.  
   _Verification commands:_  
   - `php artisan test --filter=PhotoController`  
@@ -83,29 +83,35 @@ _Last updated: 2026-02-24_
   _Intent:_ Write test that uploads with `apply_watermark=false` when `watermark_optout_disabled=true` and verifies photo is still watermarked.  
   _Verification commands:_  
   - `php artisan test --filter=Upload`  
-  _Notes:_ This prevents bypassing admin restriction via direct API calls.
+  _Notes:_ This prevents bypassing admin restriction via direct API calls. Will implement after I4 when watermarking logic is complete.
 
-### Increment I4 – Backend: ApplyWatermark pipe respects flag
+### Increment I4 –Backend: ApplyWatermark pipe respects flag
 
-- [ ] T-015-10 – Add unit test for ApplyWatermark pipe with flag (FR-015-05, S-015-01, S-015-02).  
+- [x] T-015-10 – Add unit test for ApplyWatermark pipe with flag (FR-015-05, S-015-01, S-015-02).  
   _Intent:_ Write tests for ApplyWatermark behavior with flag true/false/null.  
   _Verification commands:_  
   - `php artisan test --filter=ApplyWatermark`  
   _Notes:_ false = skip, true or null = apply if globally enabled.
 
-- [ ] T-015-11 – Modify ApplyWatermark pipe to check flag (FR-015-05).  
+- [x] T-015-11 – Modify ApplyWatermark pipe to check flag (FR-015-05).  
   _Intent:_ Add flag check in handle() method before applying watermark.  
   _Verification commands:_  
   - `php artisan test --filter=ApplyWatermark`  
   - `php artisan test --filter=ProcessImageJob`  
   - `make phpstan`  
-  _Notes:_ Need to pass flag through StandaloneDTO or pipeline configuration.
+  _Notes:_ Passed flag through InitDTO and StandaloneDTO to ApplyWatermark pipe.
+
+- [x] T-015-11b – Register watermark_optout_disabled in ConfigIntegrity (FR-015-07).  
+  _Intent:_ Add config key to SE_FIELDS array to pass integrity checks.  
+  _Verification commands:_  
+  - `php artisan test tests/Unit/Middleware/ConfigIntegrityTest.php`  
+  _Notes:_ Required because watermark configs are Supporter Edition features (level=1).
 
 - [ ] T-015-12 – Integration test: upload without watermark (S-015-02).  
   _Intent:_ End-to-end test uploading photo with apply_watermark=false, verify not watermarked.  
   _Verification commands:_  
   - `php artisan test --filter=Upload`  
-  _Notes:_ Requires watermarking to be globally enabled in test setup.
+  _Notes:_ Requires watermarking to be globally enabled in test setup. Deferred to I9 integration testing.
 
 ### Increment I5 – Frontend: Extend TypeScript types
 

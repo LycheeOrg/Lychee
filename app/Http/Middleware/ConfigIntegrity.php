@@ -64,6 +64,7 @@ class ConfigIntegrity
 		'watermark_shift_x_direction',
 		'watermark_shift_y',
 		'watermark_shift_y_direction',
+		'watermark_optout_disabled',
 		'live_metrics_enabled',
 		'live_metrics_access',
 		'live_metrics_max_time',
