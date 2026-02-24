@@ -84,7 +84,14 @@ class ProcessImageJob implements ShouldQueue
 		$this->user_id = $user_id ?? $album?->owner_id ?? throw new OwnerRequiredException();
 
 		$this->file_last_modified_time = $file_last_modified_time;
-		$this->apply_watermark = $apply_watermark;
+
+		// Enforce watermark_optout_disabled restriction
+		// If admin has disabled opt-out, ignore user's preference and use global setting
+		if (resolve(ConfigManager::class)->getValueAsBool('watermark_optout_disabled')) {
+			$this->apply_watermark = null;
+		} else {
+			$this->apply_watermark = $apply_watermark;
+		}
 
 		// Set up our new history record.
 		$this->history = new JobHistory();

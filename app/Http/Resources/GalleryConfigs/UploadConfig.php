@@ -9,6 +9,7 @@
 namespace App\Http\Resources\GalleryConfigs;
 
 use App\Facades\Helpers;
+use App\Image\Watermarker;
 use App\Repositories\ConfigManager;
 use Safe\Exceptions\InfoException;
 use function Safe\ini_get;
@@ -20,7 +21,6 @@ class UploadConfig extends Data
 {
 	public int $upload_processing_limit;
 	public int $upload_chunk_size;
-	public bool $is_watermarker_enabled;
 	public bool $can_watermark_optout;
 
 	public function __construct()
@@ -30,8 +30,8 @@ class UploadConfig extends Data
 		$this->upload_chunk_size = self::getUploadLimit();
 
 		// Compute watermarker status
-		$this->is_watermarker_enabled = $this->computeIsWatermarkerEnabled($config_manager);
-		$this->can_watermark_optout = $this->is_watermarker_enabled && !$config_manager->getValueAsBool('watermark_optout_disabled');
+		$watermarker = resolve(Watermarker::class);
+		$this->can_watermark_optout = $watermarker->can_watermark() && !$config_manager->getValueAsBool('watermark_optout_disabled');
 	}
 
 	public static function getUploadLimit(): int
@@ -55,44 +55,5 @@ class UploadConfig extends Data
 		}
 
 		return $size;
-	}
-
-	/**
-	 * Determine if watermarker is enabled and available.
-	 *
-	 * Checks if:
-	 * 1. watermark_enabled config is true
-	 * 2. watermark_photo_id is set
-	 * 3. Imagick is enabled in config
-	 * 4. Imagick extension is loaded
-	 *
-	 * @param ConfigManager $config_manager
-	 *
-	 * @return bool
-	 */
-	private function computeIsWatermarkerEnabled(ConfigManager $config_manager): bool
-	{
-		// Check if watermarking is enabled in config
-		if (!$config_manager->getValueAsBool('watermark_enabled')) {
-			return false;
-		}
-
-		// Check if watermark photo ID is set
-		$watermark_photo_id = $config_manager->getValueAsString('watermark_photo_id');
-		if ($watermark_photo_id === '') {
-			return false;
-		}
-
-		// Check if Imagick is enabled in config
-		if (!$config_manager->getValueAsBool('imagick')) {
-			return false;
-		}
-
-		// Check if Imagick extension is loaded
-		if (!extension_loaded('imagick')) {
-			return false;
-		}
-
-		return true;
 	}
 }

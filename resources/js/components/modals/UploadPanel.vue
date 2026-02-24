@@ -24,6 +24,7 @@
 						:status="uploadable.status"
 						:index="index"
 						:chunk-size="setup.upload_chunk_size"
+						:apply-watermark="applyWatermark"
 						@upload:completed="uploadCompleted"
 					/>
 				</ScrollPanel>
@@ -187,6 +188,7 @@ function uploadCompleted(index: number, status: "done" | "error" | "warning") {
 function cancel() {
 	is_upload_visible.value = false;
 	list_upload_files.value = [];
+	applyWatermark.value = true;
 	AlbumService.clearCache(albumId.value ?? "unsorted");
 	emits("refresh");
 }
@@ -194,7 +196,7 @@ function cancel() {
 function close() {
 	list_upload_files.value = [];
 	is_upload_visible.value = false;
-	applyWatermark.value = true; // Reset to default on close
+	applyWatermark.value = true;
 }
 
 watch(

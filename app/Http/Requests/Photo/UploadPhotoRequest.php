@@ -81,7 +81,7 @@ class UploadPhotoRequest extends BaseApiRequest implements HasAbstractAlbum
 		);
 		// Process apply_watermark parameter (optional boolean)
 		if (isset($values['apply_watermark'])) {
-			$this->apply_watermark = $values['apply_watermark'] === true || $values['apply_watermark'] === '1' || $values['apply_watermark'] === 1;
+			$this->apply_watermark = self::toBoolean($values['apply_watermark']);
 		}
 	}
 

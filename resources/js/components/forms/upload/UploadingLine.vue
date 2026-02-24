@@ -25,11 +25,10 @@ const props = withDefaults(
 		chunkSize: number;
 		status: "uploading" | "waiting" | "done" | "error" | "warning";
 		index: number;
-		applyWatermark?: boolean;
+		applyWatermark: boolean;
 	}>(),
 	{
 		chunkSize: 1024,
-		applyWatermark: true,
 	},
 );
 

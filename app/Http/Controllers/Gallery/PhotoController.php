@@ -112,12 +112,6 @@ class PhotoController extends Controller
 		$is_zip = strtolower(pathinfo($meta->file_name, PATHINFO_EXTENSION)) === 'zip';
 		$is_se = $verify->is_supporter();
 
-		// Enforce watermark_optout_disabled restriction
-		// If admin has disabled opt-out, ignore user's preference and use global setting
-		if ($config_manager->getValueAsBool('watermark_optout_disabled') && $apply_watermark === false) {
-			$apply_watermark = null;
-		}
-
 		if ($is_se && $config_manager->getValueAsBool('extract_zip_on_upload') && $is_zip) {
 			ExtractZip::dispatch($processable_file, $album?->get_id(), $file_last_modified_time);
 			// We return DONE no matter what:
