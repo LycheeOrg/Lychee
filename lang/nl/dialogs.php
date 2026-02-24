@@ -120,6 +120,7 @@ return [
         'uploading' => 'Uploaden',
         'finished' => 'Klaar',
         'failed_error' => 'Upload mislukt. De server gaf een foutmelding terug!',
+        'apply_watermark' => 'Apply watermark',
     ],
     'visibility' => [
         'public' => 'Publiek',

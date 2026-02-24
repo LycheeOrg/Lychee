@@ -120,6 +120,7 @@ return [
         'uploading' => 'Hochladen',
         'finished' => 'Fertig',
         'failed_error' => 'Hochladen fehlgeschlagen. Der Server hat einen Fehler zurückgegeben!',
+        'apply_watermark' => 'Apply watermark',
     ],
     'visibility' => [
         'public' => 'Öffentlich',

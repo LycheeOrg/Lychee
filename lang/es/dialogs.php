@@ -120,6 +120,7 @@ return [
         'uploading' => 'Subiendo',
         'finished' => 'Finalizado',
         'failed_error' => 'Error al subir. El servidor devolvió un error!',
+        'apply_watermark' => 'Apply watermark',
     ],
     'visibility' => [
         'public' => 'Público',

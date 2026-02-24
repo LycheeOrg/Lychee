@@ -120,6 +120,7 @@ return [
         'uploading' => 'Laster opp',
         'finished' => 'Fullført',
         'failed_error' => 'Opplastingen mislyktes. Serveren returnerte en feil!',
+        'apply_watermark' => 'Apply watermark',
     ],
     'visibility' => [
         'public' => 'Offentlig',

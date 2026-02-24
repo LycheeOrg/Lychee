@@ -120,6 +120,7 @@ return [
         'uploading' => 'جارٍ التحميل',
         'finished' => 'منتهي',
         'failed_error' => 'فشل التحميل. الخادم أعاد خطأ!',
+        'apply_watermark' => 'Apply watermark',
     ],
     'visibility' => [
         'public' => 'عام',

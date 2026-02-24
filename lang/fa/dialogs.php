@@ -120,6 +120,7 @@ return [
         'uploading' => 'در حال بارگذاری',
         'finished' => 'پایان یافته',
         'failed_error' => 'بارگذاری با بازگرداندن خطا از سمت سرور نا تمام ماند!',
+        'apply_watermark' => 'Apply watermark',
     ],
     'visibility' => [
         'public' => 'عمومی',

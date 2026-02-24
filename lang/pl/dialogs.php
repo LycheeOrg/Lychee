@@ -119,8 +119,7 @@ return [
         'resume' => 'Wznowienie',
         'uploading' => 'Przesyłanie',
         'finished' => 'Zakończono',
-        'failed_error' => 'Przesyłanie nie powiodło się. Serwer zwrócił błąd!',
-    ],
+        'failed_error' => 'Przesyłanie nie powiodło się. Serwer zwrócił błąd!',        'apply_watermark' => 'Apply watermark',    ],
     'visibility' => [
         'public' => 'Publiczny',
         'public_expl' => 'Anonimowi użytkownicy mogą uzyskać dostęp do tego albumu, z zastrzeżeniem poniższych ograniczeń.',
