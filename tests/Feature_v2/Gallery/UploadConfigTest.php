@@ -30,7 +30,6 @@ class UploadConfigTest extends BaseApiWithDataTest
 		$response = $this->getJson('Gallery::getUploadLimits');
 		$this->assertOk($response);
 		$response->assertJson([
-			'is_watermarker_enabled' => false,
 			'can_watermark_optout' => false,
 		]);
 	}
@@ -47,7 +46,6 @@ class UploadConfigTest extends BaseApiWithDataTest
 		$response = $this->getJson('Gallery::getUploadLimits');
 		$this->assertOk($response);
 		$response->assertJson([
-			'is_watermarker_enabled' => true,
 			'can_watermark_optout' => true,
 		]);
 	}
@@ -61,7 +59,6 @@ class UploadConfigTest extends BaseApiWithDataTest
 		$response = $this->getJson('Gallery::getUploadLimits');
 		$this->assertOk($response);
 		$response->assertJson([
-			'is_watermarker_enabled' => false,
 			'can_watermark_optout' => false,
 		]);
 	}
@@ -75,7 +72,6 @@ class UploadConfigTest extends BaseApiWithDataTest
 		$response = $this->getJson('Gallery::getUploadLimits');
 		$this->assertOk($response);
 		$response->assertJson([
-			'is_watermarker_enabled' => false,
 			'can_watermark_optout' => false,
 		]);
 	}
@@ -92,7 +88,6 @@ class UploadConfigTest extends BaseApiWithDataTest
 		$response = $this->getJson('Gallery::getUploadLimits');
 		$this->assertOk($response);
 		$response->assertJson([
-			'is_watermarker_enabled' => true,
 			'can_watermark_optout' => false,
 		]);
 	}

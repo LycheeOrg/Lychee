@@ -518,7 +518,6 @@ declare namespace App.Http.Resources.GalleryConfigs {
 	export type UploadConfig = {
 		upload_processing_limit: number;
 		upload_chunk_size: number;
-		is_watermarker_enabled: boolean;
 		can_watermark_optout: boolean;
 	};
 }
