@@ -149,6 +149,16 @@ return new class() extends Migration {
 			->update([
 				'type_range' => DB::raw("REPLACE(type_range, 'is_starred', 'is_highlighted')"),
 			]);
+
+		// ----------------------------------------------------------------
+		// Step 6: Update random_album_id to use highlighted
+		// ----------------------------------------------------------------
+		DB::table('configs')
+			->where('key', '=', 'random_album_id')
+			->where('value', '=', 'starred')
+			->update([
+				'value' => 'highlighted',
+			]);
 	}
 
 	/**
@@ -207,6 +217,16 @@ return new class() extends Migration {
 			->where('key', '=', 'sorting_photos_col')
 			->update([
 				'type_range' => DB::raw("REPLACE(type_range, 'is_highlighted', 'is_starred')"),
+			]);
+
+		// ----------------------------------------------------------------
+		// Step 6: Update random_album_id to use starred
+		// ----------------------------------------------------------------
+		DB::table('configs')
+			->where('key', '=', 'random_album_id')
+			->where('value', '=', 'highlighted')
+			->update([
+				'value' => 'starred',
 			]);
 	}
 };
