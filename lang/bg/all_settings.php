@@ -295,6 +295,7 @@ return [
         'watermark_shift_x_direction' => 'Посока на хоризонталното изместване',
         'watermark_shift_y' => 'Вертикално изместване',
         'watermark_shift_y_direction' => 'Посока на вертикалното изместване',
+        'watermark_optout_disabled' => 'Disable watermark opt-out during upload',
         'renamer_enabled' => 'Активиране на правила за преименуване',
         'renamer_enforced' => 'Принудително прилагане на правилата за преименуване',
         'renamer_enforced_before' => 'Прилагане на принудителните правила преди потребителските',

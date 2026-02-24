@@ -121,6 +121,7 @@ return [
         'uploading' => 'Качване',
         'finished' => 'Завършено',
         'failed_error' => 'Качването не бе успешно. Сървърът върна грешка!',
+        'apply_watermark' => 'Apply watermark',
     ],
     'visibility' => [
         'public' => 'Публичен',

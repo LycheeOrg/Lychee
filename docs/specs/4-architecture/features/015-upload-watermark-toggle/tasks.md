@@ -160,17 +160,17 @@ _Last updated: 2026-02-24_
 
 ### Increment I8 – Translations
 
-- [ ] T-015-19 – Add English translation for watermark toggle and admin setting (FR-015-01, FR-015-07).  
-  _Intent:_ Add translation keys to lang/en/gallery.php and lang/en/all_settings.php.  
+- [x] T-015-19 – Add English translation for watermark toggle and admin setting (FR-015-01, FR-015-07).  
+  _Intent:_ Add translation keys to lang/en/dialogs.php and lang/en/all_settings.php.  
   _Verification commands:_  
   - `npm run check`  
-  _Notes:_ Keys: `dialogs.upload.apply_watermark`, `watermark_optout_disabled`.
+  _Notes:_ Keys added: `dialogs.upload.apply_watermark`, `all_settings.watermark_optout_disabled`.
 
-- [ ] T-015-20 – Add translations for all supported languages (FR-015-01, FR-015-07).  
-  _Intent:_ Add translation strings to all 21 language files for both keys.  
+- [x] T-015-20 – Add translations for all supported languages (FR-015-01, FR-015-07).  
+  _Intent:_ Add translation strings to all 22 language files for both keys.  
   _Verification commands:_  
   - `npm run check`  
-  _Notes:_ Languages: ar, cz, de, el, en, es, fa, fr, hu, it, ja, nl, no, pl, pt, ru, sk, sv, vi, zh_CN, zh_TW.
+  _Notes:_ Added English placeholders to: ar, bg, cz, de, el, en, es, fa, fr, hu, it, ja, nl, no, pl, pt, ru, sk, sv, vi, zh_CN, zh_TW. Native speakers can translate later.
 
 ### Increment I8b – Admin UI: Add watermark_optout_disabled setting
 

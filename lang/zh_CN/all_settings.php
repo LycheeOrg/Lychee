@@ -295,6 +295,7 @@ return [
         'watermark_shift_x_direction' => 'Direction of the horizontal shift',
         'watermark_shift_y' => 'Vertical shift',
         'watermark_shift_y_direction' => 'Direction of the vertical shift',
+        'watermark_optout_disabled' => 'Disable watermark opt-out during upload',
         'renamer_enabled' => 'Enable renamer rules',
         'renamer_enforced' => 'Enforce renamer rules',
         'renamer_enforced_before' => 'Enforce renamer rules before user rules',

@@ -120,6 +120,7 @@ return [
         'uploading' => 'Téléversement',
         'finished' => 'Terminé',
         'failed_error' => 'Échec du téléversement. Le serveur a retourné une erreur !',
+        'apply_watermark' => 'Apply watermark',
     ],
     'visibility' => [
         'public' => 'Public',

@@ -121,6 +121,7 @@ return [
         'uploading' => 'Uploading',
         'finished' => 'Finished',
         'failed_error' => 'Upload failed. The server returned an error!',
+        'apply_watermark' => 'Apply watermark',
     ],
     'visibility' => [
         'public' => 'Public',
