@@ -6,31 +6,10 @@
  * Copyright (c) 2018-2026 LycheeOrg.
  */
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\DB;
+use App\Models\Extensions\BaseConfigMigration;
 
-return new class() extends Migration {
+return new class() extends BaseConfigMigration {
 	public const MOD_WATERMARKER = 'Mod Watermarker';
-	public const BOOL = '0|1';
-
-	/**
-	 * Run the migrations.
-	 */
-	final public function up(): void
-	{
-		DB::table('configs')->insert($this->getConfigs());
-	}
-
-	/**
-	 * Reverse the migrations.
-	 *
-	 * @codeCoverageIgnore Tested but after CI run...
-	 */
-	final public function down(): void
-	{
-		$keys = collect($this->getConfigs())->map(fn ($v) => $v['key'])->all();
-		DB::table('configs')->whereIn('key', $keys)->delete();
-	}
 
 	public function getConfigs(): array
 	{
