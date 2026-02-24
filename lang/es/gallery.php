@@ -63,6 +63,7 @@ return [
         'masonry' => 'Con aspecto, mampostería',
         'grid' => 'Con aspecto, cuadrícula',
         'filmstrip' => 'Tira de película',
+        'list' => 'Vista de lista',
     ],
     'filter' => [
         'by_rating' => 'Filter by star rating',

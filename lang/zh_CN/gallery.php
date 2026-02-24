@@ -63,6 +63,7 @@ return [
         'masonry' => '等比例瀑布流',
         'grid' => '等比例网格',
         'filmstrip' => '胶片条',
+        'list' => '列表视图',
     ],
     'filter' => [
         'by_rating' => 'Filter by star rating',

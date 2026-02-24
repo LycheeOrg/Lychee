@@ -62,6 +62,7 @@ return [
         'masonry' => 'مع النسبة، متراص',
         'grid' => 'مع النسبة، شبكة',
         'filmstrip' => 'شريط فيلم',
+        'list' => 'عرض القائمة',
     ],
     'filter' => [
         'by_rating' => 'Filter by star rating',

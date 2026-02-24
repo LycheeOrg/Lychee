@@ -1,6 +1,17 @@
 <template>
 	<div :id="'photoListing' + props.groupIdx" class="relative flex flex-wrap flex-row shrink w-full justify-start align-top">
-		<template v-for="photo in props.photos" :key="photo.id">
+		<!-- List view -->
+		<PhotoListView
+			v-if="layoutStore.layout === 'list'"
+			:photos="props.photos"
+			:selected-photos="props.selectedPhotos"
+			@clicked="(id: string, e: MouseEvent | KeyboardEvent) => emits('clicked', id, e as MouseEvent)"
+			@selected="(id: string, e: MouseEvent | KeyboardEvent) => emits('selected', id, e as MouseEvent)"
+			@contexted="(id: string, e: MouseEvent) => emits('contexted', id, e)"
+			@toggle-buy-me="(id: string) => emits('toggleBuyMe', id)"
+		/>
+		<!-- Thumbnail views -->
+		<template v-else v-for="photo in props.photos" :key="photo.id">
 			<PhotoThumb
 				:photo="photo"
 				:is-selected="props.selectedPhotos.includes(photo.id)"
@@ -18,6 +29,7 @@
 import { useLayouts, type TimelineData } from "@/layouts/PhotoLayout";
 import { computed, onMounted, onUnmounted, onUpdated, watch } from "vue";
 import PhotoThumb from "./thumbs/PhotoThumb.vue";
+import PhotoListView from "./PhotoListView.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import { ctrlKeyState, metaKeyState, shiftKeyState } from "@/utils/keybindings-utils";
