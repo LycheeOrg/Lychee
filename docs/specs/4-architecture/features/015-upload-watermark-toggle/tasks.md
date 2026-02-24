@@ -139,24 +139,24 @@ _Last updated: 2026-02-24_
 
 ### Increment I7 – Frontend: Pass watermark flag in upload service
 
-- [ ] T-015-16 – Extend UploadData type and upload-service.ts (FR-015-02).  
+- [x] T-015-16 – Extend UploadData type and upload-service.ts (FR-015-02).  
   _Intent:_ Add apply_watermark field to UploadData type and FormData.  
   _Verification commands:_  
   - `npm run check`  
-  _Notes:_ Append to FormData: `formData.append("apply_watermark", ...)`.
+  _Notes:_ Appended to FormData as "1" or "0" string. Only included if defined (undefined skips).
 
-- [ ] T-015-17 – Update UploadingLine.vue to accept watermark prop (FR-015-02, S-015-06).  
+- [x] T-015-17 – Update UploadingLine.vue to accept watermark prop (FR-015-02, S-015-06).  
   _Intent:_ Add prop for watermark flag, pass to upload service.  
   _Verification commands:_  
   - `npm run check`  
-  _Notes:_ Prop passed from UploadPanel, used in process() method.
+  _Notes:_ Default value true. Passed to UploadData in process() method.
 
-- [ ] T-015-18 – Update UploadPanel.vue to pass watermark flag to UploadingLine (FR-015-02).  
+- [x] T-015-18 – Update UploadPanel.vue to pass watermark flag to UploadingLine (FR-015-02).  
   _Intent:_ Bind applyWatermark state to UploadingLine component prop.  
   _Verification commands:_  
   - `npm run format`  
   - `npm run check`  
-  _Notes:_ Pass current toggle state to each UploadingLine.
+  _Notes:_ Bound via :apply-watermark="applyWatermark" prop.
 
 ### Increment I8 – Translations
 

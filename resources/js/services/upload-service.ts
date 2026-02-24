@@ -6,6 +6,7 @@ export type UploadData = {
 	file_last_modified_time: number | null;
 	file: Blob;
 	meta: App.Http.Resources.Editable.UploadMetaResource;
+	apply_watermark?: boolean;
 
 	onUploadProgress: (e: AxiosProgressEvent) => void;
 };
@@ -26,6 +27,9 @@ const UploadService = {
 		formData.append("extension", info.meta.extension ?? "");
 		formData.append("chunk_number", info.meta.chunk_number?.toString() ?? "");
 		formData.append("total_chunks", info.meta.total_chunks?.toString() ?? "");
+		if (info.apply_watermark !== undefined) {
+			formData.append("apply_watermark", info.apply_watermark ? "1" : "0");
+		}
 
 		const config: AxiosRequestConfig<FormData> = {
 			onUploadProgress: info.onUploadProgress,

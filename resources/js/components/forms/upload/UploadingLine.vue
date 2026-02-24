@@ -25,9 +25,11 @@ const props = withDefaults(
 		chunkSize: number;
 		status: "uploading" | "waiting" | "done" | "error" | "warning";
 		index: number;
+		applyWatermark?: boolean;
 	}>(),
 	{
 		chunkSize: 1024,
+		applyWatermark: true,
 	},
 );
 
@@ -102,6 +104,7 @@ function process() {
 		file: chunk,
 		file_last_modified_time: file.value.lastModified,
 		meta: meta.value,
+		apply_watermark: props.applyWatermark,
 		onUploadProgress: (progressEvent: AxiosProgressEvent) => {
 			const percent = progressEvent.loaded / (progressEvent.total ?? 1);
 			progress.value = Math.round(((chunkStart.value + percent * (chunkEnd - chunkStart.value)) / size.value) * 100);
