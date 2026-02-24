@@ -174,12 +174,12 @@ _Last updated: 2026-02-24_
 
 ### Increment I8b – Admin UI: Add watermark_optout_disabled setting
 
-- [ ] T-015-21 – Add watermark_optout_disabled toggle to Mod Watermarker settings (FR-015-07, S-015-08).  
+- [x] T-015-21 – Add watermark_optout_disabled toggle to Mod Watermarker settings (FR-015-07, S-015-08).  
   _Intent:_ Add toggle in admin settings UI for controlling watermark opt-out availability.  
   _Verification commands:_  
   - `npm run format`  
   - `npm run check`  
-  _Notes:_ Label: "Disable watermark opt-out". When enabled, users cannot skip watermarking.
+  _Notes:_ No code changes needed. Migration from I0 includes all metadata (cat, type_range: "0|1", description, details, level: 1, order: 15). Lychee's ConfigGroup component auto-generates boolean toggles from database configs.
 
 ### Increment I9 – Integration and documentation
 
