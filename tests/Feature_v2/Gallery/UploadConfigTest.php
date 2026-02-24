@@ -40,7 +40,7 @@ class UploadConfigTest extends BaseApiWithDataTest
 		$this->requireSe();
 
 		Configs::set('watermark_enabled', true);
-		Configs::set('watermark_photo_id', 'test_photo_id_12345678');
+		Configs::set('watermark_photo_id', $this->photo1->id);
 		Configs::set('imagick', true);
 		Configs::set('watermark_optout_disabled', false);
 
@@ -69,7 +69,7 @@ class UploadConfigTest extends BaseApiWithDataTest
 	public function testWatermarkerStatusWhenImagickDisabled(): void
 	{
 		Configs::set('watermark_enabled', true);
-		Configs::set('watermark_photo_id', 'test_photo_id_12345678');
+		Configs::set('watermark_photo_id', $this->photo1->id);
 		Configs::set('imagick', false);
 
 		$response = $this->getJson('Gallery::getUploadLimits');
@@ -85,7 +85,7 @@ class UploadConfigTest extends BaseApiWithDataTest
 		$this->requireSe();
 
 		Configs::set('watermark_enabled', true);
-		Configs::set('watermark_photo_id', 'test_photo_id_12345678');
+		Configs::set('watermark_photo_id', $this->photo1->id);
 		Configs::set('imagick', true);
 		Configs::set('watermark_optout_disabled', true);
 
