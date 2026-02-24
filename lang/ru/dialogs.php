@@ -119,7 +119,9 @@ return [
         'resume' => 'Возобновить',
         'uploading' => 'Загрузка',
         'finished' => 'Завершено',
-        'failed_error' => 'Не удалось загрузить. Сервер вернул ошибку!',        'apply_watermark' => 'Apply watermark',    ],
+        'failed_error' => 'Не удалось загрузить. Сервер вернул ошибку!',
+        'apply_watermark' => 'Apply watermark',
+    ],
     'visibility' => [
         'public' => 'Публичный',
         'public_expl' => 'Анонимные пользователи могут получить доступ к этому альбому с ограничениями ниже.',

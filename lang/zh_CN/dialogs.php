@@ -119,7 +119,9 @@ return [
         'resume' => '继续',
         'uploading' => '上传中',
         'finished' => '已完成',
-        'failed_error' => '上传失败。服务器返回错误！',        'apply_watermark' => 'Apply watermark',    ],
+        'failed_error' => '上传失败。服务器返回错误！',
+        'apply_watermark' => 'Apply watermark',
+    ],
     'visibility' => [
         'public' => '公开',
         'public_expl' => '匿名用户可以访问此相册，但受以下限制。',
