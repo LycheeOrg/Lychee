@@ -627,6 +627,7 @@ return [
         'watermark_shift_x_direction' => 'Direction of the translation applied to the watermark: to the left or to the right?',
         'watermark_shift_y' => 'Number of pixel/proportional translation applied vertically to the watermark.',
         'watermark_shift_y_direction' => 'Direction of the translation applied to the watermark: up or down?',
+        'watermark_optout_disabled' => '',
         'renamer_enabled' => 'This allows you to rename files based on rules defined in the renamer module.',
         'renamer_enforced' => 'Rules defined by the owner of the Lychee instance will be applied regardless of user settings.',
         'renamer_enforced_before' => 'Rules defined by the owner of the Lychee instance will be applied before the rules of the user.',

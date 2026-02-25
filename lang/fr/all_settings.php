@@ -293,6 +293,7 @@ return [
         'watermark_shift_x_direction' => 'Direction du décalage horizontal appliqué au filigrane : vers la gauche ou vers la droite ?',
         'watermark_shift_y' => 'Nombre de pixels/proportion du décalage vertical.',
         'watermark_shift_y_direction' => 'Direction du décalage vertical appliqué au filigrane : vers le haut ou vers le bas ?',
+        'watermark_optout_disabled' => '',
         'renamer_enabled' => 'Permet de renommer les fichiers via des règles du module de renommage.',
         'renamer_enforced' => 'Les règles définies par le propriétaire sont appliquées quelles que soient celles de l’utilisateur.',
         'renamer_enforced_before' => 'Règles du propriétaire appliquées avant celles de l’utilisateur.',
