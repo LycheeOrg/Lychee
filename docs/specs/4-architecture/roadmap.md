@@ -6,7 +6,7 @@ High-level planning document for Lychee features and architectural initiatives.
 
 | Feature ID | Name | Status | Priority | Assignee | Started | Updated | Progress |
 |------------|------|--------|----------|----------|---------|---------|----------|
-| - | - | - | - | - | - | - | - |
+| 016 | Bulk License Edit | Planning | P2 | - | 2026-02-26 | 2026-02-26 | Spec, plan, and tasks created |
 
 ## Paused Features
 
@@ -94,4 +94,4 @@ features/
 
 ---
 
-*Last updated: 2026-02-24*
+*Last updated: 2026-02-26*
