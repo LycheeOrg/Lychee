@@ -10,6 +10,8 @@ namespace App\Http\Controllers;
 
 use App\Actions\Renamer\PreviewAlbums;
 use App\Actions\Renamer\PreviewPhotos;
+use App\Actions\Renamer\RenameAlbums;
+use App\Actions\Renamer\RenamePhotos;
 use App\Http\Requests\Renamer\CreateRenamerRuleRequest;
 use App\Http\Requests\Renamer\DeleteRenamerRuleRequest;
 use App\Http\Requests\Renamer\ListRenamerRulesRequest;
@@ -19,12 +21,7 @@ use App\Http\Requests\Renamer\TestRenamerRequest;
 use App\Http\Requests\Renamer\UpdateRenamerRuleRequest;
 use App\Http\Resources\Models\RenamerPreviewResource;
 use App\Http\Resources\Models\RenamerRuleResource;
-use App\Metadata\Renamer\AlbumRenamer;
-use App\Metadata\Renamer\PhotoRenamer;
 use App\Metadata\Renamer\Renamer;
-use App\Models\Album;
-use App\Models\BaseAlbumImpl;
-use App\Models\Photo;
 use App\Models\RenamerRule;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
@@ -212,7 +209,7 @@ class RenamerController extends Controller
 				$request->albumIds(),
 				$request->album_id,
 				$scope
-			)
+			),
 		};
 	}
 
@@ -253,41 +250,13 @@ class RenamerController extends Controller
 		$rule_ids = count($request->rule_ids) > 0 ? $request->rule_ids : null;
 
 		if (count($request->photoIds()) > 0) {
-			$photo_renamer = new PhotoRenamer($user_id, $rule_ids);
-
-			Photo::query()
-				->whereIn('id', $request->photoIds())
-				// Process by chunks of self::CHUNK_SIZE to avoid memory issues
-				->chunkById(self::CHUNK_SIZE, function (Collection $photos) use ($photo_renamer): void {
-					$values = $photos->map(fn (Photo $photo) => [
-						'id' => $photo->id,
-						'title' => $photo_renamer->handle($photo->title),
-					])->all();
-
-					// Make a batch update to update all photo titles at once
-					$photo_instance = new Photo();
-					// https://github.com/mavinoo/laravelBatch
-					batch()->update($photo_instance, $values, 'id');
-				});
+			$action = new RenamePhotos();
+			$action->execute($user_id, $request->photoIds(), $rule_ids);
 		}
 
 		if (count($request->albumIds()) > 0) {
-			$album_renamer = new AlbumRenamer($user_id, $rule_ids);
-
-			Album::query()
-				->whereIn('id', $request->albumIds())
-				// Process by chunks of self::CHUNK_SIZE to avoid memory issues
-				->chunkById(self::CHUNK_SIZE, function (Collection $albums) use ($album_renamer): void {
-					$values = $albums->map(fn (Album $album) => [
-						'id' => $album->id,
-						'title' => $album_renamer->handle($album->title),
-					])->all();
-
-					// Make a batch update to update all photo titles at once
-					$album_instance = new BaseAlbumImpl();
-					// https://github.com/mavinoo/laravelBatch
-					batch()->update($album_instance, $values, 'id');
-				});
+			$action = new RenameAlbums();
+			$action->execute($user_id, $request->albumIds(), $rule_ids);
 		}
 	}
 }
