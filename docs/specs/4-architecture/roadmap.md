@@ -7,6 +7,7 @@ High-level planning document for Lychee features and architectural initiatives.
 | Feature ID | Name | Status | Priority | Assignee | Started | Updated | Progress |
 |------------|------|--------|----------|----------|---------|---------|----------|
 | 016 | Bulk License Edit | In Progress | P2 | - | 2026-02-26 | 2026-02-27 | Backend complete (T-016-01 to T-016-04), next: quality gates & frontend |
+| 017 | Apply Renamer Rules & Watermark Confirm | Planning | P2 | - | 2026-02-26 | 2026-02-26 | Spec, plan, tasks drafted. Pending implementation. |
 
 ## Paused Features
 
