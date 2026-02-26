@@ -40,86 +40,86 @@ _Last updated: 2026-02-26_
   _Verification commands:_  
   - `php artisan route:list | grep "Photo::license"` - Route exists  
   - `php artisan test --filter=PhotoBulkLicenseTest` - All backend tests pass  
-  _Notes:_ PATCH method, auth:api middleware.
+  _Notes:_ PATCH method, auth:api middleware. ✓ Completed - Route registered.
 
-- [ ] T-016-05 – Run backend quality gates (NFR-016-02).  
+- [x] T-016-05 – Run backend quality gates (NFR-016-02).  
   _Intent:_ Ensure PHP code follows Lychee conventions and passes static analysis.  
   _Verification commands:_  
   - `vendor/bin/php-cs-fixer fix` - Apply formatting  
   - `php artisan test` - All tests pass  
   - `make phpstan` - PHPStan level 6, no errors  
-  _Notes:_ Verify license headers, snake_case, strict comparison, no empty().
+  _Notes:_ Verify license headers, snake_case, strict comparison, no empty(). ✓ Completed - All quality gates pass.
 
 ### Frontend Implementation
 
-- [ ] T-016-06 – Add PhotoService.license() method (API-016-01).  
+- [x] T-016-06 – Add PhotoService.license() method (API-016-01).  
   _Intent:_ Create service method for API communication.  
   _Files:_ `resources/js/services/photo-service.ts`  
   _Verification commands:_  
   - `npm run check` - TypeScript compiles  
   - `npm run format` - Formatting applied  
-  _Notes:_ Method signature: `license(photo_ids: string[], license: App.Enum.LicenseType): Promise<AxiosResponse>`.
+  _Notes:_ Method signature: `license(photo_ids: string[], license: App.Enum.LicenseType): Promise<AxiosResponse>`. ✓ Completed.
 
-- [ ] T-016-07 – Create PhotoLicenseDialog component structure (FR-016-01, UI-016-01).  
+- [x] T-016-07 – Create PhotoLicenseDialog component structure (FR-016-01, UI-016-01).  
   _Intent:_ Build dialog component scaffold with props, emits, and template.  
   _Files:_ `resources/js/components/forms/photo/PhotoLicenseDialog.vue`  
   _Verification commands:_  
   - `npm run check` - TypeScript compiles  
   - `npm run format` - Formatting applied  
-  _Notes:_ Props: parentId, photo?, photoIds?. Emit: licensed. Use PrimeVue Dialog, Dropdown, Button. Match PhotoTagDialog structure.
+  _Notes:_ Props: parentId, photo?, photoIds?. Emit: licensed. Use PrimeVue Dialog, Dropdown, Button. Match PhotoTagDialog structure. ✓ Completed.
 
-- [ ] T-016-08 – Implement license dropdown with all options (FR-016-02).  
+- [x] T-016-08 – Implement license dropdown with all options (FR-016-02).  
   _Intent:_ Populate dropdown with all 31 LicenseType enum values.  
   _Files:_ `resources/js/components/forms/photo/PhotoLicenseDialog.vue`  
   _Verification commands:_  
   - `npm run check` - TypeScript compiles  
   - Manual testing: Open dialog, verify all license types appear  
-  _Notes:_ Default to "None", format for PrimeVue (label/value pairs), match LicenseType.localized().
+  _Notes:_ Default to "None", format for PrimeVue (label/value pairs), match LicenseType.localized(). ✓ Completed - Uses licenseOptions from constants.
 
-- [ ] T-016-09 – Implement dialog logic (submit, cancel, validation) (S-016-01, S-016-02, S-016-07).  
+- [x] T-016-09 – Implement dialog logic (submit, cancel, validation) (S-016-01, S-016-02, S-016-07).  
   _Intent:_ Connect dialog UI to PhotoService, handle success/error states.  
   _Files:_ `resources/js/components/forms/photo/PhotoLicenseDialog.vue`  
   _Verification commands:_  
   - `npm run check` - TypeScript compiles  
   - Manual testing: Submit updates licenses, cancel closes dialog  
-  _Notes:_ execute() calls PhotoService.license(), close() resets state.
+  _Notes:_ execute() calls PhotoService.license(), close() resets state. ✓ Completed.
 
-- [ ] T-016-10 – Add success/error feedback (FR-016-05).  
+- [x] T-016-10 – Add success/error feedback (FR-016-05).  
   _Intent:_ Display toasts and clear cache on success.  
   _Files:_ `resources/js/components/forms/photo/PhotoLicenseDialog.vue`  
   _Verification commands:_  
   - Manual testing: Verify toast appears with correct count, view refreshes  
-  _Notes:_ Toast: "License updated for X photos". Call AlbumService.clearCache(parentId).
+  _Notes:_ Toast: "License updated for X photos". Call AlbumService.clearCache(parentId). ✓ Completed.
 
-- [ ] T-016-11 – Integrate dialog into gallery selection menu (FR-016-01).  
+- [x] T-016-11 – Integrate dialog into gallery selection menu (FR-016-01).  
   _Intent:_ Add "Set License" action to photo selection context menu.  
   _Files:_ Gallery selection menu component (TBD during implementation)  
   _Verification commands:_  
   - `npm run check` - TypeScript compiles  
   - Manual testing: Select photos, verify "Set License" action appears  
-  _Notes:_ Import PhotoLicenseDialog, add menu item, bind v-model, pass props, handle @licensed event.
+  _Notes:_ Import PhotoLicenseDialog, add menu item, bind v-model, pass props, handle @licensed event. ✓ Completed - Integrated in Album, Tag, Timeline, Search views + context menus.
 
-- [ ] T-016-12 – Add translation strings for English (I10).  
+- [x] T-016-12 – Add translation strings for English (I10).  
   _Intent:_ Add dialog and toast translations.  
   _Files:_ `lang/en/dialogs.php`  
   _Verification commands:_  
   - `grep "photo_license" lang/en/dialogs.php` - Strings exist  
   - Manual testing: Verify dialog displays correct English text  
-  _Notes:_ Add: question, question_multiple, set_license, updated, select_license, replace_warning.
+  _Notes:_ Add: question, question_multiple, set_license, updated, select_license, replace_warning. ✓ Completed.
 
-- [ ] T-016-13 – Add translation string placeholders for other languages.  
+- [x] T-016-13 – Add translation string placeholders for other languages.  
   _Intent:_ Add English placeholders to other 21 language files.  
   _Files:_ `lang/*/dialogs.php` (22 languages total)  
   _Verification commands:_  
   - `grep -r "photo_license" lang/` - Strings exist in all language files  
-  _Notes:_ Copy English strings as placeholders (to be translated later by community).
+  _Notes:_ Copy English strings as placeholders (to be translated later by community). ✓ Completed - 22 languages updated.
 
-- [ ] T-016-14 – Run frontend quality gates (NFR-016-03).  
+- [x] T-016-14 – Run frontend quality gates (NFR-016-03).  
   _Intent:_ Ensure Vue/TypeScript code follows Lychee conventions.  
   _Verification commands:_  
   - `npm run format` - Apply formatting  
   - `npm run check` - All checks pass  
-  _Notes:_ Verify: template-first, composition API, regular functions (not arrow), .then() not async/await.
+  _Notes:_ Verify: template-first, composition API, regular functions (not arrow), .then() not async/await. ✓ Completed.
 
 ### Testing & Validation
 
