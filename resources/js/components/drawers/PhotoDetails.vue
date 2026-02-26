@@ -82,6 +82,29 @@
 						</span>
 					</template>
 
+					<!-- Albums stuff -->
+					<h2 class="text-muted-color-emphasis text-base font-bold mt-4 mb-1">
+						{{ $t("gallery.photo.details.albums") }}
+					</h2>
+					<div v-if="albums_loading" class="flex items-center gap-2 text-muted-color text-sm">
+						<ProgressSpinner style="width: 1.25rem; height: 1.25rem" strokeWidth="4" />
+						<span>{{ $t("gallery.photo.details.albums_loading") }}</span>
+					</div>
+					<div v-else-if="albums_error" class="text-sm text-muted-color">
+						<i class="pi pi-exclamation-triangle mr-1" />
+						{{ $t("gallery.photo.details.albums_loading_error") }}
+					</div>
+					<div v-else-if="albums.length === 0" class="text-sm text-muted-color">
+						{{ $t("gallery.photo.details.no_albums") }}
+					</div>
+					<ul v-else class="list-none p-0 m-0">
+						<li v-for="album in albums" :key="album.id" class="mb-1">
+							<a class="text-sm text-primary-color cursor-pointer hover:underline" @click="navigateToAlbum(album.id)">
+								{{ album.title }}
+							</a>
+						</li>
+					</ul>
+
 					<!-- Exif stuff -->
 					<template v-if="photoStore.photo.precomputed.has_exif">
 						<h2 class="text-muted-color-emphasis text-base font-bold mt-4 mb-1">
@@ -205,8 +228,9 @@
 	</aside>
 </template>
 <script setup lang="ts">
-import { Ref } from "vue";
+import { Ref, ref, watch } from "vue";
 import Card from "primevue/card";
+import ProgressSpinner from "primevue/progressspinner";
 import MapInclude from "@/components/gallery/photoModule/MapInclude.vue";
 import MiniIcon from "@/components/icons/MiniIcon.vue";
 import ColourSquare from "@/components/gallery/photoModule/ColourSquare.vue";
@@ -215,8 +239,13 @@ import { useLycheeStateStore } from "@/stores/LycheeState";
 import LinksInclude from "@/components/gallery/photoModule/LinksInclude.vue";
 import { storeToRefs } from "pinia";
 import { usePhotoStore } from "@/stores/PhotoState";
+import { useRouter } from "vue-router";
+import PhotoService from "@/services/photo-service";
+import { useTogglablesStateStore } from "@/stores/ModalsState";
 
 const photoStore = usePhotoStore();
+const router = useRouter();
+const togglableStore = useTogglablesStateStore();
 
 const props = defineProps<{
 	isMapVisible: boolean;
@@ -226,4 +255,47 @@ const areDetailsOpen = defineModel("areDetailsOpen", { default: true }) as Ref<b
 
 const lycheeState = useLycheeStateStore();
 const { is_details_links_enabled } = storeToRefs(lycheeState);
+
+// Albums section state
+const albums = ref<App.Http.Resources.Models.PhotoAlbumResource[]>([]);
+const albums_loading = ref(false);
+const albums_error = ref(false);
+const albums_cached_photo_id = ref<string | null>(null);
+
+function fetchAlbums(photo_id: string) {
+	if (albums_cached_photo_id.value === photo_id) {
+		return;
+	}
+
+	albums_loading.value = true;
+	albums_error.value = false;
+	albums.value = [];
+
+	PhotoService.albums(photo_id)
+		.then((response) => {
+			albums.value = response.data;
+			albums_cached_photo_id.value = photo_id;
+			albums_loading.value = false;
+		})
+		.catch(() => {
+			albums_error.value = true;
+			albums_loading.value = false;
+		});
+}
+
+function navigateToAlbum(album_id: string) {
+	togglableStore.are_details_open = false;
+	photoStore.$reset();
+	router.push({ name: "album", params: { albumId: album_id } });
+}
+
+watch(
+	[areDetailsOpen, () => photoStore.photo?.id],
+	([is_open, photo_id]) => {
+		if (is_open && photo_id !== undefined && photo_id !== null) {
+			fetchAlbums(photo_id);
+		}
+	},
+	{ immediate: true },
+);
 </script>

@@ -84,6 +84,10 @@ const PhotoService = {
 	setRating(photo_id: string, rating: 0 | 1 | 2 | 3 | 4 | 5): Promise<AxiosResponse<App.Http.Resources.Models.PhotoResource>> {
 		return axios.post(`${Constants.getApiUrl()}Photo::setRating`, { photo_id: photo_id, rating: rating });
 	},
+
+	albums(photo_id: string): Promise<AxiosResponse<App.Http.Resources.Models.PhotoAlbumResource[]>> {
+		return axios.get(`${Constants.getApiUrl()}Photo/${photo_id}/albums`, { data: {} });
+	},
 };
 
 export default PhotoService;

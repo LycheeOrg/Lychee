@@ -664,6 +664,10 @@ declare namespace App.Http.Resources.Models {
 		title: string;
 		url: string | null;
 	};
+	export type PhotoAlbumResource = {
+		id: string;
+		title: string;
+	};
 	export type PhotoRatingResource = {
 		rating_user: number;
 		rating_count: number;
@@ -704,6 +708,11 @@ declare namespace App.Http.Resources.Models {
 		shared_count: number;
 		rating_count: number;
 		rating_avg: number | null;
+	};
+	export type RenamerPreviewResource = {
+		id: string;
+		original: string;
+		new: string;
 	};
 	export type RenamerRuleResource = {
 		id: number;

@@ -190,6 +190,10 @@ return [
             'aperture' => 'Бленда',
             'focal' => 'Фокусно разстояние',
             'iso' => 'ISO %s',
+            'albums' => 'Albums',
+            'albums_loading' => 'Loading...',
+            'no_albums' => 'This photo is not in any album.',
+            'albums_loading_error' => 'Could not load albums.',
             'stats' => [
                 'header' => 'Статистика',
                 'number_of_visits' => 'Брой посещения',

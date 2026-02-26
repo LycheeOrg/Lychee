@@ -146,6 +146,7 @@ Route::post('/Photo::highlight', [Gallery\PhotoController::class, 'highlight']);
 Route::post('/Photo::setRating', [Gallery\PhotoController::class, 'rate']);
 Route::post('/Photo::rotate', [Gallery\PhotoController::class, 'rotate']);
 Route::post('/Photo::watermark', [Gallery\PhotoController::class, 'watermark'])->middleware('support:se');
+Route::get('/Photo/{photo_id}/albums', [Gallery\PhotoController::class, 'albums']);
 Route::delete('/Photo', [Gallery\PhotoController::class, 'delete']);
 
 // Route::get('/Photo::getArchive', [PhotoController::class, 'getArchive'])

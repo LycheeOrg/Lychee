@@ -190,6 +190,10 @@ return [
             'aperture' => 'Diafragma',
             'focal' => 'Brandpuntsafstand',
             'iso' => 'ISO %s',
+            'albums' => 'Albums',
+            'albums_loading' => 'Loading...',
+            'no_albums' => 'This photo is not in any album.',
+            'albums_loading_error' => 'Could not load albums.',
             'stats' => [
                 'header' => 'Statistieken',
                 'number_of_visits' => 'Aantal bezoeken',
