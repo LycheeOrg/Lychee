@@ -298,22 +298,12 @@ class PhotoController extends Controller
 	public function license(SetPhotosLicenseRequest $request): void
 	{
 		$license = $request->license();
-		$photo_ids = $request->photos()->pluck('id')->toArray();
-
+		$photo_ids = collect($request->photoIds());
 		DB::transaction(function () use ($photo_ids, $license): void {
 			// Process photos in chunks of 100 to avoid memory issues
-			Photo::query()
-				->whereIn('id', $photo_ids)
-				->chunkById(100, function ($photos) use ($license): void {
-					$values = $photos->map(fn (Photo $photo) => [
-						'id' => $photo->id,
-						'license' => $license->value,
-					])->all();
-
-					// Make a batch update to update all photo licenses at once
-					$photo_instance = new Photo();
-					batch()->update($photo_instance, $values, 'id');
-				});
+			$photo_ids->chunk(100)->each(function ($photo_id) use ($license): void {
+				Photo::query()->whereIn('id', $photo_id)->update(['license' => $license->value]);
+			});
 		});
 	}
 

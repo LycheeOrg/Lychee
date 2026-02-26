@@ -9,22 +9,21 @@
 namespace App\Http\Requests\Photo;
 
 use App\Contracts\Http\Requests\HasLicense;
-use App\Contracts\Http\Requests\HasPhotos;
+use App\Contracts\Http\Requests\HasPhotoIds;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Enum\LicenseType;
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Traits\Authorize\AuthorizeCanEditPhotosTrait;
+use App\Http\Requests\Traits\Authorize\AuthorizeCanEditPhotosByIdTrait;
 use App\Http\Requests\Traits\HasLicenseTrait;
-use App\Http\Requests\Traits\HasPhotosTrait;
-use App\Models\Photo;
+use App\Http\Requests\Traits\HasPhotoIdsTrait;
 use App\Rules\RandomIDRule;
 use Illuminate\Validation\Rules\Enum;
 
-class SetPhotosLicenseRequest extends BaseApiRequest implements HasPhotos, HasLicense
+class SetPhotosLicenseRequest extends BaseApiRequest implements HasPhotoIds, HasLicense
 {
-	use HasPhotosTrait;
+	use HasPhotoIdsTrait;
 	use HasLicenseTrait;
-	use AuthorizeCanEditPhotosTrait;
+	use AuthorizeCanEditPhotosByIdTrait;
 
 	/**
 	 * {@inheritDoc}
@@ -43,11 +42,7 @@ class SetPhotosLicenseRequest extends BaseApiRequest implements HasPhotos, HasLi
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		/** @var array<int,string> $photos_ids */
-		$photos_ids = $values[RequestAttribute::PHOTO_IDS_ATTRIBUTE];
-		$this->photos = Photo::query()
-			->with(['size_variants', 'albums'])
-			->findOrFail($photos_ids);
+		$this->photo_ids = $values[RequestAttribute::PHOTO_IDS_ATTRIBUTE];
 		$this->license = LicenseType::from($values[RequestAttribute::LICENSE_ATTRIBUTE]);
 	}
 }

@@ -11,23 +11,14 @@ namespace App\Http\Requests\Photo;
 use App\Contracts\Http\Requests\HasPhotoIds;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Http\Requests\BaseApiRequest;
+use App\Http\Requests\Traits\Authorize\AuthorizeCanEditPhotosByIdTrait;
 use App\Http\Requests\Traits\HasPhotoIdsTrait;
-use App\Models\Photo;
-use App\Policies\PhotoPolicy;
 use App\Rules\RandomIDRule;
-use Illuminate\Support\Facades\Gate;
 
 class WatermarkPhotoRequest extends BaseApiRequest implements HasPhotoIds
 {
 	use HasPhotoIdsTrait;
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function authorize(): bool
-	{
-		return Gate::check(PhotoPolicy::CAN_EDIT_ID, [Photo::class, $this->photoIds()]);
-	}
+	use AuthorizeCanEditPhotosByIdTrait;
 
 	/**
 	 * {@inheritDoc}
