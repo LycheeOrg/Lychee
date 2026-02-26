@@ -118,6 +118,8 @@ return [
             'share' => 'Сподели албума',
             'embed' => 'Вгради албума',
             'stats_only_se' => 'Статистиката е налична в Supporter Edition',
+            'apply_renamer' => 'Apply Renamer Rules',
+            'watermark' => 'Watermark',
         ],
         'stats' => [
             'number_of_visits' => 'Брой посещения',
@@ -255,6 +257,8 @@ return [
         'download_all' => 'Изтегли избраните',
         'merge' => 'Слей',
         'merge_all' => 'Слей избраните',
+        'apply_renamer' => 'Apply Renamer',
+        'apply_renamer_all' => 'Apply Renamer to Selected',
         'upload_photo' => 'Качи снимка',
         'import_link' => 'Импорт от линк',
         'import_server' => 'Импорт от сървър',

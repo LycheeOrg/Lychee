@@ -353,6 +353,7 @@ const photoCallbacks = {
 	toggleMove: toggleMove,
 	toggleDelete: toggleDelete,
 	toggleDownload: () => {},
+	toggleApplyRenamer: () => {},
 };
 
 const {

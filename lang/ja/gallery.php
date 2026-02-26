@@ -118,6 +118,8 @@ return [
             'share' => 'Share Album',
             'embed' => 'Embed Album',
             'stats_only_se' => 'Statistics available in the Supporter Edition',
+            'apply_renamer' => 'Apply Renamer Rules',
+            'watermark' => 'Watermark',
         ],
         'stats' => [
             'number_of_visits' => 'Number of visits',
@@ -255,6 +257,8 @@ return [
         'download_all' => 'Download Selected',
         'merge' => 'Merge',
         'merge_all' => 'Merge Selected',
+        'apply_renamer' => 'Apply Renamer',
+        'apply_renamer_all' => 'Apply Renamer to Selected',
         'upload_photo' => 'Upload Photo',
         'import_link' => 'Import from Link',
         'import_server' => 'Import from Server',

@@ -11,6 +11,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Renamer\CreateRenamerRuleRequest;
 use App\Http\Requests\Renamer\DeleteRenamerRuleRequest;
 use App\Http\Requests\Renamer\ListRenamerRulesRequest;
+use App\Http\Requests\Renamer\PreviewRenameRequest;
 use App\Http\Requests\Renamer\RenameRequest;
 use App\Http\Requests\Renamer\TestRenamerRequest;
 use App\Http\Requests\Renamer\UpdateRenamerRuleRequest;
@@ -177,6 +178,94 @@ class RenamerController extends Controller
 	}
 
 	/**
+	 * Preview renamer rule application on photos/albums.
+	 *
+	 * Returns an array of items whose title would change, with original and new titles.
+	 *
+	 * @param PreviewRenameRequest $request
+	 *
+	 * @return JsonResponse
+	 */
+	public function preview(PreviewRenameRequest $request): JsonResponse
+	{
+		$user_id = Auth::id();
+		$target = $request->target;
+		$scope = $request->scope;
+		$rule_ids = $request->rule_ids;
+
+		$changes = [];
+
+		if ($target === 'photos') {
+			$renamer = new PhotoRenamer($user_id, $rule_ids);
+
+			// Resolve photos: explicit IDs or by album_id + scope
+			$query = Photo::query();
+			if (count($request->photoIds()) > 0) {
+				$query->whereIn('id', $request->photoIds());
+			} elseif ($request->album_id !== '') {
+				if ($scope === 'descendants') {
+					$parent = Album::query()->findOrFail($request->album_id);
+					$descendant_ids = Album::query()
+						->where('_lft', '>=', $parent->_lft)
+						->where('_rgt', '<=', $parent->_rgt)
+						->pluck('id');
+					$query->whereHas('albums', function ($q) use ($descendant_ids): void {
+						$q->whereIn('albums.id', $descendant_ids);
+					});
+				} else {
+					$query->whereHas('albums', function ($q) use ($request): void {
+						$q->where('albums.id', $request->album_id);
+					});
+				}
+			}
+
+			$query->chunkById(self::CHUNK_SIZE, function (Collection $photos) use ($renamer, &$changes): void {
+				foreach ($photos as $photo) {
+					$new_title = $renamer->handle($photo->title);
+					if ($new_title !== $photo->title) {
+						$changes[] = [
+							'id' => $photo->id,
+							'original_title' => $photo->title,
+							'new_title' => $new_title,
+						];
+					}
+				}
+			});
+		} else {
+			$renamer = new AlbumRenamer($user_id, $rule_ids);
+
+			// Resolve albums: explicit IDs or by album_id + scope
+			$query = Album::query();
+			if (count($request->albumIds()) > 0) {
+				$query->whereIn('id', $request->albumIds());
+			} elseif ($request->album_id !== '') {
+				$parent = Album::query()->findOrFail($request->album_id);
+				if ($scope === 'descendants') {
+					$query->where('_lft', '>', $parent->_lft)
+						->where('_rgt', '<', $parent->_rgt);
+				} else {
+					$query->where('parent_id', $request->album_id);
+				}
+			}
+
+			$query->chunkById(self::CHUNK_SIZE, function (Collection $albums) use ($renamer, &$changes): void {
+				foreach ($albums as $album) {
+					$new_title = $renamer->handle($album->title);
+					if ($new_title !== $album->title) {
+						$changes[] = [
+							'id' => $album->id,
+							'original_title' => $album->title,
+							'new_title' => $new_title,
+						];
+					}
+				}
+			});
+		}
+
+		return response()->json($changes);
+	}
+
+	/**
 	 * Test renamer rules against a candidate string.
 	 *
 	 * @param TestRenamerRequest $request
@@ -210,9 +299,10 @@ class RenamerController extends Controller
 	public function rename(RenameRequest $request): void
 	{
 		$user_id = Auth::id();
+		$rule_ids = count($request->rule_ids) > 0 ? $request->rule_ids : null;
 
 		if (count($request->photoIds()) > 0) {
-			$photo_renamer = new PhotoRenamer($user_id);
+			$photo_renamer = new PhotoRenamer($user_id, $rule_ids);
 
 			Photo::query()
 				->whereIn('id', $request->photoIds())
@@ -231,7 +321,7 @@ class RenamerController extends Controller
 		}
 
 		if (count($request->albumIds()) > 0) {
-			$album_renamer = new AlbumRenamer($user_id);
+			$album_renamer = new AlbumRenamer($user_id, $rule_ids);
 
 			Album::query()
 				->whereIn('id', $request->albumIds())

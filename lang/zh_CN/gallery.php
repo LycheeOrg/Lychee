@@ -118,6 +118,8 @@ return [
             'share' => '分享相册',
             'embed' => 'Embed Album',
             'stats_only_se' => '统计功能仅在支持者版本中可用',
+            'apply_renamer' => 'Apply Renamer Rules',
+            'watermark' => 'Watermark',
         ],
         'stats' => [
             'number_of_visits' => 'Number of visits',
@@ -255,6 +257,8 @@ return [
         'download_all' => '下载所选',
         'merge' => '合并',
         'merge_all' => '合并所选',
+        'apply_renamer' => 'Apply Renamer',
+        'apply_renamer_all' => 'Apply Renamer to Selected',
         'upload_photo' => '上传照片',
         'import_link' => '从链接导入',
         'import_server' => 'Import from Server',

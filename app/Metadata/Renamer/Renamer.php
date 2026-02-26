@@ -61,14 +61,16 @@ class Renamer
 	 * the user ID with the system owner's ID, ensuring consistent renaming rules
 	 * are applied throughout the system.
 	 *
-	 * @param int       $user_id  The ID of the user whose rules should be applied
-	 * @param bool|null $is_photo Whether to include photo rules (default: null)
-	 * @param bool|null $is_album Whether to include album rules (default: null)
+	 * @param int        $user_id  The ID of the user whose rules should be applied
+	 * @param bool|null  $is_photo Whether to include photo rules (default: null)
+	 * @param bool|null  $is_album Whether to include album rules (default: null)
+	 * @param int[]|null $rule_ids When provided, only apply rules whose IDs are in this array
 	 */
 	public function __construct(
 		int $user_id,
 		?bool $is_photo = null,
-		?bool $is_album = null)
+		?bool $is_album = null,
+		?array $rule_ids = null)
 	{
 		$verify = app(VerifyInterface::class);
 		$config_manager = app(ConfigManager::class);
@@ -118,6 +120,11 @@ class Renamer
 		}
 
 		$this->rules = $rules;
+
+		// Filter rules by explicit IDs when provided
+		if ($rule_ids !== null) {
+			$this->rules = $this->rules->filter(fn (RenamerRule $rule) => in_array($rule->id, $rule_ids, true));
+		}
 	}
 
 	/**

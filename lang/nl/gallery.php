@@ -118,6 +118,8 @@ return [
             'share' => 'Deel Album',
             'embed' => 'Embed Album',
             'stats_only_se' => 'Statistieken beschikbaar in de Supporter Edition',
+            'apply_renamer' => 'Apply Renamer Rules',
+            'watermark' => 'Watermark',
         ],
         'stats' => [
             'number_of_visits' => 'Aantal bezoeken',
@@ -255,6 +257,8 @@ return [
         'download_all' => 'Alles downloaden',
         'merge' => 'Samenvoegen',
         'merge_all' => 'Alles samenvoegen',
+        'apply_renamer' => 'Apply Renamer',
+        'apply_renamer_all' => 'Apply Renamer to Selected',
         'upload_photo' => 'Foto uploaden',
         'import_link' => 'Importeer van link',
         'import_server' => 'Import from Server',

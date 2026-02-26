@@ -117,6 +117,8 @@ return [
             'share' => 'Поделиться альбомом',
             'embed' => 'Embed Album',
             'stats_only_se' => 'Статистика доступна в версии для поддерживающих пользователей',
+            'apply_renamer' => 'Apply Renamer Rules',
+            'watermark' => 'Watermark',
         ],
         'stats' => [
             'number_of_visits' => 'Кол-во посещений',
@@ -254,6 +256,8 @@ return [
         'download_all' => 'Скачать выбранные',
         'merge' => 'Объединить',
         'merge_all' => 'Объединить выбранные',
+        'apply_renamer' => 'Apply Renamer',
+        'apply_renamer_all' => 'Apply Renamer to Selected',
         'upload_photo' => 'Загрузить фото',
         'import_link' => 'Импортировать по ссылке',
         'import_server' => 'Импортировать с сервера',

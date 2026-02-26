@@ -93,10 +93,18 @@
 							<i class="pi pi-play" />
 						</a>
 						<a
-							v-if="isWatermarkerEnabled"
-							v-tooltip.bottom="'Watermark'"
+							v-if="isRenamerEnabled"
+							v-tooltip.bottom="$t('gallery.album.hero.apply_renamer')"
 							class="shrink-0 px-3 cursor-pointer text-muted-color inline-block transform duration-300 hover:scale-150 hover:text-color"
-							@click="watermark"
+							@click="emits('toggleApplyRenamer')"
+						>
+							<i class="pi pi-pencil" />
+						</a>
+						<a
+							v-if="isWatermarkerEnabled"
+							v-tooltip.bottom="$t('gallery.album.hero.watermark')"
+							class="shrink-0 px-3 cursor-pointer text-muted-color inline-block transform duration-300 hover:scale-150 hover:text-color"
+							@click="emits('toggleWatermarkConfirm')"
 						>
 							<i class="pi pi-barcode" />
 						</a>
@@ -160,13 +168,10 @@ import Button from "primevue/button";
 import { computed } from "vue";
 import AlbumStatistics from "./AlbumStatistics.vue";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
-import { useToast } from "primevue/usetoast";
-import { trans } from "laravel-vue-i18n";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { usePhotosStore } from "@/stores/PhotosState";
 import { useAlbumsStore } from "@/stores/AlbumsState";
 
-const toast = useToast();
 const userStore = useUserStore();
 const leftMenu = useLeftMenuStateStore();
 const lycheeStore = useLycheeStateStore();
@@ -184,24 +189,14 @@ const hasCoordinates = computed(() =>
 	photosStore.photos.some((photo) => photo.precomputed.latitude !== null && photo.precomputed.longitude !== null),
 );
 
+const isRenamerEnabled = computed(() => leftMenu.initData?.modules.is_mod_renamer_enabled && albumStore.rights?.can_edit);
+
 const isWatermarkerEnabled = computed(
 	() =>
 		leftMenu.initData?.modules.is_watermarker_enabled &&
 		albumStore.rights?.can_edit &&
 		photosStore.photos.some((p) => needSizeVariantsWatermark(p.size_variants)),
 );
-function watermark() {
-	if (albumStore.album === undefined) {
-		return;
-	}
-	AlbumService.watermark(albumStore.album.id).then(() => {
-		toast.add({
-			severity: "success",
-			detail: trans("toasts.success"),
-			life: 3000,
-		});
-	});
-}
 
 function needSizeVariantsWatermark(sizeVariants: App.Http.Resources.Models.SizeVariantsResouce): boolean {
 	return (
@@ -220,6 +215,8 @@ const emits = defineEmits<{
 	openStatistics: [];
 	toggleSlideShow: [];
 	openEmbedCode: [];
+	toggleApplyRenamer: [];
+	toggleWatermarkConfirm: [];
 }>();
 
 // Check if album is embeddable (public, no password, no link requirement)

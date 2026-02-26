@@ -82,7 +82,7 @@ const emits = defineEmits<{
 	goBack: [];
 }>();
 
-const { toggleDelete, toggleMove, toggleRename, toggleTag, toggleLicense, toggleCopy } = useGalleryModals(togglableStore);
+const { toggleDelete, toggleMove, toggleRename, toggleTag, toggleLicense, toggleCopy, toggleApplyRenamer } = useGalleryModals(togglableStore);
 
 const { selectedPhoto, selectedPhotos, selectedPhotosIds, photoSelect: selectPhoto } = useSelection(photosStore, albumsStore, togglableStore);
 
@@ -114,6 +114,7 @@ const photoCallbacks = {
 	toggleDownload: () => {
 		PhotoService.download(selectedPhotosIds.value, getParentId());
 	},
+	toggleApplyRenamer: toggleApplyRenamer,
 };
 
 const albumCallbacks = {
@@ -124,6 +125,7 @@ const albumCallbacks = {
 	toggleDelete: () => {},
 	toggleDownload: () => {},
 	togglePin: () => {},
+	toggleApplyRenamer: () => {},
 };
 
 const {

@@ -117,6 +117,8 @@ return [
             'share' => 'مشاركة الألبوم',
             'embed' => 'Embed Album',
             'stats_only_se' => 'الإحصائيات متاحة في إصدار الدعم فقط',
+            'apply_renamer' => 'Apply Renamer Rules',
+            'watermark' => 'Watermark',
         ],
         'stats' => [
             'number_of_visits' => 'عدد الزيارات',
@@ -254,6 +256,8 @@ return [
         'download_all' => 'تنزيل المحدد',
         'merge' => 'دمج',
         'merge_all' => 'دمج المحدد',
+        'apply_renamer' => 'Apply Renamer',
+        'apply_renamer_all' => 'Apply Renamer to Selected',
         'upload_photo' => 'رفع صورة',
         'import_link' => 'استيراد من الرابط',
         'import_server' => 'Import from Server',

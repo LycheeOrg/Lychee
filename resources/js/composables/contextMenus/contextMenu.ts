@@ -30,6 +30,7 @@ export type PhotoCallbacks = {
 	toggleMove: () => void;
 	toggleDelete: () => void;
 	toggleDownload: () => void;
+	toggleApplyRenamer: () => void;
 };
 
 export type AlbumCallbacks = {
@@ -40,6 +41,7 @@ export type AlbumCallbacks = {
 	togglePin: () => void;
 	toggleDelete: () => void;
 	toggleDownload: () => void;
+	toggleApplyRenamer: () => void;
 };
 
 type MenuItem = {
@@ -149,6 +151,12 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 					access: albumStore.rights?.can_edit ?? false,
 				},
 				{
+					label: "gallery.menus.apply_renamer",
+					icon: "pi pi-pencil",
+					callback: photoCallbacks.toggleApplyRenamer,
+					access: (albumStore.rights?.can_edit ?? false) && (leftMenuStore.initData?.modules.is_mod_renamer_enabled ?? false),
+				},
+				{
 					is_divider: true,
 					access: albumStore.rights?.can_edit ?? false,
 				},
@@ -230,6 +238,12 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 					access: albumStore.rights?.can_edit ?? false,
 				},
 				{
+					label: "gallery.menus.apply_renamer_all",
+					icon: "pi pi-pencil",
+					callback: photoCallbacks.toggleApplyRenamer,
+					access: (albumStore.rights?.can_edit ?? false) && (leftMenuStore.initData?.modules.is_mod_renamer_enabled ?? false),
+				},
+				{
 					is_divider: true,
 					access: albumStore.rights?.can_edit ?? false,
 				},
@@ -270,6 +284,7 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 
 		const menuItems = [];
 		const selectedAlbum = selectors.selectedAlbum.value as App.Http.Resources.Models.ThumbAlbumResource;
+		const leftMenuStore = useLeftMenuStateStore();
 
 		if (selectors.config?.value?.is_model_album) {
 			menuItems.push({
@@ -287,6 +302,12 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 					icon: "pi pi-pen-to-square",
 					callback: albumCallbacks.toggleRename,
 					access: selectedAlbum.rights.can_edit ?? false,
+				},
+				{
+					label: "gallery.menus.apply_renamer",
+					icon: "pi pi-pencil",
+					callback: albumCallbacks.toggleApplyRenamer,
+					access: (selectedAlbum.rights.can_edit ?? false) && (leftMenuStore.initData?.modules.is_mod_renamer_enabled ?? false),
 				},
 				{
 					label: "gallery.menus.merge",

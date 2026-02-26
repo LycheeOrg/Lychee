@@ -34,6 +34,27 @@ export type TestRenamerResponse = {
 	result: string;
 };
 
+export type PreviewRenameRequest = {
+	album_id?: string;
+	target: "photos" | "albums";
+	scope: "current" | "descendants";
+	rule_ids: number[];
+	photo_ids?: string[];
+	album_ids?: string[];
+};
+
+export type PreviewRenameItem = {
+	id: string;
+	original_title: string;
+	new_title: string;
+};
+
+export type RenameApplyRequest = {
+	photo_ids?: string[];
+	album_ids?: string[];
+	rule_ids?: number[];
+};
+
 const RenamerService = {
 	list(all: boolean = false): Promise<AxiosResponse<App.Http.Resources.Models.RenamerRuleResource[]>> {
 		return axios.get(`${Constants.getApiUrl()}Renamer`, { params: {}, data: { all: all } });
@@ -53,6 +74,14 @@ const RenamerService = {
 
 	test(data: TestRenamerRequest): Promise<AxiosResponse<TestRenamerResponse>> {
 		return axios.post(`${Constants.getApiUrl()}Renamer::test`, data);
+	},
+
+	preview(data: PreviewRenameRequest): Promise<AxiosResponse<PreviewRenameItem[]>> {
+		return axios.post(`${Constants.getApiUrl()}Renamer::preview`, data);
+	},
+
+	rename(data: RenameApplyRequest): Promise<AxiosResponse<void>> {
+		return axios.patch(`${Constants.getApiUrl()}Renamer`, data);
 	},
 };
 

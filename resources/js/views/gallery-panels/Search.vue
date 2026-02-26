@@ -265,6 +265,7 @@ const {
 	toggleLicense,
 	is_copy_visible,
 	toggleCopy,
+	toggleApplyRenamer,
 } = useGalleryModals(togglableStore);
 
 const { selectedPhoto, selectedAlbum, selectedPhotos, selectedAlbums, selectedPhotosIds, selectedAlbumsIds, unselect } = useSelection(
@@ -328,6 +329,7 @@ const photoCallbacks = {
 	toggleMove: toggleMove,
 	toggleDelete: toggleDelete,
 	toggleDownload: () => {},
+	toggleApplyRenamer: toggleApplyRenamer,
 };
 
 const albumCallbacks = {
@@ -338,6 +340,7 @@ const albumCallbacks = {
 	toggleDelete: toggleDelete,
 	toggleDownload: () => {},
 	togglePin: () => {},
+	toggleApplyRenamer: toggleApplyRenamer,
 };
 
 const album = computed(() => albumStore.album);

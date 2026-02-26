@@ -29,6 +29,9 @@ class RenameRequest extends BaseApiRequest implements HasPhotoIds, HasAlbumIds
 	use HasPhotoIdsTrait;
 	use HasAlbumIdsTrait;
 
+	/** @var int[] */
+	public array $rule_ids = [];
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -48,6 +51,8 @@ class RenameRequest extends BaseApiRequest implements HasPhotoIds, HasAlbumIds
 			RequestAttribute::ALBUM_IDS_ATTRIBUTE . '.*' => ['string', new RandomIDRule(false)],
 			RequestAttribute::PHOTO_IDS_ATTRIBUTE => ['sometimes', 'array'],
 			RequestAttribute::PHOTO_IDS_ATTRIBUTE . '.*' => ['string', new RandomIDRule(false)],
+			'rule_ids' => ['sometimes', 'array'],
+			'rule_ids.*' => ['integer'],
 		];
 	}
 
@@ -58,5 +63,6 @@ class RenameRequest extends BaseApiRequest implements HasPhotoIds, HasAlbumIds
 	{
 		$this->photo_ids = $values[RequestAttribute::PHOTO_IDS_ATTRIBUTE] ?? [];
 		$this->album_ids = $values[RequestAttribute::ALBUM_IDS_ATTRIBUTE] ?? [];
+		$this->rule_ids = array_map('intval', $values['rule_ids'] ?? []);
 	}
 }

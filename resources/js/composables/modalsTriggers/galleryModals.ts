@@ -19,6 +19,8 @@ export function useGalleryModals(togglableStore: TogglablesStateStore) {
 		is_copy_visible,
 		is_import_from_dropbox_open,
 		is_import_from_server_open,
+		is_apply_renamer_visible,
+		is_watermark_confirm_visible,
 	} = storeToRefs(togglableStore);
 
 	function toggleCreateAlbum() {
@@ -82,6 +84,14 @@ export function useGalleryModals(togglableStore: TogglablesStateStore) {
 		is_copy_visible.value = !is_copy_visible.value;
 	}
 
+	function toggleApplyRenamer() {
+		is_apply_renamer_visible.value = !is_apply_renamer_visible.value;
+	}
+
+	function toggleWatermarkConfirm() {
+		is_watermark_confirm_visible.value = !is_watermark_confirm_visible.value;
+	}
+
 	return {
 		is_create_album_visible,
 		toggleCreateAlbum,
@@ -114,5 +124,9 @@ export function useGalleryModals(togglableStore: TogglablesStateStore) {
 		toggleLicense,
 		is_copy_visible,
 		toggleCopy,
+		is_apply_renamer_visible,
+		toggleApplyRenamer,
+		is_watermark_confirm_visible,
+		toggleWatermarkConfirm,
 	};
 }

@@ -333,3 +333,4 @@ Route::post('/Renamer', [RenamerController::class, 'store'])->middleware(['suppo
 Route::put('/Renamer', [RenamerController::class, 'update'])->middleware(['support:se']);
 Route::delete('/Renamer', [RenamerController::class, 'destroy'])->middleware(['support:se']);
 Route::post('/Renamer::test', [RenamerController::class, 'test'])->middleware(['support:se']);
+Route::post('/Renamer::preview', [RenamerController::class, 'preview'])->middleware(['support:se']);

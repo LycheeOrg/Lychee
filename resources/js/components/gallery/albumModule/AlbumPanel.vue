@@ -33,6 +33,8 @@
 					@open-embed-code="toggleEmbedCode"
 					@open-statistics="toggleStatistics"
 					@toggle-slide-show="emits('toggleSlideShow')"
+					@toggle-apply-renamer="toggleApplyRenamer"
+					@toggle-watermark-confirm="toggleWatermarkConfirm"
 				/>
 				<template v-if="is_se_enabled && userStore.isLoggedIn">
 					<AlbumStatistics
@@ -99,6 +101,14 @@
 				<GalleryFooter v-once />
 			</div>
 			<ShareAlbum :key="`share_modal_${albumStore.album.id}`" v-model:visible="is_share_album_visible" :title="albumStore.album.title" />
+			<ApplyRenamerDialog
+				v-model:visible="is_apply_renamer_visible"
+				:album-id="albumStore.album.id"
+				:photo-ids="selectedPhotosIds"
+				:album-ids="selectedAlbumsIds"
+				@applied="emits('refresh')"
+			/>
+			<WatermarkConfirmDialog v-model:visible="is_watermark_confirm_visible" :album-id="albumStore.album.id" @watermarked="emits('refresh')" />
 
 			<!-- Dialogs -->
 			<ContextMenu ref="menu" :model="Menu" :class="Menu.length === 0 ? 'hidden' : ''">
@@ -151,6 +161,8 @@ import { useUserStore } from "@/stores/UserState";
 import { useLayoutStore } from "@/stores/LayoutState";
 import { useCatalogStore } from "@/stores/CatalogState";
 import BuyMeDialog from "@/components/forms/gallery-dialogs/BuyMeDialog.vue";
+import ApplyRenamerDialog from "@/components/forms/album/ApplyRenamerDialog.vue";
+import WatermarkConfirmDialog from "@/components/forms/album/WatermarkConfirmDialog.vue";
 import { useToast } from "primevue/usetoast";
 import Pagination from "@/components/pagination/Pagination.vue";
 import { trans } from "laravel-vue-i18n";
@@ -198,6 +210,10 @@ const {
 	toggleLicense,
 	toggleCopy,
 	toggleUpload,
+	toggleApplyRenamer,
+	is_apply_renamer_visible,
+	toggleWatermarkConfirm,
+	is_watermark_confirm_visible,
 } = useGalleryModals(togglableStore);
 
 const { toggleBuyMe } = useBuyMeActions(albumStore, photosStore, orderManagement, catalogStore, toast);
@@ -295,6 +311,7 @@ const photoCallbacks = {
 	toggleDownload: () => {
 		PhotoService.download(selectedPhotosIds.value, getParentId());
 	},
+	toggleApplyRenamer: toggleApplyRenamer,
 };
 
 function togglePin() {
@@ -332,6 +349,7 @@ const albumCallbacks = {
 		AlbumService.download(selectedAlbumsIds.value);
 	},
 	togglePin: togglePin,
+	toggleApplyRenamer: toggleApplyRenamer,
 	copyHighlighted: () => {
 		const highlighted = photosStore.photos.filter((p) => p.is_highlighted);
 		const selectedNames = highlighted

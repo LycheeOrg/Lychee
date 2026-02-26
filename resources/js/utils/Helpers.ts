@@ -53,6 +53,7 @@ export const EmptyAlbumCallbacks = {
 	toggleDelete: () => {},
 	toggleDownload: () => {},
 	togglePin: () => {},
+	toggleApplyRenamer: () => {},
 };
 
 export const EmptyPhotoCallbacks = {
@@ -67,4 +68,5 @@ export const EmptyPhotoCallbacks = {
 	toggleMove: () => {},
 	toggleDelete: () => {},
 	toggleDownload: () => {},
+	toggleApplyRenamer: () => {},
 };

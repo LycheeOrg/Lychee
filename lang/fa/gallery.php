@@ -117,6 +117,8 @@ return [
             'share' => 'اشتراک‌گذاری آلبوم',
             'embed' => 'Embed Album',
             'stats_only_se' => 'آمار فقط در نسخه حامیان در دسترس است',
+            'apply_renamer' => 'Apply Renamer Rules',
+            'watermark' => 'Watermark',
         ],
         'stats' => [
             'number_of_visits' => 'تعداد بازدیدها',
@@ -254,6 +256,8 @@ return [
         'download_all' => 'دانلود انتخاب شده‌ها',
         'merge' => 'ادغام',
         'merge_all' => 'ادغام انتخاب شده‌ها',
+        'apply_renamer' => 'Apply Renamer',
+        'apply_renamer_all' => 'Apply Renamer to Selected',
         'upload_photo' => 'بارگذاری عکس',
         'import_link' => 'وارد کردن از لینک',
         'import_server' => 'Import from Server',

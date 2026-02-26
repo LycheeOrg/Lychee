@@ -318,6 +318,7 @@ const albumCallbacks = {
 	toggleDownload: () => {
 		AlbumService.download(selectedAlbumsIds.value);
 	},
+	toggleApplyRenamer: () => {},
 };
 
 const {
