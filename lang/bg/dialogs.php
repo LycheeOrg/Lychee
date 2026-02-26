@@ -213,6 +213,13 @@ return [
         'updated' => 'Таговете са обновени!',
         'tags_override_info' => 'Ако това не е отметнато, таговете ще бъдат добавени към съществуващите тагове на снимката.',
     ],
+    'photo_license' => [
+        'question' => 'Select a license for this photo.',
+        'question_multiple' => 'Select a license for all %d selected photos.',
+        'select_license' => 'Select License',
+        'set_license' => 'Set License',
+        'updated' => 'License updated!',
+    ],
     'photo_copy' => [
         'no_albums' => 'Няма албуми за копиране',
         'copy_to' => 'Копирай %s в:',

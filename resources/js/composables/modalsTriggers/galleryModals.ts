@@ -15,6 +15,7 @@ export function useGalleryModals(togglableStore: TogglablesStateStore) {
 		embed_code_mode,
 		is_import_from_link_open,
 		is_tag_visible,
+		is_license_visible,
 		is_copy_visible,
 		is_import_from_dropbox_open,
 		is_import_from_server_open,
@@ -73,6 +74,10 @@ export function useGalleryModals(togglableStore: TogglablesStateStore) {
 		is_tag_visible.value = !is_tag_visible.value;
 	}
 
+	function toggleLicense() {
+		is_license_visible.value = !is_license_visible.value;
+	}
+
 	function toggleCopy() {
 		is_copy_visible.value = !is_copy_visible.value;
 	}
@@ -105,6 +110,8 @@ export function useGalleryModals(togglableStore: TogglablesStateStore) {
 		toggleUpload,
 		is_tag_visible,
 		toggleTag,
+		is_license_visible,
+		toggleLicense,
 		is_copy_visible,
 		toggleCopy,
 	};

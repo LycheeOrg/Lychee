@@ -93,6 +93,13 @@
 				:photo-ids="selectedPhotosIds"
 				@tagged="refresh"
 			/>
+			<PhotoLicenseDialog
+				v-model:visible="is_license_visible"
+				:parent-id="undefined"
+				:photo="selectedPhoto"
+				:photo-ids="selectedPhotosIds"
+				@licensed="refresh"
+			/>
 			<PhotoCopyDialog v-model:visible="is_copy_visible" :photo="selectedPhoto" :photo-ids="selectedPhotosIds" @copied="refresh" />
 			<MoveDialog
 				v-model:visible="is_move_visible"
@@ -161,6 +168,7 @@ import { useSlideshowFunction } from "@/composables/photo/slideshow";
 import { useToast } from "primevue/usetoast";
 import TimelineDates from "@/components/gallery/timelineModule/TimelineDates.vue";
 import PhotoTagDialog from "@/components/forms/photo/PhotoTagDialog.vue";
+import PhotoLicenseDialog from "@/components/forms/photo/PhotoLicenseDialog.vue";
 import PhotoCopyDialog from "@/components/forms/photo/PhotoCopyDialog.vue";
 // import PhotoEdit from "@/components/drawers/PhotoEdit.vue";
 import MoveDialog from "@/components/forms/gallery-dialogs/MoveDialog.vue";
@@ -319,6 +327,8 @@ const {
 	toggleRename,
 	is_tag_visible,
 	toggleTag,
+	is_license_visible,
+	toggleLicense,
 	is_copy_visible,
 	toggleCopy,
 } = useGalleryModals(togglableStore);
@@ -337,6 +347,7 @@ const photoCallbacks = {
 	setAsCover: () => {},
 	setAsHeader: () => {},
 	toggleTag: toggleTag,
+	toggleLicense: toggleLicense,
 	toggleRename: toggleRename,
 	toggleCopyTo: toggleCopy,
 	toggleMove: toggleMove,

@@ -213,6 +213,13 @@ return [
         'updated' => 'Tags updated!',
         'tags_override_info' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',
     ],
+    'photo_license' => [
+        'question' => 'Select a license for this photo.',
+        'question_multiple' => 'Select a license for all %d selected photos.',
+        'select_license' => 'Select License',
+        'set_license' => 'Set License',
+        'updated' => 'License updated!',
+    ],
     'photo_copy' => [
         'no_albums' => 'No albums to copy to',
         'copy_to' => 'Copy %s to:',

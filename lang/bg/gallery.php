@@ -237,6 +237,8 @@ return [
         'unhighlight_all' => 'Премахни отметките',
         'tag' => 'Таг',
         'tag_all' => 'Тагни избраните',
+        'license' => 'License',
+        'license_all' => 'License Selected',
         'set_cover' => 'Задай корица на албума',
         'remove_header' => 'Премахни заглавката на албума',
         'set_header' => 'Задай заглавка на албума',

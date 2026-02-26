@@ -209,6 +209,13 @@ return [
         'updated' => '¡Etiquetas actualizadas!',
         'tags_override_info' => 'Si esta opción no está marcada, las etiquetas se agregarán a las etiquetas existentes de la foto.',
     ],
+    'photo_license' => [
+        'question' => 'Select a license for this photo.',
+        'question_multiple' => 'Select a license for all %d selected photos.',
+        'select_license' => 'Select License',
+        'set_license' => 'Set License',
+        'updated' => 'License updated!',
+    ],
     'photo_copy' => [
         'no_albums' => 'No hay álbumes para copiar',
         'copy_to' => 'Copiar %s a:',

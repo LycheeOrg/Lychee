@@ -61,6 +61,7 @@ export const EmptyPhotoCallbacks = {
 	setAsCover: () => {},
 	setAsHeader: () => {},
 	toggleTag: () => {},
+	toggleLicense: () => {},
 	toggleRename: () => {},
 	toggleCopyTo: () => {},
 	toggleMove: () => {},

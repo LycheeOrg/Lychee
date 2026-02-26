@@ -59,6 +59,17 @@
 				}
 			"
 		/>
+		<PhotoLicenseDialog
+			v-model:visible="is_license_visible"
+			:parent-id="albumId"
+			:photo="photoStore.photo"
+			@licensed="
+				() => {
+					unselect();
+					refresh();
+				}
+			"
+		/>
 		<PhotoCopyDialog
 			v-model:visible="is_copy_visible"
 			:photo="photoStore.photo"
@@ -81,6 +92,13 @@
 			:photo="selectedPhoto"
 			:photo-ids="selectedPhotosIds"
 			@tagged="refresh"
+		/>
+		<PhotoLicenseDialog
+			v-model:visible="is_license_visible"
+			:parent-id="albumId"
+			:photo="selectedPhoto"
+			:photo-ids="selectedPhotosIds"
+			@licensed="refresh"
 		/>
 		<PhotoCopyDialog v-model:visible="is_copy_visible" :photo="selectedPhoto" :photo-ids="selectedPhotosIds" @copied="refresh" />
 		<MoveDialog
@@ -243,6 +261,8 @@ const {
 	toggleRename,
 	is_tag_visible,
 	toggleTag,
+	is_license_visible,
+	toggleLicense,
 	is_copy_visible,
 	toggleCopy,
 } = useGalleryModals(togglableStore);
@@ -302,6 +322,7 @@ const photoCallbacks = {
 		// refresh();
 	},
 	toggleTag: toggleTag,
+	toggleLicense: toggleLicense,
 	toggleRename: toggleRename,
 	toggleCopyTo: toggleCopy,
 	toggleMove: toggleMove,

@@ -211,6 +211,13 @@ return [
         'updated' => '已更新標籤！',
         'tags_override_info' => '如果未勾選，標籤將會新增到照片現有的標籤中。',
     ],
+    'photo_license' => [
+        'question' => 'Select a license for this photo.',
+        'question_multiple' => 'Select a license for all %d selected photos.',
+        'select_license' => 'Select License',
+        'set_license' => 'Set License',
+        'updated' => 'License updated!',
+    ],
     'photo_copy' => [
         'no_albums' => '沒有可複製的相簿至',
         'copy_to' => '複製 %s 至：',

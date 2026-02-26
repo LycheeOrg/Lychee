@@ -237,6 +237,8 @@ return [
         'unhighlight_all' => 'Sterren verwijderen',
         'tag' => 'Tag',
         'tag_all' => 'Alle tags',
+        'license' => 'License',
+        'license_all' => 'License Selected',
         'set_cover' => 'Stel albumhoes in',
         'remove_header' => 'Verwijder albumkop',
         'set_header' => 'Stel albumkop in',

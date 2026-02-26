@@ -236,6 +236,8 @@ return [
         'unhighlight_all' => 'Retirer la sélection des favoris',
         'tag' => 'Étiqueter',
         'tag_all' => 'Étiqueter la sélection',
+        'license' => 'License',
+        'license_all' => 'License Selected',
         'set_cover' => 'Définir la couverture',
         'remove_header' => 'Retirer l’en-tête',
         'set_header' => 'Définir l’en-tête',

@@ -212,6 +212,13 @@ return [
         'updated' => 'Étiquettes mises à jour !',
         'tags_override_info' => 'Si cette case n’est pas cochée, les étiquettes seront ajoutées à celles existantes.',
     ],
+    'photo_license' => [
+        'question' => 'Select a license for this photo.',
+        'question_multiple' => 'Select a license for all %d selected photos.',
+        'select_license' => 'Select License',
+        'set_license' => 'Set License',
+        'updated' => 'License updated!',
+    ],
     'photo_copy' => [
         'no_albums' => 'Aucun album vers lequel copier',
         'copy_to' => 'Copier %s vers :',

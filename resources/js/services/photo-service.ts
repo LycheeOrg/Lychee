@@ -41,6 +41,10 @@ const PhotoService = {
 		return axios.patch(`${Constants.getApiUrl()}Photo::tags`, { photo_ids: photo_ids, tags: tags, shall_override: shall_override });
 	},
 
+	license(photo_ids: string[], license: App.Enum.LicenseType): Promise<AxiosResponse> {
+		return axios.patch(`${Constants.getApiUrl()}Photo::license`, { photo_ids: photo_ids, license: license });
+	},
+
 	copy(destination_id: string | null, photo_ids: string[]): Promise<AxiosResponse> {
 		return axios.post(`${Constants.getApiUrl()}Photo::copy`, { album_id: destination_id, photo_ids: photo_ids });
 	},

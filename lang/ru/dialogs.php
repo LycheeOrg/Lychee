@@ -209,6 +209,13 @@ return [
         'updated' => 'Теги обновлены!',
         'tags_override_info' => 'Если этот параметр не выбран, теги будут добавлены к существующим тегам фотографии.',
     ],
+    'photo_license' => [
+        'question' => 'Select a license for this photo.',
+        'question_multiple' => 'Select a license for all %d selected photos.',
+        'select_license' => 'Select License',
+        'set_license' => 'Set License',
+        'updated' => 'License updated!',
+    ],
     'photo_copy' => [
         'no_albums' => 'Нет альбомов для копирования',
         'copy_to' => 'Копировать %s в:',

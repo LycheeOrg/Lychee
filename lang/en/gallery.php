@@ -237,6 +237,8 @@ return [
         'unhighlight_all' => 'Unhighlight Selected',
         'tag' => 'Tag',
         'tag_all' => 'Tag Selected',
+        'license' => 'License',
+        'license_all' => 'License Selected',
         'set_cover' => 'Set Album Cover',
         'remove_header' => 'Remove Album Header',
         'set_header' => 'Set Album Header',

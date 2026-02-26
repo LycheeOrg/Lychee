@@ -24,6 +24,7 @@ export type PhotoCallbacks = {
 	setAsCover: () => void;
 	setAsHeader: () => void;
 	toggleTag: () => void;
+	toggleLicense: () => void;
 	toggleRename: () => void;
 	toggleCopyTo: () => void;
 	toggleMove: () => void;
@@ -142,6 +143,12 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 					access: albumStore.rights?.can_edit ?? false,
 				},
 				{
+					label: "gallery.menus.license",
+					icon: "pi pi-id-card",
+					callback: photoCallbacks.toggleLicense,
+					access: albumStore.rights?.can_edit ?? false,
+				},
+				{
 					is_divider: true,
 					access: albumStore.rights?.can_edit ?? false,
 				},
@@ -214,6 +221,12 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 					label: "gallery.menus.tag_all",
 					icon: "pi pi-tag",
 					callback: photoCallbacks.toggleTag,
+					access: albumStore.rights?.can_edit ?? false,
+				},
+				{
+					label: "gallery.menus.license_all",
+					icon: "pi pi-id-card",
+					callback: photoCallbacks.toggleLicense,
 					access: albumStore.rights?.can_edit ?? false,
 				},
 				{

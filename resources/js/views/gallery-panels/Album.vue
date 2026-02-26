@@ -62,6 +62,18 @@
 				}
 			"
 		/>
+		<PhotoLicenseDialog
+			v-model:visible="is_license_visible"
+			:parent-id="albumId"
+			:photo="selectedPhoto"
+			:photo-ids="selectedPhotosIds"
+			@licensed="
+				() => {
+					unselect();
+					refresh();
+				}
+			"
+		/>
 		<PhotoCopyDialog
 			v-model:visible="is_copy_visible"
 			:photo="selectedPhoto"
@@ -140,6 +152,7 @@ import MoveDialog from "@/components/forms/gallery-dialogs/MoveDialog.vue";
 import DeleteDialog from "@/components/forms/gallery-dialogs/DeleteDialog.vue";
 import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
 import PhotoTagDialog from "@/components/forms/photo/PhotoTagDialog.vue";
+import PhotoLicenseDialog from "@/components/forms/photo/PhotoLicenseDialog.vue";
 import PhotoCopyDialog from "@/components/forms/photo/PhotoCopyDialog.vue";
 import SensitiveWarning from "@/components/gallery/albumModule/SensitiveWarning.vue";
 import Unlock from "@/components/forms/album/Unlock.vue";
@@ -253,6 +266,7 @@ const {
 	toggleMove,
 	is_rename_visible,
 	is_tag_visible,
+	is_license_visible,
 	is_copy_visible,
 	is_import_from_dropbox_open,
 	is_import_from_server_open,

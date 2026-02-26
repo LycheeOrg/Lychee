@@ -237,6 +237,8 @@ return [
         'unhighlight_all' => '取消标星所选',
         'tag' => '标签',
         'tag_all' => '为所选添加标签',
+        'license' => 'License',
+        'license_all' => 'License Selected',
         'set_cover' => '设为相册封面',
         'remove_header' => '移除相册页眉图片',
         'set_header' => '设置相册页眉图片',

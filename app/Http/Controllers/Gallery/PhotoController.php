@@ -28,6 +28,7 @@ use App\Http\Requests\Photo\RenamePhotoRequest;
 use App\Http\Requests\Photo\RotatePhotoRequest;
 use App\Http\Requests\Photo\SetPhotoRatingRequest;
 use App\Http\Requests\Photo\SetPhotosHighlightedRequest;
+use App\Http\Requests\Photo\SetPhotosLicenseRequest;
 use App\Http\Requests\Photo\SetPhotosTagsRequest;
 use App\Http\Requests\Photo\UploadPhotoRequest;
 use App\Http\Requests\Photo\WatermarkPhotoRequest;
@@ -288,6 +289,31 @@ class PhotoController extends Controller
 				$tag->photos()->syncWithoutDetaching($photo_ids);
 			});
 			DB::commit();
+		});
+	}
+
+	/**
+	 * Set the license for multiple photos.
+	 */
+	public function license(SetPhotosLicenseRequest $request): void
+	{
+		$license = $request->license();
+		$photo_ids = $request->photos()->pluck('id')->toArray();
+
+		DB::transaction(function () use ($photo_ids, $license): void {
+			// Process photos in chunks of 100 to avoid memory issues
+			Photo::query()
+				->whereIn('id', $photo_ids)
+				->chunkById(100, function ($photos) use ($license): void {
+					$values = $photos->map(fn (Photo $photo) => [
+						'id' => $photo->id,
+						'license' => $license->value,
+					])->all();
+
+					// Make a batch update to update all photo licenses at once
+					$photo_instance = new Photo();
+					batch()->update($photo_instance, $values, 'id');
+				});
 		});
 	}
 

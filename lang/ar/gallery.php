@@ -236,6 +236,8 @@ return [
         'unhighlight_all' => 'إلغاء تمييز المحدد',
         'tag' => 'علامة',
         'tag_all' => 'تعيين علامة للمحدد',
+        'license' => 'License',
+        'license_all' => 'License Selected',
         'set_cover' => 'تعيين غلاف الألبوم',
         'remove_header' => 'إزالة رأس الألبوم',
         'set_header' => 'تعيين رأس الألبوم',

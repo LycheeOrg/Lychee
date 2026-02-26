@@ -212,6 +212,13 @@ return [
         'updated' => '标签已更新！',
         'tags_override_info' => '如果取消选中此项，标签将添加到照片的现有标签中。',
     ],
+    'photo_license' => [
+        'question' => 'Select a license for this photo.',
+        'question_multiple' => 'Select a license for all %d selected photos.',
+        'select_license' => 'Select License',
+        'set_license' => 'Set License',
+        'updated' => 'License updated!',
+    ],
     'photo_copy' => [
         'no_albums' => '没有可复制到的相册',
         'copy_to' => '将 %s 复制到：',

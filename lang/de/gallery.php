@@ -236,6 +236,8 @@ return [
         'unhighlight_all' => 'Bei ausgewähltem Favoritenmarkierung entfernen',
         'tag' => 'Tag',
         'tag_all' => 'Ausgewähltes taggen',
+        'license' => 'License',
+        'license_all' => 'License Selected',
         'set_cover' => 'Album Cover festlegen',
         'remove_header' => 'Album Header entfernen',
         'set_header' => 'Album Header festlegen',

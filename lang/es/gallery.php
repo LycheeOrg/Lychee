@@ -237,6 +237,8 @@ return [
         'unhighlight_all' => 'Desmarcar seleccionado',
         'tag' => 'Etiqueta',
         'tag_all' => 'Etiqueta seleccionada',
+        'license' => 'License',
+        'license_all' => 'License Selected',
         'set_cover' => 'Establecer la portada del álbum',
         'remove_header' => 'Eliminar encabezado del álbum',
         'set_header' => 'Establecer encabezado de álbum',

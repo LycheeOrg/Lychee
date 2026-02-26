@@ -236,6 +236,8 @@ return [
         'unhighlight_all' => 'حذف ستاره از انتخاب شده‌ها',
         'tag' => 'برچسب',
         'tag_all' => 'برچسب‌گذاری انتخاب شده‌ها',
+        'license' => 'License',
+        'license_all' => 'License Selected',
         'set_cover' => 'تنظیم جلد آلبوم',
         'remove_header' => 'حذف هدر آلبوم',
         'set_header' => 'تنظیم هدر آلبوم',

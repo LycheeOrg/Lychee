@@ -236,6 +236,8 @@ return [
         'unhighlight_all' => 'Убрать все из избранного',
         'tag' => 'Тег',
         'tag_all' => 'Тегировать все',
+        'license' => 'License',
+        'license_all' => 'License Selected',
         'set_cover' => 'Установить обложку альбома',
         'remove_header' => 'Удалить заголовок альбома',
         'set_header' => 'Установить заголовок альбома',

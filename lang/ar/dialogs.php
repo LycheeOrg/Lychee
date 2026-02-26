@@ -211,6 +211,13 @@ return [
         'updated' => 'تم تحديث العلامات!',
         'tags_override_info' => 'إذا لم يتم تحديد هذا الخيار، فسيتم إضافة العلامات إلى العلامات الحالية للصورة.',
     ],
+    'photo_license' => [
+        'question' => 'Select a license for this photo.',
+        'question_multiple' => 'Select a license for all %d selected photos.',
+        'select_license' => 'Select License',
+        'set_license' => 'Set License',
+        'updated' => 'License updated!',
+    ],
     'photo_copy' => [
         'no_albums' => 'لا توجد ألبومات للنسخ إليها',
         'copy_to' => 'نسخ %s إلى:',

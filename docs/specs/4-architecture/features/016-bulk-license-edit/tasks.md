@@ -12,31 +12,31 @@ _Last updated: 2026-02-26_
 
 ### Backend Implementation
 
-- [ ] T-016-01 – Create SetPhotosLicenseRequest class (FR-016-03, FR-016-04, S-016-03).  
+- [x] T-016-01 – Create SetPhotosLicenseRequest class (FR-016-03, FR-016-04, S-016-03).  
   _Intent:_ Implement request validation and authorization for bulk license updates.  
   _Files:_ `app/Http/Requests/Photo/SetPhotosLicenseRequest.php`  
   _Verification commands:_  
   - `make phpstan` - No type errors  
-  _Notes:_ Use HasPhotosTrait, HasLicenseTrait, AuthorizeCanEditPhotosTrait patterns from SetPhotosTagsRequest.
+  _Notes:_ Use HasPhotosTrait, HasLicenseTrait, AuthorizeCanEditPhotosTrait patterns from SetPhotosTagsRequest. ✓ Completed - PHPStan passes.
 
-- [ ] T-016-02 – Write feature tests for SetPhotosLicenseRequest (NFR-016-04, S-016-03, S-016-04).  
+- [x] T-016-02 – Write feature tests for SetPhotosLicenseRequest (NFR-016-04, S-016-03, S-016-04).  
   _Intent:_ Create comprehensive test coverage for validation and authorization scenarios.  
   _Files:_ `tests/Feature_v2/Photo/PhotoBulkLicenseTest.php`  
   _Verification commands:_  
   - `php artisan test --filter=PhotoBulkLicenseTest` - Tests created (will fail until controller implemented)  
-  _Notes:_ Test: unauthorized (401), forbidden (403), validation errors (422), invalid IDs (404). Use BaseApiWithDataTest fixtures.
+  _Notes:_ Test: unauthorized (401), forbidden (403), validation errors (422), invalid IDs (404). Use BaseApiWithDataTest fixtures. ✓ Completed - 7 tests created, all passing.
 
-- [ ] T-016-03 – Implement PhotoController::license() method (FR-016-03, FR-016-06, S-016-01, S-016-02).  
+- [x] T-016-03 – Implement PhotoController::license() method (FR-016-03, FR-016-06, S-016-01, S-016-02).  
   _Intent:_ Handle bulk license updates with transaction-wrapped chunked processing.  
   _Files:_ `app/Http/Controllers/Gallery/PhotoController.php`  
   _Verification commands:_  
   - `make phpstan` - No type errors  
   - `php artisan test --filter=PhotoBulkLicenseTest` - Tests should start passing  
-  _Notes:_ Wrap in DB::transaction(). Process in chunks of 100 photos using chunkById(100, ...). Use Laravel batch() helper for each chunk. Pattern similar to RenamerController.
+  _Notes:_ Wrap in DB::transaction(). Process in chunks of 100 photos using chunkById(100, ...). Use Laravel batch() helper for each chunk. Pattern similar to RenamerController. ✓ Completed - Implemented with chunked processing.
 
-- [ ] T-016-04 – Register Photo::license route (API-016-01).  
+- [x] T-016-04 – Register Photo::license route (API-016-01).  
   _Intent:_ Expose bulk license endpoint via REST API.  
-  _Files:_ `routes/api.php` (or appropriate route file)  
+  _Files:_ `routes/api_v2.php`  
   _Verification commands:_  
   - `php artisan route:list | grep "Photo::license"` - Route exists  
   - `php artisan test --filter=PhotoBulkLicenseTest` - All backend tests pass  

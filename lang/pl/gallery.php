@@ -237,6 +237,8 @@ return [
         'unhighlight_all' => 'Cofnij wyróżnienie dla zaznaczonych',
         'tag' => 'Tag',
         'tag_all' => 'Otaguj zaznaczone',
+        'license' => 'License',
+        'license_all' => 'License Selected',
         'set_cover' => 'Ustaw okładkę albumu',
         'remove_header' => 'Usuń nagłówek albumu',
         'set_header' => 'Ustawianie nagłówka albumu',

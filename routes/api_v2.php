@@ -139,6 +139,7 @@ Route::post('/Photo', [Gallery\PhotoController::class, 'upload'])
 Route::patch('/Photo', [Gallery\PhotoController::class, 'update']);
 Route::patch('/Photo::rename', [Gallery\PhotoController::class, 'rename']);
 Route::patch('/Photo::tags', [Gallery\PhotoController::class, 'tags']);
+Route::patch('/Photo::license', [Gallery\PhotoController::class, 'license']);
 Route::post('/Photo::move', [Gallery\PhotoController::class, 'move']);
 Route::post('/Photo::copy', [Gallery\PhotoController::class, 'copy']);
 Route::post('/Photo::highlight', [Gallery\PhotoController::class, 'highlight']);

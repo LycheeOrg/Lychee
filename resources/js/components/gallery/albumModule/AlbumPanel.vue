@@ -195,6 +195,7 @@ const {
 	toggleShareAlbum,
 	toggleEmbedCode,
 	toggleTag,
+	toggleLicense,
 	toggleCopy,
 	toggleUpload,
 } = useGalleryModals(togglableStore);
@@ -286,6 +287,7 @@ const photoCallbacks = {
 		AlbumService.clearCache(albumStore.album.id);
 	},
 	toggleTag: toggleTag,
+	toggleLicense: toggleLicense,
 	toggleRename: toggleRename,
 	toggleCopyTo: toggleCopy,
 	toggleMove: toggleMove,

@@ -210,6 +210,13 @@ return [
         'updated' => 'برچسب‌ها به‌روزرسانی شد!',
         'tags_override_info' => 'اگر این گزینه غیرفعال باشد، برچسب‌ها به برچسب‌های موجود عکس اضافه خواهند شد.',
     ],
+    'photo_license' => [
+        'question' => 'Select a license for this photo.',
+        'question_multiple' => 'Select a license for all %d selected photos.',
+        'select_license' => 'Select License',
+        'set_license' => 'Set License',
+        'updated' => 'License updated!',
+    ],
     'photo_copy' => [
         'no_albums' => 'هیچ آلبومی برای کپی کردن وجود ندارد',
         'copy_to' => 'کپی %s به:',

@@ -212,6 +212,13 @@ return [
         'updated' => 'Tags aktualisiert!',
         'tags_override_info' => 'Wenn diese Option nicht aktiviert ist, werden die Tags zu den vorhandenen Tags des Fotos hinzugefügt.',
     ],
+    'photo_license' => [
+        'question' => 'Select a license for this photo.',
+        'question_multiple' => 'Select a license for all %d selected photos.',
+        'select_license' => 'Select License',
+        'set_license' => 'Set License',
+        'updated' => 'License updated!',
+    ],
     'photo_copy' => [
         'no_albums' => 'Keine Alben zum Kopieren nach',
         'copy_to' => 'Kopieren Sie %s nach:',
