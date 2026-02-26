@@ -116,8 +116,8 @@ class RenamerPreviewTest extends BaseApiWithDataTest
 
 		// Find the photo1 entry and verify the new title
 		$photo1_change = collect($data)->firstWhere('id', $this->photo1->id);
-		$this->assertSame($this->photo1->title, $photo1_change['original_title']);
-		$this->assertSame('Renamed_' . $this->photo1->title, $photo1_change['new_title']);
+		$this->assertSame($this->photo1->title, $photo1_change['original']);
+		$this->assertSame('Renamed_' . $this->photo1->title, $photo1_change['new']);
 	}
 
 	public function testPreviewNoChanges(): void

@@ -68,8 +68,8 @@
 						</thead>
 						<tbody>
 							<tr v-for="item in preview_items" :key="item.id" class="border-b border-surface-100 dark:border-surface-800">
-								<td class="py-1 px-2 text-red-400 line-through">{{ item.original_title }}</td>
-								<td class="py-1 px-2 text-green-400">{{ item.new_title }}</td>
+								<td class="py-1 px-2 text-danger-600 line-through">{{ item.original }}</td>
+								<td class="py-1 px-2 text-create-600">{{ item.new }}</td>
 							</tr>
 						</tbody>
 					</table>

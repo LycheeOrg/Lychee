@@ -45,8 +45,8 @@ export type PreviewRenameRequest = {
 
 export type PreviewRenameItem = {
 	id: string;
-	original_title: string;
-	new_title: string;
+	original: string;
+	new: string;
 };
 
 export type RenameApplyRequest = {
