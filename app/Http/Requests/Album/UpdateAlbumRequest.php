@@ -171,7 +171,7 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 		$this->is_pinned = static::toBoolean($values[RequestAttribute::IS_PINNED_ATTRIBUTE]);
 
 		$slug = $values[RequestAttribute::SLUG_ATTRIBUTE] ?? null;
-		$album->base_class->slug = ($slug !== '' ? $slug : null);
+		$album->slug = ($slug !== '' ? $slug : null);
 
 		if ($this->is_compact) {
 			return;

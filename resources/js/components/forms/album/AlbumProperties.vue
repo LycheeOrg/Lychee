@@ -10,13 +10,14 @@
 				</div>
 				<div v-if="is_se_enabled || is_se_preview_enabled" class="h-12 mt-2" dir="ltr">
 					<InputGroup class="rounded-none">
-						<InputGroupAddon
+						<div
 							class="text-muted-color flex items-center"
 							:class="{ 'cursor-pointer': slug }"
 							@click="copySlugUrl"
 							v-tooltip.top="{ value: $t('gallery.album.properties.copy_slug_url'), pt: { root: slug ? '' : 'hidden!' } }"
-							><span>{{ Constants.BASE_URL }}/gallery/</span></InputGroupAddon
 						>
+							<span>{{ Constants.BASE_URL }}/gallery/</span>
+						</div>
 						<FloatLabel variant="on">
 							<InputText id="slug" v-model="slug" type="text" :disabled="is_se_preview_enabled" class="pl-1" />
 							<label for="slug" :class="{ 'text-primary-500': is_se_preview_enabled }">{{ $t("gallery.album.properties.slug") }}</label>
