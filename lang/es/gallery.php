@@ -135,6 +135,8 @@ return [
         'properties' => [
             'title' => 'Título',
             'slug' => 'Slug (URL amigable)',
+            'generate_slug' => 'Generate slug from title',
+            'copy_slug_url' => 'Copy URL to clipboard',
             'description' => 'Descripción',
             'photo_ordering' => 'Ordenar fotos por',
             'children_ordering' => 'Ordenar álbumes por',

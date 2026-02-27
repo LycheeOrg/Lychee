@@ -134,6 +134,8 @@ return [
         'properties' => [
             'title' => 'العنوان',
             'slug' => 'Slug (عنوان URL ودّي)',
+            'generate_slug' => 'Generate slug from title',
+            'copy_slug_url' => 'Copy URL to clipboard',
             'description' => 'الوصف',
             'photo_ordering' => 'ترتيب الصور بواسطة',
             'children_ordering' => 'ترتيب الألبومات بواسطة',

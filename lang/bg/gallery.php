@@ -135,6 +135,8 @@ return [
         'properties' => [
             'title' => 'Заглавие',
             'slug' => 'Slug (приятелски URL)',
+            'generate_slug' => 'Generate slug from title',
+            'copy_slug_url' => 'Copy URL to clipboard',
             'description' => 'Описание',
             'photo_ordering' => 'Подреждай снимките по',
             'children_ordering' => 'Подреждай албумите по',

@@ -52,6 +52,7 @@ Never use floats or doubles to represent monetary values. Instead, use integers 
 
 # Translations
 
-Translations files are located in the `resources/lang/` directory. Use snake_case for keys and group related translations in nested arrays.
-Ignore all the the `lang/*.json` files as they are auto generated
-and not tracked in git.
+Translation source files are the PHP arrays in `lang/<locale>/*.php` (e.g. `lang/en/gallery.php`).
+When adding or editing translation keys, **only** modify these PHP files. Use snake_case for keys and group related translations in nested arrays.
+
+**NEVER read, write, or modify `lang/php_*.json` files.** They are auto-generated from the PHP sources and not tracked in git.

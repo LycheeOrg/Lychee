@@ -134,6 +134,8 @@ return [
         'properties' => [
             'title' => 'عنوان',
             'slug' => 'Slug (URL دوستانه)',
+            'generate_slug' => 'Generate slug from title',
+            'copy_slug_url' => 'Copy URL to clipboard',
             'description' => 'توضیحات',
             'photo_ordering' => 'مرتب سازی عکس‌ها بر اساس',
             'children_ordering' => 'مرتب سازی آلبوم‌ها بر اساس',

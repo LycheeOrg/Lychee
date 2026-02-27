@@ -135,6 +135,8 @@ return [
         'properties' => [
             'title' => 'Titel',
             'slug' => 'Slug (vriendelijke URL)',
+            'generate_slug' => 'Generate slug from title',
+            'copy_slug_url' => 'Copy URL to clipboard',
             'description' => 'Beschrijving',
             'photo_ordering' => 'Foto’s sorteren op',
             'children_ordering' => 'Albums sorteren op',
