@@ -42,7 +42,6 @@ Route::get('/Albums', [Gallery\AlbumsController::class, 'get'])->middleware(['lo
 /**
  * ALBUM.
  */
-Route::get('/Album', [Gallery\AlbumController::class, 'get'])->middleware(['login_required:album', 'cache_control']);
 Route::get('/Album::head', [Gallery\AlbumHeadController::class, 'get'])->middleware(['login_required:album', 'cache_control']);
 Route::get('/Album::albums', [Gallery\AlbumChildrenController::class, 'get'])->middleware(['login_required:album', 'cache_control']);
 Route::get('/Album::photos', [Gallery\AlbumPhotosController::class, 'get'])->middleware(['login_required:album', 'cache_control']);
