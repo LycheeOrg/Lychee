@@ -9,6 +9,7 @@
 namespace App\Http\Middleware;
 
 use App\Constants\RandomID;
+use App\Contracts\Http\Requests\RequestAttribute;
 use App\Enum\SmartAlbumType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -29,9 +30,18 @@ class ResolveAlbumSlug
 	 */
 	public function handle(Request $request, \Closure $next): Response
 	{
-		$this->resolveQueryOrBodyParam($request, 'album_id');
+		// Normal album operations
+		$this->resolveQueryOrBodyParam($request, RequestAttribute::ALBUM_ID_ATTRIBUTE);
+		// Some photo/album operations rely on parent_id
+		$this->resolveQueryOrBodyParam($request, RequestAttribute::PARENT_ID_ATTRIBUTE);
+		// Some album/photos operations rely on from_id
+		$this->resolveQueryOrBodyParam($request, RequestAttribute::FROM_ID_ATTRIBUTE);
+
+		// Used mostly in routes such as first loading of album
 		$this->resolveRouteParam($request, 'albumId');
-		$this->resolveArrayParam($request, 'album_ids');
+
+		// May occur but unlikely, better safe than sorry.
+		$this->resolveArrayParam($request, RequestAttribute::ALBUM_IDS_ATTRIBUTE);
 
 		return $next($request);
 	}
