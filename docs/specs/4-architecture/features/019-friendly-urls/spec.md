@@ -17,7 +17,7 @@
 
 Albums and tag albums in Lychee are currently identified exclusively by opaque 24-character random Base64 IDs (e.g., `ePN3Y_kA16KtZGXmxv-kdBrg`). This makes shared links cryptic and unfriendly. This feature adds an optional **slug** (alias) column to albums so they can be accessed via human-readable URLs such as `/gallery/my-vacation-2025` instead of `/gallery/ePN3Y_kA16KtZGXmxv-kdBrg`.
 
-**Affected modules:** Database (migration on `base_albums`), Models (`BaseAlbumImpl`), Factories (`AlbumFactory`), Application (Request classes), REST API (album resolution), UI (album edit forms, slug input).
+**Affected modules:** Database (migration on `base_albums`), Models (`BaseAlbumImpl`), HTTP Middleware (`ResolveAlbumSlug`), REST API (album resolution), UI (album edit forms, slug input). Validation rules (`AlbumIDRule`, `RandomIDRule`) and `AlbumFactory` remain **unchanged** — the middleware translates slugs to real IDs before the request reaches validation.
 
 ## Goals
 
@@ -31,12 +31,12 @@ Albums and tag albums in Lychee are currently identified exclusively by opaque 2
 
 ## Non-Goals
 
-- **Hierarchical/nested slug paths** (e.g., `/gallery/parent/child`) — slugs are flat, globally unique strings. Nested resolution is complex and deferred. See Q-019-01.
+- **Hierarchical/nested slug paths** (e.g., `/gallery/parent/child`) — slugs are flat, globally unique strings (Q-019-01 resolved: Option A). No dependency on parent structure; renaming/moving a parent doesn't invalidate child slugs.
 - **Mandatory slugs** — slugs are entirely optional; albums without slugs continue to use their random ID.
 - **Photo slugs** — only albums (Album + TagAlbum) are in scope.
 - **Auto-redirect from old ID to slug** — both the ID and slug resolve to the same album; no HTTP redirects are issued.
-- **Custom top-level routes** (e.g., `/my-album` without `/gallery/` prefix) — slugs only work within the existing `/gallery/{slug}` route pattern. See Q-019-02.
-- **Slug versioning or history** — renaming a slug produces no redirect from the old slug.
+- **Custom top-level routes** (e.g., `/my-album` without `/gallery/` prefix) — slugs only work within the existing `/gallery/{slug}` route pattern (Q-019-02 resolved: Option A). No collision risk with named routes; no route definition changes required.
+- **Slug versioning or history** — renaming a slug produces no redirect from the old slug. The middleware architecture makes a future `slug_history` table with 301 redirects a natural extension, but this is out of scope for the initial implementation.
 
 ## Functional Requirements
 
@@ -46,8 +46,8 @@ Albums and tag albums in Lychee are currently identified exclusively by opaque 2
 | FR-019-02 | **Slug format validation** — Slugs must be lowercase, consist of ASCII alphanumeric characters, hyphens, and underscores only. Must start with a letter. Min length 2, max length 250. | Slug `my-vacation-2025` accepted. | Rejects: empty string, uppercase (`My-Album`), special chars (`café`), leading digit (`2025-trip`), leading hyphen (`-album`), single char (`a`). Returns 422 with descriptive error. | N/A | N/A | URL safety, RFC 3986 unreserved chars |
 | FR-019-03 | **Slug uniqueness** — Slugs are globally unique across all albums (Album + TagAlbum). | Setting slug `summer-photos` succeeds when no other album has that slug. | Rejects duplicate slug with 422 error: "This slug is already in use." | Database unique constraint prevents race conditions. | N/A | [Issue #330 discussion](https://github.com/LycheeOrg/Lychee/issues/330) |
 | FR-019-04 | **Reserved slug protection** — Slugs must not collide with SmartAlbum type identifiers or other reserved words. | Slug `my-album` accepted (not reserved). | Rejects slugs matching SmartAlbumType values (`unsorted`, `recent`, `highlighted`, `on_this_day`, `my-rated-pictures`, `my-best-pictures`) and route segments (`settings`, `profile`, `login`, `register`). Returns 422: "This slug is reserved." | N/A | N/A | SmartAlbumType enum, route collision prevention |
-| FR-019-05 | **Album resolution by slug** — `AlbumFactory` resolves album identifiers by trying: (1) SmartAlbumType match, (2) exact ID match, (3) slug match. | `/gallery/my-vacation` resolves to the album with `slug = 'my-vacation'`. | If no match found for any strategy, returns 404. | N/A | N/A | Core resolution logic |
-| FR-019-06 | **API accepts slug as album identifier** — All API endpoints that accept `album_id` also accept a slug value transparently. | `GET /Album?album_id=my-vacation` returns the album. | Invalid slug/ID returns 404. | N/A | N/A | API consistency |
+| FR-019-05 | **Slug-to-ID middleware** — A `ResolveAlbumSlug` middleware intercepts requests **before** validation. For each `album_id` (query param or route param), if the value is not a 24-char random ID and not a SmartAlbumType value, the middleware looks up `base_albums.slug` and replaces the value with the real ID. If no match, the value passes through unchanged and normal 404 handling applies downstream. This keeps `AlbumIDRule`, `RandomIDRule`, and `AlbumFactory` completely unchanged. | `/gallery/my-vacation` → middleware rewrites to `/gallery/{real_id}` → request validation and factory see a standard 24-char ID. | If slug not found in DB, value passes through; downstream validation/factory returns 404. | N/A | N/A | Separation of concerns: slug translation is a transport/HTTP concern |
+| FR-019-06 | **API accepts slug as album identifier** — All API endpoints that accept `album_id` also accept a slug value transparently, via the middleware registered on the album route group. No changes to individual request classes or controllers. | `GET /Album?album_id=my-vacation` → middleware rewrites to `album_id={real_id}` → returns the album. | Invalid slug/ID returns 404 from downstream validation. | N/A | N/A | API consistency |
 | FR-019-07 | **Set slug via API** — New endpoint or extension to existing album edit endpoint to set/clear the slug. | `PATCH /Album` with `slug` field updates the album slug. Setting to `null` or empty string clears it. | Validates format (FR-019-02), uniqueness (FR-019-03), reserved words (FR-019-04). Returns 422 on failure. | 403 if user lacks edit permission. | N/A | User requirement |
 | FR-019-08 | **UI slug field in album sidebar** — Album edit/info panel includes a text input for the slug with auto-generate button. | User types or auto-generates slug, saves. Sidebar shows the full friendly URL for copy. | Client-side validation mirrors FR-019-02. Error messages displayed inline. | Server-side validation catches duplicates/reserved words. | N/A | UX requirement |
 | FR-019-09 | **Auto-generate slug from title** — A button next to the slug input slugifies the current album title as a starting point. | "My Vacation & Adventures 2025" → `my-vacation-and-adventures-2025`. User can edit before saving. | If title produces an empty or invalid slug (e.g., title is all special chars), show a warning and leave the field empty for manual entry. | N/A | N/A | Convenience, [Issue #330](https://github.com/LycheeOrg/Lychee/issues/330) |
@@ -60,7 +60,7 @@ Albums and tag albums in Lychee are currently identified exclusively by opaque 2
 | ID | Requirement | Driver | Measurement | Dependencies | Source |
 |----|-------------|--------|-------------|--------------|--------|
 | NFR-019-01 | Slug lookup adds negligible latency | Performance | Slug lookup via indexed column should add <5ms to album resolution. Unique B-tree index on `base_albums.slug`. | Database index | Performance standard |
-| NFR-019-02 | Backward compatibility — all existing ID-based URLs continue to work | API stability | No existing tests break. All current `/gallery/{id}` and `album_id={id}` patterns resolve identically. | AlbumFactory resolution order | API contract |
+| NFR-019-02 | Backward compatibility — all existing ID-based URLs continue to work | API stability | No existing tests break. All current `/gallery/{id}` and `album_id={id}` patterns resolve identically. Middleware passes 24-char IDs and SmartAlbumType values through without any DB lookup. | Middleware format check (length + SmartAlbumType) | API contract |
 | NFR-019-03 | Code follows Lychee PHP conventions | Maintainability | License headers, snake_case variables, strict comparison (===), PSR-4, no `empty()`, `in_array(..., true)`. | php-cs-fixer, phpstan level 6 | [coding-conventions.md](../../../3-reference/coding-conventions.md) |
 | NFR-019-04 | Frontend follows Vue3/TypeScript conventions | Maintainability | Template-first, Composition API, `.then()` (no async/await), regular function declarations, axios in services. | Prettier, eslint | [coding-conventions.md](../../../3-reference/coding-conventions.md) |
 | NFR-019-05 | Test coverage for slug CRUD and resolution | Quality | Feature tests for: slug set/clear, uniqueness violation, reserved word rejection, format validation, resolution by slug, authorization. Unit tests for slug validation rule and slugify helper. | BaseApiWithDataTest, in-memory SQLite | Testing standard |
@@ -161,6 +161,12 @@ Albums and tag albums in Lychee are currently identified exclusively by opaque 2
   - Unit tests for slug format validation rule (valid patterns, invalid patterns, edge cases)
   - Unit test for slugify helper (title → slug conversion, special chars, unicode)
   - Unit test for reserved word check against SmartAlbumType values
+- **Middleware:**
+  - 24-char ID passes through untouched (no DB query)
+  - SmartAlbumType value passes through untouched (no DB query)
+  - Valid slug resolved to real ID in request
+  - Unknown slug passes through (404 downstream)
+  - Array of mixed slugs/IDs: each element resolved independently
 - **REST (Feature tests):**
   - Set slug on album (204)
   - Set slug on tag album (204)
@@ -188,15 +194,16 @@ Albums and tag albums in Lychee are currently identified exclusively by opaque 2
 | ID | Description | Modules |
 |----|-------------|---------|
 | DO-019-01 | `base_albums.slug` — nullable VARCHAR(250) with unique index | Database, BaseAlbumImpl model |
-| DO-019-02 | `SlugRule` — Custom validation rule enforcing FR-019-02 format + FR-019-04 reserved words | Application (Rules) |
+| DO-019-02 | `SlugRule` — Custom validation rule enforcing FR-019-02 format + FR-019-04 reserved words (used only when *setting* a slug, not during resolution) | Application (Rules) |
 | DO-019-03 | Slugify helper — Converts album title to URL-safe slug string | Application (helper or service) |
+| DO-019-04 | `ResolveAlbumSlug` middleware — Translates slug values to real album IDs in the request before validation runs. Checks: if value is 24-char random ID or SmartAlbumType → pass through; otherwise query `base_albums.slug` → replace with real ID or pass through unchanged. Registered on album route groups. | HTTP Middleware |
 
 ### API Routes / Services
 
 | ID | Transport | Description | Notes |
 |----|-----------|-------------|-------|
 | API-019-01 | PATCH /Album (extended) | Accepts optional `slug` field to set/clear album slug | Extends existing album update endpoint |
-| API-019-02 | GET /Album?album_id={slug} | Resolves album by slug (or ID, as before) | No new endpoint — AlbumFactory updated |
+| API-019-02 | GET /Album?album_id={slug} | Resolves album by slug (or ID, as before) | No new endpoint — `ResolveAlbumSlug` middleware translates slug to ID before validation; `AlbumFactory` unchanged |
 
 ### UI States
 
@@ -225,7 +232,7 @@ No custom telemetry events. Standard Laravel logging covers:
 ## Documentation Deliverables
 
 - Roadmap entry updated with feature 019
-- Knowledge map updated: `base_albums.slug` column, `AlbumFactory` slug resolution, `SlugRule`
+- Knowledge map updated: `base_albums.slug` column, `ResolveAlbumSlug` middleware, `SlugRule`
 - Translation keys added to all 22 language files for slug field label, placeholder, validation messages, auto-generate button tooltip
 
 ## Spec DSL
@@ -239,11 +246,15 @@ domain_objects:
   - id: DO-019-02
     name: SlugRule
     type: validation_rule
-    constraints: "format check + reserved word check"
+    constraints: "format check + reserved word check (used when setting slug, not during resolution)"
   - id: DO-019-03
     name: SlugifyHelper
     type: utility
     behaviour: "title string → URL-safe slug"
+  - id: DO-019-04
+    name: ResolveAlbumSlug
+    type: middleware
+    behaviour: "translates slug → real ID in request before validation; passes through 24-char IDs and SmartAlbumType values unchanged"
 routes:
   - id: API-019-01
     method: PATCH
@@ -293,15 +304,35 @@ fixtures:
 - `settings`, `profile`, `login`, `register`, `diagnostics`, `home`
 - `users`, `sharing`, `jobs`, `maintenance`
 
-### C. Resolution Order in AlbumFactory
+### C. Middleware Resolution Flow (`ResolveAlbumSlug`)
 
 ```
-Input: album_id parameter (string)
-  1. Try SmartAlbumType::tryFrom(album_id) → return smart album if match
-  2. Try Album::find(album_id) → return if found (exact ID match)
-  3. Try TagAlbum::find(album_id) → return if found (exact ID match)
-  4. Try BaseAlbumImpl::where('slug', album_id)->first() → return associated Album/TagAlbum if found
-  5. Throw ModelNotFoundException (404)
+Request arrives with album_id (query param, route param, or array element)
+  ┌─ Is it exactly 24 chars (RandomID length)?  → Pass through unchanged
+  ├─ Is it a SmartAlbumType value?               → Pass through unchanged
+  └─ Otherwise:
+       Query: SELECT id FROM base_albums WHERE slug = :value
+       ├─ Found  → Replace value in request with the real ID
+       └─ Not found → Pass through unchanged (will 404 downstream)
 ```
 
-Step 4 is the new addition. Because Lychee IDs are 24-char Base64 strings that can contain uppercase, `+`, `/`, and `=`, while slugs are restricted to lowercase + hyphens + underscores, there is **zero chance of collisions** between a valid slug and a valid random ID.
+The existing `AlbumFactory` resolution order is **unchanged**:
+```
+  1. SmartAlbumType::tryFrom(album_id) → smart album
+  2. Album::find(album_id)             → regular album
+  3. TagAlbum::find(album_id)          → tag album
+  4. Throw ModelNotFoundException       → 404
+```
+
+Because Lychee IDs are 24-char Base64 strings that can contain uppercase, `+`, `/`, and `=`, while slugs are restricted to lowercase + hyphens + underscores, there is **zero chance of collisions** between a valid slug and a valid random ID. The middleware's length check (`strlen === 24`) is sufficient to distinguish the two formats.
+
+### D. Why Middleware (Not AlbumFactory)
+
+| Concern | Middleware | Factory modification |
+|---------|-----------|---------------------|
+| Separation of concerns | Slug translation is a transport/HTTP concern | Mixes URL aliasing into domain resolution |
+| Validation rules | `AlbumIDRule`, `RandomIDRule` stay strict and unchanged | Must widen rules to accept arbitrary strings |
+| Factory | Untouched — always receives real IDs | Gains slug fallback logic |
+| Slug versioning/redirects | Natural extension point (301 from old slug) | Awkward to retrofit in the factory |
+| DB overhead | Same — query only fires for non-ID strings | Same |
+| Batch endpoints (array of IDs) | Iterates array, replaces matching slugs | Automatic but pollutes factory with slug knowledge |
