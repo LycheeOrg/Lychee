@@ -27,6 +27,7 @@ class HeadTagAlbumResource extends Data
 
 	public string $id;
 	public string $title;
+	public ?string $slug;
 	public ?string $owner_name;
 	public ?string $copyright;
 	public bool $is_tag_album;
@@ -47,6 +48,7 @@ class HeadTagAlbumResource extends Data
 		// basic
 		$this->id = $tag_album->id;
 		$this->title = $tag_album->title;
+		$this->slug = request()->verify()->is_supporter() ? $tag_album->slug : null;
 		$this->owner_name = Auth::check() ? $tag_album->owner->name : null;
 		$this->is_tag_album = true;
 		$this->show_tags = $tag_album->tags->map(fn ($t) => $t->name)->all();

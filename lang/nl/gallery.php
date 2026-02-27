@@ -134,6 +134,7 @@ return [
         ],
         'properties' => [
             'title' => 'Titel',
+            'slug' => 'Slug (vriendelijke URL)',
             'description' => 'Beschrijving',
             'photo_ordering' => 'Foto’s sorteren op',
             'children_ordering' => 'Albums sorteren op',

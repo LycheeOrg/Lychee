@@ -41,6 +41,8 @@ use App\Rules\CopyrightRule;
 use App\Rules\DescriptionRule;
 use App\Rules\EnumRequireSupportRule;
 use App\Rules\RandomIDRule;
+use App\Rules\SlugRule;
+use App\Rules\StringRequireSupportRule;
 use App\Rules\TitleRule;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Validation\ValidationException;
@@ -80,6 +82,7 @@ class UpdateTagAlbumRequest extends BaseApiRequest implements HasTagAlbum, HasTi
 			RequestAttribute::ALBUM_PHOTO_LAYOUT => ['present', 'nullable', new Enum(PhotoLayoutType::class)],
 			RequestAttribute::ALBUM_TIMELINE_PHOTO => ['present', 'nullable', new Enum(TimelinePhotoGranularity::class), new EnumRequireSupportRule(TimelinePhotoGranularity::class, [TimelinePhotoGranularity::DEFAULT, TimelinePhotoGranularity::DISABLED], $this->verify())],
 			RequestAttribute::IS_AND_ATTRIBUTE => ['required', 'boolean'],
+			RequestAttribute::SLUG_ATTRIBUTE => ['sometimes', 'nullable', new StringRequireSupportRule(null, $this->verify()), new SlugRule($this->input(RequestAttribute::ALBUM_ID_ATTRIBUTE))],
 		];
 	}
 
@@ -99,6 +102,13 @@ class UpdateTagAlbumRequest extends BaseApiRequest implements HasTagAlbum, HasTi
 		$this->album = $album;
 		$this->title = $values[RequestAttribute::TITLE_ATTRIBUTE];
 		$this->description = $values[RequestAttribute::DESCRIPTION_ATTRIBUTE];
+
+		// Slug is saved on the base_class (base_albums table)
+		if (array_key_exists(RequestAttribute::SLUG_ATTRIBUTE, $values)) {
+			$slug = $values[RequestAttribute::SLUG_ATTRIBUTE];
+			$slug = is_string($slug) && $slug !== '' ? $slug : null;
+			$album->base_class->slug = $slug;
+		}
 
 		$photo_column = ColumnSortingPhotoType::tryFrom($values[RequestAttribute::PHOTO_SORTING_COLUMN_ATTRIBUTE]);
 		$photo_order = OrderSortingType::tryFrom($values[RequestAttribute::PHOTO_SORTING_ORDER_ATTRIBUTE]);

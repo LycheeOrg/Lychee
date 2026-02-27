@@ -104,6 +104,7 @@ class Kernel extends HttpKernel
 		'support' => \LycheeVerify\Http\Middleware\VerifySupporterStatus::class,
 		'config_integrity' => \App\Http\Middleware\ConfigIntegrity::class,
 		'unlock_with_password' => \App\Http\Middleware\UnlockWithPassword::class,
+		'resolve_album_slug' => \App\Http\Middleware\ResolveAlbumSlug::class,
 		'response_cache' => \App\Http\Middleware\Caching\ResponseCache::class,
 		'album_cache_refresher' => \App\Http\Middleware\Caching\AlbumRouteCacheRefresher::class,
 	];

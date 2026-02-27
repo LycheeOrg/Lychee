@@ -42,22 +42,22 @@ Route::get('/Albums', [Gallery\AlbumsController::class, 'get'])->middleware(['lo
 /**
  * ALBUM.
  */
-Route::get('/Album::head', [Gallery\AlbumHeadController::class, 'get'])->middleware(['login_required:album', 'cache_control']);
-Route::get('/Album::albums', [Gallery\AlbumChildrenController::class, 'get'])->middleware(['login_required:album', 'cache_control']);
-Route::get('/Album::photos', [Gallery\AlbumPhotosController::class, 'get'])->middleware(['login_required:album', 'cache_control']);
-Route::get('/Album::getTargetListAlbums', [Gallery\AlbumController::class, 'getTargetListAlbums'])->middleware(['login_required:album', 'cache_control']);
-Route::post('/Album::unlock', [Gallery\AlbumController::class, 'unlock']);
+Route::get('/Album::head', [Gallery\AlbumHeadController::class, 'get'])->middleware(['login_required:album', 'cache_control', 'resolve_album_slug']);
+Route::get('/Album::albums', [Gallery\AlbumChildrenController::class, 'get'])->middleware(['login_required:album', 'cache_control', 'resolve_album_slug']);
+Route::get('/Album::photos', [Gallery\AlbumPhotosController::class, 'get'])->middleware(['login_required:album', 'cache_control', 'resolve_album_slug']);
+Route::get('/Album::getTargetListAlbums', [Gallery\AlbumController::class, 'getTargetListAlbums'])->middleware(['login_required:album', 'cache_control', 'resolve_album_slug']);
+Route::post('/Album::unlock', [Gallery\AlbumController::class, 'unlock'])->middleware(['resolve_album_slug']);
 Route::post('/Album', [Gallery\AlbumController::class, 'createAlbum']);
 Route::patch('/Album', [Gallery\AlbumController::class, 'updateAlbum']);
 Route::patch('/Album::rename', [Gallery\AlbumController::class, 'rename']);
 Route::patch('/Album::setPinned', [Gallery\AlbumController::class, 'setPinned']);
 Route::post('/Album::updateProtectionPolicy', [Gallery\AlbumController::class, 'updateProtectionPolicy']);
-Route::delete('/Album', [Gallery\AlbumController::class, 'delete']);
-Route::post('/Album::move', [Gallery\AlbumController::class, 'move']);
-Route::post('/Album::cover', [Gallery\AlbumController::class, 'cover']);
-Route::post('/Album::header', [Gallery\AlbumController::class, 'header']);
-Route::post('/Album::merge', [Gallery\AlbumController::class, 'merge']);
-Route::post('/Album::transfer', [Gallery\AlbumController::class, 'transfer']);
+Route::delete('/Album', [Gallery\AlbumController::class, 'delete'])->middleware(['resolve_album_slug']);
+Route::post('/Album::move', [Gallery\AlbumController::class, 'move'])->middleware(['resolve_album_slug']);
+Route::post('/Album::cover', [Gallery\AlbumController::class, 'cover'])->middleware(['resolve_album_slug']);
+Route::post('/Album::header', [Gallery\AlbumController::class, 'header'])->middleware(['resolve_album_slug']);
+Route::post('/Album::merge', [Gallery\AlbumController::class, 'merge'])->middleware(['resolve_album_slug']);
+Route::post('/Album::transfer', [Gallery\AlbumController::class, 'transfer'])->middleware(['resolve_album_slug']);
 Route::post('/Album::track', [Gallery\AlbumController::class, 'setTrack'])
 	->withoutMiddleware(['content_type:json'])
 	->middleware(['content_type:multipart']);

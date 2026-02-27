@@ -134,6 +134,7 @@ return [
         ],
         'properties' => [
             'title' => '标题',
+            'slug' => 'Slug (友好 URL)',
             'description' => '描述',
             'photo_ordering' => '照片排序方式',
             'children_ordering' => '相册排序方式',

@@ -134,6 +134,7 @@ return [
         ],
         'properties' => [
             'title' => 'Заглавие',
+            'slug' => 'Slug (приятелски URL)',
             'description' => 'Описание',
             'photo_ordering' => 'Подреждай снимките по',
             'children_ordering' => 'Подреждай албумите по',

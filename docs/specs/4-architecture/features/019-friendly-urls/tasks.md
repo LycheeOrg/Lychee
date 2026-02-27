@@ -1,7 +1,7 @@
 # Feature 019 Tasks – Friendly URLs (Album Slugs)
 
-_Status: Draft_  
-_Last updated: 2026-02-27_
+_Status: Complete_  
+_Last updated: 2026-02-28_
 
 > Keep this checklist aligned with the feature plan increments. Stage tests before implementation, record verification commands beside each task, and prefer bite-sized entries (≤90 minutes).
 > **Mark tasks `[x]` immediately** after each one passes verification—do not batch completions. Update the roadmap status when all tasks are done.
@@ -12,7 +12,7 @@ _Last updated: 2026-02-27_
 
 ### I1 – Database Migration
 
-- [ ] T-019-01 – Create migration to add `slug` column to `base_albums` (FR-019-01, NFR-019-06).  
+- [x] T-019-01 – Create migration to add `slug` column to `base_albums` (FR-019-01, NFR-019-06).  
   _Intent:_ Add nullable VARCHAR(250) `slug` column with unique index to `base_albums` table. Implement reversible `down()`.  
   _Files:_ `database/migrations/YYYY_MM_DD_HHMMSS_add_slug_to_base_albums.php`  
   _Verification commands:_  
@@ -22,28 +22,28 @@ _Last updated: 2026-02-27_
 
 ### I2 – Model & DTO Updates
 
-- [ ] T-019-02 – Add `slug` to `BaseAlbumImpl` model (FR-019-01).  
+- [x] T-019-02 – Add `slug` to `BaseAlbumImpl` model (FR-019-01).  
   _Intent:_ Expose slug in the Eloquent model attributes and casts.  
   _Files:_ `app/Models/BaseAlbumImpl.php`  
   _Verification commands:_  
   - `make phpstan`  
   _Notes:_ Add `'slug' => null` to `$attributes`, `'slug' => 'string'` to `$casts`.
 
-- [ ] T-019-03 – Add `SLUG_ATTRIBUTE` constant to `RequestAttribute` (FR-019-07).  
+- [x] T-019-03 – Add `SLUG_ATTRIBUTE` constant to `RequestAttribute` (FR-019-07).  
   _Intent:_ Define attribute constant for use in request validation rules.  
   _Files:_ `app/Contracts/Http/Requests/RequestAttribute.php`  
   _Verification commands:_  
   - `make phpstan`  
   _Notes:_ `public const SLUG_ATTRIBUTE = 'slug';`
 
-- [ ] T-019-04 – Add `slug` field to `EditableBaseAlbumResource` (FR-019-12).  
+- [x] T-019-04 – Add `slug` field to `EditableBaseAlbumResource` (FR-019-12).  
   _Intent:_ Include slug in the editable album DTO so the frontend can read/write it.  
   _Files:_ `app/Http/Resources/Editable/EditableBaseAlbumResource.php`  
   _Verification commands:_  
   - `make phpstan`  
   _Notes:_ Add `public ?string $slug` property. Populate from `BaseAlbumImpl::slug`.
 
-- [ ] T-019-05 – Add `slug` field to `HeadAlbumResource` (FR-019-12).  
+- [x] T-019-05 – Add `slug` field to `HeadAlbumResource` (FR-019-12).  
   _Intent:_ Include slug in the album head response so the frontend can use it for navigation.  
   _Files:_ `app/Http/Resources/Models/HeadAlbumResource.php`  
   _Verification commands:_  
@@ -52,7 +52,7 @@ _Last updated: 2026-02-27_
 
 ### I3 – SlugRule Validation
 
-- [ ] T-019-06 – Create `SlugRule` validation rule (FR-019-02, FR-019-03, FR-019-04, DO-019-02).  
+- [x] T-019-06 – Create `SlugRule` validation rule (FR-019-02, FR-019-03, FR-019-04, DO-019-02).  
   _Intent:_ Custom validation rule enforcing slug format, reserved word check, and uniqueness. Takes optional `$exclude_album_id` in constructor for update scenarios.  
   _Files:_ `app/Rules/SlugRule.php`  
   _Verification commands:_  
@@ -61,7 +61,7 @@ _Last updated: 2026-02-27_
 
 ### I4 – SlugRule Unit Tests
 
-- [ ] T-019-07 – Write unit tests for `SlugRule` (NFR-019-05, S-019-03, S-019-04, S-019-05).  
+- [x] T-019-07 – Write unit tests for `SlugRule` (NFR-019-05, S-019-03, S-019-04, S-019-05).  
   _Intent:_ Test-first coverage for format validation, reserved words, and uniqueness.  
   _Files:_ `tests/Unit/Rules/SlugRuleTest.php`  
   _Verification commands:_  
@@ -74,7 +74,7 @@ _Last updated: 2026-02-27_
 
 ### I5 – ResolveAlbumSlug Middleware
 
-- [ ] T-019-08 – Create `ResolveAlbumSlug` middleware (FR-019-05, FR-019-06, DO-019-04).  
+- [x] T-019-08 – Create `ResolveAlbumSlug` middleware (FR-019-05, FR-019-06, DO-019-04).  
   _Intent:_ Middleware that intercepts `album_id` (query/route param) and translates slugs to real IDs before request validation. Short-circuits for 24-char IDs and SmartAlbumType values.  
   _Files:_ `app/Http/Middleware/ResolveAlbumSlug.php`  
   _Verification commands:_  
@@ -87,7 +87,7 @@ _Last updated: 2026-02-27_
   5. Also handle `album_ids` array param for batch endpoints  
   6. Call `$next($request)`  
 
-- [ ] T-019-09 – Register middleware and apply to routes (FR-019-05, NFR-019-02).  
+- [x] T-019-09 – Register middleware and apply to routes (FR-019-05, NFR-019-02).  
   _Intent:_ Register `resolve_album_slug` alias in Kernel and apply to album routes.  
   _Files:_ `app/Http/Kernel.php`, `routes/api_v2.php`, `routes/web_v2.php`  
   _Verification commands:_  
@@ -97,7 +97,7 @@ _Last updated: 2026-02-27_
 
 ### I6 – Middleware Feature Tests
 
-- [ ] T-019-10 – Write middleware resolution feature tests (NFR-019-05, S-019-08, S-019-09, S-019-10, S-019-11).  
+- [x] T-019-10 – Write middleware resolution feature tests (NFR-019-05, S-019-08, S-019-09, S-019-10, S-019-11).  
   _Intent:_ Integration tests verifying slug-to-ID translation works end-to-end.  
   _Files:_ `tests/Feature_v2/Album/AlbumSlugResolutionTest.php`  
   _Verification commands:_  
@@ -112,21 +112,21 @@ _Last updated: 2026-02-27_
 
 ### I7 – Extend Album Update with Slug
 
-- [ ] T-019-11 – Add `slug` to `UpdateAlbumRequest` (FR-019-07, API-019-01).  
+- [x] T-019-11 – Add `slug` to `UpdateAlbumRequest` (FR-019-07, API-019-01).  
   _Intent:_ Accept optional slug field when updating an album.  
   _Files:_ `app/Http/Requests/Album/UpdateAlbumRequest.php`  
   _Verification commands:_  
   - `make phpstan`  
   _Notes:_ Add rule: `RequestAttribute::SLUG_ATTRIBUTE => ['present', 'nullable', new SlugRule($this->album?->id)]`. Process in `processValidatedValues()`. Save in controller.
 
-- [ ] T-019-12 – Add `slug` to `UpdateTagAlbumRequest` (FR-019-07).  
+- [x] T-019-12 – Add `slug` to `UpdateTagAlbumRequest` (FR-019-07).  
   _Intent:_ Accept optional slug field when updating a tag album.  
   _Files:_ `app/Http/Requests/Album/UpdateTagAlbumRequest.php`  
   _Verification commands:_  
   - `make phpstan`  
   _Notes:_ Same pattern as T-019-11.
 
-- [ ] T-019-13 – Save slug in `AlbumController::updateAlbum()` and `updateTagAlbum()` (FR-019-07).  
+- [x] T-019-13 – Save slug in `AlbumController::updateAlbum()` and `updateTagAlbum()` (FR-019-07).  
   _Intent:_ Persist slug to base_albums when album is updated.  
   _Files:_ `app/Http/Controllers/Gallery/AlbumController.php`  
   _Verification commands:_  
@@ -135,7 +135,7 @@ _Last updated: 2026-02-27_
 
 ### I8 – Slug CRUD Feature Tests
 
-- [ ] T-019-14 – Write slug CRUD feature tests (NFR-019-05, S-019-01 through S-019-07, S-019-14, S-019-15).  
+- [x] T-019-14 – Write slug CRUD feature tests (NFR-019-05, S-019-01 through S-019-07, S-019-14, S-019-15).  
   _Intent:_ Feature tests for setting, clearing, and validating slugs via PATCH /Album.  
   _Files:_ `tests/Feature_v2/Album/AlbumSlugCrudTest.php`  
   _Verification commands:_  
@@ -152,7 +152,7 @@ _Last updated: 2026-02-27_
 
 ### I9 – Backend Quality Gate
 
-- [ ] T-019-15 – Run full backend quality gate (NFR-019-03).  
+- [x] T-019-15 – Run full backend quality gate (NFR-019-03).  
   _Intent:_ Ensure all backend code passes formatting, tests, and static analysis.  
   _Verification commands:_  
   - `vendor/bin/php-cs-fixer fix`  
@@ -162,7 +162,7 @@ _Last updated: 2026-02-27_
 
 ### I10 – Frontend Service & Type Updates
 
-- [ ] T-019-16 – Add `slug` to frontend types and service (API-019-01, FR-019-12).  
+- [x] T-019-16 – Add `slug` to frontend types and service (API-019-01, FR-019-12).  
   _Intent:_ Update TypeScript types and album service to include slug.  
   _Files:_ `resources/js/services/album-service.ts`  
   _Verification commands:_  
@@ -171,7 +171,7 @@ _Last updated: 2026-02-27_
 
 ### I11 – Frontend Slug Input UI
 
-- [ ] T-019-17 – Add slug input field to `AlbumProperties.vue` (FR-019-08, FR-019-09, UI-019-01 through UI-019-06, S-019-12, S-019-13).  
+- [x] T-019-17 – Add slug input field to `AlbumProperties.vue` (FR-019-08, FR-019-09, UI-019-01 through UI-019-06, S-019-12, S-019-13).  
   _Intent:_ Slug text input with auto-generate button, URL preview, client-side validation.  
   _Files:_ `resources/js/components/forms/album/AlbumProperties.vue`  
   _Verification commands:_  
@@ -187,7 +187,7 @@ _Last updated: 2026-02-27_
 
 ### I12 – Frontend Vue Router Slug Navigation
 
-- [ ] T-019-18 – Use slug in URL bar when available (FR-019-10, S-019-16).  
+- [x] T-019-18 – Use slug in URL bar when available (FR-019-10, S-019-16).  
   _Intent:_ When navigating to an album that has a slug, use the slug in the URL instead of the ID.  
   _Files:_ Album navigation components (gallery listing, breadcrumbs)  
   _Verification commands:_  
@@ -196,14 +196,14 @@ _Last updated: 2026-02-27_
 
 ### I13 – Translation Strings
 
-- [ ] T-019-19 – Add English translation strings for slug UI (FR-019-08).  
+- [x] T-019-19 – Add English translation strings for slug UI (FR-019-08).  
   _Intent:_ Add all slug-related translation keys to English language file.  
   _Files:_ Appropriate lang file(s) under `lang/`  
   _Verification commands:_  
   - `grep -r "slug" lang/`  
   _Notes:_ Keys: field label ("Friendly URL"), placeholder ("my-album-name"), auto-generate tooltip ("Generate from title"), validation errors (format, reserved, duplicate), success toast.
 
-- [ ] T-019-20 – Add translation placeholders to other 21 languages.  
+- [x] T-019-20 – Add translation placeholders to other 21 languages.  
   _Intent:_ Copy English strings as placeholders to all other language files.  
   _Files:_ `lang/` (22 language files)  
   _Verification commands:_  
@@ -212,7 +212,7 @@ _Last updated: 2026-02-27_
 
 ### I14 – Frontend Quality Gate
 
-- [ ] T-019-21 – Run frontend quality gate (NFR-019-04).  
+- [x] T-019-21 – Run frontend quality gate (NFR-019-04).  
   _Intent:_ Ensure Vue/TypeScript code passes formatting and lint checks.  
   _Verification commands:_  
   - `npm run format`  
@@ -221,7 +221,7 @@ _Last updated: 2026-02-27_
 
 ### I15 – Final Integration & Documentation
 
-- [ ] T-019-22 – Run full quality gate (NFR-019-03, NFR-019-04).  
+- [x] T-019-22 – Run full quality gate (NFR-019-03, NFR-019-04).  
   _Intent:_ Final combined backend + frontend quality gate.  
   _Verification commands:_  
   - `vendor/bin/php-cs-fixer fix`  
@@ -231,13 +231,13 @@ _Last updated: 2026-02-27_
   - `make phpstan`  
   _Notes:_ All must pass.
 
-- [ ] T-019-23 – Manual scenario verification (S-019-01 through S-019-16).  
+- [x] T-019-23 – Manual scenario verification (S-019-01 through S-019-16).  
   _Intent:_ Walk through all 16 scenarios from the spec manually.  
   _Verification commands:_  
   - Manual browser testing  
   _Notes:_ Record pass/fail for each scenario. Fix any failures before marking complete.
 
-- [ ] T-019-24 – Update roadmap and mark feature complete.  
+- [x] T-019-24 – Update roadmap and mark feature complete.  
   _Intent:_ Record feature completion in roadmap.  
   _Files:_ `docs/specs/4-architecture/roadmap.md`  
   _Verification commands:_  

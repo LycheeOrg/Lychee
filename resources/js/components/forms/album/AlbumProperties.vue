@@ -8,6 +8,12 @@
 						<label for="title">{{ $t("gallery.album.properties.title") }}</label>
 					</FloatLabel>
 				</div>
+				<div v-if="is_se_enabled" class="h-12 mt-2">
+					<FloatLabel variant="on">
+						<InputText id="slug" v-model="slug" type="text" />
+						<label for="slug">{{ $t("gallery.album.properties.slug") }}</label>
+					</FloatLabel>
+				</div>
 				<div class="my-4 h-48">
 					<FloatLabel variant="on">
 						<Textarea id="description" v-model="description" class="w-full h-48" :rows="6" :cols="30" />
@@ -330,6 +336,7 @@ const toast = useToast();
 const is_model_album = ref(true);
 const albumId = ref("");
 const title = ref("");
+const slug = ref<string | null>(null);
 const description = ref<string | null>(null);
 const photoSortingColumn = ref<SelectOption<App.Enum.ColumnSortingPhotoType> | undefined>(undefined);
 const photoSortingOrder = ref<SelectOption<App.Enum.OrderSortingType> | undefined>(undefined);
@@ -400,6 +407,7 @@ function load(editable: App.Http.Resources.Editable.EditableBaseAlbumResource, p
 	is_model_album.value = editable.is_model_album;
 	albumId.value = editable.id;
 	title.value = editable.title;
+	slug.value = editable.slug;
 	description.value = editable.description;
 	photoSortingColumn.value = SelectBuilders.buildPhotoSorting(editable.photo_sorting?.column);
 	photoSortingOrder.value = SelectBuilders.buildSortingOrder(editable.photo_sorting?.order);
@@ -434,6 +442,7 @@ function saveAlbum() {
 	const data: UpdateAbumData = {
 		album_id: albumId.value,
 		title: title.value,
+		slug: slug.value === "" ? null : slug.value,
 		license: license.value?.value ?? null,
 		description: description.value,
 		photo_sorting_column: photoSortingColumn.value?.value ?? null,
@@ -464,6 +473,7 @@ function saveTagAlbum() {
 	const data: UpdateTagAlbumData = {
 		album_id: albumId.value,
 		title: title.value,
+		slug: slug.value === "" ? null : slug.value,
 		tags: tags.value,
 		description: description.value,
 		photo_sorting_column: photoSortingColumn.value?.value ?? null,

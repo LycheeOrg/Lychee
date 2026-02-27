@@ -133,6 +133,7 @@ return [
         ],
         'properties' => [
             'title' => 'العنوان',
+            'slug' => 'Slug (عنوان URL ودّي)',
             'description' => 'الوصف',
             'photo_ordering' => 'ترتيب الصور بواسطة',
             'children_ordering' => 'ترتيب الألبومات بواسطة',

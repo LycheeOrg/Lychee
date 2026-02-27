@@ -133,6 +133,7 @@ return [
         ],
         'properties' => [
             'title' => 'Titre',
+            'slug' => 'Slug (URL conviviale)',
             'description' => 'Description',
             'photo_ordering' => 'Ordre des photos',
             'children_ordering' => 'Ordre des albums',

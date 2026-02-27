@@ -101,6 +101,7 @@ use Illuminate\Support\Facades\Auth;
  * @property Carbon                           $updated_at
  * @property Carbon|null                      $published_at
  * @property string                           $title
+ * @property string|null                      $slug
  * @property string|null                      $description
  * @property PhotoLayoutType|null             $photo_layout
  * @property TimelinePhotoGranularity         $photo_timeline
@@ -180,6 +181,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		'created_at' => null,
 		'updated_at' => null,
 		'title' => null, // Sic! `title` is actually non-nullable, but using `null` here forces the caller to actually set a title before saving.
+		'slug' => null,
 		'description' => null,
 		'owner_id' => 0,
 		'sorting_col' => null,
@@ -200,6 +202,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		'created_at' => 'datetime',
 		'updated_at' => 'datetime',
 		'published_at' => 'datetime',
+		'slug' => 'string',
 		'is_nsfw' => 'boolean',
 		'is_pinned' => 'boolean',
 		'owner_id' => 'integer',

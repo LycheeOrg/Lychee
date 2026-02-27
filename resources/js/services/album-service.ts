@@ -16,6 +16,7 @@ export type CreateTagAlbumData = {
 export type UpdateAbumData = {
 	album_id: string;
 	title: string;
+	slug: string | null;
 	license: string | null;
 	description: string | null;
 	photo_sorting_column: App.Enum.ColumnSortingPhotoType | null;
@@ -35,6 +36,7 @@ export type UpdateAbumData = {
 export type UpdateTagAlbumData = {
 	album_id: string;
 	title: string;
+	slug: string | null;
 	tags: string[];
 	description: string | null;
 	photo_sorting_column: App.Enum.ColumnSortingPhotoType | null;

@@ -280,6 +280,7 @@ declare namespace App.Http.Resources.Editable {
 	export type EditableBaseAlbumResource = {
 		id: string;
 		title: string;
+		slug: string | null;
 		description: string | null;
 		copyright: string | null;
 		license: App.Enum.LicenseType | null;
@@ -605,6 +606,7 @@ declare namespace App.Http.Resources.Models {
 	export type HeadAlbumResource = {
 		id: string;
 		title: string;
+		slug: string | null;
 		owner_name: string | null;
 		description: string | null;
 		copyright: string | null;
@@ -634,6 +636,7 @@ declare namespace App.Http.Resources.Models {
 	export type HeadTagAlbumResource = {
 		id: string;
 		title: string;
+		slug: string | null;
 		owner_name: string | null;
 		copyright: string | null;
 		is_tag_album: boolean;

@@ -133,6 +133,7 @@ return [
         ],
         'properties' => [
             'title' => 'عنوان',
+            'slug' => 'Slug (URL دوستانه)',
             'description' => 'توضیحات',
             'photo_ordering' => 'مرتب سازی عکس‌ها بر اساس',
             'children_ordering' => 'مرتب سازی آلبوم‌ها بر اساس',

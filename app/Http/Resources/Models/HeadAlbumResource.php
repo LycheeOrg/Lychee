@@ -27,6 +27,7 @@ class HeadAlbumResource extends Data
 
 	public string $id;
 	public string $title;
+	public ?string $slug;
 	public ?string $owner_name;
 	public ?string $description;
 	public ?string $copyright;
@@ -58,6 +59,7 @@ class HeadAlbumResource extends Data
 	{
 		$this->id = $album->id;
 		$this->title = $album->title;
+		$this->slug = request()->verify()->is_supporter() ? $album->slug : null;
 		$this->description = $album->description;
 		$this->owner_name = Auth::check() ? $album->owner->name : null;
 		$this->copyright = $album->copyright;

@@ -25,6 +25,7 @@ class EditableBaseAlbumResource extends Data
 {
 	public string $id;
 	public string $title;
+	public ?string $slug;
 	public ?string $description;
 	public ?string $copyright;
 	public ?LicenseType $license;
@@ -46,6 +47,7 @@ class EditableBaseAlbumResource extends Data
 	{
 		$this->id = $album->id;
 		$this->title = $album->title;
+		$this->slug = request()->verify()->is_supporter() ? $album->slug : null;
 		$this->description = $album->description;
 		$this->copyright = $album->copyright;
 		$this->photo_sorting = $album->photo_sorting;
