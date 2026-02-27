@@ -131,36 +131,6 @@ class PaginationIntegrationTest extends BaseApiWithDataTest
 	}
 
 	/**
-	 * Test backward compatibility: legacy /Album endpoint still returns full data.
-	 */
-	public function testBackwardCompatibilityWithLegacyEndpoint(): void
-	{
-		$this->actingAs($this->userMayUpload1);
-
-		// Load album via legacy endpoint
-		$legacyResponse = $this->getJsonWithData('Album', ['album_id' => $this->album1->id]);
-		$this->assertOk($legacyResponse);
-		$legacyData = $legacyResponse->json('resource');
-
-		// Legacy endpoint should include albums and photos arrays
-		$this->assertArrayHasKey('albums', $legacyData);
-		$this->assertArrayHasKey('photos', $legacyData);
-
-		// Load same album via new endpoints
-		$headResponse = $this->getJsonWithData('Album::head', ['album_id' => $this->album1->id]);
-		$albumsResponse = $this->getJsonWithData('Album::albums', ['album_id' => $this->album1->id]);
-		$photosResponse = $this->getJsonWithData('Album::photos', ['album_id' => $this->album1->id]);
-
-		$headData = $headResponse->json('resource');
-		$albumsData = $albumsResponse->json('data'); // Direct access to data array
-		$photosData = $photosResponse->json('photos'); // Direct access to photos array
-
-		// Verify that data is consistent between legacy and new endpoints
-		$this->assertCount(count($legacyData['albums']), $albumsData, 'Legacy albums array should match new albums pagination data');
-		$this->assertCount(count($legacyData['photos']), $photosData, 'Legacy photos array should match new photos pagination data');
-	}
-
-	/**
 	 * Test pagination across multiple pages to verify continuity.
 	 */
 	public function testPaginationContinuityAcrossPages(): void

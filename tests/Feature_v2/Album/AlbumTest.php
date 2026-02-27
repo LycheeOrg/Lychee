@@ -24,7 +24,7 @@ class AlbumTest extends BaseApiWithDataTest
 {
 	public function testGet(): void
 	{
-		$response = $this->getJson('Album');
+		$response = $this->getJson('Album::head');
 		$this->assertUnprocessable($response);
 		$response->assertJson([
 			'message' => 'The album id field is required.',
