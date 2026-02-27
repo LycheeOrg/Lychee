@@ -6,9 +6,81 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 | Question ID | Feature | Priority | Summary | Status | Opened | Updated |
 |-------------|---------|----------|---------|--------|--------|---------|
-| (none) | — | — | — | — | — | — |
+| Q-019-01 | 019 – Friendly URLs | High | Hierarchical vs flat slugs | Open | 2026-02-27 | 2026-02-27 |
+| Q-019-02 | 019 – Friendly URLs | Medium | Top-level route support (`/slug` without `/gallery/` prefix) | Open | 2026-02-27 | 2026-02-27 |
+| Q-019-03 | 019 – Friendly URLs | Medium | Tag album slug support scope | Open | 2026-02-27 | 2026-02-27 |
 
 ## Question Details
+
+### Q-019-01: Hierarchical vs Flat Slugs
+
+**Question:** Should album slugs support hierarchical (nested) paths that mirror the album tree, or should they be flat globally-unique strings?
+
+- **Option A (Recommended):** Flat globally-unique slugs
+  - Simpler implementation: single `slug` column with unique index
+  - No dependency on parent album structure — renaming/moving a parent doesn't invalidate child slugs
+  - URL format: `/gallery/child-album` (not `/gallery/parent/child`)
+  - Easier to reason about uniqueness and collisions
+  - Slug can be any valid string regardless of album hierarchy
+  - Cons: Doesn't convey album structure in the URL
+
+- **Option B:** Hierarchical slugs built from the album tree
+  - URL format: `/gallery/parent-album/child-album/grandchild` mirrors the album tree
+  - Conveys structure in the URL (more intuitive for deep hierarchies)
+  - Requires recomputing child paths when a parent album slug changes
+  - Much more complex: needs computed `full_path` column, recursive updates, path-based routing
+  - Moving an album between parents invalidates its URL
+  - Collisions scoped to siblings (two siblings can't have the same slug, but unrelated albums can)
+
+**Impact:** HIGH — fundamentally affects the data model, resolution logic, and URL semantics. Must be decided before implementation.
+
+---
+
+### Q-019-02: Top-Level Route Support
+
+**Question:** Should albums with slugs be accessible at the top level (e.g., `example.com/my-vacation`) in addition to the gallery path (e.g., `example.com/gallery/my-vacation`)?
+
+- **Option A (Recommended):** Gallery-prefixed only (`/gallery/{slug}`)
+  - No collision risk with existing routes (`/settings`, `/profile`, `/login`, etc.)
+  - No changes to web route definitions — slug resolution happens inside the existing `{albumId}` parameter
+  - Simpler, safer, ships faster
+  - Cons: URLs are longer (`/gallery/my-vacation` vs `/my-vacation`)
+
+- **Option B:** Support both `/gallery/{slug}` and `/{slug}` (top-level)
+  - Shorter, cleaner URLs for sharing
+  - Requires a catch-all `/{slug}` route placed **after** all named routes
+  - Risk of collisions with future routes or features
+  - May interfere with custom page modules or third-party packages
+  - Cons: More fragile, harder to maintain
+
+- **Option C:** Top-level only (`/{slug}`)
+  - Cleanest URLs
+  - Highest collision risk
+  - Breaking change if `/gallery/` prefix is removed
+
+**Impact:** MEDIUM — affects routing architecture and URL aesthetics. Can be deferred post-MVP since `/gallery/{slug}` works without route changes.
+
+---
+
+### Q-019-03: Tag Album Slug Support
+
+**Question:** Should tag albums also support slugs, or should this feature be limited to regular albums?
+
+- **Option A (Recommended):** Both Album and TagAlbum (via shared `base_albums` table)
+  - The `slug` column lives on `base_albums`, which is shared by both Album and TagAlbum
+  - Consistent behaviour — any album-like entity can have a friendly URL
+  - No special-casing needed in the factory or validation
+  - Cons: Slightly larger surface area to test
+
+- **Option B:** Regular albums only
+  - Simpler initial scope
+  - Tag albums are more dynamic/virtual in nature — slugs may be less useful
+  - Would require the slug column to be on the `albums` table instead of `base_albums`, or adding a check that rejects slugs on tag albums
+  - Cons: Inconsistent, more complex to restrict than to allow
+
+**Impact:** MEDIUM — affects migration placement and validation logic. Option A is simpler given the shared `base_albums` architecture.
+
+---
 
 ### ~~Q-017-01: Context Menu Scope Behaviour for Photos vs Albums~~ ✅ RESOLVED
 
