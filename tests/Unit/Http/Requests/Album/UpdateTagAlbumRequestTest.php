@@ -18,6 +18,7 @@ use App\Enum\PhotoLayoutType;
 use App\Enum\TimelinePhotoGranularity;
 use App\Factories\AlbumFactory;
 use App\Http\Requests\Album\UpdateTagAlbumRequest;
+use App\Models\BaseAlbumImpl;
 use App\Models\TagAlbum;
 use App\Policies\AlbumPolicy;
 use App\Rules\CopyrightRule;
@@ -44,6 +45,14 @@ class UpdateTagAlbumRequestTest extends BaseRequestTest
 	public function testAuthorization()
 	{
 		$tagalbumMock = $this->createMock(TagAlbum::class);
+		$baseAlbumImpl = new BaseAlbumImpl();
+		$tagalbumMock->method('__get')->willReturnCallback(function (string $key) use ($baseAlbumImpl) {
+			if ($key === 'base_class') {
+				return $baseAlbumImpl;
+			}
+
+			return null;
+		});
 		Config::set('features.populate-request-macros', true);
 
 		Gate::shouldReceive('check')
