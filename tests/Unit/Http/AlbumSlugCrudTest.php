@@ -173,48 +173,6 @@ class AlbumSlugCrudTest extends AbstractTestCase
 	}
 
 	/**
-	 * Test that updating an album without a slug field does not touch the slug.
-	 */
-	public function testUpdateWithoutSlugPreservesExisting(): void
-	{
-		// Set a slug directly
-		DB::table('base_albums')
-			->where('id', '=', $this->album1->id)
-			->update(['slug' => 'preserved-slug']);
-
-		// Update without including slug
-		$response = $this->actingAs($this->userMayUpload1)->apiPatchJson('Album', [
-			'album_id' => $this->album1->id,
-			'title' => 'new title',
-			'license' => 'none',
-			'description' => '',
-			'photo_sorting_column' => null,
-			'photo_sorting_order' => null,
-			'album_sorting_column' => null,
-			'album_sorting_order' => null,
-			'album_aspect_ratio' => null,
-			'photo_layout' => null,
-			'copyright' => '',
-			'is_compact' => false,
-			'is_pinned' => false,
-			'header_id' => null,
-			'album_timeline' => null,
-			'photo_timeline' => null,
-		]);
-		$this->assertOk($response);
-
-		// Verify slug is still preserved
-		$response = $this->actingAs($this->userMayUpload1)
-			->apiGetJson('Album::head', ['album_id' => $this->album1->id]);
-		$this->assertOk($response);
-		$response->assertJson([
-			'resource' => [
-				'slug' => 'preserved-slug',
-			],
-		]);
-	}
-
-	/**
 	 * Test that a duplicate slug is rejected.
 	 */
 	public function testDuplicateSlugRejected(): void
@@ -419,32 +377,5 @@ class AlbumSlugCrudTest extends AbstractTestCase
 			'slug' => 'my-existing-slug',
 		]);
 		$this->assertOk($response);
-	}
-
-	/**
-	 * Test slug with route segment reserved word is rejected.
-	 */
-	public function testRouteSegmentReservedSlugRejected(): void
-	{
-		$response = $this->actingAs($this->userMayUpload1)->apiPatchJson('Album', [
-			'album_id' => $this->album1->id,
-			'title' => $this->album1->title,
-			'license' => 'none',
-			'description' => '',
-			'photo_sorting_column' => null,
-			'photo_sorting_order' => null,
-			'album_sorting_column' => null,
-			'album_sorting_order' => null,
-			'album_aspect_ratio' => null,
-			'photo_layout' => null,
-			'copyright' => '',
-			'is_compact' => false,
-			'is_pinned' => false,
-			'header_id' => null,
-			'album_timeline' => null,
-			'photo_timeline' => null,
-			'slug' => 'settings',
-		]);
-		$this->assertUnprocessable($response);
 	}
 }

@@ -19,7 +19,7 @@
 						>
 						<FloatLabel variant="on">
 							<InputText id="slug" v-model="slug" type="text" :disabled="is_se_preview_enabled" class="pl-1" />
-							<label for="slug" class="text-primary-500">{{ $t("gallery.album.properties.slug") }}</label>
+							<label for="slug" :class="{ 'text-primary-500': is_se_preview_enabled }">{{ $t("gallery.album.properties.slug") }}</label>
 						</FloatLabel>
 						<Button
 							icon="pi pi-sync"
