@@ -103,12 +103,8 @@ class UpdateTagAlbumRequest extends BaseApiRequest implements HasTagAlbum, HasTi
 		$this->title = $values[RequestAttribute::TITLE_ATTRIBUTE];
 		$this->description = $values[RequestAttribute::DESCRIPTION_ATTRIBUTE];
 
-		// Slug is saved on the base_class (base_albums table)
-		if (array_key_exists(RequestAttribute::SLUG_ATTRIBUTE, $values)) {
-			$slug = $values[RequestAttribute::SLUG_ATTRIBUTE];
-			$slug = is_string($slug) && $slug !== '' ? $slug : null;
-			$album->base_class->slug = $slug;
-		}
+		$slug = $values[RequestAttribute::SLUG_ATTRIBUTE] ?? null;
+		$album->base_class->slug = ($slug !== '' ? $slug : null);
 
 		$photo_column = ColumnSortingPhotoType::tryFrom($values[RequestAttribute::PHOTO_SORTING_COLUMN_ATTRIBUTE]);
 		$photo_order = OrderSortingType::tryFrom($values[RequestAttribute::PHOTO_SORTING_ORDER_ATTRIBUTE]);

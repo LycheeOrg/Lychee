@@ -19,19 +19,6 @@ final class SlugRule implements ValidationRule
 
 	private const SLUG_REGEX = '/^[a-z][a-z0-9_-]{1,249}$/';
 
-	private const RESERVED_ROUTE_SEGMENTS = [
-		'settings',
-		'profile',
-		'login',
-		'register',
-		'diagnostics',
-		'home',
-		'users',
-		'sharing',
-		'jobs',
-		'maintenance',
-	];
-
 	private string $failure_message = '';
 
 	public function __construct(
@@ -85,11 +72,7 @@ final class SlugRule implements ValidationRule
 
 	private function isReserved(string $value): bool
 	{
-		if (in_array($value, SmartAlbumType::values(), true)) {
-			return true;
-		}
-
-		return in_array($value, self::RESERVED_ROUTE_SEGMENTS, true);
+		return in_array($value, SmartAlbumType::values(), true);
 	}
 
 	private function isDuplicate(string $value): bool

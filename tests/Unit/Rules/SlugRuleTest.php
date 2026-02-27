@@ -85,21 +85,6 @@ class SlugRuleTest extends AbstractTestCase
 		$this->assertFails($rule, 'my_best_pictures');
 	}
 
-	public function testReservedRouteSegments(): void
-	{
-		$rule = new SlugRule();
-		$this->assertFails($rule, 'settings');
-		$this->assertFails($rule, 'profile');
-		$this->assertFails($rule, 'login');
-		$this->assertFails($rule, 'register');
-		$this->assertFails($rule, 'diagnostics');
-		$this->assertFails($rule, 'home');
-		$this->assertFails($rule, 'users');
-		$this->assertFails($rule, 'sharing');
-		$this->assertFails($rule, 'jobs');
-		$this->assertFails($rule, 'maintenance');
-	}
-
 	public function testUniqueness(): void
 	{
 		// Create a user and album with a slug
