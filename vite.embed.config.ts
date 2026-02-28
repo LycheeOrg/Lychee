@@ -43,14 +43,6 @@ export default defineConfig({
 				exports: 'named',
 			},
 		},
-		// Optimize for production
-		minify: 'terser',
-		terserOptions: {
-			compress: {
-				drop_console: true,
-				drop_debugger: true,
-			},
-		},
 		// Generate sourcemaps for debugging
 		sourcemap: true,
 	},

@@ -8,6 +8,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Query\JoinClause;
+use Illuminate\Database\QueryException;
 
 return new class() extends Migration {
 	/**
@@ -46,17 +47,31 @@ return new class() extends Migration {
 
 			// We have to use a foreach here because we want to catch the exceptions individually
 			foreach ($photos_ids as $photo_id) {
+				// Begin an inner transaction to avoid aborting when updates fail
+				DB::beginTransaction();
 				try {
 					DB::table('photo_album')->where('photo_id', '=', $photo_id)->whereNotIn('album_id', $album_ids)->update(['photo_id' => $photo_to_keep]);
-				} catch (\Exception) {
+					// update the link
+					DB::commit();
+				} catch (QueryException $e) {
 					// If this crashes this means that the link already exists between the photo and the album.
 					// We ignore it.
+					// So we rollback this part
+					DB::rollBack();
+				} catch (\Exception $e) {
+					throw $e;
 				}
 
+				// Same as before, we guard against failing updates with an inner transaction
+				DB::beginTransaction();
 				try {
 					DB::table('purchasables')->where('photo_id', '=', $photo_id)->whereNotIn('album_id', $album_ids)->update(['photo_id' => $photo_to_keep]);
-				} catch (\Exception) {
+					DB::commit();
+				} catch (QueryException $e) {
 					// Same shit as above. :)
+					DB::rollBack();
+				} catch (\Exception $e) {
+					throw $e;
 				}
 			}
 
