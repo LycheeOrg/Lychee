@@ -137,7 +137,7 @@ class ZipRequest extends BaseApiRequest implements HasAlbums, HasPhotos, HasSize
 		$photo_query = Photo::query()->with(['albums']);
 		// The condition is required, because Lychee also supports to archive
 		// the "live video" as a size variant which is not a proper size variant
-		$variant = $this->size_variant->getSizeVariantType();
+		$variant = $this->size_variant?->getSizeVariantType();
 		if ($variant !== null) { // NOT LIVE PHOTO
 			// If a proper size variant is requested, eagerly load the size
 			// variants but only the requested type due to efficiency reasons
