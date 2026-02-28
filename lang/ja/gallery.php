@@ -28,6 +28,7 @@ return [
     'thumbnail' => 'Photo thumbnail',
     'live_video' => 'Video part of live-photo',
     'download_raw' => 'Download RAW',
+    'download_album' => 'アルバムZIPアーカイブの画像解像度を選択してください。選択した種類がない写真にはオリジナルが使用されます。',
     'camera_data' => 'Camera date',
     'album_reserved' => 'All Rights Reserved',
     'map' => [

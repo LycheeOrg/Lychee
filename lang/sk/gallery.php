@@ -28,6 +28,7 @@ return [
     'thumbnail' => 'Photo thumbnail',
     'live_video' => 'Video part of live-photo',
     'download_raw' => 'Download RAW',
+    'download_album' => 'Vyberte rozlíšenie obrázkov pre ZIP archív albumu. Ak fotografia nemá vybranú variantu, použije sa originál.',
     'camera_data' => 'Camera date',
     'album_reserved' => 'All Rights Reserved',
     'map' => [

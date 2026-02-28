@@ -26,8 +26,7 @@ return [
     'placeholder' => 'Image de basse qualité (LQIP)',
     'thumbnail' => 'Vignette de la photo',
     'live_video' => 'Partie vidéo d’une live-photo',
-    'download_raw' => 'Download RAW',
-    'camera_data' => 'Données de l’appareil',
+    'download_raw' => 'Download RAW',    'download_album' => 'Sélectionnez la résolution d\'image pour l\'archive ZIP de l\'album. Si une photo ne possède pas la variante sélectionnée, l\'originale sera utilisée.',    'camera_data' => 'Données de l’appareil',
     'album_reserved' => 'Tous droits réservés',
     'map' => [
         'error_gpx' => 'Erreur lors du chargement du fichier GPX',

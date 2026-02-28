@@ -3,8 +3,11 @@
 		<template #container="{ closeCallback }">
 			<div class="flex flex-col relative max-w-md w-full text-sm rounded-md">
 				<div class="flex flex-col gap-1 justify-center p-9">
+					<p class="text-muted-color text-center mb-2">
+						{{ $t("gallery.download_album") }}
+					</p>
 					<Button v-if="is_raw_download_enabled" severity="contrast" class="w-full dark:border-surface-900" @click="download('RAW')">
-						<i class="pi pi-cloud-download"></i> RAW
+						<i class="pi pi-cloud-download"></i> {{ $t("gallery.raw") }}
 					</Button>
 					<Button severity="contrast" class="w-full dark:border-surface-900" @click="download('ORIGINAL')">
 						<i class="pi pi-cloud-download"></i> {{ $t("gallery.original") }}

@@ -28,6 +28,7 @@ return [
     'thumbnail' => 'Photo thumbnail',
     'live_video' => 'Video part of live-photo',
     'download_raw' => 'Download RAW',
+    'download_album' => 'Välj bildupplösning för albumets ZIP-arkiv. Om ett foto saknar den valda varianten används originalet istället.',
     'camera_data' => 'Camera date',
     'album_reserved' => 'All Rights Reserved',
     'map' => [

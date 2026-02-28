@@ -28,6 +28,7 @@ return [
     'thumbnail' => 'Miniatura de la foto',
     'live_video' => 'Vídeo parte de foto en directo',
     'download_raw' => 'Download RAW',
+    'download_album' => 'Seleccione la resolución de imagen para el archivo ZIP del álbum. Si una foto no tiene la variante seleccionada, se usará la original.',
     'camera_data' => 'Fecha de la cámara',
     'album_reserved' => 'Todos los derechos reservados',
     'map' => [

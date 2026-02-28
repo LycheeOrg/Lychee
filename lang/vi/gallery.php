@@ -28,6 +28,7 @@ return [
     'thumbnail' => 'Photo thumbnail',
     'live_video' => 'Video part of live-photo',
     'download_raw' => 'Download RAW',
+    'download_album' => 'Chọn độ phân giải hình ảnh cho tệp ZIP album. Nếu ảnh không có biến thể đã chọn, ảnh gốc sẽ được sử dụng.',
     'camera_data' => 'Camera date',
     'album_reserved' => 'All Rights Reserved',
     'map' => [
