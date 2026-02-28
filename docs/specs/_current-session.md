@@ -1,74 +1,76 @@
 # Current Session
 
-_Last updated: 2026-02-24_
+_Last updated: 2026-02-28_
 
 ## Active Features
 
-**Feature 015 – Upload Watermark Toggle**
+**Feature 022 – Contact Form**
 - Status: Planning (spec, plan, tasks complete)
 - Priority: P2
-- Started: 2026-02-24
+- License: Supporters Only
+- Started: 2026-02-28
 - Dependencies: None
 
 ## Session Summary
 
-Feature 015 specification, plan, and tasks updated to include admin setting for controlling watermark opt-out availability.
+Feature 022 (Contact Form) specification, plan, and tasks created per user requirements to restructure the contact form feature to use two separate pages (visitor form and admin management) with configurable Q&A, security questions, and consent text.
 
-### Feature 015: Upload Watermark Toggle
+### Feature 022: Contact Form (Visitors + Admin Management)
 
-**User Request:**
-- Add toggle switch to upload modal for watermark control
-- Toggle visible only when watermarking is globally enabled and configured
-- Default state: ON (watermark enabled)
-- Pass watermark preference through upload pipeline
-- **NEW:** Admin setting `watermark_optout_disabled` to force watermarking (default: false)
+**User Requirements:**
+- Two new pages: visitor contact form + admin message management
+- Visitor form: capture name, email, message; optional security question, sample Q&A, consent checkbox
+- Admin page: list messages, mark as read, delete messages (feature: checkbox toggle, delete button)
+- No email support—messages managed in admin panel only
+- 7 configurable settings (sample Q&A, security Q&A, consent text, privacy URL, submit button text)
+- New "Contact Form" settings category
+- All features restricted to Supporters license tier
 
 **Key Design Decisions:**
-- `is_watermarker_enabled` computed in UploadConfig (config + photo_id + Imagick check)
-- `can_watermark_optout` computed as: `is_watermarker_enabled` AND NOT `watermark_optout_disabled`
-- `apply_watermark` optional boolean parameter in upload request
-- Flag passed through ProcessImageJob to ApplyWatermark pipe
-- Toggle state persists per upload session, reset on modal close
-- Backward compatible: missing parameter = use global setting
-- Admin can disable opt-out via `watermark_optout_disabled` config
+- Visitor form public at `/contact` (no auth required)
+- Admin page at `/security/contact-messages` (requires `may_administrate` permission)
+- Rate limiting: 5 submissions per IP per 24 hours (prevent spam)
+- Security question answer: case-insensitive exact match
+- Consent checkbox required only if `contact_form_custom_consent_text` is configured
+- Database: `contact_messages` table with `is_read` boolean flag
+- All config options stored in settings system (Supporters-gated)
 
-**Implementation Increments:**
-| Increment | Description | Est. Time |
-|-----------|-------------|-----------|
-| I0 | Backend: Add watermark_optout_disabled config | 30 min |
-| I1 | Backend: Extend UploadConfig with watermarker status | 30 min |
-| I2 | Backend: Add watermark flag to upload request | 30 min |
-| I3 | Backend: Pass watermark flag to ProcessImageJob | 45 min |
-| I4 | Backend: ApplyWatermark pipe respects flag | 45 min |
-| I5 | Frontend: Extend TypeScript types | 15 min |
-| I6 | Frontend: Add toggle to UploadPanel | 45 min |
-| I7 | Frontend: Pass watermark flag in upload service | 45 min |
-| I8 | Translations (21 languages) | 30 min |
-| I8b | Admin UI: Add watermark_optout_disabled setting | 30 min |
-| I9 | Integration and documentation | 30 min |
+**7 Config Keys:**
+- `contact_form_sample_question` / `contact_form_sample_answer`
+- `contact_form_security_question` / `contact_form_security_answer`
+- `contact_form_custom_consent_text`
+- `contact_form_custom_privacy_url`
+- `contact_form_custom_submit_button_text`
 
-**Tasks:** 24 tasks across 11 increments (I0-I9, I8b)
+**Implementation Phases:**
+- Phase 1 (Backend infra): 4 increments (~4 hours) - database, config, routes, controller
+- Phase 2 (Visitor form): 3 increments (~3 hours) - public form, service, styling
+- Phase 3 (Admin page): 4 increments (~4 hours) - list view, interactions, search/filter, polish
+- Phase 4 (Testing): 3 increments (~3 hours) - unit tests, feature tests, quality gates
+- Phase 5 (Integration): 2 increments (~2 hours) - translations, final E2E testing
+
+**Total: 16 increments (~16 hours)**
 
 **Deliverables:**
-1. [spec.md](docs/specs/4-architecture/features/015-upload-watermark-toggle/spec.md)
-2. [plan.md](docs/specs/4-architecture/features/015-upload-watermark-toggle/plan.md)
-3. [tasks.md](docs/specs/4-architecture/features/015-upload-watermark-toggle/tasks.md)
+1. [spec.md](docs/specs/4-architecture/features/022-contact-form/spec.md)
+2. [plan.md](docs/specs/4-architecture/features/022-contact-form/plan.md)
+3. [tasks.md](docs/specs/4-architecture/features/022-contact-form/tasks.md)
 
 ## Next Steps
 
-1. Run analysis gate checklist
-2. Begin implementation starting with I0 (watermark_optout_disabled config)
+1. Run analysis gate checklist (if needed)
+2. Begin implementation with Phase 1 (I1-I4): database setup, config, routes, controller
 
 ## Open Questions
 
-None - no open questions for Feature 015.
+None - all requirements clarified and captured in spec.
 
 ## References
 
-**Feature 015:**
-- Feature spec: [015-upload-watermark-toggle/spec.md](docs/specs/4-architecture/features/015-upload-watermark-toggle/spec.md)
-- Implementation plan: [015-upload-watermark-toggle/plan.md](docs/specs/4-architecture/features/015-upload-watermark-toggle/plan.md)
-- Task checklist: [015-upload-watermark-toggle/tasks.md](docs/specs/4-architecture/features/015-upload-watermark-toggle/tasks.md)
+**Feature 022:**
+- Feature spec: [022-contact-form/spec.md](docs/specs/4-architecture/features/022-contact-form/spec.md)
+- Implementation plan: [022-contact-form/plan.md](docs/specs/4-architecture/features/022-contact-form/plan.md)
+- Task checklist: [022-contact-form/tasks.md](docs/specs/4-architecture/features/022-contact-form/tasks.md)
 
 **Common:**
 - Roadmap: [roadmap.md](docs/specs/4-architecture/roadmap.md)
@@ -78,12 +80,11 @@ None - no open questions for Feature 015.
 
 **Session Context for Handoff:**
 
-Feature 015 (Upload Watermark Toggle) fully planned with 24 tasks across 11 increments. Key design:
-1. Toggle in upload modal, visible only when watermarking enabled AND opt-out allowed
-2. `is_watermarker_enabled` + `can_watermark_optout` properties in UploadConfig
-3. `apply_watermark` optional boolean in upload request
-4. ProcessImageJob passes flag to ApplyWatermark pipe
-5. New admin setting `watermark_optout_disabled` (default: false) to force watermarking
-6. Backward compatible: missing param uses global setting
+Feature 022 (Contact Form) fully planned with 16 increments over 5 phases (~16 hours total). Supporters-only feature with:
+1. Public visitor form at `/contact` (configurable Q&A, security question, consent)
+2. Admin message management page at `/security/contact-messages` (mark as read, delete, search/filter)
+3. Rate limiting: 5 submissions per IP per 24 hours
+4. 7 configurable settings in new "Contact Form" category
+5. Database: `contact_messages` table with `is_read` flag
 
-Ready to begin implementation starting with I0 (config migration).
+Ready to begin Phase 1 (I1-I4) implementing database, config, routes, and controller.
