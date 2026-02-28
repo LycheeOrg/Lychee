@@ -126,7 +126,7 @@ The following classes were removed as part of this refactoring:
 | `HeifToJpeg` | `RawToJpeg` (handles all convertible formats) |
 | `ConvertUnsupportedMedia` | `DetectAndStoreRaw` |
 | `PhotoConverterFactory` | Direct `RawToJpeg` instantiation |
-| `ConvertableImageType` enum | `DetectAndStoreRaw::CONVERTIBLE_RAW_EXTENSIONS` constant |
+| `ConvertableImageType` enum | `FileExtensionService::CONVERTIBLE_RAW_EXTENSIONS` constant |
 | `PhotoConverter` interface | Removed (no multiple converters needed) |
 
 ## Metadata Extraction

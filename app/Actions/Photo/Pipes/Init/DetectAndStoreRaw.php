@@ -32,32 +32,6 @@ use App\Services\Image\FileExtensionService;
 class DetectAndStoreRaw implements InitPipe
 {
 	/**
-	 * Extensions that can be converted to JPEG via Imagick (with delegates).
-	 * Case-insensitive matching — values are lowercase with leading dot.
-	 */
-	public const CONVERTIBLE_RAW_EXTENSIONS = [
-		'.nef',
-		'.cr2',
-		'.cr3',
-		'.arw',
-		'.dng',
-		'.orf',
-		'.rw2',
-		'.raf',
-		'.pef',
-		'.srw',
-		'.nrw',
-		'.psd',
-		'.heic',
-		'.heif',
-	];
-
-	public function __construct(
-		private FileExtensionService $file_extension_service,
-	) {
-	}
-
-	/**
 	 * @param InitDTO                           $state
 	 * @param \Closure(InitDTO $state): InitDTO $next
 	 *
@@ -71,7 +45,7 @@ class DetectAndStoreRaw implements InitPipe
 		}
 
 		// Only act on convertible RAW formats
-		if (!in_array($ext, self::CONVERTIBLE_RAW_EXTENSIONS, true)) {
+		if (!in_array($ext, FileExtensionService::CONVERTIBLE_RAW_EXTENSIONS, true)) {
 			return $next($state);
 		}
 

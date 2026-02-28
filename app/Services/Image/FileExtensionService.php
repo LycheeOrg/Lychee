@@ -90,6 +90,29 @@ class FileExtensionService
 		'application/octet-stream' => '.mp4',
 	];
 
+	/**
+	 * Extensions that can be converted to JPEG via Imagick (with delegates).
+	 * Case-insensitive matching — values are lowercase with leading dot.
+	 *
+	 * @var string[]
+	 */
+	public const CONVERTIBLE_RAW_EXTENSIONS = [
+		'.nef',
+		'.cr2',
+		'.cr3',
+		'.arw',
+		'.dng',
+		'.orf',
+		'.rw2',
+		'.raf',
+		'.pef',
+		'.srw',
+		'.nrw',
+		'.psd',
+		'.heic',
+		'.heif',
+	];
+
 	/** @var string[] the accepted raw file extensions minus supported extensions */
 	protected array $cached_accepted_raw_file_extensions = [];
 	private ConfigManager $config_manager;
@@ -164,6 +187,8 @@ class FileExtensionService
 			// We imagick is enabeld, then we can allow PDF files.
 			if ($this->config_manager->hasImagick()) {
 				$tmp[] = '.pdf';
+				// If imagick is enabled, we should also support the raw files.
+				$tmp = array_merge($tmp, self::CONVERTIBLE_RAW_EXTENSIONS);
 			}
 
 			// Explode may return `false` on error

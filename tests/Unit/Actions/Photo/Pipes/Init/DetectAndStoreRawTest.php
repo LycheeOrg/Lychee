@@ -18,6 +18,7 @@ use App\DTO\ImportMode;
 use App\DTO\ImportParam;
 use App\DTO\PhotoCreate\InitDTO;
 use App\Image\Files\NativeLocalFile;
+use App\Services\Image\FileExtensionService;
 use Tests\AbstractTestCase;
 
 class DetectAndStoreRawTest extends AbstractTestCase
@@ -124,7 +125,7 @@ class DetectAndStoreRawTest extends AbstractTestCase
 			'.heic', '.heif',
 		];
 
-		self::assertSame($expected, DetectAndStoreRaw::CONVERTIBLE_RAW_EXTENSIONS);
+		self::assertSame($expected, FileExtensionService::CONVERTIBLE_RAW_EXTENSIONS);
 	}
 
 	private function createInitDTO(NativeLocalFile $source_file): InitDTO
