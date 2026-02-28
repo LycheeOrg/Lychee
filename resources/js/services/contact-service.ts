@@ -37,7 +37,9 @@ const ContactService = {
 		return axios.post(`${Constants.getApiUrl()}contact`, data);
 	},
 
-	list(params: { page?: number; per_page?: number; is_read?: boolean | null; search?: string } = {}): Promise<AxiosResponse<ContactMessagesListResponse>> {
+	list(
+		params: { page?: number; per_page?: number; is_read?: boolean | null; search?: string } = {},
+	): Promise<AxiosResponse<ContactMessagesListResponse>> {
 		return axios.get(`${Constants.getApiUrl()}contact`, { params });
 	},
 

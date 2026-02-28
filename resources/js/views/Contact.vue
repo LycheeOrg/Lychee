@@ -22,12 +22,8 @@
 			<!-- Sample Q&A (optional) -->
 			<div v-if="sampleQuestion" class="rounded-lg bg-surface-100 dark:bg-surface-100/5 p-4">
 				<p class="font-semibold mb-1">{{ $t("contact.sample_qa_label") }}</p>
-				<p class="text-sm text-muted-color mb-1">
-					<span class="font-medium">Q:</span> {{ sampleQuestion }}
-				</p>
-				<p v-if="sampleAnswer" class="text-sm text-muted-color">
-					<span class="font-medium">A:</span> {{ sampleAnswer }}
-				</p>
+				<p class="text-sm text-muted-color mb-1"><span class="font-medium">Q:</span> {{ sampleQuestion }}</p>
+				<p v-if="sampleAnswer" class="text-sm text-muted-color"><span class="font-medium">A:</span> {{ sampleAnswer }}</p>
 			</div>
 
 			<!-- Name -->
@@ -60,7 +56,9 @@
 
 			<!-- Security Question (optional) -->
 			<div v-if="securityQuestion" class="flex flex-col gap-1">
-				<label for="contact-security" class="font-medium">{{ $t("contact.security_question_label") }} <span class="text-red-500">*</span></label>
+				<label for="contact-security" class="font-medium"
+					>{{ $t("contact.security_question_label") }} <span class="text-red-500">*</span></label
+				>
 				<p class="text-sm text-muted-color">{{ securityQuestion }}</p>
 				<InputText
 					id="contact-security"
@@ -157,12 +155,12 @@ const errors = ref({
 	consent_agreed: "",
 });
 
-const submitLabel = computed(() => customSubmitText.value !== "" ? customSubmitText.value : trans("contact.submit_button"));
+const submitLabel = computed(() => (customSubmitText.value !== "" ? customSubmitText.value : trans("contact.submit_button")));
 
 function loadConfig(): void {
 	// Read config values from the lychee store / init data if available,
 	// otherwise fall back to empty strings (fields hidden).
-	const initData = (lycheeStore as unknown as Record<string, unknown>);
+	const initData = lycheeStore as unknown as Record<string, unknown>;
 	sampleQuestion.value = (initData["contact_form_sample_question"] as string | undefined) ?? "";
 	sampleAnswer.value = (initData["contact_form_sample_answer"] as string | undefined) ?? "";
 	securityQuestion.value = (initData["contact_form_security_question"] as string | undefined) ?? "";

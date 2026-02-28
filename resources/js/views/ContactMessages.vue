@@ -15,12 +15,7 @@
 
 		<!-- Filters -->
 		<div class="flex flex-wrap gap-4 mb-6 items-center">
-			<InputText
-				v-model="searchQuery"
-				:placeholder="$t('contact.admin.search_placeholder')"
-				class="w-64"
-				@input="onSearchInput"
-			/>
+			<InputText v-model="searchQuery" :placeholder="$t('contact.admin.search_placeholder')" class="w-64" @input="onSearchInput" />
 			<div class="flex gap-2">
 				<Button
 					:label="$t('contact.admin.filter_all')"
@@ -58,14 +53,7 @@
 
 		<!-- Messages list -->
 		<template v-else>
-			<DataTable
-				:value="messages"
-				:row-class="rowClass"
-				expandable-rows
-				v-model:expanded-rows="expandedRows"
-				data-key="id"
-				class="w-full"
-			>
+			<DataTable :value="messages" :row-class="rowClass" expandable-rows v-model:expanded-rows="expandedRows" data-key="id" class="w-full">
 				<Column header-class="w-1/4" :header="$t('contact.admin.name_column')">
 					<template #body="slotProps">
 						<span :class="{ 'font-bold': !slotProps.data.is_read }">{{ slotProps.data.name }}</span>
@@ -89,24 +77,13 @@
 				<Column header-class="w-16 text-center" :header="$t('contact.admin.read_column')">
 					<template #body="slotProps">
 						<div class="flex justify-center">
-							<Checkbox
-								:model-value="slotProps.data.is_read"
-								binary
-								@change="toggleRead(slotProps.data)"
-							/>
+							<Checkbox :model-value="slotProps.data.is_read" binary @change="toggleRead(slotProps.data)" />
 						</div>
 					</template>
 				</Column>
 				<Column header-class="w-12">
 					<template #body="slotProps">
-						<Button
-							icon="pi pi-trash"
-							severity="danger"
-							text
-							rounded
-							size="small"
-							@click="confirmDelete(slotProps.data)"
-						/>
+						<Button icon="pi pi-trash" severity="danger" text rounded size="small" @click="confirmDelete(slotProps.data)" />
 					</template>
 				</Column>
 				<template #expansion="slotProps">
