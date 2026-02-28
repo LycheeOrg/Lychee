@@ -295,7 +295,7 @@ Source File → DetectAndStoreRaw (REPLACES ConvertUnsupportedMedia):
            → CreateSizeVariants → ApplyWatermark → EncodePlaceholder
 ```
 
-**Removed classes:** `HeifToJpeg`, `ConvertUnsupportedMedia`, `ConvertableImageType` (HEIC/HEIF detection folded into RAW format list).  
+**Removed classes:** `HeifToJpeg`, `ConvertUnsupportedMedia`, `PhotoConverterFactory`, `ConvertableImageType` (HEIC/HEIF detection folded into RAW format list).  
 **New classes:** `DetectAndStoreRaw` (Init pipe), `CreateRawSizeVariant` (Standalone pipe), `RawToJpeg` (converter — unified Imagick-based conversion for all RAW+HEIC+PSD formats).
 
 ---

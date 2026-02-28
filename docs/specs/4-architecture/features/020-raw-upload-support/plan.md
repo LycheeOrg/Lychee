@@ -90,7 +90,7 @@ Record drift findings in this plan's Follow-ups section.
   9. Run `make phpstan` and `php artisan test`.
 - _Commands:_ `make phpstan`, `php artisan test`
 - _Exit:_ All tests green, enum values correct, migration runs on SQLite.
-- _Refs:_ FR-020-01, FR-020-02, FR-020-11, FR-020-13, FR-020-15, S-020-13, NFR-020-01, NFR-020-05
+- _Refs:_ FR-020-01, FR-020-02, FR-020-11, FR-020-13, FR-020-15, S-020-13, S-020-17, NFR-020-01, NFR-020-05
 
 ### I1b – Existing Raw-Format File Migration (~30 min)
 
@@ -158,7 +158,7 @@ Record drift findings in this plan's Follow-ups section.
   9. Test with existing HEIC fixtures (`tests/Samples/classic-car.heic`, `sewing-threads.heic`) and mocked RAW conversions.
 - _Commands:_ `make phpstan`, `php artisan test`
 - _Exit:_ RAW upload produces RAW variant + converted ORIGINAL. HEIC preserved as RAW. Conversion failure falls back gracefully. `HeifToJpeg` and `ConvertUnsupportedMedia` removed.
-- _Refs:_ FR-020-03, FR-020-04, FR-020-09, S-020-01, S-020-02, S-020-03, S-020-04, S-020-14, S-020-21, S-020-22, S-020-24, NFR-020-04
+- _Refs:_ FR-020-03, FR-020-04, FR-020-09, S-020-01, S-020-02, S-020-03, S-020-04, S-020-05, S-020-14, S-020-21, S-020-22, S-020-24, NFR-020-04
 
 ### ~~I5 – HEIC/HEIF Refactoring~~ (merged into I4)
 
@@ -201,7 +201,7 @@ Record drift findings in this plan's Follow-ups section.
   5. Run tests.
 - _Commands:_ `make phpstan`, `php artisan test`
 - _Exit:_ RAW download properly gated by config.
-- _Refs:_ FR-020-06, S-020-06, S-020-07, S-020-08, API-020-01
+- _Refs:_ FR-020-06, S-020-06, S-020-07, S-020-08, S-020-16, API-020-01
 
 ### I9 – Diagnostics & Statistics Updates (~30 min)
 
