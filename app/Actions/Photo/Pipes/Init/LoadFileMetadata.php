@@ -30,14 +30,19 @@ class LoadFileMetadata implements InitPipe
 			return $next($state);
 		}
 
-		$state->exif_info = Extractor::createFromFile($state->source_file, $state->file_last_modified_time);
+		// When a RAW source is available (e.g. CR3, NEF, HEIC) prefer it for
+		// metadata extraction because the converted JPEG may lose EXIF data.
+		$metadata_file = $state->raw_source_file ?? $state->source_file;
 
-		// Use basename of file if IPTC title missing
+		$state->exif_info = Extractor::createFromFile($metadata_file, $state->file_last_modified_time);
+
+		// Use basename of the original upload for the title, not the converted file
 		if (
 			$state->exif_info->title === null ||
 			$state->exif_info->title === ''
 		) {
-			$state->exif_info->title = substr($state->source_file->getOriginalBasename(), 0, 98);
+			$title_source = $state->raw_source_file ?? $state->source_file;
+			$state->exif_info->title = substr($title_source->getOriginalBasename(), 0, 98);
 		}
 
 		return $next($state);

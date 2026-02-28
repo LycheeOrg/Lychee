@@ -28,7 +28,6 @@ use Tests\Traits\RequiresImageHandler;
  * Verifies that:
  * - HEIC uploads create both a RAW size variant and a JPEG original.
  * - Standard JPEG/PNG uploads remain unaffected (no RAW variant).
- * - The `has_raw` API flag is set correctly.
  *
  * Requires Imagick to be available.
  */
@@ -50,28 +49,26 @@ class RawUploadImagickTest extends BaseImageHandler
 	}
 
 	/**
-	 * JPEG upload should NOT create a RAW variant and has_raw should be false.
+	 * JPEG upload should NOT create a RAW variant.
 	 */
 	public function testJpegUploadHasNoRaw(): void
 	{
 		$response = $this->uploadImage(TestConstants::SAMPLE_FILE_NIGHT_IMAGE);
 		$photo = $response->json('photos.0');
 
-		self::assertFalse($photo['has_raw']);
 		self::assertNotNull($photo['size_variants']['original']);
 		self::assertStringEndsWith('.jpg', $photo['size_variants']['original']['url']);
 	}
 
 	/**
 	 * HEIC upload should create a RAW variant (preserving HEIC) and convert
-	 * the original to JPEG. The has_raw flag should be true.
+	 * the original to JPEG.
 	 */
 	public function testHeicUploadCreatesRaw(): void
 	{
 		$response = $this->uploadImage(TestConstants::SAMPLE_FILE_HEIC);
 		$photo = $response->json('photos.0');
 
-		self::assertTrue($photo['has_raw']);
 		self::assertNotNull($photo['size_variants']['original']);
 		// The original should be a JPEG after conversion
 		self::assertStringEndsWith('.jpg', $photo['size_variants']['original']['url']);
@@ -93,7 +90,6 @@ class RawUploadImagickTest extends BaseImageHandler
 			$photo = $response->json('photos.0');
 
 			// TIFF is not in CONVERTIBLE_RAW_EXTENSIONS, so no RAW variant
-			self::assertFalse($photo['has_raw']);
 			self::assertNotNull($photo['size_variants']['original']);
 			self::assertStringEndsWith('.tif', $photo['size_variants']['original']['url']);
 			self::assertEquals(TestConstants::MIME_TYPE_IMG_TIFF, $photo['type']);
@@ -111,7 +107,6 @@ class RawUploadImagickTest extends BaseImageHandler
 		$response = $this->uploadImage(TestConstants::SAMPLE_FILE_PNG);
 		$photo = $response->json('photos.0');
 
-		self::assertFalse($photo['has_raw']);
 		self::assertNotNull($photo['size_variants']['original']);
 	}
 }

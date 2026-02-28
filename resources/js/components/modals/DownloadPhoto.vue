@@ -20,11 +20,6 @@
 							<i class="pi pi-cloud-download"></i> {{ sv?.locale }} - {{ sv?.width }}x{{ sv?.height }} ({{ sv?.filesize }})
 						</Button>
 					</template>
-					<template v-if="photoStore.photo.has_raw && is_raw_download_enabled">
-						<Button severity="contrast" class="w-full dark:border-surface-900" @click="downloadVariant('RAW')">
-							<i class="pi pi-cloud-download"></i> {{ $t("gallery.download_raw") }}
-						</Button>
-					</template>
 					<template v-if="photoStore.photo.precomputed.is_livephoto">
 						<Button severity="contrast" class="w-full dark:border-surface-900" @click="downloadVariant('LIVEPHOTOVIDEO')">
 							<i class="pi pi-cloud-download"></i> {{ $t("gallery.live_video") }} - {{ photoStore.photo.preformatted.resolution }}

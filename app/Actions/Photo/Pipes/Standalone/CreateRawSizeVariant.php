@@ -46,12 +46,20 @@ class CreateRawSizeVariant implements StandalonePipe
 		// Restore the original extension for subsequent pipes
 		$state->naming_strategy->setExtension($original_extension);
 
+		$dimensions = new ImageDimension(0, 0);
+
+		// Load the dimension from the previous Original which was created.
+		$original_jpeg = $state->photo->size_variants->getOriginal();
+		if ($original_jpeg !== null) {
+			$dimensions = new ImageDimension($original_jpeg->width, $original_jpeg->height);
+		}
+
 		// Create the RAW size variant DB record
 		// RAW files have no displayable dimensions (use 0x0)
 		$state->photo->size_variants->create(
 			SizeVariantType::RAW,
 			$raw_target->getRelativePath(),
-			new ImageDimension(0, 0),
+			$dimensions,
 			$stream_stat->bytes
 		);
 

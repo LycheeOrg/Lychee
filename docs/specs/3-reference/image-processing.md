@@ -109,10 +109,6 @@ The `CreateRawSizeVariant` Standalone pipe (runs after `CreateOriginalSizeVarian
 - `width = 0`, `height = 0` (dimensions not decoded for RAW files)
 - Native file extension preserved.
 
-### API Flag
-
-`PhotoResource::$has_raw` (bool) is `true` when a RAW `size_variants` row exists for the photo. The frontend uses this together with the `raw_download_enabled` config flag to conditionally show the "Download RAW" button.
-
 ### Download Gating
 
 RAW downloads are controlled by the `raw_download_enabled` configuration key (boolean, default `false`, category *Image Processing*). When disabled, `ZipRequest::authorize()` returns `false` for `DownloadVariantType::RAW` requests.

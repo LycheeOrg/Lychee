@@ -134,7 +134,6 @@ class TestConstants
 			'album_id' => null,
 			'title' => self::PHOTO_NIGHT_TITLE,
 			'type' => 'image/jpeg',
-			'has_raw' => false,
 			'size_variants' => [
 				'original' => ['type' => 1, 'width' => 6720, 'height' => 4480],
 				'medium2x' => ['type' => 2, 'width' => 3240, 'height' => 2160],
@@ -150,7 +149,6 @@ class TestConstants
 			'album_id' => null,
 			'title' => self::PHOTO_MONGOLIA_TITLE,
 			'type' => 'image/jpeg',
-			'has_raw' => false,
 			'size_variants' => [
 				'original' => ['type' => 1, 'width' => 1280, 'height' => 850],
 				'medium2x' => null,
@@ -166,7 +164,6 @@ class TestConstants
 			'album_id' => null,
 			'title' => self::PHOTO_SUNSET_TITLE,
 			'type' => 'image/jpeg',
-			'has_raw' => false,
 			'size_variants' => [
 				'original' => ['type' => 1, 'width' => 914, 'height' => 1625],
 				'medium2x' => null,
@@ -182,7 +179,6 @@ class TestConstants
 			'album_id' => null,
 			'title' => self::PHOTO_TRAIN_TITLE,
 			'type' => 'image/jpeg',
-			'has_raw' => false,
 			'size_variants' => [
 				'original' => ['type' => 1, 'width' => 4032, 'height' => 3024],
 				'medium2x' => ['type' => 2, 'width' => 2880, 'height' => 2160],

@@ -53,7 +53,6 @@ class PhotoResource extends Data
 
 	public ?PhotoStatisticsResource $statistics = null;
 	public ?PhotoRatingResource $rating = null;
-	public bool $has_raw;
 
 	public function __construct(Photo $photo, ?string $album_id, bool $should_downgrade_size_variants)
 	{
@@ -69,7 +68,6 @@ class PhotoResource extends Data
 		$this->live_photo_url = $photo->live_photo_url;
 		$this->original_checksum = $photo->original_checksum;
 		$this->size_variants = new SizeVariantsResouce($photo, $should_downgrade_size_variants);
-		$this->has_raw = $photo->relationLoaded('size_variants') ? $photo->size_variants->getRaw() !== null : false;
 		$this->tags = $photo->tags->pluck('name')->all();
 		$this->taken_at = $photo->taken_at?->toIso8601String();
 		$this->taken_at_orig_tz = $photo->taken_at_orig_tz;

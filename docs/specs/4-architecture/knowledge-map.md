@@ -211,7 +211,7 @@ Preserves original camera RAW / HEIC / PSD files as a dedicated size variant whi
 
 **Removed classes:** `HeifToJpeg`, `ConvertUnsupportedMedia`, `PhotoConverterFactory`, `ConvertableImageType`, `PhotoConverter` interface
 
-**API:** `PhotoResource::$has_raw` (bool) — true when a RAW size_variant row exists. `DownloadVariantType::RAW` maps to the RAW download endpoint gated by `raw_download_enabled` config.
+**API:** `DownloadVariantType::RAW` maps to the RAW download endpoint gated by `raw_download_enabled` config. The frontend checks whether a RAW size variant exists in the `size_variants` response to conditionally show the download button.
 
 **Migrations:** `2026_02_28_000001` (shift type values), `2026_02_28_000002` (add `raw_download_enabled` config), `2026_02_28_000003` (reclassify existing raw-format ORIGINAL rows), `2026_02_28_000004` (add `size_raw` to `album_size_statistics`)
 
