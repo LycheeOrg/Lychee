@@ -16,6 +16,7 @@ return [
         'shared_with_me' => 'Shared with Me',
     ],
     'favourites' => 'Favoritos',
+    'raw' => '',
     'original' => 'Original',
     'medium' => 'Medio',
     'medium_hidpi' => 'Medio HiDPI',

@@ -16,6 +16,7 @@ return [
         'shared_with_me' => 'Shared with Me',
     ],
     'favourites' => 'Favourites',
+    'raw' => '',
     'original' => '原图',
     'medium' => '中等',
     'medium_hidpi' => '中等高清',

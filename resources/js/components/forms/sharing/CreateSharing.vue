@@ -35,7 +35,7 @@ import { type UserOrGroup, type UserOrGroupId } from "@/stores/UsersAndGroupsSta
 
 const props = defineProps<{
 	withAlbum?: boolean;
-	album: App.Http.Resources.Models.AlbumResource | App.Http.Resources.Models.TagAlbumResource;
+	album: App.Http.Resources.Models.HeadAlbumResource | App.Http.Resources.Models.HeadTagAlbumResource;
 	filteredUsersIds?: UserOrGroupId[];
 }>();
 
