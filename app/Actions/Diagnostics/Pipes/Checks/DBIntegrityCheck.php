@@ -10,6 +10,7 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
+use App\Enum\SizeVariantType;
 use App\Models\Photo;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -31,7 +32,7 @@ class DBIntegrityCheck implements DiagnosticPipe
 			return $next($data);
 		}
 
-		$sub_join = DB::table('size_variants')->where('size_variants.type', '=', 0);
+		$sub_join = DB::table('size_variants')->where('size_variants.type', '=', SizeVariantType::ORIGINAL->value)->select('id', 'photo_id');
 		$photos = Photo::query()
 			->with(['albums'])
 			->select(['photos.id', 'title'])
