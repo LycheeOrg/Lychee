@@ -30,6 +30,10 @@ class StandaloneDTO implements PhotoDTO
 	public FlysystemFile|null $backup_file = null;
 	public Collection $tags;
 
+	// If the uploaded file is a RAW format, this holds the original (untouched) source file
+	// that should be preserved as a RAW size variant after conversion to JPEG.
+	public NativeLocalFile|null $raw_source_file = null;
+
 	public function __construct(
 		// The resulting photo
 		public Photo $photo,
@@ -54,7 +58,7 @@ class StandaloneDTO implements PhotoDTO
 
 	public static function ofInit(InitDTO $init_dto): StandaloneDTO
 	{
-		return new StandaloneDTO(
+		$dto = new StandaloneDTO(
 			photo: new Photo(),
 			source_file: $init_dto->source_file,
 			is_highlighted: $init_dto->is_highlighted,
@@ -66,6 +70,9 @@ class StandaloneDTO implements PhotoDTO
 			shall_rename_photo_title: $init_dto->import_mode->shall_rename_photo_title,
 			apply_watermark: $init_dto->apply_watermark,
 		);
+		$dto->raw_source_file = $init_dto->raw_source_file;
+
+		return $dto;
 	}
 
 	public function getPhoto(): Photo

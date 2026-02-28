@@ -26,6 +26,7 @@ return [
     'placeholder' => 'Laagkwaliteitsafbeelding Placeholder',
     'thumbnail' => 'Foto miniatuur',
     'live_video' => 'Videodeel van live-foto',
+    'download_raw' => '',
     'camera_data' => 'Cameradatum',
     'album_reserved' => 'Alle rechten voorbehouden',
     'map' => [

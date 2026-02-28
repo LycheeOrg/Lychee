@@ -26,6 +26,7 @@ return [
     'placeholder' => 'Заместител с ниско качество',
     'thumbnail' => 'Миниатюра на снимка',
     'live_video' => 'Видео част от live-photo',
+    'download_raw' => '',
     'camera_data' => 'Дата от камерата',
     'album_reserved' => 'Всички права запазени',
     'map' => [

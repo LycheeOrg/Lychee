@@ -25,6 +25,7 @@ return [
     'placeholder' => 'Заглушка изображения низкого качества',
     'thumbnail' => 'Миниатюра фото',
     'live_video' => 'Часть видео с живого фото',
+    'download_raw' => '',
     'camera_data' => 'Дата камеры',
     'album_reserved' => 'Все права защищены',
     'map' => [

@@ -40,6 +40,16 @@ abstract class AbstractSizeVariantNamingStrategy
 	}
 
 	/**
+	 * Gets the current extension.
+	 *
+	 * @return string the extension
+	 */
+	public function getExtension(): string
+	{
+		return $this->extension;
+	}
+
+	/**
 	 * Sets the photo for which names of size variants shall be generated.
 	 *
 	 * @param Photo|null $photo the photo whose size variants shall be named

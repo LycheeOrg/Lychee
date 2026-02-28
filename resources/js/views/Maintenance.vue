@@ -20,11 +20,11 @@
 		<MaintenanceOptimize />
 		<MaintenanceDuplicateChecker />
 		<MaintenanceFlushCache />
-		<MaintenanceGenSizevariants :sv="1" />
 		<MaintenanceGenSizevariants :sv="2" />
 		<MaintenanceGenSizevariants :sv="3" />
 		<MaintenanceGenSizevariants :sv="4" />
-		<MaintenanceGenSizevariants :sv="7" />
+		<MaintenanceGenSizevariants :sv="5" />
+		<MaintenanceGenSizevariants :sv="8" />
 		<MaintenanceFixJobs />
 		<MaintenanceFixTree />
 		<MaintenanceFilesize />

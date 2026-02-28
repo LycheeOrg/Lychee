@@ -25,6 +25,7 @@ return [
     'placeholder' => 'عنصر نائب للصورة منخفضة الجودة',
     'thumbnail' => 'مصغر الصورة',
     'live_video' => 'جزء الفيديو من الصورة الحية',
+    'download_raw' => '',
     'camera_data' => 'تاريخ الكاميرا',
     'album_reserved' => 'جميع الحقوق محفوظة',
     'map' => [

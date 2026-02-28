@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * Eliminates expensive runtime aggregations across size_variants table.
  *
  * @property string $album_id      Primary key, foreign key to albums.id
+ * @property int    $size_raw      Total bytes for RAW variants
  * @property int    $size_thumb    Total bytes for THUMB variants
  * @property int    $size_thumb2x  Total bytes for THUMB2X variants
  * @property int    $size_small    Total bytes for SMALL variants
@@ -83,6 +84,7 @@ class AlbumSizeStatistics extends Model
 	 */
 	protected $fillable = [
 		'album_id',
+		'size_raw',
 		'size_thumb',
 		'size_thumb2x',
 		'size_small',
@@ -98,6 +100,7 @@ class AlbumSizeStatistics extends Model
 	 * @var array<string,string>
 	 */
 	protected $casts = [
+		'size_raw' => 'integer',
 		'size_thumb' => 'integer',
 		'size_thumb2x' => 'integer',
 		'size_small' => 'integer',

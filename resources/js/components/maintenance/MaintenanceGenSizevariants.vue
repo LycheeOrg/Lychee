@@ -52,22 +52,24 @@ const description = computed(() => {
 
 function getName(sv: App.Enum.SizeVariantType): string {
 	switch (sv) {
-		case 7:
+		case 8:
 			return "placeholder";
-		case 6:
+		case 7:
 			return "thumb";
-		case 5:
+		case 6:
 			return "thumb2x";
-		case 4:
+		case 5:
 			return "small";
-		case 3:
+		case 4:
 			return "small2x";
-		case 2:
+		case 3:
 			return "medium";
-		case 1:
+		case 2:
 			return "medium2x";
-		case 0:
+		case 1:
 			return "original";
+		case 0:
+			return "raw";
 	}
 }
 

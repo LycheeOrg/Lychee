@@ -138,8 +138,8 @@ class SizeVariantDefaultFactory implements SizeVariantFactory
 	 */
 	public function createSizeVariantCond(SizeVariantType $size_variant): ?SizeVariant
 	{
-		if ($size_variant === SizeVariantType::ORIGINAL) {
-			throw new InvalidSizeVariantException('createSizeVariantCond() must not be used to create original size');
+		if ($size_variant === SizeVariantType::ORIGINAL || $size_variant === SizeVariantType::RAW) {
+			throw new InvalidSizeVariantException('createSizeVariantCond() must not be used to create original or raw size');
 		}
 		if (!$this->sv_dimension_helpers->isEnabledByConfiguration($size_variant)) {
 			return null;

@@ -31,6 +31,7 @@ class SizeVariants
 	/** @var Photo the parent object this object is tied to */
 	private Photo $photo;
 
+	private ?SizeVariant $raw = null;
 	private ?SizeVariant $original = null;
 	private ?SizeVariant $medium2x = null;
 	private ?SizeVariant $medium = null;
@@ -81,6 +82,7 @@ class SizeVariants
 		}
 
 		match ($size_variant->type) {
+			SizeVariantType::RAW => $this->raw = $size_variant,
 			SizeVariantType::ORIGINAL => $this->original = $size_variant,
 			SizeVariantType::MEDIUM2X => $this->medium2x = $size_variant,
 			SizeVariantType::MEDIUM => $this->medium = $size_variant,
@@ -101,6 +103,7 @@ class SizeVariants
 	{
 		/** @phpstan-ignore return.type (BaseCollection is not covariant...) */
 		return collect([
+			$this->raw,
 			$this->original,
 			$this->medium2x,
 			$this->medium,
@@ -124,6 +127,7 @@ class SizeVariants
 	public function getSizeVariant(SizeVariantType $size_variant_type): ?SizeVariant
 	{
 		return match ($size_variant_type) {
+			SizeVariantType::RAW => $this->raw,
 			SizeVariantType::ORIGINAL => $this->original,
 			SizeVariantType::MEDIUM2X => $this->medium2x,
 			SizeVariantType::MEDIUM => $this->medium,
@@ -138,6 +142,11 @@ class SizeVariants
 	public function getOriginal(): ?SizeVariant
 	{
 		return $this->original;
+	}
+
+	public function getRaw(): ?SizeVariant
+	{
+		return $this->raw;
 	}
 
 	/**
@@ -241,6 +250,7 @@ class SizeVariants
 	public function deleteAll(): void
 	{
 		$ids = [
+			$this->raw?->id,
 			$this->original?->id,
 			$this->medium2x?->id,
 			$this->medium?->id,
@@ -251,6 +261,7 @@ class SizeVariants
 			$this->placeholder?->id,
 		];
 
+		$this->raw = null;
 		$this->original = null;
 		$this->medium2x = null;
 		$this->medium = null;

@@ -69,6 +69,7 @@ class InitConfig extends Data
 	public AlbumLayoutType $album_layout;
 
 	// Download configuration
+	public bool $is_raw_download_enabled;
 	public bool $is_thumb_download_enabled;
 	public bool $is_thum2x_download_enabled;
 	public bool $is_small_download_enabled;
@@ -176,6 +177,7 @@ class InitConfig extends Data
 		$this->album_layout = request()->configs()->getValueAsEnum('album_layout', AlbumLayoutType::class);
 
 		// Download configuration
+		$this->is_raw_download_enabled = request()->configs()->getValueAsBool('raw_download_enabled');
 		$this->is_thumb_download_enabled = request()->configs()->getValueAsBool('disable_thumb_download') === false;
 		$this->is_thum2x_download_enabled = request()->configs()->getValueAsBool('disable_thumb2x_download') === false;
 		$this->is_small_download_enabled = request()->configs()->getValueAsBool('disable_small_download') === false;

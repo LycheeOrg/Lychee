@@ -15,14 +15,15 @@ namespace App\Enum;
  */
 enum SizeVariantType: int
 {
-	case ORIGINAL = 0;
-	case MEDIUM2X = 1;
-	case MEDIUM = 2;
-	case SMALL2X = 3;
-	case SMALL = 4;
-	case THUMB2X = 5;
-	case THUMB = 6;
-	case PLACEHOLDER = 7;
+	case RAW = 0;
+	case ORIGINAL = 1;
+	case MEDIUM2X = 2;
+	case MEDIUM = 3;
+	case SMALL2X = 4;
+	case SMALL = 5;
+	case THUMB2X = 6;
+	case THUMB = 7;
+	case PLACEHOLDER = 8;
 
 	/**
 	 * Given a sizeVariantType return the associated name.
@@ -32,6 +33,7 @@ enum SizeVariantType: int
 	public function name(): string
 	{
 		return match ($this) {
+			self::RAW => 'raw',
 			self::PLACEHOLDER => 'placeholder',
 			self::THUMB => 'thumb',
 			self::THUMB2X => 'thumb2x',
@@ -51,6 +53,7 @@ enum SizeVariantType: int
 	public function localization(): string
 	{
 		return match ($this) {
+			self::RAW => __('gallery.raw'),
 			self::PLACEHOLDER => __('gallery.placeholder'),
 			self::THUMB => __('gallery.thumb'),
 			self::THUMB2X => __('gallery.thumb_hidpi'),

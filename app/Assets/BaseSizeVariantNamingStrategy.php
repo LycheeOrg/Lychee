@@ -38,7 +38,7 @@ abstract class BaseSizeVariantNamingStrategy extends AbstractSizeVariantNamingSt
 	{
 		if ($size_variant === SizeVariantType::THUMB ||
 			$size_variant === SizeVariantType::THUMB2X ||
-			($size_variant !== SizeVariantType::ORIGINAL && !$this->photo->isPhoto())
+			($size_variant !== SizeVariantType::ORIGINAL && $size_variant !== SizeVariantType::RAW && !$this->photo->isPhoto())
 		) {
 			return self::THUMB_EXTENSION;
 		}

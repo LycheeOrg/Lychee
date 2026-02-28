@@ -80,7 +80,7 @@ class Create
 		);
 
 		$pre_pipes = [
-			Init\ConvertUnsupportedMedia::class,
+			Init\DetectAndStoreRaw::class,
 			Init\AssertSupportedMedia::class,
 			Init\FetchLastModifiedTime::class,
 			Init\MayLoadFileMetadata::class,
@@ -183,6 +183,7 @@ class Create
 			Shared\SetParent::class,
 			Shared\SaveStatistics::class,
 			Standalone\CreateOriginalSizeVariant::class,
+			Standalone\CreateRawSizeVariant::class,
 			Standalone\CreateSizeVariants::class,
 			Standalone\ApplyWatermark::class,
 			Standalone\EncodePlaceholder::class,
@@ -276,6 +277,7 @@ class Create
 			Shared\Save::class,
 			Shared\SetParent::class,
 			Standalone\CreateOriginalSizeVariant::class,
+			Standalone\CreateRawSizeVariant::class,
 			Standalone\CreateSizeVariants::class,
 			Standalone\ApplyWatermark::class,
 			Standalone\EncodePlaceholder::class,

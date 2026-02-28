@@ -47,6 +47,10 @@ class InitDTO
 	// Optional last modified data if known.
 	public int|null $file_last_modified_time = null;
 
+	// If the uploaded file is a RAW format, this holds the original (untouched) source file
+	// that should be preserved as a RAW size variant after conversion to JPEG.
+	public NativeLocalFile|null $raw_source_file = null;
+
 	public function __construct(
 		ImportParam $parameters,
 		NativeLocalFile $source_file,

@@ -2,29 +2,32 @@
 export function sizeVariantToColour(sv: App.Enum.SizeVariantType): string {
 	const documentStyle = getComputedStyle(document.body);
 	switch (sv) {
-		// original
+		// raw
 		case 0:
+			return documentStyle.getPropertyValue("--p-sky-800");
+		// original
+		case 1:
 			return documentStyle.getPropertyValue("--p-sky-700");
 		// medium2x
-		case 1:
+		case 2:
 			return documentStyle.getPropertyValue("--p-sky-600");
 		// medium
-		case 2:
+		case 3:
 			return documentStyle.getPropertyValue("--p-sky-500");
 		// small2x
-		case 3:
+		case 4:
 			return documentStyle.getPropertyValue("--p-sky-400");
 		// small
-		case 4:
+		case 5:
 			return documentStyle.getPropertyValue("--p-sky-300");
 		// thumb2x
-		case 5:
+		case 6:
 			return documentStyle.getPropertyValue("--p-sky-200");
 		// thumb
-		case 6:
+		case 7:
 			return documentStyle.getPropertyValue("--p-sky-100");
 		// placeholder
-		case 7:
+		case 8:
 			return documentStyle.getPropertyValue("--p-sky-50");
 	}
 }

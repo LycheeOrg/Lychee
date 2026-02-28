@@ -26,6 +26,7 @@ return [
     'placeholder' => '低质量图片占位符',
     'thumbnail' => '照片缩略图',
     'live_video' => '实况照片视频部分',
+    'download_raw' => '',
     'camera_data' => '相机日期',
     'album_reserved' => '所有权利保留',
     'map' => [

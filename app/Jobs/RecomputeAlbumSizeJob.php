@@ -27,7 +27,7 @@ use Illuminate\Support\Facades\Log;
  *
  * Queries size_variants for all photos in the album (direct children only),
  * groups by variant type, sums filesize, and stores in album_size_statistics table.
- * Excludes PLACEHOLDER variants (type 7) from all calculations.
+ * Excludes PLACEHOLDER variants from all calculations.
  */
 class RecomputeAlbumSizeJob implements ShouldQueue
 {
@@ -139,12 +139,13 @@ class RecomputeAlbumSizeJob implements ShouldQueue
 	 *
 	 * @param Album $album
 	 *
-	 * @return array<string,int> Array with keys: size_thumb, size_thumb2x, size_small, size_small2x, size_medium, size_medium2x, size_original
+	 * @return array<string,int> Array with keys: size_raw, size_thumb, size_thumb2x, size_small, size_small2x, size_medium, size_medium2x, size_original
 	 */
 	private function computeSizes(Album $album): array
 	{
 		// Initialize all sizes to 0
 		$sizes = [
+			'size_raw' => 0,
 			'size_thumb' => 0,
 			'size_thumb2x' => 0,
 			'size_small' => 0,
@@ -156,7 +157,7 @@ class RecomputeAlbumSizeJob implements ShouldQueue
 
 		// Query size_variants for photos in this album
 		// JOIN: size_variants -> photos -> photo_album
-		// Filter by album_id, exclude PLACEHOLDER (type 7)
+		// Filter by album_id, exclude PLACEHOLDER
 		// Group by type, SUM filesize
 		$results = DB::table('size_variants')
 			->join('photos', 'size_variants.photo_id', '=', 'photos.id')

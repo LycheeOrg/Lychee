@@ -26,6 +26,7 @@ return [
     'placeholder' => 'Obraz zastępczy o niskiej jakości',
     'thumbnail' => 'Miniatura zdjęcia',
     'live_video' => 'Część wideo zdjęcia na żywo',
+    'download_raw' => '',
     'camera_data' => 'Dane kamery',
     'album_reserved' => 'Wszelkie prawa zastrzeżone',
     'map' => [

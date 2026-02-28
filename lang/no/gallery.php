@@ -26,6 +26,7 @@ return [
     'placeholder' => 'Low Quality Image Placeholder',
     'thumbnail' => 'Photo thumbnail',
     'live_video' => 'Video part of live-photo',
+    'download_raw' => '',
     'camera_data' => 'Camera date',
     'album_reserved' => 'All Rights Reserved',
     'map' => [

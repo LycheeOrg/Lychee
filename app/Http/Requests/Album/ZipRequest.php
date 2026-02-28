@@ -45,6 +45,12 @@ class ZipRequest extends BaseApiRequest implements HasAlbums, HasPhotos, HasSize
 	 */
 	public function authorize(): bool
 	{
+		// Gate RAW downloads behind the raw_download_enabled config option
+		if ($this->size_variant === DownloadVariantType::RAW &&
+			!request()->configs()->getValueAsBool('raw_download_enabled')) {
+			return false;
+		}
+
 		/** @var AbstractAlbum $album */
 		foreach ($this->albums as $album) {
 			if (!Gate::check(AlbumPolicy::CAN_DOWNLOAD, $album)) {

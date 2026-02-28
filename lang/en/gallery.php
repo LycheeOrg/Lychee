@@ -16,6 +16,7 @@ return [
         'shared_with_me' => 'Shared with Me',
     ],
     'favourites' => 'Favourites',
+    'raw' => 'RAW',
     'original' => 'Original',
     'medium' => 'Medium',
     'medium_hidpi' => 'Medium HiDPI',
@@ -26,6 +27,7 @@ return [
     'placeholder' => 'Low Quality Image Placeholder',
     'thumbnail' => 'Photo thumbnail',
     'live_video' => 'Video part of live-photo',
+    'download_raw' => 'Download RAW',
     'camera_data' => 'Camera date',
     'album_reserved' => 'All Rights Reserved',
     'map' => [

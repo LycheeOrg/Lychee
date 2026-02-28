@@ -327,11 +327,11 @@ abstract class BaseArchive
 			$base_filename_addon = '';
 			if ($sv !== null) {
 				$source_file = $sv->getFile();
-				// The filename of the original size variant shall get no
+				// The filename of the original and raw size variants shall get no
 				// particular suffix but remain as is.
 				// All other size variants (i.e. the generated, smaller ones)
 				// get size information as suffix.
-				if ($sv->type !== SizeVariantType::ORIGINAL) {
+				if ($sv->type !== SizeVariantType::ORIGINAL && $sv->type !== SizeVariantType::RAW) {
 					$base_filename_addon = '-' . $sv->width . 'x' . $sv->height;
 				}
 			} else {

@@ -25,6 +25,7 @@ return [
     'placeholder' => 'تصویر با کیفیت پایین',
     'thumbnail' => 'تصویر کوچک',
     'live_video' => 'بخش ویدئویی لایو-فوتو',
+    'download_raw' => '',
     'camera_data' => 'تاریخ دوربین',
     'album_reserved' => 'کلیه حقوق محفوظ است',
     'map' => [

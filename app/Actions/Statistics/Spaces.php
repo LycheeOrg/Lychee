@@ -52,7 +52,8 @@ final class Spaces
 					COALESCE(album_size_statistics.size_small2x, 0) +
 					COALESCE(album_size_statistics.size_medium, 0) +
 					COALESCE(album_size_statistics.size_medium2x, 0) +
-					COALESCE(album_size_statistics.size_original, 0)) as size')
+					COALESCE(album_size_statistics.size_original, 0) +
+					COALESCE(album_size_statistics.size_raw, 0)) as size')
 			)
 			->groupBy('users.id', 'username')
 			->orderBy('users.id', 'asc')
@@ -81,6 +82,7 @@ final class Spaces
 			->when($owner_id !== null, fn ($query) => $query->where('base_albums.owner_id', '=', $owner_id))
 			->join('album_size_statistics', 'album_size_statistics.album_id', '=', 'base_albums.id')
 			->select(
+				DB::raw('SUM(COALESCE(album_size_statistics.size_raw, 0)) as size_raw'),
 				DB::raw('SUM(COALESCE(album_size_statistics.size_original, 0)) as size_original'),
 				DB::raw('SUM(COALESCE(album_size_statistics.size_medium2x, 0)) as size_medium2x'),
 				DB::raw('SUM(COALESCE(album_size_statistics.size_medium, 0)) as size_medium'),
@@ -107,7 +109,7 @@ final class Spaces
 		//             `photo_album`.`album_id` IS NULL
 		//     ) as `size_variants_select`
 		// WHERE
-		//     `size_variants_select`.`type` != 7
+		//     `size_variants_select`.`type` != 8  -- PLACEHOLDER
 		// GROUP BY
 		//     `size_variants_select`.`type`;
 		// With 3285540 size_variants, this takes ~33s on a DB on a SSD
@@ -152,6 +154,7 @@ final class Spaces
 
 		// Combine results by SizeVariantType
 		$combined = [
+			SizeVariantType::RAW->value => intval($album_stats->size_raw ?? 0),
 			SizeVariantType::ORIGINAL->value => intval($album_stats->size_original ?? 0),
 			SizeVariantType::MEDIUM2X->value => intval($album_stats->size_medium2x ?? 0),
 			SizeVariantType::MEDIUM->value => intval($album_stats->size_medium ?? 0),
@@ -199,6 +202,7 @@ final class Spaces
 			)
 			->leftJoin('album_size_statistics', 'album_size_statistics.album_id', '=', 'descendants.id')
 			->select(
+				DB::raw('SUM(COALESCE(album_size_statistics.size_raw, 0)) as size_raw'),
 				DB::raw('SUM(COALESCE(album_size_statistics.size_original, 0)) as size_original'),
 				DB::raw('SUM(COALESCE(album_size_statistics.size_medium2x, 0)) as size_medium2x'),
 				DB::raw('SUM(COALESCE(album_size_statistics.size_medium, 0)) as size_medium'),
@@ -212,6 +216,9 @@ final class Spaces
 
 		// Map aggregated sizes to SizeVariantType enum
 		$variants = [];
+		if (intval($result->size_raw) > 0) {
+			$variants[] = ['type' => SizeVariantType::RAW, 'size' => intval($result->size_raw)];
+		}
 		if (intval($result->size_original) > 0) {
 			$variants[] = ['type' => SizeVariantType::ORIGINAL, 'size' => intval($result->size_original)];
 		}
@@ -276,7 +283,8 @@ final class Spaces
 				'albums.id',
 				'albums._lft',
 				'albums._rgt',
-				DB::raw('(COALESCE(album_size_statistics.size_thumb, 0) +
+				DB::raw('(COALESCE(album_size_statistics.size_raw, 0) +
+					COALESCE(album_size_statistics.size_thumb, 0) +
 					COALESCE(album_size_statistics.size_thumb2x, 0) +
 					COALESCE(album_size_statistics.size_small, 0) +
 					COALESCE(album_size_statistics.size_small2x, 0) +
@@ -332,7 +340,8 @@ final class Spaces
 				'albums.id',
 				'albums._lft',
 				'albums._rgt',
-				DB::raw('SUM(COALESCE(album_size_statistics.size_thumb, 0) +
+				DB::raw('SUM(COALESCE(album_size_statistics.size_raw, 0) +
+					COALESCE(album_size_statistics.size_thumb, 0) +
 					COALESCE(album_size_statistics.size_thumb2x, 0) +
 					COALESCE(album_size_statistics.size_small, 0) +
 					COALESCE(album_size_statistics.size_small2x, 0) +

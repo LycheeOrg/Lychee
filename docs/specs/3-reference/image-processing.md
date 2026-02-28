@@ -14,13 +14,17 @@ Photos are stored in multiple sizes to optimize performance and bandwidth:
 
 ### Variant Types
 
-- **Original**: Full-resolution uploaded image (unmodified)
-- **Medium2x**: High-DPI web-optimized version (2x resolution)
-- **Medium**: Standard web-optimized version
-- **Small2x**: High-DPI thumbnail version (2x resolution)
-- **Small**: Standard thumbnail version
-- **Thumb2x**: High-DPI small thumbnail for galleries (2x resolution)
-- **Thumb**: Standard small thumbnail for galleries
+| Value | Name | Description |
+|-------|------|-------------|
+| 0 | **RAW** | Original camera RAW / HEIC / PSD file (preserved unmodified) |
+| 1 | **Original** | Full-resolution uploaded image (JPEG after conversion, or native for non-RAW uploads) |
+| 2 | **Medium2x** | High-DPI web-optimised version (2× resolution) |
+| 3 | **Medium** | Standard web-optimised version |
+| 4 | **Small2x** | High-DPI thumbnail version (2× resolution) |
+| 5 | **Small** | Standard thumbnail version |
+| 6 | **Thumb2x** | High-DPI small thumbnail for galleries (2× resolution) |
+| 7 | **Thumb** | Standard small thumbnail for galleries |
+| 8 | **Placeholder** | Low-quality image placeholder (LQIP) |
 
 ### Variant Configuration
 
@@ -84,6 +88,46 @@ The photo creation process uses a pipeline with multiple stages:
 6. **Finalization Stage**: Create database records
 
 For detailed information about the photo processing pipeline, see [app/Actions/Photo/README.md](../../../app/Actions/Photo/README.md).
+
+## RAW Upload Pipeline (Feature 020)
+
+Camera RAW files (NEF, CR2, CR3, ARW, DNG, ORF, RW2, RAF, PEF, SRW, NRW, PSD, HEIC, HEIF) are handled by a **dual-variant** pipeline that preserves the unmodified source file alongside a displayable JPEG original.
+
+### Detection & Conversion
+
+The `DetectAndStoreRaw` Init pipe (replacing the former `ConvertUnsupportedMedia`) performs:
+
+1. Extension check against `CONVERTIBLE_RAW_EXTENSIONS` constant.
+2. On match: original file is stashed in `InitDTO::$raw_source_file`; `RawToJpeg` converts it to JPEG via Imagick (quality 92) and the JPEG replaces the `source_file` in the DTO.
+3. On Imagick failure: graceful fallback — file is kept as-is, no RAW variant is stored, a warning is logged.
+4. **PDF exception**: `.pdf` files are **not** treated as convertible RAW formats; they remain as ORIGINAL.
+
+### RAW Size Variant Storage
+
+The `CreateRawSizeVariant` Standalone pipe (runs after `CreateOriginalSizeVariant`) copies the raw source file to permanent storage and creates a `size_variants` DB row with:
+- `type = 0` (RAW)
+- `width = 0`, `height = 0` (dimensions not decoded for RAW files)
+- Native file extension preserved.
+
+### API Flag
+
+`PhotoResource::$has_raw` (bool) is `true` when a RAW `size_variants` row exists for the photo. The frontend uses this together with the `raw_download_enabled` config flag to conditionally show the "Download RAW" button.
+
+### Download Gating
+
+RAW downloads are controlled by the `raw_download_enabled` configuration key (boolean, default `false`, category *Image Processing*). When disabled, `ZipRequest::authorize()` returns `false` for `DownloadVariantType::RAW` requests.
+
+### Removed Classes
+
+The following classes were removed as part of this refactoring:
+
+| Removed | Replacement |
+|---------|-------------|
+| `HeifToJpeg` | `RawToJpeg` (handles all convertible formats) |
+| `ConvertUnsupportedMedia` | `DetectAndStoreRaw` |
+| `PhotoConverterFactory` | Direct `RawToJpeg` instantiation |
+| `ConvertableImageType` enum | `DetectAndStoreRaw::CONVERTIBLE_RAW_EXTENSIONS` constant |
+| `PhotoConverter` interface | Removed (no multiple converters needed) |
 
 ## Metadata Extraction
 
@@ -208,4 +252,4 @@ class Palette extends Model
 
 ---
 
-*Last updated: December 22, 2025*
+*Last updated: February 28, 2026*

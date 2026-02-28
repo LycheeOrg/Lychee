@@ -27,13 +27,13 @@ class GenSizeVariantsTest extends BaseApiWithDataTest
 		$response = $this->getJsonWithData('Maintenance::genSizeVariants', []);
 		$this->assertUnprocessable($response);
 
-		$response = $this->getJsonWithData('Maintenance::genSizeVariants', ['variant' => 4]);
+		$response = $this->getJsonWithData('Maintenance::genSizeVariants', ['variant' => 5]);
 		$this->assertUnauthorized($response);
 
 		$response = $this->postJson('Maintenance::genSizeVariants');
 		$this->assertUnprocessable($response);
 
-		$response = $this->postJson('Maintenance::genSizeVariants', ['variant' => 4]);
+		$response = $this->postJson('Maintenance::genSizeVariants', ['variant' => 5]);
 		$this->assertUnauthorized($response);
 	}
 
@@ -42,13 +42,13 @@ class GenSizeVariantsTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->userLocked)->getJsonWithData('Maintenance::genSizeVariants');
 		$this->assertUnprocessable($response);
 
-		$response = $this->actingAs($this->userLocked)->getJsonWithData('Maintenance::genSizeVariants', ['variant' => 4]);
+		$response = $this->actingAs($this->userLocked)->getJsonWithData('Maintenance::genSizeVariants', ['variant' => 5]);
 		$this->assertForbidden($response);
 
 		$response = $this->actingAs($this->userLocked)->postJson('Maintenance::genSizeVariants');
 		$this->assertUnprocessable($response);
 
-		$response = $this->actingAs($this->userLocked)->postJson('Maintenance::genSizeVariants', ['variant' => 4]);
+		$response = $this->actingAs($this->userLocked)->postJson('Maintenance::genSizeVariants', ['variant' => 5]);
 		$this->assertForbidden($response);
 	}
 
@@ -57,17 +57,17 @@ class GenSizeVariantsTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->admin)->getJsonWithData('Maintenance::genSizeVariants');
 		$this->assertUnprocessable($response);
 
-		$response = $this->actingAs($this->admin)->getJsonWithData('Maintenance::genSizeVariants', ['variant' => 4]);
+		$response = $this->actingAs($this->admin)->getJsonWithData('Maintenance::genSizeVariants', ['variant' => 5]);
 		$this->assertOk($response);
 
-		$response = $this->actingAs($this->admin)->getJsonWithData('Maintenance::genSizeVariants', ['variant' => 1]);
+		$response = $this->actingAs($this->admin)->getJsonWithData('Maintenance::genSizeVariants', ['variant' => 2]);
 		$this->assertOk($response);
 		self::assertEquals(0, $response->json());
 
 		$response = $this->actingAs($this->admin)->postJson('Maintenance::genSizeVariants');
 		$this->assertUnprocessable($response);
 
-		$response = $this->actingAs($this->admin)->postJson('Maintenance::genSizeVariants', ['variant' => 4]);
+		$response = $this->actingAs($this->admin)->postJson('Maintenance::genSizeVariants', ['variant' => 5]);
 		$this->assertNoContent($response);
 	}
 }

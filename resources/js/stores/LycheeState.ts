@@ -51,6 +51,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		is_photo_thumb_tags_enabled: false,
 
 		// Download settings
+		is_raw_download_enabled: false,
 		is_thumb_download_enabled: false,
 		is_thum2x_download_enabled: false,
 		is_small_download_enabled: false,
@@ -179,6 +180,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.is_photo_thumb_tags_enabled = data.is_photo_thumb_tags_enabled;
 					this.album_view_mode = data.album_layout;
 
+					this.is_raw_download_enabled = data.is_raw_download_enabled;
 					this.is_thumb_download_enabled = data.is_thumb_download_enabled;
 					this.is_thum2x_download_enabled = data.is_thum2x_download_enabled;
 					this.is_small_download_enabled = data.is_small_download_enabled;

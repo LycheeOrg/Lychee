@@ -25,6 +25,7 @@ return [
     'placeholder' => 'Platzhalter für Bilder niedriger Qualität',
     'thumbnail' => 'Foto-Miniaturansicht',
     'live_video' => 'Videoteil des Live-Fotos',
+    'download_raw' => '',
     'camera_data' => 'Datum Kamera',
     'album_reserved' => 'Alle Rechte vorbehalten',
     'map' => [

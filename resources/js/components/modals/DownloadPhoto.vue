@@ -20,8 +20,13 @@
 							<i class="pi pi-cloud-download"></i> {{ sv?.locale }} - {{ sv?.width }}x{{ sv?.height }} ({{ sv?.filesize }})
 						</Button>
 					</template>
+					<template v-if="photoStore.photo.has_raw && is_raw_download_enabled">
+						<Button severity="contrast" class="w-full dark:border-surface-900" @click="downloadVariant('RAW')">
+							<i class="pi pi-cloud-download"></i> {{ $t("gallery.download_raw") }}
+						</Button>
+					</template>
 					<template v-if="photoStore.photo.precomputed.is_livephoto">
-						<Button severity="contrast" class="w-full dark:border-surface-900" @click="download(7)">
+						<Button severity="contrast" class="w-full dark:border-surface-900" @click="downloadVariant('LIVEPHOTOVIDEO')">
 							<i class="pi pi-cloud-download"></i> {{ $t("gallery.live_video") }} - {{ photoStore.photo.preformatted.resolution }}
 						</Button>
 					</template>
@@ -50,6 +55,7 @@ const { getParentId } = usePhotoRoute(router);
 
 const lycheeState = useLycheeStateStore();
 const {
+	is_raw_download_enabled,
 	is_thumb_download_enabled,
 	is_thum2x_download_enabled,
 	is_small_download_enabled,
@@ -69,13 +75,14 @@ function closeCallback() {
 // prettier-ignore
 function svtoVariant(sv: number): App.Enum.DownloadVariantType {
 	switch (sv) {
-		case 0: return "ORIGINAL";
-		case 1: return "MEDIUM2X";
-		case 2: return "MEDIUM";
-		case 3: return "SMALL2X";
-		case 4: return "SMALL";
-		case 5: return "THUMB2X";
-		case 6: return "THUMB";
+		case 0: return "RAW";
+		case 1: return "ORIGINAL";
+		case 2: return "MEDIUM2X";
+		case 3: return "MEDIUM";
+		case 4: return "SMALL2X";
+		case 5: return "SMALL";
+		case 6: return "THUMB2X";
+		case 7: return "THUMB";
 		default: return "LIVEPHOTOVIDEO";
 	}
 }
@@ -83,14 +90,15 @@ function svtoVariant(sv: number): App.Enum.DownloadVariantType {
 // prettier-ignore
 function isDownloadable(sv: number): boolean {
 	switch (sv) {
-		case 0: return true;
-		case 1: return is_medium2x_download_enabled.value;
-		case 2: return is_medium_download_enabled.value;
-		case 3: return is_small2x_download_enabled.value;
-		case 4: return is_small_download_enabled.value;
-		case 5: return is_thum2x_download_enabled.value;
-		case 6: return is_thumb_download_enabled.value;
-		case 7: return false; // Placeholder = string => not downloadable.
+		case 0: return is_raw_download_enabled.value;
+		case 1: return true;
+		case 2: return is_medium2x_download_enabled.value;
+		case 3: return is_medium_download_enabled.value;
+		case 4: return is_small2x_download_enabled.value;
+		case 5: return is_small_download_enabled.value;
+		case 6: return is_thum2x_download_enabled.value;
+		case 7: return is_thumb_download_enabled.value;
+		case 8: return false; // Placeholder = string => not downloadable.
 		default: return true;
 	}
 }
@@ -100,5 +108,12 @@ function download(sv: number) {
 		return;
 	}
 	PhotoService.download([photoStore.photo.id], getParentId(), svtoVariant(sv));
+}
+
+function downloadVariant(variant: App.Enum.DownloadVariantType) {
+	if (photoStore.photo === undefined) {
+		return;
+	}
+	PhotoService.download([photoStore.photo.id], getParentId(), variant);
 }
 </script>

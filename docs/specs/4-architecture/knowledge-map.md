@@ -192,6 +192,29 @@ Replaces on-the-fly virtual column computation with physical database fields upd
 
 **Benefits**: 50%+ query time reduction for album listings, removes expensive nested set JOINs from read path
 
+### RAW Upload Pipeline (Feature 020)
+Preserves original camera RAW / HEIC / PSD files as a dedicated size variant while converting to a displayable JPEG for the gallery.
+
+**Size Variant numbering:** `RAW=0, ORIGINAL=1, MEDIUM2X=2, MEDIUM=3, SMALL2X=4, SMALL=5, THUMB2X=6, THUMB=7, PLACEHOLDER=8`
+
+**Upload flow (Init pipes):**
+1. `DetectAndStoreRaw` — if extension is in `CONVERTIBLE_RAW_EXTENSIONS` (`.nef`, `.cr2`, `.cr3`, `.arw`, `.dng`, `.orf`, `.rw2`, `.raf`, `.pef`, `.srw`, `.nrw`, `.psd`, `.heic`, `.heif`): stores original in `InitDTO::$raw_source_file`, converts to JPEG via `RawToJpeg`. On failure: graceful fallback (keeps original file as-is, no RAW variant). PDF files are explicitly excluded.
+2. `AssertSupportedMedia` → `FetchLastModifiedTime` → `MayLoadFileMetadata` → `FindDuplicate` (unchanged)
+
+**Upload flow (Standalone pipes, added after `CreateOriginalSizeVariant`):**
+- `CreateRawSizeVariant` — if `$raw_source_file` is set in DTO: copies raw file to storage, creates DB row with `type=RAW(0)` and `0×0` dimensions.
+
+**Key classes:**
+- `app/Actions/Photo/Convert/RawToJpeg.php` — Imagick converter, quality 92, does NOT delete source
+- `app/Actions/Photo/Pipes/Init/DetectAndStoreRaw.php` — replaces deleted `ConvertUnsupportedMedia`
+- `app/Actions/Photo/Pipes/Standalone/CreateRawSizeVariant.php`
+
+**Removed classes:** `HeifToJpeg`, `ConvertUnsupportedMedia`, `PhotoConverterFactory`, `ConvertableImageType`, `PhotoConverter` interface
+
+**API:** `PhotoResource::$has_raw` (bool) — true when a RAW size_variant row exists. `DownloadVariantType::RAW` maps to the RAW download endpoint gated by `raw_download_enabled` config.
+
+**Migrations:** `2026_02_28_000001` (shift type values), `2026_02_28_000002` (add `raw_download_enabled` config), `2026_02_28_000003` (reclassify existing raw-format ORIGINAL rows), `2026_02_28_000004` (add `size_raw` to `album_size_statistics`)
+
 ### Naming Conventions
 - PHP: snake_case for variables, PSR-4 for classes
 - Vue3: Composition API with TypeScript

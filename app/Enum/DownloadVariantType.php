@@ -16,6 +16,7 @@ namespace App\Enum;
  */
 enum DownloadVariantType: string
 {
+	case RAW = 'RAW';
 	case LIVEPHOTOVIDEO = 'LIVEPHOTOVIDEO';
 	case ORIGINAL = 'ORIGINAL';
 	case MEDIUM2X = 'MEDIUM2X';
@@ -33,6 +34,7 @@ enum DownloadVariantType: string
 	public function getSizeVariantType(): SizeVariantType|null
 	{
 		return match ($this) {
+			self::RAW => SizeVariantType::RAW,
 			self::THUMB => SizeVariantType::THUMB,
 			self::THUMB2X => SizeVariantType::THUMB2X,
 			self::SMALL => SizeVariantType::SMALL,

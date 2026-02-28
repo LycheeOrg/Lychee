@@ -73,7 +73,7 @@ class SizeVariantDimensionHelpers
 			SizeVariantType::THUMB2X => $this->config_manager->getValueAsBool('thumb_2x'),
 			SizeVariantType::PLACEHOLDER => $this->config_manager->getValueAsBool('low_quality_image_placeholder'),
 			SizeVariantType::SMALL, SizeVariantType::MEDIUM, SizeVariantType::THUMB => true,
-			default => throw new InvalidSizeVariantException('unknown size variant: ' . $size_variant->value),
+			SizeVariantType::RAW, SizeVariantType::ORIGINAL => false,
 		};
 	}
 
@@ -109,7 +109,7 @@ class SizeVariantDimensionHelpers
 			SizeVariantType::THUMB2X => SizeVariantDefaultFactory::THUMBNAIL2X_DIM,
 			SizeVariantType::THUMB => SizeVariantDefaultFactory::THUMBNAIL_DIM,
 			SizeVariantType::PLACEHOLDER => SizeVariantDefaultFactory::PLACEHOLDER_DIM,
-			default => throw new InvalidSizeVariantException('No applicable for original'),
+			SizeVariantType::RAW, SizeVariantType::ORIGINAL => throw new InvalidSizeVariantException('No applicable for original/raw'),
 		};
 	}
 
@@ -126,7 +126,7 @@ class SizeVariantDimensionHelpers
 			SizeVariantType::THUMB2X => SizeVariantDefaultFactory::THUMBNAIL2X_DIM,
 			SizeVariantType::THUMB => SizeVariantDefaultFactory::THUMBNAIL_DIM,
 			SizeVariantType::PLACEHOLDER => SizeVariantDefaultFactory::PLACEHOLDER_DIM,
-			default => throw new InvalidSizeVariantException('unknown size variant: ' . $size_variant->value),
+			SizeVariantType::RAW, SizeVariantType::ORIGINAL => throw new InvalidSizeVariantException('No applicable for original/raw'),
 		};
 	}
 }

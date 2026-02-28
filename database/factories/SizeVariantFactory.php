@@ -89,6 +89,7 @@ class SizeVariantFactory extends Factory
 
 		// Set appropriate dimensions based on type
 		$dimensions = match ($type) {
+			SizeVariantType::RAW => ['width' => self::W * 8, 'height' => self::H * 8, 'filesize' => 128 * self::FS],
 			SizeVariantType::ORIGINAL => ['width' => self::W * 8, 'height' => self::H * 8, 'filesize' => 64 * self::FS],
 			SizeVariantType::MEDIUM2X => ['width' => self::W * 6, 'height' => self::H * 6, 'filesize' => 36 * self::FS],
 			SizeVariantType::MEDIUM => ['width' => self::W * 3, 'height' => self::H * 3, 'filesize' => 9 * self::FS],

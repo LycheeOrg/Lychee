@@ -123,9 +123,13 @@ class Watermarker
 	 */
 	public function get_path(SizeVariant $size_variant): string
 	{
-		// Guard against placeholders which cannot be watermarked
+		// Guard against placeholders and RAW files which cannot be watermarked
 		if ($size_variant->type === SizeVariantType::PLACEHOLDER) {
 			throw new LycheeLogicException('Cannot get watermark path for placeholder.');
+		}
+
+		if ($size_variant->type === SizeVariantType::RAW) {
+			throw new LycheeLogicException('Cannot get watermark path for raw file.');
 		}
 
 		// Early return conditions where we should use the original path
@@ -193,6 +197,7 @@ class Watermarker
 
 		$config_manager = resolve(ConfigManager::class);
 		if ($size_variant->type === SizeVariantType::PLACEHOLDER ||
+			$size_variant->type === SizeVariantType::RAW ||
 			($size_variant->type === SizeVariantType::ORIGINAL && !$config_manager->getValueAsBool('watermark_original'))) {
 			return;
 		}
