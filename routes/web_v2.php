@@ -85,6 +85,8 @@ Route::get('/fixTree', VueController::class)->middleware(['migration:complete', 
 Route::get('/duplicatesFinder', VueController::class)->middleware(['migration:complete', 'login_required:always']);
 Route::get('/renamerRules', VueController::class)->middleware(['migration:complete', 'login_required:always']);
 Route::get('/purchasables', VueController::class)->middleware(['migration:complete', 'login_required:always']);
+Route::get('/contact', VueController::class)->middleware(['migration:complete']);
+Route::get('/contact-messages', VueController::class)->middleware(['migration:complete', 'login_required:always']);
 Route::get('/orders', VueController::class)->middleware(['migration:complete', 'login_required:always']);
 Route::get('/order/{orderId}/{transactionId?}', VueController::class)->middleware(['migration:complete']);
 Route::get('/basket', VueController::class)->middleware(['migration:complete']);
