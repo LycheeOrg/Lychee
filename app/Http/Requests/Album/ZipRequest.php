@@ -76,7 +76,7 @@ class ZipRequest extends BaseApiRequest implements HasAlbums, HasPhotos, HasSize
 		return [
 			RequestAttribute::ALBUM_IDS_ATTRIBUTE => ['sometimes', new AlbumIDListRule()],
 			RequestAttribute::PHOTO_IDS_ATTRIBUTE => ['sometimes', new RandomIDListRule()],
-			RequestAttribute::SIZE_VARIANT_ATTRIBUTE => ['required_if_accepted:photos_ids', new Enum(DownloadVariantType::class)],
+			RequestAttribute::SIZE_VARIANT_ATTRIBUTE => ['sometimes', new Enum(DownloadVariantType::class)],
 			RequestAttribute::FROM_ID_ATTRIBUTE => ['required_if_accepted:photos_ids', new AlbumIDRule(true)],
 		];
 	}

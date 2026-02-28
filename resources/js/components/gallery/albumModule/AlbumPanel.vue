@@ -35,6 +35,7 @@
 					@toggle-slide-show="emits('toggleSlideShow')"
 					@toggle-apply-renamer="toggleApplyRenamer"
 					@toggle-watermark-confirm="toggleWatermarkConfirm"
+					@toggle-download-album="toggleDownloadAlbumFromHero"
 				/>
 				<template v-if="is_se_enabled && userStore.isLoggedIn">
 					<AlbumStatistics
@@ -109,6 +110,7 @@
 				@applied="emits('refresh')"
 			/>
 			<WatermarkConfirmDialog v-model:visible="is_watermark_confirm_visible" :album-id="albumStore.album.id" @watermarked="emits('refresh')" />
+			<DownloadAlbum v-model:visible="is_download_album_visible" :album-ids="downloadAlbumIds" />
 
 			<!-- Dialogs -->
 			<ContextMenu ref="menu" :model="Menu" :class="Menu.length === 0 ? 'hidden' : ''">
@@ -163,6 +165,7 @@ import { useCatalogStore } from "@/stores/CatalogState";
 import BuyMeDialog from "@/components/forms/gallery-dialogs/BuyMeDialog.vue";
 import ApplyRenamerDialog from "@/components/forms/album/ApplyRenamerDialog.vue";
 import WatermarkConfirmDialog from "@/components/forms/album/WatermarkConfirmDialog.vue";
+import DownloadAlbum from "@/components/modals/DownloadAlbum.vue";
 import { useToast } from "primevue/usetoast";
 import Pagination from "@/components/pagination/Pagination.vue";
 import { trans } from "laravel-vue-i18n";
@@ -240,6 +243,20 @@ function toggleStatistics() {
 	if (is_se_enabled) {
 		areStatisticsOpen.value = !areStatisticsOpen.value;
 	}
+}
+
+const is_download_album_visible = ref(false);
+const downloadAlbumIds = ref<string[]>([]);
+
+function toggleDownloadAlbumFromHero() {
+	if (albumStore.album === undefined) return;
+	downloadAlbumIds.value = [albumStore.album.id];
+	is_download_album_visible.value = true;
+}
+
+function toggleDownloadAlbumFromSelection() {
+	downloadAlbumIds.value = selectedAlbumsIds.value;
+	is_download_album_visible.value = true;
 }
 
 const albumPanelConfig = computed<AlbumThumbConfig>(() => ({
@@ -346,7 +363,7 @@ const albumCallbacks = {
 	toggleMove: toggleMove,
 	toggleDelete: toggleDelete,
 	toggleDownload: () => {
-		AlbumService.download(selectedAlbumsIds.value);
+		toggleDownloadAlbumFromSelection();
 	},
 	togglePin: togglePin,
 	toggleApplyRenamer: toggleApplyRenamer,

@@ -303,7 +303,7 @@ class AlbumController extends Controller
 				AlbumDownload::dispatchIf($should_measure, $this->visitorId(), $album->get_id());
 			}
 
-			return AlbumBaseArchive::resolve()->do($request->albums());
+			return AlbumBaseArchive::resolve()->do($request->albums(), $request->sizeVariant());
 		}
 
 		// We dispatch one event per photo.

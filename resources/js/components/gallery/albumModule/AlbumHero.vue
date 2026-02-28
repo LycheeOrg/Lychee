@@ -158,7 +158,6 @@
 	</Card>
 </template>
 <script setup lang="ts">
-import AlbumService from "@/services/album-service";
 import { useUserStore } from "@/stores/UserState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { isTouchDevice } from "@/utils/keybindings-utils";
@@ -217,6 +216,7 @@ const emits = defineEmits<{
 	openEmbedCode: [];
 	toggleApplyRenamer: [];
 	toggleWatermarkConfirm: [];
+	toggleDownloadAlbum: [];
 }>();
 
 // Check if album is embeddable (public, no password, no link requirement)
@@ -250,6 +250,6 @@ function download() {
 	if (albumStore.album === undefined) {
 		return;
 	}
-	AlbumService.download([albumStore.album.id]);
+	emits("toggleDownloadAlbum");
 }
 </script>

@@ -180,8 +180,8 @@ const AlbumService = {
 		return axios.get(`${Constants.getApiUrl()}Map`, { params: { album_id: album_id }, data: {} });
 	},
 
-	download(album_ids: string[]): void {
-		location.href = `${Constants.getApiUrl()}Zip?album_ids=${album_ids.join(",")}`;
+	download(album_ids: string[], variant: App.Enum.DownloadVariantType = "ORIGINAL"): void {
+		location.href = `${Constants.getApiUrl()}Zip?album_ids=${album_ids.join(",")}&variant=${variant}`;
 	},
 
 	uploadTrack(album_id: string, file: Blob): Promise<AxiosResponse> {
