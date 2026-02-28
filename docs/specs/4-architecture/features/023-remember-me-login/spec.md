@@ -31,10 +31,10 @@ This feature adds a "Remember Me" checkbox to the login form. When checked, a lo
 
 ## Non-Goals
 
-- Configurable remember duration via admin UI (use the `SESSION_REMEMBER` env variable or config/auth.php `remember` key; no settings page control).
+- Configurable remember duration via admin UI (use the `REMEMBER_LIFETIME` env variable; no settings page control). Default is 4 weeks (40320 minutes), loaded by `config/auth.php` guard config (Q-023-01 resolved → Option C).
 - "Remember Me" for WebAuthn or OAuth login flows (those have their own session management).
 - Server-side session extension (the session lifetime itself is unchanged; only the remember cookie provides persistence).
-- "Keep me logged in forever" — the remember cookie has a finite duration (default: ~5 years per Laravel, configurable via auth guard config `remember` key in minutes).
+- "Keep me logged in forever" — the remember cookie has a finite duration (default: 4 weeks, configurable via `REMEMBER_LIFETIME` env variable).
 - Per-user remember-me enable/disable toggle (all users who check the box get the feature).
 
 ## Functional Requirements
@@ -52,7 +52,7 @@ This feature adds a "Remember Me" checkbox to the login form. When checked, a lo
 
 | ID | Requirement | Driver | Measurement | Dependencies | Source |
 |----|-------------|--------|-------------|--------------|--------|
-| NFR-023-01 | Remember cookie must use `httpOnly`, `secure` (when HTTPS), and `SameSite` attributes consistent with session cookie configuration. | Security | Cookie attributes verified in browser dev tools during manual testing. | `config/session.php` cookie settings. | OWASP |
+| NFR-023-01 | Remember cookie must use `httpOnly`, `secure` (when HTTPS), and `SameSite` attributes consistent with session cookie configuration. Cookie duration defaults to 4 weeks (40320 minutes), configurable via `REMEMBER_LIFETIME` env variable (Q-023-01 resolved → Option C). | Security | Cookie attributes verified in browser dev tools during manual testing. Duration verified via `config('auth.guards.lychee.remember')`. | `config/auth.php` guard config, `config/session.php` cookie settings. | OWASP, Q-023-01 |
 | NFR-023-02 | The `remember_token` column already exists in the `users` table. No migration needed for the token itself. | Backward compatibility | `remember_token` column present in User model `$fillable` / schema. | Existing migration. | Laravel default |
 | NFR-023-03 | Existing sessions and login flows must not be affected when `remember` is absent or `false`. | Backward compatibility | All existing login tests pass without modification. | — | Regression prevention |
 | NFR-023-04 | The feature must work with both session-based and session-or-token guard configurations. | Guard compatibility | Tests pass with the `session-or-token` guard (Lychee's custom guard). | `SessionOrTokenGuard` already supports `$remember` in `login()`. | Architecture |

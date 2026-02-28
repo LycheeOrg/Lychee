@@ -139,5 +139,6 @@ _Last updated: 2026-02-28_
 
 - **Remember cookie name:** Laravel auto-generates the cookie name as `remember_web_{sha1(guard_name)}`. For Lychee's `lychee` guard, the cookie will be named `remember_web_{sha1('lychee')}`. Tests should search for a cookie with prefix `remember_web_` rather than an exact name.
 - **Guard configuration:** The `SessionOrTokenGuard::login()` method (line 274) already accepts `$remember = false`. The `recaller()` method is inherited from Laravel's `SessionGuard` and handles remember cookie reading. No changes to the guard are needed.
+- **Remember duration (Q-023-01 resolved → Option C):** `config/auth.php` sets `'remember' => (int) env('REMEMBER_LIFETIME', 40320)` in the lychee guard config. Default is 4 weeks (40320 minutes). `SessionOrTokenGuard::createGuard()` reads this via `setRememberDuration()`. `.env.example` documents the `REMEMBER_LIFETIME` env variable.
 - **No migration needed:** The `remember_token` column already exists in the `users` table from Laravel's default migration. `SessionOrTokenGuard` already calls `setRememberDuration()` in `createGuard()`.
 - **Existing logout behavior:** `AuthController::logout()` calls `Auth::logout()` which already invalidates the remember cookie and rotates the token in the database (Laravel default behavior).

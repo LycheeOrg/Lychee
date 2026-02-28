@@ -30,7 +30,7 @@ _Last updated:_ 2026-02-28
   - Feature tests for remember cookie presence/absence.
 
 - **Out of scope:**
-  - Admin-configurable remember duration (use `SESSION_REMEMBER` env or config `auth.guards.lychee.remember`).
+  - Admin-configurable remember duration via settings UI (use `REMEMBER_LIFETIME` env variable; default 4 weeks).
   - WebAuthn/OAuth remember-me support.
   - Remember-me for the migration/setup authentication flow.
   - Session lifetime configuration changes.
@@ -48,7 +48,7 @@ _Last updated:_ 2026-02-28
 - **Assumptions:**
   - The `remember_token` column in the `users` table is functional (Laravel default).
   - `SessionOrTokenGuard`'s `recaller()` method (inherited from Laravel's `SessionGuard`) correctly handles remember-me cookies.
-  - The `remember` duration defaults to Laravel's standard (~5 years / 2,628,000 minutes) unless overridden in `config/auth.php`.
+  - The `remember` duration defaults to 4 weeks (40320 minutes), set via `config/auth.php` guard config with `REMEMBER_LIFETIME` env override (Q-023-01 resolved → Option C).
 
 - **Risks / Mitigations:**
   - **R1: Remember cookie not set due to guard misconfiguration.** Mitigation: Write a feature test that asserts the cookie is present in the response.
@@ -170,7 +170,7 @@ Not yet completed. Will be run after spec, plan, and tasks agree.
 
 ## Follow-ups / Backlog
 
-- **Admin-configurable remember duration** — Consider adding a settings UI control for the remember cookie lifetime (currently requires env variable or config change).
+- **Admin-configurable remember duration via UI** — Consider adding a settings UI control for the remember cookie lifetime (currently configurable via `REMEMBER_LIFETIME` env variable, default 4 weeks).
 - **"Remember Me" for WebAuthn** — Investigate if WebAuthn sessions can benefit from a similar persistence mechanism.
 - **Session management UI** — Allow users to see and revoke active remember-me sessions (list of devices/tokens).
 
