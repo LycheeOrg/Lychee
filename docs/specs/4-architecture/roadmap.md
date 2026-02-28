@@ -6,6 +6,7 @@ High-level planning document for Lychee features and architectural initiatives.
 
 | Feature ID | Name | Status | Priority | Assignee | Started | Updated | Progress |
 |------------|------|--------|----------|----------|---------|---------|----------|
+| 020 | Raw Upload Support | Planning | P2 | — | 2026-02-28 | 2026-02-28 | Spec and plan drafted. 4 open questions (Q-020-01 to Q-020-04) pending resolution before implementation. |
 | 019 | Friendly URLs (Album Slugs) | Complete | P2 | - | 2026-02-27 | 2026-02-28 | All 24 tasks done. Migration, model, SlugRule, middleware, update requests, feature tests (26 tests/1048 assertions), frontend UI, translations (22 langs). Quality gates: PHPStan 0 errors, php-cs-fixer clean, npm build/check/format clean. |
 
 ## Paused Features

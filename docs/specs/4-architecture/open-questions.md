@@ -10,6 +10,38 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 ## Question Details
 
+### ~~Q-020-01: RAW Conversion Failure Behavior~~ ✅ RESOLVED
+
+**Decision:** Option C — Fall back to existing `raw_formats` behavior (store unprocessed, no conversion)
+**Rationale:** Graceful degradation preserves the uploaded file. If Imagick cannot convert the RAW file, it is stored as-is using the existing accepted-raw path (the raw file becomes the ORIGINAL with no thumbnails). Additionally, a data migration will move existing files that are currently stored as ORIGINAL but match raw format extensions to the new RAW size variant type.
+**Updated in spec:** FR-020-03 (failure path), FR-020-16 (migration of existing raw-format files from ORIGINAL to RAW type)
+
+---
+
+### ~~Q-020-02: RAW Conversion Tooling & Imagick Delegate Requirements~~ ✅ RESOLVED
+
+**Decision:** Option A — Require Imagick with libraw/dcraw delegates; document system requirements
+**Rationale:** Single code path through Imagick. Existing `HeifToJpeg` already uses Imagick. System requirement: `apt install libraw-dev` (or equivalent) for camera RAW delegate support. If a specific format is unsupported by the installed Imagick delegates, the fallback from Q-020-01 applies (file stored as-is).
+**Updated in spec:** NFR-020-04 (Imagick requirement), FR-020-09 (conversion tooling)
+
+---
+
+### ~~Q-020-03: Async Conversion for Large RAW Files~~ ✅ RESOLVED
+
+**Decision:** Option A — Synchronous conversion (already async via job pipeline)
+**Rationale:** Lychee already processes uploads through queued jobs, so conversion is inherently asynchronous from the user's perspective. No additional async infrastructure is needed. The conversion runs within the existing job pipeline.
+**Updated in spec:** NFR-020-02 (clarified: conversion happens in existing job pipeline)
+
+---
+
+### ~~Q-020-04: Interaction with Existing `raw_formats` Config~~ ✅ RESOLVED
+
+**Decision:** Option A — Keep both systems separate, with refinement
+**Rationale:** The `raw_formats` config continues to define accepted extra formats. However, files matching `raw_formats` are now stored as **RAW size variants** (not ORIGINAL) — unless they are PDF, which remains stored as ORIGINAL (since PDF can be rendered/displayed). The new convertible-RAW pipeline (camera RAW + HEIC/HEIF) is a separate hardcoded list that triggers conversion. If an extension is in both lists, the new RAW pipeline takes precedence.
+**Updated in spec:** FR-020-03, FR-020-04, FR-020-09, FR-020-16 (unprocessed raw_formats files stored as RAW type, PDF exception)
+
+---
+
 ### ~~Q-019-01: Hierarchical vs Flat Slugs~~ ✅ RESOLVED
 
 **Decision:** Option A — Flat globally-unique slugs
@@ -63,58 +95,6 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 **Decision:** Option A - Separate config key `my_best_pictures_count`
 **Rationale:** Allows independent configuration. Users might want different counts for overall best pictures vs personal favorites. Clearer semantics with each album having its own setting.
 **Updated in spec:** CFG-011-03, DO-011-02 implementation
-
----
-
-### Q-011-01: Config Key Naming for My Best Pictures Count
-
-**Question:** Should "My Best Pictures" use a separate config key from "Best Pictures" count, or share the same `best_pictures_count` config?
-
-- **Option A (Recommended):** Separate config key `my_best_pictures_count`
-  - Allows independent configuration of the two albums
-  - Users might want different counts (e.g., top 50 overall vs top 20 personal favorites)
-  - Clearer semantics: each album has its own count setting
-  - Requires new config entry in database/config system
-  
-- **Option B:** Share existing `best_pictures_count` config
-  - Simpler configuration (one less setting)
-  - Both albums show same count
-  - Less flexible for users
-  - No code changes to config system needed
-
-**Pros/Cons:**
-- **A:** More flexible, clearer intent; adds one config key
-- **B:** Simpler, less config; less flexible, potentially confusing
-
-**Impact:** MEDIUM - affects config system, admin UI (if implemented), user experience
-
----
-
-### Q-011-02: Default Sort Order for My Rated Pictures Album
-
-**Question:** What should be the default sort order for "My Rated Pictures" album?
-
-- **Option A (Recommended):** Sort by rating DESC, then by created_at DESC
-  - Shows highest-rated photos first
-  - Consistent with "best pictures" concept
-  - Users likely want to see their favorites at top
-  
-- **Option B:** Sort by created_at DESC (recently rated first)
-  - Shows most recently rated photos first
-  - Consistent with "Recent" album pattern
-  - Good for reviewing recent rating activity
-  
-- **Option C:** Use default photo sorting (from user preferences)
-  - Respects user's chosen sort order
-  - Most flexible
-  - Might not match user expectations for a "rated" album
-
-**Pros/Cons:**
-- **A:** Most intuitive for "favorites" view; opinionated
-- **B:** Good for activity tracking; less relevant for "best" concept
-- **C:** Most flexible; potentially confusing
-
-**Impact:** MEDIUM - affects user experience, query implementation, consistency with other smart albums
 
 ---
 
