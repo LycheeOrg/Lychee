@@ -66,6 +66,7 @@ return [
         'password' => 'Mot de passe',
         'unknown_invalid' => 'Utilisateur inconnu ou mot de passe invalide.',
         'signin' => 'Connexion',
+        'remember_me' => 'Se souvenir de moi',
     ],
     'register' => [
         'enter_license' => 'Entrez votre clé de licence ci-dessous :',

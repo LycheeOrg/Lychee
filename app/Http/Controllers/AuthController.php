@@ -45,11 +45,12 @@ class AuthController extends Controller
 		$username = $request->username();
 		$password = $request->password();
 		$ip = $request->ip();
+		$remember = $request->rememberMe();
 
 		try {
 			// Try LDAP authentication first if enabled
-			if ($this->isLdapEnabled($request) && $this->attemptLdapLogin($username, $password)) {
-				Log::channel('login')->notice(__METHOD__ . ':' . __LINE__ . ' -- User (' . $username . ') has logged in via LDAP from ' . $ip);
+			if ($this->isLdapEnabled($request) && $this->attemptLdapLogin($username, $password, $remember)) {
+				Log::channel('login')->notice(__METHOD__ . ':' . __LINE__ . ' -- User (' . $username . ') has logged in via LDAP from ' . $ip . ' [remember=' . ($remember ? 'true' : 'false') . ']');
 
 				return;
 			}
@@ -62,8 +63,8 @@ class AuthController extends Controller
 		if (Auth::attempt([
 			'username' => $username,
 			'password' => $password,
-		])) {
-			Log::channel('login')->notice(__METHOD__ . ':' . __LINE__ . ' -- User (' . $username . ') has logged in from ' . $ip);
+		], $remember)) {
+			Log::channel('login')->notice(__METHOD__ . ':' . __LINE__ . ' -- User (' . $username . ') has logged in from ' . $ip . ' [remember=' . ($remember ? 'true' : 'false') . ']');
 
 			return;
 		}
@@ -132,7 +133,7 @@ class AuthController extends Controller
 	 *
 	 * @return bool True if authentication succeeded, false otherwise
 	 */
-	private function attemptLdapLogin(string $username, string $password): bool
+	private function attemptLdapLogin(string $username, string $password, bool $remember = false): bool
 	{
 		try {
 			// Create LDAP configuration and service
@@ -151,7 +152,7 @@ class AuthController extends Controller
 			$user = $provision_action->do($ldap_user);
 
 			// Log the user in
-			Auth::login($user);
+			Auth::login($user, $remember);
 
 			return true;
 		} catch (LdapConnectionException $e) {

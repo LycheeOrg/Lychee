@@ -67,6 +67,7 @@ return [
         'password' => 'Парола',
         'unknown_invalid' => 'Непознат потребител или невалидна парола.',
         'signin' => 'Вход',
+        'remember_me' => 'Запомни ме',
     ],
     'register' => [
         'enter_license' => 'Въведете лицензния си ключ по-долу:',

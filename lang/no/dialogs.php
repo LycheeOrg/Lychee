@@ -66,6 +66,7 @@ return [
         'password' => 'Passord',
         'unknown_invalid' => 'Ukjent brukernavn eller feil passord.',
         'signin' => 'Logg inn',
+        'remember_me' => 'Husk meg',
     ],
     'register' => [
         'enter_license' => 'Skriv inn lisensnøkkelen din nedenfor:',

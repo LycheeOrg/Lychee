@@ -47,6 +47,7 @@ class RequestAttribute
 	public const ALBUM_ASPECT_RATIO_ATTRIBUTE = 'album_aspect_ratio';
 
 	public const USERNAME_ATTRIBUTE = 'username';
+	public const REMEMBER_ME_ATTRIBUTE = 'remember_me';
 
 	public const PASSWORD_ATTRIBUTE = 'password';
 	public const OLD_PASSWORD_ATTRIBUTE = 'old_password';

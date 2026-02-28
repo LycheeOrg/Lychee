@@ -66,6 +66,7 @@ return [
         'password' => 'Passwort',
         'unknown_invalid' => 'Unbekannter Benutzer oder ungültiges Passwort.',
         'signin' => 'Anmelden',
+        'remember_me' => 'Angemeldet bleiben',
     ],
     'register' => [
         'enter_license' => 'Den Lizenzschlüssel eingeben:',

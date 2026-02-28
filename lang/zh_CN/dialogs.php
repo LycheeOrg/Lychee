@@ -66,6 +66,7 @@ return [
         'password' => '密码',
         'unknown_invalid' => '用户名不存在或密码错误',
         'signin' => '登录',
+        'remember_me' => '记住我',
     ],
     'register' => [
         'enter_license' => '请在下方输入您的许可证密钥：',

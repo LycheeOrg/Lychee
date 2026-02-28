@@ -66,6 +66,7 @@ return [
         'password' => 'رمز عبور',
         'unknown_invalid' => 'نام کاربری یا رمز عبور نامعتبر.',
         'signin' => 'ورود',
+        'remember_me' => 'مرا به خاطر بسپار',
     ],
     'register' => [
         'enter_license' => 'کلید لایسنس خود را در زیر وارد کنید:',
