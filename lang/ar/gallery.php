@@ -15,7 +15,7 @@ return [
         'shared_with_me' => 'Shared with Me',
     ],
     'favourites' => 'المفضلة',
-    'raw' => '',
+    'raw' => 'RAW',
     'original' => 'الأصلي',
     'medium' => 'متوسط',
     'medium_hidpi' => 'متوسط HiDPI',
@@ -26,7 +26,7 @@ return [
     'placeholder' => 'عنصر نائب للصورة منخفضة الجودة',
     'thumbnail' => 'مصغر الصورة',
     'live_video' => 'جزء الفيديو من الصورة الحية',
-    'download_raw' => '',
+    'download_raw' => 'Download RAW',
     'camera_data' => 'تاريخ الكاميرا',
     'album_reserved' => 'جميع الحقوق محفوظة',
     'map' => [

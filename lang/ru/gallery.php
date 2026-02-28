@@ -15,7 +15,7 @@ return [
         'shared_with_me' => 'Shared with Me',
     ],
     'favourites' => 'Избранные',
-    'raw' => '',
+    'raw' => 'RAW',
     'original' => 'Оригинал',
     'medium' => 'Средний',
     'medium_hidpi' => 'Средний HiDPI',
@@ -26,7 +26,7 @@ return [
     'placeholder' => 'Заглушка изображения низкого качества',
     'thumbnail' => 'Миниатюра фото',
     'live_video' => 'Часть видео с живого фото',
-    'download_raw' => '',
+    'download_raw' => 'Download RAW',
     'camera_data' => 'Дата камеры',
     'album_reserved' => 'Все права защищены',
     'map' => [

@@ -16,7 +16,7 @@ return [
         'shared_with_me' => 'Shared with Me',
     ],
     'favourites' => 'Favorieten',
-    'raw' => '',
+    'raw' => 'RAW',
     'original' => 'Origineel',
     'medium' => 'Middelgroot',
     'medium_hidpi' => 'Middelgroot HiDPI',
@@ -27,7 +27,7 @@ return [
     'placeholder' => 'Laagkwaliteitsafbeelding Placeholder',
     'thumbnail' => 'Foto miniatuur',
     'live_video' => 'Videodeel van live-foto',
-    'download_raw' => '',
+    'download_raw' => 'Download RAW',
     'camera_data' => 'Cameradatum',
     'album_reserved' => 'Alle rechten voorbehouden',
     'map' => [

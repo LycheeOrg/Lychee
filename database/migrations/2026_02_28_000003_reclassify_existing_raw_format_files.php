@@ -51,32 +51,9 @@ return new class() extends Migration {
 
 	public function down(): void
 	{
-		$raw_formats_value = DB::table('configs')
-			->where('key', '=', 'raw_formats')
-			->value('value');
-
-		if ($raw_formats_value === null || trim($raw_formats_value) === '') {
-			return;
-		}
-
-		$extensions = explode('|', strtolower($raw_formats_value));
-		$extensions = array_filter($extensions, fn (string $ext) => $ext !== '' && $ext !== '.pdf');
-
-		if (count($extensions) === 0) {
-			return;
-		}
-
 		// Reverse: set RAW rows matching raw_formats back to ORIGINAL
-		$query = DB::table('size_variants')
-			->where('type', '=', SizeVariantType::RAW->value);
-
-		$query->where(function ($q) use ($extensions) {
-			foreach ($extensions as $ext) {
-				$ext = str_starts_with($ext, '.') ? $ext : '.' . $ext;
-				$q->orWhere('short_path', 'LIKE', '%' . $ext);
-			}
-		});
-
-		$query->update(['type' => SizeVariantType::ORIGINAL->value]);
+		DB::table('size_variants')
+			->where('type', '=', SizeVariantType::RAW->value)
+			->update(['type' => SizeVariantType::ORIGINAL->value]);
 	}
 };
