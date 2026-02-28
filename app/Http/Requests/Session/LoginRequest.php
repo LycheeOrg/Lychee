@@ -53,7 +53,7 @@ class LoginRequest extends BaseApiRequest implements HasUsername, HasPassword
 	{
 		$this->username = $values[RequestAttribute::USERNAME_ATTRIBUTE];
 		$this->password = $values[RequestAttribute::PASSWORD_ATTRIBUTE];
-		$this->remember_me = isset($values[RequestAttribute::REMEMBER_ME_ATTRIBUTE]) && $values[RequestAttribute::REMEMBER_ME_ATTRIBUTE] === true;
+		$this->remember_me = $values[RequestAttribute::REMEMBER_ME_ATTRIBUTE] ?? false;
 	}
 
 	/**
