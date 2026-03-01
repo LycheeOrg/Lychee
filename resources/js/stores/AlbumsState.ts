@@ -7,6 +7,8 @@ import AlbumService from "@/services/album-service";
 import { useTogglablesStateStore } from "./ModalsState";
 import { useUserStore } from "./UserState";
 import { Router } from "vue-router";
+import InitService from "@/services/init-service";
+
 const { spliter } = useSplitter();
 
 export type { SplitData };
@@ -47,6 +49,11 @@ export const useAlbumsStore = defineStore("albums-store", {
 			this.sharedAlbums = [];
 			this.rootConfig = undefined;
 			this.rootRights = undefined;
+		},
+		loadRootRights(): Promise<void> {
+			return InitService.fetchGlobalRights().then((data) => {
+				this.rootRights = data.data.root_album;
+			});
 		},
 		load(router: Router): Promise<void> {
 			const togglableState = useTogglablesStateStore();

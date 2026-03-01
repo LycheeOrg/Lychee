@@ -56,6 +56,7 @@ Route::delete('/Album', [Gallery\AlbumController::class, 'delete']);
 Route::post('/Album::move', [Gallery\AlbumController::class, 'move']);
 Route::post('/Album::cover', [Gallery\AlbumController::class, 'cover']);
 Route::post('/Album::header', [Gallery\AlbumController::class, 'header']);
+Route::patch('/Album::header', [Gallery\AlbumController::class, 'updateAlbumHeader'])->middleware('support:pro');
 Route::post('/Album::merge', [Gallery\AlbumController::class, 'merge']);
 Route::post('/Album::transfer', [Gallery\AlbumController::class, 'transfer']);
 Route::post('/Album::track', [Gallery\AlbumController::class, 'setTrack'])

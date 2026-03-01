@@ -10,6 +10,8 @@ namespace App\Models;
 
 use App\Actions\Album\Delete;
 use App\DTO\AlbumSortingCriterion;
+use App\Enum\AlbumTitleColor;
+use App\Enum\AlbumTitlePosition;
 use App\Enum\AspectRatioType;
 use App\Enum\ColumnSortingType;
 use App\Enum\LicenseType;
@@ -180,6 +182,7 @@ class Album extends BaseAlbum implements Node
 		'min_taken_at' => null,
 		'num_children' => 0,
 		'num_photos' => 0,
+		'header_photo_focus' => null,
 		'auto_cover_id_max_privilege' => null,
 		'auto_cover_id_least_privilege' => null,
 	];
@@ -195,7 +198,10 @@ class Album extends BaseAlbum implements Node
 		'auto_cover_id_max_privilege' => 'string',
 		'auto_cover_id_least_privilege' => 'string',
 		'is_recursive_nsfw' => 'boolean',
+		'header_photo_focus' => 'array',
 		'album_thumb_aspect_ratio' => AspectRatioType::class,
+		'title_color' => AlbumTitleColor::class,
+		'title_position' => AlbumTitlePosition::class,
 		'album_timeline' => TimelineAlbumGranularity::class,
 		'_lft' => 'integer',
 		'_rgt' => 'integer',
@@ -436,6 +442,52 @@ class Album extends BaseAlbum implements Node
 	protected function setAlbumTimelineAttribute(?TimelineAlbumGranularity $album_timeline): void
 	{
 		$this->attributes['album_timeline'] = $album_timeline?->value;
+	}
+
+	/**
+	 * Get the color palette from the album's header photo.
+	 */
+	public function getHeaderPalette(): ?Palette
+	{
+		return $this->header?->palette;
+	}
+
+	/**
+	 * Get the computed title color as hex string based on title_color setting.
+	 * Returns white/black hex or palette color if available.
+	 */
+	public function getComputedTitleColor(): string
+	{
+		return match ($this->title_color) {
+			// Default to white if not set
+			null => '#ffffff',
+			AlbumTitleColor::WHITE => '#ffffff',
+			AlbumTitleColor::BLACK => '#000000',
+			default => $this->getPaletteColor(),
+		};
+	}
+
+	/**
+	 * Return the title color for the current album palette.
+	 *
+	 * @return string
+	 */
+	private function getPaletteColor(): string
+	{
+		// Handle palette colors (color1 through color5)
+		$palette = $this->getHeaderPalette();
+		if ($palette === null) {
+			return '#ffffff';
+		}
+
+		return match ($this->title_color) {
+			AlbumTitleColor::COLOUR_1 => Palette::toHex($palette->colour_1),
+			AlbumTitleColor::COLOUR_2 => Palette::toHex($palette->colour_2),
+			AlbumTitleColor::COLOUR_3 => Palette::toHex($palette->colour_3),
+			AlbumTitleColor::COLOUR_4 => Palette::toHex($palette->colour_4),
+			AlbumTitleColor::COLOUR_5 => Palette::toHex($palette->colour_5),
+			default => '#ffffff',
+		};
 	}
 
 	/**

@@ -15,7 +15,10 @@ declare namespace App.DTO {
 declare namespace App.Enum {
 	export type AlbumDecorationOrientation = "row" | "row-reverse" | "column" | "column-reverse";
 	export type AlbumDecorationType = "none" | "layers" | "album" | "photo" | "all";
+	export type AlbumHeaderSize = "half_screen" | "full_screen";
 	export type AlbumLayoutType = "list" | "grid";
+	export type AlbumTitleColor = "white" | "black" | "colour_1" | "colour_2" | "colour_3" | "colour_4" | "colour_5";
+	export type AlbumTitlePosition = "top_left" | "top_right" | "bottom_left" | "bottom_right" | "center";
 	export type AspectRatioCSSType = "aspect-5x4" | "aspect-4x5" | "aspect-3x2" | "aspect-square" | "aspect-2x3" | "aspect-video";
 	export type AspectRatioType = "5/4" | "3/2" | "1/1" | "2/3" | "4/5" | "16/9";
 	export type CacheTag = "gallery" | "auth" | "user" | "settings" | "statistics" | "users";
@@ -472,6 +475,9 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		albums_infinite_scroll_threshold: number;
 		default_album_protection: App.Enum.DefaultAlbumProtectionType;
 		photos_star_visibility: App.Enum.PhotoHighlightVisibilityType;
+		is_album_enhanced_display_enabled: boolean;
+		album_header_size: App.Enum.AlbumHeaderSize;
+		is_album_header_landing_title_enabled: boolean;
 	};
 	export type LandingPageResource = {
 		landing_page_enable: boolean;
@@ -817,6 +823,10 @@ declare namespace App.Http.Resources.Models.Utils {
 		grants_upload: boolean;
 		is_password_required: boolean;
 	};
+	export type HeaderFocusData = {
+		x: number;
+		y: number;
+	};
 	export type PreComputedPhotoData = {
 		is_video: boolean;
 		is_raw: boolean;
@@ -840,6 +850,10 @@ declare namespace App.Http.Resources.Models.Utils {
 		created_at: string | null;
 		description: string | null;
 		copyright: string | null;
+		palette: App.Http.Resources.Models.ColourPaletteResource | null;
+		title_color: App.Enum.AlbumTitleColor | null;
+		title_position: App.Enum.AlbumTitlePosition | null;
+		header_photo_focus: App.Http.Resources.Models.Utils.HeaderFocusData | null;
 	};
 	export type PreformattedPhotoData = {
 		created_at: string;

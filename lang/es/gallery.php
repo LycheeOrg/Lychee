@@ -11,6 +11,10 @@ return [
     'pinned_albums' => 'Álbumes fijados',
     'albums' => 'Álbumes',
     'root' => 'Álbumes',
+    'set_focus' => 'Set Focus',
+    'set_header_focus' => 'Set Header Focus',
+    'done' => 'Done',
+    'cancel' => 'Cancel',
     'tabs' => [
         'my_albums' => 'My Albums',
         'shared_with_me' => 'Shared with Me',
@@ -28,6 +32,7 @@ return [
     'thumbnail' => 'Miniatura de la foto',
     'live_video' => 'Vídeo parte de foto en directo',
     'download_raw' => 'Download RAW',
+    'download_album' => 'Seleccione la resolución de imagen para el archivo ZIP del álbum. Si una foto no tiene la variante seleccionada, se usará la original.',
     'camera_data' => 'Fecha de la cámara',
     'album_reserved' => 'Todos los derechos reservados',
     'map' => [
@@ -120,6 +125,9 @@ return [
             'share' => 'Compartir álbum',
             'embed' => 'Embed Album',
             'stats_only_se' => 'Estadísticas disponibles en la Supporter Edition',
+            'edit' => 'Edit',
+            'save' => 'Save',
+            'open_gallery' => 'Open gallery',
             'apply_renamer' => 'Apply Renamer Rules',
             'watermark' => 'Watermark',
         ],
@@ -155,6 +163,7 @@ return [
             'tags_required' => 'Se requieren etiquetas.',
             'all_tags_must_match' => 'Todas las etiquetas deben coincidir.',
         ],
+
     ],
     'photo' => [
         'actions' => [

@@ -10,6 +10,10 @@ return [
     'smart_albums' => 'Smart Albums',
     'pinned_albums' => 'Featured Albums',
     'albums' => 'Albums',
+    'set_focus' => 'Set Focus',
+    'set_header_focus' => 'Set Header Focus',
+    'done' => 'Done',
+    'cancel' => 'Cancel',
     'root' => 'Albums',
     'tabs' => [
         'my_albums' => 'My Albums',
@@ -28,6 +32,7 @@ return [
     'thumbnail' => 'Photo thumbnail',
     'live_video' => 'Video part of live-photo',
     'download_raw' => 'Download RAW',
+    'download_album' => 'Select the image resolution for the album ZIP archive. If a photo does not have the selected variant, the original will be used instead.',
     'camera_data' => 'Camera date',
     'album_reserved' => 'All Rights Reserved',
     'map' => [
@@ -120,6 +125,9 @@ return [
             'share' => 'Share Album',
             'embed' => 'Embed Album',
             'stats_only_se' => 'Statistics available in the Supporter Edition',
+            'edit' => 'Edit',
+            'save' => 'Save',
+            'open_gallery' => 'Open gallery',
             'apply_renamer' => 'Apply Renamer Rules',
             'watermark' => 'Watermark',
         ],
@@ -155,6 +163,7 @@ return [
             'tags_required' => 'Tags are required.',
             'all_tags_must_match' => 'All tags must match.',
         ],
+
     ],
     'photo' => [
         'actions' => [

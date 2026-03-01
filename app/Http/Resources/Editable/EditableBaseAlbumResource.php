@@ -37,6 +37,7 @@ class EditableBaseAlbumResource extends Data
 	public ?string $cover_id;
 	public ?TimelineAlbumGranularity $album_timeline;
 	public ?TimelinePhotoGranularity $photo_timeline;
+
 	/** @var string[] */
 	public array $tags = [];
 	public bool $is_and = true;

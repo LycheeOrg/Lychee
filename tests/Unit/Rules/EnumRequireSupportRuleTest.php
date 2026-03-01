@@ -28,7 +28,7 @@ class EnumRequireSupportRuleTest extends AbstractTestCase
 	public function testHappy(): void
 	{
 		$verify = $this->createMock(VerifyInterface::class);
-		$verify->method('is_supporter')->willReturn(false);
+		$verify->method('check')->willReturn(false);
 
 		/** @disregard P1006 */
 		$rule = new EnumRequireSupportRule(
@@ -46,7 +46,7 @@ class EnumRequireSupportRuleTest extends AbstractTestCase
 		self::expectException(\Exception::class);
 
 		$verify = $this->createMock(VerifyInterface::class);
-		$verify->method('is_supporter')->willReturn(false);
+		$verify->method('check')->willReturn(false);
 
 		/** @disregard P1006 */
 		$rule = new EnumRequireSupportRule(
@@ -61,7 +61,7 @@ class EnumRequireSupportRuleTest extends AbstractTestCase
 	public function testHappy2(): void
 	{
 		$verify = $this->createMock(VerifyInterface::class);
-		$verify->method('is_supporter')->willReturn(true);
+		$verify->method('check')->willReturn(true);
 
 		/** @disregard P1006 */
 		$rule = new EnumRequireSupportRule(
@@ -77,7 +77,7 @@ class EnumRequireSupportRuleTest extends AbstractTestCase
 	public function testHappy3(): void
 	{
 		$verify = $this->createMock(VerifyInterface::class);
-		$verify->method('is_supporter')->willReturn(true);
+		$verify->method('check')->willReturn(true);
 
 		/** @disregard P1006 */
 		$rule = new EnumRequireSupportRule(
@@ -93,7 +93,7 @@ class EnumRequireSupportRuleTest extends AbstractTestCase
 	public function testHappy4(): void
 	{
 		$verify = $this->createMock(VerifyInterface::class);
-		$verify->method('is_supporter')->willReturn(false);
+		$verify->method('check')->willReturn(false);
 
 		/** @disregard P1006 */
 		$rule = new EnumRequireSupportRule(

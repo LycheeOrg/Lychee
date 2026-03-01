@@ -11,6 +11,10 @@ return [
     'pinned_albums' => 'Vastgepinde albums',
     'albums' => 'Albums',
     'root' => 'Albums',
+    'set_focus' => 'Set Focus',
+    'set_header_focus' => 'Set Header Focus',
+    'done' => 'Done',
+    'cancel' => 'Cancel',
     'tabs' => [
         'my_albums' => 'My Albums',
         'shared_with_me' => 'Shared with Me',
@@ -28,6 +32,7 @@ return [
     'thumbnail' => 'Foto miniatuur',
     'live_video' => 'Videodeel van live-foto',
     'download_raw' => 'Download RAW',
+    'download_album' => 'Selecteer de beeldresolutie voor het album-ZIP-archief. Als een foto de geselecteerde variant niet heeft, wordt het origineel gebruikt.',
     'camera_data' => 'Cameradatum',
     'album_reserved' => 'Alle rechten voorbehouden',
     'map' => [
@@ -120,6 +125,9 @@ return [
             'share' => 'Deel Album',
             'embed' => 'Embed Album',
             'stats_only_se' => 'Statistieken beschikbaar in de Supporter Edition',
+            'edit' => 'Edit',
+            'save' => 'Save',
+            'open_gallery' => 'Open gallery',
             'apply_renamer' => 'Apply Renamer Rules',
             'watermark' => 'Watermark',
         ],
@@ -155,6 +163,7 @@ return [
             'tags_required' => 'Tags zijn vereist.',
             'all_tags_must_match' => 'Alle tags moeten overeenkomen.',
         ],
+
     ],
     'photo' => [
         'actions' => [

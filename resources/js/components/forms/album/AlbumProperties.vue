@@ -43,7 +43,7 @@
 						<Select
 							label-id="photoSortingColumn"
 							v-model="photoSortingColumn"
-							class="w-56 border-none"
+							class="w-62 border-none"
 							:options="photoSortingColumnsOptions"
 							option-label="label"
 							show-clear
@@ -65,7 +65,7 @@
 						<Select
 							label-id="photoSortingOrder"
 							v-model="photoSortingOrder"
-							class="w-56 border-none"
+							class="w-62 border-none"
 							:options="sortingOrdersOptions"
 							option-label="label"
 							show-clear
@@ -90,7 +90,7 @@
 							<Select
 								label-id="albumSortingColumn"
 								v-model="albumSortingColumn"
-								class="w-56 border-none"
+								class="w-62 border-none"
 								:options="albumSortingColumnsOptions"
 								option-label="label"
 								show-clear
@@ -112,7 +112,7 @@
 							<Select
 								label-id="albumSortingOrder"
 								v-model="albumSortingOrder"
-								class="w-56 border-none"
+								class="w-62 border-none"
 								:options="sortingOrdersOptions"
 								option-label="label"
 								show-clear
@@ -507,6 +507,7 @@ function saveAlbum() {
 	AlbumService.updateAlbum(data).then(() => {
 		toast.add({ severity: "success", summary: trans("toasts.success"), life: 3000 });
 		AlbumService.clearCache(albumId.value);
+		albumStore.loadHead();
 	});
 }
 
@@ -533,6 +534,7 @@ function saveTagAlbum() {
 	AlbumService.updateTag(data).then(() => {
 		toast.add({ severity: "success", summary: trans("toasts.success"), life: 3000 });
 		AlbumService.clearCache(albumId.value);
+		albumStore.loadHead();
 	});
 }
 

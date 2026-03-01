@@ -19,7 +19,7 @@
 					v-tooltip.bottom="
 						photoStore.photo.is_highlighted ? $t('gallery.photo.actions.unhighlight') : $t('gallery.photo.actions.highlight')
 					"
-					:icon="photoStore.photo.is_highlighted ? 'pi pi-star-fill' : 'pi pi-star'"
+					:icon="photoStore.photo.is_highlighted ? 'pi pi-flag-fill' : 'pi pi-flag'"
 					class="ltr:mr-2 rtl:ml-2"
 					:class="
 						photoStore.photo.is_highlighted

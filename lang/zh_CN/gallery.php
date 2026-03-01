@@ -11,6 +11,10 @@ return [
     'pinned_albums' => '置顶相册',
     'albums' => '相册',
     'root' => '相册',
+    'set_focus' => 'Set Focus',
+    'set_header_focus' => 'Set Header Focus',
+    'done' => 'Done',
+    'cancel' => 'Cancel',
     'tabs' => [
         'my_albums' => 'My Albums',
         'shared_with_me' => 'Shared with Me',
@@ -28,6 +32,7 @@ return [
     'thumbnail' => '照片缩略图',
     'live_video' => '实况照片视频部分',
     'download_raw' => 'Download RAW',
+    'download_album' => '选择相册ZIP压缩包的图片分辨率。如果照片没有所选的版本，将使用原始版本。',
     'camera_data' => '相机日期',
     'album_reserved' => '所有权利保留',
     'map' => [
@@ -120,6 +125,9 @@ return [
             'share' => '分享相册',
             'embed' => 'Embed Album',
             'stats_only_se' => '统计功能仅在支持者版本中可用',
+            'edit' => 'Edit',
+            'save' => 'Save',
+            'open_gallery' => 'Open gallery',
             'apply_renamer' => 'Apply Renamer Rules',
             'watermark' => 'Watermark',
         ],
@@ -155,6 +163,7 @@ return [
             'tags_required' => '标签为必填项。',
             'all_tags_must_match' => '所有标签必须匹配。',
         ],
+
     ],
     'photo' => [
         'actions' => [
