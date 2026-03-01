@@ -38,7 +38,7 @@ class ContactSubmitTest extends BaseApiWithDataTest
 	public function testPublicSubmitSuccess(): void
 	{
 		Configs::set('contact_form_security_question', '');
-		Configs::set('contact_form_custom_consent_text', '');
+		Configs::set('contact_form_custom_consent_required', '0');
 
 		$response = $this->postJson('Contact', [
 			'name' => 'John Doe',
@@ -121,7 +121,7 @@ class ContactSubmitTest extends BaseApiWithDataTest
 
 	public function testPublicSubmitConsentRequired(): void
 	{
-		Configs::set('contact_form_custom_consent_text', 'I agree to the privacy policy');
+		Configs::set('contact_form_custom_consent_required', '1');
 
 		$response = $this->postJson('Contact', [
 			'name' => 'John Doe',
@@ -132,6 +132,6 @@ class ContactSubmitTest extends BaseApiWithDataTest
 
 		$this->assertUnprocessable($response);
 
-		Configs::set('contact_form_custom_consent_text', '');
+		Configs::set('contact_form_custom_consent_required', '0');
 	}
 }

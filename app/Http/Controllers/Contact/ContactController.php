@@ -50,8 +50,8 @@ class ContactController extends Controller
 		}
 
 		// Validate consent if configured
-		$consent_text = $request->configs()->getValueAsBool('contact_form_custom_consent_required');
-		if ($consent_text !== '' && !$request->consentAgreed()) {
+		$is_consent_required = $request->configs()->getValueAsBool('contact_form_custom_consent_required');
+		if ($is_consent_required && !$request->consentAgreed()) {
 			abort(422, 'You must agree to the privacy policy.');
 		}
 
