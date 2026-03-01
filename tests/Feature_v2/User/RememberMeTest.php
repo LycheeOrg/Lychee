@@ -31,15 +31,16 @@ class RememberMeTest extends BaseApiWithDataTest
 		]);
 		$this->assertNoContent($response);
 
-		// Verify a remember cookie is set
+		// Verify a remember cookie is set.
+		// The Lychee guard is named 'lychee', so the cookie is 'remember_lychee_*' (not 'remember_web_*').
 		$has_remember_cookie = false;
 		foreach ($response->headers->getCookies() as $cookie) {
-			if (str_starts_with($cookie->getName(), 'remember_web_')) {
+			if (str_starts_with($cookie->getName(), 'remember_lychee_')) {
 				$has_remember_cookie = true;
 				break;
 			}
 		}
-		$this->assertTrue($has_remember_cookie, 'Expected a remember_web_* cookie to be set');
+		$this->assertTrue($has_remember_cookie, 'Expected a remember_lychee_* cookie to be set');
 	}
 
 	public function testLoginWithRememberMeFalse(): void
@@ -54,8 +55,8 @@ class RememberMeTest extends BaseApiWithDataTest
 		// Verify no remember cookie is set
 		foreach ($response->headers->getCookies() as $cookie) {
 			$this->assertFalse(
-				str_starts_with($cookie->getName(), 'remember_web_'),
-				'Did not expect a remember_web_* cookie'
+				str_starts_with($cookie->getName(), 'remember_lychee_'),
+				'Did not expect a remember_lychee_* cookie'
 			);
 		}
 	}
@@ -71,8 +72,8 @@ class RememberMeTest extends BaseApiWithDataTest
 		// Verify no remember cookie is set (backward compatibility)
 		foreach ($response->headers->getCookies() as $cookie) {
 			$this->assertFalse(
-				str_starts_with($cookie->getName(), 'remember_web_'),
-				'Did not expect a remember_web_* cookie when remember_me is absent'
+				str_starts_with($cookie->getName(), 'remember_lychee_'),
+				'Did not expect a remember_lychee_* cookie when remember_me is absent'
 			);
 		}
 	}
@@ -89,8 +90,8 @@ class RememberMeTest extends BaseApiWithDataTest
 		// Verify no remember cookie is set on failed auth
 		foreach ($response->headers->getCookies() as $cookie) {
 			$this->assertFalse(
-				str_starts_with($cookie->getName(), 'remember_web_'),
-				'Did not expect a remember_web_* cookie on failed login'
+				str_starts_with($cookie->getName(), 'remember_lychee_'),
+				'Did not expect a remember_lychee_* cookie on failed login'
 			);
 		}
 	}
