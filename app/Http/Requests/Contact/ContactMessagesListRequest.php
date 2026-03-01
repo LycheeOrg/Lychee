@@ -15,6 +15,9 @@ use Illuminate\Support\Facades\Gate;
 
 class ContactMessagesListRequest extends AbstractEmptyRequest
 {
+	/**
+	 * {@inheritDoc}
+	 */
 	public function authorize(): bool
 	{
 		return Gate::check(UserPolicy::CAN_CREATE_OR_EDIT_OR_DELETE, [User::class]);

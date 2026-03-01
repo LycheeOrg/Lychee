@@ -18,11 +18,17 @@ class DeleteContactMessageRequest extends BaseApiRequest
 {
 	protected ContactMessage $contact_message;
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function authorize(): bool
 	{
 		return Gate::check(UserPolicy::CAN_CREATE_OR_EDIT_OR_DELETE, [User::class]);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function rules(): array
 	{
 		return [
@@ -30,6 +36,9 @@ class DeleteContactMessageRequest extends BaseApiRequest
 		];
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		/** @var int $id */

@@ -16,8 +16,18 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class ContactMessageFactory extends Factory
 {
+	/**
+	 * The name of the factory's corresponding model.
+	 *
+	 * @var class-string<ContactMessage>
+	 */
 	protected $model = ContactMessage::class;
 
+	/**
+	 * Define the model's default state.
+	 *
+	 * @return array<string, mixed>
+	 */
 	public function definition(): array
 	{
 		return [
@@ -30,7 +40,7 @@ class ContactMessageFactory extends Factory
 		];
 	}
 
-	public function read(): static
+	public function read(): Factory
 	{
 		return $this->state(fn (array $attributes) => ['is_read' => true]);
 	}

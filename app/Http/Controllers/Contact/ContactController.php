@@ -22,6 +22,10 @@ class ContactController extends Controller
 {
 	/**
 	 * Store a new contact message from a public visitor.
+	 *
+	 * @param StoreContactMessageRequest $request
+	 *
+	 * @return array{success:bool,message:string}
 	 */
 	public function store(StoreContactMessageRequest $request): array
 	{
@@ -53,6 +57,10 @@ class ContactController extends Controller
 
 	/**
 	 * List all contact messages (admin only).
+	 *
+	 * @param ContactMessagesListRequest $request
+	 *
+	 * @return array{data:array<int,ContactMessageResource>,pagination:array{total:int,per_page:int,current_page:int}}
 	 */
 	public function index(ContactMessagesListRequest $request): array
 	{
@@ -91,6 +99,10 @@ class ContactController extends Controller
 
 	/**
 	 * Update a contact message (mark as read/unread).
+	 *
+	 * @param UpdateContactMessageRequest $request
+	 *
+	 * @return ContactMessageResource
 	 */
 	public function update(UpdateContactMessageRequest $request): ContactMessageResource
 	{
@@ -103,6 +115,10 @@ class ContactController extends Controller
 
 	/**
 	 * Delete a contact message.
+	 *
+	 * @param DeleteContactMessageRequest $request
+	 *
+	 * @return Response
 	 */
 	public function destroy(DeleteContactMessageRequest $request): Response
 	{

@@ -18,11 +18,17 @@ class StoreContactMessageRequest extends BaseApiRequest
 	protected string $security_answer = '';
 	protected bool $consent_agreed = false;
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function authorize(): bool
 	{
 		return true;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function rules(): array
 	{
 		return [
@@ -34,6 +40,9 @@ class StoreContactMessageRequest extends BaseApiRequest
 		];
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		$this->name = $values['name'];

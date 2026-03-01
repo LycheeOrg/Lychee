@@ -28,9 +28,13 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ContactMessage extends Model
 {
+	/** @phpstan-use HasFactory<\Database\Factories\ContactMessageFactory> */
 	use HasFactory;
 	use ThrowsConsistentExceptions;
 
+	/**
+	 * @var list<string>
+	 */
 	protected $fillable = [
 		'name',
 		'email',
@@ -40,10 +44,18 @@ class ContactMessage extends Model
 		'user_agent',
 	];
 
+	/**
+	 * @var array<string, string>
+	 */
 	protected $casts = [
 		'is_read' => 'boolean',
+		'created_at' => 'datetime',
+		'updated_at' => 'datetime',
 	];
 
+	/**
+	 * @var list<string>
+	 */
 	protected $hidden = [
 		'ip_address',
 		'user_agent',
