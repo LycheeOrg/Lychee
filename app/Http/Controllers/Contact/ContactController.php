@@ -12,14 +12,25 @@ use App\Http\Requests\Contact\ContactMessagesListRequest;
 use App\Http\Requests\Contact\DeleteContactMessageRequest;
 use App\Http\Requests\Contact\StoreContactMessageRequest;
 use App\Http\Requests\Contact\UpdateContactMessageRequest;
+use App\Http\Resources\Collections\ContactMessageCollectionResource;
+use App\Http\Resources\GalleryConfigs\ContactConfig;
 use App\Http\Resources\Models\ContactMessageResource;
-use App\Models\Configs;
 use App\Models\ContactMessage;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 
 class ContactController extends Controller
 {
+	/**
+	 * Return the contact form configuration values.
+	 *
+	 * @return ContactConfig
+	 */
+	public function init(): ContactConfig
+	{
+		return new ContactConfig();
+	}
+
 	/**
 	 * Store a new contact message from a public visitor.
 	 *
@@ -30,8 +41,8 @@ class ContactController extends Controller
 	public function store(StoreContactMessageRequest $request): array
 	{
 		// Validate security answer if configured
-		$security_question = $request->config()->getValueAsString('contact_form_security_question');
-		$security_answer = $request->config()->getValueAsString('contact_form_security_answer');
+		$security_question = $request->configs()->getValueAsString('contact_form_security_question');
+		$security_answer = $request->configs()->getValueAsString('contact_form_security_answer');
 		if ($security_question !== '' && $security_answer !== '') {
 			if (strcasecmp(trim($request->securityAnswer()), trim($security_answer)) !== 0) {
 				abort(422, 'Incorrect answer to the security question.');
@@ -39,7 +50,7 @@ class ContactController extends Controller
 		}
 
 		// Validate consent if configured
-		$consent_text = $request->config()->getValueAsString('contact_form_custom_consent_text');
+		$consent_text = $request->configs()->getValueAsString('contact_form_custom_consent_text');
 		if ($consent_text !== '' && !$request->consentAgreed()) {
 			abort(422, 'You must agree to the privacy policy.');
 		}
@@ -60,9 +71,9 @@ class ContactController extends Controller
 	 *
 	 * @param ContactMessagesListRequest $request
 	 *
-	 * @return array{data:array<int,ContactMessageResource>,pagination:array{total:int,per_page:int,current_page:int}}
+	 * @return ContactMessageCollectionResource
 	 */
-	public function index(ContactMessagesListRequest $request): array
+	public function index(ContactMessagesListRequest $request): ContactMessageCollectionResource
 	{
 		$per_page = min((int) $request->query('per_page', 20), 100);
 		$page = max((int) $request->query('page', 1), 1);
@@ -87,14 +98,12 @@ class ContactController extends Controller
 		$total = $query->count();
 		$messages = $query->offset(($page - 1) * $per_page)->limit($per_page)->get();
 
-		return [
-			'data' => $messages->map(fn (ContactMessage $m) => new ContactMessageResource($m))->values()->all(),
-			'pagination' => [
-				'total' => $total,
-				'per_page' => $per_page,
-				'current_page' => $page,
-			],
-		];
+		return new ContactMessageCollectionResource(
+			$messages->map(fn (ContactMessage $m) => new ContactMessageResource($m))->values(),
+			$total,
+			$per_page,
+			$page,
+		);
 	}
 
 	/**

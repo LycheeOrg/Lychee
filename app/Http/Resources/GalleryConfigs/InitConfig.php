@@ -123,6 +123,7 @@ class InitConfig extends Data
 	// Homepage
 	public string $default_homepage;
 	public bool $is_timeline_page_enabled = false;
+	public bool $is_contact_form_enabled = false;
 
 	// Pagination settings
 	public PaginationMode $photos_pagination_mode;
@@ -219,6 +220,7 @@ class InitConfig extends Data
 		// Homepage
 		$this->default_homepage = request()->configs()->getValueAsString('home_page_default');
 		$this->is_timeline_page_enabled = request()->configs()->getValueAsBool('timeline_page_enabled');
+		$this->is_contact_form_enabled = request()->configs()->getValueAsBool('contact_form_enabled');
 
 		// Pagination settings
 		$this->photos_pagination_mode = request()->configs()->getValueAsEnum('photos_pagination_ui_mode', PaginationMode::class);

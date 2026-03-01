@@ -21,7 +21,8 @@ return new class() extends Migration {
 			$table->boolean('is_read')->default(false);
 			$table->string('ip_address', 45)->nullable();
 			$table->string('user_agent', 512)->nullable();
-			$table->timestamps();
+			$table->dateTime('created_at', 6)->nullable(false);
+			$table->dateTime('updated_at', 6)->nullable(false);
 
 			$table->index('created_at');
 			$table->index('is_read');

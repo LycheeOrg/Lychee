@@ -28,10 +28,11 @@ Route::get('/Frame', [Gallery\FrameController::class, 'get']);
 /**
  * CONTACT FORM.
  */
-Route::post('/contact', [Contact\ContactController::class, 'store'])->middleware(['throttle:5,1440']);
-Route::get('/contact', [Contact\ContactController::class, 'index']);
-Route::patch('/contact', [Contact\ContactController::class, 'update']);
-Route::delete('/contact', [Contact\ContactController::class, 'destroy']);
+Route::get('/Contact::Init', [Contact\ContactController::class, 'init'])->middleware(['cache_control', 'support:pro']);
+Route::post('/Contact', [Contact\ContactController::class, 'store'])->middleware(['throttle:5,1440', 'support:pro']);
+Route::get('/Contact', [Contact\ContactController::class, 'index'])->middleware('support:pro');
+Route::patch('/Contact', [Contact\ContactController::class, 'update'])->middleware('support:pro');
+Route::delete('/Contact', [Contact\ContactController::class, 'destroy'])->middleware('support:pro');
 
 Route::get('/Gallery::Init', [Gallery\ConfigController::class, 'getInit']);
 Route::get('/Gallery::Footer', [Gallery\ConfigController::class, 'getFooter'])->middleware(['cache_control']);
