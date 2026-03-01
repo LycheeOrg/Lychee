@@ -63,11 +63,17 @@
 				{{ $t("landing.Powered_by_Lychee") }}
 			</a>
 		</p>
+		<p v-if="footerData.is_contact_form_enabled" class="contact_form_link w-full uppercase text-muted-color leading-6 font-normal">
+			<a rel="noopener noreferrer" target="_blank" :href="Constants.BASE_URL + '/contact'" class="underline">
+				{{ footerData.contact_header ? footerData.contact_header : $t("contact.title") }}
+			</a>
+		</p>
 	</div>
 </template>
 <script setup lang="ts">
 import InitService from "@/services/init-service";
 import { ref } from "vue";
+import Constants from "@/services/constants";
 
 const footerData = ref<App.Http.Resources.GalleryConfigs.FooterConfig | undefined>(undefined);
 InitService.fetchFooter().then((data) => {

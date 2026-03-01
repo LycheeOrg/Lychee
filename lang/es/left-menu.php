@@ -22,4 +22,6 @@ return [
     'api' => 'Documentación de la API',
     'source_code' => 'Código fuente',
     'support' => 'Asistencia',
+    'contact' => 'Contact',
+    'messages' => 'Messages',
 ];

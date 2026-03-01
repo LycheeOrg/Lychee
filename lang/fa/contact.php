@@ -20,7 +20,7 @@ return [
     'consent_label' => 'I agree to the',
     'consent_privacy_link' => 'privacy policy',
     'name_required_error' => 'Name is required.',
-    'email_required_error' => 'Email is required.',
+    'email_required_error' => 'Contact method is required.',
     'message_min_length_error' => 'Message must be at least 10 characters.',
     'security_answer_required_error' => 'Please answer the security question.',
     'consent_required_error' => 'You must agree to the privacy policy.',

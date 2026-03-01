@@ -22,4 +22,6 @@ return [
     'api' => 'API 文档',
     'source_code' => '源代码',
     'support' => '支持',
+    'contact' => 'Contact',
+    'messages' => 'Messages',
 ];

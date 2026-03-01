@@ -15,7 +15,7 @@
 
 		<!-- Filters -->
 		<div class="flex flex-wrap gap-4 mb-6 items-center">
-			<InputText v-model="searchQuery" :placeholder="$t('contact.admin.search_placeholder')" class="w-64" @input="onSearchInput" />
+			<InputText v-model="searchQuery" :placeholder="$t('contact.admin.search_placeholder')" class="w-64!" @input="onSearchInput" />
 			<div class="flex gap-2">
 				<Button
 					:label="$t('contact.admin.filter_all')"
@@ -132,19 +132,19 @@ import Checkbox from "primevue/checkbox";
 import Column from "primevue/column";
 import ConfirmDialog from "primevue/confirmdialog";
 import DataTable from "primevue/datatable";
-import InputText from "primevue/inputtext";
 import Panel from "primevue/panel";
 import ProgressSpinner from "primevue/progressspinner";
 import Toolbar from "primevue/toolbar";
 import { trans } from "laravel-vue-i18n";
 import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
-import ContactService, { type ContactMessageResource } from "@/services/contact-service";
+import ContactService from "@/services/contact-service";
 import { useLycheeStateStore } from "@/stores/LycheeState";
+import InputText from "@/components/forms/basic/InputText.vue";
 
 const lycheeStore = useLycheeStateStore();
 lycheeStore.load();
 
-const messages = ref<ContactMessageResource[]>([]);
+const messages = ref<App.Http.Resources.Models.ContactMessageResource[]>([]);
 const loading = ref(false);
 const expandedRows = ref<Record<number, boolean>>({});
 const searchQuery = ref("");
@@ -159,7 +159,7 @@ function formatDate(iso: string): string {
 	return new Date(iso).toLocaleDateString(undefined, { year: "2-digit", month: "short", day: "numeric" });
 }
 
-function rowClass(data: ContactMessageResource): string {
+function rowClass(data: App.Http.Resources.Models.ContactMessageResource): string {
 	return data.is_read ? "opacity-60" : "";
 }
 
@@ -173,7 +173,9 @@ function load(page = 1): void {
 	})
 		.then((response) => {
 			messages.value = response.data.data;
-			pagination.value = response.data.pagination;
+			pagination.value.current_page = response.data.current_page;
+			pagination.value.total = response.data.total;
+			pagination.value.per_page = response.data.per_page;
 		})
 		.finally(() => {
 			loading.value = false;
@@ -198,7 +200,7 @@ function goToPage(page: number): void {
 	load(page);
 }
 
-function toggleRead(message: ContactMessageResource): void {
+function toggleRead(message: App.Http.Resources.Models.ContactMessageResource): void {
 	const newValue = !message.is_read;
 	ContactService.markRead(message.id, newValue)
 		.then((response) => {
@@ -209,7 +211,7 @@ function toggleRead(message: ContactMessageResource): void {
 		});
 }
 
-function confirmDelete(message: ContactMessageResource): void {
+function confirmDelete(message: App.Http.Resources.Models.ContactMessageResource): void {
 	confirm.require({
 		message: trans("contact.admin.delete_confirm_message"),
 		header: trans("contact.admin.delete_confirm_header"),

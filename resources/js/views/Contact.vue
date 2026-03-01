@@ -4,27 +4,20 @@
 			<OpenLeftMenu />
 		</template>
 		<template #center>
-			{{ $t("contact.title") }}
+			{{ contactConfig?.header ? contactConfig.header : $t("contact.title") }}
 		</template>
 		<template #end></template>
 	</Toolbar>
 
-	<Panel class="border-0 max-w-2xl mx-auto mt-6">
+	<Panel class="border-0 max-w-2xl mx-auto mt-6" v-if="contactConfig">
 		<div v-if="submitted" class="text-center p-8">
 			<i class="pi pi-check-circle text-green-500 text-5xl mb-4 block" />
-			<p class="text-lg">{{ $t("contact.success_message") }}</p>
+			<p class="text-lg">{{ contactConfig.thank_you_message ? contactConfig.thank_you_message : $t("contact.success_message") }}</p>
 			<Button class="mt-6 border-none" severity="secondary" :label="$t('contact.clear_button')" @click="reset" />
 		</div>
 
 		<form v-else class="flex flex-col gap-5" @submit.prevent="submit">
-			<p class="text-muted-color">{{ $t("contact.description") }}</p>
-
-			<!-- Sample Q&A (optional) -->
-			<div v-if="sampleQuestion" class="rounded-lg bg-surface-100 dark:bg-surface-100/5 p-4">
-				<p class="font-semibold mb-1">{{ $t("contact.sample_qa_label") }}</p>
-				<p class="text-sm text-muted-color mb-1"><span class="font-medium">Q:</span> {{ sampleQuestion }}</p>
-				<p v-if="sampleAnswer" class="text-sm text-muted-color"><span class="font-medium">A:</span> {{ sampleAnswer }}</p>
-			</div>
+			<p class="text-muted-color">{{ contactConfig.headline ? contactConfig.headline : $t("contact.description") }}</p>
 
 			<!-- Name -->
 			<div class="flex flex-col gap-1">
@@ -42,7 +35,10 @@
 
 			<!-- Email -->
 			<div class="flex flex-col gap-1">
-				<label for="contact-email" class="font-medium">{{ $t("contact.email_label") }} <span class="text-red-500">*</span></label>
+				<label for="contact-email" class="font-medium"
+					>{{ contactConfig.contact_method ? contactConfig.contact_method : $t("contact.email_label") }}
+					<span class="text-red-500">*</span></label
+				>
 				<InputText
 					id="contact-email"
 					v-model="form.email"
@@ -55,11 +51,11 @@
 			</div>
 
 			<!-- Security Question (optional) -->
-			<div v-if="securityQuestion" class="flex flex-col gap-1">
+			<div v-if="contactConfig.security_question" class="flex flex-col gap-1">
 				<label for="contact-security" class="font-medium"
-					>{{ $t("contact.security_question_label") }} <span class="text-red-500">*</span></label
+					>{{ contactConfig.security_question ? contactConfig.security_question : $t("contact.security_question_label") }}
+					<span class="text-red-500">*</span></label
 				>
-				<p class="text-sm text-muted-color">{{ securityQuestion }}</p>
 				<InputText
 					id="contact-security"
 					v-model="form.security_answer"
@@ -72,13 +68,16 @@
 
 			<!-- Message -->
 			<div class="flex flex-col gap-1">
-				<label for="contact-message" class="font-medium">{{ $t("contact.message_label") }} <span class="text-red-500">*</span></label>
+				<label for="contact-message" class="font-medium"
+					>{{ contactConfig.message_label ? contactConfig.message_label : $t("contact.message_label") }}
+					<span class="text-red-500">*</span></label
+				>
 				<Textarea
 					id="contact-message"
 					v-model="form.message"
-					:placeholder="$t('contact.message_placeholder')"
+					:placeholder="contactConfig.message_answer ? contactConfig.message_answer : $t('contact.message_placeholder')"
 					:invalid="errors.message !== ''"
-					rows="5"
+					:rows="5"
 					maxlength="5000"
 					class="w-full"
 				/>
@@ -89,14 +88,20 @@
 			</div>
 
 			<!-- Consent (optional) -->
-			<div v-if="consentText" class="flex items-start gap-3">
+			<div v-if="contactConfig.is_consent_required" class="flex items-start gap-3">
 				<Checkbox v-model="form.consent_agreed" binary input-id="contact-consent" :invalid="errors.consent_agreed !== ''" />
 				<label for="contact-consent" class="text-sm cursor-pointer">
-					{{ $t("contact.consent_label") }}
-					<a v-if="privacyUrl" :href="privacyUrl" target="_blank" rel="noopener noreferrer" class="underline">
+					{{ contactConfig.consent_text ? contactConfig.consent_text : $t("contact.consent_label") }} <span class="text-red-500">*</span
+					><br />
+					<a
+						v-if="contactConfig.privacy_policy_url"
+						:href="contactConfig.privacy_policy_url"
+						target="_blank"
+						rel="noopener noreferrer"
+						class="underline"
+					>
 						{{ $t("contact.consent_privacy_link") }}
 					</a>
-					<span v-else>{{ $t("contact.consent_privacy_link") }}</span>
 				</label>
 			</div>
 			<small v-if="errors.consent_agreed" class="text-red-500">{{ errors.consent_agreed }}</small>
@@ -107,34 +112,37 @@
 			<!-- Actions -->
 			<div class="flex gap-3 justify-end">
 				<Button type="button" severity="secondary" class="border-none" :label="$t('contact.clear_button')" @click="reset" />
-				<Button type="submit" class="border-none" :label="submitLabel" :loading="loading" :disabled="loading" />
+				<Button
+					type="submit"
+					class="border-none"
+					:label="contactConfig.submit_button_text ? contactConfig.submit_button_text : $t('contact.submit_button')"
+					:loading="loading"
+					:disabled="loading"
+				/>
 			</div>
 		</form>
 	</Panel>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { onMounted, ref } from "vue";
 import Button from "primevue/button";
 import Checkbox from "primevue/checkbox";
-import InputText from "primevue/inputtext";
 import Panel from "primevue/panel";
-import Textarea from "primevue/textarea";
 import Toolbar from "primevue/toolbar";
 import { trans } from "laravel-vue-i18n";
 import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
 import ContactService from "@/services/contact-service";
 import { useLycheeStateStore } from "@/stores/LycheeState";
+import InputText from "@/components/forms/basic/InputText.vue";
+import Textarea from "@/components/forms/basic/Textarea.vue";
+import { useRouter } from "vue-router";
 
 const lycheeStore = useLycheeStateStore();
 lycheeStore.load();
 
-const sampleQuestion = ref("");
-const sampleAnswer = ref("");
-const securityQuestion = ref("");
-const consentText = ref("");
-const privacyUrl = ref("");
-const customSubmitText = ref("");
+const router = useRouter();
+const contactConfig = ref<App.Http.Resources.GalleryConfigs.ContactConfig | undefined>(undefined);
 const submitted = ref(false);
 const loading = ref(false);
 const globalError = ref("");
@@ -155,18 +163,13 @@ const errors = ref({
 	consent_agreed: "",
 });
 
-const submitLabel = computed(() => (customSubmitText.value !== "" ? customSubmitText.value : trans("contact.submit_button")));
-
 function loadConfig(): void {
-	// Read config values from the lychee store / init data if available,
-	// otherwise fall back to empty strings (fields hidden).
-	const initData = lycheeStore as unknown as Record<string, unknown>;
-	sampleQuestion.value = (initData["contact_form_sample_question"] as string | undefined) ?? "";
-	sampleAnswer.value = (initData["contact_form_sample_answer"] as string | undefined) ?? "";
-	securityQuestion.value = (initData["contact_form_security_question"] as string | undefined) ?? "";
-	consentText.value = (initData["contact_form_custom_consent_text"] as string | undefined) ?? "";
-	privacyUrl.value = (initData["contact_form_custom_privacy_url"] as string | undefined) ?? "";
-	customSubmitText.value = (initData["contact_form_custom_submit_button_text"] as string | undefined) ?? "";
+	ContactService.init().then((response) => {
+		contactConfig.value = response.data;
+		if (!contactConfig.value.is_contact_form_enabled) {
+			router.push("/gallery");
+		}
+	});
 }
 
 function validate(): boolean {
@@ -185,11 +188,11 @@ function validate(): boolean {
 		errors.value.message = trans("contact.message_min_length_error");
 		valid = false;
 	}
-	if (securityQuestion.value !== "" && form.value.security_answer.trim() === "") {
+	if (contactConfig.value?.security_question && form.value.security_answer.trim() === "") {
 		errors.value.security_answer = trans("contact.security_answer_required_error");
 		valid = false;
 	}
-	if (consentText.value !== "" && !form.value.consent_agreed) {
+	if (contactConfig.value?.consent_text && !form.value.consent_agreed) {
 		errors.value.consent_agreed = trans("contact.consent_required_error");
 		valid = false;
 	}
@@ -198,7 +201,7 @@ function validate(): boolean {
 }
 
 function submit(): void {
-	if (!validate()) {
+	if (!validate() || !contactConfig.value) {
 		return;
 	}
 
@@ -209,8 +212,8 @@ function submit(): void {
 		name: form.value.name,
 		email: form.value.email,
 		message: form.value.message,
-		...(securityQuestion.value !== "" ? { security_answer: form.value.security_answer } : {}),
-		...(consentText.value !== "" ? { consent_agreed: form.value.consent_agreed } : {}),
+		...(contactConfig.value.security_question ? { security_answer: form.value.security_answer } : {}),
+		...(contactConfig.value.is_consent_required ? { consent_agreed: form.value.consent_agreed } : {}),
 	};
 
 	ContactService.submit(payload)

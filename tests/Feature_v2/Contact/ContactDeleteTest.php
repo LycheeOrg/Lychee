@@ -13,7 +13,6 @@
 
 namespace Tests\Feature_v2\Contact;
 
-use App\Models\Configs;
 use App\Models\ContactMessage;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 use Tests\Traits\RequirePro;

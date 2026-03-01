@@ -118,6 +118,14 @@ class ConfigIntegrity
 		'webshop_auto_fulfill_enabled',
 		'webshop_manual_fulfill_enabled',
 		'photos_star_visibility',
+		'contact_form_enabled',
+		'contact_form_sample_question',
+		'contact_form_sample_answer',
+		'contact_form_security_question',
+		'contact_form_security_answer',
+		'contact_form_custom_consent_text',
+		'contact_form_custom_privacy_url',
+		'contact_form_custom_submit_button_text',
 	];
 
 	/**

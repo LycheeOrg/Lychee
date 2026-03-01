@@ -50,7 +50,7 @@ class ContactController extends Controller
 		}
 
 		// Validate consent if configured
-		$consent_text = $request->configs()->getValueAsString('contact_form_custom_consent_text');
+		$consent_text = $request->configs()->getValueAsBool('contact_form_custom_consent_required');
 		if ($consent_text !== '' && !$request->consentAgreed()) {
 			abort(422, 'You must agree to the privacy policy.');
 		}
@@ -99,7 +99,7 @@ class ContactController extends Controller
 		$messages = $query->offset(($page - 1) * $per_page)->limit($per_page)->get();
 
 		return new ContactMessageCollectionResource(
-			$messages->map(fn (ContactMessage $m) => new ContactMessageResource($m))->values(),
+			$messages->map(fn (ContactMessage $m) => new ContactMessageResource($m)),
 			$total,
 			$per_page,
 			$page,

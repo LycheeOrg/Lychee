@@ -623,6 +623,7 @@ const LycheePrimeVueConfig: Preset = {
 						color: "{surface.0}",
 					},
 					legend: {
+						color: "{primary.400}",
 						background: "{surface.900}",
 						hoverBackground: "{surface.800}",
 						hoverColor: "{surface.0}",

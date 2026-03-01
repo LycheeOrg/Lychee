@@ -14,41 +14,27 @@ export type ContactMessageSubmitResponse = {
 	message: string;
 };
 
-export type ContactMessageResource = {
-	id: number;
-	name: string;
-	email: string;
-	message: string;
-	is_read: boolean;
-	created_at: string;
-};
-
-export type ContactMessagesListResponse = {
-	data: ContactMessageResource[];
-	pagination: {
-		total: number;
-		per_page: number;
-		current_page: number;
-	};
-};
-
 const ContactService = {
+	init(): Promise<AxiosResponse<App.Http.Resources.GalleryConfigs.ContactConfig>> {
+		return axios.get(`${Constants.getApiUrl()}Contact::Init`, { data: {} });
+	},
+
 	submit(data: ContactMessageSubmitRequest): Promise<AxiosResponse<ContactMessageSubmitResponse>> {
-		return axios.post(`${Constants.getApiUrl()}contact`, data);
+		return axios.post(`${Constants.getApiUrl()}Contact`, data);
 	},
 
 	list(
 		params: { page?: number; per_page?: number; is_read?: boolean | null; search?: string } = {},
-	): Promise<AxiosResponse<ContactMessagesListResponse>> {
-		return axios.get(`${Constants.getApiUrl()}contact`, { params });
+	): Promise<AxiosResponse<App.Http.Resources.Collections.ContactMessageCollectionResource>> {
+		return axios.get(`${Constants.getApiUrl()}Contact`, { params, data: {} });
 	},
 
-	markRead(id: number, is_read: boolean): Promise<AxiosResponse<ContactMessageResource>> {
-		return axios.patch(`${Constants.getApiUrl()}contact`, { id, is_read });
+	markRead(id: number, is_read: boolean): Promise<AxiosResponse<App.Http.Resources.Models.ContactMessageResource>> {
+		return axios.patch(`${Constants.getApiUrl()}Contact`, { id, is_read });
 	},
 
 	deleteMessage(id: number): Promise<AxiosResponse<void>> {
-		return axios.delete(`${Constants.getApiUrl()}contact`, { data: { id } });
+		return axios.delete(`${Constants.getApiUrl()}Contact`, { data: { id } });
 	},
 };
 

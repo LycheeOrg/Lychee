@@ -24,6 +24,9 @@ class FooterConfig extends Data
 	public string $sm_twitter_url;
 	public string $sm_youtube_url;
 
+	public bool $is_contact_form_enabled;
+	public string $contact_header;
+
 	public function __construct()
 	{
 		$this->footer_additional_text = request()->configs()->getValueAsString('footer_additional_text');
@@ -35,6 +38,9 @@ class FooterConfig extends Data
 		$this->sm_instagram_url = request()->configs()->getValueAsString('sm_instagram_url');
 		$this->sm_twitter_url = request()->configs()->getValueAsString('sm_twitter_url');
 		$this->sm_youtube_url = request()->configs()->getValueAsString('sm_youtube_url');
+
+		$this->is_contact_form_enabled = request()->configs()->getValueAsBool('contact_form_enabled');
+		$this->contact_header = request()->configs()->getValueAsString('contact_form_header');
 	}
 
 	private function get_copyright(): string

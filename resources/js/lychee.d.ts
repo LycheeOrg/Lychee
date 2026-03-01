@@ -192,6 +192,12 @@ declare namespace App.Http.Resources.Admin {
 	};
 }
 declare namespace App.Http.Resources.Collections {
+	export type ContactMessageCollectionResource = {
+		data: App.Http.Resources.Models.ContactMessageResource[];
+		current_page: number;
+		per_page: number;
+		total: number;
+	};
 	export type PaginatedAlbumsResource = {
 		data: App.Http.Resources.Models.ThumbAlbumResource[];
 		current_page: number;
@@ -396,6 +402,20 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		is_album_timeline_enabled: boolean;
 		is_photo_timeline_enabled: boolean;
 	};
+	export type ContactConfig = {
+		is_contact_form_enabled: boolean;
+		security_question: string;
+		is_consent_required: boolean;
+		header: string;
+		headline: string;
+		consent_text: string;
+		privacy_policy_url: string;
+		submit_button_text: string;
+		contact_method: string;
+		message_label: string;
+		message_answer: string;
+		thank_you_message: string;
+	};
 	export type FooterConfig = {
 		footer_additional_text: string;
 		footer_show_copyright: boolean;
@@ -406,6 +426,8 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		sm_instagram_url: string;
 		sm_twitter_url: string;
 		sm_youtube_url: string;
+		is_contact_form_enabled: boolean;
+		contact_header: string;
 	};
 	export type InitConfig = {
 		is_debug_enabled: boolean;
@@ -464,6 +486,7 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		rating_album_view_mode: App.Enum.VisibilityType;
 		default_homepage: string;
 		is_timeline_page_enabled: boolean;
+		is_contact_form_enabled: boolean;
 		photos_pagination_mode: App.Enum.PaginationMode;
 		albums_pagination_mode: App.Enum.PaginationMode;
 		photos_per_page: number;
@@ -565,6 +588,14 @@ declare namespace App.Http.Resources.Models {
 		is_expert: boolean;
 		require_se: boolean;
 		order: number | null;
+	};
+	export type ContactMessageResource = {
+		id: number;
+		name: string;
+		email: string;
+		message: string;
+		is_read: boolean;
+		created_at: string;
 	};
 	export type HeadAbstractAlbumResource = {
 		config: App.Http.Resources.GalleryConfigs.AlbumConfig;

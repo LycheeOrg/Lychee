@@ -22,4 +22,6 @@ return [
     'api' => 'توثيق API',
     'source_code' => 'كود المصدر',
     'support' => 'الدعم',
+    'contact' => 'Contact',
+    'messages' => 'Messages',
 ];

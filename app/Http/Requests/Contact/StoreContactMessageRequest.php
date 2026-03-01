@@ -33,7 +33,7 @@ class StoreContactMessageRequest extends BaseApiRequest
 	{
 		return [
 			'name' => ['required', 'string', 'max:255'],
-			'email' => ['required', 'email', 'max:255'],
+			'email' => ['required', 'string', 'max:255'],
 			'message' => ['required', 'string', 'min:10', 'max:5000'],
 			'security_answer' => ['sometimes', 'nullable', 'string'],
 			'consent_agreed' => ['sometimes', 'boolean'],

@@ -152,6 +152,9 @@ final readonly class RouteCacheManager
 			'api/v2/Shop/Management/List' => false,
 			'api/v2/Shop/Order/List' => false,
 			'api/v2/Shop/Order/{order_id}' => false,
+
+			'api/v2/Contact' => false,
+			'api/v2/Contact::Init' => new RouteCacheConfig(tag: CacheTag::SETTINGS, user_dependant: false),
 		];
 	}
 
