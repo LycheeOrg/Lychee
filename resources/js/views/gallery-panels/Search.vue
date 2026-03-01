@@ -37,7 +37,7 @@
 		@rotate-photo-c-w="rotatePhotoCW"
 		@rotate-photo-c-c-w="rotatePhotoCCW"
 		@set-album-header="setAlbumHeader"
-		@toggle-star="toggleHighlight"
+		@toggle-highlight="toggleHighlight"
 		@toggle-move="toggleMove"
 		@toggle-delete="toggleDelete"
 		@updated="refresh()"
@@ -309,6 +309,14 @@ const photoCallbacks = {
 		if (albumStore.modelAlbum !== undefined) {
 			albumStore.modelAlbum.header_id = isToggleOff ? null : selectedPhoto.value!.id;
 		}
+		if (
+			albumStore.album !== undefined &&
+			"editable" in albumStore.album &&
+			albumStore.album.editable !== undefined &&
+			albumStore.album.editable !== null
+		) {
+			albumStore.album.editable.header_id = isToggleOff ? null : selectedPhoto.value!.id;
+		}
 		// Update the header image URL in the album's preFormattedData
 		if (albumStore.album?.preFormattedData) {
 			if (isToggleOff) {
@@ -410,7 +418,14 @@ onKeyStroke(
 	"e",
 	() => !shouldIgnoreKeystroke() && photoStore.isLoaded && albumStore.rights?.can_edit && (is_photo_edit_open.value = !is_photo_edit_open.value),
 );
-onKeyStroke("s", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && albumStore.rights?.can_edit && toggleHighlight());
+onKeyStroke(
+	"s",
+	() =>
+		!shouldIgnoreKeystroke() &&
+		photoStore.isLoaded &&
+		(albumsStore.rootRights?.can_highlight || albumStore.rights?.can_edit) &&
+		toggleHighlight(),
+);
 onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && photoStore.isLoaded && albumStore.album?.rights.can_delete && toggleDelete());
 
 // on key stroke escape:

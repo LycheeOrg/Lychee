@@ -31,7 +31,7 @@ class ConfigResource extends Data
 		$this->type = ConfigType::tryFrom($c->type_range) ?? $c->type_range;
 		$this->value = $c->value;
 		$this->documentation = $c->description;
-		$this->details = $c->details;
+		$this->details = $c->details ?? '';
 		$this->require_se = $c->level > 0;
 		$this->is_expert = $c->is_expert;
 		$this->order = (config('app.env', 'dev') === 'dev') ? $c->order : null;

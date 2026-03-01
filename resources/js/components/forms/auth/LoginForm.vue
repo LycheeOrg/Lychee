@@ -49,6 +49,10 @@
 				</FloatLabel>
 				<Message v-if="invalidPassword" severity="error">{{ $t("dialogs.login.unknown_invalid") }}</Message>
 			</div>
+			<div class="inline-flex items-center gap-2" :class="props.padding ?? 'px-9'">
+				<Checkbox v-model="rememberMe" input-id="remember_me" :binary="true" />
+				<label for="remember_me" class="cursor-pointer">{{ $t("dialogs.login.remember_me") }}</label>
+			</div>
 			<div class="text-muted-color text-right font-semibold" :class="props.padding ?? 'px-9'">
 				Lychee <span v-if="is_se_enabled" class="text-primary-500">SE</span>
 			</div>
@@ -104,6 +108,7 @@
 import { ref } from "vue";
 import FloatLabel from "primevue/floatlabel";
 import Button from "primevue/button";
+import Checkbox from "primevue/checkbox";
 import Message from "primevue/message";
 import AuthService from "@/services/auth-service";
 import InputText from "@/components/forms/basic/InputText.vue";
@@ -134,6 +139,7 @@ const props = defineProps<{
 
 const username = ref("");
 const password = ref("");
+const rememberMe = ref(false);
 const userStore = useUserStore();
 const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
@@ -144,7 +150,7 @@ const invalidPassword = ref(false);
 const oauths = ref<OauthProvider[] | undefined>(undefined);
 
 function login() {
-	AuthService.login(username.value, password.value)
+	AuthService.login(username.value, password.value, rememberMe.value)
 		.then(() => {
 			is_login_open.value = false;
 			userStore.setUser(undefined);

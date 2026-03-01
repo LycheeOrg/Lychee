@@ -73,6 +73,7 @@ class AuthControllerTest extends AbstractTestCase
 		$request->shouldReceive('ip')->andReturn('127.0.0.1');
 		// Not clean: totally a work around, verify should return a Verify interface.
 		$request->shouldReceive('verify')->andReturn(new SupporterVerifyier());
+		$request->shouldReceive('rememberMe')->andReturn(false);
 
 		// Login should succeed with local auth
 		$this->controller->login($request);
@@ -97,6 +98,7 @@ class AuthControllerTest extends AbstractTestCase
 		$request->shouldReceive('ip')->andReturn('127.0.0.1');
 		// Not clean: totally a work around, verify should return a Verify interface.
 		$request->shouldReceive('verify')->andReturn(new FreeVerifyier());
+		$request->shouldReceive('rememberMe')->andReturn(false);
 
 		// Login should succeed with local auth
 		$this->controller->login($request);
@@ -120,6 +122,7 @@ class AuthControllerTest extends AbstractTestCase
 		$request->shouldReceive('password')->andReturn('wrongpassword');
 		$request->shouldReceive('ip')->andReturn('127.0.0.1');
 		$request->shouldReceive('verify')->andReturn(new FreeVerifyier());
+		$request->shouldReceive('rememberMe')->andReturn(false);
 
 		// Expect authentication exception
 		$this->expectException(UnauthenticatedException::class);
@@ -240,6 +243,7 @@ class AuthControllerTest extends AbstractTestCase
 		$request->shouldReceive('ip')->andReturn('127.0.0.1');
 		// Not clean: totally a work around, verify should return a Verify interface.
 		$request->shouldReceive('verify')->andReturn(new SupporterVerifyier());
+		$request->shouldReceive('rememberMe')->andReturn(false);
 
 		// Login should succeed via LDAP
 		$controller->login($request);
@@ -295,6 +299,7 @@ class AuthControllerTest extends AbstractTestCase
 		$request->shouldReceive('password')->andReturn('localpassword');
 		$request->shouldReceive('ip')->andReturn('127.0.0.1');
 		$request->shouldReceive('verify')->andReturn(new SupporterVerifyier());
+		$request->shouldReceive('rememberMe')->andReturn(false);
 
 		// Login should fall back to local auth
 		$controller->login($request);
@@ -348,6 +353,7 @@ class AuthControllerTest extends AbstractTestCase
 		$request->shouldReceive('ip')->andReturn('127.0.0.1');
 		// Not clean: totally a work around, verify should return a Verify interface.
 		$request->shouldReceive('verify')->andReturn(new SupporterVerifyier());
+		$request->shouldReceive('rememberMe')->andReturn(false);
 
 		// Login should fall back to local auth
 		$controller->login($request);
@@ -402,6 +408,7 @@ class AuthControllerTest extends AbstractTestCase
 		$request->shouldReceive('ip')->andReturn('127.0.0.1');
 		// Not clean: totally a work around, verify should return a Verify interface.
 		$request->shouldReceive('verify')->andReturn(new SupporterVerifyier());
+		$request->shouldReceive('rememberMe')->andReturn(false);
 
 		// Expect authentication exception
 		$this->expectException(UnauthenticatedException::class);
@@ -467,6 +474,7 @@ class AuthControllerTest extends AbstractTestCase
 		$request->shouldReceive('ip')->andReturn('127.0.0.1');
 		// Not clean: totally a work around, verify should return a Verify interface.
 		$request->shouldReceive('verify')->andReturn(new SupporterVerifyier());
+		$request->shouldReceive('rememberMe')->andReturn(false);
 
 		// Login should fall back to local auth
 		$controller->login($request);
@@ -493,6 +501,7 @@ class AuthControllerTest extends AbstractTestCase
 		$request->shouldReceive('password')->andReturn('localpassword');
 		$request->shouldReceive('ip')->andReturn('127.0.0.1');
 		$request->shouldReceive('verify')->andReturn(new FreeVerifyier());
+		$request->shouldReceive('rememberMe')->andReturn(false);
 
 		// Login should go directly to local auth
 		$this->controller->login($request);

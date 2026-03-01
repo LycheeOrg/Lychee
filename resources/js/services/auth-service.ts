@@ -2,12 +2,13 @@ import axios, { AxiosRequestConfig, type AxiosResponse } from "axios";
 import Constants from "./constants";
 
 const AuthService = {
-	login(username: string, password: string): Promise<AxiosResponse<void>> {
+	login(username: string, password: string, rememberMe: boolean = false): Promise<AxiosResponse<void>> {
 		return axios.post(
 			`${Constants.getApiUrl()}Auth::login`,
 			{
 				username: username,
 				password: password,
+				remember_me: rememberMe,
 			},
 			{
 				cache: {

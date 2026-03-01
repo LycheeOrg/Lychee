@@ -66,6 +66,7 @@ return [
         'password' => 'Hasło',
         'unknown_invalid' => 'Nieznany użytkownik lub nieprawidłowe hasło.',
         'signin' => 'Logowanie',
+        'remember_me' => 'Zapamiętaj mnie',
     ],
     'register' => [
         'enter_license' => 'Wprowadź swój klucz licencyjny poniżej:',

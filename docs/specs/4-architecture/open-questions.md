@@ -1768,3 +1768,9 @@ Need to clarify the sequence:
 ---
 
 *Last updated: 2026-01-02*
+
+### ~~Q-023-01: Remember-me Cookie Duration and Admin Configurability~~ ✅ RESOLVED
+
+**Decision:** Option C — Use a shorter default (4 weeks) with env override
+**Rationale:** A 4-week (40320 minutes) default is more security-conscious than Laravel's ~5-year default while still being practical for home/personal instances. The duration is configurable via `REMEMBER_LIFETIME` env variable, loaded by `config/auth.php` in the lychee guard config (`'remember' => (int) env('REMEMBER_LIFETIME', 40320)`). The existing `SessionOrTokenGuard::createGuard()` already reads this key via `setRememberDuration()`. No admin UI control — env/config only.
+**Updated in spec:** Non-Goals (clarified no admin UI for duration), NFR-023-01 (cookie duration = 4 weeks default)

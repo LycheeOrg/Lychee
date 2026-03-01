@@ -24,6 +24,8 @@ class LoginRequest extends BaseApiRequest implements HasUsername, HasPassword
 	use HasUsernameTrait;
 	use HasPasswordTrait;
 
+	protected bool $remember_me = false;
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -40,6 +42,7 @@ class LoginRequest extends BaseApiRequest implements HasUsername, HasPassword
 		return [
 			RequestAttribute::USERNAME_ATTRIBUTE => ['required', new UsernameRule()],
 			RequestAttribute::PASSWORD_ATTRIBUTE => ['required', new PasswordRule(false)],
+			RequestAttribute::REMEMBER_ME_ATTRIBUTE => ['sometimes', 'boolean'],
 		];
 	}
 
@@ -50,5 +53,14 @@ class LoginRequest extends BaseApiRequest implements HasUsername, HasPassword
 	{
 		$this->username = $values[RequestAttribute::USERNAME_ATTRIBUTE];
 		$this->password = $values[RequestAttribute::PASSWORD_ATTRIBUTE];
+		$this->remember_me = $values[RequestAttribute::REMEMBER_ME_ATTRIBUTE] ?? false;
+	}
+
+	/**
+	 * Returns whether the user wants to be remembered.
+	 */
+	public function rememberMe(): bool
+	{
+		return $this->remember_me;
 	}
 }

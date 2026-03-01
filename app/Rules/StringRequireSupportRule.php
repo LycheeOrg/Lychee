@@ -9,6 +9,7 @@
 namespace App\Rules;
 
 use Illuminate\Contracts\Validation\ValidationRule;
+use LycheeVerify\Contract\Status;
 use LycheeVerify\Contract\VerifyInterface;
 
 /**
@@ -18,8 +19,9 @@ final class StringRequireSupportRule implements ValidationRule
 {
 	public function __construct(
 		private mixed $expected,
-		private VerifyInterface $verify)
-	{
+		private VerifyInterface $verify,
+		private Status $status = Status::SUPPORTER_EDITION,
+	) {
 		$this->verify = $verify;
 		$this->expected = $expected === '' ? null : $expected;
 	}
@@ -34,10 +36,17 @@ final class StringRequireSupportRule implements ValidationRule
 			return;
 		}
 
-		if ($this->verify->is_supporter()) {
+		if ($this->verify->check($this->status)) {
 			return;
 		}
 
-		$fail('Error: This functionality is only available in the Supporter Edition of Lychee. See here: https://lycheeorg.dev/get-supporter-edition/');
+		$edition = match ($this->status) {
+			Status::SUPPORTER_EDITION => 'Supporter Edition',
+			Status::PRO_EDITION => 'Pro Edition',
+			Status::SIGNATURE_EDITION => 'Signature Edition',
+			default => 'Unknown Edition',
+		};
+
+		$fail('Error: This functionality is only available in the ' . $edition . ' of Lychee. See here: https://lycheeorg.dev/get-supporter-edition/');
 	}
 }

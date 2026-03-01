@@ -35,7 +35,7 @@
 		@rotate-photo-c-w="rotatePhotoCW"
 		@rotate-photo-c-c-w="rotatePhotoCCW"
 		@set-album-header="setAlbumHeader"
-		@toggle-star="toggleHighlight"
+		@toggle-highlight="toggleHighlight"
 		@toggle-move="toggleMove"
 		@toggle-delete="toggleDelete"
 		@updated="refresh()"
@@ -383,7 +383,14 @@ onKeyStroke(
 // Priviledged Photo operations
 onKeyStroke("m", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && albumStore.rights?.can_edit && toggleMove());
 onKeyStroke("e", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && albumStore.rights?.can_edit && toggleEdit());
-onKeyStroke("s", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && albumStore.rights?.can_edit && toggleHighlight());
+onKeyStroke(
+	"s",
+	() =>
+		!shouldIgnoreKeystroke() &&
+		photoStore.isLoaded &&
+		(albumsStore.rootRights?.can_highlight || albumStore.rights?.can_edit) &&
+		toggleHighlight(),
+);
 onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && photoStore.isLoaded && albumStore.rights?.can_delete && toggleDelete());
 onKeyStroke("0", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && handleRatingClick(photoStore.photo!.id, 0));
 onKeyStroke("1", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && handleRatingClick(photoStore.photo!.id, 1));

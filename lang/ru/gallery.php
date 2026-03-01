@@ -10,6 +10,10 @@ return [
     'pinned_albums' => 'Закреплённые альбомы',
     'albums' => 'Альбомы',
     'root' => 'Альбомы',
+    'set_focus' => 'Set Focus',
+    'set_header_focus' => 'Set Header Focus',
+    'done' => 'Done',
+    'cancel' => 'Cancel',
     'tabs' => [
         'my_albums' => 'My Albums',
         'shared_with_me' => 'Shared with Me',
@@ -27,6 +31,7 @@ return [
     'thumbnail' => 'Миниатюра фото',
     'live_video' => 'Часть видео с живого фото',
     'download_raw' => 'Download RAW',
+    'download_album' => 'Выберите разрешение изображений для ZIP-архива альбома. Если у фотографии нет выбранного варианта, будет использован оригинал.',
     'camera_data' => 'Дата камеры',
     'album_reserved' => 'Все права защищены',
     'map' => [
@@ -119,6 +124,9 @@ return [
             'share' => 'Поделиться альбомом',
             'embed' => 'Embed Album',
             'stats_only_se' => 'Статистика доступна в версии для поддерживающих пользователей',
+            'edit' => 'Edit',
+            'save' => 'Save',
+            'open_gallery' => 'Open gallery',
             'apply_renamer' => 'Apply Renamer Rules',
             'watermark' => 'Watermark',
         ],
@@ -154,6 +162,7 @@ return [
             'tags_required' => 'Теги обязательны.',
             'all_tags_must_match' => 'Все теги должны совпадать.',
         ],
+
     ],
     'photo' => [
         'actions' => [

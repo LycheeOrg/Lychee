@@ -11,6 +11,10 @@ return [
     'pinned_albums' => 'Rögzített albumok',
     'albums' => 'Albums',
     'root' => 'Albums',
+    'set_focus' => 'Set Focus',
+    'set_header_focus' => 'Set Header Focus',
+    'done' => 'Done',
+    'cancel' => 'Cancel',
     'tabs' => [
         'my_albums' => 'My Albums',
         'shared_with_me' => 'Shared with Me',
@@ -28,6 +32,7 @@ return [
     'thumbnail' => 'Photo thumbnail',
     'live_video' => 'Video part of live-photo',
     'download_raw' => 'Download RAW',
+    'download_album' => 'Válassza ki a képfelbontást az album ZIP archívumához. Ha egy fotónak nincs meg a kiválasztott változata, az eredeti lesz használva.',
     'camera_data' => 'Camera date',
     'album_reserved' => 'All Rights Reserved',
     'map' => [
@@ -120,6 +125,9 @@ return [
             'share' => 'Share Album',
             'embed' => 'Embed Album',
             'stats_only_se' => 'Statistics available in the Supporter Edition',
+            'edit' => 'Edit',
+            'save' => 'Save',
+            'open_gallery' => 'Open gallery',
             'apply_renamer' => 'Apply Renamer Rules',
             'watermark' => 'Watermark',
         ],
@@ -155,6 +163,7 @@ return [
             'tags_required' => 'Tags are required.',
             'all_tags_must_match' => 'All tags must match.',
         ],
+
     ],
     'photo' => [
         'actions' => [

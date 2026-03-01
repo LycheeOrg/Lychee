@@ -66,6 +66,7 @@ return [
         'password' => 'Wachtwoord',
         'unknown_invalid' => 'Onbekende gebruiker of ongeldig wachtwoord.',
         'signin' => 'Aanmelden',
+        'remember_me' => 'Onthoud mij',
     ],
     'register' => [
         'enter_license' => 'Voer uw licentiesleutel hieronder in:',

@@ -10,6 +10,10 @@ return [
     'pinned_albums' => 'آلبوم‌های سنجاق‌شده',
     'albums' => 'آلبوم‌ها',
     'root' => 'آلبوم‌ها',
+    'set_focus' => 'Set Focus',
+    'set_header_focus' => 'Set Header Focus',
+    'done' => 'Done',
+    'cancel' => 'Cancel',
     'tabs' => [
         'my_albums' => 'My Albums',
         'shared_with_me' => 'Shared with Me',
@@ -27,6 +31,7 @@ return [
     'thumbnail' => 'تصویر کوچک',
     'live_video' => 'بخش ویدئویی لایو-فوتو',
     'download_raw' => 'Download RAW',
+    'download_album' => 'رزولوشن تصویر را برای فایل ZIP آلبوم انتخاب کنید. اگر عکسی نوع انتخاب‌شده را نداشته باشد، از نسخه اصلی استفاده می‌شود.',
     'camera_data' => 'تاریخ دوربین',
     'album_reserved' => 'کلیه حقوق محفوظ است',
     'map' => [
@@ -119,6 +124,9 @@ return [
             'share' => 'اشتراک‌گذاری آلبوم',
             'embed' => 'Embed Album',
             'stats_only_se' => 'آمار فقط در نسخه حامیان در دسترس است',
+            'edit' => 'Edit',
+            'save' => 'Save',
+            'open_gallery' => 'Open gallery',
             'apply_renamer' => 'Apply Renamer Rules',
             'watermark' => 'Watermark',
         ],
@@ -154,6 +162,7 @@ return [
             'tags_required' => 'برچسب‌ها الزامی هستند.',
             'all_tags_must_match' => 'همه برچسب‌ها باید مطابقت داشته باشند.',
         ],
+
     ],
     'photo' => [
         'actions' => [

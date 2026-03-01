@@ -108,5 +108,6 @@ class Kernel extends HttpKernel
 		'resolve_album_slug' => \App\Http\Middleware\ResolveAlbumSlug::class,
 		'response_cache' => \App\Http\Middleware\Caching\ResponseCache::class,
 		'album_cache_refresher' => \App\Http\Middleware\Caching\AlbumRouteCacheRefresher::class,
+		'legacy_id_redirect' => \App\Http\Middleware\LegacyLocalIdRedirect::class,
 	];
 }

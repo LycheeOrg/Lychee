@@ -11,6 +11,10 @@ return [
     'pinned_albums' => 'Przypięte albumy',
     'albums' => 'Albumy',
     'root' => 'Albumy',
+    'set_focus' => 'Set Focus',
+    'set_header_focus' => 'Set Header Focus',
+    'done' => 'Done',
+    'cancel' => 'Cancel',
     'tabs' => [
         'my_albums' => 'My Albums',
         'shared_with_me' => 'Shared with Me',
@@ -28,6 +32,7 @@ return [
     'thumbnail' => 'Miniatura zdjęcia',
     'live_video' => 'Część wideo zdjęcia na żywo',
     'download_raw' => 'Download RAW',
+    'download_album' => 'Wybierz rozdzielczość obrazów dla archiwum ZIP albumu. Jeśli zdjęcie nie ma wybranego wariantu, zostanie użyty oryginał.',
     'camera_data' => 'Dane kamery',
     'album_reserved' => 'Wszelkie prawa zastrzeżone',
     'map' => [
@@ -120,6 +125,9 @@ return [
             'share' => 'Udostępnij album',
             'embed' => 'Embed Album',
             'stats_only_se' => 'Statystyki dostępne w Supporter Edition',
+            'edit' => 'Edit',
+            'save' => 'Save',
+            'open_gallery' => 'Open gallery',
             'apply_renamer' => 'Apply Renamer Rules',
             'watermark' => 'Watermark',
         ],
@@ -155,6 +163,7 @@ return [
             'tags_required' => 'Wymagane są znaczniki.',
             'all_tags_must_match' => 'Wszystkie znaczniki muszą pasować.',
         ],
+
     ],
     'photo' => [
         'actions' => [

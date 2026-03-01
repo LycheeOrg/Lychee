@@ -10,6 +10,10 @@ return [
     'pinned_albums' => 'الألبومات المثبتة',
     'albums' => 'الألبومات',
     'root' => 'الألبومات',
+    'set_focus' => 'Set Focus',
+    'set_header_focus' => 'Set Header Focus',
+    'done' => 'Done',
+    'cancel' => 'Cancel',
     'tabs' => [
         'my_albums' => 'My Albums',
         'shared_with_me' => 'Shared with Me',
@@ -27,6 +31,7 @@ return [
     'thumbnail' => 'مصغر الصورة',
     'live_video' => 'جزء الفيديو من الصورة الحية',
     'download_raw' => 'Download RAW',
+    'download_album' => 'اختر دقة الصورة لأرشيف ZIP للألبوم. إذا لم تكن الصورة تحتوي على النوع المحدد، سيتم استخدام النسخة الأصلية.',
     'camera_data' => 'تاريخ الكاميرا',
     'album_reserved' => 'جميع الحقوق محفوظة',
     'map' => [
@@ -119,6 +124,9 @@ return [
             'share' => 'مشاركة الألبوم',
             'embed' => 'Embed Album',
             'stats_only_se' => 'الإحصائيات متاحة في إصدار الدعم فقط',
+            'edit' => 'Edit',
+            'save' => 'Save',
+            'open_gallery' => 'Open gallery',
             'apply_renamer' => 'Apply Renamer Rules',
             'watermark' => 'Watermark',
         ],

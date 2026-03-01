@@ -434,6 +434,12 @@ trait ForwardsToParentImplementation
 			$value = $this->fromDateTime($value);
 		}
 
+		if ($this->isEnumCastable($key)) {
+			$this->setEnumCastableAttribute($key, $value);
+
+			return $this;
+		}
+
 		if ($this->isClassCastable($key)) {
 			$this->setClassCastableAttribute($key, $value);
 

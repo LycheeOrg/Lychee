@@ -33,6 +33,13 @@ export type UpdateAbumData = {
 	photo_timeline: App.Enum.TimelinePhotoGranularity | null;
 };
 
+export type UpdateAlbumHeaderData = {
+	album_id: string;
+	title_color: App.Enum.AlbumTitleColor | null;
+	title_position: App.Enum.AlbumTitlePosition | null;
+	header_photo_focus: { x: number; y: number } | null;
+};
+
 export type UpdateTagAlbumData = {
 	album_id: string;
 	title: string;
@@ -136,6 +143,10 @@ const AlbumService = {
 		return axios.patch(`${Constants.getApiUrl()}Album`, data);
 	},
 
+	updateAlbumHeader(data: UpdateAlbumHeaderData): Promise<AxiosResponse> {
+		return axios.patch(`${Constants.getApiUrl()}Album::header`, data);
+	},
+
 	updateTag(data: UpdateTagAlbumData): Promise<AxiosResponse> {
 		return axios.patch(`${Constants.getApiUrl()}TagAlbum`, data);
 	},
@@ -180,8 +191,8 @@ const AlbumService = {
 		return axios.get(`${Constants.getApiUrl()}Map`, { params: { album_id: album_id }, data: {} });
 	},
 
-	download(album_ids: string[]): void {
-		location.href = `${Constants.getApiUrl()}Zip?album_ids=${album_ids.join(",")}`;
+	download(album_ids: string[], variant: App.Enum.DownloadVariantType = "ORIGINAL"): void {
+		location.href = `${Constants.getApiUrl()}Zip?album_ids=${album_ids.join(",")}&variant=${variant}`;
 	},
 
 	uploadTrack(album_id: string, file: Blob): Promise<AxiosResponse> {

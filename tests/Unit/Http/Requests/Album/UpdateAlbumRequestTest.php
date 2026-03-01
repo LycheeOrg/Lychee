@@ -12,7 +12,6 @@ namespace Tests\Unit\Http\Requests\Album;
 
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Models\AbstractAlbum;
-use App\DTO\PhotoSortingCriterion;
 use App\Enum\AspectRatioType;
 use App\Enum\ColumnSortingAlbumType;
 use App\Enum\ColumnSortingPhotoType;

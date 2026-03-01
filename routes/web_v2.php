@@ -55,7 +55,7 @@ Route::get('/octane-health', function () {
 Route::get('/', VueController::class)->name('home')->middleware(['migration:complete']);
 Route::get('/home', VueController::class)->name('homepage')->middleware(['migration:complete']);
 Route::get('/flow/{albumId?}/{photoId?}', [VueController::class, 'gallery'])->name('flow')->middleware(['migration:complete', 'unlock_with_password', 'resolve_album_slug']);
-Route::get('/gallery/{albumId?}/{photoId?}', [VueController::class, 'gallery'])->name('gallery')->middleware(['migration:complete', 'unlock_with_password', 'resolve_album_slug']);
+Route::get('/gallery/{albumId?}/{photoId?}', [VueController::class, 'gallery'])->name('gallery')->middleware(['migration:complete', 'legacy_id_redirect', 'unlock_with_password', 'resolve_album_slug']);
 Route::get('/frame/{albumId?}', [VueController::class, 'gallery'])->name('frame')->middleware(['migration:complete', 'resolve_album_slug']);
 Route::get('/map/{albumId?}', [VueController::class, 'gallery'])->name('map')->middleware(['migration:complete', 'resolve_album_slug']);
 Route::get('/search/{albumId?}/{photoId?}', [VueController::class, 'gallery'])->name('search')->middleware(['migration:complete', 'resolve_album_slug']);

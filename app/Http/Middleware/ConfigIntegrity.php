@@ -101,6 +101,10 @@ class ConfigIntegrity
 		'best_pictures_count',
 		'enable_my_best_pictures',
 		'my_best_pictures_count',
+		'contact_form_enabled',
+		'contact_form_security_question',
+		'contact_form_security_answer',
+		'contact_form_custom_consent_required',
 	];
 
 	public const PRO_FIELDS = [
@@ -118,14 +122,18 @@ class ConfigIntegrity
 		'webshop_auto_fulfill_enabled',
 		'webshop_manual_fulfill_enabled',
 		'photos_star_visibility',
-		'contact_form_enabled',
-		'contact_form_sample_question',
-		'contact_form_sample_answer',
-		'contact_form_security_question',
-		'contact_form_security_answer',
 		'contact_form_custom_consent_text',
 		'contact_form_custom_privacy_url',
 		'contact_form_custom_submit_button_text',
+		'album_enhanced_display_enabled',
+		'album_header_size',
+		'album_header_landing_title_enabled',
+		'contact_form_header',
+		'contact_form_headline',
+		'contact_form_contact_method',
+		'contact_form_message_label',
+		'contact_form_message_answer',
+		'contact_form_thank_you_message',
 	];
 
 	/**

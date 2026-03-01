@@ -33,8 +33,10 @@
 					@open-embed-code="toggleEmbedCode"
 					@open-statistics="toggleStatistics"
 					@toggle-slide-show="emits('toggleSlideShow')"
+					@scroll-to-pictures="albumCallbacks.scrollToPaginatorTop"
 					@toggle-apply-renamer="toggleApplyRenamer"
 					@toggle-watermark-confirm="toggleWatermarkConfirm"
+					@toggle-download-album="toggleDownloadAlbumFromHero"
 				/>
 				<template v-if="is_se_enabled && userStore.isLoggedIn">
 					<AlbumStatistics
@@ -81,6 +83,7 @@
 					@selected="photoSelect"
 					@contexted="contextMenuPhotoOpen"
 					@toggle-buy-me="toggleBuyMe"
+					ref="photoPanel"
 				/>
 				<!-- Pagination for photos -->
 				<Pagination
@@ -109,6 +112,7 @@
 				@applied="emits('refresh')"
 			/>
 			<WatermarkConfirmDialog v-model:visible="is_watermark_confirm_visible" :album-id="albumStore.album.id" @watermarked="emits('refresh')" />
+			<DownloadAlbum v-model:visible="is_download_album_visible" :album-ids="downloadAlbumIds" />
 
 			<!-- Dialogs -->
 			<ContextMenu ref="menu" :model="Menu" :class="Menu.length === 0 ? 'hidden' : ''">
@@ -127,7 +131,7 @@
 	</div>
 </template>
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, ComponentPublicInstance } from "vue";
 import AlbumThumbPanel from "@/components/gallery/albumModule/AlbumThumbPanel.vue";
 import PhotoThumbPanel from "@/components/gallery/albumModule/PhotoThumbPanel.vue";
 import ShareAlbum from "@/components/modals/ShareAlbum.vue";
@@ -163,6 +167,7 @@ import { useCatalogStore } from "@/stores/CatalogState";
 import BuyMeDialog from "@/components/forms/gallery-dialogs/BuyMeDialog.vue";
 import ApplyRenamerDialog from "@/components/forms/album/ApplyRenamerDialog.vue";
 import WatermarkConfirmDialog from "@/components/forms/album/WatermarkConfirmDialog.vue";
+import DownloadAlbum from "@/components/modals/DownloadAlbum.vue";
 import { useToast } from "primevue/usetoast";
 import Pagination from "@/components/pagination/Pagination.vue";
 import { trans } from "laravel-vue-i18n";
@@ -183,6 +188,10 @@ const layoutStore = useLayoutStore();
 const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
 const orderManagement = useOrderManagementStore();
+
+if (!albumsStore.rootRights) {
+	albumsStore.loadRootRights();
+}
 
 const emits = defineEmits<{
 	refresh: [];
@@ -242,6 +251,20 @@ function toggleStatistics() {
 	}
 }
 
+const is_download_album_visible = ref(false);
+const downloadAlbumIds = ref<string[]>([]);
+
+function toggleDownloadAlbumFromHero() {
+	if (albumStore.album === undefined) return;
+	downloadAlbumIds.value = [albumStore.album.id];
+	is_download_album_visible.value = true;
+}
+
+function toggleDownloadAlbumFromSelection() {
+	downloadAlbumIds.value = selectedAlbumsIds.value;
+	is_download_album_visible.value = true;
+}
+
 const albumPanelConfig = computed<AlbumThumbConfig>(() => ({
 	album_thumb_css_aspect_ratio: albumStore.config?.album_thumb_css_aspect_ratio ?? "aspect-square",
 	album_subtitle_type: lycheeStore.album_subtitle_type,
@@ -289,6 +312,18 @@ const photoCallbacks = {
 		const isToggleOff = albumStore.modelAlbum?.header_id === selectedPhoto.value!.id;
 		if (albumStore.modelAlbum !== undefined) {
 			albumStore.modelAlbum.header_id = isToggleOff ? null : selectedPhoto.value!.id;
+			if (albumStore.modelAlbum.preFormattedData) {
+				albumStore.modelAlbum.preFormattedData.header_photo_focus = null;
+			}
+		}
+		if (
+			albumStore.album !== undefined &&
+			"editable" in albumStore.album &&
+			albumStore.album.editable !== undefined &&
+			albumStore.album.editable !== null
+		) {
+			albumStore.album.editable.header_id = isToggleOff ? null : selectedPhoto.value!.id;
+			albumStore.album.preFormattedData.header_photo_focus = null;
 		}
 		// Update the header image URL in the album's preFormattedData
 		if (albumStore.album.preFormattedData) {
@@ -298,6 +333,7 @@ const photoCallbacks = {
 				// Use medium or small variant for the header image
 				const headerUrl = selectedPhoto.value!.size_variants.medium?.url ?? selectedPhoto.value!.size_variants.small?.url ?? null;
 				albumStore.album.preFormattedData.url = headerUrl;
+				albumStore.album.preFormattedData.header_photo_focus = null;
 			}
 		}
 		AlbumService.clearCache(albumStore.album.id);
@@ -346,7 +382,7 @@ const albumCallbacks = {
 	toggleMove: toggleMove,
 	toggleDelete: toggleDelete,
 	toggleDownload: () => {
-		AlbumService.download(selectedAlbumsIds.value);
+		toggleDownloadAlbumFromSelection();
 	},
 	togglePin: togglePin,
 	toggleApplyRenamer: toggleApplyRenamer,
@@ -377,10 +413,16 @@ const albumCallbacks = {
 				}),
 			);
 	},
+	scrollToPaginatorTop: () => {
+		if (photoPanel.value) {
+			photoPanel.value.$el.scrollIntoView({ behavior: "smooth" });
+		}
+	},
 };
 
 const computedAlbum = computed(() => albumStore.album);
 const computedConfig = computed(() => albumStore.config);
+const photoPanel = ref<ComponentPublicInstance | null>(null);
 
 const {
 	menu,

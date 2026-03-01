@@ -26,6 +26,8 @@ use App\Metadata\Versions\FileVersion;
 use App\Metadata\Versions\GitHubVersion;
 use App\Metadata\Versions\InstalledVersion;
 use Mockery\MockInterface;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use Tests\AbstractTestCase;
 
 class CheckUpdateTest extends AbstractTestCase
@@ -49,6 +51,8 @@ class CheckUpdateTest extends AbstractTestCase
 		parent::tearDown();
 	}
 
+	#[RunInSeparateProcess]
+	#[PreserveGlobalState(false)]
 	public function testGetCodeReturnsNotMasterWhenNotOnMasterBranch(): void
 	{
 		// Arrange
@@ -73,6 +77,8 @@ class CheckUpdateTest extends AbstractTestCase
 		$this->assertEquals(UpdateStatus::NOT_MASTER, $result);
 	}
 
+	#[RunInSeparateProcess]
+	#[PreserveGlobalState(false)]
 	public function testGetCodeReturnsUpToDateWhenGitIsUpToDate(): void
 	{
 		// Arrange
@@ -97,6 +103,8 @@ class CheckUpdateTest extends AbstractTestCase
 		$this->assertEquals(UpdateStatus::UP_TO_DATE, $result);
 	}
 
+	#[RunInSeparateProcess]
+	#[PreserveGlobalState(false)]
 	public function testGetCodeReturnsNotUpToDateWhenGitIsBehind(): void
 	{
 		// Arrange
@@ -121,6 +129,8 @@ class CheckUpdateTest extends AbstractTestCase
 		$this->assertEquals(UpdateStatus::NOT_UP_TO_DATE, $result);
 	}
 
+	#[RunInSeparateProcess]
+	#[PreserveGlobalState(false)]
 	public function testGetCodeWithReleaseVersionChecksFileVersion(): void
 	{
 		// Arrange
@@ -146,6 +156,8 @@ class CheckUpdateTest extends AbstractTestCase
 		$this->assertEquals(UpdateStatus::UP_TO_DATE, $result);
 	}
 
+	#[RunInSeparateProcess]
+	#[PreserveGlobalState(false)]
 	public function testGetCodeWithReleaseVersionReturnsNotUpToDateWhenFileIsBehind(): void
 	{
 		// Arrange
@@ -171,6 +183,8 @@ class CheckUpdateTest extends AbstractTestCase
 		$this->assertEquals(UpdateStatus::NOT_UP_TO_DATE, $result);
 	}
 
+	#[RunInSeparateProcess]
+	#[PreserveGlobalState(false)]
 	public function testGetCodeWithReleaseVersionReturnsRequireMigrationWhenMigrationNeeded(): void
 	{
 		// Arrange

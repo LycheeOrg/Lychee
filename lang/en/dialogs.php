@@ -67,6 +67,7 @@ return [
         'password' => 'Password',
         'unknown_invalid' => 'Unknown user or invalid password.',
         'signin' => 'Sign-In',
+        'remember_me' => 'Remember me',
     ],
     'register' => [
         'enter_license' => 'Enter your license key below:',

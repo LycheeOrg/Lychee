@@ -30,7 +30,7 @@
 			<Dock
 				v-if="albumStore.rights?.can_edit && !is_photo_edit_open"
 				:is-narrow-menu="photoStore.imageViewMode === ImageViewMode.Pdf"
-				@toggle-star="emits('toggleHighlight')"
+				@toggle-highlight="emits('toggleHighlight')"
 				@set-album-header="emits('setAlbumHeader')"
 				@rotate-photo-c-c-w="emits('rotatePhotoCCW')"
 				@rotate-photo-c-w="emits('rotatePhotoCW')"

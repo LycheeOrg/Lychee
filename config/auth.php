@@ -41,6 +41,7 @@ return [
 		'lychee' => [
 			'driver' => env('ENABLE_BEARER_TOKEN_AUTH', env('ENABLE_TOKEN_AUTH', true)) ? 'session-or-token' : 'session',
 			'provider' => 'users',
+			'remember' => (int) env('REMEMBER_LIFETIME', 40320), // 4 weeks = 28 days × 24 h × 60 min
 		],
 	],
 

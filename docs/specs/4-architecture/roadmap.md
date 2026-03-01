@@ -6,9 +6,6 @@ High-level planning document for Lychee features and architectural initiatives.
 
 | Feature ID | Name | Status | Priority | Assignee | Started | Updated | Progress |
 |------------|------|--------|----------|----------|---------|---------|----------|
-| 022 | Contact Form | Planning | P2 | — | 2026-02-28 | 2026-02-28 | Spec, plan, and tasks drafted. Supports-only feature: visitor form (public page), admin message management page, configurable sample Q&A, security question, consent text, privacy URL, custom submit button. 16 increments planned (~16 hours). Ready for implementation. |
-| 020 | Raw Upload Support | Complete | P2 | — | 2026-02-28 | 2026-02-28 | All 47 tasks done. RAW=0 enum shift, 4 migrations, RawToJpeg converter, DetectAndStoreRaw + CreateRawSizeVariant pipes, download gating, frontend RAW download button (22 langs), 38 tests passing. PHPStan 0 errors, php-cs-fixer clean, knowledge map + image-processing ref updated. |
-| 019 | Friendly URLs (Album Slugs) | Complete | P2 | - | 2026-02-27 | 2026-02-28 | All 24 tasks done. Migration, model, SlugRule, middleware, update requests, feature tests (26 tests/1048 assertions), frontend UI, translations (22 langs). Quality gates: PHPStan 0 errors, php-cs-fixer clean, npm build/check/format clean. |
 
 ## Paused Features
 
@@ -20,6 +17,11 @@ High-level planning document for Lychee features and architectural initiatives.
 
 | Feature ID | Name | Completed | Notes |
 |------------|------|-----------|-------|
+| 023 | Remember Me Login | 2026-03-01 | Spec, plan, tasks drafted. Implementation completed. |
+| 022 | Contact Form | 2026-03-01 | Spec, plan, and tasks drafted. Supports-only feature: visitor form (public page), admin message management page, configurable sample Q&A, security question, consent text, privacy URL, custom submit button. 16 increments planned (~16 hours). Implementation completed. |
+| 021 | Album Variant ZIP Download | 2026-02-28 | Spec, plan, tasks drafted. Starting implementation. |
+| 020 | Raw Upload Support | 2026-02-28 | All 47 tasks done. RAW=0 enum shift, 4 migrations, RawToJpeg converter, DetectAndStoreRaw + CreateRawSizeVariant pipes, download gating, frontend RAW download button (22 langs), 38 tests passing. PHPStan 0 errors, php-cs-fixer clean, knowledge map + image-processing ref updated. |
+| 019 | Friendly URLs (Album Slugs) | 2026-02-28 | All 24 tasks done. Migration, model, SlugRule, middleware, update requests, feature tests (26 tests/1048 assertions), frontend UI, translations (22 langs). Quality gates: PHPStan 0 errors, php-cs-fixer clean, npm build/check/format clean. |
 | 018 | Photo Albums Sidebar  | 2026-02-26 | Spec, plan, tasks drafted. Pending implementation. |
 | 017 | Apply Renamer Rules & Watermark Confirm  | 2026-02-26 | Spec, plan, tasks drafted. Pending implementation. |
 | 016 | Bulk License Edit | 2026-02-27 | Backend complete (T-016-01 to T-016-04), next: quality gates & frontend |

@@ -107,10 +107,10 @@ return [
 			'strict' => true,
 			'engine' => 'InnoDB ROW_FORMAT=DYNAMIC',
 			'options' => extension_loaded('pdo_mysql') ? array_filter([
-				PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
-				PDO::ATTR_TIMEOUT => 5, // Connection timeout
-				PDO::ATTR_PERSISTENT => false, // NEVER use persistent connections with Octane
-				PDO::MYSQL_ATTR_INIT_COMMAND => 'SET SESSION wait_timeout=28800', // 8 hours
+				\Pdo\Mysql::ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+				\Pdo\Mysql::ATTR_TIMEOUT => 5, // Connection timeout
+				\Pdo\Mysql::ATTR_PERSISTENT => false, // NEVER use persistent connections with Octane
+				\Pdo\Mysql::ATTR_INIT_COMMAND => 'SET SESSION wait_timeout=28800', // 8 hours
 			], fn ($v) => $v !== '' && $v !== null && $v !== []) : [],
 			'sticky' => true,
 			'pool' => [

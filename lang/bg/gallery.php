@@ -11,6 +11,10 @@ return [
     'pinned_albums' => 'Избрани албуми',
     'albums' => 'Албуми',
     'root' => 'Албуми',
+    'set_focus' => 'Задай фокус',
+    'set_header_focus' => 'Задай фокус на заглавката',
+    'done' => 'Готово',
+    'cancel' => 'Отказ',
     'tabs' => [
         'my_albums' => 'Моите албуми',
         'shared_with_me' => 'Споделени с мен',
@@ -28,6 +32,7 @@ return [
     'thumbnail' => 'Миниатюра на снимка',
     'live_video' => 'Видео част от live-photo',
     'download_raw' => 'Download RAW',
+    'download_album' => 'Изберете разделителна способност на изображенията за ZIP архива на албума. Ако снимка няма избрания вариант, ще бъде използван оригиналът.',
     'camera_data' => 'Дата от камерата',
     'album_reserved' => 'Всички права запазени',
     'map' => [
@@ -120,6 +125,9 @@ return [
             'share' => 'Сподели албума',
             'embed' => 'Вгради албума',
             'stats_only_se' => 'Статистиката е налична в Supporter Edition',
+            'edit' => 'Редактирай',
+            'save' => 'Запази',
+            'open_gallery' => 'Отвори галерията',
             'apply_renamer' => 'Apply Renamer Rules',
             'watermark' => 'Watermark',
         ],

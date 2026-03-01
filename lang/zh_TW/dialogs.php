@@ -66,6 +66,7 @@ return [
         'password' => '密碼',
         'unknown_invalid' => '未知的使用者或密碼無效。',
         'signin' => '登入',
+        'remember_me' => '記住我',
     ],
     'register' => [
         'enter_license' => '在下方輸入您的授權鑰匙：',
