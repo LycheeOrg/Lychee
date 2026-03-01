@@ -46,7 +46,7 @@ class UpdateContactMessageRequest extends BaseApiRequest
 		/** @var int $id */
 		$id = $values['id'];
 		$this->contact_message = ContactMessage::query()->findOrFail($id);
-		$this->is_read = (bool) $values['is_read'];
+		$this->is_read = self::toBoolean($values['is_read']);
 	}
 
 	public function contactMessage(): ContactMessage

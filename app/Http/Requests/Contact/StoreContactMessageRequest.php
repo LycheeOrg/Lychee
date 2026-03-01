@@ -49,7 +49,7 @@ class StoreContactMessageRequest extends BaseApiRequest
 		$this->email = $values['email'];
 		$this->message_body = $values['message'];
 		$this->security_answer = $values['security_answer'] ?? '';
-		$this->consent_agreed = (bool) ($values['consent_agreed'] ?? false);
+		$this->consent_agreed = self::toBoolean($values['consent_agreed'] ?? false);
 	}
 
 	public function senderName(): string

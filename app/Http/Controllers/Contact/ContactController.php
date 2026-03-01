@@ -30,8 +30,8 @@ class ContactController extends Controller
 	public function store(StoreContactMessageRequest $request): array
 	{
 		// Validate security answer if configured
-		$security_question = Configs::getValueAsString('contact_form_security_question');
-		$security_answer = Configs::getValueAsString('contact_form_security_answer');
+		$security_question = $request->config()->getValueAsString('contact_form_security_question');
+		$security_answer = $request->config()->getValueAsString('contact_form_security_answer');
 		if ($security_question !== '' && $security_answer !== '') {
 			if (strcasecmp(trim($request->securityAnswer()), trim($security_answer)) !== 0) {
 				abort(422, 'Incorrect answer to the security question.');
@@ -39,7 +39,7 @@ class ContactController extends Controller
 		}
 
 		// Validate consent if configured
-		$consent_text = Configs::getValueAsString('contact_form_custom_consent_text');
+		$consent_text = $request->config()->getValueAsString('contact_form_custom_consent_text');
 		if ($consent_text !== '' && !$request->consentAgreed()) {
 			abort(422, 'You must agree to the privacy policy.');
 		}
