@@ -33,12 +33,16 @@ class Watermarker
 	{
 		$this->naming_strategy = new WatermarkGroupedWithRandomSuffixNamingStrategy();
 
-		if (!$this->is_watermark_enabled()) {
-			return;
-		}
+		try {
+			if (!$this->is_watermark_enabled()) {
+				return;
+			}
 
-		if (!$this->check_watermark_image()) {
-			return;
+			if (!$this->check_watermark_image()) {
+				return;
+			}
+		} catch (\Throwable $t) {
+			Log::error('Failed to initialize Watermarker', [$t]);
 		}
 	}
 
