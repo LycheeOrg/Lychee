@@ -19,7 +19,6 @@ use App\Models\SizeVariant;
 use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use Throwable;
 
 class Watermarker
 {
@@ -42,7 +41,7 @@ class Watermarker
 			if (!$this->check_watermark_image()) {
 				return;
 			}
-		} catch (Throwable $t) {
+		} catch (\Throwable $t) {
 			Log::error('Failed to initialize Watermarker', [$t]);
 		}
 	}
