@@ -123,6 +123,21 @@ class PanicAttack
 		$this->displaySimpleError();
 	}
 
+	/*
+	 |--------------------------------------------------------------------------
+	 | Catch error on missing ldap extension.
+	 |--------------------------------------------------------------------------
+	 | When the ldap extension is not loaded, we display a nice error.
+	 | This is a sanity check to prevent the user from seeing a blank page with an error in the top left
+	*/
+	public function ldap() {
+		$this->title = 'Missing PHP Extension';
+		$this->code = 500;
+		$this->message = 'The PHP extension "ldap" is required but not loaded. Please install and enable it to run Lychee.';
+		$this->displaySimpleError();
+	}
+
+
 	/**
 	 *  dispatcher.
 	 */
