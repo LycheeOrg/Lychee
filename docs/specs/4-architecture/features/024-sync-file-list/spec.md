@@ -2,7 +2,7 @@
 
 | Field | Value |
 |-------|-------|
-| Status | Draft |
+| Status | Complete |
 | Last updated | 2026-03-03 |
 | Owners | LycheeOrg |
 | Linked plan | `docs/specs/4-architecture/features/024-sync-file-list/plan.md` |

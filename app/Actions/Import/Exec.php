@@ -12,8 +12,12 @@ use App\Actions\Import\Pipes\HasReporterTrait;
 use App\DTO\ImportDTO;
 use App\DTO\ImportEventReport;
 use App\DTO\ImportMode;
+use App\Image\Files\NativeLocalFile;
 use App\Jobs\ImportImageJob;
+use App\Jobs\RecomputeAlbumSizeJob;
+use App\Jobs\RecomputeAlbumStatsJob;
 use App\Models\Album;
+use App\Services\Image\FileExtensionService;
 use Illuminate\Pipeline\Pipeline;
 use Safe\Exceptions\InfoException;
 use function Safe\ini_get;
@@ -100,5 +104,48 @@ class Exec
 		// @codeCoverageIgnoreEnd
 
 		return $ret->job_bus;
+	}
+
+	/**
+	 * Import a list of individual files directly, bypassing tree-based album creation.
+	 *
+	 * Each file is validated for a supported extension and queued as an `ImportImageJob`.
+	 * Files with unsupported extensions are skipped with a warning.
+	 *
+	 * @param string[]   $file_paths   Absolute paths to individual files to import
+	 * @param Album|null $parent_album Optional parent album to import into (null = unsorted)
+	 *
+	 * @return (ImportImageJob|RecomputeAlbumSizeJob|RecomputeAlbumStatsJob)[]
+	 */
+	public function doFiles(array $file_paths, ?Album $parent_album): array
+	{
+		$job_bus = [];
+		$file_extension_service = app(FileExtensionService::class);
+
+		foreach ($file_paths as $file_path) {
+			$extension = '.' . strtolower(pathinfo($file_path, PATHINFO_EXTENSION));
+
+			if (!$file_extension_service->isSupportedOrAcceptedFileExtension($extension)) {
+				$this->report(ImportEventReport::createWarning('unsupported_extension', $file_path, 'Unsupported file extension skipped: ' . $extension));
+				continue;
+			}
+
+			$file = new NativeLocalFile($file_path);
+			$job_bus[] = new ImportImageJob($file, $this->intended_owner_id, $this->import_mode, $parent_album);
+			$this->report(ImportEventReport::createDebug('queued', $file_path, 'Queued file for import'));
+		}
+
+		if ($parent_album !== null && count($job_bus) > 0) {
+			$job_bus[] = new RecomputeAlbumSizeJob($parent_album->id);
+			$job_bus[] = new RecomputeAlbumStatsJob($parent_album->id);
+		}
+
+		if ($this->should_execute_jobs) {
+			foreach ($job_bus as $job) {
+				dispatch($job);
+			}
+		}
+
+		return $job_bus;
 	}
 }

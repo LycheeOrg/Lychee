@@ -38,7 +38,7 @@ class ImportImageJob implements ShouldQueue
 
 	protected JobHistory $history;
 	public string $file_path;
-	public string $album_id;
+	public ?string $album_id;
 
 	/**
 	 * Create a new job instance.
@@ -47,15 +47,15 @@ class ImportImageJob implements ShouldQueue
 		NativeLocalFile $file,
 		public int $intended_owner_id,
 		public ImportMode $import_mode,
-		public Album $album,
+		public ?Album $album,
 	) {
 		$this->file_path = $file->getPath();
-		$this->album_id = $album->id;
+		$this->album_id = $album?->id;
 
 		// Set up our new history record.
 		$this->history = new JobHistory();
 		$this->history->owner_id = $this->intended_owner_id;
-		$this->history->job = Str::limit(sprintf('Process Image: %s added to %s.', basename($this->file_path), $album->title), 200);
+		$this->history->job = Str::limit(sprintf('Process Image: %s added to %s.', basename($this->file_path), $album?->title ?? 'root'), 200);
 		$this->history->status = JobStatus::READY;
 		$this->history->save();
 	}
@@ -80,7 +80,7 @@ class ImportImageJob implements ShouldQueue
 			intended_owner_id: $this->intended_owner_id,
 		);
 
-		$album = $album_factory->findAbstractAlbumOrFail($this->album_id);
+		$album = $this->album_id !== null ? $album_factory->findAbstractAlbumOrFail($this->album_id) : null;
 		$photo = $create->add($copied_file, $album);
 
 		// Once the job has finished, set history status to 1.
