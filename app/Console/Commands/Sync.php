@@ -21,6 +21,7 @@ use Illuminate\Console\Command;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\Console\Exception\ExceptionInterface;
+use function Safe\realpath;
 
 class Sync extends Command
 {
