@@ -6,7 +6,6 @@
  * Copyright (c) 2018-2026 LycheeOrg.
  */
 
-use App\Enum\LandingBackgroundModeType;
 use App\Models\Extensions\BaseConfigMigration;
 
 return new class() extends BaseConfigMigration {
@@ -14,14 +13,12 @@ return new class() extends BaseConfigMigration {
 
 	public function getConfigs(): array
 	{
-		$mode_enum = implode('|', array_column(LandingBackgroundModeType::cases(), 'value'));
-
 		return [
 			[
 				'key' => 'landing_background_landscape_mode',
-				'value' => LandingBackgroundModeType::STATIC->value,
+				'value' => 'static', // Default to static to avoid unexpected behavior for existing users
 				'cat' => self::MOD_WELCOME,
-				'type_range' => $mode_enum,
+				'type_range' => 'static|photo_id|random|latest_album_cover|random_from_album',
 				'description' => 'Mode for landscape background',
 				'details' => 'Options: static (URL), photo_id (specific photo), random (random public photo), latest_album_cover (latest album cover), random_from_album (random from album)',
 				'is_secret' => false,
@@ -31,9 +28,9 @@ return new class() extends BaseConfigMigration {
 			],
 			[
 				'key' => 'landing_background_portrait_mode',
-				'value' => LandingBackgroundModeType::STATIC->value,
+				'value' => 'static', // Default to static to avoid unexpected behavior for existing users
 				'cat' => self::MOD_WELCOME,
-				'type_range' => $mode_enum,
+				'type_range' => 'static|photo_id|random|latest_album_cover|random_from_album',
 				'description' => 'Mode for portrait background',
 				'details' => 'Options: static (URL), photo_id (specific photo), random (random public photo), latest_album_cover (latest album cover), random_from_album (random from album)',
 				'is_secret' => false,
