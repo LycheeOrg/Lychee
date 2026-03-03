@@ -200,7 +200,9 @@ class LandingPageResource extends Data
 		// Get random photo from album
 		$photo = Photo::query()
 			->with(['size_variants'])
-			->where('album_id', '=', $album->id)
+			->whereHas('albums', static function ($query) use ($album): void {
+				$query->whereKey($album->id);
+			})
 			->inRandomOrder()
 			->limit(1)
 			->first();
