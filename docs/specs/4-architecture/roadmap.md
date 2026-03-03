@@ -17,6 +17,7 @@ High-level planning document for Lychee features and architectural initiatives.
 
 | Feature ID | Name | Completed | Notes |
 |------------|------|-----------|-------|
+| 024 | CLI Sync File-List Support | 2026-03-03 | `lychee:sync` now accepts individual file paths alongside directories; `Exec::doFiles()` added; `ImportImageJob` accepts nullable Album; 7 new tests. |
 | 023 | Remember Me Login | 2026-03-01 | Spec, plan, tasks drafted. Implementation completed. |
 | 022 | Contact Form | 2026-03-01 | Spec, plan, and tasks drafted. Supports-only feature: visitor form (public page), admin message management page, configurable sample Q&A, security question, consent text, privacy URL, custom submit button. 16 increments planned (~16 hours). Implementation completed. |
 | 021 | Album Variant ZIP Download | 2026-02-28 | Spec, plan, tasks drafted. Starting implementation. |

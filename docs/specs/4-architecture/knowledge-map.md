@@ -34,6 +34,9 @@ This document tracks modules, dependencies, and architectural relationships acro
     - Syncs attributes (email, display_name) on each login
     - Queries LDAP groups to assign admin role (`may_administrate`)
     - Sets random password for LDAP users (local password not used)
+  - **Import Actions** (`app/Actions/Import/`) - CLI sync and import pipeline
+    - `Exec::do(string $path, ?Album $parent_album)` — tree-based directory import (BuildTree pipe chain)
+    - `Exec::doFiles(array $file_paths, ?Album $parent_album)` — direct file import, bypasses tree-based album creation (Feature 024)
 - **DTOs** (`app/DTO/`) - Data transfer objects (Spatie Data)
   - **LdapConfiguration** (`app/DTO/LdapConfiguration.php`) - Validates LDAP environment variables
   - **LdapUser** (`app/DTO/LdapUser.php`) - LDAP authentication result (username, userDn, email, display_name)
@@ -189,6 +192,7 @@ Replaces on-the-fly virtual column computation with physical database fields upd
 6. **CLI Commands**:
    - `lychee:recompute-album-stats` - Unified command: with album_id for single-album recompute, without album_id for bulk backfill of all albums
    - `lychee:recompute-album-stats {album_id}` - Manual recovery after propagation failures
+   - `lychee:sync {paths*}` - Sync files and directories to Lychee (Feature 024): accepts both directory paths (tree-based import) and individual file paths (direct import via `Exec::doFiles()`); mixed invocations supported; `--album_id` optional
 
 **Benefits**: 50%+ query time reduction for album listings, removes expensive nested set JOINs from read path
 

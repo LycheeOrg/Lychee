@@ -1,76 +1,68 @@
 # Current Session
 
-_Last updated: 2026-02-28_
+_Last updated: 2026-03-03_
 
 ## Active Features
 
-**Feature 022 – Contact Form**
+**Feature 024 – CLI Sync File-List Support**
 - Status: Planning (spec, plan, tasks complete)
 - Priority: P2
-- License: Supporters Only
-- Started: 2026-02-28
+- License: Open
+- Started: 2026-03-03
 - Dependencies: None
 
 ## Session Summary
 
-Feature 022 (Contact Form) specification, plan, and tasks created per user requirements to restructure the contact form feature to use two separate pages (visitor form and admin management) with configurable Q&A, security questions, and consent text.
+Feature 024 (CLI Sync File-List Support) specification, plan, and tasks created per GitHub issue #1231. The `lychee:sync` artisan command currently rejects individual file paths with "Given path is not a directory". This feature extends the command to accept both directories and individual file paths in a single invocation.
 
-### Feature 022: Contact Form (Visitors + Admin Management)
+### Feature 024: CLI Sync File-List Support
 
-**User Requirements:**
-- Two new pages: visitor contact form + admin message management
-- Visitor form: capture name, email, message; optional security question, sample Q&A, consent checkbox
-- Admin page: list messages, mark as read, delete messages (feature: checkbox toggle, delete button)
-- No email support—messages managed in admin panel only
-- 7 configurable settings (sample Q&A, security Q&A, consent text, privacy URL, submit button text)
-- New "Contact Form" settings category
-- All features restricted to Supporters license tier
+**Problem:**
+Users want to run commands like:
+```bash
+php artisan lychee:sync $(find /storage/NAS/photos/ -type f -mtime -1) \
+  --import_via_symlink=1 --skip_duplicates=1
+```
+Currently this fails because the `lychee:sync` command only accepts directory paths, not individual file paths.
 
 **Key Design Decisions:**
-- Visitor form public at `/contact` (no auth required)
-- Admin page at `/security/contact-messages` (requires `may_administrate` permission)
-- Rate limiting: 5 submissions per IP per 24 hours (prevent spam)
-- Security question answer: case-insensitive exact match
-- Consent checkbox required only if `contact_form_custom_consent_text` is configured
-- Database: `contact_messages` table with `is_read` boolean flag
-- All config options stored in settings system (Supporters-gated)
-
-**7 Config Keys:**
-- `contact_form_sample_question` / `contact_form_sample_answer`
-- `contact_form_security_question` / `contact_form_security_answer`
-- `contact_form_custom_consent_text`
-- `contact_form_custom_privacy_url`
-- `contact_form_custom_submit_button_text`
+- Accept both file and directory paths in the existing `{dir*}` (renamed to `{paths*}`) positional argument.
+- File paths bypass the `BuildTree` pipe and are queued directly via `ImportImageJob`.
+- Mixed invocations (some dirs, some files) are supported; each path is processed independently.
+- `skip_duplicates` applies to file-list mode; `delete_missing_*` flags are inactive for file paths (with a notice).
+- No new external dependencies; no HTTP API changes.
 
 **Implementation Phases:**
-- Phase 1 (Backend infra): 4 increments (~4 hours) - database, config, routes, controller
-- Phase 2 (Visitor form): 3 increments (~3 hours) - public form, service, styling
-- Phase 3 (Admin page): 4 increments (~4 hours) - list view, interactions, search/filter, polish
-- Phase 4 (Testing): 3 increments (~3 hours) - unit tests, feature tests, quality gates
-- Phase 5 (Integration): 2 increments (~2 hours) - translations, final E2E testing
+- I1 (Tests first): Write failing tests for S-024-02 through S-024-08 (~60 min)
+- I2 (DTO extension): Add `file_list` to `ImportDTO` (~30 min)
+- I3 (Command layer): Classify paths in `Sync::validatePaths()` (~60 min)
+- I4 (Import layer): Add `Exec::doFiles()` for direct file import (~60 min)
+- I5 (Duplicate detection & flag guard): skip_duplicates + delete_missing notice (~45 min)
+- I6 (Quality gates): php-cs-fixer, phpstan, docs (~30 min)
 
-**Total: 16 increments (~16 hours)**
+**Total: 6 increments (~5.25 hours)**
 
 **Deliverables:**
-1. [spec.md](docs/specs/4-architecture/features/022-contact-form/spec.md)
-2. [plan.md](docs/specs/4-architecture/features/022-contact-form/plan.md)
-3. [tasks.md](docs/specs/4-architecture/features/022-contact-form/tasks.md)
+1. [spec.md](docs/specs/4-architecture/features/024-sync-file-list/spec.md)
+2. [plan.md](docs/specs/4-architecture/features/024-sync-file-list/plan.md)
+3. [tasks.md](docs/specs/4-architecture/features/024-sync-file-list/tasks.md)
 
 ## Next Steps
 
-1. Run analysis gate checklist (if needed)
-2. Begin implementation with Phase 1 (I1-I4): database setup, config, routes, controller
+1. Run analysis gate checklist.
+2. Begin implementation with I1: write failing feature tests.
 
 ## Open Questions
 
-None - all requirements clarified and captured in spec.
+None - requirements are clear from issue #1231 and existing codebase analysis.
 
 ## References
 
-**Feature 022:**
-- Feature spec: [022-contact-form/spec.md](docs/specs/4-architecture/features/022-contact-form/spec.md)
-- Implementation plan: [022-contact-form/plan.md](docs/specs/4-architecture/features/022-contact-form/plan.md)
-- Task checklist: [022-contact-form/tasks.md](docs/specs/4-architecture/features/022-contact-form/tasks.md)
+**Feature 024:**
+- Feature spec: [024-sync-file-list/spec.md](docs/specs/4-architecture/features/024-sync-file-list/spec.md)
+- Implementation plan: [024-sync-file-list/plan.md](docs/specs/4-architecture/features/024-sync-file-list/plan.md)
+- Task checklist: [024-sync-file-list/tasks.md](docs/specs/4-architecture/features/024-sync-file-list/tasks.md)
+- GitHub issue: https://github.com/LycheeOrg/Lychee/issues/1231
 
 **Common:**
 - Roadmap: [roadmap.md](docs/specs/4-architecture/roadmap.md)
@@ -80,11 +72,11 @@ None - all requirements clarified and captured in spec.
 
 **Session Context for Handoff:**
 
-Feature 022 (Contact Form) fully planned with 16 increments over 5 phases (~16 hours total). Supporters-only feature with:
-1. Public visitor form at `/contact` (configurable Q&A, security question, consent)
-2. Admin message management page at `/security/contact-messages` (mark as read, delete, search/filter)
-3. Rate limiting: 5 submissions per IP per 24 hours
-4. 7 configurable settings in new "Contact Form" category
-5. Database: `contact_messages` table with `is_read` flag
+Feature 024 (CLI Sync File-List Support) fully planned with 6 increments (~5.25 hours total). This is an open-licensed feature:
+1. `lychee:sync` positional argument accepts files and directories.
+2. File paths bypass `BuildTree` pipe; queued directly via `ImportImageJob`.
+3. Mixed invocations (dirs + files) supported in a single call.
+4. `skip_duplicates` applies to file-list mode; `delete_missing_*` inactive for file paths.
+5. No new dependencies; no HTTP API changes.
 
-Ready to begin Phase 1 (I1-I4) implementing database, config, routes, and controller.
+Ready to begin I1: write failing feature tests.
