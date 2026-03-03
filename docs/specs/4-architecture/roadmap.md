@@ -6,6 +6,7 @@ High-level planning document for Lychee features and architectural initiatives.
 
 | Feature ID | Name | Status | Priority | Assignee | Started | Updated | Progress |
 |------------|------|--------|----------|----------|---------|---------|----------|
+| 024 | CLI Sync File-List Support | Planning | P2 | — | 2026-03-03 | 2026-03-03 | Spec, plan, tasks drafted |
 
 ## Paused Features
 
