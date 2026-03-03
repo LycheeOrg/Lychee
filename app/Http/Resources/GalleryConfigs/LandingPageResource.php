@@ -8,6 +8,7 @@
 
 namespace App\Http\Resources\GalleryConfigs;
 
+use App\Enum\LandingBackgroundModeType;
 use App\Models\Album;
 use App\Models\Photo;
 use App\Policies\AlbumQueryPolicy;
@@ -35,11 +36,11 @@ class LandingPageResource extends Data
 		$this->landing_page_enable = request()->configs()->getValueAsBool('landing_page_enable');
 
 		// Resolve dynamic backgrounds based on mode configs
-		$landscape_mode = request()->configs()->getValueAsString('landing_background_landscape_mode');
+		$landscape_mode = request()->configs()->getValueAsEnum('landing_background_landscape_mode', LandingBackgroundModeType::class);
 		$landscape_value = request()->configs()->getValueAsString('landing_background_landscape');
 		$this->landing_background_landscape = $this->resolveBackgroundUrl($landscape_mode, $landscape_value);
 
-		$portrait_mode = request()->configs()->getValueAsString('landing_background_portrait_mode');
+		$portrait_mode = request()->configs()->getValueAsEnum('landing_background_portrait_mode', LandingBackgroundModeType::class);
 		$portrait_value = request()->configs()->getValueAsString('landing_background_portrait');
 		$this->landing_background_portrait = $this->resolveBackgroundUrl($portrait_mode, $portrait_value);
 
@@ -53,26 +54,29 @@ class LandingPageResource extends Data
 	 * Resolves background URL based on mode and value.
 	 * Always returns a valid URL string - never throws exceptions.
 	 *
-	 * @param string $mode  The resolution mode (static|photo_id|random|latest_album_cover|random_from_album)
-	 * @param string $value The value to use (URL, photo ID, or album ID depending on mode)
+	 * @param LandingBackgroundModeType|null $mode  The resolution mode enum
+	 * @param string                         $value The value to use (URL, photo ID, or album ID depending on mode)
 	 *
 	 * @return string The resolved URL or fallback image
 	 */
-	private function resolveBackgroundUrl(string $mode, string $value): string
+	private function resolveBackgroundUrl(?LandingBackgroundModeType $mode, string $value): string
 	{
 		try {
+			if ($mode === null) {
+				return self::FALLBACK_IMAGE;
+			}
+
 			return match ($mode) {
-				'static' => $this->resolveStatic($value),
-				'photo_id' => $this->resolvePhotoById($value),
-				'random' => $this->resolveRandomPhoto(),
-				'latest_album_cover' => $this->resolveLatestAlbumCover(),
-				'random_from_album' => $this->resolveRandomFromAlbum($value),
-				default => self::FALLBACK_IMAGE,
+				LandingBackgroundModeType::STATIC => $this->resolveStatic($value),
+				LandingBackgroundModeType::PHOTO_ID => $this->resolvePhotoById($value),
+				LandingBackgroundModeType::RANDOM => $this->resolveRandomPhoto(),
+				LandingBackgroundModeType::LATEST_ALBUM_COVER => $this->resolveLatestAlbumCover(),
+				LandingBackgroundModeType::RANDOM_FROM_ALBUM => $this->resolveRandomFromAlbum($value),
 			};
 		} catch (\Throwable $e) {
 			// Graceful fallback - log error but don't break landing page
 			\Log::notice('Landing background resolution failed', [
-				'mode' => $mode,
+				'mode' => $mode?->value,
 				'value' => $value,
 				'error' => $e->getMessage(),
 			]);

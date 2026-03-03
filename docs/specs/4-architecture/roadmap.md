@@ -6,6 +6,7 @@ High-level planning document for Lychee features and architectural initiatives.
 
 | Feature ID | Name | Status | Priority | Assignee | Started | Updated | Progress |
 |------------|------|--------|----------|----------|---------|---------|----------|
+| 025 | Dynamic Landing Background Options | Planning | P2 | LycheeOrg | 2026-03-03 | 2026-03-03 | Spec, plan, tasks drafted |
 
 ## Paused Features
 
@@ -102,4 +103,4 @@ features/
 
 ---
 
-*Last updated: 2026-02-26*
+*Last updated: 2026-03-03*
