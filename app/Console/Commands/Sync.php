@@ -20,8 +20,9 @@ use App\Repositories\ConfigManager;
 use Illuminate\Console\Command;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
-use Symfony\Component\Console\Exception\ExceptionInterface;
+use Safe\Exceptions\FilesystemException;
 use function Safe\realpath;
+use Symfony\Component\Console\Exception\ExceptionInterface;
 
 class Sync extends Command
 {
@@ -134,9 +135,10 @@ class Sync extends Command
 		$files = [];
 
 		foreach ($paths as $path) {
-			$real = realpath($path);
-			if ($real === false) {
-				$this->error('Path not found: ' . $path);
+			try {
+				$real = realpath($path);
+			} catch (FilesystemException $e) {
+				$this->error('Error accessing path: ' . $path . ' - ' . $e->getMessage());
 
 				return null;
 			}
