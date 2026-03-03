@@ -11,6 +11,7 @@ namespace App\Console\Commands;
 use App\Actions\Import\Exec;
 use App\Contracts\Exceptions\ExternalLycheeException;
 use App\DTO\ImportMode;
+use App\DTO\SyncDTO;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\EmptyFolderException;
 use App\Exceptions\InvalidDirectoryException;
@@ -111,7 +112,7 @@ class Sync extends Command
 				return 1;
 			}
 
-			return $this->executeImport($paths['directories'], $paths['files'], $album, $owner_id, $import_settings);
+			return $this->executeImport($paths, $album, $owner_id, $import_settings);
 		} catch (ExceptionInterface $e) {
 			throw new UnexpectedException($e);
 		}
@@ -120,9 +121,9 @@ class Sync extends Command
 	/**
 	 * Validate and classify the paths provided as arguments.
 	 *
-	 * @return array{directories: string[], files: string[]}|null Classified paths or null on validation failure
+	 * @return SyncDTO|null Classified paths or null on validation failure
 	 */
-	private function validatePaths(): ?array
+	private function validatePaths(): ?SyncDTO
 	{
 		$paths = $this->argument('paths');
 		if (!is_array($paths)) {
@@ -168,7 +169,7 @@ class Sync extends Command
 			}
 		}
 
-		return ['directories' => $directories, 'files' => $files];
+		return new SyncDTO($files, $directories);
 	}
 
 	/**
@@ -280,15 +281,14 @@ class Sync extends Command
 	/**
 	 * Execute the import process.
 	 *
-	 * @param string[]   $directories Directories to import
-	 * @param string[]   $files       Individual file paths to import directly
+	 * @param SyncDTO    $paths       paths to import directly
 	 * @param Album|null $album       Parent album or null for root
 	 * @param int        $owner_id    Owner ID for the imported files
 	 * @param ImportMode $import_mode Import settings
 	 *
 	 * @return int Status code (0 for success)
 	 */
-	private function executeImport(array $directories, array $files, ?Album $album, int $owner_id, ImportMode $import_mode): int
+	private function executeImport(SyncDTO $paths, ?Album $album, int $owner_id, ImportMode $import_mode): int
 	{
 		$dry_run = $this->option('dry_run') === '1';
 		$delete_missing_photos = $this->validateDeleteMissingPhotos($dry_run);
@@ -301,7 +301,7 @@ class Sync extends Command
 		}
 
 		// FR-024-07: delete_missing flags only apply to directory mode; warn when file-only invocation uses them
-		if (count($directories) === 0 && count($files) > 0 && ($delete_missing_photos || $delete_missing_albums)) {
+		if ($paths->isFilesOnly() && ($delete_missing_photos || $delete_missing_albums)) {
 			$this->line('<fg=gray>Note: --delete_missing_photos and --delete_missing_albums are inactive when only file paths are supplied.</>');
 			$delete_missing_photos = false;
 			$delete_missing_albums = false;
@@ -329,10 +329,10 @@ class Sync extends Command
 			should_execute_jobs: true,
 		);
 
-		if (count($directories) > 0) {
+		if (count($paths->directories) > 0) {
 			$this->info('Start tree-based syncing (maintains folder structure).');
 
-			foreach ($directories as $directory) {
+			foreach ($paths->directories as $directory) {
 				try {
 					$exec->do($directory, $album);
 				} catch (EmptyFolderException|InvalidDirectoryException $e) {
@@ -346,9 +346,9 @@ class Sync extends Command
 			$this->info('Done tree-based syncing.');
 		}
 
-		if (count($files) > 0) {
+		if (count($paths->files) > 0) {
 			$this->info('Start direct file import.');
-			$exec->doFiles($files, $album);
+			$exec->doFiles($paths->files, $album);
 			$this->info('Done direct file import.');
 		}
 
