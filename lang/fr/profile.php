@@ -64,7 +64,7 @@ return [
         'change_saved' => 'Préférences enregistrées !',
     ],
     'shared_albums' => [
-        'instruction' => 'Choose how shared albums (albums from other users) appear in your gallery:',
+        'instruction' => 'Choisissez comment les albums partagés (albums d\'autres utilisateurs) apparaissent dans votre galerie :',
         'mode_default' => 'Use Server Default',
         'mode_default_desc' => 'Inherit the server\'s default visibility mode.',
         'mode_show' => 'Show Inline',
