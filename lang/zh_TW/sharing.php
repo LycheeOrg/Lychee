@@ -1,12 +1,11 @@
 <?php
-
 return [
     /*
     |--------------------------------------------------------------------------
     | Sharing page
     |--------------------------------------------------------------------------
     */
-    'title' => 'Sharing',
+    'title' => '分享',
     'info' => 'This page gives an overview of and the ability to edit the sharing rights associated with albums.',
     'album_title' => 'Album title',
     'username' => 'Username',

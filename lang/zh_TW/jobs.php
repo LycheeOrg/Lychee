@@ -1,15 +1,14 @@
 <?php
-
 return [
     /*
     |--------------------------------------------------------------------------
     | Jobs page
     |--------------------------------------------------------------------------
     */
-    'title' => 'Jobs',
-    'no_data' => 'No Jobs have been executed yet.',
-    'ready' => 'Ready',
-    'success' => 'Success',
-    'failure' => 'Failure',
-    'started' => 'Started',
+    'title' => '工作',
+    'no_data' => '尚未執行任何工作。',
+    'ready' => '已準備',
+    'success' => '成功',
+    'failure' => '失敗',
+    'started' => '已開始',
 ];

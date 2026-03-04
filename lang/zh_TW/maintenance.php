@@ -5,7 +5,7 @@ return [
     | Update Page
     |--------------------------------------------------------------------------
     */
-    'title' => 'Maintenance',
+    'title' => '維護',
     'description' => 'You will find on this page, all the required actions to keep your Lychee installation running smooth and nicely.',
     'cleaning' => [
         'title' => 'Cleaning %s',
