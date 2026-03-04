@@ -26,7 +26,10 @@
 				<template v-if="item.access">
 					<router-link v-if="item.route" v-slot="{ href, navigate }" :to="item.route" custom>
 						<a v-ripple :href="href" v-bind="props.action" @click="navigate">
-							<PiMiniIcon :key="item.icon" :icon="item.icon" />
+							<OverlayBadge v-if="item.num > 0" severity="primary" :pt:badge:class="' outline-0'">
+								<PiMiniIcon :key="item.icon" :icon="item.icon" />
+							</OverlayBadge>
+							<PiMiniIcon :key="item.icon" :icon="item.icon" v-else />
 							<span class="ml-2">
 								<!-- @vue-ignore -->
 								{{ $t(item.label) }}
@@ -123,6 +126,7 @@ import { usePhotosStore } from "@/stores/PhotosState";
 import { useAlbumsStore } from "@/stores/AlbumsState";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { usePhotoStore } from "@/stores/PhotoState";
+import OverlayBadge from "primevue/overlaybadge";
 
 const leftMenuState = useLeftMenuStateStore();
 const route = useRoute();
@@ -177,3 +181,10 @@ watch(
 	},
 );
 </script>
+
+<style lang="css">
+.p-overlaybadge .p-badge {
+	outline: 0;
+	transform: translate(30%, -20%);
+}
+</style>
