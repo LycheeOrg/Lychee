@@ -1,13 +1,12 @@
 <?php
-
 return [
     /*
     |--------------------------------------------------------------------------
     | Landing page
     |--------------------------------------------------------------------------
     */
-    'gallery' => 'Gallery',
-    'access_gallery' => 'Access the gallery',
-    'Powered_by_Lychee' => 'Powered by Lychee',
-    'copyright' => 'All images on this website are subject to copyright by %1$s © %2$s',
+    'gallery' => '相集',
+    'access_gallery' => '存取相集',
+    'Powered_by_Lychee' => '由 Lychee 提供',
+    'copyright' => '本網站所有相片版權 %1$s © %2$s',
 ];
