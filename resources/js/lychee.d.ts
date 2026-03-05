@@ -77,6 +77,7 @@ declare namespace App.Enum {
 	export type FlowStrategy = "auto" | "opt-in";
 	export type ImageOverlayType = "none" | "desc" | "date" | "exif";
 	export type JobStatus = 0 | 1 | 2 | 3;
+	export type LandingBackgroundModeType = "static" | "photo_id" | "random" | "latest_album_cover" | "random_from_album";
 	export type LicenseType =
 		| "none"
 		| "reserved"
@@ -953,6 +954,8 @@ declare namespace App.Http.Resources.Rights {
 		is_photo_timeline_enabled: boolean;
 		is_mod_renamer_enabled: boolean;
 		is_mod_webshop_enabled: boolean;
+		is_contact_enabled: boolean;
+		messages_count: number;
 	};
 	export type PhotoRightsResource = {
 		can_edit: boolean;

@@ -11,8 +11,10 @@ namespace App\Http\Resources\Rights;
 use App\Contracts\Models\AbstractAlbum;
 use App\Factories\AlbumFactory;
 use App\Image\Watermarker;
+use App\Models\ContactMessage;
 use App\Models\Photo;
 use App\Policies\AlbumPolicy;
+use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
@@ -29,6 +31,8 @@ class ModulesRightsResource extends Data
 	public bool $is_photo_timeline_enabled = false;
 	public bool $is_mod_renamer_enabled = false;
 	public bool $is_mod_webshop_enabled = false;
+	public bool $is_contact_enabled = false;
+	public int $messages_count = 0;
 
 	public function __construct()
 	{
@@ -41,6 +45,7 @@ class ModulesRightsResource extends Data
 		$this->is_photo_timeline_enabled = $this->isTimelinePhotosEnabled($is_logged_in);
 		$this->is_mod_renamer_enabled = $this->isRenamerEnabled();
 		$this->is_mod_webshop_enabled = $this->isWebshopEnabled();
+		$this->isContactEnabled();
 	}
 
 	/**
@@ -182,5 +187,26 @@ class ModulesRightsResource extends Data
 		}
 
 		return request()->configs()->getValueAsBool('webshop_enabled');
+	}
+
+	/**
+	 * Check if contact is enabled and set the messages count.
+	 *
+	 * @return void
+	 */
+	private function isContactEnabled(): void
+	{
+		if (!resolve(ConfigManager::class)->getValueAsBool('contact_form_enabled')) {
+			return;
+		}
+
+		$this->is_contact_enabled = true;
+
+		// Only show this information to administrators.
+		if (Auth::user()?->may_administrate !== true) {
+			return;
+		}
+
+		$this->messages_count = ContactMessage::query()->where('is_read', '=', false)->toBase()->count();
 	}
 }
