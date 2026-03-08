@@ -22,15 +22,12 @@
 	const hashMatch = document.location.hash.replace("#", "").split("/");
 	const albumID = hashMatch[0] ?? '';
 	const photoID = hashMatch[1] ?? '';
+	const url = document.querySelector("base")?.getAttribute("href");
 
 	if (photoID !== '') {
-		window.location = @php
-            echo '"'.route('gallery').'/"'
-        @endphp + albumID + '/' + photoID;
+		window.location = url + `/gallery/${albumID}/${photoID}`;
 	} else if (albumID !== '') {
-		window.location = @php
-            echo '"'.route('gallery').'/"'
-        @endphp + albumID;
+		window.location = url + `/gallery/${albumID}`;
 	}
 </script>
 @endif
