@@ -192,9 +192,8 @@ function goBack() {
 		return;
 	}
 
-	if (photoId.value !== undefined) {
+	if (photoStore.photoId !== undefined) {
 		photoStore.reset();
-
 		router.push({ name: albumRoutes().album, params: { tagId: tagId.value } });
 		return;
 	}
