@@ -43,7 +43,7 @@ const langs = import.meta.glob("../../lang/*.json");
  * registering components with the application instance so they are ready
  * to use in your application's views. An example is included for you.
  */
-const app = createApp({});
+const app = createApp(AppComponent);
 app.config.globalProperties.window = window;
 app.use(pinia);
 app.use(PrimeVue, {
@@ -64,7 +64,6 @@ app.directive("ripple", Ripple);
 app.directive("focustrap", FocusTrap);
 app.directive("tooltip", Tooltip);
 
-app.component("App", AppComponent);
 app.use(router);
 app.use(ToastService);
 app.use(ConfirmationService);
