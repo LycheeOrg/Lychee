@@ -2,6 +2,19 @@
 # shellcheck disable=SC3040
 set -euo pipefail
 
+# Check if migrations folder exists and is not empty
+# This is a sanity check to ensure that the user did not just mount
+#   - ./database:/app/database
+if [ ! -d "database/migrations" ]; then
+  echo "❌ ERROR: Migrations folder does not exist at database/migrations"
+  echo "   Cannot start container without migrations."
+  exit 1
+elif [ -z "$(ls -A database/migrations 2>/dev/null)" ]; then
+  echo "❌ ERROR: Migrations folder is empty at database/migrations"
+  echo "   Cannot start container without migrations."
+  exit 1
+fi
+
 if [ "${DB_CONNECTION:-}" = "mysql" ] || [ "${DB_CONNECTION:-}" = "pgsql" ]; then
   echo "⏳ Waiting for database to be ready..."
 
