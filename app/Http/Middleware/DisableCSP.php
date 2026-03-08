@@ -69,10 +69,6 @@ class DisableCSP
 	 */
 	private function handleVueJS()
 	{
-		// We have to disable unsafe-eval because Livewire requires it...
-		// So stupid....
-		config(['secure-headers.csp.script-src.unsafe-eval' => true]);
-
 		// if the public/hot file exists, it means that we need to disable CSP completely
 		// As we will be reloading on the fly the page and Vite has poor CSP support.
 		if (File::exists(public_path('hot'))) {
