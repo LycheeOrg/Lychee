@@ -159,7 +159,7 @@ export function useLeftMenu(
 						label: "left-menu.messages",
 						icon: "pi pi-inbox",
 						route: "/contact-messages",
-						access: initData.value.modules.is_contact_enabled,
+						access: initData.value.modules.is_contact_enabled && canSeeAdmin.value,
 						num: initData.value.modules.messages_count,
 					},
 					{
