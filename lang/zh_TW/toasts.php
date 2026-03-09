@@ -5,8 +5,8 @@ return [
     | Toasts
     |--------------------------------------------------------------------------
     */
-    'error' => 'Error',
+    'error' => '錯誤',
     'success' => '成功',
-    'album_updated' => 'Album updated',
-    'update_failed' => 'Failed to update album',
+    'album_updated' => '相本已更新',
+    'update_failed' => '更新相本失敗',
 ];
