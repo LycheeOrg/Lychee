@@ -2,7 +2,7 @@
 
 _Linked plan:_ [plan.md](plan.md)  
 _Linked spec:_ [spec.md](spec.md)  
-_Status:_ In Progress (I1 complete, starting I2)  
+_Status:_ In Progress (I1-I2 complete, starting I3)  
 _Last updated:_ 2026-03-09
 
 > Guardrail: Each task should complete in ≤90 minutes. Mark tasks `[x]` immediately after completion and commit. Tests come before implementation. Reference scenario IDs (S-026-XX) and requirement IDs (FR-026-XX, NFR-026-XX) from the spec.
@@ -86,14 +86,14 @@ _Last updated:_ 2026-03-09
 ## I2 – Extend GetAlbumPhotosRequest (Backend)
 
 ### Task 2.1: Write GetAlbumPhotosRequest validation tests
-- [ ] Create or extend `tests/Unit/Requests/Album/GetAlbumPhotosRequestTest.php`
-- [ ] Extend `AbstractTestCase` base class
-- [ ] Test: Valid `tag_ids[]` array is accepted
-- [ ] Test: Valid `tag_logic` enum ("AND", "OR") is accepted
-- [ ] Test: Empty `tag_ids[]` is treated as no filter
-- [ ] Test: Invalid `tag_logic` value is rejected
-- [ ] Test: All tag IDs invalid returns validation error 422 (Q-026-05)
-- [ ] Verify tests fail (validation rules don't exist yet)
+- [x] Create or extend `tests/Unit/Requests/Album/GetAlbumPhotosRequestTest.php`
+- [x] Extend `AbstractTestCase` base class
+- [x] Test: Valid `tag_ids[]` array is accepted
+- [x] Test: Valid `tag_logic` enum ("AND", "OR") is accepted
+- [x] Test: Empty `tag_ids[]` is treated as no filter
+- [x] Test: Invalid `tag_logic` value is rejected
+- [x] Test: All tag IDs invalid returns validation error 422 (Q-026-05)
+- [x] Verify tests fail (validation rules don't exist yet)
 
 **Duration:** 45 min  
 **Dependencies:** I1 complete  
@@ -102,17 +102,17 @@ _Last updated:_ 2026-03-09
 ---
 
 ### Task 2.2: Extend GetAlbumPhotosRequest with tag filter validation
-- [ ] Open `app/Http/Requests/Album/GetAlbumPhotosRequest.php`
-- [ ] Add validation rules:
+- [x] Open `app/Http/Requests/Album/GetAlbumPhotosRequest.php`
+- [x] Add validation rules:
   ```php
   'tag_ids' => ['sometimes', 'array'],
   'tag_ids.*' => ['integer'],
   'tag_logic' => ['sometimes', 'string', 'in:AND,OR'],
   ```
-- [ ] Add accessor methods: `tagIds(): array` (return empty array if not set), `tagLogic(): string` (default "OR")
-- [ ] Add custom validation method `withValidator()` to check if ALL tag IDs are invalid
-- [ ] If all tag IDs invalid, throw ValidationException with message "No valid tags found for filtering"
-- [ ] Individual invalid tag IDs are silently ignored (array_filter valid IDs)
+- [x] Add accessor methods: `tagIds(): array` (return empty array if not set), `tagLogic(): string` (default "OR")
+- [x] Add custom validation method `withValidator()` to check if ALL tag IDs are invalid
+- [x] If all tag IDs invalid, throw ValidationException with message "No valid tags found for filtering"
+- [x] Individual invalid tag IDs are silently ignored (array_filter valid IDs)
 
 **Duration:** 60 min  
 **Dependencies:** Task 2.1 complete  
@@ -121,10 +121,10 @@ _Last updated:_ 2026-03-09
 ---
 
 ### Task 2.3: Process validated tag filter values
-- [ ] In `GetAlbumPhotosRequest`, add logic to `processValidatedValues()` or accessor methods
-- [ ] Filter out invalid tag IDs from `tag_ids[]` array
-- [ ] Store validated values in class properties or return via accessors
-- [ ] Ensure strict comparison (`===`) used throughout
+- [x] In `GetAlbumPhotosRequest`, add logic to `processValidatedValues()` or accessor methods
+- [x] Filter out invalid tag IDs from `tag_ids[]` array
+- [x] Store validated values in class properties or return via accessors
+- [x] Ensure strict comparison (`===`) used throughout
 
 **Duration:** 20 min  
 **Dependencies:** Task 2.2 complete  
@@ -133,10 +133,10 @@ _Last updated:_ 2026-03-09
 ---
 
 ### Task 2.4: Run quality checks for I2
-- [ ] Run `make phpstan` (0 errors)
-- [ ] Run `vendor/bin/php-cs-fixer fix app/Http/Requests/Album/GetAlbumPhotosRequest.php`
-- [ ] Run `php artisan test --filter=GetAlbumPhotosRequestTest` (all pass)
-- [ ] Verify FR-026-02 validation path implemented
+- [x] Run `make phpstan` (0 errors)
+- [x] Run `vendor/bin/php-cs-fixer fix app/Http/Requests/Album/GetAlbumPhotosRequest.php`
+- [x] Run `php artisan test --filter=GetAlbumPhotosRequestTest` (all pass)
+- [x] Verify FR-026-02 validation path implemented
 
 **Duration:** 10 min  
 **Dependencies:** Tasks 2.1-2.3 complete  
