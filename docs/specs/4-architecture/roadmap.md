@@ -6,7 +6,7 @@ High-level planning document for Lychee features and architectural initiatives.
 
 | Feature ID | Name | Status | Priority | Assignee | Started | Updated | Progress |
 |------------|------|--------|----------|----------|---------|---------|----------|
-| 025 | Dynamic Landing Background Options | Planning | P2 | LycheeOrg | 2026-03-03 | 2026-03-03 | Spec, plan, tasks drafted |
+| 026 | Album Photo Tag Filter | Ready for Implementation | P2 | LycheeOrg | 2026-03-09 | 2026-03-09 | Spec, plan, tasks complete. 76 tasks across 9 increments (~32h estimated). All open questions resolved. Ready to begin Task 1.1. |
 
 ## Paused Features
 
@@ -18,6 +18,7 @@ High-level planning document for Lychee features and architectural initiatives.
 
 | Feature ID | Name | Completed | Notes |
 |------------|------|-----------|-------|
+| 025 | Dynamic Landing Background Options | 2026-03-03 | Spec, plan, tasks completed |
 | 024 | CLI Sync File-List Support | 2026-03-03 | `lychee:sync` now accepts individual file paths alongside directories; `Exec::doFiles()` added; `ImportImageJob` accepts nullable Album; 7 new tests. |
 | 023 | Remember Me Login | 2026-03-01 | Spec, plan, tasks drafted. Implementation completed. |
 | 022 | Contact Form | 2026-03-01 | Spec, plan, and tasks drafted. Supports-only feature: visitor form (public page), admin message management page, configurable sample Q&A, security question, consent text, privacy URL, custom submit button. 16 increments planned (~16 hours). Implementation completed. |
