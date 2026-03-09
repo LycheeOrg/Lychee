@@ -221,6 +221,10 @@ const AlbumService = {
 	watermark(album_id: string): Promise<AxiosResponse> {
 		return axios.post(`${Constants.getApiUrl()}Album::watermark`, { album_id: album_id });
 	},
+
+	getAlbumTags(album_id: string): Promise<AxiosResponse<App.Http.Resources.Models.TagResource[]>> {
+		return axios.get(`${Constants.getApiUrl()}Album::tags`, { params: { album_id: album_id }, data: {} });
+	},
 };
 
 export default AlbumService;
