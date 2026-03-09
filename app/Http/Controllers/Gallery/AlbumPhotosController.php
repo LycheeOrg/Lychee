@@ -69,7 +69,16 @@ class AlbumPhotosController extends Controller
 		}
 
 		/** @var Album $album */
-		$paginator = $this->photo_repository->getPhotosForAlbumPaginated($album->id, $album->getEffectivePhotoSorting(), $per_page);
+		$tag_ids = $request->tagIds();
+		$tag_logic = $request->tagLogic();
+
+		$paginator = $this->photo_repository->getPhotosForAlbumPaginated(
+			$album->id,
+			$album->getEffectivePhotoSorting(),
+			$per_page,
+			count($tag_ids) > 0 ? $tag_ids : null,
+			$tag_logic
+		);
 
 		return new PaginatedPhotosResource(
 			paginated_photos: $paginator,
