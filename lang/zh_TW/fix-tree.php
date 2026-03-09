@@ -25,7 +25,7 @@ return [
     ],
     'no-changes' => 'No changes to apply.',
     'table' => [
-        'title' => 'Title',
+        'title' => '標題',
         'left' => 'Left',
         'right' => 'Right',
         'id' => 'Id',
