@@ -93,7 +93,7 @@ class PhotoRepository
 				->havingRaw('COUNT(DISTINCT pt.tag_id) = ?', [count($tag_ids)]);
 		} else {
 			// OR logic (or single tag): photo must have ANY of the specified tags
-			$query->whereHas('tags', function ($q) use ($tag_ids) {
+			$query->whereHas('tags', function ($q) use ($tag_ids): void {
 				$q->whereIn('tags.id', $tag_ids);
 			});
 		}

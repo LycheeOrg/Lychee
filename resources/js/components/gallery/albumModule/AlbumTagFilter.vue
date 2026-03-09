@@ -55,7 +55,7 @@
 			<i class="pi pi-filter" />
 			<span>{{
 				$t("gallery.menus.tag_filter_active_summary", {
-					count: selectedTagIds.length,
+					count: selectedTagIds.length.toString(),
 					logic: tagLogic,
 				})
 			}}</span>
@@ -80,7 +80,7 @@ const emits = defineEmits<{
 }>();
 
 // Reactive state
-const availableTags = ref<App.Http.Resources.Models.TagResource[]>([]);
+const availableTags = ref<App.Http.Resources.Tags.TagResource[]>([]);
 const selectedTagIds = ref<number[]>([]);
 const tagLogic = ref<string>("OR");
 const isFilterActive = ref<boolean>(false);

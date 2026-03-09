@@ -14,6 +14,14 @@
 	<SensitiveWarning v-if="albumStore.config?.is_nsfw_warning_visible" />
 	<Unlock :visible="albumStore.isPasswordProtected" @reload="refresh" @fail="is_login_open = true" />
 
+	<!-- Tag Filter -->
+	<AlbumTagFilter
+		v-if="albumStore.album?.id && !photoStore.isLoaded"
+		:album-id="albumStore.album.id"
+		@apply="handleTagFilterApply"
+		@clear="handleTagFilterClear"
+	/>
+
 	<!-- Album panel -->
 	<AlbumPanel
 		v-if="layoutStore.config !== undefined && albumStore.album !== undefined"
@@ -155,6 +163,7 @@ import PhotoTagDialog from "@/components/forms/photo/PhotoTagDialog.vue";
 import PhotoLicenseDialog from "@/components/forms/photo/PhotoLicenseDialog.vue";
 import PhotoCopyDialog from "@/components/forms/photo/PhotoCopyDialog.vue";
 import SensitiveWarning from "@/components/gallery/albumModule/SensitiveWarning.vue";
+import AlbumTagFilter from "@/components/gallery/albumModule/AlbumTagFilter.vue";
 import Unlock from "@/components/forms/album/Unlock.vue";
 import LoginModal from "@/components/modals/LoginModal.vue";
 import { useMouseEvents } from "@/composables/album/uploadEvents";
@@ -236,6 +245,22 @@ async function refresh(isDelete: boolean = false) {
 	}
 	photoStore.photoId = photoId.value;
 	photoStore.load();
+}
+
+/**
+ * Handle tag filter apply event from AlbumTagFilter component.
+ * Sets the tag filter in AlbumStore and reloads photos.
+ */
+function handleTagFilterApply(payload: { tagIds: number[]; tagLogic: string }) {
+	albumStore.setTagFilter(payload.tagIds, payload.tagLogic);
+}
+
+/**
+ * Handle tag filter clear event from AlbumTagFilter component.
+ * Clears the tag filter in AlbumStore and reloads all photos.
+ */
+function handleTagFilterClear() {
+	albumStore.clearTagFilter();
 }
 
 // eslint-disable-next-line vue/no-dupe-keys

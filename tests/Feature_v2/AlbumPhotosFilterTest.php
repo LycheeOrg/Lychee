@@ -13,7 +13,7 @@ use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class AlbumPhotosFilterTest extends BaseApiWithDataTest
 {
-	protected function tearDown(): void
+	public function tearDown(): void
 	{
 		// Clean up tags created during tests
 		Tag::where('name', 'Landscape')->delete();

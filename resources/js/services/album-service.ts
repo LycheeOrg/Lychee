@@ -114,12 +114,31 @@ const AlbumService = {
 		});
 	},
 
-	getPhotos(album_id: string, page: number = 1): Promise<AxiosResponse<App.Http.Resources.Collections.PaginatedPhotosResource>> {
+	getPhotos(
+		album_id: string,
+		page: number = 1,
+		tag_ids: number[] | null = null,
+		tag_logic: string = "OR",
+	): Promise<AxiosResponse<App.Http.Resources.Collections.PaginatedPhotosResource>> {
 		const requester = axios as unknown as AxiosCacheInstance;
+		const params: Record<string, any> = { album_id: album_id, page: page };
+
+		// Add tag filter params if provided
+		if (tag_ids && tag_ids.length > 0) {
+			params["tag_ids[]"] = tag_ids;
+			params.tag_logic = tag_logic;
+		}
+
+		// Cache key includes tag filter for proper cache isolation
+		const cacheKey =
+			tag_ids && tag_ids.length > 0
+				? `album_photos_${album_id}_page${page}_tags${tag_ids.join(",")}_${tag_logic}`
+				: `album_photos_${album_id}_page${page}`;
+
 		return requester.get(`${Constants.getApiUrl()}Album::photos`, {
-			params: { album_id: album_id, page: page },
+			params: params,
 			data: {},
-			id: `album_photos_${album_id}_page${page}`,
+			id: cacheKey,
 		});
 	},
 
@@ -222,7 +241,7 @@ const AlbumService = {
 		return axios.post(`${Constants.getApiUrl()}Album::watermark`, { album_id: album_id });
 	},
 
-	getAlbumTags(album_id: string): Promise<AxiosResponse<App.Http.Resources.Models.TagResource[]>> {
+	getAlbumTags(album_id: string): Promise<AxiosResponse<App.Http.Resources.Tags.TagResource[]>> {
 		return axios.get(`${Constants.getApiUrl()}Album::tags`, { params: { album_id: album_id }, data: {} });
 	},
 };

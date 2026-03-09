@@ -68,7 +68,7 @@ class GetAlbumPhotosRequest extends BaseApiRequest implements HasAbstractAlbum
 	 */
 	public function withValidator(Validator $validator): void
 	{
-		$validator->after(function ($validator) {
+		$validator->after(function ($validator): void {
 			$tag_ids = $this->input('tag_ids', []);
 
 			// If tag_ids provided but ALL are invalid (don't exist in database)

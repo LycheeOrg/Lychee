@@ -101,16 +101,16 @@ class AlbumTagsController extends Controller
 	{
 		// For TagAlbum, query tags from photos within that tag album
 		/** @phpstan-ignore method.private (It is NOT private and it works.) */
-		$photoIds = $album->photos()->pluck('id')->toArray();
+		$photo_ids = $album->photos()->pluck('id')->toArray();
 
-		if (count($photoIds) === 0) {
+		if (count($photo_ids) === 0) {
 			return [];
 		}
 
 		$tags = DB::table('tags')
 			->select('tags.id', 'tags.name', 'tags.description')
 			->join('photos_tags', 'tags.id', '=', 'photos_tags.tag_id')
-			->whereIn('photos_tags.photo_id', $photoIds)
+			->whereIn('photos_tags.photo_id', $photo_ids)
 			->distinct()
 			->orderByRaw('LOWER(tags.name) ASC')
 			->get()
@@ -134,16 +134,16 @@ class AlbumTagsController extends Controller
 	private function getTagsForSmartAlbum(BaseSmartAlbum $album): array
 	{
 		// For smart albums, get photos from the smart album's query
-		$photoIds = $album->photos()->pluck('id')->toArray();
+		$photo_ids = $album->photos()->pluck('id')->toArray();
 
-		if (count($photoIds) === 0) {
+		if (count($photo_ids) === 0) {
 			return [];
 		}
 
 		$tags = DB::table('tags')
 			->select('tags.id', 'tags.name', 'tags.description')
 			->join('photos_tags', 'tags.id', '=', 'photos_tags.tag_id')
-			->whereIn('photos_tags.photo_id', $photoIds)
+			->whereIn('photos_tags.photo_id', $photo_ids)
 			->distinct()
 			->orderByRaw('LOWER(tags.name) ASC')
 			->get()
