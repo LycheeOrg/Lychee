@@ -2,7 +2,7 @@
 
 _Linked plan:_ [plan.md](plan.md)  
 _Linked spec:_ [spec.md](spec.md)  
-_Status:_ Not Started  
+_Status:_ In Progress (I1 complete, starting I2)  
 _Last updated:_ 2026-03-09
 
 > Guardrail: Each task should complete in ≤90 minutes. Mark tasks `[x]` immediately after completion and commit. Tests come before implementation. Reference scenario IDs (S-026-XX) and requirement IDs (FR-026-XX, NFR-026-XX) from the spec.
@@ -12,15 +12,15 @@ _Last updated:_ 2026-03-09
 ## I1 – Album::tags Endpoint (Backend)
 
 ### Task 1.1: Write AlbumTagsControllerTest (S-026-11, S-026-12, S-026-13, S-026-19, S-026-20)
-- [ ] Create `tests/Feature_v2/AlbumTagsControllerTest.php`
-- [ ] Extend `BaseApiWithDataTest` base class
-- [ ] Test scenario S-026-11: Album with tagged photos returns distinct sorted tags
-- [ ] Test scenario S-026-12: Non-existent album returns 404
-- [ ] Test scenario S-026-13: Private album without access returns 403
-- [ ] Test scenario: Album with no tagged photos returns empty array `[]`
-- [ ] Test scenario S-026-19: TagAlbum returns tags from photos in that TagAlbum
-- [ ] Test scenario S-026-20: Smart Album returns tags from photos in computed photo set
-- [ ] Verify tests fail (endpoint doesn't exist yet)
+- [x] Create `tests/Feature_v2/AlbumTagsControllerTest.php`
+- [x] Extend `BaseApiWithDataTest` base class
+- [x] Test scenario S-026-11: Album with tagged photos returns distinct sorted tags
+- [x] Test scenario S-026-12: Non-existent album returns 404
+- [x] Test scenario S-026-13: Private album without access returns 403
+- [x] Test scenario: Album with no tagged photos returns empty array `[]`
+- [x] Test scenario S-026-19: TagAlbum returns tags from photos in that TagAlbum
+- [x] Test scenario S-026-20: Smart Album returns tags from photos in computed photo set
+- [x] Verify tests fail (endpoint doesn't exist yet)
 
 **Duration:** 60 min  
 **Dependencies:** None  
@@ -29,13 +29,13 @@ _Last updated:_ 2026-03-09
 ---
 
 ### Task 1.2: Create AlbumTagsRequest validator
-- [ ] Create `app/Http/Requests/Album/AlbumTagsRequest.php`
-- [ ] Add license header and single blank line after opening PHP tag
-- [ ] Extend `BaseApiRequest`
-- [ ] Add validation rules: `album_id` required string
-- [ ] Add `authorize()` method (return true, middleware handles auth)
-- [ ] Add accessor method: `albumId(): string`
-- [ ] Apply PSR-4 conventions, snake_case variables, strict comparison
+- [x] Create `app/Http/Requests/Album/AlbumTagsRequest.php`
+- [x] Add license header and single blank line after opening PHP tag
+- [x] Extend `BaseApiRequest`
+- [x] Add validation rules: `album_id` required string
+- [x] Add `authorize()` method (return true, middleware handles auth)
+- [x] Add accessor method: `albumId(): string`
+- [x] Apply PSR-4 conventions, snake_case variables, strict comparison
 
 **Duration:** 20 min  
 **Dependencies:** Task 1.1 complete  
@@ -44,14 +44,14 @@ _Last updated:_ 2026-03-09
 ---
 
 ### Task 1.3: Create AlbumTagsController
-- [ ] Create `app/Http/Controllers/Gallery/AlbumTagsController.php`
-- [ ] Add license header and single blank line after opening PHP tag
-- [ ] Add `get(AlbumTagsRequest $request)` method
-- [ ] Fetch album by ID (handle Album, TagAlbum, SmartAlbum types)
-- [ ] Query: SELECT DISTINCT tags via photo_album → photos_tags → tags relationships
-- [ ] Order tags by `tags.name` ASC (alphabetically)
-- [ ] Return JSON: `{tags: [{id, name, description}]}`
-- [ ] Handle edge case: album with no tagged photos returns `{tags: []}`
+- [x] Create `app/Http/Controllers/Gallery/AlbumTagsController.php`
+- [x] Add license header and single blank line after opening PHP tag
+- [x] Add `get(AlbumTagsRequest $request)` method
+- [x] Fetch album by ID (handle Album, TagAlbum, SmartAlbum types)
+- [x] Query: SELECT DISTINCT tags via photo_album → photos_tags → tags relationships
+- [x] Order tags by `tags.name` ASC (alphabetically)
+- [x] Return JSON: `{tags: [{id, name, description}]}`
+- [x] Handle edge case: album with no tagged photos returns `{tags: []}`
 
 **Duration:** 45 min  
 **Dependencies:** Task 1.2 complete  
@@ -60,9 +60,9 @@ _Last updated:_ 2026-03-09
 ---
 
 ### Task 1.4: Add Album::tags route
-- [ ] Open `routes/api_v2.php`
-- [ ] Add route: `Route::get('/Album::tags', [Gallery\AlbumTagsController::class, 'get'])->middleware(['login_required:album', 'cache_control']);`
-- [ ] Verify route registered: `php artisan route:list | grep Album::tags`
+- [x] Open `routes/api_v2.php`
+- [x] Add route: `Route::get('/Album::tags', [Gallery\AlbumTagsController::class, 'get'])->middleware(['login_required:album', 'cache_control']);`
+- [x] Verify route registered: `php artisan route:list | grep Album::tags`
 
 **Duration:** 10 min  
 **Dependencies:** Task 1.3 complete  
@@ -71,11 +71,11 @@ _Last updated:_ 2026-03-09
 ---
 
 ### Task 1.5: Run quality checks for I1
-- [ ] Run `make phpstan` (0 errors)
-- [ ] Run `vendor/bin/php-cs-fixer fix app/Http/Controllers/Gallery/AlbumTagsController.php`
-- [ ] Run `vendor/bin/php-cs-fixer fix app/Http/Requests/Album/AlbumTagsRequest.php`
-- [ ] Run `php artisan test --filter=AlbumTagsControllerTest` (all pass)
-- [ ] Verify FR-026-01 fully implemented
+- [x] Run `make phpstan` (0 errors)
+- [x] Run `vendor/bin/php-cs-fixer fix app/Http/Controllers/Gallery/AlbumTagsController.php`
+- [x] Run `vendor/bin/php-cs-fixer fix app/Http/Requests/Album/AlbumTagsRequest.php`
+- [x] Run `php artisan test --filter=AlbumTagsControllerTest` (all pass)
+- [x] Verify FR-026-01 fully implemented
 
 **Duration:** 15 min  
 **Dependencies:** Tasks 1.1-1.4 complete  
