@@ -543,6 +543,7 @@ return [
 
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/connect-src
 		'connect-src' => [
+			'self' => true,
 			'allow' => array_merge(
 				['https://lycheeorg.dev/update.json'],
 				explode(',', (string) env('SECURITY_HEADER_CSP_CONNECT_SRC', ''))
