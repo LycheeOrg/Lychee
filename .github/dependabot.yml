@@ -28,3 +28,11 @@ updates:
         dependency-type: "production"
       development-dependencies:
         dependency-type: "development"
+
+
+  - package-ecosystem: "docker"
+    directories:
+      - "Dockerfile"
+      - "Dockerfile-legacy"
+    schedule:
+      interval: weekly
