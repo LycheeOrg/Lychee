@@ -1,22 +1,21 @@
 <?php
-
 return [
     /*
     |--------------------------------------------------------------------------
     | Diagnostics page
     |--------------------------------------------------------------------------
     */
-    'title' => 'Diagnostics',
-    'copy_to_clipboard' => 'Copy diagnostics to clipboard',
-    'self-diagnosis' => 'Self-diagnosis',
-    'info' => 'Info',
-    'space' => 'Space',
-    'load_space' => 'Load space usage.',
-    'configuration' => 'Configuration',
-    'loading' => 'Loading...',
-    'identical_content' => 'Identical content',
+    'title' => '診斷',
+    'copy_to_clipboard' => '複制診斷到剪貼簿',
+    'self-diagnosis' => '自我診斷',
+    'info' => '資料',
+    'space' => '空間',
+    'load_space' => '已使用負載空間。',
+    'configuration' => '設定',
+    'loading' => '加載中…',
+    'identical_content' => '相同的內容',
     'toast' => [
-        'info' => 'Info',
-        'copy' => 'Diagnostics copied to clipboard!',
+        'info' => '資料',
+        'copy' => '診斷已複制到剪貼簿!',
     ],
 ];
