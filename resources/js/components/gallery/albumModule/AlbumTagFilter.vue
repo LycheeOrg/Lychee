@@ -64,7 +64,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted } from "vue";
 import MultiSelect from "primevue/multiselect";
 import RadioButton from "primevue/radiobutton";
 import Button from "primevue/button";
@@ -84,9 +84,6 @@ const availableTags = ref<App.Http.Resources.Tags.TagResource[]>([]);
 const selectedTagIds = ref<number[]>([]);
 const tagLogic = ref<string>("OR");
 const isFilterActive = ref<boolean>(false);
-
-// Computed
-const isApplyDisabled = computed(() => selectedTagIds.value.length === 0);
 
 // Methods
 function applyFilter() {
@@ -124,9 +121,3 @@ onMounted(() => {
 	fetchTags();
 });
 </script>
-
-<style scoped>
-.album-tag-filter {
-	/* Component-specific styles if needed */
-}
-</style>

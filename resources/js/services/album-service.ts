@@ -121,7 +121,7 @@ const AlbumService = {
 		tag_logic: string = "OR",
 	): Promise<AxiosResponse<App.Http.Resources.Collections.PaginatedPhotosResource>> {
 		const requester = axios as unknown as AxiosCacheInstance;
-		const params: Record<string, any> = { album_id: album_id, page: page };
+		const params: Record<string, string | number | number[]> = { album_id: album_id, page: page };
 
 		// Add tag filter params if provided
 		if (tag_ids && tag_ids.length > 0) {
