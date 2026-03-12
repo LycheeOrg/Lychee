@@ -19,4 +19,5 @@ return [
         'info' => 'معلومات',
         'copy' => 'تم نسخ التشخيصات إلى الحافظة!',
     ],
+    'copy_on_secure_context' => 'Copying diagnostics is only available in secure contexts (HTTPS).',
 ];

@@ -19,4 +19,5 @@ return [
         'info' => 'Info',
         'copy' => 'Diagnostics copied to clipboard!',
     ],
+    'copy_on_secure_context' => 'Copying diagnostics is only available in secure contexts (HTTPS).',
 ];

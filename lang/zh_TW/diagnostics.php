@@ -18,4 +18,5 @@ return [
         'info' => '資料',
         'copy' => '診斷已複制到剪貼簿!',
     ],
+    'copy_on_secure_context' => 'Copying diagnostics is only available in secure contexts (HTTPS).',
 ];
