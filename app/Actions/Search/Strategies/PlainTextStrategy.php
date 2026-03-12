@@ -25,19 +25,20 @@ class PlainTextStrategy implements PhotoSearchTokenStrategy
 	public function apply(Builder $query, SearchToken $token): void
 	{
 		$value = $this->escapeLike($token->value);
+		$pattern = '%' . $value . '%';
 
-		$query->where(function (Builder $q) use ($value): void {
-			$q->where('title', 'like', '%' . $value . '%')
-				->orWhere('description', 'like', '%' . $value . '%')
-				->orWhere('location', 'like', '%' . $value . '%')
-				->orWhere('model', 'like', '%' . $value . '%')
-				->orWhere('taken_at', 'like', '%' . $value . '%')
-				->orWhereHas('tags', fn (Builder $tq) => $tq->where('name', 'like', '%' . $value . '%'));
+		$query->where(function (Builder $q) use ($pattern): void {
+			$q->whereRaw("title LIKE ? ESCAPE '!'", [$pattern])
+				->orWhereRaw("description LIKE ? ESCAPE '!'", [$pattern])
+				->orWhereRaw("location LIKE ? ESCAPE '!'", [$pattern])
+				->orWhereRaw("model LIKE ? ESCAPE '!'", [$pattern])
+				->orWhereRaw("taken_at LIKE ? ESCAPE '!'", [$pattern])
+				->orWhereHas('tags', fn (Builder $tq) => $tq->whereRaw("name LIKE ? ESCAPE '!'", [$pattern]));
 		});
 	}
 
 	private function escapeLike(string $value): string
 	{
-		return str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $value);
+		return str_replace(['!', '%', '_'], ['!!', '!%', '!_'], $value);
 	}
 }

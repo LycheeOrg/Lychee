@@ -53,6 +53,11 @@ class ColourStrategy implements PhotoSearchTokenStrategy
 		$b = $colour->B;
 
 		$query->whereExists(function (\Illuminate\Database\Query\Builder $sub) use ($r, $g, $b, $dist): void {
+			$grammar = $sub->getConnection()->getQueryGrammar(); // @phpstan-ignore method.notFound
+			$col_r = $grammar->wrap('c.R');
+			$col_g = $grammar->wrap('c.G');
+			$col_b = $grammar->wrap('c.B');
+
 			$sub->select(\Illuminate\Support\Facades\DB::raw('1'))
 				->from('palettes as p')
 				->join('colours as c', function (\Illuminate\Database\Query\JoinClause $join): void {
@@ -63,7 +68,7 @@ class ColourStrategy implements PhotoSearchTokenStrategy
 						->orOn('c.id', '=', 'p.colour_5');
 				})
 				->whereColumn('p.photo_id', 'photos.id')
-				->whereRaw('ABS(c.R - ?) + ABS(c.G - ?) + ABS(c.B - ?) <= ?', [$r, $g, $b, $dist]);
+				->whereRaw("ABS({$col_r} - ?) + ABS({$col_g} - ?) + ABS({$col_b} - ?) <= ?", [$r, $g, $b, $dist]);
 		});
 	}
 

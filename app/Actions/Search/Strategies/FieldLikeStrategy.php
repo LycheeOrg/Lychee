@@ -29,12 +29,12 @@ class FieldLikeStrategy implements PhotoSearchTokenStrategy
 
 	public function apply(Builder $query, SearchToken $token): void
 	{
-		$escaped = str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $token->value);
+		$escaped = str_replace(['!', '%', '_'], ['!!', '!%', '!_'], $token->value);
 
 		if ($token->is_prefix) {
-			$query->where($this->column, 'like', $escaped . '%');
+			$query->whereRaw("{$this->column} LIKE ? ESCAPE '!'", [$escaped . '%']);
 		} else {
-			$query->where($this->column, 'like', '%' . $escaped . '%');
+			$query->whereRaw("{$this->column} LIKE ? ESCAPE '!'", ['%' . $escaped . '%']);
 		}
 	}
 }
