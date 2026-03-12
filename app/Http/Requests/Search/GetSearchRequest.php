@@ -8,23 +8,23 @@
 
 namespace App\Http\Requests\Search;
 
+use App\Actions\Search\SearchTokenParser;
 use App\Contracts\Http\Requests\HasAbstractAlbum;
-use App\Contracts\Http\Requests\HasTerms;
+use App\Contracts\Http\Requests\HasSearchTokens;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasAbstractAlbumTrait;
-use App\Http\Requests\Traits\HasTermsTrait;
+use App\Http\Requests\Traits\HasSearchTokensTrait;
 use App\Policies\AlbumPolicy;
 use App\Rules\RandomIDRule;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use function Safe\base64_decode;
-use function Safe\preg_match_all;
 
-class GetSearchRequest extends BaseApiRequest implements HasAbstractAlbum, HasTerms
+class GetSearchRequest extends BaseApiRequest implements HasAbstractAlbum, HasSearchTokens
 {
-	use HasTermsTrait;
+	use HasSearchTokensTrait;
 	use HasAbstractAlbumTrait;
 
 	/**
@@ -58,19 +58,7 @@ class GetSearchRequest extends BaseApiRequest implements HasAbstractAlbum, HasTe
 		$album_id = $values[RequestAttribute::ALBUM_ID_ATTRIBUTE] ?? null;
 		$this->album = $this->album_factory->findNullalbleAbstractAlbumOrFail($album_id);
 
-		// Escape special characters for a LIKE query
-		$terms = str_replace(
-			['\\', '%', '_'],
-			['\\\\', '\\%', '\\_'],
-			base64_decode($values[RequestAttribute::TERM_ATTRIBUTE], true)
-		);
-
-		// Explode the string by spaces but keep encapsulated strings as single terms
-		// This regex matches quoted strings and unquoted words
-		// Note: This regex is not perfect and may not handle all edge cases, but it works for most common cases.
-		// It captures quoted strings as a single match and unquoted words separately.
-		// Example: "hello world" foo bar -> ["hello world", "foo", "bar"]
-		preg_match_all('/"[^"]*"|\S+/', $terms, $matches);
-		$this->terms = array_map(fn ($term) => trim($term, '"'), $matches[0]);
+		$raw = base64_decode($values[RequestAttribute::TERM_ATTRIBUTE], true);
+		$this->tokens = SearchTokenParser::parse($raw);
 	}
 }
