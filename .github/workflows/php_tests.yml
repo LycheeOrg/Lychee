@@ -96,7 +96,7 @@ jobs:
           tools: pecl, composer
 
       - name: Install Composer dependencies
-        uses: ramsey/composer-install@3cf229dc2919194e9e36783941438d17239e8520 # 3.1.1
+        uses: ramsey/composer-install@a35c6ebd3d08125aaf8852dff361e686a1a67947 # 3.2.0
 
       - name: copy Env
         run: |
