@@ -108,7 +108,7 @@ function clearFilter() {
 async function fetchTags() {
 	AlbumService.getAlbumTags(props.albumId)
 		.then((response) => {
-			availableTags.value = response.data;
+			availableTags.value = response.data.tags;
 		})
 		.catch((error) => {
 			console.error("Failed to fetch album tags:", error);

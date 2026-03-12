@@ -72,14 +72,6 @@
 					@go-to-page="goToAlbumsPage"
 				/>
 				<!-- Tag Filter -->
-				<div class="bg-red-500">
-				<AlbumTagFilter
-					:album-id="albumStore.album.id"
-					@apply="handleTagFilterApply"
-					@clear="handleTagFilterClear"
-				/>
-				</div>
-
 				<PhotoThumbPanel
 					v-if="layoutStore.config && photosStore.photos.length > 0"
 					header="gallery.album.header_photos"
@@ -160,7 +152,6 @@ import { AlbumThumbConfig } from "@/components/gallery/albumModule/thumbs/AlbumT
 import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
 import Button from "primevue/button";
 import GalleryFooter from "@/components/footers/GalleryFooter.vue";
-import AlbumTagFilter from "@/components/gallery/albumModule/AlbumTagFilter.vue";
 import AlbumStatistics from "@/components/drawers/AlbumStatistics.vue";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { usePhotoRoute } from "@/composables/photo/photoRoute";
@@ -273,22 +264,6 @@ function toggleDownloadAlbumFromHero() {
 function toggleDownloadAlbumFromSelection() {
 	downloadAlbumIds.value = selectedAlbumsIds.value;
 	is_download_album_visible.value = true;
-}
-
-/**
- * Handle tag filter apply event from AlbumTagFilter component.
- * Sets the tag filter in AlbumStore and reloads photos.
- */
-function handleTagFilterApply(payload: { tagIds: number[]; tagLogic: string }) {
-	albumStore.setTagFilter(payload.tagIds, payload.tagLogic);
-}
-
-/**
- * Handle tag filter clear event from AlbumTagFilter component.
- * Clears the tag filter in AlbumStore and reloads all photos.
- */
-function handleTagFilterClear() {
-	albumStore.clearTagFilter();
 }
 
 const albumPanelConfig = computed<AlbumThumbConfig>(() => ({
