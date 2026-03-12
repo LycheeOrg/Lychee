@@ -19,7 +19,7 @@ use Illuminate\Validation\ValidationException;
 /**
  * Handles `color:` / `colour:` search tokens.
  *
- * Finds photos whose palette contains at least one colour within the
+ * Finds photos whose palettes contains at least one colour within the
  * configured Manhattan RGB distance of the target colour.
  *
  * Named CSS colours (e.g. "red") are resolved via {@link ColourNameMap::NAMES}.
@@ -27,14 +27,14 @@ use Illuminate\Validation\ValidationException;
  *
  * SQL EXISTS subquery (valid on SQLite, MySQL, PostgreSQL):
  *   EXISTS (
- *     SELECT 1 FROM palette p
+ *     SELECT 1 FROM palettes p
  *     JOIN colours c ON (c.id = p.colour_1 OR c.id = p.colour_2 OR ...
  *                        OR c.id = p.colour_5)
  *     WHERE p.photo_id = photos.id
  *       AND ABS(c.R - :R) + ABS(c.G - :G) + ABS(c.B - :B) <= :dist
  *   )
  *
- * Photos without a palette row are excluded (EXISTS fails naturally).
+ * Photos without a palettes row are excluded (EXISTS fails naturally).
  */
 class ColourStrategy implements PhotoSearchTokenStrategy
 {
@@ -54,7 +54,7 @@ class ColourStrategy implements PhotoSearchTokenStrategy
 
 		$query->whereExists(function (\Illuminate\Database\Query\Builder $sub) use ($r, $g, $b, $dist): void {
 			$sub->select(\Illuminate\Support\Facades\DB::raw('1'))
-				->from('palette as p')
+				->from('palettes as p')
 				->join('colours as c', function (\Illuminate\Database\Query\JoinClause $join): void {
 					$join->on('c.id', '=', 'p.colour_1')
 						->orOn('c.id', '=', 'p.colour_2')
