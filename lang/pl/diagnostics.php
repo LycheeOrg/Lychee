@@ -19,4 +19,5 @@ return [
         'info' => 'Info',
         'copy' => 'Diagnostyka skopiowana do schowka !',
     ],
+    'copy_on_secure_context' => 'Copying diagnostics is only available in secure contexts (HTTPS).',
 ];

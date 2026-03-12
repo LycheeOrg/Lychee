@@ -18,4 +18,5 @@ return [
         'info' => 'Info',
         'copy' => 'Diagnosen in die Zwischenablage kopiert!',
     ],
+    'copy_on_secure_context' => 'Copying diagnostics is only available in secure contexts (HTTPS).',
 ];
