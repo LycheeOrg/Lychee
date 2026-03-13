@@ -35,9 +35,23 @@ use function Safe\preg_match_all;
 class SearchTokenParser
 {
 	private const KNOWN_MODIFIERS = [
-		'tag', 'date', 'type', 'ratio', 'color', 'colour',
-		'make', 'lens', 'aperture', 'iso', 'shutter', 'focal',
-		'title', 'description', 'location', 'model', 'rating',
+		'title',
+		'description',
+		'location',
+		'tag',
+		'date',
+		'type',
+		'ratio',
+		'color',
+		'colour',
+		'make',
+		'lens',
+		'aperture',
+		'iso',
+		'shutter',
+		'focal',
+		'model',
+		'rating',
 	];
 
 	/**
