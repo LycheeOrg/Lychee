@@ -32,7 +32,6 @@ class PlainTextStrategy implements PhotoSearchTokenStrategy
 				->orWhereRaw("description LIKE ? ESCAPE '!'", [$pattern])
 				->orWhereRaw("location LIKE ? ESCAPE '!'", [$pattern])
 				->orWhereRaw("model LIKE ? ESCAPE '!'", [$pattern])
-				->orWhereRaw("taken_at LIKE ? ESCAPE '!'", [$pattern])
 				->orWhereHas('tags', fn (Builder $tq) => $tq->whereRaw("name LIKE ? ESCAPE '!'", [$pattern]));
 		});
 	}
