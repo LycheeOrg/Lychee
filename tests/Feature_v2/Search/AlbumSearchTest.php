@@ -13,6 +13,8 @@
 
 namespace Tests\Feature_v2\Search;
 
+use App\Actions\Search\AlbumSearch;
+use App\Actions\Search\SearchTokenParser;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 /**
@@ -105,5 +107,30 @@ class AlbumSearchTest extends BaseApiWithDataTest
 				'terms' => base64_encode('date:not-a-date'),
 			]);
 		$this->assertUnprocessable($response);
+	}
+
+	// ---------------------------------------------------------------------------
+	// queryTagAlbums (service-layer direct tests)
+	// ---------------------------------------------------------------------------
+
+	public function testQueryTagAlbumsMatchesByTitle(): void
+	{
+		$this->be($this->userMayUpload1);
+
+		$tokens = SearchTokenParser::parse($this->tagAlbum1->title);
+		$results = app(AlbumSearch::class)->queryTagAlbums($tokens);
+
+		$ids = $results->pluck('id');
+		$this->assertContains($this->tagAlbum1->id, $ids->toArray());
+	}
+
+	public function testQueryTagAlbumsNoMatchReturnsEmptyCollection(): void
+	{
+		$this->be($this->userMayUpload1);
+
+		$tokens = SearchTokenParser::parse('__no_matching_tag_album_' . uniqid() . '__');
+		$results = app(AlbumSearch::class)->queryTagAlbums($tokens);
+
+		$this->assertEmpty($results);
 	}
 }

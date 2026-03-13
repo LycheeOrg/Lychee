@@ -117,6 +117,19 @@ class SearchTokenParserTest extends AbstractTestCase
 		SearchTokenParser::parse('date:not-a-date');
 	}
 
+	public function testDateWithEmptyValueThrowsValidationException(): void
+	{
+		$this->expectException(ValidationException::class);
+		SearchTokenParser::parse('date:');
+	}
+
+	public function testDateWithInvalidCalendarDateThrowsValidationException(): void
+	{
+		// Month 13 has valid YYYY-MM-DD format but fails checkdate().
+		$this->expectException(ValidationException::class);
+		SearchTokenParser::parse('date:2024-13-01');
+	}
+
 	// ---------------------------------------------------------------------------
 	// Colour modifier
 	// ---------------------------------------------------------------------------
@@ -174,6 +187,28 @@ class SearchTokenParserTest extends AbstractTestCase
 		SearchTokenParser::parse('ratio:widescreen');
 	}
 
+	public function testRatioNumericWithoutOperatorThrowsValidationException(): void
+	{
+		// ratio:1.5 is a valid number but has no operator and is not a named bucket.
+		$this->expectException(ValidationException::class);
+		SearchTokenParser::parse('ratio:1.5');
+	}
+
+	public function testRatioNonNumericValueThrowsValidationException(): void
+	{
+		$this->expectException(ValidationException::class);
+		SearchTokenParser::parse('ratio:>notanumber');
+	}
+
+	public function testRatioNumericWithOperatorParsesCorrectly(): void
+	{
+		$tokens = SearchTokenParser::parse('ratio:>1.5');
+		$this->assertCount(1, $tokens);
+		$this->assertSame('ratio', $tokens[0]->modifier);
+		$this->assertSame('>', $tokens[0]->operator);
+		$this->assertSame('1.5', $tokens[0]->value);
+	}
+
 	// ---------------------------------------------------------------------------
 	// Rating modifier
 	// ---------------------------------------------------------------------------
@@ -217,6 +252,19 @@ class SearchTokenParserTest extends AbstractTestCase
 		SearchTokenParser::parse('rating:best:>=3');
 	}
 
+	public function testRatingAvgWithNoOperatorThrowsValidationException(): void
+	{
+		// rating:avg:5 has a sub-modifier but no comparison operator.
+		$this->expectException(ValidationException::class);
+		SearchTokenParser::parse('rating:avg:5');
+	}
+
+	public function testRatingNonDigitValueThrowsValidationException(): void
+	{
+		$this->expectException(ValidationException::class);
+		SearchTokenParser::parse('rating:avg:>=abc');
+	}
+
 	// ---------------------------------------------------------------------------
 	// EXIF field modifiers
 	// ---------------------------------------------------------------------------
@@ -227,6 +275,13 @@ class SearchTokenParserTest extends AbstractTestCase
 		$this->assertCount(1, $tokens);
 		$this->assertSame('make', $tokens[0]->modifier);
 		$this->assertSame('Canon', $tokens[0]->value);
+	}
+
+	public function testFieldModifierWithOnlyWildcardThrowsValidationException(): void
+	{
+		// make:* is forbidden — the prefix value before * must not be empty.
+		$this->expectException(ValidationException::class);
+		SearchTokenParser::parse('make:*');
 	}
 
 	public function testIsoPrefixModifier(): void

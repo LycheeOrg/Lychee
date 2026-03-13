@@ -10,6 +10,7 @@ namespace App\Actions\Search\Strategies;
 
 use App\Contracts\Search\PhotoSearchTokenStrategy;
 use App\DTO\Search\SearchToken;
+use App\Enum\SizeVariantType;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
@@ -34,28 +35,30 @@ class RatioStrategy implements PhotoSearchTokenStrategy
 
 	public function apply(Builder $query, SearchToken $token): void
 	{
+		$original = SizeVariantType::ORIGINAL->value;
+
 		if ($token->operator === null) {
 			// Named bucket.
-			$this->applyBucket($query, $token->value);
+			$this->applyBucket($query, $token->value, $original);
 		} else {
 			// Numeric comparison.
 			$ratio = (float) $token->value;
 			$op = $token->operator;
 			$query->whereHas(
 				'size_variants',
-				fn (Builder $sq) => $sq->where('type', 0)->where('ratio', $op, $ratio)
+				fn (Builder $sq) => $sq->where('type', $original)->where('ratio', $op, $ratio)
 			);
 		}
 	}
 
-	private function applyBucket(Builder $query, string $bucket): void
+	private function applyBucket(Builder $query, string $bucket, int $original): void
 	{
 		match ($bucket) {
-			'landscape' => $query->whereHas('size_variants', fn (Builder $sq) => $sq->where('type', 0)->where('ratio', '>', self::BUCKET_HIGH)),
-			'portrait' => $query->whereHas('size_variants', fn (Builder $sq) => $sq->where('type', 0)->where('ratio', '<', self::BUCKET_LOW)),
+			'landscape' => $query->whereHas('size_variants', fn (Builder $sq) => $sq->where('type', $original)->where('ratio', '>', self::BUCKET_HIGH)),
+			'portrait' => $query->whereHas('size_variants', fn (Builder $sq) => $sq->where('type', $original)->where('ratio', '<', self::BUCKET_LOW)),
 			'square' => $query->whereHas(
 				'size_variants',
-				fn (Builder $sq) => $sq->where('type', 0)
+				fn (Builder $sq) => $sq->where('type', $original)
 					->where('ratio', '>=', self::BUCKET_LOW)
 					->where('ratio', '<=', self::BUCKET_HIGH)
 			),

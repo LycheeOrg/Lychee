@@ -200,4 +200,235 @@ class PhotoSearchTest extends BaseApiWithDataTest
 			]);
 		$this->assertUnprocessable($response);
 	}
+
+	// ---------------------------------------------------------------------------
+	// Rating strategy
+	// ---------------------------------------------------------------------------
+
+	public function testRatingAvgGteMatchesPhotoAboveThreshold(): void
+	{
+		\Illuminate\Support\Facades\DB::table('photos')->where('id', $this->photo1->id)->update(['rating_avg' => 4.0]);
+
+		$response = $this->actingAs($this->userMayUpload1)
+			->getJsonWithData('Search', [
+				'album_id' => null,
+				'terms' => base64_encode('rating:avg:>=3'),
+			]);
+		$this->assertOk($response);
+		$ids = collect($response->json('photos'))->pluck('id');
+		$this->assertContains($this->photo1->id, $ids->toArray());
+	}
+
+	public function testRatingAvgGteBelowThresholdExcludesPhoto(): void
+	{
+		\Illuminate\Support\Facades\DB::table('photos')->where('id', $this->photo1->id)->update(['rating_avg' => 2.0]);
+
+		$response = $this->actingAs($this->userMayUpload1)
+			->getJsonWithData('Search', [
+				'album_id' => null,
+				'terms' => base64_encode('rating:avg:>=3'),
+			]);
+		$this->assertOk($response);
+		$ids = collect($response->json('photos'))->pluck('id');
+		$this->assertNotContains($this->photo1->id, $ids->toArray());
+	}
+
+	public function testRatingOutOfRangeReturnsUnprocessable(): void
+	{
+		$response = $this->actingAs($this->userMayUpload1)
+			->getJsonWithData('Search', [
+				'album_id' => null,
+				'terms' => base64_encode('rating:avg:>=6'),
+			]);
+		$this->assertUnprocessable($response);
+	}
+
+	public function testRatingOwnGteMatchesAuthenticatedUserRating(): void
+	{
+		\App\Models\PhotoRating::create([
+			'photo_id' => $this->photo1->id,
+			'user_id' => $this->userMayUpload1->id,
+			'rating' => 4,
+		]);
+
+		$response = $this->actingAs($this->userMayUpload1)
+			->getJsonWithData('Search', [
+				'album_id' => null,
+				'terms' => base64_encode('rating:own:>=3'),
+			]);
+		$this->assertOk($response);
+		$ids = collect($response->json('photos'))->pluck('id');
+		$this->assertContains($this->photo1->id, $ids->toArray());
+	}
+
+	// ---------------------------------------------------------------------------
+	// Ratio strategy — named buckets
+	// ---------------------------------------------------------------------------
+
+	public function testRatioLandscapeMatchesLandscapePhoto(): void
+	{
+		// Factory ORIGINAL size variant has ratio=1.5, which is > 1.05 (landscape).
+		$response = $this->actingAs($this->userMayUpload1)
+			->getJsonWithData('Search', [
+				'album_id' => null,
+				'terms' => base64_encode('ratio:landscape'),
+			]);
+		$this->assertOk($response);
+		$ids = collect($response->json('photos'))->pluck('id');
+		$this->assertContains($this->photo1->id, $ids->toArray());
+	}
+
+	public function testRatioSquareDoesNotMatchLandscapePhoto(): void
+	{
+		$response = $this->actingAs($this->userMayUpload1)
+			->getJsonWithData('Search', [
+				'album_id' => null,
+				'terms' => base64_encode('ratio:square'),
+			]);
+		$this->assertOk($response);
+		$ids = collect($response->json('photos'))->pluck('id');
+		$this->assertNotContains($this->photo1->id, $ids->toArray());
+	}
+
+	public function testRatioPortraitDoesNotMatchLandscapePhoto(): void
+	{
+		$response = $this->actingAs($this->userMayUpload1)
+			->getJsonWithData('Search', [
+				'album_id' => null,
+				'terms' => base64_encode('ratio:portrait'),
+			]);
+		$this->assertOk($response);
+		$ids = collect($response->json('photos'))->pluck('id');
+		$this->assertNotContains($this->photo1->id, $ids->toArray());
+	}
+
+	// ---------------------------------------------------------------------------
+	// Ratio strategy — numeric comparison
+	// ---------------------------------------------------------------------------
+
+	public function testRatioNumericGtMatchesLandscapePhoto(): void
+	{
+		// ratio:>1.0 — photo1 has ORIGINAL ratio=1.5
+		$response = $this->actingAs($this->userMayUpload1)
+			->getJsonWithData('Search', [
+				'album_id' => null,
+				'terms' => base64_encode('ratio:>1.0'),
+			]);
+		$this->assertOk($response);
+		$ids = collect($response->json('photos'))->pluck('id');
+		$this->assertContains($this->photo1->id, $ids->toArray());
+	}
+
+	public function testRatioNumericLteExcludesLandscapePhoto(): void
+	{
+		// ratio:<=1.0 — photo1 ratio=1.5 should not match
+		$response = $this->actingAs($this->userMayUpload1)
+			->getJsonWithData('Search', [
+				'album_id' => null,
+				'terms' => base64_encode('ratio:<=1.0'),
+			]);
+		$this->assertOk($response);
+		$ids = collect($response->json('photos'))->pluck('id');
+		$this->assertNotContains($this->photo1->id, $ids->toArray());
+	}
+
+	// ---------------------------------------------------------------------------
+	// Date strategy — exact match
+	// ---------------------------------------------------------------------------
+
+	public function testDateExactMatchesPhotoTakenOnDate(): void
+	{
+		$date = $this->photo1->taken_at->format('Y-m-d');
+
+		$response = $this->actingAs($this->userMayUpload1)
+			->getJsonWithData('Search', [
+				'album_id' => null,
+				'terms' => base64_encode('date:' . $date),
+			]);
+		$this->assertOk($response);
+		$ids = collect($response->json('photos'))->pluck('id');
+		$this->assertContains($this->photo1->id, $ids->toArray());
+	}
+
+	// ---------------------------------------------------------------------------
+	// Tag strategy
+	// ---------------------------------------------------------------------------
+
+	public function testTagExactMatchReturnsTaggedPhoto(): void
+	{
+		// photo1 has tag "test" (set up in BaseApiWithDataTest)
+		$response = $this->actingAs($this->userMayUpload1)
+			->getJsonWithData('Search', [
+				'album_id' => null,
+				'terms' => base64_encode('tag:test'),
+			]);
+		$this->assertOk($response);
+		$ids = collect($response->json('photos'))->pluck('id');
+		$this->assertContains($this->photo1->id, $ids->toArray());
+	}
+
+	public function testTagExactMatchExcludesUntaggedPhoto(): void
+	{
+		// photo1b has no tags
+		$response = $this->actingAs($this->userMayUpload1)
+			->getJsonWithData('Search', [
+				'album_id' => null,
+				'terms' => base64_encode('tag:test'),
+			]);
+		$this->assertOk($response);
+		$ids = collect($response->json('photos'))->pluck('id');
+		$this->assertNotContains($this->photo1b->id, $ids->toArray());
+	}
+
+	public function testTagPrefixMatchReturnsTaggedPhoto(): void
+	{
+		// "tes*" prefix matches tag "test"
+		$response = $this->actingAs($this->userMayUpload1)
+			->getJsonWithData('Search', [
+				'album_id' => null,
+				'terms' => base64_encode('tag:tes*'),
+			]);
+		$this->assertOk($response);
+		$ids = collect($response->json('photos'))->pluck('id');
+		$this->assertContains($this->photo1->id, $ids->toArray());
+	}
+
+	public function testTagNoMatchReturnsEmptyPhotos(): void
+	{
+		$response = $this->actingAs($this->userMayUpload1)
+			->getJsonWithData('Search', [
+				'album_id' => null,
+				'terms' => base64_encode('tag:__no_such_tag_' . uniqid() . '__'),
+			]);
+		$this->assertOk($response);
+		$response->assertJson(['photos' => []]);
+	}
+
+	// ---------------------------------------------------------------------------
+	// FieldLike strategy — prefix mode
+	// ---------------------------------------------------------------------------
+
+	public function testFieldLikePrefixMatchesPhoto(): void
+	{
+		// Factory default make='Canon'; 'Can*' prefix should match
+		$response = $this->actingAs($this->userMayUpload1)
+			->getJsonWithData('Search', [
+				'album_id' => null,
+				'terms' => base64_encode('make:Can*'),
+			]);
+		$this->assertOk($response);
+		$ids = collect($response->json('photos'))->pluck('id');
+		$this->assertContains($this->photo1->id, $ids->toArray());
+	}
+
+	public function testFieldLikePrefixNoMatchReturnsEmpty(): void
+	{
+		$response = $this->actingAs($this->userMayUpload1)
+			->getJsonWithData('Search', [
+				'album_id' => null,
+				'terms' => base64_encode('make:XYZ' . uniqid() . '*'),
+			]);
+		$this->assertOk($response);
+		$response->assertJson(['photos' => []]);
+	}
 }
