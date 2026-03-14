@@ -30,7 +30,15 @@ class DateStrategy implements PhotoSearchTokenStrategy
 			// Exact calendar date.
 			$query->whereDate('taken_at', '=', $token->value);
 		} else {
-			$query->where('taken_at', $token->operator, Carbon::parse($token->value));
+	public function apply(Builder $query, SearchToken $token): void
+	{
+		if ($token->operator === null) {
+			// Exact calendar date.
+			$query->whereDate('taken_at', '=', $token->value);
+		} else {
+			$query->whereDate('taken_at', $token->operator, $token->value);
+		}
+	}
 		}
 	}
 }
