@@ -5,7 +5,13 @@
 		</template>
 		<!-- <div class="flex justify-end" v-if="is_filters_visible"> -->
 		<Collapse :when="is_filters_visible">
-			<AlbumTagFilter v-if="albumStore.modelAlbum" :album-id="albumStore.modelAlbum.id" @apply="handleTagFilterApply" @clear="handleTagFilterClear" :key="`tags_list_album${albumStore.modelAlbum.id}`" />
+			<AlbumTagFilter
+				v-if="albumStore.modelAlbum"
+				:album-id="albumStore.modelAlbum.id"
+				@apply="handleTagFilterApply"
+				@clear="handleTagFilterClear"
+				:key="`tags_list_album${albumStore.modelAlbum.id}`"
+			/>
 		</Collapse>
 		<PhotoThumbPanelList
 			v-if="isTimeline === false"
