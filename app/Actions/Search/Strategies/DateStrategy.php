@@ -10,7 +10,6 @@ namespace App\Actions\Search\Strategies;
 
 use App\Contracts\Search\PhotoSearchTokenStrategy;
 use App\DTO\Search\SearchToken;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
@@ -30,15 +29,7 @@ class DateStrategy implements PhotoSearchTokenStrategy
 			// Exact calendar date.
 			$query->whereDate('taken_at', '=', $token->value);
 		} else {
-	public function apply(Builder $query, SearchToken $token): void
-	{
-		if ($token->operator === null) {
-			// Exact calendar date.
-			$query->whereDate('taken_at', '=', $token->value);
-		} else {
 			$query->whereDate('taken_at', $token->operator, $token->value);
-		}
-	}
 		}
 	}
 }
