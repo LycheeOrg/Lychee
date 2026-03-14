@@ -73,12 +73,12 @@ class AlbumTagsController extends Controller
 	{
 		// Query tags from photos that are directly in this album
 		$tags = DB::table('tags')
-			->select('tags.id', 'tags.name', 'tags.description')
+			->select('tags.id', 'tags.name', 'tags.description', DB::raw('LOWER(tags.name) as lower_name'))
 			->join('photos_tags', 'tags.id', '=', 'photos_tags.tag_id')
 			->join('photo_album', 'photos_tags.photo_id', '=', 'photo_album.photo_id')
 			->where('photo_album.album_id', '=', $album->id)
 			->distinct()
-			->orderByRaw('LOWER(tags.name) ASC')
+			->orderBy('lower_name')
 			->get()
 			->map(fn ($tag) => [
 				'id' => $tag->id,
@@ -108,11 +108,11 @@ class AlbumTagsController extends Controller
 		}
 
 		$tags = DB::table('tags')
-			->select('tags.id', 'tags.name', 'tags.description')
+			->select('tags.id', 'tags.name', 'tags.description', DB::raw('LOWER(tags.name) as lower_name'))
 			->join('photos_tags', 'tags.id', '=', 'photos_tags.tag_id')
 			->whereIn('photos_tags.photo_id', $photo_ids)
 			->distinct()
-			->orderByRaw('LOWER(tags.name) ASC')
+			->orderBy('lower_name')
 			->get()
 			->map(fn ($tag) => [
 				'id' => $tag->id,
@@ -141,11 +141,11 @@ class AlbumTagsController extends Controller
 		}
 
 		$tags = DB::table('tags')
-			->select('tags.id', 'tags.name', 'tags.description')
+			->select('tags.id', 'tags.name', 'tags.description', DB::raw('LOWER(tags.name) as lower_name'))
 			->join('photos_tags', 'tags.id', '=', 'photos_tags.tag_id')
 			->whereIn('photos_tags.photo_id', $photo_ids)
 			->distinct()
-			->orderByRaw('LOWER(tags.name) ASC')
+			->orderBy('lower_name')
 			->get()
 			->map(fn ($tag) => [
 				'id' => $tag->id,
