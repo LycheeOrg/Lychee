@@ -969,6 +969,17 @@ const LycheePrimeVueConfig: Preset = {
 				maxWidth: "20rem",
 			},
 		},
+		popover: {
+			root: {},
+			colorScheme: {
+				dark: {
+					root: {
+						background: "{surface.800}",
+						borderColor: "{surface.700}",
+					},
+				},
+			},
+		},
 		listbox: {
 			root: {
 				background: "transparent",
@@ -987,6 +998,27 @@ const LycheePrimeVueConfig: Preset = {
 					option: {
 						color: "{text.hoverMutedColor}",
 						focusBackground: "{highlight.background}",
+						focusColor: "{content.color}",
+					},
+				},
+			},
+		},
+		multiselect: {
+			colorScheme: {
+				dark: {
+					root: {
+						background: "transparent",
+						borderColor: "{surface.700}",
+					},
+					overlay: {
+						background: "{surface.800}",
+						borderColor: "{surface.700}",
+					},
+					option: {
+						color: "{text.hoverMutedColor}",
+						focusBackground: "{highlight.background}",
+						selectedBackground: "{primary.color}",
+						selectedColor: "{primary.contrast.color}",
 						focusColor: "{content.color}",
 					},
 				},

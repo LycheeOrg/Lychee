@@ -3,6 +3,16 @@
 		<template #icons>
 			<PhotoThumbPanelControl v-if="withControl" />
 		</template>
+		<!-- <div class="flex justify-end" v-if="is_filters_visible"> -->
+		<Collapse :when="is_filters_visible">
+			<AlbumTagFilter
+				v-if="albumStore.modelAlbum"
+				:album-id="albumStore.modelAlbum.id"
+				@apply="handleTagFilterApply"
+				@clear="handleTagFilterClear"
+				:key="`tags_list_album${albumStore.modelAlbum.id}`"
+			/>
+		</Collapse>
 		<PhotoThumbPanelList
 			v-if="isTimeline === false"
 			:photos="props.photos"
@@ -85,12 +95,19 @@ import { isTouchDevice } from "@/utils/keybindings-utils";
 import { onMounted } from "vue";
 import { useLtRorRtL } from "@/utils/Helpers";
 import { vIntersectionObserver } from "@vueuse/components";
+import AlbumTagFilter from "./AlbumTagFilter.vue";
+import { useAlbumStore } from "@/stores/AlbumState";
+import { useTogglablesStateStore } from "@/stores/ModalsState";
+import { Collapse } from "vue-collapsed";
 
 const { isLTR } = useLtRorRtL();
 
 const lycheeStore = useLycheeStateStore();
+const albumStore = useAlbumStore();
+const modalStore = useTogglablesStateStore();
 
 const { is_timeline_left_border_visible, is_debug_enabled } = storeToRefs(lycheeStore);
+const { is_filters_visible } = storeToRefs(modalStore);
 
 const props = defineProps<{
 	header: string;
@@ -122,6 +139,22 @@ function onIntersectionObserver([entry]: IntersectionObserverEntry[]) {
 const { verifyOrder } = useSplitter();
 
 const isTimeline = computed(() => props.isTimeline && props.photosTimeline !== undefined && props.photosTimeline.length > 1);
+
+/**
+ * Handle tag filter apply event from AlbumTagFilter component.
+ * Sets the tag filter in AlbumStore and reloads photos.
+ */
+function handleTagFilterApply(payload: { tagIds: number[]; tagLogic: string }) {
+	albumStore.setTagFilter(payload.tagIds, payload.tagLogic);
+}
+
+/**
+ * Handle tag filter clear event from AlbumTagFilter component.
+ * Clears the tag filter in AlbumStore and reloads all photos.
+ */
+function handleTagFilterClear() {
+	albumStore.clearTagFilter();
+}
 
 onMounted(() => {
 	if (isTimeline.value) {

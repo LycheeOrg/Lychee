@@ -40,6 +40,9 @@ export const useAlbumStore = defineStore("album-store", {
 		albums_per_page: 0,
 		albums_total: 0,
 		albums_loading: false as boolean,
+
+		// Tag filter state for photos
+		active_tag_filter: null as { tag_ids: number[]; tag_logic: string } | null,
 	}),
 	actions: {
 		refresh(): Promise<void> {
@@ -64,6 +67,8 @@ export const useAlbumStore = defineStore("album-store", {
 			this.albums_per_page = 0;
 			this.albums_total = 0;
 			this.albums_loading = false;
+			// Reset tag filter
+			this.active_tag_filter = null;
 		},
 
 		/**
@@ -211,7 +216,11 @@ export const useAlbumStore = defineStore("album-store", {
 			const requestedAlbumId = this.albumId;
 			this.photos_loading = true;
 
-			return AlbumService.getPhotos(requestedAlbumId, page)
+			// Extract tag filter params from state
+			const tag_ids = this.active_tag_filter?.tag_ids ?? null;
+			const tag_logic = this.active_tag_filter?.tag_logic ?? "OR";
+
+			return AlbumService.getPhotos(requestedAlbumId, page, tag_ids, tag_logic)
 				.then((data) => {
 					// Race condition guard: Don't update state if user navigated away
 					if (this.albumId !== requestedAlbumId) {
@@ -282,22 +291,32 @@ export const useAlbumStore = defineStore("album-store", {
 			return this.loadAlbums(this.albums_current_page + 1, true);
 		},
 
+		/**
+		 * Set tag filter and reload photos.
+		 * Resets to page 1 and replaces existing photos.
+		 */
+		setTagFilter(tag_ids: number[], tag_logic: string = "OR"): Promise<void> {
+			this.active_tag_filter = { tag_ids, tag_logic };
+			// Reset to page 1 and reload with filter
+			return this.loadPhotos(1, false);
+		},
+
+		/**
+		 * Clear tag filter and reload all photos.
+		 * Resets to page 1 and replaces existing photos.
+		 */
+		clearTagFilter(): Promise<void> {
+			this.active_tag_filter = null;
+			// Reset to page 1 and reload without filter
+			return this.loadPhotos(1, false);
+		},
+
 		async load(): Promise<void> {
 			const togglableState = useTogglablesStateStore();
 			const photosState = usePhotosStore();
 			const albumsStore = useAlbumsStore();
 
 			if (this.albumId === ALL || this.albumId === undefined) {
-				return Promise.resolve();
-			}
-
-			// Do not reload fully if we are already on the right album.
-			if (this.albumId === this.album?.id && this.isLoaded) {
-				return Promise.resolve();
-			}
-
-			// Exit early if we are already loading this album
-			if (this._loadingAlbumId === this.albumId) {
 				return Promise.resolve();
 			}
 

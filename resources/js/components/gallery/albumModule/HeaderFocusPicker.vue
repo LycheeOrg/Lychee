@@ -1,5 +1,5 @@
 <template>
-	<div class="absolute top-10 right-1 z-50 w-72 bg-surface-800 rounded-lg shadow-xl overflow-hidden border border-surface-700 z-100">
+	<div class="absolute top-10 right-1 w-72 bg-surface-800 rounded-lg shadow-xl overflow-hidden border border-surface-700 z-100">
 		<div class="p-3 border-b border-surface-700 flex justify-between items-center">
 			<h3 class="text-sm font-semibold text-surface-0">{{ $t("gallery.set_header_focus") }}</h3>
 			<button @click="$emit('cancel')" class="text-surface-400 hover:text-white transition-colors cursor-pointer">

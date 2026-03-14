@@ -71,6 +71,7 @@
 					@load-more="albumStore.loadMoreAlbums()"
 					@go-to-page="goToAlbumsPage"
 				/>
+				<!-- Tag Filter -->
 				<PhotoThumbPanel
 					v-if="layoutStore.config && photosStore.photos.length > 0"
 					header="gallery.album.header_photos"
