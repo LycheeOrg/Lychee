@@ -9,7 +9,16 @@
 		</template>
 
 		<template #end>
-			<Button v-tooltip="$t('diagnostics.copy_to_clipboard')" :disabled="!canCopy" text aria-label="Copy" icon="pi pi-copy" @click="copy" />
+			<Button
+				v-if="isSecureContext"
+				v-tooltip="$t('diagnostics.copy_to_clipboard')"
+				:disabled="!canCopy"
+				text
+				aria-label="Copy"
+				icon="pi pi-copy"
+				@click="copy"
+			/>
+			<Button v-else v-tooltip="$t('diagnostics.copy_on_secure_context')" :disabled="true" text aria-label="Copy" icon="pi pi-copy" />
 		</template>
 	</Toolbar>
 	<ErrorsDiagnotics @loaded="loadError" />
@@ -54,6 +63,8 @@ function loadInfo(val: string[]) {
 function loadConfig(val: string[]) {
 	configurationLoaded.value = val;
 }
+
+const isSecureContext = computed(() => window.isSecureContext);
 
 function copy() {
 	if (!canCopy.value) {

@@ -19,4 +19,5 @@ return [
         'info' => 'اطلاعات',
         'copy' => 'نتیجه عیب یابی در کلیپ‌بورد کپی شد!',
     ],
+    'copy_on_secure_context' => 'Copying diagnostics is only available in secure contexts (HTTPS).',
 ];

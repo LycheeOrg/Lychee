@@ -18,4 +18,5 @@ return [
         'info' => 'Информация',
         'copy' => 'Диагностика скопирована в буфер обмена!',
     ],
+    'copy_on_secure_context' => 'Copying diagnostics is only available in secure contexts (HTTPS).',
 ];

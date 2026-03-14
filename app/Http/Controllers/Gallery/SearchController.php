@@ -41,7 +41,7 @@ class SearchController extends Controller
 	 */
 	public function search(GetSearchRequest $request, AlbumSearch $album_search, PhotoSearch $photo_search): ResultsResource
 	{
-		$terms = $request->terms();
+		$tokens = $request->tokens();
 		$album = $request->album();
 
 		$config_manager = resolve(ConfigManager::class);
@@ -54,11 +54,11 @@ class SearchController extends Controller
 
 		/** @disregard P1013 Undefined method withQueryString() (stupid intelephense) */
 		$photo_results = $photo_search
-			->sqlQuery($terms, $album)
+			->sqlQuery($tokens, $album)
 			->orderBy(ColumnSortingPhotoType::TAKEN_AT->value, OrderSortingType::ASC->value)
 			->paginate($request->configs()->getValueAsInt('search_pagination_limit'));
 
-		$album_results = $album_search->queryAlbums($terms, $album);
+		$album_results = $album_search->queryAlbums($tokens, $album);
 
 		return ResultsResource::fromData(
 			albums: $album_results,

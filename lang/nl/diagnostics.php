@@ -18,4 +18,5 @@ return [
         'info' => 'Informatie',
         'copy' => 'Diagnostieken gekopieerd naar klembord!',
     ],
+    'copy_on_secure_context' => 'Copying diagnostics is only available in secure contexts (HTTPS).',
 ];

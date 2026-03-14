@@ -47,7 +47,7 @@
 			>
 				<i
 					:class="{
-						'pi pi-star-fill text-sky-500': rating <= (hoverRating ?? props.rating.rating_user),
+						'pi pi-star-fill text-primary-500': rating <= (hoverRating ?? props.rating.rating_user),
 						'pi pi-star text-muted-color': rating > (hoverRating ?? props.rating.rating_user),
 					}"
 				/>
@@ -69,13 +69,16 @@ import { useToast } from "primevue/usetoast";
 import { useUserStore } from "@/stores/UserState";
 import StarRow from "@/components/icons/StarRow.vue";
 import { useRating } from "@/composables/photo/useRating";
+import { ref } from "vue";
 
 const lycheeStore = useLycheeStateStore();
 const photoStore = usePhotoStore();
 const userStore = useUserStore();
 const toast = useToast();
 
-const { hoverRating, loading, handleRatingClick } = useRating(photoStore, toast, userStore);
+const { loading, handleRatingClick } = useRating(photoStore, toast, userStore);
+
+const hoverRating = ref<number | null>(null);
 
 const props = defineProps<{
 	photoId: string;

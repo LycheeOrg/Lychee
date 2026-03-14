@@ -9,7 +9,6 @@ import { ref } from "vue";
 export function useRating(photoStore: PhotoStore, toast: ToastServiceMethods, userStore: UserStore) {
 	const photosStore = usePhotosStore();
 	const loading = ref(false);
-	const hoverRating = ref<number | null>(null);
 
 	function handleRatingClick(photoId: string, rating: 0 | 1 | 2 | 3 | 4 | 5) {
 		if (loading.value) {
@@ -74,12 +73,10 @@ export function useRating(photoStore: PhotoStore, toast: ToastServiceMethods, us
 			})
 			.finally(() => {
 				loading.value = false;
-				hoverRating.value = null;
 			});
 	}
 
 	return {
-		hoverRating,
 		loading,
 		handleRatingClick,
 	};
