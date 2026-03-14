@@ -18,28 +18,7 @@
 			class="absolute left-1/2 -translate-x-1/2 bottom-7 text-shadow"
 		>
 			<!-- Star rating buttons (1-5) -->
-			<div class="flex items-center h-6 gap-0.5">
-				<button
-					v-for="rating in [1, 2, 3, 4, 5]"
-					:key="`rate-${rating}`"
-					:disabled="loading"
-					:class="{
-						'w-6 h-6 transition-colors rounded block': true,
-						'cursor-pointer': !loading,
-						'cursor-not-allowed opacity-50': loading,
-					}"
-					@mouseenter="handleMouseEnter(rating)"
-					@mouseleave="handleMouseLeave()"
-					@click="handleRatingClick(photoStore?.photo.id, rating as 1 | 2 | 3 | 4 | 5)"
-				>
-					<i
-						:class="{
-							'text-xl pi pi-star-fill text-amber-500': rating <= (hoverRating ?? photoStore?.photo.rating.rating_user),
-							'text-xl pi pi-star text-muted-color': rating > (hoverRating ?? photoStore?.photo.rating.rating_user),
-						}"
-					/>
-				</button>
-			</div>
+			<Rating :loading="loading" :selectedRating="photoStore.photo.rating.rating_user" :handleRatingClick="rate" :amber="true" />
 		</div>
 	</div>
 </template>
@@ -55,6 +34,7 @@ import StarRow from "@/components/icons/StarRow.vue";
 import { useUserStore } from "@/stores/UserState";
 import { useToast } from "primevue/usetoast";
 import { useRating } from "@/composables/photo/useRating";
+import Rating from "@/components/forms/basic/rating.vue";
 
 const photoStore = usePhotoStore();
 const lycheeStore = useLycheeStateStore();
@@ -64,16 +44,12 @@ const toast = useToast();
 
 const { is_slideshow_active, are_details_open } = storeToRefs(togglableStore);
 
-const { hoverRating, loading, handleRatingClick } = useRating(photoStore, toast, userStore);
+const { loading, handleRatingClick } = useRating(photoStore, toast, userStore);
 
-function handleMouseEnter(rating: number) {
-	if (!loading.value) {
-		hoverRating.value = rating;
+function rate(rating: 1 | 2 | 3 | 4 | 5 | 0) {
+	if (photoStore?.photo) {
+		handleRatingClick(photoStore.photo.id, rating);
 	}
-}
-
-function handleMouseLeave() {
-	hoverRating.value = null;
 }
 
 // Compute which rating should be shown on thumbnails

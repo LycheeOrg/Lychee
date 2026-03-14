@@ -13,7 +13,8 @@
 				'h-[calc(100vh-3.5rem)]': !is_full_screen,
 			}"
 		>
-			<SearchPanel :title="title" :no-data="noData" :search="searchStore.searchTerm" @clear="searchStore.clear" @search="searchStore.search" />
+			<SearchPanel :no-data="noData" @clear="searchStore.clear" @search="onSearch" />
+			<div ref="resultsMarkerRef" aria-hidden="true" class="w-full h-0" data-search-results></div>
 			<ResultPanel
 				v-model:first="searchStore.from"
 				:total="searchStore.total"
@@ -128,7 +129,7 @@ import { useSelection } from "@/composables/selections/selections";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { onKeyStroke, useDebounceFn } from "@vueuse/core";
 import { storeToRefs } from "pinia";
-import { computed, ref, watch } from "vue";
+import { computed, nextTick, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import AlbumMergeDialog from "@/components/forms/gallery-dialogs/AlbumMergeDialog.vue";
 import RenameDialog from "@/components/forms/gallery-dialogs/RenameDialog.vue";
@@ -186,6 +187,18 @@ const photosStore = usePhotosStore();
 const userStore = useUserStore();
 const searchStore = useSearchStore();
 const layoutStore = useLayoutStore();
+
+const resultsMarkerRef = ref<HTMLElement | null>(null);
+
+function onSearch(terms: string) {
+	searchStore.search(terms).then(() => {
+		if (searchStore.total > 0) {
+			nextTick(() => {
+				resultsMarkerRef.value?.scrollIntoView({ behavior: "smooth" });
+			});
+		}
+	});
+}
 
 // eslint-disable-next-line vue/no-dupe-keys
 const { albumId } = storeToRefs(albumStore);

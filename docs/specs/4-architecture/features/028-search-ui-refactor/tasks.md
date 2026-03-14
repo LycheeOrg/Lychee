@@ -1,7 +1,7 @@
 # Feature 028 Tasks – Search UI Refactor
 
-_Status: Draft_  
-_Last updated: 2026-03-13_
+_Status: Complete_  
+_Last updated: 2026-05-30_
 
 > Keep this checklist aligned with the feature plan increments. Stage tests before implementation, record verification commands beside each task, and prefer bite-sized entries (≤90 minutes).
 > **Mark tasks `[x]` immediately** after each one passes verification — do not batch completions. Update the roadmap status when all tasks are done.
@@ -11,7 +11,7 @@ _Last updated: 2026-03-13_
 
 ### I1 · Translation Keys
 
-- [ ] T-028-01 – Add advanced-search translation keys to `lang/en/gallery.php` (FR-028-05, S-028-03).  
+- [x] T-028-01 – Add advanced-search translation keys to `lang/en/gallery.php` (FR-028-05, S-028-03).  
   _Intent:_ Register all label strings under the `search.advanced` sub-group so no copy is hardcoded in Vue.  
   Keys to add: `search.advanced.title`, `search.advanced.description`, `search.advanced.location`, `search.advanced.tags`, `search.advanced.date_from`, `search.advanced.date_to`, `search.advanced.type`, `search.advanced.orientation`, `search.advanced.rating_min`, `search.advanced.rating_own`, `search.advanced.clear`, `search.advanced.search_button`, `search.advanced.toggle_advanced`, `search.advanced.any`.  
   Also add: `search.advanced.type_image`, `search.advanced.type_video`, `search.advanced.type_raw`, `search.advanced.type_live`, `search.advanced.orientation_landscape`, `search.advanced.orientation_portrait`, `search.advanced.orientation_square`.  
@@ -25,7 +25,7 @@ _Last updated: 2026-03-13_
 
 ### I2 · Token Assembler Composable
 
-- [ ] T-028-02 – Create `resources/js/composables/useSearchTokenAssembler.ts` with the `AdvancedSearchState` interface and `assembleTokens` function (FR-028-05, FR-028-06, FR-028-10, FR-028-11, FR-028-12, FR-028-13, FR-028-14, FR-028-16, FR-028-17, S-028-03, S-028-12, S-028-14, S-028-15).  
+- [x] T-028-02 – Create `resources/js/composables/useSearchTokenAssembler.ts` with the `AdvancedSearchState` interface and `assembleTokens` function (FR-028-05, FR-028-06, FR-028-10, FR-028-11, FR-028-12, FR-028-13, FR-028-14, FR-028-16, FR-028-17, S-028-03, S-028-12, S-028-14, S-028-15).  
   _Intent:_ Pure function: `assembleTokens(state: AdvancedSearchState, isAuthenticated: boolean) → string`. No Vue reactivity in this file.  
   Assembly rules (per spec.md §Token Assembly Contract):  
   - title → `title:value` (quote if contains space)  
@@ -50,7 +50,7 @@ _Last updated: 2026-03-13_
   - `npm run check`  
   _Notes:_ Export as a named function (`export function assembleTokens`), not a composable hook.
 
-- [ ] T-028-03 – Add `parseTokens(raw: string): { advanced: AdvancedSearchState; remainder: string }` to the same file (FR-028-07, S-028-05).  
+- [x] T-028-03 – Add `parseTokens(raw: string): { advanced: AdvancedSearchState; remainder: string }` to the same file (FR-028-07, S-028-05).  
   _Intent:_ Parse known token prefixes out of a raw string, populate `AdvancedSearchState`, return unparsed remainder.  
   Tokens to parse: `title:`, `description:`, `location:`, `tag:` (accumulate into comma list), `date:>=`, `date:<=`, `type:`, `ratio:`, `rating:avg:>=:`, `rating:own:>=:`, `make:`, `model:`, `lens:`, `aperture:`, `shutter:`, `focal:`, `iso:`.  
   Unrecognised tokens go to `remainder`.  
@@ -61,7 +61,7 @@ _Last updated: 2026-03-13_
 
 ### I3 · Token Assembler Unit Tests
 
-- [ ] T-028-04 – Create `resources/js/__tests__/search/tokenAssembler.test.ts` with tests for `assembleTokens` (NFR-028-04, S-028-03, S-028-04, S-028-12, S-028-14, S-028-15).  
+- [x] T-028-04 – Create `resources/js/__tests__/search/tokenAssembler.test.ts` with tests for `assembleTokens` (NFR-028-04, S-028-03, S-028-04, S-028-12, S-028-14, S-028-15).  
   _Intent:_ Cover every assembly rule with isolated tests; verify empty fields are omitted; verify comma-tag splitting; verify quoted multi-word title; verify EXIF fields; verify `ratingOwn` gating.  
   Test cases (minimum):  
   1. All fields empty → empty string.  
@@ -81,7 +81,7 @@ _Last updated: 2026-03-13_
   _Verification commands:_  
   - `npm run check`
 
-- [ ] T-028-05 – Add tests for `parseTokens` round-trip (FR-028-07, S-028-05).  
+- [x] T-028-05 – Add tests for `parseTokens` round-trip (FR-028-07, S-028-05).  
   _Intent:_ Verify that a raw string assembled by `assembleTokens` can be parsed back to the same `AdvancedSearchState` with empty remainder.  
   Test cases (minimum):  
   1. Raw string of a single known token → correct field populated; remainder empty.  
@@ -96,7 +96,7 @@ _Last updated: 2026-03-13_
 
 ### I4 · `SearchInputBar` Component
 
-- [ ] T-028-06 – Create `resources/js/components/forms/search/SearchInputBar.vue` (FR-028-01, FR-028-02, FR-028-03, FR-028-04, FR-028-09, S-028-01, S-028-02, S-028-11).  
+- [x] T-028-06 – Create `resources/js/components/forms/search/SearchInputBar.vue` (FR-028-01, FR-028-02, FR-028-03, FR-028-04, FR-028-09, S-028-01, S-028-02, S-028-11).  
   _Intent:_ Single-line input + Search button + ▼/▲ toggle. No debounce. No auto-fire.  
   Props:  
   - `modelValue: string` — current query string  
@@ -118,7 +118,7 @@ _Last updated: 2026-03-13_
 
 ### I5 · `AdvancedSearchPanel` Component
 
-- [ ] T-028-07 – Create `resources/js/components/forms/search/AdvancedSearchPanel.vue` — structure and layout (FR-028-05, FR-028-16, FR-028-17, S-028-03, S-028-09, S-028-10, S-028-14, S-028-15).  
+- [x] T-028-07 – Create `resources/js/components/forms/search/AdvancedSearchPanel.vue` — structure and layout (FR-028-05, FR-028-16, FR-028-17, S-028-03, S-028-09, S-028-10, S-028-14, S-028-15).  
   _Intent:_ Responsive grid of labelled form fields using PrimeVue components and Tailwind utilities.  
   Fields and PrimeVue components:  
   - Title, Description, Location → `InputText`  
@@ -134,7 +134,7 @@ _Last updated: 2026-03-13_
   _Verification commands:_  
   - `npm run check`
 
-- [ ] T-028-08 – Wire token emission and `parseAndLoad` in `AdvancedSearchPanel.vue` (FR-028-05, FR-028-06, FR-028-07, FR-028-16, FR-028-17, S-028-04, S-028-05, S-028-06, S-028-14, S-028-15).  
+- [x] T-028-08 – Wire token emission and `parseAndLoad` in `AdvancedSearchPanel.vue` (FR-028-05, FR-028-06, FR-028-07, FR-028-16, FR-028-17, S-028-04, S-028-05, S-028-06, S-028-14, S-028-15).  
   _Intent:_ On any field change, call `assembleTokens(state, isAuthenticated)` and emit `update:tokens`. Expose `parseAndLoad(raw: string)` via `defineExpose` so the parent can sync from raw input. On Clear, reset state and emit `update:tokens` with `""` and emit `clear`.  
   Emits:  
   - `update:tokens: string` — assembled token fragment from advanced fields only  
@@ -146,7 +146,7 @@ _Last updated: 2026-03-13_
 
 ### I6 · Refactor `SearchBox` to Compose New Components
 
-- [ ] T-028-09 – Rewrite `resources/js/components/forms/search/SearchBox.vue` to compose `SearchInputBar` + `AdvancedSearchPanel` (FR-028-01 through FR-028-15, S-028-01 through S-028-07, S-028-13).  
+- [x] T-028-09 – Rewrite `resources/js/components/forms/search/SearchBox.vue` to compose `SearchInputBar` + `AdvancedSearchPanel` (FR-028-01 through FR-028-15, S-028-01 through S-028-07, S-028-13).  
   _Intent:_ Replace the current single-`InputText` + debounce implementation.  
   Logic:  
   - Internal state: `advancedOpen: Ref<boolean>` (starts `false`), `rawInput: Ref<string>`, `advancedTokens: Ref<string>`.  
@@ -165,13 +165,13 @@ _Last updated: 2026-03-13_
 
 ### I7 · Auto-scroll After Search & Store Cleanup
 
-- [ ] T-028-10 – Remove debounce auto-trigger from `resources/js/stores/SearchState.ts` (FR-028-03, NFR-028-03, S-028-01).  
+- [x] T-028-10 – Remove debounce auto-trigger from `resources/js/stores/SearchState.ts` (FR-028-03, NFR-028-03, S-028-01).  
   _Intent:_ Ensure `search()` is only called on explicit user action. Remove any watcher or debounced timer that auto-fires on `searchTerm` change.  
   _Verification commands:_  
   - `npm run check`  
   _Notes:_ Confirm `searchStore.search()` is only called from `SearchBox` (via `SearchPanel` → `Search.vue` `@search` handler).
 
-- [ ] T-028-11 – Add `data-search-results` attribute to `ResultPanel.vue` root element and implement auto-scroll in `Search.vue` (FR-028-08, S-028-01, S-028-08).  
+- [x] T-028-11 – Add `data-search-results` attribute to `ResultPanel.vue` root element and implement auto-scroll in `Search.vue` (FR-028-08, S-028-01, S-028-08).  
   _Intent:_ After search completes, scroll the result container into view. Zero-results case: no scroll.  
   Implementation in `Search.vue`:  
   ```ts
@@ -196,7 +196,7 @@ _Last updated: 2026-03-13_
 
 ### I8 · Quality Gate
 
-- [ ] T-028-12 – Run full quality gate and fix any issues (NFR-028-01 through NFR-028-07).  
+- [x] T-028-12 – Run full quality gate and fix any issues (NFR-028-01 through NFR-028-07).  
   _Intent:_ All checks green before feature is declared complete.  
   _Verification commands:_  
   - `npm run format`  
@@ -205,12 +205,12 @@ _Last updated: 2026-03-13_
   - `make phpstan`  
   _Notes:_ Fix any TS, lint, PHPStan, or test failures found. Do not suppress warnings with `@ts-ignore` unless there is no alternative — document any suppression.
 
-- [ ] T-028-13 – Manual walkthrough of all 15 scenarios from spec §Branch & Scenario Matrix (S-028-01 through S-028-15).  
+- [x] T-028-13 – Manual walkthrough of all 15 scenarios from spec §Branch & Scenario Matrix (S-028-01 through S-028-15).  
   _Intent:_ Confirm each scenario behaves as specified in both light and dark mode.  
   _Verification commands:_ Manual browser test.  
   _Notes:_ Record any deviations as follow-up tasks or open questions.
 
-- [ ] T-028-14 – Update roadmap status for Feature 028 to "Complete".  
+- [x] T-028-14 – Update roadmap status for Feature 028 to "Complete".  
   _Intent:_ Keep `docs/specs/4-architecture/roadmap.md` accurate.  
   _Verification commands:_ — (documentation only)
 
