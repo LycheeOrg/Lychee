@@ -8,9 +8,18 @@
 
 namespace App\Actions\Search;
 
+use App\Actions\Search\Strategies\ColourStrategy;
+use App\Actions\Search\Strategies\DateStrategy;
+use App\Actions\Search\Strategies\FieldLikeStrategy;
+use App\Actions\Search\Strategies\PlainTextStrategy;
+use App\Actions\Search\Strategies\RatingStrategy;
+use App\Actions\Search\Strategies\RatioStrategy;
+use App\Actions\Search\Strategies\TagStrategy;
+use App\Actions\Search\Strategies\TypeStrategy;
 use App\Contracts\Exceptions\InternalLycheeException;
+use App\Contracts\Search\PhotoSearchTokenStrategy;
 use App\DTO\PhotoSortingCriterion;
-use App\Eloquent\FixedQueryBuilder;
+use App\DTO\Search\SearchToken;
 use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
@@ -32,15 +41,15 @@ class PhotoSearch
 	/**
 	 * Apply search directly.
 	 *
-	 * @param array<int,string> $terms
+	 * @param array<int,SearchToken> $tokens
 	 *
 	 * @return Collection<int,Photo> photos
 	 *
 	 * @throws InternalLycheeException
 	 */
-	public function query(array $terms): Collection
+	public function query(array $tokens): Collection
 	{
-		$query = $this->sqlQuery($terms);
+		$query = $this->sqlQuery($tokens);
 		$sorting = PhotoSortingCriterion::createDefault();
 
 		return (new SortingDecorator($query))
@@ -50,12 +59,12 @@ class PhotoSearch
 	/**
 	 * Create the query manually.
 	 *
-	 * @param array<int,string> $terms
-	 * @param Album|null        $album the optional top album which is used as a search base
+	 * @param array<int,SearchToken> $tokens parsed search tokens from {@link SearchTokenParser}
+	 * @param Album|null             $album  optional top album used as a search base
 	 *
-	 * @return FixedQueryBuilder<Photo>
+	 * @return Builder<Photo>
 	 */
-	public function sqlQuery(array $terms, ?Album $album = null): Builder
+	public function sqlQuery(array $tokens, ?Album $album = null): Builder
 	{
 		$user = Auth::user();
 		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
@@ -68,18 +77,42 @@ class PhotoSearch
 			include_nsfw: !$this->config_manager->getValueAsBool('hide_nsfw_in_search')
 		);
 
-		foreach ($terms as $term) {
-			$query->where(
-				fn (FixedQueryBuilder $query) => $query
-					->where('title', 'like', '%' . $term . '%')
-					->orWhere('description', 'like', '%' . $term . '%')
-					// ->orWhere('tags', 'like', '%' . $term . '%')
-					->orWhere('location', 'like', '%' . $term . '%')
-					->orWhere('model', 'like', '%' . $term . '%')
-					->orWhere('taken_at', 'like', '%' . $term . '%')
-			);
+		$strategies = $this->buildStrategyRegistry();
+
+		foreach ($tokens as $token) {
+			$strategy = $strategies[$token->modifier ?? ''] ?? $strategies[''];
+			$strategy->apply($query, $token);
 		}
 
 		return $query;
+	}
+
+	/**
+	 * Build the map from modifier string (or empty string for plain text) to a strategy instance.
+	 *
+	 * @return array<string, PhotoSearchTokenStrategy>
+	 */
+	private function buildStrategyRegistry(): array
+	{
+		return [
+			'' => new PlainTextStrategy(),
+			'tag' => new TagStrategy(),
+			'date' => new DateStrategy(),
+			'type' => new TypeStrategy(),
+			'ratio' => new RatioStrategy(),
+			'color' => new ColourStrategy($this->config_manager),
+			'colour' => new ColourStrategy($this->config_manager),
+			'make' => new FieldLikeStrategy('make'),
+			'lens' => new FieldLikeStrategy('lens'),
+			'aperture' => new FieldLikeStrategy('aperture'),
+			'iso' => new FieldLikeStrategy('iso'),
+			'shutter' => new FieldLikeStrategy('shutter'),
+			'focal' => new FieldLikeStrategy('focal'),
+			'title' => new FieldLikeStrategy('title'),
+			'description' => new FieldLikeStrategy('description'),
+			'location' => new FieldLikeStrategy('location'),
+			'model' => new FieldLikeStrategy('model'),
+			'rating' => new RatingStrategy(),
+		];
 	}
 }
