@@ -26,6 +26,7 @@ export const useTogglablesStateStore = defineStore("togglables-store", {
 		is_photo_edit_open: false,
 		are_details_open: false,
 		is_slideshow_active: false,
+		is_filters_visible: false,
 
 		// Scroll memory
 		scroll_memory: {} as Record<string, number>,
@@ -71,6 +72,10 @@ export const useTogglablesStateStore = defineStore("togglables-store", {
 
 		rememberScrollPage(elem: HTMLElement, path: string) {
 			this.scroll_memory[path] = elem.scrollTop;
+		},
+
+		toggleFilters() {
+			this.is_filters_visible = !this.is_filters_visible;
 		},
 
 		recoverScrollPage(elem: HTMLElement, path: string) {

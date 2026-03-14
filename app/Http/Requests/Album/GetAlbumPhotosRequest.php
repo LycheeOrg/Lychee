@@ -91,8 +91,8 @@ class GetAlbumPhotosRequest extends BaseApiRequest implements HasAbstractAlbum
 		$this->page = intval($values[RequestAttribute::PAGE_ATTRIBUTE] ?? 1);
 
 		// Process tag filter parameters
-		$tag_ids = $values['tag_ids'] ?? [];
-		$this->tag_ids = array_filter($tag_ids, fn ($id) => is_int($id) && $id > 0);
+		$tag_ids = array_map(fn ($id) => intval($id), $values['tag_ids'] ?? []);
+		$this->tag_ids = array_filter($tag_ids, fn ($id) => $id > 0);
 		$this->tag_logic = $values['tag_logic'] ?? 'OR';
 
 		$smart_id = SmartAlbumType::tryFrom($values[RequestAttribute::ALBUM_ID_ATTRIBUTE]);

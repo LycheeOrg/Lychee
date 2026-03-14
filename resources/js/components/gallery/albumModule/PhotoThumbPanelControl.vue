@@ -1,10 +1,7 @@
 <template>
-	<Popover ref="tagFilterPopover">
-		<AlbumTagFilter v-if="albumStore.album" :album-id="albumStore.album.id" @apply="handleTagFilterApply" @clear="handleTagFilterClear" />
-	</Popover>
 	<!-- Tag filtering -->
 	<div class="inline-flex items-center gap-0.5 pr-2 mr-2 border-r border-neutral-300 dark:border-neutral-600 h-8">
-		<Button icon="pi pi-tag" class="border-none hover:text-color" severity="secondary" text @click="toggleTagsFilters" />
+		<Button icon="pi pi-tag" class="border-none hover:text-color" severity="secondary" text @click="modalStore.toggleFilters" />
 	</div>
 	<!-- Star Rating Filter (visible only when rated photos exist) -->
 	<div
@@ -64,12 +61,11 @@ import { useAlbumsStore } from "@/stores/AlbumsState";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { useLayoutStore } from "@/stores/LayoutState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
+import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { usePhotosStore, type PhotoRatingFilter } from "@/stores/PhotosState";
 import { storeToRefs } from "pinia";
 import Button from "primevue/button";
 import { ref, type Ref } from "vue";
-import AlbumTagFilter from "./AlbumTagFilter.vue";
-import Popover, { PopoverMethods } from "primevue/popover";
 
 const layoutStore = useLayoutStore();
 const photosStore = usePhotosStore();
@@ -77,32 +73,8 @@ const lycheeStore = useLycheeStateStore();
 const albumsStore = useAlbumsStore();
 const albumStore = useAlbumStore();
 const { layout } = storeToRefs(layoutStore);
-
+const modalStore = useTogglablesStateStore();
 const starButtons: Ref<HTMLButtonElement[]> = ref([]);
-
-const tagFilterPopover: Ref<PopoverMethods | undefined> = ref();
-
-function toggleTagsFilters(event: MouseEvent) {
-	if (tagFilterPopover.value) {
-		tagFilterPopover.value.toggle(event);
-	}
-}
-
-/**
- * Handle tag filter apply event from AlbumTagFilter component.
- * Sets the tag filter in AlbumStore and reloads photos.
- */
-function handleTagFilterApply(payload: { tagIds: number[]; tagLogic: string }) {
-	albumStore.setTagFilter(payload.tagIds, payload.tagLogic);
-}
-
-/**
- * Handle tag filter clear event from AlbumTagFilter component.
- * Clears the tag filter in AlbumStore and reloads all photos.
- */
-function handleTagFilterClear() {
-	albumStore.clearTagFilter();
-}
 
 /**
  * Handle star click - toggle filter on/off
