@@ -1,6 +1,6 @@
 <template>
 	<!-- Tag filtering -->
-	<div class="inline-flex items-center gap-0.5 pr-2 mr-2 border-r border-neutral-300 dark:border-neutral-600 h-8">
+	<div class="inline-flex items-center gap-0.5 pr-2 mr-2 border-r border-neutral-300 dark:border-neutral-600 h-8" v-if="albumStore.modelAlbum">
 		<Button icon="pi pi-tag" class="border-none hover:text-color" severity="secondary" text @click="modalStore.toggleFilters" />
 	</div>
 	<!-- Star Rating Filter (visible only when rated photos exist) -->
