@@ -90,16 +90,37 @@ class AlbumSearch
 	/**
 	 * Adds the search conditions to the provided query builder.
 	 *
+	 * Only tokens whose modifier is recognised by the album layer (plain text,
+	 * title, description, date) generate WHERE conditions.  Photo-only modifiers
+	 * (rating, tag, type, ratio, make, lens, …) are silently skipped so they
+	 * cannot accidentally match albums via the plain-text fallback.
+	 *
+	 * When every token in the query is photo-only (e.g. `rating:avg:>=3`), no
+	 * album strategy is ever applied, and we force an empty result set so the
+	 * caller does not return all albums.
+	 *
 	 * @param array<int,SearchToken>                                                            $tokens
 	 * @param AlbumBuilder|TagAlbumBuilder|FixedQueryBuilder<TagAlbum>|FixedQueryBuilder<Album> $query
 	 */
 	private function addSearchCondition(array $tokens, AlbumBuilder|TagAlbumBuilder|FixedQueryBuilder $query): void
 	{
 		$strategies = $this->buildAlbumStrategyRegistry();
+		$applied = false;
 
 		foreach ($tokens as $token) {
-			$strategy = $strategies[$token->modifier ?? ''] ?? $strategies[''];
+			// Tokens with a modifier unknown to albums (e.g. rating, tag, type)
+			// are photo-only filters; skip them entirely.
+			if ($token->modifier !== null && !array_key_exists($token->modifier, $strategies)) {
+				continue;
+			}
+			$strategy = $strategies[$token->modifier ?? ''];
 			$strategy->apply($query, $token);
+			$applied = true;
+		}
+
+		// If every token was photo-only, return an empty set rather than all albums.
+		if (!$applied) {
+			$query->whereRaw('1 = 0');
 		}
 	}
 

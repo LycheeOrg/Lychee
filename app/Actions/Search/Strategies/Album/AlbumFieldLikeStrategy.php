@@ -36,7 +36,7 @@ class AlbumFieldLikeStrategy implements AlbumSearchTokenStrategy
 		$pattern = $token->is_prefix ? $escaped . '%' : '%' . $escaped . '%';
 
 		if ($this->column !== null) {
-			$query->where('base_albums.' . $this->column, 'like', $pattern);
+			$query->whereRaw('base_albums.' . $this->column . " LIKE ? ESCAPE '!'", [$pattern]);
 		} else {
 			// Plain-text fallback: match either title or description.
 			$query->where(function (Builder $q) use ($pattern): void {

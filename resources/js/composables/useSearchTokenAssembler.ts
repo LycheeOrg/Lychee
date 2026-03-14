@@ -96,8 +96,8 @@ export function assembleTokens(state: AdvancedSearchState, isAuthenticated: bool
 	if (state.dateTo) parts.push(`date:<=${state.dateTo}`);
 	if (state.type) parts.push(`type:${state.type}`);
 	if (state.orientation) parts.push(`ratio:${state.orientation}`);
-	if (state.ratingMin) parts.push(`rating:avg:>=:${state.ratingMin}`);
-	if (state.ratingOwn && isAuthenticated) parts.push(`rating:own:>=:${state.ratingOwn}`);
+	if (state.ratingMin) parts.push(`rating:avg:>=${state.ratingMin}`);
+	if (state.ratingOwn && isAuthenticated) parts.push(`rating:own:>=${state.ratingOwn}`);
 
 	if (state.make.trim()) parts.push(assembleStringToken("make", state.make.trim()));
 	if (state.model.trim()) parts.push(assembleStringToken("model", state.model.trim()));
@@ -173,10 +173,10 @@ export function parseTokens(raw: string): { advanced: AdvancedSearchState; remai
 			advanced.type = token.slice(5).toLowerCase();
 		} else if (lower.startsWith("ratio:")) {
 			advanced.orientation = token.slice(6).toLowerCase();
-		} else if (lower.startsWith("rating:avg:>=:")) {
-			advanced.ratingMin = token.slice(14);
-		} else if (lower.startsWith("rating:own:>=:")) {
-			advanced.ratingOwn = token.slice(14);
+		} else if (lower.startsWith("rating:avg:>=")) {
+			advanced.ratingMin = token.slice(13);
+		} else if (lower.startsWith("rating:own:>=")) {
+			advanced.ratingOwn = token.slice(13);
 		} else if (lower.startsWith("make:")) {
 			advanced.make = stripQuotes(token.slice(5));
 		} else if (lower.startsWith("model:")) {

@@ -110,6 +110,32 @@ class AlbumSearchTest extends BaseApiWithDataTest
 	}
 
 	// ---------------------------------------------------------------------------
+	// Photo-only modifiers must not leak into album results
+	// ---------------------------------------------------------------------------
+
+	public function testRatingOnlyTokenReturnsNoAlbums(): void
+	{
+		$response = $this->actingAs($this->userMayUpload1)
+			->getJsonWithData('Search', [
+				'album_id' => null,
+				'terms' => base64_encode('rating:avg:>=1'),
+			]);
+		$this->assertOk($response);
+		$response->assertJson(['albums' => []]);
+	}
+
+	public function testTagOnlyTokenReturnsNoAlbums(): void
+	{
+		$response = $this->actingAs($this->userMayUpload1)
+			->getJsonWithData('Search', [
+				'album_id' => null,
+				'terms' => base64_encode('tag:sunset'),
+			]);
+		$this->assertOk($response);
+		$response->assertJson(['albums' => []]);
+	}
+
+	// ---------------------------------------------------------------------------
 	// queryTagAlbums (service-layer direct tests)
 	// ---------------------------------------------------------------------------
 
