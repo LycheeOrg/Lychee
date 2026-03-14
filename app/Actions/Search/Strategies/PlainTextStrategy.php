@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Builder;
 /**
  * Handles plain-text search tokens (modifier = null).
  *
- * Matches the value against title, description, location, model, taken_at
+ * Matches the value against title, description, location, model
  * and tags.name using LIKE '%value%'.
  * All fields are OR-ed within the group so that a single plain-text term
  * can match any of these columns.

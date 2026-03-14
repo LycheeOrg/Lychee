@@ -61,8 +61,14 @@ export function emptyAdvancedSearchState(): AdvancedSearchState {
 // Assembly
 // ---------------------------------------------------------------------------
 
-function quoteIfNeeded(value: string): string {
-	return value.includes(" ") ? `"${value}"` : value;
+/**
+ * Assembles a single `modifier:value` token.
+ * When the value contains spaces the *entire* token is wrapped in double-quotes
+ * so that the backend tokeniser (`"[^"]*"|\S+`) can consume it as one unit.
+ */
+function assembleStringToken(modifier: string, value: string): string {
+	const token = `${modifier}:${value}`;
+	return value.includes(" ") ? `"${token}"` : token;
 }
 
 /**
@@ -75,15 +81,15 @@ function quoteIfNeeded(value: string): string {
 export function assembleTokens(state: AdvancedSearchState, isAuthenticated: boolean): string {
 	const parts: string[] = [];
 
-	if (state.title.trim()) parts.push(`title:${quoteIfNeeded(state.title.trim())}`);
-	if (state.description.trim()) parts.push(`description:${quoteIfNeeded(state.description.trim())}`);
-	if (state.location.trim()) parts.push(`location:${quoteIfNeeded(state.location.trim())}`);
+	if (state.title.trim()) parts.push(assembleStringToken("title", state.title.trim()));
+	if (state.description.trim()) parts.push(assembleStringToken("description", state.description.trim()));
+	if (state.location.trim()) parts.push(assembleStringToken("location", state.location.trim()));
 
 	for (const tag of state.tags
 		.split(",")
 		.map((t) => t.trim())
 		.filter(Boolean)) {
-		parts.push(`tag:${tag}`);
+		parts.push(assembleStringToken("tag", tag));
 	}
 
 	if (state.dateFrom) parts.push(`date:>=${state.dateFrom}`);
@@ -93,9 +99,9 @@ export function assembleTokens(state: AdvancedSearchState, isAuthenticated: bool
 	if (state.ratingMin) parts.push(`rating:avg:>=:${state.ratingMin}`);
 	if (state.ratingOwn && isAuthenticated) parts.push(`rating:own:>=:${state.ratingOwn}`);
 
-	if (state.make.trim()) parts.push(`make:${quoteIfNeeded(state.make.trim())}`);
-	if (state.model.trim()) parts.push(`model:${quoteIfNeeded(state.model.trim())}`);
-	if (state.lens.trim()) parts.push(`lens:${quoteIfNeeded(state.lens.trim())}`);
+	if (state.make.trim()) parts.push(assembleStringToken("make", state.make.trim()));
+	if (state.model.trim()) parts.push(assembleStringToken("model", state.model.trim()));
+	if (state.lens.trim()) parts.push(assembleStringToken("lens", state.lens.trim()));
 	if (state.aperture.trim()) parts.push(`aperture:${state.aperture.trim()}`);
 	if (state.shutter.trim()) parts.push(`shutter:${state.shutter.trim()}`);
 	if (state.focal.trim()) parts.push(`focal:${state.focal.trim()}`);
@@ -145,7 +151,10 @@ export function parseTokens(raw: string): { advanced: AdvancedSearchState; remai
 	const remainderParts: string[] = [];
 	const tagAccumulator: string[] = [];
 
-	for (const token of tokenizeRaw(raw)) {
+	for (const rawToken of tokenizeRaw(raw)) {
+		// Unwrap whole-token quoting: "modifier:value with spaces" → modifier:value with spaces
+		// Plain tokens and value-quoted tokens (modifier:"value") are unchanged by stripQuotes.
+		const token = stripQuotes(rawToken);
 		const lower = token.toLowerCase();
 
 		if (lower.startsWith("title:")) {
@@ -183,7 +192,7 @@ export function parseTokens(raw: string): { advanced: AdvancedSearchState; remai
 		} else if (lower.startsWith("iso:")) {
 			advanced.iso = token.slice(4);
 		} else {
-			remainderParts.push(token);
+			remainderParts.push(rawToken);
 		}
 	}
 

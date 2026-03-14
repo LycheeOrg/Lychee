@@ -32,7 +32,7 @@ class AlbumFieldLikeStrategy implements AlbumSearchTokenStrategy
 
 	public function apply(Builder $query, SearchToken $token): void
 	{
-		$escaped = str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $token->value);
+		$escaped = $this->escapeLike($token->value);
 		$pattern = $token->is_prefix ? $escaped . '%' : '%' . $escaped . '%';
 
 		if ($this->column !== null) {
@@ -40,9 +40,14 @@ class AlbumFieldLikeStrategy implements AlbumSearchTokenStrategy
 		} else {
 			// Plain-text fallback: match either title or description.
 			$query->where(function (Builder $q) use ($pattern): void {
-				$q->where('base_albums.title', 'like', $pattern)
-					->orWhere('base_albums.description', 'like', $pattern);
+				$q->whereRaw("base_albums.title LIKE ? ESCAPE '!'", [$pattern])
+					->orWhereRaw("base_albums.description LIKE ? ESCAPE '!'", [$pattern]);
 			});
 		}
+	}
+
+	private function escapeLike(string $value): string
+	{
+		return str_replace(['!', '%', '_'], ['!!', '!%', '!_'], $value);
 	}
 }
