@@ -6,6 +6,7 @@ High-level planning document for Lychee features and architectural initiatives.
 
 | Feature ID | Name | Status | Priority | Assignee | Started | Updated | Progress |
 |------------|------|--------|----------|----------|---------|---------|----------|
+| 029 | AI Vision Service | Planning | P1 | LycheeOrg | 2026-03-15 | 2026-03-15 | Spec, plan, tasks drafted. 43 tasks across 19 increments (I1–I3 Python service, I4–I12 PHP backend, I13–I18 frontend, I19 docs). Q-029-01 through Q-029-12 resolved. 13 new open questions (Q-029-13 through Q-029-25) — 6 high, 7 medium. I1–I3 can start; I8 blocked on Q-029-13; I10 blocked on Q-029-14, Q-029-15, Q-029-17. |
 | 026 | Album Photo Tag Filter | Ready for Implementation | P2 | LycheeOrg | 2026-03-09 | 2026-03-09 | Spec, plan, tasks complete. 76 tasks across 9 increments (~32h estimated). All open questions resolved. Ready to begin Task 1.1. |
 
 ## Paused Features
@@ -105,4 +106,4 @@ features/
 
 ---
 
-*Last updated: 2026-03-03*
+*Last updated: 2026-03-15*
