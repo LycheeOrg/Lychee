@@ -349,13 +349,12 @@ export const useAlbumStore = defineStore("album-store", {
 					this.config = data.data.config;
 					layoutStore.layout = data.data.config.photo_layout;
 
-					const loader = [this.loadPhotos(1, false)]
+					const loader = [this.loadPhotos(1, false)];
 
 					if (data.data.config.is_model_album) {
 						this.modelAlbum = data.data.resource as App.Http.Resources.Models.HeadAlbumResource;
 						loader.push(this.loadAlbums(1, false));
-					}
-					else if (data.data.config.is_base_album) {
+					} else if (data.data.config.is_base_album) {
 						this.tagAlbum = data.data.resource as App.Http.Resources.Models.HeadTagAlbumResource;
 					} else {
 						this.smartAlbum = data.data.resource as App.Http.Resources.Models.HeadSmartAlbumResource;
