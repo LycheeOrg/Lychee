@@ -6,9 +6,245 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 | Question ID | Feature | Priority | Summary | Status | Opened | Updated |
 |-------------|---------|----------|---------|--------|--------|---------|
-| (none) | — | — | — | — | — | — |
+| Q-029-13 | 029 – AI Vision Service | High | Embedding ID → Person mapping gap in selfie match flow | Open | 2026-03-15 | 2026-03-15 |
+| Q-029-14 | 029 – AI Vision Service | High | Re-scan destroys manual face assignments | Open | 2026-03-15 | 2026-03-15 |
+| Q-029-15 | 029 – AI Vision Service | High | Two API keys but Lychee config only defines one; header format unspecified | Open | 2026-03-15 | 2026-03-15 |
+| Q-029-16 | 029 – AI Vision Service | High | Missing Face deletion endpoint for false positives | Open | 2026-03-15 | 2026-03-15 |
+| Q-029-17 | 029 – AI Vision Service | High | Error callback shape undefined (Python → Lychee on failure) | Open | 2026-03-15 | 2026-03-15 |
+| Q-029-18 | 029 – AI Vision Service | High | Spec DSL type mismatch — Face.person_id declared as integer, should be string | Open | 2026-03-15 | 2026-03-15 |
+| Q-029-19 | 029 – AI Vision Service | Medium | Naming inconsistency — FACE_* env prefix vs ai-vision-service name | Open | 2026-03-15 | 2026-03-15 |
+| Q-029-20 | 029 – AI Vision Service | Medium | Permission mode scope per operation is ambiguous | Open | 2026-03-15 | 2026-03-15 |
+| Q-029-21 | 029 – AI Vision Service | Medium | Missing Person unclaim endpoint | Open | 2026-03-15 | 2026-03-15 |
+| Q-029-22 | 029 – AI Vision Service | Medium | Merge direction ambiguity on API-029-06 | Open | 2026-03-15 | 2026-03-15 |
+| Q-029-23 | 029 – AI Vision Service | Medium | face_scan_status state machine transitions undefined | Open | 2026-03-15 | 2026-03-15 |
+| Q-029-24 | 029 – AI Vision Service | Medium | Similar faces in assignment modal — data source unspecified | Open | 2026-03-15 | 2026-03-15 |
+| Q-029-25 | 029 – AI Vision Service | Medium | Crop storage path pattern undefined | Open | 2026-03-15 | 2026-03-15 |
 
 ## Question Details
+
+### Q-029-13: Embedding ID → Person Mapping Gap in Selfie Match Flow
+
+**Question:** The Python `/match` endpoint returns `embedding_id` + `person_suggestion` (cluster label). But Lychee needs a Lychee `person_id` to link the match to a Person. The Face model has no `embedding_id` column, and the Python service doesn't know Lychee Person IDs. How does Lychee resolve a match result back to a Person?
+
+**Impact:** Blocks I8 (SelfieClaimController) and I2 (Python /match endpoint). Without a mapping, the selfie claim flow cannot work.
+
+**Options:**
+- **(A)** Store `lychee_face_id` in Python's embedding DB — set during scan result ingestion. Match returns `lychee_face_id` which Lychee resolves via `Face → person_id`.
+- **(B)** Add `embedding_id` column to the Face model in Lychee. Match result looked up via `Face.where('embedding_id', ...)→person_id`.
+- **(C)** Python returns the `photo_id` + bounding box of the best-matching face. Lychee resolves by matching bounding box to an existing Face record → Person.
+
+**Affects:** FR-029-12, API-029-13, I2, I8, inter-service contract (scan result + match response schemas).
+
+---
+
+### Q-029-14: Re-scan Destroys Manual Face Assignments
+
+**Question:** FR-029-07 says re-scanning a photo replaces old Face records (idempotent). But if a user manually assigned Face → Person, re-scan deletes those records and creates new unassigned ones. All manual assignment work is lost silently. Is this acceptable?
+
+**Impact:** Affects I10 (scan result ingestion). Could cause significant user frustration with no recourse.
+
+**Options:**
+- **(A)** Preserve assignments: match new faces to old faces by bounding box IoU overlap (≥ threshold), carry over `person_id` from old → new face. Delete truly gone faces.
+- **(B)** Soft-delete old faces — mark as `superseded` but keep records. Let user review changes.
+- **(C)** Block re-scan on photos with any assigned faces unless user explicitly confirms (force flag).
+- **(D)** Accept data loss — document it as expected behavior. User must re-assign after re-scan.
+
+**Affects:** FR-029-07, S-029-14, I10, ProcessFaceDetectionResults action.
+
+---
+
+### Q-029-15: Two API Keys but Lychee Config Only Defines One
+
+**Question:** The inter-service contract requires two authentication directions:
+1. **Lychee → Python** (scan requests): Python validates incoming requests via `FACE_API_KEY`.
+2. **Python → Lychee** (callbacks): Lychee validates incoming results via... what?
+
+The Lychee config migration only defines `face_recognition_api_key` (singular). Which direction does it authenticate? What HTTP header format is used (`Authorization: Bearer <key>`, `X-API-Key: <key>`, etc.)?
+
+**Impact:** Blocks I3 (Python API key auth), I4 (Lychee config migration), I10 (result ingestion auth).
+
+**Options:**
+- **(A)** Single shared symmetric key — same key used in both directions. Simpler but less secure (compromise exposes both directions). Header: `X-API-Key: <key>`.
+- **(B)** Two separate keys — Lychee config gets `face_recognition_api_key` (Lychee sends to Python) + `face_recognition_callback_key` (Python sends to Lychee). Header: `X-API-Key: <key>`.
+
+**Affects:** FR-029-07, FR-029-08, I3, I4, I10, inter-service contract, Pydantic `AppSettings`.
+
+---
+
+### Q-029-16: Missing Face Deletion Endpoint for False Positives
+
+**Question:** There is no API to delete a Face record. If the detector produces a false positive (e.g., a face detected in tree bark, a painting, etc.), the user has no way to remove it. This is a basic UX requirement for any face detection system.
+
+**Impact:** Affects I9 (FaceController), frontend face overlay UX.
+
+**Options:**
+- **(A)** Add `DELETE /api/v2/Face/{id}` — hard-delete Face record + crop file. Authorization: photo owner or admin. Add to API catalogue as API-029-14.
+- **(B)** Add `is_dismissed` boolean to Face model — dismissed faces hidden from UI but record retained for re-scan deduplication. Toggle via `PATCH /api/v2/Face/{id}`.
+- **(C)** Both — dismiss by default, hard-delete as admin action.
+
+**Affects:** FR-029-02, I9, I15 (face overlay UI needs a "dismiss" or "delete" action), migrations (if option B).
+
+---
+
+### Q-029-17: Error Callback Shape Undefined
+
+**Question:** If the Python service fails to process a photo (corrupt file, unsupported format, OOM, model error), what does it POST back to Lychee? The inter-service contract only defines the success payload (`DetectCallbackPayload`). Without an error callback, `face_scan_status` will remain `pending` indefinitely for failed photos.
+
+**Impact:** Blocks I2 (Python callback flow), I10 (result ingestion — needs to handle errors), I11 (bulk scan progress tracking).
+
+**Options:**
+- **(A)** Define error callback payload: `{"photo_id": "abc", "status": "error", "error_code": "corrupt_file", "message": "..."}`. Lychee sets `face_scan_status = failed`. Add `ErrorCallbackPayload` Pydantic model.
+- **(B)** Python doesn't callback on failure; Lychee has a configurable timeout (e.g., `face_recognition_scan_timeout` = 5 min) that marks stale `pending` → `failed` via scheduled job.
+- **(C)** Both — Python best-effort error callback + Lychee timeout as safety net.
+
+**Affects:** Inter-service contract, `face_scan_status` transitions, I2, I10, I11, Pydantic schemas.
+
+---
+
+### Q-029-18: Spec DSL Type Mismatch — Face.person_id
+
+**Question:** In the Spec DSL (line ~338), DO-029-02 declares `person_id` with `type: integer` but the actual FK target (Person PK) is `string`. The constraints say `"FK→persons (string)"` contradicting the type field. This is a copy-paste error that could generate wrong migrations if the DSL is used as a generation source.
+
+**Impact:** Low runtime risk (DSL is documentary), but misleading if used for code generation.
+
+**Options:**
+- **(A)** Fix: change `type: integer` → `type: string` on `person_id` in DO-029-02.
+
+**Affects:** Spec DSL only.
+
+---
+
+### Q-029-19: Naming Inconsistency — FACE_* Prefix vs ai-vision-service
+
+**Question:** The service directory is `ai-vision-service` (chosen for future extensibility: tagging, scene detection, etc.), but all environment variables use `FACE_*` prefix and all Lychee config keys use `face_recognition_*`. Should these be renamed for consistency and extensibility?
+
+**Impact:** Naming decision that becomes harder to change after v1 ships.
+
+**Options:**
+- **(A)** Keep `FACE_*` / `face_recognition_*` — scope is facial recognition for now; rename later if/when new capabilities added.
+- **(B)** Rename to `VISION_*` / `ai_vision_*` — future-proof now. More churn in spec but cleaner long-term.
+- **(C)** Hybrid: service-level config uses `VISION_*` (generic), Lychee-side config stays `face_recognition_*` (feature-specific).
+
+**Affects:** Pydantic `AppSettings` (env_prefix), Lychee config migration, docker-compose, all documentation.
+
+---
+
+### Q-029-20: Permission Mode Scope per Operation Is Ambiguous
+
+**Question:** The `face_recognition_permission_mode` setting (`open` / `restricted`) is defined but the spec doesn't enumerate which operations each mode governs. Specifically:
+
+- **open**: Any authenticated user can do what exactly? CRUD persons? Assign faces? Trigger scans? View all persons?
+- **restricted**: Only photo/album owner or admin — but for which operations? Can a non-owner VIEW persons in restricted mode? Can they see face overlays on photos they have album access to?
+
+**Impact:** Affects I7, I8, I9, I10 — every controller needs to know what to gate.
+
+**Options:**
+- **(A)** Define a per-operation matrix:
+  | Operation | open | restricted |
+  |-----------|------|-----------|
+  | View People page | all users | all users |
+  | View face overlays | album access | album access |
+  | Create/edit Person | all users | admin only |
+  | Assign face | all users | photo owner + admin |
+  | Trigger scan | all users | photo/album owner + admin |
+  | Claim person | all users | all users |
+  | Merge persons | all users | admin only |
+- **(B)** Simpler: `open` = all authenticated users for everything; `restricted` = admin-only for all write operations, read follows album access.
+
+**Affects:** NFR-029-07, I7, I8, I9, I10, form request authorization.
+
+---
+
+### Q-029-21: Missing Person Unclaim Endpoint
+
+**Question:** FR-029-05 describes claim behavior and test intents reference "unclaim", but there's no API route for unclaiming a Person (removing the User link). How does a user or admin remove a Person-User link?
+
+**Impact:** Affects I8 (claim controller).
+
+**Options:**
+- **(A)** Add `DELETE /api/v2/Person/{id}/claim` — removes `person.user_id`. Linked user or admin only. Add as API-029-15.
+- **(B)** Use existing `PATCH /api/v2/Person/{id}` with `user_id: null` — no new route needed, but less semantic.
+
+**Affects:** FR-029-05, API catalogue, I8.
+
+---
+
+### Q-029-22: Merge Direction Ambiguity on API-029-06
+
+**Question:** `POST /api/v2/Person/{id}/merge` with body `{target_person_id}`. Which person is destroyed?
+
+- Reading 1: `{id}` is the **source** (destroyed), faces moved to `target_person_id` (kept).
+- Reading 2: `{id}` is the **target** (kept), body's `source_person_id` provides the one destroyed.
+
+REST convention: the URL resource (`{id}`) is typically the one acted upon and preserved. The current spec text says "merge source into target" with `{id}` and body `target_person_id`, which implies `{id}` = source (destroyed). This contradicts the convention.
+
+**Impact:** Affects I8 (merge implementation), frontend merge UI.
+
+**Options:**
+- **(A)** `{id}` = target (kept). Rename body param to `source_person_id`. Follows REST convention.
+- **(B)** `{id}` = source (destroyed). Keep body as `target_person_id`. Document explicitly.
+
+**Affects:** API-029-06, FR-029-11, I8, I14 (frontend merge action).
+
+---
+
+### Q-029-23: face_scan_status State Machine Transitions Undefined
+
+**Question:** The `face_scan_status` enum (`null` / `pending` / `completed` / `failed`) is added to the photos table but its state transitions are not documented:
+
+1. What sets `pending`? (DispatchFaceScanJob dispatch? Or the HTTP request to Python?)
+2. What sets `completed`? (The callback handler in ProcessFaceDetectionResults?)
+3. What sets `failed`? (Error callback? Timeout? Exception in job?)
+4. Can `failed` → `pending` (retry)? Can `completed` → `pending` (re-scan)?
+5. If a photo is `pending` and user triggers another scan, what happens? Ignore? Reset?
+
+**Impact:** Affects I10, I11, bulk scan progress reporting.
+
+**Options:**
+- **(A)** Define explicit state machine:
+  - `null` → `pending` (scan requested)
+  - `pending` → `completed` (success callback received)
+  - `pending` → `failed` (error callback or timeout)
+  - `failed` → `pending` (retry allowed)
+  - `completed` → `pending` (re-scan allowed)
+  - `pending` → `pending` (duplicate request ignored — no-op)
+
+**Affects:** I10, I11, DispatchFaceScanJob, ProcessFaceDetectionResults.
+
+---
+
+### Q-029-24: Similar Faces in Assignment Modal — Data Source Unspecified
+
+**Question:** UI-029-04 (Face Assignment Modal) shows "Similar faces found: [Alice (94%)] [Bob (12%)]". This implies a similarity query — given an unassigned face, find the most similar existing persons. But there's no Lychee API endpoint that provides this data. Where does it come from?
+
+**Impact:** Affects I16 (frontend assignment modal), possibly I2 (Python service), possibly new API endpoint.
+
+**Options:**
+- **(A)** Pre-computed during scan: Python includes `cluster_suggestion` or `similar_embedding_ids` in the callback. Lychee stores these on the Face record or a separate suggestions table.
+- **(B)** On-demand query: when user opens assignment modal, frontend calls a new endpoint (e.g., `GET /api/v2/Face/{id}/suggestions`) which queries Python service for similar embeddings → resolves to Persons.
+- **(C)** Frontend-only heuristic: no similarity data. Drop the "Similar faces found" from the modal. User picks from a Person dropdown only.
+
+**Affects:** UI-029-04, possibly new API endpoint, I2 (if pre-computed), I16.
+
+---
+
+### Q-029-25: Crop Storage Path Pattern Undefined
+
+**Question:** Face crops (150×150 JPEG) are described as "stored alongside size variants" but the actual filesystem path pattern is not specified. This matters for:
+- Generating crop URLs for frontend display.
+- Cleanup on Face deletion or re-scan.
+- Serving via Lychee's existing media serving pipeline.
+
+**Impact:** Affects I10 (ProcessFaceDetectionResults — where to write), I6 (FaceResource crop_url), I16 (frontend crop display).
+
+**Options:**
+- **(A)** Store under photo's size variant directory: `{photo_variant_dir}/faces/{face_id}.jpg`. Served via same media controller.
+- **(B)** Dedicated faces directory: `uploads/faces/{face_id}.jpg`. Separate serving route.
+- **(C)** Store in `storage/app/faces/{face_id}.jpg` — Laravel storage disk, served via signed URL or controller.
+
+**Affects:** FR-029-02, I10, I6, Face model `crop_url` accessor, frontend.
+
+---
 
 ### ~~Q-026-01: TagAlbum and Smart Album Support Scope~~ ✅ RESOLVED
 
@@ -1884,10 +2120,239 @@ Need to clarify the sequence:
 
 ---
 
-*Last updated: 2026-01-02*
+*Last updated: 2026-03-15*
 
 ### ~~Q-023-01: Remember-me Cookie Duration and Admin Configurability~~ ✅ RESOLVED
 
 **Decision:** Option C — Use a shorter default (4 weeks) with env override
 **Rationale:** A 4-week (40320 minutes) default is more security-conscious than Laravel's ~5-year default while still being practical for home/personal instances. The duration is configurable via `REMEMBER_LIFETIME` env variable, loaded by `config/auth.php` in the lychee guard config (`'remember' => (int) env('REMEMBER_LIFETIME', 40320)`). The existing `SessionOrTokenGuard::createGuard()` already reads this key via `setRememberDuration()`. No admin UI control — env/config only.
 **Updated in spec:** Non-Goals (clarified no admin UI for duration), NFR-023-01 (cookie duration = 4 weeks default)
+
+---
+
+### ~~Q-029-01: Communication Protocol Between Python Face-Recognition Service and Lychee~~ ✅ RESOLVED
+
+**Feature:** 029 – Facial Recognition
+**Priority:** High
+**Status:** Resolved
+**Opened:** 2026-03-15
+
+**Resolution:** **Option A** — REST API with webhook callbacks. Lychee sends scan requests to the Python service's REST API; the Python service calls back to Lychee's `/api/v2/FaceDetection/results` endpoint when results are ready.
+
+**Rationale:** Simplest architecture, stateless, easy to debug, works with existing HTTP infrastructure. No additional broker dependencies.
+
+**Spec Impact:** FR-029-07, FR-029-08 confirmed with REST+callback pattern. Inter-service contract in spec appendix is authoritative.
+
+**Resolved:** 2026-03-15
+
+---
+
+### ~~Q-029-02: Face Detection Trigger Mechanism~~ ✅ RESOLVED
+
+**Feature:** 029 – Facial Recognition
+**Priority:** High
+**Status:** Resolved
+**Opened:** 2026-03-15
+
+**Resolution:** **Option A** — Multiple triggers: automatic on upload (via queue job), manual scan (photo/album), and admin bulk-scan command.
+
+**Rationale:** Covers all use cases. New photos auto-processed; existing libraries backfilled via bulk scan; manual scan for on-demand needs.
+
+**Spec Impact:** FR-029-08 (manual scan), FR-029-09 (bulk scan) confirmed. Auto-on-upload trigger added to plan as I7 sub-task.
+
+**Resolved:** 2026-03-15
+
+---
+
+### ~~Q-029-03: Face Clustering and Assignment Workflow~~ ✅ RESOLVED
+
+**Feature:** 029 – Facial Recognition
+**Priority:** High
+**Status:** Resolved
+**Opened:** 2026-03-15
+
+**Resolution:** **Option A** — Auto-cluster with manual confirmation. Python service clusters face embeddings and suggests groupings. Users review, name clusters (creating Person records), and can merge/split. Unknown faces grouped as "Unknown" until assigned.
+
+**Rationale:** Best balance of automation and user control. Leverages ML capability while keeping human in the loop.
+
+**Spec Impact:** Clustering result ingestion added to inter-service contract. UI for cluster review added to frontend increments.
+
+**Resolved:** 2026-03-15
+
+---
+
+### ~~Q-029-04: Face Embedding Storage Location~~ ✅ RESOLVED
+
+**Feature:** 029 – Facial Recognition
+**Priority:** Medium
+**Status:** Resolved
+**Opened:** 2026-03-15
+
+**Resolution:** **Option A** — Python service owns embeddings in its own storage. Lychee's `faces` table stores only bounding box, confidence, person_id, photo_id. No raw embedding data in Lychee DB.
+
+**Rationale:** Keeps Lychee DB lean; vector similarity search belongs in the Python service; clean separation of concerns.
+
+**Spec Impact:** DO-029-02 (Face) confirmed without embedding column. NFR-029-05 (versioned contract) covers embedding_id reference.
+
+**Resolved:** 2026-03-15
+
+---
+
+### ~~Q-029-05: "Non-Searchable" Person Semantics~~ ✅ RESOLVED
+
+**Feature:** 029 – Facial Recognition
+**Priority:** Medium
+**Status:** Resolved
+**Opened:** 2026-03-15
+
+**Resolution:** **Option A** — Non-searchable Person hidden from search results AND People browsing page for all users except the Person's linked User and admins. Faces still detected and stored internally.
+
+**Rationale:** Privacy-respecting; person can opt out of being discoverable; data remains available for the linked user and administrators.
+
+**Spec Impact:** FR-029-06 updated with full visibility rules. NFR-029-04 confirmed. S-029-05, S-029-15 test scenarios confirmed.
+
+**Resolved:** 2026-03-15
+
+---
+
+### ~~Q-029-06: Person-User Tie Purpose and Semantics~~ ✅ RESOLVED
+
+**Feature:** 029 – Facial Recognition
+**Priority:** Medium
+**Status:** Resolved
+**Opened:** 2026-03-15
+
+**Resolution:** **Option A (extended)** — Self-identification ("this Person is me") with two additions:
+1. **Admin override:** Admins can link/unlink any Person-User pair, overriding user claims.
+2. **Selfie-upload claim:** Users can upload a photo of themselves; the Python service matches the selfie against existing face embeddings to find and assign the matching Person record.
+
+**Rationale:** Self-identification enables privacy self-service and "find photos of me". Admin override provides governance. Selfie-upload leverages the face recognition service for convenient self-assignment without manual browsing.
+
+**Spec Impact:** FR-029-05 updated with admin override. New FR-029-12 added for selfie-upload claim flow. New API endpoint (API-029-13) and UI state (UI-029-07) added. Plan increment I5 extended with selfie-upload sub-tasks.
+
+**Resolved:** 2026-03-15
+
+---
+
+### ~~Q-029-07: How Does the Python Service Access Photo Files?~~ ✅ RESOLVED
+
+**Feature:** 029 – Facial Recognition
+**Priority:** High
+**Status:** Resolved
+**Opened:** 2026-03-15
+
+**Resolution:** **Option A** — Shared Docker volume. Both containers mount the same storage volume. The scan request includes a `photo_path` (filesystem path) instead of a URL. Python service reads directly from disk.
+
+**Rationale:** Fastest access; no auth complexity; works with private photos; no network overhead. Deployment requires both containers to share the photos volume.
+
+**Spec Impact:** Inter-service contract updated: `photo_url` replaced with `photo_path` in scan request. Deployment docs must specify shared volume configuration. NFR added for S3/remote storage documentation (FUSE mount or alternative).
+
+**Resolved:** 2026-03-15
+
+---
+
+### ~~Q-029-08: Permission Model for People/Face Operations~~ ✅ RESOLVED
+
+**Feature:** 029 – Facial Recognition
+**Priority:** High
+**Status:** Resolved
+**Opened:** 2026-03-15
+
+**Resolution:** **Option C** — Configurable via admin setting (`face_recognition_permission_mode`). Two modes:
+- **"open"** (default): Any authenticated user can perform all CRUD/assign/merge operations. Only bulk scan restricted to admin.
+- **"restricted"**: Photo-owner-centric with admin escalation:
+  - Create Person: Any authenticated user.
+  - Update/Delete Person: Linked User, creator, or admin.
+  - Assign Face: Photo owner or admin.
+  - Trigger scan: Photo/album owner or admin.
+  - Bulk scan: Admin only.
+  - Merge Persons: Admin only.
+  - Claim Person: Any authenticated user.
+
+**Rationale:** Accommodates both single-user/family instances (open mode) and multi-user deployments (restricted mode). Default is "open" since most Lychee instances are single-user.
+
+**Spec Impact:** New config entry `face_recognition_permission_mode` (enum: open, restricted). FR-029-05/08/10/11 updated with conditional authorization. New NFR for permission mode testing (both modes covered by feature tests).
+
+**Resolved:** 2026-03-15
+
+---
+
+### ~~Q-029-09: Face Crop Thumbnail Generation~~ ✅ RESOLVED
+
+**Feature:** 029 – Facial Recognition
+**Priority:** High
+**Status:** Resolved
+**Opened:** 2026-03-15
+
+**Resolution:** **Option B** — Server-side crop stored as a new asset. The Python service generates a cropped face thumbnail (150x150px) during face detection and includes it in the scan result callback. The crop is stored alongside size variants. The Face record includes a `crop_path` field.
+
+**Rationale:** Crisp thumbnails optimized for People page grid; fast rendering from small pre-generated files; Python service already has the image loaded during detection so the crop is essentially free.
+
+**Spec Impact:** DO-029-02 (Face) gains `crop_path` field. Inter-service contract updated: scan result includes `crop` (base64 JPEG) per face. New migration adds `crop_path` to faces table. I16 Python service includes crop generation.
+
+**Resolved:** 2026-03-15
+
+---
+
+### ~~Q-029-10: Non-Searchable Person Face Overlay Behavior~~ ✅ RESOLVED
+
+**Feature:** 029 – Facial Recognition
+**Priority:** Medium
+**Status:** Resolved
+**Opened:** 2026-03-15
+
+**Resolution:** **Option B (extended)** — Hide the overlay entirely for non-searchable persons, but include a summary indicator: "N faces detected but hidden for privacy reasons" displayed below the photo or in the faces info bar. The count does not reveal which specific persons are hidden.
+
+**Rationale:** Maximum privacy — no hint about which specific face was identified. The summary count maintains transparency about face detection having occurred without leaking person-specific data.
+
+**Spec Impact:** FR-029-04 updated: photo detail response excludes Face records for non-searchable persons (for unauthorized viewers), but includes `hidden_face_count` (integer). Frontend displays "{N} face(s) hidden for privacy" when count > 0. NFR-029-04 test cases updated.
+
+**Resolved:** 2026-03-15
+
+---
+
+### ~~Q-029-11: Selfie Image Lifecycle~~ ✅ RESOLVED
+
+**Feature:** 029 – Facial Recognition
+**Priority:** Medium
+**Status:** Resolved
+**Opened:** 2026-03-15
+
+**Resolution:** **Option A** — Discard immediately after match. The selfie is held in memory/temp storage only during the matching request. Once the Python service returns its result, the image is deleted. No permanent record.
+
+**Rationale:** Privacy-friendly; no unnecessary data retention; simpler storage. Users can re-upload if they want to retry.
+
+**Spec Impact:** FR-029-12 confirmed: selfie is transient. No storage schema changes needed for selfie retention. Implementation uses temp file or in-memory buffer.
+
+**Resolved:** 2026-03-15
+
+---
+
+### ~~Q-029-12: Selfie Match Inter-Service Contract~~ ✅ RESOLVED
+
+**Feature:** 029 – Facial Recognition
+**Priority:** Medium
+**Status:** Resolved
+**Opened:** 2026-03-15
+
+**Resolution:** **Option A** — Dedicated match endpoint on Python service. `POST /match` accepts an image file (multipart) and returns top-N matching embedding references with confidence scores.
+
+Contract:
+```json
+// Request: POST /match (multipart form with "image" file field)
+// Response:
+{
+  "matches": [
+    { "embedding_id": "emb_001", "person_suggestion": "cluster_42", "confidence": 0.963 },
+    { "embedding_id": "emb_002", "person_suggestion": "cluster_17", "confidence": 0.412 }
+  ]
+}
+```
+
+Lychee maps `embedding_id` back to Face records (which have person_id) to identify the matching Person. The `person_suggestion` field is advisory (from clustering) and may be null.
+
+**Rationale:** Clean separation; Python service owns matching logic; single round trip; Lychee just consumes results.
+
+**Spec Impact:** Inter-service contract appendix updated with `/match` endpoint. I17 Python service implements the endpoint. I5 Lychee SelfieClaimController consumes it.
+
+**Resolved:** 2026-03-15
