@@ -5,6 +5,7 @@ import { useTogglablesStateStore } from "./ModalsState";
 import { usePhotosStore } from "./PhotosState";
 import { useAlbumsStore } from "./AlbumsState";
 import { useLycheeStateStore } from "./LycheeState";
+import { useLayoutStore } from "./LayoutState";
 
 export type AlbumStore = ReturnType<typeof useAlbumStore>;
 
@@ -84,6 +85,7 @@ export const useAlbumStore = defineStore("album-store", {
 		 */
 		loadHead(): Promise<void> {
 			const togglableState = useTogglablesStateStore();
+			const layoutStore = useLayoutStore();
 
 			if (this.albumId === ALL || this.albumId === undefined) {
 				return Promise.resolve();
@@ -110,18 +112,18 @@ export const useAlbumStore = defineStore("album-store", {
 					if (this._loadingAlbumId !== requestedAlbumId) {
 						return;
 					}
+					this.config = data.data.config;
+					layoutStore.layout = data.data.config.photo_layout;
 
 					if (data.data.config.is_model_album) {
-						this.config = data.data.config;
 						this.modelAlbum = data.data.resource as App.Http.Resources.Models.HeadAlbumResource;
-					} else {
-						this.config = data.data.config;
-						if (data.data.config.is_base_album) {
-							this.tagAlbum = data.data.resource as App.Http.Resources.Models.HeadTagAlbumResource;
-						} else {
-							this.smartAlbum = data.data.resource as App.Http.Resources.Models.HeadSmartAlbumResource;
-						}
+						return;
 					}
+					if (data.data.config.is_base_album) {
+						this.tagAlbum = data.data.resource as App.Http.Resources.Models.HeadTagAlbumResource;
+						return;
+					}
+					this.smartAlbum = data.data.resource as App.Http.Resources.Models.HeadSmartAlbumResource;
 				})
 				.catch((error) => {
 					if (this.albumId !== requestedAlbumId) {
@@ -315,6 +317,7 @@ export const useAlbumStore = defineStore("album-store", {
 			const togglableState = useTogglablesStateStore();
 			const photosState = usePhotosStore();
 			const albumsStore = useAlbumsStore();
+			const layoutStore = useLayoutStore();
 
 			if (this.albumId === ALL || this.albumId === undefined) {
 				return Promise.resolve();
@@ -343,24 +346,21 @@ export const useAlbumStore = defineStore("album-store", {
 					albumsStore.reset();
 					photosState.reset();
 
-					// Model albums (regular albums): Load both children and photos in parallel
-					// This is efficient because they're independent queries
+					this.config = data.data.config;
+					layoutStore.layout = data.data.config.photo_layout;
+
+					const loader = [this.loadPhotos(1, false)]
+
 					if (data.data.config.is_model_album) {
-						this.config = data.data.config;
-						await Promise.all([this.loadAlbums(1, false), this.loadPhotos(1, false)]);
 						this.modelAlbum = data.data.resource as App.Http.Resources.Models.HeadAlbumResource;
-					} else {
-						// Tag/Smart albums: Only load photos (they don't have child albums)
-						await this.loadPhotos(1, false);
-						this.config = data.data.config;
-						if (data.data.config.is_base_album) {
-							// Tag album: Photos filtered by tag
-							this.tagAlbum = data.data.resource as App.Http.Resources.Models.HeadTagAlbumResource;
-						} else {
-							// Smart album: Recent, Highlighted, On This Day, Unsorted, Untagged
-							this.smartAlbum = data.data.resource as App.Http.Resources.Models.HeadSmartAlbumResource;
-						}
+						loader.push(this.loadAlbums(1, false));
 					}
+					else if (data.data.config.is_base_album) {
+						this.tagAlbum = data.data.resource as App.Http.Resources.Models.HeadTagAlbumResource;
+					} else {
+						this.smartAlbum = data.data.resource as App.Http.Resources.Models.HeadSmartAlbumResource;
+					}
+					await Promise.all(loader);
 				})
 				.catch((error) => {
 					if (this._loadingAlbumId !== requestedAlbumId) {

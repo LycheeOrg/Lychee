@@ -14,7 +14,12 @@
 			<div id="galleryView" class="relative flex flex-wrap content-start w-full justify-start overflow-y-auto h-full select-none">
 				<SelectDrag :with-scroll="true" />
 				<AlbumEdit v-if="albumStore.rights?.can_edit" />
-				<div v-if="noData" class="flex w-full flex-col h-full items-center justify-center text-xl text-muted-color gap-8">
+				<div v-if="true">
+					<div class="flex w-full h-full items-center justify-center">
+						<i class="pi pi-spin pi-spinner text-4xl text-primary-400" />
+					</div>
+				</div>
+				<div v-else-if="noData" class="flex w-full flex-col h-full items-center justify-center text-xl text-muted-color gap-8">
 					<span class="block">
 						{{ $t("gallery.album.no_results") }}
 					</span>
@@ -205,7 +210,7 @@ const emits = defineEmits<{
 
 const { is_se_enabled } = storeToRefs(lycheeStore);
 const noData = computed(() => {
-	return albumsStore.albums.length === 0 && photosStore.photos.length === 0;
+	return !albumStore.isLoading && albumsStore.albums.length === 0 && photosStore.photos.length === 0;
 });
 
 const {
