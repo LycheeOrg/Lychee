@@ -1,6 +1,6 @@
 <template>
 	<div
-		class="flex flex-col max-h-[75vh] p-8 bg-surface-50 dark:bg-surface-950/25 rounded border border-surface-200 dark:border-surface-700 min-h-[400px]"
+		class="flex flex-col max-h-[75vh] p-8 bg-surface-50 dark:bg-surface-950/25 rounded border border-surface-200 dark:border-surface-700 min-h-100"
 		v-if="order"
 	>
 		<div class="text-lg font-bold text-center mb-12">{{ $t("webshop.orderSummary.title") }}</div>
