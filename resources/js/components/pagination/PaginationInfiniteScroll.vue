@@ -40,9 +40,11 @@ let scrollContainer: HTMLElement | null = null;
  */
 function handleIntersect(entries: IntersectionObserverEntry[]) {
 	const entry = entries[0];
-	console.debug(
-		`[InfiniteScroll] intersect: isIntersecting=${entry.isIntersecting}, hasMore=${props.hasMore}, loading=${props.loading}, isEmitting=${isEmitting}`,
-	);
+	if (LycheeState.is_debug_enabled) {
+		console.debug(
+			`[InfiniteScroll] intersect: isIntersecting=${entry.isIntersecting}, hasMore=${props.hasMore}, loading=${props.loading}, isEmitting=${isEmitting}`,
+		);
+	}
 	// Guard against duplicate emissions during rapid intersection callbacks
 	if (entry.isIntersecting && props.hasMore && !props.loading && !isEmitting) {
 		// console.log("[InfiniteScroll] => emitting loadMore");

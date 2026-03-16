@@ -495,7 +495,8 @@ watch(
 
 		photoStore.setTransition(newPhotoId as string | undefined);
 
-		if (newAlbumId !== albumStore.albumId) {
+		const oldAlbumId = albumId.value;
+		if (newAlbumId !== oldAlbumId) {
 			current_page.value = 1; // Reset the page if we change album
 		}
 		albumId.value = newAlbumId as string;
@@ -506,6 +507,18 @@ watch(
 			togglableStore.rememberScrollThumb(photoId.value);
 		}
 
+		if (oldAlbumId === newAlbumId) {
+			// If we are navigating between photos of the same album, we don't need to reload the album.
+			// We just need to load the new photo.
+			photoStore.load();
+
+			// TODO: Consider loading the next page if the photo is getting close to the end of the currently loaded photos.
+			return;
+		}
+
+		// If we are navigating to a different album, we need to
+		// 1. load the new album
+		// 2. set the scroll position to the photo if we have a photoId, or to the top if we don't have a photoId
 		load().then(() => {
 			if (photoId.value === undefined) {
 				setScroll();
