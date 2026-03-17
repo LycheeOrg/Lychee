@@ -545,7 +545,11 @@ return [
 		'connect-src' => [
 			'self' => true,
 			'allow' => array_merge(
-				['https://lycheeorg.dev/update.json'],
+				[
+					'https://lycheeorg.dev/update.json',
+					'https://www.sandbox.paypal.com',
+					'https://www.paypal.com',
+				],
 				explode(',', (string) env('SECURITY_HEADER_CSP_CONNECT_SRC', ''))
 			),
 		],
@@ -593,6 +597,7 @@ return [
 					'https://a.osm.rrze.fau.de/osmhd/',
 					'https://b.osm.rrze.fau.de/osmhd/',
 					'https://c.osm.rrze.fau.de/osmhd/',
+					'https://www.paypalobjects.com',
 					'data:', // required by openstreetmap
 					'blob:', // required for "live" photos
 				],
@@ -701,7 +706,12 @@ return [
 			'report-sample' => true,
 
 			'allow' => array_merge(
-				['https://www.dropbox.com/static/api/1/dropins.js', 'https://js.mollie.com', 'https://js.stripe.com'],
+				[
+					'https://www.dropbox.com/static/api/1/dropins.js',
+					'https://js.mollie.com',
+					'https://js.stripe.com',
+					'https://www.paypal.com/sdk/js',
+				],
 				explode(',', (string) env('SECURITY_HEADER_SCRIPT_SRC_ALLOW', ''))
 			),
 
@@ -711,7 +721,8 @@ return [
 			],
 
 			/* followings are only work for `script` and `style` related directives */
-			'unsafe-inline' => false,
+			// We need this one for PayPal SDK sadly.
+			'unsafe-inline' => env('PAYPAL_CLIENT_ID', '') !== '',
 
 			'unsafe-eval' => false,
 
@@ -725,7 +736,7 @@ return [
 
 			// Those should be removed if we drop v4 legacy support completely.
 			'hashes' => [
-				'sha256' => [
+				'sha256' => env('PAYPAL_CLIENT_ID', '') !== '' ? [] : [
 					// 'sha256-hash-value-with-base64-encode',
 
 					// lychee.startDrag(event)
