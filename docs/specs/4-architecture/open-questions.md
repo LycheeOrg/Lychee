@@ -4,36 +4,77 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 ## Active Questions
 
-| Question ID | Feature | Priority | Summary | Status | Opened | Updated |
-|-------------|---------|----------|---------|--------|--------|---------|
-| Q-029-13 | 029 – AI Vision Service | High | Embedding ID → Person mapping gap in selfie match flow | Open | 2026-03-15 | 2026-03-15 |
-| Q-029-14 | 029 – AI Vision Service | High | Re-scan destroys manual face assignments | Open | 2026-03-15 | 2026-03-15 |
-| Q-029-15 | 029 – AI Vision Service | High | Two API keys but Lychee config only defines one; header format unspecified | Open | 2026-03-15 | 2026-03-15 |
-| Q-029-16 | 029 – AI Vision Service | High | Missing Face deletion endpoint for false positives | Open | 2026-03-15 | 2026-03-15 |
-| Q-029-17 | 029 – AI Vision Service | High | Error callback shape undefined (Python → Lychee on failure) | Open | 2026-03-15 | 2026-03-15 |
-| Q-029-18 | 029 – AI Vision Service | High | Spec DSL type mismatch — Face.person_id declared as integer, should be string | Open | 2026-03-15 | 2026-03-15 |
-| Q-029-19 | 029 – AI Vision Service | Medium | Naming inconsistency — FACE_* env prefix vs ai-vision-service name | Open | 2026-03-15 | 2026-03-15 |
-| Q-029-20 | 029 – AI Vision Service | Medium | Permission mode scope per operation is ambiguous | Open | 2026-03-15 | 2026-03-15 |
-| Q-029-21 | 029 – AI Vision Service | Medium | Missing Person unclaim endpoint | Open | 2026-03-15 | 2026-03-15 |
-| Q-029-22 | 029 – AI Vision Service | Medium | Merge direction ambiguity on API-029-06 | Open | 2026-03-15 | 2026-03-15 |
-| Q-029-23 | 029 – AI Vision Service | Medium | face_scan_status state machine transitions undefined | Open | 2026-03-15 | 2026-03-15 |
-| Q-029-24 | 029 – AI Vision Service | Medium | Similar faces in assignment modal — data source unspecified | Open | 2026-03-15 | 2026-03-15 |
-| Q-029-25 | 029 – AI Vision Service | Medium | Crop storage path pattern undefined | Open | 2026-03-15 | 2026-03-15 |
+*No active questions.*
 
 ## Question Details
 
-### Q-029-13: Embedding ID → Person Mapping Gap in Selfie Match Flow
+### ~~Q-029-26: Python Concurrency Model — CPU-Bound Face Detection Blocks Event Loop~~ ✅ RESOLVED
 
-**Question:** The Python `/match` endpoint returns `embedding_id` + `person_suggestion` (cluster label). But Lychee needs a Lychee `person_id` to link the match to a Person. The Face model has no `embedding_id` column, and the Python service doesn't know Lychee Person IDs. How does Lychee resolve a match result back to a Person?
+**Resolution:** **Option A** — inference runs in a `ThreadPoolExecutor` via `asyncio.run_in_executor`, keeping the FastAPI event loop responsive while CPU-bound detection executes on a background thread. Pool size is configurable via `VISION_THREAD_POOL_SIZE` env var (default `1`). The service must emit structured log entries at three checkpoints: job received (`INFO`), detection started (`INFO`), and detection finished (`INFO` with face count and elapsed milliseconds). Callback failures are logged at `ERROR` level.
 
-**Impact:** Blocks I8 (SelfieClaimController) and I2 (Python /match endpoint). Without a mapping, the selfie claim flow cannot work.
+**Spec Impact:** Add `thread_pool_size: int = 1` to `AppSettings`. Add `VISION_THREAD_POOL_SIZE` to env var table. Add "Concurrency Model" subsection to Python Service Technical Specification documenting the `run_in_executor` pattern and the structured logging checkpoints table.
 
-**Options:**
-- **(A)** Store `lychee_face_id` in Python's embedding DB — set during scan result ingestion. Match returns `lychee_face_id` which Lychee resolves via `Face → person_id`.
-- **(B)** Add `embedding_id` column to the Face model in Lychee. Match result looked up via `Face.where('embedding_id', ...)→person_id`.
-- **(C)** Python returns the `photo_id` + bounding box of the best-matching face. Lychee resolves by matching bounding box to an existing Face record → Person.
+**Resolved:** 2026-03-17
 
-**Affects:** FR-029-12, API-029-13, I2, I8, inter-service contract (scan result + match response schemas).
+---
+
+### ~~Q-029-27: Callback Retry Policy — Stuck-Pending Risk When Python→Lychee POST Fails~~ ✅ RESOLVED
+
+**Resolution:** **Option B** — fire-and-forget. Python makes one callback attempt. If the request fails (network error, 5xx), the failure is logged at `ERROR` level and discarded. The photo's `face_scan_status` remains `pending` indefinitely; operators must reset stuck records manually. No retry logic in the Python service; no outbox table.
+
+**Spec Impact:** Document fire-and-forget policy in the "Concurrency Model" subsection. Add `ERROR` log entry for callback failure in the structured logging table. Note in state machine documentation that `pending` can become permanently stuck on callback failure; add an operator note.
+
+**Resolved:** 2026-03-17
+
+---
+
+### ~~Q-029-28: Security — `photo_path` Path Traversal and `callback_url` SSRF~~ ✅ RESOLVED
+
+**Resolution:** **Option A, extended** — validate `photo_path` resolves within `VISION_PHOTOS_PATH` (resolve symlinks, reject traversals with 422). `callback_url` is **removed from the `DetectRequest` body entirely** — Python reads the callback endpoint from `VISION_LYCHEE_API_URL` env var. Since the callback URL is operator-supplied via env and not present in the request payload, the SSRF vector is eliminated structurally rather than via allowlist validation.
+
+**Spec Impact:** Remove `callback_url` field from `DetectRequest` Pydantic model. Remove `callback_url` from Scan Request JSON example. Add path-traversal validation note to `DetectRequest.photo_path` field comment. Update inter-service contract description and the scan request JSON example.
+
+**Resolved:** 2026-03-17
+
+---
+
+### ~~Q-029-29: Suggestion Items — `embedding_id` vs. `lychee_face_id` in Callback Suggestions~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — Python sends `lychee_face_id` in suggestion items (it already stores them from prior callback 200 responses). Rename `SuggestionResult.embedding_id` → `lychee_face_id`. Lychee stores `(face_id, suggested_face_id, confidence)` in `face_suggestions` using `lychee_face_id` directly — no cross-callback resolution needed.
+
+**Spec Impact:** Rename `SuggestionResult.embedding_id` → `lychee_face_id` in Pydantic schemas. Update suggestion examples in the callback JSON. Update `FaceResult.suggestions` comment. Update `face_suggestions` table schema note (`DO-029-05`).
+
+**Resolved:** 2026-03-17
+
+---
+
+### ~~Q-029-30: Clustering Trigger — When Does DBSCAN Run and How Does It Feed Suggestions?~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — per-scan suggestions use **nearest-neighbour cosine similarity search** against stored embeddings via `sqlite-vec`/`pgvector` (fast, inline with the detection job). DBSCAN is a **separate offline batch operation** grouping unassigned faces for the People browse UI; triggered manually via `POST /cluster` and never invoked per scan request.
+
+**Spec Impact:** Update `clustering/clusterer.py` description in project structure (offline batch, not per-scan). Update DBSCAN tech stack table entry. Add `POST /cluster` to routes list. Clarify `SuggestionResult` data source as NN cosine similarity search.
+
+**Resolved:** 2026-03-17
+
+---
+
+### ~~Q-029-31: `VISION_CONFIDENCE_THRESHOLD` — Detection Filter vs. Matching Threshold~~ ✅ RESOLVED
+
+**Resolution:** **Option B** — two separate thresholds. Rename `VISION_CONFIDENCE_THRESHOLD` → `VISION_DETECTION_THRESHOLD` (bounding box filter: faces below threshold excluded from callback payloads) and add `VISION_MATCH_THRESHOLD` (similarity search cutoff: suggestions and selfie match results below threshold excluded). Independent configuration allows operators to tune detection sensitivity and identity matching independently.
+
+**Spec Impact:** Remove `VISION_CONFIDENCE_THRESHOLD` from env var table. Add `VISION_DETECTION_THRESHOLD` (default `0.5`) and `VISION_MATCH_THRESHOLD` (default `0.5`). Rename `AppSettings.confidence_threshold` → `detection_threshold` + add `match_threshold`. Update `app/detection/detector.py` and `app/matching/matcher.py` references.
+
+**Resolved:** 2026-03-17
+
+---
+
+### ~~Q-029-32: InsightFace Model Acquisition — Baked Into Docker Image vs. Runtime Download~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — bake `buffalo_l` model weights into the Docker image at build time via a `RUN` step in the builder stage. The multi-stage Dockerfile copies the downloaded model folder from builder to runtime. Image is significantly larger (~1GB+) but starts instantly and works in airgapped environments. Model updates require an image rebuild (acceptable given model stability).
+
+**Spec Impact:** Update Dockerfile spec: add `RUN uv run python -c "..."` model download step in builder stage; add `COPY --from=builder /root/.insightface /root/.insightface` in runtime stage. Note model size and rebuild requirement in Docker configuration section.
+
+**Resolved:** 2026-03-17
 
 ---
 
@@ -243,6 +284,151 @@ REST convention: the URL resource (`{id}`) is typically the one acted upon and p
 - **(C)** Store in `storage/app/faces/{face_id}.jpg` — Laravel storage disk, served via signed URL or controller.
 
 **Affects:** FR-029-02, I10, I6, Face model `crop_url` accessor, frontend.
+
+---
+
+### ~~Q-029-13: Embedding ID → Person Mapping Gap in Selfie Match Flow~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — Store `lychee_face_id` in Python's embedding DB. When Lychee ingests a scan callback it creates Face records and returns the `embedding_id → lychee_face_id` mapping in the HTTP 200 response body. Python persists each mapping. The `/match` endpoint returns `lychee_face_id` (not `embedding_id`); Lychee resolves `lychee_face_id → Face → person_id`.
+
+**Spec Impact:** Update `DetectCallbackPayload` response body to include `{"faces": [{"embedding_id": "...", "lychee_face_id": "..."}]}`. Update `MatchResult` Pydantic model: replace `embedding_id` with `lychee_face_id`. Update FR-029-12, API-029-13, I2, I8, inter-service contract.
+
+**Resolved:** 2026-03-17
+
+---
+
+### ~~Q-029-14: Re-scan Destroys Manual Face Assignments~~ ✅ RESOLVED
+
+**Resolution:** **Options A + C** — On re-scan, new faces are matched to existing faces by bounding box IoU (≥ threshold); matched old face's `person_id` is carried over to the new face record; truly gone faces are deleted. Additionally, if a photo has any faces with a `person_id` assigned, re-scan is blocked unless the request includes `force: true`. Without `force: true` a 409 Conflict is returned listing the number of assigned faces at risk.
+
+**Spec Impact:** Update FR-029-07 (re-scan idempotency now caveated with IoU preservation + force flag). Update S-029-14. Update `ProcessFaceDetectionResults` action description. Update API-029-10 to document optional `force` parameter.
+
+**Resolved:** 2026-03-17
+
+---
+
+### ~~Q-029-15: Two API Keys but Lychee Config Only Defines One~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — Single shared symmetric key for both directions. Header: `X-API-Key: <key>`. The key is defined in `.env` as `AI_VISION_API_KEY` (after Q-029-19 renaming). **Critical separation of concerns:** the AI vision callback endpoints (`POST /api/v2/FaceDetection/results`) are authenticated **exclusively** via the API key header — no user session, no admin session. Even authenticated admins cannot reach these endpoints through the normal auth middleware. Lychee-to-Python requests likewise send `X-API-Key` with the same shared key.
+
+**Spec Impact:** Update config migration to single key `ai_vision_api_key`. Add note that FaceDetection/results middleware skips session auth. Update NFR-029-07, I3, I4, I10, inter-service contract, AppSettings.
+
+**Resolved:** 2026-03-17
+
+---
+
+### ~~Q-029-16: Missing Face Deletion Endpoint for False Positives~~ ✅ RESOLVED
+
+**Resolution:** **Option C (dismiss-first)** — Users dismiss false positives via `PATCH /api/v2/Face/{id}` (toggles `is_dismissed`). Dismissed faces are hidden from face overlays and assignment UI. Admin can hard-delete all dismissed faces in bulk from the Maintenance page (a new maintenance action); this permanently removes the Face records + crop files.
+
+**Spec Impact:** Add `is_dismissed` boolean (default `false`) to DO-029-02 and Face migration. Add API-029-14 (`PATCH /api/v2/Face/{id}` dismiss toggle). Add admin maintenance action for bulk hard-delete of dismissed faces. Update UI-029-03 (face overlay hides dismissed faces).
+
+**Resolved:** 2026-03-17
+
+---
+
+### ~~Q-029-17: Error Callback Shape Undefined~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — Python posts an error callback payload to the same `callback_url`: `{"photo_id": "abc", "status": "error", "error_code": "corrupt_file", "message": "..."}`. Lychee sets `face_scan_status = failed`. Python defines `ErrorCallbackPayload` Pydantic model. No timeout mechanism; status transitions only occur via explicit callbacks.
+
+**Spec Impact:** Add `ErrorCallbackPayload` Pydantic model. Update FR-029-07 (result endpoint handles both success and error payloads). Update `face_scan_status` state machine in spec. Update I2, I10.
+
+**Resolved:** 2026-03-17
+
+---
+
+### ~~Q-029-18: Spec DSL Type Mismatch — Face.person_id~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — Fix `person_id` field in DO-029-02 DSL from `type: integer` to `type: string`.
+
+**Spec Impact:** Update DO-029-02 Spec DSL `person_id` type field. Low impact.
+
+**Resolved:** 2026-03-17
+
+---
+
+### ~~Q-029-19: Naming Inconsistency — FACE_* Prefix vs ai-vision-service~~ ✅ RESOLVED
+
+**Resolution:** **Option B** — Rename for future-proofing. Python env vars use `VISION_*` prefix; Lychee config keys use `ai_vision_*` prefix. All documentation, docker-compose, and AppSettings updated accordingly.
+
+**Spec Impact:** Rename `FACE_*` → `VISION_*` throughout Python service config and docker-compose. Rename `face_recognition_*` → `ai_vision_*` for all Lychee config keys. Update AppSettings `env_prefix`. Update all env variable tables in spec and docs.
+
+**Resolved:** 2026-03-17
+
+---
+
+### ~~Q-029-20: Permission Mode Scope per Operation Is Ambiguous~~ ✅ RESOLVED
+
+**Resolution:** **Option C** — Four-mode enum (`public`, `private`, `privacy-preserving`, `restricted`) with a per-operation matrix:
+
+| Operation          | public       | private      | privacy-preserving        | restricted                |
+|--------------------|--------------|--------------|---------------------------|---------------------------|
+| View People page   | guest        | logged users | photo/album owner + admin | admin only                |
+| View face overlays | album access | logged users | photo/album owner + admin | photo/album owner + admin |
+| Create/edit Person | logged users | logged users | photo/album owner + admin | admin only                |
+| Assign face        | logged users | logged users | photo/album owner + admin | admin only                |
+| Trigger scan       | logged users | logged users | photo/album owner + admin | photo/album owner + admin |
+| Claim person       | logged users | logged users | logged users              | all users                 |
+| Merge persons      | logged users | logged users | photo/album owner + admin | admin only                |
+
+**Spec Impact:** Update `ai_vision_permission_mode` to a 4-value enum. Update NFR-029-07 with full matrix. Update FR-029-08 authorization description. Update all controller authorization references (I7, I8, I9, I10).
+
+**Resolved:** 2026-03-17
+
+---
+
+### ~~Q-029-21: Missing Person Unclaim Endpoint~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — Add `DELETE /api/v2/Person/{id}/claim` as API-029-15. Removes `person.user_id` (sets to null). Linked user or admin only.
+
+**Spec Impact:** Add API-029-15 to API catalogue and Spec DSL routes. Update FR-029-05 to reference unclaim. Update I8.
+
+**Resolved:** 2026-03-17
+
+---
+
+### ~~Q-029-22: Merge Direction Ambiguity on API-029-06~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — `{id}` = target (kept). Body parameter renamed to `source_person_id`. Follows REST convention: the URL resource is the one preserved.
+
+**Spec Impact:** Update API-029-06 body param from `target_person_id` to `source_person_id`. Update FR-029-11. Update I8 and I14 (frontend merge action).
+
+**Resolved:** 2026-03-17
+
+---
+
+### ~~Q-029-23: face_scan_status State Machine Transitions Undefined~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — Explicit state machine:
+1. `null → pending`: set on **dispatch** (when the scan job is enqueued, before the HTTP request to Python is sent).
+2. `pending → completed`: set when Lychee receives a **success** callback from the Python service.
+3. `pending → failed`: set when Lychee receives an **error** callback from Python. No timeout mechanism (async model; Lychee never waits for a response).
+4. Retry/re-scan: `failed → pending` (retry) and `completed → pending` (re-scan) are both **allowed**.
+5. Duplicate pending: **reset** to `pending` (do not ignore); the earlier `pending` could be a silent timeout.
+
+**Spec Impact:** Document state machine in FR-029-07/NFR section. Update I10, I11, DispatchFaceScanJob, ProcessFaceDetectionResults.
+
+**Resolved:** 2026-03-17
+
+---
+
+### ~~Q-029-24: Similar Faces in Assignment Modal — Data Source Unspecified~~ ✅ RESOLVED
+
+**Resolution:** **Option A, stored in a dedicated suggestions table** — Python includes a `suggestions` array per face in the `DetectCallbackPayload`. Lychee persists these in a `face_suggestions` table (`face_id`, `person_id`, `confidence`). The assignment modal reads from this table. New domain object `FaceSuggestion` added.
+
+**Spec Impact:** Add `FaceSuggestion` domain object (DO-029-05). Add `face_suggestions` table to migrations. Update `FaceResult` Pydantic model to include `suggestions: list[SuggestionResult]`. Update UI-029-04. Update I2, I10, I16.
+
+**Resolved:** 2026-03-17
+
+---
+
+### ~~Q-029-25: Crop Storage Path Pattern Undefined~~ ✅ RESOLVED
+
+**Resolution:** **Option B** — Crops stored at `uploads/faces/{face_id}.jpg` in a dedicated `faces/` subdirectory under the main uploads directory. Served via a separate media controller route (not the standard photo size-variant pipeline).
+
+**Spec Impact:** Update DO-029-02 `crop_path` description. Update `crop_url` accessor. Add a new route for serving face crops. Update I6, I10, I16.
+
+**Resolved:** 2026-03-17
 
 ---
 
