@@ -3,7 +3,7 @@
 | Field | Value |
 |-------|-------|
 | Status | Draft |
-| Last updated | 2026-03-17 |
+| Last updated | 2026-03-18 |
 | Owners | LycheeOrg |
 | Linked plan | `docs/specs/4-architecture/features/029-ai-vision-service/plan.md` |
 | Linked tasks | `docs/specs/4-architecture/features/029-ai-vision-service/tasks.md` |
