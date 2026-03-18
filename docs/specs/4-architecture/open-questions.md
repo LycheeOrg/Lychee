@@ -4,15 +4,150 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 ## Active Questions
 
+| ID | Summary | Priority | Affects |
+|----|---------|----------|---------|
+
 *No active questions.*
+
+*Updated: 2026-03-18*
 
 ## Question Details
 
+### ~~Q-029-33: `face_suggestions` Schema Wrong — Face-to-Face, Not Face-to-Person~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — schema changed to `(face_id FK→faces, suggested_face_id FK→faces, confidence)`. Both FKs point to `faces`. Python sends `lychee_face_id` (a Face ID) as the suggestion target — there is no concept of Persons in the Python service, and suggestions may reference unassigned faces (where `person_id IS NULL`). The assignment modal resolves `suggested_face_id → faces → persons` via LEFT JOIN at read time. A unique constraint on `(face_id, suggested_face_id)` prevents duplicate suggestion rows.
+
+**Spec Impact:** Updated DO-029-05 (domain object table and DSL). Updated `SuggestionResult` Pydantic model comment. `face_suggestions` migration will use `suggested_face_id` (FK→faces) instead of `person_id` (FK→persons).
+
+**Resolved:** 2026-03-18
+
+---
+
+### ~~Q-029-34: Crop Serving Route Undefined~~ ✅ RESOLVED
+
+**Resolution:** **Option B** — crops served directly by nginx with no application-level auth. The crop token stored in the Face model is a random high-entropy identifier (not a sequential ID), so enumeration of `uploads/faces/` is not feasible. Path structure mirrors Lychee's existing size-variant pattern: `uploads/faces/{token[0:2]}/{token[2:4]}/{token}.jpg` (e.g. `uploads/faces/aa/bb/aabbccddeeff0011223344.jpg`). `FaceResource.crop_url` returns this path directly; no dedicated controller route needed. API-029-16 slot is therefore free for the dismissed-face bulk delete (Q-029-43).
+
+**Spec Impact:** Update DO-029-02 and DSL `crop_token` constraint to reflect the two-level hash path and nginx-direct serving.
+
+**Resolved:** 2026-03-18
+
+---
+
+### ~~Q-029-35: IoU Threshold for Re-scan Face Matching Not Defined~~ ✅ RESOLVED
+
+**Resolution:** **Option B** — add `VISION_FACE_RESCAN_IOU_THRESHOLD` env var (default `0.5`) mapped to `AppSettings.rescan_iou_threshold`. Allows operators to tune matching sensitivity for re-scans without rebuilding the image.
+
+**Spec Impact:** Add `rescan_iou_threshold: float = 0.5` to `AppSettings`. Add `VISION_FACE_RESCAN_IOU_THRESHOLD` row to the env var table. Update FR-029-07 resolved note to reference the configurable threshold.
+
+**Resolved:** 2026-03-18
+
+---
+
+### ~~Q-029-36: "Claim Person" in Restricted Mode Listed as "All Users" — Contradictory~~ ✅ RESOLVED
+
+**Resolution:** Fixed in permission matrix — `Claim person` now reads `logged users` for all four modes. "All users" (including unauthenticated guests) would make no sense since claiming requires a User record to link.
+
+**Spec Impact:** Spec line 78 updated. No further changes needed.
+
+**Resolved:** 2026-03-18
+
+---
+
+### ~~Q-029-37: "Unknown" Group in People Page Not Designed~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — virtual aggregate. `GET /api/v2/People` always appends a synthetic `{id: null, name: "Unknown", face_count: N}` entry where `N = COUNT(faces WHERE person_id IS NULL)`. No DB record required. Clicking the tile navigates to `GET /api/v2/Face?unassigned=true`. The entry is omitted when `N = 0`.
+
+**Spec Impact:** Update API-029-01 notes. Add `GET /api/v2/Face?unassigned=true` filter note. Update UI-029-01 description.
+
+**Resolved:** 2026-03-18
+
+---
+
+### ~~Q-029-38: `face_scan_status` Column Type and DSL Entry Missing~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — `VARCHAR(16)`, nullable, with a PHP-side `ScanStatus` Enum cast. Portable across MySQL, PostgreSQL, and SQLite. Consistent with Lychee's existing enum-as-string column pattern.
+
+**Spec Impact:** Add `face_scan_status` field to the `photos` table addendum in the Spec DSL (`type: string (VARCHAR 16)`, nullable, `cast: ScanStatus`). Document the cast in the state machine section.
+
+**Resolved:** 2026-03-18
+
+---
+
+### ~~Q-029-39: Crop Inline Base64 Payload Size Limit Undefined~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — cap at N faces per callback, default `N = 10` (configurable via `VISION_FACE_MAX_FACES_PER_PHOTO`). Python keeps the top-N faces by confidence and drops the rest from the callback payload. Operators may raise the limit but must accept the corresponding body size increase.
+
+**Spec Impact:** Add `VISION_FACE_MAX_FACES_PER_PHOTO` env var (default `10`) and `max_faces_per_photo: int = 10` to `AppSettings`. Update `FaceResult` / `DetectCallbackPayload` comments to note the cap.
+
+**Resolved:** 2026-03-18
+
+---
+
+### ~~Q-029-40: Bulk Scan Scope — `IS NULL` Only or Include `failed`?~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — bulk scan targets `IS NULL` only. A separate **Maintenance page action** ("Re-scan failed photos") handles `face_scan_status = 'failed'` recovery, keeping bulk scan fast and predictable.
+
+**Spec Impact:** FR-029-09 stays as IS NULL. Add CLI-029-03 `php artisan lychee:rescan-failed-faces` and a corresponding admin Maintenance page action.
+
+**Resolved:** 2026-03-18
+
+---
+
+### ~~Q-029-41: Album Scan Depth — Recursive Through Sub-Albums?~~ ✅ RESOLVED
+
+**Resolution:** **Option C** — user-selectable scope. Bulk scan UI offers two options: (1) **Library scan** — all unscanned photos across the entire library; (2) **Album scan** — all unscanned photos directly in the selected album (non-recursive). Sub-album scans are triggered explicitly. Matches existing CLI-029-01 / CLI-029-02 pattern.
+
+**Spec Impact:** Update FR-029-09 to describe both scope options. Update API-029-12 notes to clarify non-recursive album scope.
+
+**Resolved:** 2026-03-18
+
+---
+
+### ~~Q-029-42: Face Reassignment Authorization Across Users~~ ✅ RESOLVED
+
+**Resolution:** **Option C** — mode-governed. In `public` and `private` modes, any user who passes the "Assign face" permission check (NFR-029-07 matrix) may reassign any face. In `privacy-preserving` and `restricted` modes, only the photo owner or admin may reassign. No `assigned_by_user_id` field needed.
+
+**Spec Impact:** Add a clarifying note to the permission matrix that the "Assign face" row governs cross-user reassignment as well. Add comment to FR-029-04/FR-029-10.
+
+**Resolved:** 2026-03-18
+
+---
+
+### ~~Q-029-43: Admin Bulk Hard-Delete of Dismissed Faces Missing from API Catalogue~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — add `DELETE /api/v2/Face/dismissed` as **API-029-16**. Admin-only; hard-deletes all `is_dismissed = true` Face records and their crop files.
+
+**Spec Impact:** Add API-029-16 to API catalogue table and DSL routes.
+
+**Resolved:** 2026-03-18
+
+---
+
+### ~~Q-029-44: Selfie Upload Has No Rate Limiting~~ ✅ RESOLVED
+
+**Resolution:** Rate limiting applied at the **Lychee PHP layer** via Laravel's built-in throttle middleware on API-029-13 (`POST /api/v2/Person/claim-by-selfie`). No changes to the Python service needed.
+
+**Spec Impact:** Add `throttle:5,1` (5 requests/minute per user) to the API-029-13 route definition note. Document in deployment guide.
+
+**Resolved:** 2026-03-18
+
+---
+
+### ~~Q-029-45: `photo_ids[]` Batch in API-029-10 Has No Maximum~~ ✅ RESOLVED
+
+**Resolution:** **Option B** — accept any count, dispatch in configurable chunks. The job dispatcher slices the photo ID list into chunks of size `ai_vision_face_scan_batch_size` (Lychee `configs` table, default `200`). No hard caller limit; queue load controlled by chunk size + queue concurrency.
+
+**Spec Impact:** Add `ai_vision_face_scan_batch_size` to the Lychee `configs` table (integer, default `200`). Update API-029-10 notes to describe chunked dispatch.
+
+**Resolved:** 2026-03-18
+
+---
+
 ### ~~Q-029-26: Python Concurrency Model — CPU-Bound Face Detection Blocks Event Loop~~ ✅ RESOLVED
 
-**Resolution:** **Option A** — inference runs in a `ThreadPoolExecutor` via `asyncio.run_in_executor`, keeping the FastAPI event loop responsive while CPU-bound detection executes on a background thread. Pool size is configurable via `VISION_THREAD_POOL_SIZE` env var (default `1`). The service must emit structured log entries at three checkpoints: job received (`INFO`), detection started (`INFO`), and detection finished (`INFO` with face count and elapsed milliseconds). Callback failures are logged at `ERROR` level.
+**Resolution:** **Option A** — inference runs in a `ThreadPoolExecutor` via `asyncio.run_in_executor`, keeping the FastAPI event loop responsive while CPU-bound detection executes on a background thread. Pool size is configurable via `VISION_FACE_THREAD_POOL_SIZE` env var (default `1`). The service must emit structured log entries at three checkpoints: job received (`INFO`), detection started (`INFO`), and detection finished (`INFO` with face count and elapsed milliseconds). Callback failures are logged at `ERROR` level.
 
-**Spec Impact:** Add `thread_pool_size: int = 1` to `AppSettings`. Add `VISION_THREAD_POOL_SIZE` to env var table. Add "Concurrency Model" subsection to Python Service Technical Specification documenting the `run_in_executor` pattern and the structured logging checkpoints table.
+**Spec Impact:** Add `thread_pool_size: int = 1` to `AppSettings`. Add `VISION_FACE_THREAD_POOL_SIZE` to env var table. Add "Concurrency Model" subsection to Python Service Technical Specification documenting the `run_in_executor` pattern and the structured logging checkpoints table.
 
 **Resolved:** 2026-03-17
 
@@ -30,7 +165,7 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 ### ~~Q-029-28: Security — `photo_path` Path Traversal and `callback_url` SSRF~~ ✅ RESOLVED
 
-**Resolution:** **Option A, extended** — validate `photo_path` resolves within `VISION_PHOTOS_PATH` (resolve symlinks, reject traversals with 422). `callback_url` is **removed from the `DetectRequest` body entirely** — Python reads the callback endpoint from `VISION_LYCHEE_API_URL` env var. Since the callback URL is operator-supplied via env and not present in the request payload, the SSRF vector is eliminated structurally rather than via allowlist validation.
+**Resolution:** **Option A, extended** — validate `photo_path` resolves within `VISION_FACE_PHOTOS_PATH` (resolve symlinks, reject traversals with 422). `callback_url` is **removed from the `DetectRequest` body entirely** — Python reads the callback endpoint from `VISION_FACE_LYCHEE_API_URL` env var. Since the callback URL is operator-supplied via env and not present in the request payload, the SSRF vector is eliminated structurally rather than via allowlist validation.
 
 **Spec Impact:** Remove `callback_url` field from `DetectRequest` Pydantic model. Remove `callback_url` from Scan Request JSON example. Add path-traversal validation note to `DetectRequest.photo_path` field comment. Update inter-service contract description and the scan request JSON example.
 
@@ -60,9 +195,9 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 ### ~~Q-029-31: `VISION_CONFIDENCE_THRESHOLD` — Detection Filter vs. Matching Threshold~~ ✅ RESOLVED
 
-**Resolution:** **Option B** — two separate thresholds. Rename `VISION_CONFIDENCE_THRESHOLD` → `VISION_DETECTION_THRESHOLD` (bounding box filter: faces below threshold excluded from callback payloads) and add `VISION_MATCH_THRESHOLD` (similarity search cutoff: suggestions and selfie match results below threshold excluded). Independent configuration allows operators to tune detection sensitivity and identity matching independently.
+**Resolution:** **Option B** — two separate thresholds. Rename `VISION_CONFIDENCE_THRESHOLD` → `VISION_FACE_DETECTION_THRESHOLD` (bounding box filter: faces below threshold excluded from callback payloads) and add `VISION_FACE_MATCH_THRESHOLD` (similarity search cutoff: suggestions and selfie match results below threshold excluded). Independent configuration allows operators to tune detection sensitivity and identity matching independently.
 
-**Spec Impact:** Remove `VISION_CONFIDENCE_THRESHOLD` from env var table. Add `VISION_DETECTION_THRESHOLD` (default `0.5`) and `VISION_MATCH_THRESHOLD` (default `0.5`). Rename `AppSettings.confidence_threshold` → `detection_threshold` + add `match_threshold`. Update `app/detection/detector.py` and `app/matching/matcher.py` references.
+**Spec Impact:** Remove `VISION_CONFIDENCE_THRESHOLD` from env var table. Add `VISION_FACE_DETECTION_THRESHOLD` (default `0.5`) and `VISION_FACE_MATCH_THRESHOLD` (default `0.5`). Rename `AppSettings.confidence_threshold` → `detection_threshold` + add `match_threshold`. Update `app/detection/detector.py` and `app/matching/matcher.py` references.
 
 **Resolved:** 2026-03-17
 
@@ -75,6 +210,36 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 **Spec Impact:** Update Dockerfile spec: add `RUN uv run python -c "..."` model download step in builder stage; add `COPY --from=builder /root/.insightface /root/.insightface` in runtime stage. Note model size and rebuild requirement in Docker configuration section.
 
 **Resolved:** 2026-03-17
+
+---
+
+### ~~Q-029-46: `FaceResource` (DO-029-04) Field Specification Missing~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — suggestions are embedded in FaceResource. Fields exposed: `id` (Face ID), `photo_id`, `person_id` (nullable), `x`/`y`/`width`/`height` (float 0.0–1.0 bounding box), `confidence`, `is_dismissed`, `crop_url` (computed nginx-direct path from crop_token). Embedded `suggestions[]` array — each item: `suggested_face_id`, `crop_url` (suggested face's own crop or null), `person_name` (nullable, LEFT JOIN on persons), `confidence`. Suggestions are always included (pre-computed, stored in `face_suggestions`) — no N+1 risk.
+
+**Spec Impact:** Expanded DO-029-04 in narrative domain objects table.
+
+**Resolved:** 2026-03-18
+
+---
+
+### ~~Q-029-47: Missing Telemetry Events for Face Dismiss/Undismiss and Bulk Delete~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — three new events added: `TE-029-10` → `face.dismissed` (`face_id`, `photo_id`), `TE-029-11` → `face.undismissed` (`face_id`, `photo_id`), `TE-029-12` → `face.bulk_deleted` (`deleted_count`).
+
+**Spec Impact:** Added TE-029-10, TE-029-11, TE-029-12 to telemetry events table and DSL.
+
+**Resolved:** 2026-03-18
+
+---
+
+### ~~Q-029-48: No CLI/UI Path for Photos Stuck in `pending` Indefinitely~~ ✅ RESOLVED
+
+**Resolution:** **Options B + C** combined — (B) `CLI-029-03` extended with optional `--stuck-pending [--older-than=N]` flag to reset pending records older than N minutes (default 60) back to `null`. (C) Admin Maintenance page action via **`GET /api/v2/Maintenance::resetStuckFaces`** (check: count of stuck records) + **`POST /api/v2/Maintenance::resetStuckFaces`** (do: reset them). Follows the existing check/do Maintenance route pattern. Endpoint added as API-029-17 / API-029-17b.
+
+**Spec Impact:** Extended CLI-029-03 description. Added API-029-17 and API-029-17b to API catalogue and DSL routes.
+
+**Resolved:** 2026-03-18
 
 ---
 

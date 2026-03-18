@@ -42,14 +42,14 @@ Affected modules: **Models** (new Person, Face), **Migrations** (new tables + pi
 | ID | Requirement | Success path | Validation path | Failure path | Telemetry & traces | Source |
 |----|-------------|--------------|-----------------|--------------|---------------------|--------|
 | FR-029-01 | System shall store Person records with a name, optional User link (1-1), and a searchability flag. | Person created with name; optionally linked to a User; `is_searchable` defaults to the value of `ai_vision_face_person_is_searchable_default` config (default `true`). | Name must be non-empty string ≤255 chars; user_id must reference existing User and be unique across Person table (1-1). | Return 422 with validation errors. | `person.created`, `person.updated` | Owner directive |
-| FR-029-02 | System shall store Face records linking a detected face region in a Photo to an optional Person, including a server-side crop thumbnail path and a dismissal flag. *(Resolved Q-029-09: server-side crop; Q-029-16: is_dismissed; Q-029-25: crop storage path)* | Face created with photo_id, bounding box (x, y, width, height as percentages), confidence score, `crop_token` (random UUID, stored on Face model), served as `uploads/faces/{crop_token}.jpg`; person_id nullable (unassigned); `is_dismissed` defaults to `false`. | photo_id must exist; bounding box values 0.0–1.0; confidence 0.0–1.0. | Return 422; reject invalid photo_id with 404. | `face.created` | Owner directive, Q-029-09, Q-029-16, Q-029-25 |
+| FR-029-02 | System shall store Face records linking a detected face region in a Photo to an optional Person, including a server-side crop thumbnail path and a dismissal flag. *(Resolved Q-029-09: server-side crop; Q-029-16: is_dismissed; Q-029-25: crop storage path; Q-029-34: nginx-direct hash path)* | Face created with photo_id, bounding box (x, y, width, height as percentages), confidence score, `crop_token` (random high-entropy token, stored on Face model); crop file stored at `uploads/faces/{token[0:2]}/{token[2:4]}/{token}.jpg` and served directly by nginx (path is unguessable, no app-level auth required); person_id nullable (unassigned); `is_dismissed` defaults to `false`. | photo_id must exist; bounding box values 0.0–1.0; confidence 0.0–1.0. | Return 422; reject invalid photo_id with 404. | `face.created` | Owner directive, Q-029-09, Q-029-16, Q-029-25 |
 | FR-029-03 | A Person can appear in multiple Photos (many-to-many through Face). The system shall provide an endpoint to list all photos containing a given Person. | GET endpoint returns paginated photos where at least one Face with matching person_id exists. | person_id must exist; pagination params validated. | 404 if Person not found; empty result set if no faces assigned. | — | Owner directive |
 | FR-029-04 | A Photo can contain multiple Persons. The system shall return all identified Persons when viewing a Photo's details. For non-searchable Persons, face overlays are hidden entirely for unauthorized viewers; a `hidden_face_count` integer is included instead. *(Resolved Q-029-10: hide overlay + count indicator)* | Photo detail response includes `faces` array (only searchable/authorized faces) + `hidden_face_count` (integer, count of suppressed non-searchable faces). | — | Graceful empty array if no faces detected; hidden_face_count = 0 if none suppressed. | — | Owner directive, Q-029-10 |
 | FR-029-05 | Users can link their account to a Person (1-1) via direct claim, and unlink via unclaim. Admins can link/unlink any Person-User pair, overriding user claims. Only one Person per User, one User per Person. *(Resolved Q-029-06: self-identification + admin override; Q-029-21: unclaim endpoint)* | User claims a Person; `person.user_id` set; old claim (if any) cleared. Admin can force-link/unlink any pair. User unclaims via `DELETE /api/v2/Person/{id}/claim`; sets `person.user_id = null`. | user_id unique on persons table; User must exist. Non-admin claim: 409 if Person already claimed by another User; 403 if `ai_vision_face_allow_user_claim` is `false`. Admin claim: overrides existing link; bypasses `ai_vision_face_allow_user_claim`. Unclaim: only linked User or admin. | 409 if Person already claimed (non-admin); 403 if `ai_vision_face_allow_user_claim` is `false` (non-admin); 403 if unclaim caller is not linked User or admin; 422 for validation errors. | `person.claimed`, `person.unclaimed` | Owner directive, Q-029-06, Q-029-21 |
 | FR-029-06 | A Person's linked User (or admin) can toggle `is_searchable` on the Person. When `is_searchable` is false, the Person is excluded from search results and People browsing for non-admin users who are not the linked User. *(Resolved Q-029-05: hidden from search + People page for unauthorized users)* | Toggle flips boolean; subsequent search/browse queries filter accordingly. | Only linked User or admin can toggle. | 403 if unauthorized; 404 if Person not found. | `person.searchability_changed` | Owner directive, Q-029-05 |
 | FR-029-07 | System shall expose API endpoints for the external Python service to submit face detection results (success or error) via REST webhook callback. *(Resolved Q-029-01: REST + webhooks; Q-029-14: re-scan IoU preservation + force flag; Q-029-15: single shared API key, separation of concerns; Q-029-17: error callback; Q-029-23: state machine)* | Success POST: accepts photo_id + faces array; creates/updates Face records (IoU matching preserves `person_id` from old faces); returns `embedding_id → lychee_face_id` mapping in 200 response. Error POST: accepts photo_id + error details; sets `face_scan_status = failed`. Re-scan with assigned faces requires `force: true`. `face_scan_status` set: `pending` on dispatch, `completed` on success callback, `failed` on error callback. | photo_id must exist; face data array validated per FR-029-02; endpoint authenticated **exclusively** via `X-API-Key` header (no user/admin session); `force` boolean optional (default false, required when photo has assigned faces on re-scan). | 404 for invalid photo; 422 for malformed face data; 401 for invalid API key; 409 if photo has assigned faces and `force` is false. | `face.batch_created` | Owner directive, Q-029-01, Q-029-14, Q-029-15, Q-029-17, Q-029-23 |
 | FR-029-08 | System shall expose an API endpoint to request face detection for a photo or album. Lychee sends REST request to Python service with photo filesystem path (shared Docker volume) and callback URL. Authorization governed by `ai_vision_face_permission_mode` setting (4-value enum). *(Resolved Q-029-01, Q-029-02, Q-029-07: REST + webhooks + shared volume; Q-029-08: configurable permissions; Q-029-19: ai_vision_* naming; Q-029-20: four-mode permission enum)* | POST triggers scan request via HTTP to Python service; sets `face_scan_status = pending` on dispatch; returns 202 Accepted. Also auto-triggered on photo upload when `ai_vision_face_enabled` is true. | photo_id or album_id must exist; user must have Trigger scan permission per `ai_vision_face_permission_mode` (see NFR-029-07 matrix). | 404/403 for invalid/unauthorized targets; 503 if Python service unavailable. | `face.scan_requested` | Owner directive, Q-029-01, Q-029-02, Q-029-07, Q-029-08, Q-029-19, Q-029-20 |
-| FR-029-09 | Admin can trigger bulk face detection scan for all unscanned photos. *(Resolved Q-029-02: multiple triggers including bulk; Q-029-19: ai_vision_* naming)* | Admin action enqueues all photos where `face_scan_status` IS NULL; progress trackable via `face_scan_status` column. | Admin-only access. | 503 if service unavailable; partial failure logged per photo (status set to `failed`). | `face.bulk_scan_requested` | Owner directive, Q-029-02, Q-029-19 |
+| FR-029-09 | Admin can trigger bulk face detection scan for all unscanned photos. *(Resolved Q-029-02: multiple triggers including bulk; Q-029-19: ai_vision_* naming)* | Admin action enqueues all photos where `face_scan_status` IS NULL; progress trackable via `face_scan_status` column. | Admin-only access. | 503 if service unavailable; partial failure logged per photo (status set to `failed`). | `face.scan_requested` (`target_type: "bulk"`) | Owner directive, Q-029-02, Q-029-19 |
 | FR-029-10 | Users can manually assign/reassign an unassigned Face to a Person, or create a new Person from a Face. Python service provides cluster suggestions for grouping similar faces. *(Resolved Q-029-03: auto-cluster with manual confirmation)* | Face's person_id updated; new Person created if requested. Cluster suggestions displayed as similarity scores in assignment UI. | Face must exist; target Person (if specified) must exist. | 404/422 for invalid references. | `face.assigned` | Owner directive, Q-029-03 |
 | FR-029-11 | Users can merge two Person records (combining all their Face associations). *(Resolved Q-029-22: merge direction — URL {id} = target kept; body source_person_id = source destroyed)* | All Faces of source Person reassigned to target Person (`{id}`); source Person deleted. | Both Persons must exist; user must have edit permission per `ai_vision_face_permission_mode`; body must supply `source_person_id`. | 404 if either Person not found; 403 if unauthorized. | `person.merged` | Owner directive, Q-029-22 |
 | FR-029-12 | Users can upload a selfie photo to claim a Person via face matching. Selfie sent to Python service's dedicated `POST /match` endpoint; image discarded immediately after matching. *(Resolved Q-029-06: selfie-upload claim; Q-029-11: discard after match; Q-029-12: dedicated /match endpoint; Q-029-13: lychee_face_id returned by /match)* | User uploads selfie → Python service `POST /match` returns top-N matches with `lychee_face_id` + confidence → if best match above `ai_vision_face_selfie_confidence_threshold`, Lychee resolves `lychee_face_id → Face → person_id` and links Person to User (same 1-1 rules as FR-029-05). Selfie image deleted after response. | Selfie must contain exactly one detectable face; confidence threshold configurable. | 422 if no face detected in selfie; 404 if no matching Person found; 409 if matched Person already claimed by another User. | `person.selfie_claim_requested`, `person.selfie_claim_matched` | Owner directive, Q-029-06, Q-029-11, Q-029-12, Q-029-13 |
@@ -75,10 +75,13 @@ Affected modules: **Models** (new Person, Face), **Migrations** (new tables + pi
 | Create/edit Person | logged users | logged users | photo/album owner + admin | admin only                |
 | Assign face        | logged users | logged users | photo/album owner + admin | admin only                |
 | Trigger scan       | logged users | logged users | photo/album owner + admin | photo/album owner + admin |
-| Claim person       | logged users | logged users | logged users              | all users                 |
+| Claim person       | logged users | logged users | logged users              | logged users              |
 | Merge persons      | logged users | logged users | photo/album owner + admin | admin only                |
+
 | NFR-029-08 | Python service accesses photos via shared Docker volume (filesystem path). Deployment must document volume mount configuration. *(Resolved Q-029-07)* | Performance; no auth complexity for file access. | Python service reads photos from shared path; integration test confirms file access. | Docker volume configuration in docker-compose. | Owner directive, Q-029-07 |
 | NFR-029-09 | AI Vision (facial recognition and People management) is a **Supporter Edition (SE)** feature. All AI Vision config keys are stored with `level = 1`; the admin settings UI hides them on non-SE instances. Face detection and People management endpoints return 403 on non-SE instances. | Licensing; feature differentiation. | Non-SE instance: settings page does not expose the AI Vision category; scan/people endpoints return 403. | License-level check middleware (existing SE gate); config `level` column. | Owner directive |
+
+> **Cross-user reassignment *(Q-029-42)*:** The "Assign face" row governs reassignment of faces regardless of who previously assigned them. In `public`/`private` modes any user meeting the mode's write threshold may reassign; in `privacy-preserving`/`restricted` only the photo owner or admin may do so.
 
 ### Lychee Configuration — AI Vision Category
 
@@ -95,7 +98,7 @@ Read via `config('features.ai-vision.face-url')` and `config('features.ai-vision
 | PHP key | `.env` variable | Default | Description |
 |---------|----------------|---------|-------------|
 | `features.ai-vision.face-url` | `AI_VISION_FACE_URL` | `""` | Base URL of the Python face-recognition service (e.g. `http://ai-vision:8000`). Must not have a trailing slash. |
-| `features.ai-vision.face-api-key` | `AI_VISION_FACE_API_KEY` | `""` | Shared API key for both directions: sent as `X-API-Key` in Lychee→Python scan requests; expected as `X-API-Key` in Python→Lychee callbacks. Must match `VISION_API_KEY` / `VISION_LYCHEE_API_KEY` env vars on the Python side. |
+| `features.ai-vision.face-api-key` | `AI_VISION_FACE_API_KEY` | `""` | Shared API key for both directions: sent as `X-API-Key` in Lychee→Python scan requests; expected as `X-API-Key` in Python→Lychee callbacks. Must match `VISION_FACE_API_KEY` / `VISION_FACE_LYCHEE_API_KEY` env vars on the Python side. |
 
 #### `configs` table — AI Vision admin-configurable keys
 
@@ -107,6 +110,7 @@ Read via `config('features.ai-vision.face-url')` and `config('features.ai-vision
 | `ai_vision_face_selfie_confidence_threshold` | float (0.0–1.0) | `0.8` | Minimum match confidence score for selfie-based Person auto-claim (FR-029-12). |
 | `ai_vision_face_person_is_searchable_default` | `0\|1` | `1` | Default `is_searchable` value assigned to each newly created Person record (FR-029-01). |
 | `ai_vision_face_allow_user_claim` | `0\|1` | `1` | When `1`, regular (non-admin) users may claim an assigned Person to link it to their account. Admins can always claim/unclaim regardless of this setting (FR-029-05). |
+| `ai_vision_face_scan_batch_size` | integer | `200` | Number of photo IDs dispatched per job chunk when bulk-scanning. Controls queue saturation — lower values reduce burst load at the cost of more job records. *(Q-029-45)* |
 
 ## UI / Interaction Mock-ups
 
@@ -268,16 +272,17 @@ Read via `config('features.ai-vision.face-url')` and `config('features.ai-vision
 | ID | Description | Modules |
 |----|-------------|---------|
 | DO-029-01 | `Person` — id, name, user_id (nullable, unique), is_searchable (boolean, default true), timestamps | Models, API, UI |
-| DO-029-02 | `Face` — id, photo_id (FK→photos), person_id (nullable FK→persons), x, y, width, height (float 0.0–1.0), confidence (float 0.0–1.0), is_dismissed (boolean, default false), crop_token (random UUID, nullable; file stored at `uploads/faces/{crop_token}.jpg`), timestamps | Models, API, UI |
+| DO-029-02 | `Face` — id, photo_id (FK→photos), person_id (nullable FK→persons), x, y, width, height (float 0.0–1.0), confidence (float 0.0–1.0), is_dismissed (boolean, default false), crop_token (random high-entropy token, nullable; file stored at `uploads/faces/{token[0:2]}/{token[2:4]}/{token}.jpg` and served directly by nginx — path is unguessable, no app-level auth required), timestamps | Models, API, UI |
 | DO-029-03 | `PersonResource` — Spatie Data resource for Person API responses | Resources |
-| DO-029-04 | `FaceResource` — Spatie Data resource for Face API responses (included in PhotoResource) | Resources |
-| DO-029-05 | `FaceSuggestion` — face_id (FK→faces), person_id (FK→persons), confidence (float 0.0–1.0); pre-computed similarity suggestions stored from Python scan callback | Models, API, UI |
+| DO-029-04 | `FaceResource` — Spatie Data resource for Face API responses (included in PhotoResource). Fields exposed: `id` (Face ID), `photo_id`, `person_id` (nullable), `x`, `y`, `width`, `height` (float 0.0–1.0), `confidence` (float 0.0–1.0), `is_dismissed` (boolean), `crop_url` (computed: `uploads/faces/{token[0:2]}/{token[2:4]}/{token}.jpg`; null if no crop). Embedded `suggestions[]` array — each item: `suggested_face_id`, `crop_url` (suggested face's crop or null), `person_name` (nullable, resolved via LEFT JOIN on persons), `confidence` (float 0.0–1.0). Suggestions always embedded (not lazy-loaded) since they are pre-computed and stored — no N+1 risk. *(Q-029-46)* | Resources |
+| DO-029-05 | `FaceSuggestion` — face_id (FK→faces), suggested_face_id (FK→faces), confidence (float 0.0–1.0); pre-computed similar-face suggestions stored from Python scan callback. Both FKs point to `faces`; the assignment modal JOINs at read time to resolve `suggested_face_id → person_id` (supports unassigned suggestions). Unique constraint on `(face_id, suggested_face_id)`. *(Q-029-33)* | Models, API, UI |
+| DO-029-06 | `photos` table addendum — adds nullable `face_scan_status VARCHAR(16)` column; PHP `ScanStatus` Enum cast. Values: `null` (never scanned), `pending`, `completed`, `failed`. Type chosen for MySQL/PostgreSQL/SQLite portability. *(Q-029-38)* | Models, Migrations |
 
 ### API Routes / Services
 
 | ID | Transport | Description | Notes |
 |----|-----------|-------------|-------|
-| API-029-01 | GET /api/v2/People | List all persons (paginated), filtered by is_searchable for non-admin users | Returns PersonResource collection |
+| API-029-01 | GET /api/v2/People | List all persons (paginated), filtered by is_searchable for non-admin users; always appends a synthetic `{id: null, name: "Unknown", face_count: N}` entry (omitted when N = 0) where N = unassigned faces count *(Q-029-37)* | Returns PersonResource collection + synthetic Unknown entry |
 | API-029-02 | GET /api/v2/Person/{id} | Get Person detail with face count and photo count | Returns PersonResource |
 | API-029-03 | POST /api/v2/Person | Create a new Person | Body: name, user_id? |
 | API-029-04 | PATCH /api/v2/Person/{id} | Update Person (name, is_searchable) | |
@@ -286,19 +291,23 @@ Read via `config('features.ai-vision.face-url')` and `config('features.ai-vision
 | API-029-07 | POST /api/v2/Person/{id}/claim | Link Person to current User (1-1) | |
 | API-029-08 | GET /api/v2/Person/{id}/photos | Paginated photos containing Person | |
 | API-029-09 | POST /api/v2/Face/{id}/assign | Assign a Face to a Person (or create new Person) | Body: person_id or new_person_name |
-| API-029-10 | POST /api/v2/FaceDetection/scan | Request face detection for photo(s) or album | Body: photo_ids[] or album_id, optional `force` boolean |
+| API-029-10 | POST /api/v2/FaceDetection/scan | Request face detection for photo(s) or album | Body: photo_ids[] or album_id, optional `force` boolean; dispatched in chunks of `ai_vision_face_scan_batch_size` (default 200) *(Q-029-45)* |
 | API-029-11 | POST /api/v2/FaceDetection/results | Receive face detection results (success or error) from Python service (service-to-service only; authenticated via `X-API-Key`, no user session) | Body: success payload or error payload |
-| API-029-12 | POST /api/v2/FaceDetection/bulk-scan | Admin: enqueue all unscanned photos | Admin-only |
-| API-029-13 | POST /api/v2/Person/claim-by-selfie | Upload selfie photo, Python service matches against embeddings, link matching Person to current User | Multipart form with image file |
+| API-029-12 | POST /api/v2/FaceDetection/bulk-scan | Admin: enqueue all unscanned photos (face_scan_status IS NULL); scope: full library (no album_id) or direct photos in specified album (non-recursive) *(Q-029-41)* | Admin-only |
+| API-029-13 | POST /api/v2/Person/claim-by-selfie | Upload selfie photo, Python service matches against embeddings, link matching Person to current User | Multipart form with image file; **throttle: 5 requests/minute per user** *(Q-029-44)* |
 | API-029-14 | PATCH /api/v2/Face/{id} | Toggle `is_dismissed` flag (dismiss/undismiss a false-positive face) | Auth: photo owner or admin |
 | API-029-15 | DELETE /api/v2/Person/{id}/claim | Remove the User link from a Person (unclaim) | Auth: linked User or admin |
+| API-029-16 | DELETE /api/v2/Face/dismissed | Admin: hard-delete all dismissed faces (is_dismissed = true) and their crop files | Admin-only *(Q-029-43)* |
+| API-029-17 | GET /api/v2/Maintenance::resetStuckFaces | Admin: check — returns count of photos stuck in `pending` longer than `older_than_minutes` (default 60). Follows existing check/do Maintenance pattern. | Admin-only *(Q-029-48)* |
+| API-029-17b | POST /api/v2/Maintenance::resetStuckFaces | Admin: do — reset all `face_scan_status = 'pending'` records older than threshold back to `null`. Body: optional `older_than_minutes` (integer, default 60). | Admin-only *(Q-029-48)* |
 
 ### CLI Commands / Flags
 
 | ID | Command | Behaviour |
 |----|---------|-----------|
 | CLI-029-01 | `php artisan lychee:scan-faces` | Enqueue all unscanned photos for face detection (admin batch operation) |
-| CLI-029-02 | `php artisan lychee:scan-faces --album={id}` | Enqueue photos in a specific album for face detection |
+| CLI-029-02 | `php artisan lychee:scan-faces --album={id}` | Enqueue photos directly in a specific album for face detection (non-recursive) |
+| CLI-029-03 | `php artisan lychee:rescan-failed-faces [--stuck-pending] [--older-than=N]]` | Maintenance: re-enqueue all photos where `face_scan_status = 'failed'` *(Q-029-40)*. With `--stuck-pending`: additionally reset `face_scan_status = 'pending'` records older than N minutes (default 60) back to `null`, making them eligible for a fresh scan. *(Q-029-48)* |
 
 ### Telemetry Events
 
@@ -315,6 +324,9 @@ Read via `config('features.ai-vision.face-url')` and `config('features.ai-vision
 | TE-029-07 | face.scan_requested | `target_type` (photo/album/bulk), `target_id`, `photo_count` |
 | TE-029-08 | person.selfie_claim_requested | `user_id` |
 | TE-029-09 | person.selfie_claim_matched | `user_id`, `person_id`, `confidence` |
+| TE-029-10 | face.dismissed | `face_id`, `photo_id` *(Q-029-47)* |
+| TE-029-11 | face.undismissed | `face_id`, `photo_id` *(Q-029-47)* |
+| TE-029-12 | face.bulk_deleted | `deleted_count` (count of dismissed faces hard-deleted by API-029-16) *(Q-029-47)* |
 
 ### UI States
 
@@ -402,19 +414,26 @@ domain_objects:
         constraints: "default: false"
       - name: crop_token
         type: string
-        constraints: "nullable, random UUID; file stored at uploads/faces/{crop_token}.jpg served via dedicated route"
+        constraints: "nullable, random high-entropy token; file stored at uploads/faces/{token[0:2]}/{token[2:4]}/{token}.jpg; served directly by nginx — path is unguessable (Q-029-34)"
   - id: DO-029-05
     name: FaceSuggestion
     fields:
       - name: face_id
         type: string
         constraints: "required, FK→faces, cascade delete"
-      - name: person_id
+      - name: suggested_face_id
         type: string
-        constraints: "required, FK→persons, cascade delete"
+        constraints: "required, FK→faces, cascade delete; unique with face_id (Q-029-33)"
       - name: confidence
         type: float
         constraints: "0.0–1.0"
+  - id: DO-029-06
+    name: photos table addendum
+    note: "Existing core table; this feature adds one nullable column (Q-029-38)"
+    fields:
+      - name: face_scan_status
+        type: string
+        constraints: "nullable, VARCHAR(16); PHP cast: ScanStatus enum; values: null, pending, completed, failed"
 routes:
   - id: API-029-01
     method: GET
@@ -465,11 +484,26 @@ routes:
     method: DELETE
     path: /api/v2/Person/{id}/claim
     notes: unclaim person
+  - id: API-029-16
+    method: DELETE
+    path: /api/v2/Face/dismissed
+    notes: admin-only; hard-delete all is_dismissed faces + crop files (Q-029-43)
+  - id: API-029-17
+    method: GET
+    path: /api/v2/Maintenance::resetStuckFaces
+    notes: admin-only; check — count of photos stuck in pending older than threshold (Q-029-48)
+  - id: API-029-17b
+    method: POST
+    path: /api/v2/Maintenance::resetStuckFaces
+    notes: admin-only; do — reset stuck pending photos to null; body: older_than_minutes (default 60) (Q-029-48)
 cli_commands:
   - id: CLI-029-01
     command: php artisan lychee:scan-faces
   - id: CLI-029-02
     command: php artisan lychee:scan-faces --album={id}
+  - id: CLI-029-03
+    command: "php artisan lychee:rescan-failed-faces [--stuck-pending] [--older-than=N]"
+    note: "Re-enqueue failed photos (Q-029-40). --stuck-pending also resets pending records older than N minutes (default 60) to null (Q-029-48)"
 telemetry_events:
   - id: TE-029-01
     event: person.created
@@ -493,6 +527,12 @@ telemetry_events:
     event: person.selfie_claim_requested
   - id: TE-029-09
     event: person.selfie_claim_matched
+  - id: TE-029-10
+    event: face.dismissed
+  - id: TE-029-11
+    event: face.undismissed
+  - id: TE-029-12
+    event: face.bulk_deleted
 ui_states:
   - id: UI-029-01
     description: People grid page
@@ -548,7 +588,7 @@ Communication uses REST API with webhook callbacks. Photo files are accessed via
   "photo_path": "/data/photos/original/abc123.jpg"
 }
 ```
-*(Q-029-28 resolved: `callback_url` removed from request body — Python reads `VISION_LYCHEE_API_URL` from env. `photo_path` is validated to reside within `VISION_PHOTOS_PATH` to prevent path traversal.)*
+*(Q-029-28 resolved: `callback_url` removed from request body — Python reads `VISION_FACE_LYCHEE_API_URL` from env. `photo_path` is validated to reside within `VISION_FACE_PHOTOS_PATH` to prevent path traversal.)*
 
 **Scan Result (Python → Lychee):** `POST /api/v2/FaceDetection/results` *(success)*
 ```json
@@ -678,7 +718,7 @@ ai-vision-service/
 
 #### Concurrency Model *(Q-029-26, Q-029-27 resolved)*
 
-InsightFace inference is synchronous and CPU-bound. The `POST /detect` handler offloads detection to a `ThreadPoolExecutor` via `asyncio.run_in_executor`, keeping the FastAPI event loop responsive while detection runs on a background thread. Pool size is configurable via `VISION_THREAD_POOL_SIZE` (default `1`).
+InsightFace inference is synchronous and CPU-bound. The `POST /detect` handler offloads detection to a `ThreadPoolExecutor` via `asyncio.run_in_executor`, keeping the FastAPI event loop responsive while detection runs on a background thread. Pool size is configurable via `VISION_FACE_THREAD_POOL_SIZE` (default `1`).
 
 **Structured logging checkpoints** (required at each stage):
 
@@ -692,6 +732,17 @@ InsightFace inference is synchronous and CPU-bound. The `POST /detect` handler o
 
 **Callback policy *(Q-029-27 resolved)*:** Python makes one callback attempt (fire-and-forget). If it fails, the failure is logged at `ERROR` level and the job is discarded. The photo's `face_scan_status` remains `pending` until an operator resets it manually. No retry logic; no outbox table.
 
+#### Python Service HTTP Endpoints
+
+All endpoints require `X-API-Key: <VISION_FACE_API_KEY>` header on every request except `GET /health` (unauthenticated).
+
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| `POST` | `/detect` | Required | Accept a scan job; validate `photo_path` against `VISION_FACE_PHOTOS_PATH`; run detection asynchronously via `ThreadPoolExecutor`; POST results back to `VISION_FACE_LYCHEE_API_URL/api/v2/FaceDetection/results`. Body: `DetectRequest`. |
+| `POST` | `/match` | Required | Accept a multipart selfie image; detect + embed the face; cosine-search against stored embeddings; return top-N matches above `VISION_FACE_MATCH_THRESHOLD`. Body: multipart file. Response: `MatchResponse`. |
+| `POST` | `/cluster` | Required | Run DBSCAN offline batch clustering on all unassigned embeddings; return cluster group assignments. Body: none. Expensive — operators call manually, not per scan. |
+| `GET` | `/health` | None | Return service health status, model-loaded flag, and embedding count. Response: `HealthResponse`. |
+
 #### Pydantic Models (Request/Response Schemas)
 
 ```python
@@ -699,11 +750,11 @@ InsightFace inference is synchronous and CPU-bound. The `POST /detect` handler o
 
 class DetectRequest(BaseModel):
     photo_id: str
-    photo_path: str  # Filesystem path on shared volume; validated within VISION_PHOTOS_PATH (Q-029-28: path traversal protection)
-    # callback_url is not in the request body — Python reads VISION_LYCHEE_API_URL from env (Q-029-28)
+    photo_path: str  # Filesystem path on shared volume; validated within VISION_FACE_PHOTOS_PATH (Q-029-28: path traversal protection)
+    # callback_url is not in the request body — Python reads VISION_FACE_LYCHEE_API_URL from env (Q-029-28)
 
 class SuggestionResult(BaseModel):
-    lychee_face_id: str  # Q-029-29: Python stores lychee_face_id per embedding — resolves without cross-callback mapping
+    lychee_face_id: str  # Q-029-29/33: Python returns the lychee_face_id of the suggested (similar) Face — stored as suggested_face_id in face_suggestions; Lychee JOINs to resolve person at read time
     confidence: float = Field(ge=0.0, le=1.0)
 
 class FaceResult(BaseModel):
@@ -713,7 +764,7 @@ class FaceResult(BaseModel):
     height: float = Field(ge=0.0, le=1.0)
     confidence: float = Field(ge=0.0, le=1.0)
     embedding_id: str
-    crop: str  # Base64-encoded 150x150 JPEG; Lychee stores it at uploads/faces/{crop_token}.jpg (crop_token = random UUID generated by Lychee on ingestion)
+    crop: str  # Base64-encoded 150×150 JPEG; Lychee stores it at uploads/faces/{token[0:2]}/{token[2:4]}/{token}.jpg (crop_token = random high-entropy token). Only the top max_faces_per_photo faces (by confidence) are included per callback (Q-029-39).
     suggestions: list[SuggestionResult] = []  # Pre-computed similar faces (Q-029-24)
 
 class DetectCallbackPayload(BaseModel):
@@ -728,7 +779,7 @@ class ErrorCallbackPayload(BaseModel):  # Q-029-17
     message: str
 
 class FaceMapping(BaseModel):  # Q-029-13: returned in 200 response to callback
-    embedding_id: str
+    embedding_id: str  # Echoed back from FaceResult.embedding_id. NOT stored on Lychee's Face model — transient exchange value only; Python uses the returned lychee_face_id to update its embedding store.
     lychee_face_id: str
 
 class DetectCallbackResponse(BaseModel):
@@ -758,14 +809,24 @@ class AppSettings(BaseSettings):
     model_name: str = "buffalo_l"
     detection_threshold: float = 0.5  # Q-029-31: bounding box filter — faces below threshold excluded from callback
     match_threshold: float = 0.5  # Q-029-31: similarity search cutoff for suggestions and selfie matching
+    rescan_iou_threshold: float = 0.5  # Q-029-35: IoU threshold for bounding-box matching on re-scan (preserves person_id)
+    max_faces_per_photo: int = 10  # Q-029-39: top-N faces included in callback payload (by confidence); rest dropped
     thread_pool_size: int = 1  # Q-029-26: ThreadPoolExecutor pool size for asyncio.run_in_executor
     storage_backend: str = "sqlite"  # "sqlite" | "pgvector"
-    storage_path: str = "/data/embeddings"
+    # SQLite storage (used when storage_backend = "sqlite")
+    storage_path: str = "/data/embeddings"  # Path to the SQLite DB file
+    # PostgreSQL connection params (used when storage_backend = "pgvector")
+    # Mapped from VISION_FACE_PG_HOST, VISION_FACE_PG_PORT, etc.
+    pg_host: str = "localhost"
+    pg_port: int = 5432
+    pg_database: str = "ai_vision"
+    pg_user: str = "ai_vision"
+    pg_password: str = ""
     photos_path: str = "/data/photos"
     workers: int = 1
     log_level: str = "info"
 
-    model_config = SettingsConfigDict(env_prefix="VISION_")  # Q-029-19: renamed from FACE_
+    model_config = SettingsConfigDict(env_prefix="VISION_FACE_")  # Prefixed with service scope for future VISION_NUDENET_ etc.
 ```
 
 #### Type Annotation Requirements
@@ -889,27 +950,36 @@ COPY --from=builder /root/.insightface /root/.insightface
 COPY app/ ./app/
 ENV PATH="/app/.venv/bin:$PATH"
 EXPOSE 8000
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers ${VISION_FACE_WORKERS:-1}"]
 ```
 
-**Environment variables (runtime):** *(Q-029-19 resolved: renamed FACE_* → VISION_*)*
+**Environment variables (runtime):** *(Prefixed `VISION_FACE_` to scope vars to this service; future services use e.g. `VISION_NUDENET_*`)*
 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
-| `VISION_LYCHEE_API_URL` | Yes | — | Lychee instance base URL for callbacks |
-| `VISION_LYCHEE_API_KEY` | Yes | — | Shared API key sent as `X-API-Key` header on callbacks to Lychee |
-| `VISION_API_KEY` | Yes | — | Shared API key Lychee sends as `X-API-Key` to authenticate requests to this service |
-| `VISION_MODEL_NAME` | No | `buffalo_l` | InsightFace model pack name |
-| `VISION_DETECTION_THRESHOLD` | No | `0.5` | Bounding box confidence filter — faces below threshold excluded from callback *(Q-029-31)* |
-| `VISION_MATCH_THRESHOLD` | No | `0.5` | Similarity score cutoff for suggestions and selfie match results *(Q-029-31)* |
-| `VISION_THREAD_POOL_SIZE` | No | `1` | CPU-bound inference thread pool size (`asyncio.run_in_executor`) *(Q-029-26)* |
-| `VISION_STORAGE_BACKEND` | No | `sqlite` | Embedding storage: `sqlite` or `pgvector` |
-| `VISION_STORAGE_PATH` | No | `/data/embeddings` | Path for SQLite DB or pgvector connection string |
-| `VISION_PHOTOS_PATH` | No | `/data/photos` | Shared volume mount for photo files |
-| `VISION_WORKERS` | No | `1` | Number of Uvicorn worker processes |
-| `VISION_LOG_LEVEL` | No | `info` | Logging level |
+| `VISION_FACE_LYCHEE_API_URL` | Yes | — | Lychee instance base URL for callbacks |
+| `VISION_FACE_LYCHEE_API_KEY` | Yes | — | Shared API key sent as `X-API-Key` header on callbacks to Lychee |
+| `VISION_FACE_API_KEY` | Yes | — | Shared API key Lychee sends as `X-API-Key` to authenticate requests to this service |
+| `VISION_FACE_MODEL_NAME` | No | `buffalo_l` | InsightFace model pack name |
+| `VISION_FACE_DETECTION_THRESHOLD` | No | `0.5` | Bounding box confidence filter — faces below threshold excluded from callback *(Q-029-31)* |
+| `VISION_FACE_MATCH_THRESHOLD` | No | `0.5` | Similarity score cutoff for suggestions and selfie match results *(Q-029-31)* |
+| `VISION_FACE_RESCAN_IOU_THRESHOLD` | No | `0.5` | IoU threshold for bounding-box matching on re-scan (preserves `person_id`) *(Q-029-35)* |
+| `VISION_FACE_MAX_FACES_PER_PHOTO` | No | `10` | Maximum faces included in the callback payload (top-N by confidence; rest dropped) *(Q-029-39)* |
+| `VISION_FACE_THREAD_POOL_SIZE` | No | `1` | CPU-bound inference thread pool size (`asyncio.run_in_executor`) *(Q-029-26)* |
+| `VISION_FACE_STORAGE_BACKEND` | No | `sqlite` | Embedding storage: `sqlite` or `pgvector` |
+| `VISION_FACE_STORAGE_PATH` | No | `/data/embeddings` | SQLite DB file path (only when `VISION_FACE_STORAGE_BACKEND=sqlite`) |
+| `VISION_FACE_PG_HOST` | No* | `localhost` | PostgreSQL host (only when `VISION_FACE_STORAGE_BACKEND=pgvector`; *required in that case) |
+| `VISION_FACE_PG_PORT` | No | `5432` | PostgreSQL port |
+| `VISION_FACE_PG_DATABASE` | No* | `ai_vision` | PostgreSQL database name (*required when pgvector) |
+| `VISION_FACE_PG_USER` | No* | `ai_vision` | PostgreSQL username (*required when pgvector) |
+| `VISION_FACE_PG_PASSWORD` | No* | `` | PostgreSQL password (*required when pgvector) |
+| `VISION_FACE_PHOTOS_PATH` | No | `/data/photos` | Shared volume mount for photo files |
+| `VISION_FACE_WORKERS` | No | `1` | Number of Uvicorn worker processes |
+| `VISION_FACE_LOG_LEVEL` | No | `info` | Logging level |
 
 ### face_scan_status State Machine *(Q-029-23 resolved)*
+
+**Column:** `face_scan_status` on the `photos` table. Type: `VARCHAR(16)`, nullable (null = never scanned), cast in the Photo model via `ScanStatus` PHP Enum. *(Q-029-38: VARCHAR chosen for MySQL/PostgreSQL/SQLite portability.)*
 
 ```
          ┌──────────────────────┐
