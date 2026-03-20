@@ -95,7 +95,7 @@ final class PhotoUrlRule implements ValidationRule
 
 		if (
 			$this->config_manager->getValueAsBool('import_via_url_forbidden_localhost') &&
-			in_array($host, ['localhost', '127.0.0.1', '::1'], true)
+			in_array(strtolower($host), ['localhost', '127.0.0.1', '::1'], true)
 		) {
 			$fail($attribute . ' must not be localhost.');
 
