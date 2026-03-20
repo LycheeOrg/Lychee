@@ -11,3 +11,6 @@ CVE-2025-45769
 
 # True positive but local attack vector, we will be waiting for frankenphp to update their image.
 CVE-2026-0861
+
+# Unfortunately Frankenphp is
+CVE-2026-33186
