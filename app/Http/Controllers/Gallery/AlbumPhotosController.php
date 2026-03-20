@@ -14,6 +14,7 @@ use App\Http\Requests\Album\GetAlbumPhotosRequest;
 use App\Http\Resources\Collections\PaginatedPhotosResource;
 use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
+use App\Models\Photo;
 use App\Models\TagAlbum;
 use App\Policies\AlbumPolicy;
 use App\Repositories\ConfigManager;
@@ -64,18 +65,18 @@ class AlbumPhotosController extends Controller
 		if ($album instanceof TagAlbum) {
 			$config_manager = resolve(ConfigManager::class);
 
+			// @phpstan-ignore method.private
 			$query = $album->photos()->with(['size_variants', 'tags', 'palette', 'statistics', 'rating']);
 
 			// Apply sorting via SortingDecorator
 			/** @var SortingDecorator<Photo> */
-			$sorting_decorator = new SortingDecorator($query->getQuery());
+			$sorting_decorator = new SortingDecorator($query);
 
 			$paginated_photos = $sorting_decorator
 				->orderPhotosBy($sorting->column, $sorting->order)
 				->paginate($per_page);
 
 			return new PaginatedPhotosResource(
-				/** @phpstan-ignore method.private (It is NOT private and it works.) */
 				paginated_photos: $paginated_photos,
 				album_id: $album->id,
 				should_downgrade: Gate::check(AlbumPolicy::CAN_ACCESS_FULL_PHOTO, [AbstractAlbum::class, $album]) === false,
