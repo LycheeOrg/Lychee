@@ -167,6 +167,9 @@
             "php-http/discovery": false
         }
     },
+    "suggest": {
+        "ext-ldap": "Required to enable LDAP authentication (LDAP_ENABLED=true)"
+    },
     "minimum-stability": "dev",
     "prefer-stable": true
 }

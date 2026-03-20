@@ -35,10 +35,14 @@ final class LdapConfiguration
 	public readonly int $connection_timeout;
 
 	/**
-	 * @throws LdapConfigurationException if required LDAP config missing
+	 * @throws LdapConfigurationException if required LDAP config missing or ext-ldap absent
 	 */
 	public function __construct()
 	{
+		if (!extension_loaded('ldap')) {
+			throw new LdapConfigurationException('LDAP configuration error: the PHP ldap extension is not installed');
+		}
+
 		// Validate required connection settings
 		$this->host = $this->requireString(config('ldap.connections.default.hosts')[0], 'LDAP_HOST', 'ldap.example.com');
 		$this->port = $this->requireInt(config('ldap.connections.default.port'), 'LDAP_PORT');

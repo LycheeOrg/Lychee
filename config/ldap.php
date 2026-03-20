@@ -28,12 +28,12 @@ return [
 			'use_ssl' => env('LDAP_PORT', 389) === 636, // Auto-detect LDAPS from port
 
 			// Additional connection options
-			'options' => [
-				// TLS certificate verification
+			// LDAP constants require ext-ldap; skip when the extension is absent
+			'options' => extension_loaded('ldap') ? [
 				LDAP_OPT_X_TLS_REQUIRE_CERT => ((bool) env('LDAP_TLS_VERIFY_PEER', true))
 					? LDAP_OPT_X_TLS_DEMAND
 					: LDAP_OPT_X_TLS_ALLOW,
-			],
+			] : [],
 		],
 	],
 
