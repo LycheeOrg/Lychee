@@ -18,15 +18,6 @@ define('LARAVEL_START', microtime(true));
  */
 require_once __DIR__ . '/../bootstrap/PanicAttack.php';
 
-/**
- * Check if the required extensions are loaded and if not, display a nice error page.
- * This is a sanity check to prevent the user from seeing a blank page with an error in the top left corner.
- */
-if (!extension_loaded('ldap')) {
-	$panic_attack = new PanicAttack();
-	$panic_attack->ldap();
-}
-
 /*
  |--------------------------------------------------------------------------
  | Initialize before loading composer

@@ -122,7 +122,10 @@ class AuthController extends Controller
 	 */
 	protected function isLdapEnabled(Request $request): bool
 	{
-		return $request->verify()->is_supporter() && config('ldap.auth.enabled', false) === true;
+		return $request->verify()->is_supporter() &&
+			config('ldap.auth.enabled', false) === true &&
+			extension_loaded('ldap') &&
+			class_exists(\LdapRecord\Connection::class);
 	}
 
 	/**
