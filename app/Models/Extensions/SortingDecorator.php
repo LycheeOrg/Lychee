@@ -13,6 +13,7 @@ use App\Enum\OrderSortingType;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection as BaseCollection;
 
@@ -29,14 +30,14 @@ class SortingDecorator
 	/**
 	 * @var Builder<TModelClass>
 	 */
-	protected Builder $base_builder;
+	protected Builder|Relation $base_builder;
 
 	/**
 	 * @param Builder<TModelClass> $base_builder
 	 *
 	 * @return void
 	 */
-	public function __construct(Builder $base_builder)
+	public function __construct(Builder|Relation $base_builder)
 	{
 		$this->base_builder = $base_builder;
 	}
