@@ -76,19 +76,19 @@ _Last updated: 2026-03-21_
 
 ### I4 – Database Migrations
 
-- [ ] T-030-10 – Create `persons` table migration (FR-030-01, S-030-01).
+- [x] T-030-10 – Create `persons` table migration (FR-030-01, S-030-01).
   _Intent:_ Migration with columns: id (string PK), name (varchar 255), user_id (nullable unsigned int, unique, FK→users ON DELETE SET NULL), is_searchable (boolean default true), timestamps. Index on user_id.
   _Verification commands:_
   - `php artisan test`
   _Notes:_ Use string PK consistent with Photo/Album models.
 
-- [ ] T-030-11 – Create `faces` table migration and `face_suggestions` table migration (FR-030-02, DO-030-02, DO-030-05, Q-030-33/34/38).
+- [x] T-030-11 – Create `faces` table migration and `face_suggestions` table migration (FR-030-02, DO-030-02, DO-030-05, Q-030-33/34/38).
   _Intent:_ `faces` migration: `id` (string PK), `photo_id` (FK→photos CASCADE), `person_id` (nullable FK→persons SET NULL), `x`/`y`/`width`/`height` (float, 0.0–1.0), `confidence` (float), `crop_token` (nullable string — random high-entropy token; file served nginx-direct from `uploads/faces/{tok[0:2]}/{tok[2:4]}/{tok}.jpg`, Q-030-34), `is_dismissed` (boolean default false), timestamps. Indexes on `photo_id`, `person_id`. `face_suggestions` migration: `face_id` (FK→faces CASCADE), `suggested_face_id` (FK→faces CASCADE), `confidence` (float 0.0–1.0); unique on `(face_id, suggested_face_id)`. Separate migration: add nullable `face_scan_status VARCHAR(16)` column to `photos` table (Q-030-38).
   _Verification commands:_
   - `php artisan test`
   _Notes:_ Bounding box values are relative (0.0–1.0) per NFR-030-06. `crop_path` is NOT a column — `crop_url` is a computed accessor derived from `crop_token`.
 
-- [ ] T-030-12 – Add AI Vision config entries migration (FR-030-07, FR-030-08, NFR-030-09).
+- [x] T-030-12 – Add AI Vision config entries migration (FR-030-07, FR-030-08, NFR-030-09).
   _Intent:_ Config entries in `configs` table (`cat = 'AI Vision'`, `level = 1` / Supporter Edition): `ai_vision_enabled` (0|1, default 0), `ai_vision_face_enabled` (0|1, default 0), `ai_vision_face_permission_mode` (string, default `restricted`), `ai_vision_face_selfie_confidence_threshold` (float, default 0.8), `ai_vision_face_person_is_searchable_default` (0|1, default 1), `ai_vision_face_allow_user_claim` (0|1, default 1), `ai_vision_face_scan_batch_size` (integer, default 200). Infrastructure secrets (`AI_VISION_FACE_URL`, `AI_VISION_FACE_API_KEY`) added to `config/features.php` — NOT in the `configs` table.
   _Verification commands:_
   - `php artisan test`
@@ -107,19 +107,19 @@ _Last updated: 2026-03-21_
   - `php artisan test --filter=FaceModelTest`
   - `make phpstan`
 
-- [ ] T-030-15 – Implement Person model (FR-030-01, FR-030-03).
+- [x] T-030-15 – Implement Person model (FR-030-01, FR-030-03).
   _Intent:_ Eloquent model with: `user()` belongsTo, `faces()` hasMany, `photos()` custom relation via Face→Photo, `scopeSearchable()` query scope for is_searchable filtering. Fillable: name, user_id, is_searchable.
   _Verification commands:_
   - `php artisan test --filter=PersonModelTest`
   - `make phpstan`
 
-- [ ] T-030-16 – Implement Face model (FR-030-02).
+- [x] T-030-16 – Implement Face model (FR-030-02).
   _Intent:_ Eloquent model with: `photo()` belongsTo, `person()` belongsTo (nullable). `crop_url` computed accessor (from `crop_token`). Fillable: photo_id, person_id, x, y, width, height, confidence, crop_token, is_dismissed. Casts for float fields.
   _Verification commands:_
   - `php artisan test --filter=FaceModelTest`
   - `make phpstan`
 
-- [ ] T-030-17 – Add `faces()`, `faceSuggestions()` relationships to Photo model; `person()` to User model; `ScanStatus` Enum cast (FR-030-04, FR-030-05, Q-030-38).
+- [x] T-030-17 – Add `faces()`, `faceSuggestions()` relationships to Photo model; `person()` to User model; `ScanStatus` Enum cast (FR-030-04, FR-030-05, Q-030-38).
   _Intent:_ Photo hasMany Face; User hasOne Person. Add `ScanStatus` PHP Backed Enum (values: `pending`, `completed`, `failed`) and cast `face_scan_status` via it on the Photo model. FaceSuggestion Eloquent model: `face()` / `suggestedFace()` belongsTo Face; `confidence` float; fillable `[face_id, suggested_face_id, confidence]`. *(DO-030-05, DO-030-06)*
   _Verification commands:_
   - `php artisan test --filter=PersonModelTest`
@@ -128,7 +128,7 @@ _Last updated: 2026-03-21_
 
 ### I6 – Spatie Data Resources
 
-- [ ] T-030-18 – Create PersonResource and FaceResource (DO-030-03, DO-030-04, Q-030-46).
+- [x] T-030-18 – Create PersonResource and FaceResource (DO-030-03, DO-030-04, Q-030-46).
   _Intent:_ PersonResource: `id`, `name`, `user_id`, `is_searchable`, `face_count` (int), `photo_count` (int), `representative_crop_url`. FaceResource per DO-030-04: `id` (Face ID), `photo_id`, `person_id` (nullable), `x`/`y`/`width`/`height` (float 0.0–1.0), `confidence`, `is_dismissed`, `crop_url` (computed from `crop_token`: `uploads/faces/{tok[0:2]}/{tok[2:4]}/{tok}.jpg`; null if no crop). Embedded `suggestions[]` array — each item: `suggested_face_id`, `crop_url` (suggested face's own crop or null), `person_name` (nullable, LEFT JOIN), `confidence`. Suggestions always included (pre-computed from `face_suggestions` table, no N+1 risk). Include FaceResource array in PhotoResource with `hidden_face_count` (int, count of suppressed non-searchable faces — Q-030-10).
   _Verification commands:_
   - `make phpstan`
@@ -142,7 +142,7 @@ _Last updated: 2026-03-21_
   - `php artisan test --filter=PeopleControllerTest`
   - `make phpstan`
 
-- [ ] T-030-20 – Implement PeopleController with CRUD actions (API-030-01 through API-030-05).
+- [x] T-030-20 – Implement PeopleController with CRUD actions (API-030-01 through API-030-05).
   _Intent:_ index (paginated, searchable scope), show, store, update, destroy. Form requests: StorePersonRequest (name required, user_id optional unique), UpdatePersonRequest (name, is_searchable). Permission mode middleware/gate: check `ai_vision_face_permission_mode` config. Routes in api_v2.php.
   _Verification commands:_
   - `php artisan test --filter=PeopleControllerTest`
@@ -157,7 +157,7 @@ _Last updated: 2026-03-21_
   - `php artisan test --filter=PersonMergeTest`
   - `make phpstan`
 
-- [ ] T-030-22 – Implement claim (user + admin override) and merge actions (API-030-06, API-030-07).
+- [x] T-030-22 – Implement claim (user + admin override) and merge actions (API-030-06, API-030-07).
   _Intent:_ ClaimPerson action: set person.user_id to Auth::id(), enforce uniqueness for non-admin. Admin claim: override existing link (clear previous user's claim, set new). MergePerson action: reassign Face records, delete source Person. Register routes.
   _Verification commands:_
   - `php artisan test --filter=PersonClaimTest`
@@ -170,7 +170,7 @@ _Last updated: 2026-03-21_
   - `php artisan test --filter=SelfieClaimTest`
   - `make phpstan`
 
-- [ ] T-030-24 – Implement SelfieClaimController (API-030-13).
+- [x] T-030-24 – Implement SelfieClaimController (API-030-13).
   _Intent:_ POST /Person/claim-by-selfie: accepts multipart image upload, sends to Python service `POST /match` (Q-030-12 resolved: dedicated endpoint), receives matching person_id + confidence, validates confidence ≥ `ai_vision_face_selfie_confidence_threshold`, links Person to User (same 1-1 rules), deletes temp selfie. Register route.
   _Verification commands:_
   - `php artisan test --filter=SelfieClaimTest`
@@ -190,7 +190,7 @@ _Last updated: 2026-03-21_
   - `php artisan test --filter=FaceDismissTest`
   - `make phpstan`
 
-- [ ] T-030-26b – Implement FaceController: `assign`, `toggleDismissed`, and `destroyDismissed` actions (API-030-09, API-030-14, API-030-16).
+- [x] T-030-26b – Implement FaceController: `assign`, `toggleDismissed`, and `destroyDismissed` actions (API-030-09, API-030-14, API-030-16).
   _Intent:_ `POST /Face/{id}/assign`: accepts `person_id` OR `new_person_name`; creates Person if needed; updates `face.person_id`. `PATCH /Face/{id}`: flips `is_dismissed`; auth: photo owner or admin; emits `face.dismissed` or `face.undismissed`. `DELETE /Face/dismissed`: admin-only; loops `is_dismissed = true` faces, deletes crop files from `uploads/faces/`, deletes Face records, emits `face.bulk_deleted` with count. Create form requests: `AssignFaceRequest`, `ToggleDismissedRequest`. Register routes.
   _Verification commands:_
   - `php artisan test --filter=FaceAssignmentTest`
@@ -211,7 +211,7 @@ _Last updated: 2026-03-21_
   - `php artisan test --filter=FaceDetectionServiceUnavailableTest`
   - `make phpstan`
 
-- [ ] T-030-29 – Implement FaceDetectionController, DispatchFaceScanJob, ProcessFaceDetectionResults, and auto-on-upload hook (API-030-10, API-030-11, API-030-12, S-030-23, Q-030-28/33/34/35/45).
+- [x] T-030-29 – Implement FaceDetectionController, DispatchFaceScanJob, ProcessFaceDetectionResults, and auto-on-upload hook (API-030-10, API-030-11, API-030-12, S-030-23, Q-030-28/33/34/35/45).
   _Intent:_ `scan` action: validate target (`photo_ids[]` or `album_id`), set `face_scan_status = pending`, dispatch DispatchFaceScanJob in chunks of `ai_vision_face_scan_batch_size` (default 200, Q-030-45), return 202. Job sends HTTP `POST /detect` with `photo_path` (filesystem via shared volume) — **no `callback_url` in body** (Python reads callback URL from `VISION_FACE_LYCHEE_API_URL` env, Q-030-28). `results` action: validate X-API-Key; on success — decode base64 crops, store at `uploads/faces/{tok[0:2]}/{tok[2:4]}/{tok}.jpg`, create Face records with `crop_token`, create/replace FaceSuggestion rows from `suggestions[]` (Q-030-33), IoU-match old faces on re-scan to preserve `person_id` (Q-030-14; threshold from `VISION_FACE_RESCAN_IOU_THRESHOLD`, Q-030-35), set `face_scan_status = completed`; on error — set `face_scan_status = failed` (Q-030-17). `bulk-scan` action: enqueue photos where `face_scan_status IS NULL` (Q-030-40/41). Auto-on-upload: listener on PhotoSaved event dispatches job when `ai_vision_face_enabled = 1`.
   _Verification commands:_
   - `php artisan test --filter=FaceDetection`
@@ -225,13 +225,13 @@ _Last updated: 2026-03-21_
   - `php artisan test --filter=ScanFacesCommandTest`
   - `make phpstan`
 
-- [ ] T-030-31 – Implement `lychee:scan-faces` and `lychee:scan-faces --album={id}` commands (CLI-030-01, CLI-030-02).
+- [x] T-030-31 – Implement `lychee:scan-faces` and `lychee:scan-faces --album={id}` commands (CLI-030-01, CLI-030-02).
   _Intent:_ Query photos where `face_scan_status IS NULL`, dispatch DispatchFaceScanJob. `--album={id}` limits to direct photos in that album (non-recursive). Progress output per batch.
   _Verification commands:_
   - `php artisan test --filter=ScanFacesCommandTest`
   - `make phpstan`
 
-- [ ] T-030-31b – Implement `lychee:rescan-failed-faces [--stuck-pending] [--older-than=N]` command (CLI-030-03, Q-030-40/48).
+- [x] T-030-31b – Implement `lychee:rescan-failed-faces [--stuck-pending] [--older-than=N]` command (CLI-030-03, Q-030-40/48).
   _Intent:_ Default: re-enqueue all photos where `face_scan_status = 'failed'`. With `--stuck-pending`: additionally reset photos with `face_scan_status = 'pending'` and `updated_at < now() - N minutes` (default `--older-than=60`) back to `null`, making them eligible for a fresh scan. *(Q-030-48)*
   _Verification commands:_
   - `php artisan test --filter=RescanFailedFacesCommandTest`
@@ -251,7 +251,7 @@ _Last updated: 2026-03-21_
   - `php artisan test --filter=PersonPhotosTest`
   - `make phpstan`
 
-- [ ] T-030-33 – Implement PersonPhotosController (API-030-08).
+- [x] T-030-33 – Implement PersonPhotosController (API-030-08).
   _Intent:_ GET /Person/{id}/photos: paginated photos through Face join, apply PhotoQueryPolicy for access control. Register route.
   _Verification commands:_
   - `php artisan test --filter=PersonPhotosTest`
