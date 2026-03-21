@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------------
 # Stage 1 – builder: install dependencies and bake the model weights.
 # ---------------------------------------------------------------------------
-FROM python:3.13-slim AS builder
+FROM python:3.13-slim@sha256:739e7213785e88c0f702dcdc12c0973afcbd606dbf021a589cab77d6b00b579d AS builder
 
 # Install uv from the official image.
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
@@ -34,7 +34,7 @@ RUN uv run python -c \
 # ---------------------------------------------------------------------------
 # Stage 2 – runtime: copy only what's needed to run.
 # ---------------------------------------------------------------------------
-FROM python:3.13-slim AS runtime
+FROM python:3.13-slim@sha256:739e7213785e88c0f702dcdc12c0973afcbd606dbf021a589cab77d6b00b579d AS runtime
 
 WORKDIR /app
 
