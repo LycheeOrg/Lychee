@@ -1,6 +1,6 @@
-# Feature Plan 029 – Facial Recognition
+# Feature Plan 030 – Facial Recognition
 
-_Linked specification:_ `docs/specs/4-architecture/features/029-ai-vision-service/spec.md`
+_Linked specification:_ `docs/specs/4-architecture/features/030-ai-vision-service/spec.md`
 _Status:_ Draft
 _Last updated:_ 2026-03-18
 
@@ -15,7 +15,7 @@ Enable Lychee users to browse their photo library by the people who appear in th
 - API endpoints for CRUD operations on Person/Face, scan triggering, and result ingestion pass feature tests.
 - People page renders persons with photo counts; photo detail shows face overlays.
 - Non-searchable persons are invisible to unauthorized users (verified by tests).
-- Lychee functions normally when the Python service is unavailable (NFR-029-03).
+- Lychee functions normally when the Python service is unavailable (NFR-030-03).
 
 ## Scope Alignment
 
@@ -40,20 +40,20 @@ Enable Lychee users to browse their photo library by the people who appear in th
 - **User model** — Person optionally linked to User (1-1).
 - **AccessPermission / PhotoQueryPolicy** — Person photo listing must respect existing album access control.
 - **Laravel Queue** — Scan requests dispatched as jobs for async processing.
-- **Python service** — External dependency; communicates via REST + webhook callbacks (Q-029-01 resolved). Contract defined in spec appendix.
+- **Python service** — External dependency; communicates via REST + webhook callbacks (Q-030-01 resolved). Contract defined in spec appendix.
 - **PrimeVue** — Frontend components for People page, modals, overlays.
 
 ## Assumptions & Risks
 
 - **Assumptions:**
   - The Python service will conform to the JSON contract defined in the spec appendix.
-  - Photos are accessible to the Python service via shared Docker volume (Q-029-07 resolved).
+  - Photos are accessible to the Python service via shared Docker volume (Q-030-07 resolved).
   - Face detection results include bounding boxes as relative coordinates (0.0–1.0).
 
 - **Risks / Mitigations:**
-  - *Python service API changes:* Mitigated by versioned contract schema (NFR-029-05).
+  - *Python service API changes:* Mitigated by versioned contract schema (NFR-030-05).
   - *Large libraries overwhelm scan queue:* Mitigated by rate limiting bulk scans and progress tracking.
-  - *Privacy leaks through non-searchable persons:* Mitigated by query scopes tested at unit and feature level (NFR-029-04).
+  - *Privacy leaks through non-searchable persons:* Mitigated by query scopes tested at unit and feature level (NFR-030-04).
 
 ## Implementation Drift Gate
 
@@ -121,7 +121,7 @@ After each increment, verify:
   1. Finalize Dockerfile: multi-stage build (builder with `uv sync --frozen --no-dev`, runtime with slim Python base), GPU support optional.
   2. docker-compose integration: add face-recognition service to Lychee's docker-compose with shared photos volume and internal network.
   3. Environment variable configuration via Pydantic `AppSettings` (`VISION_FACE_`-prefixed): `VISION_FACE_LYCHEE_API_URL`, `VISION_FACE_LYCHEE_API_KEY`, `VISION_FACE_API_KEY`, `VISION_FACE_MODEL_NAME`, `VISION_FACE_DETECTION_THRESHOLD` (bounding box filter), `VISION_FACE_MATCH_THRESHOLD` (similarity search cutoff), `VISION_FACE_RESCAN_IOU_THRESHOLD` (IoU on re-scan), `VISION_FACE_MAX_FACES_PER_PHOTO` (default 10), `VISION_FACE_THREAD_POOL_SIZE`, `VISION_FACE_STORAGE_BACKEND`, `VISION_FACE_STORAGE_PATH`, `VISION_FACE_PHOTOS_PATH`, `VISION_FACE_WORKERS`, `VISION_FACE_LOG_LEVEL`.
-  4. Startup: FastAPI lifespan handler loads `buffalo_l` model (baked into image at build time; no download on first run — Q-029-32 resolved). Workers count exposed via CMD shell form to honour `VISION_FACE_WORKERS` env var.
+  4. Startup: FastAPI lifespan handler loads `buffalo_l` model (baked into image at build time; no download on first run — Q-030-32 resolved). Workers count exposed via CMD shell form to honour `VISION_FACE_WORKERS` env var.
   5. Create `.github/workflows/python_ai_vision.yml`: lint (ruff), typecheck (ty check), test (pytest --cov, Python 3.13+3.14 matrix), docker-build. Uses `astral-sh/setup-uv@v5`. Follows existing Lychee CI patterns (harden-runner, pinned actions, concurrency groups).
   6. Smoke test: docker-compose up → health check passes → detect endpoint responds.
 - _Commands:_ `docker build .`, `docker-compose up`
@@ -135,9 +135,9 @@ After each increment, verify:
 - _Preconditions:_ Spec approved; I1–I3 complete (Python service contract validated).
 - _Steps:_
   1. Create migration for `persons` table: `id` (string PK), `name` (varchar 255), `user_id` (nullable unsigned int, unique, FK→users ON DELETE SET NULL), `is_searchable` (boolean default true), timestamps.
-  2. Create migration for `faces` table: `id` (string PK), `photo_id` (string, FK→photos ON DELETE CASCADE), `person_id` (nullable string, FK→persons ON DELETE SET NULL), `x` / `y` / `width` / `height` (float, 0.0–1.0), `confidence` (float), `crop_token` (nullable string — random high-entropy token; file stored at `uploads/faces/{tok[0:2]}/{tok[2:4]}/{tok}.jpg`, served nginx-direct; Q-029-34), `is_dismissed` (boolean, default false), timestamps. Indexes on `photo_id`, `person_id`.
-  3. Create migration for `face_suggestions` table: `face_id` (string, FK→faces CASCADE), `suggested_face_id` (string, FK→faces CASCADE), `confidence` (float); unique constraint on `(face_id, suggested_face_id)`. *(DO-029-05, Q-029-33)*
-  4. Add `face_scan_status` nullable `VARCHAR(16)` column to `photos` table. *(DO-029-06, Q-029-38)*
+  2. Create migration for `faces` table: `id` (string PK), `photo_id` (string, FK→photos ON DELETE CASCADE), `person_id` (nullable string, FK→persons ON DELETE SET NULL), `x` / `y` / `width` / `height` (float, 0.0–1.0), `confidence` (float), `crop_token` (nullable string — random high-entropy token; file stored at `uploads/faces/{tok[0:2]}/{tok[2:4]}/{tok}.jpg`, served nginx-direct; Q-030-34), `is_dismissed` (boolean, default false), timestamps. Indexes on `photo_id`, `person_id`.
+  3. Create migration for `face_suggestions` table: `face_id` (string, FK→faces CASCADE), `suggested_face_id` (string, FK→faces CASCADE), `confidence` (float); unique constraint on `(face_id, suggested_face_id)`. *(DO-030-05, Q-030-33)*
+  4. Add `face_scan_status` nullable `VARCHAR(16)` column to `photos` table. *(DO-030-06, Q-030-38)*
   5. Add `persons.user_id` index.
   6. Add config entries migration (`cat = 'AI Vision'`, `level = 1` / SE): `ai_vision_enabled` (0|1, default 0), `ai_vision_face_enabled` (0|1, default 0), `ai_vision_face_permission_mode` (string, default `restricted`), `ai_vision_face_selfie_confidence_threshold` (float, default 0.8), `ai_vision_face_person_is_searchable_default` (0|1, default 1), `ai_vision_face_allow_user_claim` (0|1, default 1), `ai_vision_face_scan_batch_size` (integer, default 200). Infrastructure keys (`AI_VISION_FACE_URL`, `AI_VISION_FACE_API_KEY`) stored in `.env` / `config/features.php` only — not in the `configs` table.
 - _Commands:_ `php artisan test`
@@ -152,8 +152,8 @@ After each increment, verify:
   2. Write unit tests for Face relationships: `photo()` (belongsTo Photo), `person()` (belongsTo Person).
   3. Write unit test for Photo→faces relationship (hasMany Face). Test cascade: Photo delete → Face cascade delete. Test Person delete → Face.person_id set to null.
   4. Implement Person model with relationships, `scopeSearchable()` query scope, fillable fields.
-  5. Implement Face model with relationships, bounding box accessors, `crop_token`, `is_dismissed` (boolean), fillable fields; `ScanStatus` PHP Enum cast on `face_scan_status` (photos model, Q-029-38).
-  6. Implement FaceSuggestion model: `face_id`, `suggested_face_id`, `confidence`; `face()` / `suggestedFace()` belongsTo. *(DO-029-05)*
+  5. Implement Face model with relationships, bounding box accessors, `crop_token`, `is_dismissed` (boolean), fillable fields; `ScanStatus` PHP Enum cast on `face_scan_status` (photos model, Q-030-38).
+  6. Implement FaceSuggestion model: `face_id`, `suggested_face_id`, `confidence`; `face()` / `suggestedFace()` belongsTo. *(DO-030-05)*
   7. Add `faces()` relationship (hasMany Face) and `faceSuggestions()` through Face to Photo model.
   8. Add `person()` relationship to User model (hasOne Person).
 - _Commands:_ `php artisan test --filter=Person`, `php artisan test --filter=Face`
@@ -165,8 +165,8 @@ After each increment, verify:
 - _Preconditions:_ I5 complete.
 - _Steps:_
   1. Create PersonResource (Spatie Data): `id`, `name`, `user_id`, `is_searchable`, `face_count`, `photo_count`, `representative_crop_url`.
-  2. Create FaceResource (Spatie Data) per DO-029-04 *(Q-029-46)*: `id` (Face ID), `photo_id`, `person_id` (nullable), `x` / `y` / `width` / `height` (float 0.0–1.0), `confidence`, `is_dismissed`, `crop_url` (computed: `uploads/faces/{tok[0:2]}/{tok[2:4]}/{tok}.jpg`, null if no crop). Embedded `suggestions[]` array — each item: `suggested_face_id`, `crop_url` (suggested face's crop or null), `person_name` (nullable, LEFT JOIN), `confidence`. Suggestions always included — pre-computed, no N+1 risk.
-  3. Include FaceResource array in existing PhotoResource (eager-loaded faces with suggestions), plus `hidden_face_count` (integer, count of suppressed non-searchable faces for unauthorized viewers — Q-029-10).
+  2. Create FaceResource (Spatie Data) per DO-030-04 *(Q-030-46)*: `id` (Face ID), `photo_id`, `person_id` (nullable), `x` / `y` / `width` / `height` (float 0.0–1.0), `confidence`, `is_dismissed`, `crop_url` (computed: `uploads/faces/{tok[0:2]}/{tok[2:4]}/{tok}.jpg`, null if no crop). Embedded `suggestions[]` array — each item: `suggested_face_id`, `crop_url` (suggested face's crop or null), `person_name` (nullable, LEFT JOIN), `confidence`. Suggestions always included — pre-computed, no N+1 risk.
+  3. Include FaceResource array in existing PhotoResource (eager-loaded faces with suggestions), plus `hidden_face_count` (integer, count of suppressed non-searchable faces for unauthorized viewers — Q-030-10).
 - _Commands:_ `make phpstan`
 - _Exit:_ Resources compile; PHPStan clean.
 
@@ -203,12 +203,12 @@ After each increment, verify:
 - _Goal:_ Face-to-person assignment, false-positive dismissal, and admin cleanup.
 - _Preconditions:_ I7 complete.
 - _Steps:_
-  1. Write feature tests: assign face to existing person, assign face to new person (create Person inline), reassign face. Test both permission modes. *(API-029-09)*
-  2. Write feature tests: dismiss face (`is_dismissed = true`), undismiss face, non-owner gets 403; admin hard-delete all dismissed faces and their crop files. *(API-029-14, API-029-16)*
+  1. Write feature tests: assign face to existing person, assign face to new person (create Person inline), reassign face. Test both permission modes. *(API-030-09)*
+  2. Write feature tests: dismiss face (`is_dismissed = true`), undismiss face, non-owner gets 403; admin hard-delete all dismissed faces and their crop files. *(API-030-14, API-030-16)*
   3. Implement FaceController with: `assign` action, `toggleDismissed` action (PATCH `is_dismissed`; auth: photo owner or admin), `destroyDismissed` action (DELETE all `is_dismissed = true` faces + crop file cleanup; admin-only).
   4. Create form requests: `AssignFaceRequest`, `ToggleDismissedRequest`.
   5. Register routes: `POST /api/v2/Face/{id}/assign`, `PATCH /api/v2/Face/{id}`, `DELETE /api/v2/Face/dismissed`.
-  6. Emit telemetry: `face.dismissed`, `face.undismissed` (TE-029-10/11), `face.bulk_deleted` with `deleted_count` (TE-029-12).
+  6. Emit telemetry: `face.dismissed`, `face.undismissed` (TE-030-10/11), `face.bulk_deleted` with `deleted_count` (TE-030-12).
 - _Commands:_ `php artisan test --filter=Face`, `make phpstan`
 - _Exit:_ Assignment, dismiss toggle, and admin bulk-delete all tested and green; crop files deleted on bulk delete.
 
@@ -219,8 +219,8 @@ After each increment, verify:
 - _Steps:_
   1. Write feature tests: trigger scan for photo (202 response), trigger scan for album, receive scan results (Face records created with crop_token), re-scan replaces old faces (old crops deleted), service unavailable (503), auto-scan on upload when enabled. Test both permission modes for scan trigger.
   2. Implement FaceDetectionController with `scan` and `results` actions.
-  3. Create DispatchFaceScanJob (queued) — sends HTTP request to Python service `POST /detect` with `photo_path` (filesystem path; no `callback_url` in body — Python reads callback URL from env, Q-029-28). API-029-10 body `photo_ids[]` or `album_id`; dispatch in chunks of `ai_vision_face_scan_batch_size` (default 200, Q-029-45). Sets `face_scan_status = pending` on dispatch.
-  4. Create ProcessFaceDetectionResults action — validates X-API-Key, decodes base64 crops and stores at `uploads/faces/{tok[0:2]}/{tok[2:4]}/{tok}.jpg` (Q-029-34), creates Face records with `crop_token`, stores FaceSuggestion rows from `suggestions[]` (Q-029-33). IoU-match old faces on re-scan to preserve `person_id` (Q-029-14/35). Error callback sets `face_scan_status = failed` (Q-029-17).
+  3. Create DispatchFaceScanJob (queued) — sends HTTP request to Python service `POST /detect` with `photo_path` (filesystem path; no `callback_url` in body — Python reads callback URL from env, Q-030-28). API-030-10 body `photo_ids[]` or `album_id`; dispatch in chunks of `ai_vision_face_scan_batch_size` (default 200, Q-030-45). Sets `face_scan_status = pending` on dispatch.
+  4. Create ProcessFaceDetectionResults action — validates X-API-Key, decodes base64 crops and stores at `uploads/faces/{tok[0:2]}/{tok[2:4]}/{tok}.jpg` (Q-030-34), creates Face records with `crop_token`, stores FaceSuggestion rows from `suggestions[]` (Q-030-33). IoU-match old faces on re-scan to preserve `person_id` (Q-030-14/35). Error callback sets `face_scan_status = failed` (Q-030-17).
   5. Register routes (scan trigger: per permission mode; results: service-to-service with API key).
   6. Hook into photo upload pipeline: listener on PhotoSaved event dispatches DispatchFaceScanJob when `ai_vision_face_enabled = 1`.
 - _Commands:_ `php artisan test --filter=FaceDetection`, `make phpstan`
@@ -231,11 +231,11 @@ After each increment, verify:
 - _Goal:_ CLI commands for admin bulk face scanning and stuck-pending recovery; Maintenance page endpoints.
 - _Preconditions:_ I10 complete.
 - _Steps:_
-  1. Write feature tests for `lychee:scan-faces` command (CLI-029-01/02): scans unscanned photos (`face_scan_status IS NULL`), respects `--album` filter (non-recursive), skips already-scanned photos. *(FR-029-09)*
+  1. Write feature tests for `lychee:scan-faces` command (CLI-030-01/02): scans unscanned photos (`face_scan_status IS NULL`), respects `--album` filter (non-recursive), skips already-scanned photos. *(FR-030-09)*
   2. Implement `lychee:scan-faces` and `lychee:scan-faces --album={id}` commands.
-  3. Write feature tests for `lychee:rescan-failed-faces` (CLI-029-03): re-enqueues `failed` photos; with `--stuck-pending --older-than=N` additionally resets `pending` records older than N minutes to `null`. *(Q-029-48)*
+  3. Write feature tests for `lychee:rescan-failed-faces` (CLI-030-03): re-enqueues `failed` photos; with `--stuck-pending --older-than=N` additionally resets `pending` records older than N minutes to `null`. *(Q-030-48)*
   4. Implement `lychee:rescan-failed-faces` command with `--stuck-pending` and `--older-than` options.
-  5. Write feature tests and implement `GET /api/v2/Maintenance::resetStuckFaces` (check: returns count of stuck-pending photos older than threshold) and `POST /api/v2/Maintenance::resetStuckFaces` (do: reset them to `null`; body: `older_than_minutes` default 60). Admin-only. Follows existing check/do Maintenance pattern. *(API-029-17/17b, Q-029-48)*
+  5. Write feature tests and implement `GET /api/v2/Maintenance::resetStuckFaces` (check: returns count of stuck-pending photos older than threshold) and `POST /api/v2/Maintenance::resetStuckFaces` (do: reset them to `null`; body: `older_than_minutes` default 60). Admin-only. Follows existing check/do Maintenance pattern. *(API-030-17/17b, Q-030-48)*
   6. Register Maintenance routes in `api_v2.php`.
 - _Commands:_ `php artisan test --filter=ScanFaces`, `php artisan test --filter=Maintenance`, `make phpstan`
 - _Exit:_ All CLI commands enqueue correct photos; stuck-pending flag works; Maintenance endpoints return count and reset correctly.
@@ -329,7 +329,7 @@ After each increment, verify:
 - _Steps:_
   1. Create SelfieClaimModal.vue component.
   2. File upload area (drag & drop or click) for selfie image.
-  3. Send to API-029-13, display matching Person result with confidence and crop thumbnail.
+  3. Send to API-030-13, display matching Person result with confidence and crop thumbnail.
   4. Confirm claim button to link Person to User.
   5. Handle error states: no face detected, no match, already claimed.
   6. Add "Find me in photos" button to user profile page.
@@ -355,32 +355,32 @@ After each increment, verify:
 
 | Scenario ID | Increment / Task reference | Notes |
 |-------------|---------------------------|-------|
-| S-029-01 | I10 | Face creation from Python results (with crops) |
-| S-029-02 | I9 | Face assignment to existing person |
-| S-029-03 | I9 | New person creation from face |
-| S-029-04 | I8 | Person claim (1-1 link) |
-| S-029-05 | I7 | Non-searchable filtering |
-| S-029-06 | I11 | Admin bulk scan |
-| S-029-07 | I10 | Single photo scan trigger |
-| S-029-08 | I10 | Album scan trigger |
-| S-029-09 | I10 | Service unavailable handling |
-| S-029-10 | I15 | Face overlays on photo (hidden for non-searchable) |
-| S-029-11 | I13 | People grid page (with crop thumbnails) |
-| S-029-12 | I14 | Person detail with photos |
-| S-029-13 | I8 | Person merge |
-| S-029-14 | I10 | Re-scan replaces old faces |
-| S-029-15 | I7 | Non-searchable privacy enforcement + hidden_face_count |
-| S-029-16 | I8 | Claim conflict (409) |
-| S-029-17 | I5 | Photo delete cascades to faces |
-| S-029-18 | I7 | Person delete nullifies face.person_id |
-| S-029-19 | I8 | Admin force-link override |
-| S-029-20 | I8 | Selfie-upload claim match (selfie discarded) |
-| S-029-21 | I8 | Selfie no face detected (422) |
-| S-029-22 | I8 | Selfie no matching Person (404) |
-| S-029-23 | I10 | Auto-scan on upload |
-| S-029-24 | I9 | Face dismissed (is_dismissed toggle) |
-| S-029-25 | I9 | Admin hard-deletes all dismissed faces + crop files |
-| S-029-26 | I11 | Admin resets stuck-pending photos via Maintenance endpoint |
+| S-030-01 | I10 | Face creation from Python results (with crops) |
+| S-030-02 | I9 | Face assignment to existing person |
+| S-030-03 | I9 | New person creation from face |
+| S-030-04 | I8 | Person claim (1-1 link) |
+| S-030-05 | I7 | Non-searchable filtering |
+| S-030-06 | I11 | Admin bulk scan |
+| S-030-07 | I10 | Single photo scan trigger |
+| S-030-08 | I10 | Album scan trigger |
+| S-030-09 | I10 | Service unavailable handling |
+| S-030-10 | I15 | Face overlays on photo (hidden for non-searchable) |
+| S-030-11 | I13 | People grid page (with crop thumbnails) |
+| S-030-12 | I14 | Person detail with photos |
+| S-030-13 | I8 | Person merge |
+| S-030-14 | I10 | Re-scan replaces old faces |
+| S-030-15 | I7 | Non-searchable privacy enforcement + hidden_face_count |
+| S-030-16 | I8 | Claim conflict (409) |
+| S-030-17 | I5 | Photo delete cascades to faces |
+| S-030-18 | I7 | Person delete nullifies face.person_id |
+| S-030-19 | I8 | Admin force-link override |
+| S-030-20 | I8 | Selfie-upload claim match (selfie discarded) |
+| S-030-21 | I8 | Selfie no face detected (422) |
+| S-030-22 | I8 | Selfie no matching Person (404) |
+| S-030-23 | I10 | Auto-scan on upload |
+| S-030-24 | I9 | Face dismissed (is_dismissed toggle) |
+| S-030-25 | I9 | Admin hard-deletes all dismissed faces + crop files |
+| S-030-26 | I11 | Admin resets stuck-pending photos via Maintenance endpoint |
 
 ## Analysis Gate
 
@@ -401,7 +401,7 @@ _To be completed after spec, plan, and tasks align and before implementation beg
 
 ## Follow-ups / Backlog
 
-- Auto-clustering UI — Python service clusters via `POST /cluster` (DBSCAN offline batch); dedicated cluster-review/confirm workflow is a future enhancement beyond manual assignment. *(Q-029-30 resolved)*
+- Auto-clustering UI — Python service clusters via `POST /cluster` (DBSCAN offline batch); dedicated cluster-review/confirm workflow is a future enhancement beyond manual assignment. *(Q-030-30 resolved)*
 - Face recognition accuracy tuning and confidence threshold configuration (admin UI for `VISION_FACE_DETECTION_THRESHOLD` / `VISION_FACE_MATCH_THRESHOLD`).
 - Notifications when a user is tagged in a new photo.
 - Performance optimisation for large Person/Face datasets (materialized views, caching face counts).
