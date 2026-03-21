@@ -10,6 +10,16 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 ## Question Details
 
+### ~~Q-029-01: Destination album for camera capture from root view~~ ✅ RESOLVED
+
+**Question:** When the user takes a photo from the root albums view (not inside any album), where should the captured photo be stored?
+
+**Resolution:** Upload with no album ID — photo lands in the "Unsorted" smart album, consistent with existing upload behaviour at root level.
+
+**Resolved:** 2026-03-18
+
+---
+
 ### ~~Q-026-01: TagAlbum and Smart Album Support Scope~~ ✅ RESOLVED
 
 **Question:** Should TagAlbums and Smart Albums support tag filtering in the future, or is "only regular Albums" a permanent architectural decision?
