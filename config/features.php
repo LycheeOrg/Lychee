@@ -151,4 +151,19 @@ return [
 	 | missing macros and test failures.
 	 */
 	'populate-request-macros' => (bool) env('POPULATE_REQUEST_MACROS', false),
+
+	/*
+	 |--------------------------------------------------------------------------
+	 | AI Vision service integration.
+	 |--------------------------------------------------------------------------
+	 |
+	 | Infrastructure keys for the external AI Vision (facial recognition) service.
+	 | These are NOT stored in the configs table to avoid exposing the service URL
+	 | or shared API key through the admin settings UI.
+	 */
+	'ai-vision' => [
+		'face-url' => env('AI_VISION_FACE_URL', ''),
+		'face-api-key' => env('AI_VISION_FACE_API_KEY', ''),
+		'face-rescan-iou-threshold' => (float) env('VISION_FACE_RESCAN_IOU_THRESHOLD', 0.3),
+	],
 ];

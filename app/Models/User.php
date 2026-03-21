@@ -182,6 +182,16 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	}
 
 	/**
+	 * Return the Person linked to this user (1-1).
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\HasOne<Person,$this>
+	 */
+	public function person(): \Illuminate\Database\Eloquent\Relations\HasOne
+	{
+		return $this->hasOne(Person::class, 'user_id', 'id');
+	}
+
+	/**
 	 * Used by Larapass.
 	 *
 	 * @return string

@@ -345,3 +345,39 @@ Route::put('/Renamer', [RenamerController::class, 'update'])->middleware(['suppo
 Route::delete('/Renamer', [RenamerController::class, 'destroy'])->middleware(['support:se']);
 Route::post('/Renamer::test', [RenamerController::class, 'test'])->middleware(['support:se']);
 Route::post('/Renamer::preview', [RenamerController::class, 'preview'])->middleware(['support:se']);
+
+/**
+ * AI VISION — PEOPLE.
+ */
+Route::get('/People', [AiVision\PeopleController::class, 'index'])->middleware(['support:se']);
+Route::get('/Person/{id}', [AiVision\PeopleController::class, 'show'])->middleware(['support:se']);
+Route::post('/Person', [AiVision\PeopleController::class, 'store'])->middleware(['support:se']);
+Route::patch('/Person/{id}', [AiVision\PeopleController::class, 'update'])->middleware(['support:se']);
+Route::delete('/Person/{id}', [AiVision\PeopleController::class, 'destroy'])->middleware(['support:se']);
+Route::post('/Person/{id}/claim', [AiVision\PersonClaimController::class, 'claim'])->middleware(['support:se']);
+Route::delete('/Person/{id}/claim', [AiVision\PersonClaimController::class, 'unclaim'])->middleware(['support:se']);
+Route::post('/Person/{id}/merge', [AiVision\PersonClaimController::class, 'merge'])->middleware(['support:se']);
+Route::post('/Person/claim-by-selfie', [AiVision\SelfieClaimController::class, 'claimBySelfie'])
+	->middleware(['support:se', 'throttle:5,1'])
+	->withoutMiddleware(['content_type:json']);
+Route::get('/Person/{id}/photos', [AiVision\PersonPhotosController::class, 'index'])->middleware(['support:se']);
+
+/**
+ * AI VISION — FACES.
+ */
+Route::post('/Face/{id}/assign', [AiVision\FaceController::class, 'assign'])->middleware(['support:se']);
+Route::patch('/Face/{id}', [AiVision\FaceController::class, 'toggleDismissed'])->middleware(['support:se']);
+Route::delete('/Face/dismissed', [AiVision\FaceController::class, 'destroyDismissed'])->middleware(['support:se']);
+
+/**
+ * AI VISION — FACE DETECTION.
+ */
+Route::post('/FaceDetection/scan', [AiVision\FaceDetectionController::class, 'scan'])->middleware(['support:se']);
+Route::post('/FaceDetection/results', [AiVision\FaceDetectionController::class, 'results'])->withoutMiddleware(['auth']);
+Route::post('/FaceDetection/bulk-scan', [AiVision\FaceDetectionController::class, 'bulkScan'])->middleware(['support:se']);
+
+/**
+ * AI VISION — MAINTENANCE.
+ */
+Route::get('/Maintenance::resetStuckFaces', [Admin\Maintenance\ResetStuckFaces::class, 'check']);
+Route::post('/Maintenance::resetStuckFaces', [Admin\Maintenance\ResetStuckFaces::class, 'do']);
