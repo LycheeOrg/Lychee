@@ -1,0 +1,91 @@
+[project]
+name = "ai-vision-service"
+version = "0.1.0"
+description = "Lychee AI Vision Service – facial recognition microservice"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "pydantic>=2.10",
+    "pydantic-settings>=2.7",
+    "httpx>=0.28",
+    "insightface>=0.7",
+    "onnxruntime>=1.20",
+    "opencv-python-headless>=4.10",
+    "pillow>=11.0",
+    "numpy>=2.2",
+    "scikit-learn>=1.6",
+    "sqlite-vec>=0.1",
+    "psycopg2-binary>=2.9",
+    "python-multipart>=0.0.20",
+]
+
+[project.optional-dependencies]
+gpu = ["onnxruntime-gpu>=1.20"]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.9",
+    "ty>=0.0.1a10",
+    "pytest>=8.3",
+    "pytest-cov>=6.0",
+    "pytest-asyncio>=0.25",
+    "anyio>=4.7",
+    "respx>=0.21",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["app"]
+
+# ---------------------------------------------------------------------------
+# Ruff – linting and formatting
+# ---------------------------------------------------------------------------
+[tool.ruff]
+target-version = "py313"
+line-length = 120
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "N",   # pep8-naming
+    "UP",  # pyupgrade
+    "ANN", # flake8-annotations
+    "B",   # flake8-bugbear
+    "A",   # flake8-builtins
+    "SIM", # flake8-simplify
+    "TCH", # flake8-type-checking
+    "RUF", # Ruff-specific rules
+]
+ignore = [
+    "B008",   # FastAPI requires Depends() calls in function default arguments
+    "ANN401", # typing.Any needed for InsightFace's untyped library interface
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["app"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+# ---------------------------------------------------------------------------
+# ty – type checking
+# ---------------------------------------------------------------------------
+[tool.ty]
+# ty inherits Python version from requires-python
+
+# ---------------------------------------------------------------------------
+# pytest
+# ---------------------------------------------------------------------------
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+addopts = "--strict-markers"

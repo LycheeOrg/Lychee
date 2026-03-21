@@ -1,0 +1,104 @@
+"""Application configuration via Pydantic BaseSettings.
+
+All settings are loaded from environment variables prefixed with ``VISION_FACE_``.
+Example: the ``api_key`` field maps to the ``VISION_FACE_API_KEY`` env var.
+"""
+
+from functools import lru_cache
+
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class AppSettings(BaseSettings):
+    """Runtime configuration for the AI Vision Service.
+
+    All values are read from environment variables prefixed ``VISION_FACE_``.
+    """
+
+    # --- Required ---
+    lychee_api_url: str
+    """Lychee instance base URL for callbacks (e.g. ``http://lychee``). No trailing slash."""
+
+    api_key: str
+    """API key this service validates on *inbound* requests from Lychee (``X-API-Key`` header)."""
+
+    lychee_api_key: str
+    """API key sent as ``X-API-Key`` on *outbound* callbacks to Lychee."""
+
+    # --- Model ---
+    model_name: str = "buffalo_l"
+    """InsightFace model pack name. ``buffalo_l`` = large/high-accuracy; ``buffalo_s`` = faster alternative."""
+
+    # --- Detection thresholds ---
+    detection_threshold: float = 0.5
+    """Bounding-box confidence filter — faces below this score are excluded from the callback payload."""
+
+    match_threshold: float = 0.5
+    """Cosine-similarity cutoff for selfie match results and suggestion candidates."""
+
+    rescan_iou_threshold: float = 0.5
+    """IoU threshold for bounding-box matching on re-scan (preserves ``person_id``)."""
+
+    max_faces_per_photo: int = 10
+    """Maximum faces included in a callback payload (top-N by confidence; rest dropped)."""
+
+    # --- Concurrency ---
+    thread_pool_size: int = 1
+    """Number of threads in the ``ThreadPoolExecutor`` used for CPU-bound inference."""
+
+    workers: int = 1
+    """Number of Uvicorn worker processes."""
+
+    # --- Embedding storage ---
+    storage_backend: str = "sqlite"
+    """Embedding storage engine: ``sqlite`` or ``pgvector``."""
+
+    storage_path: str = "/data/embeddings"
+    """SQLite DB directory (used when ``storage_backend = "sqlite"``)."""
+
+    # --- PostgreSQL (pgvector) ---
+    pg_host: str = "localhost"
+    """PostgreSQL host (only when ``storage_backend = "pgvector"``)."""
+
+    pg_port: int = 5432
+    """PostgreSQL port."""
+
+    pg_database: str = "ai_vision"
+    """PostgreSQL database name."""
+
+    pg_user: str = "ai_vision"
+    """PostgreSQL username."""
+
+    pg_password: str = ""
+    """PostgreSQL password."""
+
+    # --- Photo volume ---
+    photos_path: str = "/data/photos"
+    """Shared Docker-volume mount point for photo files.
+
+    ``photo_path`` values from Lychee are validated to reside within this prefix
+    (path-traversal protection).
+    """
+
+    # --- Logging ---
+    log_level: str = "info"
+    """Uvicorn/application log level."""
+
+    model_config = SettingsConfigDict(
+        env_prefix="VISION_FACE_",
+        # Support .env files in development but never require them in production.
+        env_file=".env",
+        env_file_encoding="utf-8",
+        case_sensitive=False,
+    )
+
+
+@lru_cache
+def get_settings() -> AppSettings:
+    """Return a cached ``AppSettings`` instance.
+
+    Call this function via ``Depends(get_settings)`` in FastAPI route handlers.
+    Override ``app.dependency_overrides[get_settings]`` in tests to inject
+    mock settings without touching environment variables.
+    """
+    return AppSettings()  # type: ignore[call-arg]

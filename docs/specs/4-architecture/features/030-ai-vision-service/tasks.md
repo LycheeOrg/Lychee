@@ -12,7 +12,11 @@ _Last updated: 2026-03-21_
 
 ### I1 – Python Service: Project Setup & Face Detection
 
+<<<<<<< HEAD
+- [x] T-030-01 – Create Python service project structure with uv, ruff, ty.
+=======
 - [ ] T-030-01 – Create Python service project structure with uv, ruff, ty.
+>>>>>>> master
   _Intent:_ Create `ai-vision-service/` directory with: `pyproject.toml` (uv project config, ruff settings, ty config), `app/` (main application with `__init__.py`), `app/detection/`, `app/embeddings/`, `app/api/`, `app/clustering/`, `app/matching/`, `tests/`, `Dockerfile`, `README.md`. Configure ruff lint rules (E, W, F, I, N, UP, ANN, B, A, SIM, TCH, RUF) and ty in `pyproject.toml`. Create Pydantic `AppSettings` (BaseSettings) in `app/config.py` with all `VISION_FACE_`-prefixed env vars. Create Pydantic request/response schemas in `app/api/schemas.py`: `DetectRequest`, `FaceResult`, `DetectCallbackPayload`, `MatchResult`, `MatchResponse`, `HealthResponse`. All code fully type-annotated.
   _Verification commands:_
   - `uv sync`
@@ -20,13 +24,21 @@ _Last updated: 2026-03-21_
   - `uv run ruff check`
   - `uv run ty check`
 
+<<<<<<< HEAD
+- [x] T-030-02 – Implement face detection and crop generation with InsightFace.
+=======
 - [ ] T-030-02 – Implement face detection and crop generation with InsightFace.
+>>>>>>> master
   _Intent:_ `app/detection/detector.py`: typed wrapper around InsightFace (ONNX Runtime backend, `buffalo_l` model). Accept photo filesystem path (shared Docker volume — Q-030-07 resolved), return list of `FaceResult` with bounding box coordinates as 0.0–1.0 relative values and confidence scores. `app/detection/cropper.py`: generate 150x150px JPEG face crop per detected face using Pillow, returned as base64 string (Q-030-09 resolved: server-side crop). Full type annotations; no `Any` types.
   _Verification commands:_
   - `uv run pytest tests/test_detection.py tests/test_cropper.py`
   - `uv run ty check`
 
+<<<<<<< HEAD
+- [x] T-030-03 – Implement embedding generation and storage layer.
+=======
 - [ ] T-030-03 – Implement embedding generation and storage layer.
+>>>>>>> master
   _Intent:_ `app/embeddings/store.py`: abstract `EmbeddingStore` protocol (typed). `app/embeddings/sqlite_store.py`: SQLite+sqlite-vec implementation. `app/embeddings/pgvector_store.py`: PostgreSQL+pgvector implementation. CRUD operations for embeddings. Vector similarity search for matching. Configurable via `VISION_FACE_STORAGE_BACKEND` env var. Pydantic validation on all inputs.
   _Verification commands:_
   - `uv run pytest tests/test_embeddings.py`
@@ -34,19 +46,31 @@ _Last updated: 2026-03-21_
 
 ### I2 – Python Service: Clustering, Matching & Callback
 
+<<<<<<< HEAD
+- [x] T-030-04 – Implement face clustering with scikit-learn DBSCAN.
+=======
 - [ ] T-030-04 – Implement face clustering with scikit-learn DBSCAN.
+>>>>>>> master
   _Intent:_ `app/clustering/clusterer.py`: cluster similar face embeddings using scikit-learn DBSCAN. Configurable distance threshold (eps). Returns cluster labels for each embedding. Typed interface. No need to pre-specify cluster count (Q-030-03 resolved: auto-cluster with manual confirmation).
   _Verification commands:_
   - `uv run pytest tests/test_clustering.py`
   - `uv run ty check`
 
+<<<<<<< HEAD
+- [x] T-030-05 – Implement similarity matching.
+=======
 - [ ] T-030-05 – Implement similarity matching.
+>>>>>>> master
   _Intent:_ `app/matching/matcher.py`: `POST /match` endpoint logic (Q-030-12 resolved: dedicated endpoint). Accepts image file (multipart via FastAPI `UploadFile`), detects face, compares embedding against stored embeddings via `EmbeddingStore.similarity_search()`, returns list of `MatchResult` with confidence scores. Selfie image discarded after match — no temp file persisted (Q-030-11 resolved). Full type annotations.
   _Verification commands:_
   - `uv run pytest tests/test_matching.py`
   - `uv run ty check`
 
+<<<<<<< HEAD
+- [x] T-030-06 – Implement FastAPI REST API, scan callback flow, and API key auth.
+=======
 - [ ] T-030-06 – Implement FastAPI REST API, scan callback flow, and API key auth.
+>>>>>>> master
   _Intent:_ `app/main.py`: FastAPI app factory with lifespan handler (model loading on startup). `app/api/routes.py`: `POST /detect`, `POST /match`, `GET /health` — all using Pydantic request/response models. `app/api/dependencies.py`: API key auth as FastAPI dependency (validates `X-API-Key` header against `VISION_FACE_API_KEY`). Scan callback flow: receive `DetectRequest` → detect faces → generate embeddings + base64 crops → store embeddings → POST `DetectCallbackPayload` back to Lychee via httpx. `HealthResponse` includes model_loaded status and embedding_count.
   _Verification commands:_
   - `uv run pytest tests/test_api.py`
@@ -56,18 +80,30 @@ _Last updated: 2026-03-21_
 
 ### I3 – Python Service: Docker Image, Deployment & CI/CD
 
+<<<<<<< HEAD
+- [x] T-030-07 – Create Dockerfile and docker-compose integration.
+=======
 - [ ] T-030-07 – Create Dockerfile and docker-compose integration.
+>>>>>>> master
   _Intent:_ Multi-stage Dockerfile: builder stage uses `uv sync --frozen --no-dev`, runtime stage uses `python:3.13-slim`. Minimal image size. GPU support optional. Model (`buffalo_l`) baked into image at build time — lifespan handler loads it on startup, no runtime download (Q-030-32 resolved). Workers count via CMD shell form to honour `VISION_FACE_WORKERS`. All env vars `VISION_FACE_`-prefixed (see Pydantic `AppSettings`). Add service to Lychee's docker-compose example with shared photos volume and internal network.
   _Verification commands:_
   - `docker build -t lychee-ai-vision .`
   - `docker-compose up -d`
 
+<<<<<<< HEAD
+- [x] T-030-08 – Create GitHub Actions CI/CD workflow for Python service.
+=======
 - [ ] T-030-08 – Create GitHub Actions CI/CD workflow for Python service.
+>>>>>>> master
   _Intent:_ `.github/workflows/python_ai_vision.yml`: triggers on push/PR when `ai-vision-service/**` changes. Jobs: lint (`uv run ruff format --check`, `uv run ruff check`), typecheck (`uv run ty check`), test (`uv run pytest --cov=app --cov-report=xml`, Python 3.13+3.14 matrix), docker-build (`docker build .`). Uses `astral-sh/setup-uv@v5`. Follow existing Lychee CI patterns: pinned action versions, `step-security/harden-runner`, concurrency groups.
   _Verification commands:_
   - Push branch and verify workflow runs green
 
+<<<<<<< HEAD
+- [x] T-030-09 – End-to-end smoke test in Docker.
+=======
 - [ ] T-030-09 – End-to-end smoke test in Docker.
+>>>>>>> master
   _Intent:_ docker-compose up → health check passes → detect endpoint responds → callback delivers results to mock Lychee endpoint. Verify shared volume photo access works.
   _Verification commands:_
   - Integration test suite
