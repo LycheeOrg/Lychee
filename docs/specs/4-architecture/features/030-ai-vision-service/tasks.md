@@ -1,7 +1,7 @@
 # Feature 030 Tasks – Facial Recognition
 
 _Status: Draft_
-_Last updated: 2026-03-18_
+_Last updated: 2026-03-21_
 
 > Keep this checklist aligned with the feature plan increments. Stage tests before implementation, record verification commands beside each task, and prefer bite-sized entries (≤90 minutes).
 > **Mark tasks `[x]` immediately** after each one passes verification—do not batch completions. Update the roadmap status when all tasks are done.
@@ -27,7 +27,7 @@ _Last updated: 2026-03-18_
   - `uv run ty check`
 
 - [ ] T-030-03 – Implement embedding generation and storage layer.
-  _Intent:_ `app/embeddings/store.py`: abstract `EmbeddingStore` protocol (typed). `app/embeddings/sqlite_store.py`: SQLite+sqlite-vec implementation. `app/embeddings/pgvector_store.py`: PostgreSQL+pgvector implementation. CRUD operations for embeddings. Vector similarity search for matching. Configurable via `FACE_STORAGE_BACKEND` env var. Pydantic validation on all inputs.
+  _Intent:_ `app/embeddings/store.py`: abstract `EmbeddingStore` protocol (typed). `app/embeddings/sqlite_store.py`: SQLite+sqlite-vec implementation. `app/embeddings/pgvector_store.py`: PostgreSQL+pgvector implementation. CRUD operations for embeddings. Vector similarity search for matching. Configurable via `VISION_FACE_STORAGE_BACKEND` env var. Pydantic validation on all inputs.
   _Verification commands:_
   - `uv run pytest tests/test_embeddings.py`
   - `uv run ty check`
@@ -47,7 +47,7 @@ _Last updated: 2026-03-18_
   - `uv run ty check`
 
 - [ ] T-030-06 – Implement FastAPI REST API, scan callback flow, and API key auth.
-  _Intent:_ `app/main.py`: FastAPI app factory with lifespan handler (model loading on startup). `app/api/routes.py`: `POST /detect`, `POST /match`, `GET /health` — all using Pydantic request/response models. `app/api/dependencies.py`: API key auth as FastAPI dependency (validates `FACE_API_KEY` header). Scan callback flow: receive `DetectRequest` → detect faces → generate embeddings + base64 crops → store embeddings → POST `DetectCallbackPayload` back to Lychee via httpx. `HealthResponse` includes model_loaded status and embedding_count.
+  _Intent:_ `app/main.py`: FastAPI app factory with lifespan handler (model loading on startup). `app/api/routes.py`: `POST /detect`, `POST /match`, `GET /health` — all using Pydantic request/response models. `app/api/dependencies.py`: API key auth as FastAPI dependency (validates `X-API-Key` header against `VISION_FACE_API_KEY`). Scan callback flow: receive `DetectRequest` → detect faces → generate embeddings + base64 crops → store embeddings → POST `DetectCallbackPayload` back to Lychee via httpx. `HealthResponse` includes model_loaded status and embedding_count.
   _Verification commands:_
   - `uv run pytest tests/test_api.py`
   - `uv run ruff format --check`
@@ -57,7 +57,7 @@ _Last updated: 2026-03-18_
 ### I3 – Python Service: Docker Image, Deployment & CI/CD
 
 - [ ] T-030-07 – Create Dockerfile and docker-compose integration.
-  _Intent:_ Multi-stage Dockerfile: builder stage uses `uv sync --frozen --no-dev`, runtime stage uses `python:3.13-slim`. Minimal image size. GPU support optional. Model download on first run via FastAPI lifespan handler. All env vars `VISION_FACE_`-prefixed (see Pydantic `AppSettings`). Add service to Lychee's docker-compose example with shared photos volume and internal network.
+  _Intent:_ Multi-stage Dockerfile: builder stage uses `uv sync --frozen --no-dev`, runtime stage uses `python:3.13-slim`. Minimal image size. GPU support optional. Model (`buffalo_l`) baked into image at build time — lifespan handler loads it on startup, no runtime download (Q-030-32 resolved). Workers count via CMD shell form to honour `VISION_FACE_WORKERS`. All env vars `VISION_FACE_`-prefixed (see Pydantic `AppSettings`). Add service to Lychee's docker-compose example with shared photos volume and internal network.
   _Verification commands:_
   - `docker build -t lychee-ai-vision .`
   - `docker-compose up -d`
