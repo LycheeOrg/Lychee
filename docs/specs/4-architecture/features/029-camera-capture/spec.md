@@ -135,7 +135,6 @@ No telemetry events introduced. Camera permission errors are surfaced in the UI 
 - `docs/specs/4-architecture/features/029-camera-capture/spec.md` (this file)
 - `docs/specs/4-architecture/features/029-camera-capture/plan.md`
 - `docs/specs/4-architecture/features/029-camera-capture/tasks.md`
-- `docs/specs/5-decisions/ADR-0001.md` — Docker Compose security hardening removal
 
 ## Spec DSL
 
