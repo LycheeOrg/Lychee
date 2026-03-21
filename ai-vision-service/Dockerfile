@@ -8,11 +8,18 @@ FROM python:3.13-slim AS builder
 # Install uv from the official image.
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 
+# Build tools required to compile insightface's Cython extension (mesh_core_cython).
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        g++ \
+        libgl1 \
+        libglib2.0-0 \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
 # Install dependencies only (no source code) so layer cache is reused when
 # only application code changes.
-COPY pyproject.toml uv.lock ./
+COPY pyproject.toml uv.lock README.md ./
 RUN uv sync --frozen --no-dev
 
 # Bake buffalo_l model weights into the image at build time (~300 MB download).
