@@ -13,6 +13,8 @@ use App\Enum\TimelinePhotoGranularity;
 use App\Http\Requests\Album\GetAlbumPhotosRequest;
 use App\Http\Resources\Collections\PaginatedPhotosResource;
 use App\Models\Album;
+use App\Models\Extensions\SortingDecorator;
+use App\Models\Photo;
 use App\Models\TagAlbum;
 use App\Policies\AlbumPolicy;
 use App\Repositories\ConfigManager;
@@ -41,6 +43,7 @@ class AlbumPhotosController extends Controller
 	 */
 	public function get(GetAlbumPhotosRequest $request): PaginatedPhotosResource
 	{
+		/** @var Album|TagAlbum|BaseSmartAlbum $album */
 		$album = $request->album();
 
 		$per_page = $request->configs()->getValueAsInt('photos_per_page');
@@ -55,13 +58,26 @@ class AlbumPhotosController extends Controller
 				photo_timeline: $config_manager->getValueAsEnum('timeline_photos_granularity', TimelinePhotoGranularity::class),
 			);
 		}
+
+		$sorting = $album->getEffectivePhotoSorting();
+
 		// grants_full_photo_access
 		if ($album instanceof TagAlbum) {
 			$config_manager = resolve(ConfigManager::class);
 
+			// @phpstan-ignore method.private
+			$query = $album->photos()->with(['size_variants', 'tags', 'palette', 'statistics', 'rating']);
+
+			// Apply sorting via SortingDecorator
+			/** @var SortingDecorator<Photo> */
+			$sorting_decorator = new SortingDecorator($query);
+
+			$paginated_photos = $sorting_decorator
+				->orderPhotosBy($sorting->column, $sorting->order)
+				->paginate($per_page);
+
 			return new PaginatedPhotosResource(
-				/** @phpstan-ignore method.private (It is NOT private and it works.) */
-				paginated_photos: $album->photos()->with(['size_variants', 'tags', 'palette', 'statistics', 'rating'])->paginate($config_manager->getValueAsInt('photos_per_page')),
+				paginated_photos: $paginated_photos,
 				album_id: $album->id,
 				should_downgrade: Gate::check(AlbumPolicy::CAN_ACCESS_FULL_PHOTO, [AbstractAlbum::class, $album]) === false,
 				photo_timeline: $album->photo_timeline,
@@ -74,7 +90,7 @@ class AlbumPhotosController extends Controller
 
 		$paginator = $this->photo_repository->getPhotosForAlbumPaginated(
 			$album->id,
-			$album->getEffectivePhotoSorting(),
+			$sorting,
 			$per_page,
 			count($tag_ids) > 0 ? $tag_ids : null,
 			$tag_logic

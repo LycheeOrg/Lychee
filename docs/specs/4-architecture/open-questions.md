@@ -4,12 +4,9 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 ## Active Questions
 
-| ID | Summary | Priority | Affects |
-|----|---------|----------|---------|
-
-*No active questions.*
-
-*Updated: 2026-03-18*
+| Question ID | Feature | Priority | Summary | Status | Opened | Updated |
+|-------------|---------|----------|---------|--------|--------|---------|
+| (none) | — | — | — | — | — | — |
 
 ## Question Details
 
@@ -594,6 +591,16 @@ REST convention: the URL resource (`{id}`) is typically the one acted upon and p
 **Spec Impact:** Update DO-030-02 `crop_path` description. Update `crop_url` accessor. Add a new route for serving face crops. Update I6, I10, I16.
 
 **Resolved:** 2026-03-17
+
+---
+
+### ~~Q-029-01: Destination album for camera capture from root view~~ ✅ RESOLVED
+
+**Question:** When the user takes a photo from the root albums view (not inside any album), where should the captured photo be stored?
+
+**Resolution:** Upload with no album ID — photo lands in the "Unsorted" smart album, consistent with existing upload behaviour at root level.
+
+**Resolved:** 2026-03-18
 
 ---
 

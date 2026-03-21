@@ -86,7 +86,7 @@ final class PhotoUrlRule implements ValidationRule
 		if (
 			$this->config_manager->getValueAsBool('import_via_url_forbidden_local_ip') &&
 			filter_var($host, FILTER_VALIDATE_IP) !== false &&
-			filter_var($host, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE) === false
+			filter_var($host, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) === false
 		) {
 			$fail($attribute . ' must not be a private IP address.');
 
@@ -95,7 +95,7 @@ final class PhotoUrlRule implements ValidationRule
 
 		if (
 			$this->config_manager->getValueAsBool('import_via_url_forbidden_localhost') &&
-			$host === 'localhost'
+			in_array(strtolower($host), ['localhost', '127.0.0.1', '::1'], true)
 		) {
 			$fail($attribute . ' must not be localhost.');
 
