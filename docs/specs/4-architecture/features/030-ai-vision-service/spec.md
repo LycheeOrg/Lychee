@@ -98,7 +98,7 @@ Read via `config('features.ai-vision.face-url')` and `config('features.ai-vision
 | PHP key | `.env` variable | Default | Description |
 |---------|----------------|---------|-------------|
 | `features.ai-vision.face-url` | `AI_VISION_FACE_URL` | `""` | Base URL of the Python face-recognition service (e.g. `http://ai-vision:8000`). Must not have a trailing slash. |
-| `features.ai-vision.face-api-key` | `AI_VISION_FACE_API_KEY` | `""` | Shared API key for both directions: sent as `X-API-Key` in Lychee→Python scan requests; expected as `X-API-Key` in Python→Lychee callbacks. Must match `VISION_FACE_API_KEY` / `VISION_FACE_LYCHEE_API_KEY` env vars on the Python side. |
+| `features.ai-vision.face-api-key` | `AI_VISION_FACE_API_KEY` | `""` | Shared API key for both directions: sent as `X-API-Key` in Lychee→Python scan requests; expected as `X-API-Key` in Python→Lychee callbacks. Must match `VISION_FACE_API_KEY` on the Python side. |
 
 #### `configs` table — AI Vision admin-configurable keys
 
@@ -307,7 +307,7 @@ Read via `config('features.ai-vision.face-url')` and `config('features.ai-vision
 |----|---------|-----------|
 | CLI-030-01 | `php artisan lychee:scan-faces` | Enqueue all unscanned photos for face detection (admin batch operation) |
 | CLI-030-02 | `php artisan lychee:scan-faces --album={id}` | Enqueue photos directly in a specific album for face detection (non-recursive) |
-| CLI-030-03 | `php artisan lychee:rescan-failed-faces [--stuck-pending] [--older-than=N]]` | Maintenance: re-enqueue all photos where `face_scan_status = 'failed'` *(Q-030-40)*. With `--stuck-pending`: additionally reset `face_scan_status = 'pending'` records older than N minutes (default 60) back to `null`, making them eligible for a fresh scan. *(Q-030-48)* |
+| CLI-030-03 | `php artisan lychee:rescan-failed-faces [--stuck-pending] [--older-than=N]` | Maintenance: re-enqueue all photos where `face_scan_status = 'failed'` *(Q-030-40)*. With `--stuck-pending`: additionally reset `face_scan_status = 'pending'` records older than N minutes (default 60) back to `null`, making them eligible for a fresh scan. *(Q-030-48)* |
 
 ### Telemetry Events
 
@@ -958,8 +958,7 @@ CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers ${VI
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
 | `VISION_FACE_LYCHEE_API_URL` | Yes | — | Lychee instance base URL for callbacks |
-| `VISION_FACE_LYCHEE_API_KEY` | Yes | — | Shared API key sent as `X-API-Key` header on callbacks to Lychee |
-| `VISION_FACE_API_KEY` | Yes | — | Shared API key Lychee sends as `X-API-Key` to authenticate requests to this service |
+| `VISION_FACE_API_KEY` | Yes | — | Shared API key used in both directions: validates inbound `X-API-Key` from Lychee scan requests; also sent as `X-API-Key` on callbacks to Lychee. Must match `AI_VISION_FACE_API_KEY` on the Lychee side. |
 | `VISION_FACE_MODEL_NAME` | No | `buffalo_l` | InsightFace model pack name |
 | `VISION_FACE_DETECTION_THRESHOLD` | No | `0.5` | Bounding box confidence filter — faces below threshold excluded from callback *(Q-030-31)* |
 | `VISION_FACE_MATCH_THRESHOLD` | No | `0.5` | Similarity score cutoff for suggestions and selfie match results *(Q-030-31)* |
