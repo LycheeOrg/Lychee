@@ -38,6 +38,8 @@ class Person extends Model
 	use ThrowsConsistentExceptions;
 	use ToArrayThrowsNotImplemented;
 
+	protected $table = 'persons';
+
 	/**
 	 * @var string The type of the primary key
 	 */
