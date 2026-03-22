@@ -128,6 +128,7 @@ return [
         'capture' => 'Chụp',
         'retake' => 'Chụp lại',
         'upload' => 'Tải lên',
+        'secure_connection_required' => 'Truy cập camera yêu cầu kết nối bảo mật (HTTPS hoặc localhost).',
     ],
     'visibility' => [
         'public' => 'Public',

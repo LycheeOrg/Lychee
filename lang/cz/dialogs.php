@@ -128,6 +128,7 @@ return [
         'capture' => 'Vyfotit',
         'retake' => 'Znovu vyfotit',
         'upload' => 'Nahrát',
+        'secure_connection_required' => 'Přístup ke kameře vyžaduje zabezpečené připojení (HTTPS nebo localhost).',
     ],
     'visibility' => [
         'public' => 'Public',

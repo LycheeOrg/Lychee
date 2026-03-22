@@ -128,6 +128,7 @@ return [
         'capture' => 'گرفتن',
         'retake' => 'دوباره بگیر',
         'upload' => 'بارگذاری',
+        'secure_connection_required' => 'دسترسی به دوربین نیاز به اتصال امن (HTTPS یا localhost) دارد.',
     ],
     'visibility' => [
         'public' => 'عمومی',

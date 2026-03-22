@@ -128,6 +128,7 @@ return [
         'capture' => 'Capturer',
         'retake' => 'Reprendre',
         'upload' => 'Téléverser',
+        'secure_connection_required' => 'L'accès à la caméra nécessite une connexion sécurisée (HTTPS ou localhost).',
     ],
     'visibility' => [
         'public' => 'Public',

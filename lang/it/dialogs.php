@@ -128,6 +128,7 @@ return [
         'capture' => 'Cattura',
         'retake' => 'Riprendi',
         'upload' => 'Carica',
+        'secure_connection_required' => 'L'accesso alla fotocamera richiede una connessione sicura (HTTPS o localhost).',
     ],
     'visibility' => [
         'public' => 'Public',

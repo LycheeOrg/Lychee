@@ -128,6 +128,7 @@ return [
         'capture' => '拍摄',
         'retake' => '重拍',
         'upload' => '上传',
+        'secure_connection_required' => '访问摄像头需要安全连接（HTTPS 或 localhost）。',
     ],
     'visibility' => [
         'public' => '公开',

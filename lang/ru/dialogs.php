@@ -128,6 +128,7 @@ return [
         'capture' => 'Снять',
         'retake' => 'Переснять',
         'upload' => 'Загрузить',
+        'secure_connection_required' => 'Для доступа к камере требуется защищённое соединение (HTTPS или localhost).',
     ],
     'visibility' => [
         'public' => 'Публичный',

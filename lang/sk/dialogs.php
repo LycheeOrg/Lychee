@@ -128,6 +128,7 @@ return [
         'capture' => 'Odfotiť',
         'retake' => 'Odfotiť znova',
         'upload' => 'Nahrať',
+        'secure_connection_required' => 'Prístup ku kamere vyžaduje zabezpečené pripojenie (HTTPS alebo localhost).',
     ],
     'visibility' => [
         'public' => 'Public',

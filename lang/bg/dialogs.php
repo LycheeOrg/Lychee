@@ -129,6 +129,7 @@ return [
         'capture' => 'Снимай',
         'retake' => 'Повтори',
         'upload' => 'Качи',
+        'secure_connection_required' => 'Достъпът до камерата изисква защитена връзка (HTTPS или localhost).',
     ],
     'visibility' => [
         'public' => 'Публичен',

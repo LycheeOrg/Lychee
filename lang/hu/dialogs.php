@@ -128,6 +128,7 @@ return [
         'capture' => 'Fényképez',
         'retake' => 'Újra fényképez',
         'upload' => 'Feltöltés',
+        'secure_connection_required' => 'A kamera eléréséhez biztonságos kapcsolat szükséges (HTTPS vagy localhost).',
     ],
     'visibility' => [
         'public' => 'Public',

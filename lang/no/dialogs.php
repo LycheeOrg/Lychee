@@ -128,6 +128,7 @@ return [
         'capture' => 'Ta bilde',
         'retake' => 'Ta på nytt',
         'upload' => 'Last opp',
+        'secure_connection_required' => 'Kameratilgang krever en sikker tilkobling (HTTPS eller localhost).',
     ],
     'visibility' => [
         'public' => 'Offentlig',

@@ -128,6 +128,7 @@ return [
         'capture' => 'Λήψη',
         'retake' => 'Επανάληψη',
         'upload' => 'Μεταφόρτωση',
+        'secure_connection_required' => 'Η πρόσβαση στην κάμερα απαιτεί ασφαλή σύνδεση (HTTPS ή localhost).',
     ],
     'visibility' => [
         'public' => 'Public',

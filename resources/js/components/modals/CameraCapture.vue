@@ -53,10 +53,12 @@
 <script setup lang="ts">
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
-import { ref, watch } from "vue";
+import { ref, watch, onUnmounted } from "vue";
 import { storeToRefs } from "pinia";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
+import { useI18n } from "vue-i18n";
 
+const { t } = useI18n();
 const togglableStore = useTogglablesStateStore();
 const { is_camera_capture_visible, is_upload_visible, list_upload_files } = storeToRefs(togglableStore);
 
@@ -68,6 +70,7 @@ const capturedDataUrl = ref<string>("");
 const errorMessage = ref<string>("");
 
 let stream: MediaStream | null = null;
+let cameraToken = 0;
 
 function startCamera() {
 	errorMessage.value = "";
@@ -76,14 +79,21 @@ function startCamera() {
 	capturedDataUrl.value = "";
 
 	if (!navigator.mediaDevices?.getUserMedia) {
-		errorMessage.value =
-			"Camera access requires a secure connection (HTTPS or localhost). Please access Lychee via https:// or http://localhost.";
+		errorMessage.value = t("dialogs.camera.secure_connection_required");
 		return;
 	}
+
+	const token = ++cameraToken;
 
 	navigator.mediaDevices
 		.getUserMedia({ video: { facingMode: "environment" }, audio: false })
 		.then(function (s) {
+			if (token !== cameraToken) {
+				s.getTracks().forEach(function (t) {
+					t.stop();
+				});
+				return;
+			}
 			stream = s;
 			if (videoEl.value) {
 				videoEl.value.srcObject = s;
@@ -93,7 +103,8 @@ function startCamera() {
 			}
 		})
 		.catch(function (e: Error) {
-			errorMessage.value = e.message ?? "Could not access camera.";
+			if (token !== cameraToken) return;
+			errorMessage.value = e.message ?? t("dialogs.camera.secure_connection_required");
 		});
 }
 
@@ -159,4 +170,6 @@ watch(is_camera_capture_visible, function (visible) {
 		stopCamera();
 	}
 });
+
+onUnmounted(stopCamera);
 </script>

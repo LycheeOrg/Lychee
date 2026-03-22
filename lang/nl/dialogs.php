@@ -128,6 +128,7 @@ return [
         'capture' => 'Vastleggen',
         'retake' => 'Opnieuw nemen',
         'upload' => 'Uploaden',
+        'secure_connection_required' => 'Cameratoegang vereist een beveiligde verbinding (HTTPS of localhost).',
     ],
     'visibility' => [
         'public' => 'Publiek',

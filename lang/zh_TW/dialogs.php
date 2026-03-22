@@ -128,6 +128,7 @@ return [
         'capture' => '拍攝',
         'retake' => '重拍',
         'upload' => '上傳',
+        'secure_connection_required' => '存取攝影機需要安全連線（HTTPS 或 localhost）。',
     ],
     'visibility' => [
         'public' => '公開',

@@ -129,6 +129,7 @@ return [
         'capture' => 'Capture',
         'retake' => 'Retake',
         'upload' => 'Upload',
+        'secure_connection_required' => 'Camera access requires a secure connection (HTTPS or localhost). Please access Lychee via https:// or http://localhost.',
     ],
     'visibility' => [
         'public' => 'Public',

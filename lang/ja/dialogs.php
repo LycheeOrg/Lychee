@@ -128,6 +128,7 @@ return [
         'capture' => '撮影',
         'retake' => '撮り直し',
         'upload' => 'アップロード',
+        'secure_connection_required' => 'カメラへのアクセスには安全な接続（HTTPSまたはlocalhost）が必要です。',
     ],
     'visibility' => [
         'public' => 'Public',
