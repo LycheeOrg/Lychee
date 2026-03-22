@@ -19,32 +19,46 @@
 					</div>
 
 					<canvas ref="canvasEl" class="hidden" />
-
-					<div v-if="!capturedBlob" class="flex gap-3 pb-2">
-						<Button
-							icon="pi pi-times"
-							:label="$t('dialogs.button.cancel')"
-							severity="secondary"
-							@click="is_camera_capture_visible = false"
-						/>
-						<Button
-							:disabled="!cameraReady"
-							icon="pi pi-camera"
-							:label="$t('dialogs.camera.capture')"
-							severity="primary"
-							@click="capture"
-						/>
-					</div>
-					<div v-else class="flex gap-3 pb-2">
-						<Button
-							icon="pi pi-times"
-							:label="$t('dialogs.button.cancel')"
-							severity="secondary"
-							@click="is_camera_capture_visible = false"
-						/>
-						<Button icon="pi pi-refresh" :label="$t('dialogs.camera.retake')" severity="secondary" @click="retake" />
-						<Button icon="pi pi-upload" :label="$t('dialogs.camera.upload')" severity="primary" @click="upload" />
-					</div>
+				</div>
+				<div v-if="!capturedBlob" class="flex w-full">
+					<Button
+						icon="pi pi-times"
+						:label="$t('dialogs.button.cancel')"
+						severity="secondary"
+						class="w-full border-none rounded-none rounded-bl-xl"
+						@click="is_camera_capture_visible = false"
+					/>
+					<Button
+						:disabled="!cameraReady"
+						icon="pi pi-camera"
+						:label="$t('dialogs.camera.capture')"
+						severity="primary"
+						class="w-full border-none rounded-none rounded-br-xl"
+						@click="capture"
+					/>
+				</div>
+				<div v-else class="flex w-full">
+					<Button
+						icon="pi pi-times"
+						:label="$t('dialogs.button.cancel')"
+						severity="secondary"
+						class="w-full border-none rounded-none rounded-bl-xl"
+						@click="is_camera_capture_visible = false"
+					/>
+					<Button
+						icon="pi pi-refresh"
+						:label="$t('dialogs.camera.retake')"
+						class="w-full border-none rounded-none"
+						severity="secondary"
+						@click="retake"
+					/>
+					<Button
+						icon="pi pi-upload"
+						:label="$t('dialogs.camera.upload')"
+						class="w-full border-none rounded-none rounded-br-xl"
+						severity="primary"
+						@click="upload"
+					/>
 				</div>
 			</div>
 		</template>
