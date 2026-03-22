@@ -124,6 +124,13 @@ return [
         'failed_error' => 'Качването не бе успешно. Сървърът върна грешка!',
         'apply_watermark' => 'Apply watermark',
     ],
+    'camera' => [
+        'title' => 'Направи снимка',
+        'capture' => 'Снимай',
+        'retake' => 'Повтори',
+        'upload' => 'Качи',
+        'secure_connection_required' => 'Достъпът до камерата изисква защитена връзка (HTTPS или localhost).',
+    ],
     'visibility' => [
         'public' => 'Публичен',
         'public_expl' => 'Анонимните потребители имат достъп до този албум, според ограниченията по-долу.',

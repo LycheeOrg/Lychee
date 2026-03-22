@@ -250,7 +250,7 @@ return [
 		'camera' => [
 			'none' => false,
 			'*' => false,
-			'self' => false,
+			'self' => true,
 			'origins' => [
 				// 'url',
 			],

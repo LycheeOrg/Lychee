@@ -48,6 +48,7 @@ export const useTogglablesStateStore = defineStore("togglables-store", {
 		is_import_from_server_open: false,
 		is_apply_renamer_visible: false,
 		is_watermark_confirm_visible: false,
+		is_camera_capture_visible: false,
 
 		// Help
 		is_keybindings_help_open: false,

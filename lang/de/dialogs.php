@@ -123,6 +123,13 @@ return [
         'failed_error' => 'Hochladen fehlgeschlagen. Der Server hat einen Fehler zurückgegeben!',
         'apply_watermark' => 'Apply watermark',
     ],
+    'camera' => [
+        'title' => 'Foto aufnehmen',
+        'capture' => 'Aufnehmen',
+        'retake' => 'Erneut aufnehmen',
+        'upload' => 'Hochladen',
+        'secure_connection_required' => 'Der Kamerazugriff erfordert eine sichere Verbindung (HTTPS oder localhost).',
+    ],
     'visibility' => [
         'public' => 'Öffentlich',
         'public_expl' => 'Anonyme Benutzer können auf dieses Album zugreifen, allerdings mit den unten aufgeführten Einschränkungen.',

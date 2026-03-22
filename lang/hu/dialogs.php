@@ -123,6 +123,13 @@ return [
         'failed_error' => 'Upload failed. The server returned an error!',
         'apply_watermark' => 'Apply watermark',
     ],
+    'camera' => [
+        'title' => 'Fénykép készítése',
+        'capture' => 'Fényképez',
+        'retake' => 'Újra fényképez',
+        'upload' => 'Feltöltés',
+        'secure_connection_required' => 'A kamera eléréséhez biztonságos kapcsolat szükséges (HTTPS vagy localhost).',
+    ],
     'visibility' => [
         'public' => 'Public',
         'public_expl' => 'Anonymous users can access this album, subject to the restrictions below.',

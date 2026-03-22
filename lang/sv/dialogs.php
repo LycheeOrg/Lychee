@@ -123,6 +123,13 @@ return [
         'failed_error' => 'Upload failed. The server returned an error!',
         'apply_watermark' => 'Apply watermark',
     ],
+    'camera' => [
+        'title' => 'Ta ett foto',
+        'capture' => 'Ta bild',
+        'retake' => 'Ta om',
+        'upload' => 'Ladda upp',
+        'secure_connection_required' => 'Kameraåtkomst kräver en säker anslutning (HTTPS eller localhost).',
+    ],
     'visibility' => [
         'public' => 'Public',
         'public_expl' => 'Anonymous users can access this album, subject to the restrictions below.',

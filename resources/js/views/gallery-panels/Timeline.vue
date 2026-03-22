@@ -2,6 +2,7 @@
 	<LoadingProgress v-model:loading="timelineStore.isLoading" />
 	<LoginModal v-if="userStore.isGuest" @logged-in="refresh" />
 	<WebauthnModal v-if="userStore.isGuest" @logged-in="refresh" />
+	<CameraCapture v-if="timelineStore.rootRights?.can_upload" key="camera_capture_modal" />
 
 	<div v-if="timelineStore.rootConfig && timelineStore.rootRights" class="h-svh overflow-y-auto" id="scrollArea">
 		<Collapse :when="!is_full_screen">
@@ -153,6 +154,7 @@ import ScrollTop from "primevue/scrolltop";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import PhotoThumbPanel from "@/components/gallery/albumModule/PhotoThumbPanel.vue";
 import TimelineHeader from "@/components/headers/TimelineHeader.vue";
+import CameraCapture from "@/components/modals/CameraCapture.vue";
 import { onMounted } from "vue";
 import ProgressSpinner from "primevue/progressspinner";
 import PhotoPanel from "@/components/gallery/photoModule/PhotoPanel.vue";

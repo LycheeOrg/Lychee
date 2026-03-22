@@ -123,6 +123,13 @@ return [
         'failed_error' => 'Не удалось загрузить. Сервер вернул ошибку!',
         'apply_watermark' => 'Apply watermark',
     ],
+    'camera' => [
+        'title' => 'Сделать фото',
+        'capture' => 'Снять',
+        'retake' => 'Переснять',
+        'upload' => 'Загрузить',
+        'secure_connection_required' => 'Для доступа к камере требуется защищённое соединение (HTTPS или localhost).',
+    ],
     'visibility' => [
         'public' => 'Публичный',
         'public_expl' => 'Анонимные пользователи могут получить доступ к этому альбому с ограничениями ниже.',

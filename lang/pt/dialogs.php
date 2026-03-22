@@ -123,6 +123,13 @@ return [
         'failed_error' => 'Upload failed. The server returned an error!',
         'apply_watermark' => 'Apply watermark',
     ],
+    'camera' => [
+        'title' => 'Tirar uma foto',
+        'capture' => 'Capturar',
+        'retake' => 'Repetir',
+        'upload' => 'Enviar',
+        'secure_connection_required' => 'O acesso à câmera requer uma conexão segura (HTTPS ou localhost).',
+    ],
     'visibility' => [
         'public' => 'Public',
         'public_expl' => 'Anonymous users can access this album, subject to the restrictions below.',
