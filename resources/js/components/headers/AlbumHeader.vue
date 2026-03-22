@@ -101,7 +101,8 @@ const orderManagementStore = useOrderManagementStore();
 const { dropbox_api_key, is_favourite_enabled, is_se_enabled } = storeToRefs(lycheeStore);
 const { is_album_edit_open, is_full_screen } = storeToRefs(togglableStore);
 
-const { toggleCreateAlbum, toggleImportFromLink, toggleImportFromDropbox, toggleUpload, toggleImportFromServer } = useGalleryModals(togglableStore);
+const { toggleCreateAlbum, toggleImportFromLink, toggleImportFromDropbox, toggleUpload, toggleImportFromServer, toggleCameraCapture } =
+	useGalleryModals(togglableStore);
 
 const emits = defineEmits<{
 	refresh: [];
@@ -138,6 +139,7 @@ const { addmenu, addMenu, openAddMenu } = useContextMenuAlbumAdd(
 	albumStore,
 	{
 		toggleUpload,
+		toggleCameraCapture,
 		toggleCreateAlbum,
 		toggleImportFromLink,
 		toggleUploadTrack,

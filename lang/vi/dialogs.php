@@ -123,6 +123,12 @@ return [
         'failed_error' => 'Upload failed. The server returned an error!',
         'apply_watermark' => 'Apply watermark',
     ],
+    'camera' => [
+        'title' => 'Chụp ảnh',
+        'capture' => 'Chụp',
+        'retake' => 'Chụp lại',
+        'upload' => 'Tải lên',
+    ],
     'visibility' => [
         'public' => 'Public',
         'public_expl' => 'Anonymous users can access this album, subject to the restrictions below.',

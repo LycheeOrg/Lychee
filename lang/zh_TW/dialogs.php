@@ -123,6 +123,12 @@ return [
         'failed_error' => '上傳失敗。伺服器回傳錯誤！',
         'apply_watermark' => 'Apply watermark',
     ],
+    'camera' => [
+        'title' => '拍照',
+        'capture' => '拍攝',
+        'retake' => '重拍',
+        'upload' => '上傳',
+    ],
     'visibility' => [
         'public' => '公開',
         'public_expl' => '匿名使用者可以存取此相簿，但須遵守以下限制。',

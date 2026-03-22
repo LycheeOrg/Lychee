@@ -21,6 +21,7 @@ export function useGalleryModals(togglableStore: TogglablesStateStore) {
 		is_import_from_server_open,
 		is_apply_renamer_visible,
 		is_watermark_confirm_visible,
+		is_camera_capture_visible,
 	} = storeToRefs(togglableStore);
 
 	function toggleCreateAlbum() {
@@ -92,6 +93,10 @@ export function useGalleryModals(togglableStore: TogglablesStateStore) {
 		is_watermark_confirm_visible.value = !is_watermark_confirm_visible.value;
 	}
 
+	function toggleCameraCapture() {
+		is_camera_capture_visible.value = !is_camera_capture_visible.value;
+	}
+
 	return {
 		is_create_album_visible,
 		toggleCreateAlbum,
@@ -128,5 +133,7 @@ export function useGalleryModals(togglableStore: TogglablesStateStore) {
 		toggleApplyRenamer,
 		is_watermark_confirm_visible,
 		toggleWatermarkConfirm,
+		is_camera_capture_visible,
+		toggleCameraCapture,
 	};
 }

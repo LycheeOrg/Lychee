@@ -16,6 +16,7 @@ export type AddMenuItem =
 type Callbacks = {
 	toggleCreateAlbum: () => void;
 	toggleUpload: () => void;
+	toggleCameraCapture: () => void;
 	toggleImportFromLink: () => void;
 	toggleUploadTrack: () => void;
 	deleteTrack: () => void;
@@ -31,6 +32,11 @@ export function useContextMenuAlbumAdd(albumStore: AlbumStore, callbacks: Callba
 				label: "gallery.menus.upload_photo",
 				icon: "pi pi-upload",
 				callback: callbacks.toggleUpload,
+			},
+			{
+				label: "gallery.menus.take_photo",
+				icon: "pi pi-camera",
+				callback: callbacks.toggleCameraCapture,
 			},
 			{
 				is_divider: true,

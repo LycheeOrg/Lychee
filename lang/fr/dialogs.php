@@ -123,6 +123,12 @@ return [
         'failed_error' => 'Échec du téléversement. Le serveur a retourné une erreur !',
         'apply_watermark' => 'Apply watermark',
     ],
+    'camera' => [
+        'title' => 'Prendre une photo',
+        'capture' => 'Capturer',
+        'retake' => 'Reprendre',
+        'upload' => 'Téléverser',
+    ],
     'visibility' => [
         'public' => 'Public',
         'public_expl' => 'Les utilisateurs anonymes peuvent accéder à cet album, sous réserve des restrictions ci-dessous.',

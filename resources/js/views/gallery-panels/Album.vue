@@ -3,6 +3,7 @@
 
 	<!-- Modals Upload, login, Create -->
 	<UploadPanel v-if="albumStore.rights?.can_upload" key="upload_modal" @refresh="refresh" />
+	<CameraCapture v-if="albumStore.rights?.can_upload" key="camera_capture_modal" />
 	<LoginModal v-if="!userStore.isLoggedIn" @logged-in="refresh" />
 	<WebauthnModal v-if="!userStore.isLoggedIn" @logged-in="refresh" />
 	<AlbumCreateDialog v-if="albumStore.rights?.can_upload && albumStore.config?.is_model_album" key="create_album_modal" />
@@ -160,6 +161,7 @@ import LoginModal from "@/components/modals/LoginModal.vue";
 import { useMouseEvents } from "@/composables/album/uploadEvents";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import UploadPanel from "@/components/modals/UploadPanel.vue";
+import CameraCapture from "@/components/modals/CameraCapture.vue";
 import AlbumCreateDialog from "@/components/forms/album/AlbumCreateDialog.vue";
 import { useScrollable } from "@/composables/album/scrollable";
 import WebauthnModal from "@/components/modals/WebauthnModal.vue";

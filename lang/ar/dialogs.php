@@ -123,6 +123,12 @@ return [
         'failed_error' => 'فشل التحميل. الخادم أعاد خطأ!',
         'apply_watermark' => 'Apply watermark',
     ],
+    'camera' => [
+        'title' => 'التقاط صورة',
+        'capture' => 'التقاط',
+        'retake' => 'إعادة التقاط',
+        'upload' => 'رفع',
+    ],
     'visibility' => [
         'public' => 'عام',
         'public_expl' => 'يمكن للمستخدمين المجهولين الوصول إلى هذا الألبوم، مع مراعاة القيود أدناه.',

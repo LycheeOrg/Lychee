@@ -123,6 +123,12 @@ return [
         'failed_error' => 'Opplastingen mislyktes. Serveren returnerte en feil!',
         'apply_watermark' => 'Apply watermark',
     ],
+    'camera' => [
+        'title' => 'Ta et bilde',
+        'capture' => 'Ta bilde',
+        'retake' => 'Ta på nytt',
+        'upload' => 'Last opp',
+    ],
     'visibility' => [
         'public' => 'Offentlig',
         'public_expl' => 'Anonyme brukere har tilgang til dette albumet, med forbehold om restriksjonene nedenfor.',

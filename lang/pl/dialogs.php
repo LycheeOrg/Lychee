@@ -123,6 +123,12 @@ return [
         'failed_error' => 'Przesyłanie nie powiodło się. Serwer zwrócił błąd!',
         'apply_watermark' => 'Apply watermark',
     ],
+    'camera' => [
+        'title' => 'Zrób zdjęcie',
+        'capture' => 'Sfotografuj',
+        'retake' => 'Zrób ponownie',
+        'upload' => 'Prześlij',
+    ],
     'visibility' => [
         'public' => 'Publiczny',
         'public_expl' => 'Anonimowi użytkownicy mogą uzyskać dostęp do tego albumu, z zastrzeżeniem poniższych ograniczeń.',
