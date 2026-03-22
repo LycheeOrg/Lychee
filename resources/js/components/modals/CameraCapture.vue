@@ -9,7 +9,7 @@
 
 					<div v-if="!capturedBlob" class="relative w-full">
 						<video ref="videoEl" autoplay playsinline class="w-full max-h-[60vh] rounded-xl object-contain" />
-						<div v-if="!cameraReady" class="absolute inset-0 flex items-center justify-center rounded-xl bg-surface-900/50">
+						<div v-if="cameraLoading" class="absolute inset-0 flex items-center justify-center rounded-xl bg-surface-900/50">
 							<i class="pi pi-spin pi-spinner text-3xl text-white" />
 						</div>
 					</div>
@@ -65,6 +65,7 @@ const { is_camera_capture_visible, is_upload_visible, list_upload_files } = stor
 const videoEl = ref<HTMLVideoElement | null>(null);
 const canvasEl = ref<HTMLCanvasElement | null>(null);
 const cameraReady = ref(false);
+const cameraLoading = ref(false);
 const capturedBlob = ref<Blob | null>(null);
 const capturedDataUrl = ref<string>("");
 const errorMessage = ref<string>("");
@@ -75,10 +76,12 @@ let cameraToken = 0;
 function startCamera() {
 	errorMessage.value = "";
 	cameraReady.value = false;
+	cameraLoading.value = true;
 	capturedBlob.value = null;
 	capturedDataUrl.value = "";
 
 	if (!navigator.mediaDevices?.getUserMedia) {
+		cameraLoading.value = false;
 		errorMessage.value = t("dialogs.camera.secure_connection_required");
 		return;
 	}
@@ -98,12 +101,14 @@ function startCamera() {
 			if (videoEl.value) {
 				videoEl.value.srcObject = s;
 				videoEl.value.onloadedmetadata = function () {
+					cameraLoading.value = false;
 					cameraReady.value = true;
 				};
 			}
 		})
 		.catch(function (e: Error) {
 			if (token !== cameraToken) return;
+			cameraLoading.value = false;
 			errorMessage.value = e.message ?? t("dialogs.camera.secure_connection_required");
 		});
 }
@@ -116,6 +121,7 @@ function stopStream() {
 		stream = null;
 	}
 	cameraReady.value = false;
+	cameraLoading.value = false;
 }
 
 function stopCamera() {
