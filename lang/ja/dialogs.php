@@ -123,6 +123,13 @@ return [
         'failed_error' => 'Upload failed. The server returned an error!',
         'apply_watermark' => 'Apply watermark',
     ],
+    'camera' => [
+        'title' => '写真を撮る',
+        'capture' => '撮影',
+        'retake' => '撮り直し',
+        'upload' => 'アップロード',
+        'secure_connection_required' => 'カメラへのアクセスには安全な接続（HTTPSまたはlocalhost）が必要です。',
+    ],
     'visibility' => [
         'public' => 'Public',
         'public_expl' => 'Anonymous users can access this album, subject to the restrictions below.',

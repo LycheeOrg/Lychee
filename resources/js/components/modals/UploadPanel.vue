@@ -1,8 +1,8 @@
 <template>
 	<Dialog v-model:visible="is_upload_visible" modal pt:root:class="border-none" :dismissable-mask="true">
 		<template #container>
-			<div v-if="setup" class="max-w-md w-full">
-				<div v-if="counts.files > 0" class="m-4 flex flex-wrap justify-center">
+			<div v-if="setup" class="w-screen max-w-md max-h-screen flex flex-col p-4">
+				<div v-if="counts.files > 0" class="flex flex-wrap justify-center w-full max-w-md">
 					<span v-if="counts.completed === counts.files" class="w-full text-center text-muted-color-emphasis font-bold">{{
 						$t("dialogs.upload.completed")
 					}}</span>
@@ -15,7 +15,7 @@
 						:class="counts.completed === counts.files ? 'successProgressBarSeverity' : ''"
 					/>
 				</div>
-				<ScrollPanel v-if="counts.files > 0" class="w-96 h-48 m-4 p-1 mr-5" :pt:scrollbar:class="'opacity-100'">
+				<ScrollPanel v-if="counts.files > 0" class="w-full h-48 py-4 pr-3 mr-5" :pt:scrollbar:class="'opacity-100'">
 					<UploadingLine
 						v-for="(uploadable, index) in list_upload_files"
 						:key="uploadable.file.name"
@@ -28,10 +28,10 @@
 						@upload:completed="uploadCompleted"
 					/>
 				</ScrollPanel>
-				<div v-if="counts.files === 0" class="p-9 max-w-3xl w-full">
+				<div v-if="counts.files === 0" class="w-full flex flex-col items-center gap-4">
 					<div
 						v-show="isDropping"
-						class="absolute flex items-center justify-center bg-primary-500 opacity-90"
+						class="absolute flex items-center justify-center bg-primary-500 opacity-90 w-full"
 						@dragover.prevent="isDropping = true"
 						@dragleave.prevent="isDropping = false"
 						@drop="upload"
@@ -39,14 +39,14 @@
 						<span class="text-3xl">{{ $t("dialogs.upload.release") }}</span>
 					</div>
 					<label
-						class="flex flex-col items-center justify-center hover:text-muted-color-emphasis dark:border-surface-900 dark:hover:bg-surface-900/10 dark:hover:border-surface-950 border shadow cursor-pointer h-1/2 rounded-2xl p-6"
+						class="flex flex-col w-full items-center justify-center hover:text-muted-color-emphasis dark:border-surface-900 dark:hover:bg-surface-900/10 dark:hover:border-surface-950 border shadow cursor-pointer h-1/2 rounded-2xl p-6"
 						for="myFiles"
 					>
 						<h3 class="text-xl text-center">{{ $t("dialogs.upload.select") }}</h3>
 						<em class="italic text-muted-color-emphasis hover:text-muted-color">{{ $t("dialogs.upload.drag") }}</em>
 					</label>
 					<input id="myFiles" type="file" multiple class="hidden" @change="upload" />
-					<div v-if="setup?.can_watermark_optout" class="flex items-center justify-center gap-2 mt-4">
+					<div v-if="setup?.can_watermark_optout" class="flex items-center justify-center gap-2">
 						<label for="watermark-toggle" class="cursor-pointer">{{ $t("dialogs.upload.apply_watermark") }}</label>
 						<InputSwitch id="watermark-toggle" v-model="applyWatermark" :disabled="showCancel" />
 					</div>

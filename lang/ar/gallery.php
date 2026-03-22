@@ -315,6 +315,7 @@ return [
         'apply_renamer' => 'Apply Renamer',
         'apply_renamer_all' => 'Apply Renamer to Selected',
         'upload_photo' => 'رفع صورة',
+        'take_photo' => 'التقاط صورة',
         'import_link' => 'استيراد من الرابط',
         'import_server' => 'Import from Server',
         'import_dropbox' => 'استيراد من Dropbox',
