@@ -12,7 +12,6 @@ use App\Repositories\ConfigManager;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Safe\Exceptions\NetworkException;
 use Safe\Exceptions\UrlException;
-
 use function Safe\inet_pton;
 use function Safe\parse_url;
 
