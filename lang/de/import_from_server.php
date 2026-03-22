@@ -6,17 +6,17 @@ return [
     | Import from Server
     |--------------------------------------------------------------------------
     */
-    'title' => 'Synchronize your server files',
-    'description' => 'Synchronize your server files with Lychee. This will import photos from a directory and all children directories. This process is very slow and we recommend using workers and queues in order to avoid timeout.',
-    'sync' => 'Synchronize',
-    'loading' => 'Loading...',
-    'selected_directory' => 'Current selected directory:',
-    'resync_metadata' => "Re-sync metadata of existing files.",
-    'delete_imported' => "Delete the original files.",
-    'import_via_symlink' => "Import photos via symlink instead of copying the files.",
-    'skip_duplicates' => "Skip photos and albums if they already exist in the gallery.",
-    'delete_missing_photos' => "Delete photos in the album that are not present in the synced directory.",
-    'delete_missing_albums' => "Delete albums in the parent album that are not present in the synced directory.",
-    'importing_please_be_patient' => 'Importing, please be patient...',
+    'title' => 'Server-Dateien synchronisieren',
+    'description' => 'Synchronisieren Sie Ihre Server-Dateien mit Lychee. Dies importiert Fotos aus einem Verzeichnis und allen Unterverzeichnissen. Dieser Vorgang ist sehr langsam; wir empfehlen die Nutzung von Workern und Queues (Warteschlangen), um Zeitüberschreitungen (Timeouts) zu vermeiden.',
+    'sync' => 'Synchronisieren',
+    'loading' => 'Lade...',
+    'selected_directory' => 'Aktuell ausgewähltes Verzeichnis:',
+    'resync_metadata' => 'Metadaten bestehender Dateien erneut synchronisieren.',
+    'delete_imported' => 'Originaldateien nach dem Import löschen.',
+    'import_via_symlink' => 'Fotos via Symlink importieren (statt die Dateien zu kopieren).',
+    'skip_duplicates' => 'Fotos und Alben überspringen, wenn sie bereits in der Galerie existieren.',
+    'delete_missing_photos' => 'Fotos im Album löschen, die im synchronisierten Verzeichnis nicht vorhanden sind.',
+    'delete_missing_albums' => 'Alben im übergeordneten Album löschen, die im synchronisierten Verzeichnis nicht vorhanden sind.',
+    'importing_please_be_patient' => 'Import läuft, bitte haben Sie etwas Geduld...',
 ];
 

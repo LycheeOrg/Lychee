@@ -7,10 +7,10 @@ return [
     */
     'title' => 'Teilen',
     'info' => 'Diese Seite bietet einen Überblick über die mit den Alben verbundenen Freigabeberechtigungen und die Möglichkeit, diese zu bearbeiten.',
-    'album_title' => 'Album Titel',
+    'album_title' => 'Albumtitel',
     'username' => 'Benutzername',
     'no_data' => 'Die Freigabeliste ist leer.',
-    'share' => 'Teile',
+    'share' => 'Teilen',
     'add_new_access_permission' => 'Eine neue Zugangsberechtigung hinzufügen',
     'permission_deleted' => 'Berechtigung gelöscht!',
     'permission_created' => 'Berechtigung erstellt!',
