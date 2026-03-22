@@ -2,6 +2,7 @@ import { Ref, ref } from "vue";
 
 type Callbacks = {
 	toggleUpload: () => void;
+	toggleCameraCapture: () => void;
 	toggleImportFromLink: () => void;
 	toggleCreateAlbum: () => void;
 	toggleCreateTagAlbum: () => void;
@@ -17,6 +18,11 @@ export function useContextMenuAlbumsAdd(callbacks: Callbacks, dropbox_api_key: R
 				label: "gallery.menus.upload_photo",
 				icon: "pi pi-upload",
 				callback: callbacks.toggleUpload,
+			},
+			{
+				label: "gallery.menus.take_photo",
+				icon: "pi pi-camera",
+				callback: callbacks.toggleCameraCapture,
 			},
 			{
 				is_divider: true,

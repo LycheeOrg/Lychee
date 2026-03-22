@@ -124,6 +124,13 @@ return [
         'failed_error' => 'Upload failed. The server returned an error!',
         'apply_watermark' => 'Apply watermark',
     ],
+    'camera' => [
+        'title' => 'Take a Photo',
+        'capture' => 'Capture',
+        'retake' => 'Retake',
+        'upload' => 'Upload',
+        'secure_connection_required' => 'Camera access requires a secure connection (HTTPS or localhost). Please access Lychee via https:// or http://localhost.',
+    ],
     'visibility' => [
         'public' => 'Public',
         'public_expl' => 'Anonymous users can access this album, subject to the restrictions below.',

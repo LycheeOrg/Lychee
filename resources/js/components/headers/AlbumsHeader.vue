@@ -158,14 +158,22 @@ const { is_login_open, is_upload_visible, is_create_album_visible, is_create_tag
 
 const router = useRouter();
 
-const { toggleCreateAlbum, toggleCreateTagAlbum, toggleImportFromLink, toggleImportFromDropbox, toggleUpload, toggleImportFromServer } =
-	useGalleryModals(togglableStore);
+const {
+	toggleCreateAlbum,
+	toggleCreateTagAlbum,
+	toggleImportFromLink,
+	toggleImportFromDropbox,
+	toggleUpload,
+	toggleImportFromServer,
+	toggleCameraCapture,
+} = useGalleryModals(togglableStore);
 
 const is_owner = computed(() => albumsStore.rootRights?.can_import_from_server ?? false);
 
 const { addmenu, addMenu } = useContextMenuAlbumsAdd(
 	{
 		toggleUpload: toggleUpload,
+		toggleCameraCapture: toggleCameraCapture,
 		toggleCreateAlbum: toggleCreateAlbum,
 		toggleImportFromLink: toggleImportFromLink,
 		toggleImportFromDropbox: toggleImportFromDropbox,

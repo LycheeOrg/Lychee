@@ -149,12 +149,14 @@ const {
 	is_import_from_server_open,
 	toggleImportFromDropbox,
 	toggleUpload,
+	toggleCameraCapture,
 } = useGalleryModals(togglableStore);
 
 const is_owner = computed(() => timelineStore.rootRights?.can_import_from_server === true);
 const { addmenu, addMenu } = useContextMenuAlbumsAdd(
 	{
 		toggleUpload: toggleUpload,
+		toggleCameraCapture: toggleCameraCapture,
 		toggleCreateAlbum: toggleCreateAlbum,
 		toggleImportFromLink: toggleImportFromLink,
 		toggleImportFromDropbox: toggleImportFromDropbox,
