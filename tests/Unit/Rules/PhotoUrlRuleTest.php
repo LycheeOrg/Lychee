@@ -19,7 +19,9 @@
 namespace Tests\Unit\Rules;
 
 use App\Models\Configs;
+use App\Repositories\ConfigManager;
 use App\Rules\PhotoUrlRule;
+use Closure;
 use Tests\AbstractTestCase;
 
 class PhotoUrlRuleTest extends AbstractTestCase
@@ -31,7 +33,7 @@ class PhotoUrlRuleTest extends AbstractTestCase
 	public function setUp(): void
 	{
 		parent::setUp();
-		$this->rule = resolve(PhotoUrlRule::class);
+		$this->rule = $this->makeRule();
 		$this->failCalled = false;
 		$this->failMessage = '';
 
@@ -39,6 +41,19 @@ class PhotoUrlRuleTest extends AbstractTestCase
 		Configs::set('import_via_url_forbidden_ports', '1');
 		Configs::set('import_via_url_forbidden_local_ip', '1');
 		Configs::set('import_via_url_forbidden_localhost', '1');
+	}
+
+	/**
+	 * Create a PhotoUrlRule with an optional mock DNS resolver.
+	 *
+	 * @param Closure|null $dns_get_record
+	 */
+	private function makeRule(?Closure $dns_get_record = null): PhotoUrlRule
+	{
+		return new PhotoUrlRule(
+			resolve(ConfigManager::class),
+			$dns_get_record ?? fn (string $hostname, int $type = DNS_A) => [],
+		);
 	}
 
 	public function tearDown(): void
@@ -102,6 +117,10 @@ class PhotoUrlRuleTest extends AbstractTestCase
 	 */
 	public function testHttpsRequiredAndProvided(): void
 	{
+		$this->rule = $this->makeRule(fn (string $hostname, int $type = DNS_A) => match ($type) {
+			DNS_A => [['ip' => '93.184.216.34']],
+			default => [],
+		});
 		$this->rule->validate('photo_url', 'https://example.com', fn ($m) => $this->m($m));
 		self::assertFalse($this->failCalled);
 		self::assertEquals('', $this->failMessage);
@@ -134,9 +153,11 @@ class PhotoUrlRuleTest extends AbstractTestCase
 	 */
 	public function testAllowedPort(): void
 	{
-		$this->rule->validate('photo_url', 'https://example.com:80', function ($message) {
-			$this->failCalled = true;
+		$this->rule = $this->makeRule(fn (string $hostname, int $type = DNS_A) => match ($type) {
+			DNS_A => [['ip' => '93.184.216.34']],
+			default => [],
 		});
+		$this->rule->validate('photo_url', 'https://example.com:80', fn ($m) => $this->m($m));
 
 		self::assertFalse($this->failCalled);
 		self::assertEquals('', $this->failMessage);
@@ -149,7 +170,7 @@ class PhotoUrlRuleTest extends AbstractTestCase
 	{
 		$this->rule->validate('photo_url', 'https://192.168.1.1', fn ($m) => $this->m($m));
 		self::assertTrue($this->failCalled);
-		self::assertEquals('photo_url must not be a private IP address.', $this->failMessage);
+		self::assertEquals('photo_url must not resolve to a private or reserved IP address.', $this->failMessage);
 	}
 
 	/**
@@ -157,9 +178,43 @@ class PhotoUrlRuleTest extends AbstractTestCase
 	 */
 	public function testForbiddenLocalhost(): void
 	{
+		// Disable private IP check so we specifically test the localhost check.
+		Configs::set('import_via_url_forbidden_local_ip', '0');
+
 		$this->rule->validate('photo_url', 'https://localhost', fn ($m) => $this->m($m));
 		self::assertTrue($this->failCalled);
-		self::assertEquals('photo_url must not be localhost.', $this->failMessage);
+		self::assertEquals('photo_url must not resolve to localhost.', $this->failMessage);
+	}
+
+	/**
+	 * Test that hostnames resolving to private IPs are blocked (DNS rebinding protection).
+	 */
+	public function testForbiddenPrivateIpViaHostname(): void
+	{
+		$this->rule = $this->makeRule(fn (string $hostname, int $type = DNS_A) => match ($type) {
+			DNS_A => [['ip' => '127.0.0.1']],
+			default => [],
+		});
+		$this->rule->validate('photo_url', 'https://evil.example.com/test.jpg', fn ($m) => $this->m($m));
+		self::assertTrue($this->failCalled);
+		self::assertEquals('photo_url must not resolve to a private or reserved IP address.', $this->failMessage);
+	}
+
+	/**
+	 * Test that hostnames resolving to localhost are blocked.
+	 */
+	public function testForbiddenLocalhostViaHostname(): void
+	{
+		$this->rule = $this->makeRule(fn (string $hostname, int $type = DNS_A) => match ($type) {
+			DNS_A => [['ip' => '127.0.0.1']],
+			default => [],
+		});
+
+		Configs::set('import_via_url_forbidden_local_ip', '0');
+
+		$this->rule->validate('photo_url', 'https://evil.example.com/test.jpg', fn ($m) => $this->m($m));
+		self::assertTrue($this->failCalled);
+		self::assertEquals('photo_url must not resolve to localhost.', $this->failMessage);
 	}
 
 	/**
