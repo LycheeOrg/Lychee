@@ -213,7 +213,11 @@ async def _run_detection_job(
             response = await client.post(
                 callback_url,
                 json=payload.model_dump(),
-                headers={"X-API-Key": settings.api_key},
+                headers={
+                    "X-API-Key": settings.api_key,
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                },
                 timeout=30.0,
             )
             response.raise_for_status()
@@ -240,7 +244,11 @@ async def _send_error_callback(photo_id: str, error_code: str, message: str, set
             await client.post(
                 callback_url,
                 json=payload.model_dump(),
-                headers={"X-API-Key": settings.api_key},
+                headers={
+                    "X-API-Key": settings.api_key,
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                },
                 timeout=10.0,
             )
     except Exception:
