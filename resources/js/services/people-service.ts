@@ -10,10 +10,7 @@ const PeopleService = {
 		return axios.get(`${Constants.getApiUrl()}People/${id}`, { data: {} });
 	},
 
-	getPhotos(
-		id: string,
-		page: number = 1,
-	): Promise<AxiosResponse<PaginatedResponse<App.Http.Resources.Models.PhotoResource>>> {
+	getPhotos(id: string, page: number = 1): Promise<AxiosResponse<PaginatedResponse<App.Http.Resources.Models.PhotoResource>>> {
 		return axios.get(`${Constants.getApiUrl()}People/${id}/photos`, { params: { page }, data: {} });
 	},
 
@@ -21,10 +18,7 @@ const PeopleService = {
 		return axios.post(`${Constants.getApiUrl()}People`, { name });
 	},
 
-	update(
-		id: string,
-		data: { name?: string; is_searchable?: boolean },
-	): Promise<AxiosResponse<App.Http.Resources.Models.PersonResource>> {
+	update(id: string, data: { name?: string; is_searchable?: boolean }): Promise<AxiosResponse<App.Http.Resources.Models.PersonResource>> {
 		return axios.patch(`${Constants.getApiUrl()}People/${id}`, data);
 	},
 

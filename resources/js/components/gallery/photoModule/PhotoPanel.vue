@@ -28,11 +28,11 @@
 			<Overlay v-if="!is_exif_disabled && photoStore.imageViewMode !== ImageViewMode.Pdf" />
 			<PhotoRatingOverlay />
 			<FaceOverlay
-				v-if="photoStore.photo.faces && photoStore.photo.faces.length > 0 || photoStore.photo.hidden_face_count > 0"
+				v-if="(photoStore.photo.faces && photoStore.photo.faces.length > 0) || photoStore.photo.hidden_face_count > 0"
 				:faces="photoStore.photo.faces ?? []"
 				:hidden-face-count="photoStore.photo.hidden_face_count ?? 0"
 				:person-names="{}"
-				@faces-updated="photoStore.reload()"
+				@faces-updated="emits('updated')"
 			/>
 			<Dock
 				v-if="albumStore.rights?.can_edit && !is_photo_edit_open"

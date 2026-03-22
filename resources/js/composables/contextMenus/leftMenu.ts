@@ -88,6 +88,12 @@ export function useLeftMenu(
 				route: "/tags",
 			},
 			{
+				label: "people.title",
+				icon: "pi pi-users",
+				access: user.value?.id !== null,
+				route: "/people",
+			},
+			{
 				label: "gallery.favourites",
 				icon: "pi pi-heart",
 				route: "/gallery/favourites",

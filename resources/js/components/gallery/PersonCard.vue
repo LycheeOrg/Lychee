@@ -1,5 +1,8 @@
 <template>
-	<Card class="cursor-pointer hover:shadow-lg transition-shadow duration-200" @click="$router.push({ name: 'person', params: { personId: person.id } })">
+	<Card
+		class="cursor-pointer hover:shadow-lg transition-shadow duration-200"
+		@click="$router.push({ name: 'person', params: { personId: person.id } })"
+	>
 		<template #header>
 			<div class="aspect-square overflow-hidden rounded-t-lg bg-surface-800 flex items-center justify-center">
 				<img
@@ -18,9 +21,7 @@
 			</div>
 		</template>
 		<template #content>
-			<div class="text-sm text-muted-color">
-				{{ person.photo_count }} {{ $t("people.photos_label") }}
-			</div>
+			<div class="text-sm text-muted-color">{{ person.photo_count }} {{ $t("people.photos_label") }}</div>
 		</template>
 	</Card>
 </template>
@@ -33,4 +34,3 @@ defineProps<{
 	person: App.Http.Resources.Models.PersonResource;
 }>();
 </script>
-

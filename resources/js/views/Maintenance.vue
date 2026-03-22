@@ -38,6 +38,7 @@
 		<MaintenanceCleaning path="filesystems.disks.extract-jobs.root" />
 		<MaintenanceCleaning path="filesystems.disks.image-jobs.root" />
 		<MaintenanceCleaning path="filesystems.disks.image-upload.root" />
+		<MaintenanceBulkScanFaces />
 	</div>
 </template>
 <script setup lang="ts">
@@ -59,4 +60,5 @@ import MaintenanceFulfillOrders from "@/components/maintenance/MaintenanceFulfil
 import MaintenanceFulfillPrecompute from "@/components/maintenance/MaintenanceFulfillPrecompute.vue";
 import MaintenanceBackfillAlbumSizes from "@/components/maintenance/MaintenanceBackfillAlbumSizes.vue";
 import MaintenanceFlushQueue from "@/components/maintenance/MaintenanceFlushQueue.vue";
+import MaintenanceBulkScanFaces from "@/components/maintenance/MaintenanceBulkScanFaces.vue";
 </script>

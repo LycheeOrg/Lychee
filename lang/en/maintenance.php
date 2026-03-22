@@ -99,4 +99,7 @@ return [
         'description' => 'Found %d albums without size statistics.<br/><br/>Equivalent to running: php artisan lychee:recompute-album-sizes',
         'button' => 'Compute sizes',
     ],
+    'bulk-scan-faces' => [
+        'description' => 'Queue all photos that have not yet been scanned for facial recognition. Requires the AI Vision service to be running.',
+    ],
 ];

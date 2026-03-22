@@ -13,9 +13,7 @@
 					<i class="pi pi-user text-4xl text-muted-color" />
 				</div>
 			</div>
-			<div class="text-center text-sm text-muted-color">
-				{{ $t("people.confidence") }}: {{ Math.round(face.confidence * 100) }}%
-			</div>
+			<div class="text-center text-sm text-muted-color">{{ $t("people.confidence") }}: {{ Math.round(face.confidence * 100) }}%</div>
 
 			<!-- Suggestions -->
 			<div v-if="face.suggestions.length > 0" class="flex flex-col gap-2">
@@ -29,12 +27,7 @@
 						size="small"
 						@click="selectSuggestion(suggestion)"
 					>
-						<img
-							v-if="suggestion.crop_url"
-							:src="suggestion.crop_url"
-							class="w-6 h-6 rounded-full object-cover mr-1"
-							alt=""
-						/>
+						<img v-if="suggestion.crop_url" :src="suggestion.crop_url" class="w-6 h-6 rounded-full object-cover mr-1" alt="" />
 						{{ suggestion.person_name ?? $t("people.unknown") }}
 						({{ Math.round(suggestion.confidence * 100) }}%)
 					</Button>

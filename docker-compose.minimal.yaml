@@ -46,6 +46,8 @@ x-common-env: &common-env
   SESSION_DRIVER: "${SESSION_DRIVER:-file}"
   SESSION_LIFETIME: "${SESSION_LIFETIME:-120}"
   QUEUE_CONNECTION: "${QUEUE_CONNECTION:-database}"
+  AI_VISION_FACE_API_KEY: "${AI_VISION_API_KEY:-changeme}"
+  AI_VISION_FACE_URL: "http://ai_vision:8000"
 
 services:
   lychee_api:
@@ -122,10 +124,43 @@ services:
         retries: 10
         start_period: 10s
 
+  ai_vision:
+    build:
+      context: ./ai-vision-service
+    container_name: lychee-ai-vision
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    environment:
+      VISION_FACE_LYCHEE_API_URL: "http://lychee_api:8000"
+      VISION_FACE_API_KEY: "${AI_VISION_API_KEY:-changeme}"
+      VISION_FACE_PHOTOS_PATH: "/data/photos"
+      VISION_FACE_STORAGE_PATH: "/data/embeddings"
+      VISION_FACE_WORKERS: "${AI_VISION_WORKERS:-1}"
+    volumes:
+      - ./lychee/uploads:/data/photos:ro
+      - ai_vision_embeddings:/data/embeddings
+    networks:
+      - lychee
+    depends_on:
+      lychee_api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
 networks:
     lychee:
 
 volumes:
     mysql:
         name: lychee_prod_mysql
+        driver: local
+    ai_vision_embeddings:
+        name: lychee_ai_vision_embeddings
         driver: local

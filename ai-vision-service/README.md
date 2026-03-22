@@ -59,8 +59,7 @@ All variables are prefixed `VISION_FACE_`.
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
 | `VISION_FACE_LYCHEE_API_URL` | Yes | — | Lychee base URL for callbacks |
-| `VISION_FACE_API_KEY` | Yes | — | API key expected on inbound requests from Lychee |
-| `VISION_FACE_LYCHEE_API_KEY` | Yes | — | API key sent on outbound callbacks to Lychee |
+| `VISION_FACE_API_KEY` | Yes | — | Shared API key: validated on inbound requests from Lychee, and sent on outbound callbacks to Lychee |
 | `VISION_FACE_MODEL_NAME` | No | `buffalo_l` | InsightFace model pack |
 | `VISION_FACE_DETECTION_THRESHOLD` | No | `0.5` | Confidence filter for detected faces |
 | `VISION_FACE_MATCH_THRESHOLD` | No | `0.5` | Cosine-similarity cutoff for selfie matching |
@@ -108,7 +107,6 @@ docker build -t lychee-ai-vision .
 docker run --rm \
   -e VISION_FACE_LYCHEE_API_URL=http://lychee \
   -e VISION_FACE_API_KEY=changeme \
-  -e VISION_FACE_LYCHEE_API_KEY=changeme \
   -v /path/to/photos:/data/photos:ro \
   -v ai-vision-embeddings:/data/embeddings \
   -p 8000:8000 \

@@ -261,7 +261,7 @@ _Last updated: 2026-03-21_
 
 ### I13 – Frontend: People Page
 
-- [ ] T-030-34 – Create People.vue, PeopleService.ts, and PersonCard.vue (UI-030-01).
+- [x] T-030-34 – Create People.vue, PeopleService.ts, and PersonCard.vue (UI-030-01).
   _Intent:_ People page at /people route. Grid of PersonCard components (server-side face crop thumbnail from crop_url, name, photo count). PeopleService: getPeople(), getPerson(), etc. Empty state when no persons exist. Service unavailable state (toast notification). Navigation link in sidebar.
   _Verification commands:_
   - `npm run check`
@@ -269,7 +269,7 @@ _Last updated: 2026-03-21_
 
 ### I14 – Frontend: Person Detail Page
 
-- [ ] T-030-35 – Create PersonDetail.vue (UI-030-02).
+- [x] T-030-35 – Create PersonDetail.vue (UI-030-02).
   _Intent:_ Person detail at /people/:id. Person info header (name, counts, linked user, searchability badge). Paginated photo grid (reuse existing layout components). Action buttons: Edit, Toggle searchable, Merge, Delete. Route registration.
   _Verification commands:_
   - `npm run check`
@@ -277,7 +277,7 @@ _Last updated: 2026-03-21_
 
 ### I15 – Frontend: Face Overlays on Photo Detail
 
-- [ ] T-030-36 – Create FaceOverlay.vue and integrate into photo detail (UI-030-03).
+- [x] T-030-36 – Create FaceOverlay.vue and integrate into photo detail (UI-030-03).
   _Intent:_ Positioned div overlays on photo using bounding box percentages (x, y, width, height as CSS left/top/width/height %). Name label per overlay. "Unknown" for unassigned faces. Non-searchable faces: overlays hidden entirely; display "{N} face(s) hidden for privacy" message when `hidden_face_count > 0` (Q-030-10 resolved). Click unassigned → open assignment modal. Responsive scaling with image container.
   _Verification commands:_
   - `npm run check`
@@ -285,7 +285,7 @@ _Last updated: 2026-03-21_
 
 ### I16 – Frontend: Face Assignment Modal
 
-- [ ] T-030-37 – Create FaceAssignmentModal.vue (UI-030-04).
+- [x] T-030-37 – Create FaceAssignmentModal.vue (UI-030-04).
   _Intent:_ Modal triggered by clicking unassigned face overlay. Face crop preview (from crop_url), confidence display. PrimeVue Dropdown to select existing person (with filter). Text input for new person name. Calls FaceService.assign() on confirm. Refreshes face overlays after success.
   _Verification commands:_
   - `npm run check`
@@ -293,7 +293,7 @@ _Last updated: 2026-03-21_
 
 ### I17 – Frontend: Scan Trigger UI
 
-- [ ] T-030-38 – Add scan trigger buttons to photo/album context menus and admin page (UI-030-05, UI-030-06).
+- [x] T-030-38 – Add scan trigger buttons to photo/album context menus and admin page (UI-030-05, UI-030-06).
   _Intent:_ "Scan for faces" in photo context menu (calls FaceDetectionService.scan). "Scan album" in album context menu. "Bulk scan all photos" in admin Maintenance page. Progress toast during scanning. Graceful handling when service unavailable.
   _Verification commands:_
   - `npm run check`
@@ -301,7 +301,7 @@ _Last updated: 2026-03-21_
 
 ### I18 – Frontend: Selfie Upload Claim
 
-- [ ] T-030-39 – Create SelfieClaimModal.vue and integrate into user profile (UI-030-07, S-030-20, S-030-21, S-030-22).
+- [x] T-030-39 – Create SelfieClaimModal.vue and integrate into user profile (UI-030-07, S-030-20, S-030-21, S-030-22).
   _Intent:_ Modal with file upload area (drag & drop or click) for selfie image. Sends to API-030-13. Displays matching Person result (face crop, name, confidence score). Confirm button links Person to User. Error states: no face detected, no match found, already claimed. "Find me in photos" button on user profile page triggers modal.
   _Verification commands:_
   - `npm run check`
@@ -311,22 +311,22 @@ _Last updated: 2026-03-21_
 
 ### I19 – Documentation & Quality Gate
 
-- [ ] T-030-40 – Update knowledge-map.md with Person/Face models and service integration.
+- [x] T-030-40 – Update knowledge-map.md with Person/Face models and service integration.
   _Intent:_ Add Person, Face to Domain Layer models. Add Python face-recognition service to Dependencies. Add inter-service communication to Architectural Patterns. Add shared Docker volume architecture.
   _Verification commands:_
   - Review documentation for accuracy.
 
-- [ ] T-030-41 – Update database-schema.md with persons and faces tables.
+- [x] T-030-41 – Update database-schema.md with persons and faces tables.
   _Intent:_ Add table definitions (including `crop_token` on faces, `face_suggestions` table, `face_scan_status` on photos), relationships, indexes, and constraints.
   _Verification commands:_
   - Review documentation for accuracy.
 
-- [ ] T-030-42 – Create configure-facial-recognition.md how-to guide.
+- [x] T-030-42 – Create configure-facial-recognition.md how-to guide.
   _Intent:_ Docker setup instructions, shared volume configuration, environment variables, permission modes (open/restricted), service health check, troubleshooting.
   _Verification commands:_
   - Review documentation for accuracy.
 
-- [ ] T-030-43 – Run full quality gate and update roadmap.
+- [x] T-030-43 – Run full quality gate and update roadmap.
   _Intent:_ Run all quality gates across all three codebases. All green. Update roadmap status to Complete.
   _Verification commands:_
   - Python: `cd ai-vision-service && uv run ruff format --check && uv run ruff check && uv run ty check && uv run pytest --cov=app`

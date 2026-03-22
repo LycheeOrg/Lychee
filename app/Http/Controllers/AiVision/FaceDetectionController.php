@@ -154,7 +154,7 @@ class FaceDetectionController extends Controller
 		$album_id = $request->albumId();
 		$batch_size = (int) app(ConfigManager::class)->getValueAsString('ai_vision_face_scan_batch_size');
 
-		$query = Photo::query()->select('id')->whereNull('face_scan_status');
+		$query = Photo::query()->select('id')->whereNull('face_scan_status')->orWhere('face_scan_status', '=', FaceScanStatus::FAILED->value);
 
 		if ($album_id !== null) {
 			$query->whereHas('albums', fn ($q) => $q->where('albums.id', '=', $album_id));

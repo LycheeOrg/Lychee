@@ -20,13 +20,7 @@
 						v-tooltip.bottom="$t('people.person.toggle_searchable')"
 						@click="toggleSearchable"
 					/>
-					<Button
-						icon="pi pi-trash"
-						severity="danger"
-						text
-						v-tooltip.bottom="$t('people.person.delete')"
-						@click="confirmDelete"
-					/>
+					<Button icon="pi pi-trash" severity="danger" text v-tooltip.bottom="$t('people.person.delete')" @click="confirmDelete" />
 				</div>
 			</template>
 		</Toolbar>
@@ -87,7 +81,13 @@
 				<ProgressSpinner class="w-8 h-8" />
 			</div>
 			<div v-if="hasMorePhotos" class="flex justify-center pb-8 mt-4">
-				<Button :label="$t('gallery.load_more') || 'Load more'" severity="secondary" outlined @click="loadMorePhotos" :loading="photosLoadingMore" />
+				<Button
+					:label="$t('gallery.load_more') || 'Load more'"
+					severity="secondary"
+					outlined
+					@click="loadMorePhotos"
+					:loading="photosLoadingMore"
+				/>
 			</div>
 		</template>
 

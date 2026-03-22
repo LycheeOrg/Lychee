@@ -34,6 +34,8 @@ const BasketList = () => import("@/views/webshop/BasketList.vue");
 const CheckoutPage = () => import("@/views/webshop/CheckoutPage.vue");
 const OrderList = () => import("@/views/webshop/OrderList.vue");
 const OrderDownload = () => import("@/views/webshop/OrderDownload.vue");
+const People = () => import("@/views/People.vue");
+const PersonDetail = () => import("@/views/PersonDetail.vue");
 
 const routes_ = [
 	{
@@ -224,6 +226,17 @@ const routes_ = [
 		name: "order",
 		path: "/order/:orderId?/:transactionId?",
 		component: OrderDownload,
+		props: true,
+	},
+	{
+		name: "people",
+		path: "/people",
+		component: People,
+	},
+	{
+		name: "person",
+		path: "/people/:personId",
+		component: PersonDetail,
 		props: true,
 	},
 ];
