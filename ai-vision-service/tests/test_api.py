@@ -72,15 +72,15 @@ def test_match_requires_api_key(client: TestClient) -> None:
 # ---------------------------------------------------------------------------
 
 
-def test_detect_returns_202(client: TestClient, tmp_path: Path) -> None:
+def test_detect_returns_202(client: TestClient, photos_path: Path) -> None:
     """Valid request to POST /detect must return 202 Accepted."""
-    photo = tmp_path / "photo.jpg"
+    photo = photos_path / "photo.jpg"
     photo.touch()
 
     with patch("app.api.routes._run_detection_job") as mock_job:
         response = client.post(
             "/detect",
-            json={"photo_id": "photo-123", "photo_path": str(photo)},
+            json={"photo_id": "photo-123", "photo_path": "photo.jpg"},
             headers={"X-API-Key": "test-api-key"},
         )
     assert response.status_code == 202
@@ -98,24 +98,24 @@ def test_detect_rejects_path_traversal(client: TestClient, tmp_path: Path) -> No
     assert response.status_code == 400
 
 
-def test_detect_rejects_nonexistent_file(client: TestClient, tmp_path: Path) -> None:
+def test_detect_rejects_nonexistent_file(client: TestClient) -> None:
     """photo_path that does not exist must be rejected with 400."""
     response = client.post(
         "/detect",
-        json={"photo_id": "p1", "photo_path": str(tmp_path / "missing.jpg")},
+        json={"photo_id": "p1", "photo_path": "missing.jpg"},
         headers={"X-API-Key": "test-api-key"},
     )
     assert response.status_code == 400
 
 
-def test_detect_background_task_called_with_correct_args(client: TestClient, tmp_path: Path) -> None:
-    photo = tmp_path / "photo.jpg"
+def test_detect_background_task_called_with_correct_args(client: TestClient, photos_path: Path) -> None:
+    photo = photos_path / "photo.jpg"
     photo.touch()
 
     with patch("app.api.routes._run_detection_job") as mock_job:
         client.post(
             "/detect",
-            json={"photo_id": "photo-xyz", "photo_path": str(photo)},
+            json={"photo_id": "photo-xyz", "photo_path": "photo.jpg"},
             headers={"X-API-Key": "test-api-key"},
         )
         args = mock_job.call_args[0]

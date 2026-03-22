@@ -11,6 +11,13 @@ from __future__ import annotations
 import logging
 import warnings
 from concurrent.futures import ThreadPoolExecutor
+from contextlib import asynccontextmanager
+from typing import TYPE_CHECKING, Any
+
+from fastapi import FastAPI
+
+from app.api.routes import router
+from app.config import AppSettings, get_settings
 
 # insightface uses the deprecated SimilarityTransform.estimate() API from scikit-image >=0.26.
 # Suppress until insightface ships a fix upstream.
@@ -20,13 +27,6 @@ warnings.filterwarnings(
     category=FutureWarning,
     module=r"skimage",
 )
-from contextlib import asynccontextmanager
-from typing import TYPE_CHECKING, Any
-
-from fastapi import FastAPI
-
-from app.api.routes import router
-from app.config import AppSettings, get_settings
 
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator
