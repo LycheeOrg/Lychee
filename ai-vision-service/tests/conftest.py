@@ -5,6 +5,7 @@ from __future__ import annotations
 import io
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import asynccontextmanager
+from pathlib import Path
 from typing import TYPE_CHECKING, Any
 from unittest.mock import MagicMock
 
@@ -125,6 +126,13 @@ def client(test_app: FastAPI) -> TestClient:
     """Return a synchronous :class:`TestClient` bound to the test app."""
     with TestClient(test_app) as c:
         return c
+
+
+@pytest.fixture
+def photos_path(test_app: FastAPI) -> Path:
+    """Return the photos_path directory configured in the test app's settings override."""
+    settings: AppSettings = test_app.dependency_overrides[get_settings]()
+    return Path(settings.photos_path)
 
 
 # ---------------------------------------------------------------------------
