@@ -10,19 +10,20 @@ namespace App\Http\Controllers\AiVision;
 
 use App\Enum\FaceScanStatus;
 use App\Http\Requests\Face\BulkScanRequest;
+use App\Http\Requests\Face\FaceDetectionResultsRequest;
 use App\Http\Requests\Face\ScanPhotosRequest;
 use App\Jobs\DispatchFaceScanJob;
 use App\Models\Face;
 use App\Models\FaceSuggestion;
 use App\Models\Photo;
 use App\Repositories\ConfigManager;
-use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use function Safe\base64_decode;
+use Safe\Exceptions\MiscException;
 
 /**
  * Controller for AI Vision face detection scan management.
@@ -46,12 +47,8 @@ class FaceDetectionController extends Controller
 	public function scan(ScanPhotosRequest $request): \Illuminate\Http\Response
 	{
 		$photo_ids = $request->photoIds();
-		$album_id = $request->albumId();
+		$album_id = $request->album()?->id;
 		$force = $request->force();
-
-		if ($photo_ids === null && $album_id === null) {
-			abort(422, 'Either photo_ids or album_id must be provided.');
-		}
 
 		// Collect target photos
 		$query = Photo::query()->select('id');
@@ -67,7 +64,7 @@ class FaceDetectionController extends Controller
 			$query->whereDoesntHave('faces', fn ($q) => $q->whereNotNull('person_id'));
 		}
 
-		$batch_size = (int) app(ConfigManager::class)->getValueAsString('ai_vision_face_scan_batch_size');
+		$batch_size = app(ConfigManager::class)->getValueAsInt('ai_vision_face_scan_batch_size');
 
 		$dispatched = 0;
 		$query->lazyById($batch_size, 'id')->chunk($batch_size)->each(function ($chunk) use (&$dispatched): void {
@@ -96,46 +93,19 @@ class FaceDetectionController extends Controller
 	 *
 	 * @return array<string,array<array{embedding_id:string,lychee_face_id:string}>>
 	 */
-	public function results(Request $request): array
+	public function results(FaceDetectionResultsRequest $request): array
 	{
-		// Validate API key — exclusive auth for this endpoint
-		$expected_key = config('features.ai-vision.face-api-key', '');
-		$provided_key = $request->header('X-API-Key', '');
+		$photo_id = $request->photoId();
 
-		if ($expected_key === '' || $provided_key !== $expected_key) {
-			abort(401, 'Invalid or missing X-API-Key.');
-		}
-
-		$data = $request->validate([
-			'photo_id' => 'required|string|exists:photos,id',
-			'status' => 'required|string|in:success,error',
-			'faces' => 'sometimes|array',
-			'faces.*.x' => 'required_with:faces|numeric',
-			'faces.*.y' => 'required_with:faces|numeric',
-			'faces.*.width' => 'required_with:faces|numeric',
-			'faces.*.height' => 'required_with:faces|numeric',
-			'faces.*.confidence' => 'required_with:faces|numeric',
-			'faces.*.embedding_id' => 'required_with:faces|string',
-			'faces.*.crop' => 'sometimes|string',
-			'faces.*.suggestions' => 'sometimes|array',
-			'faces.*.suggestions.*.lychee_face_id' => 'required|string',
-			'faces.*.suggestions.*.confidence' => 'required|numeric',
-			'error_code' => 'sometimes|string',
-			'message' => 'sometimes|string',
-		]);
-
-		$photo_id = $data['photo_id'];
-
-		if ($data['status'] === 'error') {
+		if ($request->status() === 'error') {
 			Photo::where('id', '=', $photo_id)->update(['face_scan_status' => FaceScanStatus::FAILED->value]);
-			Log::info("FaceDetectionController::results — photo {$photo_id} face scan failed: " . ($data['message'] ?? 'unknown error'));
+			Log::info("FaceDetectionController::results — photo {$photo_id} face scan failed: " . ($request->message() ?? 'unknown error'));
 
 			return ['faces' => []];
 		}
 
 		// Process success payload
-		$incoming_faces = $data['faces'] ?? [];
-		$mapping = $this->processFaceResults($photo_id, $incoming_faces);
+		$mapping = $this->processFaceResults($photo_id, $request->faces());
 
 		Photo::where('id', '=', $photo_id)->update(['face_scan_status' => FaceScanStatus::COMPLETED->value]);
 
@@ -151,8 +121,8 @@ class FaceDetectionController extends Controller
 	 */
 	public function bulkScan(BulkScanRequest $request): \Illuminate\Http\Response
 	{
-		$album_id = $request->albumId();
-		$batch_size = (int) app(ConfigManager::class)->getValueAsString('ai_vision_face_scan_batch_size');
+		$album_id = $request->album()?->id;
+		$batch_size = $request->configs()->getValueAsInt('ai_vision_face_scan_batch_size');
 
 		$query = Photo::query()->select('id')->whereNull('face_scan_status')->orWhere('face_scan_status', '=', FaceScanStatus::FAILED->value);
 
@@ -244,7 +214,7 @@ class FaceDetectionController extends Controller
 				try {
 					$decoded = base64_decode($face_data['crop']);
 					Storage::disk('images')->put($crop_path, $decoded);
-				} catch (\Safe\Exceptions\MiscException) {
+				} catch (MiscException) {
 					$tok = null;
 				}
 			} else {

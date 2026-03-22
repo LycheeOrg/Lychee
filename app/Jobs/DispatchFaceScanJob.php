@@ -17,7 +17,6 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * Dispatches a single photo to the AI Vision Python service for face detection.
@@ -80,7 +79,7 @@ class DispatchFaceScanJob implements ShouldQueue
 				->post($service_url . '/detect', $data);
 
 			if (!$response->successful()) {
-				Log::warning("DispatchFaceScanJob: /detect returned HTTP {$response->status()} for photo {$this->photo_id}.", ['data' => $data,'response' => $response->json()]);
+				Log::warning("DispatchFaceScanJob: /detect returned HTTP {$response->status()} for photo {$this->photo_id}.", ['data' => $data, 'response' => $response->json()]);
 				$photo->face_scan_status = FaceScanStatus::FAILED;
 				$photo->save();
 			}

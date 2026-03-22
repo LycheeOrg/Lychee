@@ -10,10 +10,10 @@ namespace App\Http\Controllers\AiVision;
 
 use App\Http\Requests\Person\ClaimPersonRequest;
 use App\Http\Requests\Person\MergePersonRequest;
+use App\Http\Requests\Person\UnclaimPersonRequest;
 use App\Http\Resources\Models\PersonResource;
 use App\Models\Face;
 use App\Models\Person;
-use App\Repositories\ConfigManager;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 
@@ -29,18 +29,13 @@ class PersonClaimController extends Controller
 	 *
 	 * @return PersonResource
 	 */
-	public function claim(ClaimPersonRequest $_request, string $id): PersonResource
+	public function claim(ClaimPersonRequest $request, string $id): PersonResource
 	{
 		/** @var \App\Models\User $user */
 		$user = Auth::user();
-		$person = Person::findOrFail($id);
+		$person = $request->person();
 
 		if (!$user->may_administrate) {
-			// Check if user claims are allowed
-			if (app(ConfigManager::class)->getValueAsString('ai_vision_face_allow_user_claim') !== '1') {
-				abort(403, 'User claims are not permitted by the administrator.');
-			}
-
 			// Non-admin: conflict if already claimed by another user
 			if ($person->user_id !== null && $person->user_id !== $user->id) {
 				abort(409, 'This person is already claimed by another user.');
@@ -66,15 +61,9 @@ class PersonClaimController extends Controller
 	 * Unclaim a Person — remove the user_id link.
 	 * Only the linked user or admin can unclaim.
 	 */
-	public function unclaim(ClaimPersonRequest $_request, string $id): void
+	public function unclaim(UnclaimPersonRequest $request, string $id): void
 	{
-		/** @var \App\Models\User $user */
-		$user = Auth::user();
-		$person = Person::findOrFail($id);
-
-		if (!$user->may_administrate && $person->user_id !== $user->id) {
-			abort(403, 'Only the linked user or an admin can unclaim this person.');
-		}
+		$person = $request->person();
 
 		$person->user_id = null;
 		$person->save();

@@ -16,7 +16,6 @@ use App\Models\Face;
 use App\Models\Person;
 use App\Repositories\ConfigManager;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -33,19 +32,17 @@ class FaceController extends Controller
 	 */
 	public function assign(AssignFaceRequest $request, string $id): FaceResource
 	{
-		$face = Face::findOrFail($id);
+		$face = $request->face();
 
-		if ($request->personId() !== null) {
-			$face->person_id = $request->personId();
-		} elseif ($request->newPersonName() !== null) {
-			$is_searchable_default = app(ConfigManager::class)->getValueAsString('ai_vision_face_person_is_searchable_default') === '1';
+		if ($request->person() !== null) {
+			$face->person_id = $request->person()->id;
+		} else {
+			$is_searchable_default = app(ConfigManager::class)->getValueAsBool('ai_vision_face_person_is_searchable_default');
 			$person = new Person();
 			$person->name = $request->newPersonName();
 			$person->is_searchable = $is_searchable_default;
 			$person->save();
 			$face->person_id = $person->id;
-		} else {
-			abort(422, 'Either person_id or new_person_name must be provided.');
 		}
 
 		$face->save();
@@ -61,16 +58,9 @@ class FaceController extends Controller
 	 *
 	 * @return FaceResource
 	 */
-	public function toggleDismissed(ToggleDismissedRequest $_request, string $id): FaceResource
+	public function toggleDismissed(ToggleDismissedRequest $request, string $id): FaceResource
 	{
-		$face = Face::with('photo')->findOrFail($id);
-		$user = Auth::user();
-
-		// Check ownership: photo owner or admin
-		if (!($user?->may_administrate === true) && $face->photo->owner_id !== $user?->id) {
-			abort(403, 'Only the photo owner or an admin can dismiss faces.');
-		}
-
+		$face = $request->face();
 		$face->is_dismissed = !$face->is_dismissed;
 		$face->save();
 

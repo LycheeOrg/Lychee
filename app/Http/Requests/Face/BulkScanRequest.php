@@ -9,8 +9,10 @@
 namespace App\Http\Requests\Face;
 
 use App\Http\Requests\BaseApiRequest;
+use App\Models\Album;
 use App\Models\Configs;
 use App\Policies\SettingsPolicy;
+use App\Rules\RandomIDRule;
 use Illuminate\Support\Facades\Gate;
 
 /**
@@ -20,7 +22,7 @@ use Illuminate\Support\Facades\Gate;
  */
 class BulkScanRequest extends BaseApiRequest
 {
-	private ?string $album_id = null;
+	private ?Album $album = null;
 
 	/**
 	 * {@inheritDoc}
@@ -36,7 +38,7 @@ class BulkScanRequest extends BaseApiRequest
 	public function rules(): array
 	{
 		return [
-			'album_id' => 'nullable|string|exists:albums,id',
+			'album_id' => ['nullable', new RandomIDRule(true)],
 		];
 	}
 
@@ -45,11 +47,12 @@ class BulkScanRequest extends BaseApiRequest
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->album_id = $values['album_id'] ?? null;
+		$album_id = $values['album_id'] ?? null;
+		$this->album = $album_id !== null ? Album::findOrFail($album_id) : null;
 	}
 
-	public function albumId(): ?string
+	public function album(): ?Album
 	{
-		return $this->album_id;
+		return $this->album;
 	}
 }

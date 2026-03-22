@@ -34,7 +34,7 @@ class SelfieClaimController extends Controller
 	 *
 	 * @return PersonResource
 	 */
-	public function claimBySelfie(SelfieClaimRequest $request): PersonResource
+	public function claimBySelfie(SelfieClaimRequest $request, ConfigManager $config_manager): PersonResource
 	{
 		/** @var \App\Models\User $user */
 		$user = Auth::user();
@@ -75,7 +75,7 @@ class SelfieClaimController extends Controller
 			abort(404, 'No matching person found for the selfie.');
 		}
 
-		$threshold = (float) app(ConfigManager::class)->getValueAsString('ai_vision_face_selfie_confidence_threshold');
+		$threshold = (float) $config_manager->getValueAsString('ai_vision_face_selfie_confidence_threshold');
 		$best_match = $matches[0];
 
 		if ($best_match['confidence'] < $threshold) {
@@ -102,7 +102,7 @@ class SelfieClaimController extends Controller
 		}
 
 		// Check if user claims are allowed
-		if (!$user->may_administrate && app(ConfigManager::class)->getValueAsString('ai_vision_face_allow_user_claim') !== '1') {
+		if (!$user->may_administrate && !$config_manager->getValueAsBool('ai_vision_face_allow_user_claim')) {
 			abort(403, 'User claims are not permitted by the administrator.');
 		}
 

@@ -26,10 +26,10 @@ x-base-lychee-setup: &base-lychee-setup
   # There are also other images available which uses nginx as a base instead of FrankenPHP:
   # - ghcr.io/lycheeorg/lychee:latest-legacy
   # - ghcr.io/lycheeorg/lychee:edge-legacy
-  image: ghcr.io/lycheeorg/lychee:latest
+  # image: ghcr.io/lycheeorg/lychee:latest
 
   # The following lines are for development purposes only.
-  # image: lychee-frankenphp:latest
+  image: lychee-frankenphp
   # image: lychee-legacy:latest
   # build:
   #   context: ./app
@@ -219,7 +219,7 @@ x-common-env: &common-env
   #
   # For improved reactivity of Lychee we recommend to use a worker.
   # You can use either 'database' or 'redis' as queue driver (but in the later you need to enable redis).
-  # QUEUE_CONNECTION: "${QUEUE_CONNECTION:-database}"
+  QUEUE_CONNECTION: "${QUEUE_CONNECTION:-database}"
 
   # Logging Stuff.
   # LOG_CHANNEL: "${LOG_CHANNEL:-stack}"
@@ -560,23 +560,23 @@ services:
       - "${APP_PORT_AI_FACE:-8001}"
     ports:
       - "${APP_PORT_AI_FACE:-8001}:8000"
-    build:
-      context: ./ai-vision-service
-    container_name: lychee-ai-vision
+    # build:
+    #   context: ./ai-vision-service
+    # container_name: lychee-ai-vision
+    image: lychee-ai-vision
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
     cap_drop:
       - ALL
     environment:
-      VISION_FACE_LYCHEE_API_URL: "http://localhost:443"
+      VISION_FACE_LYCHEE_API_URL: "http://lychee_api:8000"
       VISION_FACE_API_KEY: "${AI_VISION_API_KEY:-changeme}"
       VISION_FACE_PHOTOS_PATH: "/data/photos"
       VISION_FACE_STORAGE_PATH: "/data/embeddings"
       VISION_FACE_WORKERS: "${AI_VISION_WORKERS:-1}"
     volumes:
-      # - ./lychee/uploads:/data/photos:ro
-      - ./public/uploads:/data/photos:ro
+      - ./lychee/uploads:/data/photos:ro
       - ai_vision_embeddings:/data/embeddings
     networks:
       - lychee
