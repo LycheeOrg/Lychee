@@ -20,7 +20,6 @@ from app.main import create_app
 
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator
-    from pathlib import Path
 
     from fastapi import FastAPI
 
