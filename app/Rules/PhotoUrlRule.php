@@ -10,7 +10,10 @@ namespace App\Rules;
 
 use App\Repositories\ConfigManager;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Safe\Exceptions\NetworkException;
 use Safe\Exceptions\UrlException;
+
+use function Safe\inet_pton;
 use function Safe\parse_url;
 
 final class PhotoUrlRule implements ValidationRule
@@ -186,9 +189,19 @@ final class PhotoUrlRule implements ValidationRule
 			return true;
 		}
 
+		$loopback_v6 = inet_pton('::1');
 		foreach ($ips as $ip) {
-			if (str_starts_with($ip, '127.') || $ip === '::1') {
+			if (str_starts_with($ip, '127.')) {
 				return true;
+			}
+
+			try {
+				$ip = inet_pton($ip);
+				if ($ip === $loopback_v6) {
+					return true;
+				}
+			} catch (NetworkException) {
+				return true; // If we can't parse the IP, assume it's invalid and potentially localhost.
 			}
 		}
 
