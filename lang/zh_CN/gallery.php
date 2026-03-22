@@ -317,6 +317,7 @@ return [
         'apply_renamer' => 'Apply Renamer',
         'apply_renamer_all' => 'Apply Renamer to Selected',
         'upload_photo' => '上传照片',
+        'take_photo' => '拍照',
         'import_link' => '从链接导入',
         'import_server' => 'Import from Server',
         'import_dropbox' => '从 Dropbox 导入',

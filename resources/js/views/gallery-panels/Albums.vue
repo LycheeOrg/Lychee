@@ -1,6 +1,7 @@
 <template>
 	<LoadingProgress v-model:loading="albumsStore.isLoading" />
 	<UploadPanel v-if="albumsStore.rootRights?.can_upload" key="upload_modal" @refresh="refresh" />
+	<CameraCapture v-if="albumsStore.rootRights?.can_upload" key="camera_capture_modal" />
 	<KeybindingsHelp v-if="userStore.isLoggedIn" v-model:visible="is_keybindings_help_open" />
 	<AlbumCreateDialog v-if="albumsStore.rootRights?.can_upload" key="create_album_modal" />
 	<AlbumCreateTagDialog v-if="albumsStore.rootRights?.can_upload" key="create_tag_album_modal" />
@@ -216,6 +217,7 @@ import { useMouseEvents } from "@/composables/album/uploadEvents";
 import GalleryFooter from "@/components/footers/GalleryFooter.vue";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import UploadPanel from "@/components/modals/UploadPanel.vue";
+import CameraCapture from "@/components/modals/CameraCapture.vue";
 import AlbumCreateDialog from "@/components/forms/album/AlbumCreateDialog.vue";
 import AlbumCreateTagDialog from "@/components/forms/album/AlbumCreateTagDialog.vue";
 import { useScrollable } from "@/composables/album/scrollable";

@@ -123,6 +123,13 @@ return [
         'failed_error' => 'Error al subir. El servidor devolvió un error!',
         'apply_watermark' => 'Apply watermark',
     ],
+    'camera' => [
+        'title' => 'Tomar una foto',
+        'capture' => 'Capturar',
+        'retake' => 'Repetir',
+        'upload' => 'Subir',
+        'secure_connection_required' => 'El acceso a la cámara requiere una conexión segura (HTTPS o localhost).',
+    ],
     'visibility' => [
         'public' => 'Público',
         'public_expl' => 'Los usuarios anónimos pueden acceder a este álbum, sujeto a las restricciones que se indican a continuación.',

@@ -123,6 +123,13 @@ return [
         'failed_error' => '上传失败。服务器返回错误！',
         'apply_watermark' => 'Apply watermark',
     ],
+    'camera' => [
+        'title' => '拍照',
+        'capture' => '拍摄',
+        'retake' => '重拍',
+        'upload' => '上传',
+        'secure_connection_required' => '访问摄像头需要安全连接（HTTPS 或 localhost）。',
+    ],
     'visibility' => [
         'public' => '公开',
         'public_expl' => '匿名用户可以访问此相册，但受以下限制。',

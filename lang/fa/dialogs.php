@@ -123,6 +123,13 @@ return [
         'failed_error' => 'بارگذاری با بازگرداندن خطا از سمت سرور نا تمام ماند!',
         'apply_watermark' => 'Apply watermark',
     ],
+    'camera' => [
+        'title' => 'گرفتن عکس',
+        'capture' => 'گرفتن',
+        'retake' => 'دوباره بگیر',
+        'upload' => 'بارگذاری',
+        'secure_connection_required' => 'دسترسی به دوربین نیاز به اتصال امن (HTTPS یا localhost) دارد.',
+    ],
     'visibility' => [
         'public' => 'عمومی',
         'public_expl' => 'کاربران ناشناس می‌توانند به این آلبوم دسترسی پیدا کنند، مشروط به محدودیت‌های زیر.',

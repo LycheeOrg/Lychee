@@ -123,6 +123,13 @@ return [
         'failed_error' => 'Upload mislukt. De server gaf een foutmelding terug!',
         'apply_watermark' => 'Apply watermark',
     ],
+    'camera' => [
+        'title' => 'Foto nemen',
+        'capture' => 'Vastleggen',
+        'retake' => 'Opnieuw nemen',
+        'upload' => 'Uploaden',
+        'secure_connection_required' => 'Cameratoegang vereist een beveiligde verbinding (HTTPS of localhost).',
+    ],
     'visibility' => [
         'public' => 'Publiek',
         'public_expl' => 'Anonieme gebruikers kunnen toegang krijgen tot dit album, onderhevig aan de onderstaande beperkingen.',

@@ -316,6 +316,7 @@ return [
         'apply_renamer' => 'Apply Renamer',
         'apply_renamer_all' => 'Apply Renamer to Selected',
         'upload_photo' => 'Качи снимка',
+        'take_photo' => 'Направи снимка',
         'import_link' => 'Импорт от линк',
         'import_server' => 'Импорт от сървър',
         'import_dropbox' => 'Импорт от Dropbox',
