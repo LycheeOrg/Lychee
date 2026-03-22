@@ -56,9 +56,7 @@ import Dialog from "primevue/dialog";
 import { ref, watch, onUnmounted } from "vue";
 import { storeToRefs } from "pinia";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
-import { useI18n } from "vue-i18n";
-
-const { t } = useI18n();
+import { trans } from "laravel-vue-i18n";
 const togglableStore = useTogglablesStateStore();
 const { is_camera_capture_visible, is_upload_visible, list_upload_files } = storeToRefs(togglableStore);
 
@@ -82,7 +80,7 @@ function startCamera() {
 
 	if (!navigator.mediaDevices?.getUserMedia) {
 		cameraLoading.value = false;
-		errorMessage.value = t("dialogs.camera.secure_connection_required");
+		errorMessage.value = trans("dialogs.camera.secure_connection_required");
 		return;
 	}
 
@@ -109,7 +107,7 @@ function startCamera() {
 		.catch(function (e: Error) {
 			if (token !== cameraToken) return;
 			cameraLoading.value = false;
-			errorMessage.value = e.message ?? t("dialogs.camera.secure_connection_required");
+			errorMessage.value = e.message ?? trans("dialogs.camera.secure_connection_required");
 		});
 }
 
