@@ -711,6 +711,36 @@ declare namespace App.Http.Resources.Models {
 		palette: App.Http.Resources.Models.ColourPaletteResource | null;
 		statistics: App.Http.Resources.Models.PhotoStatisticsResource | null;
 		rating: App.Http.Resources.Models.PhotoRatingResource | null;
+		faces: App.Http.Resources.Models.FaceResource[];
+		hidden_face_count: number;
+	};
+	export type FaceSuggestionResource = {
+		suggested_face_id: string;
+		crop_url: string | null;
+		person_name: string | null;
+		confidence: number;
+	};
+	export type FaceResource = {
+		id: string;
+		photo_id: string;
+		person_id: string | null;
+		x: number;
+		y: number;
+		width: number;
+		height: number;
+		confidence: number;
+		is_dismissed: boolean;
+		crop_url: string | null;
+		suggestions: App.Http.Resources.Models.FaceSuggestionResource[];
+	};
+	export type PersonResource = {
+		id: string;
+		name: string;
+		user_id: number | null;
+		is_searchable: boolean;
+		face_count: number;
+		photo_count: number;
+		representative_crop_url: string | null;
 	};
 	export type PhotoStatisticsResource = {
 		visit_count: number;

@@ -27,6 +27,13 @@
 			/>
 			<Overlay v-if="!is_exif_disabled && photoStore.imageViewMode !== ImageViewMode.Pdf" />
 			<PhotoRatingOverlay />
+			<FaceOverlay
+				v-if="photoStore.photo.faces && photoStore.photo.faces.length > 0 || photoStore.photo.hidden_face_count > 0"
+				:faces="photoStore.photo.faces ?? []"
+				:hidden-face-count="photoStore.photo.hidden_face_count ?? 0"
+				:person-names="{}"
+				@faces-updated="photoStore.reload()"
+			/>
 			<Dock
 				v-if="albumStore.rights?.can_edit && !is_photo_edit_open"
 				:is-narrow-menu="photoStore.imageViewMode === ImageViewMode.Pdf"
@@ -49,6 +56,7 @@ import { onMounted } from "vue";
 import NextPrevious from "./NextPrevious.vue";
 import Overlay from "./Overlay.vue";
 import PhotoRatingOverlay from "./PhotoRatingOverlay.vue";
+import FaceOverlay from "./FaceOverlay.vue";
 import PhotoDetails from "@/components/drawers/PhotoDetails.vue";
 import PhotoHeader from "@/components/headers/PhotoHeader.vue";
 import Dock from "./Dock.vue";
