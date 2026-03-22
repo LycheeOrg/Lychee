@@ -10,6 +10,7 @@ namespace App\Http\Controllers\AiVision;
 
 use App\Http\Requests\Person\DestroyPersonRequest;
 use App\Http\Requests\Person\ListPersonsRequest;
+use App\Http\Requests\Person\ShowPersonRequest;
 use App\Http\Requests\Person\StorePersonRequest;
 use App\Http\Requests\Person\UpdatePersonRequest;
 use App\Http\Resources\Models\PersonResource;
@@ -56,17 +57,9 @@ class PeopleController extends Controller
 	 *
 	 * @return PersonResource
 	 */
-	public function show(ListPersonsRequest $_request, string $id): PersonResource
+	public function show(ShowPersonRequest $request): PersonResource
 	{
-		$user = Auth::user();
-		$person = Person::findOrFail($id);
-
-		// Non-admin cannot see non-searchable persons unless they are linked to them
-		if (!($user?->may_administrate === true) && !$person->is_searchable && $person->user_id !== $user?->id) {
-			abort(403);
-		}
-
-		return PersonResource::fromModel($person);
+		return PersonResource::fromModel($request->person());
 	}
 
 	/**
@@ -94,14 +87,9 @@ class PeopleController extends Controller
 	 */
 	public function update(UpdatePersonRequest $request): PersonResource
 	{
-		$person = Person::findOrFail($request->personId());
-		$user = Auth::user();
+		$person = $request->person();
 
-		// For searchability toggle, only the linked user or admin can change
 		if ($request->isSearchable() !== null) {
-			if (!($user?->may_administrate === true) && $person->user_id !== $user?->id) {
-				abort(403);
-			}
 			$person->is_searchable = $request->isSearchable();
 		}
 

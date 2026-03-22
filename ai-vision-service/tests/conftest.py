@@ -34,7 +34,6 @@ def mock_settings() -> AppSettings:
     m = MagicMock(spec=AppSettings)
     m.api_key = "test-api-key"
     m.lychee_api_url = "http://lychee-test"
-    m.lychee_api_key = "test-lychee-key"
     m.photos_path = "/tmp"  # overridden where needed
     m.match_threshold = 0.5
     m.max_faces_per_photo = 10
@@ -110,7 +109,6 @@ def test_app(mock_detector: FaceDetector, mock_store: EmbeddingStore, tmp_path: 
         m = MagicMock(spec=AppSettings)
         m.api_key = "test-api-key"
         m.lychee_api_url = "http://lychee-test"
-        m.lychee_api_key = "test-lychee-key"
         m.photos_path = str(tmp_path)
         m.match_threshold = 0.5
         m.max_faces_per_photo = 10

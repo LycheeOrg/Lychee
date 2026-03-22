@@ -13,6 +13,7 @@ use App\Models\Person;
 use App\Models\Photo;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Controller for listing photos containing faces of a given Person.
@@ -51,7 +52,7 @@ class PersonPhotosController extends Controller
 			$query->where(function ($q) use ($user): void {
 				// Photos in at least one public album (base_albums.is_public = true)
 				$q->whereExists(function ($sub): void {
-					$sub->select(\Illuminate\Support\Facades\DB::raw(1))
+					$sub->select(DB::raw(1))
 						->from('photo_album')
 						->join('base_albums', 'base_albums.id', '=', 'photo_album.album_id')
 						->whereColumn('photo_album.photo_id', 'photos.id')

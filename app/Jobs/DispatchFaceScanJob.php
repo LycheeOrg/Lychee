@@ -17,7 +17,6 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * Dispatches a single photo to the AI Vision Python service for face detection.
@@ -71,17 +70,16 @@ class DispatchFaceScanJob implements ShouldQueue
 			return;
 		}
 
-		$photo_path = Storage::disk($original->storage_disk->value)->path($original->short_path);
-
 		try {
+			$data = [
+				'photo_id' => $this->photo_id,
+				'photo_path' => $original->short_path, // We just send short path. Not that this means that we do not support s3 for facial recognition.
+			];
 			$response = Http::withHeaders(['X-API-Key' => $api_key])
-				->post($service_url . '/detect', [
-					'photo_id' => $this->photo_id,
-					'photo_path' => $photo_path,
-				]);
+				->post($service_url . '/detect', $data);
 
 			if (!$response->successful()) {
-				Log::warning("DispatchFaceScanJob: /detect returned HTTP {$response->status()} for photo {$this->photo_id}.");
+				Log::warning("DispatchFaceScanJob: /detect returned HTTP {$response->status()} for photo {$this->photo_id}.", ['data' => $data, 'response' => $response->json()]);
 				$photo->face_scan_status = FaceScanStatus::FAILED;
 				$photo->save();
 			}

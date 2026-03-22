@@ -63,11 +63,11 @@ async def detect(
     Results are POSTed back to Lychee's results endpoint once detection
     completes.
     """
-    resolved = Path(body.photo_path).resolve()
+    resolved = Path(settings.photos_path.removesuffix("/") + "/" + body.photo_path.removeprefix("/")).resolve()
     photos_root = Path(settings.photos_path).resolve()
 
     if not str(resolved).startswith(str(photos_root) + "/") and resolved != photos_root:
-        raise HTTPException(status_code=400, detail="photo_path is outside the allowed directory")
+        raise HTTPException(status_code=400, detail=f"photo_path {resolved} is outside the allowed directory")
 
     if not resolved.is_file():
         raise HTTPException(status_code=400, detail="photo_path does not exist or is not a file")
@@ -213,7 +213,11 @@ async def _run_detection_job(
             response = await client.post(
                 callback_url,
                 json=payload.model_dump(),
-                headers={"X-API-Key": settings.lychee_api_key},
+                headers={
+                    "X-API-Key": settings.api_key,
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                },
                 timeout=30.0,
             )
             response.raise_for_status()
@@ -240,7 +244,11 @@ async def _send_error_callback(photo_id: str, error_code: str, message: str, set
             await client.post(
                 callback_url,
                 json=payload.model_dump(),
-                headers={"X-API-Key": settings.lychee_api_key},
+                headers={
+                    "X-API-Key": settings.api_key,
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                },
                 timeout=10.0,
             )
     except Exception:

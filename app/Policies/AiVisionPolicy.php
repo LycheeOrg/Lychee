@@ -31,12 +31,14 @@ use App\Repositories\ConfigManager;
 class AiVisionPolicy extends BasePolicy
 {
 	public const CAN_VIEW_PEOPLE = 'canViewPeople';
+	public const CAN_SHOW_PERSON = 'canShowPerson';
 	public const CAN_EDIT_PERSON = 'canEditPerson';
 	public const CAN_ASSIGN_FACE = 'canAssignFace';
 	public const CAN_TRIGGER_SCAN = 'canTriggerScan';
 	public const CAN_CLAIM_PERSON = 'canClaimPerson';
 	public const CAN_MERGE_PERSONS = 'canMergePersons';
 	public const CAN_DISMISS_FACE = 'canDismissFace';
+	public const CAN_CHANGE_PERSON_SEARCHABILITY = 'canChangePersonSearchability';
 
 	/**
 	 * Get the current permission mode from configuration.
@@ -60,6 +62,20 @@ class AiVisionPolicy extends BasePolicy
 			FacePermissionMode::PRIVACY_PRESERVING => false, // admin handled by before()
 			FacePermissionMode::RESTRICTED => false, // admin handled by before()
 		};
+	}
+
+	/**
+	 * View a specific Person record.
+	 * Requires canViewPeople access, plus the person must be searchable or linked to the user.
+	 * Admins always pass via before().
+	 */
+	public function canShowPerson(?User $user, Person $person): bool
+	{
+		if (!$this->canViewPeople($user)) {
+			return false;
+		}
+
+		return $person->is_searchable || $person->user_id === $user?->id;
 	}
 
 	/**
@@ -143,5 +159,14 @@ class AiVisionPolicy extends BasePolicy
 		}
 
 		return $person->user_id === $user->id;
+	}
+
+	/**
+	 * Change the is_searchable flag of a Person.
+	 * Only the person's linked user or admin (via before()) may toggle it.
+	 */
+	public function canChangePersonSearchability(?User $user, Person $person): bool
+	{
+		return $person->user_id === $user?->id;
 	}
 }

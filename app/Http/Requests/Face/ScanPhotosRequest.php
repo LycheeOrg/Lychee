@@ -11,6 +11,7 @@ namespace App\Http\Requests\Face;
 use App\Http\Requests\BaseApiRequest;
 use App\Models\Album;
 use App\Policies\AiVisionPolicy;
+use App\Rules\RandomIDRule;
 use Illuminate\Support\Facades\Gate;
 
 /**
@@ -21,7 +22,7 @@ use Illuminate\Support\Facades\Gate;
 class ScanPhotosRequest extends BaseApiRequest
 {
 	private ?array $photo_ids = null;
-	private ?string $album_id = null;
+	private ?Album $album = null;
 	private bool $force = false;
 
 	/**
@@ -39,10 +40,23 @@ class ScanPhotosRequest extends BaseApiRequest
 	{
 		return [
 			'photo_ids' => 'nullable|array',
-			'photo_ids.*' => 'string|exists:photos,id',
-			'album_id' => 'nullable|string|exists:albums,id',
+			'photo_ids.*' => ['string', new RandomIDRule(false)],
+			'album_id' => ['nullable', new RandomIDRule(true)],
 			'force' => 'sometimes|boolean',
 		];
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function withValidator(\Illuminate\Validation\Validator $validator): void
+	{
+		$validator->after(function (\Illuminate\Validation\Validator $validator): void {
+			$values = $validator->validated();
+			if (($values['photo_ids'] ?? null) === null && ($values['album_id'] ?? null) === null) {
+				$validator->errors()->add('photo_ids', 'Either photo_ids or album_id must be provided.');
+			}
+		});
 	}
 
 	/**
@@ -51,7 +65,8 @@ class ScanPhotosRequest extends BaseApiRequest
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		$this->photo_ids = $values['photo_ids'] ?? null;
-		$this->album_id = $values['album_id'] ?? null;
+		$album_id = $values['album_id'] ?? null;
+		$this->album = $album_id !== null ? Album::findOrFail($album_id) : null;
 		$this->force = isset($values['force']) && static::toBoolean($values['force']);
 	}
 
@@ -63,9 +78,9 @@ class ScanPhotosRequest extends BaseApiRequest
 		return $this->photo_ids;
 	}
 
-	public function albumId(): ?string
+	public function album(): ?Album
 	{
-		return $this->album_id;
+		return $this->album;
 	}
 
 	public function force(): bool
