@@ -191,7 +191,7 @@ class PhotoUrlRuleTest extends AbstractTestCase
 	public function testForbiddenPrivateIpViaHostname(): void
 	{
 		$this->rule = $this->makeRule(fn (string $hostname, int $type = DNS_A) => match ($type) {
-			DNS_A => [['ip' => '127.0.0.1']],
+			DNS_A => [['ip' => '192.168.0.1']],
 			default => [],
 		});
 		$this->rule->validate('photo_url', 'https://evil.example.com/test.jpg', fn ($m) => $this->m($m));
