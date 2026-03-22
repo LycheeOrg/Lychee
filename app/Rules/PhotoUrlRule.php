@@ -9,7 +9,6 @@
 namespace App\Rules;
 
 use App\Repositories\ConfigManager;
-use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Safe\Exceptions\UrlException;
 use function Safe\parse_url;
@@ -17,16 +16,16 @@ use function Safe\parse_url;
 final class PhotoUrlRule implements ValidationRule
 {
 	/**
-	 *
 	 * @param ConfigManager $config_manager
-	 * @param Closure(string $hostname, int $type = ?, array &$authoritative_name_servers = ?, array &$additional_records = ?, bool $raw = ?): array|false $dns_get_record
+	 * @param \Closure      $dns_get_record defaulted to dns_get_record(string $hostname, int $type = ?, array &$authoritative_name_servers = ?, array &$additional_records = ?, bool $raw = ?): array|false
+	 *
 	 * @return void
 	 */
 	public function __construct(
 		private ConfigManager $config_manager,
-		private null|Closure $dns_get_record = null
+		private \Closure|null $dns_get_record = null,
 	) {
-		$this->dns_get_record = $dns_get_record ?? Closure::fromCallable('dns_get_record');
+		$this->dns_get_record = $dns_get_record ?? \Closure::fromCallable('dns_get_record');
 	}
 
 	/**
@@ -118,7 +117,8 @@ final class PhotoUrlRule implements ValidationRule
 	 *
 	 * If the host is already an IP address, return it directly.
 	 *
-	 * @param  string   $host
+	 * @param string $host
+	 *
 	 * @return string[]
 	 */
 	private function resolveHostToIPs(string $host): array
@@ -157,7 +157,8 @@ final class PhotoUrlRule implements ValidationRule
 	/**
 	 * Check if any of the resolved IPs are private or reserved.
 	 *
-	 * @param  string[] $ips
+	 * @param string[] $ips
+	 *
 	 * @return bool
 	 */
 	private function hasPrivateOrReservedIP(array $ips): bool
@@ -174,8 +175,9 @@ final class PhotoUrlRule implements ValidationRule
 	/**
 	 * Check if the host or any resolved IP is localhost.
 	 *
-	 * @param  string   $host
-	 * @param  string[] $ips
+	 * @param string   $host
+	 * @param string[] $ips
+	 *
 	 * @return bool
 	 */
 	private function hasLocalhostIP(string $host, array $ips): bool

@@ -21,7 +21,6 @@ namespace Tests\Unit\Rules;
 use App\Models\Configs;
 use App\Repositories\ConfigManager;
 use App\Rules\PhotoUrlRule;
-use Closure;
 use Tests\AbstractTestCase;
 
 class PhotoUrlRuleTest extends AbstractTestCase
@@ -46,9 +45,9 @@ class PhotoUrlRuleTest extends AbstractTestCase
 	/**
 	 * Create a PhotoUrlRule with an optional mock DNS resolver.
 	 *
-	 * @param Closure|null $dns_get_record
+	 * @param \Closure|null $dns_get_record
 	 */
-	private function makeRule(?Closure $dns_get_record = null): PhotoUrlRule
+	private function makeRule(?\Closure $dns_get_record = null): PhotoUrlRule
 	{
 		return new PhotoUrlRule(
 			resolve(ConfigManager::class),
