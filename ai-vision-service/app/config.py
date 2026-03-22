@@ -20,10 +20,9 @@ class AppSettings(BaseSettings):
     """Lychee instance base URL for callbacks (e.g. ``http://lychee``). No trailing slash."""
 
     api_key: str
-    """API key this service validates on *inbound* requests from Lychee (``X-API-Key`` header)."""
-
-    lychee_api_key: str
-    """API key sent as ``X-API-Key`` on *outbound* callbacks to Lychee."""
+    """Shared API key used in both directions: validated on *inbound* requests from Lychee
+    (``X-API-Key`` header) and sent as ``X-API-Key`` on *outbound* callbacks to Lychee.
+    Must match ``AI_VISION_FACE_API_KEY`` in the Lychee ``.env``."""
 
     # --- Model ---
     model_name: str = "buffalo_l"

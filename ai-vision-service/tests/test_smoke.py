@@ -11,8 +11,7 @@ mock Lychee HTTP server running in a background thread.
 Prerequisites:
   - Docker and docker-compose available in PATH
   - ``docker-compose.minimal.yaml`` with the ``ai-vision`` service block
-  - ``VISION_FACE_API_KEY`` and ``VISION_FACE_LYCHEE_API_KEY`` env vars set
-    (or defaults are used for local testing)
+  - ``VISION_FACE_API_KEY`` env var set (or the default is used for local testing)
 """
 
 from __future__ import annotations

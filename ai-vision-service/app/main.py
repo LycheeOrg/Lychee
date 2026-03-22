@@ -9,7 +9,17 @@ the real InsightFace model.
 from __future__ import annotations
 
 import logging
+import warnings
 from concurrent.futures import ThreadPoolExecutor
+
+# insightface uses the deprecated SimilarityTransform.estimate() API from scikit-image >=0.26.
+# Suppress until insightface ships a fix upstream.
+warnings.filterwarnings(
+    "ignore",
+    message=r"`estimate` is deprecated",
+    category=FutureWarning,
+    module=r"skimage",
+)
 from contextlib import asynccontextmanager
 from typing import TYPE_CHECKING, Any
 
