@@ -6,34 +6,34 @@ return [
     | User Groups page
     |--------------------------------------------------------------------------
     */
-    'title' => 'User Groups',
-    'explanation' => 'User groups allow you to organize users and manage permissions collectively.',
+    'title' => 'Benutzergruppen',
+    'explanation' => 'Benutzergruppen ermöglichen es Ihnen, Benutzer zu organisieren und Berechtigungen gemeinsam zu verwalten.',
 
-    'create_group' => 'Create Group',
-    'edit' => 'Edit',
-    'delete' => 'Delete',
+    'create_group' => 'Gruppe erstellen',
+    'edit' => 'Bearbeiten',
+    'delete' => 'Löschen',
 
-    'loading' => 'Loading groups...',
-    'empty' => 'No groups found.',
+    'loading' => 'Gruppen werden geladen...',
+    'empty' => 'Keine Gruppen gefunden.',
 
-    'add_member' => 'Add member...',
-    'empty_group' => 'This group is empty.',
-    'no_permission_members' => 'You do not have the permission to see the members of this group.',
-    'remove_success' => '%s has been removed from %s.',
+    'add_member' => 'Mitglied hinzufügen...',
+    'empty_group' => 'Diese Gruppe ist leer.',
+    'no_permission_members' => 'Sie haben keine Berechtigung, die Mitglieder dieser Gruppe einzusehen.',
+    'remove_success' => '„%s“ wurde aus „%s“ entfernt.',
 
-    'confirm_delete_header' => 'Delete Group',
-    'confirm_delete_message' => 'Are you sure you want to delete this group?',
-    'cancel' => 'Cancel',
-    'confirm' => 'Delete',
+    'confirm_delete_header' => 'Gruppe löschen',
+    'confirm_delete_message' => 'Sind Sie sicher, dass Sie diese Gruppe löschen möchten?',
+    'cancel' => 'Abbrechen',
+    'confirm' => 'Löschen',
 
     'create' => [
-        'name' => 'Group Name',
-        'description' => 'Description',
-        'users' => 'Users',
-        'cancel' => 'Cancel',
-        'create' => 'Create',
-        'edit' => 'Edit',
+        'name' => 'Gruppenname',
+        'description' => 'Beschreibung',
+        'users' => 'Benutzer',
+        'cancel' => 'Abbrechen',
+        'create' => 'Erstellen',
+        'edit' => 'Bearbeiten',
 
-        'error_name_required' => 'Group name is required.',
+        'error_name_required' => 'Ein Gruppenname ist erforderlich.',
     ]
 ];
