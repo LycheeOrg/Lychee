@@ -9,8 +9,10 @@
 namespace App\Http\Controllers\AiVision;
 
 use App\Http\Requests\Person\ListPersonsRequest;
+use App\Http\Resources\Models\PhotoResource;
 use App\Models\Person;
 use App\Models\Photo;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -29,9 +31,11 @@ class PersonPhotosController extends Controller
 	 * - Authenticated user: photos they own + photos in public albums
 	 * - Guest: photos in public albums only.
 	 *
-	 * @return \Illuminate\Pagination\LengthAwarePaginator<\stdClass>
+	 * Returns the standard Laravel paginator JSON shape: {data, links, meta}.
+	 *
+	 * @return LengthAwarePaginator<PhotoResource>
 	 */
-	public function index(ListPersonsRequest $_request, string $id)
+	public function index(ListPersonsRequest $_request, string $id): LengthAwarePaginator
 	{
 		$user = Auth::user();
 		$person = Person::findOrFail($id);
@@ -42,9 +46,11 @@ class PersonPhotosController extends Controller
 		}
 
 		$query = Photo::query()
-			->select(['photos.id', 'photos.title'])
+			->select('photos.*')
 			->join('faces', 'faces.photo_id', '=', 'photos.id')
 			->where('faces.person_id', '=', $id)
+			->with(['size_variants', 'tags', 'palette', 'statistics', 'rating',
+				'faces.person', 'faces.suggestions.suggestedFace.person'])
 			->orderBy('photos.taken_at', 'desc');
 
 		// Access control: restrict to photos accessible to the current user
@@ -66,6 +72,13 @@ class PersonPhotosController extends Controller
 			});
 		}
 
-		return $query->distinct()->paginate(50);
+		/** @var LengthAwarePaginator<PhotoResource> */
+		return $query->distinct()->paginate(50)->through(
+			fn (Photo $photo) => new PhotoResource(
+				photo: $photo,
+				album_id: null,
+				should_downgrade_size_variants: false,
+			)
+		);
 	}
 }

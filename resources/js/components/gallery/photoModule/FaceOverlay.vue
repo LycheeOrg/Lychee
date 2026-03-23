@@ -40,7 +40,6 @@ import FaceAssignmentModal from "@/components/modals/FaceAssignmentModal.vue";
 const props = defineProps<{
 	faces: App.Http.Resources.Models.FaceResource[];
 	hiddenFaceCount: number;
-	personNames: Record<string, string>;
 }>();
 
 const emits = defineEmits<{
@@ -53,10 +52,7 @@ const selectedFace = ref<App.Http.Resources.Models.FaceResource | undefined>(und
 const visibleFaces = computed(() => props.faces.filter((f) => !f.is_dismissed));
 
 function faceLabel(face: App.Http.Resources.Models.FaceResource): string {
-	if (face.person_id && props.personNames[face.person_id]) {
-		return props.personNames[face.person_id];
-	}
-	return "Unknown";
+	return face.person_name ?? "Unknown";
 }
 
 function openAssignment(face: App.Http.Resources.Models.FaceResource) {

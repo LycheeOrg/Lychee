@@ -1,5 +1,5 @@
 <template>
-	<Dialog v-model:visible="visible" modal :header="$t('people.assignment.title')" pt:root:class="border-none w-full max-w-md">
+	<Dialog v-model:visible="visible" modal :header="$t('people.assignment.title')" pt:root:class="border-none w-full max-w-md" @show="onShow">
 		<div class="flex flex-col gap-4 p-2">
 			<!-- Face crop preview -->
 			<div class="flex justify-center">
@@ -78,7 +78,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref } from "vue";
 import Dialog from "primevue/dialog";
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
@@ -151,11 +151,9 @@ function submit() {
 		});
 }
 
-watch(visible, (newVal) => {
-	if (newVal) {
-		selectedPersonId.value = undefined;
-		newPersonName.value = "";
-		loadPeople();
-	}
-});
+function onShow() {
+	selectedPersonId.value = undefined;
+	newPersonName.value = "";
+	loadPeople();
+}
 </script>

@@ -7,11 +7,11 @@ const PeopleService = {
 	},
 
 	getPerson(id: string): Promise<AxiosResponse<App.Http.Resources.Models.PersonResource>> {
-		return axios.get(`${Constants.getApiUrl()}People/${id}`, { data: {} });
+		return axios.get(`${Constants.getApiUrl()}Person/${id}`, { data: {} });
 	},
 
 	getPhotos(id: string, page: number = 1): Promise<AxiosResponse<PaginatedResponse<App.Http.Resources.Models.PhotoResource>>> {
-		return axios.get(`${Constants.getApiUrl()}People/${id}/photos`, { params: { page }, data: {} });
+		return axios.get(`${Constants.getApiUrl()}Person/${id}/photos`, { params: { page }, data: {} });
 	},
 
 	create(name: string): Promise<AxiosResponse<App.Http.Resources.Models.PersonResource>> {
@@ -19,29 +19,29 @@ const PeopleService = {
 	},
 
 	update(id: string, data: { name?: string; is_searchable?: boolean }): Promise<AxiosResponse<App.Http.Resources.Models.PersonResource>> {
-		return axios.patch(`${Constants.getApiUrl()}People/${id}`, data);
+		return axios.patch(`${Constants.getApiUrl()}Person/${id}`, data);
 	},
 
 	destroy(id: string): Promise<AxiosResponse> {
-		return axios.delete(`${Constants.getApiUrl()}People/${id}`);
+		return axios.delete(`${Constants.getApiUrl()}Person/${id}`);
 	},
 
 	claim(id: string): Promise<AxiosResponse> {
-		return axios.post(`${Constants.getApiUrl()}People/${id}/claim`);
+		return axios.post(`${Constants.getApiUrl()}Person/${id}/claim`);
 	},
 
 	unclaim(id: string): Promise<AxiosResponse> {
-		return axios.delete(`${Constants.getApiUrl()}People/${id}/claim`);
+		return axios.delete(`${Constants.getApiUrl()}Person/${id}/claim`);
 	},
 
 	merge(targetId: string, sourcePersonId: string): Promise<AxiosResponse> {
-		return axios.post(`${Constants.getApiUrl()}People/${targetId}/merge`, { source_person_id: sourcePersonId });
+		return axios.post(`${Constants.getApiUrl()}Person/${targetId}/merge`, { source_person_id: sourcePersonId });
 	},
 
 	claimBySelfie(file: File): Promise<AxiosResponse<App.Http.Resources.Models.PersonResource>> {
 		const form = new FormData();
 		form.append("selfie", file);
-		return axios.post(`${Constants.getApiUrl()}People/claim-by-selfie`, form, {
+		return axios.post(`${Constants.getApiUrl()}Person/claim-by-selfie`, form, {
 			headers: { "Content-Type": "multipart/form-data" },
 		});
 	},

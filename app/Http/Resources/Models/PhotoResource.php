@@ -8,10 +8,12 @@
 
 namespace App\Http\Resources\Models;
 
+use App\Enum\FacePermissionMode;
 use App\Enum\LicenseType;
 use App\Http\Resources\Models\Utils\PreComputedPhotoData;
 use App\Http\Resources\Models\Utils\PreformattedPhotoData;
 use App\Http\Resources\Models\Utils\TimelineData;
+use App\Models\Face;
 use App\Models\Photo;
 use App\Policies\PhotoPolicy;
 use Illuminate\Support\Carbon;
@@ -53,6 +55,9 @@ class PhotoResource extends Data
 
 	public ?PhotoStatisticsResource $statistics = null;
 	public ?PhotoRatingResource $rating = null;
+	/** @var FaceResource[] */
+	public array $faces = [];
+	public int $hidden_face_count = 0;
 
 	public function __construct(Photo $photo, ?string $album_id, bool $should_downgrade_size_variants)
 	{
@@ -94,6 +99,60 @@ class PhotoResource extends Data
 				$photo->rating,
 				request()->configs(),
 			);
+		}
+
+		$this->buildFaceData($photo);
+	}
+
+	/**
+	 * Populate faces[] and hidden_face_count from the photo's detected faces.
+	 *
+	 * Only runs when ai_vision_face_enabled is on and the viewer has permission
+	 * to see face overlays per the ai_vision_face_permission_mode matrix.
+	 * Non-searchable persons are hidden from viewers who are not the linked user;
+	 * they are counted in hidden_face_count instead.
+	 */
+	private function buildFaceData(Photo $photo): void
+	{
+		if (!request()->configs()->getValueAsBool('ai_vision_enabled') ||
+			!request()->configs()->getValueAsBool('ai_vision_face_enabled')) {
+			return;
+		}
+
+		$user = Auth::user();
+		$is_admin = $user?->may_administrate === true;
+
+		// Check per-mode overlay visibility (View face overlays row in permission matrix).
+		$mode = request()->configs()->getValueAsEnum('ai_vision_face_permission_mode', FacePermissionMode::class) ?? FacePermissionMode::RESTRICTED;
+		$can_view_overlays = $is_admin || match ($mode) {
+			FacePermissionMode::PUBLIC => true,
+			FacePermissionMode::PRIVATE => $user !== null,
+			FacePermissionMode::PRIVACY_PRESERVING,
+			FacePermissionMode::RESTRICTED => $user !== null && $photo->owner_id === $user->id,
+		};
+
+		if (!$can_view_overlays) {
+			return;
+		}
+
+		foreach ($photo->faces as $face) {
+			/** @var Face $face */
+			if ($face->is_dismissed) {
+				continue;
+			}
+
+			// Unassigned face or searchable person: always include.
+			if ($face->person_id === null || ($face->person !== null && $face->person->is_searchable)) {
+				$this->faces[] = new FaceResource($face);
+				continue;
+			}
+
+			// Non-searchable person: visible only to the linked user or admin.
+			if ($is_admin || ($user !== null && $face->person?->user_id === $user->id)) {
+				$this->faces[] = new FaceResource($face);
+			} else {
+				$this->hidden_face_count++;
+			}
 		}
 	}
 

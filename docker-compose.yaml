@@ -509,6 +509,22 @@ services:
           - cache:/data:rw
       restart: on-failure:5
 
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      - PMA_HOST=lychee_db
+      - PMA_PORT=3306
+    depends_on:
+        lychee_db:
+          condition: service_healthy
+    networks:
+        - lychee
+    profiles:
+      - phpmyadmin
+
   lychee_db:
       image: mariadb:10
       security_opt:

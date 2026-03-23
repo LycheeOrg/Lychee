@@ -26,6 +26,7 @@ class FaceResource extends Data
 	public float $confidence;
 	public bool $is_dismissed;
 	public ?string $crop_url;
+	public ?string $person_name;
 	/** @var FaceSuggestionResource[] */
 	public array $suggestions;
 
@@ -41,6 +42,7 @@ class FaceResource extends Data
 		$this->confidence = $face->confidence;
 		$this->is_dismissed = $face->is_dismissed;
 		$this->crop_url = $face->crop_url;
+		$this->person_name = $face->person?->name;
 		$this->suggestions = $face->suggestions
 			->map(fn (FaceSuggestion $s) => new FaceSuggestionResource($s))
 			->values()
