@@ -8320,20 +8320,19 @@
         },
         {
             "name": "socialiteproviders/microsoft",
-            "version": "4.8.0",
+            "version": "4.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/SocialiteProviders/Microsoft.git",
-                "reference": "33ac5df3e13e0430bcff04031d606bda88f2b27f"
+                "reference": "1d6af46e96e8dd83a4de0b994cf93dcceeb87ecd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SocialiteProviders/Microsoft/zipball/33ac5df3e13e0430bcff04031d606bda88f2b27f",
-                "reference": "33ac5df3e13e0430bcff04031d606bda88f2b27f",
+                "url": "https://api.github.com/repos/SocialiteProviders/Microsoft/zipball/1d6af46e96e8dd83a4de0b994cf93dcceeb87ecd",
+                "reference": "1d6af46e96e8dd83a4de0b994cf93dcceeb87ecd",
                 "shasum": ""
             },
             "require": {
-                "ext-json": "*",
                 "firebase/php-jwt": "^7.0",
                 "php": "^8.0",
                 "socialiteproviders/manager": "^4.4"
@@ -8367,7 +8366,7 @@
                 "issues": "https://github.com/socialiteproviders/providers/issues",
                 "source": "https://github.com/socialiteproviders/providers"
             },
-            "time": "2026-02-18T14:40:47+00:00"
+            "time": "2026-03-23T02:21:23+00:00"
         },
         {
             "name": "socialiteproviders/nextcloud",
@@ -18248,5 +18247,5 @@
     "platform-overrides": {
         "php": "8.4"
     },
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.9.0"
 }
