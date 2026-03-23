@@ -28,7 +28,7 @@
                 }
             ],
 @endif
-            "tags": [ {!! implode(',', array_map(fn($c) => '"'.$c.'"', $item->category)) !!} ]
+            "tags": [ {{ implode(',', array_map(fn($c) => '"'.$c.'"', $item->category)) }} ]
         }@if($item !== $items->last()),
 @endif
         @endforeach
