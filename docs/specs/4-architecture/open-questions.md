@@ -10,6 +10,34 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 ## Question Details
 
+### ~~Q-030-49: Cluster Storage Model — Resolved~~ ✅ RESOLVED — How Should the Backend Know About Existing Clusters?
+
+**Context:** FR-030-15 and API-030-18/19/20 specify a Cluster Review page. The current spec says `cluster_id` is "derived from the suggestion graph" (connected components of `face_suggestions`). This approach has three fatal flaws: (1) O(V+E) graph traversal per `GET /clusters` request violates NFR-030-02; (2) SHA1-of-sorted-face-IDs IDs are unstable — they change when any face in the cluster is dismissed or assigned, breaking `POST .../clusters/{id}/assign`; (3) pagination over connected components requires materialising all clusters first.
+
+**Option A (Recommended) — `cluster_label` nullable INT column on `faces`**
+- DBSCAN already produces integer labels (0, 1, 2... for clusters; -1 = noise). Persist them directly.
+- `POST /cluster-results` payload carries `{face_id, cluster_label}[]` alongside suggestion pairs; PHP bulk-updates `faces.cluster_label`.
+- `GET /clusters` = standard `GROUP BY cluster_label` SQL with `LIMIT/OFFSET`; composite index on `(cluster_label, person_id, is_dismissed)`.
+- `cluster_id` in the API = `cluster_label` integer (stable between clustering runs).
+- Assign/dismiss = `WHERE cluster_label = ?`.
+- Stale for faces added after last clustering run (they have `cluster_label = NULL` and don't appear until re-cluster). Acceptable — Cluster Review is explicitly post-clustering UX.
+- **One nullable column. No new model. Trivial pagination.**
+
+**Option B — Separate `face_clusters` table + FK on `faces`**
+- `face_clusters`: id (ULID), run_at, size (cached).
+- `faces.cluster_id` FK → `face_clusters.id`.
+- Pros: opaque ULID IDs, can record run timestamp. Cons: extra table + model, more complex ingestion, size cache goes stale on dismiss/assign. Not worth the complexity over A.
+
+**Option C — Keep as-is (on-the-fly BFS/DFS over `face_suggestions`)**
+- Always reflects current suggestion relationships (no staleness).
+- Fatal: O(V+E) per page load, unstable IDs, pagination infeasible. Violates NFR-030-02. **Not viable at scale.**
+
+**Required spec changes if Option A adopted:**
+- `DO-030-02`: add `cluster_label` (nullable INT) to Face
+- `DO-030-06` / migration: add `cluster_label INT NULL` column + composite index `(cluster_label, person_id, is_dismissed)` on `faces`
+- `FR-030-13` (`POST /cluster-results`): body gains `{face_id: str, cluster_label: int | null}[]` alongside suggestion pairs
+- `FR-030-15` / API-030-18/19/20: `cluster_id` = `cluster_label` integer; remove "opaque stable identifier derived from the suggestion graph" language; add note that noisy faces (`cluster_label = NULL`) excluded from Cluster Review
+
 ### ~~Q-030-33: `face_suggestions` Schema Wrong — Face-to-Face, Not Face-to-Person~~ ✅ RESOLVED
 
 **Resolution:** **Option A** — schema changed to `(face_id FK→faces, suggested_face_id FK→faces, confidence)`. Both FKs point to `faces`. Python sends `lychee_face_id` (a Face ID) as the suggestion target — there is no concept of Persons in the Python service, and suggestions may reference unassigned faces (where `person_id IS NULL`). The assignment modal resolves `suggested_face_id → faces → persons` via LEFT JOIN at read time. A unique constraint on `(face_id, suggested_face_id)` prevents duplicate suggestion rows.
@@ -17,6 +45,10 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 **Spec Impact:** Updated DO-030-05 (domain object table and DSL). Updated `SuggestionResult` Pydantic model comment. `face_suggestions` migration will use `suggested_face_id` (FK→faces) instead of `person_id` (FK→persons).
 
 **Resolved:** 2026-03-18
+
+**Resolution: Option A adopted.**  nullable INT column on . Spec updated: DO-030-02, DO-030-07, FR-030-13, FR-030-15, API-030-18/19/20.
+
+**Resolved:** 2026-03-23
 
 ---
 

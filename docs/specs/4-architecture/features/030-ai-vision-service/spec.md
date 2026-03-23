@@ -42,7 +42,7 @@ Affected modules: **Models** (new Person, Face), **Migrations** (new tables + pi
 | ID | Requirement | Success path | Validation path | Failure path | Telemetry & traces | Source |
 |----|-------------|--------------|-----------------|--------------|---------------------|--------|
 | FR-030-01 | System shall store Person records with a name, optional User link (1-1), and a searchability flag. | Person created with name; optionally linked to a User; `is_searchable` defaults to the value of `ai_vision_face_person_is_searchable_default` config (default `true`). | Name must be non-empty string ≤255 chars; user_id must reference existing User and be unique across Person table (1-1). | Return 422 with validation errors. | `person.created`, `person.updated` | Owner directive |
-| FR-030-02 | System shall store Face records linking a detected face region in a Photo to an optional Person, including a server-side crop thumbnail path and a dismissal flag. *(Resolved Q-030-09: server-side crop; Q-030-16: is_dismissed; Q-030-25: crop storage path; Q-030-34: nginx-direct hash path)* | Face created with photo_id, bounding box (x, y, width, height as percentages), confidence score, `crop_token` (random high-entropy token, stored on Face model); crop file stored at `uploads/faces/{token[0:2]}/{token[2:4]}/{token}.jpg` and served directly by nginx (path is unguessable, no app-level auth required); person_id nullable (unassigned); `is_dismissed` defaults to `false`. | photo_id must exist; bounding box values 0.0–1.0; confidence 0.0–1.0. | Return 422; reject invalid photo_id with 404. | `face.created` | Owner directive, Q-030-09, Q-030-16, Q-030-25 |
+| FR-030-02 | System shall store Face records linking a detected face region in a Photo to an optional Person, including a server-side crop thumbnail path and a dismissal flag. The Python service shall filter detections by both confidence and sharpness before sending results to Lychee. *(Resolved Q-030-09: server-side crop; Q-030-16: is_dismissed; Q-030-25: crop storage path; Q-030-34: nginx-direct hash path)* | Face created with photo_id, bounding box (x, y, width, height as percentages), confidence score, `crop_token` (random high-entropy token, stored on Face model); crop file stored at `uploads/faces/{token[0:2]}/{token[2:4]}/{token}.jpg` and served directly by nginx (path is unguessable, no app-level auth required); person_id nullable (unassigned); `is_dismissed` defaults to `false`. Python service filters detections by two thresholds before callback: (a) `VISION_FACE_DETECTION_THRESHOLD` (confidence; default 0.5) — faces below excluded; (b) `VISION_FACE_BLUR_THRESHOLD` (Laplacian variance sharpness score; default `100.0`) — faces whose crop has a Laplacian variance below this value are excluded as too blurry to be usable for recognition. | photo_id must exist; bounding box values 0.0–1.0; confidence 0.0–1.0. | Return 422; reject invalid photo_id with 404. | `face.created` | Owner directive, Q-030-09, Q-030-16, Q-030-25 |
 | FR-030-03 | A Person can appear in multiple Photos (many-to-many through Face). The system shall provide an endpoint to list all photos containing a given Person. | GET endpoint returns paginated photos where at least one Face with matching person_id exists. | person_id must exist; pagination params validated. | 404 if Person not found; empty result set if no faces assigned. | — | Owner directive |
 | FR-030-04 | A Photo can contain multiple Persons. The system shall return all identified Persons when viewing a Photo's details. For non-searchable Persons, face overlays are hidden entirely for unauthorized viewers; a `hidden_face_count` integer is included instead. *(Resolved Q-030-10: hide overlay + count indicator)* | Photo detail response includes `faces` array (only searchable/authorized faces) + `hidden_face_count` (integer, count of suppressed non-searchable faces). | — | Graceful empty array if no faces detected; hidden_face_count = 0 if none suppressed. | — | Owner directive, Q-030-10 |
 | FR-030-05 | Users can link their account to a Person (1-1) via direct claim, and unlink via unclaim. Admins can link/unlink any Person-User pair, overriding user claims. Only one Person per User, one User per Person. *(Resolved Q-030-06: self-identification + admin override; Q-030-21: unclaim endpoint)* | User claims a Person; `person.user_id` set; old claim (if any) cleared. Admin can force-link/unlink any pair. User unclaims via `DELETE /api/v2/Person/{id}/claim`; sets `person.user_id = null`. | user_id unique on persons table; User must exist. Non-admin claim: 409 if Person already claimed by another User; 403 if `ai_vision_face_allow_user_claim` is `false`. Admin claim: overrides existing link; bypasses `ai_vision_face_allow_user_claim`. Unclaim: only linked User or admin. | 409 if Person already claimed (non-admin); 403 if `ai_vision_face_allow_user_claim` is `false` (non-admin); 403 if unclaim caller is not linked User or admin; 422 for validation errors. | `person.claimed`, `person.unclaimed` | Owner directive, Q-030-06, Q-030-21 |
@@ -53,6 +53,9 @@ Affected modules: **Models** (new Person, Face), **Migrations** (new tables + pi
 | FR-030-10 | Users can manually assign/reassign an unassigned Face to a Person, or create a new Person from a Face. Python service provides cluster suggestions for grouping similar faces. *(Resolved Q-030-03: auto-cluster with manual confirmation)* | Face's person_id updated; new Person created if requested. Cluster suggestions displayed as similarity scores in assignment UI. | Face must exist; target Person (if specified) must exist. | 404/422 for invalid references. | `face.assigned` | Owner directive, Q-030-03 |
 | FR-030-11 | Users can merge two Person records (combining all their Face associations). *(Resolved Q-030-22: merge direction — URL {id} = target kept; body source_person_id = source destroyed)* | All Faces of source Person reassigned to target Person (`{id}`); source Person deleted. | Both Persons must exist; user must have edit permission per `ai_vision_face_permission_mode`; body must supply `source_person_id`. | 404 if either Person not found; 403 if unauthorized. | `person.merged` | Owner directive, Q-030-22 |
 | FR-030-12 | Users can upload a selfie photo to claim a Person via face matching. Selfie sent to Python service's dedicated `POST /match` endpoint; image discarded immediately after matching. *(Resolved Q-030-06: selfie-upload claim; Q-030-11: discard after match; Q-030-12: dedicated /match endpoint; Q-030-13: lychee_face_id returned by /match)* | User uploads selfie → Python service `POST /match` returns top-N matches with `lychee_face_id` + confidence → if best match above `ai_vision_face_selfie_confidence_threshold`, Lychee resolves `lychee_face_id → Face → person_id` and links Person to User (same 1-1 rules as FR-030-05). Selfie image deleted after response. | Selfie must contain exactly one detectable face; confidence threshold configurable. | 422 if no face detected in selfie; 404 if no matching Person found; 409 if matched Person already claimed by another User. | `person.selfie_claim_requested`, `person.selfie_claim_matched` | Owner directive, Q-030-06, Q-030-11, Q-030-12, Q-030-13 |
+| FR-030-14 | When Face records are hard-deleted from Lychee (either via admin bulk-dismissed-delete or via cascade when a Photo is deleted), the corresponding embeddings shall also be removed from the Python service's embedding store to prevent stale data from polluting future clustering and suggestion results. | After hard-deleting Face records, Lychee calls Python `DELETE /embeddings` with `{face_ids: [str]}`. Python removes those embeddings from `EmbeddingStore`. The call is best-effort (fire-and-forget via queued job): Lychee proceeds with the deletion regardless of whether the Python service responds. Failures are logged as warnings. | face_ids must be a non-empty list of strings. | If the Python service is unavailable, log warning and continue — do not fail or roll back the Lychee-side deletion. | `face.embeddings_deleted` (with `count`) | Owner directive |
+| FR-030-15 | System shall provide a Cluster Review page where authorized users can browse face clusters produced by DBSCAN (faces grouped by visual similarity, not yet assigned to a Person) and bulk-name or dismiss an entire cluster in one action. | `GET /api/v2/FaceDetection/clusters` returns a paginated list of clusters; each cluster contains a `cluster_id` (integer, equal to `faces.cluster_label`, stable between clustering runs), a list of `FaceResource` items (crop_url, confidence, photo_id), and a `size` count. The page renders face-crop grids grouped by cluster. User can: (a) type a name and click “Create Person & assign all” — creates a new Person and bulk-assigns every face in the cluster to it via `POST /api/v2/FaceDetection/clusters/{cluster_id}/assign`; (b) click “Dismiss cluster” — marks every face `is_dismissed = true` via `POST /api/v2/FaceDetection/clusters/{cluster_id}/dismiss`. | Cluster review page respects `ai_vision_face_permission_mode` (same visibility rules as People page). `cluster_id` must be a valid integer `cluster_label` value with at least one qualifying face. | 404 if `cluster_id` not found; 403 if unauthorized. | `face.cluster_assigned` (with `cluster_id`, `person_id`, `face_count`), `face.cluster_dismissed` (with `cluster_id`, `face_count`) | Owner directive, Q-030-49 |
+| FR-030-13 | Admin can trigger offline DBSCAN face clustering across all stored embeddings to generate cross-photo face suggestion pairs and persist cluster labels on Face records. The Python service exposes `POST /cluster`; Lychee exposes `POST /FaceDetection/cluster-results` to ingest the results. *(Q-030-49)* | Admin calls `POST /api/v2/Maintenance::runFaceClustering` (admin-only) → Lychee calls Python service `POST /cluster` (X-API-Key auth) → Python reads all stored embeddings from `EmbeddingStore`, runs DBSCAN (eps from `VISION_FACE_CLUSTER_EPS` env var, default configurable), generates: (a) `{face_id: str, cluster_label: int}[]` where label = DBSCAN integer label (noise faces omitted); (b) `(face_id, suggested_face_id, confidence)` pairs for every intra-cluster pair using cosine similarity → POSTs both to `POST /api/v2/FaceDetection/cluster-results` (X-API-Key auth) → Lychee: bulk-updates `faces.cluster_label` (all previously clustered faces first reset to NULL, then new labels written); bulk-upserts `face_suggestions` rows (unique on `(face_id, suggested_face_id)`); returns `{faces_labeled: N, suggestions_updated: M}`. Maintenance trigger returns 202 Accepted; clustering runs asynchronously on the Python side. | Python endpoint: X-API-Key required. PHP cluster-results endpoint: X-API-Key required; body: `{labels: [{face_id: str, cluster_label: int}], suggestions: [{face_id: str, suggested_face_id: str, confidence: float}]}`. Both arrays optional (empty array = no-op for that field). Maintenance trigger: admin-only session auth. | 503 if Python service unavailable; 401 for invalid API key; no-op if no embeddings stored (returns `{faces_labeled: 0, suggestions_updated: 0}`). | `face.clustering_triggered`, `face.cluster_labels_written` (with `faces_labeled`), `face.cluster_suggestions_ingested` (with `suggestions_updated`) | Owner directive, Q-030-49 |
 
 ## Non-Functional Requirements
 
@@ -228,6 +231,39 @@ Read via `config('features.ai-vision.face-url')` and `config('features.ai-vision
 +------------------------------------------+
 ```
 
+### Cluster Review Page
+
+```
++------------------------------------------------------------------+
+| Lychee > People > Clusters                         [Run Cluster] |
++------------------------------------------------------------------+
+|  Showing 24 clusters of unassigned faces                         |
++------------------------------------------------------------------+
+|                                                                  |
+|  Cluster #1  (12 faces)                                         |
+|  +------+ +------+ +------+ +------+ +------+  [+7 more]        |
+|  |      | |      | |      | |      | |      |                   |
+|  | crop | | crop | | crop | | crop | | crop |                   |
+|  |      | |      | |      | |      | |      |                   |
+|  +------+ +------+ +------+ +------+ +------+                   |
+|  [ _______________ ]  [Create Person & Assign All]  [Dismiss]   |
+|                                                                  |
+|  Cluster #2  (7 faces)                                          |
+|  +------+ +------+ +------+ +------+ +------+  [+2 more]        |
+|  |      | |      | |      | |      | |      |                   |
+|  | crop | | crop | | crop | | crop | | crop |                   |
+|  |      | |      | |      | |      | |      |                   |
+|  +------+ +------+ +------+ +------+ +------+                   |
+|  [ _______________ ]  [Create Person & Assign All]  [Dismiss]   |
+|                                                                  |
+|  Cluster #3  (3 faces)     · · ·                                |
+|                                                                  |
+|  [Load more clusters]                                           |
++------------------------------------------------------------------+
+```
+
+*Note: "Run Cluster" button triggers `POST /api/v2/Maintenance::runFaceClustering` then refreshes the page. Clusters with faces already assigned to a Person are not shown.*
+
 ## Branch & Scenario Matrix
 
 | Scenario ID | Description / Expected outcome |
@@ -255,6 +291,12 @@ Read via `config('features.ai-vision.face-url')` and `config('features.ai-vision
 | S-030-21 | User uploads selfie with no detectable face → 422 error |
 | S-030-22 | User uploads selfie but no matching Person found → 404, user informed |
 | S-030-23 | Photo uploaded with `ai_vision_face_enabled` → auto-scan job dispatched |
+| S-030-27 | Admin triggers face clustering → Python runs DBSCAN across all stored embeddings → suggestion pairs bulk-upserted into `face_suggestions` → FaceAssignmentModal shows updated suggestions |
+| S-030-28 | Admin hard-deletes all dismissed faces → Lychee deletes Face records → Python `DELETE /embeddings` called with their IDs → embeddings removed from store |
+| S-030-29 | Photo deleted → Face records cascade-deleted → Python `DELETE /embeddings` called → stale embeddings removed |
+| S-030-30 | Face detected in photo with sharpness below `VISION_FACE_BLUR_THRESHOLD` → face excluded from detection callback; not stored in Lychee or embedding store |
+| S-030-31 | Admin opens Cluster Review page → clusters of visually similar unassigned faces displayed → admin names a cluster → new Person created and all faces in cluster assigned |
+| S-030-32 | Admin dismisses an entire cluster from Cluster Review page → all faces in cluster marked `is_dismissed = true` |
 
 ## Test Strategy
 
@@ -272,11 +314,12 @@ Read via `config('features.ai-vision.face-url')` and `config('features.ai-vision
 | ID | Description | Modules |
 |----|-------------|---------|
 | DO-030-01 | `Person` — id, name, user_id (nullable, unique), is_searchable (boolean, default true), timestamps | Models, API, UI |
-| DO-030-02 | `Face` — id, photo_id (FK→photos), person_id (nullable FK→persons), x, y, width, height (float 0.0–1.0), confidence (float 0.0–1.0), is_dismissed (boolean, default false), crop_token (random high-entropy token, nullable; file stored at `uploads/faces/{token[0:2]}/{token[2:4]}/{token}.jpg` and served directly by nginx — path is unguessable, no app-level auth required), timestamps | Models, API, UI |
+| DO-030-02 | `Face` — id, photo_id (FK→photos), person_id (nullable FK→persons), x, y, width, height (float 0.0–1.0), confidence (float 0.0–1.0), is_dismissed (boolean, default false), crop_token (random high-entropy token, nullable; file stored at `uploads/faces/{token[0:2]}/{token[2:4]}/{token}.jpg` and served directly by nginx — path is unguessable, no app-level auth required), cluster_label (nullable INT; DBSCAN cluster assignment written by `POST /FaceDetection/cluster-results`; -1 = DBSCAN noise/outlier stored as NULL; NULL = not yet clustered), timestamps | Models, API, UI |
 | DO-030-03 | `PersonResource` — Spatie Data resource for Person API responses | Resources |
 | DO-030-04 | `FaceResource` — Spatie Data resource for Face API responses (included in PhotoResource). Fields exposed: `id` (Face ID), `photo_id`, `person_id` (nullable), `x`, `y`, `width`, `height` (float 0.0–1.0), `confidence` (float 0.0–1.0), `is_dismissed` (boolean), `crop_url` (computed: `uploads/faces/{token[0:2]}/{token[2:4]}/{token}.jpg`; null if no crop). Embedded `suggestions[]` array — each item: `suggested_face_id`, `crop_url` (suggested face's crop or null), `person_name` (nullable, resolved via LEFT JOIN on persons), `confidence` (float 0.0–1.0). Suggestions always embedded (not lazy-loaded) since they are pre-computed and stored — no N+1 risk. *(Q-030-46)* | Resources |
 | DO-030-05 | `FaceSuggestion` — face_id (FK→faces), suggested_face_id (FK→faces), confidence (float 0.0–1.0); pre-computed similar-face suggestions stored from Python scan callback. Both FKs point to `faces`; the assignment modal JOINs at read time to resolve `suggested_face_id → person_id` (supports unassigned suggestions). Unique constraint on `(face_id, suggested_face_id)`. *(Q-030-33)* | Models, API, UI |
 | DO-030-06 | `photos` table addendum — adds nullable `face_scan_status VARCHAR(16)` column; PHP `ScanStatus` Enum cast. Values: `null` (never scanned), `pending`, `completed`, `failed`. Type chosen for MySQL/PostgreSQL/SQLite portability. *(Q-030-38)* | Models, Migrations |
+| DO-030-07 | `faces` table addendum — adds nullable `cluster_label INT` column (DBSCAN output label; NULL = not yet clustered or noise). Composite index `(cluster_label, person_id, is_dismissed)` on `faces` enables O(index-scan) `GROUP BY cluster_label` pagination for API-030-18. *(Q-030-49)* | Models, Migrations |
 
 ### API Routes / Services
 
@@ -297,9 +340,12 @@ Read via `config('features.ai-vision.face-url')` and `config('features.ai-vision
 | API-030-13 | POST /api/v2/Person/claim-by-selfie | Upload selfie photo, Python service matches against embeddings, link matching Person to current User | Multipart form with image file; **throttle: 5 requests/minute per user** *(Q-030-44)* |
 | API-030-14 | PATCH /api/v2/Face/{id} | Toggle `is_dismissed` flag (dismiss/undismiss a false-positive face) | Auth: photo owner or admin |
 | API-030-15 | DELETE /api/v2/Person/{id}/claim | Remove the User link from a Person (unclaim) | Auth: linked User or admin |
-| API-030-16 | DELETE /api/v2/Face/dismissed | Admin: hard-delete all dismissed faces (is_dismissed = true) and their crop files | Admin-only *(Q-030-43)* |
+| API-030-16 | DELETE /api/v2/Face/dismissed | Admin: hard-delete all dismissed faces (is_dismissed = true), their crop files, and their embeddings (FR-030-14: calls Python `DELETE /embeddings` asynchronously) | Admin-only *(Q-030-43)* |
 | API-030-17 | GET /api/v2/Maintenance::resetStuckFaces | Admin: check — returns count of photos stuck in `pending` longer than `older_than_minutes` (default 60). Follows existing check/do Maintenance pattern. | Admin-only *(Q-030-48)* |
 | API-030-17b | POST /api/v2/Maintenance::resetStuckFaces | Admin: do — reset all `face_scan_status = 'pending'` records older than threshold back to `null`. Body: optional `older_than_minutes` (integer, default 60). | Admin-only *(Q-030-48)* |
+| API-030-18 | GET /api/v2/FaceDetection/clusters | List face clusters using `SELECT cluster_label, COUNT(*) as size FROM faces WHERE cluster_label IS NOT NULL AND person_id IS NULL AND is_dismissed = false GROUP BY cluster_label ORDER BY cluster_label LIMIT/OFFSET`. Paginated; each cluster: `{cluster_id: int, size: int, faces: FaceResource[]}` (faces loaded via separate WHERE cluster_label = ? query, limited to first N for preview). Composite index `(cluster_label, person_id, is_dismissed)` ensures O(index-scan). Respects `ai_vision_face_permission_mode` visibility rules. | Auth per permission mode |
+| API-030-19 | POST /api/v2/FaceDetection/clusters/{cluster_id}/assign | Bulk-assign all qualifying faces (`cluster_label = cluster_id AND person_id IS NULL AND is_dismissed = false`) to a Person (existing `person_id` or new `new_person_name`). Creates Person if `new_person_name` provided. `cluster_id` is the integer `cluster_label` value. | Body: `person_id` or `new_person_name` |
+| API-030-20 | POST /api/v2/FaceDetection/clusters/{cluster_id}/dismiss | Bulk-dismiss all qualifying faces (`cluster_label = cluster_id AND person_id IS NULL AND is_dismissed = false`) by setting `is_dismissed = true`. `cluster_id` is the integer `cluster_label` value. | Auth: photo owner or admin |
 
 ### CLI Commands / Flags
 
@@ -654,6 +700,18 @@ Lychee resolves `lychee_face_id → Face → person_id` to identify the matching
 
 **Health Check:** `GET /health` → `{"status": "ok"}`
 
+**Embedding Deletion (Lychee → Python):** `DELETE /embeddings` *(FR-030-14)*
+```json
+{
+  "face_ids": ["face_abc123", "face_def456"]
+}
+```
+Response (200):
+```json
+{ "deleted_count": 2 }
+```
+Lychee dispatches this call as a fire-and-forget queued job after hard-deleting Face records (dismissed bulk-delete or Photo cascade). The Python service removes the listed embeddings from `EmbeddingStore`; IDs not found are silently ignored. Endpoint authenticated via `X-API-Key`.
+
 ### Python Service Technical Specification
 
 #### Technology Stack
@@ -961,7 +1019,9 @@ CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers ${VI
 | `VISION_FACE_API_KEY` | Yes | — | Shared API key used in both directions: validates inbound `X-API-Key` from Lychee scan requests; also sent as `X-API-Key` on callbacks to Lychee. Must match `AI_VISION_FACE_API_KEY` on the Lychee side. |
 | `VISION_FACE_MODEL_NAME` | No | `buffalo_l` | InsightFace model pack name |
 | `VISION_FACE_DETECTION_THRESHOLD` | No | `0.5` | Bounding box confidence filter — faces below threshold excluded from callback *(Q-030-31)* |
+| `VISION_FACE_BLUR_THRESHOLD` | No | `100.0` | Laplacian variance sharpness filter — faces whose crop Laplacian variance falls below this value are excluded as too blurry for reliable recognition (FR-030-02). Set to `0.0` to disable blur filtering. |
 | `VISION_FACE_MATCH_THRESHOLD` | No | `0.5` | Similarity score cutoff for suggestions and selfie match results *(Q-030-31)* |
+| `VISION_FACE_CLUSTER_EPS` | No | `0.6` | DBSCAN epsilon (maximum cosine distance between embeddings to be considered the same cluster) used by `POST /cluster` (FR-030-13). Lower values → tighter clusters. |
 | `VISION_FACE_RESCAN_IOU_THRESHOLD` | No | `0.5` | IoU threshold for bounding-box matching on re-scan (preserves `person_id`) *(Q-030-35)* |
 | `VISION_FACE_MAX_FACES_PER_PHOTO` | No | `10` | Maximum faces included in the callback payload (top-N by confidence; rest dropped) *(Q-030-39)* |
 | `VISION_FACE_THREAD_POOL_SIZE` | No | `1` | CPU-bound inference thread pool size (`asyncio.run_in_executor`) *(Q-030-26)* |

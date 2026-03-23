@@ -326,12 +326,62 @@ _Last updated: 2026-03-21_
   _Verification commands:_
   - Review documentation for accuracy.
 
-- [x] T-030-43 – Run full quality gate and update roadmap.
-  _Intent:_ Run all quality gates across all three codebases. All green. Update roadmap status to Complete.
+### I20 – Clustering Endpoint: Python `POST /cluster` + PHP Ingestion & Trigger
+
+- [ ] T-030-44 – Implement Python `POST /cluster` endpoint and wire `FaceClusterer` (FR-030-13, S-030-27).
+  _Intent:_ Add `ClusterResponse` Pydantic schema (`{clusters: int, suggestions_generated: int}`) to `app/api/schemas.py`. Add `VISION_FACE_CLUSTER_EPS` (float, default `0.6`) to `AppSettings`. Extend `app/clustering/clusterer.py` with `run_cluster_and_notify(store, lychee_url, api_key)`: read all embeddings, run DBSCAN, generate `(face_id, suggested_face_id, confidence)` pairs within each cluster (cosine similarity as confidence), POST `{suggestions: [...]}` to `{lychee_url}/api/v2/FaceDetection/cluster-results` with `X-API-Key`. Add `POST /cluster` route to `app/api/routes.py` (X-API-Key auth dependency) that calls `run_cluster_and_notify()` and returns `ClusterResponse`. Add unit + integration tests in `tests/test_clustering.py` (mock httpx POST to Lychee).
   _Verification commands:_
-  - Python: `cd ai-vision-service && uv run ruff format --check && uv run ruff check && uv run ty check && uv run pytest --cov=app`
-  - PHP: `vendor/bin/php-cs-fixer fix && php artisan test && make phpstan`
-  - Frontend: `npm run format && npm run check`
+  - `cd ai-vision-service && uv run pytest tests/test_clustering.py`
+  - `uv run ty check`
+  - `uv run ruff check`
+
+- [ ] T-030-45 – Write feature tests and implement PHP `POST /FaceDetection/cluster-results` ingestion endpoint (FR-030-13).
+  _Intent:_ New action `clusterResults` on `FaceDetectionController`: auth via X-API-Key header; validate body `{suggestions: [{face_id, suggested_face_id, confidence}]}`; bulk-upsert `face_suggestions` rows on `(face_id, suggested_face_id)` updating `confidence`; return `{updated_count: N}`. Feature tests: success (suggestions upserted, count returned), invalid API key (401), malformed body (422), unknown face_id (422). Register route in `api_v2.php`.
+  _Verification commands:_
+  - `php artisan test --filter=FaceClusterResultsTest`
+  - `make phpstan`
+
+- [ ] T-030-46 – Write feature tests and implement PHP `POST /Maintenance::runFaceClustering` admin trigger (FR-030-13).
+  _Intent:_ Admin-only Maintenance endpoint following the existing check/do pattern. `POST /api/v2/Maintenance::runFaceClustering`: calls Python service `POST /cluster` via HTTP with `X-API-Key`; returns 202 Accepted on success; returns 503 if Python service is unreachable (NFR-030-03). Feature tests: admin triggers clustering (202), non-admin gets 403, service unavailable (503). Register route in `api_v2.php`.
+  _Verification commands:_
+  - `php artisan test --filter=MaintenanceFaceClusteringTest`
+  - `make phpstan`
+
+### I21 – Embedding Sync on Deletion + Blur Threshold Filtering
+
+- [ ] T-030-47 – Python: `VISION_FACE_BLUR_THRESHOLD` filter in detector (FR-030-02, S-030-30).
+  _Intent:_ Add `VISION_FACE_BLUR_THRESHOLD` (float, default `100.0`) to `AppSettings` in `app/config.py`. In `app/detection/detector.py`, after detecting each face and cropping the bounding-box region, compute its Laplacian variance (`cv2.Laplacian(crop_region, cv2.CV_64F).var()`); discard any face whose variance is below the threshold before adding it to the results list. A value of `0.0` disables the filter (all faces pass). Update `tests/test_detection.py`: verify a synthetic blurry patch (Gaussian blur, variance << threshold) is excluded; verify a sharp patch is retained.
+  _Verification commands:_
+  - `cd ai-vision-service && uv run pytest tests/test_detection.py`
+  - `uv run ty check`
+  - `uv run ruff check`
+
+- [ ] T-030-48 – Python: `DELETE /embeddings` endpoint (FR-030-14, S-030-28, S-030-29).
+  _Intent:_ Add `delete_many(face_ids: list[str]) -> int` to the `EmbeddingStore` protocol in `app/embeddings/store.py` and implement it in both `SQLiteStore` and `PgVectorStore` (ignores unknown IDs silently; returns count of rows actually deleted). Add `DELETE /embeddings` route in `app/api/routes.py` (X-API-Key auth): accepts `{face_ids: list[str]}`, calls `store.delete_many()`, returns `{deleted_count: int}`. Add tests in `tests/test_api.py`: success (returns count), invalid API key (401), empty list (400), IDs not in store (returns `{deleted_count: 0}`).
+  _Verification commands:_
+  - `cd ai-vision-service && uv run pytest tests/test_api.py tests/test_embeddings.py`
+  - `uv run ty check`
+  - `uv run ruff check`
+
+- [ ] T-030-49 – PHP: dispatch embedding deletion after Face hard-deletes (FR-030-14, S-030-28, S-030-29).
+  _Intent:_ Create `DeleteFaceEmbeddingsJob` (implements `ShouldQueue`): accepts `array<string> $faceIds`, calls Python `DELETE /embeddings` via HTTP with `X-API-Key`; catches all exceptions, logs a warning (`Log::warning`), and returns without re-throwing (never fails the queue worker or rolls back the Lychee deletion). Dispatch this job from two trigger points: (1) in `destroyDismissed` action — collect IDs of dismissed faces before deleting them, dispatch job after `Face::where('is_dismissed', true)->delete()`; (2) in a `Face` model observer `deleting` event, or by hooking into the Photo delete pipeline to collect `face_ids` before cascade — dispatch batch job for those IDs. Write feature tests: `DELETE /Face/dismissed` → job dispatched with correct IDs; Photo delete → job dispatched for cascaded faces; Python service unavailable → Lychee deletion succeeds, warning logged.
+  _Verification commands:_
+  - `php artisan test --filter=FaceEmbeddingSyncTest`
+  - `make phpstan`
+
+### I22 – Cluster Review UI: Browse & Bulk-Name/Dismiss Clusters
+
+- [ ] T-030-50 – Write feature tests and implement PHP cluster-review API endpoints (FR-030-15, API-030-18, API-030-19, API-030-20, S-030-31, S-030-32).
+  _Intent:_ `GET /api/v2/FaceDetection/clusters`: query `face_suggestions` graph, derive connected components of unassigned (`person_id IS NULL`) non-dismissed faces using breadth-first traversal; assign each component a deterministic `cluster_id` (SHA1 of sorted face IDs); return paginated `{cluster_id, size, faces: FaceResource[]}`. `POST /api/v2/FaceDetection/clusters/{cluster_id}/assign`: resolve faces in cluster, create Person if `new_person_name` supplied (or use existing `person_id`), bulk `UPDATE faces SET person_id = ? WHERE id IN (...)`, emit `face.cluster_assigned` telemetry, return `{person_id, assigned_count}`. `POST /api/v2/FaceDetection/clusters/{cluster_id}/dismiss`: bulk `UPDATE faces SET is_dismissed = true WHERE id IN (...)`, emit `face.cluster_dismissed`, return `{dismissed_count}`. Feature tests: list clusters (only unassigned non-dismissed faces; already-assigned excluded), assign cluster (new person created + faces linked; existing person used if person_id supplied), dismiss cluster (all faces marked is_dismissed). Test permission mode enforcement (public/restricted at minimum). Register routes in `api_v2.php`.
+  _Verification commands:_
+  - `php artisan test --filter=FaceClusterReviewTest`
+  - `make phpstan`
+
+- [ ] T-030-51 – Create FaceClusters.vue page and wire into navigation (FR-030-15, UI-030-08, S-030-31, S-030-32).
+  _Intent:_ New Vue3 view at `/people/clusters`. Fetches `GET /FaceDetection/clusters` (paginated). Renders a vertical list of cluster cards; each card shows: first 5 face-crop `<img>` thumbnails (from `crop_url`), "+N more" badge when `size > 5`, size badge, a name `InputText`, a "Create Person & Assign All" `Button` (calls `POST /FaceDetection/clusters/{id}/assign` with `new_person_name`; or if person selected from dropdown, uses `person_id`), and a "Dismiss" `Button` (calls `POST /FaceDetection/clusters/{id}/dismiss`). After either action, remove the cluster card from the list without full-page reload. "Run Cluster" `Button` in page header calls `POST /Maintenance::runFaceClustering` then re-fetches clusters. Empty state illustration when no clusters exist. Add `/people/clusters` route to Vue Router and a "Clusters" navigation link under People in the sidebar (visible only when `ai_vision_face_enabled` is true).
+  _Verification commands:_
+  - `npm run check`
+  - `npm run format`
 
 ## Notes / TODOs
 

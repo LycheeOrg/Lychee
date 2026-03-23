@@ -251,7 +251,47 @@ After each increment, verify:
 - _Commands:_ `php artisan test --filter=PersonPhotos`, `make phpstan`
 - _Exit:_ Paginated photos returned; access control respected.
 
-### Phase 3: Frontend (Vue3/TypeScript)
+### I20 – Clustering Endpoint: Python `POST /cluster` + PHP Ingestion & Trigger (≥90 min)
+
+- _Goal:_ Wire up the existing `FaceClusterer` (DBSCAN) to a FastAPI REST endpoint and complete the round-trip: Python runs clustering, posts suggestion pairs to Lychee, Lychee bulk-upserts `face_suggestions`. Admin can trigger clustering via a Maintenance API action.
+- _Preconditions:_ I2 complete (`FaceClusterer` and `EmbeddingStore` implemented); I10 complete (`face_suggestions` table exists, PHP ingestion pipeline in place); I11 complete (Maintenance endpoint pattern established).
+- _Steps:_
+  1. **Python** — Add `ClusterResponse` Pydantic schema (`{clusters: int, suggestions_generated: int}`) to `app/api/schemas.py`. Add `VISION_FACE_CLUSTER_EPS` env var to `AppSettings` (default `0.6`).
+  2. **Python** — Extend `app/clustering/clusterer.py` with `run_cluster_and_notify(store: EmbeddingStore, lychee_url: str, api_key: str) -> ClusterResponse`: reads all embeddings from store, runs DBSCAN, generates `(face_id, suggested_face_id, confidence)` pairs for every pair within the same cluster (cosine similarity as confidence), POSTs `{suggestions: [...]}` to `{lychee_url}/api/v2/FaceDetection/cluster-results` with `X-API-Key` header.
+  3. **Python** — Add `POST /cluster` route to `app/api/routes.py` (X-API-Key auth); calls `run_cluster_and_notify()`; returns `ClusterResponse`. Add unit + integration tests in `tests/test_clustering.py` (mock httpx POST to Lychee).
+  4. **PHP** — Implement `POST /api/v2/FaceDetection/cluster-results` endpoint in `FaceDetectionController` (or a new `FaceClusterResultsController`): auth via X-API-Key, validate body `{suggestions: [{face_id, suggested_face_id, confidence}]}`, bulk-upsert `face_suggestions` rows (upsert on `(face_id, suggested_face_id)`, update `confidence`), return `{updated_count: N}`. Register route.
+  5. **PHP** — Add `POST /api/v2/Maintenance::runFaceClustering` Maintenance endpoint (admin-only, follows existing check/do pattern): calls Python service `POST /cluster` via HTTP, returns 202 Accepted. Register route.
+  6. Write PHP feature tests for cluster-results ingestion (success, invalid API key, malformed body) and for the Maintenance trigger (success, service unavailable 503).
+- _Commands:_ `uv run pytest tests/test_clustering.py`, `php artisan test --filter=FaceCluster`, `make phpstan`
+- _Exit:_ `POST /cluster` on Python service triggers DBSCAN and POSTs pairs to Lychee; `POST /FaceDetection/cluster-results` bulk-upserts face_suggestions; Maintenance trigger returns 202; all tests green.
+
+### I21 – Embedding Sync on Deletion + Blur Threshold Filtering (≈60 min)
+
+- _Goal:_ Prevent stale embeddings from corrupting clustering/suggestions after face hard-deletes; discard blurry faces before they ever reach Lychee.
+- _Preconditions:_ I2 complete (EmbeddingStore implemented); I9 complete (`destroyDismissed` action exists); Photo model cascade delete exists.
+- _Steps:_
+  1. **Python** — Add `VISION_FACE_BLUR_THRESHOLD` (float, default `100.0`) to `AppSettings` in `app/config.py`. In `app/detection/detector.py`, after cropping each detected face region, compute its Laplacian variance using OpenCV/NumPy (`cv2.Laplacian(crop, cv2.CV_64F).var()`); exclude faces whose variance is below `VISION_FACE_BLUR_THRESHOLD`. Also add `VISION_FACE_CLUSTER_EPS` to `AppSettings` (default `0.6`) if not already present from I20.
+  2. **Python** — Add `DELETE /embeddings` route to `app/api/routes.py` (X-API-Key auth): accepts `{face_ids: [str]}`, calls `EmbeddingStore.delete_many(face_ids)`, returns `{deleted_count: int}`. Add `delete_many()` method to the `EmbeddingStore` protocol and both implementations (`SQLiteStore`, `PgVectorStore`). IDs not found are silently ignored.
+  3. **Python** — Add tests: `tests/test_detection.py` — blurry face below threshold not returned; sharp face above threshold returned. `tests/test_api.py` — `DELETE /embeddings` removes embeddings and returns count.
+  4. **PHP** — Create `DeleteFaceEmbeddingsJob` (queued): accepts `array<string> $faceIds`, calls Python `DELETE /embeddings` via HTTP with `X-API-Key`; logs warning on failure, never throws. Dispatch this job **after** `destroyDismissed` deletes Face records (FR-030-14, S-030-28).
+  5. **PHP** — Add `Face` model observer or hook into `Photo` cascade: after a Photo delete triggers Face cascade deletes, collect deleted face IDs and dispatch `DeleteFaceEmbeddingsJob` (S-030-29).
+  6. **PHP** — Write feature tests: `DELETE /Face/dismissed` → embeddings deleted (job dispatched with correct IDs); Photo delete → embeddings deleted; Python unavailable → Lychee deletion still succeeds, warning logged.
+- _Commands:_ `uv run pytest tests/test_detection.py tests/test_api.py`, `php artisan test --filter=FaceEmbeddingSync`, `make phpstan`
+- _Exit:_ Blurry faces never reach Lychee; dismissed/cascade-deleted Face embeddings are removed from the store; service unavailability does not block Lychee-side deletions.
+
+### I22 – Cluster Review UI: Browse & Bulk-Name/Dismiss Clusters (≥90 min)
+
+- _Goal:_ Give authorized users a dedicated page to review DBSCAN-produced face clusters (visually similar unassigned faces) and resolve them in bulk — either creating a Person and assigning all faces in one action, or dismissing the whole cluster as false-positives.
+- _Preconditions:_ I20 complete (`face_suggestions` populated by clustering); I9 complete (dismiss action exists); I7 complete (Person create + face assign available).
+- _Steps:_
+  1. **PHP** — Implement `GET /api/v2/FaceDetection/clusters` (API-030-18): derive clusters from the `face_suggestions` graph using connected-component grouping on unassigned (`person_id IS NULL`) and non-dismissed faces; return paginated list of `{cluster_id, size, faces: FaceResource[]}`. `cluster_id` is a deterministic hash of the sorted face IDs in the component. Respect `ai_vision_face_permission_mode` visibility rules.
+  2. **PHP** — Implement `POST /api/v2/FaceDetection/clusters/{cluster_id}/assign` (API-030-19): resolve cluster faces, create Person if `new_person_name` provided, bulk-update `face.person_id` for all faces in cluster, emit `face.cluster_assigned` telemetry. Return `{person_id, assigned_count}`.
+  3. **PHP** — Implement `POST /api/v2/FaceDetection/clusters/{cluster_id}/dismiss` (API-030-20): bulk-set `is_dismissed = true` for all faces in cluster, emit `face.cluster_dismissed` telemetry. Return `{dismissed_count}`.
+  4. Write feature tests: list clusters (unassigned faces grouped, assigned faces excluded), assign cluster (new person + faces linked), dismiss cluster (all faces dismissed). Test permission mode enforcement.
+  5. **Frontend** — Create `FaceClusters.vue` page at `/people/clusters`. Paginated grid of cluster cards: first 5 face-crop thumbnails + "+N more" overflow badge, cluster size badge, name input, “Create Person & Assign All” button, “Dismiss” button. “Run Cluster” button in page header calls `POST /Maintenance::runFaceClustering` then refreshes. Empty state when no clusters exist.
+  6. Add route `/people/clusters` to Vue Router; add “Clusters” navigation link under People in sidebar.
+- _Commands:_ `php artisan test --filter=FaceClusterReviewTest`, `make phpstan`, `npm run check`
+- _Exit:_ Clusters page shows unassigned face groups; bulk-assign creates Person and links all faces; bulk-dismiss marks all is_dismissed; “Run Cluster” triggers fresh clustering; all tests green.
 
 ### I13 – Frontend: People Page (≈90 min)
 
@@ -381,6 +421,12 @@ After each increment, verify:
 | S-030-24 | I9 | Face dismissed (is_dismissed toggle) |
 | S-030-25 | I9 | Admin hard-deletes all dismissed faces + crop files |
 | S-030-26 | I11 | Admin resets stuck-pending photos via Maintenance endpoint |
+| S-030-27 | I20 | Admin triggers clustering; suggestion pairs ingested into face_suggestions |
+| S-030-28 | I21 | Admin hard-deletes dismissed faces; embeddings deleted from Python store |
+| S-030-29 | I21 | Photo deleted; Face cascade-deleted; embeddings deleted from Python store |
+| S-030-30 | I21 | Blurry face below VISION_FACE_BLUR_THRESHOLD excluded from detection callback |
+| S-030-31 | I22 | Cluster Review page: admin names cluster → Person created, all faces assigned |
+| S-030-32 | I22 | Cluster Review page: admin dismisses cluster → all faces marked is_dismissed |
 
 ## Analysis Gate
 
@@ -388,7 +434,7 @@ _To be completed after spec, plan, and tasks align and before implementation beg
 
 ## Exit Criteria
 
-- [ ] All 19 increments (I1–I19) complete with passing tests.
+- [ ] All 22 increments (I1–I22) complete with passing tests.
 - [ ] PHPStan 0 errors.
 - [ ] php-cs-fixer clean.
 - [ ] npm run check / npm run format clean.
@@ -401,9 +447,7 @@ _To be completed after spec, plan, and tasks align and before implementation beg
 
 ## Follow-ups / Backlog
 
-- Auto-clustering UI — Python service clusters via `POST /cluster` (DBSCAN offline batch); dedicated cluster-review/confirm workflow is a future enhancement beyond manual assignment. *(Q-030-30 resolved)*
 - Face recognition accuracy tuning and confidence threshold configuration (admin UI for `VISION_FACE_DETECTION_THRESHOLD` / `VISION_FACE_MATCH_THRESHOLD`).
 - Notifications when a user is tagged in a new photo.
 - Performance optimisation for large Person/Face datasets (materialized views, caching face counts).
 - GPU acceleration for the Python service (optional CUDA/ROCm support in Dockerfile).
-- Cluster review UI — surface DBSCAN group results for bulk confirmation by admin.
