@@ -152,15 +152,18 @@ function updateFaceOverlay() {
 }
 
 // Re-runs whenever imageEl changes (photo/mode switch) — flush:'post' ensures DOM is ready.
-watchEffect(() => {
-	imageResizeObserver?.disconnect();
-	const img = imageEl.value;
-	if (!img) return;
-	imageResizeObserver = new ResizeObserver(updateFaceOverlay);
-	imageResizeObserver.observe(img);
-	// rAF ensures browser layout is complete (handles both cached and uncached images)
-	requestAnimationFrame(updateFaceOverlay);
-}, { flush: "post" });
+watchEffect(
+	() => {
+		imageResizeObserver?.disconnect();
+		const img = imageEl.value;
+		if (!img) return;
+		imageResizeObserver = new ResizeObserver(updateFaceOverlay);
+		imageResizeObserver.observe(img);
+		// rAF ensures browser layout is complete (handles both cached and uncached images)
+		requestAnimationFrame(updateFaceOverlay);
+	},
+	{ flush: "post" },
+);
 
 onUnmounted(() => imageResizeObserver?.disconnect());
 

@@ -19,6 +19,10 @@ from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request,
 
 from app.api.dependencies import get_detector, get_store, require_api_key
 from app.api.schemas import (
+    ClusterFaceResult,
+    ClusterResponse,
+    DeleteEmbeddingsRequest,
+    DeleteEmbeddingsResponse,
     DetectCallbackPayload,
     DetectCallbackResponse,
     DetectRequest,
@@ -29,6 +33,7 @@ from app.api.schemas import (
     MatchResult,
     SuggestionResult,
 )
+from app.clustering.clusterer import FaceClusterer
 from app.config import AppSettings, get_settings
 from app.detection.cropper import generate_crop
 
@@ -122,6 +127,63 @@ async def match(
     matches = store.similarity_search(best.embedding, settings.match_threshold, limit=10)
 
     return MatchResponse(matches=[MatchResult(lychee_face_id=face_id, confidence=conf) for face_id, conf in matches])
+
+
+# ---------------------------------------------------------------------------
+# DELETE /embeddings
+# ---------------------------------------------------------------------------
+
+
+@router.delete("/embeddings")
+async def delete_embeddings(
+    body: DeleteEmbeddingsRequest,
+    request: Request,
+    _: None = Depends(require_api_key),
+) -> DeleteEmbeddingsResponse:
+    """Delete face embeddings by their Lychee Face IDs.
+
+    Called by Lychee when dismissed faces are permanently removed or when
+    a photo is deleted.
+    """
+    store: EmbeddingStore = get_store(request)
+    deleted = store.delete_many(body.face_ids)
+    return DeleteEmbeddingsResponse(deleted=deleted)
+
+
+# ---------------------------------------------------------------------------
+# POST /cluster
+# ---------------------------------------------------------------------------
+
+
+@router.post("/cluster")
+async def cluster(
+    request: Request,
+    settings: AppSettings = Depends(get_settings),
+    _: None = Depends(require_api_key),
+) -> ClusterResponse:
+    """Run DBSCAN clustering over all stored face embeddings.
+
+    Reads every embedding from the store, clusters them, and returns the
+    per-face cluster assignments. The PHP layer uses these to set
+    ``faces.cluster_label`` for the cluster-review UI.
+    """
+    store: EmbeddingStore = get_store(request)
+    all_embeddings = store.get_all()
+
+    if not all_embeddings:
+        return ClusterResponse(total_faces=0, num_clusters=0, assignments=[])
+
+    clusterer = FaceClusterer(eps=settings.cluster_eps)
+    results = clusterer.cluster(all_embeddings)
+
+    assignments = [ClusterFaceResult(lychee_face_id=fid, cluster_label=label) for fid, label in results]
+    distinct_labels = {label for _, label in results if label != -1}
+
+    return ClusterResponse(
+        total_faces=len(results),
+        num_clusters=len(distinct_labels),
+        assignments=assignments,
+    )
 
 
 # ---------------------------------------------------------------------------

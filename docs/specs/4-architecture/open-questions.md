@@ -6,9 +6,79 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 | Question ID | Feature | Priority | Summary | Status | Opened | Updated |
 |-------------|---------|----------|---------|--------|--------|---------|
-| (none) | — | — | — | — | — | — |
+| *(none)* | | | | | | |
 
 ## Question Details
+
+### ~~Q-030-50: `PersonResource.representative_crop_url` — Selection Rule Unspecified~~ ✅ RESOLVED
+
+**Resolution:** **Options A + C** combined. Default logic uses highest-confidence non-dismissed face (`ORDER BY confidence DESC LIMIT 1`). A `representative_face_id` nullable FK→`faces` ON DELETE SET NULL is also added to the `persons` table (DO-030-08, T-030-53), allowing admins/users to override the representative via `PATCH /Person/{id}`. `PersonResource` uses the FK if set (and the referenced Face has a `crop_token`); otherwise falls back to the highest-confidence SELECT. Captured in DO-030-01, DO-030-03, DO-030-08, T-030-10 (note), T-030-18, T-030-53.
+
+**Context:** DO-030-03 (`PersonResource`) lists `representative_crop_url` as a field. T-030-18 mentions it. The spec has no rule for *which* Face crop is chosen as representative. `PersonCard.vue` uses it as the person's avatar on the People page.
+
+**Impact:** If implementors pick different strategies independently, the result will differ from what product design expects. Affects I6 (FaceResource), I13 (People page thumbnails).
+
+**Option A (Recommended) — highest-confidence face crop**
+- `SELECT crop_token FROM faces WHERE person_id = ? AND is_dismissed = false AND crop_token IS NOT NULL ORDER BY confidence DESC LIMIT 1`
+- Deterministic, stable once detection quality is good, no additional sort column needed.
+
+**Option B — most-recently added face crop**
+- `ORDER BY created_at DESC LIMIT 1`
+- Reflects the latest photo that person appeared in — may be more "current" but less relevant.
+
+**Option C — null until user explicitly sets a representative face**
+- Add a `representative_face_id` nullable FK on `persons` table, set via a new PATCH sub-action.
+- Fully explicit but requires extra migration and UI affordance.
+
+**Affects:** DO-030-03, T-030-18, PersonResource, PersonCard.vue.
+
+---
+
+### ~~Q-030-51: `ai_vision_enabled` / `ai_vision_face_enabled` Gating Hierarchy~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — compound gate. All `ai_vision_face_*` functionality is implicitly gated on `ai_vision_enabled = 1`. Any code path that gates on `ai_vision_face_enabled` must first confirm `ai_vision_enabled = 1`. If `ai_vision_enabled = 0`, all AI Vision endpoints return 503 / UI hides all AI Vision elements, regardless of `ai_vision_face_enabled`. Captured in NFR-030-10 and config table note for `ai_vision_face_enabled`.
+
+**Context:** T-030-12 adds two separate config flags: `ai_vision_enabled` (global feature kill-switch for the whole AI Vision system) and `ai_vision_face_enabled` (specifically enables face detection). T-030-29 fires auto-scan when `ai_vision_face_enabled = 1`, but no task or spec explicitly states that `ai_vision_face_enabled` must ALSO check `ai_vision_enabled` first. An implementor could check only one flag or check both.
+
+**Impact:** If `ai_vision_enabled = 0` but `ai_vision_face_enabled = 1`, undefined behaviour. Affects I8, I9, I10, I17 (every place that gates on the config).
+
+**Option A (Recommended) — `ai_vision_face_enabled` implies `ai_vision_enabled`; guard with both**
+- Any code path that checks `ai_vision_face_enabled` must first confirm `ai_vision_enabled`. Documented as a compound gate in NFR or as a middleware.
+- Spec adds: "All `ai_vision_face_*` functionality is implicitly gated on `ai_vision_enabled = 1`."
+
+**Option B — single flag; remove `ai_vision_enabled`**
+- Since only face detection exists now, `ai_vision_face_enabled` is the only effective toggle. `ai_vision_enabled` is removed or deferred to when a second AI Vision feature ships.
+- Simpler, but loses the global kill-switch if other AI features follow.
+
+**Option C — independent flags; document the combination table**
+- `ai_vision_enabled` controls API availability (503 when off). `ai_vision_face_enabled` controls auto-on-upload and People page visibility. Both can vary independently.
+
+**Affects:** FR-030-08, NFR-030-03, T-030-12, T-030-29, T-030-38, FaceDetectionController, FaceDetectionService.ts.
+
+---
+
+### ~~Q-030-52: Embedding Deletion Dispatch Hook — Observer vs. Photo Pipeline~~ ✅ RESOLVED
+
+**Resolution:** **Option B** — no Face model observer. Two explicit call-sites: (1) `destroyDismissed` action — collect dismissed face IDs before `Face::where('is_dismissed', true)->delete()`, dispatch `DeleteFaceEmbeddingsJob`; (2) `PhotoObserver::deleting` — collect `$photo->faces()->pluck('id')` before cascade, dispatch batch job. Captured in FR-030-14 and T-030-49.
+
+**Context:** T-030-49 (FR-030-14) specifies dispatching `DeleteFaceEmbeddingsJob` when Face records are hard-deleted. The task says "Face model observer `deleting` event, **or** by hooking into the Photo delete pipeline." These are architecturally different:
+
+- **Observer (`deleting`)**: fires per-row; requires N individual event firings for a batch delete; works for both cascade-from-Photo and admin bulk-delete paths uniformly.
+- **Photo pipeline hook**: collects all `face_ids` before the cascade delete, dispatches one batch job; avoids N observer firings but only covers Photo→Face cascade. The admin `destroyDismissed` path still needs its own dispatch.
+
+**Impact:** The observer approach fires for every delete path automatically but causes N jobs for a batch Photo cascade. The pipeline approach is more efficient but duplicates dispatch logic. Affects I21 (PHP `DeleteFaceEmbeddingsJob`), T-030-49.
+
+**Option A (Recommended) — Observer on `deleting`, but coalesce with batch dispatch**
+- Register a `Face` model observer. On `deleting`, collect IDs into a static `$pendingDeletion` buffer. A `deleted` static hook (or `booted` teardown) dispatches one job for the full batch at the end of the request lifecycle. Handles all delete paths without duplicating logic.
+
+**Option B — No observer; explicit dispatch at each call-site**
+- `destroyDismissed`: collects IDs before delete, dispatches one job explicitly.
+- Photo delete: `PhotoObserver::deleting` collects `$photo->faces()->pluck('id')` before cascade, dispatches job.
+- Simpler per-path but requires remembering to add dispatch at every future Face-delete call-site.
+
+**Affects:** FR-030-14, T-030-49, I21, Face model observer, PhotoObserver, `destroyDismissed` action.
+
+---
 
 ### ~~Q-030-49: Cluster Storage Model — Resolved~~ ✅ RESOLVED — How Should the Backend Know About Existing Clusters?
 

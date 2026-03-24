@@ -101,6 +101,31 @@ class PgVectorEmbeddingStore:
                 rows: list[Any] = cur.fetchall()
         return [(row[0], float(row[1])) for row in rows]
 
+    def delete_many(self, lychee_face_ids: list[str]) -> int:
+        """Remove multiple embeddings by Lychee Face ID."""
+        if not lychee_face_ids:
+            return 0
+        with self._lock:
+            conn = self._get_conn()
+            with conn.cursor() as cur:
+                # Use ANY(%s) with a list parameter for batch delete
+                cur.execute(
+                    "DELETE FROM face_embeddings WHERE lychee_face_id = ANY(%s)",
+                    (lychee_face_ids,),
+                )
+                deleted: int = cur.rowcount
+            conn.commit()
+        return deleted
+
+    def get_all(self) -> list[tuple[str, list[float]]]:
+        """Return all stored embeddings as (face_id, embedding) pairs."""
+        with self._lock:
+            conn = self._get_conn()
+            with conn.cursor() as cur:
+                cur.execute("SELECT lychee_face_id, embedding FROM face_embeddings")
+                rows: list[Any] = cur.fetchall()
+        return [(row[0], [float(v) for v in row[1]]) for row in rows]
+
     def count(self) -> int:
         """Return the total number of stored embeddings."""
         with self._lock:

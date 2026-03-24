@@ -12,6 +12,7 @@ use App\Http\Requests\Face\AssignFaceRequest;
 use App\Http\Requests\Face\DestroyDismissedFacesRequest;
 use App\Http\Requests\Face\ToggleDismissedRequest;
 use App\Http\Resources\Models\FaceResource;
+use App\Jobs\DeleteFaceEmbeddingsJob;
 use App\Models\Face;
 use App\Models\Person;
 use App\Repositories\ConfigManager;
@@ -78,6 +79,7 @@ class FaceController extends Controller
 	public function destroyDismissed(DestroyDismissedFacesRequest $_request): array
 	{
 		$dismissed_faces = Face::where('is_dismissed', '=', true)->get();
+		$face_ids = $dismissed_faces->pluck('id')->all();
 		$count = 0;
 
 		foreach ($dismissed_faces as $face) {
@@ -89,6 +91,10 @@ class FaceController extends Controller
 			}
 			$face->delete();
 			$count++;
+		}
+
+		if ($face_ids !== []) {
+			DeleteFaceEmbeddingsJob::dispatch($face_ids);
 		}
 
 		return ['deleted_count' => $count];

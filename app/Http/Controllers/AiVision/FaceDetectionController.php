@@ -10,6 +10,7 @@ namespace App\Http\Controllers\AiVision;
 
 use App\Enum\FaceScanStatus;
 use App\Http\Requests\Face\BulkScanRequest;
+use App\Http\Requests\Face\ClusterResultsRequest;
 use App\Http\Requests\Face\FaceDetectionResultsRequest;
 use App\Http\Requests\Face\ScanPhotosRequest;
 use App\Jobs\DispatchFaceScanJob;
@@ -142,6 +143,40 @@ class FaceDetectionController extends Controller
 		});
 
 		Log::info("FaceDetectionController::bulkScan — dispatched {$dispatched} scans.");
+
+		return response()->noContent(202);
+	}
+
+	/**
+	 * Receive face clustering results callback from the Python service.
+	 * Authentication is exclusively via X-API-Key header; no user session required.
+	 *
+	 * POST /FaceDetection/cluster-results
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+	public function clusterResults(ClusterResultsRequest $request): \Illuminate\Http\Response
+	{
+		DB::transaction(function () use ($request): void {
+			// Reset all existing cluster labels so stale assignments are removed.
+			Face::whereNotNull('cluster_label')->update(['cluster_label' => null]);
+
+			// Apply new cluster labels in bulk.
+			foreach ($request->labels() as $item) {
+				Face::where('id', '=', $item['face_id'])
+					->update(['cluster_label' => $item['cluster_label']]);
+			}
+
+			// Upsert cross-cluster suggestions.
+			foreach ($request->suggestions() as $sug) {
+				FaceSuggestion::updateOrCreate(
+					['face_id' => $sug['face_id'], 'suggested_face_id' => $sug['suggested_face_id']],
+					['confidence' => $sug['confidence']],
+				);
+			}
+		});
+
+		Log::info('FaceDetectionController::clusterResults — updated ' . count($request->labels()) . ' cluster labels.');
 
 		return response()->noContent(202);
 	}

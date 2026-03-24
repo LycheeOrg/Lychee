@@ -83,6 +83,16 @@ class AppSettings(BaseSettings):
     log_level: str = "info"
     """Uvicorn/application log level."""
 
+    # --- Clustering ---
+    cluster_eps: float = 0.6
+    """DBSCAN epsilon (max cosine distance) for face clustering.
+    Lower values produce tighter, more homogeneous clusters."""
+
+    # --- Quality filtering ---
+    blur_threshold: float = 100.0
+    """Laplacian variance threshold for blur detection.
+    Face crops with a variance below this value are discarded before embedding."""
+
     model_config = SettingsConfigDict(
         env_prefix="VISION_FACE_",
         # Support .env files in development but never require them in production.

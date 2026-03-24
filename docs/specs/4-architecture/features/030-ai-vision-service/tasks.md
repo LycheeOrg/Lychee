@@ -77,7 +77,7 @@ _Last updated: 2026-03-21_
 ### I4 – Database Migrations
 
 - [x] T-030-10 – Create `persons` table migration (FR-030-01, S-030-01).
-  _Intent:_ Migration with columns: id (string PK), name (varchar 255), user_id (nullable unsigned int, unique, FK→users ON DELETE SET NULL), is_searchable (boolean default true), timestamps. Index on user_id.
+  _Intent:_ Migration with columns: id (string PK), name (varchar 255), user_id (nullable unsigned int, unique, FK→users ON DELETE SET NULL), is_searchable (boolean default true), timestamps. Index on user_id. **Does not include `representative_face_id`** — that FK references the `faces` table which does not yet exist; it is added in a separate addendum migration (T-030-53, DO-030-08) after `faces` is created, to avoid a circular FK dependency.
   _Verification commands:_
   - `php artisan test`
   _Notes:_ Use string PK consistent with Photo/Album models.
@@ -93,15 +93,21 @@ _Last updated: 2026-03-21_
   _Verification commands:_
   - `php artisan test`
 
+- [x] T-030-53 – Add `representative_face_id` column migration to `persons` table (DO-030-08, Q-030-50).
+  _Intent:_ New migration (runs **after** the `faces` table migration from T-030-11): `ALTER TABLE persons ADD COLUMN representative_face_id VARCHAR(?) NULL`. Add FK constraint: `representative_face_id` → `faces.id` ON DELETE SET NULL. This resolves the circular-FK dependency (persons→faces and faces→persons both require the other table to exist first). Run tests to confirm migration applies cleanly on SQLite.
+  _Verification commands:_
+  - `php artisan test`
+  - `make phpstan`
+
 ### I5 – Eloquent Models & Relationships
 
-- [ ] T-030-13 – Write unit tests for Person model relationships (FR-030-01, FR-030-03, S-030-17).
+- [x] T-030-13 – Write unit tests for Person model relationships (FR-030-01, FR-030-03, S-030-17).
   _Intent:_ Test Person→User (belongsTo), Person→Faces (hasMany), Person→Photos (derived through Face). Test cascade: Photo delete → Face cascade delete. Test Person delete → Face.person_id set to null.
   _Verification commands:_
   - `php artisan test --filter=PersonModelTest`
   - `make phpstan`
 
-- [ ] T-030-14 – Write unit tests for Face model relationships (FR-030-02, FR-030-04).
+- [x] T-030-14 – Write unit tests for Face model relationships (FR-030-02, FR-030-04).
   _Intent:_ Test Face→Photo (belongsTo), Face→Person (belongsTo nullable). Test bounding box validation (0.0–1.0 range). Test `crop_url` accessor (computed from `crop_token`).
   _Verification commands:_
   - `php artisan test --filter=FaceModelTest`
@@ -129,14 +135,14 @@ _Last updated: 2026-03-21_
 ### I6 – Spatie Data Resources
 
 - [x] T-030-18 – Create PersonResource and FaceResource (DO-030-03, DO-030-04, Q-030-46).
-  _Intent:_ PersonResource: `id`, `name`, `user_id`, `is_searchable`, `face_count` (int), `photo_count` (int), `representative_crop_url`. FaceResource per DO-030-04: `id` (Face ID), `photo_id`, `person_id` (nullable), `x`/`y`/`width`/`height` (float 0.0–1.0), `confidence`, `is_dismissed`, `crop_url` (computed from `crop_token`: `uploads/faces/{tok[0:2]}/{tok[2:4]}/{tok}.jpg`; null if no crop). Embedded `suggestions[]` array — each item: `suggested_face_id`, `crop_url` (suggested face's own crop or null), `person_name` (nullable, LEFT JOIN), `confidence`. Suggestions always included (pre-computed from `face_suggestions` table, no N+1 risk). Include FaceResource array in PhotoResource with `hidden_face_count` (int, count of suppressed non-searchable faces — Q-030-10).
+  _Intent:_ PersonResource: `id`, `name`, `user_id`, `is_searchable`, `face_count` (int), `photo_count` (int), `representative_face_id` (nullable string), `representative_crop_url` (nullable string — computed: if `representative_face_id` is set and the referenced Face has a `crop_token`, use that face's crop URL; otherwise `SELECT crop_token FROM faces WHERE person_id = ? AND is_dismissed = false AND crop_token IS NOT NULL ORDER BY confidence DESC LIMIT 1`; null if no qualifying face). FaceResource per DO-030-04: `id` (Face ID), `photo_id`, `person_id` (nullable), `x`/`y`/`width`/`height` (float 0.0–1.0), `confidence`, `is_dismissed`, `crop_url` (computed from `crop_token`: `uploads/faces/{tok[0:2]}/{tok[2:4]}/{tok}.jpg`; null if no crop). Embedded `suggestions[]` array — each item: `suggested_face_id`, `crop_url` (suggested face's own crop or null), `person_name` (nullable, LEFT JOIN), `confidence`. Suggestions always included (pre-computed from `face_suggestions` table, no N+1 risk). Include FaceResource array in PhotoResource with `hidden_face_count` (int, count of suppressed non-searchable faces — Q-030-10).
   _Verification commands:_
   - `make phpstan`
   _Notes:_ Follow existing Spatie Data patterns in app/Http/Resources/.
 
 ### I7 – Person CRUD Endpoints
 
-- [ ] T-030-19 – Write feature tests for Person CRUD and non-searchable filtering (FR-030-01, FR-030-06, S-030-05, S-030-15, S-030-18).
+- [x] T-030-19 – Write feature tests for Person CRUD and non-searchable filtering (FR-030-01, FR-030-06, S-030-05, S-030-15, S-030-18).
   _Intent:_ Tests for: list persons (paginated), get person, create person, update person (name, is_searchable), delete person (face.person_id nullified). Non-searchable person hidden from non-admin non-linked users. Admin sees all. Test both `open` and `restricted` permission modes (Q-030-08 resolved). Verify hidden_face_count in photo detail response.
   _Verification commands:_
   - `php artisan test --filter=PeopleControllerTest`
@@ -150,41 +156,41 @@ _Last updated: 2026-03-21_
 
 ### I8 – Person Claim, Admin Override, Merge & Selfie Claim
 
-- [ ] T-030-21 – Write feature tests for Person claim, admin override, and merge (FR-030-05, FR-030-11, S-030-04, S-030-13, S-030-16, S-030-19).
+- [x] T-030-21 – Write feature tests for Person claim, admin override, and merge (FR-030-05, FR-030-11, S-030-04, S-030-13, S-030-16, S-030-19).
   _Intent:_ Tests: claim person (success, sets user_id), claim already-claimed (409), admin force-claim (overrides existing link), unclaim. Merge: faces reassigned from source to target, source deleted, face count updated. Test both permission modes.
   _Verification commands:_
   - `php artisan test --filter=PersonClaimTest`
   - `php artisan test --filter=PersonMergeTest`
   - `make phpstan`
 
-- [x] T-030-22 – Implement claim (user + admin override) and merge actions (API-030-06, API-030-07).
-  _Intent:_ ClaimPerson action: set person.user_id to Auth::id(), enforce uniqueness for non-admin. Admin claim: override existing link (clear previous user's claim, set new). MergePerson action: reassign Face records, delete source Person. Register routes.
+- [x] T-030-22 – Implement claim (user + admin override), unclaim, and merge actions (API-030-06, API-030-07, API-030-15).
+  _Intent:_ ClaimPerson action: set person.user_id to Auth::id(), enforce uniqueness for non-admin. Admin claim: override existing link (clear previous user's claim, set new). UnclaimPerson action: `DELETE /api/v2/Person/{id}/claim` — sets `person.user_id = null`; only linked User or admin can unclaim (FR-030-05). MergePerson action: reassign Face records, delete source Person. Register all three routes.
   _Verification commands:_
   - `php artisan test --filter=PersonClaimTest`
   - `php artisan test --filter=PersonMergeTest`
   - `make phpstan`
 
-- [ ] T-030-23 – Write feature tests for selfie-upload claim (FR-030-12, S-030-20, S-030-21, S-030-22).
+- [x] T-030-23 – Write feature tests for selfie-upload claim (FR-030-12, S-030-20, S-030-21, S-030-22).
   _Intent:_ Tests: upload selfie → Python service returns match → Person linked (success); selfie with no face detected (422); no matching Person (404); matched Person already claimed by another user (409). Verify selfie image discarded after match (Q-030-11 resolved).
   _Verification commands:_
   - `php artisan test --filter=SelfieClaimTest`
   - `make phpstan`
 
 - [x] T-030-24 – Implement SelfieClaimController (API-030-13).
-  _Intent:_ POST /Person/claim-by-selfie: accepts multipart image upload, sends to Python service `POST /match` (Q-030-12 resolved: dedicated endpoint), receives matching person_id + confidence, validates confidence ≥ `ai_vision_face_selfie_confidence_threshold`, links Person to User (same 1-1 rules), deletes temp selfie. Register route.
+  _Intent:_ POST /Person/claim-by-selfie: accepts multipart image upload, sends to Python service `POST /match` (Q-030-12 resolved: dedicated endpoint), receives matching person_id + confidence, validates confidence ≥ `ai_vision_face_selfie_confidence_threshold`, links Person to User (same 1-1 rules), deletes temp selfie. Apply Laravel `throttle:5,1` middleware to this route (5 requests/minute per user — Q-030-44). Register route.
   _Verification commands:_
   - `php artisan test --filter=SelfieClaimTest`
   - `make phpstan`
 
 ### I9 – Face Assignment, Dismiss & Cleanup Endpoints
 
-- [ ] T-030-25 – Write feature tests for face assignment (FR-030-10, S-030-02, S-030-03).
+- [x] T-030-25 – Write feature tests for face assignment (FR-030-10, S-030-02, S-030-03).
   _Intent:_ Tests: assign face to existing person, assign face creating new person, reassign face to different person. Test all four `ai_vision_face_permission_mode` values.
   _Verification commands:_
   - `php artisan test --filter=FaceAssignmentTest`
   - `make phpstan`
 
-- [ ] T-030-26 – Write feature tests for face dismiss/undismiss and admin bulk delete (API-030-14, API-030-16, S-030-24, S-030-25, Q-030-47).
+- [x] T-030-26 – Write feature tests for face dismiss/undismiss and admin bulk delete (API-030-14, API-030-16, S-030-24, S-030-25, Q-030-47).
   _Intent:_ Tests: `PATCH /api/v2/Face/{id}` toggles `is_dismissed`; photo owner can dismiss, non-owner gets 403; admin can always dismiss. `DELETE /api/v2/Face/dismissed` hard-deletes all `is_dismissed = true` faces, removes crop files, returns count. Emit `face.dismissed` / `face.undismissed` / `face.bulk_deleted` telemetry events (TE-030-10/11/12).
   _Verification commands:_
   - `php artisan test --filter=FaceDismissTest`
@@ -199,13 +205,13 @@ _Last updated: 2026-03-21_
 
 ### I10 – Scan Trigger & Result Ingestion Endpoints
 
-- [ ] T-030-27 – Write feature tests for scan trigger and result ingestion (FR-030-07, FR-030-08, S-030-01, S-030-07, S-030-08, S-030-14, S-030-23).
+- [x] T-030-27 – Write feature tests for scan trigger and result ingestion (FR-030-07, FR-030-08, S-030-01, S-030-07, S-030-08, S-030-14, S-030-23).
   _Intent:_ Tests: trigger scan for photo (202), trigger scan for album, receive results (Face records created with crop_token), re-scan replaces old faces (old crops deleted), invalid photo_id (404), auto-scan on upload when enabled. Test both permission modes for scan trigger.
   _Verification commands:_
   - `php artisan test --filter=FaceDetectionTest`
   - `make phpstan`
 
-- [ ] T-030-28 – Write feature test for service unavailability (FR-030-08, NFR-030-03, S-030-09).
+- [x] T-030-28 – Write feature test for service unavailability (FR-030-08, NFR-030-03, S-030-09).
   _Intent:_ Test: scan trigger when Python service is unreachable returns 503; all other Lychee endpoints continue to work.
   _Verification commands:_
   - `php artisan test --filter=FaceDetectionServiceUnavailableTest`
@@ -219,7 +225,7 @@ _Last updated: 2026-03-21_
 
 ### I11 – Bulk Scan Commands & Maintenance Endpoints
 
-- [ ] T-030-30 – Write feature tests for `lychee:scan-faces` command (FR-030-09, S-030-06, CLI-030-01, CLI-030-02).
+- [x] T-030-30 – Write feature tests for `lychee:scan-faces` command (FR-030-09, S-030-06, CLI-030-01, CLI-030-02).
   _Intent:_ Tests: command enqueues photos where `face_scan_status IS NULL` (not failed/completed), `--album` filter works (non-recursive — only direct photos in album, Q-030-41), already-scanned photos skipped.
   _Verification commands:_
   - `php artisan test --filter=ScanFacesCommandTest`
@@ -237,7 +243,7 @@ _Last updated: 2026-03-21_
   - `php artisan test --filter=RescanFailedFacesCommandTest`
   - `make phpstan`
 
-- [ ] T-030-31c – Write feature tests and implement Maintenance::resetStuckFaces endpoints (API-030-17, API-030-17b, Q-030-48, S-030-26).
+- [x] T-030-31c – Write feature tests and implement Maintenance::resetStuckFaces endpoints (API-030-17, API-030-17b, Q-030-48, S-030-26).
   _Intent:_ `GET /api/v2/Maintenance::resetStuckFaces`: admin-only check — returns `{count: N}` for photos stuck in `pending` longer than `older_than_minutes` (default 60). `POST /api/v2/Maintenance::resetStuckFaces`: admin-only do — resets those records to `null` and returns `{reset_count: N}`. Body: optional `older_than_minutes` (integer). Follows existing `Maintenance::cleaning` / `Maintenance::jobs` check/do pattern. Register in `api_v2.php`.
   _Verification commands:_
   - `php artisan test --filter=MaintenanceResetStuckFacesTest`
@@ -245,7 +251,7 @@ _Last updated: 2026-03-21_
 
 ### I12 – Person Photos Endpoint
 
-- [ ] T-030-32 – Write feature test for Person photos listing (FR-030-03, S-030-12, API-030-08).
+- [x] T-030-32 – Write feature test for Person photos listing (FR-030-03, S-030-12, API-030-08).
   _Intent:_ Tests: get paginated photos for person, respects album access control (user without album access doesn't see photo), empty result for person with no faces.
   _Verification commands:_
   - `php artisan test --filter=PersonPhotosTest`
@@ -328,20 +334,26 @@ _Last updated: 2026-03-21_
 
 ### I20 – Clustering Endpoint: Python `POST /cluster` + PHP Ingestion & Trigger
 
-- [ ] T-030-44 – Implement Python `POST /cluster` endpoint and wire `FaceClusterer` (FR-030-13, S-030-27).
-  _Intent:_ Add `ClusterResponse` Pydantic schema (`{clusters: int, suggestions_generated: int}`) to `app/api/schemas.py`. Add `VISION_FACE_CLUSTER_EPS` (float, default `0.6`) to `AppSettings`. Extend `app/clustering/clusterer.py` with `run_cluster_and_notify(store, lychee_url, api_key)`: read all embeddings, run DBSCAN, generate `(face_id, suggested_face_id, confidence)` pairs within each cluster (cosine similarity as confidence), POST `{suggestions: [...]}` to `{lychee_url}/api/v2/FaceDetection/cluster-results` with `X-API-Key`. Add `POST /cluster` route to `app/api/routes.py` (X-API-Key auth dependency) that calls `run_cluster_and_notify()` and returns `ClusterResponse`. Add unit + integration tests in `tests/test_clustering.py` (mock httpx POST to Lychee).
+- [x] T-030-43 – Add `cluster_label` column migration to `faces` table (DO-030-07, Q-030-49).
+  _Intent:_ New migration: `ALTER TABLE faces ADD COLUMN cluster_label INT NULL`. Add composite index `(cluster_label, person_id, is_dismissed)` on `faces` to support O(index-scan) `GROUP BY cluster_label` paging in API-030-18. This migration is a prerequisite for T-030-44 (Python cluster ingestion) and T-030-50 (cluster-review API). Run tests to confirm migration applies cleanly on SQLite.
+  _Verification commands:_
+  - `php artisan test`
+  - `make phpstan`
+
+- [x] T-030-44 – Implement Python `POST /cluster` endpoint and wire `FaceClusterer` (FR-030-13, S-030-27, Q-030-49).
+  _Intent:_ Add `ClusterResponse` Pydantic schema (`{clusters: int, faces_labeled: int, suggestions_generated: int}`) to `app/api/schemas.py`. Add `VISION_FACE_CLUSTER_EPS` (float, default `0.6`) to `AppSettings`. Extend `app/clustering/clusterer.py` with `run_cluster_and_notify(store, lychee_url, api_key)`: read all embeddings, run DBSCAN, produce (a) `labels` list — `[{face_id: str, cluster_label: int}]` for every non-noise face (noise faces skipped); (b) `suggestions` list — `(face_id, suggested_face_id, confidence)` pairs for every intra-cluster pair (cosine similarity); POST `{labels: [...], suggestions: [...]}` to `{lychee_url}/api/v2/FaceDetection/cluster-results` with `X-API-Key`. Add `POST /cluster` route to `app/api/routes.py` (X-API-Key auth dependency) that calls `run_cluster_and_notify()` and returns `ClusterResponse`. Add unit + integration tests in `tests/test_clustering.py` (mock httpx POST to Lychee).
   _Verification commands:_
   - `cd ai-vision-service && uv run pytest tests/test_clustering.py`
   - `uv run ty check`
   - `uv run ruff check`
 
-- [ ] T-030-45 – Write feature tests and implement PHP `POST /FaceDetection/cluster-results` ingestion endpoint (FR-030-13).
-  _Intent:_ New action `clusterResults` on `FaceDetectionController`: auth via X-API-Key header; validate body `{suggestions: [{face_id, suggested_face_id, confidence}]}`; bulk-upsert `face_suggestions` rows on `(face_id, suggested_face_id)` updating `confidence`; return `{updated_count: N}`. Feature tests: success (suggestions upserted, count returned), invalid API key (401), malformed body (422), unknown face_id (422). Register route in `api_v2.php`.
+- [x] T-030-45 – Write feature tests and implement PHP `POST /FaceDetection/cluster-results` ingestion endpoint (FR-030-13, Q-030-49).
+  _Intent:_ New action `clusterResults` on `FaceDetectionController`: auth via X-API-Key header; validate body `{labels: [{face_id: str, cluster_label: int}], suggestions: [{face_id: str, suggested_face_id: str, confidence: float}]}` (both arrays optional — empty = no-op for that field). Processing: (1) if `labels` non-empty — first reset all `faces.cluster_label` to NULL (full re-cluster run), then bulk `UPDATE faces SET cluster_label = ? WHERE id = ?` for each label entry; (2) if `suggestions` non-empty — bulk-upsert `face_suggestions` rows on `(face_id, suggested_face_id)` updating `confidence`. Return `{faces_labeled: N, suggestions_updated: M}`. Feature tests: labels bulk-update `faces.cluster_label` correctly; suggestions upserted; both arrays in same request; invalid API key (401); malformed body (422); unknown face_id (422). Register route in `api_v2.php`.
   _Verification commands:_
   - `php artisan test --filter=FaceClusterResultsTest`
   - `make phpstan`
 
-- [ ] T-030-46 – Write feature tests and implement PHP `POST /Maintenance::runFaceClustering` admin trigger (FR-030-13).
+- [x] T-030-46 – Write feature tests and implement PHP `POST /Maintenance::runFaceClustering` admin trigger (FR-030-13).
   _Intent:_ Admin-only Maintenance endpoint following the existing check/do pattern. `POST /api/v2/Maintenance::runFaceClustering`: calls Python service `POST /cluster` via HTTP with `X-API-Key`; returns 202 Accepted on success; returns 503 if Python service is unreachable (NFR-030-03). Feature tests: admin triggers clustering (202), non-admin gets 403, service unavailable (503). Register route in `api_v2.php`.
   _Verification commands:_
   - `php artisan test --filter=MaintenanceFaceClusteringTest`
@@ -349,36 +361,36 @@ _Last updated: 2026-03-21_
 
 ### I21 – Embedding Sync on Deletion + Blur Threshold Filtering
 
-- [ ] T-030-47 – Python: `VISION_FACE_BLUR_THRESHOLD` filter in detector (FR-030-02, S-030-30).
+- [x] T-030-47 – Python: `VISION_FACE_BLUR_THRESHOLD` filter in detector (FR-030-02, S-030-30).
   _Intent:_ Add `VISION_FACE_BLUR_THRESHOLD` (float, default `100.0`) to `AppSettings` in `app/config.py`. In `app/detection/detector.py`, after detecting each face and cropping the bounding-box region, compute its Laplacian variance (`cv2.Laplacian(crop_region, cv2.CV_64F).var()`); discard any face whose variance is below the threshold before adding it to the results list. A value of `0.0` disables the filter (all faces pass). Update `tests/test_detection.py`: verify a synthetic blurry patch (Gaussian blur, variance << threshold) is excluded; verify a sharp patch is retained.
   _Verification commands:_
   - `cd ai-vision-service && uv run pytest tests/test_detection.py`
   - `uv run ty check`
   - `uv run ruff check`
 
-- [ ] T-030-48 – Python: `DELETE /embeddings` endpoint (FR-030-14, S-030-28, S-030-29).
+- [x] T-030-48 – Python: `DELETE /embeddings` endpoint (FR-030-14, S-030-28, S-030-29).
   _Intent:_ Add `delete_many(face_ids: list[str]) -> int` to the `EmbeddingStore` protocol in `app/embeddings/store.py` and implement it in both `SQLiteStore` and `PgVectorStore` (ignores unknown IDs silently; returns count of rows actually deleted). Add `DELETE /embeddings` route in `app/api/routes.py` (X-API-Key auth): accepts `{face_ids: list[str]}`, calls `store.delete_many()`, returns `{deleted_count: int}`. Add tests in `tests/test_api.py`: success (returns count), invalid API key (401), empty list (400), IDs not in store (returns `{deleted_count: 0}`).
   _Verification commands:_
   - `cd ai-vision-service && uv run pytest tests/test_api.py tests/test_embeddings.py`
   - `uv run ty check`
   - `uv run ruff check`
 
-- [ ] T-030-49 – PHP: dispatch embedding deletion after Face hard-deletes (FR-030-14, S-030-28, S-030-29).
-  _Intent:_ Create `DeleteFaceEmbeddingsJob` (implements `ShouldQueue`): accepts `array<string> $faceIds`, calls Python `DELETE /embeddings` via HTTP with `X-API-Key`; catches all exceptions, logs a warning (`Log::warning`), and returns without re-throwing (never fails the queue worker or rolls back the Lychee deletion). Dispatch this job from two trigger points: (1) in `destroyDismissed` action — collect IDs of dismissed faces before deleting them, dispatch job after `Face::where('is_dismissed', true)->delete()`; (2) in a `Face` model observer `deleting` event, or by hooking into the Photo delete pipeline to collect `face_ids` before cascade — dispatch batch job for those IDs. Write feature tests: `DELETE /Face/dismissed` → job dispatched with correct IDs; Photo delete → job dispatched for cascaded faces; Python service unavailable → Lychee deletion succeeds, warning logged.
+- [x] T-030-49 – PHP: dispatch embedding deletion after Face hard-deletes (FR-030-14, S-030-28, S-030-29).
+  _Intent:_ Create `DeleteFaceEmbeddingsJob` (implements `ShouldQueue`): accepts `array<string> $faceIds`, calls Python `DELETE /embeddings` via HTTP with `X-API-Key`; catches all exceptions, logs a warning (`Log::warning`), and returns without re-throwing (never fails the queue worker or rolls back the Lychee deletion). Dispatch this job from **two explicit call-sites** (no Face model observer — Q-030-52/Option B): (1) in `destroyDismissed` action — collect IDs of dismissed faces before `Face::where('is_dismissed', true)->delete()`, then dispatch job; (2) in `PhotoObserver::deleting` — collect `$photo->faces()->pluck('id')` before cascade delete, then dispatch batch job for those IDs. Write feature tests: `DELETE /Face/dismissed` → job dispatched with correct IDs; Photo delete → job dispatched for cascaded faces; Python service unavailable → Lychee deletion succeeds, warning logged.
   _Verification commands:_
   - `php artisan test --filter=FaceEmbeddingSyncTest`
   - `make phpstan`
 
 ### I22 – Cluster Review UI: Browse & Bulk-Name/Dismiss Clusters
 
-- [ ] T-030-50 – Write feature tests and implement PHP cluster-review API endpoints (FR-030-15, API-030-18, API-030-19, API-030-20, S-030-31, S-030-32).
-  _Intent:_ `GET /api/v2/FaceDetection/clusters`: query `face_suggestions` graph, derive connected components of unassigned (`person_id IS NULL`) non-dismissed faces using breadth-first traversal; assign each component a deterministic `cluster_id` (SHA1 of sorted face IDs); return paginated `{cluster_id, size, faces: FaceResource[]}`. `POST /api/v2/FaceDetection/clusters/{cluster_id}/assign`: resolve faces in cluster, create Person if `new_person_name` supplied (or use existing `person_id`), bulk `UPDATE faces SET person_id = ? WHERE id IN (...)`, emit `face.cluster_assigned` telemetry, return `{person_id, assigned_count}`. `POST /api/v2/FaceDetection/clusters/{cluster_id}/dismiss`: bulk `UPDATE faces SET is_dismissed = true WHERE id IN (...)`, emit `face.cluster_dismissed`, return `{dismissed_count}`. Feature tests: list clusters (only unassigned non-dismissed faces; already-assigned excluded), assign cluster (new person created + faces linked; existing person used if person_id supplied), dismiss cluster (all faces marked is_dismissed). Test permission mode enforcement (public/restricted at minimum). Register routes in `api_v2.php`.
+- [x] T-030-50 – Write feature tests and implement PHP cluster-review API endpoints (FR-030-15, API-030-18, API-030-19, API-030-20, S-030-31, S-030-32, Q-030-49).
+  _Intent:_ `GET /api/v2/FaceDetection/clusters`: `SELECT cluster_label, COUNT(*) as size FROM faces WHERE cluster_label IS NOT NULL AND person_id IS NULL AND is_dismissed = false GROUP BY cluster_label ORDER BY cluster_label LIMIT ? OFFSET ?` (uses composite index DO-030-07); for each cluster, load preview faces via `WHERE cluster_label = ? AND person_id IS NULL AND is_dismissed = false`; return `{cluster_id: int, size: int, faces: FaceResource[]}`. Respects `ai_vision_face_permission_mode`. `POST /api/v2/FaceDetection/clusters/{cluster_id}/assign`: validate `cluster_id` is a valid integer `cluster_label` with qualifying faces; create Person if `new_person_name` supplied (or validate existing `person_id`); bulk `UPDATE faces SET person_id = ? WHERE cluster_label = ? AND person_id IS NULL AND is_dismissed = false`; emit `face.cluster_assigned`; return `{person_id, assigned_count}`. `POST /api/v2/FaceDetection/clusters/{cluster_id}/dismiss`: bulk `UPDATE faces SET is_dismissed = true WHERE cluster_label = ? AND person_id IS NULL AND is_dismissed = false`; emit `face.cluster_dismissed`; return `{dismissed_count}`. Feature tests: list clusters (only qualifying faces; already-assigned or dismissed excluded), 404 for unknown cluster_id, assign cluster (new person + faces linked; existing person used if person_id supplied), dismiss cluster (all qualifying faces marked is_dismissed). Test permission mode enforcement (public/restricted at minimum). Register routes in `api_v2.php`.
   _Verification commands:_
   - `php artisan test --filter=FaceClusterReviewTest`
   - `make phpstan`
 
-- [ ] T-030-51 – Create FaceClusters.vue page and wire into navigation (FR-030-15, UI-030-08, S-030-31, S-030-32).
-  _Intent:_ New Vue3 view at `/people/clusters`. Fetches `GET /FaceDetection/clusters` (paginated). Renders a vertical list of cluster cards; each card shows: first 5 face-crop `<img>` thumbnails (from `crop_url`), "+N more" badge when `size > 5`, size badge, a name `InputText`, a "Create Person & Assign All" `Button` (calls `POST /FaceDetection/clusters/{id}/assign` with `new_person_name`; or if person selected from dropdown, uses `person_id`), and a "Dismiss" `Button` (calls `POST /FaceDetection/clusters/{id}/dismiss`). After either action, remove the cluster card from the list without full-page reload. "Run Cluster" `Button` in page header calls `POST /Maintenance::runFaceClustering` then re-fetches clusters. Empty state illustration when no clusters exist. Add `/people/clusters` route to Vue Router and a "Clusters" navigation link under People in the sidebar (visible only when `ai_vision_face_enabled` is true).
+- [x] T-030-51 – Create FaceClusterService.ts, FaceClusters.vue page, and wire into navigation (FR-030-15, UI-030-08, S-030-31, S-030-32).
+  _Intent:_ Create `services/FaceClusterService.ts` with typed functions: `getClusters(page)`, `assignCluster(clusterId, payload)`, `dismissCluster(clusterId)`, `runClustering()` — all using `${Constants.getApiUrl()}` base URL. New Vue3 view `FaceClusters.vue` at `/people/clusters`. Fetches `GET /FaceDetection/clusters` (paginated, via FaceClusterService). Renders a vertical list of cluster cards; each card shows: first 5 face-crop `<img>` thumbnails (from `crop_url`), "+N more" badge when `size > 5`, size badge, a name `InputText`, a "Create Person & Assign All" `Button` (calls `assignCluster` with `new_person_name`; or if person selected from dropdown, uses `person_id`), and a "Dismiss" `Button` (calls `dismissCluster`). After either action, remove the cluster card from the list without full-page reload. "Run Cluster" `Button` in page header calls `runClustering()` then re-fetches clusters. Empty state illustration when no clusters exist. Add `/people/clusters` route to Vue Router and a "Clusters" navigation link under People in the sidebar (visible only when `ai_vision_face_enabled` is true).
   _Verification commands:_
   - `npm run check`
   - `npm run format`

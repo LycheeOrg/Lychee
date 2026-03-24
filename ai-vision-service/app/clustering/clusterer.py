@@ -7,7 +7,12 @@ to a likely distinct identity; noise points (label ``-1``) are unassigned.
 
 from __future__ import annotations
 
+import logging
+
 import numpy as np
+from sklearn.cluster import DBSCAN
+
+logger = logging.getLogger(__name__)
 
 
 class FaceClusterer:
@@ -50,8 +55,6 @@ class FaceClusterer:
         if not face_embeddings:
             return []
 
-        from sklearn.cluster import DBSCAN
-
         ids = [fid for fid, _ in face_embeddings]
         vectors = np.array([emb for _, emb in face_embeddings], dtype=np.float32)
 
@@ -63,7 +66,14 @@ class FaceClusterer:
         norms = np.where(norms == 0, 1.0, norms)
         vectors = vectors / norms
 
+        logger.info(
+            "Start clustering %d face embeddings with DBSCAN (eps=%.2f, min_samples=%d)",
+            len(face_embeddings),
+            self._eps,
+            self._min_samples,
+        )
         db = DBSCAN(eps=self._eps, min_samples=self._min_samples, metric="cosine")
         labels: list[int] = db.fit_predict(vectors).tolist()
+        logger.info("Done clustering %d face embeddings with DBSCAN", len(face_embeddings))
 
         return list(zip(ids, labels, strict=True))

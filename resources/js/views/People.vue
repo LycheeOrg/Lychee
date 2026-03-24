@@ -7,7 +7,15 @@
 			<template #center>
 				{{ $t("people.title") }}
 			</template>
-			<template #end> </template>
+			<template #end>
+				<Button
+					:label="$t('people.clusters_title')"
+					icon="pi pi-sitemap"
+					severity="secondary"
+					outlined
+					@click="$router.push('/people/clusters')"
+				/>
+			</template>
 		</Toolbar>
 
 		<div v-if="loading" class="flex justify-center items-center mt-20">

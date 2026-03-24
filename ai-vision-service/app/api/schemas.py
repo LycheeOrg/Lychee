@@ -143,6 +143,53 @@ class MatchResponse(BaseModel):
 
 
 # ---------------------------------------------------------------------------
+# DELETE /embeddings - Lychee -> Python
+# ---------------------------------------------------------------------------
+
+
+class DeleteEmbeddingsRequest(BaseModel):
+    """Body sent by Lychee to delete face embeddings from the store."""
+
+    face_ids: list[str] = Field(min_length=1)
+    """List of Lychee ``Face.id`` values whose embeddings should be removed."""
+
+
+class DeleteEmbeddingsResponse(BaseModel):
+    """Response body for ``DELETE /embeddings``."""
+
+    deleted: int
+    """Number of embeddings actually removed (IDs not found are silently skipped)."""
+
+
+# ---------------------------------------------------------------------------
+# POST /cluster - Lychee -> Python
+# ---------------------------------------------------------------------------
+
+
+class ClusterFaceResult(BaseModel):
+    """One face's cluster assignment."""
+
+    lychee_face_id: str
+    """Lychee ``Face.id``."""
+
+    cluster_label: int
+    """DBSCAN cluster label. ``-1`` = noise / unassigned."""
+
+
+class ClusterResponse(BaseModel):
+    """Response body for ``POST /cluster``."""
+
+    total_faces: int
+    """Total number of embeddings that were clustered."""
+
+    num_clusters: int
+    """Number of distinct clusters found (excluding noise)."""
+
+    assignments: list[ClusterFaceResult]
+    """Per-face cluster label assignments."""
+
+
+# ---------------------------------------------------------------------------
 # /health
 # ---------------------------------------------------------------------------
 

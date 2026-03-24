@@ -31,6 +31,7 @@ use Illuminate\Support\Carbon;
  * @property float                          $confidence
  * @property string|null                    $crop_token
  * @property bool                           $is_dismissed
+ * @property int|null                       $cluster_label
  * @property Carbon                         $created_at
  * @property Carbon                         $updated_at
  * @property Photo                          $photo
@@ -71,32 +72,36 @@ class Face extends Model
 		'confidence',
 		'crop_token',
 		'is_dismissed',
-	];
-
-	/**
-	 * @var array<string, string|class-string>
-	 */
-	protected $casts = [
-		'created_at' => 'datetime',
-		'updated_at' => 'datetime',
-		'x' => 'float',
-		'y' => 'float',
-		'width' => 'float',
-		'height' => 'float',
-		'confidence' => 'float',
-		'is_dismissed' => 'boolean',
+		'cluster_label',
 	];
 
 	/**
 	 * @var list<string>
 	 */
-	protected $appends = ['crop_url'];
+	protected $appends = [
+		'crop_url',
+	];
 
 	/**
-	 * Get the crop URL derived from the crop_token.
-	 * Path format: uploads/faces/{tok[0:2]}/{tok[2:4]}/{tok}.jpg.
-	 *
-	 * @return string|null
+	 * @return array<string,string>
+	 */
+	protected function casts(): array
+	{
+		return [
+			'x' => 'float',
+			'y' => 'float',
+			'width' => 'float',
+			'height' => 'float',
+			'confidence' => 'float',
+			'is_dismissed' => 'boolean',
+			'cluster_label' => 'integer',
+			'created_at' => 'datetime',
+			'updated_at' => 'datetime',
+		];
+	}
+
+	/**
+	 * Compute the crop URL from the crop_token.
 	 */
 	public function getCropUrlAttribute(): ?string
 	{

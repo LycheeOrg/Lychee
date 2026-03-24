@@ -25,10 +25,12 @@ use Illuminate\Support\Carbon;
  * @property string               $name
  * @property int|null             $user_id
  * @property bool                 $is_searchable
+ * @property string|null          $representative_face_id
  * @property Carbon               $created_at
  * @property Carbon               $updated_at
  * @property User|null            $user
  * @property Collection<int,Face> $faces
+ * @property Face|null            $representativeFace
  */
 class Person extends Model
 {
@@ -59,17 +61,22 @@ class Person extends Model
 		'name',
 		'user_id',
 		'is_searchable',
+		'representative_face_id',
 	];
 
 	/**
-	 * @var array<string, string|class-string>
+	 * @return array<string,string>
 	 */
-	protected $casts = [
-		'created_at' => 'datetime',
-		'updated_at' => 'datetime',
-		'is_searchable' => 'boolean',
-		'user_id' => 'integer',
-	];
+	protected function casts(): array
+	{
+		return [
+			'created_at' => 'datetime',
+			'updated_at' => 'datetime',
+			'is_searchable' => 'boolean',
+			'user_id' => 'integer',
+			'representative_face_id' => 'string',
+		];
+	}
 
 	/**
 	 * Return the user linked to this person.
@@ -92,8 +99,16 @@ class Person extends Model
 	}
 
 	/**
-	 * Scope to only return searchable persons.
+	 * Return the representative face for this person (nullable).
 	 *
+	 * @return BelongsTo<Face,$this>
+	 */
+	public function representativeFace(): BelongsTo
+	{
+		return $this->belongsTo(Face::class, 'representative_face_id', 'id');
+	}
+
+	/**
 	 * @param \Illuminate\Database\Eloquent\Builder<static> $query
 	 *
 	 * @return \Illuminate\Database\Eloquent\Builder<static>

@@ -375,9 +375,18 @@ Route::delete('/Face/dismissed', [AiVision\FaceController::class, 'destroyDismis
 Route::post('/FaceDetection/scan', [AiVision\FaceDetectionController::class, 'scan'])->middleware(['support:se']);
 Route::post('/FaceDetection/results', [AiVision\FaceDetectionController::class, 'results'])->withoutMiddleware(['auth']);
 Route::post('/FaceDetection/bulk-scan', [AiVision\FaceDetectionController::class, 'bulkScan'])->middleware(['support:se']);
+Route::post('/FaceDetection/cluster-results', [AiVision\FaceDetectionController::class, 'clusterResults'])->withoutMiddleware(['auth']);
+
+/**
+ * AI VISION — CLUSTER REVIEW.
+ */
+Route::get('/FaceDetection/clusters', [AiVision\FaceClusterController::class, 'index'])->middleware(['support:se']);
+Route::post('/FaceDetection/clusters/{label}/assign', [AiVision\FaceClusterController::class, 'assign'])->middleware(['support:se']);
+Route::post('/FaceDetection/clusters/{label}/dismiss', [AiVision\FaceClusterController::class, 'dismiss'])->middleware(['support:se']);
 
 /**
  * AI VISION — MAINTENANCE.
  */
 Route::get('/Maintenance::resetStuckFaces', [Admin\Maintenance\ResetStuckFaces::class, 'check']);
 Route::post('/Maintenance::resetStuckFaces', [Admin\Maintenance\ResetStuckFaces::class, 'do']);
+Route::post('/Maintenance::runFaceClustering', [Admin\Maintenance\RunFaceClustering::class, 'do']);

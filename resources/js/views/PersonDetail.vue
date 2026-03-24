@@ -32,7 +32,7 @@
 		<template v-else-if="person">
 			<!-- Person header -->
 			<div class="flex flex-col sm:flex-row items-center gap-6 p-6 border-b border-surface-700">
-				<div class="w-24 h-24 rounded-full overflow-hidden bg-surface-800 flex items-center justify-center flex-shrink-0">
+				<div class="w-24 h-24 rounded-full overflow-hidden bg-surface-800 flex items-center justify-center shrink-0">
 					<img
 						v-if="person.representative_crop_url"
 						:src="person.representative_crop_url"

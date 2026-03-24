@@ -58,6 +58,27 @@ class EmbeddingStore(Protocol):
         """
         ...
 
+    def delete_many(self, lychee_face_ids: list[str]) -> int:
+        """Remove multiple embeddings by Lychee Face ID.
+
+        Args:
+            lychee_face_ids: List of Lychee ``Face.id`` strings to remove.
+
+        Returns:
+            Number of embeddings actually deleted (IDs not found are silently
+            skipped).
+        """
+        ...
+
+    def get_all(self) -> list[tuple[str, list[float]]]:
+        """Return all stored embeddings.
+
+        Returns:
+            List of ``(lychee_face_id, embedding)`` pairs.  Used by the
+            clustering endpoint to read the full dataset into memory.
+        """
+        ...
+
     def count(self) -> int:
         """Return the total number of stored embeddings."""
         ...

@@ -45,10 +45,12 @@ class FaceDetector:
         self,
         model_name: str = "buffalo_l",
         detection_threshold: float = 0.5,
+        blur_threshold: float = 100.0,
         model_root: str = "/root/.insightface",
     ) -> None:
         self._model_name = model_name
         self._detection_threshold = detection_threshold
+        self._blur_threshold = blur_threshold
         self._model_root = model_root
         self._app: Any = None  # insightface.app.FaceAnalysis - untyped library
         self._lock = threading.Lock()
@@ -137,6 +139,8 @@ class FaceDetector:
 
     def _detect_array(self, img: Any) -> list[DetectedFace]:
         """Run detection on a BGR numpy array (internal)."""
+        import cv2
+
         if self._app is None:
             raise RuntimeError("FaceDetector not loaded - call load() first.")
 
@@ -154,6 +158,20 @@ class FaceDetector:
 
             bbox: Any = face.bbox  # [x1, y1, x2, y2] absolute pixels
             x1, y1, x2, y2 = float(bbox[0]), float(bbox[1]), float(bbox[2]), float(bbox[3])
+
+            # Blur filter: compute Laplacian variance on the face crop region.
+            # A value of 0.0 disables the filter (all faces pass).
+            if self._blur_threshold > 0.0:
+                px1 = max(0, int(x1))
+                py1 = max(0, int(y1))
+                px2 = min(w, int(x2))
+                py2 = min(h, int(y2))
+                if px2 > px1 and py2 > py1:
+                    crop_region = img[py1:py2, px1:px2]
+                    gray = cv2.cvtColor(crop_region, cv2.COLOR_BGR2GRAY)
+                    variance: float = float(cv2.Laplacian(gray, cv2.CV_64F).var())
+                    if variance < self._blur_threshold:
+                        continue
 
             # Normalise to [0, 1] and clamp
             fx = max(0.0, min(1.0, x1 / w))

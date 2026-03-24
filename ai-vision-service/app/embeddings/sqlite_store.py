@@ -115,6 +115,48 @@ class SQLiteEmbeddingStore:
         finally:
             conn.close()
 
+    def delete_many(self, lychee_face_ids: list[str]) -> int:
+        """Remove multiple embeddings by Lychee Face ID."""
+        if not lychee_face_ids:
+            return 0
+        deleted = 0
+        with self._lock:
+            conn = self._connect()
+            try:
+                for fid in lychee_face_ids:
+                    row = conn.execute(
+                        "SELECT vec_rowid FROM face_meta WHERE lychee_face_id = ?",
+                        [fid],
+                    ).fetchone()
+                    if row is not None:
+                        conn.execute("DELETE FROM vec_faces WHERE rowid = ?", [row[0]])
+                        conn.execute("DELETE FROM face_meta WHERE lychee_face_id = ?", [fid])
+                        deleted += 1
+                conn.commit()
+            finally:
+                conn.close()
+        return deleted
+
+    def get_all(self) -> list[tuple[str, list[float]]]:
+        """Return all stored embeddings as (face_id, embedding) pairs."""
+        conn = self._connect()
+        try:
+            rows = conn.execute(
+                """
+                SELECT m.lychee_face_id, v.face_embedding
+                FROM face_meta m
+                JOIN vec_faces v ON v.rowid = m.vec_rowid
+                """,
+            ).fetchall()
+            results: list[tuple[str, list[float]]] = []
+            for lychee_face_id, blob in rows:
+                count = len(blob) // 4  # float32 = 4 bytes
+                embedding = list(struct.unpack(f"{count}f", blob))
+                results.append((lychee_face_id, embedding))
+            return results
+        finally:
+            conn.close()
+
     def count(self) -> int:
         """Return the number of stored embeddings."""
         conn = self._connect()

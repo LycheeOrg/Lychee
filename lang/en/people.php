@@ -46,6 +46,13 @@ return [
         'unclaim' => 'Unlink from me',
         'photos_title' => 'Photos of %s',
     ],
+    'clusters_title' => 'Face Clusters',
+    'run_clustering' => 'Run Clustering',
+    'no_clusters' => 'No clusters found. Run clustering to group detected faces.',
+    'faces' => 'faces',
+    'enter_name' => 'Person name…',
+    'assign' => 'Assign',
+    'dismiss' => 'Dismiss',
     'assignment' => [
         'title' => 'Assign face to person',
         'select_person' => 'Select existing person…',

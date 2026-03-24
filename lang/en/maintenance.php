@@ -102,4 +102,8 @@ return [
     'bulk-scan-faces' => [
         'description' => 'Queue all photos that have not yet been scanned for facial recognition. Requires the AI Vision service to be running.',
     ],
+    'run-clustering' => [
+        'description' => 'Trigger face clustering in the AI Vision service. Groups detected faces by similarity so you can assign them to people.',
+        'success' => 'Clustering started successfully.',
+    ],
 ];

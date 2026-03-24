@@ -36,6 +36,7 @@ const OrderList = () => import("@/views/webshop/OrderList.vue");
 const OrderDownload = () => import("@/views/webshop/OrderDownload.vue");
 const People = () => import("@/views/People.vue");
 const PersonDetail = () => import("@/views/PersonDetail.vue");
+const FaceClusters = () => import("@/views/FaceClusters.vue");
 
 const routes_ = [
 	{
@@ -232,6 +233,11 @@ const routes_ = [
 		name: "people",
 		path: "/people",
 		component: People,
+	},
+	{
+		name: "face-clusters",
+		path: "/people/clusters",
+		component: FaceClusters,
 	},
 	{
 		name: "person",

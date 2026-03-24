@@ -19,6 +19,7 @@ class PersonResource extends Data
 	public string $name;
 	public ?int $user_id;
 	public bool $is_searchable;
+	public ?string $representative_face_id;
 	public int $face_count;
 	public int $photo_count;
 	public ?string $representative_crop_url;
@@ -29,10 +30,28 @@ class PersonResource extends Data
 		$this->name = $person->name;
 		$this->user_id = $person->user_id;
 		$this->is_searchable = $person->is_searchable;
+		$this->representative_face_id = $person->representative_face_id;
 		$this->face_count = $person->faces()->count();
 		$this->photo_count = $person->faces()->distinct('photo_id')->count('photo_id');
 
-		$crop_token = $person->faces()->whereNotNull('crop_token')->value('crop_token');
+		// Representative crop: prefer the explicitly pinned face's crop,
+		// fall back to the highest-confidence non-dismissed face with a crop.
+		$crop_token = null;
+		if ($person->representative_face_id !== null) {
+			$crop_token = $person->faces()
+				->where('id', '=', $person->representative_face_id)
+				->whereNotNull('crop_token')
+				->value('crop_token');
+		}
+
+		if ($crop_token === null) {
+			$crop_token = $person->faces()
+				->where('is_dismissed', '=', false)
+				->whereNotNull('crop_token')
+				->orderByDesc('confidence')
+				->value('crop_token');
+		}
+
 		if ($crop_token !== null) {
 			$this->representative_crop_url = 'uploads/faces/' . substr($crop_token, 0, 2) . '/' . substr($crop_token, 2, 2) . '/' . $crop_token . '.jpg';
 		} else {
