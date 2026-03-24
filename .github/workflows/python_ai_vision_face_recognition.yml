@@ -1,4 +1,4 @@
-name: Python AI Vision Service
+name: Python AI Vision Service for face recognition
 
 on:
   push:
@@ -6,10 +6,10 @@ on:
       - master
       - assisted-vision
     paths:
-      - 'ai-vision-service/**'
+      - 'ai-vision-service/face-recognition/**'
   pull_request:
     paths:
-      - 'ai-vision-service/**'
+      - 'ai-vision-service/face-recognition/**'
   workflow_dispatch:
 
 # Declare default permissions as read only.
@@ -22,7 +22,7 @@ concurrency:
 
 defaults:
   run:
-    working-directory: ai-vision-service
+    working-directory: ai-vision-service/face-recognition
 
 jobs:
   # ---------------------------------------------------------------------------
