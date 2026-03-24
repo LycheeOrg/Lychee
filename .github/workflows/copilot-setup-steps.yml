@@ -53,5 +53,5 @@ jobs:
         with:
           enable-cache: true
 
-      - name: Install Python dependencies
-        run: uv sync --frozen
+      # - name: Install Python dependencies
+      #   run: uv sync --frozen
