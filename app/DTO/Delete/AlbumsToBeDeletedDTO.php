@@ -17,6 +17,13 @@ use Illuminate\Support\Facades\DB;
 final class AlbumsToBeDeletedDTO
 {
 	/**
+	 * Maximum number of IDs to pass in a single whereIn() clause.
+	 * MySQL's prepared-statement placeholder limit is 65 535; staying at 1 000
+	 * keeps every query well within that bound regardless of query complexity.
+	 */
+	private const CHUNK_SIZE = 1000;
+
+	/**
 	 * Container for all Albums and associated Tracks to be deleted.
 	 *
 	 * @param string[]                 $parent_ids the parents ID to recompute the cover photo etc
@@ -42,19 +49,55 @@ final class AlbumsToBeDeletedDTO
 	public function executeDelete()
 	{
 		DB::transaction(function (): void {
-			// Safety checks
-			if (DB::table('photo_album')->whereIn('album_id', $this->album_ids)->count() > 0) {
+			// Safety check: ensure no photos are still linked to any of the albums.
+			// Chunk album_ids to avoid hitting the database placeholder limit (MySQL error 1390).
+			$has_linked_photos = collect($this->album_ids)->chunk(self::CHUNK_SIZE)->contains(
+				fn ($chunk) => DB::table('photo_album')->whereIn('album_id', $chunk->all())->count() > 0
+			);
+			if ($has_linked_photos) {
 				throw new LycheeLogicException('There are still photos linked to the albums to be deleted.');
 			}
 
 			$purchasable_service = resolve(PurchasableService::class);
 			$purchasable_service->deleteMultipleAlbumPurchasables($this->album_ids);
-			DB::table('live_metrics')->whereIn('album_id', $this->album_ids)->delete();
-			DB::table('access_permissions')->whereIn('base_album_id', $this->album_ids)->delete();
-			DB::table('statistics')->whereIn('album_id', $this->album_ids)->delete();
-			DB::table('album_size_statistics')->whereIn('album_id', $this->album_ids)->delete();
-			DB::table('albums')->whereIn('id', $this->album_ids)->orderBy('_lft', 'desc')->delete();
-			DB::table('base_albums')->whereIn('id', $this->album_ids)->delete();
+
+			// For the albums table we must delete leaves before their parents to respect
+			// the nested-set parent_id foreign key. Load _lft values in chunks, then sort
+			// globally by _lft DESC so the deepest leaves come first across all chunks.
+			$albums_with_lft = collect($this->album_ids)->chunk(self::CHUNK_SIZE)->reduce(
+				function (Collection $carry, Collection $chunk): Collection {
+					return $carry->concat(
+						DB::table('albums')->whereIn('id', $chunk->all())->select(['id', '_lft'])->get()
+					);
+				},
+				collect([])
+			);
+			$sorted_album_ids = $albums_with_lft
+				->sortByDesc('_lft')
+				->pluck('id')
+				->values()
+				->all();
+
+			// Chunk all subsequent deletes to avoid hitting the placeholder limit.
+			// Delete dependents of base_albums first (no ordering constraint among them).
+			collect($this->album_ids)->chunk(self::CHUNK_SIZE)->each(function ($chunk): void {
+				DB::table('live_metrics')->whereIn('album_id', $chunk->all())->delete();
+				DB::table('access_permissions')->whereIn('base_album_id', $chunk->all())->delete();
+				DB::table('statistics')->whereIn('album_id', $chunk->all())->delete();
+				DB::table('album_size_statistics')->whereIn('album_id', $chunk->all())->delete();
+			});
+
+			// Delete albums leaf-first (sorted by _lft DESC) so parent_id FK constraints
+			// are never violated when a child still references its parent.
+			collect($sorted_album_ids)->chunk(self::CHUNK_SIZE)->each(function ($chunk): void {
+				DB::table('albums')->whereIn('id', $chunk->all())->delete();
+			});
+
+			// Delete base_albums last: albums.id FK-references base_albums.id, so albums
+			// must be fully gone before base_albums rows can be removed.
+			collect($this->album_ids)->chunk(self::CHUNK_SIZE)->each(function ($chunk): void {
+				DB::table('base_albums')->whereIn('id', $chunk->all())->delete();
+			});
 
 			// Now that all albums have been deleted, we need to update the
 			// Album table to remove gaps created by the removal.
