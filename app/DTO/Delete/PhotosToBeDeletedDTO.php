@@ -23,7 +23,7 @@ final class PhotosToBeDeletedDTO
 	 * MySQL's prepared-statement placeholder limit is 65 535; staying at 1 000
 	 * keeps every query well within that bound regardless of query complexity.
 	 */
-	private const CHUNK_SIZE = 1000;
+	private const CHUNK_SIZE = 500;
 
 	/**
 	 * Container for all Albums and associated Tracks to be deleted.
