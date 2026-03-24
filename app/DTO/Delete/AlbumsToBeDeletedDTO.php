@@ -49,6 +49,11 @@ final class AlbumsToBeDeletedDTO
 	public function executeDelete()
 	{
 		DB::transaction(function (): void {
+			// We disable foreign key checks for the duration of the transaction to avoid issues with the complex web of FK constraints among albums,
+			// base_albums, and their dependents. The transactional nature ensures that FK checks are re-enabled at the end of the transaction block,
+			// even if an exception occurs.
+			DB::statement('SET FOREIGN_KEY_CHECKS=0');
+
 			// Safety check: ensure no photos are still linked to any of the albums.
 			// Chunk album_ids to avoid hitting the database placeholder limit (MySQL error 1390).
 			$has_linked_photos = collect($this->album_ids)->chunk(self::CHUNK_SIZE)->contains(
@@ -105,6 +110,8 @@ final class AlbumsToBeDeletedDTO
 			// Now that all albums have been deleted, we need to update the
 			// Album table to remove gaps created by the removal.
 			$this->removeGaps();
+
+			DB::statement('SET FOREIGN_KEY_CHECKS=1');
 		});
 	}
 
