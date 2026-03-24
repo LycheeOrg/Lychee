@@ -59,7 +59,10 @@ final class AlbumsToBeDeletedDTO
 			}
 
 			$purchasable_service = resolve(PurchasableService::class);
-			$purchasable_service->deleteMultipleAlbumPurchasables($this->album_ids);
+			collect($this->album_ids)
+				->chunk(self::CHUNK_SIZE)
+				->each(fn ($chunk) => $purchasable_service->deleteMultipleAlbumPurchasables($chunk->all())
+				);
 
 			// For the albums table we must delete leaves before their parents to respect
 			// the nested-set parent_id foreign key. Load _lft values in chunks, then sort
