@@ -8,24 +8,15 @@
 
 namespace App\Http\Requests\Face;
 
-use App\Http\Requests\BaseApiRequest;
+use App\Http\Requests\AbstractEmptyRequest;
 use App\Models\Face;
 use App\Policies\AiVisionPolicy;
 use Illuminate\Support\Facades\Gate;
 
-class ClusterIndexRequest extends BaseApiRequest
+class ClusterIndexRequest extends AbstractEmptyRequest
 {
 	public function authorize(): bool
 	{
 		return Gate::check(AiVisionPolicy::CAN_ASSIGN_FACE, Face::class);
-	}
-
-	public function rules(): array
-	{
-		return [];
-	}
-
-	protected function processValidatedValues(array $values, array $files): void
-	{
 	}
 }

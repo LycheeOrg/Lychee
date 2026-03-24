@@ -8,12 +8,12 @@
 
 namespace App\Jobs;
 
+use App\Services\Image\FacialRecognitionService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -38,27 +38,22 @@ class DeleteFaceEmbeddingsJob implements ShouldQueue
 		$this->face_ids = $face_ids;
 	}
 
-	public function handle(): void
+	public function handle(FacialRecognitionService $facial_recognition_service): void
 	{
 		if ($this->face_ids === []) {
 			return;
 		}
 
-		$service_url = config('features.ai-vision.face-url', '');
-		$api_key = config('features.ai-vision.face-api-key', '');
-
-		if ($service_url === '') {
+		if (!$facial_recognition_service->isConfigured()) {
 			Log::warning('DeleteFaceEmbeddingsJob: AI Vision service not configured.');
 
 			return;
 		}
 
 		try {
-			$response = Http::withHeaders(['X-API-Key' => $api_key])
-				->delete($service_url . '/embeddings', ['face_ids' => $this->face_ids]);
+			$response = $facial_recognition_service->deleteEmbeddings($this->face_ids);
 
-			$ok = $response->successful();
-			if (!$ok) {
+			if (!$response->successful()) {
 				Log::warning('DeleteFaceEmbeddingsJob: /embeddings DELETE returned HTTP ' . $response->status() . '.', ['face_ids' => $this->face_ids]);
 			}
 		} catch (\Exception $e) {

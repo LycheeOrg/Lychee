@@ -8,13 +8,12 @@
 
 namespace App\Http\Controllers\AiVision;
 
+use App\Factories\PersonFactory;
 use App\Http\Requests\Face\ClusterAssignRequest;
 use App\Http\Requests\Face\ClusterDismissRequest;
 use App\Http\Requests\Face\ClusterIndexRequest;
 use App\Http\Resources\Models\ClusterPreviewResource;
 use App\Models\Face;
-use App\Models\Person;
-use App\Repositories\ConfigManager;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Routing\Controller;
 
@@ -40,6 +39,7 @@ class FaceClusterController extends Controller
 		$items = $paginated->map(function (Face $row): ClusterPreviewResource {
 			$cluster_label = (int) $row->cluster_label;
 			$face_count = (int) $row->face_count; // @phpstan-ignore property.notFound (see line 34)
+			// This is a n+1 query ...
 			$samples = Face::query()
 				->where('cluster_label', '=', $cluster_label)
 				->whereNull('person_id')
@@ -57,22 +57,13 @@ class FaceClusterController extends Controller
 		return new LengthAwarePaginator($items, $total, self::PER_PAGE, $page, ['path' => $request->url()]);
 	}
 
-	public function assign(ClusterAssignRequest $request, int $label): array
+	public function assign(ClusterAssignRequest $request, int $label, PersonFactory $person_factory): array
 	{
-		if ($request->personId() !== null) {
-			$person_id = $request->personId();
-		} else {
-			$is_searchable_default = app(ConfigManager::class)->getValueAsBool('ai_vision_face_person_is_searchable_default');
-			$person = new Person();
-			$person->name = (string) $request->newPersonName();
-			$person->is_searchable = $is_searchable_default;
-			$person->save();
-			$person_id = $person->id;
-		}
+		$person = $person_factory->findOrCreate($request->person_id, $request->new_person_name);
 		$count = Face::where('cluster_label', '=', $label)
 			->whereNull('person_id')
 			->where('is_dismissed', '=', false)
-			->update(['person_id' => $person_id]);
+			->update(['person_id' => $person->id]);
 
 		return ['assigned_count' => $count];
 	}

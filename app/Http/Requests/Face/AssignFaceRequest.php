@@ -12,7 +12,6 @@ use App\Contracts\Http\Requests\HasFace;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasFaceTrait;
 use App\Models\Face;
-use App\Models\Person;
 use App\Policies\AiVisionPolicy;
 use App\Rules\RandomIDRule;
 use Illuminate\Support\Facades\Gate;
@@ -21,8 +20,8 @@ class AssignFaceRequest extends BaseApiRequest implements HasFace
 {
 	use HasFaceTrait;
 
-	private ?Person $person;
-	private ?string $new_person_name;
+	public ?string $person_id = null;
+	public string $new_person_name;
 
 	public function authorize(): bool
 	{
@@ -33,7 +32,7 @@ class AssignFaceRequest extends BaseApiRequest implements HasFace
 	{
 		return [
 			'id' => ['required', new RandomIDRule(false)],
-			'person_id' => ['nullable', 'string', 'exists:persons,id'],
+			'person_id' => ['nullable', 'string'],
 			'new_person_name' => ['nullable', 'string', 'max:255'],
 		];
 	}
@@ -61,17 +60,7 @@ class AssignFaceRequest extends BaseApiRequest implements HasFace
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		$this->face = Face::findOrFail($values['id']);
-		$this->person = isset($values['person_id']) ? Person::find($values['person_id']) : null;
-		$this->new_person_name = $values['new_person_name'] ?? null;
-	}
-
-	public function person(): ?Person
-	{
-		return $this->person;
-	}
-
-	public function newPersonName(): ?string
-	{
-		return $this->new_person_name;
+		$this->person_id = $values['person_id'] ?? null;
+		$this->new_person_name = $values['new_person_name'] ?? 'people.unknown';
 	}
 }

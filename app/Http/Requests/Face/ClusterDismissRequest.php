@@ -8,24 +8,15 @@
 
 namespace App\Http\Requests\Face;
 
-use App\Http\Requests\BaseApiRequest;
+use App\Http\Requests\AbstractEmptyRequest;
 use App\Models\Face;
 use App\Policies\AiVisionPolicy;
 use Illuminate\Support\Facades\Gate;
 
-class ClusterDismissRequest extends BaseApiRequest
+class ClusterDismissRequest extends AbstractEmptyRequest
 {
 	public function authorize(): bool
 	{
 		return Gate::check(AiVisionPolicy::CAN_DISMISS_FACE, Face::class);
-	}
-
-	public function rules(): array
-	{
-		return [];
-	}
-
-	protected function processValidatedValues(array $values, array $files): void
-	{
 	}
 }

@@ -8,6 +8,7 @@
 
 namespace App\Http\Controllers\AiVision;
 
+use App\Factories\PersonFactory;
 use App\Http\Requests\Face\AssignFaceRequest;
 use App\Http\Requests\Face\DestroyDismissedFacesRequest;
 use App\Http\Requests\Face\ToggleDismissedRequest;
@@ -15,7 +16,6 @@ use App\Http\Resources\Models\FaceResource;
 use App\Jobs\DeleteFaceEmbeddingsJob;
 use App\Models\Face;
 use App\Models\Person;
-use App\Repositories\ConfigManager;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Storage;
 
@@ -31,21 +31,12 @@ class FaceController extends Controller
 	 *
 	 * @return FaceResource
 	 */
-	public function assign(AssignFaceRequest $request, string $id): FaceResource
+	public function assign(AssignFaceRequest $request, string $id, PersonFactory $person_factory): FaceResource
 	{
 		$face = $request->face();
 
-		if ($request->person() !== null) {
-			$face->person_id = $request->person()->id;
-		} else {
-			$is_searchable_default = app(ConfigManager::class)->getValueAsBool('ai_vision_face_person_is_searchable_default');
-			$person = new Person();
-			$person->name = $request->newPersonName();
-			$person->is_searchable = $is_searchable_default;
-			$person->save();
-			$face->person_id = $person->id;
-		}
-
+		$person = $person_factory->findOrCreate($request->person_id, $request->new_person_name);
+		$face->person_id = $person->id;
 		$face->save();
 
 		return FaceResource::fromModel($face->load(['suggestions.suggestedFace.person', 'person']));

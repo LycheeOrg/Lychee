@@ -10,12 +10,12 @@ namespace App\Jobs;
 
 use App\Enum\FaceScanStatus;
 use App\Models\Photo;
+use App\Services\Image\FacialRecognitionService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -39,11 +39,8 @@ class DispatchFaceScanJob implements ShouldQueue
 	/**
 	 * Execute the job: send the photo to the AI Vision service.
 	 */
-	public function handle(): void
+	public function handle(FacialRecognitionService $facial_recognition_service): void
 	{
-		$service_url = config('features.ai-vision.face-url', '');
-		$api_key = config('features.ai-vision.face-api-key', '');
-
 		$photo = Photo::with('size_variants')->find($this->photo_id);
 
 		if ($photo === null) {
@@ -52,7 +49,7 @@ class DispatchFaceScanJob implements ShouldQueue
 			return;
 		}
 
-		if ($service_url === '') {
+		if (!$facial_recognition_service->isConfigured()) {
 			Log::warning("DispatchFaceScanJob: AI Vision service not configured, marking photo {$this->photo_id} as failed.");
 			$photo->face_scan_status = FaceScanStatus::FAILED;
 			$photo->save();
@@ -71,15 +68,10 @@ class DispatchFaceScanJob implements ShouldQueue
 		}
 
 		try {
-			$data = [
-				'photo_id' => $this->photo_id,
-				'photo_path' => $original->short_path, // We just send short path. Not that this means that we do not support s3 for facial recognition.
-			];
-			$response = Http::withHeaders(['X-API-Key' => $api_key])
-				->post($service_url . '/detect', $data);
+			$response = $facial_recognition_service->detectFaces($this->photo_id, $original->short_path);
 
 			if (!$response->successful()) {
-				Log::warning("DispatchFaceScanJob: /detect returned HTTP {$response->status()} for photo {$this->photo_id}.", ['data' => $data, 'response' => $response->json()]);
+				Log::warning("DispatchFaceScanJob: /detect returned HTTP {$response->status()} for photo {$this->photo_id}.", ['response' => $response->json()]);
 				$photo->face_scan_status = FaceScanStatus::FAILED;
 				$photo->save();
 			}

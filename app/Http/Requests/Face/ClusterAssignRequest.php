@@ -15,8 +15,8 @@ use Illuminate\Support\Facades\Gate;
 
 class ClusterAssignRequest extends BaseApiRequest
 {
-	private ?string $person_id = null;
-	private ?string $new_person_name = null;
+	public ?string $person_id = null;
+	public string $new_person_name;
 
 	public function authorize(): bool
 	{
@@ -34,16 +34,6 @@ class ClusterAssignRequest extends BaseApiRequest
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		$this->person_id = $values['person_id'] ?? null;
-		$this->new_person_name = $values['new_person_name'] ?? null;
-	}
-
-	public function personId(): ?string
-	{
-		return $this->person_id;
-	}
-
-	public function newPersonName(): ?string
-	{
-		return $this->new_person_name;
+		$this->new_person_name = $values['new_person_name'] ?? 'people.unknown';
 	}
 }

@@ -13,11 +13,10 @@ use App\Http\Resources\Models\PersonResource;
 use App\Models\Face;
 use App\Models\Person;
 use App\Repositories\ConfigManager;
+use App\Services\Image\FacialRecognitionService;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use function Safe\file_get_contents;
 use function Safe\unlink;
 
 /**
@@ -34,24 +33,19 @@ class SelfieClaimController extends Controller
 	 *
 	 * @return PersonResource
 	 */
-	public function claimBySelfie(SelfieClaimRequest $request, ConfigManager $config_manager): PersonResource
+	public function claimBySelfie(SelfieClaimRequest $request, ConfigManager $config_manager, FacialRecognitionService $facial_recognition_service): PersonResource
 	{
 		/** @var \App\Models\User $user */
 		$user = Auth::user();
 
-		$service_url = config('features.ai-vision.face-url', '');
-		$api_key = config('features.ai-vision.face-api-key', '');
-
-		if ($service_url === '') {
+		if (!$facial_recognition_service->isConfigured()) {
 			abort(503, 'AI Vision service is not configured.');
 		}
 
 		$selfie = $request->selfie();
 
 		try {
-			$response = Http::withHeaders(['X-API-Key' => $api_key])
-				->attach('image', file_get_contents($selfie->getRealPath()), $selfie->getClientOriginalName())
-				->post($service_url . '/match');
+			$data = $facial_recognition_service->matchSelfie($selfie->getRealPath(), $selfie->getClientOriginalName());
 		} catch (\Exception $e) {
 			Log::warning('AI Vision selfie match request failed: ' . $e->getMessage());
 			abort(503, 'AI Vision service is unavailable.');
@@ -60,15 +54,11 @@ class SelfieClaimController extends Controller
 			unlink($selfie->getRealPath());
 		}
 
-		if (!$response->successful()) {
-			if ($response->status() === 422) {
-				abort(422, 'No face detected in the selfie image.');
-			}
+		if ($data === null) {
 			abort(503, 'AI Vision service returned an error.');
 		}
 
 		/** @var array{matches: array<array{lychee_face_id: string, confidence: float}>} $data */
-		$data = $response->json();
 		$matches = $data['matches'] ?? [];
 
 		if ($matches === []) {
