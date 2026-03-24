@@ -10,6 +10,7 @@ namespace App\Console\Commands;
 
 use App\Models\Album;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Model;
 
 class FixTree extends Command
 {
@@ -54,7 +55,11 @@ class FixTree extends Command
 		}
 
 		$this->line('Found ' . $total_errors . ' errors.');
+		// Normally we would not want that.
+		// But here we need to disable strict mode to be able to fix the tree.
+		Model::shouldBeStrict(false);
 		$fixed_nodes = $query->fixTree();
+		Model::shouldBeStrict(true);
 		$this->line('Fixed ' . $fixed_nodes . ' nodes.');
 
 		return 0;
