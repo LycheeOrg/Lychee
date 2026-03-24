@@ -115,6 +115,7 @@ function load() {
 			hasMorePages.value = response.data.meta.current_page < response.data.meta.last_page;
 		})
 		.catch((e) => {
+			console.error("Error loading face clusters:", e);
 			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });
 		})
 		.finally(() => {
@@ -132,6 +133,7 @@ function loadMore() {
 			hasMorePages.value = response.data.meta.current_page < response.data.meta.last_page;
 		})
 		.catch((e) => {
+			console.error("Error loading more face clusters:", e);
 			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });
 		})
 		.finally(() => {
@@ -156,6 +158,7 @@ function assignCluster(label: number) {
 			delete clusterNames[label];
 		})
 		.catch((e) => {
+			console.error("Error assigning face cluster:", e);
 			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });
 		})
 		.finally(() => {
@@ -177,6 +180,7 @@ function dismissCluster(label: number) {
 			delete clusterNames[label];
 		})
 		.catch((e) => {
+			console.error("Error dismissing face cluster:", e);
 			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });
 		})
 		.finally(() => {
@@ -192,6 +196,7 @@ function runClustering() {
 			setTimeout(() => load(), 3000);
 		})
 		.catch((e) => {
+			console.error("Error running face clustering:", e);
 			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });
 		})
 		.finally(() => {
