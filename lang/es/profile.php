@@ -41,7 +41,7 @@ return [
         'header' => 'OAuth',
         'header_not_available' => 'OAuth no está disponible',
         'setup_env' => 'Configura las credenciales en tu .env',
-        'token_registered' => 'Token% s registrado.',
+        'token_registered' => 'Token %s registrado.',
         'setup' => 'Configurar %s',
         'reset' => 'reiniciar',
         'credential_deleted' => '¡Credencial eliminada!',
