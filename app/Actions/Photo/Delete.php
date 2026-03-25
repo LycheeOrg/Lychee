@@ -11,10 +11,14 @@ namespace App\Actions\Photo;
 use App\Actions\Shop\PurchasableService;
 use App\Constants\PhotoAlbum as PA;
 use App\DTO\Delete\PhotosToBeDeletedDTO;
+use App\Enum\SizeVariantType;
+use App\Enum\StorageDiskType;
 use App\Events\PhotoDeleted;
+use App\Events\PhotoWillBeDeleted;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\ModelDBException;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Deletes the photos with the designated IDs **efficiently**.
@@ -108,6 +112,13 @@ readonly class Delete
 
 		$this->purchasable_service->deleteMulitplePhotoPurchasables($photo_ids, [$from_id]);
 
+		// Fire PhotoWillBeDeleted for each photo that will be hard-deleted,
+		// BEFORE executeDelete() removes the records from the database.
+		// Load a lean snapshot of photo data (id, title) and their size variants.
+		if (count($delete_photo_ids) > 0) {
+			$this->dispatchWillBeDeletedEvents($delete_photo_ids, $from_id);
+		}
+
 		$photos_to_be_deleted = new PhotosToBeDeletedDTO(
 			force_delete_photo_ids: $delete_photo_ids,
 			soft_delete_photo_ids: $photo_ids,
@@ -120,6 +131,59 @@ readonly class Delete
 
 		foreach ($jobs as $job) {
 			dispatch($job);
+		}
+	}
+
+	/**
+	 * Fire PhotoWillBeDeleted for each photo scheduled for hard deletion.
+	 *
+	 * Uses a lean DB query (no full Eloquent hydration) to load photo title
+	 * and size variant URLs before the records are removed.
+	 *
+	 * @param string[] $photo_ids IDs of photos to be hard-deleted.
+	 * @param string   $album_id  The album they are being deleted from.
+	 */
+	private function dispatchWillBeDeletedEvents(array $photo_ids, string $album_id): void
+	{
+		// Load minimal photo data.
+		$photos_data = DB::table('photos')
+			->whereIn('id', $photo_ids)
+			->select(['id', 'title'])
+			->get()
+			->keyBy('id');
+
+		// Load size variant data for all photos in one query.
+		$size_variants_raw = DB::table('size_variants')
+			->whereIn('photo_id', $photo_ids)
+			->select(['photo_id', 'type', 'short_path', 'storage_disk'])
+			->get()
+			->groupBy('photo_id');
+
+		foreach ($photo_ids as $photo_id) {
+			$photo_data = $photos_data->get($photo_id);
+			if ($photo_data === null) {
+				continue;
+			}
+
+			$variants = [];
+			$raw_variants = $size_variants_raw->get($photo_id, collect());
+			foreach ($raw_variants as $sv) {
+				// Reconstruct the public URL using Storage facade.
+				$disk_type = $sv->storage_disk !== null ? StorageDiskType::from($sv->storage_disk) : StorageDiskType::LOCAL;
+				$url = Storage::disk($disk_type->value)->url($sv->short_path);
+				$type_name = SizeVariantType::from($sv->type)->name();
+				$variants[] = [
+					'type' => $type_name,
+					'url' => $url,
+				];
+			}
+
+			PhotoWillBeDeleted::dispatch(
+				$photo_id,
+				$album_id,
+				$photo_data->title,
+				$variants,
+			);
 		}
 	}
 }

@@ -6,26 +6,25 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 | Question ID | Feature | Priority | Summary | Status | Opened | Updated |
 |-------------|---------|----------|---------|--------|--------|---------|
-| Q-031-08 | 031 – Configurable Webhooks | High | When `payload_format = query_string` and `send_size_variants = true`, how should the `size_variants` array (an array of `{type, url}` objects) be encoded in the URL query string? | Open | 2026-03-25 | 2026-03-25 |
+
+_No active questions for this feature._
 
 ## Question Details
 
-### Q-031-08: `size_variants` Encoding in Query-String Payload Format
+### ~~Q-031-08: `size_variants` Encoding in Query-String Payload Format~~ ✅ RESOLVED
 
 **Feature:** 031 – Configurable Webhooks
 **Priority:** High
-**Status:** Open
+**Status:** Resolved
 **Opened:** 2026-03-25
 
 **Context:** `payload_format = query_string` delivers all payload fields as URL query parameters. Simple scalar fields (`photo_id`, `album_id`, `title`) serialize trivially. However, `size_variants` is an array of objects (`[{type, url}]`), which has no single canonical query-string encoding.
 
-**Options:**
-- **Option A (Recommended):** Flat named keys — one param per selected size-variant type: `size_variant_original=https://...&size_variant_medium=https://...`. Simple, easy to consume in any framework. No nested encoding required.
-- **Option B:** PHP-style bracket notation — `size_variants[0][type]=original&size_variants[0][url]=https://...`. Familiar to PHP consumers; harder to consume in non-PHP contexts.
-- **Option C:** JSON-encode the entire array as a single URL-encoded parameter: `size_variants=%5B%7B%22type%22%3A%22original%22...%7D%5D`. Compact but requires JSON-parsing the query value.
-- **Option D:** Skip `size_variants` entirely in query-string mode. Admins who need size-variant URLs must use `payload_format = json`.
+**Resolution:** The URL of each size variant is **base64-encoded** (standard base64, not URL-safe) and delivered as a flat named query parameter using the pattern `size_variant_{type}=<base64(url)>`. For example: `size_variant_original=aHR0cHM6Ly9leGFtcGxlLmNvbS91cGxvYWRzL29yaWdpbmFsL3Bob3RvLmpwZw==&size_variant_medium=aHR0cHM6Ly9leGFtcGxlLmNvbS91cGxvYWRzL21lZGl1bS9waG90by5qcGc=`. Base64 encoding avoids any URL-encoding ambiguity for complex S3/CDN URLs.
 
-**Spec Impact:** FR-031-09, S-031-15, `WebhookPayloadBuilder`, and `WebhookDispatchJob` must be updated once resolved. Until resolved, `size_variants` is omitted from query-string payloads (implementation placeholder).
+**Spec Impact:** Updated FR-031-09, S-031-15, `WebhookPayloadBuilder`, and `WebhookDispatchJob`. Spec DSL updated.
+
+**Resolved:** 2026-03-25
 
 ---
 
