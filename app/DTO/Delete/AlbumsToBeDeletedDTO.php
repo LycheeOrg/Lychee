@@ -13,6 +13,7 @@ use App\Exceptions\Internal\LycheeLogicException;
 use App\Models\Album;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 final class AlbumsToBeDeletedDTO
 {
@@ -52,7 +53,7 @@ final class AlbumsToBeDeletedDTO
 			// We disable foreign key checks for the duration of the transaction to avoid issues with the complex web of FK constraints among albums,
 			// base_albums, and their dependents. The transactional nature ensures that FK checks are re-enabled at the end of the transaction block,
 			// even if an exception occurs.
-			DB::statement('SET FOREIGN_KEY_CHECKS=0');
+			Schema::disableForeignKeyConstraints();
 
 			// Safety check: ensure no photos are still linked to any of the albums.
 			// Chunk album_ids to avoid hitting the database placeholder limit (MySQL error 1390).
@@ -111,7 +112,7 @@ final class AlbumsToBeDeletedDTO
 			// Album table to remove gaps created by the removal.
 			$this->removeGaps();
 
-			DB::statement('SET FOREIGN_KEY_CHECKS=1');
+			Schema::enableForeignKeyConstraints();
 		});
 	}
 
