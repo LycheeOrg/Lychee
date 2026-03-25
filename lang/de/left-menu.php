@@ -18,9 +18,9 @@ return [
     'sign_out' => 'Abmelden',
     'about' => 'Über',
     'changelog' => 'Änderungsprotokoll',
-    'api' => 'API Dokumentation',
+    'api' => 'API-Dokumentation',
     'source_code' => 'Quellcode',
     'support' => 'Support',
-    'contact' => 'Contact',
-    'messages' => 'Messages',
+    'contact' => 'Kontakt',
+    'messages' => 'Nachrichten',
 ];

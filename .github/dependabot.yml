@@ -18,6 +18,9 @@ updates:
         dependency-type: "production"
       development-dependencies:
         dependency-type: "development"
+    ignore:
+      - dependency-name: "typescript"
+        versions: [ ">=6.0.0" ]
 
   - package-ecosystem: composer
     directory: /

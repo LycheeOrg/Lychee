@@ -20,6 +20,7 @@ use App\Repositories\ConfigManager;
 use App\Services\UrlGenerator;
 use Carbon\Exceptions\InvalidFormatException;
 use Carbon\Exceptions\UnitException;
+use GrahamCampbell\Markdown\Facades\Markdown;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -54,7 +55,7 @@ class Generate
 		$feed_item = [
 			'id' => $page_link,
 			'title' => $data->title,
-			'summary' => $data->description ?? '',
+			'summary' => Markdown::convert($data->description ?? '')->getContent(),
 			'updated' => $this->asDateTime($data->updated_at),
 			'link' => $page_link,
 			'enclosure' => $this->url_generator->pathToUrl($data->short_path, $data->storage_disk, SizeVariantType::ORIGINAL),

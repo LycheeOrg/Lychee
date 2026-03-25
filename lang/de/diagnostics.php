@@ -7,7 +7,7 @@ return [
     */
     'title' => 'Diagnostik',
     'copy_to_clipboard' => 'Diagnose in die Zwischenablage kopieren',
-    'self-diagnosis' => 'Selbst-Diagnose',
+    'self-diagnosis' => 'Selbstdiagnose',
     'info' => 'Info',
     'space' => 'Speicherplatz',
     'load_space' => 'Speicherplatzverbrauch laden.',
@@ -18,5 +18,5 @@ return [
         'info' => 'Info',
         'copy' => 'Diagnosen in die Zwischenablage kopiert!',
     ],
-    'copy_on_secure_context' => 'Copying diagnostics is only available in secure contexts (HTTPS).',
+    'copy_on_secure_context' => 'Das Kopieren der Diagnose ist nur in sicheren Kontexten (HTTPS) verfügbar.',
 ];
