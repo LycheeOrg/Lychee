@@ -6,138 +6,96 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 | Question ID | Feature | Priority | Summary | Status | Opened | Updated |
 |-------------|---------|----------|---------|--------|--------|---------|
-| Q-031-01 | 031 – Configurable Webhooks | High | Should HTTP-only (non-HTTPS) webhook URLs be allowed, or should HTTPS be enforced? | Open | 2026-03-25 | 2026-03-25 |
-| Q-031-02 | 031 – Configurable Webhooks | High | How should payload fields be sent when `method = GET` or `method = DELETE` (no request body by convention)? Query parameters? Custom headers? Ignore non-body methods? | Open | 2026-03-25 | 2026-03-25 |
-| Q-031-03 | 031 – Configurable Webhooks | Medium | Should deleted webhook configurations be hard-deleted or soft-deleted (with a `deleted_at` column)? | Open | 2026-03-25 | 2026-03-25 |
-| Q-031-04 | 031 – Configurable Webhooks | Medium | Should failed webhook dispatches be retried automatically? If so, how many times, with what back-off policy, and should failed attempts be visible to admins? | Open | 2026-03-25 | 2026-03-25 |
-| Q-031-05 | 031 – Configurable Webhooks | High | How should the `WebhookListener` distinguish a `photo.add` event from a `photo.move` event when both fire `PhotoSaved`? Use `wasRecentlyCreated`, a dedicated event, or extend `PhotoSaved` with an action type? | Open | 2026-03-25 | 2026-03-25 |
-| Q-031-06 | 031 – Configurable Webhooks | High | `PhotoDeleted` carries only `album_id`. How should the `WebhookListener` obtain full photo data (photo_id, title, size-variant URLs) for the `photo.delete` payload — listen to the Eloquent `deleting` model event, extend the `PhotoDeleted` event, or capture data in the delete Action before deletion? | Open | 2026-03-25 | 2026-03-25 |
-| Q-031-07 | 031 – Configurable Webhooks | Medium | Should the `WebhookResource` (API response) expose the raw `secret` value, mask it (e.g., `"****"`), or return only a boolean `has_secret` flag? | Open | 2026-03-25 | 2026-03-25 |
+| Q-031-08 | 031 – Configurable Webhooks | High | When `payload_format = query_string` and `send_size_variants = true`, how should the `size_variants` array (an array of `{type, url}` objects) be encoded in the URL query string? | Open | 2026-03-25 | 2026-03-25 |
 
 ## Question Details
 
-### Q-031-01: HTTPS Enforcement for Webhook URLs
+### Q-031-08: `size_variants` Encoding in Query-String Payload Format
 
 **Feature:** 031 – Configurable Webhooks
 **Priority:** High
 **Status:** Open
 **Opened:** 2026-03-25
 
-**Context:** FR-031-01 requires URL validation. Allowing plain HTTP exposes secret values to network interception; however, enforcing HTTPS may break local development and self-hosted environments where HTTPS is not configured.
+**Context:** `payload_format = query_string` delivers all payload fields as URL query parameters. Simple scalar fields (`photo_id`, `album_id`, `title`) serialize trivially. However, `size_variants` is an array of objects (`[{type, url}]`), which has no single canonical query-string encoding.
 
 **Options:**
-- **Option A (Recommended):** Allow both HTTP and HTTPS but display a warning in the admin UI when a plain HTTP URL is entered. Document the security risk.
-- **Option B:** Enforce HTTPS only. Reject HTTP URLs with a 422 validation error. Provide a config flag `WEBHOOK_ALLOW_HTTP=true` for operators who need plain HTTP (e.g., local dev).
-- **Option C:** Allow both without any warning. Leave security configuration to the operator.
+- **Option A (Recommended):** Flat named keys — one param per selected size-variant type: `size_variant_original=https://...&size_variant_medium=https://...`. Simple, easy to consume in any framework. No nested encoding required.
+- **Option B:** PHP-style bracket notation — `size_variants[0][type]=original&size_variants[0][url]=https://...`. Familiar to PHP consumers; harder to consume in non-PHP contexts.
+- **Option C:** JSON-encode the entire array as a single URL-encoded parameter: `size_variants=%5B%7B%22type%22%3A%22original%22...%7D%5D`. Compact but requires JSON-parsing the query value.
+- **Option D:** Skip `size_variants` entirely in query-string mode. Admins who need size-variant URLs must use `payload_format = json`.
 
-**Spec Impact:** FR-031-01 validation path and NFR-031-06 must be updated once resolved.
+**Spec Impact:** FR-031-09, S-031-15, `WebhookPayloadBuilder`, and `WebhookDispatchJob` must be updated once resolved. Until resolved, `size_variants` is omitted from query-string payloads (implementation placeholder).
 
 ---
 
-### Q-031-02: Payload Delivery for GET and DELETE Methods
+### ~~Q-031-01: HTTPS Enforcement for Webhook URLs~~ ✅ RESOLVED
 
-**Feature:** 031 – Configurable Webhooks
-**Priority:** High
-**Status:** Open
-**Opened:** 2026-03-25
+**Resolution:** **Option A** — Allow both HTTP and HTTPS. Plain HTTP URLs are accepted at the server; the admin UI displays a security warning ("Plain HTTP transmits your secret key in cleartext.") when a non-HTTPS URL is entered. No backend enforcement.
 
-**Context:** HTTP GET and DELETE requests conventionally carry no request body. If an admin configures a webhook with `method = GET` or `method = DELETE`, it is unclear how the payload fields (photo_id, album_id, title, size_variants) should be transmitted.
+**Spec Impact:** Updated FR-031-01 (validation path), NFR-031-06, UI-031-08, S-031-21. HTTP URL warning added to modal mock-up.
 
-**Options:**
-- **Option A (Recommended):** For GET and DELETE, append all selected payload fields as URL query parameters. E.g., `?photo_id=xxx&album_id=yyy&title=...&size_variants[0][type]=original&...`.
-- **Option B:** Disallow GET and DELETE methods entirely (limit to POST, PUT, PATCH). Simplifies implementation; removes ambiguity. Update FR-031-01 and WebhookMethod enum.
-- **Option C:** For GET and DELETE, send the payload as a JSON body anyway (non-standard but accepted by many endpoint frameworks).
-
-**Spec Impact:** FR-031-09, WebhookMethod enum, WebhookDispatchJob, S-031-15 must be updated once resolved.
+**Resolved:** 2026-03-25
 
 ---
 
-### Q-031-03: Hard Delete vs. Soft Delete for Webhook Records
+### ~~Q-031-02: Payload Delivery for GET and DELETE Methods~~ ✅ RESOLVED
 
-**Feature:** 031 – Configurable Webhooks
-**Priority:** Medium
-**Status:** Open
-**Opened:** 2026-03-25
+**Resolution:** **New option** — Add a `payload_format` field to the `Webhook` model. Admins choose per-webhook whether to deliver the payload as a **JSON body** (`json`) or **URL query parameters** (`query_string`). This choice is independent of HTTP method. If the admin selects `payload_format = json` with `method = GET`, Lychee sends the JSON body regardless (explicit operator choice; documented in admin guide). Note: `size_variants` encoding in query-string mode is tracked separately in Q-031-08.
 
-**Context:** Lychee uses both hard deletes and soft deletes depending on the model. Soft-deleted webhooks would survive accidental deletion but add complexity to queries (global scope or explicit `withTrashed`).
+**Spec Impact:** Added `payload_format` field to DO-031-01 (Webhook model), FR-031-01, FR-031-09, S-031-15, S-031-20, `WebhookPayloadFormat` enum, migration, mock-up, WebhookDispatchJob, Spec DSL.
 
-**Options:**
-- **Option A (Recommended):** Hard delete only. The `enabled` flag provides sufficient protection against accidental triggering. Consistent with simpler admin CRUD patterns.
-- **Option B:** Soft delete with `deleted_at` column. Allows recovery of accidentally deleted configurations. Requires adding `SoftDeletes` trait and excluding soft-deleted records from dispatch queries.
-
-**Spec Impact:** NFR-031-02 and the migration (DO-031-01) must be updated once resolved.
+**Resolved:** 2026-03-25
 
 ---
 
-### Q-031-04: Automatic Retry Policy for Failed Dispatches
+### ~~Q-031-03: Hard Delete vs. Soft Delete for Webhook Records~~ ✅ RESOLVED
 
-**Feature:** 031 – Configurable Webhooks
-**Priority:** Medium
-**Status:** Open
-**Opened:** 2026-03-25
+**Resolution:** **Option A** — Hard delete only. No `deleted_at` column. The `enabled` flag provides sufficient protection.
 
-**Context:** The spec currently requires only logging on failure (NFR-031-04). Laravel Queue supports automatic job retries natively. The question is whether failed dispatches should be retried, and if so, with what policy.
+**Spec Impact:** Updated NFR-031-02, FR-031-04, DO-031-01 (no `deleted_at`), migration (no `deleted_at` column), `WebhookController.destroy()`.
 
-**Options:**
-- **Option A (Recommended):** No automatic retry. Log failure at ERROR level and discard. Keeps the feature simple; operators can use `php artisan lychee:webhook-test` to manually verify connectivity. Retry policy can be added as a follow-up feature.
-- **Option B:** Use Laravel's built-in job retry mechanism with a configurable `$tries` and exponential back-off via `$backoff`. Store retry count and last-error in the `webhooks` table or a separate `webhook_dispatch_log` table. Requires additional schema work.
-- **Option C:** Add a `webhook_dispatch_log` table and surface delivery history in the admin UI. Most visibility but highest implementation cost.
-
-**Spec Impact:** NFR-031-04 and the `WebhookDispatchJob` must be updated once resolved. Option B/C would add DO-031-05 and potentially new routes.
+**Resolved:** 2026-03-25
 
 ---
 
-### Q-031-05: Distinguishing `photo.add` from `photo.move` via `PhotoSaved`
+### ~~Q-031-04: Automatic Retry Policy for Failed Dispatches~~ ✅ RESOLVED
 
-**Feature:** 031 – Configurable Webhooks
-**Priority:** High
-**Status:** Open
-**Opened:** 2026-03-25
+**Resolution:** **Option A** — No automatic retry. Log failure at ERROR level and discard. `WebhookDispatchJob.$tries = 1`.
 
-**Context:** Both a new photo being added and an existing photo being moved between albums fire the `PhotoSaved` event (which carries only `photo_id`). The `WebhookListener` must determine which webhook event type to use.
+**Spec Impact:** Updated NFR-031-04, DO-031-04, `WebhookDispatchJob`.
 
-**Options:**
-- **Option A (Recommended):** Use `Photo::wasRecentlyCreated` on the reloaded model in the listener to distinguish add (true) from move (false). Simple, requires no event changes.
-- **Option B:** Extend the `PhotoSaved` event class to carry an action type field (`add` | `move`). Requires modifying the existing event class and all places that fire it.
-- **Option C:** Add new dedicated events `PhotoAdded` and `PhotoMoved` and fire them from the relevant action classes (`Create`, `MoveOrDuplicate`). Cleanest separation but requires changes to more files.
-
-**Spec Impact:** Appendix "Relationship to Existing Events" table and the `WebhookListener` implementation notes must be updated once resolved.
+**Resolved:** 2026-03-25
 
 ---
 
-### Q-031-06: Capturing Photo Data Before Hard Deletion
+### ~~Q-031-05: Distinguishing `photo.add` from `photo.move` via `PhotoSaved`~~ ✅ RESOLVED
 
-**Feature:** 031 – Configurable Webhooks
-**Priority:** High
-**Status:** Open
-**Opened:** 2026-03-25
+**Resolution:** **Option C** — Add new dedicated events `PhotoAdded` and `PhotoMoved`, fired from the relevant action classes. `PhotoAdded` fired from `app/Actions/Photo/Pipes/Shared/SetParent.php` for new photo records. `PhotoMoved` fired from `app/Actions/Photo/MoveOrDuplicate.php` when source and destination albums differ. Existing `PhotoSaved` remains unchanged and continues to serve existing listeners.
 
-**Context:** `PhotoDeleted` currently carries only `album_id`. The `photo.delete` webhook payload needs `photo_id`, `album_id`, `title`, and size-variant URLs. By the time the listener runs, the photo model may already be deleted from the database.
+**Spec Impact:** Added `PhotoAdded`, `PhotoMoved` to DO-031-03, Spec DSL `domain_events`, Appendix event table. Updated FR-031-06, FR-031-07, plan Dependencies, Scope, I1 steps, I3 steps. New tasks T-031-02, T-031-14, T-031-15.
 
-**Options:**
-- **Option A (Recommended):** Listen to the Eloquent `deleting` model observer event on `Photo`. Capture a snapshot (`photo_id`, `album_id`, `title`, `size_variants`) before deletion and pass it to `WebhookDispatchJob`. Requires registering a `PhotoObserver` or using the `deleting` hook inside the `Delete` action.
-- **Option B:** Extend the `PhotoDeleted` event class to carry a full `PhotoSnapshot` DTO (photo_id, album_id, title, size_variants). Requires modifying the existing event class and the `Delete` action that fires it.
-- **Option C:** In the `WebhookListener`, attempt to load the photo model from the DB immediately when `PhotoDeleted` fires, before it is hard-deleted (race-condition risk in async environments — not recommended).
-
-**Spec Impact:** FR-031-08, DO-031-04, and the `WebhookListener` must be updated once resolved. Option B would also update `PhotoDeleted` event.
+**Resolved:** 2026-03-25
 
 ---
 
-### Q-031-07: Secret Exposure in API Response
+### ~~Q-031-06: Capturing Photo Data Before Hard Deletion~~ ✅ RESOLVED
 
-**Feature:** 031 – Configurable Webhooks
-**Priority:** Medium
-**Status:** Open
-**Opened:** 2026-03-25
+**Resolution:** **Option D** — Create a new `PhotoWillBeDeleted` event that carries the full photo snapshot (`photo_id`, `album_id`, `title`, `size_variants[]`). This event is fired from `app/Actions/Photo/Delete.php` **before** `executeDelete()`, per photo scheduled for deletion. No Eloquent hooks or model observers. Existing `PhotoDeleted` event remains unchanged.
 
-**Context:** The `WebhookResource` is returned on CRUD operations. Returning the raw `secret` value in read responses allows admins to retrieve it after creation but creates a re-exposure risk.
+**Spec Impact:** Added `PhotoWillBeDeleted` to DO-031-03, Spec DSL `domain_events`, Appendix event table. Updated FR-031-08, plan Dependencies, I1 steps, I3 steps. New tasks T-031-02, T-031-16.
 
-**Options:**
-- **Option A (Recommended):** Exclude `secret` from the API response entirely. Return a boolean `has_secret` flag. Admins must set a new secret if they lose it (treat it like a password).
-- **Option B:** Return the `secret` in the response only at creation time (HTTP 201), then mask it in subsequent GET responses (return `"****"`).
-- **Option C:** Always return the raw `secret` value in API responses (admin-only endpoint so access is already controlled).
+**Resolved:** 2026-03-25
 
-**Spec Impact:** `WebhookResource` (DO-031-01) and FR-031-02 (list response shape) must be updated once resolved.
+---
+
+### ~~Q-031-07: Secret Exposure in API Response~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — Exclude raw `secret` from all API responses. Return `has_secret` (boolean) computed as `secret !== null`. Admins must set a new secret if they lose it.
+
+**Spec Impact:** Updated DO-031-01, FR-031-02, `WebhookResource`, S-031-22, Spec DSL.
+
+**Resolved:** 2026-03-25
 
 ---
 

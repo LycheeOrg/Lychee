@@ -2,7 +2,7 @@
 
 | Field | Value |
 |-------|-------|
-| Status | Draft |
+| Status | Draft (questions Q-031-01 – Q-031-07 resolved) |
 | Last updated | 2026-03-25 |
 | Owners | LycheeOrg |
 | Linked plan | `docs/specs/4-architecture/features/031-configurable-webhooks/plan.md` |
@@ -24,7 +24,7 @@ Affected modules: `core` (Webhook model, domain events), `application` (WebhookD
 3. Each webhook supports configurable HTTP method (GET, POST, PUT, PATCH, DELETE), target URL, optional secret key, and configurable secret-header name.
 4. Administrators can choose which payload fields are included per webhook: `photo_id`, `album_id`, `title`, and any subset of the nine `SizeVariantType` URLs as a JSON array.
 5. Webhook dispatch is non-blocking (queued asynchronously via Laravel Queue).
-6. Failed dispatches are logged; no automatic retry is required (see NFR-031-04 and open question Q-031-04).
+6. Failed dispatches are logged at ERROR level and discarded — no automatic retry (resolved: NFR-031-04, Q-031-04 → A).
 
 ## Non-Goals
 
@@ -32,7 +32,7 @@ Affected modules: `core` (Webhook model, domain events), `application` (WebhookD
 - Receiving/consuming inbound webhooks.
 - Webhook signature verification on the Lychee side (Lychee sends signatures, does not receive them).
 - Per-user webhook configurations — admin-only management.
-- Delivery retries beyond what Laravel's built-in queue retry mechanism offers (Q-031-04).
+- Delivery retries — failed dispatches are discarded after one attempt (Q-031-04 → A).
 - Batching/aggregating multiple photos into a single webhook call.
 - Real-time webhook delivery status dashboard in the UI.
 
@@ -40,15 +40,15 @@ Affected modules: `core` (Webhook model, domain events), `application` (WebhookD
 
 | ID | Requirement | Success path | Validation path | Failure path | Telemetry & traces | Source |
 |----|-------------|--------------|-----------------|--------------|--------------------|--------|
-| FR-031-01 | Admin can create a webhook configuration with: `name` (human label), `url`, `method` (GET/POST/PUT/PATCH/DELETE), `event` (photo.add / photo.move / photo.delete), optional `secret`, optional `secret_header` (header name carrying the secret), `enabled` flag, and a set of `payload_fields` flags (`send_photo_id`, `send_album_id`, `send_title`, `send_size_variants`, `size_variant_types[]`). | Webhook record persisted; admin sees it in list. | `url` must be a valid HTTPS or HTTP URL (Q-031-01); `method` must be one of the allowed enum values; `event` must be one of three allowed values; `secret_header` must be a valid HTTP header name when `secret` is provided; `name` is required and ≤255 chars. | Return 422 with field-level validation errors. | — | Problem statement |
-| FR-031-02 | Admin can list all configured webhooks with their current `enabled` state, `event`, `method`, and `url`. | Paginated list returned. | None (read-only). | — | — | Problem statement |
+| FR-031-01 | Admin can create a webhook configuration with: `name` (human label), `url`, `method` (GET/POST/PUT/PATCH/DELETE), `event` (photo.add / photo.move / photo.delete), `payload_format` (`json` or `query_string`), optional `secret`, optional `secret_header` (header name carrying the secret), `enabled` flag, and a set of `payload_fields` flags (`send_photo_id`, `send_album_id`, `send_title`, `send_size_variants`, `size_variant_types[]`). | Webhook record persisted; admin sees it in list. | `url` must be a valid HTTP or HTTPS URL; plain HTTP is accepted but the admin UI displays a security warning (Q-031-01 → A). `method` must be one of the allowed enum values. `event` must be one of three allowed values. `payload_format` is required and must be `json` or `query_string`. `secret_header` must be a valid HTTP header name when `secret` is provided; `name` is required and ≤255 chars. | Return 422 with field-level validation errors. | — | Problem statement |
+| FR-031-02 | Admin can list all configured webhooks. The list response includes `has_secret` (boolean) instead of the raw `secret` value. | Paginated list returned. | None (read-only). | — | — | Problem statement; Q-031-07 → A |
 | FR-031-03 | Admin can update any field of an existing webhook. | Webhook record updated. | Same validation as FR-031-01. | Return 422 or 404 (webhook not found). | — | Problem statement |
-| FR-031-04 | Admin can delete a webhook configuration. | Webhook record removed; no further dispatches fired. | None. | Return 404 if webhook does not exist. | — | Problem statement |
+| FR-031-04 | Admin can delete a webhook configuration (hard delete — no soft-delete). | Webhook record permanently removed; no further dispatches fired. | None. | Return 404 if webhook does not exist. | — | Problem statement; Q-031-03 → A |
 | FR-031-05 | Admin can enable or disable a webhook without deleting it (`enabled` toggle). | `enabled` flag toggled; disabled webhooks are skipped during dispatch. | — | — | — | Problem statement |
-| FR-031-06 | When a photo is **added** to Lychee (via upload, import, or duplication), all `enabled` webhooks with `event = photo.add` fire once per photo, independently. | Each webhook receives a HTTP request containing the configured payload fields. | Photo must exist and be accessible before dispatch is queued. | If the HTTP request fails, the failure is logged (see NFR-031-04). Dispatch does not block the photo-add flow. | Log entry per webhook dispatch attempt. | Problem statement |
-| FR-031-07 | When a photo is **moved** between albums, all `enabled` webhooks with `event = photo.move` fire once per photo. | Same as FR-031-06. | — | Same as FR-031-06. | — | Problem statement |
-| FR-031-08 | When a photo is **deleted**, all `enabled` webhooks with `event = photo.delete` fire once per photo. Payload is constructed from the photo data available **before** deletion completes. | Same as FR-031-06. | Photo data must be captured before the model is hard-deleted. | Same as FR-031-06. | — | Problem statement |
-| FR-031-09 | The webhook HTTP request payload (for POST/PUT/PATCH; see Q-031-02 for GET/DELETE) includes only the fields selected in the webhook's `payload_fields` configuration: `photo_id` (string), `album_id` (string), `title` (string), `size_variants` (array of objects `{type, url}` for the selected `SizeVariantType` values). | Payload contains only requested fields. | Fields not selected are absent from payload. | — | — | Problem statement |
+| FR-031-06 | When a photo is **added** to Lychee (via upload, import, or duplication), the application fires the new `PhotoAdded` domain event once per photo. All `enabled` webhooks with `event = photo.add` fire once per photo, independently, in response. | Each webhook receives a HTTP request containing the configured payload fields. | Photo must exist before dispatch is queued. | If the HTTP request fails, the failure is logged at ERROR level (NFR-031-04). Dispatch does not block the photo-add flow. | Log entry per webhook dispatch attempt. | Problem statement; Q-031-05 → C |
+| FR-031-07 | When a photo is **moved** between albums, the application fires the new `PhotoMoved` domain event once per photo. All `enabled` webhooks with `event = photo.move` fire once per photo. | Same as FR-031-06. | — | Same as FR-031-06. | — | Problem statement; Q-031-05 → C |
+| FR-031-08 | When a photo is **deleted**, the `Delete` action fires the new `PhotoWillBeDeleted` domain event per photo, **before** the photo record is removed from the database, carrying the full photo snapshot (photo_id, album_id, title, size-variant URLs). All `enabled` webhooks with `event = photo.delete` fire once per photo using this snapshot. | Same as FR-031-06. | The event must carry full photo data captured before DB deletion; the `Delete` action is responsible for loading and serializing this data. | Same as FR-031-06. | — | Problem statement; Q-031-06 → D |
+| FR-031-09 | The outgoing webhook request delivers only the fields selected in the webhook's `payload_fields` configuration: `photo_id` (string), `album_id` (string), `title` (string), `size_variants` (array of objects `{type, url}` for the selected `SizeVariantType` values). The delivery format is governed by `payload_format`: **`json`** — payload sent as a JSON request body (`Content-Type: application/json`) regardless of HTTP method; **`query_string`** — payload sent as URL query parameters (see Q-031-08 for `size_variants` encoding in query-string mode). | Payload contains only requested fields in the configured format. | Fields not selected are absent from payload. | — | — | Problem statement; Q-031-02 |
 | FR-031-10 | When `secret` is configured on a webhook, Lychee sets the `secret_header` HTTP header (default: `X-Webhook-Secret`) to the raw secret value on every outgoing request. | Header is present with correct value. | If `secret` is configured but `secret_header` is empty, default to `X-Webhook-Secret`. | — | — | Problem statement |
 | FR-031-11 | `size_variant_types[]` specifies which of the nine `SizeVariantType` values (RAW, ORIGINAL, MEDIUM2X, MEDIUM, SMALL2X, SMALL, THUMB2X, THUMB, PLACEHOLDER) should have their URL included in the `size_variants` array. Only variants that exist for the photo are included; missing variants are omitted silently. | Array contains `{type, url}` objects for available variants matching the selection. | — | — | — | Problem statement |
 | FR-031-12 | Only administrators (`is_admin = true`) may call the webhook CRUD API endpoints. Non-admin requests receive 403. | — | Middleware/policy check on every webhook CRUD route. | Return 403. | — | Problem statement |
@@ -59,11 +59,11 @@ Affected modules: `core` (Webhook model, domain events), `application` (WebhookD
 | ID | Requirement | Driver | Measurement | Dependencies | Source |
 |----|-------------|--------|-------------|--------------|--------|
 | NFR-031-01 | Webhook dispatch is fully asynchronous. Photo operations (add, move, delete) must not block waiting for HTTP responses. | User experience — photo operations must remain fast. | Photo add/move/delete response times unaffected by webhook configuration. | Laravel Queue | Problem statement |
-| NFR-031-02 | Webhook configurations must be stored in the database (`webhooks` table) with soft-delete or hard-delete (Q-031-03). | Persistence | All CRUD operations survive application restarts. | Eloquent Model, migrations | Problem statement |
+| NFR-031-02 | Webhook configurations are hard-deleted (no soft-delete). The `enabled` flag provides sufficient protection against accidental triggering. | Persistence | Webhook record is permanently removed on delete. All CRUD operations survive application restarts. | Eloquent Model, migrations | Q-031-03 → A |
 | NFR-031-03 | Secret values must be stored encrypted in the database using Laravel's `encrypted` cast. | Security — secrets must not be stored in plaintext. | PHPStan static analysis; encrypted cast applied on model. | Laravel encryption (`APP_KEY`) | Security best practice |
-| NFR-031-04 | Failed webhook dispatches (non-2xx response, network error, timeout) are logged at ERROR level. No automatic retry is mandated by this spec (Q-031-04 tracks retry policy). | Observability | Log entry visible in `storage/logs/laravel.log`. | Laravel Logging | Problem statement |
+| NFR-031-04 | Failed webhook dispatches (non-2xx response, network error, timeout) are logged at ERROR level and discarded. No automatic retry. Operators can use `php artisan lychee:webhook-test` to verify connectivity manually. | Observability / simplicity | Log entry visible in `storage/logs/laravel.log`. | Laravel Logging | Q-031-04 → A |
 | NFR-031-05 | Outgoing webhook requests carry a `User-Agent: Lychee/<version>` header on every call. | Identification | Verified in feature tests with HTTP fake. | Laravel HTTP client | Operational convention |
-| NFR-031-06 | Webhook URL must be validated as a syntactically valid URL at create/update time. Plain HTTP is allowed (Q-031-01 tracks HTTPS enforcement). | Data integrity | Validation rule applied in FormRequest. | Laravel Validator | Problem statement |
+| NFR-031-06 | Webhook URL validation allows both HTTP and HTTPS. When an HTTP (non-HTTPS) URL is saved, the admin UI displays a visible security warning ("Plain HTTP transmits secrets in cleartext"). HTTPS is not enforced server-side. | Security UX — warns operators without blocking self-hosted HTTP environments. | UI review; no backend enforcement needed. | Vue 3 admin UI | Q-031-01 → A |
 | NFR-031-07 | The admin Webhooks management page must be accessible via the existing Lychee admin panel navigation, consistent with the look and feel of other admin pages (PrimeVue components). | Consistency | Visual review against Settings and Maintenance pages. | PrimeVue, Vue 3 | Problem statement |
 | NFR-031-08 | Webhook dispatch timeout is configurable via a Lychee `configs` table entry `webhook_timeout_seconds` (default: 10 seconds). | Resilience — prevents runaway HTTP connections from stalling queue workers. | Feature test asserts timeout value forwarded to HTTP client. | Laravel HTTP client, configs table | Problem statement |
 
@@ -93,6 +93,10 @@ Affected modules: `core` (Webhook model, domain events), `application` (WebhookD
 │ Event *         [photo.add            ▼]        │
 │ Method *        [POST                 ▼]        │
 │ URL *           [https://example.com/hook]      │
+│                 ⚠ Plain HTTP sends secrets      │
+│                   in cleartext                  │
+│ Payload format* [JSON body            ▼]        │
+│                 (JSON body | Query string)       │
 │ Enabled         [✓]                             │
 ├─ Authentication ───────────────────────────────┤
 │ Secret key      [____________________________]  │
@@ -123,17 +127,20 @@ Affected modules: `core` (Webhook model, domain events), `application` (WebhookD
 | S-031-06 | Admin deletes a webhook → record removed, no further dispatches. |
 | S-031-07 | Admin disables a webhook → subsequent photo events do not trigger it. |
 | S-031-08 | Non-admin user calls webhook CRUD endpoint → 403. |
-| S-031-09 | Photo added → enabled `photo.add` webhooks fire once per photo; payload contains selected fields only. |
-| S-031-10 | Photo moved → enabled `photo.move` webhooks fire once per photo. |
-| S-031-11 | Photo deleted → enabled `photo.delete` webhooks fire once per photo with pre-deletion data. |
-| S-031-12 | Bulk delete of N photos → N × (number of matching webhooks) HTTP calls fired. |
+| S-031-09 | Photo added (via `PhotoAdded` event) → enabled `photo.add` webhooks fire once per photo; payload contains selected fields only. |
+| S-031-10 | Photo moved (via `PhotoMoved` event) → enabled `photo.move` webhooks fire once per photo. |
+| S-031-11 | Photo deleted (via `PhotoWillBeDeleted` event) → enabled `photo.delete` webhooks fire once per photo with pre-deletion data. |
+| S-031-12 | Bulk delete of N photos → N `PhotoWillBeDeleted` events → N × (number of matching webhooks) HTTP calls fired. |
 | S-031-13 | Webhook with `secret` configured → outgoing request carries `secret_header` set to secret value. |
 | S-031-14 | Webhook with `send_size_variants = true` and `size_variant_types = [original, medium]` → `size_variants` array contains only `original` and `medium` entries (skipping absent variants). |
-| S-031-15 | Webhook with `method = GET` → payload fields sent as query parameters (see Q-031-02). |
+| S-031-15 | Webhook with `payload_format = query_string` → payload fields sent as URL query parameters; `photo_id`, `album_id`, `title` included as individual params (see Q-031-08 for `size_variants` encoding). |
 | S-031-16 | Webhook HTTP request returns non-2xx → error logged; photo operation unaffected. |
 | S-031-17 | Webhook HTTP request times out (exceeds `webhook_timeout_seconds`) → error logged; photo operation unaffected. |
 | S-031-18 | No enabled webhooks for an event → no HTTP calls fired; no overhead. |
 | S-031-19 | Photo deleted via bulk operation (multiple photos) → one webhook call per photo (not aggregated). |
+| S-031-20 | Webhook with `payload_format = json` and `method = GET` → JSON payload sent as request body (explicit user choice; documented in admin guide). |
+| S-031-21 | Admin creates a webhook with a plain HTTP URL → record saved; admin UI displays HTTP security warning. |
+| S-031-22 | List response for a webhook with a configured secret → `has_secret = true` returned; raw secret value absent from response. |
 
 ## Test Strategy
 
@@ -149,10 +156,10 @@ Affected modules: `core` (Webhook model, domain events), `application` (WebhookD
 
 | ID | Description | Modules |
 |----|-------------|---------|
-| DO-031-01 | `Webhook` Eloquent model: `id` (ulid), `name` (string, 255), `event` (enum: photo.add / photo.move / photo.delete), `method` (enum: GET / POST / PUT / PATCH / DELETE), `url` (string, 2048), `secret` (string, nullable, encrypted), `secret_header` (string, nullable, default `X-Webhook-Secret`), `enabled` (boolean, default true), `send_photo_id` (boolean), `send_album_id` (boolean), `send_title` (boolean), `send_size_variants` (boolean), `size_variant_types` (JSON array of SizeVariantType names, nullable) — timestamps. | core, application, REST |
+| DO-031-01 | `Webhook` Eloquent model: `id` (ulid), `name` (string, 255), `event` (enum: photo.add / photo.move / photo.delete), `method` (enum: GET / POST / PUT / PATCH / DELETE), `url` (string, 2048), `payload_format` (enum: json / query_string), `secret` (string, nullable, encrypted — never exposed in API responses), `secret_header` (string, nullable, default `X-Webhook-Secret`), `enabled` (boolean, default true), `send_photo_id` (boolean), `send_album_id` (boolean), `send_title` (boolean), `send_size_variants` (boolean), `size_variant_types` (JSON array of SizeVariantType names, nullable) — timestamps. Hard-deleted (no `deleted_at`). API responses expose `has_secret` (boolean) instead of the raw secret. | core, application, REST |
 | DO-031-02 | `WebhookPayload` DTO: built per webhook configuration from a Photo model snapshot. Fields: `photo_id?`, `album_id?`, `title?`, `size_variants?` (array of `{type: string, url: string}`). | application |
-| DO-031-03 | `PhotoWebhookEvent` enum: `photo.add`, `photo.move`, `photo.delete`. Used as the `event` column value and as the event type key when dispatching. | core |
-| DO-031-04 | `WebhookDispatchJob` queued job: accepts one `Webhook` model and one `WebhookPayload` DTO; fires the HTTP request; logs failure on non-2xx or exception. | application |
+| DO-031-03 | `PhotoWebhookEvent` enum: `photo.add`, `photo.move`, `photo.delete`. Used as the `event` column value and as the event type key when dispatching. Three new Laravel events are introduced: `PhotoAdded` (fired from `Create` action per photo), `PhotoMoved` (fired from `MoveOrDuplicate` action per photo when albums differ), and `PhotoWillBeDeleted` (fired from `Delete` action per photo **before** DB deletion, carrying photo_id, album_id, title, and size-variant URLs as a serialized snapshot). | core |
+| DO-031-04 | `WebhookDispatchJob` queued job: accepts one `Webhook` model and one `WebhookPayload` DTO; fires the HTTP request using `payload_format` to determine whether to send a JSON body or query-string parameters; logs failure on non-2xx or exception (no retry). | application |
 
 ### API Routes / Services
 
@@ -189,6 +196,7 @@ Affected modules: `core` (Webhook model, domain events), `application` (WebhookD
 | UI-031-05 | Size-variant checkboxes disabled | `send_size_variants` unchecked → individual size-variant checkboxes greyed out. |
 | UI-031-06 | Secret header field | `secret` field empty → `secret_header` field greyed out (not applicable). |
 | UI-031-07 | Delete confirmation | Admin clicks delete → confirmation dialog before removal. |
+| UI-031-08 | HTTP URL warning | Admin enters a plain HTTP URL → inline warning: "Plain HTTP transmits your secret key in cleartext." Warning disappears when HTTPS URL is entered. |
 
 ## Telemetry & Observability
 
@@ -212,6 +220,7 @@ On each dispatch attempt Lychee writes a structured log entry at DEBUG level on 
 domain_objects:
   - id: DO-031-01
     name: Webhook
+    hard_delete: true
     fields:
       - name: id
         type: ulid (string)
@@ -225,8 +234,13 @@ domain_objects:
       - name: url
         type: string
         constraints: "max:2048, required, url"
+      - name: payload_format
+        type: enum (json | query_string)
+        constraints: "required, default: json"
       - name: secret
-        type: string (nullable, encrypted)
+        type: string (nullable, encrypted, excluded from API response)
+      - name: has_secret
+        type: boolean (virtual, computed, returned in API response instead of secret)
       - name: secret_header
         type: string (nullable)
         constraints: "default: X-Webhook-Secret"
@@ -243,6 +257,17 @@ domain_objects:
         type: boolean
       - name: size_variant_types
         type: json (array of SizeVariantType names, nullable)
+
+domain_events:
+  - name: PhotoAdded
+    fired_from: app/Actions/Photo/Pipes/Shared/SetParent.php (new photo records only)
+    carries: photo_id
+  - name: PhotoMoved
+    fired_from: app/Actions/Photo/MoveOrDuplicate.php (when source != destination album)
+    carries: photo_id, from_album_id, to_album_id
+  - name: PhotoWillBeDeleted
+    fired_from: app/Actions/Photo/Delete.php (before executeDelete(), per photo)
+    carries: photo_id, album_id, title, size_variants (serialized snapshot)
 
 routes:
   - id: API-031-01
@@ -299,11 +324,13 @@ ui_states:
     description: Secret header field disabled when secret is empty
   - id: UI-031-07
     description: Delete confirmation dialog
+  - id: UI-031-08
+    description: HTTP URL security warning displayed when plain HTTP URL is entered
 ```
 
 ## Appendix
 
-### Outgoing Webhook Payload Example (POST)
+### Outgoing Webhook Payload Example (JSON format — POST)
 
 ```json
 {
@@ -317,6 +344,14 @@ ui_states:
 }
 ```
 
+### Outgoing Webhook Payload Example (query_string format — GET)
+
+```
+GET /hook?photo_id=01HXYZ1234ABCDEFGHIJK&album_id=01HXYZ5678LMNOPQRSTU&title=Sunset+over+the+mountains HTTP/1.1
+```
+
+> Note: `size_variants` encoding in query-string mode is unresolved (Q-031-08). Flat key encoding (`size_variant_original=https://...&size_variant_medium=https://...`) is the recommended option; see open-questions.md.
+
 ### Outgoing Webhook Request Headers Example
 
 ```
@@ -328,14 +363,14 @@ X-Webhook-Secret: my-secret-value
 X-Lychee-Event: photo.add
 ```
 
-### Relationship to Existing Events
+### Relationship to Existing Events / New Events
 
-The following existing Lychee events are the integration points:
+The following **new** Lychee domain events are introduced by this feature (Q-031-05 → C, Q-031-06 → D):
 
-| Lychee event class | Maps to webhook event |
-|---|---|
-| `PhotoSaved` (new record) | `photo.add` |
-| `PhotoSaved` (moved — album changed) | `photo.move` |
-| `PhotoDeleted` | `photo.delete` |
+| New event class | Fired from | Maps to webhook event | Carries |
+|---|---|---|---|
+| `PhotoAdded` | `app/Actions/Photo/Pipes/Shared/SetParent.php` (new records only) | `photo.add` | `photo_id` |
+| `PhotoMoved` | `app/Actions/Photo/MoveOrDuplicate.php` (when albums differ) | `photo.move` | `photo_id`, `from_album_id`, `to_album_id` |
+| `PhotoWillBeDeleted` | `app/Actions/Photo/Delete.php` (before `executeDelete()`, per photo) | `photo.delete` | Full photo snapshot: `photo_id`, `album_id`, `title`, `size_variants[]` |
 
-> Note: `PhotoSaved` currently carries only `photo_id`. The listener will need to reload the Photo model to determine whether it was a new record or a move. See Q-031-05 for the preferred discrimination approach.
+The existing `PhotoSaved` and `PhotoDeleted` events remain unchanged and continue to serve their existing listeners (album stats recomputation, etc.). The webhook system subscribes to the three new events above, not to `PhotoSaved` / `PhotoDeleted`.

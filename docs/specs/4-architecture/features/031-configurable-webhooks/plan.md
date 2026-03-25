@@ -13,28 +13,29 @@ Allow Lychee administrators to register HTTP endpoints that receive real-time no
 **Success signals:**
 - `Webhook` model, migration, factory, and resource created and tested.
 - Admin CRUD API (6 endpoints) passes feature tests including auth enforcement.
-- `WebhookDispatchJob` dispatches correctly shaped HTTP requests with correct headers and body, verified with `Http::fake()`.
-- Listener correctly fires jobs for all three photo events.
+- `WebhookDispatchJob` dispatches correctly shaped HTTP requests with correct headers and body (JSON or query-string per `payload_format`), verified with `Http::fake()`.
+- Three new events (`PhotoAdded`, `PhotoMoved`, `PhotoWillBeDeleted`) fire from the correct action classes; listener correctly fires dispatch jobs for all three photo events.
 - Admin Vue page renders list, create/edit modal, and delete confirmation; wired to API.
 - `php artisan lychee:webhook-test` sends a test payload.
-- All open questions (Q-031-01 through Q-031-07) resolved before implementation begins.
+- Open question Q-031-08 resolved before implementation of query-string size_variants encoding.
 
 ## Scope Alignment
 
 - **In scope:**
-  - `webhooks` database migration.
-  - `Webhook` Eloquent model with encrypted `secret` cast, JSON `size_variant_types` cast.
+  - `webhooks` database migration (includes `payload_format` column; hard delete — no `deleted_at`).
+  - `Webhook` Eloquent model with encrypted `secret` cast, JSON `size_variant_types` cast, `payload_format` enum cast.
   - `WebhookFactory` for tests.
-  - `WebhookResource` (Spatie Data) for API responses.
+  - `WebhookResource` (Spatie Data) exposing `has_secret` boolean instead of raw secret.
   - Six admin REST endpoints (`GET/POST/GET/{id}/PUT/{id}/PATCH/{id}/DELETE/{id}`).
-  - `StoreWebhookRequest` and `UpdateWebhookRequest` FormRequests.
+  - `StoreWebhookRequest` and `UpdateWebhookRequest` FormRequests (with `payload_format` validation).
   - `PhotoWebhookEvent` enum (photo.add / photo.move / photo.delete).
+  - **New Laravel events:** `PhotoAdded`, `PhotoMoved`, `PhotoWillBeDeleted` (each fired from the relevant action class; existing `PhotoSaved`/`PhotoDeleted` remain unchanged).
   - `WebhookPayloadBuilder` service that constructs `WebhookPayload` DTO from a Photo snapshot + webhook config.
-  - `WebhookDispatchJob` queued job.
-  - `WebhookListener` that subscribes to `PhotoSaved` and `PhotoDeleted` and dispatches jobs.
-  - `EventServiceProvider` update to register the listener.
+  - `WebhookDispatchJob` queued job — sends JSON body (`payload_format = json`) or URL query params (`payload_format = query_string`; no retry on failure).
+  - `WebhookListener` that subscribes to `PhotoAdded`, `PhotoMoved`, `PhotoWillBeDeleted` and dispatches jobs.
+  - `EventServiceProvider` update to register the listener and new events.
   - `php artisan lychee:webhook-test` Artisan command (CLI-031-01).
-  - Admin Vue page: webhook list table, add/edit modal, enable/disable toggle, delete confirmation.
+  - Admin Vue page: webhook list table, add/edit modal, enable/disable toggle, delete confirmation, HTTP-URL warning.
   - OpenAPI schema update.
   - Knowledge-map update.
 
@@ -46,27 +47,29 @@ Allow Lychee administrators to register HTTP endpoints that receive real-time no
 
 ## Dependencies & Interfaces
 
-- **`PhotoSaved` event** — fired by `app/Events/PhotoSaved.php` (carries `photo_id`). Listener must reload model to detect new vs. moved.
-- **`PhotoDeleted` event** — fired by `app/Events/PhotoDeleted.php` (carries `album_id`). Listener must receive full photo data before deletion (Q-031-06).
+- **`PhotoAdded` event (new)** — fired from `app/Actions/Photo/Pipes/Shared/SetParent.php` for newly created photos.
+- **`PhotoMoved` event (new)** — fired from `app/Actions/Photo/MoveOrDuplicate.php` when source and destination albums differ, per photo in the batch.
+- **`PhotoWillBeDeleted` event (new)** — fired from `app/Actions/Photo/Delete.php` **before** `executeDelete()`, per photo scheduled for deletion, carrying a full photo data snapshot.
+- **`PhotoSaved` / `PhotoDeleted` (existing)** — unchanged; continue to serve existing listeners (album stats recomputation etc.).
 - **Laravel Queue** — `WebhookDispatchJob` dispatched to the default queue.
-- **Laravel HTTP Client** — used in `WebhookDispatchJob` to fire outgoing requests with configurable timeout (`webhook_timeout_seconds` from `configs` table).
+- **Laravel HTTP Client** — used in `WebhookDispatchJob` to fire outgoing requests with configurable timeout (`webhook_timeout_seconds` from `configs` table). Sends JSON body or query-string params depending on `payload_format`.
 - **Lychee `configs` table** — stores `webhook_timeout_seconds` (default: 10).
 - **`SizeVariantType` enum** — for `size_variant_types` field validation and payload construction.
 - **PrimeVue / Vue 3** — admin UI components consistent with existing admin pages.
-- **Spatie Laravel Data** — `WebhookResource` extends `Data` (per codebase convention).
+- **Spatie Laravel Data** — `WebhookResource` extends `Data` (per codebase convention); exposes `has_secret` boolean instead of raw secret.
 - **Laravel encrypted cast** — `secret` field on `Webhook` model.
 
 ## Assumptions & Risks
 
 - **Assumptions:**
-  - The existing `PhotoSaved` / `PhotoDeleted` events fire reliably for all add, move, and delete paths.
-  - The `photo.delete` event listener can capture full photo data (id, album_id, title, size variants) before the model is hard-deleted — either from the event payload or by loading the model from the DB in the listener before the delete completes.
+  - The three new events (`PhotoAdded`, `PhotoMoved`, `PhotoWillBeDeleted`) can be injected into the existing action classes without breaking existing listeners.
+  - `Delete.do()` iterates or collects photo data before calling `executeDelete()`, giving an integration point for `PhotoWillBeDeleted`.
   - Queue workers are configured and running in production deployments.
 
 - **Risks / Mitigations:**
-  - *Photo data unavailable at delete time:* `PhotoDeleted` currently carries only `album_id`. Listener may not be able to reconstruct full photo data. Mitigation: resolve Q-031-06 — either extend the event, use `PhotoSaved` observer with `deleting` lifecycle hook, or capture data in the action before deletion.
-  - *`PhotoSaved` fired for both add and move:* Listener must distinguish new record creation from updates/moves. Resolve Q-031-05 before implementing the listener.
-  - *Webhook URL points to internal services (SSRF):* Resolve Q-031-01; consider URL allow-listing or at minimum document the risk.
+  - *`Delete.do()` is optimised for bulk efficiency:* Loading full photo models (with size variants) for `PhotoWillBeDeleted` may add a query overhead for bulk deletions. Mitigation: load only the fields needed for the snapshot (photo_id, album_id, title, size_variant URLs) with a targeted query, not full Eloquent hydration.
+  - *Q-031-08 (size_variants in query string) unresolved:* `send_size_variants` with `payload_format = query_string` is blocked until Q-031-08 is answered. Mitigation: implement query-string mode without `size_variants` initially; add encoding once resolved.
+  - *Webhook URL points to internal services (SSRF):* Plain HTTP is allowed; operators bear responsibility. Document risk in admin guide.
   - *Queue not configured:* Dispatch silently drops if queue driver is `sync` — document in admin guide.
 
 ## Implementation Drift Gate
@@ -80,20 +83,22 @@ After each increment, verify:
 
 ## Increment Map
 
-### I1 – Database Migration & Eloquent Model (≈60 min)
+### I1 – Database Migration, Enums & Eloquent Model (≈70 min)
 
-- _Goal:_ Create the `webhooks` table and the `Webhook` Eloquent model with all casts, factory, and resource.
-- _Preconditions:_ Open questions Q-031-01 through Q-031-07 resolved (or provisionally resolved with a note).
+- _Goal:_ Create the `webhooks` table, new Laravel events, enums, and the `Webhook` Eloquent model with all casts, factory, and resource.
+- _Preconditions:_ Q-031-08 noted as open but does not block I1.
 - _Steps:_
-  1. Create migration `create_webhooks_table` with columns per DO-031-01. Use ULID primary key consistent with existing Lychee models.
-  2. Create `app/Enum/PhotoWebhookEvent.php` backed enum (string): `Add = 'photo.add'`, `Move = 'photo.move'`, `Delete = 'photo.delete'`.
-  3. Create `app/Enum/WebhookMethod.php` backed enum (string): `GET`, `POST`, `PUT`, `PATCH`, `DELETE`.
-  4. Create `app/Models/Webhook.php` with `encrypted` cast on `secret`, JSON cast on `size_variant_types`, boolean casts on flag fields, enum casts on `event` and `method`.
-  5. Create `database/factories/WebhookFactory.php`.
-  6. Create `app/Http/Resources/Models/WebhookResource.php` (Spatie Data).
-  7. Run `php artisan migrate` and verify schema.
+  1. Create `app/Enum/PhotoWebhookEvent.php` backed enum (string): `Add = 'photo.add'`, `Move = 'photo.move'`, `Delete = 'photo.delete'`.
+  2. Create `app/Enum/WebhookMethod.php` backed enum (string): GET, POST, PUT, PATCH, DELETE.
+  3. Create `app/Enum/WebhookPayloadFormat.php` backed enum (string): `Json = 'json'`, `QueryString = 'query_string'`.
+  4. Create new Laravel events: `app/Events/PhotoAdded.php` (carries `photo_id`), `app/Events/PhotoMoved.php` (carries `photo_id`, `from_album_id`, `to_album_id`), `app/Events/PhotoWillBeDeleted.php` (carries snapshot: `photo_id`, `album_id`, `title`, `size_variants`).
+  5. Create migration `create_webhooks_table` with columns per DO-031-01. ULID primary key, **no** `deleted_at` (hard delete).
+  6. Create `app/Models/Webhook.php` with `encrypted` cast on `secret`, JSON cast on `size_variant_types`, enum casts on `event`, `method`, `payload_format`, boolean casts on flag fields. Scope: `enabled()` filters to `enabled = true`.
+  7. Create `database/factories/WebhookFactory.php`.
+  8. Create `app/Http/Resources/Models/WebhookResource.php` (Spatie Data) — exposes `has_secret` boolean, excludes raw `secret`.
+  9. Run `php artisan migrate` and verify schema.
 - _Commands:_ `php artisan migrate`, `php artisan test --filter=WebhookModelTest`
-- _Exit:_ Migration runs cleanly; model CRUD works in tinker; factory generates valid records.
+- _Exit:_ Migration runs cleanly; model CRUD works in tinker; factory generates valid records; WebhookResource returns `has_secret`.
 
 ### I2 – Admin CRUD REST API (≈75 min)
 
@@ -108,19 +113,22 @@ After each increment, verify:
 - _Commands:_ `php artisan test --filter=WebhookApiTest`
 - _Exit:_ All six endpoints work; validation errors return 422; non-admin returns 403.
 
-### I3 – Webhook Dispatch Job & Payload Builder (≈75 min)
+### I3 – Webhook Dispatch Job & Payload Builder (≈80 min)
 
 - _Goal:_ Implement `WebhookPayloadBuilder`, `WebhookDispatchJob`, and the `WebhookListener`.
-- _Preconditions:_ I1 complete; Q-031-02, Q-031-05, Q-031-06 resolved.
+- _Preconditions:_ I1 complete. Q-031-08 must be resolved before implementing `send_size_variants` in query-string mode.
 - _Steps:_
   1. Create `app/DTO/WebhookPayload.php` DTO.
-  2. Create `app/Services/WebhookPayloadBuilder.php`: accepts `Webhook` + `Photo` (or snapshot), returns `WebhookPayload` with only selected fields.
-  3. Create `app/Jobs/WebhookDispatchJob.php`: reads payload, fires HTTP request via `Http::withHeaders()->timeout()->send(method, url, body/query)`, logs success/failure (TE-031-01, TE-031-02).
-  4. Create `app/Listeners/WebhookListener.php`: subscribes to `PhotoSaved` and `PhotoDeleted`; resolves event type (add vs. move — Q-031-05); loads active webhooks matching event; dispatches `WebhookDispatchJob` per photo per webhook.
-  5. Register listener in `EventServiceProvider`.
-  6. Write feature tests with `Http::fake()` for all three event types; assert payload shape, method, URL, headers (S-031-09 through S-031-17).
+  2. Create `app/Services/WebhookPayloadBuilder.php`: accepts `Webhook` + photo snapshot data, returns `WebhookPayload` with only selected fields. Size-variant filtering per `size_variant_types`.
+  3. Create `app/Jobs/WebhookDispatchJob.php`: Implements `ShouldQueue`. Reads `payload_format` to determine delivery: `json` → JSON request body with `Content-Type: application/json`; `query_string` → append payload as URL query params (note: `size_variants` excluded from query-string mode until Q-031-08 resolved). Sets `User-Agent: Lychee/<version>` and `X-Lychee-Event: <event>` headers. On non-2xx or exception, logs at ERROR (TE-031-02). On success logs at DEBUG (TE-031-01). No retry.
+  4. Create `app/Listeners/WebhookListener.php`: subscribes to `PhotoAdded` (→ `photo.add`), `PhotoMoved` (→ `photo.move`), `PhotoWillBeDeleted` (→ `photo.delete`). Loads active webhooks matching event; dispatches `WebhookDispatchJob` per webhook.
+  5. Modify `app/Actions/Photo/Pipes/Shared/SetParent.php`: fire `PhotoAdded` for new photo records (not updates).
+  6. Modify `app/Actions/Photo/MoveOrDuplicate.php`: fire `PhotoMoved` per photo when `$from_album->get_id() !== $to_album->id`.
+  7. Modify `app/Actions/Photo/Delete.php`: before `executeDelete()`, load photo snapshots for `$delete_photo_ids` and fire `PhotoWillBeDeleted` per photo.
+  8. Register listener in `EventServiceProvider`.
+  9. Write feature tests with `Http::fake()` for all three event types; assert payload shape, method, URL, headers (S-031-09 through S-031-20).
 - _Commands:_ `php artisan test --filter=WebhookDispatchTest`
-- _Exit:_ Correct HTTP calls fired for all scenarios; disabled webhooks skipped; secrets in header; size-variant filtering works.
+- _Exit:_ Correct HTTP calls fired for all scenarios; disabled webhooks skipped; secrets in header; `payload_format` governs body vs query params; size-variant filtering works.
 
 ### I4 – Artisan Test Command (≈30 min)
 
@@ -140,12 +148,12 @@ After each increment, verify:
 - _Steps:_
   1. Create `resources/js/services/webhook-service.ts` with typed API calls for all six endpoints.
   2. Create `resources/js/views/admin/WebhooksView.vue`: table, empty state, enabled toggle, edit/delete actions.
-  3. Create `resources/js/components/admin/WebhookModal.vue`: form with all fields; size-variant checkboxes disabled when `send_size_variants` is unchecked; secret header disabled when secret is empty.
+  3. Create `resources/js/components/admin/WebhookModal.vue`: form with all fields including `payload_format` dropdown; size-variant checkboxes disabled when `send_size_variants` is unchecked; secret header disabled when secret is empty; **HTTP URL warning** shown when URL starts with `http://` (UI-031-08).
   4. Create `resources/js/components/admin/WebhookDeleteConfirm.vue`: confirmation dialog.
   5. Wire into admin navigation (add menu entry consistent with existing admin nav).
-  6. Write Vitest unit tests for list render, modal validation display, checkbox disabling logic.
+  6. Write Vitest unit tests for list render, modal validation display, checkbox disabling logic, HTTP URL warning.
 - _Commands:_ `npm run check`, `npm run test` (Vitest)
-- _Exit:_ Admin page renders; CRUD operations work end-to-end; UI states UI-031-01 through UI-031-07 verified visually.
+- _Exit:_ Admin page renders; CRUD operations work end-to-end; UI states UI-031-01 through UI-031-08 verified visually.
 
 ### I6 – Documentation & Knowledge-Map Update (≈20 min)
 
@@ -169,21 +177,24 @@ After each increment, verify:
 | S-031-06 | I2 / T-031-08 | Delete |
 | S-031-07 | I2 / T-031-09 | Disable |
 | S-031-08 | I2 / T-031-10 | Auth enforcement |
-| S-031-09 | I3 / T-031-13 | photo.add dispatch |
-| S-031-10 | I3 / T-031-14 | photo.move dispatch |
-| S-031-11 | I3 / T-031-15 | photo.delete dispatch |
+| S-031-09 | I3 / T-031-13 | photo.add dispatch via PhotoAdded event |
+| S-031-10 | I3 / T-031-14 | photo.move dispatch via PhotoMoved event |
+| S-031-11 | I3 / T-031-15 | photo.delete dispatch via PhotoWillBeDeleted event |
 | S-031-12 | I3 / T-031-16 | Bulk delete fan-out |
 | S-031-13 | I3 / T-031-17 | Secret header |
 | S-031-14 | I3 / T-031-18 | Size-variant filtering |
-| S-031-15 | I3 / T-031-19 | GET method → query params (Q-031-02) |
+| S-031-15 | I3 / T-031-19 | payload_format=query_string sends query params |
 | S-031-16 | I3 / T-031-20 | Non-2xx logging |
 | S-031-17 | I3 / T-031-20 | Timeout logging |
 | S-031-18 | I3 / T-031-21 | No matching webhooks |
 | S-031-19 | I3 / T-031-16 | Bulk delete non-aggregation |
+| S-031-20 | I3 / T-031-19 | payload_format=json with GET method sends JSON body |
+| S-031-21 | I2 / T-031-06 | HTTP URL accepted, saved without error |
+| S-031-22 | I2 / T-031-05 | List response returns has_secret, not raw secret |
 
 ## Analysis Gate
 
-_Not yet completed — awaiting resolution of open questions Q-031-01 through Q-031-07._
+_Completed 2026-03-25. Q-031-01 through Q-031-07 resolved. One remaining question (Q-031-08: `size_variants` query-string encoding) is open but does not block most increments — only `send_size_variants` in query-string mode is deferred._
 
 ## Exit Criteria
 
@@ -191,11 +202,12 @@ _Not yet completed — awaiting resolution of open questions Q-031-01 through Q-
 - [ ] PHPStan 0 errors (`make phpstan`).
 - [ ] php-cs-fixer clean (`vendor/bin/php-cs-fixer fix --dry-run`).
 - [ ] TypeScript/Vue build clean (`npm run check`).
-- [ ] All scenario IDs (S-031-01 through S-031-19) covered by at least one test.
+- [ ] All scenario IDs (S-031-01 through S-031-22) covered by at least one test.
 - [ ] OpenAPI spec updated and validated.
 - [ ] Knowledge-map updated.
 - [ ] `php artisan lychee:webhook-test` command functional.
-- [ ] All open questions (Q-031-01 through Q-031-07) resolved in `open-questions.md` and reflected in spec normative sections.
+- [ ] Q-031-08 resolved and `size_variants` query-string encoding implemented.
+- [ ] Three new events (`PhotoAdded`, `PhotoMoved`, `PhotoWillBeDeleted`) fire correctly from action classes.
 
 ## Follow-ups / Backlog
 
