@@ -234,7 +234,7 @@ return [
         'copied' => '¡Foto(s) copiadas!',
     ],
     'photo_delete' => [
-        'confirm' => '¿Estás seguro de que quieres eliminar la foto "% s"?',
+        'confirm' => '¿Estás seguro de que quieres eliminar la foto "%s"?',
         'confirm_multiple' => '¿Estás seguro de que deseas eliminar las %d fotos seleccionadas?',
         'deleted' => '¡Foto(s) eliminadas!',
     ],
