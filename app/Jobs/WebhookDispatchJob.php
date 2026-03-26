@@ -53,7 +53,7 @@ class WebhookDispatchJob implements ShouldQueue
 	 */
 	public function handle(): void
 	{
-		$timeout = (int) config('lychee.webhook_timeout_seconds', 10);
+		$timeout = (int) config('features.webhook_timeout_seconds', 10);
 		$url = $this->webhook->url;
 		$event_name = $this->webhook->event->value;
 

@@ -8,6 +8,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Assets\Features;
 use App\Http\Requests\Webhook\PatchWebhookRequest;
 use App\Http\Requests\Webhook\StoreWebhookRequest;
 use App\Http\Requests\Webhook\UpdateWebhookRequest;
@@ -105,10 +106,14 @@ class WebhookController extends Controller
 	}
 
 	/**
-	 * Ensure the authenticated user is an administrator.
+	 * Ensure the authenticated user is an administrator and that the webhook feature is enabled.
 	 */
 	private function assertAdmin(): void
 	{
+		if (Features::inactive('webhook')) {
+			abort(404, 'Webhook feature is not enabled.');
+		}
+
 		/** @var User|null */
 		$user = Auth::user();
 		if ($user?->may_administrate !== true) {

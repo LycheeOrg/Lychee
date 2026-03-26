@@ -8,6 +8,7 @@
 
 namespace App\Listeners;
 
+use App\Assets\Features;
 use App\DTO\WebhookPayload;
 use App\Enum\PhotoWebhookEvent;
 use App\Events\PhotoAdded;
@@ -34,6 +35,10 @@ class WebhookListener
 	 */
 	public function handlePhotoAdded(PhotoAdded $event): void
 	{
+		if (Features::inactive('webhook')) {
+			return;
+		}
+
 		$this->dispatchForEvent(
 			PhotoWebhookEvent::ADD,
 			$event->photo_id,
@@ -45,6 +50,10 @@ class WebhookListener
 	 */
 	public function handlePhotoMoved(PhotoMoved $event): void
 	{
+		if (Features::inactive('webhook')) {
+			return;
+		}
+
 		$this->dispatchForEvent(
 			PhotoWebhookEvent::MOVE,
 			$event->photo_id,
@@ -58,6 +67,10 @@ class WebhookListener
 	 */
 	public function handlePhotoWillBeDeleted(PhotoWillBeDeleted $event): void
 	{
+		if (Features::inactive('webhook')) {
+			return;
+		}
+
 		$webhooks = Webhook::query()
 			->enabled()
 			->forEvent(PhotoWebhookEvent::DELETE)

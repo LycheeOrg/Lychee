@@ -8,6 +8,7 @@
 
 namespace App\Http\Requests\Webhook;
 
+use App\Assets\Features;
 use App\Enum\PhotoWebhookEvent;
 use App\Enum\WebhookMethod;
 use App\Enum\WebhookPayloadFormat;
@@ -26,10 +27,14 @@ class PatchWebhookRequest extends BaseApiRequest
 	public Webhook $webhook;
 
 	/**
-	 * Only administrators may manage webhooks.
+	 * Only administrators may manage webhooks, and the webhook feature must be enabled.
 	 */
 	public function authorize(): bool
 	{
+		if (Features::inactive('webhook')) {
+			return false;
+		}
+
 		/** @var User|null */
 		$user = Auth::user();
 

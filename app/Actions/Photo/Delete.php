@@ -169,11 +169,15 @@ readonly class Delete
 			$raw_variants = $size_variants_raw->get($photo_id, collect());
 			foreach ($raw_variants as $sv) {
 				// Reconstruct the public URL using Storage facade.
-				$disk_type = $sv->storage_disk !== null ? StorageDiskType::from($sv->storage_disk) : StorageDiskType::LOCAL;
+				// Use tryFrom() to handle any corrupt enum values gracefully.
+				$disk_type = StorageDiskType::tryFrom($sv->storage_disk ?? '') ?? StorageDiskType::LOCAL;
+				$size_variant_type = SizeVariantType::tryFrom($sv->type);
+				if ($size_variant_type === null) {
+					continue;
+				}
 				$url = Storage::disk($disk_type->value)->url($sv->short_path);
-				$type_name = SizeVariantType::from($sv->type)->name();
 				$variants[] = [
-					'type' => $type_name,
+					'type' => $size_variant_type->name(),
 					'url' => $url,
 				];
 			}

@@ -8,6 +8,7 @@
 
 namespace App\Console\Commands;
 
+use App\Assets\Features;
 use App\DTO\WebhookPayload;
 use App\Jobs\WebhookDispatchJob;
 use App\Models\Webhook;
@@ -28,6 +29,13 @@ class WebhookTest extends Command
 
 	public function handle(): int
 	{
+		if (Features::inactive('webhook')) {
+			$this->warn('The webhook feature is disabled (WEBHOOK_ENABLED is not set to true).');
+			$this->warn('Set WEBHOOK_ENABLED=true in your .env file and clear the config cache to enable it.');
+
+			return self::FAILURE;
+		}
+
 		$id = $this->argument('id');
 
 		/** @var Webhook|null $webhook */
