@@ -9,6 +9,7 @@
 namespace App\Http\Requests\Face;
 
 use App\Http\Requests\BaseApiRequest;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Request for receiving face clustering results from the Python AI Vision service.
@@ -49,6 +50,11 @@ class ClusterResultsRequest extends BaseApiRequest
 	{
 		$this->labels = $values['labels'] ?? [];
 		$this->suggestions = $values['suggestions'] ?? [];
+		Log::warning('Received face clustering results with ' . count($this->labels) . ' labels and ' . count($this->suggestions) . ' suggestions.',
+			[
+				'labels' => $this->labels,
+				'suggestions' => $this->suggestions,
+			]);
 	}
 
 	/**
