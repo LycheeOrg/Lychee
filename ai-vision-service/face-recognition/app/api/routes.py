@@ -19,8 +19,9 @@ from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request,
 
 from app.api.dependencies import get_detector, get_store, require_api_key
 from app.api.schemas import (
+    ClusterCallbackPayload,
     ClusterFaceResult,
-    ClusterResponse,
+    ClusterSuggestion,
     DeleteEmbeddingsRequest,
     DeleteEmbeddingsResponse,
     DetectCallbackPayload,
@@ -155,34 +156,27 @@ async def delete_embeddings(
 # ---------------------------------------------------------------------------
 
 
-@router.post("/cluster")
+@router.post("/cluster", status_code=202)
 async def cluster(
+    background_tasks: BackgroundTasks,
     request: Request,
     settings: AppSettings = Depends(get_settings),
     _: None = Depends(require_api_key),
-) -> ClusterResponse:
+) -> None:
     """Run DBSCAN clustering over all stored face embeddings.
 
-    Reads every embedding from the store, clusters them, and returns the
-    per-face cluster assignments. The PHP layer uses these to set
-    ``faces.cluster_label`` for the cluster-review UI.
+    Immediately returns **202 Accepted** and schedules clustering as a background
+    task. Results are POSTed back to Lychee's clustering results endpoint once
+    clustering completes.
     """
     store: EmbeddingStore = get_store(request)
-    all_embeddings = store.get_all()
+    executor: Executor = request.app.state.executor
 
-    if not all_embeddings:
-        return ClusterResponse(total_faces=0, num_clusters=0, assignments=[])
-
-    clusterer = FaceClusterer(eps=settings.cluster_eps)
-    results = clusterer.cluster(all_embeddings)
-
-    assignments = [ClusterFaceResult(lychee_face_id=fid, cluster_label=label) for fid, label in results]
-    distinct_labels = {label for _, label in results if label != -1}
-
-    return ClusterResponse(
-        total_faces=len(results),
-        num_clusters=len(distinct_labels),
-        assignments=assignments,
+    background_tasks.add_task(
+        _run_clustering_job,
+        store,
+        executor,
+        settings,
     )
 
 
@@ -315,3 +309,147 @@ async def _send_error_callback(photo_id: str, error_code: str, message: str, set
             )
     except Exception:
         logger.exception("Failed to send error callback for photo_id=%s", photo_id)
+
+
+# ---------------------------------------------------------------------------
+# Background clustering job
+# ---------------------------------------------------------------------------
+
+
+async def _run_clustering_job(
+    store: EmbeddingStore,
+    executor: Executor,
+    settings: AppSettings,
+) -> None:
+    """Run DBSCAN clustering and notify Lychee with results.
+
+    Runs entirely as an async background task after the ``/cluster`` route has
+    returned 202. CPU-bound clustering work is offloaded to ``executor`` via
+    ``run_in_executor`` so the event loop remains responsive.
+    """
+    try:
+        # --- 1. Fetch all embeddings from store ---
+        all_embeddings = store.get_all()
+
+        if not all_embeddings:
+            # Send success callback with empty results
+            payload = ClusterCallbackPayload(labels=[])
+            await _send_cluster_callback(payload, settings)
+            return
+
+        # --- 2. Run DBSCAN clustering (CPU-bound, runs in thread pool) ---
+        loop = asyncio.get_running_loop()
+        clusterer = FaceClusterer(eps=settings.cluster_eps)
+        results: list[tuple[str, int]] = await loop.run_in_executor(
+            executor,
+            clusterer.cluster,
+            all_embeddings,
+        )
+
+        # --- 3. Build cluster label assignments ---
+        labels = [ClusterFaceResult(face_id=fid, cluster_label=label) for fid, label in results]
+
+        # --- 4. Generate cross-cluster suggestions ---
+        # Only include face_ids that exist in cluster_results to pass PHP's exists:faces,id validation
+        valid_face_ids = {fid for fid, _ in results}
+        suggestions = _generate_cross_cluster_suggestions(
+            results,
+            all_embeddings,
+            store,
+            valid_face_ids,
+            settings.match_threshold,
+        )
+
+        payload = ClusterCallbackPayload(labels=labels, suggestions=suggestions)
+
+        # --- 5. POST success callback to Lychee ---
+        await _send_cluster_callback(payload, settings)
+
+    except Exception:
+        logger.exception("Clustering job failed; sending empty results to Lychee")
+        # PHP endpoint doesn't handle error payloads, so send empty results
+        try:
+            empty_payload = ClusterCallbackPayload(labels=[])
+            await _send_cluster_callback(empty_payload, settings)
+        except Exception:
+            logger.exception("Failed to send fallback empty clustering results")
+
+
+async def _send_cluster_callback(payload: ClusterCallbackPayload, settings: AppSettings) -> None:
+    """POST clustering results to Lychee."""
+    callback_url = f"{settings.lychee_api_url}/api/v2/FaceDetection/cluster-results"
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                callback_url,
+                json=payload.model_dump(),
+                headers={
+                    "X-API-Key": settings.api_key,
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                },
+                timeout=30.0,
+            )
+            response.raise_for_status()
+    except Exception:
+        logger.exception("Failed to send clustering callback")
+        raise
+
+
+def _generate_cross_cluster_suggestions(
+    cluster_results: list[tuple[str, int]],
+    all_embeddings: list[tuple[str, list[float]]],
+    store: EmbeddingStore,
+    valid_face_ids: set[str],
+    threshold: float,
+    max_per_face: int = 3,
+) -> list[ClusterSuggestion]:
+    """Generate cross-cluster face suggestions for UI review.
+
+    For each clustered face, find similar faces from different clusters
+    that are above the similarity threshold. This helps identify potential
+    mis-clusterings and allows manual review.
+
+    Args:
+        cluster_results: List of (face_id, cluster_label) tuples
+        all_embeddings: List of (face_id, embedding) tuples
+        store: Embedding store for similarity search
+        valid_face_ids: Set of face IDs that exist in Lychee's database
+        threshold: Minimum similarity threshold
+        max_per_face: Maximum suggestions per face
+    """
+    suggestions = []
+    face_to_cluster = {fid: label for fid, label in cluster_results}
+    embedding_map = {fid: emb for fid, emb in all_embeddings}
+
+    for face_id, cluster_label in cluster_results:
+        # Skip noise points (cluster_label == -1)
+        if cluster_label == -1:
+            continue
+
+        embedding = embedding_map.get(face_id)
+        if embedding is None:
+            continue
+
+        # Find similar faces from the embedding store
+        matches = store.similarity_search(embedding, threshold, limit=max_per_face + 10)
+
+        # Filter to only faces from different clusters that exist in Lychee's database
+        for suggested_face_id, confidence in matches:
+            # Skip if suggested face doesn't exist in Lychee's database
+            if suggested_face_id not in valid_face_ids:
+                continue
+
+            suggested_cluster = face_to_cluster.get(suggested_face_id)
+            if suggested_cluster is not None and suggested_cluster != cluster_label and suggested_cluster != -1:
+                suggestions.append(
+                    ClusterSuggestion(
+                        face_id=face_id,
+                        suggested_face_id=suggested_face_id,
+                        confidence=float(confidence),  # Ensure it's a Python float, not numpy
+                    )
+                )
+                if len([s for s in suggestions if s.face_id == face_id]) >= max_per_face:
+                    break
+
+    return suggestions

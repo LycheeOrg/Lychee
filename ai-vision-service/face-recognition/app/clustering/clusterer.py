@@ -75,6 +75,6 @@ class FaceClusterer:
         db = DBSCAN(eps=self._eps, min_samples=self._min_samples, metric="cosine")
         labels: list[int] = db.fit_predict(vectors).tolist()
         logger.info("Done clustering %d face embeddings with DBSCAN", len(face_embeddings))
-        logger.info("Cluster label distribution: %s", dict(zip(*np.unique(labels, return_counts=True))))
+        logger.info("Cluster label distribution: %s", dict(zip(*np.unique(labels, return_counts=True), strict=False)))
 
         return list(zip(ids, labels, strict=True))

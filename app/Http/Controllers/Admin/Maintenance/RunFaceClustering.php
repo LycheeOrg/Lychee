@@ -39,6 +39,10 @@ class RunFaceClustering extends Controller
 			$response = Http::withHeaders(['X-API-Key' => $api_key])
 				->post($service_url . '/cluster');
 
+			if ($response->status() === 202) {
+				return response()->json(['status' => 'dispatched', 'message' => 'Clustering job accepted; results will be sent via callback.'], 202);
+			}
+
 			if ($response->successful()) {
 				return response()->json(['status' => 'dispatched'], 200);
 			}

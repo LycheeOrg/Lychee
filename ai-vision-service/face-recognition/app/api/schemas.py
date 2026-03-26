@@ -169,11 +169,24 @@ class DeleteEmbeddingsResponse(BaseModel):
 class ClusterFaceResult(BaseModel):
     """One face's cluster assignment."""
 
-    lychee_face_id: str
+    face_id: str
     """Lychee ``Face.id``."""
 
     cluster_label: int
     """DBSCAN cluster label. ``-1`` = noise / unassigned."""
+
+
+class ClusterSuggestion(BaseModel):
+    """Cross-cluster face suggestion for UI review."""
+
+    face_id: str
+    """The face that should show this suggestion."""
+
+    suggested_face_id: str
+    """The suggested similar face from a different cluster."""
+
+    confidence: float = Field(ge=0.0, le=1.0)
+    """Cosine-similarity score between the two faces."""
 
 
 class ClusterResponse(BaseModel):
@@ -185,8 +198,20 @@ class ClusterResponse(BaseModel):
     num_clusters: int
     """Number of distinct clusters found (excluding noise)."""
 
-    assignments: list[ClusterFaceResult]
+    labels: list[ClusterFaceResult]
     """Per-face cluster label assignments."""
+
+
+class ClusterCallbackPayload(BaseModel):
+    """Payload POSTed by the service to Lychee's clustering results endpoint on success."""
+
+    model_config = {"validate_assignment": True}
+
+    labels: list[ClusterFaceResult]
+    """Per-face cluster label assignments."""
+
+    suggestions: list[ClusterSuggestion] = []
+    """Cross-cluster face suggestions (optional)."""
 
 
 # ---------------------------------------------------------------------------
