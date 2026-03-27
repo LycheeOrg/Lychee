@@ -29,7 +29,7 @@ return [
         'nsfw_album_visibility' => 'Sensible Alben standardmäßig sichtbar machen.',
         'nsfw_album_explanation' => 'Wenn das Album öffentlich ist, ist es immer noch zugänglich, es ist nur nicht sichtbar und<b>kann durch Drücken von <kbd>H</kbd></b> angezeigt werden.',
         'cache_enabled' => 'Zwischenspeicherung von Antworten aktivieren.',
-        'cache_enabled_details' => 'Das wird die Antwortzeit von Lychee erheblich beschleunigen.<br> <i class="pi pi-exclamation-triangle text-warning-600 mr-2"></i>Wenn Sie passwortgeschützte Alben verwenden, sollten Sie diese Funktion nicht aktivieren.',
+        'cache_enabled_details' => 'Beschleunigt die Antwortzeit von Lychee erheblich.<br> <i class="pi pi-exclamation-triangle text-warning-600 mr-2"></i>Wenn Sie passwortgeschützte Alben verwenden, sollten Sie diese Funktion nicht aktivieren.',
     ],
     'lychee_se' => [
         'header' => 'Lychee <span class="text-primary-emphasis">SE</span>',
