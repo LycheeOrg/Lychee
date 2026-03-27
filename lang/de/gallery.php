@@ -7,7 +7,7 @@ return [
     */
     'title' => 'Galerie',
     'smart_albums' => 'Intelligente Alben',
-    'pinned_albums' => 'Vorgeschlagene Alben',
+    'pinned_albums' => 'Hervorgehobene Alben',
     'albums' => 'Alben',
     'root' => 'Alben',
     'set_focus' => 'Fokus setzen',
@@ -81,7 +81,7 @@ return [
     'smart_album' => [
         'unsorted' => 'Unsortiert',
         'highlighted' => 'Als Favorit markiert',
-        'recent' => 'Neueste',
+        'recent' => 'Zuletzt hinzugefügt',
         'public' => 'Öffentlich',
         'on_this_day' => 'An diesem Tag',
         'untagged' => 'Ohne Tags',
@@ -97,8 +97,8 @@ return [
     ],
     'layout' => [
         'squares' => 'Quadratische Miniaturansichten',
-        'justified' => 'Mit Seitenverhältnis, ausgerichtet',
-        'masonry' => 'Mit Seitenverhältnis, masonry',
+        'justified' => 'Mit Seitenverhältnis, bündig',
+        'masonry' => 'Mit Seitenverhältnis, Masonry',
         'grid' => 'Mit Seitenverhältnis, Raster',
         'filmstrip' => 'Filmstreifen',
         'list' => 'Listenansicht',
@@ -125,7 +125,7 @@ return [
     ],
     'pagination' => [
         'infinite_scroll' => 'Endloses Scrollen',
-        'load_more_button' => '„Mehr laden“-Button',
+        'load_more_button' => '„Mehr laden“-Schaltfläche',
         'page_navigation' => 'Seitennavigation',
         'loading' => 'Lade …',
         'load_more' => 'Mehr laden',

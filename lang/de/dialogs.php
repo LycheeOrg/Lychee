@@ -30,7 +30,7 @@ return [
     'keybindings' => [
         'header' => 'Tastaturkürzel',
         'don_t_show_again' => 'Diesen Dialog nicht nochmal anzeigen',
-        'hide_header_button' => 'Hilfe in der Kopfzeile nicht anzeigen',
+        'hide_header_button' => 'Hilfe im Header nicht anzeigen',
         'side_wide' => 'Global gültige Tastaturkürzel',
         'back_cancel' => 'Zurück/Abbrechen',
         'confirm' => 'Bestätigen',
@@ -95,7 +95,7 @@ return [
         'sort_order' => 'Sortierung',
         'sort_newest' => 'Neueste zuerst',
         'sort_oldest' => 'Älteste zuerst',
-        'header_placement' => 'Position der Kopfzeile',
+        'header_placement' => 'Position des Headers',
         'header_top' => 'Oben',
         'header_bottom' => 'Unten',
         'header_none' => 'Keine',
