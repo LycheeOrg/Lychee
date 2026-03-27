@@ -124,7 +124,7 @@ return [
         'hour' => 'Stunde',
     ],
     'pagination' => [
-        'infinite_scroll' => 'Endloses Scrollen',
+        'infinite_scroll' => 'Unendliches Scrollen',
         'load_more_button' => '„Mehr laden“-Schaltfläche',
         'page_navigation' => 'Seitennavigation',
         'loading' => 'Lade …',
