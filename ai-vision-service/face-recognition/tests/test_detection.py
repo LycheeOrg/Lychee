@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 from unittest.mock import MagicMock, patch
 
+import numpy as np
 import pytest
 
 from app.detection.detector import DetectedFace, FaceDetector
@@ -71,9 +72,9 @@ def _make_mock_face(
     return face
 
 
-def _build_detector_with_faces(faces: list[Any]) -> FaceDetector:
+def _build_detector_with_faces(faces: list[Any], *, blur_threshold: float = 0.0) -> FaceDetector:
     """Return a detector whose internal InsightFace app returns ``faces``."""
-    detector = FaceDetector(detection_threshold=0.5)
+    detector = FaceDetector(detection_threshold=0.5, blur_threshold=blur_threshold)
     mock_app = MagicMock()
     mock_app.get.return_value = faces
     detector._app = mock_app  # type: ignore[attr-defined]
@@ -91,9 +92,8 @@ def test_detect_returns_normalised_bbox(jpeg_image_path: Path) -> None:
     detector = _build_detector_with_faces([mock_face])
 
     # cv2 is lazily imported inside detect(); call _detect_array directly
-    # with a primed fake image to avoid touching the real filesystem.
-    fake_img = MagicMock()
-    fake_img.shape = (100, 100, 3)
+    # with a real numpy array so the blur filter can process it.
+    fake_img = np.zeros((100, 100, 3), dtype=np.uint8)
     results = detector._detect_array(fake_img)
 
     assert len(results) == 1
@@ -126,8 +126,7 @@ def test_detect_sorts_by_confidence_descending() -> None:
         _make_mock_face([20, 20, 30, 30], 0.75, [0.0] * 512),
     ]
     detector = _build_detector_with_faces(faces)
-    fake_img = MagicMock()
-    fake_img.shape = (100, 100, 3)
+    fake_img = np.zeros((100, 100, 3), dtype=np.uint8)
     results = detector._detect_array(fake_img)
     confidences = [f.confidence for f in results]
     assert confidences == sorted(confidences, reverse=True)
@@ -138,8 +137,7 @@ def test_detect_returns_full_embedding() -> None:
     embedding = list(range(512))
     mock_face = _make_mock_face([0, 0, 50, 50], 0.99, embedding)
     detector = _build_detector_with_faces([mock_face])
-    fake_img = MagicMock()
-    fake_img.shape = (100, 100, 3)
+    fake_img = np.zeros((100, 100, 3), dtype=np.uint8)
     results = detector._detect_array(fake_img)
     assert len(results) == 1
     assert len(results[0].embedding) == 512
