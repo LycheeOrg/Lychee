@@ -11,12 +11,11 @@ namespace App\Actions\Photo;
 use App\Actions\Shop\PurchasableService;
 use App\Constants\PhotoAlbum as PA;
 use App\DTO\Delete\PhotosToBeDeletedDTO;
-use App\Enum\SizeVariantType;
-use App\Enum\StorageDiskType;
 use App\Events\PhotoDeleted;
 use App\Events\PhotoWillBeDeleted;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\ModelDBException;
+use App\Models\SizeVariant;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
@@ -149,45 +148,34 @@ readonly class Delete
 		$photos_data = DB::table('photos')
 			->whereIn('id', $photo_ids)
 			->select(['id', 'title'])
-			->get()
-			->keyBy('id');
+			->get();
 
-		// Load size variant data for all photos in one query.
-		$size_variants_raw = DB::table('size_variants')
-			->whereIn('photo_id', $photo_ids)
-			->select(['photo_id', 'type', 'short_path', 'storage_disk'])
-			->get()
-			->groupBy('photo_id');
+		$photos_data->chunk(500)->each(function ($chunk) use ($album_id): void {
+			$photo_ids_chunked = $chunk->pluck('id')->all();
+			// Load size variant data for all photos in one query.
+			$size_variants = SizeVariant::whereIn('photo_id', $photo_ids_chunked)
+				->select(['photo_id', 'type', 'short_path', 'storage_disk'])
+				->get()
+				->groupBy('photo_id');
 
-		foreach ($photo_ids as $photo_id) {
-			$photo_data = $photos_data->get($photo_id);
-			if ($photo_data === null) {
-				continue;
-			}
-
-			$variants = [];
-			$raw_variants = $size_variants_raw->get($photo_id, collect());
-			foreach ($raw_variants as $sv) {
-				// Reconstruct the public URL using Storage facade.
-				// Use tryFrom() to handle any corrupt enum values gracefully.
-				$disk_type = StorageDiskType::tryFrom($sv->storage_disk ?? '') ?? StorageDiskType::LOCAL;
-				$size_variant_type = SizeVariantType::tryFrom($sv->type);
-				if ($size_variant_type === null) {
-					continue;
+			foreach ($chunk as $photo) {
+				$variants = [];
+				$raw_variants = $size_variants->get($photo->id, collect());
+				foreach ($raw_variants as $sv) {
+					$url = $sv->getDownloadUrlAttribute();
+					$variants[] = [
+						'type' => $sv->type->name(),
+						'url' => $url,
+					];
 				}
-				$url = Storage::disk($disk_type->value)->url($sv->short_path);
-				$variants[] = [
-					'type' => $size_variant_type->name(),
-					'url' => $url,
-				];
-			}
 
-			PhotoWillBeDeleted::dispatch(
-				$photo_id,
-				$album_id,
-				$photo_data->title,
-				$variants,
-			);
-		}
+				PhotoWillBeDeleted::dispatch(
+					$photo->id,
+					$album_id,
+					$photo->title,
+					$variants,
+				);
+			}
+		});
 	}
 }

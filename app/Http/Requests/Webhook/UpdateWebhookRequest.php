@@ -51,7 +51,7 @@ class UpdateWebhookRequest extends BaseApiRequest
 	public function rules(): array
 	{
 		return [
-			'webhook_id' => ['required', 'string', 'exists:webhooks,id'],
+			'webhook_id' => ['required', 'string'],
 			'name' => ['required', 'string', 'max:255'],
 			'event' => ['required', 'string', Rule::in(PhotoWebhookEvent::values())],
 			'method' => ['required', 'string', Rule::in(WebhookMethod::values())],

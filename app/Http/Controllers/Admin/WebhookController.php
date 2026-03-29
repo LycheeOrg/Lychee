@@ -8,15 +8,15 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Assets\Features;
+use App\Http\Requests\Webhook\DestroyWebhookRequest;
+use App\Http\Requests\Webhook\IndexWebhookRequest;
 use App\Http\Requests\Webhook\PatchWebhookRequest;
+use App\Http\Requests\Webhook\ShowWebhookRequest;
 use App\Http\Requests\Webhook\StoreWebhookRequest;
 use App\Http\Requests\Webhook\UpdateWebhookRequest;
 use App\Http\Resources\Models\WebhookResource;
-use App\Models\User;
 use App\Models\Webhook;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Auth;
 use Spatie\LaravelData\PaginatedDataCollection;
 
 /**
@@ -31,10 +31,8 @@ class WebhookController extends Controller
 	 *
 	 * @return PaginatedDataCollection<(int|string),WebhookResource>
 	 */
-	public function index(): PaginatedDataCollection
+	public function index(IndexWebhookRequest $request): PaginatedDataCollection
 	{
-		$this->assertAdmin();
-
 		$webhooks = Webhook::query()->orderBy('created_at', 'asc')->paginate(50);
 
 		return WebhookResource::collect($webhooks, PaginatedDataCollection::class);
@@ -57,14 +55,9 @@ class WebhookController extends Controller
 	/**
 	 * Retrieve a single webhook configuration.
 	 */
-	public function show(string $webhook): WebhookResource
+	public function show(ShowWebhookRequest $request): WebhookResource
 	{
-		$this->assertAdmin();
-
-		/** @var Webhook $model */
-		$model = Webhook::findOrFail($webhook);
-
-		return new WebhookResource($model);
+		return new WebhookResource($request->webhook);
 	}
 
 	/**
@@ -96,28 +89,8 @@ class WebhookController extends Controller
 	/**
 	 * Hard-delete a webhook configuration.
 	 */
-	public function destroy(string $webhook): void
+	public function destroy(DestroyWebhookRequest $request): void
 	{
-		$this->assertAdmin();
-
-		/** @var Webhook $model */
-		$model = Webhook::findOrFail($webhook);
-		$model->delete();
-	}
-
-	/**
-	 * Ensure the authenticated user is an administrator and that the webhook feature is enabled.
-	 */
-	private function assertAdmin(): void
-	{
-		if (Features::inactive('webhook')) {
-			abort(404, 'Webhook feature is not enabled.');
-		}
-
-		/** @var User|null */
-		$user = Auth::user();
-		if ($user?->may_administrate !== true) {
-			abort(403, 'Admin access required.');
-		}
+		$request->webhook->delete();
 	}
 }

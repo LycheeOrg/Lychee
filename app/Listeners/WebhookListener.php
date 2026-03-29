@@ -14,6 +14,7 @@ use App\Events\PhotoAdded;
 use App\Events\PhotoMoved;
 use App\Events\PhotoWillBeDeleted;
 use App\Jobs\WebhookDispatchJob;
+use App\Models\Photo;
 use App\Models\SizeVariant;
 use App\Models\Webhook;
 use App\Services\Webhook\WebhookPayloadBuilder;
@@ -108,8 +109,8 @@ class WebhookListener
 		}
 
 		// Load the photo and its albums to build the payload.
-		/** @var \App\Models\Photo|null $photo */
-		$photo = \App\Models\Photo::query()
+		/** @var Photo|null $photo */
+		$photo = Photo::query()
 			->with(['albums', 'size_variants'])
 			->find($photo_id);
 
@@ -140,11 +141,11 @@ class WebhookListener
 	/**
 	 * Build a size_variants snapshot array from a loaded Photo model.
 	 *
-	 * @param \App\Models\Photo $photo
+	 * @param Photo $photo
 	 *
 	 * @return array<int,array{type:string,url:string}>
 	 */
-	private function buildSizeVariantsSnapshot(\App\Models\Photo $photo): array
+	private function buildSizeVariantsSnapshot(Photo $photo): array
 	{
 		$variants = [];
 		/** @var SizeVariant $sv */

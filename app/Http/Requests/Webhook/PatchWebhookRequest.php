@@ -52,7 +52,7 @@ class PatchWebhookRequest extends BaseApiRequest
 	public function rules(): array
 	{
 		return [
-			'webhook_id' => ['required', 'string', 'exists:webhooks,id'],
+			'webhook_id' => ['required', 'string'],
 			'name' => ['sometimes', 'required', 'string', 'max:255'],
 			'event' => ['sometimes', 'required', 'string', Rule::in(PhotoWebhookEvent::values())],
 			'method' => ['sometimes', 'required', 'string', Rule::in(WebhookMethod::values())],
