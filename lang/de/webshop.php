@@ -179,7 +179,7 @@ return [
     "albumPurchasable" => [
         "notPurchasableYet" => "Dieses Album ist (noch) nicht käuflich erwerbbar.",
         "descriptionPlaceholder" => "Beschreibung für Kunden",
-        "ownerNotePlaceholder" => "Notiz des Eigentümers",
+        "ownerNotePlaceholder" => "Anmerkung des Besitzers",
         "setPurchasable" => "Zum Verkauf freigeben",
         "setPurchasablePropagate" => "Zum Verkauf freigeben und vererben",
         "disable" => "Deaktivieren",
