@@ -1,9 +1,7 @@
 import L from "leaflet";
 import "leaflet-rotatedmarker/leaflet.rotatedMarker.js";
 import "leaflet.markercluster/dist/leaflet.markercluster.js";
-import "@lychee-org/leaflet.photo/Leaflet.Photo.js";
 import "leaflet/dist/leaflet.css";
-import "@lychee-org/leaflet.photo/Leaflet.Photo.css";
 import { ref } from "vue";
 import AlbumService from "./album-service";
 import Constants from "./constants";
