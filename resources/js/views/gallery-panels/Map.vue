@@ -29,9 +29,9 @@ import { useRouter } from "vue-router";
 import L, { LatLngBoundsLiteral } from "leaflet";
 import "leaflet-rotatedmarker/leaflet.rotatedMarker.js";
 import "leaflet.markercluster/dist/leaflet.markercluster.js";
-import "@lychee-org/leaflet.photo/Leaflet.Photo.js";
+// import "@lychee-org/leaflet.photo/Leaflet.Photo.js";
 import "leaflet/dist/leaflet.css";
-import "@lychee-org/leaflet.photo/Leaflet.Photo.css";
+// import "@lychee-org/leaflet.photo/Leaflet.Photo.css";
 import "leaflet-gpx/gpx.js";
 import { useToast } from "primevue/usetoast";
 import Toolbar from "primevue/toolbar";
@@ -41,6 +41,7 @@ import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { onMounted } from "vue";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
 import GoBack from "@/components/headers/GoBack.vue";
+import { clusterFunc } from "@/composables/photo";
 
 type MapPhotoEntry = {
 	lat?: number | null;
@@ -130,7 +131,7 @@ function fetchData() {
 function open() {
 	// Define how the photos on the map should look
 	// @ts-expect-error Leaflet.Photo is not typed
-	photoLayer.value = L.photo.cluster().on("click", function (e: MapClickEvent) {
+	photoLayer.value = clusterFunc().on("click", function (e: MapClickEvent) {
 		const photo: MapPhotoEntry = {
 			photoID: e.layer.photo.photoID,
 			albumID: e.layer.photo.albumID,
@@ -295,3 +296,32 @@ onMounted(() => {
 	loadMapProvider();
 });
 </script>
+<style lang="css">
+.leaflet-marker-photo {
+	border: 2px solid #fff;
+	box-shadow: 3px 3px 10px #888;
+}
+
+.leaflet-marker-photo div {
+	width: 100%;
+	height: 100%;
+	background-size: cover;
+	background-position: center center;
+	background-repeat: no-repeat;
+}
+
+.leaflet-marker-photo b {
+	position: absolute;
+	top: -7px;
+	right: -11px;
+	color: #555;
+	background-color: #fff;
+	border-radius: 8px;
+	height: 12px;
+	min-width: 12px;
+	line-height: 12px;
+	text-align: center;
+	padding: 3px;
+	box-shadow: 0 3px 14px rgba(0, 0, 0, 0.4);
+}
+</style>

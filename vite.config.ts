@@ -4,6 +4,28 @@ import laravel from "laravel-vite-plugin";
 import vue from "@vitejs/plugin-vue";
 import i18n from "laravel-vue-i18n/vite";
 import tailwindcss from "@tailwindcss/vite";
+import type { Plugin } from 'vite';
+
+
+function leafletGlobalPlugin(): Plugin {
+  const LEAFLET_PLUGINS = [
+    'leaflet-gpx',
+    'leaflet-rotatedmarker',
+	'leaflet.markercluster',
+  ];
+  return {
+    name: 'vite-plugin-leaflet-global',
+    transform(code, id) {
+      if (
+        LEAFLET_PLUGINS.some((p) => id.includes(p)) &&
+        !id.endsWith('.css') &&
+        !id.includes('?vue&type=style')
+      ) {
+        return { code: `import L from 'leaflet';\n${code}`, map: null };
+      }
+    },
+  };
+}
 
 const laravelPlugin = laravel({
 	input: ["resources/sass/app.css", "resources/js/app.ts"],
@@ -59,6 +81,7 @@ const localDevelopMiddleware: PluginOption = {
 const baseConfig = {
 	base: "./",
 	plugins: [
+		leafletGlobalPlugin(),
 		tailwindcss(),
 		vue({ template: { transformAssetUrls: { base: null, includeAbsolute: false } } }),
 		i18n(),
@@ -89,13 +112,25 @@ const baseConfig = {
 	build: {
 		rollupOptions: {
 			output: {
-				manualChunks(id) {
-					if (id.includes("node_modules")) {
-						return id.toString().split("node_modules/")[1].split("/")[0].toString();
-					}
+				codeSplitting: {
+				groups: [
+					{
+						test: /primevue/,
+						name: 'primevue',
+					},
+				],
 				},
 			},
-		},
+		}
+		// rollupOptions: {
+		// 	output: {
+		// 		// manualChunks(id) {
+		// 		// 	if (id.includes("node_modules")) {
+		// 		// 		return id.toString().split("node_modules/")[1].split("/")[0].toString();
+		// 		// 	}
+		// 		// },
+		// 	},
+		// },
 	},
 } as UserConfig;
 
