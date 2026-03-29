@@ -3,7 +3,6 @@
 @import "primeicons/primeicons.css";
 @import "leaflet/dist/leaflet.css";
 @import "leaflet.markercluster/dist/MarkerCluster.css";
-@import "@lychee-org/leaflet.photo/Leaflet.Photo.css";
 
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
