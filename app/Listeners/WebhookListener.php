@@ -9,7 +9,6 @@
 namespace App\Listeners;
 
 use App\Assets\Features;
-use App\DTO\WebhookPayload;
 use App\Enum\PhotoWebhookEvent;
 use App\Events\PhotoAdded;
 use App\Events\PhotoMoved;

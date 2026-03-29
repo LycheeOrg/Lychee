@@ -22,11 +22,11 @@ class WebhookPayloadBuilder
 	/**
 	 * Build a WebhookPayload for the given webhook and photo snapshot data.
 	 *
-	 * @param Webhook                                          $webhook       The webhook configuration.
-	 * @param string                                           $photo_id      The photo ID.
-	 * @param string                                           $album_id      The album ID.
-	 * @param string                                           $title         The photo title.
-	 * @param array<int,array{type:string,url:string}>         $size_variants All available size variants for the photo (type = lowercase name, url = full URL).
+	 * @param Webhook                                  $webhook       the webhook configuration
+	 * @param string                                   $photo_id      the photo ID
+	 * @param string                                   $album_id      the album ID
+	 * @param string                                   $title         the photo title
+	 * @param array<int,array{type:string,url:string}> $size_variants all available size variants for the photo (type = lowercase name, url = full URL)
 	 *
 	 * @return WebhookPayload
 	 */
@@ -51,8 +51,8 @@ class WebhookPayloadBuilder
 	 * If size_variant_types is null or empty, all provided variants are included.
 	 * Variants not present in $size_variants are silently omitted.
 	 *
-	 * @param Webhook                                    $webhook       The webhook configuration.
-	 * @param array<int,array{type:string,url:string}>   $size_variants All available size variants.
+	 * @param Webhook                                  $webhook       the webhook configuration
+	 * @param array<int,array{type:string,url:string}> $size_variants all available size variants
 	 *
 	 * @return array<int,array{type:string,url:string}>
 	 */

@@ -24,18 +24,18 @@ use Illuminate\Database\Eloquent\Model;
  * Represents an outgoing webhook configuration.
  * Webhooks are hard-deleted — no soft-delete.
  *
- * @property string               $id             ULID primary key
- * @property string               $name           Human-readable label
- * @property PhotoWebhookEvent    $event          Lifecycle event that triggers this webhook
- * @property WebhookMethod        $method         HTTP method for the outgoing request
- * @property string               $url            Target URL (HTTP or HTTPS)
- * @property WebhookPayloadFormat $payload_format How the payload is delivered (json | query_string)
- * @property string|null          $secret         Secret key (encrypted at rest)
- * @property string|null          $secret_header  HTTP header name that carries the secret
- * @property bool                 $enabled        When false, this webhook is skipped during dispatch
- * @property bool                 $send_photo_id  Include photo_id in payload
- * @property bool                 $send_album_id  Include album_id in payload
- * @property bool                 $send_title     Include title in payload
+ * @property string               $id                 ULID primary key
+ * @property string               $name               Human-readable label
+ * @property PhotoWebhookEvent    $event              Lifecycle event that triggers this webhook
+ * @property WebhookMethod        $method             HTTP method for the outgoing request
+ * @property string               $url                Target URL (HTTP or HTTPS)
+ * @property WebhookPayloadFormat $payload_format     How the payload is delivered (json | query_string)
+ * @property string|null          $secret             Secret key (encrypted at rest)
+ * @property string|null          $secret_header      HTTP header name that carries the secret
+ * @property bool                 $enabled            When false, this webhook is skipped during dispatch
+ * @property bool                 $send_photo_id      Include photo_id in payload
+ * @property bool                 $send_album_id      Include album_id in payload
+ * @property bool                 $send_title         Include title in payload
  * @property bool                 $send_size_variants Include size_variants in payload
  * @property int[]|null           $size_variant_types SizeVariantType int values to include
  * @property Carbon               $created_at

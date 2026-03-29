@@ -140,8 +140,8 @@ readonly class Delete
 	 * Uses a lean DB query (no full Eloquent hydration) to load photo title
 	 * and size variant URLs before the records are removed.
 	 *
-	 * @param string[] $photo_ids IDs of photos to be hard-deleted.
-	 * @param string   $album_id  The album they are being deleted from.
+	 * @param string[] $photo_ids IDs of photos to be hard-deleted
+	 * @param string   $album_id  the album they are being deleted from
 	 */
 	private function dispatchWillBeDeletedEvents(array $photo_ids, string $album_id): void
 	{

@@ -16,10 +16,10 @@ namespace App\DTO;
 final class WebhookPayload
 {
 	/**
-	 * @param string|null                             $photo_id      The photo ID (null if not selected).
-	 * @param string|null                             $album_id      The album ID (null if not selected).
-	 * @param string|null                             $title         The photo title (null if not selected).
-	 * @param array<int,array{type:string,url:string}>|null $size_variants Array of {type, url} objects (null if not selected).
+	 * @param string|null                                   $photo_id      the photo ID (null if not selected)
+	 * @param string|null                                   $album_id      the album ID (null if not selected)
+	 * @param string|null                                   $title         the photo title (null if not selected)
+	 * @param array<int,array{type:string,url:string}>|null $size_variants array of {type, url} objects (null if not selected)
 	 */
 	public function __construct(
 		public readonly ?string $photo_id,

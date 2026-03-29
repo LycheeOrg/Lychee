@@ -8,9 +8,6 @@
 
 namespace App\Http\Resources\Models;
 
-use App\Enum\PhotoWebhookEvent;
-use App\Enum\WebhookMethod;
-use App\Enum\WebhookPayloadFormat;
 use App\Models\Webhook;
 use Carbon\Carbon;
 use Spatie\LaravelData\Data;

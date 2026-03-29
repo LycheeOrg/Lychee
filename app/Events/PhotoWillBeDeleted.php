@@ -27,10 +27,10 @@ class PhotoWillBeDeleted
 	/**
 	 * Create a new event instance.
 	 *
-	 * @param string                             $photo_id      The ID of the photo being deleted.
-	 * @param string                             $album_id      The ID of the album the photo is being removed from.
-	 * @param string                             $title         The title of the photo.
-	 * @param array<int,array{type:string,url:string}> $size_variants Array of size variant snapshots with 'type' (lowercase name) and 'url'.
+	 * @param string                                   $photo_id      the ID of the photo being deleted
+	 * @param string                                   $album_id      the ID of the album the photo is being removed from
+	 * @param string                                   $title         the title of the photo
+	 * @param array<int,array{type:string,url:string}> $size_variants array of size variant snapshots with 'type' (lowercase name) and 'url'
 	 */
 	public function __construct(
 		public string $photo_id,
