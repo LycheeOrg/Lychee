@@ -14,10 +14,10 @@ use App\Http\Requests\Webhook\PatchWebhookRequest;
 use App\Http\Requests\Webhook\ShowWebhookRequest;
 use App\Http\Requests\Webhook\StoreWebhookRequest;
 use App\Http\Requests\Webhook\UpdateWebhookRequest;
+use App\Http\Resources\Collections\PaginatedWebhookResource;
 use App\Http\Resources\Models\WebhookResource;
 use App\Models\Webhook;
 use Illuminate\Routing\Controller;
-use Spatie\LaravelData\PaginatedDataCollection;
 
 /**
  * Admin controller for managing outgoing webhook configurations.
@@ -28,14 +28,12 @@ class WebhookController extends Controller
 {
 	/**
 	 * List all webhook configurations.
-	 *
-	 * @return PaginatedDataCollection<(int|string),WebhookResource>
 	 */
-	public function index(IndexWebhookRequest $request): PaginatedDataCollection
+	public function index(IndexWebhookRequest $request): PaginatedWebhookResource
 	{
 		$webhooks = Webhook::query()->orderBy('created_at', 'asc')->paginate(50);
 
-		return WebhookResource::collect($webhooks, PaginatedDataCollection::class);
+		return new PaginatedWebhookResource($webhooks);
 	}
 
 	/**

@@ -8,6 +8,9 @@
 
 namespace App\Http\Resources\Models;
 
+use App\Enum\PhotoWebhookEvent;
+use App\Enum\WebhookMethod;
+use App\Enum\WebhookPayloadFormat;
 use App\Models\Webhook;
 use Carbon\Carbon;
 use Spatie\LaravelData\Data;
@@ -24,10 +27,10 @@ class WebhookResource extends Data
 {
 	public string $id;
 	public string $name;
-	public string $event;
-	public string $method;
+	public PhotoWebhookEvent $event;
+	public WebhookMethod $method;
 	public string $url;
-	public string $payload_format;
+	public WebhookPayloadFormat $payload_format;
 	public bool $has_secret;
 	public ?string $secret_header;
 	public bool $enabled;
@@ -44,10 +47,10 @@ class WebhookResource extends Data
 	{
 		$this->id = $webhook->id;
 		$this->name = $webhook->name;
-		$this->event = $webhook->event->value;
-		$this->method = $webhook->method->value;
+		$this->event = $webhook->event;
+		$this->method = $webhook->method;
 		$this->url = $webhook->url;
-		$this->payload_format = $webhook->payload_format->value;
+		$this->payload_format = $webhook->payload_format;
 		$this->has_secret = $webhook->secret !== null;
 		$this->secret_header = $webhook->secret_header;
 		$this->enabled = $webhook->enabled;
@@ -58,5 +61,10 @@ class WebhookResource extends Data
 		$this->size_variant_types = $webhook->size_variant_types;
 		$this->created_at = $webhook->created_at;
 		$this->updated_at = $webhook->updated_at;
+	}
+
+	public function fromModel(Webhook $webhook): static
+	{
+		return new static($webhook);
 	}
 }

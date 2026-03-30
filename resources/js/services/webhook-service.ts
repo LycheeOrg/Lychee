@@ -9,10 +9,10 @@ import Constants from "./constants";
 
 export type CreateWebhookRequest = {
 	name: string;
-	event: App.Enum.PhotoWebhookEventType;
-	method: App.Enum.WebhookMethodType;
+	event: App.Enum.PhotoWebhookEvent;
+	method: App.Enum.WebhookMethod;
 	url: string;
-	payload_format: App.Enum.WebhookPayloadFormatType;
+	payload_format: App.Enum.WebhookPayloadFormat;
 	secret?: string | null;
 	secret_header?: string | null;
 	enabled: boolean;
@@ -31,16 +31,8 @@ export type PatchWebhookRequest = Partial<CreateWebhookRequest> & {
 	webhook_id: string;
 };
 
-export type PaginatedWebhooks = {
-	data: App.Http.Resources.Models.WebhookResource[];
-	current_page: number;
-	per_page: number;
-	total: number;
-	last_page: number;
-};
-
 const WebhookService = {
-	list(): Promise<AxiosResponse<PaginatedWebhooks>> {
+	list(): Promise<AxiosResponse<App.Http.Resources.Collections.PaginatedWebhookResource>> {
 		return axios.get(`${Constants.getApiUrl()}Webhook`, { data: {} });
 	},
 
@@ -61,7 +53,7 @@ const WebhookService = {
 	},
 
 	delete(id: string): Promise<AxiosResponse<void>> {
-		return axios.delete(`${Constants.getApiUrl()}Webhook/${id}`);
+		return axios.delete(`${Constants.getApiUrl()}Webhook/${id}`, { data: {} });
 	},
 };
 
