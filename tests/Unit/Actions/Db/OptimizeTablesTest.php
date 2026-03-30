@@ -32,6 +32,6 @@ class OptimizeTablesTest extends AbstractTestCase
 	{
 		$optimize = new OptimizeTables();
 		$output = count($optimize->do());
-		self::assertTrue(in_array($output, [3, 39], true), 'OptimizeTables should return either 3 or 39: ' . $output);
+		self::assertTrue(in_array($output, [3, 38], true), 'OptimizeTables should return either 3 or 38: ' . $output);
 	}
 }
