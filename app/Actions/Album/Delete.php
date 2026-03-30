@@ -147,14 +147,17 @@ class Delete
 			->orderBy(PA::PHOTO_ID, 'asc')
 			->get();
 
-		// Potential photos to be deleted
-		$photos_ids = $photos_ids_occurances_in_album->pluck('photo_id')->all();
-
 		// We select all the photos which are impacted: we want to know if they are only occuring in those albums or not.
 		// Note that photos which are only in the deleted albums can be deleted fully.
+		// We use a subquery instead of whereIn($photos_ids) to avoid hitting the database
+		// placeholder limit (MySQL error 1390) when there are many photos to delete.
 		/** @var Collection<int,object{photo_id:string,album_count:int}> $photos_ids_occurances */
 		$photos_ids_occurances = DB::table(PA::PHOTO_ALBUM)
-			->whereIn(PA::PHOTO_ID, $photos_ids)
+			->whereIn(PA::PHOTO_ID, function ($query) use ($album_ids): void {
+				$query->select(PA::PHOTO_ID)
+					->from(PA::PHOTO_ALBUM)
+					->whereIn(PA::ALBUM_ID, $album_ids);
+			})
 			->select([PA::PHOTO_ID, DB::raw('COUNT(*) AS album_count')])
 			->groupBy(PA::PHOTO_ID)
 			->orderBy(PA::PHOTO_ID, 'asc')

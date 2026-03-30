@@ -19,6 +19,13 @@ use Illuminate\Support\Facades\DB;
 final class PhotosToBeDeletedDTO
 {
 	/**
+	 * Maximum number of IDs to pass in a single whereIn() clause.
+	 * MySQL's prepared-statement placeholder limit is 65 535; staying at 1 000
+	 * keeps every query well within that bound regardless of query complexity.
+	 */
+	private const CHUNK_SIZE = 500;
+
+	/**
 	 * Container for all Albums and associated Tracks to be deleted.
 	 *
 	 * @param string[] $force_delete_photo_ids the photo IDs to be force deleted => removed from storage etc
@@ -64,11 +71,17 @@ final class PhotosToBeDeletedDTO
 			return;
 		}
 
-		// Just remove the link between albums and photos.
-		DB::table('photo_album')
-			->whereIn('photo_id', $this->soft_delete_photo_ids)
-			->whereIn('album_id', $this->album_ids)
-			->delete();
+		// Chunk to avoid hitting the database placeholder limit (MySQL error 1390).
+		// Both photo and album ID arrays can be large, so we chunk each independently
+		// and run all cross-product combinations within the same transaction.
+		collect($this->soft_delete_photo_ids)->chunk(self::CHUNK_SIZE)->each(function ($photo_chunk): void {
+			collect($this->album_ids)->chunk(self::CHUNK_SIZE)->each(function ($album_chunk) use ($photo_chunk): void {
+				DB::table('photo_album')
+					->whereIn('photo_id', $photo_chunk->all())
+					->whereIn('album_id', $album_chunk->all())
+					->delete();
+			});
+		});
 	}
 
 	/**
@@ -83,9 +96,12 @@ final class PhotosToBeDeletedDTO
 			return [];
 		}
 
-		// Reset headers and covers pointing to deleted photos
-		DB::table('albums')->whereIn('header_id', $this->force_delete_photo_ids)->update(['header_id' => null]);
-		DB::table('albums')->whereIn('cover_id', $this->force_delete_photo_ids)->update(['cover_id' => null]);
+		// Reset headers and covers pointing to deleted photos.
+		// Chunk to avoid hitting the database placeholder limit (MySQL error 1390).
+		collect($this->force_delete_photo_ids)->chunk(self::CHUNK_SIZE)->each(function ($chunk): void {
+			DB::table('albums')->whereIn('header_id', $chunk->all())->update(['header_id' => null]);
+			DB::table('albums')->whereIn('cover_id', $chunk->all())->update(['cover_id' => null]);
+		});
 
 		// Maybe consider doing multiple queries for the different storage types.
 		$exclude_size_variants_ids = DB::table('order_items')->select(['size_variant_id'])->pluck('size_variant_id')->all();
@@ -111,18 +127,19 @@ final class PhotosToBeDeletedDTO
 		$delete_jobs[] = new FileDeleterJob(StorageDiskType::S3, $short_path_watermarked_s3);
 		$delete_jobs[] = new FileDeleterJob(StorageDiskType::S3, $live_photo_short_paths_s3);
 
-		// Now delete DB records
-		// ! If we are deleting more than a few 1000 photos at once, we may run into
-		// ! SQL query size limits. In that case, we need to chunk the deletion.
+		// Now delete DB records.
+		// Chunk to avoid hitting the database placeholder limit (MySQL error 1390).
 
 		// Those we are keeping.
 		DB::table('size_variants')->whereIn('id', $exclude_size_variants_ids)->update(['photo_id' => null]);
 		// Those we delete
-		DB::table('size_variants')->whereIn('photo_id', $this->force_delete_photo_ids)->delete();
-		DB::table('statistics')->whereIn('photo_id', $this->force_delete_photo_ids)->delete();
-		DB::table('palettes')->whereIn('photo_id', $this->force_delete_photo_ids)->delete();
-		DB::table('photo_album')->whereIn('photo_id', $this->force_delete_photo_ids)->delete(); // Just to be sure.
-		DB::table('photos')->whereIn('id', $this->force_delete_photo_ids)->delete();
+		collect($this->force_delete_photo_ids)->chunk(self::CHUNK_SIZE)->each(function ($chunk): void {
+			DB::table('size_variants')->whereIn('photo_id', $chunk->all())->delete();
+			DB::table('statistics')->whereIn('photo_id', $chunk->all())->delete();
+			DB::table('palettes')->whereIn('photo_id', $chunk->all())->delete();
+			DB::table('photo_album')->whereIn('photo_id', $chunk->all())->delete(); // Just to be sure.
+			DB::table('photos')->whereIn('id', $chunk->all())->delete();
+		});
 
 		return $delete_jobs;
 	}
@@ -146,15 +163,23 @@ final class PhotosToBeDeletedDTO
 			return collect([]);
 		}
 
-		return SizeVariant::query()
-			->from('size_variants as sv')
-			->select(['sv.short_path', 'sv.short_path_watermarked'])
-			->join('photos as p', 'p.id', '=', 'sv.photo_id')
-			->whereIn('p.id', $photo_ids)
-			->where('sv.storage_disk', '=', $storage_disk->value)
-			->whereNotIn('sv.id', $exclude_size_variants_ids)
-			->toBase()
-			->get();
+		// Chunk photo_ids to avoid hitting the database placeholder limit (MySQL error 1390).
+		return collect($photo_ids)->chunk(self::CHUNK_SIZE)->reduce(
+			function (Collection $carry, Collection $chunk) use ($storage_disk, $exclude_size_variants_ids): Collection {
+				return $carry->concat(
+					SizeVariant::query()
+						->from('size_variants as sv')
+						->select(['sv.short_path', 'sv.short_path_watermarked'])
+						->join('photos as p', 'p.id', '=', 'sv.photo_id')
+						->whereIn('p.id', $chunk->all())
+						->where('sv.storage_disk', '=', $storage_disk->value)
+						->whereNotIn('sv.id', $exclude_size_variants_ids)
+						->toBase()
+						->get()
+				);
+			},
+			collect([])
+		);
 	}
 
 	/**
@@ -175,16 +200,24 @@ final class PhotosToBeDeletedDTO
 			return collect([]);
 		}
 
-		return DB::table('photos', 'p')
-			->select(['p.live_photo_short_path'])
-			->join('size_variants as sv', function (JoinClause $join): void {
-				$join
-					->on('sv.photo_id', '=', 'p.id')
-					->where('sv.type', '=', SizeVariantType::ORIGINAL);
-			})
-			->whereIn('p.id', $photo_ids)
-			->whereNotNull('p.live_photo_short_path')
-			->where('sv.storage_disk', '=', $storage_disk->value)
-			->get();
+		// Chunk photo_ids to avoid hitting the database placeholder limit (MySQL error 1390).
+		return collect($photo_ids)->chunk(self::CHUNK_SIZE)->reduce(
+			function (Collection $carry, Collection $chunk) use ($storage_disk): Collection {
+				return $carry->concat(
+					DB::table('photos', 'p')
+						->select(['p.live_photo_short_path'])
+						->join('size_variants as sv', function (JoinClause $join): void {
+							$join
+								->on('sv.photo_id', '=', 'p.id')
+								->where('sv.type', '=', SizeVariantType::ORIGINAL);
+						})
+						->whereIn('p.id', $chunk->all())
+						->whereNotNull('p.live_photo_short_path')
+						->where('sv.storage_disk', '=', $storage_disk->value)
+						->get()
+				);
+			},
+			collect([])
+		);
 	}
 }
