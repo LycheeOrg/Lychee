@@ -62,9 +62,4 @@ class WebhookResource extends Data
 		$this->created_at = $webhook->created_at;
 		$this->updated_at = $webhook->updated_at;
 	}
-
-	public function fromModel(Webhook $webhook): static
-	{
-		return new static($webhook);
-	}
 }
