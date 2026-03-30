@@ -45,7 +45,7 @@
         "@paypal/paypal-js": "^9.4.1",
         "@primeuix/themes": "^2.0.3",
         "@sidsbrmnn/scrollspy": "^1.1.0",
-        "@stripe/stripe-js": "^8.11.0",
+        "@stripe/stripe-js": "^9.0.1",
         "@tailwindcss/typography": "^0.5.19",
         "@tailwindcss/vite": "^4.2.2",
         "@vitejs/plugin-vue": "^6.0.5",
