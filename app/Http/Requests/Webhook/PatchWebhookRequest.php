@@ -10,13 +10,14 @@ namespace App\Http\Requests\Webhook;
 
 use App\Assets\Features;
 use App\Enum\PhotoWebhookEvent;
+use App\Enum\SizeVariantType;
 use App\Enum\WebhookMethod;
 use App\Enum\WebhookPayloadFormat;
 use App\Http\Requests\BaseApiRequest;
 use App\Models\User;
 use App\Models\Webhook;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Enum;
 
 /**
  * Request for a partial update of an existing webhook configuration.
@@ -54,10 +55,10 @@ class PatchWebhookRequest extends BaseApiRequest
 		return [
 			'webhook_id' => ['required', 'string'],
 			'name' => ['sometimes', 'required', 'string', 'max:255'],
-			'event' => ['sometimes', 'required', 'string', Rule::in(PhotoWebhookEvent::values())],
-			'method' => ['sometimes', 'required', 'string', Rule::in(WebhookMethod::values())],
+			'event' => ['sometimes', 'required', 'string', new Enum(PhotoWebhookEvent::class)],
+			'method' => ['sometimes', 'required', 'string', new Enum(WebhookMethod::class)],
 			'url' => ['sometimes', 'required', 'string', 'url', 'max:2048'],
-			'payload_format' => ['sometimes', 'required', 'string', Rule::in(WebhookPayloadFormat::values())],
+			'payload_format' => ['sometimes', 'required', 'string', new Enum(WebhookPayloadFormat::class)],
 			'secret' => ['sometimes', 'nullable', 'string', 'max:1024'],
 			'secret_header' => ['sometimes', 'nullable', 'string', 'max:255', 'regex:/^[a-zA-Z0-9\-]+$/'],
 			'enabled' => ['sometimes', 'boolean'],
@@ -66,7 +67,7 @@ class PatchWebhookRequest extends BaseApiRequest
 			'send_title' => ['sometimes', 'boolean'],
 			'send_size_variants' => ['sometimes', 'boolean'],
 			'size_variant_types' => ['sometimes', 'nullable', 'array'],
-			'size_variant_types.*' => ['integer', Rule::in(array_column(\App\Enum\SizeVariantType::cases(), 'value'))],
+			'size_variant_types.*' => ['integer', new Enum(SizeVariantType::class)],
 		];
 	}
 

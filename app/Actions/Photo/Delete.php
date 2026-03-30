@@ -9,8 +9,10 @@
 namespace App\Actions\Photo;
 
 use App\Actions\Shop\PurchasableService;
+use App\Assets\Features;
 use App\Constants\PhotoAlbum as PA;
 use App\DTO\Delete\PhotosToBeDeletedDTO;
+use App\Enum\SizeVariantType;
 use App\Events\PhotoDeleted;
 use App\Events\PhotoWillBeDeleted;
 use App\Exceptions\Internal\LycheeLogicException;
@@ -144,6 +146,11 @@ readonly class Delete
 	 */
 	private function dispatchWillBeDeletedEvents(array $photo_ids, string $album_id): void
 	{
+		// Skip this
+		if (Features::inactive('webhook')) {
+			return;
+		}
+
 		// Load minimal photo data.
 		$photos_data = DB::table('photos')
 			->whereIn('id', $photo_ids)
@@ -161,8 +168,9 @@ readonly class Delete
 			foreach ($chunk as $photo) {
 				$variants = [];
 				$raw_variants = $size_variants->get($photo->id, collect());
+				/** @var SizeVariant $sv */
 				foreach ($raw_variants as $sv) {
-					$url = $sv->getDownloadUrlAttribute();
+					$url = $sv->type === SizeVariantType::PLACEHOLDER ? $sv->short_path : $sv->getDownloadUrlAttribute();
 					$variants[] = [
 						'type' => $sv->type->name(),
 						'url' => $url,
