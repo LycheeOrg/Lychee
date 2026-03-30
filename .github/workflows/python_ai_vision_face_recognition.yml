@@ -118,8 +118,8 @@ jobs:
         if: matrix.python-version == '3.13'
         uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de # v5.5.2
         with:
-          files: ai-vision-service/coverage.xml
-          flags: ai-vision-service
+          files: ai-vision-service/face-recognition/coverage.xml
+          flags: ai-vision-service/face-recognition
         continue-on-error: true
 
   # ---------------------------------------------------------------------------
@@ -143,7 +143,7 @@ jobs:
       - name: Build Docker image (no model bake in CI to save time)
         uses: docker/build-push-action@d08e5c354a6adb9ed34480a06d141179aa583294 # v7.0.0
         with:
-          context: ai-vision-service
+          context: ai-vision-service/face-recognition
           push: false
           load: true
           tags: lychee-ai-vision:ci
