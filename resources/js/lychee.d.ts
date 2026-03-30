@@ -138,7 +138,10 @@ declare namespace App.Enum {
 	export type PhotoThumbInfoType = "title" | "description";
 	export type PurchasableLicenseType = "personal" | "commercial" | "extended";
 	export type PurchasableSizeVariantType = "medium" | "medium2x" | "original" | "full";
+	export type PhotoWebhookEventType = "photo.add" | "photo.move" | "photo.delete";
 	export type RenamerModeType = "first" | "all" | "regex" | "trim" | "strtolower" | "strtoupper" | "ucwords" | "ucfirst";
+	export type WebhookMethodType = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+	export type WebhookPayloadFormatType = "json" | "query_string";
 	export type SeverityType = "emergency" | "alert" | "critical" | "error" | "warning" | "notice" | "info" | "debug";
 	export type SharedAlbumsVisibility = "show" | "separate" | "separate_shared_only" | "hide";
 	export type ShiftType = "relative" | "absolute";
@@ -738,6 +741,24 @@ declare namespace App.Http.Resources.Models {
 		is_photo_rule: boolean;
 		is_album_rule: boolean;
 	};
+	export type WebhookResource = {
+		id: string;
+		name: string;
+		event: App.Enum.PhotoWebhookEventType;
+		method: App.Enum.WebhookMethodType;
+		url: string;
+		payload_format: App.Enum.WebhookPayloadFormatType;
+		has_secret: boolean;
+		secret_header: string | null;
+		enabled: boolean;
+		send_photo_id: boolean;
+		send_album_id: boolean;
+		send_title: boolean;
+		send_size_variants: boolean;
+		size_variant_types: number[] | null;
+		created_at: string;
+		updated_at: string;
+	};
 	export type SizeVariantResource = {
 		type: App.Enum.SizeVariantType;
 		locale: string;
@@ -954,6 +975,7 @@ declare namespace App.Http.Resources.Rights {
 		is_photo_timeline_enabled: boolean;
 		is_mod_renamer_enabled: boolean;
 		is_mod_webshop_enabled: boolean;
+		is_mod_webhook_enabled: boolean;
 		is_contact_enabled: boolean;
 		messages_count: number;
 	};
