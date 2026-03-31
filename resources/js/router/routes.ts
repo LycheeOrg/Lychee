@@ -30,6 +30,7 @@ const RenamerRules = () => import("@/views/RenamerRules.vue");
 const PurchasablesList = () => import("@/views/webshop/PurchasablesList.vue");
 const Contact = () => import("@/views/Contact.vue");
 const ContactMessages = () => import("@/views/ContactMessages.vue");
+const Webhooks = () => import("@/views/Webhooks.vue");
 const BasketList = () => import("@/views/webshop/BasketList.vue");
 const CheckoutPage = () => import("@/views/webshop/CheckoutPage.vue");
 const OrderList = () => import("@/views/webshop/OrderList.vue");
@@ -198,6 +199,11 @@ const routes_ = [
 		name: "contact-messages",
 		path: "/contact-messages",
 		component: ContactMessages,
+	},
+	{
+		name: "webhooks",
+		path: "/webhooks",
+		component: Webhooks,
 	},
 	{
 		name: "purchasables",

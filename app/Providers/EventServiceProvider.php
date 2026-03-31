@@ -19,8 +19,11 @@ use App\Events\Metrics\PhotoFavourite;
 use App\Events\Metrics\PhotoShared;
 use App\Events\Metrics\PhotoVisit;
 use App\Events\OrderCompleted;
+use App\Events\PhotoAdded;
 use App\Events\PhotoDeleted;
+use App\Events\PhotoMoved;
 use App\Events\PhotoSaved;
+use App\Events\PhotoWillBeDeleted;
 use App\Events\TaggedRouteCacheUpdated;
 use App\Listeners\AlbumCacheCleaner;
 use App\Listeners\CacheListener;
@@ -32,6 +35,7 @@ use App\Listeners\RecomputeAlbumSizeOnPhotoMutation;
 use App\Listeners\RecomputeAlbumStatsOnAlbumChange;
 use App\Listeners\RecomputeAlbumStatsOnPhotoChange;
 use App\Listeners\TaggedRouteCacheCleaner;
+use App\Listeners\WebhookListener;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Cache\Events\CacheHit;
 use Illuminate\Cache\Events\CacheMissed;
@@ -119,5 +123,10 @@ class EventServiceProvider extends ServiceProvider
 		Event::listen(PhotoDeleted::class, RecomputeAlbumSizeOnPhotoMutation::class . '@handlePhotoDeleted');
 		Event::listen(AlbumSaved::class, RecomputeAlbumSizeOnAlbumChange::class . '@handleAlbumSaved');
 		Event::listen(AlbumDeleted::class, RecomputeAlbumSizeOnAlbumChange::class . '@handleAlbumDeleted');
+
+		// Webhook dispatch for photo lifecycle events
+		Event::listen(PhotoAdded::class, WebhookListener::class . '@handlePhotoAdded');
+		Event::listen(PhotoMoved::class, WebhookListener::class . '@handlePhotoMoved');
+		Event::listen(PhotoWillBeDeleted::class, WebhookListener::class . '@handlePhotoWillBeDeleted');
 	}
 }

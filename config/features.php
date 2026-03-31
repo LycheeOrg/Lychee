@@ -142,6 +142,27 @@ return [
 
 	/*
 	 |--------------------------------------------------------------------------
+	 | Enable Webhooks
+	 |--------------------------------------------------------------------------
+	 |
+	 | When enabled, admins can configure outgoing webhooks that are triggered
+	 | on photo lifecycle events (photo.add, photo.move, photo.delete).
+	 | Disabled by default — set WEBHOOK_ENABLED=true to activate.
+	 */
+	'webhook' => (bool) env('WEBHOOK_ENABLED', false),
+
+	/*
+	 |--------------------------------------------------------------------------
+	 | Webhook HTTP request timeout
+	 |--------------------------------------------------------------------------
+	 |
+	 | Controls how long (in seconds) Lychee waits for a webhook endpoint to
+	 | respond before treating the request as failed.
+	 */
+	'webhook_timeout_seconds' => (int) env('WEBHOOK_TIMEOUT_SECONDS', 10),
+
+	/*
+	 |--------------------------------------------------------------------------
 	 | Populate Request object macros while testing
 	 |--------------------------------------------------------------------------
 	 |

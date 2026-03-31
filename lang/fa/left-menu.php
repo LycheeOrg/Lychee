@@ -24,4 +24,5 @@ return [
     'support' => 'پشتیبانی',
     'contact' => 'Contact',
     'messages' => 'Messages',
+    'webhooks' => 'Webhooks',
 ];

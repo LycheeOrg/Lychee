@@ -14,6 +14,7 @@ use App\Constants\PhotoAlbum as PA;
 use App\Contracts\Models\AbstractAlbum;
 use App\Events\AlbumSaved;
 use App\Events\PhotoDeleted;
+use App\Events\PhotoMoved;
 use App\Models\Album;
 use App\Models\Photo;
 use App\Models\Purchasable;
@@ -82,6 +83,13 @@ class MoveOrDuplicate
 
 			foreach ($photos as $photo) {
 				$this->applyToPurchasable($photo->id, $from_album->get_id(), $to_album?->get_id());
+			}
+
+			// Dispatch PhotoMoved for each moved photo (cross-album move only; not duplication).
+			if ($to_album !== null) {
+				foreach ($photos as $photo) {
+					PhotoMoved::dispatch($photo->id, $from_album->get_id(), $to_album->id);
+				}
 			}
 		}
 

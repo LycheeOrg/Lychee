@@ -163,6 +163,12 @@ export function useLeftMenu(
 						num: initData.value.modules.messages_count,
 					},
 					{
+						label: "left-menu.webhooks",
+						icon: "pi pi-send",
+						route: "/webhooks",
+						access: initData.value.modules.is_mod_webhook_enabled ?? false,
+					},
+					{
 						label: "diagnostics.title",
 						icon: "wrench",
 						route: "/diagnostics",

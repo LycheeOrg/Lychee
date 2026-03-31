@@ -136,6 +136,7 @@ declare namespace App.Enum {
 	export type PhotoHighlightVisibilityType = "anonymous" | "authenticated" | "editor";
 	export type PhotoLayoutType = "square" | "justified" | "masonry" | "grid";
 	export type PhotoThumbInfoType = "title" | "description";
+	export type PhotoWebhookEvent = "photo.add" | "photo.move" | "photo.delete";
 	export type PurchasableLicenseType = "personal" | "commercial" | "extended";
 	export type PurchasableSizeVariantType = "medium" | "medium2x" | "original" | "full";
 	export type RenamerModeType = "first" | "all" | "regex" | "trim" | "strtolower" | "strtoupper" | "ucwords" | "ucfirst";
@@ -171,6 +172,8 @@ declare namespace App.Enum {
 	export type VersionChannelType = "release" | "git" | "tag";
 	export type VisibilityType = "never" | "always" | "hover";
 	export type WatermarkPosition = "top-left" | "top" | "top-right" | "left" | "center" | "right" | "bottom-left" | "bottom" | "bottom-right";
+	export type WebhookMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+	export type WebhookPayloadFormat = "json" | "query_string";
 }
 declare namespace App.Http.Resources.Admin {
 	export type ImportDirectoryResource = {
@@ -211,6 +214,13 @@ declare namespace App.Http.Resources.Collections {
 	};
 	export type PaginatedPhotosResource = {
 		photos: App.Http.Resources.Models.PhotoResource[];
+		current_page: number;
+		last_page: number;
+		per_page: number;
+		total: number;
+	};
+	export type PaginatedWebhookResource = {
+		webhooks: App.Http.Resources.Models.WebhookResource[];
 		current_page: number;
 		last_page: number;
 		per_page: number;
@@ -829,6 +839,24 @@ declare namespace App.Http.Resources.Models {
 		alias: string | null;
 		created_at: string;
 	};
+	export type WebhookResource = {
+		id: string;
+		name: string;
+		event: App.Enum.PhotoWebhookEvent;
+		method: App.Enum.WebhookMethod;
+		url: string;
+		payload_format: App.Enum.WebhookPayloadFormat;
+		has_secret: boolean;
+		secret_header: string | null;
+		enabled: boolean;
+		send_photo_id: boolean;
+		send_album_id: boolean;
+		send_title: boolean;
+		send_size_variants: boolean;
+		size_variant_types: Array<number> | null;
+		created_at: string;
+		updated_at: string;
+	};
 }
 declare namespace App.Http.Resources.Models.Duplicates {
 	export type Duplicate = {
@@ -954,6 +982,7 @@ declare namespace App.Http.Resources.Rights {
 		is_photo_timeline_enabled: boolean;
 		is_mod_renamer_enabled: boolean;
 		is_mod_webshop_enabled: boolean;
+		is_mod_webhook_enabled: boolean;
 		is_contact_enabled: boolean;
 		messages_count: number;
 	};

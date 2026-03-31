@@ -31,6 +31,7 @@ class ModulesRightsResource extends Data
 	public bool $is_photo_timeline_enabled = false;
 	public bool $is_mod_renamer_enabled = false;
 	public bool $is_mod_webshop_enabled = false;
+	public bool $is_mod_webhook_enabled = false;
 	public bool $is_contact_enabled = false;
 	public int $messages_count = 0;
 
@@ -45,6 +46,7 @@ class ModulesRightsResource extends Data
 		$this->is_photo_timeline_enabled = $this->isTimelinePhotosEnabled($is_logged_in);
 		$this->is_mod_renamer_enabled = $this->isRenamerEnabled();
 		$this->is_mod_webshop_enabled = $this->isWebshopEnabled();
+		$this->is_mod_webhook_enabled = $this->isWebhookEnabled();
 		$this->isContactEnabled();
 	}
 
@@ -187,6 +189,23 @@ class ModulesRightsResource extends Data
 		}
 
 		return request()->configs()->getValueAsBool('webshop_enabled');
+	}
+
+	/**
+	 * Check if the webhook module is enabled for administrators.
+	 *
+	 * The webhook feature is gated behind the WEBHOOK_ENABLED environment variable.
+	 * Only admins see and interact with webhook configuration.
+	 *
+	 * @return bool true if the webhook feature is enabled and the user is an admin, false otherwise
+	 */
+	private function isWebhookEnabled(): bool
+	{
+		if (config('features.webhook') === false) {
+			return false;
+		}
+
+		return Auth::user()?->may_administrate === true;
 	}
 
 	/**
