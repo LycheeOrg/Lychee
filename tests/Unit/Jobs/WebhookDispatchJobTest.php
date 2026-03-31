@@ -124,10 +124,10 @@ class WebhookDispatchJobTest extends AbstractTestCase
 		Http::assertSent(function (Request $request): bool {
 			$body = json_decode($request->body(), true);
 
-			return $request->hasHeader('Content-Type', 'application/json')
-				&& $body['photo_id'] === 'pid'
-				&& $body['album_id'] === 'aid'
-				&& $body['title'] === 'Title';
+			return $request->hasHeader('Content-Type', 'application/json') &&
+				$body['photo_id'] === 'pid' &&
+				$body['album_id'] === 'aid' &&
+				$body['title'] === 'Title';
 		});
 	}
 
@@ -145,8 +145,8 @@ class WebhookDispatchJobTest extends AbstractTestCase
 		Http::assertSent(function (Request $request): bool {
 			$url = $request->url();
 
-			return str_contains($url, 'photo_id=pid')
-				&& str_contains($url, 'album_id=aid');
+			return str_contains($url, 'photo_id=pid') &&
+				str_contains($url, 'album_id=aid');
 		});
 	}
 
@@ -164,8 +164,8 @@ class WebhookDispatchJobTest extends AbstractTestCase
 		Http::assertSent(function (Request $request): bool {
 			$url = $request->url();
 
-			return str_contains($url, 'token=abc')
-				&& str_contains($url, 'photo_id=pid');
+			return str_contains($url, 'token=abc') &&
+				str_contains($url, 'photo_id=pid');
 		});
 	}
 
@@ -226,8 +226,8 @@ class WebhookDispatchJobTest extends AbstractTestCase
 		(new WebhookDispatchJob($webhook, $this->makePayload()))->handle();
 
 		Http::assertSent(function (Request $request): bool {
-			return !$request->hasHeader('X-Webhook-Secret')
-				&& !$request->hasHeader('X-My-Signature');
+			return !$request->hasHeader('X-Webhook-Secret') &&
+				!$request->hasHeader('X-My-Signature');
 		});
 	}
 
@@ -241,8 +241,8 @@ class WebhookDispatchJobTest extends AbstractTestCase
 		(new WebhookDispatchJob($webhook, $this->makePayload()))->handle();
 
 		Http::assertSent(function (Request $request): bool {
-			return $request->hasHeader('User-Agent', 'Lychee/Webhooks')
-				&& $request->hasHeader('X-Lychee-Event', 'photo.add');
+			return $request->hasHeader('User-Agent', 'Lychee/Webhooks') &&
+				$request->hasHeader('X-Lychee-Event', 'photo.add');
 		});
 	}
 
