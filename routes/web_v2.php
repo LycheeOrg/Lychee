@@ -78,6 +78,7 @@ Route::get('/duplicatesFinder', VueController::class)->middleware(['migration:co
 Route::get('/changelogs', VueController::class)->middleware(['migration:complete']);
 Route::get('/login', VueController::class)->middleware(['migration:complete']);
 Route::get('/register', VueController::class)->name('register')->middleware(['migration:complete']);
+Route::get('/webhooks', VueController::class)->middleware(['migration:complete', 'login_required:always']);
 
 Route::get('/people/{cluster?}', VueController::class)->middleware(['migration:complete']);
 Route::get('/settings', VueController::class)->middleware(['migration:complete', 'login_required:always']);

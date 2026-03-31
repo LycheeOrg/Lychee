@@ -258,6 +258,16 @@ Route::get('/Diagnostics::permissions', [Admin\DiagnosticsController::class, 'ge
 Route::get('/Jobs', [Admin\JobsController::class, 'list']);
 
 /**
+ * WEBHOOKS.
+ */
+Route::get('/Webhook', [Admin\WebhookController::class, 'index']);
+Route::post('/Webhook', [Admin\WebhookController::class, 'store']);
+Route::get('/Webhook/{webhook}', [Admin\WebhookController::class, 'show']);
+Route::put('/Webhook/{webhook}', [Admin\WebhookController::class, 'update']);
+Route::patch('/Webhook/{webhook}', [Admin\WebhookController::class, 'patch']);
+Route::delete('/Webhook/{webhook}', [Admin\WebhookController::class, 'destroy']);
+
+/**
  * SETTINGS.
  */
 Route::get('/Settings', [Admin\SettingsController::class, 'getAll']);

@@ -12,6 +12,7 @@ use App\Constants\PhotoAlbum as PA;
 use App\Contracts\PhotoCreate\SharedPipe;
 use App\DTO\PhotoCreate\DuplicateDTO;
 use App\DTO\PhotoCreate\StandaloneDTO;
+use App\Events\PhotoAdded;
 use App\Events\PhotoSaved;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Models\Album;
@@ -49,6 +50,12 @@ class SetParent implements SharedPipe
 			// Dispatch event for album stats recomputation
 			// This must be done after SetParent so the photo_album relationship exists
 			PhotoSaved::dispatch($state->photo->id);
+
+			// Dispatch PhotoAdded for new photo records only (upload, import, duplication).
+			// Existing records that were re-saved into a different album are handled by PhotoMoved.
+			if ($state->photo->wasRecentlyCreated) {
+				PhotoAdded::dispatch($state->photo->id);
+			}
 		}
 
 		return $next($state);
