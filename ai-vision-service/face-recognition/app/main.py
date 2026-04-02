@@ -14,6 +14,7 @@ from concurrent.futures import ThreadPoolExecutor
 from contextlib import asynccontextmanager
 from typing import TYPE_CHECKING, Any
 
+import httpx
 from fastapi import FastAPI
 
 from app.api.routes import router
@@ -41,6 +42,27 @@ async def _default_lifespan(app: FastAPI) -> AsyncGenerator[None]:
 
     # Configure logging
     logging.basicConfig(level=getattr(logging, settings.log_level.upper(), logging.INFO))
+
+    # Verify Lychee connectivity
+    lychee_up_url = f"{settings.lychee_api_url}/up"
+    logger.info("Checking Lychee connectivity at %s", lychee_up_url)
+    try:
+        async with httpx.AsyncClient(verify=settings.verify_ssl, timeout=10.0) as client:
+            response = await client.get(lychee_up_url)
+            response.raise_for_status()
+            logger.info("✓ Lychee is reachable (status=%d)", response.status_code)
+    except httpx.HTTPStatusError as e:
+        logger.error("✗ Lychee /up endpoint returned status %d", e.response.status_code)
+        raise RuntimeError(
+            f"Lychee health check failed: /up returned {e.response.status_code}. "
+            "Ensure VISION_FACE_LYCHEE_API_URL is correct and Lychee is running."
+        ) from e
+    except httpx.RequestError as e:
+        logger.error("✗ Cannot connect to Lychee at %s: %s", lychee_up_url, e)
+        raise RuntimeError(
+            f"Cannot connect to Lychee at {lychee_up_url}. "
+            "Ensure VISION_FACE_LYCHEE_API_URL is correct and Lychee is reachable."
+        ) from e
 
     # Load detector
     from app.detection.detector import FaceDetector
