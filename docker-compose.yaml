@@ -588,6 +588,7 @@ services:
     environment:
       VISION_FACE_LYCHEE_API_URL: "http://lychee_api:8000"
       VISION_FACE_API_KEY: "${AI_VISION_API_KEY:-changeme}"
+      VISION_FACE_VERIFY_SSL: "${AI_VISION_VERIFY_SSL:-true}"
       VISION_FACE_PHOTOS_PATH: "/data/photos"
       VISION_FACE_STORAGE_PATH: "/data/embeddings"
       VISION_FACE_WORKERS: "${AI_VISION_WORKERS:-1}"

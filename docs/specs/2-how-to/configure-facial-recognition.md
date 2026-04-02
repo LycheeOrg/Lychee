@@ -110,6 +110,7 @@ Add these to `x-common-env` or the service's `environment` block:
 |---|---|---|
 | `VISION_FACE_LYCHEE_API_URL` | Base URL of the Lychee API (for callbacks) | — |
 | `VISION_FACE_API_KEY` | Must match `AI_VISION_FACE_API_KEY` in Lychee | — |
+| `VISION_FACE_VERIFY_SSL` | Verify SSL certificates when connecting to Lychee. Set to `false` for dev environments with self-signed certificates | `true` |
 | `VISION_FACE_PHOTOS_PATH` | Path where photos are mounted inside the container | `/data/photos` |
 | `VISION_FACE_STORAGE_PATH` | Path for persisting face embeddings | `/data/embeddings` |
 

@@ -265,7 +265,7 @@ async def _run_detection_job(
         )
         callback_url = f"{settings.lychee_api_url}/api/v2/FaceDetection/results"
 
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(verify=settings.verify_ssl) as client:
             response = await client.post(
                 callback_url,
                 json=payload.model_dump(),
@@ -296,7 +296,7 @@ async def _send_error_callback(photo_id: str, error_code: str, message: str, set
     payload = ErrorCallbackPayload(photo_id=photo_id, error_code=error_code, message=message)
     callback_url = f"{settings.lychee_api_url}/api/v2/FaceDetection/results"
     try:
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(verify=settings.verify_ssl) as client:
             await client.post(
                 callback_url,
                 json=payload.model_dump(),
@@ -379,7 +379,7 @@ async def _send_cluster_callback(payload: ClusterCallbackPayload, settings: AppS
     """POST clustering results to Lychee."""
     callback_url = f"{settings.lychee_api_url}/api/v2/FaceDetection/cluster-results"
     try:
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(verify=settings.verify_ssl) as client:
             response = await client.post(
                 callback_url,
                 json=payload.model_dump(),

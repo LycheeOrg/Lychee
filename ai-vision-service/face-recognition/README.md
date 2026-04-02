@@ -60,6 +60,7 @@ All variables are prefixed `VISION_FACE_`.
 |----------|----------|---------|-------------|
 | `VISION_FACE_LYCHEE_API_URL` | Yes | — | Lychee base URL for callbacks |
 | `VISION_FACE_API_KEY` | Yes | — | Shared API key: validated on inbound requests from Lychee, and sent on outbound callbacks to Lychee |
+| `VISION_FACE_VERIFY_SSL` | No | `true` | Verify SSL certificates when making callbacks to Lychee. Set to `false` for dev environments with self-signed certificates |
 | `VISION_FACE_MODEL_NAME` | No | `buffalo_l` | InsightFace model pack |
 | `VISION_FACE_DETECTION_THRESHOLD` | No | `0.5` | Confidence filter for detected faces |
 | `VISION_FACE_MATCH_THRESHOLD` | No | `0.5` | Cosine-similarity cutoff for selfie matching |

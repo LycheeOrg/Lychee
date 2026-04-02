@@ -24,6 +24,11 @@ class AppSettings(BaseSettings):
     (``X-API-Key`` header) and sent as ``X-API-Key`` on *outbound* callbacks to Lychee.
     Must match ``AI_VISION_FACE_API_KEY`` in the Lychee ``.env``."""
 
+    verify_ssl: bool = True
+    """Whether to verify SSL certificates when making callbacks to Lychee.
+    Set to ``False`` for development environments with self-signed certificates.
+    **WARNING:** Disabling SSL verification in production is a security risk."""
+
     # --- Model ---
     model_name: str = "buffalo_l"
     """InsightFace model pack name. ``buffalo_l`` = large/high-accuracy; ``buffalo_s`` = faster alternative."""
