@@ -9,6 +9,7 @@
 namespace App\Actions\Diagnostics;
 
 use App\Actions\Diagnostics\Pipes\Checks\AdminUserExistsCheck;
+use App\Actions\Diagnostics\Pipes\Checks\AiVisionServiceCheck;
 use App\Actions\Diagnostics\Pipes\Checks\AppUrlMatchCheck;
 use App\Actions\Diagnostics\Pipes\Checks\AuthDisabledCheck;
 use App\Actions\Diagnostics\Pipes\Checks\BasicPermissionCheck;
@@ -75,6 +76,7 @@ class Errors
 		SupporterCheck::class,
 		ImagickPdfCheck::class,
 		WatermarkerEnabledCheck::class,
+		AiVisionServiceCheck::class,
 		StatisticsIntegrityCheck::class,
 		WebshopCheck::class,
 	];

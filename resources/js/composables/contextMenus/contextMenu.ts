@@ -31,6 +31,7 @@ export type PhotoCallbacks = {
 	toggleDelete: () => void;
 	toggleDownload: () => void;
 	toggleApplyRenamer: () => void;
+	toggleScanFaces: () => void;
 };
 
 export type AlbumCallbacks = {
@@ -42,6 +43,7 @@ export type AlbumCallbacks = {
 	toggleDelete: () => void;
 	toggleDownload: () => void;
 	toggleApplyRenamer: () => void;
+	toggleScanFaces: () => void;
 };
 
 type MenuItem = {
@@ -157,6 +159,12 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 					access: (albumStore.rights?.can_edit ?? false) && (leftMenuStore.initData?.modules.is_mod_renamer_enabled ?? false),
 				},
 				{
+					label: "gallery.menus.scan_faces",
+					icon: "pi pi-face-smile",
+					callback: photoCallbacks.toggleScanFaces,
+					access: (albumStore.rights?.can_edit ?? false) && (leftMenuStore.initData?.modules.is_ai_vision_enabled ?? false),
+				},
+				{
 					is_divider: true,
 					access: albumStore.rights?.can_edit ?? false,
 				},
@@ -244,6 +252,12 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 					access: (albumStore.rights?.can_edit ?? false) && (leftMenuStore.initData?.modules.is_mod_renamer_enabled ?? false),
 				},
 				{
+					label: "gallery.menus.scan_faces_all",
+					icon: "pi pi-face-smile",
+					callback: photoCallbacks.toggleScanFaces,
+					access: (albumStore.rights?.can_edit ?? false) && (leftMenuStore.initData?.modules.is_ai_vision_enabled ?? false),
+				},
+				{
 					is_divider: true,
 					access: albumStore.rights?.can_edit ?? false,
 				},
@@ -308,6 +322,12 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 					icon: "pi pi-pencil",
 					callback: albumCallbacks.toggleApplyRenamer,
 					access: (selectedAlbum.rights.can_edit ?? false) && (leftMenuStore.initData?.modules.is_mod_renamer_enabled ?? false),
+				},
+				{
+					label: "gallery.menus.scan_faces",
+					icon: "pi pi-face-smile",
+					callback: albumCallbacks.toggleScanFaces,
+					access: (selectedAlbum.rights.can_edit ?? false) && (leftMenuStore.initData?.modules.is_ai_vision_enabled ?? false),
 				},
 				{
 					label: "gallery.menus.merge",

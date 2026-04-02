@@ -32,6 +32,7 @@ class ModulesRightsResource extends Data
 	public bool $is_mod_renamer_enabled = false;
 	public bool $is_mod_webshop_enabled = false;
 	public bool $is_mod_webhook_enabled = false;
+	public bool $is_ai_vision_enabled = false;
 	public bool $is_contact_enabled = false;
 	public int $messages_count = 0;
 
@@ -47,6 +48,7 @@ class ModulesRightsResource extends Data
 		$this->is_mod_renamer_enabled = $this->isRenamerEnabled();
 		$this->is_mod_webshop_enabled = $this->isWebshopEnabled();
 		$this->is_mod_webhook_enabled = $this->isWebhookEnabled();
+		$this->is_ai_vision_enabled = $this->isAiVisionEnabled($is_logged_in);
 		$this->isContactEnabled();
 	}
 
@@ -206,6 +208,22 @@ class ModulesRightsResource extends Data
 		}
 
 		return Auth::user()?->may_administrate === true;
+	}
+
+	/**
+	 * Check if AI Vision face detection is enabled and accessible to the current user.
+	 *
+	 * @param bool $is_logged_in
+	 *
+	 * @return bool true if AI Vision is enabled and accessible, false otherwise
+	 */
+	private function isAiVisionEnabled(bool $is_logged_in): bool
+	{
+		if (!$is_logged_in) {
+			return false;
+		}
+
+		return request()->configs()->getValueAsBool('ai_vision_enabled');
 	}
 
 	/**

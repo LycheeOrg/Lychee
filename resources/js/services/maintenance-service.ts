@@ -135,6 +135,18 @@ const MaintenanceService = {
 	backfillAlbumSizesDo(): Promise<AxiosResponse> {
 		return axios.post(`${Constants.getApiUrl()}Maintenance::backfillAlbumSizes`, {});
 	},
+	bulkScanFacesCheck(): Promise<AxiosResponse<number>> {
+		return axios.get(`${Constants.getApiUrl()}Maintenance::bulkScanFaces`, { data: {} });
+	},
+	bulkScanFacesDo(): Promise<AxiosResponse> {
+		return axios.post(`${Constants.getApiUrl()}Maintenance::bulkScanFaces`, {});
+	},
+	runFaceClusteringCheck(): Promise<AxiosResponse<number>> {
+		return axios.get(`${Constants.getApiUrl()}Maintenance::runFaceClustering`, { data: {} });
+	},
+	runFaceClusteringDo(): Promise<AxiosResponse> {
+		return axios.post(`${Constants.getApiUrl()}Maintenance::runFaceClustering`, {});
+	},
 };
 
 export default MaintenanceService;

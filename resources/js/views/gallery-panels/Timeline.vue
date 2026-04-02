@@ -356,6 +356,7 @@ const photoCallbacks = {
 	toggleDelete: toggleDelete,
 	toggleDownload: () => {},
 	toggleApplyRenamer: () => {},
+	toggleScanFaces: () => {},
 };
 
 const {

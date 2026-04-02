@@ -17,10 +17,21 @@ use Illuminate\Support\Facades\Log;
 /**
  * Admin maintenance controller to trigger face clustering in the AI Vision service.
  *
- * POST /Maintenance::runFaceClustering  — dispatch clustering job to Python service
+ * GET  /Maintenance::runFaceClustering — check if AI Vision is enabled
+ * POST /Maintenance::runFaceClustering — dispatch clustering job to Python service
  */
 class RunFaceClustering extends Controller
 {
+	/**
+	 * Check if AI Vision is enabled.
+	 *
+	 * @return int 1 if enabled, 0 if disabled
+	 */
+	public function check(MaintenanceRequest $request): int
+	{
+		return $request->configs()->getValueAsBool('ai_vision_enabled') ? 1 : 0;
+	}
+
 	/**
 	 * Trigger face clustering in the AI Vision Python service.
 	 *

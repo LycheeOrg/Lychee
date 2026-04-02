@@ -584,6 +584,11 @@ declare namespace App.Http.Resources.Models {
 		download_count: number;
 		shared_count: number;
 	};
+	export type ClusterPreviewResource = {
+		cluster_label: number;
+		face_count: number;
+		sample_crop_urls: { [key: number]: string };
+	};
 	export type ColourPaletteResource = {
 		colour_1: string;
 		colour_2: string;
@@ -712,6 +717,7 @@ declare namespace App.Http.Resources.Models {
 		name: string;
 		user_id: number | null;
 		is_searchable: boolean;
+		representative_face_id: string | null;
 		face_count: number;
 		photo_count: number;
 		representative_crop_url: string | null;
@@ -1016,6 +1022,7 @@ declare namespace App.Http.Resources.Rights {
 		is_mod_renamer_enabled: boolean;
 		is_mod_webshop_enabled: boolean;
 		is_mod_webhook_enabled: boolean;
+		is_ai_vision_enabled: boolean;
 		is_contact_enabled: boolean;
 		messages_count: number;
 	};
