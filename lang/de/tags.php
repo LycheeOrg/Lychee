@@ -8,7 +8,7 @@ return [
     'title' => 'Tags',
     'description' => 'Hier können Sie Ihre Tags verwalten. Sie können Tags umbenennen, zusammenführen und löschen.<br>Die Zahl gibt an, wie viele Fotos mit dem jeweiligen Tag verknüpft sind.',
     'no_tags' => 'Keine Tags gefunden.',
-    'loading' => 'Tags werden geladen...',
+    'loading' => 'Tags werden geladen …',
     'rename' => 'Umbenennen',
     'merge' => 'Zusammenführen',
     'delete' => 'Löschen',
