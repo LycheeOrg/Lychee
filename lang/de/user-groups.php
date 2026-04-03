@@ -13,10 +13,10 @@ return [
     'edit' => 'Bearbeiten',
     'delete' => 'Löschen',
 
-    'loading' => 'Gruppen werden geladen...',
+    'loading' => 'Gruppen werden geladen …',
     'empty' => 'Keine Gruppen gefunden.',
 
-    'add_member' => 'Mitglied hinzufügen...',
+    'add_member' => 'Mitglied hinzufügen …',
     'empty_group' => 'Diese Gruppe ist leer.',
     'no_permission_members' => 'Sie haben keine Berechtigung, die Mitglieder dieser Gruppe einzusehen.',
     'remove_success' => '„%s“ wurde aus „%s“ entfernt.',

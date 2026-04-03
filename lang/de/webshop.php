@@ -169,7 +169,7 @@ return [
         "enterInfo" => "Geben Sie Ihre Informationen für %s ein"
     ],
     "paymentInProgress" => [
-        "message" => "Zahlung wird verarbeitet...",
+        "message" => "Zahlung wird verarbeitet …",
         "cancel" => "Abbrechen"
     ],
     "useOrder" => [
