@@ -9,10 +9,9 @@
 namespace App\Http\Controllers\AiVision;
 
 use App\Http\Requests\Person\ListPersonsRequest;
-use App\Http\Resources\Models\PhotoResource;
+use App\Http\Resources\Collections\PaginatedPhotosResource;
 use App\Models\Person;
 use App\Models\Photo;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -31,11 +30,9 @@ class PersonPhotosController extends Controller
 	 * - Authenticated user: photos they own + photos in public albums
 	 * - Guest: photos in public albums only.
 	 *
-	 * Returns the standard Laravel paginator JSON shape: {data, links, meta}.
-	 *
-	 * @return LengthAwarePaginator<PhotoResource>
+	 * @return PaginatedPhotosResource
 	 */
-	public function index(ListPersonsRequest $_request, string $id): LengthAwarePaginator
+	public function index(ListPersonsRequest $_request, string $id): PaginatedPhotosResource
 	{
 		$user = Auth::user();
 		$person = Person::findOrFail($id);
@@ -72,13 +69,13 @@ class PersonPhotosController extends Controller
 			});
 		}
 
-		/** @var LengthAwarePaginator<PhotoResource> */
-		return $query->distinct()->paginate(50)->through(
-			fn (Photo $photo) => new PhotoResource(
-				photo: $photo,
-				album_id: null,
-				should_downgrade_size_variants: false,
-			)
+		$paginated = $query->distinct()->paginate(50);
+
+		return new PaginatedPhotosResource(
+			paginated_photos: $paginated,
+			album_id: null,
+			should_downgrade: false,
+			photo_timeline: null
 		);
 	}
 }

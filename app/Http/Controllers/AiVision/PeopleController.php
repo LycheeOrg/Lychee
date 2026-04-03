@@ -13,12 +13,12 @@ use App\Http\Requests\Person\ListPersonsRequest;
 use App\Http\Requests\Person\ShowPersonRequest;
 use App\Http\Requests\Person\StorePersonRequest;
 use App\Http\Requests\Person\UpdatePersonRequest;
+use App\Http\Resources\Collections\PaginatedPersonsResource;
 use App\Http\Resources\Models\PersonResource;
 use App\Models\Person;
 use App\Repositories\ConfigManager;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
-use Spatie\LaravelData\PaginatedDataCollection;
 
 /**
  * CRUD controller for Person records.
@@ -29,9 +29,9 @@ class PeopleController extends Controller
 	 * List persons (paginated).
 	 * Filters non-searchable persons for non-admin users who are not linked to the person.
 	 *
-	 * @return PaginatedDataCollection<(int|string),PersonResource>
+	 * @return PaginatedPersonsResource
 	 */
-	public function index(ListPersonsRequest $_request): PaginatedDataCollection
+	public function index(ListPersonsRequest $_request): PaginatedPersonsResource
 	{
 		$user = Auth::user();
 		$query = Person::query()->orderBy('name');
@@ -49,7 +49,7 @@ class PeopleController extends Controller
 
 		$persons = $query->paginate(50);
 
-		return PersonResource::collect($persons, PaginatedDataCollection::class);
+		return new PaginatedPersonsResource($persons);
 	}
 
 	/**

@@ -118,14 +118,24 @@ async def match(
     store: EmbeddingStore = get_store(request)
     executor: Executor = request.app.state.executor
 
+    logger.info("Processing selfie match request (%d bytes)", len(image_bytes))
+
     loop = asyncio.get_running_loop()
     raw_faces: list[DetectedFace] = await loop.run_in_executor(executor, detector.detect_bytes, image_bytes)
 
     if not raw_faces:
+        logger.warning("No face detected in uploaded selfie image")
         raise HTTPException(status_code=422, detail="No face detected in the uploaded image")
 
     best = raw_faces[0]  # highest confidence (sorted descending)
     matches = store.similarity_search(best.embedding, settings.match_threshold, limit=10)
+
+    logger.info(
+        "Selfie match found %d match(es) above threshold %.2f (detected face confidence: %.3f)",
+        len(matches),
+        settings.match_threshold,
+        best.confidence,
+    )
 
     return MatchResponse(matches=[MatchResult(lychee_face_id=face_id, confidence=conf) for face_id, conf in matches])
 
@@ -221,12 +231,23 @@ async def _run_detection_job(
     returned 202.  All CPU-bound work is offloaded to ``executor`` via
     ``run_in_executor`` so the event loop remains responsive.
     """
+    logger.info("Starting detection job for photo_id=%s, path=%s", photo_id, image_path)
     try:
         loop = asyncio.get_running_loop()
 
         # --- 1. Detect faces (CPU-bound, runs in thread pool) ---
         raw_faces: list[DetectedFace] = await loop.run_in_executor(executor, detector.detect, image_path)
+
+        if len(raw_faces) > settings.max_faces_per_photo:
+            logger.info(
+                "Limiting faces from %d to %d (max_faces_per_photo setting)",
+                len(raw_faces),
+                settings.max_faces_per_photo,
+            )
         raw_faces = raw_faces[: settings.max_faces_per_photo]
+
+        if not raw_faces:
+            logger.info("No faces detected in photo_id=%s, sending empty results", photo_id)
 
         # --- 2. For each face: generate crop + search suggestions ---
         face_data: list[tuple[str, list[float], FaceResult]] = []
@@ -245,6 +266,13 @@ async def _run_detection_job(
             )
 
             suggestions = store.similarity_search(raw_face.embedding, settings.match_threshold, limit=10)
+
+            if suggestions:
+                logger.debug(
+                    "Found %d suggestion(s) for face with confidence=%.3f",
+                    len(suggestions),
+                    raw_face.confidence,
+                )
 
             result = FaceResult(
                 x=raw_face.x,
@@ -278,6 +306,12 @@ async def _run_detection_job(
             )
             response.raise_for_status()
             callback_resp = DetectCallbackResponse.model_validate(response.json())
+
+        logger.info(
+            "Successfully sent detection results to Lychee for photo_id=%s (%d face(s))",
+            photo_id,
+            len(face_data),
+        )
 
         # --- 4. Persist embeddings now that we have stable lychee_face_ids ---
         id_to_vector: dict[str, list[float]] = {eid: vec for eid, vec, _ in face_data}

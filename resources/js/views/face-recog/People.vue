@@ -59,9 +59,9 @@ function load() {
 	loading.value = true;
 	PeopleService.getPeople(1)
 		.then((response) => {
-			people.value = response.data.data;
+			people.value = response.data.persons;
 			currentPage.value = 1;
-			hasMorePages.value = response.data.meta.current_page < response.data.meta.last_page;
+			hasMorePages.value = response.data.current_page < response.data.last_page;
 		})
 		.catch((e) => {
 			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });
@@ -76,9 +76,9 @@ function loadMore() {
 	const nextPage = currentPage.value + 1;
 	PeopleService.getPeople(nextPage)
 		.then((response) => {
-			people.value = [...people.value, ...response.data.data];
+			people.value = [...people.value, ...response.data.persons];
 			currentPage.value = nextPage;
-			hasMorePages.value = response.data.meta.current_page < response.data.meta.last_page;
+			hasMorePages.value = response.data.current_page < response.data.last_page;
 		})
 		.catch((e) => {
 			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });

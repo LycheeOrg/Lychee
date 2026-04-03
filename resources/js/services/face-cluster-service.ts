@@ -1,14 +1,8 @@
 import axios, { type AxiosResponse } from "axios";
-import Constants, { type PaginatedResponse } from "./constants";
-
-export type ClusterPreview = {
-	cluster_label: number;
-	face_count: number;
-	sample_crop_urls: string[];
-};
+import Constants from "./constants";
 
 const FaceClusterService = {
-	getClusters(page: number = 1): Promise<AxiosResponse<PaginatedResponse<ClusterPreview>>> {
+	getClusters(page: number = 1): Promise<AxiosResponse<App.Http.Resources.Collections.PaginatedClustersResource>> {
 		return axios.get(`${Constants.getApiUrl()}FaceDetection/clusters`, { params: { page }, data: {} });
 	},
 

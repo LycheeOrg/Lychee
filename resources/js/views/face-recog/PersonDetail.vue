@@ -153,9 +153,9 @@ function loadPhotos() {
 	photosLoading.value = true;
 	PeopleService.getPhotos(props.personId, 1)
 		.then((response) => {
-			photos.value = response.data.data;
+			photos.value = response.data.photos;
 			photosPage.value = 1;
-			hasMorePhotos.value = response.data.meta.current_page < response.data.meta.last_page;
+			hasMorePhotos.value = response.data.current_page < response.data.last_page;
 		})
 		.finally(() => {
 			photosLoading.value = false;
@@ -167,9 +167,9 @@ function loadMorePhotos() {
 	const nextPage = photosPage.value + 1;
 	PeopleService.getPhotos(props.personId, nextPage)
 		.then((response) => {
-			photos.value = [...photos.value, ...response.data.data];
+			photos.value = [...photos.value, ...response.data.photos];
 			photosPage.value = nextPage;
-			hasMorePhotos.value = response.data.meta.current_page < response.data.meta.last_page;
+			hasMorePhotos.value = response.data.current_page < response.data.last_page;
 		})
 		.finally(() => {
 			photosLoadingMore.value = false;

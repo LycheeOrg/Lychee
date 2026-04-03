@@ -119,7 +119,7 @@ function loadPeople() {
 	loadingPeople.value = true;
 	PeopleService.getPeople()
 		.then((response) => {
-			people.value = response.data.data;
+			people.value = response.data.persons;
 		})
 		.finally(() => {
 			loadingPeople.value = false;

@@ -214,6 +214,20 @@ declare namespace App.Http.Resources.Collections {
 		per_page: number;
 		total: number;
 	};
+	export type PaginatedClustersResource = {
+		data: App.Http.Resources.Models.ClusterPreviewResource[];
+		current_page: number;
+		last_page: number;
+		per_page: number;
+		total: number;
+	};
+	export type PaginatedPersonsResource = {
+		persons: App.Http.Resources.Models.PersonResource[];
+		current_page: number;
+		last_page: number;
+		per_page: number;
+		total: number;
+	};
 	export type PaginatedPhotosResource = {
 		photos: App.Http.Resources.Models.PhotoResource[];
 		current_page: number;
@@ -587,7 +601,7 @@ declare namespace App.Http.Resources.Models {
 	export type ClusterPreviewResource = {
 		cluster_label: number;
 		face_count: number;
-		sample_crop_urls: { [key: number]: string };
+		sample_crop_urls: string[];
 	};
 	export type ColourPaletteResource = {
 		colour_1: string;

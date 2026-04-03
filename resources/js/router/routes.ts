@@ -35,9 +35,9 @@ const BasketList = () => import("@/views/webshop/BasketList.vue");
 const CheckoutPage = () => import("@/views/webshop/CheckoutPage.vue");
 const OrderList = () => import("@/views/webshop/OrderList.vue");
 const OrderDownload = () => import("@/views/webshop/OrderDownload.vue");
-const People = () => import("@/views/People.vue");
-const PersonDetail = () => import("@/views/PersonDetail.vue");
-const FaceClusters = () => import("@/views/FaceClusters.vue");
+const People = () => import("@/views/face-recog/People.vue");
+const PersonDetail = () => import("@/views/face-recog/PersonDetail.vue");
+const FaceClusters = () => import("@/views/face-recog/FaceClusters.vue");
 
 const routes_ = [
 	{

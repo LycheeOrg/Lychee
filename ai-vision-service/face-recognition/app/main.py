@@ -71,6 +71,7 @@ async def _default_lifespan(app: FastAPI) -> AsyncGenerator[None]:
         model_name=settings.model_name,
         detection_threshold=settings.detection_threshold,
         blur_threshold=settings.blur_threshold,
+        model_root=settings.model_root,
     )
     detector.load()
     logger.info("InsightFace model '%s' loaded successfully", settings.model_name)

@@ -5,6 +5,7 @@ Example: the ``api_key`` field maps to the ``VISION_FACE_API_KEY`` env var.
 """
 
 from functools import lru_cache
+from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -94,16 +95,25 @@ class AppSettings(BaseSettings):
     Lower values produce tighter, more homogeneous clusters."""
 
     # --- Quality filtering ---
-    blur_threshold: float = 100.0
+    blur_threshold: float = 0.5
     """Laplacian variance threshold for blur detection.
     Face crops with a variance below this value are discarded before embedding."""
+
+    model_root: str = "/root/.insightface"
+    """Root directory for InsightFace model packs.  Defaults to the library's default (``~/.insightface``)
+    but can be overridden to point to a shared Docker volume if desired."""
 
     model_config = SettingsConfigDict(
         env_prefix="VISION_FACE_",
         # Support .env files in development but never require them in production.
-        env_file=".env",
+        # Load project root .env first (fallback), then working directory .env (override)
+        env_file=(
+            Path(__file__).parent.parent / ".env",  # Project root (fallback)
+            ".env",  # Current working directory (takes precedence)
+        ),
         env_file_encoding="utf-8",
         case_sensitive=False,
+        extra="ignore",  # Ignore extra fields (e.g., from Lychee's .env when running from main project)
     )
 
 

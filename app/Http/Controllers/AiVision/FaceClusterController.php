@@ -12,6 +12,7 @@ use App\Factories\PersonFactory;
 use App\Http\Requests\Face\ClusterAssignRequest;
 use App\Http\Requests\Face\ClusterDismissRequest;
 use App\Http\Requests\Face\ClusterIndexRequest;
+use App\Http\Resources\Collections\PaginatedClustersResource;
 use App\Http\Resources\Models\ClusterPreviewResource;
 use App\Models\Face;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -22,7 +23,7 @@ class FaceClusterController extends Controller
 	private const PER_PAGE = 20;
 	private const SAMPLE_SIZE = 5;
 
-	public function index(ClusterIndexRequest $request): LengthAwarePaginator
+	public function index(ClusterIndexRequest $request): PaginatedClustersResource
 	{
 		$page = (int) $request->query('page', '1');
 		$totals = Face::query()
@@ -54,7 +55,9 @@ class FaceClusterController extends Controller
 			return new ClusterPreviewResource($cluster_label, $face_count, $samples);
 		});
 
-		return new LengthAwarePaginator($items, $total, self::PER_PAGE, $page, ['path' => $request->url()]);
+		$paginator = new LengthAwarePaginator($items, $total, self::PER_PAGE, $page, ['path' => $request->url()]);
+
+		return new PaginatedClustersResource($paginator);
 	}
 
 	public function assign(ClusterAssignRequest $request, int $label, PersonFactory $person_factory): array

@@ -1,8 +1,8 @@
 import axios, { type AxiosResponse } from "axios";
-import Constants, { type PaginatedResponse } from "./constants";
+import Constants from "./constants";
 
 const PeopleService = {
-	getPeople(page: number = 1): Promise<AxiosResponse<PaginatedResponse<App.Http.Resources.Models.PersonResource>>> {
+	getPeople(page: number = 1): Promise<AxiosResponse<App.Http.Resources.Collections.PaginatedPersonsResource>> {
 		return axios.get(`${Constants.getApiUrl()}People`, { params: { page }, data: {} });
 	},
 
@@ -10,7 +10,7 @@ const PeopleService = {
 		return axios.get(`${Constants.getApiUrl()}Person/${id}`, { data: {} });
 	},
 
-	getPhotos(id: string, page: number = 1): Promise<AxiosResponse<PaginatedResponse<App.Http.Resources.Models.PhotoResource>>> {
+	getPhotos(id: string, page: number = 1): Promise<AxiosResponse<App.Http.Resources.Collections.PaginatedPhotosResource>> {
 		return axios.get(`${Constants.getApiUrl()}Person/${id}/photos`, { params: { page }, data: {} });
 	},
 

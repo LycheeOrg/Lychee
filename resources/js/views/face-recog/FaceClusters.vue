@@ -92,11 +92,11 @@ import InputText from "primevue/inputtext";
 import { useToast } from "primevue/usetoast";
 import { trans } from "laravel-vue-i18n";
 import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
-import FaceClusterService, { type ClusterPreview } from "@/services/face-cluster-service";
+import FaceClusterService from "@/services/face-cluster-service";
 
 const toast = useToast();
 
-const clusters = ref<ClusterPreview[]>([]);
+const clusters = ref<App.Http.Resources.Models.ClusterPreviewResource[]>([]);
 const clusterNames = reactive<Record<number, string>>({});
 const loading = ref(false);
 const loadingMore = ref(false);
@@ -112,7 +112,7 @@ function load() {
 		.then((response) => {
 			clusters.value = response.data.data;
 			currentPage.value = 1;
-			hasMorePages.value = response.data.meta.current_page < response.data.meta.last_page;
+			hasMorePages.value = response.data.current_page < response.data.last_page;
 		})
 		.catch((e) => {
 			console.error("Error loading face clusters:", e);
@@ -130,7 +130,7 @@ function loadMore() {
 		.then((response) => {
 			clusters.value = [...clusters.value, ...response.data.data];
 			currentPage.value = nextPage;
-			hasMorePages.value = response.data.meta.current_page < response.data.meta.last_page;
+			hasMorePages.value = response.data.current_page < response.data.last_page;
 		})
 		.catch((e) => {
 			console.error("Error loading more face clusters:", e);

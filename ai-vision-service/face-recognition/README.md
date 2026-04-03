@@ -80,6 +80,8 @@ All variables are prefixed `VISION_FACE_`.
 
 ## Development
 
+### Setup
+
 ```bash
 # Install uv (https://docs.astral.sh/uv/getting-started/installation/)
 curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -87,15 +89,40 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 # Install all dependencies (including dev)
 uv sync
 
+# Configure .env file (create or edit .env in this directory)
+# Minimum required variables:
+# VISION_FACE_LYCHEE_API_URL=https://lychee.test
+# VISION_FACE_API_KEY=changeme
+# VISION_FACE_VERIFY_SSL=false
+# VISION_FACE_PHOTOS_PATH=../../public/uploads
+```
+
+### Running locally
+
+```bash
+# Using uv run (recommended)
+uv run python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+The service will be available at http://localhost:8000
+- API docs: http://localhost:8000/docs
+- Health check: http://localhost:8000/health
+
+### Linting and testing
+
+```bash
 # Lint and format
-uv run ruff format --check
-uv run ruff check
+uv run ruff format
+uv run ruff check --fix
 
 # Type check
 uv run ty check
 
 # Run tests
 uv run pytest
+
+# Run tests with coverage
+uv run pytest --cov=app --cov-report=html
 ```
 
 ## Docker

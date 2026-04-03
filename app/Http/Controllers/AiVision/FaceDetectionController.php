@@ -268,8 +268,14 @@ class FaceDetectionController extends Controller
 			$face->is_dismissed = false;
 			$face->save();
 
+			// We filter out the id which no longer exists.
+			$suggestions = $face_data['suggestions'] ?? [];
+			$suggestion_ids = collect($suggestions)->map(fn ($sug) => $sug['lychee_face_id']);
+			$existing_ids = Face::whereIn('id', $suggestion_ids)->pluck('id')->all();
+			$valid_suggestions = collect($suggestions)->filter(fn ($sug) => in_array($sug['lychee_face_id'], $existing_ids, true));
+
 			// Create suggestion records
-			foreach ($face_data['suggestions'] ?? [] as $suggestion) {
+			foreach ($valid_suggestions as $suggestion) {
 				$sug = new FaceSuggestion();
 				$sug->face_id = $face->id;
 				$sug->suggested_face_id = $suggestion['lychee_face_id'];

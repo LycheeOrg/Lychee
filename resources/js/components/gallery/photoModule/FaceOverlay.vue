@@ -4,7 +4,7 @@
 		<template v-for="face in visibleFaces" :key="face.id">
 			<div
 				v-if="!face.is_dismissed"
-				class="absolute border-2 rounded transition-opacity duration-200 pointer-events-auto cursor-pointer"
+				class="absolute border-2 rounded transition-opacity duration-200 pointer-events-auto cursor-pointer z-50"
 				:class="face.person_id ? 'border-primary-400 hover:border-primary-300' : 'border-yellow-400 hover:border-yellow-300'"
 				:style="{
 					left: face.x * 100 + '%',

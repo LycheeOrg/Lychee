@@ -2,12 +2,15 @@
 
 from __future__ import annotations
 
+import logging
 import threading
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from pathlib import Path
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -150,10 +153,16 @@ class FaceDetector:
         with self._lock:
             raw_faces: list[Any] = self._app.get(img)
 
+        logger.info("Face detection: found %d raw face(s) in %dx%d image", len(raw_faces), w, h)
+
         results: list[DetectedFace] = []
+        filtered_by_confidence = 0
+        filtered_by_blur = 0
+
         for face in raw_faces:
             score: float = float(face.det_score)
             if score < self._detection_threshold:
+                filtered_by_confidence += 1
                 continue
 
             bbox: Any = face.bbox  # [x1, y1, x2, y2] absolute pixels
@@ -171,6 +180,12 @@ class FaceDetector:
                     gray = cv2.cvtColor(crop_region, cv2.COLOR_BGR2GRAY)
                     variance: float = float(cv2.Laplacian(gray, cv2.CV_64F).var())
                     if variance < self._blur_threshold:
+                        filtered_by_blur += 1
+                        logger.info(
+                            "Filtered blurry face: variance=%.2f < threshold=%.2f",
+                            variance,
+                            self._blur_threshold,
+                        )
                         continue
 
             # Normalise to [0, 1] and clamp
@@ -185,4 +200,16 @@ class FaceDetector:
 
         # Descending confidence order
         results.sort(key=lambda f: f.confidence, reverse=True)
+
+        # Log summary
+        if filtered_by_confidence > 0 or filtered_by_blur > 0:
+            logger.info(
+                "Face detection: %d face(s) passed filters (filtered %d by confidence, %d by blur)",
+                len(results),
+                filtered_by_confidence,
+                filtered_by_blur,
+            )
+        else:
+            logger.info("Face detection: %d face(s) detected (all passed filters)", len(results))
+
         return results

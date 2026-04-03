@@ -9,6 +9,7 @@
 namespace App\Http\Resources\Models;
 
 use Spatie\LaravelData\Data;
+use Spatie\TypeScriptTransformer\Attributes\LiteralTypeScriptType;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 /**
@@ -21,6 +22,7 @@ class ClusterPreviewResource extends Data
 	public int $face_count;
 
 	/** @var list<string> Up to 5 sample crop URLs for preview thumbnails. */
+	#[LiteralTypeScriptType('string[]')]
 	public array $sample_crop_urls;
 
 	public function __construct(int $cluster_label, int $face_count, array $sample_crop_urls)
