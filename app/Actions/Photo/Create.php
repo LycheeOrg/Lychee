@@ -148,7 +148,6 @@ class Create
 		$pipes[] = Shared\Save::class;
 		$pipes[] = Shared\SetParent::class;
 		$pipes[] = Shared\SaveStatistics::class;
-		$pipes[] = Shared\NotifyAlbums::class;
 
 		try {
 			return app(Pipeline::class)
@@ -190,6 +189,7 @@ class Create
 			Standalone\ReplaceOriginalWithBackup::class,
 			Shared\UploadSizeVariantsToS3::class,
 			Shared\ExtractColourPalette::class,
+			Shared\NotifyAlbums::class,
 		];
 
 		return $this->executePipeOnDTO($pipes, $dto)->getPhoto();
