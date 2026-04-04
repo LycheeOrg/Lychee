@@ -688,7 +688,7 @@ return [
     'category_name' => [
         'config' => 'Basics',
         'lychee SE' => 'Lychee SE',
-        'Gallery' => 'Gallery',
+        'Gallery' => 'Galeri',
         'Mod Welcome' => 'Landing page',
         'Footer' => 'Footer',
         'Smart Albums' => 'Smart & Featured Albums',
