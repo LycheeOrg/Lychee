@@ -1,12 +1,11 @@
 <?php
-
 return [
     /*
     |--------------------------------------------------------------------------
     | Settings page
     |--------------------------------------------------------------------------
     */
-    'title' => 'Settings',
+    'title' => 'Ayarlar',
     'small_screen' => 'For better a experience on the Settings page,<br />we recommend you use a larger screen.',
     'tabs' => [
         'basic' => 'Basic',
@@ -25,7 +24,7 @@ return [
     ],
     'system' => [
         'header' => 'System',
-        'use_dark_mode' => 'Use dark mode for Lychee',
+        'use_dark_mode' => 'Lychee için karanlık modu kullan',
         'language' => 'Language used by Lychee',
         'nsfw_album_visibility' => 'Make Sensitive albums visible by default.',
         'nsfw_album_explanation' => 'If the album is public, it is still accessible, just hidden from the view and <b>can be revealed by pressing <kbd>H</kbd></b>.',
@@ -46,7 +45,7 @@ return [
         'set_key' => 'Set Dropbox Key',
     ],
     'gallery' => [
-        'header' => 'Gallery',
+        'header' => 'Galeri',
         'photo_order_column' => 'Default column used for sorting photos',
         'photo_order_direction' => 'Default order used for sorting photos',
         'album_order_column' => 'Default column used for sorting albums',
