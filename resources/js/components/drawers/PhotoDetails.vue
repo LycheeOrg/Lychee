@@ -221,6 +221,53 @@
 						:key="`rating-${photoStore.photo.id}`"
 					/>
 
+					<!-- People in this photo -->
+					<template
+						v-if="
+							initData?.modules.is_ai_vision_enabled &&
+							initData?.modules.is_face_overlay_enabled &&
+							photoStore.photo.faces &&
+							photoStore.photo.faces.length > 0
+						"
+					>
+						<h2 class="text-muted-color-emphasis text-base font-bold mt-4 mb-2">
+							{{ $t("people.people_in_photo") }}
+						</h2>
+						<div class="flex gap-3 overflow-x-auto pb-1">
+							<div
+								v-for="face in photoStore.photo.faces.filter((f) => !f.is_dismissed)"
+								:key="face.id"
+								class="flex flex-col items-center gap-1 shrink-0 cursor-pointer"
+								@click.exact="openFaceAssignment(face)"
+								@click.ctrl.exact.prevent="dismissFace(face)"
+								@click.meta.exact.prevent="dismissFace(face)"
+							>
+								<img
+									v-if="face.crop_url"
+									:src="face.crop_url"
+									:alt="face.person_name ?? $t('people.unknown')"
+									class="w-12 h-12 rounded-full object-cover border-2 border-surface-600"
+								/>
+								<div
+									v-else
+									class="w-12 h-12 rounded-full bg-surface-800 flex items-center justify-center border-2 border-surface-600"
+								>
+									<i class="pi pi-user text-xl text-muted-color" />
+								</div>
+								<span class="text-xs text-muted-color text-center max-w-14 truncate">
+									{{ face.person_name ?? "???" }}
+								</span>
+							</div>
+						</div>
+						<FaceAssignmentModal
+							v-if="faceForAssignment"
+							v-model:visible="isFaceAssignmentOpen"
+							:face="faceForAssignment"
+							@assigned="onFaceUpdated"
+							@dismissed="onFaceUpdated"
+						/>
+					</template>
+
 					<LinksInclude v-if="is_details_links_enabled" />
 				</div>
 			</template>
@@ -237,15 +284,25 @@ import ColourSquare from "@/components/gallery/photoModule/ColourSquare.vue";
 import PhotoRatingWidget from "@/components/gallery/photoModule/PhotoRatingWidget.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import LinksInclude from "@/components/gallery/photoModule/LinksInclude.vue";
+import FaceAssignmentModal from "@/components/modals/FaceAssignmentModal.vue";
 import { storeToRefs } from "pinia";
 import { usePhotoStore } from "@/stores/PhotoState";
 import { useRouter } from "vue-router";
 import PhotoService from "@/services/photo-service";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
+import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
+import FaceDetectionService from "@/services/face-detection-service";
+import { useToast } from "primevue/usetoast";
+import { trans } from "laravel-vue-i18n";
+import { isTouchDevice } from "@/utils/keybindings-utils";
 
 const photoStore = usePhotoStore();
 const router = useRouter();
 const togglableStore = useTogglablesStateStore();
+const leftMenuStore = useLeftMenuStateStore();
+const { initData } = storeToRefs(leftMenuStore);
+const toast = useToast();
+const isTouchDev = isTouchDevice();
 
 const props = defineProps<{
 	isMapVisible: boolean;
@@ -298,4 +355,39 @@ watch(
 	},
 	{ immediate: true },
 );
+
+// Face circles section
+const faceForAssignment = ref<App.Http.Resources.Models.FaceResource | undefined>(undefined);
+const isFaceAssignmentOpen = ref(false);
+
+function openFaceAssignment(face: App.Http.Resources.Models.FaceResource) {
+	faceForAssignment.value = face;
+	isFaceAssignmentOpen.value = true;
+}
+
+function dismissFace(face: App.Http.Resources.Models.FaceResource) {
+	if (isTouchDev) {
+		// Touch devices: do not dismiss via shortcut — open modal instead
+		openFaceAssignment(face);
+		return;
+	}
+	FaceDetectionService.toggleDismissed(face.id)
+		.then(() => {
+			toast.add({ severity: "success", summary: trans("toasts.success"), detail: trans("people.assignment.dismissed"), life: 3000 });
+			onFaceUpdated();
+		})
+		.catch((e: { response?: { data?: { message?: string } } }) => {
+			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });
+		});
+}
+
+function onFaceUpdated() {
+	// Force reload photo to refresh face data
+	if (photoStore.photo?.id) {
+		const current_id = photoStore.photoId;
+		photoStore.$patch({ photo: undefined });
+		photoStore.photoId = current_id;
+		photoStore.load();
+	}
+}
 </script>

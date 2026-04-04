@@ -12,6 +12,13 @@
 			</template>
 			<template #end>
 				<div v-if="person && canEdit" class="flex gap-2">
+					<Button
+						icon="pi pi-code-branch"
+						severity="secondary"
+						text
+						v-tooltip.bottom="$t('people.merge.title')"
+						@click="isMergeModalOpen = true"
+					/>
 					<Button icon="pi pi-pencil" severity="secondary" text v-tooltip.bottom="$t('people.person.edit')" @click="openEdit" />
 					<Button
 						:icon="person.is_searchable ? 'pi pi-eye' : 'pi pi-eye-slash'"
@@ -92,6 +99,7 @@
 		</template>
 
 		<ConfirmDialog />
+		<MergePersonModal v-if="person && isMergeModalOpen" v-model:visible="isMergeModalOpen" :source-person="person" @merged="onMerged" />
 	</div>
 </template>
 
@@ -108,6 +116,7 @@ import { useToast } from "primevue/usetoast";
 import { useConfirm } from "primevue/useconfirm";
 import { trans } from "laravel-vue-i18n";
 import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
+import MergePersonModal from "@/components/modals/MergePersonModal.vue";
 import PeopleService from "@/services/people-service";
 import { useUserStore } from "@/stores/UserState";
 import { storeToRefs } from "pinia";
@@ -231,4 +240,11 @@ function confirmDelete() {
 onMounted(() => {
 	load();
 });
+
+// Merge modal
+const isMergeModalOpen = ref(false);
+
+function onMerged(targetPersonId: string) {
+	router.push({ name: "person", params: { personId: targetPersonId } });
+}
 </script>

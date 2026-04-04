@@ -94,6 +94,12 @@ class FaceController extends Controller
 
 		return ['affected_count' => $count, 'person_id' => $person->id];
 	}
+
+	/**
+	 * Hard-delete all dismissed faces and remove their crop files.
+	 * Admin-only.
+	 *
+	 * DELETE /Face/dismissed
 	 *
 	 * @return array{deleted_count: int}
 	 */

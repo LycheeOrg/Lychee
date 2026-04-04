@@ -1037,6 +1037,8 @@ declare namespace App.Http.Resources.Rights {
 		is_mod_webshop_enabled: boolean;
 		is_mod_webhook_enabled: boolean;
 		is_ai_vision_enabled: boolean;
+		is_face_overlay_enabled: boolean;
+		face_overlay_default_visibility: string;
 		is_contact_enabled: boolean;
 		messages_count: number;
 	};
