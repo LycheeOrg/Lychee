@@ -384,9 +384,9 @@ function dismissFace(face: App.Http.Resources.Models.FaceResource) {
 function onFaceUpdated() {
 	// Force reload photo to refresh face data
 	if (photoStore.photo?.id) {
-		const current_id = photoStore.photoId;
+		const currentId = photoStore.photoId;
 		photoStore.$patch({ photo: undefined });
-		photoStore.photoId = current_id;
+		photoStore.photoId = currentId;
 		photoStore.load();
 	}
 }

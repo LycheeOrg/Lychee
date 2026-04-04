@@ -37,7 +37,7 @@ class FaceController extends Controller
 	{
 		$face = $request->face();
 
-		if ($request->person_id === null && trim($request->new_person_name) === '') {
+		if ($request->person_id === null && trim($request->new_person_name ?? '') === '') {
 			// Unassign: return face to unassigned pool
 			$face->person_id = null;
 		} else {

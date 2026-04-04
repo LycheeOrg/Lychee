@@ -44,7 +44,7 @@ class AssignFaceRequest extends BaseApiRequest implements HasFace
 				return;
 			}
 
-			// Allowing all three to be null/absent is valid — it means unassign.
+			// Allowing both to be null/absent is valid — it means unassign.
 			// We only reject the case where both new_person_name and person_id are
 			// provided simultaneously with non-null values (ambiguous intent).
 			$values = $validator->validated();
