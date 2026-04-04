@@ -1,12 +1,11 @@
 <?php
-
 return [
     /*
     |--------------------------------------------------------------------------
     | Gallery page
     |--------------------------------------------------------------------------
     */
-    'title' => 'Gallery',
+    'title' => 'Galeri',
     'smart_albums' => 'Smart Albums',
     'pinned_albums' => 'Featured Albums',
     'albums' => 'Albums',
@@ -68,7 +67,7 @@ return [
             'type_live' => 'Live',
             'orientation_landscape' => 'Landscape',
             'orientation_portrait' => 'Portrait',
-            'orientation_square' => 'Square',
+            'orientation_square' => 'Kare',
             'exif' => 'EXIF',
             'make' => 'Make',
             'model' => 'Model',
@@ -195,7 +194,6 @@ return [
             'tags_required' => 'Tags are required.',
             'all_tags_must_match' => 'All tags must match.',
         ],
-
     ],
     'photo' => [
         'actions' => [
@@ -288,7 +286,8 @@ return [
         'highlight_all' => 'Highlight Selected',
         'unhighlight_all' => 'Unhighlight Selected',
         'tag' => 'Tag',
-        'tag_all' => 'Tag Selected',        'tag_filter_label' => 'Filter by tags:',
+        'tag_all' => 'Tag Selected',
+        'tag_filter_label' => 'Filter by tags:',
         'tag_filter_logic_or' => 'Any tag (OR)',
         'tag_filter_logic_and' => 'All tags (AND)',
         'tag_filter_apply' => 'Apply Filter',
