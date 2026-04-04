@@ -12,6 +12,7 @@ use App\Factories\PersonFactory;
 use App\Http\Requests\Face\ClusterAssignRequest;
 use App\Http\Requests\Face\ClusterDismissRequest;
 use App\Http\Requests\Face\ClusterIndexRequest;
+use App\Http\Requests\Face\UnclusterFacesRequest;
 use App\Http\Resources\Collections\PaginatedClustersResource;
 use App\Http\Resources\Models\ClusterPreviewResource;
 use App\Models\Face;
@@ -79,5 +80,24 @@ class FaceClusterController extends Controller
 			->update(['is_dismissed' => true]);
 
 		return ['dismissed_count' => $count];
+	}
+
+	/**
+	 * Remove selected faces from a cluster by setting cluster_label = NULL.
+	 * Only affects qualifying faces (cluster_label = label, person_id IS NULL, is_dismissed = false).
+	 *
+	 * POST /FaceDetection/clusters/{label}/uncluster
+	 *
+	 * @return array{unclustered_count: int}
+	 */
+	public function uncluster(UnclusterFacesRequest $request, int $label): array
+	{
+		$count = Face::whereIn('id', $request->face_ids)
+			->where('cluster_label', '=', $label)
+			->whereNull('person_id')
+			->where('is_dismissed', '=', false)
+			->update(['cluster_label' => null]);
+
+		return ['unclustered_count' => $count];
 	}
 }

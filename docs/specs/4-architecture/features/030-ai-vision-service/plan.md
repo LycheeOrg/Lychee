@@ -405,14 +405,14 @@ After each increment, verify:
 
 ### I23 – Face Dismiss UX: Modal Button + CTRL+Click Overlay (≈60 min)
 
-- _Goal:_ Add dismiss functionality to the FaceAssignmentModal and CTRL+click shortcut on face overlays.
+- _Goal:_ Add dismiss functionality to the FaceAssignmentModal and CTRL+click shortcut on face overlays (desktop only).
 - _Preconditions:_ I15 (FaceOverlay.vue) and I16 (FaceAssignmentModal.vue) complete.
 - _Steps:_
   1. **Frontend** — Add "Dismiss" button to FaceAssignmentModal.vue. Clicking calls `PATCH /Face/{id}` to set `is_dismissed = true`, then closes the modal and refreshes overlays. *(FR-030-16)*
-  2. **Frontend** — In FaceOverlay.vue, listen for CTRL `keydown`/`keyup` events on `window`. When CTRL is held, switch all face rectangle CSS to red dashed borders (`border: 2px dashed red`). When a rectangle is clicked in CTRL state, call `PATCH /Face/{id}` directly (no modal). After dismiss, remove the overlay element.
+  2. **Frontend** — In FaceOverlay.vue, check `isTouchDevice()` from `keybindings-utils.ts`. On non-touch devices only, listen for CTRL `keydown`/`keyup` events on `window`. When CTRL is held, switch all face rectangle CSS to red dashed borders. When a rectangle is clicked in CTRL state, call `PATCH /Face/{id}` directly (no modal). After dismiss, remove the overlay element. Touch devices: no CTRL+click — modal button only. *(Q-030-70: B)*
   3. Write JS unit test: CTRL state toggles overlay CSS classes; click in CTRL state fires dismiss API call.
 - _Commands:_ `npm run check`, `npm run format`
-- _Exit:_ Dismiss button works in modal; CTRL+click dismiss works on overlays; visual feedback correct; tests green.
+- _Exit:_ Dismiss button works in modal; CTRL+click dismiss works on desktop overlays; touch devices unaffected; visual feedback correct; tests green.
 
 ### I24 – Face Overlay Config Settings & P-Key Toggle (≈45 min)
 
@@ -421,7 +421,7 @@ After each increment, verify:
 - _Steps:_
   1. **PHP** — Add config migration for `ai_vision_face_overlay_enabled` (0|1, default 1) and `ai_vision_face_overlay_default_visibility` (string: `visible`|`hidden`, default `visible`) to the AI Vision category. *(NFR-030-11)*
   2. **Frontend** — In FaceOverlay.vue, gate overlay rendering on `ai_vision_face_overlay_enabled` config. Initialize overlay visibility from `ai_vision_face_overlay_default_visibility`.
-  3. **Frontend** — Register `P` key handler (on photo view) to toggle overlay visibility. Ensure no conflict with existing key bindings (check Q-030-65).
+  3. **Frontend** — Register `P` key handler (on photo view) to toggle overlay visibility. `P` is confirmed unbound — `F` maps to fullscreen. Use `onKeyStroke('p', ...)` pattern from `@vueuse/core` with `shouldIgnoreKeystroke()` guard. *(Q-030-65: A)*
   4. Write PHP migration test; verify config values accessible.
 - _Commands:_ `php artisan test`, `npm run check`, `npm run format`
 - _Exit:_ Overlay disabled when config is off; default visibility respected; P key toggles; no key binding conflicts.
@@ -431,10 +431,10 @@ After each increment, verify:
 - _Goal:_ Display circular face crop thumbnails in the photo details sidebar with click/CTRL+click interactions.
 - _Preconditions:_ I15 (face overlays), I16 (FaceAssignmentModal), I23 (CTRL+click dismiss).
 - _Steps:_
-  1. **Frontend** — Add "People in this photo" section to `PhotoDetails.vue`. Render a horizontal flex row of circular face crop images (48px, `border-radius: 50%`) with person name label below each. Unassigned faces show "???". Hidden when photo has no faces or when `ai_vision_face_overlay_enabled = 0`.
+  1. **Frontend** — Add "People in this photo" section to `PhotoDetails.vue`. Render a horizontal flex row (`overflow-x: auto`) of circular face crop images (48px, `border-radius: 50%`) with person name label below each. Unassigned faces show "???". Hidden when photo has no faces or when `ai_vision_face_overlay_enabled = 0`.
   2. **Frontend** — Click on a face circle → open FaceAssignmentModal for that face.
-  3. **Frontend** — CTRL+click on a face circle → dismiss face directly (same pattern as I23).
-  4. Handle overflow: horizontal scroll with "+N more" indicator when faces exceed container width.
+  3. **Frontend** — CTRL+click on a face circle (desktop only) → dismiss face directly (same pattern as I23). *(Q-030-70: B — no touch shortcut)*
+  4. Overflow handled by horizontal scroll (`overflow-x: auto`) — all circles accessible by scrolling. *(Q-030-71: A)*
 - _Commands:_ `npm run check`, `npm run format`
 - _Exit:_ Face circles render in detail panel; click/CTRL+click interactions work; overflow handled; tests green.
 
@@ -452,16 +452,17 @@ After each increment, verify:
 - _Commands:_ `php artisan test --filter=FaceBatch`, `make phpstan`, `npm run check`
 - _Exit:_ Batch operations work end-to-end; select mode activates cleanly; action bar renders; all tests green.
 
-### I27 – Maintenance Blocks: Dismiss Cleanup + Reset Failed/Stuck Scans (≈60 min)
+### I27 – Maintenance Blocks: Dismiss Cleanup + Combined Reset Stuck/Failed Scans (≈60 min)
 
-- _Goal:_ Add conditional maintenance blocks for face cleanup and scan reset operations.
+- _Goal:_ Add two conditional maintenance blocks for face cleanup and scan reset operations. *(Q-030-73: combined stuck+failed into one block)*
 - _Preconditions:_ I9 (dismiss exists), I11 (stuck reset exists), maintenance pattern established.
 - _Steps:_
   1. **PHP** — Implement `DestroyDismissedFaces` maintenance controller with check/do pattern. `check()` returns count of `Face::where('is_dismissed', true)->count()`. `do()` reuses `destroyDismissed` logic from FaceController. *(FR-030-23, API-030-21/21b)*
-  2. **PHP** — Implement `ResetFailedFaceScans` maintenance controller with check/do. `check()` returns count of `Photo::where('face_scan_status', FaceScanStatus::FAILED)->count()`. `do()` sets `face_scan_status = NULL` on those photos. *(FR-030-24, API-030-22/22b)*
+  2. **PHP** — Implement `ResetFaceScanStatus` maintenance controller (combined stuck + failed). `check()` returns sum of: stuck-pending (>720 min) + `face_scan_status = 'failed'`. `do()` resets both in one DB operation. Returns `{reset_count: N}`. *(FR-030-24, API-030-22/22b, Q-030-73)*
   3. **PHP** — Register maintenance routes in `api_v2.php`. Write feature tests for both check/do endpoints.
-  4. **Frontend** — Create `MaintenanceDestroyDismissedFaces.vue` and `MaintenanceResetFailedFaceScans.vue` maintenance card components. Each calls check endpoint on mount and hides when count is 0. Follow existing `MaintenanceBulkScanFaces.vue` pattern.
-  5. **Frontend** — Add new maintenance cards to `Maintenance.vue` template.
+  4. **Frontend** — Create `MaintenanceDestroyDismissedFaces.vue`: calls check endpoint on mount, hides when count is 0, "Destroy All" button calls POST endpoint. Follow existing `MaintenanceBulkScanFaces.vue` pattern.
+  5. **Frontend** — Create `MaintenanceResetFaceScanStatus.vue` (NOT separate components for stuck and failed — combined per Q-030-73). Same pattern: check on mount, hide when 0, "Reset All" button.
+  6. **Frontend** — Add both maintenance cards to `Maintenance.vue` template.
 - _Commands:_ `php artisan test --filter=Maintenance`, `make phpstan`, `npm run check`
 - _Exit:_ Both maintenance blocks appear conditionally; check returns correct counts; do performs cleanup; cards hidden when count is 0.
 
@@ -574,4 +575,4 @@ _To be completed after spec, plan, and tasks align and before implementation beg
 - Performance optimisation for large Person/Face datasets (materialized views, caching face counts).
 - GPU acceleration for the Python service (optional CUDA/ROCm support in Dockerfile).
 - Per-user face overlay visibility preference (currently global config only — Q-030-61).
-- Policy refinement: cross-check album/photo edit rights in AiVisionPolicy (Q-030-63, deferred).
+- Policy refinement: cross-check album/photo edit rights in AiVisionPolicy (Q-030-63, Q-030-72 — deferred to future iteration).

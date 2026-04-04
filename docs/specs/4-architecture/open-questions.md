@@ -6,15 +6,7 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 | Question ID | Feature | Priority | Summary | Status | Opened | Updated |
 |-------------|---------|----------|---------|--------|--------|---------|
-| Q-030-65 | 030 | High | Face overlay toggle key binding conflict — does P already have a mapping? | Open | 2026-04-04 | 2026-04-04 |
-| Q-030-66 | 030 | Medium | Album People endpoint — should it include people from sub-albums recursively or only direct photos? | Open | 2026-04-04 | 2026-04-04 |
-| Q-030-67 | 030 | Medium | Batch face selection UX — how should multi-select work in cluster/person detail views? | Open | 2026-04-04 | 2026-04-04 |
-| Q-030-68 | 030 | Medium | Person merge UI — where should the merge dialog live and how should target person be selected? | Open | 2026-04-04 | 2026-04-04 |
-| Q-030-69 | 030 | Low | Person miniature in face assignment — crop circle size and layout when many persons share same name | Open | 2026-04-04 | 2026-04-04 |
-| Q-030-70 | 030 | Medium | CTRL+click dismiss on mobile — what is the equivalent touch gesture? | Open | 2026-04-04 | 2026-04-04 |
-| Q-030-71 | 030 | Medium | Face circles in photo detail panel — click vs CTRL+click behaviour when panel is narrow | Open | 2026-04-04 | 2026-04-04 |
-| Q-030-72 | 030 | High | Policy refinement scope — which specific operations should check Album/Photo edit rights vs Face-level policy? | Open | 2026-04-04 | 2026-04-04 |
-| Q-030-73 | 030 | Medium | Reset face scan status maintenance blocks — should "stuck" and "failed" be separate blocks or combined? | Open | 2026-04-04 | 2026-04-04 |
+| *(no active questions for feature 030)* | | | | | | |
 
 ## Question Details
 
@@ -189,7 +181,9 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 ---
 
-### Q-030-65: Face Overlay Toggle Key Binding Conflict — Does P Already Have a Mapping?
+### ~~Q-030-65: Face Overlay Toggle Key Binding Conflict — Does P Already Have a Mapping?~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — Use `P`. Confirmed that `P` has no existing binding. `F` is mapped to fullscreen (`togglableStore.toggleFullScreen()` in `Album.vue`). `P` is free and is used for toggling face overlay visibility. Captured in NFR-030-11, FR-030-21, I24.
 
 **Context:** FR-030-21 specifies mapping the `P` key to toggle face overlay visibility. The existing Lychee photo viewer may already use `P` for another action (e.g., play slideshow, or some other shortcut). If there is a conflict, we need to choose a different key.
 
@@ -203,13 +197,17 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 **Affects:** FR-030-21, FaceOverlay.vue, keybinding system.
 
+**Resolved:** 2026-04-04
+
 ---
 
-### Q-030-66: Album People Endpoint — Recursive vs Direct Photos Only
+### ~~Q-030-66: Album People Endpoint — Recursive vs Direct Photos Only~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — Direct photos only (non-recursive). Consistent with existing bulk scan behaviour (Q-030-41). Sub-album people can be viewed by navigating to each sub-album. Captured in FR-030-22, API-030-25 (renamed from API-030-27).
 
 **Context:** FR-030-22 adds `GET /Album/{id}/people`. Should it include people from sub-album photos (recursive) or only direct photos in the album (joined via `photo_albums` where `album_id = ?`)?
 
-**Impact:** Recursive requires either a CTE or pre-computing the album tree. Direct is simpler and consistent with how bulk scan works (non-recursive per Q-030-41). Affects API-030-27.
+**Impact:** Recursive requires either a CTE or pre-computing the album tree. Direct is simpler and consistent with how bulk scan works (non-recursive per Q-030-41). Affects API-030-25.
 
 **Option A (Recommended) — Direct photos only (non-recursive)**
 - Consistent with bulk scan behaviour. Sub-album people can be viewed by navigating to each sub-album.
@@ -218,11 +216,15 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 **Option B — Recursive through sub-albums**
 - More comprehensive but potentially expensive for deep album trees. May require album path pre-computation.
 
-**Affects:** FR-030-22, API-030-27, PersonPhotosController or new AlbumPeopleController.
+**Affects:** FR-030-22, API-030-25, AlbumPeopleController.
+
+**Resolved:** 2026-04-04
 
 ---
 
-### Q-030-67: Batch Face Selection UX — Checkbox Overlay or Selection Mode Toggle?
+### ~~Q-030-67: Batch Face Selection UX — Checkbox Overlay or Selection Mode Toggle?~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — Selection mode toggle. A "Select" button toggles selection mode; checkboxes appear on face crops only when active. Action bar slides in at the bottom. Captured in FR-030-19, UI-030-12.
 
 **Context:** FR-030-19 specifies batch face selection in person/cluster views. Should selection be always-on (checkboxes always visible) or require entering a "select mode" first (like file managers)?
 
@@ -237,9 +239,13 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 **Affects:** FR-030-19, PersonDetail.vue, FaceClusters.vue.
 
+**Resolved:** 2026-04-04
+
 ---
 
-### Q-030-68: Person Merge UI — Location and Target Selection
+### ~~Q-030-68: Person Merge UI — Location and Target Selection~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — "Merge into..." button on PersonDetail page, opens modal with person search dropdown. Captured in FR-030-25, UI-030-13, MergePersonModal.vue.
 
 **Context:** FR-030-11 allows merging two Person records. The backend supports `POST /Person/{id}/merge` with `source_person_id` in body. Where should the merge UI live? How should the user select the target person?
 
@@ -253,9 +259,13 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 **Affects:** PersonDetail.vue, new MergePersonModal.vue.
 
+**Resolved:** 2026-04-04
+
 ---
 
-### Q-030-69: Person Miniature Size and Layout for Same-Name Persons
+### ~~Q-030-69: Person Miniature Size and Layout for Same-Name Persons~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — Compact layout: 24px circle + name + face count, with type-ahead filter already built into PrimeVue Select/Dropdown. Captured in FR-030-20, UI-030-09.
 
 **Context:** FR-030-20 adds circular miniatures in the face assignment dropdown. If there are many persons with the same name, the dropdown may become long and hard to navigate.
 
@@ -269,26 +279,34 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 **Affects:** FR-030-20, FaceAssignmentModal.vue.
 
+**Resolved:** 2026-04-04
+
 ---
 
-### Q-030-70: CTRL+Click Dismiss on Touch Devices
+### ~~Q-030-70: CTRL+Click Dismiss on Touch Devices~~ ✅ RESOLVED
+
+**Resolution:** **Option B** — No touch shortcut. Dismiss only via the modal button. On touch devices (detected via `isTouchDevice()` from `keybindings-utils.ts`), the CTRL+click behaviour is not implemented. Touch users open the modal and click the "Dismiss" button. Captured in FR-030-16 (updated), UI-030-08 (desktop-only note).
 
 **Context:** FR-030-16 uses CTRL+click as a shortcut for face dismissal on overlays and in the detail panel. Touch devices (tablets, phones) don't have a CTRL key.
 
 **Impact:** Touch users would have no shortcut for face dismissal and must use the modal button instead.
 
-**Option A (Recommended) — Long-press on touch devices triggers dismiss**
+**Option A — Long-press on touch devices triggers dismiss**
 - Long-press (500ms+) on a face overlay or face circle opens a context menu with "Dismiss" option.
 - Alternatively, long-press directly dismisses (with undo toast).
 
-**Option B — No touch shortcut; dismiss only via modal**
+**Option B (Chosen) — No touch shortcut; dismiss only via modal**
 - Simplest approach. Touch users open the modal and click the dismiss button.
 
 **Affects:** FR-030-16, FaceOverlay.vue, PhotoDetails.vue face circles.
 
+**Resolved:** 2026-04-04
+
 ---
 
-### Q-030-71: Face Circles in Photo Detail Panel — Layout When Panel Is Narrow
+### ~~Q-030-71: Face Circles in Photo Detail Panel — Layout When Panel Is Narrow~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — Horizontal scrollable row with overflow indicator. Flex row with `overflow-x: auto`. When faces exceed visible width, a "+N more" badge is shown; the row is scrollable to reveal all faces. Captured in FR-030-21, UI-030-10.
 
 **Context:** FR-030-21 adds circular face crops to the PhotoDetails sidebar. The sidebar is fixed at `w-95` (380px). If a photo has many faces (10+), the circles may overflow.
 
@@ -303,42 +321,51 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 **Affects:** FR-030-21, PhotoDetails.vue face section.
 
+**Resolved:** 2026-04-04
+
 ---
 
-### Q-030-72: Policy Refinement — Album/Photo Edit Rights
+### ~~Q-030-72: Policy Refinement — Album/Photo Edit Rights~~ ✅ RESOLVED
+
+**Resolution:** **Option B** — Defer to next iteration. The current four-level permission mode semantic (public/private/privacy-preserving/restricted) provides a reasonable baseline. Policy refinement for per-resource album/photo ownership is deferred. This is the same conclusion as Q-030-63. Captured as a note in NFR-030-07 policy refinement note.
 
 **Context:** The current `AiVisionPolicy` checks the global `ai_vision_face_permission_mode` but does not cross-reference the user's actual edit rights on the specific album or photo. In `privacy-preserving` and `restricted` modes, "photo/album owner" should mean the owner of that specific resource, but the current implementation may check ownership globally.
 
 **Impact:** High — could allow users to assign/dismiss faces on photos they don't own. Affects all face operations gated on "photo/album owner + admin".
 
-**Option A (Recommended) — Add album/photo ownership checks to policy methods**
+**Option A — Add album/photo ownership checks to policy methods**
 - For operations like face assignment, dismiss, and scan trigger: check that the authenticated user owns (or has edit rights on) the photo or its containing album.
 - Use existing `PhotoPolicy` and `AlbumPolicy` gates alongside `AiVisionPolicy`.
 
-**Option B — Defer to next iteration (current approach)**
+**Option B (Chosen) — Defer to next iteration (current approach)**
 - Accept the gap for now. The four-level mode provides a reasonable baseline. Refine later.
-- Per the user's directive, this is the current stance — revisit later.
 
 **Affects:** AiVisionPolicy, FaceController, FaceDetectionController, all face-related request classes.
 
+**Resolved:** 2026-04-04 (deferred for future iteration)
+
 ---
 
-### Q-030-73: Reset Face Scan Status Maintenance Blocks — Separate or Combined?
+### ~~Q-030-73: Reset Face Scan Status Maintenance Blocks — Separate or Combined?~~ ✅ RESOLVED
+
+**Resolution:** **Option A with grouping** — Group stuck-pending and failed resets into a **single** combined maintenance block, distinct from the "Destroy Dismissed Faces" block. The final UI has exactly two face maintenance action blocks: (1) "Destroy Dismissed Faces" and (2) "Reset Face Scan Status" (handles both stuck-pending and failed). The existing `Maintenance::resetStuckFaces` backend endpoint remains available for CLI use but no longer has a dedicated UI card. Captured in FR-030-24 (updated), API-030-22/22b (renamed to `resetFaceScanStatus`), UI-030-15.
 
 **Context:** Q-030-55 resolution requires maintenance blocks for: (a) destroying dismissed faces, (b) resetting stuck-pending scans, (c) resetting failed scans. Should these be three separate maintenance cards or combined into fewer?
 
 **Impact:** Affects Maintenance.vue layout and number of maintenance controllers.
 
-**Option A (Recommended) — Three separate conditional blocks**
+**Option A with grouping (Chosen) — Two conditional blocks: dismiss cleanup + combined reset stuck/failed**
+- Block 1: `MaintenanceDestroyDismissedFaces.vue` — destroys dismissed faces (count > 0 to show).
+- Block 2: `MaintenanceResetFaceScanStatus.vue` — combined reset of stuck-pending (>720 min) AND failed scans.
+  - check: `count_stuck + count_failed`; hidden when 0
+  - do: resets both `PENDING` (older than 720 min) and `FAILED` photos to `null`
+
+**Option B — Three separate conditional blocks**
 - Each block independently checks its count and hides when zero. Clear, granular control.
-- Consistent with existing pattern (each maintenance action has its own card).
 
-**Option B — One combined "Face Maintenance" card with three actions**
-- Fewer cards on the page, but deviates from the existing one-card-per-action pattern.
+**Affects:** FR-030-24, Maintenance.vue, API-030-22/22b, new `ResetFaceScanStatus.php` controller.
 
-**Affects:** Maintenance.vue, new maintenance controller classes.
-
----
+**Resolved:** 2026-04-04
 
 ### ~~Q-030-50: `PersonResource.representative_crop_url` — Selection Rule Unspecified~~ ✅ RESOLVED
 

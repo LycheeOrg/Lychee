@@ -376,6 +376,7 @@ Route::get('/Person/{id}/photos', [AiVision\PersonPhotosController::class, 'inde
  * AI VISION — FACES.
  */
 Route::post('/Face/{id}/assign', [AiVision\FaceController::class, 'assign'])->middleware(['support:se']);
+Route::post('/Face/batch', [AiVision\FaceController::class, 'batch'])->middleware(['support:se']);
 Route::patch('/Face/{id}', [AiVision\FaceController::class, 'toggleDismissed'])->middleware(['support:se']);
 Route::delete('/Face/dismissed', [AiVision\FaceController::class, 'destroyDismissed'])->middleware(['support:se']);
 
@@ -393,6 +394,7 @@ Route::post('/FaceDetection/cluster-results', [AiVision\FaceDetectionController:
 Route::get('/FaceDetection/clusters', [AiVision\FaceClusterController::class, 'index'])->middleware(['support:se']);
 Route::post('/FaceDetection/clusters/{label}/assign', [AiVision\FaceClusterController::class, 'assign'])->middleware(['support:se']);
 Route::post('/FaceDetection/clusters/{label}/dismiss', [AiVision\FaceClusterController::class, 'dismiss'])->middleware(['support:se']);
+Route::post('/FaceDetection/clusters/{label}/uncluster', [AiVision\FaceClusterController::class, 'uncluster'])->middleware(['support:se']);
 
 /**
  * AI VISION — MAINTENANCE.
@@ -403,3 +405,12 @@ Route::get('/Maintenance::bulkScanFaces', [Admin\Maintenance\BulkScanFaces::clas
 Route::post('/Maintenance::bulkScanFaces', [Admin\Maintenance\BulkScanFaces::class, 'do']);
 Route::get('/Maintenance::runFaceClustering', [Admin\Maintenance\RunFaceClustering::class, 'check']);
 Route::post('/Maintenance::runFaceClustering', [Admin\Maintenance\RunFaceClustering::class, 'do']);
+Route::get('/Maintenance::destroyDismissedFaces', [Admin\Maintenance\DestroyDismissedFaces::class, 'check']);
+Route::post('/Maintenance::destroyDismissedFaces', [Admin\Maintenance\DestroyDismissedFaces::class, 'do']);
+Route::get('/Maintenance::resetFaceScanStatus', [Admin\Maintenance\ResetFaceScanStatus::class, 'check']);
+Route::post('/Maintenance::resetFaceScanStatus', [Admin\Maintenance\ResetFaceScanStatus::class, 'do']);
+
+/**
+ * AI VISION — ALBUM PEOPLE.
+ */
+Route::get('/Album/{albumId}/people', [AiVision\AlbumPeopleController::class, 'index'])->middleware(['support:se']);
