@@ -47,7 +47,21 @@
 					filter
 					:loading="loadingPeople"
 					@change="newPersonName = ''"
-				/>
+				>
+					<template #option="slotProps">
+						<div class="flex items-center gap-2">
+							<img
+								v-if="slotProps.option.representative_crop_url"
+								:src="slotProps.option.representative_crop_url"
+								class="w-6 h-6 rounded-full object-cover shrink-0"
+								alt=""
+							/>
+							<i v-else class="pi pi-user w-6 h-6 flex items-center justify-center text-muted-color shrink-0" />
+							<span class="flex-1 truncate">{{ slotProps.option.name }}</span>
+							<span class="text-xs text-muted-color shrink-0">{{ slotProps.option.face_count }}</span>
+						</div>
+					</template>
+				</Select>
 			</div>
 
 			<!-- Or create new person -->
@@ -64,6 +78,7 @@
 
 		<template #footer>
 			<div class="flex gap-2 justify-end">
+				<Button :label="$t('people.assignment.dismiss')" severity="danger" text :loading="dismissing" @click="dismiss" />
 				<Button :label="$t('people.assignment.cancel')" severity="secondary" text @click="visible = false" />
 				<Button
 					:label="$t('people.assignment.confirm')"
@@ -94,6 +109,7 @@ const props = defineProps<{
 
 const emits = defineEmits<{
 	assigned: [];
+	dismissed: [];
 }>();
 
 const visible = defineModel<boolean>("visible", { default: false });
@@ -104,6 +120,7 @@ const loadingPeople = ref(false);
 const selectedPersonId = ref<string | undefined>(undefined);
 const newPersonName = ref("");
 const submitting = ref(false);
+const dismissing = ref(false);
 
 function selectSuggestion(suggestion: App.Http.Resources.Models.FaceSuggestionResource) {
 	if (suggestion.person_name) {
@@ -148,6 +165,22 @@ function submit() {
 		})
 		.finally(() => {
 			submitting.value = false;
+		});
+}
+
+function dismiss() {
+	dismissing.value = true;
+	FaceDetectionService.toggleDismissed(props.face.id)
+		.then(() => {
+			toast.add({ severity: "success", summary: trans("toasts.success"), detail: trans("people.assignment.dismissed"), life: 3000 });
+			visible.value = false;
+			emits("dismissed");
+		})
+		.catch((e) => {
+			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });
+		})
+		.finally(() => {
+			dismissing.value = false;
 		});
 }
 

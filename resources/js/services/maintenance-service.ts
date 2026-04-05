@@ -147,6 +147,18 @@ const MaintenanceService = {
 	runFaceClusteringDo(): Promise<AxiosResponse> {
 		return axios.post(`${Constants.getApiUrl()}Maintenance::runFaceClustering`, {});
 	},
+	destroyDismissedFacesCheck(): Promise<AxiosResponse<number>> {
+		return axios.get(`${Constants.getApiUrl()}Maintenance::destroyDismissedFaces`, { data: {} });
+	},
+	destroyDismissedFacesDo(): Promise<AxiosResponse<{ deleted_count: number }>> {
+		return axios.post(`${Constants.getApiUrl()}Maintenance::destroyDismissedFaces`, {});
+	},
+	resetFaceScanStatusCheck(): Promise<AxiosResponse<number>> {
+		return axios.get(`${Constants.getApiUrl()}Maintenance::resetFaceScanStatus`, { data: {} });
+	},
+	resetFaceScanStatusDo(): Promise<AxiosResponse<{ reset_count: number }>> {
+		return axios.post(`${Constants.getApiUrl()}Maintenance::resetFaceScanStatus`, {});
+	},
 };
 
 export default MaintenanceService;

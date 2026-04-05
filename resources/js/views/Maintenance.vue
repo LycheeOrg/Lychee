@@ -40,6 +40,8 @@
 		<MaintenanceCleaning path="filesystems.disks.image-upload.root" />
 		<MaintenanceBulkScanFaces />
 		<MaintenanceRunClustering />
+		<MaintenanceDestroyDismissedFaces />
+		<MaintenanceResetFaceScanStatus />
 	</div>
 </template>
 <script setup lang="ts">
@@ -63,4 +65,6 @@ import MaintenanceBackfillAlbumSizes from "@/components/maintenance/MaintenanceB
 import MaintenanceFlushQueue from "@/components/maintenance/MaintenanceFlushQueue.vue";
 import MaintenanceBulkScanFaces from "@/components/maintenance/MaintenanceBulkScanFaces.vue";
 import MaintenanceRunClustering from "@/components/maintenance/MaintenanceRunClustering.vue";
+import MaintenanceDestroyDismissedFaces from "@/components/maintenance/MaintenanceDestroyDismissedFaces.vue";
+import MaintenanceResetFaceScanStatus from "@/components/maintenance/MaintenanceResetFaceScanStatus.vue";
 </script>

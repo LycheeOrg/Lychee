@@ -61,5 +61,16 @@ return [
         'confirm' => 'Assign',
         'cancel' => 'Cancel',
         'success' => 'Face assigned successfully.',
+        'dismiss' => 'Dismiss',
+        'dismissed' => 'Face dismissed successfully.',
+    ],
+    'people_in_photo' => 'People in this photo',
+    'merge' => [
+        'title' => 'Merge person',
+        'into' => 'into…',
+        'select_target' => 'Select target person…',
+        'warning' => 'This will move all faces from the source person to the target person and delete the source. This cannot be undone.',
+        'confirm' => 'Merge',
+        'success' => 'Persons merged successfully.',
     ],
 ];

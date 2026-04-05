@@ -1,7 +1,7 @@
 # Feature 030 Tasks – Facial Recognition
 
 _Status: Draft_
-_Last updated: 2026-03-21_
+_Last updated: 2026-04-04_
 
 > Keep this checklist aligned with the feature plan increments. Stage tests before implementation, record verification commands beside each task, and prefer bite-sized entries (≤90 minutes).
 > **Mark tasks `[x]` immediately** after each one passes verification—do not batch completions. Update the roadmap status when all tasks are done.
@@ -395,25 +395,148 @@ _Last updated: 2026-03-21_
   - `npm run check`
   - `npm run format`
 
+### Phase 5: Face UX Enhancements
+
+### I23 – Face Dismiss UX: Modal Button + CTRL+Click Overlay
+
+- [ ] T-030-54 – Add "Dismiss" button to FaceAssignmentModal.vue (FR-030-16, S-030-33).
+  _Intent:_ Add a "Dismiss" button to FaceAssignmentModal.vue (alongside existing "Cancel" and "Assign" buttons). Clicking "Dismiss" calls `PATCH /Face/{id}` to set `is_dismissed = true`, closes the modal, and refreshes the face overlay on the photo.
+  _Verification commands:_
+  - `npm run check`
+  - `npm run format`
+
+- [ ] T-030-55 – Implement CTRL+click dismiss shortcut on FaceOverlay.vue (FR-030-16, S-030-34, UI-030-08, Q-030-70).
+  _Intent:_ In FaceOverlay.vue, **first** check `isTouchDevice()` from `keybindings-utils.ts` — if true, skip all CTRL+click setup (Q-030-70: B, no touch shortcut). On non-touch devices: listen for CTRL `keydown`/`keyup` events on `window`. When CTRL is held: (a) switch all face rectangle CSS to red dashed borders (`border: 2px dashed red`); (b) change cursor to `crosshair` to indicate dismiss action. When a rectangle is clicked in CTRL state: call `PATCH /Face/{id}` directly (no modal), remove the overlay element on success, show success toast. When CTRL is released, revert to normal overlay styles.
+  _Verification commands:_
+  - `npm run check`
+  - `npm run format`
+
+### I24 – Face Overlay Config Settings & P-Key Toggle
+
+- [ ] T-030-56 – Add config migration for face overlay settings (NFR-030-11, S-030-44).
+  _Intent:_ Add two new config entries to the AI Vision category: `ai_vision_face_overlay_enabled` (0|1, default 1, level 1/SE) — master toggle for face overlay rendering; `ai_vision_face_overlay_default_visibility` (string: `visible`|`hidden`, default `visible`, level 1/SE) — default visibility when viewing photos.
+  _Verification commands:_
+  - `php artisan test`
+  - `make phpstan`
+
+- [ ] T-030-57 – Implement face overlay config gating and P-key toggle in FaceOverlay.vue (NFR-030-11, FR-030-21, S-030-41, UI-030-11, Q-030-65).
+  _Intent:_ Gate FaceOverlay rendering on `ai_vision_face_overlay_enabled` config (if 0, render nothing). Initialize overlay visibility from `ai_vision_face_overlay_default_visibility` config. Register `P` key handler using `onKeyStroke('p', ...)` from `@vueuse/core` with `shouldIgnoreKeystroke()` guard — `P` is **confirmed free** (confirmed in Q-030-65: `F` maps to fullscreen via `Album.vue` `onKeyStroke("f", ...)`).
+  _Verification commands:_
+  - `npm run check`
+  - `npm run format`
+
+### I25 – Face Circles in Photo Detail Panel
+
+- [ ] T-030-58 – Add "People in this photo" section to PhotoDetails.vue (FR-030-21, S-030-38, S-030-39, UI-030-10, Q-030-70, Q-030-71).
+  _Intent:_ Add a new section titled "People in this photo" in `PhotoDetails.vue` (photo detail sidebar). Render a horizontal flex row (`overflow-x: auto`) of circular face crop `<img>` elements (48px diameter, `border-radius: 50%`, `object-fit: cover`) sourced from `FaceResource.crop_url`. Below each circle, show person name (`person_name` from FaceResource or "???" for unassigned). Section hidden when: no faces detected, `ai_vision_face_overlay_enabled = 0`, or `ai_vision_enabled = 0`. Click on a face circle → emit event to open FaceAssignmentModal for that face. CTRL+click (desktop only, checked via `isTouchDevice()`) → call `PATCH /Face/{id}` to dismiss (same pattern as I23; no touch shortcut per Q-030-70). Overflow handled by horizontal scroll — all circles accessible by scrolling, no "+N more" truncation needed (Q-030-71: A).
+  _Verification commands:_
+  - `npm run check`
+  - `npm run format`
+
+### I26 – Batch Face Operations: API + Frontend
+
+- [ ] T-030-59 – Implement `POST /api/v2/Face/batch` endpoint (FR-030-19, API-030-24, S-030-37).
+  _Intent:_ New endpoint in FaceController. Body: `{face_ids: string[], action: "unassign"|"assign", person_id?: string, new_person_name?: string}`. For "unassign": bulk `UPDATE faces SET person_id = NULL WHERE id IN (...)`. For "assign": if `person_id` provided, validate it exists; if `new_person_name` provided, create new Person. Then bulk `UPDATE faces SET person_id = ? WHERE id IN (...)`. Auth: check assign permission for every face. Return `{affected_count: int, person_id?: string}`. Emit `face.batch_updated` telemetry. Create `BatchFaceRequest` form request.
+  _Verification commands:_
+  - `php artisan test --filter=FaceBatchTest`
+  - `make phpstan`
+
+- [ ] T-030-60 – Implement `POST /api/v2/FaceDetection/clusters/{cluster_id}/uncluster` endpoint (FR-030-17, API-030-23, S-030-35).
+  _Intent:_ New endpoint in FaceClusterController. Body: `{face_ids: string[]}`. Sets `cluster_label = NULL` for faces matching: `id IN (face_ids) AND cluster_label = cluster_id AND person_id IS NULL AND is_dismissed = false`. Returns `{unclustered_count: int}`. Emit `face.unclustered` telemetry. Create `UnclusterFacesRequest` form request. Register route.
+  _Verification commands:_
+  - `php artisan test --filter=FaceUnclusterTest`
+  - `make phpstan`
+
+- [ ] T-030-61 – Write feature tests for batch face operations and uncluster (FR-030-17, FR-030-19).
+  _Intent:_ Tests: batch unassign (person_id set to NULL on selected faces), batch assign to existing person, batch assign creating new person, uncluster faces from cluster (cluster_label set to NULL), auth checks (unauthorized user → 403), invalid face_ids (422), empty face_ids (422).
+  _Verification commands:_
+  - `php artisan test --filter=FaceBatch`
+  - `php artisan test --filter=FaceUncluster`
+  - `make phpstan`
+
+- [ ] T-030-62 – Implement batch selection mode in PersonDetail.vue and FaceClusters.vue (FR-030-19, UI-030-12).
+  _Intent:_ Add "Select" toggle button to PersonDetail.vue (face grid section) and FaceClusters.vue (each cluster card). When active: checkbox overlay appears on each face crop thumbnail. Selecting faces shows an action bar at the bottom: "Unassign (N)" (PersonDetail only), "Reassign to..." (opens person search dropdown), "Assign to new person" (text input), "Uncluster" (FaceClusters only). Each action calls the corresponding API endpoint. After action, deselect all and refresh the view. Create `FaceBatchService.ts` with typed functions: `batchUpdate(faceIds, action, personId?, newPersonName?)`, `unclusterFaces(clusterId, faceIds)`.
+  _Verification commands:_
+  - `npm run check`
+  - `npm run format`
+
+### I27 – Maintenance Blocks: Dismiss Cleanup + Reset Failed/Stuck Scans
+
+- [ ] T-030-63 – Implement `DestroyDismissedFaces` maintenance controller (FR-030-23, API-030-21/21b, S-030-42).
+  _Intent:_ New maintenance controller class following the existing check/do pattern. `check(MaintenanceRequest)`: returns count of `Face::where('is_dismissed', true)->count()`. Returns 0 if AI Vision is not enabled. `do(MaintenanceRequest)`: reuse `destroyDismissed` logic — collect dismissed face IDs, delete crop files, delete Face records, dispatch `DeleteFaceEmbeddingsJob`, return `{deleted_count}`. Register `GET`/`POST` routes as `Maintenance::destroyDismissedFaces` in `api_v2.php`.
+  _Verification commands:_
+  - `php artisan test --filter=MaintenanceDestroyDismissedFacesTest`
+  - `make phpstan`
+
+- [ ] T-030-64 – Implement `ResetFaceScanStatus` combined maintenance controller (FR-030-24, API-030-22/22b, S-030-43, Q-030-73).
+  _Intent:_ New maintenance controller class `ResetFaceScanStatus` following check/do pattern. Combines stuck-pending AND failed resets into one block (Q-030-73: group together). `check(MaintenanceRequest)`: returns combined count — stuck-pending (older than 720 min: `face_scan_status = PENDING AND updated_at < now() - 720min`) + failed (`face_scan_status = FAILED`). Returns 0 if AI Vision is not enabled. `do(MaintenanceRequest)`: single DB operation that resets both: `Photo::where(fn → face_scan_status=FAILED OR (face_scan_status=PENDING AND updated_at < cutoff))->update(['face_scan_status' => null])`. Returns `{reset_count: N}`. Emit `face.failed_scans_reset` telemetry. Register routes as `Maintenance::resetFaceScanStatus` in `api_v2.php`. The existing `ResetStuckFaces.php` controller remains (unchanged) for CLI use.
+  _Verification commands:_
+  - `php artisan test --filter=MaintenanceResetFailedFaceScansTest`
+  - `make phpstan`
+
+- [ ] T-030-65 – Create maintenance Vue components for dismiss cleanup and combined scan reset (UI-030-14, UI-030-15, Q-030-73).
+  _Intent:_ Create `MaintenanceDestroyDismissedFaces.vue`: follows existing `MaintenanceBulkScanFaces.vue` pattern. On mount, calls `GET /Maintenance::destroyDismissedFaces` check endpoint. If count is 0, component renders nothing (v-if). If count > 0, shows card with count and "Destroy All" button. Button calls `POST /Maintenance::destroyDismissedFaces`, refreshes count on success. Create `MaintenanceResetFaceScanStatus.vue` (NOT separate stuck/failed cards — combined per Q-030-73): same pattern, calls `GET/POST /Maintenance::resetFaceScanStatus`, label describes "stuck and failed scans". Add **both** components (two total, not three) to `Maintenance.vue` template alongside existing face maintenance blocks.
+  _Verification commands:_
+  - `npm run check`
+  - `npm run format`
+
+### I28 – Merge Person UI + Person Miniature in Dropdown
+
+- [ ] T-030-66 – Create MergePersonModal.vue (FR-030-25, S-030-45, UI-030-13).
+  _Intent:_ New modal component `MergePersonModal.vue`. Props: `sourcePerson` (PersonResource). Content: header "Merge {source.name} into:", PrimeVue Dropdown with person search (same custom option template as T-030-67 — miniature + name + count), filter by typing. Warning text explaining merge consequences (face count moved, source deleted, irreversible). Cancel/Merge buttons. On confirm, call `POST /Person/{source.id}/merge` with `{source_person_id: source.id}` (note: URL `{id}` = target, body = source). After success, navigate to target person page. Add "Merge into..." button to PersonDetail.vue actions, gated on merge permission.
+  _Verification commands:_
+  - `npm run check`
+  - `npm run format`
+
+- [ ] T-030-67 – Add person miniature to FaceAssignmentModal dropdown (FR-030-20, S-030-46, UI-030-09).
+  _Intent:_ Update the existing person Dropdown in FaceAssignmentModal.vue to use a custom `option` template (PrimeVue `#option` slot). Each option renders: 24px circular `<img>` (`border-radius: 50%`, `object-fit: cover`) from `person.representative_crop_url`, person name, face count in muted text. Fallback: placeholder person icon (PrimeVue `pi pi-user` or similar) when `representative_crop_url` is null. Reuse this template pattern in MergePersonModal.vue.
+  _Verification commands:_
+  - `npm run check`
+  - `npm run format`
+
+### I29 – Album People Endpoint
+
+- [ ] T-030-68 – Implement `GET /api/v2/Album/{id}/people` endpoint (FR-030-22, API-030-25, S-030-40).
+  _Intent:_ New `AlbumPeopleController` with `index()` action. Query joins `photo_albums → photos → faces → persons` to collect distinct persons in the album (non-recursive, direct photos only). Apply `ai_vision_face_permission_mode` visibility rules and `is_searchable` filtering. Return `PaginatedPersonsResource` (consistent with People listing). Create `AlbumPeopleRequest` form request: validate album_id exists, user has album access (use existing album access policy). Register route in `api_v2.php`.
+  _Verification commands:_
+  - `php artisan test --filter=AlbumPeopleTest`
+  - `make phpstan`
+
+- [ ] T-030-69 – Write feature tests for album people endpoint (FR-030-22, S-030-40).
+  _Intent:_ Tests: album with persons returns correct distinct list, album with no faces returns empty, non-searchable person filtered out for non-admin, user without album access gets 403, album not found returns 404, pagination works correctly. Test with photos linked via `photo_albums` pivot table.
+  _Verification commands:_
+  - `php artisan test --filter=AlbumPeopleTest`
+  - `make phpstan`
+
+### I30 – Unassign Face from Person
+
+- [ ] T-030-70 – Update face assign endpoint to support unassign (FR-030-18, S-030-36).
+  _Intent:_ Update `POST /Face/{id}/assign` in FaceController to accept `person_id: null` (or omitted `person_id` with neither `person_id` nor `new_person_name` present, treated as unassign). Sets `face.person_id = NULL`. Emit `face.unassigned` telemetry with `previous_person_id`. Update `AssignFaceRequest` validation to allow nullable `person_id`. Write feature test: assign a face, then unassign it; verify face is in unassigned state.
+  _Verification commands:_
+  - `php artisan test --filter=FaceAssignment`
+  - `make phpstan`
+
+- [ ] T-030-71 – Add "Remove from person" UI in PersonDetail.vue (FR-030-18).
+  _Intent:_ In PersonDetail.vue face grid (non-batch mode), add a small "×" remove button (or right-click context menu) on each face crop. Clicking calls `POST /Face/{id}/assign` with `person_id: null`. After success, remove the face from the grid and update the face count.
+  _Verification commands:_
+  - `npm run check`
+  - `npm run format`
+
 ## Notes / TODOs
 
-**All Q-030-01 through Q-030-48 have been resolved.** All decisions are encoded in spec.md normative sections. No blocking questions remain.
+**Q-030-01 through Q-030-53 have been resolved.** All decisions are encoded in spec.md normative sections.
 
-**Previously blocking items — now resolved:**
-- Q-030-13: `lychee_face_id` returned by `/match`; used in selfie claim flow. *(resolved, I8)*
-- Q-030-14: Re-scan IoU-matches old faces to preserve `person_id`; configurable via `VISION_FACE_RESCAN_IOU_THRESHOLD`. *(resolved, I10)*
-- Q-030-15: Single shared symmetric API key, both directions via `X-API-Key` header. *(resolved, I3/I10)*
-- Q-030-16: `is_dismissed` boolean on Face; dismiss via `PATCH /Face/{id}`, hard-delete via `DELETE /Face/dismissed`. *(resolved, I9)*
-- Q-030-17: Error callback payload defined (`ErrorCallbackPayload`); sets `face_scan_status = failed`. *(resolved, I10)*
-- Q-030-18: Face.person_id type is `string` (consistent with string PKs). *(resolved, no code impact)*
-- Q-030-19: `VISION_FACE_*` env prefix; `ai_vision_face_*` / `ai_vision_*` config keys. *(resolved, I3/I4)*
-- Q-030-20: Four-mode permission matrix defined. *(resolved, I7)*
-- Q-030-21: `DELETE /Person/{id}/claim` unclaim endpoint. *(resolved, I8)*
-- Q-030-22: `{id}` = target Person (kept); `source_person_id` in body. *(resolved, I8)*
-- Q-030-23: State machine documented; `face_scan_status VARCHAR(16)` + ScanStatus enum cast. *(resolved, I4/I10)*
-- Q-030-24: Suggestions pre-computed via NN cosine similarity search (Python side); stored in `face_suggestions` table; embedded in FaceResource. *(resolved, I2/I10/I6)*
-- Q-030-25: crop stored at `uploads/faces/{tok[0:2]}/{tok[2:4]}/{tok}.jpg`; served nginx-direct. *(resolved, I10)*
-- Q-030-26: ThreadPoolExecutor concurrency model in Python. *(resolved, I2)*
-- Q-030-27: Fire-and-forget callback; stuck-pending recovery via CLI-030-03 `--stuck-pending` and Maintenance endpoint. *(resolved, I11)*
-- Q-030-28: `callback_url` removed from DetectRequest body; Python reads from env. *(resolved, I2/I10)*
-- Q-030-29–48: All resolved; see spec.md and open-questions.md.
+**Q-030-54 through Q-030-64 resolved** (2026-04-04): dismiss UX, maintenance blocks, uncluster, unassign, batch ops, person miniatures, face circles in detail panel, overlay config, album people, merge UI, policy refinement (deferred).
+
+**Q-030-65 through Q-030-73 resolved** (2026-04-04):
+- Q-030-65 (A): P key confirmed free — F maps to fullscreen. Use `onKeyStroke('p', ...)`.
+- Q-030-66 (A): Direct photos only (non-recursive) for album people endpoint.
+- Q-030-67 (A): Selection mode toggle (not always-on checkboxes).
+- Q-030-68 (A): Merge modal triggered from PersonDetail page with person search dropdown.
+- Q-030-69 (A): Compact layout — 24px circle + name + face count with type-ahead filter.
+- Q-030-70 (B): No touch shortcut — CTRL+click dismiss on **desktop only** (use `isTouchDevice()` guard); touch users dismiss via modal button.
+- Q-030-71 (A): Horizontal scrollable row (`overflow-x: auto`) for face circles in detail panel.
+- Q-030-72 (B): Policy refinement deferred (same as Q-030-63).
+- Q-030-73 (A with grouping): ONE combined "Reset Face Scan Status" maintenance block for both stuck-pending AND failed (not three separate blocks, not two separate stuck/failed blocks).
+
+**No active questions remain for feature 030.** All 73 questions resolved. Implementation may proceed.
