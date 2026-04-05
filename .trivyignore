@@ -27,3 +27,6 @@ CVE-2026-30836
 # PHP's own hash_hmac() and openssl_sign() behave identically and have no CVEs for this.
 # NVD agrees — hence the Disputed tag and no score from NIST.
 CVE-2025-45769
+
+# We do not use JWT on the GOLANG side (frankenphp), so this CVE does not apply to us.
+CVE-2026-34986
