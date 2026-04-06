@@ -129,7 +129,7 @@ Self-diagnosis errors:
 
 | ID | Description | Modules |
 |----|-------------|---------|
-| DO-032-01 | `SecurityAdvisory` DTO — fields: `cve_id: string`, `ghsa_id: string`, `summary: string`, `cvss_score: float\|null`, `cvss_vector: string\|null`, `affected_version_range: string` | application |
+| DO-032-01 | `SecurityAdvisory` DTO — fields: `cve_id: ?string`, `ghsa_id: string`, `summary: string`, `cvss_score: float\|null`, `cvss_vector: string\|null`, `affected_version_range: string` | application |
 | DO-032-02 | `VersionRangeChecker` service / value object — `matches(Version $version, string $range): bool` evaluates comma-separated semver constraints | application |
 
 ### API Routes / Services
