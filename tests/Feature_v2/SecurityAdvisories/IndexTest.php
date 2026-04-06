@@ -66,6 +66,7 @@ class IndexTest extends BaseApiWithDataTest
 		$this->instance(
 			SecurityAdvisoriesService::class,
 			new class() extends SecurityAdvisoriesService {
+				// Test stub: bypasses parent constructor dependencies (no DB/HTTP needed).
 				public function __construct()
 				{
 				}

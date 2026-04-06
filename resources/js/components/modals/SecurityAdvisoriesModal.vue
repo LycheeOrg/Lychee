@@ -89,7 +89,6 @@ watch(
 );
 
 function dismiss() {
-	sessionStorage.setItem("advisory_dismissed", "1");
 	emits("update:visible", false);
 }
 

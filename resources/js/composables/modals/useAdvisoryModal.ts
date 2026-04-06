@@ -9,6 +9,10 @@ import SecurityAdvisoriesService from "@/services/security-advisories-service";
 
 const DISMISSED_KEY = "advisory_dismissed";
 
+// Module-level reactive state provides intentional singleton behaviour:
+// - One advisory check per admin login across all component instances.
+// - Dismissed state persists for the duration of the browser session
+//   (sessionStorage is cleared when the tab is closed).
 const is_visible = ref(false);
 const advisories = ref<App.Http.Resources.Models.SecurityAdvisoryResource[]>([]);
 

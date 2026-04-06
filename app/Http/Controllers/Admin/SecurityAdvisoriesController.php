@@ -48,4 +48,3 @@ class SecurityAdvisoriesController extends Controller
 		);
 	}
 }
-
