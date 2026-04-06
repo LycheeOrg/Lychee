@@ -92,22 +92,22 @@ After each increment, verify:
      - Add `advisories.api_url` and `advisories.cache_ttl` to `config/urls.php`.
      - Add `vulnerability-check` flag to `config/features.php`.
      - Create `app/DTO/SecurityAdvisory.php` with fields `cve_id`, `ghsa_id`, `summary`, `cvss_score`, `cvss_vector`, `affected_version_range`.
-     - Create `app/Services/VersionRangeChecker.php` — pure `matches(Version $version, string $range): bool`.
-     - Create unit test `tests/Unit/Services/VersionRangeCheckerTest.php` covering all six operators and multi-constraint ranges.
+     - Create `app/Services/VersionRangeChecker.php` — pure `matches(Version $version, string $range): bool`. If `$range` is null or empty string, return `true` (matches all versions). Otherwise, split by `,`, trim, parse operators, evaluate all tokens.
+     - Create unit test `tests/Unit/Services/VersionRangeCheckerTest.php` covering all six operators, multi-constraint ranges, null/empty range (returns true), and malformed tokens (skipped with log warning).
    - _Commands:_ `make phpstan && vendor/bin/php-cs-fixer fix --dry-run && php artisan test --filter=VersionRangeCheckerTest`
-   - _Exit:_ Config keys present; DTO and checker pass static analysis and unit tests.
+   - _Exit:_ Config keys present; DTO and checker pass static analysis and unit tests; null/empty range handling verified.
 
 2. **I2 – Advisory Fetch Service**
-   - _Goal:_ Implement `AdvisoriesRequest` (HTTP fetch with Accept header) and `SecurityAdvisoriesService` (fetch + cache + parse).
+   - _Goal:_ Implement `AdvisoriesRequest` (HTTP fetch with Accept header) and `SecurityAdvisoriesService` (fetch + cache + parse + deduplicate + sort).
    - _Preconditions:_ I1 complete; `config/urls.php` keys present.
    - _Steps:_
      - Add `array $extra_headers = []` constructor parameter to `ExternalRequestFunctions` and thread it into the stream context `header` array.
      - Create `app/Metadata/Json/AdvisoriesRequest.php` extending `JsonRequestFunctions`; sets `Accept: application/vnd.github+json` header.
-     - Create `app/Services/SecurityAdvisoriesService.php` — uses `AdvisoriesRequest` to fetch, caches result, filters advisories with `VersionRangeChecker`, returns `SecurityAdvisory[]`.
+     - Create `app/Services/SecurityAdvisoriesService.php` — uses `AdvisoriesRequest` to fetch, caches result, filters advisories with `VersionRangeChecker`, **deduplicates by `ghsa_id`**, **sorts by `cvss_score DESC NULLS LAST, cve_id DESC NULLS LAST`**, returns `SecurityAdvisory[]`.
      - Create fixture `tests/Fixtures/github-security-advisories.json` with two advisories (one matching, one not).
-     - Create `tests/Unit/Services/SecurityAdvisoriesServiceTest.php` using fixture data; verify caching (S-032-06), parse error handling (S-032-09), feature-disabled early-return (S-032-01).
+     - Create `tests/Unit/Services/SecurityAdvisoriesServiceTest.php` using fixture data; verify caching (S-032-06), parse error handling (S-032-09), feature-disabled early-return (S-032-01), null/empty range handling (S-032-03), deduplication (S-032-04), sorting (S-032-06).
    - _Commands:_ `make phpstan && php artisan test --filter=SecurityAdvisoriesServiceTest`
-   - _Exit:_ Service returns correct `SecurityAdvisory[]` for fixture; caching verified; PHPStan clean.
+   - _Exit:_ Service returns correct `SecurityAdvisory[]` for fixture; caching, deduplication, and sorting verified; PHPStan clean.
 
 3. **I3 – Diagnostic Pipe**
    - _Goal:_ Implement and register `SecurityAdvisoriesCheck` in the diagnostic pipeline.
@@ -115,11 +115,11 @@ After each increment, verify:
    - _Steps:_
      - Create `app/Actions/Diagnostics/Pipes/Checks/SecurityAdvisoriesCheck.php` implementing `DiagnosticPipe`.
      - Guard: return `$next($data)` immediately if feature disabled or user is not admin.
-     - For each `SecurityAdvisory` returned by the service: append `DiagnosticData::error("Security vulnerability: {cve_id} (CVSS {score})", self::class, [$advisory->summary])`.
+     - For each `SecurityAdvisory` returned by the service (already sorted): append `DiagnosticData::error("Security vulnerability: {cve_id ?? ghsa_id} (CVSS {score})", self::class, [$advisory->summary])` where score is formatted to 1 decimal place with `number_format($score, 1)` or "(no CVSS score)" when null.
      - Register `SecurityAdvisoriesCheck::class` at the end of `$pipes` in `app/Actions/Diagnostics/Errors.php`.
-     - Create `tests/Unit/Actions/Diagnostics/SecurityAdvisoriesCheckTest.php` with mock service; verify admin guard, no-entries when service empty, correct error format.
+     - Create `tests/Unit/Actions/Diagnostics/SecurityAdvisoriesCheckTest.php` with mock service; verify admin guard, no-entries when service empty, correct error format including GHSA fallback and CVSS formatting, sorted output.
    - _Commands:_ `make phpstan && php artisan test --filter=SecurityAdvisoriesCheckTest`
-   - _Exit:_ Diagnostic pipe registered; unit tests pass; PHPStan clean.
+   - _Exit:_ Diagnostic pipe registered; unit tests pass; PHPStan clean; CVE/GHSA and CVSS formatting verified.
 
 4. **I4 – REST Endpoint**
    - _Goal:_ Expose `GET /api/v2/Security/Advisories` for the frontend to consume.
@@ -133,17 +133,17 @@ After each increment, verify:
    - _Exit:_ Endpoint returns correct JSON; auth enforced; all scenarios covered.
 
 5. **I5 – Frontend Modal**
-   - _Goal:_ Show dismissable advisory modal to admin on login when vulnerabilities are present.
+   - _Goal:_ Show dismissable advisory modal to admin after login when vulnerabilities are present.
    - _Preconditions:_ I4 complete; REST endpoint available.
    - _Steps:_
      - Create `resources/js/services/security-advisories-service.ts` — `getAdvisories(): Promise<AxiosResponse<SecurityAdvisoryResource[]>>`.
-     - Create `resources/js/components/modals/SecurityAdvisoriesModal.vue` — PrimeVue `Dialog`; lists CVEs and CVSS scores; "Close" button sets `sessionStorage.advisory_dismissed = '1'`; "Go to Diagnostics" navigates to diagnostics page.
+     - Create `resources/js/components/modals/SecurityAdvisoriesModal.vue` — PrimeVue `Dialog`; header with warning icon (⚠) and title "Security Vulnerabilities Detected"; header close button ([×]) dismisses modal; body lists vulnerabilities in bullet format "• {cve_id ?? ghsa_id}  CVSS {score.toFixed(1) ?? '(no CVSS score)'}" where each CVE/GHSA ID is a clickable link to `https://github.com/advisories/{ghsa_id}`; footer with "Go to Diagnostics" button (navigates to diagnostics page and sets dismissal flag) and "Close" button (sets dismissal flag); both buttons **and the header [×]** execute: `sessionStorage.setItem('advisory_dismissed', '1')` then close/navigate.
      - Update `lychee.d.ts` to include `SecurityAdvisoryResource` type.
-     - In the post-login flow (after successful auth), check `sessionStorage.advisory_dismissed`; if not set, call advisory service; if results present, show modal.
+     - In the post-login flow (**immediately after successful POST /login response** with `is_admin = true`), **check `is_admin` before calling the endpoint** to avoid 403, then check `sessionStorage.advisory_dismissed`; if not set, call advisory service; if results present, show modal.
      - Ensure modal is only shown when `is_admin` is true.
-     - Write Vitest unit test for `SecurityAdvisoriesModal.vue`: renders CVE list, dismiss sets `sessionStorage`, does not render if flag present.
+     - Write Vitest unit test for `SecurityAdvisoriesModal.vue`: renders warning icon and title; renders CVE/GHSA list from props with correct format and clickable links; CVSS scores formatted to 1 decimal; clicking header [×] emits `update:visible(false)` and sets `sessionStorage`; clicking "Close" button emits `update:visible(false)` and sets `sessionStorage`; clicking "Go to Diagnostics" emits `update:visible(false)`, sets `sessionStorage`, and navigates; does not render when `visible = false`.
    - _Commands:_ `npm run type-check && npm run test`
-   - _Exit:_ Modal renders correctly in Vitest; dismissal behaviour verified; TypeScript clean.
+   - _Exit:_ Modal renders correctly in Vitest per mock-up spec; all dismissal paths verified; clickable links and CVSS formatting tested; TypeScript clean.
 
 6. **I6 – Quality Gates & Documentation**
    - _Goal:_ Final quality sweep, OpenAPI update, knowledge-map update, roadmap update.
@@ -198,3 +198,4 @@ _Not yet completed — pending implementation start._
 - Consider adding a `php artisan lychee:advisories-check` Artisan command for CLI-based advisory checks in CI/CD pipelines.
 - Investigate authenticated GitHub API requests (personal access token) to raise the rate limit from 60 to 5000 requests/hour for high-traffic installs.
 - Evaluate persisting dismissal in the database (per-user flag) rather than `sessionStorage` if multi-device admins find the per-session approach inconvenient.
+- (Q-032-08 follow-up) Add force-refresh capability via CLI command (`php artisan lychee:advisories-refresh`) or API endpoint (`POST /api/v2/Security/Advisories/refresh`) to clear advisory cache on demand.

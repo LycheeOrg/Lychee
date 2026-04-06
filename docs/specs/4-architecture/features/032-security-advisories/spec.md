@@ -40,11 +40,11 @@ Affected modules: `application` (service, diagnostic pipe), `REST` (new advisory
 |----|-------------|--------------|-----------------|--------------|--------------------|--------|
 | FR-032-01 | When `features.vulnerability-check` is `true`, the `SecurityAdvisoriesService` fetches the JSON array from `urls.advisories.api_url`, sending the `Accept: application/vnd.github+json` header. | Advisories array retrieved and cached for `urls.advisories.cache_ttl` days. | URL must be a non-empty string; TTL must be a positive integer. | Log warning and return empty advisory list; no error surfaced to end user. | Log entry on fetch failure. | Problem statement |
 | FR-032-02 | The service caches the raw API response using the API URL as the cache key for `urls.advisories.cache_ttl` days. Subsequent calls within the TTL window return the cached payload without hitting the GitHub API. | Cached response served; GitHub API not contacted during TTL window. | Cache driver configured in Laravel (`CACHE_DRIVER`). | If cache store is unavailable, fetch live on every call. | — | Problem statement |
-| FR-032-03 | For each advisory returned by the API, the service iterates `vulnerabilities[*].vulnerable_version_range` (a comma-separated string of semver constraints, e.g. `">= 5.0.0, < 5.1.2"`) and evaluates whether the currently installed Lychee version satisfies the range. | Matching advisories collected into a result list. | Each constraint token is trimmed and parsed as an operator (`>=`, `<=`, `>`, `<`, `=`, `!=`) followed by a semver. Malformed tokens are skipped with a log warning. | Parsing errors skip the individual advisory; remaining advisories are still checked. | Log warning per malformed token. | Problem statement |
-| FR-032-04 | The `SecurityAdvisoriesCheck` diagnostic pipe (implementing `DiagnosticPipe`) is registered in `Errors.php`. It runs **only when** `features.vulnerability-check` is `true` **and** the currently authenticated user is an admin (`may_administrate = true`). | For each matching advisory, a `DiagnosticData::error()` entry is appended with format: `"Security vulnerability: {cve_id} (CVSS {score})"` and a details array containing the advisory summary. | Guard clauses applied at the top of `handle()`. | If the service returns an empty list (fetch failure, no matches, or feature disabled), no entries are added. | — | Problem statement |
+| FR-032-03 | For each advisory returned by the API, the service iterates `vulnerabilities[*].vulnerable_version_range` (a comma-separated string of semver constraints, e.g. `">= 5.0.0, < 5.1.2"`) and evaluates whether the currently installed Lychee version satisfies the range. **If `vulnerable_version_range` is null or an empty string, the version range check passes (advisory matches all versions).** A single advisory with multiple matching `vulnerabilities[]` entries is included **once** (deduplicated by `ghsa_id`). | Matching advisories collected into a result list and deduplicated. | Each constraint token is trimmed and parsed as an operator (`>=`, `<=`, `>`, `<`, `=`, `!=`) followed by a semver. Malformed tokens are skipped with a log warning. Null/empty ranges treated as match-all. | Parsing errors skip the individual advisory; remaining advisories are still checked. | Log warning per malformed token. | Problem statement, Q-032-03, Q-032-04 |
+| FR-032-04 | The `SecurityAdvisoriesCheck` diagnostic pipe (implementing `DiagnosticPipe`) is registered in `Errors.php`. It runs **only when** `features.vulnerability-check` is `true` **and** the currently authenticated user is an admin (`may_administrate = true`). **Matching advisories are sorted by `cvss_score DESC NULLS LAST, cve_id DESC NULLS LAST` before being added to the diagnostic pipeline.** | For each matching advisory, a `DiagnosticData::error()` entry is appended with format: `"Security vulnerability: {cve_id ?? ghsa_id} (CVSS {score})"` where the score is formatted to 1 decimal place (or "(no CVSS score)" when null) and `ghsa_id` is used when `cve_id` is null. Details array contains the advisory summary. | Guard clauses applied at the top of `handle()`. Diagnostic entries are clickable links to `https://github.com/advisories/{ghsa_id}`. | If the service returns an empty list (fetch failure, no matches, or feature disabled), no entries are added. | — | Problem statement, Q-032-05, Q-032-06, Q-032-07 |
 | FR-032-05 | A new REST endpoint `GET /api/v2/Security/Advisories` returns the list of matching vulnerabilities (CVE ID, CVSS score, summary) when the authenticated user is an admin. Non-admin requests receive 403. Unauthenticated requests receive 401. | Advisory list returned as JSON. | Auth middleware enforces admin-only access. | Returns empty list `[]` when check is disabled or no vulnerabilities match. | — | Problem statement |
-| FR-032-06 | On each admin login, the frontend checks `GET /api/v2/Security/Advisories`. If the response contains at least one entry, a dismissable modal is displayed once per browser session (using `sessionStorage` to prevent re-display after dismiss). The modal lists the CVE IDs and CVSS scores and links to the advisory URL. | Modal shown on first admin login per session if vulnerabilities are present. | Check performed after successful login response, before navigating to the gallery. | If the endpoint returns an error or empty list, the modal is not shown. | — | Problem statement |
-| FR-032-07 | The modal can be dismissed ("Close" / "×" button). After dismissal, it does not re-appear within the same browser session. The modal does not block navigation — it can be dismissed immediately. | Modal closes and `sessionStorage` flag set. | `sessionStorage.setItem('advisory_dismissed', '1')` after close. | — | — | Problem statement |
+| FR-032-06 | The frontend checks `GET /api/v2/Security/Advisories` **immediately after a successful login response (POST /login) when `is_admin` is true**. The check does not fire on page refresh or navigation for already-authenticated users. **The frontend must verify `is_admin` before calling the endpoint to avoid a 403 response.** If the response contains at least one entry, a dismissable modal is displayed once per browser session (using `sessionStorage` to prevent re-display after dismiss). The modal lists the CVE/GHSA IDs (as clickable links to `https://github.com/advisories/{ghsa_id}`), CVSS scores (formatted to 1 decimal place or "(no CVSS score)" when null), using GHSA ID when `cve_id` is null. | Modal shown on first admin login per session if vulnerabilities are present. | Check performed after successful POST /login response with `is_admin = true`. Advisory list sorted by CVSS score DESC, CVE ID DESC. | If the endpoint returns an error or empty list, the modal is not shown. | — | Problem statement, Q-032-01, Q-032-09 |
+| FR-032-07 | The modal can be dismissed via the "Close" button, header "×" button, or "Go to Diagnostics" button (which also navigates to the diagnostics page). **All three dismissal actions set `sessionStorage.advisory_dismissed = '1'`.** After dismissal, the modal does not re-appear within the same browser session. **Dismissal is scoped per browser tab (sessionStorage semantics); opening a new tab triggers the modal again on login in that tab.** The modal does not block navigation — it can be dismissed immediately. | Modal closes and `sessionStorage` flag set. Both "Close" and "Go to Diagnostics" buttons set the dismissal flag. | `sessionStorage.setItem('advisory_dismissed', '1')` after any dismissal action. | — | — | Problem statement, Q-032-02, Q-032-10 |
 | FR-032-08 | When `features.vulnerability-check` is `false`, the `SecurityAdvisoriesCheck` pipe is a no-op (returns `$next($data)` immediately), the REST endpoint returns `[]`, and the frontend never shows the modal. | Feature disabled path verified. | Feature flag checked as first guard clause. | — | — | Problem statement |
 
 ## Non-Functional Requirements
@@ -68,27 +68,38 @@ Affected modules: `application` (service, diagnostic pipe), `REST` (new advisory
 ├─────────────────────────────────────────────────────────────────────┤
 │ The following vulnerabilities affect your current Lychee version:   │
 │                                                                     │
-│  • CVE-2024-12345  CVSS 8.5  — Remote code execution in upload     │
-│    handler. Update to v5.1.2 or later.                             │
+│  • CVE-2024-12345  CVSS 8.5    (clickable → GitHub advisory)        │
+│  • GHSA-1234-5678-90ab  CVSS 6.1    (when cve_id is null)           │
+│  • CVE-2024-99999  (no CVSS score)  (when cvss_score is null)       │
 │                                                                     │
-│  • CVE-2024-67890  CVSS 6.1  — Reflected XSS in album title.      │
-│    Update to v5.1.1 or later.                                      │
-│                                                                     │
-│ Visit the Diagnostics page for full details.                        │
-│                                                                     │
-│                                        [Go to Diagnostics] [Close] │
+│                                        [Go to Diagnostics] [Close]  │
 └─────────────────────────────────────────────────────────────────────┘
 ```
+
+**Notes:**
+- Each CVE/GHSA ID is a clickable link to `https://github.com/advisories/{ghsa_id}`.
+- CVSS scores are formatted to exactly 1 decimal place (e.g., `8.0`, `9.5`).
+- When `cvss_score` is `null`, display `(no CVSS score)` instead of the score.
+- When `cve_id` is `null`, display the GHSA ID in the same format.
+- Both "Go to Diagnostics" and "Close" buttons set `sessionStorage.advisory_dismissed = '1'`.
+- The header [×] button also sets the dismissal flag and closes the modal.
 
 ### Diagnostic Error Panel (existing page, new entries added)
 
 ```
 Self-diagnosis errors:
-  [ERROR]  Security vulnerability: CVE-2024-12345 (CVSS 8.5)
-           Remote code execution in upload handler. Update to v5.1.2.
-  [ERROR]  Security vulnerability: CVE-2024-67890 (CVSS 6.1)
-           Reflected XSS in album title. Update to v5.1.1.
+  [ERROR]  Security vulnerability: CVE-2024-12345 (CVSS 8.5)  (clickable link)
+           Remote code execution in upload handler. Update to v5.1.2 or later.
+  [ERROR]  Security vulnerability: GHSA-1234-5678-90ab (CVSS 6.1)  (when cve_id is null)
+           Reflected XSS in album title. Update to v5.1.1 or later.
+  [ERROR]  Security vulnerability: CVE-2024-99999 (no CVSS score)  (when cvss_score is null)
+           Configuration disclosure. Update to v5.1.0 or later.
 ```
+
+**Notes:**
+- Advisories are sorted by CVSS score descending (highest severity first), then by CVE ID descending (higher CVE = more recent).
+- Entries with `null` CVSS scores appear last.
+- Each entry is a clickable link to `https://github.com/advisories/{ghsa_id}`.
 
 ## Branch & Scenario Matrix
 
@@ -156,9 +167,9 @@ Self-diagnosis errors:
 | ID | State | Trigger / Expected outcome |
 |----|-------|---------------------------|
 | UI-032-01 | Modal hidden | No advisories match running version, or feature disabled, or `sessionStorage.advisory_dismissed` is set. |
-| UI-032-02 | Modal visible | Admin logged in, advisory endpoint returns ≥1 entry, `sessionStorage.advisory_dismissed` not set. |
-| UI-032-03 | Modal dismissed | Admin clicks "Close" / "×"; `sessionStorage.advisory_dismissed = '1'` set; modal unmounted. |
-| UI-032-04 | Diagnostic error entry | Diagnostic page loads for admin; each matching advisory rendered as error line. |
+| UI-032-02 | Modal visible | Admin completed POST /login with `is_admin = true`, advisory endpoint returns ≥1 entry (sorted by CVSS DESC, CVE ID DESC), `sessionStorage.advisory_dismissed` not set. CVE/GHSA IDs rendered as clickable links to `https://github.com/advisories/{ghsa_id}`. CVSS scores formatted to 1 decimal place. |
+| UI-032-03 | Modal dismissed | Admin clicks "Close", "×", or "Go to Diagnostics"; `sessionStorage.advisory_dismissed = '1'` set; modal unmounted. "Go to Diagnostics" also navigates to diagnostics page. |
+| UI-032-04 | Diagnostic error entry | Diagnostic page loads for admin; each matching advisory rendered as error line with clickable link to GitHub advisory, sorted by CVSS DESC then CVE ID DESC. |
 
 ## Telemetry & Observability
 
