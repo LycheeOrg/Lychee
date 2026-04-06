@@ -134,8 +134,7 @@ class SharingController extends Controller
 			fn ($q) => $q->whereIn('base_album_id', BaseAlbumImpl::select('id')
 				->where('owner_id', '=', Auth::id()))
 		);
-		$query = $query->where(fn ($q) =>
-			$q->whereNotNull(APC::USER_ID)
+		$query = $query->where(fn ($q) => $q->whereNotNull(APC::USER_ID)
 			->orWhereNotNull(APC::USER_GROUP_ID));
 		$query = $query->orderBy('base_album_id', 'asc');
 
