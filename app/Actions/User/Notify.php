@@ -46,12 +46,16 @@ class Notify
 		// Admin user is always notified
 		$users = User::query()->where('may_administrate', '=', true)->get();
 
-		$albums = Album::query()->without(['thumbs', 'statistics', 'cover', 'min_privilege_cover', 'max_privilege_cover'])->join(PA::PHOTO_ALBUM, PA::ALBUM_ID, '=', 'album.id')
+		$albums = Album::query()
+			->without(['thumbs', 'statistics', 'cover', 'min_privilege_cover', 'max_privilege_cover'])
+			->join(PA::PHOTO_ALBUM, PA::ALBUM_ID, '=', 'albums.id')
 			->where(PA::PHOTO_ID, '=', $photo->id)
 			->get();
 
 		if ($albums->count() > 0) {
-			$shared_with = User::query()->join(APC::ACCESS_PERMISSIONS, APC::USER_ID, '=', 'user.id')
+			$shared_with = User::query()
+				->join(APC::ACCESS_PERMISSIONS, APC::USER_ID, '=', 'users.id')
+				->select(['users.*', APC::BASE_ALBUM_ID])
 				->whereIn(APC::BASE_ALBUM_ID, $albums->pluck('id'))
 				->get();
 			$users->push(...$shared_with->all());

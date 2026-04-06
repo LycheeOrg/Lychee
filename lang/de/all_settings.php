@@ -431,7 +431,7 @@ return [
         'album_subtitle_type' => '',
         'upload_processing_limit' => '',
         'new_photos_notification' => '',
-        'zip_deflate_level' => '-1 = Kompression deaktivieren (STORE-Methode), 0 = keine Kompression (DEFLATE-Methode), 1 = minimale Kompression (schnell), ... 9 = maximale Kompression (langsam)',
+        'zip_deflate_level' => '-1 = Kompression deaktivieren (STORE-Methode), 0 = keine Kompression (DEFLATE-Methode), 1 = minimale Kompression (schnell), … 9 = maximale Kompression (langsam)',
         'default_album_protection' => '',
         'allow_username_change' => '',
         'album_decoration' => '',

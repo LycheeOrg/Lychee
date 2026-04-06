@@ -80,7 +80,7 @@ return [
     // List view
     'rules_count' => ':count Regeln',
     'no_rules' => 'Keine Umbenennungsregeln gefunden',
-    'loading' => 'Umbenennungsregeln werden geladen...',
+    'loading' => 'Umbenennungsregeln werden geladen …',
     'pattern_label' => 'Muster',
     'replace_with_label' => 'Ersetzen durch',
     'photo' => 'Foto',
