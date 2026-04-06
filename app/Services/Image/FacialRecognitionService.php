@@ -124,4 +124,25 @@ class FacialRecognitionService
 
 		return $response->successful() ? $response->json() : null;
 	}
+
+	/**
+	 * Export all face embeddings with metadata for synchronization.
+	 *
+	 * @return array{count: int, embeddings: array<array{lychee_face_id: string, photo_id: string, laplacian_variance: float, crop_path: string}>}|null
+	 *
+	 * @throws \Exception When the HTTP request fails
+	 */
+	public function syncFaceEmbeddings(): ?array
+	{
+		if (!$this->isConfigured()) {
+			Log::warning('FacialRecognitionService: syncFaceEmbeddings called but service is not configured.');
+
+			return null;
+		}
+
+		$response = Http::withHeaders(['X-API-Key' => $this->api_key])
+			->get($this->service_url . '/embeddings/export');
+
+		return $response->successful() ? $response->json() : null;
+	}
 }

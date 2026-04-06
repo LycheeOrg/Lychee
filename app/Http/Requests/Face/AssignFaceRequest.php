@@ -48,9 +48,9 @@ class AssignFaceRequest extends BaseApiRequest implements HasFace
 			// We only reject the case where both new_person_name and person_id are
 			// provided simultaneously with non-null values (ambiguous intent).
 			$values = $validator->validated();
-			$hasPerson = isset($values['person_id']) && $values['person_id'] !== null;
-			$hasName = isset($values['new_person_name']) && $values['new_person_name'] !== null;
-			if ($hasPerson && $hasName) {
+			$has_person = isset($values['person_id']) && $values['person_id'] !== null;
+			$has_name = isset($values['new_person_name']) && $values['new_person_name'] !== null;
+			if ($has_person && $has_name) {
 				$validator->errors()->add('person_id', 'Provide either person_id or new_person_name, not both.');
 			}
 		});

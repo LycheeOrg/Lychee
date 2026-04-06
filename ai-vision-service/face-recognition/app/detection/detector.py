@@ -35,6 +35,9 @@ class DetectedFace:
     embedding: list[float] = field(default_factory=list)
     """512-dimensional ArcFace embedding vector."""
 
+    laplacian_variance: float = 0.0
+    """Laplacian variance sharpness score (higher = sharper)."""
+
 
 class FaceDetector:
     """Thread-safe wrapper around InsightFace FaceAnalysis.
@@ -168,25 +171,27 @@ class FaceDetector:
             bbox: Any = face.bbox  # [x1, y1, x2, y2] absolute pixels
             x1, y1, x2, y2 = float(bbox[0]), float(bbox[1]), float(bbox[2]), float(bbox[3])
 
-            # Blur filter: compute Laplacian variance on the face crop region.
-            # A value of 0.0 disables the filter (all faces pass).
-            if self._blur_threshold > 0.0:
-                px1 = max(0, int(x1))
-                py1 = max(0, int(y1))
-                px2 = min(w, int(x2))
-                py2 = min(h, int(y2))
-                if px2 > px1 and py2 > py1:
-                    crop_region = img[py1:py2, px1:px2]
-                    gray = cv2.cvtColor(crop_region, cv2.COLOR_BGR2GRAY)
-                    variance: float = float(cv2.Laplacian(gray, cv2.CV_64F).var())
-                    if variance < self._blur_threshold:
-                        filtered_by_blur += 1
-                        logger.info(
-                            "Filtered blurry face: variance=%.2f < threshold=%.2f",
-                            variance,
-                            self._blur_threshold,
-                        )
-                        continue
+            # Compute Laplacian variance on the face crop region.
+            # This sharpness score is always computed and sent to Lychee for filtering/tuning.
+            px1 = max(0, int(x1))
+            py1 = max(0, int(y1))
+            px2 = min(w, int(x2))
+            py2 = min(h, int(y2))
+            variance: float = 0.0
+            if px2 > px1 and py2 > py1:
+                crop_region = img[py1:py2, px1:px2]
+                gray = cv2.cvtColor(crop_region, cv2.COLOR_BGR2GRAY)
+                variance = float(cv2.Laplacian(gray, cv2.CV_64F).var())
+
+                # Blur filter: exclude faces below threshold if enabled (threshold > 0.0)
+                if self._blur_threshold > 0.0 and variance < self._blur_threshold:
+                    filtered_by_blur += 1
+                    logger.info(
+                        "Filtered blurry face: variance=%.2f < threshold=%.2f",
+                        variance,
+                        self._blur_threshold,
+                    )
+                    continue
 
             # Normalise to [0, 1] and clamp
             fx = max(0.0, min(1.0, x1 / w))
@@ -196,7 +201,17 @@ class FaceDetector:
 
             embedding: list[float] = [float(v) for v in face.embedding]
 
-            results.append(DetectedFace(x=fx, y=fy, width=fw, height=fh, confidence=score, embedding=embedding))
+            results.append(
+                DetectedFace(
+                    x=fx,
+                    y=fy,
+                    width=fw,
+                    height=fh,
+                    confidence=score,
+                    embedding=embedding,
+                    laplacian_variance=variance,
+                )
+            )
 
         # Descending confidence order
         results.sort(key=lambda f: f.confidence, reverse=True)

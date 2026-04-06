@@ -27,6 +27,7 @@ return new class() extends Migration {
 			$table->float('width')->nullable(false);
 			$table->float('height')->nullable(false);
 			$table->float('confidence')->nullable(false);
+			$table->float('laplacian_variance')->default(0.0);
 			$table->string('crop_token')->nullable(true);
 			$table->boolean('is_dismissed')->default(false);
 			$table->timestamps();

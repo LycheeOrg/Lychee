@@ -23,7 +23,7 @@ const PeopleService = {
 	},
 
 	destroy(id: string): Promise<AxiosResponse> {
-		return axios.delete(`${Constants.getApiUrl()}Person/${id}`);
+		return axios.delete(`${Constants.getApiUrl()}Person/${id}`, { data: {} });
 	},
 
 	claim(id: string): Promise<AxiosResponse> {

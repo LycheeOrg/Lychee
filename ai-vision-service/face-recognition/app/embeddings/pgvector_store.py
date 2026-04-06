@@ -47,7 +47,14 @@ class PgVectorEmbeddingStore:
     # EmbeddingStore protocol
     # ------------------------------------------------------------------
 
-    def add(self, lychee_face_id: str, embedding: list[float]) -> None:
+    def add(
+        self,
+        lychee_face_id: str,
+        embedding: list[float],
+        photo_id: str,
+        laplacian_variance: float,
+        crop_path: str,
+    ) -> None:
         """Upsert an embedding row."""
         vec_str = _to_pg_vector(embedding)
         with self._lock:
@@ -55,12 +62,15 @@ class PgVectorEmbeddingStore:
             with conn.cursor() as cur:
                 cur.execute(
                     """
-                    INSERT INTO face_embeddings (lychee_face_id, embedding)
-                    VALUES (%s, %s::vector)
+                    INSERT INTO face_embeddings (lychee_face_id, embedding, photo_id, laplacian_variance, crop_path)
+                    VALUES (%s, %s::vector, %s, %s, %s)
                     ON CONFLICT (lychee_face_id) DO UPDATE
-                        SET embedding = EXCLUDED.embedding
+                        SET embedding = EXCLUDED.embedding,
+                            photo_id = EXCLUDED.photo_id,
+                            laplacian_variance = EXCLUDED.laplacian_variance,
+                            crop_path = EXCLUDED.crop_path
                     """,
-                    (lychee_face_id, vec_str),
+                    (lychee_face_id, vec_str, photo_id, laplacian_variance, crop_path),
                 )
             conn.commit()
 
@@ -126,6 +136,25 @@ class PgVectorEmbeddingStore:
                 rows: list[Any] = cur.fetchall()
         return [(row[0], [float(v) for v in row[1]]) for row in rows]
 
+    def get_all_with_metadata(self) -> list[dict[str, str | float | None]]:
+        """Return all stored embeddings with metadata."""
+        with self._lock:
+            conn = self._get_conn()
+            with conn.cursor() as cur:
+                cur.execute(
+                    "SELECT lychee_face_id, photo_id, laplacian_variance, crop_path FROM face_embeddings"
+                )
+                rows: list[Any] = cur.fetchall()
+        results: list[dict[str, str | float | None]] = []
+        for row in rows:
+            results.append({
+                "lychee_face_id": row[0],
+                "photo_id": row[1],
+                "laplacian_variance": float(row[2]) if row[2] is not None else None,
+                "crop_path": row[3],
+            })
+        return results
+
     def count(self) -> int:
         """Return the total number of stored embeddings."""
         with self._lock:
@@ -157,7 +186,10 @@ class PgVectorEmbeddingStore:
                     f"""
                     CREATE TABLE IF NOT EXISTS face_embeddings (
                         lychee_face_id TEXT PRIMARY KEY,
-                        embedding      vector({_EMBEDDING_DIM}) NOT NULL
+                        embedding      vector({_EMBEDDING_DIM}) NOT NULL,
+                        photo_id       TEXT,
+                        laplacian_variance REAL,
+                        crop_path      TEXT
                     )
                     """
                 )

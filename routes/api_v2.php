@@ -407,10 +407,12 @@ Route::get('/Maintenance::runFaceClustering', [Admin\Maintenance\RunFaceClusteri
 Route::post('/Maintenance::runFaceClustering', [Admin\Maintenance\RunFaceClustering::class, 'do']);
 Route::get('/Maintenance::destroyDismissedFaces', [Admin\Maintenance\DestroyDismissedFaces::class, 'check']);
 Route::post('/Maintenance::destroyDismissedFaces', [Admin\Maintenance\DestroyDismissedFaces::class, 'do']);
+Route::get('/Maintenance::syncFaceEmbeddings', [Admin\Maintenance\SyncFaceEmbeddings::class, 'check']);
+Route::post('/Maintenance::syncFaceEmbeddings', [Admin\Maintenance\SyncFaceEmbeddings::class, 'do']);
 Route::get('/Maintenance::resetFaceScanStatus', [Admin\Maintenance\ResetFaceScanStatus::class, 'check']);
 Route::post('/Maintenance::resetFaceScanStatus', [Admin\Maintenance\ResetFaceScanStatus::class, 'do']);
 
 /**
  * AI VISION — ALBUM PEOPLE.
  */
-Route::get('/Album/{albumId}/people', [AiVision\AlbumPeopleController::class, 'index'])->middleware(['support:se']);
+Route::get('/Album/{album_id}/people', [AiVision\AlbumPeopleController::class, 'index'])->middleware(['support:se']);

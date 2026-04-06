@@ -41,6 +41,7 @@
 		<MaintenanceBulkScanFaces />
 		<MaintenanceRunClustering />
 		<MaintenanceDestroyDismissedFaces />
+		<MaintenanceSyncFaceEmbeddings />
 		<MaintenanceResetFaceScanStatus />
 	</div>
 </template>
@@ -66,5 +67,6 @@ import MaintenanceFlushQueue from "@/components/maintenance/MaintenanceFlushQueu
 import MaintenanceBulkScanFaces from "@/components/maintenance/MaintenanceBulkScanFaces.vue";
 import MaintenanceRunClustering from "@/components/maintenance/MaintenanceRunClustering.vue";
 import MaintenanceDestroyDismissedFaces from "@/components/maintenance/MaintenanceDestroyDismissedFaces.vue";
+import MaintenanceSyncFaceEmbeddings from "@/components/maintenance/MaintenanceSyncFaceEmbeddings.vue";
 import MaintenanceResetFaceScanStatus from "@/components/maintenance/MaintenanceResetFaceScanStatus.vue";
 </script>

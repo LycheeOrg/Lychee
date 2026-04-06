@@ -48,7 +48,14 @@ class SQLiteEmbeddingStore:
     # EmbeddingStore protocol
     # ------------------------------------------------------------------
 
-    def add(self, lychee_face_id: str, embedding: list[float]) -> None:
+    def add(
+        self,
+        lychee_face_id: str,
+        embedding: list[float],
+        photo_id: str,
+        laplacian_variance: float,
+        crop_path: str,
+    ) -> None:
         """Upsert an embedding row."""
         with self._lock:
             conn = self._connect()
@@ -61,8 +68,8 @@ class SQLiteEmbeddingStore:
                 )
                 vec_rowid: int = cursor.lastrowid  # type: ignore[assignment]
                 conn.execute(
-                    "INSERT INTO face_meta(vec_rowid, lychee_face_id) VALUES (?, ?)",
-                    [vec_rowid, lychee_face_id],
+                    "INSERT INTO face_meta(vec_rowid, lychee_face_id, photo_id, laplacian_variance, crop_path) VALUES (?, ?, ?, ?, ?)",
+                    [vec_rowid, lychee_face_id, photo_id, laplacian_variance, crop_path],
                 )
                 conn.commit()
             finally:
@@ -157,6 +164,28 @@ class SQLiteEmbeddingStore:
         finally:
             conn.close()
 
+    def get_all_with_metadata(self) -> list[dict[str, str | float | None]]:
+        """Return all stored embeddings with metadata."""
+        conn = self._connect()
+        try:
+            rows = conn.execute(
+                """
+                SELECT lychee_face_id, photo_id, laplacian_variance, crop_path
+                FROM face_meta
+                """,
+            ).fetchall()
+            results: list[dict[str, str | float | None]] = []
+            for lychee_face_id, photo_id, laplacian_variance, crop_path in rows:
+                results.append({
+                    "lychee_face_id": lychee_face_id,
+                    "photo_id": photo_id,
+                    "laplacian_variance": laplacian_variance,
+                    "crop_path": crop_path,
+                })
+            return results
+        finally:
+            conn.close()
+
     def count(self) -> int:
         """Return the number of stored embeddings."""
         conn = self._connect()
@@ -192,7 +221,10 @@ class SQLiteEmbeddingStore:
                     """
                     CREATE TABLE IF NOT EXISTS face_meta (
                         vec_rowid  INTEGER UNIQUE NOT NULL,
-                        lychee_face_id TEXT PRIMARY KEY NOT NULL
+                        lychee_face_id TEXT PRIMARY KEY NOT NULL,
+                        photo_id TEXT,
+                        laplacian_variance REAL,
+                        crop_path TEXT
                     )
                     """
                 )

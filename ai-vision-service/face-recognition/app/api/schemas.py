@@ -77,6 +77,13 @@ class FaceResult(BaseModel):
     Only the top ``max_faces_per_photo`` faces (by confidence) are included.
     """
 
+    laplacian_variance: float
+    """Laplacian variance sharpness score for the face crop.
+
+    Higher values indicate sharper images. Lychee stores this value to allow
+    users to tune quality filtering thresholds without re-scanning.
+    """
+
     suggestions: list[SuggestionResult] = []
     """Pre-computed similar faces from the embedding store (may be empty)."""
 
@@ -230,3 +237,31 @@ class HealthResponse(BaseModel):
 
     embedding_count: int
     """Total number of face embeddings currently stored."""
+
+
+# ---------------------------------------------------------------------------
+# GET /embeddings/export - Python -> Lychee (for sync)
+# ---------------------------------------------------------------------------
+
+
+class EmbeddingExportItem(BaseModel):
+    """One face embedding metadata record for syncing."""
+
+    lychee_face_id: str
+    """Stable Lychee ``Face.id``."""
+
+    photo_id: str
+    """Lychee photo ID."""
+
+    laplacian_variance: float
+    """Sharpness score."""
+
+    crop_path: str
+    """Relative path to stored face crop."""
+
+
+class EmbeddingExportResponse(BaseModel):
+    """Response body for ``GET /embeddings/export``."""
+
+    embeddings: list[EmbeddingExportItem]
+    """All stored face embeddings with metadata."""

@@ -22,9 +22,11 @@
 			>
 				<div
 					class="absolute top-full left-0 mt-0.5 px-1.5 py-0.5 text-xs rounded whitespace-nowrap max-w-32 truncate"
-					:class="face.person_id ? 'bg-primary-500 text-white' : 'bg-yellow-500 text-black'"
+					:class="
+						ctrlHeld && !isTouchDev ? 'bg-red-600 text-white' : face.person_id ? 'bg-primary-500 text-white' : 'bg-yellow-500 text-black'
+					"
 				>
-					{{ faceLabel(face) }}
+					{{ ctrlHeld && !isTouchDev ? $t("people.dismiss") : faceLabel(face) }}
 				</div>
 			</div>
 		</template>

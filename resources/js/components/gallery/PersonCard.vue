@@ -1,6 +1,7 @@
 <template>
 	<Card
 		class="cursor-pointer hover:shadow-lg transition-shadow duration-200"
+		:class="ctrlHeld && !isTouchDev ? 'border-2 border-dashed border-red-500' : ''"
 		@click="$router.push({ name: 'person', params: { personId: person.id } })"
 	>
 		<template #header>
@@ -27,10 +28,41 @@
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted, onUnmounted } from "vue";
 import Card from "primevue/card";
 import Tag from "primevue/tag";
+import { isTouchDevice } from "@/utils/keybindings-utils";
 
 defineProps<{
 	person: App.Http.Resources.Models.PersonResource;
 }>();
+
+const isTouchDev = isTouchDevice();
+const ctrlHeld = ref(false);
+
+function onKeyDown(e: KeyboardEvent) {
+	if (e.key === "Control" || e.key === "Meta") {
+		ctrlHeld.value = true;
+	}
+}
+
+function onKeyUp(e: KeyboardEvent) {
+	if (e.key === "Control" || e.key === "Meta") {
+		ctrlHeld.value = false;
+	}
+}
+
+onMounted(() => {
+	if (!isTouchDev) {
+		window.addEventListener("keydown", onKeyDown);
+		window.addEventListener("keyup", onKeyUp);
+	}
+});
+
+onUnmounted(() => {
+	if (!isTouchDev) {
+		window.removeEventListener("keydown", onKeyDown);
+		window.removeEventListener("keyup", onKeyUp);
+	}
+});
 </script>

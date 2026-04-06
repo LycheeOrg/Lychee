@@ -112,6 +112,12 @@ return [
         'action' => 'Destroy All',
         'success' => 'Dismissed faces destroyed successfully.',
     ],
+    'sync-face-embeddings' => [
+        'title' => 'Sync Face Embeddings',
+        'description' => 'Face count mismatch detected (%d difference). Syncing will pull latest face data from AI Vision service to Lychee.',
+        'action' => 'Sync Now',
+        'success' => 'Face embeddings synchronized successfully.',
+    ],
     'reset-face-scan-status' => [
         'title' => 'Reset Face Scan Status',
         'description' => 'Found %d photos with a stuck-pending or failed face scan status. Resetting them will allow them to be re-scanned.',

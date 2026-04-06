@@ -8,7 +8,7 @@
 
 namespace App\Http\Controllers\AiVision;
 
-use App\Http\Requests\Person\ListPersonsRequest;
+use App\Http\Requests\Person\GetAlbumPersonsRequest;
 use App\Http\Resources\Collections\PaginatedPersonsResource;
 use App\Models\Album;
 use App\Models\Person;
@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Auth;
 /**
  * Controller for listing persons found in a given album's direct photos.
  *
- * GET /Album/{albumId}/people
+ * GET /Album/{album_id}/people
  *
  * Returns persons distinct to the album's photos (non-recursive — direct photos only via photo_album pivot).
  * Respects ai_vision_face_permission_mode and is_searchable filtering.
@@ -30,22 +30,17 @@ class AlbumPeopleController extends Controller
 	 *
 	 * @return PaginatedPersonsResource
 	 */
-	public function index(ListPersonsRequest $_request, string $albumId): PaginatedPersonsResource
+	public function index(GetAlbumPersonsRequest $request): PaginatedPersonsResource
 	{
-		$album = Album::findOrFail($albumId);
+		/** @var Album $album */
+		$album = $request->album();
 		$user = Auth::user();
-
-		// Verify the user has access to this album
-		// Use the album's is_public flag or ownership for basic access control
-		if (!$album->is_public && ($user === null || ($user->may_administrate !== true && $album->owner_id !== $user->id))) {
-			abort(403);
-		}
 
 		$query = Person::query()
 			->select('persons.*')
 			->join('faces', 'faces.person_id', '=', 'persons.id')
 			->join('photo_album', 'photo_album.photo_id', '=', 'faces.photo_id')
-			->where('photo_album.album_id', '=', $albumId)
+			->where('photo_album.album_id', '=', $album->id)
 			->where('faces.is_dismissed', '=', false)
 			->whereNotNull('faces.person_id')
 			->orderBy('persons.name');

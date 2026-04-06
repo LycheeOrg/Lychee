@@ -16,6 +16,7 @@ from typing import TYPE_CHECKING
 
 import httpx
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request, UploadFile
+from fastapi.responses import RedirectResponse
 
 from app.api.dependencies import get_detector, get_store, require_api_key
 from app.api.schemas import (
@@ -27,6 +28,8 @@ from app.api.schemas import (
     DetectCallbackPayload,
     DetectCallbackResponse,
     DetectRequest,
+    EmbeddingExportItem,
+    EmbeddingExportResponse,
     ErrorCallbackPayload,
     FaceResult,
     HealthResponse,
@@ -47,6 +50,17 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
+
+
+# ---------------------------------------------------------------------------
+# GET / - Redirect to /health
+# ---------------------------------------------------------------------------
+
+
+@router.get("/")
+async def root() -> RedirectResponse:
+    """Redirect root to /health endpoint."""
+    return RedirectResponse(url="/health")
 
 
 # ---------------------------------------------------------------------------
@@ -159,6 +173,32 @@ async def delete_embeddings(
     store: EmbeddingStore = get_store(request)
     deleted = store.delete_many(body.face_ids)
     return DeleteEmbeddingsResponse(deleted=deleted)
+
+
+@router.get("/embeddings/export")
+async def export_embeddings(
+    request: Request,
+    _: None = Depends(require_api_key),
+) -> EmbeddingExportResponse:
+    """Export all face embeddings with metadata for synchronization.
+
+    Called by Lychee maintenance to re-sync face data after callback failures
+    or to verify database consistency.
+    """
+    store: EmbeddingStore = get_store(request)
+    all_data = store.get_all_with_metadata()
+
+    items = [
+        EmbeddingExportItem(
+            lychee_face_id=row["lychee_face_id"],
+            photo_id=row["photo_id"],
+            laplacian_variance=row["laplacian_variance"],
+            crop_path=row["crop_path"],
+        )
+        for row in all_data
+    ]
+
+    return EmbeddingExportResponse(count=len(items), embeddings=items)
 
 
 # ---------------------------------------------------------------------------
@@ -282,6 +322,7 @@ async def _run_detection_job(
                 confidence=raw_face.confidence,
                 embedding_id=emp_id,
                 crop=crop_b64,
+                laplacian_variance=raw_face.laplacian_variance,
                 suggestions=[SuggestionResult(lychee_face_id=fid, confidence=conf) for fid, conf in suggestions],
             )
             face_data.append((emp_id, raw_face.embedding, result))
@@ -313,12 +354,32 @@ async def _run_detection_job(
             len(face_data),
         )
 
-        # --- 4. Persist embeddings now that we have stable lychee_face_ids ---
-        id_to_vector: dict[str, list[float]] = {eid: vec for eid, vec, _ in face_data}
+        # --- 4. Persist embeddings + crops now that we have stable lychee_face_ids ---
+        id_to_data: dict[str, tuple[list[float], FaceResult]] = {eid: (vec, res) for eid, vec, res in face_data}
+        crop_dir = Path("data/faces")
+        crop_dir.mkdir(parents=True, exist_ok=True)
+
         for mapping in callback_resp.faces:
-            vec = id_to_vector.get(mapping.embedding_id)
-            if vec is not None:
-                store.add(mapping.lychee_face_id, vec)
+            data = id_to_data.get(mapping.embedding_id)
+            if data is not None:
+                vec, face_result = data
+                lychee_face_id = mapping.lychee_face_id
+
+                # Save face crop to disk
+                crop_path = f"faces/{lychee_face_id}.jpg"
+                crop_file = crop_dir / f"{lychee_face_id}.jpg"
+                import base64
+                crop_bytes = base64.b64decode(face_result.crop)
+                crop_file.write_bytes(crop_bytes)
+
+                # Persist embedding with metadata
+                store.add(
+                    lychee_face_id=lychee_face_id,
+                    embedding=vec,
+                    photo_id=photo_id,
+                    laplacian_variance=face_result.laplacian_variance,
+                    crop_path=crop_path,
+                )
 
     except Exception:
         logger.exception("Detection job failed for photo_id=%s; sending error callback", photo_id)

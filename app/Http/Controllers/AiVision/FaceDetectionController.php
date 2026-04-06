@@ -264,6 +264,7 @@ class FaceDetectionController extends Controller
 			$face->width = $face_data['width'];
 			$face->height = $face_data['height'];
 			$face->confidence = $face_data['confidence'];
+			$face->laplacian_variance = $face_data['laplacian_variance'] ?? 0.0;
 			$face->crop_token = $tok;
 			$face->is_dismissed = false;
 			$face->save();

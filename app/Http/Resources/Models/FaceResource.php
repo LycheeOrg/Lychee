@@ -24,6 +24,7 @@ class FaceResource extends Data
 	public float $width;
 	public float $height;
 	public float $confidence;
+	public float $laplacian_variance;
 	public bool $is_dismissed;
 	public ?string $crop_url;
 	public ?string $person_name;
@@ -40,6 +41,7 @@ class FaceResource extends Data
 		$this->width = $face->width;
 		$this->height = $face->height;
 		$this->confidence = $face->confidence;
+		$this->laplacian_variance = $face->laplacian_variance;
 		$this->is_dismissed = $face->is_dismissed;
 		$this->crop_url = $face->crop_url;
 		$this->person_name = $face->person?->name;

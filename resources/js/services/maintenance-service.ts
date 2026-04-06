@@ -153,6 +153,12 @@ const MaintenanceService = {
 	destroyDismissedFacesDo(): Promise<AxiosResponse<{ deleted_count: number }>> {
 		return axios.post(`${Constants.getApiUrl()}Maintenance::destroyDismissedFaces`, {});
 	},
+	syncFaceEmbeddingsCheck(): Promise<AxiosResponse<number>> {
+		return axios.get(`${Constants.getApiUrl()}Maintenance::syncFaceEmbeddings`, { data: {} });
+	},
+	syncFaceEmbeddingsDo(): Promise<AxiosResponse<{ synced_count: number; missing_in_ai: number }>> {
+		return axios.post(`${Constants.getApiUrl()}Maintenance::syncFaceEmbeddings`, {});
+	},
 	resetFaceScanStatusCheck(): Promise<AxiosResponse<number>> {
 		return axios.get(`${Constants.getApiUrl()}Maintenance::resetFaceScanStatus`, { data: {} });
 	},

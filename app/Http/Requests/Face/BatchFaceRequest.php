@@ -45,9 +45,9 @@ class BatchFaceRequest extends BaseApiRequest
 
 			$values = $validator->validated();
 			if ($values['action'] === 'assign') {
-				$hasPerson = isset($values['person_id']) && $values['person_id'] !== null;
-				$hasName = isset($values['new_person_name']) && $values['new_person_name'] !== null && $values['new_person_name'] !== '';
-				if (!$hasPerson && !$hasName) {
+				$has_person = isset($values['person_id']) && $values['person_id'] !== null;
+				$has_name = isset($values['new_person_name']) && $values['new_person_name'] !== null && $values['new_person_name'] !== '';
+				if (!$has_person && !$has_name) {
 					$validator->errors()->add('person_id', 'Either person_id or new_person_name must be provided for assign action.');
 				}
 			}

@@ -29,6 +29,7 @@ use Illuminate\Support\Carbon;
  * @property float                          $width
  * @property float                          $height
  * @property float                          $confidence
+ * @property float                          $laplacian_variance
  * @property string|null                    $crop_token
  * @property bool                           $is_dismissed
  * @property int|null                       $cluster_label
@@ -70,6 +71,7 @@ class Face extends Model
 		'width',
 		'height',
 		'confidence',
+		'laplacian_variance',
 		'crop_token',
 		'is_dismissed',
 		'cluster_label',
@@ -93,6 +95,7 @@ class Face extends Model
 			'width' => 'float',
 			'height' => 'float',
 			'confidence' => 'float',
+			'laplacian_variance' => 'float',
 			'is_dismissed' => 'boolean',
 			'cluster_label' => 'integer',
 			'created_at' => 'datetime',

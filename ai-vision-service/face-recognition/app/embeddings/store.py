@@ -17,7 +17,14 @@ class EmbeddingStore(Protocol):
     handlers.
     """
 
-    def add(self, lychee_face_id: str, embedding: list[float]) -> None:
+    def add(
+        self,
+        lychee_face_id: str,
+        embedding: list[float],
+        photo_id: str,
+        laplacian_variance: float,
+        crop_path: str,
+    ) -> None:
         """Persist an embedding, keyed by its Lychee Face ID.
 
         If an entry for ``lychee_face_id`` already exists, it is replaced.
@@ -25,6 +32,9 @@ class EmbeddingStore(Protocol):
         Args:
             lychee_face_id: Stable Lychee ``Face.id`` (string PK).
             embedding: 512-dimensional ArcFace float vector.
+            photo_id: Lychee photo ID for re-synchronization support.
+            laplacian_variance: Sharpness score for filtering/tuning.
+            crop_path: Relative path to stored face crop (e.g. 'faces/{id}.jpg').
         """
         ...
 
@@ -76,6 +86,15 @@ class EmbeddingStore(Protocol):
         Returns:
             List of ``(lychee_face_id, embedding)`` pairs.  Used by the
             clustering endpoint to read the full dataset into memory.
+        """
+        ...
+
+    def get_all_with_metadata(self) -> list[dict[str, str | float | None]]:
+        """Return all stored embeddings with metadata.
+
+        Returns:
+            List of dicts with keys: lychee_face_id, photo_id, laplacian_variance, crop_path.
+            Used for syncing embeddings back to Lychee.
         """
         ...
 
