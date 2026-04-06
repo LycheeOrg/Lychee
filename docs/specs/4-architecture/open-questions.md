@@ -10,6 +10,437 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 ## Question Details
 
+### ~~Q-032-01: Advisory URL Field Missing from DTO/Resource~~ ✅ RESOLVED
+
+**Feature:** 032 – Security Advisories Check  
+**Priority:** High  
+**Status:** Resolved  
+**Opened:** 2026-04-06
+
+**Resolution:** **Option B** — Construct GitHub URL from GHSA ID. GitHub advisory URLs follow the pattern `https://github.com/advisories/{ghsa_id}`. The frontend computes the URL from the existing `ghsa_id` field. No DTO/Resource changes needed.
+
+**Spec Impact:** Updated FR-032-06 to clarify that advisory links are computed client-side from `ghsa_id`. Updated UI-032-02 (modal) and UI-032-04 (diagnostic panel) to note clickable links. Updated tasks T-032-13, T-032-14 to include link rendering logic.
+
+**Resolved:** 2026-04-06
+
+---
+
+### ~~Q-032-02: "Go to Diagnostics" Button Dismissal Behavior~~ ✅ RESOLVED
+
+**Feature:** 032 – Security Advisories Check  
+**Priority:** High  
+**Status:** Resolved  
+**Opened:** 2026-04-06
+
+**Resolution:** **Option A** — "Go to Diagnostics" also sets dismissal flag. Clicking "Go to Diagnostics" navigates to the diagnostics page **and** sets `sessionStorage.advisory_dismissed = '1'`. Modal does not re-appear in the same session. Consistent with "once per session" intent.
+
+**Spec Impact:** Updated FR-032-07 to clarify both buttons set the dismissal flag. Updated UI-032-03 (modal dismissed state). Updated tasks T-032-13, T-032-14.
+
+**Resolved:** 2026-04-06
+
+---
+
+### ~~Q-032-03: Advisory with Null/Missing `vulnerable_version_range`~~ ✅ RESOLVED
+
+**Feature:** 032 – Security Advisories Check  
+**Priority:** Medium  
+**Status:** Resolved  
+**Opened:** 2026-04-06
+
+**Resolution:** **Option A** — Treat null/empty range as "matches all versions". If `vulnerable_version_range` is null or empty, consider the advisory applicable to all Lychee versions and include it in the diagnostic/modal output. Conservative approach ensures critical advisories aren't missed.
+
+**Spec Impact:** Added clause to FR-032-03: "If `vulnerable_version_range` is null or an empty string, the version range check passes (advisory matches all versions)." Updated tasks T-032-03 (VersionRangeChecker tests), T-032-07 (SecurityAdvisoriesService tests).
+
+**Resolved:** 2026-04-06
+
+---
+
+### ~~Q-032-04: Multiple Vulnerability Ranges Per Advisory~~ ✅ RESOLVED
+
+**Feature:** 032 – Security Advisories Check  
+**Priority:** Medium  
+**Status:** Resolved  
+**Opened:** 2026-04-06
+
+**Resolution:** **Option A** — Deduplicate by advisory ID; show once. If one or more `vulnerabilities[].vulnerable_version_range` entries match the running version, include the advisory **once** in the results. Clean UX; no duplicate entries.
+
+**Spec Impact:** Added clause to FR-032-03: "A single advisory with multiple matching `vulnerabilities[]` entries is included once (deduplicated by `ghsa_id`)." Updated tasks T-032-07 (SecurityAdvisoriesService deduplication logic), T-032-08 (SecurityAdvisoriesCheck single-entry behavior).
+
+**Resolved:** 2026-04-06
+
+---
+
+### ~~Q-032-05: CVE/GHSA Display Format When `cve_id` is Null~~ ✅ RESOLVED
+
+**Feature:** 032 – Security Advisories Check  
+**Priority:** Medium  
+**Status:** Resolved  
+**Opened:** 2026-04-06
+
+**Resolution:** **Option A** — "GHSA-xxxx-xxxx-xxxx  CVSS {score}". Use the same format as CVE, but with the GHSA ID when `cve_id` is null. Consistent format; GHSA is GitHub's canonical ID.
+
+**Spec Impact:** Updated FR-032-04 diagnostic error message format: "Security vulnerability: {cve_id ?? ghsa_id} (CVSS {score})". Updated UI-032-02, UI-032-04 mock-ups to show GHSA format example. Updated tasks T-032-08, T-032-13.
+
+**Resolved:** 2026-04-06
+
+---
+
+### ~~Q-032-06: Diagnostic Panel Advisory Ordering~~ ✅ RESOLVED
+
+**Feature:** 032 – Security Advisories Check  
+**Priority:** Medium  
+**Status:** Resolved  
+**Opened:** 2026-04-06
+
+**Resolution:** **Custom Option D** — Sort by CVSS score descending (highest severity first), then by CVE ID descending (higher = more recent). Sort matched advisories by `cvss_score DESC NULLS LAST, cve_id DESC NULLS LAST` before adding diagnostic entries and returning API results.
+
+**Spec Impact:** Updated FR-032-04 to specify sorting: "Matching advisories are sorted by `cvss_score DESC NULLS LAST, cve_id DESC NULLS LAST` before being added to the diagnostic pipeline." Updated tasks T-032-07 (SecurityAdvisoriesService sorting), T-032-08 (SecurityAdvisoriesCheck ordered output).
+
+**Resolved:** 2026-04-06
+
+---
+
+### ~~Q-032-07: CVSS Score Display Precision~~ ✅ RESOLVED
+
+**Feature:** 032 – Security Advisories Check  
+**Priority:** Low  
+**Status:** Resolved  
+**Opened:** 2026-04-06
+
+**Resolution:** **Option A** — Always format to 1 decimal place; show "(no CVSS score)" when null. Use `number_format($score, 1)` in PHP / `.toFixed(1)` in TypeScript. Consistent visual format.
+
+**Spec Impact:** Updated FR-032-04 diagnostic error format and UI-032-02/UI-032-04 to specify 1-decimal formatting. Added note: "When `cvss_score` is null, display '(no CVSS score)' instead of the score." Updated tasks T-032-08, T-032-13.
+
+**Resolved:** 2026-04-06
+
+---
+
+### ~~Q-032-08: Cache Invalidation — No Admin Force-Refresh Path~~ ✅ RESOLVED
+
+**Feature:** 032 – Security Advisories Check  
+**Priority:** Low  
+**Status:** Resolved  
+**Opened:** 2026-04-06
+
+**Resolution:** **Option C** — No force-refresh; cache TTL is acceptable. Accept the 1-day delay as tolerable. Operators who need faster updates can reduce `ADVISORIES_CACHE_TTL_DAYS` to hours (e.g., `0.042` for 1 hour). Force-refresh feature tracked as follow-up in plan backlog (CLI command or API endpoint).
+
+**Spec Impact:** No spec changes required. Documented as follow-up in plan.md backlog.
+
+**Resolved:** 2026-04-06
+
+---
+
+### ~~Q-032-09: Modal Trigger Timing — "On Each Admin Login" Ambiguous~~ ✅ RESOLVED
+
+**Feature:** 032 – Security Advisories Check  
+**Priority:** Low  
+**Status:** Resolved  
+**Opened:** 2026-04-06
+
+**Resolution:** **Option A** — After successful `POST /login` response only. The advisory check fires immediately after the login API call returns a successful response with `is_admin = true`. Does not fire on page refresh or navigation if the user is already logged in. **Important:** Check user access rights (`is_admin`) before calling the advisory endpoint to avoid a 403 response.
+
+**Spec Impact:** Updated FR-032-06 to clarify: "The frontend checks `GET /api/v2/Security/Advisories` immediately after a successful login response (POST /login) when `is_admin` is true. The check does not fire on page refresh or navigation for already-authenticated users." Updated tasks T-032-14 to emphasize the admin rights check before the API call.
+
+**Resolved:** 2026-04-06
+
+---
+
+### ~~Q-032-10: sessionStorage Multi-Tab Behavior~~ ✅ RESOLVED
+
+**Feature:** 032 – Security Advisories Check  
+**Priority:** Low  
+**Status:** Resolved  
+**Opened:** 2026-04-06
+
+**Resolution:** **Option A** — Keep `sessionStorage` (per-tab dismissal). Each tab tracks dismissal independently. Opening a new tab shows the modal again (if advisories are present). Matches spec as written; ensures advisory is seen across different browser contexts. Note: This behavior is acceptable since the modal is only triggered after a login request, not on every page load.
+
+**Spec Impact:** No spec changes required (already uses `sessionStorage` in FR-032-07). Added clarifying note to FR-032-07: "Dismissal is scoped per browser tab (sessionStorage semantics); opening a new tab triggers the modal again on login in that tab."
+
+**Resolved:** 2026-04-06
+
+---
+
+### ~~Q-031-08: `size_variants` Encoding in Query-String Payload Format~~ ✅ RESOLVED
+
+**Feature:** 031 – Configurable Webhooks
+**Priority:** High
+**Status:** Resolved
+**Opened:** 2026-03-25
+
+**Context:** `payload_format = query_string` delivers all payload fields as URL query parameters. Simple scalar fields (`photo_id`, `album_id`, `title`) serialize trivially. However, `size_variants` is an array of objects (`[{type, url}]`), which has no single canonical query-string encoding.
+
+**Resolution:** The URL of each size variant is **base64-encoded** (standard base64, not URL-safe) and delivered as a flat named query parameter using the pattern `size_variant_{type}=<base64(url)>`. For example: `size_variant_original=aHR0cHM6Ly9leGFtcGxlLmNvbS91cGxvYWRzL29yaWdpbmFsL3Bob3RvLmpwZw==&size_variant_medium=aHR0cHM6Ly9leGFtcGxlLmNvbS91cGxvYWRzL21lZGl1bS9waG90by5qcGc=`. Base64 encoding avoids any URL-encoding ambiguity for complex S3/CDN URLs.
+
+**Spec Impact:** Updated FR-031-09, S-031-15, `WebhookPayloadBuilder`, and `WebhookDispatchJob`. Spec DSL updated.
+
+**Resolved:** 2026-03-25
+
+---
+
+### ~~Q-031-01: HTTPS Enforcement for Webhook URLs~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — Allow both HTTP and HTTPS. Plain HTTP URLs are accepted at the server; the admin UI displays a security warning ("Plain HTTP transmits your secret key in cleartext.") when a non-HTTPS URL is entered. No backend enforcement.
+
+**Spec Impact:** Updated FR-031-01 (validation path), NFR-031-06, UI-031-08, S-031-21. HTTP URL warning added to modal mock-up.
+
+**Resolved:** 2026-03-25
+
+---
+
+### ~~Q-031-02: Payload Delivery for GET and DELETE Methods~~ ✅ RESOLVED
+
+**Resolution:** **New option** — Add a `payload_format` field to the `Webhook` model. Admins choose per-webhook whether to deliver the payload as a **JSON body** (`json`) or **URL query parameters** (`query_string`). This choice is independent of HTTP method. If the admin selects `payload_format = json` with `method = GET`, Lychee sends the JSON body regardless (explicit operator choice; documented in admin guide). Note: `size_variants` encoding in query-string mode is tracked separately in Q-031-08.
+
+**Spec Impact:** Added `payload_format` field to DO-031-01 (Webhook model), FR-031-01, FR-031-09, S-031-15, S-031-20, `WebhookPayloadFormat` enum, migration, mock-up, WebhookDispatchJob, Spec DSL.
+
+**Resolved:** 2026-03-25
+
+---
+
+### ~~Q-031-03: Hard Delete vs. Soft Delete for Webhook Records~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — Hard delete only. No `deleted_at` column. The `enabled` flag provides sufficient protection.
+
+**Spec Impact:** Updated NFR-031-02, FR-031-04, DO-031-01 (no `deleted_at`), migration (no `deleted_at` column), `WebhookController.destroy()`.
+
+**Resolved:** 2026-03-25
+
+---
+
+### ~~Q-031-04: Automatic Retry Policy for Failed Dispatches~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — No automatic retry. Log failure at ERROR level and discard. `WebhookDispatchJob.$tries = 1`.
+
+**Spec Impact:** Updated NFR-031-04, DO-031-04, `WebhookDispatchJob`.
+
+**Resolved:** 2026-03-25
+
+---
+
+### ~~Q-031-05: Distinguishing `photo.add` from `photo.move` via `PhotoSaved`~~ ✅ RESOLVED
+
+**Resolution:** **Option C** — Add new dedicated events `PhotoAdded` and `PhotoMoved`, fired from the relevant action classes. `PhotoAdded` fired from `app/Actions/Photo/Pipes/Shared/SetParent.php` for new photo records. `PhotoMoved` fired from `app/Actions/Photo/MoveOrDuplicate.php` when source and destination albums differ. Existing `PhotoSaved` remains unchanged and continues to serve existing listeners.
+
+**Spec Impact:** Added `PhotoAdded`, `PhotoMoved` to DO-031-03, Spec DSL `domain_events`, Appendix event table. Updated FR-031-06, FR-031-07, plan Dependencies, Scope, I1 steps, I3 steps. New tasks T-031-02, T-031-14, T-031-15.
+
+**Resolved:** 2026-03-25
+
+---
+
+### ~~Q-031-06: Capturing Photo Data Before Hard Deletion~~ ✅ RESOLVED
+
+**Resolution:** **Option D** — Create a new `PhotoWillBeDeleted` event that carries the full photo snapshot (`photo_id`, `album_id`, `title`, `size_variants[]`). This event is fired from `app/Actions/Photo/Delete.php` **before** `executeDelete()`, per photo scheduled for deletion. No Eloquent hooks or model observers. Existing `PhotoDeleted` event remains unchanged.
+
+**Spec Impact:** Added `PhotoWillBeDeleted` to DO-031-03, Spec DSL `domain_events`, Appendix event table. Updated FR-031-08, plan Dependencies, I1 steps, I3 steps. New tasks T-031-02, T-031-16.
+
+**Resolved:** 2026-03-25
+
+---
+
+### ~~Q-031-07: Secret Exposure in API Response~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — Exclude raw `secret` from all API responses. Return `has_secret` (boolean) computed as `secret !== null`. Admins must set a new secret if they lose it.
+
+**Spec Impact:** Updated DO-031-01, FR-031-02, `WebhookResource`, S-031-22, Spec DSL.
+
+**Resolved:** 2026-03-25
+
+---
+
+### ~~Q-030-33: `face_suggestions` Schema Wrong — Face-to-Face, Not Face-to-Person~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — schema changed to `(face_id FK→faces, suggested_face_id FK→faces, confidence)`. Both FKs point to `faces`. Python sends `lychee_face_id` (a Face ID) as the suggestion target — there is no concept of Persons in the Python service, and suggestions may reference unassigned faces (where `person_id IS NULL`). The assignment modal resolves `suggested_face_id → faces → persons` via LEFT JOIN at read time. A unique constraint on `(face_id, suggested_face_id)` prevents duplicate suggestion rows.
+
+**Spec Impact:** Updated DO-030-05 (domain object table and DSL). Updated `SuggestionResult` Pydantic model comment. `face_suggestions` migration will use `suggested_face_id` (FK→faces) instead of `person_id` (FK→persons).
+
+**Resolved:** 2026-03-18
+
+**Resolution: Option A adopted.**  nullable INT column on . Spec updated: DO-030-02, DO-030-07, FR-030-13, FR-030-15, API-030-18/19/20.
+
+**Resolved:** 2026-03-23
+
+---
+
+### ~~Q-030-34: Crop Serving Route Undefined~~ ✅ RESOLVED
+
+**Resolution:** **Option B** — crops served directly by nginx with no application-level auth. The crop token stored in the Face model is a random high-entropy identifier (not a sequential ID), so enumeration of `uploads/faces/` is not feasible. Path structure mirrors Lychee's existing size-variant pattern: `uploads/faces/{token[0:2]}/{token[2:4]}/{token}.jpg` (e.g. `uploads/faces/aa/bb/aabbccddeeff0011223344.jpg`). `FaceResource.crop_url` returns this path directly; no dedicated controller route needed. API-030-16 slot is therefore free for the dismissed-face bulk delete (Q-030-43).
+
+**Spec Impact:** Update DO-030-02 and DSL `crop_token` constraint to reflect the two-level hash path and nginx-direct serving.
+
+**Resolved:** 2026-03-18
+
+---
+
+### ~~Q-030-35: IoU Threshold for Re-scan Face Matching Not Defined~~ ✅ RESOLVED
+
+**Resolution:** **Option B** — add `VISION_FACE_RESCAN_IOU_THRESHOLD` env var (default `0.5`) mapped to `AppSettings.rescan_iou_threshold`. Allows operators to tune matching sensitivity for re-scans without rebuilding the image.
+
+**Spec Impact:** Add `rescan_iou_threshold: float = 0.5` to `AppSettings`. Add `VISION_FACE_RESCAN_IOU_THRESHOLD` row to the env var table. Update FR-030-07 resolved note to reference the configurable threshold.
+
+**Resolved:** 2026-03-18
+
+---
+
+### ~~Q-030-36: "Claim Person" in Restricted Mode Listed as "All Users" — Contradictory~~ ✅ RESOLVED
+
+**Resolution:** Fixed in permission matrix — `Claim person` now reads `logged users` for all four modes. "All users" (including unauthenticated guests) would make no sense since claiming requires a User record to link.
+
+**Spec Impact:** Spec line 78 updated. No further changes needed.
+
+**Resolved:** 2026-03-18
+
+---
+
+### ~~Q-030-37: "Unknown" Group in People Page Not Designed~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — virtual aggregate. `GET /api/v2/People` always appends a synthetic `{id: null, name: "Unknown", face_count: N}` entry where `N = COUNT(faces WHERE person_id IS NULL)`. No DB record required. Clicking the tile navigates to `GET /api/v2/Face?unassigned=true`. The entry is omitted when `N = 0`.
+
+**Spec Impact:** Update API-030-01 notes. Add `GET /api/v2/Face?unassigned=true` filter note. Update UI-030-01 description.
+
+**Resolved:** 2026-03-18
+
+---
+
+### ~~Q-030-38: `face_scan_status` Column Type and DSL Entry Missing~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — `VARCHAR(16)`, nullable, with a PHP-side `ScanStatus` Enum cast. Portable across MySQL, PostgreSQL, and SQLite. Consistent with Lychee's existing enum-as-string column pattern.
+
+**Spec Impact:** Add `face_scan_status` field to the `photos` table addendum in the Spec DSL (`type: string (VARCHAR 16)`, nullable, `cast: ScanStatus`). Document the cast in the state machine section.
+
+**Resolved:** 2026-03-18
+
+---
+
+### ~~Q-030-39: Crop Inline Base64 Payload Size Limit Undefined~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — cap at N faces per callback, default `N = 10` (configurable via `VISION_FACE_MAX_FACES_PER_PHOTO`). Python keeps the top-N faces by confidence and drops the rest from the callback payload. Operators may raise the limit but must accept the corresponding body size increase.
+
+**Spec Impact:** Add `VISION_FACE_MAX_FACES_PER_PHOTO` env var (default `10`) and `max_faces_per_photo: int = 10` to `AppSettings`. Update `FaceResult` / `DetectCallbackPayload` comments to note the cap.
+
+**Resolved:** 2026-03-18
+
+---
+
+### ~~Q-030-40: Bulk Scan Scope — `IS NULL` Only or Include `failed`?~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — bulk scan targets `IS NULL` only. A separate **Maintenance page action** ("Re-scan failed photos") handles `face_scan_status = 'failed'` recovery, keeping bulk scan fast and predictable.
+
+**Spec Impact:** FR-030-09 stays as IS NULL. Add CLI-030-03 `php artisan lychee:rescan-failed-faces` and a corresponding admin Maintenance page action.
+
+**Resolved:** 2026-03-18
+
+---
+
+### ~~Q-030-41: Album Scan Depth — Recursive Through Sub-Albums?~~ ✅ RESOLVED
+
+**Resolution:** **Option C** — user-selectable scope. Bulk scan UI offers two options: (1) **Library scan** — all unscanned photos across the entire library; (2) **Album scan** — all unscanned photos directly in the selected album (non-recursive). Sub-album scans are triggered explicitly. Matches existing CLI-030-01 / CLI-030-02 pattern.
+
+**Spec Impact:** Update FR-030-09 to describe both scope options. Update API-030-12 notes to clarify non-recursive album scope.
+
+**Resolved:** 2026-03-18
+
+---
+
+### ~~Q-030-42: Face Reassignment Authorization Across Users~~ ✅ RESOLVED
+
+**Resolution:** **Option C** — mode-governed. In `public` and `private` modes, any user who passes the "Assign face" permission check (NFR-030-07 matrix) may reassign any face. In `privacy-preserving` and `restricted` modes, only the photo owner or admin may reassign. No `assigned_by_user_id` field needed.
+
+**Spec Impact:** Add a clarifying note to the permission matrix that the "Assign face" row governs cross-user reassignment as well. Add comment to FR-030-04/FR-030-10.
+
+**Resolved:** 2026-03-18
+
+---
+
+### ~~Q-030-43: Admin Bulk Hard-Delete of Dismissed Faces Missing from API Catalogue~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — add `DELETE /api/v2/Face/dismissed` as **API-030-16**. Admin-only; hard-deletes all `is_dismissed = true` Face records and their crop files.
+
+**Spec Impact:** Add API-030-16 to API catalogue table and DSL routes.
+
+**Resolved:** 2026-03-18
+
+---
+
+### ~~Q-030-44: Selfie Upload Has No Rate Limiting~~ ✅ RESOLVED
+
+**Resolution:** Rate limiting applied at the **Lychee PHP layer** via Laravel's built-in throttle middleware on API-030-13 (`POST /api/v2/Person/claim-by-selfie`). No changes to the Python service needed.
+
+**Spec Impact:** Add `throttle:5,1` (5 requests/minute per user) to the API-030-13 route definition note. Document in deployment guide.
+
+**Resolved:** 2026-03-18
+
+---
+
+### ~~Q-030-45: `photo_ids[]` Batch in API-030-10 Has No Maximum~~ ✅ RESOLVED
+
+**Resolution:** **Option B** — accept any count, dispatch in configurable chunks. The job dispatcher slices the photo ID list into chunks of size `ai_vision_face_scan_batch_size` (Lychee `configs` table, default `200`). No hard caller limit; queue load controlled by chunk size + queue concurrency.
+
+**Spec Impact:** Add `ai_vision_face_scan_batch_size` to the Lychee `configs` table (integer, default `200`). Update API-030-10 notes to describe chunked dispatch.
+
+**Resolved:** 2026-03-18
+
+---
+
+### ~~Q-030-26: Python Concurrency Model — CPU-Bound Face Detection Blocks Event Loop~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — inference runs in a `ThreadPoolExecutor` via `asyncio.run_in_executor`, keeping the FastAPI event loop responsive while CPU-bound detection executes on a background thread. Pool size is configurable via `VISION_FACE_THREAD_POOL_SIZE` env var (default `1`). The service must emit structured log entries at three checkpoints: job received (`INFO`), detection started (`INFO`), and detection finished (`INFO` with face count and elapsed milliseconds). Callback failures are logged at `ERROR` level.
+
+**Spec Impact:** Add `thread_pool_size: int = 1` to `AppSettings`. Add `VISION_FACE_THREAD_POOL_SIZE` to env var table. Add "Concurrency Model" subsection to Python Service Technical Specification documenting the `run_in_executor` pattern and the structured logging checkpoints table.
+
+**Resolved:** 2026-03-17
+
+---
+
+### ~~Q-030-27: Callback Retry Policy — Stuck-Pending Risk When Python→Lychee POST Fails~~ ✅ RESOLVED
+
+**Resolution:** **Option B** — fire-and-forget. Python makes one callback attempt. If the request fails (network error, 5xx), the failure is logged at `ERROR` level and discarded. The photo's `face_scan_status` remains `pending` indefinitely; operators must reset stuck records manually. No retry logic in the Python service; no outbox table.
+
+**Spec Impact:** Document fire-and-forget policy in the "Concurrency Model" subsection. Add `ERROR` log entry for callback failure in the structured logging table. Note in state machine documentation that `pending` can become permanently stuck on callback failure; add an operator note.
+
+**Resolved:** 2026-03-17
+
+---
+
+### ~~Q-030-28: Security — `photo_path` Path Traversal and `callback_url` SSRF~~ ✅ RESOLVED
+
+**Resolution:** **Option A, extended** — validate `photo_path` resolves within `VISION_FACE_PHOTOS_PATH` (resolve symlinks, reject traversals with 422). `callback_url` is **removed from the `DetectRequest` body entirely** — Python reads the callback endpoint from `VISION_FACE_LYCHEE_API_URL` env var. Since the callback URL is operator-supplied via env and not present in the request payload, the SSRF vector is eliminated structurally rather than via allowlist validation.
+
+**Spec Impact:** Remove `callback_url` field from `DetectRequest` Pydantic model. Remove `callback_url` from Scan Request JSON example. Add path-traversal validation note to `DetectRequest.photo_path` field comment. Update inter-service contract description and the scan request JSON example.
+
+**Resolved:** 2026-03-17
+
+---
+
+### ~~Q-030-29: Suggestion Items — `embedding_id` vs. `lychee_face_id` in Callback Suggestions~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — Python sends `lychee_face_id` in suggestion items (it already stores them from prior callback 200 responses). Rename `SuggestionResult.embedding_id` → `lychee_face_id`. Lychee stores `(face_id, suggested_face_id, confidence)` in `face_suggestions` using `lychee_face_id` directly — no cross-callback resolution needed.
+
+**Spec Impact:** Rename `SuggestionResult.embedding_id` → `lychee_face_id` in Pydantic schemas. Update suggestion examples in the callback JSON. Update `FaceResult.suggestions` comment. Update `face_suggestions` table schema note (`DO-030-05`).
+
+**Resolved:** 2026-03-17
+
+---
+
+### ~~Q-030-30: Clustering Trigger — When Does DBSCAN Run and How Does It Feed Suggestions?~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — per-scan suggestions use **nearest-neighbour cosine similarity search** against stored embeddings via `sqlite-vec`/`pgvector` (fast, inline with the detection job). DBSCAN is a **separate offline batch operation** grouping unassigned faces for the People browse UI; triggered manually via `POST /cluster` and never invoked per scan request.
+
+**Spec Impact:** Update `clustering/clusterer.py` description in project structure (offline batch, not per-scan). Update DBSCAN tech stack table entry. Add `POST /cluster` to routes list. Clarify `SuggestionResult` data source as NN cosine similarity search.
+
+**Resolved:** 2026-03-17
+
+---
+
+### ~~Q-030-31: `VISION_CONFIDENCE_THRESHOLD` — Detection Filter vs. Matching Threshold~~ ✅ RESOLVED
+
+**Resolution:** **Option B** — two separate thresholds. Rename `VISION_CONFIDENCE_THRESHOLD` → `VISION_FACE_DETECTION_THRESHOLD` (bounding box filter: faces below threshold excluded from callback payloads) and add `VISION_FACE_MATCH_THRESHOLD` (similarity search cutoff: suggestions and selfie match results below threshold excluded). Independent configuration allows operators to tune detection sensitivity and identity matching independently.
+
+**Spec Impact:** Remove `VISION_CONFIDENCE_THRESHOLD` from env var table. Add `VISION_FACE_DETECTION_THRESHOLD` (default `0.5`) and `VISION_FACE_MATCH_THRESHOLD` (default `0.5`). Rename `AppSettings.confidence_threshold` → `detection_threshold` + add `match_threshold`. Update `app/detection/detector.py` and `app/matching/matcher.py` references.
+
+**Resolved:** 2026-03-17
+
+---
+
 ### ~~Q-030-54: Dismiss Face — Button Placement and CTRL+Click Shortcut~~ ✅ RESOLVED
 
 **Resolution:** **Option A** — Add a "Dismiss" button in the FaceAssignmentModal. Additionally, when the user holds CTRL, face overlay rectangles switch to red dashed borders; clicking a rectangle in this state directly dismisses the face without opening the modal. Captured in FR-030-16, UI-030-08, S-030-33/34.
@@ -465,286 +896,6 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 - `FR-030-13` (`POST /cluster-results`): body gains `{face_id: str, cluster_label: int | null}[]` alongside suggestion pairs
 - `FR-030-15` / API-030-18/19/20: `cluster_id` = `cluster_label` integer; remove "opaque stable identifier derived from the suggestion graph" language; add note that noisy faces (`cluster_label = NULL`) excluded from Cluster Review
 
-### ~~Q-031-08: `size_variants` Encoding in Query-String Payload Format~~ ✅ RESOLVED
-
-**Feature:** 031 – Configurable Webhooks
-**Priority:** High
-**Status:** Resolved
-**Opened:** 2026-03-25
-
-**Context:** `payload_format = query_string` delivers all payload fields as URL query parameters. Simple scalar fields (`photo_id`, `album_id`, `title`) serialize trivially. However, `size_variants` is an array of objects (`[{type, url}]`), which has no single canonical query-string encoding.
-
-**Resolution:** The URL of each size variant is **base64-encoded** (standard base64, not URL-safe) and delivered as a flat named query parameter using the pattern `size_variant_{type}=<base64(url)>`. For example: `size_variant_original=aHR0cHM6Ly9leGFtcGxlLmNvbS91cGxvYWRzL29yaWdpbmFsL3Bob3RvLmpwZw==&size_variant_medium=aHR0cHM6Ly9leGFtcGxlLmNvbS91cGxvYWRzL21lZGl1bS9waG90by5qcGc=`. Base64 encoding avoids any URL-encoding ambiguity for complex S3/CDN URLs.
-
-**Spec Impact:** Updated FR-031-09, S-031-15, `WebhookPayloadBuilder`, and `WebhookDispatchJob`. Spec DSL updated.
-
-**Resolved:** 2026-03-25
-
----
-
-### ~~Q-031-01: HTTPS Enforcement for Webhook URLs~~ ✅ RESOLVED
-
-**Resolution:** **Option A** — Allow both HTTP and HTTPS. Plain HTTP URLs are accepted at the server; the admin UI displays a security warning ("Plain HTTP transmits your secret key in cleartext.") when a non-HTTPS URL is entered. No backend enforcement.
-
-**Spec Impact:** Updated FR-031-01 (validation path), NFR-031-06, UI-031-08, S-031-21. HTTP URL warning added to modal mock-up.
-
-**Resolved:** 2026-03-25
-
----
-
-### ~~Q-031-02: Payload Delivery for GET and DELETE Methods~~ ✅ RESOLVED
-
-**Resolution:** **New option** — Add a `payload_format` field to the `Webhook` model. Admins choose per-webhook whether to deliver the payload as a **JSON body** (`json`) or **URL query parameters** (`query_string`). This choice is independent of HTTP method. If the admin selects `payload_format = json` with `method = GET`, Lychee sends the JSON body regardless (explicit operator choice; documented in admin guide). Note: `size_variants` encoding in query-string mode is tracked separately in Q-031-08.
-
-**Spec Impact:** Added `payload_format` field to DO-031-01 (Webhook model), FR-031-01, FR-031-09, S-031-15, S-031-20, `WebhookPayloadFormat` enum, migration, mock-up, WebhookDispatchJob, Spec DSL.
-
-**Resolved:** 2026-03-25
-
----
-
-### ~~Q-031-03: Hard Delete vs. Soft Delete for Webhook Records~~ ✅ RESOLVED
-
-**Resolution:** **Option A** — Hard delete only. No `deleted_at` column. The `enabled` flag provides sufficient protection.
-
-**Spec Impact:** Updated NFR-031-02, FR-031-04, DO-031-01 (no `deleted_at`), migration (no `deleted_at` column), `WebhookController.destroy()`.
-
-**Resolved:** 2026-03-25
-
----
-
-### ~~Q-031-04: Automatic Retry Policy for Failed Dispatches~~ ✅ RESOLVED
-
-**Resolution:** **Option A** — No automatic retry. Log failure at ERROR level and discard. `WebhookDispatchJob.$tries = 1`.
-
-**Spec Impact:** Updated NFR-031-04, DO-031-04, `WebhookDispatchJob`.
-
-**Resolved:** 2026-03-25
-
----
-
-### ~~Q-031-05: Distinguishing `photo.add` from `photo.move` via `PhotoSaved`~~ ✅ RESOLVED
-
-**Resolution:** **Option C** — Add new dedicated events `PhotoAdded` and `PhotoMoved`, fired from the relevant action classes. `PhotoAdded` fired from `app/Actions/Photo/Pipes/Shared/SetParent.php` for new photo records. `PhotoMoved` fired from `app/Actions/Photo/MoveOrDuplicate.php` when source and destination albums differ. Existing `PhotoSaved` remains unchanged and continues to serve existing listeners.
-
-**Spec Impact:** Added `PhotoAdded`, `PhotoMoved` to DO-031-03, Spec DSL `domain_events`, Appendix event table. Updated FR-031-06, FR-031-07, plan Dependencies, Scope, I1 steps, I3 steps. New tasks T-031-02, T-031-14, T-031-15.
-
-**Resolved:** 2026-03-25
-
----
-
-### ~~Q-031-06: Capturing Photo Data Before Hard Deletion~~ ✅ RESOLVED
-
-**Resolution:** **Option D** — Create a new `PhotoWillBeDeleted` event that carries the full photo snapshot (`photo_id`, `album_id`, `title`, `size_variants[]`). This event is fired from `app/Actions/Photo/Delete.php` **before** `executeDelete()`, per photo scheduled for deletion. No Eloquent hooks or model observers. Existing `PhotoDeleted` event remains unchanged.
-
-**Spec Impact:** Added `PhotoWillBeDeleted` to DO-031-03, Spec DSL `domain_events`, Appendix event table. Updated FR-031-08, plan Dependencies, I1 steps, I3 steps. New tasks T-031-02, T-031-16.
-
-**Resolved:** 2026-03-25
-
----
-
-### ~~Q-031-07: Secret Exposure in API Response~~ ✅ RESOLVED
-
-**Resolution:** **Option A** — Exclude raw `secret` from all API responses. Return `has_secret` (boolean) computed as `secret !== null`. Admins must set a new secret if they lose it.
-
-**Spec Impact:** Updated DO-031-01, FR-031-02, `WebhookResource`, S-031-22, Spec DSL.
-
-**Resolved:** 2026-03-25
-
----
-
-### ~~Q-030-33: `face_suggestions` Schema Wrong — Face-to-Face, Not Face-to-Person~~ ✅ RESOLVED
-
-**Resolution:** **Option A** — schema changed to `(face_id FK→faces, suggested_face_id FK→faces, confidence)`. Both FKs point to `faces`. Python sends `lychee_face_id` (a Face ID) as the suggestion target — there is no concept of Persons in the Python service, and suggestions may reference unassigned faces (where `person_id IS NULL`). The assignment modal resolves `suggested_face_id → faces → persons` via LEFT JOIN at read time. A unique constraint on `(face_id, suggested_face_id)` prevents duplicate suggestion rows.
-
-**Spec Impact:** Updated DO-030-05 (domain object table and DSL). Updated `SuggestionResult` Pydantic model comment. `face_suggestions` migration will use `suggested_face_id` (FK→faces) instead of `person_id` (FK→persons).
-
-**Resolved:** 2026-03-18
-
-**Resolution: Option A adopted.**  nullable INT column on . Spec updated: DO-030-02, DO-030-07, FR-030-13, FR-030-15, API-030-18/19/20.
-
-**Resolved:** 2026-03-23
-
----
-
-### ~~Q-030-34: Crop Serving Route Undefined~~ ✅ RESOLVED
-
-**Resolution:** **Option B** — crops served directly by nginx with no application-level auth. The crop token stored in the Face model is a random high-entropy identifier (not a sequential ID), so enumeration of `uploads/faces/` is not feasible. Path structure mirrors Lychee's existing size-variant pattern: `uploads/faces/{token[0:2]}/{token[2:4]}/{token}.jpg` (e.g. `uploads/faces/aa/bb/aabbccddeeff0011223344.jpg`). `FaceResource.crop_url` returns this path directly; no dedicated controller route needed. API-030-16 slot is therefore free for the dismissed-face bulk delete (Q-030-43).
-
-**Spec Impact:** Update DO-030-02 and DSL `crop_token` constraint to reflect the two-level hash path and nginx-direct serving.
-
-**Resolved:** 2026-03-18
-
----
-
-### ~~Q-030-35: IoU Threshold for Re-scan Face Matching Not Defined~~ ✅ RESOLVED
-
-**Resolution:** **Option B** — add `VISION_FACE_RESCAN_IOU_THRESHOLD` env var (default `0.5`) mapped to `AppSettings.rescan_iou_threshold`. Allows operators to tune matching sensitivity for re-scans without rebuilding the image.
-
-**Spec Impact:** Add `rescan_iou_threshold: float = 0.5` to `AppSettings`. Add `VISION_FACE_RESCAN_IOU_THRESHOLD` row to the env var table. Update FR-030-07 resolved note to reference the configurable threshold.
-
-**Resolved:** 2026-03-18
-
----
-
-### ~~Q-030-36: "Claim Person" in Restricted Mode Listed as "All Users" — Contradictory~~ ✅ RESOLVED
-
-**Resolution:** Fixed in permission matrix — `Claim person` now reads `logged users` for all four modes. "All users" (including unauthenticated guests) would make no sense since claiming requires a User record to link.
-
-**Spec Impact:** Spec line 78 updated. No further changes needed.
-
-**Resolved:** 2026-03-18
-
----
-
-### ~~Q-030-37: "Unknown" Group in People Page Not Designed~~ ✅ RESOLVED
-
-**Resolution:** **Option A** — virtual aggregate. `GET /api/v2/People` always appends a synthetic `{id: null, name: "Unknown", face_count: N}` entry where `N = COUNT(faces WHERE person_id IS NULL)`. No DB record required. Clicking the tile navigates to `GET /api/v2/Face?unassigned=true`. The entry is omitted when `N = 0`.
-
-**Spec Impact:** Update API-030-01 notes. Add `GET /api/v2/Face?unassigned=true` filter note. Update UI-030-01 description.
-
-**Resolved:** 2026-03-18
-
----
-
-### ~~Q-030-38: `face_scan_status` Column Type and DSL Entry Missing~~ ✅ RESOLVED
-
-**Resolution:** **Option A** — `VARCHAR(16)`, nullable, with a PHP-side `ScanStatus` Enum cast. Portable across MySQL, PostgreSQL, and SQLite. Consistent with Lychee's existing enum-as-string column pattern.
-
-**Spec Impact:** Add `face_scan_status` field to the `photos` table addendum in the Spec DSL (`type: string (VARCHAR 16)`, nullable, `cast: ScanStatus`). Document the cast in the state machine section.
-
-**Resolved:** 2026-03-18
-
----
-
-### ~~Q-030-39: Crop Inline Base64 Payload Size Limit Undefined~~ ✅ RESOLVED
-
-**Resolution:** **Option A** — cap at N faces per callback, default `N = 10` (configurable via `VISION_FACE_MAX_FACES_PER_PHOTO`). Python keeps the top-N faces by confidence and drops the rest from the callback payload. Operators may raise the limit but must accept the corresponding body size increase.
-
-**Spec Impact:** Add `VISION_FACE_MAX_FACES_PER_PHOTO` env var (default `10`) and `max_faces_per_photo: int = 10` to `AppSettings`. Update `FaceResult` / `DetectCallbackPayload` comments to note the cap.
-
-**Resolved:** 2026-03-18
-
----
-
-### ~~Q-030-40: Bulk Scan Scope — `IS NULL` Only or Include `failed`?~~ ✅ RESOLVED
-
-**Resolution:** **Option A** — bulk scan targets `IS NULL` only. A separate **Maintenance page action** ("Re-scan failed photos") handles `face_scan_status = 'failed'` recovery, keeping bulk scan fast and predictable.
-
-**Spec Impact:** FR-030-09 stays as IS NULL. Add CLI-030-03 `php artisan lychee:rescan-failed-faces` and a corresponding admin Maintenance page action.
-
-**Resolved:** 2026-03-18
-
----
-
-### ~~Q-030-41: Album Scan Depth — Recursive Through Sub-Albums?~~ ✅ RESOLVED
-
-**Resolution:** **Option C** — user-selectable scope. Bulk scan UI offers two options: (1) **Library scan** — all unscanned photos across the entire library; (2) **Album scan** — all unscanned photos directly in the selected album (non-recursive). Sub-album scans are triggered explicitly. Matches existing CLI-030-01 / CLI-030-02 pattern.
-
-**Spec Impact:** Update FR-030-09 to describe both scope options. Update API-030-12 notes to clarify non-recursive album scope.
-
-**Resolved:** 2026-03-18
-
----
-
-### ~~Q-030-42: Face Reassignment Authorization Across Users~~ ✅ RESOLVED
-
-**Resolution:** **Option C** — mode-governed. In `public` and `private` modes, any user who passes the "Assign face" permission check (NFR-030-07 matrix) may reassign any face. In `privacy-preserving` and `restricted` modes, only the photo owner or admin may reassign. No `assigned_by_user_id` field needed.
-
-**Spec Impact:** Add a clarifying note to the permission matrix that the "Assign face" row governs cross-user reassignment as well. Add comment to FR-030-04/FR-030-10.
-
-**Resolved:** 2026-03-18
-
----
-
-### ~~Q-030-43: Admin Bulk Hard-Delete of Dismissed Faces Missing from API Catalogue~~ ✅ RESOLVED
-
-**Resolution:** **Option A** — add `DELETE /api/v2/Face/dismissed` as **API-030-16**. Admin-only; hard-deletes all `is_dismissed = true` Face records and their crop files.
-
-**Spec Impact:** Add API-030-16 to API catalogue table and DSL routes.
-
-**Resolved:** 2026-03-18
-
----
-
-### ~~Q-030-44: Selfie Upload Has No Rate Limiting~~ ✅ RESOLVED
-
-**Resolution:** Rate limiting applied at the **Lychee PHP layer** via Laravel's built-in throttle middleware on API-030-13 (`POST /api/v2/Person/claim-by-selfie`). No changes to the Python service needed.
-
-**Spec Impact:** Add `throttle:5,1` (5 requests/minute per user) to the API-030-13 route definition note. Document in deployment guide.
-
-**Resolved:** 2026-03-18
-
----
-
-### ~~Q-030-45: `photo_ids[]` Batch in API-030-10 Has No Maximum~~ ✅ RESOLVED
-
-**Resolution:** **Option B** — accept any count, dispatch in configurable chunks. The job dispatcher slices the photo ID list into chunks of size `ai_vision_face_scan_batch_size` (Lychee `configs` table, default `200`). No hard caller limit; queue load controlled by chunk size + queue concurrency.
-
-**Spec Impact:** Add `ai_vision_face_scan_batch_size` to the Lychee `configs` table (integer, default `200`). Update API-030-10 notes to describe chunked dispatch.
-
-**Resolved:** 2026-03-18
-
----
-
-### ~~Q-030-26: Python Concurrency Model — CPU-Bound Face Detection Blocks Event Loop~~ ✅ RESOLVED
-
-**Resolution:** **Option A** — inference runs in a `ThreadPoolExecutor` via `asyncio.run_in_executor`, keeping the FastAPI event loop responsive while CPU-bound detection executes on a background thread. Pool size is configurable via `VISION_FACE_THREAD_POOL_SIZE` env var (default `1`). The service must emit structured log entries at three checkpoints: job received (`INFO`), detection started (`INFO`), and detection finished (`INFO` with face count and elapsed milliseconds). Callback failures are logged at `ERROR` level.
-
-**Spec Impact:** Add `thread_pool_size: int = 1` to `AppSettings`. Add `VISION_FACE_THREAD_POOL_SIZE` to env var table. Add "Concurrency Model" subsection to Python Service Technical Specification documenting the `run_in_executor` pattern and the structured logging checkpoints table.
-
-**Resolved:** 2026-03-17
-
----
-
-### ~~Q-030-27: Callback Retry Policy — Stuck-Pending Risk When Python→Lychee POST Fails~~ ✅ RESOLVED
-
-**Resolution:** **Option B** — fire-and-forget. Python makes one callback attempt. If the request fails (network error, 5xx), the failure is logged at `ERROR` level and discarded. The photo's `face_scan_status` remains `pending` indefinitely; operators must reset stuck records manually. No retry logic in the Python service; no outbox table.
-
-**Spec Impact:** Document fire-and-forget policy in the "Concurrency Model" subsection. Add `ERROR` log entry for callback failure in the structured logging table. Note in state machine documentation that `pending` can become permanently stuck on callback failure; add an operator note.
-
-**Resolved:** 2026-03-17
-
----
-
-### ~~Q-030-28: Security — `photo_path` Path Traversal and `callback_url` SSRF~~ ✅ RESOLVED
-
-**Resolution:** **Option A, extended** — validate `photo_path` resolves within `VISION_FACE_PHOTOS_PATH` (resolve symlinks, reject traversals with 422). `callback_url` is **removed from the `DetectRequest` body entirely** — Python reads the callback endpoint from `VISION_FACE_LYCHEE_API_URL` env var. Since the callback URL is operator-supplied via env and not present in the request payload, the SSRF vector is eliminated structurally rather than via allowlist validation.
-
-**Spec Impact:** Remove `callback_url` field from `DetectRequest` Pydantic model. Remove `callback_url` from Scan Request JSON example. Add path-traversal validation note to `DetectRequest.photo_path` field comment. Update inter-service contract description and the scan request JSON example.
-
-**Resolved:** 2026-03-17
-
----
-
-### ~~Q-030-29: Suggestion Items — `embedding_id` vs. `lychee_face_id` in Callback Suggestions~~ ✅ RESOLVED
-
-**Resolution:** **Option A** — Python sends `lychee_face_id` in suggestion items (it already stores them from prior callback 200 responses). Rename `SuggestionResult.embedding_id` → `lychee_face_id`. Lychee stores `(face_id, suggested_face_id, confidence)` in `face_suggestions` using `lychee_face_id` directly — no cross-callback resolution needed.
-
-**Spec Impact:** Rename `SuggestionResult.embedding_id` → `lychee_face_id` in Pydantic schemas. Update suggestion examples in the callback JSON. Update `FaceResult.suggestions` comment. Update `face_suggestions` table schema note (`DO-030-05`).
-
-**Resolved:** 2026-03-17
-
----
-
-### ~~Q-030-30: Clustering Trigger — When Does DBSCAN Run and How Does It Feed Suggestions?~~ ✅ RESOLVED
-
-**Resolution:** **Option A** — per-scan suggestions use **nearest-neighbour cosine similarity search** against stored embeddings via `sqlite-vec`/`pgvector` (fast, inline with the detection job). DBSCAN is a **separate offline batch operation** grouping unassigned faces for the People browse UI; triggered manually via `POST /cluster` and never invoked per scan request.
-
-**Spec Impact:** Update `clustering/clusterer.py` description in project structure (offline batch, not per-scan). Update DBSCAN tech stack table entry. Add `POST /cluster` to routes list. Clarify `SuggestionResult` data source as NN cosine similarity search.
-
-**Resolved:** 2026-03-17
-
----
-
-### ~~Q-030-31: `VISION_CONFIDENCE_THRESHOLD` — Detection Filter vs. Matching Threshold~~ ✅ RESOLVED
-
-**Resolution:** **Option B** — two separate thresholds. Rename `VISION_CONFIDENCE_THRESHOLD` → `VISION_FACE_DETECTION_THRESHOLD` (bounding box filter: faces below threshold excluded from callback payloads) and add `VISION_FACE_MATCH_THRESHOLD` (similarity search cutoff: suggestions and selfie match results below threshold excluded). Independent configuration allows operators to tune detection sensitivity and identity matching independently.
-
-**Spec Impact:** Remove `VISION_CONFIDENCE_THRESHOLD` from env var table. Add `VISION_FACE_DETECTION_THRESHOLD` (default `0.5`) and `VISION_FACE_MATCH_THRESHOLD` (default `0.5`). Rename `AppSettings.confidence_threshold` → `detection_threshold` + add `match_threshold`. Update `app/detection/detector.py` and `app/matching/matcher.py` references.
-
-**Resolved:** 2026-03-17
-
----
 
 ### ~~Q-030-32: InsightFace Model Acquisition — Baked Into Docker Image vs. Runtime Download~~ ✅ RESOLVED
 

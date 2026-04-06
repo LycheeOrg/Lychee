@@ -911,6 +911,13 @@ declare namespace App.Http.Resources.Models {
 		created_at: string;
 		updated_at: string;
 	};
+	export type SecurityAdvisoryResource = {
+		cve_id: string | null;
+		ghsa_id: string;
+		summary: string;
+		cvss_score: number | null;
+		cvss_vector: string | null;
+	};
 }
 declare namespace App.Http.Resources.Models.Duplicates {
 	export type Duplicate = {

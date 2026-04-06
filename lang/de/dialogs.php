@@ -296,4 +296,10 @@ return [
         'description' => 'Sind Sie sicher, dass Sie den Fotos in diesem Album ein Wasserzeichen hinzufügen möchten? Diese Aktion kann nicht rückgängig gemacht werden.',
         'confirm' => 'Wasserzeichen hinzufügen',
     ],
+    'security_advisories' => [
+        'title' => 'Security Vulnerabilities Detected',
+        'description' => 'The following vulnerabilities affect your current Lychee version:',
+        'no_cvss' => '(no CVSS score)',
+        'go_to_diagnostics' => 'Go to Diagnostics',
+    ],
 ];

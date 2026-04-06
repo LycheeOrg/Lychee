@@ -163,6 +163,19 @@ return [
 
 	/*
 	 |--------------------------------------------------------------------------
+	 | Enable Vulnerability Check
+	 |--------------------------------------------------------------------------
+	 |
+	 | When enabled, Lychee periodically fetches the list of published security
+	 | advisories from the configured url.advisories.api_url and compares them
+	 | against the running version. Matching vulnerabilities are surfaced in the
+	 | diagnostic error panel (admin-only) and as a dismissable modal on login.
+	 | Enabled by default — set VULNERABILITY_CHECK_ENABLED=false to opt out.
+	 */
+	'vulnerability-check' => (bool) env('VULNERABILITY_CHECK_ENABLED', true),
+
+	/*
+	 |--------------------------------------------------------------------------
 	 | Populate Request object macros while testing
 	 |--------------------------------------------------------------------------
 	 |

@@ -295,4 +295,10 @@ return [
         'description' => 'Are you sure you want to apply a watermark to the photos in this album? This action cannot be undone.',
         'confirm' => 'Apply Watermark',
     ],
+    'security_advisories' => [
+        'title' => 'Security Vulnerabilities Detected',
+        'description' => 'The following vulnerabilities affect your current Lychee version:',
+        'no_cvss' => '(no CVSS score)',
+        'go_to_diagnostics' => 'Go to Diagnostics',
+    ],
 ];
