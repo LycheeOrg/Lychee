@@ -19,9 +19,15 @@ class ExternalRequestFunctions implements ExternalRequest
 {
 	protected ?string $data = null;
 
+	/**
+	 * @param string   $url           URL to fetch
+	 * @param int      $ttl_in_days   cache TTL in days
+	 * @param string[] $extra_headers additional HTTP headers to send (e.g. ['Accept: application/json'])
+	 */
 	public function __construct(
 		private string $url,
 		private int $ttl_in_days,
+		private array $extra_headers = [],
 	) {
 	}
 
@@ -114,9 +120,10 @@ class ExternalRequestFunctions implements ExternalRequest
 			'http' => [
 				'method' => 'GET',
 				'timeout' => 1,
-				'header' => [
-					'User-Agent: ' . ini_get('user_agent'),
-				],
+				'header' => array_merge(
+					['User-Agent: ' . ini_get('user_agent')],
+					$this->extra_headers,
+				),
 			],
 		];
 		$context = stream_context_create($opts);
