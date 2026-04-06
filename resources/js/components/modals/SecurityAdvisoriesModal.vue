@@ -21,7 +21,7 @@
 							<div class="flex items-center gap-2 font-semibold">
 								<span class="text-orange-400">•</span>
 								<a
-									:href="`https://github.com/advisories/${advisory.ghsa_id}`"
+									:href="`https://github.com/LycheeOrg/Lychee/security/advisories/${advisory.ghsa_id}`"
 									target="_blank"
 									rel="noopener noreferrer"
 									class="text-primary-400 hover:text-primary-300 underline"

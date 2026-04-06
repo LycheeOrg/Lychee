@@ -7,12 +7,7 @@
 	<AlbumCreateTagDialog v-if="albumsStore.rootRights?.can_upload" key="create_tag_album_modal" />
 	<LoginModal v-if="!userStore.isLoggedIn" @logged-in="onLoggedIn" />
 	<WebauthnModal v-if="!userStore.isLoggedIn" @logged-in="onLoggedIn" />
-	<SecurityAdvisoriesModal
-		v-if="advisory.is_visible.value"
-		:visible="advisory.is_visible.value"
-		:advisories="advisory.advisories.value"
-		@update:visible="advisory.dismiss"
-	/>
+	<SecurityAdvisoriesModal v-if="isAdvisoriesVisible" :visible="isAdvisoriesVisible" :advisories="advisories" @update:visible="advisoryDismiss" />
 	<LiveMetrics v-if="userStore.isLoggedIn" />
 	<ImportFromLink v-if="albumsStore.rootRights?.can_upload" v-model:visible="is_import_from_link_open" @refresh="refresh" />
 	<ImportFromServer v-if="albumsStore.rootRights?.can_import_from_server" v-model:visible="is_import_from_server_open" @refresh="refresh" />
@@ -261,7 +256,7 @@ const photosStore = usePhotosStore();
 const photoStore = usePhotoStore();
 const router = useRouter();
 const orderManagementStore = useOrderManagementStore();
-const advisory = useAdvisoryModal();
+const { advisories, isAdvisoriesVisible, advisoryCheck, advisoryDismiss } = useAdvisoryModal();
 
 // Reset!
 albumStore.reset();
@@ -279,7 +274,7 @@ async function onLoggedIn() {
 	await Promise.allSettled([lycheeStore.load(), userStore.refresh()]);
 	albumsStore.load(router);
 	orderManagementStore.refresh();
-	advisory.check();
+	advisoryCheck();
 }
 
 const albumId = ref("gallery");

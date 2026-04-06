@@ -117,6 +117,7 @@ import WebauthnModal from "@/components/modals/WebauthnModal.vue";
 import { usePhotoActions } from "@/composables/album/photoActions";
 import { useScrollable } from "@/composables/album/scrollable";
 import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
+import { useAdvisoryModal } from "@/composables/modals/useAdvisoryModal";
 import { useAlbumRoute } from "@/composables/photo/albumRoute";
 import { getNextPreviousPhoto } from "@/composables/photo/getNextPreviousPhoto";
 import { useSlideshowFunction } from "@/composables/photo/slideshow";
@@ -142,6 +143,7 @@ const { isLTR } = useLtRorRtL();
 const route = useRoute();
 const router = useRouter();
 const toast = useToast();
+const { advisoryCheck } = useAdvisoryModal();
 const { albumRoutes } = useAlbumRoute(router);
 
 const props = defineProps<{
@@ -297,7 +299,7 @@ onKeyStroke("Escape", () => {
 
 async function refresh() {
 	await Promise.allSettled([userStore.load(), layoutStore.load(), lycheeStore.load(), tagStore.load()]);
-
+	advisoryCheck();
 	photoStore.load();
 }
 

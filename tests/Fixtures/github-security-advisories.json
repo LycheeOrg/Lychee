@@ -120,5 +120,91 @@
 		"collaborating_users": [],
 		"collaborating_teams": [],
 		"private_fork": null
+	},
+	{
+		"ghsa_id": "GHSA-aaaa-bbbb-cccc",
+		"cve_id": "CVE-2024-00003",
+		"url": "https://github.com/advisories/GHSA-aaaa-bbbb-cccc",
+		"html_url": "https://github.com/advisories/GHSA-aaaa-bbbb-cccc",
+		"summary": "Vulnerability with patched version range (current version IS patched)",
+		"description": "This vulnerability was fixed in 5.6.0 and above.",
+		"severity": "high",
+		"author": { "login": "LycheeOrg", "id": 1 },
+		"publisher": { "login": "LycheeOrg", "id": 1 },
+		"identifiers": [
+			{ "value": "GHSA-aaaa-bbbb-cccc", "type": "GHSA" },
+			{ "value": "CVE-2024-00003", "type": "CVE" }
+		],
+		"state": "published",
+		"created_at": "2024-04-01T00:00:00Z",
+		"updated_at": "2024-04-01T00:00:00Z",
+		"published_at": "2024-04-01T00:00:00Z",
+		"withdrawn_at": null,
+		"submission": null,
+		"vulnerabilities": [
+			{
+				"package": {
+					"ecosystem": "composer",
+					"name": "lycheeorg/lychee"
+				},
+				"severity": "high",
+				"vulnerable_version_range": ">= 4.0.0, < 99.0.0",
+				"first_patched_version": "5.6.0",
+				"patched_versions": ">= 5.6.0"
+			}
+		],
+		"cvss": {
+			"vector_string": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+			"score": 8.8
+		},
+		"cwes": [],
+		"credits": [],
+		"credits_detailed": [],
+		"collaborating_users": [],
+		"collaborating_teams": [],
+		"private_fork": null
+	},
+	{
+		"ghsa_id": "GHSA-dddd-eeee-ffff",
+		"cve_id": "CVE-2024-00004",
+		"url": "https://github.com/advisories/GHSA-dddd-eeee-ffff",
+		"html_url": "https://github.com/advisories/GHSA-dddd-eeee-ffff",
+		"summary": "Vulnerability with patched version range (current version NOT patched)",
+		"description": "This vulnerability requires version 6.0.0 or higher to be fixed.",
+		"severity": "high",
+		"author": { "login": "LycheeOrg", "id": 1 },
+		"publisher": { "login": "LycheeOrg", "id": 1 },
+		"identifiers": [
+			{ "value": "GHSA-dddd-eeee-ffff", "type": "GHSA" },
+			{ "value": "CVE-2024-00004", "type": "CVE" }
+		],
+		"state": "published",
+		"created_at": "2024-05-01T00:00:00Z",
+		"updated_at": "2024-05-01T00:00:00Z",
+		"published_at": "2024-05-01T00:00:00Z",
+		"withdrawn_at": null,
+		"submission": null,
+		"vulnerabilities": [
+			{
+				"package": {
+					"ecosystem": "composer",
+					"name": "lycheeorg/lychee"
+				},
+				"severity": "high",
+				"vulnerable_version_range": ">= 4.0.0, < 99.0.0",
+				"first_patched_version": "6.0.0",
+				"patched_versions": ">= 6.0.0"
+			}
+		],
+		"cvss": {
+			"vector_string": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:L",
+			"score": 7.3
+		},
+		"cwes": [],
+		"credits": [],
+		"credits_detailed": [],
+		"collaborating_users": [],
+		"collaborating_teams": [],
+		"private_fork": null
 	}
 ]

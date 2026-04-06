@@ -25,6 +25,7 @@ use App\Metadata\Versions\InstalledVersion;
 use App\Services\SecurityAdvisoriesService;
 use App\Services\VersionRangeChecker;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 use Tests\AbstractTestCase;
 
 /**
@@ -151,23 +152,33 @@ class SecurityAdvisoriesServiceTest extends AbstractTestCase
 
 	public function testReturnsMultipleMatchingAdvisoriesSortedByCvssDesc(): void
 	{
-		// Version 5.0.0 matches advisories 1 (CVSS 9.8) and 3 (null CVSS).
+		// Version 5.0.0 matches multiple advisories
 		$this->mock_version->shouldReceive('getVersion')->andReturn(new Version(5, 0, 0));
 		$this->mock_request->shouldReceive('get_json')->andReturn($this->fixture_data);
 
 		$service = $this->makeService();
 		$result = $service->getMatchingAdvisories();
 
-		// Advisories 1 (9.8) and 3 (null CVSS) match; advisory 2 (< 1.0.0) does not.
-		$this->assertCount(2, $result);
+		// Advisory 1 (< 1.0.0) does not match.
+		// Advisories 0, 2, 3, 4 all match version 5.0.0.
+		// Advisory 3 is NOT patched (5.0.0 < 5.6.0), so it matches.
+		// Advisory 4 is NOT patched (5.0.0 < 6.0.0), so it matches.
+		$this->assertCount(4, $result);
 
-		// First: highest CVSS score (9.8)
+		// Sorted by CVSS descending (nulls last):
+		// 0: 9.8, 3: 8.8, 4: 7.3, 2: null
 		$this->assertSame('CVE-2024-00001', $result[0]->cve_id);
 		$this->assertEqualsWithDelta(9.8, $result[0]->cvss_score, 0.01);
 
-		// Second: null CVSS → nulls last
-		$this->assertNull($result[1]->cve_id);
-		$this->assertNull($result[1]->cvss_score);
+		$this->assertSame('CVE-2024-00003', $result[1]->cve_id);
+		$this->assertEqualsWithDelta(8.8, $result[1]->cvss_score, 0.01);
+
+		$this->assertSame('CVE-2024-00004', $result[2]->cve_id);
+		$this->assertEqualsWithDelta(7.3, $result[2]->cvss_score, 0.01);
+
+		// Last: null CVSS → nulls last
+		$this->assertNull($result[3]->cve_id);
+		$this->assertNull($result[3]->cvss_score);
 	}
 
 	// ── deduplication by ghsa_id (Q-032-04) ──────────────────────────────────
@@ -222,6 +233,8 @@ class SecurityAdvisoriesServiceTest extends AbstractTestCase
 
 	public function testReturnsEmptyArrayWhenVersionThrows(): void
 	{
+		Log::shouldReceive('debug')->once();
+
 		$this->mock_version->shouldReceive('getVersion')
 			->andThrow(new \RuntimeException('DB not available'));
 
@@ -230,5 +243,38 @@ class SecurityAdvisoriesServiceTest extends AbstractTestCase
 
 		$service = $this->makeService();
 		$this->assertSame([], $service->getMatchingAdvisories());
+	}
+
+	// ── patched versions checking ────────────────────────────────────────────
+
+	public function testExcludesAdvisoryWhenVersionIsPatched(): void
+	{
+		// Version 5.6.1 is in vulnerable range (>= 4.0.0, < 99.0.0)
+		// but also in patched range (>= 5.6.0), so should NOT be returned
+		$this->mock_version->shouldReceive('getVersion')->andReturn(new Version(5, 6, 1));
+		$this->mock_request->shouldReceive('get_json')->andReturn([$this->fixture_data[3]]);
+
+		$service = $this->makeService();
+		$result = $service->getMatchingAdvisories();
+
+		// Advisory should be excluded because version is patched
+		$this->assertCount(0, $result);
+	}
+
+	public function testIncludesAdvisoryWhenVersionIsNotPatched(): void
+	{
+		// Version 5.6.1 is in vulnerable range (>= 4.0.0, < 99.0.0)
+		// but NOT in patched range (>= 6.0.0), so SHOULD be returned
+		$this->mock_version->shouldReceive('getVersion')->andReturn(new Version(5, 6, 1));
+		$this->mock_request->shouldReceive('get_json')->andReturn([$this->fixture_data[4]]);
+
+		$service = $this->makeService();
+		$result = $service->getMatchingAdvisories();
+
+		// Advisory should be included because version is still vulnerable
+		$this->assertCount(1, $result);
+		$this->assertSame('CVE-2024-00004', $result[0]->cve_id);
+		$this->assertSame('GHSA-dddd-eeee-ffff', $result[0]->ghsa_id);
+		$this->assertSame(7.3, $result[0]->cvss_score);
 	}
 }

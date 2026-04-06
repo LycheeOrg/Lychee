@@ -13,7 +13,7 @@ const DISMISSED_KEY = "advisory_dismissed";
 // - One advisory check per admin login across all component instances.
 // - Dismissed state persists for the duration of the browser session
 //   (sessionStorage is cleared when the tab is closed).
-const is_visible = ref(false);
+const isAdvisoriesVisible = ref(false);
 const advisories = ref<App.Http.Resources.Models.SecurityAdvisoryResource[]>([]);
 
 /**
@@ -25,7 +25,7 @@ const advisories = ref<App.Http.Resources.Models.SecurityAdvisoryResource[]>([])
  * is caught and silently ignored.
  */
 export function useAdvisoryModal() {
-	function check() {
+	function advisoryCheck() {
 		if (sessionStorage.getItem(DISMISSED_KEY) !== null) {
 			return;
 		}
@@ -34,7 +34,7 @@ export function useAdvisoryModal() {
 			.then((response) => {
 				if (response.data.length > 0) {
 					advisories.value = response.data;
-					is_visible.value = true;
+					isAdvisoriesVisible.value = true;
 				}
 			})
 			.catch(() => {
@@ -42,15 +42,15 @@ export function useAdvisoryModal() {
 			});
 	}
 
-	function dismiss() {
+	function advisoryDismiss() {
 		sessionStorage.setItem(DISMISSED_KEY, "1");
-		is_visible.value = false;
+		isAdvisoriesVisible.value = false;
 	}
 
 	return {
 		advisories,
-		is_visible,
-		check,
-		dismiss,
+		isAdvisoriesVisible,
+		advisoryCheck,
+		advisoryDismiss,
 	};
 }

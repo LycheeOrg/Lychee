@@ -147,6 +147,7 @@ import { onKeyStroke } from "@vueuse/core";
 import { isTouchDevice, shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import { useSelection } from "@/composables/selections/selections";
 import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
+import { useAdvisoryModal } from "@/composables/modals/useAdvisoryModal";
 import { Collapse } from "vue-collapsed";
 import { useRoute, useRouter } from "vue-router";
 import GalleryFooter from "@/components/footers/GalleryFooter.vue";
@@ -202,6 +203,7 @@ const props = defineProps<{
 const toast = useToast();
 const route = useRoute();
 const router = useRouter();
+const { advisoryCheck } = useAdvisoryModal();
 const lycheeStore = useLycheeStateStore();
 const togglableStore = useTogglablesStateStore();
 const photoStore = usePhotoStore();
@@ -310,6 +312,7 @@ async function refresh() {
 		router.push({ name: "gallery" });
 	}
 	await Promise.allSettled([layoutStore.load(), userStore.load(), timelineStore.loadDates()]);
+	advisoryCheck();
 	await timelineStore.initialLoad(props.date ?? "", props.photoId);
 	await nextTick();
 	scrollToDate(props.date ?? "");

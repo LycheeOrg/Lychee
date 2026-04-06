@@ -34,6 +34,8 @@ import WebauthnModal from "@/components/modals/WebauthnModal.vue";
 import InitService from "@/services/init-service";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
+import { useUserStore } from "@/stores/UserState";
+import { useAdvisoryModal } from "@/composables/modals/useAdvisoryModal";
 import { storeToRefs } from "pinia";
 import Button from "primevue/button";
 import Panel from "primevue/panel";
@@ -44,10 +46,14 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 const lycheeStore = useLycheeStateStore();
 const leftMenuStore = useLeftMenuStateStore();
+const userStore = useUserStore();
+const { advisoryCheck } = useAdvisoryModal();
 const { title, is_registration_enabled, is_basic_auth_enabled } = storeToRefs(lycheeStore);
 const is_loaded = ref(false);
 
-function goBack() {
+async function goBack() {
+	await Promise.allSettled([lycheeStore.load(), userStore.refresh()]);
+	advisoryCheck();
 	router.push({ name: "gallery" });
 }
 

@@ -19,6 +19,9 @@ use function Safe\preg_match;
  *
  * Supported operators: >=, <=, >, <, =, !=
  *
+ * When a token has no operator (e.g., "7.1.0"), it is treated as ">= 7.1.0"
+ * (all versions including and above that value are considered affected).
+ *
  * A null or empty range string is treated as "matches all versions" (returns true).
  * Malformed tokens are skipped with a warning log entry.
  */
@@ -58,6 +61,9 @@ class VersionRangeChecker
 	/**
 	 * Evaluate a single constraint token such as ">= 5.0.0".
 	 *
+	 * When no operator is present (e.g., "7.1.0"), it is treated as ">= 7.1.0"
+	 * (all versions including and above that value are considered affected).
+	 *
 	 * @param Version $version installed version
 	 * @param string  $token   single trimmed constraint string
 	 *
@@ -67,9 +73,20 @@ class VersionRangeChecker
 	{
 		// Parse operator prefix: >=, <=, !=, >, <, =
 		if (preg_match('/^(>=|<=|!=|>|<|=)\s*(.+)$/', $token, $matches) !== 1) {
-			Log::warning('SecurityAdvisories: malformed version range token "' . $token . '" — skipping.');
+			// No operator found — treat as ">=" by default
+			// (i.e., "7.1.0" means ">= 7.1.0")
+			try {
+				$constraint = Version::createFromString(trim($token));
+			} catch (\Throwable) {
+				Log::warning('SecurityAdvisories: unable to parse version "' . $token . '" — skipping.');
 
-			return true; // skip malformed token; don't fail the whole advisory
+				return true;
+			}
+
+			$installed = $version->toInteger();
+			$bound = $constraint->toInteger();
+
+			return $installed >= $bound;
 		}
 
 		$operator = $matches[1];

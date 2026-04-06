@@ -20,6 +20,7 @@ namespace Tests\Unit\Services;
 
 use App\DTO\Version;
 use App\Services\VersionRangeChecker;
+use Illuminate\Support\Facades\Log;
 use Tests\AbstractTestCase;
 
 /**
@@ -179,19 +180,47 @@ class VersionRangeCheckerTest extends AbstractTestCase
 
 	// ── malformed token (S-032-09) ───────────────────────────────────────────
 
-	public function testMalformedTokenIsSkippedAndRemainingConstraintsEvaluated(): void
+	public function testTokenWithoutOperatorIsTreatedAsGreaterThanOrEqual(): void
 	{
-		// The malformed token is skipped (returns true for that token),
-		// so only the valid ">= 5.0.0" constraint matters.
-		$v = new Version(5, 0, 5);
-		// "BADTOKEN" has no operator — should be skipped, only ">= 5.0.0" applies.
-		$this->assertTrue($this->checker->matches($v, 'BADTOKEN, >= 5.0.0'));
+		// A token without an operator (e.g., "5.1.2") is treated as ">= 5.1.2".
+		$v = new Version(5, 2, 0);
+		$this->assertTrue($this->checker->matches($v, '5.1.2'));
 	}
 
-	public function testMalformedTokenDoesNotBlockValidConstraintFromFailingMatch(): void
+	public function testTokenWithoutOperatorMatchesEqualVersion(): void
+	{
+		$v = new Version(5, 1, 2);
+		$this->assertTrue($this->checker->matches($v, '5.1.2'));
+	}
+
+	public function testTokenWithoutOperatorDoesNotMatchLowerVersion(): void
+	{
+		$v = new Version(5, 1, 1);
+		$this->assertFalse($this->checker->matches($v, '5.1.2'));
+	}
+
+	public function testMultiConstraintWithImplicitOperator(): void
+	{
+		// "5.0.0" is treated as ">= 5.0.0"
+		// So "5.0.5" should match ">= 5.0.0, < 5.1.2"
+		$v = new Version(5, 0, 5);
+		$this->assertTrue($this->checker->matches($v, '5.0.0, < 5.1.2'));
+	}
+
+	public function testTrulyMalformedTokenIsSkippedAndRemainingConstraintsEvaluated(): void
+	{
+		// A token that can't be parsed as a version at all is skipped (returns true),
+		// so only the valid ">= 5.0.0" constraint matters.
+		Log::shouldReceive('warning')->once();
+		$v = new Version(5, 0, 5);
+		$this->assertTrue($this->checker->matches($v, 'not-a-version, >= 5.0.0'));
+	}
+
+	public function testTrulyMalformedTokenDoesNotBlockValidConstraintFromFailingMatch(): void
 	{
 		// Even with a skipped malformed token, a valid failing constraint returns false.
+		Log::shouldReceive('warning')->once();
 		$v = new Version(3, 0, 0);
-		$this->assertFalse($this->checker->matches($v, 'BADTOKEN, >= 5.0.0'));
+		$this->assertFalse($this->checker->matches($v, 'not-a-version, >= 5.0.0'));
 	}
 }

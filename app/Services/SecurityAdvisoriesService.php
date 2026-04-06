@@ -93,8 +93,17 @@ class SecurityAdvisoriesService
 				}
 
 				$range = $vuln->vulnerable_version_range ?? '';
+				$patched = $vuln->patched_versions ?? '';
 
+				// Check if version is in the vulnerable range
 				if ($this->range_checker->matches($version, (string) $range)) {
+					// If patched versions are defined, check if we're patched
+					if ($patched !== '' && $this->range_checker->matches($version, (string) $patched)) {
+						// Version is patched, not vulnerable — skip this advisory
+						continue;
+					}
+
+					// Version is vulnerable and not patched — include this advisory
 					$seen[$ghsa_id] = new SecurityAdvisory(
 						cve_id: $cve_id,
 						ghsa_id: $ghsa_id,
