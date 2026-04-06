@@ -30,6 +30,7 @@ use App\Actions\Diagnostics\Pipes\Checks\OldLicenseCheck;
 use App\Actions\Diagnostics\Pipes\Checks\OpCacheCheck;
 use App\Actions\Diagnostics\Pipes\Checks\PHPVersionCheck;
 use App\Actions\Diagnostics\Pipes\Checks\PlaceholderExistsCheck;
+use App\Actions\Diagnostics\Pipes\Checks\SecurityAdvisoriesCheck;
 use App\Actions\Diagnostics\Pipes\Checks\SmallMediumExistsCheck;
 use App\Actions\Diagnostics\Pipes\Checks\StatisticsIntegrityCheck;
 use App\Actions\Diagnostics\Pipes\Checks\SupporterCheck;
@@ -77,6 +78,7 @@ class Errors
 		WatermarkerEnabledCheck::class,
 		StatisticsIntegrityCheck::class,
 		WebshopCheck::class,
+		SecurityAdvisoriesCheck::class,
 	];
 
 	/**

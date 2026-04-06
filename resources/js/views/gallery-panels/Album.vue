@@ -188,12 +188,14 @@ import { useLayoutStore } from "@/stores/LayoutState";
 import { useAlbumsStore } from "@/stores/AlbumsState";
 import { useCatalogStore } from "@/stores/CatalogState";
 import { useRating } from "@/composables/photo/useRating";
+import { useAdvisoryModal } from "@/composables/modals/useAdvisoryModal";
 
 const { isLTR } = useLtRorRtL();
 
 const route = useRoute();
 const router = useRouter();
 const toast = useToast();
+const { advisoryCheck } = useAdvisoryModal();
 
 const { albumRoutes } = useAlbumRoute(router);
 
@@ -228,6 +230,7 @@ async function load() {
 
 async function refresh(isDelete: boolean = false) {
 	await Promise.allSettled([layoutStore.load(), lycheeStore.load(), userStore.refresh(), albumStore.refresh()]);
+	advisoryCheck();
 	catalogStore.albumId = albumId.value;
 	catalogStore.load();
 	orderManagement.load();

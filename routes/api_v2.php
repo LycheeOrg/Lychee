@@ -253,6 +253,11 @@ Route::get('/Diagnostics::config', [Admin\DiagnosticsController::class, 'config'
 Route::get('/Diagnostics::permissions', [Admin\DiagnosticsController::class, 'getFullAccessPermissions']);
 
 /**
+ * SECURITY ADVISORIES.
+ */
+Route::get('/Security/Advisories', [Admin\SecurityAdvisoriesController::class, 'index']);
+
+/**
  * JOBS.
  */
 Route::get('/Jobs', [Admin\JobsController::class, 'list']);

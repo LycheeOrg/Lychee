@@ -16,15 +16,16 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Feature_v2\Caching;
+namespace Tests\Unit\Caching;
 
 use App\Metadata\Cache\RouteCacheManager;
 use Illuminate\Support\Facades\Route;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\ConsoleSectionOutput;
-use Tests\Feature_v2\Base\BaseApiWithDataTest;
+use Tests\AbstractTestCase;
+use Tests\Feature_v2\Base\BaseApiTest;
 
-class CachingConfigTest extends BaseApiWithDataTest
+class CachingConfigTest extends AbstractTestCase
 {
 	private ConsoleSectionOutput $msgSection;
 	private bool $failed = false;
@@ -34,7 +35,7 @@ class CachingConfigTest extends BaseApiWithDataTest
 		$this->msgSection = (new ConsoleOutput())->section();
 
 		$routeCollection = Route::getRoutes();
-		$getRoutes = array_filter($routeCollection->getRoutesByMethod()['GET'], fn ($r) => str_starts_with($r->uri(), ltrim(self::API_PREFIX, '/')));
+		$getRoutes = array_filter($routeCollection->getRoutesByMethod()['GET'], fn ($r) => str_starts_with($r->uri(), ltrim(BaseApiTest::API_PREFIX, '/')));
 		$getRoutesUri = array_map(fn ($r) => $r->uri(), $getRoutes);
 
 		$routeManage = new RouteCacheManager();
