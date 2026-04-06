@@ -190,15 +190,15 @@ async def export_embeddings(
 
     items = [
         EmbeddingExportItem(
-            lychee_face_id=row["lychee_face_id"],
-            photo_id=row["photo_id"],
-            laplacian_variance=row["laplacian_variance"],
-            crop_path=row["crop_path"],
+            lychee_face_id=str(row["lychee_face_id"]),
+            photo_id=str(row["photo_id"]),
+            laplacian_variance=float(row["laplacian_variance"] or 0.0),
+            crop_path=str(row["crop_path"]),
         )
         for row in all_data
     ]
 
-    return EmbeddingExportResponse(count=len(items), embeddings=items)
+    return EmbeddingExportResponse(embeddings=items)
 
 
 # ---------------------------------------------------------------------------

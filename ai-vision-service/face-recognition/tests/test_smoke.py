@@ -49,8 +49,8 @@ class _CallbackHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(b'{"faces": []}')
 
-    def log_message(self, *args: object) -> None:  # suppress request log noise
-        pass
+    def log_message(self, format: str, *args: object) -> None:  # noqa: A002
+        pass  # suppress request log noise
 
 
 # ---------------------------------------------------------------------------
@@ -59,12 +59,12 @@ class _CallbackHandler(BaseHTTPRequestHandler):
 
 
 @pytest.fixture(scope="module", autouse=True)
-def mock_lychee_server() -> None:
+def mock_lychee_server() -> None:  # ty: ignore
     """Start a mock Lychee callback receiver before smoke tests."""
     server = HTTPServer(("0.0.0.0", MOCK_LYCHEE_PORT), _CallbackHandler)
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
-    yield  # type: ignore[misc]
+    yield
     server.shutdown()
 
 

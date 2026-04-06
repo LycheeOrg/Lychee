@@ -125,4 +125,4 @@ def get_settings() -> AppSettings:
     Override ``app.dependency_overrides[get_settings]`` in tests to inject
     mock settings without touching environment variables.
     """
-    return AppSettings()  # type: ignore[call-arg]
+    return AppSettings()  # ty: ignore

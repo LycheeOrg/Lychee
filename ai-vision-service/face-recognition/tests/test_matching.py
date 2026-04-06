@@ -75,7 +75,7 @@ def test_match_uses_highest_confidence_face() -> None:
     matcher.match(b"fake")
 
     # store.similarity_search should have been called with high_conf.embedding
-    store.similarity_search.assert_called_once_with(high_conf.embedding, matcher._threshold, limit=10)  # type: ignore[attr-defined]
+    store.similarity_search.assert_called_once_with(high_conf.embedding, matcher._threshold, limit=10)  # ty: ignore
 
 
 def test_match_passes_threshold_to_store() -> None:
@@ -85,10 +85,10 @@ def test_match_passes_threshold_to_store() -> None:
     matcher = FaceMatcher(detector=detector, store=store, threshold=0.8)
     matcher.match(b"fake")
 
-    store.similarity_search.assert_called_once()  # type: ignore[attr-defined]
-    _, _kwargs = store.similarity_search.call_args  # type: ignore[attr-defined]
+    store.similarity_search.assert_called_once()  # ty: ignore
+    _, _kwargs = store.similarity_search.call_args  # ty: ignore
     # threshold may be passed as positional or keyword
-    call_args = store.similarity_search.call_args[0]  # type: ignore[attr-defined]
+    call_args = store.similarity_search.call_args[0]  # ty: ignore
     assert call_args[1] == 0.8  # second positional arg = threshold
 
 

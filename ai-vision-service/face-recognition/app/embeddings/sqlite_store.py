@@ -66,7 +66,7 @@ class SQLiteEmbeddingStore:
                     "INSERT INTO vec_faces(face_embedding) VALUES (?)",
                     [_to_blob(embedding)],
                 )
-                vec_rowid: int = cursor.lastrowid  # type: ignore[assignment]
+                vec_rowid: int = cursor.lastrowid  # ty: ignore
                 conn.execute(
                     "INSERT INTO face_meta(vec_rowid, lychee_face_id, photo_id, laplacian_variance, "
                     "crop_path) VALUES (?, ?, ?, ?, ?)",

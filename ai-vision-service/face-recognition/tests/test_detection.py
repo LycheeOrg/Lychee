@@ -134,7 +134,7 @@ def test_detect_sorts_by_confidence_descending() -> None:
 
 def test_detect_returns_full_embedding() -> None:
     """Each DetectedFace must include a 512-element embedding list."""
-    embedding = list(range(512))
+    embedding: list[int | float] = list(range(512))
     mock_face = _make_mock_face([0, 0, 50, 50], 0.99, embedding)
     detector = _build_detector_with_faces([mock_face])
     fake_img = np.zeros((100, 100, 3), dtype=np.uint8)

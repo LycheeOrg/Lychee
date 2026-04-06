@@ -145,10 +145,10 @@ def test_match_returns_matches(
 ) -> None:
     """When matches are found, /match must return them in the response body."""
 
-    mock_detector.detect_bytes.return_value = [  # type: ignore[attr-defined]
+    mock_detector.detect_bytes.return_value = [  # ty: ignore
         DetectedFace(x=0.1, y=0.1, width=0.5, height=0.5, confidence=0.99, embedding=[0.5] * 512)
     ]
-    mock_store.similarity_search.return_value = [("face-abc", 0.91)]  # type: ignore[attr-defined]
+    mock_store.similarity_search.return_value = [("face-abc", 0.91)]  # ty: ignore
 
     img_buf = io.BytesIO(jpeg_image_bytes)
     response = client.post(
@@ -166,10 +166,10 @@ def test_match_returns_empty_matches_when_below_threshold(
     client: TestClient, mock_detector: object, mock_store: object, jpeg_image_bytes: bytes
 ) -> None:
     """If no stored face exceeds threshold, matches must be an empty list."""
-    mock_detector.detect_bytes.return_value = [  # type: ignore[attr-defined]
+    mock_detector.detect_bytes.return_value = [  # ty: ignore
         DetectedFace(x=0.1, y=0.1, width=0.5, height=0.5, confidence=0.99, embedding=[0.5] * 512)
     ]
-    mock_store.similarity_search.return_value = []  # type: ignore[attr-defined]
+    mock_store.similarity_search.return_value = []  # ty: ignore
 
     img_buf = io.BytesIO(jpeg_image_bytes)
     response = client.post(
