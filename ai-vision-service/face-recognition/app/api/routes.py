@@ -333,6 +333,9 @@ async def _run_detection_job(
             faces=[fd[2] for fd in face_data],
         )
         callback_url = f"{settings.lychee_api_url}/api/v2/FaceDetection/results"
+        logger.debug("Sending detection results to Lychee for photo_id=%s (%d face(s))", photo_id, len(face_data))
+        logger.debug("Detection callback payload: %s", payload.model_dump())
+
 
         async with httpx.AsyncClient(verify=settings.verify_ssl) as client:
             response = await client.post(

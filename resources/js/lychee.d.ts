@@ -644,6 +644,7 @@ declare namespace App.Http.Resources.Models {
 		width: number;
 		height: number;
 		confidence: number;
+		laplacian_variance: number;
 		is_dismissed: boolean;
 		crop_url: string | null;
 		person_name: string | null;

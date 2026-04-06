@@ -20,7 +20,7 @@ class FaceDetectionResultsRequest extends BaseApiRequest
 {
 	private string $photo_id;
 	private string $status;
-	/** @var array<array{x:float,y:float,width:float,height:float,confidence:float,embedding_id:string,crop?:string,suggestions?:array<array{lychee_face_id:string,confidence:float}>}> */
+	/** @var array<array{x:float,y:float,width:float,height:float,confidence:float,laplacian_variance:float,embedding_id:string,crop?:string,suggestions?:array<array{lychee_face_id:string,confidence:float}>}> */
 	private array $faces = [];
 	private ?string $error_code = null;
 	private ?string $message = null;
@@ -52,6 +52,7 @@ class FaceDetectionResultsRequest extends BaseApiRequest
 			'faces.*.width' => 'required_with:faces|numeric',
 			'faces.*.height' => 'required_with:faces|numeric',
 			'faces.*.confidence' => 'required_with:faces|numeric',
+			'faces.*.laplacian_variance' => 'required_with:faces|numeric',
 			'faces.*.embedding_id' => 'required_with:faces|string',
 			'faces.*.crop' => 'sometimes|string',
 			'faces.*.suggestions' => 'sometimes|array',

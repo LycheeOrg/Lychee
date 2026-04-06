@@ -1,86 +1,99 @@
 <template>
 	<Dialog v-model:visible="visible" modal :header="$t('people.assignment.title')" pt:root:class="border-none w-full max-w-md" @show="onShow">
-		<div class="flex flex-col gap-4 p-2">
-			<!-- Face crop preview -->
-			<div class="flex justify-center">
-				<img
-					v-if="face.crop_url"
-					:src="face.crop_url"
-					alt="Face crop"
-					class="w-24 h-24 rounded-full object-cover border-2 border-surface-700"
-				/>
-				<div v-else class="w-24 h-24 rounded-full bg-surface-800 flex items-center justify-center">
-					<i class="pi pi-user text-4xl text-muted-color" />
+		<template #container="{ closeCallback }">
+			<div class="flex flex-col gap-4 p-9">
+				<!-- Face crop preview -->
+				<div class="flex justify-center">
+					<img
+						v-if="face.crop_url"
+						:src="face.crop_url"
+						alt="Face crop"
+						class="w-24 h-24 rounded-full object-cover border-2 border-surface-700"
+					/>
+					<div v-else class="w-24 h-24 rounded-full bg-surface-800 flex items-center justify-center">
+						<i class="pi pi-user text-4xl text-muted-color" />
+					</div>
 				</div>
-			</div>
-			<div class="text-center text-sm text-muted-color">{{ $t("people.confidence") }}: {{ Math.round(face.confidence * 100) }}%</div>
+				<div class="text-center text-sm text-muted-color grid grid-cols-2 gap-1">
+					<div class="text-right">{{ $t("people.confidence") }}:</div>
+					<div class="text-left">{{ Math.round(face.confidence * 100) }}%</div>
+					<div class="text-right">{{ $t("people.laplacian_variance") }}:</div>
+					<div class="text-left">{{ Math.round(face.laplacian_variance * 10) / 10 }}</div>
+				</div>
 
-			<!-- Suggestions -->
-			<div v-if="face.suggestions.length > 0" class="flex flex-col gap-2">
-				<div class="text-sm font-semibold text-muted-color-emphasis">Suggestions</div>
-				<div class="flex gap-2 flex-wrap">
-					<Button
-						v-for="suggestion in face.suggestions"
-						:key="suggestion.suggested_face_id"
-						severity="secondary"
-						outlined
-						size="small"
-						@click="selectSuggestion(suggestion)"
+				<!-- Suggestions -->
+				<div v-if="face.suggestions.length > 0" class="flex flex-col gap-2">
+					<div class="text-sm font-semibold text-muted-color-emphasis">Suggestions</div>
+					<div class="flex gap-2 flex-wrap">
+						<Button
+							v-for="suggestion in face.suggestions"
+							:key="suggestion.suggested_face_id"
+							severity="secondary"
+							outlined
+							size="small"
+							@click="selectSuggestion(suggestion)"
+						>
+							<img v-if="suggestion.crop_url" :src="suggestion.crop_url" class="w-6 h-6 rounded-full object-cover mr-1" alt="" />
+							{{ suggestion.person_name ?? $t("people.unknown") }}
+							({{ Math.round(suggestion.confidence * 100) }}%)
+						</Button>
+					</div>
+				</div>
+
+				<!-- Select existing person -->
+				<div>
+					<label class="block text-sm text-muted-color mb-1">{{ $t("people.assignment.select_person") }}</label>
+					<Select
+						v-model="selectedPersonId"
+						:options="people"
+						option-label="name"
+						option-value="id"
+						:placeholder="$t('people.assignment.select_person')"
+						class="w-full"
+						filter
+						:loading="loadingPeople"
+						@change="newPersonName = ''"
 					>
-						<img v-if="suggestion.crop_url" :src="suggestion.crop_url" class="w-6 h-6 rounded-full object-cover mr-1" alt="" />
-						{{ suggestion.person_name ?? $t("people.unknown") }}
-						({{ Math.round(suggestion.confidence * 100) }}%)
-					</Button>
+						<template #option="slotProps">
+							<div class="flex items-center gap-2">
+								<img
+									v-if="slotProps.option.representative_crop_url"
+									:src="slotProps.option.representative_crop_url"
+									class="w-6 h-6 rounded-full object-cover shrink-0"
+									alt=""
+								/>
+								<i v-else class="pi pi-user w-6 h-6 flex items-center justify-center text-muted-color shrink-0" />
+								<span class="flex-1 truncate">{{ slotProps.option.name }}</span>
+								<span class="text-xs text-muted-color shrink-0">{{ slotProps.option.face_count }}</span>
+							</div>
+						</template>
+					</Select>
+				</div>
+
+				<!-- Or create new person -->
+				<div>
+					<label class="block text-sm text-muted-color mb-1">{{ $t("people.assignment.new_person") }}</label>
+					<InputText
+						v-model="newPersonName"
+						class="w-full"
+						:placeholder="$t('people.assignment.new_person_placeholder')"
+						@input="selectedPersonId = undefined"
+					/>
 				</div>
 			</div>
 
-			<!-- Select existing person -->
-			<div>
-				<label class="block text-sm text-muted-color mb-1">{{ $t("people.assignment.select_person") }}</label>
-				<Select
-					v-model="selectedPersonId"
-					:options="people"
-					option-label="name"
-					option-value="id"
-					:placeholder="$t('people.assignment.select_person')"
-					class="w-full"
-					filter
-					:loading="loadingPeople"
-					@change="newPersonName = ''"
-				>
-					<template #option="slotProps">
-						<div class="flex items-center gap-2">
-							<img
-								v-if="slotProps.option.representative_crop_url"
-								:src="slotProps.option.representative_crop_url"
-								class="w-6 h-6 rounded-full object-cover shrink-0"
-								alt=""
-							/>
-							<i v-else class="pi pi-user w-6 h-6 flex items-center justify-center text-muted-color shrink-0" />
-							<span class="flex-1 truncate">{{ slotProps.option.name }}</span>
-							<span class="text-xs text-muted-color shrink-0">{{ slotProps.option.face_count }}</span>
-						</div>
-					</template>
-				</Select>
-			</div>
-
-			<!-- Or create new person -->
-			<div>
-				<label class="block text-sm text-muted-color mb-1">{{ $t("people.assignment.new_person") }}</label>
-				<InputText
-					v-model="newPersonName"
-					class="w-full"
-					:placeholder="$t('people.assignment.new_person_placeholder')"
-					@input="selectedPersonId = undefined"
-				/>
-			</div>
-		</div>
-
-		<template #footer>
-			<div class="flex gap-2 justify-end">
-				<Button :label="$t('people.assignment.dismiss')" severity="danger" text :loading="dismissing" @click="dismiss" />
-				<Button :label="$t('people.assignment.cancel')" severity="secondary" text @click="visible = false" />
+			<div class="flex justify-end">
 				<Button
+					class="w-full rounded-none rounded-bl-xl"
+					:label="$t('people.assignment.dismiss')"
+					severity="danger"
+					text
+					:loading="dismissing"
+					@click="dismiss"
+				/>
+				<Button class="w-full rounded-none" :label="$t('people.assignment.cancel')" severity="secondary" text @click="closeCallback" />
+				<Button
+					class="w-full rounded-none rounded-br-xl"
 					:label="$t('people.assignment.confirm')"
 					severity="primary"
 					:disabled="!selectedPersonId && !newPersonName.trim()"

@@ -20,6 +20,7 @@ return [
     'hidden_faces' => 'face(s) hidden for privacy',
     'unknown' => 'Unknown',
     'confidence' => 'Confidence',
+    'laplacian_variance' => 'Laplacian Variance',
     'assign_face' => 'Assign face',
     'dismiss_face' => 'Dismiss face',
     'undismiss_face' => 'Undismiss face',

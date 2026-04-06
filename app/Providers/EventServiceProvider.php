@@ -26,7 +26,6 @@ use App\Events\PhotoSaved;
 use App\Events\PhotoWillBeDeleted;
 use App\Events\TaggedRouteCacheUpdated;
 use App\Listeners\AlbumCacheCleaner;
-use App\Listeners\AutoScanFacesOnUpload;
 use App\Listeners\CacheListener;
 use App\Listeners\LogQueryTimeout;
 use App\Listeners\MetricsListener;
@@ -124,8 +123,6 @@ class EventServiceProvider extends ServiceProvider
 		Event::listen(PhotoDeleted::class, RecomputeAlbumSizeOnPhotoMutation::class . '@handlePhotoDeleted');
 		Event::listen(AlbumSaved::class, RecomputeAlbumSizeOnAlbumChange::class . '@handleAlbumSaved');
 		Event::listen(AlbumDeleted::class, RecomputeAlbumSizeOnAlbumChange::class . '@handleAlbumDeleted');
-
-		Event::listen(PhotoSaved::class, AutoScanFacesOnUpload::class . '@handle');
 
 		// Webhook dispatch for photo lifecycle events
 		Event::listen(PhotoAdded::class, WebhookListener::class . '@handlePhotoAdded');

@@ -365,23 +365,43 @@ function openFaceAssignment(face: App.Http.Resources.Models.FaceResource) {
 	isFaceAssignmentOpen.value = true;
 }
 
+function removeFaceFromPhoto(faceId: string) {
+	if (photoStore.photo?.faces) {
+		const faceIndex = photoStore.photo.faces.findIndex((f) => f.id === faceId);
+		if (faceIndex !== -1) {
+			photoStore.photo.faces.splice(faceIndex, 1);
+		}
+	}
+}
+
 function dismissFace(face: App.Http.Resources.Models.FaceResource) {
 	if (isTouchDev) {
 		// Touch devices: do not dismiss via shortcut — open modal instead
 		openFaceAssignment(face);
 		return;
 	}
+
+	// Immediately remove from store for instant feedback
+	removeFaceFromPhoto(face.id);
+
 	FaceDetectionService.toggleDismissed(face.id)
 		.then(() => {
 			toast.add({ severity: "success", summary: trans("toasts.success"), detail: trans("people.assignment.dismissed"), life: 3000 });
 			onFaceUpdated();
 		})
 		.catch((e: { response?: { data?: { message?: string } } }) => {
+			// On error, reload to restore face
+			photoStore.load();
 			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });
 		});
 }
 
 function onFaceUpdated() {
+	// Remove dismissed face from store immediately if modal was used
+	if (faceForAssignment.value) {
+		removeFaceFromPhoto(faceForAssignment.value.id);
+	}
+
 	// Force reload photo to refresh face data
 	if (photoStore.photo?.id) {
 		const currentId = photoStore.photoId;

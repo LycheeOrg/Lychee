@@ -41,8 +41,8 @@
 			v-if="selectedFace"
 			v-model:visible="isAssignmentOpen"
 			:face="selectedFace"
-			@assigned="emits('facesUpdated')"
-			@dismissed="emits('facesUpdated')"
+			@assigned="handleFaceUpdated"
+			@dismissed="handleFaceDismissed"
 		/>
 	</div>
 </template>
@@ -56,6 +56,8 @@ import FaceAssignmentModal from "@/components/modals/FaceAssignmentModal.vue";
 import FaceDetectionService from "@/services/face-detection-service";
 import { shouldIgnoreKeystroke, isTouchDevice } from "@/utils/keybindings-utils";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
+import { usePhotoStore } from "@/stores/PhotoState";
+import { usePhotosStore } from "@/stores/PhotosState";
 import { storeToRefs } from "pinia";
 
 const props = defineProps<{
@@ -69,6 +71,8 @@ const emits = defineEmits<{
 
 const toast = useToast();
 const leftMenuStore = useLeftMenuStateStore();
+const photoStore = usePhotoStore();
+const photosStore = usePhotosStore();
 const { initData } = storeToRefs(leftMenuStore);
 
 const isTouchDev = isTouchDevice();
@@ -130,20 +134,56 @@ function faceLabel(face: App.Http.Resources.Models.FaceResource): string {
 	return face.person_name ?? "Unknown";
 }
 
+function removeFaceFromStores(faceId: string) {
+	// Remove from photoStore
+	if (photoStore.photo?.faces) {
+		const photoFaceIndex = photoStore.photo.faces.findIndex((f) => f.id === faceId);
+		if (photoFaceIndex !== -1) {
+			photoStore.photo.faces.splice(photoFaceIndex, 1);
+		}
+	}
+
+	// Remove from photosStore (for album view)
+	const photoInAlbum = photosStore.photos.find((p) => p.id === photoStore.photo?.id);
+	if (photoInAlbum?.faces) {
+		const albumFaceIndex = photoInAlbum.faces.findIndex((f) => f.id === faceId);
+		if (albumFaceIndex !== -1) {
+			photoInAlbum.faces.splice(albumFaceIndex, 1);
+		}
+	}
+}
+
 function handleClick(face: App.Http.Resources.Models.FaceResource) {
 	if (ctrlHeld.value && !isTouchDev) {
 		// CTRL+click: dismiss directly without modal
+		// Immediately remove from stores for instant feedback
+		removeFaceFromStores(face.id);
+
 		FaceDetectionService.toggleDismissed(face.id)
 			.then(() => {
 				toast.add({ severity: "success", summary: trans("toasts.success"), detail: trans("people.assignment.dismissed"), life: 3000 });
 				emits("facesUpdated");
 			})
 			.catch((e: { response?: { data?: { message?: string } } }) => {
+				// On error, reload to restore face
+				photoStore.load();
 				toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });
 			});
 	} else {
 		selectedFace.value = face;
 		isAssignmentOpen.value = true;
 	}
+}
+
+function handleFaceUpdated() {
+	emits("facesUpdated");
+}
+
+function handleFaceDismissed() {
+	// Immediately remove the dismissed face from stores
+	if (selectedFace.value) {
+		removeFaceFromStores(selectedFace.value.id);
+	}
+	emits("facesUpdated");
 }
 </script>
