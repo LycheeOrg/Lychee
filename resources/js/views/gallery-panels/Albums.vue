@@ -332,6 +332,7 @@ const albumCallbacks = {
 		AlbumService.download(selectedAlbumsIds.value);
 	},
 	toggleApplyRenamer: () => {},
+	toggleScanFaces: () => {},
 };
 
 const {

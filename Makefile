@@ -166,6 +166,9 @@ class-leak:
 docker-build:
 	docker build -t lychee-frankenphp .
 
+docker-build-legacy:
+	docker build -t lychee-frankenphp -f Dockerfile-legacy .
+
 docker-build-no-cache:
 	docker build -t lychee-frankenphp . --no-cache
 

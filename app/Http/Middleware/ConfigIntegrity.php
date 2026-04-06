@@ -105,6 +105,13 @@ class ConfigIntegrity
 		'contact_form_security_question',
 		'contact_form_security_answer',
 		'contact_form_custom_consent_required',
+		'ai_vision_enabled',
+		'ai_vision_face_enabled',
+		'ai_vision_face_permission_mode',
+		'ai_vision_face_selfie_confidence_threshold',
+		'ai_vision_face_person_is_searchable_default',
+		'ai_vision_face_allow_user_claim',
+		'ai_vision_face_scan_batch_size',
 	];
 
 	public const PRO_FIELDS = [

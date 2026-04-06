@@ -351,6 +351,7 @@ const photoCallbacks = {
 	toggleDelete: toggleDelete,
 	toggleDownload: () => {},
 	toggleApplyRenamer: toggleApplyRenamer,
+	toggleScanFaces: () => {},
 };
 
 const albumCallbacks = {
@@ -362,6 +363,7 @@ const albumCallbacks = {
 	toggleDownload: () => {},
 	togglePin: () => {},
 	toggleApplyRenamer: toggleApplyRenamer,
+	toggleScanFaces: () => {},
 };
 
 const album = computed(() => albumStore.album);

@@ -115,6 +115,7 @@ const photoCallbacks = {
 		PhotoService.download(selectedPhotosIds.value, getParentId());
 	},
 	toggleApplyRenamer: toggleApplyRenamer,
+	toggleScanFaces: () => {},
 };
 
 const albumCallbacks = {
@@ -126,6 +127,7 @@ const albumCallbacks = {
 	toggleDownload: () => {},
 	togglePin: () => {},
 	toggleApplyRenamer: () => {},
+	toggleScanFaces: () => {},
 };
 
 const {

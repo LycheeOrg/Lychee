@@ -2,7 +2,7 @@
 
 _Linked specification:_ `docs/specs/4-architecture/features/030-ai-vision-service/spec.md`
 _Status:_ Draft
-_Last updated:_ 2026-03-18
+_Last updated:_ 2026-04-04
 
 > Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in [docs/specs/4-architecture/open-questions.md](../../open-questions.md), and assume clarifications are resolved only when the spec's normative sections and, where applicable, ADRs have been updated.
 
@@ -29,10 +29,20 @@ Enable Lychee users to browse their photo library by the people who appear in th
   - Feature and unit tests for all backend functionality.
   - **Python facial recognition service**: face detection, embedding generation, clustering, similarity matching, REST API with callback support.
   - **Docker image**: Dockerfile for the Python service, docker-compose integration, deployment documentation.
+  - **Face dismiss UX**: Dismiss button in modal + CTRL+click shortcut on overlays *(Q-030-54)*.
+  - **Maintenance blocks**: Destroy dismissed faces, reset stuck/failed scans with conditional visibility *(Q-030-55)*.
+  - **Batch face operations**: Multi-select faces, unassign/reassign/uncluster *(Q-030-56, Q-030-58)*.
+  - **Unassign face from person**: Return face to unassigned pool *(Q-030-57)*.
+  - **Person miniature in dropdowns**: Circular crop in assignment/merge dropdowns *(Q-030-59)*.
+  - **Face circles in detail panel**: Photo sidebar shows circular face crops with click/CTRL+click interactions *(Q-030-60)*.
+  - **Face overlay config**: Global enable/disable toggle + default visibility setting + P-key toggle *(Q-030-61)*.
+  - **Album people endpoint**: List persons found in an album *(Q-030-62)*.
+  - **Merge person UI**: Modal with person search and miniatures *(Q-030-58)*.
 
 - **Out of scope:**
   - Training custom face recognition models (use pre-trained models like InsightFace/dlib/face_recognition).
-  - Cluster review/confirmation UI (Lychee consumes cluster suggestions; dedicated review workflow is a follow-up).
+  - Per-user face overlay preferences (deferred — currently global config only).
+  - Policy refinement for album/photo edit rights cross-check (deferred — Q-030-63).
 
 ## Dependencies & Interfaces
 
@@ -79,7 +89,7 @@ After each increment, verify:
 
 ## Increment Map
 
-> **Implementation order: Python service first (I1–I3), then PHP/Lychee backend (I4–I12), then frontend (I13–I18), then docs (I19).**
+> **Implementation order: Python service first (I1–I3), then PHP/Lychee backend (I4–I12), then frontend (I13–I18), then docs (I19), then clustering & embedding sync (I20–I22), then face UX enhancements (I23–I30).**
 
 ### Phase 1: Python Facial Recognition Service
 
@@ -251,7 +261,47 @@ After each increment, verify:
 - _Commands:_ `php artisan test --filter=PersonPhotos`, `make phpstan`
 - _Exit:_ Paginated photos returned; access control respected.
 
-### Phase 3: Frontend (Vue3/TypeScript)
+### I20 – Clustering Endpoint: Python `POST /cluster` + PHP Ingestion & Trigger (≥90 min)
+
+- _Goal:_ Wire up the existing `FaceClusterer` (DBSCAN) to a FastAPI REST endpoint and complete the round-trip: Python runs clustering, posts suggestion pairs to Lychee, Lychee bulk-upserts `face_suggestions`. Admin can trigger clustering via a Maintenance API action.
+- _Preconditions:_ I2 complete (`FaceClusterer` and `EmbeddingStore` implemented); I10 complete (`face_suggestions` table exists, PHP ingestion pipeline in place); I11 complete (Maintenance endpoint pattern established).
+- _Steps:_
+  1. **Python** — Add `ClusterResponse` Pydantic schema (`{clusters: int, suggestions_generated: int}`) to `app/api/schemas.py`. Add `VISION_FACE_CLUSTER_EPS` env var to `AppSettings` (default `0.6`).
+  2. **Python** — Extend `app/clustering/clusterer.py` with `run_cluster_and_notify(store: EmbeddingStore, lychee_url: str, api_key: str) -> ClusterResponse`: reads all embeddings from store, runs DBSCAN, produces (a) a `labels` list — `[{face_id: str, cluster_label: int}]` for every non-noise face; (b) a `suggestions` list — `(face_id, suggested_face_id, confidence)` pairs for every intra-cluster pair (cosine similarity as confidence). POSTs `{labels: [...], suggestions: [...]}` to `{lychee_url}/api/v2/FaceDetection/cluster-results` with `X-API-Key` header. *(Q-030-49)*
+  3. **Python** — Add `POST /cluster` route to `app/api/routes.py` (X-API-Key auth); calls `run_cluster_and_notify()`; returns `ClusterResponse`. Add unit + integration tests in `tests/test_clustering.py` (mock httpx POST to Lychee).
+  4. **PHP** — Implement `POST /api/v2/FaceDetection/cluster-results` endpoint in `FaceDetectionController` (or a new `FaceClusterResultsController`): auth via X-API-Key, validate body `{suggestions: [{face_id, suggested_face_id, confidence}]}`, bulk-upsert `face_suggestions` rows (upsert on `(face_id, suggested_face_id)`, update `confidence`), return `{updated_count: N}`. Register route.
+  5. **PHP** — Add `POST /api/v2/Maintenance::runFaceClustering` Maintenance endpoint (admin-only, follows existing check/do pattern): calls Python service `POST /cluster` via HTTP, returns 202 Accepted. Register route.
+  6. Write PHP feature tests for cluster-results ingestion (success, invalid API key, malformed body) and for the Maintenance trigger (success, service unavailable 503).
+- _Commands:_ `uv run pytest tests/test_clustering.py`, `php artisan test --filter=FaceCluster`, `make phpstan`
+- _Exit:_ `POST /cluster` on Python service triggers DBSCAN and POSTs pairs to Lychee; `POST /FaceDetection/cluster-results` bulk-upserts face_suggestions; Maintenance trigger returns 202; all tests green.
+
+### I21 – Embedding Sync on Deletion + Blur Threshold Filtering (≈60 min)
+
+- _Goal:_ Prevent stale embeddings from corrupting clustering/suggestions after face hard-deletes; discard blurry faces before they ever reach Lychee.
+- _Preconditions:_ I2 complete (EmbeddingStore implemented); I9 complete (`destroyDismissed` action exists); Photo model cascade delete exists.
+- _Steps:_
+  1. **Python** — Add `VISION_FACE_BLUR_THRESHOLD` (float, default `100.0`) to `AppSettings` in `app/config.py`. In `app/detection/detector.py`, after cropping each detected face region, compute its Laplacian variance using OpenCV/NumPy (`cv2.Laplacian(crop, cv2.CV_64F).var()`); exclude faces whose variance is below `VISION_FACE_BLUR_THRESHOLD`. Also add `VISION_FACE_CLUSTER_EPS` to `AppSettings` (default `0.6`) if not already present from I20.
+  2. **Python** — Add `DELETE /embeddings` route to `app/api/routes.py` (X-API-Key auth): accepts `{face_ids: [str]}`, calls `EmbeddingStore.delete_many(face_ids)`, returns `{deleted_count: int}`. Add `delete_many()` method to the `EmbeddingStore` protocol and both implementations (`SQLiteStore`, `PgVectorStore`). IDs not found are silently ignored.
+  3. **Python** — Add tests: `tests/test_detection.py` — blurry face below threshold not returned; sharp face above threshold returned. `tests/test_api.py` — `DELETE /embeddings` removes embeddings and returns count.
+  4. **PHP** — Create `DeleteFaceEmbeddingsJob` (queued): accepts `array<string> $faceIds`, calls Python `DELETE /embeddings` via HTTP with `X-API-Key`; logs warning on failure, never throws. Dispatch this job **after** `destroyDismissed` deletes Face records (FR-030-14, S-030-28).
+  5. **PHP** — Add `Face` model observer or hook into `Photo` cascade: after a Photo delete triggers Face cascade deletes, collect deleted face IDs and dispatch `DeleteFaceEmbeddingsJob` (S-030-29).
+  6. **PHP** — Write feature tests: `DELETE /Face/dismissed` → embeddings deleted (job dispatched with correct IDs); Photo delete → embeddings deleted; Python unavailable → Lychee deletion still succeeds, warning logged.
+- _Commands:_ `uv run pytest tests/test_detection.py tests/test_api.py`, `php artisan test --filter=FaceEmbeddingSync`, `make phpstan`
+- _Exit:_ Blurry faces never reach Lychee; dismissed/cascade-deleted Face embeddings are removed from the store; service unavailability does not block Lychee-side deletions.
+
+### I22 – Cluster Review UI: Browse & Bulk-Name/Dismiss Clusters (≥90 min)
+
+- _Goal:_ Give authorized users a dedicated page to review DBSCAN-produced face clusters (visually similar unassigned faces) and resolve them in bulk — either creating a Person and assigning all faces in one action, or dismissing the whole cluster as false-positives.
+- _Preconditions:_ I20 complete (`face_suggestions` populated by clustering); I9 complete (dismiss action exists); I7 complete (Person create + face assign available).
+- _Steps:_
+  1. **PHP** — Add migration for `cluster_label INT NULL` column + composite index `(cluster_label, person_id, is_dismissed)` on `faces` (DO-030-07, Q-030-49). Implement `GET /api/v2/FaceDetection/clusters` (API-030-18): `SELECT cluster_label, COUNT(*) as size FROM faces WHERE cluster_label IS NOT NULL AND person_id IS NULL AND is_dismissed = false GROUP BY cluster_label ORDER BY cluster_label LIMIT/OFFSET`; load preview faces per cluster; return `{cluster_id: int, size: int, faces: FaceResource[]}`. `cluster_id` = integer `cluster_label` value. Respect `ai_vision_face_permission_mode` visibility rules.
+  2. **PHP** — Implement `POST /api/v2/FaceDetection/clusters/{cluster_id}/assign` (API-030-19): resolve cluster faces, create Person if `new_person_name` provided, bulk-update `face.person_id` for all faces in cluster, emit `face.cluster_assigned` telemetry. Return `{person_id, assigned_count}`.
+  3. **PHP** — Implement `POST /api/v2/FaceDetection/clusters/{cluster_id}/dismiss` (API-030-20): bulk-set `is_dismissed = true` for all faces in cluster, emit `face.cluster_dismissed` telemetry. Return `{dismissed_count}`.
+  4. Write feature tests: list clusters (unassigned faces grouped, assigned faces excluded), assign cluster (new person + faces linked), dismiss cluster (all faces dismissed). Test permission mode enforcement.
+  5. **Frontend** — Create `FaceClusters.vue` page at `/people/clusters`. Paginated grid of cluster cards: first 5 face-crop thumbnails + "+N more" overflow badge, cluster size badge, name input, “Create Person & Assign All” button, “Dismiss” button. “Run Cluster” button in page header calls `POST /Maintenance::runFaceClustering` then refreshes. Empty state when no clusters exist.
+  6. Add route `/people/clusters` to Vue Router; add “Clusters” navigation link under People in sidebar.
+- _Commands:_ `php artisan test --filter=FaceClusterReviewTest`, `make phpstan`, `npm run check`
+- _Exit:_ Clusters page shows unassigned face groups; bulk-assign creates Person and links all faces; bulk-dismiss marks all is_dismissed; “Run Cluster” triggers fresh clustering; all tests green.
 
 ### I13 – Frontend: People Page (≈90 min)
 
@@ -351,6 +401,105 @@ After each increment, verify:
 - _Commands:_ Full quality gate commands.
 - _Exit:_ All gates green; documentation current.
 
+### Phase 5: Face UX Enhancements (Q-030-54 through Q-030-64)
+
+### I23 – Face Dismiss UX: Modal Button + CTRL+Click Overlay (≈60 min)
+
+- _Goal:_ Add dismiss functionality to the FaceAssignmentModal and CTRL+click shortcut on face overlays (desktop only).
+- _Preconditions:_ I15 (FaceOverlay.vue) and I16 (FaceAssignmentModal.vue) complete.
+- _Steps:_
+  1. **Frontend** — Add "Dismiss" button to FaceAssignmentModal.vue. Clicking calls `PATCH /Face/{id}` to set `is_dismissed = true`, then closes the modal and refreshes overlays. *(FR-030-16)*
+  2. **Frontend** — In FaceOverlay.vue, check `isTouchDevice()` from `keybindings-utils.ts`. On non-touch devices only, listen for CTRL `keydown`/`keyup` events on `window`. When CTRL is held, switch all face rectangle CSS to red dashed borders. When a rectangle is clicked in CTRL state, call `PATCH /Face/{id}` directly (no modal). After dismiss, remove the overlay element. Touch devices: no CTRL+click — modal button only. *(Q-030-70: B)*
+  3. Write JS unit test: CTRL state toggles overlay CSS classes; click in CTRL state fires dismiss API call.
+- _Commands:_ `npm run check`, `npm run format`
+- _Exit:_ Dismiss button works in modal; CTRL+click dismiss works on desktop overlays; touch devices unaffected; visual feedback correct; tests green.
+
+### I24 – Face Overlay Config Settings & P-Key Toggle (≈45 min)
+
+- _Goal:_ Add config settings for face overlay enable/disable and default visibility; map P key to toggle.
+- _Preconditions:_ I4 (config migration pattern established), I15 (FaceOverlay.vue exists).
+- _Steps:_
+  1. **PHP** — Add config migration for `ai_vision_face_overlay_enabled` (0|1, default 1) and `ai_vision_face_overlay_default_visibility` (string: `visible`|`hidden`, default `visible`) to the AI Vision category. *(NFR-030-11)*
+  2. **Frontend** — In FaceOverlay.vue, gate overlay rendering on `ai_vision_face_overlay_enabled` config. Initialize overlay visibility from `ai_vision_face_overlay_default_visibility`.
+  3. **Frontend** — Register `P` key handler (on photo view) to toggle overlay visibility. `P` is confirmed unbound — `F` maps to fullscreen. Use `onKeyStroke('p', ...)` pattern from `@vueuse/core` with `shouldIgnoreKeystroke()` guard. *(Q-030-65: A)*
+  4. Write PHP migration test; verify config values accessible.
+- _Commands:_ `php artisan test`, `npm run check`, `npm run format`
+- _Exit:_ Overlay disabled when config is off; default visibility respected; P key toggles; no key binding conflicts.
+
+### I25 – Face Circles in Photo Detail Panel (≈60 min)
+
+- _Goal:_ Display circular face crop thumbnails in the photo details sidebar with click/CTRL+click interactions.
+- _Preconditions:_ I15 (face overlays), I16 (FaceAssignmentModal), I23 (CTRL+click dismiss).
+- _Steps:_
+  1. **Frontend** — Add "People in this photo" section to `PhotoDetails.vue`. Render a horizontal flex row (`overflow-x: auto`) of circular face crop images (48px, `border-radius: 50%`) with person name label below each. Unassigned faces show "???". Hidden when photo has no faces or when `ai_vision_face_overlay_enabled = 0`.
+  2. **Frontend** — Click on a face circle → open FaceAssignmentModal for that face.
+  3. **Frontend** — CTRL+click on a face circle (desktop only) → dismiss face directly (same pattern as I23). *(Q-030-70: B — no touch shortcut)*
+  4. Overflow handled by horizontal scroll (`overflow-x: auto`) — all circles accessible by scrolling. *(Q-030-71: A)*
+- _Commands:_ `npm run check`, `npm run format`
+- _Exit:_ Face circles render in detail panel; click/CTRL+click interactions work; overflow handled; tests green.
+
+### I26 – Batch Face Operations: API + Frontend (≈90 min)
+
+- _Goal:_ Implement batch face selection, unassign, reassign, uncluster operations in both backend and frontend.
+- _Preconditions:_ I9 (face assignment), I22 (cluster review), I14 (person detail).
+- _Steps:_
+  1. **PHP** — Implement `POST /api/v2/Face/batch` endpoint in FaceController. Body: `{face_ids: [str], action: "unassign"|"assign", person_id?: str, new_person_name?: str}`. Validation: face_ids non-empty, action valid, person_id or new_person_name for assign. Auth: check assign permission for each face. Returns `{affected_count, person_id?}`. *(FR-030-19, API-030-24)*
+  2. **PHP** — Implement `POST /api/v2/FaceDetection/clusters/{cluster_id}/uncluster` endpoint. Body: `{face_ids: [str]}`. Sets `cluster_label = NULL` for qualifying faces. Returns `{unclustered_count}`. *(FR-030-17, API-030-23)*
+  3. **PHP** — Write feature tests: batch unassign, batch assign to existing person, batch assign to new person, uncluster faces, auth checks.
+  4. **Frontend** — Add "Select Mode" toggle button to PersonDetail.vue and FaceClusters.vue. When active, checkbox overlays appear on each face crop.
+  5. **Frontend** — Add action bar (slides in at bottom when faces selected): "Unassign (N)", "Reassign to...", "Assign to new person", "Uncluster" (cluster view only). Each calls the corresponding API.
+  6. Create `FaceBatchService.ts` with typed functions.
+- _Commands:_ `php artisan test --filter=FaceBatch`, `make phpstan`, `npm run check`
+- _Exit:_ Batch operations work end-to-end; select mode activates cleanly; action bar renders; all tests green.
+
+### I27 – Maintenance Blocks: Dismiss Cleanup + Combined Reset Stuck/Failed Scans (≈60 min)
+
+- _Goal:_ Add two conditional maintenance blocks for face cleanup and scan reset operations. *(Q-030-73: combined stuck+failed into one block)*
+- _Preconditions:_ I9 (dismiss exists), I11 (stuck reset exists), maintenance pattern established.
+- _Steps:_
+  1. **PHP** — Implement `DestroyDismissedFaces` maintenance controller with check/do pattern. `check()` returns count of `Face::where('is_dismissed', true)->count()`. `do()` reuses `destroyDismissed` logic from FaceController. *(FR-030-23, API-030-21/21b)*
+  2. **PHP** — Implement `ResetFaceScanStatus` maintenance controller (combined stuck + failed). `check()` returns sum of: stuck-pending (>720 min) + `face_scan_status = 'failed'`. `do()` resets both in one DB operation. Returns `{reset_count: N}`. *(FR-030-24, API-030-22/22b, Q-030-73)*
+  3. **PHP** — Register maintenance routes in `api_v2.php`. Write feature tests for both check/do endpoints.
+  4. **Frontend** — Create `MaintenanceDestroyDismissedFaces.vue`: calls check endpoint on mount, hides when count is 0, "Destroy All" button calls POST endpoint. Follow existing `MaintenanceBulkScanFaces.vue` pattern.
+  5. **Frontend** — Create `MaintenanceResetFaceScanStatus.vue` (NOT separate components for stuck and failed — combined per Q-030-73). Same pattern: check on mount, hide when 0, "Reset All" button.
+  6. **Frontend** — Add both maintenance cards to `Maintenance.vue` template.
+- _Commands:_ `php artisan test --filter=Maintenance`, `make phpstan`, `npm run check`
+- _Exit:_ Both maintenance blocks appear conditionally; check returns correct counts; do performs cleanup; cards hidden when count is 0.
+
+### I28 – Merge Person UI + Person Miniature in Dropdown (≈60 min)
+
+- _Goal:_ Implement merge person modal and add person miniatures to the face assignment dropdown.
+- _Preconditions:_ I8 (merge backend), I16 (FaceAssignmentModal), I14 (PersonDetail).
+- _Steps:_
+  1. **Frontend** — Create `MergePersonModal.vue`. Triggered by "Merge into..." button on PersonDetail.vue. Shows source person info, PrimeVue Dropdown with person search (custom option template: 24px circular miniature + name + face count), warning text about merge consequences, Cancel/Merge buttons. On confirm, calls `POST /Person/{id}/merge`. *(FR-030-25)*
+  2. **Frontend** — Update FaceAssignmentModal.vue dropdown to use custom `option` template with circular miniature (from `representative_crop_url`), person name, and face count. Use PrimeVue Dropdown's `optionLabel` slot. Fallback placeholder icon when no crop exists. *(FR-030-20)*
+  3. After merge, redirect from source person page to target person page.
+- _Commands:_ `npm run check`, `npm run format`
+- _Exit:_ Merge modal opens from PersonDetail; person search works with miniatures; merge executes and redirects; assignment dropdown shows miniatures.
+
+### I29 – Album People Endpoint (≈45 min)
+
+- _Goal:_ New endpoint returning persons found in a given album.
+- _Preconditions:_ I7 (People CRUD), photo_albums relationship exists.
+- _Steps:_
+  1. **PHP** — Implement `AlbumPeopleController` with `index()` action. `GET /api/v2/Album/{id}/people`: query `SELECT DISTINCT persons.* FROM persons JOIN faces ... JOIN photo_albums WHERE photo_albums.album_id = ?` (non-recursive, direct photos only). Return `PaginatedPersonsResource`. Respect `ai_vision_face_permission_mode` and `is_searchable` filtering. *(FR-030-22, API-030-25)*
+  2. **PHP** — Create `AlbumPeopleRequest` form request; validate album_id exists, user has album access.
+  3. **PHP** — Write feature tests: album with persons returns correct list; empty album returns empty; non-searchable filtering; access control.
+  4. **PHP** — Register route in `api_v2.php`.
+- _Commands:_ `php artisan test --filter=AlbumPeople`, `make phpstan`
+- _Exit:_ Album people endpoint returns correct persons; pagination works; access control verified.
+
+### I30 – Unassign Face from Person (≈30 min)
+
+- _Goal:_ Allow unassigning a face from a person, returning it to the unassigned pool.
+- _Preconditions:_ I9 (face assignment API).
+- _Steps:_
+  1. **PHP** — Update `POST /Face/{id}/assign` to accept `person_id: null` (or empty string) as a valid value that unassigns the face (sets `face.person_id = NULL`). Emit `face.unassigned` telemetry. *(FR-030-18, API-030-25)*
+  2. **PHP** — Write feature test: assign face, then unassign (person_id = null); verify face returns to unassigned state.
+  3. **Frontend** — In PersonDetail.vue (non-batch mode), add "Remove" button or context menu option on each face crop that calls assign with `person_id: null`.
+- _Commands:_ `php artisan test --filter=FaceAssignment`, `make phpstan`, `npm run check`
+- _Exit:_ Face unassign works via API; PersonDetail UI allows removal; face returns to unassigned pool.
+
 ## Scenario Tracking
 
 | Scenario ID | Increment / Task reference | Notes |
@@ -381,6 +530,26 @@ After each increment, verify:
 | S-030-24 | I9 | Face dismissed (is_dismissed toggle) |
 | S-030-25 | I9 | Admin hard-deletes all dismissed faces + crop files |
 | S-030-26 | I11 | Admin resets stuck-pending photos via Maintenance endpoint |
+| S-030-27 | I20 | Admin triggers clustering; suggestion pairs ingested into face_suggestions |
+| S-030-28 | I21 | Admin hard-deletes dismissed faces; embeddings deleted from Python store |
+| S-030-29 | I21 | Photo deleted; Face cascade-deleted; embeddings deleted from Python store |
+| S-030-30 | I21 | Blurry face below VISION_FACE_BLUR_THRESHOLD excluded from detection callback |
+| S-030-31 | I22 | Cluster Review page: admin names cluster → Person created, all faces assigned |
+| S-030-32 | I22 | Cluster Review page: admin dismisses cluster → all faces marked is_dismissed |
+| S-030-33 | I23 | Dismiss button in FaceAssignmentModal |
+| S-030-34 | I23 | CTRL+click dismiss on face overlays (red dashed borders) |
+| S-030-35 | I26 | Uncluster selected faces from a cluster |
+| S-030-36 | I30 | Unassign face from person (person_id = NULL) |
+| S-030-37 | I26 | Batch select + reassign faces in person detail |
+| S-030-38 | I25 | Face circles in photo detail panel (click → modal) |
+| S-030-39 | I25 | CTRL+click face circle in detail panel → dismiss |
+| S-030-40 | I29 | Album people endpoint returns persons in album |
+| S-030-41 | I24 | P key toggles face overlay visibility |
+| S-030-42 | I27 | Maintenance destroy dismissed faces block |
+| S-030-43 | I27 | Maintenance reset failed face scans block |
+| S-030-44 | I24 | Face overlay disabled when config is off |
+| S-030-45 | I28 | Person merge from UI with merge modal |
+| S-030-46 | I28 | Person miniature in face assignment dropdown |
 
 ## Analysis Gate
 
@@ -388,7 +557,7 @@ _To be completed after spec, plan, and tasks align and before implementation beg
 
 ## Exit Criteria
 
-- [ ] All 19 increments (I1–I19) complete with passing tests.
+- [ ] All 30 increments (I1–I30) complete with passing tests.
 - [ ] PHPStan 0 errors.
 - [ ] php-cs-fixer clean.
 - [ ] npm run check / npm run format clean.
@@ -401,9 +570,9 @@ _To be completed after spec, plan, and tasks align and before implementation beg
 
 ## Follow-ups / Backlog
 
-- Auto-clustering UI — Python service clusters via `POST /cluster` (DBSCAN offline batch); dedicated cluster-review/confirm workflow is a future enhancement beyond manual assignment. *(Q-030-30 resolved)*
 - Face recognition accuracy tuning and confidence threshold configuration (admin UI for `VISION_FACE_DETECTION_THRESHOLD` / `VISION_FACE_MATCH_THRESHOLD`).
 - Notifications when a user is tagged in a new photo.
 - Performance optimisation for large Person/Face datasets (materialized views, caching face counts).
 - GPU acceleration for the Python service (optional CUDA/ROCm support in Dockerfile).
-- Cluster review UI — surface DBSCAN group results for bulk confirmation by admin.
+- Per-user face overlay visibility preference (currently global config only — Q-030-61).
+- Policy refinement: cross-check album/photo edit rights in AiVisionPolicy (Q-030-63, Q-030-72 — deferred to future iteration).

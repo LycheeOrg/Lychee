@@ -99,4 +99,29 @@ return [
         'description' => 'Found %d albums without size statistics.<br/><br/>Equivalent to running: php artisan lychee:recompute-album-sizes',
         'button' => 'Compute sizes',
     ],
+    'bulk-scan-faces' => [
+        'description' => 'Found %d photos that have not yet been scanned for facial recognition.<br/><br/>Requires the AI Vision service to be running.',
+    ],
+    'run-clustering' => [
+        'description' => 'Trigger face clustering in the AI Vision service. Groups detected faces by similarity so you can assign them to people.',
+        'success' => 'Clustering started successfully.',
+    ],
+    'destroy-dismissed-faces' => [
+        'title' => 'Destroy Dismissed Faces',
+        'description' => 'Found %d dismissed faces. Destroying them will permanently delete their crop files and embeddings.',
+        'action' => 'Destroy All',
+        'success' => 'Dismissed faces destroyed successfully.',
+    ],
+    'sync-face-embeddings' => [
+        'title' => 'Sync Face Embeddings',
+        'description' => 'Face count mismatch detected (%d difference). Syncing will pull latest face data from AI Vision service to Lychee.',
+        'action' => 'Sync Now',
+        'success' => 'Face embeddings synchronized successfully.',
+    ],
+    'reset-face-scan-status' => [
+        'title' => 'Reset Face Scan Status',
+        'description' => 'Found %d photos with a stuck-pending or failed face scan status. Resetting them will allow them to be re-scanned.',
+        'action' => 'Reset All',
+        'success' => 'Face scan statuses reset successfully.',
+    ],
 ];

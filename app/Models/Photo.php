@@ -13,6 +13,7 @@ use App\Casts\DateTimeWithTimezoneCast;
 use App\Casts\MustNotSetCast;
 use App\Constants\PhotoAlbum as PA;
 use App\Contracts\Models\HasUTCBasedTimes;
+use App\Enum\FaceScanStatus;
 use App\Enum\LicenseType;
 use App\Enum\SmartAlbumType;
 use App\Enum\StorageDiskType;
@@ -170,6 +171,7 @@ class Photo extends Model implements HasUTCBasedTimes
 		'altitude' => 'float',
 		'img_direction' => 'float',
 		'rating_avg' => 'decimal:4',
+		'face_scan_status' => FaceScanStatus::class,
 	];
 
 	/**
@@ -270,6 +272,16 @@ class Photo extends Model implements HasUTCBasedTimes
 	public function palette(): HasOne
 	{
 		return $this->hasOne(Palette::class, 'photo_id', 'id');
+	}
+
+	/**
+	 * Return the faces detected in this photo.
+	 *
+	 * @return HasMany<Face,$this>
+	 */
+	public function faces(): HasMany
+	{
+		return $this->hasMany(Face::class, 'photo_id', 'id');
 	}
 
 	/**

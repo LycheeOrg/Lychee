@@ -190,6 +190,7 @@ class Create
 			Shared\UploadSizeVariantsToS3::class,
 			Shared\ExtractColourPalette::class,
 			Shared\NotifyAlbums::class,
+			Standalone\AutoScanFacesOnUpload::class,
 		];
 
 		return $this->executePipeOnDTO($pipes, $dto)->getPhoto();

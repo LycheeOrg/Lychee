@@ -27,6 +27,8 @@ use App\Metadata\Versions\InstalledVersion;
 use App\Metadata\Versions\Remote\GitCommits;
 use App\Metadata\Versions\Remote\GitTags;
 use App\Models\Configs;
+use App\Models\Photo;
+use App\Observers\PhotoObserver;
 use App\Policies\AlbumQueryPolicy;
 use App\Policies\PhotoQueryPolicy;
 use App\Policies\SettingsPolicy;
@@ -111,6 +113,7 @@ class AppServiceProvider extends ServiceProvider
 		$this->registerHttpAndResponseConfiguration();
 		$this->registerStreamFilters();
 		$this->registerOctaneSettings();
+		Photo::observe(PhotoObserver::class);
 	}
 
 	/**

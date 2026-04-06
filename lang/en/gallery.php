@@ -315,6 +315,8 @@ return [
         'merge_all' => 'Merge Selected',
         'apply_renamer' => 'Apply Renamer',
         'apply_renamer_all' => 'Apply Renamer to Selected',
+        'scan_faces' => 'Scan for Faces',
+        'scan_faces_all' => 'Scan Selected for Faces',
         'upload_photo' => 'Upload Photo',
         'take_photo' => 'Take Photo',
         'import_link' => 'Import from Link',

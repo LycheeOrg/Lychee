@@ -43,6 +43,13 @@
 				class="lg:hover:text-primary-500 text-white"
 				@click="watermark"
 			/>
+			<DockButton
+				v-if="isAiVisionEnabled"
+				v-tooltip.bottom="$t('people.scan_faces')"
+				pi="face-smile"
+				class="lg:hover:text-primary-500 text-white"
+				@click="scanFaces"
+			/>
 			<template v-if="lycheeStore.can_rotate">
 				<DockButton icon="counterclockwise" class="fill-white lg:hover:fill-primary-500" @click="emits('rotatePhotoCCW')" />
 				<DockButton icon="clockwise" class="fill-white lg:hover:fill-primary-500" @click="emits('rotatePhotoCW')" />
@@ -64,6 +71,7 @@
 </template>
 <script setup lang="ts">
 import PhotoService from "@/services/photo-service";
+import FaceDetectionService from "@/services/face-detection-service";
 import DockButton from "./DockButton.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
@@ -97,6 +105,8 @@ const isWatermarkerEnabled = computed(
 		needSizeVariantsWatermark(photoStore.photo.size_variants),
 );
 
+const isAiVisionEnabled = computed(() => leftMenu.initData?.modules.is_ai_vision_enabled && photoStore.photo && albumStore.rights?.can_edit);
+
 function watermark() {
 	if (!photoStore.photo) {
 		return;
@@ -109,6 +119,28 @@ function watermark() {
 			life: 3000,
 		});
 	});
+}
+
+function scanFaces() {
+	if (!photoStore.photo) {
+		return;
+	}
+
+	FaceDetectionService.scanPhotos([photoStore.photo.id])
+		.then(() => {
+			toast.add({
+				severity: "success",
+				detail: trans("people.scan_success"),
+				life: 3000,
+			});
+		})
+		.catch((e) => {
+			toast.add({
+				severity: "error",
+				detail: e.response?.data?.message || trans("toasts.error"),
+				life: 3000,
+			});
+		});
 }
 
 function needSizeVariantsWatermark(sizeVariants: App.Http.Resources.Models.SizeVariantsResouce): boolean {
