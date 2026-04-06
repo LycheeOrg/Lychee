@@ -5,8 +5,14 @@
 	<KeybindingsHelp v-if="userStore.isLoggedIn" v-model:visible="is_keybindings_help_open" />
 	<AlbumCreateDialog v-if="albumsStore.rootRights?.can_upload" key="create_album_modal" />
 	<AlbumCreateTagDialog v-if="albumsStore.rootRights?.can_upload" key="create_tag_album_modal" />
-	<LoginModal v-if="!userStore.isLoggedIn" @logged-in="refresh" />
-	<WebauthnModal v-if="!userStore.isLoggedIn" @logged-in="refresh" />
+	<LoginModal v-if="!userStore.isLoggedIn" @logged-in="onLoggedIn" />
+	<WebauthnModal v-if="!userStore.isLoggedIn" @logged-in="onLoggedIn" />
+	<SecurityAdvisoriesModal
+		v-if="advisory.is_visible.value"
+		:visible="advisory.is_visible.value"
+		:advisories="advisory.advisories.value"
+		@update:visible="advisory.dismiss"
+	/>
 	<LiveMetrics v-if="userStore.isLoggedIn" />
 	<ImportFromLink v-if="albumsStore.rootRights?.can_upload" v-model:visible="is_import_from_link_open" @refresh="refresh" />
 	<ImportFromServer v-if="albumsStore.rootRights?.can_import_from_server" v-model:visible="is_import_from_server_open" @refresh="refresh" />
@@ -224,6 +230,8 @@ import { useScrollable } from "@/composables/album/scrollable";
 import { EmptyPhotoCallbacks } from "@/utils/Helpers";
 import WebauthnModal from "@/components/modals/WebauthnModal.vue";
 import LoginModal from "@/components/modals/LoginModal.vue";
+import SecurityAdvisoriesModal from "@/components/modals/SecurityAdvisoriesModal.vue";
+import { useAdvisoryModal } from "@/composables/modals/useAdvisoryModal";
 import LoadingProgress from "@/components/loading/LoadingProgress.vue";
 import LiveMetrics from "@/components/drawers/LiveMetrics.vue";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
@@ -253,6 +261,7 @@ const photosStore = usePhotosStore();
 const photoStore = usePhotoStore();
 const router = useRouter();
 const orderManagementStore = useOrderManagementStore();
+const advisory = useAdvisoryModal();
 
 // Reset!
 albumStore.reset();
@@ -264,6 +273,13 @@ async function refresh() {
 	await Promise.allSettled([lycheeStore.load(), userStore.refresh()]);
 	albumsStore.load(router);
 	orderManagementStore.refresh();
+}
+
+async function onLoggedIn() {
+	await Promise.allSettled([lycheeStore.load(), userStore.refresh()]);
+	albumsStore.load(router);
+	orderManagementStore.refresh();
+	advisory.check();
 }
 
 const albumId = ref("gallery");
