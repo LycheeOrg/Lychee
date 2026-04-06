@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "eafed810f9420c9b19b56de549745c63",
+    "content-hash": "2d894cda123a887a1beb3342da39afd1",
     "packages": [
         {
             "name": "apimatic/core",
@@ -1701,16 +1701,16 @@
         },
         {
             "name": "firebase/php-jwt",
-            "version": "v7.0.4",
+            "version": "v7.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/firebase/php-jwt.git",
-                "reference": "e41f1bd7dbe3c5455c3f72d4338cfeb083b71931"
+                "reference": "47ad26bab5e7c70ae8a6f08ed25ff83631121380"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/firebase/php-jwt/zipball/e41f1bd7dbe3c5455c3f72d4338cfeb083b71931",
-                "reference": "e41f1bd7dbe3c5455c3f72d4338cfeb083b71931",
+                "url": "https://api.github.com/repos/firebase/php-jwt/zipball/47ad26bab5e7c70ae8a6f08ed25ff83631121380",
+                "reference": "47ad26bab5e7c70ae8a6f08ed25ff83631121380",
                 "shasum": ""
             },
             "require": {
@@ -1759,9 +1759,9 @@
             ],
             "support": {
                 "issues": "https://github.com/firebase/php-jwt/issues",
-                "source": "https://github.com/firebase/php-jwt/tree/v7.0.4"
+                "source": "https://github.com/firebase/php-jwt/tree/v7.0.5"
             },
-            "time": "2026-03-27T21:17:19+00:00"
+            "time": "2026-04-01T20:38:03+00:00"
         },
         {
             "name": "fruitcake/php-cors",
@@ -2785,27 +2785,27 @@
         },
         {
             "name": "laragear/meta-model",
-            "version": "v2.0.0",
+            "version": "v3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Laragear/MetaModel.git",
-                "reference": "1973517263d9ff1cfaabf682f3c2883425271dbc"
+                "reference": "5f6f15e390c934cb10068117555242c2d29e9caa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Laragear/MetaModel/zipball/1973517263d9ff1cfaabf682f3c2883425271dbc",
-                "reference": "1973517263d9ff1cfaabf682f3c2883425271dbc",
+                "url": "https://api.github.com/repos/Laragear/MetaModel/zipball/5f6f15e390c934cb10068117555242c2d29e9caa",
+                "reference": "5f6f15e390c934cb10068117555242c2d29e9caa",
                 "shasum": ""
             },
             "require": {
-                "illuminate/container": "11.*|12.*",
-                "illuminate/contracts": "11.*|12.*",
-                "illuminate/database": "11.*|12.*",
-                "php": "^8.2"
+                "illuminate/container": "12.*|13.*",
+                "illuminate/contracts": "12.*|13.*",
+                "illuminate/database": "12.*|13.*",
+                "php": "^8.3"
             },
             "require-dev": {
                 "mockery/mockery": "^1.6",
-                "phpunit/phpunit": "11.*|12.*"
+                "phpunit/phpunit": "12.*|13.*"
             },
             "type": "library",
             "autoload": {
@@ -2846,38 +2846,38 @@
                     "type": "Paypal"
                 }
             ],
-            "time": "2025-02-16T04:19:25+00:00"
+            "time": "2026-03-04T16:50:11+00:00"
         },
         {
             "name": "laragear/webauthn",
-            "version": "v4.1.0",
+            "version": "v5.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Laragear/WebAuthn.git",
-                "reference": "0545a45d623bc420f998d6595377ea26ce4c70dd"
+                "reference": "503c11894d3022a77f1d09bf21dc6eacac2b93e4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Laragear/WebAuthn/zipball/0545a45d623bc420f998d6595377ea26ce4c70dd",
-                "reference": "0545a45d623bc420f998d6595377ea26ce4c70dd",
+                "url": "https://api.github.com/repos/Laragear/WebAuthn/zipball/503c11894d3022a77f1d09bf21dc6eacac2b93e4",
+                "reference": "503c11894d3022a77f1d09bf21dc6eacac2b93e4",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
                 "ext-openssl": "*",
-                "illuminate/auth": "11.*|12.*",
-                "illuminate/config": "11.*|12.*",
-                "illuminate/database": "11.*|12.*",
-                "illuminate/encryption": "11.*|12.*",
-                "illuminate/http": "11.*|12.*",
-                "illuminate/session": "11.*|12.*",
-                "illuminate/support": "11.*|12.*",
-                "laragear/meta-model": "2.*",
-                "php": "^8.2"
+                "illuminate/auth": "12.*|13.*",
+                "illuminate/config": "12.*|13.*",
+                "illuminate/database": "12.*|13.*",
+                "illuminate/encryption": "12.*|13.*",
+                "illuminate/http": "12.*|13.*",
+                "illuminate/session": "12.*|13.*",
+                "illuminate/support": "12.*|13.*",
+                "laragear/meta-model": "3.*",
+                "php": "^8.3"
             },
             "require-dev": {
                 "ext-sodium": "*",
-                "orchestra/testbench": "^9.16|10.*"
+                "orchestra/testbench": "10.*|11.*"
             },
             "suggest": {
                 "paragonie/sodium_compat": "To enable EdDSA 25519 keys from authenticators, if `ext-sodium` is unavailable."
@@ -2936,7 +2936,7 @@
                     "type": "Paypal"
                 }
             ],
-            "time": "2026-01-19T17:57:17+00:00"
+            "time": "2026-03-09T01:19:11+00:00"
         },
         {
             "name": "laravel/framework",
@@ -3371,16 +3371,16 @@
         },
         {
             "name": "laravel/socialite",
-            "version": "v5.26.0",
+            "version": "v5.26.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/socialite.git",
-                "reference": "1d26f0c653a5f0e88859f4197830a29fe0cc59d0"
+                "reference": "db6ec2ee967b7f06412c3a0cf1daaf072f4752a4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/socialite/zipball/1d26f0c653a5f0e88859f4197830a29fe0cc59d0",
-                "reference": "1d26f0c653a5f0e88859f4197830a29fe0cc59d0",
+                "url": "https://api.github.com/repos/laravel/socialite/zipball/db6ec2ee967b7f06412c3a0cf1daaf072f4752a4",
+                "reference": "db6ec2ee967b7f06412c3a0cf1daaf072f4752a4",
                 "shasum": ""
             },
             "require": {
@@ -3439,7 +3439,7 @@
                 "issues": "https://github.com/laravel/socialite/issues",
                 "source": "https://github.com/laravel/socialite"
             },
-            "time": "2026-03-24T18:37:47+00:00"
+            "time": "2026-03-29T14:50:53+00:00"
         },
         {
             "name": "lcobucci/clock",
@@ -8595,16 +8595,16 @@
         },
         {
             "name": "spatie/laravel-data",
-            "version": "4.20.1",
+            "version": "4.21.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/laravel-data.git",
-                "reference": "5490cb15de6fc8b35a8cd2f661fac072d987a1ad"
+                "reference": "27ad502f84a684e1ec94ebee95c5adaea99bef96"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-data/zipball/5490cb15de6fc8b35a8cd2f661fac072d987a1ad",
-                "reference": "5490cb15de6fc8b35a8cd2f661fac072d987a1ad",
+                "url": "https://api.github.com/repos/spatie/laravel-data/zipball/27ad502f84a684e1ec94ebee95c5adaea99bef96",
+                "reference": "27ad502f84a684e1ec94ebee95c5adaea99bef96",
                 "shasum": ""
             },
             "require": {
@@ -8665,7 +8665,7 @@
             ],
             "support": {
                 "issues": "https://github.com/spatie/laravel-data/issues",
-                "source": "https://github.com/spatie/laravel-data/tree/4.20.1"
+                "source": "https://github.com/spatie/laravel-data/tree/4.21.0"
             },
             "funding": [
                 {
@@ -8673,7 +8673,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-03-18T07:44:01+00:00"
+            "time": "2026-04-02T14:36:45+00:00"
         },
         {
             "name": "spatie/laravel-feed",
