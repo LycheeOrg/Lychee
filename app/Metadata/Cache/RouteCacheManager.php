@@ -160,6 +160,9 @@ final readonly class RouteCacheManager
 
 			'api/v2/Contact' => false,
 			'api/v2/Contact::Init' => new RouteCacheConfig(tag: CacheTag::SETTINGS, user_dependant: false),
+
+			// No need to cache this.
+			'api/v2/Security/Advisories' => false,
 		];
 	}
 
