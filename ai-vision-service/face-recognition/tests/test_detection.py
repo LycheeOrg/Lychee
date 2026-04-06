@@ -63,7 +63,7 @@ def test_is_loaded_false_before_load() -> None:
 def _make_mock_face(
     bbox: list[float],
     det_score: float,
-    embedding: list[float],
+    embedding: list[int | float],
 ) -> Any:
     face = MagicMock()
     face.det_score = det_score

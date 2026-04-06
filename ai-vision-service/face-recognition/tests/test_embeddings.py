@@ -37,16 +37,16 @@ def _unit_vec(dim: int = 512, index: int = 0) -> list[float]:
 
 def test_add_increments_count(store: SQLiteEmbeddingStore) -> None:
     assert store.count() == 0
-    store.add("face-1", _unit_vec(index=0))
+    store.add("face-1", _unit_vec(index=0), "photo-1", 100.0, "test/crop1.jpg")
     assert store.count() == 1
-    store.add("face-2", _unit_vec(index=1))
+    store.add("face-2", _unit_vec(index=1), "photo-2", 100.0, "test/crop2.jpg")
     assert store.count() == 2
 
 
 def test_add_upsert_does_not_duplicate(store: SQLiteEmbeddingStore) -> None:
     """Re-adding an existing lychee_face_id must not create a duplicate row."""
-    store.add("face-1", _unit_vec(index=0))
-    store.add("face-1", _unit_vec(index=0))
+    store.add("face-1", _unit_vec(index=0), "photo-1", 100.0, "test/crop1.jpg")
+    store.add("face-1", _unit_vec(index=0), "photo-1", 100.0, "test/crop1.jpg")
     assert store.count() == 1
 
 
@@ -56,7 +56,7 @@ def test_add_upsert_does_not_duplicate(store: SQLiteEmbeddingStore) -> None:
 
 
 def test_delete_removes_entry(store: SQLiteEmbeddingStore) -> None:
-    store.add("face-1", _unit_vec(index=0))
+    store.add("face-1", _unit_vec(index=0), "photo-1", 100.0, "test/crop1.jpg")
     store.delete("face-1")
     assert store.count() == 0
 
@@ -75,7 +75,7 @@ def test_delete_unknown_id_is_noop(store: SQLiteEmbeddingStore) -> None:
 def test_similarity_search_returns_identical_face(store: SQLiteEmbeddingStore) -> None:
     """An exact match should have similarity ≈ 1.0."""
     vec = _unit_vec(index=0)
-    store.add("face-1", vec)
+    store.add("face-1", vec, "photo-1", 100.0, "test/crop1.jpg")
 
     results = store.similarity_search(vec, threshold=0.9, limit=10)
     assert len(results) == 1
@@ -86,7 +86,7 @@ def test_similarity_search_returns_identical_face(store: SQLiteEmbeddingStore) -
 
 def test_similarity_search_excludes_below_threshold(store: SQLiteEmbeddingStore) -> None:
     """Results below ``threshold`` must be excluded."""
-    store.add("face-1", _unit_vec(index=0))
+    store.add("face-1", _unit_vec(index=0), "photo-1", 100.0, "test/crop1.jpg")
 
     # Query with an orthogonal vector - cosine similarity = 0.0
     query = _unit_vec(index=1)
@@ -99,7 +99,7 @@ def test_similarity_search_respects_limit(store: SQLiteEmbeddingStore) -> None:
     for i in range(20):
         # All vectors point in roughly the same direction → high similarity
         v = [1.0 / math.sqrt(512)] * 512
-        store.add(f"face-{i}", v)
+        store.add(f"face-{i}", v, f"photo-{i}", 100.0, f"test/crop{i}.jpg")
 
     results = store.similarity_search([1.0 / math.sqrt(512)] * 512, threshold=0.0, limit=5)
     assert len(results) <= 5
@@ -107,13 +107,13 @@ def test_similarity_search_respects_limit(store: SQLiteEmbeddingStore) -> None:
 
 def test_similarity_search_ordered_descending(store: SQLiteEmbeddingStore) -> None:
     """Results must be ordered by descending similarity."""
-    store.add("face-exact", _unit_vec(index=0))
-    store.add("face-close", [0.9, 0.1] + [0.0] * 510)
+    store.add("face-exact", _unit_vec(index=0), "photo-1", 100.0, "test/crop1.jpg")
+    store.add("face-close", [0.9, 0.1] + [0.0] * 510, "photo-2", 100.0, "test/crop2.jpg")
 
     # Normalise the close vector
     norm = math.sqrt(0.9**2 + 0.1**2)
     close = [0.9 / norm, 0.1 / norm] + [0.0] * 510
-    store.add("face-close-n", close)
+    store.add("face-close-n", close, "photo-3", 100.0, "test/crop3.jpg")
 
     results = store.similarity_search(_unit_vec(index=0), threshold=0.0, limit=10)
     sims = [r[1] for r in results]

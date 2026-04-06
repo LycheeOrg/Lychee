@@ -68,7 +68,8 @@ class SQLiteEmbeddingStore:
                 )
                 vec_rowid: int = cursor.lastrowid  # type: ignore[assignment]
                 conn.execute(
-                    "INSERT INTO face_meta(vec_rowid, lychee_face_id, photo_id, laplacian_variance, crop_path) VALUES (?, ?, ?, ?, ?)",
+                    "INSERT INTO face_meta(vec_rowid, lychee_face_id, photo_id, laplacian_variance, "
+                    "crop_path) VALUES (?, ?, ?, ?, ?)",
                     [vec_rowid, lychee_face_id, photo_id, laplacian_variance, crop_path],
                 )
                 conn.commit()
@@ -176,12 +177,14 @@ class SQLiteEmbeddingStore:
             ).fetchall()
             results: list[dict[str, str | float | None]] = []
             for lychee_face_id, photo_id, laplacian_variance, crop_path in rows:
-                results.append({
-                    "lychee_face_id": lychee_face_id,
-                    "photo_id": photo_id,
-                    "laplacian_variance": laplacian_variance,
-                    "crop_path": crop_path,
-                })
+                results.append(
+                    {
+                        "lychee_face_id": lychee_face_id,
+                        "photo_id": photo_id,
+                        "laplacian_variance": laplacian_variance,
+                        "crop_path": crop_path,
+                    }
+                )
             return results
         finally:
             conn.close()

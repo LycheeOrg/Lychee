@@ -141,18 +141,18 @@ class PgVectorEmbeddingStore:
         with self._lock:
             conn = self._get_conn()
             with conn.cursor() as cur:
-                cur.execute(
-                    "SELECT lychee_face_id, photo_id, laplacian_variance, crop_path FROM face_embeddings"
-                )
+                cur.execute("SELECT lychee_face_id, photo_id, laplacian_variance, crop_path FROM face_embeddings")
                 rows: list[Any] = cur.fetchall()
         results: list[dict[str, str | float | None]] = []
         for row in rows:
-            results.append({
-                "lychee_face_id": row[0],
-                "photo_id": row[1],
-                "laplacian_variance": float(row[2]) if row[2] is not None else None,
-                "crop_path": row[3],
-            })
+            results.append(
+                {
+                    "lychee_face_id": row[0],
+                    "photo_id": row[1],
+                    "laplacian_variance": float(row[2]) if row[2] is not None else None,
+                    "crop_path": row[3],
+                }
+            )
         return results
 
     def count(self) -> int:

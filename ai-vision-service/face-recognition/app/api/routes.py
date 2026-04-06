@@ -336,7 +336,6 @@ async def _run_detection_job(
         logger.debug("Sending detection results to Lychee for photo_id=%s (%d face(s))", photo_id, len(face_data))
         logger.debug("Detection callback payload: %s", payload.model_dump())
 
-
         async with httpx.AsyncClient(verify=settings.verify_ssl) as client:
             response = await client.post(
                 callback_url,
@@ -372,6 +371,7 @@ async def _run_detection_job(
                 crop_path = f"faces/{lychee_face_id}.jpg"
                 crop_file = crop_dir / f"{lychee_face_id}.jpg"
                 import base64
+
                 crop_bytes = base64.b64decode(face_result.crop)
                 crop_file.write_bytes(crop_bytes)
 
