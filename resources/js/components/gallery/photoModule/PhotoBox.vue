@@ -159,6 +159,12 @@ watchEffect(
 		if (!img) return;
 		imageResizeObserver = new ResizeObserver(updateFaceOverlay);
 		imageResizeObserver.observe(img);
+		// Also observe the container so that sidebar open/close (which resizes the
+		// imageview container but may not resize the image itself when it is
+		// height-constrained) still triggers an overlay recompute.
+		if (swipe.value) {
+			imageResizeObserver.observe(swipe.value);
+		}
 		// rAF ensures browser layout is complete (handles both cached and uncached images)
 		requestAnimationFrame(updateFaceOverlay);
 	},

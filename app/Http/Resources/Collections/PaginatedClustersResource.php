@@ -32,7 +32,7 @@ class PaginatedClustersResource extends Data
 	 */
 	public function __construct(LengthAwarePaginator $paginated_clusters)
 	{
-		$this->data = collect($paginated_clusters->items());
+		$this->data = collect($paginated_clusters->items())->values();
 		$this->current_page = $paginated_clusters->currentPage();
 		$this->last_page = $paginated_clusters->lastPage();
 		$this->per_page = $paginated_clusters->perPage();

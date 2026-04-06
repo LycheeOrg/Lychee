@@ -8,14 +8,37 @@
 				{{ $t("people.clusters_title") }}
 			</template>
 			<template #end>
-				<Button
-					:label="$t('people.run_clustering')"
-					icon="pi pi-refresh"
-					severity="secondary"
-					outlined
-					:loading="runningClustering"
-					@click="runClustering"
-				/>
+				<div class="flex gap-2">
+					<Button
+						v-if="!isBatchMode"
+						icon="pi pi-check-square"
+						severity="secondary"
+						text
+						v-tooltip.bottom="$t('people.batch_select')"
+						@click="startBatchMode"
+					/>
+					<template v-else>
+						<Button :label="$t('people.batch_cancel')" severity="secondary" text @click="cancelBatchMode" />
+						<Button
+							:label="$t('people.dismiss')"
+							icon="pi pi-times"
+							severity="danger"
+							text
+							:disabled="selectedLabels.length === 0"
+							:loading="batchDismissing"
+							@click="batchDismiss"
+						/>
+					</template>
+					<Button
+						:label="$t('people.run_clustering')"
+						class="border-none"
+						icon="pi pi-refresh"
+						severity="secondary"
+						outlined
+						:loading="runningClustering"
+						@click="runClustering"
+					/>
+				</div>
 			</template>
 		</Toolbar>
 
@@ -28,11 +51,31 @@
 		</div>
 
 		<div v-else class="p-6 flex flex-col gap-4">
+			<!-- Batch info bar -->
+			<div v-if="isBatchMode" class="flex items-center gap-3 text-sm -mb-2">
+				<Checkbox
+					:modelValue="selectedLabels.length === clusters.length && clusters.length > 0"
+					:indeterminate="selectedLabels.length > 0 && selectedLabels.length < clusters.length"
+					binary
+					@change="toggleSelectAllClusters"
+				/>
+				<span>{{ $t("people.batch_selected", { count: String(selectedLabels.length) }) }}</span>
+			</div>
 			<div
 				v-for="cluster in clusters"
 				:key="cluster.cluster_label"
-				class="border border-surface rounded-lg p-4 flex flex-col sm:flex-row items-start gap-4"
+				class="relative border border-surface rounded-lg p-4 flex flex-col sm:flex-row items-start gap-4"
+				:class="{ 'ring-2 ring-primary': isBatchMode && selectedLabels.includes(cluster.cluster_label), 'cursor-pointer': isBatchMode }"
+				@click="isBatchMode ? toggleClusterSelection(cluster.cluster_label) : undefined"
 			>
+				<!-- Batch checkbox -->
+				<div v-if="isBatchMode" class="absolute top-2 right-2">
+					<Checkbox
+						:modelValue="selectedLabels.includes(cluster.cluster_label)"
+						binary
+						@click.stop="toggleClusterSelection(cluster.cluster_label)"
+					/>
+				</div>
 				<div class="flex gap-2 shrink-0">
 					<img
 						v-for="(url, idx) in cluster.sample_crop_urls"
@@ -88,6 +131,7 @@ import { ref, reactive, onMounted } from "vue";
 import Toolbar from "primevue/toolbar";
 import ProgressSpinner from "primevue/progressspinner";
 import Button from "primevue/button";
+import Checkbox from "primevue/checkbox";
 import InputText from "primevue/inputtext";
 import { useToast } from "primevue/usetoast";
 import { trans } from "laravel-vue-i18n";
@@ -106,11 +150,63 @@ const dismissingLabel = ref<number | null>(null);
 const currentPage = ref(1);
 const hasMorePages = ref(false);
 
+// Batch selection state
+const isBatchMode = ref(false);
+const selectedLabels = ref<number[]>([]);
+const batchDismissing = ref(false);
+
+function startBatchMode() {
+	isBatchMode.value = true;
+	selectedLabels.value = [];
+}
+
+function cancelBatchMode() {
+	isBatchMode.value = false;
+	selectedLabels.value = [];
+}
+
+function toggleClusterSelection(label: number) {
+	const idx = selectedLabels.value.indexOf(label);
+	if (idx === -1) {
+		selectedLabels.value.push(label);
+	} else {
+		selectedLabels.value.splice(idx, 1);
+	}
+}
+
+function toggleSelectAllClusters() {
+	if (selectedLabels.value.length === clusters.value.length) {
+		selectedLabels.value = [];
+	} else {
+		selectedLabels.value = clusters.value.map((c) => c.cluster_label);
+	}
+}
+
+function batchDismiss() {
+	if (selectedLabels.value.length === 0) return;
+	batchDismissing.value = true;
+	const toDissmiss = [...selectedLabels.value];
+	Promise.all(toDissmiss.map((label) => FaceClusterService.dismissCluster(label)))
+		.then(() => {
+			clusters.value = clusters.value.filter((c) => !toDissmiss.includes(c.cluster_label));
+			selectedLabels.value = [];
+			isBatchMode.value = false;
+			toast.add({ severity: "success", summary: trans("toasts.success"), life: 3000 });
+		})
+		.catch((e: { response?: { data?: { message?: string } } }) => {
+			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });
+		})
+		.finally(() => {
+			batchDismissing.value = false;
+		});
+}
+
 function load() {
 	loading.value = true;
 	FaceClusterService.getClusters(1)
 		.then((response) => {
-			clusters.value = response.data.data;
+			const items = response.data.data;
+			clusters.value = Array.isArray(items) ? items : (Object.values(items) as App.Http.Resources.Models.ClusterPreviewResource[]);
 			currentPage.value = 1;
 			hasMorePages.value = response.data.current_page < response.data.last_page;
 		})
@@ -128,7 +224,9 @@ function loadMore() {
 	const nextPage = currentPage.value + 1;
 	FaceClusterService.getClusters(nextPage)
 		.then((response) => {
-			clusters.value = [...clusters.value, ...response.data.data];
+			const items = response.data.data;
+			const newItems = Array.isArray(items) ? items : (Object.values(items) as App.Http.Resources.Models.ClusterPreviewResource[]);
+			clusters.value = [...clusters.value, ...newItems];
 			currentPage.value = nextPage;
 			hasMorePages.value = response.data.current_page < response.data.last_page;
 		})

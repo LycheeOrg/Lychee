@@ -18,7 +18,7 @@ class PersonFactory
 	) {
 	}
 
-	public function findOrCreate(?int $id, string $name): Person
+	public function findOrCreate(?string $id, string $name): Person
 	{
 		if ($id !== null) {
 			return Person::findOrFail($id);

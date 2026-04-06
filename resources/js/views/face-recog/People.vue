@@ -10,6 +10,7 @@
 			<template #end>
 				<Button
 					:label="$t('people.clusters_title')"
+					class="border-none"
 					icon="pi pi-sitemap"
 					severity="secondary"
 					outlined

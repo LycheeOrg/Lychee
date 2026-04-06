@@ -84,16 +84,16 @@
 
 			<div class="flex justify-end">
 				<Button
-					class="w-full rounded-none rounded-bl-xl"
+					class="w-full border-none rounded-none rounded-bl-xl"
 					:label="$t('people.assignment.dismiss')"
 					severity="danger"
 					text
 					:loading="dismissing"
 					@click="dismiss"
 				/>
-				<Button class="w-full rounded-none" :label="$t('people.assignment.cancel')" severity="secondary" text @click="closeCallback" />
+				<Button class="w-full border-none rounded-none" :label="$t('people.assignment.cancel')" severity="secondary" text @click="closeCallback" />
 				<Button
-					class="w-full rounded-none rounded-br-xl"
+					class="w-full border-none rounded-none rounded-br-xl"
 					:label="$t('people.assignment.confirm')"
 					severity="primary"
 					:disabled="!selectedPersonId && !newPersonName.trim()"
@@ -121,7 +121,7 @@ const props = defineProps<{
 }>();
 
 const emits = defineEmits<{
-	assigned: [];
+	assigned: [face: App.Http.Resources.Models.FaceResource];
 	dismissed: [];
 }>();
 
@@ -166,12 +166,12 @@ function submit() {
 	}
 
 	FaceDetectionService.assignFace(props.face.id, data)
-		.then(() => {
+		.then((response) => {
 			toast.add({ severity: "success", summary: trans("toasts.success"), detail: trans("people.assignment.success"), life: 3000 });
 			visible.value = false;
 			selectedPersonId.value = undefined;
 			newPersonName.value = "";
-			emits("assigned");
+			emits("assigned", response.data as App.Http.Resources.Models.FaceResource);
 		})
 		.catch((e) => {
 			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });

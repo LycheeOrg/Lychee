@@ -41,7 +41,7 @@
 			v-if="selectedFace"
 			v-model:visible="isAssignmentOpen"
 			:face="selectedFace"
-			@assigned="handleFaceUpdated"
+			@assigned="handleFaceAssigned"
 			@dismissed="handleFaceDismissed"
 		/>
 	</div>
@@ -52,7 +52,7 @@ import { computed, ref, onMounted, onUnmounted } from "vue";
 import { onKeyStroke } from "@vueuse/core";
 import { useToast } from "primevue/usetoast";
 import { trans } from "laravel-vue-i18n";
-import FaceAssignmentModal from "@/components/modals/FaceAssignmentModal.vue";
+import FaceAssignmentModal from "@/components/modals/faceRecog/FaceAssignmentModal.vue";
 import FaceDetectionService from "@/services/face-detection-service";
 import { shouldIgnoreKeystroke, isTouchDevice } from "@/utils/keybindings-utils";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
@@ -175,7 +175,26 @@ function handleClick(face: App.Http.Resources.Models.FaceResource) {
 	}
 }
 
-function handleFaceUpdated() {
+function updateFaceInStores(updatedFace: App.Http.Resources.Models.FaceResource) {
+	// Update in photoStore
+	if (photoStore.photo?.faces) {
+		const idx = photoStore.photo.faces.findIndex((f) => f.id === updatedFace.id);
+		if (idx !== -1) {
+			photoStore.photo.faces[idx] = updatedFace;
+		}
+	}
+	// Update in photosStore (album view)
+	const photoInAlbum = photosStore.photos.find((p) => p.id === photoStore.photo?.id);
+	if (photoInAlbum?.faces) {
+		const idx = photoInAlbum.faces.findIndex((f) => f.id === updatedFace.id);
+		if (idx !== -1) {
+			photoInAlbum.faces[idx] = updatedFace;
+		}
+	}
+}
+
+function handleFaceAssigned(updatedFace: App.Http.Resources.Models.FaceResource) {
+	updateFaceInStores(updatedFace);
 	emits("facesUpdated");
 }
 

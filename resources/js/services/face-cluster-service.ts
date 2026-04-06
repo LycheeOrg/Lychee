@@ -14,6 +14,10 @@ const FaceClusterService = {
 		return axios.post(`${Constants.getApiUrl()}FaceDetection/clusters/${label}/dismiss`, {});
 	},
 
+	unclusterFaces(label: number, faceIds: string[]): Promise<AxiosResponse<{ unclustered_count: number }>> {
+		return axios.post(`${Constants.getApiUrl()}FaceDetection/clusters/${label}/uncluster`, { face_ids: faceIds });
+	},
+
 	runClustering(): Promise<AxiosResponse> {
 		return axios.post(`${Constants.getApiUrl()}Maintenance::runFaceClustering`, {});
 	},

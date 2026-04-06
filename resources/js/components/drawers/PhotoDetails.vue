@@ -284,7 +284,7 @@ import ColourSquare from "@/components/gallery/photoModule/ColourSquare.vue";
 import PhotoRatingWidget from "@/components/gallery/photoModule/PhotoRatingWidget.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import LinksInclude from "@/components/gallery/photoModule/LinksInclude.vue";
-import FaceAssignmentModal from "@/components/modals/FaceAssignmentModal.vue";
+import FaceAssignmentModal from "@/components/modals/faceRecog/FaceAssignmentModal.vue";
 import { storeToRefs } from "pinia";
 import { usePhotoStore } from "@/stores/PhotoState";
 import { useRouter } from "vue-router";
