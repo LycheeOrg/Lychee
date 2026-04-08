@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { usePhotosStore } from "./PhotosState";
+import PhotoService from "@/services/photo-service";
 
 export enum ImageViewMode {
 	Original = "original",
@@ -36,7 +37,7 @@ export const usePhotoStore = defineStore("photo-store", {
 				this.transition = "slide-next";
 			}
 		},
-		load() {
+		async load() {
 			if (this.photoId === undefined) {
 				this.photo = undefined;
 				return;
@@ -48,11 +49,12 @@ export const usePhotoStore = defineStore("photo-store", {
 			}
 
 			const photosState = usePhotosStore();
-			if (photosState.photos.length === 0) {
-				this.photo = undefined;
-				return;
-			}
 			this.photo = photosState.photos.find((p) => p.id === this.photoId);
+
+			if (this.photo === undefined) {
+				const response = await PhotoService.get(this.photoId);
+				this.photo = response.data;
+			}
 		},
 	},
 	getters: {

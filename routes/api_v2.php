@@ -141,6 +141,7 @@ Route::get('/Import::browse', [Admin\ImportFromServerController::class, 'browse'
 /**
  * PHOTO.
  */
+Route::get('/Photo', [Gallery\PhotoController::class, 'get']);
 Route::get('/Photo::random', [Gallery\FrameController::class, 'random']);
 Route::post('/Photo::fromUrl', [Gallery\PhotoController::class, 'fromUrl']);
 Route::post('/Photo', [Gallery\PhotoController::class, 'upload'])

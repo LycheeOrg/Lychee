@@ -225,7 +225,7 @@ async function load() {
 	catalogStore.load();
 	orderManagement.load();
 	photoStore.photoId = photoId.value;
-	photoStore.load();
+	await photoStore.load();
 }
 
 async function refresh(isDelete: boolean = false) {
@@ -240,7 +240,7 @@ async function refresh(isDelete: boolean = false) {
 		return;
 	}
 	photoStore.photoId = photoId.value;
-	photoStore.load();
+	await photoStore.load();
 }
 
 // eslint-disable-next-line vue/no-dupe-keys
@@ -495,7 +495,7 @@ const debouncedPhotoMetrics = useDebounceFn(() => {
 
 watch(
 	() => [route.params.albumId, route.params.photoId],
-	([newAlbumId, newPhotoId], _) => {
+	async ([newAlbumId, newPhotoId], _) => {
 		unselect();
 
 		photoStore.setTransition(newPhotoId as string | undefined);
@@ -515,7 +515,7 @@ watch(
 		if (oldAlbumId === newAlbumId) {
 			// If we are navigating between photos of the same album, we don't need to reload the album.
 			// We just need to load the new photo.
-			photoStore.load();
+			await photoStore.load();
 
 			// TODO: Consider loading the next page if the photo is getting close to the end of the currently loaded photos.
 			return;

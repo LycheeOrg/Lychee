@@ -24,8 +24,12 @@ return new class() extends Migration {
 			// Let's run the check for exiftool right here
 			$has_exiftool = 2; // not set
 			try {
-				$path = exec('command -v exiftool');
-				if ($path === '') {
+				if (PHP_OS_FAMILY === 'Windows') {
+					$path = exec('where exiftool 2>NUL');
+				} else {
+					$path = exec('command -v exiftool 2>/dev/null');
+				}
+				if ($path === '' || $path === null) {
 					$has_exiftool = 0; // false
 				} else {
 					$has_exiftool = 1; // true

@@ -24,6 +24,7 @@ use App\Http\Requests\Photo\DeletePhotosRequest;
 use App\Http\Requests\Photo\EditPhotoRequest;
 use App\Http\Requests\Photo\FromUrlRequest;
 use App\Http\Requests\Photo\GetPhotoAlbumsRequest;
+use App\Http\Requests\Photo\GetPhotoRequest;
 use App\Http\Requests\Photo\MovePhotosRequest;
 use App\Http\Requests\Photo\RenamePhotoRequest;
 use App\Http\Requests\Photo\RotatePhotoRequest;
@@ -61,6 +62,22 @@ use LycheeVerify\Contract\VerifyInterface;
  */
 class PhotoController extends Controller
 {
+	/**
+	 * Fetch a single photo.
+	 *
+	 * @param GetPhotoRequest $request
+	 *
+	 * @return PhotoResource
+	 */
+	public function get(GetPhotoRequest $request): PhotoResource
+	{
+		return new PhotoResource(
+			photo: $request->photo(),
+			album_id: null,
+			should_downgrade_size_variants: !Gate::check(PhotoPolicy::CAN_ACCESS_FULL_PHOTO, [Photo::class, $request->photo()])
+		);
+	}
+
 	/**
 	 * Upload a picture.
 	 */
