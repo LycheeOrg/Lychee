@@ -178,3 +178,16 @@ def test_detected_face_with_embedding() -> None:
     emb = [0.5] * 512
     face = DetectedFace(x=0.0, y=0.0, width=1.0, height=1.0, confidence=0.8, embedding=emb)
     assert face.embedding == emb
+
+
+def test_detected_face_has_laplacian_variance_field() -> None:
+    """DetectedFace must expose laplacian_variance; default is 0.0."""
+    face = DetectedFace(x=0.1, y=0.2, width=0.3, height=0.4, confidence=0.9)
+    assert hasattr(face, "laplacian_variance")
+    assert face.laplacian_variance == 0.0
+
+
+def test_detected_face_laplacian_variance_stored() -> None:
+    """laplacian_variance value passed on construction is preserved."""
+    face = DetectedFace(x=0.0, y=0.0, width=1.0, height=1.0, confidence=0.7, laplacian_variance=123.45)
+    assert face.laplacian_variance == pytest.approx(123.45)

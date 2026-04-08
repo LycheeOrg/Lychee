@@ -73,6 +73,13 @@ return [
 	'batch_selected' => ':count selected',
 	'batch_assign' => 'Assign selected',
 	'batch_unassign' => 'Unassign selected',
+	'assign_to_user' => 'Assign to user',
+	'search_user' => 'Search user…',
+	'cluster_detail_title' => 'Cluster (:count faces)',
+	'assigned_faces_to' => 'Assigned :count face(s) to ":name"',
+	'assigned_faces' => 'Assigned :count face(s)',
+	'dismissed_faces' => 'Dismissed :count face(s)',
+	'clustering_started' => 'Clustering started. Reload when complete.',
 	'merge' => [
 		'title' => 'Merge person',
 		'into' => 'into…',

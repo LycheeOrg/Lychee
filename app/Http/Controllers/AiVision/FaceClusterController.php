@@ -11,9 +11,11 @@ namespace App\Http\Controllers\AiVision;
 use App\Factories\PersonFactory;
 use App\Http\Requests\Face\ClusterAssignRequest;
 use App\Http\Requests\Face\ClusterDismissRequest;
+use App\Http\Requests\Face\ClusterFacesRequest;
 use App\Http\Requests\Face\ClusterIndexRequest;
 use App\Http\Requests\Face\UnclusterFacesRequest;
 use App\Http\Resources\Collections\PaginatedClustersResource;
+use App\Http\Resources\Collections\PaginatedFaceResource;
 use App\Http\Resources\Models\ClusterPreviewResource;
 use App\Models\Face;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -99,5 +101,32 @@ class FaceClusterController extends Controller
 			->update(['cluster_label' => null]);
 
 		return ['unclustered_count' => $count];
+	}
+
+	/**
+	 * List the faces belonging to a cluster (unassigned, not dismissed).
+	 *
+	 * GET /FaceDetection/clusters/{label}/faces
+	 */
+	public function faces(ClusterFacesRequest $request, int $label): PaginatedFaceResource
+	{
+		$exists = Face::where('cluster_label', '=', $label)
+			->whereNull('person_id')
+			->where('is_dismissed', '=', false)
+			->exists();
+
+		if (!$exists) {
+			abort(404, 'Cluster not found or has no qualifying faces.');
+		}
+
+		$paginated = Face::query()
+			->where('cluster_label', '=', $label)
+			->whereNull('person_id')
+			->where('is_dismissed', '=', false)
+			->with(['person', 'suggestions.suggestedFace.person'])
+			->orderByDesc('confidence')
+			->paginate(50);
+
+		return new PaginatedFaceResource($paginated);
 	}
 }

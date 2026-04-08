@@ -38,6 +38,7 @@ const OrderDownload = () => import("@/views/webshop/OrderDownload.vue");
 const People = () => import("@/views/face-recog/People.vue");
 const PersonDetail = () => import("@/views/face-recog/PersonDetail.vue");
 const FaceClusters = () => import("@/views/face-recog/FaceClusters.vue");
+const FaceMaintenance = () => import("@/views/face-recog/FaceMaintenance.vue");
 
 const routes_ = [
 	{
@@ -136,6 +137,11 @@ const routes_ = [
 		name: "maintenance",
 		path: "/maintenance",
 		component: Maintenance,
+	},
+	{
+		name: "face-maintenance",
+		path: "/maintenance/faces",
+		component: FaceMaintenance,
 	},
 	{
 		name: "tree",
@@ -247,7 +253,7 @@ const routes_ = [
 	},
 	{
 		name: "person",
-		path: "/people/:personId",
+		path: "/people/:personId/:photoId?",
 		component: PersonDetail,
 		props: true,
 	},

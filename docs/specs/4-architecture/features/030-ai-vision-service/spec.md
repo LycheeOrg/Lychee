@@ -3,7 +3,7 @@
 | Field | Value |
 |-------|-------|
 | Status | Draft |
-| Last updated | 2026-04-04 |
+| Last updated | 2026-04-07 |
 | Owners | LycheeOrg |
 | Linked plan | `docs/specs/4-architecture/features/030-ai-vision-service/plan.md` |
 | Linked tasks | `docs/specs/4-architecture/features/030-ai-vision-service/tasks.md` |
@@ -43,7 +43,7 @@ Affected modules: **Models** (new Person, Face), **Migrations** (new tables + pi
 |----|-------------|--------------|-----------------|--------------|---------------------|--------|
 | FR-030-01 | System shall store Person records with a name, optional User link (1-1), and a searchability flag. | Person created with name; optionally linked to a User; `is_searchable` defaults to the value of `ai_vision_face_person_is_searchable_default` config (default `true`). | Name must be non-empty string ≤255 chars; user_id must reference existing User and be unique across Person table (1-1). | Return 422 with validation errors. | `person.created`, `person.updated` | Owner directive |
 | FR-030-02 | System shall store Face records linking a detected face region in a Photo to an optional Person, including a server-side crop thumbnail path and a dismissal flag. The Python service shall filter detections by both confidence and sharpness before sending results to Lychee. *(Resolved Q-030-09: server-side crop; Q-030-16: is_dismissed; Q-030-25: crop storage path; Q-030-34: nginx-direct hash path)* | Face created with photo_id, bounding box (x, y, width, height as percentages), confidence score, `crop_token` (random high-entropy token, stored on Face model); crop file stored at `uploads/faces/{token[0:2]}/{token[2:4]}/{token}.jpg` and served directly by nginx (path is unguessable, no app-level auth required); person_id nullable (unassigned); `is_dismissed` defaults to `false`. Python service filters detections by two thresholds before callback: (a) `VISION_FACE_DETECTION_THRESHOLD` (confidence; default 0.5) — faces below excluded; (b) `VISION_FACE_BLUR_THRESHOLD` (Laplacian variance sharpness score; default `100.0`) — faces whose crop has a Laplacian variance below this value are excluded as too blurry to be usable for recognition. | photo_id must exist; bounding box values 0.0–1.0; confidence 0.0–1.0. | Return 422; reject invalid photo_id with 404. | `face.created` | Owner directive, Q-030-09, Q-030-16, Q-030-25 |
-| FR-030-03 | A Person can appear in multiple Photos (many-to-many through Face). The system shall provide an endpoint to list all photos containing a given Person. | GET endpoint returns paginated photos where at least one Face with matching person_id exists. | person_id must exist; pagination params validated. | 404 if Person not found; empty result set if no faces assigned. | — | Owner directive |
+| FR-030-03 | A Person can appear in multiple Photos (many-to-many through Face). The system shall provide an endpoint to list all photos containing a given Person. *(Resolved Q-030-74)* | GET endpoint returns paginated photos where at least one Face with matching person_id exists. Each `PhotoResource` in the response includes `next_photo_id` and `previous_photo_id` computed relative to the person's collection (sequential index order, access-filtered; null at boundaries), enabling `PhotoPanel.vue` to navigate within the person's collection natively. | person_id must exist; pagination params validated. | 404 if Person not found; empty result set if no faces assigned. | — | Owner directive |
 | FR-030-04 | A Photo can contain multiple Persons. The system shall return all identified Persons when viewing a Photo's details. For non-searchable Persons, face overlays are hidden entirely for unauthorized viewers; a `hidden_face_count` integer is included instead. *(Resolved Q-030-10: hide overlay + count indicator)* | Photo detail response includes `faces` array (only searchable/authorized faces) + `hidden_face_count` (integer, count of suppressed non-searchable faces). | — | Graceful empty array if no faces detected; hidden_face_count = 0 if none suppressed. | — | Owner directive, Q-030-10 |
 | FR-030-05 | Users can link their account to a Person (1-1) via direct claim, and unlink via unclaim. Admins can link/unlink any Person-User pair, overriding user claims. Only one Person per User, one User per Person. *(Resolved Q-030-06: self-identification + admin override; Q-030-21: unclaim endpoint)* | User claims a Person; `person.user_id` set; old claim (if any) cleared. Admin can force-link/unlink any pair. User unclaims via `DELETE /api/v2/Person/{id}/claim`; sets `person.user_id = null`. | user_id unique on persons table; User must exist. Non-admin claim: 409 if Person already claimed by another User; 403 if `ai_vision_face_allow_user_claim` is `false`. Admin claim: overrides existing link; bypasses `ai_vision_face_allow_user_claim`. Unclaim: only linked User or admin. | 409 if Person already claimed (non-admin); 403 if `ai_vision_face_allow_user_claim` is `false` (non-admin); 403 if unclaim caller is not linked User or admin; 422 for validation errors. | `person.claimed`, `person.unclaimed` | Owner directive, Q-030-06, Q-030-21 |
 | FR-030-06 | A Person's linked User (or admin) can toggle `is_searchable` on the Person. When `is_searchable` is false, the Person is excluded from search results and People browsing for non-admin users who are not the linked User. *(Resolved Q-030-05: hidden from search + People page for unauthorized users)* | Toggle flips boolean; subsequent search/browse queries filter accordingly. | Only linked User or admin can toggle. | 403 if unauthorized; 404 if Person not found. | `person.searchability_changed` | Owner directive, Q-030-05 |
@@ -66,6 +66,26 @@ Affected modules: **Models** (new Person, Face), **Migrations** (new tables + pi
 | FR-030-23 | Maintenance page shall include a block for destroying all dismissed faces. The block only appears when dismissed faces exist (count > 0). *(Q-030-55)* | `GET /Maintenance::destroyDismissedFaces` (check): returns count of dismissed faces. `POST /Maintenance::destroyDismissedFaces` (do): calls existing `DELETE /Face/dismissed` logic. Maintenance card hidden when count is 0. | Admin-only. | — | `face.bulk_deleted` | Owner directive, Q-030-55 |
 | FR-030-24 | Maintenance page shall include a single combined block for resetting photos with stuck-pending (`face_scan_status = 'pending'` older than 720 minutes) OR failed (`face_scan_status = 'failed'`) scan status, so they can be re-scanned. The block only appears when the combined count is > 0. *(Q-030-55, Q-030-73)* | `GET /Maintenance::resetFaceScanStatus` (check): returns combined count of stuck-pending (>720 min) + failed photos. `POST /Maintenance::resetFaceScanStatus` (do): sets `face_scan_status = NULL` on all stuck-pending (>720 min) and all failed photos in a single update. Block hidden when combined count is 0. The existing `Maintenance::resetStuckFaces` endpoint remains available for CLI use but is superseded in the UI by this combined block. | Admin-only. | — | `face.failed_scans_reset` (with `reset_count`) | Owner directive, Q-030-55, Q-030-73 |
 | FR-030-25 | Person merge shall be accessible from the UI via a "Merge into..." button on the PersonDetail page. A modal allows searching/selecting the target person. *(Q-030-58)* | PersonDetail page includes a "Merge" action button. Clicking opens `MergePersonModal.vue` with a person search dropdown (same PrimeVue Dropdown + custom template with miniature as FR-030-20). User selects target, confirms → calls `POST /Person/{id}/merge`. Source person's page redirects to target person after merge. | Both persons must exist; user must have merge permission. | 403 if unauthorized; 404 if either person not found. | `person.merged` | Owner directive, Q-030-58 |
+
+### UX Enhancement Requirements (Phase 6)
+
+| ID | Requirement | Success path | Validation path | Failure path | Telemetry & traces | Source |
+|----|-------------|--------------|-----------------|--------------|---------------------|--------|
+| FR-030-26 | **Face Cluster page: Enter key assigns name.** In the cluster review page, pressing Enter in the name input field shall submit the assignment (equivalent to clicking "Create Person & Assign All"). | User types a name and presses Enter → cluster is assigned to a new Person with that name, cluster card removed from list. | Name must be non-empty after trim. | No-op if name is empty. | — | Owner directive |
+| FR-030-27 | **Face Cluster page: Existing person dropdown.** The cluster assignment UI shall include a dropdown to select an existing Person (with miniature and type-ahead search) in addition to creating a new one. The user can either type a new name or select an existing person. | User selects an existing person from the dropdown → `POST /clusters/{id}/assign` is called with `person_id`. Dropdown uses the same custom option template as FR-030-20 (miniature + name + count). | Person must exist; assignment rules per permission mode. | — | — | Owner directive |
+| FR-030-28 | **Face Cluster page: Infinite scrolling.** The cluster review page shall use infinite scrolling (IntersectionObserver) instead of a "Load more" button. New clusters load automatically as the user scrolls near the bottom. | User scrolls down → next page of clusters fetched and appended automatically. Loading spinner shown during fetch. | Server returns valid paginated data. | Error toast on network failure; infinite scroll stops on last page. | — | Owner directive |
+| FR-030-29 | **Face Cluster page: Cluster detail view.** Clicking on a cluster card (or a "View all" indicator) shall open a PrimeVue `Dialog` showing all faces in that cluster (not just the preview subset). From this view the user can assign a name to the entire cluster or dismiss individual faces. *(Resolved Q-030-75: PrimeVue Dialog)* | User clicks a cluster card → a PrimeVue Dialog opens displaying all faces in the cluster in a responsive grid. The user can: type a name and assign all faces, select an existing person, or click an individual face to dismiss it. | Cluster must exist with qualifying faces. | 404 if cluster not found. | — | Owner directive |
+| FR-030-30 | **Face Cluster page: Dismiss individual faces from cluster.** Within the cluster detail view, individual faces can be dismissed (marked `is_dismissed = true`) without dismissing the entire cluster. A dismiss icon/button appears on each face crop. | User clicks dismiss on a single face → `PATCH /Face/{id}` toggles `is_dismissed`, face is removed from the cluster view, cluster size decremented. | Face must exist; user must have dismiss permission. | 403 if unauthorized. | `face.dismissed` | Owner directive |
+| FR-030-31 | **Face Cluster page: Grid layout.** The cluster review page shall use a compact grid layout (not a wide list) where each cluster card contains the face thumbnails, name input, and action buttons in close visual proximity. The "Run Clustering" and "Toggle multi-select" buttons shall move from the header toolbar into the page body. An explanatory header text shall describe the purpose of the page. | Clusters render as compact cards in a responsive grid. Buttons are positioned adjacent to the face thumbnails. Page includes a descriptive header: "Review face clusters to identify people. Assign a name to group similar faces, or dismiss false positives." | — | — | — | Owner directive |
+| FR-030-32 | **People page: Context menu.** Right-clicking (or long-pressing on touch) a PersonCard shall open a context menu with actions: "Merge into...", "Toggle privacy", "Assign to user", "Remove association". *(Resolved Q-030-76)* | Context menu opens on PersonCard with the four options. "Assign to user" (admin-only): opens a PrimeVue `<Dialog>` with an autocomplete Dropdown listing user accounts by name + email; on confirm calls `PATCH /Person/{id}` with `{ user_id: selectedUserId }`; requires extending `UpdatePersonRequest` to accept nullable `user_id` (admin-only validation gate). Each other action calls the corresponding API endpoint. | Person must exist; user must have appropriate permissions per action. For "Assign to user": admin-only. | 403 if unauthorized for the selected action. | — | Owner directive |
+| FR-030-33 | **People page: Compact face thumbnails.** PersonCard face crop thumbnails shall be smaller than the current size and use rounded corners (`border-radius`) for a polished appearance. | PersonCard renders with a smaller circular or rounded-corner face crop (e.g. 80px instead of 96px) and rounded corners on the card itself. | — | — | — | Owner directive |
+| FR-030-34 | **Person detail: Inline name editing.** Clicking directly on the person's name text shall make it editable inline (contenteditable or input swap) without requiring the pencil icon. Pressing Enter submits the change; pressing Escape cancels. The pencil icon is removed. | User clicks the person name → name becomes an editable input. Enter saves, Escape reverts. | Name must be non-empty after trim. | Revert to previous name on validation failure. | `person.updated` | Owner directive |
+| FR-030-35 | **Person detail: Title visibility in dark mode.** The person name title text shall use a color that is readable in dark mode (e.g. `text-text-main-0` or equivalent theme-aware class). | Title text is fully readable against both light and dark backgrounds. | — | — | — | Owner directive |
+| FR-030-36 | **Person detail: Album-style photo layout.** The photo grid in PersonDetail shall use the same justified/masonry photo layout as album views (preserving aspect ratios) instead of a uniform square grid. | Photos render with their natural aspect ratios in a justified gallery layout, consistent with the album photo view. | Photos must have size variant metadata. | Fallback to square grid if no size metadata available. | — | Owner directive |
+| FR-030-37 | **Person detail: Compact face removal toggle.** The "Remove from person" hover overlay shall be replaced with a smaller toggle indicator (e.g. a small "×" badge in the corner of each face/photo tile) that appears on hover but does not cover the entire photo. | User hovers over a photo → a small "×" badge appears in the top-right corner. Clicking it removes the face from the person. | Face must exist; user must have assign permission. | — | `face.unassigned` | Owner directive |
+| FR-030-38 | **Person detail: Multi-select with drag & blue border.** Photo/face selection in PersonDetail shall support click-to-select (with blue border highlight, matching album selection style), Shift+click range select, and drag-to-select (rubber-band selection). Selected items show a blue border (not checkbox). | User clicks a photo → blue border highlight. Shift+click selects a range. Drag creates a rubber-band rectangle selecting enclosed items. | — | — | — | Owner directive |
+| FR-030-39 | **Person detail: Click photo opens photo lightbox.** Clicking a photo in PersonDetail (when not in select mode) shall open the full photo viewer/lightbox (the same photo overlay used in album views, with navigation arrows, EXIF data, etc.). *(Resolved Q-030-74)* | User clicks a photo → photo lightbox/overlay opens at that photo. Navigation between photos in the person's collection is driven by `next_photo_id`/`previous_photo_id` set person-relative by `GET /Person/{id}/photos` (FR-030-03); `PhotoPanel.vue` follows these IDs natively with no additional store manipulation. | Photo must exist with valid size variants. | Fallback gracefully if photo data is missing. | — | Owner directive |
+| FR-030-40 | **Face Maintenance page.** A new page accessible from the admin maintenance area shall list all detected faces in a sortable table. Columns: face crop thumbnail, photo thumbnail, person name (or "Unassigned"), cluster label, confidence score, Laplacian blur score. The table shall support sorting by confidence and blur score to identify low-quality faces for manual review and dismissal. | Admin navigates to the face maintenance page → table loads with all faces. Admin sorts by confidence ascending → lowest-quality faces shown first. Admin can dismiss individual faces from this view. | Admin-only access. | 403 for non-admin users. | — | Owner directive |
 
 ## Non-Functional Requirements
 
@@ -136,24 +156,32 @@ Read via `config('features.ai-vision.face-url')` and `config('features.ai-vision
 
 ## UI / Interaction Mock-ups
 
-### People Page (new top-level view)
+### People Page *(updated — FR-030-32, FR-030-33)*
 
 ```
 +------------------------------------------------------------------+
 | Lychee > People                                          [Search] |
 +------------------------------------------------------------------+
 |                                                                    |
-|  +----------+  +----------+  +----------+  +----------+           |
-|  |  ┌────┐  |  |  ┌────┐  |  |  ┌────┐  |  |  ┌────┐  |          |
-|  |  │face│  |  |  │face│  |  |  │face│  |  |  │ ?  │  |          |
-|  |  │crop│  |  |  │crop│  |  |  │crop│  |  |  │    │  |          |
-|  |  └────┘  |  |  └────┘  |  |  └────┘  |  |  └────┘  |          |
-|  |  Alice   |  |  Bob     |  |  Carol   |  | Unknown  |          |
-|  | 142 photos|  | 87 photos|  | 53 photos|  | 12 faces |          |
-|  +----------+  +----------+  +----------+  +----------+           |
+|  +--------+  +--------+  +--------+  +--------+  +--------+      |
+|  | ┌──┐   |  | ┌──┐   |  | ┌──┐   |  | ┌──┐   |  | ┌──┐   |     |
+|  | │  │   |  | │  │   |  | │  │   |  | │  │   |  | │ ? │   |     |
+|  | └──┘   |  | └──┘   |  | └──┘   |  | └──┘   |  | └──┘   |     |
+|  | Alice   |  | Bob    |  | Carol  |  | Dave   |  |Unknown  |     |
+|  | 142 ph  |  | 87 ph  |  | 53 ph  |  | 28 ph  |  | 12 f   |     |
+|  +--------+  +--------+  +--------+  +--------+  +--------+      |
 |                                                                    |
+|  Right-click PersonCard:                                           |
+|  ┌──────────────────┐                                             |
+|  │ Merge into...    │                                             |
+|  │ Toggle privacy   │                                             |
+|  │ Assign to user   │                                             |
+|  │ Remove assoc.    │                                             |
+|  └──────────────────┘                                             |
 +------------------------------------------------------------------+
 ```
+
+*Note: Smaller face crop thumbnails (80px, rounded corners). Context menu on right-click or long-press. More cards per row.*
 
 ### Photo Detail — Face Overlay
 
@@ -176,28 +204,36 @@ Read via `config('features.ai-vision.face-url')` and `config('features.ai-vision
 +------------------------------------------------------------------+
 ```
 
-### Person Detail Page
+### Person Detail Page *(updated — FR-030-34 through FR-030-39)*
 
 ```
 +------------------------------------------------------------------+
-| Lychee > People > Alice                                           |
+| ◄  Alice                                                          |
 +------------------------------------------------------------------+
-|  ┌────┐                                                           |
-|  │face│  Alice                                                    |
-|  │crop│  142 photos · Linked to: alice@example.com               |
-|  └────┘  [✓ Searchable] [Edit] [Merge] [Delete]                 |
+|  ┌──┐                                                             |
+|  │  │  [Alice]  ← click name to edit inline; Enter saves          |
+|  └──┘  142 photos · Linked to: alice@example.com                  |
+|        [✓ Searchable] [Merge] [Delete]                            |
 +------------------------------------------------------------------+
 |                                                                    |
-|  Photos containing Alice:                                         |
-|  ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐                   |
-|  │      │ │      │ │      │ │      │ │      │                    |
-|  │ img1 │ │ img2 │ │ img3 │ │ img4 │ │ img5 │                    |
-|  │      │ │      │ │      │ │      │ │      │                    |
-|  └──────┘ └──────┘ └──────┘ └──────┘ └──────┘                    |
+|  Photos containing Alice:  (album-style justified layout)          |
+|  ┌────────┐ ┌──────────────┐ ┌──────┐ ┌──────────┐               |
+|  │        │ │              │ │      │ │          │               |
+|  │  img1  │ │    img2      │ │ img3 │ │   img4   │               |
+|  │     [×]│ │           [×]│ │   [×]│ │       [×]│               |
+|  └────────┘ └──────────────┘ └──────┘ └──────────┘               |
+|  ┌──────────────┐ ┌──────┐ ┌────────┐                            |
+|  │              │ │      │ │        │                            |
+|  │    img5      │ │ img6 │ │  img7  │                            |
+|  │           [×]│ │   [×]│ │     [×]│                            |
+|  └──────────────┘ └──────┘ └────────┘                            |
 |                                                                    |
-|  [Load more (137 remaining)]                                      |
+|  Click photo → opens lightbox. [×] = compact remove badge.        |
+|  Click+drag or Shift+click for blue-border multi-select.          |
 +------------------------------------------------------------------+
 ```
+
+*Note: Name is editable inline (click to edit, Enter to save, Escape to cancel — pencil icon removed). Photos use album-style justified layout (natural aspect ratios). Small [×] badge in corner for face removal (replaces full-image hover overlay). Clicking a photo opens the full lightbox. Multi-select via click/Shift+click/drag with blue border highlight. Title uses theme-aware colors for dark mode.*
 
 ### Face Assignment Modal
 
@@ -254,38 +290,59 @@ Read via `config('features.ai-vision.face-url')` and `config('features.ai-vision
 +------------------------------------------+
 ```
 
-### Cluster Review Page
+### Cluster Review Page *(updated — FR-030-26 through FR-030-31)*
 
 ```
 +------------------------------------------------------------------+
-| Lychee > People > Clusters                         [Run Cluster] |
+| Lychee > People > Clusters                                        |
 +------------------------------------------------------------------+
-|  Showing 24 clusters of unassigned faces                         |
+|  Review face clusters to identify people. Assign a name to group  |
+|  similar faces, or dismiss false positives.                       |
+|                                                                   |
+|  [Run Clustering]  [Toggle Multi-Select]                          |
 +------------------------------------------------------------------+
-|                                                                  |
-|  Cluster #1  (12 faces)                                         |
-|  +------+ +------+ +------+ +------+ +------+  [+7 more]        |
-|  |      | |      | |      | |      | |      |                   |
-|  | crop | | crop | | crop | | crop | | crop |                   |
-|  |      | |      | |      | |      | |      |                   |
-|  +------+ +------+ +------+ +------+ +------+                   |
-|  [ _______________ ]  [Create Person & Assign All]  [Dismiss]   |
-|                                                                  |
-|  Cluster #2  (7 faces)                                          |
-|  +------+ +------+ +------+ +------+ +------+  [+2 more]        |
-|  |      | |      | |      | |      | |      |                   |
-|  | crop | | crop | | crop | | crop | | crop |                   |
-|  |      | |      | |      | |      | |      |                   |
-|  +------+ +------+ +------+ +------+ +------+                   |
-|  [ _______________ ]  [Create Person & Assign All]  [Dismiss]   |
-|                                                                  |
-|  Cluster #3  (3 faces)     · · ·                                |
-|                                                                  |
-|  [Load more clusters]                                           |
+|                                                                   |
+|  +---------------------------+  +---------------------------+     |
+|  | Cluster #1  (12 faces)    |  | Cluster #2  (7 faces)     |    |
+|  | +----+ +----+ +----+      |  | +----+ +----+ +----+      |    |
+|  | |crop| |crop| |crop| +7   |  | |crop| |crop| |crop| +4   |    |
+|  | +----+ +----+ +----+      |  | +----+ +----+ +----+      |    |
+|  | [ ___name___ ⏎] [▼Person] |  | [ ___name___ ⏎] [▼Person] |    |
+|  | [Assign]         [Dismiss] |  | [Assign]         [Dismiss] |    |
+|  +---------------------------+  +---------------------------+     |
+|                                                                   |
+|  +---------------------------+  +---------------------------+     |
+|  | Cluster #3 ...            |  | Cluster #4 ...            |    |
+|  +---------------------------+  +---------------------------+     |
+|                                                                   |
+|  ↓ (infinite scroll — loads more as user scrolls)                 |
 +------------------------------------------------------------------+
 ```
 
-*Note: "Run Cluster" button triggers `POST /api/v2/Maintenance::runFaceClustering` then refreshes the page. Clusters with faces already assigned to a Person are not shown.*
+*Note: Grid layout with compact cards. Name input supports Enter to submit. Dropdown to select existing person alongside "Create new" text input. Infinite scroll replaces "Load more" button. Clicking a cluster card opens the cluster detail view (FR-030-29). "Run Clustering" and "Toggle Multi-Select" buttons are in the page body, not the toolbar.*
+
+### Cluster Detail View *(new — FR-030-29, FR-030-30)*
+
+```
++------------------------------------------------------------------+
+| Lychee > People > Clusters > Cluster #1 (12 faces)     [← Back] |
++------------------------------------------------------------------+
+|                                                                   |
+|  +------+ +------+ +------+ +------+ +------+ +------+           |
+|  | crop | | crop | | crop | | crop | | crop | | crop |           |
+|  |  [×] | |  [×] | |  [×] | |  [×] | |  [×] | |  [×] |          |
+|  +------+ +------+ +------+ +------+ +------+ +------+           |
+|  +------+ +------+ +------+ +------+ +------+ +------+           |
+|  | crop | | crop | | crop | | crop | | crop | | crop |           |
+|  |  [×] | |  [×] | |  [×] | |  [×] | |  [×] | |  [×] |          |
+|  +------+ +------+ +------+ +------+ +------+ +------+           |
+|                                                                   |
+|  [ ___person name___ ⏎]  [▼ Select person]                       |
+|  [Create Person & Assign All]                    [Dismiss All]    |
++------------------------------------------------------------------+
+```
+
+*Note: Shows ALL faces in the cluster. Each face has a small [×] dismiss button. Name input + existing person dropdown at bottom. Enter submits assignment.*
 
 ### Face Overlay — CTRL+Click Dismiss Mode *(FR-030-16)*
 
@@ -419,6 +476,31 @@ Read via `config('features.ai-vision.face-url')` and `config('features.ai-vision
 
 *Note: Each face maintenance block is conditional — hidden when its count is 0. The "Reset Face Scan Status" block combines stuck-pending (>720 min) and failed scans into one action. The existing `Maintenance::resetStuckFaces` API is retained for CLI use but has no dedicated UI card.*
 
+### Face Maintenance Admin Table *(new — FR-030-40)*
+
+```
++------------------------------------------------------------------+
+| Lychee > Maintenance > Face Quality                               |
++------------------------------------------------------------------+
+|  Review detected faces sorted by quality metrics.                  |
+|  Dismiss low-quality faces to improve recognition accuracy.        |
++------------------------------------------------------------------+
+|                                                                    |
+|  | Crop | Photo | Person    | Cluster | Confidence ▼ | Blur    |  |
+|  |------|-------|-----------|---------|-------------|---------|  |
+|  | [○]  | [□]   | Unassigned| #3      | 0.52        | 45.2    |  |
+|  | [○]  | [□]   | Alice     | #1      | 0.55        | 62.8    |  |
+|  | [○]  | [□]   | Unassigned| —       | 0.61        | 88.1    |  |
+|  | [○]  | [□]   | Bob       | #2      | 0.73        | 112.4   |  |
+|  | [○]  | [□]   | Carol     | #1      | 0.89        | 245.6   |  |
+|  ...                                                               |
+|                                                                    |
+|  ↓ (infinite scroll or paginated table)                            |
++------------------------------------------------------------------+
+```
+
+*Note: Sortable by Confidence and Blur (Laplacian) score columns. Admin can click a face row to dismiss it. Low confidence / low blur scores indicate low-quality detections. Allows admin to tune detection thresholds based on real data.*
+
 ## Branch & Scenario Matrix
 
 | Scenario ID | Description / Expected outcome |
@@ -466,6 +548,17 @@ Read via `config('features.ai-vision.face-url')` and `config('features.ai-vision
 | S-030-44 | `ai_vision_face_overlay_enabled` set to `0` → no face overlays or face circles rendered anywhere in the UI |
 | S-030-45 | Person merge from UI: user opens PersonDetail → clicks "Merge into..." → selects target person with miniature → confirms → source person merged into target |
 | S-030-46 | Face assignment dropdown shows persons with circular miniature + name + face count; two persons named "John" visually distinguishable |
+| S-030-47 | Cluster page: user types name, presses Enter → cluster assigned to new Person |
+| S-030-48 | Cluster page: user selects existing person from dropdown → cluster assigned to that person |
+| S-030-49 | Cluster page: user scrolls down → next page of clusters loads automatically (infinite scroll) |
+| S-030-50 | Cluster page: user clicks cluster → detail view shows all faces; user assigns name → all faces in cluster assigned |
+| S-030-51 | Cluster page: user dismisses individual face from cluster detail → face marked dismissed, removed from view |
+| S-030-52 | People page: user right-clicks PersonCard → context menu with Merge/Privacy/Assign/Remove actions |
+| S-030-53 | Person detail: user clicks on name text → becomes editable; Enter saves; Escape cancels |
+| S-030-54 | Person detail: photos display in album-style justified layout with natural aspect ratios |
+| S-030-55 | Person detail: user clicks photo (not in select mode) → photo lightbox opens; left/right navigation stays within the person's collection via person-relative `next_photo_id`/`previous_photo_id` set by `GET /Person/{id}/photos` *(Resolved Q-030-74)* |
+| S-030-56 | Person detail: user Shift+clicks to range-select photos → blue border highlight; drag-to-select works |
+| S-030-57 | Face Maintenance page: admin sorts by confidence ascending → lowest-quality faces shown; can dismiss from table |
 
 ## Test Strategy
 
@@ -490,6 +583,7 @@ Read via `config('features.ai-vision.face-url')` and `config('features.ai-vision
 | DO-030-06 | `photos` table addendum — adds nullable `face_scan_status VARCHAR(16)` column; PHP `ScanStatus` Enum cast. Values: `null` (never scanned), `pending`, `completed`, `failed`. Type chosen for MySQL/PostgreSQL/SQLite portability. *(Q-030-38)* | Models, Migrations |
 | DO-030-07 | `faces` table addendum — adds nullable `cluster_label INT` column (DBSCAN output label; NULL = not yet clustered or noise). Composite index `(cluster_label, person_id, is_dismissed)` on `faces` enables O(index-scan) `GROUP BY cluster_label` pagination for API-030-18. *(Q-030-49)* | Models, Migrations |
 | DO-030-08 | `persons` table addendum — adds `representative_face_id` nullable FK→`faces` ON DELETE SET NULL. Separate migration required (cannot be included in the original `persons` migration because `faces` does not yet exist at that point — circular-FK dependency). *(Q-030-50)* | Models, Migrations |
+| DO-030-09 | `faces` table addendum — adds nullable `laplacian_variance FLOAT` column. Stores the Laplacian variance (sharpness) value computed by the Python service during detection. Populated from the detection callback payload. Used for face quality sorting in the face maintenance admin view (FR-030-40). | Models, Migrations |
 
 ### API Routes / Services
 
@@ -523,6 +617,8 @@ Read via `config('features.ai-vision.face-url')` and `config('features.ai-vision
 | API-030-23 | POST /api/v2/FaceDetection/clusters/{cluster_id}/uncluster | Remove selected faces from a cluster by setting `cluster_label = NULL`. Body: `{face_ids: [str]}`. Only affects qualifying faces in the given cluster (`cluster_label = cluster_id AND person_id IS NULL AND is_dismissed = false`). Returns `{unclustered_count: int}`. *(FR-030-17, Q-030-56)* | Auth per permission mode |
 | API-030-24 | POST /api/v2/Face/batch | Batch face operations. Body: `{face_ids: [str], action: "unassign"\|"assign", person_id?: str, new_person_name?: str}`. "unassign" sets `person_id = NULL`; "assign" sets `person_id` (or creates new Person). Returns `{affected_count: int, person_id?: str}`. *(FR-030-19, Q-030-58)* | Auth per permission mode; user must have assign permission for all faces |
 | API-030-25 | GET /api/v2/Album/{id}/people | List distinct persons appearing in an album's photos. Joins `photo_albums → photos → faces → persons`. Returns `PaginatedPersonsResource`. Respects `ai_vision_face_permission_mode` and `is_searchable` filtering. *(FR-030-22, Q-030-62)* | Auth: album access required |
+| API-030-26 | GET /api/v2/FaceDetection/clusters/{cluster_id}/faces | List all faces in a specific cluster (not just the preview subset). Paginated. Returns `FaceResource[]` for qualifying faces (`cluster_label = cluster_id AND person_id IS NULL AND is_dismissed = false`). *(FR-030-29)* | Auth per permission mode |
+| API-030-27 | GET /api/v2/Face/maintenance | Admin: list all faces with extended metadata (confidence, laplacian_variance, person_name, cluster_label, photo thumbnail). Sortable by confidence and laplacian_variance. Paginated. *(FR-030-40)* | Admin-only |
 
 ### CLI Commands / Flags
 
@@ -574,6 +670,14 @@ Read via `config('features.ai-vision.face-url')` and `config('features.ai-vision
 | UI-030-13 | Merge person modal | PersonDetail → "Merge into..." → modal with person search dropdown → confirm merge *(FR-030-25)* |
 | UI-030-14 | Maintenance dismiss cleanup | Maintenance page → "Destroy Dismissed Faces" card (visible only when count > 0) *(FR-030-23)* |
 | UI-030-15 | Maintenance reset face scan status | Maintenance page → "Reset Face Scan Status" card — combined reset for stuck-pending (>720 min) AND failed scans (visible only when combined count > 0) *(FR-030-24, Q-030-73)* |
+| UI-030-16 | Cluster detail view | Click cluster card → full grid of all faces in cluster; assign name or dismiss individual faces *(FR-030-29, FR-030-30)* |
+| UI-030-17 | Cluster infinite scroll | Scroll near bottom of cluster page → next page loads automatically *(FR-030-28)* |
+| UI-030-18 | People context menu | Right-click PersonCard → context menu with Merge/Privacy/Assign/Remove *(FR-030-32)* |
+| UI-030-19 | Inline person name edit | Click person name → editable inline input; Enter saves; Escape cancels *(FR-030-34)* |
+| UI-030-20 | Album-style photo layout in PersonDetail | Person photos use justified gallery layout matching album views *(FR-030-36)* |
+| UI-030-21 | Photo lightbox from PersonDetail | Click photo → full photo viewer/lightbox opens *(FR-030-39)* |
+| UI-030-22 | Drag & blue-border multi-select | Click/Shift+click/drag-select photos with blue border highlight *(FR-030-38)* |
+| UI-030-23 | Face Maintenance admin table | Admin sortable table of all faces with confidence/blur scores *(FR-030-40)* |
 
 ## Telemetry & Observability
 

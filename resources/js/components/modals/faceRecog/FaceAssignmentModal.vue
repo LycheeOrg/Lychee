@@ -91,7 +91,13 @@
 					:loading="dismissing"
 					@click="dismiss"
 				/>
-				<Button class="w-full border-none rounded-none" :label="$t('people.assignment.cancel')" severity="secondary" text @click="closeCallback" />
+				<Button
+					class="w-full border-none rounded-none"
+					:label="$t('people.assignment.cancel')"
+					severity="secondary"
+					text
+					@click="closeCallback"
+				/>
 				<Button
 					class="w-full border-none rounded-none rounded-br-xl"
 					:label="$t('people.assignment.confirm')"

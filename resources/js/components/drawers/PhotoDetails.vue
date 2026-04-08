@@ -246,7 +246,11 @@
 									v-if="face.crop_url"
 									:src="face.crop_url"
 									:alt="face.person_name ?? $t('people.unknown')"
-									class="w-12 h-12 rounded-full object-cover border-2 border-surface-600"
+									class="w-12 h-12 rounded-full object-cover border-2"
+									:class="{
+										'border-surface-600': !ctrlHeld || isTouchDev,
+										'border-2 border-dashed border-red-500': ctrlHeld && !isTouchDev,
+									}"
 								/>
 								<div
 									v-else
@@ -275,7 +279,7 @@
 	</aside>
 </template>
 <script setup lang="ts">
-import { Ref, ref, watch } from "vue";
+import { Ref, ref, watch, onMounted, onUnmounted } from "vue";
 import Card from "primevue/card";
 import ProgressSpinner from "primevue/progressspinner";
 import MapInclude from "@/components/gallery/photoModule/MapInclude.vue";
@@ -359,6 +363,33 @@ watch(
 // Face circles section
 const faceForAssignment = ref<App.Http.Resources.Models.FaceResource | undefined>(undefined);
 const isFaceAssignmentOpen = ref(false);
+const ctrlHeld = ref(false);
+
+function onKeyDown(e: KeyboardEvent) {
+	if (e.key === "Control" || e.key === "Meta") {
+		ctrlHeld.value = true;
+	}
+}
+
+function onKeyUp(e: KeyboardEvent) {
+	if (e.key === "Control" || e.key === "Meta") {
+		ctrlHeld.value = false;
+	}
+}
+
+onMounted(() => {
+	if (!isTouchDev) {
+		window.addEventListener("keydown", onKeyDown);
+		window.addEventListener("keyup", onKeyUp);
+	}
+});
+
+onUnmounted(() => {
+	if (!isTouchDev) {
+		window.removeEventListener("keydown", onKeyDown);
+		window.removeEventListener("keyup", onKeyUp);
+	}
+});
 
 function openFaceAssignment(face: App.Http.Resources.Models.FaceResource) {
 	faceForAssignment.value = face;

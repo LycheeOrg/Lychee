@@ -179,3 +179,28 @@ def test_match_returns_empty_matches_when_below_threshold(
     )
     assert response.status_code == 200
     assert response.json()["matches"] == []
+
+
+# ---------------------------------------------------------------------------
+# FaceResult schema
+# ---------------------------------------------------------------------------
+
+
+def test_face_result_includes_laplacian_variance() -> None:
+    """FaceResult schema must expose laplacian_variance so it is included in callback payloads."""
+    from app.api.schemas import FaceResult
+
+    face = FaceResult(
+        x=0.1,
+        y=0.1,
+        width=0.4,
+        height=0.4,
+        confidence=0.9,
+        embedding_id="emb-001",
+        crop="base64data",
+        laplacian_variance=42.7,
+    )
+    assert face.laplacian_variance == pytest.approx(42.7)
+    payload = face.model_dump()
+    assert "laplacian_variance" in payload
+    assert payload["laplacian_variance"] == pytest.approx(42.7)

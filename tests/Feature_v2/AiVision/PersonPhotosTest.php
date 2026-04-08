@@ -51,7 +51,7 @@ class PersonPhotosTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->admin)->getJson('Person/' . $this->person1->id . '/photos');
 		$this->assertOk($response);
 
-		$photo_ids = collect($response->json('data'))->pluck('id')->all();
+		$photo_ids = collect($response->json('photos'))->pluck('id')->all();
 		self::assertContains($this->photo1->id, $photo_ids);
 	}
 
@@ -59,7 +59,31 @@ class PersonPhotosTest extends BaseApiWithDataTest
 	{
 		$response = $this->actingAs($this->admin)->getJson('Person/' . $this->person1->id . '/photos');
 		$this->assertOk($response);
-		self::assertEmpty($response->json('data'));
+		self::assertEmpty($response->json('photos'));
+	}
+
+	public function testNextPreviousIdsAreSetRelativeToPersonCollection(): void
+	{
+		Face::factory()->for_photo($this->photo1)->for_person($this->person1)->create();
+		Face::factory()->for_photo($this->photo2)->for_person($this->person1)->create();
+		Face::factory()->for_photo($this->photo3)->for_person($this->person1)->create();
+
+		$response = $this->actingAs($this->admin)->getJson('Person/' . $this->person1->id . '/photos');
+		$this->assertOk($response);
+
+		$photos = $response->json('photos');
+		self::assertCount(3, $photos);
+
+		// First photo: previous_photo_id must be null
+		self::assertNull($photos[0]['previous_photo_id']);
+		// First photo points forward to second
+		self::assertSame($photos[1]['id'], $photos[0]['next_photo_id']);
+		// Middle photo chained correctly
+		self::assertSame($photos[0]['id'], $photos[1]['previous_photo_id']);
+		self::assertSame($photos[2]['id'], $photos[1]['next_photo_id']);
+		// Last photo: next_photo_id must be null
+		self::assertNull($photos[2]['next_photo_id']);
+		self::assertSame($photos[1]['id'], $photos[2]['previous_photo_id']);
 	}
 
 	public function testNonSearchablePersonForbiddenForNonOwner(): void

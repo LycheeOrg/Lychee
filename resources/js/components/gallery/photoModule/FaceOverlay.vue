@@ -56,6 +56,7 @@ import FaceAssignmentModal from "@/components/modals/faceRecog/FaceAssignmentMod
 import FaceDetectionService from "@/services/face-detection-service";
 import { shouldIgnoreKeystroke, isTouchDevice } from "@/utils/keybindings-utils";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
+import { useLycheeStateStore } from "@/stores/LycheeState";
 import { usePhotoStore } from "@/stores/PhotoState";
 import { usePhotosStore } from "@/stores/PhotosState";
 import { storeToRefs } from "pinia";
@@ -71,6 +72,7 @@ const emits = defineEmits<{
 
 const toast = useToast();
 const leftMenuStore = useLeftMenuStateStore();
+const lycheeStore = useLycheeStateStore();
 const photoStore = usePhotoStore();
 const photosStore = usePhotosStore();
 const { initData } = storeToRefs(leftMenuStore);
@@ -80,20 +82,15 @@ const isTouchDev = isTouchDevice();
 // Config-driven: is the overlay feature enabled at all?
 const overlayEnabled = computed(() => initData.value?.modules.is_face_overlay_enabled ?? true);
 
-// Visibility toggle (P key) — init from config default
-const defaultVisibility = computed(() => (initData.value?.modules.face_overlay_default_visibility ?? "visible") === "visible");
-const isVisible = ref(true);
+// Visibility toggle (P key) — stored in lycheeStore for persistence
+const isVisible = computed(() => lycheeStore.is_face_overlay_visible);
 
-onMounted(() => {
-	isVisible.value = defaultVisibility.value;
-});
-
-// P key toggles overlay visibility (confirmed free — F = fullscreen)
+// P key toggles overlay visibility
 onKeyStroke("p", () => {
 	if (shouldIgnoreKeystroke()) {
 		return;
 	}
-	isVisible.value = !isVisible.value;
+	lycheeStore.is_face_overlay_visible = !lycheeStore.is_face_overlay_visible;
 });
 
 // CTRL+click dismiss mode — desktop only

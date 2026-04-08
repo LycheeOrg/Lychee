@@ -2,7 +2,7 @@
 
 _Linked specification:_ `docs/specs/4-architecture/features/030-ai-vision-service/spec.md`
 _Status:_ Draft
-_Last updated:_ 2026-04-04
+_Last updated:_ 2026-04-07
 
 > Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in [docs/specs/4-architecture/open-questions.md](../../open-questions.md), and assume clarifications are resolved only when the spec's normative sections and, where applicable, ADRs have been updated.
 
@@ -89,7 +89,7 @@ After each increment, verify:
 
 ## Increment Map
 
-> **Implementation order: Python service first (I1–I3), then PHP/Lychee backend (I4–I12), then frontend (I13–I18), then docs (I19), then clustering & embedding sync (I20–I22), then face UX enhancements (I23–I30).**
+> **Implementation order: Python service first (I1–I3), then PHP/Lychee backend (I4–I12), then frontend (I13–I18), then docs (I19), then clustering & embedding sync (I20–I22), then face UX enhancements (I23–I30), then UX polish & maintenance (I31–I37).**
 
 ### Phase 1: Python Facial Recognition Service
 
@@ -255,11 +255,11 @@ After each increment, verify:
 - _Goal:_ Paginated endpoint listing all photos containing a given Person.
 - _Preconditions:_ I7 complete.
 - _Steps:_
-  1. Write feature test: get photos for person (paginated), respects album access control.
-  2. Implement PersonPhotosController with paginated query through Face→Photo join.
+  1. Write feature test: get photos for person (paginated), respects album access control; verify `next_photo_id` and `previous_photo_id` are set relative to the person's collection (first photo has `previous_photo_id = null`, last has `next_photo_id = null`, middle photos chain correctly). *(Resolved Q-030-74)*
+  2. Implement PersonPhotosController with paginated query through Face→Photo join. After fetching the ordered photo page, compute sequential `next_photo_id` / `previous_photo_id` for each photo: `photos[i].next_photo_id = photos[i+1].id` (null for last), `photos[i].previous_photo_id = photos[i-1].id` (null for first). These person-relative values override the album-relative fields on `PhotoResource` so that `PhotoPanel.vue` navigates within the person's collection natively.
   3. Register route.
 - _Commands:_ `php artisan test --filter=PersonPhotos`, `make phpstan`
-- _Exit:_ Paginated photos returned; access control respected.
+- _Exit:_ Paginated photos returned; access control respected; `next_photo_id`/`previous_photo_id` set relative to the person's collection.
 
 ### I20 – Clustering Endpoint: Python `POST /cluster` + PHP Ingestion & Trigger (≥90 min)
 
@@ -500,6 +500,92 @@ After each increment, verify:
 - _Commands:_ `php artisan test --filter=FaceAssignment`, `make phpstan`, `npm run check`
 - _Exit:_ Face unassign works via API; PersonDetail UI allows removal; face returns to unassigned pool.
 
+### Phase 6: UX Polish & Face Maintenance (FR-030-26 through FR-030-40)
+
+### I31 – Face Cluster Page UX Overhaul (≈120 min)
+
+- _Goal:_ Improve the FaceClusters.vue page with Enter-to-submit, existing person dropdown, infinite scrolling, grid layout, and descriptive header.
+- _Preconditions:_ I22 complete (FaceClusters.vue exists).
+- _Steps:_
+  1. **Frontend** — Replace the "Load more" button with infinite scrolling using `IntersectionObserver`. A sentinel element at the bottom of the cluster list triggers `loadMore()` when it enters the viewport. Show a loading spinner during fetch. Stop observing on last page. *(FR-030-28)*
+  2. **Frontend** — Add `@keydown.enter` handler on the name `InputText` to call the assign function (same as clicking "Assign" button). Only fires when the name is non-empty. *(FR-030-26)*
+  3. **Frontend** — Add a PrimeVue Dropdown (with type-ahead filter and custom option template: miniature + name + count, reusing the pattern from I28/T-030-67) alongside the name input. The user can either type a new name OR select an existing person. When a person is selected, `assignCluster()` sends `person_id` instead of `new_person_name`. *(FR-030-27)*
+  4. **Frontend** — Rework the page layout from vertical list to a responsive grid (`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4`). Each cluster card is a compact unit with face thumbnails, name input, person dropdown, and action buttons in close visual proximity. *(FR-030-31)*
+  5. **Frontend** — Move the "Run Clustering" and "Toggle Multi-Select" buttons from the `Toolbar` into the page body (below the header description text). Add a descriptive header paragraph: "Review face clusters to identify people. Assign a name to group similar faces, or dismiss false positives." *(FR-030-31)*
+- _Commands:_ `npm run check`, `npm run format`
+- _Exit:_ Infinite scroll works; Enter submits name; existing person dropdown available; grid layout renders cleanly; buttons in page body; header description shown.
+
+### I32 – Face Cluster Detail View + Individual Face Dismiss (≈90 min)
+
+- _Goal:_ Allow clicking on a cluster to see all its faces and dismiss individual faces from a cluster.
+- _Preconditions:_ I31 complete; I22 complete (cluster API exists).
+- _Steps:_
+  1. **PHP** — Implement `GET /api/v2/FaceDetection/clusters/{cluster_id}/faces` endpoint (API-030-26): paginated list of all `FaceResource` items for the cluster (`cluster_label = cluster_id AND person_id IS NULL AND is_dismissed = false`). Auth per permission mode. Register route.
+  2. **PHP** — Write feature test: list faces for a valid cluster_id (paginated), 404 for unknown cluster_id, permission mode enforcement.
+  3. **Frontend** — Create a cluster detail view as a PrimeVue `<Dialog>` *(Resolved Q-030-75)*. Clicking a cluster card (or "+N more" badge) opens the Dialog. Shows a full responsive grid of all face crops in the cluster with a small "×" dismiss badge on each face. At the bottom: name input + existing person dropdown + "Assign All" + "Dismiss All" buttons. *(FR-030-29, FR-030-30)*
+  4. **Frontend** — Dismissing a face from the detail view calls `PATCH /Face/{id}` (existing dismiss endpoint), removes the face from the grid, decrements the cluster size. If all faces dismissed, close the detail view and remove the cluster card.
+- _Commands:_ `php artisan test --filter=FaceClusterFaces`, `make phpstan`, `npm run check`
+- _Exit:_ Cluster detail shows all faces; individual dismiss works; assign from detail view works; all tests green.
+
+### I33 – People Page: Context Menu + Compact Cards (≈60 min)
+
+- _Goal:_ Add a context menu to PersonCards and make face thumbnails smaller with rounded corners.
+- _Preconditions:_ I13 complete (People.vue and PersonCard.vue exist).
+- _Steps:_
+  1. **Frontend** — Add a right-click (or long-press on touch) context menu to PersonCard using PrimeVue `ContextMenu` component. Menu items: "Merge into..." (opens MergePersonModal with this person as source), "Toggle privacy" (calls `PeopleService.update(id, {is_searchable: !current})`), "Assign to user" (admin-only; opens a PrimeVue `<Dialog>` with an autocomplete Dropdown listing user accounts by name + email; on confirm calls `PATCH /Person/{id}` with `{ user_id: selectedUserId }`; requires extending `UpdatePersonRequest` to accept nullable `user_id` with admin-only validation gate) *(Resolved Q-030-76)*, "Remove association" (calls `DELETE /Person/{id}` after confirmation). *(FR-030-32)*
+  2. **Frontend** — Reduce PersonCard face crop size (e.g. from 96px to 80px diameter). Add `border-radius: 12px` (or `rounded-xl`) to the PersonCard container for a polished look. Ensure the card layout remains balanced at the smaller size. *(FR-030-33)*
+- _Commands:_ `npm run check`, `npm run format`
+- _Exit:_ Context menu opens with all four actions; each action calls the correct API; face crops smaller with rounded corners.
+
+### I34 – Person Detail: Inline Edit, Dark Mode Fix, Compact Remove (≈60 min)
+
+- _Goal:_ Make the person name editable inline, fix dark mode title visibility, and replace the full-image hover overlay with a compact remove badge.
+- _Preconditions:_ I14 complete (PersonDetail.vue exists).
+- _Steps:_
+  1. **Frontend** — Replace the separate edit form and pencil icon with inline-editable name text. Clicking the name text switches to an `InputText` (or contenteditable span). Enter saves via `PeopleService.update()`, Escape cancels. Remove the "Edit" button from the toolbar. *(FR-030-34)*
+  2. **Frontend** — Fix the person name title color in dark mode. Use theme-aware CSS classes (e.g. `text-text-main-0` or Tailwind `dark:text-white`) so the title is readable against both light and dark backgrounds. *(FR-030-35)*
+  3. **Frontend** — Replace the full-image hover overlay ("Remove from person" button covering the entire photo) with a small "×" badge that appears in the top-right corner on hover. Clicking it calls `POST /Face/{id}/assign` with `person_id: null`. The badge should be small (~24px), positioned absolutely, and styled with a semi-transparent background. *(FR-030-37)*
+- _Commands:_ `npm run check`, `npm run format`
+- _Exit:_ Name editable inline; title readable in dark mode; compact "×" badge replaces full overlay.
+
+### I35 – Person Detail: Album-Style Layout + Photo Lightbox (≈90 min)
+
+- _Goal:_ Use the existing album photo layout (justified gallery) in PersonDetail and open photos in the lightbox.
+- _Preconditions:_ I14 complete; existing album layout components available.
+- _Steps:_
+  1. **Frontend** — Replace the current uniform square grid in PersonDetail.vue with the justified/masonry photo layout component used in album views. Photos should display with their natural aspect ratios. Reuse existing gallery layout components/composables (investigate existing implementation in Album.vue or PhotoLayout component). *(FR-030-36)*
+  2. **Frontend** — Wire up photo click (when not in select mode) to open the photo lightbox/overlay — the same viewer used in album views with navigation arrows, EXIF data sidebar, etc. The lightbox should scope its navigation to the current person's photos. *(FR-030-39)*
+  3. **Frontend** — Integrate infinite scrolling (IntersectionObserver pattern) to replace the "Load more" button for consistency with the cluster page.
+- _Commands:_ `npm run check`, `npm run format`
+- _Exit:_ Photos render in justified layout with natural aspect ratios; clicking opens lightbox with navigation; infinite scroll works.
+
+### I36 – Person Detail: Multi-Select with Drag & Blue Border (≈90 min)
+
+- _Goal:_ Implement album-style multi-select with blue border highlights, Shift+click range select, and drag-to-select.
+- _Preconditions:_ I35 complete (album-style layout in place); existing selection patterns in album views available for reuse.
+- _Steps:_
+  1. **Frontend** — Replace the current checkbox-based batch selection in PersonDetail.vue with blue-border selection (matching album selection style). Selected photos show a blue border highlight instead of a checkbox overlay. *(FR-030-38)*
+  2. **Frontend** — Implement Shift+click range select: clicking a photo, then Shift+clicking another photo, selects all photos between them (inclusive). Follow existing album selection pattern.
+  3. **Frontend** — Implement drag-to-select (rubber-band selection): mousedown on empty area starts a selection rectangle; all face/photo tiles intersecting the rectangle are selected. Reuse existing drag-select composable if available in album views.
+  4. **Frontend** — Wire selected faces to the existing batch action bar (unassign/reassign).
+- _Commands:_ `npm run check`, `npm run format`
+- _Exit:_ Click-to-select with blue border works; Shift+click range select works; drag-to-select works; batch actions operate on selected items.
+
+### I37 – Face Maintenance Admin Page (≈120 min)
+
+- _Goal:_ Create a face quality review page where admins can sort faces by confidence and blur score, and dismiss low-quality detections.
+- _Preconditions:_ I4 complete (faces table); Python service stores Laplacian scores.
+- _Steps:_
+  1. **Python** — Extend the `FaceResult` Pydantic schema in `app/api/schemas.py` to include a `laplacian_variance: float` field in the detection callback payload. In `app/detection/detector.py`, compute and include the Laplacian variance value for each detected face (already computed for blur filtering; now also returned in the callback).
+  2. **Python** — Update tests to verify `laplacian_variance` is included in callback payload.
+  3. **PHP** — Create migration: `ALTER TABLE faces ADD COLUMN laplacian_variance FLOAT NULL` (DO-030-09). Update Face model fillable and casts.
+  4. **PHP** — Update `ProcessFaceDetectionResults` action to store `laplacian_variance` from the callback payload (nullable — existing faces will have NULL).
+  5. **PHP** — Implement `GET /api/v2/Face/maintenance` endpoint (API-030-27): admin-only; returns paginated list of faces with extended fields: `id`, `crop_url`, `photo_id`, `photo_thumb_url`, `person_name` (nullable), `cluster_label` (nullable), `confidence`, `laplacian_variance` (nullable). Supports `sort_by` query param (`confidence` | `laplacian_variance`, default `confidence`) and `sort_dir` (`asc` | `desc`, default `asc`). Register route.
+  6. **PHP** — Write feature tests: list faces sorted by confidence asc, sorted by laplacian_variance asc, admin-only auth, pagination.
+  7. **Frontend** — Create `FaceMaintenance.vue` page (admin-only, add route and navigation link in maintenance area). PrimeVue DataTable with sortable columns: face crop (img), photo thumbnail (img), person name, cluster label, confidence, blur score. Clicking a row allows dismissing the face (confirmation + `PATCH /Face/{id}`). Descriptive header text: "Review detected face quality. Sort by confidence or blur score to find low-quality detections."
+- _Commands:_ `uv run pytest`, `uv run ruff check`, `php artisan test --filter=FaceMaintenance`, `make phpstan`, `npm run check`
+- _Exit:_ Laplacian score stored on faces; maintenance endpoint returns sortable face list; admin page renders with sortable table; dismiss from table works; all tests green.
+
 ## Scenario Tracking
 
 | Scenario ID | Increment / Task reference | Notes |
@@ -550,6 +636,17 @@ After each increment, verify:
 | S-030-44 | I24 | Face overlay disabled when config is off |
 | S-030-45 | I28 | Person merge from UI with merge modal |
 | S-030-46 | I28 | Person miniature in face assignment dropdown |
+| S-030-47 | I31 | Cluster page: Enter key submits name assignment |
+| S-030-48 | I31 | Cluster page: existing person dropdown selection |
+| S-030-49 | I31 | Cluster page: infinite scroll loads next page |
+| S-030-50 | I32 | Cluster detail view: all faces displayed; assign name |
+| S-030-51 | I32 | Cluster detail: dismiss individual face |
+| S-030-52 | I33 | People page: context menu on PersonCard |
+| S-030-53 | I34 | Person detail: inline name editing |
+| S-030-54 | I35 | Person detail: album-style justified layout |
+| S-030-55 | I35 | Person detail: click photo opens lightbox |
+| S-030-56 | I36 | Person detail: drag & blue-border multi-select |
+| S-030-57 | I37 | Face Maintenance page: admin sorts by quality; dismisses |
 
 ## Analysis Gate
 
@@ -557,7 +654,7 @@ _To be completed after spec, plan, and tasks align and before implementation beg
 
 ## Exit Criteria
 
-- [ ] All 30 increments (I1–I30) complete with passing tests.
+- [ ] All 37 increments (I1–I37) complete with passing tests.
 - [ ] PHPStan 0 errors.
 - [ ] php-cs-fixer clean.
 - [ ] npm run check / npm run format clean.

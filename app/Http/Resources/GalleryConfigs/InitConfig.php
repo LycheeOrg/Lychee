@@ -54,6 +54,7 @@ class InitConfig extends Data
 	public bool $is_desktop_dock_full_transparency_enabled;
 	public bool $is_mobile_dock_full_transparency_enabled;
 	public bool $is_photo_details_always_open;
+	public bool $is_face_overlay_visible;
 
 	// Thumbs configuration
 	public VisibilityType $display_thumb_album_overlay;
@@ -171,6 +172,7 @@ class InitConfig extends Data
 		$this->is_desktop_dock_full_transparency_enabled = request()->configs()->getValueAsBool('desktop_dock_full_transparency_enabled');
 		$this->is_mobile_dock_full_transparency_enabled = request()->configs()->getValueAsBool('mobile_dock_full_transparency_enabled');
 		$this->is_photo_details_always_open = request()->configs()->getValueAsBool('enable_photo_details_always_open');
+		$this->is_face_overlay_visible = request()->configs()->getValueAsString('ai_vision_face_overlay_default_visibility') === 'visible';
 
 		// Thumbs configuration
 		$this->display_thumb_album_overlay = request()->configs()->getValueAsEnum('display_thumb_album_overlay', VisibilityType::class);

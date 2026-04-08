@@ -33,7 +33,8 @@ Route::get('/up', function () {
 	Event::dispatch(new DiagnosingHealth());
 
 	return view('health-up');
-});
+})->withoutMiddleware(['admin_user:set']); // We do not require an admin user fot the health check, as it may be used to check if the application is up before any users are created.
+
 Route::get('/octane-health', function () {
 	$status = [
 		'status' => 'healthy',
@@ -69,6 +70,7 @@ Route::get('/jobs', VueController::class)->middleware(['migration:complete', 'lo
 Route::get('/diagnostics', VueController::class)->middleware(['migration:complete']);
 Route::get('/statistics', VueController::class)->middleware(['migration:complete', 'login_required:always']);
 Route::get('/maintenance', VueController::class)->middleware(['migration:complete', 'login_required:always']);
+Route::get('/maintenance/faces', VueController::class)->middleware(['migration:complete', 'login_required:always']);
 Route::get('/users', VueController::class)->middleware(['migration:complete', 'login_required:always']);
 Route::get('/user-groups', VueController::class)->middleware(['migration:complete', 'login_required:always']);
 Route::get('/settings/{tab?}', VueController::class)->middleware(['migration:complete', 'login_required:always']);

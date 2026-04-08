@@ -81,7 +81,7 @@ class PeopleController extends Controller
 	}
 
 	/**
-	 * Update a Person (name and/or searchability).
+	 * Update a Person (name, searchability, and/or linked user).
 	 *
 	 * @return PersonResource
 	 */
@@ -95,6 +95,10 @@ class PeopleController extends Controller
 
 		if ($request->name() !== null) {
 			$person->name = $request->name();
+		}
+
+		if ($request->hasUserId()) {
+			$person->user_id = $request->userId();
 		}
 
 		$person->save();

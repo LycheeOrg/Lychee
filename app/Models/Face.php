@@ -84,6 +84,10 @@ class Face extends Model
 		'crop_url',
 	];
 
+	protected $with = [
+		'person',
+	];
+
 	/**
 	 * @return array<string,string>
 	 */

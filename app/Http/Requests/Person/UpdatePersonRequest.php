@@ -22,6 +22,7 @@ class UpdatePersonRequest extends BaseApiRequest implements HasPerson
 
 	private ?string $name;
 	private ?bool $is_searchable;
+	private ?int $user_id;
 
 	public function authorize(): bool
 	{
@@ -34,6 +35,11 @@ class UpdatePersonRequest extends BaseApiRequest implements HasPerson
 			return false;
 		}
 
+		// Only admins may set user_id
+		if ($this->user_id !== null && !request()->user()?->may_administrate) {
+			return false;
+		}
+
 		return true;
 	}
 
@@ -43,6 +49,7 @@ class UpdatePersonRequest extends BaseApiRequest implements HasPerson
 			'id' => ['required', new RandomIDRule(false)],
 			'name' => ['sometimes', 'string', 'max:255'],
 			'is_searchable' => ['sometimes', 'boolean'],
+			'user_id' => ['sometimes', 'nullable', 'integer', 'exists:users,id'],
 		];
 	}
 
@@ -57,6 +64,7 @@ class UpdatePersonRequest extends BaseApiRequest implements HasPerson
 		$this->person = Person::findOrFail($values['id']);
 		$this->name = $values['name'] ?? null;
 		$this->is_searchable = isset($values['is_searchable']) ? static::toBoolean($values['is_searchable']) : null;
+		$this->user_id = array_key_exists('user_id', $values) ? ($values['user_id'] === null ? null : (int) $values['user_id']) : -1;
 	}
 
 	public function name(): ?string
@@ -67,5 +75,22 @@ class UpdatePersonRequest extends BaseApiRequest implements HasPerson
 	public function isSearchable(): ?bool
 	{
 		return $this->is_searchable;
+	}
+
+	/**
+	 * Returns the new user_id value, or -1 if user_id was not included in the request.
+	 * -1 signals "not provided" since null is a valid value (unlink person from user).
+	 */
+	public function userId(): int|null
+	{
+		return $this->user_id;
+	}
+
+	/**
+	 * Whether the request explicitly contains a user_id field.
+	 */
+	public function hasUserId(): bool
+	{
+		return $this->user_id !== -1;
 	}
 }

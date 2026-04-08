@@ -384,6 +384,8 @@ Route::post('/Face/{id}/assign', [AiVision\FaceController::class, 'assign'])->mi
 Route::post('/Face/batch', [AiVision\FaceController::class, 'batch'])->middleware(['support:se']);
 Route::patch('/Face/{id}', [AiVision\FaceController::class, 'toggleDismissed'])->middleware(['support:se']);
 Route::delete('/Face/dismissed', [AiVision\FaceController::class, 'destroyDismissed'])->middleware(['support:se']);
+Route::get('/Face/maintenance', [AiVision\FaceMaintenanceController::class, 'index'])->middleware(['support:se']);
+Route::post('/Face/maintenance/batch-dismiss', [AiVision\FaceMaintenanceController::class, 'batchDismiss'])->middleware(['support:se']);
 
 /**
  * AI VISION — FACE DETECTION.
@@ -397,6 +399,7 @@ Route::post('/FaceDetection/cluster-results', [AiVision\FaceDetectionController:
  * AI VISION — CLUSTER REVIEW.
  */
 Route::get('/FaceDetection/clusters', [AiVision\FaceClusterController::class, 'index'])->middleware(['support:se']);
+Route::get('/FaceDetection/clusters/{label}/faces', [AiVision\FaceClusterController::class, 'faces'])->middleware(['support:se']);
 Route::post('/FaceDetection/clusters/{label}/assign', [AiVision\FaceClusterController::class, 'assign'])->middleware(['support:se']);
 Route::post('/FaceDetection/clusters/{label}/dismiss', [AiVision\FaceClusterController::class, 'dismiss'])->middleware(['support:se']);
 Route::post('/FaceDetection/clusters/{label}/uncluster', [AiVision\FaceClusterController::class, 'uncluster'])->middleware(['support:se']);

@@ -34,6 +34,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		is_desktop_dock_full_transparency_enabled: false,
 		is_mobile_dock_full_transparency_enabled: false,
 		is_photo_details_always_open: false,
+		is_face_overlay_visible: true,
 
 		// keybinding help
 		show_keybinding_help_popup: false,
@@ -201,6 +202,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.is_desktop_dock_full_transparency_enabled = data.is_desktop_dock_full_transparency_enabled;
 					this.is_mobile_dock_full_transparency_enabled = data.is_mobile_dock_full_transparency_enabled;
 					this.is_photo_details_always_open = data.is_photo_details_always_open;
+					this.is_face_overlay_visible = data.is_face_overlay_visible;
 					const togglableStore = useTogglablesStateStore();
 					// Initialize the details togglable according to the always open config
 					togglableStore.are_details_open = data.is_photo_details_always_open;

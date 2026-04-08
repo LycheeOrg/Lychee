@@ -646,6 +646,7 @@ declare namespace App.Http.Resources.Models {
 		confidence: number;
 		laplacian_variance: number;
 		is_dismissed: boolean;
+		cluster_label: number | null;
 		crop_url: string | null;
 		person_name: string | null;
 		suggestions: Array<App.Http.Resources.Models.FaceSuggestionResource>;

@@ -53,7 +53,13 @@
 			</div>
 
 			<div class="flex justify-end">
-				<Button class="w-full border-none rounded-none rounded-bl-xl" :label="$t('gallery.cancel')" severity="secondary" text @click="closeCallback" />
+				<Button
+					class="w-full border-none rounded-none rounded-bl-xl"
+					:label="$t('gallery.cancel')"
+					severity="secondary"
+					text
+					@click="closeCallback"
+				/>
 				<Button
 					class="w-full border-none rounded-none rounded-br-xl"
 					:label="$t('people.merge.confirm')"

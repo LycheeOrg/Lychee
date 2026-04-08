@@ -187,6 +187,12 @@ export function useLeftMenu(
 						access: initData.value.settings.can_edit ?? false,
 					},
 					{
+						label: "maintenance.face_quality.title",
+						icon: "pi pi-face-smile",
+						route: "/maintenance/faces",
+						access: (initData.value.settings.can_edit ?? false) && (initData.value.modules.is_ai_vision_enabled ?? false),
+					},
+					{
 						label: "left-menu.logs",
 						icon: "excerpt",
 						url: Constants.BASE_URL + "/Logs",

@@ -18,7 +18,10 @@ const PeopleService = {
 		return axios.post(`${Constants.getApiUrl()}People`, { name });
 	},
 
-	update(id: string, data: { name?: string; is_searchable?: boolean }): Promise<AxiosResponse<App.Http.Resources.Models.PersonResource>> {
+	update(
+		id: string,
+		data: { name?: string; is_searchable?: boolean; user_id?: number | null },
+	): Promise<AxiosResponse<App.Http.Resources.Models.PersonResource>> {
 		return axios.patch(`${Constants.getApiUrl()}Person/${id}`, data);
 	},
 

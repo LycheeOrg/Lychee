@@ -6,9 +6,59 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 | Question ID | Feature | Priority | Summary | Status | Opened | Updated |
 |-------------|---------|----------|---------|--------|--------|---------|
-| *(no active questions for feature 030)* | | | | | | |
+
 
 ## Question Details
+
+---
+
+### ~~Q-030-74: PersonDetail Lightbox Navigation Strategy~~ ✅ RESOLVED
+
+**Feature:** 030 – AI Vision Service  
+**Priority:** High  
+**Status:** Resolved  
+**Opened:** 2026-04-07  
+**Affects:** T-030-85 (I35), FR-030-39
+
+**Resolution:** **Option A (server-side)** — `GET /Person/{id}/photos` computes and includes `next_photo_id` and `previous_photo_id` on each `PhotoResource`, ordered sequentially by collection position (access-filtered). First photo: `previous_photo_id = null`; last photo: `next_photo_id = null`. `PhotoPanel.vue` then uses these person-relative IDs natively for navigation within the person's collection. No client-side monkey-patching required.
+
+**Spec Impact:** Updated FR-030-03 success path to note that each `PhotoResource` includes `next_photo_id`/`previous_photo_id` relative to the person's collection. Updated FR-030-39 success path. Updated S-030-55 scenario. Updated plan.md I12 steps and exit criteria. Updated T-030-32 (test for next/previous IDs), T-030-33 (implementation), T-030-85 (lightbox navigation note).
+
+**Resolved:** 2026-04-07
+
+---
+
+### ~~Q-030-75: FaceCluster Detail View — Dialog vs. Sub-Route~~ ✅ RESOLVED
+
+**Feature:** 030 – AI Vision Service  
+**Priority:** Medium  
+**Status:** Resolved  
+**Opened:** 2026-04-07  
+**Affects:** T-030-78 (I32), FR-030-29
+
+**Resolution:** **Option A** — PrimeVue `<Dialog>`. Clicking a cluster card opens a Dialog that fetches all faces via `GET /FaceDetection/clusters/{cluster_id}/faces`. URL does not change. No routing changes needed.
+
+**Spec Impact:** Updated FR-030-29 requirement and success path to specify PrimeVue Dialog. Updated plan.md I32 step 3. Updated T-030-78 intent (Dialog only, sub-route option removed).
+
+**Resolved:** 2026-04-07
+
+---
+
+### ~~Q-030-76: People.vue Context Menu "Assign to User" Action~~ ✅ RESOLVED
+
+**Feature:** 030 – AI Vision Service  
+**Priority:** Medium  
+**Status:** Resolved  
+**Opened:** 2026-04-07  
+**Affects:** T-030-79 (I33), FR-030-32, FR-030-05
+
+**Resolution:** **Option A** — User-picker dialog. "Assign to user" (admin-only) opens a PrimeVue `<Dialog>` with an autocomplete Dropdown listing user accounts (name + email). On confirm, calls `PATCH /Person/{id}` with `{ user_id: selectedUserId }`. Requires extending `UpdatePersonRequest` to accept nullable `user_id` with an admin-only validation gate.
+
+**Spec Impact:** Updated FR-030-32 success path to describe the user-picker dialog and `PATCH /Person/{id}` with `user_id`. Updated plan.md I33 step 1. Updated T-030-79 intent (user-picker dialog, UpdatePersonRequest extension noted).
+
+**Resolved:** 2026-04-07
+
+---
 
 ### ~~Q-032-01: Advisory URL Field Missing from DTO/Resource~~ ✅ RESOLVED
 

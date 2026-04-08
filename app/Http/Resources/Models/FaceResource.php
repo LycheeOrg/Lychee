@@ -26,6 +26,7 @@ class FaceResource extends Data
 	public float $confidence;
 	public float $laplacian_variance;
 	public bool $is_dismissed;
+	public ?int $cluster_label;
 	public ?string $crop_url;
 	public ?string $person_name;
 	/** @var FaceSuggestionResource[] */
@@ -43,6 +44,7 @@ class FaceResource extends Data
 		$this->confidence = $face->confidence;
 		$this->laplacian_variance = $face->laplacian_variance;
 		$this->is_dismissed = $face->is_dismissed;
+		$this->cluster_label = $face->cluster_label;
 		$this->crop_url = $face->crop_url;
 		$this->person_name = $face->person?->name;
 		$this->suggestions = $face->suggestions
