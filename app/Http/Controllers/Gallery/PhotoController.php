@@ -10,6 +10,7 @@ namespace App\Http\Controllers\Gallery;
 
 use App\Actions\Import\FromUrl;
 use App\Actions\Photo\Delete;
+use App\Actions\Photo\GetNeighbors;
 use App\Actions\Photo\MoveOrDuplicate;
 use App\Actions\Photo\Rating;
 use App\Actions\Photo\Rotate;
@@ -69,12 +70,22 @@ class PhotoController extends Controller
 	 *
 	 * @return PhotoResource
 	 */
-	public function get(GetPhotoRequest $request): PhotoResource
+	public function get(GetPhotoRequest $request, GetNeighbors $get_neighbors): PhotoResource
 	{
+		$photo = $request->photo();
+		$album = $photo->albums()->first();
+		$neighbors = ['previous_photo_id' => null, 'next_photo_id' => null];
+
+		if ($album !== null) {
+			$neighbors = $get_neighbors->do($photo, $album);
+		}
+
 		return new PhotoResource(
-			photo: $request->photo(),
-			album_id: null,
-			should_downgrade_size_variants: !Gate::check(PhotoPolicy::CAN_ACCESS_FULL_PHOTO, [Photo::class, $request->photo()])
+			photo: $photo,
+			album_id: $album?->id,
+			should_downgrade_size_variants: !Gate::check(PhotoPolicy::CAN_ACCESS_FULL_PHOTO, [Photo::class, $photo]),
+			next_photo_id: $neighbors['next_photo_id'],
+			previous_photo_id: $neighbors['previous_photo_id']
 		);
 	}
 

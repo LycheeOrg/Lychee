@@ -54,8 +54,13 @@ class PhotoResource extends Data
 	public ?PhotoStatisticsResource $statistics = null;
 	public ?PhotoRatingResource $rating = null;
 
-	public function __construct(Photo $photo, ?string $album_id, bool $should_downgrade_size_variants)
-	{
+	public function __construct(
+		Photo $photo,
+		?string $album_id,
+		bool $should_downgrade_size_variants,
+		?string $next_photo_id = null,
+		?string $previous_photo_id = null,
+	) {
 		$this->id = $photo->id;
 		$this->album_id = $album_id;
 		$this->checksum = $photo->checksum;
@@ -74,8 +79,8 @@ class PhotoResource extends Data
 		$this->title = (request()->configs()->getValueAsBool('file_name_hidden') && Auth::guest()) ? '' : $photo->title;
 		$this->type = $photo->type;
 		$this->updated_at = $photo->updated_at->toIso8601String();
-		$this->next_photo_id = null;
-		$this->previous_photo_id = null;
+		$this->next_photo_id = $next_photo_id;
+		$this->previous_photo_id = $previous_photo_id;
 		$include_exif_data = request()->configs()->getValueAsBool('display_exif_data');
 		$this->preformatted = new PreformattedPhotoData($photo, $include_exif_data, $this->size_variants->original);
 		$this->precomputed = new PreComputedPhotoData($photo, $include_exif_data);
