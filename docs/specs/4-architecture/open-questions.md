@@ -6,8 +6,9 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 | Question ID | Feature | Priority | Summary | Status | Opened | Updated |
 |-------------|---------|----------|---------|--------|--------|---------|
-
-_No active questions for this feature._
+| Q-033-01 | 033 – Upload Trust Level | High | Monitor trust level behaviour | Open | 2026-04-09 | 2026-04-09 |
+| Q-033-02 | 033 – Upload Trust Level | Medium | Retroactive trust level changes | Open | 2026-04-09 | 2026-04-09 |
+| Q-033-03 | 033 – Upload Trust Level | Medium | Admin photo uploads and trust level | Open | 2026-04-09 | 2026-04-09 |
 
 ## Question Details
 
@@ -2952,3 +2953,58 @@ Lychee maps `embedding_id` back to Face records (which have person_id) to identi
 **Spec Impact:** Inter-service contract appendix updated with `/match` endpoint. I17 Python service implements the endpoint. I5 Lychee SelfieClaimController consumes it.
 
 **Resolved:** 2026-03-15
+
+---
+
+### Q-033-01: Monitor Trust Level Behaviour
+
+**Feature:** 033 – Upload Trust Level  
+**Priority:** High  
+**Status:** Open  
+**Opened:** 2026-04-09
+
+The `monitor` trust level is included in the enum but has no distinct runtime behaviour in the initial implementation. It currently behaves identically to `trusted` (uploads are immediately validated). What should `monitor` do in a future iteration?
+
+**Option A (Recommended):** Photos from `monitor`-level users are immediately validated (public), but flagged for periodic admin review. A separate "monitoring queue" shows recently uploaded photos from `monitor` users for the admin to spot-check. No photos are hidden; this is a soft-audit mechanism.
+
+**Option B:** Photos from `monitor`-level users are immediately validated but generate a notification/log entry for the admin. No separate queue — just observability.
+
+**Option C:** `monitor` behaves identically to `check` (uploads hidden until approved), but with a different label to indicate the admin's intent (e.g., "this user is on probation"). Functionally identical to `check`.
+
+**Spec Impact:** Affects FR-033-03 (trust level resolution logic for `monitor`). Currently the spec states `monitor` behaves as `trusted`. Resolution will define the distinct `monitor` behaviour and may require additional API endpoints or UI panels.
+
+---
+
+### Q-033-02: Retroactive Trust Level Changes
+
+**Feature:** 033 – Upload Trust Level  
+**Priority:** Medium  
+**Status:** Open  
+**Opened:** 2026-04-09
+
+When an admin changes a user's trust level (e.g., from `trusted` to `check`), should the change affect existing photos that were already validated?
+
+**Option A (Recommended):** No retroactive changes. Only future uploads are affected by the new trust level. Existing photos retain their `is_upload_validated` status. This is the simplest and safest approach, and is the current spec position (non-goal).
+
+**Option B:** Provide an explicit admin action ("Re-evaluate user's photos") that sets `is_upload_validated = false` for all photos by that user, requiring re-approval. This is a separate action, not triggered automatically by trust level changes.
+
+**Option C:** Automatically invalidate all photos when trust level changes from `trusted`/`monitor` to `check`. This could be disruptive and is not recommended.
+
+**Spec Impact:** Currently out of scope (non-goal). Resolution of Option B could add a follow-up task for a bulk-invalidate admin action.
+
+---
+
+### Q-033-03: Admin Photo Uploads and Trust Level
+
+**Feature:** 033 – Upload Trust Level  
+**Priority:** Medium  
+**Status:** Open  
+**Opened:** 2026-04-09
+
+Should admin users' trust level be respected, or should admin uploads always be immediately validated regardless of their `upload_trust_level` setting?
+
+**Option A (Recommended):** Admin uploads are always immediately validated (`is_upload_validated = true`) regardless of the admin's `upload_trust_level` setting. Admins are inherently trusted — they can approve their own photos anyway. The `SetUploadValidated` pipe checks `may_administrate` first and short-circuits to `true`.
+
+**Option B:** Respect the admin's `upload_trust_level` setting. An admin with `check` trust level would have unvalidated uploads (they would then need to approve their own photos). This is internally consistent but impractical.
+
+**Spec Impact:** Affects FR-033-03 (trust level resolution logic). Option A adds an admin short-circuit in the `SetUploadValidated` pipe. Currently the spec's Appendix ("Trust Level Decision Matrix") states admin uploads are always `true`, implying Option A.
