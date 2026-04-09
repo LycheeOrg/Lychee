@@ -81,7 +81,7 @@ Allow Lychee administrators to control whether a user's uploads are immediately 
   - *Performance impact of adding a WHERE condition to every photo query:* Mitigation: `is_upload_validated` is indexed; for the common case (all photos validated), the index lookup is trivially fast.
   - *Guest upload trust level resolution may require loading config in a hot path:* Mitigation: `ConfigManager` caches config values in memory; no additional DB queries.
   - *Moderation backlog could grow large if admin doesn't review:* Mitigation: pagination on moderation endpoint (NFR-033-03); UI shows total count.
-  - *Changing trust level for a user does not retroactively update existing photos:* This is intentional (non-goal) but may surprise administrators. Mitigation: document this behaviour clearly.
+  - *Changing trust level for a user does not retroactively update existing photos:* This is intentional and confirmed (Q-033-02 → A). Mitigation: document this behaviour clearly in the admin guide.
 
 ## Implementation Drift Gate
 
@@ -114,19 +114,22 @@ After each increment, verify:
 ### I2 – Photo Creation Pipeline Integration (≈60 min)
 
 - _Goal:_ Set `is_upload_validated` on new photos based on the uploader's trust level or guest config.
-- _Preconditions:_ I1 complete.
+- _Preconditions:_ I1 complete. Q-033-01, Q-033-03 resolved.
 - _Steps:_
   1. Create `app/Actions/Photo/Pipes/Shared/SetUploadValidated.php` — a new pipe in the shared photo creation pipeline. Logic:
      - Resolve the intended owner from `$state->intended_owner_id`.
+     - If owner exists and `owner->may_administrate === true`: set `is_upload_validated = true` (admin short-circuit, Q-033-03 → A).
      - If owner is `null` (guest upload): read `guest_upload_trust_level` config via `ConfigManager`.
-     - If owner exists: read `owner->upload_trust_level`.
+     - If owner exists (non-admin): read `owner->upload_trust_level`.
      - If trust level is `CHECK`: set `$state->photo->is_upload_validated = false`.
-     - Otherwise: set `$state->photo->is_upload_validated = true`.
+     - For `TRUSTED` or `MONITOR`: set `$state->photo->is_upload_validated = true` (Q-033-01 → A: `monitor` behaves as `trusted`).
   2. Register the pipe in `Create.php` shared pipe list (after `SetOwnership`, before `Save`).
   3. Ensure the pipe also runs in the duplicate detection pipeline if applicable.
-  4. Write unit test: mock user with `check` trust level → photo gets `is_upload_validated = false`.
-  5. Write unit test: mock user with `trusted` trust level → photo gets `is_upload_validated = true`.
-  6. Write unit test: guest upload with `guest_upload_trust_level = check` → photo gets `is_upload_validated = false`.
+  4. Write unit test: mock admin user with `check` trust level → photo gets `is_upload_validated = true` (admin override).
+  5. Write unit test: mock non-admin user with `check` trust level → photo gets `is_upload_validated = false`.
+  6. Write unit test: mock non-admin user with `trusted` trust level → photo gets `is_upload_validated = true`.
+  7. Write unit test: mock non-admin user with `monitor` trust level → photo gets `is_upload_validated = true`.
+  8. Write unit test: guest upload with `guest_upload_trust_level = check` → photo gets `is_upload_validated = false`.
 - _Commands:_ `php artisan test --filter=SetUploadValidated`, `make phpstan`
 - _Exit:_ Photos created with correct `is_upload_validated` based on trust level.
 
@@ -288,10 +291,10 @@ _Not yet completed._ To be filled after plan review and before implementation be
 
 ## Follow-ups / Backlog
 
-- **Monitor trust level behaviour:** Define and implement distinct behaviour for the `monitor` level (e.g., photos are public but flagged for periodic review).
+- **Monitor trust level — soft-audit queue (Q-033-01 → A):** Implement the monitoring queue for `monitor`-level users. Photos are immediately public but flagged for periodic admin review in a separate queue. This requires a new "monitoring" tab or filter in the moderation panel.
 - **CLI trust level flag:** Add `--upload-trust-level` option to `lychee:create_user` Artisan command.
-- **Retroactive trust level changes:** Consider an admin action to re-validate/invalidate all photos for a user when their trust level changes.
 - **Notification system:** Notify users when their photos are approved (or rejected).
 - **Moderation metrics:** Track approval rate, average time-to-approve, rejection rate.
 - **Moderation rejection:** Add a reject action that deletes or hides photos with optional feedback to the uploader.
 - **Per-album trust level overrides:** Allow admins to set a trust level per album (e.g., public community albums always require check).
+- **Moderation pending count badge:** Show count of pending moderation items in the admin left menu entry.

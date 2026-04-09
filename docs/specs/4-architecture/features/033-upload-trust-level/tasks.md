@@ -67,19 +67,19 @@ _Last updated: 2026-04-09_
 
 ### I2 – Photo Creation Pipeline Integration
 
-- [ ] T-033-07 – Create `SetUploadValidated` pipe for photo creation pipeline (FR-033-03, S-033-05, S-033-06).  
-  _Intent:_ Create `app/Actions/Photo/Pipes/Shared/SetUploadValidated.php`. The pipe resolves the intended owner from `$state->intended_owner_id`, reads their `upload_trust_level`, and sets `$state->photo->is_upload_validated` accordingly. If trust level is `CHECK`, set to `false`; otherwise `true`.  
+- [ ] T-033-07 – Create `SetUploadValidated` pipe for photo creation pipeline (FR-033-03, S-033-05, S-033-06; Q-033-01 → A, Q-033-03 → A).  
+  _Intent:_ Create `app/Actions/Photo/Pipes/Shared/SetUploadValidated.php`. The pipe resolves the intended owner from `$state->intended_owner_id` and sets `$state->photo->is_upload_validated` as follows: (1) if owner exists and `may_administrate === true`, always set to `true` (admin short-circuit, Q-033-03 → A); (2) if owner is `null` (guest upload), read `guest_upload_trust_level` config; (3) otherwise read `owner->upload_trust_level`. Trust level `CHECK` → `false`; `TRUSTED` or `MONITOR` → `true` (Q-033-01 → A: `monitor` behaves as `trusted`).  
   _Files:_ `app/Actions/Photo/Pipes/Shared/SetUploadValidated.php`  
   _Verification commands:_  
   - `make phpstan`  
-  _Notes:_ Look at `SetOwnership.php` and `SetHighlighted.php` for pipe patterns. The pipe must handle the case where `intended_owner_id` is 0 or null (guest upload).
+  _Notes:_ Look at `SetOwnership.php` and `SetHighlighted.php` for pipe patterns. The pipe must handle the case where `intended_owner_id` is 0 or null (guest upload). Admin short-circuit takes precedence over trust level.
 
 - [ ] T-033-08 – Handle guest upload trust level in `SetUploadValidated` pipe (FR-033-04, S-033-07).  
-  _Intent:_ When `intended_owner_id` resolves to no user (guest/anonymous upload), read `guest_upload_trust_level` config from `ConfigManager` and use that to determine `is_upload_validated`.  
+  _Intent:_ When `intended_owner_id` resolves to no user (guest/anonymous upload), read `guest_upload_trust_level` config from `ConfigManager` and use that to determine `is_upload_validated`. For `MONITOR`, treat as `trusted` (Q-033-01 → A).  
   _Files:_ `app/Actions/Photo/Pipes/Shared/SetUploadValidated.php`  
   _Verification commands:_  
   - `make phpstan`  
-  _Notes:_ Use `app(ConfigManager::class)->getValueAsEnum('guest_upload_trust_level', UserUploadTrustLevel::class)`.
+  _Notes:_ Use `app(ConfigManager::class)->getValueAsEnum('guest_upload_trust_level', UserUploadTrustLevel::class)`. Admin short-circuit does not apply to guest uploads.
 
 - [ ] T-033-09 – Register `SetUploadValidated` in photo creation pipeline (FR-033-03).  
   _Intent:_ Add `SetUploadValidated::class` to the shared pipe chain in `Create.php`, after `SetOwnership` and before `Save`. Ensure it runs for both new photo creation and duplicate handling flows.  
@@ -342,8 +342,9 @@ _Last updated: 2026-04-09_
 
 ## Notes / TODOs
 
-- The `monitor` trust level is reserved but behaves identically to `trusted` in this iteration. A follow-up task should define and implement distinct `monitor` behaviour.
+- The `monitor` trust level is reserved and behaves identically to `trusted` in this iteration (Q-033-01 → A). A follow-up task should implement the monitoring queue (soft-audit: uploads are public but flagged for periodic admin review).
+- Admin uploads always set `is_upload_validated = true` regardless of the admin's trust level setting (Q-033-03 → A). The `SetUploadValidated` pipe checks `may_administrate` first and short-circuits.
+- Trust level changes do not retroactively affect existing photos (Q-033-02 → A). Only future uploads are affected. Document this clearly in the admin guide.
 - The `lychee:create_user` CLI command does not currently accept a `--upload-trust-level` flag. This is deferred to a follow-up task.
-- Retroactive trust-level changes (e.g., changing a user from `trusted` to `check` and re-validating all their photos) are explicitly out of scope. Document this in the admin guide.
 - The moderation panel does not currently support a "reject" action. Admins can use existing photo delete functionality. A dedicated rejection workflow is a follow-up.
 - Consider adding a badge/count of pending moderation items to the admin left menu entry as a future enhancement.

@@ -2,7 +2,7 @@
 
 | Field | Value |
 |-------|-------|
-| Status | Draft |
+| Status | Draft (questions Q-033-01 – Q-033-03 resolved) |
 | Last updated | 2026-04-09 |
 | Owners | LycheeOrg |
 | Linked plan | `docs/specs/4-architecture/features/033-upload-trust-level/plan.md` |
@@ -28,12 +28,12 @@ Affected modules: `core` (User model, Photo model, enums), `application` (photo 
 
 ## Non-Goals
 
-- Implementing the `monitor` trust level behaviour — the enum value is reserved but has no distinct runtime effect in this iteration. It behaves identically to `trusted` for now.
+- Implementing the `monitor` trust level's distinct soft-audit behaviour in this iteration — the enum value exists and uploads are immediately validated (like `trusted`), but the future monitoring queue (periodic admin review of `monitor` users' uploads) is deferred (resolved: Q-033-01 → A).
 - Per-album trust level overrides — trust level is per-user only.
 - Automated content moderation (AI-based image scanning, NSFW detection) — this is out of scope.
 - Rejection workflow (deleting or quarantining photos that fail review) — the admin can use existing delete functionality.
 - Notification system for users when their photos are approved or rejected.
-- Trust level changes triggering retroactive validation/invalidation of existing photos.
+- Trust level changes triggering retroactive validation/invalidation of existing photos — only future uploads are affected by trust level changes (resolved: Q-033-02 → A).
 
 ## Functional Requirements
 
@@ -41,7 +41,7 @@ Affected modules: `core` (User model, Photo model, enums), `application` (photo 
 |----|-------------|--------------|-----------------|--------------|--------------------|--------|
 | FR-033-01 | A new string column `upload_trust_level` is added to the `users` table with allowed values `check`, `monitor`, `trusted` (default: `trusted`). The column is cast to a `UserUploadTrustLevel` backed enum on the User model. | Column present after migration; User model returns enum instances. | Value must be one of the three allowed enum cases. Migration is reversible. | Invalid values rejected by enum cast. | No telemetry. | Problem statement |
 | FR-033-02 | A new boolean column `is_upload_validated` is added to the `photos` table (default: `true`, indexed). The Photo model casts it to boolean. | Column present after migration; existing photos have `is_upload_validated = true`. | Default ensures backward compatibility — all pre-existing photos remain visible. | Migration must be reversible. | No telemetry. | Problem statement |
-| FR-033-03 | When a photo is created (via upload, import, or URL import), if the intended owner's `upload_trust_level` is `check`, the photo's `is_upload_validated` is set to `false`. For `trusted` (and `monitor` in this iteration), it is set to `true`. | Photo persisted with correct `is_upload_validated` flag based on owner's trust level. | Owner must be resolved before the flag is set. For album uploads where the owner is the album owner, the album owner's trust level is used. | If user cannot be resolved, default to `true` (fail-open for backward compatibility). | No telemetry (DB write). | Problem statement |
+| FR-033-03 | When a photo is created (via upload, import, or URL import), the `is_upload_validated` flag is determined as follows: (1) if the intended owner is an admin (`may_administrate = true`), always set to `true` regardless of trust level (resolved: Q-033-03 → A); (2) if the intended owner's `upload_trust_level` is `check`, set to `false`; (3) for `trusted` or `monitor`, set to `true` — `monitor` behaves as `trusted` in this iteration (resolved: Q-033-01 → A). | Photo persisted with correct `is_upload_validated` flag based on owner's admin status and trust level. | Owner must be resolved before the flag is set. For album uploads where the owner is the album owner, the album owner's trust level is used. Admin check takes precedence over trust level. | If user cannot be resolved, default to `true` (fail-open for backward compatibility). | No telemetry (DB write). | Problem statement; Q-033-01 → A; Q-033-03 → A |
 | FR-033-04 | For guest (anonymous) uploads to albums with `grants_upload = true`, the effective trust level is read from the `guest_upload_trust_level` configuration setting (default: `check`). | Guest-uploaded photos have `is_upload_validated = false` when config is `check`. | Config must be loaded before photo creation. | If config is missing, default to `check`. | No telemetry. | Problem statement |
 | FR-033-05 | Photos with `is_upload_validated = false` are excluded from public visibility queries. Specifically, `PhotoQueryPolicy::applyVisibilityFilter` must add a condition that hides unvalidated photos from non-owner, non-admin users. | Non-admin, non-owner users do not see unvalidated photos in album views, search results, or smart albums. | Query produces correct SQL for all three user types (admin, owner, public). | No user sees unvalidated photos they should not see. | No telemetry (query filter). | Problem statement |
 | FR-033-06 | Photo owners always see their own photos, including those with `is_upload_validated = false`. | Owner browsing their own albums or unsorted photos sees all their uploads. | Owner visibility query returns both validated and unvalidated photos. | — | No telemetry. | Problem statement |
@@ -290,10 +290,10 @@ ui_states:
 | User type | Trust level | `is_upload_validated` on new photo | Photo visible to public? |
 |-----------|-------------|-----------------------------------|--------------------------|
 | Registered user | `trusted` | `true` | Yes (subject to album permissions) |
-| Registered user | `monitor` | `true` (same as trusted in v1) | Yes |
+| Registered user | `monitor` | `true` (same as trusted in this iteration; future: soft-audit queue per Q-033-01 → A) | Yes |
 | Registered user | `check` | `false` | No (until admin approves) |
 | Guest (anonymous) | per config | per `guest_upload_trust_level` config | Depends on config |
-| Admin | always `trusted` | `true` | Yes |
+| Admin | always `true` (Q-033-03 → A) | `true` (admin short-circuit, trust level ignored) | Yes |
 
 ### Visibility Filter Truth Table
 
