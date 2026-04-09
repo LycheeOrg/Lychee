@@ -35,11 +35,16 @@ return new class() extends Migration {
 
 	/**
 	 * Reverse the migrations.
+	 *
+	 * NOTE: We cannot restore which rows were originally set to Wikimedia because
+	 * they were migrated to OpenStreetMap.org in up(). The type_range column is
+	 * already set to 'map_provider' by an earlier migration, so no change is needed.
 	 */
 	public function down(): void
 	{
-		DB::table('configs')
-			->where('key', '=', 'map_provider')
-			->update(['type_range' => 'map_provider']);
+		// No-op: the type_range was already 'map_provider' before this migration.
+		// The value migration (Wikimedia → OpenStreetMap.org) cannot be reversed
+		// because we cannot distinguish migrated rows from genuine OpenStreetMap.org
+		// settings.
 	}
 };
