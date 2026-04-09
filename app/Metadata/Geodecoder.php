@@ -39,7 +39,7 @@ class Geodecoder
 		$config_manager = app(ConfigManager::class);
 		try {
 			$stack = HandlerStack::create();
-			$stack->push(RateLimiterMiddleware::perSecond(1));
+			$stack->push(RateLimiterMiddleware::perSecond(config('features.location_decoding_requests_per_second', 1)));
 
 			$http_client = new \GuzzleHttp\Client([
 				'handler' => $stack,

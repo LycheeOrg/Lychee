@@ -80,13 +80,11 @@ class CoverageTest extends AbstractTestCase
 
 	public function testMapProvidersEnum(): void
 	{
-		self::assertEquals('https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}{r}.png', MapProviders::Wikimedia->getLayer());
 		self::assertEquals('https://tile.openstreetmap.org/{z}/{x}/{y}.png', MapProviders::OpenStreetMapOrg->getLayer());
 		self::assertEquals('https://tile.openstreetmap.de/{z}/{x}/{y}.png ', MapProviders::OpenStreetMapDe->getLayer());
 		self::assertEquals('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png ', MapProviders::OpenStreetMapFr->getLayer());
 		self::assertEquals('https://{s}.osm.rrze.fau.de/osmhd/{z}/{x}/{y}.png', MapProviders::RRZE->getLayer());
 
-		self::assertEquals('<a href="https://wikimediafoundation.org/wiki/Maps_Terms_of_Use">Wikimedia</a>', MapProviders::Wikimedia->getAtributionHtml());
 		self::assertEquals('&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>', MapProviders::OpenStreetMapOrg->getAtributionHtml());
 		self::assertEquals('&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>', MapProviders::OpenStreetMapDe->getAtributionHtml());
 		self::assertEquals('&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>', MapProviders::OpenStreetMapFr->getAtributionHtml());

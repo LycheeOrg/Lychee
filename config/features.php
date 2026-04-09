@@ -163,6 +163,18 @@ return [
 
 	/*
 	 |--------------------------------------------------------------------------
+	 | Location Decoding Rate Limit
+	 |--------------------------------------------------------------------------
+	 |
+	 | Controls how many reverse-geocoding requests per second Lychee may send
+	 | to the Nominatim service. Nominatim's usage policy requires at most 1
+	 | request per second; raise this only if you are running your own instance.
+	 | Set via LOCATION_DECODING_REQUESTS_PER_SECOND (default: 1).
+	 */
+	'location_decoding_requests_per_second' => (int) env('LOCATION_DECODING_REQUESTS_PER_SECOND', 1),
+
+	/*
+	 |--------------------------------------------------------------------------
 	 | Enable Vulnerability Check
 	 |--------------------------------------------------------------------------
 	 |

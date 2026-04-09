@@ -188,6 +188,7 @@ class Create
 			Standalone\EncodePlaceholder::class,
 			Standalone\ReplaceOriginalWithBackup::class,
 			Shared\UploadSizeVariantsToS3::class,
+			Shared\GeodecodeLocation::class,
 			Shared\ExtractColourPalette::class,
 			Shared\NotifyAlbums::class,
 		];

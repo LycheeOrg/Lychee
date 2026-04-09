@@ -8,7 +8,6 @@
 
 namespace App\Metadata;
 
-use App\Exceptions\ExternalComponentFailedException;
 use App\Exceptions\ExternalComponentMissingException;
 use App\Exceptions\Handler;
 use App\Exceptions\MediaFileOperationException;
@@ -23,7 +22,6 @@ use PHPExif\Enum\ReaderType;
 use PHPExif\Reader\PhpExifReaderException;
 use PHPExif\Reader\Reader;
 use Safe\DateTime;
-use Safe\Exceptions\StringsException;
 
 /**
  * Collects normalized EXIF info about an image/video.
@@ -472,20 +470,6 @@ class Extractor
 			// It does not make any sense to strip-off the suffix again in Photo and re-add it again.
 			$metadata->shutter .= self::SUFFIX_SEC_UNIT;
 		}
-
-		// Decode location data, it can be longer than is acceptable for DB that's the reason for substr
-		// but only if return value is not null (= function has been disabled)
-		try {
-			$metadata->location = Geodecoder::decodeLocation($metadata->latitude, $metadata->longitude);
-			if ($metadata->location !== null) {
-				$metadata->location = substr($metadata->location, 0, self::MAX_LOCATION_STRING_LENGTH);
-			}
-			// @codeCoverageIgnoreStart
-		} catch (ExternalComponentFailedException|StringsException $e) {
-			Handler::reportSafely($e);
-			$metadata->location = null;
-		}
-		// @codeCoverageIgnoreEnd
 
 		return $metadata;
 	}
