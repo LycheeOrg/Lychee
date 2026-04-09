@@ -198,6 +198,18 @@ class SQLiteEmbeddingStore:
         finally:
             conn.close()
 
+    def count_by_photo_id(self, photo_id: str) -> int:
+        """Count how many faces have been stored for a given photo."""
+        conn = self._connect()
+        try:
+            row = conn.execute(
+                "SELECT COUNT(*) FROM face_meta WHERE photo_id = ?",
+                [photo_id],
+            ).fetchone()
+            return int(row[0]) if row else 0
+        finally:
+            conn.close()
+
     # ------------------------------------------------------------------
     # Internal helpers
     # ------------------------------------------------------------------

@@ -98,6 +98,17 @@ class EmbeddingStore(Protocol):
         """
         ...
 
+    def count_by_photo_id(self, photo_id: str) -> int:
+        """Count how many faces have been stored for a given photo.
+
+        Args:
+            photo_id: Lychee photo ID to check.
+
+        Returns:
+            Number of face embeddings stored for this photo.
+        """
+        ...
+
     def count(self) -> int:
         """Return the total number of stored embeddings."""
         ...

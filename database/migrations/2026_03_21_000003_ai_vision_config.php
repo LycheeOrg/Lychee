@@ -45,7 +45,7 @@ return new class() extends BaseConfigMigration {
 				'type_range' => 'public|private|privacy-preserving|restricted',
 				'description' => 'Permission mode for facial recognition features',
 				'details' => 'Controls who can view people, face overlays, and manage faces. Options: public, private, privacy-preserving, restricted.',
-				'is_expert' => true,
+				'is_expert' => false,
 				'is_secret' => false,
 				'level' => 1,
 				'order' => 12,

@@ -273,6 +273,31 @@ async def _run_detection_job(
     """
     logger.info("Starting detection job for photo_id=%s, path=%s", photo_id, image_path)
     try:
+        # --- 0. Check if faces already exist for this photo ---
+        existing_count = store.count_by_photo_id(photo_id)
+        if existing_count > 0:
+            logger.info(
+                "Skipping detection for photo_id=%s: %d face(s) already processed",
+                photo_id,
+                existing_count,
+            )
+            # Send empty success callback to indicate no new faces detected
+            payload = DetectCallbackPayload(photo_id=photo_id, faces=[])
+            callback_url = f"{settings.lychee_api_url}/api/v2/FaceDetection/results"
+            async with httpx.AsyncClient(verify=settings.verify_ssl) as client:
+                response = await client.post(
+                    callback_url,
+                    json=payload.model_dump(),
+                    headers={
+                        "X-API-Key": settings.api_key,
+                        "Content-Type": "application/json",
+                        "Accept": "application/json",
+                    },
+                    timeout=30.0,
+                )
+                response.raise_for_status()
+            return
+
         loop = asyncio.get_running_loop()
 
         # --- 1. Detect faces (CPU-bound, runs in thread pool) ---
