@@ -10,5 +10,5 @@ return [
     '2by3' => '2/3 (Portrait)',
     '3by2' => '3/2 (Querformat)',
     '1by1' => 'Quadrat',
-    '16by9' => '16/9 (Querformat)',
+    '1byx9' => '16/9 (Querformat)',
 ];
