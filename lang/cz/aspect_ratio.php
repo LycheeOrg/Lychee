@@ -6,10 +6,10 @@ return [
     | Aspect Ratio lines.
     |--------------------------------------------------------------------------
     */
-    '5by4' => '5/4 (instagram landscape)',
-    '4by5' => '4/5 (instagram portrait)',
-    '2by3' => '2/3 (portrait)',
-    '3by2' => '3/2 (landscape)',
-    '1by1' => 'square',
-    '16by9' => '16/9 (landscape)',
+    '5by4' => '5/4 (instagram na šířku)',
+    '4by5' => '4/5 (instagram na výšku)',
+    '2by3' => '2/3 (na výšku)',
+    '3by2' => '3/2 (na šířku)',
+    '1by1' => 'čtverec',
+    '16by9' => '16/9 (na šířku)',
 ];
