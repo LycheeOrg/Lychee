@@ -40,7 +40,7 @@ export const aspectRationOptions: SelectOption<App.Enum.AspectRatioType>[] = [
 	{ value: "1/1", label: "aspect_ratio.1by1" },
 	{ value: "2/3", label: "aspect_ratio.2by3" },
 	{ value: "4/5", label: "aspect_ratio.4by5" },
-	{ value: "16/9", label: "aspect_ratio.1byx9" },
+	{ value: "16/9", label: "aspect_ratio.16by9" },
 ];
 
 export const licenseOptions: SelectOption<App.Enum.LicenseType>[] = [

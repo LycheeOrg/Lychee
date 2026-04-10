@@ -83,7 +83,7 @@ class UpdateAlbumRequestTest extends BaseRequestTest
 			RequestAttribute::PHOTO_SORTING_ORDER_ATTRIBUTE => OrderSortingType::ASC->value,
 			RequestAttribute::ALBUM_SORTING_COLUMN_ATTRIBUTE => ColumnSortingPhotoType::TITLE->value,
 			RequestAttribute::ALBUM_SORTING_ORDER_ATTRIBUTE => OrderSortingType::ASC->value,
-			RequestAttribute::ALBUM_ASPECT_RATIO_ATTRIBUTE => AspectRatioType::aspect1byx9->value,
+			RequestAttribute::ALBUM_ASPECT_RATIO_ATTRIBUTE => AspectRatioType::aspect16by9->value,
 			RequestAttribute::ALBUM_PHOTO_LAYOUT => PhotoLayoutType::JUSTIFIED->value,
 			RequestAttribute::COPYRIGHT_ATTRIBUTE => 'Copyright (c) 2017-2018 Tobias Reich',
 			RequestAttribute::ALBUM_TIMELINE_ALBUM => TimelineAlbumGranularity::DEFAULT->value,
