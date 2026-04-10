@@ -51,7 +51,7 @@
         "@vitejs/plugin-vue": "^6.0.5",
         "@vueuse/components": "^14.2.1",
         "@vueuse/core": "^14.0.0",
-        "axios": "^1.13.5",
+        "axios": "^1.15.0",
         "axios-cache-interceptor": "^1.12.0",
         "image-focus": "^1.2.1",
         "justified-layout": "^4.1.0",

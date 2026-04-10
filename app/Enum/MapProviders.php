@@ -14,7 +14,6 @@ namespace App\Enum;
  */
 enum MapProviders: string
 {
-	case Wikimedia = 'Wikimedia';
 	case OpenStreetMapOrg = 'OpenStreetMap.org';
 	case OpenStreetMapDe = 'OpenStreetMap.de';
 	case OpenStreetMapFr = 'OpenStreetMap.fr';
@@ -23,7 +22,6 @@ enum MapProviders: string
 	public function getLayer(): string
 	{
 		return match ($this) {
-			self::Wikimedia => 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}{r}.png',
 			self::OpenStreetMapOrg => 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
 			self::OpenStreetMapDe => 'https://tile.openstreetmap.de/{z}/{x}/{y}.png ',
 			self::OpenStreetMapFr => 'https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png ',
@@ -34,7 +32,6 @@ enum MapProviders: string
 	public function getAtributionHtml(): string
 	{
 		return match ($this) {
-			self::Wikimedia => '<a href="https://wikimediafoundation.org/wiki/Maps_Terms_of_Use">Wikimedia</a>',
 			self::OpenStreetMapOrg => '&copy; <a href="https://openstreetmap.org/copyright">' . __('gallery.map.osm_contributors') . '</a>',
 			self::OpenStreetMapDe => '&copy; <a href="https://openstreetmap.org/copyright">' . __('gallery.map.osm_contributors') . '</a>',
 			self::OpenStreetMapFr => '&copy; <a href="https://openstreetmap.org/copyright">' . __('gallery.map.osm_contributors') . '</a>',

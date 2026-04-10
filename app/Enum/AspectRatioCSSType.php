@@ -20,5 +20,5 @@ enum AspectRatioCSSType: string
 	case aspect3by2 = 'aspect-3x2';
 	case aspect1by1 = 'aspect-square';
 	case aspect2by3 = 'aspect-2x3';
-	case aspect1byx9 = 'aspect-video';
+	case aspect16by9 = 'aspect-video';
 }

@@ -20,7 +20,7 @@ enum AspectRatioType: string
 	case aspect1by1 = '1/1';
 	case aspect2by3 = '2/3';
 	case aspect4by5 = '4/5';
-	case aspect1byx9 = '16/9';
+	case aspect16by9 = '16/9';
 
 	public function css(): AspectRatioCSSType
 	{
@@ -30,7 +30,7 @@ enum AspectRatioType: string
 			self::aspect3by2 => AspectRatioCSSType::aspect3by2,
 			self::aspect1by1 => AspectRatioCSSType::aspect1by1,
 			self::aspect2by3 => AspectRatioCSSType::aspect2by3,
-			self::aspect1byx9 => AspectRatioCSSType::aspect1byx9,
+			self::aspect16by9 => AspectRatioCSSType::aspect16by9,
 		};
 	}
 }
