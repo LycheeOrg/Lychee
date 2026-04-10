@@ -17,6 +17,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\Middleware\RateLimited;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -52,6 +53,16 @@ class GeodecodeLocationJob implements ShouldQueue
 	}
 
 	/**
+	 * Get the middleware the job should pass through.
+	 *
+	 * @return array
+	 */
+	public function middleware()
+	{
+		return [new RateLimited('geo-queue')];
+	}
+
+	/**
 	 * Execute the job.
 	 */
 	public function handle(): void
@@ -76,8 +87,12 @@ class GeodecodeLocationJob implements ShouldQueue
 			$location = substr($location, 0, Extractor::MAX_LOCATION_STRING_LENGTH);
 		}
 
-		$photo->location = $location;
-		$photo->save();
+		Photo::query()
+			->where('id', '=', $this->photo_id)
+			->where(function ($query): void {
+				$query->whereNull('location')->orWhere('location', '=', '');
+			})
+			->update(['location' => $location]);
 
 		$this->history->status = JobStatus::SUCCESS;
 		$this->history->save();

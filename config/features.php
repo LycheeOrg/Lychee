@@ -171,7 +171,7 @@ return [
 	 | request per second; raise this only if you are running your own instance.
 	 | Set via LOCATION_DECODING_REQUESTS_PER_SECOND (default: 1).
 	 */
-	'location_decoding_requests_per_second' => (int) env('LOCATION_DECODING_REQUESTS_PER_SECOND', 1),
+	'location_decoding_requests_per_second' => max(1, (int) env('LOCATION_DECODING_REQUESTS_PER_SECOND', 1)),
 
 	/*
 	 |--------------------------------------------------------------------------

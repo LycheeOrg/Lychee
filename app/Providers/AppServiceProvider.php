@@ -32,6 +32,7 @@ use App\Policies\PhotoQueryPolicy;
 use App\Policies\SettingsPolicy;
 use App\Repositories\ConfigManager;
 use App\Services\MoneyService;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Events\QueryExecuted;
@@ -41,6 +42,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
@@ -111,6 +113,7 @@ class AppServiceProvider extends ServiceProvider
 		$this->registerHttpAndResponseConfiguration();
 		$this->registerStreamFilters();
 		$this->registerOctaneSettings();
+		$this->registerThrottleQueues();
 	}
 
 	/**
@@ -440,5 +443,12 @@ class AppServiceProvider extends ServiceProvider
 		if (gc_enabled()) {
 			gc_collect_cycles();
 		}
+	}
+
+	private function registerThrottleQueues(): void
+	{
+		RateLimiter::for('geo-queue', function ($job) {
+			return Limit::perSecond(config('features.location_decoding_requests_per_second', 1))->by($job->user->id);
+		});
 	}
 }
