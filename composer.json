@@ -59,7 +59,7 @@
         "geocoder-php/nominatim-provider": "^5.7",
         "graham-campbell/markdown": "^16.0",
         "itsgoingd/clockwork": "^5.1",
-        "laragear/webauthn": "^4.0",
+        "laragear/webauthn": "^5.0",
         "laravel/framework": "^12.0",
         "laravel/octane": "^2.13",
         "laravel/socialite": "^5.18",

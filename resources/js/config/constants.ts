@@ -94,7 +94,6 @@ export const defaultAlbumProtectionOptions: SelectOption<string>[] = [
 ];
 
 export const mapProvidersOptions: SelectOption<App.Enum.MapProviders>[] = [
-	{ value: "Wikimedia", label: "Wikimedia" },
 	{ value: "OpenStreetMap.org", label: "OpenStreetMap.org" },
 	{ value: "OpenStreetMap.de", label: "OpenStreetMap.de" },
 	{ value: "OpenStreetMap.fr", label: "OpenStreetMap.fr" },

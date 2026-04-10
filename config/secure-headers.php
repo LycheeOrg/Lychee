@@ -588,7 +588,6 @@ return [
 			// Allow image to be directly encoded at the img source parameter
 			'allow' => array_merge(
 				[
-					'https://maps.wikimedia.org/osm-intl/',
 					'https://tile.openstreetmap.org/',
 					'https://tile.openstreetmap.de/',
 					'https://a.tile.openstreetmap.fr/osmfr/',
