@@ -284,6 +284,7 @@ class Create
 			Standalone\EncodePlaceholder::class,
 			Standalone\ReplaceOriginalWithBackup::class,
 			Shared\UploadSizeVariantsToS3::class,
+			Shared\GeodecodeLocation::class,
 			Shared\ExtractColourPalette::class,
 		];
 		$stand_alone_dto = $this->executePipeOnDTO($stand_alone_pipes, $stand_alone_dto);
