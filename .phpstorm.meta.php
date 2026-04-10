@@ -4466,7 +4466,7 @@ namespace PHPSTORM_META {
 'all_settings.details.webshop_currency','all_settings.details.webshop_default_description','all_settings.details.webshop_allow_guest_checkout','all_settings.details.webshop_terms_url','all_settings.details.webshop_privacy_url',
 'all_settings.details.webshop_default_price_cents','all_settings.details.webshop_default_license','all_settings.details.webshop_default_size','all_settings.details.enable_untagged','all_settings.details.photos_pagination_limit',
 'all_settings.details.webshop_offline','all_settings.details.deduplicate_pinned_albums','all_settings.details.desktop_dock_full_transparency_enabled','all_settings.details.mobile_dock_full_transparency_enabled','aspect_ratio.5by4',
-'aspect_ratio.4by5','aspect_ratio.2by3','aspect_ratio.3by2','aspect_ratio.1by1','aspect_ratio.16by9',
+'aspect_ratio.4by5','aspect_ratio.2by3','aspect_ratio.3by2','aspect_ratio.1by1','aspect_ratio.1byx9',
 'changelogs.title','changelogs.description','diagnostics.title','diagnostics.copy_to_clipboard','diagnostics.self-diagnosis',
 'diagnostics.info','diagnostics.space','diagnostics.load_space','diagnostics.configuration','diagnostics.loading',
 'diagnostics.identical_content','diagnostics.toast.info','diagnostics.toast.copy','dialogs.button.close','dialogs.button.cancel',
