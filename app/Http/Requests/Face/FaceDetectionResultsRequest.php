@@ -32,7 +32,7 @@ class FaceDetectionResultsRequest extends BaseApiRequest
 	 */
 	public function authorize(): bool
 	{
-		$expected_key = config('features.ai-vision.face-api-key', '');
+		$expected_key = config('features.ai-vision-service.face-api-key', '');
 		$provided_key = $this->header('X-API-Key', '');
 
 		return $expected_key !== '' && $provided_key === $expected_key;

@@ -39,8 +39,8 @@ class RunFaceClustering extends Controller
 	 */
 	public function do(MaintenanceRequest $request): JsonResponse
 	{
-		$service_url = config('features.ai-vision.face-url', '');
-		$api_key = config('features.ai-vision.face-api-key', '');
+		$service_url = config('features.ai-vision-service.face-url', '');
+		$api_key = config('features.ai-vision-service.face-api-key', '');
 
 		if ($service_url === '') {
 			return response()->json(['status' => 'error', 'message' => 'AI Vision service not configured.'], 503);

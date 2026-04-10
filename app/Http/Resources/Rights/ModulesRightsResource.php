@@ -215,12 +215,21 @@ class ModulesRightsResource extends Data
 	/**
 	 * Check if AI Vision face detection is enabled and accessible to the current user.
 	 *
+	 * The AI Vision feature must be enabled via BOTH:
+	 * 1. The AI_VISION_ENABLED environment variable / feature flag
+	 * 2. The ai_vision_enabled database configuration setting
+	 *
 	 * @param bool $is_logged_in
 	 *
 	 * @return bool true if AI Vision is enabled and accessible, false otherwise
 	 */
 	private function isAiVisionEnabled(bool $is_logged_in): bool
 	{
+		// Check feature flag first
+		if (config('features.ai-vision') === false) {
+			return false;
+		}
+
 		if (!$is_logged_in) {
 			return false;
 		}

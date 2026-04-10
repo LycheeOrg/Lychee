@@ -53,7 +53,7 @@ class AiVisionServiceCheck implements DiagnosticPipe
 	 */
 	private function validateServiceUrl(array &$data): void
 	{
-		$service_url = config('features.ai-vision.face-url', '');
+		$service_url = config('features.ai-vision-service.face-url', '');
 		if ($service_url === '') {
 			$data[] = DiagnosticData::error(
 				'AI Vision: Service URL is not configured. Set AI_VISION_FACE_URL in your .env file.',
@@ -72,12 +72,12 @@ class AiVisionServiceCheck implements DiagnosticPipe
 	 */
 	private function checkServiceHealth(array &$data): void
 	{
-		$service_url = config('features.ai-vision.face-url', '');
+		$service_url = config('features.ai-vision-service.face-url', '');
 		if ($service_url === '') {
 			return;
 		}
 
-		$api_key = config('features.ai-vision.face-api-key', '');
+		$api_key = config('features.ai-vision-service.face-api-key', '');
 		$health_url = rtrim($service_url, '/') . '/health';
 
 		try {

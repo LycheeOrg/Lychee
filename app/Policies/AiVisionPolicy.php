@@ -8,6 +8,7 @@
 
 namespace App\Policies;
 
+use App\Assets\Features;
 use App\Enum\FacePermissionMode;
 use App\Models\Person;
 use App\Models\User;
@@ -39,6 +40,29 @@ class AiVisionPolicy extends BasePolicy
 	public const CAN_MERGE_PERSONS = 'canMergePersons';
 	public const CAN_DISMISS_FACE = 'canDismissFace';
 	public const CAN_CHANGE_PERSON_SEARCHABILITY = 'canChangePersonSearchability';
+
+	/**
+	 * Perform pre-authorization checks.
+	 * If AI Vision feature is disabled, deny all access.
+	 * Admins always pass if the feature is enabled.
+	 *
+	 * @param User|null $user
+	 * @param string    $ability
+	 *
+	 * @return void|bool
+	 */
+	public function before(?User $user, $ability)
+	{
+		// If AI Vision feature is completely disabled, deny all access
+		if (Features::inactive('ai-vision')) {
+			return false;
+		}
+
+		// Admins bypass all other checks
+		if ($user?->may_administrate === true) {
+			return true;
+		}
+	}
 
 	/**
 	 * Get the current permission mode from configuration.
