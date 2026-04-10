@@ -9,7 +9,7 @@ import Constants from "./constants";
 
 const ModerationService = {
 	list(page: number = 1, per_page: number = 30): Promise<AxiosResponse<App.Http.Resources.Collections.PaginatedModerationResource>> {
-		return axios.get(`${Constants.getApiUrl()}Moderation`, { params: { page, per_page } });
+		return axios.get(`${Constants.getApiUrl()}Moderation`, { params: { page, per_page }, data: {} });
 	},
 
 	approve(photo_ids: string[]): Promise<AxiosResponse<void>> {
