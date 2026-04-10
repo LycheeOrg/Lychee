@@ -7,26 +7,9 @@
 # to maintain our own fork of Frankenphp and keep it up to date with the latest security patches, which
 # is not sustainable for us.
 
-# True positive but we expect Lychee to be run behind a reverse proxy that is taking care of the cryptography and TLS configuration.
-# CVSS  7.6
-CVE-2026-25793
-
-# Gnu lib C vulnerbility that is used by the underlying image of frankenphp.
-CVE-2026-0861
-
-# gRPC-Go is the Go language implementation of gRPC. CVSS 9.1
-CVE-2026-33186
-
-# Step CA is an online certificate authority for secure, automated certificate management for DevOps. Versions 0.30.0-rc6 and below do not safeguard against unauthenticated certificate issuance through the SCEP UpdateReq. CVSS 10
-CVE-2026-30836
-
-
 # This CVE is stupid and disputed.
 # The "vulnerability" is that php-jwt accepts short HMAC keys without validation.
 # This is not a library bug — key management is the caller's responsibility.
 # PHP's own hash_hmac() and openssl_sign() behave identically and have no CVEs for this.
 # NVD agrees — hence the Disputed tag and no score from NIST.
 CVE-2025-45769
-
-# We do not use JWT on the GOLANG side (frankenphp), so this CVE does not apply to us.
-CVE-2026-34986
