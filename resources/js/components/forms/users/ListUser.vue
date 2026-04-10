@@ -19,6 +19,19 @@
 					<i v-if="props.user.may_edit_own_settings" class="pi pi-check text-create-600"></i>
 					<i v-else class="pi pi-times text-muted-color opacity-30"></i>
 				</div>
+				<div class="w-full text-center">
+					<i
+						v-if="props.user.upload_trust_level === 'trusted'"
+						v-tooltip.top="$t('users.upload_trust_level')"
+						class="pi pi-shield text-create-600"
+					></i>
+					<i
+						v-else-if="props.user.upload_trust_level === 'monitor'"
+						v-tooltip.top="$t('users.upload_trust_level')"
+						class="pi pi-shield text-yellow-500"
+					></i>
+					<i v-else v-tooltip.top="$t('users.upload_trust_level')" class="pi pi-shield text-danger-600"></i>
+				</div>
 				<div v-if="isQuotaEnabled" class="w-full text-center">
 					<i v-if="props.user.quota_kb !== null" v-tooltip.right="formattedQuota" class="pi pi-chart-pie text-muted-color"></i>
 				</div>

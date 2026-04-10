@@ -169,6 +169,7 @@ declare namespace App.Enum {
 	export type UpdateStatus = 0 | 1 | 2 | 3;
 	export type UserGroupRole = "member" | "admin";
 	export type UserSharedAlbumsVisibility = "default" | "show" | "separate" | "separate_shared_only" | "hide";
+	export type UserUploadTrustLevel = "check" | "monitor" | "trusted";
 	export type VersionChannelType = "release" | "git" | "tag";
 	export type VisibilityType = "never" | "always" | "hover";
 	export type WatermarkPosition = "top-left" | "top" | "top-right" | "left" | "center" | "right" | "bottom-left" | "bottom" | "bottom-right";
@@ -214,6 +215,13 @@ declare namespace App.Http.Resources.Collections {
 	};
 	export type PaginatedPhotosResource = {
 		photos: App.Http.Resources.Models.PhotoResource[];
+		current_page: number;
+		last_page: number;
+		per_page: number;
+		total: number;
+	};
+	export type PaginatedModerationResource = {
+		photos: App.Http.Resources.Models.ModerationResource[];
 		current_page: number;
 		last_page: number;
 		per_page: number;
@@ -589,6 +597,14 @@ declare namespace App.Http.Resources.Models {
 		colour_4: string;
 		colour_5: string;
 	};
+	export type ModerationResource = {
+		photo_id: string;
+		title: string;
+		thumb_url: string | null;
+		owner_username: string;
+		album_title: string | null;
+		created_at: string;
+	};
 	export type ConfigCategoryResource = {
 		cat: string;
 		name: string;
@@ -701,6 +717,7 @@ declare namespace App.Http.Resources.Models {
 		created_at: string;
 		description: string;
 		is_highlighted: boolean;
+		is_upload_validated: boolean;
 		license: App.Enum.LicenseType;
 		live_photo_checksum: string | null;
 		live_photo_content_id: string | null;
@@ -816,6 +833,7 @@ declare namespace App.Http.Resources.Models {
 		may_upload: boolean;
 		may_edit_own_settings: boolean;
 		is_owner: boolean;
+		upload_trust_level: App.Enum.UserUploadTrustLevel;
 		quota_kb: number | null;
 		description: string | null;
 		note: string | null;

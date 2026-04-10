@@ -10,6 +10,7 @@ namespace Database\Factories;
 
 use App\Enum\UserGroupRole;
 use App\Enum\UserSharedAlbumsVisibility;
+use App\Enum\UserUploadTrustLevel;
 use App\Models\User;
 use App\Models\UserGroup;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -47,6 +48,7 @@ class UserFactory extends Factory
 			'remember_token' => null,
 			'may_edit_own_settings' => true,
 			'shared_albums_visibility' => UserSharedAlbumsVisibility::DEFAULT->value,
+			'upload_trust_level' => UserUploadTrustLevel::TRUSTED->value,
 		];
 	}
 

@@ -100,6 +100,7 @@ class RequestAttribute
 	public const MAY_UPLOAD_ATTRIBUTE = 'may_upload';
 	public const MAY_EDIT_OWN_SETTINGS_ATTRIBUTE = 'may_edit_own_settings';
 	public const MAY_ADMINISTRATE = 'may_administrate';
+	public const UPLOAD_TRUST_LEVEL_ATTRIBUTE = 'upload_trust_level';
 	public const SHARED_ALBUMS_VISIBILITY_ATTRIBUTE = 'shared_albums_visibility';
 
 	/**

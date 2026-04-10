@@ -69,7 +69,17 @@ class PhotoQueryPolicy
 			}
 		};
 
-		return $query->where($visibility_sub_query);
+		// Unvalidated photos are only visible to their owner or to admins.
+		// We wrap the main OR-clause so that accessibility is still required,
+		// and add an additional AND condition for the validation flag.
+		return $query
+			->where($visibility_sub_query)
+			->where(function (FixedQueryBuilder $q) use ($user_id): void {
+				$q->where('photos.is_upload_validated', '=', true);
+				if ($user_id !== null) {
+					$q->orWhere('photos.owner_id', '=', $user_id);
+				}
+			});
 	}
 
 	/**
@@ -125,15 +135,24 @@ class PhotoQueryPolicy
 			return $query;
 		}
 
-		return $query->where(function (Builder $query) use ($user, $unlocked_album_ids, $origin): void {
-			$this->appendSearchabilityConditions(
-				$query->getQuery(),
-				$user,
-				$unlocked_album_ids,
-				$origin?->_lft,
-				$origin?->_rgt
-			);
-		});
+		$user_id = $user?->id;
+
+		return $query
+			->where(function (Builder $query) use ($user, $unlocked_album_ids, $origin): void {
+				$this->appendSearchabilityConditions(
+					$query->getQuery(),
+					$user,
+					$unlocked_album_ids,
+					$origin?->_lft,
+					$origin?->_rgt
+				);
+			})
+			->where(function (FixedQueryBuilder $q) use ($user_id): void {
+				$q->where('photos.is_upload_validated', '=', true);
+				if ($user_id !== null) {
+					$q->orWhere('photos.owner_id', '=', $user_id);
+				}
+			});
 	}
 
 	/**

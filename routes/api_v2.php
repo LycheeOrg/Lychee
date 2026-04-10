@@ -273,6 +273,12 @@ Route::patch('/Webhook/{webhook}', [Admin\WebhookController::class, 'patch']);
 Route::delete('/Webhook/{webhook}', [Admin\WebhookController::class, 'destroy']);
 
 /**
+ * MODERATION.
+ */
+Route::get('/Moderation', [Admin\ModerationController::class, 'list']);
+Route::post('/Moderation::approve', [Admin\ModerationController::class, 'approve']);
+
+/**
  * SETTINGS.
  */
 Route::get('/Settings', [Admin\SettingsController::class, 'getAll']);

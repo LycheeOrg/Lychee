@@ -145,6 +145,7 @@ class Create
 		}
 		$pipes[] = Duplicate\ThrowSkipDuplicate::class;
 		$pipes[] = Shared\SetHighlighted::class;
+		$pipes[] = Shared\SetUploadValidated::class;
 		$pipes[] = Shared\Save::class;
 		$pipes[] = Shared\SetParent::class;
 		$pipes[] = Shared\SaveStatistics::class;
@@ -171,16 +172,8 @@ class Create
 			Shared\HydrateMetadata::class,
 			Shared\SetHighlighted::class,
 			Shared\SetOwnership::class,
+			Shared\SetUploadValidated::class,
 			Standalone\SetOriginalChecksum::class,
-			Standalone\FetchSourceImage::class,
-			Standalone\ExtractGoogleMotionPictures::class,
-			Standalone\PlacePhoto::class,
-			Standalone\PlaceGoogleMotionVideo::class,
-			Standalone\SetChecksum::class,
-			Standalone\AutoRenamer::class,
-			Shared\Save::class,
-			Shared\SetParent::class,
-			Shared\SaveStatistics::class,
 			Standalone\CreateOriginalSizeVariant::class,
 			Standalone\CreateRawSizeVariant::class,
 			Standalone\CreateSizeVariants::class,
@@ -267,6 +260,7 @@ class Create
 			Shared\HydrateMetadata::class,
 			Shared\SetHighlighted::class,
 			Shared\SetOwnership::class,
+			Shared\SetUploadValidated::class,
 			Standalone\SetOriginalChecksum::class,
 			Standalone\FetchSourceImage::class,
 			Standalone\ExtractGoogleMotionPictures::class,

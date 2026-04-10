@@ -33,6 +33,10 @@
 						{{ $t("users.create_edit.admin_rights") }} <SETag />
 					</label>
 				</div>
+				<div class="w-full flex items-center text-muted-color gap-2 pt-1">
+					<label class="shrink-0">{{ $t("users.create_edit.upload_trust_level") }}</label>
+					<Select v-model="upload_trust_level" :options="trustLevelOptions" option-label="label" option-value="value" class="w-full" />
+				</div>
 				<div v-if="is_se_enabled || is_se_preview_enabled" class="w-full items-center text-muted-color">
 					<Checkbox v-model="has_quota" input-id="hasQuota" :binary="true" />
 					<label for="hasQuota" class="ltr:ml-2 rtl:mr-2 cursor-pointer">{{ $t("users.create_edit.quota") }} <SETag /></label>
@@ -83,6 +87,7 @@ import Dialog from "primevue/dialog";
 import Button from "primevue/button";
 import Checkbox from "primevue/checkbox";
 import FloatLabel from "primevue/floatlabel";
+import Select from "primevue/select";
 import { useToast } from "primevue/usetoast";
 import InputText from "@/components/forms/basic/InputText.vue";
 import InputPassword from "@/components/forms/basic/InputPassword.vue";
@@ -93,6 +98,12 @@ import Textarea from "@/components/forms/basic/Textarea.vue";
 import SETag from "@/components/icons/SETag.vue";
 import UsersService from "@/services/users-service";
 import { trans } from "laravel-vue-i18n";
+
+const trustLevelOptions = [
+	{ value: "trusted" as App.Enum.UserUploadTrustLevel, label: "Trusted" },
+	{ value: "monitor" as App.Enum.UserUploadTrustLevel, label: "Monitor" },
+	{ value: "check" as App.Enum.UserUploadTrustLevel, label: "Check" },
+];
 
 const lycheeStore = useLycheeStateStore();
 const { is_se_preview_enabled, is_se_enabled } = storeToRefs(lycheeStore);
@@ -112,6 +123,7 @@ const may_administrate = ref(props.user?.may_administrate ?? false);
 const may_upload = ref(props.user?.may_upload ?? false);
 const has_quota = ref(props.user?.quota_kb !== undefined && props.user?.quota_kb !== null);
 const quota_kb = ref(props.user?.quota_kb?.toString() ?? "0");
+const upload_trust_level = ref<App.Enum.UserUploadTrustLevel>(props.user?.upload_trust_level ?? "trusted");
 
 const toast = useToast();
 const emits = defineEmits<{
@@ -129,6 +141,7 @@ function createUser() {
 		may_edit_own_settings: may_edit_own_settings.value,
 		may_administrate: may_administrate.value,
 		may_upload: may_upload.value,
+		upload_trust_level: upload_trust_level.value,
 		has_quota: is_se_enabled ? has_quota.value : undefined,
 		quota_kb: is_se_enabled ? parseInt(quota_kb.value) : undefined,
 		note: is_se_enabled ? note.value : undefined,
@@ -142,6 +155,7 @@ function createUser() {
 			username.value = undefined;
 			has_quota.value = false;
 			quota_kb.value = "0";
+			upload_trust_level.value = "trusted";
 			toast.add({ severity: "success", summary: trans("toasts.success"), detail: trans("users.user_created"), life: 3000 });
 			emits("refresh");
 
@@ -165,6 +179,7 @@ function editUser() {
 		may_edit_own_settings: may_edit_own_settings.value,
 		may_administrate: may_administrate.value,
 		may_upload: may_upload.value,
+		upload_trust_level: upload_trust_level.value,
 		has_quota: is_se_enabled ? has_quota.value : undefined,
 		quota_kb: is_se_enabled ? parseInt(quota_kb.value) : undefined,
 		note: is_se_enabled ? note.value : undefined,
@@ -178,6 +193,7 @@ function editUser() {
 			username.value = undefined;
 			has_quota.value = false;
 			quota_kb.value = "0";
+			upload_trust_level.value = "trusted";
 			toast.add({ severity: "success", summary: trans("users.change_saved"), detail: trans("users.user_updated"), life: 3000 });
 			emits("refresh");
 		})
@@ -196,6 +212,7 @@ watch(
 		may_upload.value = newUser?.may_upload ?? false;
 		has_quota.value = newUser?.quota_kb !== undefined && newUser?.quota_kb !== null;
 		quota_kb.value = newUser?.quota_kb?.toString() ?? "0";
+		upload_trust_level.value = newUser?.upload_trust_level ?? "trusted";
 	},
 );
 </script>

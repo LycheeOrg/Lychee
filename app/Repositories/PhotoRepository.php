@@ -13,6 +13,7 @@ use App\DTO\PhotoSortingCriterion;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Repository for Photo queries.
@@ -63,6 +64,18 @@ class PhotoRepository
 		// Apply tag filtering if tag_ids provided and not empty
 		if ($tag_ids !== null && count($tag_ids) > 0) {
 			$this->applyTagFilter($query, $tag_ids, $tag_logic);
+		}
+
+		// Non-admins must not see unvalidated photos uploaded by other users.
+		$user = Auth::user();
+		if ($user?->may_administrate !== true) {
+			$user_id = $user?->id;
+			$query->where(function ($q) use ($user_id): void {
+				$q->where('photos.is_upload_validated', '=', true);
+				if ($user_id !== null) {
+					$q->orWhere('photos.owner_id', '=', $user_id);
+				}
+			});
 		}
 
 		// Apply sorting via SortingDecorator
