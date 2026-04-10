@@ -11,5 +11,5 @@ return [
     '2by3' => '2/3 (vertikal)',
     '3by2' => '3/2 (horisontal)',
     '1by1' => 'kvadrat',
-    '1byx9' => '16/9 (horisontal)',
+    '16by9' => '16/9 (horisontal)',
 ];
