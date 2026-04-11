@@ -254,21 +254,19 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 	 */
 	private function getPhotoIdForUser(Album $album, ?User $user, bool $is_nsfw_context): ?string
 	{
+
 		$photo_query_policy = resolve(PhotoQueryPolicy::class);
 		$sorting = $album->getEffectivePhotoSorting();
-		$result = $photo_query_policy
+		return $photo_query_policy
 			->applySearchabilityFilter(
-				query: Photo::query()->select('photos.id'),
+				query: Photo::query(),
 				user: $user,
 				unlocked_album_ids: [],
 				origin: $album,
 				include_nsfw: $is_nsfw_context)
 			->orderBy('photos.is_highlighted', 'desc')
 			->orderBy($sorting->column->toColumn(), $sorting->order->value)
-			->select('photos.id')
-			->first();
-
-		return $result?->id;
+			->select('photos.id')->toBase()->first()?->id;
 	}
 
 	/**

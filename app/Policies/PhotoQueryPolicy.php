@@ -133,18 +133,17 @@ class PhotoQueryPolicy
 			return $query;
 		}
 
-		$user_id = $user?->id;
+		$query_with_search = $query->where(function (Builder $query) use ($user, $unlocked_album_ids, $origin): void {
+			$this->appendSearchabilityConditions(
+				$query->getQuery(),
+				$user,
+				$unlocked_album_ids,
+				$origin?->_lft,
+				$origin?->_rgt
+			);
+		});
 
-		$query_searchability = $this->appendSearchabilityConditions(
-			$query->getQuery(),
-			$user,
-			$unlocked_album_ids,
-			$origin?->_lft,
-			$origin?->_rgt
-		);
-		$query = $query->where($query_searchability);
-
-		return $this->applyUploadValidationFilter($query, $user_id);
+		return $this->applyUploadValidationFilter($query_with_search, $user?->id);
 	}
 
 	/**
