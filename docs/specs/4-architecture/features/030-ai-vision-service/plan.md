@@ -149,7 +149,7 @@ After each increment, verify:
   3. Create migration for `face_suggestions` table: `face_id` (string, FK→faces CASCADE), `suggested_face_id` (string, FK→faces CASCADE), `confidence` (float); unique constraint on `(face_id, suggested_face_id)`. *(DO-030-05, Q-030-33)*
   4. Add `face_scan_status` nullable `VARCHAR(16)` column to `photos` table. *(DO-030-06, Q-030-38)*
   5. Add `persons.user_id` index.
-  6. Add config entries migration (`cat = 'AI Vision'`, `level = 1` / SE): `ai_vision_enabled` (0|1, default 0), `ai_vision_face_enabled` (0|1, default 0), `ai_vision_face_permission_mode` (string, default `restricted`), `ai_vision_face_selfie_confidence_threshold` (float, default 0.8), `ai_vision_face_person_is_searchable_default` (0|1, default 1), `ai_vision_face_allow_user_claim` (0|1, default 1), `ai_vision_face_scan_batch_size` (integer, default 200). Infrastructure keys (`AI_VISION_FACE_URL`, `AI_VISION_FACE_API_KEY`) stored in `.env` / `config/features.php` only — not in the `configs` table.
+  6. Add config entries migration (`cat = 'AI Vision'`, `level = 1` / SE): `ai_vision_enabled` (0|1, default 0), `ai_vision_face_enabled` (0|1, default 0), `ai_vision_face_permission_mode` (string, default `restricted`), `ai_vision_face_selfie_confidence_threshold` (float, default 0.8), `ai_vision_face_person_is_searchable_default` (0|1, default 1), `ai_vision_face_allow_user_claim` (0|1, default 1). Infrastructure keys (`AI_VISION_FACE_URL`, `AI_VISION_FACE_API_KEY`) stored in `.env` / `config/features.php` only — not in the `configs` table.
 - _Commands:_ `php artisan test`
 - _Exit:_ Migrations run on test SQLite DB; `php artisan test` passes.
 
@@ -229,7 +229,7 @@ After each increment, verify:
 - _Steps:_
   1. Write feature tests: trigger scan for photo (202 response), trigger scan for album, receive scan results (Face records created with crop_token), re-scan replaces old faces (old crops deleted), service unavailable (503), auto-scan on upload when enabled. Test both permission modes for scan trigger.
   2. Implement FaceDetectionController with `scan` and `results` actions.
-  3. Create DispatchFaceScanJob (queued) — sends HTTP request to Python service `POST /detect` with `photo_path` (filesystem path; no `callback_url` in body — Python reads callback URL from env, Q-030-28). API-030-10 body `photo_ids[]` or `album_id`; dispatch in chunks of `ai_vision_face_scan_batch_size` (default 200, Q-030-45). Sets `face_scan_status = pending` on dispatch.
+  3. Create DispatchFaceScanJob (queued) — sends HTTP request to Python service `POST /detect` with `photo_path` (filesystem path; no `callback_url` in body — Python reads callback URL from env, Q-030-28). API-030-10 body `photo_ids[]` or `album_id`; dispatch in chunks of 200 (default 200, Q-030-45). Sets `face_scan_status = pending` on dispatch.
   4. Create ProcessFaceDetectionResults action — validates X-API-Key, decodes base64 crops and stores at `uploads/faces/{tok[0:2]}/{tok[2:4]}/{tok}.jpg` (Q-030-34), creates Face records with `crop_token`, stores FaceSuggestion rows from `suggestions[]` (Q-030-33). IoU-match old faces on re-scan to preserve `person_id` (Q-030-14/35). Error callback sets `face_scan_status = failed` (Q-030-17).
   5. Register routes (scan trigger: per permission mode; results: service-to-service with API key).
   6. Hook into photo upload pipeline: listener on PhotoSaved event dispatches DispatchFaceScanJob when `ai_vision_face_enabled = 1`.

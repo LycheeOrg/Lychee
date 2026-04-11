@@ -421,16 +421,6 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 ---
 
-### ~~Q-030-45: `photo_ids[]` Batch in API-030-10 Has No Maximum~~ ✅ RESOLVED
-
-**Resolution:** **Option B** — accept any count, dispatch in configurable chunks. The job dispatcher slices the photo ID list into chunks of size `ai_vision_face_scan_batch_size` (Lychee `configs` table, default `200`). No hard caller limit; queue load controlled by chunk size + queue concurrency.
-
-**Spec Impact:** Add `ai_vision_face_scan_batch_size` to the Lychee `configs` table (integer, default `200`). Update API-030-10 notes to describe chunked dispatch.
-
-**Resolved:** 2026-03-18
-
----
-
 ### ~~Q-030-26: Python Concurrency Model — CPU-Bound Face Detection Blocks Event Loop~~ ✅ RESOLVED
 
 **Resolution:** **Option A** — inference runs in a `ThreadPoolExecutor` via `asyncio.run_in_executor`, keeping the FastAPI event loop responsive while CPU-bound detection executes on a background thread. Pool size is configurable via `VISION_FACE_THREAD_POOL_SIZE` env var (default `1`). The service must emit structured log entries at three checkpoints: job received (`INFO`), detection started (`INFO`), and detection finished (`INFO` with face count and elapsed milliseconds). Callback failures are logged at `ERROR` level.

@@ -407,8 +407,6 @@ Route::post('/FaceDetection/clusters/{label}/uncluster', [AiVision\FaceClusterCo
 /**
  * AI VISION — MAINTENANCE.
  */
-Route::get('/Maintenance::resetStuckFaces', [Admin\Maintenance\ResetStuckFaces::class, 'check']);
-Route::post('/Maintenance::resetStuckFaces', [Admin\Maintenance\ResetStuckFaces::class, 'do']);
 Route::get('/Maintenance::bulkScanFaces', [Admin\Maintenance\BulkScanFaces::class, 'check']);
 Route::post('/Maintenance::bulkScanFaces', [Admin\Maintenance\BulkScanFaces::class, 'do']);
 Route::get('/Maintenance::runFaceClustering', [Admin\Maintenance\RunFaceClustering::class, 'check']);

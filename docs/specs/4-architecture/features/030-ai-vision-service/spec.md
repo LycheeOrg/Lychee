@@ -150,7 +150,6 @@ Read via `config('features.ai-vision-service.face-url')` and `config('features.a
 | `ai_vision_face_selfie_confidence_threshold` | float (0.0–1.0) | `0.8` | Minimum match confidence score for selfie-based Person auto-claim (FR-030-12). |
 | `ai_vision_face_person_is_searchable_default` | `0\|1` | `1` | Default `is_searchable` value assigned to each newly created Person record (FR-030-01). |
 | `ai_vision_face_allow_user_claim` | `0\|1` | `1` | When `1`, regular (non-admin) users may claim an assigned Person to link it to their account. Admins can always claim/unclaim regardless of this setting (FR-030-05). |
-| `ai_vision_face_scan_batch_size` | integer | `200` | Number of photo IDs dispatched per job chunk when bulk-scanning. Controls queue saturation — lower values reduce burst load at the cost of more job records. *(Q-030-45)* |
 | `ai_vision_face_overlay_enabled` | `0\|1` | `1` | Master toggle for face overlay rendering. When `0`, no face overlays or face circles are shown anywhere in the UI. *(Q-030-61, NFR-030-11)* |
 | `ai_vision_face_overlay_default_visibility` | enum string | `visible` | Default visibility state for face overlays when viewing a photo. Values: `visible`, `hidden`. User can toggle with `P` key during photo viewing. *(Q-030-61, NFR-030-11)* |
 
@@ -598,7 +597,7 @@ Read via `config('features.ai-vision-service.face-url')` and `config('features.a
 | API-030-07 | POST /api/v2/Person/{id}/claim | Link Person to current User (1-1) | |
 | API-030-08 | GET /api/v2/Person/{id}/photos | Paginated photos containing Person | |
 | API-030-09 | POST /api/v2/Face/{id}/assign | Assign a Face to a Person (or create new Person) | Body: person_id or new_person_name |
-| API-030-10 | POST /api/v2/FaceDetection/scan | Request face detection for photo(s) or album | Body: photo_ids[] or album_id, optional `force` boolean; dispatched in chunks of `ai_vision_face_scan_batch_size` (default 200) *(Q-030-45)* |
+| API-030-10 | POST /api/v2/FaceDetection/scan | Request face detection for photo(s) or album | Body: photo_ids[] or album_id, optional `force` boolean; dispatched in chunks of 200 *(Q-030-45)* |
 | API-030-11 | POST /api/v2/FaceDetection/results | Receive face detection results (success or error) from Python service (service-to-service only; authenticated via `X-API-Key`, no user session) | Body: success payload or error payload |
 | API-030-12 | POST /api/v2/FaceDetection/bulk-scan | Admin: enqueue all unscanned photos (face_scan_status IS NULL); scope: full library (no album_id) or direct photos in specified album (non-recursive) *(Q-030-41)* | Admin-only |
 | API-030-13 | POST /api/v2/Person/claim-by-selfie | Upload selfie photo, Python service matches against embeddings, link matching Person to current User | Multipart form with image file; **throttle: 5 requests/minute per user** *(Q-030-44)* |

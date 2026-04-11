@@ -17,6 +17,7 @@ use App\Rules\RandomIDRule;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
+// TODO: Make sure FacePermissionMode applies here
 class ToggleDismissedRequest extends BaseApiRequest implements HasFace
 {
 	use HasFaceTrait;

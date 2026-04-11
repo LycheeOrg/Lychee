@@ -329,7 +329,6 @@ Eager loading enforced with `Model::shouldBeStrict()`, which throws an exception
 | `ai_vision_face_selfie_confidence_threshold` | `0.8` | Minimum confidence for selfie-based person claim |
 | `ai_vision_face_person_is_searchable_default` | `1` | Default `is_searchable` for new Person records |
 | `ai_vision_face_allow_user_claim` | `1` | Allow non-admin users to claim a Person profile |
-| `ai_vision_face_scan_batch_size` | `200` | Photo IDs per bulk-scan job chunk |
 
 ---
 

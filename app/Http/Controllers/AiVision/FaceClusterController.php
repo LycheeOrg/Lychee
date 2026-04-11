@@ -40,20 +40,27 @@ class FaceClusterController extends Controller
 			->get();
 		$total = $totals->count();
 		$paginated = $totals->forPage($page, self::PER_PAGE);
-		$items = $paginated->map(function (Face $row): ClusterPreviewResource {
+
+		// Prefetch sample faces for all clusters in the paginated set to avoid N+1
+		$cluster_labels = $paginated->pluck('cluster_label')->all();
+		$samples_by_cluster = Face::query()
+			->whereIn('cluster_label', $cluster_labels)
+			->whereNull('person_id')
+			->where('is_dismissed', '=', false)
+			->whereNotNull('crop_token')
+			->select('cluster_label', 'crop_token', 'confidence')
+			->orderBy('cluster_label')
+			->orderByDesc('confidence')
+			->get()
+			->groupBy('cluster_label')
+			->map(fn ($faces) => $faces->take(self::SAMPLE_SIZE)->pluck('crop_token')->map(
+				static fn ($tok) => 'uploads/faces/' . substr($tok, 0, 2) . '/' . substr($tok, 2, 2) . '/' . $tok . '.jpg'
+			)->all());
+
+		$items = $paginated->map(function (Face $row) use ($samples_by_cluster): ClusterPreviewResource {
 			$cluster_label = (int) $row->cluster_label;
 			$face_count = (int) $row->face_count; // @phpstan-ignore property.notFound (see line 34)
-			// This is a n+1 query ...
-			$samples = Face::query()
-				->where('cluster_label', '=', $cluster_label)
-				->whereNull('person_id')
-				->where('is_dismissed', '=', false)
-				->whereNotNull('crop_token')
-				->orderByDesc('confidence')
-				->limit(self::SAMPLE_SIZE)
-				->pluck('crop_token')
-				->map(static fn ($tok) => 'uploads/faces/' . substr($tok, 0, 2) . '/' . substr($tok, 2, 2) . '/' . $tok . '.jpg')
-				->all();
+			$samples = $samples_by_cluster->get($cluster_label, []);
 
 			return new ClusterPreviewResource($cluster_label, $face_count, $samples);
 		});
