@@ -668,19 +668,19 @@ _Last updated: 2026-04-11_
 
 ### I38 – Denormalized Face & Photo Counters
 
-- [ ] T-030-93 – Write unit tests for Person counter invariants (FR-030-41, S-030-58, S-030-59, S-030-60).
+- [x] T-030-93 – Write unit tests for Person counter invariants (FR-030-41, S-030-58, S-030-59, S-030-60).
   _Intent:_ Using `AbstractTestCase` (SQLite in-memory). Create a Person with a Photo+Face fixture. Assert: (a) creating a non-dismissed face with `person_id` increments `person.face_count` by 1 and `person.photo_count` by 1; (b) creating a second non-dismissed face for the **same** person+photo increments `face_count` by 1 but leaves `photo_count` unchanged; (c) dismissing one face decrements `person.face_count` and leaves `person.photo_count` unchanged (other face still active); (d) dismissing the last non-dismissed face for that person+photo also decrements `person.photo_count`; (e) undismissing a face re-increments the relevant counters; (f) deleting a non-dismissed face with `person_id` decrements the counters; (g) deleting a dismissed face leaves counters unchanged; (h) unassigning a face (`person_id = null`) decrements counters for the old person.
   _Verification commands:_
   - `php artisan test --filter=FaceCounterPersonTest`
   - `make phpstan`
 
-- [ ] T-030-94 – Write unit tests for Photo.face_count counter invariants (FR-030-42, S-030-59, S-030-60).
+- [x] T-030-94 – Write unit tests for Photo.face_count counter invariants (FR-030-42, S-030-59, S-030-60).
   _Intent:_ Using `AbstractTestCase`. Assert: (a) creating a non-dismissed face on a photo increments `photo.face_count`; (b) creating a dismissed face (`is_dismissed = true`) on a photo does **not** increment `photo.face_count`; (c) dismissing a previously non-dismissed face decrements `photo.face_count`; (d) undismissing increments `photo.face_count`; (e) deleting a non-dismissed face decrements `photo.face_count`; (f) deleting a dismissed face leaves `photo.face_count` unchanged; (g) changing `person_id` on a non-dismissed face does **not** affect `photo.face_count`.
   _Verification commands:_
   - `php artisan test --filter=FaceCounterPhotoTest`
   - `make phpstan`
 
-- [ ] T-030-96 – Implement FaceObserver and register it (FR-030-41, FR-030-42).
+- [x] T-030-96 – Implement FaceObserver and register it (FR-030-41, FR-030-42).
   _Intent:_ Create `app/Observers/FaceObserver.php`. Handle three Eloquent events:
   - **`creating`**: if `is_dismissed = false`, queue a `photo.face_count++`. If `person_id` is set and `is_dismissed = false`, queue a `person.face_count++` and recount `person.photo_count` post-save.
   - **`updating`**: compare `getOriginal('person_id')` vs new `person_id` and `getOriginal('is_dismissed')` vs new `is_dismissed`. Apply appropriate increments/decrements to the affected Person(s) and Photo. For `person.photo_count`, always recount from DB after the change (avoids edge cases with multiple faces sharing person+photo).
@@ -691,7 +691,7 @@ _Last updated: 2026-04-11_
   - `php artisan test --filter=FaceCounterPhotoTest`
   - `make phpstan`
 
-- [ ] T-030-97 – Update PersonResource to read denormalized columns (FR-030-41).
+- [x] T-030-97 – Update PersonResource to read denormalized columns (FR-030-41).
   _Intent:_ In `app/Http/Resources/Models/PersonResource.php`, replace:
   - `$person->faces()->count()` → `$person->face_count`
   - `$person->faces()->distinct('photo_id')->count('photo_id')` → `$person->photo_count`
@@ -702,7 +702,7 @@ _Last updated: 2026-04-11_
 
 ### I39 – Per-Resource Face Access Rights
 
-- [ ] T-030-98 – Write feature tests for PhotoPolicy face gates across all four modes (FR-030-43, S-030-61, S-030-62, S-030-65).
+- [x] T-030-98 – Write feature tests for PhotoPolicy face gates across all four modes (FR-030-43, S-030-61, S-030-62, S-030-65).
   _Intent:_ Using `BaseApiWithDataTest`. For each of the four `FacePermissionMode` values, test `canViewFaceOverlays`, `canDismissFace`, `canAssignFaceOnPhoto`, `canTriggerScanOnPhoto` with three actor roles: (a) photo owner, (b) logged-in non-owner, (c) guest. Expected results per matrix row:
   - `canViewFaceOverlays`: public → album access sufficient; private → logged; pp/restricted → owner only.
   - `canDismissFace`: always owner only, regardless of mode.
@@ -713,7 +713,7 @@ _Last updated: 2026-04-11_
   - `php artisan test --filter=PhotoPolicyFaceTest`
   - `make phpstan`
 
-- [ ] T-030-99 – Write feature tests for AlbumPolicy face gates across all four modes (FR-030-44, S-030-63, S-030-64, S-030-65).
+- [x] T-030-99 – Write feature tests for AlbumPolicy face gates across all four modes (FR-030-44, S-030-63, S-030-64, S-030-65).
   _Intent:_ Using `BaseApiWithDataTest`. Test `canViewAlbumPeople`, `canTriggerScanOnAlbum`, `canAssignFaceInAlbum`, `canBatchFaceOps` with roles: album owner, logged non-owner, guest. Expected per matrix:
   - `canViewAlbumPeople`: public → album access; private → logged; pp/restricted → album owner only.
   - `canTriggerScanOnAlbum`: public/private → logged; pp/restricted → album owner only.
@@ -724,26 +724,26 @@ _Last updated: 2026-04-11_
   - `php artisan test --filter=AlbumPolicyFaceTest`
   - `make phpstan`
 
-- [ ] T-030-100 – Implement PhotoPolicy face gate constants and methods (FR-030-43).
+- [x] T-030-100 – Implement PhotoPolicy face gate constants and methods (FR-030-43).
   _Intent:_ In `app/Policies/PhotoPolicy.php`, add four new constants: `CAN_VIEW_FACE_OVERLAYS`, `CAN_DISMISS_FACE`, `CAN_ASSIGN_FACE_ON_PHOTO`, `CAN_TRIGGER_SCAN_ON_PHOTO`. Implement the corresponding methods — each accepts `(?User $user, Photo $photo)`. The admin short-circuit and feature-disabled checks are handled by `PhotoPolicy::before()` (note: admins bypass the gate even when AI Vision is disabled — accepted risk per Q-030-77). Each method: (1) resolves `FacePermissionMode` via `ConfigManager`; (2) applies mode + ownership logic per the permission matrix. `canViewFaceOverlays` in `public` mode calls `$this->canAccess($user, $photo->album)` directly on the policy instance (not via `Gate::check()` — no circular dependency per Q-030-78). `isOwner()` helper already exists on `PhotoPolicy`. Register the four new abilities in the Gate (same registration point as existing `PhotoPolicy` constants).
   _Verification commands:_
   - `php artisan test --filter=PhotoPolicyFaceTest`
   - `make phpstan`
 
-- [ ] T-030-101 – Implement AlbumPolicy face gate constants and methods (FR-030-44).
+- [x] T-030-101 – Implement AlbumPolicy face gate constants and methods (FR-030-44).
   _Intent:_ In `app/Policies/AlbumPolicy.php`, add four new constants: `CAN_VIEW_ALBUM_PEOPLE`, `CAN_TRIGGER_SCAN_ON_ALBUM`, `CAN_ASSIGN_FACE_IN_ALBUM`, `CAN_BATCH_FACE_OPS`. Implement corresponding methods accepting `(?User $user, AbstractAlbum|null $album)`. The admin short-circuit and feature-disabled checks are handled by `AlbumPolicy::before()` (accepted risk: admin bypasses even when AI Vision disabled — Q-030-77). `canViewAlbumPeople` in `public` mode calls `$this->canAccess($user, $album)` directly on the policy instance (Q-030-78). Ownership check for concrete albums: `$album instanceof BaseAlbum && $this->isOwner($user, $album)`. Smart albums: no owner concept → return false for non-admin. Null album: return false for any mode requiring ownership. Register in Gate.
   _Verification commands:_
   - `php artisan test --filter=AlbumPolicyFaceTest`
   - `make phpstan`
 
-- [ ] T-030-102 – Extend PhotoRightsResource and AlbumRightsResource with face rights fields (FR-030-45, FR-030-46, DO-030-12, DO-030-13).
+- [x] T-030-102 – Extend PhotoRightsResource and AlbumRightsResource with face rights fields (FR-030-45, FR-030-46, DO-030-12, DO-030-13).
   _Intent:_ `PhotoRightsResource`: add optional `?Photo $photo = null` second constructor parameter. Add four new public bool properties defaulting to `false`: `can_view_face_overlays`, `can_dismiss_face`, `can_assign_face`, `can_trigger_scan`. When AI Vision feature is active and `$photo` is not null, populate via `Gate::check(PhotoPolicy::CAN_VIEW_FACE_OVERLAYS, $photo)` etc. Update all construction call sites that create `PhotoRightsResource` to pass the `Photo` instance (primarily `PhotoResource`). `AlbumRightsResource`: add four new bool properties: `can_view_album_people`, `can_trigger_scan`, `can_assign_face`, `can_batch_face_ops` — computed from `AlbumPolicy` gate checks using the existing `$abstract_album`. Regenerate TypeScript declarations (`npm run generate-types` or `php artisan typescript:transform`).
   _Verification commands:_
   - `php artisan test --filter=RightsResourceTest`
   - `make phpstan`
   - `npm run check`
 
-- [ ] T-030-103 – Update request authorizers to use per-resource gates (FR-030-47).
+- [x] T-030-103 – Update request authorizers to use per-resource gates (FR-030-47).
   _Intent:_ Six targeted changes — remove all `// TODO: Make sure FacePermissionMode applies here` comments by replacing the gate check with the correct scoped gate:
   (a) `AssignFaceRequest::authorize()`: `Gate::check(PhotoPolicy::CAN_ASSIGN_FACE_ON_PHOTO, $this->face->photo)`.
   (b) `ToggleDismissedRequest::authorize()`: remove inline ownership check + `// TODO`; replace entirely with `Gate::check(PhotoPolicy::CAN_DISMISS_FACE, $this->face->photo)`.
