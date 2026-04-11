@@ -73,5 +73,8 @@ export const useUserStore = defineStore("user-store", {
 		isGuest(): boolean {
 			return this.user !== undefined && this.user.id === null;
 		},
+		isAdmin(): boolean {
+			return this.user?.may_administrate === true;
+		},
 	},
 });
