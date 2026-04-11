@@ -13,9 +13,7 @@ use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasPersonTrait;
 use App\Models\Person;
 use App\Policies\AiVisionPolicy;
-use App\Repositories\ConfigManager;
 use App\Rules\RandomIDRule;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
 class ClaimPersonRequest extends BaseApiRequest implements HasPerson
@@ -27,19 +25,7 @@ class ClaimPersonRequest extends BaseApiRequest implements HasPerson
 	 */
 	public function authorize(): bool
 	{
-		if (!Gate::check(AiVisionPolicy::CAN_CLAIM_PERSON, Person::class)) {
-			return false;
-		}
-
-		/** @var \App\Models\User $user */
-		$user = Auth::user();
-		if ($user->may_administrate) {
-			// Admin can always claim (force-claim)
-			return true;
-		}
-
-		// Non-admin: check if user claims are allowed by the administrator
-		return app(ConfigManager::class)->getValueAsBool('ai_vision_face_allow_user_claim');
+		return Gate::check(AiVisionPolicy::CAN_CLAIM_PERSON, Person::class);
 	}
 
 	/**

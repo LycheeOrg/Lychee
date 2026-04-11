@@ -1,9 +1,9 @@
 <template>
-	<div v-if="overlayEnabled && (faces.length > 0 || hiddenFaceCount > 0)" class="absolute inset-0 pointer-events-none">
+	<div v-if="overlayEnabled && isVisible && (faces.length > 0 || hiddenFaceCount > 0)" class="absolute inset-0 pointer-events-none">
 		<!-- Face bounding box overlays -->
 		<template v-for="face in visibleFaces" :key="face.id">
 			<div
-				v-if="!face.is_dismissed && isVisible"
+				v-if="!face.is_dismissed"
 				class="absolute rounded transition-opacity duration-200 pointer-events-auto cursor-pointer z-50"
 				:class="
 					ctrlHeld && !isTouchDev

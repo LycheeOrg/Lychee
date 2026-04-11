@@ -11,6 +11,7 @@ namespace App\Models;
 use App\Models\Extensions\HasRandomIDAndLegacyTimeBasedID;
 use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\ToArrayThrowsNotImplemented;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -39,6 +40,9 @@ use Illuminate\Support\Carbon;
  * @property Person|null                    $person
  * @property Collection<int,FaceSuggestion> $suggestions
  * @property string|null                    $crop_url
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<Face> notDismissed()
+ * @method static \Illuminate\Database\Eloquent\Builder<Face> dismissed()
  */
 class Face extends Model
 {
@@ -144,5 +148,27 @@ class Face extends Model
 	public function suggestions(): HasMany
 	{
 		return $this->hasMany(FaceSuggestion::class, 'face_id', 'id');
+	}
+
+	/**
+	 * Scope: only faces that have not been dismissed.
+	 *
+	 * @param Builder<Face> $query
+	 * @return Builder<Face>
+	 */
+	public function scopeNotDismissed(Builder $query): Builder
+	{
+		return $query->where('is_dismissed', '=', false);
+	}
+
+	/**
+	 * Scope: only faces that have been dismissed.
+	 *
+	 * @param Builder<Face> $query
+	 * @return Builder<Face>
+	 */
+	public function scopeDismissed(Builder $query): Builder
+	{
+		return $query->where('is_dismissed', '=', true);
 	}
 }

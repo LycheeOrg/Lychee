@@ -9,7 +9,7 @@
 namespace App\Http\Controllers\Admin\Maintenance;
 
 use App\Http\Requests\Maintenance\MaintenanceRequest;
-use App\Services\FaceDetectionService;
+use App\Services\Image\FaceDetectionService;
 use Illuminate\Routing\Controller;
 
 /**

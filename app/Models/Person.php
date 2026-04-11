@@ -11,6 +11,7 @@ namespace App\Models;
 use App\Models\Extensions\HasRandomIDAndLegacyTimeBasedID;
 use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\ToArrayThrowsNotImplemented;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -109,12 +110,24 @@ class Person extends Model
 	}
 
 	/**
-	 * @param \Illuminate\Database\Eloquent\Builder<static> $query
+	 * Scope to only include persons visible to a given user.
+	 * Always includes searchable persons; if $user_id is provided, also includes
+	 * the person linked to that user.
 	 *
-	 * @return \Illuminate\Database\Eloquent\Builder<static>
+	 * @param Builder<static> $query
+	 * @param int|null                                       $user_id
+	 *
+	 * @return Builder<static>
 	 */
-	public function scopeSearchable($query)
-	{
-		return $query->where('is_searchable', '=', true);
+	public function scopeSearchable(
+		Builder $query,
+		?int $user_id = null,
+	): Builder {
+		return $query->where(function (Builder $q) use ($user_id): void {
+			$q->where('persons.is_searchable', '=', true);
+			if ($user_id !== null) {
+				$q->orWhere('persons.user_id', '=', $user_id);
+			}
+		});
 	}
 }

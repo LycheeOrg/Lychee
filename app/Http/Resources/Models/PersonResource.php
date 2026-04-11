@@ -46,7 +46,7 @@ class PersonResource extends Data
 
 		if ($crop_token === null) {
 			$crop_token = $person->faces()
-				->where('is_dismissed', '=', false)
+				->notDismissed()
 				->whereNotNull('crop_token')
 				->orderByDesc('confidence')
 				->value('crop_token');

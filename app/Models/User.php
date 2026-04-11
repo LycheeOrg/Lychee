@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\DatabaseNotification;
@@ -184,9 +185,9 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	/**
 	 * Return the Person linked to this user (1-1).
 	 *
-	 * @return \Illuminate\Database\Eloquent\Relations\HasOne<Person,$this>
+	 * @return HasOne<Person,$this>
 	 */
-	public function person(): \Illuminate\Database\Eloquent\Relations\HasOne
+	public function person(): HasOne
 	{
 		return $this->hasOne(Person::class, 'user_id', 'id');
 	}

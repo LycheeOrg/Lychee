@@ -42,18 +42,11 @@ class AlbumPeopleController extends Controller
 			->join('photo_album', 'photo_album.photo_id', '=', 'faces.photo_id')
 			->where('photo_album.album_id', '=', $album->id)
 			->where('faces.is_dismissed', '=', false)
-			->whereNotNull('faces.person_id')
 			->orderBy('persons.name');
 
 		// Non-admin: only show searchable persons, plus the person linked to the current user
 		if ($user?->may_administrate !== true) {
-			$user_id = $user?->id;
-			$query->where(function ($q) use ($user_id): void {
-				$q->where('persons.is_searchable', '=', true);
-				if ($user_id !== null) {
-					$q->orWhere('persons.user_id', '=', $user_id);
-				}
-			});
+			$query->searchable($user?->id);
 		}
 
 		$persons = $query->distinct()->paginate(50);

@@ -27,6 +27,7 @@ class UnclusterFacesRequest extends BaseApiRequest
 	{
 		return [
 			'face_ids' => ['required', 'array', 'min:1'],
+			// TODO remove exist check
 			'face_ids.*' => ['required', 'string', 'exists:faces,id'],
 		];
 	}

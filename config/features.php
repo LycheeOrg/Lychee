@@ -153,19 +153,6 @@ return [
 
 	/*
 	 |--------------------------------------------------------------------------
-	 | Enable AI Vision / Assisted Vision
-	 |--------------------------------------------------------------------------
-	 |
-	 | When enabled, users can use facial recognition and AI-powered features
-	 | such as face detection, person management, and photo clustering.
-	 | Requires ai_vision_enabled to be true in the database configs table
-	 | AND this feature flag to be enabled.
-	 | Disabled by default — set AI_VISION_ENABLED=true to activate.
-	 */
-	'ai-vision' => (bool) env('AI_VISION_ENABLED', false),
-
-	/*
-	 |--------------------------------------------------------------------------
 	 | Webhook HTTP request timeout
 	 |--------------------------------------------------------------------------
 	 |
@@ -210,6 +197,19 @@ return [
 	 | missing macros and test failures.
 	 */
 	'populate-request-macros' => (bool) env('POPULATE_REQUEST_MACROS', false),
+
+	/*
+	 |--------------------------------------------------------------------------
+	 | Enable AI Vision / Assisted Vision
+	 |--------------------------------------------------------------------------
+	 |
+	 | When enabled, users can use facial recognition and AI-powered features
+	 | such as face detection, person management, and photo clustering.
+	 | Requires ai_vision_enabled to be true in the database configs table
+	 | AND this feature flag to be enabled.
+	 | Disabled by default — set AI_VISION_ENABLED=true to activate.
+	 */
+	'ai-vision' => (bool) env('AI_VISION_ENABLED', false),
 
 	/*
 	 |--------------------------------------------------------------------------

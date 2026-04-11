@@ -33,7 +33,7 @@ class DestroyDismissedFaces extends Controller
 			return 0;
 		}
 
-		return Face::where('is_dismissed', '=', true)->count();
+		return Face::dismissed()->count();
 	}
 
 	/**
@@ -43,7 +43,7 @@ class DestroyDismissedFaces extends Controller
 	 */
 	public function do(MaintenanceRequest $_request): array
 	{
-		$dismissed_faces = Face::where('is_dismissed', '=', true)->get();
+		$dismissed_faces = Face::dismissed()->get();
 		$face_ids = $dismissed_faces->pluck('id')->all();
 		$count = 0;
 

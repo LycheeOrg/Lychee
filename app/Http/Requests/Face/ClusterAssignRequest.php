@@ -27,6 +27,7 @@ class ClusterAssignRequest extends BaseApiRequest
 	public function rules(): array
 	{
 		return [
+			// TODO remove exist check
 			'person_id' => ['nullable', 'string', 'exists:persons,id'],
 			'new_person_name' => ['nullable', 'string', 'max:255'],
 		];

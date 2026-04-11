@@ -30,8 +30,10 @@ class BatchFaceRequest extends BaseApiRequest
 	{
 		return [
 			'face_ids' => ['required', 'array', 'min:1'],
+			// TODO remove exist check
 			'face_ids.*' => ['required', 'string', 'exists:faces,id'],
 			'action' => ['required', 'string', 'in:unassign,assign'],
+			// TODO remove exist check
 			'person_id' => ['nullable', 'string', 'exists:persons,id'],
 			'new_person_name' => ['nullable', 'string', 'max:255'],
 		];

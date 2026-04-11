@@ -16,7 +16,7 @@ use App\Http\Requests\Face\ScanPhotosRequest;
 use App\Models\Face;
 use App\Models\FaceSuggestion;
 use App\Models\Photo;
-use App\Services\FaceDetectionService;
+use App\Services\Image\FaceDetectionService;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;

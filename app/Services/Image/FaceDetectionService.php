@@ -6,7 +6,7 @@
  * Copyright (c) 2018-2026 LycheeOrg.
  */
 
-namespace App\Services;
+namespace App\Services\Image;
 
 use App\Enum\FaceScanStatus;
 use App\Jobs\DispatchFaceScanJob;

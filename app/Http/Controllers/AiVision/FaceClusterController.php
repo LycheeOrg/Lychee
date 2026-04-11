@@ -33,7 +33,7 @@ class FaceClusterController extends Controller
 			->whereNotNull('cluster_label')
 			->where('cluster_label', '>', -1)
 			->whereNull('person_id')
-			->where('is_dismissed', '=', false)
+			->notDismissed()
 			->selectRaw('cluster_label, COUNT(*) as face_count')
 			->groupBy('cluster_label')
 			->orderBy('face_count', 'desc')
@@ -46,7 +46,7 @@ class FaceClusterController extends Controller
 		$samples_by_cluster = Face::query()
 			->whereIn('cluster_label', $cluster_labels)
 			->whereNull('person_id')
-			->where('is_dismissed', '=', false)
+			->notDismissed()
 			->whereNotNull('crop_token')
 			->select('cluster_label', 'crop_token', 'confidence')
 			->orderBy('cluster_label')
@@ -75,7 +75,7 @@ class FaceClusterController extends Controller
 		$person = $person_factory->findOrCreate($request->person_id, $request->new_person_name);
 		$count = Face::where('cluster_label', '=', $label)
 			->whereNull('person_id')
-			->where('is_dismissed', '=', false)
+			->notDismissed()
 			->update(['person_id' => $person->id]);
 
 		return ['assigned_count' => $count];
@@ -85,7 +85,7 @@ class FaceClusterController extends Controller
 	{
 		$count = Face::where('cluster_label', '=', $label)
 			->whereNull('person_id')
-			->where('is_dismissed', '=', false)
+			->notDismissed()
 			->update(['is_dismissed' => true]);
 
 		return ['dismissed_count' => $count];
@@ -104,7 +104,7 @@ class FaceClusterController extends Controller
 		$count = Face::whereIn('id', $request->face_ids)
 			->where('cluster_label', '=', $label)
 			->whereNull('person_id')
-			->where('is_dismissed', '=', false)
+			->notDismissed()
 			->update(['cluster_label' => null]);
 
 		return ['unclustered_count' => $count];
@@ -119,7 +119,7 @@ class FaceClusterController extends Controller
 	{
 		$exists = Face::where('cluster_label', '=', $label)
 			->whereNull('person_id')
-			->where('is_dismissed', '=', false)
+			->notDismissed()
 			->exists();
 
 		if (!$exists) {
@@ -129,7 +129,7 @@ class FaceClusterController extends Controller
 		$paginated = Face::query()
 			->where('cluster_label', '=', $label)
 			->whereNull('person_id')
-			->where('is_dismissed', '=', false)
+			->notDismissed()
 			->with(['person', 'suggestions.suggestedFace.person'])
 			->orderByDesc('confidence')
 			->paginate(50);

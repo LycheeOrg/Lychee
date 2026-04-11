@@ -8,6 +8,7 @@
 
 namespace App\Services\Image;
 
+use App\Exceptions\ExternalComponentMissingException;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -73,7 +74,7 @@ class FacialRecognitionService
 	public function detectFaces(string $photo_id, string $photo_path): Response
 	{
 		if (!$this->isConfigured()) {
-			throw new \RuntimeException('AI Vision service is not configured.');
+			throw new ExternalComponentMissingException('AI Vision service is not configured.');
 		}
 
 		$data = [
@@ -97,7 +98,7 @@ class FacialRecognitionService
 	public function deleteEmbeddings(array $face_ids): Response
 	{
 		if (!$this->isConfigured()) {
-			throw new \RuntimeException('AI Vision service is not configured.');
+			throw new ExternalComponentMissingException('AI Vision service is not configured.');
 		}
 
 		return Http::withHeaders(['X-API-Key' => $this->api_key])
