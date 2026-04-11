@@ -10,6 +10,7 @@ namespace App\Actions\Import;
 
 use App\Actions\Photo\Create;
 use App\DTO\ImportMode;
+use App\Enum\UserUploadTrustLevel;
 use App\Exceptions\Handler;
 use App\Exceptions\MassImportException;
 use App\Image\Files\DownloadedFile;
@@ -49,13 +50,13 @@ class FromUrl
 				skip_duplicates: $config_manager->getValueAsBool('skip_duplicates'),
 				shall_rename_photo_title: $config_manager->getValueAsBool('renamer_photo_title_enabled'),
 			),
-			intended_owner_id: $intended_owner_id
+			intended_owner_id: $intended_owner_id,
+			upload_trust_level: UserUploadTrustLevel::TRUSTED,
 		);
 
 		$file_extension_service = resolve(FileExtensionService::class);
 		foreach ($urls as $url) {
 			try {
-				// Reset the execution timeout for every iteration.
 				try {
 					set_time_limit((int) ini_get('max_execution_time'));
 				} catch (InfoException) {

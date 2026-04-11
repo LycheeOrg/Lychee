@@ -14,9 +14,9 @@ use App\Eloquent\FixedQueryBuilder;
 use App\Exceptions\Internal\InvalidQueryModelException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Album;
+use App\Models\Extensions\FiltersUploadValidation;
 use App\Models\Photo;
 use App\Models\User;
-use App\Models\Extensions\FiltersUploadValidation;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Database\Query\JoinClause;
@@ -24,6 +24,7 @@ use Illuminate\Database\Query\JoinClause;
 class PhotoQueryPolicy
 {
 	use FiltersUploadValidation;
+
 	public function __construct(
 		protected AlbumQueryPolicy $album_query_policy,
 	) {

@@ -13,6 +13,7 @@ use App\Contracts\Image\StreamStats;
 use App\Contracts\Models\AbstractAlbum;
 use App\Contracts\Models\AbstractSizeVariantNamingStrategy;
 use App\Contracts\PhotoCreate\PhotoDTO;
+use App\Enum\UserUploadTrustLevel;
 use App\Image\Files\FlysystemFile;
 use App\Image\Files\NativeLocalFile;
 use App\Image\Files\TemporaryLocalFile;
@@ -47,8 +48,8 @@ class StandaloneDTO implements PhotoDTO
 		public readonly ?AbstractAlbum $album,
 		// Indicates the intended owner of the image.
 		public readonly int $intended_owner_id,
-		// Indicates whether the upload was performed by a guest (anonymous) user.
-		public readonly bool $is_guest_upload,
+		// Pre-resolved upload trust level (null = resolve at runtime in SetUploadValidated).
+		public readonly UserUploadTrustLevel $upload_trust_level,
 		public readonly bool $shall_import_via_symlink,
 		public readonly bool $shall_delete_imported,
 		public readonly bool $shall_rename_photo_title,
@@ -67,7 +68,7 @@ class StandaloneDTO implements PhotoDTO
 			exif_info: $init_dto->exif_info,
 			album: $init_dto->album,
 			intended_owner_id: $init_dto->intended_owner_id,
-			is_guest_upload: $init_dto->is_guest_upload,
+			upload_trust_level: $init_dto->upload_trust_level,
 			shall_import_via_symlink: $init_dto->import_mode->shall_import_via_symlink,
 			shall_delete_imported: $init_dto->import_mode->shall_delete_imported,
 			shall_rename_photo_title: $init_dto->import_mode->shall_rename_photo_title,

@@ -12,7 +12,8 @@ return [
     'password' => '密码',
     'legend' => '图例',
     'upload_rights' => '选中后，用户可以上传内容。',
-    'edit_rights' => '选中后，用户可以修改其个人资料（用户名、密码）。',    'upload_trust_level' => 'Upload trust level — controls whether uploads are immediately public.',
+    'edit_rights' => '选中后，用户可以修改其个人资料（用户名、密码）。',
+    'upload_trust_level' => 'Upload trust level — controls whether uploads are immediately public.',
 
     'quota' => '设置后，用户将有照片空间配额限制（以 kB 为单位）。',
     'user_deleted' => '用户已删除',
@@ -22,11 +23,12 @@ return [
     'create_edit' => [
         'upload_rights' => '用户可以上传内容。',
         'edit_rights' => '用户可以修改其个人资料（用户名、密码）。',
-        'admin_rights' => 'User has admin rights.',        'upload_trust_level' => 'Upload trust level',
+        'admin_rights' => 'User has admin rights.',
+        'upload_trust_level' => 'Upload trust level',
         'upload_trust_level_check' => 'Check – uploads require admin approval before becoming public.',
-        'upload_trust_level_monitor' => 'Monitor – reserved for future use, currently behaves as Trusted.',
+        'upload_trust_level_monitor' => 'Monitor – upload are publics unless flagged for content..',
         'upload_trust_level_trusted' => 'Trusted – uploads are immediately public.',
-        
+
         'quota' => '用户有配额限制。',
         'quota_kb' => '配额（kB，0 表示使用默认值）',
         'note' => '管理员备注（不公开显示）',

@@ -24,6 +24,7 @@ use App\DTO\PhotoCreate\InitDTO;
 use App\DTO\PhotoCreate\PhotoPartnerDTO;
 use App\DTO\PhotoCreate\StandaloneDTO;
 use App\DTO\PhotoCreate\VideoPartnerDTO;
+use App\Enum\UserUploadTrustLevel;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\PhotoResyncedException;
 use App\Exceptions\PhotoSkippedException;
@@ -44,9 +45,9 @@ class Create
 	public function __construct(
 		?ImportMode $import_mode,
 		int $intended_owner_id,
-		bool $is_guest_upload = false,
+		UserUploadTrustLevel $upload_trust_level,
 	) {
-		$this->strategy_parameters = new ImportParam($import_mode, $intended_owner_id, is_guest_upload: $is_guest_upload);
+		$this->strategy_parameters = new ImportParam($import_mode, $intended_owner_id, upload_trust_level: $upload_trust_level);
 	}
 
 	/**

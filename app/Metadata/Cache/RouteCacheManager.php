@@ -14,7 +14,6 @@ use App\Facades\Helpers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use Route;
 
 final readonly class RouteCacheManager
 {

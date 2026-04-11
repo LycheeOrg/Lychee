@@ -10,8 +10,8 @@ namespace App\Repositories;
 
 use App\Constants\PhotoAlbum as PA;
 use App\DTO\PhotoSortingCriterion;
-use App\Models\Extensions\SortingDecorator;
 use App\Models\Extensions\FiltersUploadValidation;
+use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Auth;
 class PhotoRepository
 {
 	use FiltersUploadValidation;
+
 	/**
 	 * Get paginated photos for an album with all necessary relations eager-loaded.
 	 *

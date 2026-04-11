@@ -11,6 +11,7 @@ namespace App\Jobs;
 use App\Actions\Photo\Create;
 use App\DTO\ImportMode;
 use App\Enum\JobStatus;
+use App\Enum\UserUploadTrustLevel;
 use App\Factories\AlbumFactory;
 use App\Image\Files\NativeLocalFile;
 use App\Models\Album;
@@ -78,6 +79,7 @@ class ImportImageJob implements ShouldQueue
 		$create = new Create(
 			import_mode: $this->import_mode,
 			intended_owner_id: $this->intended_owner_id,
+			upload_trust_level: UserUploadTrustLevel::TRUSTED,
 		);
 
 		$album = $this->album_id !== null ? $album_factory->findAbstractAlbumOrFail($this->album_id) : null;
