@@ -8,34 +8,53 @@
 
 namespace App\Http\Requests\Face;
 
+use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
+use App\Models\Album;
 use App\Models\Face;
-use App\Policies\AiVisionPolicy;
+use App\Policies\AlbumPolicy;
+use App\Policies\PhotoPolicy;
 use Illuminate\Support\Facades\Gate;
 
-// TODO: Make sure FacePermissionMode applies here
 class BatchFaceRequest extends BaseApiRequest
 {
 	public array $face_ids = [];
 	public string $action;
 	public ?string $person_id = null;
 	public ?string $new_person_name = null;
+	private ?Album $album = null;
 
 	public function authorize(): bool
 	{
-		return Gate::check(AiVisionPolicy::CAN_ASSIGN_FACE, Face::class);
+		if ($this->album !== null) {
+			return Gate::check(AlbumPolicy::CAN_BATCH_FACE_OPS, [AbstractAlbum::class, $this->album]);
+		}
+
+		// Per-photo check: deny if any face's photo fails the gate.
+		$face_ids = $this->input('face_ids', []);
+		if (count($face_ids) === 0) {
+			return false;
+		}
+
+		$faces = Face::with('photo')->whereIn('id', $face_ids)->get();
+		foreach ($faces as $face) {
+			if (!Gate::check(PhotoPolicy::CAN_ASSIGN_FACE_ON_PHOTO, $face->photo)) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	public function rules(): array
 	{
 		return [
 			'face_ids' => ['required', 'array', 'min:1'],
-			// TODO remove exist check
 			'face_ids.*' => ['required', 'string', 'exists:faces,id'],
 			'action' => ['required', 'string', 'in:unassign,assign'],
-			// TODO remove exist check
 			'person_id' => ['nullable', 'string', 'exists:persons,id'],
 			'new_person_name' => ['nullable', 'string', 'max:255'],
+			'album_id' => ['nullable', 'string'],
 		];
 	}
 
@@ -63,5 +82,7 @@ class BatchFaceRequest extends BaseApiRequest
 		$this->action = $values['action'];
 		$this->person_id = $values['person_id'] ?? null;
 		$this->new_person_name = $values['new_person_name'] ?? null;
+		$album_id = $values['album_id'] ?? null;
+		$this->album = $album_id !== null ? Album::find($album_id) : null;
 	}
 }

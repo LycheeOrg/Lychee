@@ -12,25 +12,17 @@ use App\Contracts\Http\Requests\HasFace;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasFaceTrait;
 use App\Models\Face;
-use App\Policies\AiVisionPolicy;
+use App\Policies\PhotoPolicy;
 use App\Rules\RandomIDRule;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
-// TODO: Make sure FacePermissionMode applies here
 class ToggleDismissedRequest extends BaseApiRequest implements HasFace
 {
 	use HasFaceTrait;
 
 	public function authorize(): bool
 	{
-		if (!Gate::check(AiVisionPolicy::CAN_DISMISS_FACE, Face::class)) {
-			return false;
-		}
-
-		$user = Auth::user();
-
-		return ($user?->may_administrate === true) || $this->face->photo->owner_id === $user?->id;
+		return Gate::check(PhotoPolicy::CAN_DISMISS_FACE, $this->face->photo);
 	}
 
 	public function rules(): array

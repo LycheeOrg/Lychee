@@ -33,8 +33,8 @@ class GetAlbumPersonsRequest extends BaseApiRequest implements HasAbstractAlbum
 	 */
 	public function authorize(): bool
 	{
-		// TODO : also need to authorize based on FacePermissionMode for non-admin users (see AlbumPeopleController::index)
-		return Gate::check(AlbumPolicy::CAN_ACCESS, [AbstractAlbum::class, $this->album]);
+		return Gate::check(AlbumPolicy::CAN_ACCESS, [AbstractAlbum::class, $this->album]) &&
+			Gate::check(AlbumPolicy::CAN_VIEW_ALBUM_PEOPLE, [AbstractAlbum::class, $this->album]);
 	}
 
 	/**

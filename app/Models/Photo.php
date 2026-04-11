@@ -172,6 +172,7 @@ class Photo extends Model implements HasUTCBasedTimes
 		'img_direction' => 'float',
 		'rating_avg' => 'decimal:4',
 		'face_scan_status' => FaceScanStatus::class,
+		'face_count' => 'integer',
 	];
 
 	/**

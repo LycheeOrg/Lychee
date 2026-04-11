@@ -8,7 +8,6 @@
 
 namespace App\Http\Resources\Models;
 
-use App\Enum\FacePermissionMode;
 use App\Enum\LicenseType;
 use App\Http\Resources\Models\Utils\PreComputedPhotoData;
 use App\Http\Resources\Models\Utils\PreformattedPhotoData;
@@ -108,32 +107,18 @@ class PhotoResource extends Data
 	 * Populate faces[] and hidden_face_count from the photo's detected faces.
 	 *
 	 * Only runs when ai_vision_face_enabled is on and the viewer has permission
-	 * to see face overlays per the ai_vision_face_permission_mode matrix.
+	 * to see face overlays per the PhotoPolicy::CAN_VIEW_FACE_OVERLAYS gate.
 	 * Non-searchable persons are hidden from viewers who are not the linked user;
 	 * they are counted in hidden_face_count instead.
 	 */
 	private function buildFaceData(Photo $photo): void
 	{
-		if (!request()->configs()->getValueAsBool('ai_vision_enabled') ||
-			!request()->configs()->getValueAsBool('ai_vision_face_enabled')) {
+		if (!Gate::check(PhotoPolicy::CAN_VIEW_FACE_OVERLAYS, $photo)) {
 			return;
 		}
 
 		$user = Auth::user();
 		$is_admin = $user?->may_administrate === true;
-
-		// Check per-mode overlay visibility (View face overlays row in permission matrix).
-		$mode = request()->configs()->getValueAsEnum('ai_vision_face_permission_mode', FacePermissionMode::class) ?? FacePermissionMode::RESTRICTED;
-		$can_view_overlays = $is_admin || match ($mode) {
-			FacePermissionMode::PUBLIC => true,
-			FacePermissionMode::PRIVATE => $user !== null,
-			FacePermissionMode::PRIVACY_PRESERVING,
-			FacePermissionMode::RESTRICTED => $user !== null && $photo->owner_id === $user->id,
-		};
-
-		if (!$can_view_overlays) {
-			return;
-		}
 
 		foreach ($photo->faces as $face) {
 			/** @var Face $face */

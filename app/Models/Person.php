@@ -27,6 +27,8 @@ use Illuminate\Support\Carbon;
  * @property int|null             $user_id
  * @property bool                 $is_searchable
  * @property string|null          $representative_face_id
+ * @property int                  $face_count
+ * @property int                  $photo_count
  * @property Carbon               $created_at
  * @property Carbon               $updated_at
  * @property User|null            $user
@@ -63,6 +65,8 @@ class Person extends Model
 		'user_id',
 		'is_searchable',
 		'representative_face_id',
+		'face_count',
+		'photo_count',
 	];
 
 	/**
@@ -76,6 +80,8 @@ class Person extends Model
 			'is_searchable' => 'boolean',
 			'user_id' => 'integer',
 			'representative_face_id' => 'string',
+			'face_count' => 'integer',
+			'photo_count' => 'integer',
 		];
 	}
 

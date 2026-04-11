@@ -31,8 +31,8 @@ class PersonResource extends Data
 		$this->user_id = $person->user_id;
 		$this->is_searchable = $person->is_searchable;
 		$this->representative_face_id = $person->representative_face_id;
-		$this->face_count = $person->faces()->count();
-		$this->photo_count = $person->faces()->distinct('photo_id')->count('photo_id');
+		$this->face_count = $person->face_count;
+		$this->photo_count = $person->photo_count;
 
 		// Representative crop: prefer the explicitly pinned face's crop,
 		// fall back to the highest-confidence non-dismissed face with a crop.

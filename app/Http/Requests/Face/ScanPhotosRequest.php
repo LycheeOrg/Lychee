@@ -8,10 +8,12 @@
 
 namespace App\Http\Requests\Face;
 
+use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
 use App\Models\Album;
-use App\Models\Face;
-use App\Policies\AiVisionPolicy;
+use App\Models\Photo;
+use App\Policies\AlbumPolicy;
+use App\Policies\PhotoPolicy;
 use App\Rules\RandomIDRule;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Validator;
@@ -32,7 +34,24 @@ class ScanPhotosRequest extends BaseApiRequest
 	 */
 	public function authorize(): bool
 	{
-		return Gate::check(AiVisionPolicy::CAN_TRIGGER_SCAN, [Face::class, $this->album]);
+		if ($this->album !== null) {
+			return Gate::check(AlbumPolicy::CAN_TRIGGER_SCAN_ON_ALBUM, [AbstractAlbum::class, $this->album]);
+		}
+
+		// Per-photo check: deny if any photo fails the gate.
+		$photo_ids = $this->input('photo_ids', []);
+		if (count($photo_ids) === 0) {
+			return false;
+		}
+
+		$photos = Photo::whereIn('id', $photo_ids)->get();
+		foreach ($photos as $photo) {
+			if (!Gate::check(PhotoPolicy::CAN_TRIGGER_SCAN_ON_PHOTO, $photo)) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**

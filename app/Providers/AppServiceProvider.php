@@ -27,7 +27,9 @@ use App\Metadata\Versions\InstalledVersion;
 use App\Metadata\Versions\Remote\GitCommits;
 use App\Metadata\Versions\Remote\GitTags;
 use App\Models\Configs;
+use App\Models\Face;
 use App\Models\Photo;
+use App\Observers\FaceObserver;
 use App\Observers\PhotoObserver;
 use App\Policies\AlbumQueryPolicy;
 use App\Policies\PhotoQueryPolicy;
@@ -458,5 +460,6 @@ class AppServiceProvider extends ServiceProvider
 	private function registerObservers(): void
 	{
 		Photo::observe(PhotoObserver::class);
+		Face::observe(FaceObserver::class);
 	}
 }

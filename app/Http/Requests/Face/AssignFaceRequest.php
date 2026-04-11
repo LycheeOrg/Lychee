@@ -12,11 +12,10 @@ use App\Contracts\Http\Requests\HasFace;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasFaceTrait;
 use App\Models\Face;
-use App\Policies\AiVisionPolicy;
+use App\Policies\PhotoPolicy;
 use App\Rules\RandomIDRule;
 use Illuminate\Support\Facades\Gate;
 
-// TODO: Make sure FacePermissionMode applies here
 class AssignFaceRequest extends BaseApiRequest implements HasFace
 {
 	use HasFaceTrait;
@@ -26,7 +25,7 @@ class AssignFaceRequest extends BaseApiRequest implements HasFace
 
 	public function authorize(): bool
 	{
-		return Gate::check(AiVisionPolicy::CAN_ASSIGN_FACE, Face::class);
+		return Gate::check(PhotoPolicy::CAN_ASSIGN_FACE_ON_PHOTO, $this->face->photo);
 	}
 
 	public function rules(): array
@@ -65,7 +64,7 @@ class AssignFaceRequest extends BaseApiRequest implements HasFace
 
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->face = Face::findOrFail($values['id']);
+		$this->face = Face::with('photo')->findOrFail($values['id']);
 		$this->person_id = $values['person_id'] ?? null;
 		$this->new_person_name = $values['new_person_name'] ?? 'people.unknown';
 	}
