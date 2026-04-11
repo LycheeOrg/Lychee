@@ -6,6 +6,7 @@
 
 import { ref } from "vue";
 import SecurityAdvisoriesService from "@/services/security-advisories-service";
+import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
 
 const DISMISSED_KEY = "advisory_dismissed";
 
@@ -21,11 +22,27 @@ const advisories = ref<App.Http.Resources.Models.SecurityAdvisoryResource[]>([])
  * modal for admin users after login.
  *
  * The modal is shown at most once per browser session (controlled via
- * sessionStorage). Non-admin users receive a 403 from the endpoint, which
- * is caught and silently ignored.
+ * sessionStorage). The advisory endpoint is only queried when the current
+ * user has admin-level rights, as determined by the left-menu global rights
+ * data already loaded in LeftMenuStateStore.
  */
 export function useAdvisoryModal() {
+	const leftMenuStore = useLeftMenuStateStore();
+
 	function advisoryCheck() {
+		const initData = leftMenuStore.initData;
+		const isAdmin =
+			initData?.settings.can_edit ||
+			initData?.user_management.can_edit ||
+			initData?.settings.can_see_diagnostics ||
+			initData?.settings.can_see_logs ||
+			initData?.settings.can_acess_user_groups ||
+			false;
+
+		if (!isAdmin) {
+			return;
+		}
+
 		if (sessionStorage.getItem(DISMISSED_KEY) !== null) {
 			return;
 		}
@@ -38,7 +55,7 @@ export function useAdvisoryModal() {
 				}
 			})
 			.catch(() => {
-				// 401/403 for non-admins or network errors: silently ignore.
+				// Network errors: silently ignore.
 			});
 	}
 
