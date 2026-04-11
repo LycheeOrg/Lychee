@@ -53,7 +53,7 @@ class PhotoResource extends Data
 
 	public ?PhotoStatisticsResource $statistics = null;
 	public ?PhotoRatingResource $rating = null;
-	public bool $is_upload_validated;
+	public bool $is_validated;
 
 	public function __construct(Photo $photo, ?string $album_id, bool $should_downgrade_size_variants)
 	{
@@ -63,7 +63,7 @@ class PhotoResource extends Data
 		$this->created_at = $photo->created_at->toIso8601String();
 		$this->description = $photo->description ?? '';
 		$this->is_highlighted = $photo->is_highlighted;
-		$this->is_upload_validated = $photo->is_upload_validated;
+		$this->is_validated = $photo->is_validated;
 		$this->license = $photo->license;
 		$this->live_photo_checksum = $photo->live_photo_checksum;
 		$this->live_photo_content_id = $photo->live_photo_content_id;

@@ -18,8 +18,8 @@ use Illuminate\Routing\Controller;
 /**
  * Controller for the admin moderation panel.
  *
- * Lists photos awaiting validation (is_upload_validated = false) and
- * supports bulk-approval by setting is_upload_validated = true.
+ * Lists photos awaiting validation (is_validated = false) and
+ * supports bulk-approval by setting is_validated = true.
  *
  * Both endpoints are restricted to administrators only.
  */
@@ -37,7 +37,7 @@ class ModerationController extends Controller
 		$per_page = min((int) $request->query('per_page', 30), 100);
 
 		/** @var \Illuminate\Pagination\LengthAwarePaginator<Photo> $paginated */
-		$paginated = Photo::where('is_upload_validated', false)
+		$paginated = Photo::where('is_validated', false)
 			->with(['owner', 'albums', 'size_variants'])
 			->orderBy('created_at', 'desc')
 			->paginate($per_page);
@@ -58,7 +58,7 @@ class ModerationController extends Controller
 
 		// Process in chunks to avoid potential query size issues (NFR-033-04)
 		collect($ids)->chunk(100)->each(function ($chunk): void {
-			Photo::whereIn('id', $chunk)->update(['is_upload_validated' => true]);
+			Photo::whereIn('id', $chunk)->update(['is_validated' => true]);
 		});
 
 		return response()->noContent();

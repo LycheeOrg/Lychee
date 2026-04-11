@@ -75,9 +75,9 @@ class PhotoQueryPolicy
 		// Unvalidated photos are only visible to their owner or to admins.
 		// We wrap the main OR-clause so that accessibility is still required,
 		// and add an additional AND condition for the validation flag.
-		return $query
-			->where($visibility_sub_query)
-			->tap(fn ($q) => $this->applyUploadValidationFilter($q, $user_id));
+		$query = $query->where($visibility_sub_query);
+
+		return $this->applyUploadValidationFilter($query, $user_id);
 	}
 
 	/**
@@ -135,17 +135,16 @@ class PhotoQueryPolicy
 
 		$user_id = $user?->id;
 
-		return $query
-			->where(function (Builder $query) use ($user, $unlocked_album_ids, $origin): void {
-				$this->appendSearchabilityConditions(
-					$query->getQuery(),
-					$user,
-					$unlocked_album_ids,
-					$origin?->_lft,
-					$origin?->_rgt
-				);
-			})
-			->tap(fn ($q) => $this->applyUploadValidationFilter($q, $user_id));
+		$query_searchability = $this->appendSearchabilityConditions(
+			$query->getQuery(),
+			$user,
+			$unlocked_album_ids,
+			$origin?->_lft,
+			$origin?->_rgt
+		);
+		$query = $query->where($query_searchability);
+
+		return $this->applyUploadValidationFilter($query, $user_id);
 	}
 
 	/**

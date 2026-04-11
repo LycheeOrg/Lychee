@@ -13,7 +13,7 @@ use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 /**
- * API resource for a photo awaiting moderation (is_upload_validated = false).
+ * API resource for a photo awaiting moderation (is_validated = false).
  *
  * Only exposed to administrators via the moderation endpoints.
  */

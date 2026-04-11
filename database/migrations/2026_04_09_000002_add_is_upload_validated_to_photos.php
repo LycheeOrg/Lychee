@@ -14,16 +14,16 @@ return new class() extends Migration {
 	public function up(): void
 	{
 		Schema::table('photos', function (Blueprint $table): void {
-			$table->boolean('is_upload_validated')->default(true)->after('is_highlighted');
-			$table->index('is_upload_validated');
+			$table->boolean('is_validated')->default(true)->after('is_highlighted');
+			$table->index('is_validated');
 		});
 	}
 
 	public function down(): void
 	{
 		Schema::table('photos', function (Blueprint $table): void {
-			$table->dropIndex(['is_upload_validated']);
-			$table->dropColumn('is_upload_validated');
+			$table->dropIndex(['is_validated']);
+			$table->dropColumn('is_validated');
 		});
 	}
 };

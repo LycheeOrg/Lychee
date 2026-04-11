@@ -25,7 +25,7 @@ use Tests\Feature_v2\Base\BaseApiWithDataTest;
  * End-to-end integration test for the upload-trust-level → moderation → public flow.
  *
  * Flow:
- *  1. Photo with is_upload_validated=false is not visible to guests.
+ *  1. Photo with is_validated=false is not visible to guests.
  *  2. Same photo IS visible to the owner.
  *  3. Admin lists it via the Moderation API.
  *  4. Admin approves it.
@@ -36,7 +36,7 @@ class UploadModerationFlowTest extends BaseApiWithDataTest
 	public function testFullUploadModerationFlow(): void
 	{
 		// Step 1: Mark photo4 (public album4, owned by userLocked) as unvalidated
-		$this->photo4->is_upload_validated = false;
+		$this->photo4->is_validated = false;
 		$this->photo4->save();
 
 		try {
@@ -72,7 +72,7 @@ class UploadModerationFlowTest extends BaseApiWithDataTest
 			$this->assertContains($this->photo4->id, $afterIds, 'After approval, guest SHOULD see the photo');
 		} finally {
 			// Restore state
-			$this->photo4->is_upload_validated = true;
+			$this->photo4->is_validated = true;
 			$this->photo4->save();
 		}
 	}
@@ -86,13 +86,13 @@ class UploadModerationFlowTest extends BaseApiWithDataTest
 		try {
 			// photo4 was already created as validated (factory default)
 			// Set to false to simulate what would happen on upload with CHECK level
-			$this->photo4->is_upload_validated = false;
+			$this->photo4->is_validated = false;
 			$this->photo4->save();
 
-			$this->assertFalse($this->photo4->fresh()->is_upload_validated);
+			$this->assertFalse($this->photo4->fresh()->is_validated);
 
 			// Restore
-			$this->photo4->is_upload_validated = true;
+			$this->photo4->is_validated = true;
 			$this->photo4->save();
 		} finally {
 			$this->userLocked->upload_trust_level = UserUploadTrustLevel::TRUSTED;
@@ -103,7 +103,7 @@ class UploadModerationFlowTest extends BaseApiWithDataTest
 	public function testTrustedUserPhotosAreImmediatelyPublic(): void
 	{
 		// photo4 already validated (factory default = trusted)
-		$this->assertTrue($this->photo4->is_upload_validated);
+		$this->assertTrue($this->photo4->is_validated);
 
 		// Should appear for guests since album4 is public
 		$response = $this->getJsonWithData('Album::photos', ['album_id' => $this->album4->id]);

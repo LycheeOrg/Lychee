@@ -49,7 +49,7 @@ class ModerationTest extends BaseApiWithDataTest
 	{
 		// Set one of the existing photos to unvalidated
 		$photo = $this->photo1;
-		$photo->is_upload_validated = false;
+		$photo->is_validated = false;
 		$photo->save();
 
 		try {
@@ -62,7 +62,7 @@ class ModerationTest extends BaseApiWithDataTest
 				],
 			]);
 		} finally {
-			$photo->is_upload_validated = true;
+			$photo->is_validated = true;
 			$photo->save();
 		}
 	}
@@ -88,19 +88,19 @@ class ModerationTest extends BaseApiWithDataTest
 	public function testApproveMarkPhotosAsValidated(): void
 	{
 		$photo = $this->photo1;
-		$photo->is_upload_validated = false;
+		$photo->is_validated = false;
 		$photo->save();
 
 		try {
-			$this->assertFalse($photo->is_upload_validated);
+			$this->assertFalse($photo->is_validated);
 
 			$response = $this->actingAs($this->admin)->postJson('Moderation::approve', ['photo_ids' => [$photo->id]]);
 			$this->assertNoContent($response);
 
 			$photo->refresh();
-			$this->assertTrue($photo->is_upload_validated);
+			$this->assertTrue($photo->is_validated);
 		} finally {
-			$photo->is_upload_validated = true;
+			$photo->is_validated = true;
 			$photo->save();
 		}
 	}

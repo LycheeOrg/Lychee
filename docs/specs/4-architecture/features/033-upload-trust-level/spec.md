@@ -42,26 +42,26 @@ Affected modules: `core` (User model, Photo model, enums), `application` (photo 
 | ID | Requirement | Success path | Validation path | Failure path | Telemetry & traces | Source |
 |----|-------------|--------------|-----------------|--------------|--------------------|--------|
 | FR-033-01 | A new string column `upload_trust_level` is added to the `users` table with allowed values `check`, `monitor`, `trusted` (default: `trusted`). The column is cast to a `UserUploadTrustLevel` backed enum on the User model. | Column present after migration; User model returns enum instances. | Value must be one of the three allowed enum cases. Migration is reversible. | Invalid values rejected by enum cast. | No telemetry. | Problem statement |
-| FR-033-02 | A new boolean column `is_upload_validated` is added to the `photos` table (default: `true`, indexed). The Photo model casts it to boolean. | Column present after migration; existing photos have `is_upload_validated = true`. | Default ensures backward compatibility — all pre-existing photos remain visible. | Migration must be reversible. | No telemetry. | Problem statement |
-| FR-033-03 | When a photo is created (via upload, import, or URL import), the `is_upload_validated` flag is determined as follows: (1) if the intended owner is an admin (`may_administrate = true`), always set to `true` regardless of trust level (resolved: Q-033-03 → A); (2) if the intended owner's `upload_trust_level` is `check`, set to `false`; (3) for `trusted` or `monitor`, set to `true` — `monitor` behaves as `trusted` in this iteration (resolved: Q-033-01 → A). | Photo persisted with correct `is_upload_validated` flag based on owner's admin status and trust level. | Owner must be resolved before the flag is set. For album uploads where the owner is the album owner, the album owner's trust level is used. Admin check takes precedence over trust level. | If user cannot be resolved, default to `true` (fail-open for backward compatibility). | No telemetry (DB write). | Problem statement; Q-033-01 → A; Q-033-03 → A |
-| FR-033-04 | For guest (anonymous) uploads to albums with `grants_upload = true`, the effective trust level is read from the `guest_upload_trust_level` configuration setting (default: `check`). | Guest-uploaded photos have `is_upload_validated = false` when config is `check`. | Config must be loaded before photo creation. | If config is missing, default to `check`. | No telemetry. | Problem statement |
-| FR-033-05 | Photos with `is_upload_validated = false` are excluded from public visibility queries. Specifically, `PhotoQueryPolicy::applyVisibilityFilter` must add a condition that hides unvalidated photos from non-owner, non-admin users. | Non-admin, non-owner users do not see unvalidated photos in album views, search results, or smart albums. | Query produces correct SQL for all three user types (admin, owner, public). | No user sees unvalidated photos they should not see. | No telemetry (query filter). | Problem statement |
-| FR-033-06 | Photo owners always see their own photos, including those with `is_upload_validated = false`. | Owner browsing their own albums or unsorted photos sees all their uploads. | Owner visibility query returns both validated and unvalidated photos. | — | No telemetry. | Problem statement |
-| FR-033-07 | Administrators always see all photos regardless of `is_upload_validated`. The admin moderation panel specifically lists only unvalidated photos for review. | Admin sees all photos in normal gallery browsing. Moderation endpoint returns only unvalidated photos. | Admin query does not apply the validation filter. | — | No telemetry. | Problem statement |
+| FR-033-02 | A new boolean column `is_validated` is added to the `photos` table (default: `true`, indexed). The Photo model casts it to boolean. | Column present after migration; existing photos have `is_validated = true`. | Default ensures backward compatibility — all pre-existing photos remain visible. | Migration must be reversible. | No telemetry. | Problem statement |
+| FR-033-03 | When a photo is created (via upload, import, or URL import), the `is_validated` flag is determined as follows: (1) if the intended owner is an admin (`may_administrate = true`), always set to `true` regardless of trust level (resolved: Q-033-03 → A); (2) if the intended owner's `upload_trust_level` is `check`, set to `false`; (3) for `trusted` or `monitor`, set to `true` — `monitor` behaves as `trusted` in this iteration (resolved: Q-033-01 → A). | Photo persisted with correct `is_validated` flag based on owner's admin status and trust level. | Owner must be resolved before the flag is set. For album uploads where the owner is the album owner, the album owner's trust level is used. Admin check takes precedence over trust level. | If user cannot be resolved, default to `true` (fail-open for backward compatibility). | No telemetry (DB write). | Problem statement; Q-033-01 → A; Q-033-03 → A |
+| FR-033-04 | For guest (anonymous) uploads to albums with `grants_upload = true`, the effective trust level is read from the `guest_upload_trust_level` configuration setting (default: `check`). | Guest-uploaded photos have `is_validated = false` when config is `check`. | Config must be loaded before photo creation. | If config is missing, default to `check`. | No telemetry. | Problem statement |
+| FR-033-05 | Photos with `is_validated = false` are excluded from public visibility queries. Specifically, `PhotoQueryPolicy::applyVisibilityFilter` must add a condition that hides unvalidated photos from non-owner, non-admin users. | Non-admin, non-owner users do not see unvalidated photos in album views, search results, or smart albums. | Query produces correct SQL for all three user types (admin, owner, public). | No user sees unvalidated photos they should not see. | No telemetry (query filter). | Problem statement |
+| FR-033-06 | Photo owners always see their own photos, including those with `is_validated = false`. | Owner browsing their own albums or unsorted photos sees all their uploads. | Owner visibility query returns both validated and unvalidated photos. | — | No telemetry. | Problem statement |
+| FR-033-07 | Administrators always see all photos regardless of `is_validated`. The admin moderation panel specifically lists only unvalidated photos for review. | Admin sees all photos in normal gallery browsing. Moderation endpoint returns only unvalidated photos. | Admin query does not apply the validation filter. | — | No telemetry. | Problem statement |
 | FR-033-08 | Admin can set the `upload_trust_level` for a user via the user management CRUD API (both create and update). The field is optional on create (defaults to the `default_user_trust_level` config value) and optional on update (keeps existing value if not provided). | Trust level persisted on user record; reflected in user management list. | Value must be a valid `UserUploadTrustLevel` enum case. | Return 422 if invalid value is provided. | No telemetry. | Problem statement |
 | FR-033-09 | Two new configuration settings are added: `default_user_trust_level` (default: `trusted`, enum `check\|monitor\|trusted`) and `guest_upload_trust_level` (default: `check`, same enum). Both are editable via the admin settings panel. | Configs stored in `configs` table; accessible via `ConfigManager`. | Values validated against enum range. | Invalid values rejected. | No telemetry. | Problem statement |
-| FR-033-10 | A new admin-only REST endpoint `GET /api/v2/Moderation` returns a paginated list of photos where `is_upload_validated = false`, ordered by `created_at DESC`. Each entry includes the photo resource data plus the owner's username. | Admin receives list of unvalidated photos. | Only admin users may call this endpoint (403 for non-admins). Empty list returned when no unvalidated photos exist. | Return 403 for non-admin users. Return 401 for unauthenticated requests. | No telemetry. | Problem statement |
-| FR-033-11 | A new admin-only REST endpoint `POST /api/v2/Moderation::approve` accepts an array of photo IDs and sets `is_upload_validated = true` for all specified photos. | Photos marked as validated; become publicly visible. | Photo IDs must be valid, existing photo IDs. | Return 422 for invalid input. Return 403 for non-admin users. | No telemetry (DB update). | Problem statement |
+| FR-033-10 | A new admin-only REST endpoint `GET /api/v2/Moderation` returns a paginated list of photos where `is_validated = false`, ordered by `created_at DESC`. Each entry includes the photo resource data plus the owner's username. | Admin receives list of unvalidated photos. | Only admin users may call this endpoint (403 for non-admins). Empty list returned when no unvalidated photos exist. | Return 403 for non-admin users. Return 401 for unauthenticated requests. | No telemetry. | Problem statement |
+| FR-033-11 | A new admin-only REST endpoint `POST /api/v2/Moderation::approve` accepts an array of photo IDs and sets `is_validated = true` for all specified photos. | Photos marked as validated; become publicly visible. | Photo IDs must be valid, existing photo IDs. | Return 422 for invalid input. Return 403 for non-admin users. | No telemetry (DB update). | Problem statement |
 | FR-033-12 | The `UserManagementResource` includes the user's `upload_trust_level` field so the admin UI can display and edit it. | Trust level visible in user management list and edit form. | Value serialised as the enum string value. | — | No telemetry. | Problem statement |
-| FR-033-13 | The `PhotoResource` includes the `is_upload_validated` boolean field so the frontend can display a visual indicator for unvalidated photos (visible only to the owner and admins). | Field present in photo API response. | Boolean value correctly reflects DB state. | — | No telemetry. | Problem statement |
-| FR-033-14 | `ProcessImageJob` must capture an `is_guest_upload: bool` flag at **dispatch time** (when `Auth::user()` is still available: `true` when `Auth::user() === null`). This flag is serialised with the job and forwarded through `Create::add()` into the photo creation pipeline state, so that `SetUploadValidated` can apply `guest_upload_trust_level` config even after the HTTP session has ended. Without this flag, `SetUploadValidated` receives a non-zero `intended_owner_id` (the album owner's fallback) and cannot distinguish a guest upload from a direct owner upload. | Photo processed via queue with `is_guest_upload = true` → `is_upload_validated` respects `guest_upload_trust_level` config, not the album owner's trust level. | Flag must be a serialisable primitive (`bool`); captured unconditionally in the constructor. | If `is_guest_upload = true`, admin short-circuit still does not apply (admin check applies to the intended owner, not the uploader). | No telemetry. | Queued-job gap identified in code review |
+| FR-033-13 | The `PhotoResource` includes the `is_validated` boolean field so the frontend can display a visual indicator for unvalidated photos (visible only to the owner and admins). | Field present in photo API response. | Boolean value correctly reflects DB state. | — | No telemetry. | Problem statement |
+| FR-033-14 | `ProcessImageJob` must capture an `is_guest_upload: bool` flag at **dispatch time** (when `Auth::user()` is still available: `true` when `Auth::user() === null`). This flag is serialised with the job and forwarded through `Create::add()` into the photo creation pipeline state, so that `SetUploadValidated` can apply `guest_upload_trust_level` config even after the HTTP session has ended. Without this flag, `SetUploadValidated` receives a non-zero `intended_owner_id` (the album owner's fallback) and cannot distinguish a guest upload from a direct owner upload. | Photo processed via queue with `is_guest_upload = true` → `is_validated` respects `guest_upload_trust_level` config, not the album owner's trust level. | Flag must be a serialisable primitive (`bool`); captured unconditionally in the constructor. | If `is_guest_upload = true`, admin short-circuit still does not apply (admin check applies to the intended owner, not the uploader). | No telemetry. | Queued-job gap identified in code review |
 
 ## Non-Functional Requirements
 
 | ID | Requirement | Driver | Measurement | Dependencies | Source |
 |----|-------------|--------|-------------|--------------|--------|
-| NFR-033-01 | The visibility filter for `is_upload_validated` must not degrade query performance for the common case (all photos validated). The indexed boolean column ensures efficient filtering. | Performance — photo listing queries must remain fast. | Benchmark: photo listing latency unchanged (< 5% overhead) when all photos are validated. Index on `is_upload_validated` column. | Database index migration. | Implementation requirement |
-| NFR-033-02 | Backward compatibility: all existing photos default to `is_upload_validated = true` after migration, and all existing users default to `upload_trust_level = trusted`. No behaviour change for existing installations until the admin explicitly configures trust levels. | Backward compatibility — existing galleries must not break on upgrade. | After migration: all photos visible, all users trusted. | Migration defaults. | Implementation requirement |
+| NFR-033-01 | The visibility filter for `is_validated` must not degrade query performance for the common case (all photos validated). The indexed boolean column ensures efficient filtering. | Performance — photo listing queries must remain fast. | Benchmark: photo listing latency unchanged (< 5% overhead) when all photos are validated. Index on `is_validated` column. | Database index migration. | Implementation requirement |
+| NFR-033-02 | Backward compatibility: all existing photos default to `is_validated = true` after migration, and all existing users default to `upload_trust_level = trusted`. No behaviour change for existing installations until the admin explicitly configures trust levels. | Backward compatibility — existing galleries must not break on upgrade. | After migration: all photos visible, all users trusted. | Migration defaults. | Implementation requirement |
 | NFR-033-03 | The moderation endpoint must support pagination and return at most 100 photos per page to prevent excessive memory usage for large backlogs. | Scalability — installations with many pending photos must not OOM. | Endpoint respects `page` and `per_page` parameters (default 30, max 100). | Pagination middleware/logic. | Implementation requirement |
 | NFR-033-04 | The bulk-approve endpoint must process up to 500 photo IDs per request efficiently using chunked updates (100 per batch). | Scalability — bulk approve must handle large selections without timeout. | Batch update completes in < 5 seconds for 500 photos. | Eloquent chunked update. | Implementation requirement |
 | NFR-033-05 | Admin moderation panel UI must be consistent with existing admin pages (PrimeVue DataTable, toolbar, left-menu navigation). | UX consistency. | Visual review against Users and Webhooks admin pages. | PrimeVue, Vue 3. | Problem statement |
@@ -134,14 +134,14 @@ Legend:
 | S-033-02 | Admin creates a user without specifying `upload_trust_level` → defaults to `default_user_trust_level` config (default: `trusted`). |
 | S-033-03 | Admin updates a user's trust level from `trusted` to `check` → user record updated. Future uploads require validation. |
 | S-033-04 | Admin updates a user but does not send `upload_trust_level` → existing value preserved. |
-| S-033-05 | User with trust level `check` uploads a photo → photo created with `is_upload_validated = false`. |
-| S-033-06 | User with trust level `trusted` uploads a photo → photo created with `is_upload_validated = true`. |
-| S-033-07 | Guest uploads a photo to a public album (with `grants_upload = true`) and `guest_upload_trust_level` config is `check` → photo created with `is_upload_validated = false`. |
+| S-033-05 | User with trust level `check` uploads a photo → photo created with `is_validated = false`. |
+| S-033-06 | User with trust level `trusted` uploads a photo → photo created with `is_validated = true`. |
+| S-033-07 | Guest uploads a photo to a public album (with `grants_upload = true`) and `guest_upload_trust_level` config is `check` → photo created with `is_validated = false`. |
 | S-033-08 | Non-admin, non-owner user requests album photos → unvalidated photos excluded from response. |
 | S-033-09 | Photo owner requests their own photos → all photos returned including unvalidated ones. |
 | S-033-10 | Admin requests album photos → all photos returned including unvalidated ones. |
 | S-033-11 | Admin accesses moderation panel (`GET /api/v2/Moderation`) → paginated list of unvalidated photos returned. |
-| S-033-12 | Admin approves a set of photo IDs (`POST /api/v2/Moderation::approve`) → photos set to `is_upload_validated = true`. |
+| S-033-12 | Admin approves a set of photo IDs (`POST /api/v2/Moderation::approve`) → photos set to `is_validated = true`. |
 | S-033-13 | Non-admin user accesses moderation endpoint → 403 Forbidden. |
 | S-033-14 | Admin approves photos with some invalid IDs → 422 with validation error. |
 | S-033-15 | Admin sets `default_user_trust_level` config to `check` → new users created without explicit trust level default to `check`. |
@@ -151,14 +151,14 @@ Legend:
 | S-033-19 | Search results exclude unvalidated photos for non-admin/non-owner users. |
 | S-033-20 | Smart albums (recent, unsorted, highlighted) exclude unvalidated photos for non-admin/non-owner users. |
 | S-033-21 | `UserManagementResource` includes `upload_trust_level` field in API response. |
-| S-033-22 | `PhotoResource` includes `is_upload_validated` boolean field. |
+| S-033-22 | `PhotoResource` includes `is_validated` boolean field. |
 | S-033-23 | CLI `lychee:create_user` does not set trust level explicitly → defaults to `default_user_trust_level` config value. |
-| S-033-24 | Guest uploads a photo to a public album (`grants_upload = true`) when uploads are processed via `ProcessImageJob` (queued) and `guest_upload_trust_level` config is `check` → photo created with `is_upload_validated = false` even though `intended_owner_id` resolves to the album owner's ID. |
+| S-033-24 | Guest uploads a photo to a public album (`grants_upload = true`) when uploads are processed via `ProcessImageJob` (queued) and `guest_upload_trust_level` config is `check` → photo created with `is_validated = false` even though `intended_owner_id` resolves to the album owner's ID. |
 
 ## Test Strategy
 
 - **Core (Unit):** `UserUploadTrustLevel` enum construction and value validation. Unit test for trust-level resolution logic (user trust level vs guest config).
-- **Application (Feature):** Feature tests for photo upload with different trust levels — verify `is_upload_validated` is correctly set. Feature tests for `PhotoQueryPolicy` visibility filtering — verify unvalidated photos are hidden from public, visible to owner and admin. Feature tests for moderation endpoints (list, approve) including auth enforcement and pagination.
+- **Application (Feature):** Feature tests for photo upload with different trust levels — verify `is_validated` is correctly set. Feature tests for `PhotoQueryPolicy` visibility filtering — verify unvalidated photos are hidden from public, visible to owner and admin. Feature tests for moderation endpoints (list, approve) including auth enforcement and pagination.
 - **REST (Feature):** User management CRUD tests verifying trust level field is accepted, validated, persisted, and returned. Moderation API tests: list unvalidated, bulk approve, auth.
 - **CLI:** Test `lychee:create_user` with and without trust level flag (future enhancement).
 - **UI (Vue/Vitest):** Unit tests for trust level dropdown in CreateEditUser dialog. Unit tests for moderation panel rendering and bulk selection.
@@ -171,7 +171,7 @@ Legend:
 |----|-------------|---------|
 | DO-033-01 | `UserUploadTrustLevel` string-backed enum: `check`, `monitor`, `trusted`. Cast on `User.upload_trust_level` column. | core |
 | DO-033-02 | `User.upload_trust_level` column: string, default `trusted`, cast to `UserUploadTrustLevel` enum. | core |
-| DO-033-03 | `Photo.is_upload_validated` column: boolean, default `true`, indexed. Indicates whether the photo has been approved for public display. | core |
+| DO-033-03 | `Photo.is_validated` column: boolean, default `true`, indexed. Indicates whether the photo has been approved for public display. | core |
 | DO-033-04 | Two config entries: `default_user_trust_level` (default `trusted`) and `guest_upload_trust_level` (default `check`), both with type range `check\|monitor\|trusted`. | core |
 | DO-033-05 | `ProcessImageJob.$is_guest_upload`: serialisable `bool` property. Set to `true` in the job constructor when `Auth::user() === null` at dispatch time. Forwarded through `Create::add()` into the pipeline state DTO so `SetUploadValidated` can apply guest-upload trust logic during queue processing. | application |
 
@@ -206,14 +206,14 @@ Legend:
 ## Telemetry & Observability
 
 No dedicated telemetry events are introduced in this iteration. Standard Laravel logging applies:
-- Photo creation logs include the `is_upload_validated` status.
+- Photo creation logs include the `is_validated` status.
 - Moderation approve actions are logged at INFO level with the approving admin's user ID and the list of approved photo IDs.
 
 ## Documentation Deliverables
 
 - `docs/specs/4-architecture/knowledge-map.md` — add Upload Trust Level and Moderation entries.
 - Update admin guide with trust level configuration and moderation workflow documentation.
-- Inline PHPDoc on `UserUploadTrustLevel` enum, `is_upload_validated` column, and moderation endpoints.
+- Inline PHPDoc on `UserUploadTrustLevel` enum, `is_validated` column, and moderation endpoints.
 
 ## Fixtures & Sample Data
 
@@ -238,7 +238,7 @@ domain_objects:
     type: string column
     constraints: "default: trusted, cast: UserUploadTrustLevel"
   - id: DO-033-03
-    name: Photo.is_upload_validated
+    name: Photo.is_validated
     type: boolean column
     constraints: "default: true, indexed"
   - id: DO-033-04
@@ -292,7 +292,7 @@ ui_states:
 
 ### Trust Level Decision Matrix
 
-| User type | Trust level | `is_upload_validated` on new photo | Photo visible to public? |
+| User type | Trust level | `is_validated` on new photo | Photo visible to public? |
 |-----------|-------------|-----------------------------------|--------------------------|
 | Registered user | `trusted` | `true` | Yes (subject to album permissions) |
 | Registered user | `monitor` | `true` (same as trusted in this iteration; future: soft-audit queue per Q-033-01 → A) | Yes |
@@ -302,7 +302,7 @@ ui_states:
 
 ### Visibility Filter Truth Table
 
-| Viewer | Photo `is_upload_validated` | Photo visible? |
+| Viewer | Photo `is_validated` | Photo visible? |
 |--------|---------------------------|----------------|
 | Admin | `true` | Yes |
 | Admin | `false` | Yes |

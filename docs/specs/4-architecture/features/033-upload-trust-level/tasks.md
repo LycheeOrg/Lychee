@@ -28,9 +28,9 @@ _Last updated: 2026-04-11_
   - `php artisan migrate:rollback --step=1 && php artisan migrate`  
   _Notes:_ Default `trusted` ensures backward compatibility (NFR-033-02). String column allows enum extensibility (NFR-033-06).
 
-- [x] T-033-03 – Create migration: add `is_upload_validated` to `photos` table (FR-033-02, DO-033-03, NFR-033-01, NFR-033-02).  
-  _Intent:_ Add `boolean('is_upload_validated')->default(true)->after('is_highlighted')` with index to `photos` table.  
-  _Files:_ `database/migrations/2026_04_09_000002_add_is_upload_validated_to_photos.php`  
+- [x] T-033-03 – Create migration: add `is_validated` to `photos` table (FR-033-02, DO-033-03, NFR-033-01, NFR-033-02).  
+  _Intent:_ Add `boolean('is_validated')->default(true)->after('is_highlighted')` with index to `photos` table.  
+  _Files:_ `database/migrations/2026_04_09_000002_add_is_validated_to_photos.php`  
   _Verification commands:_  
   - `php artisan migrate`  
   - `php artisan migrate:rollback --step=1 && php artisan migrate`  
@@ -51,8 +51,8 @@ _Last updated: 2026-04-11_
   - `make phpstan`  
   _Notes:_ Follow the pattern of `shared_albums_visibility` cast on User model.
 
-- [x] T-033-06 – Update `Photo` model with `is_upload_validated` property and cast (FR-033-02, DO-033-03).  
-  _Intent:_ Add `@property bool $is_upload_validated` PHPDoc, add `'is_upload_validated' => 'boolean'` to `$casts` array.  
+- [x] T-033-06 – Update `Photo` model with `is_validated` property and cast (FR-033-02, DO-033-03).  
+  _Intent:_ Add `@property bool $is_validated` PHPDoc, add `'is_validated' => 'boolean'` to `$casts` array.  
   _Files:_ `app/Models/Photo.php`  
   _Verification commands:_  
   - `make phpstan`  
@@ -68,14 +68,14 @@ _Last updated: 2026-04-11_
 ### I2 – Photo Creation Pipeline Integration
 
 - [x] T-033-07 – Create `SetUploadValidated` pipe for photo creation pipeline (FR-033-03, S-033-05, S-033-06; Q-033-01 → A, Q-033-03 → A).  
-  _Intent:_ Create `app/Actions/Photo/Pipes/Shared/SetUploadValidated.php`. The pipe resolves the intended owner from `$state->intended_owner_id` and sets `$state->photo->is_upload_validated` as follows: (1) if owner exists and `may_administrate === true`, always set to `true` (admin short-circuit, Q-033-03 → A); (2) if owner is `null` (guest upload), read `guest_upload_trust_level` config; (3) otherwise read `owner->upload_trust_level`. Trust level `CHECK` → `false`; `TRUSTED` or `MONITOR` → `true` (Q-033-01 → A: `monitor` behaves as `trusted`).  
+  _Intent:_ Create `app/Actions/Photo/Pipes/Shared/SetUploadValidated.php`. The pipe resolves the intended owner from `$state->intended_owner_id` and sets `$state->photo->is_validated` as follows: (1) if owner exists and `may_administrate === true`, always set to `true` (admin short-circuit, Q-033-03 → A); (2) if owner is `null` (guest upload), read `guest_upload_trust_level` config; (3) otherwise read `owner->upload_trust_level`. Trust level `CHECK` → `false`; `TRUSTED` or `MONITOR` → `true` (Q-033-01 → A: `monitor` behaves as `trusted`).  
   _Files:_ `app/Actions/Photo/Pipes/Shared/SetUploadValidated.php`  
   _Verification commands:_  
   - `make phpstan`  
   _Notes:_ Look at `SetOwnership.php` and `SetHighlighted.php` for pipe patterns. The pipe must handle the case where `intended_owner_id` is 0 or null (guest upload). Admin short-circuit takes precedence over trust level.
 
 - [x] T-033-08 – Handle guest upload trust level in `SetUploadValidated` pipe (FR-033-04, S-033-07).  
-  _Intent:_ When `intended_owner_id` resolves to no user (guest/anonymous upload), read `guest_upload_trust_level` config from `ConfigManager` and use that to determine `is_upload_validated`. For `MONITOR`, treat as `trusted` (Q-033-01 → A).  
+  _Intent:_ When `intended_owner_id` resolves to no user (guest/anonymous upload), read `guest_upload_trust_level` config from `ConfigManager` and use that to determine `is_validated`. For `MONITOR`, treat as `trusted` (Q-033-01 → A).  
   _Files:_ `app/Actions/Photo/Pipes/Shared/SetUploadValidated.php`  
   _Verification commands:_  
   - `make phpstan`  
@@ -92,7 +92,7 @@ _Last updated: 2026-04-11_
 ### I3 – PhotoQueryPolicy Visibility Filter
 
 - [x] T-033-10 – Update `applyVisibilityFilter` to exclude unvalidated photos (FR-033-05, S-033-08, S-033-09, S-033-10).  
-  _Intent:_ In `PhotoQueryPolicy::applyVisibilityFilter()`, for non-admin users, add a condition that requires `photos.is_upload_validated = true` OR `photos.owner_id = $user_id`. This means unvalidated photos are only visible to their owner or to admins. The admin early-return already bypasses the filter.  
+  _Intent:_ In `PhotoQueryPolicy::applyVisibilityFilter()`, for non-admin users, add a condition that requires `photos.is_validated = true` OR `photos.owner_id = $user_id`. This means unvalidated photos are only visible to their owner or to admins. The admin early-return already bypasses the filter.  
   _Files:_ `app/Policies/PhotoQueryPolicy.php`  
   _Verification commands:_  
   - `make phpstan`  
@@ -100,7 +100,7 @@ _Last updated: 2026-04-11_
   _Notes:_ The owner condition already exists in the visibility sub-query (`orWhere('photos.owner_id', '=', $user_id)`). The unvalidated filter must wrap or augment the existing logic so that album accessibility alone is not sufficient for unvalidated photos — the viewer must also be the owner.
 
 - [x] T-033-11 – Update `applySearchabilityFilter` to exclude unvalidated photos (FR-033-05, S-033-19).  
-  _Intent:_ Apply the same `is_upload_validated` filter logic in `PhotoQueryPolicy::applySearchabilityFilter()` so search results also hide unvalidated photos from non-owners/non-admins.  
+  _Intent:_ Apply the same `is_validated` filter logic in `PhotoQueryPolicy::applySearchabilityFilter()` so search results also hide unvalidated photos from non-owners/non-admins.  
   _Files:_ `app/Policies/PhotoQueryPolicy.php`  
   _Verification commands:_  
   - `make phpstan`  
@@ -164,8 +164,8 @@ _Last updated: 2026-04-11_
   _Verification commands:_  
   - `make phpstan`  
 
-- [x] T-033-19b – Update `PhotoResource` with `is_upload_validated` (FR-033-13, S-033-22).  
-  _Intent:_ Add `public bool $is_upload_validated` property. In constructor, set from photo model.  
+- [x] T-033-19b – Update `PhotoResource` with `is_validated` (FR-033-13, S-033-22).  
+  _Intent:_ Add `public bool $is_validated` property. In constructor, set from photo model.  
   _Files:_ `app/Http/Resources/Models/PhotoResource.php`  
   _Verification commands:_  
   - `make phpstan`  
@@ -198,8 +198,8 @@ _Last updated: 2026-04-11_
 
 - [x] T-033-22 – Create `ModerationController` (FR-033-10, FR-033-11, API-033-01, API-033-02).  
   _Intent:_ Create `app/Http/Controllers/Admin/ModerationController.php` with:  
-  - `list(ListModerationRequest)`: Query `Photo::where('is_upload_validated', false)->with(['owner', 'albums'])->orderBy('created_at', 'desc')`, paginate (default 30, max 100). Transform to `ModerationResource` collection.  
-  - `approve(ApproveModerationRequest)`: `Photo::whereIn('id', $photo_ids)->update(['is_upload_validated' => true])`. Return 204.  
+  - `list(ListModerationRequest)`: Query `Photo::where('is_validated', false)->with(['owner', 'albums'])->orderBy('created_at', 'desc')`, paginate (default 30, max 100). Transform to `ModerationResource` collection.  
+  - `approve(ApproveModerationRequest)`: `Photo::whereIn('id', $photo_ids)->update(['is_validated' => true])`. Return 204.  
   _Files:_ `app/Http/Controllers/Admin/ModerationController.php`  
   _Verification commands:_  
   - `make phpstan`  
@@ -275,7 +275,7 @@ _Last updated: 2026-04-11_
   - `npm run check`  
 
 - [x] T-033-30 – Update TypeScript types for moderation (DO-033-03, API-033-01).  
-  _Intent:_ Add `ModerationResource` type to `lychee.d.ts`. Add `is_upload_validated: boolean` to `PhotoResource` type.  
+  _Intent:_ Add `ModerationResource` type to `lychee.d.ts`. Add `is_validated: boolean` to `PhotoResource` type.  
   _Files:_ `resources/js/lychee.d.ts`  
   _Verification commands:_  
   - `npm run check`  
@@ -344,8 +344,8 @@ These tasks address FR-033-14. `ProcessImageJob` loses the HTTP session when it 
   2. Create an album with `grants_upload = true` owned by a `trusted`-level user.  
   3. Simulate a `ProcessImageJob` dispatched as if by a guest (construct with `Auth::user()` null → `is_guest_upload = true`).  
   4. Run `handle()` synchronously.  
-  5. Assert the resulting photo has `is_upload_validated = false`.  
-  6. Repeat with `guest_upload_trust_level = trusted` → assert `is_upload_validated = true`.  
+  5. Assert the resulting photo has `is_validated = false`.  
+  6. Repeat with `guest_upload_trust_level = trusted` → assert `is_validated = true`.  
   _Files:_ `tests/Feature_v2/TrustLevel/QueuedGuestUploadTrustTest.php`  
   _Verification commands:_  
   - `php artisan test --filter=QueuedGuestUploadTrust`  
@@ -356,7 +356,7 @@ These tasks address FR-033-14. `ProcessImageJob` loses the HTTP session when it 
 - [ ] T-033-35 – Write end-to-end integration test: upload → moderation → public (S-033-05, S-033-08, S-033-12).  
   _Intent:_ Create `tests/Feature_v2/TrustLevel/UploadModerationFlowTest.php`. Full flow:  
   1. Create user with `check` trust level.  
-  2. Upload photo as that user → verify `is_upload_validated = false`.  
+  2. Upload photo as that user → verify `is_validated = false`.  
   3. List album photos as anonymous user → photo not in response.  
   4. List album photos as photo owner → photo in response.  
   5. Admin calls moderation list → photo present.  
@@ -383,7 +383,7 @@ These tasks address FR-033-14. `ProcessImageJob` loses the HTTP session when it 
 ## Notes / TODOs
 
 - The `monitor` trust level is reserved and behaves identically to `trusted` in this iteration (Q-033-01 → A). A follow-up task should implement the monitoring queue (soft-audit: uploads are public but flagged for periodic admin review).
-- Admin uploads always set `is_upload_validated = true` regardless of the admin's trust level setting (Q-033-03 → A). The `SetUploadValidated` pipe checks `may_administrate` first and short-circuits. This short-circuit does NOT apply when `is_guest_upload = true` (FR-033-14): the intended owner is the album owner, not the anonymous uploader.
+- Admin uploads always set `is_validated = true` regardless of the admin's trust level setting (Q-033-03 → A). The `SetUploadValidated` pipe checks `may_administrate` first and short-circuits. This short-circuit does NOT apply when `is_guest_upload = true` (FR-033-14): the intended owner is the album owner, not the anonymous uploader.
 - **Queued-job gap (FR-033-14):** When `ProcessImageJob` runs in a queue worker, `Auth::user()` is null. Ownership falls back to `album->owner_id`. Without the `is_guest_upload` flag added in I9, `SetUploadValidated` would apply the album owner's trust level to guest uploads, completely bypassing `guest_upload_trust_level` config. Tasks T-033-38 to T-033-41 address this.
 - Trust level changes do not retroactively affect existing photos (Q-033-02 → A). Only future uploads are affected. Document this clearly in the admin guide.
 - The `lychee:create_user` CLI command does not currently accept a `--upload-trust-level` flag. This is deferred to a follow-up task.

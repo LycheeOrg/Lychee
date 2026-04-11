@@ -6,9 +6,8 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 | Question ID | Feature | Priority | Summary | Status | Opened | Updated |
 |-------------|---------|----------|---------|--------|--------|---------|
-| ~~Q-033-01~~ | 033 – Upload Trust Level | High | Monitor trust level behaviour | ✅ Resolved | 2026-04-09 | 2026-04-09 |
-| ~~Q-033-02~~ | 033 – Upload Trust Level | Medium | Retroactive trust level changes | ✅ Resolved | 2026-04-09 | 2026-04-09 |
-| ~~Q-033-03~~ | 033 – Upload Trust Level | Medium | Admin photo uploads and trust level | ✅ Resolved | 2026-04-09 | 2026-04-09 |
+
+_No active questions for this feature._
 
 ## Question Details
 
@@ -2978,7 +2977,7 @@ Lychee maps `embedding_id` back to Face records (which have person_id) to identi
 **Status:** Resolved  
 **Opened:** 2026-04-09
 
-**Resolution:** **Option A** — No retroactive changes. Only future uploads are affected by the new trust level. Existing photos retain their `is_upload_validated` status. This is the simplest and safest approach.
+**Resolution:** **Option A** — No retroactive changes. Only future uploads are affected by the new trust level. Existing photos retain their `is_validated` status. This is the simplest and safest approach.
 
 **Spec Impact:** Confirmed as a non-goal in spec.md. No additional follow-up tasks needed.
 
@@ -2993,7 +2992,7 @@ Lychee maps `embedding_id` back to Face records (which have person_id) to identi
 **Status:** Resolved  
 **Opened:** 2026-04-09
 
-**Resolution:** **Option A** — Admin uploads are always immediately validated (`is_upload_validated = true`) regardless of the admin's `upload_trust_level` setting. Admins are inherently trusted — they can approve their own photos anyway. The `SetUploadValidated` pipe checks `may_administrate` first and short-circuits to `true`.
+**Resolution:** **Option A** — Admin uploads are always immediately validated (`is_validated = true`) regardless of the admin's `upload_trust_level` setting. Admins are inherently trusted — they can approve their own photos anyway. The `SetUploadValidated` pipe checks `may_administrate` first and short-circuits to `true`.
 
 **Spec Impact:** Updated FR-033-03 to explicitly state that admin uploads bypass trust level checks. Updated Appendix Trust Level Decision Matrix. Updated task T-033-07 to include the admin short-circuit logic.
 

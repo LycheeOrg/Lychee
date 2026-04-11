@@ -213,15 +213,15 @@ declare namespace App.Http.Resources.Collections {
 		per_page: number;
 		total: number;
 	};
-	export type PaginatedPhotosResource = {
-		photos: App.Http.Resources.Models.PhotoResource[];
+	export type PaginatedModerationResource = {
+		photos: App.Http.Resources.Models.ModerationResource[];
 		current_page: number;
 		last_page: number;
 		per_page: number;
 		total: number;
 	};
-	export type PaginatedModerationResource = {
-		photos: App.Http.Resources.Models.ModerationResource[];
+	export type PaginatedPhotosResource = {
+		photos: App.Http.Resources.Models.PhotoResource[];
 		current_page: number;
 		last_page: number;
 		per_page: number;
@@ -597,14 +597,6 @@ declare namespace App.Http.Resources.Models {
 		colour_4: string;
 		colour_5: string;
 	};
-	export type ModerationResource = {
-		photo_id: string;
-		title: string;
-		thumb_url: string | null;
-		owner_username: string;
-		album_title: string | null;
-		created_at: string;
-	};
 	export type ConfigCategoryResource = {
 		cat: string;
 		name: string;
@@ -701,6 +693,14 @@ declare namespace App.Http.Resources.Models {
 		title: string;
 		url: string | null;
 	};
+	export type ModerationResource = {
+		photo_id: string;
+		title: string;
+		thumb_url: string | null;
+		owner_username: string;
+		album_title: string | null;
+		created_at: string;
+	};
 	export type PhotoAlbumResource = {
 		id: string;
 		title: string;
@@ -717,7 +717,6 @@ declare namespace App.Http.Resources.Models {
 		created_at: string;
 		description: string;
 		is_highlighted: boolean;
-		is_upload_validated: boolean;
 		license: App.Enum.LicenseType;
 		live_photo_checksum: string | null;
 		live_photo_content_id: string | null;
@@ -738,6 +737,7 @@ declare namespace App.Http.Resources.Models {
 		palette: App.Http.Resources.Models.ColourPaletteResource | null;
 		statistics: App.Http.Resources.Models.PhotoStatisticsResource | null;
 		rating: App.Http.Resources.Models.PhotoRatingResource | null;
+		is_validated: boolean;
 	};
 	export type PhotoStatisticsResource = {
 		visit_count: number;
@@ -764,6 +764,13 @@ declare namespace App.Http.Resources.Models {
 		is_enabled: boolean;
 		is_photo_rule: boolean;
 		is_album_rule: boolean;
+	};
+	export type SecurityAdvisoryResource = {
+		cve_id: string | null;
+		ghsa_id: string;
+		summary: string;
+		cvss_score: number | null;
+		cvss_vector: string | null;
 	};
 	export type SizeVariantResource = {
 		type: App.Enum.SizeVariantType;
@@ -874,13 +881,6 @@ declare namespace App.Http.Resources.Models {
 		size_variant_types: Array<number> | null;
 		created_at: string;
 		updated_at: string;
-	};
-	export type SecurityAdvisoryResource = {
-		cve_id: string | null;
-		ghsa_id: string;
-		summary: string;
-		cvss_score: number | null;
-		cvss_vector: string | null;
 	};
 }
 declare namespace App.Http.Resources.Models.Duplicates {

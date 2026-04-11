@@ -10,7 +10,6 @@ namespace App\DTO\PhotoCreate;
 
 use App\Contracts\Models\AbstractAlbum;
 use App\Contracts\PhotoCreate\PhotoDTO;
-use App\Enum\UserUploadTrustLevel;
 use App\Metadata\Extractor;
 use App\Models\Photo;
 use Illuminate\Support\Collection;
@@ -30,9 +29,6 @@ class DuplicateDTO implements PhotoDTO
 		public readonly bool $shall_skip_duplicates,
 		// Indicates the intended owner of the image.
 		public readonly int $intended_owner_id,
-
-		// Pre-resolved upload trust level (null = resolve at runtime in SetUploadValidated).
-		public readonly UserUploadTrustLevel $upload_trust_level,
 
 		// Indicates whether the new photo shall be highlighted.
 		public readonly bool $is_highlighted,
@@ -55,7 +51,6 @@ class DuplicateDTO implements PhotoDTO
 			shall_resync_metadata: $init_dto->import_mode->shall_resync_metadata,
 			shall_skip_duplicates: $init_dto->import_mode->shall_skip_duplicates,
 			intended_owner_id: $init_dto->intended_owner_id,
-			upload_trust_level: $init_dto->upload_trust_level,
 			is_highlighted: $init_dto->is_highlighted,
 			exif_info: $init_dto->exif_info,
 			album: $init_dto->album,

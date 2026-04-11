@@ -8,10 +8,12 @@
 
 namespace App\Models\Extensions;
 
+use App\Eloquent\FixedQueryBuilder;
+
 /**
  * Provides the upload-validation visibility filter for photo queries.
  *
- * Photos with `is_upload_validated = false` are only visible to their owner.
+ * Photos with `is_validated = false` are only visible to their owner.
  * Admin callers must apply an early return before calling this helper.
  */
 trait FiltersUploadValidation
@@ -19,13 +21,13 @@ trait FiltersUploadValidation
 	/**
 	 * Adds the upload-validation visibility filter to a photo query.
 	 *
-	 * @param \Illuminate\Database\Eloquent\Builder<\App\Models\Photo>|\App\Eloquent\FixedQueryBuilder<\App\Models\Photo> $query   the query builder
-	 * @param int|null                                                                                                    $user_id the authenticated user's ID, or null for guests
+	 * @param \App\Eloquent\FixedQueryBuilder<\App\Models\Photo> $query   the query builder
+	 * @param int|null                                           $user_id the authenticated user's ID, or null for guests
 	 */
-	private function applyUploadValidationFilter($query, ?int $user_id): void
+	private function applyUploadValidationFilter(FixedQueryBuilder $query, ?int $user_id): FixedQueryBuilder
 	{
-		$query->where(function ($q) use ($user_id): void {
-			$q->where('photos.is_upload_validated', '=', true);
+		return $query->where(function ($q) use ($user_id): void {
+			$q->where('photos.is_validated', '=', true);
 			if ($user_id !== null) {
 				$q->orWhere('photos.owner_id', '=', $user_id);
 			}

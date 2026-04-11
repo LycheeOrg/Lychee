@@ -146,8 +146,8 @@ class Create
 			$pipes[] = Duplicate\SaveIfDirty::class;
 		}
 		$pipes[] = Duplicate\ThrowSkipDuplicate::class;
+		$pipes[] = Duplicate\ThrowUntrustedDuplicate::class;
 		$pipes[] = Shared\SetHighlighted::class;
-		$pipes[] = Shared\SetUploadValidated::class;
 		$pipes[] = Shared\Save::class;
 		$pipes[] = Shared\SetParent::class;
 		$pipes[] = Shared\SaveStatistics::class;

@@ -19,6 +19,7 @@ use App\Models\Photo;
 use App\Repositories\ConfigManager;
 use App\Services\Image\FileExtensionService;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Safe\Exceptions\InfoException;
 use function Safe\ini_get;
 use function Safe\parse_url;
@@ -44,6 +45,17 @@ class FromUrl
 		$config_manager = resolve(ConfigManager::class);
 		$result = new Collection();
 		$exceptions = [];
+
+		$user = Auth::user();
+		if ($user?->may_administrate === true) {
+			$upload_trust_level = UserUploadTrustLevel::TRUSTED;
+		} elseif ($user !== null) {
+			$upload_trust_level = $user->upload_trust_level;
+		} else {
+			$upload_trust_level = $config_manager->getValueAsEnum('guest_upload_trust_level', UserUploadTrustLevel::class)
+				?? UserUploadTrustLevel::CHECK;
+		}
+
 		$create = new Create(
 			import_mode: new ImportMode(
 				delete_imported: true,
@@ -51,7 +63,7 @@ class FromUrl
 				shall_rename_photo_title: $config_manager->getValueAsBool('renamer_photo_title_enabled'),
 			),
 			intended_owner_id: $intended_owner_id,
-			upload_trust_level: UserUploadTrustLevel::TRUSTED,
+			upload_trust_level: $upload_trust_level,
 		);
 
 		$file_extension_service = resolve(FileExtensionService::class);

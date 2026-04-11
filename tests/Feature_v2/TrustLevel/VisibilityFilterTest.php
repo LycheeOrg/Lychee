@@ -26,7 +26,7 @@ use Tests\Feature_v2\Base\BaseApiWithDataTest;
  * album4 is publicly visible (has perm4 with is_public=true).
  * photo4 belongs to album4 and is owned by userLocked.
  *
- * A photo with is_upload_validated = false must NOT be visible to
+ * A photo with is_validated = false must NOT be visible to
  * unauthenticated users or users who are not the owner/admin.
  * The owner and admin must still be able to see it.
  */
@@ -35,7 +35,7 @@ class VisibilityFilterTest extends BaseApiWithDataTest
 	public function testUnvalidatedPhotoIsHiddenFromGuest(): void
 	{
 		// album4 is already public (perm4); set photo4 as unvalidated
-		$this->photo4->is_upload_validated = false;
+		$this->photo4->is_validated = false;
 		$this->photo4->save();
 
 		try {
@@ -45,14 +45,14 @@ class VisibilityFilterTest extends BaseApiWithDataTest
 			$ids = collect($response->json('photos'))->pluck('id')->toArray();
 			$this->assertNotContains($this->photo4->id, $ids);
 		} finally {
-			$this->photo4->is_upload_validated = true;
+			$this->photo4->is_validated = true;
 			$this->photo4->save();
 		}
 	}
 
 	public function testUnvalidatedPhotoIsVisibleToOwner(): void
 	{
-		$this->photo4->is_upload_validated = false;
+		$this->photo4->is_validated = false;
 		$this->photo4->save();
 
 		try {
@@ -62,14 +62,14 @@ class VisibilityFilterTest extends BaseApiWithDataTest
 			$ids = collect($response->json('photos'))->pluck('id')->toArray();
 			$this->assertContains($this->photo4->id, $ids);
 		} finally {
-			$this->photo4->is_upload_validated = true;
+			$this->photo4->is_validated = true;
 			$this->photo4->save();
 		}
 	}
 
 	public function testUnvalidatedPhotoIsVisibleToAdmin(): void
 	{
-		$this->photo4->is_upload_validated = false;
+		$this->photo4->is_validated = false;
 		$this->photo4->save();
 
 		try {
@@ -79,14 +79,14 @@ class VisibilityFilterTest extends BaseApiWithDataTest
 			$ids = collect($response->json('photos'))->pluck('id')->toArray();
 			$this->assertContains($this->photo4->id, $ids);
 		} finally {
-			$this->photo4->is_upload_validated = true;
+			$this->photo4->is_validated = true;
 			$this->photo4->save();
 		}
 	}
 
 	public function testUnvalidatedPhotoIsHiddenFromOtherUser(): void
 	{
-		$this->photo4->is_upload_validated = false;
+		$this->photo4->is_validated = false;
 		$this->photo4->save();
 
 		try {
@@ -96,7 +96,7 @@ class VisibilityFilterTest extends BaseApiWithDataTest
 			$ids = collect($response->json('photos'))->pluck('id')->toArray();
 			$this->assertNotContains($this->photo4->id, $ids);
 		} finally {
-			$this->photo4->is_upload_validated = true;
+			$this->photo4->is_validated = true;
 			$this->photo4->save();
 		}
 	}
@@ -104,6 +104,6 @@ class VisibilityFilterTest extends BaseApiWithDataTest
 	public function testExistingPhotosAreValidatedByDefault(): void
 	{
 		// photo4 was created via factory (trusted by default factory)
-		$this->assertTrue($this->photo4->is_upload_validated);
+		$this->assertTrue($this->photo4->is_validated);
 	}
 }
