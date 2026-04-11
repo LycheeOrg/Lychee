@@ -1,7 +1,7 @@
 # Feature 030 Tasks – Facial Recognition
 
 _Status: Draft_
-_Last updated: 2026-04-07_
+_Last updated: 2026-04-11_
 
 > Keep this checklist aligned with the feature plan increments. Stage tests before implementation, record verification commands beside each task, and prefer bite-sized entries (≤90 minutes).
 > **Mark tasks `[x]` immediately** after each one passes verification—do not batch completions. Update the roadmap status when all tasks are done.
@@ -666,6 +666,40 @@ _Last updated: 2026-04-07_
   - `npm run check`
   - `npm run format`
 
+### I38 – Denormalized Face & Photo Counters
+
+- [ ] T-030-93 – Write unit tests for Person counter invariants (FR-030-41, S-030-58, S-030-59, S-030-60).
+  _Intent:_ Using `AbstractTestCase` (SQLite in-memory). Create a Person with a Photo+Face fixture. Assert: (a) creating a non-dismissed face with `person_id` increments `person.face_count` by 1 and `person.photo_count` by 1; (b) creating a second non-dismissed face for the **same** person+photo increments `face_count` by 1 but leaves `photo_count` unchanged; (c) dismissing one face decrements `person.face_count` and leaves `person.photo_count` unchanged (other face still active); (d) dismissing the last non-dismissed face for that person+photo also decrements `person.photo_count`; (e) undismissing a face re-increments the relevant counters; (f) deleting a non-dismissed face with `person_id` decrements the counters; (g) deleting a dismissed face leaves counters unchanged; (h) unassigning a face (`person_id = null`) decrements counters for the old person.
+  _Verification commands:_
+  - `php artisan test --filter=FaceCounterPersonTest`
+  - `make phpstan`
+
+- [ ] T-030-94 – Write unit tests for Photo.face_count counter invariants (FR-030-42, S-030-59, S-030-60).
+  _Intent:_ Using `AbstractTestCase`. Assert: (a) creating a non-dismissed face on a photo increments `photo.face_count`; (b) creating a dismissed face (`is_dismissed = true`) on a photo does **not** increment `photo.face_count`; (c) dismissing a previously non-dismissed face decrements `photo.face_count`; (d) undismissing increments `photo.face_count`; (e) deleting a non-dismissed face decrements `photo.face_count`; (f) deleting a dismissed face leaves `photo.face_count` unchanged; (g) changing `person_id` on a non-dismissed face does **not** affect `photo.face_count`.
+  _Verification commands:_
+  - `php artisan test --filter=FaceCounterPhotoTest`
+  - `make phpstan`
+
+- [ ] T-030-96 – Implement FaceObserver and register it (FR-030-41, FR-030-42).
+  _Intent:_ Create `app/Observers/FaceObserver.php`. Handle three Eloquent events:
+  - **`creating`**: if `is_dismissed = false`, queue a `photo.face_count++`. If `person_id` is set and `is_dismissed = false`, queue a `person.face_count++` and recount `person.photo_count` post-save.
+  - **`updating`**: compare `getOriginal('person_id')` vs new `person_id` and `getOriginal('is_dismissed')` vs new `is_dismissed`. Apply appropriate increments/decrements to the affected Person(s) and Photo. For `person.photo_count`, always recount from DB after the change (avoids edge cases with multiple faces sharing person+photo).
+  - **`deleted`**: if the deleted face was not dismissed and had a `person_id`, decrement `person.face_count` and recount `person.photo_count`. If not dismissed, decrement `photo.face_count`. All counter updates wrapped in a DB transaction.
+  Register the observer in `AppServiceProvider` (or a dedicated `ObserverServiceProvider`) via `Face::observe(FaceObserver::class)`.
+  _Verification commands:_
+  - `php artisan test --filter=FaceCounterPersonTest`
+  - `php artisan test --filter=FaceCounterPhotoTest`
+  - `make phpstan`
+
+- [ ] T-030-97 – Update PersonResource to read denormalized columns (FR-030-41).
+  _Intent:_ In `app/Http/Resources/Models/PersonResource.php`, replace:
+  - `$person->faces()->count()` → `$person->face_count`
+  - `$person->faces()->distinct('photo_id')->count('photo_id')` → `$person->photo_count`
+  Add `face_count` and `photo_count` to `$fillable` and the `integer` cast in `Person` model. Update PHPDoc block on `Person` to document the new columns. Verify no runtime COUNT query is issued by asserting `PersonResource::fromModel($person)` does not trigger an additional DB query (use `DB::enableQueryLog()` in the test).
+  _Verification commands:_
+  - `php artisan test --filter=PersonResourceTest`
+  - `make phpstan`
+
 ## Notes / TODOs
 
 **Q-030-01 through Q-030-53 have been resolved.** All decisions are encoded in spec.md normative sections.
@@ -684,3 +718,5 @@ _Last updated: 2026-04-07_
 - Q-030-73 (A with grouping): ONE combined "Reset Face Scan Status" maintenance block for both stuck-pending AND failed (not three separate blocks, not two separate stuck/failed blocks).
 
 **No active questions remain for feature 030.** All 73 questions resolved. Implementation may proceed.
+
+**I38 added (2026-04-11):** Denormalized face and photo counter columns on `persons` and `photos`; FaceObserver to maintain them; PersonResource updated to read columns directly. Tasks T-030-93 through T-030-97.

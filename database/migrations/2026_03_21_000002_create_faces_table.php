@@ -50,6 +50,7 @@ return new class() extends Migration {
 
 		Schema::table('photos', function (Blueprint $table) {
 			$table->string('face_scan_status', 16)->nullable(true)->after('is_highlighted');
+			$table->unsignedInteger('face_count')->default(0)->after('face_scan_status');
 		});
 	}
 
@@ -59,7 +60,7 @@ return new class() extends Migration {
 	public function down(): void
 	{
 		Schema::table('photos', function (Blueprint $table) {
-			$table->dropColumn('face_scan_status');
+			$table->dropColumn(['face_scan_status', 'face_count']);
 		});
 
 		Schema::dropIfExists('face_suggestions');

@@ -23,6 +23,8 @@ return new class() extends Migration {
 			$table->string('name', 255)->nullable(false);
 			$table->unsignedInteger('user_id')->nullable(true)->unique();
 			$table->boolean('is_searchable')->default(true);
+			$table->unsignedInteger('face_count')->default(0);
+			$table->unsignedInteger('photo_count')->default(0);
 			$table->timestamps();
 
 			$table->index('user_id');

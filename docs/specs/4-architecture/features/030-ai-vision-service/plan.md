@@ -2,7 +2,7 @@
 
 _Linked specification:_ `docs/specs/4-architecture/features/030-ai-vision-service/spec.md`
 _Status:_ Draft
-_Last updated:_ 2026-04-07
+_Last updated:_ 2026-04-11
 
 > Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in [docs/specs/4-architecture/open-questions.md](../../open-questions.md), and assume clarifications are resolved only when the spec's normative sections and, where applicable, ADRs have been updated.
 
@@ -586,6 +586,20 @@ After each increment, verify:
 - _Commands:_ `uv run pytest`, `uv run ruff check`, `php artisan test --filter=FaceMaintenance`, `make phpstan`, `npm run check`
 - _Exit:_ Laplacian score stored on faces; maintenance endpoint returns sortable face list; admin page renders with sortable table; dismiss from table works; all tests green.
 
+### I38 – Denormalized Face & Photo Counters (≈60 min)
+
+- _Goal:_ Replace runtime `COUNT` queries in `PersonResource` and `PhotoResource` with denormalized counter columns maintained by an Eloquent observer on `Face`.
+- _Preconditions:_ I5 (Person & Face models), I6 (PersonResource), I9 (Face dismiss logic) complete.
+- _Steps:_
+  1. Write unit tests for the counter invariants (see tasks T-030-93, T-030-94): assign face → counters increment; unassign → decrement; dismiss → decrement; undismiss → increment; delete non-dismissed face → decrement; dismissed faces never counted; photo_count counts distinct photos only.
+  2. Update Person model: add `face_count` and `photo_count` to `$fillable` and `$casts` (`integer`). Update PHPDoc block. *(Columns added directly to the existing persons migration — greenfield.)*
+  3. Update Photo model: add `face_count` to `$fillable` and `$casts`. Update PHPDoc block. *(Column added directly to the existing faces migration alongside `face_scan_status` — greenfield.)*
+  4. Implement `FaceObserver` (`app/Observers/FaceObserver.php`): handle `creating`, `updating` (delta on `person_id` and `is_dismissed` changes), and `deleting` events. Use DB transactions to update counters atomically. For `photo_count` on Person: after any counter-affecting change, recount `faces.count(DISTINCT photo_id) WHERE person_id = ? AND is_dismissed = false` and write the result (avoids double-decrement edge cases when multiple faces share a photo+person pair).
+  5. Register `FaceObserver` in a service provider.
+  6. Update `PersonResource`: replace `$person->faces()->count()` with `$person->face_count` and `$person->faces()->distinct('photo_id')->count('photo_id')` with `$person->photo_count`.
+- _Commands:_ `php artisan test --filter=FaceCounterTest`, `php artisan test --filter=PersonResourceTest`, `make phpstan`
+- _Exit:_ Counter columns exist in existing migrations; observer keeps them in sync; PersonResource reads columns directly; all unit and feature tests pass; PHPStan clean.
+
 ## Scenario Tracking
 
 | Scenario ID | Increment / Task reference | Notes |
@@ -647,6 +661,9 @@ After each increment, verify:
 | S-030-55 | I35 | Person detail: click photo opens lightbox |
 | S-030-56 | I36 | Person detail: drag & blue-border multi-select |
 | S-030-57 | I37 | Face Maintenance page: admin sorts by quality; dismisses |
+| S-030-58 | I38 | Face assigned to Person → person.face_count and person.photo_count updated |
+| S-030-59 | I38 | Face dismissed → person.face_count, person.photo_count, photo.face_count decremented |
+| S-030-60 | I38 | Face undismissed → counters re-incremented consistently |
 
 ## Analysis Gate
 
@@ -654,7 +671,7 @@ _To be completed after spec, plan, and tasks align and before implementation beg
 
 ## Exit Criteria
 
-- [ ] All 37 increments (I1–I37) complete with passing tests.
+- [ ] All 38 increments (I1–I38) complete with passing tests.
 - [ ] PHPStan 0 errors.
 - [ ] php-cs-fixer clean.
 - [ ] npm run check / npm run format clean.
@@ -669,7 +686,6 @@ _To be completed after spec, plan, and tasks align and before implementation beg
 
 - Face recognition accuracy tuning and confidence threshold configuration (admin UI for `VISION_FACE_DETECTION_THRESHOLD` / `VISION_FACE_MATCH_THRESHOLD`).
 - Notifications when a user is tagged in a new photo.
-- Performance optimisation for large Person/Face datasets (materialized views, caching face counts).
 - GPU acceleration for the Python service (optional CUDA/ROCm support in Dockerfile).
 - Per-user face overlay visibility preference (currently global config only — Q-030-61).
 - Policy refinement: cross-check album/photo edit rights in AiVisionPolicy (Q-030-63, Q-030-72 — deferred to future iteration).
