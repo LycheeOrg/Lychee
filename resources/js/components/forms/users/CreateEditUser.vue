@@ -35,7 +35,7 @@
 				</div>
 				<div class="w-full flex items-center text-muted-color gap-2 pt-1">
 					<label class="shrink-0">{{ $t("users.create_edit.upload_trust_level") }}</label>
-					<Select v-model="upload_trust_level" :options="trustLevelOptions" option-label="label" option-value="value" class="w-full" />
+					<Select v-model="upload_trust_level" :options="trustLevelOptions" option-label="label" option-value="value" class="w-full border-none" />
 				</div>
 				<div v-if="is_se_enabled || is_se_preview_enabled" class="w-full items-center text-muted-color">
 					<Checkbox v-model="has_quota" input-id="hasQuota" :binary="true" />

@@ -27,7 +27,7 @@ return [
         'admin_rights' => 'Потребителят има администраторски права.',
         'upload_trust_level' => 'Upload trust level',
         'upload_trust_level_check' => 'Check – uploads require admin approval before becoming public.',
-        'upload_trust_level_monitor' => 'Monitor – upload are publics unless flagged for content..',
+        'upload_trust_level_monitor' => 'Monitor – upload are publics unless flagged for content.',
         'upload_trust_level_trusted' => 'Trusted – uploads are immediately public.',
 
         'quota' => 'Потребителят има ограничение на квотата.',

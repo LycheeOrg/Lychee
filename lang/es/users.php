@@ -26,7 +26,7 @@ return [
         'admin_rights' => 'El usuario tiene derechos de administrador.',
         'upload_trust_level' => 'Upload trust level',
         'upload_trust_level_check' => 'Check – uploads require admin approval before becoming public.',
-        'upload_trust_level_monitor' => 'Monitor – upload are publics unless flagged for content..',
+        'upload_trust_level_monitor' => 'Monitor – upload are publics unless flagged for content.',
         'upload_trust_level_trusted' => 'Trusted – uploads are immediately public.',
 
         'quota' => 'El usuario tiene un límite de cuota.',

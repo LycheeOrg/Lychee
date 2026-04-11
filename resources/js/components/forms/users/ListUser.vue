@@ -22,15 +22,15 @@
 				<div class="w-full text-center">
 					<i
 						v-if="props.user.upload_trust_level === 'trusted'"
-						v-tooltip.top="$t('users.upload_trust_level')"
+						v-tooltip.top="$t('users.create_edit.upload_trust_level_trusted')"
 						class="pi pi-shield text-create-600"
 					></i>
 					<i
 						v-else-if="props.user.upload_trust_level === 'monitor'"
-						v-tooltip.top="$t('users.upload_trust_level')"
+						v-tooltip.top="$t('users.create_edit.upload_trust_level_monitor')"
 						class="pi pi-shield text-yellow-500"
 					></i>
-					<i v-else v-tooltip.top="$t('users.upload_trust_level')" class="pi pi-shield text-danger-600"></i>
+					<i v-else v-tooltip.top="$t('users.create_edit.upload_trust_level_check')" class="pi pi-shield text-danger-600"></i>
 				</div>
 				<div v-if="isQuotaEnabled" class="w-full text-center">
 					<i v-if="props.user.quota_kb !== null" v-tooltip.right="formattedQuota" class="pi pi-chart-pie text-muted-color"></i>
