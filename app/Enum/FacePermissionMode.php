@@ -24,7 +24,6 @@ namespace App\Enum;
  * | Batch face ops     | logged users        | logged users        | photo/album owner + admin | admin only                |
  * | View album people  | album access        | logged users        | photo/album owner + admin | photo/album owner + admin |
  */
-
 enum FacePermissionMode: string
 {
 	case PUBLIC = 'public';

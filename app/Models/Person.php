@@ -115,7 +115,7 @@ class Person extends Model
 	 * the person linked to that user.
 	 *
 	 * @param Builder<static> $query
-	 * @param int|null                                       $user_id
+	 * @param int|null        $user_id
 	 *
 	 * @return Builder<static>
 	 */

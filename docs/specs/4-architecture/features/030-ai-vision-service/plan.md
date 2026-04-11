@@ -600,6 +600,22 @@ After each increment, verify:
 - _Commands:_ `php artisan test --filter=FaceCounterTest`, `php artisan test --filter=PersonResourceTest`, `make phpstan`
 - _Exit:_ Counter columns exist in existing migrations; observer keeps them in sync; PersonResource reads columns directly; all unit and feature tests pass; PHPStan clean.
 
+### I39 – Per-Resource Face Access Rights (≈75 min)
+
+- _Goal:_ Implement proper per-photo and per-album ownership checks in `PhotoPolicy` and `AlbumPolicy` for all face operations; surface the resulting right flags in `PhotoRightsResource` and `AlbumRightsResource`; wire request authorizers to the new gates. Resolves Q-030-63 and Q-030-72.
+- _Preconditions:_ I5 (models), I6 (resources), I7 (controllers), I9 (face ops) complete.
+- _Steps:_
+  1. Write feature tests covering the four permission modes × ownership scenarios for each new gate (S-030-61 through S-030-65). Tests verify 403 for non-owners in privacy-preserving/restricted modes and 200 for owners with the same operations.
+  2. Add four gate constants + methods to `PhotoPolicy` (FR-030-43): `CAN_VIEW_FACE_OVERLAYS`, `CAN_DISMISS_FACE`, `CAN_ASSIGN_FACE_ON_PHOTO`, `CAN_TRIGGER_SCAN_ON_PHOTO`. Each method accepts `(?User, Photo)` and resolves mode + ownership. Delegate feature-flag/admin short-circuit via `AiVisionPolicy`.
+  3. Add four gate constants + methods to `AlbumPolicy` (FR-030-44): `CAN_VIEW_ALBUM_PEOPLE`, `CAN_TRIGGER_SCAN_ON_ALBUM`, `CAN_ASSIGN_FACE_IN_ALBUM`, `CAN_BATCH_FACE_OPS`. Each method accepts `(?User, AbstractAlbum|null)`.
+  4. Register new gate abilities in `AuthServiceProvider` (or existing registration location for `PhotoPolicy`/`AlbumPolicy`).
+  5. Extend `PhotoRightsResource` (DO-030-12): add optional `?Photo $photo` parameter, compute `can_view_face_overlays`, `can_dismiss_face`, `can_assign_face`, `can_trigger_scan` via Gate checks. Update all call sites to pass the `Photo` instance.
+  6. Extend `AlbumRightsResource` (DO-030-13): add `can_view_album_people`, `can_trigger_scan`, `can_assign_face`, `can_batch_face_ops` via Gate checks. No constructor change needed.
+  7. Update request authorizers (FR-030-47): `AssignFaceRequest`, `ToggleDismissedRequest` (remove `// TODO` + inline ownership check), `BatchFaceRequest`, `ScanPhotosRequest`, `GetAlbumPersonsRequest`. Replace `AiVisionPolicy` gate calls with new `PhotoPolicy`/`AlbumPolicy` gate calls. Replace `PhotoResource::buildFaceData()` inline mode-check with `Gate::check(PhotoPolicy::CAN_VIEW_FACE_OVERLAYS, $photo)`.
+  8. Regenerate TypeScript type declarations (`npm run generate-types` or equivalent) to include the new rights fields.
+- _Commands:_ `php artisan test --filter=FaceAccessRightsTest`, `make phpstan`, `npm run check`
+- _Exit:_ All four modes + ownership scenarios tested; rights resources include face flags; all TODOs in request classes removed; PHPStan clean; TypeScript types updated.
+
 ## Scenario Tracking
 
 | Scenario ID | Increment / Task reference | Notes |
@@ -664,6 +680,11 @@ After each increment, verify:
 | S-030-58 | I38 | Face assigned to Person → person.face_count and person.photo_count updated |
 | S-030-59 | I38 | Face dismissed → person.face_count, person.photo_count, photo.face_count decremented |
 | S-030-60 | I38 | Face undismissed → counters re-incremented consistently |
+| S-030-61 | I39 | Photo owner in privacy-preserving mode → overlays visible; non-owner → hidden |
+| S-030-62 | I39 | Non-owner assign face on privacy-preserving photo → 403 |
+| S-030-63 | I39 | Album owner in restricted mode triggers scan on own album → 200; non-owner → 403 |
+| S-030-64 | I39 | Non-owner requests album people in privacy-preserving mode → 403 |
+| S-030-65 | I39 | Rights resource fields reflect correct booleans for all four modes |
 
 ## Analysis Gate
 
@@ -671,7 +692,7 @@ _To be completed after spec, plan, and tasks align and before implementation beg
 
 ## Exit Criteria
 
-- [ ] All 38 increments (I1–I38) complete with passing tests.
+- [ ] All 39 increments (I1–I39) complete with passing tests.
 - [ ] PHPStan 0 errors.
 - [ ] php-cs-fixer clean.
 - [ ] npm run check / npm run format clean.

@@ -154,6 +154,7 @@ class Face extends Model
 	 * Scope: only faces that have not been dismissed.
 	 *
 	 * @param Builder<Face> $query
+	 *
 	 * @return Builder<Face>
 	 */
 	public function scopeNotDismissed(Builder $query): Builder
@@ -165,6 +166,7 @@ class Face extends Model
 	 * Scope: only faces that have been dismissed.
 	 *
 	 * @param Builder<Face> $query
+	 *
 	 * @return Builder<Face>
 	 */
 	public function scopeDismissed(Builder $query): Builder

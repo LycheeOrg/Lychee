@@ -221,6 +221,13 @@ declare namespace App.Http.Resources.Collections {
 		per_page: number;
 		total: number;
 	};
+	export type PaginatedFaceResource = {
+		data: App.Http.Resources.Models.FaceResource[];
+		current_page: number;
+		last_page: number;
+		per_page: number;
+		total: number;
+	};
 	export type PaginatedPersonsResource = {
 		persons: App.Http.Resources.Models.PersonResource[];
 		current_page: number;
@@ -476,6 +483,7 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		is_desktop_dock_full_transparency_enabled: boolean;
 		is_mobile_dock_full_transparency_enabled: boolean;
 		is_photo_details_always_open: boolean;
+		is_face_overlay_visible: boolean;
 		display_thumb_album_overlay: App.Enum.VisibilityType;
 		display_thumb_photo_overlay: App.Enum.VisibilityType;
 		album_subtitle_type: App.Enum.ThumbAlbumSubtitleType;
@@ -803,6 +811,13 @@ declare namespace App.Http.Resources.Models {
 		is_photo_rule: boolean;
 		is_album_rule: boolean;
 	};
+	export type SecurityAdvisoryResource = {
+		cve_id: string | null;
+		ghsa_id: string;
+		summary: string;
+		cvss_score: number | null;
+		cvss_vector: string | null;
+	};
 	export type SizeVariantResource = {
 		type: App.Enum.SizeVariantType;
 		locale: string;
@@ -911,13 +926,6 @@ declare namespace App.Http.Resources.Models {
 		size_variant_types: Array<number> | null;
 		created_at: string;
 		updated_at: string;
-	};
-	export type SecurityAdvisoryResource = {
-		cve_id: string | null;
-		ghsa_id: string;
-		summary: string;
-		cvss_score: number | null;
-		cvss_vector: string | null;
 	};
 }
 declare namespace App.Http.Resources.Models.Duplicates {
@@ -1047,7 +1055,6 @@ declare namespace App.Http.Resources.Rights {
 		is_mod_webhook_enabled: boolean;
 		is_ai_vision_enabled: boolean;
 		is_face_overlay_enabled: boolean;
-		face_overlay_default_visibility: string;
 		is_contact_enabled: boolean;
 		messages_count: number;
 	};

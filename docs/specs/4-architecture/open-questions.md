@@ -8,6 +8,7 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 |-------------|---------|----------|---------|--------|--------|---------|
 
 
+
 ## Question Details
 
 ---
@@ -57,6 +58,48 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 **Spec Impact:** Updated FR-030-32 success path to describe the user-picker dialog and `PATCH /Person/{id}` with `user_id`. Updated plan.md I33 step 1. Updated T-030-79 intent (user-picker dialog, UpdatePersonRequest extension noted).
 
 **Resolved:** 2026-04-07
+
+---
+
+### ~~Q-030-77: Admin/Feature Short-Circuit Mechanism in PhotoPolicy and AlbumPolicy Face Gates~~ ✅ RESOLVED
+
+**Feature:** 030 – AI Vision Service
+**Priority:** High
+**Status:** Resolved
+**Opened:** 2026-04-11
+**Affects:** T-030-100 (PhotoPolicy), T-030-101 (AlbumPolicy), FR-030-43, FR-030-44
+
+**Resolution:** FR-030-43/44 wording about `AiVisionPolicy::before()` is incorrect and is removed. The new `PhotoPolicy` and `AlbumPolicy` face gate methods rely on those policies' own `before()` hooks for the admin short-circuit. Side-effect: admins will bypass the gate even when AI Vision is disabled — **accepted risk**. No inline duplication or shared trait needed.
+
+**Resolved:** 2026-04-11
+
+---
+
+### ~~Q-030-78: "Album Access" Verification in Public/Private Mode for Face Gates~~ ✅ RESOLVED
+
+**Feature:** 030 – AI Vision Service
+**Priority:** High
+**Status:** Resolved
+**Opened:** 2026-04-11
+**Affects:** T-030-100 (PhotoPolicy), T-030-101 (AlbumPolicy), FR-030-43, FR-030-44
+
+**Resolution:** Non-issue. There is no circular dependency — `AlbumPolicy::canViewAlbumPeople()` can call `$this->canAccess($user, $album)` directly on the same policy instance without going through `Gate::check()`. No proxy or workaround needed.
+
+**Resolved:** 2026-04-11
+
+---
+
+### ~~Q-030-79: BatchFaceRequest Album Context and ScanPhotosRequest Photo-Path Authorization~~ ✅ RESOLVED
+
+**Feature:** 030 – AI Vision Service
+**Priority:** Medium
+**Status:** Resolved
+**Opened:** 2026-04-11
+**Affects:** T-030-103, FR-030-47
+
+**Resolution:** Option A for both cases — check ownership of the concrete **photo** when no album is available. `BatchFaceRequest`: when `album_id` is null (no album context), check `Gate::check(PhotoPolicy::CAN_ASSIGN_FACE_ON_PHOTO, $face->photo)` for each resolved face. `ScanPhotosRequest` photo-only path: check `Gate::check(PhotoPolicy::CAN_TRIGGER_SCAN_ON_PHOTO, $photo)` for each photo. FR-030-47 (c) and (d) updated accordingly.
+
+**Resolved:** 2026-04-11
 
 ---
 
@@ -642,13 +685,13 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 ### ~~Q-030-63: Policy Refinement — Album/Photo Rights vs Face-Level Policy~~ ✅ RESOLVED
 
-**Resolution:** Deferred for now. The current four-level permission mode semantic is correct. However, the policy also needs refinement with regard to album/photo edit rights (which is not currently applied). For now, focus on the UI/UX interaction. Policy refinement will be revisited in a future iteration. Captured as a note in NFR-030-07.
+**Resolution:** ~~Deferred for now~~ **→ Fully resolved 2026-04-11 by I39.** `PhotoPolicy` gains four per-photo face gate constants (`CAN_VIEW_FACE_OVERLAYS`, `CAN_DISMISS_FACE`, `CAN_ASSIGN_FACE_ON_PHOTO`, `CAN_TRIGGER_SCAN_ON_PHOTO`) and `AlbumPolicy` gains four per-album face gate constants (`CAN_VIEW_ALBUM_PEOPLE`, `CAN_TRIGGER_SCAN_ON_ALBUM`, `CAN_ASSIGN_FACE_IN_ALBUM`, `CAN_BATCH_FACE_OPS`), each evaluating ownership against the concrete photo/album model. `PhotoRightsResource` and `AlbumRightsResource` surface the resulting booleans to the frontend. All face-related `Request` authorizers are updated to use these per-resource gates (FR-030-43 through FR-030-47).
 
 **Context:** The `AiVisionPolicy` currently checks `ai_vision_face_permission_mode` globally but does not cross-check whether the user has edit rights on the specific album or photo. For example, in `privacy-preserving` mode, "photo/album owner + admin" should mean the owner of the specific album/photo, but the current policy may not check actual album ownership.
 
-**Impact:** Deferred — no immediate spec changes beyond noting the gap.
+**Impact:** Resolved — see NFR-030-07 policy refinement note, FR-030-43 through FR-030-47, DO-030-12, DO-030-13, S-030-61 through S-030-65, I39.
 
-**Resolved:** 2026-04-04 (deferred for future iteration)
+**Resolved:** 2026-04-04 (initially deferred); **re-resolved 2026-04-11 (I39 implements full fix)**
 
 ---
 
@@ -798,22 +841,20 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 ### ~~Q-030-72: Policy Refinement — Album/Photo Edit Rights~~ ✅ RESOLVED
 
-**Resolution:** **Option B** — Defer to next iteration. The current four-level permission mode semantic (public/private/privacy-preserving/restricted) provides a reasonable baseline. Policy refinement for per-resource album/photo ownership is deferred. This is the same conclusion as Q-030-63. Captured as a note in NFR-030-07 policy refinement note.
+**Resolution:** ~~Option B — Defer~~ **→ Fully resolved 2026-04-11 by I39** (same resolution as Q-030-63). `PhotoPolicy` and `AlbumPolicy` now provide per-resource face gate methods that check the concrete photo/album owner. All face-related request authorizers are wired to these new gates. See FR-030-43 through FR-030-47 and I39 in `plan.md`.
 
 **Context:** The current `AiVisionPolicy` checks the global `ai_vision_face_permission_mode` but does not cross-reference the user's actual edit rights on the specific album or photo. In `privacy-preserving` and `restricted` modes, "photo/album owner" should mean the owner of that specific resource, but the current implementation may check ownership globally.
 
 **Impact:** High — could allow users to assign/dismiss faces on photos they don't own. Affects all face operations gated on "photo/album owner + admin".
 
-**Option A — Add album/photo ownership checks to policy methods**
-- For operations like face assignment, dismiss, and scan trigger: check that the authenticated user owns (or has edit rights on) the photo or its containing album.
-- Use existing `PhotoPolicy` and `AlbumPolicy` gates alongside `AiVisionPolicy`.
+**Option A (Chosen) — Add album/photo ownership checks to policy methods**
+- `PhotoPolicy` gains `CAN_VIEW_FACE_OVERLAYS`, `CAN_DISMISS_FACE`, `CAN_ASSIGN_FACE_ON_PHOTO`, `CAN_TRIGGER_SCAN_ON_PHOTO` methods taking `(?User, Photo)`.
+- `AlbumPolicy` gains `CAN_VIEW_ALBUM_PEOPLE`, `CAN_TRIGGER_SCAN_ON_ALBUM`, `CAN_ASSIGN_FACE_IN_ALBUM`, `CAN_BATCH_FACE_OPS` methods taking `(?User, AbstractAlbum|null)`.
+- All face request authorizers updated to use these per-resource gates.
 
-**Option B (Chosen) — Defer to next iteration (current approach)**
-- Accept the gap for now. The four-level mode provides a reasonable baseline. Refine later.
+**Affects:** AiVisionPolicy, PhotoPolicy, AlbumPolicy, PhotoRightsResource, AlbumRightsResource, all face-related request classes.
 
-**Affects:** AiVisionPolicy, FaceController, FaceDetectionController, all face-related request classes.
-
-**Resolved:** 2026-04-04 (deferred for future iteration)
+**Resolved:** 2026-04-04 (initially deferred); **re-resolved 2026-04-11 (I39 implements full fix)**
 
 ---
 
