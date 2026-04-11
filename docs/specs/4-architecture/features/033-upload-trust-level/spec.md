@@ -2,8 +2,8 @@
 
 | Field | Value |
 |-------|-------|
-| Status | Draft (questions Q-033-01 – Q-033-03 resolved) |
-| Last updated | 2026-04-09 |
+| Status | Draft (questions Q-033-01 – Q-033-03 resolved; queued-job gap FR-033-14 added 2026-04-11) |
+| Last updated | 2026-04-11 |
 | Owners | LycheeOrg |
 | Linked plan | `docs/specs/4-architecture/features/033-upload-trust-level/plan.md` |
 | Linked tasks | `docs/specs/4-architecture/features/033-upload-trust-level/tasks.md` |
@@ -15,7 +15,9 @@
 
 When Lychee is used as a community gallery (multiple users, public-facing albums, guest uploads via `grants_upload`), administrators need a way to prevent inappropriate or unwanted content from being displayed publicly before they have reviewed it. This feature introduces a per-user **upload trust level** that controls whether newly uploaded photos are immediately visible to the public or require explicit admin approval first.
 
-Affected modules: `core` (User model, Photo model, enums), `application` (photo creation pipeline, query policies, moderation actions), `REST` (user management API, moderation API), `CLI` (user creation command), `UI` (user management form, admin moderation panel).
+Affected modules: `core` (User model, Photo model, enums), `application` (photo creation pipeline, `ProcessImageJob`, query policies, moderation actions), `REST` (user management API, moderation API), `CLI` (user creation command), `UI` (user management form, admin moderation panel).
+
+> **Queued-job gap (addressed in FR-033-14):** When photos are processed asynchronously via `ProcessImageJob`, `Auth::user()` is no longer available in the queue worker. The job resolves `intended_owner_id` to the **album owner** as a fallback for photo ownership. Without an explicit flag, `SetUploadValidated` cannot distinguish a guest-uploaded photo (owner resolved by fallback) from a direct upload by the album owner, causing `guest_upload_trust_level` config to be silently bypassed.
 
 ## Goals
 
@@ -52,6 +54,7 @@ Affected modules: `core` (User model, Photo model, enums), `application` (photo 
 | FR-033-11 | A new admin-only REST endpoint `POST /api/v2/Moderation::approve` accepts an array of photo IDs and sets `is_upload_validated = true` for all specified photos. | Photos marked as validated; become publicly visible. | Photo IDs must be valid, existing photo IDs. | Return 422 for invalid input. Return 403 for non-admin users. | No telemetry (DB update). | Problem statement |
 | FR-033-12 | The `UserManagementResource` includes the user's `upload_trust_level` field so the admin UI can display and edit it. | Trust level visible in user management list and edit form. | Value serialised as the enum string value. | — | No telemetry. | Problem statement |
 | FR-033-13 | The `PhotoResource` includes the `is_upload_validated` boolean field so the frontend can display a visual indicator for unvalidated photos (visible only to the owner and admins). | Field present in photo API response. | Boolean value correctly reflects DB state. | — | No telemetry. | Problem statement |
+| FR-033-14 | `ProcessImageJob` must capture an `is_guest_upload: bool` flag at **dispatch time** (when `Auth::user()` is still available: `true` when `Auth::user() === null`). This flag is serialised with the job and forwarded through `Create::add()` into the photo creation pipeline state, so that `SetUploadValidated` can apply `guest_upload_trust_level` config even after the HTTP session has ended. Without this flag, `SetUploadValidated` receives a non-zero `intended_owner_id` (the album owner's fallback) and cannot distinguish a guest upload from a direct owner upload. | Photo processed via queue with `is_guest_upload = true` → `is_upload_validated` respects `guest_upload_trust_level` config, not the album owner's trust level. | Flag must be a serialisable primitive (`bool`); captured unconditionally in the constructor. | If `is_guest_upload = true`, admin short-circuit still does not apply (admin check applies to the intended owner, not the uploader). | No telemetry. | Queued-job gap identified in code review |
 
 ## Non-Functional Requirements
 
@@ -150,6 +153,7 @@ Legend:
 | S-033-21 | `UserManagementResource` includes `upload_trust_level` field in API response. |
 | S-033-22 | `PhotoResource` includes `is_upload_validated` boolean field. |
 | S-033-23 | CLI `lychee:create_user` does not set trust level explicitly → defaults to `default_user_trust_level` config value. |
+| S-033-24 | Guest uploads a photo to a public album (`grants_upload = true`) when uploads are processed via `ProcessImageJob` (queued) and `guest_upload_trust_level` config is `check` → photo created with `is_upload_validated = false` even though `intended_owner_id` resolves to the album owner's ID. |
 
 ## Test Strategy
 
@@ -169,6 +173,7 @@ Legend:
 | DO-033-02 | `User.upload_trust_level` column: string, default `trusted`, cast to `UserUploadTrustLevel` enum. | core |
 | DO-033-03 | `Photo.is_upload_validated` column: boolean, default `true`, indexed. Indicates whether the photo has been approved for public display. | core |
 | DO-033-04 | Two config entries: `default_user_trust_level` (default `trusted`) and `guest_upload_trust_level` (default `check`), both with type range `check\|monitor\|trusted`. | core |
+| DO-033-05 | `ProcessImageJob.$is_guest_upload`: serialisable `bool` property. Set to `true` in the job constructor when `Auth::user() === null` at dispatch time. Forwarded through `Create::add()` into the pipeline state DTO so `SetUploadValidated` can apply guest-upload trust logic during queue processing. | application |
 
 ### API Routes / Services
 

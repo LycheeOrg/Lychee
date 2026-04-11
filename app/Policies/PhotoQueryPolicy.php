@@ -16,12 +16,14 @@ use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Album;
 use App\Models\Photo;
 use App\Models\User;
+use App\Models\Extensions\FiltersUploadValidation;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Database\Query\JoinClause;
 
 class PhotoQueryPolicy
 {
+	use FiltersUploadValidation;
 	public function __construct(
 		protected AlbumQueryPolicy $album_query_policy,
 	) {
@@ -74,12 +76,7 @@ class PhotoQueryPolicy
 		// and add an additional AND condition for the validation flag.
 		return $query
 			->where($visibility_sub_query)
-			->where(function (FixedQueryBuilder $q) use ($user_id): void {
-				$q->where('photos.is_upload_validated', '=', true);
-				if ($user_id !== null) {
-					$q->orWhere('photos.owner_id', '=', $user_id);
-				}
-			});
+			->tap(fn ($q) => $this->applyUploadValidationFilter($q, $user_id));
 	}
 
 	/**
@@ -147,12 +144,7 @@ class PhotoQueryPolicy
 					$origin?->_rgt
 				);
 			})
-			->where(function (FixedQueryBuilder $q) use ($user_id): void {
-				$q->where('photos.is_upload_validated', '=', true);
-				if ($user_id !== null) {
-					$q->orWhere('photos.owner_id', '=', $user_id);
-				}
-			});
+			->tap(fn ($q) => $this->applyUploadValidationFilter($q, $user_id));
 	}
 
 	/**

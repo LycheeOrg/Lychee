@@ -23,7 +23,7 @@ class UserManagementResource extends Data
 	public bool $may_edit_own_settings;
 	public bool $is_owner;
 
-	public string $upload_trust_level;
+	public UserUploadTrustLevel $upload_trust_level;
 
 	public ?int $quota_kb = null;
 	public ?string $description = null;
@@ -45,7 +45,7 @@ class UserManagementResource extends Data
 		$this->may_administrate = $user->may_administrate;
 		$this->may_upload = $user->may_upload || $user->may_administrate;
 		$this->may_edit_own_settings = $user->may_edit_own_settings || $user->may_administrate;
-		$this->upload_trust_level = ($user->upload_trust_level ?? UserUploadTrustLevel::TRUSTED)->value;
+		$this->upload_trust_level = $user->upload_trust_level;
 		if ($is_se) {
 			$this->quota_kb = $user->quota_kb;
 			$this->description = $user->description;

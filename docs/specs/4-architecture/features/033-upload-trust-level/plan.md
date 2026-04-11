@@ -2,7 +2,7 @@
 
 _Linked specification:_ `docs/specs/4-architecture/features/033-upload-trust-level/spec.md`  
 _Status:_ Draft  
-_Last updated:_ 2026-04-09
+_Last updated:_ 2026-04-11
 
 > Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in [docs/specs/4-architecture/open-questions.md](../../open-questions.md), and assume clarifications are resolved only when the spec's normative sections (requirements/NFR/behaviour/telemetry) and, where applicable, ADRs under `docs/specs/5-decisions/` have been updated.
 
@@ -45,6 +45,8 @@ Allow Lychee administrators to control whether a user's uploads are immediately 
   - English language strings for trust level and moderation.
   - Feature tests for trust-level CRUD, photo validation filtering, moderation API.
 
+  - Queued photo upload trust-level enforcement (queued-job gap): `is_guest_upload` bool flag on `ProcessImageJob`; threading through `Create::add()` to pipeline state DTO; `SetUploadValidated` updated to consume the flag.
+
 - **Out of scope:**
   - `monitor` trust level distinct behaviour — reserved for future.
   - Per-album trust-level overrides.
@@ -60,6 +62,7 @@ Allow Lychee administrators to control whether a user's uploads are immediately 
 - **`Photo` model** (`app/Models/Photo.php`) — new `is_upload_validated` boolean property and cast.
 - **`ImportParam` DTO** (`app/DTO/ImportParam.php`) — may need new `is_upload_validated` parameter, or determination can happen in a pipe.
 - **Photo creation pipeline** (`app/Actions/Photo/Create.php`) — trust level resolution pipe added to the shared pipe chain.
+- **`ProcessImageJob`** (`app/Jobs/ProcessImageJob.php`) — new `is_guest_upload: bool` property captured at dispatch time from `Auth::user() === null`. Forwarded to `Create::add()` so the pipeline can apply guest-upload trust logic regardless of `intended_owner_id` fallback resolution.
 - **`PhotoQueryPolicy`** (`app/Policies/PhotoQueryPolicy.php`) — visibility and searchability filters updated.
 - **`ConfigManager`** (`app/Repositories/ConfigManager.php`) — reads `default_user_trust_level` and `guest_upload_trust_level`.
 - **User management requests** (`app/Http/Requests/UserManagement/`) — updated for trust level validation.
@@ -77,8 +80,8 @@ Allow Lychee administrators to control whether a user's uploads are immediately 
   - Queue workers are not required — trust level resolution is synchronous during photo creation.
   - The existing `ImportParam` DTO can be extended with an additional boolean or the determination can be made in a new pipe that queries the user model.
 
-- **Risks / Mitigations:**
-  - *Performance impact of adding a WHERE condition to every photo query:* Mitigation: `is_upload_validated` is indexed; for the common case (all photos validated), the index lookup is trivially fast.
+  - *Queue workers process photos without HTTP session context — `Auth::user()` is null:* `ProcessImageJob` resolves `intended_owner_id` to the album owner as an ownership fallback. Without an explicit `is_guest_upload` flag, `SetUploadValidated` applies the album owner's trust level instead of `guest_upload_trust_level` config, silently bypassing moderation for all guest uploads. Mitigation: capture `is_guest_upload` at dispatch time (FR-033-14, I9).
+  - *Queue workers process photos without HTTP session context — `Auth::user()` is null:* `ProcessImageJob` resolves `intended_owner_id` to the album owner as an ownership fallback. Without an explicit `is_guest_upload` flag, `SetUploadValidated` applies the album owner's trust level instead of `guest_upload_trust_level` config, silently bypassing moderation for all guest uploads. Mitigation: capture `is_guest_upload` at dispatch time (FR-033-14, I9).
   - *Guest upload trust level resolution may require loading config in a hot path:* Mitigation: `ConfigManager` caches config values in memory; no additional DB queries.
   - *Moderation backlog could grow large if admin doesn't review:* Mitigation: pagination on moderation endpoint (NFR-033-03); UI shows total count.
   - *Changing trust level for a user does not retroactively update existing photos:* This is intentional and confirmed (Q-033-02 → A). Mitigation: document this behaviour clearly in the admin guide.
@@ -241,6 +244,20 @@ After each increment, verify:
 - _Commands:_ `php artisan test`, `make phpstan`, `vendor/bin/php-cs-fixer fix --dry-run`, `npm run check`
 - _Exit:_ Full suite green, all linting clean, documentation updated.
 
+### I9 – Queued-Job Guest-Upload Trust Fix (≈45 min)
+
+- _Goal:_ Ensure guest uploads processed via `ProcessImageJob` correctly apply `guest_upload_trust_level` config regardless of the `intended_owner_id` fallback resolution.
+- _Preconditions:_ I2 complete (FR-033-14).
+- _Steps:_
+  1. Add `public bool $is_guest_upload` property to `ProcessImageJob`. Set in constructor from `Auth::user() === null` before the ownership fallback assignment runs.
+  2. Add an `is_guest_upload` parameter to `Create::add()` (default `false` for backward compatibility with all non-job callers).
+  3. Thread the flag into the pipeline state DTO so `SetUploadValidated` can read it via `$state->is_guest_upload`.
+  4. Update `SetUploadValidated::resolveIsValidated()` to accept the flag; treat `is_guest_upload === true` identically to `intended_owner_id === 0` (apply `guest_upload_trust_level` config branch). Admin short-circuit does not apply when `is_guest_upload` is true.
+  5. Update `ProcessImageJob::handle()` to pass `is_guest_upload: $this->is_guest_upload` to `Create::add()`.
+  6. Write feature test (S-033-24): dispatch `ProcessImageJob` for a guest upload to an album configured with `grants_upload = true`; verify `is_upload_validated` reflects `guest_upload_trust_level` config, not the album owner's trust level.
+- _Commands:_ `php artisan test --filter=ProcessImageJob`, `php artisan test --filter=SetUploadValidated`, `make phpstan`
+- _Exit:_ Guest uploads via queue correctly set `is_upload_validated` based on `guest_upload_trust_level` config.
+
 ## Scenario Tracking
 
 | Scenario ID | Increment / Task reference | Notes |
@@ -267,7 +284,8 @@ After each increment, verify:
 | S-033-20 | I3 / T-033-13 | Smart albums exclude unvalidated |
 | S-033-21 | I4 / T-033-18 | UserManagementResource includes trust level |
 | S-033-22 | I7 / T-033-27, I2 | PhotoResource includes is_upload_validated |
-| S-033-23 | I8 / T-033-32 | CLI user creation defaults |
+| S-033-23 | I8 / T-033-37 | CLI user creation defaults |
+| S-033-24 | I9 / T-033-41 | Queued guest upload applies guest_upload_trust_level |
 
 ## Analysis Gate
 
@@ -280,6 +298,7 @@ _Not yet completed._ To be filled after plan review and before implementation be
 - [ ] Two config entries created and accessible via `ConfigManager`.
 - [ ] Photo creation pipeline sets `is_upload_validated` based on user trust level or guest config.
 - [ ] `PhotoQueryPolicy` hides unvalidated photos from non-owner, non-admin users.
+- [ ] Guest uploads via `ProcessImageJob` (queued) correctly apply `guest_upload_trust_level` based on FR-033-14 `is_guest_upload` flag.
 - [ ] User management API (create/update/list) handles `upload_trust_level`.
 - [ ] Moderation API (list/approve) works and is admin-gated.
 - [ ] Frontend user management shows trust level.

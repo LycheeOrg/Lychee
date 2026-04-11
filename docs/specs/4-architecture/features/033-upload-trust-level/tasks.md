@@ -1,7 +1,7 @@
 # Feature 033 Tasks – Upload Trust Level
 
 _Status: Draft_  
-_Last updated: 2026-04-09_
+_Last updated: 2026-04-11_
 
 > Keep this checklist aligned with the feature plan increments. Stage tests before implementation, record verification commands beside each task, and prefer bite-sized entries (≤90 minutes).
 > **Mark tasks `[x]` immediately** after each one passes verification—do not batch completions. Update the roadmap status when all tasks are done.
@@ -311,6 +311,46 @@ _Last updated: 2026-04-09_
   _Verification commands:_  
   - `npm run check`  
 
+### I9 – Queued-Job Guest-Upload Trust Fix
+
+These tasks address FR-033-14. `ProcessImageJob` loses the HTTP session when it runs in a queue worker, so `Auth::user()` is no longer available. The job currently resolves `intended_owner_id` to the album owner as an ownership fallback for guest uploads. Without an explicit flag, `SetUploadValidated` cannot distinguish a guest upload from a direct owner upload and silently skips the `guest_upload_trust_level` config branch.
+
+- [ ] T-033-38 – Add `is_guest_upload` flag to `ProcessImageJob` (FR-033-14, S-033-24, DO-033-05).  
+  _Intent:_ Add `public bool $is_guest_upload;` to `ProcessImageJob`. In the constructor, **before** the `$this->user_id = $user_id ?? $album?->owner_id` assignment, capture `$this->is_guest_upload = ($user_id === null);`. This preserves the original uploader context as a serialisable primitive.  
+  _Files:_ `app/Jobs/ProcessImageJob.php`  
+  _Verification commands:_  
+  - `make phpstan`  
+  - `vendor/bin/php-cs-fixer fix --dry-run`  
+  _Notes:_ `is_guest_upload` must be declared as a `public` property so Laravel's `SerializesModels` can serialise it to the queue payload. It is intentionally separate from `user_id` (which still holds the album owner for photo ownership purposes).
+
+- [ ] T-033-39 – Thread `is_guest_upload` from `ProcessImageJob::handle()` to `Create::add()` (FR-033-14).  
+  _Intent:_ Add an `is_guest_upload: bool = false` parameter to `Create::add()`. In `ProcessImageJob::handle()`, pass `is_guest_upload: $this->is_guest_upload`. Thread the flag through into the pipeline state DTO (whichever DTO is used by `SetUploadValidated`) as a `bool $is_guest_upload` field (default `false`).  
+  _Files:_ `app/Actions/Photo/Create.php`, `app/DTO/PhotoCreate/StandaloneDTO.php`, `app/DTO/PhotoCreate/DuplicateDTO.php`, `app/Jobs/ProcessImageJob.php`  
+  _Verification commands:_  
+  - `make phpstan`  
+  _Notes:_ All other callers of `Create::add()` that do not pass the flag default to `false` (authenticated user upload or import). No existing callers need changes beyond the default. Verify no other caller breaks by running `php artisan test`.
+
+- [ ] T-033-40 – Update `SetUploadValidated` to consume `is_guest_upload` flag (FR-033-14, S-033-24).  
+  _Intent:_ In `SetUploadValidated::resolveIsValidated()`, check `$state->is_guest_upload` (or receive as parameter) **before** the `intended_owner_id === 0` check. When `is_guest_upload === true`, execute the same guest-upload branch: read `guest_upload_trust_level` from `ConfigManager`. Admin short-circuit does not apply when `is_guest_upload` is `true` (the intended owner is the album owner, not the uploader, so their admin status is irrelevant to the trust decision).  
+  _Files:_ `app/Actions/Photo/Pipes/Shared/SetUploadValidated.php`  
+  _Verification commands:_  
+  - `make phpstan`  
+  - `php artisan test --filter=SetUploadValidated`  
+  _Notes:_ The guard order becomes: (1) `is_guest_upload === true` → guest branch; (2) `intended_owner_id === 0` → guest branch (direct dispatch edge case); (3) admin short-circuit; (4) owner trust level.
+
+- [ ] T-033-41 – Write feature test for queued guest upload trust enforcement (S-033-24, FR-033-14).  
+  _Intent:_ Extend `tests/Feature_v2/TrustLevel/UploadModerationFlowTest.php` (or create a dedicated `QueuedGuestUploadTrustTest.php`). Test steps:  
+  1. Set `guest_upload_trust_level` config to `check`.  
+  2. Create an album with `grants_upload = true` owned by a `trusted`-level user.  
+  3. Simulate a `ProcessImageJob` dispatched as if by a guest (construct with `Auth::user()` null → `is_guest_upload = true`).  
+  4. Run `handle()` synchronously.  
+  5. Assert the resulting photo has `is_upload_validated = false`.  
+  6. Repeat with `guest_upload_trust_level = trusted` → assert `is_upload_validated = true`.  
+  _Files:_ `tests/Feature_v2/TrustLevel/QueuedGuestUploadTrustTest.php`  
+  _Verification commands:_  
+  - `php artisan test --filter=QueuedGuestUploadTrust`  
+  _Notes:_ Use `Queue::fake()` so no real worker is needed. Construct the job without Auth::user and call handle() directly to assert pipeline behaviour.
+
 ### I8 – Integration Tests & Final Verification
 
 - [ ] T-033-35 – Write end-to-end integration test: upload → moderation → public (S-033-05, S-033-08, S-033-12).  
@@ -343,7 +383,8 @@ _Last updated: 2026-04-09_
 ## Notes / TODOs
 
 - The `monitor` trust level is reserved and behaves identically to `trusted` in this iteration (Q-033-01 → A). A follow-up task should implement the monitoring queue (soft-audit: uploads are public but flagged for periodic admin review).
-- Admin uploads always set `is_upload_validated = true` regardless of the admin's trust level setting (Q-033-03 → A). The `SetUploadValidated` pipe checks `may_administrate` first and short-circuits.
+- Admin uploads always set `is_upload_validated = true` regardless of the admin's trust level setting (Q-033-03 → A). The `SetUploadValidated` pipe checks `may_administrate` first and short-circuits. This short-circuit does NOT apply when `is_guest_upload = true` (FR-033-14): the intended owner is the album owner, not the anonymous uploader.
+- **Queued-job gap (FR-033-14):** When `ProcessImageJob` runs in a queue worker, `Auth::user()` is null. Ownership falls back to `album->owner_id`. Without the `is_guest_upload` flag added in I9, `SetUploadValidated` would apply the album owner's trust level to guest uploads, completely bypassing `guest_upload_trust_level` config. Tasks T-033-38 to T-033-41 address this.
 - Trust level changes do not retroactively affect existing photos (Q-033-02 → A). Only future uploads are affected. Document this clearly in the admin guide.
 - The `lychee:create_user` CLI command does not currently accept a `--upload-trust-level` flag. This is deferred to a follow-up task.
 - The moderation panel does not currently support a "reject" action. Admins can use existing photo delete functionality. A dedicated rejection workflow is a follow-up.
