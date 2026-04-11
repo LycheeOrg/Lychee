@@ -6,6 +6,7 @@
 
 import { ref } from "vue";
 import SecurityAdvisoriesService from "@/services/security-advisories-service";
+import { useUserStore } from "@/stores/UserState";
 
 const DISMISSED_KEY = "advisory_dismissed";
 
@@ -21,25 +22,33 @@ const advisories = ref<App.Http.Resources.Models.SecurityAdvisoryResource[]>([])
  * modal for admin users after login.
  *
  * The modal is shown at most once per browser session (controlled via
- * sessionStorage). Non-admin users receive a 403 from the endpoint, which
- * is caught and silently ignored.
+ * sessionStorage). The advisory endpoint is only queried when the current
+ * user has the `may_administrate` flag set on their user resource.
  */
 export function useAdvisoryModal() {
 	function advisoryCheck() {
-		if (sessionStorage.getItem(DISMISSED_KEY) !== null) {
-			return;
-		}
+		const userStore = useUserStore();
 
-		SecurityAdvisoriesService.getAdvisories()
-			.then((response) => {
-				if (response.data.length > 0) {
-					advisories.value = response.data;
-					isAdvisoriesVisible.value = true;
-				}
-			})
-			.catch(() => {
-				// 401/403 for non-admins or network errors: silently ignore.
-			});
+		userStore.load().then(() => {
+			if (!userStore.isAdmin) {
+				return;
+			}
+
+			if (sessionStorage.getItem(DISMISSED_KEY) !== null) {
+				return;
+			}
+
+			SecurityAdvisoriesService.getAdvisories()
+				.then((response) => {
+					if (response.data.length > 0) {
+						advisories.value = response.data;
+						isAdvisoriesVisible.value = true;
+					}
+				})
+				.catch(() => {
+					// Network errors: silently ignore.
+				});
+		});
 	}
 
 	function advisoryDismiss() {

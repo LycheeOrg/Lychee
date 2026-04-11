@@ -857,6 +857,7 @@ declare namespace App.Http.Resources.Models {
 		username: string | null;
 		email: string | null;
 		is_ldap: boolean;
+		may_administrate: boolean;
 		shared_albums_visibility: App.Enum.UserSharedAlbumsVisibility;
 	};
 	export type WebAuthnResource = {

@@ -21,6 +21,7 @@ class UserResource extends Data
 	public ?string $username;
 	public ?string $email;
 	public bool $is_ldap;
+	public bool $may_administrate;
 	public UserSharedAlbumsVisibility $shared_albums_visibility;
 
 	public function __construct(?User $user)
@@ -30,6 +31,7 @@ class UserResource extends Data
 		$this->username = $user?->username;
 		$this->email = $user?->email;
 		$this->is_ldap = $user?->is_ldap ?? false;
+		$this->may_administrate = $user?->may_administrate ?? false;
 		$this->shared_albums_visibility = $user?->shared_albums_visibility ?? UserSharedAlbumsVisibility::DEFAULT;
 	}
 }
