@@ -211,5 +211,6 @@ return [
 		'face-url' => env('AI_VISION_FACE_URL', ''),
 		'face-api-key' => env('AI_VISION_FACE_API_KEY', ''),
 		'face-rescan-iou-threshold' => (float) env('AI_VISION_FACE_RESCAN_IOU_THRESHOLD', 0.3),
+		'face-stuck-scan-threshold-minutes' => (int) env('AI_VISION_FACE_STUCK_SCAN_THRESHOLD_MINUTES', 720),
 	],
 ];

@@ -19,7 +19,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
-class MaintenanceResetStuckFacesTest extends BaseApiWithDataTest
+class MaintenanceResetFaceScanStatusTest extends BaseApiWithDataTest
 {
 	public function setUp(): void
 	{
@@ -38,34 +38,38 @@ class MaintenanceResetStuckFacesTest extends BaseApiWithDataTest
 
 	public function testCheckAsGuest(): void
 	{
-		$response = $this->getJson('Maintenance::resetStuckFaces');
+		$response = $this->getJson('Maintenance::resetFaceScanStatus');
 		$this->assertUnauthorized($response);
 	}
 
 	public function testCheckAsUser(): void
 	{
-		$response = $this->actingAs($this->userMayUpload1)->getJson('Maintenance::resetStuckFaces');
+		$response = $this->actingAs($this->userMayUpload1)->getJson('Maintenance::resetFaceScanStatus');
 		$this->assertForbidden($response);
 	}
 
 	public function testCheckAsAdmin(): void
 	{
-		// Create a stuck pending photo
+		// Create a stuck pending photo and a failed photo
 		Photo::where('id', $this->photo1->id)->update([
 			'face_scan_status' => FaceScanStatus::PENDING,
 			'updated_at' => Carbon::now()->subMinutes(800),
 		]);
 
-		$response = $this->actingAs($this->admin)->getJson('Maintenance::resetStuckFaces');
+		Photo::where('id', $this->photo2->id)->update([
+			'face_scan_status' => FaceScanStatus::FAILED,
+		]);
+
+		$response = $this->actingAs($this->admin)->getJson('Maintenance::resetFaceScanStatus');
 		$this->assertOk($response);
 
 		$count = $response->json();
-		self::assertGreaterThanOrEqual(1, $count);
+		self::assertGreaterThanOrEqual(2, $count); // Should count both stuck and failed
 	}
 
 	public function testCheckReturnsZeroWhenNoneStuck(): void
 	{
-		$response = $this->actingAs($this->admin)->getJson('Maintenance::resetStuckFaces');
+		$response = $this->actingAs($this->admin)->getJson('Maintenance::resetFaceScanStatus');
 		$this->assertOk($response);
 		self::assertEquals(0, $response->json());
 	}
@@ -74,25 +78,25 @@ class MaintenanceResetStuckFacesTest extends BaseApiWithDataTest
 
 	public function testDoAsGuest(): void
 	{
-		$response = $this->postJson('Maintenance::resetStuckFaces');
+		$response = $this->postJson('Maintenance::resetFaceScanStatus');
 		$this->assertUnauthorized($response);
 	}
 
 	public function testDoAsUser(): void
 	{
-		$response = $this->actingAs($this->userMayUpload1)->postJson('Maintenance::resetStuckFaces');
+		$response = $this->actingAs($this->userMayUpload1)->postJson('Maintenance::resetFaceScanStatus');
 		$this->assertForbidden($response);
 	}
 
-	public function testDoAsAdmin(): void
+	public function testDoResetsStuckPending(): void
 	{
-		// Create a stuck pending photo (older than default threshold)
+		// Create a stuck pending photo (older than default threshold of 720 min)
 		Photo::where('id', $this->photo1->id)->update([
 			'face_scan_status' => FaceScanStatus::PENDING,
 			'updated_at' => Carbon::now()->subMinutes(800),
 		]);
 
-		$response = $this->actingAs($this->admin)->postJson('Maintenance::resetStuckFaces');
+		$response = $this->actingAs($this->admin)->postJson('Maintenance::resetFaceScanStatus');
 		$this->assertOk($response);
 		self::assertGreaterThanOrEqual(1, $response->json('reset_count'));
 
@@ -101,38 +105,54 @@ class MaintenanceResetStuckFacesTest extends BaseApiWithDataTest
 		self::assertNull($this->photo1->face_scan_status);
 	}
 
-	public function testDoWithCustomThreshold(): void
+	public function testDoResetsFailed(): void
 	{
-		// Set pending photo that is 30 minutes old
+		// Create a failed photo
 		Photo::where('id', $this->photo1->id)->update([
-			'face_scan_status' => FaceScanStatus::PENDING,
-			'updated_at' => Carbon::now()->subMinutes(30),
+			'face_scan_status' => FaceScanStatus::FAILED,
 		]);
 
-		// Default threshold is 720 min (12h), so this should NOT be reset
-		$response = $this->actingAs($this->admin)->postJson('Maintenance::resetStuckFaces');
-		$this->assertOk($response);
-		self::assertEquals(0, $response->json('reset_count'));
-
-		// With a custom threshold of 15 minutes, it SHOULD be reset
-		$response = $this->actingAs($this->admin)->postJson('Maintenance::resetStuckFaces', [
-			'older_than_minutes' => 15,
-		]);
+		$response = $this->actingAs($this->admin)->postJson('Maintenance::resetFaceScanStatus');
 		$this->assertOk($response);
 		self::assertGreaterThanOrEqual(1, $response->json('reset_count'));
+
+		// Photo should be reset to null
+		$this->photo1->refresh();
+		self::assertNull($this->photo1->face_scan_status);
+	}
+
+	public function testDoResetsBothStuckAndFailed(): void
+	{
+		// Create stuck pending and failed photos
+		Photo::where('id', $this->photo1->id)->update([
+			'face_scan_status' => FaceScanStatus::PENDING,
+			'updated_at' => Carbon::now()->subMinutes(800),
+		]);
+
+		Photo::where('id', $this->photo2->id)->update([
+			'face_scan_status' => FaceScanStatus::FAILED,
+		]);
+
+		$response = $this->actingAs($this->admin)->postJson('Maintenance::resetFaceScanStatus');
+		$this->assertOk($response);
+		self::assertGreaterThanOrEqual(2, $response->json('reset_count'));
+
+		// Both photos should be reset to null
+		$this->photo1->refresh();
+		$this->photo2->refresh();
+		self::assertNull($this->photo1->face_scan_status);
+		self::assertNull($this->photo2->face_scan_status);
 	}
 
 	public function testDoDoesNotResetRecentPending(): void
 	{
-		// Set pending photo that is recent (5 minutes)
+		// Set pending photo that is recent (5 minutes) - should NOT be reset
 		Photo::where('id', $this->photo1->id)->update([
 			'face_scan_status' => FaceScanStatus::PENDING,
 			'updated_at' => Carbon::now()->subMinutes(5),
 		]);
 
-		$response = $this->actingAs($this->admin)->postJson('Maintenance::resetStuckFaces', [
-			'older_than_minutes' => 60,
-		]);
+		$response = $this->actingAs($this->admin)->postJson('Maintenance::resetFaceScanStatus');
 		$this->assertOk($response);
 		self::assertEquals(0, $response->json('reset_count'));
 

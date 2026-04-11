@@ -13,6 +13,7 @@ use App\Models\Face;
 use App\Policies\AiVisionPolicy;
 use Illuminate\Support\Facades\Gate;
 
+// TODO: Make sure FacePermissionMode applies here
 class ClusterDismissRequest extends AbstractEmptyRequest
 {
 	public function authorize(): bool

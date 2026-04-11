@@ -26,9 +26,6 @@ use Illuminate\Support\Carbon;
  */
 class ResetFaceScanStatus extends Controller
 {
-	/** @var int Age in minutes before a pending scan is considered stuck */
-	private const DEFAULT_OLDER_THAN = 720; // 12 hours
-
 	/**
 	 * Check: return combined count of stuck-pending and failed photos.
 	 *
@@ -40,7 +37,8 @@ class ResetFaceScanStatus extends Controller
 			return 0;
 		}
 
-		$cutoff = Carbon::now()->subMinutes(self::DEFAULT_OLDER_THAN);
+		$threshold_minutes = (int) config('features.ai-vision.face-stuck-scan-threshold-minutes', 720);
+		$cutoff = Carbon::now()->subMinutes($threshold_minutes);
 
 		$stuck_count = Photo::where('face_scan_status', '=', FaceScanStatus::PENDING->value)
 			->where('updated_at', '<', $cutoff)
@@ -59,7 +57,8 @@ class ResetFaceScanStatus extends Controller
 	 */
 	public function do(MaintenanceRequest $_request): array
 	{
-		$cutoff = Carbon::now()->subMinutes(self::DEFAULT_OLDER_THAN);
+		$threshold_minutes = (int) config('features.ai-vision.face-stuck-scan-threshold-minutes', 720);
+		$cutoff = Carbon::now()->subMinutes($threshold_minutes);
 
 		// Reset failed scans
 		$failed_count = Photo::where('face_scan_status', '=', FaceScanStatus::FAILED->value)

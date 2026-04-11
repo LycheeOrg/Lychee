@@ -13,11 +13,10 @@ use App\Http\Requests\Face\BulkScanRequest;
 use App\Http\Requests\Face\ClusterResultsRequest;
 use App\Http\Requests\Face\FaceDetectionResultsRequest;
 use App\Http\Requests\Face\ScanPhotosRequest;
-use App\Jobs\DispatchFaceScanJob;
 use App\Models\Face;
 use App\Models\FaceSuggestion;
 use App\Models\Photo;
-use App\Repositories\ConfigManager;
+use App\Services\FaceDetectionService;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -45,43 +44,13 @@ class FaceDetectionController extends Controller
 	 *
 	 * @return \Illuminate\Http\Response
 	 */
-	public function scan(ScanPhotosRequest $request): \Illuminate\Http\Response
+	public function scan(ScanPhotosRequest $request, FaceDetectionService $service): \Illuminate\Http\Response
 	{
 		$photo_ids = $request->photoIds();
 		$album_id = $request->album()?->id;
 		$force = $request->force();
 
-		// Collect target photos
-		$query = Photo::query()->select('id');
-
-		if ($photo_ids !== null) {
-			$query->whereIn('id', $photo_ids);
-		} else {
-			$query->whereHas('albums', fn ($q) => $q->where('albums.id', '=', $album_id));
-		}
-
-		if (!$force) {
-			// Skip photos that have at least one face with a person assigned
-			$query->whereDoesntHave('faces', fn ($q) => $q->whereNotNull('person_id'));
-		}
-
-		$batch_size = app(ConfigManager::class)->getValueAsInt('ai_vision_face_scan_batch_size');
-
-		$dispatched = 0;
-		$query->lazyById($batch_size, 'id')->chunk($batch_size)->each(function ($chunk) use (&$dispatched): void {
-			$ids = $chunk->pluck('id')->all();
-
-			// Set status to pending in bulk
-			Photo::whereIn('id', $ids)->update(['face_scan_status' => FaceScanStatus::PENDING->value]);
-
-			// Dispatch a job for each photo
-			foreach ($ids as $photo_id) {
-				DispatchFaceScanJob::dispatch($photo_id);
-				$dispatched++;
-			}
-		});
-
-		Log::info("FaceDetectionController::scan — dispatched {$dispatched} scans.");
+		$service->dispatchPhotos($photo_ids, $album_id, $force);
 
 		return response()->noContent(202);
 	}
@@ -120,29 +89,11 @@ class FaceDetectionController extends Controller
 	 *
 	 * @return \Illuminate\Http\Response
 	 */
-	public function bulkScan(BulkScanRequest $request): \Illuminate\Http\Response
+	public function bulkScan(BulkScanRequest $request, FaceDetectionService $service): \Illuminate\Http\Response
 	{
 		$album_id = $request->album()?->id;
-		$batch_size = $request->configs()->getValueAsInt('ai_vision_face_scan_batch_size');
 
-		$query = Photo::query()->select('id')->whereNull('face_scan_status')->orWhere('face_scan_status', '=', FaceScanStatus::FAILED->value);
-
-		if ($album_id !== null) {
-			$query->whereHas('albums', fn ($q) => $q->where('albums.id', '=', $album_id));
-		}
-
-		$dispatched = 0;
-		$query->lazyById($batch_size, 'id')->chunk($batch_size)->each(function ($chunk) use (&$dispatched): void {
-			$ids = $chunk->pluck('id')->all();
-			Photo::whereIn('id', $ids)->update(['face_scan_status' => FaceScanStatus::PENDING->value]);
-
-			foreach ($ids as $photo_id) {
-				DispatchFaceScanJob::dispatch($photo_id);
-				$dispatched++;
-			}
-		});
-
-		Log::info("FaceDetectionController::bulkScan — dispatched {$dispatched} scans.");
+		$service->dispatchUnscanedPhotos($album_id);
 
 		return response()->noContent(202);
 	}

@@ -13,6 +13,7 @@ use App\Models\Configs;
 use App\Policies\SettingsPolicy;
 use Illuminate\Support\Facades\Gate;
 
+// TODO: Make sure FacePermissionMode applies here
 class DestroyDismissedFacesRequest extends AbstractEmptyRequest
 {
 	public function authorize(): bool

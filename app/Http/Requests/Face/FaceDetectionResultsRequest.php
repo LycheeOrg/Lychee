@@ -43,6 +43,7 @@ class FaceDetectionResultsRequest extends BaseApiRequest
 	 */
 	public function rules(): array
 	{
+		// TODO: Remove the photo,id check. The AI Vision service may send results for photos that have been deleted in the meantime, and we want to be able to handle that gracefully.
 		return [
 			'photo_id' => 'required|string|exists:photos,id',
 			'status' => 'required|string|in:success,error',

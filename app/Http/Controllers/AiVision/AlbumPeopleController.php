@@ -46,7 +46,7 @@ class AlbumPeopleController extends Controller
 			->orderBy('persons.name');
 
 		// Non-admin: only show searchable persons, plus the person linked to the current user
-		if (!($user?->may_administrate === true)) {
+		if ($user?->may_administrate !== true) {
 			$user_id = $user?->id;
 			$query->where(function ($q) use ($user_id): void {
 				$q->where('persons.is_searchable', '=', true);

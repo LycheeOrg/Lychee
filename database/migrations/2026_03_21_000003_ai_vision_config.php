@@ -87,18 +87,6 @@ return new class() extends BaseConfigMigration {
 				'order' => 15,
 			],
 			[
-				'key' => 'ai_vision_face_scan_batch_size',
-				'value' => '200',
-				'cat' => self::CAT,
-				'type_range' => self::POSITIVE,
-				'description' => 'Batch size for bulk face scanning',
-				'details' => 'Number of photo IDs dispatched per job chunk when bulk-scanning. Lower values reduce burst queue load.',
-				'is_expert' => true,
-				'is_secret' => false,
-				'level' => 1,
-				'order' => 16,
-			],
-			[
 				'key' => 'ai_vision_face_overlay_enabled',
 				'value' => '1',
 				'cat' => self::CAT,

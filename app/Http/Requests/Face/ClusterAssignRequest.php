@@ -13,6 +13,7 @@ use App\Models\Face;
 use App\Policies\AiVisionPolicy;
 use Illuminate\Support\Facades\Gate;
 
+// TODO: Make sure FacePermissionMode applies here
 class ClusterAssignRequest extends BaseApiRequest
 {
 	public ?string $person_id = null;

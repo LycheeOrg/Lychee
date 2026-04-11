@@ -16,6 +16,7 @@ use App\Policies\AiVisionPolicy;
 use App\Rules\RandomIDRule;
 use Illuminate\Support\Facades\Gate;
 
+// TODO: Make sure FacePermissionMode applies here
 class AssignFaceRequest extends BaseApiRequest implements HasFace
 {
 	use HasFaceTrait;
