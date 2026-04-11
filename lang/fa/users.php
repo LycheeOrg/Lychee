@@ -12,7 +12,8 @@ return [
     'password' => 'رمزعبور',
     'legend' => 'راهنما',
     'upload_rights' => 'در صورت انتخاب، کاربر می‌تواند محتوا بارگذاری کند.',
-    'edit_rights' => 'در صورت انتخاب، کاربر می‌تواند پروفایل خود (نام کاربری، رمزعبور) را ویرایش کند.',
+    'edit_rights' => 'در صورت انتخاب، کاربر می‌تواند پروفایل خود (نام کاربری، رمزعبور) را ویرایش کند.',    'upload_trust_level' => 'Upload trust level — controls whether uploads are immediately public.',
+
     'quota' => 'در صورت تنظیم، کاربر دارای سهمیه فضا برای تصاویر (بر حسب کیلوبایت) است.',
     'user_deleted' => 'کاربر حذف شد',
     'user_created' => 'کاربر ایجاد شد',
@@ -21,7 +22,11 @@ return [
     'create_edit' => [
         'upload_rights' => 'کاربر می‌تواند محتوا بارگذاری کند.',
         'edit_rights' => 'کاربر می‌تواند پروفایل خود (نام کاربری، رمزعبور) را ویرایش کند.',
-        'admin_rights' => 'كاربر داراي حقوق ادمين است',
+        'admin_rights' => 'كاربر داراي حقوق ادمين است',        'upload_trust_level' => 'Upload trust level',
+        'upload_trust_level_check' => 'Check – uploads require admin approval before becoming public.',
+        'upload_trust_level_monitor' => 'Monitor – reserved for future use, currently behaves as Trusted.',
+        'upload_trust_level_trusted' => 'Trusted – uploads are immediately public.',
+        
         'quota' => 'کاربر دارای محدودیت سهمیه است.',
         'quota_kb' => 'سهمیه بر حسب کیلو بایت(سهمیه پیش فرض 0 است)',
         'note' => 'یادداشت مدیر (قابل مشاهده برای عموم نیست)',

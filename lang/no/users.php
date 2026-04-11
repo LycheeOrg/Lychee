@@ -12,7 +12,8 @@ return [
     'password' => 'Passord',
     'legend' => 'Legend',
     'upload_rights' => 'Når dette er valgt, kan brukeren laste opp innhold.',
-    'edit_rights' => 'Når dette er valgt, kan brukeren endre profilen sin (brukernavn, passord).',
+    'edit_rights' => 'Når dette er valgt, kan brukeren endre profilen sin (brukernavn, passord).',    'upload_trust_level' => 'Upload trust level — controls whether uploads are immediately public.',
+
     'quota' => 'Når dette er angitt, har brukeren en diskplasskvote for bilder (i kB).',
     'user_deleted' => 'Brukeren ble slettet',
     'user_created' => 'Brukeren ble laget',
@@ -21,7 +22,11 @@ return [
     'create_edit' => [
         'upload_rights' => 'Brukeren kan laste opp innhold.',
         'edit_rights' => 'Brukeren kan endre profilen sin (brukernavn, passord).',
-        'admin_rights' => 'Brukeren har administratorrettigheter.',
+        'admin_rights' => 'Brukeren har administratorrettigheter.',        'upload_trust_level' => 'Upload trust level',
+        'upload_trust_level_check' => 'Check – uploads require admin approval before becoming public.',
+        'upload_trust_level_monitor' => 'Monitor – reserved for future use, currently behaves as Trusted.',
+        'upload_trust_level_trusted' => 'Trusted – uploads are immediately public.',
+        
         'quota' => 'Brukeren har en kvotegrense.',
         'quota_kb' => 'kvote i kB (0 for standard)',
         'note' => 'Admin note (not publically visible)',

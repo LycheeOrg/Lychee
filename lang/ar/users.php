@@ -12,7 +12,8 @@ return [
     'password' => 'كلمة المرور',
     'legend' => 'الأسطورة',
     'upload_rights' => 'عند التحديد، يمكن للمستخدم تحميل المحتوى.',
-    'edit_rights' => 'عند التحديد، يمكن للمستخدم تعديل ملفه الشخصي (اسم المستخدم، كلمة المرور).',
+    'edit_rights' => 'عند التحديد، يمكن للمستخدم تعديل ملفه الشخصي (اسم المستخدم، كلمة المرور).',    'upload_trust_level' => 'Upload trust level — controls whether uploads are immediately public.',
+
     'quota' => 'عند التعيين، يكون للمستخدم حصة مساحة للصور (بالكيلوبايت).',
     'user_deleted' => 'تم حذف المستخدم',
     'user_created' => 'تم إنشاء المستخدم',
@@ -21,7 +22,11 @@ return [
     'create_edit' => [
         'upload_rights' => 'يمكن للمستخدم تحميل المحتوى.',
         'edit_rights' => 'يمكن للمستخدم تعديل ملفه الشخصي (اسم المستخدم، كلمة المرور).',
-        'admin_rights' => 'User has admin rights.',
+        'admin_rights' => 'User has admin rights.',        'upload_trust_level' => 'Upload trust level',
+        'upload_trust_level_check' => 'Check – uploads require admin approval before becoming public.',
+        'upload_trust_level_monitor' => 'Monitor – reserved for future use, currently behaves as Trusted.',
+        'upload_trust_level_trusted' => 'Trusted – uploads are immediately public.',
+        
         'quota' => 'لدى المستخدم حد الحصة.',
         'quota_kb' => 'الحصة بالكيلوبايت (0 للإعداد الافتراضي)',
         'note' => 'ملاحظة المسؤول (غير مرئية للعامة)',

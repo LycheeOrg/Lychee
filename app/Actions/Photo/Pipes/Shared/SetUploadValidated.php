@@ -37,15 +37,16 @@ class SetUploadValidated implements SharedPipe
 
 	public function handle(DuplicateDTO|StandaloneDTO $state, \Closure $next): DuplicateDTO|StandaloneDTO
 	{
-		$state->photo->is_upload_validated = $this->resolveIsValidated($state->intended_owner_id);
+		$state->photo->is_upload_validated = $this->resolveIsValidated($state->intended_owner_id, $state->is_guest_upload);
 
 		return $next($state);
 	}
 
-	private function resolveIsValidated(int $intended_owner_id): bool
+	private function resolveIsValidated(int $intended_owner_id, bool $is_guest_upload = false): bool
 	{
-		// No authenticated owner → guest upload
-		if ($intended_owner_id === 0) {
+		// Explicit guest upload flag (set by queued job when Auth::user() was null at dispatch time)
+		// or legacy fallback: no authenticated owner means guest upload
+		if ($is_guest_upload || $intended_owner_id === 0) {
 			$trust_level = $this->config_manager->getValueAsEnum('guest_upload_trust_level', UserUploadTrustLevel::class)
 				?? UserUploadTrustLevel::CHECK;
 

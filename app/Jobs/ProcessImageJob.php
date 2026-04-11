@@ -49,6 +49,7 @@ class ProcessImageJob implements ShouldQueue
 	public string $original_base_name;
 	public ?string $album_id;
 	public int $user_id;
+	public bool $is_guest_upload;
 	public ?int $file_last_modified_time;
 	public ?bool $apply_watermark;
 
@@ -77,6 +78,7 @@ class ProcessImageJob implements ShouldQueue
 		$this->album_id = $album?->get_id();
 		$album_name = $album?->get_title() ?? __('gallery.smart_album.unsorted');
 		$user_id = Auth::user()?->id;
+		$this->is_guest_upload = ($user_id === null);
 		if ($user_id === null && ($album === null || $album instanceof BaseSmartAlbum)) {
 			throw new OwnerRequiredException();
 		}
@@ -125,7 +127,8 @@ class ProcessImageJob implements ShouldQueue
 				skip_duplicates: $config_manager->getValueAsBool('skip_duplicates'),
 				shall_rename_photo_title: $config_manager->getValueAsBool('renamer_photo_title_enabled'),
 			),
-			intended_owner_id: $this->user_id
+			intended_owner_id: $this->user_id,
+			is_guest_upload: $this->is_guest_upload,
 		);
 
 		$album = null;

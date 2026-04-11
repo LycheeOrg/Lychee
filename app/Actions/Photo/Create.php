@@ -44,8 +44,9 @@ class Create
 	public function __construct(
 		?ImportMode $import_mode,
 		int $intended_owner_id,
+		bool $is_guest_upload = false,
 	) {
-		$this->strategy_parameters = new ImportParam($import_mode, $intended_owner_id);
+		$this->strategy_parameters = new ImportParam($import_mode, $intended_owner_id, is_guest_upload: $is_guest_upload);
 	}
 
 	/**

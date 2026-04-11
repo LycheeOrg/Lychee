@@ -30,6 +30,7 @@ final class ImportParam
 		public bool $is_highlighted = false,
 		public Extractor|null $exif_info = null,
 		public ?bool $apply_watermark = null,
+		public bool $is_guest_upload = false,
 	) {
 	}
 }

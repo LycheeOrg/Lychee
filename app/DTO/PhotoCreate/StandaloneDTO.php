@@ -47,6 +47,8 @@ class StandaloneDTO implements PhotoDTO
 		public readonly ?AbstractAlbum $album,
 		// Indicates the intended owner of the image.
 		public readonly int $intended_owner_id,
+		// Indicates whether the upload was performed by a guest (anonymous) user.
+		public readonly bool $is_guest_upload,
 		public readonly bool $shall_import_via_symlink,
 		public readonly bool $shall_delete_imported,
 		public readonly bool $shall_rename_photo_title,
@@ -65,6 +67,7 @@ class StandaloneDTO implements PhotoDTO
 			exif_info: $init_dto->exif_info,
 			album: $init_dto->album,
 			intended_owner_id: $init_dto->intended_owner_id,
+			is_guest_upload: $init_dto->is_guest_upload,
 			shall_import_via_symlink: $init_dto->import_mode->shall_import_via_symlink,
 			shall_delete_imported: $init_dto->import_mode->shall_delete_imported,
 			shall_rename_photo_title: $init_dto->import_mode->shall_rename_photo_title,

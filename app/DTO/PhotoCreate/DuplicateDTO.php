@@ -30,6 +30,9 @@ class DuplicateDTO implements PhotoDTO
 		// Indicates the intended owner of the image.
 		public readonly int $intended_owner_id,
 
+		// Indicates whether the upload was performed by a guest (anonymous) user.
+		public readonly bool $is_guest_upload,
+
 		// Indicates whether the new photo shall be highlighted.
 		public readonly bool $is_highlighted,
 
@@ -51,6 +54,7 @@ class DuplicateDTO implements PhotoDTO
 			shall_resync_metadata: $init_dto->import_mode->shall_resync_metadata,
 			shall_skip_duplicates: $init_dto->import_mode->shall_skip_duplicates,
 			intended_owner_id: $init_dto->intended_owner_id,
+			is_guest_upload: $init_dto->is_guest_upload,
 			is_highlighted: $init_dto->is_highlighted,
 			exif_info: $init_dto->exif_info,
 			album: $init_dto->album,

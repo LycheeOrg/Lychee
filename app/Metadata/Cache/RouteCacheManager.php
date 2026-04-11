@@ -103,6 +103,7 @@ final readonly class RouteCacheManager
 			'api/v2/Photo::random' => false,
 
 			// We don't care about those, they are rarely loaded.
+			'api/v2/Moderation' => false,
 			'api/v2/Webhook' => false,
 			'api/v2/Webhook/{webhook}' => false,
 

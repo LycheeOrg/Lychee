@@ -23,6 +23,9 @@ class InitDTO
 	// Indicates the intended owner of the image.
 	public readonly int $intended_owner_id;
 
+	// Indicates whether the upload was performed by a guest (anonymous) user.
+	public readonly bool $is_guest_upload;
+
 	// Indicates whether the new photo shall be highlighted.
 	public bool $is_highlighted = false;
 
@@ -60,6 +63,7 @@ class InitDTO
 		$this->source_file = $source_file;
 		$this->import_mode = $parameters->import_mode;
 		$this->intended_owner_id = $parameters->intended_owner_id;
+		$this->is_guest_upload = $parameters->is_guest_upload;
 		$this->is_highlighted = $parameters->is_highlighted;
 		$this->exif_info = $parameters->exif_info;
 		$this->apply_watermark = $parameters->apply_watermark;
