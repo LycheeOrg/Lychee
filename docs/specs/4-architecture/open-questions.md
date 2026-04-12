@@ -6,8 +6,10 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 | Question ID | Feature | Priority | Summary | Status | Opened | Updated |
 |-------------|---------|----------|---------|--------|--------|---------|
-
-_No active questions for this feature._
+| Q-034-01 | 034 – Bulk Album Edit | Medium | Should TagAlbum rows appear in the list with limited editable fields? | Open | 2026-04-12 | 2026-04-12 |
+| Q-034-02 | 034 – Bulk Album Edit | Medium | Should depth indicator be computed server-side (`withDepth()`) or client-side from `_lft`/`_rgt`? | Open | 2026-04-12 | 2026-04-12 |
+| Q-034-03 | 034 – Bulk Album Edit | High | Should bulk delete require a confirmation input (e.g. type "DELETE") despite the no-confirmation rule? | Open | 2026-04-12 | 2026-04-12 |
+| Q-034-04 | 034 – Bulk Album Edit | Low | Should "select all matching" scope to admin's own albums only, or all albums? | Open | 2026-04-12 | 2026-04-12 |
 
 ## Question Details
 
@@ -2997,3 +2999,67 @@ Lychee maps `embedding_id` back to Face records (which have person_id) to identi
 **Spec Impact:** Updated FR-033-03 to explicitly state that admin uploads bypass trust level checks. Updated Appendix Trust Level Decision Matrix. Updated task T-033-07 to include the admin short-circuit logic.
 
 **Resolved:** 2026-04-09
+
+---
+
+### Q-034-01: TagAlbum Rows in Bulk Edit List
+
+**Feature:** 034 – Bulk Album Edit  
+**Priority:** Medium  
+**Status:** Open  
+**Opened:** 2026-04-12
+
+**Question:** Should TagAlbum rows appear in the bulk-edit list with a visual indicator but with album-specific fields (license, album_sorting, aspect_ratio, album_timeline) disabled/hidden? Alternatively, should the list only show regular `Album` records (current spec)?
+
+**Options:**
+
+- **Option A (recommended):** Show only regular `Album` records in the list. TagAlbums are excluded entirely. The list query joins only the `albums` table (not `tag_albums`). This is simpler and avoids conditional field rendering. A note on the page explains that TagAlbums are not shown.
+- **Option B:** Show both Album and TagAlbum rows. TagAlbum rows display a "Tag Album" badge; album-specific fields are disabled for them. Allows bulk-editing shared base fields (description, copyright, is_nsfw, owner) for TagAlbums too.
+
+---
+
+### Q-034-02: Depth Indicator Computation Strategy
+
+**Feature:** 034 – Bulk Album Edit  
+**Priority:** Medium  
+**Status:** Open  
+**Opened:** 2026-04-12
+
+**Question:** Should the album depth be computed server-side via Nestedset's `withDepth()` scope (adds a `depth` column to the query result) or client-side by scanning the `_lft`/`_rgt` range of each row?
+
+**Options:**
+
+- **Option A (recommended):** Compute server-side. The `withDepth()` scope from Kalnoy Nestedset adds a `depth` integer to each result row with minimal overhead. This is reliable, correct, and requires no client-side computation. Include `depth` in `BulkAlbumResource`.
+- **Option B:** Compute client-side from `_lft`/`_rgt` by counting how many other rows' ranges contain this row's `_lft`. This is O(n²) and fragile; not recommended.
+
+---
+
+### Q-034-03: Confirmation for Bulk Delete
+
+**Feature:** 034 – Bulk Album Edit  
+**Priority:** High  
+**Status:** Open  
+**Opened:** 2026-04-12
+
+**Question:** The problem statement says "We will not ask for confirmation but add a warning at the top of the page that any modifications are finals without confirmations." Should this no-confirmation rule apply to the delete action as well, or should delete retain a confirmation step (e.g., typing "DELETE") given that it is irreversible and cascades to all descendant albums and photos?
+
+**Options:**
+
+- **Option A:** No confirmation for delete, consistent with the problem statement. The permanent warning banner serves as the sole warning. This is consistent with the stated UX intent.
+- **Option B (recommended):** Delete retains a minimal confirmation: a modal dialog showing the count of selected albums and asking the admin to click a second "Confirm Delete" button. No text input required. This reduces accidental mass-delete risk without adding friction. The problem statement's "no confirmation" wording likely refers to field edits, not destructive operations.
+
+---
+
+### Q-034-04: Scope of "Select All Matching"
+
+**Feature:** 034 – Bulk Album Edit  
+**Priority:** Low  
+**Status:** Open  
+**Opened:** 2026-04-12
+
+**Question:** Should the `GET /api/v2/BulkAlbumEdit::ids` endpoint return IDs for all albums in the gallery (regardless of owner), or should it be scoped to the authenticated admin's own albums?
+
+**Options:**
+
+- **Option A (recommended):** Return all albums regardless of owner. This page is admin-only; the admin has authority over all albums. Scoping to own albums would defeat the purpose of a bulk management tool.
+- **Option B:** Scope to albums the admin owns. Less useful for the stated use case (managing albums imported by multiple users).
