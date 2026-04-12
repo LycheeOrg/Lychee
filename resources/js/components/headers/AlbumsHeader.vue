@@ -56,6 +56,8 @@
 					{{ $t("profile.register.signup") }}
 				</Button>
 			</template>
+			<!-- Not logged in. -->
+			<BackLinkButton v-if="userStore.user?.id === null && albumsStore.rootConfig" :config="albumsStore.rootConfig" />
 			<!-- Maybe logged in. -->
 			<div class="hidden lg:block">
 				<template v-for="(item, idx) in menu" :key="`menu-item-${idx}`">
@@ -67,8 +69,6 @@
 						<Button :icon="item.icon" class="border-none" :severity="item.severity ?? 'secondary'" text @click="item.callback" />
 					</template>
 				</template>
-				<!-- Not logged in. -->
-				<BackLinkButton v-if="userStore.user?.id === null && albumsStore.rootConfig" :config="albumsStore.rootConfig" />
 			</div>
 			<SpeedDial
 				:model="menu"
