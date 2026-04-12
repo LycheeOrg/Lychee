@@ -33,8 +33,8 @@ return new class() extends BaseConfigMigration {
 				'details' => 'check: guest uploads require admin approval. monitor: reserved (behaves as trusted). trusted: guest uploads are immediately public.',
 				'is_secret' => false,
 				'is_expert' => false,
-				'level' => 1,
-				'order' => 10,
+				'level' => 1, // No need to display it if the user does not have SE as they don't have guest upload functionalities2.
+				'order' => 11,
 			],
 		];
 	}
