@@ -13,6 +13,8 @@ return [
     'legend' => 'Легенда',
     'upload_rights' => 'При выборе этого параметра пользователь может загружать контент.',
     'edit_rights' => 'При выборе этого параметра пользователь может изменить свой профиль (имя пользователя, пароль).',
+    'upload_trust_level' => 'Upload trust level — controls whether uploads are immediately public.',
+
     'quota' => 'Если установлено, у пользователя есть квота места для фотографий (в кБ).',
     'user_deleted' => 'Пользователь удалён',
     'user_created' => 'Пользователь создан',
@@ -22,6 +24,11 @@ return [
         'upload_rights' => 'Пользователь может загружать контент.',
         'edit_rights' => 'Пользователь может изменить свой профиль (имя пользователя, пароль).',
         'admin_rights' => 'Пользователь имеет права администратора.',
+        'upload_trust_level' => 'Upload trust level',
+        'upload_trust_level_check' => 'Check – uploads require admin approval before becoming public.',
+        'upload_trust_level_monitor' => 'Monitor – upload are publics unless flagged for content.',
+        'upload_trust_level_trusted' => 'Trusted – uploads are immediately public.',
+
         'quota' => 'Пользователь имеет ограничение по квоте.',
         'quota_kb' => 'квота в кБ (0 по умолчанию)',
         'note' => 'Примечание администратора (не видно публично)',

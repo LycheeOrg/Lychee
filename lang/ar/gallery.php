@@ -314,6 +314,8 @@ return [
         'merge_all' => 'دمج المحدد',
         'apply_renamer' => 'Apply Renamer',
         'apply_renamer_all' => 'Apply Renamer to Selected',
+        'approve' => 'Approve',
+        'approve_all' => 'Approve Selected',
         'upload_photo' => 'رفع صورة',
         'take_photo' => 'التقاط صورة',
         'import_link' => 'استيراد من الرابط',

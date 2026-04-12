@@ -24,6 +24,7 @@ use App\DTO\PhotoCreate\InitDTO;
 use App\DTO\PhotoCreate\PhotoPartnerDTO;
 use App\DTO\PhotoCreate\StandaloneDTO;
 use App\DTO\PhotoCreate\VideoPartnerDTO;
+use App\Enum\UserUploadTrustLevel;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\PhotoResyncedException;
 use App\Exceptions\PhotoSkippedException;
@@ -44,8 +45,9 @@ class Create
 	public function __construct(
 		?ImportMode $import_mode,
 		int $intended_owner_id,
+		UserUploadTrustLevel $upload_trust_level,
 	) {
-		$this->strategy_parameters = new ImportParam($import_mode, $intended_owner_id);
+		$this->strategy_parameters = new ImportParam($import_mode, $intended_owner_id, upload_trust_level: $upload_trust_level);
 	}
 
 	/**
@@ -144,6 +146,7 @@ class Create
 			$pipes[] = Duplicate\SaveIfDirty::class;
 		}
 		$pipes[] = Duplicate\ThrowSkipDuplicate::class;
+		$pipes[] = Duplicate\ThrowUntrustedDuplicate::class;
 		$pipes[] = Shared\SetHighlighted::class;
 		$pipes[] = Shared\Save::class;
 		$pipes[] = Shared\SetParent::class;
@@ -178,6 +181,7 @@ class Create
 			Standalone\PlaceGoogleMotionVideo::class,
 			Standalone\SetChecksum::class,
 			Standalone\AutoRenamer::class,
+			Shared\SetUploadValidated::class,
 			Shared\Save::class,
 			Shared\SetParent::class,
 			Shared\SaveStatistics::class,
@@ -276,6 +280,7 @@ class Create
 			Standalone\PlaceGoogleMotionVideo::class,
 			Standalone\SetChecksum::class,
 			Standalone\AutoRenamer::class,
+			Shared\SetUploadValidated::class,
 			Shared\Save::class,
 			Shared\SetParent::class,
 			Standalone\CreateOriginalSizeVariant::class,

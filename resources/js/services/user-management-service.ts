@@ -7,6 +7,7 @@ type UserManagementCreateRequest = {
 	may_upload: boolean;
 	may_administrate: boolean;
 	may_edit_own_settings: boolean;
+	upload_trust_level?: App.Enum.UserUploadTrustLevel;
 	has_quota?: boolean;
 	quota_kb?: number;
 	note?: string;

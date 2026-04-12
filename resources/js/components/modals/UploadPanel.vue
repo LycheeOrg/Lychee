@@ -1,7 +1,7 @@
 <template>
 	<Dialog v-model:visible="is_upload_visible" modal pt:root:class="border-none" :dismissable-mask="true">
 		<template #container>
-			<div v-if="setup" class="w-screen max-w-md max-h-screen flex flex-col p-4">
+			<div v-if="setup" class="w-screen max-w-lg max-h-screen flex flex-col p-4">
 				<div v-if="counts.files > 0" class="flex flex-wrap justify-center w-full max-w-md">
 					<span v-if="counts.completed === counts.files" class="w-full text-center text-muted-color-emphasis font-bold">{{
 						$t("dialogs.upload.completed")
@@ -22,6 +22,7 @@
 						:file="uploadable.file"
 						:album-id="albumId"
 						:status="uploadable.status"
+						:message="uploadable.message"
 						:index="index"
 						:chunk-size="setup.upload_chunk_size"
 						:apply-watermark="applyWatermark"
@@ -173,8 +174,9 @@ function uploadNext(searchIndex = 0, max_processing_limit: number | undefined = 
 	}
 }
 
-function uploadCompleted(index: number, status: "done" | "error" | "warning") {
+function uploadCompleted(index: number, status: "done" | "error" | "warning", message: string | undefined) {
 	list_upload_files.value[index].status = status;
+	list_upload_files.value[index].message = message;
 
 	uploadNext(index, 1);
 

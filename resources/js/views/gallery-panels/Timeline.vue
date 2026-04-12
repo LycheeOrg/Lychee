@@ -179,6 +179,7 @@ import DeleteDialog from "@/components/forms/gallery-dialogs/DeleteDialog.vue";
 import { useContextMenu } from "@/composables/contextMenus/contextMenu";
 import PhotoService from "@/services/photo-service";
 import AlbumService from "@/services/album-service";
+import ModerationService from "@/services/moderation-service";
 import { EmptyAlbumCallbacks } from "@/utils/Helpers";
 import Divider from "primevue/divider";
 import ContextMenu from "primevue/contextmenu";
@@ -360,6 +361,16 @@ const photoCallbacks = {
 	toggleDownload: () => {},
 	toggleApplyRenamer: () => {},
 	toggleScanFaces: () => {},
+	toggleApprove: () => {
+		ModerationService.approve(selectedPhotosIds.value).then(() => {
+			selectedPhotosIds.value.forEach((photoId) => {
+				const photo = photosStore.photos.find((p) => p.id === photoId);
+				if (photo) {
+					photo.is_validated = true;
+				}
+			});
+		});
+	},
 };
 
 const {

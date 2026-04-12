@@ -8,11 +8,15 @@
 
 namespace App\DTO;
 
+use App\Enum\UserUploadTrustLevel;
+use App\Exceptions\Internal\LycheeLogicException;
 use App\Metadata\Extractor;
 use App\Models\Album;
 
 final class ImportParam
 {
+	public UserUploadTrustLevel $upload_trust_level;
+
 	/**
 	 * @param ImportMode     $import_mode
 	 * @param int            $intended_owner_id indicates the intended owner of the image
@@ -30,6 +34,8 @@ final class ImportParam
 		public bool $is_highlighted = false,
 		public Extractor|null $exif_info = null,
 		public ?bool $apply_watermark = null,
+		?UserUploadTrustLevel $upload_trust_level = null,
 	) {
+		$this->upload_trust_level = $upload_trust_level ?? throw new LycheeLogicException('Upload trust level must be provided');
 	}
 }

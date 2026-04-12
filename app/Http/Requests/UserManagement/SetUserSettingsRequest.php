@@ -14,6 +14,7 @@ use App\Contracts\Http\Requests\HasQuotaKB;
 use App\Contracts\Http\Requests\HasUser;
 use App\Contracts\Http\Requests\HasUsername;
 use App\Contracts\Http\Requests\RequestAttribute;
+use App\Enum\UserUploadTrustLevel;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasNoteTrait;
 use App\Http\Requests\Traits\HasPasswordTrait;
@@ -30,6 +31,7 @@ use App\Rules\PasswordRule;
 use App\Rules\StringRequireSupportRule;
 use App\Rules\UsernameRule;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\Rules\Enum;
 
 class SetUserSettingsRequest extends BaseApiRequest implements HasUsername, HasPassword, HasUser, HasQuotaKB, HasNote
 {
@@ -42,6 +44,7 @@ class SetUserSettingsRequest extends BaseApiRequest implements HasUsername, HasP
 	protected bool $may_upload = false;
 	protected bool $may_edit_own_settings = false;
 	protected bool $may_administrate = false;
+	protected ?UserUploadTrustLevel $upload_trust_level = null;
 
 	/**
 	 * {@inheritDoc}
@@ -63,6 +66,7 @@ class SetUserSettingsRequest extends BaseApiRequest implements HasUsername, HasP
 			RequestAttribute::MAY_UPLOAD_ATTRIBUTE => 'present|boolean',
 			RequestAttribute::MAY_EDIT_OWN_SETTINGS_ATTRIBUTE => 'present|boolean',
 			RequestAttribute::MAY_ADMINISTRATE => ['sometimes', 'boolean', new BooleanRequireSupportRule(false, $this->verify())],
+			RequestAttribute::UPLOAD_TRUST_LEVEL_ATTRIBUTE => ['sometimes', new Enum(UserUploadTrustLevel::class)],
 			RequestAttribute::HAS_QUOTA_ATTRIBUTE => ['sometimes', 'boolean', new BooleanRequireSupportRule(false, $this->verify())],
 			RequestAttribute::QUOTA_ATTRIBUTE => ['sometimes', 'int', new IntegerRequireSupportRule(0, $this->verify())],
 			RequestAttribute::NOTE_ATTRIBUTE => ['sometimes', 'nullable', 'string', new StringRequireSupportRule('', $this->verify())],
@@ -85,6 +89,9 @@ class SetUserSettingsRequest extends BaseApiRequest implements HasUsername, HasP
 		$this->may_upload = static::toBoolean($values[RequestAttribute::MAY_UPLOAD_ATTRIBUTE]);
 		$this->may_edit_own_settings = static::toBoolean($values[RequestAttribute::MAY_EDIT_OWN_SETTINGS_ATTRIBUTE]);
 		$this->may_administrate = static::toBoolean($values[RequestAttribute::MAY_ADMINISTRATE] ?? false);
+		$this->upload_trust_level = isset($values[RequestAttribute::UPLOAD_TRUST_LEVEL_ATTRIBUTE])
+			? UserUploadTrustLevel::from($values[RequestAttribute::UPLOAD_TRUST_LEVEL_ATTRIBUTE])
+			: null;
 		/** @var int $user_id */
 		$user_id = $values[RequestAttribute::ID_ATTRIBUTE];
 		$this->user2 = User::query()->findOrFail($user_id);
@@ -106,5 +113,10 @@ class SetUserSettingsRequest extends BaseApiRequest implements HasUsername, HasP
 	public function mayAdministrate(): bool
 	{
 		return $this->may_administrate;
+	}
+
+	public function uploadTrustLevel(): ?UserUploadTrustLevel
+	{
+		return $this->upload_trust_level;
 	}
 }

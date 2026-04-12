@@ -111,6 +111,7 @@ class ConfigIntegrity
 		'ai_vision_face_selfie_confidence_threshold',
 		'ai_vision_face_person_is_searchable_default',
 		'ai_vision_face_allow_user_claim',
+		'guest_upload_trust_level',
 	];
 
 	public const PRO_FIELDS = [

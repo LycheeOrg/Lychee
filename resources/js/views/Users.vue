@@ -29,6 +29,9 @@
 								<span v-tooltip.top="$t('users.edit_rights')" class="w-full text-center">
 									<i class="pi pi-lock-open" />
 								</span>
+								<span v-tooltip.top="$t('users.upload_trust_level')" class="w-full text-center">
+									<i class="pi pi-shield" />
+								</span>
 								<span v-if="isQuotaEnabled" v-tooltip.top="$t('users.quota')" class="w-full text-center">
 									<i class="pi pi-chart-pie" />
 								</span>
@@ -60,6 +63,10 @@
 						<li class="ltr:ml-2 rtl:mr-2 pt-2 flex items-start gap-x-4">
 							<i class="pi pi-lock-open"></i>
 							<span>{{ $t("users.edit_rights") }}</span>
+						</li>
+						<li class="ltr:ml-2 rtl:mr-2 pt-2 flex items-start gap-x-4">
+							<i class="pi pi-shield text-create-600"></i>
+							<span>{{ $t("users.upload_trust_level") }}</span>
 						</li>
 						<li v-if="is_se_enabled" class="ltr:ml-2 rtl:mr-2 pt-2 flex items-start gap-x-4">
 							<i class="pi pi-chart-pie"></i>

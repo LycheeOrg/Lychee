@@ -8,6 +8,7 @@
 
 namespace App\Actions\User;
 
+use App\Enum\UserUploadTrustLevel;
 use App\Exceptions\ConflictingPropertyException;
 use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\ModelDBException;
@@ -42,6 +43,7 @@ class Save
 		bool $may_administrate = false,
 		?int $quota_kb = null,
 		?string $note = null,
+		?UserUploadTrustLevel $upload_trust_level = null,
 	): void {
 		if (User::query()
 			->where('username', '=', $username)
@@ -62,6 +64,9 @@ class Save
 		$user->may_administrate = $may_administrate;
 		$user->note = $note;
 		$user->quota_kb = $quota_kb;
+		if ($upload_trust_level !== null) {
+			$user->upload_trust_level = $upload_trust_level;
+		}
 		if ($password !== null && $password !== '') {
 			$user->password = Hash::make($password);
 		}

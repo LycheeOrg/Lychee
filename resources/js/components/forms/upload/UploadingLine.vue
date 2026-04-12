@@ -13,7 +13,7 @@
 </template>
 <script setup lang="ts">
 import UploadService, { UploadData } from "@/services/upload-service";
-import { type AxiosProgressEvent } from "axios";
+import { AxiosError, type AxiosProgressEvent } from "axios";
 import { trans } from "laravel-vue-i18n";
 import ProgressBar from "primevue/progressbar";
 import { computed, ref, watch } from "vue";
@@ -26,14 +26,16 @@ const props = withDefaults(
 		status: "uploading" | "waiting" | "done" | "error" | "warning";
 		index: number;
 		applyWatermark: boolean;
+		message: string | undefined;
 	}>(),
 	{
 		chunkSize: 1024,
+		message: undefined,
 	},
 );
 
 const emits = defineEmits<{
-	"upload:completed": [index: number, status: "done" | "warning" | "error"];
+	"upload:completed": [index: number, status: "done" | "warning" | "error", message: string | undefined];
 }>();
 
 const status = ref(props.status);
@@ -57,8 +59,8 @@ const statusMessage = computed(() => {
 	switch (status.value) {
 		case "uploading": return trans("dialogs.upload.uploading");
 		case "done":      return trans("dialogs.upload.finished");
-		case "warning":   return errorMessage.value ?? trans("dialogs.upload.failed_error");
-		case "error":     return errorMessage.value ?? trans("dialogs.upload.failed_error");
+		case "warning":   return props.message ?? errorMessage.value ?? trans("dialogs.upload.failed_error");
+		case "error":     return props.message ?? errorMessage.value ?? trans("dialogs.upload.failed_error");
 		default:          return "";
 	}
 });
@@ -75,11 +77,11 @@ const errorFlexClass = computed(() => {
 // prettier-ignore
 const statusClass = computed(() => {
 	switch (status.value) {
-		case "uploading": return "text-sky-500 text-right pr-1";
-		case "done":      return "text-create-600 text-right pr-1";
-		case "warning":   return "text-warning-600 text-right pr-1";
-		case "error":     return "text-danger-700 text-right pr-1";
-		default:          return "text-warning-600 text-right pr-1";
+		case "uploading": return "text-sky-500 text-right pr-1  text-xs";
+		case "done":      return "text-create-600 text-right pr-1  text-xs";
+		case "warning":   return "text-warning-600 text-right pr-1  text-xs";
+		case "error":     return "text-danger-700 text-right pr-1  text-xs";
+		default:          return "text-warning-600 text-right pr-1  text-xs";
 	}
 });
 
@@ -116,38 +118,64 @@ function process() {
 			if (response.data.chunk_number === response.data.total_chunks) {
 				progress.value = 100;
 				status.value = "done";
-				emits("upload:completed", props.index, "done");
+				emits("upload:completed", props.index, "done", undefined);
 			} else {
 				chunkStart.value += props.chunkSize;
 				process();
 			}
 		})
-		.catch((error) => {
-			// prettier-ignore
-			switch (error.response.status) {
-				case 409: errorMessage.value = error.response.data.message;
-					progress.value = 100;
-					status.value = "warning";
-					emits("upload:completed", props.index, "warning");
-					break; // duplicate found
-				case 413: errorMessage.value = error.response.data.message; break;
-				case 422: errorMessage.value = error.response.data.message; break;
-				case 500: errorMessage.value = "Something went wrong, check the logs.";
-					if (error.response.data.message.includes("Failed to open stream: Permission denied")) {
-						errorMessage.value = "Failed to open stream: Permission denied";
-					}
-					break;
-				case 504: errorMessage.value = "The server took too long to respond.";
-					progress.value = 100;
-					status.value = "warning";
-					emits("upload:completed", props.index, "warning");
-					return;
-				default: break;
+		.catch(handleError);
+}
+
+function handleError(error: AxiosError<{ message: string }>) {
+	if (!error.response) {
+		progress.value = 100;
+		status.value = "error";
+		errorMessage.value = error.message;
+		emits("upload:completed", props.index, "error", errorMessage.value);
+		return;
+	}
+
+	switch (error.response.status) {
+		case 409:
+			errorMessage.value = error.response.data.message;
+			progress.value = 100;
+			status.value = "warning";
+			emits("upload:completed", props.index, "warning", errorMessage.value);
+			return; // duplicate found
+		case 413:
+			errorMessage.value = error.response.data.message;
+			progress.value = 100;
+			status.value = "error";
+			emits("upload:completed", props.index, "error", errorMessage.value);
+			return;
+		case 422:
+			errorMessage.value = error.response.data.message;
+			progress.value = 100;
+			status.value = "error";
+			emits("upload:completed", props.index, "error", errorMessage.value);
+			return;
+		case 500:
+			errorMessage.value = "Something went wrong, check the logs.";
+			if (error.response.data.message.includes("Failed to open stream: Permission denied")) {
+				errorMessage.value = "Failed to open stream: Permission denied";
 			}
 			progress.value = 100;
 			status.value = "error";
-			emits("upload:completed", props.index, "error");
-		});
+			emits("upload:completed", props.index, "error", errorMessage.value);
+			return;
+		case 504:
+			errorMessage.value = "The server took too long to respond.";
+			progress.value = 100;
+			status.value = "warning";
+			emits("upload:completed", props.index, "warning", errorMessage.value);
+			return;
+		default:
+			progress.value = 100;
+			status.value = "error";
+			emits("upload:completed", props.index, "error", undefined);
+			return;
+	}
 }
 
 if (status.value === "uploading") {

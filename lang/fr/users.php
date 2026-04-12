@@ -11,6 +11,8 @@ return [
     'legend' => 'Légende',
     'upload_rights' => 'Si cette option est cochée, l’utilisateur peut téléverser du contenu.',
     'edit_rights' => 'Si cette option est cochée, l’utilisateur peut modifier son profil (nom d’utilisateur, mot de passe).',
+    'upload_trust_level' => 'Upload trust level — controls whether uploads are immediately public.',
+
     'quota' => 'Si défini, l’utilisateur dispose d’un quota d’espace pour les photos (en Ko).',
     'user_deleted' => 'Utilisateur supprimé',
     'user_created' => 'Utilisateur créé',
@@ -20,6 +22,11 @@ return [
         'upload_rights' => 'L’utilisateur peut téléverser du contenu.',
         'edit_rights' => 'L’utilisateur peut modifier son nom d’utilisateur et son mot de passe.',
         'admin_rights' => 'L’utilisateur peut administrer Lychee.',
+        'upload_trust_level' => 'Upload trust level',
+        'upload_trust_level_check' => 'Check – uploads require admin approval before becoming public.',
+        'upload_trust_level_monitor' => 'Monitor – upload are publics unless flagged for content.',
+        'upload_trust_level_trusted' => 'Trusted – uploads are immediately public.',
+
         'quota' => 'Quota d’espace (en Ko).',
         'quota_kb' => 'quota en Ko (0 par défaut)',
         'note' => 'Note admin (non visible publiquement)',

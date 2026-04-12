@@ -57,6 +57,7 @@ class PhotoResource extends Data
 	/** @var FaceResource[] */
 	public array $faces = [];
 	public int $hidden_face_count = 0;
+	public bool $is_validated;
 
 	public function __construct(Photo $photo, ?string $album_id, bool $should_downgrade_size_variants)
 	{
@@ -66,6 +67,7 @@ class PhotoResource extends Data
 		$this->created_at = $photo->created_at->toIso8601String();
 		$this->description = $photo->description ?? '';
 		$this->is_highlighted = $photo->is_highlighted;
+		$this->is_validated = $photo->is_validated;
 		$this->license = $photo->license;
 		$this->live_photo_checksum = $photo->live_photo_checksum;
 		$this->live_photo_content_id = $photo->live_photo_content_id;

@@ -155,6 +155,7 @@ import { useContextMenu } from "@/composables/contextMenus/contextMenu";
 import PhotoService from "@/services/photo-service";
 import AlbumService from "@/services/album-service";
 import FaceDetectionService from "@/services/face-detection-service";
+import ModerationService from "@/services/moderation-service";
 import { AlbumThumbConfig } from "@/components/gallery/albumModule/thumbs/AlbumThumb.vue";
 import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
 import Button from "primevue/button";
@@ -391,6 +392,16 @@ const photoCallbacks = {
 					life: 3000,
 				});
 			});
+	},
+	toggleApprove: () => {
+		ModerationService.approve(selectedPhotosIds.value).then(() => {
+			selectedPhotosIds.value.forEach((photoId) => {
+				const photo = photosStore.photos.find((p) => p.id === photoId);
+				if (photo) {
+					photo.is_validated = true;
+				}
+			});
+		});
 	},
 };
 

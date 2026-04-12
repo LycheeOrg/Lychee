@@ -10,9 +10,11 @@ namespace App\Repositories;
 
 use App\Constants\PhotoAlbum as PA;
 use App\DTO\PhotoSortingCriterion;
+use App\Models\Extensions\FiltersUploadValidation;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Repository for Photo queries.
@@ -21,6 +23,8 @@ use Illuminate\Pagination\LengthAwarePaginator;
  */
 class PhotoRepository
 {
+	use FiltersUploadValidation;
+
 	/**
 	 * Get paginated photos for an album with all necessary relations eager-loaded.
 	 *
@@ -63,6 +67,12 @@ class PhotoRepository
 		// Apply tag filtering if tag_ids provided and not empty
 		if ($tag_ids !== null && count($tag_ids) > 0) {
 			$this->applyTagFilter($query, $tag_ids, $tag_logic);
+		}
+
+		// Non-admins must not see unvalidated photos uploaded by other users.
+		$user = Auth::user();
+		if ($user?->may_administrate !== true) {
+			$this->applyUploadValidationFilter($query, $user?->id);
 		}
 
 		// Apply sorting via SortingDecorator

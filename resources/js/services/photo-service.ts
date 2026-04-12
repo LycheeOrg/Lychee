@@ -17,10 +17,6 @@ export type PhotoMove = {
 };
 
 const PhotoService = {
-	get(photo_id: string): Promise<AxiosResponse<App.Http.Resources.Models.PhotoResource>> {
-		return axios.get(`${Constants.getApiUrl()}Photo`, { params: { photo_id: photo_id }, data: {} });
-	},
-
 	importFromUrl(urls: string[], album_id: string | null): Promise<AxiosResponse<string>> {
 		return axios.post(`${Constants.getApiUrl()}Photo::fromUrl`, { urls: urls.filter(Boolean), album_id: album_id });
 	},

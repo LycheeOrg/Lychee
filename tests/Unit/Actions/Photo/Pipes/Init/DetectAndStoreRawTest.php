@@ -133,6 +133,7 @@ class DetectAndStoreRawTest extends AbstractTestCase
 		$import_param = new ImportParam(
 			import_mode: new ImportMode(),
 			intended_owner_id: 1,
+			upload_trust_level: \App\Enum\UserUploadTrustLevel::TRUSTED,
 		);
 
 		return new InitDTO(

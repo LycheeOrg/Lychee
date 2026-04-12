@@ -72,6 +72,7 @@ use function Safe\preg_match;
  * @property Carbon|null           $initial_taken_at
  * @property string|null           $initial_taken_at_orig_tz
  * @property bool                  $is_highlighted
+ * @property bool                  $is_validated
  * @property string|null           $rating_avg
  * @property string|null           $live_photo_short_path
  * @property string|null           $live_photo_url
@@ -166,6 +167,7 @@ class Photo extends Model implements HasUTCBasedTimes
 		'taken_at_mod' => 'datetime',
 		'owner_id' => 'integer',
 		'is_highlighted' => 'boolean',
+		'is_validated' => 'boolean',
 		'latitude' => 'float',
 		'longitude' => 'float',
 		'altitude' => 'float',
