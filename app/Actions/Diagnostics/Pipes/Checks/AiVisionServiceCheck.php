@@ -11,7 +11,7 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
 use App\Repositories\ConfigManager;
-use Illuminate\Support\Facades\Http;
+use App\Services\Image\FacialRecognitionService;
 use Illuminate\Support\Facades\Schema;
 
 /**
@@ -21,6 +21,7 @@ class AiVisionServiceCheck implements DiagnosticPipe
 {
 	public function __construct(
 		protected readonly ConfigManager $config_manager,
+		protected readonly FacialRecognitionService $facial_recognition_service,
 	) {
 	}
 
@@ -38,29 +39,19 @@ class AiVisionServiceCheck implements DiagnosticPipe
 			return $next($data);
 		}
 
-		$this->validateServiceUrl($data);
-		$this->checkServiceHealth($data);
-
-		return $next($data);
-	}
-
-	/**
-	 * Validate that the AI Vision service URL is configured.
-	 *
-	 * @param DiagnosticData[] &$data
-	 *
-	 * @return void
-	 */
-	private function validateServiceUrl(array &$data): void
-	{
-		$service_url = config('features.ai-vision-service.face-url', '');
-		if ($service_url === '') {
+		if (!$this->facial_recognition_service->isConfigured()) {
 			$data[] = DiagnosticData::error(
 				'AI Vision: Service URL is not configured. Set AI_VISION_FACE_URL in your .env file.',
 				self::class,
 				[]
 			);
+
+			return $next($data);
 		}
+
+		$this->checkServiceHealth($data);
+
+		return $next($data);
 	}
 
 	/**
@@ -73,17 +64,9 @@ class AiVisionServiceCheck implements DiagnosticPipe
 	private function checkServiceHealth(array &$data): void
 	{
 		$service_url = config('features.ai-vision-service.face-url', '');
-		if ($service_url === '') {
-			return;
-		}
-
-		$api_key = config('features.ai-vision-service.face-api-key', '');
-		$health_url = rtrim($service_url, '/') . '/health';
 
 		try {
-			$response = Http::withHeaders(['X-API-Key' => $api_key])
-				->timeout(5)
-				->get($health_url);
+			$response = $this->facial_recognition_service->checkHealthRaw(5);
 
 			if (!$response->successful()) {
 				$data[] = DiagnosticData::error(
@@ -115,7 +98,7 @@ class AiVisionServiceCheck implements DiagnosticPipe
 			}
 		} catch (\Illuminate\Http\Client\ConnectionException $e) {
 			$data[] = DiagnosticData::error(
-				'AI Vision: Could not connect to service at ' . $health_url,
+				'AI Vision: Could not connect to service at ' . rtrim($service_url, '/') . '/health',
 				self::class,
 				['Check that the AI Vision service is running and the URL is correct.', $e->getMessage()]
 			);

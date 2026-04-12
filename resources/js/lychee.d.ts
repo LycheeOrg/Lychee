@@ -229,11 +229,15 @@ declare namespace App.Http.Resources.Collections {
 		per_page: number;
 		total: number;
 	};
-	export type PaginatedPersonsResource = {
-		persons: App.Http.Resources.Models.PersonResource[];
-	};
 	export type PaginatedModerationResource = {
 		photos: App.Http.Resources.Models.ModerationResource[];
+		current_page: number;
+		last_page: number;
+		per_page: number;
+		total: number;
+	};
+	export type PaginatedPersonsResource = {
+		persons: App.Http.Resources.Models.PersonResource[];
 		current_page: number;
 		last_page: number;
 		per_page: number;
@@ -740,6 +744,15 @@ declare namespace App.Http.Resources.Models {
 		title: string;
 		url: string | null;
 	};
+	export type ModerationResource = {
+		photo_id: string;
+		title: string;
+		thumb_url: string | null;
+		owner_username: string;
+		album_id: string | null;
+		album_title: string | null;
+		created_at: string;
+	};
 	export type PersonResource = {
 		id: string;
 		name: string;
@@ -749,15 +762,6 @@ declare namespace App.Http.Resources.Models {
 		face_count: number;
 		photo_count: number;
 		representative_crop_url: string | null;
-	};
-	export type ModerationResource = {
-		photo_id: string;
-		title: string;
-		thumb_url: string | null;
-		owner_username: string;
-		album_id: string | null;
-		album_title: string | null;
-		created_at: string;
 	};
 	export type PhotoAlbumResource = {
 		id: string;
@@ -1052,6 +1056,10 @@ declare namespace App.Http.Resources.Rights {
 		can_pasword_protect: boolean;
 		can_import_from_server: boolean;
 		can_make_purchasable: boolean;
+		can_view_album_people: boolean;
+		can_trigger_scan: boolean;
+		can_assign_face: boolean;
+		can_batch_face_ops: boolean;
 	};
 	export type GlobalRightsResource = {
 		root_album: App.Http.Resources.Rights.RootAlbumRightsResource;
@@ -1078,6 +1086,10 @@ declare namespace App.Http.Resources.Rights {
 		can_edit: boolean;
 		can_download: boolean;
 		can_access_full_photo: boolean;
+		can_view_face_overlays: boolean;
+		can_dismiss_face: boolean;
+		can_assign_face: boolean;
+		can_trigger_scan: boolean;
 	};
 	export type RootAlbumRightsResource = {
 		can_edit: boolean;

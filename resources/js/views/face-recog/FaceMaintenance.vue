@@ -230,6 +230,7 @@ import FaceAssignmentModal from "@/components/modals/faceRecog/FaceAssignmentMod
 import FaceMaintenanceService from "@/services/face-maintenance-service";
 import FaceDetectionService from "@/services/face-detection-service";
 import PhotoService from "@/services/photo-service";
+import ModerationService from "@/services/moderation-service";
 
 const faces = ref<App.Http.Resources.Models.FaceResource[]>([]);
 const loading = ref(false);
@@ -408,7 +409,7 @@ function openPhotoViewer(face: App.Http.Resources.Models.FaceResource): void {
 	showPhotoViewer.value = true;
 	viewingPhoto.value = null;
 
-	PhotoService.get(face.photo_id)
+	ModerationService.getPhoto(face.photo_id)
 		.then((response) => {
 			viewingPhoto.value = response.data;
 		})

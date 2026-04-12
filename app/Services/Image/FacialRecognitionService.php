@@ -106,11 +106,30 @@ class FacialRecognitionService
 	}
 
 	/**
+	 * Make a raw HTTP request to the AI Vision service health endpoint.
+	 *
+	 * @param int $timeout Request timeout in seconds
+	 *
+	 * @return Response
+	 *
+	 * @throws ExternalComponentMissingException When the service is not configured
+	 * @throws \Exception                        When the HTTP request fails
+	 */
+	public function checkHealthRaw(int $timeout = 5): Response
+	{
+		if (!$this->isConfigured()) {
+			throw new ExternalComponentMissingException('AI Vision service is not configured.');
+		}
+
+		return Http::withHeaders(['X-API-Key' => $this->api_key])
+			->timeout($timeout)
+			->get($this->service_url . '/health');
+	}
+
+	/**
 	 * Check the health status of the AI Vision service.
 	 *
 	 * @return array{status: string, model_loaded: bool, embedding_count: int}|null
-	 *
-	 * @throws \Exception When the HTTP request fails
 	 */
 	public function checkHealth(): ?array
 	{
@@ -120,10 +139,13 @@ class FacialRecognitionService
 			return null;
 		}
 
-		$response = Http::withHeaders(['X-API-Key' => $this->api_key])
-			->get($this->service_url . '/health');
+		try {
+			$response = $this->checkHealthRaw();
 
-		return $response->successful() ? $response->json() : null;
+			return $response->successful() ? $response->json() : null;
+		} catch (\Exception) {
+			return null;
+		}
 	}
 
 	/**
