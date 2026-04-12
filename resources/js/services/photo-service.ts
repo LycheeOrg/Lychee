@@ -73,6 +73,33 @@ const PhotoService = {
 		location.href = `${Constants.getApiUrl()}Zip?photo_ids=${photo_ids.join(",")}&variant=${download_type}&from_id=${from_id ?? null}`;
 	},
 
+	getChunkCount(photo_ids: string[], from_id: string | null, variant: App.Enum.DownloadVariantType): Promise<AxiosResponse<App.Http.Resources.GalleryConfigs.ZipChunksData>> {
+		return axios.get(`${Constants.getApiUrl()}Zip/chunks`, { params: { photo_ids: photo_ids.join(","), from_id: from_id, variant } });
+	},
+
+	downloadChunk(photo_ids: string[], from_id: string | null, variant: App.Enum.DownloadVariantType, chunk: number): Promise<void> {
+		return axios
+			.get(`${Constants.getApiUrl()}Zip`, { params: { photo_ids: photo_ids.join(","), from_id: from_id, variant, chunk }, responseType: "blob" })
+			.then(function (response) {
+				const url = URL.createObjectURL(response.data as Blob);
+				const a = document.createElement("a");
+				const disposition = response.headers["content-disposition"] as string | undefined;
+				let filename = "photos.zip";
+				if (disposition) {
+					const match = disposition.match(/filename\*?=(?:UTF-8'')?([^;]+)/i);
+					if (match) {
+						filename = decodeURIComponent(match[1].replace(/['"]/g, ""));
+					}
+				}
+				a.href = url;
+				a.download = filename;
+				document.body.appendChild(a);
+				a.click();
+				document.body.removeChild(a);
+				URL.revokeObjectURL(url);
+			});
+	},
+
 	watermark(photo_ids: string[]): Promise<AxiosResponse> {
 		return axios.post(`${Constants.getApiUrl()}Photo::watermark`, { photo_ids: photo_ids });
 	},

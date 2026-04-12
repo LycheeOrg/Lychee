@@ -214,6 +214,33 @@ const AlbumService = {
 		location.href = `${Constants.getApiUrl()}Zip?album_ids=${album_ids.join(",")}&variant=${variant}`;
 	},
 
+	getChunkCount(album_ids: string[], variant: App.Enum.DownloadVariantType): Promise<AxiosResponse<App.Http.Resources.GalleryConfigs.ZipChunksData>> {
+		return axios.get(`${Constants.getApiUrl()}Zip/chunks`, { params: { album_ids: album_ids.join(","), variant } });
+	},
+
+	downloadChunk(album_ids: string[], variant: App.Enum.DownloadVariantType, chunk: number): Promise<void> {
+		return axios
+			.get(`${Constants.getApiUrl()}Zip`, { params: { album_ids: album_ids.join(","), variant, chunk }, responseType: "blob" })
+			.then(function (response) {
+				const url = URL.createObjectURL(response.data as Blob);
+				const a = document.createElement("a");
+				const disposition = response.headers["content-disposition"] as string | undefined;
+				let filename = "archive.zip";
+				if (disposition) {
+					const match = disposition.match(/filename\*?=(?:UTF-8'')?([^;]+)/i);
+					if (match) {
+						filename = decodeURIComponent(match[1].replace(/['"]/g, ""));
+					}
+				}
+				a.href = url;
+				a.download = filename;
+				document.body.appendChild(a);
+				a.click();
+				document.body.removeChild(a);
+				URL.revokeObjectURL(url);
+			});
+	},
+
 	uploadTrack(album_id: string, file: Blob): Promise<AxiosResponse> {
 		const formData = new FormData();
 		formData.append("album_id", album_id);

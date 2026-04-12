@@ -43,6 +43,7 @@ import { usePhotoStore } from "@/stores/PhotoState";
 import { storeToRefs } from "pinia";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
+import { useToast } from "primevue/usetoast";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
@@ -57,8 +58,10 @@ const {
 	is_small2x_download_enabled,
 	is_medium_download_enabled,
 	is_medium2x_download_enabled,
+	is_download_archive_chunked,
 } = storeToRefs(lycheeState);
 
+const toast = useToast();
 const photoStore = usePhotoStore();
 
 const visible = defineModel("visible", { default: false });
@@ -98,17 +101,47 @@ function isDownloadable(sv: number): boolean {
 	}
 }
 
+function downloadVariantChunked(photo_ids: string[], parent_id: string | null, variant: App.Enum.DownloadVariantType) {
+	PhotoService.getChunkCount(photo_ids, parent_id, variant).then(function (response) {
+		const chunks = response.data.total_chunks;
+		function downloadNext(chunk: number): Promise<void> {
+			if (chunk > chunks) {
+				return Promise.resolve();
+			}
+			return PhotoService.downloadChunk(photo_ids, parent_id, variant, chunk).then(function () {
+				return downloadNext(chunk + 1);
+			});
+		}
+		return downloadNext(1);
+	}).catch(function (err: unknown) {
+		toast.add({ severity: "error", summary: "Download failed", detail: String(err), life: 5000 });
+	});
+}
+
 function download(sv: number) {
 	if (photoStore.photo === undefined) {
 		return;
 	}
-	PhotoService.download([photoStore.photo.id], getParentId(), svtoVariant(sv));
+	const photo_ids = [photoStore.photo.id];
+	const parent_id = getParentId() ?? null;
+	const variant = svtoVariant(sv);
+	if (is_download_archive_chunked.value) {
+		downloadVariantChunked(photo_ids, parent_id, variant);
+	} else {
+		PhotoService.download(photo_ids, parent_id ?? undefined, variant);
+	}
 }
 
 function downloadVariant(variant: App.Enum.DownloadVariantType) {
 	if (photoStore.photo === undefined) {
 		return;
 	}
-	PhotoService.download([photoStore.photo.id], getParentId(), variant);
+	const photo_ids = [photoStore.photo.id];
+	const parent_id = getParentId() ?? null;
+	if (is_download_archive_chunked.value) {
+		downloadVariantChunked(photo_ids, parent_id, variant);
+	} else {
+		PhotoService.download(photo_ids, parent_id ?? undefined, variant);
+	}
 }
 </script>

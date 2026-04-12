@@ -150,4 +150,6 @@ class RequestAttribute
 	 * Album slug attribute.
 	 */
 	public const SLUG_ATTRIBUTE = 'slug';
+
+	public const CHUNK_ATTRIBUTE = 'chunk';
 }

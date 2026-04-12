@@ -14,6 +14,7 @@ use App\Contracts\Http\Requests\HasPhotos;
 use App\Contracts\Http\Requests\HasSizeVariant;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Models\AbstractAlbum;
+use App\DTO\ChunkSlice;
 use App\Enum\DownloadVariantType;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasAlbumsTrait;
@@ -23,6 +24,7 @@ use App\Http\Requests\Traits\HasSizeVariantTrait;
 use App\Models\Photo;
 use App\Policies\AlbumPolicy;
 use App\Policies\PhotoPolicy;
+use App\Repositories\ConfigManager;
 use App\Rules\AlbumIDListRule;
 use App\Rules\AlbumIDRule;
 use App\Rules\RandomIDListRule;
@@ -78,6 +80,7 @@ class ZipRequest extends BaseApiRequest implements HasAlbums, HasPhotos, HasSize
 			RequestAttribute::PHOTO_IDS_ATTRIBUTE => ['sometimes', new RandomIDListRule()],
 			RequestAttribute::SIZE_VARIANT_ATTRIBUTE => ['sometimes', new Enum(DownloadVariantType::class)],
 			RequestAttribute::FROM_ID_ATTRIBUTE => ['required_if_accepted:photos_ids', new AlbumIDRule(true)],
+			RequestAttribute::CHUNK_ATTRIBUTE => ['sometimes', 'integer', 'min:1'],
 		];
 	}
 
@@ -151,5 +154,54 @@ class ZipRequest extends BaseApiRequest implements HasAlbums, HasPhotos, HasSize
 		// with an array of IDs we never get a single entity (even if the
 		// array only contains a single ID).
 		$this->photos = $photo_query->findOrFail($photo_ids);
+	}
+
+	/**
+	 * Compute the chunk slice for chunked ZIP downloads.
+	 *
+	 * Returns null when no chunk parameter is present (non-chunked download).
+	 * Throws a ValidationException when the chunk number exceeds total chunks.
+	 *
+	 * @return ChunkSlice|null
+	 *
+	 * @throws \Illuminate\Validation\ValidationException
+	 */
+	public function chunkSlice(): ?ChunkSlice
+	{
+		$chunk = $this->integer(RequestAttribute::CHUNK_ATTRIBUTE, 0);
+		if ($chunk === 0) {
+			return null;
+		}
+
+		$config_manager = app(ConfigManager::class);
+		$chunk_size = $config_manager->getValueAsInt('download_archive_chunk_size');
+
+		if ($chunk_size <= 0) {
+			$chunk_size = 300;
+		}
+
+		// Count total photos to validate chunk is in range.
+		$total = 0;
+		foreach ($this->albums as $album) {
+			$photos = $album->get_photos();
+			if ($photos instanceof \Illuminate\Pagination\LengthAwarePaginator) {
+				$total += $photos->total();
+			} else {
+				$total += $photos->count();
+			}
+		}
+		foreach ($this->photos as $ignored) {
+			$total++;
+		}
+
+		$total_chunks = max(1, (int) ceil($total / $chunk_size));
+
+		if ($chunk > $total_chunks) {
+			abort(422, 'Chunk number exceeds total number of chunks.');
+		}
+
+		$offset = ($chunk - 1) * $chunk_size;
+
+		return new ChunkSlice(offset: $offset, limit: $chunk_size, chunk: $chunk);
 	}
 }
