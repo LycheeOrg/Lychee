@@ -315,6 +315,8 @@ return [
         'merge_all' => 'Слей избраните',
         'apply_renamer' => 'Apply Renamer',
         'apply_renamer_all' => 'Apply Renamer to Selected',
+        'approve' => 'Approve',
+        'approve_all' => 'Approve Selected',
         'upload_photo' => 'Качи снимка',
         'take_photo' => 'Направи снимка',
         'import_link' => 'Импорт от линк',

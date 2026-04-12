@@ -91,6 +91,12 @@
 			/>
 			<ThumbBadge v-if="userStore.isLoggedIn && props.isCoverId" class="bg-yellow-500" icon="folder-cover" />
 			<ThumbBadge v-if="userStore.isLoggedIn && props.isHeaderId" class="bg-slate-400 hidden sm:block" pi="image" />
+			<ThumbBadge
+				v-if="!props.photo.is_validated"
+				class="bg-surface-800"
+				border-color="border-none"
+				pi="shield text-amber-500 text-shadow-md"
+			/>
 		</div>
 		<!-- Rating Overlay -->
 		<ThumbRatingOverlay v-if="rating_album_view_mode !== 'never' && props.photo.rating !== null" :rating="props.photo.rating" />

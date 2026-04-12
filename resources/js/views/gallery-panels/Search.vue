@@ -156,6 +156,7 @@ import SearchHeader from "@/components/headers/SearchHeader.vue";
 import LoadingProgress from "@/components/loading/LoadingProgress.vue";
 import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import MetricsService from "@/services/metrics-service";
+import ModerationService from "@/services/moderation-service";
 import { usePhotoRoute } from "@/composables/photo/photoRoute";
 import { useLtRorRtL } from "@/utils/Helpers";
 import { useAlbumsStore } from "@/stores/AlbumsState";
@@ -351,6 +352,16 @@ const photoCallbacks = {
 	toggleDelete: toggleDelete,
 	toggleDownload: () => {},
 	toggleApplyRenamer: toggleApplyRenamer,
+	toggleApprove: () => {
+		ModerationService.approve(selectedPhotosIds.value).then(() => {
+			selectedPhotosIds.value.forEach((photoId) => {
+				const photo = photosStore.photos.find((p) => p.id === photoId);
+				if (photo) {
+					photo.is_validated = true;
+				}
+			});
+		});
+	},
 };
 
 const albumCallbacks = {

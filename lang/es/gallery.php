@@ -314,6 +314,8 @@ return [
         'merge_all' => 'Fusionar seleccionados',
         'apply_renamer' => 'Apply Renamer',
         'apply_renamer_all' => 'Apply Renamer to Selected',
+        'approve' => 'Approve',
+        'approve_all' => 'Approve Selected',
         'upload_photo' => 'Subir foto',
         'take_photo' => 'Tomar foto',
         'import_link' => 'Importar desde el enlace',

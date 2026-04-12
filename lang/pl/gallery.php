@@ -316,6 +316,8 @@ return [
         'merge_all' => 'Scal wybrane',
         'apply_renamer' => 'Apply Renamer',
         'apply_renamer_all' => 'Apply Renamer to Selected',
+        'approve' => 'Approve',
+        'approve_all' => 'Approve Selected',
         'upload_photo' => 'Prześlij zdjęcie',
         'take_photo' => 'Zrób zdjęcie',
         'import_link' => 'Import z łącza',

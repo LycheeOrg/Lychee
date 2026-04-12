@@ -13,6 +13,7 @@ use App\Contracts\Http\Requests\HasPassword;
 use App\Contracts\Http\Requests\HasQuotaKB;
 use App\Contracts\Http\Requests\HasUsername;
 use App\Contracts\Http\Requests\RequestAttribute;
+use App\Enum\UserUploadTrustLevel;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasNoteTrait;
 use App\Http\Requests\Traits\HasPasswordTrait;
@@ -20,12 +21,14 @@ use App\Http\Requests\Traits\HasQuotaKBTrait;
 use App\Http\Requests\Traits\HasUsernameTrait;
 use App\Models\User;
 use App\Policies\UserPolicy;
+use App\Repositories\ConfigManager;
 use App\Rules\BooleanRequireSupportRule;
 use App\Rules\IntegerRequireSupportRule;
 use App\Rules\PasswordRule;
 use App\Rules\StringRequireSupportRule;
 use App\Rules\UsernameRule;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\Rules\Enum;
 
 class AddUserRequest extends BaseApiRequest implements HasUsername, HasPassword, HasQuotaKB, HasNote
 {
@@ -37,6 +40,7 @@ class AddUserRequest extends BaseApiRequest implements HasUsername, HasPassword,
 	protected bool $may_upload = false;
 	protected bool $may_edit_own_settings = false;
 	protected bool $may_administrate = false;
+	protected UserUploadTrustLevel $upload_trust_level = UserUploadTrustLevel::TRUSTED;
 
 	/**
 	 * {@inheritDoc}
@@ -57,6 +61,7 @@ class AddUserRequest extends BaseApiRequest implements HasUsername, HasPassword,
 			RequestAttribute::MAY_UPLOAD_ATTRIBUTE => 'present|boolean',
 			RequestAttribute::MAY_EDIT_OWN_SETTINGS_ATTRIBUTE => 'present|boolean',
 			RequestAttribute::MAY_ADMINISTRATE => ['sometimes', 'boolean', new BooleanRequireSupportRule(false, $this->verify())],
+			RequestAttribute::UPLOAD_TRUST_LEVEL_ATTRIBUTE => ['sometimes', new Enum(UserUploadTrustLevel::class)],
 			RequestAttribute::HAS_QUOTA_ATTRIBUTE => ['sometimes', 'boolean', new BooleanRequireSupportRule(false, $this->verify())],
 			RequestAttribute::QUOTA_ATTRIBUTE => ['sometimes', 'int', new IntegerRequireSupportRule(0, $this->verify())],
 			RequestAttribute::NOTE_ATTRIBUTE => ['sometimes', 'string', new StringRequireSupportRule('', $this->verify())],
@@ -73,6 +78,12 @@ class AddUserRequest extends BaseApiRequest implements HasUsername, HasPassword,
 		$this->may_upload = static::toBoolean($values[RequestAttribute::MAY_UPLOAD_ATTRIBUTE]);
 		$this->may_edit_own_settings = static::toBoolean($values[RequestAttribute::MAY_EDIT_OWN_SETTINGS_ATTRIBUTE]);
 		$this->may_administrate = static::toBoolean($values[RequestAttribute::MAY_ADMINISTRATE] ?? false);
+		if (array_key_exists(RequestAttribute::UPLOAD_TRUST_LEVEL_ATTRIBUTE, $values)) {
+			$this->upload_trust_level = UserUploadTrustLevel::from($values[RequestAttribute::UPLOAD_TRUST_LEVEL_ATTRIBUTE]);
+		} else {
+			$this->upload_trust_level = resolve(ConfigManager::class)->getValueAsEnum('default_user_trust_level', UserUploadTrustLevel::class)
+				?? UserUploadTrustLevel::TRUSTED;
+		}
 		$has_quota = static::toBoolean($values[RequestAttribute::HAS_QUOTA_ATTRIBUTE] ?? false);
 		$this->quota_kb = $has_quota ? intval($values[RequestAttribute::QUOTA_ATTRIBUTE]) : null;
 		$this->note = $values[RequestAttribute::NOTE_ATTRIBUTE] ?? '';
@@ -91,5 +102,10 @@ class AddUserRequest extends BaseApiRequest implements HasUsername, HasPassword,
 	public function mayAdministrate(): bool
 	{
 		return $this->may_administrate;
+	}
+
+	public function uploadTrustLevel(): UserUploadTrustLevel
+	{
+		return $this->upload_trust_level;
 	}
 }

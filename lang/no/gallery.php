@@ -316,6 +316,8 @@ return [
         'merge_all' => 'Merge Selected',
         'apply_renamer' => 'Apply Renamer',
         'apply_renamer_all' => 'Apply Renamer to Selected',
+        'approve' => 'Approve',
+        'approve_all' => 'Approve Selected',
         'upload_photo' => 'Upload Photo',
         'take_photo' => 'Ta bilde',
         'import_link' => 'Import from Link',

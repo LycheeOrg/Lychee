@@ -105,6 +105,7 @@ class ConfigIntegrity
 		'contact_form_security_question',
 		'contact_form_security_answer',
 		'contact_form_custom_consent_required',
+		'guest_upload_trust_level',
 	];
 
 	public const PRO_FIELDS = [

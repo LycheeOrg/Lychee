@@ -13,6 +13,8 @@ return [
     'legend' => 'Leyenda',
     'upload_rights' => 'Cuando se selecciona, el usuario puede subir contenido.',
     'edit_rights' => 'Cuando se selecciona, el usuario puede modificar su perfil (nombre de usuario, contraseña).',
+    'upload_trust_level' => 'Upload trust level — controls whether uploads are immediately public.',
+
     'quota' => 'Cuando se configura, el usuario dispone de una cuota de espacio para imágenes (en kB).',
     'user_deleted' => 'Usuario eliminado',
     'user_created' => 'Creado por el usuario',
@@ -22,6 +24,11 @@ return [
         'upload_rights' => 'El usuario puede subir contenido.',
         'edit_rights' => 'El usuario puede modificar su perfil (nombre de usuario, contraseña).',
         'admin_rights' => 'El usuario tiene derechos de administrador.',
+        'upload_trust_level' => 'Upload trust level',
+        'upload_trust_level_check' => 'Check – uploads require admin approval before becoming public.',
+        'upload_trust_level_monitor' => 'Monitor – upload are publics unless flagged for content.',
+        'upload_trust_level_trusted' => 'Trusted – uploads are immediately public.',
+
         'quota' => 'El usuario tiene un límite de cuota.',
         'quota_kb' => 'cuota en kB (0 por defecto)',
         'note' => 'Nota de administrador (no visible públicamente)',

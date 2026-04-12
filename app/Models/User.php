@@ -10,6 +10,7 @@ namespace App\Models;
 
 use App\Constants\AccessPermissionConstants as APC;
 use App\Enum\UserSharedAlbumsVisibility;
+use App\Enum\UserUploadTrustLevel;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
 use App\Models\Builders\UserBuilder;
@@ -54,6 +55,7 @@ use function Safe\mb_convert_encoding;
  * @property string|null                                           $token
  * @property string|null                                           $remember_token
  * @property UserSharedAlbumsVisibility                            $shared_albums_visibility
+ * @property UserUploadTrustLevel                                  $upload_trust_level
  * @property Collection<int,BaseAlbumImpl>                         $albums
  * @property Collection<int,OauthCredential>                       $oauthCredentials
  * @property DatabaseNotificationCollection|DatabaseNotification[] $notifications
@@ -123,6 +125,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		'may_edit_own_settings' => 'boolean',
 		'quota_kb' => 'integer',
 		'shared_albums_visibility' => UserSharedAlbumsVisibility::class,
+		'upload_trust_level' => UserUploadTrustLevel::class,
 	];
 
 	protected $hidden = [];

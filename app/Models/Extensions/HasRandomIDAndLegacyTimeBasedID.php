@@ -111,7 +111,7 @@ trait HasRandomIDAndLegacyTimeBasedID
 			} catch (QueryException $e) {
 				$last_exception = $e;
 				$error_code = $e->getCode();
-				if ($error_code === 23000 || $error_code === 23505 || $error_code === '23000' || $error_code === '23505') {
+				if (in_array($error_code, [23000, 23505, '23000', '23505'], true)) {
 					// houston, we have a duplicate entry problem
 					// Our ids are based on current system time, so
 					// wait randomly up to 1s before retrying.

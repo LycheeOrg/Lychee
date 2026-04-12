@@ -14,6 +14,7 @@ use App\Eloquent\FixedQueryBuilder;
 use App\Exceptions\Internal\InvalidQueryModelException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Album;
+use App\Models\Extensions\FiltersUploadValidation;
 use App\Models\Photo;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
@@ -22,6 +23,8 @@ use Illuminate\Database\Query\JoinClause;
 
 class PhotoQueryPolicy
 {
+	use FiltersUploadValidation;
+
 	public function __construct(
 		protected AlbumQueryPolicy $album_query_policy,
 	) {
@@ -69,7 +72,12 @@ class PhotoQueryPolicy
 			}
 		};
 
-		return $query->where($visibility_sub_query);
+		// Unvalidated photos are only visible to their owner or to admins.
+		// We wrap the main OR-clause so that accessibility is still required,
+		// and add an additional AND condition for the validation flag.
+		$query = $query->where($visibility_sub_query);
+
+		return $this->applyUploadValidationFilter($query, $user_id);
 	}
 
 	/**
@@ -125,7 +133,7 @@ class PhotoQueryPolicy
 			return $query;
 		}
 
-		return $query->where(function (Builder $query) use ($user, $unlocked_album_ids, $origin): void {
+		$query_with_search = $query->where(function (Builder $query) use ($user, $unlocked_album_ids, $origin): void {
 			$this->appendSearchabilityConditions(
 				$query->getQuery(),
 				$user,
@@ -134,6 +142,8 @@ class PhotoQueryPolicy
 				$origin?->_rgt
 			);
 		});
+
+		return $this->applyUploadValidationFilter($query_with_search, $user?->id);
 	}
 
 	/**

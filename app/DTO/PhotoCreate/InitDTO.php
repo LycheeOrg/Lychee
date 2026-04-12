@@ -11,6 +11,7 @@ namespace App\DTO\PhotoCreate;
 use App\Contracts\Models\AbstractAlbum;
 use App\DTO\ImportMode;
 use App\DTO\ImportParam;
+use App\Enum\UserUploadTrustLevel;
 use App\Image\Files\NativeLocalFile;
 use App\Metadata\Extractor;
 use App\Models\Photo;
@@ -22,6 +23,9 @@ class InitDTO
 
 	// Indicates the intended owner of the image.
 	public readonly int $intended_owner_id;
+
+	// Pre-resolved upload trust level (set when session context is available at dispatch time).
+	public readonly UserUploadTrustLevel $upload_trust_level;
 
 	// Indicates whether the new photo shall be highlighted.
 	public bool $is_highlighted = false;
@@ -60,6 +64,7 @@ class InitDTO
 		$this->source_file = $source_file;
 		$this->import_mode = $parameters->import_mode;
 		$this->intended_owner_id = $parameters->intended_owner_id;
+		$this->upload_trust_level = $parameters->upload_trust_level;
 		$this->is_highlighted = $parameters->is_highlighted;
 		$this->exif_info = $parameters->exif_info;
 		$this->apply_watermark = $parameters->apply_watermark;

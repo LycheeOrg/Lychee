@@ -14,6 +14,8 @@ return [
     'legend' => 'Legenda',
     'upload_rights' => 'Po wybraniu tej opcji użytkownik może przesyłać zawartość.',
     'edit_rights' => 'Po wybraniu tej opcji użytkownik może zmodyfikować swój profil (nazwa użytkownika, hasło).',
+    'upload_trust_level' => 'Upload trust level — controls whether uploads are immediately public.',
+
     'quota' => 'Po ustawieniu użytkownik ma limit miejsca na zdjęcia (w kB).',
     'user_deleted' => 'Użytkownik usunięty',
     'user_created' => 'Uzytkownik utworzony',
@@ -23,6 +25,11 @@ return [
         'upload_rights' => 'Użytkownik może przesyłać treści.',
         'edit_rights' => 'Użytkownik może modyfikować swój profil (nazwa użytkownika, hasło).',
         'admin_rights' => 'User has admin rights.',
+        'upload_trust_level' => 'Upload trust level',
+        'upload_trust_level_check' => 'Check – uploads require admin approval before becoming public.',
+        'upload_trust_level_monitor' => 'Monitor – upload are publics unless flagged for content.',
+        'upload_trust_level_trusted' => 'Trusted – uploads are immediately public.',
+
         'quota' => 'Użytkownik ma limit miejsca',
         'quota_kb' => 'miejsce na zdjęcia w kB (domyślnie 0)',
         'note' => 'Uwaga administratora (niewidoczna publicznie)',
