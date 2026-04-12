@@ -13,6 +13,8 @@ from __future__ import annotations
 import threading
 from typing import Any
 
+from app.embeddings.store import EmbeddingStore
+
 _EMBEDDING_DIM = 512
 """ArcFace (buffalo_l) embedding dimension."""
 
@@ -22,7 +24,7 @@ def _to_pg_vector(embedding: list[float]) -> str:
     return "[" + ",".join(f"{v:.8f}" for v in embedding) + "]"
 
 
-class PgVectorEmbeddingStore:
+class PgVectorEmbeddingStore(EmbeddingStore):
     """Embedding store backed by PostgreSQL + pgvector.
 
     Thread-safe: each method acquires an RLock to serialise access to the

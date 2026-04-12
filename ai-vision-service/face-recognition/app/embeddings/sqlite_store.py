@@ -16,6 +16,8 @@ import struct
 import threading
 from pathlib import Path
 
+from app.embeddings.store import EmbeddingStore
+
 _EMBEDDING_DIM = 512
 """ArcFace (buffalo_l) embedding dimension."""
 
@@ -25,7 +27,7 @@ def _to_blob(embedding: list[float]) -> bytes:
     return struct.pack(f"{len(embedding)}f", *embedding)
 
 
-class SQLiteEmbeddingStore:
+class SQLiteEmbeddingStore(EmbeddingStore):
     """Embedding store backed by SQLite + sqlite-vec.
 
     Thread-safe: all write operations are protected by a reentrant lock.
