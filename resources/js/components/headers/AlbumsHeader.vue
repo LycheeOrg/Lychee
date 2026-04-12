@@ -57,7 +57,7 @@
 				</Button>
 			</template>
 			<!-- Not logged in. -->
-			<BackLinkButton v-if="userStore.user?.id === null && albumsStore.rootConfig" :config="albumsStore.rootConfig" />
+			<BackLinkButton v-if="userStore.isGuest && albumsStore.rootConfig" :config="albumsStore.rootConfig" />
 			<!-- Maybe logged in. -->
 			<div class="hidden lg:block">
 				<template v-for="(item, idx) in menu" :key="`menu-item-${idx}`">
