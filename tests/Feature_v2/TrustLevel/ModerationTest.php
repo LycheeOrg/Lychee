@@ -104,4 +104,47 @@ class ModerationTest extends BaseApiWithDataTest
 			$photo->save();
 		}
 	}
+
+	public function testGetPhotoRequiresAuthentication(): void
+	{
+		$response = $this->getJson('Moderation::photo?photo_id=' . $this->photo1->id);
+		$this->assertUnauthorized($response);
+	}
+
+	public function testGetPhotoForbiddenForNonAdmin(): void
+	{
+		$response = $this->actingAs($this->userMayUpload1)->getJson('Moderation::photo?photo_id=' . $this->photo1->id);
+		$this->assertForbidden($response);
+	}
+
+	public function testGetPhotoRequiresPhotoId(): void
+	{
+		$response = $this->actingAs($this->admin)->getJson('Moderation::photo');
+		$this->assertUnprocessable($response);
+	}
+
+	public function testGetPhotoReturnsPhotoResource(): void
+	{
+		$response = $this->actingAs($this->admin)->getJson('Moderation::photo?photo_id=' . $this->photo1->id);
+		$this->assertOk($response);
+		$response->assertJsonStructure(['id', 'title', 'type', 'size_variants']);
+		$response->assertJsonPath('id', $this->photo1->id);
+	}
+
+	public function testGetPhotoWorksForUnvalidatedPhoto(): void
+	{
+		$photo = $this->photo1;
+		$photo->is_validated = false;
+		$photo->save();
+
+		try {
+			$response = $this->actingAs($this->admin)->getJson('Moderation::photo?photo_id=' . $photo->id);
+			$this->assertOk($response);
+			$response->assertJsonPath('id', $photo->id);
+			$response->assertJsonPath('is_validated', false);
+		} finally {
+			$photo->is_validated = true;
+			$photo->save();
+		}
+	}
 }
