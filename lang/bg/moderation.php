@@ -8,6 +8,8 @@ return [
     'title' => 'Moderation',
     'description' => 'Review and approve photos uploaded by users with the "check" trust level before they become publicly visible.',
     'approve_selected' => 'Approve Selected',
+    'delete_selected' => 'Delete Selected',
+    'selected' => 'selected',
     'no_pending' => 'No photos are awaiting moderation.',
     'approved' => 'Photos approved successfully.',
     'col_thumbnail' => 'Thumbnail',
