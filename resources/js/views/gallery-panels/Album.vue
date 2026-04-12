@@ -233,7 +233,8 @@ function getStartPage(): number {
 }
 
 async function load() {
-	await Promise.allSettled([layoutStore.load(), lycheeStore.load(), userStore.load(), albumStore.load(getStartPage())]);
+	const startPage = getStartPage();
+	await Promise.allSettled([layoutStore.load(), lycheeStore.load(), userStore.load(), albumStore.load(startPage)]);
 	catalogStore.albumId = albumId.value;
 	catalogStore.load();
 	orderManagement.load();

@@ -27,7 +27,8 @@ export function usePhotoRoute(router: Router) {
 
 		const photosStore = usePhotosStore();
 		const page = photosStore.photoPageMap[photoId];
-		const pageQuery = page !== undefined ? { page: String(page) } : {};
+		// Only include ?page=N when the stored value is a valid positive integer
+		const pageQuery = page !== undefined && Number.isInteger(page) && page >= 1 ? { page: String(page) } : {};
 
 		if (currentRoute.startsWith("flow")) {
 			return { name: "flow-album", params: { albumId: albumId ?? ALL, photoId: photoId }, query: pageQuery };

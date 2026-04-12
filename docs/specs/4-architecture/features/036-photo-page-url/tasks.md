@@ -1,6 +1,6 @@
 # Feature 036 Tasks – Photo Page URL
 
-_Status: In Progress_  
+_Status: Complete_  
 _Last updated: 2026-04-12_
 
 > Keep this checklist aligned with the feature plan increments. Stage tests before implementation, record verification commands beside each task, and prefer bite-sized entries (≤90 minutes).
@@ -63,7 +63,7 @@ _Last updated: 2026-04-12_
   - `npm run build`  
   _Notes:_ `router.replace()` preserves the existing route params and merges into existing query params, so the `photoId` in the URL is not lost.
 
-- [ ] T-036-10 – Create spec, plan, and tasks files (documentation).  
+- [x] T-036-10 – Create spec, plan, and tasks files (documentation).  
   _Intent:_ Ensure the specification pipeline is complete for feature 036.  
   _Verification commands:_ _(none — documentation only)_  
   _Notes:_ Spec at `docs/specs/4-architecture/features/036-photo-page-url/spec.md`, plan at `plan.md`, tasks at `tasks.md` (this file).

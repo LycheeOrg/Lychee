@@ -157,7 +157,13 @@ export const usePhotosStore = defineStore("photos-store", {
 				// Prepend photos to the beginning of the array
 				this.photos = [...photos, ...this.photos];
 
-				// Fix navigation links at the boundary between prepended and existing photos
+				// Fix navigation links within the prepended batch
+				for (let i = 0; i < photos.length - 1; i++) {
+					this.photos[i].next_photo_id = this.photos[i + 1].id;
+					this.photos[i + 1].previous_photo_id = this.photos[i].id;
+				}
+				// Fix navigation links at the boundary between prepended and existing photos.
+				// (Timeline mode uses rebuildNavigationLinks() for a full rebuild instead.)
 				if (photos.length > 0 && oldPhotoCount > 0) {
 					const lastPrependedPhoto = this.photos[photos.length - 1];
 					const firstExistingPhoto = this.photos[photos.length];
@@ -166,11 +172,6 @@ export const usePhotosStore = defineStore("photos-store", {
 					lastPrependedPhoto.next_photo_id = firstExistingPhoto.id;
 					// Connect the first existing photo back to the last prepended photo
 					firstExistingPhoto.previous_photo_id = lastPrependedPhoto.id;
-				}
-				// Fix navigation links within the prepended batch
-				for (let i = 0; i < photos.length - 1; i++) {
-					this.photos[i].next_photo_id = this.photos[i + 1].id;
-					this.photos[i + 1].previous_photo_id = this.photos[i].id;
 				}
 				if (photos.length > 0) {
 					this.photos[0].previous_photo_id = null;

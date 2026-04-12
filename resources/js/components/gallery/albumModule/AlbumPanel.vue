@@ -258,13 +258,18 @@ async function loadMorePhotosAndUpdateUrl() {
 }
 
 function goToPhotosPage(page: number) {
-	albumStore.loadPhotos(page, false).then(() => {
-		router.replace({
-			name: router.currentRoute.value.name as string,
-			params: router.currentRoute.value.params,
-			query: { ...router.currentRoute.value.query, page: String(albumStore.photos_current_page) },
+	albumStore
+		.loadPhotos(page, false)
+		.then(() => {
+			router.replace({
+				name: router.currentRoute.value.name as string,
+				params: router.currentRoute.value.params,
+				query: { ...router.currentRoute.value.query, page: String(albumStore.photos_current_page) },
+			});
+		})
+		.catch((error: unknown) => {
+			console.error("Failed to load photos page:", error);
 		});
-	});
 }
 
 function goToAlbumsPage(page: number) {

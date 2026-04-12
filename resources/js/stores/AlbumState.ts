@@ -398,10 +398,14 @@ export const useAlbumStore = defineStore("album-store", {
 
 					await Promise.all(loader);
 
-					// Fire off background loading of pages 1 … resolvedStart-1 (prepend).
+					// Fire off background loading of immediately preceding pages (prepend).
+					// Capped at the 5 most-recent previous pages to avoid issuing too many
+					// concurrent requests when jumping to a high page number (e.g. page 50).
 					// These are intentionally NOT awaited so the photo panel can render
 					// while earlier pages stream in, without blocking albumStore.load().
-					for (let p = resolvedStart - 1; p >= 1; p--) {
+					const backgroundPagesLimit = 5;
+					const firstBackgroundPage = Math.max(1, resolvedStart - backgroundPagesLimit);
+					for (let p = resolvedStart - 1; p >= firstBackgroundPage; p--) {
 						void this.loadPhotos(p, false, true);
 					}
 				})

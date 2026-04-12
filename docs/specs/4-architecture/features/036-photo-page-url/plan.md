@@ -1,7 +1,7 @@
 # Feature Plan 036 – Photo Page URL
 
 _Linked specification:_ `docs/specs/4-architecture/features/036-photo-page-url/spec.md`  
-_Status:_ In Progress  
+_Status:_ Complete  
 _Last updated:_ 2026-04-12
 
 > Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant. Log any new high- or medium-impact questions in [docs/specs/4-architecture/open-questions.md](docs/specs/4-architecture/open-questions.md).
@@ -102,11 +102,11 @@ Analysis complete on 2026-04-12. No open questions were identified as blocking i
 
 ## Exit Criteria
 
-- [ ] `npm run build` passes with no TypeScript errors.
-- [ ] Visiting `/gallery/:albumId/:photoId?page=N` opens the photo panel for a photo on page N of a large album.
-- [ ] Scrolling down in the album view updates the URL `?page` query parameter.
-- [ ] Clicking a photo in the album view navigates to a URL with the correct `?page`.
-- [ ] All existing PHP tests continue to pass (`php artisan test`).
+- [x] `npm run build` passes with no TypeScript errors.
+- [x] Visiting `/gallery/:albumId/:photoId?page=N` opens the photo panel for a photo on page N of a large album.
+- [x] Scrolling down in the album view updates the URL `?page` query parameter.
+- [x] Clicking a photo in the album view navigates to a URL with the correct `?page`.
+- [x] All existing PHP tests continue to pass (`php artisan test`).
 
 ## Follow-ups / Backlog
 
