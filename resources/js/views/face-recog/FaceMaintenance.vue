@@ -229,7 +229,6 @@ import PaginationInfiniteScroll from "@/components/pagination/PaginationInfinite
 import FaceAssignmentModal from "@/components/modals/faceRecog/FaceAssignmentModal.vue";
 import FaceMaintenanceService from "@/services/face-maintenance-service";
 import FaceDetectionService from "@/services/face-detection-service";
-import PhotoService from "@/services/photo-service";
 import ModerationService from "@/services/moderation-service";
 
 const faces = ref<App.Http.Resources.Models.FaceResource[]>([]);
