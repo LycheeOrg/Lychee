@@ -102,7 +102,7 @@
 						:total="albumStore.photos_total"
 						:remaining="albumStore.photosRemainingCount"
 						resource-type="photos"
-						@load-more="albumStore.loadMorePhotos()"
+						@load-more="loadMorePhotosAndUpdateUrl()"
 						@go-to-page="goToPhotosPage"
 					/>
 				</template>
@@ -243,8 +243,28 @@ function photoClick(photoId: string, _e: MouseEvent) {
 	router.push(photoRoute(photoId));
 }
 
+/**
+ * Load the next page of photos and update the URL query parameter to reflect
+ * the new current page. This allows direct links to include ?page=N so they
+ * land on the correct pagination window.
+ */
+async function loadMorePhotosAndUpdateUrl() {
+	await albumStore.loadMorePhotos();
+	router.replace({
+		name: router.currentRoute.value.name as string,
+		params: router.currentRoute.value.params,
+		query: { ...router.currentRoute.value.query, page: String(albumStore.photos_current_page) },
+	});
+}
+
 function goToPhotosPage(page: number) {
-	albumStore.loadPhotos(page, false);
+	albumStore.loadPhotos(page, false).then(() => {
+		router.replace({
+			name: router.currentRoute.value.name as string,
+			params: router.currentRoute.value.params,
+			query: { ...router.currentRoute.value.query, page: String(albumStore.photos_current_page) },
+		});
+	});
 }
 
 function goToAlbumsPage(page: number) {

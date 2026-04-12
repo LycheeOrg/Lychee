@@ -219,8 +219,21 @@ const photosStore = usePhotosStore();
 const layoutStore = useLayoutStore();
 const catalogStore = useCatalogStore();
 
+/**
+ * Read the ?page=N query parameter from the current route.
+ * Returns 1 (first page) when the param is absent or invalid.
+ */
+function getStartPage(): number {
+	const p = route.query.page;
+	if (typeof p === "string") {
+		const parsed = parseInt(p, 10);
+		return isNaN(parsed) || parsed < 1 ? 1 : parsed;
+	}
+	return 1;
+}
+
 async function load() {
-	await Promise.allSettled([layoutStore.load(), lycheeStore.load(), userStore.load(), albumStore.load()]);
+	await Promise.allSettled([layoutStore.load(), lycheeStore.load(), userStore.load(), albumStore.load(getStartPage())]);
 	catalogStore.albumId = albumId.value;
 	catalogStore.load();
 	orderManagement.load();
@@ -529,6 +542,21 @@ watch(
 				setScroll();
 			}
 		});
+	},
+);
+
+// Reactively attempt to display the photo whenever the loaded photos change.
+// This is necessary for two cases:
+//  1. The target page (from ?page=N) is loaded asynchronously and may not yet
+//     contain the photo when photoStore.load() first runs.
+//  2. Background prepend operations (for pages < startPage) may later bring the
+//     photo into photosStore.photos, especially if ?page was slightly off.
+watch(
+	() => photosStore.photos,
+	() => {
+		if (photoId.value !== undefined && !photoStore.isLoaded) {
+			photoStore.load();
+		}
 	},
 );
 </script>

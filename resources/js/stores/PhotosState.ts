@@ -11,12 +11,19 @@ export const usePhotosStore = defineStore("photos-store", {
 		photos: [] as App.Http.Resources.Models.PhotoResource[],
 		photosTimeline: undefined as SplitData<App.Http.Resources.Models.PhotoResource>[] | undefined,
 		photoRatingFilter: null as PhotoRatingFilter,
+		/**
+		 * Maps each loaded photo ID to the page number it was loaded from.
+		 * Used by photoRoute() to include ?page=N in photo URLs so direct links
+		 * open the correct page of a paginated album.
+		 */
+		photoPageMap: {} as Record<string, number>,
 	}),
 	actions: {
 		reset() {
 			this.photos = [];
 			this.photosTimeline = undefined;
 			this.photoRatingFilter = null;
+			this.photoPageMap = {};
 		},
 		setPhotoRatingFilter(rating: PhotoRatingFilter) {
 			this.photoRatingFilter = rating;
@@ -36,7 +43,15 @@ export const usePhotosStore = defineStore("photos-store", {
 				currentPhoto.next_photo_id = nextPhoto?.id ?? null;
 			}
 		},
-		setPhotos(photos: App.Http.Resources.Models.PhotoResource[], isTimeline: boolean) {
+		/**
+		 * Record the page number for a batch of photos in photoPageMap.
+		 */
+		recordPhotoPages(photos: App.Http.Resources.Models.PhotoResource[], page: number) {
+			photos.forEach((p) => {
+				this.photoPageMap[p.id] = page;
+			});
+		},
+		setPhotos(photos: App.Http.Resources.Models.PhotoResource[], isTimeline: boolean, page: number = 1) {
 			if (isTimeline) {
 				this.photosTimeline = spliter(
 					photos,
@@ -51,6 +66,7 @@ export const usePhotosStore = defineStore("photos-store", {
 				this.photos = photos;
 				this.photosTimeline = undefined;
 			}
+			this.recordPhotoPages(photos, page);
 		},
 		/**
 		 * Append new photos to the existing collection.
@@ -60,7 +76,7 @@ export const usePhotosStore = defineStore("photos-store", {
 		 * the last photo of the existing collection and the first photo of the new batch.
 		 * Without this fix, navigating between photos would break at page boundaries.
 		 */
-		appendPhotos(photos: App.Http.Resources.Models.PhotoResource[], isTimeline: boolean) {
+		appendPhotos(photos: App.Http.Resources.Models.PhotoResource[], isTimeline: boolean, page: number = 1) {
 			if (isTimeline) {
 				// Append new photos to timeline and re-merge
 				const newTimelinePhotos = spliter(
@@ -102,6 +118,65 @@ export const usePhotosStore = defineStore("photos-store", {
 					firstNewPhoto.previous_photo_id = lastOldPhoto.id;
 				}
 			}
+			this.recordPhotoPages(photos, page);
+		},
+		/**
+		 * Prepend new photos to the beginning of the existing collection.
+		 * Used when loading previous pages in background after jumping directly to a later page.
+		 * Handles both timeline and non-timeline modes.
+		 *
+		 * Critical: Fixes navigation links (next_photo_id/previous_photo_id) between
+		 * the last prepended photo and the first existing photo.
+		 */
+		prependPhotos(photos: App.Http.Resources.Models.PhotoResource[], isTimeline: boolean, page: number) {
+			if (isTimeline) {
+				const newTimelinePhotos = spliter(
+					photos,
+					(p: App.Http.Resources.Models.PhotoResource) => p.timeline?.time_date ?? "",
+					(p: App.Http.Resources.Models.PhotoResource) => p.timeline?.format ?? "Others",
+				);
+				// Prepend new timeline groups or merge into existing ones
+				if (this.photosTimeline) {
+					for (const newGroup of newTimelinePhotos) {
+						const existingGroup = this.photosTimeline.find((g) => g.header === newGroup.header);
+						if (existingGroup) {
+							existingGroup.data = [...newGroup.data, ...existingGroup.data];
+						} else {
+							// Insert at the beginning (earlier pages have earlier/later dates depending on sort)
+							this.photosTimeline.unshift(newGroup);
+						}
+					}
+				} else {
+					this.photosTimeline = newTimelinePhotos;
+				}
+				this.photos = merge(this.photosTimeline);
+				// Rebuild all navigation links after timeline merge since photos were reordered
+				this.rebuildNavigationLinks();
+			} else {
+				const oldPhotoCount = this.photos.length;
+				// Prepend photos to the beginning of the array
+				this.photos = [...photos, ...this.photos];
+
+				// Fix navigation links at the boundary between prepended and existing photos
+				if (photos.length > 0 && oldPhotoCount > 0) {
+					const lastPrependedPhoto = this.photos[photos.length - 1];
+					const firstExistingPhoto = this.photos[photos.length];
+
+					// Connect the last prepended photo to the first existing photo
+					lastPrependedPhoto.next_photo_id = firstExistingPhoto.id;
+					// Connect the first existing photo back to the last prepended photo
+					firstExistingPhoto.previous_photo_id = lastPrependedPhoto.id;
+				}
+				// Fix navigation links within the prepended batch
+				for (let i = 0; i < photos.length - 1; i++) {
+					this.photos[i].next_photo_id = this.photos[i + 1].id;
+					this.photos[i + 1].previous_photo_id = this.photos[i].id;
+				}
+				if (photos.length > 0) {
+					this.photos[0].previous_photo_id = null;
+				}
+			}
+			this.recordPhotoPages(photos, page);
 		},
 	},
 	getters: {
