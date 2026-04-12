@@ -9,8 +9,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\Moderation\ApproveModerationRequest;
+use App\Http\Requests\Moderation\GetModerationPhotoRequest;
 use App\Http\Requests\Moderation\ListModerationRequest;
 use App\Http\Resources\Collections\PaginatedModerationResource;
+use App\Http\Resources\Models\PhotoResource;
 use App\Models\Photo;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
@@ -43,6 +45,30 @@ class ModerationController extends Controller
 			->paginate($per_page);
 
 		return new PaginatedModerationResource($paginated);
+	}
+
+	/**
+	 * Return the full PhotoResource for a single unvalidated photo.
+	 *
+	 * Bypasses the is_validated filter since only admins can reach this endpoint.
+	 *
+	 * @param GetModerationPhotoRequest $request
+	 *
+	 * @return PhotoResource
+	 */
+	public function photo(GetModerationPhotoRequest $request): PhotoResource
+	{
+		/** @var Photo $photo */
+		$photo = Photo::where('id', $request->photoId())
+			->with(['size_variants', 'palette', 'tags', 'statistics', 'rating', 'albums', 'owner'])
+			->firstOrFail();
+
+		return new PhotoResource(
+			photo: $photo,
+			album_id: null,
+			// This is admin view, we don't need to downgrade
+			should_downgrade_size_variants: false,
+		);
 	}
 
 	/**

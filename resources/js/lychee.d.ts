@@ -698,6 +698,7 @@ declare namespace App.Http.Resources.Models {
 		title: string;
 		thumb_url: string | null;
 		owner_username: string;
+		album_id: string | null;
 		album_title: string | null;
 		created_at: string;
 	};

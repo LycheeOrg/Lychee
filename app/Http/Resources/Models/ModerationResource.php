@@ -24,6 +24,7 @@ class ModerationResource extends Data
 	public string $title;
 	public ?string $thumb_url;
 	public string $owner_username;
+	public ?string $album_id;
 	public ?string $album_title;
 	public string $created_at;
 
@@ -35,6 +36,7 @@ class ModerationResource extends Data
 		$this->owner_username = $photo->owner?->username ?? '';
 		// Use the title of the first album the photo belongs to, if any
 		$album = $photo->albums->first();
+		$this->album_id = $album?->id;
 		$this->album_title = $album?->title;
 		$this->created_at = $photo->created_at->toIso8601String();
 	}

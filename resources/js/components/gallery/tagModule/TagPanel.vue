@@ -58,6 +58,7 @@ import ContextMenu from "primevue/contextmenu";
 import { useContextMenu } from "@/composables/contextMenus/contextMenu";
 import PhotoService from "@/services/photo-service";
 import AlbumService from "@/services/album-service";
+import ModerationService from "@/services/moderation-service";
 import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
 import GalleryFooter from "@/components/footers/GalleryFooter.vue";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
@@ -115,6 +116,16 @@ const photoCallbacks = {
 		PhotoService.download(selectedPhotosIds.value, getParentId());
 	},
 	toggleApplyRenamer: toggleApplyRenamer,
+	toggleApprove: () => {
+		ModerationService.approve(selectedPhotosIds.value).then(() => {
+			selectedPhotosIds.value.forEach((photoId) => {
+				const photo = photosStore.photos.find((p) => p.id === photoId);
+				if (photo) {
+					photo.is_validated = true;
+				}
+			});
+		});
+	},
 };
 
 const albumCallbacks = {

@@ -15,6 +15,10 @@ const ModerationService = {
 	approve(photo_ids: string[]): Promise<AxiosResponse<void>> {
 		return axios.post(`${Constants.getApiUrl()}Moderation::approve`, { photo_ids });
 	},
+
+	getPhoto(photo_id: string): Promise<AxiosResponse<App.Http.Resources.Models.PhotoResource>> {
+		return axios.get(`${Constants.getApiUrl()}Moderation::photo`, { params: { photo_id }, data: {} });
+	},
 };
 
 export default ModerationService;

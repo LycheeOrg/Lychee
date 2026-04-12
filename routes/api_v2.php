@@ -276,6 +276,7 @@ Route::delete('/Webhook/{webhook}', [Admin\WebhookController::class, 'destroy'])
  * MODERATION.
  */
 Route::get('/Moderation', [Admin\ModerationController::class, 'list']);
+Route::get('/Moderation::photo', [Admin\ModerationController::class, 'photo']);
 Route::post('/Moderation::approve', [Admin\ModerationController::class, 'approve']);
 
 /**

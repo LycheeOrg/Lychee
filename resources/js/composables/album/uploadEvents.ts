@@ -3,6 +3,7 @@ import { type Ref } from "vue";
 
 export type Uploadable = {
 	file: File;
+	message?: string;
 	status: "uploading" | "waiting" | "done" | "error" | "warning";
 };
 

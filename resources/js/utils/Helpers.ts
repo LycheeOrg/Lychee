@@ -69,4 +69,5 @@ export const EmptyPhotoCallbacks = {
 	toggleDelete: () => {},
 	toggleDownload: () => {},
 	toggleApplyRenamer: () => {},
+	toggleApprove: () => {},
 };
