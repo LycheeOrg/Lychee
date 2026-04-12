@@ -316,6 +316,8 @@ return [
         'merge_all' => 'Scal wybrane',
         'apply_renamer' => 'Apply Renamer',
         'apply_renamer_all' => 'Apply Renamer to Selected',
+        'scan_faces' => 'Scan for Faces',
+        'scan_faces_all' => 'Scan Selected for Faces',
         'approve' => 'Approve',
         'approve_all' => 'Approve Selected',
         'upload_photo' => 'Prześlij zdjęcie',

@@ -42,6 +42,7 @@ final readonly class RouteCacheManager
 			'api/v2/Album::tags' => new RouteCacheConfig(tag: CacheTag::GALLERY, user_dependant: true, extra: [RequestAttribute::ALBUM_ID_ATTRIBUTE]),
 			'api/v2/Album::getTargetListAlbums' => false, // TODO: cache me later.
 			'api/v2/Photo/{photo_id}/albums' => new RouteCacheConfig(tag: CacheTag::GALLERY, user_dependant: true),
+			'api/v2/Photo/{photo_id}' => new RouteCacheConfig(tag: CacheTag::GALLERY, user_dependant: true),
 			'api/v2/Albums' => new RouteCacheConfig(tag: CacheTag::GALLERY, user_dependant: true),
 			'api/v2/Auth::config' => new RouteCacheConfig(tag: CacheTag::SETTINGS, user_dependant: true),
 			'api/v2/Auth::rights' => new RouteCacheConfig(tag: CacheTag::SETTINGS, user_dependant: true),
@@ -164,6 +165,22 @@ final readonly class RouteCacheManager
 
 			// No need to cache this.
 			'api/v2/Security/Advisories' => false,
+
+			// AI Vision — People & Faces: do not cache, user/content-dependent.
+			'api/v2/People' => false,
+			'api/v2/Person/{id}' => false,
+			'api/v2/Person/{id}/photos' => false,
+			'api/v2/Face/maintenance' => false,
+			'api/v2/FaceDetection/clusters' => false,
+			'api/v2/FaceDetection/clusters/{label}/faces' => false,
+			'api/v2/Album/{album_id}/people' => false,
+
+			// AI Vision — Maintenance: never cache.
+			'api/v2/Maintenance::bulkScanFaces' => false,
+			'api/v2/Maintenance::runFaceClustering' => false,
+			'api/v2/Maintenance::destroyDismissedFaces' => false,
+			'api/v2/Maintenance::syncFaceEmbeddings' => false,
+			'api/v2/Maintenance::resetFaceScanStatus' => false,
 		];
 	}
 
