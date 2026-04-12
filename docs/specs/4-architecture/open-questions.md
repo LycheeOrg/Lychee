@@ -3000,19 +3000,17 @@ Lychee maps `embedding_id` back to Face records (which have person_id) to identi
 
 ---
 
-### Q-035-01: Behaviour of GET /Zip (no chunk param) when chunked mode is ON
+### ~~Q-035-01: Behaviour of GET /Zip (no chunk param) when chunked mode is ON~~ ✅ RESOLVED
 
 **Feature:** 035 – Chunked Archive Download
 **Priority:** Medium
-**Status:** Open
+**Status:** Resolved
 **Opened:** 2026-04-12
 
 **Context:** When `download_archive_chunked` is enabled, a client that calls `GET /Zip` without a `chunk` parameter may be a legacy client or an incorrect integration. We need a defined contract for this case.
 
-**Options:**
+**Resolution:** **Option A** — Treat missing `chunk` as a regular single-archive download, regardless of the chunked-mode setting. This is backward-compatible: legacy frontends and direct URL downloads work without modification.
 
-**Option A (recommended):** Treat missing `chunk` as "no chunking" — stream the full archive in a single response exactly as before. This is backward-compatible and safe: older frontends and direct URL downloads continue to work without modification.
+**Spec Impact:** Encoded in FR-035-05 and FR-035-07.
 
-**Option B:** Return 422 when chunked mode is ON and `chunk` is absent. This enforces the new protocol, catches mis-integrated clients early, and makes the API contract unambiguous, but breaks any client that does not yet know about chunked mode.
-
-**Spec Impact:** Determines FR-035-05 and FR-035-07; affects T-035-09 implementation. Encode resolution in `spec.md` FR-035-05.
+**Resolved:** 2026-04-12

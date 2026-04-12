@@ -12,9 +12,9 @@ Users with large albums (>300 photos) can download them reliably without hitting
 
 Success signals:
 - All existing `GET /Zip` feature tests continue to pass unmodified.
-- New feature tests cover all scenarios in S-035-01 through S-035-11.
+- New feature tests cover all scenarios in S-035-01 through S-035-12.
 - `GET /Zip/chunks` responds in < 200 ms on albums with 10 000 photos (COUNT query only).
-- Frontend TypeScript compiles without errors after `InitConfig` type update.
+- Frontend TypeScript compiles without errors after `InitConfig` type update (only `is_download_archive_chunked` added).
 
 ## Scope Alignment
 
@@ -22,10 +22,10 @@ Success signals:
 - Two new `configs` entries: `download_archive_chunked` (bool) and `download_archive_chunk_size` (int, default 300).
 - New `GET /Zip/chunks` endpoint (API-035-01) returning `{ total_chunks, total_photos }`.
 - Extend `GET /Zip` to accept optional `chunk` query param (API-035-02).
-- `BaseArchive::do()` refactored to accept an optional `ChunkSlice` (offset + limit) to avoid loading all photos into memory.
-- `InitConfig` extended with `is_download_archive_chunked` and `download_archive_chunk_size`.
+- `BaseArchive::do()` refactored to: (1) pre-generate all filenames for the complete photo set, then (2) apply the `ChunkSlice` (offset + limit) to avoid cross-chunk name collisions.
+- `InitConfig` extended with `is_download_archive_chunked` **only** — `download_archive_chunk_size` stays server-side.
 - `DownloadAlbum.vue` and `DownloadPhoto.vue` updated for sequential chunk downloads.
-- Admin settings UI exposure of the two new settings.
+- Admin settings UI auto-renders both new config keys (no extra frontend wiring needed — I5 is skipped).
 - PHPUnit and Vitest tests covering all new scenarios.
 
 **Out of scope:**
@@ -42,7 +42,7 @@ Success signals:
 | `BaseArchive` (Album + Photo variants) | Refactored to accept `ChunkSlice`; backward-compatible default `null` slice. |
 | `ZipRequest` | Extended with optional `chunk` param and validation. |
 | `ConfigManager` / `BaseConfigMigration` | New migration for two config keys. |
-| `InitConfig` (Spatie Data) | Two new public properties. |
+| `InitConfig` (Spatie Data) | One new public property: `is_download_archive_chunked` only. `download_archive_chunk_size` is server-side. |
 | `AlbumController::getArchive` | Passes slice to archive action. |
 | Vue 3 + PrimeVue | `DownloadAlbum.vue`, `DownloadPhoto.vue` updates. |
 | `album-service.ts` | New `downloadChunk(albumIds, variant, chunk)` method. |
@@ -51,8 +51,8 @@ Success signals:
 
 **Assumptions:**
 - The photo ordering for chunking is stable and deterministic (consistent with the existing order used inside `compressAlbum`).
-- The admin UI settings panel already renders bool and int config types; no new UI component is needed.
-- Q-035-01 is resolved as **Option A** (missing `chunk` ≡ no chunking / single archive) for backward-compatibility.
+- The admin UI settings panel already renders bool and int config types; no new UI component is needed (I5 skipped as confirmed by owner).
+- Q-035-01 resolved as **Option A** (missing `chunk` ≡ single-archive download, regardless of chunked mode).
 
 **Risks / Mitigations:**
 - **Risk:** Sub-album structures complicate flat-photo-count queries. **Mitigation:** Chunk slicing is applied only to the top-level collected photo list (same collection the archive already iterates), not re-queried independently.
@@ -66,14 +66,14 @@ After each increment: run `php artisan test --filter=Zip` and `npm run type-chec
 ## Increment Map
 
 1. **I1 – DB Configuration (≤ 30 min)**
-   - _Goal:_ Introduce the two new `configs` entries and expose them in `InitConfig`.
+   - _Goal:_ Introduce the two new `configs` entries and expose `is_download_archive_chunked` in `InitConfig`.
    - _Preconditions:_ None.
    - _Steps:_
      - Create migration `YYYY_MM_DD_000001_add_chunked_download_configs.php` extending `BaseConfigMigration`, adding `download_archive_chunked` (BOOL, Image Processing cat) and `download_archive_chunk_size` (INT, Image Processing cat, default 300).
-     - Add `is_download_archive_chunked: bool` and `download_archive_chunk_size: int` to `InitConfig`.
-     - Update `lychee.d.ts` TypeScript interface for `InitConfig`.
+     - Add `is_download_archive_chunked: bool` to `InitConfig` (only — `download_archive_chunk_size` is server-side, not serialised to the client).
+     - Update `lychee.d.ts` TypeScript interface for `InitConfig` with `is_download_archive_chunked` only.
    - _Commands:_ `php artisan migrate`, `php artisan test --filter=InitConfig`.
-   - _Exit:_ Migration runs cleanly; `InitConfig` serialises the two new fields.
+   - _Exit:_ Migration runs cleanly; `InitConfig` serialises `is_download_archive_chunked`; `download_archive_chunk_size` is absent from JSON.
 
 2. **I2 – Backend: Chunk Metadata Endpoint (≤ 60 min)**
    - _Goal:_ Implement `GET /Zip/chunks` returning `{ total_chunks, total_photos }` (API-035-01).
@@ -92,10 +92,10 @@ After each increment: run `php artisan test --filter=Zip` and `npm run type-chec
    - _Steps:_
      - Add optional `chunk: ?int` to `ZipRequest::rules()` and `processValidatedValues()`; validate ≥ 1 when present.
      - Introduce `ChunkSlice` value object (`offset: int`, `limit: int`); add `ZipRequest::chunkSlice(): ?ChunkSlice`.
-     - Refactor `BaseArchive::do()` (both Album and Photo variants) to accept `?ChunkSlice`; when non-null, skip `offset` photos and stop after `limit` photos in the flat photo iteration.
-     - Adjust `Content-Disposition` filename: when `chunk` present, append `.part<n>` before `.zip`.
-     - Out-of-range `chunk` (> total_chunks): validate in `ZipRequest` (requires count query) or return empty archive. Log as Q-035-02 if policy unclear.
-     - Write PHPUnit feature tests: S-035-01, S-035-03, S-035-04, S-035-05, S-035-06, S-035-07, S-035-11.
+     - Refactor `BaseArchive::do()` (both Album and Photo variants): first traverse the **full** photo list to pre-assign all unique filenames (de-duplication pass), then apply `ChunkSlice` offset/limit to select which photos to stream into the ZIP. This ensures filenames in chunk N are globally unique relative to all other chunks (NFR-035-04).
+     - Adjust `Content-Disposition` filename: when `chunk` is present, produce `<title>.part<n>.zip`.
+     - Out-of-range `chunk` (> total_chunks): validate in `ZipRequest` or controller; return 422.
+     - Write PHPUnit feature tests: S-035-01, S-035-03, S-035-04, S-035-05, S-035-06, S-035-07, S-035-11, S-035-12.
    - _Commands:_ `php artisan test --filter=ZipChunked`.
    - _Exit:_ All scenario tests green; existing non-chunked tests still pass.
 
@@ -107,27 +107,17 @@ After each increment: run `php artisan test --filter=Zip` and `npm run type-chec
      - Add `getChunkCount(albumIds, variant): Promise<ZipChunksData>` to `album-service.ts`.
      - Refactor `DownloadAlbum.vue`: when `is_download_archive_chunked`, call `getChunkCount()` then loop `downloadChunk()` for each part; show `"Downloading part k / n"` progress label; handle errors with toast.
      - Update `DownloadPhoto.vue` similarly for photo-level chunked downloads.
-     - Add `is_download_archive_chunked` and `download_archive_chunk_size` to `useLycheeStateStore` refs.
+     - Add `is_download_archive_chunked` ref to `useLycheeStateStore` (no `download_archive_chunk_size` — that's server-side).
      - Write Vitest unit tests for sequential download logic.
    - _Commands:_ `npm run test`, `npm run type-check`.
    - _Exit:_ Vitest tests pass; TypeScript compiles; dialog shows progress label during download.
 
-5. **I5 – Admin UI Settings Exposure (≤ 30 min)**
-   - _Goal:_ Verify / ensure the two new config keys are rendered in the admin settings page (NFR-035-05).
-   - _Preconditions:_ I1 complete.
-   - _Steps:_
-     - Confirm the existing admin settings Vue component auto-renders bool/int keys in the `Image Processing` category without code changes (existing pattern).
-     - If not automatic, add explicit entries.
-     - Visual inspection / Selenium test.
-   - _Commands:_ `npm run build`.
-   - _Exit:_ Admin settings page shows both new toggles/inputs.
-
-6. **I6 – Documentation & Knowledge Map (≤ 20 min)**
+5. **I5 – Documentation & Knowledge Map (≤ 20 min)**
    - _Goal:_ Keep living docs up to date.
-   - _Preconditions:_ I1–I5 complete.
+   - _Preconditions:_ I1–I4 complete.
    - _Steps:_
      - Update `docs/specs/4-architecture/knowledge-map.md` to reference feature 035.
-     - Resolve Q-035-01 in `open-questions.md` based on implementation choice.
+     - Mark Q-035-01 as resolved in `open-questions.md`.
    - _Commands:_ None.
    - _Exit:_ Knowledge map updated; open question resolved.
 
@@ -141,25 +131,25 @@ After each increment: run `php artisan test --filter=Zip` and `npm run type-chec
 | S-035-04 | I3 / T-035-07 | Chunk 2 of 2 (remainder). |
 | S-035-05 | I3 / T-035-08 | chunk=0 → 422. |
 | S-035-06 | I3 / T-035-08 | chunk > total → 422. |
-| S-035-07 | I3 / T-035-09 | No chunk param + chunked mode ON (Q-035-01). |
+| S-035-07 | I3 / T-035-09 | No chunk param + chunked mode ON → single archive (Q-035-01 → Option A). |
 | S-035-08 | I4 / T-035-11 | Frontend sequential download. |
 | S-035-09 | I4 / T-035-12 | Frontend error handling. |
 | S-035-10 | I2 / T-035-04 | Chunk count endpoint auth/validation. |
 | S-035-11 | I1 / T-035-02 | chunk_size validation. |
+| S-035-12 | I3 / T-035-07 | Filename uniqueness across chunks. |
 
 ## Analysis Gate
 
-_Not yet completed._ Pending resolution of Q-035-01 before I3 implementation begins.
+Q-035-01 resolved as Option A (2026-04-12). I3 implementation may proceed.
 
 ## Exit Criteria
 
 - [ ] Migration runs on a clean install; `php artisan migrate:fresh --seed` passes.
 - [ ] All existing `GET /Zip` feature tests pass without modification.
-- [ ] PHPUnit tests cover S-035-01 through S-035-11.
+- [ ] PHPUnit tests cover S-035-01 through S-035-12.
 - [ ] Vitest tests cover UI-035-01 through UI-035-04.
 - [ ] `npm run type-check` passes.
 - [ ] `npm run build` produces no errors.
-- [ ] Q-035-01 resolved and encoded in spec.
 - [ ] Knowledge map updated.
 
 ## Follow-ups / Backlog

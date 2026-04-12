@@ -20,8 +20,8 @@ _Last updated: 2026-04-12_
   - `php artisan migrate`
   _Notes:_ Use `BaseConfigMigration`; set `is_expert = false`, `is_secret = false`. Order after `raw_download_enabled`.
 
-- [ ] T-035-02 – Extend `InitConfig` with chunk settings and update TypeScript types (FR-035-07, NFR-035-05, S-035-11).
-  _Intent:_ Add `is_download_archive_chunked: bool` and `download_archive_chunk_size: int` public properties to `app/Http/Resources/GalleryConfigs/InitConfig.php`, populated from `ConfigManager`. Update `resources/js/lychee.d.ts` `InitConfig` interface. Add `is_download_archive_chunked` and `download_archive_chunk_size` refs to `useLycheeStateStore`.
+- [ ] T-035-02 – Extend `InitConfig` with `is_download_archive_chunked` and update TypeScript types (FR-035-07, S-035-11).
+  _Intent:_ Add `is_download_archive_chunked: bool` public property to `app/Http/Resources/GalleryConfigs/InitConfig.php`, populated from `ConfigManager`. **Do not** add `download_archive_chunk_size` — that stays server-side. Update `resources/js/lychee.d.ts` `InitConfig` interface with `is_download_archive_chunked` only. Add `is_download_archive_chunked` ref to `useLycheeStateStore` (no `download_archive_chunk_size`).
   _Verification commands:_
   - `npm run type-check`
   - `php artisan test --filter=InitConfig`
@@ -44,26 +44,29 @@ _Last updated: 2026-04-12_
 
 ### I3 – Backend: Chunked Archive Slicing
 
-- [ ] T-035-05 – Write PHPUnit feature tests for chunked `GET /Zip` before implementation (S-035-01, S-035-03 through S-035-07, S-035-11).
-  _Intent:_ Stage-first tests covering: no-chunk param → single archive (S-035-01); chunk=1 with 350 photos → 300-photo archive named `.part1.zip` (S-035-03); chunk=2 → 50-photo archive named `.part2.zip` (S-035-04); chunk=0 → 422 (S-035-05); chunk=99 (> total) → 422 (S-035-06); no chunk param + chunked mode ON (S-035-07, implement per Q-035-01 resolution); chunk_size < 1 rejected (S-035-11).
+- [ ] T-035-05 – Write PHPUnit feature tests for chunked `GET /Zip` before implementation (S-035-01, S-035-03 through S-035-07, S-035-11, S-035-12).
+  _Intent:_ Stage-first tests covering: no-chunk param → single archive (S-035-01); chunk=1 with 350 photos → 300-photo archive named `.part1.zip` (S-035-03); chunk=2 → 50-photo archive named `.part2.zip` (S-035-04); chunk=0 → 422 (S-035-05); chunk=99 (> total) → 422 (S-035-06); no chunk param + chunked mode ON → single archive, Option A (S-035-07); chunk_size < 1 rejected (S-035-11); filenames disjoint across both chunks (S-035-12).
   _Verification commands:_
   - `php artisan test --filter=ZipChunkedDownloadTest` (expected: red until T-035-06/07/08 implemented)
   _Notes:_ Place in `tests/Feature_v2/Zip/ZipChunkedDownloadTest.php`.
 
 - [ ] T-035-06 – Add `chunk` parameter to `ZipRequest` with validation (FR-035-04, FR-035-05, NFR-035-03, S-035-05, S-035-06, S-035-11).
-  _Intent:_ Add `chunk` to `ZipRequest::rules()` as `sometimes|integer|min:1`. Add `chunkSlice(): ?ChunkSlice` accessor that computes offset/limit from `chunk` and `download_archive_chunk_size`. Validate that `chunk` ≤ `total_chunks` (or defer this to controller). Introduce `ChunkSlice` value object in `app/DTO/ChunkSlice.php`.
+  _Intent:_ Add `chunk` to `ZipRequest::rules()` as `sometimes|integer|min:1`. Add `chunkSlice(): ?ChunkSlice` accessor that computes offset/limit from `chunk` and `download_archive_chunk_size` (read from `ConfigManager` — not from the request). Validate that `chunk` ≤ `total_chunks` (or defer this to controller). Introduce `ChunkSlice` value object in `app/DTO/ChunkSlice.php`.
   _Verification commands:_
   - `php artisan test --filter=ZipChunkedDownloadTest`
   - `make phpstan`
-  _Notes:_ Q-035-01 resolution determines behaviour when `chunk` is absent and chunked mode is ON; default to treating absent `chunk` as no-chunk (Option A).
+  _Notes:_ Per Q-035-01 → Option A: absent `chunk` = single-archive download regardless of chunked mode setting.
 
-- [ ] T-035-07 – Refactor `BaseArchive::do()` to accept `?ChunkSlice` and slice photo iteration (FR-035-04, NFR-035-01, S-035-03, S-035-04).
-  _Intent:_ When `ChunkSlice` is non-null, skip `offset` photos and stop after `limit` photos in the flat photo iteration (applies to both album and photo archive variants). Update `Content-Disposition` filename: when chunk is present, produce `<title>.part<n>.zip`. Ensure both `Archive32` and `Archive64` subclasses pass the slice through. Update `AlbumController::getArchive()` to pass `$request->chunkSlice()` to archive actions.
+- [ ] T-035-07 – Refactor `BaseArchive::do()` to pre-generate filenames then apply `?ChunkSlice` (FR-035-04, NFR-035-01, NFR-035-04, S-035-03, S-035-04, S-035-12).
+  _Intent:_ Refactor the archive generation pipeline in two passes:
+  1. **Pre-generation pass (no streaming):** traverse the full photo list (all albums/pages) and assign a unique filename to every photo using the existing `makeUnique`/`createValidTitle` logic, building a `photo_id → filename` map.
+  2. **Streaming pass:** when `ChunkSlice` is non-null, skip `offset` photos and stop after `limit` photos; use the pre-assigned filename from the map when adding each file to the ZIP.
+  This guarantees filenames are globally unique across all chunks. Update `Content-Disposition` filename: when `chunk` is present, produce `<title>.part<n>.zip`. Ensure both `Archive32` and `Archive64` subclasses pass the slice through. Update `AlbumController::getArchive()` to pass `$request->chunkSlice()` to archive actions.
   _Verification commands:_
   - `php artisan test --filter=ZipChunkedDownloadTest`
   - `php artisan test --filter=ZipTest` (existing tests must still pass)
   - `make phpstan`
-  _Notes:_ NFR-035-01: do not load all photos into memory; offset/limit must propagate into the query or iterator, not post-filter a full collection.
+  _Notes:_ The pre-generation pass only builds a lightweight map (`photo_id → string`), not a collection of photo objects — NFR-035-01 (no full load into memory) still holds. Verify that `Album::get_photos()` uses a stable sort; add `->orderBy('id')` if not already present.
 
 - [ ] T-035-08 – Implement out-of-range chunk validation (S-035-05, S-035-06, NFR-035-03).
   _Intent:_ When `chunk` param is present but exceeds `total_chunks`, return 422 before streaming begins. This requires a COUNT query in `ZipRequest::authorize()` or a dedicated validation rule. Ensure chunk=0 is rejected by `min:1` rule (already covered by T-035-06).
@@ -71,11 +74,11 @@ _Last updated: 2026-04-12_
   - `php artisan test --filter=ZipChunkedDownloadTest`
   _Notes:_ Keep the COUNT query lightweight (same query as API-035-01 uses).
 
-- [ ] T-035-09 – Resolve Q-035-01 and encode in spec (S-035-07).
-  _Intent:_ Document the decision for "no `chunk` param + chunked mode ON" in `open-questions.md` and update FR-035-05 / FR-035-07 accordingly. Implement whichever branch the resolution specifies.
+- [ ] T-035-09 – Encode Q-035-01 Option A in spec and implement (S-035-07).
+  _Intent:_ Q-035-01 is resolved as **Option A** (2026-04-12): absent `chunk` param → single-archive download, regardless of chunked-mode setting. Ensure ZipRequest and BaseArchive implement this branch; add or confirm the corresponding test case for S-035-07.
   _Verification commands:_
   - `php artisan test --filter=ZipChunkedDownloadTest`
-  _Notes:_ Default recommendation is Option A (treat absent chunk as single-archive download).
+  _Notes:_ No further clarification needed — spec and open-questions.md already updated.
 
 ### I4 – Frontend: Sequential Chunk Download
 
@@ -83,7 +86,7 @@ _Last updated: 2026-04-12_
   _Intent:_ `getChunkCount(albumIds, variant): Promise<ZipChunksData>` calls `GET /Zip/chunks`. `downloadChunk(albumIds, variant, chunk): Promise<void>` calls `GET /Zip?chunk=n` using `fetch()`, converts the blob to an object URL, programmatically clicks a hidden `<a>` to trigger a save dialog, then revokes the object URL. Update `lychee.d.ts` with `ZipChunksData` type.
   _Verification commands:_
   - `npm run type-check`
-  _Notes:_ Use `.then()` chains, not `async/await` (project convention). Sequential ordering is enforced by chaining `.then()` calls.
+  _Notes:_ Use `.then()` chains, not `async/await` (project convention). Sequential ordering is enforced by chaining `.then()` calls. `download_archive_chunk_size` is **not** needed client-side.
 
 - [ ] T-035-11 – Write Vitest unit tests for sequential download logic (S-035-08, UI-035-01, UI-035-02).
   _Intent:_ Mock `AlbumService.getChunkCount()` returning `{ total_chunks: 3, total_photos: 650 }` and `AlbumService.downloadChunk()`. Assert that `DownloadAlbum.vue` calls `downloadChunk` three times in order, and that the progress label transitions `"Downloading part 1 / 3"` → `"Downloading part 2 / 3"` → `"Downloading part 3 / 3"`.
@@ -92,7 +95,7 @@ _Last updated: 2026-04-12_
   _Notes:_ Place in `resources/js/components/modals/__tests__/DownloadAlbum.spec.ts`.
 
 - [ ] T-035-12 – Update `DownloadAlbum.vue` for chunked sequential download with progress and error handling (FR-035-06, S-035-08, S-035-09, UI-035-01 through UI-035-04).
-  _Intent:_ When `is_download_archive_chunked` is true: call `getChunkCount()`, then loop `downloadChunk()` for each part sequentially; display `"Downloading part k / n"` label; on error show a toast and abort remaining parts. When `is_download_archive_chunked` is false: preserve current `location.href` approach unchanged.
+  _Intent:_ When `is_download_archive_chunked` is true: call `getChunkCount()`, then loop `downloadChunk()` for each part sequentially; display `"Downloading part k / n"` label; on error show a toast and abort remaining parts. When `is_download_archive_chunked` is false: preserve current `location.href` approach unchanged. No need to read `download_archive_chunk_size` client-side — chunk count comes from the API.
   _Verification commands:_
   - `npm run test`
   - `npm run type-check`
@@ -105,26 +108,18 @@ _Last updated: 2026-04-12_
   - `npm run type-check`
   _Notes:_ Photo downloads use `photo_ids` query param instead of `album_ids`; verify `GET /Zip/chunks` handles this correctly.
 
-### I5 – Admin UI Settings Exposure
+### I5 – Documentation & Knowledge Map
 
-- [ ] T-035-14 – Verify admin settings panel renders new config keys automatically (NFR-035-05).
-  _Intent:_ Confirm that the `Image Processing` settings section auto-renders `download_archive_chunked` (toggle) and `download_archive_chunk_size` (number input) without additional code. If manual wiring is required, add it.
-  _Verification commands:_
-  - `npm run build`
-  - Visual inspection of `/settings` admin page after migration.
-  _Notes:_ Compare with how `raw_download_enabled` and `zip_deflate_level` are rendered.
-
-### I6 – Documentation & Knowledge Map
-
-- [ ] T-035-15 – Update knowledge map and resolve open question (FR-035-01 through FR-035-07).
-  _Intent:_ Add feature 035 entry to `docs/specs/4-architecture/knowledge-map.md`. Mark Q-035-01 as resolved in `open-questions.md` with a link to the spec section that encodes the decision.
+- [ ] T-035-14 – Update knowledge map and confirm Q-035-01 resolved (FR-035-01 through FR-035-07).
+  _Intent:_ Add feature 035 entry to `docs/specs/4-architecture/knowledge-map.md`. Confirm Q-035-01 is marked resolved in `open-questions.md` with a link to FR-035-05.
   _Verification commands:_
   - None (documentation only).
   _Notes:_ Also update `docs/specs/architecture-graph.json` if the chunk endpoints add new module dependencies.
 
 ## Notes / TODOs
 
-- Q-035-01 (behaviour of `GET /Zip` with no `chunk` param when chunked mode is ON) must be resolved before T-035-09 / before I3 implementation is finalised.
+- Q-035-01 resolved as Option A (2026-04-12): absent `chunk` param = single-archive download, regardless of chunked-mode setting.
 - T-035-08 (out-of-range chunk validation) may require a lightweight COUNT query in `ZipRequest`; evaluate whether this duplicates the query in `ZipChunksController` and factor accordingly.
-- The flat photo iteration order in `BaseArchive` must be deterministic across requests for chunks to be non-overlapping. Verify that `Album::get_photos()` uses a stable sort; add `->orderBy('id')` if not already present.
+- T-035-07: the pre-generation pass traverses the full photo list to assign filenames, then a second pass streams only the slice. The first pass must use the same stable sort order as the second. Verify that `Album::get_photos()` uses a stable sort; add `->orderBy('id')` if not already present.
 - `photo-service.ts` may need its own `downloadChunk()` / `getChunkCount()` counterpart if photo-level downloads hit a different URL structure (T-035-13).
+- `download_archive_chunk_size` is never sent to the frontend; the client always gets `total_chunks` from the API and iterates from 1 to that value.
