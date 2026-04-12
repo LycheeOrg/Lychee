@@ -2997,3 +2997,22 @@ Lychee maps `embedding_id` back to Face records (which have person_id) to identi
 **Spec Impact:** Updated FR-033-03 to explicitly state that admin uploads bypass trust level checks. Updated Appendix Trust Level Decision Matrix. Updated task T-033-07 to include the admin short-circuit logic.
 
 **Resolved:** 2026-04-09
+
+---
+
+### Q-035-01: Behaviour of GET /Zip (no chunk param) when chunked mode is ON
+
+**Feature:** 035 – Chunked Archive Download
+**Priority:** Medium
+**Status:** Open
+**Opened:** 2026-04-12
+
+**Context:** When `download_archive_chunked` is enabled, a client that calls `GET /Zip` without a `chunk` parameter may be a legacy client or an incorrect integration. We need a defined contract for this case.
+
+**Options:**
+
+**Option A (recommended):** Treat missing `chunk` as "no chunking" — stream the full archive in a single response exactly as before. This is backward-compatible and safe: older frontends and direct URL downloads continue to work without modification.
+
+**Option B:** Return 422 when chunked mode is ON and `chunk` is absent. This enforces the new protocol, catches mis-integrated clients early, and makes the API contract unambiguous, but breaks any client that does not yet know about chunked mode.
+
+**Spec Impact:** Determines FR-035-05 and FR-035-07; affects T-035-09 implementation. Encode resolution in `spec.md` FR-035-05.
