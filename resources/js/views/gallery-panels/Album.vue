@@ -484,8 +484,23 @@ onMounted(async () => {
 	albumId.value = props.albumId;
 	photoId.value = props.photoId;
 
+	// For direct-access URLs (e.g. /album/xxx/photo/yyy?page=2), remember which
+	// photo to scroll back to so that closing the photo panel restores the
+	// correct thumbnail position.
+	if (photoId.value !== undefined) {
+		togglableStore.rememberScrollThumb(photoId.value);
+	}
+
 	await load();
-	setScroll();
+
+	// Only restore scroll position when no photo is open.
+	// When a photo IS open, scroll_photo_id must remain set so the route watcher
+	// can use it to scroll the album back to the correct thumbnail once the user
+	// closes the photo. Calling setScroll() here while the photo is visible would
+	// consume (reset) scroll_photo_id prematurely.
+	if (photoId.value === undefined) {
+		setScroll();
+	}
 
 	// if #upload is in the URL, open the upload modal
 	if (window.location.hash === "#upload") {
@@ -532,6 +547,12 @@ watch(
 			photoStore.load();
 
 			// TODO: Consider loading the next page if the photo is getting close to the end of the currently loaded photos.
+
+			// When going back from a photo to the album (photoId becomes undefined),
+			// scroll the album panel to the previously viewed photo thumbnail.
+			if (photoId.value === undefined) {
+				setScroll();
+			}
 			return;
 		}
 
@@ -557,6 +578,13 @@ watch(
 	() => {
 		if (photoId.value !== undefined && !photoStore.isLoaded) {
 			photoStore.load();
+		}
+
+		// When in album view and background-prepended pages finish loading,
+		// re-trigger the scroll so the target thumbnail (scroll_photo_id) is
+		// scrolled into view once its DOM element becomes available.
+		if (photoId.value === undefined && togglableStore.scroll_photo_id) {
+			setScroll();
 		}
 	},
 );

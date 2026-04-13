@@ -137,14 +137,20 @@ export const usePhotosStore = defineStore("photos-store", {
 				);
 				// Prepend new timeline groups or merge into existing ones
 				if (this.photosTimeline) {
+					// Collect non-matching groups so they can be spliced in one operation.
+					// Individual unshift() calls would reverse their relative order, so we
+					// accumulate them first and prepend as a single batch.
+					const prependGroups: SplitData<App.Http.Resources.Models.PhotoResource>[] = [];
 					for (const newGroup of newTimelinePhotos) {
 						const existingGroup = this.photosTimeline.find((g) => g.header === newGroup.header);
 						if (existingGroup) {
 							existingGroup.data = [...newGroup.data, ...existingGroup.data];
 						} else {
-							// Insert at the beginning (earlier pages have earlier/later dates depending on sort)
-							this.photosTimeline.unshift(newGroup);
+							prependGroups.push(newGroup);
 						}
+					}
+					if (prependGroups.length > 0) {
+						this.photosTimeline.splice(0, 0, ...prependGroups);
 					}
 				} else {
 					this.photosTimeline = newTimelinePhotos;

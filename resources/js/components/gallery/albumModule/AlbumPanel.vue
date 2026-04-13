@@ -243,33 +243,14 @@ function photoClick(photoId: string, _e: MouseEvent) {
 	router.push(photoRoute(photoId));
 }
 
-/**
- * Load the next page of photos and update the URL query parameter to reflect
- * the new current page. This allows direct links to include ?page=N so they
- * land on the correct pagination window.
- */
 async function loadMorePhotosAndUpdateUrl() {
 	await albumStore.loadMorePhotos();
-	router.replace({
-		name: router.currentRoute.value.name as string,
-		params: router.currentRoute.value.params,
-		query: { ...router.currentRoute.value.query, page: String(albumStore.photos_current_page) },
-	});
 }
 
 function goToPhotosPage(page: number) {
-	albumStore
-		.loadPhotos(page, false)
-		.then(() => {
-			router.replace({
-				name: router.currentRoute.value.name as string,
-				params: router.currentRoute.value.params,
-				query: { ...router.currentRoute.value.query, page: String(albumStore.photos_current_page) },
-			});
-		})
-		.catch((error: unknown) => {
-			console.error("Failed to load photos page:", error);
-		});
+	albumStore.loadPhotos(page, false).catch((error: unknown) => {
+		console.error("Failed to load photos page:", error);
+	});
 }
 
 function goToAlbumsPage(page: number) {
