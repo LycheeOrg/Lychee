@@ -16,8 +16,8 @@ export function useScrollable(toggleableStore: TogglablesStateStore, path: Ref<s
 			return;
 		}
 
-		// Abort. We tried 10 times (waited 1s).
-		if (iter == 10) {
+		// Abort. We tried 10 times (waited 5s).
+		if (iter == 50) {
 			return;
 		}
 

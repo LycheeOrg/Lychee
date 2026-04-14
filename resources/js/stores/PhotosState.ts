@@ -29,6 +29,20 @@ export const usePhotosStore = defineStore("photos-store", {
 			this.photoRatingFilter = rating;
 		},
 		/**
+		 * Recompute the `iter` offset on every SplitData chunk so that
+		 * `chunk.iter + localIndex` always equals the item's index in the
+		 * merged flat `photos` array.  Must be called after any mutation of
+		 * `photosTimeline` (append, prepend, or per-group data change).
+		 */
+		rebuildIterOffsets() {
+			if (!this.photosTimeline) return;
+			let offset = 0;
+			for (const group of this.photosTimeline) {
+				group.iter = offset;
+				offset += group.data.length;
+			}
+		},
+		/**
 		 * Rebuild navigation links for all photos based on their current order.
 		 * This ensures next_photo_id and previous_photo_id are always correct,
 		 * especially after timeline merge operations that reorder photos.
@@ -99,6 +113,8 @@ export const usePhotosStore = defineStore("photos-store", {
 					this.photosTimeline = newTimelinePhotos;
 				}
 				this.photos = merge(this.photosTimeline);
+				// Rebuild iter offsets after merging so verifyOrder() stays consistent
+				this.rebuildIterOffsets();
 				// Rebuild all navigation links after timeline merge since photos were reordered
 				this.rebuildNavigationLinks();
 			} else {
@@ -156,6 +172,8 @@ export const usePhotosStore = defineStore("photos-store", {
 					this.photosTimeline = newTimelinePhotos;
 				}
 				this.photos = merge(this.photosTimeline);
+				// Rebuild iter offsets after merging so verifyOrder() stays consistent
+				this.rebuildIterOffsets();
 				// Rebuild all navigation links after timeline merge since photos were reordered
 				this.rebuildNavigationLinks();
 			} else {

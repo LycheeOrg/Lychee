@@ -567,25 +567,25 @@ watch(
 	},
 );
 
-// Reactively attempt to display the photo whenever the loaded photos change.
-// This is necessary for two cases:
-//  1. The target page (from ?page=N) is loaded asynchronously and may not yet
-//     contain the photo when photoStore.load() first runs.
-//  2. Background prepend operations (for pages < startPage) may later bring the
-//     photo into photosStore.photos, especially if ?page was slightly off.
-watch(
-	() => photosStore.photos,
-	() => {
-		if (photoId.value !== undefined && !photoStore.isLoaded) {
-			photoStore.load();
-		}
+// // Reactively attempt to display the photo whenever the loaded photos change.
+// // This is necessary for two cases:
+// //  1. The target page (from ?page=N) is loaded asynchronously and may not yet
+// //     contain the photo when photoStore.load() first runs.
+// //  2. Background prepend operations (for pages < startPage) may later bring the
+// //     photo into photosStore.photos, especially if ?page was slightly off.
+// watch(
+// 	() => photosStore.photos,
+// 	() => {
+// 		if (photoId.value !== undefined && !photoStore.isLoaded) {
+// 			photoStore.load();
+// 		}
 
-		// When in album view and background-prepended pages finish loading,
-		// re-trigger the scroll so the target thumbnail (scroll_photo_id) is
-		// scrolled into view once its DOM element becomes available.
-		if (photoId.value === undefined && togglableStore.scroll_photo_id) {
-			setScroll();
-		}
-	},
-);
+// 		// When in album view and background-prepended pages finish loading,
+// 		// re-trigger the scroll so the target thumbnail (scroll_photo_id) is
+// 		// scrolled into view once its DOM element becomes available.
+// 		if (photoId.value === undefined && togglableStore.scroll_photo_id) {
+// 			setScroll();
+// 		}
+// 	},
+// );
 </script>

@@ -102,7 +102,7 @@
 						:total="albumStore.photos_total"
 						:remaining="albumStore.photosRemainingCount"
 						resource-type="photos"
-						@load-more="loadMorePhotosAndUpdateUrl()"
+						@load-more="albumStore.loadMorePhotos()"
 						@go-to-page="goToPhotosPage"
 					/>
 				</template>
@@ -243,14 +243,8 @@ function photoClick(photoId: string, _e: MouseEvent) {
 	router.push(photoRoute(photoId));
 }
 
-async function loadMorePhotosAndUpdateUrl() {
-	await albumStore.loadMorePhotos();
-}
-
 function goToPhotosPage(page: number) {
-	albumStore.loadPhotos(page, false).catch((error: unknown) => {
-		console.error("Failed to load photos page:", error);
-	});
+	albumStore.loadPhotos(page, false);
 }
 
 function goToAlbumsPage(page: number) {
