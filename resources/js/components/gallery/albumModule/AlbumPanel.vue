@@ -119,6 +119,7 @@
 			/>
 			<WatermarkConfirmDialog v-model:visible="is_watermark_confirm_visible" :album-id="albumStore.album.id" @watermarked="emits('refresh')" />
 			<DownloadAlbum v-model:visible="is_download_album_visible" :album-ids="downloadAlbumIds" />
+			<DownloadAlbum v-model:visible="is_download_photo_visible" :photo-ids="downloadPhotoIds" :from-id="downloadFromId" />
 
 			<!-- Dialogs -->
 			<ContextMenu ref="menu" :model="Menu" :class="Menu.length === 0 ? 'hidden' : ''">
@@ -260,6 +261,9 @@ function toggleStatistics() {
 
 const is_download_album_visible = ref(false);
 const downloadAlbumIds = ref<string[]>([]);
+const is_download_photo_visible = ref(false);
+const downloadPhotoIds = ref<string[]>([]);
+const downloadFromId = ref<string | null>(null);
 
 function toggleDownloadAlbumFromHero() {
 	if (albumStore.album === undefined) return;
@@ -352,7 +356,9 @@ const photoCallbacks = {
 	toggleMove: toggleMove,
 	toggleDelete: toggleDelete,
 	toggleDownload: () => {
-		PhotoService.download(selectedPhotosIds.value, getParentId());
+		downloadPhotoIds.value = selectedPhotosIds.value;
+		downloadFromId.value = getParentId() ?? null;
+		is_download_photo_visible.value = true;
 	},
 	toggleApplyRenamer: toggleApplyRenamer,
 	toggleApprove: () => {

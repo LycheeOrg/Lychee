@@ -58,13 +58,14 @@
 </template>
 <script setup lang="ts">
 import AlbumService from "@/services/album-service";
+import PhotoService from "@/services/photo-service";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { trans } from "laravel-vue-i18n";
 import { storeToRefs } from "pinia";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
 import { useToast } from "primevue/usetoast";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 
 const lycheeState = useLycheeStateStore();
 const {
@@ -83,8 +84,12 @@ const toast = useToast();
 const visible = defineModel("visible", { default: false });
 
 const props = defineProps<{
-	albumIds: string[];
+	albumIds?: string[];
+	photoIds?: string[];
+	fromId?: string | null;
 }>();
+
+const is_photo_mode = computed(() => (props.photoIds?.length ?? 0) > 0);
 
 const is_downloading = ref(false);
 const current_chunk = ref(0);
@@ -100,7 +105,11 @@ function downloadChunked(variant: App.Enum.DownloadVariantType) {
 	current_chunk.value = 0;
 	total_chunks.value = 0;
 
-	AlbumService.getChunkCount(props.albumIds, variant)
+	const countPromise = is_photo_mode.value
+		? PhotoService.getChunkCount(props.photoIds!, props.fromId ?? null, variant)
+		: AlbumService.getChunkCount(props.albumIds!, variant);
+
+	countPromise
 		.then(function (response) {
 			total_chunks.value = response.data.total_chunks;
 
@@ -111,7 +120,10 @@ function downloadChunked(variant: App.Enum.DownloadVariantType) {
 					return Promise.resolve();
 				}
 				current_chunk.value = chunk;
-				return AlbumService.downloadChunk(props.albumIds, variant, chunk).then(function () {
+				const chunkPromise = is_photo_mode.value
+					? PhotoService.downloadChunk(props.photoIds!, props.fromId ?? null, variant, chunk)
+					: AlbumService.downloadChunk(props.albumIds!, variant, chunk);
+				return chunkPromise.then(function () {
 					return downloadNext(chunk + 1);
 				});
 			}
@@ -127,8 +139,11 @@ function downloadChunked(variant: App.Enum.DownloadVariantType) {
 function download(variant: App.Enum.DownloadVariantType) {
 	if (is_download_archive_chunked.value) {
 		downloadChunked(variant);
+	} else if (is_photo_mode.value) {
+		PhotoService.download(props.photoIds!, props.fromId ?? undefined, variant);
+		visible.value = false;
 	} else {
-		AlbumService.download(props.albumIds, variant);
+		AlbumService.download(props.albumIds!, variant);
 		visible.value = false;
 	}
 }
