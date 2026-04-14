@@ -169,6 +169,12 @@ export function useLeftMenu(
 						access: initData.value.modules.is_mod_webhook_enabled ?? false,
 					},
 					{
+						label: "bulk_album_edit.title",
+						icon: "pi pi-objects-column",
+						route: "/bulk-album-edit",
+						access: canSeeAdmin.value,
+					},
+					{
 						label: "moderation.title",
 						icon: "pi pi-shield",
 						route: "/moderation",
