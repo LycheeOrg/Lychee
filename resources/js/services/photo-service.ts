@@ -78,7 +78,7 @@ const PhotoService = {
 		from_id: string | null,
 		variant: App.Enum.DownloadVariantType,
 	): Promise<AxiosResponse<App.Http.Resources.GalleryConfigs.ZipChunkData>> {
-		return axios.get(`${Constants.getApiUrl()}Zip/chunks`, { params: { photo_ids: photo_ids.join(","), from_id: from_id, variant } });
+		return axios.get(`${Constants.getApiUrl()}Zip/chunks`, { params: { photo_ids: photo_ids.join(","), from_id: from_id, variant }, data: {} });
 	},
 
 	downloadChunk(photo_ids: string[], from_id: string | null, variant: App.Enum.DownloadVariantType, chunk: number): Promise<void> {
