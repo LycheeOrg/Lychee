@@ -2,8 +2,8 @@
 
 | Field | Value |
 |-------|-------|
-| Status | Draft |
-| Last updated | 2026-04-12 |
+| Status | Draft – Resolutions incorporated |
+| Last updated | 2026-04-14 |
 | Owners | LycheeOrg |
 | Linked plan | `docs/specs/4-architecture/features/034-bulk-album-edit/plan.md` |
 | Linked tasks | `docs/specs/4-architecture/features/034-bulk-album-edit/tasks.md` |
@@ -13,16 +13,22 @@
 
 ## Overview
 
-Administrators currently have no way to update common metadata (license, visibility, layout, timeline, sorting, copyright, ownership) across many albums at once. This feature adds a dedicated admin-only **Bulk Album Edit** page where albums are listed in nested-set (`_lft`) order, can be filtered by name via a `LIKE` search, selected individually or all-at-once, and updated in a single batch operation. Ownership transfer also cascades to all descendants and demotes a transferred sub-album to a root level (as the existing `Transfer` action does). The page uses infinite scrolling **or** numbered pagination (configurable via the UI); no DataTable component is used. A persistent warning banner informs the admin that changes are final with no confirmation step.
+Administrators currently have no way to update common metadata (license, visibility, layout, timeline, sorting, copyright, ownership) across many albums at once. This feature adds a dedicated admin-only **Bulk Album Edit** page where albums are listed in nested-set (`_lft`) order, can be filtered by name via a `LIKE` search, selected individually or all-at-once, and updated in a single batch operation. Ownership transfer also cascades to all descendants and demotes a transferred sub-album to a root level (as the existing `Transfer` action does). The page uses infinite scrolling **or** numbered pagination (configurable via the UI); no DataTable component is used. A persistent warning banner informs the admin that changes are final with no confirmation step (except for the destructive delete operation which shows a minimal confirmation dialog).
 
-**Affected modules:** `core` (Album/BaseAlbumImpl models, `Transfer` action), `application` (new `BulkEditAlbumsRequest`, new `BulkEditAlbumsAction`), `REST` (new `Admin\BulkAlbumController`), `UI` (new `BulkAlbumEdit.vue` page, route `/bulk-album-edit`, left-menu entry).
+Editing is supported in two complementary modes:
+
+1. **Inline editing** — clicking a cell in the album row enters edit mode for that single field; saving triggers a single-album PATCH immediately.
+2. **Bulk modal** — selecting multiple albums and clicking "Edit Fields" opens a modal where only explicitly-checked fields are applied to all selected albums in one request.
+
+Public visibility properties (`is_public`, `is_link_required`, `grants_full_photo_access`, `grants_download`, `grants_upload`) are editable both inline (as toggles in each row) and via the bulk modal.
+
+**Affected modules:** `core` (Album/BaseAlbumImpl/AccessPermission models, `Transfer`/`SetProtectionPolicy` actions), `application` (new `BulkEditAlbumsAction`, new Request classes), `REST` (new `Admin\BulkAlbumController`), `UI` (new `BulkAlbumEdit.vue` page, route `/bulk-album-edit`, left-menu entry).
 
 ## Goals
 
-1. Admin can list all albums ordered by `_lft ASC` with optional name filter (case-insensitive `LIKE`).
+1. Admin can list all `Album` records (TagAlbums excluded — Q-034-01 → Option A) ordered by `_lft ASC` with optional name filter (case-insensitive `LIKE`).
 2. Admin can select individual albums or all visible albums (across all pages / loaded rows).
-3. Admin can set any combination of the following fields for selected albums in one request:
-   - `title` (optional — only if explicitly supplied)
+3. Admin can set any combination of the following fields for selected albums via the **bulk modal**:
    - `description`
    - `copyright`
    - `license` (`LicenseType` enum)
@@ -33,41 +39,48 @@ Administrators currently have no way to update common metadata (license, visibil
    - `album_timeline` (`TimelineAlbumGranularity` enum)
    - `photo_timeline` (`TimelinePhotoGranularity` enum)
    - `is_nsfw` (boolean)
-   - `owner_id` (integer — admin-only; cascades to descendants + demotes to root)
-4. Ownership transfer cascades to all descendant albums and photos, and the album is demoted to root (reusing `Transfer::do()` logic).
-5. The page supports both **infinite scroll** and **numbered pagination** with a per-page selector (25 / 50 / 100).
-6. A warning banner at the top of the page informs the admin that changes are applied immediately without any confirmation dialog.
-7. Bulk action buttons (Delete, Set Owner, Set Fields…) appear above the album list, not in column headers.
-8. Admin can delete selected albums via the page (with the same semantics as the existing `DeleteAlbumsRequest`).
+   - `is_public` (boolean — creates/deletes public `AccessPermission`)
+   - `is_link_required` (boolean — updates public `AccessPermission`)
+   - `grants_full_photo_access` (boolean — updates public `AccessPermission`)
+   - `grants_download` (boolean — updates public `AccessPermission`)
+   - `grants_upload` (boolean, SE-only — updates public `AccessPermission`)
+4. Admin can **inline-edit** individual cell values directly in the table row. Changing a value triggers an immediate single-album PATCH (same endpoint, single ID). No explicit save step beyond leaving the field.
+5. Ownership transfer (`owner_id`) is a dedicated action: selects albums, opens Set Owner modal, cascades to all descendant albums and photos, and demotes the album to root (reusing `Transfer::do()` logic).
+6. The page supports both **infinite scroll** and **numbered pagination** with a per-page selector (25 / 50 / 100).
+7. A warning banner at the top of the page informs the admin that changes are applied immediately without any confirmation dialog (except delete).
+8. Bulk action buttons (Delete, Set Owner, Edit Fields…) appear above the album list, not in column headers.
+9. Admin can delete selected albums via the page; a minimal confirmation dialog (click "Confirm Delete") is shown before deletion — per Q-034-03 → Option B.
+10. Depth indicator for each album row is computed client-side in a single O(n) linear pass over the `_lft`/`_rgt`-sorted result — per Q-034-02 → Option B.
 
 ## Non-Goals
 
-- Bulk editing of `TagAlbum` metadata (tag albums have a separate schema — deferred).
-- Bulk editing of album access/protection policies — use the existing Sharing page.
-- Editing individual album fields inline in the table — all edits go through the batch form.
-- Pagination configuration persistence across sessions (page size resets on navigate).
-- Non-admin users accessing this page.
-- Confirmation dialogs for any bulk operation (per problem statement: no confirmation).
+- Bulk editing of `TagAlbum` metadata (tag albums have a separate schema — deferred; per Q-034-01 → Option A TagAlbums are not listed).
+- Bulk editing of per-user or per-group access permissions (only the public permission slot is edited — the same slot managed by the existing Sharing page for single albums).
+- Confirmation dialogs for field edits or ownership transfer (warning banner is sufficient; delete retains a minimal confirmation per Q-034-03 → Option B).
 - Editing album cover or header photo from this page.
+- `title` and `slug` bulk editing (mass-rename risk; individual editor only).
+- Pagination configuration persistence across sessions (page size resets on navigate).
 
 ## Functional Requirements
 
 | ID | Requirement | Success path | Validation path | Failure path | Telemetry & traces | Source |
 |----|-------------|--------------|-----------------|--------------|--------------------|--------|
-| FR-034-01 | A new admin-only page `/bulk-album-edit` lists all regular albums (`albums` table joined with `base_albums`) ordered by `_lft ASC`. Each row shows: depth indicator, title, owner username, license, is_nsfw flag, created_at date. | Page renders list of albums in nested-set order. | Admin-only gate (403 for non-admin). Unauthenticated users receive 401/redirect. | Empty state shown when no albums exist. | No telemetry. | Problem statement |
-| FR-034-02 | The list supports a name filter: a text input sends a `LIKE %search%` query (case-insensitive) to the backend. Filtering resets the current page to 1. | Matching albums returned in `_lft ASC` order. | Empty string / null means no filter. Filter does not break pagination. | No matches → empty state with "No albums match your search." | No telemetry. | Problem statement |
-| FR-034-03 | The list supports both infinite scrolling and numbered pagination. A page-size selector (options: 25, 50, 100; default 50) controls results per page. Pagination mode (infinite vs numbered) is toggled by a control on the page. | Correct page/cursor-based results returned. Infinite scroll appends next page when sentinel is visible. Numbered pagination shows page number buttons. | Page and per_page parameters validated (page ≥ 1, per_page ∈ {25, 50, 100}). | Server-side pagination errors surface as toast notifications. | No telemetry. | Problem statement + problem statement ("infinite scrolling or paginated with page numbers") |
-| FR-034-04 | Each album row has a checkbox. A "select all on current page" checkbox exists in the header row. A separate "select all matching" button selects all album IDs matching the current filter (regardless of current page). | Selected IDs are tracked in frontend state. Select-all-matching fetches all matching IDs from a dedicated endpoint `GET /api/v2/BulkAlbumEdit::ids`. | "Select all matching" capped at 1 000 IDs server-side for safety; a warning toast is shown if cap is reached. | Stale selection cleared when filter changes. | No telemetry. | Problem statement |
+| FR-034-01 | A new admin-only page `/bulk-album-edit` lists all regular `Album` records (only `albums` table; TagAlbums excluded — Q-034-01 → A) joined with `base_albums`, ordered by `_lft ASC`. Each row shows: depth indicator, title, owner username, license, is_nsfw flag, is_public indicator, is_link_required indicator, grants_full_photo_access, grants_download, grants_upload, created_at date. | Page renders list of albums in nested-set order. | Admin-only gate (403 for non-admin). Unauthenticated users receive 401/redirect. | Empty state shown when no albums exist. | No telemetry. | Problem statement |
+| FR-034-02 | The list supports a name filter: a text input sends a `LIKE %search%` query (case-insensitive) to the backend. Filtering resets the current page to 1 and clears the selection. | Matching albums returned in `_lft ASC` order. | Empty string / null means no filter. Filter does not break pagination. | No matches → empty state with "No albums match your search." | No telemetry. | Problem statement |
+| FR-034-03 | The list supports both infinite scrolling and numbered pagination. A page-size selector (options: 25, 50, 100; default 50) controls results per page. Pagination mode (infinite vs numbered) is toggled by a control on the page. | Correct page/cursor-based results returned. Infinite scroll appends next page when sentinel is visible. Numbered pagination shows page number buttons. | Page and per_page parameters validated (page ≥ 1, per_page ∈ {25, 50, 100}). | Server-side pagination errors surface as toast notifications. | No telemetry. | Problem statement |
+| FR-034-04 | Each album row has a checkbox. A "select all on current page" checkbox exists in the header row. A separate "select all matching" button selects all album IDs matching the current filter (regardless of current page). The scope covers all albums in the gallery regardless of owner (Q-034-04 → A). | Selected IDs are tracked in frontend state. Select-all-matching fetches all matching IDs from a dedicated endpoint `GET /api/v2/BulkAlbumEdit::ids`. | "Select all matching" capped at 1 000 IDs server-side for safety; a warning toast is shown if cap is reached. | Stale selection cleared when filter changes. | No telemetry. | Problem statement |
 | FR-034-05 | A warning banner is displayed permanently at the top of the page: "⚠ Any modification made on this page is final. There is no confirmation step." | Banner visible on page load and remains throughout session. | Cannot be dismissed. | n/a | No telemetry. | Problem statement |
 | FR-034-06 | Bulk action buttons are placed above the album list (not in table column headers): **Delete**, **Set Owner**, **Edit Fields**. Buttons are disabled when no albums are selected. | Buttons enabled when selection is non-empty. | n/a | n/a | No telemetry. | Problem statement |
-| FR-034-07 | **Edit Fields** opens a side-panel or modal form. Every field is optional; only fields whose checkbox/toggle is explicitly enabled by the admin are included in the PATCH request. Fields available: description, copyright, license, photo_layout, photo_sorting (col+order), album_sorting (col+order), album_thumb_aspect_ratio, album_timeline, photo_timeline, is_nsfw. | Only enabled fields are sent in request body. Disabled fields are omitted entirely (null-safe partial update). | Each included field validated against its existing enum/type rules. | 422 returned with per-field errors surfaced in the form. | No telemetry. | Problem statement |
-| FR-034-08 | A new REST endpoint `PATCH /api/v2/BulkAlbumEdit` accepts an array of album IDs (`album_ids`) and a partial set of fields (any combination from FR-034-07). Only admin users may call this endpoint. Fields present in the request are applied to all specified albums; absent fields are left unchanged. Updates are wrapped in a single DB transaction. | All specified albums updated. 204 No Content returned. | album_ids: required, array, min:1. Each ID must be a valid random ID for an existing `albums` record. Each present field validated per its own rules. | 422 for validation failure. 403 for non-admin. Transaction rolls back on any error. | No telemetry. | Problem statement |
-| FR-034-09 | A new REST endpoint `POST /api/v2/BulkAlbumEdit::setOwner` accepts `album_ids` array and `owner_id` (integer). Admin-only. For each album, calls the existing `Transfer::do()` logic: updates `owner_id` on `base_albums`, removes the previous permission grant for the new owner, calls `makeRoot()` on the `albums` record and `fixOwnershipOfChildren()` to cascade to descendants. If the album is already a root album, `makeRoot()` is still called (no-op for tree position). | Ownership transferred and descendants updated. Tree integrity maintained. 204 returned. | album_ids: required, array, min:1. owner_id: required, must be an existing user ID. | 422 for validation failure. 403 for non-admin. Transaction rolls back on any error. | No telemetry. | Problem statement |
-| FR-034-10 | A new REST endpoint `DELETE /api/v2/BulkAlbumEdit` accepts `album_ids` array. Admin-only. Delegates to the existing `Delete::do()` action. | Selected albums (and their descendants) deleted. 204 returned. | album_ids: required, array, min:1. Each must be an existing albums ID. | 422 for validation failure. 403 for non-admin. | No telemetry. | Problem statement |
+| FR-034-07 | **Edit Fields** (modal) opens when one or more albums are selected. Every field is optional; only fields whose checkbox/toggle is explicitly enabled by the admin are included in the PATCH request. Fields available in the modal: description, copyright, license, photo_layout, photo_sorting (col+order), album_sorting (col+order), album_thumb_aspect_ratio, album_timeline, photo_timeline, is_nsfw, is_public, is_link_required, grants_full_photo_access, grants_download, grants_upload (SE-only — hidden if not SE). | Only enabled fields are sent in request body. Disabled fields are omitted. | Each included field validated against its existing enum/type rules. grants_upload only accepted when SE verified. | 422 returned with per-field errors surfaced in the form. | No telemetry. | Problem statement |
+| FR-034-08 | A new REST endpoint `PATCH /api/v2/BulkAlbumEdit` accepts an array of album IDs (`album_ids`, min:1) and a partial set of fields. Admin-only. Fields present in the request are applied to all specified albums; absent fields are left unchanged. Metadata fields (`base_albums`/`albums` columns) use chunked SQL updates; visibility fields (`is_public`, `is_link_required`, `grants_full_photo_access`, `grants_download`, `grants_upload`) are applied per-album via `SetProtectionPolicy::do()` within the same transaction. All operations wrapped in a single DB transaction. Supports both bulk (many IDs) and inline editing (single ID) from the same endpoint. | All specified albums updated. 204 No Content returned. | album_ids: required, array, min:1. Each ID must be a valid random ID for an existing `albums` record. At least one optional field required. Each present field validated per its own rules. | 422 for validation failure. 403 for non-admin. Transaction rolls back on any error. | No telemetry. | Problem statement |
+| FR-034-09 | A new REST endpoint `POST /api/v2/BulkAlbumEdit::setOwner` accepts `album_ids` array and `owner_id` (integer). Admin-only. For each album, calls the existing `Transfer::do()` logic: updates `owner_id` on `base_albums`, removes the previous permission grant for the new owner, calls `makeRoot()` on the `albums` record and `fixOwnershipOfChildren()` to cascade to descendants. Albums are processed sequentially to preserve tree integrity (NFR-034-03). | Ownership transferred and descendants updated. Tree integrity maintained. 204 returned. | album_ids: required, array, min:1. owner_id: required, must be an existing user ID. | 422 for validation failure. 403 for non-admin. Transaction rolls back on any error. | No telemetry. | Problem statement |
+| FR-034-10 | A new REST endpoint `DELETE /api/v2/BulkAlbumEdit` accepts `album_ids` array. Admin-only. Delegates to the existing `Delete::do()` action. On the frontend, clicking the Delete button shows a minimal confirmation dialog ("You are about to delete N albums. This action cannot be undone. [Confirm Delete] [Cancel]") before the request is sent — per Q-034-03 → Option B. | Selected albums (and their descendants) deleted. 204 returned. | album_ids: required, array, min:1. Each must be an existing albums ID. | 422 for validation failure. 403 for non-admin. | No telemetry. | Q-034-03 resolution |
 | FR-034-11 | A new REST endpoint `GET /api/v2/BulkAlbumEdit` returns a paginated list of albums ordered by `_lft ASC`. Supports query parameters: `search` (string, optional), `page` (int ≥ 1), `per_page` (int ∈ {25, 50, 100}). Response includes: `data[]` (array of `BulkAlbumResource`), `meta.current_page`, `meta.last_page`, `meta.total`. Admin-only. | Correct paginated list returned. | Validated query params. | 422 for invalid params. 403 for non-admin. | No telemetry. | Problem statement |
-| FR-034-12 | A new REST endpoint `GET /api/v2/BulkAlbumEdit::ids` returns all album IDs matching the current `search` filter (no pagination), capped at 1 000. Admin-only. | Array of album ID strings returned. Cap warning field `capped: true` included when total > 1 000. | search param optional. | 403 for non-admin. | No telemetry. | FR-034-04 |
+| FR-034-12 | A new REST endpoint `GET /api/v2/BulkAlbumEdit::ids` returns all album IDs matching the current `search` filter (no pagination), capped at 1 000. Returns IDs for all albums in the gallery regardless of owner (Q-034-04 → A). Admin-only. | Array of album ID strings returned. Cap warning field `capped: true` included when total > 1 000. | search param optional. | 403 for non-admin. | No telemetry. | FR-034-04, Q-034-04 |
 | FR-034-13 | The page has a left-menu entry labelled "Bulk Album Edit" visible only to admin users, consistent with other admin page entries. | Entry appears in left menu for admins. | Hidden for non-admin users. | n/a | No telemetry. | Problem statement |
-| FR-034-14 | Each album row in the list displays a depth indicator (indentation or tree-prefix characters: `└─`, `├─`, `│`) computed from the album's depth in the nested-set tree. | Correct visual nesting shown. Tree prefix computed client-side or server-side using `depth` field from `withDepth()`. | n/a | n/a | No telemetry. | Problem statement ("Albums should be ordered by _lft increasing") |
+| FR-034-14 | Each album row in the list displays a depth indicator (indentation + tree-prefix characters: `└─`, `├─`, `│`) computed **client-side** in a single O(n) linear pass over the `_lft`/`_rgt`-sorted result set — per Q-034-02 → Option B. Algorithm: maintain a stack of ancestor `_rgt` values; pop the stack while current row's `_lft` > stack-top's `_rgt`; depth = stack length before push. The server includes `_lft` and `_rgt` in each `BulkAlbumResource` row (no server-side `withDepth()` call needed). | Correct visual nesting shown for all rows in one pass. | n/a | n/a | No telemetry. | Q-034-02 resolution |
+| FR-034-15 | Album visibility/protection properties (`is_public`, `is_link_required`, `grants_full_photo_access`, `grants_download`, `grants_upload`) are displayed as icon-toggles or chips in the album list row and are editable both inline (row toggle → immediate PATCH) and via the bulk modal (FR-034-07). `grants_upload` is hidden when SE is not active. When `is_public` is set to false, all other public-permission fields are effectively hidden/disabled in the UI (public permissions record is deleted). | Inline toggle changes immediately reflected; PATCH sent with single album ID + changed field. Bulk modal update applies to all selected albums. | `grants_upload: true` rejected with 422 when not SE. | 422 surfaced as toast for inline edits. | No telemetry. | Problem statement ("visible, require link, downloadable, guest upload, can access originals") |
+| FR-034-16 | Each metadata cell in the album row is directly editable inline: clicking a cell (title, description, copyright, license, photo_layout, photo_sorting, album_sorting, album_thumb_aspect_ratio, album_timeline, photo_timeline, is_nsfw) activates an inline editor for that cell. Confirming the change (Enter / blur / select) immediately sends a PATCH to `PATCH /api/v2/BulkAlbumEdit` with the single album ID and the changed field. | Edited value persisted; row refreshed from response or optimistic update. | Same validation as bulk PATCH. | 422 error shown as inline error state on the cell; original value restored. | No telemetry. | Problem statement ("directly edit in the table") |
 
 ## Non-Functional Requirements
 
@@ -86,110 +99,142 @@ Administrators currently have no way to update common metadata (license, visibil
 ### 1. Page Layout
 
 ```
-┌──────────────────────────────────────────────────────────────────────────┐
-│  ☰  Bulk Album Edit                                                       │
-├──────────────────────────────────────────────────────────────────────────┤
-│                                                                            │
-│  ⚠  Any modification made on this page is final. There is no              │
-│     confirmation step.                                                     │
-│                                                                            │
-│  ┌────────────────────────────────┐  Per page: [50 ▼]  [∞ scroll / pages]│
-│  │ 🔍 Filter by name…            │                                        │
-│  └────────────────────────────────┘                                        │
-│                                                                            │
-│  [ Delete ]  [ Set Owner… ]  [ Edit Fields… ]   (disabled when 0 selected)│
-│                                                                            │
-│  ┌───┬──────────────────────────────┬──────────┬───────┬────────┬────────┐│
-│  │ ☑ │ Title                        │ Owner    │License│ NSFW  │Created ││
-│  ├───┼──────────────────────────────┼──────────┼───────┼────────┼────────┤│
-│  │ □ │ Album A                      │ admin    │ none  │ no    │2024-01 ││
-│  │ □ │   └─ Sub-album A1            │ admin    │ CC-BY │ no    │2024-01 ││
-│  │ ☑ │      └─ Sub-sub-album A1a    │ admin    │ none  │ yes   │2024-02 ││
-│  │ □ │ Album B                      │ user1    │ none  │ no    │2024-03 ││
-│  └───┴──────────────────────────────┴──────────┴───────┴────────┴────────┘│
-│                                                                            │
-│  [Select all on this page]  [Select all 247 matching]  2 selected          │
-│                                                                            │
-│  ◀ 1  2  3 … 10 ▶                                                         │
-└──────────────────────────────────────────────────────────────────────────┘
+┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+│  ☰  Bulk Album Edit                                                                             │
+├────────────────────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                                  │
+│  ⚠  Any modification made on this page is final. There is no confirmation step.                 │
+│                                                                                                  │
+│  ┌────────────────────────────┐  Per page: [50 ▼]  [∞ scroll / pages]                          │
+│  │ 🔍 Filter by name…        │                                                                  │
+│  └────────────────────────────┘                                                                  │
+│                                                                                                  │
+│  [ Delete ]  [ Set Owner… ]  [ Edit Fields… ]     (disabled when 0 selected)                    │
+│                                                                                                  │
+│  ┌───┬──────────────────────────────┬──────────┬───────┬─────┬──────┬──────┬──────┬──────┬──────┐│
+│  │ ☑ │ Title                        │ Owner    │License│NSFW │Pub. │Link? │Dwnl. │Orig. │Upld. ││
+│  ├───┼──────────────────────────────┼──────────┼───────┼─────┼──────┼──────┼──────┼──────┼──────┤│
+│  │ □ │ Album A          [click→edit]│ admin    │ none▼ │ ○  │  ●  │  ○  │  ●  │  ●  │  ○  ││
+│  │ □ │   └─ Sub-album A1            │ admin    │ CC-BY▼│ ○  │  ○  │  ─  │  ─  │  ─  │  ─  ││
+│  │ ☑ │      └─ Sub-sub-album A1a    │ admin    │ none▼ │ ●  │  ●  │  ○  │  ○  │  ○  │  ○  ││
+│  │ □ │ Album B                      │ user1    │ none▼ │ ○  │  ○  │  ─  │  ─  │  ─  │  ─  ││
+│  └───┴──────────────────────────────┴──────────┴───────┴─────┴──────┴──────┴──────┴──────┴──────┘│
+│                                                                                                  │
+│  [Select all on this page]  [Select all 247 matching]  2 selected                               │
+│                                                                                                  │
+│  ◀ 1  2  3 … 10 ▶                                                                               │
+└────────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 2. Edit Fields Panel/Modal
+**Legend:** Pub. = is_public, Link? = is_link_required, Dwnl. = grants_download, Orig. = grants_full_photo_access, Upld. = grants_upload (hidden if not SE). ● = true, ○ = false, ─ = disabled (album not public). Toggles are clickable inline (FR-034-15). License/other metadata cells are click-to-edit dropdowns/inputs (FR-034-16).
+
+### 2. Edit Fields Modal (Bulk)
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│  Edit Fields for 2 albums                             [×]    │
-├─────────────────────────────────────────────────────────────┤
-│  ⚠ Only checked fields will be updated.                      │
-│                                                              │
-│  [✓] Description  [________________________________]         │
-│  [✓] Copyright    [________________________________]         │
-│  [ ] License      [none                           ▼]         │
-│  [ ] Photo layout [default                        ▼]         │
-│  [ ] Photo sort   [taken_at          ▼] [asc      ▼]         │
-│  [ ] Album sort   [title             ▼] [asc      ▼]         │
-│  [ ] Aspect ratio [default                        ▼]         │
-│  [ ] Album timeline [default                      ▼]         │
-│  [ ] Photo timeline [default                      ▼]         │
-│  [ ] Is NSFW      [toggle off]                               │
-│                                                              │
-├─────────────────────────────────────────────────────────────┤
-│  [ Cancel ]                              [ Apply ]           │
-└─────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────┐
+│  Edit Fields for 2 albums                                     [×]    │
+├─────────────────────────────────────────────────────────────────────┤
+│  ⚠ Only checked fields will be updated.                              │
+│                                                                      │
+│  ─── Metadata ──────────────────────────────────────────────────    │
+│  [✓] Description  [________________________________]                 │
+│  [✓] Copyright    [________________________________]                 │
+│  [ ] License      [none                           ▼]                 │
+│  [ ] Photo layout [default                        ▼]                 │
+│  [ ] Photo sort   [taken_at          ▼] [asc      ▼]                 │
+│  [ ] Album sort   [title             ▼] [asc      ▼]                 │
+│  [ ] Aspect ratio [default                        ▼]                 │
+│  [ ] Album timeline [default                      ▼]                 │
+│  [ ] Photo timeline [default                      ▼]                 │
+│  [ ] Is NSFW      [toggle off]                                       │
+│                                                                      │
+│  ─── Visibility ────────────────────────────────────────────────    │
+│  [ ] Public            [toggle off]                                  │
+│  [ ] Require link      [toggle off]  (only if Public)                │
+│  [ ] Allow download    [toggle off]  (only if Public)                │
+│  [ ] Allow originals   [toggle off]  (only if Public)                │
+│  [ ] Guest upload ⭐    [toggle off]  (only if Public, SE required)   │
+│                                                                      │
+├─────────────────────────────────────────────────────────────────────┤
+│  [ Cancel ]                                        [ Apply ]         │
+└─────────────────────────────────────────────────────────────────────┘
 ```
 
 ### 3. Set Owner Modal
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│  Transfer Ownership for 2 albums                      [×]    │
-├─────────────────────────────────────────────────────────────┤
-│  ⚠ All selected albums will be moved to the root level       │
-│     and their descendants will also be transferred.          │
-│                                                              │
-│  New Owner: [Select user…                         ▼]         │
-│                                                              │
-├─────────────────────────────────────────────────────────────┤
-│  [ Cancel ]                              [ Transfer ]        │
-└─────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────┐
+│  Transfer Ownership for 2 albums                              [×]    │
+├─────────────────────────────────────────────────────────────────────┤
+│  ⚠ All selected albums will be moved to the root level               │
+│     and their descendants will also be transferred.                  │
+│                                                                      │
+│  New Owner: [Select user…                             ▼]             │
+│                                                                      │
+├─────────────────────────────────────────────────────────────────────┤
+│  [ Cancel ]                                    [ Transfer ]          │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+### 4. Delete Confirmation Dialog
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│  Delete Albums                                                [×]    │
+├─────────────────────────────────────────────────────────────────────┤
+│  You are about to permanently delete 2 albums and all their          │
+│  sub-albums and photos. This action cannot be undone.                │
+│                                                                      │
+├─────────────────────────────────────────────────────────────────────┤
+│  [ Cancel ]                                  [ Confirm Delete ]      │
+└─────────────────────────────────────────────────────────────────────┘
 ```
 
 ## Branch & Scenario Matrix
 
 | Scenario ID | Description / Expected outcome |
 |-------------|--------------------------------|
-| S-034-01 | Admin loads page — album list displayed in `_lft ASC` order with depth indicators |
-| S-034-02 | Admin types a search string — list filtered via `LIKE %search%`, page reset to 1 |
+| S-034-01 | Admin loads page — album list displayed in `_lft ASC` order with depth indicators (client-side O(n) computation) |
+| S-034-02 | Admin types a search string — list filtered via `LIKE %search%`, page reset to 1, selection cleared |
 | S-034-03 | Admin switches between infinite-scroll and numbered-pagination modes |
 | S-034-04 | Admin selects albums on current page using header checkbox |
-| S-034-05 | Admin clicks "Select all matching" — up to 1 000 IDs loaded; warning toast if capped |
+| S-034-05 | Admin clicks "Select all matching" — up to 1 000 IDs loaded from all albums regardless of owner; warning toast if capped |
 | S-034-06 | Admin opens "Edit Fields", checks Description and Copyright, clicks Apply — only those two fields updated on selected albums |
 | S-034-07 | Admin opens "Edit Fields", checks License, selects CC-BY-4.0, clicks Apply — license updated on all selected albums |
 | S-034-08 | Admin opens "Set Owner", selects a user, clicks Transfer — each selected album moved to root, descendants transferred, tree recomputed |
-| S-034-09 | Admin clicks "Delete" — selected albums and their descendants deleted |
+| S-034-09 | Admin clicks "Delete", sees confirmation dialog, clicks "Confirm Delete" — selected albums and their descendants deleted |
 | S-034-10 | Non-admin user attempts to access `/bulk-album-edit` — 403 / redirect to home |
 | S-034-11 | Admin submits PATCH with 0 fields enabled — 422 validation error returned |
 | S-034-12 | Admin submits PATCH with invalid enum value — 422 validation error surfaced in form |
 | S-034-13 | Admin submits Set Owner with non-existent user_id — 422 validation error |
 | S-034-14 | Ownership transfer on sub-album: album demoted to root, siblings' `_lft`/`_rgt` recomputed correctly |
 | S-034-15 | Admin submits Delete on 500 albums — completes successfully, tree integrity maintained |
+| S-034-16 | Admin clicks on a License cell in the table — inline dropdown opens; admin selects "CC-BY-4.0"; dropdown closes; PATCH sent immediately; row updates |
+| S-034-17 | Admin toggles `is_public` for an album row to ON — PATCH sent; row shows public flags enabled; `is_link_required`/`grants_*` toggles become active |
+| S-034-18 | Admin toggles `is_public` for an album row to OFF — PATCH sent; album's `access_permissions` record deleted; `is_link_required`/`grants_*` toggles disabled/greyed |
+| S-034-19 | Admin opens "Edit Fields" modal, checks "Public" toggle ON, checks "Guest upload" — if not SE: validation error; if SE: update applies |
+| S-034-20 | Admin clicks "Delete", then "Cancel" in confirmation dialog — nothing deleted, dialog closed |
 
 ## Test Strategy
 
-- **Application:** Unit tests for `BulkEditAlbumsAction` (field merging, chunked update logic).
+- **Application:** Unit tests for `BulkEditAlbumsAction` (field merging, chunked update logic, visibility field delegation to `SetProtectionPolicy`).
 - **REST:** Feature tests in `tests/Feature_v2/BulkAlbumEdit/` covering:
-  - `IndexTest` — list, pagination, search filter, `_lft` ordering.
-  - `IdsTest` — "select all matching" endpoint, cap at 1 000.
-  - `PatchTest` — partial field update, admin-only gate, transaction rollback, 422 scenarios.
+  - `IndexTest` — list, pagination, search filter, `_lft` ordering, `_lft`/`_rgt` fields present in response.
+  - `IdsTest` — "select all matching" endpoint, cap at 1 000, all albums returned regardless of owner.
+  - `PatchTest` — partial field update, admin-only gate, transaction rollback, 422 scenarios, visibility field updates (is_public, is_link_required, grants_*), SE gate on grants_upload.
   - `SetOwnerTest` — ownership transfer, descendants cascade, tree integrity, admin-only gate.
   - `DeleteTest` — bulk delete, admin-only gate, cascade.
 - **UI (JS):** Vue component tests for `BulkAlbumEdit.vue`:
   - Page-size selector, mode toggle.
   - Filter debounce clears selection.
   - "Select all on page" / "Select all matching" interactions.
-  - Edit Fields panel: disabled fields excluded from payload.
+  - Depth indicator computed correctly from `_lft`/`_rgt` (client-side O(n) algorithm unit test).
+  - Edit Fields modal: disabled fields excluded from payload; visibility section renders correctly.
+  - Inline editing: cell click enters edit mode, confirm triggers PATCH, error restores value.
+  - Inline visibility toggle sends PATCH, updates row state, disables dependent toggles when is_public=false.
   - Set Owner modal: user picker renders, submit calls service.
-- **Docs/Contracts:** OpenAPI annotations on all four endpoints.
+  - Delete confirmation dialog: Cancel → no request sent; Confirm → DELETE sent.
+- **Docs/Contracts:** OpenAPI annotations on all five endpoints.
 
 ## Interface & Contract Catalogue
 
@@ -197,8 +242,8 @@ Administrators currently have no way to update common metadata (license, visibil
 
 | ID | Description | Modules |
 |----|-------------|---------|
-| DO-034-01 | `BulkAlbumResource` — Spatie Data: `id`, `title`, `owner_id`, `owner_name`, `license`, `photo_layout`, `album_thumb_aspect_ratio`, `album_timeline`, `photo_timeline`, `photo_sorting`, `album_sorting`, `copyright`, `description`, `is_nsfw`, `depth`, `_lft` | application, REST |
-| DO-034-02 | `BulkEditAlbumsRequest` — `album_ids[]`, plus optional nullable fields: `description`, `copyright`, `license`, `photo_layout`, `photo_sorting_col`, `photo_sorting_order`, `album_sorting_col`, `album_sorting_order`, `album_thumb_aspect_ratio`, `album_timeline`, `photo_timeline`, `is_nsfw`. At least one optional field must be present. | application |
+| DO-034-01 | `BulkAlbumResource` — Spatie Data: `id`, `title`, `owner_id`, `owner_name`, `license`, `photo_layout`, `album_thumb_aspect_ratio`, `album_timeline`, `photo_timeline`, `photo_sorting`, `album_sorting`, `copyright`, `description`, `is_nsfw`, `_lft`, `_rgt`, `is_public`, `is_link_required`, `grants_full_photo_access`, `grants_download`, `grants_upload` (no `depth` — computed client-side per Q-034-02) | application, REST |
+| DO-034-02 | `BulkEditAlbumsRequest` — `album_ids[]`, plus optional nullable fields: `description`, `copyright`, `license`, `photo_layout`, `photo_sorting_col`, `photo_sorting_order`, `album_sorting_col`, `album_sorting_order`, `album_thumb_aspect_ratio`, `album_timeline`, `photo_timeline`, `is_nsfw`, `is_public`, `is_link_required`, `grants_full_photo_access`, `grants_download`, `grants_upload`. At least one optional field must be present. | application |
 | DO-034-03 | `SetOwnerBulkRequest` — `album_ids[]` (required), `owner_id` (required, integer) | application |
 | DO-034-04 | `DeleteBulkAlbumsRequest` — `album_ids[]` (required, min:1) | application |
 | DO-034-05 | `BulkAlbumIdsResource` — `ids[]` (array of strings), `capped` (bool) | application, REST |
@@ -219,14 +264,20 @@ Administrators currently have no way to update common metadata (license, visibil
 |----|-------|---------------------------|
 | UI-034-01 | Page loaded, no selection | Action buttons disabled; warning banner visible |
 | UI-034-02 | Albums selected | Action buttons enabled; selection count shown |
-| UI-034-03 | Edit Fields panel open | Per-field enable/disable toggles; only checked fields sent on Apply |
+| UI-034-03 | Edit Fields modal open | Per-field enable/disable toggles; visibility section shown; only checked fields sent on Apply |
 | UI-034-04 | Set Owner modal open | User dropdown populated from existing users list |
-| UI-034-05 | PATCH in progress | Buttons disabled; loading spinner on Apply button |
-| UI-034-06 | PATCH success | Success toast; album list refreshed; selection cleared |
-| UI-034-07 | PATCH error | Error toast with server message; selection preserved |
-| UI-034-08 | Infinite scroll active | Next page appended automatically when scroll sentinel visible |
-| UI-034-09 | Numbered pagination active | Page buttons rendered; clicking page loads new data; selection cleared |
-| UI-034-10 | "Select all matching" capped | Warning toast: "Only first 1 000 albums selected." |
+| UI-034-05 | Delete confirmation dialog open | Count shown; Cancel closes without action; Confirm Delete sends DELETE request |
+| UI-034-06 | PATCH/DELETE/Transfer in progress | Buttons disabled; loading spinner on Apply/Transfer/Confirm button |
+| UI-034-07 | Operation success | Success toast; album list refreshed; selection cleared |
+| UI-034-08 | Operation error | Error toast with server message; selection preserved |
+| UI-034-09 | Infinite scroll active | Next page appended automatically when scroll sentinel visible |
+| UI-034-10 | Numbered pagination active | Page buttons rendered; clicking page loads new data; selection cleared |
+| UI-034-11 | "Select all matching" capped | Warning toast: "Only first 1 000 albums selected." |
+| UI-034-12 | Inline cell editing active | Cell transitions to editable state (dropdown/input); Escape restores original; Enter/blur confirms |
+| UI-034-13 | Inline edit confirmed | PATCH sent; cell shows new value; loading micro-state on cell |
+| UI-034-14 | Inline edit error | 422 error; cell shows error indicator; original value restored |
+| UI-034-15 | is_public toggled OFF | Row's Link?/Dwnl./Orig./Upld. cells greyed out/disabled |
+| UI-034-16 | is_public toggled ON | Row's Link?/Dwnl./Orig./Upld. cells become active toggles |
 
 ## Telemetry & Observability
 
@@ -243,9 +294,18 @@ No new telemetry events are required for this feature. Standard Laravel exceptio
 - Reuse existing `BaseApiWithDataTest` fixtures (albums, users).
 - Add a seeder or factory helper that creates a 3-level nested album tree for tree-integrity tests.
 
-## Open Questions (logged separately)
+## Clarification Resolutions
 
-See [open-questions.md](../../open-questions.md) for Q-034-01 through Q-034-04.
+All four open questions have been resolved (2026-04-14):
+
+| Q-ID | Resolution |
+|------|-----------|
+| Q-034-01 | **Option A** — Only `Album` records listed; TagAlbums excluded. |
+| Q-034-02 | **Option B** — Depth computed client-side in O(n) linear pass using `_lft`/`_rgt` stack algorithm. Server includes `_lft` and `_rgt` in each resource row; no `withDepth()` needed. |
+| Q-034-03 | **Option B** — Delete shows a minimal confirmation dialog (count + "Confirm Delete" button). All other operations remain no-confirmation. |
+| Q-034-04 | **Option A** — `GET ::ids` returns all albums regardless of owner. |
+
+See [open-questions.md](../../open-questions.md) for full resolution history.
 
 ## Spec DSL
 
@@ -282,10 +342,21 @@ domain_objects:
         type: string|null
       - name: is_nsfw
         type: boolean
-      - name: depth
-        type: integer
       - name: _lft
         type: integer
+      - name: _rgt
+        type: integer
+      # depth is NOT included — computed client-side per Q-034-02 → B
+      - name: is_public
+        type: boolean
+      - name: is_link_required
+        type: boolean
+      - name: grants_full_photo_access
+        type: boolean
+      - name: grants_download
+        type: boolean
+      - name: grants_upload
+        type: boolean
   - id: DO-034-02
     name: BulkEditAlbumsRequest
     fields:
@@ -328,6 +399,21 @@ domain_objects:
       - name: is_nsfw
         type: boolean
         constraints: "optional"
+      - name: is_public
+        type: boolean
+        constraints: "optional"
+      - name: is_link_required
+        type: boolean
+        constraints: "optional"
+      - name: grants_full_photo_access
+        type: boolean
+        constraints: "optional"
+      - name: grants_download
+        type: boolean
+        constraints: "optional"
+      - name: grants_upload
+        type: boolean
+        constraints: "optional, requires SE (BooleanRequireSupportRule)"
   - id: DO-034-03
     name: SetOwnerBulkRequest
     fields:
@@ -378,7 +464,7 @@ routes:
     auth: admin
     request_body:
       - album_ids: array<string>
-      - (optional fields per DO-034-02)
+      - (optional fields per DO-034-02 — metadata + visibility)
     responses:
       - 204: Success
       - 403: Non-admin
@@ -411,21 +497,33 @@ ui_states:
   - id: UI-034-02
     description: Albums selected (action buttons enabled)
   - id: UI-034-03
-    description: Edit Fields panel open
+    description: Edit Fields modal open (metadata + visibility sections)
   - id: UI-034-04
     description: Set Owner modal open
   - id: UI-034-05
-    description: PATCH/DELETE/Transfer in progress
+    description: Delete confirmation dialog open
   - id: UI-034-06
-    description: Operation success
+    description: Operation in progress
   - id: UI-034-07
-    description: Operation error
+    description: Operation success
   - id: UI-034-08
-    description: Infinite scroll appending
+    description: Operation error
   - id: UI-034-09
-    description: Numbered pagination navigation
+    description: Infinite scroll appending
   - id: UI-034-10
+    description: Numbered pagination navigation
+  - id: UI-034-11
     description: Select-all-matching capped at 1 000
+  - id: UI-034-12
+    description: Inline cell editing active
+  - id: UI-034-13
+    description: Inline edit confirmed (PATCH in flight)
+  - id: UI-034-14
+    description: Inline edit error (cell reverted)
+  - id: UI-034-15
+    description: is_public=false — dependent toggles disabled
+  - id: UI-034-16
+    description: is_public=true — dependent toggles active
 ```
 
 ## Appendix
@@ -440,24 +538,45 @@ The existing `Transfer::do()` action calls `Album::makeRoot()` which uses the Ka
 
 ### Editable Fields Rationale
 
-The problem statement asks for: "Photo/Album Order, Photo/Album Thumbs Aspect Ratio, Photo/Album Timeline Mode, Licence and Copyright" — plus "most of the metadata of base_albums (including ownership)". The following fields from `base_albums` and `albums` are therefore in scope:
+The problem statement asks for: "Photo/Album Order, Photo/Album Thumbs Aspect Ratio, Photo/Album Timeline Mode, Licence and Copyright, visible, require link, downloadable, guest upload, can access originals" — plus "most of the metadata of base_albums (including ownership)". The following fields are therefore in scope:
 
-| Field | Table |
-|-------|-------|
-| `description` | base_albums |
-| `copyright` | base_albums |
-| `photo_layout` | base_albums |
-| `sorting_col` / `sorting_order` | base_albums |
-| `is_nsfw` | base_albums |
-| `owner_id` | base_albums (via Transfer action) |
-| `license` | albums |
-| `album_thumb_aspect_ratio` | albums |
-| `album_timeline` | albums |
-| `album_sorting_col` / `album_sorting_order` | albums |
-| `photo_timeline` | base_albums (via photo_timeline column) |
+| Field | Table / Mechanism | Editable inline? | Editable via modal? |
+|-------|--------------------|------------------|---------------------|
+| `description` | base_albums | ✓ | ✓ |
+| `copyright` | base_albums | ✓ | ✓ |
+| `photo_layout` | base_albums | ✓ (dropdown) | ✓ |
+| `sorting_col` / `sorting_order` | base_albums | ✓ | ✓ |
+| `is_nsfw` | base_albums | ✓ (toggle) | ✓ |
+| `owner_id` | base_albums (via Transfer action) | ✗ (use Set Owner button) | ✗ |
+| `license` | albums | ✓ (dropdown) | ✓ |
+| `album_thumb_aspect_ratio` | albums | ✓ (dropdown) | ✓ |
+| `album_timeline` | albums | ✓ (dropdown) | ✓ |
+| `album_sorting_col` / `album_sorting_order` | albums | ✓ | ✓ |
+| `photo_timeline` | base_albums | ✓ (dropdown) | ✓ |
+| `is_public` | access_permissions (SetProtectionPolicy) | ✓ (toggle) | ✓ |
+| `is_link_required` | access_permissions (SetProtectionPolicy) | ✓ (toggle, only if public) | ✓ |
+| `grants_full_photo_access` | access_permissions (SetProtectionPolicy) | ✓ (toggle, only if public) | ✓ |
+| `grants_download` | access_permissions (SetProtectionPolicy) | ✓ (toggle, only if public) | ✓ |
+| `grants_upload` | access_permissions (SetProtectionPolicy, SE-only) | ✓ (toggle, SE + public) | ✓ (hidden if not SE) |
 
-`title` and `slug` are intentionally excluded from the batch form to prevent accidental mass-rename of albums; they remain editable only via the individual album editor. `is_pinned` is also excluded from bulk edit (unlikely to need bulk update; individual toggle is sufficient).
+`title` and `slug` are intentionally excluded from bulk edit (mass-rename risk; individual editor only). `is_pinned` is also excluded.
+
+### Depth Computation Algorithm (Q-034-02 → Option B)
+
+Given an array of album rows sorted by `_lft ASC`, compute depth in a single O(n) pass:
+
+```
+stack = []       // stack of {_rgt} values
+for each row in sorted rows:
+  while stack is not empty and row._lft > stack.top._rgt:
+    stack.pop()
+  depth = stack.length
+  row.computedDepth = depth
+  stack.push({ _rgt: row._rgt })
+```
+
+This algorithm is O(n) in time and O(tree depth) in space.
 
 ---
 
-*Last updated: 2026-04-12*
+*Last updated: 2026-04-14*
