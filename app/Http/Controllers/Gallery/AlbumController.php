@@ -8,7 +8,6 @@
 
 namespace App\Http\Controllers\Gallery;
 
-use App\Actions\Album\BaseArchive as AlbumBaseArchive;
 use App\Actions\Album\Create;
 use App\Actions\Album\CreateTagAlbum;
 use App\Actions\Album\Delete;
@@ -20,16 +19,12 @@ use App\Actions\Album\SetProtectionPolicy;
 use App\Actions\Album\SetSmartProtectionPolicy;
 use App\Actions\Album\Transfer;
 use App\Actions\Album\Unlock;
-use App\Actions\Photo\BaseArchive as PhotoBaseArchive;
 use App\Enum\AlbumTitleColor;
 use App\Enum\AlbumTitlePosition;
 use App\Enum\SizeVariantType;
 use App\Events\AlbumRouteCacheUpdated;
-use App\Events\Metrics\AlbumDownload;
-use App\Events\Metrics\PhotoDownload;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\UnauthenticatedException;
-use App\Http\Controllers\MetricsController;
 use App\Http\Requests\Album\AddAlbumRequest;
 use App\Http\Requests\Album\AddTagAlbumRequest;
 use App\Http\Requests\Album\DeleteAlbumsRequest;
@@ -49,7 +44,6 @@ use App\Http\Requests\Album\UpdateAlbumHeaderRequest;
 use App\Http\Requests\Album\UpdateAlbumRequest;
 use App\Http\Requests\Album\UpdateTagAlbumRequest;
 use App\Http\Requests\Album\WatermarkAlbumRequest;
-use App\Http\Requests\Album\ZipRequest;
 use App\Http\Requests\Traits\HasVisitorIdTrait;
 use App\Http\Resources\Editable\EditableBaseAlbumResource;
 use App\Http\Resources\Models\TargetAlbumResource;
@@ -63,7 +57,6 @@ use App\Models\Tag;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * Controller responsible for an album.
@@ -306,29 +299,6 @@ class AlbumController extends Controller
 		$album = $request->album();
 		$album->is_pinned = $request->is_pinned();
 		$album->save();
-	}
-
-	/**
-	 * Return the archive of the pictures of the album and its sub-albums.
-	 */
-	public function getArchive(ZipRequest $request): StreamedResponse
-	{
-		$should_measure = MetricsController::shouldMeasure();
-		if ($request->albums()->count() > 0) {
-			// We dispatch one event per album.
-			foreach ($request->albums() as $album) {
-				AlbumDownload::dispatchIf($should_measure, $this->visitorId(), $album->get_id());
-			}
-
-			return AlbumBaseArchive::resolve()->do($request->albums(), $request->sizeVariant(), $request->chunkSlice());
-		}
-
-		// We dispatch one event per photo.
-		foreach ($request->photos() as $photo) {
-			PhotoDownload::dispatchIf($should_measure && $request->from_id() !== null, $this->visitorId(), $photo->id, $request->from_id());
-		}
-
-		return PhotoBaseArchive::resolve()->do($request->photos(), $request->sizeVariant());
 	}
 
 	/**

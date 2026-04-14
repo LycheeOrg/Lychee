@@ -411,10 +411,6 @@ declare namespace App.Http.Resources.Frame {
 	};
 }
 declare namespace App.Http.Resources.GalleryConfigs {
-	export type ZipChunksData = {
-		total_chunks: number;
-		total_photos: number;
-	};
 	export type AlbumConfig = {
 		is_base_album: boolean;
 		is_model_album: boolean;
@@ -573,6 +569,10 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		upload_processing_limit: number;
 		upload_chunk_size: number;
 		can_watermark_optout: boolean;
+	};
+	export type ZipChunkData = {
+		total_chunks: number;
+		total_photos: number;
 	};
 }
 declare namespace App.Http.Resources.Models {

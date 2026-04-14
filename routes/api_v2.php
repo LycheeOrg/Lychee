@@ -77,9 +77,9 @@ Route::post('/Album::watermark', [Gallery\AlbumController::class, 'watermarkAlbu
 
 Route::post('/TagAlbum', [Gallery\AlbumController::class, 'createTagAlbum']);
 Route::patch('/TagAlbum', [Gallery\AlbumController::class, 'updateTagAlbum']);
-Route::get('/Zip/chunks', [Gallery\ZipChunksController::class, 'index'])
+Route::get('/Zip/chunks', [Gallery\ZipController::class, 'getChunksCount'])
 	->name('download-chunks');
-Route::get('/Zip', [Gallery\AlbumController::class, 'getArchive'])
+Route::get('/Zip', [Gallery\ZipController::class, 'getArchive'])
 	->name('download')
 	->withoutMiddleware(['content_type:json', 'accept_content_type:json'])
 	->middleware(['accept_content_type:any']);

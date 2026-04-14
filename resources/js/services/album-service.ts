@@ -217,7 +217,7 @@ const AlbumService = {
 	getChunkCount(
 		album_ids: string[],
 		variant: App.Enum.DownloadVariantType,
-	): Promise<AxiosResponse<App.Http.Resources.GalleryConfigs.ZipChunksData>> {
+	): Promise<AxiosResponse<App.Http.Resources.GalleryConfigs.ZipChunkData>> {
 		return axios.get(`${Constants.getApiUrl()}Zip/chunks`, { params: { album_ids: album_ids.join(","), variant } });
 	},
 

@@ -30,7 +30,7 @@ return new class() extends BaseConfigMigration {
 				'key' => 'download_archive_chunk_size',
 				'value' => '300',
 				'cat' => self::CAT,
-				'type_range' => self::INT,
+				'type_range' => self::POSITIVE,
 				'description' => 'Number of photos per ZIP chunk.',
 				'details' => 'When chunked downloads are enabled, each ZIP archive will contain at most this many photos.',
 				'is_secret' => false,
