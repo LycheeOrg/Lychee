@@ -59,6 +59,7 @@
 <script setup lang="ts">
 import AlbumService from "@/services/album-service";
 import { useLycheeStateStore } from "@/stores/LycheeState";
+import { trans } from "laravel-vue-i18n";
 import { storeToRefs } from "pinia";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
@@ -119,7 +120,7 @@ function downloadChunked(variant: App.Enum.DownloadVariantType) {
 		})
 		.catch(function (err: unknown) {
 			is_downloading.value = false;
-			toast.add({ severity: "error", summary: "Download failed", detail: String(err), life: 5000 });
+			toast.add({ severity: "error", summary: trans("gallery.download_error"), detail: String(err), life: 5000 });
 		});
 }
 

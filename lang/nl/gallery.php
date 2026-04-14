@@ -33,6 +33,8 @@ return [
     'live_video' => 'Videodeel van live-foto',
     'download_raw' => 'Download RAW',
     'download_album' => 'Selecteer de beeldresolutie voor het album-ZIP-archief. Als een foto de geselecteerde variant niet heeft, wordt het origineel gebruikt.',
+    'downloading_part' => 'Downloading part :current / :total',
+    'download_error' => 'Download failed',
     'camera_data' => 'Cameradatum',
     'album_reserved' => 'Alle rechten voorbehouden',
     'map' => [

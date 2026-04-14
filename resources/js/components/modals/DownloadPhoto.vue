@@ -40,6 +40,7 @@ import { usePhotoRoute } from "@/composables/photo/photoRoute";
 import PhotoService from "@/services/photo-service";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { usePhotoStore } from "@/stores/PhotoState";
+import { trans } from "laravel-vue-i18n";
 import { storeToRefs } from "pinia";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
@@ -116,7 +117,7 @@ function downloadVariantChunked(photo_ids: string[], parent_id: string | null, v
 			return downloadNext(1);
 		})
 		.catch(function (err: unknown) {
-			toast.add({ severity: "error", summary: "Download failed", detail: String(err), life: 5000 });
+			toast.add({ severity: "error", summary: trans("gallery.download_error"), detail: String(err), life: 5000 });
 		});
 }
 
