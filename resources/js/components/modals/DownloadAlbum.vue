@@ -99,26 +99,28 @@ function downloadChunked(variant: App.Enum.DownloadVariantType) {
 	current_chunk.value = 0;
 	total_chunks.value = 0;
 
-	AlbumService.getChunkCount(props.albumIds, variant).then(function (response) {
-		total_chunks.value = response.data.total_chunks;
+	AlbumService.getChunkCount(props.albumIds, variant)
+		.then(function (response) {
+			total_chunks.value = response.data.total_chunks;
 
-		function downloadNext(chunk: number): Promise<void> {
-			if (!is_downloading.value || chunk > total_chunks.value) {
-				is_downloading.value = false;
-				visible.value = false;
-				return Promise.resolve();
+			function downloadNext(chunk: number): Promise<void> {
+				if (!is_downloading.value || chunk > total_chunks.value) {
+					is_downloading.value = false;
+					visible.value = false;
+					return Promise.resolve();
+				}
+				current_chunk.value = chunk;
+				return AlbumService.downloadChunk(props.albumIds, variant, chunk).then(function () {
+					return downloadNext(chunk + 1);
+				});
 			}
-			current_chunk.value = chunk;
-			return AlbumService.downloadChunk(props.albumIds, variant, chunk).then(function () {
-				return downloadNext(chunk + 1);
-			});
-		}
 
-		return downloadNext(1);
-	}).catch(function (err: unknown) {
-		is_downloading.value = false;
-		toast.add({ severity: "error", summary: "Download failed", detail: String(err), life: 5000 });
-	});
+			return downloadNext(1);
+		})
+		.catch(function (err: unknown) {
+			is_downloading.value = false;
+			toast.add({ severity: "error", summary: "Download failed", detail: String(err), life: 5000 });
+		});
 }
 
 function download(variant: App.Enum.DownloadVariantType) {

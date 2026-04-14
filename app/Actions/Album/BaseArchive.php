@@ -346,11 +346,11 @@ abstract class BaseArchive
 	/**
 	 * Recursive helper that collects photo id + zip_path pairs for an album and its descendants.
 	 *
-	 * @param AbstractAlbum         $album
-	 * @param array<string>         $used_dir_names
-	 * @param string|null           $full_name_of_parent
-	 * @param DownloadVariantType   $variant
-	 * @param array<int,array{id:string,zip_path:string}> $result (by reference)
+	 * @param AbstractAlbum                               $album
+	 * @param array<string>                               $used_dir_names
+	 * @param string|null                                 $full_name_of_parent
+	 * @param DownloadVariantType                         $variant
+	 * @param array<int,array{id:string,zip_path:string}> $result              (by reference)
 	 */
 	private function gatherAlbumFilenames(AbstractAlbum $album, array &$used_dir_names, ?string $full_name_of_parent, DownloadVariantType $variant, array &$result): void
 	{
@@ -443,12 +443,12 @@ abstract class BaseArchive
 	/**
 	 * Compresses an album recursively using a pre-computed inclusion map (for chunked downloads).
 	 *
-	 * @param AbstractAlbum       $album
-	 * @param array<string>       $used_dir_names
-	 * @param string|null         $full_name_of_parent
-	 * @param ZipStream           $zip
-	 * @param DownloadVariantType $variant
-	 * @param array<string,string> $included_map  photo_id => zip_path for photos to include
+	 * @param AbstractAlbum        $album
+	 * @param array<string>        $used_dir_names
+	 * @param string|null          $full_name_of_parent
+	 * @param ZipStream            $zip
+	 * @param DownloadVariantType  $variant
+	 * @param array<string,string> $included_map        photo_id => zip_path for photos to include
 	 */
 	private function compressAlbumSliced(AbstractAlbum $album, array &$used_dir_names, ?string $full_name_of_parent, ZipStream $zip, DownloadVariantType $variant, array $included_map): void
 	{
@@ -513,10 +513,10 @@ abstract class BaseArchive
 	 * Streams photos from a collection using the inclusion map.
 	 *
 	 * @param Collection<int,Photo>|iterable<Photo> $photos
-	 * @param AbstractAlbum                          $album
-	 * @param ZipStream                              $zip
-	 * @param DownloadVariantType                    $variant
-	 * @param array<string,string>                   $included_map  photo_id => zip_path
+	 * @param AbstractAlbum                         $album
+	 * @param ZipStream                             $zip
+	 * @param DownloadVariantType                   $variant
+	 * @param array<string,string>                  $included_map photo_id => zip_path
 	 */
 	private function compressPhotosFromCollectionSliced(Collection|iterable $photos, AbstractAlbum $album, ZipStream $zip, DownloadVariantType $variant, array $included_map): void
 	{

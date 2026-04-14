@@ -214,7 +214,10 @@ const AlbumService = {
 		location.href = `${Constants.getApiUrl()}Zip?album_ids=${album_ids.join(",")}&variant=${variant}`;
 	},
 
-	getChunkCount(album_ids: string[], variant: App.Enum.DownloadVariantType): Promise<AxiosResponse<App.Http.Resources.GalleryConfigs.ZipChunksData>> {
+	getChunkCount(
+		album_ids: string[],
+		variant: App.Enum.DownloadVariantType,
+	): Promise<AxiosResponse<App.Http.Resources.GalleryConfigs.ZipChunksData>> {
 		return axios.get(`${Constants.getApiUrl()}Zip/chunks`, { params: { album_ids: album_ids.join(","), variant } });
 	},
 

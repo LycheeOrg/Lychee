@@ -22,7 +22,6 @@ namespace Tests\Feature_v2\Zip;
 
 use App\Enum\DownloadVariantType;
 use App\Models\Configs;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class ZipChunkedDownloadTest extends BaseApiWithDataTest

@@ -102,20 +102,22 @@ function isDownloadable(sv: number): boolean {
 }
 
 function downloadVariantChunked(photo_ids: string[], parent_id: string | null, variant: App.Enum.DownloadVariantType) {
-	PhotoService.getChunkCount(photo_ids, parent_id, variant).then(function (response) {
-		const chunks = response.data.total_chunks;
-		function downloadNext(chunk: number): Promise<void> {
-			if (chunk > chunks) {
-				return Promise.resolve();
+	PhotoService.getChunkCount(photo_ids, parent_id, variant)
+		.then(function (response) {
+			const chunks = response.data.total_chunks;
+			function downloadNext(chunk: number): Promise<void> {
+				if (chunk > chunks) {
+					return Promise.resolve();
+				}
+				return PhotoService.downloadChunk(photo_ids, parent_id, variant, chunk).then(function () {
+					return downloadNext(chunk + 1);
+				});
 			}
-			return PhotoService.downloadChunk(photo_ids, parent_id, variant, chunk).then(function () {
-				return downloadNext(chunk + 1);
-			});
-		}
-		return downloadNext(1);
-	}).catch(function (err: unknown) {
-		toast.add({ severity: "error", summary: "Download failed", detail: String(err), life: 5000 });
-	});
+			return downloadNext(1);
+		})
+		.catch(function (err: unknown) {
+			toast.add({ severity: "error", summary: "Download failed", detail: String(err), life: 5000 });
+		});
 }
 
 function download(sv: number) {

@@ -138,6 +138,7 @@ final readonly class RouteCacheManager
 
 			// This is returning a stream, we do not cache it.
 			'api/v2/Zip' => false,
+			'api/v2/Zip/chunks' => false,
 
 			// We shall take care of that later.
 			'api/v2/Tags' => false,
