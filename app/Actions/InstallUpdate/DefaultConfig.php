@@ -37,7 +37,6 @@ class DefaultConfig
 				'filter', // Required by dependencies
 				'gd',
 				'json', // Required by Laravel
-				'ldap', // Required by dependencies
 				'libxml', // Required by dependencies
 				'mbstring', // Required by Laravel
 				'openssl', // Required by Laravel
