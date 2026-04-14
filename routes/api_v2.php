@@ -263,6 +263,15 @@ Route::get('/Security/Advisories', [Admin\SecurityAdvisoriesController::class, '
 Route::get('/Jobs', [Admin\JobsController::class, 'list']);
 
 /**
+ * BULK ALBUM EDIT.
+ */
+Route::get('/BulkAlbumEdit', [Admin\BulkAlbumController::class, 'index']);
+Route::get('/BulkAlbumEdit::ids', [Admin\BulkAlbumController::class, 'ids']);
+Route::patch('/BulkAlbumEdit', [Admin\BulkAlbumController::class, 'patch']);
+Route::post('/BulkAlbumEdit::setOwner', [Admin\BulkAlbumController::class, 'setOwner']);
+Route::delete('/BulkAlbumEdit', [Admin\BulkAlbumController::class, 'destroy']);
+
+/**
  * WEBHOOKS.
  */
 Route::get('/Webhook', [Admin\WebhookController::class, 'index']);
