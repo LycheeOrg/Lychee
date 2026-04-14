@@ -7,8 +7,8 @@
 		class="border-none"
 		:class="props.config.back_button_enabled ? '' : 'hidden'"
 	>
-		<i class="pi pi-home sm:hidden" />
-		<span class="hidden sm:inline">{{ props.config.back_button_text }}</span>
+		<i class="pi pi-home lg:hidden" />
+		<span class="hidden lg:inline">{{ props.config.back_button_text }}</span>
 	</Button>
 </template>
 <script setup lang="ts">
