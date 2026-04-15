@@ -6,6 +6,7 @@ return [
     | Left Menu
     |--------------------------------------------------------------------------
     */
+    'back_to_gallery' => 'Zpět do Galerie',
     'login' => 'Přihlášení',
     'frame' => 'Rámeček',
     'map' => 'Mapa',

@@ -314,6 +314,8 @@ return [
         'download_all' => 'Stáhnout vybrané',
         'merge' => 'Sloučit',
         'merge_all' => 'Sloučit vybrané',
+        'approve' => 'Schválit',
+        'approve_all' => 'Schválit vybrané',
         'apply_renamer' => 'Použít přejmenování',
         'apply_renamer_all' => 'Použít přejmenování na vybrané',
         'upload_photo' => 'Nahrát fotografii',

@@ -272,7 +272,9 @@ return [
         'names_copied' => 'Názvy vybraných obrázků byly zkopírovány!',
     ],
     'apply_renamer' => [
-        'no_rules' => 'Nebyly nalezena žádná pravidla pro přejmenování.',
+        'title' => 'Aplikovat pravidla pro přejmenování',
+        'description' => 'Vyberte pravidla pro přejmenování, která chcete použít, a nastavte jejich rozsah.',
+        'no_rules' => 'Nebyla nalezena žádná pravidla pro přejmenování.',
         'target' => 'Cíl',
         'scope' => 'Rozsah',
         'photos' => 'Fotografie',
