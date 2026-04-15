@@ -199,7 +199,7 @@ class AlbumFactory
 		$tag_albums = $albums_only ? [] : $tag_album_query->findMany($album_ids)->all(); /** @phpstan-ignore varTag.type */
 
 		/** @var array<int,Album> $albums */
-		$albums = $album_query->findMany($album_ids)->all(); /** @phpstan-ignore varTag.type */
+		$albums = $album_query->findMany($album_ids)->all();
 		$result = new Collection(array_merge($tag_albums, $albums));
 
 		if ($result->count() !== count($album_ids)) {

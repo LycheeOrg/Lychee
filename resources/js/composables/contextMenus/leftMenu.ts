@@ -169,6 +169,12 @@ export function useLeftMenu(
 						access: initData.value.modules.is_mod_webhook_enabled ?? false,
 					},
 					{
+						label: "moderation.title",
+						icon: "pi pi-shield",
+						route: "/moderation",
+						access: canSeeAdmin.value,
+					},
+					{
 						label: "diagnostics.title",
 						icon: "wrench",
 						route: "/diagnostics",

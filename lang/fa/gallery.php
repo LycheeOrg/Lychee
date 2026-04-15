@@ -315,6 +315,8 @@ return [
         'merge_all' => 'ادغام انتخاب شده‌ها',
         'apply_renamer' => 'Apply Renamer',
         'apply_renamer_all' => 'Apply Renamer to Selected',
+        'approve' => 'Approve',
+        'approve_all' => 'Approve Selected',
         'upload_photo' => 'بارگذاری عکس',
         'take_photo' => 'گرفتن عکس',
         'import_link' => 'وارد کردن از لینک',

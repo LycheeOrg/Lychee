@@ -8,6 +8,7 @@
 
 namespace App\Actions\User;
 
+use App\Enum\UserUploadTrustLevel;
 use App\Exceptions\ConflictingPropertyException;
 use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\ModelDBException;
@@ -35,6 +36,7 @@ class Create
 		bool $may_administrate = false,
 		?int $quota_kb = null,
 		?string $note = null,
+		?UserUploadTrustLevel $upload_trust_level = null,
 	): User {
 		if (User::query()->where('username', '=', $username)->count() !== 0) {
 			throw new ConflictingPropertyException('Username already exists');
@@ -52,6 +54,9 @@ class Create
 		$user->password = Hash::make($password);
 		$user->quota_kb = $quota_kb;
 		$user->note = $note;
+		$user->upload_trust_level = $upload_trust_level
+			?? $this->config_manager->getValueAsEnum('default_user_trust_level', UserUploadTrustLevel::class)
+			?? UserUploadTrustLevel::TRUSTED;
 		$user->save();
 
 		return $user;

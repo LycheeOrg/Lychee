@@ -14,7 +14,6 @@ use App\Facades\Helpers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use Route;
 
 final readonly class RouteCacheManager
 {
@@ -103,6 +102,8 @@ final readonly class RouteCacheManager
 			'api/v2/Photo::random' => false,
 
 			// We don't care about those, they are rarely loaded.
+			'api/v2/Moderation' => false,
+			'api/v2/Moderation::photo' => false,
 			'api/v2/Webhook' => false,
 			'api/v2/Webhook/{webhook}' => false,
 

@@ -315,6 +315,8 @@ return [
         'merge_all' => 'Auswahl zusammenführen',
         'apply_renamer' => 'Umbenennungsregeln auf Auswahl anwenden',
         'apply_renamer_all' => 'Apply Renamer to Selected',
+        'approve' => 'Approve',
+        'approve_all' => 'Approve Selected',
         'upload_photo' => 'Foto hochladen',
         'take_photo' => 'Foto aufnehmen',
         'import_link' => 'Von Link importieren',

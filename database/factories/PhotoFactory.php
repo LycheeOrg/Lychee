@@ -59,6 +59,7 @@ class PhotoFactory extends Factory
 			'taken_at' => $now,
 			'initial_taken_at_orig_tz' => null,
 			'is_highlighted' => false,
+			'is_validated' => true,
 			'checksum' => sha1(rand()),
 			'original_checksum' => sha1(rand()),
 			'license' => 'none',

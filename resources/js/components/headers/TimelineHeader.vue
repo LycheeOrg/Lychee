@@ -50,6 +50,8 @@
 					{{ $t("profile.register.signup") }}
 				</Button>
 			</template>
+			<!-- Not logged in. -->
+			<BackLinkButton v-if="userStore.isGuest && timelineStore.rootConfig" :config="timelineStore.rootConfig" />
 			<!-- Maybe logged in. -->
 			<div class="hidden lg:block">
 				<template v-for="(item, idx) in menu" :key="`menu-item-${idx}`">
@@ -61,8 +63,6 @@
 						<Button :icon="item.icon" class="border-none" severity="secondary" text @click="item.callback" />
 					</template>
 				</template>
-				<!-- Not logged in. -->
-				<BackLinkButton v-if="userStore.isGuest && timelineStore.rootConfig" :config="timelineStore.rootConfig" />
 			</div>
 			<SpeedDial
 				:model="menu"

@@ -316,6 +316,8 @@ return [
         'merge_all' => '合并所选',
         'apply_renamer' => 'Apply Renamer',
         'apply_renamer_all' => 'Apply Renamer to Selected',
+        'approve' => 'Approve',
+        'approve_all' => 'Approve Selected',
         'upload_photo' => '上传照片',
         'take_photo' => '拍照',
         'import_link' => '从链接导入',

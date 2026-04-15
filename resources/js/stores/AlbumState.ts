@@ -34,6 +34,8 @@ export const useAlbumStore = defineStore("album-store", {
 		photos_per_page: 0,
 		photos_total: 0,
 		photos_loading: false as boolean,
+		/** Earliest page that has been loaded into the photos store (used for background prepend tracking). */
+		photos_min_page: 1,
 
 		// New pagination state for albums (via /Album::albums endpoint)
 		albums_current_page: 1,
@@ -63,6 +65,7 @@ export const useAlbumStore = defineStore("album-store", {
 			this.photos_per_page = 0;
 			this.photos_total = 0;
 			this.photos_loading = false;
+			this.photos_min_page = 1;
 			this.albums_current_page = 1;
 			this.albums_last_page = 0;
 			this.albums_per_page = 0;
@@ -202,12 +205,13 @@ export const useAlbumStore = defineStore("album-store", {
 		 *
 		 * @param page - Page number to load (1-indexed)
 		 * @param append - If true, merge with existing photos; if false, replace them
+		 * @param prepend - If true, insert photos at the beginning (for background loading of previous pages)
 		 *
 		 * Handles timeline mode: When append=true and timeline is enabled,
 		 * PhotosState.appendPhotos() intelligently merges photos into existing
 		 * timeline groups rather than creating duplicate date headers.
 		 */
-		loadPhotos(page: number = 1, append: boolean = false): Promise<void> {
+		loadPhotos(page: number = 1, append: boolean = false, prepend: boolean = false): Promise<void> {
 			const photosState = usePhotosStore();
 
 			if (this.albumId === ALL || this.albumId === undefined) {
@@ -216,7 +220,11 @@ export const useAlbumStore = defineStore("album-store", {
 
 			// Capture current album ID to detect navigation during loading
 			const requestedAlbumId = this.albumId;
-			this.photos_loading = true;
+			// Background prepend operations don't show a loading indicator to
+			// avoid flickering and to not block the loadMorePhotos guard.
+			if (!prepend) {
+				this.photos_loading = true;
+			}
 
 			// Extract tag filter params from state
 			const tag_ids = this.active_tag_filter?.tag_ids ?? null;
@@ -228,26 +236,40 @@ export const useAlbumStore = defineStore("album-store", {
 					if (this.albumId !== requestedAlbumId) {
 						return;
 					}
+					// prependPhotos inserts before existing photos for prepend=true (background loading of previous pages)
 					// appendPhotos handles timeline merging for append=true
 					// setPhotos replaces all photos and rebuilds timeline for append=false
-					if (append) {
-						photosState.appendPhotos(data.data.photos, this.config?.is_photo_timeline_enabled ?? false);
+					if (prepend) {
+						photosState.prependPhotos(data.data.photos, this.config?.is_photo_timeline_enabled ?? false, page);
+						// Track the earliest page that has been prepended
+						if (page < this.photos_min_page) {
+							this.photos_min_page = page;
+						}
+					} else if (append) {
+						photosState.appendPhotos(data.data.photos, this.config?.is_photo_timeline_enabled ?? false, page);
+						this.photos_current_page = data.data.current_page;
+						this.photos_last_page = data.data.last_page;
+						this.photos_per_page = data.data.per_page;
+						this.photos_total = data.data.total;
 					} else {
-						photosState.setPhotos(data.data.photos, this.config?.is_photo_timeline_enabled ?? false);
+						photosState.setPhotos(data.data.photos, this.config?.is_photo_timeline_enabled ?? false, page);
+						this.photos_current_page = data.data.current_page;
+						this.photos_last_page = data.data.last_page;
+						this.photos_per_page = data.data.per_page;
+						this.photos_total = data.data.total;
+						this.photos_min_page = page;
 					}
 					if (useLycheeStateStore().is_debug_enabled) {
 						console.debug(`photos: ${photosState.photos.length}/${data.data.total}`);
 					}
-					this.photos_current_page = data.data.current_page;
-					this.photos_last_page = data.data.last_page;
-					this.photos_per_page = data.data.per_page;
-					this.photos_total = data.data.total;
 				})
 				.catch((error) => {
 					console.error(error);
 				})
 				.finally(() => {
-					this.photos_loading = false;
+					if (!prepend) {
+						this.photos_loading = false;
+					}
 				});
 		},
 
@@ -313,7 +335,14 @@ export const useAlbumStore = defineStore("album-store", {
 			return this.loadPhotos(1, false);
 		},
 
-		async load(): Promise<void> {
+		/**
+		 * Load the album metadata and first batch of photos.
+		 *
+		 * @param startPage - The page to load first. When provided (>1), that page is loaded
+		 *                    immediately so a directly linked photo can be displayed, then
+		 *                    pages 1…startPage-1 are loaded in the background (prepended).
+		 */
+		async load(startPage: number = 1): Promise<void> {
 			const togglableState = useTogglablesStateStore();
 			const photosState = usePhotosStore();
 			const albumsStore = useAlbumsStore();
@@ -349,7 +378,14 @@ export const useAlbumStore = defineStore("album-store", {
 					this.config = data.data.config;
 					layoutStore.layout = data.data.config.photo_layout;
 
-					const loader = [this.loadPhotos(1, false)];
+					// Clamp startPage to a valid range (guard against bad query params)
+					const resolvedStart = startPage > 1 ? startPage : 1;
+
+					// Load the target page first so a directly linked photo can be displayed
+					// immediately. Previous pages are prepended in background afterwards.
+					await this.loadPhotos(resolvedStart, false);
+
+					const loader: Promise<void>[] = [];
 
 					if (data.data.config.is_model_album) {
 						this.modelAlbum = data.data.resource as App.Http.Resources.Models.HeadAlbumResource;
@@ -359,7 +395,19 @@ export const useAlbumStore = defineStore("album-store", {
 					} else {
 						this.smartAlbum = data.data.resource as App.Http.Resources.Models.HeadSmartAlbumResource;
 					}
+
 					await Promise.all(loader);
+
+					// Fire off background loading of immediately preceding pages (prepend).
+					// Capped at the 5 most-recent previous pages to avoid issuing too many
+					// concurrent requests when jumping to a high page number (e.g. page 50).
+					// These are intentionally NOT awaited so the photo panel can render
+					// while earlier pages stream in, without blocking albumStore.load().
+					const backgroundPagesLimit = 5;
+					const firstBackgroundPage = Math.max(1, resolvedStart - backgroundPagesLimit);
+					for (let p = resolvedStart - 1; p >= firstBackgroundPage; p--) {
+						void this.loadPhotos(p, false, true);
+					}
 				})
 				.catch((error) => {
 					if (this._loadingAlbumId !== requestedAlbumId) {

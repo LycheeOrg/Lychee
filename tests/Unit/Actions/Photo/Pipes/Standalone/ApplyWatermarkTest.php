@@ -183,6 +183,7 @@ class ApplyWatermarkTest extends AbstractTestCase
 			exif_info: $exif_info,
 			album: null,
 			intended_owner_id: 1,
+			upload_trust_level: \App\Enum\UserUploadTrustLevel::TRUSTED,
 			shall_import_via_symlink: false,
 			shall_delete_imported: false,
 			shall_rename_photo_title: false,

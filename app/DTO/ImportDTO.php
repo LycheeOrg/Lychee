@@ -10,6 +10,7 @@ namespace App\DTO;
 
 use App\Actions\Album\Create as AlbumCreate;
 use App\Actions\Photo\Create as PhotoCreate;
+use App\Enum\UserUploadTrustLevel;
 use App\Jobs\ImportImageJob;
 use App\Jobs\RecomputeAlbumSizeJob;
 use App\Jobs\RecomputeAlbumStatsJob;
@@ -39,7 +40,7 @@ class ImportDTO
 		public readonly bool $should_execute_jobs = false,
 	) {
 		$this->album_create = new AlbumCreate($intended_owner_id);
-		$this->photo_create = new PhotoCreate($import_mode, $intended_owner_id);
+		$this->photo_create = new PhotoCreate($import_mode, $intended_owner_id, upload_trust_level: UserUploadTrustLevel::TRUSTED);
 		$this->album_renamer = new AlbumRenamer($intended_owner_id);
 		$this->photo_renamer = new PhotoRenamer($intended_owner_id);
 	}

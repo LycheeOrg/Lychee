@@ -316,6 +316,8 @@ return [
         'merge_all' => 'Alles samenvoegen',
         'apply_renamer' => 'Apply Renamer',
         'apply_renamer_all' => 'Apply Renamer to Selected',
+        'approve' => 'Approve',
+        'approve_all' => 'Approve Selected',
         'upload_photo' => 'Foto uploaden',
         'take_photo' => 'Foto nemen',
         'import_link' => 'Importeer van link',

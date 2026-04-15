@@ -316,7 +316,7 @@ return [
         'merge_all' => 'Sloučit vybrané',
         'apply_renamer' => 'Použít přejmenování',
         'apply_renamer_all' => 'Použít přejmenování na vybrané',
-        'upload_photo' => 'Nahrát fotku',
+        'upload_photo' => 'Nahrát fotografii',
         'take_photo' => 'Vyfotit',
         'import_link' => 'Importovat z odkazu',
         'import_server' => 'Importovat ze serveru',

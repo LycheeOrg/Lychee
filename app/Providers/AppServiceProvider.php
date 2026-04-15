@@ -448,7 +448,7 @@ class AppServiceProvider extends ServiceProvider
 	private function registerThrottleQueues(): void
 	{
 		RateLimiter::for('geo-queue', function ($job) {
-			return Limit::perSecond(config('features.location_decoding_requests_per_second', 1))->by($job->user->id);
+			return Limit::perSecond(config('features.location_decoding_requests_per_second', 1));
 		});
 	}
 }
