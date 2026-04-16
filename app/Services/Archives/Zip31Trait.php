@@ -51,6 +51,6 @@ trait Zip31Trait
 		}
 
 		/** @disregard */
-		$zip->addFileFromStream(fileName: $zippable_photo->file_name, stream: $zippable_photo->file->read(), comment: $zippable_photo->title, last_modification_date_time: $zippable_photo->last_modification_date_time);
+		$zip->addFileFromStream(fileName: $zippable_photo->file_name, stream: $zippable_photo->file->read(), comment: $zippable_photo->title, lastModificationDateTime: $zippable_photo->last_modification_date_time);
 	}
 }

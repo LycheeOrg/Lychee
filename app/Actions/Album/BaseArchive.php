@@ -325,7 +325,7 @@ abstract class BaseArchive
 		};
 
 		try {
-			$zip_title = self::createZipTitle($albums);
+			$zip_title = $this->createZipTitle($albums);
 			$part_filename = $zip_title . '.part' . $slice->chunk . '.zip';
 			$fallback = 'Album.part' . $slice->chunk . '.zip';
 			$disposition = HeaderUtils::makeDisposition(

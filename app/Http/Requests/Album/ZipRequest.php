@@ -95,7 +95,7 @@ class ZipRequest extends BaseApiRequest implements HasAlbums, HasPhotos, HasSize
 		$this->processAlbums($album_ids);
 
 		// only interesting if we have no albums
-		$this->size_variant = DownloadVariantType::tryFrom($values[RequestAttribute::SIZE_VARIANT_ATTRIBUTE] ?? '');
+		$this->size_variant = DownloadVariantType::tryFrom($values[RequestAttribute::SIZE_VARIANT_ATTRIBUTE] ?? '') ?? DownloadVariantType::ORIGINAL;
 
 		$photo_ids = $values[RequestAttribute::PHOTO_IDS_ATTRIBUTE] ?? null;
 		$photo_ids = $photo_ids === null ? [] : explode(',', $photo_ids);
