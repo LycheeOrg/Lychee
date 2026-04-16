@@ -11,13 +11,13 @@ namespace App\Actions\Photo;
 use App\Actions\Photo\Extensions\ArchiveFileInfo;
 use App\Contracts\Exceptions\LycheeException;
 use App\DTO\ChunkSlice;
+use App\DTO\ZippablePhoto;
 use App\Enum\DownloadVariantType;
 use App\Enum\SizeVariantType;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\InvalidSizeVariantException;
 use App\Exceptions\Internal\LycheeLogicException;
-use App\Image\Files\BaseMediaFile;
 use App\Image\Files\FlysystemFile;
 use App\Models\Photo;
 use App\Repositories\ConfigManager;
@@ -46,6 +46,26 @@ abstract class BaseArchive
 	];
 
 	protected int $deflate_level = -1;
+
+	/**
+	 * @return ZipStream
+	 *
+	 * @throws ConfigurationKeyMissingException
+	 */
+	abstract protected function createZip(): ZipStream;
+
+	/**
+	 * @param ZipStream     $zip
+	 * @param ZippablePhoto $zippable_photo,
+	 *
+	 * @return void
+	 *
+	 * @codeCoverageIgnore
+	 */
+	abstract protected function addFileToZip(
+		ZipStream $zip,
+		ZippablePhoto $zippable_photo,
+	): void;
 
 	/**
 	 * Resolve which version of the archive to use.
@@ -203,7 +223,14 @@ abstract class BaseArchive
 				}
 
 				$filename = $filename_map[$photo->id];
-				$this->addFileToZip($zip, $filename, $archive_file_info->file, null);
+				$zippable_photo = new ZippablePhoto(
+					file_name: $filename,
+					file: $archive_file_info->file,
+					title: null,
+					last_modification_date_time: null,
+				);
+
+				$this->addFileToZip($zip, $zippable_photo);
 				$archive_file_info->file->close();
 
 				try {
@@ -397,7 +424,14 @@ abstract class BaseArchive
 						);
 					} while (array_key_exists($filename, $unique_filenames));
 				}
-				$this->addFileToZip($zip, $filename, $archive_file_info->file, null);
+				$zippable_photo = new ZippablePhoto(
+					file_name: $filename,
+					file: $archive_file_info->file,
+					title: null,
+					last_modification_date_time: null,
+				);
+
+				$this->addFileToZip($zip, $zippable_photo);
 				$archive_file_info->file->close();
 				// Reset the execution timeout for every iteration.
 				try {
@@ -430,15 +464,6 @@ abstract class BaseArchive
 
 		return $response;
 	}
-
-	abstract protected function addFileToZip(ZipStream $zip, string $file_name, FlysystemFile|BaseMediaFile $file, Photo|null $photo): void;
-
-	/**
-	 * @return ZipStream
-	 *
-	 * @throws ConfigurationKeyMissingException
-	 */
-	abstract protected function createZip(): ZipStream;
 
 	/**
 	 * Creates a {@link ArchiveFileInfo} for the indicated photo and variant.

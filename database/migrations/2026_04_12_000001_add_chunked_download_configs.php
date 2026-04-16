@@ -38,6 +38,18 @@ return new class() extends BaseConfigMigration {
 				'level' => 0,
 				'order' => 19,
 			],
+			[
+				'key' => 'download_archive_drop_extension_enabled',
+				'value' => '1',
+				'cat' => self::CAT,
+				'type_range' => self::BOOL,
+				'description' => 'Drop extensions in file names/titles in ZIP archives.',
+				'details' => 'When enabled the extension of files in zip archives will be dropped. This is useful if your photos have titles such as image.jpg to avoid having files named image.jpg.jpg in the zip archive.',
+				'is_secret' => false,
+				'is_expert' => true,
+				'level' => 0,
+				'order' => 20,
+			],
 		];
 	}
 };
