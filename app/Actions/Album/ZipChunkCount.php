@@ -66,7 +66,7 @@ class ZipChunkCount
 		$total = $album->photos()->count();
 
 		if ($album instanceof Album) {
-			foreach ($album->children()->get() as $child) {
+			foreach ($album->children()->get() as $child) { /** @phpstan-ignore foreach.nonIterable (false positive) */
 				$total += $this->getPhotoCountForAlbum($child);
 			}
 		}

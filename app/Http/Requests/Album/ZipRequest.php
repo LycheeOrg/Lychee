@@ -76,8 +76,6 @@ class ZipRequest extends BaseApiRequest implements HasAlbums, HasPhotos, HasSize
 	 */
 	public function rules(): array
 	{
-		$chunk_size = request()->configs()->getValueAsInt('download_archive_chunk_size');
-
 		return [
 			RequestAttribute::ALBUM_IDS_ATTRIBUTE => ['sometimes', new AlbumIDListRule()],
 			RequestAttribute::PHOTO_IDS_ATTRIBUTE => ['sometimes', new RandomIDListRule()],
