@@ -364,7 +364,7 @@ const photoCallbacks = {
 	toggleMove: toggleMove,
 	toggleDelete: toggleDelete,
 	toggleDownload: () => {
-		downloadPhotoIds.value = selectedPhotosIds.value;
+		downloadPhotoIds.value = [...selectedPhotosIds.value];
 		is_download_photo_visible.value = true;
 	},
 	toggleApplyRenamer: () => {},

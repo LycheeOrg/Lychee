@@ -24,7 +24,6 @@ use App\Http\Requests\Traits\HasSizeVariantTrait;
 use App\Models\Photo;
 use App\Policies\AlbumPolicy;
 use App\Policies\PhotoPolicy;
-use App\Repositories\ConfigManager;
 use App\Rules\AlbumIDListRule;
 use App\Rules\AlbumIDRule;
 use App\Rules\RandomIDListRule;
@@ -41,6 +40,8 @@ class ZipRequest extends BaseApiRequest implements HasAlbums, HasPhotos, HasSize
 	use HasPhotosTrait;
 	use HasFromIdTrait;
 	use HasSizeVariantTrait;
+
+	protected ?ChunkSlice $chunk_slice;
 
 	/**
 	 * {@inheritDoc}
@@ -75,6 +76,8 @@ class ZipRequest extends BaseApiRequest implements HasAlbums, HasPhotos, HasSize
 	 */
 	public function rules(): array
 	{
+		$chunk_size = request()->configs()->getValueAsInt('download_archive_chunk_size');
+
 		return [
 			RequestAttribute::ALBUM_IDS_ATTRIBUTE => ['sometimes', new AlbumIDListRule()],
 			RequestAttribute::PHOTO_IDS_ATTRIBUTE => ['sometimes', new RandomIDListRule()],
@@ -101,6 +104,8 @@ class ZipRequest extends BaseApiRequest implements HasAlbums, HasPhotos, HasSize
 		$this->processPhotos($photo_ids);
 
 		$this->from_id = $values[RequestAttribute::FROM_ID_ATTRIBUTE] ?? null;
+
+		$this->chunk_slice = $this->processChunkSlice();
 	}
 
 	/**
@@ -118,7 +123,6 @@ class ZipRequest extends BaseApiRequest implements HasAlbums, HasPhotos, HasSize
 			return;
 		}
 
-		// TODO: `App\Actions\Album\Archive::compressAlbum` iterates over the original size variant of each photo in the album; we should eagerly load them for higher efficiency.
 		$this->albums = $this->album_factory->findAbstractAlbumsOrFail($album_ids);
 	}
 
@@ -163,45 +167,25 @@ class ZipRequest extends BaseApiRequest implements HasAlbums, HasPhotos, HasSize
 	 * Throws a ValidationException when the chunk number exceeds total chunks.
 	 *
 	 * @return ChunkSlice|null
-	 *
-	 * @throws \Illuminate\Validation\ValidationException
 	 */
-	public function chunkSlice(): ?ChunkSlice
+	private function processChunkSlice(): ?ChunkSlice
 	{
 		$chunk = $this->integer(RequestAttribute::CHUNK_ATTRIBUTE, 0);
 		if ($chunk === 0) {
 			return null;
 		}
 
-		$config_manager = app(ConfigManager::class);
-		$chunk_size = $config_manager->getValueAsInt('download_archive_chunk_size');
-
-		if ($chunk_size <= 0) {
-			$chunk_size = 300;
-		}
-
-		// Count total photos to validate chunk is in range.
-		$total = 0;
-		foreach ($this->albums as $album) {
-			$photos = $album->get_photos();
-			if ($photos instanceof \Illuminate\Pagination\LengthAwarePaginator) {
-				$total += $photos->total();
-			} else {
-				$total += $photos->count();
-			}
-		}
-		foreach ($this->photos as $ignored) {
-			$total++;
-		}
-
-		$total_chunks = max(1, (int) ceil($total / $chunk_size));
-
-		if ($chunk > $total_chunks) {
-			abort(422, 'Chunk number exceeds total number of chunks.');
-		}
-
+		$chunk_size = request()->configs()->getValueAsInt('download_archive_chunk_size');
 		$offset = ($chunk - 1) * $chunk_size;
 
 		return new ChunkSlice(offset: $offset, limit: $chunk_size, chunk: $chunk);
+	}
+
+	/**
+	 * Get the chunk slice for chunked ZIP downloads.
+	 */
+	public function chunkSlice(): ?ChunkSlice
+	{
+		return $this->chunk_slice;
 	}
 }

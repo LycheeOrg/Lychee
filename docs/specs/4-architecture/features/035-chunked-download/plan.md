@@ -25,7 +25,7 @@ Success signals:
 - `BaseArchive::do()` refactored to: (1) pre-generate all filenames for the complete photo set, then (2) apply the `ChunkSlice` (offset + limit) to avoid cross-chunk name collisions.
 - `InitConfig` extended with `is_download_archive_chunked` **only** — `download_archive_chunk_size` stays server-side.
 - `DownloadAlbum.vue` and `DownloadPhoto.vue` updated for sequential chunk downloads.
-- Admin settings UI auto-renders both new config keys (no extra frontend wiring needed — I5 is skipped).
+- Admin settings UI auto-renders both new config keys (no extra frontend wiring needed).
 - PHPUnit and Vitest tests covering all new scenarios.
 
 **Out of scope:**
@@ -51,7 +51,7 @@ Success signals:
 
 **Assumptions:**
 - The photo ordering for chunking is stable and deterministic (consistent with the existing order used inside `compressAlbum`).
-- The admin UI settings panel already renders bool and int config types; no new UI component is needed (I5 skipped as confirmed by owner).
+- The admin UI settings panel already renders bool and int config types; no new UI component is needed.
 - Q-035-01 resolved as **Option A** (missing `chunk` ≡ single-archive download, regardless of chunked mode).
 
 **Risks / Mitigations:**
@@ -111,15 +111,6 @@ After each increment: run `php artisan test --filter=Zip` and `npm run type-chec
      - Write Vitest unit tests for sequential download logic.
    - _Commands:_ `npm run test`, `npm run type-check`.
    - _Exit:_ Vitest tests pass; TypeScript compiles; dialog shows progress label during download.
-
-5. **I5 – Documentation & Knowledge Map (≤ 20 min)**
-   - _Goal:_ Keep living docs up to date.
-   - _Preconditions:_ I1–I4 complete.
-   - _Steps:_
-     - Update `docs/specs/4-architecture/knowledge-map.md` to reference feature 035.
-     - Mark Q-035-01 as resolved in `open-questions.md`.
-   - _Commands:_ None.
-   - _Exit:_ Knowledge map updated; open question resolved.
 
 ## Scenario Tracking
 

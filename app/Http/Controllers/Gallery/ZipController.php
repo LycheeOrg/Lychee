@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\Gallery;
 
 use App\Actions\Album\BaseArchive as AlbumBaseArchive;
+use App\Actions\Album\ZipChunkCount;
 use App\Actions\Photo\BaseArchive as PhotoBaseArchive;
 use App\Events\Metrics\AlbumDownload;
 use App\Events\Metrics\PhotoDownload;
@@ -17,7 +18,6 @@ use App\Http\Requests\Album\ZipChunksRequest;
 use App\Http\Requests\Album\ZipRequest;
 use App\Http\Requests\Traits\HasVisitorIdTrait;
 use App\Http\Resources\GalleryConfigs\ZipChunkData;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ZipController
@@ -47,7 +47,7 @@ class ZipController
 			PhotoDownload::dispatchIf($should_measure && $request->from_id() !== null, $this->visitorId(), $photo->id, $request->from_id());
 		}
 
-		return PhotoBaseArchive::resolve()->do($request->photos(), $request->sizeVariant());
+		return PhotoBaseArchive::resolve()->do($request->photos(), $request->sizeVariant(), $request->chunkSlice());
 	}
 
 	/**
@@ -61,22 +61,12 @@ class ZipController
 
 		$total = 0;
 		if ($request->albums()->count() > 0) {
-			// We dispatch one event per album.
-			foreach ($request->albums() as $album) {
-				AlbumDownload::dispatchIf($should_measure, $this->visitorId(), $album->get_id());
-				$photos = $album->get_photos();
-				if ($photos instanceof LengthAwarePaginator) {
-					$total += $photos->total();
-				} else {
-					$total += $photos->count();
-				}
-			}
-			$total_chunks = max(1, (int) ceil($total / $chunk_size));
-
-			return new ZipChunkData(
-				total_chunks: $total_chunks,
-				total_photos: $total,
+			$zip_chunk_count = new ZipChunkCount(
+				should_measure: $should_measure,
+				visitor_id: $this->visitorId(),
 			);
+
+			return $zip_chunk_count->getZipChunkData($request->albums());
 		}
 
 		$total = 0;

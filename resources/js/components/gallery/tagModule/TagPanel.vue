@@ -120,7 +120,7 @@ const photoCallbacks = {
 	toggleMove: toggleMove,
 	toggleDelete: toggleDelete,
 	toggleDownload: () => {
-		downloadPhotoIds.value = selectedPhotosIds.value;
+		downloadPhotoIds.value = [...selectedPhotosIds.value];
 		downloadFromId.value = getParentId() ?? null;
 		is_download_photo_visible.value = true;
 	},
