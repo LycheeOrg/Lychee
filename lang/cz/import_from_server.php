@@ -6,17 +6,17 @@ return [
     | Import from Server
     |--------------------------------------------------------------------------
     */
-    'title' => 'Synchronize your server files',
-    'description' => 'Synchronize your server files with Lychee. This will import photos from a directory and all children directories. This process is very slow and we recommend using workers and queues in order to avoid timeout.',
-    'sync' => 'Synchronize',
-    'loading' => 'Loading...',
-    'selected_directory' => 'Current selected directory:',
-    'resync_metadata' => "Re-sync metadata of existing files.",
-    'delete_imported' => "Delete the original files.",
-    'import_via_symlink' => "Import photos via symlink instead of copying the files.",
-    'skip_duplicates' => "Skip photos and albums if they already exist in the gallery.",
-    'delete_missing_photos' => "Delete photos in the album that are not present in the synced directory.",
-    'delete_missing_albums' => "Delete albums in the parent album that are not present in the synced directory.",
-    'importing_please_be_patient' => 'Importing, please be patient...',
+    'title' => 'Synchronizovat soubory na serveru',
+    'description' => 'Synchronizujte soubory na serveru pomocí Lychee. Tímto způsobem se importují fotografie z daného adresáře a všech podadresářů. Tento proces je velmi pomalý a doporučujeme použít pracovníky a fronty, aby nedošlo k vypršení časového limitu.',
+    'sync' => 'Synchronizovat',
+    'loading' => 'Načítání...',
+    'selected_directory' => 'Aktuálně vybraný adresář:',
+    'resync_metadata' => 'Znovu synchronizovat metadata existujících souborů.',
+    'delete_imported' => 'Odstranit původní soubory.',
+    'import_via_symlink' => 'Importovat fotografie přes symbolický odkaz namísto kopírování souborů.',
+    'skip_duplicates' => 'Přeskočit fotografie a alba, pokud již v galerii existují.',
+    'delete_missing_photos' => 'Odstranit fotografie v albu, které nejsou přítomny v synchronizovaném adresáři.',
+    'delete_missing_albums' => 'Odstranit alba v nadřazeném albu, která nejsou přítomna v synchronizovaném adresáři.',
+    'importing_please_be_patient' => 'Probíhá import, prosím vyčkejte...',
 ];
 
