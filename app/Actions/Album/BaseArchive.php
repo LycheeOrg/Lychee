@@ -176,7 +176,6 @@ abstract class BaseArchive
 		$photos = $album->photos()->get();
 		$this->compressPhotosFromCollection($photos, $album, $full_name_of_directory, $used_file_names, $zip);
 
-		// // For smart albums, get_photos() returns a paginator. We need to iterate through all pages.
 		// Recursively compress sub-albums
 		if ($album instanceof Album) {
 			$sub_dirs = [];
