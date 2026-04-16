@@ -50,6 +50,28 @@ abstract class BaseArchive
 	];
 
 	protected int $deflate_level = -1;
+	protected DownloadVariantType $variant;
+
+	/**
+	 * @return ZipStream
+	 *
+	 * @throws ConfigurationKeyMissingException
+	 *
+	 * @codeCoverageIgnore
+	 */
+	abstract protected function createZip(): ZipStream;
+
+	/**
+	 * @param ZipStream                   $zip
+	 * @param string                      $file_name
+	 * @param FlysystemFile|BaseMediaFile $file
+	 * @param Photo|null                  $photo
+	 *
+	 * @return void
+	 *
+	 * @codeCoverageIgnore
+	 */
+	abstract protected function addFileToZip(ZipStream $zip, string $file_name, FlysystemFile|BaseMediaFile $file, Photo|null $photo): void;
 
 	/**
 	 * Resolve which version of the archive to use.
@@ -93,27 +115,99 @@ abstract class BaseArchive
 
 		$config_manager = app(ConfigManager::class);
 		$this->deflate_level = $config_manager->getValueAsInt('zip_deflate_level');
-
-		$effective_variant = $variant ?? DownloadVariantType::ORIGINAL;
+		$this->variant = $variant ?? DownloadVariantType::ORIGINAL;
 
 		if ($slice !== null) {
-			return $this->doSliced($albums, $effective_variant, $slice);
+			return $this->doSliced($albums, $slice);
 		}
 
-		$response_generator = function () use ($albums, $effective_variant): void {
+		return $this->doSingle($albums);
+	}
+
+	/**
+	 * Return in a single archive
+	 *
+	 * @param Collection<int,AbstractAlbum> $albums
+	 */
+	private function doSingle(Collection $albums): StreamedResponse
+	{
+		$response_generator = function () use ($albums): void {
 			$zip = $this->createZip();
 
 			$used_dir_names = [];
 			foreach ($albums as $album) {
-				$this->compressAlbum($album, $used_dir_names, null, $zip, $effective_variant);
+				$this->compressAlbum($album, $used_dir_names, null, $zip);
 			}
 
 			// finish the zip stream
 			$zip->finish();
 		};
 
+		return self::streamZipFile($response_generator, $albums);
+	}
+
+	/**
+	 * Compresses an album recursively.
+	 *
+	 * @param AbstractAlbum       $album               the album which shall be added to the archive
+	 * @param array<string>       $used_dir_names      the list of already used directory names on the same level as `$album`
+	 *                                                 ("siblings" of `$album`)
+	 * @param string|null         $full_name_of_parent the fully qualified path name of the parent directory
+	 * @param ZipStream           $zip                 the archive
+	 * @param DownloadVariantType $variant             the desired size variant
+	 *
+	 * @throws FileNotFoundException
+	 * @throws FileNotReadableException
+	 */
+	private function compressAlbum(AbstractAlbum $album, array &$used_dir_names, ?string $full_name_of_parent, ZipStream $zip): void
+	{
+		$full_name_of_parent = $full_name_of_parent ?? '';
+
+		if (!Gate::check(AlbumPolicy::CAN_DOWNLOAD, [AbstractAlbum::class, $album])) {
+			return;
+		}
+
+		$full_name_of_directory = $this->makeUnique(self::createValidTitle($album->get_title()), $used_dir_names);
+		if ($full_name_of_parent !== '') {
+			$full_name_of_directory = $full_name_of_parent . '/' . $full_name_of_directory;
+		}
+
+		$used_file_names = [];
+		// TODO: Ensure that the size variant `original` for each photo is eagerly loaded as it is needed below. This must be solved in close coordination with `ArchiveAlbumRequest`.
+		$photos = $album->get_photos();
+
+		// For smart albums, get_photos() returns a paginator. We need to iterate through all pages.
+		if ($photos instanceof LengthAwarePaginator) {
+			$this->compressPhotosFromPaginator($photos, $album, $full_name_of_directory, $used_file_names, $zip);
+		} else {
+			$this->compressPhotosFromCollection($photos, $album, $full_name_of_directory, $used_file_names, $zip);
+		}
+
+		// Recursively compress sub-albums
+		if ($album instanceof Album) {
+			$sub_dirs = [];
+			// TODO: For higher efficiency, ensure that the photos of each child album together with the original size variant are eagerly loaded.
+			$sub_albums = $album->children;
+			foreach ($sub_albums as $sub_album) {
+				try {
+					$this->compressAlbum($sub_album, $sub_dirs, $full_name_of_directory, $zip);
+					// @codeCoverageIgnoreStart
+				} catch (\Throwable $e) {
+					Handler::reportSafely($e);
+				}
+				// @codeCoverageIgnoreEnd
+			}
+		}
+	}
+
+
+	/**
+	 * Stream the response from the generator and albums list.
+	 */
+	private static function streamZipFile($generator, $albums): StreamedResponse
+	{
 		try {
-			$response = new StreamedResponse($response_generator);
+			$response = new StreamedResponse($generator);
 			// Set file type and destination
 			$zip_title = self::createZipTitle($albums);
 			$disposition = HeaderUtils::makeDisposition(
@@ -141,17 +235,16 @@ abstract class BaseArchive
 	 * Produces a chunked (partial) ZIP archive containing only the photos in the given slice.
 	 *
 	 * @param Collection<int,AbstractAlbum> $albums
-	 * @param DownloadVariantType           $variant
 	 * @param ChunkSlice                    $slice
 	 *
 	 * @return StreamedResponse
 	 *
 	 * @throws FrameworkException
 	 */
-	private function doSliced(Collection $albums, DownloadVariantType $variant, ChunkSlice $slice): StreamedResponse
+	private function doSliced(Collection $albums, ChunkSlice $slice): StreamedResponse
 	{
 		// First pass: build the complete ordered list of [id => zip_path] for all photos.
-		$all_filenames = $this->gatherAllFilenames($albums, $variant);
+		$all_filenames = $this->gatherAllFilenames($albums);
 
 		// Extract only the photos in the requested slice.
 		$sliced = array_slice($all_filenames, $slice->offset, $slice->limit);
@@ -162,11 +255,11 @@ abstract class BaseArchive
 			$included_map[$item['id']] = $item['zip_path'];
 		}
 
-		$response_generator = function () use ($albums, $variant, $included_map): void {
+		$response_generator = function () use ($albums, $included_map): void {
 			$zip = $this->createZip();
 			$used_dir_names = [];
 			foreach ($albums as $album) {
-				$this->compressAlbumSliced($album, $used_dir_names, null, $zip, $variant, $included_map);
+				$this->compressAlbumSliced($album, $used_dir_names, null, $zip, $included_map);
 			}
 			$zip->finish();
 		};
@@ -195,15 +288,6 @@ abstract class BaseArchive
 
 		return $response;
 	}
-
-	/**
-	 * @return ZipStream
-	 *
-	 * @throws ConfigurationKeyMissingException
-	 *
-	 * @codeCoverageIgnore
-	 */
-	abstract protected function createZip(): ZipStream;
 
 	/**
 	 * Create the title of the ZIP archive.
@@ -270,59 +354,7 @@ abstract class BaseArchive
 		return $str;
 	}
 
-	/**
-	 * Compresses an album recursively.
-	 *
-	 * @param AbstractAlbum       $album               the album which shall be added to the archive
-	 * @param array<string>       $used_dir_names      the list of already used directory names on the same level as `$album`
-	 *                                                 ("siblings" of `$album`)
-	 * @param string|null         $full_name_of_parent the fully qualified path name of the parent directory
-	 * @param ZipStream           $zip                 the archive
-	 * @param DownloadVariantType $variant             the desired size variant
-	 *
-	 * @throws FileNotFoundException
-	 * @throws FileNotReadableException
-	 */
-	private function compressAlbum(AbstractAlbum $album, array &$used_dir_names, ?string $full_name_of_parent, ZipStream $zip, DownloadVariantType $variant): void
-	{
-		$full_name_of_parent = $full_name_of_parent ?? '';
 
-		if (!Gate::check(AlbumPolicy::CAN_DOWNLOAD, [AbstractAlbum::class, $album])) {
-			return;
-		}
-
-		$full_name_of_directory = $this->makeUnique(self::createValidTitle($album->get_title()), $used_dir_names);
-		if ($full_name_of_parent !== '') {
-			$full_name_of_directory = $full_name_of_parent . '/' . $full_name_of_directory;
-		}
-
-		$used_file_names = [];
-		// TODO: Ensure that the size variant `original` for each photo is eagerly loaded as it is needed below. This must be solved in close coordination with `ArchiveAlbumRequest`.
-		$photos = $album->get_photos();
-
-		// For smart albums, get_photos() returns a paginator. We need to iterate through all pages.
-		if ($photos instanceof LengthAwarePaginator) {
-			$this->compressPhotosFromPaginator($photos, $album, $full_name_of_directory, $used_file_names, $zip, $variant);
-		} else {
-			$this->compressPhotosFromCollection($photos, $album, $full_name_of_directory, $used_file_names, $zip, $variant);
-		}
-
-		// Recursively compress sub-albums
-		if ($album instanceof Album) {
-			$sub_dirs = [];
-			// TODO: For higher efficiency, ensure that the photos of each child album together with the original size variant are eagerly loaded.
-			$sub_albums = $album->children;
-			foreach ($sub_albums as $sub_album) {
-				try {
-					$this->compressAlbum($sub_album, $sub_dirs, $full_name_of_directory, $zip, $variant);
-					// @codeCoverageIgnoreStart
-				} catch (\Throwable $e) {
-					Handler::reportSafely($e);
-				}
-				// @codeCoverageIgnoreEnd
-			}
-		}
-	}
 
 	/**
 	 * Gathers an ordered list of all photos across the given albums with their computed ZIP paths.
@@ -332,12 +364,12 @@ abstract class BaseArchive
 	 *
 	 * @return array<int,array{id:string,zip_path:string}>
 	 */
-	private function gatherAllFilenames(Collection $albums, DownloadVariantType $variant): array
+	private function gatherAllFilenames(Collection $albums): array
 	{
 		$result = [];
 		$used_dir_names = [];
 		foreach ($albums as $album) {
-			$this->gatherAlbumFilenames($album, $used_dir_names, null, $variant, $result);
+			$this->gatherAlbumFilenames($album, $used_dir_names, null, $result);
 		}
 
 		return $result;
@@ -352,7 +384,7 @@ abstract class BaseArchive
 	 * @param DownloadVariantType                         $variant
 	 * @param array<int,array{id:string,zip_path:string}> $result              (by reference)
 	 */
-	private function gatherAlbumFilenames(AbstractAlbum $album, array &$used_dir_names, ?string $full_name_of_parent, DownloadVariantType $variant, array &$result): void
+	private function gatherAlbumFilenames(AbstractAlbum $album, array &$used_dir_names, ?string $full_name_of_parent, array &$result): void
 	{
 		$full_name_of_parent = $full_name_of_parent ?? '';
 
@@ -382,7 +414,7 @@ abstract class BaseArchive
 				// @codeCoverageIgnoreEnd
 			}
 
-			$size_variant_type = $variant->getSizeVariantType();
+			$size_variant_type = $this->variant->getSizeVariantType();
 			$size_variant = $size_variant_type !== null
 				? $photo->size_variants->getSizeVariant($size_variant_type)
 				: null;
@@ -447,10 +479,9 @@ abstract class BaseArchive
 	 * @param array<string>        $used_dir_names
 	 * @param string|null          $full_name_of_parent
 	 * @param ZipStream            $zip
-	 * @param DownloadVariantType  $variant
 	 * @param array<string,string> $included_map        photo_id => zip_path for photos to include
 	 */
-	private function compressAlbumSliced(AbstractAlbum $album, array &$used_dir_names, ?string $full_name_of_parent, ZipStream $zip, DownloadVariantType $variant, array $included_map): void
+	private function compressAlbumSliced(AbstractAlbum $album, array &$used_dir_names, ?string $full_name_of_parent, ZipStream $zip, array $included_map): void
 	{
 		$full_name_of_parent = $full_name_of_parent ?? '';
 
@@ -466,16 +497,16 @@ abstract class BaseArchive
 		$photos = $album->get_photos();
 
 		if ($photos instanceof LengthAwarePaginator) {
-			$this->compressPhotosFromPaginatorSliced($photos, $album, $zip, $variant, $included_map, $full_name_of_directory);
+			$this->compressPhotosFromPaginatorSliced($photos, $album, $zip, $included_map, $full_name_of_directory);
 		} else {
-			$this->compressPhotosFromCollectionSliced($photos, $album, $zip, $variant, $included_map);
+			$this->compressPhotosFromCollectionSliced($photos, $album, $zip, $included_map);
 		}
 
 		if ($album instanceof Album) {
 			$sub_dirs = [];
 			foreach ($album->children as $sub_album) {
 				try {
-					$this->compressAlbumSliced($sub_album, $sub_dirs, $full_name_of_directory, $zip, $variant, $included_map);
+					$this->compressAlbumSliced($sub_album, $sub_dirs, $full_name_of_directory, $zip, $included_map);
 					// @codeCoverageIgnoreStart
 				} catch (\Throwable $e) {
 					Handler::reportSafely($e);
@@ -495,9 +526,9 @@ abstract class BaseArchive
 	 * @param array<string,string>            $included_map
 	 * @param string                          $full_name_of_directory unused — path comes from map
 	 */
-	private function compressPhotosFromPaginatorSliced(LengthAwarePaginator $paginator, AbstractAlbum $album, ZipStream $zip, DownloadVariantType $variant, array $included_map, string $full_name_of_directory): void
+	private function compressPhotosFromPaginatorSliced(LengthAwarePaginator $paginator, AbstractAlbum $album, ZipStream $zip, array $included_map, string $full_name_of_directory): void
 	{
-		$this->compressPhotosFromCollectionSliced($paginator->getCollection(), $album, $zip, $variant, $included_map);
+		$this->compressPhotosFromCollectionSliced($paginator->getCollection(), $album, $zip, $included_map);
 
 		$current_page = 1;
 		$last_page = $paginator->lastPage();
@@ -505,7 +536,7 @@ abstract class BaseArchive
 			$current_page++;
 			/** @var LengthAwarePaginator<int,Photo> $next_page */
 			$next_page = $album->photos()->paginate($paginator->perPage(), ['*'], 'page', $current_page);
-			$this->compressPhotosFromCollectionSliced($next_page->getCollection(), $album, $zip, $variant, $included_map);
+			$this->compressPhotosFromCollectionSliced($next_page->getCollection(), $album, $zip, $included_map);
 		}
 	}
 
@@ -518,7 +549,7 @@ abstract class BaseArchive
 	 * @param DownloadVariantType                   $variant
 	 * @param array<string,string>                  $included_map photo_id => zip_path
 	 */
-	private function compressPhotosFromCollectionSliced(Collection|iterable $photos, AbstractAlbum $album, ZipStream $zip, DownloadVariantType $variant, array $included_map): void
+	private function compressPhotosFromCollectionSliced(Collection|iterable $photos, AbstractAlbum $album, ZipStream $zip, array $included_map): void
 	{
 		/** @var Photo $photo */
 		foreach ($photos as $photo) {
@@ -536,7 +567,7 @@ abstract class BaseArchive
 					// @codeCoverageIgnoreEnd
 				}
 
-				$size_variant_type = $variant->getSizeVariantType();
+				$size_variant_type = $this->variant->getSizeVariantType();
 				$size_variant = $size_variant_type !== null
 					? $photo->size_variants->getSizeVariant($size_variant_type)
 					: null;
@@ -575,20 +606,20 @@ abstract class BaseArchive
 	 * @param ZipStream                       $zip
 	 * @param DownloadVariantType             $variant
 	 */
-	private function compressPhotosFromPaginator(LengthAwarePaginator $paginator, AbstractAlbum $album, string $full_name_of_directory, array &$used_file_names, ZipStream $zip, DownloadVariantType $variant): void
+	private function compressPhotosFromPaginator(LengthAwarePaginator $paginator, AbstractAlbum $album, string $full_name_of_directory, array &$used_file_names, ZipStream $zip): void
 	{
 		$current_page = 1;
 		$last_page = $paginator->lastPage();
 
 		// Process first page (already loaded)
-		$this->compressPhotosFromCollection($paginator->getCollection(), $album, $full_name_of_directory, $used_file_names, $zip, $variant);
+		$this->compressPhotosFromCollection($paginator->getCollection(), $album, $full_name_of_directory, $used_file_names, $zip);
 
 		// Process remaining pages
 		while ($current_page < $last_page) {
 			$current_page++;
 			/** @var LengthAwarePaginator<int,Photo> $next_page */
 			$next_page = $album->photos()->paginate($paginator->perPage(), ['*'], 'page', $current_page);
-			$this->compressPhotosFromCollection($next_page->getCollection(), $album, $full_name_of_directory, $used_file_names, $zip, $variant);
+			$this->compressPhotosFromCollection($next_page->getCollection(), $album, $full_name_of_directory, $used_file_names, $zip);
 		}
 	}
 
@@ -602,7 +633,7 @@ abstract class BaseArchive
 	 * @param ZipStream                             $zip
 	 * @param DownloadVariantType                   $variant
 	 */
-	private function compressPhotosFromCollection(Collection|iterable $photos, AbstractAlbum $album, string $full_name_of_directory, array &$used_file_names, ZipStream $zip, DownloadVariantType $variant): void
+	private function compressPhotosFromCollection(Collection|iterable $photos, AbstractAlbum $album, string $full_name_of_directory, array &$used_file_names, ZipStream $zip): void
 	{
 		/** @var Photo $photo */
 		foreach ($photos as $photo) {
@@ -621,7 +652,7 @@ abstract class BaseArchive
 				}
 
 				// Use the requested size variant; fall back to ORIGINAL if unavailable
-				$size_variant_type = $variant->getSizeVariantType();
+				$size_variant_type = $this->variant->getSizeVariantType();
 				$size_variant = $size_variant_type !== null
 					? $photo->size_variants->getSizeVariant($size_variant_type)
 					: null;
@@ -652,16 +683,4 @@ abstract class BaseArchive
 			// @codeCoverageIgnoreEnd
 		}
 	}
-
-	/**
-	 * @param ZipStream                   $zip
-	 * @param string                      $file_name
-	 * @param FlysystemFile|BaseMediaFile $file
-	 * @param Photo|null                  $photo
-	 *
-	 * @return void
-	 *
-	 * @codeCoverageIgnore
-	 */
-	abstract protected function addFileToZip(ZipStream $zip, string $file_name, FlysystemFile|BaseMediaFile $file, Photo|null $photo): void;
 }
