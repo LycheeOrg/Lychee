@@ -8,6 +8,7 @@
 
 namespace App\Http\Requests\Admin\BulkAlbumEdit;
 
+use App\DTO\BulkAlbumPatchData;
 use App\Enum\AspectRatioType;
 use App\Enum\ColumnSortingAlbumType;
 use App\Enum\ColumnSortingPhotoType;
@@ -31,6 +32,8 @@ use Illuminate\Validation\Rules\Enum;
  */
 class PatchBulkAlbumRequest extends BaseApiRequest
 {
+	protected BulkAlbumPatchData $bulk_album_patch_data;
+
 	public function authorize(): bool
 	{
 		/** @var User|null */
@@ -97,5 +100,47 @@ class PatchBulkAlbumRequest extends BaseApiRequest
 
 	protected function processValidatedValues(array $values, array $files): void
 	{
+		$optional_fields = [
+			'description', 'copyright', 'license', 'photo_layout',
+			'photo_sorting_col', 'photo_sorting_order',
+			'album_sorting_col', 'album_sorting_order',
+			'album_thumb_aspect_ratio', 'album_timeline', 'photo_timeline',
+			'is_nsfw', 'is_public', 'is_link_required',
+			'grants_full_photo_access', 'grants_download', 'grants_upload',
+		];
+
+		$present = [];
+		foreach ($optional_fields as $field) {
+			if ($this->has($field)) {
+				$present[] = $field;
+			}
+		}
+
+		$this->bulk_album_patch_data = new BulkAlbumPatchData(
+			album_ids: $values['album_ids'],
+			present_fields: $present,
+			description: $values['description'] ?? null,
+			copyright: $values['copyright'] ?? null,
+			license: isset($values['license']) ? LicenseType::tryFrom($values['license']) : null,
+			photo_layout: isset($values['photo_layout']) ? PhotoLayoutType::tryFrom($values['photo_layout']) : null,
+			photo_sorting_col: isset($values['photo_sorting_col']) ? ColumnSortingPhotoType::tryFrom($values['photo_sorting_col']) : null,
+			photo_sorting_order: isset($values['photo_sorting_order']) ? OrderSortingType::tryFrom($values['photo_sorting_order']) : null,
+			album_sorting_col: isset($values['album_sorting_col']) ? ColumnSortingAlbumType::tryFrom($values['album_sorting_col']) : null,
+			album_sorting_order: isset($values['album_sorting_order']) ? OrderSortingType::tryFrom($values['album_sorting_order']) : null,
+			album_thumb_aspect_ratio: isset($values['album_thumb_aspect_ratio']) ? AspectRatioType::tryFrom($values['album_thumb_aspect_ratio']) : null,
+			album_timeline: isset($values['album_timeline']) ? TimelineAlbumGranularity::tryFrom($values['album_timeline']) : null,
+			photo_timeline: isset($values['photo_timeline']) ? TimelinePhotoGranularity::tryFrom($values['photo_timeline']) : null,
+			is_nsfw: isset($values['is_nsfw']) ? static::toBoolean($values['is_nsfw']) : null,
+			is_public: isset($values['is_public']) ? static::toBoolean($values['is_public']) : null,
+			is_link_required: isset($values['is_link_required']) ? static::toBoolean($values['is_link_required']) : null,
+			grants_full_photo_access: isset($values['grants_full_photo_access']) ? static::toBoolean($values['grants_full_photo_access']) : null,
+			grants_download: isset($values['grants_download']) ? static::toBoolean($values['grants_download']) : null,
+			grants_upload: isset($values['grants_upload']) ? static::toBoolean($values['grants_upload']) : null,
+		);
+	}
+
+	public function bulkAlbumPatchData(): BulkAlbumPatchData
+	{
+		return $this->bulk_album_patch_data;
 	}
 }

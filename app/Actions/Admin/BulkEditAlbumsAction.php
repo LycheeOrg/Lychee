@@ -9,14 +9,7 @@
 namespace App\Actions\Admin;
 
 use App\Actions\Album\SetProtectionPolicy;
-use App\Enum\AspectRatioType;
-use App\Enum\ColumnSortingAlbumType;
-use App\Enum\ColumnSortingPhotoType;
-use App\Enum\LicenseType;
-use App\Enum\OrderSortingType;
-use App\Enum\PhotoLayoutType;
-use App\Enum\TimelineAlbumGranularity;
-use App\Enum\TimelinePhotoGranularity;
+use App\DTO\BulkAlbumPatchData;
 use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
 use App\Models\Album;
 use App\Models\BaseAlbumImpl;
@@ -44,42 +37,39 @@ class BulkEditAlbumsAction
 	/**
 	 * Apply the partial payload to all specified album IDs.
 	 *
-	 * @param string[]             $album_ids existing Album IDs
-	 * @param array<string, mixed> $payload   Validated, keyed by field name. Only present keys are applied.
+	 * Only fields that were present in the original request (tracked via
+	 * {@see BulkAlbumPatchData::has()}) are updated; absent fields are left
+	 * unchanged.
+	 *
+	 * @param BulkAlbumPatchData $data validated, typed patch payload
 	 */
-	public function do(array $album_ids, array $payload): void
+	public function do(BulkAlbumPatchData $data): void
 	{
+		$album_ids = $data->album_ids;
+
 		// ── Group 1: base_albums columns ─────────────────────────────────────
 		$base_data = [];
 
-		if (array_key_exists('description', $payload)) {
-			$base_data['description'] = $payload['description'];
+		if ($data->has('description')) {
+			$base_data['description'] = $data->description;
 		}
-		if (array_key_exists('copyright', $payload)) {
-			$base_data['copyright'] = $payload['copyright'];
+		if ($data->has('copyright')) {
+			$base_data['copyright'] = $data->copyright;
 		}
-		if (array_key_exists('photo_layout', $payload)) {
-			$base_data['photo_layout'] = $payload['photo_layout'] instanceof PhotoLayoutType
-				? $payload['photo_layout']->value
-				: $payload['photo_layout'];
+		if ($data->has('photo_layout')) {
+			$base_data['photo_layout'] = $data->photo_layout?->value;
 		}
-		if (array_key_exists('photo_sorting_col', $payload)) {
-			$base_data['sorting_col'] = $payload['photo_sorting_col'] instanceof ColumnSortingPhotoType
-				? $payload['photo_sorting_col']->value
-				: $payload['photo_sorting_col'];
+		if ($data->has('photo_sorting_col')) {
+			$base_data['sorting_col'] = $data->photo_sorting_col?->value;
 		}
-		if (array_key_exists('photo_sorting_order', $payload)) {
-			$base_data['sorting_order'] = $payload['photo_sorting_order'] instanceof OrderSortingType
-				? $payload['photo_sorting_order']->value
-				: $payload['photo_sorting_order'];
+		if ($data->has('photo_sorting_order')) {
+			$base_data['sorting_order'] = $data->photo_sorting_order?->value;
 		}
-		if (array_key_exists('photo_timeline', $payload)) {
-			$base_data['photo_timeline'] = $payload['photo_timeline'] instanceof TimelinePhotoGranularity
-				? $payload['photo_timeline']->value
-				: $payload['photo_timeline'];
+		if ($data->has('photo_timeline')) {
+			$base_data['photo_timeline'] = $data->photo_timeline?->value;
 		}
-		if (array_key_exists('is_nsfw', $payload)) {
-			$base_data['is_nsfw'] = $payload['is_nsfw'];
+		if ($data->has('is_nsfw')) {
+			$base_data['is_nsfw'] = $data->is_nsfw;
 		}
 
 		if ($base_data !== []) {
@@ -91,30 +81,20 @@ class BulkEditAlbumsAction
 		// ── Group 2: albums columns ───────────────────────────────────────────
 		$album_data = [];
 
-		if (array_key_exists('license', $payload)) {
-			$album_data['license'] = $payload['license'] instanceof LicenseType
-				? $payload['license']->value
-				: $payload['license'];
+		if ($data->has('license')) {
+			$album_data['license'] = $data->license?->value;
 		}
-		if (array_key_exists('album_thumb_aspect_ratio', $payload)) {
-			$album_data['album_thumb_aspect_ratio'] = $payload['album_thumb_aspect_ratio'] instanceof AspectRatioType
-				? $payload['album_thumb_aspect_ratio']->value
-				: $payload['album_thumb_aspect_ratio'];
+		if ($data->has('album_thumb_aspect_ratio')) {
+			$album_data['album_thumb_aspect_ratio'] = $data->album_thumb_aspect_ratio?->value;
 		}
-		if (array_key_exists('album_timeline', $payload)) {
-			$album_data['album_timeline'] = $payload['album_timeline'] instanceof TimelineAlbumGranularity
-				? $payload['album_timeline']->value
-				: $payload['album_timeline'];
+		if ($data->has('album_timeline')) {
+			$album_data['album_timeline'] = $data->album_timeline?->value;
 		}
-		if (array_key_exists('album_sorting_col', $payload)) {
-			$album_data['album_sorting_col'] = $payload['album_sorting_col'] instanceof ColumnSortingAlbumType
-				? $payload['album_sorting_col']->value
-				: $payload['album_sorting_col'];
+		if ($data->has('album_sorting_col')) {
+			$album_data['album_sorting_col'] = $data->album_sorting_col?->value;
 		}
-		if (array_key_exists('album_sorting_order', $payload)) {
-			$album_data['album_sorting_order'] = $payload['album_sorting_order'] instanceof OrderSortingType
-				? $payload['album_sorting_order']->value
-				: $payload['album_sorting_order'];
+		if ($data->has('album_sorting_order')) {
+			$album_data['album_sorting_order'] = $data->album_sorting_order?->value;
 		}
 
 		if ($album_data !== []) {
@@ -124,14 +104,11 @@ class BulkEditAlbumsAction
 		}
 
 		// ── Group 3: Visibility fields ────────────────────────────────────────
-		$visibility_keys = ['is_public', 'is_link_required', 'grants_full_photo_access', 'grants_download', 'grants_upload'];
-		$has_visibility = false;
-		foreach ($visibility_keys as $key) {
-			if (array_key_exists($key, $payload)) {
-				$has_visibility = true;
-				break;
-			}
-		}
+		$has_visibility = $data->has('is_public') ||
+			$data->has('is_link_required') ||
+			$data->has('grants_full_photo_access') ||
+			$data->has('grants_download') ||
+			$data->has('grants_upload');
 
 		if ($has_visibility) {
 			/** @var Album[] $albums */
@@ -145,26 +122,26 @@ class BulkEditAlbumsAction
 				$existing = $album->public_permissions();
 
 				// Derive current values as defaults, then overlay payload
-				$is_public = array_key_exists('is_public', $payload)
-					? filter_var($payload['is_public'], FILTER_VALIDATE_BOOLEAN)
+				$is_public = $data->has('is_public')
+					? ($data->is_public === true)
 					: ($existing !== null);
-				$is_link_required = array_key_exists('is_link_required', $payload)
-					? filter_var($payload['is_link_required'], FILTER_VALIDATE_BOOLEAN)
+				$is_link_required = $data->has('is_link_required')
+					? ($data->is_link_required === true)
 					: ($existing?->is_link_required === true);
-				$grants_full_photo_access = array_key_exists('grants_full_photo_access', $payload)
-					? filter_var($payload['grants_full_photo_access'], FILTER_VALIDATE_BOOLEAN)
+				$grants_full_photo_access = $data->has('grants_full_photo_access')
+					? ($data->grants_full_photo_access === true)
 					: ($existing?->grants_full_photo_access === true);
-				$grants_download = array_key_exists('grants_download', $payload)
-					? filter_var($payload['grants_download'], FILTER_VALIDATE_BOOLEAN)
+				$grants_download = $data->has('grants_download')
+					? ($data->grants_download === true)
 					: ($existing?->grants_download === true);
-				$grants_upload = array_key_exists('grants_upload', $payload)
-					? filter_var($payload['grants_upload'], FILTER_VALIDATE_BOOLEAN)
+				$grants_upload = $data->has('grants_upload')
+					? ($data->grants_upload === true)
 					: ($existing?->grants_upload === true);
 
-				// is_nsfw may have been updated in group 1; re-read from model
-				// but group 1 used a direct mass-update so we need the payload value if available.
-				$is_nsfw = array_key_exists('is_nsfw', $payload)
-					? filter_var($payload['is_nsfw'], FILTER_VALIDATE_BOOLEAN)
+				// is_nsfw may have been updated in group 1 via mass-update;
+				// use the payload value if present, else the model value.
+				$is_nsfw = $data->has('is_nsfw')
+					? ($data->is_nsfw === true)
 					: ($album->is_nsfw === true);
 
 				$protection_policy = new AlbumProtectionPolicy(

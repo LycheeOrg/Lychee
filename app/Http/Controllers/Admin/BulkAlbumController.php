@@ -144,36 +144,10 @@ class BulkAlbumController extends Controller
 	 */
 	public function patch(PatchBulkAlbumRequest $request): void
 	{
-		$validated = $request->validated();
-		$album_ids = $validated['album_ids'];
+		$data = $request->bulkAlbumPatchData();
 
-		// Build the payload with only the fields that were actually sent.
-		$optional_fields = [
-			'description', 'copyright', 'photo_layout',
-			'photo_sorting_col', 'photo_sorting_order',
-			'album_sorting_col', 'album_sorting_order',
-			'album_thumb_aspect_ratio', 'album_timeline', 'photo_timeline',
-			'is_nsfw', 'is_public', 'is_link_required',
-			'grants_full_photo_access', 'grants_download', 'grants_upload',
-		];
-
-		$payload = [];
-		foreach ($optional_fields as $field) {
-			if ($request->has($field)) {
-				$payload[$field] = $validated[$field] ?? null;
-			}
-		}
-
-		// Handle license separately (may be null to clear)
-		if ($request->has('license')) {
-			$license_raw = $validated['license'] ?? null;
-			$payload['license'] = $license_raw !== null
-				? LicenseType::from($license_raw instanceof LicenseType ? $license_raw->value : $license_raw)
-				: null;
-		}
-
-		DB::transaction(function () use ($album_ids, $payload): void {
-			(new BulkEditAlbumsAction())->do($album_ids, $payload);
+		DB::transaction(function () use ($data): void {
+			(new BulkEditAlbumsAction())->do($data);
 		});
 	}
 
