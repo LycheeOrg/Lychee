@@ -81,12 +81,12 @@ export type BulkAlbumIdsResource = {
 
 const BulkAlbumEditService = {
 	getAlbums(params: IndexParams): Promise<AxiosResponse<PaginatedBulkAlbumResource>> {
-		return axios.get(`${Constants.getApiUrl()}BulkAlbumEdit`, { params });
+		return axios.get(`${Constants.getApiUrl()}BulkAlbumEdit`, { params, data: {} });
 	},
 
 	getIds(search?: string | null): Promise<AxiosResponse<BulkAlbumIdsResource>> {
 		const params = search ? { search } : {};
-		return axios.get(`${Constants.getApiUrl()}BulkAlbumEdit::ids`, { params });
+		return axios.get(`${Constants.getApiUrl()}BulkAlbumEdit::ids`, { params, data: {} });
 	},
 
 	patchAlbums(payload: PatchPayload): Promise<AxiosResponse<void>> {

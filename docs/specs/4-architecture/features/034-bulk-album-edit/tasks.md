@@ -111,17 +111,17 @@ _Last updated: 2026-04-14_
 
 ### I8 – BulkAlbumEdit.vue — List + Filter + Pagination
 
-- [ ] T-034-15 – Create `BulkAlbumEdit.vue` with warning banner and page skeleton (FR-034-05, NFR-034-04, NFR-034-07, UI-034-01).  
+- [x] T-034-15 – Create `BulkAlbumEdit.vue` with warning banner and page skeleton (FR-034-05, NFR-034-04, NFR-034-07, UI-034-01).  
   _Intent:_ Create `resources/js/views/BulkAlbumEdit.vue`. Add non-dismissible `<Message severity="warn">` banner. Add Toolbar with `<OpenLeftMenu />`. Admin-only guard (redirect to `/` if not admin). Page-level reactive state: `albums`, `selectedIds`, `page`, `perPage`, `paginationMode`, `search`, `loading`.  
   _Verification commands:_  
   - `npm run check`
 
-- [ ] T-034-16 – Implement filter input, pagination mode toggle, and page-size selector (FR-034-02, FR-034-03, S-034-02, S-034-03, UI-034-08, UI-034-09).  
+- [x] T-034-16 – Implement filter input, pagination mode toggle, and page-size selector (FR-034-02, FR-034-03, S-034-02, S-034-03, UI-034-08, UI-034-09).  
   _Intent:_ Debounced (300 ms) filter input clears selection and resets page to 1 on change. Page-size selector (`<Select>` with options 25/50/100). Mode toggle button (infinite scroll / numbered). For numbered mode: use PrimeVue `Paginator`. For infinite scroll: use `IntersectionObserver` on a sentinel element at list bottom.  
   _Verification commands:_  
   - `npm run check && npm run format -- --check`
 
-- [ ] T-034-17 – Implement album list rows with depth indicators, checkboxes, and visibility columns (FR-034-01, FR-034-14, FR-034-15, S-034-01, S-034-04, S-034-17, S-034-18, UI-034-01, UI-034-02, UI-034-12, UI-034-15, UI-034-16).  
+- [x] T-034-17 – Implement album list rows with depth indicators, checkboxes, and visibility columns (FR-034-01, FR-034-14, FR-034-15, S-034-01, S-034-04, S-034-17, S-034-18, UI-034-01, UI-034-02, UI-034-12, UI-034-15, UI-034-16).  
   _Intent:_ Render table/list with columns: checkbox, depth-indicator prefix (`└─`, `├─`, `│`), title (click-to-edit), owner, license (click-to-edit dropdown), is_nsfw (toggle), is_public (toggle), is_link_required (toggle, disabled when not public), grants_full_photo_access (toggle, disabled when not public), grants_download (toggle, disabled when not public), grants_upload (toggle, disabled when not public or not SE; hidden when not SE), created_at. Header row has "select all on page" checkbox. Track selection in a `Set<string>` of album IDs.
 
   **Depth algorithm (Q-034-02 → B):** After fetching a page, run a single O(n) pass over rows (already sorted by `_lft`): maintain a stack of `_rgt` values; pop while `row._lft > stack.top`; `computedDepth = stack.length`; push `row._rgt`. Use `computedDepth` to choose the correct tree-prefix character.
@@ -130,7 +130,7 @@ _Last updated: 2026-04-14_
   _Verification commands:_  
   - `npm run check`
 
-- [ ] T-034-18 – Implement "Select all matching" button with cap warning (FR-034-04, S-034-05, UI-034-10).  
+- [x] T-034-18 – Implement "Select all matching" button with cap warning (FR-034-04, S-034-05, UI-034-10).  
   _Intent:_ Button calls `getIds(search)`. On response: merge all returned IDs into `selectedIds`. If `capped: true`, show warning toast "Only the first 1,000 albums have been selected." Display total selection count.  
   _Verification commands:_  
   - `npm run check`

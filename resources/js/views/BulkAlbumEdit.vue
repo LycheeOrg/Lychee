@@ -90,7 +90,7 @@
 		<!-- Warning -->
 		<Message severity="warn" :closable="false" class="mb-4">{{ $t("bulk_album_edit.warning") }}</Message>
 
-		<!-- Filter + selection bar -->
+		<!-- Filter + controls bar -->
 		<div class="flex flex-wrap items-center gap-2 mb-3">
 			<InputText
 				v-model="search"
@@ -102,9 +102,37 @@
 
 			<Select v-model="perPage" :options="perPageOptions" class="w-24" size="small" @change="load(1)" />
 
+			<Button
+				size="small"
+				severity="secondary"
+				:icon="paginationMode === 'numbered' ? 'pi pi-list' : 'pi pi-align-justify'"
+				:label="$t(paginationMode === 'numbered' ? 'bulk_album_edit.mode_infinite' : 'bulk_album_edit.mode_paginated')"
+				class="border-none"
+				@click="togglePaginationMode"
+			/>
+		</div>
+
+		<!-- Selection + action bar -->
+		<div class="flex flex-wrap items-center gap-2 mb-3">
 			<span class="text-muted-color text-sm">
 				{{ trans_choice("bulk_album_edit.total_selected", selectedIds.length, { n: String(selectedIds.length) }) }}
 			</span>
+
+			<Button
+				size="small"
+				severity="secondary"
+				:label="$t('bulk_album_edit.select_all_page')"
+				class="border-none"
+				@click="toggleSelectPage(!isPageAllSelected)"
+			/>
+
+			<Button
+				size="small"
+				severity="secondary"
+				:label="$t('bulk_album_edit.select_all_matching')"
+				class="border-none"
+				@click="selectAllMatching"
+			/>
 
 			<Button
 				v-if="selectedIds.length > 0"
@@ -140,61 +168,85 @@
 		</div>
 
 		<!-- Table -->
-		<div v-else>
-			<DataTable
-				:value="albums"
-				class="w-full text-sm"
-				scrollable
-				scroll-height="calc(100vh - 260px)"
-				data-key="id"
-				:selection="selectedRows"
-				selection-mode="multiple"
-				@row-select="onRowSelect"
-				@row-unselect="onRowUnselect"
-				@row-select-all="onSelectAll"
-				@row-unselect-all="onUnselectAll"
-			>
-				<Column selection-mode="multiple" header-class="w-12" />
+		<div v-else class="overflow-x-auto">
+			<table class="w-full text-sm border-collapse">
+				<thead>
+					<tr class="border-b border-surface-200 text-left">
+						<th class="p-2 w-10 text-center">
+							<Checkbox :model-value="isPageAllSelected" :binary="true" @update:model-value="toggleSelectPage" />
+						</th>
+						<th class="p-2">{{ $t("bulk_album_edit.col_title") }}</th>
+						<th class="p-2 w-32">{{ $t("bulk_album_edit.col_owner") }}</th>
+						<th class="p-2 w-28 text-center">{{ $t("bulk_album_edit.col_license") }}</th>
+						<th class="p-2 w-14 text-center">{{ $t("bulk_album_edit.col_is_nsfw") }}</th>
+						<th class="p-2 w-14 text-center">{{ $t("bulk_album_edit.col_is_public") }}</th>
+						<th class="p-2 w-14 text-center">{{ $t("bulk_album_edit.col_is_link_required") }}</th>
+						<th class="p-2 w-14 text-center">{{ $t("bulk_album_edit.col_grants_download") }}</th>
+						<th class="p-2 w-14 text-center">{{ $t("bulk_album_edit.col_grants_full_photo_access") }}</th>
+						<th class="p-2 w-14 text-center">{{ $t("bulk_album_edit.col_grants_upload") }}</th>
+						<th class="p-2 w-32 text-left">{{ $t("bulk_album_edit.col_created_at") }}</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr v-for="(album, idx) in albums" :key="album.id" class="border-b border-surface-100 hover:bg-surface-50">
+						<td class="p-2 text-center">
+							<Checkbox :model-value="selectedIds.includes(album.id)" :binary="true" @update:model-value="toggleRow(album.id)" />
+						</td>
+						<td class="p-2 whitespace-nowrap">
+							<span :style="`padding-left: ${albumDepths[idx] * 1.25}rem`">
+								<span v-if="albumDepths[idx] > 0" class="text-muted-color mr-1">└─</span>{{ album.title }}
+							</span>
+						</td>
+						<td class="p-2 text-muted-color text-xs w-32">{{ album.owner_name }}</td>
+						<td class="p-2 text-muted-color text-xs text-center w-28">{{ album.license ?? "—" }}</td>
+						<td class="p-2 text-center w-14">
+							<ToggleSwitch
+								:model-value="album.is_nsfw"
+								@update:model-value="(val) => onInlineToggle(album.id, 'is_nsfw', val as boolean)"
+							/>
+						</td>
+						<td class="p-2 text-center w-14">
+							<ToggleSwitch
+								:model-value="album.is_public"
+								@update:model-value="(val) => onInlineToggle(album.id, 'is_public', val as boolean)"
+							/>
+						</td>
+						<td class="p-2 text-center w-14">
+							<ToggleSwitch
+								:model-value="album.is_link_required"
+								:disabled="!album.is_public"
+								@update:model-value="(val) => onInlineToggle(album.id, 'is_link_required', val as boolean)"
+							/>
+						</td>
+						<td class="p-2 text-center w-14">
+							<ToggleSwitch
+								:model-value="album.grants_download"
+								:disabled="!album.is_public"
+								@update:model-value="(val) => onInlineToggle(album.id, 'grants_download', val as boolean)"
+							/>
+						</td>
+						<td class="p-2 text-center w-14">
+							<ToggleSwitch
+								:model-value="album.grants_full_photo_access"
+								:disabled="!album.is_public"
+								@update:model-value="(val) => onInlineToggle(album.id, 'grants_full_photo_access', val as boolean)"
+							/>
+						</td>
+						<td class="p-2 text-center w-14">
+							<ToggleSwitch
+								:model-value="album.grants_upload"
+								:disabled="!album.is_public"
+								@update:model-value="(val) => onInlineToggle(album.id, 'grants_upload', val as boolean)"
+							/>
+						</td>
+						<td class="p-2 text-muted-color text-xs w-32">{{ formatDate(album.created_at) }}</td>
+					</tr>
+				</tbody>
+			</table>
 
-				<Column field="title" :header="$t('bulk_album_edit.col_title')">
-					<template #body="{ data }">
-						<span :style="indentStyle(data)" class="whitespace-nowrap">{{ data.title }}</span>
-					</template>
-				</Column>
-
-				<Column field="owner_name" :header="$t('bulk_album_edit.col_owner')" class="w-32" />
-
-				<Column :header="$t('bulk_album_edit.col_is_public')" header-class="text-center w-20">
-					<template #body="{ data }">
-						<div class="flex justify-center">
-							<i :class="data.is_public ? 'pi pi-lock-open text-green-500' : 'pi pi-lock text-muted-color'" />
-						</div>
-					</template>
-				</Column>
-
-				<Column :header="$t('bulk_album_edit.col_is_nsfw')" header-class="text-center w-16">
-					<template #body="{ data }">
-						<div class="flex justify-center">
-							<i v-if="data.is_nsfw" class="pi pi-exclamation-triangle text-orange-500" />
-						</div>
-					</template>
-				</Column>
-
-				<Column field="license" :header="$t('bulk_album_edit.col_license')" class="w-28">
-					<template #body="{ data }">
-						<span class="text-muted-color text-xs">{{ data.license ?? "—" }}</span>
-					</template>
-				</Column>
-
-				<Column :header="$t('bulk_album_edit.col_created_at')" class="w-32">
-					<template #body="{ data }">
-						<span class="text-muted-color text-xs">{{ formatDate(data.created_at) }}</span>
-					</template>
-				</Column>
-			</DataTable>
-
-			<!-- Pagination -->
+			<!-- Pagination (numbered mode) -->
 			<Paginator
+				v-if="paginationMode === 'numbered'"
 				:rows="perPage"
 				:total-records="total"
 				:first="(currentPage - 1) * perPage"
@@ -202,6 +254,9 @@
 				class="mt-2"
 				@page="onPage"
 			/>
+
+			<!-- Infinite scroll sentinel -->
+			<div v-if="paginationMode === 'infinite'" ref="sentinel" class="h-4" />
 		</div>
 	</div>
 </template>
@@ -211,18 +266,11 @@ export default { name: "BulkAlbumEdit" };
 </script>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { trans_choice } from "laravel-vue-i18n";
 import { useToast } from "primevue/usetoast";
 import Button from "primevue/button";
 import Checkbox from "primevue/checkbox";
-import Column from "primevue/column";
-import DataTable, {
-	type DataTableRowSelectAllEvent,
-	type DataTableRowSelectEvent,
-	type DataTableRowUnselectAllEvent,
-	type DataTableRowUnselectEvent,
-} from "primevue/datatable";
 import Dialog from "primevue/dialog";
 import InputText from "primevue/inputtext";
 import Message from "primevue/message";
@@ -248,7 +296,10 @@ const total = ref(0);
 const perPageOptions = [25, 50, 100];
 
 const selectedIds = ref<string[]>([]);
-const selectedRows = ref<BulkAlbumResource[]>([]);
+
+const paginationMode = ref<"numbered" | "infinite">("numbered");
+const sentinel = ref<HTMLElement | null>(null);
+let intersectionObserver: IntersectionObserver | null = null;
 
 // -- dialogs --
 const isSetOwnerVisible = ref(false);
@@ -354,13 +405,23 @@ let searchTimeout: ReturnType<typeof setTimeout> | null = null;
 
 // ── Computed helpers ──────────────────────────────────────────────────────────
 
-function indentStyle(row: BulkAlbumResource): string {
-	// Compute depth from _lft position (approximation via nesting depth in sorted list).
-	// We don't have parent_id in this resource, so we use a simple approach:
-	// Find how many ancestors exist by scanning albums with _lft < row._lft and _rgt > row._rgt.
-	const depth = albums.value.filter((a) => a._lft < row._lft && a._rgt > row._rgt).length;
-	return depth > 0 ? `padding-left: ${depth * 1.25}rem` : "";
-}
+/** O(n) depth computation using a stack of ancestor _rgt values (Q-034-02 → B). */
+const albumDepths = computed<number[]>(() => {
+	const depths: number[] = [];
+	const stack: number[] = [];
+	for (const row of albums.value) {
+		while (stack.length > 0 && row._lft > stack[stack.length - 1]) {
+			stack.pop();
+		}
+		depths.push(stack.length);
+		stack.push(row._rgt);
+	}
+	return depths;
+});
+
+const isPageAllSelected = computed<boolean>(() => {
+	return albums.value.length > 0 && albums.value.every((a) => selectedIds.value.includes(a.id));
+});
 
 function formatDate(iso: string): string {
 	return new Date(iso).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
@@ -379,12 +440,13 @@ function load(page?: number): void {
 		per_page: perPage.value,
 	})
 		.then((response) => {
-			albums.value = response.data.data;
+			if (paginationMode.value === "infinite" && page === undefined) {
+				albums.value = [...albums.value, ...response.data.data];
+			} else {
+				albums.value = response.data.data;
+			}
 			total.value = response.data.total;
 			currentPage.value = response.data.current_page;
-			// Keep selectedRows in sync (remove rows no longer on this page)
-			const pageIds = new Set(albums.value.map((a) => a.id));
-			selectedRows.value = selectedRows.value.filter((r) => selectedIds.value.includes(r.id) && pageIds.has(r.id));
 		})
 		.catch(() => {
 			toast.add({ severity: "error", summary: "Error", detail: "bulk_album_edit.error_load", life: 3000 });
@@ -399,44 +461,65 @@ function onSearchInput(): void {
 		clearTimeout(searchTimeout);
 	}
 	searchTimeout = setTimeout(() => {
+		selectedIds.value = [];
+		albums.value = [];
 		load(1);
 	}, 350);
 }
 
 // ── Selection ─────────────────────────────────────────────────────────────────
 
-function onRowSelect(event: DataTableRowSelectEvent): void {
-	const id = (event.data as BulkAlbumResource).id;
-	if (!selectedIds.value.includes(id)) {
+function toggleRow(id: string): void {
+	if (selectedIds.value.includes(id)) {
+		selectedIds.value = selectedIds.value.filter((i) => i !== id);
+	} else {
 		selectedIds.value = [...selectedIds.value, id];
-		selectedRows.value = [...selectedRows.value, event.data as BulkAlbumResource];
 	}
 }
 
-function onRowUnselect(event: DataTableRowUnselectEvent): void {
-	const id = (event.data as BulkAlbumResource).id;
-	selectedIds.value = selectedIds.value.filter((i) => i !== id);
-	selectedRows.value = selectedRows.value.filter((r) => r.id !== id);
+function toggleSelectPage(selectAll: boolean): void {
+	if (selectAll) {
+		const newIds = new Set(selectedIds.value);
+		albums.value.forEach((a) => newIds.add(a.id));
+		selectedIds.value = Array.from(newIds);
+	} else {
+		const pageIds = new Set(albums.value.map((a) => a.id));
+		selectedIds.value = selectedIds.value.filter((id) => !pageIds.has(id));
+	}
 }
 
-function onSelectAll(event: DataTableRowSelectAllEvent): void {
-	const newIds: string[] = [];
-	const newRows: BulkAlbumResource[] = [];
-	(event.data as BulkAlbumResource[]).forEach((row) => {
-		if (!selectedIds.value.includes(row.id)) {
-			newIds.push(row.id);
-			newRows.push(row);
-		}
+function selectAllMatching(): void {
+	BulkAlbumEditService.getIds(search.value || null)
+		.then((response) => {
+			const newIds = new Set(selectedIds.value);
+			response.data.ids.forEach((id) => newIds.add(id));
+			selectedIds.value = Array.from(newIds);
+			if (response.data.capped) {
+				toast.add({ severity: "warn", summary: "Warning", detail: "bulk_album_edit.cap_warning", life: 5000 });
+			}
+		})
+		.catch(() => {
+			toast.add({ severity: "error", summary: "Error", detail: "bulk_album_edit.error_load", life: 3000 });
+		});
+}
+
+// ── Inline editing ────────────────────────────────────────────────────────────
+
+function onInlineToggle(
+	albumId: string,
+	field: "is_public" | "is_nsfw" | "is_link_required" | "grants_full_photo_access" | "grants_download" | "grants_upload",
+	value: boolean,
+): void {
+	const album = albums.value.find((a) => a.id === albumId);
+	if (album === undefined) {
+		return;
+	}
+	const originalValue = album[field];
+	album[field] = value;
+	BulkAlbumEditService.patchAlbums({ album_ids: [albumId], [field]: value }).catch(() => {
+		album[field] = originalValue;
+		toast.add({ severity: "error", summary: "Error", detail: "bulk_album_edit.error_patch", life: 3000 });
 	});
-	selectedIds.value = [...selectedIds.value, ...newIds];
-	selectedRows.value = [...selectedRows.value, ...newRows];
-}
-
-function onUnselectAll(_event: DataTableRowUnselectAllEvent): void {
-	// When unselecting all on current page, remove page IDs from selection
-	const pageIds = new Set(albums.value.map((r) => r.id));
-	selectedIds.value = selectedIds.value.filter((id) => !pageIds.has(id));
-	selectedRows.value = selectedRows.value.filter((r) => !pageIds.has(r.id));
 }
 
 // ── Pagination ────────────────────────────────────────────────────────────────
@@ -446,6 +529,40 @@ function onPage(event: PageState): void {
 	perPage.value = event.rows;
 	load();
 }
+
+function togglePaginationMode(): void {
+	if (paginationMode.value === "numbered") {
+		paginationMode.value = "infinite";
+	} else {
+		paginationMode.value = "numbered";
+		if (intersectionObserver !== null) {
+			intersectionObserver.disconnect();
+			intersectionObserver = null;
+		}
+	}
+}
+
+function setupInfiniteScroll(): void {
+	if (sentinel.value === null) {
+		return;
+	}
+	intersectionObserver = new IntersectionObserver((entries) => {
+		if (entries[0].isIntersecting && !loading.value && currentPage.value * perPage.value < total.value) {
+			load(currentPage.value + 1);
+		}
+	});
+	intersectionObserver.observe(sentinel.value);
+}
+
+watch([paginationMode, sentinel], ([mode, el]) => {
+	if (intersectionObserver !== null) {
+		intersectionObserver.disconnect();
+		intersectionObserver = null;
+	}
+	if (mode === "infinite" && el !== null) {
+		setupInfiniteScroll();
+	}
+});
 
 // ── Set Owner ─────────────────────────────────────────────────────────────────
 
@@ -472,7 +589,6 @@ function doSetOwner(): void {
 			toast.add({ severity: "success", summary: "OK", detail: "bulk_album_edit.success_set_owner", life: 3000 });
 			isSetOwnerVisible.value = false;
 			selectedIds.value = [];
-			selectedRows.value = [];
 			load();
 		})
 		.catch(() => {
@@ -488,7 +604,6 @@ function doDelete(): void {
 			toast.add({ severity: "success", summary: "OK", detail: "bulk_album_edit.success_delete", life: 3000 });
 			isDeleteVisible.value = false;
 			selectedIds.value = [];
-			selectedRows.value = [];
 			load(1);
 		})
 		.catch(() => {
@@ -556,5 +671,11 @@ function doEditFields(): void {
 
 onMounted(() => {
 	load(1);
+});
+
+onUnmounted(() => {
+	if (intersectionObserver !== null) {
+		intersectionObserver.disconnect();
+	}
 });
 </script>
