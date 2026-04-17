@@ -18,7 +18,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Feature_v2\Zip;
+namespace Tests\ImageProcessing\Zip;
 
 use App\Models\Configs;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
@@ -61,8 +61,8 @@ class ZipChunksTest extends BaseApiWithDataTest
 		]);
 
 		$this->assertOk($response);
-		// album1 has photo1 and photo1b (2 photos), with chunk_size=1 we expect 2 chunks
-		$response->assertJson(['total_photos' => 2]);
+		// album1 has photo1 and photo1b (2 photos), and a sub album with 1 photo. with chunk_size=1 we expect 3 chunks
+		$response->assertJson(['total_photos' => 3]);
 		$this->assertGreaterThanOrEqual(1, $response->json('total_chunks'));
 
 		Configs::set('download_archive_chunked', false);

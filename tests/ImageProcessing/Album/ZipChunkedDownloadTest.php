@@ -18,14 +18,34 @@
 
 declare(strict_types=1);
 
-namespace Tests\Feature_v2\Zip;
+namespace Tests\ImageProcessing\Zip;
 
 use App\Enum\DownloadVariantType;
 use App\Models\Configs;
+use Tests\Constants\TestConstants;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class ZipChunkedDownloadTest extends BaseApiWithDataTest
 {
+	protected function uploadImage(string $filename, string $album_id)
+	{
+		$this->catchFailureSilence = [];
+		$response = $this->actingAs($this->admin)->upload('Photo', filename: $filename, album_id: $album_id);
+		$this->assertCreated($response);
+
+		$response = $this->getJsonWithData('Album::photos', ['album_id' => $album_id]);
+		$this->assertOk($response);
+
+		return $response;
+	}
+
+	public function setUp(): void
+	{
+		parent::setUp();
+		$response = $this->uploadImage(filename: TestConstants::SAMPLE_FILE_NIGHT_IMAGE, album_id: $this->album5->id);
+		$response = $this->uploadImage(filename: TestConstants::SAMPLE_FILE_AARHUS, album_id: $this->album5->id);
+	}
+
 	/**
 	 * S-035-01: No chunk param → single archive (200, application/x-zip).
 	 */
@@ -34,8 +54,8 @@ class ZipChunkedDownloadTest extends BaseApiWithDataTest
 		Configs::set('download_archive_chunked', true);
 		Configs::set('download_archive_chunk_size', 3);
 
-		$response = $this->actingAs($this->userMayUpload1)->download(
-			album_ids: [$this->album1->id],
+		$response = $this->actingAs($this->admin)->download(
+			album_ids: [$this->album5->id],
 			kind: DownloadVariantType::ORIGINAL,
 			expectedStatusCode: 200,
 		);
@@ -59,8 +79,8 @@ class ZipChunkedDownloadTest extends BaseApiWithDataTest
 		Configs::set('download_archive_chunked', true);
 		Configs::set('download_archive_chunk_size', 1);
 
-		$response = $this->actingAs($this->userMayUpload1)->download(
-			album_ids: [$this->album1->id],
+		$response = $this->actingAs($this->admin)->download(
+			album_ids: [$this->album5->id],
 			kind: DownloadVariantType::ORIGINAL,
 			expectedStatusCode: 200,
 			extra_params: ['chunk' => 1],
@@ -84,8 +104,8 @@ class ZipChunkedDownloadTest extends BaseApiWithDataTest
 		Configs::set('download_archive_chunked', true);
 		Configs::set('download_archive_chunk_size', 1);
 
-		$response = $this->actingAs($this->userMayUpload1)->download(
-			album_ids: [$this->album1->id],
+		$response = $this->actingAs($this->admin)->download(
+			album_ids: [$this->album5->id],
 			kind: DownloadVariantType::ORIGINAL,
 			expectedStatusCode: 200,
 			extra_params: ['chunk' => 2],

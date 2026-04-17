@@ -310,6 +310,11 @@ abstract class BaseArchive
 		// First pass: build the complete ordered list of [id => zip_path] for all photos.
 		$all_filenames = $this->gatherAllFilenames($albums);
 
+		$num_files = count($all_filenames);
+		if ($slice->offset >= $num_files) {
+			abort(422, 'Wrong chunk number: no photos in the requested slice.');
+		}
+
 		// Extract only the photos in the requested slice.
 		$zippable_photos = array_slice($all_filenames, $slice->offset, $slice->limit);
 
