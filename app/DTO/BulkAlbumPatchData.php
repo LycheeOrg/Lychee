@@ -119,6 +119,40 @@ class BulkAlbumPatchData
 	}
 
 	/**
+	 * Build a DTO from a validated request values array.
+	 *
+	 * Handles all enum coercion and boolean normalization so that callers
+	 * (FormRequests, tests, …) never have to repeat that logic.
+	 *
+	 * @param array<string,mixed> $values         the output of {@see \Illuminate\Foundation\Http\FormRequest::validated()}
+	 * @param string[]            $present_fields names of optional fields that were present in the request
+	 */
+	public static function fromValidated(array $values, array $present_fields): self
+	{
+		return new self(
+			album_ids: $values['album_ids'],
+			present_fields: $present_fields,
+			description: $values['description'] ?? null,
+			copyright: $values['copyright'] ?? null,
+			license: isset($values['license']) ? LicenseType::tryFrom($values['license']) : null,
+			photo_layout: isset($values['photo_layout']) ? PhotoLayoutType::tryFrom($values['photo_layout']) : null,
+			photo_sorting_col: isset($values['photo_sorting_col']) ? ColumnSortingPhotoType::tryFrom($values['photo_sorting_col']) : null,
+			photo_sorting_order: isset($values['photo_sorting_order']) ? OrderSortingType::tryFrom($values['photo_sorting_order']) : null,
+			album_sorting_col: isset($values['album_sorting_col']) ? ColumnSortingAlbumType::tryFrom($values['album_sorting_col']) : null,
+			album_sorting_order: isset($values['album_sorting_order']) ? OrderSortingType::tryFrom($values['album_sorting_order']) : null,
+			album_thumb_aspect_ratio: isset($values['album_thumb_aspect_ratio']) ? AspectRatioType::tryFrom($values['album_thumb_aspect_ratio']) : null,
+			album_timeline: isset($values['album_timeline']) ? TimelineAlbumGranularity::tryFrom($values['album_timeline']) : null,
+			photo_timeline: isset($values['photo_timeline']) ? TimelinePhotoGranularity::tryFrom($values['photo_timeline']) : null,
+			is_nsfw: isset($values['is_nsfw']) ? filter_var($values['is_nsfw'], FILTER_VALIDATE_BOOLEAN) : null,
+			is_public: isset($values['is_public']) ? filter_var($values['is_public'], FILTER_VALIDATE_BOOLEAN) : null,
+			is_link_required: isset($values['is_link_required']) ? filter_var($values['is_link_required'], FILTER_VALIDATE_BOOLEAN) : null,
+			grants_full_photo_access: isset($values['grants_full_photo_access']) ? filter_var($values['grants_full_photo_access'], FILTER_VALIDATE_BOOLEAN) : null,
+			grants_download: isset($values['grants_download']) ? filter_var($values['grants_download'], FILTER_VALIDATE_BOOLEAN) : null,
+			grants_upload: isset($values['grants_upload']) ? filter_var($values['grants_upload'], FILTER_VALIDATE_BOOLEAN) : null,
+		);
+	}
+
+	/**
 	 * Returns true if the named field was present in the original request.
 	 *
 	 * A field can be present-but-null (meaning "clear this value") or
