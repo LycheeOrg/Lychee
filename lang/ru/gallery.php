@@ -32,6 +32,8 @@ return [
     'live_video' => 'Часть видео с живого фото',
     'download_raw' => 'Download RAW',
     'download_album' => 'Выберите разрешение изображений для ZIP-архива альбома. Если у фотографии нет выбранного варианта, будет использован оригинал.',
+    'downloading_part' => 'Downloading part :current / :total',
+    'download_error' => 'Download failed',
     'camera_data' => 'Дата камеры',
     'album_reserved' => 'Все права защищены',
     'map' => [

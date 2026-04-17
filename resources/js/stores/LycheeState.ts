@@ -63,6 +63,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		is_small2x_download_enabled: false,
 		is_medium_download_enabled: false,
 		is_medium2x_download_enabled: false,
+		is_download_archive_chunked: false,
 
 		// menu stuff
 		clockwork_url: "" as null | string,
@@ -196,6 +197,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.is_small2x_download_enabled = data.is_small2x_download_enabled;
 					this.is_medium_download_enabled = data.is_medium_download_enabled;
 					this.is_medium2x_download_enabled = data.is_medium2x_download_enabled;
+					this.is_download_archive_chunked = data.is_download_archive_chunked;
 					this.photo_previous_next_size = data.photo_previous_next_size;
 					this.is_details_links_enabled = data.is_details_links_enabled;
 					this.is_desktop_dock_full_transparency_enabled = data.is_desktop_dock_full_transparency_enabled;

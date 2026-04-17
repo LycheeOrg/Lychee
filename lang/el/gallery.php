@@ -33,6 +33,8 @@ return [
     'live_video' => 'Video part of live-photo',
     'download_raw' => 'Download RAW',
     'download_album' => 'Επιλέξτε την ανάλυση εικόνας για το αρχείο ZIP του άλμπουμ. Αν μια φωτογραφία δεν διαθέτει την επιλεγμένη παραλλαγή, θα χρησιμοποιηθεί η αρχική.',
+    'downloading_part' => 'Downloading part :current / :total',
+    'download_error' => 'Download failed',
     'camera_data' => 'Camera date',
     'album_reserved' => 'All Rights Reserved',
     'map' => [

@@ -33,6 +33,8 @@ return [
     'live_video' => 'Видео част от live-photo',
     'download_raw' => 'Download RAW',
     'download_album' => 'Изберете разделителна способност на изображенията за ZIP архива на албума. Ако снимка няма избрания вариант, ще бъде използван оригиналът.',
+    'downloading_part' => 'Downloading part :current / :total',
+    'download_error' => 'Download failed',
     'camera_data' => 'Дата от камерата',
     'album_reserved' => 'Всички права запазени',
     'map' => [

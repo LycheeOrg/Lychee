@@ -64,6 +64,7 @@ class ZipRequestTest extends BaseRequestTest
 			RequestAttribute::PHOTO_IDS_ATTRIBUTE => ['sometimes', new RandomIDListRule()],
 			RequestAttribute::SIZE_VARIANT_ATTRIBUTE => ['sometimes', new Enum(DownloadVariantType::class)],
 			RequestAttribute::FROM_ID_ATTRIBUTE => ['required_if_accepted:photos_ids', new AlbumIDRule(true)],
+			RequestAttribute::CHUNK_ATTRIBUTE => ['sometimes', 'integer', 'min:1'],
 		];
 		$this->assertCount(count($expectedRuleMap), $rules); // only validating the first 7 rules & the GRANTS_UPLOAD_ATTRIBUTE is tested afterwards
 

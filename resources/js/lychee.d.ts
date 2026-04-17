@@ -484,6 +484,7 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		is_small2x_download_enabled: boolean;
 		is_medium_download_enabled: boolean;
 		is_medium2x_download_enabled: boolean;
+		is_download_archive_chunked: boolean;
 		clockwork_url: string | null;
 		slideshow_timeout: number;
 		is_slideshow_enabled: boolean;
@@ -568,6 +569,10 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		upload_processing_limit: number;
 		upload_chunk_size: number;
 		can_watermark_optout: boolean;
+	};
+	export type ZipChunkData = {
+		total_chunks: number;
+		total_photos: number;
 	};
 }
 declare namespace App.Http.Resources.Models {

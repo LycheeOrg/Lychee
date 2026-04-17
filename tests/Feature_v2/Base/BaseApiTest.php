@@ -172,6 +172,7 @@ abstract class BaseApiTest extends AbstractTestCase
 	 * @param array               $album_ids          list of albums to download
 	 * @param DownloadVariantType $kind               in the case of photo ids we can also specify the kind
 	 * @param int                 $expectedStatusCode expected status code of the response (hopefully 200)
+	 * @param array               $extra_params       additional query parameters
 	 *
 	 * @return TestResponse<JsonResponse>
 	 */
@@ -181,6 +182,7 @@ abstract class BaseApiTest extends AbstractTestCase
 		string $from_id = '',
 		DownloadVariantType $kind = DownloadVariantType::ORIGINAL,
 		$expectedStatusCode = 200,
+		array $extra_params = [],
 	): TestResponse {
 		$params = [];
 		if ($photo_ids !== []) {
@@ -189,9 +191,13 @@ abstract class BaseApiTest extends AbstractTestCase
 		}
 		if ($album_ids !== []) {
 			$params['album_ids'] = implode(',', $album_ids);
+			$params['variant'] = $kind->value;
 		}
 		if ($from_id !== '') {
 			$params['from_id'] = $from_id;
+		}
+		if ($extra_params !== []) {
+			$params = array_merge($params, $extra_params);
 		}
 
 		$response = $this->getWithParameters(self::API_PREFIX . 'Zip', $params, [

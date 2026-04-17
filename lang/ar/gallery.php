@@ -32,6 +32,8 @@ return [
     'live_video' => 'جزء الفيديو من الصورة الحية',
     'download_raw' => 'Download RAW',
     'download_album' => 'اختر دقة الصورة لأرشيف ZIP للألبوم. إذا لم تكن الصورة تحتوي على النوع المحدد، سيتم استخدام النسخة الأصلية.',
+    'downloading_part' => 'Downloading part :current / :total',
+    'download_error' => 'Download failed',
     'camera_data' => 'تاريخ الكاميرا',
     'album_reserved' => 'جميع الحقوق محفوظة',
     'map' => [

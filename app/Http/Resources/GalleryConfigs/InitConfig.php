@@ -77,6 +77,7 @@ class InitConfig extends Data
 	public bool $is_small2x_download_enabled;
 	public bool $is_medium_download_enabled;
 	public bool $is_medium2x_download_enabled;
+	public bool $is_download_archive_chunked;
 
 	// Clockwork
 	public ?string $clockwork_url;
@@ -191,6 +192,7 @@ class InitConfig extends Data
 		$this->is_small2x_download_enabled = request()->configs()->getValueAsBool('disable_small2x_download') === false;
 		$this->is_medium_download_enabled = request()->configs()->getValueAsBool('disable_medium_download') === false;
 		$this->is_medium2x_download_enabled = request()->configs()->getValueAsBool('disable_medium2x_download') === false;
+		$this->is_download_archive_chunked = request()->configs()->getValueAsBool('download_archive_chunked');
 
 		// Clockwork
 		$this->has_clockwork_in_menu();

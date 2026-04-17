@@ -10,13 +10,14 @@ namespace App\Actions\Photo;
 
 use App\Actions\Photo\Extensions\ArchiveFileInfo;
 use App\Contracts\Exceptions\LycheeException;
+use App\DTO\ChunkSlice;
+use App\DTO\ZippablePhoto;
 use App\Enum\DownloadVariantType;
 use App\Enum\SizeVariantType;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\InvalidSizeVariantException;
 use App\Exceptions\Internal\LycheeLogicException;
-use App\Image\Files\BaseMediaFile;
 use App\Image\Files\FlysystemFile;
 use App\Models\Photo;
 use App\Repositories\ConfigManager;
@@ -47,6 +48,26 @@ abstract class BaseArchive
 	protected int $deflate_level = -1;
 
 	/**
+	 * @return ZipStream
+	 *
+	 * @throws ConfigurationKeyMissingException
+	 */
+	abstract protected function createZip(): ZipStream;
+
+	/**
+	 * @param ZipStream     $zip
+	 * @param ZippablePhoto $zippable_photo,
+	 *
+	 * @return void
+	 *
+	 * @codeCoverageIgnore
+	 */
+	abstract protected function addFileToZip(
+		ZipStream $zip,
+		ZippablePhoto $zippable_photo,
+	): void;
+
+	/**
 	 * Resolve which version of the archive to use.
 	 *
 	 * @return BaseArchive
@@ -72,13 +93,18 @@ abstract class BaseArchive
 	 *
 	 * @param Collection<int,Photo> $photos           the photos which shall be included in the response
 	 * @param DownloadVariantType   $download_variant the desired variant of the photo
+	 * @param ChunkSlice|null       $slice            optional chunk slice for chunked downloads
 	 *
 	 * @return StreamedResponse
 	 *
 	 * @throws LycheeException
 	 */
-	public function do(Collection $photos, DownloadVariantType $download_variant): StreamedResponse
+	public function do(Collection $photos, DownloadVariantType $download_variant, ?ChunkSlice $slice = null): StreamedResponse
 	{
+		if ($slice !== null) {
+			return $this->zipSliced($photos, $download_variant, $slice);
+		}
+
 		if ($photos->count() === 1) {
 			$response = $this->file($photos->firstOrFail(), $download_variant);
 		} else {
@@ -151,6 +177,145 @@ abstract class BaseArchive
 		} catch (\InvalidArgumentException $e) {
 			throw new FrameworkException('Symfony\'s response component', $e);
 		}
+	}
+
+	/**
+	 * Produces a chunked (partial) ZIP archive for photos.
+	 *
+	 * Pre-computes filenames for the complete photo set so that names are
+	 * globally unique across all chunks, then streams only the slice.
+	 *
+	 * @param Collection<int,Photo> $photos
+	 * @param DownloadVariantType   $download_variant
+	 * @param ChunkSlice            $slice
+	 *
+	 * @return StreamedResponse
+	 *
+	 * @throws FrameworkException
+	 * @throws ConfigurationKeyMissingException
+	 */
+	protected function zipSliced(Collection $photos, DownloadVariantType $download_variant, ChunkSlice $slice): StreamedResponse
+	{
+		$config_manager = app(ConfigManager::class);
+		$this->deflate_level = $config_manager->getValueAsInt('zip_deflate_level');
+
+		// Pass 1: pre-compute globally-unique filenames for the full photo set.
+		$filename_map = $this->buildFilenameMap($photos, $download_variant);
+
+		// Slice the ordered list of photo IDs (keys of the map) to select the chunk.
+		$photo_ids_in_order = array_keys($filename_map);
+		$ids_in_slice = array_slice($photo_ids_in_order, $slice->offset, $slice->limit);
+		$ids_set = array_flip($ids_in_slice);
+
+		$response_generator = function () use ($photos, $download_variant, $filename_map, $ids_set): void {
+			$zip = $this->createZip();
+
+			/** @var Photo $photo */
+			foreach ($photos as $photo) {
+				if (!array_key_exists($photo->id, $ids_set)) {
+					continue;
+				}
+
+				try {
+					$archive_file_info = $this->extractFileInfo($photo, $download_variant);
+				} catch (\Throwable) {
+					continue;
+				}
+
+				$filename = $filename_map[$photo->id];
+				$zippable_photo = new ZippablePhoto(
+					file_name: $filename,
+					file: $archive_file_info->file,
+					title: null,
+					last_modification_date_time: null,
+				);
+
+				$this->addFileToZip($zip, $zippable_photo);
+				$archive_file_info->file->close();
+
+				try {
+					set_time_limit((int) ini_get('max_execution_time'));
+				} catch (InfoException) {
+					// Silently do nothing, if `set_time_limit` is denied.
+				}
+			}
+
+			$zip->finish();
+		};
+
+		try {
+			$response = new StreamedResponse($response_generator);
+			$disposition = HeaderUtils::makeDisposition(
+				HeaderUtils::DISPOSITION_ATTACHMENT,
+				'Photos.part' . $slice->chunk . '.zip'
+			);
+			$response->headers->set('Content-Type', 'application/x-zip');
+			$response->headers->set('Content-Disposition', $disposition);
+			$response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate');
+			$response->headers->set('Pragma', 'no-cache');
+			$response->headers->set('Expires', '0');
+		} catch (\InvalidArgumentException $e) {
+			throw new FrameworkException('Symfony\'s response component', $e);
+		}
+
+		return $response;
+	}
+
+	/**
+	 * Pre-computes globally-unique filenames for every photo in the collection.
+	 *
+	 * Returns an ordered map of photo_id => final_filename, preserving the
+	 * iteration order of $photos so that offset/limit slicing is stable.
+	 *
+	 * @param Collection<int,Photo> $photos
+	 * @param DownloadVariantType   $download_variant
+	 *
+	 * @return array<string,string> photo_id => final_filename
+	 */
+	private function buildFilenameMap(Collection $photos, DownloadVariantType $download_variant): array
+	{
+		/** @var array<string,ArchiveFileInfo> $archive_file_infos photo_id => info */
+		$archive_file_infos = [];
+		$unique_filenames = [];
+		$ambiguous_filenames = [];
+
+		// Partition into unique / ambiguous (same logic as zip())
+		/** @var Photo $photo */
+		foreach ($photos as $photo) {
+			try {
+				$info = $this->extractFileInfo($photo, $download_variant);
+			} catch (\Throwable) {
+				continue;
+			}
+			$archive_file_infos[$photo->id] = $info;
+			$filename = $info->getFilename();
+			if (array_key_exists($filename, $ambiguous_filenames)) {
+				// already known duplicate
+			} elseif (array_key_exists($filename, $unique_filenames)) {
+				unset($unique_filenames[$filename]);
+				$ambiguous_filenames[$filename] = 0;
+			} else {
+				$unique_filenames[$filename] = 0;
+			}
+		}
+
+		// Resolve final filenames
+		$filename_map = [];
+		foreach ($archive_file_infos as $photo_id => $info) {
+			$true_filename = $info->getFilename();
+			if (array_key_exists($true_filename, $unique_filenames)) {
+				$filename_map[$photo_id] = $true_filename;
+			} else {
+				do {
+					$filename = $info->getFilename('-' . ++$ambiguous_filenames[$true_filename]);
+				} while (array_key_exists($filename, $unique_filenames));
+				$filename_map[$photo_id] = $filename;
+			}
+			// Close files opened during extractFileInfo to avoid resource leaks.
+			$info->file->close();
+		}
+
+		return $filename_map;
 	}
 
 	/**
@@ -259,7 +424,14 @@ abstract class BaseArchive
 						);
 					} while (array_key_exists($filename, $unique_filenames));
 				}
-				$this->addFileToZip($zip, $filename, $archive_file_info->file, null);
+				$zippable_photo = new ZippablePhoto(
+					file_name: $filename,
+					file: $archive_file_info->file,
+					title: null,
+					last_modification_date_time: null,
+				);
+
+				$this->addFileToZip($zip, $zippable_photo);
 				$archive_file_info->file->close();
 				// Reset the execution timeout for every iteration.
 				try {
@@ -292,15 +464,6 @@ abstract class BaseArchive
 
 		return $response;
 	}
-
-	abstract protected function addFileToZip(ZipStream $zip, string $file_name, FlysystemFile|BaseMediaFile $file, Photo|null $photo): void;
-
-	/**
-	 * @return ZipStream
-	 *
-	 * @throws ConfigurationKeyMissingException
-	 */
-	abstract protected function createZip(): ZipStream;
 
 	/**
 	 * Creates a {@link ArchiveFileInfo} for the indicated photo and variant.

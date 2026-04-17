@@ -35,6 +35,7 @@
 		</div>
 
 		<!-- Dialogs -->
+		<DownloadAlbum v-model:visible="is_download_photo_visible" :photo-ids="downloadPhotoIds" :from-id="downloadFromId" />
 		<ContextMenu ref="menu" :model="Menu" :class="Menu.length === 0 ? 'hidden' : ''">
 			<template #item="{ item, props }">
 				<Divider v-if="item.is_divider" />
@@ -70,6 +71,8 @@ import { usePhotosStore } from "@/stores/PhotosState";
 import { useTagStore } from "@/stores/TagState";
 import { useAlbumsStore } from "@/stores/AlbumsState";
 import { usePhotoStore } from "@/stores/PhotoState";
+import DownloadAlbum from "@/components/modals/DownloadAlbum.vue";
+import { ref } from "vue";
 
 const router = useRouter();
 const togglableStore = useTogglablesStateStore();
@@ -88,6 +91,10 @@ const { toggleDelete, toggleMove, toggleRename, toggleTag, toggleLicense, toggle
 const { selectedPhoto, selectedPhotos, selectedPhotosIds, photoSelect: selectPhoto } = useSelection(photosStore, albumsStore, togglableStore);
 
 const { photoRoute, getParentId } = usePhotoRoute(router);
+
+const is_download_photo_visible = ref(false);
+const downloadPhotoIds = ref<string[]>([]);
+const downloadFromId = ref<string | null>(null);
 
 function photoClick(photoId: string, _e: MouseEvent) {
 	router.push(photoRoute(photoId));
@@ -113,7 +120,9 @@ const photoCallbacks = {
 	toggleMove: toggleMove,
 	toggleDelete: toggleDelete,
 	toggleDownload: () => {
-		PhotoService.download(selectedPhotosIds.value, getParentId());
+		downloadPhotoIds.value = [...selectedPhotosIds.value];
+		downloadFromId.value = getParentId() ?? null;
+		is_download_photo_visible.value = true;
 	},
 	toggleApplyRenamer: toggleApplyRenamer,
 	toggleApprove: () => {

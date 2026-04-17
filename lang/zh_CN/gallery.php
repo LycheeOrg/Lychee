@@ -33,6 +33,8 @@ return [
     'live_video' => '实况照片视频部分',
     'download_raw' => 'Download RAW',
     'download_album' => '选择相册ZIP压缩包的图片分辨率。如果照片没有所选的版本，将使用原始版本。',
+    'downloading_part' => 'Downloading part :current / :total',
+    'download_error' => 'Download failed',
     'camera_data' => '相机日期',
     'album_reserved' => '所有权利保留',
     'map' => [
