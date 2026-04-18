@@ -32,6 +32,8 @@ return [
     'live_video' => 'بخش ویدئویی لایو-فوتو',
     'download_raw' => 'Download RAW',
     'download_album' => 'رزولوشن تصویر را برای فایل ZIP آلبوم انتخاب کنید. اگر عکسی نوع انتخاب‌شده را نداشته باشد، از نسخه اصلی استفاده می‌شود.',
+    'downloading_part' => 'Downloading part :current / :total',
+    'download_error' => 'Download failed',
     'camera_data' => 'تاریخ دوربین',
     'album_reserved' => 'کلیه حقوق محفوظ است',
     'map' => [

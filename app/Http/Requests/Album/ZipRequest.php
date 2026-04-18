@@ -14,6 +14,7 @@ use App\Contracts\Http\Requests\HasPhotos;
 use App\Contracts\Http\Requests\HasSizeVariant;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Models\AbstractAlbum;
+use App\DTO\ChunkSlice;
 use App\Enum\DownloadVariantType;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasAlbumsTrait;
@@ -39,6 +40,8 @@ class ZipRequest extends BaseApiRequest implements HasAlbums, HasPhotos, HasSize
 	use HasPhotosTrait;
 	use HasFromIdTrait;
 	use HasSizeVariantTrait;
+
+	protected ?ChunkSlice $chunk_slice;
 
 	/**
 	 * {@inheritDoc}
@@ -78,6 +81,7 @@ class ZipRequest extends BaseApiRequest implements HasAlbums, HasPhotos, HasSize
 			RequestAttribute::PHOTO_IDS_ATTRIBUTE => ['sometimes', new RandomIDListRule()],
 			RequestAttribute::SIZE_VARIANT_ATTRIBUTE => ['sometimes', new Enum(DownloadVariantType::class)],
 			RequestAttribute::FROM_ID_ATTRIBUTE => ['required_if_accepted:photos_ids', new AlbumIDRule(true)],
+			RequestAttribute::CHUNK_ATTRIBUTE => ['sometimes', 'integer', 'min:1'],
 		];
 	}
 
@@ -91,13 +95,15 @@ class ZipRequest extends BaseApiRequest implements HasAlbums, HasPhotos, HasSize
 		$this->processAlbums($album_ids);
 
 		// only interesting if we have no albums
-		$this->size_variant = DownloadVariantType::tryFrom($values[RequestAttribute::SIZE_VARIANT_ATTRIBUTE] ?? '');
+		$this->size_variant = DownloadVariantType::tryFrom($values[RequestAttribute::SIZE_VARIANT_ATTRIBUTE] ?? '') ?? DownloadVariantType::ORIGINAL;
 
 		$photo_ids = $values[RequestAttribute::PHOTO_IDS_ATTRIBUTE] ?? null;
 		$photo_ids = $photo_ids === null ? [] : explode(',', $photo_ids);
 		$this->processPhotos($photo_ids);
 
 		$this->from_id = $values[RequestAttribute::FROM_ID_ATTRIBUTE] ?? null;
+
+		$this->chunk_slice = $this->processChunkSlice();
 	}
 
 	/**
@@ -115,7 +121,6 @@ class ZipRequest extends BaseApiRequest implements HasAlbums, HasPhotos, HasSize
 			return;
 		}
 
-		// TODO: `App\Actions\Album\Archive::compressAlbum` iterates over the original size variant of each photo in the album; we should eagerly load them for higher efficiency.
 		$this->albums = $this->album_factory->findAbstractAlbumsOrFail($album_ids);
 	}
 
@@ -134,7 +139,7 @@ class ZipRequest extends BaseApiRequest implements HasAlbums, HasPhotos, HasSize
 			return;
 		}
 
-		$photo_query = Photo::query()->with(['albums']);
+		$photo_query = Photo::query()->with(['albums'])->orderBy('title', 'ASC');
 		// The condition is required, because Lychee also supports to archive
 		// the "live video" as a size variant which is not a proper size variant
 		$variant = $this->size_variant?->getSizeVariantType();
@@ -151,5 +156,34 @@ class ZipRequest extends BaseApiRequest implements HasAlbums, HasPhotos, HasSize
 		// with an array of IDs we never get a single entity (even if the
 		// array only contains a single ID).
 		$this->photos = $photo_query->findOrFail($photo_ids);
+	}
+
+	/**
+	 * Compute the chunk slice for chunked ZIP downloads.
+	 *
+	 * Returns null when no chunk parameter is present (non-chunked download).
+	 * Throws a ValidationException when the chunk number exceeds total chunks.
+	 *
+	 * @return ChunkSlice|null
+	 */
+	private function processChunkSlice(): ?ChunkSlice
+	{
+		$chunk = $this->integer(RequestAttribute::CHUNK_ATTRIBUTE, 0);
+		if ($chunk === 0) {
+			return null;
+		}
+
+		$chunk_size = request()->configs()->getValueAsInt('download_archive_chunk_size');
+		$offset = ($chunk - 1) * $chunk_size;
+
+		return new ChunkSlice(offset: $offset, limit: $chunk_size, chunk: $chunk);
+	}
+
+	/**
+	 * Get the chunk slice for chunked ZIP downloads.
+	 */
+	public function chunkSlice(): ?ChunkSlice
+	{
+		return $this->chunk_slice;
 	}
 }

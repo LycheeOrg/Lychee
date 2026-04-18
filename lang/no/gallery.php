@@ -33,6 +33,8 @@ return [
     'live_video' => 'Video part of live-photo',
     'download_raw' => 'Download RAW',
     'download_album' => 'Velg bildeoppløsning for albumets ZIP-arkiv. Hvis et bilde ikke har den valgte varianten, brukes originalen i stedet.',
+    'downloading_part' => 'Downloading part :current / :total',
+    'download_error' => 'Download failed',
     'camera_data' => 'Camera date',
     'album_reserved' => 'All Rights Reserved',
     'map' => [

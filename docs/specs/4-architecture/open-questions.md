@@ -3052,3 +3052,20 @@ Lychee maps `embedding_id` back to Face records (which have person_id) to identi
 **Resolution:** **Option A** — Return all albums in the gallery regardless of owner. Admin page; admin has authority over all albums.
 
 **Spec Impact:** FR-034-12 confirmed: no owner filter applied on `GET /BulkAlbumEdit::ids`.
+
+---
+
+### ~~Q-035-01: Behaviour of GET /Zip (no chunk param) when chunked mode is ON~~ ✅ RESOLVED
+
+**Feature:** 035 – Chunked Archive Download
+**Priority:** Medium
+**Status:** Resolved
+**Opened:** 2026-04-12
+
+**Context:** When `download_archive_chunked` is enabled, a client that calls `GET /Zip` without a `chunk` parameter may be a legacy client or an incorrect integration. We need a defined contract for this case.
+
+**Resolution:** **Option A** — Treat missing `chunk` as a regular single-archive download, regardless of the chunked-mode setting. This is backward-compatible: legacy frontends and direct URL downloads work without modification.
+
+**Spec Impact:** Encoded in FR-035-05 and FR-035-07.
+
+**Resolved:** 2026-04-12

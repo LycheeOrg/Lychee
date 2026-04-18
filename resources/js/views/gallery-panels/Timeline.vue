@@ -122,6 +122,7 @@
 			/>
 			<RenameDialog v-model:visible="is_rename_visible" :parent-id="undefined" :album="undefined" :photo="selectedPhoto" @renamed="refresh" />
 		</template>
+		<DownloadAlbum v-model:visible="is_download_photo_visible" :photo-ids="downloadPhotoIds" />
 		<ContextMenu ref="menu" :model="Menu" :class="Menu.length === 0 ? 'hidden' : ''">
 			<template #item="{ item, props }">
 				<Divider v-if="item.is_divider" />
@@ -193,6 +194,7 @@ import { usePhotosStore } from "@/stores/PhotosState";
 import { useLayoutStore } from "@/stores/LayoutState";
 import { useAlbumsStore } from "@/stores/AlbumsState";
 import { useTimelineStore } from "@/stores/TimelineState";
+import DownloadAlbum from "@/components/modals/DownloadAlbum.vue";
 
 const { isLTR } = useLtRorRtL();
 
@@ -235,6 +237,9 @@ const {
 } = useSelection(photosStore, albumsStore, togglableStore);
 
 const { photoRoute } = usePhotoRoute(router);
+
+const is_download_photo_visible = ref(false);
+const downloadPhotoIds = ref<string[]>([]);
 
 function onIntersectionObserver([entry]: IntersectionObserverEntry[]) {
 	if (entry.isIntersecting) {
@@ -358,7 +363,10 @@ const photoCallbacks = {
 	toggleCopyTo: toggleCopy,
 	toggleMove: toggleMove,
 	toggleDelete: toggleDelete,
-	toggleDownload: () => {},
+	toggleDownload: () => {
+		downloadPhotoIds.value = [...selectedPhotosIds.value];
+		is_download_photo_visible.value = true;
+	},
 	toggleApplyRenamer: () => {},
 	toggleApprove: () => {
 		ModerationService.approve(selectedPhotosIds.value).then(() => {

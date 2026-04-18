@@ -24,6 +24,7 @@ use App\Image\Files\TemporaryLocalFile;
 use App\Image\Handlers\ImagickHandler;
 use App\Image\Handlers\VideoHandler;
 use App\Models\Album;
+use App\Models\Configs;
 use function Safe\file_get_contents;
 use function Safe\filesize;
 use function Safe\fwrite;
@@ -111,6 +112,55 @@ class DownloadTest extends BaseApiWithDataTest
 			'night.jpg' => ['size' => filesize(base_path(TestConstants::SAMPLE_FILE_NIGHT_IMAGE))],
 			'mongolia.jpeg' => ['size' => filesize(base_path(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE))],
 		]);
+	}
+
+	/**
+	 * Downloads an archive of two different photos.
+	 *
+	 * @return void
+	 */
+	public function testMultiplePhotoDownloadChunked(): void
+	{
+		Configs::set('download_archive_chunked', true);
+		Configs::set('download_archive_chunk_size', 1);
+
+		$this->catchFailureSilence = [];
+		$response = $this->actingAs($this->admin)->upload('Photo', filename: TestConstants::SAMPLE_FILE_NIGHT_IMAGE, album_id: $this->album5->id, file_name: TestConstants::PHOTO_NIGHT_TITLE . '.jpg');
+		$this->assertCreated($response);
+		$response = $this->actingAs($this->admin)->upload('Photo', filename: TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE, album_id: $this->album5->id, file_name: TestConstants::PHOTO_MONGOLIA_TITLE . '.jpeg');
+		$this->assertCreated($response);
+
+		$response = $this->getJsonWithData('Album::photos', ['album_id' => $this->album5->id]);
+		$this->assertOk($response);
+		$response->assertJsonCount(2, 'photos');
+
+		$photoArchiveResponse = $this->download(
+			photo_ids: [$response->json('photos.0.id'), $response->json('photos.1.id')],
+			from_id: $this->album5->id,
+			kind: DownloadVariantType::ORIGINAL,
+			extra_params: ['chunk' => 1],
+		);
+
+		$zipArchive = AssertableZipArchive::createFromResponse($photoArchiveResponse);
+
+		$zipArchive->assertContainsFilesExactly([
+			'mongolia.jpeg' => ['size' => filesize(base_path(TestConstants::SAMPLE_FILE_MONGOLIA_IMAGE))],
+		]);
+
+		$photoArchiveResponse = $this->download(
+			photo_ids: [$response->json('photos.0.id'), $response->json('photos.1.id')],
+			from_id: $this->album5->id,
+			kind: DownloadVariantType::ORIGINAL,
+			extra_params: ['chunk' => 2],
+		);
+		$zipArchive = AssertableZipArchive::createFromResponse($photoArchiveResponse);
+
+		$zipArchive->assertContainsFilesExactly([
+			'night.jpg' => ['size' => filesize(base_path(TestConstants::SAMPLE_FILE_NIGHT_IMAGE))],
+		]);
+
+		Configs::set('download_archive_chunked', false);
+		Configs::set('download_archive_chunk_size', 300);
 	}
 
 	/**
