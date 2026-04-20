@@ -17,7 +17,11 @@
 					<Button severity="secondary" class="w-full border-none rounded-none rounded-bl-xl font-bold" @click="closeCallback">
 						{{ $t("bulk_album_edit.cancel") }}
 					</Button>
-					<Button :disabled="selectedOwner === undefined" class="w-full border-none rounded-none rounded-br-xl font-bold" @click="doSetOwner">
+					<Button
+						:disabled="selectedOwner === undefined"
+						class="w-full border-none rounded-none rounded-br-xl font-bold"
+						@click="doSetOwner"
+					>
 						{{ $t("bulk_album_edit.transfer") }}
 					</Button>
 				</div>

@@ -116,7 +116,9 @@
 						<th class="p-2 w-14 text-center">{{ $t("bulk_album_edit.col_is_link_required") }}</th>
 						<th class="p-2 w-14 text-center">{{ $t("bulk_album_edit.col_grants_download") }}</th>
 						<th class="p-2 w-14 text-center">{{ $t("bulk_album_edit.col_grants_full_photo_access") }}</th>
-						<th v-if="is_se_enabled || is_se_preview_enabled" class="p-2 w-14 text-center text-red-500">{{ $t("bulk_album_edit.col_grants_upload") }}</th>
+						<th v-if="is_se_enabled || is_se_preview_enabled" class="p-2 w-14 text-center text-red-500">
+							{{ $t("bulk_album_edit.col_grants_upload") }}
+						</th>
 						<th class="p-2 w-52 text-center">{{ $t("bulk_album_edit.col_photo_sorting") }}</th>
 						<th class="p-2 w-52 text-center">{{ $t("bulk_album_edit.col_album_sorting") }}</th>
 						<th class="p-2 w-32 text-left">{{ $t("bulk_album_edit.col_created_at") }}</th>
@@ -129,7 +131,7 @@
 							<Checkbox :model-value="selectedIds.includes(album.id)" :binary="true" @update:model-value="toggleRow(album.id)" />
 						</td>
 						<td class="p-2 whitespace-nowrap">
-							<span :style="`padding-left: ${(albumDepths[idx]-1) * 1.25}rem`" class="inline-flex items-center gap-1">
+							<span :style="`padding-left: ${(albumDepths[idx] - 1) * 1.25}rem`" class="inline-flex items-center gap-1">
 								<span v-if="albumDepths[idx] > 0" class="text-muted-color mr-1">└─</span>
 								<InputText
 									v-if="editingTitleId === album.id"
@@ -148,7 +150,11 @@
 						<td class="p-2 text-center w-14">
 							<ToggleSwitch
 								:model-value="album.is_nsfw"
-								style="--p-toggleswitch-checked-background: var(--p-red-800); --p-toggleswitch-checked-hover-background: var(--p-red-900); --p-toggleswitch-hover-background: var(--p-red-900);"
+								style="
+									--p-toggleswitch-checked-background: var(--p-red-800);
+									--p-toggleswitch-checked-hover-background: var(--p-red-900);
+									--p-toggleswitch-hover-background: var(--p-red-900);
+								"
 								@update:model-value="(val) => onInlineToggle(album.id, 'is_nsfw', val as boolean)"
 							/>
 						</td>
@@ -179,11 +185,15 @@
 								@update:model-value="(val) => onInlineToggle(album.id, 'grants_full_photo_access', val as boolean)"
 							/>
 						</td>
-							<td v-if="is_se_enabled || is_se_preview_enabled" class="p-2 text-center w-14">
-								<ToggleSwitch
-									:model-value="album.grants_upload"
-									:disabled="!album.is_public || !is_se_enabled"
-									style="--p-toggleswitch-checked-background: var(--p-red-800); --p-toggleswitch-checked-hover-background: var(--p-red-900); --p-toggleswitch-hover-background: var(--p-red-900);"
+						<td v-if="is_se_enabled || is_se_preview_enabled" class="p-2 text-center w-14">
+							<ToggleSwitch
+								:model-value="album.grants_upload"
+								:disabled="!album.is_public || !is_se_enabled"
+								style="
+									--p-toggleswitch-checked-background: var(--p-red-800);
+									--p-toggleswitch-checked-hover-background: var(--p-red-900);
+									--p-toggleswitch-hover-background: var(--p-red-900);
+								"
 								@update:model-value="(val) => onInlineToggle(album.id, 'grants_upload', val as boolean)"
 							/>
 						</td>
@@ -210,13 +220,20 @@
 									v-else
 									class="cursor-text text-xs hover:text-primary-500 w-32 text-center"
 									@click="startEditPhotoSorting(album.id)"
-								>{{ photoSortingColumnsOptions.find((o) => o.value === album.photo_sorting_col)?.label !== undefined ? $t(photoSortingColumnsOptions.find((o) => o.value === album.photo_sorting_col)!.label) : '—' }}</span>
+									>{{
+										photoSortingColumnsOptions.find((o) => o.value === album.photo_sorting_col)?.label !== undefined
+											? $t(photoSortingColumnsOptions.find((o) => o.value === album.photo_sorting_col)!.label)
+											: "—"
+									}}</span
+								>
 								<Button
 									size="small"
 									text
 									:icon="album.photo_sorting_order === 'DESC' ? 'pi pi-sort-amount-down-alt' : 'pi pi-sort-amount-up-alt'"
 									:disabled="album.photo_sorting_col === null"
-									@click="onInlineSortingChange(album.id, 'photo_sorting_order', album.photo_sorting_order === 'DESC' ? 'ASC' : 'DESC')"
+									@click="
+										onInlineSortingChange(album.id, 'photo_sorting_order', album.photo_sorting_order === 'DESC' ? 'ASC' : 'DESC')
+									"
 								/>
 							</div>
 						</td>
@@ -243,24 +260,26 @@
 									v-else
 									class="cursor-text text-xs hover:text-primary-500 w-32 text-center"
 									@click="startEditAlbumSorting(album.id)"
-								>{{ albumSortingColumnsOptions.find((o) => o.value === album.album_sorting_col)?.label !== undefined ? $t(albumSortingColumnsOptions.find((o) => o.value === album.album_sorting_col)!.label) : '—' }}</span>
+									>{{
+										albumSortingColumnsOptions.find((o) => o.value === album.album_sorting_col)?.label !== undefined
+											? $t(albumSortingColumnsOptions.find((o) => o.value === album.album_sorting_col)!.label)
+											: "—"
+									}}</span
+								>
 								<Button
 									size="small"
 									text
 									:icon="album.album_sorting_order === 'DESC' ? 'pi pi-sort-amount-down-alt' : 'pi pi-sort-amount-up-alt'"
 									:disabled="album.album_sorting_col === null"
-									@click="onInlineSortingChange(album.id, 'album_sorting_order', album.album_sorting_order === 'DESC' ? 'ASC' : 'DESC')"
+									@click="
+										onInlineSortingChange(album.id, 'album_sorting_order', album.album_sorting_order === 'DESC' ? 'ASC' : 'DESC')
+									"
 								/>
 							</div>
 						</td>
 						<td class="p-2 text-muted-color text-xs w-32">{{ formatDate(album.created_at) }}</td>
 						<td class="p-2 w-10 text-center">
-							<Button
-								size="small"
-								text
-								icon="pi pi-pencil"
-								@click="quickEditAlbum(album.id)"
-							/>
+							<Button size="small" text icon="pi pi-pencil" @click="quickEditAlbum(album.id)" />
 						</td>
 					</tr>
 				</tbody>
@@ -480,12 +499,12 @@ function cancelEditTitle(): void {
 // ── Sorting editing ────────────────────────────────────────────────────────────
 
 function startEditPhotoSorting(albumId: string): void {
-	editingSortingId.value = albumId + '_photo';
+	editingSortingId.value = albumId + "_photo";
 	nextTick(() => activeSortingSelect.value[0]?.show());
 }
 
 function startEditAlbumSorting(albumId: string): void {
-	editingSortingId.value = albumId + '_album';
+	editingSortingId.value = albumId + "_album";
 	nextTick(() => activeSortingSelect.value[0]?.show());
 }
 
@@ -494,12 +513,12 @@ function closeEditSorting(): void {
 }
 
 function savePhotoSortingCol(albumId: string, val: string | null): void {
-	onInlineSortingChange(albumId, 'photo_sorting_col', val);
+	onInlineSortingChange(albumId, "photo_sorting_col", val);
 	editingSortingId.value = null;
 }
 
 function saveAlbumSortingCol(albumId: string, val: string | null): void {
-	onInlineSortingChange(albumId, 'album_sorting_col', val);
+	onInlineSortingChange(albumId, "album_sorting_col", val);
 	editingSortingId.value = null;
 }
 
@@ -531,7 +550,7 @@ function onInlineToggle(
 
 function onInlineSortingChange(
 	albumId: string,
-	field: 'photo_sorting_col' | 'photo_sorting_order' | 'album_sorting_col' | 'album_sorting_order',
+	field: "photo_sorting_col" | "photo_sorting_order" | "album_sorting_col" | "album_sorting_order",
 	value: string | null,
 ): void {
 	const album = albums.value.find((a) => a.id === albumId);

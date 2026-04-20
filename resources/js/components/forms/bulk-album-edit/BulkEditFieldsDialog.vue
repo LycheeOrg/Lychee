@@ -39,7 +39,7 @@
 									>
 										<template #value="slotProps">
 											<span v-if="slotProps.value !== null && slotProps.value !== undefined">
-												{{ $t(field.options.find((o) => o.value === slotProps.value)?.label ?? '') }}
+												{{ $t(field.options.find((o) => o.value === slotProps.value)?.label ?? "") }}
 											</span>
 										</template>
 										<template #option="slotProps">{{ $t(slotProps.option.label) }}</template>
@@ -66,7 +66,7 @@
 										>
 											<template #value="slotProps">
 												<span v-if="slotProps.value !== null && slotProps.value !== undefined">
-													{{ $t(pair.col.options.find((o) => o.value === slotProps.value)?.label ?? '') }}
+													{{ $t(pair.col.options.find((o) => o.value === slotProps.value)?.label ?? "") }}
 												</span>
 											</template>
 											<template #option="slotProps">{{ $t(slotProps.option.label) }}</template>
@@ -89,7 +89,7 @@
 										>
 											<template #value="slotProps">
 												<span v-if="slotProps.value !== null && slotProps.value !== undefined">
-													{{ $t(pair.order.options.find((o) => o.value === slotProps.value)?.label ?? '') }}
+													{{ $t(pair.order.options.find((o) => o.value === slotProps.value)?.label ?? "") }}
 												</span>
 											</template>
 											<template #option="slotProps">{{ $t(slotProps.option.label) }}</template>
@@ -105,11 +105,17 @@
 						<div class="grid grid-cols-2 gap-3">
 							<div v-for="field in visibleBoolFields" :key="field.key" class="flex items-center gap-2">
 								<Checkbox v-model="editEnabled[field.key]" :binary="true" class="shrink-0" />
-								<label class="text-sm flex-1" :class="field.red ? 'text-red-500' : ''">{{ $t("bulk_album_edit." + field.label) }}</label>
+								<label class="text-sm flex-1" :class="field.red ? 'text-red-500' : ''">{{
+									$t("bulk_album_edit." + field.label)
+								}}</label>
 								<ToggleSwitch
 									:model-value="editBoolValues[field.key]"
 									:disabled="field.seOnly === true && !is_se_enabled"
-									:style="field.red ? '--p-toggleswitch-checked-background: var(--p-red-800); --p-toggleswitch-checked-hover-background: var(--p-red-900); --p-toggleswitch-hover-background: var(--p-red-900);' : ''"
+									:style="
+										field.red
+											? '--p-toggleswitch-checked-background: var(--p-red-800); --p-toggleswitch-checked-hover-background: var(--p-red-900); --p-toggleswitch-hover-background: var(--p-red-900);'
+											: ''
+									"
 									@update:model-value="(v) => onBoolChange(field.key, v as boolean)"
 								/>
 							</div>
