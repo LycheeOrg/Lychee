@@ -16,7 +16,7 @@
 										:model-value="editTextValues[field.key]"
 										class="w-full"
 										size="small"
-										@update:model-value="(v) => onTextChange(field.key, v)"
+										@update:model-value="(v) => onTextChange(field.key, v ?? null)"
 									/>
 									<label class="block text-sm mb-1">{{ $t("bulk_album_edit." + field.label) }}</label>
 								</FloatLabel>
