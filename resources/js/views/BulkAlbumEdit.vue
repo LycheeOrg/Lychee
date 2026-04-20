@@ -1,78 +1,12 @@
 <template>
 	<!-- Set Owner Dialog -->
-	<Dialog v-model:visible="isSetOwnerVisible" :header="$t('bulk_album_edit.set_owner_title')" modal class="w-full max-w-md">
-		<p class="mb-4 text-muted-color text-sm">{{ $t("bulk_album_edit.set_owner_description") }}</p>
-		<Select
-			v-model="selectedOwner"
-			:options="users"
-			filter
-			option-label="username"
-			:placeholder="$t('bulk_album_edit.set_owner_select_user')"
-			class="w-full"
-		/>
-		<template #footer>
-			<Button :label="$t('bulk_album_edit.cancel')" severity="secondary" text @click="isSetOwnerVisible = false" />
-			<Button :label="$t('bulk_album_edit.transfer')" :disabled="selectedOwner === undefined" @click="doSetOwner" />
-		</template>
-	</Dialog>
+	<BulkSetOwnerDialog v-model:visible="isSetOwnerVisible" :album-ids="selectedIds" @transferred="onTransferred" />
 
 	<!-- Delete Confirmation Dialog -->
-	<Dialog v-model:visible="isDeleteVisible" :header="$t('bulk_album_edit.delete_title')" modal class="w-full max-w-md">
-		<p class="mb-2 text-muted-color text-sm">
-			{{ trans_choice("bulk_album_edit.delete_confirm", selectedIds.length, { count: String(selectedIds.length) }) }}
-		</p>
-		<template #footer>
-			<Button :label="$t('bulk_album_edit.cancel')" severity="secondary" text @click="isDeleteVisible = false" />
-			<Button :label="$t('bulk_album_edit.confirm_delete')" severity="danger" @click="doDelete" />
-		</template>
-	</Dialog>
+	<DeleteDialog v-model:visible="isDeleteVisible" :album-ids="selectedIds" @deleted="onDeleted" />
 
 	<!-- Edit Fields Dialog -->
-	<Dialog v-model:visible="isEditFieldsVisible" :header="$t('bulk_album_edit.edit_fields_title')" modal class="w-full max-w-2xl">
-		<p class="mb-4 text-muted-color text-sm">{{ $t("bulk_album_edit.edit_fields_description") }}</p>
-
-		<div class="grid grid-cols-1 gap-3">
-			<p class="font-semibold text-sm">{{ $t("bulk_album_edit.section_metadata") }}</p>
-
-			<div v-for="field in textFields" :key="field.key" class="flex items-start gap-3">
-				<Checkbox v-model="editEnabled[field.key]" :binary="true" class="mt-1 flex-shrink-0" />
-				<div class="flex-1">
-					<label class="block text-sm mb-1">{{ $t("bulk_album_edit." + field.label) }}</label>
-					<InputText v-model="editTextValues[field.key]" :disabled="!editEnabled[field.key]" class="w-full" size="small" />
-				</div>
-			</div>
-
-			<div v-for="field in enumFields" :key="field.key" class="flex items-start gap-3">
-				<Checkbox v-model="editEnabled[field.key]" :binary="true" class="mt-1 flex-shrink-0" />
-				<div class="flex-1">
-					<label class="block text-sm mb-1">{{ $t("bulk_album_edit." + field.label) }}</label>
-					<Select
-						v-model="editEnumValues[field.key]"
-						:options="field.options"
-						:disabled="!editEnabled[field.key]"
-						option-label="label"
-						option-value="value"
-						show-clear
-						class="w-full"
-						size="small"
-					/>
-				</div>
-			</div>
-
-			<p class="font-semibold text-sm mt-2">{{ $t("bulk_album_edit.section_visibility") }}</p>
-
-			<div v-for="field in boolFields" :key="field.key" class="flex items-center gap-3">
-				<Checkbox v-model="editEnabled[field.key]" :binary="true" class="flex-shrink-0" />
-				<label class="text-sm flex-1">{{ $t("bulk_album_edit." + field.label) }}</label>
-				<ToggleSwitch v-model="editBoolValues[field.key]" :disabled="!editEnabled[field.key]" />
-			</div>
-		</div>
-
-		<template #footer>
-			<Button :label="$t('bulk_album_edit.cancel')" severity="secondary" text @click="isEditFieldsVisible = false" />
-			<Button :label="$t('bulk_album_edit.apply')" :disabled="!hasAnyEnabled" @click="doEditFields" />
-		</template>
-	</Dialog>
+	<BulkEditFieldsDialog v-model:visible="isEditFieldsVisible" :album-ids="selectedIds" @patched="onPatched" />
 
 	<!-- Toolbar -->
 	<Toolbar class="w-full border-0 h-14 rounded-none">
@@ -84,11 +18,10 @@
 		</template>
 	</Toolbar>
 
-	<div class="max-w-7xl mx-auto mt-4 px-2">
+	<Panel class="max-w-7xl mx-auto mt-4 border-none">
 		<p class="text-center text-muted-color text-sm mb-4">{{ $t("bulk_album_edit.description") }}</p>
-
 		<!-- Warning -->
-		<Message severity="warn" :closable="false" class="mb-4">{{ $t("bulk_album_edit.warning") }}</Message>
+		<p class="text-center text-muted-color-emphasis text-sm mb-4">{{ $t("bulk_album_edit.warning") }}</p>
 
 		<!-- Filter + controls bar -->
 		<div class="flex flex-wrap items-center gap-2 mb-3">
@@ -100,7 +33,7 @@
 				@input="onSearchInput"
 			/>
 
-			<Select v-model="perPage" :options="perPageOptions" class="w-24" size="small" @change="load(1)" />
+			<Select v-model="perPage" :options="perPageOptions" class="w-24 border-none" size="small" @change="load(1)" />
 
 			<Button
 				size="small"
@@ -144,13 +77,13 @@
 				@click="isDeleteVisible = true"
 			/>
 			<Button
-				v-if="selectedIds.length > 0"
+				v-if="selectedIds.length > 0 && numUsers > 1"
 				size="small"
 				severity="secondary"
 				:label="$t('bulk_album_edit.action_set_owner')"
 				icon="pi pi-user"
 				class="border-none"
-				@click="openSetOwner"
+				@click="isSetOwnerVisible = true"
 			/>
 			<Button
 				v-if="selectedIds.length > 0"
@@ -158,7 +91,7 @@
 				:label="$t('bulk_album_edit.action_edit_fields')"
 				icon="pi pi-pencil"
 				class="border-none"
-				@click="openEditFields"
+				@click="isEditFieldsVisible = true"
 			/>
 		</div>
 
@@ -171,7 +104,7 @@
 		<div v-else class="overflow-x-auto">
 			<table class="w-full text-sm border-collapse">
 				<thead>
-					<tr class="border-b border-surface-200 text-left">
+					<tr class="border-b border-surface-200 dark:border-surface-700 text-left">
 						<th class="p-2 w-10 text-center">
 							<Checkbox :model-value="isPageAllSelected" :binary="true" @update:model-value="toggleSelectPage" />
 						</th>
@@ -183,18 +116,31 @@
 						<th class="p-2 w-14 text-center">{{ $t("bulk_album_edit.col_is_link_required") }}</th>
 						<th class="p-2 w-14 text-center">{{ $t("bulk_album_edit.col_grants_download") }}</th>
 						<th class="p-2 w-14 text-center">{{ $t("bulk_album_edit.col_grants_full_photo_access") }}</th>
-						<th class="p-2 w-14 text-center">{{ $t("bulk_album_edit.col_grants_upload") }}</th>
+						<th v-if="is_se_enabled || is_se_preview_enabled" class="p-2 w-14 text-center text-red-500">{{ $t("bulk_album_edit.col_grants_upload") }}</th>
+						<th class="p-2 w-52 text-center">{{ $t("bulk_album_edit.col_photo_sorting") }}</th>
+						<th class="p-2 w-52 text-center">{{ $t("bulk_album_edit.col_album_sorting") }}</th>
 						<th class="p-2 w-32 text-left">{{ $t("bulk_album_edit.col_created_at") }}</th>
+						<th class="p-2 w-10"></th>
 					</tr>
 				</thead>
 				<tbody>
-					<tr v-for="(album, idx) in albums" :key="album.id" class="border-b border-surface-100 hover:bg-surface-50">
+					<tr v-for="(album, idx) in albums" :key="album.id" class="hover:bg-primary-emphasis/5">
 						<td class="p-2 text-center">
 							<Checkbox :model-value="selectedIds.includes(album.id)" :binary="true" @update:model-value="toggleRow(album.id)" />
 						</td>
 						<td class="p-2 whitespace-nowrap">
-							<span :style="`padding-left: ${albumDepths[idx] * 1.25}rem`">
-								<span v-if="albumDepths[idx] > 0" class="text-muted-color mr-1">└─</span>{{ album.title }}
+							<span :style="`padding-left: ${(albumDepths[idx]-1) * 1.25}rem`" class="inline-flex items-center gap-1">
+								<span v-if="albumDepths[idx] > 0" class="text-muted-color mr-1">└─</span>
+								<InputText
+									v-if="editingTitleId === album.id"
+									v-model="editingTitleValue"
+									size="small"
+									class="w-64"
+									@blur="saveTitle(album)"
+									@keyup.enter="saveTitle(album)"
+									@keyup.escape="cancelEditTitle"
+								/>
+								<span v-else class="cursor-text hover:text-primary-500" @click="startEditTitle(album)">{{ album.title }}</span>
 							</span>
 						</td>
 						<td class="p-2 text-muted-color text-xs w-32">{{ album.owner_name }}</td>
@@ -202,6 +148,7 @@
 						<td class="p-2 text-center w-14">
 							<ToggleSwitch
 								:model-value="album.is_nsfw"
+								style="--p-toggleswitch-checked-background: var(--p-red-800); --p-toggleswitch-checked-hover-background: var(--p-red-900); --p-toggleswitch-hover-background: var(--p-red-900);"
 								@update:model-value="(val) => onInlineToggle(album.id, 'is_nsfw', val as boolean)"
 							/>
 						</td>
@@ -232,14 +179,89 @@
 								@update:model-value="(val) => onInlineToggle(album.id, 'grants_full_photo_access', val as boolean)"
 							/>
 						</td>
-						<td class="p-2 text-center w-14">
-							<ToggleSwitch
-								:model-value="album.grants_upload"
-								:disabled="!album.is_public"
+							<td v-if="is_se_enabled || is_se_preview_enabled" class="p-2 text-center w-14">
+								<ToggleSwitch
+									:model-value="album.grants_upload"
+									:disabled="!album.is_public || !is_se_enabled"
+									style="--p-toggleswitch-checked-background: var(--p-red-800); --p-toggleswitch-checked-hover-background: var(--p-red-900); --p-toggleswitch-hover-background: var(--p-red-900);"
 								@update:model-value="(val) => onInlineToggle(album.id, 'grants_upload', val as boolean)"
 							/>
 						</td>
+						<td class="py-2 text-center w-52">
+							<div class="flex items-center justify-center gap-1">
+								<Select
+									v-if="editingSortingId === album.id + '_photo'"
+									ref="activeSortingSelect"
+									:model-value="album.photo_sorting_col"
+									:options="photoSortingColumnsOptions"
+									option-label="label"
+									option-value="value"
+									show-clear
+									size="small"
+									class="text-xs w-32 border-none"
+									@update:model-value="(val) => savePhotoSortingCol(album.id, val)"
+									@blur="closeEditSorting"
+								>
+									<template #option="slotProps">
+										{{ $t(slotProps.option.label) }}
+									</template>
+								</Select>
+								<span
+									v-else
+									class="cursor-text text-xs hover:text-primary-500 w-32 text-center"
+									@click="startEditPhotoSorting(album.id)"
+								>{{ photoSortingColumnsOptions.find((o) => o.value === album.photo_sorting_col)?.label !== undefined ? $t(photoSortingColumnsOptions.find((o) => o.value === album.photo_sorting_col)!.label) : '—' }}</span>
+								<Button
+									size="small"
+									text
+									:icon="album.photo_sorting_order === 'DESC' ? 'pi pi-sort-amount-down-alt' : 'pi pi-sort-amount-up-alt'"
+									:disabled="album.photo_sorting_col === null"
+									@click="onInlineSortingChange(album.id, 'photo_sorting_order', album.photo_sorting_order === 'DESC' ? 'ASC' : 'DESC')"
+								/>
+							</div>
+						</td>
+						<td class="py-2 text-center w-52">
+							<div class="flex items-center justify-center gap-1">
+								<Select
+									v-if="editingSortingId === album.id + '_album'"
+									ref="activeSortingSelect"
+									:model-value="album.album_sorting_col"
+									:options="albumSortingColumnsOptions"
+									option-label="label"
+									option-value="value"
+									show-clear
+									size="small"
+									class="text-xs w-32 border-none"
+									@update:model-value="(val) => saveAlbumSortingCol(album.id, val)"
+									@blur="closeEditSorting"
+								>
+									<template #option="slotProps">
+										{{ $t(slotProps.option.label) }}
+									</template>
+								</Select>
+								<span
+									v-else
+									class="cursor-text text-xs hover:text-primary-500 w-32 text-center"
+									@click="startEditAlbumSorting(album.id)"
+								>{{ albumSortingColumnsOptions.find((o) => o.value === album.album_sorting_col)?.label !== undefined ? $t(albumSortingColumnsOptions.find((o) => o.value === album.album_sorting_col)!.label) : '—' }}</span>
+								<Button
+									size="small"
+									text
+									:icon="album.album_sorting_order === 'DESC' ? 'pi pi-sort-amount-down-alt' : 'pi pi-sort-amount-up-alt'"
+									:disabled="album.album_sorting_col === null"
+									@click="onInlineSortingChange(album.id, 'album_sorting_order', album.album_sorting_order === 'DESC' ? 'ASC' : 'DESC')"
+								/>
+							</div>
+						</td>
 						<td class="p-2 text-muted-color text-xs w-32">{{ formatDate(album.created_at) }}</td>
+						<td class="p-2 w-10 text-center">
+							<Button
+								size="small"
+								text
+								icon="pi pi-pencil"
+								@click="quickEditAlbum(album.id)"
+							/>
+						</td>
 					</tr>
 				</tbody>
 			</table>
@@ -258,7 +280,7 @@
 			<!-- Infinite scroll sentinel -->
 			<div v-if="paginationMode === 'infinite'" ref="sentinel" class="h-4" />
 		</div>
-	</div>
+	</Panel>
 </template>
 
 <script lang="ts">
@@ -266,24 +288,37 @@ export default { name: "BulkAlbumEdit" };
 </script>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, watch } from "vue";
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
+import { storeToRefs } from "pinia";
 import { trans_choice } from "laravel-vue-i18n";
 import { useToast } from "primevue/usetoast";
 import Button from "primevue/button";
 import Checkbox from "primevue/checkbox";
-import Dialog from "primevue/dialog";
-import InputText from "primevue/inputtext";
-import Message from "primevue/message";
+import Panel from "primevue/panel";
 import Paginator, { type PageState } from "primevue/paginator";
 import ProgressSpinner from "primevue/progressspinner";
 import Select from "primevue/select";
 import ToggleSwitch from "primevue/toggleswitch";
 import Toolbar from "primevue/toolbar";
+import InputText from "@/components/forms/basic/InputText.vue";
 import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
+import DeleteDialog from "@/components/forms/gallery-dialogs/DeleteDialog.vue";
+import BulkSetOwnerDialog from "@/components/forms/bulk-album-edit/BulkSetOwnerDialog.vue";
+import BulkEditFieldsDialog from "@/components/forms/bulk-album-edit/BulkEditFieldsDialog.vue";
 import BulkAlbumEditService, { type BulkAlbumResource } from "@/services/bulk-album-edit-service";
+import AlbumService from "@/services/album-service";
 import UsersService from "@/services/users-service";
+import { photoSortingColumnsOptions, albumSortingColumnsOptions } from "@/config/constants";
+import { useLycheeStateStore } from "@/stores/LycheeState";
 
 const toast = useToast();
+
+const { is_se_enabled, is_se_preview_enabled } = storeToRefs(useLycheeStateStore());
+
+const numUsers = ref(0);
+UsersService.count().then((data) => {
+	numUsers.value = data.data;
+});
 
 // ── State ─────────────────────────────────────────────────────────────────────
 
@@ -291,9 +326,9 @@ const albums = ref<BulkAlbumResource[]>([]);
 const loading = ref(false);
 const search = ref("");
 const currentPage = ref(1);
-const perPage = ref(50);
+const perPage = ref(100);
 const total = ref(0);
-const perPageOptions = [25, 50, 100];
+const perPageOptions = [100, 200, 500];
 
 const selectedIds = ref<string[]>([]);
 
@@ -306,100 +341,11 @@ const isSetOwnerVisible = ref(false);
 const isDeleteVisible = ref(false);
 const isEditFieldsVisible = ref(false);
 
-const users = ref<App.Http.Resources.Models.LightUserResource[]>([]);
-const selectedOwner = ref<App.Http.Resources.Models.LightUserResource | undefined>(undefined);
-
-// Edit Fields state
-const editEnabled = ref<Record<string, boolean>>({});
-const editTextValues = ref<Record<string, string | null>>({});
-const editEnumValues = ref<Record<string, string | null>>({});
-const editBoolValues = ref<Record<string, boolean>>({});
-
-const textFields = [
-	{ key: "description", label: "field_description" },
-	{ key: "copyright", label: "field_copyright" },
-];
-
-const licenseOptions = [
-	{ label: "None", value: "none" },
-	{ label: "Reserved", value: "reserved" },
-	{ label: "CC0", value: "CC0" },
-	{ label: "CC-BY 4.0", value: "CC-BY-4.0" },
-	{ label: "CC-BY-ND 4.0", value: "CC-BY-ND-4.0" },
-	{ label: "CC-BY-SA 4.0", value: "CC-BY-SA-4.0" },
-	{ label: "CC-BY-NC 4.0", value: "CC-BY-NC-4.0" },
-	{ label: "CC-BY-NC-ND 4.0", value: "CC-BY-NC-ND-4.0" },
-	{ label: "CC-BY-NC-SA 4.0", value: "CC-BY-NC-SA-4.0" },
-];
-
-const photoLayoutOptions = [
-	{ label: "Square", value: "square" },
-	{ label: "Justified", value: "justified" },
-	{ label: "Masonry", value: "masonry" },
-	{ label: "Grid", value: "grid" },
-];
-
-const photoSortColOptions = [
-	{ label: "Created At", value: "created_at" },
-	{ label: "Taken At", value: "taken_at" },
-	{ label: "Title", value: "title" },
-	{ label: "Rating", value: "rating_avg" },
-	{ label: "Type", value: "type" },
-];
-
-const albumSortColOptions = [
-	{ label: "Created At", value: "created_at" },
-	{ label: "Min Taken At", value: "min_taken_at" },
-	{ label: "Max Taken At", value: "max_taken_at" },
-	{ label: "Title", value: "title" },
-];
-
-const sortOrderOptions = [
-	{ label: "Ascending", value: "ASC" },
-	{ label: "Descending", value: "DESC" },
-];
-
-const aspectRatioOptions = [
-	{ label: "5:4", value: "5/4" },
-	{ label: "3:2", value: "3/2" },
-	{ label: "1:1", value: "1/1" },
-	{ label: "2:3", value: "2/3" },
-	{ label: "4:5", value: "4/5" },
-	{ label: "16:9", value: "16/9" },
-];
-
-const timelineOptions = [
-	{ label: "Default", value: "default" },
-	{ label: "Disabled", value: "disabled" },
-	{ label: "Year", value: "year" },
-	{ label: "Month", value: "month" },
-	{ label: "Day", value: "day" },
-];
-
-const photoTimelineOptions = [...timelineOptions, { label: "Hour", value: "hour" }];
-
-const enumFields = [
-	{ key: "license", label: "field_license", options: licenseOptions },
-	{ key: "photo_layout", label: "field_photo_layout", options: photoLayoutOptions },
-	{ key: "photo_sorting_col", label: "field_photo_sorting_col", options: photoSortColOptions },
-	{ key: "photo_sorting_order", label: "field_photo_sorting_order", options: sortOrderOptions },
-	{ key: "album_sorting_col", label: "field_album_sorting_col", options: albumSortColOptions },
-	{ key: "album_sorting_order", label: "field_album_sorting_order", options: sortOrderOptions },
-	{ key: "album_thumb_aspect_ratio", label: "field_album_thumb_aspect_ratio", options: aspectRatioOptions },
-	{ key: "album_timeline", label: "field_album_timeline", options: timelineOptions },
-	{ key: "photo_timeline", label: "field_photo_timeline", options: photoTimelineOptions },
-];
-
-const boolFields = [
-	{ key: "is_nsfw", label: "field_is_nsfw" },
-	{ key: "is_public", label: "field_is_public" },
-	{ key: "is_link_required", label: "field_is_link_required" },
-	{ key: "grants_full_photo_access", label: "field_grants_full_photo_access" },
-	{ key: "grants_download", label: "field_grants_download" },
-	{ key: "grants_upload", label: "field_grants_upload" },
-];
-
-const hasAnyEnabled = computed(() => Object.values(editEnabled.value).some((v) => v === true));
+// -- inline title edit --
+const editingTitleId = ref<string | null>(null);
+const editingTitleValue = ref<string>("");
+const editingSortingId = ref<string | null>(null);
+const activeSortingSelect = ref<Array<{ show: () => void }>>([]);
 
 let searchTimeout: ReturnType<typeof setTimeout> | null = null;
 
@@ -503,12 +449,90 @@ function selectAllMatching(): void {
 		});
 }
 
+// ── Inline title editing ─────────────────────────────────────────────────────
+
+function startEditTitle(album: BulkAlbumResource): void {
+	editingTitleId.value = album.id;
+	editingTitleValue.value = album.title;
+}
+
+function saveTitle(album: BulkAlbumResource): void {
+	if (editingTitleId.value !== album.id) {
+		return;
+	}
+	const newTitle = editingTitleValue.value.trim();
+	editingTitleId.value = null;
+	if (newTitle === album.title || newTitle === "") {
+		return;
+	}
+	const originalTitle = album.title;
+	album.title = newTitle;
+	AlbumService.rename(album.id, newTitle).catch(() => {
+		album.title = originalTitle;
+		toast.add({ severity: "error", summary: "Error", detail: "bulk_album_edit.error_patch", life: 3000 });
+	});
+}
+
+function cancelEditTitle(): void {
+	editingTitleId.value = null;
+}
+
+// ── Sorting editing ────────────────────────────────────────────────────────────
+
+function startEditPhotoSorting(albumId: string): void {
+	editingSortingId.value = albumId + '_photo';
+	nextTick(() => activeSortingSelect.value[0]?.show());
+}
+
+function startEditAlbumSorting(albumId: string): void {
+	editingSortingId.value = albumId + '_album';
+	nextTick(() => activeSortingSelect.value[0]?.show());
+}
+
+function closeEditSorting(): void {
+	editingSortingId.value = null;
+}
+
+function savePhotoSortingCol(albumId: string, val: string | null): void {
+	onInlineSortingChange(albumId, 'photo_sorting_col', val);
+	editingSortingId.value = null;
+}
+
+function saveAlbumSortingCol(albumId: string, val: string | null): void {
+	onInlineSortingChange(albumId, 'album_sorting_col', val);
+	editingSortingId.value = null;
+}
+
+// ── Quick edit ────────────────────────────────────────────────────────────────
+
+function quickEditAlbum(id: string): void {
+	selectedIds.value = [id];
+	isEditFieldsVisible.value = true;
+}
+
 // ── Inline editing ────────────────────────────────────────────────────────────
 
 function onInlineToggle(
 	albumId: string,
 	field: "is_public" | "is_nsfw" | "is_link_required" | "grants_full_photo_access" | "grants_download" | "grants_upload",
 	value: boolean,
+): void {
+	const album = albums.value.find((a) => a.id === albumId);
+	if (album === undefined) {
+		return;
+	}
+	const originalValue = album[field];
+	album[field] = value;
+	BulkAlbumEditService.patchAlbums({ album_ids: [albumId], [field]: value }).catch(() => {
+		album[field] = originalValue;
+		toast.add({ severity: "error", summary: "Error", detail: "bulk_album_edit.error_patch", life: 3000 });
+	});
+}
+
+function onInlineSortingChange(
+	albumId: string,
+	field: 'photo_sorting_col' | 'photo_sorting_order' | 'album_sorting_col' | 'album_sorting_order',
+	value: string | null,
 ): void {
 	const album = albums.value.find((a) => a.id === albumId);
 	if (album === undefined) {
@@ -566,105 +590,22 @@ watch([paginationMode, sentinel], ([mode, el]) => {
 
 // ── Set Owner ─────────────────────────────────────────────────────────────────
 
-function openSetOwner(): void {
-	selectedOwner.value = undefined;
-	if (users.value.length === 0) {
-		UsersService.get()
-			.then((r) => {
-				users.value = r.data;
-			})
-			.catch(() => {
-				toast.add({ severity: "error", summary: "Error", detail: "bulk_album_edit.error_load_users", life: 3000 });
-			});
-	}
-	isSetOwnerVisible.value = true;
-}
-
-function doSetOwner(): void {
-	if (selectedOwner.value === undefined) {
-		return;
-	}
-	BulkAlbumEditService.setOwner({ album_ids: selectedIds.value, owner_id: selectedOwner.value.id })
-		.then(() => {
-			toast.add({ severity: "success", summary: "OK", detail: "bulk_album_edit.success_set_owner", life: 3000 });
-			isSetOwnerVisible.value = false;
-			selectedIds.value = [];
-			load();
-		})
-		.catch(() => {
-			toast.add({ severity: "error", summary: "Error", detail: "bulk_album_edit.error_set_owner", life: 3000 });
-		});
+function onTransferred(): void {
+	selectedIds.value = [];
+	load();
 }
 
 // ── Delete ────────────────────────────────────────────────────────────────────
 
-function doDelete(): void {
-	BulkAlbumEditService.deleteAlbums(selectedIds.value)
-		.then(() => {
-			toast.add({ severity: "success", summary: "OK", detail: "bulk_album_edit.success_delete", life: 3000 });
-			isDeleteVisible.value = false;
-			selectedIds.value = [];
-			load(1);
-		})
-		.catch(() => {
-			toast.add({ severity: "error", summary: "Error", detail: "bulk_album_edit.error_delete", life: 3000 });
-		});
+function onDeleted(): void {
+	selectedIds.value = [];
+	load(1);
 }
 
 // ── Edit Fields ───────────────────────────────────────────────────────────────
 
-function openEditFields(): void {
-	// Reset edit state
-	const enabled: Record<string, boolean> = {};
-	const textVals: Record<string, string | null> = {};
-	const enumVals: Record<string, string | null> = {};
-	const boolVals: Record<string, boolean> = {};
-	textFields.forEach((f) => {
-		enabled[f.key] = false;
-		textVals[f.key] = null;
-	});
-	enumFields.forEach((f) => {
-		enabled[f.key] = false;
-		enumVals[f.key] = null;
-	});
-	boolFields.forEach((f) => {
-		enabled[f.key] = false;
-		boolVals[f.key] = false;
-	});
-	editEnabled.value = enabled;
-	editTextValues.value = textVals;
-	editEnumValues.value = enumVals;
-	editBoolValues.value = boolVals;
-	isEditFieldsVisible.value = true;
-}
-
-function doEditFields(): void {
-	const payload: Record<string, unknown> = { album_ids: selectedIds.value };
-	textFields.forEach((f) => {
-		if (editEnabled.value[f.key] === true) {
-			payload[f.key] = editTextValues.value[f.key];
-		}
-	});
-	enumFields.forEach((f) => {
-		if (editEnabled.value[f.key] === true) {
-			payload[f.key] = editEnumValues.value[f.key];
-		}
-	});
-	boolFields.forEach((f) => {
-		if (editEnabled.value[f.key] === true) {
-			payload[f.key] = editBoolValues.value[f.key];
-		}
-	});
-
-	BulkAlbumEditService.patchAlbums(payload as Parameters<typeof BulkAlbumEditService.patchAlbums>[0])
-		.then(() => {
-			toast.add({ severity: "success", summary: "OK", detail: "bulk_album_edit.success_patch", life: 3000 });
-			isEditFieldsVisible.value = false;
-			load();
-		})
-		.catch(() => {
-			toast.add({ severity: "error", summary: "Error", detail: "bulk_album_edit.error_patch", life: 3000 });
-		});
+function onPatched(): void {
+	load();
 }
 
 // ── Lifecycle ─────────────────────────────────────────────────────────────────

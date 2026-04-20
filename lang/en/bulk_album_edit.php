@@ -21,12 +21,14 @@ return [
     'col_title' => 'Title',
     'col_owner' => 'Owner',
     'col_license' => 'License',
-    'col_is_nsfw' => 'NSFW',
+    'col_is_nsfw' => 'Sensitive',
     'col_is_public' => 'Public',
     'col_is_link_required' => 'Link',
     'col_grants_full_photo_access' => 'Full Photo',
     'col_grants_download' => 'Download',
     'col_grants_upload' => 'Upload',
+    'col_photo_sorting' => 'Photo Sort',
+    'col_album_sorting' => 'Album Sort',
     'col_created_at' => 'Created',
 
     // Filter
@@ -34,7 +36,7 @@ return [
 
     // Pagination
     'per_page' => 'Per page',
-    'total_selected' => '{n} album selected|{n} albums selected',
+    'total_selected' => ':n album selected|:n albums selected',
     'select_all_page' => 'Select all on this page',
     'select_all_matching' => 'Select all matching',
     'cap_warning' => 'Only the first 1,000 albums have been selected.',
@@ -64,7 +66,7 @@ return [
     'field_album_thumb_aspect_ratio' => 'Thumb Aspect Ratio',
     'field_album_timeline' => 'Album Timeline',
     'field_photo_timeline' => 'Photo Timeline',
-    'field_is_nsfw' => 'NSFW',
+    'field_is_nsfw' => 'Sensitive',
     'field_is_public' => 'Public',
     'field_is_link_required' => 'Link Required',
     'field_grants_full_photo_access' => 'Full Photo Access',
