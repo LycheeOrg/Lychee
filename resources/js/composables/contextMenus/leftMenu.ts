@@ -172,7 +172,7 @@ export function useLeftMenu(
 						label: "bulk_album_edit.title",
 						icon: "pi pi-objects-column",
 						route: "/bulk-album-edit",
-						access: canSeeAdmin.value,
+						access: authStore.isAdmin,
 					},
 					{
 						label: "moderation.title",

@@ -45,7 +45,7 @@ class PatchBulkAlbumRequest extends BaseApiRequest
 	public function rules(): array
 	{
 		return [
-			'album_ids' => ['required', 'array', 'min:1'],
+			'album_ids' => ['required', 'array', 'min:1', 'max:1000'],
 			'album_ids.*' => ['required', 'string'],
 			'description' => ['sometimes', 'nullable', 'string', 'max:1048576'],
 			'copyright' => ['sometimes', 'nullable', 'string', 'max:255'],

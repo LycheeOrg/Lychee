@@ -309,7 +309,7 @@ export default { name: "BulkAlbumEdit" };
 <script setup lang="ts">
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
 import { storeToRefs } from "pinia";
-import { trans_choice } from "laravel-vue-i18n";
+import { trans, trans_choice } from "laravel-vue-i18n";
 import { useToast } from "primevue/usetoast";
 import Button from "primevue/button";
 import Checkbox from "primevue/checkbox";
@@ -405,7 +405,7 @@ function load(page?: number): void {
 		per_page: perPage.value,
 	})
 		.then((response) => {
-			if (paginationMode.value === "infinite" && page === undefined) {
+			if (paginationMode.value === "infinite" && page !== undefined && page > 1) {
 				albums.value = [...albums.value, ...response.data.data];
 			} else {
 				albums.value = response.data.data;
@@ -414,7 +414,7 @@ function load(page?: number): void {
 			currentPage.value = response.data.current_page;
 		})
 		.catch(() => {
-			toast.add({ severity: "error", summary: "Error", detail: "bulk_album_edit.error_load", life: 3000 });
+			toast.add({ severity: "error", summary: trans("toasts.error"), detail: trans("bulk_album_edit.error_load"), life: 3000 });
 		})
 		.finally(() => {
 			loading.value = false;
@@ -460,11 +460,11 @@ function selectAllMatching(): void {
 			response.data.ids.forEach((id) => newIds.add(id));
 			selectedIds.value = Array.from(newIds);
 			if (response.data.capped) {
-				toast.add({ severity: "warn", summary: "Warning", detail: "bulk_album_edit.cap_warning", life: 5000 });
+				toast.add({ severity: "warn", summary: "Warning", detail: trans("bulk_album_edit.cap_warning"), life: 5000 });
 			}
 		})
 		.catch(() => {
-			toast.add({ severity: "error", summary: "Error", detail: "bulk_album_edit.error_load", life: 3000 });
+			toast.add({ severity: "error", summary: trans("toasts.error"), detail: trans("bulk_album_edit.error_load"), life: 3000 });
 		});
 }
 
@@ -488,7 +488,7 @@ function saveTitle(album: BulkAlbumResource): void {
 	album.title = newTitle;
 	AlbumService.rename(album.id, newTitle).catch(() => {
 		album.title = originalTitle;
-		toast.add({ severity: "error", summary: "Error", detail: "bulk_album_edit.error_patch", life: 3000 });
+		toast.add({ severity: "error", summary: trans("toasts.error"), detail: trans("bulk_album_edit.error_patch"), life: 3000 });
 	});
 }
 
@@ -544,7 +544,7 @@ function onInlineToggle(
 	album[field] = value;
 	BulkAlbumEditService.patchAlbums({ album_ids: [albumId], [field]: value }).catch(() => {
 		album[field] = originalValue;
-		toast.add({ severity: "error", summary: "Error", detail: "bulk_album_edit.error_patch", life: 3000 });
+		toast.add({ severity: "error", summary: trans("toasts.error"), detail: trans("bulk_album_edit.error_patch"), life: 3000 });
 	});
 }
 
@@ -561,7 +561,7 @@ function onInlineSortingChange(
 	album[field] = value;
 	BulkAlbumEditService.patchAlbums({ album_ids: [albumId], [field]: value }).catch(() => {
 		album[field] = originalValue;
-		toast.add({ severity: "error", summary: "Error", detail: "bulk_album_edit.error_patch", life: 3000 });
+		toast.add({ severity: "error", summary: trans("toasts.error"), detail: trans("bulk_album_edit.error_patch"), life: 3000 });
 	});
 }
 
