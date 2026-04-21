@@ -13,14 +13,10 @@ use App\Actions\Album\Delete;
 use App\Actions\Album\Transfer;
 use App\Actions\Search\Strategies\Album\AlbumFieldLikeStrategy;
 use App\DTO\Search\SearchToken;
-use App\Enum\AspectRatioType;
 use App\Enum\ColumnSortingAlbumType;
 use App\Enum\ColumnSortingPhotoType;
 use App\Enum\LicenseType;
 use App\Enum\OrderSortingType;
-use App\Enum\PhotoLayoutType;
-use App\Enum\TimelineAlbumGranularity;
-use App\Enum\TimelinePhotoGranularity;
 use App\Http\Requests\Admin\BulkAlbumEdit\DeleteBulkAlbumRequest;
 use App\Http\Requests\Admin\BulkAlbumEdit\IdsBulkAlbumRequest;
 use App\Http\Requests\Admin\BulkAlbumEdit\IndexBulkAlbumRequest;
@@ -30,7 +26,6 @@ use App\Http\Resources\Admin\BulkAlbumIdsResource;
 use App\Http\Resources\Admin\BulkAlbumResource;
 use App\Http\Resources\Admin\PaginatedBulkAlbumResource;
 use App\Models\Album;
-use Carbon\Carbon;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 
@@ -54,49 +49,16 @@ class BulkAlbumController extends Controller
 		$per_page = (int) $request->validated('per_page', 50);
 		$page = (int) $request->validated('page', 1);
 
-		$query = DB::table('albums')
-			->join('base_albums', 'base_albums.id', '=', 'albums.id')
-			->join('users', 'users.id', '=', 'base_albums.owner_id')
-			->leftJoin('access_permissions as ap', function ($join): void {
-				$join->on('ap.base_album_id', '=', 'base_albums.id')
-					->whereNull('ap.user_id')
-					->whereNull('ap.user_group_id');
-			})
-			->select([
-				'albums.id',
-				'base_albums.title',
-				'base_albums.owner_id',
-				DB::raw('COALESCE(users.display_name, users.username) as owner_name'),
-				'base_albums.description',
-				'base_albums.copyright',
-				'albums.license',
-				'base_albums.photo_layout',
-				'base_albums.sorting_col as photo_sorting_col',
-				'base_albums.sorting_order as photo_sorting_order',
-				'albums.album_sorting_col',
-				'albums.album_sorting_order',
-				'albums.album_thumb_aspect_ratio',
-				'albums.album_timeline',
-				'base_albums.photo_timeline',
-				'base_albums.is_nsfw',
-				'albums._lft',
-				'albums._rgt',
-				'base_albums.created_at',
-				// Visibility from public access_permissions row
-				DB::raw('CASE WHEN ap.id IS NOT NULL THEN 1 ELSE 0 END as is_public'),
-				DB::raw('COALESCE(ap.is_link_required, 0) as is_link_required'),
-				DB::raw('COALESCE(ap.grants_full_photo_access, 0) as grants_full_photo_access'),
-				DB::raw('COALESCE(ap.grants_download, 0) as grants_download'),
-				DB::raw('COALESCE(ap.grants_upload, 0) as grants_upload'),
-			])
-			->orderBy('albums._lft', 'asc');
+		$query = Album::query()->without(
+			['cover', 'cover.size_variants', 'min_privilege_cover', 'min_privilege_cover.size_variants', 'max_privilege_cover', 'max_privilege_cover.size_variants', 'thumb']
+		)->orderBy('albums._lft', 'asc');
 
 		if ($search !== null && $search !== '') {
 			$strategy = new AlbumFieldLikeStrategy('title');
 			$strategy->apply($query, new SearchToken(null, null, null, value: $search, is_prefix: false));
 		}
 
-		/** @var \Illuminate\Pagination\LengthAwarePaginator<int,object> $paginated */
+		/** @var \Illuminate\Pagination\LengthAwarePaginator<int,Album> $paginated */
 		$paginated = $query->paginate(perPage: $per_page, page: $page);
 
 		$resource_collection = $paginated->getCollection()->map(fn ($row) => $this->rowToResource($row));
@@ -191,35 +153,35 @@ class BulkAlbumController extends Controller
 	/**
 	 * Map a raw DB row object to a BulkAlbumResource.
 	 *
-	 * @param object $row
+	 * @param Album $row
 	 */
-	private function rowToResource(object $row): BulkAlbumResource
+	private function rowToResource(Album $row): BulkAlbumResource
 	{
 		return new BulkAlbumResource(
 			id: $row->id,
 			title: $row->title,
-			owner_id: (int) $row->owner_id,
-			owner_name: $row->owner_name,
+			owner_id: $row->owner_id,
+			owner_name: $row->owner->name,
 			description: $row->description,
 			copyright: $row->copyright,
-			license: LicenseType::tryFrom($row->license ?? '') ?? LicenseType::NONE,
-			photo_layout: PhotoLayoutType::tryFrom($row->photo_layout ?? ''),
-			photo_sorting_col: ColumnSortingPhotoType::tryFrom($row->photo_sorting_col ?? ''),
-			photo_sorting_order: OrderSortingType::tryFrom($row->photo_sorting_order ?? ''),
-			album_sorting_col: ColumnSortingAlbumType::tryFrom($row->album_sorting_col ?? ''),
-			album_sorting_order: OrderSortingType::tryFrom($row->album_sorting_order ?? ''),
-			album_thumb_aspect_ratio: AspectRatioType::tryFrom($row->album_thumb_aspect_ratio ?? ''),
-			album_timeline: TimelineAlbumGranularity::tryFrom($row->album_timeline ?? ''),
-			photo_timeline: TimelinePhotoGranularity::tryFrom($row->photo_timeline ?? ''),
-			is_nsfw: boolval($row->is_nsfw),
-			_lft: (int) $row->_lft,
-			_rgt: (int) $row->_rgt,
-			is_public: boolval($row->is_public),
-			is_link_required: boolval($row->is_link_required),
-			grants_full_photo_access: boolval($row->grants_full_photo_access),
-			grants_download: boolval($row->grants_download),
-			grants_upload: boolval($row->grants_upload),
-			created_at: Carbon::parse($row->created_at),
+			license: $row->license ?? LicenseType::NONE,
+			photo_layout: $row->photo_layout,
+			photo_sorting_col: ColumnSortingPhotoType::tryFrom($row->sorting_col),
+			photo_sorting_order: OrderSortingType::tryFrom($row->sorting_order),
+			album_sorting_col: ColumnSortingAlbumType::tryFrom($row->album_sorting_col),
+			album_sorting_order: OrderSortingType::tryFrom($row->album_sorting_order),
+			album_thumb_aspect_ratio: $row->album_thumb_aspect_ratio,
+			album_timeline: $row->album_timeline,
+			photo_timeline: $row->photo_timeline,
+			is_nsfw: $row->is_nsfw,
+			_lft: $row->_lft,
+			_rgt: $row->_rgt,
+			is_public: $row->public_permissions() !== null,
+			is_link_required: $row->public_permissions()?->is_link_required === true,
+			grants_full_photo_access: $row->public_permissions()?->grants_full_photo_access === true,
+			grants_download: $row->public_permissions()?->grants_download === true,
+			grants_upload: $row->public_permissions()?->grants_upload === true,
+			created_at: $row->created_at,
 		);
 	}
 }
