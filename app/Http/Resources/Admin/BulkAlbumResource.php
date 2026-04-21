@@ -48,7 +48,7 @@ class BulkAlbumResource extends Data
 	public bool $is_nsfw;
 	public int $_lft;
 	public int $_rgt;
-	// Visibility / protection policy fields (null when album is not public)
+	// Visibility / protection policy fields (false when album has no public access_permissions row)
 	public bool $is_public;
 	public bool $is_link_required;
 	public bool $grants_full_photo_access;

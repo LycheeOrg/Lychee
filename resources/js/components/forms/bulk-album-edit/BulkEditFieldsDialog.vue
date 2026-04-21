@@ -104,7 +104,12 @@
 
 						<div class="grid grid-cols-2 gap-3">
 							<div v-for="field in visibleBoolFields" :key="field.key" class="flex items-center gap-2">
-								<Checkbox v-model="editEnabled[field.key]" :binary="true" class="shrink-0" />
+								<Checkbox
+									v-model="editEnabled[field.key]"
+									:binary="true"
+									class="shrink-0"
+									:disabled="field.seOnly === true && !is_se_enabled"
+								/>
 								<label class="text-sm flex-1" :class="field.red ? 'text-red-500' : ''">{{
 									$t("bulk_album_edit." + field.label)
 								}}</label>
@@ -156,12 +161,13 @@ import {
 	photoSortingColumnsOptions,
 	albumSortingColumnsOptions,
 	sortingOrdersOptions,
-	aspectRationOptions,
+	aspectRatioOptions,
 	timelinePhotoGranularityOptions,
 	timelineAlbumGranularityOptions,
 } from "@/config/constants";
 import FloatLabel from "primevue/floatlabel";
 import { useLycheeStateStore } from "@/stores/LycheeState";
+import { trans } from "laravel-vue-i18n";
 
 const props = defineProps<{
 	albumIds: string[];
@@ -190,7 +196,7 @@ const textFields = [
 const enumFields = [
 	{ key: "license", label: "field_license", options: licenseOptions },
 	{ key: "photo_layout", label: "field_photo_layout", options: photoLayoutOptions },
-	{ key: "album_thumb_aspect_ratio", label: "field_album_thumb_aspect_ratio", options: aspectRationOptions },
+	{ key: "album_thumb_aspect_ratio", label: "field_album_thumb_aspect_ratio", options: aspectRatioOptions },
 	{ key: "album_timeline", label: "field_album_timeline", options: timelineAlbumGranularityOptions },
 	{ key: "photo_timeline", label: "field_photo_timeline", options: timelinePhotoGranularityOptions },
 ];
@@ -292,12 +298,12 @@ function doEditFields(): void {
 
 	BulkAlbumEditService.patchAlbums(payload as Parameters<typeof BulkAlbumEditService.patchAlbums>[0])
 		.then(() => {
-			toast.add({ severity: "success", summary: "OK", detail: "bulk_album_edit.success_patch", life: 3000 });
+			toast.add({ severity: "success", summary: trans("toasts.success"), detail: trans("bulk_album_edit.success_patch"), life: 3000 });
 			visible.value = false;
 			emits("patched");
 		})
 		.catch(() => {
-			toast.add({ severity: "error", summary: "Error", detail: "bulk_album_edit.error_patch", life: 3000 });
+			toast.add({ severity: "error", summary: trans("toasts.error"), detail: trans("bulk_album_edit.error_patch"), life: 3000 });
 		});
 }
 </script>

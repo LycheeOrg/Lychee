@@ -30,7 +30,7 @@ class SetOwnerBulkAlbumRequest extends BaseApiRequest
 	public function rules(): array
 	{
 		return [
-			'album_ids' => ['required', 'array', 'min:1'],
+			'album_ids' => ['required', 'array', 'min:1', 'max:1000'],
 			'album_ids.*' => ['required', 'string'],
 			'owner_id' => ['required', 'integer', 'exists:users,id'],
 		];

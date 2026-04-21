@@ -582,6 +582,8 @@ function togglePaginationMode(): void {
 			intersectionObserver.disconnect();
 			intersectionObserver = null;
 		}
+		albums.value = [];
+		load(1);
 	}
 }
 

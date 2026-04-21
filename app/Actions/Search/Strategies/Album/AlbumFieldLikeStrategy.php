@@ -11,6 +11,7 @@ namespace App\Actions\Search\Strategies\Album;
 use App\Contracts\Search\AlbumSearchTokenStrategy;
 use App\DTO\Search\SearchToken;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 
 /**
  * Handles `title:` and `description:` tokens in album searches.
@@ -30,7 +31,7 @@ class AlbumFieldLikeStrategy implements AlbumSearchTokenStrategy
 	{
 	}
 
-	public function apply(Builder $query, SearchToken $token): void
+	public function apply(Builder|QueryBuilder $query, SearchToken $token): void
 	{
 		$escaped = $this->escapeLike($token->value);
 		$pattern = $token->is_prefix ? $escaped . '%' : '%' . $escaped . '%';

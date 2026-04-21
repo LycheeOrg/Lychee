@@ -11,6 +11,8 @@ namespace App\Http\Controllers\Admin;
 use App\Actions\Admin\BulkEditAlbumsAction;
 use App\Actions\Album\Delete;
 use App\Actions\Album\Transfer;
+use App\Actions\Search\Strategies\Album\AlbumFieldLikeStrategy;
+use App\DTO\Search\SearchToken;
 use App\Enum\AspectRatioType;
 use App\Enum\ColumnSortingAlbumType;
 use App\Enum\ColumnSortingPhotoType;
@@ -90,7 +92,8 @@ class BulkAlbumController extends Controller
 			->orderBy('albums._lft', 'asc');
 
 		if ($search !== null && $search !== '') {
-			$query->where('base_albums.title', 'like', '%' . $search . '%');
+			$strategy = new AlbumFieldLikeStrategy('title');
+			$strategy->apply($query, new SearchToken(null, null, null, value: $search, is_prefix: false));
 		}
 
 		/** @var \Illuminate\Pagination\LengthAwarePaginator<int,object> $paginated */
@@ -123,7 +126,8 @@ class BulkAlbumController extends Controller
 			->select('albums.id');
 
 		if ($search !== null && $search !== '') {
-			$query->where('base_albums.title', 'like', '%' . $search . '%');
+			$strategy = new AlbumFieldLikeStrategy('title');
+			$strategy->apply($query, new SearchToken(null, null, null, value: $search, is_prefix: false));
 		}
 
 		$results = $query->pluck('id')->all();
