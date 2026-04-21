@@ -31,6 +31,7 @@ const PurchasablesList = () => import("@/views/webshop/PurchasablesList.vue");
 const Contact = () => import("@/views/Contact.vue");
 const ContactMessages = () => import("@/views/ContactMessages.vue");
 const Webhooks = () => import("@/views/Webhooks.vue");
+const BulkAlbumEdit = () => import("@/views/BulkAlbumEdit.vue");
 const Moderation = () => import("@/views/Moderation.vue");
 const BasketList = () => import("@/views/webshop/BasketList.vue");
 const CheckoutPage = () => import("@/views/webshop/CheckoutPage.vue");
@@ -205,6 +206,11 @@ const routes_ = [
 		name: "webhooks",
 		path: "/webhooks",
 		component: Webhooks,
+	},
+	{
+		name: "bulk-album-edit",
+		path: "/bulk-album-edit",
+		component: BulkAlbumEdit,
 	},
 	{
 		name: "moderation",

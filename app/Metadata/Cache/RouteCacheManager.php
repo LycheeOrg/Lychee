@@ -107,6 +107,9 @@ final readonly class RouteCacheManager
 			'api/v2/Webhook' => false,
 			'api/v2/Webhook/{webhook}' => false,
 
+			'api/v2/BulkAlbumEdit' => false,
+			'api/v2/BulkAlbumEdit::ids' => false,
+
 			// Ideally we should cache the search results, unfortunately it is not clear how to handle the pagination and the parts of the query.
 			// Furthermore the result of the serach depends of the user. Making the caching strategy more complex.
 			// TODO: how to support pagination ?? new RouteCacheConfig(tag: CacheTag::GALLERY, user_dependant: true, extra: ['album_id', 'terms']),
