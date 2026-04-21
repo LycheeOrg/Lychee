@@ -55,7 +55,18 @@ class BulkAlbumController extends Controller
 
 		if ($search !== null && $search !== '') {
 			$strategy = new AlbumFieldLikeStrategy('title');
-			$strategy->apply($query, new SearchToken(null, null, null, value: $search, is_prefix: false));
+			$strategy->apply(
+				$query->joinSub(
+					// We do a sub-select on the title to avoid selecting the other columns.
+					// Otherwise the propagation of attributes from the Album model to the base_albums
+					// is not applied and the cast is not applied on created_at.
+					DB::table('base_albums')->select(['id', 'title']),
+					'base_albums',
+					'base_albums.id',
+					'=',
+					'albums.id'),
+				new SearchToken(null, null, null, value: $search, is_prefix: false)
+			);
 		}
 
 		/** @var \Illuminate\Pagination\LengthAwarePaginator<int,Album> $paginated */
