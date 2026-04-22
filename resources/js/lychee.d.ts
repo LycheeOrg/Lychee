@@ -890,6 +890,17 @@ declare namespace App.Http.Resources.Models {
 		created_at: string;
 		updated_at: string;
 	};
+	export type AdminStatsResource = {
+		photos_count: number;
+		albums_count: number;
+		users_count: number;
+		storage_bytes: number;
+		queued_jobs: number;
+		failed_jobs_24h: number;
+		last_successful_job_at: string | null;
+		cached_at: string;
+		errors: string[];
+	};
 }
 declare namespace App.Http.Resources.Models.Duplicates {
 	export type Duplicate = {

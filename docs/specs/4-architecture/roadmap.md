@@ -6,7 +6,6 @@ High-level planning document for Lychee features and architectural initiatives.
 
 | Feature ID | Name | Status | Priority | Assignee | Started | Updated | Progress |
 |------------|------|--------|----------|----------|---------|---------|----------|
-| 037 | Admin Dashboard & `/admin/` URL Reorg | Ready for Implementation | P2 | LycheeOrg | 2026-04-22 | 2026-04-22 | Spec, plan, tasks complete. 30 tasks across 7 increments (I1 config migration, I2 AdminStatsService + cache, I3 REST endpoint + Feature_v2 tests, I4 router/view relocation, I5 AdminDashboard.vue + tiles + Refresh, I6 left-menu branch + 22-locale parity, I7 OpenAPI + knowledge map + quality gates). All 8 open questions resolved (Q-037-01…Q-037-08). Ready to begin T-037-01. |
 
 ## Paused Features
 
@@ -18,6 +17,7 @@ High-level planning document for Lychee features and architectural initiatives.
 
 | Feature ID | Name | Completed | Notes |
 |------------|------|-----------|-------|
+| 037 | Admin Dashboard & `/admin/` URL Reorg | 2026-04-22 | Config migration (`use_admin_dashboard` toggle), `AdminStatsService` with 5-min cache, `GET /api/v2/Admin/Stats` endpoint, 9 admin views relocated to `views/admin/`, `AdminDashboard.vue` tile grid + stats panel + Refresh, left-menu collapse toggle, 22-locale i18n, 13 backend tests passing, TypeScript/PHPStan clean. |
 | 034 | Bulk Album Edit | 2026-04-12 | Spec, plan, tasks drafted. 25 tasks across 11 increments (I1 backend scaffold, I2-I6 REST endpoints, I7-I10 frontend, I11 quality gates). 4 open questions (Q-034-01 to Q-034-04; 1 high, 2 medium, 1 low). Ready to begin T-034-01 once Q-034-03 resolved. |
 | 032 | Security Advisories Check | 2026-04-06 | Spec, plan, tasks drafted. 18 tasks across 6 increments (I1 config/DTO, I2 fetch service, I3 diagnostic pipe, I4 REST endpoint, I5 frontend modal, I6 quality gates). All open questions resolved in spec. Ready to begin T-032-01. |
 | 030 | AI Vision Service | 2026-03-15 | Spec, plan, tasks drafted. 43 tasks across 19 increments (I1–I3 Python service, I4–I12 PHP backend, I13–I18 frontend, I19 docs). Q-030-01 through Q-030-12 resolved. 13 new open questions (Q-030-13 through Q-030-25) — 6 high, 7 medium. I1–I3 can start; I8 blocked on Q-030-13; I10 blocked on Q-030-14, Q-030-15, Q-030-17. |
@@ -110,4 +110,4 @@ features/
 
 ---
 
-*Last updated: 2026-04-22 (Feature 037 plan + tasks authored)*
+*Last updated: 2026-04-22 (Feature 037 completed — Admin Dashboard & `/admin/` URL Reorg)*
