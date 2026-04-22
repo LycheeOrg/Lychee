@@ -351,8 +351,12 @@ export const useAlbumStore = defineStore("album-store", {
 		async _searchPhotoInPages(photoId: string, startPage: number, requestedAlbumId: string): Promise<void> {
 			const photosState = usePhotosStore();
 
+			// Clamp to the actual last page so an out-of-range `?page=N` doesn't trigger
+			// a long chain of requests for pages that do not exist.
+			const effectiveStart = Math.min(startPage, this.photos_last_page);
+
 			// Search backward: prepend pages from startPage-1 down to 1
-			for (let p = startPage - 1; p >= 1; p--) {
+			for (let p = effectiveStart - 1; p >= 1; p--) {
 				if (this.albumId !== requestedAlbumId) {
 					return;
 				}
@@ -363,7 +367,7 @@ export const useAlbumStore = defineStore("album-store", {
 			}
 
 			// Search forward: append pages from startPage+1 up to photos_last_page
-			for (let p = startPage + 1; p <= this.photos_last_page; p++) {
+			for (let p = effectiveStart + 1; p <= this.photos_last_page; p++) {
 				if (this.albumId !== requestedAlbumId) {
 					return;
 				}
