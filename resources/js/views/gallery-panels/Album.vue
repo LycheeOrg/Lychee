@@ -234,7 +234,7 @@ function getStartPage(): number {
 
 async function load() {
 	const startPage = getStartPage();
-	await Promise.allSettled([layoutStore.load(), lycheeStore.load(), userStore.load(), albumStore.load(startPage)]);
+	await Promise.allSettled([layoutStore.load(), lycheeStore.load(), userStore.load(), albumStore.load(startPage, photoId.value)]);
 	catalogStore.albumId = albumId.value;
 	catalogStore.load();
 	orderManagement.load();
