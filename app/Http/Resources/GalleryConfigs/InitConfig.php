@@ -122,6 +122,9 @@ class InitConfig extends Data
 	public bool $is_rating_show_avg_in_album_view_enabled;
 	public VisibilityType $rating_album_view_mode;
 
+	// Embed
+	public bool $is_embed_enabled = true;
+
 	// Homepage
 	public string $default_homepage;
 	public bool $is_timeline_page_enabled = false;
@@ -224,6 +227,9 @@ class InitConfig extends Data
 		$this->rating_photo_view_mode = request()->configs()->getValueAsEnum('rating_photo_view_mode', VisibilityType::class);
 		$this->is_rating_show_avg_in_album_view_enabled = request()->configs()->getValueAsBool('rating_show_avg_in_album_view');
 		$this->rating_album_view_mode = request()->configs()->getValueAsEnum('rating_album_view_mode', VisibilityType::class);
+
+		// Embed
+		$this->is_embed_enabled = request()->configs()->getValueAsBool('is_embed_enabled');
 
 		// Homepage
 		$this->default_homepage = request()->configs()->getValueAsString('home_page_default');

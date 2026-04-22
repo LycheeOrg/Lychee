@@ -35,8 +35,15 @@ export function useLeftMenu(
 	const { user } = storeToRefs(authStore);
 
 	const { initData, left_menu_open } = storeToRefs(LeftMenuStateStore);
-	const { clockwork_url, is_se_enabled, is_se_preview_enabled, is_se_info_hidden, is_favourite_enabled, is_timeline_page_enabled } =
-		storeToRefs(lycheeStore);
+	const {
+		clockwork_url,
+		is_se_enabled,
+		is_se_preview_enabled,
+		is_se_info_hidden,
+		is_favourite_enabled,
+		is_timeline_page_enabled,
+		is_embed_enabled,
+	} = storeToRefs(lycheeStore);
 	const openLycheeAbout = ref(false);
 	const logsEnabled = ref(true);
 
@@ -114,7 +121,7 @@ export function useLeftMenu(
 			{
 				label: "left-menu.embed_stream",
 				icon: "pi pi-code",
-				access: user.value?.id !== null,
+				access: (is_embed_enabled.value ?? true) && user.value?.id !== null,
 				command: () => {
 					const togglableStore = useTogglablesStateStore();
 					togglableStore.embed_code_mode = "stream";
