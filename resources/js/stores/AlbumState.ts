@@ -336,13 +336,60 @@ export const useAlbumStore = defineStore("album-store", {
 		},
 
 		/**
+		 * Search for a photo across pages that have not yet been loaded.
+		 *
+		 * The search first goes backward (prepending pages from startPage-1 down to 1),
+		 * then forward (appending pages from startPage+1 up to photos_last_page), stopping
+		 * as soon as the photo is found.  Each iteration guards against concurrent
+		 * navigation by comparing this.albumId with requestedAlbumId.
+		 *
+		 * @param photoId          - The photo ID to search for
+		 * @param startPage        - The page that was already loaded (search starts around it)
+		 * @param requestedAlbumId - The album ID captured at the start of load(); used to
+		 *                           abort the search when the user navigates away
+		 */
+		async _searchPhotoInPages(photoId: string, startPage: number, requestedAlbumId: string): Promise<void> {
+			const photosState = usePhotosStore();
+
+			// Clamp to the actual last page so an out-of-range `?page=N` doesn't trigger
+			// a long chain of requests for pages that do not exist.
+			const effectiveStart = Math.min(startPage, this.photos_last_page);
+
+			// Search backward: prepend pages from startPage-1 down to 1
+			for (let p = effectiveStart - 1; p >= 1; p--) {
+				if (this.albumId !== requestedAlbumId) {
+					return;
+				}
+				await this.loadPhotos(p, false, true);
+				if (photosState.photos.some((ph) => ph.id === photoId)) {
+					return;
+				}
+			}
+
+			// Search forward: append pages from startPage+1 up to photos_last_page
+			for (let p = effectiveStart + 1; p <= this.photos_last_page; p++) {
+				if (this.albumId !== requestedAlbumId) {
+					return;
+				}
+				await this.loadPhotos(p, true, false);
+				if (photosState.photos.some((ph) => ph.id === photoId)) {
+					return;
+				}
+			}
+		},
+
+		/**
 		 * Load the album metadata and first batch of photos.
 		 *
 		 * @param startPage - The page to load first. When provided (>1), that page is loaded
 		 *                    immediately so a directly linked photo can be displayed, then
 		 *                    pages 1…startPage-1 are loaded in the background (prepended).
+		 * @param photoId   - Optional photo ID expected on this page. When given and not
+		 *                    found in startPage, other pages are searched sequentially
+		 *                    (backward then forward) before giving up and showing the album.
+		 *                    The ?page=N query parameter is treated as a hint, not a guarantee.
 		 */
-		async load(startPage: number = 1): Promise<void> {
+		async load(startPage: number = 1, photoId?: string): Promise<void> {
 			const togglableState = useTogglablesStateStore();
 			const photosState = usePhotosStore();
 			const albumsStore = useAlbumsStore();
@@ -396,17 +443,29 @@ export const useAlbumStore = defineStore("album-store", {
 						this.smartAlbum = data.data.resource as App.Http.Resources.Models.HeadSmartAlbumResource;
 					}
 
+					// When a specific photo is expected but was not found in the initial page,
+					// search other pages sequentially (backward then forward).  This is run
+					// concurrently with album loading so the album header appears quickly.
+					const photoFoundInInitialPage = photoId !== undefined && photosState.photos.some((p) => p.id === photoId);
+					if (photoId !== undefined && !photoFoundInInitialPage) {
+						loader.push(this._searchPhotoInPages(photoId, resolvedStart, requestedAlbumId));
+					}
+
 					await Promise.all(loader);
 
 					// Fire off background loading of immediately preceding pages (prepend).
+					// Only done when we are NOT searching (the sequential search already covers
+					// those pages, and running both would load them twice).
 					// Capped at the 5 most-recent previous pages to avoid issuing too many
 					// concurrent requests when jumping to a high page number (e.g. page 50).
 					// These are intentionally NOT awaited so the photo panel can render
 					// while earlier pages stream in, without blocking albumStore.load().
-					const backgroundPagesLimit = 5;
-					const firstBackgroundPage = Math.max(1, resolvedStart - backgroundPagesLimit);
-					for (let p = resolvedStart - 1; p >= firstBackgroundPage; p--) {
-						void this.loadPhotos(p, false, true);
+					if (photoId === undefined || photoFoundInInitialPage) {
+						const backgroundPagesLimit = 5;
+						const firstBackgroundPage = Math.max(1, resolvedStart - backgroundPagesLimit);
+						for (let p = resolvedStart - 1; p >= firstBackgroundPage; p--) {
+							void this.loadPhotos(p, false, true);
+						}
 					}
 				})
 				.catch((error) => {
