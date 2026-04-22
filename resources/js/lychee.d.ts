@@ -521,6 +521,7 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		is_album_enhanced_display_enabled: boolean;
 		album_header_size: App.Enum.AlbumHeaderSize;
 		is_album_header_landing_title_enabled: boolean;
+		use_admin_dashboard: boolean;
 	};
 	export type LandingPageResource = {
 		landing_page_enable: boolean;
