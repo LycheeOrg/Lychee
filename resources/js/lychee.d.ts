@@ -521,6 +521,7 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		is_album_enhanced_display_enabled: boolean;
 		album_header_size: App.Enum.AlbumHeaderSize;
 		is_album_header_landing_title_enabled: boolean;
+		use_admin_dashboard: boolean;
 	};
 	export type LandingPageResource = {
 		landing_page_enable: boolean;
@@ -888,6 +889,17 @@ declare namespace App.Http.Resources.Models {
 		size_variant_types: Array<number> | null;
 		created_at: string;
 		updated_at: string;
+	};
+	export type AdminStatsResource = {
+		photos_count: number;
+		albums_count: number;
+		users_count: number;
+		storage_bytes: number;
+		queued_jobs: number;
+		failed_jobs_24h: number;
+		last_successful_job_at: string | null;
+		cached_at: string;
+		errors: string[];
 	};
 }
 declare namespace App.Http.Resources.Models.Duplicates {

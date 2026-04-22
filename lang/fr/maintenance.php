@@ -1,102 +1,103 @@
 <?php
+
 return [
-    /*
-    |--------------------------------------------------------------------------
-    | Update Page
-    |--------------------------------------------------------------------------
-    */
-    'title' => 'Maintenance',
-    'description' => 'Sur cette page, vous trouverez toutes les actions nécessaires pour que votre installation de Lychee fonctionne de manière fluide et efficace.',
-    'cleaning' => [
-        'title' => 'Nettoyage de %s',
-        'result' => '%s supprimé.',
-        'description' => 'Supprimer tout le contenu de <span class="font-mono">%s</span>',
-        'button' => 'Nettoyer',
-    ],
-    'duplicate-finder' => [
-        'title' => 'Doublons',
-        'description' => 'Ce module recense les doublons potentiels entre les photos.',
-        'duplicates-all' => 'Doublons sur tous les albums',
-        'duplicates-title' => 'Doublons de titre par album',
-        'duplicates-per-album' => 'Doublons par album',
-        'show' => 'Afficher les doublons',
-        'load' => 'Compter les doublons',
-    ],
-    'fix-jobs' => [
-        'title' => 'Correction de l’historique des tâches',
-        'description' => 'Marquer les tâches avec le statut <span class="text-ready-400">%s</span> ou <span class="text-primary-500">%s</span> comme <span class="text-danger-700">%s</span>.',
-        'button' => 'Corriger l’historique',
-    ],
-    'gen-sizevariants' => [
-        'title' => 'Manquants : %s',
-        'description' => '%d %s pouvant être générés ont été trouvés.',
-        'button' => 'Générer !',
-        'success' => '%d %s générés avec succès.',
-    ],
-    'fill-filesize-sizevariants' => [
-        'title' => 'Tailles de fichiers manquantes',
-        'description' => '%d variantes de petite taille sans information de taille de fichier ont été trouvées.',
-        'button' => 'Récupérer les données !',
-        'success' => 'Taille des fichiers calculée avec succès pour %d variantes.',
-    ],
-    'fix-tree' => [
-        'title' => 'Statistiques de l’arborescence',
-        'Oddness' => 'Anomalies',
-        'Duplicates' => 'Doublons',
-        'Wrong parents' => 'Parents incorrects',
-        'Missing parents' => 'Parents manquants',
-        'button' => 'Corriger l’arborescence',
-    ],
-    'optimize' => [
-        'title' => 'Optimiser la base de données',
-        'description' => 'Si vous constatez un ralentissement de votre installation, cela peut venir d’un manque d’index dans votre base de données.',
-        'button' => 'Optimiser la base',
-    ],
-    'update' => [
-        'title' => 'Mises à jour',
-        'check-button' => 'Vérifier les mises à jour',
-        'update-button' => 'Mettre à jour',
-        'no-pending-updates' => 'Aucune mise à jour en attente.',
-    ],
-    'missing-palettes' => [
-        'title' => 'Palettes manquantes',
-        'description' => '%d palettes manquantes trouvées.',
-        'button' => 'Créer les palettes manquantes',
-    ],
-    'statistics-check' => [
-        'title' => 'Check de l’intégrité des Statistiques',
-        'missing_photos' => '%d statistiques de photos manquantes.',
-        'missing_albums' => '%d statistiques d’albums manquantes.',
-        'button' => 'Créer les statistiques manquantes',
-    ],
-    'flush-cache' => [
-        'title' => 'Vider le cache',
-        'description' => 'Vider le cache de tous les utilisateurs pour résoudre les problèmes d’invalidation.',
-        'button' => 'Vider',
-    ],
-    'old-orders' => [
-        'title' => 'Old Orders',
-        'description' => 'Found %d old orders.<br/><br/>An old order is older than 14 days, that have no associated user and are either still pending payment or have no items in them.',
-        'button' => 'Delete old orders',
-    ],
-    'fulfill-orders' => [
-        'title' => 'Orders to fulfill',
-        'description' => 'Found %d orders with content that has not been made available.<br/><br/>Click on the button to assign content when possible.',
-        'button' => 'Fulfill orders',
-    ],
-    'fulfill-precompute' => [
-        'title' => 'Album Precomputed Fields',
-        'description' => 'Found %d albums with missing precomputed fields.<br/><br/>Equivalent to running: php artisan lychee:recompute-album-fields',
-        'button' => 'Compute fields',
-    ],
-    'flush-queue' => [
-        'title' => 'Flush Queue',
-        'description' => 'Found %d pending jobs in the queue.<br/><br/>CAUTION: Clearing the queue will permanently delete all pending jobs. This cannot be undone.',
-        'button' => 'Clear queue',
-    ],
-    'backfill-album-sizes' => [
-        'title' => 'Album Size Statistics',
-        'description' => 'Found %d albums without size statistics.<br/><br/>Equivalent to running: php artisan lychee:recompute-album-sizes',
-        'button' => 'Compute sizes',
-    ],
+	/*
+	|--------------------------------------------------------------------------
+	| Update Page
+	|--------------------------------------------------------------------------
+	*/
+	'title' => 'Maintenance',
+	'description' => 'Sur cette page, vous trouverez toutes les actions nécessaires pour que votre installation de Lychee fonctionne de manière fluide et efficace.',
+	'cleaning' => [
+		'title' => 'Nettoyage de %s',
+		'result' => '%s supprimé.',
+		'description' => 'Supprimer tout le contenu de <span class="font-mono">%s</span>',
+		'button' => 'Nettoyer',
+	],
+	'duplicate-finder' => [
+		'title' => 'Doublons',
+		'description' => 'Ce module recense les doublons potentiels entre les photos.',
+		'duplicates-all' => 'Doublons sur tous les albums',
+		'duplicates-title' => 'Doublons de titre par album',
+		'duplicates-per-album' => 'Doublons par album',
+		'show' => 'Afficher les doublons',
+		'load' => 'Compter les doublons',
+	],
+	'fix-jobs' => [
+		'title' => 'Correction de l’historique des tâches',
+		'description' => 'Marquer les tâches avec le statut <span class="text-ready-400">%s</span> ou <span class="text-primary-500">%s</span> comme <span class="text-danger-700">%s</span>.',
+		'button' => 'Corriger l’historique',
+	],
+	'gen-sizevariants' => [
+		'title' => 'Manquants : %s',
+		'description' => '%d %s pouvant être générés ont été trouvés.',
+		'button' => 'Générer !',
+		'success' => '%d %s générés avec succès.',
+	],
+	'fill-filesize-sizevariants' => [
+		'title' => 'Tailles de fichiers manquantes',
+		'description' => '%d variantes de petite taille sans information de taille de fichier ont été trouvées.',
+		'button' => 'Récupérer les données !',
+		'success' => 'Taille des fichiers calculée avec succès pour %d variantes.',
+	],
+	'fix-tree' => [
+		'title' => 'Statistiques de l’arborescence',
+		'Oddness' => 'Anomalies',
+		'Duplicates' => 'Doublons',
+		'Wrong parents' => 'Parents incorrects',
+		'Missing parents' => 'Parents manquants',
+		'button' => 'Corriger l’arborescence',
+	],
+	'optimize' => [
+		'title' => 'Optimiser la base de données',
+		'description' => 'Si vous constatez un ralentissement de votre installation, cela peut venir d’un manque d’index dans votre base de données.',
+		'button' => 'Optimiser la base',
+	],
+	'update' => [
+		'title' => 'Mises à jour',
+		'check-button' => 'Vérifier les mises à jour',
+		'update-button' => 'Mettre à jour',
+		'no-pending-updates' => 'Aucune mise à jour en attente.',
+	],
+	'missing-palettes' => [
+		'title' => 'Palettes manquantes',
+		'description' => '%d palettes manquantes trouvées.',
+		'button' => 'Créer les palettes manquantes',
+	],
+	'statistics-check' => [
+		'title' => 'Check de l’intégrité des Statistiques',
+		'missing_photos' => '%d statistiques de photos manquantes.',
+		'missing_albums' => '%d statistiques d’albums manquantes.',
+		'button' => 'Créer les statistiques manquantes',
+	],
+	'flush-cache' => [
+		'title' => 'Vider le cache',
+		'description' => 'Vider le cache de tous les utilisateurs pour résoudre les problèmes d’invalidation.',
+		'button' => 'Vider',
+	],
+	'old-orders' => [
+		'title' => 'Old Orders',
+		'description' => 'Found %d old orders.<br/><br/>An old order is older than 14 days, that have no associated user and are either still pending payment or have no items in them.',
+		'button' => 'Delete old orders',
+	],
+	'fulfill-orders' => [
+		'title' => 'Orders to fulfill',
+		'description' => 'Found %d orders with content that has not been made available.<br/><br/>Click on the button to assign content when possible.',
+		'button' => 'Fulfill orders',
+	],
+	'fulfill-precompute' => [
+		'title' => 'Album Precomputed Fields',
+		'description' => 'Found %d albums with missing precomputed fields.<br/><br/>Equivalent to running: php artisan lychee:recompute-album-fields',
+		'button' => 'Compute fields',
+	],
+	'flush-queue' => [
+		'title' => 'Flush Queue',
+		'description' => 'Found %d pending jobs in the queue.<br/><br/>CAUTION: Clearing the queue will permanently delete all pending jobs. This cannot be undone.',
+		'button' => 'Clear queue',
+	],
+	'backfill-album-sizes' => [
+		'title' => 'Album Size Statistics',
+		'description' => 'Found %d albums without size statistics.<br/><br/>Equivalent to running: php artisan lychee:recompute-album-sizes',
+		'button' => 'Compute sizes',
+	],
 ];
