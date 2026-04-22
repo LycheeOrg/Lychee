@@ -60,6 +60,8 @@ use Kalnoy\Nestedset\NodeTrait;
  * @property string|null              $auto_cover_id_least_privilege Automatically selected cover photo ID (most restrictive view).
  * @property Photo|null               $min_privilege_cover
  * @property LicenseType              $license
+ * @property string|null              $album_sorting_col
+ * @property string|null              $album_sorting_order
  * @property string|null              $cover_id
  * @property Photo|null               $cover
  * @property string|null              $header_id

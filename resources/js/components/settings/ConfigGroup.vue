@@ -70,7 +70,7 @@
 					<SelectOptionsField
 						v-else-if="config.key === 'default_album_thumb_aspect_ratio'"
 						:config="config"
-						:options="aspectRationOptions"
+						:options="aspectRatioOptions"
 						:mapper="SelectBuilders.buildAspectRatio"
 						@filled="filled"
 						@reset="reset"
@@ -175,7 +175,7 @@ import {
 	albumSortingColumnsOptions,
 	sortingOrdersOptions,
 	licenseOptions,
-	aspectRationOptions,
+	aspectRatioOptions,
 	SelectBuilders,
 	photoLayoutOptions,
 	defaultAlbumProtectionOptions,

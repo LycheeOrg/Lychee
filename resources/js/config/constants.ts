@@ -34,7 +34,7 @@ export const albumSortingColumnsOptions: SelectOption<App.Enum.ColumnSortingAlbu
 	{ value: "max_taken_at", label: "gallery.sort.album_select_5" },
 ];
 
-export const aspectRationOptions: SelectOption<App.Enum.AspectRatioType>[] = [
+export const aspectRatioOptions: SelectOption<App.Enum.AspectRatioType>[] = [
 	{ value: "5/4", label: "aspect_ratio.5by4" },
 	{ value: "3/2", label: "aspect_ratio.3by2" },
 	{ value: "1/1", label: "aspect_ratio.1by1" },
@@ -298,7 +298,7 @@ export const SelectBuilders = {
 	},
 
 	buildAspectRatio(value: string | App.Enum.AspectRatioType | undefined): SelectOption<App.Enum.AspectRatioType> | undefined {
-		return aspectRationOptions.find((option) => option.value === value) || undefined;
+		return aspectRatioOptions.find((option) => option.value === value) || undefined;
 	},
 
 	buildLicense(value: string | App.Enum.LicenseType | undefined): SelectOption<App.Enum.LicenseType> | undefined {

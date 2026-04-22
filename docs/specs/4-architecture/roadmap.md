@@ -7,9 +7,6 @@ High-level planning document for Lychee features and architectural initiatives.
 | Feature ID | Name | Status | Priority | Assignee | Started | Updated | Progress |
 |------------|------|--------|----------|----------|---------|---------|----------|
 | 037 | Admin Dashboard & `/admin/` URL Reorg | Ready for Implementation | P2 | LycheeOrg | 2026-04-22 | 2026-04-22 | Spec, plan, tasks complete. 30 tasks across 7 increments (I1 config migration, I2 AdminStatsService + cache, I3 REST endpoint + Feature_v2 tests, I4 router/view relocation, I5 AdminDashboard.vue + tiles + Refresh, I6 left-menu branch + 22-locale parity, I7 OpenAPI + knowledge map + quality gates). All 8 open questions resolved (Q-037-01…Q-037-08). Ready to begin T-037-01. |
-| 032 | Security Advisories Check | Planning | P0 | LycheeOrg | 2026-04-06 | 2026-04-06 | Spec, plan, tasks drafted. 18 tasks across 6 increments (I1 config/DTO, I2 fetch service, I3 diagnostic pipe, I4 REST endpoint, I5 frontend modal, I6 quality gates). All open questions resolved in spec. Ready to begin T-032-01. |
-| 030 | AI Vision Service | Planning | P1 | LycheeOrg | 2026-03-15 | 2026-03-15 | Spec, plan, tasks drafted. 43 tasks across 19 increments (I1–I3 Python service, I4–I12 PHP backend, I13–I18 frontend, I19 docs). Q-030-01 through Q-030-12 resolved. 13 new open questions (Q-030-13 through Q-030-25) — 6 high, 7 medium. I1–I3 can start; I8 blocked on Q-030-13; I10 blocked on Q-030-14, Q-030-15, Q-030-17. |
-| 026 | Album Photo Tag Filter | Ready for Implementation | P2 | LycheeOrg | 2026-03-09 | 2026-03-09 | Spec, plan, tasks complete. 76 tasks across 9 increments (~32h estimated). All open questions resolved. Ready to begin Task 1.1. |
 
 ## Paused Features
 
@@ -21,8 +18,12 @@ High-level planning document for Lychee features and architectural initiatives.
 
 | Feature ID | Name | Completed | Notes |
 |------------|------|-----------|-------|
+| 034 | Bulk Album Edit | 2026-04-12 | Spec, plan, tasks drafted. 25 tasks across 11 increments (I1 backend scaffold, I2-I6 REST endpoints, I7-I10 frontend, I11 quality gates). 4 open questions (Q-034-01 to Q-034-04; 1 high, 2 medium, 1 low). Ready to begin T-034-01 once Q-034-03 resolved. |
+| 032 | Security Advisories Check | 2026-04-06 | Spec, plan, tasks drafted. 18 tasks across 6 increments (I1 config/DTO, I2 fetch service, I3 diagnostic pipe, I4 REST endpoint, I5 frontend modal, I6 quality gates). All open questions resolved in spec. Ready to begin T-032-01. |
+| 030 | AI Vision Service | 2026-03-15 | Spec, plan, tasks drafted. 43 tasks across 19 increments (I1–I3 Python service, I4–I12 PHP backend, I13–I18 frontend, I19 docs). Q-030-01 through Q-030-12 resolved. 13 new open questions (Q-030-13 through Q-030-25) — 6 high, 7 medium. I1–I3 can start; I8 blocked on Q-030-13; I10 blocked on Q-030-14, Q-030-15, Q-030-17. |
 | 029 | Camera Capture | 2026-03-18 | "Take Photo" in `+` add menu (album and root views). CameraCapture.vue modal: live video → canvas capture → JPEG preview → push to existing UploadPanel queue. Secure-context guard, mobile layout fixes, `Permissions-Policy: camera=(self)` header. No backend changes. |
 | 028 | Search UI Refactor | 2026-05-30 | Full refactor: simple input + collapsible advanced panel (17 fields: title, description, location, tags, date range, type, orientation, rating, EXIF fields). Token assembler/parser composable. No-debounce on-demand search. Auto-scroll to first result. vue-tsc clean, 74 PHP tests passed, PHPStan 0 errors. |
+| 026 | Album Photo Tag Filter | 2026-03-09 | Spec, plan, tasks complete. 76 tasks across 9 increments (~32h estimated). All open questions resolved. Ready to begin Task 1.1. |
 | 025 | Dynamic Landing Background Options | 2026-03-03 | Spec, plan, tasks completed |
 | 024 | CLI Sync File-List Support | 2026-03-03 | `lychee:sync` now accepts individual file paths alongside directories; `Exec::doFiles()` added; `ImportImageJob` accepts nullable Album; 7 new tests. |
 | 023 | Remember Me Login | 2026-03-01 | Spec, plan, tasks drafted. Implementation completed. |
