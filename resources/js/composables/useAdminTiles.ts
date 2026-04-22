@@ -16,6 +16,7 @@ export type AdminTile = {
 	to: string;
 	isExternal: boolean;
 	visible: ComputedRef<boolean>;
+	num?: ComputedRef<number>;
 };
 
 export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: LeftMenuStateStore): AdminTile[] {
@@ -61,6 +62,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			icon: "pi pi-inbox",
 			to: "/admin/contact-messages",
 			isExternal: false,
+			num: computed(() => initData.value?.modules.messages_count ?? 0),
 			visible: computed(
 				() =>
 					(initData.value?.modules.is_contact_enabled ?? false) &&

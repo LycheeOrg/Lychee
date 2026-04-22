@@ -19,7 +19,7 @@ return new class() extends BaseConfigMigration {
 				'value' => '1',
 				'cat' => self::CAT,
 				'type_range' => self::BOOL,
-				'description' => 'Use new admin dashboard and collapsed admin menu',
+				'description' => 'Use admin dashboard instead of links in Left menu',
 				'details' => '',
 				'is_secret' => false,
 				'is_expert' => false,
