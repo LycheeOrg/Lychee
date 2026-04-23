@@ -6,16 +6,16 @@ return [
     | Moderation page
     |--------------------------------------------------------------------------
     */
-    'title' => 'Moderation',
-    'description' => 'Review and approve photos uploaded by users with the "check" trust level before they become publicly visible.',
-    'approve_selected' => 'Approve Selected',
-    'delete_selected' => 'Delete Selected',
-    'selected' => 'selected',
-    'no_pending' => 'No photos are awaiting moderation.',
-    'approved' => 'Photos approved successfully.',
-    'col_thumbnail' => 'Thumbnail',
-    'col_title' => 'Title',
-    'col_owner' => 'Owner',
+    'title' => 'Moderace',
+    'description' => 'Prohlédněte a schválte fotografie nahrané uživateli s úrovní důvěryhodnosti „Kontrola“, než budou zveřejněny.',
+    'approve_selected' => 'Schválit vybrané',
+    'delete_selected' => 'Odstranit vybrané',
+    'selected' => 'vybrané',
+    'no_pending' => 'Žádné fotografie nečekají na moderování.',
+    'approved' => 'Fotografie byly úspěšně schváleny.',
+    'col_thumbnail' => 'Miniatura',
+    'col_title' => 'Název',
+    'col_owner' => 'Vlastník',
     'col_album' => 'Album',
-    'col_uploaded' => 'Uploaded',
+    'col_uploaded' => 'Nahráno',
 ];

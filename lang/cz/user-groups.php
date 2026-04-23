@@ -6,34 +6,33 @@ return [
     | User Groups page
     |--------------------------------------------------------------------------
     */
-    'title' => 'User Groups',
-    'explanation' => 'User groups allow you to organize users and manage permissions collectively.',
+    'title' => 'Uživatelské skupiny',
+    'explanation' => 'Uživatelské skupiny vám umožňují organizovat uživatele a hromadně spravovat oprávnění.',
 
-    'create_group' => 'Create Group',
-    'edit' => 'Edit',
-    'delete' => 'Delete',
+    'create_group' => 'Vytvořit skupinu',
+    'edit' => 'Upravit',
+    'delete' => 'Smazat',
 
-    'loading' => 'Loading groups...',
-    'empty' => 'No groups found.',
+    'loading' => 'Načítání skupin...',
+    'empty' => 'Nenalezeny žádné skupiny.',
 
-    'add_member' => 'Add member...',
-    'empty_group' => 'This group is empty.',
-    'no_permission_members' => 'You do not have the permission to see the members of this group.',
-    'remove_success' => '%s has been removed from %s.',
+    'add_member' => 'Pridat člena...',
+    'empty_group' => 'Tato skupina je prázdná.',
+    'no_permission_members' => 'Nemáte oprávnění vidět členy této skupiny',
+    'remove_success' => '%s byl odstraněn ze skupiny %s.',
 
-    'confirm_delete_header' => 'Delete Group',
-    'confirm_delete_message' => 'Are you sure you want to delete this group?',
-    'cancel' => 'Cancel',
-    'confirm' => 'Delete',
+    'confirm_delete_header' => 'Smazat skupinu',
+    'confirm_delete_message' => 'Opravdu chcete smazat tuto skupinu?',
+    'cancel' => 'Zrušit',
+    'confirm' => 'Smazat',
 
     'create' => [
-        'name' => 'Group Name',
-        'description' => 'Description',
-        'users' => 'Users',
-        'cancel' => 'Cancel',
-        'create' => 'Create',
-        'edit' => 'Edit',
-
-        'error_name_required' => 'Group name is required.',
+        'name' => 'Jméno skupiny',
+        'description' => 'Popis',
+        'users' => 'Uživatelé',
+        'cancel' => 'Zrušit',
+        'create' => 'Vytvořit',
+        'edit' => 'Upravit',
+        'error_name_required' => 'Jméno skupiny je povinné.',
     ],
 ];

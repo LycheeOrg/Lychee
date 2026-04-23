@@ -7,7 +7,7 @@ return [
     |--------------------------------------------------------------------------
     */
     'error' => 'Chyba',
-    'success' => 'Success',
-    'album_updated' => 'Album updated',
-    'update_failed' => 'Failed to update album',
+    'success' => 'Úspěch',
+    'album_updated' => 'Album aktualizováno',
+    'update_failed' => 'Nepovedlo se aktualizovat Alba',
 ];
