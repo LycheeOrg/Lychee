@@ -1,5 +1,4 @@
 <?php
-
 return [
     /*
     |--------------------------------------------------------------------------
@@ -11,13 +10,13 @@ return [
     'pinned_albums' => 'Festede album',
     'albums' => 'Album',
     'root' => 'Album',
-    'set_focus' => 'Set Focus',
-    'set_header_focus' => 'Set Header Focus',
-    'done' => 'Done',
-    'cancel' => 'Cancel',
+    'set_focus' => 'Sett fokus',
+    'set_header_focus' => 'Angi fokus for overskrift',
+    'done' => 'Ferdig',
+    'cancel' => 'Avbryt',
     'tabs' => [
-        'my_albums' => 'My Albums',
-        'shared_with_me' => 'Shared with Me',
+        'my_albums' => 'Mine album',
+        'shared_with_me' => 'Delt med meg',
     ],
     'favourites' => 'Favoritter',
     'raw' => 'RAW',
