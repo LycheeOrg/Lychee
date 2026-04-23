@@ -179,7 +179,8 @@ const albumStore = useAlbumStore();
 const albumsStore = useAlbumsStore();
 const photosStore = usePhotosStore();
 
-const { is_se_enabled, is_se_preview_enabled, are_nsfw_visible, is_slideshow_enabled, album_header_size } = storeToRefs(lycheeStore);
+const { is_se_enabled, is_se_preview_enabled, are_nsfw_visible, is_slideshow_enabled, album_header_size, is_embed_enabled } =
+	storeToRefs(lycheeStore);
 
 function toggleAlbumView(mode: "grid" | "list") {
 	lycheeStore.album_view_mode = mode;
@@ -224,6 +225,10 @@ const emits = defineEmits<{
 // Check if album is embeddable (public, no password, no link requirement)
 // and if user is logged in
 const isEmbeddable = computed(() => {
+	// Respect the global embed enabled setting
+	if (!is_embed_enabled.value) {
+		return false;
+	}
 	// Only show embed button to logged-in users
 	if (!userStore.isLoggedIn) {
 		return false;

@@ -54,6 +54,10 @@ class EmbedController extends Controller
 	 */
 	public function getAlbum(EmbededRequest $request): EmbedAlbumResource
 	{
+		if (!$request->configs()->getValueAsBool('is_embed_enabled')) {
+			throw new NotFoundHttpException();
+		}
+
 		/** @var Album $album */
 		$album = $request->album() ?? throw new LycheeLogicException('Album should be set in EmbededRequest');
 
@@ -84,6 +88,10 @@ class EmbedController extends Controller
 	 */
 	public function getPublicStream(EmbededRequest $request): EmbedStreamResource
 	{
+		if (!$request->configs()->getValueAsBool('is_embed_enabled')) {
+			throw new NotFoundHttpException();
+		}
+
 		$photos = $this->findPublicPhotos($request->limit ?? 100, $request->offset, $request->sort ?? 'desc', $request->authors);
 
 		// Get site title from configuration
