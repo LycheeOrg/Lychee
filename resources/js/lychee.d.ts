@@ -509,6 +509,7 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		rating_album_view_mode: App.Enum.VisibilityType;
 		default_homepage: string;
 		is_timeline_page_enabled: boolean;
+		is_embed_enabled: boolean;
 		is_contact_form_enabled: boolean;
 		photos_pagination_mode: App.Enum.PaginationMode;
 		albums_pagination_mode: App.Enum.PaginationMode;
