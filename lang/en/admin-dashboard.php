@@ -10,6 +10,11 @@ return [
 	'title' => 'Admin Dashboard',
 	'overview' => 'Overview',
 	'tools' => 'Tools',
+	'tool_groups' => [
+		'core' => 'Admin',
+		'monitoring' => 'Monitoring',
+		'extensions' => 'Extensions',
+	],
 	'refresh' => 'Refresh',
 	'metrics' => [
 		'photos_count' => 'Photos',
@@ -27,6 +32,9 @@ return [
 		'title' => 'Security Advisories',
 		'description' => 'The following vulnerabilities affect your current Lychee version. Please update as soon as possible.',
 		'no_cvss' => '(no CVSS score)',
-		'go_to_diagnostics' => 'Go to Diagnostics',
+	],
+	'update' => [
+		'title' => 'Update Status',
+		'update_available' => 'A newer version is available (current: :current, latest: :latest).',
 	],
 ];

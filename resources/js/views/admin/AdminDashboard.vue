@@ -20,8 +20,26 @@
 	</Toolbar>
 
 	<div class="admin-dashboard max-w-7xl mx-auto p-4">
+		<!-- Update Status (only for full admins) -->
+		<Panel v-if="initData?.settings.can_edit && updateStatus?.enabled && updateStatus?.has_update" class="mb-4 border-none">
+			<template #header>
+				<div class="flex items-center gap-2 font-bold text-primary-500">
+					<i class="pi pi-arrow-circle-up text-lg" />
+					<span>{{ $t("admin-dashboard.update.title") }}</span>
+				</div>
+			</template>
+			<p class="text-sm text-muted-color">
+				{{
+					$t("admin-dashboard.update.update_available", {
+						current: updateStatus.current_version ?? "?",
+						latest: updateStatus.latest_version ?? "?",
+					})
+				}}
+			</p>
+		</Panel>
+
 		<!-- Security Advisories (only for full admins, shown when vulnerabilities are found) -->
-		<Panel v-if="initData?.settings.can_edit && advisories.length > 0" class="mb-8 border-none">
+		<Panel v-if="initData?.settings.can_edit && advisories.length > 0" class="mb-4 border-none">
 			<template #header>
 				<div class="flex items-center gap-2 text-orange-400 font-bold">
 					<i class="pi pi-exclamation-triangle text-lg" />
@@ -51,7 +69,7 @@
 		</Panel>
 
 		<!-- Stats Overview (only for full admins with settings.can_edit) -->
-		<Panel v-if="initData?.settings.can_edit" class="mb-8 border-none">
+		<Panel v-if="initData?.settings.can_edit" class="mb-4 border-none">
 			<template #header>
 				<h2 class="text-xl font-semibold">{{ $t("admin-dashboard.overview") }}</h2>
 			</template>
@@ -98,33 +116,37 @@
 			<template #header>
 				<h2 class="text-xl font-semibold">{{ $t("admin-dashboard.tools") }}</h2>
 			</template>
-			<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-				<template v-for="tile in tiles" :key="tile.key">
-					<component
-						:is="tile.isExternal ? 'a' : RouterLink"
-						v-if="tile.visible.value"
-						:to="tile.isExternal ? undefined : tile.to"
-						:href="tile.isExternal ? tile.to : undefined"
-						:target="tile.isExternal ? '_blank' : undefined"
-						class="bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700 rounded p-4 text-center flex flex-col items-center gap-2 cursor-pointer no-underline text-color"
-						tabindex="0"
-						@keydown.enter="navigateTile(tile)"
-						@keydown.space.prevent="navigateTile(tile)"
-					>
-						<OverlayBadge v-if="tile.num && tile.num.value > 0" severity="primary" :pt:badge:class="' outline-0'">
-							<PiMiniIcon :icon="tile.icon" class="w-6 h-6 text-2xl fill-surface-0" />
-						</OverlayBadge>
-						<PiMiniIcon v-else :icon="tile.icon" class="w-6 h-6 text-2xl fill-surface-0" />
-						<span class="text-sm">{{ $t(tile.label) }}</span>
-					</component>
-				</template>
+			<div class="flex flex-col gap-6">
+				<div v-for="section in tileSections" :key="section.key" v-show="section.tiles.length > 0">
+					<h3 class="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-color">{{ $t(section.label) }}</h3>
+					<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+						<template v-for="tile in section.tiles" :key="tile.key">
+							<component
+								:is="tile.isExternal ? 'a' : RouterLink"
+								:to="tile.isExternal ? undefined : tile.to"
+								:href="tile.isExternal ? tile.to : undefined"
+								:target="tile.isExternal ? '_blank' : undefined"
+								class="bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700 rounded p-4 text-center flex flex-col items-center gap-2 cursor-pointer no-underline text-color"
+								tabindex="0"
+								@keydown.enter="navigateTile(tile)"
+								@keydown.space.prevent="navigateTile(tile)"
+							>
+								<OverlayBadge v-if="tile.num && tile.num.value > 0" severity="primary" :pt:badge:class="' outline-0'">
+									<PiMiniIcon :icon="tile.icon" class="w-6 h-6 text-2xl fill-surface-0" />
+								</OverlayBadge>
+								<PiMiniIcon v-else :icon="tile.icon" class="w-6 h-6 text-2xl fill-surface-0" />
+								<span class="text-sm">{{ $t(tile.label) }}</span>
+							</component>
+						</template>
+					</div>
+				</div>
 			</div>
 		</Panel>
 	</div>
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import OverlayBadge from "primevue/overlaybadge";
 import { RouterLink, useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
@@ -139,8 +161,8 @@ import PiMiniIcon from "@/components/icons/PiMiniIcon.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
 import SecurityAdvisoriesService from "@/services/security-advisories-service";
-import AdminStatsService from "@/services/admin-stats-service";
-import { useAdminTiles, type AdminTile } from "@/composables/useAdminTiles";
+import AdminStatsService, { type AdminUpdateStatusResource } from "@/services/admin-stats-service";
+import { useAdminTiles, type AdminTile, type AdminTileGroup } from "@/composables/useAdminTiles";
 
 const lycheeStore = useLycheeStateStore();
 const leftMenuStore = useLeftMenuStateStore();
@@ -151,8 +173,25 @@ const { initData } = storeToRefs(leftMenuStore);
 const stats = ref<App.Http.Resources.Models.AdminStatsResource | null>(null);
 const isLoading = ref(false);
 const advisories = ref<App.Http.Resources.Models.SecurityAdvisoryResource[]>([]);
+const updateStatus = ref<AdminUpdateStatusResource | null>(null);
 
 const tiles: AdminTile[] = useAdminTiles(lycheeStore, leftMenuStore);
+
+const tileGroupLabelMap: Record<AdminTileGroup, string> = {
+	core: "admin-dashboard.tool_groups.core",
+	monitoring: "admin-dashboard.tool_groups.monitoring",
+	extensions: "admin-dashboard.tool_groups.extensions",
+};
+
+const tileSections = computed(() => {
+	const orderedGroups: AdminTileGroup[] = ["core", "monitoring", "extensions"];
+
+	return orderedGroups.map((group) => ({
+		key: group,
+		label: tileGroupLabelMap[group],
+		tiles: tiles.filter((tile) => tile.group === group && tile.visible.value),
+	}));
+});
 
 function loadStats() {
 	isLoading.value = true;
@@ -210,9 +249,20 @@ function loadAdvisories() {
 		});
 }
 
+function loadUpdateStatus() {
+	AdminStatsService.getUpdateStatus()
+		.then((response) => {
+			updateStatus.value = response.data;
+		})
+		.catch(() => {
+			// Network errors: silently ignore.
+		});
+}
+
 onMounted(() => {
 	if (initData.value?.settings.can_edit) {
 		loadStats();
+		loadUpdateStatus();
 		loadAdvisories();
 	}
 });

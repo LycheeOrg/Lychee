@@ -66,4 +66,20 @@ class CheckUpdate
 		}
 		// @codeCoverageIgnoreEnd
 	}
+
+	/**
+	 * Return the latest known release version from the remote update feed.
+	 */
+	public function getLatestVersion(): ?string
+	{
+		return $this->file_version->remote_version?->toString();
+	}
+
+	/**
+	 * Return the current installed file version.
+	 */
+	public function getCurrentVersion(): string
+	{
+		return $this->file_version->getVersion()->toString();
+	}
 }

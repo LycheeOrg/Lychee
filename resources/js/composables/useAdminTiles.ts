@@ -9,8 +9,11 @@ import { storeToRefs } from "pinia";
 import { type LeftMenuStateStore } from "@/stores/LeftMenuState";
 import { type LycheeStateStore } from "@/stores/LycheeState";
 
+export type AdminTileGroup = "core" | "monitoring" | "extensions";
+
 export type AdminTile = {
 	key: string;
+	group: AdminTileGroup;
 	label: string;
 	icon: string;
 	to: string;
@@ -26,6 +29,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 	return [
 		{
 			key: "settings",
+			group: "core",
 			label: "settings.title",
 			icon: "cog",
 			to: "/admin/settings",
@@ -33,7 +37,17 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			visible: computed(() => initData.value?.settings.can_edit ?? false),
 		},
 		{
+			key: "diagnostics",
+			group: "monitoring",
+			label: "diagnostics.title",
+			icon: "wrench",
+			to: "/diagnostics",
+			isExternal: false,
+			visible: computed(() => initData.value?.settings.can_see_diagnostics ?? false),
+		},
+		{
 			key: "users",
+			group: "core",
 			label: "users.title",
 			icon: "pi pi-user",
 			to: "/admin/users",
@@ -42,6 +56,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 		},
 		{
 			key: "user-groups",
+			group: "core",
 			label: "user-groups.title",
 			icon: "pi pi-users",
 			to: "/admin/user-groups",
@@ -50,6 +65,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 		},
 		{
 			key: "purchasables",
+			group: "extensions",
 			label: "Purchasables",
 			icon: "pi pi-shopping-bag",
 			to: "/admin/purchasables",
@@ -58,6 +74,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 		},
 		{
 			key: "contact-messages",
+			group: "extensions",
 			label: "left-menu.messages",
 			icon: "pi pi-inbox",
 			to: "/admin/contact-messages",
@@ -75,6 +92,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 		},
 		{
 			key: "webhooks",
+			group: "extensions",
 			label: "left-menu.webhooks",
 			icon: "pi pi-send",
 			to: "/admin/webhooks",
@@ -83,6 +101,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 		},
 		{
 			key: "moderation",
+			group: "core",
 			label: "moderation.title",
 			icon: "pi pi-shield",
 			to: "/admin/moderation",
@@ -98,6 +117,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 		},
 		{
 			key: "maintenance",
+			group: "core",
 			label: "maintenance.title",
 			icon: "timer",
 			to: "/admin/maintenance",
@@ -106,22 +126,17 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 		},
 		{
 			key: "jobs",
+			group: "monitoring",
 			label: "left-menu.jobs",
 			icon: "project",
 			to: "/admin/jobs",
 			isExternal: false,
 			visible: computed(() => initData.value?.settings.can_see_logs ?? false),
 		},
-		{
-			key: "diagnostics",
-			label: "diagnostics.title",
-			icon: "wrench",
-			to: "/diagnostics",
-			isExternal: false,
-			visible: computed(() => initData.value?.settings.can_see_diagnostics ?? false),
-		},
+
 		{
 			key: "logs",
+			group: "monitoring",
 			label: "left-menu.logs",
 			icon: "excerpt",
 			to: "/Logs",
@@ -130,6 +145,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 		},
 		{
 			key: "clockwork",
+			group: "monitoring",
 			label: "left-menu.clockwork",
 			icon: "telescope",
 			to: clockwork_url.value ?? "",

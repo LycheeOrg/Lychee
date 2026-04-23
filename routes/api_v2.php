@@ -249,6 +249,7 @@ Route::delete('/Oauth', [OauthController::class, 'clear']);
  * DIAGNOSTICS.
  */
 Route::get('/Admin/Stats', [Admin\AdminDashboardController::class, 'stats']);
+Route::get('/Admin/UpdateStatus', [Admin\AdminUpdateStatusController::class, 'show']);
 Route::get('/Diagnostics', [Admin\DiagnosticsController::class, 'errors']);
 Route::get('/Diagnostics::info', [Admin\DiagnosticsController::class, 'info']);
 Route::get('/Diagnostics::space', [Admin\DiagnosticsController::class, 'space']);
