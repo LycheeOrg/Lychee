@@ -11,7 +11,7 @@ const AdminStatsService = {
 	getStats(force: boolean = false): Promise<AxiosResponse<App.Http.Resources.Models.AdminStatsResource>> {
 		return axios.get(`${Constants.getApiUrl()}Admin/Stats`, {
 			params: { force: force ? 1 : undefined },
-			data: {}
+			data: {},
 		});
 	},
 };

@@ -27,7 +27,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 		{
 			key: "settings",
 			label: "settings.title",
-			icon: "pi pi-cog",
+			icon: "cog",
 			to: "/admin/settings",
 			isExternal: false,
 			visible: computed(() => initData.value?.settings.can_edit ?? false),
@@ -99,7 +99,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 		{
 			key: "maintenance",
 			label: "maintenance.title",
-			icon: "pi pi-wrench",
+			icon: "timer",
 			to: "/admin/maintenance",
 			isExternal: false,
 			visible: computed(() => initData.value?.settings.can_edit ?? false),
@@ -107,7 +107,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 		{
 			key: "jobs",
 			label: "left-menu.jobs",
-			icon: "pi pi-briefcase",
+			icon: "project",
 			to: "/admin/jobs",
 			isExternal: false,
 			visible: computed(() => initData.value?.settings.can_see_logs ?? false),
@@ -115,7 +115,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 		{
 			key: "diagnostics",
 			label: "diagnostics.title",
-			icon: "pi pi-wrench",
+			icon: "wrench",
 			to: "/diagnostics",
 			isExternal: false,
 			visible: computed(() => initData.value?.settings.can_see_diagnostics ?? false),
@@ -123,7 +123,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 		{
 			key: "logs",
 			label: "left-menu.logs",
-			icon: "pi pi-file-edit",
+			icon: "excerpt",
 			to: "/Logs",
 			isExternal: true,
 			visible: computed(() => initData.value?.settings.can_see_logs ?? false),
@@ -131,7 +131,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 		{
 			key: "clockwork",
 			label: "left-menu.clockwork",
-			icon: "pi pi-clock",
+			icon: "telescope",
 			to: clockwork_url.value ?? "",
 			isExternal: true,
 			visible: computed(() => clockwork_url.value !== null && (initData.value?.settings.can_access_dev_tools ?? false)),

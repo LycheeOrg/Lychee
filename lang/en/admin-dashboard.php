@@ -23,4 +23,10 @@ return [
 	'errors' => [
 		'partial' => 'Some metrics could not be loaded.',
 	],
+	'security' => [
+		'title' => 'Security Advisories',
+		'description' => 'The following vulnerabilities affect your current Lychee version. Please update as soon as possible.',
+		'no_cvss' => '(no CVSS score)',
+		'go_to_diagnostics' => 'Go to Diagnostics',
+	],
 ];
