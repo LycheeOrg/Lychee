@@ -1,25 +1,23 @@
 <?php
-
 return [
-    /*
+    'documentation' => [
+        /*
     |--------------------------------------------------------------------------
     | All Settings
     |--------------------------------------------------------------------------
     */
-
-    'documentation' => [
-        'version' => 'Current version of Lychee',
-        'check_for_updates' => 'Automatically check for new updates',
-        'sorting_photos_col' => 'Default column used for sorting photos',
-        'sorting_photos_order' => 'Default order used for sorting photos',
-        'sorting_albums_col' => 'Default column used for sorting albums',
-        'sorting_albums_order' => 'Default order used for sorting albums',
-        'photos_star_visibility' => 'Who can see and set the star flag on a photo',
-        'imagick' => 'Enable imagick processing',
-        'dropbox_key' => 'Dropbox API key',
-        'skip_duplicates' => 'Skip duplicate if found on import',
-        'lang' => 'Language used by Lychee',
-        'default_license' => 'Default license used for albums',
+        'version' => 'Nåværende versjon av Lychee',
+        'check_for_updates' => 'Sjekk automatisk etter nye oppdateringer',
+        'sorting_photos_col' => 'Standardkolonne for sortering av bilder',
+        'sorting_photos_order' => 'Standardrekkefølge for sortering av bilder',
+        'sorting_albums_col' => 'Standardkolonne for sortering av album',
+        'sorting_albums_order' => 'Standardrekkefølge for sortering av album',
+        'photos_star_visibility' => 'Hvem kan se og sette stjerneflagget på et bilde',
+        'imagick' => 'Aktiver bildebehandling',
+        'dropbox_key' => 'Dropbox API-nøkkel',
+        'skip_duplicates' => 'Hopp over duplikat hvis det blir funnet ved import',
+        'lang' => 'Språk brukt av Lychee',
+        'default_license' => 'Standardlisens brukt for album',
         'small_max_width' => 'Maximum width for small thumbs (album view)',
         'small_max_height' => 'Maximum height for small thumbs (album view)',
         'medium_max_width' => 'Maximum width for medium image (photo view)',
@@ -687,7 +685,6 @@ return [
         'album_header_size' => 'Configuration of the size of the header image in album view.',
         'album_header_landing_title_enabled' => 'Display the landing title at the bottom of the Album header. You can configure the landing title in the Landing page module.',
     ],
-
     'category_name' => [
         'config' => 'Basics',
         'lychee SE' => 'Lychee SE',
@@ -716,7 +713,6 @@ return [
         'Mod Rating' => 'Photo star rating',
         'Mod Webshop' => 'Webshop',
     ],
-
     'category_description' => [
         'config' => '',
         'lychee SE' => 'Unlock the full capabilities of Lychee with the <a href="https://lycheeorg.dev/get-supporter-edition/" class="text-primary-500 font-bold underline">Supporter Edition</a>. Get exclusive features and support the development of Lychee. Sponsor LycheeOrg on GitHub and get your License key <a href="https://github.com/sponsors/LycheeOrg" class="text-primary-500 font-bold underline">here</a>.',
