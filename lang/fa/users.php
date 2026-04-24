@@ -1,50 +1,50 @@
 <?php
 
 return [
-	/*
-	|--------------------------------------------------------------------------
-	| صفحه کاربران
-	|--------------------------------------------------------------------------
-	*/
-	'title' => 'کاربران',
-	'description' => 'در اینجا می‌توانید کاربران نسخه نصب شده Lychee خود را مدیریت کنید. می‌توانید کاربران را ایجاد، ویرایش و حذف کنید.',
-	'create' => 'ایجاد کاربر جدید',
-	'username' => 'نام کاربری',
-	'password' => 'رمزعبور',
-	'legend' => 'راهنما',
-	'upload_rights' => 'در صورت انتخاب، کاربر می‌تواند محتوا بارگذاری کند.',
-	'edit_rights' => 'در صورت انتخاب، کاربر می‌تواند پروفایل خود (نام کاربری، رمزعبور) را ویرایش کند.',
-	'upload_trust_level' => 'Upload trust level — controls whether uploads are immediately public.',
+    /*
+    |--------------------------------------------------------------------------
+    | صفحه کاربران
+    |--------------------------------------------------------------------------
+    */
+    'title' => 'کاربران',
+    'description' => 'در اینجا می‌توانید کاربران نسخه نصب شده Lychee خود را مدیریت کنید. می‌توانید کاربران را ایجاد، ویرایش و حذف کنید.',
+    'create' => 'ایجاد کاربر جدید',
+    'username' => 'نام کاربری',
+    'password' => 'رمزعبور',
+    'legend' => 'راهنما',
+    'upload_rights' => 'در صورت انتخاب، کاربر می‌تواند محتوا بارگذاری کند.',
+    'edit_rights' => 'در صورت انتخاب، کاربر می‌تواند پروفایل خود (نام کاربری، رمزعبور) را ویرایش کند.',
+    'upload_trust_level' => 'Upload trust level — controls whether uploads are immediately public.',
 
-	'quota' => 'در صورت تنظیم، کاربر دارای سهمیه فضا برای تصاویر (بر حسب کیلوبایت) است.',
-	'user_deleted' => 'کاربر حذف شد',
-	'user_created' => 'کاربر ایجاد شد',
-	'user_updated' => 'کاربر به‌روزرسانی شد',
-	'change_saved' => 'تغییر ذخیره شد!',
-	'create_edit' => [
-		'upload_rights' => 'کاربر می‌تواند محتوا بارگذاری کند.',
-		'edit_rights' => 'کاربر می‌تواند پروفایل خود (نام کاربری، رمزعبور) را ویرایش کند.',
-		'admin_rights' => 'كاربر داراي حقوق ادمين است',
-		'upload_trust_level' => 'Upload trust level',
-		'upload_trust_level_check' => 'Check – uploads require admin approval before becoming public.',
-		'upload_trust_level_monitor' => 'Monitor – upload are publics unless flagged for content.',
-		'upload_trust_level_trusted' => 'Trusted – uploads are immediately public.',
+    'quota' => 'در صورت تنظیم، کاربر دارای سهمیه فضا برای تصاویر (بر حسب کیلوبایت) است.',
+    'user_deleted' => 'کاربر حذف شد',
+    'user_created' => 'کاربر ایجاد شد',
+    'user_updated' => 'کاربر به‌روزرسانی شد',
+    'change_saved' => 'تغییر ذخیره شد!',
+    'create_edit' => [
+        'upload_rights' => 'کاربر می‌تواند محتوا بارگذاری کند.',
+        'edit_rights' => 'کاربر می‌تواند پروفایل خود (نام کاربری، رمزعبور) را ویرایش کند.',
+        'admin_rights' => 'كاربر داراي حقوق ادمين است',
+        'upload_trust_level' => 'Upload trust level',
+        'upload_trust_level_check' => 'Check – uploads require admin approval before becoming public.',
+        'upload_trust_level_monitor' => 'Monitor – upload are publics unless flagged for content.',
+        'upload_trust_level_trusted' => 'Trusted – uploads are immediately public.',
 
-		'quota' => 'کاربر دارای محدودیت سهمیه است.',
-		'quota_kb' => 'سهمیه بر حسب کیلو بایت(سهمیه پیش فرض 0 است)',
-		'note' => 'یادداشت مدیر (قابل مشاهده برای عموم نیست)',
-		'create' => 'ایجاد',
-		'edit' => 'ویرایش',
-	],
-	'invite' => [
-		'button' => 'Invite user',
-		'links_are_not_revokable' => 'Invitation links are not revokable.',
-		'link_is_valid_x_days' => 'This link is valid for %d days.',
-	],
-	'line' => [
-		'owner' => 'مالك',
-		'admin' => 'کاربر مدیر',
-		'edit' => 'ویرایش',
-		'delete' => 'حذف',
-	],
+        'quota' => 'کاربر دارای محدودیت سهمیه است.',
+        'quota_kb' => 'سهمیه بر حسب کیلو بایت(سهمیه پیش فرض 0 است)',
+        'note' => 'یادداشت مدیر (قابل مشاهده برای عموم نیست)',
+        'create' => 'ایجاد',
+        'edit' => 'ویرایش',
+    ],
+    'invite' => [
+        'button' => 'Invite user',
+        'links_are_not_revokable' => 'Invitation links are not revokable.',
+        'link_is_valid_x_days' => 'This link is valid for %d days.',
+    ],
+    'line' => [
+        'owner' => 'مالك',
+        'admin' => 'کاربر مدیر',
+        'edit' => 'ویرایش',
+        'delete' => 'حذف',
+    ],
 ];

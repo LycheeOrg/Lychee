@@ -1,103 +1,103 @@
 <?php
 
 return [
-	/*
-	|--------------------------------------------------------------------------
-	| Update Page
-	|--------------------------------------------------------------------------
-	*/
-	'title' => 'Обслуживание',
-	'description' => 'На этой странице вы найдете все необходимые действия для поддержания вашей установки Lychee в рабочем и исправном состоянии.',
-	'cleaning' => [
-		'title' => 'Очистка %s',
-		'result' => '%s удалено.',
-		'description' => 'Удалить все содержимое из <span class="font-mono">%s</span>',
-		'button' => 'Очистить',
-	],
-	'duplicate-finder' => [
-		'title' => 'Дубликаты',
-		'description' => 'Этот модуль подсчитывает возможные дубликаты среди изображений.',
-		'duplicates-all' => 'Дубликаты по всем альбомам',
-		'duplicates-title' => 'Дубликаты по заголовкам альбомов',
-		'duplicates-per-album' => 'Дубликаты по альбомам',
-		'show' => 'Показать дубликаты',
-		'load' => 'Load counts',
-	],
-	'fix-jobs' => [
-		'title' => 'Исправление истории задач',
-		'description' => 'Пометить задачи со статусом <span class="text-ready-400">%s</span> или <span class="text-primary-500">%s</span> как <span class="text-danger-700">%s</span>.',
-		'button' => 'Исправить историю задач',
-	],
-	'gen-sizevariants' => [
-		'title' => 'Отсутствуют %s',
-		'description' => 'Найдено %d %s, которые могут быть сгенерированы.',
-		'button' => 'Генерировать!',
-		'success' => 'Успешно сгенерировано %d %s.',
-	],
-	'fill-filesize-sizevariants' => [
-		'title' => 'Отсутствуют размеры файлов',
-		'description' => 'Найдено %d маленьких вариантов без размера файла.',
-		'button' => 'Получить данные!',
-		'success' => 'Успешно вычислены размеры %d маленьких вариантов.',
-	],
-	'fix-tree' => [
-		'title' => 'Статистика дерева',
-		'Oddness' => 'Необычности',
-		'Duplicates' => 'Дубликаты',
-		'Wrong parents' => 'Неверные родители',
-		'Missing parents' => 'Отсутствующие родители',
-		'button' => 'Исправить дерево',
-	],
-	'optimize' => [
-		'title' => 'Оптимизация базы данных',
-		'description' => 'Если вы замечаете замедление работы установки, возможно, это связано с отсутствием необходимых индексов в базе данных.',
-		'button' => 'Оптимизировать базу данных',
-	],
-	'update' => [
-		'title' => 'Обновления',
-		'check-button' => 'Проверить обновления',
-		'update-button' => 'Обновить',
-		'no-pending-updates' => 'Нет ожидающих обновлений.',
-	],
-	'missing-palettes' => [
-		'title' => 'Missing Palettes',
-		'description' => 'Found %d missing palettes.',
-		'button' => 'Create missing',
-	],
-	'statistics-check' => [
-		'title' => 'Statistics integrity Check',
-		'missing_photos' => 'Для %d фото нет статистики.',
-		'missing_albums' => 'Для %d альбомов нет статистики.',
-		'button' => 'Create missing',
-	],
-	'flush-cache' => [
-		'title' => 'Очистить кэш',
-		'description' => 'Очистить кэш каждого пользователя для решения проблем с устаревшими данными.',
-		'button' => 'Очистить',
-	],
-	'old-orders' => [
-		'title' => 'Old Orders',
-		'description' => 'Found %d old orders.<br/><br/>An old order is older than 14 days, that have no associated user and are either still pending payment or have no items in them.',
-		'button' => 'Delete old orders',
-	],
-	'fulfill-orders' => [
-		'title' => 'Orders to fulfill',
-		'description' => 'Found %d orders with content that has not been made available.<br/><br/>Click on the button to assign content when possible.',
-		'button' => 'Fulfill orders',
-	],
-	'fulfill-precompute' => [
-		'title' => 'Album Precomputed Fields',
-		'description' => 'Found %d albums with missing precomputed fields.<br/><br/>Equivalent to running: php artisan lychee:recompute-album-fields',
-		'button' => 'Compute fields',
-	],
-	'flush-queue' => [
-		'title' => 'Flush Queue',
-		'description' => 'Found %d pending jobs in the queue.<br/><br/>CAUTION: Clearing the queue will permanently delete all pending jobs. This cannot be undone.',
-		'button' => 'Clear queue',
-	],
-	'backfill-album-sizes' => [
-		'title' => 'Album Size Statistics',
-		'description' => 'Found %d albums without size statistics.<br/><br/>Equivalent to running: php artisan lychee:recompute-album-sizes',
-		'button' => 'Compute sizes',
-	],
+    /*
+    |--------------------------------------------------------------------------
+    | Update Page
+    |--------------------------------------------------------------------------
+    */
+    'title' => 'Обслуживание',
+    'description' => 'На этой странице вы найдете все необходимые действия для поддержания вашей установки Lychee в рабочем и исправном состоянии.',
+    'cleaning' => [
+        'title' => 'Очистка %s',
+        'result' => '%s удалено.',
+        'description' => 'Удалить все содержимое из <span class="font-mono">%s</span>',
+        'button' => 'Очистить',
+    ],
+    'duplicate-finder' => [
+        'title' => 'Дубликаты',
+        'description' => 'Этот модуль подсчитывает возможные дубликаты среди изображений.',
+        'duplicates-all' => 'Дубликаты по всем альбомам',
+        'duplicates-title' => 'Дубликаты по заголовкам альбомов',
+        'duplicates-per-album' => 'Дубликаты по альбомам',
+        'show' => 'Показать дубликаты',
+        'load' => 'Load counts',
+    ],
+    'fix-jobs' => [
+        'title' => 'Исправление истории задач',
+        'description' => 'Пометить задачи со статусом <span class="text-ready-400">%s</span> или <span class="text-primary-500">%s</span> как <span class="text-danger-700">%s</span>.',
+        'button' => 'Исправить историю задач',
+    ],
+    'gen-sizevariants' => [
+        'title' => 'Отсутствуют %s',
+        'description' => 'Найдено %d %s, которые могут быть сгенерированы.',
+        'button' => 'Генерировать!',
+        'success' => 'Успешно сгенерировано %d %s.',
+    ],
+    'fill-filesize-sizevariants' => [
+        'title' => 'Отсутствуют размеры файлов',
+        'description' => 'Найдено %d маленьких вариантов без размера файла.',
+        'button' => 'Получить данные!',
+        'success' => 'Успешно вычислены размеры %d маленьких вариантов.',
+    ],
+    'fix-tree' => [
+        'title' => 'Статистика дерева',
+        'Oddness' => 'Необычности',
+        'Duplicates' => 'Дубликаты',
+        'Wrong parents' => 'Неверные родители',
+        'Missing parents' => 'Отсутствующие родители',
+        'button' => 'Исправить дерево',
+    ],
+    'optimize' => [
+        'title' => 'Оптимизация базы данных',
+        'description' => 'Если вы замечаете замедление работы установки, возможно, это связано с отсутствием необходимых индексов в базе данных.',
+        'button' => 'Оптимизировать базу данных',
+    ],
+    'update' => [
+        'title' => 'Обновления',
+        'check-button' => 'Проверить обновления',
+        'update-button' => 'Обновить',
+        'no-pending-updates' => 'Нет ожидающих обновлений.',
+    ],
+    'missing-palettes' => [
+        'title' => 'Missing Palettes',
+        'description' => 'Found %d missing palettes.',
+        'button' => 'Create missing',
+    ],
+    'statistics-check' => [
+        'title' => 'Statistics integrity Check',
+        'missing_photos' => 'Для %d фото нет статистики.',
+        'missing_albums' => 'Для %d альбомов нет статистики.',
+        'button' => 'Create missing',
+    ],
+    'flush-cache' => [
+        'title' => 'Очистить кэш',
+        'description' => 'Очистить кэш каждого пользователя для решения проблем с устаревшими данными.',
+        'button' => 'Очистить',
+    ],
+    'old-orders' => [
+        'title' => 'Old Orders',
+        'description' => 'Found %d old orders.<br/><br/>An old order is older than 14 days, that have no associated user and are either still pending payment or have no items in them.',
+        'button' => 'Delete old orders',
+    ],
+    'fulfill-orders' => [
+        'title' => 'Orders to fulfill',
+        'description' => 'Found %d orders with content that has not been made available.<br/><br/>Click on the button to assign content when possible.',
+        'button' => 'Fulfill orders',
+    ],
+    'fulfill-precompute' => [
+        'title' => 'Album Precomputed Fields',
+        'description' => 'Found %d albums with missing precomputed fields.<br/><br/>Equivalent to running: php artisan lychee:recompute-album-fields',
+        'button' => 'Compute fields',
+    ],
+    'flush-queue' => [
+        'title' => 'Flush Queue',
+        'description' => 'Found %d pending jobs in the queue.<br/><br/>CAUTION: Clearing the queue will permanently delete all pending jobs. This cannot be undone.',
+        'button' => 'Clear queue',
+    ],
+    'backfill-album-sizes' => [
+        'title' => 'Album Size Statistics',
+        'description' => 'Found %d albums without size statistics.<br/><br/>Equivalent to running: php artisan lychee:recompute-album-sizes',
+        'button' => 'Compute sizes',
+    ],
 ];
