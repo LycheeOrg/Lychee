@@ -1081,11 +1081,11 @@ Lychee dispatches this call as a fire-and-forget queued job after hard-deleting 
 
 | Component | Choice | Rationale |
 |-----------|--------|-----------|
-| **Language** | Python 3.13+ | Required for InsightFace compatibility and modern type annotation syntax (`type` statements, `X \| Y` unions). |
+| **Language** | Python 3.13+ | Required for DeepFace compatibility and modern type annotation syntax (`type` statements, `X \| Y` unions). |
 | **Package manager** | `uv` | Fast dependency resolution and lockfile support. `pyproject.toml` as single config source. |
 | **Web framework** | FastAPI | Async-capable, auto-generated OpenAPI docs, native Pydantic integration for request/response validation. |
-| **Face detection & recognition** | InsightFace (ONNX Runtime backend) | State-of-the-art accuracy on LFW benchmark (99.8%+); permissive Apache-2.0 license; ONNX Runtime allows CPU-only or GPU-accelerated inference without heavy CUDA build deps. |
-| **Face detection model** | `buffalo_l` (default), configurable via `MODEL_NAME` env var | InsightFace model pack including RetinaFace detector + ArcFace recognition. `buffalo_l` = large/high-accuracy; `buffalo_s` = small/faster alternative. |
+| **Face detection & recognition** | DeepFace (MIT license) | MIT-licensed; supports ArcFace recognition (512-dim embeddings) with RetinaFace detector backend. No Cython build step required. |
+| **Face detection model** | `ArcFace` (default recognition model) + `retinaface` (default detector backend), configurable via `MODEL_NAME` and `DETECTOR_BACKEND` env vars | DeepFace ArcFace delivers the same 512-dim embedding space as InsightFace's ArcFace component. RetinaFace provides high-accuracy face bounding boxes. |
 | **Embedding storage** | SQLite + `sqlite-vec` (default); PostgreSQL + `pgvector` (optional) | SQLite for single-container simplicity; pgvector for production-scale deployments. Configurable via `STORAGE_BACKEND` env var. |
 | **Clustering** | scikit-learn DBSCAN (density-based) | Offline batch operation grouping unassigned faces for the People browse UI. **Not used for per-scan suggestions** — those use NN cosine similarity search via `sqlite-vec`/`pgvector`. Triggered manually via `POST /cluster`. *(Q-030-30 resolved)* |
 | **Image processing** | Pillow (PIL) | Face crop generation (150×150px JPEG). |
@@ -1114,7 +1114,7 @@ ai-vision-service/
 │   │   └── schemas.py          # Pydantic request/response models
 │   ├── detection/
 │   │   ├── __init__.py
-│   │   ├── detector.py         # InsightFace face detection wrapper
+│   │   ├── detector.py         # DeepFace face detection wrapper
 │   │   └── cropper.py          # Face crop generation (150x150 JPEG, base64)
 │   ├── embeddings/
 │   │   ├── __init__.py
@@ -1139,7 +1139,7 @@ ai-vision-service/
 
 #### Concurrency Model *(Q-030-26, Q-030-27 resolved)*
 
-InsightFace inference is synchronous and CPU-bound. The `POST /detect` handler offloads detection to a `ThreadPoolExecutor` via `asyncio.run_in_executor`, keeping the FastAPI event loop responsive while detection runs on a background thread. Pool size is configurable via `VISION_FACE_THREAD_POOL_SIZE` (default `1`).
+DeepFace inference is synchronous and CPU-bound. The `POST /detect` handler offloads detection to a `ThreadPoolExecutor` via `asyncio.run_in_executor`, keeping the FastAPI event loop responsive while detection runs on a background thread. Pool size is configurable via `VISION_FACE_THREAD_POOL_SIZE` (default `1`).
 
 **Structured logging checkpoints** (required at each stage):
 
@@ -1227,7 +1227,8 @@ class AppSettings(BaseSettings):
     lychee_api_url: str
     lychee_api_key: str  # Key Python sends to Lychee callbacks (X-API-Key header)
     api_key: str  # Key Lychee sends to authenticate with this service (X-API-Key header)
-    model_name: str = "buffalo_l"
+    model_name: str = "ArcFace"
+    detector_backend: str = "retinaface"
     detection_threshold: float = 0.5  # Q-030-31: bounding box filter — faces below threshold excluded from callback
     match_threshold: float = 0.5  # Q-030-31: similarity search cutoff for suggestions and selfie matching
     rescan_iou_threshold: float = 0.5  # Q-030-35: IoU threshold for bounding-box matching on re-scan (preserves person_id)
@@ -1294,7 +1295,7 @@ python-version = "3.13"
 
 | Layer | Scope | Tooling | Notes |
 |-------|-------|---------|-------|
-| **Unit** | Detection, cropping, embedding CRUD, clustering, matching | pytest + fixtures with sample images | Mock InsightFace model for fast tests; one slow integration test with real model. |
+| **Unit** | Detection, cropping, embedding CRUD, clustering, matching | pytest + fixtures with sample images | Mock DeepFace model for fast tests; one slow integration test with real model. |
 | **API integration** | Full endpoint flows (detect → callback, match → response, health) | pytest-asyncio + httpx `AsyncClient` | Test against FastAPI `TestClient`; mock external HTTP calls (callback to Lychee). |
 | **Validation** | Pydantic schema enforcement | pytest | Invalid payloads return 422 with structured errors. |
 | **Type checking** | Static analysis | ty (Astral) | Run in CI via `uv run ty check`; zero errors required. |
@@ -1355,21 +1356,27 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 WORKDIR /app
 COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-dev
-# Bake buffalo_l model weights into the image at build time (~300 MB download). (Q-030-32 resolved: Option A)
-# The resulting image is ~1 GB larger but starts instantly and works in airgapped environments.
+# Bake ArcFace + RetinaFace model weights into the image at build time. (Q-030-32 resolved: Option A)
+# The resulting image starts instantly and works in airgapped environments.
 # Model updates require an image rebuild.
-RUN uv run python -c \
-    "from insightface.app import FaceAnalysis; \
-     app = FaceAnalysis(name='buffalo_l', root='/root/.insightface', providers=['CPUExecutionProvider']); \
-     app.prepare(ctx_id=-1); \
-     print('buffalo_l model downloaded.')"
+RUN DEEPFACE_HOME=/root/.deepface uv run python -c \
+    "from deepface import DeepFace; \
+     import numpy as np; \
+     DeepFace.represent( \
+         img_path=np.zeros((1, 1, 3), dtype='uint8'), \
+         model_name='ArcFace', \
+         detector_backend='retinaface', \
+         enforce_detection=False, \
+     ); \
+     print('ArcFace + RetinaFace models downloaded.')"
 
 FROM python:3.13-slim AS runtime
 WORKDIR /app
 COPY --from=builder /app/.venv /app/.venv
-COPY --from=builder /root/.insightface /root/.insightface
+COPY --from=builder /root/.deepface /root/.deepface
 COPY app/ ./app/
 ENV PATH="/app/.venv/bin:$PATH"
+ENV DEEPFACE_HOME=/root/.deepface
 EXPOSE 8000
 CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers ${VISION_FACE_WORKERS:-1}"]
 ```
@@ -1380,7 +1387,8 @@ CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers ${VI
 |----------|----------|---------|-------------|
 | `VISION_FACE_LYCHEE_API_URL` | Yes | — | Lychee instance base URL for callbacks |
 | `VISION_FACE_API_KEY` | Yes | — | Shared API key used in both directions: validates inbound `X-API-Key` from Lychee scan requests; also sent as `X-API-Key` on callbacks to Lychee. Must match `AI_VISION_FACE_API_KEY` on the Lychee side. |
-| `VISION_FACE_MODEL_NAME` | No | `buffalo_l` | InsightFace model pack name |
+| `VISION_FACE_MODEL_NAME` | No | `ArcFace` | DeepFace recognition model name |
+| `VISION_FACE_DETECTOR_BACKEND` | No | `retinaface` | DeepFace detector backend (`retinaface`, `mtcnn`, `opencv`, `ssd`) |
 | `VISION_FACE_DETECTION_THRESHOLD` | No | `0.5` | Bounding box confidence filter — faces below threshold excluded from callback *(Q-030-31)* |
 | `VISION_FACE_BLUR_THRESHOLD` | No | `100.0` | Laplacian variance sharpness filter — faces whose crop Laplacian variance falls below this value are excluded as too blurry for reliable recognition (FR-030-02). Set to `0.0` to disable blur filtering. |
 | `VISION_FACE_MATCH_THRESHOLD` | No | `0.5` | Similarity score cutoff for suggestions and selfie match results *(Q-030-31)* |

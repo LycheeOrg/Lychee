@@ -10,9 +10,8 @@ dependencies = [
     "pydantic>=2.10",
     "pydantic-settings>=2.7",
     "httpx>=0.28",
-    "insightface>=0.7",
-    "onnxruntime>=1.20",
-    "opencv-python-headless>=4.10",
+    "deepface>=0.0.93",
+    "opencv-python>=4.10",
     "pillow>=11.0",
     "numpy>=2.2",
     "scikit-learn>=1.6",
@@ -22,7 +21,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-gpu = ["onnxruntime-gpu>=1.20"]
+gpu = ["tensorflow[and-cuda]"]
 
 [dependency-groups]
 dev = [
@@ -66,7 +65,7 @@ select = [
 ]
 ignore = [
     "B008",   # FastAPI requires Depends() calls in function default arguments
-    "ANN401", # typing.Any needed for InsightFace's untyped library interface
+    "ANN401", # typing.Any needed for numpy array and deepface return type annotations
 ]
 
 [tool.ruff.lint.isort]

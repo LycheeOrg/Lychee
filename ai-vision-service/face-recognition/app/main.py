@@ -3,13 +3,13 @@
 Entry point for the AI Vision Service.  The ``create_app`` factory accepts an
 optional ``lifespan`` parameter so that tests can inject a custom lifespan
 context that pre-populates ``app.state`` with mock objects instead of loading
-the real InsightFace model.
+the real face recognition model.
 """
 
 from __future__ import annotations
 
 import logging
-import warnings
+import os
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import asynccontextmanager
 from typing import TYPE_CHECKING, Any
@@ -19,15 +19,6 @@ from fastapi import FastAPI
 
 from app.api.routes import router
 from app.config import AppSettings, get_settings
-
-# insightface uses the deprecated SimilarityTransform.estimate() API from scikit-image >=0.26.
-# Suppress until insightface ships a fix upstream.
-warnings.filterwarnings(
-    "ignore",
-    message=r"`estimate` is deprecated",
-    category=FutureWarning,
-    module=r"skimage",
-)
 
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator
@@ -67,14 +58,17 @@ async def _default_lifespan(app: FastAPI) -> AsyncGenerator[None]:
     # Load detector
     from app.detection.detector import FaceDetector
 
+    # Expose model_root as DEEPFACE_HOME so deepface discovers cached weights.
+    os.environ["DEEPFACE_HOME"] = settings.model_root
+
     detector = FaceDetector(
         model_name=settings.model_name,
         detection_threshold=settings.detection_threshold,
         blur_threshold=settings.blur_threshold,
-        model_root=settings.model_root,
+        detector_backend=settings.detector_backend,
     )
     detector.load()
-    logger.info("InsightFace model '%s' loaded successfully", settings.model_name)
+    logger.info("DeepFace model '%s' (backend: %s) loaded successfully", settings.model_name, settings.detector_backend)
 
     # Initialise embedding store
     from app.embeddings.factory import create_store
