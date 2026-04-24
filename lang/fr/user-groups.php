@@ -35,5 +35,5 @@ return [
         'edit' => 'Enregistrer',
 
         'error_name_required' => 'Le nom du groupe est requis.',
-    ]
+    ],
 ];

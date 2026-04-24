@@ -1,4 +1,5 @@
 <?php
+
 return [
     /*
     |--------------------------------------------------------------------------
@@ -22,5 +23,4 @@ return [
         'keep-one' => 'Vybrali jste všechny duplikáty v této skupině. Vyberte prosím alespoň jednu duplikát, který chcete ponechat.',
     ],
     'delete-selected' => 'Odstranit vybrané',
-
 ];

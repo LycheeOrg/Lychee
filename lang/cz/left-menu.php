@@ -27,4 +27,3 @@ return [
     'webhooks' => 'Webhooky',
 ];
 
-

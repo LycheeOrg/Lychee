@@ -197,7 +197,6 @@ return [
             'tags_required' => 'Štítky jsou povinné.',
             'all_tags_must_match' => 'Všechny štítky se musí shodovat.',
         ],
-
     ],
     'photo' => [
         'actions' => [

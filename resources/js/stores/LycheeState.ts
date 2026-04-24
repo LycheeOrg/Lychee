@@ -55,6 +55,8 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		album_header_size: "half_screen" as App.Enum.AlbumHeaderSize,
 		is_album_header_landing_title_enabled: false,
 
+		use_admin_dashboard: true,
+
 		// Download settings
 		is_raw_download_enabled: false,
 		is_thumb_download_enabled: false,
@@ -231,6 +233,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.albums_infinite_scroll_threshold = data.albums_infinite_scroll_threshold;
 
 					this.default_album_protection = data.default_album_protection;
+					this.use_admin_dashboard = data.use_admin_dashboard;
 				})
 				.catch((error) => {
 					// In this specific case, even though it has been possibly disabled, we really need to see the error.

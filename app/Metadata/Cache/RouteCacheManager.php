@@ -132,6 +132,8 @@ final readonly class RouteCacheManager
 			'api/v2/Users::count' => new RouteCacheConfig(tag: CacheTag::USERS, user_dependant: true),
 			'api/v2/Version' => false,
 			'api/v2/ChangeLogs' => false,
+			'api/v2/Admin/Stats' => false,
+			'api/v2/Admin/UpdateStatus' => false,
 
 			'api/v2/Import' => new RouteCacheConfig(tag: CacheTag::SETTINGS, user_dependant: true),
 			'api/v2/Import::browse' => false, // This will return a different result each time depending on the directory requested.

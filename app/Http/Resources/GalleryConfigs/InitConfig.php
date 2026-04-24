@@ -147,6 +147,8 @@ class InitConfig extends Data
 	public AlbumHeaderSize $album_header_size;
 	public bool $is_album_header_landing_title_enabled;
 
+	public bool $use_admin_dashboard;
+
 	public function __construct()
 	{
 		// Debug mode
@@ -251,6 +253,7 @@ class InitConfig extends Data
 		$this->is_album_enhanced_display_enabled = request()->configs()->getValueAsBool('album_enhanced_display_enabled');
 		$this->album_header_size = request()->configs()->getValueAsEnum('album_header_size', AlbumHeaderSize::class);
 		$this->is_album_header_landing_title_enabled = request()->configs()->getValueAsBool('album_header_landing_title_enabled');
+		$this->use_admin_dashboard = request()->configs()->getValueAsBool('use_admin_dashboard');
 
 		$this->set_supporter_properties();
 	}

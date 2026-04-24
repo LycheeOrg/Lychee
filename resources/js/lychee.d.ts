@@ -177,6 +177,36 @@ declare namespace App.Enum {
 	export type WebhookPayloadFormat = "json" | "query_string";
 }
 declare namespace App.Http.Resources.Admin {
+	export type BulkAlbumIdsResource = {
+		ids: Array<string>;
+		capped: boolean;
+	};
+	export type BulkAlbumResource = {
+		id: string;
+		title: string;
+		owner_id: number;
+		owner_name: string;
+		description: string | null;
+		copyright: string | null;
+		license: App.Enum.LicenseType;
+		photo_layout: App.Enum.PhotoLayoutType | null;
+		photo_sorting_col: App.Enum.ColumnSortingPhotoType | null;
+		photo_sorting_order: App.Enum.OrderSortingType | null;
+		album_sorting_col: App.Enum.ColumnSortingAlbumType | null;
+		album_sorting_order: App.Enum.OrderSortingType | null;
+		album_thumb_aspect_ratio: App.Enum.AspectRatioType | null;
+		album_timeline: App.Enum.TimelineAlbumGranularity | null;
+		photo_timeline: App.Enum.TimelinePhotoGranularity | null;
+		is_nsfw: boolean;
+		_lft: number;
+		_rgt: number;
+		is_public: boolean;
+		is_link_required: boolean;
+		grants_full_photo_access: boolean;
+		grants_download: boolean;
+		grants_upload: boolean;
+		created_at: string;
+	};
 	export type ImportDirectoryResource = {
 		directory: string;
 		status: boolean;
@@ -197,6 +227,13 @@ declare namespace App.Http.Resources.Admin {
 		message: string;
 		results: App.Http.Resources.Admin.ImportDirectoryResource[];
 		job_count: number;
+	};
+	export type PaginatedBulkAlbumResource = {
+		data: App.Http.Resources.Admin.BulkAlbumResource[];
+		current_page: number;
+		last_page: number;
+		per_page: number;
+		total: number;
 	};
 }
 declare namespace App.Http.Resources.Collections {
@@ -522,6 +559,7 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		is_album_enhanced_display_enabled: boolean;
 		album_header_size: App.Enum.AlbumHeaderSize;
 		is_album_header_landing_title_enabled: boolean;
+		use_admin_dashboard: boolean;
 	};
 	export type LandingPageResource = {
 		landing_page_enable: boolean;
@@ -590,6 +628,24 @@ declare namespace App.Http.Resources.Models {
 		grants_upload: boolean;
 		grants_edit: boolean;
 		grants_delete: boolean;
+	};
+	export type AdminStatsResource = {
+		photos_count: number;
+		albums_count: number;
+		users_count: number;
+		storage_bytes: number;
+		queued_jobs: number;
+		failed_jobs_24h: number;
+		last_successful_job_at: string | null;
+		cached_at: string;
+		errors: Array<string>;
+	};
+	export type AdminUpdateStatusResource = {
+		enabled: boolean;
+		update_status: number | null;
+		has_update: boolean;
+		current_version: string | null;
+		latest_version: string | null;
 	};
 	export type AlbumStatisticsResource = {
 		visit_count: number;

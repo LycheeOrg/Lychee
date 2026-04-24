@@ -1,49 +1,50 @@
 <?php
+
 return [
-    /*
-    |--------------------------------------------------------------------------
-    | Users page
-    |--------------------------------------------------------------------------
-    */
-    'title' => 'Users',
-    'description' => 'Here you can manage the users of your Lychee installation. You can create, edit and delete users.',
-    'create' => 'Create a new user',
-    'username' => 'Username',
-    'password' => 'Password',
-    'legend' => 'Legend',
-    'upload_rights' => 'When selected, the user can upload content.',
-    'edit_rights' => 'When selected, the user can modify their profile (username, password).',
-    'upload_trust_level' => 'Upload trust level — controls whether uploads are immediately public.',
+	/*
+	|--------------------------------------------------------------------------
+	| Users page
+	|--------------------------------------------------------------------------
+	*/
+	'title' => 'Users',
+	'description' => 'Here you can manage the users of your Lychee installation. You can create, edit and delete users.',
+	'create' => 'Create a new user',
+	'username' => 'Username',
+	'password' => 'Password',
+	'legend' => 'Legend',
+	'upload_rights' => 'When selected, the user can upload content.',
+	'edit_rights' => 'When selected, the user can modify their profile (username, password).',
+	'upload_trust_level' => 'Upload trust level — controls whether uploads are immediately public.',
 
-    'quota' => 'When set, the user has a space quota for pictures (in kB).',
-    'user_deleted' => 'User deleted',
-    'user_created' => 'User created',
-    'user_updated' => 'User updated',
-    'change_saved' => 'Change saved!',
-    'create_edit' => [
-        'upload_rights' => 'User can upload content.',
-        'edit_rights' => 'User can modify their profile (username, password).',
-        'admin_rights' => 'User has admin rights.',
-        'upload_trust_level' => 'Upload trust level',
-        'upload_trust_level_check' => 'Check – uploads require admin approval before becoming public.',
-        'upload_trust_level_monitor' => 'Monitor – upload are publics unless flagged for content.',
-        'upload_trust_level_trusted' => 'Trusted – uploads are immediately public.',
+	'quota' => 'When set, the user has a space quota for pictures (in kB).',
+	'user_deleted' => 'User deleted',
+	'user_created' => 'User created',
+	'user_updated' => 'User updated',
+	'change_saved' => 'Change saved!',
+	'create_edit' => [
+		'upload_rights' => 'User can upload content.',
+		'edit_rights' => 'User can modify their profile (username, password).',
+		'admin_rights' => 'User has admin rights.',
+		'upload_trust_level' => 'Upload trust level',
+		'upload_trust_level_check' => 'Check – uploads require admin approval before becoming public.',
+		'upload_trust_level_monitor' => 'Monitor – upload are publics unless flagged for content.',
+		'upload_trust_level_trusted' => 'Trusted – uploads are immediately public.',
 
-        'quota' => 'User has quota limit.',
-        'quota_kb' => 'quota in kB (0 for default)',
-        'note' => 'Admin note (not publically visible)',
-        'create' => 'Create',
-        'edit' => 'Edit',
-    ],
-    'invite' => [
-        'button' => 'Invite user',
-        'links_are_not_revokable' => 'Invitation links are not revocable.',
-        'link_is_valid_x_days' => 'This link is valid for %d days.',
-    ],
-    'line' => [
-        'owner' => 'Owner',
-        'admin' => 'Admin user',
-        'edit' => 'Edit',
-        'delete' => 'Delete',
-    ],
+		'quota' => 'User has quota limit.',
+		'quota_kb' => 'quota in kB (0 for default)',
+		'note' => 'Admin note (not publically visible)',
+		'create' => 'Create',
+		'edit' => 'Edit',
+	],
+	'invite' => [
+		'button' => 'Invite user',
+		'links_are_not_revokable' => 'Invitation links are not revocable.',
+		'link_is_valid_x_days' => 'This link is valid for %d days.',
+	],
+	'line' => [
+		'owner' => 'Owner',
+		'admin' => 'Admin user',
+		'edit' => 'Edit',
+		'delete' => 'Delete',
+	],
 ];

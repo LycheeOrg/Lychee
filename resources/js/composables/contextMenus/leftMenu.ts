@@ -42,6 +42,7 @@ export function useLeftMenu(
 		is_se_info_hidden,
 		is_favourite_enabled,
 		is_timeline_page_enabled,
+		use_admin_dashboard,
 		is_embed_enabled,
 	} = storeToRefs(lycheeStore);
 	const openLycheeAbout = ref(false);
@@ -134,96 +135,107 @@ export function useLeftMenu(
 				route: "/contact",
 				access: initData.value.modules.is_contact_enabled && !canSeeAdmin.value,
 			},
-			{
-				label: "left-menu.admin",
-				access: canSeeAdmin.value,
-				items: [
-					{
-						label: "settings.title",
-						icon: "cog",
-						route: "/settings",
-						access: initData.value.settings.can_edit ?? false,
-					},
-					{
-						label: "users.title",
-						icon: "pi pi-user",
-						route: "/users",
-						access: initData.value.user_management.can_edit ?? false,
-					},
-					{
-						label: "user-groups.title",
-						icon: "pi pi-users",
-						route: "/user-groups",
-						access: initData.value.settings.can_acess_user_groups ?? false,
-					},
-					{
-						label: "Purchasables",
-						icon: "pi pi-shopping-bag",
-						route: "/purchasables",
-						access: (initData.value.modules.is_mod_webshop_enabled ?? false) && (initData.value.settings.can_edit ?? false),
-					},
-					{
-						label: "left-menu.messages",
-						icon: "pi pi-inbox",
-						route: "/contact-messages",
-						access: initData.value.modules.is_contact_enabled && canSeeAdmin.value,
-						num: initData.value.modules.messages_count,
-					},
-					{
-						label: "left-menu.webhooks",
-						icon: "pi pi-send",
-						route: "/webhooks",
-						access: initData.value.modules.is_mod_webhook_enabled ?? false,
-					},
-					{
-						label: "bulk_album_edit.title",
-						icon: "pi pi-objects-column",
-						route: "/bulk-album-edit",
-						access: authStore.isAdmin,
-					},
-					{
-						label: "moderation.title",
-						icon: "pi pi-shield",
-						route: "/moderation",
-						access: canSeeAdmin.value,
-					},
-					{
-						label: "diagnostics.title",
-						icon: "wrench",
-						route: "/diagnostics",
-						access: initData.value.settings.can_see_diagnostics ?? false,
-					},
-					{
-						label: "maintenance.title",
-						icon: "timer",
-						route: "/maintenance",
-						access: initData.value.settings.can_edit ?? false,
-					},
-					{
-						label: "left-menu.logs",
-						icon: "excerpt",
-						url: Constants.BASE_URL + "/Logs",
-						access: (initData.value.settings.can_see_logs ?? false) && logsEnabled.value,
-					},
-					{
-						label: "left-menu.logs",
-						icon: "excerpt",
-						access: (initData.value.settings.can_see_logs ?? false) && !logsEnabled.value,
-					},
-					{
-						label: "left-menu.jobs",
-						icon: "project",
-						route: "/jobs",
-						access: initData.value.settings.can_see_logs ?? false,
-					},
-					{
-						label: "left-menu.clockwork",
-						icon: "telescope",
-						url: clockwork_url.value ?? "",
-						access: clockwork_url.value !== null && (initData.value.settings.can_access_dev_tools ?? false),
-					},
-				],
-			},
+			...((use_admin_dashboard.value ?? true)
+				? [
+						{
+							label: "left-menu.admin",
+							icon: "pi pi-th-large",
+							route: "/admin",
+							access: canSeeAdmin.value,
+						},
+					]
+				: [
+						{
+							label: "left-menu.admin",
+							access: canSeeAdmin.value,
+							items: [
+								{
+									label: "settings.title",
+									icon: "cog",
+									route: "/admin/settings",
+									access: initData.value.settings.can_edit ?? false,
+								},
+								{
+									label: "users.title",
+									icon: "pi pi-user",
+									route: "/admin/users",
+									access: initData.value.user_management.can_edit ?? false,
+								},
+								{
+									label: "user-groups.title",
+									icon: "pi pi-users",
+									route: "/admin/user-groups",
+									access: initData.value.settings.can_acess_user_groups ?? false,
+								},
+								{
+									label: "Purchasables",
+									icon: "pi pi-shopping-bag",
+									route: "/admin/purchasables",
+									access: (initData.value.modules.is_mod_webshop_enabled ?? false) && (initData.value.settings.can_edit ?? false),
+								},
+								{
+									label: "left-menu.messages",
+									icon: "pi pi-inbox",
+									route: "/admin/contact-messages",
+									access: initData.value.modules.is_contact_enabled && canSeeAdmin.value,
+									num: initData.value.modules.messages_count,
+								},
+								{
+									label: "left-menu.webhooks",
+									icon: "pi pi-send",
+									route: "/admin/webhooks",
+									access: initData.value.modules.is_mod_webhook_enabled ?? false,
+								},
+								{
+									label: "bulk_album_edit.title",
+									icon: "pi pi-objects-column",
+									route: "/bulk-album-edit",
+									access: authStore.isAdmin,
+								},
+								{
+									label: "moderation.title",
+									icon: "pi pi-shield",
+									route: "/admin/moderation",
+									access: canSeeAdmin.value,
+								},
+								{
+									label: "diagnostics.title",
+									icon: "wrench",
+									route: "/diagnostics",
+									access: initData.value.settings.can_see_diagnostics ?? false,
+								},
+								{
+									label: "maintenance.title",
+									icon: "timer",
+									route: "/admin/maintenance",
+									access: initData.value.settings.can_edit ?? false,
+								},
+								{
+									label: "left-menu.logs",
+									icon: "excerpt",
+									url: Constants.BASE_URL + "/Logs",
+									access: (initData.value.settings.can_see_logs ?? false) && logsEnabled.value,
+								},
+								{
+									label: "left-menu.logs",
+									icon: "excerpt",
+									access: (initData.value.settings.can_see_logs ?? false) && !logsEnabled.value,
+								},
+								{
+									label: "left-menu.jobs",
+									icon: "project",
+									route: "/admin/jobs",
+									access: initData.value.settings.can_see_logs ?? false,
+								},
+								{
+									label: "left-menu.clockwork",
+									icon: "telescope",
+									url: clockwork_url.value ?? "",
+									access: clockwork_url.value !== null && (initData.value.settings.can_access_dev_tools ?? false),
+								},
+							],
+						},
+					]),
 			{
 				label: "Lychee",
 				items: [
