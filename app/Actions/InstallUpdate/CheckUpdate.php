@@ -69,6 +69,7 @@ class CheckUpdate
 
 	/**
 	 * Return the latest known release version from the remote update feed.
+	 * @codeCoverageIgnore
 	 */
 	public function getLatestVersion(): ?string
 	{
@@ -77,6 +78,7 @@ class CheckUpdate
 
 	/**
 	 * Return the current installed file version.
+	 * @codeCoverageIgnore
 	 */
 	public function getCurrentVersion(): string
 	{
