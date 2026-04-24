@@ -148,10 +148,11 @@ class FaceDetector:
     def _detect_array(self, img: Any) -> list[DetectedFace]:
         """Run detection on a BGR numpy array (internal)."""
         import cv2
-        from deepface import DeepFace
 
         if not self._loaded:
             raise RuntimeError("FaceDetector not loaded - call load() first.")
+
+        from deepface import DeepFace
 
         h: int = int(img.shape[0])
         w: int = int(img.shape[1])

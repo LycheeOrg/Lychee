@@ -42,6 +42,7 @@ dependencies = [
     { name = "python-multipart" },
     { name = "scikit-learn" },
     { name = "sqlite-vec" },
+    { name = "tf-keras" },
     { name = "uvicorn", extra = ["standard"] },
 ]
 
@@ -76,6 +77,7 @@ requires-dist = [
     { name = "scikit-learn", specifier = ">=1.6" },
     { name = "sqlite-vec", specifier = ">=0.1" },
     { name = "tensorflow", extras = ["and-cuda"], marker = "extra == 'gpu'" },
+    { name = "tf-keras", specifier = ">=2.16" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.32" },
 ]
 provides-extras = ["gpu"]
@@ -1802,6 +1804,18 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/46/79/cf31d7a93a8fdc6aa0fbb665be84426a8c5a557d9240b6239e9e11e35fc5/termcolor-3.3.0.tar.gz", hash = "sha256:348871ca648ec6a9a983a13ab626c0acce02f515b9e1983332b17af7979521c5", size = 14434, upload-time = "2025-12-29T12:55:21.882Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/33/d1/8bb87d21e9aeb323cc03034f5eaf2c8f69841e40e4853c2627edf8111ed3/termcolor-3.3.0-py3-none-any.whl", hash = "sha256:cf642efadaf0a8ebbbf4bc7a31cec2f9b5f21a9f726f4ccbb08192c9c26f43a5", size = 7734, upload-time = "2025-12-29T12:55:20.718Z" },
+]
+
+[[package]]
+name = "tf-keras"
+version = "2.21.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "tensorflow" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/76/80/b005b59f9ccdbabc1b6cd07ca1126cbd4d902288438f0c00072f91a43c6f/tf_keras-2.21.0.tar.gz", hash = "sha256:f9af0f2546cd5532de0fae7a481f34a1ca2253737d4cd1000f6b713dc733f770", size = 1255377, upload-time = "2026-03-18T22:12:02.103Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c5/d2/5220e3b93444f1c57c092ab5eb2c30cdc762a6e412234750f2d6a85b3769/tf_keras-2.21.0-py3-none-any.whl", hash = "sha256:f858bf3d97f892304e7fbcf5eb0942ed91674e27204f940a85de8c93cf07fe62", size = 1694939, upload-time = "2026-03-18T22:12:00.662Z" },
 ]
 
 [[package]]
