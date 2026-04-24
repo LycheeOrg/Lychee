@@ -38,7 +38,7 @@ class AdminStatsService
 		$photos_count = 0;
 		try {
 			$photos_count = Photo::count();
-		// @codeCoverageIgnoreStart
+			// @codeCoverageIgnoreStart
 		} catch (\Throwable $e) {
 			Log::warning('AdminStatsService: failed to count photos: ' . $e->getMessage());
 			$errors[] = 'Failed to count photos: ' . $e->getMessage();
@@ -48,7 +48,7 @@ class AdminStatsService
 		$albums_count = 0;
 		try {
 			$albums_count = Album::count();
-		// @codeCoverageIgnoreStart
+			// @codeCoverageIgnoreStart
 		} catch (\Throwable $e) {
 			Log::warning('AdminStatsService: failed to count albums: ' . $e->getMessage());
 			$errors[] = 'Failed to count albums: ' . $e->getMessage();
@@ -58,7 +58,7 @@ class AdminStatsService
 		$users_count = 0;
 		try {
 			$users_count = User::count();
-		// @codeCoverageIgnoreStart
+			// @codeCoverageIgnoreStart
 		} catch (\Throwable $e) {
 			Log::warning('AdminStatsService: failed to count users: ' . $e->getMessage());
 			$errors[] = 'Failed to count users: ' . $e->getMessage();
@@ -68,7 +68,7 @@ class AdminStatsService
 		$storage_bytes = 0;
 		try {
 			$storage_bytes = (int) SizeVariant::sum('filesize');
-		// @codeCoverageIgnoreStart
+			// @codeCoverageIgnoreStart
 		} catch (\Throwable $e) {
 			Log::warning('AdminStatsService: failed to sum storage: ' . $e->getMessage());
 			$errors[] = 'Failed to sum storage: ' . $e->getMessage();
@@ -81,8 +81,8 @@ class AdminStatsService
 			if ($queue_connection === 'database') {
 				$queued_jobs = DB::table('jobs')->count();
 			}
-		// @codeCoverageIgnoreEnd
-		// @codeCoverageIgnoreStart
+			// @codeCoverageIgnoreEnd
+			// @codeCoverageIgnoreStart
 		} catch (\Throwable $e) {
 			Log::warning('AdminStatsService: failed to count queued jobs: ' . $e->getMessage());
 			$errors[] = 'Failed to count queued jobs: ' . $e->getMessage();
@@ -94,7 +94,7 @@ class AdminStatsService
 			$failed_jobs_24h = JobHistory::where('status', JobStatus::FAILURE)
 				->where('updated_at', '>=', now()->subDay())
 				->count();
-		// @codeCoverageIgnoreStart
+			// @codeCoverageIgnoreStart
 		} catch (\Throwable $e) {
 			Log::warning('AdminStatsService: failed to count failed jobs: ' . $e->getMessage());
 			$errors[] = 'Failed to count failed jobs: ' . $e->getMessage();
@@ -104,7 +104,7 @@ class AdminStatsService
 		$last_successful_job_at = null;
 		try {
 			$last_successful_job_at = JobHistory::where('status', JobStatus::SUCCESS)->max('updated_at');
-		// @codeCoverageIgnoreStart
+			// @codeCoverageIgnoreStart
 		} catch (\Throwable $e) {
 			Log::warning('AdminStatsService: failed to get last successful job: ' . $e->getMessage());
 			$errors[] = 'Failed to get last successful job: ' . $e->getMessage();
