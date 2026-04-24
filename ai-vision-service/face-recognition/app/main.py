@@ -58,7 +58,10 @@ async def _default_lifespan(app: FastAPI) -> AsyncGenerator[None]:
     # Load detector
     from app.detection.detector import FaceDetector
 
-    # Expose model_root as DEEPFACE_HOME so deepface discovers cached weights.
+    # Expose model_root as DEEPFACE_HOME before load() so deepface discovers cached weights.
+    # deepface reads DEEPFACE_HOME lazily (via get_deepface_home() on each access), not at
+    # import time, so setting it here — before detector.load() — is reliable.
+    # In Docker deployments, ENV DEEPFACE_HOME is also set in the Dockerfile as a fallback.
     os.environ["DEEPFACE_HOME"] = settings.model_root
 
     detector = FaceDetector(

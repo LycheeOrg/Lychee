@@ -12,6 +12,9 @@ dependencies = [
     "httpx>=0.28",
     "deepface>=0.0.93",
     "tf-keras>=2.16",
+    # deepface requires opencv-python (not headless) as a transitive dependency.
+    # The headless variant cannot be used here because uv treats them as conflicting packages.
+    # The Dockerfile installs libgl1/libglib2.0-0 to satisfy opencv-python's system requirements.
     "opencv-python>=4.10",
     "pillow>=11.0",
     "numpy>=2.2",
