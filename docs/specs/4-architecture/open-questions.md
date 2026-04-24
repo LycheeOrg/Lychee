@@ -11,60 +11,6 @@ _No active questions._
 
 ## Question Details
 
-### ~~Q-037-08: Partial-Admin Users — Dashboard Behaviour & Stats Visibility~~ ✅ RESOLVED
-
-**Feature:** 037 – Admin Dashboard & `/admin/` URL Reorganisation
-**Priority:** High
-**Status:** Resolved
-**Opened:** 2026-04-22
-
-**Resolution:** **Option A** — the collapsed "Admin" menu entry appears whenever the existing `canSeeAdmin` composite is true. The dashboard tile grid renders per-capability (tiles for tools the operator cannot access are hidden). The stats overview block and `GET /api/v2/Admin/Stats` endpoint are gated on `settings.can_edit`; partial-admins receive 403 on the stats call and do not see the stats section. This keeps the fine-grained capability model intact and prevents leaking global telemetry to limited roles.
-
-**Spec Impact:** Updated FR-037-02 (stats endpoint auth = `settings.can_edit`), FR-037-04 (tile gating detail), FR-037-05 (menu collapse honours existing `canSeeAdmin`), added NFR-037-05 (capability gating), UI-037-01a variant (no-stats view), and scenarios S-037-16 … S-037-18.
-
-**Resolved:** 2026-04-22
-
----
-
-Lychee treats the "admin" area as a union of five fine-grained capabilities (see [`SettingsRightsResource`](../../../../app/Http/Resources/Rights/SettingsRightsResource.php) + [`UserManagementRightsResource`](../../../../app/Http/Resources/Rights/UserManagementRightsResource.php)):
-
-1. `settings.can_edit` — full config editor (typical super-admin).
-2. `user_management.can_edit` — can manage users.
-3. `settings.can_see_diagnostics` — can read diagnostics.
-4. `settings.can_see_logs` — can read logs.
-5. `settings.can_acess_user_groups` — can manage user groups (e.g., a team lead who is **not** a full admin).
-
-Today's left-menu `canSeeAdmin` composite is a permissive OR of those five, but each submenu entry has its own `access` flag so a user only sees items their capability permits (e.g., a User-Groups-only operator sees just the "User Groups" entry nested under "Admin"). When we collapse the menu to a single link → `/admin`, that user lands on a dashboard that needs to:
-- **Only** expose tiles they are authorised to reach, and
-- Decide whether the stats overview (which exposes global photo/album/user counts and storage/job telemetry) is visible to them.
-
-Today's `GET /api/v2/Admin/Stats` spec line says "Auth: admin (existing `AdminMiddleware`)", which is ambiguous: does "admin" mean full `settings.can_edit`, or the union that `canSeeAdmin` represents?
-
-**Options (ordered by preference):**
-
-- **Option A (Recommended) — Dashboard always available to anyone passing `canSeeAdmin`; tiles + stats are each permission-gated.**
-  - Menu: collapsed "Admin" link appears whenever `canSeeAdmin` is true (unchanged semantics).
-  - Dashboard tiles: rendered per existing per-tool flags (User Groups only → single User Groups tile; Diagnostics-only → single Diagnostics tile; etc.).
-  - Stats block: rendered only when `settings.can_edit` is true. Partial-admins (groups-only, logs-only, diagnostics-only) see the dashboard header + tile grid but no stats section, and the `GET /api/v2/Admin/Stats` endpoint requires `settings.can_edit` (returns 403 otherwise).
-  - Pros: preserves the fine-grained capability model; one menu entry for all admin flavours; avoids leaking global telemetry to limited roles.
-  - Cons: a partial-admin may land on a dashboard with just one tile — simple but minimal.
-
-- **Option B — Skip the dashboard for single-capability users and deep-link the menu entry.**
-  - Menu: if only one of the five capabilities is present, the "Admin" link is rewritten to target that specific page (e.g., `/admin/user-groups`) instead of `/admin`. If two or more are present, use `/admin` (dashboard).
-  - Dashboard: still tile-filtered + stats-gated on `settings.can_edit` (same gating as Option A for the multi-capability case).
-  - Pros: one-click access for limited operators; feels "smart".
-  - Cons: extra branching in the composable; users who gain a second capability suddenly see a different destination; harder to localise the single link label (does it still say "Admin" or "User Groups"?).
-
-- **Option C — Restrict dashboard to full admins (`settings.can_edit` only).**
-  - Menu: collapsed "Admin" link only appears for full admins. Partial-admins keep seeing the legacy nested submenu regardless of the toggle.
-  - Dashboard: single render path; stats always visible.
-  - Pros: simplest dashboard implementation.
-  - Cons: two menu styles coexist indefinitely, breaks the "single toggle" UX, contradicts the user's clean-replacement intent.
-
-**Spec Impact (after resolution):** Updates FR-037-02 (stats auth), FR-037-04 (tile gating), FR-037-05 (menu behaviour for partial-admins), a new NFR on capability gating, UI-037-01 variant for the no-stats view, and new scenarios S-037-16 … S-037-18 covering partial-admin paths.
-
----
-
 ### ~~Q-037-01: Scope of Admin Pages to Move Under `/admin/...`~~ ✅ RESOLVED
 
 **Feature:** 037 – Admin Dashboard & `/admin/` URL Reorganisation
@@ -167,6 +113,175 @@ Today's `GET /api/v2/Admin/Stats` spec line says "Auth: admin (existing `AdminMi
 **Spec Impact:** Route catalogue confirms no redirect routes are added.
 
 **Resolved:** 2026-04-22
+
+---
+
+### ~~Q-037-08: Partial-Admin Users — Dashboard Behaviour & Stats Visibility~~ ✅ RESOLVED
+
+**Feature:** 037 – Admin Dashboard & `/admin/` URL Reorganisation
+**Priority:** High
+**Status:** Resolved
+**Opened:** 2026-04-22
+
+**Resolution:** **Option A** — the collapsed "Admin" menu entry appears whenever the existing `canSeeAdmin` composite is true. The dashboard tile grid renders per-capability (tiles for tools the operator cannot access are hidden). The stats overview block and `GET /api/v2/Admin/Stats` endpoint are gated on `settings.can_edit`; partial-admins receive 403 on the stats call and do not see the stats section. This keeps the fine-grained capability model intact and prevents leaking global telemetry to limited roles.
+
+**Spec Impact:** Updated FR-037-02 (stats endpoint auth = `settings.can_edit`), FR-037-04 (tile gating detail), FR-037-05 (menu collapse honours existing `canSeeAdmin`), added NFR-037-05 (capability gating), UI-037-01a variant (no-stats view), and scenarios S-037-16 … S-037-18.
+
+**Resolved:** 2026-04-22
+
+---
+
+Lychee treats the "admin" area as a union of five fine-grained capabilities (see [`SettingsRightsResource`](../../../../app/Http/Resources/Rights/SettingsRightsResource.php) + [`UserManagementRightsResource`](../../../../app/Http/Resources/Rights/UserManagementRightsResource.php)):
+
+1. `settings.can_edit` — full config editor (typical super-admin).
+2. `user_management.can_edit` — can manage users.
+3. `settings.can_see_diagnostics` — can read diagnostics.
+4. `settings.can_see_logs` — can read logs.
+5. `settings.can_acess_user_groups` — can manage user groups (e.g., a team lead who is **not** a full admin).
+
+Today's left-menu `canSeeAdmin` composite is a permissive OR of those five, but each submenu entry has its own `access` flag so a user only sees items their capability permits (e.g., a User-Groups-only operator sees just the "User Groups" entry nested under "Admin"). When we collapse the menu to a single link → `/admin`, that user lands on a dashboard that needs to:
+- **Only** expose tiles they are authorised to reach, and
+- Decide whether the stats overview (which exposes global photo/album/user counts and storage/job telemetry) is visible to them.
+
+Today's `GET /api/v2/Admin/Stats` spec line says "Auth: admin (existing `AdminMiddleware`)", which is ambiguous: does "admin" mean full `settings.can_edit`, or the union that `canSeeAdmin` represents?
+
+**Options (ordered by preference):**
+
+- **Option A (Recommended) — Dashboard always available to anyone passing `canSeeAdmin`; tiles + stats are each permission-gated.**
+  - Menu: collapsed "Admin" link appears whenever `canSeeAdmin` is true (unchanged semantics).
+  - Dashboard tiles: rendered per existing per-tool flags (User Groups only → single User Groups tile; Diagnostics-only → single Diagnostics tile; etc.).
+  - Stats block: rendered only when `settings.can_edit` is true. Partial-admins (groups-only, logs-only, diagnostics-only) see the dashboard header + tile grid but no stats section, and the `GET /api/v2/Admin/Stats` endpoint requires `settings.can_edit` (returns 403 otherwise).
+  - Pros: preserves the fine-grained capability model; one menu entry for all admin flavours; avoids leaking global telemetry to limited roles.
+  - Cons: a partial-admin may land on a dashboard with just one tile — simple but minimal.
+
+- **Option B — Skip the dashboard for single-capability users and deep-link the menu entry.**
+  - Menu: if only one of the five capabilities is present, the "Admin" link is rewritten to target that specific page (e.g., `/admin/user-groups`) instead of `/admin`. If two or more are present, use `/admin` (dashboard).
+  - Dashboard: still tile-filtered + stats-gated on `settings.can_edit` (same gating as Option A for the multi-capability case).
+  - Pros: one-click access for limited operators; feels "smart".
+  - Cons: extra branching in the composable; users who gain a second capability suddenly see a different destination; harder to localise the single link label (does it still say "Admin" or "User Groups"?).
+
+- **Option C — Restrict dashboard to full admins (`settings.can_edit` only).**
+  - Menu: collapsed "Admin" link only appears for full admins. Partial-admins keep seeing the legacy nested submenu regardless of the toggle.
+  - Dashboard: single render path; stats always visible.
+  - Pros: simplest dashboard implementation.
+  - Cons: two menu styles coexist indefinitely, breaks the "single toggle" UX, contradicts the user's clean-replacement intent.
+
+**Spec Impact (after resolution):** Updates FR-037-02 (stats auth), FR-037-04 (tile gating), FR-037-05 (menu behaviour for partial-admins), a new NFR on capability gating, UI-037-01 variant for the no-stats view, and new scenarios S-037-16 … S-037-18 covering partial-admin paths.
+
+---
+
+### ~~Q-035-01: Behaviour of GET /Zip (no chunk param) when chunked mode is ON~~ ✅ RESOLVED
+
+**Feature:** 035 – Chunked Archive Download
+**Priority:** Medium
+**Status:** Resolved
+**Opened:** 2026-04-12
+
+**Context:** When `download_archive_chunked` is enabled, a client that calls `GET /Zip` without a `chunk` parameter may be a legacy client or an incorrect integration. We need a defined contract for this case.
+
+**Resolution:** **Option A** — Treat missing `chunk` as a regular single-archive download, regardless of the chunked-mode setting. This is backward-compatible: legacy frontends and direct URL downloads work without modification.
+
+**Spec Impact:** Encoded in FR-035-05 and FR-035-07.
+
+**Resolved:** 2026-04-12
+### ~~Q-034-01: TagAlbum Rows in Bulk Edit List~~ ✅ RESOLVED
+
+**Feature:** 034 – Bulk Album Edit  
+**Priority:** Medium  
+**Status:** Resolved  
+**Opened:** 2026-04-12  
+**Resolved:** 2026-04-14
+
+**Resolution:** **Option A** — Show only regular `Album` records (no TagAlbums). The list query joins only the `albums` table. A note on the page explains TagAlbums are excluded.
+
+**Spec Impact:** FR-034-01 clarified; plan and tasks updated to confirm only `albums` table is queried.
+
+---
+
+### ~~Q-034-02: Depth Indicator Computation Strategy~~ ✅ RESOLVED
+
+**Feature:** 034 – Bulk Album Edit  
+**Priority:** Medium  
+**Status:** Resolved  
+**Opened:** 2026-04-12  
+**Resolved:** 2026-04-14
+
+**Resolution:** **Option B** — Compute depth client-side, **linearly**, by scanning `_lft` values in descending order. The server returns `_lft` in each `BulkAlbumResource` row (already included). The frontend performs a single O(n) pass over the sorted-by-`_lft` result set: maintain a stack of ancestor `_rgt` values; pop the stack whenever the current row's `_lft` exceeds the stack top's `_rgt`; depth = stack length. This avoids an extra server-side `withDepth()` join and keeps computation in the client where the full page of records is already available.
+
+**Spec Impact:** `BulkAlbumResource` includes `_lft` and `_rgt` (not `depth`). FR-034-14 updated to specify client-side linear depth computation. T-034-03 and T-034-17 updated accordingly.
+
+---
+
+### ~~Q-034-03: Confirmation for Bulk Delete~~ ✅ RESOLVED
+
+**Feature:** 034 – Bulk Album Edit  
+**Priority:** High  
+**Status:** Resolved  
+**Opened:** 2026-04-12  
+**Resolved:** 2026-04-14
+
+**Resolution:** **Option B** — Bulk delete shows a minimal confirmation modal: a dialog displaying the count of selected albums and requiring the admin to click a second **"Confirm Delete"** button. No text input required. This is consistent with the spirit of the no-confirmation rule (field edits apply immediately) while protecting against accidental mass-delete.
+
+**Spec Impact:** FR-034-10 updated to require confirmation modal for delete. UI-034-05 (delete confirmation dialog state) added. T-034-20 updated.
+
+---
+
+### ~~Q-034-04: Scope of "Select All Matching"~~ ✅ RESOLVED
+
+**Feature:** 034 – Bulk Album Edit  
+**Priority:** Low  
+**Status:** Resolved  
+**Opened:** 2026-04-12  
+**Resolved:** 2026-04-14
+
+**Resolution:** **Option A** — Return all albums in the gallery regardless of owner. Admin page; admin has authority over all albums.
+
+**Spec Impact:** FR-034-12 confirmed: no owner filter applied on `GET /BulkAlbumEdit::ids`.
+
+---
+
+### ~~Q-033-01: Monitor Trust Level Behaviour~~ ✅ RESOLVED
+
+**Feature:** 033 – Upload Trust Level  
+**Priority:** High  
+**Status:** Resolved  
+**Opened:** 2026-04-09
+
+**Resolution:** **Option A** — Photos from `monitor`-level users are immediately validated (public), but flagged for periodic admin review. A separate "monitoring queue" shows recently uploaded photos from `monitor` users for the admin to spot-check. No photos are hidden; this is a soft-audit mechanism.
+
+**Spec Impact:** Updated FR-033-03 to clarify that `monitor` behaves as `trusted` (uploads immediately validated) in this iteration. The monitoring queue is deferred to a follow-up. Updated Non-Goals and Appendix Trust Level Decision Matrix.
+
+**Resolved:** 2026-04-09
+
+---
+
+### ~~Q-033-02: Retroactive Trust Level Changes~~ ✅ RESOLVED
+
+**Feature:** 033 – Upload Trust Level  
+**Priority:** Medium  
+**Status:** Resolved  
+**Opened:** 2026-04-09
+
+**Resolution:** **Option A** — No retroactive changes. Only future uploads are affected by the new trust level. Existing photos retain their `is_validated` status. This is the simplest and safest approach.
+
+**Spec Impact:** Confirmed as a non-goal in spec.md. No additional follow-up tasks needed.
+
+**Resolved:** 2026-04-09
+
+---
+
+### ~~Q-033-03: Admin Photo Uploads and Trust Level~~ ✅ RESOLVED
+
+**Feature:** 033 – Upload Trust Level  
+**Priority:** Medium  
+**Status:** Resolved  
+**Opened:** 2026-04-09
+
+**Resolution:** **Option A** — Admin uploads are always immediately validated (`is_validated = true`) regardless of the admin's `upload_trust_level` setting. Admins are inherently trusted — they can approve their own photos anyway. The `SetUploadValidated` pipe checks `may_administrate` first and short-circuits to `true`.
+
+**Spec Impact:** Updated FR-033-03 to explicitly state that admin uploads bypass trust level checks. Updated Appendix Trust Level Decision Matrix. Updated task T-033-07 to include the admin short-circuit logic.
+
+**Resolved:** 2026-04-09
 
 ---
 
@@ -320,23 +435,6 @@ Today's `GET /api/v2/Admin/Stats` spec line says "Auth: admin (existing `AdminMi
 
 ---
 
-### ~~Q-031-08: `size_variants` Encoding in Query-String Payload Format~~ ✅ RESOLVED
-
-**Feature:** 031 – Configurable Webhooks
-**Priority:** High
-**Status:** Resolved
-**Opened:** 2026-03-25
-
-**Context:** `payload_format = query_string` delivers all payload fields as URL query parameters. Simple scalar fields (`photo_id`, `album_id`, `title`) serialize trivially. However, `size_variants` is an array of objects (`[{type, url}]`), which has no single canonical query-string encoding.
-
-**Resolution:** The URL of each size variant is **base64-encoded** (standard base64, not URL-safe) and delivered as a flat named query parameter using the pattern `size_variant_{type}=<base64(url)>`. For example: `size_variant_original=aHR0cHM6Ly9leGFtcGxlLmNvbS91cGxvYWRzL29yaWdpbmFsL3Bob3RvLmpwZw==&size_variant_medium=aHR0cHM6Ly9leGFtcGxlLmNvbS91cGxvYWRzL21lZGl1bS9waG90by5qcGc=`. Base64 encoding avoids any URL-encoding ambiguity for complex S3/CDN URLs.
-
-**Spec Impact:** Updated FR-031-09, S-031-15, `WebhookPayloadBuilder`, and `WebhookDispatchJob`. Spec DSL updated.
-
-**Resolved:** 2026-03-25
-
----
-
 ### ~~Q-031-01: HTTPS Enforcement for Webhook URLs~~ ✅ RESOLVED
 
 **Resolution:** **Option A** — Allow both HTTP and HTTPS. Plain HTTP URLs are accepted at the server; the admin UI displays a security warning ("Plain HTTP transmits your secret key in cleartext.") when a non-HTTPS URL is entered. No backend enforcement.
@@ -407,93 +505,464 @@ Today's `GET /api/v2/Admin/Stats` spec line says "Auth: admin (existing `AdminMi
 
 ---
 
-### ~~Q-030-74: PersonDetail Lightbox Navigation Strategy~~ ✅ RESOLVED
+### ~~Q-031-08: `size_variants` Encoding in Query-String Payload Format~~ ✅ RESOLVED
 
-**Feature:** 030 – AI Vision Service  
-**Priority:** High  
-**Status:** Resolved  
-**Opened:** 2026-04-07  
-**Affects:** T-030-85 (I35), FR-030-39
-
-**Resolution:** **Option A (server-side)** — `GET /Person/{id}/photos` computes and includes `next_photo_id` and `previous_photo_id` on each `PhotoResource`, ordered sequentially by collection position (access-filtered). First photo: `previous_photo_id = null`; last photo: `next_photo_id = null`. `PhotoPanel.vue` then uses these person-relative IDs natively for navigation within the person's collection. No client-side monkey-patching required.
-
-**Spec Impact:** Updated FR-030-03 success path to note that each `PhotoResource` includes `next_photo_id`/`previous_photo_id` relative to the person's collection. Updated FR-030-39 success path. Updated S-030-55 scenario. Updated plan.md I12 steps and exit criteria. Updated T-030-32 (test for next/previous IDs), T-030-33 (implementation), T-030-85 (lightbox navigation note).
-
-**Resolved:** 2026-04-07
-
----
-
-### ~~Q-030-75: FaceCluster Detail View — Dialog vs. Sub-Route~~ ✅ RESOLVED
-
-**Feature:** 030 – AI Vision Service  
-**Priority:** Medium  
-**Status:** Resolved  
-**Opened:** 2026-04-07  
-**Affects:** T-030-78 (I32), FR-030-29
-
-**Resolution:** **Option A** — PrimeVue `<Dialog>`. Clicking a cluster card opens a Dialog that fetches all faces via `GET /FaceDetection/clusters/{cluster_id}/faces`. URL does not change. No routing changes needed.
-
-**Spec Impact:** Updated FR-030-29 requirement and success path to specify PrimeVue Dialog. Updated plan.md I32 step 3. Updated T-030-78 intent (Dialog only, sub-route option removed).
-
-**Resolved:** 2026-04-07
-
----
-
-### ~~Q-030-76: People.vue Context Menu "Assign to User" Action~~ ✅ RESOLVED
-
-**Feature:** 030 – AI Vision Service  
-**Priority:** Medium  
-**Status:** Resolved  
-**Opened:** 2026-04-07  
-**Affects:** T-030-79 (I33), FR-030-32, FR-030-05
-
-**Resolution:** **Option A** — User-picker dialog. "Assign to user" (admin-only) opens a PrimeVue `<Dialog>` with an autocomplete Dropdown listing user accounts (name + email). On confirm, calls `PATCH /Person/{id}` with `{ user_id: selectedUserId }`. Requires extending `UpdatePersonRequest` to accept nullable `user_id` with an admin-only validation gate.
-
-**Spec Impact:** Updated FR-030-32 success path to describe the user-picker dialog and `PATCH /Person/{id}` with `user_id`. Updated plan.md I33 step 1. Updated T-030-79 intent (user-picker dialog, UpdatePersonRequest extension noted).
-
-**Resolved:** 2026-04-07
-
----
-
-### ~~Q-030-77: Admin/Feature Short-Circuit Mechanism in PhotoPolicy and AlbumPolicy Face Gates~~ ✅ RESOLVED
-
-**Feature:** 030 – AI Vision Service
+**Feature:** 031 – Configurable Webhooks
 **Priority:** High
 **Status:** Resolved
-**Opened:** 2026-04-11
-**Affects:** T-030-100 (PhotoPolicy), T-030-101 (AlbumPolicy), FR-030-43, FR-030-44
+**Opened:** 2026-03-25
 
-**Resolution:** FR-030-43/44 wording about `AiVisionPolicy::before()` is incorrect and is removed. The new `PhotoPolicy` and `AlbumPolicy` face gate methods rely on those policies' own `before()` hooks for the admin short-circuit. Side-effect: admins will bypass the gate even when AI Vision is disabled — **accepted risk**. No inline duplication or shared trait needed.
+**Context:** `payload_format = query_string` delivers all payload fields as URL query parameters. Simple scalar fields (`photo_id`, `album_id`, `title`) serialize trivially. However, `size_variants` is an array of objects (`[{type, url}]`), which has no single canonical query-string encoding.
 
-**Resolved:** 2026-04-11
+**Resolution:** The URL of each size variant is **base64-encoded** (standard base64, not URL-safe) and delivered as a flat named query parameter using the pattern `size_variant_{type}=<base64(url)>`. For example: `size_variant_original=aHR0cHM6Ly9leGFtcGxlLmNvbS91cGxvYWRzL29yaWdpbmFsL3Bob3RvLmpwZw==&size_variant_medium=aHR0cHM6Ly9leGFtcGxlLmNvbS91cGxvYWRzL21lZGl1bS9waG90by5qcGc=`. Base64 encoding avoids any URL-encoding ambiguity for complex S3/CDN URLs.
+
+**Spec Impact:** Updated FR-031-09, S-031-15, `WebhookPayloadBuilder`, and `WebhookDispatchJob`. Spec DSL updated.
+
+**Resolved:** 2026-03-25
 
 ---
 
-### ~~Q-030-78: "Album Access" Verification in Public/Private Mode for Face Gates~~ ✅ RESOLVED
+### ~~Q-030-01: Communication Protocol Between Python Face-Recognition Service and Lychee~~ ✅ RESOLVED
 
-**Feature:** 030 – AI Vision Service
+**Feature:** 030 – Facial Recognition
 **Priority:** High
 **Status:** Resolved
-**Opened:** 2026-04-11
-**Affects:** T-030-100 (PhotoPolicy), T-030-101 (AlbumPolicy), FR-030-43, FR-030-44
+**Opened:** 2026-03-15
 
-**Resolution:** Non-issue. There is no circular dependency — `AlbumPolicy::canViewAlbumPeople()` can call `$this->canAccess($user, $album)` directly on the same policy instance without going through `Gate::check()`. No proxy or workaround needed.
+**Resolution:** **Option A** — REST API with webhook callbacks. Lychee sends scan requests to the Python service's REST API; the Python service calls back to Lychee's `/api/v2/FaceDetection/results` endpoint when results are ready.
 
-**Resolved:** 2026-04-11
+**Rationale:** Simplest architecture, stateless, easy to debug, works with existing HTTP infrastructure. No additional broker dependencies.
+
+**Spec Impact:** FR-030-07, FR-030-08 confirmed with REST+callback pattern. Inter-service contract in spec appendix is authoritative.
+
+**Resolved:** 2026-03-15
 
 ---
 
-### ~~Q-030-79: BatchFaceRequest Album Context and ScanPhotosRequest Photo-Path Authorization~~ ✅ RESOLVED
+### ~~Q-030-02: Face Detection Trigger Mechanism~~ ✅ RESOLVED
 
-**Feature:** 030 – AI Vision Service
+**Feature:** 030 – Facial Recognition
+**Priority:** High
+**Status:** Resolved
+**Opened:** 2026-03-15
+
+**Resolution:** **Option A** — Multiple triggers: automatic on upload (via queue job), manual scan (photo/album), and admin bulk-scan command.
+
+**Rationale:** Covers all use cases. New photos auto-processed; existing libraries backfilled via bulk scan; manual scan for on-demand needs.
+
+**Spec Impact:** FR-030-08 (manual scan), FR-030-09 (bulk scan) confirmed. Auto-on-upload trigger added to plan as I7 sub-task.
+
+**Resolved:** 2026-03-15
+
+---
+
+### ~~Q-030-03: Face Clustering and Assignment Workflow~~ ✅ RESOLVED
+
+**Feature:** 030 – Facial Recognition
+**Priority:** High
+**Status:** Resolved
+**Opened:** 2026-03-15
+
+**Resolution:** **Option A** — Auto-cluster with manual confirmation. Python service clusters face embeddings and suggests groupings. Users review, name clusters (creating Person records), and can merge/split. Unknown faces grouped as "Unknown" until assigned.
+
+**Rationale:** Best balance of automation and user control. Leverages ML capability while keeping human in the loop.
+
+**Spec Impact:** Clustering result ingestion added to inter-service contract. UI for cluster review added to frontend increments.
+
+**Resolved:** 2026-03-15
+
+---
+
+### ~~Q-030-04: Face Embedding Storage Location~~ ✅ RESOLVED
+
+**Feature:** 030 – Facial Recognition
 **Priority:** Medium
 **Status:** Resolved
-**Opened:** 2026-04-11
-**Affects:** T-030-103, FR-030-47
+**Opened:** 2026-03-15
 
-**Resolution:** Option A for both cases — check ownership of the concrete **photo** when no album is available. `BatchFaceRequest`: when `album_id` is null (no album context), check `Gate::check(PhotoPolicy::CAN_ASSIGN_FACE_ON_PHOTO, $face->photo)` for each resolved face. `ScanPhotosRequest` photo-only path: check `Gate::check(PhotoPolicy::CAN_TRIGGER_SCAN_ON_PHOTO, $photo)` for each photo. FR-030-47 (c) and (d) updated accordingly.
+**Resolution:** **Option A** — Python service owns embeddings in its own storage. Lychee's `faces` table stores only bounding box, confidence, person_id, photo_id. No raw embedding data in Lychee DB.
 
-**Resolved:** 2026-04-11
+**Rationale:** Keeps Lychee DB lean; vector similarity search belongs in the Python service; clean separation of concerns.
+
+**Spec Impact:** DO-030-02 (Face) confirmed without embedding column. NFR-030-05 (versioned contract) covers embedding_id reference.
+
+**Resolved:** 2026-03-15
+
+---
+
+### ~~Q-030-05: "Non-Searchable" Person Semantics~~ ✅ RESOLVED
+
+**Feature:** 030 – Facial Recognition
+**Priority:** Medium
+**Status:** Resolved
+**Opened:** 2026-03-15
+
+**Resolution:** **Option A** — Non-searchable Person hidden from search results AND People browsing page for all users except the Person's linked User and admins. Faces still detected and stored internally.
+
+**Rationale:** Privacy-respecting; person can opt out of being discoverable; data remains available for the linked user and administrators.
+
+**Spec Impact:** FR-030-06 updated with full visibility rules. NFR-030-04 confirmed. S-030-05, S-030-15 test scenarios confirmed.
+
+**Resolved:** 2026-03-15
+
+---
+
+### ~~Q-030-06: Person-User Tie Purpose and Semantics~~ ✅ RESOLVED
+
+**Feature:** 030 – Facial Recognition
+**Priority:** Medium
+**Status:** Resolved
+**Opened:** 2026-03-15
+
+**Resolution:** **Option A (extended)** — Self-identification ("this Person is me") with two additions:
+1. **Admin override:** Admins can link/unlink any Person-User pair, overriding user claims.
+2. **Selfie-upload claim:** Users can upload a photo of themselves; the Python service matches the selfie against existing face embeddings to find and assign the matching Person record.
+
+**Rationale:** Self-identification enables privacy self-service and "find photos of me". Admin override provides governance. Selfie-upload leverages the face recognition service for convenient self-assignment without manual browsing.
+
+**Spec Impact:** FR-030-05 updated with admin override. New FR-030-12 added for selfie-upload claim flow. New API endpoint (API-030-13) and UI state (UI-030-07) added. Plan increment I5 extended with selfie-upload sub-tasks.
+
+**Resolved:** 2026-03-15
+
+---
+
+### ~~Q-030-07: How Does the Python Service Access Photo Files?~~ ✅ RESOLVED
+
+**Feature:** 030 – Facial Recognition
+**Priority:** High
+**Status:** Resolved
+**Opened:** 2026-03-15
+
+**Resolution:** **Option A** — Shared Docker volume. Both containers mount the same storage volume. The scan request includes a `photo_path` (filesystem path) instead of a URL. Python service reads directly from disk.
+
+**Rationale:** Fastest access; no auth complexity; works with private photos; no network overhead. Deployment requires both containers to share the photos volume.
+
+**Spec Impact:** Inter-service contract updated: `photo_url` replaced with `photo_path` in scan request. Deployment docs must specify shared volume configuration. NFR added for S3/remote storage documentation (FUSE mount or alternative).
+
+**Resolved:** 2026-03-15
+
+---
+
+### ~~Q-030-08: Permission Model for People/Face Operations~~ ✅ RESOLVED
+
+**Feature:** 030 – Facial Recognition
+**Priority:** High
+**Status:** Resolved
+**Opened:** 2026-03-15
+
+**Resolution:** **Option C** — Configurable via admin setting (`face_recognition_permission_mode`). Two modes:
+- **"open"** (default): Any authenticated user can perform all CRUD/assign/merge operations. Only bulk scan restricted to admin.
+- **"restricted"**: Photo-owner-centric with admin escalation:
+  - Create Person: Any authenticated user.
+  - Update/Delete Person: Linked User, creator, or admin.
+  - Assign Face: Photo owner or admin.
+  - Trigger scan: Photo/album owner or admin.
+  - Bulk scan: Admin only.
+  - Merge Persons: Admin only.
+  - Claim Person: Any authenticated user.
+
+**Rationale:** Accommodates both single-user/family instances (open mode) and multi-user deployments (restricted mode). Default is "open" since most Lychee instances are single-user.
+
+**Spec Impact:** New config entry `face_recognition_permission_mode` (enum: open, restricted). FR-030-05/08/10/11 updated with conditional authorization. New NFR for permission mode testing (both modes covered by feature tests).
+
+**Resolved:** 2026-03-15
+
+---
+
+### ~~Q-030-09: Face Crop Thumbnail Generation~~ ✅ RESOLVED
+
+**Feature:** 030 – Facial Recognition
+**Priority:** High
+**Status:** Resolved
+**Opened:** 2026-03-15
+
+**Resolution:** **Option B** — Server-side crop stored as a new asset. The Python service generates a cropped face thumbnail (150x150px) during face detection and includes it in the scan result callback. The crop is stored alongside size variants. The Face record includes a `crop_path` field.
+
+**Rationale:** Crisp thumbnails optimized for People page grid; fast rendering from small pre-generated files; Python service already has the image loaded during detection so the crop is essentially free.
+
+**Spec Impact:** DO-030-02 (Face) gains `crop_path` field. Inter-service contract updated: scan result includes `crop` (base64 JPEG) per face. New migration adds `crop_path` to faces table. I16 Python service includes crop generation.
+
+**Resolved:** 2026-03-15
+
+---
+
+### ~~Q-030-10: Non-Searchable Person Face Overlay Behavior~~ ✅ RESOLVED
+
+**Feature:** 030 – Facial Recognition
+**Priority:** Medium
+**Status:** Resolved
+**Opened:** 2026-03-15
+
+**Resolution:** **Option B (extended)** — Hide the overlay entirely for non-searchable persons, but include a summary indicator: "N faces detected but hidden for privacy reasons" displayed below the photo or in the faces info bar. The count does not reveal which specific persons are hidden.
+
+**Rationale:** Maximum privacy — no hint about which specific face was identified. The summary count maintains transparency about face detection having occurred without leaking person-specific data.
+
+**Spec Impact:** FR-030-04 updated: photo detail response excludes Face records for non-searchable persons (for unauthorized viewers), but includes `hidden_face_count` (integer). Frontend displays "{N} face(s) hidden for privacy" when count > 0. NFR-030-04 test cases updated.
+
+**Resolved:** 2026-03-15
+
+---
+
+### ~~Q-030-11: Selfie Image Lifecycle~~ ✅ RESOLVED
+
+**Feature:** 030 – Facial Recognition
+**Priority:** Medium
+**Status:** Resolved
+**Opened:** 2026-03-15
+
+**Resolution:** **Option A** — Discard immediately after match. The selfie is held in memory/temp storage only during the matching request. Once the Python service returns its result, the image is deleted. No permanent record.
+
+**Rationale:** Privacy-friendly; no unnecessary data retention; simpler storage. Users can re-upload if they want to retry.
+
+**Spec Impact:** FR-030-12 confirmed: selfie is transient. No storage schema changes needed for selfie retention. Implementation uses temp file or in-memory buffer.
+
+**Resolved:** 2026-03-15
+
+---
+
+### ~~Q-030-12: Selfie Match Inter-Service Contract~~ ✅ RESOLVED
+
+**Feature:** 030 – Facial Recognition
+**Priority:** Medium
+**Status:** Resolved
+**Opened:** 2026-03-15
+
+**Resolution:** **Option A** — Dedicated match endpoint on Python service. `POST /match` accepts an image file (multipart) and returns top-N matching embedding references with confidence scores.
+
+Contract:
+```json
+// Request: POST /match (multipart form with "image" file field)
+// Response:
+{
+  "matches": [
+    { "embedding_id": "emb_001", "person_suggestion": "cluster_42", "confidence": 0.963 },
+    { "embedding_id": "emb_002", "person_suggestion": "cluster_17", "confidence": 0.412 }
+  ]
+}
+```
+
+Lychee maps `embedding_id` back to Face records (which have person_id) to identify the matching Person. The `person_suggestion` field is advisory (from clustering) and may be null.
+
+**Rationale:** Clean separation; Python service owns matching logic; single round trip; Lychee just consumes results.
+
+**Spec Impact:** Inter-service contract appendix updated with `/match` endpoint. I17 Python service implements the endpoint. I5 Lychee SelfieClaimController consumes it.
+
+**Resolved:** 2026-03-15
+
+---
+
+### ~~Q-030-13: Embedding ID → Person Mapping Gap in Selfie Match Flow~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — Store `lychee_face_id` in Python's embedding DB. When Lychee ingests a scan callback it creates Face records and returns the `embedding_id → lychee_face_id` mapping in the HTTP 200 response body. Python persists each mapping. The `/match` endpoint returns `lychee_face_id` (not `embedding_id`); Lychee resolves `lychee_face_id → Face → person_id`.
+
+**Spec Impact:** Update `DetectCallbackPayload` response body to include `{"faces": [{"embedding_id": "...", "lychee_face_id": "..."}]}`. Update `MatchResult` Pydantic model: replace `embedding_id` with `lychee_face_id`. Update FR-030-12, API-030-13, I2, I8, inter-service contract.
+
+**Resolved:** 2026-03-17
+
+---
+
+### ~~Q-030-14: Re-scan Destroys Manual Face Assignments~~ ✅ RESOLVED
+
+**Resolution:** **Options A + C** — On re-scan, new faces are matched to existing faces by bounding box IoU (≥ threshold); matched old face's `person_id` is carried over to the new face record; truly gone faces are deleted. Additionally, if a photo has any faces with a `person_id` assigned, re-scan is blocked unless the request includes `force: true`. Without `force: true` a 409 Conflict is returned listing the number of assigned faces at risk.
+
+**Spec Impact:** Update FR-030-07 (re-scan idempotency now caveated with IoU preservation + force flag). Update S-030-14. Update `ProcessFaceDetectionResults` action description. Update API-030-10 to document optional `force` parameter.
+
+**Resolved:** 2026-03-17
+
+---
+
+### ~~Q-030-15: Two API Keys but Lychee Config Only Defines One~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — Single shared symmetric key for both directions. Header: `X-API-Key: <key>`. The key is defined in `.env` as `AI_VISION_API_KEY` (after Q-030-19 renaming). **Critical separation of concerns:** the AI vision callback endpoints (`POST /api/v2/FaceDetection/results`) are authenticated **exclusively** via the API key header — no user session, no admin session. Even authenticated admins cannot reach these endpoints through the normal auth middleware. Lychee-to-Python requests likewise send `X-API-Key` with the same shared key.
+
+**Spec Impact:** Update config migration to single key `ai_vision_api_key`. Add note that FaceDetection/results middleware skips session auth. Update NFR-030-07, I3, I4, I10, inter-service contract, AppSettings.
+
+**Resolved:** 2026-03-17
+
+---
+
+### ~~Q-030-16: Missing Face Deletion Endpoint for False Positives~~ ✅ RESOLVED
+
+**Resolution:** **Option C (dismiss-first)** — Users dismiss false positives via `PATCH /api/v2/Face/{id}` (toggles `is_dismissed`). Dismissed faces are hidden from face overlays and assignment UI. Admin can hard-delete all dismissed faces in bulk from the Maintenance page (a new maintenance action); this permanently removes the Face records + crop files.
+
+**Spec Impact:** Add `is_dismissed` boolean (default `false`) to DO-030-02 and Face migration. Add API-030-14 (`PATCH /api/v2/Face/{id}` dismiss toggle). Add admin maintenance action for bulk hard-delete of dismissed faces. Update UI-030-03 (face overlay hides dismissed faces).
+
+**Resolved:** 2026-03-17
+
+---
+
+### ~~Q-030-17: Error Callback Shape Undefined~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — Python posts an error callback payload to the same `callback_url`: `{"photo_id": "abc", "status": "error", "error_code": "corrupt_file", "message": "..."}`. Lychee sets `face_scan_status = failed`. Python defines `ErrorCallbackPayload` Pydantic model. No timeout mechanism; status transitions only occur via explicit callbacks.
+
+**Spec Impact:** Add `ErrorCallbackPayload` Pydantic model. Update FR-030-07 (result endpoint handles both success and error payloads). Update `face_scan_status` state machine in spec. Update I2, I10.
+
+**Resolved:** 2026-03-17
+
+---
+
+### ~~Q-030-18: Spec DSL Type Mismatch — Face.person_id~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — Fix `person_id` field in DO-030-02 DSL from `type: integer` to `type: string`.
+
+**Spec Impact:** Update DO-030-02 Spec DSL `person_id` type field. Low impact.
+
+**Resolved:** 2026-03-17
+
+---
+
+### ~~Q-030-19: Naming Inconsistency — FACE_* Prefix vs ai-vision-service~~ ✅ RESOLVED
+
+**Resolution:** **Option B** — Rename for future-proofing. Python env vars use `VISION_*` prefix; Lychee config keys use `ai_vision_*` prefix. All documentation, docker-compose, and AppSettings updated accordingly.
+
+**Spec Impact:** Rename `FACE_*` → `VISION_*` throughout Python service config and docker-compose. Rename `face_recognition_*` → `ai_vision_*` for all Lychee config keys. Update AppSettings `env_prefix`. Update all env variable tables in spec and docs.
+
+**Resolved:** 2026-03-17
+
+---
+
+### ~~Q-030-20: Permission Mode Scope per Operation Is Ambiguous~~ ✅ RESOLVED
+
+**Resolution:** **Option C** — Four-mode enum (`public`, `private`, `privacy-preserving`, `restricted`) with a per-operation matrix:
+
+| Operation          | public       | private      | privacy-preserving        | restricted                |
+|--------------------|--------------|--------------|---------------------------|---------------------------|
+| View People page   | guest        | logged users | photo/album owner + admin | admin only                |
+| View face overlays | album access | logged users | photo/album owner + admin | photo/album owner + admin |
+| Create/edit Person | logged users | logged users | photo/album owner + admin | admin only                |
+| Assign face        | logged users | logged users | photo/album owner + admin | admin only                |
+| Trigger scan       | logged users | logged users | photo/album owner + admin | photo/album owner + admin |
+| Claim person       | logged users | logged users | logged users              | all users                 |
+| Merge persons      | logged users | logged users | photo/album owner + admin | admin only                |
+
+**Spec Impact:** Update `ai_vision_permission_mode` to a 4-value enum. Update NFR-030-07 with full matrix. Update FR-030-08 authorization description. Update all controller authorization references (I7, I8, I9, I10).
+
+**Resolved:** 2026-03-17
+
+---
+
+### ~~Q-030-21: Missing Person Unclaim Endpoint~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — Add `DELETE /api/v2/Person/{id}/claim` as API-030-15. Removes `person.user_id` (sets to null). Linked user or admin only.
+
+**Spec Impact:** Add API-030-15 to API catalogue and Spec DSL routes. Update FR-030-05 to reference unclaim. Update I8.
+
+**Resolved:** 2026-03-17
+
+---
+
+### ~~Q-030-22: Merge Direction Ambiguity on API-030-06~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — `{id}` = target (kept). Body parameter renamed to `source_person_id`. Follows REST convention: the URL resource is the one preserved.
+
+**Spec Impact:** Update API-030-06 body param from `target_person_id` to `source_person_id`. Update FR-030-11. Update I8 and I14 (frontend merge action).
+
+**Resolved:** 2026-03-17
+
+---
+
+### ~~Q-030-23: face_scan_status State Machine Transitions Undefined~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — Explicit state machine:
+1. `null → pending`: set on **dispatch** (when the scan job is enqueued, before the HTTP request to Python is sent).
+2. `pending → completed`: set when Lychee receives a **success** callback from the Python service.
+3. `pending → failed`: set when Lychee receives an **error** callback from Python. No timeout mechanism (async model; Lychee never waits for a response).
+4. Retry/re-scan: `failed → pending` (retry) and `completed → pending` (re-scan) are both **allowed**.
+5. Duplicate pending: **reset** to `pending` (do not ignore); the earlier `pending` could be a silent timeout.
+
+**Spec Impact:** Document state machine in FR-030-07/NFR section. Update I10, I11, DispatchFaceScanJob, ProcessFaceDetectionResults.
+
+**Resolved:** 2026-03-17
+
+---
+
+### ~~Q-030-24: Similar Faces in Assignment Modal — Data Source Unspecified~~ ✅ RESOLVED
+
+**Resolution:** **Option A, stored in a dedicated suggestions table** — Python includes a `suggestions` array per face in the `DetectCallbackPayload`. Lychee persists these in a `face_suggestions` table (`face_id`, `person_id`, `confidence`). The assignment modal reads from this table. New domain object `FaceSuggestion` added.
+
+**Spec Impact:** Add `FaceSuggestion` domain object (DO-030-05). Add `face_suggestions` table to migrations. Update `FaceResult` Pydantic model to include `suggestions: list[SuggestionResult]`. Update UI-030-04. Update I2, I10, I16.
+
+**Resolved:** 2026-03-17
+
+---
+
+### ~~Q-030-25: Crop Storage Path Pattern Undefined~~ ✅ RESOLVED
+
+**Resolution:** **Option B** — Crops stored at `uploads/faces/{face_id}.jpg` in a dedicated `faces/` subdirectory under the main uploads directory. Served via a separate media controller route (not the standard photo size-variant pipeline).
+
+**Spec Impact:** Update DO-030-02 `crop_path` description. Update `crop_url` accessor. Add a new route for serving face crops. Update I6, I10, I16.
+
+**Resolved:** 2026-03-17
+
+---
+
+### ~~Q-030-26: Python Concurrency Model — CPU-Bound Face Detection Blocks Event Loop~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — inference runs in a `ThreadPoolExecutor` via `asyncio.run_in_executor`, keeping the FastAPI event loop responsive while CPU-bound detection executes on a background thread. Pool size is configurable via `VISION_FACE_THREAD_POOL_SIZE` env var (default `1`). The service must emit structured log entries at three checkpoints: job received (`INFO`), detection started (`INFO`), and detection finished (`INFO` with face count and elapsed milliseconds). Callback failures are logged at `ERROR` level.
+
+**Spec Impact:** Add `thread_pool_size: int = 1` to `AppSettings`. Add `VISION_FACE_THREAD_POOL_SIZE` to env var table. Add "Concurrency Model" subsection to Python Service Technical Specification documenting the `run_in_executor` pattern and the structured logging checkpoints table.
+
+**Resolved:** 2026-03-17
+
+---
+
+### ~~Q-030-27: Callback Retry Policy — Stuck-Pending Risk When Python→Lychee POST Fails~~ ✅ RESOLVED
+
+**Resolution:** **Option B** — fire-and-forget. Python makes one callback attempt. If the request fails (network error, 5xx), the failure is logged at `ERROR` level and discarded. The photo's `face_scan_status` remains `pending` indefinitely; operators must reset stuck records manually. No retry logic in the Python service; no outbox table.
+
+**Spec Impact:** Document fire-and-forget policy in the "Concurrency Model" subsection. Add `ERROR` log entry for callback failure in the structured logging table. Note in state machine documentation that `pending` can become permanently stuck on callback failure; add an operator note.
+
+**Resolved:** 2026-03-17
+
+---
+
+### ~~Q-030-28: Security — `photo_path` Path Traversal and `callback_url` SSRF~~ ✅ RESOLVED
+
+**Resolution:** **Option A, extended** — validate `photo_path` resolves within `VISION_FACE_PHOTOS_PATH` (resolve symlinks, reject traversals with 422). `callback_url` is **removed from the `DetectRequest` body entirely** — Python reads the callback endpoint from `VISION_FACE_LYCHEE_API_URL` env var. Since the callback URL is operator-supplied via env and not present in the request payload, the SSRF vector is eliminated structurally rather than via allowlist validation.
+
+**Spec Impact:** Remove `callback_url` field from `DetectRequest` Pydantic model. Remove `callback_url` from Scan Request JSON example. Add path-traversal validation note to `DetectRequest.photo_path` field comment. Update inter-service contract description and the scan request JSON example.
+
+**Resolved:** 2026-03-17
+
+---
+
+### ~~Q-030-29: Suggestion Items — `embedding_id` vs. `lychee_face_id` in Callback Suggestions~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — Python sends `lychee_face_id` in suggestion items (it already stores them from prior callback 200 responses). Rename `SuggestionResult.embedding_id` → `lychee_face_id`. Lychee stores `(face_id, suggested_face_id, confidence)` in `face_suggestions` using `lychee_face_id` directly — no cross-callback resolution needed.
+
+**Spec Impact:** Rename `SuggestionResult.embedding_id` → `lychee_face_id` in Pydantic schemas. Update suggestion examples in the callback JSON. Update `FaceResult.suggestions` comment. Update `face_suggestions` table schema note (`DO-030-05`).
+
+**Resolved:** 2026-03-17
+
+---
+
+### ~~Q-030-30: Clustering Trigger — When Does DBSCAN Run and How Does It Feed Suggestions?~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — per-scan suggestions use **nearest-neighbour cosine similarity search** against stored embeddings via `sqlite-vec`/`pgvector` (fast, inline with the detection job). DBSCAN is a **separate offline batch operation** grouping unassigned faces for the People browse UI; triggered manually via `POST /cluster` and never invoked per scan request.
+
+**Spec Impact:** Update `clustering/clusterer.py` description in project structure (offline batch, not per-scan). Update DBSCAN tech stack table entry. Add `POST /cluster` to routes list. Clarify `SuggestionResult` data source as NN cosine similarity search.
+
+**Resolved:** 2026-03-17
+
+---
+
+### ~~Q-030-31: `VISION_CONFIDENCE_THRESHOLD` — Detection Filter vs. Matching Threshold~~ ✅ RESOLVED
+
+**Resolution:** **Option B** — two separate thresholds. Rename `VISION_CONFIDENCE_THRESHOLD` → `VISION_FACE_DETECTION_THRESHOLD` (bounding box filter: faces below threshold excluded from callback payloads) and add `VISION_FACE_MATCH_THRESHOLD` (similarity search cutoff: suggestions and selfie match results below threshold excluded). Independent configuration allows operators to tune detection sensitivity and identity matching independently.
+
+**Spec Impact:** Remove `VISION_CONFIDENCE_THRESHOLD` from env var table. Add `VISION_FACE_DETECTION_THRESHOLD` (default `0.5`) and `VISION_FACE_MATCH_THRESHOLD` (default `0.5`). Rename `AppSettings.confidence_threshold` → `detection_threshold` + add `match_threshold`. Update `app/detection/detector.py` and `app/matching/matcher.py` references.
+
+**Resolved:** 2026-03-17
+
+---
+
+### ~~Q-030-32: InsightFace Model Acquisition — Baked Into Docker Image vs. Runtime Download~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — bake `buffalo_l` model weights into the Docker image at build time via a `RUN` step in the builder stage. The multi-stage Dockerfile copies the downloaded model folder from builder to runtime. Image is significantly larger (~1GB+) but starts instantly and works in airgapped environments. Model updates require an image rebuild (acceptable given model stability).
+
+**Spec Impact:** Update Dockerfile spec: add `RUN uv run python -c "..."` model download step in builder stage; add `COPY --from=builder /root/.insightface /root/.insightface` in runtime stage. Note model size and rebuild requirement in Docker configuration section.
+
+**Resolved:** 2026-03-17
 
 ---
 
@@ -621,63 +1090,132 @@ Today's `GET /api/v2/Admin/Stats` spec line says "Auth: admin (existing `AdminMi
 
 ---
 
-### ~~Q-030-26: Python Concurrency Model — CPU-Bound Face Detection Blocks Event Loop~~ ✅ RESOLVED
+### ~~Q-030-46: `FaceResource` (DO-030-04) Field Specification Missing~~ ✅ RESOLVED
 
-**Resolution:** **Option A** — inference runs in a `ThreadPoolExecutor` via `asyncio.run_in_executor`, keeping the FastAPI event loop responsive while CPU-bound detection executes on a background thread. Pool size is configurable via `VISION_FACE_THREAD_POOL_SIZE` env var (default `1`). The service must emit structured log entries at three checkpoints: job received (`INFO`), detection started (`INFO`), and detection finished (`INFO` with face count and elapsed milliseconds). Callback failures are logged at `ERROR` level.
+**Resolution:** **Option A** — suggestions are embedded in FaceResource. Fields exposed: `id` (Face ID), `photo_id`, `person_id` (nullable), `x`/`y`/`width`/`height` (float 0.0–1.0 bounding box), `confidence`, `is_dismissed`, `crop_url` (computed nginx-direct path from crop_token). Embedded `suggestions[]` array — each item: `suggested_face_id`, `crop_url` (suggested face's own crop or null), `person_name` (nullable, LEFT JOIN on persons), `confidence`. Suggestions are always included (pre-computed, stored in `face_suggestions`) — no N+1 risk.
 
-**Spec Impact:** Add `thread_pool_size: int = 1` to `AppSettings`. Add `VISION_FACE_THREAD_POOL_SIZE` to env var table. Add "Concurrency Model" subsection to Python Service Technical Specification documenting the `run_in_executor` pattern and the structured logging checkpoints table.
+**Spec Impact:** Expanded DO-030-04 in narrative domain objects table.
 
-**Resolved:** 2026-03-17
-
----
-
-### ~~Q-030-27: Callback Retry Policy — Stuck-Pending Risk When Python→Lychee POST Fails~~ ✅ RESOLVED
-
-**Resolution:** **Option B** — fire-and-forget. Python makes one callback attempt. If the request fails (network error, 5xx), the failure is logged at `ERROR` level and discarded. The photo's `face_scan_status` remains `pending` indefinitely; operators must reset stuck records manually. No retry logic in the Python service; no outbox table.
-
-**Spec Impact:** Document fire-and-forget policy in the "Concurrency Model" subsection. Add `ERROR` log entry for callback failure in the structured logging table. Note in state machine documentation that `pending` can become permanently stuck on callback failure; add an operator note.
-
-**Resolved:** 2026-03-17
+**Resolved:** 2026-03-18
 
 ---
 
-### ~~Q-030-28: Security — `photo_path` Path Traversal and `callback_url` SSRF~~ ✅ RESOLVED
+### ~~Q-030-47: Missing Telemetry Events for Face Dismiss/Undismiss and Bulk Delete~~ ✅ RESOLVED
 
-**Resolution:** **Option A, extended** — validate `photo_path` resolves within `VISION_FACE_PHOTOS_PATH` (resolve symlinks, reject traversals with 422). `callback_url` is **removed from the `DetectRequest` body entirely** — Python reads the callback endpoint from `VISION_FACE_LYCHEE_API_URL` env var. Since the callback URL is operator-supplied via env and not present in the request payload, the SSRF vector is eliminated structurally rather than via allowlist validation.
+**Resolution:** **Option A** — three new events added: `TE-030-10` → `face.dismissed` (`face_id`, `photo_id`), `TE-030-11` → `face.undismissed` (`face_id`, `photo_id`), `TE-030-12` → `face.bulk_deleted` (`deleted_count`).
 
-**Spec Impact:** Remove `callback_url` field from `DetectRequest` Pydantic model. Remove `callback_url` from Scan Request JSON example. Add path-traversal validation note to `DetectRequest.photo_path` field comment. Update inter-service contract description and the scan request JSON example.
+**Spec Impact:** Added TE-030-10, TE-030-11, TE-030-12 to telemetry events table and DSL.
 
-**Resolved:** 2026-03-17
-
----
-
-### ~~Q-030-29: Suggestion Items — `embedding_id` vs. `lychee_face_id` in Callback Suggestions~~ ✅ RESOLVED
-
-**Resolution:** **Option A** — Python sends `lychee_face_id` in suggestion items (it already stores them from prior callback 200 responses). Rename `SuggestionResult.embedding_id` → `lychee_face_id`. Lychee stores `(face_id, suggested_face_id, confidence)` in `face_suggestions` using `lychee_face_id` directly — no cross-callback resolution needed.
-
-**Spec Impact:** Rename `SuggestionResult.embedding_id` → `lychee_face_id` in Pydantic schemas. Update suggestion examples in the callback JSON. Update `FaceResult.suggestions` comment. Update `face_suggestions` table schema note (`DO-030-05`).
-
-**Resolved:** 2026-03-17
+**Resolved:** 2026-03-18
 
 ---
 
-### ~~Q-030-30: Clustering Trigger — When Does DBSCAN Run and How Does It Feed Suggestions?~~ ✅ RESOLVED
+### ~~Q-030-48: No CLI/UI Path for Photos Stuck in `pending` Indefinitely~~ ✅ RESOLVED
 
-**Resolution:** **Option A** — per-scan suggestions use **nearest-neighbour cosine similarity search** against stored embeddings via `sqlite-vec`/`pgvector` (fast, inline with the detection job). DBSCAN is a **separate offline batch operation** grouping unassigned faces for the People browse UI; triggered manually via `POST /cluster` and never invoked per scan request.
+**Resolution:** **Options B + C** combined — (B) `CLI-030-03` extended with optional `--stuck-pending [--older-than=N]` flag to reset pending records older than N minutes (default 60) back to `null`. (C) Admin Maintenance page action via **`GET /api/v2/Maintenance::resetStuckFaces`** (check: count of stuck records) + **`POST /api/v2/Maintenance::resetStuckFaces`** (do: reset them). Follows the existing check/do Maintenance route pattern. Endpoint added as API-030-17 / API-030-17b.
 
-**Spec Impact:** Update `clustering/clusterer.py` description in project structure (offline batch, not per-scan). Update DBSCAN tech stack table entry. Add `POST /cluster` to routes list. Clarify `SuggestionResult` data source as NN cosine similarity search.
+**Spec Impact:** Extended CLI-030-03 description. Added API-030-17 and API-030-17b to API catalogue and DSL routes.
 
-**Resolved:** 2026-03-17
+**Resolved:** 2026-03-18
 
 ---
 
-### ~~Q-030-31: `VISION_CONFIDENCE_THRESHOLD` — Detection Filter vs. Matching Threshold~~ ✅ RESOLVED
+### ~~Q-030-49: Cluster Storage Model — Resolved~~ ✅ RESOLVED — How Should the Backend Know About Existing Clusters?
 
-**Resolution:** **Option B** — two separate thresholds. Rename `VISION_CONFIDENCE_THRESHOLD` → `VISION_FACE_DETECTION_THRESHOLD` (bounding box filter: faces below threshold excluded from callback payloads) and add `VISION_FACE_MATCH_THRESHOLD` (similarity search cutoff: suggestions and selfie match results below threshold excluded). Independent configuration allows operators to tune detection sensitivity and identity matching independently.
+**Context:** FR-030-15 and API-030-18/19/20 specify a Cluster Review page. The current spec says `cluster_id` is "derived from the suggestion graph" (connected components of `face_suggestions`). This approach has three fatal flaws: (1) O(V+E) graph traversal per `GET /clusters` request violates NFR-030-02; (2) SHA1-of-sorted-face-IDs IDs are unstable — they change when any face in the cluster is dismissed or assigned, breaking `POST .../clusters/{id}/assign`; (3) pagination over connected components requires materialising all clusters first.
 
-**Spec Impact:** Remove `VISION_CONFIDENCE_THRESHOLD` from env var table. Add `VISION_FACE_DETECTION_THRESHOLD` (default `0.5`) and `VISION_FACE_MATCH_THRESHOLD` (default `0.5`). Rename `AppSettings.confidence_threshold` → `detection_threshold` + add `match_threshold`. Update `app/detection/detector.py` and `app/matching/matcher.py` references.
+**Option A (Recommended) — `cluster_label` nullable INT column on `faces`**
+- DBSCAN already produces integer labels (0, 1, 2... for clusters; -1 = noise). Persist them directly.
+- `POST /cluster-results` payload carries `{face_id, cluster_label}[]` alongside suggestion pairs; PHP bulk-updates `faces.cluster_label`.
+- `GET /clusters` = standard `GROUP BY cluster_label` SQL with `LIMIT/OFFSET`; composite index on `(cluster_label, person_id, is_dismissed)`.
+- `cluster_id` in the API = `cluster_label` integer (stable between clustering runs).
+- Assign/dismiss = `WHERE cluster_label = ?`.
+- Stale for faces added after last clustering run (they have `cluster_label = NULL` and don't appear until re-cluster). Acceptable — Cluster Review is explicitly post-clustering UX.
+- **One nullable column. No new model. Trivial pagination.**
 
-**Resolved:** 2026-03-17
+**Option B — Separate `face_clusters` table + FK on `faces`**
+- `face_clusters`: id (ULID), run_at, size (cached).
+- `faces.cluster_id` FK → `face_clusters.id`.
+- Pros: opaque ULID IDs, can record run timestamp. Cons: extra table + model, more complex ingestion, size cache goes stale on dismiss/assign. Not worth the complexity over A.
+
+**Option C — Keep as-is (on-the-fly BFS/DFS over `face_suggestions`)**
+- Always reflects current suggestion relationships (no staleness).
+- Fatal: O(V+E) per page load, unstable IDs, pagination infeasible. Violates NFR-030-02. **Not viable at scale.**
+
+**Required spec changes if Option A adopted:**
+- `DO-030-02`: add `cluster_label` (nullable INT) to Face
+- `DO-030-06` / migration: add `cluster_label INT NULL` column + composite index `(cluster_label, person_id, is_dismissed)` on `faces`
+- `FR-030-13` (`POST /cluster-results`): body gains `{face_id: str, cluster_label: int | null}[]` alongside suggestion pairs
+- `FR-030-15` / API-030-18/19/20: `cluster_id` = `cluster_label` integer; remove "opaque stable identifier derived from the suggestion graph" language; add note that noisy faces (`cluster_label = NULL`) excluded from Cluster Review
+
+
+### ~~Q-030-50: `PersonResource.representative_crop_url` — Selection Rule Unspecified~~ ✅ RESOLVED
+
+**Resolution:** **Options A + C** combined. Default logic uses highest-confidence non-dismissed face (`ORDER BY confidence DESC LIMIT 1`). A `representative_face_id` nullable FK→`faces` ON DELETE SET NULL is also added to the `persons` table (DO-030-08, T-030-53), allowing admins/users to override the representative via `PATCH /Person/{id}`. `PersonResource` uses the FK if set (and the referenced Face has a `crop_token`); otherwise falls back to the highest-confidence SELECT. Captured in DO-030-01, DO-030-03, DO-030-08, T-030-10 (note), T-030-18, T-030-53.
+
+**Context:** DO-030-03 (`PersonResource`) lists `representative_crop_url` as a field. T-030-18 mentions it. The spec has no rule for *which* Face crop is chosen as representative. `PersonCard.vue` uses it as the person's avatar on the People page.
+
+**Impact:** If implementors pick different strategies independently, the result will differ from what product design expects. Affects I6 (FaceResource), I13 (People page thumbnails).
+
+**Option A (Recommended) — highest-confidence face crop**
+- `SELECT crop_token FROM faces WHERE person_id = ? AND is_dismissed = false AND crop_token IS NOT NULL ORDER BY confidence DESC LIMIT 1`
+- Deterministic, stable once detection quality is good, no additional sort column needed.
+
+**Option B — most-recently added face crop**
+- `ORDER BY created_at DESC LIMIT 1`
+- Reflects the latest photo that person appeared in — may be more "current" but less relevant.
+
+**Option C — null until user explicitly sets a representative face**
+- Add a `representative_face_id` nullable FK on `persons` table, set via a new PATCH sub-action.
+- Fully explicit but requires extra migration and UI affordance.
+
+**Affects:** DO-030-03, T-030-18, PersonResource, PersonCard.vue.
+
+---
+
+### ~~Q-030-51: `ai_vision_enabled` / `ai_vision_face_enabled` Gating Hierarchy~~ ✅ RESOLVED
+
+**Resolution:** **Option A** — compound gate. All `ai_vision_face_*` functionality is implicitly gated on `ai_vision_enabled = 1`. Any code path that gates on `ai_vision_face_enabled` must first confirm `ai_vision_enabled = 1`. If `ai_vision_enabled = 0`, all AI Vision endpoints return 503 / UI hides all AI Vision elements, regardless of `ai_vision_face_enabled`. Captured in NFR-030-10 and config table note for `ai_vision_face_enabled`.
+
+**Context:** T-030-12 adds two separate config flags: `ai_vision_enabled` (global feature kill-switch for the whole AI Vision system) and `ai_vision_face_enabled` (specifically enables face detection). T-030-29 fires auto-scan when `ai_vision_face_enabled = 1`, but no task or spec explicitly states that `ai_vision_face_enabled` must ALSO check `ai_vision_enabled` first. An implementor could check only one flag or check both.
+
+**Impact:** If `ai_vision_enabled = 0` but `ai_vision_face_enabled = 1`, undefined behaviour. Affects I8, I9, I10, I17 (every place that gates on the config).
+
+**Option A (Recommended) — `ai_vision_face_enabled` implies `ai_vision_enabled`; guard with both**
+- Any code path that checks `ai_vision_face_enabled` must first confirm `ai_vision_enabled`. Documented as a compound gate in NFR or as a middleware.
+- Spec adds: "All `ai_vision_face_*` functionality is implicitly gated on `ai_vision_enabled = 1`."
+
+**Option B — single flag; remove `ai_vision_enabled`**
+- Since only face detection exists now, `ai_vision_face_enabled` is the only effective toggle. `ai_vision_enabled` is removed or deferred to when a second AI Vision feature ships.
+- Simpler, but loses the global kill-switch if other AI features follow.
+
+**Option C — independent flags; document the combination table**
+- `ai_vision_enabled` controls API availability (503 when off). `ai_vision_face_enabled` controls auto-on-upload and People page visibility. Both can vary independently.
+
+**Affects:** FR-030-08, NFR-030-03, T-030-12, T-030-29, T-030-38, FaceDetectionController, FaceDetectionService.ts.
+
+---
+
+### ~~Q-030-52: Embedding Deletion Dispatch Hook — Observer vs. Photo Pipeline~~ ✅ RESOLVED
+
+**Resolution:** **Option B** — no Face model observer. Two explicit call-sites: (1) `destroyDismissed` action — collect dismissed face IDs before `Face::where('is_dismissed', true)->delete()`, dispatch `DeleteFaceEmbeddingsJob`; (2) `PhotoObserver::deleting` — collect `$photo->faces()->pluck('id')` before cascade, dispatch batch job. Captured in FR-030-14 and T-030-49.
+
+**Context:** T-030-49 (FR-030-14) specifies dispatching `DeleteFaceEmbeddingsJob` when Face records are hard-deleted. The task says "Face model observer `deleting` event, **or** by hooking into the Photo delete pipeline." These are architecturally different:
+
+- **Observer (`deleting`)**: fires per-row; requires N individual event firings for a batch delete; works for both cascade-from-Photo and admin bulk-delete paths uniformly.
+- **Photo pipeline hook**: collects all `face_ids` before the cascade delete, dispatches one batch job; avoids N observer firings but only covers Photo→Face cascade. The admin `destroyDismissed` path still needs its own dispatch.
+
+**Impact:** The observer approach fires for every delete path automatically but causes N jobs for a batch Photo cascade. The pipeline approach is more efficient but duplicates dispatch logic. Affects I21 (PHP `DeleteFaceEmbeddingsJob`), T-030-49.
+
+**Option A (Recommended) — Observer on `deleting`, but coalesce with batch dispatch**
+- Register a `Face` model observer. On `deleting`, collect IDs into a static `$pendingDeletion` buffer. A `deleted` static hook (or `booted` teardown) dispatches one job for the full batch at the end of the request lifecycle. Handles all delete paths without duplicating logic.
+
+**Option B — No observer; explicit dispatch at each call-site**
+- `destroyDismissed`: collects IDs before delete, dispatches one job explicitly.
+- Photo delete: `PhotoObserver::deleting` collects `$photo->faces()->pluck('id')` before cascade, dispatches job.
+- Simpler per-path but requires remembering to add dispatch at every future Face-delete call-site.
+
+**Affects:** FR-030-14, T-030-49, I21, Face model observer, PhotoObserver, `destroyDismissed` action.
 
 ---
 
@@ -1036,496 +1574,93 @@ Today's `GET /api/v2/Admin/Stats` spec line says "Auth: admin (existing `AdminMi
 
 **Resolved:** 2026-04-04
 
-### ~~Q-030-50: `PersonResource.representative_crop_url` — Selection Rule Unspecified~~ ✅ RESOLVED
+### ~~Q-030-74: PersonDetail Lightbox Navigation Strategy~~ ✅ RESOLVED
 
-**Resolution:** **Options A + C** combined. Default logic uses highest-confidence non-dismissed face (`ORDER BY confidence DESC LIMIT 1`). A `representative_face_id` nullable FK→`faces` ON DELETE SET NULL is also added to the `persons` table (DO-030-08, T-030-53), allowing admins/users to override the representative via `PATCH /Person/{id}`. `PersonResource` uses the FK if set (and the referenced Face has a `crop_token`); otherwise falls back to the highest-confidence SELECT. Captured in DO-030-01, DO-030-03, DO-030-08, T-030-10 (note), T-030-18, T-030-53.
+**Feature:** 030 – AI Vision Service  
+**Priority:** High  
+**Status:** Resolved  
+**Opened:** 2026-04-07  
+**Affects:** T-030-85 (I35), FR-030-39
 
-**Context:** DO-030-03 (`PersonResource`) lists `representative_crop_url` as a field. T-030-18 mentions it. The spec has no rule for *which* Face crop is chosen as representative. `PersonCard.vue` uses it as the person's avatar on the People page.
+**Resolution:** **Option A (server-side)** — `GET /Person/{id}/photos` computes and includes `next_photo_id` and `previous_photo_id` on each `PhotoResource`, ordered sequentially by collection position (access-filtered). First photo: `previous_photo_id = null`; last photo: `next_photo_id = null`. `PhotoPanel.vue` then uses these person-relative IDs natively for navigation within the person's collection. No client-side monkey-patching required.
 
-**Impact:** If implementors pick different strategies independently, the result will differ from what product design expects. Affects I6 (FaceResource), I13 (People page thumbnails).
+**Spec Impact:** Updated FR-030-03 success path to note that each `PhotoResource` includes `next_photo_id`/`previous_photo_id` relative to the person's collection. Updated FR-030-39 success path. Updated S-030-55 scenario. Updated plan.md I12 steps and exit criteria. Updated T-030-32 (test for next/previous IDs), T-030-33 (implementation), T-030-85 (lightbox navigation note).
 
-**Option A (Recommended) — highest-confidence face crop**
-- `SELECT crop_token FROM faces WHERE person_id = ? AND is_dismissed = false AND crop_token IS NOT NULL ORDER BY confidence DESC LIMIT 1`
-- Deterministic, stable once detection quality is good, no additional sort column needed.
-
-**Option B — most-recently added face crop**
-- `ORDER BY created_at DESC LIMIT 1`
-- Reflects the latest photo that person appeared in — may be more "current" but less relevant.
-
-**Option C — null until user explicitly sets a representative face**
-- Add a `representative_face_id` nullable FK on `persons` table, set via a new PATCH sub-action.
-- Fully explicit but requires extra migration and UI affordance.
-
-**Affects:** DO-030-03, T-030-18, PersonResource, PersonCard.vue.
+**Resolved:** 2026-04-07
 
 ---
 
-### ~~Q-030-51: `ai_vision_enabled` / `ai_vision_face_enabled` Gating Hierarchy~~ ✅ RESOLVED
+### ~~Q-030-75: FaceCluster Detail View — Dialog vs. Sub-Route~~ ✅ RESOLVED
 
-**Resolution:** **Option A** — compound gate. All `ai_vision_face_*` functionality is implicitly gated on `ai_vision_enabled = 1`. Any code path that gates on `ai_vision_face_enabled` must first confirm `ai_vision_enabled = 1`. If `ai_vision_enabled = 0`, all AI Vision endpoints return 503 / UI hides all AI Vision elements, regardless of `ai_vision_face_enabled`. Captured in NFR-030-10 and config table note for `ai_vision_face_enabled`.
+**Feature:** 030 – AI Vision Service  
+**Priority:** Medium  
+**Status:** Resolved  
+**Opened:** 2026-04-07  
+**Affects:** T-030-78 (I32), FR-030-29
 
-**Context:** T-030-12 adds two separate config flags: `ai_vision_enabled` (global feature kill-switch for the whole AI Vision system) and `ai_vision_face_enabled` (specifically enables face detection). T-030-29 fires auto-scan when `ai_vision_face_enabled = 1`, but no task or spec explicitly states that `ai_vision_face_enabled` must ALSO check `ai_vision_enabled` first. An implementor could check only one flag or check both.
+**Resolution:** **Option A** — PrimeVue `<Dialog>`. Clicking a cluster card opens a Dialog that fetches all faces via `GET /FaceDetection/clusters/{cluster_id}/faces`. URL does not change. No routing changes needed.
 
-**Impact:** If `ai_vision_enabled = 0` but `ai_vision_face_enabled = 1`, undefined behaviour. Affects I8, I9, I10, I17 (every place that gates on the config).
+**Spec Impact:** Updated FR-030-29 requirement and success path to specify PrimeVue Dialog. Updated plan.md I32 step 3. Updated T-030-78 intent (Dialog only, sub-route option removed).
 
-**Option A (Recommended) — `ai_vision_face_enabled` implies `ai_vision_enabled`; guard with both**
-- Any code path that checks `ai_vision_face_enabled` must first confirm `ai_vision_enabled`. Documented as a compound gate in NFR or as a middleware.
-- Spec adds: "All `ai_vision_face_*` functionality is implicitly gated on `ai_vision_enabled = 1`."
-
-**Option B — single flag; remove `ai_vision_enabled`**
-- Since only face detection exists now, `ai_vision_face_enabled` is the only effective toggle. `ai_vision_enabled` is removed or deferred to when a second AI Vision feature ships.
-- Simpler, but loses the global kill-switch if other AI features follow.
-
-**Option C — independent flags; document the combination table**
-- `ai_vision_enabled` controls API availability (503 when off). `ai_vision_face_enabled` controls auto-on-upload and People page visibility. Both can vary independently.
-
-**Affects:** FR-030-08, NFR-030-03, T-030-12, T-030-29, T-030-38, FaceDetectionController, FaceDetectionService.ts.
+**Resolved:** 2026-04-07
 
 ---
 
-### ~~Q-030-52: Embedding Deletion Dispatch Hook — Observer vs. Photo Pipeline~~ ✅ RESOLVED
+### ~~Q-030-76: People.vue Context Menu "Assign to User" Action~~ ✅ RESOLVED
 
-**Resolution:** **Option B** — no Face model observer. Two explicit call-sites: (1) `destroyDismissed` action — collect dismissed face IDs before `Face::where('is_dismissed', true)->delete()`, dispatch `DeleteFaceEmbeddingsJob`; (2) `PhotoObserver::deleting` — collect `$photo->faces()->pluck('id')` before cascade, dispatch batch job. Captured in FR-030-14 and T-030-49.
+**Feature:** 030 – AI Vision Service  
+**Priority:** Medium  
+**Status:** Resolved  
+**Opened:** 2026-04-07  
+**Affects:** T-030-79 (I33), FR-030-32, FR-030-05
 
-**Context:** T-030-49 (FR-030-14) specifies dispatching `DeleteFaceEmbeddingsJob` when Face records are hard-deleted. The task says "Face model observer `deleting` event, **or** by hooking into the Photo delete pipeline." These are architecturally different:
+**Resolution:** **Option A** — User-picker dialog. "Assign to user" (admin-only) opens a PrimeVue `<Dialog>` with an autocomplete Dropdown listing user accounts (name + email). On confirm, calls `PATCH /Person/{id}` with `{ user_id: selectedUserId }`. Requires extending `UpdatePersonRequest` to accept nullable `user_id` with an admin-only validation gate.
 
-- **Observer (`deleting`)**: fires per-row; requires N individual event firings for a batch delete; works for both cascade-from-Photo and admin bulk-delete paths uniformly.
-- **Photo pipeline hook**: collects all `face_ids` before the cascade delete, dispatches one batch job; avoids N observer firings but only covers Photo→Face cascade. The admin `destroyDismissed` path still needs its own dispatch.
+**Spec Impact:** Updated FR-030-32 success path to describe the user-picker dialog and `PATCH /Person/{id}` with `user_id`. Updated plan.md I33 step 1. Updated T-030-79 intent (user-picker dialog, UpdatePersonRequest extension noted).
 
-**Impact:** The observer approach fires for every delete path automatically but causes N jobs for a batch Photo cascade. The pipeline approach is more efficient but duplicates dispatch logic. Affects I21 (PHP `DeleteFaceEmbeddingsJob`), T-030-49.
-
-**Option A (Recommended) — Observer on `deleting`, but coalesce with batch dispatch**
-- Register a `Face` model observer. On `deleting`, collect IDs into a static `$pendingDeletion` buffer. A `deleted` static hook (or `booted` teardown) dispatches one job for the full batch at the end of the request lifecycle. Handles all delete paths without duplicating logic.
-
-**Option B — No observer; explicit dispatch at each call-site**
-- `destroyDismissed`: collects IDs before delete, dispatches one job explicitly.
-- Photo delete: `PhotoObserver::deleting` collects `$photo->faces()->pluck('id')` before cascade, dispatches job.
-- Simpler per-path but requires remembering to add dispatch at every future Face-delete call-site.
-
-**Affects:** FR-030-14, T-030-49, I21, Face model observer, PhotoObserver, `destroyDismissed` action.
+**Resolved:** 2026-04-07
 
 ---
 
-### ~~Q-030-49: Cluster Storage Model — Resolved~~ ✅ RESOLVED — How Should the Backend Know About Existing Clusters?
+### ~~Q-030-77: Admin/Feature Short-Circuit Mechanism in PhotoPolicy and AlbumPolicy Face Gates~~ ✅ RESOLVED
 
-**Context:** FR-030-15 and API-030-18/19/20 specify a Cluster Review page. The current spec says `cluster_id` is "derived from the suggestion graph" (connected components of `face_suggestions`). This approach has three fatal flaws: (1) O(V+E) graph traversal per `GET /clusters` request violates NFR-030-02; (2) SHA1-of-sorted-face-IDs IDs are unstable — they change when any face in the cluster is dismissed or assigned, breaking `POST .../clusters/{id}/assign`; (3) pagination over connected components requires materialising all clusters first.
+**Feature:** 030 – AI Vision Service
+**Priority:** High
+**Status:** Resolved
+**Opened:** 2026-04-11
+**Affects:** T-030-100 (PhotoPolicy), T-030-101 (AlbumPolicy), FR-030-43, FR-030-44
 
-**Option A (Recommended) — `cluster_label` nullable INT column on `faces`**
-- DBSCAN already produces integer labels (0, 1, 2... for clusters; -1 = noise). Persist them directly.
-- `POST /cluster-results` payload carries `{face_id, cluster_label}[]` alongside suggestion pairs; PHP bulk-updates `faces.cluster_label`.
-- `GET /clusters` = standard `GROUP BY cluster_label` SQL with `LIMIT/OFFSET`; composite index on `(cluster_label, person_id, is_dismissed)`.
-- `cluster_id` in the API = `cluster_label` integer (stable between clustering runs).
-- Assign/dismiss = `WHERE cluster_label = ?`.
-- Stale for faces added after last clustering run (they have `cluster_label = NULL` and don't appear until re-cluster). Acceptable — Cluster Review is explicitly post-clustering UX.
-- **One nullable column. No new model. Trivial pagination.**
+**Resolution:** FR-030-43/44 wording about `AiVisionPolicy::before()` is incorrect and is removed. The new `PhotoPolicy` and `AlbumPolicy` face gate methods rely on those policies' own `before()` hooks for the admin short-circuit. Side-effect: admins will bypass the gate even when AI Vision is disabled — **accepted risk**. No inline duplication or shared trait needed.
 
-**Option B — Separate `face_clusters` table + FK on `faces`**
-- `face_clusters`: id (ULID), run_at, size (cached).
-- `faces.cluster_id` FK → `face_clusters.id`.
-- Pros: opaque ULID IDs, can record run timestamp. Cons: extra table + model, more complex ingestion, size cache goes stale on dismiss/assign. Not worth the complexity over A.
-
-**Option C — Keep as-is (on-the-fly BFS/DFS over `face_suggestions`)**
-- Always reflects current suggestion relationships (no staleness).
-- Fatal: O(V+E) per page load, unstable IDs, pagination infeasible. Violates NFR-030-02. **Not viable at scale.**
-
-**Required spec changes if Option A adopted:**
-- `DO-030-02`: add `cluster_label` (nullable INT) to Face
-- `DO-030-06` / migration: add `cluster_label INT NULL` column + composite index `(cluster_label, person_id, is_dismissed)` on `faces`
-- `FR-030-13` (`POST /cluster-results`): body gains `{face_id: str, cluster_label: int | null}[]` alongside suggestion pairs
-- `FR-030-15` / API-030-18/19/20: `cluster_id` = `cluster_label` integer; remove "opaque stable identifier derived from the suggestion graph" language; add note that noisy faces (`cluster_label = NULL`) excluded from Cluster Review
-
-
-### ~~Q-030-32: InsightFace Model Acquisition — Baked Into Docker Image vs. Runtime Download~~ ✅ RESOLVED
-
-**Resolution:** **Option A** — bake `buffalo_l` model weights into the Docker image at build time via a `RUN` step in the builder stage. The multi-stage Dockerfile copies the downloaded model folder from builder to runtime. Image is significantly larger (~1GB+) but starts instantly and works in airgapped environments. Model updates require an image rebuild (acceptable given model stability).
-
-**Spec Impact:** Update Dockerfile spec: add `RUN uv run python -c "..."` model download step in builder stage; add `COPY --from=builder /root/.insightface /root/.insightface` in runtime stage. Note model size and rebuild requirement in Docker configuration section.
-
-**Resolved:** 2026-03-17
+**Resolved:** 2026-04-11
 
 ---
 
-### ~~Q-030-46: `FaceResource` (DO-030-04) Field Specification Missing~~ ✅ RESOLVED
+### ~~Q-030-78: "Album Access" Verification in Public/Private Mode for Face Gates~~ ✅ RESOLVED
 
-**Resolution:** **Option A** — suggestions are embedded in FaceResource. Fields exposed: `id` (Face ID), `photo_id`, `person_id` (nullable), `x`/`y`/`width`/`height` (float 0.0–1.0 bounding box), `confidence`, `is_dismissed`, `crop_url` (computed nginx-direct path from crop_token). Embedded `suggestions[]` array — each item: `suggested_face_id`, `crop_url` (suggested face's own crop or null), `person_name` (nullable, LEFT JOIN on persons), `confidence`. Suggestions are always included (pre-computed, stored in `face_suggestions`) — no N+1 risk.
+**Feature:** 030 – AI Vision Service
+**Priority:** High
+**Status:** Resolved
+**Opened:** 2026-04-11
+**Affects:** T-030-100 (PhotoPolicy), T-030-101 (AlbumPolicy), FR-030-43, FR-030-44
 
-**Spec Impact:** Expanded DO-030-04 in narrative domain objects table.
+**Resolution:** Non-issue. There is no circular dependency — `AlbumPolicy::canViewAlbumPeople()` can call `$this->canAccess($user, $album)` directly on the same policy instance without going through `Gate::check()`. No proxy or workaround needed.
 
-**Resolved:** 2026-03-18
-
----
-
-### ~~Q-030-47: Missing Telemetry Events for Face Dismiss/Undismiss and Bulk Delete~~ ✅ RESOLVED
-
-**Resolution:** **Option A** — three new events added: `TE-030-10` → `face.dismissed` (`face_id`, `photo_id`), `TE-030-11` → `face.undismissed` (`face_id`, `photo_id`), `TE-030-12` → `face.bulk_deleted` (`deleted_count`).
-
-**Spec Impact:** Added TE-030-10, TE-030-11, TE-030-12 to telemetry events table and DSL.
-
-**Resolved:** 2026-03-18
+**Resolved:** 2026-04-11
 
 ---
 
-### ~~Q-030-48: No CLI/UI Path for Photos Stuck in `pending` Indefinitely~~ ✅ RESOLVED
+### ~~Q-030-79: BatchFaceRequest Album Context and ScanPhotosRequest Photo-Path Authorization~~ ✅ RESOLVED
 
-**Resolution:** **Options B + C** combined — (B) `CLI-030-03` extended with optional `--stuck-pending [--older-than=N]` flag to reset pending records older than N minutes (default 60) back to `null`. (C) Admin Maintenance page action via **`GET /api/v2/Maintenance::resetStuckFaces`** (check: count of stuck records) + **`POST /api/v2/Maintenance::resetStuckFaces`** (do: reset them). Follows the existing check/do Maintenance route pattern. Endpoint added as API-030-17 / API-030-17b.
+**Feature:** 030 – AI Vision Service
+**Priority:** Medium
+**Status:** Resolved
+**Opened:** 2026-04-11
+**Affects:** T-030-103, FR-030-47
 
-**Spec Impact:** Extended CLI-030-03 description. Added API-030-17 and API-030-17b to API catalogue and DSL routes.
+**Resolution:** Option A for both cases — check ownership of the concrete **photo** when no album is available. `BatchFaceRequest`: when `album_id` is null (no album context), check `Gate::check(PhotoPolicy::CAN_ASSIGN_FACE_ON_PHOTO, $face->photo)` for each resolved face. `ScanPhotosRequest` photo-only path: check `Gate::check(PhotoPolicy::CAN_TRIGGER_SCAN_ON_PHOTO, $photo)` for each photo. FR-030-47 (c) and (d) updated accordingly.
 
-**Resolved:** 2026-03-18
-
----
-
-### Q-030-14: Re-scan Destroys Manual Face Assignments
-
-**Question:** FR-030-07 says re-scanning a photo replaces old Face records (idempotent). But if a user manually assigned Face → Person, re-scan deletes those records and creates new unassigned ones. All manual assignment work is lost silently. Is this acceptable?
-
-**Impact:** Affects I10 (scan result ingestion). Could cause significant user frustration with no recourse.
-
-**Options:**
-- **(A)** Preserve assignments: match new faces to old faces by bounding box IoU overlap (≥ threshold), carry over `person_id` from old → new face. Delete truly gone faces.
-- **(B)** Soft-delete old faces — mark as `superseded` but keep records. Let user review changes.
-- **(C)** Block re-scan on photos with any assigned faces unless user explicitly confirms (force flag).
-- **(D)** Accept data loss — document it as expected behavior. User must re-assign after re-scan.
-
-**Affects:** FR-030-07, S-030-14, I10, ProcessFaceDetectionResults action.
-
----
-
-### Q-030-15: Two API Keys but Lychee Config Only Defines One
-
-**Question:** The inter-service contract requires two authentication directions:
-1. **Lychee → Python** (scan requests): Python validates incoming requests via `FACE_API_KEY`.
-2. **Python → Lychee** (callbacks): Lychee validates incoming results via... what?
-
-The Lychee config migration only defines `face_recognition_api_key` (singular). Which direction does it authenticate? What HTTP header format is used (`Authorization: Bearer <key>`, `X-API-Key: <key>`, etc.)?
-
-**Impact:** Blocks I3 (Python API key auth), I4 (Lychee config migration), I10 (result ingestion auth).
-
-**Options:**
-- **(A)** Single shared symmetric key — same key used in both directions. Simpler but less secure (compromise exposes both directions). Header: `X-API-Key: <key>`.
-- **(B)** Two separate keys — Lychee config gets `face_recognition_api_key` (Lychee sends to Python) + `face_recognition_callback_key` (Python sends to Lychee). Header: `X-API-Key: <key>`.
-
-**Affects:** FR-030-07, FR-030-08, I3, I4, I10, inter-service contract, Pydantic `AppSettings`.
-
----
-
-### Q-030-16: Missing Face Deletion Endpoint for False Positives
-
-**Question:** There is no API to delete a Face record. If the detector produces a false positive (e.g., a face detected in tree bark, a painting, etc.), the user has no way to remove it. This is a basic UX requirement for any face detection system.
-
-**Impact:** Affects I9 (FaceController), frontend face overlay UX.
-
-**Options:**
-- **(A)** Add `DELETE /api/v2/Face/{id}` — hard-delete Face record + crop file. Authorization: photo owner or admin. Add to API catalogue as API-030-14.
-- **(B)** Add `is_dismissed` boolean to Face model — dismissed faces hidden from UI but record retained for re-scan deduplication. Toggle via `PATCH /api/v2/Face/{id}`.
-- **(C)** Both — dismiss by default, hard-delete as admin action.
-
-**Affects:** FR-030-02, I9, I15 (face overlay UI needs a "dismiss" or "delete" action), migrations (if option B).
-
----
-
-### Q-030-17: Error Callback Shape Undefined
-
-**Question:** If the Python service fails to process a photo (corrupt file, unsupported format, OOM, model error), what does it POST back to Lychee? The inter-service contract only defines the success payload (`DetectCallbackPayload`). Without an error callback, `face_scan_status` will remain `pending` indefinitely for failed photos.
-
-**Impact:** Blocks I2 (Python callback flow), I10 (result ingestion — needs to handle errors), I11 (bulk scan progress tracking).
-
-**Options:**
-- **(A)** Define error callback payload: `{"photo_id": "abc", "status": "error", "error_code": "corrupt_file", "message": "..."}`. Lychee sets `face_scan_status = failed`. Add `ErrorCallbackPayload` Pydantic model.
-- **(B)** Python doesn't callback on failure; Lychee has a configurable timeout (e.g., `face_recognition_scan_timeout` = 5 min) that marks stale `pending` → `failed` via scheduled job.
-- **(C)** Both — Python best-effort error callback + Lychee timeout as safety net.
-
-**Affects:** Inter-service contract, `face_scan_status` transitions, I2, I10, I11, Pydantic schemas.
-
----
-
-### Q-030-18: Spec DSL Type Mismatch — Face.person_id
-
-**Question:** In the Spec DSL (line ~338), DO-030-02 declares `person_id` with `type: integer` but the actual FK target (Person PK) is `string`. The constraints say `"FK→persons (string)"` contradicting the type field. This is a copy-paste error that could generate wrong migrations if the DSL is used as a generation source.
-
-**Impact:** Low runtime risk (DSL is documentary), but misleading if used for code generation.
-
-**Options:**
-- **(A)** Fix: change `type: integer` → `type: string` on `person_id` in DO-030-02.
-
-**Affects:** Spec DSL only.
-
----
-
-### Q-030-19: Naming Inconsistency — FACE_* Prefix vs ai-vision-service
-
-**Question:** The service directory is `ai-vision-service` (chosen for future extensibility: tagging, scene detection, etc.), but all environment variables use `FACE_*` prefix and all Lychee config keys use `face_recognition_*`. Should these be renamed for consistency and extensibility?
-
-**Impact:** Naming decision that becomes harder to change after v1 ships.
-
-**Options:**
-- **(A)** Keep `FACE_*` / `face_recognition_*` — scope is facial recognition for now; rename later if/when new capabilities added.
-- **(B)** Rename to `VISION_*` / `ai_vision_*` — future-proof now. More churn in spec but cleaner long-term.
-- **(C)** Hybrid: service-level config uses `VISION_*` (generic), Lychee-side config stays `face_recognition_*` (feature-specific).
-
-**Affects:** Pydantic `AppSettings` (env_prefix), Lychee config migration, docker-compose, all documentation.
-
----
-
-### Q-030-20: Permission Mode Scope per Operation Is Ambiguous
-
-**Question:** The `face_recognition_permission_mode` setting (`open` / `restricted`) is defined but the spec doesn't enumerate which operations each mode governs. Specifically:
-
-- **open**: Any authenticated user can do what exactly? CRUD persons? Assign faces? Trigger scans? View all persons?
-- **restricted**: Only photo/album owner or admin — but for which operations? Can a non-owner VIEW persons in restricted mode? Can they see face overlays on photos they have album access to?
-
-**Impact:** Affects I7, I8, I9, I10 — every controller needs to know what to gate.
-
-**Options:**
-- **(A)** Define a per-operation matrix:
-  | Operation | open | restricted |
-  |-----------|------|-----------|
-  | View People page | all users | all users |
-  | View face overlays | album access | album access |
-  | Create/edit Person | all users | admin only |
-  | Assign face | all users | photo owner + admin |
-  | Trigger scan | all users | photo/album owner + admin |
-  | Claim person | all users | all users |
-  | Merge persons | all users | admin only |
-- **(B)** Simpler: `open` = all authenticated users for everything; `restricted` = admin-only for all write operations, read follows album access.
-
-**Affects:** NFR-030-07, I7, I8, I9, I10, form request authorization.
-
----
-
-### Q-030-21: Missing Person Unclaim Endpoint
-
-**Question:** FR-030-05 describes claim behavior and test intents reference "unclaim", but there's no API route for unclaiming a Person (removing the User link). How does a user or admin remove a Person-User link?
-
-**Impact:** Affects I8 (claim controller).
-
-**Options:**
-- **(A)** Add `DELETE /api/v2/Person/{id}/claim` — removes `person.user_id`. Linked user or admin only. Add as API-030-15.
-- **(B)** Use existing `PATCH /api/v2/Person/{id}` with `user_id: null` — no new route needed, but less semantic.
-
-**Affects:** FR-030-05, API catalogue, I8.
-
----
-
-### Q-030-22: Merge Direction Ambiguity on API-030-06
-
-**Question:** `POST /api/v2/Person/{id}/merge` with body `{target_person_id}`. Which person is destroyed?
-
-- Reading 1: `{id}` is the **source** (destroyed), faces moved to `target_person_id` (kept).
-- Reading 2: `{id}` is the **target** (kept), body's `source_person_id` provides the one destroyed.
-
-REST convention: the URL resource (`{id}`) is typically the one acted upon and preserved. The current spec text says "merge source into target" with `{id}` and body `target_person_id`, which implies `{id}` = source (destroyed). This contradicts the convention.
-
-**Impact:** Affects I8 (merge implementation), frontend merge UI.
-
-**Options:**
-- **(A)** `{id}` = target (kept). Rename body param to `source_person_id`. Follows REST convention.
-- **(B)** `{id}` = source (destroyed). Keep body as `target_person_id`. Document explicitly.
-
-**Affects:** API-030-06, FR-030-11, I8, I14 (frontend merge action).
-
----
-
-### Q-030-23: face_scan_status State Machine Transitions Undefined
-
-**Question:** The `face_scan_status` enum (`null` / `pending` / `completed` / `failed`) is added to the photos table but its state transitions are not documented:
-
-1. What sets `pending`? (DispatchFaceScanJob dispatch? Or the HTTP request to Python?)
-2. What sets `completed`? (The callback handler in ProcessFaceDetectionResults?)
-3. What sets `failed`? (Error callback? Timeout? Exception in job?)
-4. Can `failed` → `pending` (retry)? Can `completed` → `pending` (re-scan)?
-5. If a photo is `pending` and user triggers another scan, what happens? Ignore? Reset?
-
-**Impact:** Affects I10, I11, bulk scan progress reporting.
-
-**Options:**
-- **(A)** Define explicit state machine:
-  - `null` → `pending` (scan requested)
-  - `pending` → `completed` (success callback received)
-  - `pending` → `failed` (error callback or timeout)
-  - `failed` → `pending` (retry allowed)
-  - `completed` → `pending` (re-scan allowed)
-  - `pending` → `pending` (duplicate request ignored — no-op)
-
-**Affects:** I10, I11, DispatchFaceScanJob, ProcessFaceDetectionResults.
-
----
-
-### Q-030-24: Similar Faces in Assignment Modal — Data Source Unspecified
-
-**Question:** UI-030-04 (Face Assignment Modal) shows "Similar faces found: [Alice (94%)] [Bob (12%)]". This implies a similarity query — given an unassigned face, find the most similar existing persons. But there's no Lychee API endpoint that provides this data. Where does it come from?
-
-**Impact:** Affects I16 (frontend assignment modal), possibly I2 (Python service), possibly new API endpoint.
-
-**Options:**
-- **(A)** Pre-computed during scan: Python includes `cluster_suggestion` or `similar_embedding_ids` in the callback. Lychee stores these on the Face record or a separate suggestions table.
-- **(B)** On-demand query: when user opens assignment modal, frontend calls a new endpoint (e.g., `GET /api/v2/Face/{id}/suggestions`) which queries Python service for similar embeddings → resolves to Persons.
-- **(C)** Frontend-only heuristic: no similarity data. Drop the "Similar faces found" from the modal. User picks from a Person dropdown only.
-
-**Affects:** UI-030-04, possibly new API endpoint, I2 (if pre-computed), I16.
-
----
-
-### Q-030-25: Crop Storage Path Pattern Undefined
-
-**Question:** Face crops (150×150 JPEG) are described as "stored alongside size variants" but the actual filesystem path pattern is not specified. This matters for:
-- Generating crop URLs for frontend display.
-- Cleanup on Face deletion or re-scan.
-- Serving via Lychee's existing media serving pipeline.
-
-**Impact:** Affects I10 (ProcessFaceDetectionResults — where to write), I6 (FaceResource crop_url), I16 (frontend crop display).
-
-**Options:**
-- **(A)** Store under photo's size variant directory: `{photo_variant_dir}/faces/{face_id}.jpg`. Served via same media controller.
-- **(B)** Dedicated faces directory: `uploads/faces/{face_id}.jpg`. Separate serving route.
-- **(C)** Store in `storage/app/faces/{face_id}.jpg` — Laravel storage disk, served via signed URL or controller.
-
-**Affects:** FR-030-02, I10, I6, Face model `crop_url` accessor, frontend.
-
----
-
-### ~~Q-030-13: Embedding ID → Person Mapping Gap in Selfie Match Flow~~ ✅ RESOLVED
-
-**Resolution:** **Option A** — Store `lychee_face_id` in Python's embedding DB. When Lychee ingests a scan callback it creates Face records and returns the `embedding_id → lychee_face_id` mapping in the HTTP 200 response body. Python persists each mapping. The `/match` endpoint returns `lychee_face_id` (not `embedding_id`); Lychee resolves `lychee_face_id → Face → person_id`.
-
-**Spec Impact:** Update `DetectCallbackPayload` response body to include `{"faces": [{"embedding_id": "...", "lychee_face_id": "..."}]}`. Update `MatchResult` Pydantic model: replace `embedding_id` with `lychee_face_id`. Update FR-030-12, API-030-13, I2, I8, inter-service contract.
-
-**Resolved:** 2026-03-17
-
----
-
-### ~~Q-030-14: Re-scan Destroys Manual Face Assignments~~ ✅ RESOLVED
-
-**Resolution:** **Options A + C** — On re-scan, new faces are matched to existing faces by bounding box IoU (≥ threshold); matched old face's `person_id` is carried over to the new face record; truly gone faces are deleted. Additionally, if a photo has any faces with a `person_id` assigned, re-scan is blocked unless the request includes `force: true`. Without `force: true` a 409 Conflict is returned listing the number of assigned faces at risk.
-
-**Spec Impact:** Update FR-030-07 (re-scan idempotency now caveated with IoU preservation + force flag). Update S-030-14. Update `ProcessFaceDetectionResults` action description. Update API-030-10 to document optional `force` parameter.
-
-**Resolved:** 2026-03-17
-
----
-
-### ~~Q-030-15: Two API Keys but Lychee Config Only Defines One~~ ✅ RESOLVED
-
-**Resolution:** **Option A** — Single shared symmetric key for both directions. Header: `X-API-Key: <key>`. The key is defined in `.env` as `AI_VISION_API_KEY` (after Q-030-19 renaming). **Critical separation of concerns:** the AI vision callback endpoints (`POST /api/v2/FaceDetection/results`) are authenticated **exclusively** via the API key header — no user session, no admin session. Even authenticated admins cannot reach these endpoints through the normal auth middleware. Lychee-to-Python requests likewise send `X-API-Key` with the same shared key.
-
-**Spec Impact:** Update config migration to single key `ai_vision_api_key`. Add note that FaceDetection/results middleware skips session auth. Update NFR-030-07, I3, I4, I10, inter-service contract, AppSettings.
-
-**Resolved:** 2026-03-17
-
----
-
-### ~~Q-030-16: Missing Face Deletion Endpoint for False Positives~~ ✅ RESOLVED
-
-**Resolution:** **Option C (dismiss-first)** — Users dismiss false positives via `PATCH /api/v2/Face/{id}` (toggles `is_dismissed`). Dismissed faces are hidden from face overlays and assignment UI. Admin can hard-delete all dismissed faces in bulk from the Maintenance page (a new maintenance action); this permanently removes the Face records + crop files.
-
-**Spec Impact:** Add `is_dismissed` boolean (default `false`) to DO-030-02 and Face migration. Add API-030-14 (`PATCH /api/v2/Face/{id}` dismiss toggle). Add admin maintenance action for bulk hard-delete of dismissed faces. Update UI-030-03 (face overlay hides dismissed faces).
-
-**Resolved:** 2026-03-17
-
----
-
-### ~~Q-030-17: Error Callback Shape Undefined~~ ✅ RESOLVED
-
-**Resolution:** **Option A** — Python posts an error callback payload to the same `callback_url`: `{"photo_id": "abc", "status": "error", "error_code": "corrupt_file", "message": "..."}`. Lychee sets `face_scan_status = failed`. Python defines `ErrorCallbackPayload` Pydantic model. No timeout mechanism; status transitions only occur via explicit callbacks.
-
-**Spec Impact:** Add `ErrorCallbackPayload` Pydantic model. Update FR-030-07 (result endpoint handles both success and error payloads). Update `face_scan_status` state machine in spec. Update I2, I10.
-
-**Resolved:** 2026-03-17
-
----
-
-### ~~Q-030-18: Spec DSL Type Mismatch — Face.person_id~~ ✅ RESOLVED
-
-**Resolution:** **Option A** — Fix `person_id` field in DO-030-02 DSL from `type: integer` to `type: string`.
-
-**Spec Impact:** Update DO-030-02 Spec DSL `person_id` type field. Low impact.
-
-**Resolved:** 2026-03-17
-
----
-
-### ~~Q-030-19: Naming Inconsistency — FACE_* Prefix vs ai-vision-service~~ ✅ RESOLVED
-
-**Resolution:** **Option B** — Rename for future-proofing. Python env vars use `VISION_*` prefix; Lychee config keys use `ai_vision_*` prefix. All documentation, docker-compose, and AppSettings updated accordingly.
-
-**Spec Impact:** Rename `FACE_*` → `VISION_*` throughout Python service config and docker-compose. Rename `face_recognition_*` → `ai_vision_*` for all Lychee config keys. Update AppSettings `env_prefix`. Update all env variable tables in spec and docs.
-
-**Resolved:** 2026-03-17
-
----
-
-### ~~Q-030-20: Permission Mode Scope per Operation Is Ambiguous~~ ✅ RESOLVED
-
-**Resolution:** **Option C** — Four-mode enum (`public`, `private`, `privacy-preserving`, `restricted`) with a per-operation matrix:
-
-| Operation          | public       | private      | privacy-preserving        | restricted                |
-|--------------------|--------------|--------------|---------------------------|---------------------------|
-| View People page   | guest        | logged users | photo/album owner + admin | admin only                |
-| View face overlays | album access | logged users | photo/album owner + admin | photo/album owner + admin |
-| Create/edit Person | logged users | logged users | photo/album owner + admin | admin only                |
-| Assign face        | logged users | logged users | photo/album owner + admin | admin only                |
-| Trigger scan       | logged users | logged users | photo/album owner + admin | photo/album owner + admin |
-| Claim person       | logged users | logged users | logged users              | all users                 |
-| Merge persons      | logged users | logged users | photo/album owner + admin | admin only                |
-
-**Spec Impact:** Update `ai_vision_permission_mode` to a 4-value enum. Update NFR-030-07 with full matrix. Update FR-030-08 authorization description. Update all controller authorization references (I7, I8, I9, I10).
-
-**Resolved:** 2026-03-17
-
----
-
-### ~~Q-030-21: Missing Person Unclaim Endpoint~~ ✅ RESOLVED
-
-**Resolution:** **Option A** — Add `DELETE /api/v2/Person/{id}/claim` as API-030-15. Removes `person.user_id` (sets to null). Linked user or admin only.
-
-**Spec Impact:** Add API-030-15 to API catalogue and Spec DSL routes. Update FR-030-05 to reference unclaim. Update I8.
-
-**Resolved:** 2026-03-17
-
----
-
-### ~~Q-030-22: Merge Direction Ambiguity on API-030-06~~ ✅ RESOLVED
-
-**Resolution:** **Option A** — `{id}` = target (kept). Body parameter renamed to `source_person_id`. Follows REST convention: the URL resource is the one preserved.
-
-**Spec Impact:** Update API-030-06 body param from `target_person_id` to `source_person_id`. Update FR-030-11. Update I8 and I14 (frontend merge action).
-
-**Resolved:** 2026-03-17
-
----
-
-### ~~Q-030-23: face_scan_status State Machine Transitions Undefined~~ ✅ RESOLVED
-
-**Resolution:** **Option A** — Explicit state machine:
-1. `null → pending`: set on **dispatch** (when the scan job is enqueued, before the HTTP request to Python is sent).
-2. `pending → completed`: set when Lychee receives a **success** callback from the Python service.
-3. `pending → failed`: set when Lychee receives an **error** callback from Python. No timeout mechanism (async model; Lychee never waits for a response).
-4. Retry/re-scan: `failed → pending` (retry) and `completed → pending` (re-scan) are both **allowed**.
-5. Duplicate pending: **reset** to `pending` (do not ignore); the earlier `pending` could be a silent timeout.
-
-**Spec Impact:** Document state machine in FR-030-07/NFR section. Update I10, I11, DispatchFaceScanJob, ProcessFaceDetectionResults.
-
-**Resolved:** 2026-03-17
-
----
-
-### ~~Q-030-24: Similar Faces in Assignment Modal — Data Source Unspecified~~ ✅ RESOLVED
-
-**Resolution:** **Option A, stored in a dedicated suggestions table** — Python includes a `suggestions` array per face in the `DetectCallbackPayload`. Lychee persists these in a `face_suggestions` table (`face_id`, `person_id`, `confidence`). The assignment modal reads from this table. New domain object `FaceSuggestion` added.
-
-**Spec Impact:** Add `FaceSuggestion` domain object (DO-030-05). Add `face_suggestions` table to migrations. Update `FaceResult` Pydantic model to include `suggestions: list[SuggestionResult]`. Update UI-030-04. Update I2, I10, I16.
-
-**Resolved:** 2026-03-17
-
----
-
-### ~~Q-030-25: Crop Storage Path Pattern Undefined~~ ✅ RESOLVED
-
-**Resolution:** **Option B** — Crops stored at `uploads/faces/{face_id}.jpg` in a dedicated `faces/` subdirectory under the main uploads directory. Served via a separate media controller route (not the standard photo size-variant pipeline).
-
-**Spec Impact:** Update DO-030-02 `crop_path` description. Update `crop_url` accessor. Add a new route for serving face crops. Update I6, I10, I16.
-
-**Resolved:** 2026-03-17
+**Resolved:** 2026-04-11
 
 ---
 
@@ -1536,6 +1671,56 @@ REST convention: the URL resource (`{id}`) is typically the one acted upon and p
 **Resolution:** Upload with no album ID — photo lands in the "Unsorted" smart album, consistent with existing upload behaviour at root level.
 
 **Resolved:** 2026-03-18
+
+---
+
+### ~~Q-027-01: Colour Distance Metric and Named-Colour Lookup~~ ✅ RESOLVED
+
+**Decision:** `palette.colour_N` values are foreign keys to `colours.id` (the packed 0xRRGGBB integer); the `colours` table already has separate `R`, `G`, `B` integer columns. Use a JOIN `palette → colours ON colours.id IN (p.colour_1, …, p.colour_5)` and compute Manhattan distance directly on `colours.R/G/B`. No schema migration required. Named colours resolved via `Colour::fromHex()` / `colours` table lookup.  
+**Rationale:** The separate R/G/B columns are already present in the DB; no bit-shift needed, fully portable across SQLite/MySQL/PostgreSQL.  
+**Updated in spec:** FR-027-09 (colour query mechanism), NFR-027-04 (SQL portability note updated).
+
+---
+
+### ~~Q-027-02: Rating Filter — Own Rating vs Average Rating~~ ✅ RESOLVED
+
+**Decision:** Option C — Support both sub-modifier forms: `rating:avg:>=4` (filters by `photos.rating_avg`) and `rating:own:>=4` (filters by the requesting user's own rating via JOIN on `photo_ratings WHERE user_id = Auth::id()`). Unauthenticated users may only use `rating:avg:`.  
+**Rationale:** Maximum flexibility; users with personal rating habits benefit from `own:` while gallery visitors can still filter by average.  
+**Updated in spec:** FR-027-14 (rating sub-modifiers), grammar reference updated, scenarios S-027-21/S-027-22 added.
+
+---
+
+### ~~Q-027-03: Album Search Modifier Support — This Feature or Follow-up?~~ ✅ RESOLVED
+
+**Decision:** Option B — Include album modifier support (`title:`, `description:`, `date:`) in Feature 027. `AlbumSearch` is wired to the same `SearchTokenParser`; a new `AlbumSearchTokenStrategy` interface mirrors `PhotoSearchTokenStrategy`.  
+**Rationale:** Consistent user experience in a single release; the token infrastructure from the photo search is directly reusable.  
+**Updated in spec:** FR-027-15 (album modifiers), Non-Goals updated (album modifiers removed), scenarios S-027-23/S-027-24 added.
+
+---
+
+### ~~Q-027-04: Named-Colour Name→Hex Mapping Mechanism~~ ✅ RESOLVED
+
+**Decision:** Option A — Hardcode a PHP `ColourNameMap` class (e.g. `app/Actions/Search/ColourNameMap.php`) containing a `const` array mapping lowercase CSS colour names to `#rrggbb` hex strings, covering the 16 basic CSS Level 1 colours. `ColourStrategy` consults this map when the token value does not start with `#`. Unknown names throw `InvalidTokenException` → HTTP 400. No schema migration required.  
+**Rationale:** No DB dependency; stateless; testable in isolation; fast. The `colours` table has no `name` column and `Colour::fromHex()` only accepts hex strings, so a hardcoded PHP map is the only viable no-migration path.  
+**Updated in spec:** FR-027-09 (named-colour resolution description updated), T-027-03 and T-027-22 notes updated.
+
+---
+
+### ~~Q-027-05: Invalid SQL Syntax in Colour-Similarity EXISTS Subquery~~ ✅ RESOLVED
+
+**Decision:** Option A — Replace the invalid `JOIN … ON c.id IN (…)` with an explicit OR expansion in the `ON` clause:
+
+```sql
+EXISTS (
+  SELECT 1 FROM palette p
+  JOIN colours c ON (c.id = p.colour_1 OR c.id = p.colour_2 OR c.id = p.colour_3 OR c.id = p.colour_4 OR c.id = p.colour_5)
+  WHERE p.photo_id = photos.id
+    AND ABS(c.R - :R) + ABS(c.G - :G) + ABS(c.B - :B) <= :dist
+)
+```
+
+**Rationale:** Standard SQL valid across SQLite, MySQL, and PostgreSQL. Within an `EXISTS` the five-OR join is harmless — multiple matching `colours` rows per palette row are irrelevant since `EXISTS` short-circuits on the first match.  
+**Updated in spec:** FR-027-09, NFR-027-04 (both SQL snippets corrected); plan.md I7; tasks.md T-027-22.
 
 ---
 
@@ -1606,53 +1791,11 @@ REST convention: the URL resource (`{id}`) is typically the one acted upon and p
 **Spec Impact:** Update FR-026-02 to clarify: "Invalid tag IDs individually ignored; if ALL provided tag IDs are invalid, return 422 validation error."
 
 **Resolved:** 2026-03-09
-### ~~Q-027-04: Named-Colour Name→Hex Mapping Mechanism~~ ✅ RESOLVED
+### ~~Q-023-01: Remember-me Cookie Duration and Admin Configurability~~ ✅ RESOLVED
 
-**Decision:** Option A — Hardcode a PHP `ColourNameMap` class (e.g. `app/Actions/Search/ColourNameMap.php`) containing a `const` array mapping lowercase CSS colour names to `#rrggbb` hex strings, covering the 16 basic CSS Level 1 colours. `ColourStrategy` consults this map when the token value does not start with `#`. Unknown names throw `InvalidTokenException` → HTTP 400. No schema migration required.  
-**Rationale:** No DB dependency; stateless; testable in isolation; fast. The `colours` table has no `name` column and `Colour::fromHex()` only accepts hex strings, so a hardcoded PHP map is the only viable no-migration path.  
-**Updated in spec:** FR-027-09 (named-colour resolution description updated), T-027-03 and T-027-22 notes updated.
-
----
-
-### ~~Q-027-05: Invalid SQL Syntax in Colour-Similarity EXISTS Subquery~~ ✅ RESOLVED
-
-**Decision:** Option A — Replace the invalid `JOIN … ON c.id IN (…)` with an explicit OR expansion in the `ON` clause:
-
-```sql
-EXISTS (
-  SELECT 1 FROM palette p
-  JOIN colours c ON (c.id = p.colour_1 OR c.id = p.colour_2 OR c.id = p.colour_3 OR c.id = p.colour_4 OR c.id = p.colour_5)
-  WHERE p.photo_id = photos.id
-    AND ABS(c.R - :R) + ABS(c.G - :G) + ABS(c.B - :B) <= :dist
-)
-```
-
-**Rationale:** Standard SQL valid across SQLite, MySQL, and PostgreSQL. Within an `EXISTS` the five-OR join is harmless — multiple matching `colours` rows per palette row are irrelevant since `EXISTS` short-circuits on the first match.  
-**Updated in spec:** FR-027-09, NFR-027-04 (both SQL snippets corrected); plan.md I7; tasks.md T-027-22.
-
----
-
-### ~~Q-027-01: Colour Distance Metric and Named-Colour Lookup~~ ✅ RESOLVED
-
-**Decision:** `palette.colour_N` values are foreign keys to `colours.id` (the packed 0xRRGGBB integer); the `colours` table already has separate `R`, `G`, `B` integer columns. Use a JOIN `palette → colours ON colours.id IN (p.colour_1, …, p.colour_5)` and compute Manhattan distance directly on `colours.R/G/B`. No schema migration required. Named colours resolved via `Colour::fromHex()` / `colours` table lookup.  
-**Rationale:** The separate R/G/B columns are already present in the DB; no bit-shift needed, fully portable across SQLite/MySQL/PostgreSQL.  
-**Updated in spec:** FR-027-09 (colour query mechanism), NFR-027-04 (SQL portability note updated).
-
----
-
-### ~~Q-027-02: Rating Filter — Own Rating vs Average Rating~~ ✅ RESOLVED
-
-**Decision:** Option C — Support both sub-modifier forms: `rating:avg:>=4` (filters by `photos.rating_avg`) and `rating:own:>=4` (filters by the requesting user's own rating via JOIN on `photo_ratings WHERE user_id = Auth::id()`). Unauthenticated users may only use `rating:avg:`.  
-**Rationale:** Maximum flexibility; users with personal rating habits benefit from `own:` while gallery visitors can still filter by average.  
-**Updated in spec:** FR-027-14 (rating sub-modifiers), grammar reference updated, scenarios S-027-21/S-027-22 added.
-
----
-
-### ~~Q-027-03: Album Search Modifier Support — This Feature or Follow-up?~~ ✅ RESOLVED
-
-**Decision:** Option B — Include album modifier support (`title:`, `description:`, `date:`) in Feature 027. `AlbumSearch` is wired to the same `SearchTokenParser`; a new `AlbumSearchTokenStrategy` interface mirrors `PhotoSearchTokenStrategy`.  
-**Rationale:** Consistent user experience in a single release; the token infrastructure from the photo search is directly reusable.  
-**Updated in spec:** FR-027-15 (album modifiers), Non-Goals updated (album modifiers removed), scenarios S-027-23/S-027-24 added.
+**Decision:** Option C — Use a shorter default (4 weeks) with env override
+**Rationale:** A 4-week (40320 minutes) default is more security-conscious than Laravel's ~5-year default while still being practical for home/personal instances. The duration is configurable via `REMEMBER_LIFETIME` env variable, loaded by `config/auth.php` in the lychee guard config (`'remember' => (int) env('REMEMBER_LIFETIME', 40320)`). The existing `SessionOrTokenGuard::createGuard()` already reads this key via `setRememberDuration()`. No admin UI control — env/config only.
+**Updated in spec:** Non-Goals (clarified no admin UI for duration), NFR-023-01 (cookie duration = 4 weeks default)
 
 ---
 
@@ -1728,14 +1871,6 @@ EXISTS (
 
 ---
 
-### ~~Q-011-02: Default Sort Order for My Rated Pictures Album~~ ✅ RESOLVED
-
-**Decision:** Option A - Sort by rating DESC, then by created_at DESC
-**Rationale:** Shows highest-rated photos first, consistent with "favorites" concept. Most intuitive for users wanting to see their best-rated photos at the top.
-**Updated in spec:** FR-011-01, query implementation details
-
----
-
 ### ~~Q-011-01: Config Key Naming for My Best Pictures Count~~ ✅ RESOLVED
 
 **Decision:** Option A - Separate config key `my_best_pictures_count`
@@ -1744,231 +1879,11 @@ EXISTS (
 
 ---
 
-### ~~Q-010-12: TLS/StartTLS Configuration~~ ✅ RESOLVED
-
-**Decision:** Option A - Single `LDAP_USE_TLS` flag, protocol determined by port
-**Rationale:** Simpler configuration with fewer env vars. Protocol auto-detected: port 636 = LDAPS, port 389 = StartTLS. Documentation in .env.example clarifies both scenarios.
-**Updated in spec:** ENV-010-13, I10 documentation deliverables
-
----
-
-### ~~Q-010-11: Authentication Flow Sequence~~ ✅ RESOLVED
-
-**Decision:** Option A - Search-first pattern (username → search → DN → bind → groups)
-**Rationale:** Flexible approach supporting diverse LDAP schemas. Flow: 1) User submits username+password, 2) Search LDAP using `LDAP_USER_FILTER`, 3) Get userDn from search result, 4) Bind with userDn+password, 5) Query groups using userDn, 6) Retrieve user attributes.
-**Updated in spec:** FR-010-01, I2 LdapService `authenticate()` method, I4 `getUserGroups()` signature
-
----
-
-### ~~Q-010-10: Testing Strategy~~ ✅ RESOLVED
-
-**Decision:** Option A - LdapRecord testing utilities for unit tests, skip Docker integration tests
-**Rationale:** Fast unit tests using LdapRecord's `DirectoryEmulator` or test helpers. Mock LDAP responses at service boundary. Docker integration tests deferred to future enhancement.
-**Updated in spec:** I2-I7 test implementation, no Docker CI configuration needed
-
----
-
-### ~~Q-010-09: Connection Pooling Implementation~~ ✅ RESOLVED
-
-**Decision:** Option A - Configure LdapRecord's built-in connection management
-**Rationale:** Leverage existing, tested library features. Configure timeouts and connection caching via LdapRecord config. No custom pooling code needed.
-**Updated in spec:** I2 implementation approach, NFR-010-04
-
----
-
-### ~~Q-010-08: LdapConfiguration DTO Purpose~~ ✅ RESOLVED
-
-**Decision:** Option A - LdapConfiguration validates/transforms .env values
-**Rationale:** Clean validation layer providing type-safe value object. Single source of truth: .env → LdapConfiguration::fromEnv() validates → values passed to LdapRecord config. Prevents invalid config, provides testability.
-**Updated in spec:** I1 LdapConfiguration DTO implementation, validation strategy
-
----
-
-### ~~Q-010-07: LdapRecord Integration Strategy~~ ✅ RESOLVED
-
-**Decision:** Option A - Service layer wrapping LdapRecord
-**Rationale:** Better separation of concerns and testability. `LdapService` acts as facade/adapter over LdapRecord's Connection and query builder. Business logic abstracted from LDAP library details. Easier to test (mock LdapService interface) and swap libraries if needed.
-**Updated in spec:** I2-I5 architecture, LdapService design as wrapper pattern
-
----
-
-### ~~Q-010-07: LdapRecord Integration Strategy~~ (ARCHIVED - moved above)
-
-**Question:** How should `App\Services\Auth\LdapService` integrate with LdapRecord?
-
-- **Option A (Recommended):** Service layer wrapping LdapRecord
-  - Create `LdapService` as a facade/adapter over LdapRecord's `Connection`, `Model`, and query builder
-  - Business logic lives in `LdapService`, LDAP library details abstracted
-  - Easier testing (mock LdapService interface)
-  - Easier to swap LDAP libraries in future if needed
-  
-- **Option B:** Direct LdapRecord usage throughout codebase
-  - AuthController and Actions call LdapRecord directly
-  - Less abstraction, fewer layers
-  - Tighter coupling to LdapRecord API
-  - Testing requires mocking LdapRecord classes
-
-**Pros/Cons:**
-- **A:** Better separation of concerns, testability; adds abstraction layer
-- **B:** Simpler, fewer files; harder to test, tight coupling
-
-**Impact:** HIGH - affects architecture, testing strategy, and implementation complexity across all increments (I2-I5)
-
----
-
-### Q-010-08: LdapConfiguration DTO Purpose
-
-**Question:** What is the relationship between `App\DTO\LdapConfiguration` and LdapRecord's `config/ldap.php`?
-
-- **Option A (Recommended):** LdapConfiguration validates/transforms .env values
-  - `LdapConfiguration` is a validated value object created from .env variables
-  - Values are passed to LdapRecord's config at runtime
-  - Single source of truth: .env → LdapConfiguration → LdapRecord config
-  - Validation happens in DTO constructor
-  
-- **Option B:** LdapConfiguration duplicates LdapRecord config
-  - Separate parallel configuration system
-  - Risk of config drift between two systems
-  - More complex synchronization
-
-**Pros/Cons:**
-- **A:** Clean validation layer, no duplication; .env values must be transformed
-- **B:** More flexible; potential sync issues, redundant config
-
-**Impact:** MEDIUM - affects I1 configuration setup and validation strategy
-
----
-
-### Q-010-09: Connection Pooling Implementation
-
-**Question:** What does "implement connection pooling logic" mean given LdapRecord already manages connections?
-
-- **Option A (Recommended):** Configure LdapRecord's built-in connection management
-  - Use LdapRecord's connection caching and reuse features
-  - Configure timeouts via LdapRecord config
-  - No custom pooling code needed
-  
-- **Option B:** Build custom connection pool
-  - Implement connection reuse, timeout, retry logic manually
-  - More control over pool behavior
-  - Significant additional complexity
-
-**Pros/Cons:**
-- **A:** Leverage existing, tested library feature; less code
-- **B:** Full control; reinventing the wheel, higher maintenance
-
-**Impact:** MEDIUM - affects I2 implementation complexity and testing
-
----
-
-### Q-010-10: Testing Strategy for LDAP Operations
-
-**Question:** How should LDAP server responses be mocked for deterministic testing?
-
-- **Option A (Recommended):** LdapRecord's testing utilities for unit tests + optional Docker for integration
-  - Use LdapRecord's `DirectoryEmulator` or test helpers for unit tests
-  - Mock LDAP responses at service boundary
-  - Optional: `rroemhild/test-openldap` Docker image for integration tests
-  
-- **Option B:** Docker LDAP server for all tests
-  - Realistic LDAP server in test environment
-  - Slower test execution
-  - More complex CI setup
-  
-- **Option C:** PHP mock/stub classes only
-  - Fastest execution
-  - May not catch library integration issues
-  - No LdapRecord-specific testing utilities
-
-**Pros/Cons:**
-- **A:** Fast unit tests + realistic integration tests; best of both worlds
-- **B:** Most realistic; slowest, most complex
-- **C:** Simplest, fastest; least realistic
-
-**Impact:** MEDIUM - affects I2-I7 test implementation and CI configuration
-
----
-
-### Q-010-11: Authentication Flow Sequence
-
-**Question:** What is the complete flow from username to group membership, including how userDn is obtained?
-
-Need to clarify the sequence:
-1. User submits username + password
-2. How do we get the userDn? 
-   - **Option A:** Search for user first (`LDAP_USER_FILTER`) → get DN → bind with DN + password
-   - **Option B:** Construct DN from username (e.g., `uid={username},ou=people,dc=example,dc=com`) → bind directly
-3. After successful bind, query groups using userDn
-4. Retrieve user attributes
-5. Map groups to roles
-
-**Recommended:** Option A (search-first pattern) for flexibility with diverse LDAP schemas
-
-**Impact:** HIGH - affects I2-I4 implementation, especially `bind()` and `getUserGroups()` method signatures
-
----
-
-### Q-010-12: TLS/StartTLS Configuration Clarity
-
-**Question:** Does `LDAP_USE_TLS=true` cover both LDAPS (port 636) and StartTLS (port 389), or do we need separate configuration?
-
-- **Option A (Recommended):** Single `LDAP_USE_TLS` flag, protocol determined by port
-  - `LDAP_USE_TLS=true` + `LDAP_PORT=636` → LDAPS (SSL/TLS from start)
-  - `LDAP_USE_TLS=true` + `LDAP_PORT=389` → StartTLS (upgrade connection)
-  - `LDAP_USE_TLS=false` → plaintext (dev only)
-  - Document both scenarios in .env.example
-  
-- **Option B:** Separate flags for LDAPS and StartTLS
-  - `LDAP_USE_LDAPS=true` for port 636
-  - `LDAP_USE_STARTTLS=true` for port 389
-  - More explicit configuration
-  - More environment variables
-
-**Pros/Cons:**
-- **A:** Simpler configuration, fewer env vars; requires clear documentation
-- **B:** More explicit; more complex, more env vars
-
-**Impact:** MEDIUM - affects I1 configuration, I2 TLS implementation, and documentation
-
----
-
-### ~~Q-010-06: Configuration Method~~ ✅ RESOLVED
-
-**Decision:** Option A - Environment variables only
-**Rationale:** LDAP is an expert/power-user setting; .env configuration is appropriate and avoids database complexity.
-**Updated in spec:** All configuration options use .env variables, NFR-010-01
-
----
-
-### ~~Q-010-05: Password Storage~~ ✅ RESOLVED
-
-**Decision:** Option A - Don't store LDAP passwords
-**Rationale:** Most secure approach; authenticate only against LDAP server without password duplication.
-**Updated in spec:** FR-010-01, authentication flow, security model
-
----
-
-### ~~Q-010-04: User Attribute Mapping~~ ✅ RESOLVED
-
-**Decision:** Option C - Defaults with optional override via .env
-**Rationale:** Provides sensible defaults (uid→username, mail→email, displayName→display_name) with .env configuration for LDAP schemas that differ.
-**Updated in spec:** FR-010-02, attribute mapping configuration
-
----
-
-### ~~Q-010-03: LDAP Group Mapping~~ ✅ RESOLVED
-
-**Decision:** Option B - Map LDAP groups to Lychee roles (admin/user)
-**Rationale:** Allows admin role assignment via LDAP groups; provides automatic role sync without complex user group management.
-**Updated in spec:** FR-010-03, role mapping configuration
-
----
-
-### ~~Q-010-02: User Provisioning~~ ✅ RESOLVED
-
-**Decision:** Option C - User provisioning configurable via .env
-**Rationale:** Flexibility for different deployment scenarios; allows auto-create or pre-existing-only mode via configuration.
-**Updated in spec:** FR-010-04, user provisioning behavior
+### ~~Q-011-02: Default Sort Order for My Rated Pictures Album~~ ✅ RESOLVED
+
+**Decision:** Option A - Sort by rating DESC, then by created_at DESC
+**Rationale:** Shows highest-rated photos first, consistent with "favorites" concept. Most intuitive for users wanting to see their best-rated photos at the top.
+**Updated in spec:** FR-011-01, query implementation details
 
 ---
 
@@ -1980,11 +1895,91 @@ Need to clarify the sequence:
 
 ---
 
-### ~~Q-009-06: NULLS LAST Cross-Database Strategy~~ ✅ RESOLVED
+### ~~Q-010-02: User Provisioning~~ ✅ RESOLVED
 
-**Decision:** Simple indexed ORDER BY with COALESCE pattern for fastest performance
-**Rationale:** User specified "fastest ordering possible with indexing." Using `COALESCE(rating_avg, -1) DESC` allows the query to use the index on `rating_avg` efficiently across all databases. Since ratings are always positive (1-5), -1 as sentinel value is safe and pushes NULLs to the end.
-**Updated in spec:** FR-009-02, sorting strategy, SortingDecorator implementation
+**Decision:** Option C - User provisioning configurable via .env
+**Rationale:** Flexibility for different deployment scenarios; allows auto-create or pre-existing-only mode via configuration.
+**Updated in spec:** FR-010-04, user provisioning behavior
+
+---
+
+### ~~Q-010-03: LDAP Group Mapping~~ ✅ RESOLVED
+
+**Decision:** Option B - Map LDAP groups to Lychee roles (admin/user)
+**Rationale:** Allows admin role assignment via LDAP groups; provides automatic role sync without complex user group management.
+**Updated in spec:** FR-010-03, role mapping configuration
+
+---
+
+### ~~Q-010-04: User Attribute Mapping~~ ✅ RESOLVED
+
+**Decision:** Option C - Defaults with optional override via .env
+**Rationale:** Provides sensible defaults (uid→username, mail→email, displayName→display_name) with .env configuration for LDAP schemas that differ.
+**Updated in spec:** FR-010-02, attribute mapping configuration
+
+---
+
+### ~~Q-010-05: Password Storage~~ ✅ RESOLVED
+
+**Decision:** Option A - Don't store LDAP passwords
+**Rationale:** Most secure approach; authenticate only against LDAP server without password duplication.
+**Updated in spec:** FR-010-01, authentication flow, security model
+
+---
+
+### ~~Q-010-06: Configuration Method~~ ✅ RESOLVED
+
+**Decision:** Option A - Environment variables only
+**Rationale:** LDAP is an expert/power-user setting; .env configuration is appropriate and avoids database complexity.
+**Updated in spec:** All configuration options use .env variables, NFR-010-01
+
+---
+
+### ~~Q-010-07: LdapRecord Integration Strategy~~ ✅ RESOLVED
+
+**Decision:** Option A - Service layer wrapping LdapRecord
+**Rationale:** Better separation of concerns and testability. `LdapService` acts as facade/adapter over LdapRecord's Connection and query builder. Business logic abstracted from LDAP library details. Easier to test (mock LdapService interface) and swap libraries if needed.
+**Updated in spec:** I2-I5 architecture, LdapService design as wrapper pattern
+
+---
+
+### ~~Q-010-08: LdapConfiguration DTO Purpose~~ ✅ RESOLVED
+
+**Decision:** Option A - LdapConfiguration validates/transforms .env values
+**Rationale:** Clean validation layer providing type-safe value object. Single source of truth: .env → LdapConfiguration::fromEnv() validates → values passed to LdapRecord config. Prevents invalid config, provides testability.
+**Updated in spec:** I1 LdapConfiguration DTO implementation, validation strategy
+
+---
+
+### ~~Q-010-09: Connection Pooling Implementation~~ ✅ RESOLVED
+
+**Decision:** Option A - Configure LdapRecord's built-in connection management
+**Rationale:** Leverage existing, tested library features. Configure timeouts and connection caching via LdapRecord config. No custom pooling code needed.
+**Updated in spec:** I2 implementation approach, NFR-010-04
+
+---
+
+### ~~Q-010-10: Testing Strategy~~ ✅ RESOLVED
+
+**Decision:** Option A - LdapRecord testing utilities for unit tests, skip Docker integration tests
+**Rationale:** Fast unit tests using LdapRecord's `DirectoryEmulator` or test helpers. Mock LDAP responses at service boundary. Docker integration tests deferred to future enhancement.
+**Updated in spec:** I2-I7 test implementation, no Docker CI configuration needed
+
+---
+
+### ~~Q-010-11: Authentication Flow Sequence~~ ✅ RESOLVED
+
+**Decision:** Option A - Search-first pattern (username → search → DN → bind → groups)
+**Rationale:** Flexible approach supporting diverse LDAP schemas. Flow: 1) User submits username+password, 2) Search LDAP using `LDAP_USER_FILTER`, 3) Get userDn from search result, 4) Bind with userDn+password, 5) Query groups using userDn, 6) Retrieve user attributes.
+**Updated in spec:** FR-010-01, I2 LdapService `authenticate()` method, I4 `getUserGroups()` signature
+
+---
+
+### ~~Q-010-12: TLS/StartTLS Configuration~~ ✅ RESOLVED
+
+**Decision:** Option A - Single `LDAP_USE_TLS` flag, protocol determined by port
+**Rationale:** Simpler configuration with fewer env vars. Protocol auto-detected: port 636 = LDAPS, port 389 = StartTLS. Documentation in .env.example clarifies both scenarios.
+**Updated in spec:** ENV-010-13, I10 documentation deliverables
 
 ---
 
@@ -2017,6 +2012,14 @@ Need to clarify the sequence:
 **Decision:** Custom - Rating smart albums and Best Pictures sorted by rating DESC
 **Rationale:** Shows highest-rated photos first, which is the natural expectation for rating-based albums.
 **Updated in spec:** FR-009-10, NFR-009-03
+
+---
+
+### ~~Q-009-06: NULLS LAST Cross-Database Strategy~~ ✅ RESOLVED
+
+**Decision:** Simple indexed ORDER BY with COALESCE pattern for fastest performance
+**Rationale:** User specified "fastest ordering possible with indexing." Using `COALESCE(rating_avg, -1) DESC` allows the query to use the index on `rating_avg` efficiently across all databases. Since ratings are always positive (1-5), -1 as sentinel value is safe and pushes NULLs to the end.
+**Updated in spec:** FR-009-02, sorting strategy, SortingDecorator implementation
 
 ---
 
@@ -2150,14 +2153,44 @@ Need to clarify the sequence:
 
 ---
 
-### ~~Q-003-09: Multi-user Cover Selection Strategy for computed_cover_id~~ ✅ RESOLVED
+### ~~Q-004-01: Recomputation Trigger Strategy for Size Statistics~~ ✅ RESOLVED
 
-**Decision:** Option D - Store dual cover IDs with privilege-based selection (`auto_cover_id_max_privilege` and `auto_cover_id_least_privilege`)
-**Rationale:** Balances performance (pre-computation) with security (no photo leakage). Two cover IDs stored per album: one for admin/owner view (max privilege), one for public view (least privilege). Display logic selects appropriate cover based on user permissions at query time (simple column read, no subquery). Simple schema (2 columns vs. per-user table), guaranteed safe (least-privilege cover never leaks private photos), good UX (admin/owner sees best possible cover).
-**Updated in spec:** FR-003-01, FR-003-02, FR-003-04, FR-003-07, NFR-003-05, DO-003-03, DO-003-04, Migration Strategy, Cover Selection Logic appendix
-**ADR:** ADR-0003-album-computed-fields-precomputation.md (to be updated with Q-003-09 resolution)
+**Decision:** Option B - Separate `RecomputeAlbumSizeJob` triggered independently, using Skip middleware with cache-based job tracking (same pattern as Feature 003's `RecomputeAlbumStatsJob`)
+**Rationale:** Decoupled from Feature 003, can optimize independently, reuses proven Skip middleware pattern from [RecomputeAlbumStatsJob.php](app/Jobs/RecomputeAlbumStatsJob.php:76-93) with cache key `album_size_latest_job:{album_id}` and unique job IDs for deduplication.
+**Updated in spec:** FR-004-02, JOB-004-01, middleware implementation details
 
 ---
+
+### ~~Q-004-02: Migration/Backfill Strategy for Existing Albums~~ ✅ RESOLVED
+
+**Decision:** Option A - Separate artisan command, manual execution, PLUS maintenance UI button for operators
+**Rationale:** Operator controls timing during maintenance window, fast migration (schema only), progress monitoring. Admin UI button provides convenient trigger for backfill without CLI access.
+**Updated in spec:** FR-004-04, CLI-004-01, maintenance UI addition
+
+---
+
+### ~~Q-004-03: Job Deduplication Approach for Concurrent Updates~~ ✅ RESOLVED
+
+**Decision:** Option D (Custom) - Use Skip middleware with cache-based job tracking (same pattern as Feature 003)
+**Rationale:** Reuses proven pattern from [RecomputeAlbumStatsJob.php](app/Jobs/RecomputeAlbumStatsJob.php): Each job gets unique ID, latest job ID stored in cache with key `album_size_latest_job:{album_id}`, `Skip::when()` middleware checks if newer job queued. Simpler than `WithoutOverlapping`, guarantees most recent update eventually processes.
+**Updated in spec:** FR-004-02, JOB-004-01
+
+---
+
+## How to Use This Document
+
+1. **Log new questions:** Add a row to the Active Questions table with a unique ID (format: `Q###-##`), feature reference, priority (High/Medium), and brief summary.
+2. **Add details:** Create a corresponding section under Question Details with:
+   - Full question context
+   - Options (A, B, C...) ordered by preference
+   - Pros/cons for each option
+   - Impact analysis
+3. **Present to user:** Once logged, present the question inline in chat referencing the question ID.
+4. **Resolve and remove:** When answered, update the relevant spec sections (and create ADR if high-impact), then delete both the table row and Question Details entry.
+
+---
+
+*Last updated: 2026-03-15*
 
 ### ~~Q-003-01: Recomputation Job Queue Priority~~ ✅ RESOLVED
 
@@ -2227,6 +2260,15 @@ Need to clarify the sequence:
 
 ---
 
+### ~~Q-003-09: Multi-user Cover Selection Strategy for computed_cover_id~~ ✅ RESOLVED
+
+**Decision:** Option D - Store dual cover IDs with privilege-based selection (`auto_cover_id_max_privilege` and `auto_cover_id_least_privilege`)
+**Rationale:** Balances performance (pre-computation) with security (no photo leakage). Two cover IDs stored per album: one for admin/owner view (max privilege), one for public view (least privilege). Display logic selects appropriate cover based on user permissions at query time (simple column read, no subquery). Simple schema (2 columns vs. per-user table), guaranteed safe (least-privilege cover never leaks private photos), good UX (admin/owner sees best possible cover).
+**Updated in spec:** FR-003-01, FR-003-02, FR-003-04, FR-003-07, NFR-003-05, DO-003-03, DO-003-04, Migration Strategy, Cover Selection Logic appendix
+**ADR:** ADR-0003-album-computed-fields-precomputation.md (to be updated with Q-003-09 resolution)
+
+---
+
 ### ~~Q-002-01: Worker Auto-Restart Queue Priority~~ ✅ RESOLVED
 
 **Decision:** Option A - Support multiple queue workers with priority via QUEUE_NAMES environment variable
@@ -2256,6 +2298,54 @@ Need to clarify the sequence:
 **Decision:** Option B - Healthcheck tracks restart count, fail after 10 restarts in 5 minutes
 **Rationale:** Orchestrator can restart container if worker is fundamentally broken, prevents infinite crash loops.
 **Updated in spec:** FR-002-05
+
+---
+
+### ~~Q001-01: Full-size Photo Overlay Positioning~~ ✅ RESOLVED
+
+**Decision:** Option A - Bottom-center
+**Rationale:** Centered position is more discoverable and doesn't compete with Dock buttons. Symmetrical with metadata overlay below.
+**Updated in spec:** FR-001-10, UI mockup section 2, implementation plan I9c/I9d
+
+---
+
+### ~~Q001-02: Auto-hide Timer Duration~~ ✅ RESOLVED
+
+**Decision:** Option A - 3 seconds
+**Rationale:** Standard UX pattern, balanced duration (not too fast, not too slow).
+**Updated in spec:** FR-001-10, UI mockup section 2, implementation plan I9c
+
+---
+
+### ~~Q001-03: Rating Removal Button Placement~~ ✅ RESOLVED
+
+**Decision:** Option A - Inline [0] button
+**Rationale:** Consistent button pattern, simple implementation, shown as "×" or "Remove" for clarity.
+**Updated in spec:** FR-001-09, UI mockup section 1, implementation plan I9a
+
+---
+
+### ~~Q001-04: Overlay Visibility on Mobile Devices~~ ✅ RESOLVED
+
+**Decision:** Option A - Details drawer only on mobile
+**Rationale:** Follows existing Lychee pattern (overlays are desktop-only), simple and consistent experience.
+**Updated in spec:** FR-001-09, FR-001-10, UI mockup sections 1-2, implementation plan I9a/I9c
+
+---
+
+### ~~Q001-05: Authorization Model for Rating~~ ✅ RESOLVED
+
+**Decision:** Option B - Read access (anyone who can view can rate)
+**Rationale:** Follows standard rating system patterns. Rating is a lightweight engagement action similar to favoriting, not a privileged edit operation. Makes ratings more accessible and useful.
+**Updated in spec:** FR-001-01, NFR-001-04
+
+---
+
+### ~~Q001-06: Rating Removal HTTP Status Code~~ ✅ RESOLVED
+
+**Decision:** 200 OK (idempotent behavior)
+**Rationale:** Removing a non-existent rating is a no-op and should return success (200 OK) rather than 404 error. This makes the endpoint idempotent and simpler to use.
+**Updated in spec:** FR-001-02
 
 ---
 
@@ -2411,1359 +2501,3 @@ Need to clarify the sequence:
 
 ---
 
-### ~~Q001-05: Authorization Model for Rating~~ ✅ RESOLVED
-
-**Decision:** Option B - Read access (anyone who can view can rate)
-**Rationale:** Follows standard rating system patterns. Rating is a lightweight engagement action similar to favoriting, not a privileged edit operation. Makes ratings more accessible and useful.
-**Updated in spec:** FR-001-01, NFR-001-04
-
----
-
-### ~~Q001-06: Rating Removal HTTP Status Code~~ ✅ RESOLVED
-
-**Decision:** 200 OK (idempotent behavior)
-**Rationale:** Removing a non-existent rating is a no-op and should return success (200 OK) rather than 404 error. This makes the endpoint idempotent and simpler to use.
-**Updated in spec:** FR-001-02
-
----
-
-### ~~Q001-01: Full-size Photo Overlay Positioning~~ ✅ RESOLVED
-
-**Decision:** Option A - Bottom-center
-**Rationale:** Centered position is more discoverable and doesn't compete with Dock buttons. Symmetrical with metadata overlay below.
-**Updated in spec:** FR-001-10, UI mockup section 2, implementation plan I9c/I9d
-
----
-
-### ~~Q001-02: Auto-hide Timer Duration~~ ✅ RESOLVED
-
-**Decision:** Option A - 3 seconds
-**Rationale:** Standard UX pattern, balanced duration (not too fast, not too slow).
-**Updated in spec:** FR-001-10, UI mockup section 2, implementation plan I9c
-
----
-
-### ~~Q001-03: Rating Removal Button Placement~~ ✅ RESOLVED
-
-**Decision:** Option A - Inline [0] button
-**Rationale:** Consistent button pattern, simple implementation, shown as "×" or "Remove" for clarity.
-**Updated in spec:** FR-001-09, UI mockup section 1, implementation plan I9a
-
----
-
-### ~~Q001-04: Overlay Visibility on Mobile Devices~~ ✅ RESOLVED
-
-**Decision:** Option A - Details drawer only on mobile
-**Rationale:** Follows existing Lychee pattern (overlays are desktop-only), simple and consistent experience.
-**Updated in spec:** FR-001-09, FR-001-10, UI mockup sections 1-2, implementation plan I9a/I9c
-
----
-
-### ~~Q001-01: Full-size Photo Overlay Positioning~~ (ARCHIVED)
-
-**Context:** When hovering over the lower area of a full-size photo, the rating overlay can be positioned in different locations. The spec currently presents two options.
-
-**Question:** Which positioning approach should we use for the full-size photo rating overlay?
-
-**Options (ordered by preference):**
-
-**Option A: Bottom-center (Recommended)**
-- **Position:** Horizontally centered, positioned above the metadata overlay (title/EXIF)
-- **Layout:** `★★★★☆ 4.2 (15) Your rating: ★★★★☆ [0][1][2][3][4][5]`
-- **Pros:**
-  - Centered position is intuitive and balanced
-  - Doesn't compete with Dock buttons for space
-  - More visible and discoverable
-  - Symmetrical with metadata overlay below it
-- **Cons:**
-  - May obstruct central portion of photo
-  - Wider horizontal space required
-
-**Option B: Bottom-right (near Dock buttons)**
-- **Position:** Bottom-right corner, adjacent to existing Dock action buttons
-- **Layout:** Compact vertical or horizontal near Dock
-- **Pros:**
-  - Groups with other photo actions (Dock buttons)
-  - Consistent with action button placement pattern
-  - Less obstruction of photo center
-- **Cons:**
-  - May crowd the Dock button area
-  - Less discoverable (user might not look at corner)
-  - Asymmetrical with metadata overlay (which is bottom-left)
-
-**Impact:** Medium - affects UX discoverability and visual balance, but either option is functional.
-
----
-
-### Q001-02: Auto-hide Timer Duration
-
-**Context:** The full-size photo rating overlay auto-hides after a period of inactivity to avoid obstructing the photo view.
-
-**Question:** What duration should the auto-hide timer be set to?
-
-**Options (ordered by preference):**
-
-**Option A: 3 seconds (Recommended)**
-- **Duration:** Overlay fades out after 3 seconds of no mouse movement
-- **Pros:**
-  - Short enough to not be annoying
-  - Long enough for user to read and interact
-  - Common UX pattern for transient overlays
-- **Cons:**
-  - May feel rushed for slower users
-  - Might hide before user finishes reading
-
-**Option B: 5 seconds**
-- **Duration:** Overlay fades out after 5 seconds of no mouse movement
-- **Pros:**
-  - More time for users to read and decide
-  - Less pressure to act quickly
-- **Cons:**
-  - Longer obstruction of photo view
-  - May feel sluggish
-
-**Option C: Configurable (with 3s default)**
-- **Duration:** User setting for auto-hide duration (1-10 seconds)
-- **Pros:**
-  - User preference accommodated
-  - Accessible for users with different needs
-- **Cons:**
-  - Added complexity (settings UI, store management)
-  - Deferred to post-MVP
-
-**Option D: No auto-hide (manual dismiss only)**
-- **Duration:** Overlay persists until user moves mouse away from lower area
-- **Pros:**
-  - No time pressure
-  - User controls when it disappears
-- **Cons:**
-  - Overlay may linger and obstruct photo
-  - Less elegant UX
-
-**Impact:** Medium - affects user experience and perception of polish, but any reasonable duration works.
-
----
-
-### Q001-03: Rating Removal Button Placement
-
-**Context:** Users can remove their rating by selecting "0". The UI design needs to clarify how this is presented.
-
-**Question:** How should the "remove rating" (0) option be presented in the UI?
-
-**Options (ordered by preference):**
-
-**Option A: Inline button [0] before stars (Recommended)**
-- **Layout:** `[0] [1] [2] [3] [4] [5]` with 0 shown as "×" or "Remove"
-- **Pros:**
-  - Consistent with the button pattern
-  - Clear that 0 is a special action (remove)
-  - Simple implementation (same component pattern)
-- **Cons:**
-  - May be confused with a rating of zero
-  - Takes up space in compact overlays
-
-**Option B: Separate "Clear rating" button**
-- **Layout:** `[1] [2] [3] [4] [5] [Clear ×]`
-- **Pros:**
-  - Visually distinct from rating action
-  - Clearer intent (remove vs rate)
-  - Reduces accidental removal
-- **Cons:**
-  - Additional UI element
-  - Less compact for overlays
-
-**Option C: Right-click or long-press to remove**
-- **Interaction:** Click star to rate, right-click/long-press to remove
-- **Pros:**
-  - No additional UI needed
-  - Clean visual design
-- **Cons:**
-  - Not discoverable (hidden interaction)
-  - Accessibility concerns
-  - Mobile long-press may be awkward
-
-**Impact:** Low - all options are functional, mainly affects visual design and user discovery.
-
----
-
-### Q001-04: Overlay Visibility on Mobile Devices
-
-**Context:** The current spec hides rating overlays on mobile (below md: breakpoint) because hover interactions don't work well on touch devices. Users can still rate via the details drawer.
-
-**Question:** Should we provide any rating interaction on mobile beyond the details drawer?
-
-**Options (ordered by preference):**
-
-**Option A: Details drawer only on mobile (Recommended)**
-- **Behavior:** No overlays on mobile, rating only via PhotoDetails drawer
-- **Pros:**
-  - Simple, consistent experience
-  - No awkward touch interaction patterns needed
-  - Cleaner thumbnail grid (no overlay clutter)
-  - Follows existing Lychee mobile pattern (overlays are desktop-only)
-- **Cons:**
-  - Requires opening details drawer to rate
-  - Less convenient for quick ratings
-
-**Option B: Tap-to-show overlay on thumbnails**
-- **Behavior:** Single tap shows overlay (without opening photo), tap star to rate, tap outside to dismiss
-- **Pros:**
-  - Quick access to rating on mobile
-  - No need to open details drawer
-- **Cons:**
-  - Conflicts with tap-to-open-photo gesture
-  - Requires double-tap or long-press (poor UX)
-  - Added complexity in touch event handling
-
-**Option C: Always-visible compact rating on thumbnails (mobile)**
-- **Behavior:** Small rating display (stars or number) always visible on thumbnails on mobile
-- **Pros:**
-  - Ratings always visible at a glance
-  - Tap star to rate directly
-- **Cons:**
-  - Clutters thumbnail grid
-  - Inconsistent with desktop (hover-only)
-  - May obscure thumbnail image
-
-**Impact:** Medium - affects mobile user experience, but details drawer provides full fallback.
-
----
-
-### Q001-07: Statistics Record Creation Strategy
-
-**Context:** When a user rates a photo for the first time, the `photo_statistics` record may not exist yet. The implementation must handle this gracefully.
-
-**Question:** How should we ensure the statistics record exists when creating the first rating?
-
-**Options (ordered by preference):**
-
-**Option A: firstOrCreate in transaction (Recommended)**
-- **Approach:** Use `PhotoStatistics::firstOrCreate(['photo_id' => $photo_id], [...defaults])` within the transaction
-- **Pros:**
-  - Atomic operation, no race condition
-  - Laravel handles duplicate creation attempts
-  - Simple implementation
-- **Cons:**
-  - May create statistics record even if rating fails validation
-  - Extra query overhead
-
-**Option B: Check existence before rating**
-- **Approach:** Check if statistics exists, create if missing before rating transaction
-- **Pros:**
-  - Explicit control flow
-  - Clear error handling
-- **Cons:**
-  - Two separate operations (not atomic)
-  - Race condition if two users rate simultaneously
-  - More complex code
-
-**Option C: Database trigger**
-- **Approach:** Create database trigger to auto-create statistics record on photo insert
-- **Pros:**
-  - Guarantees statistics always exists
-  - No application logic needed
-- **Cons:**
-  - Adds database complexity
-  - Migration complexity for existing photos
-  - Not Lychee's pattern (application-level logic preferred)
-
-**Impact:** High - affects data integrity and implementation complexity
-
----
-
-### Q001-08: Transaction Rollback Error Handling
-
-**Context:** When a database transaction fails (e.g., deadlock, constraint violation), the spec doesn't clarify what error should be returned to the user.
-
-**Question:** How should we handle transaction failures in the rating endpoint?
-
-**Options (ordered by preference):**
-
-**Option A: 500 Internal Server Error with generic message (Recommended)**
-- **Response:** HTTP 500, `{"message": "Unable to save rating. Please try again."}`
-- **Pros:**
-  - Doesn't expose database implementation details
-  - Standard error handling pattern
-  - User-friendly message
-- **Cons:**
-  - Less specific for debugging
-  - May retry without fixing underlying issue
-
-**Option B: 409 Conflict for transaction errors**
-- **Response:** HTTP 409, `{"message": "Rating conflict. Please refresh and try again."}`
-- **Pros:**
-  - More semantic (conflict suggests retry)
-  - Indicates temporary issue
-- **Cons:**
-  - 409 typically used for optimistic locking conflicts
-  - May confuse frontend logic
-
-**Option C: Log error, retry transaction automatically**
-- **Approach:** Catch deadlock exceptions, retry transaction 2-3 times before failing
-- **Pros:**
-  - Transparent to user
-  - Handles temporary deadlocks gracefully
-- **Cons:**
-  - Added complexity
-  - May mask underlying database issues
-  - Increased latency
-
-**Impact:** High - affects error handling strategy and user experience
-
----
-
-### Q001-09: N+1 Query Performance for user_rating
-
-**Context:** PhotoResource includes `user_rating` field by querying `$this->ratings()->where('user_id', auth()->id())->value('rating')`. When loading many photos (album grid), this creates N+1 query problem.
-
-**Question:** How should we optimize user_rating loading for photo collections?
-
-**Options (ordered by preference):**
-
-**Option A: Eager load with closure in controller (Recommended)**
-- **Implementation:**
-  ```php
-  $photos->load(['ratings' => fn($q) => $q->where('user_id', auth()->id())]);
-  ```
-- **Pros:**
-  - Single additional query for all photos
-  - Standard Laravel pattern
-  - No PhotoResource changes needed
-- **Cons:**
-  - Must remember to eager load in every controller method
-  - Easy to forget and create N+1
-
-**Option B: Global scope on Photo model**
-- **Implementation:** Add global scope to always eager load current user's rating
-- **Pros:**
-  - Automatic, no controller changes needed
-  - Consistent across all queries
-- **Cons:**
-  - Always loads ratings even when not needed
-  - Performance overhead for unauthenticated users
-  - Global scopes can have unexpected side effects
-
-**Option C: Separate endpoint for ratings**
-- **Implementation:** Load photos without ratings, fetch ratings separately via `/api/photos/{ids}/ratings`
-- **Pros:**
-  - Decoupled data loading
-  - Can defer ratings until needed
-- **Cons:**
-  - Two API calls required
-  - More complex frontend logic
-  - Increased latency
-
-**Impact:** High - affects performance for album views with many photos
-
----
-
-### Q001-10: Concurrent Update Debouncing (Rapid Clicks)
-
-**Context:** If a user rapidly clicks different star values, multiple concurrent API requests may be sent. This could cause race conditions or display inconsistencies.
-
-**Question:** Should we debounce or throttle rapid rating changes in the UI?
-
-**Options (ordered by preference):**
-
-**Option A: Disable stars during API call (Recommended)**
-- **Behavior:** Set `loading = true`, disable all star buttons until API returns
-- **Pros:**
-  - Simple implementation
-  - Prevents concurrent requests
-  - Clear visual feedback (loading state)
-- **Cons:**
-  - User must wait for each rating to complete
-  - Slower if user wants to correct mistake
-
-**Option B: Debounce rating submissions (300ms)**
-- **Behavior:** Wait 300ms after last click before sending API request, cancel pending requests
-- **Pros:**
-  - Allows user to change mind quickly
-  - Reduces API calls for rapid clicks
-- **Cons:**
-  - Delayed feedback
-  - More complex implementation (cancel logic)
-  - May feel sluggish
-
-**Option C: Queue requests, send last value only**
-- **Behavior:** Queue rating changes, send only most recent value when previous request completes
-- **Pros:**
-  - Always saves final user choice
-  - No wasted API calls
-- **Cons:**
-  - Complex state management
-  - User may see intermediate states that don't persist
-
-**Impact:** High - affects UX responsiveness and data consistency
-
----
-
-### Q001-11: Metrics Disabled Behavior (Can Still Rate?)
-
-**Context:** The spec says rating data is hidden when `metrics_enabled` config is false, but doesn't clarify if users can still submit ratings when metrics are disabled.
-
-**Question:** When metrics are disabled, should users still be able to rate photos?
-
-**Options (ordered by preference):**
-
-**Option A: Yes, rating functionality always available (Recommended)**
-- **Behavior:** Users can rate, but aggregates/counts are hidden in UI. Data is still stored.
-- **Pros:**
-  - Consistent user experience
-  - Data collection continues even if display is disabled
-  - Easy to re-enable metrics later with existing data
-- **Cons:**
-  - May confuse users (why can I rate if I can't see ratings?)
-  - Data stored but not shown
-
-**Option B: No, disable rating when metrics disabled**
-- **Behavior:** Hide all rating UI and disable `/Photo::rate` endpoint when metrics disabled
-- **Pros:**
-  - Consistent (if metrics off, ratings off)
-  - Respects privacy/metrics setting fully
-- **Cons:**
-  - Loss of data collection
-  - Hard to re-enable later (no historical data)
-  - Inconsistent with favorites (favorites work when metrics disabled)
-
-**Option C: Admin setting controls independently**
-- **Behavior:** Separate `ratings_enabled` config independent of `metrics_enabled`
-- **Pros:**
-  - Granular control
-  - Can enable rating without showing aggregates
-- **Cons:**
-  - More configuration complexity
-  - May confuse admins
-
-**Impact:** High - affects feature scope and user experience
-
----
-
-### Q001-12: Rating Display When Metrics Disabled
-
-**Context:** FR-001-04 says rating data is shown "when metrics are enabled," but spec doesn't clarify if user's own rating is shown when metrics are disabled.
-
-**Question:** When metrics are disabled, should the UI show the user's own rating (even if aggregates are hidden)?
-
-**Options (ordered by preference):**
-
-**Option A: Show user's own rating regardless of metrics setting (Recommended)**
-- **Behavior:** User sees their own rating stars highlighted, but no aggregate average/count
-- **Pros:**
-  - User feedback on their own action
-  - Doesn't expose community metrics (privacy preserved)
-  - Consistent with user-centric data (my data vs community data)
-- **Cons:**
-  - Slightly inconsistent with "metrics disabled" (rating is a metric)
-
-**Option B: Hide all rating data when metrics disabled**
-- **Behavior:** No rating display at all, including user's own
-- **Pros:**
-  - Fully consistent with metrics disabled
-  - Simplest implementation
-- **Cons:**
-  - Poor UX (user can't see what they rated)
-  - Feels broken ("I clicked 4 stars, where did it go?")
-
-**Impact:** Medium - affects UX when metrics are disabled
-
----
-
-### Q001-13: Half-Star Display for Fractional Averages
-
-**Context:** Spec stores rating_avg as decimal(3,2), allowing fractional values like 4.33. UI mockups show full/empty stars only (no half-stars).
-
-**Question:** Should we display half-stars for fractional average ratings?
-
-**Options (ordered by preference):**
-
-**Option A: Full stars only, round to nearest integer (Recommended)**
-- **Display:** 4.33 avg → ★★★★☆ (4 stars), show "4.33" as text next to stars
-- **Pros:**
-  - Simpler UI implementation
-  - Clear visual (full or empty)
-  - Numeric value still shows precision
-- **Cons:**
-  - Visual representation less precise
-
-**Option B: Half-star display for .25-.74 range**
-- **Display:** 4.33 avg → ★★★★⯨ (4.5 stars visually), show "4.33" as text
-- **Pros:**
-  - More precise visual representation
-  - Common rating pattern (Amazon, IMDb)
-- **Cons:**
-  - More complex implementation (half-star icon, rounding logic)
-  - May not match user's mental model (users rate 1-5, not 1-10)
-
-**Option C: Gradient fill for precise fractional display**
-- **Display:** 4.33 avg → ★★★★⯨ (4th star 33% filled)
-- **Pros:**
-  - Exact visual representation
-  - Visually interesting
-- **Cons:**
-  - Complex implementation (SVG/CSS gradients)
-  - May be hard to read at small sizes
-  - Uncommon pattern (users may not understand)
-
-**Impact:** Medium - affects UI polish and clarity
-
----
-
-### Q001-14: Overlay Persistence on Active Interaction
-
-**Context:** PhotoRatingOverlay (full photo) auto-hides after 3 seconds of inactivity. Spec says "persists if mouse over overlay itself," but doesn't clarify behavior when user is actively clicking/interacting.
-
-**Question:** Should the overlay stay visible while the user is actively interacting with the rating stars, even if they briefly move the mouse outside the overlay?
-
-**Options (ordered by preference):**
-
-**Option A: Persist while loading, then restart auto-hide timer (Recommended)**
-- **Behavior:** After user clicks a star, overlay stays visible during API call (loading state), then restarts 3s auto-hide timer on success
-- **Pros:**
-  - User sees confirmation (success toast + updated rating)
-  - Natural flow (interact → see result → overlay fades)
-- **Cons:**
-  - May stay visible longer than expected
-
-**Option B: Auto-hide immediately after successful rating**
-- **Behavior:** After rating succeeds, overlay fades out immediately (no 3s delay)
-- **Pros:**
-  - Faster cleanup after action
-  - User sees toast notification for confirmation
-- **Cons:**
-  - Abrupt (overlay disappears right after click)
-  - User may not see updated average
-
-**Option C: Persist until mouse leaves lower area entirely**
-- **Behavior:** Overlay stays visible as long as mouse is in lower 20-30% zone, regardless of timer
-- **Pros:**
-  - User has full control
-  - Overlay available for multiple rating changes
-- **Cons:**
-  - May linger too long
-  - Obstructs photo view longer
-
-**Impact:** Medium - affects UX polish and expected behavior
-
----
-
-### Q001-15: Rating Tooltip/Label Clarity (What Are Stars?)
-
-**Context:** UI mockups don't show tooltips or ARIA labels explaining what the star rating means (1 = lowest, 5 = highest).
-
-**Question:** Should we add tooltips/labels to explain the star rating scale?
-
-**Options (ordered by preference):**
-
-**Option A: Hover tooltips on star buttons (Recommended)**
-- **Implementation:** Each star button shows tooltip: "1 star", "2 stars", ... "5 stars"
-- **Pros:**
-  - Self-explanatory on hover
-  - Accessible (screen reader friendly with aria-label)
-  - Doesn't clutter UI
-- **Cons:**
-  - Requires tooltip implementation
-  - May be obvious to most users
-
-**Option B: Label text: "Rate 1-5 stars"**
-- **Implementation:** Static text label above star buttons
-- **Pros:**
-  - Always visible, no hover needed
-  - Clear scale indication
-- **Cons:**
-  - Takes up space in compact overlays
-  - May be redundant (stars are intuitive)
-
-**Option C: No labels/tooltips (stars are self-evident)**
-- **Implementation:** No additional labels, star icons only
-- **Pros:**
-  - Cleanest UI
-  - Stars are universal rating symbol
-- **Cons:**
-  - Accessibility concerns (screen reader users)
-  - New users may not understand scale
-
-**Impact:** Medium - affects accessibility and UX clarity
-
----
-
-### Q001-16: Accessibility (Keyboard Navigation, ARIA)
-
-**Context:** Spec doesn't specify keyboard navigation or ARIA attributes for rating components.
-
-**Question:** What accessibility features should be implemented for the rating UI?
-
-**Options (ordered by preference):**
-
-**Option A: Full WCAG 2.1 AA compliance (Recommended)**
-- **Implementation:**
-  - Keyboard navigation: Tab to focus rating, Arrow keys to select star, Enter/Space to rate
-  - ARIA attributes: `role="radiogroup"`, `aria-label="Rate this photo"`, `aria-checked` on selected star
-  - Focus indicators: Visible outline on focused star
-  - Screen reader announcements: "4 stars selected, 15 total votes, average 4.2"
-- **Pros:**
-  - Fully accessible to all users
-  - Meets legal/compliance requirements
-  - Better UX for keyboard users
-- **Cons:**
-  - More implementation effort
-  - Testing complexity
-
-**Option B: Basic accessibility (tab focus, ARIA labels only)**
-- **Implementation:** Tab to rating widget, click to rate, basic aria-labels
-- **Pros:**
-  - Simpler implementation
-  - Covers most accessibility needs
-- **Cons:**
-  - Not fully keyboard navigable
-  - May not meet WCAG AA
-
-**Option C: Defer to post-MVP**
-- **Decision:** Launch with basic implementation, enhance accessibility later
-- **Pros:**
-  - Faster to ship
-  - Can gather user feedback first
-- **Cons:**
-  - Excludes users with disabilities
-  - Harder to retrofit later
-  - Potential compliance issues
-
-**Impact:** Medium - affects accessibility and inclusivity
-
----
-
-### Q001-17: Optimistic UI Updates vs Server Confirmation
-
-**Context:** Spec doesn't clarify whether UI should update optimistically (immediately on click) or wait for server confirmation.
-
-**Question:** Should the rating UI update optimistically or wait for API response?
-
-**Options (ordered by preference):**
-
-**Option A: Wait for server confirmation (Recommended)**
-- **Behavior:** Show loading state on click, update UI only after API success
-- **Pros:**
-  - Always shows accurate server state
-  - Clear error handling (revert on failure)
-  - No phantom updates
-- **Cons:**
-  - Slower perceived responsiveness
-  - Requires loading state UI
-
-**Option B: Optimistic update, revert on error**
-- **Behavior:** Update UI immediately on click, show error and revert if API fails
-- **Pros:**
-  - Instant feedback, feels faster
-  - Better perceived performance
-- **Cons:**
-  - Complex state management (revert logic)
-  - User may see incorrect state briefly
-  - Confusing if network is slow and revert happens seconds later
-
-**Option C: Hybrid (optimistic for user rating, wait for aggregate)**
-- **Behavior:** Update user's star selection immediately, but wait for server to update average/count
-- **Pros:**
-  - Fast feedback for user action
-  - Accurate aggregate display
-- **Cons:**
-  - Split state management
-  - May show inconsistent state (user rating updated, aggregate unchanged)
-
-**Impact:** Medium - affects perceived performance and UX
-
----
-
-### Q001-18: Rating Count Threshold for Display
-
-**Context:** Spec doesn't specify if ratings should be hidden when count is very low (e.g., 1-2 ratings may not be statistically meaningful).
-
-**Question:** Should we hide average rating display until a minimum number of ratings exist?
-
-**Options (ordered by preference):**
-
-**Option A: Always show rating, regardless of count (Recommended)**
-- **Display:** Show "★★★★★ 5.0 (1)" even for single rating
-- **Pros:**
-  - Transparent, shows all data
-  - Simpler logic (no threshold)
-  - Users can judge significance from count
-- **Cons:**
-  - Single ratings may be misleading (not representative)
-  - May encourage rating manipulation
-
-**Option B: Hide average until N >= 3 ratings**
-- **Display:** Show "(3 ratings)" text only until 3+ ratings, then show average
-- **Pros:**
-  - More statistically meaningful average
-  - Reduces impact of single outlier ratings
-- **Cons:**
-  - Hides data from users
-  - Arbitrary threshold (why 3?)
-  - Users may be confused why they can't see average after rating
-
-**Option C: Show with disclaimer for low counts**
-- **Display:** "★★★★★ 5.0 (1 rating)" with styling/tooltip: "Based on limited ratings"
-- **Pros:**
-  - Shows data with context
-  - Users can make informed judgment
-- **Cons:**
-  - More UI complexity
-  - May clutter compact overlays
-
-**Impact:** Medium - affects data presentation and perceived trustworthiness
-
----
-
-### Q001-19: Telemetry Event Granularity
-
-**Context:** Spec defines three telemetry events (photo.rated, photo.rating_updated, photo.rating_removed). These events overlap (updating is also rating).
-
-**Question:** Should we emit separate events for create vs update, or combine into one event?
-
-**Options (ordered by preference):**
-
-**Option A: Three separate events (as spec defines) (Recommended)**
-- **Events:** `photo.rated` (new), `photo.rating_updated` (change), `photo.rating_removed` (delete)
-- **Pros:**
-  - Granular analytics (can track rating changes separately from new ratings)
-  - Easier to query specific actions
-- **Cons:**
-  - More event types to maintain
-  - Logic to determine which event to emit
-
-**Option B: Single event with action field**
-- **Event:** `photo.rating_changed` with field `action: "created"|"updated"|"removed"`
-- **Pros:**
-  - Simpler event schema
-  - Single event handler
-- **Cons:**
-  - Less semantic
-  - Requires filtering by action field in analytics
-
-**Option C: Two events (rated/removed only)**
-- **Events:** `photo.rated` (create or update), `photo.rating_removed`
-- **Pros:**
-  - Simpler (updates are just "rated again")
-  - Matches user mental model (user doesn't distinguish create vs update)
-- **Cons:**
-  - Can't track rating changes separately from new ratings
-
-**Impact:** Low - affects telemetry analytics, doesn't affect user experience
-
----
-
-### Q001-20: Rating Analytics/Trending Features
-
-**Context:** Spec explicitly excludes "advanced rating analytics or trends" from scope, but this may be a desirable future feature.
-
-**Question:** Should we design the schema and telemetry to support future analytics features (trending photos, rating distributions)?
-
-**Options (ordered by preference):**
-
-**Option A: Yes, design for extensibility (Recommended)**
-- **Approach:** Include timestamps, consider adding indexes for common queries (ORDER BY rating_avg), design telemetry for time-series analysis
-- **Pros:**
-  - Easier to add features later
-  - Better query performance from day 1
-  - Minimal overhead now
-- **Cons:**
-  - May add complexity that's never used
-  - YAGNI (You Aren't Gonna Need It) principle violation
-
-**Option B: No, implement minimally for current scope**
-- **Approach:** Bare minimum schema/indexes for current requirements, add analytics support later if needed
-- **Pros:**
-  - Simpler initial implementation
-  - Follows YAGNI principle
-  - Faster to ship
-- **Cons:**
-  - May require schema changes later
-  - Migration complexity for existing data
-
-**Impact:** Low - affects future extensibility, not current functionality
-
----
-
-### Q001-21: Album Aggregate Rating Display
-
-**Context:** Spec excludes "album-level aggregate ratings" from scope, but users may expect to see album ratings in album grid view.
-
-**Question:** Should we display aggregate album ratings (average of all photo ratings in album)?
-
-**Options (ordered by preference):**
-
-**Option A: Defer to future feature (Recommended)**
-- **Decision:** Not in scope for Feature 001, track as separate future feature (Feature 00X)
-- **Pros:**
-  - Keeps current feature focused
-  - Can design properly later with user feedback on photo ratings
-- **Cons:**
-  - Users may expect this feature
-  - More work to add later
-
-**Option B: Add to current feature scope**
-- **Implementation:** Calculate album average from photo ratings, display in album grid
-- **Pros:**
-  - Complete feature (photos + albums)
-  - More useful to users
-- **Cons:**
-  - Increases scope significantly
-  - More complex queries (aggregate of aggregates)
-  - Unclear UX (what does album rating mean? average of photos? weighted by photo quality?)
-
-**Impact:** Low - out of current scope, but may be user expectation
-
----
-
-### Q001-22: Rating Export in Photo Backup
-
-**Context:** Lychee supports photo export/backup functionality. Spec doesn't clarify if rating data should be included in exports.
-
-**Question:** Should photo export/backup include rating data (user's own rating and/or aggregates)?
-
-**Options (ordered by preference):**
-
-**Option A: Include in export (CSV/JSON format) (Recommended)**
-- **Export fields:** photo_id, user's rating, average rating, rating count
-- **Pros:**
-  - Complete data portability
-  - Users can back up their ratings
-  - Useful for data analysis outside Lychee
-- **Cons:**
-  - Larger export files
-  - Privacy concerns if export is shared (includes others' aggregate data)
-
-**Option B: Export user's ratings only (not aggregates)**
-- **Export fields:** photo_id, user's rating
-- **Pros:**
-  - User data portability
-  - No privacy concerns (only user's own data)
-- **Cons:**
-  - Incomplete export (aggregates lost)
-
-**Option C: No export (ratings are ephemeral/server-side only)**
-- **Decision:** Ratings not included in photo exports
-- **Pros:**
-  - Simpler export logic
-  - Smaller export files
-- **Cons:**
-  - Data loss risk if server fails
-  - No migration path to other platforms
-
-**Impact:** Low - affects data portability, not core functionality
-
----
-
-### Q001-23: Rating Notification to Photo Owner
-
-**Context:** When other users rate a photo, the photo owner may want to be notified (similar to comment notifications).
-
-**Question:** Should photo owners receive notifications when their photos are rated?
-
-**Options (ordered by preference):**
-
-**Option A: Defer to future feature (notifications system) (Recommended)**
-- **Decision:** Not in scope for Feature 001, add when notifications framework is implemented
-- **Pros:**
-  - Keeps feature scope focused
-  - Requires notifications infrastructure (may not exist yet)
-  - Can be added non-intrusively later
-- **Cons:**
-  - Photo owners won't know when photos are rated
-  - Lower engagement
-
-**Option B: Simple email notification**
-- **Implementation:** Send email to photo owner when photo is rated (with throttling: max 1 email per photo per day)
-- **Pros:**
-  - Engagement boost
-  - Photo owners stay informed
-- **Cons:**
-  - Email fatigue (could get many emails)
-  - Requires email configuration
-  - Increases scope
-
-**Option C: In-app notification only (no email)**
-- **Implementation:** Show notification bell/count in Lychee UI when photos are rated
-- **Pros:**
-  - Less intrusive than email
-  - Real-time feedback when user is active
-- **Cons:**
-  - Requires notification UI infrastructure
-  - User may miss notifications if not logged in
-
-**Impact:** Low - nice-to-have feature, not core rating functionality
-
----
-
-### Q001-24: Statistics Recalculation Artisan Command
-
-**Context:** Implementation notes mention "artisan command to recalculate all statistics from photo_ratings table for data integrity audits."
-
-**Question:** Should we implement an artisan command to recalculate rating statistics, and if so, when should it be used?
-
-**Options (ordered by preference):**
-
-**Option A: Yes, implement `php artisan photos:recalculate-ratings` command (Recommended)**
-- **Usage:** Run manually after data migration, database corruption, or as periodic audit
-- **Behavior:** Iterate all photos, sum ratings from photo_ratings table, update photo_statistics
-- **Pros:**
-  - Data integrity safety net
-  - Useful for debugging/auditing
-  - Can fix inconsistencies from bugs or manual DB edits
-- **Cons:**
-  - Extra code to maintain
-  - May be slow on large databases
-  - Risk of overwriting correct data if command is buggy
-
-**Option B: No command, rely on transaction integrity**
-- **Decision:** Trust atomic transactions to maintain consistency, no recalculation needed
-- **Pros:**
-  - Simpler (less code)
-  - Transactions should guarantee consistency
-- **Cons:**
-  - No recovery if bug causes inconsistency
-  - No way to audit/verify correctness
-
-**Option C: Automated periodic recalculation (cron job)**
-- **Implementation:** Run recalculation command daily/weekly via scheduler
-- **Pros:**
-  - Automatic data integrity maintenance
-  - Catches and fixes issues proactively
-- **Cons:**
-  - Resource intensive (extra DB load)
-  - May mask underlying bugs instead of fixing them
-  - Overkill if transactions are working correctly
-
-**Impact:** Low - data integrity safety feature, not core functionality
-
----
-
-### Q001-25: Migration Strategy for Existing Installations
-
-**Context:** When existing Lychee installations upgrade to this feature, they'll have photos but no rating data. Migration behavior isn't specified.
-
-**Question:** How should the migration handle existing photos with no rating data?
-
-**Options (ordered by preference):**
-
-**Option A: Migration adds columns with defaults, no backfill (Recommended)**
-- **Behavior:** Migration adds rating_sum/rating_count columns with default 0, existing photos have no ratings
-- **Pros:**
-  - Clean state (accurate: no ratings yet)
-  - Fast migration (no data processing)
-  - No assumptions about historical data
-- **Cons:**
-  - Existing photos start with no ratings (expected behavior)
-
-**Option B: Backfill with random/seeded ratings (dev/test only)**
-- **Behavior:** For development, optionally seed some random ratings for testing
-- **Pros:**
-  - Easier to test rating display with real-looking data
-- **Cons:**
-  - Fake data, not suitable for production
-  - Could confuse users if accidentally run in production
-
-**Option C: Import from external source (if available)**
-- **Behavior:** If migrating from another system with ratings, provide import script
-- **Pros:**
-  - Preserves historical rating data
-- **Cons:**
-  - Complex, requires external data source
-  - Not applicable to most installations
-  - Out of scope for Feature 001
-
-**Impact:** Low - affects upgrade experience, but default behavior (no ratings) is expected
-
----
-
-### ~~Q-004-01: Recomputation Trigger Strategy for Size Statistics~~ ✅ RESOLVED
-
-**Decision:** Option B - Separate `RecomputeAlbumSizeJob` triggered independently, using Skip middleware with cache-based job tracking (same pattern as Feature 003's `RecomputeAlbumStatsJob`)
-**Rationale:** Decoupled from Feature 003, can optimize independently, reuses proven Skip middleware pattern from [RecomputeAlbumStatsJob.php](app/Jobs/RecomputeAlbumStatsJob.php:76-93) with cache key `album_size_latest_job:{album_id}` and unique job IDs for deduplication.
-**Updated in spec:** FR-004-02, JOB-004-01, middleware implementation details
-
----
-
-### ~~Q-004-02: Migration/Backfill Strategy for Existing Albums~~ ✅ RESOLVED
-
-**Decision:** Option A - Separate artisan command, manual execution, PLUS maintenance UI button for operators
-**Rationale:** Operator controls timing during maintenance window, fast migration (schema only), progress monitoring. Admin UI button provides convenient trigger for backfill without CLI access.
-**Updated in spec:** FR-004-04, CLI-004-01, maintenance UI addition
-
----
-
-### ~~Q-004-03: Job Deduplication Approach for Concurrent Updates~~ ✅ RESOLVED
-
-**Decision:** Option D (Custom) - Use Skip middleware with cache-based job tracking (same pattern as Feature 003)
-**Rationale:** Reuses proven pattern from [RecomputeAlbumStatsJob.php](app/Jobs/RecomputeAlbumStatsJob.php): Each job gets unique ID, latest job ID stored in cache with key `album_size_latest_job:{album_id}`, `Skip::when()` middleware checks if newer job queued. Simpler than `WithoutOverlapping`, guarantees most recent update eventually processes.
-**Updated in spec:** FR-004-02, JOB-004-01
-
----
-
-## How to Use This Document
-
-1. **Log new questions:** Add a row to the Active Questions table with a unique ID (format: `Q###-##`), feature reference, priority (High/Medium), and brief summary.
-2. **Add details:** Create a corresponding section under Question Details with:
-   - Full question context
-   - Options (A, B, C...) ordered by preference
-   - Pros/cons for each option
-   - Impact analysis
-3. **Present to user:** Once logged, present the question inline in chat referencing the question ID.
-4. **Resolve and remove:** When answered, update the relevant spec sections (and create ADR if high-impact), then delete both the table row and Question Details entry.
-
----
-
-*Last updated: 2026-03-15*
-
-### ~~Q-023-01: Remember-me Cookie Duration and Admin Configurability~~ ✅ RESOLVED
-
-**Decision:** Option C — Use a shorter default (4 weeks) with env override
-**Rationale:** A 4-week (40320 minutes) default is more security-conscious than Laravel's ~5-year default while still being practical for home/personal instances. The duration is configurable via `REMEMBER_LIFETIME` env variable, loaded by `config/auth.php` in the lychee guard config (`'remember' => (int) env('REMEMBER_LIFETIME', 40320)`). The existing `SessionOrTokenGuard::createGuard()` already reads this key via `setRememberDuration()`. No admin UI control — env/config only.
-**Updated in spec:** Non-Goals (clarified no admin UI for duration), NFR-023-01 (cookie duration = 4 weeks default)
-
----
-
-### ~~Q-030-01: Communication Protocol Between Python Face-Recognition Service and Lychee~~ ✅ RESOLVED
-
-**Feature:** 030 – Facial Recognition
-**Priority:** High
-**Status:** Resolved
-**Opened:** 2026-03-15
-
-**Resolution:** **Option A** — REST API with webhook callbacks. Lychee sends scan requests to the Python service's REST API; the Python service calls back to Lychee's `/api/v2/FaceDetection/results` endpoint when results are ready.
-
-**Rationale:** Simplest architecture, stateless, easy to debug, works with existing HTTP infrastructure. No additional broker dependencies.
-
-**Spec Impact:** FR-030-07, FR-030-08 confirmed with REST+callback pattern. Inter-service contract in spec appendix is authoritative.
-
-**Resolved:** 2026-03-15
-
----
-
-### ~~Q-030-02: Face Detection Trigger Mechanism~~ ✅ RESOLVED
-
-**Feature:** 030 – Facial Recognition
-**Priority:** High
-**Status:** Resolved
-**Opened:** 2026-03-15
-
-**Resolution:** **Option A** — Multiple triggers: automatic on upload (via queue job), manual scan (photo/album), and admin bulk-scan command.
-
-**Rationale:** Covers all use cases. New photos auto-processed; existing libraries backfilled via bulk scan; manual scan for on-demand needs.
-
-**Spec Impact:** FR-030-08 (manual scan), FR-030-09 (bulk scan) confirmed. Auto-on-upload trigger added to plan as I7 sub-task.
-
-**Resolved:** 2026-03-15
-
----
-
-### ~~Q-030-03: Face Clustering and Assignment Workflow~~ ✅ RESOLVED
-
-**Feature:** 030 – Facial Recognition
-**Priority:** High
-**Status:** Resolved
-**Opened:** 2026-03-15
-
-**Resolution:** **Option A** — Auto-cluster with manual confirmation. Python service clusters face embeddings and suggests groupings. Users review, name clusters (creating Person records), and can merge/split. Unknown faces grouped as "Unknown" until assigned.
-
-**Rationale:** Best balance of automation and user control. Leverages ML capability while keeping human in the loop.
-
-**Spec Impact:** Clustering result ingestion added to inter-service contract. UI for cluster review added to frontend increments.
-
-**Resolved:** 2026-03-15
-
----
-
-### ~~Q-030-04: Face Embedding Storage Location~~ ✅ RESOLVED
-
-**Feature:** 030 – Facial Recognition
-**Priority:** Medium
-**Status:** Resolved
-**Opened:** 2026-03-15
-
-**Resolution:** **Option A** — Python service owns embeddings in its own storage. Lychee's `faces` table stores only bounding box, confidence, person_id, photo_id. No raw embedding data in Lychee DB.
-
-**Rationale:** Keeps Lychee DB lean; vector similarity search belongs in the Python service; clean separation of concerns.
-
-**Spec Impact:** DO-030-02 (Face) confirmed without embedding column. NFR-030-05 (versioned contract) covers embedding_id reference.
-
-**Resolved:** 2026-03-15
-
----
-
-### ~~Q-030-05: "Non-Searchable" Person Semantics~~ ✅ RESOLVED
-
-**Feature:** 030 – Facial Recognition
-**Priority:** Medium
-**Status:** Resolved
-**Opened:** 2026-03-15
-
-**Resolution:** **Option A** — Non-searchable Person hidden from search results AND People browsing page for all users except the Person's linked User and admins. Faces still detected and stored internally.
-
-**Rationale:** Privacy-respecting; person can opt out of being discoverable; data remains available for the linked user and administrators.
-
-**Spec Impact:** FR-030-06 updated with full visibility rules. NFR-030-04 confirmed. S-030-05, S-030-15 test scenarios confirmed.
-
-**Resolved:** 2026-03-15
-
----
-
-### ~~Q-030-06: Person-User Tie Purpose and Semantics~~ ✅ RESOLVED
-
-**Feature:** 030 – Facial Recognition
-**Priority:** Medium
-**Status:** Resolved
-**Opened:** 2026-03-15
-
-**Resolution:** **Option A (extended)** — Self-identification ("this Person is me") with two additions:
-1. **Admin override:** Admins can link/unlink any Person-User pair, overriding user claims.
-2. **Selfie-upload claim:** Users can upload a photo of themselves; the Python service matches the selfie against existing face embeddings to find and assign the matching Person record.
-
-**Rationale:** Self-identification enables privacy self-service and "find photos of me". Admin override provides governance. Selfie-upload leverages the face recognition service for convenient self-assignment without manual browsing.
-
-**Spec Impact:** FR-030-05 updated with admin override. New FR-030-12 added for selfie-upload claim flow. New API endpoint (API-030-13) and UI state (UI-030-07) added. Plan increment I5 extended with selfie-upload sub-tasks.
-
-**Resolved:** 2026-03-15
-
----
-
-### ~~Q-030-07: How Does the Python Service Access Photo Files?~~ ✅ RESOLVED
-
-**Feature:** 030 – Facial Recognition
-**Priority:** High
-**Status:** Resolved
-**Opened:** 2026-03-15
-
-**Resolution:** **Option A** — Shared Docker volume. Both containers mount the same storage volume. The scan request includes a `photo_path` (filesystem path) instead of a URL. Python service reads directly from disk.
-
-**Rationale:** Fastest access; no auth complexity; works with private photos; no network overhead. Deployment requires both containers to share the photos volume.
-
-**Spec Impact:** Inter-service contract updated: `photo_url` replaced with `photo_path` in scan request. Deployment docs must specify shared volume configuration. NFR added for S3/remote storage documentation (FUSE mount or alternative).
-
-**Resolved:** 2026-03-15
-
----
-
-### ~~Q-030-08: Permission Model for People/Face Operations~~ ✅ RESOLVED
-
-**Feature:** 030 – Facial Recognition
-**Priority:** High
-**Status:** Resolved
-**Opened:** 2026-03-15
-
-**Resolution:** **Option C** — Configurable via admin setting (`face_recognition_permission_mode`). Two modes:
-- **"open"** (default): Any authenticated user can perform all CRUD/assign/merge operations. Only bulk scan restricted to admin.
-- **"restricted"**: Photo-owner-centric with admin escalation:
-  - Create Person: Any authenticated user.
-  - Update/Delete Person: Linked User, creator, or admin.
-  - Assign Face: Photo owner or admin.
-  - Trigger scan: Photo/album owner or admin.
-  - Bulk scan: Admin only.
-  - Merge Persons: Admin only.
-  - Claim Person: Any authenticated user.
-
-**Rationale:** Accommodates both single-user/family instances (open mode) and multi-user deployments (restricted mode). Default is "open" since most Lychee instances are single-user.
-
-**Spec Impact:** New config entry `face_recognition_permission_mode` (enum: open, restricted). FR-030-05/08/10/11 updated with conditional authorization. New NFR for permission mode testing (both modes covered by feature tests).
-
-**Resolved:** 2026-03-15
-
----
-
-### ~~Q-030-09: Face Crop Thumbnail Generation~~ ✅ RESOLVED
-
-**Feature:** 030 – Facial Recognition
-**Priority:** High
-**Status:** Resolved
-**Opened:** 2026-03-15
-
-**Resolution:** **Option B** — Server-side crop stored as a new asset. The Python service generates a cropped face thumbnail (150x150px) during face detection and includes it in the scan result callback. The crop is stored alongside size variants. The Face record includes a `crop_path` field.
-
-**Rationale:** Crisp thumbnails optimized for People page grid; fast rendering from small pre-generated files; Python service already has the image loaded during detection so the crop is essentially free.
-
-**Spec Impact:** DO-030-02 (Face) gains `crop_path` field. Inter-service contract updated: scan result includes `crop` (base64 JPEG) per face. New migration adds `crop_path` to faces table. I16 Python service includes crop generation.
-
-**Resolved:** 2026-03-15
-
----
-
-### ~~Q-030-10: Non-Searchable Person Face Overlay Behavior~~ ✅ RESOLVED
-
-**Feature:** 030 – Facial Recognition
-**Priority:** Medium
-**Status:** Resolved
-**Opened:** 2026-03-15
-
-**Resolution:** **Option B (extended)** — Hide the overlay entirely for non-searchable persons, but include a summary indicator: "N faces detected but hidden for privacy reasons" displayed below the photo or in the faces info bar. The count does not reveal which specific persons are hidden.
-
-**Rationale:** Maximum privacy — no hint about which specific face was identified. The summary count maintains transparency about face detection having occurred without leaking person-specific data.
-
-**Spec Impact:** FR-030-04 updated: photo detail response excludes Face records for non-searchable persons (for unauthorized viewers), but includes `hidden_face_count` (integer). Frontend displays "{N} face(s) hidden for privacy" when count > 0. NFR-030-04 test cases updated.
-
-**Resolved:** 2026-03-15
-
----
-
-### ~~Q-030-11: Selfie Image Lifecycle~~ ✅ RESOLVED
-
-**Feature:** 030 – Facial Recognition
-**Priority:** Medium
-**Status:** Resolved
-**Opened:** 2026-03-15
-
-**Resolution:** **Option A** — Discard immediately after match. The selfie is held in memory/temp storage only during the matching request. Once the Python service returns its result, the image is deleted. No permanent record.
-
-**Rationale:** Privacy-friendly; no unnecessary data retention; simpler storage. Users can re-upload if they want to retry.
-
-**Spec Impact:** FR-030-12 confirmed: selfie is transient. No storage schema changes needed for selfie retention. Implementation uses temp file or in-memory buffer.
-
-**Resolved:** 2026-03-15
-
----
-
-### ~~Q-030-12: Selfie Match Inter-Service Contract~~ ✅ RESOLVED
-
-**Feature:** 030 – Facial Recognition
-**Priority:** Medium
-**Status:** Resolved
-**Opened:** 2026-03-15
-
-**Resolution:** **Option A** — Dedicated match endpoint on Python service. `POST /match` accepts an image file (multipart) and returns top-N matching embedding references with confidence scores.
-
-Contract:
-```json
-// Request: POST /match (multipart form with "image" file field)
-// Response:
-{
-  "matches": [
-    { "embedding_id": "emb_001", "person_suggestion": "cluster_42", "confidence": 0.963 },
-    { "embedding_id": "emb_002", "person_suggestion": "cluster_17", "confidence": 0.412 }
-  ]
-}
-```
-
-Lychee maps `embedding_id` back to Face records (which have person_id) to identify the matching Person. The `person_suggestion` field is advisory (from clustering) and may be null.
-
-**Rationale:** Clean separation; Python service owns matching logic; single round trip; Lychee just consumes results.
-
-**Spec Impact:** Inter-service contract appendix updated with `/match` endpoint. I17 Python service implements the endpoint. I5 Lychee SelfieClaimController consumes it.
-
-**Resolved:** 2026-03-15
-
----
-
-### ~~Q-033-01: Monitor Trust Level Behaviour~~ ✅ RESOLVED
-
-**Feature:** 033 – Upload Trust Level  
-**Priority:** High  
-**Status:** Resolved  
-**Opened:** 2026-04-09
-
-**Resolution:** **Option A** — Photos from `monitor`-level users are immediately validated (public), but flagged for periodic admin review. A separate "monitoring queue" shows recently uploaded photos from `monitor` users for the admin to spot-check. No photos are hidden; this is a soft-audit mechanism.
-
-**Spec Impact:** Updated FR-033-03 to clarify that `monitor` behaves as `trusted` (uploads immediately validated) in this iteration. The monitoring queue is deferred to a follow-up. Updated Non-Goals and Appendix Trust Level Decision Matrix.
-
-**Resolved:** 2026-04-09
-
----
-
-### ~~Q-033-02: Retroactive Trust Level Changes~~ ✅ RESOLVED
-
-**Feature:** 033 – Upload Trust Level  
-**Priority:** Medium  
-**Status:** Resolved  
-**Opened:** 2026-04-09
-
-**Resolution:** **Option A** — No retroactive changes. Only future uploads are affected by the new trust level. Existing photos retain their `is_validated` status. This is the simplest and safest approach.
-
-**Spec Impact:** Confirmed as a non-goal in spec.md. No additional follow-up tasks needed.
-
-**Resolved:** 2026-04-09
-
----
-
-### ~~Q-033-03: Admin Photo Uploads and Trust Level~~ ✅ RESOLVED
-
-**Feature:** 033 – Upload Trust Level  
-**Priority:** Medium  
-**Status:** Resolved  
-**Opened:** 2026-04-09
-
-**Resolution:** **Option A** — Admin uploads are always immediately validated (`is_validated = true`) regardless of the admin's `upload_trust_level` setting. Admins are inherently trusted — they can approve their own photos anyway. The `SetUploadValidated` pipe checks `may_administrate` first and short-circuits to `true`.
-
-**Spec Impact:** Updated FR-033-03 to explicitly state that admin uploads bypass trust level checks. Updated Appendix Trust Level Decision Matrix. Updated task T-033-07 to include the admin short-circuit logic.
-
-**Resolved:** 2026-04-09
-
----
-
-### ~~Q-034-01: TagAlbum Rows in Bulk Edit List~~ ✅ RESOLVED
-
-**Feature:** 034 – Bulk Album Edit  
-**Priority:** Medium  
-**Status:** Resolved  
-**Opened:** 2026-04-12  
-**Resolved:** 2026-04-14
-
-**Resolution:** **Option A** — Show only regular `Album` records (no TagAlbums). The list query joins only the `albums` table. A note on the page explains TagAlbums are excluded.
-
-**Spec Impact:** FR-034-01 clarified; plan and tasks updated to confirm only `albums` table is queried.
-
----
-
-### ~~Q-034-02: Depth Indicator Computation Strategy~~ ✅ RESOLVED
-
-**Feature:** 034 – Bulk Album Edit  
-**Priority:** Medium  
-**Status:** Resolved  
-**Opened:** 2026-04-12  
-**Resolved:** 2026-04-14
-
-**Resolution:** **Option B** — Compute depth client-side, **linearly**, by scanning `_lft` values in descending order. The server returns `_lft` in each `BulkAlbumResource` row (already included). The frontend performs a single O(n) pass over the sorted-by-`_lft` result set: maintain a stack of ancestor `_rgt` values; pop the stack whenever the current row's `_lft` exceeds the stack top's `_rgt`; depth = stack length. This avoids an extra server-side `withDepth()` join and keeps computation in the client where the full page of records is already available.
-
-**Spec Impact:** `BulkAlbumResource` includes `_lft` and `_rgt` (not `depth`). FR-034-14 updated to specify client-side linear depth computation. T-034-03 and T-034-17 updated accordingly.
-
----
-
-### ~~Q-034-03: Confirmation for Bulk Delete~~ ✅ RESOLVED
-
-**Feature:** 034 – Bulk Album Edit  
-**Priority:** High  
-**Status:** Resolved  
-**Opened:** 2026-04-12  
-**Resolved:** 2026-04-14
-
-**Resolution:** **Option B** — Bulk delete shows a minimal confirmation modal: a dialog displaying the count of selected albums and requiring the admin to click a second **"Confirm Delete"** button. No text input required. This is consistent with the spirit of the no-confirmation rule (field edits apply immediately) while protecting against accidental mass-delete.
-
-**Spec Impact:** FR-034-10 updated to require confirmation modal for delete. UI-034-05 (delete confirmation dialog state) added. T-034-20 updated.
-
----
-
-### ~~Q-034-04: Scope of "Select All Matching"~~ ✅ RESOLVED
-
-**Feature:** 034 – Bulk Album Edit  
-**Priority:** Low  
-**Status:** Resolved  
-**Opened:** 2026-04-12  
-**Resolved:** 2026-04-14
-
-**Resolution:** **Option A** — Return all albums in the gallery regardless of owner. Admin page; admin has authority over all albums.
-
-**Spec Impact:** FR-034-12 confirmed: no owner filter applied on `GET /BulkAlbumEdit::ids`.
-
----
-
-### ~~Q-035-01: Behaviour of GET /Zip (no chunk param) when chunked mode is ON~~ ✅ RESOLVED
-
-**Feature:** 035 – Chunked Archive Download
-**Priority:** Medium
-**Status:** Resolved
-**Opened:** 2026-04-12
-
-**Context:** When `download_archive_chunked` is enabled, a client that calls `GET /Zip` without a `chunk` parameter may be a legacy client or an incorrect integration. We need a defined contract for this case.
-
-**Resolution:** **Option A** — Treat missing `chunk` as a regular single-archive download, regardless of the chunked-mode setting. This is backward-compatible: legacy frontends and direct URL downloads work without modification.
-
-**Spec Impact:** Encoded in FR-035-05 and FR-035-07.
-
-**Resolved:** 2026-04-12
