@@ -35,5 +35,5 @@ return [
         'edit' => 'Edit',
 
         'error_name_required' => 'Group name is required.',
-    ]
+    ],
 ];

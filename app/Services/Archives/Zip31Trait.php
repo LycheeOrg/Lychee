@@ -8,11 +8,9 @@
 
 namespace App\Services\Archives;
 
+use App\DTO\ZippablePhoto;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\LycheeLogicException;
-use App\Image\Files\BaseMediaFile;
-use App\Image\Files\FlysystemFile;
-use App\Models\Photo;
 use App\Repositories\ConfigManager;
 use Composer\InstalledVersions;
 use Composer\Semver\VersionParser;
@@ -41,16 +39,18 @@ trait Zip31Trait
 		throw new LycheeLogicException('Unsupported version of maennchen/zipstream-php');
 	}
 
-	protected function addFileToZip(ZipStream $zip, string $file_name, FlysystemFile|BaseMediaFile $file, Photo|null $photo): void
-	{
-		if ($photo === null) {
+	protected function addFileToZip(
+		ZipStream $zip,
+		ZippablePhoto $zippable_photo,
+	): void {
+		if ($zippable_photo->title === null) {
 			/** @disregard */
-			$zip->addFileFromStream(fileName: $file_name, stream: $file->read());
+			$zip->addFileFromStream(fileName: $zippable_photo->file_name, stream: $zippable_photo->file->read());
 
 			return;
 		}
 
 		/** @disregard */
-		$zip->addFileFromStream(fileName: $file_name, stream: $file->read(), comment: $photo->title, lastModificationDateTime: $photo->taken_at ?? $photo->created_at);
+		$zip->addFileFromStream(fileName: $zippable_photo->file_name, stream: $zippable_photo->file->read(), comment: $zippable_photo->title, lastModificationDateTime: $zippable_photo->last_modification_date_time);
 	}
 }

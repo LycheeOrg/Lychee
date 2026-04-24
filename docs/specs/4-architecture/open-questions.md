@@ -7,99 +7,166 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 | Question ID | Feature | Priority | Summary | Status | Opened | Updated |
 |-------------|---------|----------|---------|--------|--------|---------|
 
-
+_No active questions._
 
 ## Question Details
 
----
+### ~~Q-037-08: Partial-Admin Users — Dashboard Behaviour & Stats Visibility~~ ✅ RESOLVED
 
-### ~~Q-030-74: PersonDetail Lightbox Navigation Strategy~~ ✅ RESOLVED
-
-**Feature:** 030 – AI Vision Service  
-**Priority:** High  
-**Status:** Resolved  
-**Opened:** 2026-04-07  
-**Affects:** T-030-85 (I35), FR-030-39
-
-**Resolution:** **Option A (server-side)** — `GET /Person/{id}/photos` computes and includes `next_photo_id` and `previous_photo_id` on each `PhotoResource`, ordered sequentially by collection position (access-filtered). First photo: `previous_photo_id = null`; last photo: `next_photo_id = null`. `PhotoPanel.vue` then uses these person-relative IDs natively for navigation within the person's collection. No client-side monkey-patching required.
-
-**Spec Impact:** Updated FR-030-03 success path to note that each `PhotoResource` includes `next_photo_id`/`previous_photo_id` relative to the person's collection. Updated FR-030-39 success path. Updated S-030-55 scenario. Updated plan.md I12 steps and exit criteria. Updated T-030-32 (test for next/previous IDs), T-030-33 (implementation), T-030-85 (lightbox navigation note).
-
-**Resolved:** 2026-04-07
-
----
-
-### ~~Q-030-75: FaceCluster Detail View — Dialog vs. Sub-Route~~ ✅ RESOLVED
-
-**Feature:** 030 – AI Vision Service  
-**Priority:** Medium  
-**Status:** Resolved  
-**Opened:** 2026-04-07  
-**Affects:** T-030-78 (I32), FR-030-29
-
-**Resolution:** **Option A** — PrimeVue `<Dialog>`. Clicking a cluster card opens a Dialog that fetches all faces via `GET /FaceDetection/clusters/{cluster_id}/faces`. URL does not change. No routing changes needed.
-
-**Spec Impact:** Updated FR-030-29 requirement and success path to specify PrimeVue Dialog. Updated plan.md I32 step 3. Updated T-030-78 intent (Dialog only, sub-route option removed).
-
-**Resolved:** 2026-04-07
-
----
-
-### ~~Q-030-76: People.vue Context Menu "Assign to User" Action~~ ✅ RESOLVED
-
-**Feature:** 030 – AI Vision Service  
-**Priority:** Medium  
-**Status:** Resolved  
-**Opened:** 2026-04-07  
-**Affects:** T-030-79 (I33), FR-030-32, FR-030-05
-
-**Resolution:** **Option A** — User-picker dialog. "Assign to user" (admin-only) opens a PrimeVue `<Dialog>` with an autocomplete Dropdown listing user accounts (name + email). On confirm, calls `PATCH /Person/{id}` with `{ user_id: selectedUserId }`. Requires extending `UpdatePersonRequest` to accept nullable `user_id` with an admin-only validation gate.
-
-**Spec Impact:** Updated FR-030-32 success path to describe the user-picker dialog and `PATCH /Person/{id}` with `user_id`. Updated plan.md I33 step 1. Updated T-030-79 intent (user-picker dialog, UpdatePersonRequest extension noted).
-
-**Resolved:** 2026-04-07
-
----
-
-### ~~Q-030-77: Admin/Feature Short-Circuit Mechanism in PhotoPolicy and AlbumPolicy Face Gates~~ ✅ RESOLVED
-
-**Feature:** 030 – AI Vision Service
+**Feature:** 037 – Admin Dashboard & `/admin/` URL Reorganisation
 **Priority:** High
 **Status:** Resolved
-**Opened:** 2026-04-11
-**Affects:** T-030-100 (PhotoPolicy), T-030-101 (AlbumPolicy), FR-030-43, FR-030-44
+**Opened:** 2026-04-22
 
-**Resolution:** FR-030-43/44 wording about `AiVisionPolicy::before()` is incorrect and is removed. The new `PhotoPolicy` and `AlbumPolicy` face gate methods rely on those policies' own `before()` hooks for the admin short-circuit. Side-effect: admins will bypass the gate even when AI Vision is disabled — **accepted risk**. No inline duplication or shared trait needed.
+**Resolution:** **Option A** — the collapsed "Admin" menu entry appears whenever the existing `canSeeAdmin` composite is true. The dashboard tile grid renders per-capability (tiles for tools the operator cannot access are hidden). The stats overview block and `GET /api/v2/Admin/Stats` endpoint are gated on `settings.can_edit`; partial-admins receive 403 on the stats call and do not see the stats section. This keeps the fine-grained capability model intact and prevents leaking global telemetry to limited roles.
 
-**Resolved:** 2026-04-11
+**Spec Impact:** Updated FR-037-02 (stats endpoint auth = `settings.can_edit`), FR-037-04 (tile gating detail), FR-037-05 (menu collapse honours existing `canSeeAdmin`), added NFR-037-05 (capability gating), UI-037-01a variant (no-stats view), and scenarios S-037-16 … S-037-18.
+
+**Resolved:** 2026-04-22
 
 ---
 
-### ~~Q-030-78: "Album Access" Verification in Public/Private Mode for Face Gates~~ ✅ RESOLVED
+Lychee treats the "admin" area as a union of five fine-grained capabilities (see [`SettingsRightsResource`](../../../../app/Http/Resources/Rights/SettingsRightsResource.php) + [`UserManagementRightsResource`](../../../../app/Http/Resources/Rights/UserManagementRightsResource.php)):
 
-**Feature:** 030 – AI Vision Service
+1. `settings.can_edit` — full config editor (typical super-admin).
+2. `user_management.can_edit` — can manage users.
+3. `settings.can_see_diagnostics` — can read diagnostics.
+4. `settings.can_see_logs` — can read logs.
+5. `settings.can_acess_user_groups` — can manage user groups (e.g., a team lead who is **not** a full admin).
+
+Today's left-menu `canSeeAdmin` composite is a permissive OR of those five, but each submenu entry has its own `access` flag so a user only sees items their capability permits (e.g., a User-Groups-only operator sees just the "User Groups" entry nested under "Admin"). When we collapse the menu to a single link → `/admin`, that user lands on a dashboard that needs to:
+- **Only** expose tiles they are authorised to reach, and
+- Decide whether the stats overview (which exposes global photo/album/user counts and storage/job telemetry) is visible to them.
+
+Today's `GET /api/v2/Admin/Stats` spec line says "Auth: admin (existing `AdminMiddleware`)", which is ambiguous: does "admin" mean full `settings.can_edit`, or the union that `canSeeAdmin` represents?
+
+**Options (ordered by preference):**
+
+- **Option A (Recommended) — Dashboard always available to anyone passing `canSeeAdmin`; tiles + stats are each permission-gated.**
+  - Menu: collapsed "Admin" link appears whenever `canSeeAdmin` is true (unchanged semantics).
+  - Dashboard tiles: rendered per existing per-tool flags (User Groups only → single User Groups tile; Diagnostics-only → single Diagnostics tile; etc.).
+  - Stats block: rendered only when `settings.can_edit` is true. Partial-admins (groups-only, logs-only, diagnostics-only) see the dashboard header + tile grid but no stats section, and the `GET /api/v2/Admin/Stats` endpoint requires `settings.can_edit` (returns 403 otherwise).
+  - Pros: preserves the fine-grained capability model; one menu entry for all admin flavours; avoids leaking global telemetry to limited roles.
+  - Cons: a partial-admin may land on a dashboard with just one tile — simple but minimal.
+
+- **Option B — Skip the dashboard for single-capability users and deep-link the menu entry.**
+  - Menu: if only one of the five capabilities is present, the "Admin" link is rewritten to target that specific page (e.g., `/admin/user-groups`) instead of `/admin`. If two or more are present, use `/admin` (dashboard).
+  - Dashboard: still tile-filtered + stats-gated on `settings.can_edit` (same gating as Option A for the multi-capability case).
+  - Pros: one-click access for limited operators; feels "smart".
+  - Cons: extra branching in the composable; users who gain a second capability suddenly see a different destination; harder to localise the single link label (does it still say "Admin" or "User Groups"?).
+
+- **Option C — Restrict dashboard to full admins (`settings.can_edit` only).**
+  - Menu: collapsed "Admin" link only appears for full admins. Partial-admins keep seeing the legacy nested submenu regardless of the toggle.
+  - Dashboard: single render path; stats always visible.
+  - Pros: simplest dashboard implementation.
+  - Cons: two menu styles coexist indefinitely, breaks the "single toggle" UX, contradicts the user's clean-replacement intent.
+
+**Spec Impact (after resolution):** Updates FR-037-02 (stats auth), FR-037-04 (tile gating), FR-037-05 (menu behaviour for partial-admins), a new NFR on capability gating, UI-037-01 variant for the no-stats view, and new scenarios S-037-16 … S-037-18 covering partial-admin paths.
+
+---
+
+### ~~Q-037-01: Scope of Admin Pages to Move Under `/admin/...`~~ ✅ RESOLVED
+
+**Feature:** 037 – Admin Dashboard & `/admin/` URL Reorganisation
 **Priority:** High
 **Status:** Resolved
-**Opened:** 2026-04-11
-**Affects:** T-030-100 (PhotoPolicy), T-030-101 (AlbumPolicy), FR-030-43, FR-030-44
+**Opened:** 2026-04-22
 
-**Resolution:** Non-issue. There is no circular dependency — `AlbumPolicy::canViewAlbumPeople()` can call `$this->canAccess($user, $album)` directly on the same policy instance without going through `Gate::check()`. No proxy or workaround needed.
+**Resolution:** **Option A** — Move every admin-only page except Diagnostics, Logs and Clockwork. The nine pages migrated to `/admin/<slug>` are: Settings, Users, User Groups, Purchasables, Contact Messages, Webhooks, Moderation, Maintenance, Jobs.
 
-**Resolved:** 2026-04-11
+**Spec Impact:** Populated FR-037-01, the API/UI route catalogue (nine new `/admin/...` route IDs), and the router + views reorganisation tasks. Left-menu composable updated to target the new paths.
+
+**Resolved:** 2026-04-22
 
 ---
 
-### ~~Q-030-79: BatchFaceRequest Album Context and ScanPhotosRequest Photo-Path Authorization~~ ✅ RESOLVED
+### ~~Q-037-02: Statistics Overview Content and Caching Strategy~~ ✅ RESOLVED
 
-**Feature:** 030 – AI Vision Service
+**Feature:** 037 – Admin Dashboard & `/admin/` URL Reorganisation
+**Priority:** High
+**Status:** Resolved
+**Opened:** 2026-04-22
+
+**Resolution:** **Option A** — Curated v1 metrics with a 5-minute `Cache::remember('admin.stats', 300, …)` layer plus a dashboard-side "Refresh" action that busts the cache. First-release metrics: photo count, album count, user count, total storage size, queued job count, failed job count (last 24 h), last successful job timestamp.
+
+**Spec Impact:** Defined FR-037-02 (stats endpoint), FR-037-03 (refresh action), NFR-037-01 (latency budget), DO-037-01 (AdminStatsOverview DTO), API-037-01 (REST route), TE-037-01 (telemetry event), and the dashboard mock-up.
+
+**Resolved:** 2026-04-22
+
+---
+
+### ~~Q-037-03: Admin-Menu Toggle Default and Collapsed-Menu Behaviour~~ ✅ RESOLVED
+
+**Feature:** 037 – Admin Dashboard & `/admin/` URL Reorganisation
+**Priority:** High
+**Status:** Resolved
+**Opened:** 2026-04-22
+
+**Resolution:** **Option A** — New config key `use_admin_dashboard` (boolean, default `1`). When ON the left-menu "Admin" submenu is replaced by a single "Admin" entry pointing to `/admin`. When OFF the current nested submenu renders unchanged.
+
+**Spec Impact:** Defined FR-037-05 (config toggle + menu behaviour), config migration entry (category decided in Q-037-06), and left-menu composable branch.
+
+**Resolved:** 2026-04-22
+
+---
+
+### ~~Q-037-04: View Folder Reorganisation (`resources/js/views/admin/`)~~ ✅ RESOLVED
+
+**Feature:** 037 – Admin Dashboard & `/admin/` URL Reorganisation
 **Priority:** Medium
 **Status:** Resolved
-**Opened:** 2026-04-11
-**Affects:** T-030-103, FR-030-47
+**Opened:** 2026-04-22
 
-**Resolution:** Option A for both cases — check ownership of the concrete **photo** when no album is available. `BatchFaceRequest`: when `album_id` is null (no album context), check `Gate::check(PhotoPolicy::CAN_ASSIGN_FACE_ON_PHOTO, $face->photo)` for each resolved face. `ScanPhotosRequest` photo-only path: check `Gate::check(PhotoPolicy::CAN_TRIGGER_SCAN_ON_PHOTO, $photo)` for each photo. FR-030-47 (c) and (d) updated accordingly.
+**Resolution:** **Option A** — Mirror the URL scope from Q-037-01. Only the nine views whose URL moves to `/admin/<slug>` relocate into `resources/js/views/admin/`; `Diagnostics.vue` stays at top level because `/diagnostics` stays. A new `resources/js/views/admin/AdminDashboard.vue` is added as the `/admin` landing view.
 
-**Resolved:** 2026-04-11
+**Spec Impact:** Defined Task-037 view-move entries, router import paths, and the knowledge-map entry for `resources/js/views/admin/`.
+
+**Resolved:** 2026-04-22
+
+---
+
+### ~~Q-037-05: Dashboard Page Label/Name~~ ✅ RESOLVED
+
+**Feature:** 037 – Admin Dashboard & `/admin/` URL Reorganisation
+**Priority:** Medium
+**Status:** Resolved
+**Opened:** 2026-04-22
+
+**Resolution:** **Option A** — "Admin Dashboard". i18n key `admin-dashboard.title`, route name `admin-dashboard`, view filename `AdminDashboard.vue`.
+
+**Spec Impact:** Locked naming across locale files, router entry, and view module.
+
+**Resolved:** 2026-04-22
+
+---
+
+### ~~Q-037-06: Settings Category for the New Toggle~~ ✅ RESOLVED
+
+**Feature:** 037 – Admin Dashboard & `/admin/` URL Reorganisation
+**Priority:** Medium
+**Status:** Resolved
+**Opened:** 2026-04-22
+
+**Resolution:** Operator override — place the config row under `cat = 'config'` (rather than the recommended `access_permissions`). Config migration will use `'cat' => 'config'`.
+
+**Spec Impact:** Config-migration entry uses `'cat' => 'config'`. Settings page tab visibility: the toggle surfaces under the `config` category tab.
+
+**Resolved:** 2026-04-22
+
+---
+
+### ~~Q-037-07: Keep Old URLs as Redirects or Greenfield?~~ ✅ RESOLVED
+
+**Feature:** 037 – Admin Dashboard & `/admin/` URL Reorganisation
+**Priority:** Medium
+**Status:** Resolved
+**Opened:** 2026-04-22
+
+**Resolution:** **Option A** — Greenfield. No redirects from old paths; the URLs move outright. Aligns with AGENTS.md "Guardrails & Governance" greenfield stance.
+
+**Spec Impact:** Route catalogue confirms no redirect routes are added.
+
+**Resolved:** 2026-04-22
 
 ---
 
@@ -337,6 +404,96 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 **Spec Impact:** Updated DO-031-01, FR-031-02, `WebhookResource`, S-031-22, Spec DSL.
 
 **Resolved:** 2026-03-25
+
+---
+
+### ~~Q-030-74: PersonDetail Lightbox Navigation Strategy~~ ✅ RESOLVED
+
+**Feature:** 030 – AI Vision Service  
+**Priority:** High  
+**Status:** Resolved  
+**Opened:** 2026-04-07  
+**Affects:** T-030-85 (I35), FR-030-39
+
+**Resolution:** **Option A (server-side)** — `GET /Person/{id}/photos` computes and includes `next_photo_id` and `previous_photo_id` on each `PhotoResource`, ordered sequentially by collection position (access-filtered). First photo: `previous_photo_id = null`; last photo: `next_photo_id = null`. `PhotoPanel.vue` then uses these person-relative IDs natively for navigation within the person's collection. No client-side monkey-patching required.
+
+**Spec Impact:** Updated FR-030-03 success path to note that each `PhotoResource` includes `next_photo_id`/`previous_photo_id` relative to the person's collection. Updated FR-030-39 success path. Updated S-030-55 scenario. Updated plan.md I12 steps and exit criteria. Updated T-030-32 (test for next/previous IDs), T-030-33 (implementation), T-030-85 (lightbox navigation note).
+
+**Resolved:** 2026-04-07
+
+---
+
+### ~~Q-030-75: FaceCluster Detail View — Dialog vs. Sub-Route~~ ✅ RESOLVED
+
+**Feature:** 030 – AI Vision Service  
+**Priority:** Medium  
+**Status:** Resolved  
+**Opened:** 2026-04-07  
+**Affects:** T-030-78 (I32), FR-030-29
+
+**Resolution:** **Option A** — PrimeVue `<Dialog>`. Clicking a cluster card opens a Dialog that fetches all faces via `GET /FaceDetection/clusters/{cluster_id}/faces`. URL does not change. No routing changes needed.
+
+**Spec Impact:** Updated FR-030-29 requirement and success path to specify PrimeVue Dialog. Updated plan.md I32 step 3. Updated T-030-78 intent (Dialog only, sub-route option removed).
+
+**Resolved:** 2026-04-07
+
+---
+
+### ~~Q-030-76: People.vue Context Menu "Assign to User" Action~~ ✅ RESOLVED
+
+**Feature:** 030 – AI Vision Service  
+**Priority:** Medium  
+**Status:** Resolved  
+**Opened:** 2026-04-07  
+**Affects:** T-030-79 (I33), FR-030-32, FR-030-05
+
+**Resolution:** **Option A** — User-picker dialog. "Assign to user" (admin-only) opens a PrimeVue `<Dialog>` with an autocomplete Dropdown listing user accounts (name + email). On confirm, calls `PATCH /Person/{id}` with `{ user_id: selectedUserId }`. Requires extending `UpdatePersonRequest` to accept nullable `user_id` with an admin-only validation gate.
+
+**Spec Impact:** Updated FR-030-32 success path to describe the user-picker dialog and `PATCH /Person/{id}` with `user_id`. Updated plan.md I33 step 1. Updated T-030-79 intent (user-picker dialog, UpdatePersonRequest extension noted).
+
+**Resolved:** 2026-04-07
+
+---
+
+### ~~Q-030-77: Admin/Feature Short-Circuit Mechanism in PhotoPolicy and AlbumPolicy Face Gates~~ ✅ RESOLVED
+
+**Feature:** 030 – AI Vision Service
+**Priority:** High
+**Status:** Resolved
+**Opened:** 2026-04-11
+**Affects:** T-030-100 (PhotoPolicy), T-030-101 (AlbumPolicy), FR-030-43, FR-030-44
+
+**Resolution:** FR-030-43/44 wording about `AiVisionPolicy::before()` is incorrect and is removed. The new `PhotoPolicy` and `AlbumPolicy` face gate methods rely on those policies' own `before()` hooks for the admin short-circuit. Side-effect: admins will bypass the gate even when AI Vision is disabled — **accepted risk**. No inline duplication or shared trait needed.
+
+**Resolved:** 2026-04-11
+
+---
+
+### ~~Q-030-78: "Album Access" Verification in Public/Private Mode for Face Gates~~ ✅ RESOLVED
+
+**Feature:** 030 – AI Vision Service
+**Priority:** High
+**Status:** Resolved
+**Opened:** 2026-04-11
+**Affects:** T-030-100 (PhotoPolicy), T-030-101 (AlbumPolicy), FR-030-43, FR-030-44
+
+**Resolution:** Non-issue. There is no circular dependency — `AlbumPolicy::canViewAlbumPeople()` can call `$this->canAccess($user, $album)` directly on the same policy instance without going through `Gate::check()`. No proxy or workaround needed.
+
+**Resolved:** 2026-04-11
+
+---
+
+### ~~Q-030-79: BatchFaceRequest Album Context and ScanPhotosRequest Photo-Path Authorization~~ ✅ RESOLVED
+
+**Feature:** 030 – AI Vision Service
+**Priority:** Medium
+**Status:** Resolved
+**Opened:** 2026-04-11
+**Affects:** T-030-103, FR-030-47
+
+**Resolution:** Option A for both cases — check ownership of the concrete **photo** when no album is available. `BatchFaceRequest`: when `album_id` is null (no album context), check `Gate::check(PhotoPolicy::CAN_ASSIGN_FACE_ON_PHOTO, $face->photo)` for each resolved face. `ScanPhotosRequest` photo-only path: check `Gate::check(PhotoPolicy::CAN_TRIGGER_SCAN_ON_PHOTO, $photo)` for each photo. FR-030-47 (c) and (d) updated accordingly.
+
+**Resolved:** 2026-04-11
 
 ---
 
@@ -3537,3 +3694,76 @@ Lychee maps `embedding_id` back to Face records (which have person_id) to identi
 **Spec Impact:** Updated FR-033-03 to explicitly state that admin uploads bypass trust level checks. Updated Appendix Trust Level Decision Matrix. Updated task T-033-07 to include the admin short-circuit logic.
 
 **Resolved:** 2026-04-09
+
+---
+
+### ~~Q-034-01: TagAlbum Rows in Bulk Edit List~~ ✅ RESOLVED
+
+**Feature:** 034 – Bulk Album Edit  
+**Priority:** Medium  
+**Status:** Resolved  
+**Opened:** 2026-04-12  
+**Resolved:** 2026-04-14
+
+**Resolution:** **Option A** — Show only regular `Album` records (no TagAlbums). The list query joins only the `albums` table. A note on the page explains TagAlbums are excluded.
+
+**Spec Impact:** FR-034-01 clarified; plan and tasks updated to confirm only `albums` table is queried.
+
+---
+
+### ~~Q-034-02: Depth Indicator Computation Strategy~~ ✅ RESOLVED
+
+**Feature:** 034 – Bulk Album Edit  
+**Priority:** Medium  
+**Status:** Resolved  
+**Opened:** 2026-04-12  
+**Resolved:** 2026-04-14
+
+**Resolution:** **Option B** — Compute depth client-side, **linearly**, by scanning `_lft` values in descending order. The server returns `_lft` in each `BulkAlbumResource` row (already included). The frontend performs a single O(n) pass over the sorted-by-`_lft` result set: maintain a stack of ancestor `_rgt` values; pop the stack whenever the current row's `_lft` exceeds the stack top's `_rgt`; depth = stack length. This avoids an extra server-side `withDepth()` join and keeps computation in the client where the full page of records is already available.
+
+**Spec Impact:** `BulkAlbumResource` includes `_lft` and `_rgt` (not `depth`). FR-034-14 updated to specify client-side linear depth computation. T-034-03 and T-034-17 updated accordingly.
+
+---
+
+### ~~Q-034-03: Confirmation for Bulk Delete~~ ✅ RESOLVED
+
+**Feature:** 034 – Bulk Album Edit  
+**Priority:** High  
+**Status:** Resolved  
+**Opened:** 2026-04-12  
+**Resolved:** 2026-04-14
+
+**Resolution:** **Option B** — Bulk delete shows a minimal confirmation modal: a dialog displaying the count of selected albums and requiring the admin to click a second **"Confirm Delete"** button. No text input required. This is consistent with the spirit of the no-confirmation rule (field edits apply immediately) while protecting against accidental mass-delete.
+
+**Spec Impact:** FR-034-10 updated to require confirmation modal for delete. UI-034-05 (delete confirmation dialog state) added. T-034-20 updated.
+
+---
+
+### ~~Q-034-04: Scope of "Select All Matching"~~ ✅ RESOLVED
+
+**Feature:** 034 – Bulk Album Edit  
+**Priority:** Low  
+**Status:** Resolved  
+**Opened:** 2026-04-12  
+**Resolved:** 2026-04-14
+
+**Resolution:** **Option A** — Return all albums in the gallery regardless of owner. Admin page; admin has authority over all albums.
+
+**Spec Impact:** FR-034-12 confirmed: no owner filter applied on `GET /BulkAlbumEdit::ids`.
+
+---
+
+### ~~Q-035-01: Behaviour of GET /Zip (no chunk param) when chunked mode is ON~~ ✅ RESOLVED
+
+**Feature:** 035 – Chunked Archive Download
+**Priority:** Medium
+**Status:** Resolved
+**Opened:** 2026-04-12
+
+**Context:** When `download_archive_chunked` is enabled, a client that calls `GET /Zip` without a `chunk` parameter may be a legacy client or an incorrect integration. We need a defined contract for this case.
+
+**Resolution:** **Option A** — Treat missing `chunk` as a regular single-archive download, regardless of the chunked-mode setting. This is backward-compatible: legacy frontends and direct URL downloads work without modification.
+
+**Spec Impact:** Encoded in FR-035-05 and FR-035-07.
+
+**Resolved:** 2026-04-12

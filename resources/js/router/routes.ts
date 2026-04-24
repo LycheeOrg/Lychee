@@ -9,29 +9,31 @@ const Frame = () => import("@/views/gallery-panels/Frame.vue");
 const Search = () => import("@/views/gallery-panels/Search.vue");
 const MapView = () => import("@/views/gallery-panels/Map.vue");
 const Permissions = () => import("@/views/Permissions.vue");
-const Users = () => import("@/views/Users.vue");
+const Users = () => import("@/views/admin/Users.vue");
 const Sharing = () => import("@/views/Sharing.vue");
-const Settings = () => import("@/views/Settings.vue");
+const Settings = () => import("@/views/admin/Settings.vue");
 const Profile = () => import("@/views/Profile.vue");
-const Maintenance = () => import("@/views/Maintenance.vue");
+const Maintenance = () => import("@/views/admin/Maintenance.vue");
 const Diagnostics = () => import("@/views/Diagnostics.vue");
 const Statistics = () => import("@/views/Statistics.vue");
-const Jobs = () => import("@/views/Jobs.vue");
+const Jobs = () => import("@/views/admin/Jobs.vue");
 const FixTree = () => import("@/views/FixTree.vue");
 const DuplicatesFinder = () => import("@/views/DuplicatesFinder.vue");
 const Changelogs = () => import("@/views/ChangeLogs.vue");
 const LoginPage = () => import("@/views/LoginPage.vue");
-const UserGroups = () => import("@/views/UserGroups.vue");
+const UserGroups = () => import("@/views/admin/UserGroups.vue");
 const RegisterPage = () => import("@/views/RegisterPage.vue");
 const Flow = () => import("@/views/gallery-panels/Flow.vue");
 const TagsManagement = () => import("@/views/TagsManagement.vue");
 const Tag = () => import("@/views/gallery-panels/Tag.vue");
 const RenamerRules = () => import("@/views/RenamerRules.vue");
-const PurchasablesList = () => import("@/views/webshop/PurchasablesList.vue");
+const Purchasables = () => import("@/views/admin/Purchasables.vue");
 const Contact = () => import("@/views/Contact.vue");
-const ContactMessages = () => import("@/views/ContactMessages.vue");
-const Webhooks = () => import("@/views/Webhooks.vue");
-const Moderation = () => import("@/views/Moderation.vue");
+const ContactMessages = () => import("@/views/admin/ContactMessages.vue");
+const Webhooks = () => import("@/views/admin/Webhooks.vue");
+const BulkAlbumEdit = () => import("@/views/BulkAlbumEdit.vue");
+const Moderation = () => import("@/views/admin/Moderation.vue");
+const AdminDashboard = () => import("@/views/admin/AdminDashboard.vue");
 const BasketList = () => import("@/views/webshop/BasketList.vue");
 const CheckoutPage = () => import("@/views/webshop/CheckoutPage.vue");
 const OrderList = () => import("@/views/webshop/OrderList.vue");
@@ -131,17 +133,17 @@ const routes_ = [
 	},
 	{
 		name: "jobs",
-		path: "/jobs",
+		path: "/admin/jobs",
 		component: Jobs,
 	},
 	{
 		name: "maintenance",
-		path: "/maintenance",
+		path: "/admin/maintenance",
 		component: Maintenance,
 	},
 	{
 		name: "face-maintenance",
-		path: "/maintenance/faces",
+		path: "/admin/maintenance/faces",
 		component: FaceMaintenance,
 	},
 	{
@@ -161,7 +163,7 @@ const routes_ = [
 	},
 	{
 		name: "settings",
-		path: "/settings/:tab?",
+		path: "/admin/settings/:tab?",
 		component: Settings,
 		props: true,
 	},
@@ -177,7 +179,7 @@ const routes_ = [
 	},
 	{
 		name: "users",
-		path: "/users",
+		path: "/admin/users",
 		component: Users,
 	},
 	{
@@ -192,7 +194,7 @@ const routes_ = [
 	},
 	{
 		name: "user-groups",
-		path: "/user-groups",
+		path: "/admin/user-groups",
 		component: UserGroups,
 	},
 	{
@@ -207,23 +209,33 @@ const routes_ = [
 	},
 	{
 		name: "contact-messages",
-		path: "/contact-messages",
+		path: "/admin/contact-messages",
 		component: ContactMessages,
 	},
 	{
 		name: "webhooks",
-		path: "/webhooks",
+		path: "/admin/webhooks",
 		component: Webhooks,
 	},
 	{
+		name: "bulk-album-edit",
+		path: "/bulk-album-edit",
+		component: BulkAlbumEdit,
+	},
+	{
 		name: "moderation",
-		path: "/moderation",
+		path: "/admin/moderation",
 		component: Moderation,
 	},
 	{
 		name: "purchasables",
-		path: "/purchasables",
-		component: PurchasablesList,
+		path: "/admin/purchasables",
+		component: Purchasables,
+	},
+	{
+		name: "admin-dashboard",
+		path: "/admin",
+		component: AdminDashboard,
 	},
 	{
 		name: "basket",

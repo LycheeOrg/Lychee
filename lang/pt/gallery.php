@@ -33,6 +33,8 @@ return [
     'live_video' => 'Video part of live-photo',
     'download_raw' => 'Download RAW',
     'download_album' => 'Selecione a resolução da imagem para o arquivo ZIP do álbum. Se uma foto não tiver a variante selecionada, a original será usada.',
+    'downloading_part' => 'Downloading part :current / :total',
+    'download_error' => 'Download failed',
     'camera_data' => 'Camera date',
     'album_reserved' => 'All Rights Reserved',
     'map' => [
@@ -195,7 +197,6 @@ return [
             'tags_required' => 'Tags are required.',
             'all_tags_must_match' => 'All tags must match.',
         ],
-
     ],
     'photo' => [
         'actions' => [

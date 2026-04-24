@@ -123,7 +123,7 @@
 				v-if="aspectRatio !== undefined"
 				:label="$t('settings.gallery.aspect_ratio')"
 				:config="aspectRatio"
-				:options="aspectRationOptions"
+				:options="aspectRatioOptions"
 				:mapper="SelectBuilders.buildAspectRatio"
 				@filled="save"
 			/>
@@ -244,7 +244,7 @@ import {
 	albumSortingColumnsOptions,
 	sortingOrdersOptions,
 	licenseOptions,
-	aspectRationOptions,
+	aspectRatioOptions,
 	SelectBuilders,
 	photoLayoutOptions,
 	overlayOptions,

@@ -1,4 +1,5 @@
 <?php
+
 return [
     /*
     |--------------------------------------------------------------------------
@@ -7,19 +8,19 @@ return [
     */
     'title' => 'Údržba',
     'intro' => 'Na téhle stránce najdete duplikáty fotek nalezené ve vaší databázi',
-    'found' => ' duplicates found!',
-    'invalid-search' => ' At least the checksum or title condition must be checked.',
-    'checksum-must-match' => 'Checksum must match.',
-    'title-must-match' => 'Title must match.',
-    'must-be-in-same-album' => 'Must be in the same album.',
+    'found' => ' halezeno duplikátů!',
+    'invalid-search' => ' Je nutné zadat alespoň kontrolní součet nebo název.',
+    'checksum-must-match' => 'Kontrolní součet se musí shodovat.',
+    'title-must-match' => 'Název se musí shodovat.',
+    'must-be-in-same-album' => 'Musí být ve stejném albu.',
     'columns' => [
         'album' => 'Album',
-        'photo' => 'Photo',
-        'checksum' => 'Checksum',
+        'photo' => 'Fotografie',
+        'checksum' => 'Kontrolní součet',
     ],
     'warning' => [
-        'no-original-left' => 'No original left.',
-        'keep-one' => 'You selected all duplicates in this group. Please chose at least one duplicate to keep.',
+        'no-original-left' => 'Žádný originál nezůstal.',
+        'keep-one' => 'Vybrali jste všechny duplikáty v této skupině. Vyberte prosím alespoň jednu duplikát, který chcete ponechat.',
     ],
-    'delete-selected' => 'Delete selected',
+    'delete-selected' => 'Odstranit vybrané',
 ];

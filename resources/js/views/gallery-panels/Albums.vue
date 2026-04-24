@@ -191,6 +191,7 @@
 			}
 		"
 	/>
+	<DownloadAlbum v-model:visible="is_download_album_visible" :album-ids="downloadAlbumIds" />
 </template>
 <script setup lang="ts">
 import AlbumThumbPanel from "@/components/gallery/albumModule/AlbumThumbPanel.vue";
@@ -240,6 +241,7 @@ import { useAlbumStore } from "@/stores/AlbumState";
 import { usePhotoStore } from "@/stores/PhotoState";
 import { usePhotosStore } from "@/stores/PhotosState";
 import { useOrderManagementStore } from "@/stores/OrderManagement";
+import DownloadAlbum from "@/components/modals/DownloadAlbum.vue";
 import Tabs from "primevue/tabs";
 import TabList from "primevue/tablist";
 import Tab from "primevue/tab";
@@ -321,6 +323,9 @@ function togglePin() {
 	});
 }
 
+const is_download_album_visible = ref(false);
+const downloadAlbumIds = ref<string[]>([]);
+
 const albumCallbacks = {
 	setAsCover: () => {},
 	toggleRename: toggleRename,
@@ -329,7 +334,8 @@ const albumCallbacks = {
 	togglePin: togglePin,
 	toggleDelete: toggleDelete,
 	toggleDownload: () => {
-		AlbumService.download(selectedAlbumsIds.value);
+		downloadAlbumIds.value = selectedAlbumsIds.value;
+		is_download_album_visible.value = true;
 	},
 	toggleApplyRenamer: () => {},
 	toggleScanFaces: () => {},

@@ -33,6 +33,8 @@ return [
     'live_video' => 'Część wideo zdjęcia na żywo',
     'download_raw' => 'Download RAW',
     'download_album' => 'Wybierz rozdzielczość obrazów dla archiwum ZIP albumu. Jeśli zdjęcie nie ma wybranego wariantu, zostanie użyty oryginał.',
+    'downloading_part' => 'Downloading part :current / :total',
+    'download_error' => 'Download failed',
     'camera_data' => 'Dane kamery',
     'album_reserved' => 'Wszelkie prawa zastrzeżone',
     'map' => [
@@ -195,7 +197,6 @@ return [
             'tags_required' => 'Wymagane są znaczniki.',
             'all_tags_must_match' => 'Wszystkie znaczniki muszą pasować.',
         ],
-
     ],
     'photo' => [
         'actions' => [

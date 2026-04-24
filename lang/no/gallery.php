@@ -1,5 +1,4 @@
 <?php
-
 return [
     /*
     |--------------------------------------------------------------------------
@@ -11,13 +10,13 @@ return [
     'pinned_albums' => 'Festede album',
     'albums' => 'Album',
     'root' => 'Album',
-    'set_focus' => 'Set Focus',
-    'set_header_focus' => 'Set Header Focus',
-    'done' => 'Done',
-    'cancel' => 'Cancel',
+    'set_focus' => 'Sett fokus',
+    'set_header_focus' => 'Angi fokus for overskrift',
+    'done' => 'Ferdig',
+    'cancel' => 'Avbryt',
     'tabs' => [
-        'my_albums' => 'My Albums',
-        'shared_with_me' => 'Shared with Me',
+        'my_albums' => 'Mine album',
+        'shared_with_me' => 'Delt med meg',
     ],
     'favourites' => 'Favoritter',
     'raw' => 'RAW',
@@ -33,6 +32,8 @@ return [
     'live_video' => 'Video part of live-photo',
     'download_raw' => 'Download RAW',
     'download_album' => 'Velg bildeoppløsning for albumets ZIP-arkiv. Hvis et bilde ikke har den valgte varianten, brukes originalen i stedet.',
+    'downloading_part' => 'Downloading part :current / :total',
+    'download_error' => 'Download failed',
     'camera_data' => 'Camera date',
     'album_reserved' => 'All Rights Reserved',
     'map' => [
@@ -195,7 +196,6 @@ return [
             'tags_required' => 'Tagger er obligatoriske.',
             'all_tags_must_match' => 'Alle taggene må samsvare.',
         ],
-
     ],
     'photo' => [
         'actions' => [

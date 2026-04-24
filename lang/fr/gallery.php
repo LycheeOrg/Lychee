@@ -1,4 +1,5 @@
 <?php
+
 return [
     /*
     |--------------------------------------------------------------------------
@@ -32,6 +33,8 @@ return [
     'live_video' => 'Partie vidéo d’une live-photo',
     'download_raw' => 'Download RAW',
     'download_album' => 'Sélectionnez la résolution d\'image pour l\'archive ZIP de l\'album. Si une photo ne possède pas la variante sélectionnée, l\'originale sera utilisée.',
+    'downloading_part' => 'Downloading part :current / :total',
+    'download_error' => 'Download failed',
     'camera_data' => 'Données de l’appareil',
     'album_reserved' => 'Tous droits réservés',
     'map' => [

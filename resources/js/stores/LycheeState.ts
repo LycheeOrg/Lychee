@@ -56,6 +56,8 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		album_header_size: "half_screen" as App.Enum.AlbumHeaderSize,
 		is_album_header_landing_title_enabled: false,
 
+		use_admin_dashboard: true,
+
 		// Download settings
 		is_raw_download_enabled: false,
 		is_thumb_download_enabled: false,
@@ -64,6 +66,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		is_small2x_download_enabled: false,
 		is_medium_download_enabled: false,
 		is_medium2x_download_enabled: false,
+		is_download_archive_chunked: false,
 
 		// menu stuff
 		clockwork_url: "" as null | string,
@@ -76,6 +79,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		dropbox_api_key: "disabled",
 		default_homepage: "gallery",
 		is_timeline_page_enabled: false,
+		is_embed_enabled: true,
 
 		// Login options
 		is_basic_auth_enabled: true,
@@ -197,6 +201,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.is_small2x_download_enabled = data.is_small2x_download_enabled;
 					this.is_medium_download_enabled = data.is_medium_download_enabled;
 					this.is_medium2x_download_enabled = data.is_medium2x_download_enabled;
+					this.is_download_archive_chunked = data.is_download_archive_chunked;
 					this.photo_previous_next_size = data.photo_previous_next_size;
 					this.is_details_links_enabled = data.is_details_links_enabled;
 					this.is_desktop_dock_full_transparency_enabled = data.is_desktop_dock_full_transparency_enabled;
@@ -220,6 +225,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 
 					this.default_homepage = data.default_homepage;
 					this.is_timeline_page_enabled = data.is_timeline_page_enabled;
+					this.is_embed_enabled = data.is_embed_enabled;
 
 					this.photos_pagination_mode = data.photos_pagination_mode;
 					this.albums_pagination_mode = data.albums_pagination_mode;
@@ -229,6 +235,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.albums_infinite_scroll_threshold = data.albums_infinite_scroll_threshold;
 
 					this.default_album_protection = data.default_album_protection;
+					this.use_admin_dashboard = data.use_admin_dashboard;
 				})
 				.catch((error) => {
 					// In this specific case, even though it has been possibly disabled, we really need to see the error.

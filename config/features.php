@@ -188,6 +188,18 @@ return [
 
 	/*
 	 |--------------------------------------------------------------------------
+	 | Enable Update Check
+	 |--------------------------------------------------------------------------
+	 |
+	 | When enabled, admins can query whether the current installation is
+	 | up-to-date from the admin dashboard. The endpoint also returns the latest
+	 | available release version when it can be determined.
+	 | Enabled by default - set UPDATE_CHECK_ENABLED=false to opt out.
+	 */
+	'update-check' => (bool) env('UPDATE_CHECK_ENABLED', true),
+
+	/*
+	 |--------------------------------------------------------------------------
 	 | Populate Request object macros while testing
 	 |--------------------------------------------------------------------------
 	 |

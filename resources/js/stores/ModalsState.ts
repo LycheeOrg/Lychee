@@ -110,7 +110,7 @@ export const useTogglablesStateStore = defineStore("togglables-store", {
 
 				// only scroll it into view if it's currently invisible:
 				if (!isVisible) {
-					thumbElem.scrollIntoView({ behavior: "smooth", block: "nearest" });
+					thumbElem.scrollIntoView({ behavior: "smooth", block: "center" });
 				}
 			}
 

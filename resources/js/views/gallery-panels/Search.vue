@@ -120,6 +120,8 @@
 		/>
 		<RenameDialog v-model:visible="is_rename_visible" :album="selectedAlbum" :photo="selectedPhoto" @renamed="refresh" />
 		<AlbumMergeDialog v-model:visible="is_merge_album_visible" :album="selectedAlbum" :album-ids="selectedAlbumsIds" @merged="refresh" />
+		<DownloadAlbum v-model:visible="is_download_photo_visible" :photo-ids="downloadPhotoIds" :from-id="downloadFromId" />
+		<DownloadAlbum v-model:visible="is_download_album_visible" :album-ids="downloadAlbumIds" />
 	</template>
 </template>
 <script setup lang="ts">
@@ -167,6 +169,7 @@ import { useSearchStore } from "@/stores/SearchState";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { useLayoutStore } from "@/stores/LayoutState";
 import { trans } from "laravel-vue-i18n";
+import DownloadAlbum from "@/components/modals/DownloadAlbum.vue";
 
 const { isLTR } = useLtRorRtL();
 
@@ -222,6 +225,13 @@ async function load() {
 const { is_slideshow_active, is_photo_edit_open, is_full_screen, are_details_open } = storeToRefs(togglableStore);
 
 const { getParentId } = usePhotoRoute(router);
+
+const is_download_photo_visible = ref(false);
+const downloadPhotoIds = ref<string[]>([]);
+const downloadFromId = ref<string | null>(null);
+const is_download_album_visible = ref(false);
+const downloadAlbumIds = ref<string[]>([]);
+
 const title = computed<string>(() => {
 	if (albumStore.album === undefined) {
 		return trans(lycheeStore.title);
@@ -350,7 +360,11 @@ const photoCallbacks = {
 	toggleCopyTo: toggleCopy,
 	toggleMove: toggleMove,
 	toggleDelete: toggleDelete,
-	toggleDownload: () => {},
+	toggleDownload: () => {
+		downloadPhotoIds.value = [...selectedPhotosIds.value];
+		downloadFromId.value = getParentId() ?? null;
+		is_download_photo_visible.value = true;
+	},
 	toggleApplyRenamer: toggleApplyRenamer,
 	toggleScanFaces: () => {},
 	toggleApprove: () => {
@@ -371,7 +385,10 @@ const albumCallbacks = {
 	toggleMerge: toggleMergeAlbum,
 	toggleMove: toggleMove,
 	toggleDelete: toggleDelete,
-	toggleDownload: () => {},
+	toggleDownload: () => {
+		downloadAlbumIds.value = selectedAlbumsIds.value;
+		is_download_album_visible.value = true;
+	},
 	togglePin: () => {},
 	toggleApplyRenamer: toggleApplyRenamer,
 	toggleScanFaces: () => {},

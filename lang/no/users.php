@@ -1,4 +1,5 @@
 <?php
+
 return [
     /*
     |--------------------------------------------------------------------------
@@ -10,11 +11,10 @@ return [
     'create' => 'Lag ny bruker',
     'username' => 'Brukernavn',
     'password' => 'Passord',
-    'legend' => 'Legend',
+    'legend' => 'Veilder',
     'upload_rights' => 'Når dette er valgt, kan brukeren laste opp innhold.',
     'edit_rights' => 'Når dette er valgt, kan brukeren endre profilen sin (brukernavn, passord).',
-    'upload_trust_level' => 'Upload trust level — controls whether uploads are immediately public.',
-
+    'upload_trust_level' => 'Tillitsnivå for opplasting – styrer om opplastinger er offentlige umiddelbart.',
     'quota' => 'Når dette er angitt, har brukeren en diskplasskvote for bilder (i kB).',
     'user_deleted' => 'Brukeren ble slettet',
     'user_created' => 'Brukeren ble laget',
@@ -24,14 +24,13 @@ return [
         'upload_rights' => 'Brukeren kan laste opp innhold.',
         'edit_rights' => 'Brukeren kan endre profilen sin (brukernavn, passord).',
         'admin_rights' => 'Brukeren har administratorrettigheter.',
-        'upload_trust_level' => 'Upload trust level',
-        'upload_trust_level_check' => 'Check – uploads require admin approval before becoming public.',
-        'upload_trust_level_monitor' => 'Monitor – upload are publics unless flagged for content.',
-        'upload_trust_level_trusted' => 'Trusted – uploads are immediately public.',
-
+        'upload_trust_level' => 'Last opp tillitsnivå',
+        'upload_trust_level_check' => 'Kryss av – opplastinger krever godkjenning fra administrator før de blir offentlige.',
+        'upload_trust_level_monitor' => 'Overvåk – opplastinger er offentlige med mindre de er flagget for innhold.',
+        'upload_trust_level_trusted' => 'Pålitelig – opplastinger blir umiddelbart offentlige.',
         'quota' => 'Brukeren har en kvotegrense.',
         'quota_kb' => 'kvote i kB (0 for standard)',
-        'note' => 'Admin note (not publically visible)',
+        'note' => 'Adminnotat (ikke offentlig synlig)',
         'create' => 'Lage',
         'edit' => 'Redigere',
     ],

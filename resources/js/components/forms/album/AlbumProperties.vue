@@ -201,7 +201,7 @@
 								label-id="aspectRatio"
 								v-model="aspectRatio"
 								class="w-72 border-none"
-								:options="aspectRationOptions"
+								:options="aspectRatioOptions"
 								option-label="label"
 								show-clear
 							>
@@ -323,7 +323,7 @@ import {
 	albumSortingColumnsOptions,
 	sortingOrdersOptions,
 	licenseOptions,
-	aspectRationOptions,
+	aspectRatioOptions,
 	photoLayoutOptions,
 	SelectOption,
 	SelectBuilders,

@@ -290,9 +290,11 @@ class AlbumPolicy extends BasePolicy
 		if (
 			AccessPermission::query()
 			->where(APC::BASE_ALBUM_ID, '=', $abstract_album->parent_id)
-			->where(APC::USER_ID, '=', $user->id)
+			->where(fn ($query) => $query->where(APC::USER_ID, '=', $user->id)
+					->orWhereIn(APC::USER_GROUP_ID, $user->user_groups->pluck('id'))
+			)
 			->where(APC::GRANTS_DELETE, '=', true)
-			->count() === 1
+			->count() >= 1
 		) {
 			return true;
 		}
@@ -384,9 +386,13 @@ class AlbumPolicy extends BasePolicy
 
 		if (
 			AccessPermission::query()
+			->select(APC::BASE_ALBUM_ID)
 			->whereIn(APC::BASE_ALBUM_ID, $album_ids)
-			->where(APC::USER_ID, '=', $user->id)
+			->where(fn ($query) => $query->where(APC::USER_ID, '=', $user->id)
+					->orWhereIn(APC::USER_GROUP_ID, $user->user_groups->pluck('id'))
+			)
 			->where(APC::GRANTS_EDIT, '=', true)
+			->distinct()
 			->count() === $num_albums
 		) {
 			return true;
@@ -435,9 +441,13 @@ class AlbumPolicy extends BasePolicy
 
 		if (
 			AccessPermission::query()
+			->select(APC::BASE_ALBUM_ID)
 			->whereIn(APC::BASE_ALBUM_ID, $album_ids)
-			->where(APC::USER_ID, '=', $user->id)
+			->where(fn ($query) => $query->where(APC::USER_ID, '=', $user->id)
+					->orWhereIn(APC::USER_GROUP_ID, $user->user_groups->pluck('id'))
+			)
 			->where(APC::GRANTS_DELETE, '=', true)
+			->distinct()
 			->count() === $num_albums
 		) {
 			return true;

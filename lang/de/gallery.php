@@ -1,4 +1,5 @@
 <?php
+
 return [
     /*
     |--------------------------------------------------------------------------
@@ -32,6 +33,8 @@ return [
     'live_video' => 'Videoteil des Live-Fotos',
     'download_raw' => 'Download RAW',
     'download_album' => 'Wählen Sie die Bildauflösung für das Album-ZIP-Archiv. Falls ein Foto die gewählte Variante nicht hat, wird das Original verwendet.',
+    'downloading_part' => 'Downloading part :current / :total',
+    'download_error' => 'Download failed',
     'camera_data' => 'Datum Kamera',
     'album_reserved' => 'Alle Rechte vorbehalten',
     'map' => [
@@ -194,7 +197,6 @@ return [
             'tags_required' => 'Tags sind erforderlich.',
             'all_tags_must_match' => 'Alle Tags müssen übereinstimmen.',
         ],
-
     ],
     'photo' => [
         'actions' => [

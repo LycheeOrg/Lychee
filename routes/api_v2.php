@@ -77,7 +77,9 @@ Route::post('/Album::watermark', [Gallery\AlbumController::class, 'watermarkAlbu
 
 Route::post('/TagAlbum', [Gallery\AlbumController::class, 'createTagAlbum']);
 Route::patch('/TagAlbum', [Gallery\AlbumController::class, 'updateTagAlbum']);
-Route::get('/Zip', [Gallery\AlbumController::class, 'getArchive'])
+Route::get('/Zip/chunks', [Gallery\ZipController::class, 'getChunksCount'])
+	->name('download-chunks');
+Route::get('/Zip', [Gallery\ZipController::class, 'getArchive'])
 	->name('download')
 	->withoutMiddleware(['content_type:json', 'accept_content_type:json'])
 	->middleware(['accept_content_type:any']);
@@ -246,6 +248,8 @@ Route::delete('/Oauth', [OauthController::class, 'clear']);
 /**
  * DIAGNOSTICS.
  */
+Route::get('/Admin/Stats', [Admin\AdminDashboardController::class, 'stats']);
+Route::get('/Admin/UpdateStatus', [Admin\AdminUpdateStatusController::class, 'show']);
 Route::get('/Diagnostics', [Admin\DiagnosticsController::class, 'errors']);
 Route::get('/Diagnostics::info', [Admin\DiagnosticsController::class, 'info']);
 Route::get('/Diagnostics::space', [Admin\DiagnosticsController::class, 'space']);
@@ -261,6 +265,15 @@ Route::get('/Security/Advisories', [Admin\SecurityAdvisoriesController::class, '
  * JOBS.
  */
 Route::get('/Jobs', [Admin\JobsController::class, 'list']);
+
+/**
+ * BULK ALBUM EDIT.
+ */
+Route::get('/BulkAlbumEdit', [Admin\BulkAlbumController::class, 'index']);
+Route::get('/BulkAlbumEdit::ids', [Admin\BulkAlbumController::class, 'ids']);
+Route::patch('/BulkAlbumEdit', [Admin\BulkAlbumController::class, 'patch']);
+Route::post('/BulkAlbumEdit::setOwner', [Admin\BulkAlbumController::class, 'setOwner']);
+Route::delete('/BulkAlbumEdit', [Admin\BulkAlbumController::class, 'destroy']);
 
 /**
  * WEBHOOKS.

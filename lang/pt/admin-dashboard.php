@@ -1,0 +1,40 @@
+<?php
+
+/**
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2017-2018 Tobias Reich
+ * Copyright (c) 2018-2026 LycheeOrg.
+ */
+
+return [
+    'title' => 'Admin Dashboard',
+    'overview' => 'Overview',
+    'tools' => 'Tools',
+    'tool_groups' => [
+        'core' => 'Admin',
+        'monitoring' => 'Monitoring',
+        'extensions' => 'Extensions',
+    ],
+    'refresh' => 'Refresh',
+    'metrics' => [
+        'photos_count' => 'Photos',
+        'albums_count' => 'Albums',
+        'users_count' => 'Users',
+        'storage_bytes' => 'Storage used',
+        'queued_jobs' => 'Queued jobs',
+        'failed_jobs_24h' => 'Failed jobs (24h)',
+        'last_successful_job_at' => 'Last successful job',
+    ],
+    'errors' => [
+        'partial' => 'Some metrics could not be loaded.',
+    ],
+    'security' => [
+        'title' => 'Security Advisories',
+        'description' => 'The following vulnerabilities affect your current Lychee version. Please update as soon as possible.',
+        'no_cvss' => '(no CVSS score)',
+    ],
+    'update' => [
+        'title' => 'Update Status',
+        'update_available' => 'A newer version is available (current: :current, latest: :latest).',
+    ],
+];

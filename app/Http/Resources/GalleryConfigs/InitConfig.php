@@ -78,6 +78,7 @@ class InitConfig extends Data
 	public bool $is_small2x_download_enabled;
 	public bool $is_medium_download_enabled;
 	public bool $is_medium2x_download_enabled;
+	public bool $is_download_archive_chunked;
 
 	// Clockwork
 	public ?string $clockwork_url;
@@ -122,6 +123,9 @@ class InitConfig extends Data
 	public bool $is_rating_show_avg_in_album_view_enabled;
 	public VisibilityType $rating_album_view_mode;
 
+	// Embed
+	public bool $is_embed_enabled = true;
+
 	// Homepage
 	public string $default_homepage;
 	public bool $is_timeline_page_enabled = false;
@@ -143,6 +147,8 @@ class InitConfig extends Data
 	public bool $is_album_enhanced_display_enabled;
 	public AlbumHeaderSize $album_header_size;
 	public bool $is_album_header_landing_title_enabled;
+
+	public bool $use_admin_dashboard;
 
 	public function __construct()
 	{
@@ -193,6 +199,7 @@ class InitConfig extends Data
 		$this->is_small2x_download_enabled = request()->configs()->getValueAsBool('disable_small2x_download') === false;
 		$this->is_medium_download_enabled = request()->configs()->getValueAsBool('disable_medium_download') === false;
 		$this->is_medium2x_download_enabled = request()->configs()->getValueAsBool('disable_medium2x_download') === false;
+		$this->is_download_archive_chunked = request()->configs()->getValueAsBool('download_archive_chunked');
 
 		// Clockwork
 		$this->has_clockwork_in_menu();
@@ -225,6 +232,9 @@ class InitConfig extends Data
 		$this->is_rating_show_avg_in_album_view_enabled = request()->configs()->getValueAsBool('rating_show_avg_in_album_view');
 		$this->rating_album_view_mode = request()->configs()->getValueAsEnum('rating_album_view_mode', VisibilityType::class);
 
+		// Embed
+		$this->is_embed_enabled = request()->configs()->getValueAsBool('is_embed_enabled');
+
 		// Homepage
 		$this->default_homepage = request()->configs()->getValueAsString('home_page_default');
 		$this->is_timeline_page_enabled = request()->configs()->getValueAsBool('timeline_page_enabled');
@@ -245,6 +255,7 @@ class InitConfig extends Data
 		$this->is_album_enhanced_display_enabled = request()->configs()->getValueAsBool('album_enhanced_display_enabled');
 		$this->album_header_size = request()->configs()->getValueAsEnum('album_header_size', AlbumHeaderSize::class);
 		$this->is_album_header_landing_title_enabled = request()->configs()->getValueAsBool('album_header_landing_title_enabled');
+		$this->use_admin_dashboard = request()->configs()->getValueAsBool('use_admin_dashboard');
 
 		$this->set_supporter_properties();
 	}
