@@ -1,50 +1,50 @@
 <?php
 
 return [
-	/*
-	|--------------------------------------------------------------------------
-	| Users page
-	|--------------------------------------------------------------------------
-	*/
-	'title' => 'المستخدمون',
-	'description' => 'هنا يمكنك إدارة مستخدمي تثبيت Lychee الخاص بك. يمكنك إنشاء وتحرير وحذف المستخدمين.',
-	'create' => 'إنشاء مستخدم جديد',
-	'username' => 'اسم المستخدم',
-	'password' => 'كلمة المرور',
-	'legend' => 'الأسطورة',
-	'upload_rights' => 'عند التحديد، يمكن للمستخدم تحميل المحتوى.',
-	'edit_rights' => 'عند التحديد، يمكن للمستخدم تعديل ملفه الشخصي (اسم المستخدم، كلمة المرور).',
-	'upload_trust_level' => 'Upload trust level — controls whether uploads are immediately public.',
+    /*
+    |--------------------------------------------------------------------------
+    | Users page
+    |--------------------------------------------------------------------------
+    */
+    'title' => 'المستخدمون',
+    'description' => 'هنا يمكنك إدارة مستخدمي تثبيت Lychee الخاص بك. يمكنك إنشاء وتحرير وحذف المستخدمين.',
+    'create' => 'إنشاء مستخدم جديد',
+    'username' => 'اسم المستخدم',
+    'password' => 'كلمة المرور',
+    'legend' => 'الأسطورة',
+    'upload_rights' => 'عند التحديد، يمكن للمستخدم تحميل المحتوى.',
+    'edit_rights' => 'عند التحديد، يمكن للمستخدم تعديل ملفه الشخصي (اسم المستخدم، كلمة المرور).',
+    'upload_trust_level' => 'Upload trust level — controls whether uploads are immediately public.',
 
-	'quota' => 'عند التعيين، يكون للمستخدم حصة مساحة للصور (بالكيلوبايت).',
-	'user_deleted' => 'تم حذف المستخدم',
-	'user_created' => 'تم إنشاء المستخدم',
-	'user_updated' => 'تم تحديث المستخدم',
-	'change_saved' => 'تم حفظ التغيير!',
-	'create_edit' => [
-		'upload_rights' => 'يمكن للمستخدم تحميل المحتوى.',
-		'edit_rights' => 'يمكن للمستخدم تعديل ملفه الشخصي (اسم المستخدم، كلمة المرور).',
-		'admin_rights' => 'User has admin rights.',
-		'upload_trust_level' => 'Upload trust level',
-		'upload_trust_level_check' => 'Check – uploads require admin approval before becoming public.',
-		'upload_trust_level_monitor' => 'Monitor – upload are publics unless flagged for content.',
-		'upload_trust_level_trusted' => 'Trusted – uploads are immediately public.',
+    'quota' => 'عند التعيين، يكون للمستخدم حصة مساحة للصور (بالكيلوبايت).',
+    'user_deleted' => 'تم حذف المستخدم',
+    'user_created' => 'تم إنشاء المستخدم',
+    'user_updated' => 'تم تحديث المستخدم',
+    'change_saved' => 'تم حفظ التغيير!',
+    'create_edit' => [
+        'upload_rights' => 'يمكن للمستخدم تحميل المحتوى.',
+        'edit_rights' => 'يمكن للمستخدم تعديل ملفه الشخصي (اسم المستخدم، كلمة المرور).',
+        'admin_rights' => 'User has admin rights.',
+        'upload_trust_level' => 'Upload trust level',
+        'upload_trust_level_check' => 'Check – uploads require admin approval before becoming public.',
+        'upload_trust_level_monitor' => 'Monitor – upload are publics unless flagged for content.',
+        'upload_trust_level_trusted' => 'Trusted – uploads are immediately public.',
 
-		'quota' => 'لدى المستخدم حد الحصة.',
-		'quota_kb' => 'الحصة بالكيلوبايت (0 للإعداد الافتراضي)',
-		'note' => 'ملاحظة المسؤول (غير مرئية للعامة)',
-		'create' => 'إنشاء',
-		'edit' => 'تعديل',
-	],
-	'invite' => [
-		'button' => 'Invite user',
-		'links_are_not_revokable' => 'Invitation links are not revokable.',
-		'link_is_valid_x_days' => 'This link is valid for %d days.',
-	],
-	'line' => [
-		'owner' => 'Owner',
-		'admin' => 'مستخدم مسؤول',
-		'edit' => 'تعديل',
-		'delete' => 'حذف',
-	],
+        'quota' => 'لدى المستخدم حد الحصة.',
+        'quota_kb' => 'الحصة بالكيلوبايت (0 للإعداد الافتراضي)',
+        'note' => 'ملاحظة المسؤول (غير مرئية للعامة)',
+        'create' => 'إنشاء',
+        'edit' => 'تعديل',
+    ],
+    'invite' => [
+        'button' => 'Invite user',
+        'links_are_not_revokable' => 'Invitation links are not revokable.',
+        'link_is_valid_x_days' => 'This link is valid for %d days.',
+    ],
+    'line' => [
+        'owner' => 'Owner',
+        'admin' => 'مستخدم مسؤول',
+        'edit' => 'تعديل',
+        'delete' => 'حذف',
+    ],
 ];
