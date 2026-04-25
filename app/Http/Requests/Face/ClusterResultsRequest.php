@@ -40,10 +40,8 @@ class ClusterResultsRequest extends BaseApiRequest
 			'labels.*.face_id' => 'required|string',
 			'labels.*.cluster_label' => 'required|integer',
 			'suggestions' => 'sometimes|array',
-			// TODO remove exist check
-			'suggestions.*.face_id' => 'required|string|exists:faces,id',
-			// TODO remove exist check
-			'suggestions.*.suggested_face_id' => 'required|string|exists:faces,id',
+			'suggestions.*.face_id' => 'required|string',
+			'suggestions.*.suggested_face_id' => 'required|string',
 			'suggestions.*.confidence' => 'required|numeric',
 		];
 	}

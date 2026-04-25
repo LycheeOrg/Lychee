@@ -87,9 +87,20 @@ async def detect(
     photos_root = Path(settings.photos_path).resolve()
 
     if not str(resolved).startswith(str(photos_root) + "/") and resolved != photos_root:
+        logger.warning(
+            "[/detect] 400 path-traversal: photo_id=%s resolved=%s photos_root=%s",
+            body.photo_id,
+            resolved,
+            photos_root,
+        )
         raise HTTPException(status_code=400, detail=f"photo_path {resolved} is outside the allowed directory")
 
     if not resolved.is_file():
+        logger.warning(
+            "[/detect] 400 file-not-found: photo_id=%s resolved=%s",
+            body.photo_id,
+            resolved,
+        )
         raise HTTPException(status_code=400, detail="photo_path does not exist or is not a file")
 
     detector: FaceDetector = get_detector(request)

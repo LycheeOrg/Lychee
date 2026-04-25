@@ -60,7 +60,7 @@ class ModerationController extends Controller
 	{
 		/** @var Photo $photo */
 		$photo = Photo::where('id', $request->photoId())
-			->with(['size_variants', 'palette', 'tags', 'statistics', 'rating', 'albums', 'owner'])
+			->with(['size_variants', 'palette', 'tags', 'statistics', 'rating', 'albums', 'owner', 'faces', 'faces.person'])
 			->firstOrFail();
 
 		return new PhotoResource(
