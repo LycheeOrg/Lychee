@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Generator
+import sys
 from contextlib import contextmanager
 from typing import TYPE_CHECKING, Any
 from unittest.mock import MagicMock, patch
@@ -13,6 +13,7 @@ import pytest
 from app.detection.detector import DetectedFace, FaceDetector
 
 if TYPE_CHECKING:
+    from collections.abc import Generator
     from pathlib import Path
 
 # ---------------------------------------------------------------------------
@@ -41,11 +42,24 @@ def _detector_with_faces(
     faces: list[Any],
     *,
     blur_threshold: float = 0.0,
-) -> Generator[FaceDetector, None, None]:
-    """Yield a loaded FaceDetector whose DeepFace.represent returns *faces*."""
+) -> Generator[FaceDetector]:
+    """Yield a loaded FaceDetector whose DeepFace.represent returns *faces*.
+
+    Injects a stub ``deepface`` module into ``sys.modules`` so the tests run
+    regardless of whether the heavyweight deepface package is installed in the
+    active Python environment (e.g. when running ``uv run pytest``).
+    """
+    stub_deepface_cls = MagicMock()
+    stub_deepface_cls.represent.return_value = faces
+    stub_deepface_mod = MagicMock()
+    stub_deepface_mod.DeepFace = stub_deepface_cls
+
+    stub_cv2 = MagicMock()
+    stub_cv2.Laplacian.return_value.var.return_value = 0.0
+
     detector = FaceDetector(detection_threshold=0.5, blur_threshold=blur_threshold)
     detector._loaded = True  # type: ignore[attr-defined]
-    with patch("deepface.DeepFace.represent", return_value=faces):
+    with patch.dict(sys.modules, {"deepface": stub_deepface_mod, "cv2": stub_cv2}):
         yield detector
 
 
@@ -147,9 +161,11 @@ def test_detect_returns_full_embedding() -> None:
 def test_detect_raises_without_load(jpeg_image_path: Path) -> None:
     """detect() must raise RuntimeError if load() has not been called."""
     detector = FaceDetector()
+    stub_cv2 = MagicMock()
+    stub_cv2.imread.return_value = MagicMock(shape=(100, 100, 3))
     with (
         pytest.raises(RuntimeError, match="not loaded"),
-        patch("cv2.imread", return_value=MagicMock(shape=(100, 100, 3))),
+        patch.dict(sys.modules, {"cv2": stub_cv2}),
     ):
         detector.detect(jpeg_image_path)
 
@@ -159,7 +175,9 @@ def test_detect_raises_on_unreadable_file(tmp_path: Path) -> None:
     detector = FaceDetector()
     detector._loaded = True  # type: ignore[attr-defined]
 
-    with patch("cv2.imread", return_value=None), pytest.raises(ValueError, match="Cannot read image"):
+    stub_cv2 = MagicMock()
+    stub_cv2.imread.return_value = None
+    with patch.dict(sys.modules, {"cv2": stub_cv2}), pytest.raises(ValueError, match="Cannot read image"):
         detector.detect(tmp_path / "nonexistent.jpg")
 
 

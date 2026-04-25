@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 import threading
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -158,11 +158,14 @@ class FaceDetector:
         w: int = int(img.shape[1])
 
         with self._lock:
-            raw_faces: list[Any] = DeepFace.represent(
-                img_path=img,
-                model_name=self._model_name,
-                detector_backend=self._detector_backend,
-                enforce_detection=False,
+            raw_faces: list[dict[str, Any]] = cast(
+                "list[dict[str, Any]]",
+                DeepFace.represent(
+                    img_path=img,
+                    model_name=self._model_name,
+                    detector_backend=self._detector_backend,
+                    enforce_detection=False,
+                ),
             )
 
         logger.info("Face detection: found %d raw face(s) in %dx%d image", len(raw_faces), w, h)
