@@ -10,7 +10,7 @@ claiming via a REST API consumed by the Lychee PHP backend.
 | Concern | Library |
 |---------|---------|
 | Web framework | FastAPI + Uvicorn |
-| Face detection & recognition | InsightFace (`buffalo_l`) + ONNX Runtime |
+| Face detection & recognition | DeepFace (`ArcFace` + `retinaface` backend) |
 | Face crop generation | Pillow |
 | Embedding clustering | scikit-learn (DBSCAN) |
 | Embedding storage | SQLite + sqlite-vec (default) / PostgreSQL + pgvector |
@@ -32,7 +32,7 @@ ai-vision-service/
 │   │   └── schemas.py       # Pydantic request/response models
 │   ├── detection/
 │   │   ├── __init__.py
-│   │   ├── detector.py    # InsightFace wrapper
+│   │   ├── detector.py    # DeepFace wrapper
 │   │   └── cropper.py     # 150×150 JPEG crop generator
 │   ├── embeddings/
 │   │   ├── __init__.py
@@ -61,7 +61,8 @@ All variables are prefixed `VISION_FACE_`.
 | `VISION_FACE_LYCHEE_API_URL` | Yes | — | Lychee base URL for callbacks |
 | `VISION_FACE_API_KEY` | Yes | — | Shared API key: validated on inbound requests from Lychee, and sent on outbound callbacks to Lychee |
 | `VISION_FACE_VERIFY_SSL` | No | `true` | Verify SSL certificates when making callbacks to Lychee. Set to `false` for dev environments with self-signed certificates |
-| `VISION_FACE_MODEL_NAME` | No | `buffalo_l` | InsightFace model pack |
+| `VISION_FACE_MODEL_NAME` | No | `ArcFace` | DeepFace recognition model |
+| `VISION_FACE_DETECTOR_BACKEND` | No | `retinaface` | DeepFace detector backend (`retinaface`, `mtcnn`, `opencv`, `ssd`) |
 | `VISION_FACE_DETECTION_THRESHOLD` | No | `0.5` | Confidence filter for detected faces |
 | `VISION_FACE_MATCH_THRESHOLD` | No | `0.5` | Cosine-similarity cutoff for selfie matching |
 | `VISION_FACE_RESCAN_IOU_THRESHOLD` | No | `0.5` | IoU threshold for bounding-box matching on re-scan |
@@ -128,7 +129,7 @@ uv run pytest --cov=app --cov-report=html
 ## Docker
 
 ```bash
-# Build (bakes buffalo_l model into the image – ~1 GB download on first build)
+# Build (bakes ArcFace + RetinaFace models into the image – ~500 MB download on first build)
 docker build -t lychee-ai-vision .
 
 # Run
@@ -143,4 +144,4 @@ docker run --rm \
 
 ---
 
-*Last updated: 2026-03-21*
+*Last updated: 2026-04-24*

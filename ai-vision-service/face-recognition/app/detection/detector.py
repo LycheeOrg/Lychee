@@ -1,4 +1,4 @@
-"""InsightFace wrapper for face detection and embedding generation."""
+"""DeepFace wrapper for face detection and embedding generation."""
 
 from __future__ import annotations
 
@@ -40,25 +40,25 @@ class DetectedFace:
 
 
 class FaceDetector:
-    """Thread-safe wrapper around InsightFace FaceAnalysis.
+    """Thread-safe wrapper around DeepFace for face detection and embedding generation.
 
-    Uses the ONNX Runtime CPU execution provider so no GPU is required.
+    Uses ArcFace recognition with the RetinaFace detector backend by default.
     The model is loaded once at startup (via :meth:`load`) and shared across
-    threads; a lock guards the non-thread-safe ``app.get()`` call.
+    threads; a lock guards the non-thread-safe ``DeepFace.represent()`` call.
     """
 
     def __init__(
         self,
-        model_name: str = "buffalo_l",
+        model_name: str = "ArcFace",
         detection_threshold: float = 0.5,
         blur_threshold: float = 100.0,
-        model_root: str = "/root/.insightface",
+        detector_backend: str = "retinaface",
     ) -> None:
         self._model_name = model_name
         self._detection_threshold = detection_threshold
         self._blur_threshold = blur_threshold
-        self._model_root = model_root
-        self._app: Any = None  # insightface.app.FaceAnalysis - untyped library
+        self._detector_backend = detector_backend
+        self._loaded: bool = False
         self._lock = threading.Lock()
 
     # ------------------------------------------------------------------
@@ -66,28 +66,30 @@ class FaceDetector:
     # ------------------------------------------------------------------
 
     def load(self) -> None:
-        """Load the InsightFace model pack into memory.
+        """Load the DeepFace model into memory.
 
         Idempotent - safe to call more than once.
         Must be called before :meth:`detect` or :meth:`detect_bytes`.
         """
-        with self._lock:
-            if self._app is not None:
-                return
-            from insightface.app import FaceAnalysis
+        import numpy as np
+        from deepface import DeepFace
 
-            app = FaceAnalysis(
-                name=self._model_name,
-                root=self._model_root,
-                providers=["CPUExecutionProvider"],
+        with self._lock:
+            if self._loaded:
+                return
+            # Warmup: triggers model weight download/cache on first call.
+            DeepFace.represent(
+                img_path=np.zeros((1, 1, 3), dtype=np.uint8),
+                model_name=self._model_name,
+                detector_backend=self._detector_backend,
+                enforce_detection=False,
             )
-            app.prepare(ctx_id=-1)
-            self._app = app
+            self._loaded = True
 
     @property
     def is_loaded(self) -> bool:
         """Return ``True`` if the model has been successfully loaded."""
-        return self._app is not None
+        return self._loaded
 
     # ------------------------------------------------------------------
     # Detection
@@ -147,14 +149,21 @@ class FaceDetector:
         """Run detection on a BGR numpy array (internal)."""
         import cv2
 
-        if self._app is None:
+        if not self._loaded:
             raise RuntimeError("FaceDetector not loaded - call load() first.")
+
+        from deepface import DeepFace
 
         h: int = int(img.shape[0])
         w: int = int(img.shape[1])
 
         with self._lock:
-            raw_faces: list[Any] = self._app.get(img)
+            raw_faces: list[Any] = DeepFace.represent(
+                img_path=img,
+                model_name=self._model_name,
+                detector_backend=self._detector_backend,
+                enforce_detection=False,
+            )
 
         logger.info("Face detection: found %d raw face(s) in %dx%d image", len(raw_faces), w, h)
 
@@ -163,13 +172,16 @@ class FaceDetector:
         filtered_by_blur = 0
 
         for face in raw_faces:
-            score: float = float(face.det_score)
+            score: float = float(face["face_confidence"])
             if score < self._detection_threshold:
                 filtered_by_confidence += 1
                 continue
 
-            bbox: Any = face.bbox  # [x1, y1, x2, y2] absolute pixels
-            x1, y1, x2, y2 = float(bbox[0]), float(bbox[1]), float(bbox[2]), float(bbox[3])
+            area = face["facial_area"]
+            x1 = float(area["x"])
+            y1 = float(area["y"])
+            x2 = x1 + float(area["w"])
+            y2 = y1 + float(area["h"])
 
             # Compute Laplacian variance on the face crop region.
             # This sharpness score is always computed and sent to Lychee for filtering/tuning.
@@ -199,7 +211,7 @@ class FaceDetector:
             fw = max(0.0, min(1.0, (x2 - x1) / w))
             fh = max(0.0, min(1.0, (y2 - y1) / h))
 
-            embedding: list[float] = [float(v) for v in face.embedding]
+            embedding: list[float] = [float(v) for v in face["embedding"]]
 
             results.append(
                 DetectedFace(

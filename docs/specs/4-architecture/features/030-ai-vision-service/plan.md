@@ -40,7 +40,7 @@ Enable Lychee users to browse their photo library by the people who appear in th
   - **Merge person UI**: Modal with person search and miniatures *(Q-030-58)*.
 
 - **Out of scope:**
-  - Training custom face recognition models (use pre-trained models like InsightFace/dlib/face_recognition).
+  - Training custom face recognition models (use pre-trained models like DeepFace/dlib/face_recognition).
   - Per-user face overlay preferences (deferred — currently global config only).
   - Policy refinement for album/photo edit rights cross-check (deferred — Q-030-63).
 
@@ -99,7 +99,7 @@ After each increment, verify:
 - _Preconditions:_ Inter-service contract finalized (spec appendix).
 - _Steps:_
   1. Create project structure: `ai-vision-service/` with `pyproject.toml` (uv), `app/`, `tests/`, `Dockerfile`. Configure ruff and ty in `pyproject.toml`.
-  2. Integrate InsightFace (ONNX Runtime backend) with `buffalo_l` model pack. Typed wrapper around InsightFace API.
+  2. Integrate DeepFace (ArcFace recognition + RetinaFace detector backend). Typed wrapper around DeepFace API.
   3. Create Pydantic models (`app/api/schemas.py`): `DetectRequest`, `FaceResult`, `DetectCallbackPayload`, `AppSettings` (BaseSettings).
   4. Implement face detection (`app/detection/detector.py`): accept photo filesystem path, return bounding boxes (0.0–1.0 relative) + confidence scores. Full type annotations.
   5. Implement embedding generation (`app/embeddings/`): extract face embeddings, store in SQLite+sqlite-vec (default) or PostgreSQL+pgvector. Abstract `EmbeddingStore` protocol with typed implementations.
@@ -130,8 +130,8 @@ After each increment, verify:
 - _Steps:_
   1. Finalize Dockerfile: multi-stage build (builder with `uv sync --frozen --no-dev`, runtime with slim Python base), GPU support optional.
   2. docker-compose integration: add face-recognition service to Lychee's docker-compose with shared photos volume and internal network.
-  3. Environment variable configuration via Pydantic `AppSettings` (`VISION_FACE_`-prefixed): `VISION_FACE_LYCHEE_API_URL`, `VISION_FACE_API_KEY`, `VISION_FACE_MODEL_NAME`, `VISION_FACE_DETECTION_THRESHOLD` (bounding box filter), `VISION_FACE_MATCH_THRESHOLD` (similarity search cutoff), `VISION_FACE_RESCAN_IOU_THRESHOLD` (IoU on re-scan), `VISION_FACE_MAX_FACES_PER_PHOTO` (default 10), `VISION_FACE_THREAD_POOL_SIZE`, `VISION_FACE_STORAGE_BACKEND`, `VISION_FACE_STORAGE_PATH`, `VISION_FACE_PHOTOS_PATH`, `VISION_FACE_WORKERS`, `VISION_FACE_LOG_LEVEL`.
-  4. Startup: FastAPI lifespan handler loads `buffalo_l` model (baked into image at build time; no download on first run — Q-030-32 resolved). Workers count exposed via CMD shell form to honour `VISION_FACE_WORKERS` env var.
+  3. Environment variable configuration via Pydantic `AppSettings` (`VISION_FACE_`-prefixed): `VISION_FACE_LYCHEE_API_URL`, `VISION_FACE_API_KEY`, `VISION_FACE_MODEL_NAME`, `VISION_FACE_DETECTOR_BACKEND`, `VISION_FACE_DETECTION_THRESHOLD` (bounding box filter), `VISION_FACE_MATCH_THRESHOLD` (similarity search cutoff), `VISION_FACE_RESCAN_IOU_THRESHOLD` (IoU on re-scan), `VISION_FACE_MAX_FACES_PER_PHOTO` (default 10), `VISION_FACE_THREAD_POOL_SIZE`, `VISION_FACE_STORAGE_BACKEND`, `VISION_FACE_STORAGE_PATH`, `VISION_FACE_PHOTOS_PATH`, `VISION_FACE_WORKERS`, `VISION_FACE_LOG_LEVEL`.
+  4. Startup: FastAPI lifespan handler loads ArcFace + RetinaFace models (baked into image at build time; no download on first run — Q-030-32 resolved). Workers count exposed via CMD shell form to honour `VISION_FACE_WORKERS` env var.
   5. Create `.github/workflows/python_ai_vision.yml`: lint (ruff), typecheck (ty check), test (pytest --cov, Python 3.13+3.14 matrix), docker-build. Uses `astral-sh/setup-uv@v5`. Follows existing Lychee CI patterns (harden-runner, pinned actions, concurrency groups).
   6. Smoke test: docker-compose up → health check passes → detect endpoint responds.
 - _Commands:_ `docker build .`, `docker-compose up`

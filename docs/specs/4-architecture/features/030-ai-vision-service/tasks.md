@@ -20,8 +20,8 @@ _Last updated: 2026-04-11_
   - `uv run ruff check`
   - `uv run ty check`
 
-- [x] T-030-02 – Implement face detection and crop generation with InsightFace.
-  _Intent:_ `app/detection/detector.py`: typed wrapper around InsightFace (ONNX Runtime backend, `buffalo_l` model). Accept photo filesystem path (shared Docker volume — Q-030-07 resolved), return list of `FaceResult` with bounding box coordinates as 0.0–1.0 relative values and confidence scores. `app/detection/cropper.py`: generate 150x150px JPEG face crop per detected face using Pillow, returned as base64 string (Q-030-09 resolved: server-side crop). Full type annotations; no `Any` types.
+- [x] T-030-02 – Implement face detection and crop generation with DeepFace.
+  _Intent:_ `app/detection/detector.py`: typed wrapper around DeepFace (ArcFace recognition + RetinaFace detector backend). Accept photo filesystem path (shared Docker volume — Q-030-07 resolved), return list of `FaceResult` with bounding box coordinates as 0.0–1.0 relative values and confidence scores. `app/detection/cropper.py`: generate 150x150px JPEG face crop per detected face using Pillow, returned as base64 string (Q-030-09 resolved: server-side crop). Full type annotations.
   _Verification commands:_
   - `uv run pytest tests/test_detection.py tests/test_cropper.py`
   - `uv run ty check`
@@ -57,7 +57,7 @@ _Last updated: 2026-04-11_
 ### I3 – Python Service: Docker Image, Deployment & CI/CD
 
 - [x] T-030-07 – Create Dockerfile and docker-compose integration.
-  _Intent:_ Multi-stage Dockerfile: builder stage uses `uv sync --frozen --no-dev`, runtime stage uses `python:3.13-slim`. Minimal image size. GPU support optional. Model (`buffalo_l`) baked into image at build time — lifespan handler loads it on startup, no runtime download (Q-030-32 resolved). Workers count via CMD shell form to honour `VISION_FACE_WORKERS`. All env vars `VISION_FACE_`-prefixed (see Pydantic `AppSettings`). Add service to Lychee's docker-compose example with shared photos volume and internal network.
+  _Intent:_ Multi-stage Dockerfile: builder stage uses `uv sync --frozen --no-dev`, runtime stage uses `python:3.13-slim`. Minimal image size. GPU support optional via `tensorflow[and-cuda]`. ArcFace + RetinaFace models baked into image at build time — lifespan handler loads them on startup, no runtime download (Q-030-32 resolved). Workers count via CMD shell form to honour `VISION_FACE_WORKERS`. All env vars `VISION_FACE_`-prefixed (see Pydantic `AppSettings`). Add service to Lychee's docker-compose example with shared photos volume and internal network.
   _Verification commands:_
   - `docker build -t lychee-ai-vision .`
   - `docker-compose up -d`

@@ -233,7 +233,7 @@ class HealthResponse(BaseModel):
     """``"ok"`` when fully operational; ``"degraded"`` if the model is not loaded."""
 
     model_loaded: bool
-    """Whether the InsightFace model pack has been successfully initialised."""
+    """Whether the face detection/recognition model has been successfully initialised."""
 
     embedding_count: int
     """Total number of face embeddings currently stored."""

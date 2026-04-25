@@ -31,8 +31,13 @@ class AppSettings(BaseSettings):
     **WARNING:** Disabling SSL verification in production is a security risk."""
 
     # --- Model ---
-    model_name: str = "buffalo_l"
-    """InsightFace model pack name. ``buffalo_l`` = large/high-accuracy; ``buffalo_s`` = faster alternative."""
+    model_name: str = "ArcFace"
+    """DeepFace recognition model name.  ``ArcFace`` = high-accuracy 512-dim embeddings (default);
+    other supported models include ``Facenet512``, ``VGG-Face``, etc."""
+
+    detector_backend: str = "retinaface"
+    """DeepFace detector backend.  ``retinaface`` = high-accuracy (default);
+    alternatives include ``mtcnn``, ``opencv``, ``ssd``."""
 
     # --- Detection thresholds ---
     detection_threshold: float = 0.5
@@ -99,9 +104,10 @@ class AppSettings(BaseSettings):
     """Laplacian variance threshold for blur detection.
     Face crops with a variance below this value are discarded before embedding."""
 
-    model_root: str = "/root/.insightface"
-    """Root directory for InsightFace model packs.  Defaults to the library's default (``~/.insightface``)
-    but can be overridden to point to a shared Docker volume if desired."""
+    model_root: str = "/root/.deepface"
+    """Root directory for DeepFace model weights.  Exposed as ``DEEPFACE_HOME`` when the service starts.
+    Defaults to the library's default (``~/.deepface``) but can be overridden to point to a shared
+    Docker volume if desired."""
 
     model_config = SettingsConfigDict(
         env_prefix="VISION_FACE_",

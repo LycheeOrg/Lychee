@@ -8,9 +8,8 @@ FROM python:3.13-slim@sha256:739e7213785e88c0f702dcdc12c0973afcbd606dbf021a589ca
 # Install uv from the official image.
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 
-# Build tools required to compile insightface's Cython extension (mesh_core_cython).
+# Runtime libraries required by opencv-python.
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        g++ \
         libgl1 \
         libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
@@ -22,14 +21,19 @@ WORKDIR /app
 COPY pyproject.toml uv.lock README.md ./
 RUN uv sync --frozen --no-dev
 
-# Bake buffalo_l model weights into the image at build time (~300 MB download).
-# The resulting image is ~1 GB larger but starts instantly and works in
-# airgapped environments. Model updates require an image rebuild.
-RUN uv run python -c \
-    "from insightface.app import FaceAnalysis; \
-     a = FaceAnalysis(name='buffalo_l', root='/root/.insightface', providers=['CPUExecutionProvider']); \
-     a.prepare(ctx_id=-1); \
-     print('buffalo_l model downloaded.')"
+# Bake ArcFace + RetinaFace model weights into the image at build time.
+# The resulting image starts instantly and works in airgapped environments.
+# Model updates require an image rebuild.
+RUN DEEPFACE_HOME=/root/.deepface uv run python -c \
+    "from deepface import DeepFace; \
+     import numpy as np; \
+     DeepFace.represent( \
+         img_path=np.zeros((1, 1, 3), dtype='uint8'), \
+         model_name='ArcFace', \
+         detector_backend='retinaface', \
+         enforce_detection=False, \
+     ); \
+     print('ArcFace + RetinaFace models downloaded.')"
 
 # ---------------------------------------------------------------------------
 # Stage 2 – runtime: copy only what's needed to run.
@@ -40,12 +44,13 @@ WORKDIR /app
 
 # Copy the pre-built virtualenv and baked model weights from the builder stage.
 COPY --from=builder /app/.venv /app/.venv
-COPY --from=builder /root/.insightface /root/.insightface
+COPY --from=builder /root/.deepface /root/.deepface
 
 # Copy application source.
 COPY app/ ./app/
 
 ENV PATH="/app/.venv/bin:$PATH"
+ENV DEEPFACE_HOME=/root/.deepface
 
 EXPOSE 8000
 
