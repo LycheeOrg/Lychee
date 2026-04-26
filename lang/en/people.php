@@ -41,6 +41,8 @@ return [
 	'person' => [
 		'edit' => 'Edit',
 		'delete' => 'Delete',
+		'delete_confirm' => 'Are you sure you want to delete "%s"?',
+		'delete_warning' => 'This action cannot be undone! All faces assigned to this person will be unassigned.',
 		'merge' => 'Merge into…',
 		'toggle_searchable' => 'Toggle visibility',
 		'claim' => 'This is me',

@@ -37,6 +37,8 @@
 
 		<ContextMenu ref="contextMenuRef" :model="contextMenuItems" />
 
+		<PersonDeleteDialog v-if="contextMenuPerson" v-model:visible="deletePersonVisible" :person="contextMenuPerson" @deleted="onPersonDeleted" />
+
 		<!-- Assign to user dialog (admin only) -->
 		<Dialog v-model:visible="userPickerVisible" modal :header="$t('people.assign_to_user')" class="w-80">
 			<div class="flex flex-col gap-4">
@@ -72,6 +74,7 @@ import { useToast } from "primevue/usetoast";
 import { trans } from "laravel-vue-i18n";
 import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
 import PersonCard from "@/components/gallery/PersonCard.vue";
+import PersonDeleteDialog from "@/components/forms/people/PersonDeleteDialog.vue";
 import PeopleService from "@/services/people-service";
 import UserManagementService from "@/services/user-management-service";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
@@ -91,6 +94,9 @@ const hasMorePages = ref(false);
 const contextMenuRef = ref<InstanceType<typeof ContextMenu> | null>(null);
 const contextMenuPerson = ref<App.Http.Resources.Models.PersonResource | null>(null);
 const contextMenuItems = ref<MenuItem[]>([]);
+
+// Delete dialog
+const deletePersonVisible = ref(false);
 
 // User picker
 const userPickerVisible = ref(false);
@@ -114,6 +120,12 @@ function buildContextMenuItems(person: App.Http.Resources.Models.PersonResource)
 			command: () => openUserPicker(person),
 		});
 	}
+
+	items.push({
+		label: trans("people.person.delete"),
+		icon: "pi pi-trash",
+		command: () => openDeleteDialog(person),
+	});
 
 	return items;
 }
@@ -154,6 +166,17 @@ function openUserPicker(person: App.Http.Resources.Models.PersonResource) {
 function searchUsers(event: { query: string }) {
 	const q = event.query.toLowerCase();
 	userSuggestions.value = allUsers.value.filter((u) => u.username.toLowerCase().includes(q));
+}
+
+function openDeleteDialog(person: App.Http.Resources.Models.PersonResource) {
+	contextMenuPerson.value = person;
+	deletePersonVisible.value = true;
+}
+
+function onPersonDeleted() {
+	if (contextMenuPerson.value) {
+		people.value = people.value.filter((p) => p.id !== contextMenuPerson.value!.id);
+	}
 }
 
 function confirmAssignUser() {

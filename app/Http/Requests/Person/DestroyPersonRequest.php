@@ -22,6 +22,12 @@ class DestroyPersonRequest extends BaseApiRequest
 		return Gate::check(AiVisionPolicy::CAN_EDIT_PERSON, Person::class);
 	}
 
+	protected function prepareForValidation(): void
+	{
+		/** @disregard */
+		$this->merge(['person_id' => $this->route('id')]);
+	}
+
 	public function rules(): array
 	{
 		return [

@@ -118,6 +118,30 @@ class FaceDetectionController extends Controller
 					->update(['cluster_label' => $item['cluster_label']]);
 			}
 
+			// Auto-assign unassigned faces in clusters where all already-assigned
+			// faces unanimously point to the same person.
+			// This handles the case where new photos of a known person create a
+			// cluster that mixes assigned and unassigned faces of that same person.
+			$clusters_with_person = Face::whereNotNull('cluster_label')
+				->where('cluster_label', '>', -1)
+				->whereNotNull('person_id')
+				->selectRaw('cluster_label, person_id, COUNT(*) as cnt')
+				->groupBy('cluster_label', 'person_id')
+				->get()
+				->groupBy('cluster_label');
+
+			foreach ($clusters_with_person as $label => $persons) {
+				if ($persons->count() === 1) {
+					// All assigned faces in this cluster agree on a single person.
+					Face::where('cluster_label', '=', $label)
+						->whereNull('person_id')
+						->notDismissed()
+						->update(['person_id' => $persons->first()->person_id]);
+				}
+				// If multiple persons share the same cluster (mis-clustering),
+				// leave unassigned faces for manual review.
+			}
+
 			// Upsert cross-cluster suggestions.
 			foreach ($request->suggestions() as $sug) {
 				FaceSuggestion::updateOrCreate(

@@ -154,7 +154,7 @@
 			<PaginationInfiniteScroll :loading="photosLoadingMore" :has-more="hasMorePhotos" @load-more="loadMorePhotos" />
 		</template>
 
-		<ConfirmDialog />
+		<PersonDeleteDialog v-if="person" v-model:visible="deletePersonVisible" :person="person" @deleted="router.push({ name: 'people' })" />
 		<MergePersonModal v-if="person && isMergeModalOpen" v-model:visible="isMergeModalOpen" :source-person="person" @merged="onMerged" />
 
 		<!-- Photo lightbox overlay -->
@@ -186,15 +186,14 @@ import Button from "primevue/button";
 import Checkbox from "primevue/checkbox";
 import InputText from "primevue/inputtext";
 import Tag from "primevue/tag";
-import ConfirmDialog from "primevue/confirmdialog";
 import { useToast } from "primevue/usetoast";
-import { useConfirm } from "primevue/useconfirm";
 import { trans } from "laravel-vue-i18n";
 import { useDebounceFn, onKeyStroke } from "@vueuse/core";
 import createJustifiedLayout from "justified-layout";
 import MergePersonModal from "@/components/modals/faceRecog/MergePersonModal.vue";
 import PaginationInfiniteScroll from "@/components/pagination/PaginationInfiniteScroll.vue";
 import PhotoPanel from "@/components/gallery/photoModule/PhotoPanel.vue";
+import PersonDeleteDialog from "@/components/forms/people/PersonDeleteDialog.vue";
 import PeopleService from "@/services/people-service";
 import FaceBatchService from "@/services/face-batch-service";
 import { useUserStore } from "@/stores/UserState";
@@ -212,7 +211,6 @@ const props = defineProps<{ personId: string; photoId?: string }>();
 
 const router = useRouter();
 const toast = useToast();
-const confirm = useConfirm();
 const userStore = useUserStore();
 const { user } = storeToRefs(userStore);
 const canEdit = ref(false);
@@ -612,22 +610,14 @@ function toggleSearchable() {
 		});
 }
 
+// Merge modal
+const isMergeModalOpen = ref(false);
+
+// Delete dialog
+const deletePersonVisible = ref(false);
+
 function confirmDelete() {
-	confirm.require({
-		message: trans("dialogs.delete_confirm"),
-		header: trans("dialogs.delete"),
-		icon: "pi pi-trash",
-		acceptClass: "p-button-danger",
-		accept() {
-			PeopleService.destroy(props.personId)
-				.then(() => {
-					router.push({ name: "people" });
-				})
-				.catch((e) => {
-					toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });
-				});
-		},
-	});
+	deletePersonVisible.value = true;
 }
 
 onMounted(() => {
@@ -648,9 +638,6 @@ onUnmounted(() => {
 	document.removeEventListener("mousemove", onDragMove);
 	document.removeEventListener("mouseup", onDragEnd);
 });
-
-// Merge modal
-const isMergeModalOpen = ref(false);
 
 function onMerged(targetPersonId: string) {
 	router.push({ name: "person", params: { personId: targetPersonId } });
