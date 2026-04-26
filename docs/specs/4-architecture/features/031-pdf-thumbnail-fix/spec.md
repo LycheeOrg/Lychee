@@ -47,3 +47,12 @@ Simple PDFs that can be rendered linearly happen to work via the stream path; co
 ## Root Cause
 
 `ImagickHandler::load()` called `$this->im_image->readImageFile($stream)` for all file types including PDFs. For non-PDF images, Imagick can detect the format from the stream's magic bytes. For PDFs, Imagick delegates rendering to Ghostscript, which needs a named file with a `.pdf` extension to determine the format and to seek through the file structure. Anonymous streams provide neither.
+
+### Why the 50 MB limit in InMemoryBuffer masked the issue
+
+`InMemoryBuffer` uses `php://temp/maxmemory:MAX_SIZE` (currently 50 MB). Below this threshold the stream is backed by RAM; above it PHP swaps it to an anonymous disk-backed temp file. The Flysystem stream returned by `readStream()` for local files is non-seekable, so it is always copied into an `InMemoryBuffer` before being passed to `readImageFile()`.
+
+- **PDFs under 50 MB** — stream stays in RAM. Imagick can sniff the `%PDF` magic bytes from a memory-backed stream and Ghostscript can render it.
+- **PDFs over 50 MB** — stream swaps to an anonymous disk file with no `.pdf` extension. Ghostscript receives no format hint and cannot seek through the file structure, producing silent "Page drawing error" failures and no thumbnail.
+
+This made the bug appear size-dependent and led to the initial investigation of the `MAX_SIZE` constant. Increasing `MAX_SIZE` to 100 MB shifted the failure threshold but did not fix the root cause. The correct fix is to bypass stream-based loading entirely for PDFs and pass a real file path to Imagick.
