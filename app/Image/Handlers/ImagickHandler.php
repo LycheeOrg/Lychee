@@ -20,6 +20,8 @@ use App\Image\Files\NativeLocalFile;
 use App\Repositories\ConfigManager;
 use App\Services\Image\FileExtensionService;
 use Imagick;
+use function Safe\fopen;
+use function Safe\stream_copy_to_stream;
 
 class ImagickHandler extends BaseImageHandler
 {
@@ -58,23 +60,34 @@ class ImagickHandler extends BaseImageHandler
 			$is_pdf = $file->getExtension() === '.pdf' && $file_extension_service->isSupportedOrAcceptedFileExtension($file->getExtension());
 
 			if ($is_pdf) {
-				// Ghostscript requires a real seekable file path with a .pdf extension.
-				// Using readImageFile() with an anonymous stream causes "Page drawing error"
-				// for complex PDFs because Ghostscript cannot seek back through the stream
-				// to resolve cross-references and object streams.
+				// PDFs must be loaded via a real filesystem path rather than an anonymous stream.
+				//
+				// Imagick delegates PDF rendering to Ghostscript. When given a named file path
+				// ending in .pdf, Ghostscript opens and seeks through the file freely — which it
+				// needs to do to resolve cross-reference tables and compressed object streams that
+				// are common in modern PDFs.
+				//
+				// When given an anonymous PHP stream via readImageFile(), Ghostscript receives no
+				// filename or format hint, and cannot seek backwards. This causes silent "Page
+				// drawing error" failures for any PDF complex enough to require non-linear reading,
+				// regardless of file size.
 				$pdf_path = $this->getLocalPath($file);
 				$tmp_path = null;
 
 				if ($pdf_path === null) {
-					// Remote file: copy to a named temp file so Ghostscript can open it by path.
+					// For remote/non-local files, stream the content into a named temp file
+					// so Ghostscript can open it by path. The temp file is cleaned up in the
+					// finally block below regardless of success or failure.
 					$tmp_path = tempnam(sys_get_temp_dir(), 'lychee_') . '.pdf';
 					$pdf_path = $tmp_path;
-					$tmp_handle = \Safe\fopen($tmp_path, 'wb');
-					\Safe\stream_copy_to_stream($file->read(), $tmp_handle);
+					$tmp_handle = fopen($tmp_path, 'wb');
+					stream_copy_to_stream($file->read(), $tmp_handle);
 					fclose($tmp_handle);
 				}
 
 				try {
+					// The [0] suffix tells Imagick to read only the first page of the PDF,
+					// avoiding the overhead of rendering all pages just to generate a thumbnail.
 					$this->im_image->readImage($pdf_path . '[0]');
 				} finally {
 					if ($tmp_path !== null) {
@@ -109,6 +122,9 @@ class ImagickHandler extends BaseImageHandler
 
 	/**
 	 * Returns the local filesystem path for the given file, or null if the file is remote.
+	 *
+	 * Used to obtain a real path for PDF files, which must be passed to Ghostscript
+	 * by path rather than via a stream.
 	 */
 	private function getLocalPath(MediaFile $file): ?string
 	{
@@ -119,6 +135,7 @@ class ImagickHandler extends BaseImageHandler
 			return $file->toLocalFile()->getPath();
 		}
 
+		// File is on a remote disk (e.g. S3); caller must copy it to a local temp file.
 		return null;
 	}
 
