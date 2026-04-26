@@ -14,7 +14,9 @@ use App\Contracts\Image\StreamStats;
 use App\DTO\ImageDimension;
 use App\Exceptions\ImageProcessingException;
 use App\Exceptions\MediaFileOperationException;
+use App\Image\Files\FlysystemFile;
 use App\Image\Files\InMemoryBuffer;
+use App\Image\Files\NativeLocalFile;
 use App\Repositories\ConfigManager;
 use App\Services\Image\FileExtensionService;
 use Imagick;
@@ -50,27 +52,50 @@ class ImagickHandler extends BaseImageHandler
 
 			$this->reset();
 
-			$original_stream = $file->read();
-			if (stream_get_meta_data($original_stream)['seekable']) {
-				$input_stream = $original_stream;
-			} else {
-				// We make an in-memory copy of the provided stream,
-				// because we must be able to seek/rewind the stream.
-				// For example, a readable stream from a remote location (i.e.
-				// a "download" stream) is only forward readable once.
-				$in_memory_buffer = new InMemoryBuffer();
-				$in_memory_buffer->write($original_stream);
-				$input_stream = $in_memory_buffer->read();
-			}
-
 			$this->im_image = new \Imagick();
-			$this->im_image->readImageFile($input_stream);
 
 			$file_extension_service = app(FileExtensionService::class);
+			$is_pdf = $file->getExtension() === '.pdf' && $file_extension_service->isSupportedOrAcceptedFileExtension($file->getExtension());
 
-			// If the file is a PDF and the user has chosen to support PDF files then try to create an image from the first page
-			if ($file->getExtension() === '.pdf' && $file_extension_service->isSupportedOrAcceptedFileExtension($file->getExtension())) {
-				$this->im_image->setIteratorIndex(0);
+			if ($is_pdf) {
+				// Ghostscript requires a real seekable file path with a .pdf extension.
+				// Using readImageFile() with an anonymous stream causes "Page drawing error"
+				// for complex PDFs because Ghostscript cannot seek back through the stream
+				// to resolve cross-references and object streams.
+				$pdf_path = $this->getLocalPath($file);
+				$tmp_path = null;
+
+				if ($pdf_path === null) {
+					// Remote file: copy to a named temp file so Ghostscript can open it by path.
+					$tmp_path = tempnam(sys_get_temp_dir(), 'lychee_') . '.pdf';
+					$pdf_path = $tmp_path;
+					$tmp_handle = \Safe\fopen($tmp_path, 'wb');
+					\Safe\stream_copy_to_stream($file->read(), $tmp_handle);
+					fclose($tmp_handle);
+				}
+
+				try {
+					$this->im_image->readImage($pdf_path . '[0]');
+				} finally {
+					if ($tmp_path !== null) {
+						@unlink($tmp_path);
+					}
+				}
+			} else {
+				$original_stream = $file->read();
+				if (stream_get_meta_data($original_stream)['seekable']) {
+					$input_stream = $original_stream;
+				} else {
+					// We make an in-memory copy of the provided stream,
+					// because we must be able to seek/rewind the stream.
+					// For example, a readable stream from a remote location (i.e.
+					// a "download" stream) is only forward readable once.
+					$in_memory_buffer = new InMemoryBuffer();
+					$in_memory_buffer->write($original_stream);
+					$input_stream = $in_memory_buffer->read();
+				}
+
+				$this->im_image->readImageFile($input_stream);
 			}
 
 			$this->autoRotate();
@@ -80,6 +105,21 @@ class ImagickHandler extends BaseImageHandler
 			$in_memory_buffer?->close();
 			$file->close();
 		}
+	}
+
+	/**
+	 * Returns the local filesystem path for the given file, or null if the file is remote.
+	 */
+	private function getLocalPath(MediaFile $file): ?string
+	{
+		if ($file instanceof NativeLocalFile) {
+			return $file->getPath();
+		}
+		if ($file instanceof FlysystemFile && $file->isLocalFile()) {
+			return $file->toLocalFile()->getPath();
+		}
+
+		return null;
 	}
 
 	/**
