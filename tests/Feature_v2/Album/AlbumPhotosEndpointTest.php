@@ -18,6 +18,7 @@
 
 namespace Tests\Feature_v2\Album;
 
+use App\Models\Album;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 /**
@@ -124,5 +125,31 @@ class AlbumPhotosEndpointTest extends BaseApiWithDataTest
 		$response->assertJson([
 			'message' => 'The album id field is required.',
 		]);
+	}
+
+	public function testTagAlbumPhotosNoDuplicatesWhenPhotoInMultipleAlbums(): void
+	{
+		// Regression test for: tag album photo listing returns duplicate entries.
+		// When a photo belongs to multiple regular albums, the LEFT JOIN with
+		// photo_album in applySearchabilityFilter produces one row per album
+		// membership, causing duplicate photos in the tag album response.
+
+		$this->actingAs($this->userMayUpload1);
+
+		// photo1 is already in album1 and has the 'test' tag.
+		// tagAlbum1 is linked to the 'test' tag.
+		// Add photo1 to a second album to trigger the duplicate via the photo_album JOIN.
+		$extraAlbum = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		$this->photo1->albums()->attach($extraAlbum->id);
+
+		$response = $this->getJsonWithData('Album::photos', ['album_id' => $this->tagAlbum1->id]);
+		$this->assertOk($response);
+
+		$photos = $response->json('photos');
+		$photoIds = array_column($photos, 'id');
+
+		// Each photo must appear exactly once.
+		$this->assertCount(count(array_unique($photoIds)), $photos, 'Tag album must not return duplicate photos');
+		$this->assertContains($this->photo1->id, $photoIds);
 	}
 }

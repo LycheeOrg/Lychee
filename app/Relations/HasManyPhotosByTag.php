@@ -106,6 +106,12 @@ class HasManyPhotosByTag extends BaseHasManyPhotos
 				)
 				->where(fn (Builder $q) => $this->getPhotoIdsWithTags($q, $tag_ids, $album->is_and));
 		}
+
+		// The LEFT JOIN with photo_album (added by applySearchabilityFilter/applySensitivityFilter
+		// for access control checks) produces one row per album membership. Since a photo can
+		// belong to multiple regular albums, this causes duplicate rows in the result. Adding
+		// DISTINCT ensures each photo appears only once.
+		$this->getRelationQuery()->distinct();
 	}
 
 	/**
