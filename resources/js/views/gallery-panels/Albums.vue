@@ -316,39 +316,11 @@ const {
 function togglePin() {
 	if (!selectedAlbum.value) return;
 
-	const albumId = selectedAlbum.value.id;
-	const wasPinned = selectedAlbum.value.is_pinned;
-
-	// Optimistic update: move album between arrays immediately so the UI responds without delay.
-	if (wasPinned) {
-		// Unpinning: move from pinnedAlbums to albums
-		const idx = albumsStore.pinnedAlbums.findIndex((a) => a.id === albumId);
-		if (idx !== -1) {
-			const album = albumsStore.pinnedAlbums.splice(idx, 1)[0];
-			album.is_pinned = false;
-			albumsStore.albums.unshift(album);
-		}
-	} else {
-		// Pinning: move from albums to pinnedAlbums
-		const idx = albumsStore.albums.findIndex((a) => a.id === albumId);
-		if (idx !== -1) {
-			const album = albumsStore.albums.splice(idx, 1)[0];
-			album.is_pinned = true;
-			albumsStore.pinnedAlbums.push(album);
-		}
-	}
-
-	AlbumService.setPinned(albumId, !wasPinned)
-		.then(() => {
-			AlbumService.clearAlbums();
-			unselect();
-		})
-		.catch(() => {
-			// Revert optimistic update on error
-			AlbumService.clearAlbums();
-			unselect();
-			refresh();
-		});
+	AlbumService.setPinned(selectedAlbum.value.id, !selectedAlbum.value.is_pinned).then(() => {
+		AlbumService.clearAlbums();
+		refresh();
+		unselect();
+	});
 }
 
 const is_download_album_visible = ref(false);

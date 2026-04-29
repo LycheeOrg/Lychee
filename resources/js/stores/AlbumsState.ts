@@ -31,8 +31,15 @@ export const useAlbumsStore = defineStore("albums-store", {
 		},
 		// We use state here because we want the RETURN type inference
 		selectableAlbums(state): App.Http.Resources.Models.ThumbAlbumResource[] {
-			// Note that selectableAlbums has to reflect the same order as pinned/unpinned albums
-			return state.pinnedAlbums.concat(state.albums.concat(state.sharedAlbums.map((album) => album.data).flat()));
+			// Note that selectableAlbums has to reflect the same order as pinned/unpinned albums.
+			// Deduplicate by id: when deduplicate_pinned_albums is disabled, pinned albums appear
+			// in both pinnedAlbums and albums, so we only keep the first occurrence.
+			const seen = new Set<string>();
+			return state.pinnedAlbums.concat(state.albums.concat(state.sharedAlbums.map((album) => album.data).flat())).filter((a) => {
+				if (seen.has(a.id)) return false;
+				seen.add(a.id);
+				return true;
+			});
 		},
 		// We use `this` in this one because we want the type inference of selectableAlbums
 		hasHidden(): boolean {
