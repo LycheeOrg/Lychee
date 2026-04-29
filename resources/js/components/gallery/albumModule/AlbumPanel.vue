@@ -377,14 +377,33 @@ function togglePin() {
 	if (!selectedAlbum.value) return;
 	if (!albumStore.album) return;
 
-	AlbumService.setPinned(selectedAlbum.value.id, !selectedAlbum.value.is_pinned).then(() => {
-		if (albumStore.album === undefined) return; // should not happen, but hey...
+	const albumId = selectedAlbum.value.id;
+	const wasPinned = selectedAlbum.value.is_pinned;
 
-		AlbumService.clearAlbums();
-		AlbumService.clearCache(albumStore.album.id);
-		emits("refresh");
-		unselect();
-	});
+	// Optimistic update: toggle is_pinned immediately so the UI responds without delay.
+	const album = albumsStore.albums.find((a) => a.id === albumId);
+	if (album) {
+		album.is_pinned = !wasPinned;
+	}
+
+	AlbumService.setPinned(albumId, !wasPinned)
+		.then(() => {
+			if (albumStore.album === undefined) return; // should not happen, but hey...
+
+			AlbumService.clearAlbums();
+			AlbumService.clearCache(albumStore.album.id);
+			unselect();
+		})
+		.catch(() => {
+			// Revert optimistic update on error
+			if (album) {
+				album.is_pinned = wasPinned;
+			}
+			AlbumService.clearAlbums();
+			AlbumService.clearCache(albumStore.album?.id ?? "");
+			unselect();
+			emits("refresh");
+		});
 }
 
 const albumCallbacks = {
