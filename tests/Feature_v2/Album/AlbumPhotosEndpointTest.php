@@ -149,7 +149,7 @@ class AlbumPhotosEndpointTest extends BaseApiWithDataTest
 		$photoIds = array_column($photos, 'id');
 
 		// Each photo must appear exactly once.
-		$this->assertCount(count(array_unique($photoIds)), $photos, 'Tag album must not return duplicate photos');
+		$this->assertSame(count(array_unique($photoIds)), count($photoIds), 'Tag album must not return duplicate photos');
 		$this->assertContains($this->photo1->id, $photoIds);
 	}
 }
