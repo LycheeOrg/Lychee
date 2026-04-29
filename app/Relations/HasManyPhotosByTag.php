@@ -11,6 +11,7 @@ namespace App\Relations;
 use App\Contracts\Exceptions\InternalLycheeException;
 use App\Enum\OrderSortingType;
 use App\Exceptions\Internal\NotImplementedException;
+use App\Models\Builders\PhotoBuilder;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
 use App\Models\TagAlbum;
@@ -103,7 +104,7 @@ class HasManyPhotosByTag extends BaseHasManyPhotos
 		// By using a whereIn subquery we avoid both problems: the outer relation
 		// query has no extra JOINs (no duplicates) and no DISTINCT (no ORDER BY
 		// restriction).
-		/** @var \App\Models\Builders\PhotoBuilder<Photo> $ids_query */
+		/** @var PhotoBuilder<Photo> $ids_query */
 		$ids_query = Photo::query()->select('photos.id');
 
 		if ($config_manager->getValueAsBool('TA_override_visibility')) {
