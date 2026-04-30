@@ -27,6 +27,10 @@ use App\Metadata\Versions\InstalledVersion;
 use App\Metadata\Versions\Remote\GitCommits;
 use App\Metadata\Versions\Remote\GitTags;
 use App\Models\Configs;
+use App\Models\Face;
+use App\Models\Photo;
+use App\Observers\FaceObserver;
+use App\Observers\PhotoObserver;
 use App\Policies\AlbumQueryPolicy;
 use App\Policies\PhotoQueryPolicy;
 use App\Policies\SettingsPolicy;
@@ -114,6 +118,7 @@ class AppServiceProvider extends ServiceProvider
 		$this->registerStreamFilters();
 		$this->registerOctaneSettings();
 		$this->registerThrottleQueues();
+		$this->registerObservers();
 	}
 
 	/**
@@ -450,5 +455,11 @@ class AppServiceProvider extends ServiceProvider
 		RateLimiter::for('geo-queue', function ($job) {
 			return Limit::perSecond(config('features.location_decoding_requests_per_second', 1));
 		});
+	}
+
+	private function registerObservers(): void
+	{
+		Photo::observe(PhotoObserver::class);
+		Face::observe(FaceObserver::class);
 	}
 }

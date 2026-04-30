@@ -73,6 +73,8 @@ declare namespace App.Enum {
 	export type DbDriverType = "mysql" | "pgsql" | "sqlite";
 	export type DefaultAlbumProtectionType = "private" | "public" | "inherit" | "public_hidden";
 	export type DownloadVariantType = "RAW" | "LIVEPHOTOVIDEO" | "ORIGINAL" | "MEDIUM2X" | "MEDIUM" | "SMALL2X" | "SMALL" | "THUMB2X" | "THUMB";
+	export type FacePermissionMode = "public" | "private" | "privacy-preserving" | "restricted";
+	export type FaceScanStatus = "pending" | "completed" | "failed";
 	export type FileStatus = "uploading" | "processing" | "ready" | "skipped" | "done" | "error";
 	export type FlowStrategy = "auto" | "opt-in";
 	export type ImageOverlayType = "none" | "desc" | "date" | "exif";
@@ -250,8 +252,29 @@ declare namespace App.Http.Resources.Collections {
 		per_page: number;
 		total: number;
 	};
+	export type PaginatedClustersResource = {
+		data: App.Http.Resources.Models.ClusterPreviewResource[];
+		current_page: number;
+		last_page: number;
+		per_page: number;
+		total: number;
+	};
+	export type PaginatedFaceResource = {
+		data: App.Http.Resources.Models.FaceResource[];
+		current_page: number;
+		last_page: number;
+		per_page: number;
+		total: number;
+	};
 	export type PaginatedModerationResource = {
 		photos: App.Http.Resources.Models.ModerationResource[];
+		current_page: number;
+		last_page: number;
+		per_page: number;
+		total: number;
+	};
+	export type PaginatedPersonsResource = {
+		persons: App.Http.Resources.Models.PersonResource[];
 		current_page: number;
 		last_page: number;
 		per_page: number;
@@ -505,6 +528,7 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		is_desktop_dock_full_transparency_enabled: boolean;
 		is_mobile_dock_full_transparency_enabled: boolean;
 		is_photo_details_always_open: boolean;
+		is_face_overlay_visible: boolean;
 		display_thumb_album_overlay: App.Enum.VisibilityType;
 		display_thumb_photo_overlay: App.Enum.VisibilityType;
 		album_subtitle_type: App.Enum.ThumbAlbumSubtitleType;
@@ -652,6 +676,11 @@ declare namespace App.Http.Resources.Models {
 		download_count: number;
 		shared_count: number;
 	};
+	export type ClusterPreviewResource = {
+		cluster_label: number;
+		face_count: number;
+		sample_crop_urls: string[];
+	};
 	export type ColourPaletteResource = {
 		colour_1: string;
 		colour_2: string;
@@ -683,6 +712,28 @@ declare namespace App.Http.Resources.Models {
 		message: string;
 		is_read: boolean;
 		created_at: string;
+	};
+	export type FaceResource = {
+		id: string;
+		photo_id: string;
+		person_id: string | null;
+		x: number;
+		y: number;
+		width: number;
+		height: number;
+		confidence: number;
+		laplacian_variance: number;
+		is_dismissed: boolean;
+		cluster_label: number | null;
+		crop_url: string | null;
+		person_name: string | null;
+		suggestions: Array<App.Http.Resources.Models.FaceSuggestionResource>;
+	};
+	export type FaceSuggestionResource = {
+		suggested_face_id: string;
+		crop_url: string | null;
+		person_name: string | null;
+		confidence: number;
 	};
 	export type HeadAbstractAlbumResource = {
 		config: App.Http.Resources.GalleryConfigs.AlbumConfig;
@@ -764,6 +815,16 @@ declare namespace App.Http.Resources.Models {
 		album_title: string | null;
 		created_at: string;
 	};
+	export type PersonResource = {
+		id: string;
+		name: string;
+		user_id: number | null;
+		is_searchable: boolean;
+		representative_face_id: string | null;
+		face_count: number;
+		photo_count: number;
+		representative_crop_url: string | null;
+	};
 	export type PhotoAlbumResource = {
 		id: string;
 		title: string;
@@ -800,6 +861,8 @@ declare namespace App.Http.Resources.Models {
 		palette: App.Http.Resources.Models.ColourPaletteResource | null;
 		statistics: App.Http.Resources.Models.PhotoStatisticsResource | null;
 		rating: App.Http.Resources.Models.PhotoRatingResource | null;
+		faces: Array<App.Http.Resources.Models.FaceResource>;
+		hidden_face_count: number;
 		is_validated: boolean;
 	};
 	export type PhotoStatisticsResource = {
@@ -1055,6 +1118,10 @@ declare namespace App.Http.Resources.Rights {
 		can_pasword_protect: boolean;
 		can_import_from_server: boolean;
 		can_make_purchasable: boolean;
+		can_view_album_people: boolean;
+		can_trigger_scan: boolean;
+		can_assign_face: boolean;
+		can_batch_face_ops: boolean;
 	};
 	export type GlobalRightsResource = {
 		root_album: App.Http.Resources.Rights.RootAlbumRightsResource;
@@ -1072,6 +1139,8 @@ declare namespace App.Http.Resources.Rights {
 		is_mod_renamer_enabled: boolean;
 		is_mod_webshop_enabled: boolean;
 		is_mod_webhook_enabled: boolean;
+		is_ai_vision_enabled: boolean;
+		is_face_overlay_enabled: boolean;
 		is_contact_enabled: boolean;
 		messages_count: number;
 	};
@@ -1079,6 +1148,10 @@ declare namespace App.Http.Resources.Rights {
 		can_edit: boolean;
 		can_download: boolean;
 		can_access_full_photo: boolean;
+		can_view_face_overlays: boolean;
+		can_dismiss_face: boolean;
+		can_assign_face: boolean;
+		can_trigger_scan: boolean;
 	};
 	export type RootAlbumRightsResource = {
 		can_edit: boolean;

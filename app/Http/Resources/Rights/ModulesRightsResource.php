@@ -32,6 +32,8 @@ class ModulesRightsResource extends Data
 	public bool $is_mod_renamer_enabled = false;
 	public bool $is_mod_webshop_enabled = false;
 	public bool $is_mod_webhook_enabled = false;
+	public bool $is_ai_vision_enabled = false;
+	public bool $is_face_overlay_enabled = true;
 	public bool $is_contact_enabled = false;
 	public int $messages_count = 0;
 
@@ -47,6 +49,8 @@ class ModulesRightsResource extends Data
 		$this->is_mod_renamer_enabled = $this->isRenamerEnabled();
 		$this->is_mod_webshop_enabled = $this->isWebshopEnabled();
 		$this->is_mod_webhook_enabled = $this->isWebhookEnabled();
+		$this->is_ai_vision_enabled = $this->isAiVisionEnabled($is_logged_in);
+		$this->is_face_overlay_enabled = request()->configs()->getValueAsBool('ai_vision_face_overlay_enabled');
 		$this->isContactEnabled();
 	}
 
@@ -206,6 +210,31 @@ class ModulesRightsResource extends Data
 		}
 
 		return Auth::user()?->may_administrate === true;
+	}
+
+	/**
+	 * Check if AI Vision face detection is enabled and accessible to the current user.
+	 *
+	 * The AI Vision feature must be enabled via BOTH:
+	 * 1. The AI_VISION_ENABLED environment variable / feature flag
+	 * 2. The ai_vision_enabled database configuration setting
+	 *
+	 * @param bool $is_logged_in
+	 *
+	 * @return bool true if AI Vision is enabled and accessible, false otherwise
+	 */
+	private function isAiVisionEnabled(bool $is_logged_in): bool
+	{
+		// Check feature flag first
+		if (config('features.ai-vision') === false) {
+			return false;
+		}
+
+		if (!$is_logged_in) {
+			return false;
+		}
+
+		return request()->configs()->getValueAsBool('ai_vision_enabled');
 	}
 
 	/**

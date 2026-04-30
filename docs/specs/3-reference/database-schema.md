@@ -125,6 +125,51 @@ Color palette information extracted from photos.
 **Relationships:**
 - Belongs to `Photo`
 
+#### Face
+A detected face bounding box within a specific photo.
+
+**Key Fields:**
+- `id`: Primary key (24-char random string)
+- `photo_id`: Foreign key to Photo (cascade delete)
+- `person_id`: Foreign key to Person (nullable; null on delete)
+- `x`, `y`, `width`, `height`: Bounding box as relative floats (0.0–1.0)
+- `confidence`: Detection confidence score (0.0–1.0)
+- `crop_token`: Opaque token for serving cropped face thumbnails
+- `is_dismissed`: Whether the face has been dismissed/ignored by an operator
+
+**Relationships:**
+- Belongs to `Photo`
+- Belongs to `Person` (nullable)
+- Has many `FaceSuggestion` (as the source face)
+
+#### FaceSuggestion
+Pairs of faces ranked by embedding similarity (used to suggest identities for unknown faces).
+
+**Key Fields:**
+- `face_id`: Foreign key to Face (cascade delete) — the unidentified face
+- `suggested_face_id`: Foreign key to Face (cascade delete) — an already-assigned face of a known Person
+- `confidence`: Similarity score (0.0–1.0)
+
+**Unique Constraint:** Composite unique index on (`face_id`, `suggested_face_id`)
+
+**Relationships:**
+- Both keys belong to `Face`
+
+#### Person
+An identified individual who appears across one or more photos.
+
+**Key Fields:**
+- `id`: Primary key (24-char random string)
+- `name`: Display name (max 255 chars, required)
+- `user_id`: Foreign key to User (nullable, unique — one Person per User claim; null on delete)
+- `is_searchable`: When false, face overlays for this Person are hidden from non-owners (privacy)
+
+**Unique Constraint:** `user_id` is unique (one User → at most one claimed Person)
+
+**Relationships:**
+- Optionally belongs to `User` (the claimed user)
+- Has many `Face`
+
 #### PhotoRating
 User ratings for photos on a 1-5 star scale.
 
@@ -229,11 +274,13 @@ This dual approach allows Lychee to provide:
 ### Many-to-Many
 - **Photos-Albums**: Many-to-many through `photo_album` pivot table (photos can belong to multiple albums)
 - **Tags**: Many-to-many with photos through `photos_tags` pivot table
+- **Face Suggestions**: Many-to-many between Face records through `face_suggestions` pivot table (ranked by similarity confidence)
 
 ### One-to-Many
 - **Photos**: Owned by one user (but can belong to multiple albums)
 - **Size Variants**: Multiple variants per photo
 - **Access Permissions**: Multiple permissions per album
+- **Faces**: Multiple detected faces per photo; multiple faces per Person
 
 ## Database Optimization
 
@@ -256,6 +303,33 @@ Eager loading enforced with `Model::shouldBeStrict()`, which throws an exception
 - [Tag System](../4-architecture/tag-system.md) - Tag architecture and operations
 - [Image Processing](image-processing.md) - Size variant generation and processing pipeline
 
+## AI Vision Schema Additions (Feature 030)
+
+### New Tables
+
+| Table | Migration | Purpose |
+|---|---|---|
+| `persons` | `2026_03_21_000001_create_persons_table` | Identified individuals (name, user link, searchability) |
+| `faces` | `2026_03_21_000002_create_faces_table` | Bounding boxes detected by AI Vision service |
+| `face_suggestions` | `2026_03_21_000002_create_faces_table` | Ranked similarity pairs for identity suggestions |
+
+### Column Added to `photos`
+
+| Column | Type | Default | Purpose |
+|---|---|---|---|
+| `face_scan_status` | string(16), nullable | `null` | Tracks face detection lifecycle: `null` (not queued), `pending`, `scanned`, `failed` |
+
+### New Config Keys (AI Vision category, `level = 1` / SE only)
+
+| Key | Default | Description |
+|---|---|---|
+| `ai_vision_enabled` | `0` | Master toggle for the AI Vision subsystem |
+| `ai_vision_face_enabled` | `0` | Enable facial recognition (requires master toggle) |
+| `ai_vision_face_permission_mode` | `restricted` | Access control mode: `public`, `private`, `privacy-preserving`, `restricted` |
+| `ai_vision_face_selfie_confidence_threshold` | `0.8` | Minimum confidence for selfie-based person claim |
+| `ai_vision_face_person_is_searchable_default` | `1` | Default `is_searchable` for new Person records |
+| `ai_vision_face_allow_user_claim` | `1` | Allow non-admin users to claim a Person profile |
+
 ---
 
-*Last updated: January 21, 2026*
+*Last updated: March 22, 2026*

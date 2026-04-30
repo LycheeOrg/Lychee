@@ -8,6 +8,7 @@
 
 namespace App\Http\Resources\Rights;
 
+use App\Assets\Features;
 use App\Contracts\Models\AbstractAlbum;
 use App\Models\Album;
 use App\Policies\AlbumPolicy;
@@ -30,6 +31,10 @@ class AlbumRightsResource extends Data
 	public bool $can_pasword_protect = false;
 	public bool $can_import_from_server = false;
 	public bool $can_make_purchasable = false;
+	public bool $can_view_album_people = false;
+	public bool $can_trigger_scan = false;
+	public bool $can_assign_face = false;
+	public bool $can_batch_face_ops = false;
 
 	/**
 	 * Given an album, returns the access rights associated to it.
@@ -49,6 +54,13 @@ class AlbumRightsResource extends Data
 		$this->can_pasword_protect = !request()->configs()->getValueAsBool('cache_enabled');
 		$this->can_import_from_server = Gate::check(AlbumPolicy::CAN_IMPORT_FROM_SERVER, [AbstractAlbum::class]);
 		$this->can_make_purchasable = $this->canMakePurchasable($abstract_album);
+
+		if (Features::active('ai-vision')) {
+			$this->can_view_album_people = Gate::check(AlbumPolicy::CAN_VIEW_ALBUM_PEOPLE, [AbstractAlbum::class, $abstract_album]);
+			$this->can_trigger_scan = Gate::check(AlbumPolicy::CAN_TRIGGER_SCAN_ON_ALBUM, [AbstractAlbum::class, $abstract_album]);
+			$this->can_assign_face = Gate::check(AlbumPolicy::CAN_ASSIGN_FACE_IN_ALBUM, [AbstractAlbum::class, $abstract_album]);
+			$this->can_batch_face_ops = Gate::check(AlbumPolicy::CAN_BATCH_FACE_OPS, [AbstractAlbum::class, $abstract_album]);
+		}
 	}
 
 	/**

@@ -33,7 +33,8 @@ Route::get('/up', function () {
 	Event::dispatch(new DiagnosingHealth());
 
 	return view('health-up');
-});
+})->withoutMiddleware(['admin_user:set']); // We do not require an admin user fot the health check, as it may be used to check if the application is up before any users are created.
+
 Route::get('/octane-health', function () {
 	$status = [
 		'status' => 'healthy',
@@ -66,6 +67,7 @@ Route::get('/tags', VueController::class)->middleware(['migration:complete', 'lo
 Route::get('/tag/{tagId}/{photoId?}', VueController::class)->middleware(['migration:complete']);
 Route::get('/diagnostics', VueController::class)->middleware(['migration:complete']);
 Route::get('/statistics', VueController::class)->middleware(['migration:complete', 'login_required:always']);
+Route::get('/people/{cluster?}', VueController::class)->middleware(['migration:complete']);
 Route::get('/changelogs', VueController::class)->middleware(['migration:complete']);
 Route::get('/login', VueController::class)->middleware(['migration:complete']);
 Route::get('/register', VueController::class)->name('register')->middleware(['migration:complete']);
@@ -79,7 +81,7 @@ Route::get('/admin/webhooks', VueController::class)->middleware(['migration:comp
 Route::get('/admin/moderation', VueController::class)->middleware(['migration:complete', 'login_required:always']);
 Route::get('/admin/purchasables', VueController::class)->middleware(['migration:complete', 'login_required:always']);
 Route::get('/admin/jobs', VueController::class)->middleware(['migration:complete', 'login_required:always']);
-Route::get('/admin/maintenance', VueController::class)->middleware(['migration:complete', 'login_required:always']);
+Route::get('/admin/maintenance/{faces?}', VueController::class)->middleware(['migration:complete', 'login_required:always']);
 Route::get('/permissions', VueController::class)->middleware(['migration:complete', 'login_required:always']);
 Route::get('/fixTree', VueController::class)->middleware(['migration:complete', 'login_required:always']);
 Route::get('/duplicatesFinder', VueController::class)->middleware(['migration:complete', 'login_required:always']);

@@ -108,6 +108,14 @@
 						>
 							<i class="pi pi-barcode" />
 						</a>
+						<a
+							v-if="isAiVisionEnabled"
+							v-tooltip.bottom="$t('people.scan_faces')"
+							class="shrink-0 px-3 cursor-pointer text-muted-color inline-block transform duration-300 hover:scale-150 hover:text-color"
+							@click="emits('toggleScanFaces')"
+						>
+							<i class="pi pi-face-smile" />
+						</a>
 
 						<!-- Album view toggle buttons -->
 						<Button
@@ -199,6 +207,10 @@ const isWatermarkerEnabled = computed(
 		photosStore.photos.some((p) => needSizeVariantsWatermark(p.size_variants)),
 );
 
+const isAiVisionEnabled = computed(
+	() => leftMenu.initData?.modules.is_ai_vision_enabled && albumStore.rights?.can_edit && photosStore.photos.length > 0,
+);
+
 function needSizeVariantsWatermark(sizeVariants: App.Http.Resources.Models.SizeVariantsResouce): boolean {
 	return (
 		(sizeVariants.thumb && !sizeVariants.thumb.is_watermarked) ||
@@ -220,6 +232,7 @@ const emits = defineEmits<{
 	toggleApplyRenamer: [];
 	toggleWatermarkConfirm: [];
 	toggleDownloadAlbum: [];
+	toggleScanFaces: [];
 }>();
 
 // Check if album is embeddable (public, no password, no link requirement)

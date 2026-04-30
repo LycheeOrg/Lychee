@@ -135,6 +135,36 @@ const MaintenanceService = {
 	backfillAlbumSizesDo(): Promise<AxiosResponse> {
 		return axios.post(`${Constants.getApiUrl()}Maintenance::backfillAlbumSizes`, {});
 	},
+	bulkScanFacesCheck(): Promise<AxiosResponse<number>> {
+		return axios.get(`${Constants.getApiUrl()}Maintenance::bulkScanFaces`, { data: {} });
+	},
+	bulkScanFacesDo(): Promise<AxiosResponse> {
+		return axios.post(`${Constants.getApiUrl()}Maintenance::bulkScanFaces`, {});
+	},
+	runFaceClusteringCheck(): Promise<AxiosResponse<number>> {
+		return axios.get(`${Constants.getApiUrl()}Maintenance::runFaceClustering`, { data: {} });
+	},
+	runFaceClusteringDo(): Promise<AxiosResponse> {
+		return axios.post(`${Constants.getApiUrl()}Maintenance::runFaceClustering`, {});
+	},
+	destroyDismissedFacesCheck(): Promise<AxiosResponse<number>> {
+		return axios.get(`${Constants.getApiUrl()}Maintenance::destroyDismissedFaces`, { data: {} });
+	},
+	destroyDismissedFacesDo(): Promise<AxiosResponse<{ deleted_count: number }>> {
+		return axios.post(`${Constants.getApiUrl()}Maintenance::destroyDismissedFaces`, {});
+	},
+	syncFaceEmbeddingsCheck(): Promise<AxiosResponse<number>> {
+		return axios.get(`${Constants.getApiUrl()}Maintenance::syncFaceEmbeddings`, { data: {} });
+	},
+	syncFaceEmbeddingsDo(): Promise<AxiosResponse<{ synced_count: number; missing_in_ai: number }>> {
+		return axios.post(`${Constants.getApiUrl()}Maintenance::syncFaceEmbeddings`, {});
+	},
+	resetFaceScanStatusCheck(): Promise<AxiosResponse<number>> {
+		return axios.get(`${Constants.getApiUrl()}Maintenance::resetFaceScanStatus`, { data: {} });
+	},
+	resetFaceScanStatusDo(): Promise<AxiosResponse<{ reset_count: number }>> {
+		return axios.post(`${Constants.getApiUrl()}Maintenance::resetFaceScanStatus`, {});
+	},
 };
 
 export default MaintenanceService;

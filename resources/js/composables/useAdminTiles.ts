@@ -100,6 +100,15 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			visible: computed(() => initData.value?.modules.is_mod_webhook_enabled ?? false),
 		},
 		{
+			key: "faces",
+			group: "extensions",
+			label: "maintenance.face_quality.title",
+			icon: "pi pi-face-smile",
+			to: "/admin/maintenance/faces",
+			isExternal: false,
+			visible: computed(() => (initData.value?.settings.can_edit ?? false) && (initData.value?.modules.is_ai_vision_enabled ?? false)),
+		},
+		{
 			key: "moderation",
 			group: "core",
 			label: "moderation.title",

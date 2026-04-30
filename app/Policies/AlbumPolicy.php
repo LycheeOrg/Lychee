@@ -10,6 +10,7 @@ namespace App\Policies;
 
 use App\Constants\AccessPermissionConstants as APC;
 use App\Contracts\Models\AbstractAlbum;
+use App\Enum\FacePermissionMode;
 use App\Enum\MetricsAccess;
 use App\Enum\PhotoHighlightVisibilityType;
 use App\Enum\SmartAlbumType;
@@ -48,6 +49,10 @@ class AlbumPolicy extends BasePolicy
 	public const CAN_READ_METRICS = 'canReadMetrics';
 	public const CAN_MAKE_PURCHASABLE = 'canMakePurchasable';
 	public const CAN_HIGHLIGHT = 'canHighlight';
+	public const CAN_VIEW_ALBUM_PEOPLE = 'canViewAlbumPeople';
+	public const CAN_TRIGGER_SCAN_ON_ALBUM = 'canTriggerScanOnAlbum';
+	public const CAN_ASSIGN_FACE_IN_ALBUM = 'canAssignFaceInAlbum';
+	public const CAN_BATCH_FACE_OPS = 'canBatchFaceOps';
 
 	/**
 	 * This ensures that current album is owned by current user.
@@ -666,5 +671,133 @@ class AlbumPolicy extends BasePolicy
 	public function canMakePurchasable(User $user): bool
 	{
 		return false;
+	}
+
+	// ── AI Vision / Face gates ────────────────────────────────────────────
+
+	/**
+	 * Resolve the current FacePermissionMode from configuration.
+	 */
+	private function getFaceMode(): FacePermissionMode
+	{
+		return app(ConfigManager::class)->getValueAsEnum('ai_vision_face_permission_mode', FacePermissionMode::class) ?? FacePermissionMode::RESTRICTED;
+	}
+
+	/**
+	 * Return false if AI Vision is not enabled (ai_vision_enabled + ai_vision_face_enabled).
+	 * Admin bypass is already handled by BasePolicy::before().
+	 */
+	private function isFaceEnabled(): bool
+	{
+		$cfg = app(ConfigManager::class);
+
+		return $cfg->getValueAsBool('ai_vision_enabled') && $cfg->getValueAsBool('ai_vision_face_enabled');
+	}
+
+	/**
+	 * Check whether the given album is owned by the user.
+	 * Smart albums and null album have no owner concept.
+	 */
+	private function isAlbumOwner(?User $user, ?AbstractAlbum $album): bool
+	{
+		return $album instanceof BaseAlbum && $this->isOwner($user, $album);
+	}
+
+	/**
+	 * Check whether the current user may view the people listing for an album.
+	 *
+	 * Permission matrix (admin handled by before()):
+	 *   public              → album access (canAccess)
+	 *   private             → logged-in user
+	 *   privacy-preserving  → album owner only
+	 *   restricted          → album owner only
+	 */
+	public function canViewAlbumPeople(?User $user, ?AbstractAlbum $album): bool
+	{
+		if (!$this->isFaceEnabled()) {
+			return false;
+		}
+
+		return match ($this->getFaceMode()) {
+			FacePermissionMode::PUBLIC => $this->canAccess($user, $album),
+			FacePermissionMode::PRIVATE => $user !== null,
+			FacePermissionMode::PRIVACY_PRESERVING,
+			FacePermissionMode::RESTRICTED => $this->isAlbumOwner($user, $album),
+		};
+	}
+
+	/**
+	 * Check whether the current user may trigger a face scan on photos in an album.
+	 *
+	 * Permission matrix (admin handled by before()):
+	 *   public              → logged-in user
+	 *   private             → logged-in user
+	 *   privacy-preserving  → album owner only
+	 *   restricted          → album owner only
+	 */
+	public function canTriggerScanOnAlbum(?User $user, ?AbstractAlbum $album): bool
+	{
+		if (!$this->isFaceEnabled()) {
+			return false;
+		}
+
+		return match ($this->getFaceMode()) {
+			FacePermissionMode::PUBLIC => $user !== null,
+			FacePermissionMode::PRIVATE => $user !== null,
+			FacePermissionMode::PRIVACY_PRESERVING,
+			FacePermissionMode::RESTRICTED => $this->isAlbumOwner($user, $album),
+		};
+	}
+
+	/**
+	 * Check whether the current user may assign faces in an album.
+	 *
+	 * Permission matrix (admin handled by before()):
+	 *   public              → logged-in user
+	 *   private             → logged-in user
+	 *   privacy-preserving  → album owner only
+	 *   restricted          → deny even album owner
+	 */
+	public function canAssignFaceInAlbum(?User $user, ?AbstractAlbum $album): bool
+	{
+		if (!$this->isFaceEnabled()) {
+			return false;
+		}
+
+		return match ($this->getFaceMode()) {
+			FacePermissionMode::PUBLIC => $user !== null,
+			FacePermissionMode::PRIVATE => $user !== null,
+			FacePermissionMode::PRIVACY_PRESERVING => $this->isAlbumOwner($user, $album),
+			FacePermissionMode::RESTRICTED => false,
+		};
+	}
+
+	/**
+	 * Check whether the current user may perform batch face operations in an album.
+	 * Null album always returns false (no ownership concept).
+	 *
+	 * Permission matrix (admin handled by before()):
+	 *   public              → logged-in user
+	 *   private             → logged-in user
+	 *   privacy-preserving  → album owner only
+	 *   restricted          → deny even album owner
+	 *   null album          → deny
+	 */
+	public function canBatchFaceOps(?User $user, ?AbstractAlbum $album): bool
+	{
+		if (!$this->isFaceEnabled()) {
+			return false;
+		}
+
+		if ($album === null) {
+			return false;
+		}
+
+		return match ($this->getFaceMode()) {
+			FacePermissionMode::PUBLIC => $user !== null,
+			FacePermissionMode::PRIVATE => $user !== null,
+			FacePermissionMode::PRIVACY_PRESERVING => $this->isAlbumOwner($user, $album),
+			FacePermissionMode::RESTRICTED => false,
+		};
 	}
 }

@@ -96,6 +96,12 @@ export function useLeftMenu(
 				route: "/tags",
 			},
 			{
+				label: "people.title",
+				icon: "pi pi-users",
+				access: user.value?.id !== null,
+				route: "/people",
+			},
+			{
 				label: "gallery.favourites",
 				icon: "pi pi-heart",
 				route: "/gallery/favourites",
@@ -209,6 +215,12 @@ export function useLeftMenu(
 									icon: "timer",
 									route: "/admin/maintenance",
 									access: initData.value.settings.can_edit ?? false,
+								},
+								{
+									label: "maintenance.face_quality.title",
+									icon: "pi pi-face-smile",
+									route: "/admin/maintenance/faces",
+									access: (initData.value.settings.can_edit ?? false) && (initData.value.modules.is_ai_vision_enabled ?? false),
 								},
 								{
 									label: "left-menu.logs",

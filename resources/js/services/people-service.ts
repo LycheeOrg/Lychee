@@ -1,0 +1,53 @@
+import axios, { type AxiosResponse } from "axios";
+import Constants from "./constants";
+
+const PeopleService = {
+	getPeople(page: number = 1): Promise<AxiosResponse<App.Http.Resources.Collections.PaginatedPersonsResource>> {
+		return axios.get(`${Constants.getApiUrl()}People`, { params: { page }, data: {} });
+	},
+
+	getPerson(id: string): Promise<AxiosResponse<App.Http.Resources.Models.PersonResource>> {
+		return axios.get(`${Constants.getApiUrl()}Person/${id}`, { data: {} });
+	},
+
+	getPhotos(id: string, page: number = 1): Promise<AxiosResponse<App.Http.Resources.Collections.PaginatedPhotosResource>> {
+		return axios.get(`${Constants.getApiUrl()}Person/${id}/photos`, { params: { page }, data: {} });
+	},
+
+	create(name: string): Promise<AxiosResponse<App.Http.Resources.Models.PersonResource>> {
+		return axios.post(`${Constants.getApiUrl()}People`, { name });
+	},
+
+	update(
+		id: string,
+		data: { name?: string; is_searchable?: boolean; user_id?: number | null },
+	): Promise<AxiosResponse<App.Http.Resources.Models.PersonResource>> {
+		return axios.patch(`${Constants.getApiUrl()}Person/${id}`, data);
+	},
+
+	destroy(id: string): Promise<AxiosResponse> {
+		return axios.delete(`${Constants.getApiUrl()}Person/${id}`, { data: {} });
+	},
+
+	claim(id: string): Promise<AxiosResponse> {
+		return axios.post(`${Constants.getApiUrl()}Person/${id}/claim`);
+	},
+
+	unclaim(id: string): Promise<AxiosResponse> {
+		return axios.delete(`${Constants.getApiUrl()}Person/${id}/claim`);
+	},
+
+	merge(targetId: string, sourcePersonId: string): Promise<AxiosResponse> {
+		return axios.post(`${Constants.getApiUrl()}Person/${targetId}/merge`, { source_person_id: sourcePersonId });
+	},
+
+	claimBySelfie(file: File): Promise<AxiosResponse<App.Http.Resources.Models.PersonResource>> {
+		const form = new FormData();
+		form.append("selfie", file);
+		return axios.post(`${Constants.getApiUrl()}Person/claim-by-selfie`, form, {
+			headers: { "Content-Type": "multipart/form-data" },
+		});
+	},
+};
+
+export default PeopleService;

@@ -105,6 +105,14 @@ class ConfigIntegrity
 		'contact_form_security_question',
 		'contact_form_security_answer',
 		'contact_form_custom_consent_required',
+		'ai_vision_enabled',
+		'ai_vision_face_enabled',
+		'ai_vision_face_overlay_enabled',
+		'ai_vision_face_overlay_default_visibility',
+		'ai_vision_face_permission_mode',
+		'ai_vision_face_selfie_confidence_threshold',
+		'ai_vision_face_person_is_searchable_default',
+		'ai_vision_face_allow_user_claim',
 		'guest_upload_trust_level',
 	];
 

@@ -37,6 +37,7 @@
 					@toggle-apply-renamer="toggleApplyRenamer"
 					@toggle-watermark-confirm="toggleWatermarkConfirm"
 					@toggle-download-album="toggleDownloadAlbumFromHero"
+					@toggle-scan-faces="toggleScanFacesFromHero"
 				/>
 				<template v-if="is_se_enabled && userStore.isLoggedIn">
 					<AlbumStatistics
@@ -154,6 +155,7 @@ import ContextMenu from "primevue/contextmenu";
 import { useContextMenu } from "@/composables/contextMenus/contextMenu";
 import PhotoService from "@/services/photo-service";
 import AlbumService from "@/services/album-service";
+import FaceDetectionService from "@/services/face-detection-service";
 import ModerationService from "@/services/moderation-service";
 import { AlbumThumbConfig } from "@/components/gallery/albumModule/thumbs/AlbumThumb.vue";
 import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
@@ -271,6 +273,25 @@ function toggleDownloadAlbumFromHero() {
 	is_download_album_visible.value = true;
 }
 
+function toggleScanFacesFromHero() {
+	if (albumStore.album === undefined) return;
+	FaceDetectionService.scanAlbum(albumStore.album.id)
+		.then(() => {
+			toast.add({
+				severity: "success",
+				detail: trans("people.scan_success"),
+				life: 3000,
+			});
+		})
+		.catch((e) => {
+			toast.add({
+				severity: "error",
+				detail: e.response?.data?.message || trans("toasts.error"),
+				life: 3000,
+			});
+		});
+}
+
 function toggleDownloadAlbumFromSelection() {
 	downloadAlbumIds.value = selectedAlbumsIds.value;
 	is_download_album_visible.value = true;
@@ -361,6 +382,23 @@ const photoCallbacks = {
 		is_download_photo_visible.value = true;
 	},
 	toggleApplyRenamer: toggleApplyRenamer,
+	toggleScanFaces: () => {
+		FaceDetectionService.scanPhotos(selectedPhotosIds.value)
+			.then(() => {
+				toast.add({
+					severity: "success",
+					detail: trans("people.scan_success"),
+					life: 3000,
+				});
+			})
+			.catch((e) => {
+				toast.add({
+					severity: "error",
+					detail: e.response?.data?.message || trans("toasts.error"),
+					life: 3000,
+				});
+			});
+	},
 	toggleApprove: () => {
 		ModerationService.approve(selectedPhotosIds.value).then(() => {
 			selectedPhotosIds.value.forEach((photoId) => {
@@ -409,6 +447,24 @@ const albumCallbacks = {
 	},
 	togglePin: togglePin,
 	toggleApplyRenamer: toggleApplyRenamer,
+	toggleScanFaces: () => {
+		if (albumStore.album === undefined) return;
+		FaceDetectionService.scanAlbum(selectedAlbum.value!.id)
+			.then(() => {
+				toast.add({
+					severity: "success",
+					detail: trans("people.scan_success"),
+					life: 3000,
+				});
+			})
+			.catch((e) => {
+				toast.add({
+					severity: "error",
+					detail: e.response?.data?.message || trans("toasts.error"),
+					life: 3000,
+				});
+			});
+	},
 	copyHighlighted: () => {
 		const highlighted = photosStore.photos.filter((p) => p.is_highlighted);
 		const selectedNames = highlighted
