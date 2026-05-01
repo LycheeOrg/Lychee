@@ -101,8 +101,8 @@ class AppSettings(BaseSettings):
 
     # --- Quality filtering ---
     min_face_size_pixels: int = 0
-    """Minimum face size in pixels.  The longest side of the detected bounding box (width or height)
-    must be strictly greater than this value.  Set to ``0`` to disable (default)."""
+    """Minimum face size in pixels. The longest side of the detected bounding box (width or height)
+    must be strictly greater than this value. Set to ``0`` to disable (default)."""
 
     blur_threshold: float = 0.5
     """Laplacian variance threshold for blur detection.
