@@ -53,11 +53,13 @@ class FaceDetector:
         detection_threshold: float = 0.5,
         blur_threshold: float = 100.0,
         detector_backend: str = "retinaface",
+        min_face_size_pixels: int = 0,
     ) -> None:
         self._model_name = model_name
         self._detection_threshold = detection_threshold
         self._blur_threshold = blur_threshold
         self._detector_backend = detector_backend
+        self._min_face_size_pixels = min_face_size_pixels
         self._loaded: bool = False
         self._lock = threading.Lock()
 
@@ -172,6 +174,7 @@ class FaceDetector:
 
         results: list[DetectedFace] = []
         filtered_by_confidence = 0
+        filtered_by_size = 0
         filtered_by_blur = 0
 
         for face in raw_faces:
@@ -185,6 +188,18 @@ class FaceDetector:
             y1 = float(area["y"])
             x2 = x1 + float(area["w"])
             y2 = y1 + float(area["h"])
+
+            # Size filter: exclude faces whose longest side does not exceed the minimum.
+            if self._min_face_size_pixels > 0:
+                longest_side = max(float(area["w"]), float(area["h"]))
+                if longest_side <= self._min_face_size_pixels:
+                    filtered_by_size += 1
+                    logger.info(
+                        "Filtered small face: longest_side=%.1f <= min_face_size_pixels=%d",
+                        longest_side,
+                        self._min_face_size_pixels,
+                    )
+                    continue
 
             # Compute Laplacian variance on the face crop region.
             # This sharpness score is always computed and sent to Lychee for filtering/tuning.
@@ -232,11 +247,12 @@ class FaceDetector:
         results.sort(key=lambda f: f.confidence, reverse=True)
 
         # Log summary
-        if filtered_by_confidence > 0 or filtered_by_blur > 0:
+        if filtered_by_confidence > 0 or filtered_by_size > 0 or filtered_by_blur > 0:
             logger.info(
-                "Face detection: %d face(s) passed filters (filtered %d by confidence, %d by blur)",
+                "Face detection: %d face(s) passed filters (filtered %d by confidence, %d by size, %d by blur)",
                 len(results),
                 filtered_by_confidence,
+                filtered_by_size,
                 filtered_by_blur,
             )
         else:

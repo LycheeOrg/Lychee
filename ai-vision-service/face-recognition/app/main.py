@@ -69,6 +69,7 @@ async def _default_lifespan(app: FastAPI) -> AsyncGenerator[None]:
         detection_threshold=settings.detection_threshold,
         blur_threshold=settings.blur_threshold,
         detector_backend=settings.detector_backend,
+        min_face_size_pixels=settings.min_face_size_pixels,
     )
     detector.load()
     logger.info("DeepFace model '%s' (backend: %s) loaded successfully", settings.model_name, settings.detector_backend)
