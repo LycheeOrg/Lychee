@@ -18,7 +18,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\ImageProcessing\Zip;
+namespace Tests\ImageProcessing\Album;
 
 use App\Models\Configs;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
