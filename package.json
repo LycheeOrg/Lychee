@@ -32,7 +32,6 @@
         "@vue/test-utils": "^2.4.9",
         "@vue/tsconfig": "^0.9.1",
         "eslint": "^10.2.1",
-        "eslint-plugin-no-relative-import-paths": "^1.6.1",
         "eslint-plugin-vue": "~10.9.0",
         "jsdom": "^29.1.0",
         "prettier": "3.8.3",
