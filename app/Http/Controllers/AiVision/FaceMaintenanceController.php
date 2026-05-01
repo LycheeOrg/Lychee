@@ -37,10 +37,12 @@ class FaceMaintenanceController extends Controller
 			: 'confidence';
 
 		$sort_dir = $request->query('sort_dir') === 'desc' ? 'desc' : 'asc';
+		$dismissed_only = filter_var($request->query('dismissed_only', false), FILTER_VALIDATE_BOOLEAN) === true;
 
 		$per_page = max(1, min(200, (int) ($request->query('per_page', 50))));
 
 		$paginated = Face::with(['photo:id,title', 'person:id,name', 'suggestions'])
+			->where('is_dismissed', '=', $dismissed_only)
 			->orderBy($sort_by, $sort_dir)
 			->paginate($per_page);
 

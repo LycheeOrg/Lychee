@@ -41,6 +41,19 @@ def mock_settings() -> AppSettings:
     m.thread_pool_size = 1
     m.storage_backend = "sqlite"
     m.log_level = "info"
+    m.to_diagnostics_payload.return_value = {
+        "blur_threshold": "0.5",
+        "cluster_eps": "0.45",
+        "detection_threshold": "0.5",
+        "detector_backend": "retinaface",
+        "match_threshold": "0.5",
+        "max_faces_per_photo": "20",
+        "model_name": "ArcFace",
+        "rescan_iou_threshold": "0.5",
+        "thread_pool_size": "1",
+        "verify_ssl": "False",
+        "workers": "1",
+    }
     return m
 
 
@@ -114,6 +127,19 @@ def test_app(mock_detector: FaceDetector, mock_store: EmbeddingStore, tmp_path: 
         m.max_faces_per_photo = 10
         m.detection_threshold = 0.5
         m.thread_pool_size = 1
+        m.to_diagnostics_payload.return_value = {
+            "blur_threshold": "0.5",
+            "cluster_eps": "0.45",
+            "detection_threshold": "0.5",
+            "detector_backend": "retinaface",
+            "match_threshold": "0.5",
+            "max_faces_per_photo": "20",
+            "model_name": "ArcFace",
+            "rescan_iou_threshold": "0.5",
+            "thread_pool_size": "1",
+            "verify_ssl": "False",
+            "workers": "1",
+        }
         return m  # type: ignore[return-value]
 
     application.dependency_overrides[get_settings] = _override_settings

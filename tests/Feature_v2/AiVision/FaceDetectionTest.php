@@ -239,6 +239,34 @@ class FaceDetectionTest extends BaseApiWithDataTest
 		self::assertEquals(1, $face2->cluster_label);
 	}
 
+	public function testClusterResultsRecomputesPersonCountersAfterAutoAssign(): void
+	{
+		$person = Person::factory()->create([
+			'face_count' => 0,
+			'photo_count' => 0,
+		]);
+
+		$assigned_face = Face::factory()->for_photo($this->photo1)->for_person($person)->create();
+		$unassigned_face = Face::factory()->for_photo($this->photo1)->create();
+
+		$response = $this->postJson('FaceDetection/cluster-results', [
+			'labels' => [
+				['face_id' => $assigned_face->id, 'cluster_label' => 7],
+				['face_id' => $unassigned_face->id, 'cluster_label' => 7],
+			],
+			'suggestions' => [],
+		], ['X-API-Key' => $this->api_key]);
+
+		$this->assertStatus($response, 202);
+
+		$unassigned_face->refresh();
+		self::assertEquals($person->id, $unassigned_face->person_id);
+
+		$person->refresh();
+		self::assertEquals(2, $person->face_count);
+		self::assertEquals(1, $person->photo_count);
+	}
+
 	public function testClusterResultsInvalidApiKey(): void
 	{
 		$response = $this->postJson('FaceDetection/cluster-results', [

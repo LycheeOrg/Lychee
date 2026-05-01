@@ -239,6 +239,13 @@ class HealthResponse(BaseModel):
     """Total number of face embeddings currently stored."""
 
 
+class ServiceConfigResponse(BaseModel):
+    """Response body for ``GET /config``."""
+
+    config: dict[str, str]
+    """Current runtime configuration values as strings (with secrets redacted)."""
+
+
 # ---------------------------------------------------------------------------
 # GET /embeddings/export - Python -> Lychee (for sync)
 # ---------------------------------------------------------------------------

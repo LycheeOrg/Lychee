@@ -30,7 +30,7 @@ class FaceResource extends Data
 	public ?string $crop_url;
 	public ?string $person_name;
 	/** @var FaceSuggestionResource[] */
-	public array $suggestions;
+	public array $suggestions = [];
 
 	public function __construct(Face $face)
 	{
@@ -47,10 +47,10 @@ class FaceResource extends Data
 		$this->cluster_label = $face->cluster_label;
 		$this->crop_url = $face->crop_url;
 		$this->person_name = $face->person?->name;
-		$this->suggestions = $face->suggestions
-			->map(fn (FaceSuggestion $s) => new FaceSuggestionResource($s))
-			->values()
-			->all();
+		// $this->suggestions = $face->suggestions
+		// 	->map(fn (FaceSuggestion $s) => new FaceSuggestionResource($s))
+		// 	->values()
+		// 	->all();
 	}
 
 	public static function fromModel(Face $face): self

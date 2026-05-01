@@ -4,6 +4,7 @@ Endpoints:
   POST /detect   - Accept a face-detection job; run async, callback to Lychee.
   POST /match    - Accept a selfie; return top-N similar stored faces.
   GET  /health   - Return service health and embedding count.
+    GET  /config   - Return current runtime configuration values.
 """
 
 from __future__ import annotations
@@ -35,6 +36,7 @@ from app.api.schemas import (
     HealthResponse,
     MatchResponse,
     MatchResult,
+    ServiceConfigResponse,
     SuggestionResult,
 )
 from app.clustering.clusterer import FaceClusterer
@@ -261,6 +263,19 @@ async def health(request: Request) -> HealthResponse:
         model_loaded=detector.is_loaded,
         embedding_count=store.count(),
     )
+
+
+@router.get("/config")
+async def service_config(
+    settings: AppSettings = Depends(get_settings),
+    _: None = Depends(require_api_key),
+) -> ServiceConfigResponse:
+    """Return current runtime configuration values.
+
+    The endpoint is authenticated because it exposes operational details.
+    Sensitive values are redacted by ``AppSettings.to_diagnostics_payload``.
+    """
+    return ServiceConfigResponse(config=settings.to_diagnostics_payload())
 
 
 # ---------------------------------------------------------------------------

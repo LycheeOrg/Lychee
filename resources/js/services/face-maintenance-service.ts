@@ -4,6 +4,7 @@ import Constants from "./constants";
 export type FaceMaintenanceParams = {
 	sort_by?: "confidence" | "laplacian_variance";
 	sort_dir?: "asc" | "desc";
+	dismissed_only?: boolean;
 	page?: number;
 	per_page?: number;
 };

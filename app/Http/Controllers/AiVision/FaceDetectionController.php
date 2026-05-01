@@ -15,6 +15,7 @@ use App\Http\Requests\Face\FaceDetectionResultsRequest;
 use App\Http\Requests\Face\ScanPhotosRequest;
 use App\Models\Face;
 use App\Models\FaceSuggestion;
+use App\Models\Person;
 use App\Models\Photo;
 use App\Services\Image\FaceDetectionService;
 use Illuminate\Routing\Controller;
@@ -109,6 +110,8 @@ class FaceDetectionController extends Controller
 	public function clusterResults(ClusterResultsRequest $request): \Illuminate\Http\Response
 	{
 		DB::transaction(function () use ($request): void {
+			$affected_person_ids = [];
+
 			// Reset all existing cluster labels so stale assignments are removed.
 			Face::whereNotNull('cluster_label')->update(['cluster_label' => null]);
 
@@ -133,13 +136,37 @@ class FaceDetectionController extends Controller
 			foreach ($clusters_with_person as $label => $persons) {
 				if ($persons->count() === 1) {
 					// All assigned faces in this cluster agree on a single person.
+					$person_id = $persons->first()->person_id;
 					Face::where('cluster_label', '=', $label)
 						->whereNull('person_id')
 						->notDismissed()
-						->update(['person_id' => $persons->first()->person_id]);
+						->update(['person_id' => $person_id]);
+					$affected_person_ids[] = $person_id;
 				}
 				// If multiple persons share the same cluster (mis-clustering),
 				// leave unassigned faces for manual review.
+			}
+
+			if ($affected_person_ids !== []) {
+				/** @var string[] $distinct_person_ids */
+				$distinct_person_ids = array_values(array_unique(array_filter($affected_person_ids, static fn ($person_id) => $person_id !== null)));
+				if ($distinct_person_ids !== []) {
+					$stats_by_person = Face::query()
+						->whereIn('person_id', $distinct_person_ids)
+						->where('is_dismissed', '=', false)
+						->selectRaw('person_id, COUNT(*) as face_count, COUNT(DISTINCT photo_id) as photo_count')
+						->groupBy('person_id')
+						->get()
+						->keyBy('person_id');
+
+					$persons = Person::query()->whereIn('id', $distinct_person_ids)->get();
+					foreach ($persons as $person) {
+						$stats = $stats_by_person->get($person->id);
+						$person->face_count = $stats?->face_count ?? 0;
+						$person->photo_count = $stats?->photo_count ?? 0;
+						$person->save();
+					}
+				}
 			}
 
 			// Upsert cross-cluster suggestions.

@@ -67,6 +67,36 @@ def test_match_requires_api_key(client: TestClient) -> None:
     assert response.status_code == 422  # missing header
 
 
+def test_config_requires_api_key(client: TestClient) -> None:
+    response = client.get("/config")
+    assert response.status_code == 422  # missing header
+
+
+def test_config_returns_redacted_values(client: TestClient) -> None:
+    response = client.get("/config", headers={"X-API-Key": "test-api-key"})
+    assert response.status_code == 200
+
+    payload = response.json()
+    assert "config" in payload
+    expected = {
+        "blur_threshold": "0.5",
+        "cluster_eps": "0.45",
+        "detection_threshold": "0.5",
+        "detector_backend": "retinaface",
+        "match_threshold": "0.5",
+        "max_faces_per_photo": "20",
+        "model_name": "ArcFace",
+        "rescan_iou_threshold": "0.5",
+        "thread_pool_size": "1",
+        "verify_ssl": "False",
+        "workers": "1",
+    }
+    assert payload["config"] == expected
+    assert "api_key" not in payload["config"]
+    assert "lychee_api_url" not in payload["config"]
+    assert "photos_path" not in payload["config"]
+
+
 # ---------------------------------------------------------------------------
 # POST /detect
 # ---------------------------------------------------------------------------

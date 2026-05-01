@@ -43,6 +43,15 @@
 						/>
 					</div>
 					<Button
+						:label="dismissedOnly ? $t('maintenance.face_quality.show_active') : $t('maintenance.face_quality.show_dismissed')"
+						:severity="dismissedOnly ? 'primary' : 'secondary'"
+						size="small"
+						class="border-none"
+						:icon="dismissedOnly ? 'pi pi-eye' : 'pi pi-eye-slash'"
+						icon-pos="right"
+						@click="toggleDismissedOnly"
+					/>
+					<Button
 						v-if="faces.length > 0"
 						:label="allSelected ? $t('maintenance.face_quality.deselect_all') : $t('maintenance.face_quality.select_all')"
 						severity="secondary"
@@ -56,6 +65,7 @@
 							{{ $t("maintenance.face_quality.selected_count", { count: String(selectedIds.length) }) }}
 						</span>
 						<Button
+							v-if="!dismissedOnly"
 							:label="$t('maintenance.face_quality.batch_dismiss')"
 							icon="pi pi-times"
 							severity="danger"
@@ -63,6 +73,16 @@
 							class="border-none"
 							:loading="batchDismissing"
 							@click="batchDismiss"
+						/>
+						<Button
+							v-else
+							:label="$t('maintenance.face_quality.batch_reactivate')"
+							icon="pi pi-undo"
+							severity="success"
+							size="small"
+							class="border-none"
+							:loading="batchReactivating"
+							@click="batchReactivate"
 						/>
 					</template>
 				</div>
@@ -161,6 +181,7 @@
 							/>
 							<Button
 								icon="pi pi-times"
+								v-if="!dismissedOnly"
 								severity="danger"
 								text
 								rounded
@@ -169,6 +190,18 @@
 								:loading="dismissingId === face.id"
 								v-tooltip.left="$t('maintenance.face_quality.dismiss')"
 								@click="dismissFace(face.id)"
+							/>
+							<Button
+								icon="pi pi-undo"
+								v-else
+								severity="success"
+								text
+								rounded
+								size="small"
+								class="border-none"
+								:loading="dismissingId === face.id"
+								v-tooltip.left="$t('maintenance.face_quality.readd')"
+								@click="readdFace(face.id)"
 							/>
 						</div>
 					</div>
@@ -215,7 +248,7 @@
 	</div>
 </template>
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { useToast } from "primevue/usetoast";
 import { trans } from "laravel-vue-i18n";
 import Button from "primevue/button";
@@ -238,8 +271,10 @@ const hasMorePages = ref(false);
 const currentPage = ref(1);
 const dismissingId = ref<string | null>(null);
 const batchDismissing = ref(false);
+const batchReactivating = ref(false);
 const sortBy = ref<"confidence" | "laplacian_variance">("confidence");
 const sortDir = ref<"asc" | "desc">("asc");
+const dismissedOnly = ref(false);
 
 // Selection state
 const selectedIds = ref<string[]>([]);
@@ -271,6 +306,7 @@ function load(page = 1): void {
 	FaceMaintenanceService.getFaces({
 		sort_by: sortBy.value,
 		sort_dir: sortDir.value,
+		dismissed_only: dismissedOnly.value,
 		page,
 		per_page: 50,
 	})
@@ -307,6 +343,11 @@ function setSort(field: "confidence" | "laplacian_variance"): void {
 	load(1);
 }
 
+function toggleDismissedOnly(): void {
+	dismissedOnly.value = !dismissedOnly.value;
+	load(1);
+}
+
 function toggleSelection(id: string, idx: number, event: MouseEvent): void {
 	if (event.shiftKey && lastSelectedIndex.value >= 0) {
 		const from = Math.min(lastSelectedIndex.value, idx);
@@ -338,6 +379,15 @@ function toggleSelectAll(): void {
 	}
 }
 
+function handleSelectAllShortcut(event: KeyboardEvent): void {
+	if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "a") {
+		event.preventDefault();
+		if (faces.value.length > 0) {
+			toggleSelectAll();
+		}
+	}
+}
+
 function dismissFace(id: string): void {
 	dismissingId.value = id;
 	FaceDetectionService.toggleDismissed(id)
@@ -348,6 +398,22 @@ function dismissFace(id: string): void {
 		})
 		.catch(() => {
 			toast.add({ severity: "error", summary: trans("toasts.error"), detail: trans("maintenance.face_quality.dismiss_error"), life: 3000 });
+		})
+		.finally(() => {
+			dismissingId.value = null;
+		});
+}
+
+function readdFace(id: string): void {
+	dismissingId.value = id;
+	FaceDetectionService.toggleDismissed(id)
+		.then(() => {
+			faces.value = faces.value.filter((f) => f.id !== id);
+			selectedIds.value = selectedIds.value.filter((sid) => sid !== id);
+			toast.add({ severity: "success", summary: trans("toasts.success"), detail: trans("maintenance.face_quality.readded"), life: 2000 });
+		})
+		.catch(() => {
+			toast.add({ severity: "error", summary: trans("toasts.error"), detail: trans("maintenance.face_quality.readd_error"), life: 3000 });
 		})
 		.finally(() => {
 			dismissingId.value = null;
@@ -379,6 +445,35 @@ function batchDismiss(): void {
 		})
 		.finally(() => {
 			batchDismissing.value = false;
+		});
+}
+
+function batchReactivate(): void {
+	if (selectedIds.value.length === 0) return;
+	batchReactivating.value = true;
+	const ids = [...selectedIds.value];
+
+	Promise.all(ids.map((id) => FaceDetectionService.toggleDismissed(id)))
+		.then(() => {
+			faces.value = faces.value.filter((f) => !ids.includes(f.id));
+			selectedIds.value = [];
+			toast.add({
+				severity: "success",
+				summary: trans("toasts.success"),
+				detail: trans("maintenance.face_quality.batch_reactivated", { count: String(ids.length) }),
+				life: 2500,
+			});
+		})
+		.catch(() => {
+			toast.add({
+				severity: "error",
+				summary: trans("toasts.error"),
+				detail: trans("maintenance.face_quality.batch_reactivate_error"),
+				life: 3000,
+			});
+		})
+		.finally(() => {
+			batchReactivating.value = false;
 		});
 }
 
@@ -423,5 +518,10 @@ function openPhotoViewer(face: App.Http.Resources.Models.FaceResource): void {
 
 onMounted(() => {
 	load();
+	window.addEventListener("keydown", handleSelectAllShortcut);
+});
+
+onBeforeUnmount(() => {
+	window.removeEventListener("keydown", handleSelectAllShortcut);
 });
 </script>

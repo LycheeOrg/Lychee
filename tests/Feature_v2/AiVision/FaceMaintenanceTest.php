@@ -91,6 +91,37 @@ class FaceMaintenanceTest extends BaseApiTest
 		self::assertLessThanOrEqual($data[1]['confidence'], $data[0]['confidence']);
 	}
 
+	public function testDefaultListExcludesDismissedFaces(): void
+	{
+		Face::factory()->for_photo($this->photo)->create(['is_dismissed' => false]);
+		Face::factory()->for_photo($this->photo)->create(['is_dismissed' => true]);
+
+		$response = $this->actingAs($this->admin)->getJson('Face/maintenance');
+		$this->assertOk($response);
+
+		$data = $response->json('data');
+		self::assertGreaterThan(0, count($data));
+		foreach ($data as $face) {
+			self::assertFalse($face['is_dismissed']);
+		}
+	}
+
+	public function testDismissedOnlyFilterReturnsOnlyDismissedFaces(): void
+	{
+		Face::factory()->for_photo($this->photo)->create(['is_dismissed' => false]);
+		Face::factory()->for_photo($this->photo)->create(['is_dismissed' => true]);
+		Face::factory()->for_photo($this->photo)->create(['is_dismissed' => true]);
+
+		$response = $this->actingAs($this->admin)->getJson('Face/maintenance?dismissed_only=1');
+		$this->assertOk($response);
+
+		$data = $response->json('data');
+		self::assertGreaterThan(0, count($data));
+		foreach ($data as $face) {
+			self::assertTrue($face['is_dismissed']);
+		}
+	}
+
 	public function testPaginationWorks(): void
 	{
 		Face::factory()->for_photo($this->photo)->count(5)->create();

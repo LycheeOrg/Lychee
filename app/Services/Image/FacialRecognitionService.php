@@ -149,6 +149,64 @@ class FacialRecognitionService
 	}
 
 	/**
+	 * Make a raw HTTP request to the AI Vision service config endpoint.
+	 *
+	 * @param int $timeout Request timeout in seconds
+	 *
+	 * @return Response
+	 *
+	 * @throws ExternalComponentMissingException When the service is not configured
+	 * @throws \Exception                        When the HTTP request fails
+	 */
+	public function getConfigurationRaw(int $timeout = 5): Response
+	{
+		if (!$this->isConfigured()) {
+			throw new ExternalComponentMissingException('AI Vision service is not configured.');
+		}
+
+		return Http::withHeaders(['X-API-Key' => $this->api_key])
+			->timeout($timeout)
+			->get($this->service_url . '/config');
+	}
+
+	/**
+	 * Retrieve the runtime configuration of the AI Vision service.
+	 *
+	 * @return array<string,string>|null
+	 */
+	public function getConfiguration(): ?array
+	{
+		if (!$this->isConfigured()) {
+			Log::warning('FacialRecognitionService: getConfiguration called but service is not configured.');
+
+			return null;
+		}
+
+		try {
+			$response = $this->getConfigurationRaw();
+			if (!$response->successful()) {
+				return null;
+			}
+
+			$payload = $response->json();
+			if (!is_array($payload) || !isset($payload['config']) || !is_array($payload['config'])) {
+				return null;
+			}
+
+			$config = [];
+			foreach ($payload['config'] as $key => $value) {
+				if (is_string($key)) {
+					$config[$key] = (string) $value;
+				}
+			}
+
+			return $config;
+		} catch (\Exception) {
+			return null;
+		}
+	}
+
+	/**
 	 * Export all face embeddings with metadata for synchronization.
 	 *
 	 * @return array{count: int, embeddings: array<array{lychee_face_id: string, photo_id: string, laplacian_variance: float, crop_path: string}>}|null

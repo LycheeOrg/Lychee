@@ -122,6 +122,25 @@ class AppSettings(BaseSettings):
         extra="ignore",  # Ignore extra fields (e.g., from Lychee's .env when running from main project)
     )
 
+    def to_diagnostics_payload(self) -> dict[str, str]:
+        """Return settings as a diagnostics-safe mapping.
+
+        Only non-sensitive operational settings are exposed via diagnostics.
+        """
+        return {
+            "blur_threshold": str(self.blur_threshold),
+            "cluster_eps": str(self.cluster_eps),
+            "detection_threshold": str(self.detection_threshold),
+            "detector_backend": str(self.detector_backend),
+            "match_threshold": str(self.match_threshold),
+            "max_faces_per_photo": str(self.max_faces_per_photo),
+            "model_name": str(self.model_name),
+            "rescan_iou_threshold": str(self.rescan_iou_threshold),
+            "thread_pool_size": str(self.thread_pool_size),
+            "verify_ssl": str(self.verify_ssl),
+            "workers": str(self.workers),
+        }
+
 
 @lru_cache
 def get_settings() -> AppSettings:
