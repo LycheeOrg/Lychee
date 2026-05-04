@@ -42,6 +42,7 @@ def _detector_with_faces(
     faces: list[Any],
     *,
     blur_threshold: float = 0.0,
+    min_face_size_pixels: int = 0,
 ) -> Generator[FaceDetector]:
     """Yield a loaded FaceDetector whose DeepFace.represent returns *faces*.
 
@@ -57,7 +58,7 @@ def _detector_with_faces(
     stub_cv2 = MagicMock()
     stub_cv2.Laplacian.return_value.var.return_value = 0.0
 
-    detector = FaceDetector(detection_threshold=0.5, blur_threshold=blur_threshold)
+    detector = FaceDetector(detection_threshold=0.5, blur_threshold=blur_threshold, min_face_size_pixels=min_face_size_pixels)
     detector._loaded = True  # type: ignore[attr-defined]
     with patch.dict(sys.modules, {"deepface": stub_deepface_mod, "cv2": stub_cv2}):
         yield detector
@@ -209,3 +210,58 @@ def test_detected_face_laplacian_variance_stored() -> None:
     """laplacian_variance value passed on construction is preserved."""
     face = DetectedFace(x=0.0, y=0.0, width=1.0, height=1.0, confidence=0.7, laplacian_variance=123.45)
     assert face.laplacian_variance == pytest.approx(123.45)
+
+
+# ---------------------------------------------------------------------------
+# FaceDetector - min_face_size_pixels filtering
+# ---------------------------------------------------------------------------
+
+
+def test_detect_filters_small_face_by_width() -> None:
+    """Face whose width is the longest side but not greater than min_face_size_pixels must be excluded."""
+    face = _make_deepface_face(x=0.0, y=0.0, w=30.0, h=20.0, confidence=0.99, embedding=[0.0] * 512)
+    fake_img = MagicMock()
+    fake_img.shape = (100, 100, 3)
+    with _detector_with_faces([face], min_face_size_pixels=30) as detector:
+        results = detector._detect_array(fake_img)
+    assert results == []
+
+
+def test_detect_filters_small_face_by_height() -> None:
+    """Face whose height is the longest side but not greater than min_face_size_pixels must be excluded."""
+    face = _make_deepface_face(x=0.0, y=0.0, w=20.0, h=30.0, confidence=0.99, embedding=[0.0] * 512)
+    fake_img = MagicMock()
+    fake_img.shape = (100, 100, 3)
+    with _detector_with_faces([face], min_face_size_pixels=30) as detector:
+        results = detector._detect_array(fake_img)
+    assert results == []
+
+
+def test_detect_passes_face_above_min_size() -> None:
+    """Face whose longest side strictly exceeds min_face_size_pixels must be kept."""
+    face = _make_deepface_face(x=0.0, y=0.0, w=31.0, h=20.0, confidence=0.99, embedding=[0.0] * 512)
+    fake_img = np.zeros((100, 100, 3), dtype=np.uint8)
+    with _detector_with_faces([face], min_face_size_pixels=30) as detector:
+        results = detector._detect_array(fake_img)
+    assert len(results) == 1
+
+
+def test_detect_min_face_size_disabled_when_zero() -> None:
+    """When min_face_size_pixels is 0 (default), all face sizes pass the size filter."""
+    face = _make_deepface_face(x=0.0, y=0.0, w=5.0, h=5.0, confidence=0.99, embedding=[0.0] * 512)
+    fake_img = np.zeros((100, 100, 3), dtype=np.uint8)
+    with _detector_with_faces([face], min_face_size_pixels=0) as detector:
+        results = detector._detect_array(fake_img)
+    assert len(results) == 1
+
+
+def test_detect_size_filter_applied_before_blur_filter() -> None:
+    """Size filter must run before laplacian/blur filter: a face that is too small
+    must be dropped even if the blur threshold is set (i.e. no blur computation needed)."""
+    face = _make_deepface_face(x=0.0, y=0.0, w=10.0, h=10.0, confidence=0.99, embedding=[0.0] * 512)
+    fake_img = MagicMock()
+    fake_img.shape = (100, 100, 3)
+    # blur_threshold > 0 would normally trigger laplacian computation, but the size filter fires first
+    with _detector_with_faces([face], min_face_size_pixels=20, blur_threshold=50.0) as detector:
+        results = detector._detect_array(fake_img)
+    assert results == []
