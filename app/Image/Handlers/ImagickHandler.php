@@ -22,6 +22,7 @@ use App\Services\Image\FileExtensionService;
 use Imagick;
 use function Safe\fclose;
 use function Safe\fopen;
+use function Safe\rename;
 use function Safe\stream_copy_to_stream;
 use function Safe\tempnam;
 use function Safe\unlink;
@@ -77,23 +78,32 @@ class ImagickHandler extends BaseImageHandler
 				$pdf_path = $this->getLocalPath($file);
 				$tmp_path = null;
 
-				if ($pdf_path === null) {
-					// For remote/non-local files, stream the content into a named temp file
-					// so Ghostscript can open it by path. The temp file is cleaned up in the
-					// finally block below regardless of success or failure.
-					$tmp_path = tempnam(sys_get_temp_dir(), 'lychee_') . '.pdf';
-					$pdf_path = $tmp_path;
-					$tmp_handle = fopen($tmp_path, 'wb');
-					stream_copy_to_stream($file->read(), $tmp_handle);
-					fclose($tmp_handle);
-				}
-
 				try {
+					if ($pdf_path === null) {
+						// For remote/non-local files, stream the content into a named temp file
+						// so Ghostscript can open it by path.
+						//
+						// tempnam() atomically creates a placeholder file; we rename it to a
+						// .pdf path so Ghostscript recognises the format by extension. The outer
+						// try/finally guarantees the .pdf temp file is cleaned up even if fopen(),
+						// stream_copy_to_stream(), or readImage() throws.
+						$tmp_base = tempnam(sys_get_temp_dir(), 'lychee_');
+						$tmp_path = $tmp_base . '.pdf';
+						rename($tmp_base, $tmp_path);
+						$pdf_path = $tmp_path;
+						$tmp_handle = fopen($tmp_path, 'wb');
+						try {
+							stream_copy_to_stream($file->read(), $tmp_handle);
+						} finally {
+							fclose($tmp_handle);
+						}
+					}
+
 					// The [0] suffix tells Imagick to read only the first page of the PDF,
 					// avoiding the overhead of rendering all pages just to generate a thumbnail.
 					$this->im_image->readImage($pdf_path . '[0]');
 				} finally {
-					if ($tmp_path !== null) {
+					if ($tmp_path !== null && is_file($tmp_path)) {
 						unlink($tmp_path);
 					}
 				}

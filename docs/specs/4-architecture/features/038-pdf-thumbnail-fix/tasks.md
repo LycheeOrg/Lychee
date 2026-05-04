@@ -2,7 +2,7 @@
 
 _Linked plan:_ [plan.md](plan.md)
 _Status:_ Feature Complete ✅
-_Last updated:_ 2026-04-26
+_Last updated:_ 2026-05-04
 
 ## Task Overview
 
@@ -34,3 +34,7 @@ Backend-only fix. No frontend tasks exist.
 - ✅ Locally stored PDFs use direct file path — no temp file created
 - ✅ Temp files for remote PDFs are deleted even when rendering fails
 - ✅ Non-PDF image formats are unaffected
+
+---
+
+*Last updated: 2026-05-04*

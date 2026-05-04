@@ -56,3 +56,7 @@ Simple PDFs that can be rendered linearly happen to work via the stream path; co
 - **PDFs over 50 MB** — stream swaps to an anonymous disk file with no `.pdf` extension. Ghostscript receives no format hint and cannot seek through the file structure, producing silent "Page drawing error" failures and no thumbnail.
 
 This made the bug appear size-dependent and led to the initial investigation of the `MAX_SIZE` constant. Increasing `MAX_SIZE` to 100 MB shifted the failure threshold but did not fix the root cause. The correct fix is to bypass stream-based loading entirely for PDFs and pass a real file path to Imagick.
+
+---
+
+*Last updated: 2026-05-04*

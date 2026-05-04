@@ -2,7 +2,7 @@
 
 _Linked specification:_ `docs/specs/4-architecture/features/038-pdf-thumbnail-fix/spec.md`
 _Status:_ Implemented
-_Last updated:_ 2026-04-26
+_Last updated:_ 2026-05-04
 
 > Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in [docs/specs/4-architecture/open-questions.md](../../open-questions.md), and assume clarifications are resolved only when the spec's normative sections have been updated.
 
@@ -34,3 +34,7 @@ The `[0]` suffix instructs Imagick to render only the first page of the PDF, avo
 - Add `use function Safe\fopen` and `use function Safe\stream_copy_to_stream` imports.
 - Add `use App\Image\Files\FlysystemFile` and `use App\Image\Files\NativeLocalFile` imports.
 - **Refs:** FR-038-01, FR-038-02, FR-038-03, NFR-038-01, NFR-038-02
+
+---
+
+*Last updated: 2026-05-04*
