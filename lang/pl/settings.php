@@ -38,6 +38,7 @@ return [
         'preview' => 'Włącz podgląd funkcji Lychee SE',
         'hide_call4action' => 'Ukryj ten formularz rejestracyjny Lychee SE. Jestem zadowolony z Lychee w obecnej formie. :)',
         'hide_warning' => 'Jeśli ta opcja jest włączona, jedynym sposobem zarejestrowania klucza licencyjnego będzie skorzystanie z powyższej karty Więcej. Zmiany zostaną zastosowane po przeładowaniu strony.',
+        'white_label' => 'Hide Lychee branding (white label mode)',
     ],
     'dropbox' => [
         'header' => 'Dropbox',

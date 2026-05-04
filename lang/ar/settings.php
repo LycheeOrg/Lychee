@@ -38,6 +38,7 @@ return [
         'preview' => 'تمكين معاينة ميزات Lychee SE',
         'hide_call4action' => 'إخفاء نموذج تسجيل Lychee SE هذا. أنا سعيد بـ Lychee كما هو. :)',
         'hide_warning' => 'إذا تم التمكين، فإن الطريقة الوحيدة لتسجيل مفتاح الترخيص الخاص بك ستكون عبر علامة التبويب المزيد أعلاه. يتم تطبيق التغييرات عند إعادة تحميل الصفحة.',
+        'white_label' => 'Hide Lychee branding (white label mode)',
     ],
     'dropbox' => [
         'header' => 'Dropbox',

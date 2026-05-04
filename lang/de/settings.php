@@ -38,6 +38,7 @@ return [
         'preview' => 'Vorschau der Lychee SE-Funktionen einschalten',
         'hide_call4action' => 'Lychee SE-Anmeldeformular ausblenden. Ich bin mit Lychee so zufrieden, wie es ist. :)',
         'hide_warning' => 'Wenn diese Option aktiviert ist, können Sie Ihren Lizenzschlüssel nur über die obige Registerkarte „Mehr“ registrieren. Die Änderungen werden beim Neuladen der Seite übernommen.',
+        'white_label' => 'Hide Lychee branding (white label mode)',
     ],
     'dropbox' => [
         'header' => 'Dropbox',

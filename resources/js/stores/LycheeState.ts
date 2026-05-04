@@ -91,6 +91,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		is_se_info_hidden: false,
 		is_se_expired: false,
 		is_live_metrics_enabled: false,
+		is_white_label_enabled: false,
 
 		// Settings toggles
 		is_old_style: false,
@@ -188,6 +189,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.is_se_info_hidden = data.is_se_info_hidden;
 					this.is_se_expired = data.is_se_expired;
 					this.is_live_metrics_enabled = data.is_live_metrics_enabled;
+					this.is_white_label_enabled = data.is_white_label_enabled;
 					this.number_albums_per_row_mobile = data.number_albums_per_row_mobile;
 					this.photo_thumb_info = data.photo_thumb_info;
 					this.is_photo_thumb_tags_enabled = data.is_photo_thumb_tags_enabled;

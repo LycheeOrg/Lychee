@@ -44,6 +44,7 @@ export function useLeftMenu(
 		is_timeline_page_enabled,
 		use_admin_dashboard,
 		is_embed_enabled,
+		is_white_label_enabled,
 	} = storeToRefs(lycheeStore);
 	const openLycheeAbout = ref(false);
 	const logsEnabled = ref(true);
@@ -242,31 +243,31 @@ export function useLeftMenu(
 					{
 						label: "left-menu.about",
 						icon: "info",
-						access: true,
+						access: !is_white_label_enabled.value,
 						command: () => (openLycheeAbout.value = true),
 					},
 					{
 						label: "left-menu.changelog",
 						icon: "copywriting",
-						access: true,
+						access: !is_white_label_enabled.value,
 						route: "/changelogs",
 					},
 					{
 						label: "left-menu.api",
 						icon: "book",
-						access: initData.value.settings.can_edit ?? false,
+						access: !is_white_label_enabled.value && (initData.value.settings.can_edit ?? false),
 						url: Constants.BASE_URL + "/docs/api",
 					},
 					{
 						label: "left-menu.source_code",
 						icon: "code",
-						access: user.value?.id === null || is_se_info_hidden.value === false,
+						access: !is_white_label_enabled.value && (user.value?.id === null || is_se_info_hidden.value === false),
 						url: "https://github.com/LycheeOrg/Lychee",
 					},
 					{
 						label: "left-menu.support",
 						icon: "heart",
-						access: is_se_info_hidden.value === false,
+						access: !is_white_label_enabled.value && is_se_info_hidden.value === false,
 						url: "https://lycheeorg.dev/get-supporter-edition/",
 					},
 				],

@@ -534,6 +534,7 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		is_se_info_hidden: boolean;
 		is_se_expired: boolean;
 		is_live_metrics_enabled: boolean;
+		is_white_label_enabled: boolean;
 		is_basic_auth_enabled: boolean;
 		is_webauthn_enabled: boolean;
 		is_registration_enabled: boolean;
