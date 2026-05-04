@@ -106,6 +106,7 @@ class ConfigIntegrity
 		'contact_form_security_answer',
 		'contact_form_custom_consent_required',
 		'guest_upload_trust_level',
+		'white_label_enabled',
 	];
 
 	public const PRO_FIELDS = [

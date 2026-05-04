@@ -6,85 +6,42 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 | Question ID | Feature | Priority | Summary | Status | Opened | Updated |
 |-------------|---------|----------|---------|--------|--------|---------|
-| Q-039-01 | 039 – White Label | Medium | Custom brand name vs generic "your-application" placeholder | Open | 2026-05-04 | 2026-05-04 |
-| Q-039-02 | 039 – White Label | High | Blade config read mechanism for `white_label_enabled` | Open | 2026-05-04 | 2026-05-04 |
-| Q-039-03 | 039 – White Label | Low | Gate `is_white_label_enabled` on SE being active at runtime | Open | 2026-05-04 | 2026-05-04 |
 
 ## Question Details
 
-### Q-039-01: Custom Brand Name vs Generic "your-application" Placeholder
+### ~~Q-039-01: Custom Brand Name vs Generic "your-application" Placeholder~~ ✅ RESOLVED
 
 **Feature:** 039 – Lychee White Label  
 **Priority:** Medium  
-**Status:** Open  
-**Opened:** 2026-05-04
+**Status:** Resolved — **Option A**  
+**Opened:** 2026-05-04  
+**Resolved:** 2026-05-04
 
-**Context:** FR-039-07 and FR-039-08 currently replace "Lychee" with the hardcoded string "your-application" and "lychee.example.com" with "your-application.example.com". An operator white-labelling the product may prefer to set their own application name (e.g., "FamilyGallery" instead of "your-application"), which would make the misconfiguration warning more actionable. Adding a configurable brand name field would be a second config key in the `lychee SE` category.
-
-**Options (ordered by preference):**
-
-- **Option A (Recommended) — Keep hardcoded generic placeholder ("your-application").**
-  - Simpler implementation; no extra config key; the misconfiguration warning is rarely seen in production.
-  - Cons: Warning text is generic and may confuse operators who see "your-application" in their own logs.
-
-- **Option B — Add an optional `brand_name` config key (default empty).**
-  - When `brand_name` is non-empty, use it in place of "your-application" / "your-application.example.com".
-  - When empty, fall back to "your-application".
-  - Cons: Adds scope creep; a second migration; more UI surface in the settings page.
-
-**Spec Impact if resolved as Option B:** Add FR-039-09, a second migration, and update FR-039-07 / FR-039-08 with conditional brand name substitution.
+**Resolution:** Keep the hardcoded generic placeholder "your-application" / "your-application.example.com". No extra config key needed. Captured in spec FR-039-07.
 
 ---
 
-### Q-039-02: Blade Config Read Mechanism for `white_label_enabled`
+### ~~Q-039-02: Blade Config Read Mechanism for `white_label_enabled`~~ ✅ RESOLVED
 
 **Feature:** 039 – Lychee White Label  
 **Priority:** High  
-**Status:** Open  
-**Opened:** 2026-05-04
+**Status:** Resolved — **Option A** (inline `resolve()`)  
+**Opened:** 2026-05-04  
+**Resolved:** 2026-05-04
 
-**Context:** Blade views such as `footer.blade.php` and `meta.blade.php` need to read the `white_label_enabled` config value. Lychee stores settings in the `configs` database table (not in `config/app.php`), so the standard Laravel `config('key')` helper will **not** work. Several patterns exist in the codebase: (a) some views receive data via view composers; (b) some blade components receive Blade variables passed from controllers; (c) the `request()->configs()` pipeline is available in controllers but not directly in raw blade views without a view composer or controller pass-through.
-
-**Options (ordered by preference):**
-
-- **Option A (Recommended) — Pass `$white_label_enabled` as a variable from an existing view composer or base controller.**
-  - Extend the existing `AppServiceProvider` or a dedicated view composer to inject `$white_label_enabled` into the views that need it (`footer`, `meta`, `warning-misconfiguration`).
-  - Consistent with how `$site_title`, `$page_description` etc. are injected today.
-  - Pros: Clean, testable, consistent.
-  - Cons: Requires identifying and updating the correct view composer/controller.
-
-- **Option B — Add a global Blade directive or helper that reads directly from the DB via `DB::table('configs')`.**
-  - Less preferred: direct DB reads in blade are fragile and hard to test.
-
-- **Option C — Use a static/cached facade wrapping `request()->configs()`.**
-  - If a `Config` facade or service already provides a static read path (e.g., `Configs::getValueAsBool('white_label_enabled')`), this may be the simplest drop-in solution.
-
-**Spec Impact:** Determines the exact implementation pattern for T-039-12 – T-039-17. Must be resolved before I5 begins.
+**Resolution:** Use `resolve(\App\Repositories\ConfigManager::class)->getValueAsBool('white_label_enabled')` inline in Blade directives — the same pattern already used in `vueapp.blade.php` for `dark_mode_enabled`. Captured in spec FR-039-05/06/07.
 
 ---
 
-### Q-039-03: Gate `is_white_label_enabled` on SE Being Active at Runtime
+### ~~Q-039-03: Gate `is_white_label_enabled` on SE Being Active at Runtime~~ ✅ RESOLVED
 
 **Feature:** 039 – Lychee White Label  
 **Priority:** Low  
-**Status:** Open  
-**Opened:** 2026-05-04
+**Status:** Resolved — **Option B**  
+**Opened:** 2026-05-04  
+**Resolved:** 2026-05-04
 
-**Context:** The `white_label_enabled` config key has `level = 1` (SE-only) and `is_secret = 1`, so it is only _visible_ in the admin settings panel to SE users. However, the config value is read and applied unconditionally by `InitConfig` via `getValueAsBool('white_label_enabled')`. This means that if an operator enabled white-label, then let their SE licence expire, the white-label suppression would continue to apply (because the config value remains `1` in the database).
-
-**Options (ordered by preference):**
-
-- **Option A (Recommended) — No runtime SE gate; apply the config value as-is.**
-  - The `level=1` attribute is an admin-UI visibility guard, not an enforcement gate. If the operator set the value to `1` while on SE and their licence has since expired, the feature continues working. This is consistent with how other `level=1` features behave (e.g., timeline, favourite, rating features remain active after SE expiry if already configured).
-  - Pros: Simple; consistent with the rest of the SE feature set.
-  - Cons: Technically allows using a paid feature "for free" after expiry — but only for configuration set while SE was active.
-
-- **Option B — Gate `is_white_label_enabled` on `is_se_enabled` at runtime.**
-  - `InitConfig` sets `is_white_label_enabled = request()->configs()->getValueAsBool('white_label_enabled') && $this->is_se_enabled`.
-  - Pros: Enforces the SE boundary strictly.
-  - Cons: Breaks the operator's white-label setup on licence expiry, which could expose the Lychee branding unexpectedly to end-users — the opposite of the operator's intent.
-
-**Spec Impact if resolved as Option B:** Update FR-039-02 to include the SE-active gate.
+**Resolution:** `is_white_label_enabled` is SE-gated at runtime: `$this->is_se_enabled && request()->configs()->getValueAsBool('white_label_enabled')`. White label is a Lychee Supporter benefit; operators who stop their support accept that branding re-appears. Consistent with `is_live_metrics_enabled`. Captured in spec FR-039-02.
 
 ---
 
