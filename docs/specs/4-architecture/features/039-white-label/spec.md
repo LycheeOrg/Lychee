@@ -2,7 +2,7 @@
 
 | Field | Value |
 |-------|-------|
-| Status | Draft |
+| Status | Draft (Q-039-01 – Q-039-03 open) |
 | Last updated | 2026-05-04 |
 | Owners | LycheeOrg |
 | Linked plan | `docs/specs/4-architecture/features/039-white-label/plan.md` |
@@ -13,18 +13,19 @@
 
 ## Overview
 
-Operators who use Lychee as an embedded or branded gallery application need a way to hide all visible references to the Lychee project (name, links, and generator metadata) from end-users, so the product appears as their own. This feature introduces a single boolean setting `white_label_enabled` in the `lychee SE` config category that, when enabled, suppresses the "Lychee" section in the left menu, the "Powered by Lychee" footer link, the `<meta name="generator">` tag, and Lychee branding inside the misconfiguration warning blade component.
+Operators who use Lychee as an embedded or branded gallery application need a way to hide all visible references to the Lychee project (name, links, and generator metadata) from end-users, so the product appears as their own. This feature introduces a single boolean setting `white_label_enabled` in the `lychee SE` config category that, when enabled, suppresses the "Lychee" section in the left menu, the "Lychee / SE" branding line in the login form, the "Powered by Lychee" footer link, the `<meta name="generator">` tag, and Lychee branding inside the misconfiguration warning blade component.
 
-Affected modules: `application` (new config migration), `REST` (`InitConfig` resource), `UI` (left-menu composable, `GalleryFooter.vue`), `blade` (`meta.blade.php`, `warning-misconfiguration.blade.php`).
+Affected modules: `application` (new config migration), `REST` (`InitConfig` resource), `UI` (left-menu composable, `LoginForm.vue`, `GalleryFooter.vue`), `blade` (`meta.blade.php`, `warning-misconfiguration.blade.php`).
 
 ## Goals
 
 1. A new Lychee SE config key `white_label_enabled` controls all white-labelling behaviour from a single toggle.
 2. When enabled, the "Lychee" submenu section is hidden in the left navigation drawer.
-3. When enabled, the "Powered by Lychee" paragraph is hidden in `GalleryFooter.vue` and `footer.blade.php`.
-4. When enabled, the `<meta name="generator" content="Lychee v7">` tag is omitted from the page `<head>`.
-5. When enabled, the text "Lychee" and the example URL `lychee.example.com` inside the misconfiguration warning blade component are replaced by generic placeholders (`your-application` / `your-application.example.com`).
-6. The setting is forwarded to the Vue front-end through the existing `InitConfig` resource so UI components can react without additional HTTP requests.
+3. When enabled, the `Lychee / Lychee SE` branding line at the bottom of the login form (`LoginForm.vue`) is hidden.
+4. When enabled, the "Powered by Lychee" paragraph is hidden in `GalleryFooter.vue` and `footer.blade.php`.
+5. When enabled, the `<meta name="generator" content="Lychee v7">` tag is omitted from the page `<head>`.
+6. When enabled, the text "Lychee" and the example URL `lychee.example.com` inside the misconfiguration warning blade component are replaced by generic placeholders (`your-application` / `your-application.example.com`).
+7. The setting is forwarded to the Vue front-end through the existing `InitConfig` resource so UI components can react without additional HTTP requests.
 
 ## Non-Goals
 
@@ -45,6 +46,7 @@ Affected modules: `application` (new config migration), `REST` (`InitConfig` res
 | FR-039-05 | When `is_white_label_enabled` is `true`, the "Powered by Lychee" link is hidden in `resources/views/includes/footer.blade.php`. | The `<p class="hosted_by">` element is wrapped in a Blade conditional that checks the `white_label_enabled` config value server-side. | Element present in rendered HTML when `white_label_enabled` is `0`. | No regression for default installs. | No telemetry. | Problem statement |
 | FR-039-06 | When `is_white_label_enabled` is `true`, `<meta name="generator" content="Lychee v7">` is omitted from the page `<head>` rendered by `resources/views/components/meta.blade.php`. | Meta tag absent from page source when white label is active. | Meta tag present when `white_label_enabled` is `0`. | No regression for default installs. | No telemetry. | Problem statement |
 | FR-039-07 | When `is_white_label_enabled` is `true`, the misconfiguration warning blade component (`resources/views/components/warning-misconfiguration.blade.php`) replaces: (a) "Lychee" in the `<h1>` text with "your-application"; (b) `lychee.example.com` in the `APP_URL` example `<pre>` block with `your-application.example.com`. | Page source shows generic placeholders instead of "Lychee" and "lychee.example.com" when white label is active. | Original strings present when `white_label_enabled` is `0`. | No regression for default installs. | No telemetry. | Problem statement |
+| FR-039-08 | When `is_white_label_enabled` is `true`, the `Lychee` / `Lychee SE` branding `<div>` at the bottom of the basic-auth section in `LoginForm.vue` (line reading `Lychee <span v-if="is_se_enabled" class="text-primary-500">SE</span>`) is hidden. The entire `<div class="text-muted-color text-right ...">` element must not render when white label is active, regardless of whether SE is enabled or not. | Branding `<div>` absent from rendered DOM when white label is active. | Element present when `is_white_label_enabled` is `false` (S-039-09 vs S-039-10). | No regression for installations with white label disabled. | No telemetry. | Problem statement (2026-05-04 update) |
 
 ## Non-Functional Requirements
 
@@ -56,6 +58,30 @@ Affected modules: `application` (new config migration), `REST` (`InitConfig` res
 | NFR-039-04 | The `is_white_label_enabled` field in `InitConfig` must be included in the TypeScript type generated by `spatie/typescript-transformer` so the Vue layer can consume it without manual type casting. | Type safety — TypeScript compilation (`npm run check`) must pass. | `npm run check` succeeds after the field is added. | `spatie/typescript-transformer`, `#[TypeScript()]` attribute on `InitConfig`. | Implementation requirement |
 
 ## UI / Interaction Mock-ups
+
+### Login Form — White Label OFF (default)
+
+```
+┌────────────────────────────────────┐
+│  [Username          ]              │
+│  [Password          ]              │
+│  [ ] Remember me                   │
+│                    Lychee SE  ←    │
+│  [  Cancel  ]  [  Sign in  ]       │
+└────────────────────────────────────┘
+```
+
+### Login Form — White Label ON
+
+```
+┌────────────────────────────────────┐
+│  [Username          ]              │
+│  [Password          ]              │
+│  [ ] Remember me                   │
+│  (Lychee SE line hidden)           │
+│  [  Cancel  ]  [  Sign in  ]       │
+└────────────────────────────────────┘
+```
 
 ### Left Menu — White Label OFF (default)
 
@@ -108,16 +134,23 @@ Affected modules: `application` (new config migration), `REST` (`InitConfig` res
 
 | Scenario ID | Description / Expected outcome |
 |-------------|--------------------------------|
-| S-039-01 | `white_label_enabled = 0` (default) — Left menu shows "Lychee" submenu; footer shows "Powered by Lychee"; `<meta name="generator">` present; warning blade shows "Lychee" and "lychee.example.com". |
-| S-039-02 | `white_label_enabled = 1`, SE active — Left menu omits "Lychee" submenu; footer hides "Powered by Lychee"; `<meta name="generator">` absent; warning blade shows "your-application" and "your-application.example.com". |
+| S-039-01 | `white_label_enabled = 0` (default) — Left menu shows "Lychee" submenu; login form shows "Lychee SE" branding line; footer shows "Powered by Lychee"; `<meta name="generator">` present; warning blade shows "Lychee" and "lychee.example.com". |
+| S-039-02 | `white_label_enabled = 1`, SE active — Left menu omits "Lychee" submenu; login form hides "Lychee SE" branding line; footer hides "Powered by Lychee"; `<meta name="generator">` absent; warning blade shows "your-application" and "your-application.example.com". |
 | S-039-03 | Migration rollback — `white_label_enabled` row removed; behaviour reverts to S-039-01. |
 | S-039-04 | `white_label_enabled` key absent from `configs` table (edge case) — `getValueAsBool` returns `false`; behaviour equivalent to S-039-01. |
+| S-039-05 | `white_label_enabled = 1`, SE **not** active — login form "Lychee SE" branding line still hidden; no regression on SE unavailability display. |
+| S-039-06 | `white_label_enabled = 1`, login accessed via modal (`LoginModal.vue`) — branding line hidden identically to the full-page `LoginPage` (same `LoginForm` component, same flag). |
+| S-039-07 | Login form opened with `is_basic_auth_enabled = false` — "Lychee SE" `<div>` is inside the `<template v-if="is_basic_auth_enabled">` block; it never renders anyway; no conflict with white-label flag. |
+| S-039-08 | `white_label_enabled = 1` toggled at runtime — change reflected on next page load without server restart (per NFR-039-02). |
+| S-039-09 | `white_label_enabled = 0` — Login form branding `<div>` visible; shows "Lychee" when SE is off, "Lychee SE" (with coloured span) when SE is on. |
+| S-039-10 | `white_label_enabled = 1` — Login form branding `<div>` absent regardless of SE status. |
 
 ## Test Strategy
 
 - **Application:** Feature_v2 test verifies `white_label_enabled` row is absent from the public `GET /api/v2/Settings` response (guards `is_secret`).
 - **REST:** Feature_v2 test for `GET /api/v2/Gallery/Init` asserts `is_white_label_enabled` is present with value `false` when the config is `0`.
 - **UI (component):** Jest/Vitest unit test for `useLeftMenu` confirms the "Lychee" section items all have `access = false` when `is_white_label_enabled = true`.
+- **UI (component):** Jest/Vitest unit test for `LoginForm.vue` confirms the branding `<div>` is absent from the rendered output when `is_white_label_enabled = true`, and present when `false` (covers S-039-09, S-039-10).
 - **UI (component):** Jest/Vitest unit test for `GalleryFooter.vue` confirms the "Powered by Lychee" paragraph is absent from the rendered output when `is_white_label_enabled = true`.
 - **Blade:** PHPUnit test or snapshot assertion for `meta.blade.php` confirms `<meta name="generator">` tag is absent when `white_label_enabled` config is `1`.
 - **Blade:** PHPUnit test or snapshot assertion for `warning-misconfiguration.blade.php` confirms "your-application" / "your-application.example.com" appear when `white_label_enabled` is `1`.
@@ -148,6 +181,8 @@ Affected modules: `application` (new config migration), `REST` (`InitConfig` res
 | UI-039-06 | Meta generator absent | `white_label_enabled = 1` → `<meta name="generator">` omitted from page `<head>`. |
 | UI-039-07 | Warning blade — Lychee branding | `white_label_enabled = 0` → text reads "…misconfigured Lychee" and "lychee.example.com". |
 | UI-039-08 | Warning blade — generic branding | `white_label_enabled = 1` → text reads "…misconfigured your-application" and "your-application.example.com". |
+| UI-039-09 | Login form — Lychee branding visible | `is_white_label_enabled = false` → branding `<div>` rendered (shows "Lychee" or "Lychee SE"). |
+| UI-039-10 | Login form — Lychee branding hidden | `is_white_label_enabled = true` → branding `<div>` absent from DOM (regardless of SE status). |
 
 ## Telemetry & Observability
 
@@ -209,6 +244,10 @@ ui_states:
     description: Warning blade Lychee branding (white label OFF)
   - id: UI-039-08
     description: Warning blade generic branding (white label ON)
+  - id: UI-039-09
+    description: Login form Lychee/SE branding visible (white label OFF)
+  - id: UI-039-10
+    description: Login form Lychee/SE branding hidden (white label ON)
 ```
 
 ## Appendix
@@ -220,6 +259,7 @@ ui_states:
 | `database/migrations/<date>_add_white_label_config.php` | New migration inserting `white_label_enabled` config row |
 | `app/Http/Resources/GalleryConfigs/InitConfig.php` | Add `public bool $is_white_label_enabled` property |
 | `resources/js/composables/contextMenus/leftMenu.ts` | Gate the "Lychee" submenu section on `!is_white_label_enabled` |
+| `resources/js/components/forms/auth/LoginForm.vue` | Wrap the branding `<div>` in `v-if="!is_white_label_enabled"` |
 | `resources/js/components/footers/GalleryFooter.vue` | Wrap `<p class="hosted_by">` in `v-if="!lycheeStore.is_white_label_enabled"` |
 | `resources/views/includes/footer.blade.php` | Wrap "Powered by Lychee" `<p>` in `@unless(config('...')...)` or equivalent |
 | `resources/views/components/meta.blade.php` | Wrap `<meta name="generator">` in Blade conditional |
@@ -227,4 +267,4 @@ ui_states:
 | `lang/en/settings.php` (and all locales) | Add translation key for `white_label_enabled` description under `lychee_se` group |
 
 ---
-*Last updated: 2026-05-04*
+*Last updated: 2026-05-04 (rev 2 — added FR-039-08 login form branding, Q-039-01–Q-039-03)*
