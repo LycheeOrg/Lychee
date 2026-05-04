@@ -38,7 +38,6 @@ return [
         'preview' => 'پیش‌نمایش ویژگی‌های Lychee SE را فعال کنید',
         'hide_call4action' => 'این فرم ثبت نام Lychee SE را مخفی کن. من از Lychee فعلی راضی هستم. :)',
         'hide_warning' => 'در صورت فعال‌سازی، تنها راه ثبت کلید مجوز از طریق تب More در بالا خواهد بود. تغییرات با بارگذاری مجدد صفحه اعمال می‌شوند.',
-        'white_label' => 'Hide Lychee branding (white label mode)',
     ],
     'dropbox' => [
         'header' => 'Dropbox',

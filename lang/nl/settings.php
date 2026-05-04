@@ -38,7 +38,6 @@ return [
         'preview' => 'Voorvertoning van Lychee SE-functies inschakelen',
         'hide_call4action' => 'Verberg dit Lychee SE-registratieformulier. Ik ben tevreden met Lychee zoals het is. :)',
         'hide_warning' => 'Als dit is ingeschakeld, is de enige manier om uw licentiesleutel te registreren via het tabblad Meer hierboven. Wijzigingen worden toegepast bij het herladen van de pagina.',
-        'white_label' => 'Hide Lychee branding (white label mode)',
     ],
     'dropbox' => [
         'header' => 'Dropbox',

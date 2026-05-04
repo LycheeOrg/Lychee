@@ -38,7 +38,6 @@ return [
         'preview' => 'Включить предпросмотр функций Lychee SE',
         'hide_call4action' => 'Скрыть форму регистрации Lychee SE. Я доволен текущей версией Lychee. :)',
         'hide_warning' => 'Если включено, единственный способ зарегистрировать ваш лицензионный ключ будет через вкладку «Больше» выше. Изменения применяются после перезагрузки страницы.',
-        'white_label' => 'Hide Lychee branding (white label mode)',
     ],
     'dropbox' => [
         'header' => 'Dropbox',

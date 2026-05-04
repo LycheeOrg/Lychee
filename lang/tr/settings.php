@@ -38,7 +38,6 @@ return [
         'preview' => 'Enable preview of Lychee SE features',
         'hide_call4action' => 'Hide this Lychee SE registration form. I am happy with Lychee as-is. :)',
         'hide_warning' => 'If enabled, the only way to register your license key will be via the More tab above. Changes are applied on page reload.',
-        'white_label' => 'Hide Lychee branding (white label mode)',
     ],
     'dropbox' => [
         'header' => 'Dropbox',

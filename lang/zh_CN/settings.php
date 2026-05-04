@@ -38,7 +38,6 @@ return [
         'preview' => '启用 Lychee SE 功能预览',
         'hide_call4action' => '隐藏 Lychee SE 注册表单。我对现有的 Lychee 很满意。:)',
         'hide_warning' => '启用后，注册许可证密钥的唯一方式将是通过上方的更多选项卡。更改将在页面刷新后生效。',
-        'white_label' => 'Hide Lychee branding (white label mode)',
     ],
     'dropbox' => [
         'header' => 'Dropbox',

@@ -38,7 +38,6 @@ return [
         'preview' => 'Activer l’aperçu des fonctionnalités de Lychee SE',
         'hide_call4action' => 'Masquer ce formulaire d’enregistrement pour Lychee SE. Je suis satisfait de Lychee tel quel :)',
         'hide_warning' => 'Si activé, la seule façon d’enregistrer votre clé de licence sera via l’onglet "Plus" ci-dessus. Les changements seront appliqués après rechargement de la page.',
-        'white_label' => 'Hide Lychee branding (white label mode)',
     ],
     'dropbox' => [
         'header' => 'Dropbox',
