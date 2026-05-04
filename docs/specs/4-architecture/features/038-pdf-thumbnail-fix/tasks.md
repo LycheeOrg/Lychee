@@ -1,4 +1,4 @@
-# Feature 031 – PDF Thumbnail Generation Fix – Implementation Tasks
+# Feature 038 – PDF Thumbnail Generation Fix – Implementation Tasks
 
 _Linked plan:_ [plan.md](plan.md)
 _Status:_ Feature Complete ✅

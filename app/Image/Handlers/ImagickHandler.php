@@ -20,8 +20,11 @@ use App\Image\Files\NativeLocalFile;
 use App\Repositories\ConfigManager;
 use App\Services\Image\FileExtensionService;
 use Imagick;
+use function Safe\fclose;
 use function Safe\fopen;
 use function Safe\stream_copy_to_stream;
+use function Safe\tempnam;
+use function Safe\unlink;
 
 class ImagickHandler extends BaseImageHandler
 {
@@ -91,7 +94,7 @@ class ImagickHandler extends BaseImageHandler
 					$this->im_image->readImage($pdf_path . '[0]');
 				} finally {
 					if ($tmp_path !== null) {
-						@unlink($tmp_path);
+						unlink($tmp_path);
 					}
 				}
 			} else {

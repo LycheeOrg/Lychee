@@ -1,6 +1,6 @@
-# Feature Plan 031 – PDF Thumbnail Generation Fix
+# Feature Plan 038 – PDF Thumbnail Generation Fix
 
-_Linked specification:_ `docs/specs/4-architecture/features/031-pdf-thumbnail-fix/spec.md`
+_Linked specification:_ `docs/specs/4-architecture/features/038-pdf-thumbnail-fix/spec.md`
 _Status:_ Implemented
 _Last updated:_ 2026-04-26
 
@@ -33,4 +33,4 @@ The `[0]` suffix instructs Imagick to render only the first page of the PDF, avo
 - For remote PDFs, copy to a named `.pdf` temp file, render, then clean up in a `finally` block.
 - Add `use function Safe\fopen` and `use function Safe\stream_copy_to_stream` imports.
 - Add `use App\Image\Files\FlysystemFile` and `use App\Image\Files\NativeLocalFile` imports.
-- **Refs:** FR-031-01, FR-031-02, FR-031-03, NFR-031-01, NFR-031-02
+- **Refs:** FR-038-01, FR-038-02, FR-038-03, NFR-038-01, NFR-038-02
