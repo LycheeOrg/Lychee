@@ -209,4 +209,16 @@ return [
 	 | missing macros and test failures.
 	 */
 	'populate-request-macros' => (bool) env('POPULATE_REQUEST_MACROS', false),
+
+	/*
+	 |--------------------------------------------------------------------------
+	 | White Label
+	 |--------------------------------------------------------------------------
+	 |
+	 | When enabled, hides the Lychee name, links, and generator metadata
+	 | from the UI (footer, meta tag, misconfiguration warning).
+	 | Requires a Lychee Supporter Edition licence to take effect.
+	 | Set WHITE_LABEL_ENABLED=true in .env to activate.
+	 */
+	'white_label_enabled' => (bool) env('WHITE_LABEL_ENABLED', false),
 ];

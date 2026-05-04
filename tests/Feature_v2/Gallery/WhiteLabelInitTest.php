@@ -18,7 +18,6 @@
 
 namespace Tests\Feature_v2\Gallery;
 
-use App\Models\Configs;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class WhiteLabelInitTest extends BaseApiWithDataTest
@@ -32,11 +31,11 @@ class WhiteLabelInitTest extends BaseApiWithDataTest
 		]);
 	}
 
-	public function testWhiteLabelRemainsDisabledWhenConfigEnabledWithoutSe(): void
+	public function testWhiteLabelRemainsDisabledWhenFeatureEnabledWithoutSe(): void
 	{
 		// SE is not active in tests, so white label must evaluate to false
-		// regardless of the config value (SE gate in InitConfig).
-		Configs::set('white_label_enabled', true);
+		// regardless of the features config value (SE gate in InitConfig).
+		config(['features.white_label_enabled' => true]);
 
 		$response = $this->getJson('Gallery::Init');
 		$this->assertOk($response);
@@ -44,6 +43,6 @@ class WhiteLabelInitTest extends BaseApiWithDataTest
 			'is_white_label_enabled' => false,
 		]);
 
-		Configs::set('white_label_enabled', false);
+		config(['features.white_label_enabled' => false]);
 	}
 }

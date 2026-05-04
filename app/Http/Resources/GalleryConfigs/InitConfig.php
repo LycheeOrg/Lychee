@@ -8,6 +8,7 @@
 
 namespace App\Http\Resources\GalleryConfigs;
 
+use App\Assets\Features;
 use App\Enum\AlbumDecorationOrientation;
 use App\Enum\AlbumDecorationType;
 use App\Enum\AlbumHeaderSize;
@@ -303,7 +304,7 @@ class InitConfig extends Data
 
 		$this->is_live_metrics_enabled = $this->is_se_enabled && request()->configs()->getValueAsBool('live_metrics_enabled');
 
-		$this->is_white_label_enabled = $this->is_se_enabled && request()->configs()->getValueAsBool('white_label_enabled');
+		$this->is_white_label_enabled = $this->is_se_enabled && Features::active('white_label_enabled');
 
 		$this->is_se_expired = request()->configs()->getValueAsString('license_key') !== '' && !$this->is_se_enabled;
 	}

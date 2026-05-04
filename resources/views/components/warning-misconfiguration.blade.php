@@ -1,5 +1,5 @@
 <div class="hidden" style="font-size: 24px; height: 100vh;" dir="ltr">
-@if(resolve(\App\Repositories\ConfigManager::class)->getValueAsBool('white_label_enabled'))
+@if(Features::active('white_label_enabled'))
 	<h1>If you can read me, it means that you misconfigured your-application.</h1>
 	<p style="font-size: 20px;">Please check that:
 	<ul>
