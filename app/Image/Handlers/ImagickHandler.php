@@ -14,10 +14,18 @@ use App\Contracts\Image\StreamStats;
 use App\DTO\ImageDimension;
 use App\Exceptions\ImageProcessingException;
 use App\Exceptions\MediaFileOperationException;
+use App\Image\Files\FlysystemFile;
 use App\Image\Files\InMemoryBuffer;
+use App\Image\Files\NativeLocalFile;
 use App\Repositories\ConfigManager;
 use App\Services\Image\FileExtensionService;
 use Imagick;
+use function Safe\fclose;
+use function Safe\fopen;
+use function Safe\rename;
+use function Safe\stream_copy_to_stream;
+use function Safe\tempnam;
+use function Safe\unlink;
 
 class ImagickHandler extends BaseImageHandler
 {
@@ -46,10 +54,87 @@ class ImagickHandler extends BaseImageHandler
 	public function load(MediaFile $file): void
 	{
 		try {
-			$in_memory_buffer = null;
-
 			$this->reset();
+			$this->im_image = new \Imagick();
 
+			$file_extension_service = app(FileExtensionService::class);
+			$is_pdf = $file->getExtension() === '.pdf' && $file_extension_service->isSupportedOrAcceptedFileExtension($file->getExtension());
+
+			if ($is_pdf) {
+				$this->loadPdf($file);
+			} else {
+				$this->loadFromStream($file);
+			}
+
+			$this->autoRotate();
+		} catch (\ImagickException $e) {
+			throw new MediaFileOperationException('Failed to load image', $e);
+		} finally {
+			$file->close();
+		}
+	}
+
+	/**
+	 * Loads a PDF file into Imagick by passing a real filesystem path to Ghostscript.
+	 *
+	 * Ghostscript requires a seekable named path to resolve cross-reference tables
+	 * in modern PDFs. Remote files are copied to a named temp file first.
+	 */
+	private function loadPdf(MediaFile $file): void
+	{
+		// PDFs must be loaded via a real filesystem path rather than an anonymous stream.
+		//
+		// Imagick delegates PDF rendering to Ghostscript. When given a named file path
+		// ending in .pdf, Ghostscript opens and seeks through the file freely — which it
+		// needs to do to resolve cross-reference tables and compressed object streams that
+		// are common in modern PDFs.
+		//
+		// When given an anonymous PHP stream via readImageFile(), Ghostscript receives no
+		// filename or format hint, and cannot seek backwards. This causes silent "Page
+		// drawing error" failures for any PDF complex enough to require non-linear reading,
+		// regardless of file size.
+		$pdf_path = $this->getLocalPath($file);
+		$tmp_path = null;
+
+		try {
+			if ($pdf_path === null) {
+				// For remote/non-local files, stream the content into a named temp file
+				// so Ghostscript can open it by path.
+				//
+				// tempnam() atomically creates a placeholder file; we rename it to a
+				// .pdf path so Ghostscript recognises the format by extension. The outer
+				// try/finally guarantees the .pdf temp file is cleaned up even if fopen(),
+				// stream_copy_to_stream(), or readImage() throws.
+				$tmp_base = tempnam(sys_get_temp_dir(), 'lychee_');
+				$tmp_path = $tmp_base . '.pdf';
+				rename($tmp_base, $tmp_path);
+				$pdf_path = $tmp_path;
+				$tmp_handle = fopen($tmp_path, 'wb');
+				try {
+					stream_copy_to_stream($file->read(), $tmp_handle);
+				} finally {
+					fclose($tmp_handle);
+				}
+			}
+
+			// The [0] suffix tells Imagick to read only the first page of the PDF,
+			// avoiding the overhead of rendering all pages just to generate a thumbnail.
+			$this->im_image->readImage($pdf_path . '[0]');
+		} finally {
+			if ($tmp_path !== null && is_file($tmp_path)) {
+				unlink($tmp_path);
+			}
+		}
+	}
+
+	/**
+	 * Loads a non-PDF file into Imagick via a stream, buffering in memory if the stream
+	 * is not seekable.
+	 */
+	private function loadFromStream(MediaFile $file): void
+	{
+		$in_memory_buffer = null;
+		try {
 			$original_stream = $file->read();
 			if (stream_get_meta_data($original_stream)['seekable']) {
 				$input_stream = $original_stream;
@@ -63,23 +148,29 @@ class ImagickHandler extends BaseImageHandler
 				$input_stream = $in_memory_buffer->read();
 			}
 
-			$this->im_image = new \Imagick();
 			$this->im_image->readImageFile($input_stream);
-
-			$file_extension_service = app(FileExtensionService::class);
-
-			// If the file is a PDF and the user has chosen to support PDF files then try to create an image from the first page
-			if ($file->getExtension() === '.pdf' && $file_extension_service->isSupportedOrAcceptedFileExtension($file->getExtension())) {
-				$this->im_image->setIteratorIndex(0);
-			}
-
-			$this->autoRotate();
-		} catch (\ImagickException $e) {
-			throw new MediaFileOperationException('Failed to load image', $e);
 		} finally {
 			$in_memory_buffer?->close();
-			$file->close();
 		}
+	}
+
+	/**
+	 * Returns the local filesystem path for the given file, or null if the file is remote.
+	 *
+	 * Used to obtain a real path for PDF files, which must be passed to Ghostscript
+	 * by path rather than via a stream.
+	 */
+	private function getLocalPath(MediaFile $file): ?string
+	{
+		if ($file instanceof NativeLocalFile) {
+			return $file->getPath();
+		}
+		if ($file instanceof FlysystemFile && $file->isLocalFile()) {
+			return $file->toLocalFile()->getPath();
+		}
+
+		// File is on a remote disk (e.g. S3); caller must copy it to a local temp file.
+		return null;
 	}
 
 	/**

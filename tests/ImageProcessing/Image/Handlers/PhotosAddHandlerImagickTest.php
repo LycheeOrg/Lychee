@@ -43,6 +43,24 @@ class PhotosAddHandlerImagickTest extends BaseImageHandler
 	}
 
 	/**
+	 * Tests that uploading a PDF generates a thumbnail from the first page.
+	 *
+	 * PDF support is always enabled; Imagick delegates rendering to Ghostscript.
+	 *
+	 * @return void
+	 */
+	public function testPdfUploadCreatesThumbnail(): void
+	{
+		$response = $this->uploadImage(TestConstants::SAMPLE_FILE_PDF);
+		$photo = $response->json('photos.0');
+
+		self::assertEquals(TestConstants::MIME_TYPE_APP_PDF, $photo['type']);
+		self::assertNotNull($photo['size_variants']['thumb']);
+		self::assertEquals(200, $photo['size_variants']['thumb']['width']);
+		self::assertEquals(200, $photo['size_variants']['thumb']['height']);
+	}
+
+	/**
 	 * Tests uploading of an accepted TIFF.
 	 *
 	 * As Imagick supports TIFFs, we also expect generated thumbnail.

@@ -4,7 +4,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=4.0, user-scalable=yes">
 <meta name="mobile-web-app-status-bar-style" content="black">
 <meta name="mobile-web-app-capable" content="yes">
+@if(Features::inactive('white_label_enabled'))
 <meta name="generator" content="Lychee v7">
+@endif
 <!--General Meta Data -->
 <title>{{ $page_title }}</title>
 <meta name="description" content="{{ $page_description }}">

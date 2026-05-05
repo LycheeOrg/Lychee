@@ -25,7 +25,6 @@ return [
 
 			// TLS/SSL settings
 			'use_tls' => (bool) env('LDAP_USE_TLS', true),
-			'use_ssl' => env('LDAP_PORT', 389) === 636, // Auto-detect LDAPS from port
 
 			// Additional connection options
 			// LDAP constants require ext-ldap; skip when the extension is absent

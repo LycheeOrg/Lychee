@@ -11,7 +11,9 @@ namespace App\Relations;
 use App\Contracts\Exceptions\InternalLycheeException;
 use App\Enum\OrderSortingType;
 use App\Exceptions\Internal\NotImplementedException;
+use App\Models\Builders\PhotoBuilder;
 use App\Models\Extensions\SortingDecorator;
+use App\Models\Photo;
 use App\Models\TagAlbum;
 use App\Repositories\ConfigManager;
 use Illuminate\Database\Eloquent\Builder;
@@ -70,10 +72,6 @@ class HasManyPhotosByTag extends BaseHasManyPhotos
 		/** @var TagAlbum $album */
 		$album = $albums[0];
 
-		$tag_ids = DB::table('tag_albums_tags')->where('album_id', '=', $album->id)
-			->select('tag_id')
-			->pluck('tag_id')->all();
-
 		$tag_ids = $album->relationLoaded('tags')
 			? $album->tags->pluck('id')->all()
 			: DB::table('tag_albums_tags')
@@ -86,10 +84,33 @@ class HasManyPhotosByTag extends BaseHasManyPhotos
 		$unlocked_album_ids = \App\Policies\AlbumPolicy::getUnlockedAlbumIDs();
 
 		$config_manager = app(ConfigManager::class);
+
+		// Build a subquery that selects the IDs of photos the current user may see
+		// that also carry the required tags.  We deliberately keep the access-control
+		// JOINs (photo_album, albums, computed_access_permissions) *inside* this
+		// subquery rather than on the outer relation query:
+		//
+		//   • applySearchabilityFilter / applySensitivityFilter both add a
+		//     LEFT JOIN photo_album that produces one row per album membership.
+		//     A photo belonging to N regular albums therefore appears N times.
+		//
+		//   • If we applied those JOINs directly to the outer query and used
+		//     SELECT DISTINCT to collapse duplicates, PostgreSQL would require
+		//     every ORDER BY expression to appear literally in the SELECT list.
+		//     Raw expressions such as COALESCE(photos.rating_avg, 0) used for
+		//     rating sorting are not in photos.* as a literal expression, so
+		//     PostgreSQL raises an error.
+		//
+		// By using a whereIn subquery we avoid both problems: the outer relation
+		// query has no extra JOINs (no duplicates) and no DISTINCT (no ORDER BY
+		// restriction).
+		/** @var PhotoBuilder<Photo> $ids_query */
+		$ids_query = Photo::query()->select('photos.id');
+
 		if ($config_manager->getValueAsBool('TA_override_visibility')) {
 			$this->photo_query_policy
 				->applySensitivityFilter(
-					query: $this->getRelationQuery(),
+					query: $ids_query,
 					user: $user,
 					origin: null,
 					include_nsfw: !$config_manager->getValueAsBool('hide_nsfw_in_tag_albums')
@@ -98,7 +119,7 @@ class HasManyPhotosByTag extends BaseHasManyPhotos
 		} else {
 			$this->photo_query_policy
 				->applySearchabilityFilter(
-					query: $this->getRelationQuery(),
+					query: $ids_query,
 					user: $user,
 					unlocked_album_ids: $unlocked_album_ids,
 					origin: null,
@@ -106,6 +127,8 @@ class HasManyPhotosByTag extends BaseHasManyPhotos
 				)
 				->where(fn (Builder $q) => $this->getPhotoIdsWithTags($q, $tag_ids, $album->is_and));
 		}
+
+		$this->getRelationQuery()->whereIn('photos.id', $ids_query);
 	}
 
 	/**

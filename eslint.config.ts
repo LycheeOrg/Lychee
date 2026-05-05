@@ -3,7 +3,6 @@ import { defineConfigWithVueTs, vueTsConfigs } from "@vue/eslint-config-typescri
 import pluginVue from "eslint-plugin-vue";
 import pluginVitest from "@vitest/eslint-plugin";
 import skipFormatting from "@vue/eslint-config-prettier/skip-formatting";
-import noRelativeImportPaths from "eslint-plugin-no-relative-import-paths";
 
 // To allow more languages other than `ts` in `.vue` files, uncomment the following lines:
 // import { configureVueProject } from '@vue/eslint-config-typescript'
@@ -22,14 +21,6 @@ export default defineConfigWithVueTs(
 	//   pluginVue.configs['flat/recommended'],
 	//   pluginVue.configs['flat/strongly-recommended'],
 	vueTsConfigs.recommended,
-	{
-		plugins: {
-			"no-relative-import-paths": noRelativeImportPaths,
-		},
-		rules: {
-			"no-relative-import-paths/no-relative-import-paths": "error",
-		},
-	},
 	{
 		...pluginVitest.configs.recommended,
 		files: ["src/**/__tests__/*"],
@@ -50,7 +41,6 @@ export default defineConfigWithVueTs(
 					ignoreRestSiblings: true,
 				},
 			],
-			"no-relative-import-paths/no-relative-import-paths": ["error", { allowSameFolder: true, rootDir: "resources/js", prefix: "@" }],
 		},
 	},
 );

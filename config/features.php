@@ -238,4 +238,16 @@ return [
 		'face-rescan-iou-threshold' => (float) env('AI_VISION_FACE_RESCAN_IOU_THRESHOLD', 0.3),
 		'face-stuck-scan-threshold-minutes' => (int) env('AI_VISION_FACE_STUCK_SCAN_THRESHOLD_MINUTES', 720),
 	],
+
+	/*
+	 |--------------------------------------------------------------------------
+	 | White Label
+	 |--------------------------------------------------------------------------
+	 |
+	 | When enabled, hides the Lychee name, links, and generator metadata
+	 | from the UI (footer, meta tag, misconfiguration warning).
+	 | Requires a Lychee Supporter Edition licence to take effect.
+	 | Set WHITE_LABEL_ENABLED=true in .env to activate.
+	 */
+	'white_label_enabled' => (bool) env('WHITE_LABEL_ENABLED', false),
 ];
