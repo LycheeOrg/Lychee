@@ -58,7 +58,9 @@ def _detector_with_faces(
     stub_cv2 = MagicMock()
     stub_cv2.Laplacian.return_value.var.return_value = 0.0
 
-    detector = FaceDetector(detection_threshold=0.5, blur_threshold=blur_threshold, min_face_size_pixels=min_face_size_pixels)
+    detector = FaceDetector(
+        detection_threshold=0.5, blur_threshold=blur_threshold, min_face_size_pixels=min_face_size_pixels
+    )
     detector._loaded = True  # type: ignore[attr-defined]
     with patch.dict(sys.modules, {"deepface": stub_deepface_mod, "cv2": stub_cv2}):
         yield detector
