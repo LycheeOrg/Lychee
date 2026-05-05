@@ -79,7 +79,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get --fix-broken install
-          sudo apt-get -y install ffmpeg libimage-exiftool-perl
+          sudo apt-get -y install ffmpeg libimage-exiftool-perl ghostscript
 
       - name: setup Databases
         run: |
