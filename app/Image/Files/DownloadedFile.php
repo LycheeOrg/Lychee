@@ -10,6 +10,7 @@ namespace App\Image\Files;
 
 use App\Assets\Features;
 use App\DTO\UrlValidatedDTO;
+use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
 use App\Repositories\ConfigManager;
@@ -68,7 +69,7 @@ final class DownloadedFile extends TemporaryLocalFile
 	{
 		parent::getMimeType();
 		if ($this->cachedMimeType === 'application/octet-stream' && $fallback_to_client_mime_type) {
-			return $this->originalMimeType;
+			return $this->originalMimeType ?? throw new LycheeAssertionError('The MIME type of the downloaded file could not be determined.');
 		}
 
 		return $this->cachedMimeType;
@@ -216,23 +217,25 @@ final class DownloadedFile extends TemporaryLocalFile
 		}
 
 		$temp = tmpfile();
-		stream_copy_to_stream($download_stream, $temp);
-		rewind($temp);
-		$detected_mime_type = mime_content_type($temp);
-
-		if ($file_extension_service->isSupportedMimeType($detected_mime_type)) {
-			$extension = $file_extension_service->getDefaultFileExtensionForMimeType($detected_mime_type);
-			parent::__construct($extension, $basename); // @phpstan-ignore constructor.call
-			$this->originalMimeType = $detected_mime_type;
+		try {
+			stream_copy_to_stream($download_stream, $temp);
 			rewind($temp);
-			$this->write($temp);
+			$detected_mime_type = mime_content_type($temp);
+
+			if ($file_extension_service->isSupportedMimeType($detected_mime_type)) {
+				$extension = $file_extension_service->getDefaultFileExtensionForMimeType($detected_mime_type);
+				parent::__construct($extension, $basename); // @phpstan-ignore constructor.call
+				$this->originalMimeType = $detected_mime_type;
+				rewind($temp);
+				$this->write($temp);
+
+				return;
+			}
+
+			throw new MediaFileUnsupportedException(MediaFileUnsupportedException::DEFAULT_MESSAGE . ' (bad file type: ' . $detected_mime_type . ')');
+		} finally {
 			fclose($temp);
-
-			return;
 		}
-
-		fclose($temp);
-		throw new MediaFileUnsupportedException(MediaFileUnsupportedException::DEFAULT_MESSAGE . ' (bad file type: ' . $detected_mime_type . ')');
 	}
 
 	/**

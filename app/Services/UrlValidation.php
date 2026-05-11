@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2017-2018 Tobias Reich
+ * Copyright (c) 2018-2026 LycheeOrg.
+ */
+
 namespace App\Services;
 
 use App\DTO\UrlValidatedDTO;
@@ -24,8 +30,15 @@ class UrlValidation
 		$this->dns_get_record = $dns_get_record ?? \Closure::fromCallable('dns_get_record');
 	}
 
-	public function validate(string $value): UrlValidatedDTO
+	public function validate(mixed $value): UrlValidatedDTO
 	{
+		if (!is_string($value)) {
+			return UrlValidatedDTO::fromError(
+				url: '',
+				error: 'is not a string.',
+			);
+		}
+
 		// Validate we are dealing with a valid URL.
 		// Note: This does not check whether the URL is reachable, only that it is syntactically correct.
 		if (!filter_var($value, FILTER_VALIDATE_URL)) {

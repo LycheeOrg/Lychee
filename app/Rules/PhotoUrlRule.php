@@ -19,7 +19,7 @@ final class PhotoUrlRule implements ValidationRule
 	 */
 	public function validate(string $attribute, mixed $value, \Closure $fail): void
 	{
-		// Validate we are dealing with a string.
+		// Ensure the value has been pre-processed into a UrlValidatedDTO by prepareForValidation().
 		if (!$value instanceof UrlValidatedDTO) {
 			throw new LycheeLogicException('The value passed to the PhotoUrlRule must be an instance of UrlValidatedDTO. Got ' . get_debug_type($value));
 		}
