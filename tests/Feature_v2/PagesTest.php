@@ -47,12 +47,12 @@ class PagesTest extends BaseApiWithDataTest
 	public function testRedirect(): void
 	{
 		collect([
-			'/settings',
-			'/jobs',
-			'/sharing',
-			'/users',
-			'/maintenance',
+			'/admin/settings',
+			'/admin/jobs',
+			'/admin/users',
+			'/admin/maintenance',
 			'/profile',
+			'/sharing',
 		])->each(function ($addr): void {
 			$response = $this->get($addr);
 			$this->assertRedirect($response);

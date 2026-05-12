@@ -197,7 +197,6 @@ return [
             'tags_required' => 'Wymagane są znaczniki.',
             'all_tags_must_match' => 'Wszystkie znaczniki muszą pasować.',
         ],
-
     ],
     'photo' => [
         'actions' => [

@@ -94,4 +94,10 @@ return [
         'modules' => 'الوحدات',
         'advanced' => 'متقدم',
     ],
+    'config' => [
+        'use_admin_dashboard' => [
+            'label' => 'Use admin dashboard',
+            'help' => 'Replace the nested admin submenu with a single link to the new admin dashboard page.',
+        ],
+    ],
 ];

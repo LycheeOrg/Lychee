@@ -8,6 +8,7 @@ This document tracks modules, dependencies, and architectural relationships acro
 
 #### Application Layer
 - **Controllers** (`app/Http/Controllers/`) - Handle HTTP requests and route to services
+  - **AdminDashboardController** (`app/Http/Controllers/Admin/AdminDashboardController.php`) - `GET /api/v2/Admin/Stats`; delegates to `AdminStatsService`, wraps result in `AdminStatsResource`.
 - **Requests** (`app/Http/Requests/`) - Validate and sanitize incoming requests
 - **Resources** (`app/Http/Resources/`) - Transform models to API responses (use Spatie Data)
 - **Middleware** (`app/Http/Middleware/`) - Request/response filtering and authentication
@@ -21,6 +22,7 @@ This document tracks modules, dependencies, and architectural relationships acro
     - `auto_cover_id_max_privilege` - Cover photo for admin/owner view (ignores access control)
     - `auto_cover_id_least_privilege` - Cover photo for public view (respects PhotoQueryPolicy + AlbumQueryPolicy)
 - **Services** (`app/Services/`) - Business logic and orchestration
+  - **AdminStatsService** (`app/Services/AdminStatsService.php`) - Aggregates system-wide metrics (photos, albums, users, storage, jobs) with 5-minute cache under key `admin.stats`. Supports forced refresh via `$force = true`. Returns `AdminStatsOverview` DTO; partial failures captured in `errors[]` and suppress caching.
   - **LDAP Service** (`app/Services/Auth/LdapService.php`) - Enterprise directory integration (wrapper over LdapRecord)
     - Search-first authentication pattern: searches for user by username → gets DN → binds with DN + password
     - Attribute retrieval: syncs email and display_name from LDAP
@@ -78,10 +80,13 @@ This document tracks modules, dependencies, and architectural relationships acro
   - Forms, modals, drawers, settings components
 - **Views** (`resources/js/views/`) - Page-level Vue components
   - Gallery views: Albums, Album, Favourites, Flow, Frame, Map, Search
-  - Admin views: Settings, Users, Permissions, Maintenance, Diagnostics
+  - Admin views (`resources/js/views/admin/`): AdminDashboard, Settings, Users, UserGroups, Purchasables, ContactMessages, Webhooks, Moderation, Maintenance, Jobs
+  - Diagnostics remains at top-level (`views/Diagnostics.vue`)
 - **Composables** (`resources/js/composables/`) - Reusable composition functions
   - Album, photo, search, selection, context menu composables
+  - **useAdminTiles** (`resources/js/composables/useAdminTiles.ts`) - Returns `AdminTile[]` with per-tile visibility driven by capability flags; used by `AdminDashboard.vue`.
 - **Services** (`resources/js/services/`) - API communication layer using axios
+  - **admin-stats-service.ts** - `getStats(force)` → `GET /api/v2/Admin/Stats`
 - **Layouts** (`resources/js/layouts/`) - Photo layout algorithms (square, justified, masonry, grid)
 
 #### State Management

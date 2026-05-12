@@ -1,4 +1,14 @@
 <div class="hidden" style="font-size: 24px; height: 100vh;" dir="ltr">
+@if(Features::active('white_label_enabled'))
+	<h1>If you can read me, it means that you misconfigured your-application.</h1>
+	<p style="font-size: 20px;">Please check that:
+	<ul>
+		<li style="font-size: 20px; margin-bottom: 10px;">your
+			<pre style="font-size: 16px; display:inline-block; margin: 0;">APP_URL</pre> is properly set to the correct url.<br>
+			For example:
+			<pre style="font-size: 16px; display:inline-block; margin: 0;">APP_URL=https://your-application.example.com</pre>
+		</li>
+@else
 	<h1>If you can read me, it means that you misconfigured Lychee.</h1>
 	<p style="font-size: 20px;">Please check that:
 	<ul>
@@ -7,6 +17,7 @@
 			For example:
 			<pre style="font-size: 16px; display:inline-block; margin: 0;">APP_URL=https://lychee.example.com</pre>
 		</li>
+@endif
 		<li style="font-size: 20px; margin-bottom: 10px;">if you are working behind a reverse proxy, that
 			<pre style="font-size: 16px; display:inline-block; margin: 0;">TRUSTED_PROXIES</pre> is set to the forwarding ip.<br>
 			For example:

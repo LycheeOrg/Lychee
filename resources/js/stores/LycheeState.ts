@@ -55,6 +55,8 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		album_header_size: "half_screen" as App.Enum.AlbumHeaderSize,
 		is_album_header_landing_title_enabled: false,
 
+		use_admin_dashboard: true,
+
 		// Download settings
 		is_raw_download_enabled: false,
 		is_thumb_download_enabled: false,
@@ -76,6 +78,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		dropbox_api_key: "disabled",
 		default_homepage: "gallery",
 		is_timeline_page_enabled: false,
+		is_embed_enabled: true,
 
 		// Login options
 		is_basic_auth_enabled: true,
@@ -88,6 +91,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		is_se_info_hidden: false,
 		is_se_expired: false,
 		is_live_metrics_enabled: false,
+		is_white_label_enabled: false,
 
 		// Settings toggles
 		is_old_style: false,
@@ -185,6 +189,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.is_se_info_hidden = data.is_se_info_hidden;
 					this.is_se_expired = data.is_se_expired;
 					this.is_live_metrics_enabled = data.is_live_metrics_enabled;
+					this.is_white_label_enabled = data.is_white_label_enabled;
 					this.number_albums_per_row_mobile = data.number_albums_per_row_mobile;
 					this.photo_thumb_info = data.photo_thumb_info;
 					this.is_photo_thumb_tags_enabled = data.is_photo_thumb_tags_enabled;
@@ -220,6 +225,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 
 					this.default_homepage = data.default_homepage;
 					this.is_timeline_page_enabled = data.is_timeline_page_enabled;
+					this.is_embed_enabled = data.is_embed_enabled;
 
 					this.photos_pagination_mode = data.photos_pagination_mode;
 					this.albums_pagination_mode = data.albums_pagination_mode;
@@ -229,6 +235,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.albums_infinite_scroll_threshold = data.albums_infinite_scroll_threshold;
 
 					this.default_album_protection = data.default_album_protection;
+					this.use_admin_dashboard = data.use_admin_dashboard;
 				})
 				.catch((error) => {
 					// In this specific case, even though it has been possibly disabled, we really need to see the error.

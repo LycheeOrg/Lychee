@@ -8,6 +8,7 @@
 
 namespace App\Http\Resources\GalleryConfigs;
 
+use App\Assets\Features;
 use App\Enum\AlbumDecorationOrientation;
 use App\Enum\AlbumDecorationType;
 use App\Enum\AlbumHeaderSize;
@@ -106,6 +107,9 @@ class InitConfig extends Data
 	// Live Metrics settings
 	public bool $is_live_metrics_enabled;
 
+	// White Label settings
+	public bool $is_white_label_enabled;
+
 	public bool $is_basic_auth_enabled = true;
 	public bool $is_webauthn_enabled = true;
 	// User registration enabled
@@ -121,6 +125,9 @@ class InitConfig extends Data
 	public VisibilityType $rating_photo_view_mode;
 	public bool $is_rating_show_avg_in_album_view_enabled;
 	public VisibilityType $rating_album_view_mode;
+
+	// Embed
+	public bool $is_embed_enabled = true;
 
 	// Homepage
 	public string $default_homepage;
@@ -143,6 +150,8 @@ class InitConfig extends Data
 	public bool $is_album_enhanced_display_enabled;
 	public AlbumHeaderSize $album_header_size;
 	public bool $is_album_header_landing_title_enabled;
+
+	public bool $use_admin_dashboard;
 
 	public function __construct()
 	{
@@ -225,6 +234,9 @@ class InitConfig extends Data
 		$this->is_rating_show_avg_in_album_view_enabled = request()->configs()->getValueAsBool('rating_show_avg_in_album_view');
 		$this->rating_album_view_mode = request()->configs()->getValueAsEnum('rating_album_view_mode', VisibilityType::class);
 
+		// Embed
+		$this->is_embed_enabled = request()->configs()->getValueAsBool('is_embed_enabled');
+
 		// Homepage
 		$this->default_homepage = request()->configs()->getValueAsString('home_page_default');
 		$this->is_timeline_page_enabled = request()->configs()->getValueAsBool('timeline_page_enabled');
@@ -245,6 +257,7 @@ class InitConfig extends Data
 		$this->is_album_enhanced_display_enabled = request()->configs()->getValueAsBool('album_enhanced_display_enabled');
 		$this->album_header_size = request()->configs()->getValueAsEnum('album_header_size', AlbumHeaderSize::class);
 		$this->is_album_header_landing_title_enabled = request()->configs()->getValueAsBool('album_header_landing_title_enabled');
+		$this->use_admin_dashboard = request()->configs()->getValueAsBool('use_admin_dashboard');
 
 		$this->set_supporter_properties();
 	}
@@ -290,6 +303,8 @@ class InitConfig extends Data
 		$this->is_se_info_hidden = $is_supporter || request()->configs()->getValueAsBool('disable_se_call_for_actions');
 
 		$this->is_live_metrics_enabled = $this->is_se_enabled && request()->configs()->getValueAsBool('live_metrics_enabled');
+
+		$this->is_white_label_enabled = $this->is_se_enabled && Features::active('white_label_enabled');
 
 		$this->is_se_expired = request()->configs()->getValueAsString('license_key') !== '' && !$this->is_se_enabled;
 	}

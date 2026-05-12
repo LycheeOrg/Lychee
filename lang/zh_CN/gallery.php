@@ -197,7 +197,6 @@ return [
             'tags_required' => '标签为必填项。',
             'all_tags_must_match' => '所有标签必须匹配。',
         ],
-
     ],
     'photo' => [
         'actions' => [

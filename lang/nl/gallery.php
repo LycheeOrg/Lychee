@@ -197,7 +197,6 @@ return [
             'tags_required' => 'Tags zijn vereist.',
             'all_tags_must_match' => 'Alle tags moeten overeenkomen.',
         ],
-
     ],
     'photo' => [
         'actions' => [

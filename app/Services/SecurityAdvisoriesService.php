@@ -70,7 +70,7 @@ class SecurityAdvisoriesService
 			$ghsa_id = $item->ghsa_id ?? null;
 			$cve_id = $item->cve_id ?? null;
 			$summary = $item->summary ?? '';
-			$cvss_score = $item->cvss->score ?? null;
+			$cvss_score = $item->cvss->score ?? $item->cvss_severities->cvss_v4->score ?? $item->cvss_severities->cvss_v3->score ?? null;
 			$cvss_vector = $item->cvss->vector_string ?? null;
 			$vulnerabilities = $item->vulnerabilities ?? [];
 

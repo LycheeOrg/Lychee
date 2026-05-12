@@ -197,7 +197,6 @@ return [
             'tags_required' => 'Tags are required.',
             'all_tags_must_match' => 'All tags must match.',
         ],
-
     ],
     'photo' => [
         'actions' => [

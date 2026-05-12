@@ -188,6 +188,18 @@ return [
 
 	/*
 	 |--------------------------------------------------------------------------
+	 | Enable Update Check
+	 |--------------------------------------------------------------------------
+	 |
+	 | When enabled, admins can query whether the current installation is
+	 | up-to-date from the admin dashboard. The endpoint also returns the latest
+	 | available release version when it can be determined.
+	 | Enabled by default - set UPDATE_CHECK_ENABLED=false to opt out.
+	 */
+	'update-check' => (bool) env('UPDATE_CHECK_ENABLED', true),
+
+	/*
+	 |--------------------------------------------------------------------------
 	 | Populate Request object macros while testing
 	 |--------------------------------------------------------------------------
 	 |
@@ -197,4 +209,25 @@ return [
 	 | missing macros and test failures.
 	 */
 	'populate-request-macros' => (bool) env('POPULATE_REQUEST_MACROS', false),
+
+	/*
+	 |--------------------------------------------------------------------------
+	 | White Label
+	 |--------------------------------------------------------------------------
+	 |
+	 | When enabled, hides the Lychee name, links, and generator metadata
+	 | from the UI (footer, meta tag, misconfiguration warning).
+	 | Requires a Lychee Supporter Edition licence to take effect.
+	 | Set WHITE_LABEL_ENABLED=true in .env to activate.
+	 */
+	'white_label_enabled' => (bool) env('WHITE_LABEL_ENABLED', false),
+
+	/*
+	 |--------------------------------------------------------------------------
+	 | Use fopen for URL imports instead of curl
+	 |--------------------------------------------------------------------------
+	 | curl mitigates issues with Time of Check to Time of Use (TOCTOU) attacks, but it may not be available in all environments.
+	 | Set USE_FOPEN_FOR_URL_IMPORTS=true in .env to use fopen instead of curl for URL imports.
+	 */
+	'use_fopen_for_url_imports' => (bool) env('USE_FOPEN_FOR_URL_IMPORTS', false),
 ];

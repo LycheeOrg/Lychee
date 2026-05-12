@@ -53,7 +53,7 @@
 				<Checkbox v-model="rememberMe" input-id="remember_me" :binary="true" />
 				<label for="remember_me" class="cursor-pointer">{{ $t("dialogs.login.remember_me") }}</label>
 			</div>
-			<div class="text-muted-color text-right font-semibold" :class="props.padding ?? 'px-9'">
+			<div v-if="!is_white_label_enabled" class="text-muted-color text-right font-semibold" :class="props.padding ?? 'px-9'">
 				Lychee <span v-if="is_se_enabled" class="text-primary-500">SE</span>
 			</div>
 			<div class="flex items-center mt-9">
@@ -143,7 +143,7 @@ const rememberMe = ref(false);
 const userStore = useUserStore();
 const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
-const { is_se_enabled, is_basic_auth_enabled, is_webauthn_enabled } = storeToRefs(lycheeStore);
+const { is_se_enabled, is_basic_auth_enabled, is_webauthn_enabled, is_white_label_enabled } = storeToRefs(lycheeStore);
 const { is_login_open, is_webauthn_open } = storeToRefs(togglableStore);
 const invalidPassword = ref(false);
 

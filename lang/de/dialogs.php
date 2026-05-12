@@ -1,4 +1,5 @@
 <?php
+
 return [
     'button' => [
         /*
@@ -269,7 +270,7 @@ return [
         'go_to_gallery' => 'Zur Galerie gehen',
     ],
     'selected_images' => [
-        'names_copied' => 'Die Namen der ausgewählten Bilder wurden kopiert!'
+        'names_copied' => 'Die Namen der ausgewählten Bilder wurden kopiert!',
     ],
     'apply_renamer' => [
         'title' => 'Umbenennungsregeln anwenden',

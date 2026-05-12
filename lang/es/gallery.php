@@ -197,7 +197,6 @@ return [
             'tags_required' => 'Se requieren etiquetas.',
             'all_tags_must_match' => 'Todas las etiquetas deben coincidir.',
         ],
-
     ],
     'photo' => [
         'actions' => [
