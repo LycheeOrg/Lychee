@@ -6,6 +6,7 @@ High-level planning document for Lychee features and architectural initiatives.
 
 | Feature ID | Name | Status | Priority | Assignee | Started | Updated | Progress |
 |------------|------|--------|----------|----------|---------|---------|----------|
+| 040 | Passkeys Migration (laragear/webauthn → laravel/passkeys) | Planning | P1 | LycheeOrg | 2026-05-12 | 2026-05-12 | Spec, plan, tasks drafted. 24 tasks across 8 increments. 4 open questions (Q-040-01 to Q-040-04; 1 high, 2 medium, 1 low). Ready to begin T-040-01 (inspect laravel/passkeys internals). |
 
 ## Paused Features
 
@@ -110,4 +111,4 @@ features/
 
 ---
 
-*Last updated: 2026-04-22 (Feature 037 completed — Admin Dashboard & `/admin/` URL Reorg)*
+*Last updated: 2026-05-12 (Feature 040 added — Passkeys Migration)*

@@ -1,6 +1,79 @@
 # Current Session
 
-_Last updated: 2026-04-22_
+_Last updated: 2026-05-12_
+
+## Active Features
+
+**Feature 040 – Passkeys Migration (laragear/webauthn → laravel/passkeys)**
+- Status: Planning (spec + plan + tasks complete)
+- Priority: P1
+- License: Open
+- Started: 2026-05-12
+- Dependencies: `laravel/passkeys` Composer package, `@laravel/passkeys` npm package
+
+## Session Summary
+
+User requested creation of Feature 040 specifications, plan, and tasks to migrate the WebAuthn passkey library from the abandoned `laragear/webauthn` package to the official first-party `laravel/passkeys` package. No implementation was performed.
+
+### Feature 040: Passkeys Migration (laragear/webauthn → laravel/passkeys)
+
+**Status:** spec.md + plan.md + tasks.md complete; 4 open questions pending resolution; ready to begin T-040-01.
+
+**Key artefacts produced:**
+- Spec: [docs/specs/4-architecture/features/040-passkeys-migration/spec.md](docs/specs/4-architecture/features/040-passkeys-migration/spec.md)
+- Plan: [docs/specs/4-architecture/features/040-passkeys-migration/plan.md](docs/specs/4-architecture/features/040-passkeys-migration/plan.md)
+- Tasks: [docs/specs/4-architecture/features/040-passkeys-migration/tasks.md](docs/specs/4-architecture/features/040-passkeys-migration/tasks.md)
+- Open-questions log updated (Q-040-01 through Q-040-04)
+- Roadmap row: Planning / Active
+
+**Scope (8 increments, 24 tasks):**
+- **I1 – Resolve open questions:** Inspect `laravel/passkeys` published migration, JS client, and test helpers; resolve Q-040-01 through Q-040-04.
+- **I2 – Composer & npm swap:** Vulnerability check, install `laravel/passkeys` + `@laravel/passkeys`, disable automatic routes.
+- **I3 – Database migration:** Create `passkeys` table, copy rows from `webauthn_credentials`, drop old table.
+- **I4 – PHP model updates:** `User.php`, `AuthServiceProvider`, `AuthDisabledCheck`, `WebAuthnResource`, request classes.
+- **I5 – Controllers & routes:** Rewrite three WebAuthn controllers to use `laravel/passkeys` action classes.
+- **I6 – Tests:** Update `WebAuthTest.php`, `RequiresEmptyWebAuthnCredentials`, add migration test.
+- **I7 – Frontend:** Replace vendored `webauthn.ts` / `webauthn-service.ts`; update Vue components.
+- **I8 – Docs & quality gates:** `.env.example`, knowledge map, roadmap, full pipeline.
+
+**Open questions:**
+- Q-040-01 (Medium): `alias` vs `name` column in `laravel/passkeys`.
+- Q-040-02 (High): Data migration path without requiring re-registration.
+- Q-040-03 (Medium): `laravel/passkeys` test helpers availability.
+- Q-040-04 (Low): `WEBAUTHN_NAME`/`WEBAUTHN_ID` env var deprecation strategy.
+
+## Next Steps
+
+1. Resolve Q-040-01 through Q-040-04 by running T-040-01 through T-040-03 (inspect `laravel/passkeys` source).
+2. Run the analysis gate checklist on the agreed spec/plan/tasks bundle before coding.
+3. Begin implementation at T-040-04 (Composer/npm swap) once open questions are resolved.
+4. Follow tests-before-code ordering as specified in tasks.md.
+
+## Open Questions
+
+Q-040-01 through Q-040-04 — see `docs/specs/4-architecture/open-questions.md` for full details.
+
+## References
+
+**Feature 040:**
+- Spec: [040-passkeys-migration/spec.md](docs/specs/4-architecture/features/040-passkeys-migration/spec.md)
+- Plan: [040-passkeys-migration/plan.md](docs/specs/4-architecture/features/040-passkeys-migration/plan.md)
+- Tasks: [040-passkeys-migration/tasks.md](docs/specs/4-architecture/features/040-passkeys-migration/tasks.md)
+- Open questions: [open-questions.md](docs/specs/4-architecture/open-questions.md)
+- Current WebAuthn controllers: [app/Http/Controllers/WebAuthn/](app/Http/Controllers/WebAuthn/)
+- Current WebAuthn routes: [routes/api_v2.php](routes/api_v2.php)
+- Current test: [tests/Feature_v2/WebAuthTest.php](tests/Feature_v2/WebAuthTest.php)
+- laravel/passkeys: https://github.com/laravel/passkeys-server
+
+**Common:**
+- Roadmap: [roadmap.md](docs/specs/4-architecture/roadmap.md)
+- Open questions: [open-questions.md](docs/specs/4-architecture/open-questions.md)
+
+---
+
+**Session Context for Handoff:**
+
+Feature 040 spec, plan, and tasks are complete (24 tasks across 8 increments, tests-before-code). 4 open questions (Q-040-01 to Q-040-04) must be resolved before implementation. Next author should: (1) install `laravel/passkeys` in a scratch environment to inspect its migration and model; (2) resolve Q-040-01 through Q-040-04; (3) update spec normative sections; (4) begin T-040-04 (composer swap). I3 (DB migration) is the highest-risk increment and should be addressed early.
 
 ## Active Features
 

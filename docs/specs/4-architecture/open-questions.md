@@ -6,8 +6,88 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 | Question ID | Feature | Priority | Summary | Status | Opened | Updated |
 |-------------|---------|----------|---------|--------|--------|---------|
+| Q-040-01 | 040 – Passkeys Migration | Medium | Does `laravel/passkeys` `Passkey` model expose a `name` column that maps to Lychee's `alias` concept, or must a custom column be added? | Open | 2026-05-12 | 2026-05-12 |
+| Q-040-02 | 040 – Passkeys Migration | High | Is there a supported migration path from `webauthn_credentials` → `passkeys` that preserves enrolled device data without requiring re-registration? | Open | 2026-05-12 | 2026-05-12 |
+| Q-040-03 | 040 – Passkeys Migration | Medium | Does `laravel/passkeys` ship test helpers (challenge injection, credential stubs) equivalent to `laragear`'s `Challenge` + `ByteBuffer`? | Open | 2026-05-12 | 2026-05-12 |
+| Q-040-04 | 040 – Passkeys Migration | Low | Should `WEBAUTHN_NAME` / `WEBAUTHN_ID` env vars be preserved as bridges in `config/passkeys.php` or deprecated in favour of `PASSKEYS_*` equivalents? | Open | 2026-05-12 | 2026-05-12 |
 
 ## Question Details
+
+### Q-040-01: Alias/Name Column in laravel/passkeys Passkey Model
+
+**Feature:** 040 – Passkeys Migration  
+**Priority:** Medium  
+**Status:** Open  
+**Opened:** 2026-05-12
+
+**Context:** Lychee stores a user-facing friendly name for each passkey in an `alias` column on `webauthn_credentials`. The `laravel/passkeys` package JS client calls `Passkeys.register({ name: 'My MacBook' })`, suggesting a `name` column in its schema. It is unclear whether this column exists in the published migration and whether it serves the same purpose as Lychee's `alias`.
+
+**Options:**
+
+**Option A (Recommended):** Use the `name` column from `laravel/passkeys` as the alias. Rename the `alias` concept to `name` in Lychee's code and frontend, map `alias` → `name` during the data migration.
+
+**Option B:** Add a custom `alias` column to the `passkeys` table via a follow-up migration and extend the `Passkey` model, leaving the `name` column for the package's own use.
+
+_Resolution:_ Inspect published migration (T-040-01). Update spec DO-040-01 and FR-040-04 with confirmed column name.
+
+---
+
+### Q-040-02: Data Migration Path for webauthn_credentials → passkeys
+
+**Feature:** 040 – Passkeys Migration  
+**Priority:** High  
+**Status:** Open  
+**Opened:** 2026-05-12
+
+**Context:** Existing users have enrolled passkeys stored in `webauthn_credentials`. If the table is simply dropped, users must re-register all their devices, which is a disruptive breaking change.
+
+**Options:**
+
+**Option A (Recommended):** Write a Laravel migration that copies rows from `webauthn_credentials` to `passkeys` with column mapping (`alias` → `name`, `authenticatable_id` → `user_id`, etc.), then drops the old table. Requires confirming schema compatibility (Q-040-01).
+
+**Option B:** Provide a one-time Artisan command (`passkeys:migrate-credentials`) for operators to run manually, keeping the old table as a fallback for a deprecation period.
+
+_Resolution:_ Inspect `laravel/passkeys` migration schema (T-040-01) to confirm Option A is feasible. Update spec FR-040-06 with confirmed approach.
+
+---
+
+### Q-040-03: laravel/passkeys Test Helpers for Challenge / Credential Stubs
+
+**Feature:** 040 – Passkeys Migration  
+**Priority:** Medium  
+**Status:** Open  
+**Opened:** 2026-05-12
+
+**Context:** `WebAuthTest.php` seeds a `Challenge` via `Laragear\WebAuthn\Challenge\Challenge` and `Laragear\WebAuthn\ByteBuffer`. After removing the laragear package, these classes will no longer be available. The test must be rewritten.
+
+**Options:**
+
+**Option A (Recommended):** If `laravel/passkeys` ships a `Passkeys::fake()` or similar testing facade, use it to mock challenge generation and assertion validation.
+
+**Option B:** Mock the `GenerateVerificationOptions` and `VerifyPasskey` action classes in tests, bypassing real cryptographic validation. Regenerate pre-computed test vectors only for the single full-flow integration test.
+
+_Resolution:_ Inspect package source for test helpers (T-040-03). Update plan I6 / T-040-15 accordingly.
+
+---
+
+### Q-040-04: WEBAUTHN_NAME / WEBAUTHN_ID Env Var Deprecation
+
+**Feature:** 040 – Passkeys Migration  
+**Priority:** Low  
+**Status:** Open  
+**Opened:** 2026-05-12
+
+**Context:** `config/webauthn.php` reads `WEBAUTHN_NAME` and `WEBAUTHN_ID` to set the relying-party name and ID. `config/passkeys.php` uses `relying_party_id` from `APP_URL` by default. Operators who have set these env vars may see unexpected behaviour if they are silently dropped.
+
+**Options:**
+
+**Option A (Recommended):** Bridge: in `config/passkeys.php`, read `WEBAUTHN_ID` as the `relying_party_id` fallback (via `env('WEBAUTHN_ID', parse_url(config('app.url'), PHP_URL_HOST))`). Document the bridge in `.env.example`.
+
+**Option B:** Deprecate `WEBAUTHN_NAME` / `WEBAUTHN_ID` immediately; operators must migrate to new env vars. More breaking but cleaner long-term.
+
+_Resolution:_ Decision by maintainers. Update spec and `.env.example` once resolved.
+
+---
 
 ### ~~Q-039-01: Custom Brand Name vs Generic "your-application" Placeholder~~ ✅ RESOLVED
 
