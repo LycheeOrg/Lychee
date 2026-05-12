@@ -10,6 +10,7 @@ namespace App\Actions\Import;
 
 use App\Actions\Photo\Create;
 use App\DTO\ImportMode;
+use App\DTO\UrlValidatedDTO;
 use App\Enum\UserUploadTrustLevel;
 use App\Exceptions\Handler;
 use App\Exceptions\MassImportException;
@@ -32,9 +33,9 @@ class FromUrl
 	 *
 	 * TODO: Instead of returning a collection of photos and throwing a potential {@link MassImportException}, we should use a streamed response like in {@link FromServer}
 	 *
-	 * @param string[]   $urls
-	 * @param Album|null $album
-	 * @param int        $intended_owner_id
+	 * @param UrlValidatedDTO[] $urls
+	 * @param Album|null        $album
+	 * @param int               $intended_owner_id
 	 *
 	 * @return Collection<int,Photo> the collection of imported photos
 	 *
@@ -77,7 +78,7 @@ class FromUrl
 
 				// If the component parameter is specified, this function returns a string (or int in case of PHP_URL_PORT)
 				/** @var string $path */
-				$path = parse_url($url, PHP_URL_PATH);
+				$path = parse_url($url->url, PHP_URL_PATH);
 				$extension = '.' . pathinfo($path, PATHINFO_EXTENSION);
 				if ($extension !== '.') {
 					// Validate photo extension even when `$create->add()` will do later.
