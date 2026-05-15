@@ -10,7 +10,7 @@ return [
     'copy_to_clipboard' => 'Zkopírovat diagnostiku do schránky',
     'self-diagnosis' => 'Auto-diagnostika',
     'info' => 'Info',
-    'space' => 'Mezera',
+    'space' => 'Prostor',
     'load_space' => 'Využití dostupného prostoru.',
     'configuration' => 'Konfigurace',
     'loading' => 'Načítání...',
