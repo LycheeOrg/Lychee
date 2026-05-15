@@ -16,7 +16,7 @@ return [
     'loading' => 'Načítání skupin...',
     'empty' => 'Nenalezeny žádné skupiny.',
 
-    'add_member' => 'Pridat člena...',
+    'add_member' => 'Přidat člena...',
     'empty_group' => 'Tato skupina je prázdná.',
     'no_permission_members' => 'Nemáte oprávnění vidět členy této skupiny',
     'remove_success' => '%s byl odstraněn ze skupiny %s.',

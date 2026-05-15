@@ -11,14 +11,14 @@ return [
     'title' => 'Pravidla pro přejmenování',
 
     // Modal titles
-    'create_rule' => 'Vytvořitp pravidlo pro přejmenovaní',
-    'edit_rule' => 'Upravit pravidlo pro přemenování',
+    'create_rule' => 'Vytvořit pravidlo pro přejmenování',
+    'edit_rule' => 'Upravit pravidlo pro přejmenování',
 
     // Form fields
     'rule_name' => 'Jméno pravidla',
     'description' => 'Popis',
     'pattern' => 'Vzor',
-    'replacement' => 'Nahradti',
+    'replacement' => 'Nahradit',
     'mode' => 'Režim',
     'order' => 'Pořadí',
     'enabled' => 'Povoleno',

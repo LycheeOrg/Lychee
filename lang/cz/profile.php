@@ -31,7 +31,7 @@ return [
     ],
     'token' => [
         'unavailable' => 'Tento token jste již zobrazili.',
-        'no_data' => 'Nebyl vygenerován žádný API tokenu.',
+        'no_data' => 'Nebyl vygenerován žádný API token.',
         'disable' => 'Zakázat',
         'disabled' => 'Token je zakázán',
         'warning' => 'Tento token se již znovu nezobrazí. Zkopírujte si jej a uložte na bezpečné místo.',
@@ -44,7 +44,7 @@ return [
         'setup_env' => 'Nastavte přihlašovací údaje v souboru .env',
         'token_registered' => 'Token %s byl zaregistrován.',
         'setup' => 'Nastavit %s',
-        'reset' => 'reset',
+        'reset' => 'Obnovit',
         'credential_deleted' => 'Přihlašovací údaje smazány!',
     ],
     'u2f' => [

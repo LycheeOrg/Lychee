@@ -9,5 +9,5 @@ return [
     'error' => 'Chyba',
     'success' => 'Úspěch',
     'album_updated' => 'Album aktualizováno',
-    'update_failed' => 'Nepovedlo se aktualizovat Alba',
+    'update_failed' => 'Nepovedlo se aktualizovat Album',
 ];

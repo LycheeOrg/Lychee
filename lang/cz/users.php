@@ -12,7 +12,7 @@ return [
     'username' => 'Přihlašovací jméno',
     'password' => 'Heslo',
     'legend' => 'Legenda',
-    'upload_rights' => 'Pokud povoleno, uzivatel může nahrávat obsah.',
+    'upload_rights' => 'Pokud povoleno, uživatel může nahrávat obsah.',
     'edit_rights' => 'Pokud vybráno, uživatel může měnit svůj profil (přihlašovací jméno, heslo).',
     'upload_trust_level' => 'Úroveň důvěryhodnosti při nahrávání — určuje, jestli je nahraný obsah okamžitě zveřejněný.',
 
@@ -23,12 +23,12 @@ return [
     'change_saved' => 'Změny jsou uloženy!',
     'create_edit' => [
         'upload_rights' => 'Uživatel může nahrávat obsah.',
-        'edit_rights' => 'Uživatel může měnit svůj profil (přihlasovací jméno, heslo).',
+        'edit_rights' => 'Uživatel může měnit svůj profil (přihlašovací jméno, heslo).',
         'admin_rights' => 'Uživatel má práva administrátora.',
         'upload_trust_level' => 'Úroveň důvěry při nahrávání',
         'upload_trust_level_check' => 'Kontrola – nahraný obsah vyžaduje schválení administrátora.',
         'upload_trust_level_monitor' => 'Dohled - nahraný obsah veřejně přístupný, pokud není označen jako nevhodný.',
-        'upload_trust_level_trusted' => 'Dúvěryhodný - nahraný obsah je okamžitě zveřejněn.',
+        'upload_trust_level_trusted' => 'Důvěryhodný - nahraný obsah je okamžitě zveřejněn.',
 
         'quota' => 'Uživatel má nastavený limit objemu.',
         'quota_kb' => 'limit v kB (0 pro přednastavenou hodnotu)',
@@ -38,7 +38,7 @@ return [
     ],
     'invite' => [
         'button' => 'Pozvat uživatele',
-        'links_are_not_revokable' => 'Odkaz pozvánky nelze zrušit..',
+        'links_are_not_revokable' => 'Odkaz pozvánky nelze zrušit.',
         'link_is_valid_x_days' => 'Odkaz je validní %d dní.',
     ],
     'line' => [
