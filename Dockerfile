@@ -87,6 +87,12 @@ RUN apt-get update \
     bash \
     gosu \
 	ghostscript \
+    # Update with respect to vulnerabilities detected with Trivy
+    libcap2 \
+    libcap2-bin \
+    libnghttp2-14 \
+    libsystemd0 \
+    libudev1 \
 	&& sed -i '/<\/policymap>/i \  <policy domain="coder" rights="read|write" pattern="PDF" \/>' /etc/ImageMagick-7/policy.xml \
     && install-php-extensions \
     pdo_mysql \
@@ -102,12 +108,6 @@ RUN apt-get update \
     intl \
     imagick \
     redis \
-    # Update with respect to vulnerabilities detected with Trivy
-    libcap2 \
-    libcap2-bin \
-    libnghttp2-14 \
-    libsystemd0 \
-    libudev1 \
 	&& apt-get clean -qy \
     && rm -rf /var/lib/apt/lists/*
 
