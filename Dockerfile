@@ -102,6 +102,12 @@ RUN apt-get update \
     intl \
     imagick \
     redis \
+    # Update with respect to vulnerabilities detected with Trivy
+    libcap2 \
+    libcap2-bin \
+    libnghttp2-14 \
+    libsystemd0 \
+    libudev1 \
 	&& apt-get clean -qy \
     && rm -rf /var/lib/apt/lists/*
 
