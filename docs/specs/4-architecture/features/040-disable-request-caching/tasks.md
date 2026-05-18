@@ -12,7 +12,7 @@ _Last updated: 2026-05-18_
 
 ### I1 – Database Migration
 
-- [ ] T-040-01 – Create migration to force `cache_enabled = '0'` (FR-040-01, S-040-01, S-040-02, S-040-06).  
+- [x] T-040-01 – Create migration to force `cache_enabled = '0'` (FR-040-01, S-040-01, S-040-02, S-040-06).  
   _Intent:_ Create `database/migrations/2026_05_18_000001_disable_request_caching.php` extending `Illuminate\Database\Migrations\Migration`. The `up()` method updates `configs` where `key = 'cache_enabled'` to `value = '0'`. The `down()` method is intentionally a no-op (migration is one-directional — the old value is not restored).  
   _Verification commands:_  
   - `php artisan test` — full suite must pass (migration is applied to SQLite test DB on every run).  
@@ -22,7 +22,7 @@ _Last updated: 2026-05-18_
 
 ### I2 – Feature Flag
 
-- [ ] T-040-02 – Add `enable-request-caching` feature flag to `config/features.php` (FR-040-02, S-040-03, S-040-04, S-040-05).  
+- [x] T-040-02 – Add `enable-request-caching` feature flag to `config/features.php` (FR-040-02, S-040-03, S-040-04, S-040-05).  
   _Intent:_ Append a new entry to `config/features.php` following the existing pattern:
   ```php
   'enable-request-caching' => (bool) env('ENABLE_REQUEST_CACHING', false),
@@ -33,7 +33,7 @@ _Last updated: 2026-05-18_
   - `vendor/bin/php-cs-fixer fix` — 0 violations.  
   _Notes:_ Default is `false`; no `.env` change required for the safe default.
 
-- [ ] T-040-03 – Update `.env.example` to document `ENABLE_REQUEST_CACHING` (FR-040-04).  
+- [x] T-040-03 – Update `.env.example` to document `ENABLE_REQUEST_CACHING` (FR-040-04).  
   _Intent:_ Add `ENABLE_REQUEST_CACHING=false` with a descriptive comment to `.env.example`, near the other feature-flag entries (e.g., near `WEBHOOK_ENABLED`, `WEBSHOP_ENABLED`, or `HIDE_LYCHEE_SE_CONFIG`).  
   _Verification commands:_  
   - Manual review: confirm key and comment are present.  
@@ -41,7 +41,7 @@ _Last updated: 2026-05-18_
 
 ### I3 – Settings Controller Filter
 
-- [ ] T-040-04 – Filter `Mod Cache` configs out of settings response when `ENABLE_REQUEST_CACHING` is off (FR-040-03, S-040-03, S-040-04, S-040-05, S-040-07, S-040-08).  
+- [x] T-040-04 – Filter `Mod Cache` configs out of settings response when `ENABLE_REQUEST_CACHING` is off (FR-040-03, S-040-03, S-040-04, S-040-05, S-040-07, S-040-08).  
   _Intent:_ In `app/Http/Controllers/Admin/SettingsController::getAll`, add a `->when(...)` filter to the `configs` eager-load query chain. Specifically, after the existing `->when($docker_info->isDocker(), ...)` clause, add:
   ```php
   ->when(config('features.enable-request-caching') === false, fn ($q) => $q->where('cat', '!=', 'Mod Cache'))
@@ -57,7 +57,7 @@ _Last updated: 2026-05-18_
 
 ### I4 – Feature Tests
 
-- [ ] T-040-05 – Write feature test: `Mod Cache` category absent when flag is off (S-040-03, S-040-04).  
+- [x] T-040-05 – Write feature test: `Mod Cache` category absent when flag is off (S-040-03, S-040-04).  
   _Intent:_ In `tests/Feature_v2/` (extending `BaseApiWithDataTest`), add a test method that:
   1. Ensures `config('features.enable-request-caching')` is `false` (default).
   2. Calls `GET /api/v2/Settings` as admin.
@@ -68,7 +68,7 @@ _Last updated: 2026-05-18_
   - `vendor/bin/php-cs-fixer fix` — 0 violations.  
   _Notes:_ Locate the existing settings test file in `tests/Feature_v2/` to find the correct base class and endpoint path.
 
-- [ ] T-040-06 – Write feature test: `Mod Cache` category present when flag is on (S-040-05).  
+- [x] T-040-06 – Write feature test: `Mod Cache` category present when flag is on (S-040-05).  
   _Intent:_ Add a companion test method in the same test class that:
   1. Forces `config(['features.enable-request-caching' => true])`.
   2. Calls `GET /api/v2/Settings` as admin.
@@ -81,7 +81,7 @@ _Last updated: 2026-05-18_
 
 ### I5 – Quality Gates & Documentation
 
-- [ ] T-040-07 – Run full quality gate (NFR-040-01 to NFR-040-04).  
+- [x] T-040-07 – Run full quality gate (NFR-040-01 to NFR-040-04).  
   _Intent:_ Execute the complete quality gate sequence and confirm all checks pass.  
   _Verification commands:_  
   - `vendor/bin/php-cs-fixer fix`  
