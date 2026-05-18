@@ -23,11 +23,13 @@ Redis-backed request caching is disabled by default on all installations. Operat
   - `.env.example` update (FR-040-04).
   - Feature test covering S-040-03 and S-040-05.
   - Quality gates (NFR-040-01 to NFR-040-04).
+  - Confirmation that `General.vue` and `InitConfig` require **no changes** (S-040-07 / S-040-08 — handled automatically by the API-level filter).
 
 - **Out of scope:**
   - Removing or refactoring the caching middleware.
   - Runtime UI toggle for enabling caching.
   - Redis configuration changes.
+  - Changes to `InitConfig`, `LycheeStateStore`, or `General.vue` — not required because the existing `v-if="cache_enabled !== undefined"` guard in `General.vue` already hides the toggle when the config is absent from the API response.
 
 ## Dependencies & Interfaces
 
@@ -89,16 +91,17 @@ Record results in this plan's Scenario Tracking table.
 
 ### I3 – Settings Controller Filter (≤30 min)
 
-- _Goal:_ Hide `Mod Cache` configs from admin settings when feature flag is off (FR-040-03, S-040-03, S-040-04, S-040-05).
+- _Goal:_ Hide `Mod Cache` configs from admin settings when feature flag is off (FR-040-03, S-040-03, S-040-04, S-040-05, S-040-07, S-040-08).
 - _Preconditions:_ I2 complete.
 - _Steps:_
   1. In `SettingsController::getAll`, add the filter to the `configs` query chain (after the existing `not_on_docker` filter):
      ```php
      ->when(config('features.enable-request-caching') === false, fn ($q) => $q->where('cat', '!=', 'Mod Cache'))
      ```
-  2. Run full test suite to verify no regressions.
+  2. **No changes to `General.vue` or `InitConfig` are required.** `General.vue` already guards the cache toggle with `v-if="cache_enabled !== undefined"`. The `load()` function populates `cache_enabled` via `configurations.find(config => config.key === 'cache_enabled')`. When the API omits the `Mod Cache` category, `cache_enabled.value` is `undefined` and the toggle is automatically hidden. Adding an explicit `is_request_caching_enabled` property to `InitConfig` and `LycheeStateStore` would be redundant.
+  3. Run full test suite to verify no regressions.
 - _Commands:_ `vendor/bin/php-cs-fixer fix`, `php artisan test`, `make phpstan`
-- _Exit:_ Controller updated; tests pass.
+- _Exit:_ Controller updated; tests pass; `General.vue` toggle hidden (S-040-07) confirmed indirectly by REST test.
 
 ### I4 – Feature Tests (≤40 min)
 
@@ -129,10 +132,12 @@ Record results in this plan's Scenario Tracking table.
 |-------------|---------------------------|-------|
 | S-040-01 | I1 / T-040-01 | Covered by migration `up()` and test suite re-run. |
 | S-040-02 | I1 / T-040-01 | Idempotent `UPDATE` with no-op when already `'0'`. |
-| S-040-03 | I3, I4 / T-040-03, T-040-04 | Controller filter; explicit feature test. |
-| S-040-04 | I3, I4 / T-040-03, T-040-04 | Same filter path as S-040-03. |
-| S-040-05 | I3, I4 / T-040-03, T-040-05 | Controller filter absent when flag is `true`; explicit feature test. |
+| S-040-03 | I3, I4 / T-040-04, T-040-05 | Controller filter; explicit feature test. |
+| S-040-04 | I3, I4 / T-040-04, T-040-05 | Same filter path as S-040-03. |
+| S-040-05 | I3, I4 / T-040-04, T-040-06 | Controller filter absent when flag is `true`; explicit feature test. |
 | S-040-06 | I1 / T-040-01 | `down()` is a no-op; migrate:rollback safe. |
+| S-040-07 | I3 / T-040-04 | `General.vue` hides toggle automatically — `v-if="cache_enabled !== undefined"` is `false` when config absent from API response. No changes to `General.vue` or `InitConfig` required. |
+| S-040-08 | I3 / T-040-04 | `General.vue` shows toggle when config present in API response. |
 
 ## Analysis Gate
 

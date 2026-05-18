@@ -28,6 +28,7 @@ The Redis-backed request caching feature (`cache_enabled`) has been identified a
 - Removing or refactoring the caching middleware or route-cache infrastructure.
 - Providing a UI toggle to enable/disable request caching at runtime.
 - Changing the default cache driver or Redis configuration.
+- Adding a new property to `InitConfig` / `LycheeStateStore` to propagate the feature flag to the frontend (see Appendix — this is not required because the existing `v-if` guard in `General.vue` already handles hiding).
 
 ## Functional Requirements
 
@@ -57,6 +58,8 @@ The Redis-backed request caching feature (`cache_enabled`) has been identified a
 | S-040-04 | **Feature flag explicitly false – settings hidden.** `.env` has `ENABLE_REQUEST_CACHING=false`. Same outcome as S-040-03. |
 | S-040-05 | **Feature flag true – settings visible.** `.env` has `ENABLE_REQUEST_CACHING=true`. `GET /api/v2/Settings` response contains the `Mod Cache` category with `cache_enabled`, `cache_ttl`, `cache_event_logging` rows. |
 | S-040-06 | **Migration rollback.** Running `php artisan migrate:rollback` on the new migration completes without error (no value restoration). |
+| S-040-07 | **Vue toggle hidden when flag off.** `ENABLE_REQUEST_CACHING` is unset or `false`. In `resources/js/components/settings/General.vue`, the `BoolField` for `cache_enabled` is not rendered because `cache_enabled.value` is `undefined` (config not in API response). No changes to `General.vue` or `InitConfig` are required — the existing `v-if="cache_enabled !== undefined"` guard handles this automatically. |
+| S-040-08 | **Vue toggle visible when flag on.** `ENABLE_REQUEST_CACHING=true`. The `GET /api/v2/Settings` response includes `cache_enabled`; `load()` finds it; `v-if="cache_enabled !== undefined"` is `true`; the toggle renders. |
 
 ## Test Strategy
 
@@ -65,7 +68,9 @@ The Redis-backed request caching feature (`cache_enabled`) has been identified a
 - **REST (settings list):** Add or extend a `Feature_v2` test that asserts:
   - With flag `false`: response body does not include any config with `cat = 'Mod Cache'`.
   - With flag `true`: response body includes at least one config with `cat = 'Mod Cache'`.
-- **Core / CLI / UI / Docs:** No changes required.
+- **Vue (`General.vue`):** No code changes and no additional tests required. The existing `v-if="cache_enabled !== undefined"` guard in the `<BoolField>` element already hides the toggle when `cache_enabled` is absent from the API response. The `load()` function in `General.vue` populates `cache_enabled` via `configurations.find(config => config.key === 'cache_enabled')`; when the config is not in the API payload the reactive ref stays `undefined` and the toggle is not rendered. This behaviour is indirectly verified by the REST tests above.
+- **`InitConfig` / `LycheeStateStore`:** No changes required. The frontend does not need an explicit feature-flag property because the conditional rendering is already driven by whether the config exists in the API payload.
+- **Core / CLI / Docs:** No changes required.
 
 ## Interface & Contract Catalogue
 
@@ -95,8 +100,8 @@ _None introduced._
 
 | ID | State | Trigger / Expected outcome |
 |----|-------|---------------------------|
-| UI-040-01 | `Mod Cache` category absent from settings panel | `ENABLE_REQUEST_CACHING` is unset or `false`. Admin opens Settings; no caching section visible. |
-| UI-040-02 | `Mod Cache` category present in settings panel | `ENABLE_REQUEST_CACHING=true`. Admin opens Settings; caching section with three rows visible. |
+| UI-040-01 | `Mod Cache` category absent from settings panel | `ENABLE_REQUEST_CACHING` is unset or `false`. Admin opens Settings; no caching section visible. Mechanism: backend API filter → `cache_enabled` absent from response → `v-if="cache_enabled !== undefined"` is `false` in `General.vue`. |
+| UI-040-02 | `Mod Cache` category present in settings panel | `ENABLE_REQUEST_CACHING=true`. Admin opens Settings; caching section with three rows visible. Mechanism: filter inactive → `cache_enabled` config included in response → `v-if="cache_enabled !== undefined"` is `true`. |
 
 ## Telemetry & Observability
 
@@ -137,6 +142,32 @@ ui_states:
 | `app/Http/Controllers/Admin/SettingsController.php` | Add `->when(config('features.enable-request-caching') === false, fn ($q) => $q->where('cat', '!=', 'Mod Cache'))` filter. |
 | `.env.example` | Add `ENABLE_REQUEST_CACHING=false` with comment. |
 | `tests/Feature_v2/Settings/...` | Add/extend test for S-040-03 and S-040-05. |
+
+### `General.vue` and `InitConfig` — no changes required
+
+`resources/js/components/settings/General.vue` already guards the cache toggle with:
+
+```html
+<BoolField
+    v-if="cache_enabled !== undefined"
+    :label="$t('settings.system.cache_enabled')"
+    :config="cache_enabled"
+    ...
+/>
+```
+
+The reactive ref is populated in `load()`:
+
+```ts
+cache_enabled.value = configurations.find((config) => config.key === "cache_enabled");
+```
+
+When `SettingsController::getAll` filters out the `Mod Cache` category (FR-040-03), `cache_enabled` is absent from the API response. `configurations.find(...)` returns `undefined`, so `cache_enabled.value` remains `undefined`, and the `v-if` guard keeps the toggle hidden. This end-to-end chain means:
+
+1. **No changes to `General.vue`** — the `v-if` guard is already in place.
+2. **No changes to `InitConfig`** — the frontend does not need a dedicated `is_request_caching_enabled` property. Propagating the flag via `InitConfig` → `LycheeStateStore` would introduce an unnecessary data path when the API-level filter already provides the correct signal.
+
+This decision is captured as S-040-07 and S-040-08 in the Branch & Scenario Matrix.
 
 ---
 

@@ -41,17 +41,19 @@ _Last updated: 2026-05-18_
 
 ### I3 – Settings Controller Filter
 
-- [ ] T-040-04 – Filter `Mod Cache` configs out of settings response when `ENABLE_REQUEST_CACHING` is off (FR-040-03, S-040-03, S-040-04, S-040-05).  
+- [ ] T-040-04 – Filter `Mod Cache` configs out of settings response when `ENABLE_REQUEST_CACHING` is off (FR-040-03, S-040-03, S-040-04, S-040-05, S-040-07, S-040-08).  
   _Intent:_ In `app/Http/Controllers/Admin/SettingsController::getAll`, add a `->when(...)` filter to the `configs` eager-load query chain. Specifically, after the existing `->when($docker_info->isDocker(), ...)` clause, add:
   ```php
   ->when(config('features.enable-request-caching') === false, fn ($q) => $q->where('cat', '!=', 'Mod Cache'))
   ```
-  This mirrors the existing `hide-lychee-SE` pattern (`->when(config('features.hide-lychee-SE', false) === true, fn ($q) => $q->where('cat', '!=', 'lychee SE'))`).  
+  This mirrors the existing `hide-lychee-SE` pattern (`->when(config('features.hide-lychee-SE', false) === true, fn ($q) => $q->where('cat', '!=', 'lychee SE'))`).
+
+  **`General.vue` and `InitConfig` — no code changes required.** `resources/js/components/settings/General.vue` already guards the cache toggle with `v-if="cache_enabled !== undefined"`. The `load()` function populates `cache_enabled` via `configurations.find(config => config.key === 'cache_enabled')`. When this task's filter removes `Mod Cache` from the API response, `cache_enabled.value` is `undefined` and the toggle is not rendered — automatically satisfying S-040-07. No new `InitConfig` property or `LycheeStateStore` field is needed.  
   _Verification commands:_  
   - `php artisan test` — full suite must pass.  
   - `make phpstan` — 0 errors.  
   - `vendor/bin/php-cs-fixer fix` — 0 violations.  
-  _Notes:_ This is a one-line change to the existing query chain.
+  _Notes:_ This is a one-line change to the existing query chain. The Vue hiding behaviour (S-040-07) is confirmed indirectly by the REST-level tests in T-040-05 / T-040-06.
 
 ### I4 – Feature Tests
 
@@ -102,3 +104,5 @@ _Last updated: 2026-05-18_
 - If `GET /api/v2/Settings` route or response shape differs from assumed, update T-040-05/T-040-06 assertions accordingly.
 - `Mod Cache` is the exact category name used in the migration `2024_12_28_190150_caching_config.php` and is stable.
 - The `down()` no-op in T-040-01 is intentional per FR-040-01 failure path: once the caching is disabled, we do not restore the previous value on rollback.
+- **`General.vue` requires no changes.** The toggle `<BoolField v-if="cache_enabled !== undefined" ...>` is already guarded. When the SettingsController filter (T-040-04) removes `Mod Cache` from the API response, `cache_enabled.value` stays `undefined` and the toggle is hidden automatically. This was confirmed by code inspection (see spec Appendix).
+- **`InitConfig` and `LycheeStateStore` require no changes.** No new `is_request_caching_enabled` property is needed — the API-level filter is the sole signal.
