@@ -8,8 +8,8 @@ return [
     */
     'title' => 'Údržba',
     'intro' => 'Na téhle stránce najdete duplikáty fotek nalezené ve vaší databázi',
-    'found' => ' halezeno duplikátů!',
-    'invalid-search' => ' Je nutné zadat alespoň kontrolní součet nebo název.',
+    'found' => 'nalezeno duplikátů!',
+    'invalid-search' => 'Je nutné zadat alespoň kontrolní součet nebo název.',
     'checksum-must-match' => 'Kontrolní součet se musí shodovat.',
     'title-must-match' => 'Název se musí shodovat.',
     'must-be-in-same-album' => 'Musí být ve stejném albu.',
