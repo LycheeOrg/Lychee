@@ -6,6 +6,7 @@ High-level planning document for Lychee features and architectural initiatives.
 
 | Feature ID | Name | Status | Priority | Assignee | Started | Updated | Progress |
 |------------|------|--------|----------|----------|---------|---------|----------|
+| 040 | Disable Request Caching | Planning | P2 | LycheeOrg | 2026-05-18 | 2026-05-18 | Spec, plan, tasks drafted. 9 tasks across 5 increments (I1 migration, I2 feature flag + .env.example, I3 controller filter, I4 feature tests, I5 quality gates). No open questions. Ready to begin T-040-01. |
 
 ## Paused Features
 
@@ -110,4 +111,4 @@ features/
 
 ---
 
-*Last updated: 2026-04-22 (Feature 037 completed — Admin Dashboard & `/admin/` URL Reorg)*
+*Last updated: 2026-05-18 (Feature 040 planned — Disable Request Caching)*

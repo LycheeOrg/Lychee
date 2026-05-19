@@ -69,6 +69,9 @@ class GetAllSettingsTest extends BaseApiWithDataTest
 			],
 		]);
 
+		// Mod Cache must be hidden by default (ENABLE_REQUEST_CACHING defaults to false).
+		$response->assertJsonMissing(['cat' => 'Mod Cache']);
+
 		$response = $this->actingAs($this->admin)->getJson('Settings::init');
 		$this->assertOk($response);
 		$response->assertJson([
@@ -79,5 +82,23 @@ class GetAllSettingsTest extends BaseApiWithDataTest
 
 		$response = $this->actingAs($this->admin)->getJson('Settings::getLanguages');
 		$this->assertOk($response);
+	}
+
+	public function testModCacheVisibleWhenFeatureEnabled(): void
+	{
+		config(['features.enable-request-caching' => true]);
+
+		$response = $this->actingAs($this->admin)->getJson('Settings');
+		$this->assertOk($response);
+		$response->assertJsonFragment(['cat' => 'Mod Cache']);
+	}
+
+	public function testModCacheHiddenWhenFeatureDisabled(): void
+	{
+		config(['features.enable-request-caching' => false]);
+
+		$response = $this->actingAs($this->admin)->getJson('Settings');
+		$this->assertOk($response);
+		$response->assertJsonMissing(['cat' => 'Mod Cache']);
 	}
 }
