@@ -317,6 +317,8 @@ return [
         'merge_all' => 'دمج المحدد',
         'apply_renamer' => 'Apply Renamer',
         'apply_renamer_all' => 'Apply Renamer to Selected',
+        'scan_faces' => 'Scan for Faces',
+        'scan_faces_all' => 'Scan Selected for Faces',
         'approve' => 'Approve',
         'approve_all' => 'Approve Selected',
         'upload_photo' => 'رفع صورة',

@@ -368,6 +368,7 @@ const photoCallbacks = {
 		is_download_photo_visible.value = true;
 	},
 	toggleApplyRenamer: () => {},
+	toggleScanFaces: () => {},
 	toggleApprove: () => {
 		ModerationService.approve(selectedPhotosIds.value).then(() => {
 			selectedPhotosIds.value.forEach((photoId) => {

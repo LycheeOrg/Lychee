@@ -1,0 +1,153 @@
+name: Python AI Vision Service for face recognition
+
+on:
+  push:
+    branches:
+      - master
+      - assisted-vision
+    paths:
+      - 'ai-vision-service/face-recognition/**'
+  pull_request:
+    paths:
+      - 'ai-vision-service/face-recognition/**'
+  workflow_dispatch:
+
+# Declare default permissions as read only.
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ !contains(github.ref, 'master') && !startsWith(github.ref, 'refs/tags/') }}
+
+defaults:
+  run:
+    working-directory: ai-vision-service/face-recognition
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Lint – formatting and style
+  # ---------------------------------------------------------------------------
+  lint:
+    name: Lint (ruff)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@fa2e9d605c4eeb9fcad4c99c224cee0c6c7f3594 # v2.16.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7.6.0
+        with:
+          enable-cache: true
+
+      - name: Install dev dependencies
+        run: uv sync --frozen
+
+      - name: Check formatting
+        run: uv run ruff format --check app/ tests/
+
+      - name: Lint
+        run: uv run ruff check app/ tests/
+
+  # ---------------------------------------------------------------------------
+  # Type check
+  # ---------------------------------------------------------------------------
+  typecheck:
+    name: Type check (ty)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@fa2e9d605c4eeb9fcad4c99c224cee0c6c7f3594 # v2.16.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7.6.0
+        with:
+          enable-cache: true
+
+      - name: Install dev dependencies
+        run: uv sync --frozen
+
+      - name: Type check
+        run: uv run ty check app/
+
+  # ---------------------------------------------------------------------------
+  # Test matrix – Python 3.13 and 3.14
+  # ---------------------------------------------------------------------------
+  test:
+    name: Tests (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version:
+          - "3.13"
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@fa2e9d605c4eeb9fcad4c99c224cee0c6c7f3594 # v2.16.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7.6.0
+        with:
+          enable-cache: true
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dev dependencies
+        run: uv sync --frozen
+
+      - name: Run tests
+        run: uv run pytest --cov=app --cov-report=xml -v
+
+      - name: Upload coverage
+        if: matrix.python-version == '3.13'
+        uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de # v5.5.2
+        with:
+          files: ai-vision-service/face-recognition/coverage.xml
+          flags: ai-vision-service/face-recognition
+        continue-on-error: true
+
+  # ---------------------------------------------------------------------------
+  # Docker build verification
+  # ---------------------------------------------------------------------------
+  docker-build:
+    name: Docker build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@fa2e9d605c4eeb9fcad4c99c224cee0c6c7f3594 # v2.16.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd #v4.0.0
+
+      - name: Build Docker image (no model bake in CI to save time)
+        uses: docker/build-push-action@d08e5c354a6adb9ed34480a06d141179aa583294 # v7.0.0
+        with:
+          context: ai-vision-service/face-recognition
+          push: false
+          load: true
+          tags: lychee-ai-vision:ci
+          # Override the model-bake step by targeting the builder stage
+          # to avoid downloading 300MB of model weights in CI.
+          target: builder
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

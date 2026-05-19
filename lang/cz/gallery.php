@@ -319,6 +319,8 @@ return [
         'approve_all' => 'Schválit vybrané',
         'apply_renamer' => 'Použít přejmenování',
         'apply_renamer_all' => 'Použít přejmenování na vybrané',
+        'scan_faces' => 'Scan for Faces',
+        'scan_faces_all' => 'Scan Selected for Faces',
         'upload_photo' => 'Nahrát fotografii',
         'take_photo' => 'Vyfotit',
         'import_link' => 'Importovat z odkazu',

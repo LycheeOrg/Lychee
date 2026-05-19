@@ -15,6 +15,16 @@ This document tracks modules, dependencies, and architectural relationships acro
 
 #### Domain Layer
 - **Models** (`app/Models/`) - Eloquent ORM models for database entities
+  - **Person Model** (`app/Models/Person.php`) - Represents an identified individual across multiple photos
+    - Optional 1-to-1 link to a `User` account (claimed person)
+    - `is_searchable` flag — when false, face overlays are hidden from non-owners (privacy mode)
+    - Has many `Face` records
+  - **Face Model** (`app/Models/Face.php`) - A detected face bounding box on a specific photo
+    - Bounding box stored as relative floats (0.0–1.0) in `x`, `y`, `width`, `height`
+    - `crop_token` — opaque token used to serve a cropped face thumbnail via dedicated endpoint
+    - `is_dismissed` — operator/owner has chosen to ignore this face detection
+    - Belongs to `Photo` (cascade delete), belongs to `Person` (null on delete)
+    - Has many `FaceSuggestion` (similar faces ranked by confidence)
   - **Album Model** - Nested set tree structure with pre-computed statistical fields:
     - `num_children` - Count of direct child albums
     - `num_photos` - Count of photos directly in this album (not descendants)
@@ -54,6 +64,7 @@ This document tracks modules, dependencies, and architectural relationships acro
   - `RecomputeAlbumStatsOnAlbumChange` - Dispatches recomputation job for parent album
 - **Jobs** (`app/Jobs/`) - Asynchronous task definitions
   - `RecomputeAlbumStatsJob` - Recomputes album statistics and propagates changes to ancestors
+  - `ScanFacesJob` - Dispatches face detection requests to the Python AI Vision service for a batch of photo IDs; sets `face_scan_status = pending` on dispatch, `scanned` on completion
     - Uses `WithoutOverlapping` middleware (keyed by album_id) to prevent concurrent updates
     - Atomic transaction with 3 retries + exponential backoff
     - Propagates to parent album after successful update (cascades to root)
@@ -77,16 +88,24 @@ This document tracks modules, dependencies, and architectural relationships acro
       - Conditional rendering (hidden when no rated photos)
       - Toggle behavior (click same star to clear)
       - Keyboard accessible (Arrow keys, Enter/Space)
+    - **FaceOverlay** (`photoModule/FaceOverlay.vue`) - Absolutely-positioned bounding boxes over the photo detail view; opens `FaceAssignmentModal` on click of unknown faces
   - Forms, modals, drawers, settings components
+    - **FaceAssignmentModal** - Assign an unknown face to an existing or new Person; shows suggestions ranked by confidence
+    - **SelfieClaimModal** - Upload a selfie to match and claim a Person profile (links Person ↔ User)
+  - Maintenance components
+    - **MaintenanceBulkScanFaces** - Card to trigger a bulk scan of all unscanned photos
 - **Views** (`resources/js/views/`) - Page-level Vue components
   - Gallery views: Albums, Album, Favourites, Flow, Frame, Map, Search
   - Admin views (`resources/js/views/admin/`): AdminDashboard, Settings, Users, UserGroups, Purchasables, ContactMessages, Webhooks, Moderation, Maintenance, Jobs
   - Diagnostics remains at top-level (`views/Diagnostics.vue`)
+  - People views: **People** (`/people`) — paginated PersonCard grid; **PersonDetail** (`/people/:personId`) — photos grid with edit/delete/merge actions
 - **Composables** (`resources/js/composables/`) - Reusable composition functions
   - Album, photo, search, selection, context menu composables
   - **useAdminTiles** (`resources/js/composables/useAdminTiles.ts`) - Returns `AdminTile[]` with per-tile visibility driven by capability flags; used by `AdminDashboard.vue`.
 - **Services** (`resources/js/services/`) - API communication layer using axios
-  - **admin-stats-service.ts** - `getStats(force)` → `GET /api/v2/Admin/Stats`
+  - `admin-stats-service.ts` - `getStats(force)` → `GET /api/v2/Admin/Stats`
+  - `people-service.ts` - CRUD for Person; claim/unclaim; merge; selfie upload
+  - `face-detection-service.ts` - Scan photos/albums; assign/dismiss faces; bulk scan
 - **Layouts** (`resources/js/layouts/`) - Photo layout algorithms (square, justified, masonry, grid)
 
 #### State Management
@@ -110,6 +129,14 @@ This document tracks modules, dependencies, and architectural relationships acro
 - **moneyphp/money** - Monetary value handling
 - **LdapRecord Laravel** - LDAP/Active Directory integration (v3.4.2)
   - Dependency: php-ldap PHP extension required
+
+### External Services
+- **AI Vision Service** (`ai-vision-service/`) - Sidecar Python microservice for facial recognition
+  - Framework: FastAPI + uv package manager
+  - Single shared symmetric API key (`AI_VISION_FACE_API_KEY` in Lychee / `VISION_FACE_API_KEY` in Python) used in both directions via `X-API-Key` header
+  - File access: reads photos from a **shared Docker volume** (no file transfer over HTTP)
+  - Embeddings persisted to a separate named volume (`ai_vision_embeddings`)
+  - Supporter Edition (SE) feature: endpoints return 403 on non-SE instances
 
 ### Frontend Dependencies
 - **Vue3** - Progressive JavaScript framework (Composition API)
@@ -236,6 +263,21 @@ Preserves original camera RAW / HEIC / PSD files as a dedicated size variant whi
 - Resource classes extend Spatie Data (not JsonResource)
 - No Blade views - Vue3 only
 
+### AI Vision Inter-Service Communication
+Lychee uses a **REST + webhook** pattern for facial recognition:
+
+1. **Scan trigger** — Lychee sets `face_scan_status = pending` on photo(s), dispatches `ScanFacesJob`
+2. **Batch HTTP request** — Job sends `POST /detect` to Python service with an array of `{photo_id, file_path}` pairs (file paths resolve to the shared Docker volume mount)
+3. **Async callback** — Python service POSTs results back to Lychee's internal callback endpoint with detected bounding boxes and embedding vectors
+4. **DB write** — Lychee creates `Face` rows and `FaceSuggestion` rows; sets `face_scan_status = scanned`
+5. **Cluster/compare** — On claim or merge, Lychee calls `POST /embeddings/compare` for similarity matching
+
+Shared volume architecture:
+```
+./lychee/uploads  ──►  lychee_api:/app/public/uploads  (read/write)
+                  ──►  ai_vision:/data/photos           (read-only)
+```
+
 ## Cross-Module Contracts
 
 ### API Communication
@@ -261,6 +303,7 @@ Preserves original camera RAW / HEIC / PSD files as a dedicated size variant whi
 ### How-To Guides
 - [Add OAuth Provider](../2-how-to/add-oauth-provider.md) - Step-by-step OAuth integration
 - [Configure Pagination](../2-how-to/configure-pagination.md) - Album and photo pagination settings
+- [Configure Facial Recognition](../2-how-to/configure-facial-recognition.md) - Docker setup, shared volume, environment variables, and permission modes
 - [Translating Lychee](../2-how-to/translating-lychee.md) - Translation guide for developers and translators
 - [Using Renamer](../2-how-to/using-renamer.md) - Filename transformation during import
 
@@ -300,4 +343,4 @@ Preserves original camera RAW / HEIC / PSD files as a dedicated size variant whi
 
 ---
 
-*Last updated: January 14, 2026*
+*Last updated: March 22, 2026*

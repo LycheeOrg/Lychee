@@ -9,6 +9,7 @@
 namespace App\Policies;
 
 use App\Constants\PhotoAlbum as PA;
+use App\Enum\FacePermissionMode;
 use App\Enum\MetricsAccess;
 use App\Enum\PhotoHighlightVisibilityType;
 use App\Exceptions\ConfigurationKeyMissingException;
@@ -32,6 +33,10 @@ class PhotoPolicy extends BasePolicy
 	public const CAN_READ_METRICS = 'canReadMetrics';
 	public const CAN_READ_RATINGS = 'canReadRatings';
 	public const CAN_HIGHLIGHT = 'canHighlight';
+	public const CAN_VIEW_FACE_OVERLAYS = 'canViewFaceOverlays';
+	public const CAN_DISMISS_FACE = 'canDismissFace';
+	public const CAN_ASSIGN_FACE_ON_PHOTO = 'canAssignFaceOnPhoto';
+	public const CAN_TRIGGER_SCAN_ON_PHOTO = 'canTriggerScanOnPhoto';
 
 	/**
 	 * @throws FrameworkException
@@ -304,5 +309,110 @@ class PhotoPolicy extends BasePolicy
 			fn (bool $carry, Album $album) => $carry || $reducer($album),
 			false
 		);
+	}
+
+	// ── AI Vision / Face gates ────────────────────────────────────────────
+
+	/**
+	 * Resolve the current FacePermissionMode from configuration.
+	 */
+	private function getFaceMode(): FacePermissionMode
+	{
+		return app(ConfigManager::class)->getValueAsEnum('ai_vision_face_permission_mode', FacePermissionMode::class) ?? FacePermissionMode::RESTRICTED;
+	}
+
+	/**
+	 * Return false if AI Vision is not enabled (ai_vision_enabled + ai_vision_face_enabled).
+	 * Admin bypass is already handled by BasePolicy::before().
+	 */
+	private function isFaceEnabled(): bool
+	{
+		$cfg = app(ConfigManager::class);
+
+		return $cfg->getValueAsBool('ai_vision_enabled') && $cfg->getValueAsBool('ai_vision_face_enabled');
+	}
+
+	/**
+	 * Check whether the current user may see face overlays on this photo.
+	 *
+	 * Permission matrix (admin handled by before()):
+	 *   public              → album access (canSee)
+	 *   private             → logged-in user
+	 *   privacy-preserving  → photo owner only
+	 *   restricted          → photo owner only
+	 */
+	public function canViewFaceOverlays(?User $user, Photo $photo): bool
+	{
+		if (!$this->isFaceEnabled()) {
+			return false;
+		}
+
+		return match ($this->getFaceMode()) {
+			FacePermissionMode::PUBLIC => $this->canSee($user, $photo),
+			FacePermissionMode::PRIVATE => $user !== null,
+			FacePermissionMode::PRIVACY_PRESERVING,
+			FacePermissionMode::RESTRICTED => $this->isOwner($user, $photo),
+		};
+	}
+
+	/**
+	 * Check whether the current user may dismiss a face on this photo.
+	 *
+	 * Dismiss is always restricted to the photo owner regardless of mode.
+	 * Admin bypass is handled by before().
+	 */
+	public function canDismissFace(?User $user, Photo $photo): bool
+	{
+		if (!$this->isFaceEnabled()) {
+			return false;
+		}
+
+		return $this->isOwner($user, $photo);
+	}
+
+	/**
+	 * Check whether the current user may assign a face on this photo to a person.
+	 *
+	 * Permission matrix (admin handled by before()):
+	 *   public              → logged-in user
+	 *   private             → logged-in user
+	 *   privacy-preserving  → photo owner only
+	 *   restricted          → deny even the owner
+	 */
+	public function canAssignFaceOnPhoto(?User $user, Photo $photo): bool
+	{
+		if (!$this->isFaceEnabled()) {
+			return false;
+		}
+
+		return match ($this->getFaceMode()) {
+			FacePermissionMode::PUBLIC => $user !== null,
+			FacePermissionMode::PRIVATE => $user !== null,
+			FacePermissionMode::PRIVACY_PRESERVING => $this->isOwner($user, $photo),
+			FacePermissionMode::RESTRICTED => false,
+		};
+	}
+
+	/**
+	 * Check whether the current user may trigger a face scan on this photo.
+	 *
+	 * Permission matrix (admin handled by before()):
+	 *   public              → logged-in user
+	 *   private             → logged-in user
+	 *   privacy-preserving  → photo owner only
+	 *   restricted          → photo owner only
+	 */
+	public function canTriggerScanOnPhoto(?User $user, Photo $photo): bool
+	{
+		if (!$this->isFaceEnabled()) {
+			return false;
+		}
+
+		return match ($this->getFaceMode()) {
+			FacePermissionMode::PUBLIC => $user !== null,
+			FacePermissionMode::PRIVATE => $user !== null,
+			FacePermissionMode::PRIVACY_PRESERVING,
+			FacePermissionMode::RESTRICTED => $this->isOwner($user, $photo),
+		};
 	}
 }

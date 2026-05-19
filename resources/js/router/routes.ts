@@ -38,6 +38,10 @@ const BasketList = () => import("@/views/webshop/BasketList.vue");
 const CheckoutPage = () => import("@/views/webshop/CheckoutPage.vue");
 const OrderList = () => import("@/views/webshop/OrderList.vue");
 const OrderDownload = () => import("@/views/webshop/OrderDownload.vue");
+const People = () => import("@/views/face-recog/People.vue");
+const PersonDetail = () => import("@/views/face-recog/PersonDetail.vue");
+const FaceClusters = () => import("@/views/face-recog/FaceClusters.vue");
+const FaceMaintenance = () => import("@/views/face-recog/FaceMaintenance.vue");
 
 const routes_ = [
 	{
@@ -136,6 +140,11 @@ const routes_ = [
 		name: "maintenance",
 		path: "/admin/maintenance",
 		component: Maintenance,
+	},
+	{
+		name: "face-maintenance",
+		path: "/admin/maintenance/faces",
+		component: FaceMaintenance,
 	},
 	{
 		name: "tree",
@@ -248,6 +257,22 @@ const routes_ = [
 		name: "order",
 		path: "/order/:orderId?/:transactionId?",
 		component: OrderDownload,
+		props: true,
+	},
+	{
+		name: "people",
+		path: "/people",
+		component: People,
+	},
+	{
+		name: "face-clusters",
+		path: "/people/clusters",
+		component: FaceClusters,
+	},
+	{
+		name: "person",
+		path: "/people/:personId/:photoId?",
+		component: PersonDetail,
 		props: true,
 	},
 ];

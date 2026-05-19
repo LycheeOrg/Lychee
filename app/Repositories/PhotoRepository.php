@@ -62,7 +62,7 @@ class PhotoRepository
 			->join(PA::PHOTO_ALBUM, PA::PHOTO_ID, '=', 'photos.id')
 			->where(PA::ALBUM_ID, '=', $album_id)
 			->select('photos.*')
-			->with(['size_variants', 'tags', 'palette', 'statistics', 'rating']);
+			->with(['size_variants', 'tags', 'palette', 'statistics', 'rating', 'faces.person', 'faces.suggestions.suggestedFace.person']);
 
 		// Apply tag filtering if tag_ids provided and not empty
 		if ($tag_ids !== null && count($tag_ids) > 0) {

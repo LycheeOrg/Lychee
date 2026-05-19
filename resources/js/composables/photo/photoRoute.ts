@@ -38,6 +38,11 @@ export function usePhotoRoute(router: Router) {
 			return { name: "timeline", params: { date: router.currentRoute.value.params.date as string, photoId: photoId } };
 		}
 
+		if (currentRoute === "person") {
+			const personId = router.currentRoute.value.params.personId as string;
+			return { name: "person", params: { personId, photoId } };
+		}
+
 		return { name: "album", params: { albumId: albumId ?? ALL, photoId: photoId }, query: pageQuery };
 	}
 

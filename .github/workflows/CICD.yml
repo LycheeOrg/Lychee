@@ -11,11 +11,13 @@ on:
       - '**/*.md'
       - 'public/dist/*.js'
       - 'public/dist/**/*.js'
+      - 'ai-vision-service/**'
   pull_request:
     paths-ignore:
       - '**/*.md'
       - 'public/dist/*.js'
       - 'public/dist/**/*.js'
+      - 'ai-vision-service/**'
   # Allow manually triggering the workflow.
   workflow_dispatch:
 

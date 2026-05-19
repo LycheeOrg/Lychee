@@ -118,7 +118,7 @@ final class Flow
 				'min_privilege_cover', 'min_privilege_cover.size_variants',
 				'statistics',
 				'photos',
-				'photos.statistics', 'photos.size_variants', 'photos.palette', 'photos.tags', 'photos.rating']);
+				'photos.statistics', 'photos.size_variants', 'photos.palette', 'photos.tags', 'photos.rating','photos.faces','photos.faces.person',]);
 		}
 
 		// Only join what we need for ordering.

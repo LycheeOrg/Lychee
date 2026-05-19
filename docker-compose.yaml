@@ -26,10 +26,10 @@ x-base-lychee-setup: &base-lychee-setup
   # There are also other images available which uses nginx as a base instead of FrankenPHP:
   # - ghcr.io/lycheeorg/lychee:latest-legacy
   # - ghcr.io/lycheeorg/lychee:edge-legacy
-  image: ghcr.io/lycheeorg/lychee:latest
+  # image: ghcr.io/lycheeorg/lychee:latest
 
   # The following lines are for development purposes only.
-  # image: lychee-frankenphp:latest
+  image: lychee-frankenphp
   # image: lychee-legacy:latest
   # build:
   #   context: ./app
@@ -219,7 +219,7 @@ x-common-env: &common-env
   #
   # For improved reactivity of Lychee we recommend to use a worker.
   # You can use either 'database' or 'redis' as queue driver (but in the later you need to enable redis).
-  # QUEUE_CONNECTION: "${QUEUE_CONNECTION:-database}"
+  QUEUE_CONNECTION: "${QUEUE_CONNECTION:-database}"
 
   # Logging Stuff.
   # LOG_CHANNEL: "${LOG_CHANNEL:-stack}"
@@ -404,6 +404,12 @@ x-common-env: &common-env
   # PAYPAL_CLIENT_ID=
   # PAYPAL_SECRET=
 
+  ###################################################################
+  # Facial recognition (requires SE)                               #
+  ###################################################################
+  AI_VISION_FACE_API_KEY: "${AI_VISION_API_KEY:-changeme}"
+  AI_VISION_FACE_URL: "http://ai_vision:8000"
+
 services:
   ##########################################################################################
   # Lychee API Service and frontend.
@@ -503,6 +509,22 @@ services:
           - cache:/data:rw
       restart: on-failure:5
 
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      - PMA_HOST=lychee_db
+      - PMA_PORT=3306
+    depends_on:
+        lychee_db:
+          condition: service_healthy
+    networks:
+        - lychee
+    profiles:
+      - phpmyadmin
+
   lychee_db:
       image: mariadb:10
       security_opt:
@@ -549,6 +571,43 @@ services:
         retries: 10
         start_period: 10s
 
+  ai_vision:
+    expose:
+      - "${APP_PORT_AI_FACE:-8001}"
+    ports:
+      - "${APP_PORT_AI_FACE:-8001}:8000"
+    # build:
+    #   context: ./ai-vision-service
+    # container_name: lychee-ai-vision
+    image: lychee-ai-vision
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    environment:
+      VISION_FACE_LYCHEE_API_URL: "http://lychee_api:8000"
+      VISION_FACE_API_KEY: "${AI_VISION_API_KEY:-changeme}"
+      VISION_FACE_VERIFY_SSL: "${AI_VISION_VERIFY_SSL:-true}"
+      VISION_FACE_PHOTOS_PATH: "/data/photos"
+      VISION_FACE_STORAGE_PATH: "/data/embeddings"
+      VISION_FACE_WORKERS: "${AI_VISION_WORKERS:-1}"
+    volumes:
+      - ./lychee/uploads:/data/photos:ro
+      - ai_vision_embeddings:/data/embeddings
+    networks:
+      - lychee
+    # depends_on:
+    #   lychee_api:
+    #     condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+
 networks:
     lychee:
 
@@ -558,4 +617,7 @@ volumes:
         driver: local
     cache:
         name: lychee_prod_redis
+        driver: local
+    ai_vision_embeddings:
+        name: lychee_ai_vision_embeddings
         driver: local

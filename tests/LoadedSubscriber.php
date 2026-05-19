@@ -30,8 +30,15 @@ final class LoadedSubscriber implements LoadedSubscriberInterface
 		app()->singleton(ConfigManager::class, fn () => new ConfigManager());
 
 		// If there are any users in the DB, this tends to crash some tests (because we check exact count of users).
+		// Disable FK checks and clean all related tables to avoid constraint violations.
 		if (User::query()->count() > 0) {
+			$db = \Illuminate\Support\Facades\DB::getFacadeRoot();
+			$db::statement('PRAGMA foreign_keys = OFF');
+			$db::table('face_suggestions')->delete();
+			$db::table('faces')->delete();
+			$db::table('persons')->delete();
 			User::truncate();
+			$db::statement('PRAGMA foreign_keys = ON');
 		}
 
 		HandleExceptions::flushState();
