@@ -137,10 +137,12 @@ class PhotoTagsTest extends BaseApiWithDataTest
 			'photos' => [
 				[
 					'id' => $this->photo1->id,
-					'tags' => ['tag1', 'tag2'],
 				],
 			],
 		]);
+		$sorted_tags = $response->json('photos.0.tags');
+		sort($sorted_tags);
+		$this->assertEquals(['tag1', 'tag2'], $sorted_tags);
 	}
 
 	public function testTagsPhotoAuthorizedOwnerOverride(): void

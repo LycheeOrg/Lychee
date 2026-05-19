@@ -6,19 +6,20 @@ return [
     | Tags page
     |--------------------------------------------------------------------------
     */
-    'title' => 'Tags',
-    'description' => 'Manage your tags here. You can rename, merge, and delete tags.<br>The number indicates how many photos are associated with that tag.',
-    'no_tags' => 'No tags found.',
-    'loading' => 'Loading tags...',
-    'rename' => 'Rename',
-    'merge' => 'Merge',
-    'delete' => 'Delete',
+    'title' => 'Štítky',
+    'description' => 'Zde můžete spravovat své štítky. Můžete je přejmenovat, sloučit a odstranit.<br>Číslo udává, kolik fotografií je s daným štítkem spojeno.',
+    'no_tags' => 'Nebyly nalezeny žádné štítky.',
+    'loading' => 'Načítání štítků...',
+    'rename' => 'Přejmenovat',
+    'merge' => 'Sloučit',
+    'delete' => 'Odstranit',
 
-    'delete_confirm' => 'Are you sure you want to delete the tag “%s”?',
-    'delete_warning' => 'This action cannot be undone! All photos associated with this tag will no longer have this tag.',
+    'delete_confirm' => 'Opravdu chcete odstranit štítek „%s“?',
+    'delete_warning' => 'Tuto akci nelze vrátit zpět! Všechny fotografie spojené s tímto štítkem již nebudou mít tento štítek.',
 
-    'merge_confirm' => 'Are you sure you want to merge the tag “%1$s” into the tag “%2$s”?',
-    'merge_warning' => 'This action cannot be undone! All photos associated with the source tag will be moved to the destination tag.',
+    'merge_confirm' => 'Opravdu chcete sloučit štítek „%1$s“ se štítkem „%2$s“?',
+    'merge_warning' => 'Tuto akci nelze vrátit zpět! Všechny fotografie spojené se zdrojovým štítkem budou přeštítkované cílovým štítkem.',
 
-    'rename_tag' => 'Rename Tag',
+    'rename_tag' => 'Přejmenovat štítek',
 ];
+

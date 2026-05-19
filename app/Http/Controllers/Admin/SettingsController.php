@@ -45,6 +45,7 @@ class SettingsController extends Controller
 		$editable_configs = ConfigCategory::with([
 			'configs' => fn ($query) => $query
 				->when(config('features.hide-lychee-SE', false) === true, fn ($q) => $q->where('cat', '!=', 'lychee SE'))
+				->when(config('features.enable-request-caching') === false, fn ($q) => $q->where('cat', '!=', 'Mod Cache'))
 				->when($docker_info->isDocker(), fn ($q) => $q->where('not_on_docker', '!=', true))
 				->when(!$request->verify()->is_supporter() && !$request->configs()->getValueAsBool('enable_se_preview'), fn ($q) => $q->where('level', '=', 0))
 				->when(!$request->verify()->is_pro(), fn ($q) => $q->where('level', '<', 2))

@@ -250,4 +250,26 @@ return [
 	 | Set WHITE_LABEL_ENABLED=true in .env to activate.
 	 */
 	'white_label_enabled' => (bool) env('WHITE_LABEL_ENABLED', false),
+
+	/*
+	 |--------------------------------------------------------------------------
+	 | Use fopen for URL imports instead of curl
+	 |--------------------------------------------------------------------------
+	 | curl mitigates issues with Time of Check to Time of Use (TOCTOU) attacks, but it may not be available in all environments.
+	 | Set USE_FOPEN_FOR_URL_IMPORTS=true in .env to use fopen instead of curl for URL imports.
+	 */
+	'use_fopen_for_url_imports' => (bool) env('USE_FOPEN_FOR_URL_IMPORTS', false),
+
+	/*
+	 |--------------------------------------------------------------------------
+	 | Enable Request Caching
+	 |--------------------------------------------------------------------------
+	 |
+	 | When enabled, admins can configure Redis-backed response caching from
+	 | the settings panel (cache_enabled, cache_ttl, cache_event_logging).
+	 | Disabled by default — set ENABLE_REQUEST_CACHING=true to activate.
+	 | Note: caching is only active when cache_enabled is also set to 1 in
+	 | the database settings.
+	 */
+	'enable-request-caching' => (bool) env('ENABLE_REQUEST_CACHING', false),
 ];
