@@ -216,8 +216,6 @@ function setDarkMode() {
 }
 
 onMounted(() => {
-	console.log("Mounted settings");
-	console.log("Initial tab:", tab.value);
 	load();
 });
 
