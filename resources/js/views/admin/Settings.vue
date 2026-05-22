@@ -222,7 +222,7 @@ onMounted(() => {
 watch(
 	() => route.params.tab,
 	(newTab, _oldTab) => {
-		tab.value = (newTab as string|undefined) ?? '';
+		tab.value = (newTab as string | undefined) ?? "";
 	},
 );
 </script>
