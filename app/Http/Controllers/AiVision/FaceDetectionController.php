@@ -151,7 +151,8 @@ class FaceDetectionController extends Controller
 				/** @var string[] $distinct_person_ids */
 				$distinct_person_ids = array_values(array_unique(array_filter($affected_person_ids, static fn ($person_id) => $person_id !== null)));
 				if ($distinct_person_ids !== []) {
-					$stats_by_person = Face::query()
+					/** @var \Illuminate\Support\Collection<int,object{person_id:int,face_count:int,photo_count:int}> $stats_by_person */
+					$stats_by_person = DB::table('faces')
 						->whereIn('person_id', $distinct_person_ids)
 						->where('is_dismissed', '=', false)
 						->selectRaw('person_id, COUNT(*) as face_count, COUNT(DISTINCT photo_id) as photo_count')
