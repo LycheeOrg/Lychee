@@ -79,7 +79,7 @@ const props = defineProps<{
 }>();
 
 const toast = useToast();
-const tab = ref(props.tab);
+const tab = ref(props.tab ?? ""); // Default to empty string if props.tab is undefined
 const router = useRouter();
 const route = useRoute();
 const isReady = ref(false);
@@ -222,7 +222,7 @@ onMounted(() => {
 watch(
 	() => route.params.tab,
 	(newTab, _oldTab) => {
-		tab.value = newTab as string | undefined;
+		tab.value = (newTab as string | undefined) ?? "";
 	},
 );
 </script>

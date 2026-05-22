@@ -93,6 +93,7 @@ RUN apt-get update \
     libnghttp2-14 \
     libsystemd0 \
     libudev1 \
+    libgnutls30t64 \
 	&& sed -i '/<\/policymap>/i \  <policy domain="coder" rights="read|write" pattern="PDF" \/>' /etc/ImageMagick-7/policy.xml \
     && install-php-extensions \
     pdo_mysql \
