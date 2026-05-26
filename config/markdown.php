@@ -116,11 +116,12 @@ return [
 	|
 	| This option specifies whether to allow risky image URLs and links.
 	|
-	| Default: true
+	| Default: false
 	|
+	| See: https://commonmark.thephpleague.com/2.x/security/#unsafe-links
 	*/
 
-	'allow_unsafe_links' => true,
+	'allow_unsafe_links' => false,
 
 	/*
 	|--------------------------------------------------------------------------
@@ -131,9 +132,10 @@ return [
 	|
 	| Default: PHP_INT_MAX
 	|
+	| Very unlikely we need more than 10.
 	*/
 
-	'max_nesting_level' => PHP_INT_MAX,
+	'max_nesting_level' => 10,
 
 	/*
 	|--------------------------------------------------------------------------
