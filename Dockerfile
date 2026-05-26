@@ -56,7 +56,7 @@ RUN npm run build
 # ============================================================================
 # Stage 3: Production FrankenPHP Image
 # ============================================================================
-FROM dunglas/frankenphp:php8.5-trixie@sha256:8ac21b7646f6ed7c8028cf518c95d318d0b5ea5235e76ff413b953e2eaff1bbd
+FROM dunglas/frankenphp:php8.5-trixie@sha256:b2b64b403c6dbfdcb6cdb78d533ff89d131eb9d5d8aba597e15a46559341f3b4
 
 ARG USER=appuser
 
@@ -88,12 +88,13 @@ RUN apt-get update \
     gosu \
 	ghostscript \
     # Update with respect to vulnerabilities detected with Trivy
-    libcap2 \
-    libcap2-bin \
-    libnghttp2-14 \
-    libsystemd0 \
-    libudev1 \
-    libgnutls30t64 \
+    # libcap2 \
+    # libcap2-bin \
+    # libnghttp2-14 \
+    # libsystemd0 \
+    # libudev1 \
+    # libgnutls30t64 \
+    # libgssapi-krb5-2 \
 	&& sed -i '/<\/policymap>/i \  <policy domain="coder" rights="read|write" pattern="PDF" \/>' /etc/ImageMagick-7/policy.xml \
     && install-php-extensions \
     pdo_mysql \
