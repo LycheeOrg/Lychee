@@ -35,7 +35,8 @@ updates:
 
   - package-ecosystem: "docker"
     directories:
-      - "Dockerfile"
-      - "Dockerfile-legacy"
+      - Dockerfile
+      - Dockerfile-legacy
+      - /
     schedule:
       interval: weekly
