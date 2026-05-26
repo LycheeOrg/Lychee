@@ -88,13 +88,7 @@ RUN apt-get update \
     gosu \
 	ghostscript \
     # Update with respect to vulnerabilities detected with Trivy
-    # libcap2 \
-    # libcap2-bin \
-    # libnghttp2-14 \
-    # libsystemd0 \
-    # libudev1 \
-    # libgnutls30t64 \
-    # libgssapi-krb5-2 \
+    libgssapi-krb5-2 \
 	&& sed -i '/<\/policymap>/i \  <policy domain="coder" rights="read|write" pattern="PDF" \/>' /etc/ImageMagick-7/policy.xml \
     && install-php-extensions \
     pdo_mysql \
