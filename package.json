@@ -14,8 +14,9 @@
         "vca": "vca -- --dir resources/js"
     },
     "devDependencies": {
-        "@tkskto/vue-component-analyzer": "^0.10.3",
+        "@types/dropbox-chooser": "^1.0.8",
         "@types/jsdom": "^28.0.3",
+        "@types/justified-layout": "^4.1.4",
         "@types/leaflet": "^1.9.21",
         "@types/leaflet-rotatedmarker": "^0.2.6",
         "@types/leaflet.markercluster": "^1.5.6",
@@ -23,8 +24,6 @@
         "@types/node": "^25.9.1",
         "@types/qrcode": "^1.5.6",
         "@types/sprintf-js": "^1.1.4",
-        "@types/dropbox-chooser": "^1.0.8",
-        "@types/justified-layout": "^4.1.4",
         "@typescript-eslint/parser": "^8.60.0",
         "@vitest/eslint-plugin": "^1.6.18",
         "@vue/eslint-config-prettier": "^10.2.0",
