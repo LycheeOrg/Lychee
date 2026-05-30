@@ -15,10 +15,11 @@ return new class() extends Migration {
 
 	public function up(): void
 	{
-		$val = DB::table('configs')->where('key', 'timeline_albums_enabled')->select('value')->get();
+		$val = DB::table('configs')->where('key', 'timeline_albums_enabled')->value('value');
+		$normalized_val = in_array($val, ['0', '1'], true) ? $val : '0';
 		DB::table('configs')->insert([
 			'key' => 'timeline_albums_root_enabled',
-			'value' => $val->isEmpty() ? '0' : $val[0]->value,
+			'value' => $normalized_val,
 			'cat' => self::CAT,
 			'type_range' => self::BOOL,
 			'description' => 'Enable timeline for albums at root',
