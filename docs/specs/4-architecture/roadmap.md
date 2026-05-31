@@ -6,6 +6,7 @@ High-level planning document for Lychee features and architectural initiatives.
 
 | Feature ID | Name | Status | Priority | Assignee | Started | Updated | Progress |
 |------------|------|--------|----------|----------|---------|---------|----------|
+| 042 | Order Item Photo Link | Planning | P2 | LycheeOrg | 2026-05-31 | 2026-05-31 | Spec, plan, tasks drafted. 9 tasks across 3 increments (I1 backend flags, I2 frontend three-state render, I3 quality gates). No open questions. Ready to begin T-042-01. |
 | 040 | Disable Request Caching | Planning | P2 | LycheeOrg | 2026-05-18 | 2026-05-18 | Spec, plan, tasks drafted. 9 tasks across 5 increments (I1 migration, I2 feature flag + .env.example, I3 controller filter, I4 feature tests, I5 quality gates). No open questions. Ready to begin T-040-01. |
 
 ## Paused Features
@@ -112,4 +113,4 @@ features/
 
 ---
 
-*Last updated: 2026-05-31 (Feature 041 in progress — Album Tags)*
+*Last updated: 2026-05-31 (Feature 042 planning — Order Item Photo Link)*
