@@ -153,14 +153,14 @@ _Reviewed: 2026-05-31. No blocking findings. Ready to begin T-041-01._
 
 ## Exit Criteria
 
-- [ ] All 12 tasks in `tasks.md` marked `[x]`.
-- [ ] `php artisan test` exits 0 (no regressions).
-- [ ] `make phpstan` exits 0.
-- [ ] `vendor/bin/php-cs-fixer fix --dry-run` exits 0.
-- [ ] `UploadWithMetadataTest` covers S-041-01 through S-041-09, S-041-11.
-- [ ] Roadmap row updated.
-- [ ] `knowledge-map.md` updated.
-- [ ] `_current-session.md` updated.
+- [x] All 12 tasks in `tasks.md` marked `[x]`.
+- [x] `php artisan test` exits 0 (no regressions).
+- [x] `make phpstan` exits 0.
+- [x] `vendor/bin/php-cs-fixer fix --dry-run` exits 0.
+- [x] `UploadWithMetadataTest` covers S-041-01 through S-041-09, S-041-11.
+- [x] Roadmap row updated.
+- [x] `knowledge-map.md` updated.
+- [x] `_current-session.md` updated.
 
 ## Follow-ups / Backlog
 
