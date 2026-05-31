@@ -46,7 +46,7 @@ _Last updated: 2026-05-31_
   _Verification commands:_  
   - `php artisan test --filter=ApplyUserProvidedMetadataTest`  
   - `make phpstan`  
-  _Notes:_ Pipe must handle `DuplicateDTO|StandaloneDTO` type union consistent with `SharedPipe` convention if applicable; otherwise implement as `StandalonePipe` only.
+  _Notes:_ Implement as `StandalonePipe` only (Q-041-03 resolved). For duplicate uploads the pipe never runs; user-supplied `title`/`description` are discarded (duplicate keeps its existing values).
 
 - [ ] T-041-06 – Insert `ApplyUserProvidedMetadata` before `HydrateMetadata`; add `AutoRenamer` guard (FR-041-03, FR-041-04, FR-041-06, S-041-01, S-041-11).  
   _Intent:_ In `App\Actions\Photo\Create::handleStandalone()` and `handlePhotoLivePartner()`, insert `Standalone\ApplyUserProvidedMetadata::class` immediately before `Shared\HydrateMetadata::class`. In `AutoRenamer::handle()`, add `if ($state->title !== null) { return $next($state); }` at the top.  
@@ -116,4 +116,3 @@ _Last updated: 2026-05-31_
 ## Notes / TODOs
 
 - T-041-04: If `preallocateId()` interacts poorly with Eloquent dirty-tracking, a plain property (`protected ?string $preallocated_id_override`) could be used instead of writing directly to `$this->attributes`; assess during implementation and log a follow-up in the plan if needed.
-- T-041-13: If the UploadPanel already has complex state management, consider using a Pinia store slice rather than local refs. Log as a follow-up rather than blocking the increment.

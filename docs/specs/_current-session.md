@@ -28,11 +28,10 @@ User requested Feature 041: allow callers to set a photo's `title` and `descript
 
 **No open questions.** All requirements are clear from the problem statement.
 
-**Plan increments (5 × ≤60 min, 14 tasks total):**
+**Plan increments (4 × ≤60 min, 12 tasks total):**
 - **I1 – DTO Chain & Core Model** (T-041-01 to T-041-04): failing test stubs, propagate `title`/`description`/`preallocated_id` through `ImportParam → InitDTO → StandaloneDTO`, add `Photo::preallocateId()`.
-- **I2 – New Pipe & AutoRenamer Guard** (T-041-05, T-041-06): create `ApplyUserProvidedMetadata` pipe, insert before `HydrateMetadata`, guard `AutoRenamer`.
-- **I3 – Request, Resource & Controller** (T-041-07 to T-041-11): add `title`/`description` validation, add fields to `UploadMetaResource`, generate `expected_id` in controller, update `ProcessImageJob`.
-- **I4 – Frontend** (T-041-12, T-041-13): update TS types, `upload-service.ts`, `UploadingLine.vue`, `UploadPanel.vue`.
+- **I2 – New Pipe & AutoRenamer Guard** (T-041-05, T-041-06): create `ApplyUserProvidedMetadata` pipe (StandalonePipe only), insert before `HydrateMetadata`, guard `AutoRenamer`.
+- **I3 – Request, Resource & Controller** (T-041-07 to T-041-11): add `title`/`description` validation (fires on every chunk), add fields to `UploadMetaResource`, generate `expected_id` in controller, update `ProcessImageJob`.
 - **I5 – Quality Gates + Docs** (T-041-14): full pipeline green; roadmap, knowledge map, session docs updated.
 
 **Key artefacts produced:**
@@ -64,7 +63,7 @@ User requested Feature 041: allow callers to set a photo's `title` and `descript
 
 ## Open Questions
 
-None for either active feature.
+None for either active feature. Q-041-01, Q-041-02, and Q-041-03 resolved (all Option A) — see `open-questions.md` for details.
 
 ## References
 
