@@ -1,8 +1,15 @@
 # Current Session
 
-_Last updated: 2026-05-18_
+_Last updated: 2026-05-31_
 
 ## Active Features
+
+**Feature 041 – Upload Photo Metadata**
+- Status: Planning (spec + plan + tasks complete)
+- Priority: P2
+- License: Open
+- Started: 2026-05-31
+- Dependencies: None
 
 **Feature 040 – Disable Request Caching**
 - Status: Planning (spec + plan + tasks complete)
@@ -13,49 +20,77 @@ _Last updated: 2026-05-18_
 
 ## Session Summary
 
-User requested Feature 040: disable the Redis request-caching functionality. Two deliverables:
-1. A database migration that forces `cache_enabled = '0'` regardless of its current value.
-2. A feature flag `ENABLE_REQUEST_CACHING` (default `false`) in `config/features.php` that controls visibility of the `Mod Cache` config category in the admin settings UI.
+User requested Feature 041: allow callers to set a photo's `title` and `description` at upload time, and return an `expected_id` in the upload response so clients know the photo's future ID without waiting for full processing.
+
+### Feature 041: Upload Photo Metadata
+
+**Status:** spec.md + plan.md + tasks.md complete; analysis gate passed; ready to begin T-041-01.
+
+**No open questions.** All requirements are clear from the problem statement.
+
+**Plan increments (5 × ≤60 min, 14 tasks total):**
+- **I1 – DTO Chain & Core Model** (T-041-01 to T-041-04): failing test stubs, propagate `title`/`description`/`preallocated_id` through `ImportParam → InitDTO → StandaloneDTO`, add `Photo::preallocateId()`.
+- **I2 – New Pipe & AutoRenamer Guard** (T-041-05, T-041-06): create `ApplyUserProvidedMetadata` pipe, insert before `HydrateMetadata`, guard `AutoRenamer`.
+- **I3 – Request, Resource & Controller** (T-041-07 to T-041-11): add `title`/`description` validation, add fields to `UploadMetaResource`, generate `expected_id` in controller, update `ProcessImageJob`.
+- **I4 – Frontend** (T-041-12, T-041-13): update TS types, `upload-service.ts`, `UploadingLine.vue`, `UploadPanel.vue`.
+- **I5 – Quality Gates + Docs** (T-041-14): full pipeline green; roadmap, knowledge map, session docs updated.
+
+**Key artefacts produced:**
+- Spec: [docs/specs/4-architecture/features/041-upload-photo-metadata/spec.md](docs/specs/4-architecture/features/041-upload-photo-metadata/spec.md)
+- Plan: [docs/specs/4-architecture/features/041-upload-photo-metadata/plan.md](docs/specs/4-architecture/features/041-upload-photo-metadata/plan.md)
+- Tasks: [docs/specs/4-architecture/features/041-upload-photo-metadata/tasks.md](docs/specs/4-architecture/features/041-upload-photo-metadata/tasks.md)
+- Roadmap row added to Active Features.
 
 ### Feature 040: Disable Request Caching
 
 **Status:** spec.md + plan.md + tasks.md complete; ready to begin T-040-01.
 
-**No open questions.** All requirements are clear from the problem statement.
+**No open questions.**
 
 **Plan increments (5 × ≤40 min, 9 tasks total):**
-- **I1 – Migration** (T-040-01): force `cache_enabled = '0'` via `DB::table('configs')` update; `down()` no-op.
-- **I2 – Feature flag** (T-040-02, T-040-03): add `enable-request-caching` to `config/features.php` sourced from `ENABLE_REQUEST_CACHING` env var (default false); update `.env.example`.
-- **I3 – Controller filter** (T-040-04): `SettingsController::getAll` filters out `Mod Cache` category when flag is off.
-- **I4 – Feature tests** (T-040-05, T-040-06): two `Feature_v2` tests — one asserting the category is hidden (flag off), one asserting it is visible (flag on).
-- **I5 – Quality gates + docs** (T-040-07, T-040-08, T-040-09): full pipeline green; roadmap and session docs updated.
-
-**Key artefacts produced:**
-- Spec: [docs/specs/4-architecture/features/040-disable-request-caching/spec.md](docs/specs/4-architecture/features/040-disable-request-caching/spec.md)
-- Plan: [docs/specs/4-architecture/features/040-disable-request-caching/plan.md](docs/specs/4-architecture/features/040-disable-request-caching/plan.md)
-- Tasks: [docs/specs/4-architecture/features/040-disable-request-caching/tasks.md](docs/specs/4-architecture/features/040-disable-request-caching/tasks.md)
-- Roadmap row added to Active Features.
+- **I1 – Migration** (T-040-01): force `cache_enabled = '0'`.
+- **I2 – Feature flag** (T-040-02, T-040-03): `enable-request-caching` in `config/features.php`.
+- **I3 – Controller filter** (T-040-04): hide `Mod Cache` category when flag off.
+- **I4 – Feature tests** (T-040-05, T-040-06).
+- **I5 – Quality gates + docs** (T-040-07 to T-040-09).
 
 ## Next Steps
 
-1. Run the analysis gate checklist before coding.
-2. Start implementation at **T-040-01** (migration) following tests-before-code ordering.
+1. Begin Feature 041 implementation at **T-041-01** (write failing test stubs for UploadWithMetadataTest).
+2. Follow tests-before-code SDD cadence through I1 → I5.
 3. After each task passes verification, tick the box in `tasks.md` immediately.
-4. On completion of I5, move the roadmap row from "Active" to "Completed".
+4. On completion of I5, move roadmap row 041 from "Active" to "Completed".
+5. Feature 040 is also ready to begin at T-040-01 (migration) — can be picked up in parallel or after 041.
 
 ## Open Questions
 
-None for Feature 040.
+None for either active feature.
 
 ## References
+
+**Feature 041:**
+- Spec: [041-upload-photo-metadata/spec.md](docs/specs/4-architecture/features/041-upload-photo-metadata/spec.md)
+- Plan: [041-upload-photo-metadata/plan.md](docs/specs/4-architecture/features/041-upload-photo-metadata/plan.md)
+- Tasks: [041-upload-photo-metadata/tasks.md](docs/specs/4-architecture/features/041-upload-photo-metadata/tasks.md)
+- Upload controller: [app/Http/Controllers/Gallery/PhotoController.php](app/Http/Controllers/Gallery/PhotoController.php)
+- Upload request: [app/Http/Requests/Photo/UploadPhotoRequest.php](app/Http/Requests/Photo/UploadPhotoRequest.php)
+- UploadMetaResource: [app/Http/Resources/Editable/UploadMetaResource.php](app/Http/Resources/Editable/UploadMetaResource.php)
+- ProcessImageJob: [app/Jobs/ProcessImageJob.php](app/Jobs/ProcessImageJob.php)
+- ImportParam: [app/DTO/ImportParam.php](app/DTO/ImportParam.php)
+- InitDTO: [app/DTO/PhotoCreate/InitDTO.php](app/DTO/PhotoCreate/InitDTO.php)
+- StandaloneDTO: [app/DTO/PhotoCreate/StandaloneDTO.php](app/DTO/PhotoCreate/StandaloneDTO.php)
+- Photo model: [app/Models/Photo.php](app/Models/Photo.php)
+- HasRandomIDAndLegacyTimeBasedID: [app/Models/Extensions/HasRandomIDAndLegacyTimeBasedID.php](app/Models/Extensions/HasRandomIDAndLegacyTimeBasedID.php)
+- HydrateMetadata pipe: [app/Actions/Photo/Pipes/Shared/HydrateMetadata.php](app/Actions/Photo/Pipes/Shared/HydrateMetadata.php)
+- AutoRenamer pipe: [app/Actions/Photo/Pipes/Standalone/AutoRenamer.php](app/Actions/Photo/Pipes/Standalone/AutoRenamer.php)
+- Upload service (TS): [resources/js/services/upload-service.ts](resources/js/services/upload-service.ts)
+- UploadingLine.vue: [resources/js/components/forms/upload/UploadingLine.vue](resources/js/components/forms/upload/UploadingLine.vue)
+- UploadPanel.vue: [resources/js/components/modals/UploadPanel.vue](resources/js/components/modals/UploadPanel.vue)
 
 **Feature 040:**
 - Spec: [040-disable-request-caching/spec.md](docs/specs/4-architecture/features/040-disable-request-caching/spec.md)
 - Plan: [040-disable-request-caching/plan.md](docs/specs/4-architecture/features/040-disable-request-caching/plan.md)
 - Tasks: [040-disable-request-caching/tasks.md](docs/specs/4-architecture/features/040-disable-request-caching/tasks.md)
-- Existing caching migration: [database/migrations/2024_12_28_190150_caching_config.php](database/migrations/2024_12_28_190150_caching_config.php)
-- Features config: [config/features.php](config/features.php)
-- Settings controller: [app/Http/Controllers/Admin/SettingsController.php](app/Http/Controllers/Admin/SettingsController.php)
 
 **Common:**
 - Roadmap: [roadmap.md](docs/specs/4-architecture/roadmap.md)
@@ -65,5 +100,5 @@ None for Feature 040.
 
 **Session Context for Handoff:**
 
-Feature 040 spec, plan, and tasks are complete (9 tasks across 5 increments, all ≤40 min, tests-before-code). No open questions. Next author to pick up: run the analysis gate, then begin T-040-01 (migration to force `cache_enabled = '0'`). All increments are sequential with no blocking dependencies.
+Feature 041 spec, plan, and tasks are complete (14 tasks across 5 increments, all ≤60 min, tests-before-code). No open questions. Analysis gate passed (2026-05-31). Next author to pick up: begin T-041-01 (write failing `UploadWithMetadataTest` stubs). All increments are sequential (I1 → I5). Feature 040 remains in Planning and can proceed independently.
 

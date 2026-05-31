@@ -6,6 +6,7 @@ High-level planning document for Lychee features and architectural initiatives.
 
 | Feature ID | Name | Status | Priority | Assignee | Started | Updated | Progress |
 |------------|------|--------|----------|----------|---------|---------|----------|
+| 041 | Upload Photo Metadata | Planning | P2 | LycheeOrg | 2026-05-31 | 2026-05-31 | Spec, plan, tasks drafted. 14 tasks across 5 increments (I1 DTO chain + model, I2 new pipe + AutoRenamer guard, I3 request/resource/controller, I4 frontend, I5 quality gates). No open questions. Analysis gate passed. Ready to begin T-041-01. |
 | 040 | Disable Request Caching | Planning | P2 | LycheeOrg | 2026-05-18 | 2026-05-18 | Spec, plan, tasks drafted. 9 tasks across 5 increments (I1 migration, I2 feature flag + .env.example, I3 controller filter, I4 feature tests, I5 quality gates). No open questions. Ready to begin T-040-01. |
 
 ## Paused Features
@@ -111,4 +112,4 @@ features/
 
 ---
 
-*Last updated: 2026-05-18 (Feature 040 planned — Disable Request Caching)*
+*Last updated: 2026-05-31 (Feature 041 planned — Upload Photo Metadata)*
