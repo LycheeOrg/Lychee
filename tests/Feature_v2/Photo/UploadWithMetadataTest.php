@@ -68,7 +68,6 @@ class UploadWithMetadataTest extends BaseApiWithDataTest
 		$this->assertNotNull($expected_id, 'expected_id must be present in the upload response');
 
 		// Fetch the photo by its expected ID and verify title / description (FR-041-03, FR-041-04).
-		$photo_response = $this->actingAs($this->admin)->getJsonWithData('Photo/{photo_id}/albums', ['photo_id' => $expected_id]);
 		// The photo must exist and be retrievable (S-041-04).
 		// We verify the persisted values via the album photos endpoint.
 		$photos_response = $this->actingAs($this->admin)->getJsonWithData('Album::photos', ['album_id' => $this->album5->id]);

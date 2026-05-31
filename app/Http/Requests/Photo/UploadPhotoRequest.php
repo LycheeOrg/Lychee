@@ -90,8 +90,8 @@ class UploadPhotoRequest extends BaseApiRequest implements HasAbstractAlbum
 			$this->apply_watermark = self::toBoolean($values['apply_watermark']);
 		}
 		// Store optional user-supplied title and description
-		$this->title = isset($values[RequestAttribute::TITLE_ATTRIBUTE]) ? ($values[RequestAttribute::TITLE_ATTRIBUTE] ?? null) : null;
-		$this->description = isset($values[RequestAttribute::DESCRIPTION_ATTRIBUTE]) ? ($values[RequestAttribute::DESCRIPTION_ATTRIBUTE] ?? null) : null;
+		$this->title = $values[RequestAttribute::TITLE_ATTRIBUTE] ?? null;
+		$this->description = $values[RequestAttribute::DESCRIPTION_ATTRIBUTE] ?? null;
 	}
 
 	public function uploaded_file_chunk(): UploadedFile

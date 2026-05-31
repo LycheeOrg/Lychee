@@ -91,7 +91,7 @@ class PhotoController extends Controller
 			// Generate a 24-char Base64url string using the same algorithm as generateKey().
 			$meta->expected_id = strtr(base64_encode(random_bytes(18)), '+/', '-_');
 			if ($meta->expected_id[23] === '-') {
-				$meta->expected_id[23] = '0';
+				$meta->expected_id = substr_replace($meta->expected_id, '0', 23, 1);
 			}
 		}
 
