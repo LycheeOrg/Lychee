@@ -6,8 +6,168 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 | Question ID | Feature | Priority | Summary | Status | Opened | Updated |
 |-------------|---------|----------|---------|--------|--------|---------|
+| Q-041-01 | 041 – Upload Photo Metadata | High | Frontend scope: session doc lists I4 (T-041-12/13, Vue/TS changes) but spec + plan mark frontend out of scope and tasks.md omits those tasks | Open | 2026-05-31 | 2026-05-31 |
+| Q-041-02 | 041 – Upload Photo Metadata | Medium | Validation on intermediate chunks: FR-041-01/02 say HTTP 422 when title/description too long, but also say the fields are silently ignored on non-final chunks — unclear whether validation fires on all chunks or only the final one | Open | 2026-05-31 | 2026-05-31 |
+| Q-041-03 | 041 – Upload Photo Metadata | Medium | `ApplyUserProvidedMetadata` pipe type: T-041-05 notes raise whether the pipe must be a `SharedPipe` (handling `DuplicateDTO\|StandaloneDTO`) or a `StandalonePipe` only; spec is silent on the duplicate-flow interaction | Open | 2026-05-31 | 2026-05-31 |
+| Q-040-01 | 040 – Disable Request Caching | Medium | Analysis Gate never formally signed off: plan.md gate checklist has unchecked boxes yet I1–I4 tasks are marked complete; gate must be ticked before implementation is considered verified | Open | 2026-05-31 | 2026-05-31 |
 
 ## Question Details
+
+### ❓ Q-041-01 · Frontend scope: session doc lists I4 but spec/plan/tasks exclude frontend
+
+**Status:** Open  
+**Feature:** F-041 – Upload Photo Metadata  
+**Preferred option:** 🅰️ (**recommended**) Option A – Treat frontend as out of scope; remove I4 artefacts from session doc  
+
+**Question**  
+`_current-session.md` describes a four-increment frontend increment I4 (T-041-12: update TS types / `upload-service.ts`; T-041-13: update `UploadingLine.vue` / `UploadPanel.vue`). However, `spec.md` Non-Goals and `plan.md` Out-of-Scope both explicitly exclude "Any UI / frontend changes (TypeScript types, Vue components, upload panel)." The `tasks.md` file has 12 tasks (T-041-01 to T-041-11, T-041-14) and contains no T-041-12 or T-041-13 entries; the plan has no I4 section. The session doc and the governing artefacts are contradictory. Are the frontend tasks in scope for this feature?
+
+---
+
+#### 🅰️ (**recommended**) Option A – Frontend out of scope; correct session doc
+- **Idea:** Accept spec/plan/tasks as authoritative. Remove the I4 reference from `_current-session.md`; confirm 12 tasks / 4 increments (I1–I3, I5) is the final task count.
+- **Spec impact:** None — spec already excludes frontend. Session doc gets a one-line correction.
+- **Pros:**  
+  - ✅ Keeps the feature footprint minimal (API-only, as originally designed).  
+  - ✅ Eliminates the 12 vs 14 task-count inconsistency.  
+  - ✅ No risk of breaking Vue component state management.
+- **Cons:**  
+  - ❌ Callers still need to update their own TS types manually until the TypeScript transformer is re-run.
+
+---
+
+#### 🅱️ Option B – Frontend in scope; add T-041-12/13 back to tasks and I4 to plan
+- **Idea:** Treat the session doc as the authoritative intent. Add T-041-12 and T-041-13 back to `tasks.md`, add an I4 increment to `plan.md`, and update the spec to remove the frontend Non-Goal.
+- **Spec impact:** Removes "Any UI / frontend changes" from Non-Goals; adds I4 increment; task count becomes 14.
+- **Pros:**  
+  - ✅ Clients get correct TypeScript types immediately without a separate transformer run.  
+  - ✅ Upload panel can optionally pre-populate or surface `expected_id`.
+- **Cons:**  
+  - ❌ Increases feature scope significantly (Vue component changes risk regressions).  
+  - ❌ Requires UI design decision not captured anywhere in spec.
+
+---
+
+**Next action**  
+Owner to confirm scope intent and update either `_current-session.md` (Option A) or `spec.md` + `plan.md` + `tasks.md` (Option B) so all artefacts are consistent. Update this question entry once resolved.
+
+---
+
+### ❓ Q-041-02 · Validation on intermediate chunks: does HTTP 422 fire on every chunk?
+
+**Status:** Open  
+**Feature:** F-041 – Upload Photo Metadata  
+**Preferred option:** 🅰️ (**recommended**) Option A – Validate on all chunks (Laravel default)  
+
+**Question**  
+FR-041-01 states two things: (1) "Rejected with HTTP 422 if `title` exceeds 100 chars" and (2) "Field silently ignored on intermediate chunks (only applied at final chunk)." Laravel's `FormRequest` validation runs on every request. If a client sends `title` on chunk 2 of 5 and it exceeds 100 chars, does the server return HTTP 422 immediately, or is validation deferred to the final chunk?
+
+---
+
+#### 🅰️ (**recommended**) Option A – Validate on every chunk (natural Laravel behaviour)
+- **Idea:** Add the `title`/`description` validation rules to `UploadPhotoRequest::rules()` without any chunk-gating. Laravel validates all present fields on every request. A 422 is returned immediately if any chunk carries an invalid `title`.
+- **Spec impact:** FR-041-01 "Validation path" and "Failure path" rows remain correct; the "silently ignored" clause refers to the *application* of the value to the photo model (not to validation).
+- **Pros:**  
+  - ✅ Consistent with Laravel conventions; no special-casing needed.  
+  - ✅ Fast feedback: client learns about the bad value immediately, not after all chunks are sent.  
+  - ✅ Simpler implementation — no chunk-number inspection in validation.
+- **Cons:**  
+  - ❌ Mildly surprising if a client intentionally sends `title` only on the final chunk but sent a large value on an earlier one as a test.
+
+---
+
+#### 🅱️ Option B – Defer validation to final chunk only
+- **Idea:** Gate the `title`/`description` rules with a condition that checks `$request->chunk_number === $request->total_chunks` before applying the max-length rules.
+- **Spec impact:** FR-041-01 "Validation path" and "Failure path" rows need updating to clarify "only validated on final chunk."
+- **Pros:**  
+  - ✅ Strictly consistent with "silently ignored on intermediate chunks."
+- **Cons:**  
+  - ❌ Requires custom conditional validation logic — non-standard Laravel pattern.  
+  - ❌ Client gets no feedback on an overlong `title` until the last chunk lands.  
+  - ❌ More complex implementation and more test cases needed.
+
+---
+
+**Next action**  
+Clarify FR-041-01 "Validation path" language to state whether validation runs on all chunks or only the final one. Update the spec row accordingly, then resolve this question.
+
+---
+
+### ❓ Q-041-03 · `ApplyUserProvidedMetadata` pipe type: StandalonePipe or SharedPipe?
+
+**Status:** Open  
+**Feature:** F-041 – Upload Photo Metadata  
+**Preferred option:** 🅰️ (**recommended**) Option A – StandalonePipe only  
+
+**Question**  
+T-041-05 notes: "Pipe must handle `DuplicateDTO|StandaloneDTO` type union consistent with `SharedPipe` convention if applicable; otherwise implement as `StandalonePipe` only." The spec names the pipe `Standalone\ApplyUserProvidedMetadata` (suggesting `StandalonePipe`), and the `Create` action's plan inserts it only in `handleStandalone()` and `handlePhotoLivePartner()`, not in a shared duplicate path. However, there is no explicit statement about what should happen when a duplicate is detected and the caller also supplied a `title`. Should user-supplied `title`/`description` be applied to the *duplicate's* existing record, or discarded?
+
+---
+
+#### 🅰️ (**recommended**) Option A – StandalonePipe only; discard title/description for duplicates
+- **Idea:** Implement `ApplyUserProvidedMetadata` as a `StandalonePipe`. It is inserted only in `handleStandalone()` and `handlePhotoLivePartner()`. For duplicate uploads the pipe never runs; the user-supplied metadata is discarded (the duplicate keeps its existing title/description).
+- **Spec impact:** Consistent with the existing `Standalone\` namespace and the fact that FR-041-09 already accepts that `expected_id` is meaningless for duplicates. Extend FR-041-09 to state that `title`/`description` are also discarded on duplicate detection.
+- **Pros:**  
+  - ✅ Simplest implementation — no type-union handling needed.  
+  - ✅ Consistent with Non-Goal: duplicate semantics are out of scope.  
+  - ✅ Avoids silently mutating a shared photo record that other users/albums may reference.
+- **Cons:**  
+  - ❌ Caller-supplied `title` is silently dropped on duplicates; caller only learns this via the HTTP 409 status.
+
+---
+
+#### 🅱️ Option B – SharedPipe; apply title/description even for duplicates
+- **Idea:** Implement `ApplyUserProvidedMetadata` as a `SharedPipe` handling `DuplicateDTO|StandaloneDTO`. For duplicates, if caller supplied a `title`/`description`, update the existing duplicate record with the new values.
+- **Spec impact:** Requires new FR covering duplicate metadata update; may conflict with permission model (who owns the duplicate photo?).
+- **Pros:**  
+  - ✅ Caller's intent is honoured even for duplicates.
+- **Cons:**  
+  - ❌ Significant scope expansion — mutating existing shared photos has access-control implications not analysed.  
+  - ❌ Adds complexity to the duplicate-detection flow.
+
+---
+
+**Next action**  
+Confirm pipe type in spec (update FR-041-09 or add a new requirement to explicitly state behaviour on duplicates). Resolve this question before implementing T-041-05.
+
+---
+
+### ❓ Q-040-01 · Feature 040 Analysis Gate has unchecked boxes despite tasks being done
+
+**Status:** Open  
+**Feature:** F-040 – Disable Request Caching  
+**Preferred option:** 🅰️ (**recommended**) Option A – Tick the gate and mark as passed  
+
+**Question**  
+`plan.md` for Feature 040 has an Analysis Gate section with four unchecked checkboxes (`- [ ] All four FRs are unambiguous...`, etc.). Tasks T-040-01 through T-040-06 are marked `[x]` complete and T-040-07 (quality gate) is also `[x]`. Only the doc tasks T-040-08/09 remain. The analysis gate should have been checked before coding began; leaving it unchecked makes it ambiguous whether the gate was formally passed.
+
+---
+
+#### 🅰️ (**recommended**) Option A – Retrospectively tick the Analysis Gate and note the date
+- **Idea:** Mark all four gate checkboxes `[x]` in `plan.md`, add a review date note (e.g. "Reviewed: 2026-05-18. No blocking findings. Implementation proceeded."), consistent with how Feature 041's gate was signed off.
+- **Spec impact:** No spec changes needed; plan.md cosmetic update only.
+- **Pros:**  
+  - ✅ Brings 040 plan into line with 041 (which has a properly signed-off gate).  
+  - ✅ Removes ambiguity about whether pre-flight checks were done.
+- **Cons:**  
+  - ❌ Retroactive — the gate was not signed off at the time coding began.
+
+---
+
+#### 🅱️ Option B – Leave as-is; treat gate as implicitly passed
+- **Idea:** Accept that the unchecked boxes are cosmetic and the implementation was correct.
+- **Spec impact:** None.
+- **Pros:**  
+  - ✅ No action required.
+- **Cons:**  
+  - ❌ Inconsistent process artefact; future readers cannot tell whether the gate was formally checked.
+
+---
+
+**Next action**  
+Owner to tick the four Analysis Gate checkboxes in `docs/specs/4-architecture/features/040-disable-request-caching/plan.md` and add a review date. Resolve this question once done.
+
+---
 
 ### ~~Q-039-01: Custom Brand Name vs Generic "your-application" Placeholder~~ ✅ RESOLVED
 
