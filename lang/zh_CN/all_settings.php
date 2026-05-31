@@ -507,7 +507,7 @@ return [
         'timeline_photos_order' => 'This determines whether the captured date or the upload date will be used to order the photos.',
         'timeline_photos_layout' => '',
         'timeline_photos_pagination_limit' => '',
-        'timeline_albums_enabled' => 'Globally enable albums timelines in each albums (and root). This can also be disabled/enabled per album.',
+        'timeline_albums_enabled' => 'Globally enable albums timelines in each albums. This can also be disabled/enabled per album.',
         'timeline_albums_public' => '',
         'timeline_albums_granularity' => '',
         'timeline_left_border_enabled' => '',
