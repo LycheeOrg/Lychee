@@ -1,4 +1,4 @@
-# Feature 042 Tasks – Webshop Order Item Display
+# Feature 042 Tasks – Photo Display Enrichment
 
 _Status: Draft_  
 _Last updated: 2026-05-31_
@@ -9,6 +9,8 @@ _Last updated: 2026-05-31_
 > When new high- or medium-impact questions arise during execution, add them to [docs/specs/4-architecture/open-questions.md](docs/specs/4-architecture/open-questions.md) instead of informal notes, and treat a task as fully resolved only once the governing spec sections and, when required, ADRs reflect the clarified behaviour.
 
 ## Checklist
+
+### Part A – Webshop Order Item Display
 
 ### I1 – Extend `OrderItemResource`
 
@@ -111,9 +113,10 @@ _Last updated: 2026-05-31_
   1. `vendor/bin/php-cs-fixer fix`
   2. `npm run format`
   3. `npm run check`
-  4. `php artisan test`
-  5. `make phpstan`
-  All five must exit 0.  
+  4. `npm run lint`
+  5. `php artisan test`
+  6. `make phpstan`
+  All six must exit 0.  
   _Verification commands:_ See above.  
   _Notes:_ If any check fails, fix before proceeding to documentation tasks.
 
@@ -132,10 +135,61 @@ _Last updated: 2026-05-31_
   _Verification commands:_ Manual review.  
   _Notes:_ Keep the session doc as the single live snapshot per session conventions.
 
+### Part B – Admin Maintenance Photo Title Links
+
+### I7 – Make `Duplicate` album fields nullable
+
+- [ ] T-042-16 – Make `Duplicate.album_id` and `Duplicate.album_title` nullable (FR-042-12, S-042-14).  
+  _Intent:_ Update `app/Http/Resources/Models/Duplicates/Duplicate.php` to declare `$album_id` and `$album_title` as `?string`; update `fromModel()` to propagate null values with null-safe operators; regenerate TypeScript types with `php artisan typescript:transform`.  
+  _Verification commands:_  
+  - `make phpstan`  
+  - `vendor/bin/php-cs-fixer fix --dry-run`  
+  - `php artisan test`  
+  - `npm run check` (after TypeScript regeneration)  
+  _Notes:_ `ModerationResource` already has nullable fields — no change needed there. Run the TypeScript transformer immediately after the PHP change to keep types in sync.
+
+### I8 – Create `PhotoTitleLink.vue`
+
+- [ ] T-042-17 – Create `resources/js/components/maintenance/PhotoTitleLink.vue` (FR-042-07, FR-042-08, FR-042-09, NFR-042-09, S-042-08, S-042-09, S-042-10).  
+  _Intent:_ Implement the three-state component with props `title: string`, `album_id: string | null`, `photo_id: string | null`. State 1 (`v-if="album_id && photo_id"`): `RouterLink` with title text targeting `{ name: 'album', params: { albumId: album_id, photoId: photo_id } }` and `target="_blank"`. State 2 (`v-else-if="photo_id"`): red `pi-ban` icon + `photo_id` in `<code class="font-mono text-xs">`. State 3 (`v-else`): `<span class="italic text-muted-color">` with title.  
+  _Verification commands:_  
+  - `npm run check`  
+  - `npm run lint`  
+  _Notes:_ See UI mock-ups in `spec.md` for expected HTML structure per state. This component must be importable from both `DuplicateLine.vue` and `Moderation.vue` (NFR-042-09).
+
+### I9 – Integrate `PhotoTitleLink` in `DuplicateLine.vue`
+
+- [ ] T-042-18 – Update `DuplicateLine.vue` to use `PhotoTitleLink` for the photo-title column (FR-042-10, S-042-11).  
+  _Intent:_ Import `PhotoTitleLink` in `DuplicateLine.vue`. In the photo-title `<div>`, replace the `<router-link>` icon + `<span>` pattern with `<PhotoTitleLink :title="duplicate.photo_title" :album_id="duplicate.album_id ?? null" :photo_id="duplicate.photo_id" />`.  
+  _Verification commands:_  
+  - `npm run check`  
+  - `npm run lint`  
+  _Notes:_ The album-title column (leftmost) retains its own `<router-link>` icon and is not changed by this task.
+
+### I10 – Integrate `PhotoTitleLink` in `Moderation.vue`
+
+- [ ] T-042-19 – Update `Moderation.vue` to use `PhotoTitleLink` for the title column (FR-042-11, S-042-12, S-042-13).  
+  _Intent:_ Import `PhotoTitleLink` in `Moderation.vue`. In the title `<td>`, replace `{{ photo.title }}` with `<PhotoTitleLink :title="photo.title" :album_id="photo.album_id ?? null" :photo_id="photo.photo_id" />`.  
+  _Verification commands:_  
+  - `npm run check`  
+  - `npm run lint`  
+  _Notes:_ For unsorted photos (`album_id: null`), the component will render state 2 (forbidden icon + photo_id), matching S-042-12.
+
+- [ ] T-042-20 – Run final quality gate for Part B (NFR-042-03, NFR-042-08, NFR-042-09).  
+  _Intent:_ After all Part B frontend changes, execute the full gate: `npm run check`, `npm run lint`, `make phpstan`, `php artisan test`, `vendor/bin/php-cs-fixer fix --dry-run`. All must exit 0.  
+  _Verification commands:_  
+  - `npm run check`  
+  - `npm run lint`  
+  - `make phpstan`  
+  - `php artisan test`  
+  - `vendor/bin/php-cs-fixer fix --dry-run`  
+  _Notes:_ If any check fails, fix before marking this task complete.
+
 ## Notes / TODOs
 
 - `SizeVariant::getUrlAttribute()` is the accessor providing the URL; if the attribute name differs in the actual model, adjust T-042-01 accordingly.
 - The `$item->photo->size_variants->getSizeVariant(SizeVariantType::THUMB)` call relies on `SizeVariants` being the type of `photo->size_variants`. Verify the accessor name on `Photo` before writing T-042-01 implementation.
-- If the TypeScript transformer is unavailable, document the manual interface edit in T-042-09 and add a comment to the interface file indicating it is manually maintained.
+- If the TypeScript transformer is unavailable, document the manual interface edit in T-042-09 and T-042-16, and add a comment to the interface file indicating it is manually maintained.
 - Query-count assertion in S-042-07 / T-042-03 can be implemented with `DB::enableQueryLog()` / `DB::getQueryLog()` or Laravel's `assertQueryCount()` helper if available in the test suite.
 - Do not add fallback or compatibility behaviour for historic `OrderItem` records that lack an `album_id` — the spec's Non-Goals state no fallback is required unless explicitly requested.
+- TypeScript regeneration (T-042-16) must be run before T-042-17/T-042-18/T-042-19 so that `App.Http.Resources.Models.Duplicates.Duplicate` reflects the nullable `album_id` change.
