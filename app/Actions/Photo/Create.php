@@ -46,8 +46,14 @@ class Create
 		?ImportMode $import_mode,
 		int $intended_owner_id,
 		UserUploadTrustLevel $upload_trust_level,
+		?string $title = null,
+		?string $description = null,
+		?string $preallocated_id = null,
 	) {
 		$this->strategy_parameters = new ImportParam($import_mode, $intended_owner_id, upload_trust_level: $upload_trust_level);
+		$this->strategy_parameters->title = $title;
+		$this->strategy_parameters->description = $description;
+		$this->strategy_parameters->preallocated_id = $preallocated_id;
 	}
 
 	/**
@@ -171,6 +177,7 @@ class Create
 		$pipes = [
 			Standalone\FixTimeStamps::class,
 			Standalone\InitNamingStrategy::class,
+			Standalone\ApplyUserProvidedMetadata::class,
 			Shared\HydrateMetadata::class,
 			Shared\SetHighlighted::class,
 			Shared\SetOwnership::class,
@@ -269,6 +276,7 @@ class Create
 		$stand_alone_pipes = [
 			Standalone\FixTimeStamps::class,
 			Standalone\InitNamingStrategy::class,
+			Standalone\ApplyUserProvidedMetadata::class,
 			Shared\HydrateMetadata::class,
 			Shared\SetHighlighted::class,
 			Shared\SetOwnership::class,

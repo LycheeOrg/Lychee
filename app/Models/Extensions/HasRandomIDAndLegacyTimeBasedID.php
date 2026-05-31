@@ -27,6 +27,14 @@ use Illuminate\Database\QueryException;
 trait HasRandomIDAndLegacyTimeBasedID
 {
 	/**
+	 * Holds a pre-allocated key that should be consumed on the next INSERT.
+	 * Set via {@link preallocateId()}.  Cleared after first use so that
+	 * DB-collision retries generate a fresh random ID instead of re-trying
+	 * the same value.
+	 */
+	protected ?string $preAllocatedKey = null;
+
+	/**
 	 * Get the value indicating whether the IDs are incrementing.
 	 */
 	public function getIncrementing(): bool
@@ -150,6 +158,17 @@ trait HasRandomIDAndLegacyTimeBasedID
 	 */
 	private function generateKey(): void
 	{
+		// If a key was pre-allocated (e.g. via preallocateId()), consume it on the
+		// first INSERT attempt.  Clearing $preAllocatedKey after use ensures that
+		// a DB-collision retry generates a fresh random ID rather than failing again
+		// with the same value.
+		if ($this->preAllocatedKey !== null) {
+			$this->attributes[$this->getKeyName()] = $this->preAllocatedKey;
+			$this->preAllocatedKey = null;
+
+			return;
+		}
+
 		// URl-compatible variant of base64 encoding
 		// `+` and `/` are replaced by `-` and `_`, resp.
 		// The other characters (a-z, A-Z, 0-9) are legal within an URL.

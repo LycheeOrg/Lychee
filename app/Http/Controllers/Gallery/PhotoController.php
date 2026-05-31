@@ -81,8 +81,19 @@ class PhotoController extends Controller
 			return $meta;
 		}
 
-		// Last chunk
+		// Last chunk — generate expected_id for non-zip uploads and store title/description.
 		$meta->stage = FileStatus::PROCESSING;
+		$meta->title = $request->title();
+		$meta->description = $request->description();
+
+		$is_zip = strtolower(pathinfo($meta->file_name, PATHINFO_EXTENSION)) === 'zip';
+		if (!$is_zip) {
+			// Generate a 24-char Base64url string using the same algorithm as generateKey().
+			$meta->expected_id = strtr(base64_encode(random_bytes(18)), '+/', '-_');
+			if ($meta->expected_id[23] === '-') {
+				$meta->expected_id[23] = '0';
+			}
+		}
 
 		return $this->process(
 			$request->verify(),
@@ -127,7 +138,7 @@ class PhotoController extends Controller
 			return $meta;
 		}
 
-		ProcessImageJob::dispatch($processable_file, $album, $file_last_modified_time, $apply_watermark);
+		ProcessImageJob::dispatch($processable_file, $album, $file_last_modified_time, $apply_watermark, $meta->expected_id, $meta->title, $meta->description);
 		$meta->stage = config('queue.default') === 'sync' ? FileStatus::DONE : FileStatus::READY;
 
 		return $meta;

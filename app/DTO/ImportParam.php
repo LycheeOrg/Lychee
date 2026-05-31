@@ -17,6 +17,15 @@ final class ImportParam
 {
 	public UserUploadTrustLevel $upload_trust_level;
 
+	// User-supplied title override (takes precedence over EXIF-extracted title when non-null).
+	public ?string $title = null;
+
+	// User-supplied description override (takes precedence over EXIF-extracted description when non-null).
+	public ?string $description = null;
+
+	// Pre-allocated photo ID to be used on insert (see HasRandomIDAndLegacyTimeBasedID::preallocateId).
+	public ?string $preallocated_id = null;
+
 	/**
 	 * @param ImportMode     $import_mode
 	 * @param int            $intended_owner_id indicates the intended owner of the image
