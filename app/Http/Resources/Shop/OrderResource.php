@@ -39,6 +39,12 @@ class OrderResource extends Data
 		#[LiteralTypeScriptType('App.Http.Resources.Shop.OrderItemResource[]|null')]
 		public ?Collection $items,
 		public bool $can_process_payment,
+		public ?string $shipping_street_name,
+		public ?string $shipping_street_number,
+		public ?string $shipping_additional_info,
+		public ?string $shipping_city,
+		public ?string $shipping_post_code,
+		public ?string $shipping_country,
 	) {
 	}
 
@@ -68,6 +74,12 @@ class OrderResource extends Data
 			comment: $order->comment,
 			items: $order->relationLoaded('items') ? OrderItemResource::collect($order->items) : null,
 			can_process_payment: $order->relationLoaded('items') ? $order->canProcessPayment() : false, // only if items are loaded we are able to check this.
+			shipping_street_name: $order->shipping_street_name,
+			shipping_street_number: $order->shipping_street_number,
+			shipping_additional_info: $order->shipping_additional_info,
+			shipping_city: $order->shipping_city,
+			shipping_post_code: $order->shipping_post_code,
+			shipping_country: $order->shipping_country,
 		);
 	}
 }

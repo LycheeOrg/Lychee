@@ -67,6 +67,26 @@ class CheckoutController extends Controller
 			$order->email = $request->email;
 		}
 
+		// Store shipping address if provided
+		if ($request->shipping_street_name !== null) {
+			$order->shipping_street_name = $request->shipping_street_name;
+		}
+		if ($request->shipping_street_number !== null) {
+			$order->shipping_street_number = $request->shipping_street_number;
+		}
+		if ($request->shipping_additional_info !== null) {
+			$order->shipping_additional_info = $request->shipping_additional_info;
+		}
+		if ($request->shipping_city !== null) {
+			$order->shipping_city = $request->shipping_city;
+		}
+		if ($request->shipping_post_code !== null) {
+			$order->shipping_post_code = $request->shipping_post_code;
+		}
+		if ($request->shipping_country !== null) {
+			$order->shipping_country = $request->shipping_country;
+		}
+
 		// Save changes to order
 		$order->save();
 

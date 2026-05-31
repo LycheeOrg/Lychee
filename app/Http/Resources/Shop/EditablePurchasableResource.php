@@ -25,6 +25,10 @@ class EditablePurchasableResource extends Data
 		public ?string $photo_url,
 		#[LiteralTypeScriptType('App.Http.Resources.Shop.PriceResource[]|null')]
 		public array $prices,
+		#[LiteralTypeScriptType('App.Http.Resources.Shop.PurchasablePrintSizeResource[]')]
+		public array $print_sizes,
+		#[LiteralTypeScriptType('App.Http.Resources.Shop.PurchasablePixelSizeResource[]')]
+		public array $pixel_sizes,
 		public ?string $owner_notes,
 		public ?string $description,
 		public bool $is_active,
@@ -52,6 +56,8 @@ class EditablePurchasableResource extends Data
 			photo_title: $photo_title,
 			photo_url: $photo_url,
 			prices: $item->prices->map(PriceResource::fromModel(...))->toArray(),
+			print_sizes: $item->printSizes->map(PurchasablePrintSizeResource::fromModel(...))->toArray(),
+			pixel_sizes: $item->pixelSizes->map(PurchasablePixelSizeResource::fromModel(...))->toArray(),
 			description: $item->description,
 			owner_notes: $item->owner_notes,
 			is_active: $item->is_active,
