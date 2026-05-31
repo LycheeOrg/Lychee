@@ -84,7 +84,7 @@
 						<label for="photoSortingOrder">{{ $t("gallery.album.properties.asc/desc") }}</label>
 					</FloatLabel>
 				</div>
-				<template v-if="is_model_album">
+				<template v-if="is_regular_album">
 					<div class="my-2 h-10 flex">
 						<FloatLabel variant="on">
 							<Select
@@ -289,17 +289,17 @@
 					</FloatLabel>
 				</div>
 
-				<div v-if="is_model_album" class="h-10 my-2 pt-4"></div>
-
-				<div v-if="!is_model_album" class="my-4 flex flex-col gap-2">
+				<div class="my-4 flex flex-col gap-2">
 					<FloatLabel variant="on">
-						<TagsInput v-model="tags" :add="false" />
-						<label for="tags">{{ $t("gallery.album.properties.show_tags") }}</label>
+						<TagsInput v-model="tags" :add="can_add_tags" />
+						<label for="tags">{{ $t("gallery.album.properties.tags") }}</label>
 					</FloatLabel>
-					<div class="flex gap-2 items-center my-2">
-						<ToggleSwitch v-model="is_and" input-id="pp_is_and" />
-						<label for="pp_is_and" class="text-muted-color-emphasis">{{ $t("gallery.album.properties.all_tags_must_match") }}</label>
-					</div>
+					<template v-if="!is_regular_album">
+						<div class="flex gap-2 items-center my-2">
+							<ToggleSwitch v-model="is_and" input-id="pp_is_and" />
+							<label for="pp_is_and" class="text-muted-color-emphasis">{{ $t("gallery.album.properties.all_tags_must_match") }}</label>
+						</div>
+					</template>
 				</div>
 				<Button class="p-3 mt-4 w-full font-bold border-none shrink" @click="save">
 					{{ $t("dialogs.button.save") }}
@@ -353,7 +353,9 @@ const { is_se_enabled, is_se_preview_enabled } = storeToRefs(LycheeState);
 const photosStore = usePhotosStore();
 
 const toast = useToast();
-const is_model_album = ref(true);
+const album_type = ref<"regular" | "tag">("regular");
+const is_regular_album = computed(() => album_type.value === "regular");
+const can_add_tags = computed(() => is_regular_album.value);
 const albumId = ref("");
 const title = ref("");
 const slug = ref<string | null>(null);
@@ -450,7 +452,7 @@ function buildHeaderId(value: string | null, photos: App.Http.Resources.Models.P
 }
 
 function load(editable: App.Http.Resources.Editable.EditableBaseAlbumResource, photos: App.Http.Resources.Models.PhotoResource[]) {
-	is_model_album.value = editable.is_model_album;
+	album_type.value = editable.is_model_album ? "regular" : "tag";
 	albumId.value = editable.id;
 	title.value = editable.title;
 	slug.value = editable.slug;
@@ -477,7 +479,7 @@ onMounted(() => {
 });
 
 function save() {
-	if (is_model_album.value) {
+	if (is_regular_album.value) {
 		saveAlbum();
 		return;
 	}
@@ -504,11 +506,22 @@ function saveAlbum() {
 		photo_timeline: photoTimeline.value?.value ?? null,
 		is_pinned: albumStore.tagOrModelAlbum?.editable?.is_pinned ?? false,
 	};
-	AlbumService.updateAlbum(data).then(() => {
-		toast.add({ severity: "success", summary: trans("toasts.success"), life: 3000 });
-		AlbumService.clearCache(albumId.value);
-		albumStore.loadHead();
-	});
+	AlbumService.updateAlbum(data)
+		.then(() => {
+			if (is_regular_album.value) {
+				return AlbumService.setAlbumTags(albumId.value, tags.value) as Promise<unknown>;
+			}
+
+			return Promise.resolve() as Promise<unknown>;
+		})
+		.then(() => {
+			toast.add({ severity: "success", summary: trans("toasts.success"), life: 3000 });
+			AlbumService.clearCache(albumId.value);
+			albumStore.loadHead();
+		})
+		.catch(() => {
+			toast.add({ severity: "error", summary: trans("toasts.error"), life: 3000 });
+		});
 }
 
 function saveTagAlbum() {

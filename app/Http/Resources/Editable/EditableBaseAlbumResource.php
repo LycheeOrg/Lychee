@@ -70,10 +70,11 @@ class EditableBaseAlbumResource extends Data
 			$this->cover_id = $album->cover_id;
 			$this->aspect_ratio = $album->album_thumb_aspect_ratio;
 			$this->album_timeline = $album->album_timeline;
+			$this->tags = $album->tags->map(fn ($tag) => $tag->name)->all();
 		}
 
 		if ($album instanceof TagAlbum) {
-			$this->tags = $album->tags->map(fn ($t) => $t->name)->all();
+			$this->tags = $album->tags->map(fn ($tag) => $tag->name)->all();
 			$this->is_and = $album->is_and;
 		}
 	}

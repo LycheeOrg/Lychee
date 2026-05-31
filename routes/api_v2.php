@@ -59,6 +59,7 @@ Route::get('/Album::getTargetListAlbums', [Gallery\AlbumController::class, 'getT
 Route::post('/Album::unlock', [Gallery\AlbumController::class, 'unlock']);
 Route::post('/Album', [Gallery\AlbumController::class, 'createAlbum']);
 Route::patch('/Album', [Gallery\AlbumController::class, 'updateAlbum']);
+Route::patch('/Album::albumTags', [Gallery\AlbumController::class, 'setAlbumTags']);
 Route::patch('/Album::rename', [Gallery\AlbumController::class, 'rename']);
 Route::patch('/Album::setPinned', [Gallery\AlbumController::class, 'setPinned']);
 Route::post('/Album::updateProtectionPolicy', [Gallery\AlbumController::class, 'updateProtectionPolicy']);

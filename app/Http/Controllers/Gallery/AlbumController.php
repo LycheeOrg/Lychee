@@ -33,6 +33,7 @@ use App\Http\Requests\Album\MergeAlbumsRequest;
 use App\Http\Requests\Album\MoveAlbumsRequest;
 use App\Http\Requests\Album\RenameAlbumRequest;
 use App\Http\Requests\Album\SetAlbumProtectionPolicyRequest;
+use App\Http\Requests\Album\SetAlbumTagsRequest;
 use App\Http\Requests\Album\SetAlbumTrackRequest;
 use App\Http\Requests\Album\SetAsCoverRequest;
 use App\Http\Requests\Album\SetAsHeaderRequest;
@@ -120,7 +121,19 @@ class AlbumController extends Controller
 			shall_override: true
 		);
 
-		return EditableBaseAlbumResource::fromModel($album);
+		return EditableBaseAlbumResource::fromModel($album->loadMissing('tags'));
+	}
+
+	/**
+	 * Set the tags of an album.
+	 */
+	public function setAlbumTags(SetAlbumTagsRequest $request): void
+	{
+		$tags = $request->tags();
+		$album = $request->album();
+
+		$existing_tags = Tag::from($tags);
+		$album->tags()->sync($existing_tags->pluck('id')->all());
 	}
 
 	/**

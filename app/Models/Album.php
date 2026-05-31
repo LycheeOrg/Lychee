@@ -33,6 +33,7 @@ use App\Repositories\ConfigManager;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Query\Builder as BaseBuilder;
@@ -52,6 +53,7 @@ use Kalnoy\Nestedset\NodeTrait;
  * @property Collection<int,Album>    $children
  * @property int                      $num_children                  The number of children.
  * @property Collection<int,Photo>    $all_photos
+ * @property Collection<int,Tag>      $tags
  * @property int                      $num_photos                    The number of photos in this album (excluding photos in subalbums).
  * @property Carbon|null              $max_taken_at                  Maximum taken_at timestamp of all photos in album and descendants.
  * @property Carbon|null              $min_taken_at                  Minimum taken_at timestamp of all photos in album and descendants.
@@ -228,6 +230,21 @@ class Album extends BaseAlbum implements Node
 	public function photos(): HasManyChildPhotos
 	{
 		return new HasManyChildPhotos($this);
+	}
+
+	/**
+	 * Returns the relationship between an album and all tags associated with it.
+	 *
+	 * @return BelongsToMany<Tag,$this>
+	 */
+	public function tags(): BelongsToMany
+	{
+		return $this->belongsToMany(
+			Tag::class,
+			'albums_tags',
+			'album_id',
+			'tag_id',
+		);
 	}
 
 	/**

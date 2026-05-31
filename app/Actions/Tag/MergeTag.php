@@ -46,6 +46,7 @@ class MergeTag
 		}
 
 		$this->handlePhotos($source, $into, $user);
+		$this->handleAlbums($source, $into, $user);
 		$this->handleTagAlbums($source, $into, $user);
 
 		// Cleanup unused tags after merging
@@ -105,6 +106,48 @@ class MergeTag
 			DB::table('photos_tags')
 				->where('tag_id', $source->id)
 				->whereIn('photo_id', $source_photo_ids) // Only the photos associated with the source tag and owned by the user
+				->delete();
+		});
+	}
+
+	private function handleAlbums(Tag $source, Tag $into, User $user): void
+	{
+		$source_album_ids = DB::table('albums_tags')
+			->where('tag_id', $source->id)
+			->when(
+				$user->may_administrate === false,
+				fn ($q) => $q
+					->whereExists(fn (Builder $query) => $query->select(DB::raw(1))
+							->from('base_albums')
+							->whereColumn('base_albums.id', 'albums_tags.album_id')
+							->where('base_albums.owner_id', $user->id)
+					)
+			)
+			->select('album_id')
+			->pluck('album_id')
+			->toArray();
+
+		$existing_album_ids = DB::table('albums_tags')
+			->where('tag_id', $into->id)
+			->whereIn('album_id', $source_album_ids)
+			->select('album_id')
+			->pluck('album_id')
+			->toArray();
+
+		$album_ids_to_add = array_diff($source_album_ids, $existing_album_ids);
+
+		DB::transaction(function () use ($album_ids_to_add, $into, $source, $source_album_ids): void {
+			if (count($album_ids_to_add) > 0) {
+				$insert_data = array_map(fn ($album_id) => [
+					'album_id' => $album_id,
+					'tag_id' => $into->id,
+				], $album_ids_to_add);
+				DB::table('albums_tags')->insert($insert_data);
+			}
+
+			DB::table('albums_tags')
+				->where('tag_id', $source->id)
+				->whereIn('album_id', $source_album_ids)
 				->delete();
 		});
 	}

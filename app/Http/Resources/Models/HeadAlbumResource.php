@@ -87,7 +87,7 @@ class HeadAlbumResource extends Data
 		$this->is_pinned = $album->is_pinned;
 
 		if ($this->rights->can_edit) {
-			$this->editable = EditableBaseAlbumResource::fromModel($album);
+			$this->editable = EditableBaseAlbumResource::fromModel($album->loadMissing('tags'));
 		}
 
 		if (request()->configs()->getValueAsBool('metrics_enabled') && Gate::check(AlbumPolicy::CAN_READ_METRICS, [Album::class, $album])) {

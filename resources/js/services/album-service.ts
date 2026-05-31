@@ -162,6 +162,10 @@ const AlbumService = {
 		return axios.patch(`${Constants.getApiUrl()}Album`, data);
 	},
 
+	setAlbumTags(album_id: string, tags: string[]): Promise<AxiosResponse<void>> {
+		return axios.patch(`${Constants.getApiUrl()}Album::albumTags`, { album_id, tags });
+	},
+
 	updateAlbumHeader(data: UpdateAlbumHeaderData): Promise<AxiosResponse> {
 		return axios.patch(`${Constants.getApiUrl()}Album::header`, data);
 	},

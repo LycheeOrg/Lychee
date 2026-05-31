@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 trait TagCleanupTrait
 {
 	/**
-	 * Cleans up tags that are not linked to any photos.
+	 * Cleans up tags that are not linked to photos or albums.
 	 */
 	protected function cleanupUnusedTags(): void
 	{
@@ -25,6 +25,20 @@ trait TagCleanupTrait
 					$query->select(DB::raw(1))
 						->from('photos_tags')
 						->whereColumn('photos_tags.tag_id', 'tags.id');
+				}
+			)
+			->whereNotExists(
+				function (Builder $query): void {
+					$query->select(DB::raw(1))
+						->from('tag_albums_tags')
+						->whereColumn('tag_albums_tags.tag_id', 'tags.id');
+				}
+			)
+			->whereNotExists(
+				function (Builder $query): void {
+					$query->select(DB::raw(1))
+						->from('albums_tags')
+						->whereColumn('albums_tags.tag_id', 'tags.id');
 				}
 			)
 			->pluck('id')
@@ -39,7 +53,10 @@ trait TagCleanupTrait
 			->whereIn('tag_id', $ids)
 			->delete();
 
-		// Remove any links to the tags in tag albums.
+		// Remove any links to the tags in albums and tag albums.
+		DB::table('albums_tags')
+			->whereIn('tag_id', $ids)
+			->delete();
 		DB::table('tag_albums_tags')
 			->whereIn('tag_id', $ids)
 			->delete();
