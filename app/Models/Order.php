@@ -312,9 +312,9 @@ class Order extends Model
 			return false;
 		}
 
-		// Email is set, we are fine.
+		// Email is set: identity requirement satisfied; fall through to check shipping below.
 		if ($this->email !== null && $this->email !== '') {
-			// Still need to check shipping if prints are present
+			// intentional fall-through — shipping check applies regardless of email
 		} elseif ($this->items()->where('size_variant_type', PurchasableSizeVariantType::FULL)->exists()) {
 			// We do not have a mail, so we cannot checkout if the order contains FULL size variants
 			return false;
