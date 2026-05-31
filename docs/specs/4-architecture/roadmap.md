@@ -7,6 +7,7 @@ High-level planning document for Lychee features and architectural initiatives.
 | Feature ID | Name | Status | Priority | Assignee | Started | Updated | Progress |
 |------------|------|--------|----------|----------|---------|---------|----------|
 | 040 | Disable Request Caching | Planning | P2 | LycheeOrg | 2026-05-18 | 2026-05-18 | Spec, plan, tasks drafted. 9 tasks across 5 increments (I1 migration, I2 feature flag + .env.example, I3 controller filter, I4 feature tests, I5 quality gates). No open questions. Ready to begin T-040-01. |
+| 043 | Webshop Print & Pixel Sizes | Planning | P2 | LycheeOrg | 2026-05-31 | 2026-05-31 | Spec stub created. Blocked on 5 open questions (Q-043-01 … Q-043-05): pricing model, license-type applicability, pixel fulfillment, catalogue scope, SE gating. Plan and tasks pending question resolution. |
 
 ## Paused Features
 

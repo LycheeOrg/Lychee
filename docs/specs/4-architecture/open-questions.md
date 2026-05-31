@@ -6,8 +6,98 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 | Question ID | Feature | Priority | Summary | Status | Opened | Updated |
 |-------------|---------|----------|---------|--------|--------|---------|
+| Q-043-01 | 043 – Webshop Print & Pixel Sizes | High | Pricing model: global flat price per size vs. per-purchasable with license-type dimension | Open | 2026-05-31 | 2026-05-31 |
+| Q-043-02 | 043 – Webshop Print & Pixel Sizes | High | License type: do print and pixel items carry the personal/commercial/extended dimension? | Open | 2026-05-31 | 2026-05-31 |
+| Q-043-03 | 043 – Webshop Print & Pixel Sizes | Medium | Pixel-size fulfillment: manual download-link flow (same as FULL) or different mechanism? | Open | 2026-05-31 | 2026-05-31 |
+| Q-043-04 | 043 – Webshop Print & Pixel Sizes | Medium | Print/pixel catalogue availability: global for all purchasables, or restrictable per-album/photo? | Open | 2026-05-31 | 2026-05-31 |
+| Q-043-05 | 043 – Webshop Print & Pixel Sizes | Low | SE gating: are print/pixel sizes Lychee SE (supporter:pro) only, consistent with the rest of the webshop? | Open | 2026-05-31 | 2026-05-31 |
 
 ## Question Details
+
+### Q-043-01: Pricing model for print/pixel sizes
+
+**Feature:** 043 – Webshop Print & Pixel Sizes  
+**Priority:** High  
+**Status:** Open  
+**Opened:** 2026-05-31  
+
+**Context:** The current `purchasable_prices` table prices each size variant (`medium`, `medium2x`, `original`, `full`) × license type (`personal`, `commercial`, `extended`) per `purchasable` record (album or photo). The problem statement says "admin specifies a list of possible print sizes and pixel sizes" — that implies a global catalogue. It is unclear whether a price is stored on the global size entry or whether each purchasable can override it.
+
+**Options (ordered by recommendation):**
+
+**Option A – Global flat price per size (recommended):** Each `print_size` / `pixel_size` catalogue record carries a single `price_cents` set by the admin. That price applies to every purchasable photo/album uniformly. No per-purchasable price override for print/pixel sizes. Pros: simple to implement and manage; consistent with "admin defines what's available". Cons: no per-photographer/per-album price customisation.
+
+**Option B – Per-purchasable override (mirrors existing price model):** The `purchasable_prices` table (or a sibling) is extended to accommodate `print_size_id` / `pixel_size_id` entries, allowing per-album/photo price overrides on top of a catalogue default. Pros: full pricing flexibility. Cons: significantly more complex; catalogue UI and basket resolution logic both grow; the problem statement does not explicitly request per-album overrides.
+
+---
+
+### Q-043-02: License type for print and pixel order items
+
+**Feature:** 043 – Webshop Print & Pixel Sizes  
+**Priority:** High  
+**Status:** Open  
+**Opened:** 2026-05-31  
+
+**Context:** Digital size variants are sold with a license type (personal, commercial, extended). The problem statement does not mention license types for prints or pixel sizes.
+
+**Options (ordered by recommendation):**
+
+**Option A – Retain license type for all item types (recommended):** Print and pixel-size `OrderItem` records still carry a `license_type` (defaulting to `personal` if not selected). The customer can choose the license just as with digital variants. Pros: consistent model; reuses existing enum and validation; legally safer for photographers selling commercial rights. Cons: slightly more UI surface.
+
+**Option B – No license type for prints/pixel sizes:** `license_type` is `null` on print/pixel order items; it only applies to digital downloads. Pros: simpler checkout form. Cons: inconsistent model; breaks `OrderItem` NOT-NULL constraint (requires schema change or default).
+
+---
+
+### Q-043-03: Fulfillment model for pixel-size items
+
+**Feature:** 043 – Webshop Print & Pixel Sizes  
+**Priority:** Medium  
+**Status:** Open  
+**Opened:** 2026-05-31  
+
+**Context:** FULL size variants require the photographer to manually export the file and set a `download_link`. Pixel-size purchases imply the photographer exports the photo at a specific resolution. The fulfillment mechanism is unspecified.
+
+**Options (ordered by recommendation):**
+
+**Option A – Same manual `download_link` mechanism as FULL (recommended):** A pixel-size `OrderItem` has `size_variant_type = null`, `is_print = false`, and awaits a `download_link` set by the photographer (same admin action as FULL). `FulfillOrders` task skips these until the link is set. Pros: reuses existing fulfillment infrastructure with no new code path. Cons: photographer must remember to export at the specified pixel dimensions.
+
+**Option B – Automatic export via a queue job:** A new job reads `pixel_width`/`pixel_height` from the order item and generates the resized image automatically using Lychee's image processing pipeline. Pros: fully automated. Cons: large scope increase; not requested by the problem statement; relies on Lychee's image processing capabilities being available post-purchase.
+
+---
+
+### Q-043-04: Print/pixel catalogue availability scope
+
+**Feature:** 043 – Webshop Print & Pixel Sizes  
+**Priority:** Medium  
+**Status:** Open  
+**Opened:** 2026-05-31  
+
+**Context:** The problem statement says "admin specifies a list of possible print sizes and pixel sizes" without mentioning per-album or per-photo restrictions.
+
+**Options (ordered by recommendation):**
+
+**Option A – Global catalogue, available for all purchasables (recommended):** Every active `print_size` / `pixel_size` is selectable for any purchasable photo. Admin enables/disables sizes globally only. Pros: simple; matches problem statement literally. Cons: no per-album control.
+
+**Option B – Per-purchasable opt-in/opt-out:** The purchasable management screen lets the owner whitelist or blacklist specific print/pixel sizes for each album or photo. Pros: fine-grained control. Cons: significant UI and backend complexity not requested.
+
+---
+
+### Q-043-05: Lychee SE gating for print/pixel features
+
+**Feature:** 043 – Webshop Print & Pixel Sizes  
+**Priority:** Low  
+**Status:** Open  
+**Opened:** 2026-05-31  
+
+**Context:** All existing webshop routes are behind `Route::middleware('support:pro')`. Print/pixel sizes extend the webshop.
+
+**Options (ordered by recommendation):**
+
+**Option A – Same `support:pro` gate (recommended):** Print/pixel size management and the customer catalogue endpoint sit inside the existing `support:pro` middleware group. Pros: consistent; no policy change. Cons: none.
+
+**Option B – Separate gate or free tier:** Print/pixel sizes are offered on a lower tier. Pros: expands addressable market. Cons: contradicts existing policy; would require a policy decision outside the feature's scope.
+
+---
 
 ### ~~Q-039-01: Custom Brand Name vs Generic "your-application" Placeholder~~ ✅ RESOLVED
 
