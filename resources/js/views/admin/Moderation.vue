@@ -80,9 +80,7 @@
 						/>
 						<i v-else class="pi pi-image text-2xl text-muted-color" />
 					</td>
-					<td class="py-2 pr-3">
-						<PhotoTitleLink :photo-id="photo.photo_id" :album-id="photo.album_id" :title="photo.title" />
-					</td>
+					<td class="py-2 pr-3">{{ photo.title }}</td>
 					<td class="py-2 pr-3">{{ photo.owner_username }}</td>
 					<td class="py-2 pr-3">
 						<RouterLink
@@ -147,7 +145,6 @@ import ModerationService from "@/services/moderation-service";
 import PhotoService from "@/services/photo-service";
 import { usePhotoStore } from "@/stores/PhotoState";
 import { trans } from "laravel-vue-i18n";
-import PhotoTitleLink from "@/components/maintenance/PhotoTitleLink.vue";
 
 const toast = useToast();
 const photoStore = usePhotoStore();

@@ -28,13 +28,20 @@
 						{{ duplicate.album_title }}
 					</span>
 				</div>
-				<div class="w-1/3 flex-none flex items-center gap-2 cursor-pointer" @click="click(duplicate.photo_id)">
-					<PhotoTitleLink
-						:photo-id="duplicate.photo_id"
-						:album-id="duplicate.album_id"
-						:title="duplicate.photo_title"
-						class="w-full inline-block whitespace-nowrap text-ellipsis overflow-hidden"
-					/>
+				<div class="w-1/3 flex-none flex gap-2 group">
+					<router-link
+						:to="{ name: 'album', params: { albumId: duplicate.album_id, photoId: duplicate.photo_id } }"
+						target="_blank"
+						class=""
+					>
+						<i class="pi pi-link text-primary-emphasis hover:text-primary-emphasis-alt"></i>
+					</router-link>
+					<span
+						class="w-full inline-block whitespace-nowrap text-ellipsis overflow-hidden cursor-pointer"
+						@click="click(duplicate.photo_id)"
+					>
+						{{ duplicate.photo_title }}
+					</span>
 				</div>
 				<div class="w-1/4 font-mono text-xs cursor-pointer" @click="click(duplicate.photo_id)">{{ duplicate.checksum.slice(0, 12) }}</div>
 			</div>
@@ -46,7 +53,6 @@ import { ref, watch } from "vue";
 import { type SplitData } from "@/composables/album/splitter";
 import { useToast } from "primevue/usetoast";
 import { trans } from "laravel-vue-i18n";
-import PhotoTitleLink from "@/components/maintenance/PhotoTitleLink.vue";
 
 const toast = useToast();
 const props = defineProps<{
