@@ -7,6 +7,7 @@ High-level planning document for Lychee features and architectural initiatives.
 | Feature ID | Name | Status | Priority | Assignee | Started | Updated | Progress |
 |------------|------|--------|----------|----------|---------|---------|----------|
 | 040 | Disable Request Caching | Planning | P2 | LycheeOrg | 2026-05-18 | 2026-05-18 | Spec, plan, tasks drafted. 9 tasks across 5 increments (I1 migration, I2 feature flag + .env.example, I3 controller filter, I4 feature tests, I5 quality gates). No open questions. Ready to begin T-040-01. |
+| 042 | Webshop Order Item Display | Planning | P2 | LycheeOrg | 2026-05-31 | 2026-05-31 | Spec, plan, tasks drafted. 15 tasks across 6 increments (I1 extend OrderItemResource, I2 eager-load, I3 backend tests, I4 i18n+TS types, I5 frontend OrderDownload.vue, I6 quality gates). No open questions. Ready to begin T-042-01. |
 
 ## Paused Features
 
@@ -111,4 +112,4 @@ features/
 
 ---
 
-*Last updated: 2026-05-18 (Feature 040 planned — Disable Request Caching)*
+*Last updated: 2026-05-31 (Feature 042 planned — Webshop Order Item Display)*
