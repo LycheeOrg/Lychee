@@ -93,42 +93,22 @@ _Last updated: 2026-05-31_
 
 ---
 
-## Increment I4 – Frontend
-
-- [ ] T-041-12 – Update TypeScript `UploadMetaResource` type and `upload-service.ts` (FR-041-11, FR-041-12, DO-041-01, S-041-10).  
-  _Intent:_ Locate the generated or manual TS type for `App.Http.Resources.Editable.UploadMetaResource` and add `expected_id: string | null`, `title: string | null`, `description: string | null`. In `upload-service.ts`, add `title?: string | null` and `description?: string | null` to `UploadData`; append them to `FormData` in `upload()` (skip append when null/undefined).  
-  _Verification commands:_  
-  - `npm run check`
-
-- [ ] T-041-13 – Update `UploadingLine.vue` props and `UploadPanel.vue` UI (FR-041-12, S-041-10, UI-041-01, UI-041-02, UI-041-03).  
-  _Intent:_ Add optional `title?: string` and `description?: string` props to `UploadingLine.vue`; wire into `UploadData`. In `UploadPanel.vue`, when `list_upload_files.length === 1`, render a text input (pre-filled with `file.name`) and a textarea for description above the file row, hidden otherwise. Bind values to refs and pass them as props to `<UploadingLine>`.  
-  _Verification commands:_  
-  - `npm run format`  
-  - `npm run check`  
-  _Notes:_ Follow PrimeVue component conventions already used in the file. Fields become read-only / hidden once upload starts (watch `status` ref).
-
----
-
 ## Increment I5 – Quality Gates & Docs
 
-- [ ] T-041-14 – Full quality gate and documentation update (NFR-041-01 through NFR-041-05).  
+- [ ] T-041-14 – Full quality gate and documentation update (NFR-041-01 through NFR-041-04).  
   _Intent:_ Run full pipeline; update knowledge map, roadmap, and session file.  
   _Verification commands:_  
   - `vendor/bin/php-cs-fixer fix`  
-  - `npm run format`  
-  - `npm run check`  
   - `php artisan test`  
   - `make phpstan`  
   _Steps:_  
   1. Run `vendor/bin/php-cs-fixer fix` — apply any style fixes.  
-  2. Run `npm run format` — Prettier pass.  
-  3. Run `npm run check` — TypeScript/Vue compile check.  
-  4. Run `php artisan test` — all tests green.  
-  5. Run `make phpstan` — 0 errors.  
-  6. Update `docs/specs/4-architecture/knowledge-map.md` — add entries for `ApplyUserProvidedMetadata` pipe and the three new DTO fields.  
-  7. Update `docs/specs/4-architecture/roadmap.md` — move Feature 041 from Active to Completed (or update progress field).  
-  8. Update `docs/specs/_current-session.md` — record final state.  
-  9. Mark all previous tasks `[x]`.  
+  2. Run `php artisan test` — all tests green.  
+  3. Run `make phpstan` — 0 errors.  
+  4. Update `docs/specs/4-architecture/knowledge-map.md` — add entries for `ApplyUserProvidedMetadata` pipe and the three new DTO fields.  
+  5. Update `docs/specs/4-architecture/roadmap.md` — move Feature 041 from Active to Completed (or update progress field).  
+  6. Update `docs/specs/_current-session.md` — record final state.  
+  7. Mark all previous tasks `[x]`.  
   _Notes:_ Do not proceed if any gate step fails — fix the issue in the appropriate earlier task first.
 
 ---

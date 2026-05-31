@@ -13,8 +13,8 @@ Uploading a photo to Lychee is a single atomic action from the user's perspectiv
 **Success signals:**
 - `Photo.title` and `Photo.description` reflect user-supplied values without a second API call (S-041-01).
 - `UploadMetaResource.expected_id` in the final-chunk response matches the saved `Photo.id` (S-041-05).
-- All 12 functional requirements (FR-041-01 through FR-041-12) verified by passing tests.
-- Quality gate: PHPStan 0, php-cs-fixer clean, all tests green, `npm run check` clean.
+- All 11 functional requirements (FR-041-01 through FR-041-11) verified by passing tests.
+- Quality gate: PHPStan 0, php-cs-fixer clean, all tests green.
 
 ## Scope Alignment
 
@@ -27,14 +27,14 @@ Uploading a photo to Lychee is a single atomic action from the user's perspectiv
 - `Photo` model + `HasRandomIDAndLegacyTimeBasedID` trait — `preallocateId()` helper and `generateKey()` guard.
 - New pipe `Standalone\ApplyUserProvidedMetadata` (inserted before `HydrateMetadata`).
 - `AutoRenamer` pipe guard — skip when user-supplied `title` is non-null.
-- Frontend: `UploadMetaResource` TS type update, `upload-service.ts` new fields, `UploadingLine.vue` props, `UploadPanel.vue` conditional fields.
-- Feature test `UploadWithMetadataTest.php` covering S-041-01 through S-041-09.
+- Feature test `UploadWithMetadataTest.php` covering S-041-01 through S-041-09, S-041-11.
 
 **Out of scope:**
 - Tags, license, rating, or taken-at at upload time.
 - `expected_id` for zip or from-URL imports.
 - From-URL upload changes.
 - OpenAPI automation / snapshot testing.
+- Any UI / frontend changes (TypeScript types, Vue components, upload panel).
 
 ## Dependencies & Interfaces
 
@@ -47,9 +47,6 @@ Uploading a photo to Lychee is a single atomic action from the user's perspectiv
 | `App\Models\Photo` + `HasRandomIDAndLegacyTimeBasedID` | ID pre-allocation |
 | `App\Actions\Photo\Pipes\Shared\HydrateMetadata` | Must run *after* `ApplyUserProvidedMetadata` |
 | `App\Actions\Photo\Pipes\Standalone\AutoRenamer` | Guard condition added |
-| Frontend: `resources/js/services/upload-service.ts` | New form-data fields |
-| Frontend: `resources/js/components/forms/upload/UploadingLine.vue` | New props |
-| Frontend: `resources\js\components\modals\UploadPanel.vue` | Conditional UI |
 
 ## Assumptions & Risks
 
@@ -69,9 +66,8 @@ After all tasks are complete:
 1. Run `php artisan test` — all tests green.
 2. Run `make phpstan` — 0 errors.
 3. Run `vendor/bin/php-cs-fixer fix --dry-run` — no diff.
-4. Run `npm run check` — 0 errors.
-5. Cross-check every FR/NFR against a passing test or explicit code path.
-6. Record findings in the "Analysis Gate" section below.
+4. Cross-check every FR/NFR against a passing test or explicit code path.
+5. Record findings in the "Analysis Gate" section below.
 
 ## Increment Map
 
@@ -111,29 +107,17 @@ After all tasks are complete:
 - _Commands:_ `php artisan test --filter=UploadWithMetadataTest`, `make phpstan`
 - _Exit:_ S-041-04, S-041-07, S-041-08, S-041-09 pass; PHPStan clean.
 
-### I4 – Frontend (≤ 45 min)
-- _Goal:_ Update TypeScript types and upload UI.
-- _Preconditions:_ I3 complete (backend API stable).
-- _Steps:_
-  1. Update `UploadMetaResource` TypeScript type (`resources/js/types/` or generated file) with `expected_id`, `title`, `description`.
-  2. Add `title?: string | null` and `description?: string | null` to `UploadData` in `upload-service.ts`; append to `FormData`.
-  3. Add optional `title` and `description` props to `UploadingLine.vue`; pass through `UploadData`.
-  4. In `UploadPanel.vue`: when `list_upload_files.length === 1`, render title input (pre-filled with file name) and description textarea before the file row; hide when > 1 file; wire into `UploadingLine` props.
-- _Commands:_ `npm run format`, `npm run check`
-- _Exit:_ `npm run check` clean; UI mock-up satisfied.
-
 ### I5 – Quality Gate & Docs (≤ 30 min)
 - _Goal:_ Full pipeline green; documentation updated.
-- _Preconditions:_ I1–I4 complete.
+- _Preconditions:_ I1–I3 complete.
 - _Steps:_
   1. `vendor/bin/php-cs-fixer fix`
   2. `php artisan test` — all green.
   3. `make phpstan` — 0 errors.
-  4. `npm run format && npm run check` — clean.
-  5. Update `docs/specs/4-architecture/knowledge-map.md`.
-  6. Update `docs/specs/4-architecture/roadmap.md` — move 041 to Completed (or update progress).
-  7. Update `docs/specs/_current-session.md`.
-  8. Mark all tasks `[x]` in `tasks.md`.
+  4. Update `docs/specs/4-architecture/knowledge-map.md`.
+  5. Update `docs/specs/4-architecture/roadmap.md` — move 041 to Completed (or update progress).
+  6. Update `docs/specs/_current-session.md`.
+  7. Mark all tasks `[x]` in `tasks.md`.
 - _Commands:_ (see quality gate above)
 - _Exit:_ All gates pass; docs updated; feature complete.
 
@@ -150,7 +134,6 @@ After all tasks are complete:
 | S-041-07 | I3 / T-041-09 | Zip → `expected_id` null |
 | S-041-08 | I3 / T-041-07 | `title` > 100 chars → 422 |
 | S-041-09 | I3 / T-041-08 | `description` > 1000 chars → 422 |
-| S-041-10 | I4 / T-041-12 | Multi-file batch → fields hidden |
 | S-041-11 | I2 / T-041-05 | AutoRenamer skipped when title supplied |
 
 ## Analysis Gate
@@ -159,7 +142,7 @@ _To be completed after spec, plan, and tasks are drafted and before implementati
 
 | Check | Result |
 |-------|--------|
-| Specification completeness | ✅ All FR/NFR populated; ASCII mock-up included; resolved answers in normative sections |
+| Specification completeness | ✅ All FR/NFR populated; resolved answers in normative sections; UI mock-up removed (API-only feature) |
 | Open questions | ✅ No open questions for Feature 041 |
 | Plan alignment | ✅ Plan references spec and tasks; dependencies and success criteria match spec wording |
 | Tasks coverage | ✅ Every FR maps to ≥ 1 task; tests staged before implementation per SDD cadence |
@@ -170,12 +153,11 @@ _Reviewed: 2026-05-31. No blocking findings. Ready to begin T-041-01._
 
 ## Exit Criteria
 
-- [ ] All 14 tasks in `tasks.md` marked `[x]`.
+- [ ] All 12 tasks in `tasks.md` marked `[x]`.
 - [ ] `php artisan test` exits 0 (no regressions).
 - [ ] `make phpstan` exits 0.
 - [ ] `vendor/bin/php-cs-fixer fix --dry-run` exits 0.
-- [ ] `npm run check` exits 0.
-- [ ] `UploadWithMetadataTest` covers S-041-01 through S-041-09.
+- [ ] `UploadWithMetadataTest` covers S-041-01 through S-041-09, S-041-11.
 - [ ] Roadmap row updated.
 - [ ] `knowledge-map.md` updated.
 - [ ] `_current-session.md` updated.

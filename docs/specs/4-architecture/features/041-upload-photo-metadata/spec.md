@@ -18,7 +18,7 @@ Currently the photo upload API accepts only the file binary, album target, and a
 1. **No pre-upload metadata.** Clients cannot set the photo's `title` or `description` at upload time; they must issue a second `PATCH /api/Photo` request after the picture is fully processed, which is cumbersome and blocks automation workflows.
 2. **No immediate ID feedback.** The `POST /api/Photo` response only confirms chunk progress; it does not return the photo ID.  Callers cannot navigate to the photo or link to it until the background processing job finishes (potentially seconds to minutes later).
 
-This feature adds `title`, `description`, and `expected_id` to the upload API, touching the HTTP request/response contract, `UploadMetaResource`, `ProcessImageJob`, `ImportParam`/`InitDTO`/`StandaloneDTO` DTOs, one new pipe, `Photo` model ID pre-allocation, and the TypeScript upload service and `UploadPanel` component.
+This feature adds `title`, `description`, and `expected_id` to the upload API, touching the HTTP request/response contract, `UploadMetaResource`, `ProcessImageJob`, `ImportParam`/`InitDTO`/`StandaloneDTO` DTOs, one new pipe, and `Photo` model ID pre-allocation.
 
 ## Goals
 
@@ -33,6 +33,7 @@ This feature adds `title`, `description`, and `expected_id` to the upload API, t
 - Returning a "real" photo ID when a duplicate is detected (`expected_id` is deliberately named to signal that it may not match the actual stored record in the duplicate case).
 - Changing the zip extraction flow to emit `expected_id` (zip produces multiple photos).
 - From-URL import (`POST /api/Photo/url`) is unaffected.
+- Any UI / frontend changes (TypeScript types, Vue components, upload panel).
 
 ## Functional Requirements
 
@@ -49,7 +50,6 @@ This feature adds `title`, `description`, and `expected_id` to the upload API, t
 | FR-041-09 | For duplicate uploads `expected_id` is still present in the response (the pre-generated value) but it will not match the duplicate's stored `id`. | Response contains non-null `expected_id`; HTTP 409 is returned with duplicate info; callers can distinguish the duplicate by the 409 status. | — | — | — | Problem statement ("the id loses its meaning") |
 | FR-041-10 | For zip uploads (when `ExtractZip` job is dispatched) `expected_id` is `null` in the response. | `expected_id = null`. | — | — | — | Non-Goal above |
 | FR-041-11 | `UploadMetaResource` gains three new nullable fields: `expected_id`, `title`, `description`. | TypeScript transformer regenerates types; frontend can access these fields. | — | — | — | Interface contract |
-| FR-041-12 | Upload Panel UI shows optional `title` input (pre-filled with file name) and `description` textarea when exactly one file is queued. | Values are wired into the upload payload. | Fields hidden / not sent for batch (multi-file) uploads. | — | — | Problem statement |
 
 ## Non-Functional Requirements
 
@@ -59,38 +59,10 @@ This feature adds `title`, `description`, and `expected_id` to the upload API, t
 | NFR-041-02 | PHPStan level-6 clean after all changes. | Code quality | `make phpstan` exits 0. | phpstan.neon | AGENTS.md quality gate |
 | NFR-041-03 | php-cs-fixer reports no diff after all changes. | Code style | `vendor/bin/php-cs-fixer fix --dry-run` exits 0. | .php-cs-fixer.php | AGENTS.md quality gate |
 | NFR-041-04 | All existing tests remain green. | Regression safety | `php artisan test` exits 0. | phpunit.xml | AGENTS.md quality gate |
-| NFR-041-05 | Vue/TypeScript build clean after frontend changes. | Code quality | `npm run check` exits 0. | tsconfig.json | AGENTS.md quality gate |
 
 ## UI / Interaction Mock-ups
 
-The upload panel currently shows a file picker and a list of uploading files.  When exactly **one** file is selected (before upload starts), two new optional fields appear above the file row:
-
-```
-+------------------------------------------------------------+
-|  Upload                                              [×]   |
-+------------------------------------------------------------+
-|  Title (optional)                                          |
-|  ┌──────────────────────────────────────────────────────┐  |
-|  │ my-holiday.jpg                                       │  |
-|  └──────────────────────────────────────────────────────┘  |
-|  Description (optional)                                    |
-|  ┌──────────────────────────────────────────────────────┐  |
-|  │                                                      │  |
-|  └──────────────────────────────────────────────────────┘  |
-|                                                            |
-|  ┌────────────────────────────────────────────────────┐    |
-|  │ my-holiday.jpg               uploading … 42%       │    |
-|  │ ████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░      │    |
-|  └────────────────────────────────────────────────────┘    |
-|                                                            |
-|  [ Apply watermark  ○ ]                                    |
-|  [      Cancel      ]  [       Close       ]              |
-+------------------------------------------------------------+
-
-— When more than one file is queued: title/description fields are hidden.
-— Title pre-populated with file name; user may clear or overwrite.
-— Description empty by default.
-```
+_Not applicable — this feature is API-only. No UI changes are in scope._
 
 ## Branch & Scenario Matrix
 
@@ -105,7 +77,6 @@ The upload panel currently shows a file picker and a list of uploading files.  W
 | S-041-07 | Zip upload — `expected_id` is `null` in response. |
 | S-041-08 | `title` > 100 chars in request — HTTP 422 returned. |
 | S-041-09 | `description` > 1 000 chars in request — HTTP 422 returned. |
-| S-041-10 | Multi-file batch upload via UI — title/description fields hidden; upload proceeds without those fields. |
 | S-041-11 | `AutoRenamer` skipped when caller supplies a non-null `title`. |
 
 ## Test Strategy
@@ -114,8 +85,7 @@ The upload panel currently shows a file picker and a list of uploading files.  W
 - **Application (Feature_v2):** Feature tests extending `BaseApiWithDataTest` for S-041-01 through S-041-09 via the HTTP upload endpoint. Tests stage failing assertions first, then implement code to make them green.
 - **REST:** OpenAPI contract: verify new fields appear in the response schema (manual check; no automated snapshot exists yet).
 - **CLI:** Not applicable (no CLI command affected).
-- **UI (TypeScript/Vue):** `npm run check` (vue-tsc) must pass; runtime correctness covered by manual QA / E2E tests if they exist.
-- **Docs/Contracts:** `UploadMetaResource` TypeScript definition regenerated; checked in with the implementation.
+- **Docs/Contracts:** `UploadMetaResource` response contract updated; no TypeScript type changes in scope.
 
 ## Interface & Contract Catalogue
 
@@ -123,7 +93,7 @@ The upload panel currently shows a file picker and a list of uploading files.  W
 
 | ID | Description | Modules |
 |----|-------------|---------|
-| DO-041-01 | `UploadMetaResource` — gains `expected_id: ?string`, `title: ?string`, `description: ?string` | HTTP Resources, Frontend TS types |
+| DO-041-01 | `UploadMetaResource` — gains `expected_id: ?string`, `title: ?string`, `description: ?string` | HTTP Resources |
 | DO-041-02 | `ImportParam` — gains `title: ?string`, `description: ?string`, `preallocated_id: ?string` | DTO layer |
 | DO-041-03 | `InitDTO` — gains `title: ?string`, `description: ?string`, `preallocated_id: ?string` from `ImportParam` | DTO layer |
 | DO-041-04 | `StandaloneDTO` — gains `title: ?string`, `description: ?string`; constructor accepts pre-allocated ID and calls `Photo::preallocateId()` | DTO layer |
@@ -147,15 +117,11 @@ _No new telemetry events — uploads already log via `JobHistory`._
 
 | ID | Path | Purpose |
 |----|------|---------|
-| FX-041-01 | `tests/Feature_v2/Photo/UploadWithMetadataTest.php` | Feature test covering S-041-01 through S-041-11. |
+| FX-041-01 | `tests/Feature_v2/Photo/UploadWithMetadataTest.php` | Feature test covering S-041-01 through S-041-09, S-041-11. |
 
 ### UI States
 
-| ID | State | Trigger / Expected outcome |
-|----|-------|---------------------------|
-| UI-041-01 | Single file selected, fields visible | User selects exactly one file; `title` input (pre-filled with file name) and `description` textarea appear above the file row. |
-| UI-041-02 | Multiple files selected, fields hidden | User selects > 1 file; title/description section is not rendered. |
-| UI-041-03 | Upload in progress | Fields become read-only / hidden once chunked upload begins. |
+_Not applicable — this feature is API-only. No UI states are in scope._
 
 ## Telemetry & Observability
 
@@ -225,13 +191,6 @@ routes:
 fixtures:
   - id: FX-041-01
     path: tests/Feature_v2/Photo/UploadWithMetadataTest.php
-ui_states:
-  - id: UI-041-01
-    description: Single file selected – title/description fields visible
-  - id: UI-041-02
-    description: Multiple files selected – title/description fields hidden
-  - id: UI-041-03
-    description: Upload in progress – fields hidden/read-only
 ```
 
 ## Appendix
