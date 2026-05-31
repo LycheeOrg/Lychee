@@ -342,9 +342,11 @@ class PhotoController extends Controller
 				}
 
 				// Public albums are only shown if not link-required (hidden from listings)
-				return $album->public_permissions() !== null &&
-					$album->public_permissions()->is_link_required === false &&
-					($album->public_permissions()->password === null || $album_policy->isUnlocked($album));
+				$public_perm = $album->public_permissions();
+
+				return $public_perm !== null &&
+					$public_perm->is_link_required === false &&
+					($public_perm->password === null || $album_policy->isUnlocked($album));
 			})
 			->values()
 			->map(fn ($album) => new PhotoAlbumResource($album));
