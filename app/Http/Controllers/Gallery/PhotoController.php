@@ -19,6 +19,7 @@ use App\Enum\FileStatus;
 use App\Enum\SizeVariantType;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\ConflictingPropertyException;
+use App\Factories\IdFactory;
 use App\Http\Requests\Photo\CopyPhotosRequest;
 use App\Http\Requests\Photo\DeletePhotosRequest;
 use App\Http\Requests\Photo\EditPhotoRequest;
@@ -88,11 +89,8 @@ class PhotoController extends Controller
 
 		$is_zip = strtolower(pathinfo($meta->file_name, PATHINFO_EXTENSION)) === 'zip';
 		if (!$is_zip) {
-			// Generate a 24-char Base64url string using the same algorithm as generateKey().
-			$meta->expected_id = strtr(base64_encode(random_bytes(18)), '+/', '-_');
-			if ($meta->expected_id[23] === '-') {
-				$meta->expected_id = substr_replace($meta->expected_id, '0', 23, 1);
-			}
+			$id_factory = resolve(IdFactory::class);
+			$meta->expected_id = $id_factory->createRandomID();
 		}
 
 		return $this->process(

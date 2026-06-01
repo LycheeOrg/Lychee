@@ -50,10 +50,14 @@ class Create
 		?string $description = null,
 		?string $preallocated_id = null,
 	) {
-		$this->strategy_parameters = new ImportParam($import_mode, $intended_owner_id, upload_trust_level: $upload_trust_level);
-		$this->strategy_parameters->title = $title;
-		$this->strategy_parameters->description = $description;
-		$this->strategy_parameters->preallocated_id = $preallocated_id;
+		$this->strategy_parameters = new ImportParam(
+			$import_mode,
+			$intended_owner_id,
+			title: $title,
+			description: $description,
+			preallocated_id: $preallocated_id,
+			upload_trust_level: $upload_trust_level,
+		);
 	}
 
 	/**

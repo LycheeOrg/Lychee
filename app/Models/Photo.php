@@ -203,7 +203,7 @@ class Photo extends Model implements HasUTCBasedTimes
 	 */
 	public function preallocateId(string $id): void
 	{
-		$this->preAllocatedKey = $id;
+		$this->pre_allocated_key = $id;
 	}
 
 	/**

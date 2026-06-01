@@ -8,10 +8,10 @@
 
 namespace App\Models\Extensions;
 
-use App\Constants\RandomID;
 use App\Exceptions\InsufficientEntropyException;
 use App\Exceptions\Internal\NotImplementedException;
 use App\Exceptions\Internal\TimeBasedIdException;
+use App\Factories\IdFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\InvalidCastException;
 use Illuminate\Database\Eloquent\JsonEncodingException;
@@ -32,7 +32,7 @@ trait HasRandomIDAndLegacyTimeBasedID
 	 * DB-collision retries generate a fresh random ID instead of re-trying
 	 * the same value.
 	 */
-	protected ?string $preAllocatedKey = null;
+	protected ?string $pre_allocated_key = null;
 
 	/**
 	 * Get the value indicating whether the IDs are incrementing.
@@ -159,32 +159,17 @@ trait HasRandomIDAndLegacyTimeBasedID
 	private function generateKey(): void
 	{
 		// If a key was pre-allocated (e.g. via preallocateId()), consume it on the
-		// first INSERT attempt.  Clearing $preAllocatedKey after use ensures that
+		// first INSERT attempt.  Clearing $pre_allocated_key after use ensures that
 		// a DB-collision retry generates a fresh random ID rather than failing again
 		// with the same value.
-		if ($this->preAllocatedKey !== null) {
-			$this->attributes[$this->getKeyName()] = $this->preAllocatedKey;
-			$this->preAllocatedKey = null;
+		if ($this->pre_allocated_key !== null) {
+			$this->attributes[$this->getKeyName()] = $this->pre_allocated_key;
+			$this->pre_allocated_key = null;
 
 			return;
 		}
 
-		// URl-compatible variant of base64 encoding
-		// `+` and `/` are replaced by `-` and `_`, resp.
-		// The other characters (a-z, A-Z, 0-9) are legal within an URL.
-		// As the number of bytes is divisible by 3, no trailing `=` occurs.
-		try {
-			$id = strtr(base64_encode(random_bytes(3 * RandomID::ID_LENGTH / 4)), '+/', '-_');
-			// Last character whould not be a - for some version of android.
-			// this will reduce the entropy and induce a slight bias but we are still
-			// above the birthday bounds.
-			if ($id[23] === '-') {
-				$id[23] = '0';
-			}
-			// @codeCoverageIgnoreStart
-		} catch (\Exception $e) {
-			throw new InsufficientEntropyException($e);
-		}
-		$this->attributes[$this->getKeyName()] = $id;
+		$id_factory = resolve(IdFactory::class);
+		$this->attributes[$this->getKeyName()] = $id_factory->createRandomID();
 	}
 }
