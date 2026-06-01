@@ -35,6 +35,12 @@ class StandaloneDTO implements PhotoDTO
 	// that should be preserved as a RAW size variant after conversion to JPEG.
 	public NativeLocalFile|null $raw_source_file = null;
 
+	// User-supplied title override (takes precedence over EXIF-extracted title when non-null).
+	public ?string $title = null;
+
+	// User-supplied description override (takes precedence over EXIF-extracted description when non-null).
+	public ?string $description = null;
+
 	public function __construct(
 		// The resulting photo
 		public Photo $photo,
@@ -75,6 +81,15 @@ class StandaloneDTO implements PhotoDTO
 			apply_watermark: $init_dto->apply_watermark,
 		);
 		$dto->raw_source_file = $init_dto->raw_source_file;
+		$dto->title = $init_dto->title;
+		$dto->description = $init_dto->description;
+
+		// Pre-allocate the photo ID so the controller can return it in the upload response
+		// before the job finishes. The trait's generateKey() will consume and then clear
+		// this value; a DB-collision retry will therefore generate a fresh random ID.
+		if ($init_dto->preallocated_id !== null) {
+			$dto->photo->preallocateId($init_dto->preallocated_id);
+		}
 
 		return $dto;
 	}

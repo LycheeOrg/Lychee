@@ -1,13 +1,11 @@
 <?php
-
 return [
-    /*
+    'documentation' => [
+        /*
     |--------------------------------------------------------------------------
     | All Settings
     |--------------------------------------------------------------------------
     */
-
-    'documentation' => [
         'version' => 'Aktuelle Version von Lychee',
         'check_for_updates' => 'Automatisch auf Aktualisierungen prüfen',
         'sorting_photos_col' => 'Standardspalte für die Fotosortierung',
