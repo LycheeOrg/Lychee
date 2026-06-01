@@ -117,8 +117,7 @@
 									src="../../../img/icons/camera.png"
 									class="dark:invert opacity-50 w-6 h-6"
 								/>
-								<span class="text-sm">{{ [photoStore.photo.preformatted.make, photoStore.photo.preformatted.model].filter(Boolean).join(' - ') }}</span>
-
+								<span class="text-sm">{{ cameraModel }}</span>
 							</div>
 							<div v-if="photoStore.photo.preformatted.lens" class="flex w-full gap-2 mb-2">
 								<img
@@ -229,7 +228,7 @@
 	</aside>
 </template>
 <script setup lang="ts">
-import { Ref, ref, watch } from "vue";
+import { Ref, ref, watch, computed } from "vue";
 import Card from "primevue/card";
 import ProgressSpinner from "primevue/progressspinner";
 import MapInclude from "@/components/gallery/photoModule/MapInclude.vue";
@@ -262,6 +261,24 @@ const albums = ref<App.Http.Resources.Models.PhotoAlbumResource[]>([]);
 const albums_loading = ref(false);
 const albums_error = ref(false);
 const albums_cached_photo_id = ref<string | null>(null);
+
+const cameraModel = computed(() => getModel());
+
+function getModel() {
+	if (photoStore.photo === null || photoStore.photo === undefined || photoStore.photo.preformatted.model === null) {
+		return "";
+	}
+
+	if (photoStore.photo.preformatted.make === null || photoStore.photo.preformatted.make === "") {
+		return photoStore.photo.preformatted.model ?? "";
+	}
+
+	if (photoStore.photo.preformatted.model.startsWith(photoStore.photo.preformatted.make)) {
+		return photoStore.photo.preformatted.model;
+	}
+
+	return `${photoStore.photo.preformatted.make} - ${photoStore.photo.preformatted.model}`;
+}
 
 function fetchAlbums(photo_id: string) {
 	if (albums_cached_photo_id.value === photo_id) {
