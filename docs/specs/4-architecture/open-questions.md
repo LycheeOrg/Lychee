@@ -6,8 +6,115 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 | Question ID | Feature | Priority | Summary | Status | Opened | Updated |
 |-------------|---------|----------|---------|--------|--------|---------|
+| Q-040-01 | 040 – Disable Request Caching | Medium | Analysis Gate never formally signed off: plan.md gate checklist has unchecked boxes yet I1–I4 tasks are marked complete; gate must be ticked before implementation is considered verified | Open | 2026-05-31 | 2026-05-31 |
 
 ## Question Details
+
+### ✅ Q-041-01 · Frontend scope: session doc lists I4 but spec/plan/tasks exclude frontend
+
+**Status:** Resolved (Option A) — 2026-05-31  
+**Feature:** F-041 – Upload Photo Metadata  
+**Resolution:** Frontend is out of scope. `_current-session.md` corrected to remove I4 (T-041-12/13) and reflect 12 tasks across increments I1–I3, I5.
+
+**Question**  
+`_current-session.md` describes a four-increment frontend increment I4 (T-041-12: update TS types / `upload-service.ts`; T-041-13: update `UploadingLine.vue` / `UploadPanel.vue`). However, `spec.md` Non-Goals and `plan.md` Out-of-Scope both explicitly exclude "Any UI / frontend changes (TypeScript types, Vue components, upload panel)." The `tasks.md` file has 12 tasks (T-041-01 to T-041-11, T-041-14) and contains no T-041-12 or T-041-13 entries; the plan has no I4 section. The session doc and the governing artefacts are contradictory. Are the frontend tasks in scope for this feature?
+
+---
+
+#### 🅰️ Option A – Frontend out of scope; correct session doc (**chosen**)
+- **Idea:** Accept spec/plan/tasks as authoritative. Remove the I4 reference from `_current-session.md`; confirm 12 tasks / 4 increments (I1–I3, I5) is the final task count.
+- **Spec impact:** None — spec already excludes frontend. Session doc gets a one-line correction.
+- **Pros:**  
+  - ✅ Keeps the feature footprint minimal (API-only, as originally designed).  
+  - ✅ Eliminates the 12 vs 14 task-count inconsistency.  
+  - ✅ No risk of breaking Vue component state management.
+- **Cons:**  
+  - ❌ Callers still need to update their own TS types manually until the TypeScript transformer is re-run.
+
+---
+
+### ✅ Q-041-02 · Validation on intermediate chunks: does HTTP 422 fire on every chunk?
+
+**Status:** Resolved (Option A) — 2026-05-31  
+**Feature:** F-041 – Upload Photo Metadata  
+**Resolution:** Validation runs on every chunk (natural Laravel behaviour). The "silently ignored" clause in FR-041-01/02 refers to *application* of the value to the photo model (only on the final chunk), not to validation. FR-041-01 and FR-041-02 updated in spec.md to clarify this distinction.
+
+**Question**  
+FR-041-01 states two things: (1) "Rejected with HTTP 422 if `title` exceeds 100 chars" and (2) "Field silently ignored on intermediate chunks (only applied at final chunk)." Laravel's `FormRequest` validation runs on every request. If a client sends `title` on chunk 2 of 5 and it exceeds 100 chars, does the server return HTTP 422 immediately, or is validation deferred to the final chunk?
+
+---
+
+#### 🅰️ Option A – Validate on every chunk (natural Laravel behaviour) (**chosen**)
+- **Idea:** Add the `title`/`description` validation rules to `UploadPhotoRequest::rules()` without any chunk-gating. Laravel validates all present fields on every request. A 422 is returned immediately if any chunk carries an invalid `title`.
+- **Spec impact:** FR-041-01 "Validation path" and "Failure path" rows remain correct; the "silently ignored" clause refers to the *application* of the value to the photo model (not to validation).
+- **Pros:**  
+  - ✅ Consistent with Laravel conventions; no special-casing needed.  
+  - ✅ Fast feedback: client learns about the bad value immediately, not after all chunks are sent.  
+  - ✅ Simpler implementation — no chunk-number inspection in validation.
+- **Cons:**  
+  - ❌ Mildly surprising if a client intentionally sends `title` only on the final chunk but sent a large value on an earlier one as a test.
+
+---
+
+### ✅ Q-041-03 · `ApplyUserProvidedMetadata` pipe type: StandalonePipe or SharedPipe?
+
+**Status:** Resolved (Option A) — 2026-05-31  
+**Feature:** F-041 – Upload Photo Metadata  
+**Resolution:** `ApplyUserProvidedMetadata` is implemented as a `StandalonePipe` only. For duplicate uploads the pipe never runs; user-supplied `title`/`description` are discarded. FR-041-09 in spec.md extended to state this explicitly. T-041-05 notes in tasks.md updated to confirm `StandalonePipe` only.
+
+**Question**  
+T-041-05 notes: "Pipe must handle `DuplicateDTO|StandaloneDTO` type union consistent with `SharedPipe` convention if applicable; otherwise implement as `StandalonePipe` only." The spec names the pipe `Standalone\ApplyUserProvidedMetadata` (suggesting `StandalonePipe`), and the `Create` action's plan inserts it only in `handleStandalone()` and `handlePhotoLivePartner()`, not in a shared duplicate path. However, there is no explicit statement about what should happen when a duplicate is detected and the caller also supplied a `title`. Should user-supplied `title`/`description` be applied to the *duplicate's* existing record, or discarded?
+
+---
+
+#### 🅰️ Option A – StandalonePipe only; discard title/description for duplicates (**chosen**)
+- **Idea:** Implement `ApplyUserProvidedMetadata` as a `StandalonePipe`. It is inserted only in `handleStandalone()` and `handlePhotoLivePartner()`. For duplicate uploads the pipe never runs; the user-supplied metadata is discarded (the duplicate keeps its existing title/description).
+- **Spec impact:** Consistent with the existing `Standalone\` namespace and the fact that FR-041-09 already accepts that `expected_id` is meaningless for duplicates. Extend FR-041-09 to state that `title`/`description` are also discarded on duplicate detection.
+- **Pros:**  
+  - ✅ Simplest implementation — no type-union handling needed.  
+  - ✅ Consistent with Non-Goal: duplicate semantics are out of scope.  
+  - ✅ Avoids silently mutating a shared photo record that other users/albums may reference.
+- **Cons:**  
+  - ❌ Caller-supplied `title` is silently dropped on duplicates; caller only learns this via the HTTP 409 status.
+
+---
+
+### ❓ Q-040-01 · Feature 040 Analysis Gate has unchecked boxes despite tasks being done
+
+**Status:** Open  
+**Feature:** F-040 – Disable Request Caching  
+**Preferred option:** 🅰️ (**recommended**) Option A – Tick the gate and mark as passed  
+
+**Question**  
+`plan.md` for Feature 040 has an Analysis Gate section with four unchecked checkboxes (`- [ ] All four FRs are unambiguous...`, etc.). Tasks T-040-01 through T-040-06 are marked `[x]` complete and T-040-07 (quality gate) is also `[x]`. Only the doc tasks T-040-08/09 remain. The analysis gate should have been checked before coding began; leaving it unchecked makes it ambiguous whether the gate was formally passed.
+
+---
+
+#### 🅰️ (**recommended**) Option A – Retrospectively tick the Analysis Gate and note the date
+- **Idea:** Mark all four gate checkboxes `[x]` in `plan.md`, add a review date note (e.g. "Reviewed: 2026-05-18. No blocking findings. Implementation proceeded."), consistent with how Feature 041's gate was signed off.
+- **Spec impact:** No spec changes needed; plan.md cosmetic update only.
+- **Pros:**  
+  - ✅ Brings 040 plan into line with 041 (which has a properly signed-off gate).  
+  - ✅ Removes ambiguity about whether pre-flight checks were done.
+- **Cons:**  
+  - ❌ Retroactive — the gate was not signed off at the time coding began.
+
+---
+
+#### 🅱️ Option B – Leave as-is; treat gate as implicitly passed
+- **Idea:** Accept that the unchecked boxes are cosmetic and the implementation was correct.
+- **Spec impact:** None.
+- **Pros:**  
+  - ✅ No action required.
+- **Cons:**  
+  - ❌ Inconsistent process artefact; future readers cannot tell whether the gate was formally checked.
+
+---
+
+**Next action**  
+Owner to tick the four Analysis Gate checkboxes in `docs/specs/4-architecture/features/040-disable-request-caching/plan.md` and add a review date. Resolve this question once done.
+
+---
 
 ### ~~Q-039-01: Custom Brand Name vs Generic "your-application" Placeholder~~ ✅ RESOLVED
 
