@@ -117,7 +117,7 @@
 									src="../../../img/icons/camera.png"
 									class="dark:invert opacity-50 w-6 h-6"
 								/>
-								<span class="text-sm">{{ photoStore.photo.preformatted.model }}</span>
+								<span class="text-sm">{{ photoStore.photo.preformatted.make }} - {{ photoStore.photo.preformatted.model }}</span>
 							</div>
 							<div v-if="photoStore.photo.preformatted.lens" class="flex w-full gap-2 mb-2">
 								<img
