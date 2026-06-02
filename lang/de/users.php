@@ -1,5 +1,4 @@
 <?php
-
 return [
     /*
     |--------------------------------------------------------------------------
@@ -14,8 +13,7 @@ return [
     'legend' => 'Legende',
     'upload_rights' => 'Wenn diese Option ausgewählt ist, kann der Benutzer Inhalte hochladen.',
     'edit_rights' => 'Wenn diese Option ausgewählt ist, kann der Benutzer sein Profil (Benutzername, Passwort) ändern.',
-    'upload_trust_level' => 'Upload trust level — controls whether uploads are immediately public.',
-
+    'upload_trust_level' => 'Vertrauensstufe für Uploads – Legt fest, ob Uploads sofort öffentlich zugänglich sind.',
     'quota' => 'Wenn diese Option gesetzt ist, verfügt der Benutzer über ein Platzkontingent für Bilder (in kB).',
     'user_deleted' => 'Benutzer gelöscht',
     'user_created' => 'Benutzer erstellt',
@@ -25,13 +23,12 @@ return [
         'upload_rights' => 'Benutzer können Inhalte hochladen.',
         'edit_rights' => 'Der Benutzer kann sein Profil (Benutzername, Passwort) ändern.',
         'admin_rights' => 'Der Benutzer hat Administratorrechte.',
-        'upload_trust_level' => 'Upload trust level',
-        'upload_trust_level_check' => 'Check – uploads require admin approval before becoming public.',
-        'upload_trust_level_monitor' => 'Monitor – upload are publics unless flagged for content.',
-        'upload_trust_level_trusted' => 'Trusted – uploads are immediately public.',
-
+        'upload_trust_level' => 'Vertrauensstufe zum hochladen',
+        'upload_trust_level_check' => 'Prüfen - Uploads müssen erst vom Administrator genehmigt werden, bevor sie veröffentlicht werden.',
+        'upload_trust_level_monitor' => 'Überwachen – Uploads sind öffentlich, es sei denn, sie werden wegen ihres Inhalts gemeldet.',
+        'upload_trust_level_trusted' => 'Vertrauenswürdig – Uploads sind sofort öffentlich.',
         'quota' => 'Benutzer hat Kontingentgrenze.',
-        'quota_kb' => 'Kontingent in kB (0 für Standard)',
+        'quota_kb' => 'Kontingent in kB (0 für Standardkontingent)',
         'note' => 'Verwaltungshinweis (nicht öffentlich sichtbar)',
         'create' => 'Erstellen',
         'edit' => 'Bearbeiten',
