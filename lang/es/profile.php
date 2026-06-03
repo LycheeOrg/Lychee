@@ -1,5 +1,4 @@
 <?php
-
 return [
     /*
     |--------------------------------------------------------------------------
@@ -59,9 +58,9 @@ return [
         '5_chars' => 'Al menos 5 caracteres.',
     ],
     'preferences' => [
-        'header' => 'Preferences',
-        'save' => 'Save Preference',
-        'reset' => 'Reset',
+        'header' => 'Preferencias',
+        'save' => 'Guardar preferencia',
+        'reset' => 'Restablecer',
         'change_saved' => 'Preference saved!',
     ],
     'shared_albums' => [

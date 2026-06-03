@@ -1,5 +1,4 @@
 <?php
-
 return [
     /*
     |--------------------------------------------------------------------------
@@ -96,8 +95,8 @@ return [
     ],
     'config' => [
         'use_admin_dashboard' => [
-            'label' => 'Use admin dashboard',
-            'help' => 'Replace the nested admin submenu with a single link to the new admin dashboard page.',
+            'label' => 'Admin-Dashboard verwenden',
+            'help' => 'Ersetzen Sie das verschachtelte Admin-Untermenü durch einen einzelnen Link zur neuen Admin-Dashboard-Seite.',
         ],
     ],
 ];

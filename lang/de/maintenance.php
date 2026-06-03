@@ -1,5 +1,4 @@
 <?php
-
 return [
     /*
     |--------------------------------------------------------------------------
@@ -18,7 +17,7 @@ return [
         'title' => 'Duplikate',
         'description' => 'Dieses Modul zählt potenzielle Duplikate von Bildern.',
         'duplicates-all' => 'Duplikate über alle Alben',
-        'duplicates-title' => 'Titel-Duplikate pro Album',
+        'duplicates-title' => 'Titel-Duplikate – Duplikatsuche nach Album',
         'duplicates-per-album' => 'Duplikate pro Album',
         'show' => 'Duplikate anzeigen',
         'load' => 'Anzahl laden',

@@ -1,5 +1,4 @@
 <?php
-
 return [
     'button' => [
         /*
@@ -298,9 +297,9 @@ return [
         'confirm' => 'Wasserzeichen hinzufügen',
     ],
     'security_advisories' => [
-        'title' => 'Security Vulnerabilities Detected',
-        'description' => 'The following vulnerabilities affect your current Lychee version:',
+        'title' => 'Sicherheitslücken erkannt',
+        'description' => 'Folgende Sicherheitslücken betreffen deine aktuelle Version von Lychee:',
         'no_cvss' => '(no CVSS score)',
-        'go_to_diagnostics' => 'Go to Diagnostics',
+        'go_to_diagnostics' => 'Zur Diagnose',
     ],
 ];
