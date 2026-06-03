@@ -12,9 +12,6 @@ return new class() extends Migration {
 	public const MOD_MAP = 'Mod Map';
 	public const BOOL = '0|1';
 
-	/**
-	 * @return array<int,array{key:string,value:string,is_secret:bool,cat:string,type_range:string,description:string,order?:int,not_on_docker?:bool,is_expert?:bool,level?:int}>
-	 */
 	public function getConfigs(): array
 	{
 		return [
