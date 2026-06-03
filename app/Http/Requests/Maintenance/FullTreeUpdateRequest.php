@@ -49,7 +49,7 @@ class FullTreeUpdateRequest extends BaseApiRequest
 	}
 
 	/**
-	 * @return array<int,array{id:string,_lft:int,_rgt:int}>
+	 * @return array<int,array{id:string,_lft:int,_rgt:int,parent_id:string|null}>
 	 */
 	public function albums(): array
 	{
