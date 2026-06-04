@@ -28,7 +28,6 @@ use App\Models\PrintSize;
 use App\Models\Purchasable;
 use App\Models\PurchasablePixelSize;
 use App\Models\PurchasablePrintSize;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 use Tests\Traits\RequirePro;
 
@@ -39,7 +38,6 @@ use Tests\Traits\RequirePro;
  */
 class OrderServiceAddSizeItemsTest extends BaseApiWithDataTest
 {
-	use DatabaseTransactions;
 	use RequirePro;
 
 	private OrderService $order_service;

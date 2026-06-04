@@ -319,7 +319,7 @@ class PurchasableService
 			PurchasablePrintSize::create([
 				'purchasable_id' => $purchasable->id,
 				'print_size_id' => $assignment->print_size_id,
-				'price_cents' => intval($assignment->price->getAmount()),
+				'price_cents' => $assignment->price,
 			]);
 		}
 
@@ -344,7 +344,7 @@ class PurchasableService
 			PurchasablePixelSize::create([
 				'purchasable_id' => $purchasable->id,
 				'pixel_size_id' => $assignment->pixel_size_id,
-				'price_cents' => intval($assignment->price->getAmount()),
+				'price_cents' => $assignment->price,
 			]);
 		}
 

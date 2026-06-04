@@ -27,8 +27,7 @@ use App\Models\Purchasable;
 use App\Models\PurchasablePixelSize;
 use App\Models\PurchasablePrintSize;
 use App\Services\MoneyService;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Tests\AbstractTestCase;
+use Tests\Feature_v2\Base\BaseApiWithDataTest;
 use Tests\Traits\RequirePro;
 
 /**
@@ -36,9 +35,8 @@ use Tests\Traits\RequirePro;
  *
  * Tests T-043-37: Size sync methods correctly replace existing assignments.
  */
-class PurchasableSyncSizesTest extends AbstractTestCase
+class PurchasableSyncSizesTest extends BaseApiWithDataTest
 {
-	use DatabaseTransactions;
 	use RequirePro;
 
 	private PurchasableService $service;
@@ -53,7 +51,7 @@ class PurchasableSyncSizesTest extends AbstractTestCase
 		$this->service = resolve(PurchasableService::class);
 		$this->money_service = resolve(MoneyService::class);
 
-		$this->purchasable = Purchasable::factory()->create();
+		$this->purchasable = Purchasable::factory()->forPhoto($this->photo1->id, $this->album1->id)->create();
 	}
 
 	public function tearDown(): void
