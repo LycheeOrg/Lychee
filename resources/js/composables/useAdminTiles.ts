@@ -73,6 +73,15 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			visible: computed(() => (initData.value?.modules.is_mod_webshop_enabled ?? false) && (initData.value?.settings.can_edit ?? false)),
 		},
 		{
+			key: "shop-sizes",
+			group: "extensions",
+			label: "left-menu.shopSizes",
+			icon: "pi pi-ruler",
+			to: "/admin/shop/sizes",
+			isExternal: false,
+			visible: computed(() => (initData.value?.modules.is_mod_webshop_enabled ?? false) && (initData.value?.settings.can_edit ?? false)),
+		},
+		{
 			key: "contact-messages",
 			group: "extensions",
 			label: "left-menu.messages",

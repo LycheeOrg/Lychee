@@ -7,6 +7,8 @@
 					<Textarea v-model="description" :placeholder="$t('webshop.albumPurchasable.descriptionPlaceholder')" />
 					<Textarea v-model="note" :placeholder="$t('webshop.albumPurchasable.ownerNotePlaceholder')" />
 					<PricesInput :prices="prices" />
+					<PrintSizePricesInput v-model="printSizes" />
+					<PixelSizePricesInput v-model="pixelSizes" />
 					<div class="flex gap-4">
 						<Button
 							icon="pi pi-plus"
@@ -35,13 +37,15 @@
 					<Textarea v-model="description" :placeholder="$t('webshop.albumPurchasable.descriptionPlaceholder')" />
 					<Textarea v-model="note" :placeholder="$t('webshop.albumPurchasable.ownerNotePlaceholder')" />
 					<PricesInput :prices="prices" />
+					<PrintSizePricesInput v-model="printSizes" />
+					<PixelSizePricesInput v-model="pixelSizes" />
 					<div class="flex gap-4">
 						<Button
 							class="text-danger-800 font-bold hover:text-white hover:bg-danger-800 w-full bg-transparent border-none"
 							@click="disable"
 							>{{ $t("webshop.albumPurchasable.disable") }}</Button
 						>
-						<Button class="border-none font-bold w-full" @click="makePurchasable" :disabled="prices.length === 0">
+						<Button class="border-none font-bold w-full" @click="updatePrices" :disabled="prices.length === 0">
 							{{ $t("webshop.albumPurchasable.update") }}
 						</Button>
 					</div>
@@ -52,13 +56,15 @@
 	</Card>
 </template>
 <script setup lang="ts">
-import ShopManagementService, { Price } from "@/services/shop-management-service";
+import ShopManagementService, { Price, PrintSizeAssignment, PixelSizeAssignment } from "@/services/shop-management-service";
 import Card from "primevue/card";
 import { useToast } from "primevue/usetoast";
 import { onMounted, ref } from "vue";
 import Textarea from "@/components/forms/basic/Textarea.vue";
 import Button from "primevue/button";
 import PricesInput from "@/components/forms/shop-management/PricesInput.vue";
+import PrintSizePricesInput from "@/components/forms/shop-management/PrintSizePricesInput.vue";
+import PixelSizePricesInput from "@/components/forms/shop-management/PixelSizePricesInput.vue";
 import Message from "primevue/message";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { trans } from "laravel-vue-i18n";
@@ -72,6 +78,8 @@ const description = ref<string | undefined>(undefined);
 const note = ref<string | undefined>(undefined);
 const appliesToSubalbums = ref<boolean>(false);
 const prices = ref<Price[]>([]);
+const printSizes = ref<PrintSizeAssignment[]>([]);
+const pixelSizes = ref<PixelSizeAssignment[]>([]);
 
 function load() {
 	if (!albumStore.albumId) {
@@ -90,6 +98,14 @@ function load() {
 			prices.value =
 				albumPurchasable.value?.prices?.map((p: App.Http.Resources.Shop.PriceResource) => {
 					return { price: p.price_cents, license_type: p.license_type, size_variant_type: p.size_variant };
+				}) ?? [];
+			printSizes.value =
+				albumPurchasable.value?.print_sizes?.map((ps: App.Http.Resources.Shop.PurchasablePrintSizeResource) => {
+					return { print_size_id: ps.print_size_id, price: ps.price_cents };
+				}) ?? [];
+			pixelSizes.value =
+				albumPurchasable.value?.pixel_sizes?.map((ps: App.Http.Resources.Shop.PurchasablePixelSizeResource) => {
+					return { pixel_size_id: ps.pixel_size_id, price: ps.price_cents };
 				}) ?? [];
 		})
 		.catch((error) => {
@@ -133,6 +149,33 @@ function disable() {
 				severity: "success",
 				summary: trans("webshop.albumPurchasable.success"),
 				detail: trans("webshop.albumPurchasable.albumNoLongerPurchasable"),
+				life: 3000,
+			});
+			load();
+		})
+		.catch((error) => {
+			toast.add({ severity: "error", summary: trans("webshop.albumPurchasable.error"), detail: error.message, life: 3000 });
+		});
+}
+
+function updatePrices() {
+	if (albumPurchasable.value === null || albumPurchasable.value === undefined) {
+		return;
+	}
+
+	ShopManagementService.updatePurchasablePrices({
+		purchasable_id: albumPurchasable.value.purchasable_id,
+		note: note.value ?? null,
+		description: description.value ?? null,
+		prices: prices.value,
+		print_sizes: printSizes.value,
+		pixel_sizes: pixelSizes.value,
+	})
+		.then(() => {
+			toast.add({
+				severity: "success",
+				summary: trans("webshop.albumPurchasable.success"),
+				detail: trans("webshop.albumPurchasable.albumNowPurchasable"),
 				life: 3000,
 			});
 			load();

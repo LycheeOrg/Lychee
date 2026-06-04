@@ -1194,6 +1194,47 @@ declare namespace App.Http.Resources.Shop {
 		size_variant_type: App.Enum.PurchasableSizeVariantType;
 		item_notes: string | null;
 		content_url: string | null;
+		is_print: boolean;
+	};
+	export type PrintSizeResource = {
+		id: number;
+		label: string;
+		width: number;
+		height: number;
+		unit: string;
+		paper_type: string | null;
+		is_active: boolean;
+	};
+	export type PixelSizeResource = {
+		id: number;
+		label: string;
+		width: number;
+		height: number;
+		is_active: boolean;
+	};
+	export type PurchasablePrintSizeResource = {
+		id: number;
+		print_size_id: number;
+		label: string;
+		width: number;
+		height: number;
+		unit: string;
+		paper_type: string | null;
+		price: string;
+		price_cents: number;
+	};
+	export type PurchasablePixelSizeResource = {
+		id: number;
+		pixel_size_id: number;
+		label: string;
+		width: number;
+		height: number;
+		price: string;
+		price_cents: number;
+	};
+	export type CatalogueSizesResource = {
+		print_sizes: App.Http.Resources.Shop.PurchasablePrintSizeResource[];
+		pixel_sizes: App.Http.Resources.Shop.PurchasablePixelSizeResource[];
 	};
 	export type OrderResource = {
 		id: number;
