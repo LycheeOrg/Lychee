@@ -24,7 +24,7 @@
 					@click="openCreatePrintDialog"
 				/>
 			</div>
-			<DataTable :value="printSizes" :loading="printSizes === undefined" dataKey="id" class="border rounded">
+			<DataTable :value="printSizes" :loading="printSizes === undefined" dataKey="id" class="border border-none rounded">
 				<Column field="label" :header="$t('webshop.sizeCatalogue.label')" />
 				<Column :header="$t('webshop.sizeCatalogue.dimensions')">
 					<template #body="slotProps"> {{ slotProps.data.width }}×{{ slotProps.data.height }} {{ slotProps.data.unit }} </template>
@@ -63,7 +63,7 @@
 					@click="openCreatePixelDialog"
 				/>
 			</div>
-			<DataTable :value="pixelSizes" :loading="pixelSizes === undefined" dataKey="id" class="border rounded">
+			<DataTable :value="pixelSizes" :loading="pixelSizes === undefined" dataKey="id" class="border border-none rounded">
 				<Column field="label" :header="$t('webshop.sizeCatalogue.label')" />
 				<Column :header="$t('webshop.sizeCatalogue.dimensions')">
 					<template #body="slotProps"> {{ slotProps.data.width }}×{{ slotProps.data.height }} px </template>

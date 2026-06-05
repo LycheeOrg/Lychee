@@ -38,8 +38,6 @@ class PurchasablePrintSize extends Model
 	/**
 	 * Always eager-load the related global print size so that resources can
 	 * read its fields (label, width, height…) without triggering lazy loads.
-	 *
-	 * @var string[]
 	 */
 	protected $with = ['printSize'];
 

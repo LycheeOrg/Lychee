@@ -176,7 +176,7 @@ export function useLeftMenu(
 								},
 								{
 									label: "left-menu.shopSizes",
-									icon: "pi pi-ruler",
+									icon: "pi pi-expand",
 									route: "/admin/shop/sizes",
 									access: (initData.value.modules.is_mod_webshop_enabled ?? false) && (initData.value.settings.can_edit ?? false),
 								},
