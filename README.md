@@ -120,7 +120,7 @@ For detailed installation, configuration, and update instructions, see our **[Do
 
 - **[Documentation](https://lycheeorg.dev/docs/)** - Complete guides and FAQ
 - **[GitHub Issues](https://github.com/LycheeOrg/Lychee/issues)** - Report bugs
-- **[Discord][discord]** or **[Gitter](https://gitter.im/LycheeOrg/Lobby)** - Community support
+- **[Discord][discord]** - Community support
 
 ## Open Source Community Support
 
