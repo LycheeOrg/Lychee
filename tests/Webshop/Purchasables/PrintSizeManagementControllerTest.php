@@ -63,7 +63,7 @@ class PrintSizeManagementControllerTest extends BaseApiWithDataTest
 			'is_active' => true,
 		]);
 
-		$this->assertOk($response);
+		$this->assertCreated($response);
 		$response->assertJsonStructure(['id', 'label', 'width', 'height', 'unit', 'paper_type', 'is_active']);
 		$response->assertJson([
 			'label' => '10x15 cm',
@@ -88,7 +88,7 @@ class PrintSizeManagementControllerTest extends BaseApiWithDataTest
 			'is_active' => false,
 		]);
 
-		$this->assertOk($response);
+		$this->assertCreated($response);
 		$response->assertJson(['paper_type' => null, 'is_active' => false]);
 	}
 

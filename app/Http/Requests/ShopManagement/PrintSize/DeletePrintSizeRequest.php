@@ -36,7 +36,7 @@ class DeletePrintSizeRequest extends BaseApiRequest
 	public function rules(): array
 	{
 		return [
-			'print_size_id' => 'required|integer|exists:print_sizes,id',
+			'print_size_id' => 'required|integer',
 		];
 	}
 

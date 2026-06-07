@@ -40,7 +40,7 @@ class UpdatePixelSizeRequest extends BaseApiRequest
 	public function rules(): array
 	{
 		return [
-			'pixel_size_id' => 'required|integer|exists:pixel_sizes,id',
+			'pixel_size_id' => 'required|integer',
 			'label' => 'required|string|max:100',
 			'width' => 'required|integer|min:1',
 			'height' => 'required|integer|min:1',

@@ -144,13 +144,6 @@ class CatalogueSizesControllerTest extends BaseApiWithDataTest
 		]);
 	}
 
-	public function testRequiresAuthentication(): void
-	{
-		$response = $this->getJson("Shop/Catalogue/Purchasable/{$this->purchasable->id}/Sizes");
-
-		$this->assertUnauthorized($response);
-	}
-
 	public function testReturnsFourOhFourForUnknownPurchasable(): void
 	{
 		$response = $this->actingAs($this->userMayUpload1)

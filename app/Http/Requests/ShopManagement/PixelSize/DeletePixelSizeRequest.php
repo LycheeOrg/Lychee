@@ -36,7 +36,7 @@ class DeletePixelSizeRequest extends BaseApiRequest
 	public function rules(): array
 	{
 		return [
-			'pixel_size_id' => 'required|integer|exists:pixel_sizes,id',
+			'pixel_size_id' => 'required|integer',
 		];
 	}
 

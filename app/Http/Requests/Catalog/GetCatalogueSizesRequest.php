@@ -23,13 +23,21 @@ class GetCatalogueSizesRequest extends BaseApiRequest
 		return true;
 	}
 
+	protected function prepareForValidation(): void
+	{
+		/** @disregard */
+		$this->merge([
+			'purchasable_id' => $this->route('purchasable_id'),
+		]);
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
 	public function rules(): array
 	{
 		return [
-			'purchasable_id' => 'required|integer|exists:purchasables,id',
+			'purchasable_id' => 'required|integer',
 		];
 	}
 

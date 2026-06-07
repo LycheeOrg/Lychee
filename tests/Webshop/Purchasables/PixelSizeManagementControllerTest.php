@@ -61,7 +61,7 @@ class PixelSizeManagementControllerTest extends BaseApiWithDataTest
 			'is_active' => true,
 		]);
 
-		$this->assertOk($response);
+		$this->assertCreated($response);
 		$response->assertJsonStructure(['id', 'label', 'width', 'height', 'is_active']);
 		$response->assertJson([
 			'label' => 'HD 1920×1080',
@@ -117,7 +117,8 @@ class PixelSizeManagementControllerTest extends BaseApiWithDataTest
 	{
 		$response = $this->postJson('Shop/Management/PixelSize', [
 			'label' => 'Test',
-			'long_edge_pixels' => 800,
+			'width' => 2048,
+			'height' => 1536,
 			'is_active' => true,
 		]);
 
@@ -128,7 +129,8 @@ class PixelSizeManagementControllerTest extends BaseApiWithDataTest
 	{
 		$response = $this->actingAs($this->userMayUpload1)->postJson('Shop/Management/PixelSize', [
 			'label' => 'Test',
-			'long_edge_pixels' => 800,
+			'width' => 2048,
+			'height' => 1536,
 			'is_active' => true,
 		]);
 
