@@ -299,7 +299,7 @@ return [
     'security_advisories' => [
         'title' => 'Sicherheitslücken erkannt',
         'description' => 'Folgende Sicherheitslücken betreffen deine aktuelle Version von Lychee:',
-        'no_cvss' => '(no CVSS score)',
+        'no_cvss' => '(keine CVSS-Bewertung)',
         'go_to_diagnostics' => 'Zur Diagnose',
     ],
 ];
