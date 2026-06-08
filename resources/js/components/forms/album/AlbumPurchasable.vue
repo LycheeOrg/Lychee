@@ -15,7 +15,7 @@
 							:label="$t('webshop.albumPurchasable.setPurchasable')"
 							class="border-none w-full"
 							@click="makePurchasable"
-							:disabled="prices.length === 0"
+							:disabled="!canSubmit"
 						>
 						</Button>
 						<Button
@@ -27,11 +27,11 @@
 								appliesToSubalbums = true;
 								makePurchasable();
 							"
-							:disabled="prices.length === 0"
+							:disabled="!canSubmit"
 						>
 						</Button>
 					</div>
-					<Message severity="error" v-if="prices.length === 0">{{ $t("webshop.albumPurchasable.setAtLeastOnePrice") }}</Message>
+					<Message severity="error" v-if="!canSubmit">{{ $t("webshop.albumPurchasable.setAtLeastOnePrice") }}</Message>
 				</template>
 				<template v-else>
 					<Textarea v-model="description" :placeholder="$t('webshop.albumPurchasable.descriptionPlaceholder')" />
@@ -45,11 +45,11 @@
 							@click="disable"
 							>{{ $t("webshop.albumPurchasable.disable") }}</Button
 						>
-						<Button class="border-none font-bold w-full" @click="updatePrices" :disabled="prices.length === 0">
+						<Button class="border-none font-bold w-full" @click="updatePrices" :disabled="!canSubmit">
 							{{ $t("webshop.albumPurchasable.update") }}
 						</Button>
 					</div>
-					<Message severity="error" v-if="prices.length === 0">{{ $t("webshop.albumPurchasable.setAtLeastOnePrice") }}</Message>
+					<Message severity="error" v-if="!canSubmit">{{ $t("webshop.albumPurchasable.setAtLeastOnePrice") }}</Message>
 				</template>
 			</div>
 		</template>
@@ -59,7 +59,7 @@
 import ShopManagementService, { Price, PrintSizeAssignment, PixelSizeAssignment } from "@/services/shop-management-service";
 import Card from "primevue/card";
 import { useToast } from "primevue/usetoast";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed } from "vue";
 import Textarea from "@/components/forms/basic/Textarea.vue";
 import Button from "primevue/button";
 import PricesInput from "@/components/forms/shop-management/PricesInput.vue";
@@ -80,6 +80,10 @@ const appliesToSubalbums = ref<boolean>(false);
 const prices = ref<Price[]>([]);
 const printSizes = ref<PrintSizeAssignment[]>([]);
 const pixelSizes = ref<PixelSizeAssignment[]>([]);
+const canSubmit = computed(() => {
+	console.log("Checking canSubmit", { prices: prices.value, printSizes: printSizes.value, pixelSizes: pixelSizes.value });
+	return prices.value.length > 0 || printSizes.value.length > 0 || pixelSizes.value.length > 0;
+});
 
 function load() {
 	if (!albumStore.albumId) {
