@@ -706,7 +706,7 @@ return [
         'Users Management' => 'Benutzerverwaltung',
         'Admin' => 'Administrator',
         'access_permissions' => 'Berechtigungen',
-        'Mod Flow' => 'Flow',
+        'Mod Flow' => 'Fluss',
         'gestures' => 'Gesten',
         'Mod Watermarker' => 'Wasserzeichen',
         'Mod Renamer' => 'Umbenennungsregeln',
