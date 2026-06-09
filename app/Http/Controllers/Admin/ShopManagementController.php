@@ -70,13 +70,16 @@ class ShopManagementController extends Controller
 	{
 		$purchasables = [];
 		foreach ($request->photos() as $photo) {
-			$purchasables[] = $this->purchasable_service->createPurchasableForPhoto(
+			$purchasable = $this->purchasable_service->createPurchasableForPhoto(
 				photo: $photo,
 				album_id: $request->album()->id,
 				description: $request->description(),
 				prices: $request->prices,
 				owner_notes: $request->notes
 			);
+			$this->purchasable_service->syncPrintSizes($purchasable, $request->print_sizes);
+			$this->purchasable_service->syncPixelSizes($purchasable, $request->pixel_sizes);
+			$purchasables[] = $purchasable;
 		}
 
 		return EditablePurchasableResource::collect($purchasables);
@@ -93,13 +96,16 @@ class ShopManagementController extends Controller
 	{
 		$purchasables = [];
 		foreach ($request->albums() as $album) {
-			$purchasables[] = $this->purchasable_service->createPurchasableForAlbum(
+			$purchasable = $this->purchasable_service->createPurchasableForAlbum(
 				album: $album,
 				description: $request->description(),
 				applies_to_subalbums: $request->applies_to_subalbums,
 				prices: $request->prices,
 				owner_notes: $request->notes
 			);
+			$this->purchasable_service->syncPrintSizes($purchasable, $request->print_sizes);
+			$this->purchasable_service->syncPixelSizes($purchasable, $request->pixel_sizes);
+			$purchasables[] = $purchasable;
 		}
 
 		return EditablePurchasableResource::collect($purchasables);
