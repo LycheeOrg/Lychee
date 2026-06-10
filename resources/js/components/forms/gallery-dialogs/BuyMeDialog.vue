@@ -96,7 +96,7 @@
 							text
 							class="rounded border-none font-bold"
 							icon="pi pi-cart-arrow-down"
-							@click="addPrintPhotoToOrder(ps.id, ps.price)"
+							@click="addPrintPhotoToOrder(ps.print_size_id, ps.price)"
 						/>
 					</div>
 				</div>
@@ -118,7 +118,7 @@
 							text
 							class="rounded border-none font-bold"
 							icon="pi pi-cart-arrow-down"
-							@click="addPixelPhotoToOrder(px.id, px.price)"
+							@click="addPixelPhotoToOrder(px.pixel_size_id, px.price)"
 						/>
 					</div>
 				</div>

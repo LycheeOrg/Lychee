@@ -33,6 +33,9 @@ return [
         'total' => 'Общо:',
         'proceedToCheckout' => 'Премини към плащане',
         'emptyBasket' => 'Вашата количка е празна.',
+        'printLabel' => 'Print',
+        'pixelLabel' => 'Pixel',
+        'paperType' => 'Paper',
     ],
     'checkout' => [
         'checkout' => 'Плащане',

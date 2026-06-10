@@ -38,7 +38,7 @@
 					>
 						{{ $t("dialogs.button.cancel") }}
 					</Button>
-					<Button class="w-full font-bold border-none rounded-none ltr:rounded-br-xl rtl:rounded-bl-xl shrink" @click="save">
+					<Button class="w-full font-bold border-none rounded-none ltr:rounded-br-xl rtl:rounded-bl-xl shrink" @click="save" :disabled="!canSumbit">
 						{{ $t("dialogs.button.save") }}
 					</Button>
 				</div>
@@ -48,7 +48,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, computed, watch } from "vue";
 import { useToast } from "primevue/usetoast";
 import { trans } from "laravel-vue-i18n";
 import Button from "primevue/button";
@@ -70,6 +70,8 @@ const toast = useToast();
 
 const defaultForm = () => ({ label: "", width: 1920, height: 1080, is_active: true });
 const form = ref(defaultForm());
+
+const canSumbit = computed(() => form.value.label.trim() !== "" && form.value.width > 0 && form.value.height > 0);
 
 function save() {
 	const promise = props.editingSize

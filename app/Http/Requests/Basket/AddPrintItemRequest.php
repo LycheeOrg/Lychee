@@ -37,7 +37,7 @@ class AddPrintItemRequest extends BaseBasketRequest
 		return [
 			'photo_id' => ['required', 'string'],
 			'album_id' => ['required', 'string'],
-			'print_size_id' => ['required', 'integer', 'exists:print_sizes,id'],
+			'print_size_id' => ['required', 'integer'],
 			'email' => ['sometimes', 'nullable', 'email'],
 			'notes' => ['sometimes', 'nullable', 'string', 'max:1000'],
 		];

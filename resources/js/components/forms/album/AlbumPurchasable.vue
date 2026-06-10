@@ -127,6 +127,8 @@ function makePurchasable() {
 		note: note.value ?? null,
 		description: description.value ?? null,
 		prices: prices.value,
+		print_sizes: printSizes.value,
+		pixel_sizes: pixelSizes.value,
 		applies_to_subalbums: appliesToSubalbums.value,
 	})
 		.then(() => {

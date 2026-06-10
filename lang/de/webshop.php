@@ -33,6 +33,9 @@ return [
         'total' => 'Gesamt:',
         'proceedToCheckout' => 'Zur Kasse',
         'emptyBasket' => 'Ihr Warenkorb ist leer.',
+        'printLabel' => 'Print',
+        'pixelLabel' => 'Pixel',
+        'paperType' => 'Paper',
     ],
     'checkout' => [
         'checkout' => 'Kasse',

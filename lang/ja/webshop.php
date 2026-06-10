@@ -33,6 +33,9 @@ return [
         'total' => 'Total:',
         'proceedToCheckout' => 'Proceed to Checkout',
         'emptyBasket' => 'Your basket is empty.',
+        'printLabel' => 'Print',
+        'pixelLabel' => 'Pixel',
+        'paperType' => 'Paper',
     ],
     'checkout' => [
         'checkout' => 'Checkout',

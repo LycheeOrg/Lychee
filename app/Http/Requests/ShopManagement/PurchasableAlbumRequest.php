@@ -62,7 +62,7 @@ class PurchasableAlbumRequest extends BaseApiRequest implements HasAlbums, HasDe
 			RequestAttribute::ALBUM_IDS_ATTRIBUTE . '.*' => ['required', new RandomIDRule(false)],
 			RequestAttribute::DESCRIPTION_ATTRIBUTE => 'present|nullable|string|max:1000',
 			RequestAttribute::NOTE_ATTRIBUTE => 'present|nullable|string|max:1000',
-			RequestAttribute::PRICES_ATTRIBUTE => 'required|array|min:1',
+			RequestAttribute::PRICES_ATTRIBUTE => 'sometimes|array',
 			RequestAttribute::PRICES_ATTRIBUTE . '.*.size_variant_type' => ['required', new Enum(PurchasableSizeVariantType::class)],
 			RequestAttribute::PRICES_ATTRIBUTE . '.*.license_type' => ['required', new Enum(PurchasableLicenseType::class)],
 			RequestAttribute::PRICES_ATTRIBUTE . '.*.price' => 'required|integer|min:0|max:1000000', // max 10,000.00 in cents

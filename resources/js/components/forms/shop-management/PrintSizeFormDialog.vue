@@ -46,7 +46,7 @@
 					>
 						{{ $t("dialogs.button.cancel") }}
 					</Button>
-					<Button class="w-full font-bold border-none rounded-none ltr:rounded-br-xl rtl:rounded-bl-xl shrink" @click="save">
+					<Button class="w-full font-bold border-none rounded-none ltr:rounded-br-xl rtl:rounded-bl-xl shrink" @click="save"  :disabled="!canSubmit">
 						{{ $t("dialogs.button.save") }}
 					</Button>
 				</div>
@@ -56,7 +56,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, computed, watch } from "vue";
 import { useToast } from "primevue/usetoast";
 import { trans } from "laravel-vue-i18n";
 import Button from "primevue/button";
@@ -81,6 +81,7 @@ const unitOptions = ["cm", "inch"];
 const defaultForm = () => ({ label: "", width: 10, height: 15, unit: "cm", paper_type: "", is_active: true });
 const form = ref(defaultForm());
 
+const canSubmit = computed(() => form.value.label.trim() !== "" && form.value.width > 0 && form.value.height > 0 && form.value.unit.trim() !== "");
 function save() {
 	const promise = props.editingSize
 		? ShopManagementService.updatePrintSize({ ...form.value, print_size_id: props.editingSize.id })

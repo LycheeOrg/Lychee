@@ -37,7 +37,7 @@ class AddPixelItemRequest extends BaseBasketRequest
 		return [
 			'photo_id' => ['required', 'string'],
 			'album_id' => ['required', 'string'],
-			'pixel_size_id' => ['required', 'integer', 'exists:pixel_sizes,id'],
+			'pixel_size_id' => ['required', 'integer'],
 			'email' => ['sometimes', 'nullable', 'email'],
 			'notes' => ['sometimes', 'nullable', 'string', 'max:1000'],
 		];

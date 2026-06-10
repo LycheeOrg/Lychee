@@ -12,6 +12,8 @@ export type PurchasableRequest = {
 	description: string | null;
 	note: string | null;
 	prices: Price[];
+	print_sizes: PrintSizeAssignment[];
+	pixel_sizes: PixelSizeAssignment[];
 	applies_to_subalbums: boolean;
 };
 
