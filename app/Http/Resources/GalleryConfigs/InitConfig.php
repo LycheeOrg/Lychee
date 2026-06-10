@@ -118,6 +118,7 @@ class InitConfig extends Data
 	// Gesture settings
 	public bool $is_scroll_to_navigate_photos_enabled;
 	public bool $is_swipe_vertically_to_go_back_enabled;
+	public bool $disable_swipe_effect;
 
 	// Rating settings
 	public bool $is_rating_show_avg_in_details_enabled;
@@ -226,6 +227,7 @@ class InitConfig extends Data
 		// Gesture settings
 		$this->is_scroll_to_navigate_photos_enabled = request()->configs()->getValueAsBool('is_scroll_to_navigate_photos_enabled');
 		$this->is_swipe_vertically_to_go_back_enabled = request()->configs()->getValueAsBool('is_swipe_vertically_to_go_back_enabled');
+		$this->disable_swipe_effect = request()->configs()->getValueAsBool('disable_swipe_effect');
 
 		// Rating settings
 		$this->is_rating_show_avg_in_details_enabled = request()->configs()->getValueAsBool('rating_show_avg_in_details');
