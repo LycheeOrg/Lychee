@@ -21,6 +21,7 @@ namespace Tests\Unit\Actions\Shop;
 use App\Actions\Shop\PurchasableService;
 use App\DTO\PixelSizeAssignment;
 use App\DTO\PrintSizeAssignment;
+use App\Enum\PurchasableLicenseType;
 use App\Models\PixelSize;
 use App\Models\PrintSize;
 use App\Models\Purchasable;
@@ -131,8 +132,8 @@ class PurchasableSyncSizesTest extends BaseApiWithDataTest
 		$pixel_size2 = PixelSize::factory()->create();
 
 		$assignments = [
-			new PixelSizeAssignment($pixel_size1->id, $this->money_service->createFromCents(1200)),
-			new PixelSizeAssignment($pixel_size2->id, $this->money_service->createFromCents(1800)),
+			new PixelSizeAssignment($pixel_size1->id, $this->money_service->createFromCents(1200), PurchasableLicenseType::PERSONAL),
+			new PixelSizeAssignment($pixel_size2->id, $this->money_service->createFromCents(1800), PurchasableLicenseType::PERSONAL),
 		];
 
 		$this->service->syncPixelSizes($this->purchasable, $assignments);
@@ -158,7 +159,7 @@ class PurchasableSyncSizesTest extends BaseApiWithDataTest
 		]);
 
 		$assignments = [
-			new PixelSizeAssignment($pixel_size2->id, $this->money_service->createFromCents(1800)),
+			new PixelSizeAssignment($pixel_size2->id, $this->money_service->createFromCents(1800), PurchasableLicenseType::PERSONAL),
 		];
 		$this->service->syncPixelSizes($this->purchasable, $assignments);
 

@@ -116,6 +116,7 @@ class BasketController extends Controller
 			$request->photo,
 			$request->album_id,
 			$request->pixel_size,
+			$request->license_type,
 			$request->notes
 		);
 

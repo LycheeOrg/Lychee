@@ -345,6 +345,7 @@ class PurchasableService
 				'purchasable_id' => $purchasable->id,
 				'pixel_size_id' => $assignment->pixel_size_id,
 				'price_cents' => $assignment->price,
+				'license_type' => $assignment->license_type,
 			]);
 		}
 

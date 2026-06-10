@@ -25,6 +25,7 @@ export type PrintSizeAssignment = {
 export type PixelSizeAssignment = {
 	pixel_size_id: number;
 	price: number; // in cents
+	license_type: App.Enum.PurchasableLicenseType;
 };
 
 export type UpdatePurchasablePricesRequest = {

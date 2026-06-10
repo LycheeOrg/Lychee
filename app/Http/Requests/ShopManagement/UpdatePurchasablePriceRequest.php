@@ -58,7 +58,7 @@ class UpdatePurchasablePriceRequest extends BaseApiRequest implements HasDescrip
 			RequestAttribute::PURCHASABLE_ID_ATTRIBUTE => 'required|integer|exists:purchasables,id',
 			RequestAttribute::DESCRIPTION_ATTRIBUTE => 'present|nullable|string|max:1000',
 			RequestAttribute::NOTE_ATTRIBUTE => 'present|nullable|string|max:1000',
-			RequestAttribute::PRICES_ATTRIBUTE => 'required|array',
+			RequestAttribute::PRICES_ATTRIBUTE => 'sometimes|array',
 			RequestAttribute::PRICES_ATTRIBUTE . '.*.size_variant_type' => ['required', new Enum(PurchasableSizeVariantType::class)],
 			RequestAttribute::PRICES_ATTRIBUTE . '.*.license_type' => ['required', new Enum(PurchasableLicenseType::class)],
 			RequestAttribute::PRICES_ATTRIBUTE . '.*.price' => 'required|integer|min:0|max:1000000', // max 10,000.00 in cents
@@ -67,6 +67,7 @@ class UpdatePurchasablePriceRequest extends BaseApiRequest implements HasDescrip
 			RequestAttribute::PRINT_SIZES_ATTRIBUTE . '.*.price' => 'required|integer|min:0|max:1000000',
 			RequestAttribute::PIXEL_SIZES_ATTRIBUTE => 'sometimes|array',
 			RequestAttribute::PIXEL_SIZES_ATTRIBUTE . '.*.pixel_size_id' => 'required|integer|exists:pixel_sizes,id',
+			RequestAttribute::PIXEL_SIZES_ATTRIBUTE . '.*.license_type' => ['required', new Enum(PurchasableLicenseType::class)],
 			RequestAttribute::PIXEL_SIZES_ATTRIBUTE . '.*.price' => 'required|integer|min:0|max:1000000',
 		];
 	}
@@ -106,6 +107,7 @@ class UpdatePurchasablePriceRequest extends BaseApiRequest implements HasDescrip
 			$this->pixel_sizes[] = new PixelSizeAssignment(
 				pixel_size_id: $item['pixel_size_id'],
 				price: $money_service->createFromCents($item['price']),
+				license_type: PurchasableLicenseType::from($item['license_type']),
 			);
 		}
 	}

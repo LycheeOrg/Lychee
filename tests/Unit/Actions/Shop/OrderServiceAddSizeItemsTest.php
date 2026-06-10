@@ -82,6 +82,7 @@ class OrderServiceAddSizeItemsTest extends BaseApiWithDataTest
 		PurchasablePixelSize::factory()->withPrice(1200)->create([
 			'purchasable_id' => $this->purchasable->id,
 			'pixel_size_id' => $this->pixel_size->id,
+			'license_type' => PurchasableLicenseType::PERSONAL,
 		]);
 
 		$this->order = Order::factory()->pending()->withEmail('test@example.com')->create();
@@ -182,6 +183,7 @@ class OrderServiceAddSizeItemsTest extends BaseApiWithDataTest
 			$this->photo1,
 			$this->album1->id,
 			$this->pixel_size,
+			PurchasableLicenseType::PERSONAL,
 		);
 
 		$this->assertDatabaseHas('order_items', [
@@ -199,6 +201,7 @@ class OrderServiceAddSizeItemsTest extends BaseApiWithDataTest
 			$this->photo1,
 			$this->album1->id,
 			$this->pixel_size,
+			PurchasableLicenseType::PERSONAL,
 		);
 
 		$this->assertDatabaseHas('order_items', [
@@ -217,6 +220,7 @@ class OrderServiceAddSizeItemsTest extends BaseApiWithDataTest
 			$this->photo2,
 			$this->album2->id,
 			$this->pixel_size,
+			PurchasableLicenseType::PERSONAL,
 		);
 	}
 
@@ -231,6 +235,7 @@ class OrderServiceAddSizeItemsTest extends BaseApiWithDataTest
 			$this->photo1,
 			$this->album1->id,
 			$unassigned_pixel_size,
+			PurchasableLicenseType::PERSONAL,
 		);
 	}
 }

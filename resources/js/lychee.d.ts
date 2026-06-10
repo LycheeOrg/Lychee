@@ -1264,6 +1264,7 @@ declare namespace App.Http.Resources.Shop {
 		height: number;
 		price: string;
 		price_cents: number;
+		license_type: App.Enum.PurchasableLicenseType;
 	};
 	export type PurchasablePrintSizeResource = {
 		id: number;

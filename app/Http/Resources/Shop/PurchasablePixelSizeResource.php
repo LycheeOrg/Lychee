@@ -8,6 +8,7 @@
 
 namespace App\Http\Resources\Shop;
 
+use App\Enum\PurchasableLicenseType;
 use App\Models\PurchasablePixelSize;
 use App\Services\MoneyService;
 use Spatie\LaravelData\Data;
@@ -27,6 +28,7 @@ class PurchasablePixelSizeResource extends Data
 		public int $height,
 		public string $price,
 		public int $price_cents,
+		public PurchasableLicenseType $license_type,
 	) {
 	}
 
@@ -45,6 +47,7 @@ class PurchasablePixelSizeResource extends Data
 			height: $purchasable_pixel_size->pixelSize->height,
 			price: $money_service->format($purchasable_pixel_size->price_cents),
 			price_cents: intval($purchasable_pixel_size->price_cents->getAmount()),
+			license_type: $purchasable_pixel_size->license_type,
 		);
 	}
 }

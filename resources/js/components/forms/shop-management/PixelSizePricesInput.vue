@@ -13,6 +13,9 @@
 				/>
 			</div>
 			<div class="w-full">
+				<Select v-model="item.license_type" :options="licenseTypeOptions" class="w-full border-b border-0" />
+			</div>
+			<div class="w-full">
 				<InputCurrency :value="item.price" :currency="currency" @update:model-value="(value: number) => (item.price = value)" />
 			</div>
 			<div>
@@ -57,8 +60,9 @@ const { currency, default_price_cents } = storeToRefs(ShopManagementStore);
 
 const pixelSizeOptions = ref<App.Http.Resources.Shop.PixelSizeResource[]>([]);
 const items = ref<PixelSizeAssignment[]>(props.modelValue);
+const licenseTypeOptions: App.Enum.PurchasableLicenseType[] = ["personal", "commercial", "extended"];
 
-const _defaultItem: PixelSizeAssignment = { pixel_size_id: 0, price: default_price_cents.value };
+const _defaultItem: PixelSizeAssignment = { pixel_size_id: 0, price: default_price_cents.value, license_type: "personal" };
 
 function load() {
 	ShopManagementService.listPixelSizes().then((response) => {

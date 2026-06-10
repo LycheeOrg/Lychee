@@ -105,12 +105,13 @@
 				<div v-if="buyMeItemType === 'pixel'">
 					<div
 						v-for="px in pixelSizes"
-						:key="`pixel-${px.id}`"
+						:key="`pixel-${px.id}-${px.license_type}`"
 						class="border-b last:border-b-0 border-surface-300 dark:border-surface-700 flex flex-row justify-between items-center gap-4 py-1"
 					>
 						<div class="flex flex-col w-1/3">
 							<div class="font-bold">{{ px.label }}</div>
 							<div class="text-sm text-muted-color">{{ px.width }}×{{ px.height }} px</div>
+							<div class="text-sm text-muted-color">{{ px.license_type }}</div>
 						</div>
 						<div class="font-bold text-center text-lg">{{ px.price }}</div>
 						<Button
@@ -118,7 +119,7 @@
 							text
 							class="rounded border-none font-bold"
 							icon="pi pi-cart-arrow-down"
-							@click="addPixelPhotoToOrder(px.pixel_size_id, px.price)"
+							@click="addPixelPhotoToOrder(px.pixel_size_id, px.license_type, px.price)"
 						/>
 					</div>
 				</div>

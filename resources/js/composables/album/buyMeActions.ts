@@ -157,7 +157,7 @@ export function useBuyMeActions(
 			.finally(resetBuyMeDialog);
 	}
 
-	function addPixelPhotoToOrder(pixelSizeId: number, price: string) {
+	function addPixelPhotoToOrder(pixelSizeId: number, licenseType: App.Enum.PurchasableLicenseType, price: string) {
 		showBuyMeDialog.value = false;
 
 		if (buyablePhotoId.value === undefined) {
@@ -171,6 +171,7 @@ export function useBuyMeActions(
 				photo_id: buyablePhotoId.value,
 				album_id: buyableAlbumId.value,
 				pixel_size_id: pixelSizeId,
+				license_type: licenseType,
 			})
 			.then(() => {
 				notify(photo?.title ?? "", price);

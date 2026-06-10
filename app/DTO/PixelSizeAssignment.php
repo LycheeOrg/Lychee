@@ -8,6 +8,7 @@
 
 namespace App\DTO;
 
+use App\Enum\PurchasableLicenseType;
 use Money\Money;
 
 readonly class PixelSizeAssignment
@@ -15,6 +16,7 @@ readonly class PixelSizeAssignment
 	public function __construct(
 		public int $pixel_size_id,
 		public Money $price,
+		public PurchasableLicenseType $license_type = PurchasableLicenseType::PERSONAL,
 	) {
 	}
 }

@@ -18,6 +18,7 @@
 
 namespace Tests\Webshop;
 
+use App\Enum\PurchasableLicenseType;
 use App\Models\PixelSize;
 use App\Models\PrintSize;
 use App\Models\Purchasable;
@@ -61,6 +62,7 @@ class BasketPrintPixelItemsTest extends BaseApiWithDataTest
 		PurchasablePixelSize::factory()->withPrice(1200)->create([
 			'purchasable_id' => $this->purchasable->id,
 			'pixel_size_id' => $this->pixel_size->id,
+			'license_type' => PurchasableLicenseType::PERSONAL,
 		]);
 	}
 
@@ -107,6 +109,7 @@ class BasketPrintPixelItemsTest extends BaseApiWithDataTest
 			'photo_id' => $this->photo1->id,
 			'album_id' => $this->album1->id,
 			'pixel_size_id' => $this->pixel_size->id,
+			'license_type' => PurchasableLicenseType::PERSONAL->value,
 		]);
 
 		$this->assertCreated($response);

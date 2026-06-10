@@ -256,6 +256,7 @@ class OrderService
 		Photo $photo,
 		string $album_id,
 		PixelSize $pixel_size,
+		PurchasableLicenseType $license_type,
 		?string $notes = null,
 	): Order {
 		$purchasable = $this->purchasable_service->getEffectivePurchasableForPhoto($photo, $album_id);
@@ -267,6 +268,7 @@ class OrderService
 		/** @var \App\Models\PurchasablePixelSize|null $assignment */
 		$assignment = $purchasable->pixelSizes()
 			->where('pixel_size_id', $pixel_size->id)
+			->where('license_type', $license_type->value)
 			->first();
 
 		if ($assignment === null) {
@@ -279,7 +281,7 @@ class OrderService
 			'photo_id' => $photo->id,
 			'album_id' => $album_id,
 			'title' => $photo->title ?? "Photo #{$photo->id}",
-			'license_type' => PurchasableLicenseType::PERSONAL,
+			'license_type' => $assignment->license_type,
 			'price_cents' => $assignment->price_cents,
 			'size_variant_type' => PurchasableSizeVariantType::ORIGINAL,
 			'pixel_size_id' => $pixel_size->id,

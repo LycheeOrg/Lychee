@@ -26,8 +26,8 @@
 						}}</router-link></span
 					>
 					<span class="text-sm text-muted-color" v-if="item.is_print">
-						{{ $t("webshop.basketList.printLabel") }}: {{ item.print_width }} × {{ item.print_height }}
-						{{ item.print_unit }}, {{ $t("webshop.basketList.paperType") }}: {{ item.print_paper_type }}
+						{{ $t("webshop.basketList.printLabel") }}: {{ item.print_width }} × {{ item.print_height }} {{ item.print_unit }},
+						{{ $t("webshop.basketList.paperType") }}: {{ item.print_paper_type }}
 					</span>
 					<span class="text-sm text-muted-color" v-else-if="item.pixel_size_id !== null">
 						{{ $t("webshop.basketList.pixelLabel") }}: {{ item.pixel_width }} × {{ item.pixel_height }} px,

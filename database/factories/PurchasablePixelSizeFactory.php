@@ -8,6 +8,7 @@
 
 namespace Database\Factories;
 
+use App\Enum\PurchasableLicenseType;
 use App\Models\PurchasablePixelSize;
 use App\Services\MoneyService;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -37,6 +38,7 @@ class PurchasablePixelSizeFactory extends Factory
 			'purchasable_id' => null,
 			'pixel_size_id' => null,
 			'price_cents' => $money_service->createFromCents(fake()->numberBetween(499, 4999)),
+			'license_type' => PurchasableLicenseType::PERSONAL,
 		];
 	}
 

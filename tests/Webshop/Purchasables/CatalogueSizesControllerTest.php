@@ -18,6 +18,7 @@
 
 namespace Tests\Webshop\Purchasables;
 
+use App\Enum\PurchasableLicenseType;
 use App\Models\PixelSize;
 use App\Models\PrintSize;
 use App\Models\Purchasable;
@@ -100,10 +101,12 @@ class CatalogueSizesControllerTest extends BaseApiWithDataTest
 		PurchasablePixelSize::factory()->create([
 			'purchasable_id' => $this->purchasable->id,
 			'pixel_size_id' => $active_pixel->id,
+			'license_type' => PurchasableLicenseType::PERSONAL,
 		]);
 		PurchasablePixelSize::factory()->create([
 			'purchasable_id' => $this->purchasable->id,
 			'pixel_size_id' => $inactive_pixel->id,
+			'license_type' => PurchasableLicenseType::PERSONAL,
 		]);
 
 		$response = $this->actingAs($this->userMayUpload1)
@@ -128,6 +131,7 @@ class CatalogueSizesControllerTest extends BaseApiWithDataTest
 		PurchasablePixelSize::factory()->create([
 			'purchasable_id' => $this->purchasable->id,
 			'pixel_size_id' => $pixel->id,
+			'license_type' => PurchasableLicenseType::PERSONAL,
 		]);
 
 		$response = $this->actingAs($this->userMayUpload1)
@@ -140,7 +144,7 @@ class CatalogueSizesControllerTest extends BaseApiWithDataTest
 		$this->assertCount(1, $data['pixel_sizes']);
 		$response->assertJsonStructure([
 			'print_sizes' => [['print_size_id', 'price_cents']],
-			'pixel_sizes' => [['pixel_size_id', 'price_cents']],
+			'pixel_sizes' => [['pixel_size_id', 'price_cents', 'license_type']],
 		]);
 	}
 

@@ -38,7 +38,11 @@
 					>
 						{{ $t("dialogs.button.cancel") }}
 					</Button>
-					<Button class="w-full font-bold border-none rounded-none ltr:rounded-br-xl rtl:rounded-bl-xl shrink" @click="save" :disabled="!canSumbit">
+					<Button
+						class="w-full font-bold border-none rounded-none ltr:rounded-br-xl rtl:rounded-bl-xl shrink"
+						@click="save"
+						:disabled="!canSumbit"
+					>
 						{{ $t("dialogs.button.save") }}
 					</Button>
 				</div>

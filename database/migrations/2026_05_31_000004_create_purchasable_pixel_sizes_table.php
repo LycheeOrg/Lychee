@@ -21,8 +21,9 @@ return new class() extends Migration {
 			$table->foreignId('purchasable_id')->constrained()->onDelete('cascade');
 			$table->foreignId('pixel_size_id')->constrained()->onDelete('cascade');
 			$table->integer('price_cents')->nullable(false)->comment('Price in cents for this pixel size on this purchasable');
+			$table->string('license_type', 50)->comment('PERSONAL, COMMERCIAL, EXTENDED');
 
-			$table->unique(['purchasable_id', 'pixel_size_id'], 'unique_purchasable_pixel_size');
+			$table->unique(['purchasable_id', 'pixel_size_id', 'license_type'], 'unique_purchasable_pixel_size');
 		});
 	}
 

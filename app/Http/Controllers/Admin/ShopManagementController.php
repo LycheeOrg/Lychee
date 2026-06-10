@@ -8,7 +8,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Actions\Shop\OrderService;
 use App\Actions\Shop\PurchasableService;
 use App\Http\Requests\ShopManagement\DeletePurchasablesRequest;
 use App\Http\Requests\ShopManagement\ListPurchasablesRequest;
@@ -27,7 +26,6 @@ class ShopManagementController extends Controller
 {
 	public function __construct(
 		private PurchasableService $purchasable_service,
-		private OrderService $order_service,
 	) {
 	}
 

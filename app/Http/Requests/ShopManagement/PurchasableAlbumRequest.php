@@ -71,6 +71,7 @@ class PurchasableAlbumRequest extends BaseApiRequest implements HasAlbums, HasDe
 			RequestAttribute::PRINT_SIZES_ATTRIBUTE . '.*.price' => 'required|integer|min:0|max:1000000',
 			RequestAttribute::PIXEL_SIZES_ATTRIBUTE => 'sometimes|array',
 			RequestAttribute::PIXEL_SIZES_ATTRIBUTE . '.*.pixel_size_id' => 'required|integer|exists:pixel_sizes,id',
+			RequestAttribute::PIXEL_SIZES_ATTRIBUTE . '.*.license_type' => ['required', new Enum(PurchasableLicenseType::class)],
 			RequestAttribute::PIXEL_SIZES_ATTRIBUTE . '.*.price' => 'required|integer|min:0|max:1000000',
 			RequestAttribute::APPLIES_TO_SUBALBUMS_ATTRIBUTE => 'required|boolean',
 		];
@@ -119,6 +120,7 @@ class PurchasableAlbumRequest extends BaseApiRequest implements HasAlbums, HasDe
 			$this->pixel_sizes[] = new PixelSizeAssignment(
 				pixel_size_id: $item['pixel_size_id'],
 				price: $money_service->createFromCents($item['price']),
+				license_type: PurchasableLicenseType::from($item['license_type']),
 			);
 		}
 

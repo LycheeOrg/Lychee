@@ -231,6 +231,7 @@ class BasketService
 		Photo $photo,
 		string $album_id,
 		PixelSize $pixel_size,
+		PurchasableLicenseType $license_type,
 		?string $notes = null,
 	): Order {
 		$this->ensurePendingStatus($basket);
@@ -239,6 +240,7 @@ class BasketService
 			$photo,
 			$album_id,
 			$pixel_size,
+			$license_type,
 			$notes
 		);
 

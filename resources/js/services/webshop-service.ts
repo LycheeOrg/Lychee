@@ -39,6 +39,7 @@ export type AddPixelPhoto = {
 	photo_id: string;
 	album_id?: string;
 	pixel_size_id: number;
+	license_type: App.Enum.PurchasableLicenseType;
 	notes?: string;
 };
 

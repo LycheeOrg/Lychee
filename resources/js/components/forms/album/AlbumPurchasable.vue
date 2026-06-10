@@ -81,7 +81,6 @@ const prices = ref<Price[]>([]);
 const printSizes = ref<PrintSizeAssignment[]>([]);
 const pixelSizes = ref<PixelSizeAssignment[]>([]);
 const canSubmit = computed(() => {
-	console.log("Checking canSubmit", { prices: prices.value, printSizes: printSizes.value, pixelSizes: pixelSizes.value });
 	return prices.value.length > 0 || printSizes.value.length > 0 || pixelSizes.value.length > 0;
 });
 
@@ -109,7 +108,7 @@ function load() {
 				}) ?? [];
 			pixelSizes.value =
 				albumPurchasable.value?.pixel_sizes?.map((ps: App.Http.Resources.Shop.PurchasablePixelSizeResource) => {
-					return { pixel_size_id: ps.pixel_size_id, price: ps.price_cents };
+					return { pixel_size_id: ps.pixel_size_id, price: ps.price_cents, license_type: ps.license_type };
 				}) ?? [];
 		})
 		.catch((error) => {
