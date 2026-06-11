@@ -174,7 +174,7 @@ class PurchasablePriceWithSizesTest extends BaseApiWithDataTest
 				['print_size_id' => $this->print_size1->id, 'price' => 2500],
 			],
 			'pixel_sizes' => [
-				['pixel_size_id' => $this->pixel_size1->id, 'price' => 1200],
+				['pixel_size_id' => $this->pixel_size1->id, 'price' => 1200, 'license_type' => 'personal'],
 			],
 		]);
 
