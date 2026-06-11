@@ -40,7 +40,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string                     $title             Item title at time of purchase (for historical record)
  * @property int|null                   $size_variant_id   Foreign key to size variant (nullable for custom sizes)
  * @property string|null                $download_link     Custom download URL (used for FULL variants or special cases)
- * @property PurchasableLicenseType     $license_type      License type purchased (personal, commercial, extended)
+ * @property bool                       $is_print          True when item requires physical print fulfilment
+ * @property int|null                   $print_size_id     Foreign key to print_sizes (nullable)
+ * @property int|null                   $pixel_size_id     Foreign key to pixel_sizes (nullable)
+ * @property int|null                   $print_width       Snapshot of print width at basket-add time
+ * @property int|null                   $print_height      Snapshot of print height at basket-add time
+ * @property string|null                $print_unit        Snapshot of print unit at basket-add time
+ * @property string|null                $print_paper_type  Snapshot of print paper type at basket-add time
+ * @property int|null                   $pixel_width       Snapshot of pixel width at basket-add time
+ * @property int|null                   $pixel_height      Snapshot of pixel height at basket-add time
+ * @property PurchasableLicenseType     $license_type      License type purchased (personal, commercial, extended, print)
  * @property \Money\Money               $price_cents       Price paid for this item (uses Money library for precision)
  * @property PurchasableSizeVariantType $size_variant_type Size variant purchased (medium, medium2x, original, full)
  * @property string|null                $item_notes        Optional notes specific to this item
@@ -49,6 +58,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property Photo|null                 $photo             The photo being purchased (if applicable)
  * @property Album|null                 $album             The album being purchased (if applicable)
  * @property SizeVariant|null           $size_variant      The size variant being purchased (if applicable)
+ * @property PrintSize|null             $printSize         The print size catalogue entry (if applicable)
+ * @property PixelSize|null             $pixelSize         The pixel size catalogue entry (if applicable)
  *
  * @see Order The parent order model
  * @see Purchasable The purchasable item definition
@@ -77,6 +88,15 @@ class OrderItem extends Model
 		'item_notes',
 		'size_variant_id',
 		'download_link',
+		'is_print',
+		'print_size_id',
+		'pixel_size_id',
+		'print_width',
+		'print_height',
+		'print_unit',
+		'print_paper_type',
+		'pixel_width',
+		'pixel_height',
 	];
 
 	/**
@@ -86,6 +106,7 @@ class OrderItem extends Model
 		'price_cents' => MoneyCast::class,
 		'license_type' => PurchasableLicenseType::class,
 		'size_variant_type' => PurchasableSizeVariantType::class,
+		'is_print' => 'boolean',
 	];
 
 	/**
@@ -155,6 +176,26 @@ class OrderItem extends Model
 	public function album(): BelongsTo
 	{
 		return $this->belongsTo(Album::class);
+	}
+
+	/**
+	 * Get the global print size catalogue entry for this item.
+	 *
+	 * @return BelongsTo<PrintSize,$this>
+	 */
+	public function printSize(): BelongsTo
+	{
+		return $this->belongsTo(PrintSize::class);
+	}
+
+	/**
+	 * Get the global pixel size catalogue entry for this item.
+	 *
+	 * @return BelongsTo<PixelSize,$this>
+	 */
+	public function pixelSize(): BelongsTo
+	{
+		return $this->belongsTo(PixelSize::class);
 	}
 
 	/**

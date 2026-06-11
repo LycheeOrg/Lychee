@@ -19,6 +19,7 @@ use App\Enum\FileStatus;
 use App\Enum\SizeVariantType;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\ConflictingPropertyException;
+use App\Factories\IdFactory;
 use App\Http\Requests\Photo\CopyPhotosRequest;
 use App\Http\Requests\Photo\DeletePhotosRequest;
 use App\Http\Requests\Photo\EditPhotoRequest;
@@ -42,6 +43,7 @@ use App\Image\Files\UploadedFile;
 use App\Jobs\ExtractZip;
 use App\Jobs\ProcessImageJob;
 use App\Jobs\WatermarkerJob;
+use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use App\Models\Tag;
@@ -81,8 +83,16 @@ class PhotoController extends Controller
 			return $meta;
 		}
 
-		// Last chunk
+		// Last chunk — generate expected_id for non-zip uploads and store title/description.
 		$meta->stage = FileStatus::PROCESSING;
+		$meta->title = $request->title();
+		$meta->description = $request->description();
+
+		$is_zip = strtolower(pathinfo($meta->file_name, PATHINFO_EXTENSION)) === 'zip';
+		if (!$is_zip) {
+			$id_factory = resolve(IdFactory::class);
+			$meta->expected_id = $id_factory->createRandomID();
+		}
 
 		return $this->process(
 			$request->verify(),
@@ -127,7 +137,7 @@ class PhotoController extends Controller
 			return $meta;
 		}
 
-		ProcessImageJob::dispatch($processable_file, $album, $file_last_modified_time, $apply_watermark);
+		ProcessImageJob::dispatch($processable_file, $album, $file_last_modified_time, $apply_watermark, $meta->expected_id, $meta->title, $meta->description);
 		$meta->stage = config('queue.default') === 'sync' ? FileStatus::DONE : FileStatus::READY;
 
 		return $meta;
@@ -325,7 +335,28 @@ class PhotoController extends Controller
 		$album_policy = resolve(AlbumPolicy::class);
 
 		return $photo->albums
-			->filter(fn ($album) => $album_policy->canAccess($user, $album))
+			->filter(function ($album) use ($album_policy, $user) {
+				if (!$album instanceof BaseAlbum) {
+					return $album_policy->canAccess($user, $album);
+				}
+
+				// Owner always sees their albums in the list
+				if ($album_policy->isOwner($user, $album)) {
+					return true;
+				}
+
+				// Explicitly shared albums are visible to the shared user
+				if ($album->current_user_permissions() !== null) {
+					return true;
+				}
+
+				// Public albums are only shown if not link-required (hidden from listings)
+				$public_perm = $album->public_permissions();
+
+				return $public_perm !== null &&
+					$public_perm->is_link_required === false &&
+					($public_perm->password === null || $album_policy->isUnlocked($album));
+			})
 			->values()
 			->map(fn ($album) => new PhotoAlbumResource($album));
 	}

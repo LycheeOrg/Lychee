@@ -13,9 +13,6 @@ return new class() extends BaseConfigMigration {
 	public const HEADER_SIZE = 'half_screen|full_screen';
 	public const CAT_MOD_PRO = 'Mod Pro';
 
-	/**
-	 * @return array<int,array{key:string,value:string,is_secret:bool,cat:string,type_range:string,description:string,order?:int,not_on_docker?:bool,is_expert?:bool,level?:int}>
-	 */
 	public function getConfigs(): array
 	{
 		return [

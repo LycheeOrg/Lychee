@@ -1,5 +1,4 @@
 <?php
-
 return [
     /*
     |--------------------------------------------------------------------------
@@ -22,7 +21,8 @@ return [
     'api' => 'Documentación de la API',
     'source_code' => 'Código fuente',
     'support' => 'Asistencia',
-    'contact' => 'Contact',
-    'messages' => 'Messages',
+    'contact' => 'Contacto',
+    'messages' => 'Mensajes',
     'webhooks' => 'Webhooks',
+    'shopSizes' => 'Size Catalogue',
 ];

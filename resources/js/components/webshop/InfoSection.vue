@@ -45,18 +45,54 @@
 				>
 				</label>
 			</div>
+
+			<!-- Shipping address (required when basket contains print items) -->
+			<template v-if="orderManagementStore.hasPrintItems">
+				<div class="mt-6 mb-2 font-semibold text-base">{{ $t("webshop.shippingAddress.title") }}</div>
+				<p class="text-sm text-muted-color mb-4">{{ $t("webshop.shippingAddress.required") }}</p>
+				<div class="flex flex-col gap-3">
+					<div class="flex gap-2">
+						<FloatLabel variant="on" class="flex-1">
+							<InputText id="shipping-street-name" v-model="shippingStreetName" class="w-full" />
+							<label for="shipping-street-name">{{ $t("webshop.shippingAddress.streetName") }} *</label>
+						</FloatLabel>
+						<FloatLabel variant="on" class="w-28">
+							<InputText id="shipping-street-number" v-model="shippingStreetNumber" class="w-full" />
+							<label for="shipping-street-number">{{ $t("webshop.shippingAddress.streetNumber") }}</label>
+						</FloatLabel>
+					</div>
+					<FloatLabel variant="on">
+						<InputText id="shipping-additional" v-model="shippingAdditionalInfo" class="w-full" />
+						<label for="shipping-additional">{{ $t("webshop.shippingAddress.additionalInfo") }}</label>
+					</FloatLabel>
+					<div class="flex gap-2">
+						<FloatLabel variant="on" class="flex-1">
+							<InputText id="shipping-city" v-model="shippingCity" class="w-full" />
+							<label for="shipping-city">{{ $t("webshop.shippingAddress.city") }} *</label>
+						</FloatLabel>
+						<FloatLabel variant="on" class="w-32">
+							<InputText id="shipping-post-code" v-model="shippingPostCode" class="w-full" />
+							<label for="shipping-post-code">{{ $t("webshop.shippingAddress.postCode") }} *</label>
+						</FloatLabel>
+					</div>
+					<FloatLabel variant="on">
+						<InputText id="shipping-country" v-model="shippingCountry" class="w-full" />
+						<label for="shipping-country">{{ $t("webshop.shippingAddress.country") }} *</label>
+					</FloatLabel>
+				</div>
+			</template>
 		</template>
 	</div>
 </template>
 <script setup lang="ts">
 import { useStepOne } from "@/composables/checkout/useStepOne";
 import { useUserStore } from "@/stores/UserState";
+import { useOrderManagementStore } from "@/stores/OrderManagement";
 import FloatLabel from "primevue/floatlabel";
 import { useRouter } from "vue-router";
 import InputText from "@/components/forms/basic/InputText.vue";
 import Checkbox from "primevue/checkbox";
 import Button from "primevue/button";
-import { useOrderManagementStore } from "@/stores/OrderManagement";
 import { trans } from "laravel-vue-i18n";
 import { sprintf } from "sprintf-js";
 
@@ -72,5 +108,17 @@ function strip(html: string | null | undefined): string | null | undefined {
 	const doc = new DOMParser().parseFromString(html, "text/html");
 	return doc.body.textContent || "";
 }
-const { email, options, errors, validate, consentGiven } = useStepOne(userStore, orderManagementStore);
+const {
+	email,
+	options,
+	errors,
+	validate,
+	consentGiven,
+	shippingStreetName,
+	shippingStreetNumber,
+	shippingAdditionalInfo,
+	shippingCity,
+	shippingPostCode,
+	shippingCountry,
+} = useStepOne(userStore, orderManagementStore);
 </script>

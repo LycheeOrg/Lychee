@@ -191,6 +191,22 @@ class Photo extends Model implements HasUTCBasedTimes
 	}
 
 	/**
+	 * Pre-allocate an ID for this photo before it is saved.
+	 *
+	 * This bypasses the {@link HasRandomIDAndLegacyTimeBasedID::setAttribute()} guard by
+	 * writing directly to the trait's protected property instead.
+	 * {@link HasRandomIDAndLegacyTimeBasedID::generateKey()} will consume this value on
+	 * the first INSERT attempt and then clear it so that a DB-collision retry generates
+	 * a fresh random ID rather than repeating the same value.
+	 *
+	 * @param string $id a 24-char Base64url string
+	 */
+	public function preallocateId(string $id): void
+	{
+		$this->pre_allocated_key = $id;
+	}
+
+	/**
 	 * Return the relationship between a Photo and its Album.
 	 *
 	 * @return BelongsToMany<Album,$this>

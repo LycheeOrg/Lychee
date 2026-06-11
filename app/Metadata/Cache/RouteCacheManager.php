@@ -162,6 +162,9 @@ final readonly class RouteCacheManager
 			'api/v2/Shop/Checkout/Options' => new RouteCacheConfig(tag: CacheTag::SETTINGS, user_dependant: false),
 			'api/v2/Shop/Management/Options' => new RouteCacheConfig(tag: CacheTag::SETTINGS, user_dependant: true),
 			'api/v2/Shop/Management/List' => false,
+			'api/v2/Shop/Management/PixelSize' => false,
+			'api/v2/Shop/Management/PrintSize' => false,
+			'api/v2/Shop/Catalogue/Purchasable/{purchasable_id}/Sizes' => false,
 			'api/v2/Shop/Order/List' => false,
 			'api/v2/Shop/Order/{order_id}' => false,
 

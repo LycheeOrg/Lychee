@@ -18,6 +18,8 @@ use App\Exceptions\Shop\PhotoNotPurchasableException;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Photo;
+use App\Models\PixelSize;
+use App\Models\PrintSize;
 use App\Models\User;
 use App\Repositories\ConfigManager;
 use Illuminate\Database\Eloquent\Builder;
@@ -170,6 +172,121 @@ class OrderService
 			'license_type' => $license_type,
 			'price_cents' => $price,
 			'size_variant_type' => $size_variant,
+			'item_notes' => $notes,
+		]);
+
+		return $order;
+	}
+
+	/**
+	 * Add a photo to an order as a physical print item.
+	 *
+	 * @param Order       $order      The order to add to
+	 * @param Photo       $photo      The photo to add
+	 * @param string      $album_id   The album ID to consider for hierarchical pricing
+	 * @param PrintSize   $print_size The print size to use
+	 * @param string|null $notes      Additional notes for the item
+	 *
+	 * @return Order The updated Order (note: total not recalculated)
+	 *
+	 * @throws PhotoNotPurchasableException   If the photo is not available for purchase
+	 * @throws InvalidPurchaseOptionException If the print size is not available for this purchasable
+	 */
+	public function addPrintPhotoToOrder(
+		Order $order,
+		Photo $photo,
+		string $album_id,
+		PrintSize $print_size,
+		?string $notes = null,
+	): Order {
+		$purchasable = $this->purchasable_service->getEffectivePurchasableForPhoto($photo, $album_id);
+
+		if ($purchasable === null) {
+			throw new PhotoNotPurchasableException();
+		}
+
+		/** @var \App\Models\PurchasablePrintSize|null $assignment */
+		$assignment = $purchasable->printSizes()
+			->where('print_size_id', $print_size->id)
+			->first();
+
+		if ($assignment === null) {
+			throw new InvalidPurchaseOptionException();
+		}
+
+		$assignment->load('printSize');
+
+		OrderItem::create([
+			'order_id' => $order->id,
+			'purchasable_id' => $purchasable->id,
+			'photo_id' => $photo->id,
+			'album_id' => $album_id,
+			'title' => $photo->title ?? "Photo #{$photo->id}",
+			'license_type' => PurchasableLicenseType::PRINT,
+			'price_cents' => $assignment->price_cents,
+			'size_variant_type' => PurchasableSizeVariantType::ORIGINAL,
+			'is_print' => true,
+			'print_size_id' => $print_size->id,
+			'print_width' => $print_size->width,
+			'print_height' => $print_size->height,
+			'print_unit' => $print_size->unit,
+			'print_paper_type' => $print_size->paper_type,
+			'item_notes' => $notes,
+		]);
+
+		return $order;
+	}
+
+	/**
+	 * Add a photo to an order as a custom pixel-size digital download.
+	 *
+	 * @param Order       $order      The order to add to
+	 * @param Photo       $photo      The photo to add
+	 * @param string      $album_id   The album ID to consider for hierarchical pricing
+	 * @param PixelSize   $pixel_size The pixel size to use
+	 * @param string|null $notes      Additional notes for the item
+	 *
+	 * @return Order The updated Order (note: total not recalculated)
+	 *
+	 * @throws PhotoNotPurchasableException   If the photo is not available for purchase
+	 * @throws InvalidPurchaseOptionException If the pixel size is not available for this purchasable
+	 */
+	public function addPixelPhotoToOrder(
+		Order $order,
+		Photo $photo,
+		string $album_id,
+		PixelSize $pixel_size,
+		PurchasableLicenseType $license_type,
+		?string $notes = null,
+	): Order {
+		$purchasable = $this->purchasable_service->getEffectivePurchasableForPhoto($photo, $album_id);
+
+		if ($purchasable === null) {
+			throw new PhotoNotPurchasableException();
+		}
+
+		/** @var \App\Models\PurchasablePixelSize|null $assignment */
+		$assignment = $purchasable->pixelSizes()
+			->where('pixel_size_id', $pixel_size->id)
+			->where('license_type', $license_type->value)
+			->first();
+
+		if ($assignment === null) {
+			throw new InvalidPurchaseOptionException();
+		}
+
+		OrderItem::create([
+			'order_id' => $order->id,
+			'purchasable_id' => $purchasable->id,
+			'photo_id' => $photo->id,
+			'album_id' => $album_id,
+			'title' => $photo->title ?? "Photo #{$photo->id}",
+			'license_type' => $assignment->license_type,
+			'price_cents' => $assignment->price_cents,
+			'size_variant_type' => PurchasableSizeVariantType::ORIGINAL,
+			'pixel_size_id' => $pixel_size->id,
+			'pixel_width' => $pixel_size->width,
+			'pixel_height' => $pixel_size->height,
 			'item_notes' => $notes,
 		]);
 

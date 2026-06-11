@@ -1,4 +1,4 @@
-import WebshopService, { AddAlbum, AddPhoto } from "@/services/webshop-service";
+import WebshopService, { AddAlbum, AddPhoto, AddPixelPhoto, AddPrintPhoto } from "@/services/webshop-service";
 import { defineStore } from "pinia";
 import { useLycheeStateStore } from "./LycheeState";
 
@@ -56,6 +56,34 @@ export const useOrderManagementStore = defineStore("basket-management-store", {
 				this.order = response.data;
 			});
 		},
+		async addPrintPhoto(printData: AddPrintPhoto): Promise<void> {
+			// Guard for SE
+			if (useLycheeStateStore().is_pro_enabled !== true) {
+				return Promise.resolve();
+			}
+
+			if (this.order === undefined) {
+				await this.load();
+			}
+
+			return WebshopService.Order.addPrintPhotoToBasket(printData).then((response) => {
+				this.order = response.data;
+			});
+		},
+		async addPixelPhoto(pixelData: AddPixelPhoto): Promise<void> {
+			// Guard for SE
+			if (useLycheeStateStore().is_pro_enabled !== true) {
+				return Promise.resolve();
+			}
+
+			if (this.order === undefined) {
+				await this.load();
+			}
+
+			return WebshopService.Order.addPixelPhotoToBasket(pixelData).then((response) => {
+				this.order = response.data;
+			});
+		},
 		removeItem(itemId: number): Promise<void> {
 			// Guard for SE
 			if (useLycheeStateStore().is_pro_enabled !== true) {
@@ -88,6 +116,9 @@ export const useOrderManagementStore = defineStore("basket-management-store", {
 	getters: {
 		hasItems(): boolean {
 			return this.order?.items !== undefined && this.order?.items !== null && this.order.items.length > 0;
+		},
+		hasPrintItems(): boolean {
+			return this.order?.items?.some((item: App.Http.Resources.Shop.OrderItemResource) => item.is_print === true) ?? false;
 		},
 	},
 });

@@ -1,5 +1,4 @@
 <?php
-
 return [
     /*
     |--------------------------------------------------------------------------
@@ -25,4 +24,5 @@ return [
     'contact' => 'Kontakt',
     'messages' => 'Nachrichten',
     'webhooks' => 'Webhooks',
+    'shopSizes' => 'Size Catalogue',
 ];

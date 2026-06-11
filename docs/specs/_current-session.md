@@ -1,6 +1,6 @@
 # Current Session
 
-_Last updated: 2026-05-31 (Feature 043 merged into Feature 042 — Photo Display Enrichment)_
+_Last updated: 2026-05-31_
 
 ## Active Features
 
@@ -23,7 +23,6 @@ _Last updated: 2026-05-31 (Feature 043 merged into Feature 042 — Photo Display
 ### Feature 042: Photo Display Enrichment
 
 User requested Feature 042 spec/plan/tasks: enrich photo displays with album context across two areas of the application. Part A enriches the order detail page (`OrderDownload.vue`) so that each purchased item shows the **album title** and a **thumbnail**. Part B adds a three-state `PhotoTitleLink.vue` component to admin maintenance views (`DuplicateLine.vue`, `Moderation.vue`) so photo titles are clickable `RouterLink`s (or show a fallback icon when the album is gone). Former Feature 043 (photo-title link in admin views) was merged into Feature 042 as it addresses the same theme of enriching photo display with album context.
-
 **Status:** spec.md + plan.md + tasks.md complete; ready to begin T-042-01.
 
 **No open questions.** All requirements are clear from the problem statement.
@@ -48,11 +47,22 @@ User requested Feature 042 spec/plan/tasks: enrich photo displays with album con
 - Tasks: [docs/specs/4-architecture/features/042-webshop-order-item-display/tasks.md](docs/specs/4-architecture/features/042-webshop-order-item-display/tasks.md)
 - Roadmap row updated (Feature 042 renamed to Photo Display Enrichment; Feature 043 deleted).
 
-### Feature 040: Disable Request Caching
+### Feature 041: Upload Photo Metadata — Complete
+**Status:** Implementation complete. All 9 feature tests pass. PHPStan 0 errors. php-cs-fixer clean. Roadmap updated.
 
-**Status:** spec.md + plan.md + tasks.md complete; ready to begin T-040-01.
+**What was built:**
+- New `ApplyUserProvidedMetadata` pipe (`app/Actions/Photo/Pipes/Standalone/`) — sets caller-supplied `title`/`description` on the `Photo` model before `HydrateMetadata` runs (so EXIF doesn't overwrite user input).
+- `AutoRenamer` guard: skips renaming when `StandaloneDTO::$title` is non-null.
+- DTO chain propagation: `ImportParam → InitDTO → StandaloneDTO` all carry `?string $title`, `?string $description`, `?string $preallocated_id`.
+- `Photo::preallocateId(string $id)` + `HasRandomIDAndLegacyTimeBasedID::generateKey()` guard for ID pre-allocation.
+- `UploadPhotoRequest` — `TitleRule` (max 100 chars) and `DescriptionRule` (max 1 000 chars) validation.
+- `UploadMetaResource` — `?string $expected_id`, `?string $title`, `?string $description` fields added.
+- `PhotoController::upload()` — generates 24-char Base64url `expected_id` on final non-zip chunk; forwards `title`/`description` to `process()`.
+- `ProcessImageJob` — serialises `expected_id`, `title`, `description`; passes them through `ImportParam` to `Create`.
+- Feature test: `tests/Feature_v2/Photo/UploadWithMetadataTest.php` (9 tests, 466 assertions).
 
-**No open questions.** All requirements are clear from the problem statement.
+**Key implementation note:** `skip_duplicates=true` causes `ThrowSkipDuplicate` to throw `PhotoSkippedException` (HTTP 409). With `skip_duplicates=false` (default), duplicates are re-linked without error (HTTP 201).
+
 
 **Plan increments (5 × ≤40 min, 9 tasks total):**
 - **I1 – Migration** (T-040-01): force `cache_enabled = '0'` via `DB::table('configs')` update; `down()` no-op.
@@ -72,7 +82,14 @@ User requested Feature 042 spec/plan/tasks: enrich photo displays with album con
 
 None for Feature 042. None for Feature 040.
 
-## References
+## Next Steps
+
+1. Begin Feature 040 implementation at **T-040-01** (migration).
+2. Follow tests-before-code SDD cadence through I1 → I5.
+
+## Open Questions
+
+None for active features.
 
 **Feature 042:**
 - Spec: [042-webshop-order-item-display/spec.md](docs/specs/4-architecture/features/042-webshop-order-item-display/spec.md)
@@ -90,17 +107,11 @@ None for Feature 042. None for Feature 040.
 - Spec: [040-disable-request-caching/spec.md](docs/specs/4-architecture/features/040-disable-request-caching/spec.md)
 - Plan: [040-disable-request-caching/plan.md](docs/specs/4-architecture/features/040-disable-request-caching/plan.md)
 - Tasks: [040-disable-request-caching/tasks.md](docs/specs/4-architecture/features/040-disable-request-caching/tasks.md)
-- Existing caching migration: [database/migrations/2024_12_28_190150_caching_config.php](database/migrations/2024_12_28_190150_caching_config.php)
-- Features config: [config/features.php](config/features.php)
-- Settings controller: [app/Http/Controllers/Admin/SettingsController.php](app/Http/Controllers/Admin/SettingsController.php)
 
 **Common:**
 - Roadmap: [roadmap.md](docs/specs/4-architecture/roadmap.md)
 - Open questions: [open-questions.md](docs/specs/4-architecture/open-questions.md)
 
----
-
 **Session Context for Handoff:**
 
 Feature 042 spec, plan, and tasks are complete (20 tasks across 10 increments, all ≤40 min, tests-before-code). Former Feature 043 (photo-title link in admin views) has been merged into Feature 042 as Part B. No open questions. Next author: run the analysis gate, then begin T-042-01. All Part A increments are sequential; Part B can begin after or in parallel with I6. Feature 040 is also ready to implement from T-040-01.
-

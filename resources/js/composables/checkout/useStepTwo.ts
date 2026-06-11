@@ -11,7 +11,21 @@ const isStepTwoValid = ref(false);
 const canProcessPayment = ref(false);
 const selectedProvider = ref<undefined | App.Enum.OmnipayProviderType>(undefined);
 
-export function useStepTwo(email: Ref<undefined | string>, orderManagement: OrderManagementStateStore, toast: ToastServiceMethods) {
+export type ShippingRefs = {
+	shippingStreetName: Ref<string>;
+	shippingStreetNumber: Ref<string>;
+	shippingAdditionalInfo: Ref<string>;
+	shippingCity: Ref<string>;
+	shippingPostCode: Ref<string>;
+	shippingCountry: Ref<string>;
+};
+
+export function useStepTwo(
+	email: Ref<undefined | string>,
+	orderManagement: OrderManagementStateStore,
+	toast: ToastServiceMethods,
+	shipping?: ShippingRefs,
+) {
 	const { cardDetails, isCardNumberNotEmpty, isCardNumberValid, getFakeNumber, processDummyPayment } = useDummy(toast);
 	const { processMolliePayment } = useMollie(toast);
 
@@ -45,6 +59,12 @@ export function useStepTwo(email: Ref<undefined | string>, orderManagement: Orde
 		WebshopService.Checkout.createSession({
 			email: email.value,
 			provider: selectedProvider.value,
+			shipping_street_name: shipping?.shippingStreetName.value || undefined,
+			shipping_street_number: shipping?.shippingStreetNumber.value || undefined,
+			shipping_additional_info: shipping?.shippingAdditionalInfo.value || undefined,
+			shipping_city: shipping?.shippingCity.value || undefined,
+			shipping_post_code: shipping?.shippingPostCode.value || undefined,
+			shipping_country: shipping?.shippingCountry.value || undefined,
 		})
 			.then((response) => {
 				orderManagement.order = response.data;

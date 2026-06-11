@@ -18,8 +18,10 @@ use App\Http\Requests\Traits\HasAbstractAlbumTrait;
 use App\Http\Resources\Editable\UploadMetaResource;
 use App\Policies\AlbumPolicy;
 use App\Rules\AlbumIDRule;
+use App\Rules\DescriptionRule;
 use App\Rules\ExtensionRule;
 use App\Rules\FileUuidRule;
+use App\Rules\TitleRule;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Gate;
 
@@ -34,6 +36,8 @@ class UploadPhotoRequest extends BaseApiRequest implements HasAbstractAlbum
 	protected UploadMetaResource $meta;
 	protected int $file_size;
 	protected ?bool $apply_watermark = null;
+	protected ?string $title = null;
+	protected ?string $description = null;
 
 	/**
 	 * {@inheritDoc}
@@ -58,6 +62,8 @@ class UploadPhotoRequest extends BaseApiRequest implements HasAbstractAlbum
 			'chunk_number' => 'required|integer|min:1',
 			'total_chunks' => 'required|integer|gte:chunk_number',
 			'apply_watermark' => 'sometimes|boolean',
+			RequestAttribute::TITLE_ATTRIBUTE => ['sometimes', 'nullable', new TitleRule()],
+			RequestAttribute::DESCRIPTION_ATTRIBUTE => ['sometimes', 'nullable', new DescriptionRule()],
 		];
 	}
 
@@ -83,6 +89,9 @@ class UploadPhotoRequest extends BaseApiRequest implements HasAbstractAlbum
 		if (isset($values['apply_watermark'])) {
 			$this->apply_watermark = self::toBoolean($values['apply_watermark']);
 		}
+		// Store optional user-supplied title and description
+		$this->title = $values[RequestAttribute::TITLE_ATTRIBUTE] ?? null;
+		$this->description = $values[RequestAttribute::DESCRIPTION_ATTRIBUTE] ?? null;
 	}
 
 	public function uploaded_file_chunk(): UploadedFile
@@ -103,5 +112,15 @@ class UploadPhotoRequest extends BaseApiRequest implements HasAbstractAlbum
 	public function apply_watermark(): ?bool
 	{
 		return $this->apply_watermark;
+	}
+
+	public function title(): ?string
+	{
+		return $this->title;
+	}
+
+	public function description(): ?string
+	{
+		return $this->description;
 	}
 }

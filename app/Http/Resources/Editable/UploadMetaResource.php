@@ -22,6 +22,9 @@ class UploadMetaResource extends Data
 		public FileStatus $stage,
 		public int $chunk_number,
 		public int $total_chunks,
+		public ?string $expected_id = null,
+		public ?string $title = null,
+		public ?string $description = null,
 	) {
 	}
 }

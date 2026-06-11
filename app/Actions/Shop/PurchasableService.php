@@ -9,13 +9,17 @@
 namespace App\Actions\Shop;
 
 use App\Constants\PhotoAlbum as PA;
+use App\DTO\PixelSizeAssignment;
+use App\DTO\PrintSizeAssignment;
 use App\DTO\PurchasableOption;
 use App\DTO\PurchasableOptionCreate;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Models\Album;
 use App\Models\Photo;
 use App\Models\Purchasable;
+use App\Models\PurchasablePixelSize;
 use App\Models\PurchasablePrice;
+use App\Models\PurchasablePrintSize;
 use Illuminate\Support\Facades\DB;
 
 class PurchasableService
@@ -295,5 +299,60 @@ class PurchasableService
 		Purchasable::query()
 			->whereIn('album_id', $album_ids)
 			->delete();
+	}
+
+	/**
+	 * Sync print size assignments for a purchasable item.
+	 *
+	 * Replaces all existing print size assignments with the provided list.
+	 *
+	 * @param Purchasable           $purchasable            The purchasable item to update
+	 * @param PrintSizeAssignment[] $print_size_assignments Array of print size assignments
+	 *
+	 * @return Purchasable The updated purchasable item
+	 */
+	public function syncPrintSizes(Purchasable $purchasable, array $print_size_assignments): Purchasable
+	{
+		return DB::transaction(function () use ($purchasable, $print_size_assignments): Purchasable {
+			$purchasable->printSizes()->delete();
+
+			foreach ($print_size_assignments as $assignment) {
+				PurchasablePrintSize::create([
+					'purchasable_id' => $purchasable->id,
+					'print_size_id' => $assignment->print_size_id,
+					'price_cents' => $assignment->price,
+				]);
+			}
+
+			return $purchasable;
+		});
+	}
+
+	/**
+	 * Sync pixel size assignments for a purchasable item.
+	 *
+	 * Replaces all existing pixel size assignments with the provided list.
+	 *
+	 * @param Purchasable           $purchasable            The purchasable item to update
+	 * @param PixelSizeAssignment[] $pixel_size_assignments Array of pixel size assignments
+	 *
+	 * @return Purchasable The updated purchasable item
+	 */
+	public function syncPixelSizes(Purchasable $purchasable, array $pixel_size_assignments): Purchasable
+	{
+		return DB::transaction(function () use ($purchasable, $pixel_size_assignments): Purchasable {
+			$purchasable->pixelSizes()->delete();
+
+			foreach ($pixel_size_assignments as $assignment) {
+				PurchasablePixelSize::create([
+					'purchasable_id' => $purchasable->id,
+					'pixel_size_id' => $assignment->pixel_size_id,
+					'price_cents' => $assignment->price,
+					'license_type' => $assignment->license_type,
+				]);
+			}
+
+			return $purchasable;
+		});
 	}
 }

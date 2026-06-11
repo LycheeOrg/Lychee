@@ -43,19 +43,25 @@ use Money\Money;
  * Payment processing is handled through Omnipay providers (Stripe, Mollie,
  * PayPal, etc.) with support for offline payments when enabled.
  *
- * @property int                       $id             Primary key
- * @property string                    $transaction_id Unique identifier for payment provider tracking
- * @property OmnipayProviderType       $provider       Payment provider used (Stripe, Mollie, PayPal, etc.)
- * @property int|null                  $user_id        Foreign key to users table (null for guest purchases)
- * @property string|null               $email          Customer email (required for guest purchases and FULL variants)
- * @property PaymentStatusType         $status         Current order status (pending, processing, completed, etc.)
- * @property Money                     $amount_cents   Total order amount using Money library for precision
- * @property Carbon|null               $created_at     Order creation timestamp
- * @property Carbon|null               $updated_at     Last modification timestamp
- * @property Carbon|null               $paid_at        Payment completion timestamp (null if unpaid)
- * @property string|null               $comment        Optional order notes or comments
- * @property User|null                 $user           Associated user account (null for guest purchases)
- * @property Collection<int,OrderItem> $items          Collection of items purchased in this order
+ * @property int                       $id                       Primary key
+ * @property string                    $transaction_id           Unique identifier for payment provider tracking
+ * @property OmnipayProviderType       $provider                 Payment provider used (Stripe, Mollie, PayPal, etc.)
+ * @property int|null                  $user_id                  Foreign key to users table (null for guest purchases)
+ * @property string|null               $email                    Customer email (required for guest purchases and FULL variants)
+ * @property PaymentStatusType         $status                   Current order status (pending, processing, completed, etc.)
+ * @property Money                     $amount_cents             Total order amount using Money library for precision
+ * @property Carbon|null               $created_at               Order creation timestamp
+ * @property Carbon|null               $updated_at               Last modification timestamp
+ * @property Carbon|null               $paid_at                  Payment completion timestamp (null if unpaid)
+ * @property string|null               $comment                  Optional order notes or comments
+ * @property string|null               $shipping_street_name     Shipping address street name (required for print orders)
+ * @property string|null               $shipping_street_number   Shipping address street number
+ * @property string|null               $shipping_additional_info Additional shipping address info
+ * @property string|null               $shipping_city            Shipping address city (required for print orders)
+ * @property string|null               $shipping_post_code       Shipping address post code (required for print orders)
+ * @property string|null               $shipping_country         Shipping address country (required for print orders)
+ * @property User|null                 $user                     Associated user account (null for guest purchases)
+ * @property Collection<int,OrderItem> $items                    Collection of items purchased in this order
  *
  * @see OrderItem Individual items within the order
  * @see PaymentStatusType Order status enumeration
@@ -79,6 +85,12 @@ class Order extends Model
 		'amount_cents',
 		'paid_at',
 		'comment',
+		'shipping_street_name',
+		'shipping_street_number',
+		'shipping_additional_info',
+		'shipping_city',
+		'shipping_post_code',
+		'shipping_country',
 	];
 
 	/**
@@ -279,6 +291,8 @@ class Order extends Model
 	 * 3. Contact information requirements must be satisfied:
 	 *    - Email address is provided, OR
 	 *    - User is logged in AND order contains no FULL size variants
+	 * 4. When order contains print items, all required shipping address fields
+	 *    must be non-empty (street name, city, post code, country)
 	 *
 	 * The email requirement for FULL variants exists because these require
 	 * manual processing and delivery by the photographer, necessitating
@@ -298,16 +312,28 @@ class Order extends Model
 			return false;
 		}
 
-		// Email is set, we are fine.
+		// Email is set: identity requirement satisfied; fall through to check shipping below.
 		if ($this->email !== null && $this->email !== '') {
-			return true;
-		}
-
-		// We do not have a mail, so we cannot checkout if the order contains FULL size variants
-		if ($this->items()->where('size_variant_type', PurchasableSizeVariantType::FULL)->exists()) {
+			// intentional fall-through — shipping check applies regardless of email
+		} elseif ($this->items()->where('size_variant_type', PurchasableSizeVariantType::FULL)->exists()) {
+			// We do not have a mail, so we cannot checkout if the order contains FULL size variants
+			return false;
+		} elseif ($this->user_id === null) {
 			return false;
 		}
 
-		return $this->user_id !== null;
+		// If order contains print items, shipping address is required
+		if ($this->items()->where('is_print', true)->exists()) {
+			if (
+				$this->shipping_street_name === null || $this->shipping_street_name === '' ||
+				$this->shipping_city === null || $this->shipping_city === '' ||
+				$this->shipping_post_code === null || $this->shipping_post_code === '' ||
+				$this->shipping_country === null || $this->shipping_country === ''
+			) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 }

@@ -53,6 +53,9 @@ class ProcessImageJob implements ShouldQueue
 	public UserUploadTrustLevel $upload_trust_level;
 	public ?int $file_last_modified_time;
 	public ?bool $apply_watermark;
+	public ?string $expected_id;
+	public ?string $title;
+	public ?string $description;
 
 	/**
 	 * Create a new job instance.
@@ -62,6 +65,9 @@ class ProcessImageJob implements ShouldQueue
 		string|AbstractAlbum|null $abstract_album,
 		?int $file_last_modified_time,
 		?bool $apply_watermark = null,
+		?string $expected_id = null,
+		?string $title = null,
+		?string $description = null,
 	) {
 		$this->file_path = $file->getPath();
 		$this->original_base_name = $file->getOriginalBasename();
@@ -105,6 +111,10 @@ class ProcessImageJob implements ShouldQueue
 			$this->apply_watermark = $apply_watermark;
 		}
 
+		$this->expected_id = $expected_id;
+		$this->title = $title;
+		$this->description = $description;
+
 		// Set up our new history record.
 		$this->history = new JobHistory();
 		$this->history->owner_id = $this->user_id;
@@ -139,6 +149,9 @@ class ProcessImageJob implements ShouldQueue
 			),
 			intended_owner_id: $this->user_id,
 			upload_trust_level: $this->upload_trust_level,
+			title: $this->title,
+			description: $this->description,
+			preallocated_id: $this->expected_id,
 		);
 
 		$album = null;
