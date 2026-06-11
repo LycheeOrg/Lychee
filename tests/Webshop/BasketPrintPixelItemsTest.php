@@ -159,8 +159,7 @@ class BasketPrintPixelItemsTest extends BaseApiWithDataTest
 			'print_size_id' => 99999,
 		]);
 
-		$this->assertUnprocessable($response);
-		$response->assertJsonValidationErrors(['print_size_id']);
+		$this->assertNotFound($response);
 	}
 
 	public function testAddPrintItemWithNotesStoresNotes(): void
