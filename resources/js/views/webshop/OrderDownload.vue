@@ -123,14 +123,27 @@
 								</div>
 								<div v-if="showInput(item)" class="grow max-w-1/2">
 									<InputText
-										:placeholder="item.is_print ? $t('webshop.orderDownload.enterTrackingUrl') : $t('webshop.orderDownload.enterContentUrl')"
+										:placeholder="
+											item.is_print ? $t('webshop.orderDownload.enterTrackingUrl') : $t('webshop.orderDownload.enterContentUrl')
+										"
 										class="w-full text-left"
 										@update:modelValue="(v) => updateItemLink({ id: item.id, download_link: v ?? '' })"
 									/>
 								</div>
 								<template v-else-if="item.content_url">
-									<a v-if="item.is_print && item.content_url.startsWith('http')" :href="item.content_url" target="_blank" rel="noopener noreferrer">
-										<Button icon="pi pi-truck" :label="$t('webshop.orderDownload.trackShipment')" size="small" class="border-0" severity="primary" />
+									<a
+										v-if="item.is_print && item.content_url.startsWith('http')"
+										:href="item.content_url"
+										target="_blank"
+										rel="noopener noreferrer"
+									>
+										<Button
+											icon="pi pi-truck"
+											:label="$t('webshop.orderDownload.trackShipment')"
+											size="small"
+											class="border-0"
+											severity="primary"
+										/>
 									</a>
 									<div v-else-if="item.is_print" class="flex items-center gap-2 text-sm text-muted-color">
 										<i class="pi pi-truck" />
@@ -147,7 +160,11 @@
 									/>
 								</template>
 								<div v-else class="mt-1 text-sm text-muted-color">
-									{{ item.is_print ? $t("webshop.orderDownload.awaitingShipment") : $t("webshop.orderDownload.downloadNotAvailable") }}
+									{{
+										item.is_print
+											? $t("webshop.orderDownload.awaitingShipment")
+											: $t("webshop.orderDownload.downloadNotAvailable")
+									}}
 								</div>
 							</div>
 							<div class="text-right">
