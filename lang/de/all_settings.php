@@ -1,13 +1,11 @@
 <?php
-
 return [
-    /*
+    'documentation' => [
+        /*
     |--------------------------------------------------------------------------
     | All Settings
     |--------------------------------------------------------------------------
     */
-
-    'documentation' => [
         'version' => 'Aktuelle Version von Lychee',
         'check_for_updates' => 'Automatisch auf Aktualisierungen prüfen',
         'sorting_photos_col' => 'Standardspalte für die Fotosortierung',
@@ -708,7 +706,7 @@ return [
         'Users Management' => 'Benutzerverwaltung',
         'Admin' => 'Administrator',
         'access_permissions' => 'Berechtigungen',
-        'Mod Flow' => 'Flow',
+        'Mod Flow' => 'Fluss',
         'gestures' => 'Gesten',
         'Mod Watermarker' => 'Wasserzeichen',
         'Mod Renamer' => 'Umbenennungsregeln',

@@ -24,6 +24,12 @@ class AutoRenamer implements StandalonePipe
 {
 	public function handle(StandaloneDTO $state, \Closure $next): StandaloneDTO
 	{
+		// Skip if the caller explicitly provided a title at upload time (FR-041-06).
+		// User-supplied titles take precedence and must not be overwritten by renamer rules.
+		if ($state->title !== null) {
+			return $next($state);
+		}
+
 		// Skip if not enabled.
 		if (!$state->shall_rename_photo_title) {
 			return $next($state);

@@ -18,6 +18,7 @@
 
 namespace Tests\Feature_v2\Photo;
 
+use App\Models\AccessPermission;
 use App\Models\Album;
 use App\Models\Photo;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
@@ -103,5 +104,27 @@ class GetPhotoAlbumsTest extends BaseApiWithDataTest
 
 		$response->assertJsonCount(0);
 		$response->assertExactJson([]);
+	}
+
+	/**
+	 * S-018-08: Hidden (link-required) albums are not shown to non-owners.
+	 *
+	 * Regression test for https://github.com/LycheeOrg/Lychee/discussions/4355
+	 */
+	public function testHiddenAlbumNotShownToNonOwner(): void
+	{
+		// photo4 is in album4 (public+visible). Also place it in a new hidden album.
+		$hiddenAlbum = Album::factory()->as_root()->owned_by($this->userLocked)->create();
+		// Public permission with is_link_required=true (hidden from listings)
+		AccessPermission::factory()->public()->for_album($hiddenAlbum)->create();
+		$this->photo4->albums()->syncWithoutDetaching([$hiddenAlbum->id]);
+
+		// A guest user should only see album4 (the visible one), NOT the hidden album
+		$response = $this->getJson('Photo/' . $this->photo4->id . '/albums');
+		$this->assertOk($response);
+
+		$response->assertJsonCount(1);
+		$response->assertJsonFragment(['id' => $this->album4->id]);
+		$response->assertJsonMissing(['id' => $hiddenAlbum->id]);
 	}
 }

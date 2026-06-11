@@ -1,5 +1,4 @@
 <?php
-
 return [
     /*
     |--------------------------------------------------------------------------
@@ -8,6 +7,6 @@ return [
     */
     'error' => 'Error',
     'success' => 'Éxito',
-    'album_updated' => 'Album updated',
-    'update_failed' => 'Failed to update album',
+    'album_updated' => 'Álbum actualizado',
+    'update_failed' => 'Error al actualizar el álbum',
 ];

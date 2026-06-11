@@ -1,7 +1,7 @@
 <template>
 	<LoadingProgress v-model:loading="timelineStore.isLoading" />
-	<LoginModal v-if="userStore.isGuest" @logged-in="refresh" />
-	<WebauthnModal v-if="userStore.isGuest" @logged-in="refresh" />
+	<LoginModal v-if="userStore.isGuest" @logged-in="onLoggedIn" />
+	<WebauthnModal v-if="userStore.isGuest" @logged-in="onLoggedIn" />
 	<CameraCapture v-if="timelineStore.rootRights?.can_upload" key="camera_capture_modal" />
 
 	<div v-if="timelineStore.rootConfig && timelineStore.rootRights" class="h-svh overflow-y-auto" id="scrollArea">
@@ -311,6 +311,11 @@ function goBack() {
 	}
 }
 
+async function onLoggedIn() {
+	await refresh();
+	advisoryCheck();
+}
+
 async function refresh() {
 	await timelineStore.load();
 	if (timelineStore.isTimelineEnabled !== true) {
@@ -318,7 +323,6 @@ async function refresh() {
 		router.push({ name: "gallery" });
 	}
 	await Promise.allSettled([layoutStore.load(), userStore.load(), timelineStore.loadDates()]);
-	advisoryCheck();
 	await timelineStore.initialLoad(props.date ?? "", props.photoId);
 	await nextTick();
 	scrollToDate(props.date ?? "");

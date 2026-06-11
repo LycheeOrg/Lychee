@@ -43,7 +43,7 @@ class RootConfig extends Data
 	{
 		$is_logged_in = Auth::check();
 
-		$timeline_albums_enabled = request()->configs()->getValueAsBool('timeline_albums_enabled');
+		$timeline_albums_enabled = request()->configs()->getValueAsBool('timeline_albums_root_enabled');
 		$timeline_albums_public = request()->configs()->getValueAsBool('timeline_albums_public');
 		$this->is_album_timeline_enabled = $timeline_albums_enabled && ($is_logged_in || $timeline_albums_public);
 		$this->timeline_album_granularity = request()->configs()->getValueAsEnum('timeline_albums_granularity', TimelineAlbumGranularity::class);

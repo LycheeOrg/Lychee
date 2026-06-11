@@ -49,9 +49,15 @@ This document tracks modules, dependencies, and architectural relationships acro
   - **Import Actions** (`app/Actions/Import/`) - CLI sync and import pipeline
     - `Exec::do(string $path, ?Album $parent_album)` — tree-based directory import (BuildTree pipe chain)
     - `Exec::doFiles(array $file_paths, ?Album $parent_album)` — direct file import, bypasses tree-based album creation (Feature 024)
+  - **Photo Upload Pipes** (`app/Actions/Photo/Pipes/Standalone/`) - Per-photo processing stages
+    - `ApplyUserProvidedMetadata` — assigns caller-supplied `title`/`description` to the `Photo` model before `HydrateMetadata` runs; no-op when fields are null (Feature 041)
+    - `AutoRenamer` — applies user-configured renaming rules; skips when `StandaloneDTO::$title` is non-null (Feature 041)
 - **DTOs** (`app/DTO/`) - Data transfer objects (Spatie Data)
   - **LdapConfiguration** (`app/DTO/LdapConfiguration.php`) - Validates LDAP environment variables
   - **LdapUser** (`app/DTO/LdapUser.php`) - LDAP authentication result (username, userDn, email, display_name)
+  - **ImportParam** (`app/DTO/ImportParam.php`) - Upload strategy parameters; includes `title`, `description`, `preallocated_id` (Feature 041)
+  - **InitDTO / StandaloneDTO** (`app/DTO/PhotoCreate/`) - DTO chain for photo creation; carry `title`, `description`, `preallocated_id` through the pipeline (Feature 041)
+- **HTTP Resources** (`app/Http/Resources/Editable/UploadMetaResource.php`) - Upload response DTO; includes `expected_id`, `title`, `description` (Feature 041)
 - **Enums** (`app/Enum/`) - Type-safe enumeration classes
 
 #### Infrastructure Layer
