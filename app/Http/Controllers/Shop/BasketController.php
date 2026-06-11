@@ -14,6 +14,8 @@ use App\Exceptions\Shop\BasketDeletionFailedException;
 use App\Exceptions\Shop\OrderIsNotPendingException;
 use App\Http\Requests\Basket\AddAlbumToBasketRequest;
 use App\Http\Requests\Basket\AddPhotoToBasketRequest;
+use App\Http\Requests\Basket\AddPixelItemRequest;
+use App\Http\Requests\Basket\AddPrintItemRequest;
 use App\Http\Requests\Basket\DeleteBasketRequest;
 use App\Http\Requests\Basket\DeleteItemRequest;
 use App\Http\Requests\Basket\GetBasketRequest;
@@ -71,6 +73,51 @@ class BasketController extends Controller
 			$request->license_type,
 			$request->notes,
 			$request->include_subalbums
+		);
+
+		return OrderResource::fromModel($basket);
+	}
+
+	/**
+	 * Add a photo to the basket as a physical print item.
+	 *
+	 * @param AddPrintItemRequest $request
+	 *
+	 * @return OrderResource
+	 */
+	public function addPrintItem(AddPrintItemRequest $request): OrderResource
+	{
+		$basket = $request->basket();
+
+		$basket = $this->basket_service->addPrintItemToBasket(
+			$basket,
+			$request->photo,
+			$request->album_id,
+			$request->print_size,
+			$request->notes
+		);
+
+		return OrderResource::fromModel($basket);
+	}
+
+	/**
+	 * Add a photo to the basket as a custom pixel-size digital download.
+	 *
+	 * @param AddPixelItemRequest $request
+	 *
+	 * @return OrderResource
+	 */
+	public function addPixelItem(AddPixelItemRequest $request): OrderResource
+	{
+		$basket = $request->basket();
+
+		$basket = $this->basket_service->addPixelItemToBasket(
+			$basket,
+			$request->photo,
+			$request->album_id,
+			$request->pixel_size,
+			$request->license_type,
+			$request->notes
 		);
 
 		return OrderResource::fromModel($basket);

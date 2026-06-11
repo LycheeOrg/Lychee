@@ -262,3 +262,9 @@ input:checked ~ .checkbox svg {
 	-webkit-filter: blur(5px);
 	filter: blur(5px);
 }
+
+.p-inputnumber-input {
+	border-top: 0 !important;
+	border-left: 0 !important;
+	border-right: 0 !important;
+}

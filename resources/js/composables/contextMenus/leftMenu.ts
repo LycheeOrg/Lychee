@@ -175,6 +175,12 @@ export function useLeftMenu(
 									access: (initData.value.modules.is_mod_webshop_enabled ?? false) && (initData.value.settings.can_edit ?? false),
 								},
 								{
+									label: "left-menu.shopSizes",
+									icon: "pi pi-expand",
+									route: "/admin/shop/sizes",
+									access: (initData.value.modules.is_mod_webshop_enabled ?? false) && (initData.value.settings.can_edit ?? false),
+								},
+								{
 									label: "left-menu.messages",
 									icon: "pi pi-inbox",
 									route: "/admin/contact-messages",

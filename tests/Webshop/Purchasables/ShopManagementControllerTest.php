@@ -400,7 +400,7 @@ class ShopManagementControllerTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->admin)->postJson('Shop/Management/Purchasable/Album', []);
 
 		$this->assertUnprocessable($response);
-		$response->assertJsonValidationErrors(['album_ids', 'prices', 'applies_to_subalbums']);
+		$response->assertJsonValidationErrors(['album_ids', 'applies_to_subalbums']);
 
 		// Test invalid album ID
 		$response = $this->actingAs($this->admin)->postJson('Shop/Management/Purchasable/Album', [
@@ -432,7 +432,7 @@ class ShopManagementControllerTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->admin)->putJson('Shop/Management/Purchasable/Price', []);
 
 		$this->assertUnprocessable($response);
-		$response->assertJsonValidationErrors(['purchasable_id', 'prices']);
+		$response->assertJsonValidationErrors(['purchasable_id']);
 
 		// Test invalid purchasable ID
 		$response = $this->actingAs($this->admin)->putJson('Shop/Management/Purchasable/Price', [

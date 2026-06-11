@@ -22,4 +22,5 @@ enum PurchasableLicenseType: string
 	case PERSONAL = 'personal';
 	case COMMERCIAL = 'commercial';
 	case EXTENDED = 'extended';
+	case PRINT = 'print';
 }

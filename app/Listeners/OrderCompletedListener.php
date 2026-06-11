@@ -162,6 +162,12 @@ class OrderCompletedListener
 				continue;
 			}
 
+			// Print and pixel items require the admin to provide a download_link manually
+			if ($item->is_print || $item->pixel_size_id !== null) {
+				$all_items_delivered = false;
+				continue;
+			}
+
 			// Map the purchased size variant type to the actual photo size variant
 			// FULL variants return null as they require manual photographer processing
 			$variant = match ($item->size_variant_type) {

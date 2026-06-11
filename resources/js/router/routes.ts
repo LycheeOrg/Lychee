@@ -28,6 +28,7 @@ const TagsManagement = () => import("@/views/TagsManagement.vue");
 const Tag = () => import("@/views/gallery-panels/Tag.vue");
 const RenamerRules = () => import("@/views/RenamerRules.vue");
 const Purchasables = () => import("@/views/admin/Purchasables.vue");
+const PrintPixelSizesAdmin = () => import("@/views/admin/shop/PrintPixelSizesAdmin.vue");
 const Contact = () => import("@/views/Contact.vue");
 const ContactMessages = () => import("@/views/admin/ContactMessages.vue");
 const Webhooks = () => import("@/views/admin/Webhooks.vue");
@@ -222,6 +223,11 @@ const routes_ = [
 		name: "purchasables",
 		path: "/admin/purchasables",
 		component: Purchasables,
+	},
+	{
+		name: "shop-sizes",
+		path: "/admin/shop/sizes",
+		component: PrintPixelSizesAdmin,
 	},
 	{
 		name: "admin-dashboard",
