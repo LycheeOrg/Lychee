@@ -114,8 +114,4 @@ features/
 
 ---
 
-<<<<<<< HEAD
-*Last updated: 2026-05-31 (Feature 042 expanded — Photo Display Enrichment, merged from former Feature 043)*
-=======
 *Last updated: 2026-05-31 (Feature 041 complete — Upload Photo Metadata)*
->>>>>>> master
