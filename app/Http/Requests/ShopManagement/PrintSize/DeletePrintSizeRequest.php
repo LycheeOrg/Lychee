@@ -8,8 +8,10 @@
 
 namespace App\Http\Requests\ShopManagement\PrintSize;
 
+use App\Exceptions\Internal\LycheeLogicException;
 use App\Http\Requests\BaseApiRequest;
 use App\Models\PrintSize;
+use App\Models\PurchasablePrintSize;
 use Illuminate\Support\Facades\Auth;
 
 class DeletePrintSizeRequest extends BaseApiRequest
@@ -46,5 +48,9 @@ class DeletePrintSizeRequest extends BaseApiRequest
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		$this->print_size = PrintSize::findOrFail($values['print_size_id']);
+
+		if (PurchasablePrintSize::where('print_size_id', $this->print_size->id)->exists()) {
+			throw new LycheeLogicException('Cannot delete a print size that is still assigned to purchasable items');
+		}
 	}
 }

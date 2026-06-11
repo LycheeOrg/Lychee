@@ -8,8 +8,10 @@
 
 namespace App\Http\Requests\ShopManagement\PixelSize;
 
+use App\Exceptions\Internal\LycheeLogicException;
 use App\Http\Requests\BaseApiRequest;
 use App\Models\PixelSize;
+use App\Models\PurchasablePixelSize;
 use Illuminate\Support\Facades\Auth;
 
 class DeletePixelSizeRequest extends BaseApiRequest
@@ -46,5 +48,9 @@ class DeletePixelSizeRequest extends BaseApiRequest
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		$this->pixel_size = PixelSize::findOrFail($values['pixel_size_id']);
+
+		if (PurchasablePixelSize::where('pixel_size_id', $this->pixel_size->id)->exists()) {
+			throw new LycheeLogicException('Cannot delete a pixel size that is still assigned to purchasable items');
+		}
 	}
 }

@@ -124,15 +124,23 @@ const deletingPrintSize = ref<App.Http.Resources.Shop.PrintSizeResource | null>(
 const deletingPixelSize = ref<App.Http.Resources.Shop.PixelSizeResource | null>(null);
 
 function loadPrintSizes() {
-	ShopManagementService.listPrintSizes().then((response) => {
-		printSizes.value = response.data;
-	});
+	ShopManagementService.listPrintSizes()
+		.then((response) => {
+			printSizes.value = response.data;
+		})
+		.catch(() => {
+			printSizes.value = [];
+		});
 }
 
 function loadPixelSizes() {
-	ShopManagementService.listPixelSizes().then((response) => {
-		pixelSizes.value = response.data;
-	});
+	ShopManagementService.listPixelSizes()
+		.then((response) => {
+			pixelSizes.value = response.data;
+		})
+		.catch(() => {
+			pixelSizes.value = [];
+		});
 }
 
 function openCreatePrintDialog() {

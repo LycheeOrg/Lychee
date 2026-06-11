@@ -93,7 +93,7 @@ class PurchasableAlbumRequest extends BaseApiRequest implements HasAlbums, HasDe
 
 		$this->prices = [];
 		$price_combinations = [];
-		foreach ($values[RequestAttribute::PRICES_ATTRIBUTE] as $price) {
+		foreach ($values[RequestAttribute::PRICES_ATTRIBUTE] ?? [] as $price) {
 			$combination_key = $price['size_variant_type'] . '_' . $price['license_type'];
 			if (isset($price_combinations[$combination_key])) {
 				continue;

@@ -75,7 +75,7 @@ class PrintSizeManagementController extends Controller
 
 	/**
 	 * Delete a print size from the global catalogue.
-	 * Existing purchasable_print_sizes rows and order item snapshots are preserved.
+	 * Blocked when any purchasable_print_sizes assignments still reference this size.
 	 *
 	 * @param DeletePrintSizeRequest $request
 	 *

@@ -291,7 +291,6 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 **Resolved:** 2026-05-31  
 
 **Resolution:** All new routes use the existing `support:pro` middleware group, consistent with the rest of the webshop. Captured in FR-043-20 in the spec.
-=======
 
 ### ✅ Q-041-01 · Frontend scope: session doc lists I4 but spec/plan/tasks exclude frontend
 

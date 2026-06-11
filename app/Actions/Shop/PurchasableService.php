@@ -313,17 +313,19 @@ class PurchasableService
 	 */
 	public function syncPrintSizes(Purchasable $purchasable, array $print_size_assignments): Purchasable
 	{
-		$purchasable->printSizes()->delete();
+		return DB::transaction(function () use ($purchasable, $print_size_assignments): Purchasable {
+			$purchasable->printSizes()->delete();
 
-		foreach ($print_size_assignments as $assignment) {
-			PurchasablePrintSize::create([
-				'purchasable_id' => $purchasable->id,
-				'print_size_id' => $assignment->print_size_id,
-				'price_cents' => $assignment->price,
-			]);
-		}
+			foreach ($print_size_assignments as $assignment) {
+				PurchasablePrintSize::create([
+					'purchasable_id' => $purchasable->id,
+					'print_size_id' => $assignment->print_size_id,
+					'price_cents' => $assignment->price,
+				]);
+			}
 
-		return $purchasable;
+			return $purchasable;
+		});
 	}
 
 	/**
@@ -338,17 +340,19 @@ class PurchasableService
 	 */
 	public function syncPixelSizes(Purchasable $purchasable, array $pixel_size_assignments): Purchasable
 	{
-		$purchasable->pixelSizes()->delete();
+		return DB::transaction(function () use ($purchasable, $pixel_size_assignments): Purchasable {
+			$purchasable->pixelSizes()->delete();
 
-		foreach ($pixel_size_assignments as $assignment) {
-			PurchasablePixelSize::create([
-				'purchasable_id' => $purchasable->id,
-				'pixel_size_id' => $assignment->pixel_size_id,
-				'price_cents' => $assignment->price,
-				'license_type' => $assignment->license_type,
-			]);
-		}
+			foreach ($pixel_size_assignments as $assignment) {
+				PurchasablePixelSize::create([
+					'purchasable_id' => $purchasable->id,
+					'pixel_size_id' => $assignment->pixel_size_id,
+					'price_cents' => $assignment->price,
+					'license_type' => $assignment->license_type,
+				]);
+			}
 
-		return $purchasable;
+			return $purchasable;
+		});
 	}
 }

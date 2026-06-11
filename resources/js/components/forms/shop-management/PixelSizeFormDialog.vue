@@ -41,7 +41,7 @@
 					<Button
 						class="w-full font-bold border-none rounded-none ltr:rounded-br-xl rtl:rounded-bl-xl shrink"
 						@click="save"
-						:disabled="!canSumbit"
+						:disabled="!canSubmit"
 					>
 						{{ $t("dialogs.button.save") }}
 					</Button>
@@ -75,7 +75,7 @@ const toast = useToast();
 const defaultForm = () => ({ label: "", width: 1920, height: 1080, is_active: true });
 const form = ref(defaultForm());
 
-const canSumbit = computed(() => form.value.label.trim() !== "" && form.value.width > 0 && form.value.height > 0);
+const canSubmit = computed(() => form.value.label.trim() !== "" && form.value.width > 0 && form.value.height > 0);
 
 function save() {
 	const promise = props.editingSize

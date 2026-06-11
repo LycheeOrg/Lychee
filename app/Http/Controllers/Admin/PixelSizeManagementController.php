@@ -71,7 +71,7 @@ class PixelSizeManagementController extends Controller
 
 	/**
 	 * Delete a pixel size from the global catalogue.
-	 * Existing purchasable_pixel_sizes rows and order item snapshots are preserved.
+	 * Blocked when any purchasable_pixel_sizes assignments still reference this size.
 	 *
 	 * @param DeletePixelSizeRequest $request
 	 *

@@ -48,7 +48,7 @@ class CreateSessionRequest extends BaseApiRequest implements HasBasket
 			'shipping_additional_info' => ['sometimes', 'nullable', 'string', 'max:255'],
 			'shipping_city' => ['sometimes', 'nullable', 'string', 'max:255'],
 			'shipping_post_code' => ['sometimes', 'nullable', 'string', 'max:20'],
-			'shipping_country' => ['sometimes', 'nullable', 'string', 'max:2'],
+			'shipping_country' => ['sometimes', 'nullable', 'string', 'size:2'],
 		];
 	}
 
