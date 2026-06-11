@@ -6,11 +6,18 @@ import { ref } from "vue";
 import { trans } from "laravel-vue-i18n";
 import { sprintf } from "sprintf-js";
 import { PhotosStore } from "@/stores/PhotosState";
+import WebshopService from "@/services/webshop-service";
 
 const buyablePhotoId = ref<string | undefined>(undefined);
 const buyableAlbumId = ref<string | undefined>(undefined);
 const prices = ref<App.Http.Resources.Shop.PriceResource[]>([]);
 const showBuyMeDialog = ref(false);
+
+// Print/pixel sizes fetched from the catalogue endpoint
+const printSizes = ref<App.Http.Resources.Shop.PurchasablePrintSizeResource[]>([]);
+const pixelSizes = ref<App.Http.Resources.Shop.PurchasablePixelSizeResource[]>([]);
+// Selected item type: 'digital' | 'print' | 'pixel'
+const buyMeItemType = ref<"digital" | "print" | "pixel">("digital");
 
 export function useBuyMeActions(
 	albumStore: AlbumStore,
@@ -45,18 +52,38 @@ export function useBuyMeActions(
 
 		// Filter out the options which do not exists on the photo
 		const pricesOptions = getPricesOptionsForPhoto(photoToAdd);
-		if (pricesOptions.length === 0) {
+
+		// Fetch print/pixel catalogue sizes for the purchasable
+		const purchasable = catalogStore.catalog?.album_purchasable;
+		if (purchasable?.purchasable_id !== undefined) {
+			try {
+				const sizesResponse = await WebshopService.Catalog.getCatalogueSizes(purchasable.purchasable_id);
+				printSizes.value = sizesResponse.data.print_sizes ?? [];
+				pixelSizes.value = sizesResponse.data.pixel_sizes ?? [];
+			} catch {
+				printSizes.value = [];
+				pixelSizes.value = [];
+			}
+		} else {
+			printSizes.value = [];
+			pixelSizes.value = [];
+		}
+
+		const hasSizeVariants = pricesOptions.length > 0;
+		const hasPrintSizes = printSizes.value.length > 0;
+		const hasPixelSizes = pixelSizes.value.length > 0;
+
+		if (!hasSizeVariants && !hasPrintSizes && !hasPixelSizes) {
 			// Nothing is buyable
 			return;
 		}
 
-		// Now we now we must add it.
+		// Now we know we must add it
 		buyablePhotoId.value = idx;
 		buyableAlbumId.value = albumStore.modelAlbum.id;
-		// Either there is only 1 option in the catalog, if so we take that one
-		// For now we focus only on album purchasable
-		// Later we want to also check if the photo is purchasable individually
-		if (pricesOptions.length === 1) {
+
+		// If exactly one digital price and no print/pixel options, add directly
+		if (pricesOptions.length === 1 && !hasPrintSizes && !hasPixelSizes) {
 			const sizeVariant = pricesOptions[0].size_variant;
 			const licenseType = pricesOptions[0].license_type;
 			addPhotoToOrder(sizeVariant, licenseType);
@@ -64,8 +91,9 @@ export function useBuyMeActions(
 			return;
 		}
 
-		// If we are here, we have multiple options, so we need to ask the user
+		// Multiple options or print/pixel options — show dialog
 		prices.value = pricesOptions;
+		buyMeItemType.value = hasSizeVariants ? "digital" : hasPrintSizes ? "print" : "pixel";
 		showBuyMeDialog.value = true;
 	}
 
@@ -108,11 +136,57 @@ export function useBuyMeActions(
 			.finally(resetBuyMeDialog);
 	}
 
+	function addPrintPhotoToOrder(printSizeId: number, price: string) {
+		showBuyMeDialog.value = false;
+
+		if (buyablePhotoId.value === undefined) {
+			return;
+		}
+
+		const photo = photosStore.photos.find((p) => p.id === buyablePhotoId.value);
+
+		orderManagement
+			.addPrintPhoto({
+				photo_id: buyablePhotoId.value,
+				album_id: buyableAlbumId.value,
+				print_size_id: printSizeId,
+			})
+			.then(() => {
+				notify(photo?.title ?? "", price);
+			})
+			.finally(resetBuyMeDialog);
+	}
+
+	function addPixelPhotoToOrder(pixelSizeId: number, licenseType: App.Enum.PurchasableLicenseType, price: string) {
+		showBuyMeDialog.value = false;
+
+		if (buyablePhotoId.value === undefined) {
+			return;
+		}
+
+		const photo = photosStore.photos.find((p) => p.id === buyablePhotoId.value);
+
+		orderManagement
+			.addPixelPhoto({
+				photo_id: buyablePhotoId.value,
+				album_id: buyableAlbumId.value,
+				pixel_size_id: pixelSizeId,
+				license_type: licenseType,
+			})
+			.then(() => {
+				notify(photo?.title ?? "", price);
+			})
+			.finally(resetBuyMeDialog);
+	}
+
 	function resetBuyMeDialog() {
 		buyablePhotoId.value = undefined;
 		buyableAlbumId.value = undefined;
 		prices.value = [];
+		printSizes.value = [];
+		pixelSizes.value = [];
 		showBuyMeDialog.value = false;
+		buyMeItemType.value = "digital";
 	}
 
 	function getPricesOptionsForPhoto(
@@ -147,8 +221,13 @@ export function useBuyMeActions(
 		buyableAlbumId,
 		buyablePhotoId,
 		prices,
+		printSizes,
+		pixelSizes,
+		buyMeItemType,
 		toggleBuyMe,
 		addPhotoToOrder,
+		addPrintPhotoToOrder,
+		addPixelPhotoToOrder,
 		resetBuyMeDialog,
 		getPricesOptionsForPhoto,
 	};

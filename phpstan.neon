@@ -29,6 +29,7 @@ parameters:
 		- '#Dynamic call to static method Illuminate\\.*#'
 		- '#Dynamic call to static method App\\Models\\Builders.*#'
 		- '#Dynamic call to static method App\\Eloquent\\FixedQueryBuilder.*#'
+		- '#Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition::after\(\).#'
 		- '#.*stdClass>#'
 		- '#.*contravariant.*#'
 		-

@@ -137,7 +137,7 @@ declare namespace App.Enum {
 	export type PhotoLayoutType = "square" | "justified" | "masonry" | "grid";
 	export type PhotoThumbInfoType = "title" | "description";
 	export type PhotoWebhookEvent = "photo.add" | "photo.move" | "photo.delete";
-	export type PurchasableLicenseType = "personal" | "commercial" | "extended";
+	export type PurchasableLicenseType = "personal" | "commercial" | "extended" | "print";
 	export type PurchasableSizeVariantType = "medium" | "medium2x" | "original" | "full";
 	export type RenamerModeType = "first" | "all" | "regex" | "trim" | "strtolower" | "strtoupper" | "ucwords" | "ucfirst";
 	export type SeverityType = "emergency" | "alert" | "critical" | "error" | "warning" | "notice" | "info" | "debug";
@@ -372,6 +372,9 @@ declare namespace App.Http.Resources.Editable {
 		stage: App.Enum.FileStatus;
 		chunk_number: number;
 		total_chunks: number;
+		expected_id: string | null;
+		title: string | null;
+		description: string | null;
 	};
 }
 declare namespace App.Http.Resources.Embed {
@@ -546,9 +549,9 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		rating_photo_view_mode: App.Enum.VisibilityType;
 		is_rating_show_avg_in_album_view_enabled: boolean;
 		rating_album_view_mode: App.Enum.VisibilityType;
+		is_embed_enabled: boolean;
 		default_homepage: string;
 		is_timeline_page_enabled: boolean;
-		is_embed_enabled: boolean;
 		is_contact_form_enabled: boolean;
 		photos_pagination_mode: App.Enum.PaginationMode;
 		albums_pagination_mode: App.Enum.PaginationMode;
@@ -1144,6 +1147,10 @@ declare namespace App.Http.Resources.Shop {
 		children_purchasables: App.Http.Resources.Shop.PurchasableResource[];
 		photo_purchasables: App.Http.Resources.Shop.PurchasableResource[];
 	};
+	export type CatalogueSizesResource = {
+		print_sizes: Array<App.Http.Resources.Shop.PurchasablePrintSizeResource>;
+		pixel_sizes: Array<App.Http.Resources.Shop.PurchasablePixelSizeResource>;
+	};
 	export type CheckoutOptionResource = {
 		currency: string;
 		allow_guest_checkout: boolean;
@@ -1179,6 +1186,8 @@ declare namespace App.Http.Resources.Shop {
 		photo_title: string | null;
 		photo_url: string | null;
 		prices: App.Http.Resources.Shop.PriceResource[] | null;
+		print_sizes: App.Http.Resources.Shop.PurchasablePrintSizeResource[];
+		pixel_sizes: App.Http.Resources.Shop.PurchasablePixelSizeResource[];
 		owner_notes: string | null;
 		description: string | null;
 		is_active: boolean;
@@ -1195,6 +1204,15 @@ declare namespace App.Http.Resources.Shop {
 		size_variant_type: App.Enum.PurchasableSizeVariantType;
 		item_notes: string | null;
 		content_url: string | null;
+		is_print: boolean;
+		print_size_id: number | null;
+		print_width: number | null;
+		print_height: number | null;
+		print_unit: string | null;
+		print_paper_type: string | null;
+		pixel_size_id: number | null;
+		pixel_width: number | null;
+		pixel_height: number | null;
 	};
 	export type OrderResource = {
 		id: number;
@@ -1210,10 +1228,53 @@ declare namespace App.Http.Resources.Shop {
 		comment: string | null;
 		items: App.Http.Resources.Shop.OrderItemResource[] | null;
 		can_process_payment: boolean;
+		shipping_street_name: string | null;
+		shipping_street_number: string | null;
+		shipping_additional_info: string | null;
+		shipping_city: string | null;
+		shipping_post_code: string | null;
+		shipping_country: string | null;
+	};
+	export type PixelSizeResource = {
+		id: number;
+		label: string;
+		width: number;
+		height: number;
+		is_active: boolean;
 	};
 	export type PriceResource = {
 		size_variant: App.Enum.PurchasableSizeVariantType;
 		license_type: App.Enum.PurchasableLicenseType;
+		price: string;
+		price_cents: number;
+	};
+	export type PrintSizeResource = {
+		id: number;
+		label: string;
+		width: number;
+		height: number;
+		unit: string;
+		paper_type: string | null;
+		is_active: boolean;
+	};
+	export type PurchasablePixelSizeResource = {
+		id: number;
+		pixel_size_id: number;
+		label: string;
+		width: number;
+		height: number;
+		price: string;
+		price_cents: number;
+		license_type: App.Enum.PurchasableLicenseType;
+	};
+	export type PurchasablePrintSizeResource = {
+		id: number;
+		print_size_id: number;
+		label: string;
+		width: number;
+		height: number;
+		unit: string;
+		paper_type: string | null;
 		price: string;
 		price_cents: number;
 	};

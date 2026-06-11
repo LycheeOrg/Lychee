@@ -72,6 +72,7 @@ Route::get('/register', VueController::class)->name('register')->middleware(['mi
 Route::get('/bulk-album-edit', VueController::class)->middleware(['migration:complete', 'login_required:always']);
 Route::get('/admin', VueController::class)->middleware(['migration:complete', 'login_required:always']);
 Route::get('/admin/settings/{tab?}', VueController::class)->middleware(['migration:complete', 'login_required:always']);
+Route::get('admin/shop/sizes', VueController::class)->middleware(['migration:complete', 'login_required:always']);
 Route::get('/admin/users', VueController::class)->middleware(['migration:complete', 'login_required:always']);
 Route::get('/admin/user-groups', VueController::class)->middleware(['migration:complete', 'login_required:always']);
 Route::get('/admin/contact-messages', VueController::class)->middleware(['migration:complete', 'login_required:always']);

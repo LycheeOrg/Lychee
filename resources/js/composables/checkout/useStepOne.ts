@@ -9,6 +9,13 @@ const options = ref<undefined | App.Http.Resources.Shop.CheckoutOptionResource>(
 const consentGiven = ref(false);
 const errors = ref<Record<string, string | undefined>>({});
 
+const shippingStreetName = ref<string>("");
+const shippingStreetNumber = ref<string>("");
+const shippingAdditionalInfo = ref<string>("");
+const shippingCity = ref<string>("");
+const shippingPostCode = ref<string>("");
+const shippingCountry = ref<string>("");
+
 export function useStepOne(userStore: UserStore, orderManagementStore: OrderManagementStateStore) {
 	function loadCheckoutOptions(): Promise<void> {
 		return WebshopService.Checkout.getOptions().then((response) => {
@@ -31,6 +38,13 @@ export function useStepOne(userStore: UserStore, orderManagementStore: OrderMana
 
 		if (!consentGiven.value) {
 			return false;
+		}
+
+		// When the basket contains print items, shipping address fields are required
+		if (orderManagementStore.hasPrintItems) {
+			if (!shippingStreetName.value || !shippingCity.value || !shippingPostCode.value || !shippingCountry.value) {
+				return false;
+			}
 		}
 
 		return true;
@@ -61,6 +75,12 @@ export function useStepOne(userStore: UserStore, orderManagementStore: OrderMana
 		email,
 		options,
 		consentGiven,
+		shippingStreetName,
+		shippingStreetNumber,
+		shippingAdditionalInfo,
+		shippingCity,
+		shippingPostCode,
+		shippingCountry,
 		validate,
 		loadCheckoutOptions,
 		loadEmailForUser,

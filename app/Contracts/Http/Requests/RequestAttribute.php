@@ -139,6 +139,8 @@ class RequestAttribute
 	public const BASKET_ID_ATTRIBUTE = 'basket_id';
 	public const TRANSACTION_ID_ATTRIBUTE = 'transaction_id';
 	public const PRICES_ATTRIBUTE = 'prices';
+	public const PRINT_SIZES_ATTRIBUTE = 'print_sizes';
+	public const PIXEL_SIZES_ATTRIBUTE = 'pixel_sizes';
 	public const SIZE_VARIANT_TYPE_ATTRIBUTE = 'size_variant_type';
 	public const LICENSE_TYPE_ATTRIBUTE = 'license_type';
 	public const IS_ACTIVE_ATTRIBUTE = 'is_active';

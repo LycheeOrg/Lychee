@@ -28,6 +28,8 @@ Route::middleware('support:pro')->group(function (): void {
 		Route::get('/', [Shop\BasketController::class, 'get']);
 		Route::post('/Photo', [Shop\BasketController::class, 'addPhoto']);
 		Route::post('/Album', [Shop\BasketController::class, 'addAlbum']);
+		Route::post('/Print', [Shop\BasketController::class, 'addPrintItem']);
+		Route::post('/Pixel', [Shop\BasketController::class, 'addPixelItem']);
 		Route::delete('/item', [Shop\BasketController::class, 'removeItem']);
 		Route::delete('/', [Shop\BasketController::class, 'delete']);
 	});
@@ -46,5 +48,14 @@ Route::middleware('support:pro')->group(function (): void {
 		Route::post('/Purchasable/Album', [Admin\ShopManagementController::class, 'setAlbumPurchasable']);
 		Route::put('/Purchasable/Price', [Admin\ShopManagementController::class, 'updatePurchasablePrices']);
 		Route::delete('/Purchasables', [Admin\ShopManagementController::class, 'deletePurchasables']);
+		Route::get('/PrintSize', [Admin\PrintSizeManagementController::class, 'index']);
+		Route::post('/PrintSize', [Admin\PrintSizeManagementController::class, 'store']);
+		Route::put('/PrintSize', [Admin\PrintSizeManagementController::class, 'update']);
+		Route::delete('/PrintSize', [Admin\PrintSizeManagementController::class, 'destroy']);
+		Route::get('/PixelSize', [Admin\PixelSizeManagementController::class, 'index']);
+		Route::post('/PixelSize', [Admin\PixelSizeManagementController::class, 'store']);
+		Route::put('/PixelSize', [Admin\PixelSizeManagementController::class, 'update']);
+		Route::delete('/PixelSize', [Admin\PixelSizeManagementController::class, 'destroy']);
 	});
+	Route::get('/Shop/Catalogue/Purchasable/{purchasable_id}/Sizes', [Shop\CatalogueSizesController::class, 'sizes']);
 });

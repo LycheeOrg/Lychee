@@ -20,15 +20,17 @@ use Money\Money;
 /**
  * Class Purchasable.
  *
- * @property int                              $id
- * @property string|null                      $photo_id
- * @property string|null                      $album_id
- * @property string|null                      $description
- * @property string|null                      $owner_notes
- * @property bool                             $is_active
- * @property Album|null                       $album
- * @property Photo|null                       $photo
- * @property Collection<int,PurchasablePrice> $prices
+ * @property int                                  $id
+ * @property string|null                          $photo_id
+ * @property string|null                          $album_id
+ * @property string|null                          $description
+ * @property string|null                          $owner_notes
+ * @property bool                                 $is_active
+ * @property Album|null                           $album
+ * @property Photo|null                           $photo
+ * @property Collection<int,PurchasablePrice>     $prices
+ * @property Collection<int,PurchasablePrintSize> $printSizes
+ * @property Collection<int,PurchasablePixelSize> $pixelSizes
  *
  * Defines whether a photo or album is available for purchase and its pricing options.
  */
@@ -60,7 +62,7 @@ class Purchasable extends Model
 	/**
 	 * {@inheritdoc}
 	 */
-	protected $with = ['prices'];
+	protected $with = ['prices', 'printSizes', 'pixelSizes'];
 
 	/**
 	 * Get the album associated with this purchasable item.
@@ -86,6 +88,26 @@ class Purchasable extends Model
 	public function prices(): HasMany
 	{
 		return $this->hasMany(PurchasablePrice::class);
+	}
+
+	/**
+	 * Get the per-purchasable print size assignments (with prices).
+	 *
+	 * @return HasMany<PurchasablePrintSize,$this>
+	 */
+	public function printSizes(): HasMany
+	{
+		return $this->hasMany(PurchasablePrintSize::class);
+	}
+
+	/**
+	 * Get the per-purchasable pixel size assignments (with prices).
+	 *
+	 * @return HasMany<PurchasablePixelSize,$this>
+	 */
+	public function pixelSizes(): HasMany
+	{
+		return $this->hasMany(PurchasablePixelSize::class);
 	}
 
 	/**
