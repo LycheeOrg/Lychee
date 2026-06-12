@@ -10,6 +10,7 @@ namespace App\Http\Resources\Shop;
 
 use App\Enum\OmnipayProviderType;
 use App\Enum\PaymentStatusType;
+use App\Enum\SizeVariantType;
 use App\Models\Order;
 use App\Services\MoneyService;
 use Illuminate\Support\Collection;
@@ -55,7 +56,18 @@ class OrderResource extends Data
 	{
 		$money_service = resolve(MoneyService::class);
 
-		// The order has been paid, so we provide the download links
+		// Load album and photo thumbnails for all orders (display purposes).
+		// Load size_variant only for closed orders (download URL generation).
+		$order->load([
+			'items.album',
+			'items.photo.size_variants' => fn ($q) => $q->whereIn('type', [
+				SizeVariantType::SMALL,
+				SizeVariantType::SMALL2X,
+				SizeVariantType::THUMB,
+				SizeVariantType::THUMB2X,
+				SizeVariantType::PLACEHOLDER,
+			]),
+		]);
 		if ($order->status === PaymentStatusType::CLOSED) {
 			$order->load('items.size_variant');
 		}

@@ -10,6 +10,7 @@ namespace App\Http\Resources\Shop;
 
 use App\Enum\PurchasableLicenseType;
 use App\Enum\PurchasableSizeVariantType;
+use App\Enum\SizeVariantType;
 use App\Models\OrderItem;
 use App\Services\MoneyService;
 use Spatie\LaravelData\Data;
@@ -39,6 +40,8 @@ class OrderItemResource extends Data
 		public ?int $pixel_size_id,
 		public ?int $pixel_width,
 		public ?int $pixel_height,
+		public ?string $album_title,
+		public ?string $thumb_url,
 	) {
 	}
 
@@ -70,6 +73,8 @@ class OrderItemResource extends Data
 			pixel_size_id: $item->pixel_size_id,
 			pixel_width: $item->pixel_width,
 			pixel_height: $item->pixel_height,
+			album_title: $item->album?->title,
+			thumb_url: $item->photo?->size_variants->getSizeVariant(SizeVariantType::THUMB)?->url,
 		);
 	}
 }

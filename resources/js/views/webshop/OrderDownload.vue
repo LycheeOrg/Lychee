@@ -111,14 +111,23 @@
 						/>
 					</div>
 					<div class="space-y-3">
-						<div v-for="item in order.items" :key="item.id" class="flex justify-between items-center p-3 gap-8 bg-surface-50/5 rounded">
-							<div class="flex gap-4 items-center w-full">
+						<div v-for="item in order.items" :key="item.id" class="flex justify-between items-start p-3 gap-8 bg-surface-50/5 rounded">
+							<div class="flex gap-4 items-start w-full">
+								<img
+									v-if="item.thumb_url"
+									:src="item.thumb_url"
+									loading="lazy"
+									class="w-12 h-12 object-cover rounded shrink-0"
+									:alt="item.title"
+								/>
+								<i v-else class="pi pi-image text-muted-color text-2xl w-12 h-12 flex items-center justify-center shrink-0" />
 								<div class="">
 									<div class="font-medium">
 										<RouterLink :to="{ name: 'album', params: { albumId: item.album_id, photoId: item.photo_id } }">{{
 											item.title
 										}}</RouterLink>
 									</div>
+									<div class="text-sm text-muted-color">{{ item.album_title ?? $t("webshop.orderDownload.unknownAlbum") }}</div>
 									<div class="text-sm text-muted-color">{{ item.size_variant_type }} - {{ item.license_type }}</div>
 								</div>
 								<div v-if="showInput(item)" class="grow max-w-1/2">

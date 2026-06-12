@@ -6,7 +6,6 @@ High-level planning document for Lychee features and architectural initiatives.
 
 | Feature ID | Name | Status | Priority | Assignee | Started | Updated | Progress |
 |------------|------|--------|----------|----------|---------|---------|----------|
-| 042 | Photo Display Enrichment | Planning | P2 | LycheeOrg | 2026-05-31 | 2026-05-31 | Spec, plan, tasks drafted. 20 tasks across 10 increments (Part A: I1–I6 webshop order item display; Part B: I7–I10 admin photo title links). No open questions. Ready to begin T-042-01. |
 
 ## Paused Features
 
@@ -18,6 +17,7 @@ High-level planning document for Lychee features and architectural initiatives.
 
 | Feature ID | Name | Completed | Notes |
 |------------|------|-----------|-------|
+| 042 | Photo Display Enrichment | 2026-06-12 | Part A (I1–I6) complete: `album_title` + `thumb_url` on `OrderItemResource`, unconditional eager-load in `OrderResource`, thumbnail/album-title UI in `OrderDownload.vue`, 4 backend tests passing, PHPStan 0, php-cs-fixer clean. |
 | 043 | Webshop Print & Pixel Sizes | 2026-05-31 | Spec stub created. Blocked on 5 open questions (Q-043-01 … Q-043-05): pricing model, license-type applicability, pixel fulfillment, catalogue scope, SE gating. |
 | 041 | Upload Photo Metadata | 2026-05-31 | `title`, `description` at upload time; `expected_id` in response. New `ApplyUserProvidedMetadata` pipe, DTO chain propagation (`ImportParam → InitDTO → StandaloneDTO`), `Photo::preallocateId()`, `UploadPhotoRequest` validation, `UploadMetaResource` fields, `ProcessImageJob` serialisation. 9 feature tests passing. PHPStan 0, php-cs-fixer clean. |
 | 040 | Disable Request Caching | 2026-05-18 | Spec, plan, tasks drafted. 9 tasks across 5 increments (I1 migration, I2 feature flag + .env.example, I3 controller filter, I4 feature tests, I5 quality gates). |
@@ -114,4 +114,4 @@ features/
 
 ---
 
-*Last updated: 2026-05-31 (Feature 041 complete — Upload Photo Metadata)*
+*Last updated: 2026-06-12 (Feature 042 Part A complete — Photo Display Enrichment, webshop order item display)*

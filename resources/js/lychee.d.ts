@@ -1212,6 +1212,8 @@ declare namespace App.Http.Resources.Shop {
 		pixel_size_id: number | null;
 		pixel_width: number | null;
 		pixel_height: number | null;
+		album_title: string | null;
+		thumb_url: string | null;
 	};
 	export type OrderResource = {
 		id: number;
