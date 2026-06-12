@@ -10,6 +10,7 @@ namespace App\Http\Resources\Shop;
 
 use App\Enum\OmnipayProviderType;
 use App\Enum\PaymentStatusType;
+use App\Enum\SizeVariantType;
 use App\Models\Order;
 use App\Services\MoneyService;
 use Illuminate\Support\Collection;
@@ -39,6 +40,12 @@ class OrderResource extends Data
 		#[LiteralTypeScriptType('App.Http.Resources.Shop.OrderItemResource[]|null')]
 		public ?Collection $items,
 		public bool $can_process_payment,
+		public ?string $shipping_street_name,
+		public ?string $shipping_street_number,
+		public ?string $shipping_additional_info,
+		public ?string $shipping_city,
+		public ?string $shipping_post_code,
+		public ?string $shipping_country,
 	) {
 	}
 
@@ -49,7 +56,18 @@ class OrderResource extends Data
 	{
 		$money_service = resolve(MoneyService::class);
 
-		// The order has been paid, so we provide the download links
+		// Load album and photo thumbnails for all orders (display purposes).
+		// Load size_variant only for closed orders (download URL generation).
+		$order->load([
+			'items.album',
+			'items.photo.size_variants' => fn ($q) => $q->whereIn('type', [
+				SizeVariantType::SMALL,
+				SizeVariantType::SMALL2X,
+				SizeVariantType::THUMB,
+				SizeVariantType::THUMB2X,
+				SizeVariantType::PLACEHOLDER,
+			]),
+		]);
 		if ($order->status === PaymentStatusType::CLOSED) {
 			$order->load('items.size_variant');
 		}
@@ -68,6 +86,12 @@ class OrderResource extends Data
 			comment: $order->comment,
 			items: $order->relationLoaded('items') ? OrderItemResource::collect($order->items) : null,
 			can_process_payment: $order->relationLoaded('items') ? $order->canProcessPayment() : false, // only if items are loaded we are able to check this.
+			shipping_street_name: $order->shipping_street_name,
+			shipping_street_number: $order->shipping_street_number,
+			shipping_additional_info: $order->shipping_additional_info,
+			shipping_city: $order->shipping_city,
+			shipping_post_code: $order->shipping_post_code,
+			shipping_country: $order->shipping_country,
 		);
 	}
 }

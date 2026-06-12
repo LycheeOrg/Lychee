@@ -5,7 +5,7 @@ ARG NODE_ENV=production
 # ============================================================================
 # Stage 1: Composer Dependencies
 # ============================================================================
-FROM composer:2.8@sha256:5248900ab8b5f7f880c2d62180e40960cd87f60149ec9a1abfd62ac72a02577c AS composer
+FROM composer:2.10.1@sha256:c883af18892268b3b8369c4a39c08f80b393383e79d80b75140a3ea489dbbb78 AS composer
 
 WORKDIR /app
 
@@ -29,7 +29,7 @@ RUN composer install \
 # ============================================================================
 # Stage 2: Node.js Build for Frontend Assets
 # ============================================================================
-FROM node:20-alpine@sha256:658d0f63e501824d6c23e06d4bb95c71e7d704537c9d9272f488ac03a370d448 AS node
+FROM node:24-alpine@sha256:fb71d01345f11b708a3553c66e7c74074f2d506400ea81973343d915cb64eef0 AS node
 
 # Build argument to control dev vs production build
 ARG NODE_ENV
@@ -56,7 +56,7 @@ RUN npm run build
 # ============================================================================
 # Stage 3: Production FrankenPHP Image
 # ============================================================================
-FROM dunglas/frankenphp:php8.5-trixie@sha256:b2b64b403c6dbfdcb6cdb78d533ff89d131eb9d5d8aba597e15a46559341f3b4
+FROM dunglas/frankenphp:1.12.4-php8.5-trixie@sha256:4834747626f5a8ddf678fa6fc420767cf748656858eb8e4241381116770828f1
 
 ARG USER=appuser
 

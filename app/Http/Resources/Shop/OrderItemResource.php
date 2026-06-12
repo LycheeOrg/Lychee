@@ -10,6 +10,7 @@ namespace App\Http\Resources\Shop;
 
 use App\Enum\PurchasableLicenseType;
 use App\Enum\PurchasableSizeVariantType;
+use App\Enum\SizeVariantType;
 use App\Models\OrderItem;
 use App\Services\MoneyService;
 use Spatie\LaravelData\Data;
@@ -30,6 +31,17 @@ class OrderItemResource extends Data
 		public PurchasableSizeVariantType $size_variant_type,
 		public ?string $item_notes,
 		public ?string $content_url,
+		public bool $is_print,
+		public ?int $print_size_id,
+		public ?int $print_width,
+		public ?int $print_height,
+		public ?string $print_unit,
+		public ?string $print_paper_type,
+		public ?int $pixel_size_id,
+		public ?int $pixel_width,
+		public ?int $pixel_height,
+		public ?string $album_title,
+		public ?string $thumb_url,
 	) {
 	}
 
@@ -52,6 +64,17 @@ class OrderItemResource extends Data
 			size_variant_type: $item->size_variant_type,
 			item_notes: $item->item_notes,
 			content_url: $item->content_url,
+			is_print: $item->is_print,
+			print_size_id: $item->print_size_id,
+			print_width: $item->print_width,
+			print_height: $item->print_height,
+			print_unit: $item->print_unit,
+			print_paper_type: $item->print_paper_type,
+			pixel_size_id: $item->pixel_size_id,
+			pixel_width: $item->pixel_width,
+			pixel_height: $item->pixel_height,
+			album_title: $item->album?->title,
+			thumb_url: $item->photo?->size_variants->getSizeVariant(SizeVariantType::THUMB)?->url,
 		);
 	}
 }

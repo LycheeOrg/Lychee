@@ -25,10 +25,18 @@
 							item.title
 						}}</router-link></span
 					>
-					<span class="text-sm text-muted-color"
-						>{{ $t("webshop.basketList.size") }}: {{ item.size_variant_type }}, {{ $t("webshop.basketList.license") }}:
-						{{ item.license_type }}</span
-					>
+					<span class="text-sm text-muted-color" v-if="item.is_print">
+						{{ $t("webshop.basketList.printLabel") }}: {{ item.print_width }} × {{ item.print_height }} {{ item.print_unit }},
+						{{ $t("webshop.basketList.paperType") }}: {{ item.print_paper_type }}
+					</span>
+					<span class="text-sm text-muted-color" v-else-if="item.pixel_size_id !== null">
+						{{ $t("webshop.basketList.pixelLabel") }}: {{ item.pixel_width }} × {{ item.pixel_height }} px,
+						{{ $t("webshop.basketList.license") }}: {{ item.license_type }}
+					</span>
+					<span class="text-sm text-muted-color" v-else>
+						{{ $t("webshop.basketList.size") }}: {{ item.size_variant_type }}, {{ $t("webshop.basketList.license") }}:
+						{{ item.license_type }}
+					</span>
 					<span class="text-sm text-muted-color" v-if="item.item_notes">{{ $t("webshop.basketList.notes") }}: {{ item.item_notes }}</span>
 				</div>
 				<div class="font-bold shrink">{{ item.price }}</div>

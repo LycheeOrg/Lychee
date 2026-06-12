@@ -25,4 +25,5 @@ return [
     'messages' => 'Nachrichten',
     'people' => 'People',
     'webhooks' => 'Webhooks',
+    'shopSizes' => 'Size Catalogue',
 ];

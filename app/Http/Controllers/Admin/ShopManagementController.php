@@ -8,7 +8,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Actions\Shop\OrderService;
 use App\Actions\Shop\PurchasableService;
 use App\Http\Requests\ShopManagement\DeletePurchasablesRequest;
 use App\Http\Requests\ShopManagement\ListPurchasablesRequest;
@@ -27,7 +26,6 @@ class ShopManagementController extends Controller
 {
 	public function __construct(
 		private PurchasableService $purchasable_service,
-		private OrderService $order_service,
 	) {
 	}
 
@@ -50,7 +48,7 @@ class ShopManagementController extends Controller
 	 */
 	public function list(ListPurchasablesRequest $request): array
 	{
-		$purchasables = Purchasable::with(['album', 'photo', 'prices', 'photo.size_variants'])
+		$purchasables = Purchasable::with(['album', 'photo', 'prices', 'printSizes', 'pixelSizes', 'photo.size_variants'])
 			->when(count($request->albumIds()) > 0, function ($query) use ($request): void {
 				$query->whereIn('album_id', $request->albumIds());
 			})
@@ -70,13 +68,16 @@ class ShopManagementController extends Controller
 	{
 		$purchasables = [];
 		foreach ($request->photos() as $photo) {
-			$purchasables[] = $this->purchasable_service->createPurchasableForPhoto(
+			$purchasable = $this->purchasable_service->createPurchasableForPhoto(
 				photo: $photo,
 				album_id: $request->album()->id,
 				description: $request->description(),
 				prices: $request->prices,
 				owner_notes: $request->notes
 			);
+			$this->purchasable_service->syncPrintSizes($purchasable, $request->print_sizes);
+			$this->purchasable_service->syncPixelSizes($purchasable, $request->pixel_sizes);
+			$purchasables[] = $purchasable;
 		}
 
 		return EditablePurchasableResource::collect($purchasables);
@@ -93,13 +94,16 @@ class ShopManagementController extends Controller
 	{
 		$purchasables = [];
 		foreach ($request->albums() as $album) {
-			$purchasables[] = $this->purchasable_service->createPurchasableForAlbum(
+			$purchasable = $this->purchasable_service->createPurchasableForAlbum(
 				album: $album,
 				description: $request->description(),
 				applies_to_subalbums: $request->applies_to_subalbums,
 				prices: $request->prices,
 				owner_notes: $request->notes
 			);
+			$this->purchasable_service->syncPrintSizes($purchasable, $request->print_sizes);
+			$this->purchasable_service->syncPixelSizes($purchasable, $request->pixel_sizes);
+			$purchasables[] = $purchasable;
 		}
 
 		return EditablePurchasableResource::collect($purchasables);
@@ -119,6 +123,9 @@ class ShopManagementController extends Controller
 			prices: $request->prices
 		);
 
+		$this->purchasable_service->syncPrintSizes($purchasable, $request->print_sizes);
+		$this->purchasable_service->syncPixelSizes($purchasable, $request->pixel_sizes);
+
 		// If there's a description or notes update, we need to update those too
 		$updated = false;
 		if ($request->description() !== null) {
@@ -132,6 +139,8 @@ class ShopManagementController extends Controller
 		if ($updated) {
 			$purchasable->save();
 		}
+
+		$purchasable->load(['prices', 'printSizes', 'pixelSizes']);
 
 		return EditablePurchasableResource::fromModel($purchasable);
 	}

@@ -16,6 +16,8 @@ use App\Exceptions\Shop\OrderIsNotPendingException;
 use App\Models\Album;
 use App\Models\Order;
 use App\Models\Photo;
+use App\Models\PixelSize;
+use App\Models\PrintSize;
 use App\Models\User;
 use App\Policies\AlbumPolicy;
 use App\Policies\AlbumQueryPolicy;
@@ -184,7 +186,69 @@ class BasketService
 	}
 
 	/**
-	 * Remove an item from the basket.
+	 * Add a photo to the basket as a physical print item.
+	 *
+	 * @param Order       $basket     The basket to add to
+	 * @param Photo       $photo      The photo to add
+	 * @param string      $album_id   The album ID the photo belongs to
+	 * @param PrintSize   $print_size The print size
+	 * @param string|null $notes      Optional notes for the item
+	 *
+	 * @return Order The updated basket
+	 */
+	public function addPrintItemToBasket(
+		Order $basket,
+		Photo $photo,
+		string $album_id,
+		PrintSize $print_size,
+		?string $notes = null,
+	): Order {
+		$this->ensurePendingStatus($basket);
+		$basket = $this->order_service->addPrintPhotoToOrder(
+			$basket,
+			$photo,
+			$album_id,
+			$print_size,
+			$notes
+		);
+
+		return $this->order_service->refreshBasket($basket);
+	}
+
+	/**
+	 * Add a photo to the basket as a custom pixel-size digital download.
+	 *
+	 * @param Order       $basket     The basket to add to
+	 * @param Photo       $photo      The photo to add
+	 * @param string      $album_id   The album ID the photo belongs to
+	 * @param PixelSize   $pixel_size The pixel size
+	 * @param string|null $notes      Optional notes for the item
+	 *
+	 * @return Order The updated basket
+	 */
+	public function addPixelItemToBasket(
+		Order $basket,
+		Photo $photo,
+		string $album_id,
+		PixelSize $pixel_size,
+		PurchasableLicenseType $license_type,
+		?string $notes = null,
+	): Order {
+		$this->ensurePendingStatus($basket);
+		$basket = $this->order_service->addPixelPhotoToOrder(
+			$basket,
+			$photo,
+			$album_id,
+			$pixel_size,
+			$license_type,
+			$notes
+		);
+
+		return $this->order_service->refreshBasket($basket);
+	}
+
+	/**
+	 * Remove an item from the basket.	 *.
 	 *
 	 * @param Order $basket  The basket to remove from
 	 * @param int   $item_id The ID of the order item to remove

@@ -18,8 +18,10 @@ High-level planning document for Lychee features and architectural initiatives.
 
 | Feature ID | Name | Completed | Notes |
 |------------|------|-----------|-------|
+| 042 | Photo Display Enrichment | 2026-06-12 | Part A (I1–I6) complete: `album_title` + `thumb_url` on `OrderItemResource`, unconditional eager-load in `OrderResource`, thumbnail/album-title UI in `OrderDownload.vue`, 4 backend tests passing, PHPStan 0, php-cs-fixer clean. |
+| 043 | Webshop Print & Pixel Sizes | 2026-05-31 | Spec stub created. Blocked on 5 open questions (Q-043-01 … Q-043-05): pricing model, license-type applicability, pixel fulfillment, catalogue scope, SE gating. |
 | 041 | Upload Photo Metadata | 2026-05-31 | `title`, `description` at upload time; `expected_id` in response. New `ApplyUserProvidedMetadata` pipe, DTO chain propagation (`ImportParam → InitDTO → StandaloneDTO`), `Photo::preallocateId()`, `UploadPhotoRequest` validation, `UploadMetaResource` fields, `ProcessImageJob` serialisation. 9 feature tests passing. PHPStan 0, php-cs-fixer clean. |
-| 040 | Disable Response Caching | 2026-05-18 | Spec, plan, tasks drafted. 9 tasks across 5 increments (I1 migration, I2 feature flag + .env.example, I3 controller filter, I4 feature tests, I5 quality gates). No open questions. |
+| 040 | Disable Request Caching | 2026-05-18 | Spec, plan, tasks drafted. 9 tasks across 5 increments (I1 migration, I2 feature flag + .env.example, I3 controller filter, I4 feature tests, I5 quality gates). |
 | 037 | Admin Dashboard & `/admin/` URL Reorg | 2026-04-22 | Config migration (`use_admin_dashboard` toggle), `AdminStatsService` with 5-min cache, `GET /api/v2/Admin/Stats` endpoint, 9 admin views relocated to `views/admin/`, `AdminDashboard.vue` tile grid + stats panel + Refresh, left-menu collapse toggle, 22-locale i18n, 13 backend tests passing, TypeScript/PHPStan clean. |
 | 034 | Bulk Album Edit | 2026-04-12 | Spec, plan, tasks drafted. 25 tasks across 11 increments (I1 backend scaffold, I2-I6 REST endpoints, I7-I10 frontend, I11 quality gates). 4 open questions (Q-034-01 to Q-034-04; 1 high, 2 medium, 1 low). |
 | 032 | Security Advisories Check | 2026-04-06 | Spec, plan, tasks drafted. 18 tasks across 6 increments (I1 config/DTO, I2 fetch service, I3 diagnostic pipe, I4 REST endpoint, I5 frontend modal, I6 quality gates). All open questions resolved in spec. |
@@ -112,4 +114,4 @@ features/
 
 ---
 
-*Last updated: 2026-05-31 (Feature 041 complete — Upload Photo Metadata)*
+*Last updated: 2026-06-12 (Feature 042 Part A complete — Photo Display Enrichment, webshop order item display)*

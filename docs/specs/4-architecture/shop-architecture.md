@@ -42,6 +42,8 @@ The shop integration follows Laravel's request/response pattern with additional 
 - **Resources**: Data transfer objects for API responses using Spatie Data
 - **Exception Handling**: Domain-specific exceptions for error cases
 
+`OrderItemResource` exposes `album_title` (`string|null`) and `thumb_url` (`string|null`) for display purposes. `OrderResource::fromModel()` unconditionally eager-loads `items.album` and `items.photo.size_variants` (SMALL, SMALL2X, THUMB, THUMB2X, PLACEHOLDER types only) so thumbnails and album names are available across all order statuses on the detail page.
+
 ## Access Controls
 
 Only the Lychee instance owner can set their albums and photos as purchasable. Only the photos that are in their owned albums can be set as purchasable.

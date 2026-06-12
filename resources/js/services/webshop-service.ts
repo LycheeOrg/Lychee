@@ -5,6 +5,9 @@ const CatalogService = {
 	getCatalog(albumId: string): Promise<AxiosResponse<App.Http.Resources.Shop.CatalogResource>> {
 		return axios.get(`${Constants.getApiUrl()}Shop`, { data: {}, params: { album_id: albumId } });
 	},
+	getCatalogueSizes(purchasableId: number): Promise<AxiosResponse<App.Http.Resources.Shop.CatalogueSizesResource>> {
+		return axios.get(`${Constants.getApiUrl()}Shop/Catalogue/Purchasable/${purchasableId}/Sizes`, { data: {} });
+	},
 };
 
 export type AddPhoto = {
@@ -25,9 +28,30 @@ export type AddAlbum = {
 	include_subalbums?: boolean;
 };
 
+export type AddPrintPhoto = {
+	photo_id: string;
+	album_id?: string;
+	print_size_id: number;
+	notes?: string;
+};
+
+export type AddPixelPhoto = {
+	photo_id: string;
+	album_id?: string;
+	pixel_size_id: number;
+	license_type: App.Enum.PurchasableLicenseType;
+	notes?: string;
+};
+
 export type CreateCheckout = {
 	email: string | undefined;
 	provider: App.Enum.OmnipayProviderType | undefined;
+	shipping_street_name?: string;
+	shipping_street_number?: string;
+	shipping_additional_info?: string;
+	shipping_city?: string;
+	shipping_post_code?: string;
+	shipping_country?: string;
 };
 
 export type OfflineCheckout = {
@@ -55,6 +79,12 @@ const OrderService = {
 	},
 	addAlbumToBasket(data: AddAlbum): Promise<AxiosResponse<App.Http.Resources.Shop.OrderResource>> {
 		return axios.post(`${Constants.getApiUrl()}Shop/Basket/Album`, data);
+	},
+	addPrintPhotoToBasket(data: AddPrintPhoto): Promise<AxiosResponse<App.Http.Resources.Shop.OrderResource>> {
+		return axios.post(`${Constants.getApiUrl()}Shop/Basket/Print`, data);
+	},
+	addPixelPhotoToBasket(data: AddPixelPhoto): Promise<AxiosResponse<App.Http.Resources.Shop.OrderResource>> {
+		return axios.post(`${Constants.getApiUrl()}Shop/Basket/Pixel`, data);
 	},
 	removeItemFromBasket(itemId: number): Promise<AxiosResponse<App.Http.Resources.Shop.OrderResource>> {
 		return axios.delete(`${Constants.getApiUrl()}Shop/Basket/item`, { data: {}, params: { item_id: itemId } });

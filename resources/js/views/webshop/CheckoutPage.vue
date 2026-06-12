@@ -183,9 +183,28 @@ const { isLTR } = useLtRorRtL();
 
 const ltr = computed(() => isLTR());
 
-const { email, options, loadCheckoutOptions, loadEmailForUser, isStepOneValid } = useStepOne(userStore, orderStore);
+const {
+	email,
+	options,
+	loadCheckoutOptions,
+	loadEmailForUser,
+	isStepOneValid,
+	shippingStreetName,
+	shippingStreetNumber,
+	shippingAdditionalInfo,
+	shippingCity,
+	shippingPostCode,
+	shippingCountry,
+} = useStepOne(userStore, orderStore);
 const { stepToNumber, steps } = useSteps(options);
-const { processPayment, isStepTwoValid, canProcessPayment } = useStepTwo(email, orderStore, toast);
+const { processPayment, isStepTwoValid, canProcessPayment } = useStepTwo(email, orderStore, toast, {
+	shippingStreetName,
+	shippingStreetNumber,
+	shippingAdditionalInfo,
+	shippingCity,
+	shippingPostCode,
+	shippingCountry,
+});
 
 const { markAsOffline } = useStepOffline(email, router, orderStore);
 

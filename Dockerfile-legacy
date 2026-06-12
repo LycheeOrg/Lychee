@@ -5,7 +5,7 @@ ARG NODE_ENV=production
 # ============================================================================
 # Stage 1: Composer Dependencies
 # ============================================================================
-FROM composer:2.8@sha256:5248900ab8b5f7f880c2d62180e40960cd87f60149ec9a1abfd62ac72a02577c AS composer
+FROM composer:2.10.1@sha256:c883af18892268b3b8369c4a39c08f80b393383e79d80b75140a3ea489dbbb78 AS composer
 
 WORKDIR /app
 
@@ -29,7 +29,7 @@ RUN composer install \
 # ============================================================================
 # Stage 2: Node.js Build for Frontend Assets
 # ============================================================================
-FROM node:20-alpine@sha256:658d0f63e501824d6c23e06d4bb95c71e7d704537c9d9272f488ac03a370d448 AS node
+FROM node:24-alpine@sha256:fb71d01345f11b708a3553c66e7c74074f2d506400ea81973343d915cb64eef0 AS node
 
 # Build argument to control dev vs production build
 ARG NODE_ENV
@@ -55,7 +55,7 @@ RUN npm run build
 
 # TODO: migrate to trixie once php8.5-zip is fixed.
 # TODO: Fix Imagick sed once we update the version of Imagick.
-FROM debian:bookworm-slim@sha256:d5d3f9c23164ea16f31852f95bd5959aad1c5e854332fe00f7b3a20fcc9f635c AS base
+FROM debian:trixie-slim@sha256:4e401d95de7083948053197a9c3913343cd06b706bf15eb6a0c3ccd26f436a0e AS base
 
 LABEL maintainer="lycheeorg"
 LABEL org.opencontainers.image.title="Lychee"
@@ -66,7 +66,7 @@ LABEL org.opencontainers.image.source="https://github.com/LycheeOrg/Lychee"
 LABEL org.opencontainers.image.url="https://lycheeorg.github.io"
 LABEL org.opencontainers.image.documentation="https://lycheeorg.dev/docs"
 LABEL org.opencontainers.image.licenses="MIT"
-LABEL org.opencontainers.image.base.name="debian:bookworm-slim"
+LABEL org.opencontainers.image.base.name="debian:trixie-slim"
 
 # Environment variables
 ENV PUID='1000'
@@ -86,7 +86,7 @@ RUN \
 	apt-transport-https && \
 	curl -sSLo /tmp/debsuryorg-archive-keyring.deb https://packages.sury.org/debsuryorg-archive-keyring.deb && \
 	dpkg -i /tmp/debsuryorg-archive-keyring.deb && \
-	sh -c 'echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.org/php/ bookworm main" > /etc/apt/sources.list.d/php.list' && \
+	sh -c 'echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.org/php/ trixie main" > /etc/apt/sources.list.d/php.list' && \
 	apt-get update && \
 	apt-get install -qy --no-install-recommends \
 	adduser \
@@ -117,7 +117,7 @@ RUN \
 	cron \
 	composer \
 	ghostscript && \
-	sed -i 's/<policy domain="coder" rights="none" pattern="PDF" \/>/<policy domain="coder" rights="read|write" pattern="PDF" \/>/g' /etc/ImageMagick-6/policy.xml && \
+	sed -i '/<\/policymap>/i \  <policy domain="coder" rights="read|write" pattern="PDF" \/>' /etc/ImageMagick-7/policy.xml && \
 	usermod -o -u "$PUID" "www-data" && \
 	groupmod -o -g "$PGID" "www-data" && \
 	echo "* * * * * www-data cd /app && php artisan schedule:run >> /dev/null 2>&1" >> /etc/crontab && \

@@ -111,25 +111,68 @@
 						/>
 					</div>
 					<div class="space-y-3">
-						<div v-for="item in order.items" :key="item.id" class="flex justify-between items-center p-3 gap-8 bg-surface-50/5 rounded">
-							<div class="flex gap-4 items-center w-full">
+						<div v-for="item in order.items" :key="item.id" class="flex justify-between items-start p-3 gap-8 bg-surface-50/5 rounded">
+							<div class="flex gap-4 items-start w-full">
+								<img
+									v-if="item.thumb_url"
+									:src="item.thumb_url"
+									loading="lazy"
+									class="w-12 h-12 object-cover rounded shrink-0"
+									:alt="item.title"
+								/>
+								<i v-else class="pi pi-image text-muted-color text-2xl w-12 h-12 flex items-center justify-center shrink-0" />
 								<div class="">
 									<div class="font-medium">
 										<RouterLink :to="{ name: 'album', params: { albumId: item.album_id, photoId: item.photo_id } }">{{
 											item.title
 										}}</RouterLink>
 									</div>
-									<div class="text-sm text-muted-color">{{ item.size_variant_type }} - {{ item.license_type }}</div>
+									<div class="text-sm text-muted-color-emphasis">
+										{{ item.album_title ?? $t("webshop.orderDownload.unknownAlbum") }}
+									</div>
+									<div class="text-sm text-muted-color" v-if="item.is_print">
+										{{ $t("webshop.basketList.printLabel") }}: {{ item.print_width }} × {{ item.print_height }}
+										{{ item.print_unit }}, {{ $t("webshop.basketList.paperType") }}: {{ item.print_paper_type }}
+									</div>
+									<div class="text-sm text-muted-color" v-else-if="item.pixel_size_id !== null">
+										{{ $t("webshop.basketList.pixelLabel") }}: {{ item.pixel_width }} × {{ item.pixel_height }} px,
+										{{ $t("webshop.orderSummary.license") }} {{ item.license_type }}
+									</div>
+									<div class="text-sm text-muted-color" v-else>
+										{{ $t("webshop.orderSummary.size") }} {{ item.size_variant_type }}, {{ $t("webshop.orderSummary.license") }}
+										{{ item.license_type }}
+									</div>
 								</div>
 								<div v-if="showInput(item)" class="grow max-w-1/2">
 									<InputText
-										:placeholder="$t('webshop.orderDownload.enterContentUrl')"
+										:placeholder="
+											item.is_print ? $t('webshop.orderDownload.enterTrackingUrl') : $t('webshop.orderDownload.enterContentUrl')
+										"
 										class="w-full text-left"
 										@update:modelValue="(v) => updateItemLink({ id: item.id, download_link: v ?? '' })"
 									/>
 								</div>
-								<div v-else-if="item.content_url">
+								<template v-else-if="item.content_url">
+									<a
+										v-if="item.is_print && item.content_url.startsWith('http')"
+										:href="item.content_url"
+										target="_blank"
+										rel="noopener noreferrer"
+									>
+										<Button
+											icon="pi pi-truck"
+											:label="$t('webshop.orderDownload.trackShipment')"
+											size="small"
+											class="border-0"
+											severity="primary"
+										/>
+									</a>
+									<div v-else-if="item.is_print" class="flex items-center gap-2 text-sm text-muted-color">
+										<i class="pi pi-truck" />
+										<span>{{ item.content_url }}</span>
+									</div>
 									<Button
+										v-else
 										@click="downloadItem(item.content_url)"
 										icon="pi pi-cloud-download"
 										:label="$t('webshop.orderDownload.download')"
@@ -137,8 +180,14 @@
 										class="border-0"
 										severity="primary"
 									/>
+								</template>
+								<div v-else class="mt-1 text-sm text-muted-color">
+									{{
+										item.is_print
+											? $t("webshop.orderDownload.awaitingShipment")
+											: $t("webshop.orderDownload.downloadNotAvailable")
+									}}
 								</div>
-								<div v-else class="mt-1 text-sm text-muted-color">{{ $t("webshop.orderDownload.downloadNotAvailable") }}</div>
 							</div>
 							<div class="text-right">
 								<div class="font-medium">{{ item.price }}</div>
