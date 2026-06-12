@@ -127,8 +127,21 @@
 											item.title
 										}}</RouterLink>
 									</div>
-									<div class="text-sm text-muted-color">{{ item.album_title ?? $t("webshop.orderDownload.unknownAlbum") }}</div>
-									<div class="text-sm text-muted-color">{{ item.size_variant_type }} - {{ item.license_type }}</div>
+									<div class="text-sm text-muted-color-emphasis">
+										{{ item.album_title ?? $t("webshop.orderDownload.unknownAlbum") }}
+									</div>
+									<div class="text-sm text-muted-color" v-if="item.is_print">
+										{{ $t("webshop.basketList.printLabel") }}: {{ item.print_width }} × {{ item.print_height }}
+										{{ item.print_unit }}, {{ $t("webshop.basketList.paperType") }}: {{ item.print_paper_type }}
+									</div>
+									<div class="text-sm text-muted-color" v-else-if="item.pixel_size_id !== null">
+										{{ $t("webshop.basketList.pixelLabel") }}: {{ item.pixel_width }} × {{ item.pixel_height }} px,
+										{{ $t("webshop.orderSummary.license") }} {{ item.license_type }}
+									</div>
+									<div class="text-sm text-muted-color" v-else>
+										{{ $t("webshop.orderSummary.size") }} {{ item.size_variant_type }}, {{ $t("webshop.orderSummary.license") }}
+										{{ item.license_type }}
+									</div>
 								</div>
 								<div v-if="showInput(item)" class="grow max-w-1/2">
 									<InputText
