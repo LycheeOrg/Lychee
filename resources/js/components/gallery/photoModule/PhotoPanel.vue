@@ -3,7 +3,7 @@
 		<PhotoHeader @toggle-slide-show="emits('toggleSlideShow')" @go-back="emits('goBack')" @toggle-highlight="emits('toggleHighlight')" />
 		<div class="w-0 flex-auto relative">
 			<div class="animate-zoomIn w-full h-full">
-				<Transition :name="photoStore.transition">
+				<Transition :name="disable_swipe_effect ? '' : photoStore.transition">
 					<PhotoBox
 						:key="photoStore.photo.id"
 						@go-back="emits('goBack')"
@@ -64,7 +64,7 @@ const togglableStore = useTogglablesStateStore();
 const photoStore = usePhotoStore();
 const albumStore = useAlbumStore();
 
-const { is_exif_disabled, is_scroll_to_navigate_photos_enabled } = storeToRefs(lycheeStore);
+const { is_exif_disabled, is_scroll_to_navigate_photos_enabled, disable_swipe_effect } = storeToRefs(lycheeStore);
 const { is_photo_edit_open, is_slideshow_active, are_details_open } = storeToRefs(togglableStore);
 
 const props = defineProps<{
