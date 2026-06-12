@@ -117,7 +117,7 @@ RUN \
 	cron \
 	composer \
 	ghostscript && \
-	sed -i 's/<policy domain="coder" rights="none" pattern="PDF" \/>/<policy domain="coder" rights="read|write" pattern="PDF" \/>/g' /etc/ImageMagick-6/policy.xml && \
+	sed -i '/<\/policymap>/i \  <policy domain="coder" rights="read|write" pattern="PDF" \/>' /etc/ImageMagick-7/policy.xml && \
 	usermod -o -u "$PUID" "www-data" && \
 	groupmod -o -g "$PGID" "www-data" && \
 	echo "* * * * * www-data cd /app && php artisan schedule:run >> /dev/null 2>&1" >> /etc/crontab && \
