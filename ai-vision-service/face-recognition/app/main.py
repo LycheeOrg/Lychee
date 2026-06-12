@@ -23,6 +23,27 @@ from app.config import AppSettings, get_settings
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator
 
+_LEVEL_COLORS = {
+    logging.DEBUG: "\033[36m",     # cyan
+    logging.INFO: "\033[32m",      # green
+    logging.WARNING: "\033[33m",   # yellow
+    logging.ERROR: "\033[31m",     # red
+    logging.CRITICAL: "\033[35m",  # magenta
+}
+_DIM = "\033[2m"
+_RESET = "\033[0m"
+
+
+class _ColorFormatter(logging.Formatter):
+    def formatTime(self, record: logging.LogRecord, datefmt: str | None = None) -> str:
+        return f"{_DIM}{super().formatTime(record, datefmt)}{_RESET}"
+
+    def format(self, record: logging.LogRecord) -> str:
+        color = _LEVEL_COLORS.get(record.levelno, "")
+        record.levelname = f"{color}{record.levelname}{_RESET}"
+        return super().format(record)
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -32,7 +53,12 @@ async def _default_lifespan(app: FastAPI) -> AsyncGenerator[None]:
     settings: AppSettings = get_settings()
 
     # Configure logging
-    logging.basicConfig(level=getattr(logging, settings.log_level.upper(), logging.INFO))
+    handler = logging.StreamHandler()
+    handler.setFormatter(_ColorFormatter("%(asctime)s %(levelname)s %(name)s %(message)s", datefmt="%Y-%m-%d %H:%M:%S"))
+    logging.basicConfig(
+        level=getattr(logging, settings.log_level.upper(), logging.INFO),
+        handlers=[handler],
+    )
 
     # Verify Lychee connectivity
     lychee_up_url = f"{settings.lychee_api_url}/up"

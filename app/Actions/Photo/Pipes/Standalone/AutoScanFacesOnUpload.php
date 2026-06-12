@@ -30,6 +30,11 @@ class AutoScanFacesOnUpload implements StandalonePipe
 		// Process through the rest of the pipeline first
 		$state = $next($state);
 
+		if ($state->photo->isPhoto() === false) {
+			// If this is not a photo (e.g., a video), we skip face scanning
+			return $state;
+		}
+
 		// Check if AI vision is enabled
 		if ($this->config_manager->getValueAsString('ai_vision_enabled') !== '1') {
 			return $state;

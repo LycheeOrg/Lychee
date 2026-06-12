@@ -279,7 +279,7 @@
 	</aside>
 </template>
 <script setup lang="ts">
-import { Ref, ref, watch, onMounted, onUnmounted } from "vue";
+import { Ref, ref, watch, onMounted, computed, onUnmounted } from "vue";
 import Card from "primevue/card";
 import ProgressSpinner from "primevue/progressspinner";
 import MapInclude from "@/components/gallery/photoModule/MapInclude.vue";
