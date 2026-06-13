@@ -76,7 +76,9 @@ export function useSelection(photosStore: PhotosStore, albumsStore: AlbumsStore,
 
 		// we do not support CTRL + SHIFT
 		const { isMod, isShift } = getMouseModifiers(e);
-		if (!isMod && !isShift) {
+		const isTouchSelect = togglableStore.is_touch_select_mode;
+
+		if (!isMod && !isShift && !isTouchSelect) {
 			return;
 		}
 
@@ -88,7 +90,8 @@ export function useSelection(photosStore: PhotosStore, albumsStore: AlbumsStore,
 			return;
 		}
 
-		if (isMod) {
+		// Touch select mode or Ctrl/Meta: toggle individual photo
+		if (isTouchSelect || isMod) {
 			handlePhotoCtrl(photoId);
 			return;
 		}
@@ -155,7 +158,9 @@ export function useSelection(photosStore: PhotosStore, albumsStore: AlbumsStore,
 
 		// we do not support CTRL + SHIFT
 		const { isMod, isShift } = getMouseModifiers(e);
-		if (!isMod && !isShift) {
+		const isTouchSelect = togglableStore.is_touch_select_mode;
+
+		if (!isMod && !isShift && !isTouchSelect) {
 			return;
 		}
 
@@ -168,7 +173,8 @@ export function useSelection(photosStore: PhotosStore, albumsStore: AlbumsStore,
 			return;
 		}
 
-		if (isMod) {
+		// Touch select mode or Ctrl/Meta: toggle individual album
+		if (isTouchSelect || isMod) {
 			handleAlbumCtrl(albumId);
 			return;
 		}
