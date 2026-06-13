@@ -140,7 +140,7 @@ return [
         'header_photos' => 'Fotografie',
         'show_highlighted' => 'Filtrovat zvýrazněné obrázky',
         'copy_highlighted_names' => 'Kopírovat názvy zvýrazněných fotografií do schránky',
-        'toggle_touch_select' => 'Toggle photo selection mode',
+        'toggle_touch_select' => 'Toggle selection mode',
         'photo_actions' => 'Photo actions',
         'no_results' => 'Zde není nic k vidění',
         'upload' => 'Nahrát fotografie',

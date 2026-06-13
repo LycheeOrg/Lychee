@@ -139,7 +139,7 @@ return [
         'header_photos' => 'Fotos',
         'show_highlighted' => 'Filter highlighted images',
         'copy_highlighted_names' => 'Copy highlighted photo names to clipboard',
-        'toggle_touch_select' => 'Toggle photo selection mode',
+        'toggle_touch_select' => 'Toggle selection mode',
         'photo_actions' => 'Photo actions',
         'no_results' => 'No hay nada que ver aquí',
         'upload' => 'Subir fotos',
