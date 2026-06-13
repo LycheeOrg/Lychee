@@ -11,6 +11,7 @@ namespace App\Services\Image;
 use App\Enum\FaceScanStatus;
 use App\Jobs\DispatchFaceScanJob;
 use App\Models\Photo;
+use App\Services\Image\FileExtensionService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Log;
 
@@ -58,7 +59,9 @@ class FaceDetectionService
 	 */
 	public function dispatchPhotos(?array $photo_ids, ?string $album_id, bool $force = false): int
 	{
-		$query = Photo::query()->select('id');
+		$query = Photo::query()
+			->select('id')
+			->whereIn('type', FileExtensionService::SUPPORTED_IMAGE_MIME_TYPES);
 
 		if ($photo_ids !== null) {
 			$query->whereIn('id', $photo_ids);
@@ -85,8 +88,9 @@ class FaceDetectionService
 	{
 		$query = Photo::query()
 			->select('id')
-			->whereNull('face_scan_status')
-			->orWhere('face_scan_status', '=', FaceScanStatus::FAILED->value);
+			->whereIn('type', FileExtensionService::SUPPORTED_IMAGE_MIME_TYPES)
+			->where(fn ($q) => $q->whereNull('face_scan_status')
+				->orWhere('face_scan_status', '=', FaceScanStatus::FAILED->value));
 
 		if ($album_id !== null) {
 			$query->whereHas('albums', fn ($q) => $q->where('albums.id', '=', $album_id));

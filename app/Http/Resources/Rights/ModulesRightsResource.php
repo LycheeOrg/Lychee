@@ -234,7 +234,8 @@ class ModulesRightsResource extends Data
 			return false;
 		}
 
-		return request()->configs()->getValueAsBool('ai_vision_enabled');
+		return request()->configs()->getValueAsBool('ai_vision_enabled')
+			&& request()->configs()->getValueAsBool('ai_vision_face_enabled');
 	}
 
 	/**
@@ -244,7 +245,7 @@ class ModulesRightsResource extends Data
 	 */
 	private function isContactEnabled(): void
 	{
-		if (!resolve(ConfigManager::class)->getValueAsBool('contact_form_enabled')) {
+		if (!request()->configs()->getValueAsBool('contact_form_enabled')) {
 			return;
 		}
 

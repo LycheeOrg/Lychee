@@ -67,6 +67,8 @@ return [
 		'dismiss' => 'Dismiss',
 		'dismissed' => 'Face dismissed successfully.',
 	],
+	'people_detected' => ':count person detected|:count people detected',
+	'filter_active' => 'Showing photos with :name',
 	'people_in_photo' => 'People in this photo',
 	'remove_from_person' => 'Remove from person',
 	'remove_from_person_success' => 'Face removed successfully.',

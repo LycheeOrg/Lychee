@@ -11,6 +11,7 @@ namespace App\Console\Commands;
 use App\Enum\FaceScanStatus;
 use App\Jobs\DispatchFaceScanJob;
 use App\Models\Photo;
+use App\Services\Image\FileExtensionService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
@@ -45,7 +46,9 @@ class ScanFaces extends Command
 	{
 		$album_id = $this->option('album');
 
-		$query = Photo::query()->select('id')->whereNull('face_scan_status');
+		$query = Photo::query()->select('id')
+			->whereIn('type', FileExtensionService::SUPPORTED_IMAGE_MIME_TYPES)
+			->whereNull('face_scan_status');
 
 		if ($album_id !== null) {
 			$query->whereHas('albums', fn ($q) => $q->where('albums.id', '=', $album_id));

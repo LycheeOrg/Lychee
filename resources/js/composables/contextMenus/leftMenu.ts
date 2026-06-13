@@ -99,7 +99,7 @@ export function useLeftMenu(
 			{
 				label: "people.title",
 				icon: "pi pi-users",
-				access: user.value?.id !== null,
+				access: (initData.value?.modules.is_ai_vision_enabled ?? false) && user.value?.id !== null,
 				route: "/people",
 			},
 			{

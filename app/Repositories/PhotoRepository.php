@@ -25,6 +25,13 @@ class PhotoRepository
 {
 	use FiltersUploadValidation;
 
+	public function __construct(
+		private ConfigManager $config_manager
+	)
+	{
+		// Constructor can be used for dependency injection if needed in the future
+	}
+
 	/**
 	 * Get paginated photos for an album with all necessary relations eager-loaded.
 	 *
@@ -56,17 +63,32 @@ class PhotoRepository
 		int $per_page,
 		?array $tag_ids = null,
 		string $tag_logic = 'OR',
+		?string $person_id = null,
 	): LengthAwarePaginator {
+		$face_enabled = $this->config_manager->getValueAsBool('ai_vision_enabled')
+			&& $this->config_manager->getValueAsBool('ai_vision_face_enabled');
+
+		$relations = ['size_variants', 'tags', 'palette', 'statistics', 'rating'];
+		if ($face_enabled) {
+			$relations[] = 'faces.person';
+			$relations[] = 'faces.suggestions.suggestedFace.person';
+		}
+
 		// Build query for photos belonging to the album via the photo_album pivot table
 		$query = Photo::query()
 			->join(PA::PHOTO_ALBUM, PA::PHOTO_ID, '=', 'photos.id')
 			->where(PA::ALBUM_ID, '=', $album_id)
 			->select('photos.*')
-			->with(['size_variants', 'tags', 'palette', 'statistics', 'rating', 'faces.person', 'faces.suggestions.suggestedFace.person']);
+			->with($relations);
 
 		// Apply tag filtering if tag_ids provided and not empty
 		if ($tag_ids !== null && count($tag_ids) > 0) {
 			$this->applyTagFilter($query, $tag_ids, $tag_logic);
+		}
+
+		// Apply person filtering if person_id provided
+		if ($person_id !== null) {
+			$query->whereHas('faces', fn ($q) => $q->where('person_id', $person_id));
 		}
 
 		// Non-admins must not see unvalidated photos uploaded by other users.

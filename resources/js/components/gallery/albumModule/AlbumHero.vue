@@ -28,6 +28,14 @@
 							&mdash; {{ albumStore.album.preFormattedData.license }}
 						</span>
 					</span>
+					<span
+						v-if="isAiVisionEnabled && albumStore.album_people_total > 0"
+						class="block text-muted-color text-sm cursor-pointer hover:text-color transition-colors duration-150"
+						@click="isPeopleOpen = !isPeopleOpen"
+					>
+						{{ trans_choice("people.people_detected", albumStore.album_people_total, { count: albumStore.album_people_total }) }}
+						<i :class="isPeopleOpen ? 'pi pi-chevron-up' : 'pi pi-chevron-down'" class="text-xs ml-1" />
+					</span>
 				</div>
 				<div class="flex flex-col w-full gap-2">
 					<div class="flex flex-row-reverse items-center">
@@ -109,7 +117,7 @@
 							<i class="pi pi-barcode" />
 						</a>
 						<a
-							v-if="isAiVisionEnabled"
+							v-if="isAiVisionScanEnabled"
 							v-tooltip.bottom="$t('people.scan_faces')"
 							class="shrink-0 px-3 cursor-pointer text-muted-color inline-block transform duration-300 hover:scale-150 hover:text-color"
 							@click="emits('toggleScanFaces')"
@@ -162,18 +170,21 @@
 				class="w-full max-w-full my-4 text-justify text-muted-color text-base/5 prose dark:prose-invert prose-sm"
 				v-html="albumStore.album.preFormattedData.description"
 			/>
+			<AlbumPeopleFilter v-if="isAiVisionEnabled && isPeopleOpen && albumStore.album_people.length > 0" class="mt-2" />
 		</template>
 	</Card>
 </template>
 <script setup lang="ts">
+import { trans_choice } from "laravel-vue-i18n";
 import { useUserStore } from "@/stores/UserState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { isTouchDevice } from "@/utils/keybindings-utils";
 import { storeToRefs } from "pinia";
 import Card from "primevue/card";
 import Button from "primevue/button";
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
 import AlbumStatistics from "./AlbumStatistics.vue";
+import AlbumPeopleFilter from "./AlbumPeopleFilter.vue";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { usePhotosStore } from "@/stores/PhotosState";
@@ -207,8 +218,24 @@ const isWatermarkerEnabled = computed(
 		photosStore.photos.some((p) => needSizeVariantsWatermark(p.size_variants)),
 );
 
-const isAiVisionEnabled = computed(
-	() => leftMenu.initData?.modules.is_ai_vision_enabled && albumStore.rights?.can_edit && photosStore.photos.length > 0,
+const isAiVisionEnabled = computed(() => leftMenu.initData?.modules.is_ai_vision_enabled === true);
+
+const isPeopleOpen = ref(false);
+
+// Load people whenever the album changes (and AI vision is on)
+watch(
+	() => albumStore.albumId,
+	(id) => {
+		if (id && isAiVisionEnabled.value) {
+			isPeopleOpen.value = false;
+			albumStore.loadAlbumPeople();
+		}
+	},
+	{ immediate: true },
+);
+
+const isAiVisionScanEnabled = computed(
+	() => isAiVisionEnabled.value && albumStore.rights?.can_edit && photosStore.photos.length > 0,
 );
 
 function needSizeVariantsWatermark(sizeVariants: App.Http.Resources.Models.SizeVariantsResouce): boolean {

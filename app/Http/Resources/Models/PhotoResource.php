@@ -115,6 +115,10 @@ class PhotoResource extends Data
 	 */
 	private function buildFaceData(Photo $photo): void
 	{
+		if (!request()->configs()->getValueAsBool('ai_vision_enabled') || !request()->configs()->getValueAsBool('ai_vision_face_enabled')) {
+			return;
+		}
+
 		if (!Gate::check(PhotoPolicy::CAN_VIEW_FACE_OVERLAYS, $photo)) {
 			return;
 		}

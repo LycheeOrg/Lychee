@@ -119,22 +119,27 @@ const AlbumService = {
 		page: number = 1,
 		tag_ids: number[] | null = null,
 		tag_logic: string = "OR",
+		person_id: string | null = null,
 	): Promise<AxiosResponse<App.Http.Resources.Collections.PaginatedPhotosResource>> {
 		const requester = axios as unknown as AxiosCacheInstance;
-		// const params: Record<string, string | number | number[]> = { album_id: album_id, page: page };
 
 		let param = "";
-		// Add tag filter params if provided
 		if (tag_ids && tag_ids.length > 0) {
 			param += `&${tag_ids.map((v) => `tag_ids[]=${v}`).join("&")}`;
 			param += `&tag_logic=${tag_logic}`;
 		}
+		if (person_id) {
+			param += `&person_id=${encodeURIComponent(person_id)}`;
+		}
 
-		// Cache key includes tag filter for proper cache isolation
-		const cacheKey =
-			tag_ids && tag_ids.length > 0
-				? `album_photos_${album_id}_page${page}_tags${tag_ids.join(",")}_${tag_logic}`
-				: `album_photos_${album_id}_page${page}`;
+		// Cache key includes active filters for proper cache isolation
+		let cacheKey = `album_photos_${album_id}_page${page}`;
+		if (tag_ids && tag_ids.length > 0) {
+			cacheKey += `_tags${tag_ids.join(",")}_${tag_logic}`;
+		}
+		if (person_id) {
+			cacheKey += `_person${person_id}`;
+		}
 
 		return requester.get(`${Constants.getApiUrl()}Album::photos?album_id=${album_id}&page=${page}${param}`, {
 			data: {},

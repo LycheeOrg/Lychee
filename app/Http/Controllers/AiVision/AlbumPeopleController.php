@@ -37,19 +37,20 @@ class AlbumPeopleController extends Controller
 		$user = Auth::user();
 
 		$query = Person::query()
-			->select('persons.*')
-			->join('faces', 'faces.person_id', '=', 'persons.id')
-			->join('photo_album', 'photo_album.photo_id', '=', 'faces.photo_id')
-			->where('photo_album.album_id', '=', $album->id)
-			->where('faces.is_dismissed', '=', false)
-			->orderBy('persons.name');
+			->whereHas('faces', fn ($q) => $q
+				->where('is_dismissed', false)
+				->whereHas('photo', fn ($qp) => $qp
+					->whereHas('albums', fn ($qa) => $qa->where('albums.id', $album->id))
+				)
+			)
+			->orderBy('name');
 
 		// Non-admin: only show searchable persons, plus the person linked to the current user
 		if ($user?->may_administrate !== true) {
 			$query->searchable($user?->id);
 		}
 
-		$persons = $query->distinct()->paginate(50);
+		$persons = $query->paginate(50);
 
 		return new PaginatedPersonsResource($persons);
 	}

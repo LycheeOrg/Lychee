@@ -37,6 +37,12 @@ class GetAlbumPersonsRequest extends BaseApiRequest implements HasAbstractAlbum
 			Gate::check(AlbumPolicy::CAN_VIEW_ALBUM_PEOPLE, [AbstractAlbum::class, $this->album]);
 	}
 
+	protected function prepareForValidation(): void
+	{
+		/** @disregard */
+		$this->merge([RequestAttribute::ALBUM_ID_ATTRIBUTE => $this->route('album_id')]);
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */

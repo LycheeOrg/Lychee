@@ -148,22 +148,28 @@
 			<div v-if="detailFacesLoading" class="flex justify-center py-6">
 				<ProgressSpinner />
 			</div>
-			<div v-else>
-				<div class="grid grid-cols-3 sm:grid-cols-4 gap-2 mb-4">
-					<div v-for="face in detailFaces" :key="face.id" class="relative aspect-square group">
-						<img v-if="face.crop_url" :src="face.crop_url" class="w-full h-full object-cover rounded-lg" loading="lazy" />
-						<div v-else class="w-full h-full bg-surface-200 dark:bg-surface-700 rounded-lg flex items-center justify-center">
-							<i class="pi pi-user text-xl text-muted-color" />
+			<div v-else class="flex flex-col gap-4">
+				<div class="overflow-y-auto max-h-[60vh]">
+					<div class="grid grid-cols-3 sm:grid-cols-4 gap-2">
+						<div v-for="face in detailFaces" :key="face.id" class="relative aspect-square group">
+							<img v-if="face.crop_url" :src="face.crop_url" class="w-full h-full object-cover rounded-lg" loading="lazy" />
+							<div v-else class="w-full h-full bg-surface-200 dark:bg-surface-700 rounded-lg flex items-center justify-center">
+								<i class="pi pi-user text-xl text-muted-color" />
+							</div>
+							<button
+								class="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/60 text-white text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+								@click="dismissSingleFace(face)"
+							>
+								×
+							</button>
 						</div>
-						<button
-							class="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/60 text-white text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
-							@click="dismissSingleFace(face)"
-						>
-							×
-						</button>
 					</div>
+					<div v-if="detailHasMorePages || detailFacesLoadingMore" class="flex justify-center py-2">
+						<ProgressSpinner style="width: 1.5rem; height: 1.5rem" />
+					</div>
+					<div ref="detailScrollSentinel" />
 				</div>
-				<div class="flex flex-col sm:flex-row gap-3 items-end">
+				<div class="flex flex-col sm:flex-row gap-3 items-end border-t border-surface pt-2">
 					<AutoComplete
 						v-model="detailPersonSelect"
 						:suggestions="personSuggestions"
@@ -200,7 +206,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from "vue";
+import { ref, reactive, onMounted, watch } from "vue";
 import Toolbar from "primevue/toolbar";
 import ProgressSpinner from "primevue/progressspinner";
 import Button from "primevue/button";
@@ -242,9 +248,14 @@ const detailDialogVisible = ref(false);
 const detailCluster = ref<App.Http.Resources.Models.ClusterPreviewResource | null>(null);
 const detailFaces = ref<App.Http.Resources.Models.FaceResource[]>([]);
 const detailFacesLoading = ref(false);
+const detailFacesLoadingMore = ref(false);
+const detailCurrentPage = ref(1);
+const detailHasMorePages = ref(false);
 const detailPersonSelect = ref<App.Http.Resources.Models.PersonResource | string | null>(null);
 const detailAssigning = ref(false);
 const detailDismissing = ref(false);
+const detailScrollSentinel = ref<HTMLElement | null>(null);
+let detailScrollObserver: IntersectionObserver | null = null;
 
 function searchPeople(event: { query: string }) {
 	const q = event.query.toLowerCase();
@@ -459,11 +470,15 @@ function openClusterDetail(cluster: App.Http.Resources.Models.ClusterPreviewReso
 	detailCluster.value = cluster;
 	detailFaces.value = [];
 	detailPersonSelect.value = null;
+	detailCurrentPage.value = 1;
+	detailHasMorePages.value = false;
 	detailDialogVisible.value = true;
 	detailFacesLoading.value = true;
-	FaceClusterService.getClusterFaces(cluster.cluster_label)
+	FaceClusterService.getClusterFaces(cluster.cluster_label, 1)
 		.then((response) => {
 			detailFaces.value = response.data.data as unknown as App.Http.Resources.Models.FaceResource[];
+			detailCurrentPage.value = response.data.current_page;
+			detailHasMorePages.value = response.data.current_page < response.data.last_page;
 		})
 		.catch(() => {
 			/* already handled elsewhere */
@@ -472,6 +487,52 @@ function openClusterDetail(cluster: App.Http.Resources.Models.ClusterPreviewReso
 			detailFacesLoading.value = false;
 		});
 }
+
+function loadMoreDetailFaces() {
+	if (!detailCluster.value || detailFacesLoadingMore.value || !detailHasMorePages.value) return;
+	detailFacesLoadingMore.value = true;
+	const nextPage = detailCurrentPage.value + 1;
+	FaceClusterService.getClusterFaces(detailCluster.value.cluster_label, nextPage)
+		.then((response) => {
+			detailFaces.value = [...detailFaces.value, ...(response.data.data as unknown as App.Http.Resources.Models.FaceResource[])];
+			detailCurrentPage.value = response.data.current_page;
+			detailHasMorePages.value = response.data.current_page < response.data.last_page;
+		})
+		.catch(() => {
+			/* already handled elsewhere */
+		})
+		.finally(() => {
+			detailFacesLoadingMore.value = false;
+		});
+}
+
+function setupDetailScrollObserver() {
+	detailScrollObserver?.disconnect();
+	detailScrollObserver = new IntersectionObserver(
+		(entries) => {
+			if (entries[0]?.isIntersecting) {
+				loadMoreDetailFaces();
+			}
+		},
+		{ threshold: 0.1 },
+	);
+	if (detailScrollSentinel.value) {
+		detailScrollObserver.observe(detailScrollSentinel.value);
+	}
+}
+
+watch(detailScrollSentinel, (el) => {
+	if (el) {
+		setupDetailScrollObserver();
+	}
+});
+
+watch(detailDialogVisible, (visible) => {
+	if (!visible) {
+		detailScrollObserver?.disconnect();
+		detailScrollObserver = null;
+	}
+});
 
 function dismissSingleFace(face: App.Http.Resources.Models.FaceResource) {
 	FaceDetectionService.toggleDismissed(face.id)
