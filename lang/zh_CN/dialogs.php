@@ -113,6 +113,8 @@ return [
     ],
     'upload' => [
         'completed' => '已完成',
+        'completed_with_errors' => 'Completed — :errors upload(s) failed',
+        'completed_with_warnings' => 'Completed — :warnings upload(s) with warnings',
         'uploaded' => '已上传：',
         'release' => '松开文件开始上传！',
         'select' => '点击此处选择要上传的文件',

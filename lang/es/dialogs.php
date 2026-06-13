@@ -112,6 +112,8 @@ return [
     ],
     'upload' => [
         'completed' => 'Terminado',
+        'completed_with_errors' => 'Completed — :errors upload(s) failed',
+        'completed_with_warnings' => 'Completed — :warnings upload(s) with warnings',
         'uploaded' => 'Subido:',
         'release' => '¡Libera el archivo para cargar!',
         'select' => 'Haga clic aquí para seleccionar los archivos que desea cargar',

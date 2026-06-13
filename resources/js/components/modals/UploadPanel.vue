@@ -3,16 +3,30 @@
 		<template #container>
 			<div v-if="setup" class="w-screen max-w-lg max-h-screen flex flex-col p-4">
 				<div v-if="counts.files > 0" class="flex flex-wrap justify-center w-full max-w-md">
-					<span v-if="counts.completed === counts.files" class="w-full text-center text-muted-color-emphasis font-bold">{{
-						$t("dialogs.upload.completed")
-					}}</span>
+					<template v-if="counts.completed === counts.files">
+						<span v-if="counts.errors > 0" class="w-full text-center text-danger-700 font-bold">{{
+							$t("dialogs.upload.completed_with_errors", { errors: String(counts.errors) })
+						}}</span>
+						<span v-else-if="counts.warnings > 0" class="w-full text-center text-warning-600 font-bold">{{
+							$t("dialogs.upload.completed_with_warnings", { warnings: String(counts.warnings) })
+						}}</span>
+						<span v-else class="w-full text-center text-muted-color-emphasis font-bold">{{ $t("dialogs.upload.completed") }}</span>
+					</template>
 					<span v-else class="w-full text-center">{{ $t("dialogs.upload.uploaded") }} {{ counts.completed }} / {{ counts.files }}</span>
 					<ProgressBar
 						class="w-full"
 						:value="Math.round((counts.completed * 100) / counts.files)"
 						:show-value="false"
 						:pt:value:class="'duration-300'"
-						:class="counts.completed === counts.files ? 'successProgressBarSeverity' : ''"
+						:class="
+							counts.completed === counts.files
+								? counts.errors > 0
+									? 'errorProgressBarSeverity'
+									: counts.warnings > 0
+										? 'warningProgressBarSeverity'
+										: 'successProgressBarSeverity'
+								: ''
+						"
 					/>
 				</div>
 				<ScrollPanel v-if="counts.files > 0" class="w-full h-48 py-4 pr-3 mr-5" :pt:scrollbar:class="'opacity-100'">
@@ -129,6 +143,8 @@ const counts = computed(() => {
 		waiting: list_upload_files.value.filter((f) => f.status === "waiting").length,
 		completed: list_upload_files.value.filter((f) => f.status === "done" || f.status === "error" || f.status === "warning").length,
 		uploading: list_upload_files.value.filter((f) => f.status === "uploading").length,
+		errors: list_upload_files.value.filter((f) => f.status === "error").length,
+		warnings: list_upload_files.value.filter((f) => f.status === "warning").length,
 	};
 });
 
@@ -184,6 +200,10 @@ function uploadCompleted(index: number, status: "done" | "error" | "warning", me
 	if (counts.value.completed === counts.value.files) {
 		AlbumService.clearCache(albumId.value ?? "unsorted");
 		emits("refresh");
+
+		if (setup.value?.close_upload_on_success && counts.value.errors === 0 && counts.value.warnings === 0) {
+			close();
+		}
 	}
 }
 

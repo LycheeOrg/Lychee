@@ -112,6 +112,8 @@ return [
     ],
     'upload' => [
         'completed' => 'Abgeschlossen',
+        'completed_with_errors' => 'Completed — :errors upload(s) failed',
+        'completed_with_warnings' => 'Completed — :warnings upload(s) with warnings',
         'uploaded' => 'Hochgeladen:',
         'release' => 'Datei zum Hochladen freigeben!',
         'select' => 'Hier klicken um Dateien zum Hochladen auszuwählen',
