@@ -565,6 +565,7 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		album_header_size: App.Enum.AlbumHeaderSize;
 		is_album_header_landing_title_enabled: boolean;
 		use_admin_dashboard: boolean;
+		site_logo: string;
 	};
 	export type LandingPageResource = {
 		landing_page_enable: boolean;
@@ -574,6 +575,8 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		landing_title: string;
 		site_owner: string;
 		site_title: string;
+		landing_logo: string;
+		landing_header_logo: string;
 		footer: App.Http.Resources.GalleryConfigs.FooterConfig;
 	};
 	export type MapProviderData = {
