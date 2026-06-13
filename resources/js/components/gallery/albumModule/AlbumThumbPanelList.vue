@@ -6,6 +6,7 @@
 			:cover_id="null"
 			:is-selected="props.selectedAlbums.includes(album.id)"
 			@click="propagateClicked($event, album.id)"
+			@touch-select="(e: MouseEvent) => emits('selected', e, album.id)"
 			@contextmenu.prevent="propagateContexted($event, album.id)"
 		/>
 	</template>
@@ -27,6 +28,7 @@ const props = defineProps<{
 // bubble up.
 const emits = defineEmits<{
 	clicked: [event: MouseEvent, id: string];
+	selected: [event: MouseEvent, id: string];
 	contexted: [event: MouseEvent, id: string];
 }>();
 

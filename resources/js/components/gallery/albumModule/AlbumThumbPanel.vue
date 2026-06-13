@@ -14,6 +14,7 @@
 				:albums="props.albums"
 				:selected-ids="props.selectedAlbums"
 				@clicked="propagateClicked"
+				@selected="propagateSelected"
 				@contexted="propagateContexted"
 			/>
 			<AlbumThumbPanelList
@@ -21,6 +22,7 @@
 				:albums="props.albums"
 				:selected-albums="props.selectedAlbums"
 				@clicked="propagateClicked"
+				@selected="propagateSelected"
 				@contexted="propagateContexted"
 			/>
 		</div>
@@ -113,9 +115,14 @@ const props = defineProps<{
 // bubble up.
 const emits = defineEmits<{
 	clicked: [event: MouseEvent, id: string];
+	selected: [event: MouseEvent, id: string];
 	contexted: [event: MouseEvent, id: string];
 }>();
 const { propagateClicked, propagateContexted } = usePropagateAlbumEvents(emits);
+
+function propagateSelected(event: MouseEvent, id: string) {
+	emits("selected", event, id);
+}
 
 const { spliter, verifyOrder } = useSplitter();
 

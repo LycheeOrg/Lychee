@@ -17,47 +17,68 @@
 
 		<template #end>
 			<Button
-				v-if="is_se_enabled && albumStore.album.rights?.can_edit"
-				v-tooltip.bottom="$t('gallery.album.copy_highlighted_names')"
-				icon="pi pi-copy"
-				class="border-none hover:text-color"
+				v-if="is_touch_select_mode && (selectedPhotosIds.length > 0 || selectedAlbumsIds.length > 0)"
+				v-tooltip.bottom="$t('gallery.album.photo_actions')"
+				icon="pi pi-ellipsis-v"
+				class="border-none"
 				severity="secondary"
 				text
-				@click="emits('showSelected')"
+				@click="(e: MouseEvent) => emits('openContextMenu', e)"
 			/>
-			<router-link v-if="orderManagementStore.hasItems" v-tooltip.bottom="'Basket'" :to="{ name: 'basket' }" class="hidden sm:block">
-				<Button
-					icon="pi pi-shopping-cart"
-					class="border-none"
-					:severity="orderManagementStore.order?.status === 'processing' ? 'danger' : 'secondary'"
-					text
-				/>
-			</router-link>
-			<router-link
-				v-if="is_favourite_enabled && (favourites.photos?.length ?? 0) > 0"
-				v-tooltip.bottom="'Favourites'"
-				:to="{ name: 'favourites' }"
-				class="hidden sm:block"
-			>
-				<Button icon="pi pi-heart" class="border-none" severity="secondary" text />
-			</router-link>
 			<Button
-				v-if="albumStore.config?.is_search_accessible"
-				icon="pi pi-search"
-				class="border-none hidden sm:inline-flex"
+				v-if="isTouchDevice() && canInteractPhoto()"
+				v-tooltip.bottom="$t('gallery.album.toggle_touch_select')"
+				:icon="is_touch_select_mode ? 'pi pi-check-square' : 'pi pi-stop'"
+				class="border-none"
+				:class="{ 'text-primary-400': is_touch_select_mode }"
 				severity="secondary"
 				text
-				@click="emits('openSearch')"
+				@click="togglableStore.toggleTouchSelectMode()"
 			/>
-			<Button v-if="albumStore.rights?.can_upload" icon="pi pi-plus" class="border-none" severity="secondary" text @click="openAddMenu" />
-			<template v-if="albumStore.rights?.can_edit">
+			<template v-if="!is_touch_select_mode">
 				<Button
-					:icon="is_album_edit_open ? 'pi pi-angle-up' : 'pi pi-angle-down'"
+					v-if="is_se_enabled && albumStore.album.rights?.can_edit"
+					v-tooltip.bottom="$t('gallery.album.copy_highlighted_names')"
+					icon="pi pi-copy"
+					class="border-none hover:text-color"
 					severity="secondary"
-					:class="{ 'ltr:mr-2 rtl:ml-2 border-none': true, 'text-primary-400': is_album_edit_open }"
 					text
-					@click="emits('toggleEdit')"
+					@click="emits('showSelected')"
 				/>
+				<router-link v-if="orderManagementStore.hasItems" v-tooltip.bottom="'Basket'" :to="{ name: 'basket' }" class="hidden sm:block">
+					<Button
+						icon="pi pi-shopping-cart"
+						class="border-none"
+						:severity="orderManagementStore.order?.status === 'processing' ? 'danger' : 'secondary'"
+						text
+					/>
+				</router-link>
+				<router-link
+					v-if="is_favourite_enabled && (favourites.photos?.length ?? 0) > 0"
+					v-tooltip.bottom="'Favourites'"
+					:to="{ name: 'favourites' }"
+					class="hidden sm:block"
+				>
+					<Button icon="pi pi-heart" class="border-none" severity="secondary" text />
+				</router-link>
+				<Button
+					v-if="albumStore.config?.is_search_accessible"
+					icon="pi pi-search"
+					class="border-none hidden sm:inline-flex"
+					severity="secondary"
+					text
+					@click="emits('openSearch')"
+				/>
+				<Button v-if="albumStore.rights?.can_upload" icon="pi pi-plus" class="border-none" severity="secondary" text @click="openAddMenu" />
+				<template v-if="albumStore.rights?.can_edit">
+					<Button
+						:icon="is_album_edit_open ? 'pi pi-angle-up' : 'pi pi-angle-down'"
+						severity="secondary"
+						:class="{ 'ltr:mr-2 rtl:ml-2 border-none': true, 'text-primary-400': is_album_edit_open }"
+						text
+						@click="emits('toggleEdit')"
+					/>
+				</template>
 			</template>
 		</template>
 	</Toolbar>
@@ -91,6 +112,8 @@ import GoBack from "./GoBack.vue";
 import { onMounted } from "vue";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { useOrderManagementStore } from "@/stores/OrderManagement";
+import { isTouchDevice } from "@/utils/keybindings-utils";
+import { useAlbumActions } from "@/composables/album/albumActions";
 
 const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
@@ -99,7 +122,8 @@ const albumStore = useAlbumStore();
 const orderManagementStore = useOrderManagementStore();
 
 const { dropbox_api_key, is_favourite_enabled, is_se_enabled } = storeToRefs(lycheeStore);
-const { is_album_edit_open, is_full_screen } = storeToRefs(togglableStore);
+const { canInteractPhoto } = useAlbumActions();
+const { is_album_edit_open, is_full_screen, is_touch_select_mode, selectedPhotosIds, selectedAlbumsIds } = storeToRefs(togglableStore);
 
 const { toggleCreateAlbum, toggleImportFromLink, toggleImportFromDropbox, toggleUpload, toggleImportFromServer, toggleCameraCapture } =
 	useGalleryModals(togglableStore);
@@ -110,6 +134,7 @@ const emits = defineEmits<{
 	goBack: [];
 	openSearch: [];
 	showSelected: [];
+	openContextMenu: [event: MouseEvent];
 }>();
 
 function toggleUploadTrack() {
