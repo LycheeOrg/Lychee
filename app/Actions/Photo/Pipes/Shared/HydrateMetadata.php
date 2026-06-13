@@ -33,7 +33,9 @@ class HydrateMetadata implements SharedPipe
 	public function handle(DuplicateDTO|StandaloneDTO $state, \Closure $next): DuplicateDTO|StandaloneDTO
 	{
 		if ($state->photo->title === null) {
-			$state->photo->title = $state->exif_info->title;
+			$state->photo->title = $state->exif_info->title !== null
+				? mb_substr($state->exif_info->title, 0, 100, 'UTF-8')
+				: null;
 		}
 		if ($state->photo->description === null) {
 			$state->photo->description = $state->exif_info->description;
