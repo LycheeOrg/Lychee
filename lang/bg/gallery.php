@@ -140,6 +140,8 @@ return [
         'header_photos' => 'Снимки',
         'show_highlighted' => 'Филтрирай отбелязаните снимки',
         'copy_highlighted_names' => 'Копирай имената на маркираните снимки',
+        'toggle_touch_select' => 'Toggle photo selection mode',
+        'photo_actions' => 'Photo actions',
         'no_results' => 'Няма какво да се покаже',
         'upload' => 'Качване на снимки',
         'tabs' => [

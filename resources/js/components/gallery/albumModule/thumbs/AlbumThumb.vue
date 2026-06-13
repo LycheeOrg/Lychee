@@ -65,11 +65,7 @@
 		<!-- v-if="props.config.album_decoration !== 'none'" -->
 		<AlbumThumbDecorations :album="props.album" />
 		<!-- Touch select overlay: stops the click from reaching the router-link navigate handler -->
-		<div
-			v-if="is_touch_select_mode"
-			class="absolute inset-0 z-20"
-			@click.stop="(e: MouseEvent) => emits('touchSelect', e)"
-		/>
+		<div v-if="is_touch_select_mode" class="absolute inset-0 z-20" @click.stop="(e: MouseEvent) => emits('touchSelect', e)" />
 		<!-- Touch select mode indicator -->
 		<div
 			v-if="is_touch_select_mode"

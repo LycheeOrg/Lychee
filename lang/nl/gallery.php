@@ -140,6 +140,8 @@ return [
         'header_photos' => 'Foto’s',
         'show_highlighted' => 'Filter highlighted images',
         'copy_highlighted_names' => 'Copy highlighted photo names to clipboard',
+        'toggle_touch_select' => 'Toggle photo selection mode',
+        'photo_actions' => 'Photo actions',
         'no_results' => 'Niets te zien hier',
         'upload' => 'Foto’s uploaden',
         'tabs' => [
