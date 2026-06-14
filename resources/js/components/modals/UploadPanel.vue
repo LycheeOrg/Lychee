@@ -32,9 +32,10 @@
 				<ScrollPanel v-if="counts.files > 0" class="w-full h-48 py-4 pr-3 mr-5" :pt:scrollbar:class="'opacity-100'">
 					<UploadingLine
 						v-for="(uploadable, index) in list_upload_files"
-						:key="uploadable.file.name"
+						:key="uploadable.uid"
 						:file="uploadable.file"
-						:album-id="albumId"
+						:album-id="uploadable.album_id ?? albumId"
+						:album-title="uploadable.albumTitle"
 						:status="uploadable.status"
 						:message="uploadable.message"
 						:index="index"
@@ -108,7 +109,6 @@ import InputSwitch from "primevue/inputswitch";
 import { computed, onMounted, onUnmounted, Ref, ref, watch } from "vue";
 import UploadingLine from "@/components/forms/upload/UploadingLine.vue";
 import ScrollPanel from "primevue/scrollpanel";
-import UploadService from "@/services/upload-service";
 import ProgressBar from "primevue/progressbar";
 import AlbumService from "@/services/album-service";
 import { useRoute } from "vue-router";
@@ -116,10 +116,9 @@ import { storeToRefs } from "pinia";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 
 const togglableStore = useTogglablesStateStore();
-const { is_upload_visible, list_upload_files } = storeToRefs(togglableStore);
+const { is_upload_visible, list_upload_files, upload_config: setup } = storeToRefs(togglableStore);
 const route = useRoute();
 
-const setup = ref<App.Http.Resources.GalleryConfigs.UploadConfig | undefined>(undefined);
 const albumId = ref(route.params.albumId ?? (null as string | null)) as Ref<string | null>;
 const applyWatermark = ref(true);
 
@@ -132,11 +131,6 @@ const isDropping = ref(false);
 const showCancel = computed(() => counts.value.files > 0 && counts.value.completed < counts.value.files);
 const showResume = computed(() => counts.value.waiting > 0 && counts.value.uploading === 0);
 
-function load() {
-	UploadService.getSetUp().then((response) => {
-		setup.value = response.data;
-	});
-}
 const counts = computed(() => {
 	return {
 		files: list_upload_files.value.length,
@@ -156,7 +150,7 @@ function upload(event: Event) {
 	}
 
 	for (let i = 0; i < target.files.length; i++) {
-		list_upload_files.value.push({ file: target.files[i], status: "waiting" });
+		list_upload_files.value.push({ uid: crypto.randomUUID(), file: target.files[i], status: "waiting" });
 	}
 
 	// Start uploading chunks.
@@ -198,7 +192,12 @@ function uploadCompleted(index: number, status: "done" | "error" | "warning", me
 
 	// Only refresh if all uploads are done.
 	if (counts.value.completed === counts.value.files) {
-		AlbumService.clearCache(albumId.value ?? "unsorted");
+		// Clear cache for the route-level album and any per-file album_id overrides (folder-drop targets).
+		const albumIds = new Set<string>([albumId.value ?? "unsorted"]);
+		list_upload_files.value.forEach((f) => {
+			if (f.album_id) albumIds.add(f.album_id);
+		});
+		albumIds.forEach((id) => AlbumService.clearCache(id));
 		emits("refresh");
 
 		if (setup.value?.close_upload_on_success && counts.value.errors === 0 && counts.value.warnings === 0) {
@@ -250,7 +249,6 @@ function disableAutoScroll() {
 }
 
 onMounted(() => {
-	load();
 	addEventListener("scroll", disableAutoScroll);
 });
 onUnmounted(() => {

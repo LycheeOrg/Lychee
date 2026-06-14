@@ -1,13 +1,31 @@
+import { handleFolderDrop, hasDirectoryEntry } from "@/composables/album/folderDrop";
 import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
-import { type Ref } from "vue";
+import { useToast } from "primevue/usetoast";
+import { ref, type Ref } from "vue";
 
 export type Uploadable = {
+	uid: string;
 	file: File;
+	album_id?: string;
+	albumTitle?: string;
 	message?: string;
 	status: "uploading" | "waiting" | "done" | "error" | "warning";
 };
 
-export function useMouseEvents(can_upload: Ref<boolean>, is_upload_visible: Ref<boolean>, list_upload_files: Ref<Uploadable[]>) {
+export function useMouseEvents(
+	can_upload: Ref<boolean>,
+	is_upload_visible: Ref<boolean>,
+	list_upload_files: Ref<Uploadable[]>,
+	parent_id: Ref<string | null> = ref(null),
+	existingAlbums: Ref<{ id: string; title: string }[]> = ref([]),
+	upload_config: Ref<App.Http.Resources.GalleryConfigs.UploadConfig | undefined> = ref(undefined),
+) {
+	const toast = useToast();
+
+	function onError(message: string) {
+		toast.add({ severity: "error", summary: "Upload error", detail: message, life: 5000 });
+	}
+
 	function dragEnd(e: DragEvent) {
 		if (can_upload.value !== true) {
 			return;
@@ -27,9 +45,26 @@ export function useMouseEvents(can_upload: Ref<boolean>, is_upload_visible: Ref<
 			return;
 		}
 
+		// Folder drop path: enabled by default; disabled only when explicitly set to false.
+		if (
+			upload_config.value !== undefined &&
+			upload_config.value.folder_upload_enabled === true &&
+			e.dataTransfer.items &&
+			hasDirectoryEntry(e.dataTransfer.items)
+		) {
+			const maxDepth = upload_config.value.folder_upload_max_depth;
+			handleFolderDrop(e.dataTransfer.items, parent_id.value, existingAlbums.value, list_upload_files, maxDepth, onError).then((queued) => {
+				if (queued) {
+					is_upload_visible.value = true;
+				}
+			});
+			return;
+		}
+
+		// Flat-file path (unchanged).
 		if (e.dataTransfer.files.length > 0) {
 			for (let i = 0; i < e.dataTransfer.files.length; i++) {
-				list_upload_files.value.push({ file: e.dataTransfer.files[i], status: "waiting" });
+				list_upload_files.value.push({ uid: crypto.randomUUID(), file: e.dataTransfer.files[i], status: "waiting" });
 			}
 			is_upload_visible.value = true;
 		} else if (e.dataTransfer.getData("Text").length > 3) {
@@ -59,7 +94,7 @@ export function useMouseEvents(can_upload: Ref<boolean>, is_upload_visible: Ref<
 				if (items[i].type.indexOf("image") !== -1 || items[i].type.indexOf("video") !== -1) {
 					const file = items[i].getAsFile();
 					if (file) {
-						list_upload_files.value.push({ file: file, status: "waiting" });
+						list_upload_files.value.push({ uid: crypto.randomUUID(), file: file, status: "waiting" });
 					}
 				}
 			}

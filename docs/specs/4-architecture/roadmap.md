@@ -6,6 +6,7 @@ High-level planning document for Lychee features and architectural initiatives.
 
 | Feature ID | Name | Status | Priority | Assignee | Started | Updated | Progress |
 |------------|------|--------|----------|----------|---------|---------|----------|
+| 044 | Folder Drag-and-Drop Album Creation | Draft | Medium | - | 2026-06-13 | 2026-06-13 | Spec, plan, tasks drafted. 14 tasks across 5 increments (I0 type extension, I1 UploadPanel, I2 folderDrop composable, I3 uploadEvents, I4 view wiring). Frontend-only — no backend changes. |
 
 ## Paused Features
 
@@ -114,4 +115,4 @@ features/
 
 ---
 
-*Last updated: 2026-06-12 (Feature 042 Part A complete — Photo Display Enrichment, webshop order item display)*
+*Last updated: 2026-06-13 (Feature 044 spec/plan/tasks drafted — Folder Drag-and-Drop Album Creation)*

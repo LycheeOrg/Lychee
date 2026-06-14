@@ -270,6 +270,7 @@ const {
 	is_slideshow_active,
 	is_upload_visible,
 	list_upload_files,
+	upload_config,
 	is_create_album_visible,
 	is_album_edit_open,
 	is_import_from_link_open,
@@ -469,12 +470,22 @@ onKeyStroke("Escape", () => {
 
 // We prevent the drag mechanism when a photo is loaded.
 const can_upload = computed(() => (albumStore.rights?.can_upload ?? false) && photoStore.isLoaded === false);
-const { onPaste, dragEnd, dropUpload } = useMouseEvents(can_upload, is_upload_visible, list_upload_files);
+const album_parent_id = computed(() => albumId.value ?? null);
+const album_existing_albums = computed(() => albumsStore.albums.map((a) => ({ id: a.id, title: a.title })));
+const { onPaste, dragEnd, dropUpload } = useMouseEvents(
+	can_upload,
+	is_upload_visible,
+	list_upload_files,
+	album_parent_id,
+	album_existing_albums,
+	upload_config,
+);
 
 onMounted(() => {
 	// Reset the slideshow.
 	is_slideshow_active.value = false;
 
+	togglableStore.loadUploadConfig();
 	window.addEventListener("paste", onPaste);
 	window.addEventListener("dragover", dragEnd);
 	window.addEventListener("drop", dropUpload);

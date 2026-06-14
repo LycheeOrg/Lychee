@@ -1,4 +1,5 @@
 import { Uploadable } from "@/composables/album/uploadEvents";
+import UploadService from "@/services/upload-service";
 import { defineStore } from "pinia";
 
 export type TogglablesStateStore = ReturnType<typeof useTogglablesStateStore>;
@@ -14,6 +15,7 @@ export const useTogglablesStateStore = defineStore("togglables-store", {
 		// upload
 		is_upload_visible: false,
 		list_upload_files: [] as Uploadable[],
+		upload_config: undefined as App.Http.Resources.GalleryConfigs.UploadConfig | undefined,
 
 		// create albums
 		is_create_album_visible: false,
@@ -66,6 +68,15 @@ export const useTogglablesStateStore = defineStore("togglables-store", {
 		nonHoverSelectableAlbumsIdx: [] as string[], // contains albums ids that are currently hoved but not selected
 	}),
 	actions: {
+		loadUploadConfig() {
+			if (this.upload_config !== undefined) {
+				return;
+			}
+			UploadService.getSetUp().then((response) => {
+				this.upload_config = response.data;
+			});
+		},
+
 		toggleFullScreen() {
 			this.is_full_screen = !this.is_full_screen;
 		},
