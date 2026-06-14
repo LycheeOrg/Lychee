@@ -28,9 +28,9 @@ return new class() extends BaseConfigMigration {
 			],
 			[
 				'key' => 'folder_upload_max_depth',
-				'value' => '0',
+				'value' => '5',
 				'cat' => self::PROCESSING,
-				'type_range' => self::POSITIVE . '|0',
+				'type_range' => self::INT,
 				'description' => 'Maximum sub-folder recursion depth for folder uploads (0 = unlimited).',
 				'details' => 'Controls how many sub-folder levels are processed when a folder is dropped. 1 means only the top-level dropped folder; 2 means one level of sub-folders; 0 means no limit.',
 				'is_secret' => false,
