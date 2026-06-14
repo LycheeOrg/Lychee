@@ -7,6 +7,7 @@ export type Uploadable = {
 	uid: string;
 	file: File;
 	album_id?: string;
+	albumTitle?: string;
 	message?: string;
 	status: "uploading" | "waiting" | "done" | "error" | "warning";
 };
@@ -45,8 +46,13 @@ export function useMouseEvents(
 		}
 
 		// Folder drop path: enabled by default; disabled only when explicitly set to false.
-		if (upload_config.value?.folder_upload_enabled !== false && e.dataTransfer.items && hasDirectoryEntry(e.dataTransfer.items)) {
-			const maxDepth = upload_config.value?.folder_upload_max_depth ?? 0;
+		if (
+			upload_config.value !== undefined &&
+			upload_config.value.folder_upload_enabled === true &&
+			e.dataTransfer.items &&
+			hasDirectoryEntry(e.dataTransfer.items)
+		) {
+			const maxDepth = upload_config.value.folder_upload_max_depth;
 			handleFolderDrop(e.dataTransfer.items, parent_id.value, existingAlbums.value, list_upload_files, maxDepth, onError).then((queued) => {
 				if (queued) {
 					is_upload_visible.value = true;

@@ -268,6 +268,7 @@ photoStore.reset();
 
 async function refresh() {
 	await Promise.allSettled([lycheeStore.load(), userStore.refresh()]);
+	AlbumService.clearAlbums();
 	albumsStore.load(router);
 	orderManagementStore.refresh();
 }

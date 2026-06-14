@@ -1,7 +1,9 @@
 <template>
 	<div :id="`upload${index}`" class="w-full flex flex-col">
 		<div class="flex gap-x-4 justify-between relative" :class="errorFlexClass">
-			<span class="text-ellipsis min-w-0 w-full overflow-hidden text-nowrap text-muted-color">{{ file.name }}</span>
+			<span class="text-ellipsis min-w-0 w-full overflow-hidden text-nowrap text-muted-color">
+				<span v-if="albumTitle" class="text-xs text-muted-color mr-1">{{ albumTitle }} /</span>{{ file.name }}
+			</span>
 			<span v-if="progress < 100 && progress > 0" :class="statusClass">{{ progress }}%</span>
 			<span :class="statusClass">{{ statusMessage }}</span>
 		</div>
@@ -18,21 +20,21 @@ import { trans } from "laravel-vue-i18n";
 import ProgressBar from "primevue/progressbar";
 import { computed, ref, watch } from "vue";
 
-const props = withDefaults(
-	defineProps<{
-		albumId: string | null;
-		file: File;
-		chunkSize: number;
-		status: "uploading" | "waiting" | "done" | "error" | "warning";
-		index: number;
-		applyWatermark: boolean;
-		message: string | undefined;
-	}>(),
-	{
-		chunkSize: 1024,
-		message: undefined,
-	},
-);
+type UploadingLineProps = {
+	albumId: string | null;
+	albumTitle?: string;
+	file: File;
+	chunkSize: number;
+	status: "uploading" | "waiting" | "done" | "error" | "warning";
+	index: number;
+	applyWatermark: boolean;
+	message: string | undefined;
+};
+
+const props = withDefaults(defineProps<UploadingLineProps>(), {
+	chunkSize: 1024,
+	message: undefined,
+});
 
 const emits = defineEmits<{
 	"upload:completed": [index: number, status: "done" | "warning" | "error", message: string | undefined];

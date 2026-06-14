@@ -87,7 +87,13 @@ function processDirectory(
 
 				const filePromises = fileEntries.map((fe) =>
 					fileEntryToFile(fe).then((file) => {
-						list_upload_files.value.push({ uid: crypto.randomUUID(), file, album_id: albumId, status: "waiting" });
+						list_upload_files.value.push({
+							uid: crypto.randomUUID(),
+							file,
+							album_id: albumId,
+							albumTitle: dirEntry.name,
+							status: "waiting",
+						});
 					}),
 				);
 

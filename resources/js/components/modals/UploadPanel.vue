@@ -35,6 +35,7 @@
 						:key="uploadable.uid"
 						:file="uploadable.file"
 						:album-id="uploadable.album_id ?? albumId"
+						:album-title="uploadable.albumTitle"
 						:status="uploadable.status"
 						:message="uploadable.message"
 						:index="index"
