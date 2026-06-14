@@ -36,8 +36,8 @@ class UploadConfig extends Data
 		$watermarker = resolve(Watermarker::class);
 		$this->can_watermark_optout = $watermarker->can_watermark() && !$config_manager->getValueAsBool('watermark_optout_disabled');
 		$this->close_upload_on_success = $config_manager->getValueAsBool('close_upload_on_success');
-		$this->folder_upload_enabled = $config_manager->getValueAsBool('folder_upload_enabled', true);
-		$this->folder_upload_max_depth = $config_manager->getValueAsInt('folder_upload_max_depth', 0);
+		$this->folder_upload_enabled = $config_manager->getValueAsBool('folder_upload_enabled');
+		$this->folder_upload_max_depth = $config_manager->getValueAsInt('folder_upload_max_depth');
 	}
 
 	public static function getUploadLimit(): int
