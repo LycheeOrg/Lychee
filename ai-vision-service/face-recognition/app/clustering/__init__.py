@@ -1,1 +1,0 @@
-"""Face embedding clustering (DBSCAN)."""

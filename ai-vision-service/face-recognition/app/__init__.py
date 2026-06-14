@@ -1,1 +1,0 @@
-"""Lychee AI Vision Service."""
