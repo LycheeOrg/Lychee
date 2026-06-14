@@ -12,12 +12,17 @@
 		</template>
 
 		<template #center>
-			<span class="sm:hidden font-bold">
-				{{ $t("gallery.timeline.title") }}
-			</span>
-			<span class="hidden lg:block font-bold text-sm lg:text-base text-center w-full" @click="is_metrics_open = !is_metrics_open">
-				{{ lycheeStore.title }}
-			</span>
+			<template v-if="lycheeStore.site_logo !== ''">
+				<img :src="lycheeStore.site_logo" alt="logo" class="h-8 object-contain" @click="is_metrics_open = !is_metrics_open" />
+			</template>
+			<template v-else>
+				<span class="sm:hidden font-bold">
+					{{ $t("gallery.timeline.title") }}
+				</span>
+				<span class="hidden lg:block font-bold text-sm lg:text-base text-center w-full" @click="is_metrics_open = !is_metrics_open">
+					{{ lycheeStore.title }}
+				</span>
+			</template>
 		</template>
 
 		<template #end>

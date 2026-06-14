@@ -15,14 +15,24 @@
 
 		<template #center>
 			<template v-if="albumsStore.rootConfig.header_image_url === ''">
-				<span class="lg:hidden font-bold text-shadow-sm text-shadow-black">
-					{{ $t("gallery.albums") }}
-				</span>
-				<span
-					class="hidden lg:block font-bold text-shadow-sm text-shadow-black text-sm lg:text-base text-center w-full"
+				<img
+					v-if="lycheeStore.site_logo !== ''"
+					:src="lycheeStore.site_logo"
+					alt="logo"
+					class="h-8 object-contain"
 					@click="is_metrics_open = !is_metrics_open"
-					>{{ props.title }}</span
-				>
+					id="header-site-logo-title"
+				/>
+				<template v-else>
+					<span class="lg:hidden font-bold text-shadow-sm text-shadow-black">
+						{{ $t("gallery.albums") }}
+					</span>
+					<span
+						class="hidden lg:block font-bold text-shadow-sm text-shadow-black text-sm lg:text-base text-center w-full"
+						@click="is_metrics_open = !is_metrics_open"
+						>{{ props.title }}</span
+					>
+				</template>
 			</template>
 		</template>
 
@@ -104,11 +114,20 @@
 			</a>
 		</template>
 	</ContextMenu>
-	<div v-if="albumsStore.rootConfig?.header_image_url !== ''" class="relative w-full h-[calc(100vh/2)] -mt-14 z-0">
+	<div v-if="albumsStore.rootConfig?.header_image_url !== ''" class="relative w-full h-[50vh] -mt-14 z-0">
 		<img :src="albumsStore.rootConfig?.header_image_url" class="object-cover h-full w-full" />
 		<div class="absolute top-0 left-0 w-full h-full flex items-center justify-center px-20">
+			<img
+				v-if="lycheeStore.site_logo !== ''"
+				:src="lycheeStore.site_logo"
+				alt="logo"
+				class="max-h-24 max-w-sm object-contain"
+				id="header-site-logo"
+			/>
 			<h1
+				v-else
 				class="text-sm font-bold sm:text-lg md:text-3xl md:font-normal text-surface-0 uppercase text-center text-shadow-md text-shadow-black/25"
+				id="header-site-text"
 			>
 				{{ props.title }}
 			</h1>

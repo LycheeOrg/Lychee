@@ -5,17 +5,27 @@
 	</div>
 	<Panel v-if="is_loaded" class="border-none p-9 mx-auto max-w-3x" pt:content:class="flex flex-col items-center" pt:header:class="hidden">
 		<div v-if="initdata" class="my-12">
-			<h1 class="text-center text-2xl text-surface-0 uppercase font-extralight">
-				{{ initdata.landing_title }}
-			</h1>
-			<h2 class="text-center text-base text-muted-color uppercase font-extralight">
-				{{ initdata.landing_subtitle }}
-			</h2>
+			<template v-if="initdata.landing_logo !== ''">
+				<img :src="initdata.landing_logo" alt="logo" class="max-h-24 max-w-xs object-contain mx-auto" />
+			</template>
+			<template v-else>
+				<h1 class="text-center text-2xl text-surface-0 uppercase font-extralight">
+					{{ initdata.landing_title }}
+				</h1>
+				<h2 class="text-center text-base text-muted-color uppercase font-extralight">
+					{{ initdata.landing_subtitle }}
+				</h2>
+			</template>
 		</div>
 		<div v-else class="my-12">
-			<h1 class="text-center text-2xl text-surface-0 uppercase font-extralight">
-				{{ title }}
-			</h1>
+			<template v-if="lycheeStore.site_logo !== ''">
+				<img :src="lycheeStore.site_logo" alt="logo" class="max-h-24 max-w-xs object-contain mx-auto" />
+			</template>
+			<template v-else>
+				<h1 class="text-center text-2xl text-surface-0 uppercase font-extralight">
+					{{ title }}
+				</h1>
+			</template>
 		</div>
 		<LoginForm padding="" @logged-in="goBack" />
 		<Button severity="secondary" class="w-full max-w-md font-bold border-none rounded-xl shrink" @click="goBack">
