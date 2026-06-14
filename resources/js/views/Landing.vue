@@ -3,9 +3,13 @@
 		<div id="header" class="fixed top-0 left-0 right-0 z-50 overflow-y-hidden">
 			<div id="logo" class="float-left p-4 text-surface-0 animate-landingAnimateDown">
 				<a href="#">
-					<template v-if="initdata.landing_header_logo !== ''">
-						<img :src="initdata.landing_header_logo" alt="logo" class="h-10 object-contain" />
-					</template>
+					<img
+						v-if="initdata.landing_header_logo !== ''"
+						:src="initdata.landing_header_logo"
+						alt="logo"
+						class="h-10 object-contain"
+						id="landing-header-logo"
+					/>
 					<template v-else>
 						<h1 class="text-lg font-bold uppercase text-center roboto">
 							{{ initdata.landing_title }}
@@ -37,9 +41,13 @@
 			class="z-50 bg-black fixed flex align-middle justify-center left-0 right-0 top-0 bottom-0 animate-landingIntroFadeOut"
 		>
 			<div id="intro_content" class="self-center">
-				<template v-if="initdata.landing_logo !== ''">
-					<img :src="initdata.landing_logo" alt="logo" class="max-h-32 max-w-xs object-contain animate-landingIntroPopIn" />
-				</template>
+				<img
+					v-if="initdata.landing_logo !== ''"
+					:src="initdata.landing_logo"
+					alt="logo"
+					class="max-h-32 max-w-xs object-contain animate-landingIntroPopIn"
+					id="landing-title-logo"
+				/>
 				<template v-else>
 					<h1 class="text-center text-2xl text-surface-0 uppercase font-extralight animate-landingIntroPopIn">
 						{{ initdata.landing_title }}
