@@ -614,6 +614,8 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		upload_chunk_size: number;
 		can_watermark_optout: boolean;
 		close_upload_on_success: boolean;
+		folder_upload_enabled: boolean;
+		folder_upload_max_depth: number;
 	};
 	export type ZipChunkData = {
 		total_chunks: number;

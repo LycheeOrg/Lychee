@@ -33,10 +33,10 @@ _Last updated:_ 2026-06-13 (rev 3 — symbolic links, feature toggle, max depth 
 - Browser fallback for missing `webkitGetAsEntry()` support
 
 **Out of scope:**
-- Recursive sub-folder processing
-- Backend changes
+- Backend changes beyond config migration and UploadConfig extension
 - Zip/archive extraction
 - Per-file album rename during upload
+- Folder drop onto the open UploadPanel dialog (only the album-grid backdrop is supported)
 
 ## Dependencies & Interfaces
 

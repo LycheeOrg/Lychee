@@ -287,6 +287,7 @@ const {
 	is_login_open,
 	is_upload_visible,
 	list_upload_files,
+	upload_config,
 	is_webauthn_open,
 	is_import_from_server_open,
 	is_keybindings_help_open,
@@ -370,6 +371,8 @@ onKeyStroke("l", () => !shouldIgnoreKeystroke() && !userStore.isLoggedIn && (is_
 onKeyStroke("k", () => !shouldIgnoreKeystroke() && !userStore.isLoggedIn && (is_webauthn_open.value = true));
 
 const can_upload = computed(() => albumsStore.rootRights?.can_upload === true);
+const root_parent_id = ref<string | null>(null);
+const root_existing_albums = computed(() => albumsStore.albums.map((a) => ({ id: a.id, title: a.title })));
 
 // Shared albums visibility mode handling
 const sharedAlbumsVisibilityMode = computed(() => albumsStore.rootConfig?.shared_albums_visibility_mode ?? "show");
@@ -414,9 +417,17 @@ const shouldShowTabs = computed(() => {
 	return isSeparateMode && displaySharedAlbums.value.length > 0;
 });
 
-const { onPaste, dragEnd, dropUpload } = useMouseEvents(can_upload, is_upload_visible, list_upload_files);
+const { onPaste, dragEnd, dropUpload } = useMouseEvents(
+	can_upload,
+	is_upload_visible,
+	list_upload_files,
+	root_parent_id,
+	root_existing_albums,
+	upload_config,
+);
 
 onMounted(() => {
+	togglableStore.loadUploadConfig();
 	window.addEventListener("paste", onPaste);
 	window.addEventListener("dragover", dragEnd);
 	window.addEventListener("drop", dropUpload);
