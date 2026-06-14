@@ -40,12 +40,29 @@ function fileEntryToFile(fileEntry: FileSystemFileEntry): Promise<File> {
 	return new Promise((resolve, reject) => fileEntry.file(resolve, reject));
 }
 
-function resolveOrCreateAlbum(name: string, parent_id: string | null, existingAlbums: { id: string; title: string }[]): Promise<string> {
+function resolveOrCreateAlbum(
+	name: string,
+	parent_id: string | null,
+	existingAlbums: { id: string; title: string }[],
+): Promise<{ id: string; existed: boolean }> {
 	const match = existingAlbums.find((a) => a.title.toLowerCase() === name.toLowerCase());
 	if (match !== undefined) {
-		return Promise.resolve(match.id);
+		return Promise.resolve({ id: match.id, existed: true });
 	}
-	return AlbumService.createAlbum({ title: name, parent_id }).then((response) => response.data);
+	return AlbumService.createAlbum({ title: name, parent_id }).then((response) => ({ id: response.data, existed: false }));
+}
+
+async function fetchChildAlbums(albumId: string): Promise<{ id: string; title: string }[]> {
+	const result: { id: string; title: string }[] = [];
+	let page = 1;
+	let lastPage: number;
+	do {
+		const response = await AlbumService.getAlbums(albumId, page);
+		result.push(...response.data.data.map((a) => ({ id: a.id, title: a.title })));
+		lastPage = response.data.last_page;
+		page++;
+	} while (page <= lastPage);
+	return result;
 }
 
 function processDirectory(
@@ -62,19 +79,20 @@ function processDirectory(
 	}
 
 	return resolveOrCreateAlbum(dirEntry.name, parent_id, existingAlbums)
-		.then((albumId) =>
-			readDirectoryEntries(dirEntry).then((entries) => {
+		.then(({ id: albumId, existed }) => {
+			const childAlbumsPromise = existed ? fetchChildAlbums(albumId) : Promise.resolve([]);
+			return Promise.all([readDirectoryEntries(dirEntry), childAlbumsPromise]).then(([entries, childAlbums]) => {
 				const fileEntries = entries.filter((e) => e.isFile) as FileSystemFileEntry[];
 				const subDirEntries = entries.filter((e) => e.isDirectory) as FileSystemDirectoryEntry[];
 
 				const filePromises = fileEntries.map((fe) =>
 					fileEntryToFile(fe).then((file) => {
-						list_upload_files.value.push({ file, album_id: albumId, status: "waiting" });
+						list_upload_files.value.push({ uid: crypto.randomUUID(), file, album_id: albumId, status: "waiting" });
 					}),
 				);
 
 				const subDirPromises = subDirEntries.map((sub) =>
-					processDirectory(sub, albumId, [], list_upload_files, currentDepth + 1, maxDepth, onError),
+					processDirectory(sub, albumId, childAlbums, list_upload_files, currentDepth + 1, maxDepth, onError),
 				);
 
 				return Promise.allSettled([...filePromises, ...subDirPromises]).then((results) => {
@@ -85,8 +103,8 @@ function processDirectory(
 					});
 					return fileEntries.length > 0 || subDirEntries.length > 0;
 				});
-			}),
-		)
+			});
+		})
 		.catch((err: unknown) => {
 			onError(`Failed to create album "${dirEntry.name}": ${String(err)}`);
 			return false;
@@ -117,7 +135,7 @@ export function handleFolderDrop(
 	// Flat files go directly to the queue without an album_id override.
 	const flatFilePromises = fileEntries.map((fe) =>
 		fileEntryToFile(fe).then((file) => {
-			list_upload_files.value.push({ file, status: "waiting" });
+			list_upload_files.value.push({ uid: crypto.randomUUID(), file, status: "waiting" });
 		}),
 	);
 

@@ -4,6 +4,7 @@ import { useToast } from "primevue/usetoast";
 import { ref, type Ref } from "vue";
 
 export type Uploadable = {
+	uid: string;
 	file: File;
 	album_id?: string;
 	message?: string;
@@ -57,7 +58,7 @@ export function useMouseEvents(
 		// Flat-file path (unchanged).
 		if (e.dataTransfer.files.length > 0) {
 			for (let i = 0; i < e.dataTransfer.files.length; i++) {
-				list_upload_files.value.push({ file: e.dataTransfer.files[i], status: "waiting" });
+				list_upload_files.value.push({ uid: crypto.randomUUID(), file: e.dataTransfer.files[i], status: "waiting" });
 			}
 			is_upload_visible.value = true;
 		} else if (e.dataTransfer.getData("Text").length > 3) {
@@ -87,7 +88,7 @@ export function useMouseEvents(
 				if (items[i].type.indexOf("image") !== -1 || items[i].type.indexOf("video") !== -1) {
 					const file = items[i].getAsFile();
 					if (file) {
-						list_upload_files.value.push({ file: file, status: "waiting" });
+						list_upload_files.value.push({ uid: crypto.randomUUID(), file: file, status: "waiting" });
 					}
 				}
 			}

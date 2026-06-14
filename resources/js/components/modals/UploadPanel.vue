@@ -32,7 +32,7 @@
 				<ScrollPanel v-if="counts.files > 0" class="w-full h-48 py-4 pr-3 mr-5" :pt:scrollbar:class="'opacity-100'">
 					<UploadingLine
 						v-for="(uploadable, index) in list_upload_files"
-						:key="uploadable.file.name"
+						:key="uploadable.uid"
 						:file="uploadable.file"
 						:album-id="uploadable.album_id ?? albumId"
 						:status="uploadable.status"
@@ -149,7 +149,7 @@ function upload(event: Event) {
 	}
 
 	for (let i = 0; i < target.files.length; i++) {
-		list_upload_files.value.push({ file: target.files[i], status: "waiting" });
+		list_upload_files.value.push({ uid: crypto.randomUUID(), file: target.files[i], status: "waiting" });
 	}
 
 	// Start uploading chunks.
