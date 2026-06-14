@@ -38,6 +38,7 @@ import { useRoute } from "vue-router";
 import { useLayoutStore } from "@/stores/LayoutState";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { useCatalogStore } from "@/stores/CatalogState";
+import { useTogglablesStateStore } from "@/stores/ModalsState";
 
 const props = defineProps<{
 	photos: App.Http.Resources.Models.PhotoResource[];
@@ -50,6 +51,9 @@ const lycheeStore = useLycheeStateStore();
 const layoutStore = useLayoutStore();
 const albumStore = useAlbumStore();
 const catalogStore = useCatalogStore();
+const togglableStore = useTogglablesStateStore();
+
+const { is_touch_select_mode } = storeToRefs(togglableStore);
 
 const isBuyable = computed(() => catalogStore.catalog?.album_purchasable !== undefined && catalogStore.catalog.album_purchasable !== null);
 const { is_timeline_left_border_visible } = storeToRefs(lycheeStore);
@@ -69,7 +73,7 @@ const emits = defineEmits<{
 }>();
 
 function maySelect(id: string, e: MouseEvent) {
-	if (ctrlKeyState.value || metaKeyState.value || shiftKeyState.value) {
+	if (is_touch_select_mode.value || ctrlKeyState.value || metaKeyState.value || shiftKeyState.value) {
 		emits("selected", id, e);
 		return;
 	}

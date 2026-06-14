@@ -78,7 +78,17 @@
 		>
 			<img class="absolute aspect-square w-fit h-fit" alt="play" :src="srcPlay" />
 		</div>
-		<div class="absolute top-0 ltr:right-0 rtl:left-0 w-1/4 flex flex-row-reverse px-1">
+		<!-- Touch select mode indicator -->
+		<div
+			v-if="is_touch_select_mode"
+			class="absolute top-1.5 ltr:right-1.5 rtl:left-1.5 z-10 w-5 h-5 rounded-full pointer-events-none flex items-center justify-center"
+			:class="{
+				'border border-white bg-black/40': !props.isSelected,
+			}"
+		>
+			<i v-if="props.isSelected" class="pi pi-check-circle text-lg text-primary-400" />
+		</div>
+		<div v-else class="absolute top-0 ltr:right-0 rtl:left-0 w-1/4 flex flex-row-reverse px-1">
 			<ThumbBuyMe :is-in-basket="isInBasket" @click="toggleBuyMe" v-if="props.isBuyable" />
 			<ThumbFavourite v-if="is_favourite_enabled" :is-favourite="isFavourite" @click="toggleFavourite" />
 		</div>
@@ -119,6 +129,7 @@ import { useOrderManagementStore } from "@/stores/OrderManagement";
 import { useUserStore } from "@/stores/UserState";
 import { useAlbumsStore } from "@/stores/AlbumsState";
 import { useAlbumStore } from "@/stores/AlbumState";
+import { useTogglablesStateStore } from "@/stores/ModalsState";
 
 const { getNoImageIcon, getPlayIcon } = useImageHelpers();
 
@@ -142,8 +153,10 @@ const lycheeStore = useLycheeStateStore();
 const orderStore = useOrderManagementStore();
 const albumsStore = useAlbumsStore();
 const albumStore = useAlbumStore();
+const togglableStore = useTogglablesStateStore();
 const { is_favourite_enabled, display_thumb_photo_overlay, photo_thumb_info, is_photo_thumb_tags_enabled, rating_album_view_mode } =
 	storeToRefs(lycheeStore);
+const { is_touch_select_mode } = storeToRefs(togglableStore);
 const srcPlay = ref(getPlayIcon());
 const srcNoImage = ref(getNoImageIcon());
 const isImageLoaded = ref(false);

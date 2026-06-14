@@ -1,13 +1,26 @@
 <template>
 	<div
-		class="group flex items-center gap-4 px-3 py-0.5 cursor-pointer hover:bg-primary-400/10 flex-row"
+		class="group relative flex items-center gap-4 px-3 py-0.5 cursor-pointer hover:bg-primary-400/10 flex-row"
 		:class="{
 			'bg-primary-100 dark:bg-primary-900/50': isSelected,
 		}"
 		:data-album-id="album.id"
-		@click="propagateClicked($event, album.id)"
+		@click="maySelect($event, album.id)"
 		@contextmenu.prevent="propagateContexted($event, album.id)"
 	>
+		<!-- Touch select overlay: sits above router-links so they don't capture clicks -->
+		<div v-if="is_touch_select_mode" class="absolute inset-0 z-10" />
+		<!-- Touch select mode indicator -->
+		<div
+			v-if="is_touch_select_mode"
+			class="relative z-20 shrink-0 w-5 h-5 rounded-full flex items-center justify-center"
+			:class="{
+				'bg-primary-500 border-2 border-white': isSelected,
+				'border-2 border-surface-400 bg-surface-100 dark:bg-surface-800': !isSelected,
+			}"
+		>
+			<i v-if="isSelected" class="pi pi-check text-white" style="font-size: 0.6rem" />
+		</div>
 		<!-- Thumbnail -->
 		<router-link
 			:to="{ name: 'album', params: { albumId: album.id } }"
@@ -79,11 +92,14 @@ import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useAlbumsStore } from "@/stores/AlbumsState";
 import ListBadge from "./thumbs/ListBadge.vue";
 import { usePropagateAlbumEvents } from "@/composables/album/propagateEvents";
+import { useTogglablesStateStore } from "@/stores/ModalsState";
+import { storeToRefs } from "pinia";
 
 const albumStore = useAlbumStore();
 const albumsStore = useAlbumsStore();
-
 const lycheeStore = useLycheeStateStore();
+const togglableStore = useTogglablesStateStore();
+const { is_touch_select_mode } = storeToRefs(togglableStore);
 
 defineProps<{
 	album: App.Http.Resources.Models.ThumbAlbumResource;
@@ -92,10 +108,19 @@ defineProps<{
 
 const emits = defineEmits<{
 	clicked: [event: MouseEvent, id: string];
+	selected: [event: MouseEvent, id: string];
 	contexted: [event: MouseEvent, id: string];
 }>();
 
 const { propagateClicked, propagateContexted } = usePropagateAlbumEvents(emits);
+
+function maySelect(e: MouseEvent, id: string) {
+	if (is_touch_select_mode.value) {
+		emits("selected", e, id);
+		return;
+	}
+	propagateClicked(e, id);
+}
 
 const aspectRatio = computed(
 	() => albumStore.config?.album_thumb_css_aspect_ratio ?? albumsStore.rootConfig?.album_thumb_css_aspect_ratio ?? "aspect-square",
