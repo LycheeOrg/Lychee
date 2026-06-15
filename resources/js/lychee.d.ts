@@ -317,7 +317,7 @@ declare namespace App.Http.Resources.Diagnostics {
 	};
 	export type Errors = {
 		_note: string;
-		errors: Array<any>;
+		errors: App.Http.Resources.Diagnostics.ErrorLine[];
 	};
 	export type Permissions = {
 		left: string;
