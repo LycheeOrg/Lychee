@@ -315,6 +315,10 @@ declare namespace App.Http.Resources.Diagnostics {
 		from: string;
 		details: string[];
 	};
+	export type Errors = {
+		_note: string;
+		errors: App.Http.Resources.Diagnostics.ErrorLine[];
+	};
 	export type Permissions = {
 		left: string;
 		right: string;
@@ -530,6 +534,7 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		is_slideshow_enabled: boolean;
 		is_timeline_left_border_visible: boolean;
 		title: string;
+		site_logo: string;
 		dropbox_api_key: string;
 		is_se_enabled: boolean;
 		is_pro_enabled: boolean;
@@ -565,7 +570,6 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		album_header_size: App.Enum.AlbumHeaderSize;
 		is_album_header_landing_title_enabled: boolean;
 		use_admin_dashboard: boolean;
-		site_logo: string;
 	};
 	export type LandingPageResource = {
 		landing_page_enable: boolean;

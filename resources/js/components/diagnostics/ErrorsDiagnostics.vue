@@ -26,8 +26,8 @@ const emits = defineEmits<{
 
 function load() {
 	DiagnosticsService.errors().then((response) => {
-		errors.value = response.data;
-		emits("loaded", toArray(response.data));
+		errors.value = response.data.errors;
+		emits("loaded", toArray(response.data.errors));
 	});
 }
 

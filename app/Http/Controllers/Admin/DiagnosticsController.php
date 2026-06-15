@@ -15,9 +15,11 @@ use App\Actions\Diagnostics\Space;
 use App\Constants\AccessPermissionConstants as APC;
 use App\Http\Requests\Diagnostics\DiagnosticsRequest;
 use App\Http\Resources\Diagnostics\ErrorLine;
+use App\Http\Resources\Diagnostics\Errors as DiagnosticsErrors;
 use App\Http\Resources\Diagnostics\Permissions;
 use App\Models\AccessPermission;
 use App\Policies\AlbumQueryPolicy;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -32,11 +34,17 @@ class DiagnosticsController extends Controller
 	 *
 	 * @param Errors $errors
 	 *
-	 * @return array<array-key, \App\Http\Resources\Diagnostics\ErrorLine>
+	 * @return JsonResponse
 	 */
-	public function errors(Request $request, Errors $errors): array
+	public function errors(Request $request, Errors $errors): JsonResponse
 	{
-		return ErrorLine::collect($errors->get());
+		return (new DiagnosticsErrors(ErrorLine::collect($errors->get())))
+			->toResponse($request)
+			/** @phpstan-ignore method.notFound (it exists) */
+			->withHeaders([
+				'X-Auth-Required' => 'false',
+				'X-Security-Policy' => 'https://github.com/LycheeOrg/Lychee/security/policy',
+			]);
 	}
 
 	/**

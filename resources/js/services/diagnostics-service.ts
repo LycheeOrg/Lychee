@@ -10,7 +10,7 @@ export type UpdateProfileRequest = {
 };
 
 const DiagnosticsService = {
-	errors(): Promise<AxiosResponse<App.Http.Resources.Diagnostics.ErrorLine[]>> {
+	errors(): Promise<AxiosResponse<App.Http.Resources.Diagnostics.Errors>> {
 		return axios.get(`${Constants.getApiUrl()}Diagnostics`, { data: {} });
 	},
 
