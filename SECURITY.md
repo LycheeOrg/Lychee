@@ -19,3 +19,11 @@ please contact us directly on [discord][3]. All security vulnerabilities will be
 
 [1]: https://lycheeorg.dev/docs/contributions.html#security-vulnerabilities
 [3]: https://discord.gg/JMPvuRQcTf
+
+## About the api/v2/Diagnostics endpoint
+
+If you are thinking about reporting an issue regarding the `api/v2/Diagnostics` endpoint,
+please note that **it is intentionally public and does not require authentication**.
+The responses from this endpoint do not contain any sensitive information or secrets and have been anonymized.
+
+Its main goal is to allow users to easily diagnose issues with their Lychee installation even if they can't log in.
