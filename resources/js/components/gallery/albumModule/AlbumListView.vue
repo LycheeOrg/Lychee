@@ -6,6 +6,7 @@
 				:album="album"
 				:is-selected="selectedIds.includes(album.id)"
 				@clicked="propagateClicked"
+				@selected="(e: MouseEvent, id: string) => emits('selected', e, id)"
 				@contexted="propagateContexted"
 			/>
 		</template>
@@ -25,6 +26,7 @@ const props = defineProps<{
 
 const emits = defineEmits<{
 	clicked: [event: MouseEvent, id: string];
+	selected: [event: MouseEvent, id: string];
 	contexted: [event: MouseEvent, id: string];
 }>();
 

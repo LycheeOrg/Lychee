@@ -114,6 +114,8 @@ return [
     ],
     'upload' => [
         'completed' => 'Завершено',
+        'completed_with_errors' => 'Completed — :errors upload(s) failed',
+        'completed_with_warnings' => 'Completed — :warnings upload(s) with warnings',
         'uploaded' => 'Загружено:',
         'release' => 'Отпустите файл для загрузки!',
         'select' => 'Нажмите здесь, чтобы выбрать файлы для загрузки',

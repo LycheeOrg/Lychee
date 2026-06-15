@@ -114,6 +114,8 @@ return [
     ],
     'upload' => [
         'completed' => 'Hotovo',
+        'completed_with_errors' => 'Completed — :errors upload(s) failed',
+        'completed_with_warnings' => 'Completed — :warnings upload(s) with warnings',
         'uploaded' => 'Nahráno:',
         'release' => 'Pusťte zde soubory k nahrání!',
         'select' => 'Klikněte zde pro výběr souborů k nahrání',

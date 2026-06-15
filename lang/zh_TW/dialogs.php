@@ -114,6 +114,8 @@ return [
     ],
     'upload' => [
         'completed' => '完全的',
+        'completed_with_errors' => 'Completed — :errors upload(s) failed',
+        'completed_with_warnings' => 'Completed — :warnings upload(s) with warnings',
         'uploaded' => '已上傳：',
         'release' => '發布文件上傳！',
         'select' => '點擊此處選擇要上傳的文件',

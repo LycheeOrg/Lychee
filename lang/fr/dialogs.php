@@ -114,6 +114,8 @@ return [
     ],
     'upload' => [
         'completed' => 'Terminé',
+        'completed_with_errors' => 'Completed — :errors upload(s) failed',
+        'completed_with_warnings' => 'Completed — :warnings upload(s) with warnings',
         'uploaded' => 'Téléversé :',
         'release' => 'Relâchez le fichier pour le téléverser !',
         'select' => 'Cliquez ici pour sélectionner les fichiers à téléverser',

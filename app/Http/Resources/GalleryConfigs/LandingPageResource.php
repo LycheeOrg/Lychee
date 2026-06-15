@@ -26,6 +26,8 @@ class LandingPageResource extends Data
 	public string $landing_title;
 	public string $site_owner;
 	public string $site_title;
+	public string $landing_logo;
+	public string $landing_header_logo;
 	public FooterConfig $footer;
 
 	private const FALLBACK_IMAGE = 'dist/cat.webp';
@@ -48,6 +50,8 @@ class LandingPageResource extends Data
 		$this->landing_title = request()->configs()->getValueAsString('landing_title');
 		$this->site_owner = request()->configs()->getValueAsString('site_owner');
 		$this->site_title = request()->configs()->getValueAsString('site_title');
+		$this->landing_logo = request()->configs()->getValueAsString('landing_logo');
+		$this->landing_header_logo = request()->configs()->getValueAsString('landing_header_logo');
 	}
 
 	/**

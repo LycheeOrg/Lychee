@@ -114,6 +114,8 @@ return [
     ],
     'upload' => [
         'completed' => 'Fullført',
+        'completed_with_errors' => 'Completed — :errors upload(s) failed',
+        'completed_with_warnings' => 'Completed — :warnings upload(s) with warnings',
         'uploaded' => 'Lastet opp:',
         'release' => 'Frigi fil for opplasting!',
         'select' => 'Klikk her for å velge filer som skal lastes opp',

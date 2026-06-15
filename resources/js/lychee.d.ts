@@ -338,6 +338,10 @@ declare namespace App.Http.Resources.Diagnostics {
 		from: string;
 		details: string[];
 	};
+	export type Errors = {
+		_note: string;
+		errors: App.Http.Resources.Diagnostics.ErrorLine[];
+	};
 	export type Permissions = {
 		left: string;
 		right: string;
@@ -554,6 +558,7 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		is_slideshow_enabled: boolean;
 		is_timeline_left_border_visible: boolean;
 		title: string;
+		site_logo: string;
 		dropbox_api_key: string;
 		is_se_enabled: boolean;
 		is_pro_enabled: boolean;
@@ -598,6 +603,8 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		landing_title: string;
 		site_owner: string;
 		site_title: string;
+		landing_logo: string;
+		landing_header_logo: string;
 		footer: App.Http.Resources.GalleryConfigs.FooterConfig;
 	};
 	export type MapProviderData = {
@@ -637,6 +644,9 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		upload_processing_limit: number;
 		upload_chunk_size: number;
 		can_watermark_optout: boolean;
+		close_upload_on_success: boolean;
+		folder_upload_enabled: boolean;
+		folder_upload_max_depth: number;
 	};
 	export type ZipChunkData = {
 		total_chunks: number;

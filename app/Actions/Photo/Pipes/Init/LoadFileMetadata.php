@@ -42,7 +42,7 @@ class LoadFileMetadata implements InitPipe
 			$state->exif_info->title === ''
 		) {
 			$title_source = $state->raw_source_file ?? $state->source_file;
-			$state->exif_info->title = substr($title_source->getOriginalBasename(), 0, 98);
+			$state->exif_info->title = mb_substr($title_source->getOriginalBasename(), 0, 100, 'UTF-8');
 		}
 
 		return $next($state);

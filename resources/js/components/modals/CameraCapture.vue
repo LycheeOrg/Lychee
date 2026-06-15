@@ -176,7 +176,7 @@ function upload() {
 	const filename = `photo_${new Date().toISOString().replace(/[:.]/g, "-")}.jpg`;
 	const file = new File([capturedBlob.value], filename, { type: "image/jpeg" });
 
-	list_upload_files.value.push({ file, status: "waiting" });
+	list_upload_files.value.push({ uid: crypto.randomUUID(), file, status: "waiting" });
 	is_upload_visible.value = true;
 	is_camera_capture_visible.value = false;
 }

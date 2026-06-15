@@ -114,6 +114,8 @@ return [
     ],
     'upload' => [
         'completed' => 'Completed',
+        'completed_with_errors' => 'Completed — :errors upload(s) failed',
+        'completed_with_warnings' => 'Completed — :warnings upload(s) with warnings',
         'uploaded' => 'Uploaded:',
         'release' => 'Release file to upload!',
         'select' => 'Click here to select files to upload',

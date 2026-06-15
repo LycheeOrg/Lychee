@@ -9,6 +9,7 @@
 			@open-search="emits('openSearch')"
 			@go-back="emits('goBack')"
 			@show-selected="albumCallbacks.copyHighlighted()"
+			@open-context-menu="openContextMenuFromHeader"
 		/>
 		<template v-if="albumStore.album && albumStore.config && userStore.isLoaded">
 			<div id="galleryView" class="relative flex flex-wrap content-start w-full justify-start overflow-y-auto h-full select-none">
@@ -59,6 +60,7 @@
 						:selected-albums="selectedAlbumsIds"
 						:is-timeline="albumStore.config.is_album_timeline_enabled"
 						@clicked="albumSelect"
+						@selected="albumSelect"
 						@contexted="contextMenuAlbumOpen"
 					/>
 					<!-- Pagination for albums -->
@@ -244,6 +246,14 @@ const { photoRoute, getParentId } = usePhotoRoute(router);
 
 function photoClick(photoId: string, _e: MouseEvent) {
 	router.push(photoRoute(photoId));
+}
+
+function openContextMenuFromHeader(e: MouseEvent): void {
+	if (selectedPhotosIds.value.length > 0) {
+		contextMenuPhotoOpen(selectedPhotosIds.value[0], e);
+	} else if (selectedAlbumsIds.value.length > 0) {
+		contextMenuAlbumOpen(e, selectedAlbumsIds.value[0]);
+	}
 }
 
 function goToPhotosPage(page: number) {

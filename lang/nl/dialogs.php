@@ -114,6 +114,8 @@ return [
     ],
     'upload' => [
         'completed' => 'Voltooid',
+        'completed_with_errors' => 'Completed — :errors upload(s) failed',
+        'completed_with_warnings' => 'Completed — :warnings upload(s) with warnings',
         'uploaded' => 'Geüpload:',
         'release' => 'Laat bestand los om te uploaden!',
         'select' => 'Klik hier om bestanden te selecteren om te uploaden',

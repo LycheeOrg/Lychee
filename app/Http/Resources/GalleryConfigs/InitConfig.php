@@ -93,6 +93,7 @@ class InitConfig extends Data
 
 	// Site title & dropbox key if logged in as admin.
 	public string $title;
+	public string $site_logo;
 	public string $dropbox_api_key;
 
 	// Lychee SE is available.
@@ -219,6 +220,7 @@ class InitConfig extends Data
 		// Site title & dropbox key if logged in as admin.
 		// dd(request()->config());
 		$this->title = request()->configs()->getValueAsString('site_title');
+		$this->site_logo = request()->configs()->getValueAsString('site_logo');
 		$this->dropbox_api_key = Auth::user()?->may_administrate === true ? request()->configs()->getValueAsString('dropbox_key') : 'disabled';
 
 		$this->is_basic_auth_enabled = AuthServiceProvider::isBasicAuthEnabled();

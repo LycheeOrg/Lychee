@@ -64,6 +64,18 @@
 		</div>
 		<!-- v-if="props.config.album_decoration !== 'none'" -->
 		<AlbumThumbDecorations :album="props.album" />
+		<!-- Touch select overlay: stops the click from reaching the router-link navigate handler -->
+		<div v-if="is_touch_select_mode" class="absolute inset-0 z-20" @click.stop="(e: MouseEvent) => emits('touchSelect', e)" />
+		<!-- Touch select mode indicator -->
+		<div
+			v-if="is_touch_select_mode"
+			class="absolute top-1.5 ltr:right-1.5 rtl:left-1.5 z-30 w-5 h-5 rounded-full pointer-events-none flex items-center justify-center"
+			:class="{
+				'border border-white bg-black/40': !props.isSelected,
+			}"
+		>
+			<i v-if="props.isSelected" class="pi pi-check-circle text-lg text-primary-400" />
+		</div>
 	</router-link>
 </template>
 <script setup lang="ts">
@@ -97,6 +109,10 @@ const props = defineProps<{
 	album: App.Http.Resources.Models.ThumbAlbumResource;
 }>();
 
+const emits = defineEmits<{
+	touchSelect: [event: MouseEvent];
+}>();
+
 const { canInteractAlbum } = useAlbumActions();
 const router = useRouter();
 const userStore = useUserStore();
@@ -108,6 +124,7 @@ const lycheeStore = useLycheeStateStore();
 const togglableStore = useTogglablesStateStore();
 const { getPlayIcon } = useImageHelpers();
 const { display_thumb_album_overlay } = storeToRefs(lycheeStore);
+const { is_touch_select_mode } = storeToRefs(togglableStore);
 
 const aspectRatio = computed(
 	() => albumStore.config?.album_thumb_css_aspect_ratio ?? albumsStore.rootConfig?.album_thumb_css_aspect_ratio ?? "aspect-square",

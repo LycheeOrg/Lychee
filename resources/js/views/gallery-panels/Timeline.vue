@@ -225,8 +225,16 @@ lycheeStore.load();
 const videoElement = ref<HTMLVideoElement | null>(null);
 
 const { slideshow_timeout } = storeToRefs(lycheeStore);
-const { is_full_screen, is_login_open, is_upload_visible, list_upload_files, is_slideshow_active, is_photo_edit_open, are_details_open } =
-	storeToRefs(togglableStore);
+const {
+	is_full_screen,
+	is_login_open,
+	is_upload_visible,
+	list_upload_files,
+	upload_config,
+	is_slideshow_active,
+	is_photo_edit_open,
+	are_details_open,
+} = storeToRefs(togglableStore);
 
 const {
 	selectedPhoto,
@@ -400,8 +408,18 @@ const {
 );
 
 const can_upload = computed(() => timelineStore.rootRights?.can_upload === true && photoStore.isLoaded === false);
-const { onPaste, dragEnd, dropUpload } = useMouseEvents(can_upload, is_upload_visible, list_upload_files);
+const timeline_parent_id = ref<string | null>(null);
+const timeline_existing_albums = ref<{ id: string; title: string }[]>([]);
+const { onPaste, dragEnd, dropUpload } = useMouseEvents(
+	can_upload,
+	is_upload_visible,
+	list_upload_files,
+	timeline_parent_id,
+	timeline_existing_albums,
+	upload_config,
+);
 
+togglableStore.loadUploadConfig();
 window.addEventListener("paste", onPaste);
 window.addEventListener("dragover", dragEnd);
 window.addEventListener("drop", dropUpload);

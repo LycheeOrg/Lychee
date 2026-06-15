@@ -114,6 +114,8 @@ return [
     ],
     'upload' => [
         'completed' => 'تکمیل شد',
+        'completed_with_errors' => 'Completed — :errors upload(s) failed',
+        'completed_with_warnings' => 'Completed — :warnings upload(s) with warnings',
         'uploaded' => 'بارگذاری شده:',
         'release' => 'برای بارگذاری فایل را رها کنید!',
         'select' => 'برای انتخاب فایل‌ها برای بارگذاری اینجا کلیک کنید',

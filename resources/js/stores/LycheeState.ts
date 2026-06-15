@@ -76,6 +76,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 
 		// Site title & Dropbox API key
 		title: "gallery.title",
+		site_logo: "",
 		dropbox_api_key: "disabled",
 		default_homepage: "gallery",
 		is_timeline_page_enabled: false,
@@ -180,6 +181,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.is_timeline_left_border_visible = data.is_timeline_left_border_visible;
 
 					this.title = data.title;
+					this.site_logo = data.site_logo;
 					this.dropbox_api_key = data.dropbox_api_key;
 
 					this.is_basic_auth_enabled = data.is_basic_auth_enabled;

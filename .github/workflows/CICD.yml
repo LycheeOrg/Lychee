@@ -236,7 +236,7 @@ jobs:
             ${{ github.repository }}
             ghcr.io/${{ github.repository }}
           flavor: |
-            latest=${{ startsWith(github.ref, 'refs/tags/') }}
+            latest=${{ startsWith(github.ref, 'refs/tags/') && !endsWith(github.ref, '-rc') }}
           tags: |
             # define default branch
             type=edge,branch=master
@@ -345,7 +345,7 @@ jobs:
             ${{ github.repository }}
             ghcr.io/${{ github.repository }}
           flavor: |
-            latest=${{ startsWith(github.ref, 'refs/tags/') }}
+            latest=${{ startsWith(github.ref, 'refs/tags/') && !endsWith(github.ref, '-rc') }}
             suffix=-legacy,onlatest=true
           tags: |
             # define default branch
@@ -450,7 +450,7 @@ jobs:
 
   release:
     name: 4️⃣ Release
-    if: startsWith(github.ref, 'refs/tags/')
+    if: startsWith(github.ref, 'refs/tags/') && !endsWith(github.ref, '-rc')
     needs:
       - createArtifact
     runs-on: ubuntu-latest

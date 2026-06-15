@@ -139,6 +139,8 @@ return [
         'header_photos' => 'Fotos',
         'show_highlighted' => 'Favoriten filtern',
         'copy_highlighted_names' => 'Namen der Favoriten in die Zwischenablage kopieren',
+        'toggle_touch_select' => 'Toggle selection mode',
+        'photo_actions' => 'Photo actions',
         'no_results' => 'Hier gibt es nichts zu sehen',
         'upload' => 'Fotos hochladen',
         'tabs' => [
