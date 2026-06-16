@@ -8,12 +8,11 @@
 
 namespace App\Http\Requests\Face;
 
+use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
-use App\Models\Face;
-use App\Policies\AiVisionPolicy;
+use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Gate;
 
-// TODO: Make sure FacePermissionMode applies here
 class ClusterAssignRequest extends BaseApiRequest
 {
 	public ?string $person_id = null;
@@ -21,14 +20,13 @@ class ClusterAssignRequest extends BaseApiRequest
 
 	public function authorize(): bool
 	{
-		return Gate::check(AiVisionPolicy::CAN_ASSIGN_FACE, Face::class);
+		return Gate::check(AlbumPolicy::CAN_BATCH_FACE_OPS, [AbstractAlbum::class, null]);
 	}
 
 	public function rules(): array
 	{
 		return [
-			// TODO remove exist check
-			'person_id' => ['nullable', 'string', 'exists:persons,id'],
+			'person_id' => ['nullable', 'string'],
 			'new_person_name' => ['nullable', 'string', 'max:255'],
 		];
 	}

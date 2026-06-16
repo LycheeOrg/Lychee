@@ -22,27 +22,28 @@ use App\Repositories\ConfigManager;
  *
  * | Operation          | public              | private             | privacy-preserving        | restricted                |
  * |--------------------|---------------------|---------------------|---------------------------|---------------------------|
- * | View People page   | guest               | logged users        | photo/album owner + admin | admin only                |
- * | View face overlays | album access        | logged users        | photo/album owner + admin | photo/album owner + admin |
- * | Create/edit Person | logged users        | logged users        | photo/album owner + admin | admin only                |
- * | Assign face        | logged users        | logged users        | photo/album owner + admin | admin only                |
- * | Trigger scan       | logged users        | logged users        | photo/album owner + admin | photo/album owner + admin |
+ * | View People page   | guest               | logged users        | admin only (*)            | admin only                |
+ * | Create/edit Person | logged users        | logged users        | admin only (*)            | admin only                |
  * | Claim person       | logged users        | logged users        | logged users              | logged users              |
- * | Merge persons      | logged users        | logged users        | photo/album owner + admin | admin only                |
- * | Dismiss face       | photo owner + admin | photo owner + admin | photo owner + admin       | photo owner + admin       |
- * | Batch face ops     | logged users        | logged users        | photo/album owner + admin | admin only                |
- * | View album people  | album access        | logged users        | photo/album owner + admin | photo/album owner + admin |
+ * | Merge persons      | logged users        | logged users        | admin only (*)            | admin only                |
+ * |                    |                     |                     |                           |                           |
+ * | View face overlays | → PhotoPolicy::canViewFaceOverlays                                                          |
+ * | Assign face        | → PhotoPolicy::canAssignFaceOnPhoto / AlbumPolicy::canAssignFaceInAlbum                    |
+ * | Trigger scan       | → PhotoPolicy::canTriggerScanOnPhoto / AlbumPolicy::canTriggerScanOnAlbum                  |
+ * | Dismiss face       | → PhotoPolicy::canDismissFace                                                               |
+ * | Batch face ops     | → AlbumPolicy::canBatchFaceOps                                                              |
+ * | View album people  | → AlbumPolicy::canViewAlbumPeople                                                           |
+ *
+ * (*) PRIVACY_PRESERVING returns false for non-admin in the global (entity-free) context.
+ *     Per-entity ownership checks are enforced at the photo/album level in the scoped policies.
  */
 class AiVisionPolicy extends BasePolicy
 {
 	public const CAN_VIEW_PEOPLE = 'canViewPeople';
 	public const CAN_SHOW_PERSON = 'canShowPerson';
 	public const CAN_EDIT_PERSON = 'canEditPerson';
-	public const CAN_ASSIGN_FACE = 'canAssignFace';
-	public const CAN_TRIGGER_SCAN = 'canTriggerScan';
 	public const CAN_CLAIM_PERSON = 'canClaimPerson';
 	public const CAN_MERGE_PERSONS = 'canMergePersons';
-	public const CAN_DISMISS_FACE = 'canDismissFace';
 	public const CAN_CHANGE_PERSON_SEARCHABILITY = 'canChangePersonSearchability';
 
 	/**
@@ -78,7 +79,10 @@ class AiVisionPolicy extends BasePolicy
 
 	/**
 	 * View People page / list persons.
-	 * public: guest; private: logged; privacy-preserving: owner+admin; restricted: admin only.
+	 * public: guest;
+	 * private: logged;
+	 * privacy-preserving:
+	 * owner+admin; restricted: admin only.
 	 */
 	public function canViewPeople(?User $user): bool
 	{
@@ -108,35 +112,12 @@ class AiVisionPolicy extends BasePolicy
 
 	/**
 	 * Create/edit Person.
-	 * public: logged; private: logged; privacy-preserving: owner+admin; restricted: admin only.
+	 * public: logged;
+	 * private: logged;
+	 * privacy-preserving: owner+admin;
+	 * restricted: admin only.
 	 */
 	public function canEditPerson(?User $user): bool
-	{
-		$mode = $this->getMode();
-
-		return match ($mode) {
-			FacePermissionMode::PUBLIC => $user !== null,
-			FacePermissionMode::PRIVATE => $user !== null,
-			FacePermissionMode::PRIVACY_PRESERVING => false, // admin handled by before()
-			FacePermissionMode::RESTRICTED => false, // admin handled by before()
-		};
-	}
-
-	/**
-	 * Assign face to person.
-	 * public: logged; private: logged; privacy-preserving: owner+admin; restricted: admin only.
-	 */
-	public function canAssignFace(?User $user): bool
-	{
-		// Same rules as edit
-		return $this->canEditPerson($user);
-	}
-
-	/**
-	 * Trigger face scan on photos.
-	 * public: logged; private: logged; privacy-preserving: owner+admin; restricted: owner+admin.
-	 */
-	public function canTriggerScan(?User $user): bool
 	{
 		$mode = $this->getMode();
 
@@ -170,15 +151,6 @@ class AiVisionPolicy extends BasePolicy
 	{
 		// Same rules as edit
 		return $this->canEditPerson($user);
-	}
-
-	/**
-	 * Dismiss / undismiss a face.
-	 * photo owner or admin (handled at controller level; this gate is for admin check only).
-	 */
-	public function canDismissFace(?User $user): bool
-	{
-		return $user !== null;
 	}
 
 	/**

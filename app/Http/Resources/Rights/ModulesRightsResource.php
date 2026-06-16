@@ -14,7 +14,6 @@ use App\Image\Watermarker;
 use App\Models\ContactMessage;
 use App\Models\Photo;
 use App\Policies\AlbumPolicy;
-use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
@@ -234,8 +233,8 @@ class ModulesRightsResource extends Data
 			return false;
 		}
 
-		return request()->configs()->getValueAsBool('ai_vision_enabled')
-			&& request()->configs()->getValueAsBool('ai_vision_face_enabled');
+		return request()->configs()->getValueAsBool('ai_vision_enabled') &&
+			request()->configs()->getValueAsBool('ai_vision_face_enabled');
 	}
 
 	/**

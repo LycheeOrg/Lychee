@@ -32,9 +32,8 @@ class AlbumPhotosController extends Controller
 {
 	public function __construct(
 		private PhotoRepository $photo_repository,
-		private ConfigManager $config_manager
-	)
-	{
+		private ConfigManager $config_manager,
+	) {
 	}
 
 	/**
@@ -52,7 +51,6 @@ class AlbumPhotosController extends Controller
 		$per_page = $request->configs()->getValueAsInt('photos_per_page');
 
 		if ($album instanceof BaseSmartAlbum) {
-
 			return new PaginatedPhotosResource(
 				paginated_photos: $album->getPhotos(),
 				album_id: $album->get_id(),

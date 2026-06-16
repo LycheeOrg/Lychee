@@ -258,12 +258,37 @@ class AlbumPolicyFaceTest extends BaseApiWithDataTest
 		$this->assertFalse(Gate::check(AlbumPolicy::CAN_BATCH_FACE_OPS, [AbstractAlbum::class, $this->album1]));
 	}
 
-	public function testCanBatchFaceOpsNullAlbumDenies(): void
+	public function testCanBatchFaceOpsNullAlbumLoggedUserAllowedInPublicAndPrivate(): void
 	{
 		foreach (['public', 'private'] as $mode) {
 			Configs::set('ai_vision_face_permission_mode', $mode);
 			$this->actingAs($this->userMayUpload1);
-			$this->assertFalse(Gate::check(AlbumPolicy::CAN_BATCH_FACE_OPS, [AbstractAlbum::class, null]), "Null album should always deny for mode: {$mode}");
+			$this->assertTrue(Gate::check(AlbumPolicy::CAN_BATCH_FACE_OPS, [AbstractAlbum::class, null]), "Null album should allow logged user for mode: {$mode}");
+		}
+	}
+
+	public function testCanBatchFaceOpsNullAlbumGuestDenied(): void
+	{
+		Configs::set('ai_vision_face_permission_mode', 'public');
+		Auth::logout();
+		$this->assertFalse(Gate::check(AlbumPolicy::CAN_BATCH_FACE_OPS, [AbstractAlbum::class, null]));
+	}
+
+	public function testCanBatchFaceOpsNullAlbumDeniesNonAdminInPrivacyPreservingAndRestricted(): void
+	{
+		foreach (['privacy-preserving', 'restricted'] as $mode) {
+			Configs::set('ai_vision_face_permission_mode', $mode);
+			$this->actingAs($this->userMayUpload1);
+			$this->assertFalse(Gate::check(AlbumPolicy::CAN_BATCH_FACE_OPS, [AbstractAlbum::class, null]), "Null album should deny non-admin for mode: {$mode}");
+		}
+	}
+
+	public function testCanBatchFaceOpsNullAlbumAdminAllowedInAllModes(): void
+	{
+		$this->actingAs($this->admin);
+		foreach (['public', 'private', 'privacy-preserving', 'restricted'] as $mode) {
+			Configs::set('ai_vision_face_permission_mode', $mode);
+			$this->assertTrue(Gate::check(AlbumPolicy::CAN_BATCH_FACE_OPS, [AbstractAlbum::class, null]), "Admin should pass null album for mode: {$mode}");
 		}
 	}
 

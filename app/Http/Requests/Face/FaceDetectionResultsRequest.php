@@ -43,9 +43,8 @@ class FaceDetectionResultsRequest extends BaseApiRequest
 	 */
 	public function rules(): array
 	{
-		// TODO: Remove the photo,id check. The AI Vision service may send results for photos that have been deleted in the meantime, and we want to be able to handle that gracefully.
 		return [
-			'photo_id' => 'required|string|exists:photos,id',
+			'photo_id' => 'required|string',
 			'status' => 'required|string|in:success,error',
 			'faces' => 'sometimes|array',
 			'faces.*.x' => 'required_with:faces|numeric',
@@ -87,7 +86,7 @@ class FaceDetectionResultsRequest extends BaseApiRequest
 	}
 
 	/**
-	 * @return array<array{x:float,y:float,width:float,height:float,confidence:float,embedding_id:string,crop?:string,suggestions?:array<array{lychee_face_id:string,confidence:float}>}>
+	 * @return array<array{x:float,y:float,width:float,height:float,confidence:float,laplacian_variance:float,embedding_id:string,crop?:string,suggestions?:array<array{lychee_face_id:string,confidence:float}>}>
 	 */
 	public function faces(): array
 	{

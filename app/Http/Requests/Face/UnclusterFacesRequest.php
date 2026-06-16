@@ -8,27 +8,25 @@
 
 namespace App\Http\Requests\Face;
 
+use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
-use App\Models\Face;
-use App\Policies\AiVisionPolicy;
+use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Gate;
 
-// TODO: Make sure FacePermissionMode applies here
 class UnclusterFacesRequest extends BaseApiRequest
 {
 	public array $face_ids = [];
 
 	public function authorize(): bool
 	{
-		return Gate::check(AiVisionPolicy::CAN_ASSIGN_FACE, Face::class);
+		return Gate::check(AlbumPolicy::CAN_BATCH_FACE_OPS, [AbstractAlbum::class, null]);
 	}
 
 	public function rules(): array
 	{
 		return [
 			'face_ids' => ['required', 'array', 'min:1'],
-			// TODO remove exist check
-			'face_ids.*' => ['required', 'string', 'exists:faces,id'],
+			'face_ids.*' => ['required', 'string'],
 		];
 	}
 

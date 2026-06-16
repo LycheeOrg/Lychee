@@ -234,9 +234,7 @@ watch(
 	{ immediate: true },
 );
 
-const isAiVisionScanEnabled = computed(
-	() => isAiVisionEnabled.value && albumStore.rights?.can_edit && photosStore.photos.length > 0,
-);
+const isAiVisionScanEnabled = computed(() => isAiVisionEnabled.value && albumStore.rights?.can_edit && photosStore.photos.length > 0);
 
 function needSizeVariantsWatermark(sizeVariants: App.Http.Resources.Models.SizeVariantsResouce): boolean {
 	return (

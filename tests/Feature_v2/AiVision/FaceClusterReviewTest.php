@@ -92,6 +92,29 @@ class FaceClusterReviewTest extends BaseApiWithDataTest
 		$this->assertUnauthorized($response);
 	}
 
+	public function testListClustersPrivacyPreservingNonAdminForbidden(): void
+	{
+		Configs::set('ai_vision_face_permission_mode', 'privacy-preserving');
+		$response = $this->actingAs($this->userMayUpload1)->getJson('FaceDetection/clusters');
+		$this->assertForbidden($response);
+	}
+
+	public function testAssignClusterPrivacyPreservingNonAdminForbidden(): void
+	{
+		Configs::set('ai_vision_face_permission_mode', 'privacy-preserving');
+		$response = $this->actingAs($this->userMayUpload1)->postJson('FaceDetection/clusters/1/assign', [
+			'new_person_name' => 'Test Person',
+		]);
+		$this->assertForbidden($response);
+	}
+
+	public function testDismissClusterPrivacyPreservingNonAdminForbidden(): void
+	{
+		Configs::set('ai_vision_face_permission_mode', 'privacy-preserving');
+		$response = $this->actingAs($this->userMayUpload1)->postJson('FaceDetection/clusters/1/dismiss');
+		$this->assertForbidden($response);
+	}
+
 	// ── ASSIGN CLUSTER ──────────────────────────────────────────
 
 	public function testAssignClusterToNewPerson(): void

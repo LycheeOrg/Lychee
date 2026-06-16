@@ -8,16 +8,20 @@
 
 namespace App\Http\Requests\Face;
 
+use App\Assets\Features;
 use App\Http\Requests\AbstractEmptyRequest;
 use App\Models\Configs;
 use App\Policies\SettingsPolicy;
 use Illuminate\Support\Facades\Gate;
 
-// TODO: Make sure FacePermissionMode applies here
 class DestroyDismissedFacesRequest extends AbstractEmptyRequest
 {
 	public function authorize(): bool
 	{
+		if (Features::inactive('ai-vision')) {
+			return false;
+		}
+
 		return Gate::check(SettingsPolicy::CAN_EDIT, Configs::class);
 	}
 }

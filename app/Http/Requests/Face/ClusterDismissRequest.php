@@ -8,16 +8,15 @@
 
 namespace App\Http\Requests\Face;
 
+use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\AbstractEmptyRequest;
-use App\Models\Face;
-use App\Policies\AiVisionPolicy;
+use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Gate;
 
-// TODO: Make sure FacePermissionMode applies here
 class ClusterDismissRequest extends AbstractEmptyRequest
 {
 	public function authorize(): bool
 	{
-		return Gate::check(AiVisionPolicy::CAN_DISMISS_FACE, Face::class);
+		return Gate::check(AlbumPolicy::CAN_BATCH_FACE_OPS, [AbstractAlbum::class, null]);
 	}
 }

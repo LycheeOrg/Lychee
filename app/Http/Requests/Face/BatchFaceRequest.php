@@ -50,9 +50,9 @@ class BatchFaceRequest extends BaseApiRequest
 	{
 		return [
 			'face_ids' => ['required', 'array', 'min:1'],
-			'face_ids.*' => ['required', 'string', 'exists:faces,id'],
+			'face_ids.*' => ['required', 'string'],
 			'action' => ['required', 'string', 'in:unassign,assign'],
-			'person_id' => ['nullable', 'string', 'exists:persons,id'],
+			'person_id' => ['nullable', 'string'],
 			'new_person_name' => ['nullable', 'string', 'max:255'],
 			'album_id' => ['nullable', 'string'],
 		];

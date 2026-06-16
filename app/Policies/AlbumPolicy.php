@@ -756,7 +756,7 @@ class AlbumPolicy extends BasePolicy
 	 *   public              → logged-in user
 	 *   private             → logged-in user
 	 *   privacy-preserving  → album owner only
-	 *   restricted          → deny even album owner
+	 *   restricted          → admin only
 	 */
 	public function canAssignFaceInAlbum(?User $user, ?AbstractAlbum $album): bool
 	{
@@ -774,14 +774,15 @@ class AlbumPolicy extends BasePolicy
 
 	/**
 	 * Check whether the current user may perform batch face operations in an album.
-	 * Null album always returns false (no ownership concept).
+	 * When album is null (cross-photo cluster operations), ownership cannot be checked;
+	 * PUBLIC/PRIVATE allow any logged-in user, PRIVACY_PRESERVING/RESTRICTED are admin-only via before().
 	 *
 	 * Permission matrix (admin handled by before()):
 	 *   public              → logged-in user
 	 *   private             → logged-in user
 	 *   privacy-preserving  → album owner only
-	 *   restricted          → deny even album owner
-	 *   null album          → deny
+	 *   restricted          → admin only
+	 *   null album          → logged-in user (PUBLIC/PRIVATE) or admin only (PRIVACY_PRESERVING/RESTRICTED)
 	 */
 	public function canBatchFaceOps(?User $user, ?AbstractAlbum $album): bool
 	{
@@ -790,7 +791,12 @@ class AlbumPolicy extends BasePolicy
 		}
 
 		if ($album === null) {
-			return false;
+			return match ($this->getFaceMode()) {
+				FacePermissionMode::PUBLIC => $user !== null,
+				FacePermissionMode::PRIVATE => $user !== null,
+				FacePermissionMode::PRIVACY_PRESERVING,
+				FacePermissionMode::RESTRICTED => false, // admin only via before()
+			};
 		}
 
 		return match ($this->getFaceMode()) {

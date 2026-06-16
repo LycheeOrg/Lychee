@@ -11,7 +11,6 @@ namespace App\Services\Image;
 use App\Enum\FaceScanStatus;
 use App\Jobs\DispatchFaceScanJob;
 use App\Models\Photo;
-use App\Services\Image\FileExtensionService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Log;
 

@@ -338,8 +338,8 @@ class PhotoPolicy extends BasePolicy
 	 * Permission matrix (admin handled by before()):
 	 *   public              → album access (canSee)
 	 *   private             → logged-in user
-	 *   privacy-preserving  → photo owner only
-	 *   restricted          → photo owner only
+	 *   privacy-preserving  → photo owner or album editor
+	 *   restricted          → photo owner or album editor
 	 */
 	public function canViewFaceOverlays(?User $user, Photo $photo): bool
 	{
@@ -351,7 +351,7 @@ class PhotoPolicy extends BasePolicy
 			FacePermissionMode::PUBLIC => $this->canSee($user, $photo),
 			FacePermissionMode::PRIVATE => $user !== null,
 			FacePermissionMode::PRIVACY_PRESERVING,
-			FacePermissionMode::RESTRICTED => $this->isOwner($user, $photo),
+			FacePermissionMode::RESTRICTED => $user !== null && $this->canEdit($user, $photo),
 		};
 	}
 
@@ -376,8 +376,8 @@ class PhotoPolicy extends BasePolicy
 	 * Permission matrix (admin handled by before()):
 	 *   public              → logged-in user
 	 *   private             → logged-in user
-	 *   privacy-preserving  → photo owner only
-	 *   restricted          → deny even the owner
+	 *   privacy-preserving  → photo owner or album editor
+	 *   restricted          → admin only
 	 */
 	public function canAssignFaceOnPhoto(?User $user, Photo $photo): bool
 	{
@@ -388,7 +388,7 @@ class PhotoPolicy extends BasePolicy
 		return match ($this->getFaceMode()) {
 			FacePermissionMode::PUBLIC => $user !== null,
 			FacePermissionMode::PRIVATE => $user !== null,
-			FacePermissionMode::PRIVACY_PRESERVING => $this->isOwner($user, $photo),
+			FacePermissionMode::PRIVACY_PRESERVING => $user !== null && $this->canEdit($user, $photo),
 			FacePermissionMode::RESTRICTED => false,
 		};
 	}
@@ -399,8 +399,8 @@ class PhotoPolicy extends BasePolicy
 	 * Permission matrix (admin handled by before()):
 	 *   public              → logged-in user
 	 *   private             → logged-in user
-	 *   privacy-preserving  → photo owner only
-	 *   restricted          → photo owner only
+	 *   privacy-preserving  → photo owner or album editor
+	 *   restricted          → photo owner or album editor
 	 */
 	public function canTriggerScanOnPhoto(?User $user, Photo $photo): bool
 	{
@@ -412,7 +412,7 @@ class PhotoPolicy extends BasePolicy
 			FacePermissionMode::PUBLIC => $user !== null,
 			FacePermissionMode::PRIVATE => $user !== null,
 			FacePermissionMode::PRIVACY_PRESERVING,
-			FacePermissionMode::RESTRICTED => $this->isOwner($user, $photo),
+			FacePermissionMode::RESTRICTED => $user !== null && $this->canEdit($user, $photo),
 		};
 	}
 }

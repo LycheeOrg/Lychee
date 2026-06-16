@@ -105,11 +105,13 @@ class PhotoPolicyFaceTest extends BaseApiWithDataTest
 		$this->assertTrue(Gate::check(PhotoPolicy::CAN_VIEW_FACE_OVERLAYS, $this->photo1));
 	}
 
-	public function testCanViewFaceOverlaysPrivacyPreservingNonOwnerDenied(): void
+	public function testCanViewFaceOverlaysPrivacyPreservingAlbumEditorCanView(): void
 	{
 		Configs::set('ai_vision_face_permission_mode', 'privacy-preserving');
+		// userMayUpload2 has grants_edit (perm1) on album1 which contains photo1
 		$this->actingAs($this->userMayUpload2);
-		$this->assertFalse(Gate::check(PhotoPolicy::CAN_VIEW_FACE_OVERLAYS, $this->photo1));
+		$fresh_photo = Photo::find($this->photo1->id);
+		$this->assertTrue(Gate::check(PhotoPolicy::CAN_VIEW_FACE_OVERLAYS, $fresh_photo));
 	}
 
 	public function testCanViewFaceOverlaysPrivacyPreservingGuestDenied(): void
@@ -126,11 +128,13 @@ class PhotoPolicyFaceTest extends BaseApiWithDataTest
 		$this->assertTrue(Gate::check(PhotoPolicy::CAN_VIEW_FACE_OVERLAYS, $this->photo1));
 	}
 
-	public function testCanViewFaceOverlaysRestrictedNonOwnerDenied(): void
+	public function testCanViewFaceOverlaysRestrictedAlbumEditorCanView(): void
 	{
 		Configs::set('ai_vision_face_permission_mode', 'restricted');
+		// userMayUpload2 has grants_edit (perm1) on album1 which contains photo1
 		$this->actingAs($this->userMayUpload2);
-		$this->assertFalse(Gate::check(PhotoPolicy::CAN_VIEW_FACE_OVERLAYS, $this->photo1));
+		$fresh_photo = Photo::find($this->photo1->id);
+		$this->assertTrue(Gate::check(PhotoPolicy::CAN_VIEW_FACE_OVERLAYS, $fresh_photo));
 	}
 
 	public function testCanViewFaceOverlaysAdminAlwaysTrue(): void
@@ -214,13 +218,15 @@ class PhotoPolicyFaceTest extends BaseApiWithDataTest
 		$this->assertFalse(Gate::check(PhotoPolicy::CAN_ASSIGN_FACE_ON_PHOTO, $this->photo1));
 	}
 
-	public function testCanAssignFaceOnPhotoPrivacyPreservingOwnerOnly(): void
+	public function testCanAssignFaceOnPhotoPrivacyPreservingOwnerOrAlbumEditor(): void
 	{
 		Configs::set('ai_vision_face_permission_mode', 'privacy-preserving');
 		$this->actingAs($this->userMayUpload1);
 		$this->assertTrue(Gate::check(PhotoPolicy::CAN_ASSIGN_FACE_ON_PHOTO, $this->photo1));
+		// userMayUpload2 has grants_edit (perm1) on album1 — should now pass
 		$this->actingAs($this->userMayUpload2);
-		$this->assertFalse(Gate::check(PhotoPolicy::CAN_ASSIGN_FACE_ON_PHOTO, $this->photo1));
+		$fresh_photo = Photo::find($this->photo1->id);
+		$this->assertTrue(Gate::check(PhotoPolicy::CAN_ASSIGN_FACE_ON_PHOTO, $fresh_photo));
 	}
 
 	public function testCanAssignFaceOnPhotoRestrictedDeniesEveryone(): void
@@ -261,22 +267,26 @@ class PhotoPolicyFaceTest extends BaseApiWithDataTest
 		$this->assertFalse(Gate::check(PhotoPolicy::CAN_TRIGGER_SCAN_ON_PHOTO, $this->photo1));
 	}
 
-	public function testCanTriggerScanOnPhotoPrivacyPreservingOwnerOnly(): void
+	public function testCanTriggerScanOnPhotoPrivacyPreservingOwnerOrAlbumEditor(): void
 	{
 		Configs::set('ai_vision_face_permission_mode', 'privacy-preserving');
 		$this->actingAs($this->userMayUpload1);
 		$this->assertTrue(Gate::check(PhotoPolicy::CAN_TRIGGER_SCAN_ON_PHOTO, $this->photo1));
+		// userMayUpload2 has grants_edit (perm1) on album1 — should now pass
 		$this->actingAs($this->userMayUpload2);
-		$this->assertFalse(Gate::check(PhotoPolicy::CAN_TRIGGER_SCAN_ON_PHOTO, $this->photo1));
+		$fresh_photo = Photo::find($this->photo1->id);
+		$this->assertTrue(Gate::check(PhotoPolicy::CAN_TRIGGER_SCAN_ON_PHOTO, $fresh_photo));
 	}
 
-	public function testCanTriggerScanOnPhotoRestrictedOwnerOnly(): void
+	public function testCanTriggerScanOnPhotoRestrictedOwnerOrAlbumEditor(): void
 	{
 		Configs::set('ai_vision_face_permission_mode', 'restricted');
 		$this->actingAs($this->userMayUpload1);
 		$this->assertTrue(Gate::check(PhotoPolicy::CAN_TRIGGER_SCAN_ON_PHOTO, $this->photo1));
+		// userMayUpload2 has grants_edit (perm1) on album1 — should now pass
 		$this->actingAs($this->userMayUpload2);
-		$this->assertFalse(Gate::check(PhotoPolicy::CAN_TRIGGER_SCAN_ON_PHOTO, $this->photo1));
+		$fresh_photo = Photo::find($this->photo1->id);
+		$this->assertTrue(Gate::check(PhotoPolicy::CAN_TRIGGER_SCAN_ON_PHOTO, $fresh_photo));
 	}
 
 	public function testCanTriggerScanOnPhotoAdminAlwaysTrue(): void

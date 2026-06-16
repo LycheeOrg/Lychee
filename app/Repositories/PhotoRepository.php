@@ -26,9 +26,8 @@ class PhotoRepository
 	use FiltersUploadValidation;
 
 	public function __construct(
-		private ConfigManager $config_manager
-	)
-	{
+		private ConfigManager $config_manager,
+	) {
 		// Constructor can be used for dependency injection if needed in the future
 	}
 
@@ -65,8 +64,8 @@ class PhotoRepository
 		string $tag_logic = 'OR',
 		?string $person_id = null,
 	): LengthAwarePaginator {
-		$face_enabled = $this->config_manager->getValueAsBool('ai_vision_enabled')
-			&& $this->config_manager->getValueAsBool('ai_vision_face_enabled');
+		$face_enabled = $this->config_manager->getValueAsBool('ai_vision_enabled') &&
+			$this->config_manager->getValueAsBool('ai_vision_face_enabled');
 
 		$relations = ['size_variants', 'tags', 'palette', 'statistics', 'rating'];
 		if ($face_enabled) {
