@@ -71,6 +71,7 @@ class PhotoRepository
 		if ($face_enabled) {
 			$relations[] = 'faces.person';
 			$relations[] = 'faces.suggestions.suggestedFace.person';
+			$relations[] = 'albums.access_permissions';
 		}
 
 		// Build query for photos belonging to the album via the photo_album pivot table

@@ -96,14 +96,14 @@ class FrameController extends Controller
 			$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
 
 			$query = $this->photo_query_policy->applySearchabilityFilter(
-				query: Photo::query()->with(['albums', 'size_variants', 'palette', 'tags', 'rating']),
+				query: Photo::query()->with(['albums.access_permissions', 'size_variants', 'palette', 'tags', 'rating']),
 				user: $user,
 				unlocked_album_ids: $unlocked_album_ids,
 				origin: null,
 				include_nsfw: !request()->configs()->getValueAsBool('hide_nsfw_in_frame')
 			);
 		} else {
-			$query = $album->photos()->with(['albums', 'size_variants', 'palette', 'tags', 'rating']);
+			$query = $album->photos()->with(['albums.access_permissions', 'size_variants', 'palette', 'tags', 'rating']);
 		}
 
 		/** @var ?Photo $photo */

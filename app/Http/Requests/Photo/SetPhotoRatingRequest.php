@@ -62,7 +62,7 @@ class SetPhotoRatingRequest extends BaseApiRequest implements HasPhoto
 		/** @var ?string $photo_id */
 		$photo_id = $values[RequestAttribute::PHOTO_ID_ATTRIBUTE];
 		$this->photo = Photo::query()
-			->with(['albums', 'rating'])
+			->with(['albums.access_permissions', 'rating'])
 			->findOrFail($photo_id);
 		$this->rating = intval($values[RequestAttribute::RATING_ATTRIBUTE]);
 	}

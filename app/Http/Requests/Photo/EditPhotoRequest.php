@@ -83,7 +83,7 @@ class EditPhotoRequest extends BaseApiRequest implements HasPhoto, HasTags, HasU
 		$photo_id = $values[RequestAttribute::PHOTO_ID_ATTRIBUTE];
 
 		$this->photo = Photo::query()
-			->with(['size_variants', 'albums'])
+			->with(['size_variants', 'albums.access_permissions'])
 			->findOrFail($photo_id);
 
 		$this->title = $values[RequestAttribute::TITLE_ATTRIBUTE];

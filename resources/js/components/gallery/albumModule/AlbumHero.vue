@@ -33,7 +33,9 @@
 						class="block text-muted-color text-sm cursor-pointer hover:text-color transition-colors duration-150"
 						@click="isPeopleOpen = !isPeopleOpen"
 					>
-						{{ trans_choice("people.people_detected", albumStore.album_people_total, { count: albumStore.album_people_total }) }}
+						{{
+							trans_choice("people.people_detected", albumStore.album_people_total, { count: albumStore.album_people_total.toString() })
+						}}
 						<i :class="isPeopleOpen ? 'pi pi-chevron-up' : 'pi pi-chevron-down'" class="text-xs ml-1" />
 					</span>
 				</div>
