@@ -54,7 +54,7 @@
         "dedoc/scramble": "^0.13.1",
         "directorytree/ldaprecord-laravel": "^4.0.0",
         "doctrine/dbal": "^3.9",
-        "farzai/color-palette": "^1.0",
+        "farzai/color-palette": "^2.0",
         "geocoder-php/cache-provider": "^4.4",
         "geocoder-php/nominatim-provider": "^5.7",
         "graham-campbell/markdown": "^16.0",
