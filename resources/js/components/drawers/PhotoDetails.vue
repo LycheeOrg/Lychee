@@ -222,13 +222,7 @@
 					/>
 
 					<!-- People in this photo -->
-					<template
-						v-if="
-							initData?.modules.is_ai_vision_enabled &&
-							initData?.modules.is_face_overlay_enabled &&
-							photoFaces.length > 0
-						"
-					>
+					<template v-if="initData?.modules.is_ai_vision_enabled && initData?.modules.is_face_overlay_enabled && photoFaces.length > 0">
 						<h2 class="text-muted-color-emphasis text-base font-bold mt-4 mb-2">
 							{{ $t("people.people_in_photo") }}
 						</h2>

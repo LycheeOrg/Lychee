@@ -12,8 +12,8 @@ use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
 use App\Repositories\ConfigManager;
 use App\Services\Image\FacialRecognitionService;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * Check if the AI Vision service is properly configured and reachable.

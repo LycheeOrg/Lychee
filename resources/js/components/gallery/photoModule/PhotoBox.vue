@@ -96,16 +96,8 @@
 			:style="photoStore.style"
 		></div>
 		<!-- Face overlay: positioned to exactly match the rendered image via BoundingClientRect -->
-		<div
-			v-if="loadedFaces.length > 0 || hiddenFaceCount > 0"
-			class="absolute z-10 pointer-events-none"
-			:style="faceOverlayStyle"
-		>
-			<FaceOverlay
-				:faces="loadedFaces"
-				:hidden-face-count="hiddenFaceCount"
-				@faces-updated="handleFacesUpdated"
-			/>
+		<div v-if="loadedFaces.length > 0 || hiddenFaceCount > 0" class="absolute z-10 pointer-events-none" :style="faceOverlayStyle">
+			<FaceOverlay :faces="loadedFaces" :hidden-face-count="hiddenFaceCount" @faces-updated="handleFacesUpdated" />
 		</div>
 	</div>
 </template>
