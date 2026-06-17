@@ -41,6 +41,8 @@ return [
 	'person' => [
 		'edit' => 'Edit',
 		'delete' => 'Delete',
+		'delete_confirm' => 'Are you sure you want to delete "%s"?',
+		'delete_warning' => 'This action cannot be undone! All faces assigned to this person will be unassigned.',
 		'merge' => 'Merge into…',
 		'toggle_searchable' => 'Toggle visibility',
 		'claim' => 'This is me',
@@ -65,6 +67,8 @@ return [
 		'dismiss' => 'Dismiss',
 		'dismissed' => 'Face dismissed successfully.',
 	],
+	'people_detected' => ':count person detected|:count people detected',
+	'filter_active' => 'Showing photos with :name',
 	'people_in_photo' => 'People in this photo',
 	'remove_from_person' => 'Remove from person',
 	'remove_from_person_success' => 'Face removed successfully.',
