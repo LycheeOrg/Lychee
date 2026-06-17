@@ -13,6 +13,7 @@ use App\DTO\DiagnosticData;
 use App\Repositories\ConfigManager;
 use App\Services\Image\FacialRecognitionService;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Http\Client\ConnectionException;
 
 /**
  * Check if the AI Vision service is properly configured and reachable.
@@ -96,7 +97,7 @@ class AiVisionServiceCheck implements DiagnosticPipe
 					[]
 				);
 			}
-		} catch (\Illuminate\Http\Client\ConnectionException $e) {
+		} catch (ConnectionException $e) {
 			$data[] = DiagnosticData::error(
 				'AI Vision: Could not connect to service at ' . rtrim($service_url, '/') . '/health',
 				self::class,
