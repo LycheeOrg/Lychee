@@ -30,6 +30,12 @@ use Illuminate\Support\Facades\Storage;
  */
 class SettingsController extends Controller
 {
+	public const V8_CONFIGS = [
+		'site_logo',
+		'landing_logo',
+		'landing_header_logo',
+	];
+
 	/**
 	 * Fetch all the settings available in Lychee.
 	 *
@@ -50,7 +56,8 @@ class SettingsController extends Controller
 				->when(!$request->verify()->is_supporter() && !$request->configs()->getValueAsBool('enable_se_preview'), fn ($q) => $q->where('level', '=', 0))
 				->when(!$request->verify()->is_pro(), fn ($q) => $q->where('level', '<', 2))
 				->when(config('features.webshop') === false, fn ($q) => $q->where('key', 'NOT LIKE', 'webshop_%'))
-				->when(config('features.ai-vision') === false, fn ($q) => $q->where('key', 'NOT LIKE', 'ai_vision_%')),
+				->when(config('features.ai-vision') === false, fn ($q) => $q->where('key', 'NOT LIKE', 'ai_vision_%'))
+				->when(config('features.v8') === false, fn ($q) => $q->whereNotIn('key', self::V8_CONFIGS)),
 		])->orderBy('order', 'asc')->get();
 
 		return ConfigCategoryResource::collect($editable_configs->filter(fn ($cat) => $cat->configs->isNotEmpty())->values());

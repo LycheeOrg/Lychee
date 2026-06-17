@@ -94,6 +94,15 @@ return [
 
 	/*
 	 |--------------------------------------------------------------------------
+	 | Enable the v8
+	 |--------------------------------------------------------------------------
+	 |
+	 | This value determines whether the v8 features are enabled.
+	 */
+	'v8' => (bool) env('V8_ENABLED', false),
+
+	/*
+	 |--------------------------------------------------------------------------
 	 | Require the API requests to have the header "content-type: application/json"
 	 | or "content-type: multipart/form-data" depending on the type.
 	 |
