@@ -11,7 +11,7 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Feature_v2\AiVision;
+namespace Tests\AssistedVision\People;
 
 use App\Models\Album;
 use App\Models\Configs;
