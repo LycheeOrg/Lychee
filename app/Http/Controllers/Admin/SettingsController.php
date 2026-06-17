@@ -30,7 +30,7 @@ use Illuminate\Support\Facades\Storage;
  */
 class SettingsController extends Controller
 {
-	const V8_CONFIGS = [
+	public const V8_CONFIGS = [
 		'site_logo',
 		'landing_logo',
 		'landing_header_logo',
