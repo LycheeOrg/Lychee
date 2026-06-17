@@ -109,5 +109,6 @@ class Kernel extends HttpKernel
 		'response_cache' => \App\Http\Middleware\Caching\ResponseCache::class,
 		'album_cache_refresher' => \App\Http\Middleware\Caching\AlbumRouteCacheRefresher::class,
 		'legacy_id_redirect' => \App\Http\Middleware\LegacyLocalIdRedirect::class,
+		'feature' => \App\Http\Middleware\FeatureEnabled::class,
 	];
 }
