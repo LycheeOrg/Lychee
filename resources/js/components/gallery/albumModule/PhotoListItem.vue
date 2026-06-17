@@ -11,6 +11,7 @@
 		@click="emits('clicked', $event, photo.id)"
 		@contextmenu.prevent="emits('contexted', $event, photo.id)"
 		@keydown.enter="emits('clicked', $event, photo.id)"
+		@mouseenter="prefetchFaces"
 	>
 		<!-- Thumbnail -->
 		<div class="relative block shrink-0 w-12 h-12 md:w-16 md:h-16">
@@ -105,6 +106,7 @@ import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useUserStore } from "@/stores/UserState";
 import { useAlbumsStore } from "@/stores/AlbumsState";
 import { useAlbumStore } from "@/stores/AlbumState";
+import { usePhotoFacesStore } from "@/stores/PhotoFacesState";
 import { storeToRefs } from "pinia";
 
 const props = defineProps<{
@@ -120,6 +122,7 @@ const emits = defineEmits<{
 }>();
 
 const { getNoImageIcon } = useImageHelpers();
+const facesStore = usePhotoFacesStore();
 const lycheeStore = useLycheeStateStore();
 const userStore = useUserStore();
 const albumsStore = useAlbumsStore();
@@ -135,4 +138,10 @@ const ariaLabel = computed(() => {
 	const date = props.photo.preformatted.taken_at ?? props.photo.preformatted.created_at ?? "";
 	return `${title}, ${date}`;
 });
+
+function prefetchFaces() {
+	if ((props.photo.face_count ?? 0) > 0) {
+		facesStore.prefetch(props.photo.id);
+	}
+}
 </script>

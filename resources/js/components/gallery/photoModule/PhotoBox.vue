@@ -97,14 +97,14 @@
 		></div>
 		<!-- Face overlay: positioned to exactly match the rendered image via BoundingClientRect -->
 		<div
-			v-if="(photoStore.photo.faces && photoStore.photo.faces.length > 0) || photoStore.photo.hidden_face_count > 0"
+			v-if="loadedFaces.length > 0 || hiddenFaceCount > 0"
 			class="absolute z-10 pointer-events-none"
 			:style="faceOverlayStyle"
 		>
 			<FaceOverlay
-				:faces="photoStore.photo.faces ?? []"
-				:hidden-face-count="photoStore.photo.hidden_face_count ?? 0"
-				@faces-updated="emits('facesUpdated')"
+				:faces="loadedFaces"
+				:hidden-face-count="hiddenFaceCount"
+				@faces-updated="handleFacesUpdated"
 			/>
 		</div>
 	</div>
@@ -112,10 +112,11 @@
 <script setup lang="ts">
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
+import { usePhotoFacesStore } from "@/stores/PhotoFacesState";
 import { useImageHelpers } from "@/utils/Helpers";
 import { useSwipe, type UseSwipeDirection } from "@vueuse/core";
 import { storeToRefs } from "pinia";
-import { ref, reactive, watchEffect, onUnmounted } from "vue";
+import { computed, reactive, watch, watchEffect, onUnmounted, ref } from "vue";
 import { useLtRorRtL } from "@/utils/Helpers";
 import { ImageViewMode, usePhotoStore } from "@/stores/PhotoState";
 import FaceOverlay from "./FaceOverlay.vue";
@@ -138,6 +139,19 @@ const { getPlaceholderIcon } = useImageHelpers();
 const imageEl = ref<HTMLElement | null>(null);
 const faceOverlayStyle = reactive({ top: "0px", left: "0px", width: "0px", height: "0px" });
 let imageResizeObserver: ResizeObserver | null = null;
+
+const facesStore = usePhotoFacesStore();
+const faceData = computed(() => facesStore.get(photoStore.photo?.id ?? ""));
+const loadedFaces = computed(() => faceData.value.faces);
+const hiddenFaceCount = computed(() => faceData.value.hiddenFaceCount);
+
+function handleFacesUpdated() {
+	emits("facesUpdated");
+	const photoId = photoStore.photo?.id;
+	if (photoId !== undefined) {
+		facesStore.invalidate(photoId);
+	}
+}
 
 function updateFaceOverlay() {
 	const img = imageEl.value;
@@ -172,6 +186,18 @@ watchEffect(
 );
 
 onUnmounted(() => imageResizeObserver?.disconnect());
+
+watch(
+	() => photoStore.photo?.id,
+	(photoId) => {
+		if (photoId === undefined || (photoStore.photo?.face_count ?? 0) <= 0) {
+			return;
+		}
+
+		facesStore.fetch(photoId);
+	},
+	{ immediate: true },
+);
 
 const emits = defineEmits<{
 	rotateOverlay: [];

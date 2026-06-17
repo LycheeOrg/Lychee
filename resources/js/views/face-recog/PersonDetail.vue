@@ -358,8 +358,7 @@ function onDragEnd(e: MouseEvent) {
 
 // Compute the face ID for a photo (the face belonging to the current person)
 function getPersonFaceId(photo: App.Http.Resources.Models.PhotoResource): string | null {
-	const face = photo.faces.find((f) => f.person_id === person.value?.id);
-	return face?.id ?? null;
+	return photo.person_face_id ?? null;
 }
 
 // All face IDs across all current photos

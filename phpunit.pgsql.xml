@@ -62,6 +62,7 @@
 	<env name="PAYPAL_CLIENT_ID" value="" />
 	<env name="PAYPAL_SECRET" value="" />
 	<env name="WEBSHOP_ENABLED" value="true"/>
+	<env name="AI_VISION_ENABLED" value="true"/>
   </php>
   <source>
     <include>

@@ -226,8 +226,7 @@
 						v-if="
 							initData?.modules.is_ai_vision_enabled &&
 							initData?.modules.is_face_overlay_enabled &&
-							photoStore.photo.faces &&
-							photoStore.photo.faces.length > 0
+							photoFaces.length > 0
 						"
 					>
 						<h2 class="text-muted-color-emphasis text-base font-bold mt-4 mb-2">
@@ -235,7 +234,7 @@
 						</h2>
 						<div class="flex gap-3 overflow-x-auto pb-1">
 							<div
-								v-for="face in photoStore.photo.faces.filter((f) => !f.is_dismissed)"
+								v-for="face in photoFaces.filter((f) => !f.is_dismissed)"
 								:key="face.id"
 								class="flex flex-col items-center gap-1 shrink-0 cursor-pointer"
 								@click.exact="openFaceAssignment(face)"
@@ -289,6 +288,7 @@ import PhotoRatingWidget from "@/components/gallery/photoModule/PhotoRatingWidge
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import LinksInclude from "@/components/gallery/photoModule/LinksInclude.vue";
 import FaceAssignmentModal from "@/components/modals/faceRecog/FaceAssignmentModal.vue";
+import { usePhotoFacesStore } from "@/stores/PhotoFacesState";
 import { storeToRefs } from "pinia";
 import { usePhotoStore } from "@/stores/PhotoState";
 import { useRouter } from "vue-router";
@@ -382,6 +382,8 @@ watch(
 const faceForAssignment = ref<App.Http.Resources.Models.FaceResource | undefined>(undefined);
 const isFaceAssignmentOpen = ref(false);
 const ctrlHeld = ref(false);
+const facesStore = usePhotoFacesStore();
+const photoFaces = computed(() => facesStore.get(photoStore.photo?.id ?? "").faces);
 
 function onKeyDown(e: KeyboardEvent) {
 	if (e.key === "Control" || e.key === "Meta") {
@@ -415,11 +417,9 @@ function openFaceAssignment(face: App.Http.Resources.Models.FaceResource) {
 }
 
 function removeFaceFromPhoto(faceId: string) {
-	if (photoStore.photo?.faces) {
-		const faceIndex = photoStore.photo.faces.findIndex((f) => f.id === faceId);
-		if (faceIndex !== -1) {
-			photoStore.photo.faces.splice(faceIndex, 1);
-		}
+	const photoId = photoStore.photo?.id;
+	if (photoId) {
+		facesStore.removeFace(photoId, faceId);
 	}
 }
 
@@ -440,7 +440,9 @@ function dismissFace(face: App.Http.Resources.Models.FaceResource) {
 		})
 		.catch((e: { response?: { data?: { message?: string } } }) => {
 			// On error, reload to restore face
-			photoStore.load();
+			if (photoStore.photo?.id) {
+				facesStore.invalidate(photoStore.photo.id);
+			}
 			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });
 		});
 }
@@ -451,12 +453,21 @@ function onFaceUpdated() {
 		removeFaceFromPhoto(faceForAssignment.value.id);
 	}
 
-	// Force reload photo to refresh face data
+	// Refresh face payload after assignment/dismiss in the modal.
 	if (photoStore.photo?.id) {
-		const currentId = photoStore.photoId;
-		photoStore.$patch({ photo: undefined });
-		photoStore.photoId = currentId;
-		photoStore.load();
+		facesStore.invalidate(photoStore.photo.id);
 	}
 }
+
+watch(
+	() => photoStore.photo?.id,
+	(photo_id) => {
+		if (photo_id === undefined || (photoStore.photo?.face_count ?? 0) <= 0) {
+			return;
+		}
+
+		facesStore.fetch(photo_id);
+	},
+	{ immediate: true },
+);
 </script>

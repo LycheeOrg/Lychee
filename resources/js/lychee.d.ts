@@ -849,6 +849,11 @@ declare namespace App.Http.Resources.Models {
 		rating_count: number;
 		rating_avg: number;
 	};
+	export type PhotoFacesResource = {
+		faces: Array<App.Http.Resources.Models.FaceResource>;
+		hidden_face_count: number;
+		rights: App.Http.Resources.Rights.PhotoRightsResource;
+	};
 	export type PhotoResource = {
 		id: string;
 		album_id: string | null;
@@ -876,8 +881,8 @@ declare namespace App.Http.Resources.Models {
 		palette: App.Http.Resources.Models.ColourPaletteResource | null;
 		statistics: App.Http.Resources.Models.PhotoStatisticsResource | null;
 		rating: App.Http.Resources.Models.PhotoRatingResource | null;
-		faces: Array<App.Http.Resources.Models.FaceResource>;
-		hidden_face_count: number;
+		face_count: number;
+		person_face_id: string | null;
 		is_validated: boolean;
 	};
 	export type PhotoStatisticsResource = {

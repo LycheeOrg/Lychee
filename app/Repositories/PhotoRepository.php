@@ -25,12 +25,6 @@ class PhotoRepository
 {
 	use FiltersUploadValidation;
 
-	public function __construct(
-		private ConfigManager $config_manager,
-	) {
-		// Constructor can be used for dependency injection if needed in the future
-	}
-
 	/**
 	 * Get paginated photos for an album with all necessary relations eager-loaded.
 	 *
@@ -64,15 +58,7 @@ class PhotoRepository
 		string $tag_logic = 'OR',
 		?string $person_id = null,
 	): LengthAwarePaginator {
-		$face_enabled = $this->config_manager->getValueAsBool('ai_vision_enabled') &&
-			$this->config_manager->getValueAsBool('ai_vision_face_enabled');
-
 		$relations = ['size_variants', 'tags', 'palette', 'statistics', 'rating'];
-		if ($face_enabled) {
-			$relations[] = 'faces.person';
-			$relations[] = 'faces.suggestions.suggestedFace.person';
-			$relations[] = 'albums.access_permissions';
-		}
 
 		// Build query for photos belonging to the album via the photo_album pivot table
 		$query = Photo::query()
