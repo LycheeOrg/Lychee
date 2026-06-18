@@ -13,6 +13,7 @@
 
 namespace Tests\AssistedVision\People;
 
+use App\Models\AccessPermission;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Face;
@@ -23,11 +24,6 @@ use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class AlbumPeopleTest extends BaseApiWithDataTest
 {
-	private Album $testAlbum1;
-	private Album $testAlbum2;
-	private Photo $testPhoto1;
-	private Photo $testPhoto2;
-	private Photo $testPhoto3;
 	private Person $testPerson1;
 	private Person $testPerson2;
 	private Person $testPerson3;
@@ -41,43 +37,27 @@ class AlbumPeopleTest extends BaseApiWithDataTest
 		Configs::set('ai_vision_face_enabled', '1');
 		Configs::set('ai_vision_face_permission_mode', 'public');
 
-		// Create albums
-		$this->testAlbum1 = Album::factory()->owned_by($this->userMayUpload1)->create();
-		$this->testAlbum2 = Album::factory()->owned_by($this->userMayUpload1)->create();
-
-		// Create photos
-		$this->testPhoto1 = Photo::factory()->owned_by($this->userMayUpload1)->create();
-		$this->testPhoto2 = Photo::factory()->owned_by($this->userMayUpload1)->create();
-		$this->testPhoto3 = Photo::factory()->owned_by($this->userMayUpload1)->create();
-
-		// Add photos to albums
-		DB::table('photo_album')->insert([
-			['photo_id' => $this->testPhoto1->id, 'album_id' => $this->testAlbum1->id],
-			['photo_id' => $this->testPhoto2->id, 'album_id' => $this->testAlbum1->id],
-			['photo_id' => $this->testPhoto3->id, 'album_id' => $this->testAlbum2->id],
-		]);
-
 		// Create persons
 		$this->testPerson1 = Person::factory()->with_name('Alice')->create(['is_searchable' => true]);
 		$this->testPerson2 = Person::factory()->with_name('Bob')->create(['is_searchable' => true]);
 		$this->testPerson3 = Person::factory()->with_name('Charlie')->create(['is_searchable' => false]);
 
-		// Create faces in album1 photos
-		Face::factory()->for_photo($this->testPhoto1)->without_crop()->create([
+		// Create faces in album1 photos (photo1 and photo1b are in album1 via parent)
+		Face::factory()->for_photo($this->photo1)->without_crop()->create([
 			'person_id' => $this->testPerson1->id,
 			'is_dismissed' => false,
 		]);
-		Face::factory()->for_photo($this->testPhoto1)->without_crop()->create([
+		Face::factory()->for_photo($this->photo1)->without_crop()->create([
 			'person_id' => $this->testPerson2->id,
 			'is_dismissed' => false,
 		]);
-		Face::factory()->for_photo($this->testPhoto2)->without_crop()->create([
+		Face::factory()->for_photo($this->photo1b)->without_crop()->create([
 			'person_id' => $this->testPerson1->id,
 			'is_dismissed' => false,
 		]);
 
-		// Create faces in album2 photos
-		Face::factory()->for_photo($this->testPhoto3)->without_crop()->create([
+		// Create faces in album2 photos (photo2 is in album2 via parent)
+		Face::factory()->for_photo($this->photo2)->without_crop()->create([
 			'person_id' => $this->testPerson3->id,
 			'is_dismissed' => false,
 		]);
@@ -85,7 +65,6 @@ class AlbumPeopleTest extends BaseApiWithDataTest
 
 	public function tearDown(): void
 	{
-		DB::table('photo_album')->delete();
 		DB::table('faces')->delete();
 		DB::table('persons')->delete();
 		$this->resetSe();
@@ -96,7 +75,7 @@ class AlbumPeopleTest extends BaseApiWithDataTest
 
 	public function testGetAlbumPeopleReturnsDistinctPersons(): void
 	{
-		$response = $this->actingAs($this->userMayUpload1)->getJson('Album/' . $this->testAlbum1->id . '/people');
+		$response = $this->actingAs($this->userMayUpload1)->getJson('Album/' . $this->album1->id . '/people');
 		$this->assertStatus($response, 200);
 
 		$people = $response->json('data');
@@ -111,7 +90,7 @@ class AlbumPeopleTest extends BaseApiWithDataTest
 	public function testGetAlbumPeopleDeduplicates(): void
 	{
 		// Alice appears in two photos in album1, should appear only once
-		$response = $this->actingAs($this->userMayUpload1)->getJson('Album/' . $this->testAlbum1->id . '/people');
+		$response = $this->actingAs($this->userMayUpload1)->getJson('Album/' . $this->album1->id . '/people');
 		$this->assertStatus($response, 200);
 
 		$people = $response->json('data');
@@ -122,11 +101,11 @@ class AlbumPeopleTest extends BaseApiWithDataTest
 	public function testGetAlbumPeopleExcludesDismissedFaces(): void
 	{
 		// Dismiss all faces of person2 in album1
-		Face::where('photo_id', $this->testPhoto1->id)
+		Face::where('photo_id', $this->photo1->id)
 			->where('person_id', $this->testPerson2->id)
 			->update(['is_dismissed' => true]);
 
-		$response = $this->actingAs($this->userMayUpload1)->getJson('Album/' . $this->testAlbum1->id . '/people');
+		$response = $this->actingAs($this->userMayUpload1)->getJson('Album/' . $this->album1->id . '/people');
 		$this->assertStatus($response, 200);
 
 		$people = $response->json('data');
@@ -139,16 +118,15 @@ class AlbumPeopleTest extends BaseApiWithDataTest
 	{
 		// Charlie is not searchable, should not appear for guest users
 		// Add Charlie to album1
-		Face::factory()->for_photo($this->testPhoto1)->without_crop()->create([
+		Face::factory()->for_photo($this->photo1)->without_crop()->create([
 			'person_id' => $this->testPerson3->id,
 			'is_dismissed' => false,
 		]);
 
 		// Make album public
-		$this->testAlbum1->public = true;
-		$this->testAlbum1->save();
+		AccessPermission::factory()->public()->visible()->for_album($this->album1)->create();
 
-		$response = $this->getJson('Album/' . $this->testAlbum1->id . '/people');
+		$response = $this->getJson('Album/' . $this->album1->id . '/people');
 		$this->assertStatus($response, 200);
 
 		$people = $response->json('data');
@@ -162,12 +140,12 @@ class AlbumPeopleTest extends BaseApiWithDataTest
 	{
 		// Charlie is not searchable, but admins should see them
 		// Add Charlie to album1
-		Face::factory()->for_photo($this->testPhoto1)->without_crop()->create([
+		Face::factory()->for_photo($this->photo1)->without_crop()->create([
 			'person_id' => $this->testPerson3->id,
 			'is_dismissed' => false,
 		]);
 
-		$response = $this->actingAs($this->admin)->getJson('Album/' . $this->testAlbum1->id . '/people');
+		$response = $this->actingAs($this->admin)->getJson('Album/' . $this->album1->id . '/people');
 		$this->assertStatus($response, 200);
 
 		$people = $response->json('data');
@@ -179,8 +157,8 @@ class AlbumPeopleTest extends BaseApiWithDataTest
 
 	public function testGetAlbumPeopleRequiresAlbumAccess(): void
 	{
-		// userNoUpload2 has no access to album1
-		$response = $this->actingAs($this->userNoUpload2)->getJson('Album/' . $this->testAlbum1->id . '/people');
+		// userNoUpload has no access to album1
+		$response = $this->actingAs($this->userNoUpload)->getJson('Album/' . $this->album1->id . '/people');
 		$this->assertStatus($response, [403, 404]);
 	}
 
@@ -202,14 +180,14 @@ class AlbumPeopleTest extends BaseApiWithDataTest
 		$photo_unassigned = Photo::factory()->owned_by($this->userMayUpload1)->create();
 		DB::table('photo_album')->insert([
 			'photo_id' => $photo_unassigned->id,
-			'album_id' => $this->testAlbum1->id,
+			'album_id' => $this->album1->id,
 		]);
 		Face::factory()->for_photo($photo_unassigned)->without_crop()->create([
 			'person_id' => null,
 			'is_dismissed' => false,
 		]);
 
-		$response = $this->actingAs($this->userMayUpload1)->getJson('Album/' . $this->testAlbum1->id . '/people');
+		$response = $this->actingAs($this->userMayUpload1)->getJson('Album/' . $this->album1->id . '/people');
 		$this->assertStatus($response, 200);
 
 		// Should still return Alice and Bob, not the unassigned face
