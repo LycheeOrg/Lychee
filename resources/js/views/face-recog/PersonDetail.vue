@@ -64,7 +64,7 @@
 								class="border-none"
 								severity="danger"
 								text
-								:disabled="selectedFaceIds.length === 0"
+								:disabled="selectedPhotoIds.length === 0"
 								:loading="batchLoading"
 								@click="batchUnassign"
 							/>
@@ -100,7 +100,7 @@
 			<!-- Batch mode info bar -->
 			<div v-if="isBatchMode" class="px-6 py-2 bg-surface-100 dark:bg-surface-800 flex items-center gap-3 text-sm">
 				<Checkbox :modelValue="allSelected" :indeterminate="partiallySelected" binary @change="toggleSelectAll" />
-				<span>{{ $t("people.batch_selected", { count: String(selectedFaceIds.length) }) }}</span>
+				<span>{{ $t("people.batch_selected", { count: String(selectedPhotoIds.length) }) }}</span>
 			</div>
 
 			<!-- Photos grid -->
@@ -127,7 +127,7 @@
 					:class="{ 'outline outline-2 outline-primary-500': isBatchMode && isPhotoSelected(photo) }"
 					:data-width="photo.size_variants.original?.width ?? photo.size_variants.small?.width ?? 1"
 					:data-height="photo.size_variants.original?.height ?? photo.size_variants.small?.height ?? 1"
-					:data-face-id="getPersonFaceId(photo)"
+					:data-photo-id="photo.id"
 					@click="isBatchMode ? togglePhotoSelection(photo, idx, $event) : openPhoto(photo.id)"
 				>
 					<img
@@ -282,7 +282,7 @@ let resizeObserver: ResizeObserver | null = null;
 
 // Batch selection state
 const isBatchMode = ref(false);
-const selectedFaceIds = ref<string[]>([]);
+const selectedPhotoIds = ref<string[]>([]);
 const batchLoading = ref(false);
 const lastSelectedIndex = ref<number>(-1);
 
@@ -303,7 +303,7 @@ function startDragSelect(e: MouseEvent) {
 	if (e.button !== 0) return;
 	const target = e.target as HTMLElement;
 	// Only start drag on empty space (not on a photo tile or interactive child)
-	if (target.closest("[data-face-id], button, input")) return;
+	if (target.closest("[data-photo-id], button, input")) return;
 	e.preventDefault();
 	const containerRect = photoListingRef.value!.getBoundingClientRect();
 	const containerScrollTop = photoListingRef.value!.parentElement?.scrollTop ?? 0;
@@ -332,7 +332,7 @@ function onDragEnd(e: MouseEvent) {
 		if (selRight - selLeft > 4 || selBottom - selTop > 4) {
 			const containerRect = photoListingRef.value.getBoundingClientRect();
 			const containerScrollTop = photoListingRef.value.parentElement?.scrollTop ?? 0;
-			const tiles = photoListingRef.value.querySelectorAll<HTMLElement>("[data-face-id]");
+			const tiles = photoListingRef.value.querySelectorAll<HTMLElement>("[data-photo-id]");
 			const intersected: string[] = [];
 			tiles.forEach((tile) => {
 				const tileRect = tile.getBoundingClientRect();
@@ -341,100 +341,80 @@ function onDragEnd(e: MouseEvent) {
 				const tileRight = tileLeft + tileRect.width;
 				const tileBottom = tileTop + tileRect.height;
 				if (tileLeft < selRight && tileRight > selLeft && tileTop < selBottom && tileBottom > selTop) {
-					const faceId = tile.dataset.faceId;
-					if (faceId) intersected.push(faceId);
+					const photoId = tile.dataset.photoId;
+					if (photoId) intersected.push(photoId);
 				}
 			});
 			if (e.ctrlKey || e.metaKey) {
-				const toAdd = intersected.filter((id) => !selectedFaceIds.value.includes(id));
-				selectedFaceIds.value = [...selectedFaceIds.value, ...toAdd];
+				const toAdd = intersected.filter((id) => !selectedPhotoIds.value.includes(id));
+				selectedPhotoIds.value = [...selectedPhotoIds.value, ...toAdd];
 			} else {
-				selectedFaceIds.value = intersected;
+				selectedPhotoIds.value = intersected;
 			}
 		}
 	}
 	dragVisible.value = false;
 }
 
-// Compute the face ID for a photo (the face belonging to the current person)
-function getPersonFaceId(photo: App.Http.Resources.Models.PhotoResource): string | null {
-	return photo.person_face_id ?? null;
-}
+const allPhotoIds = computed(() => photos.value.map((p) => p.id));
 
-// All face IDs across all current photos
-const allFaceIds = computed(() => {
-	return photos.value.map((p) => getPersonFaceId(p)).filter((id): id is string => id !== null);
-});
-
-const allSelected = computed(() => allFaceIds.value.length > 0 && selectedFaceIds.value.length === allFaceIds.value.length);
-const partiallySelected = computed(() => selectedFaceIds.value.length > 0 && selectedFaceIds.value.length < allFaceIds.value.length);
+const allSelected = computed(() => allPhotoIds.value.length > 0 && selectedPhotoIds.value.length === allPhotoIds.value.length);
+const partiallySelected = computed(() => selectedPhotoIds.value.length > 0 && selectedPhotoIds.value.length < allPhotoIds.value.length);
 
 function isPhotoSelected(photo: App.Http.Resources.Models.PhotoResource): boolean {
-	const faceId = getPersonFaceId(photo);
-	return faceId !== null && selectedFaceIds.value.includes(faceId);
+	return selectedPhotoIds.value.includes(photo.id);
 }
 
 function togglePhotoSelection(photo: App.Http.Resources.Models.PhotoResource, idx: number, event: MouseEvent) {
-	const faceId = getPersonFaceId(photo);
-	if (!faceId) return;
-
 	if (event.shiftKey && lastSelectedIndex.value >= 0) {
-		// Range select from lastSelectedIndex to idx
 		const from = Math.min(lastSelectedIndex.value, idx);
 		const to = Math.max(lastSelectedIndex.value, idx);
-		const rangeIds = photos.value
-			.slice(from, to + 1)
-			.map(getPersonFaceId)
-			.filter((id): id is string => id !== null);
-		const allAlreadySelected = rangeIds.every((id) => selectedFaceIds.value.includes(id));
+		const rangeIds = photos.value.slice(from, to + 1).map((p) => p.id);
+		const allAlreadySelected = rangeIds.every((id) => selectedPhotoIds.value.includes(id));
 		if (allAlreadySelected) {
-			selectedFaceIds.value = selectedFaceIds.value.filter((id) => !rangeIds.includes(id));
+			selectedPhotoIds.value = selectedPhotoIds.value.filter((id) => !rangeIds.includes(id));
 		} else {
-			const toAdd = rangeIds.filter((id) => !selectedFaceIds.value.includes(id));
-			selectedFaceIds.value = [...selectedFaceIds.value, ...toAdd];
+			const toAdd = rangeIds.filter((id) => !selectedPhotoIds.value.includes(id));
+			selectedPhotoIds.value = [...selectedPhotoIds.value, ...toAdd];
 		}
 	} else {
-		const existing = selectedFaceIds.value.indexOf(faceId);
+		const existing = selectedPhotoIds.value.indexOf(photo.id);
 		if (existing === -1) {
-			selectedFaceIds.value.push(faceId);
+			selectedPhotoIds.value.push(photo.id);
 		} else {
-			selectedFaceIds.value.splice(existing, 1);
+			selectedPhotoIds.value.splice(existing, 1);
 		}
 		lastSelectedIndex.value = idx;
 	}
 }
 
 function toggleSelectAll() {
-	if (selectedFaceIds.value.length === allFaceIds.value.length) {
-		selectedFaceIds.value = [];
+	if (selectedPhotoIds.value.length === allPhotoIds.value.length) {
+		selectedPhotoIds.value = [];
 	} else {
-		selectedFaceIds.value = [...allFaceIds.value];
+		selectedPhotoIds.value = [...allPhotoIds.value];
 	}
 }
 
 function startBatchMode() {
 	isBatchMode.value = true;
-	selectedFaceIds.value = [];
+	selectedPhotoIds.value = [];
 }
 
 function cancelBatchMode() {
 	isBatchMode.value = false;
-	selectedFaceIds.value = [];
+	selectedPhotoIds.value = [];
 	lastSelectedIndex.value = -1;
 }
 
 function batchUnassign() {
-	if (selectedFaceIds.value.length === 0) return;
+	if (selectedPhotoIds.value.length === 0) return;
 	batchLoading.value = true;
-	FaceBatchService.batchUnassign(selectedFaceIds.value)
+	FaceBatchService.batchUnassignByPhotos(selectedPhotoIds.value, props.personId)
 		.then((data) => {
 			toast.add({ severity: "success", summary: trans("toasts.success"), detail: trans("people.remove_from_person_success"), life: 3000 });
-			// Remove affected photos from list
-			const unassigned = new Set(selectedFaceIds.value);
-			photos.value = photos.value.filter((p) => {
-				const faceId = getPersonFaceId(p);
-				return faceId === null || !unassigned.has(faceId);
-			});
+			const unassigned = new Set(selectedPhotoIds.value);
+			photos.value = photos.value.filter((p) => !unassigned.has(p.id));
 			if (person.value) {
 				person.value.face_count = Math.max(0, person.value.face_count - data.affected_count);
 				person.value.photo_count = Math.max(0, person.value.photo_count - data.affected_count);
@@ -450,9 +430,7 @@ function batchUnassign() {
 }
 
 function removeFromPerson(photo: App.Http.Resources.Models.PhotoResource) {
-	const faceId = getPersonFaceId(photo);
-	if (!faceId) return;
-	FaceBatchService.batchUnassign([faceId])
+	FaceBatchService.batchUnassignByPhotos([photo.id], props.personId)
 		.then((data) => {
 			toast.add({ severity: "success", summary: trans("toasts.success"), detail: trans("people.remove_from_person_success"), life: 3000 });
 			photos.value = photos.value.filter((p) => p.id !== photo.id);

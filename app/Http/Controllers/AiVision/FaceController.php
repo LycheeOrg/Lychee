@@ -78,7 +78,12 @@ class FaceController extends Controller
 		$face_ids = $request->face_ids;
 
 		if ($request->action === 'unassign') {
-			$query = Face::whereIn('id', $face_ids);
+			if (count($request->photo_ids) > 0 && $request->person_id !== null) {
+				$query = Face::whereIn('photo_id', $request->photo_ids)
+					->where('person_id', '=', $request->person_id);
+			} else {
+				$query = Face::whereIn('id', $face_ids);
+			}
 			$count = $query->count();
 			$query->update(['person_id' => null]);
 

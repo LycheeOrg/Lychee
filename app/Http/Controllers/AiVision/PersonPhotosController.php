@@ -70,18 +70,6 @@ class PersonPhotosController extends Controller
 
 		$paginated = $query->distinct()->paginate(50);
 
-		$photo_ids = collect($paginated->items())->pluck('id')->all();
-		$person_face_ids = DB::table('faces')
-			->select('photo_id', DB::raw('MIN(id) as person_face_id'))
-			->where('person_id', '=', $id)
-			->whereIn('photo_id', $photo_ids)
-			->groupBy('photo_id')
-			->pluck('person_face_id', 'photo_id');
-
-		foreach ($paginated->items() as $photo) {
-			$photo->setAttribute('person_face_id', $person_face_ids[$photo->id] ?? null);
-		}
-
 		return new PaginatedPhotosResource(
 			paginated_photos: $paginated,
 			album_id: null,

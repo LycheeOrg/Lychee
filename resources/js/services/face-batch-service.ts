@@ -50,4 +50,20 @@ export default class FaceBatchService {
 		});
 		return response.data;
 	}
+
+	/**
+	 * Batch unassign faces by photo IDs for a given person.
+	 *
+	 * @param photoIds Array of photo IDs
+	 * @param personId The person to unassign from
+	 * @returns Response with affected count
+	 */
+	public static async batchUnassignByPhotos(photoIds: string[], personId: string): Promise<{ affected_count: number; person_id: null }> {
+		const response = await axios.post(`${Constants.getApiUrl()}Face/batch`, {
+			photo_ids: photoIds,
+			person_id: personId,
+			action: "unassign",
+		});
+		return response.data;
+	}
 }

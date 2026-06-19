@@ -882,7 +882,6 @@ declare namespace App.Http.Resources.Models {
 		statistics: App.Http.Resources.Models.PhotoStatisticsResource | null;
 		rating: App.Http.Resources.Models.PhotoRatingResource | null;
 		face_count: number;
-		person_face_id: string | null;
 		is_validated: boolean;
 	};
 	export type PhotoStatisticsResource = {
