@@ -22,12 +22,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class FaceSuggestion extends Model
 {
-	/**
-	 * This model has no timestamps.
-	 *
-	 * @var bool
-	 */
 	public $timestamps = false;
+
+	public $incrementing = false;
 
 	/**
 	 * @var string
