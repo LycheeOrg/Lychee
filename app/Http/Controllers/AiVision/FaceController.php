@@ -78,7 +78,9 @@ class FaceController extends Controller
 		$face_ids = $request->face_ids;
 
 		if ($request->action === 'unassign') {
-			$count = Face::whereIn('id', $face_ids)->update(['person_id' => null]);
+			$query = Face::whereIn('id', $face_ids);
+			$count = $query->count();
+			$query->update(['person_id' => null]);
 
 			return ['affected_count' => $count, 'person_id' => null];
 		}
