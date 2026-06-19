@@ -107,7 +107,7 @@ class AiVisionPolicy extends BasePolicy
 			return false;
 		}
 
-		return $person->is_searchable || $person->user_id === $user?->id;
+		return $person->is_searchable || ($user !== null && $person->user_id === $user->id);
 	}
 
 	/**

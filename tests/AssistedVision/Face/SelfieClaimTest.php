@@ -14,6 +14,7 @@
 namespace Tests\AssistedVision\Face;
 
 use App\Models\Configs;
+use App\Models\Face;
 use App\Models\Person;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
@@ -35,8 +36,8 @@ class SelfieClaimTest extends BaseApiWithDataTest
 		Configs::set('ai_vision_face_allow_user_claim', '1');
 		Configs::set('ai_vision_face_selfie_confidence_threshold', '0.8');
 
-		config(['features.ai-vision.face-url' => 'http://fake-vision-service:8000']);
-		config(['features.ai-vision.face-api-key' => 'test-api-key']);
+		config(['features.ai-vision-service.face-url' => 'http://fake-vision-service:8000']);
+		config(['features.ai-vision-service.face-api-key' => 'test-api-key']);
 
 		$this->person1 = Person::factory()->with_name('Alice')->create();
 	}
@@ -52,11 +53,13 @@ class SelfieClaimTest extends BaseApiWithDataTest
 
 	public function testSelfieClaimSuccess(): void
 	{
+		$face = Face::factory()->for_photo($this->photo1)->for_person($this->person1)->create();
+
 		Http::fake([
 			'fake-vision-service:8000/match' => Http::response([
 				'matches' => [
 					[
-						'lychee_face_id' => 'some_face_id',
+						'lychee_face_id' => $face->id,
 						'person_id' => $this->person1->id,
 						'confidence' => 0.95,
 					],
@@ -72,7 +75,7 @@ class SelfieClaimTest extends BaseApiWithDataTest
 			['CONTENT_TYPE' => 'multipart/form-data', 'Accept' => 'application/json']
 		);
 
-		$this->assertOk($response);
+		$this->assertCreated($response);
 		self::assertEquals($this->person1->id, $response->json('id'));
 
 		// Verify person is now linked to user
@@ -101,6 +104,8 @@ class SelfieClaimTest extends BaseApiWithDataTest
 
 	public function testSelfieClaimAlreadyClaimed(): void
 	{
+		$face = Face::factory()->for_photo($this->photo1)->for_person($this->person1)->create();
+
 		$this->person1->user_id = $this->userMayUpload2->id;
 		$this->person1->save();
 
@@ -108,7 +113,7 @@ class SelfieClaimTest extends BaseApiWithDataTest
 			'fake-vision-service:8000/match' => Http::response([
 				'matches' => [
 					[
-						'lychee_face_id' => 'some_face_id',
+						'lychee_face_id' => $face->id,
 						'person_id' => $this->person1->id,
 						'confidence' => 0.95,
 					],

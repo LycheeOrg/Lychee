@@ -179,6 +179,7 @@ final readonly class RouteCacheManager
 			'api/v2/People' => false,
 			'api/v2/Person/{id}' => false,
 			'api/v2/Person/{id}/photos' => false,
+			'api/v2/Photo/{id}/faces' => false,
 			'api/v2/Face/maintenance' => false,
 			'api/v2/FaceDetection/clusters' => false,
 			'api/v2/FaceDetection/clusters/{label}/faces' => false,

@@ -89,9 +89,9 @@ class PeopleControllerTest extends BaseApiWithDataTest
 	{
 		Configs::set('ai_vision_face_permission_mode', 'restricted');
 
-		// Guest should be forbidden
+		// Guest should be unauthenticated
 		$response = $this->getJson('People');
-		$this->assertForbidden($response);
+		$this->assertUnauthorized($response);
 
 		// Admin still sees all
 		$response = $this->actingAs($this->admin)->getJson('People');
@@ -109,15 +109,15 @@ class PeopleControllerTest extends BaseApiWithDataTest
 		self::assertArrayHasKey('photo_count', $response->json());
 	}
 
-	public function testShowNonSearchablePersonAsGuestForbidden(): void
+	public function testShowNonSearchablePersonAsGuestUnauthorized(): void
 	{
 		$response = $this->getJson('Person/' . $this->personHidden->id);
-		$this->assertForbidden($response);
+		$this->assertUnauthorized($response);
 	}
 
 	public function testShowNonExistentPerson(): void
 	{
-		$response = $this->actingAs($this->admin)->getJson('Person/nonexistent_id_12345');
+		$response = $this->actingAs($this->admin)->getJson('Person/xxxxxxxxxxxxxxxxxxxx_404');
 		$this->assertNotFound($response);
 	}
 
@@ -133,7 +133,7 @@ class PeopleControllerTest extends BaseApiWithDataTest
 	public function testStoreAsUser(): void
 	{
 		$response = $this->actingAs($this->userMayUpload1)->postJson('Person', ['name' => 'Charlie']);
-		$this->assertOk($response);
+		$this->assertCreated($response);
 		self::assertEquals('Charlie', $response->json('name'));
 		self::assertTrue($response->json('is_searchable'));
 	}
@@ -153,7 +153,7 @@ class PeopleControllerTest extends BaseApiWithDataTest
 
 		// Admin can still create
 		$response = $this->actingAs($this->admin)->postJson('Person', ['name' => 'Charlie']);
-		$this->assertOk($response);
+		$this->assertCreated($response);
 	}
 
 	// ── UPDATE ──────────────────────────────────────────────────

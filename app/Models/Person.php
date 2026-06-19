@@ -58,6 +58,14 @@ class Person extends Model
 	public $incrementing = false;
 
 	/**
+	 * @var array<string,mixed>
+	 */
+	protected $attributes = [
+		'face_count' => 0,
+		'photo_count' => 0,
+	];
+
+	/**
 	 * @var list<string>
 	 */
 	protected $fillable = [

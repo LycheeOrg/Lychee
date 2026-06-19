@@ -130,11 +130,10 @@ class FaceMaintenanceTest extends BaseApiTest
 		$this->assertOk($response);
 
 		$data = $response->json('data');
-		$meta = $response->json('meta');
 		self::assertCount(2, $data);
-		self::assertEquals(5, $meta['total']);
-		self::assertEquals(2, $meta['per_page']);
-		self::assertEquals(3, $meta['last_page']);
+		self::assertEquals(5, $response->json('total'));
+		self::assertEquals(2, $response->json('per_page'));
+		self::assertEquals(3, $response->json('last_page'));
 	}
 
 	public function testAdminOnlyNonAdminGetsForbidden(): void

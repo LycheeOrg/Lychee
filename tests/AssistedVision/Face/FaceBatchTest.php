@@ -188,7 +188,7 @@ class FaceBatchTest extends BaseApiWithDataTest
 		$this->face3->cluster_label = 42;
 		$this->face3->save();
 
-		$response = $this->actingAs($this->userMayUpload1)->postJson('clusters/42/uncluster', [
+		$response = $this->actingAs($this->userMayUpload1)->postJson('FaceDetection/clusters/42/uncluster', [
 			'face_ids' => [$this->face1->id, $this->face2->id],
 		]);
 		$this->assertStatus($response, 200);
@@ -212,7 +212,7 @@ class FaceBatchTest extends BaseApiWithDataTest
 		$this->face2->cluster_label = 42;
 		$this->face2->save();
 
-		$response = $this->actingAs($this->userMayUpload1)->postJson('clusters/42/uncluster', [
+		$response = $this->actingAs($this->userMayUpload1)->postJson('FaceDetection/clusters/42/uncluster', [
 			'face_ids' => [$this->face1->id, $this->face2->id],
 		]);
 		$this->assertStatus($response, 200);
@@ -234,7 +234,7 @@ class FaceBatchTest extends BaseApiWithDataTest
 		$this->face2->cluster_label = 42;
 		$this->face2->save();
 
-		$response = $this->actingAs($this->userMayUpload1)->postJson('clusters/42/uncluster', [
+		$response = $this->actingAs($this->userMayUpload1)->postJson('FaceDetection/clusters/42/uncluster', [
 			'face_ids' => [$this->face1->id, $this->face2->id],
 		]);
 		$this->assertStatus($response, 200);
@@ -249,7 +249,7 @@ class FaceBatchTest extends BaseApiWithDataTest
 
 	public function testUnclusterRequiresFaceIds(): void
 	{
-		$response = $this->actingAs($this->userMayUpload1)->postJson('clusters/42/uncluster', []);
+		$response = $this->actingAs($this->userMayUpload1)->postJson('FaceDetection/clusters/42/uncluster', []);
 		$this->assertStatus($response, 422);
 	}
 }

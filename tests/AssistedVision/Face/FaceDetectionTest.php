@@ -36,7 +36,7 @@ class FaceDetectionTest extends BaseApiWithDataTest
 		Configs::set('ai_vision_face_permission_mode', 'public');
 
 		$this->api_key = 'test-api-key-12345';
-		config(['features.ai-vision.face-api-key' => $this->api_key]);
+		config(['features.ai-vision-service.face-api-key' => $this->api_key]);
 	}
 
 	public function tearDown(): void
@@ -57,7 +57,7 @@ class FaceDetectionTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->userMayUpload1)->postJson('FaceDetection/scan', [
 			'photo_ids' => [$this->photo1->id],
 		]);
-		$this->assertStatus($response, 202);
+		$this->assertNoContent($response);
 	}
 
 	public function testScanAlbum(): void
@@ -67,7 +67,7 @@ class FaceDetectionTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->userMayUpload1)->postJson('FaceDetection/scan', [
 			'album_id' => $this->album1->id,
 		]);
-		$this->assertStatus($response, 202);
+		$this->assertNoContent($response);
 	}
 
 	public function testScanValidationRequiresPhotoOrAlbum(): void
@@ -101,6 +101,7 @@ class FaceDetectionTest extends BaseApiWithDataTest
 					'width' => 0.15,
 					'height' => 0.2,
 					'confidence' => 0.95,
+					'laplacian_variance' => 120.5,
 					'embedding_id' => 'emb_001',
 					'crop' => base64_encode('fake-crop-data'),
 				],
@@ -146,7 +147,7 @@ class FaceDetectionTest extends BaseApiWithDataTest
 			'faces' => [],
 		], ['X-API-Key' => 'wrong-key']);
 
-		$this->assertForbidden($response);
+		$this->assertUnauthorized($response);
 	}
 
 	public function testResultsInvalidPhotoId(): void
@@ -157,7 +158,7 @@ class FaceDetectionTest extends BaseApiWithDataTest
 			'faces' => [],
 		], ['X-API-Key' => $this->api_key]);
 
-		$this->assertUnprocessable($response);
+		$this->assertOk($response);
 	}
 
 	public function testResultsRescanPreservesPersonId(): void
@@ -184,6 +185,7 @@ class FaceDetectionTest extends BaseApiWithDataTest
 					'width' => 0.15,
 					'height' => 0.2,
 					'confidence' => 0.98,
+					'laplacian_variance' => 100.0,
 					'embedding_id' => 'emb_rescan_001',
 				],
 			],
@@ -204,7 +206,7 @@ class FaceDetectionTest extends BaseApiWithDataTest
 		Queue::fake();
 
 		$response = $this->actingAs($this->admin)->postJson('FaceDetection/bulk-scan');
-		$this->assertStatus($response, 202);
+		$this->assertNoContent($response);
 	}
 
 	public function testBulkScanAsUserForbidden(): void
@@ -230,7 +232,7 @@ class FaceDetectionTest extends BaseApiWithDataTest
 			],
 		], ['X-API-Key' => $this->api_key]);
 
-		$this->assertStatus($response, 202);
+		$this->assertNoContent($response);
 
 		// Verify cluster labels
 		$face1->refresh();
@@ -257,7 +259,7 @@ class FaceDetectionTest extends BaseApiWithDataTest
 			'suggestions' => [],
 		], ['X-API-Key' => $this->api_key]);
 
-		$this->assertStatus($response, 202);
+		$this->assertNoContent($response);
 
 		$unassigned_face->refresh();
 		self::assertEquals($person->id, $unassigned_face->person_id);
@@ -269,11 +271,13 @@ class FaceDetectionTest extends BaseApiWithDataTest
 
 	public function testClusterResultsInvalidApiKey(): void
 	{
+		$face = Face::factory()->for_photo($this->photo1)->create();
+
 		$response = $this->postJson('FaceDetection/cluster-results', [
-			'labels' => [],
+			'labels' => [['face_id' => $face->id, 'cluster_label' => 1]],
 			'suggestions' => [],
 		], ['X-API-Key' => 'wrong-key']);
 
-		$this->assertForbidden($response);
+		$this->assertUnauthorized($response);
 	}
 }

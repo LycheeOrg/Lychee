@@ -101,6 +101,6 @@ class PersonPhotosTest extends BaseApiWithDataTest
 
 		$response = $this->actingAs($this->admin)->getJson('Person/' . $hidden->id . '/photos');
 		$this->assertOk($response);
-		self::assertNotEmpty($response->json('data'));
+		self::assertNotEmpty($response->json('photos'));
 	}
 }

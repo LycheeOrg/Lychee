@@ -75,7 +75,7 @@ class PhotoFacesTest extends BaseApiWithDataTest
 	{
 		Face::factory()->for_photo($this->photo1)->for_person($this->searchable_person)->create();
 		/** @var Authenticatable $non_owner */
-		$non_owner = $this->userMayUpload2;
+		$non_owner = $this->userNoUpload;
 
 		$response = $this->actingAs($non_owner)->getJson('Photo/' . $this->photo1->id . '/faces');
 

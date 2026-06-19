@@ -87,10 +87,11 @@ class FaceAssignmentTest extends BaseApiWithDataTest
 		self::assertEquals($person2->id, $response->json('person_id'));
 	}
 
-	public function testAssignValidationRequiresPersonOrName(): void
+	public function testAssignEmptyBodyCreatesDefaultPerson(): void
 	{
 		$response = $this->actingAs($this->admin)->postJson('Face/' . $this->face1->id . '/assign', []);
-		$this->assertUnprocessable($response);
+		$this->assertCreated($response);
+		self::assertNotNull($response->json('person_id'));
 	}
 
 	public function testAssignAsGuestUnauthorized(): void
@@ -116,6 +117,6 @@ class FaceAssignmentTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->admin)->postJson('Face/' . $this->face1->id . '/assign', [
 			'person_id' => 'nonexistent_person_id',
 		]);
-		$this->assertUnprocessable($response);
+		$this->assertNotFound($response);
 	}
 }

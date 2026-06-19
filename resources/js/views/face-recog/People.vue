@@ -197,7 +197,7 @@ function load() {
 	loading.value = true;
 	PeopleService.getPeople(1)
 		.then((response) => {
-			people.value = response.data.persons;
+			people.value = response.data.data;
 			currentPage.value = 1;
 			hasMorePages.value = response.data.current_page < response.data.last_page;
 		})
@@ -214,7 +214,7 @@ function loadMore() {
 	const nextPage = currentPage.value + 1;
 	PeopleService.getPeople(nextPage)
 		.then((response) => {
-			people.value = [...people.value, ...response.data.persons];
+			people.value = [...people.value, ...response.data.data];
 			currentPage.value = nextPage;
 			hasMorePages.value = response.data.current_page < response.data.last_page;
 		})

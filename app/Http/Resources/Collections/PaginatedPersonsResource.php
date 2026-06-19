@@ -20,7 +20,7 @@ class PaginatedPersonsResource extends Data
 {
 	/** @var Collection<int,PersonResource> */
 	#[LiteralTypeScriptType('App.Http.Resources.Models.PersonResource[]')]
-	public Collection $persons;
+	public Collection $data;
 
 	public int $current_page;
 	public int $last_page;
@@ -32,7 +32,7 @@ class PaginatedPersonsResource extends Data
 	 */
 	public function __construct(?LengthAwarePaginator $paginated_persons)
 	{
-		$this->persons = collect($paginated_persons?->items() ?? [])
+		$this->data = collect($paginated_persons?->items() ?? [])
 			->map(fn ($person) => PersonResource::fromModel($person));
 
 		$this->current_page = $paginated_persons?->currentPage() ?? 1;

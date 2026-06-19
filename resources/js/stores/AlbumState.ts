@@ -360,7 +360,7 @@ export const useAlbumStore = defineStore("album-store", {
 			}
 			return FaceDetectionService.getAlbumPeople(this.albumId)
 				.then((response) => {
-					this.album_people = response.data.persons;
+					this.album_people = response.data.data;
 					this.album_people_total = response.data.total;
 					this.album_people_loaded = true;
 				})

@@ -341,7 +341,7 @@ function batchDismiss() {
 function loadPeople() {
 	PeopleService.getPeople(1)
 		.then((response) => {
-			allPeople.value = response.data.persons;
+			allPeople.value = response.data.data;
 		})
 		.catch(() => {
 			/* non-critical */

@@ -51,7 +51,7 @@ class PersonClaimTest extends BaseApiWithDataTest
 	public function testClaimSuccess(): void
 	{
 		$response = $this->actingAs($this->userMayUpload1)->postJson('Person/' . $this->person1->id . '/claim');
-		$this->assertOk($response);
+		$this->assertCreated($response);
 		self::assertEquals($this->userMayUpload1->id, $response->json('user_id'));
 	}
 
@@ -83,7 +83,7 @@ class PersonClaimTest extends BaseApiWithDataTest
 
 		// Admin can override existing claim
 		$response = $this->actingAs($this->admin)->postJson('Person/' . $this->person1->id . '/claim');
-		$this->assertOk($response);
+		$this->assertCreated($response);
 		self::assertEquals($this->admin->id, $response->json('user_id'));
 	}
 
@@ -102,7 +102,7 @@ class PersonClaimTest extends BaseApiWithDataTest
 
 		// Admin still can claim
 		$response = $this->actingAs($this->admin)->postJson('Person/' . $this->person1->id . '/claim');
-		$this->assertOk($response);
+		$this->assertCreated($response);
 	}
 
 	// ── UNCLAIM ─────────────────────────────────────────────────
@@ -149,7 +149,7 @@ class PersonClaimTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->admin)->postJson('Person/' . $this->person1->id . '/merge', [
 			'source_person_id' => $this->person2->id,
 		]);
-		$this->assertOk($response);
+		$this->assertCreated($response);
 
 		// Source person deleted
 		self::assertNull(Person::find($this->person2->id));
