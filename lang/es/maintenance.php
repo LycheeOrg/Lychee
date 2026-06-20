@@ -1,5 +1,4 @@
 <?php
-
 return [
     /*
     |--------------------------------------------------------------------------
@@ -21,7 +20,7 @@ return [
         'duplicates-title' => 'Títulos duplicados por álbum',
         'duplicates-per-album' => 'Duplicados por álbum',
         'show' => 'Mostrar duplicados',
-        'load' => 'Load counts',
+        'load' => 'Recuento de cargas',
     ],
     'fix-jobs' => [
         'title' => 'Reparación del historial de trabajos',
@@ -76,28 +75,28 @@ return [
         'button' => 'Vaciar',
     ],
     'old-orders' => [
-        'title' => 'Old Orders',
-        'description' => 'Found %d old orders.<br/><br/>An old order is older than 14 days, that have no associated user and are either still pending payment or have no items in them.',
-        'button' => 'Delete old orders',
+        'title' => 'Antiguas órdenes',
+        'description' => 'Se han encontrado %d pedidos antiguos.<br/><br/>Un pedido antiguo es aquel que tiene más de 14 días de antigüedad, no tiene ningún usuario asociado y o bien sigue pendiente de pago o bien no contiene ningún artículo.',
+        'button' => 'Eliminar pedidos antiguos',
     ],
     'fulfill-orders' => [
-        'title' => 'Orders to fulfill',
-        'description' => 'Found %d orders with content that has not been made available.<br/><br/>Click on the button to assign content when possible.',
-        'button' => 'Fulfill orders',
+        'title' => 'Pedidos pendientes de tramitar',
+        'description' => 'Se han encontrado %d pedidos con contenido que aún no está disponible.<br/><br/>Haz clic en el botón para asignar el contenido cuando sea posible.',
+        'button' => 'Tramitar pedidos',
     ],
     'fulfill-precompute' => [
-        'title' => 'Album Precomputed Fields',
+        'title' => 'Campos precalculados del álbum',
         'description' => 'Found %d albums with missing precomputed fields.<br/><br/>Equivalent to running: php artisan lychee:recompute-album-fields',
-        'button' => 'Compute fields',
+        'button' => 'Cálculo de campos',
     ],
     'flush-queue' => [
-        'title' => 'Flush Queue',
-        'description' => 'Found %d pending jobs in the queue.<br/><br/>CAUTION: Clearing the queue will permanently delete all pending jobs. This cannot be undone.',
-        'button' => 'Clear queue',
+        'title' => 'Vaciar la cola',
+        'description' => 'Se han encontrado %d trabajos pendientes en la cola.<br/><br/>PRECAUCIÓN: Al vaciar la cola se eliminarán de forma permanente todos los trabajos pendientes. Esta acción no se puede deshacer.',
+        'button' => 'Borrar cola',
     ],
     'backfill-album-sizes' => [
-        'title' => 'Album Size Statistics',
+        'title' => 'Estadísticas sobre el tamaño de los álbumes',
         'description' => 'Found %d albums without size statistics.<br/><br/>Equivalent to running: php artisan lychee:recompute-album-sizes',
-        'button' => 'Compute sizes',
+        'button' => 'Tamaños de los servidores',
     ],
 ];
