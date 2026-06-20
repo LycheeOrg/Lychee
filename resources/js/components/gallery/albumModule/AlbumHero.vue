@@ -10,7 +10,7 @@
 		:class="{ '-mt-22 z-10 relative': album_header_size !== 'half_screen' && albumStore.album && albumStore.album.preFormattedData.url }"
 	>
 		<template #content>
-			<div class="w-full flex flex-row-reverse items-start">
+			<div class="w-full flex flex-col gap-2 md:flex-row-reverse items-start">
 				<div class="order-1 flex flex-col w-full">
 					<h1 v-if="!albumStore.album.preFormattedData.url" class="font-bold text-2xl">{{ albumStore.album.title }}</h1>
 					<span v-if="albumStore.album.preFormattedData.created_at" class="block text-muted-color text-sm">

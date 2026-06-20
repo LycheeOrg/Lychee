@@ -14,7 +14,7 @@
 		</div>
 
 		<template v-else>
-			<div class="max-w-6xl mx-auto px-4 pt-4">
+			<Panel class="max-w-6xl mx-auto px-4 pt-4">
 				<p class="text-muted-color mb-4 text-center text-sm">
 					{{ $t("maintenance.face_quality.description") }}
 				</p>
@@ -176,7 +176,7 @@
 								rounded
 								size="small"
 								class="border-none"
-								v-tooltip.left="$t('people.assignment.assign')"
+								v-tooltip.left="$t('people.assign_face')"
 								@click="openAssignmentModal(face)"
 							/>
 							<Button
@@ -209,7 +209,7 @@
 
 				<!-- Infinite scroll sentinel -->
 				<PaginationInfiniteScroll :loading="loadingMore" :hasMore="hasMorePages" @loadMore="loadMore" />
-			</div>
+			</Panel>
 		</template>
 
 		<!-- Face Assignment Modal -->
@@ -263,6 +263,7 @@ import FaceAssignmentModal from "@/components/modals/faceRecog/FaceAssignmentMod
 import FaceMaintenanceService from "@/services/face-maintenance-service";
 import FaceDetectionService from "@/services/face-detection-service";
 import ModerationService from "@/services/moderation-service";
+import Panel from "primevue/panel";
 
 const faces = ref<App.Http.Resources.Models.FaceResource[]>([]);
 const loading = ref(false);

@@ -69,6 +69,11 @@ class FaceBatchTest extends BaseApiWithDataTest
 		$this->face2->refresh();
 		self::assertEquals($this->person1->id, $this->face1->person_id);
 		self::assertEquals($this->person1->id, $this->face2->person_id);
+
+		// Verify person counters were updated
+		$this->person1->refresh();
+		self::assertEquals(2, $this->person1->face_count);
+		self::assertEquals(1, $this->person1->photo_count);
 	}
 
 	public function testBatchAssignCreatesNewPerson(): void
@@ -126,6 +131,10 @@ class FaceBatchTest extends BaseApiWithDataTest
 		$this->face2->refresh();
 		self::assertNull($this->face1->person_id);
 		self::assertNull($this->face2->person_id);
+
+		// Persons with no remaining faces should be deleted
+		self::assertNull(Person::find($this->person1->id));
+		self::assertNull(Person::find($this->person2->id));
 	}
 
 	public function testBatchUnassignPartial(): void
@@ -146,6 +155,85 @@ class FaceBatchTest extends BaseApiWithDataTest
 		$this->face2->refresh();
 		self::assertNull($this->face1->person_id);
 		self::assertNull($this->face2->person_id);
+
+		// Person with no remaining faces should be deleted
+		self::assertNull(Person::find($this->person1->id));
+		// Person2 was never assigned any faces in this test, but exists from setUp
+		self::assertNotNull(Person::find($this->person2->id));
+	}
+
+	public function testBatchUnassignUpdatesCountersWithoutDeletingPerson(): void
+	{
+		// Assign all 3 faces to person1
+		$this->face1->person_id = $this->person1->id;
+		$this->face1->save();
+		$this->face2->person_id = $this->person1->id;
+		$this->face2->save();
+		$this->face3->person_id = $this->person1->id;
+		$this->face3->save();
+
+		// Unassign only 2 of the 3 faces
+		$response = $this->actingAs($this->userMayUpload1)->postJson('Face/batch', [
+			'face_ids' => [$this->face1->id, $this->face2->id],
+			'action' => 'unassign',
+		]);
+		$this->assertStatus($response, 200);
+		self::assertEquals(2, $response->json('affected_count'));
+
+		// Person should still exist with updated counters
+		$this->person1->refresh();
+		self::assertEquals(1, $this->person1->face_count);
+		self::assertEquals(1, $this->person1->photo_count);
+	}
+
+	public function testBatchAssignUpdatesOldPersonCounters(): void
+	{
+		// Assign face1 and face2 to person1
+		$this->face1->person_id = $this->person1->id;
+		$this->face1->save();
+		$this->face2->person_id = $this->person1->id;
+		$this->face2->save();
+
+		// Reassign face1 to person2
+		$response = $this->actingAs($this->userMayUpload1)->postJson('Face/batch', [
+			'face_ids' => [$this->face1->id],
+			'action' => 'assign',
+			'person_id' => $this->person2->id,
+		]);
+		$this->assertStatus($response, 200);
+
+		// person1 should have decremented counters
+		$this->person1->refresh();
+		self::assertEquals(1, $this->person1->face_count);
+		self::assertEquals(1, $this->person1->photo_count);
+
+		// person2 should have incremented counters
+		$this->person2->refresh();
+		self::assertEquals(1, $this->person2->face_count);
+		self::assertEquals(1, $this->person2->photo_count);
+	}
+
+	public function testBatchAssignDeletesOldPersonWhenLastFaceMoved(): void
+	{
+		// Assign face1 to person1 (only face)
+		$this->face1->person_id = $this->person1->id;
+		$this->face1->save();
+
+		// Reassign face1 to person2
+		$response = $this->actingAs($this->userMayUpload1)->postJson('Face/batch', [
+			'face_ids' => [$this->face1->id],
+			'action' => 'assign',
+			'person_id' => $this->person2->id,
+		]);
+		$this->assertStatus($response, 200);
+
+		// person1 should be deleted (had no remaining faces)
+		self::assertNull(Person::find($this->person1->id));
+
+		// person2 should have correct counters
+		$this->person2->refresh();
+		self::assertEquals(1, $this->person2->face_count);
+		self::assertEquals(1, $this->person2->photo_count);
 	}
 
 	// ── BATCH VALIDATION ──────────────────────────────────────────

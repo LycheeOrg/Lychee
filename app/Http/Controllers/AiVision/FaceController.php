@@ -84,8 +84,12 @@ class FaceController extends Controller
 			} else {
 				$query = Face::whereIn('id', $face_ids);
 			}
+
+			$affected_person_ids = (clone $query)->whereNotNull('person_id')->distinct()->pluck('person_id')->all();
 			$count = $query->count();
 			$query->update(['person_id' => null]);
+
+			$this->recountOrDeletePersons($affected_person_ids);
 
 			return ['affected_count' => $count, 'person_id' => null];
 		}
@@ -97,9 +101,41 @@ class FaceController extends Controller
 			$person = $person_factory->findOrCreate(null, $request->new_person_name ?? '');
 		}
 
+		$old_person_ids = Face::whereIn('id', $face_ids)->whereNotNull('person_id')->distinct()->pluck('person_id')->all();
 		$count = Face::whereIn('id', $face_ids)->update(['person_id' => $person->id]);
 
+		// Bulk update bypasses FaceObserver, so recount denormalized counters manually.
+		$person->face_count = Face::where('person_id', '=', $person->id)->where('is_dismissed', '=', false)->count();
+		$person->photo_count = Face::where('person_id', '=', $person->id)->where('is_dismissed', '=', false)->distinct('photo_id')->count('photo_id');
+		$person->save();
+
+		$this->recountOrDeletePersons($old_person_ids);
+
 		return ['affected_count' => $count, 'person_id' => $person->id];
+	}
+
+	/**
+	 * Recount denormalized counters for affected persons, deleting any that have no remaining faces.
+	 *
+	 * @param string[] $person_ids
+	 */
+	private function recountOrDeletePersons(array $person_ids): void
+	{
+		foreach ($person_ids as $person_id) {
+			$person = Person::find($person_id);
+			if ($person === null) {
+				continue;
+			}
+
+			$person->face_count = Face::where('person_id', '=', $person_id)->where('is_dismissed', '=', false)->count();
+			if ($person->face_count === 0) {
+				$person->delete();
+				continue;
+			}
+
+			$person->photo_count = Face::where('person_id', '=', $person_id)->where('is_dismissed', '=', false)->distinct('photo_id')->count('photo_id');
+			$person->save();
+		}
 	}
 
 	/**

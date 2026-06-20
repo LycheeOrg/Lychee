@@ -9,6 +9,15 @@
 			</template>
 			<template #end>
 				<Button
+					v-if="userStore.isAdmin"
+					:label="$t('maintenance.face_quality.title')"
+					class="border-none"
+					icon="pi pi-filter"
+					severity="secondary"
+					outlined
+					@click="$router.push({ name: 'face-maintenance' })"
+				/>
+				<Button
 					:label="$t('people.clusters_title')"
 					class="border-none"
 					icon="pi pi-sitemap"
@@ -78,11 +87,13 @@ import PersonDeleteDialog from "@/components/forms/people/PersonDeleteDialog.vue
 import PeopleService from "@/services/people-service";
 import UserManagementService from "@/services/user-management-service";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
+import { useUserStore } from "@/stores/UserState";
 import { storeToRefs } from "pinia";
 
 const toast = useToast();
 const leftMenuStore = useLeftMenuStateStore();
 const { initData } = storeToRefs(leftMenuStore);
+const userStore = useUserStore();
 
 const people = ref<App.Http.Resources.Models.PersonResource[]>([]);
 const loading = ref(false);
