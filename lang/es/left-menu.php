@@ -24,5 +24,5 @@ return [
     'contact' => 'Contacto',
     'messages' => 'Mensajes',
     'webhooks' => 'Webhooks',
-    'shopSizes' => 'Size Catalogue',
+    'shopSizes' => 'Catálogo de tallas',
 ];
