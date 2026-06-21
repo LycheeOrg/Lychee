@@ -30,8 +30,10 @@ use Illuminate\Support\Facades\Gate;
  */
 class AlbumPhotosController extends Controller
 {
-	public function __construct(private PhotoRepository $photo_repository)
-	{
+	public function __construct(
+		private PhotoRepository $photo_repository,
+		private ConfigManager $config_manager,
+	) {
 	}
 
 	/**
@@ -49,13 +51,11 @@ class AlbumPhotosController extends Controller
 		$per_page = $request->configs()->getValueAsInt('photos_per_page');
 
 		if ($album instanceof BaseSmartAlbum) {
-			$config_manager = resolve(ConfigManager::class);
-
 			return new PaginatedPhotosResource(
 				paginated_photos: $album->getPhotos(),
 				album_id: $album->get_id(),
-				should_downgrade: !$config_manager->getValueAsBool('grants_full_photo_access'),
-				photo_timeline: $config_manager->getValueAsEnum('timeline_photos_granularity', TimelinePhotoGranularity::class),
+				should_downgrade: !$this->config_manager->getValueAsBool('grants_full_photo_access'),
+				photo_timeline: $this->config_manager->getValueAsEnum('timeline_photos_granularity', TimelinePhotoGranularity::class),
 			);
 		}
 
@@ -63,8 +63,6 @@ class AlbumPhotosController extends Controller
 
 		// grants_full_photo_access
 		if ($album instanceof TagAlbum) {
-			$config_manager = resolve(ConfigManager::class);
-
 			// @phpstan-ignore method.private
 			$query = $album->photos()->with(['size_variants', 'tags', 'palette', 'statistics', 'rating']);
 
@@ -93,7 +91,8 @@ class AlbumPhotosController extends Controller
 			$sorting,
 			$per_page,
 			count($tag_ids) > 0 ? $tag_ids : null,
-			$tag_logic
+			$tag_logic,
+			$request->personId(),
 		);
 
 		return new PaginatedPhotosResource(

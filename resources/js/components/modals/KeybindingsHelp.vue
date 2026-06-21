@@ -160,6 +160,7 @@ const shortcutsList = ref([
 			{ action: trans("dialogs.keybindings.delete"), key: "BckSpace" },
 			{ action: trans("dialogs.keybindings.edit"), key: "e" },
 			{ action: trans("dialogs.keybindings.show_hide_meta"), key: "i" },
+			{ action: trans("dialogs.keybindings.toggle_face_overlay"), key: "p" },
 			// { action: "Rotate counter clock wise", key: "ctrl ←" },
 			// { action: "Rotate clockwise", key: "ctrl →" },
 		],

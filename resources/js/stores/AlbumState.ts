@@ -1,5 +1,6 @@
 import { ALL } from "@/config/constants";
 import AlbumService from "@/services/album-service";
+import FaceDetectionService from "@/services/face-detection-service";
 import { defineStore } from "pinia";
 import { useTogglablesStateStore } from "./ModalsState";
 import { usePhotosStore } from "./PhotosState";
@@ -46,6 +47,14 @@ export const useAlbumStore = defineStore("album-store", {
 
 		// Tag filter state for photos
 		active_tag_filter: null as { tag_ids: number[]; tag_logic: string } | null,
+
+		// Person filter state for photos
+		active_person_filter: null as string | null,
+
+		// People in this album (loaded lazily)
+		album_people: [] as App.Http.Resources.Models.PersonResource[],
+		album_people_total: 0 as number,
+		album_people_loaded: false as boolean,
 	}),
 	actions: {
 		refresh(): Promise<void> {
@@ -73,6 +82,11 @@ export const useAlbumStore = defineStore("album-store", {
 			this.albums_loading = false;
 			// Reset tag filter
 			this.active_tag_filter = null;
+			// Reset person filter and people list
+			this.active_person_filter = null;
+			this.album_people = [];
+			this.album_people_total = 0;
+			this.album_people_loaded = false;
 		},
 
 		/**
@@ -226,11 +240,12 @@ export const useAlbumStore = defineStore("album-store", {
 				this.photos_loading = true;
 			}
 
-			// Extract tag filter params from state
+			// Extract active filter params from state
 			const tag_ids = this.active_tag_filter?.tag_ids ?? null;
 			const tag_logic = this.active_tag_filter?.tag_logic ?? "OR";
+			const person_id = this.active_person_filter ?? null;
 
-			return AlbumService.getPhotos(requestedAlbumId, page, tag_ids, tag_logic)
+			return AlbumService.getPhotos(requestedAlbumId, page, tag_ids, tag_logic, person_id)
 				.then((data) => {
 					// Race condition guard: Don't update state if user navigated away
 					if (this.albumId !== requestedAlbumId) {
@@ -332,6 +347,37 @@ export const useAlbumStore = defineStore("album-store", {
 		clearTagFilter(): Promise<void> {
 			this.active_tag_filter = null;
 			// Reset to page 1 and reload without filter
+			return this.loadPhotos(1, false);
+		},
+
+		/**
+		 * Load all people detected in the album (first page, up to pagination limit).
+		 * Safe to call multiple times — skips if already loaded.
+		 */
+		loadAlbumPeople(): Promise<void> {
+			if (this.album_people_loaded || !this.albumId || this.albumId === ALL) {
+				return Promise.resolve();
+			}
+			return FaceDetectionService.getAlbumPeople(this.albumId)
+				.then((response) => {
+					this.album_people = response.data.data;
+					this.album_people_total = response.data.total;
+					this.album_people_loaded = true;
+				})
+				.catch((error) => {
+					console.error(error);
+				});
+		},
+
+		/** Filter photos to those containing the given person and reload. */
+		setPersonFilter(person_id: string): Promise<void> {
+			this.active_person_filter = person_id;
+			return this.loadPhotos(1, false);
+		},
+
+		/** Clear person filter and reload all photos. */
+		clearPersonFilter(): Promise<void> {
+			this.active_person_filter = null;
 			return this.loadPhotos(1, false);
 		},
 

@@ -31,6 +31,9 @@
       <directory suffix="Test.php">./tests/Webshop</directory>
       <exclude>./tests/Webshop/Checkout/BaseCheckoutControllerTest.php</exclude>
     </testsuite>
+    <testsuite name="AssistedVision">
+      <directory suffix="Test.php">./tests/AssistedVision</directory>
+    </testsuite>
   </testsuites>
   <extensions>
     <bootstrap class="Tests\BootExtension"/>

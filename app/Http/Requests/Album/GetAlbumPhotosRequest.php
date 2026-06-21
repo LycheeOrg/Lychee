@@ -37,6 +37,7 @@ class GetAlbumPhotosRequest extends BaseApiRequest implements HasAbstractAlbum
 	/** @var array<int> */
 	protected array $tag_ids = [];
 	protected string $tag_logic = 'OR';
+	protected ?string $person_id = null;
 
 	/**
 	 * {@inheritDoc}
@@ -57,6 +58,7 @@ class GetAlbumPhotosRequest extends BaseApiRequest implements HasAbstractAlbum
 			'tag_ids' => ['sometimes', 'array'],
 			'tag_ids.*' => ['integer'],
 			'tag_logic' => ['sometimes', 'string', 'in:OR,AND'],
+			'person_id' => ['sometimes', 'nullable', 'string'],
 		];
 	}
 
@@ -94,6 +96,7 @@ class GetAlbumPhotosRequest extends BaseApiRequest implements HasAbstractAlbum
 		$tag_ids = array_map(fn ($id) => intval($id), $values['tag_ids'] ?? []);
 		$this->tag_ids = array_filter($tag_ids, fn ($id) => $id > 0);
 		$this->tag_logic = $values['tag_logic'] ?? 'OR';
+		$this->person_id = $values['person_id'] ?? null;
 
 		$smart_id = SmartAlbumType::tryFrom($values[RequestAttribute::ALBUM_ID_ATTRIBUTE]);
 
@@ -141,5 +144,10 @@ class GetAlbumPhotosRequest extends BaseApiRequest implements HasAbstractAlbum
 	public function tagLogic(): string
 	{
 		return $this->tag_logic;
+	}
+
+	public function personId(): ?string
+	{
+		return $this->person_id;
 	}
 }

@@ -13,11 +13,14 @@ use App\Enum\OauthProvidersType;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
+use App\Models\Face;
 use App\Models\LiveMetrics;
+use App\Models\Person;
 use App\Models\Photo;
 use App\Models\Tag;
 use App\Models\User;
 use App\Models\UserGroup;
+use App\Policies\AiVisionPolicy;
 use App\Policies\AlbumPolicy;
 use App\Policies\MetricsPolicy;
 use App\Policies\PhotoPolicy;
@@ -57,6 +60,9 @@ class AuthServiceProvider extends ServiceProvider
 		UserGroup::class => UserGroupPolicy::class,
 
 		Tag::class => TagPolicy::class,
+
+		Person::class => AiVisionPolicy::class,
+		Face::class => AiVisionPolicy::class,
 	];
 
 	/**

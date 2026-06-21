@@ -53,6 +53,7 @@ class PhotoResource extends Data
 
 	public ?PhotoStatisticsResource $statistics = null;
 	public ?PhotoRatingResource $rating = null;
+	public int $face_count;
 	public bool $is_validated;
 
 	public function __construct(Photo $photo, ?string $album_id, bool $should_downgrade_size_variants)
@@ -78,6 +79,7 @@ class PhotoResource extends Data
 		$this->updated_at = $photo->updated_at->toIso8601String();
 		$this->next_photo_id = null;
 		$this->previous_photo_id = null;
+		$this->face_count = $photo->face_count;
 		$include_exif_data = request()->configs()->getValueAsBool('display_exif_data');
 		$this->preformatted = new PreformattedPhotoData($photo, $include_exif_data, $this->size_variants->original);
 		$this->precomputed = new PreComputedPhotoData($photo, $include_exif_data);

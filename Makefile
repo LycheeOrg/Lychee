@@ -154,6 +154,9 @@ test_ImageProcessing:
 test_precomputing:
 	vendor/bin/phpunit --testsuite Precomputing --stop-on-failure --stop-on-error --no-coverage --log-junit report_precomputing.xml
 
+test_assisted_vision:
+	vendor/bin/phpunit --testsuite AssistedVision --stop-on-failure --stop-on-error --no-coverage --log-junit report_assisted_vision.xml
+
 test_v2:
 	vendor/bin/phpunit --testsuite Feature_v2 --stop-on-failure --stop-on-error --no-coverage --log-junit report_v2.xml
 

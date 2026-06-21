@@ -318,6 +318,8 @@ return [
         'merge_all' => 'Fusionar seleccionados',
         'apply_renamer' => 'Aplicar Renamer',
         'apply_renamer_all' => 'Aplicar Renamer a los archivos seleccionados',
+        'scan_faces' => 'Scan for Faces',
+        'scan_faces_all' => 'Scan Selected for Faces',
         'approve' => 'Aprobar',
         'approve_all' => 'Aprobar los seleccionados',
         'upload_photo' => 'Subir foto',

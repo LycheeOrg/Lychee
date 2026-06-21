@@ -7,6 +7,7 @@
 		:data-width="props.photo.size_variants.original?.width"
 		:data-height="props.photo.size_variants.original?.height"
 		:data-photo-id="props.photo.id"
+		@mouseenter="prefetchFaces"
 	>
 		<span
 			class="thumbimg relative w-full h-full border-none overflow-hidden"
@@ -130,6 +131,7 @@ import { useUserStore } from "@/stores/UserState";
 import { useAlbumsStore } from "@/stores/AlbumsState";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
+import { usePhotoFacesStore } from "@/stores/PhotoFacesState";
 
 const { getNoImageIcon, getPlayIcon } = useImageHelpers();
 
@@ -156,6 +158,7 @@ const albumStore = useAlbumStore();
 const togglableStore = useTogglablesStateStore();
 const { is_favourite_enabled, display_thumb_photo_overlay, photo_thumb_info, is_photo_thumb_tags_enabled, rating_album_view_mode } =
 	storeToRefs(lycheeStore);
+const facesStore = usePhotoFacesStore();
 const { is_touch_select_mode } = storeToRefs(togglableStore);
 const srcPlay = ref(getPlayIcon());
 const srcNoImage = ref(getNoImageIcon());
@@ -172,6 +175,12 @@ function toggleBuyMe() {
 
 function onImageLoad() {
 	isImageLoaded.value = true;
+}
+
+function prefetchFaces() {
+	if ((props.photo.face_count ?? 0) > 0) {
+		facesStore.prefetch(props.photo.id);
+	}
 }
 
 const isFavourite = computed(() => favourites.getPhotoIds.includes(props.photo.id));

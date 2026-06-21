@@ -27,6 +27,8 @@ class VerifyCsrfToken extends Middleware
 		'/api/v2/Zip',
 		'/api/v2/Shop/Checkout/Finalize/*',
 		'/api/v2/Photo::random',
+		'/api/v2/FaceDetection/results', // This is only exposed internally and auth with a token.
+		'api/v2/FaceDetection/cluster-results', // This is only exposed internally and auth with a token.
 	];
 
 	/**

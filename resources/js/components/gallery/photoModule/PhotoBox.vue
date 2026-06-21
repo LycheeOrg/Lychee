@@ -51,21 +51,25 @@
 		<!-- This is a normal image: medium or original -->
 		<img
 			v-if="photoStore.imageViewMode == ImageViewMode.Medium"
+			ref="imageEl"
 			id="image"
 			alt="medium"
 			class="absolute m-auto w-auto h-auto bg-contain bg-center bg-no-repeat"
 			:src="photoStore.photo.size_variants.medium?.url ?? ''"
 			:class="is_full_screen || is_slideshow_active ? 'max-w-full max-h-full' : 'max-w-full md:max-w-[calc(100%-56px)] max-h-[calc(100%-56px)]'"
 			:srcset="photoStore.srcSetMedium"
+			@load="updateFaceOverlay"
 		/>
 		<img
 			v-if="photoStore.imageViewMode == ImageViewMode.Original"
+			ref="imageEl"
 			id="image"
 			alt="big"
 			class="absolute m-auto w-auto h-auto bg-contain bg-center bg-no-repeat"
 			:class="is_full_screen || is_slideshow_active ? 'max-w-full max-h-full' : 'max-w-full md:max-w-[calc(100%-56px)] max-h-[calc(100%-56px)]'"
 			:style="photoStore.style"
 			:src="photoStore.photo.size_variants.original?.url ?? ''"
+			@load="updateFaceOverlay"
 		/>
 		<!-- This is a livephoto : medium -->
 		<div
@@ -91,17 +95,23 @@
 			:class="is_full_screen || is_slideshow_active ? 'max-w-full max-h-full' : 'max-w-full md:max-w-[calc(100%-56px)] max-h-[calc(100%-56px)]'"
 			:style="photoStore.style"
 		></div>
+		<!-- Face overlay: positioned to exactly match the rendered image via BoundingClientRect -->
+		<div v-if="loadedFaces.length > 0 || hiddenFaceCount > 0" class="absolute z-10 pointer-events-none" :style="faceOverlayStyle">
+			<FaceOverlay :faces="loadedFaces" :hidden-face-count="hiddenFaceCount" @faces-updated="handleFacesUpdated" />
+		</div>
 	</div>
 </template>
 <script setup lang="ts">
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
+import { usePhotoFacesStore } from "@/stores/PhotoFacesState";
 import { useImageHelpers } from "@/utils/Helpers";
 import { useSwipe, type UseSwipeDirection } from "@vueuse/core";
 import { storeToRefs } from "pinia";
-import { ref } from "vue";
+import { computed, reactive, watch, watchEffect, onUnmounted, ref } from "vue";
 import { useLtRorRtL } from "@/utils/Helpers";
 import { ImageViewMode, usePhotoStore } from "@/stores/PhotoState";
+import FaceOverlay from "./FaceOverlay.vue";
 
 const { isLTR } = useLtRorRtL();
 
@@ -117,11 +127,76 @@ const { is_slideshow_active, is_full_screen } = storeToRefs(togglableStore);
 
 const { getPlaceholderIcon } = useImageHelpers();
 
+// Face overlay: tracks the actual rendered image position/size
+const imageEl = ref<HTMLElement | null>(null);
+const faceOverlayStyle = reactive({ top: "0px", left: "0px", width: "0px", height: "0px" });
+let imageResizeObserver: ResizeObserver | null = null;
+
+const facesStore = usePhotoFacesStore();
+const faceData = computed(() => facesStore.get(photoStore.photo?.id ?? ""));
+const loadedFaces = computed(() => faceData.value.faces);
+const hiddenFaceCount = computed(() => faceData.value.hiddenFaceCount);
+
+function handleFacesUpdated() {
+	emits("facesUpdated");
+	const photoId = photoStore.photo?.id;
+	if (photoId !== undefined) {
+		facesStore.invalidate(photoId);
+	}
+}
+
+function updateFaceOverlay() {
+	const img = imageEl.value;
+	if (!img) return;
+	// Use layout offset values (not getBoundingClientRect) so CSS transforms on
+	// parent containers (e.g. animate-zoomIn on first open) don't affect positioning.
+	// img.offsetParent is #imageview (the nearest positioned ancestor).
+	faceOverlayStyle.top = img.offsetTop + "px";
+	faceOverlayStyle.left = img.offsetLeft + "px";
+	faceOverlayStyle.width = img.offsetWidth + "px";
+	faceOverlayStyle.height = img.offsetHeight + "px";
+}
+
+// Re-runs whenever imageEl changes (photo/mode switch) — flush:'post' ensures DOM is ready.
+watchEffect(
+	() => {
+		imageResizeObserver?.disconnect();
+		const img = imageEl.value;
+		if (!img) return;
+		imageResizeObserver = new ResizeObserver(updateFaceOverlay);
+		imageResizeObserver.observe(img);
+		// Also observe the container so that sidebar open/close (which resizes the
+		// imageview container but may not resize the image itself when it is
+		// height-constrained) still triggers an overlay recompute.
+		if (swipe.value) {
+			imageResizeObserver.observe(swipe.value);
+		}
+		// rAF ensures browser layout is complete (handles both cached and uncached images)
+		requestAnimationFrame(updateFaceOverlay);
+	},
+	{ flush: "post" },
+);
+
+onUnmounted(() => imageResizeObserver?.disconnect());
+
+watch(
+	() => photoStore.photo?.id,
+	(photoId) => {
+		if (photoId === undefined || (photoStore.photo?.face_count ?? 0) <= 0) {
+			return;
+		}
+
+		facesStore.fetch(photoId);
+	},
+	{ immediate: true },
+);
+
 const emits = defineEmits<{
 	rotateOverlay: [];
 	goBack: [];
 	next: [];
 	previous: [];
+	facesUpdated: [];
 }>();
 
 useSwipe(swipe, {

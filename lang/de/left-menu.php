@@ -23,6 +23,7 @@ return [
     'support' => 'Support',
     'contact' => 'Kontakt',
     'messages' => 'Nachrichten',
+    'people' => 'People',
     'webhooks' => 'Webhooks',
     'shopSizes' => 'Size Catalogue',
 ];

@@ -48,6 +48,8 @@ vite/*
 secrets/*
 # Local testing @ildyria
 public/uploads-bck/*
+public/uploads/*
+*.sql
 
 # Node
 node_modules/
@@ -56,8 +58,12 @@ npm-debug.log
 # Mapping for database and config used by docker compose
 lychee/*
 
+# Python
+ai-vision-service/*
+
 # Laravel
 /storage/logs/*
+/storage/tmp/*
 /storage/framework/cache/*
 /storage/framework/sessions/*
 /storage/framework/views/*

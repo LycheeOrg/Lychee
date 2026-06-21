@@ -380,3 +380,68 @@ Route::put('/Renamer', [RenamerController::class, 'update'])->middleware(['suppo
 Route::delete('/Renamer', [RenamerController::class, 'destroy'])->middleware(['support:se']);
 Route::post('/Renamer::test', [RenamerController::class, 'test'])->middleware(['support:se']);
 Route::post('/Renamer::preview', [RenamerController::class, 'preview'])->middleware(['support:se']);
+
+Route::middleware(['feature:ai-vision', 'feature:v8'])->group(function (): void {
+	/**
+	 * AI VISION — PEOPLE.
+	 */
+	Route::get('/People', [AiVision\PeopleController::class, 'index']);
+	Route::get('/Person/{id}', [AiVision\PeopleController::class, 'show']);
+	Route::post('/Person', [AiVision\PeopleController::class, 'store']);
+	Route::patch('/Person/{id}', [AiVision\PeopleController::class, 'update']);
+	Route::delete('/Person/{id}', [AiVision\PeopleController::class, 'destroy']);
+	Route::post('/Person/{id}/claim', [AiVision\PersonClaimController::class, 'claim']);
+	Route::delete('/Person/{id}/claim', [AiVision\PersonClaimController::class, 'unclaim']);
+	Route::post('/Person/{id}/merge', [AiVision\PersonClaimController::class, 'merge']);
+	Route::post('/Person/claim-by-selfie', [AiVision\SelfieClaimController::class, 'claimBySelfie'])
+		->middleware(['throttle:5,1'])
+		->withoutMiddleware(['content_type:json']);
+	Route::get('/Person/{id}/photos', [AiVision\PersonPhotosController::class, 'index']);
+
+	/**
+	 * AI VISION — FACES.
+	 */
+	Route::post('/Face/{id}/assign', [AiVision\FaceController::class, 'assign']);
+	Route::post('/Face/batch', [AiVision\FaceController::class, 'batch']);
+	Route::patch('/Face/{id}', [AiVision\FaceController::class, 'toggleDismissed']);
+	Route::delete('/Face/dismissed', [AiVision\FaceController::class, 'destroyDismissed']);
+	Route::get('/Photo/{id}/faces', [AiVision\PhotoFacesController::class, 'show']);
+	Route::get('/Face/maintenance', [AiVision\FaceMaintenanceController::class, 'index']);
+	Route::post('/Face/maintenance/batch-dismiss', [AiVision\FaceMaintenanceController::class, 'batchDismiss']);
+
+	/**
+	 * AI VISION — FACE DETECTION.
+	 */
+	Route::post('/FaceDetection/scan', [AiVision\FaceDetectionController::class, 'scan']);
+	Route::post('/FaceDetection/results', [AiVision\FaceDetectionController::class, 'results'])->withoutMiddleware(['auth']);
+	Route::post('/FaceDetection/bulk-scan', [AiVision\FaceDetectionController::class, 'bulkScan']);
+	Route::post('/FaceDetection/cluster-results', [AiVision\FaceDetectionController::class, 'clusterResults'])->withoutMiddleware(['auth']);
+
+	/**
+	 * AI VISION — CLUSTER REVIEW.
+	 */
+	Route::get('/FaceDetection/clusters', [AiVision\FaceClusterController::class, 'index']);
+	Route::get('/FaceDetection/clusters/{label}/faces', [AiVision\FaceClusterController::class, 'faces']);
+	Route::post('/FaceDetection/clusters/{label}/assign', [AiVision\FaceClusterController::class, 'assign']);
+	Route::post('/FaceDetection/clusters/{label}/dismiss', [AiVision\FaceClusterController::class, 'dismiss']);
+	Route::post('/FaceDetection/clusters/{label}/uncluster', [AiVision\FaceClusterController::class, 'uncluster']);
+
+	/**
+	 * AI VISION — MAINTENANCE.
+	 */
+	Route::get('/Maintenance::bulkScanFaces', [Admin\Maintenance\BulkScanFaces::class, 'check']);
+	Route::post('/Maintenance::bulkScanFaces', [Admin\Maintenance\BulkScanFaces::class, 'do']);
+	Route::get('/Maintenance::runFaceClustering', [Admin\Maintenance\RunFaceClustering::class, 'check']);
+	Route::post('/Maintenance::runFaceClustering', [Admin\Maintenance\RunFaceClustering::class, 'do']);
+	Route::get('/Maintenance::destroyDismissedFaces', [Admin\Maintenance\DestroyDismissedFaces::class, 'check']);
+	Route::post('/Maintenance::destroyDismissedFaces', [Admin\Maintenance\DestroyDismissedFaces::class, 'do']);
+	Route::get('/Maintenance::syncFaceEmbeddings', [Admin\Maintenance\SyncFaceEmbeddings::class, 'check']);
+	Route::post('/Maintenance::syncFaceEmbeddings', [Admin\Maintenance\SyncFaceEmbeddings::class, 'do']);
+	Route::get('/Maintenance::resetFaceScanStatus', [Admin\Maintenance\ResetFaceScanStatus::class, 'check']);
+	Route::post('/Maintenance::resetFaceScanStatus', [Admin\Maintenance\ResetFaceScanStatus::class, 'do']);
+
+	/**
+	 * AI VISION — ALBUM PEOPLE.
+	 */
+	Route::get('/Album/{album_id}/people', [AiVision\AlbumPeopleController::class, 'index']);
+});

@@ -47,7 +47,7 @@ class RotatePhotoRequest extends BaseApiRequest implements HasPhoto, HasFromAlbu
 		/** @var ?string $photo_id */
 		$photo_id = $values[RequestAttribute::PHOTO_ID_ATTRIBUTE];
 		$this->photo = Photo::query()
-			->with(['size_variants', 'albums'])
+			->with(['size_variants', 'albums.access_permissions'])
 			->findOrFail($photo_id);
 		$this->direction = intval($values[RequestAttribute::DIRECTION_ATTRIBUTE]);
 

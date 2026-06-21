@@ -33,6 +33,7 @@ jobs:
           - Webshop
           - ImageProcessing
           - Precomputing
+          - AssistedVision
         exclude:
         # Some skips to reduce the number of runs
           - php-version: 8.4
@@ -45,6 +46,8 @@ jobs:
             test-suite: ImageProcessing
           - php-version: 8.4
             test-suite: Precomputing
+          - php-version: 8.4
+            test-suite: AssistedVision
     # Service containers to run with `container-job`
     services:
       # Label used to access the service container

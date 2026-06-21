@@ -340,6 +340,7 @@ const albumCallbacks = {
 		is_download_album_visible.value = true;
 	},
 	toggleApplyRenamer: () => {},
+	toggleScanFaces: () => {},
 };
 
 const {
