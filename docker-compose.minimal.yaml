@@ -46,8 +46,9 @@ x-common-env: &common-env
   SESSION_DRIVER: "${SESSION_DRIVER:-file}"
   SESSION_LIFETIME: "${SESSION_LIFETIME:-120}"
   QUEUE_CONNECTION: "${QUEUE_CONNECTION:-database}"
+  AI_VISION_ENABLED: "${AI_VISION_ENABLED:-true}"
   AI_VISION_FACE_API_KEY: "${AI_VISION_API_KEY:-changeme}"
-  AI_VISION_FACE_URL: "http://ai_vision:8000"
+  AI_VISION_FACE_URL: "http://lychee_facial_recognition:8000"
 
 services:
   lychee_api:
@@ -124,10 +125,9 @@ services:
         retries: 10
         start_period: 10s
 
-  ai_vision:
-    build:
-      context: ./ai-vision-service
-    container_name: lychee-ai-vision
+  lychee_facial_recognition:
+    container_name: lychee-facial-recognition
+    image: ghcr.io/lycheeorg/lychee-facial-recognition:latest
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
