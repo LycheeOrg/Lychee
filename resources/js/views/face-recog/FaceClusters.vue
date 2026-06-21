@@ -9,6 +9,8 @@
 			</template>
 		</Toolbar>
 
+		<FaceRecognitionWarning />
+
 		<div v-if="loading" class="flex justify-center items-center mt-20">
 			<ProgressSpinner />
 		</div>
@@ -217,6 +219,7 @@ import { useToast } from "primevue/usetoast";
 import { trans } from "laravel-vue-i18n";
 import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
 import PaginationInfiniteScroll from "@/components/pagination/PaginationInfiniteScroll.vue";
+import FaceRecognitionWarning from "@/components/faceRecog/FaceRecognitionWarning.vue";
 import FaceClusterService from "@/services/face-cluster-service";
 import PeopleService from "@/services/people-service";
 import FaceDetectionService from "@/services/face-detection-service";

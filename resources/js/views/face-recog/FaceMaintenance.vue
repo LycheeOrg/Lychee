@@ -9,6 +9,8 @@
 			</template>
 		</Toolbar>
 
+		<FaceRecognitionWarning />
+
 		<div v-if="loading && faces.length === 0" class="flex justify-center py-12">
 			<ProgressSpinner />
 		</div>
@@ -252,6 +254,7 @@ import Tag from "primevue/tag";
 import Toolbar from "primevue/toolbar";
 import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
 import PaginationInfiniteScroll from "@/components/pagination/PaginationInfiniteScroll.vue";
+import FaceRecognitionWarning from "@/components/faceRecog/FaceRecognitionWarning.vue";
 import FaceAssignmentModal from "@/components/modals/faceRecog/FaceAssignmentModal.vue";
 import FaceMaintenanceService from "@/services/face-maintenance-service";
 import FaceDetectionService from "@/services/face-detection-service";

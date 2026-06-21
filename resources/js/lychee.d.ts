@@ -1160,6 +1160,7 @@ declare namespace App.Http.Resources.Rights {
 		is_mod_webhook_enabled: boolean;
 		is_ai_vision_enabled: boolean;
 		is_face_overlay_enabled: boolean;
+		is_face_recognition_warning_enabled: boolean;
 		is_contact_enabled: boolean;
 		messages_count: number;
 	};
