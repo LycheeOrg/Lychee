@@ -22,6 +22,6 @@ class RotateLicenseKeyOnLogin
 			return;
 		}
 
-		RotateLicenseKeyJob::dispatchAfterResponse();
+		RotateLicenseKeyJob::dispatch();
 	}
 }

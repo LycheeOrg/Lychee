@@ -9,7 +9,7 @@
 namespace App\Jobs;
 
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
 use LycheeVerify\Contract\Status;
 use LycheeVerify\Rotation;
@@ -29,17 +29,14 @@ class RotateLicenseKeyJob
 			return;
 		}
 
-		$license_key = DB::table('configs')->where('key', 'license_key')->first()?->value ?? '';
-		if ($license_key === '') {
-			return;
-		}
-
 		/** @var string $api_key */
 		$api_key = config('verify.keygen_api_key', '');
 		if ($api_key === '') {
 			return;
 		}
 
+		// Make sure we try on login
+		Cache::forget(Rotation::CACHE_KEY);
 		$result = $rotation->rotate();
 
 		if ($result->success) {

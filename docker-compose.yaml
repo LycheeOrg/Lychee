@@ -185,6 +185,17 @@ x-common-env:
   # Or you can uncomment the following line to use DB_PASSWORD_FILE from secrets
   # DB_PASSWORD_FILE: "/run/secrets/db_password"
 
+  ###################################################################
+  # Keygen License Management                                       #
+  ###################################################################
+
+  # API token obtained from keygen.lycheeorg.dev.
+  # When set, Lychee will automatically rotate an expired license key
+  # on admin login and check the token health on the diagnostics page.
+  KEYGEN_API_KEY: "${KEYGEN_API_KEY:-}"
+  # Or you can uncomment the following line to use KEYGEN_API_KEY_FILE from secrets
+  # KEYGEN_API_KEY_FILE: "/run/secrets/keygen_api_key"
+
   # Session configuration
   SESSION_DRIVER: "${SESSION_DRIVER:-file}"
   SESSION_LIFETIME: "${SESSION_LIFETIME:-120}"
