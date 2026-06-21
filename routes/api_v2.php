@@ -381,7 +381,7 @@ Route::delete('/Renamer', [RenamerController::class, 'destroy'])->middleware(['s
 Route::post('/Renamer::test', [RenamerController::class, 'test'])->middleware(['support:se']);
 Route::post('/Renamer::preview', [RenamerController::class, 'preview'])->middleware(['support:se']);
 
-Route::middleware(['feature:ai-vision', 'support:se'])->group(function (): void {
+Route::middleware(['feature:ai-vision', 'feature:v8'])->group(function (): void {
 	/**
 	 * AI VISION — PEOPLE.
 	 */

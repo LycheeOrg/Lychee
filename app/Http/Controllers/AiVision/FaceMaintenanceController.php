@@ -12,6 +12,7 @@ use App\Http\Requests\Face\BatchDismissFacesRequest;
 use App\Http\Requests\Face\FaceMaintenanceIndexRequest;
 use App\Http\Resources\Collections\PaginatedFaceResource;
 use App\Models\Face;
+use App\Models\Person;
 use Illuminate\Routing\Controller;
 
 /**
@@ -58,8 +59,30 @@ class FaceMaintenanceController extends Controller
 	 */
 	public function batchDismiss(BatchDismissFacesRequest $request): array
 	{
+		$affected_person_ids = Face::whereIn('id', $request->face_ids)
+			->whereNotNull('person_id')
+			->distinct()
+			->pluck('person_id')
+			->all();
+
 		$count = Face::whereIn('id', $request->face_ids)
-			->update(['is_dismissed' => true]);
+			->update(['is_dismissed' => true, 'person_id' => null]);
+
+		foreach ($affected_person_ids as $person_id) {
+			$person = Person::find($person_id);
+			if ($person === null) {
+				continue;
+			}
+
+			$person->face_count = Face::where('person_id', '=', $person_id)->where('is_dismissed', '=', false)->count();
+			if ($person->face_count === 0) {
+				$person->delete();
+				continue;
+			}
+
+			$person->photo_count = Face::where('person_id', '=', $person_id)->where('is_dismissed', '=', false)->distinct('photo_id')->count('photo_id');
+			$person->save();
+		}
 
 		return ['dismissed_count' => $count];
 	}

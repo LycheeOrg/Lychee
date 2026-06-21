@@ -18,9 +18,9 @@ namespace App\Enum;
  * | Create/edit Person | logged users        | logged users        | photo/album owner + admin | admin only                |
  * | Assign face        | logged users        | logged users        | photo/album owner + admin | admin only                |
  * | Trigger scan       | logged users        | logged users        | photo/album owner + admin | photo/album owner + admin |
- * | Claim person       | logged users        | logged users        | logged users              | logged users              |
+ * | Claim person       | logged users        | logged users        | photo/album owner + admin | photo/album owner + admin |
  * | Merge persons      | logged users        | logged users        | photo/album owner + admin | admin only                |
- * | Dismiss face       | photo owner + admin | photo owner + admin | photo owner + admin       | photo owner + admin       |
+ * | Dismiss face       | photo owner + admin | photo owner + admin | photo/album owner + admin | photo owner + admin       |
  * | Batch face ops     | logged users        | logged users        | photo/album owner + admin | admin only                |
  * | View album people  | album access        | logged users        | photo/album owner + admin | photo/album owner + admin |
  */

@@ -228,9 +228,8 @@ return [
 	 | such as face detection, person management, and photo clustering.
 	 | Requires ai_vision_enabled to be true in the database configs table
 	 | AND this feature flag to be enabled.
-	 | Disabled by default — set AI_VISION_ENABLED=true to activate.
 	 */
-	'ai-vision' => (bool) env('AI_VISION_ENABLED', false),
+	'ai-vision' => (bool) env('AI_VISION_ENABLED', true),
 
 	/*
 	 |--------------------------------------------------------------------------

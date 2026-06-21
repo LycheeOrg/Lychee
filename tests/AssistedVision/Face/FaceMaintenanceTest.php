@@ -28,7 +28,6 @@ class FaceMaintenanceTest extends BaseApiTest
 	public function setUp(): void
 	{
 		parent::setUp();
-		$this->requireSe();
 
 		Configs::set('ai_vision_enabled', '1');
 		Configs::set('ai_vision_face_enabled', '1');
@@ -41,7 +40,6 @@ class FaceMaintenanceTest extends BaseApiTest
 
 	public function tearDown(): void
 	{
-		$this->resetSe();
 		parent::tearDown();
 	}
 

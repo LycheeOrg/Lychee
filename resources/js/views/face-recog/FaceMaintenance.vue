@@ -14,34 +14,13 @@
 		</div>
 
 		<template v-else>
-			<Panel class="max-w-6xl mx-auto px-4 pt-4">
+			<Panel class="max-w-6xl mx-auto px-4 pt-4 border-none">
 				<p class="text-muted-color mb-4 text-center text-sm">
 					{{ $t("maintenance.face_quality.description") }}
 				</p>
 
-				<!-- Sort controls -->
+				<!-- Controls -->
 				<div class="flex flex-wrap gap-3 mb-4 items-center">
-					<span class="text-muted-color text-sm">{{ $t("maintenance.face_quality.sort_by") }}</span>
-					<div class="flex gap-2">
-						<Button
-							:label="$t('maintenance.face_quality.sort_confidence')"
-							:severity="sortBy === 'confidence' ? 'primary' : 'secondary'"
-							size="small"
-							class="border-none"
-							:icon="sortBy === 'confidence' ? (sortDir === 'asc' ? 'pi pi-arrow-up' : 'pi pi-arrow-down') : undefined"
-							icon-pos="right"
-							@click="setSort('confidence')"
-						/>
-						<Button
-							:label="$t('maintenance.face_quality.sort_blur')"
-							:severity="sortBy === 'laplacian_variance' ? 'primary' : 'secondary'"
-							size="small"
-							class="border-none"
-							:icon="sortBy === 'laplacian_variance' ? (sortDir === 'asc' ? 'pi pi-arrow-up' : 'pi pi-arrow-down') : undefined"
-							icon-pos="right"
-							@click="setSort('laplacian_variance')"
-						/>
-					</div>
 					<Button
 						:label="dismissedOnly ? $t('maintenance.face_quality.show_active') : $t('maintenance.face_quality.show_dismissed')"
 						:severity="dismissedOnly ? 'primary' : 'secondary'"
@@ -103,8 +82,22 @@
 						<div>{{ $t("maintenance.face_quality.col_face") }}</div>
 						<div>{{ $t("maintenance.face_quality.col_person") }}</div>
 						<div>{{ $t("maintenance.face_quality.col_cluster") }}</div>
-						<div class="text-right">{{ $t("maintenance.face_quality.col_confidence") }}</div>
-						<div class="text-right">{{ $t("maintenance.face_quality.col_blur") }}</div>
+						<div class="text-right cursor-pointer hover:text-primary-500 transition-colors" @click="setSort('confidence')">
+							{{ $t("maintenance.face_quality.col_confidence") }}
+							<i
+								v-if="sortBy === 'confidence'"
+								:class="sortDir === 'asc' ? 'pi pi-arrow-up' : 'pi pi-arrow-down'"
+								class="text-xs ml-0.5"
+							></i>
+						</div>
+						<div class="text-right cursor-pointer hover:text-primary-500 transition-colors" @click="setSort('laplacian_variance')">
+							{{ $t("maintenance.face_quality.col_blur") }}
+							<i
+								v-if="sortBy === 'laplacian_variance'"
+								:class="sortDir === 'asc' ? 'pi pi-arrow-up' : 'pi pi-arrow-down'"
+								class="text-xs ml-0.5"
+							></i>
+						</div>
 						<div></div>
 					</div>
 

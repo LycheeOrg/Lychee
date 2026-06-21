@@ -27,7 +27,6 @@ class FaceAssignmentTest extends BaseApiWithDataTest
 	public function setUp(): void
 	{
 		parent::setUp();
-		$this->requireSe();
 
 		Configs::set('ai_vision_enabled', '1');
 		Configs::set('ai_vision_face_enabled', '1');
@@ -43,7 +42,6 @@ class FaceAssignmentTest extends BaseApiWithDataTest
 		DB::table('face_suggestions')->delete();
 		DB::table('faces')->delete();
 		DB::table('persons')->delete();
-		$this->resetSe();
 		parent::tearDown();
 	}
 

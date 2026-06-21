@@ -60,8 +60,16 @@ class FaceController extends Controller
 	public function toggleDismissed(ToggleDismissedRequest $request, string $id): FaceResource
 	{
 		$face = $request->face();
+		$old_person_id = $face->person_id;
 		$face->is_dismissed = !$face->is_dismissed;
+		if ($face->is_dismissed) {
+			$face->person_id = null;
+		}
 		$face->save();
+
+		if ($old_person_id !== null) {
+			$this->recountOrDeletePersons([$old_person_id]);
+		}
 
 		return FaceResource::fromModel($face->load(['suggestions.suggestedFace.person', 'person']));
 	}

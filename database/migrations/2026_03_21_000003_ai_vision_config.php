@@ -23,7 +23,7 @@ return new class() extends BaseConfigMigration {
 				'details' => 'Master toggle for the AI Vision subsystem. When disabled, all AI Vision endpoints and UI elements are inactive.',
 				'is_expert' => false,
 				'is_secret' => false,
-				'level' => 1,
+				'level' => 0,
 				'order' => 10,
 			],
 			[
@@ -35,7 +35,7 @@ return new class() extends BaseConfigMigration {
 				'details' => 'Enable the facial recognition subsystem. Requires ai_vision_enabled = 1. When disabled, face detection endpoints, People pages, and auto-scan on upload are inactive.',
 				'is_expert' => false,
 				'is_secret' => false,
-				'level' => 1,
+				'level' => 0,
 				'order' => 11,
 			],
 			[
@@ -47,7 +47,7 @@ return new class() extends BaseConfigMigration {
 				'details' => 'Controls who can view people, face overlays, and manage faces. Options: public, private, privacy-preserving, restricted.',
 				'is_expert' => false,
 				'is_secret' => false,
-				'level' => 1,
+				'level' => 0,
 				'order' => 12,
 			],
 			[
@@ -59,7 +59,7 @@ return new class() extends BaseConfigMigration {
 				'details' => 'Minimum match confidence score (0.0-1.0) required to automatically link a person via selfie upload.',
 				'is_expert' => true,
 				'is_secret' => false,
-				'level' => 1,
+				'level' => 0,
 				'order' => 13,
 			],
 			[
@@ -71,7 +71,7 @@ return new class() extends BaseConfigMigration {
 				'details' => 'Default value of the is_searchable flag when a new Person record is created.',
 				'is_expert' => true,
 				'is_secret' => false,
-				'level' => 1,
+				'level' => 0,
 				'order' => 14,
 			],
 			[
@@ -83,7 +83,7 @@ return new class() extends BaseConfigMigration {
 				'details' => 'When enabled, regular (non-admin) users may claim a Person record to link it to their account. Admins can always claim/unclaim regardless of this setting.',
 				'is_expert' => true,
 				'is_secret' => false,
-				'level' => 1,
+				'level' => 0,
 				'order' => 15,
 			],
 			[
@@ -95,7 +95,7 @@ return new class() extends BaseConfigMigration {
 				'details' => 'Master toggle for face bounding-box overlays. When disabled (0), no face overlays or face circles are shown anywhere in the UI, regardless of detection results.',
 				'is_expert' => false,
 				'is_secret' => false,
-				'level' => 1,
+				'level' => 0,
 				'order' => 17,
 			],
 			[
@@ -107,7 +107,7 @@ return new class() extends BaseConfigMigration {
 				'details' => 'Sets whether face overlays are shown (visible) or hidden by default when a photo is opened. Users can toggle visibility with the P key.',
 				'is_expert' => true,
 				'is_secret' => false,
-				'level' => 1,
+				'level' => 0,
 				'order' => 18,
 			],
 		];
