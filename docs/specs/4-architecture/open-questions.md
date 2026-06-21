@@ -19,6 +19,18 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 | Q-043-16 | 043 | Low | Translation key placement: which new strings belong in `webshop.php` vs `dialogs.php`? | Open | 2026-05-31 | 2026-05-31 |
 | Q-043-17 | 043 | Medium | `is_print` must be exposed in basket GET response (via `OrderItemResource`) before frontend `hasPrints` computed can work — cross-increment dependency not captured in tasks | Open | 2026-05-31 | 2026-05-31 |
 | Q-040-01 | 040 – Disable Request Caching | Medium | Analysis Gate never formally signed off: plan.md gate checklist has unchecked boxes yet I1–I4 tasks are marked complete; gate must be ticked before implementation is considered verified | Open | 2026-05-31 | 2026-05-31 |
+| ~~Q-045-01~~ | 045 – NSFW Moderation | High | Callback stores `owner_id` on detection — how does the controller resolve the uploading user from the callback payload? | Resolved (B – snapshot trust level on photo) | 2026-06-21 | 2026-06-21 |
+| ~~Q-045-02~~ | 045 – NSFW Moderation | High | "Block" action semantics — should blocked photos be soft-deleted, hidden via `is_validated`, or use a dedicated visibility flag? | Resolved (Custom – `nsfw_visibility` enum + `is_validated` combination) | 2026-06-21 | 2026-06-21 |
+| ~~Q-045-03~~ | 045 – NSFW Moderation | High | Sensitive action on unsorted photos (no album) — should it create a "Sensitive" album, mark as moderation instead, or skip? | Resolved (Custom – configurable: skip or fall back to moderate) | 2026-06-21 | 2026-06-21 |
+| ~~Q-045-04~~ | 045 – NSFW Moderation | High | User context in upload pipe — `StandaloneDTO` may not carry the uploading user's trust level; how to resolve it? | Resolved (subsumed by Q-045-01 → B; pipe loads owner to snapshot) | 2026-06-21 | 2026-06-21 |
+| ~~Q-045-05~~ | 045 – NSFW Moderation | Medium | Should the NSFW service share the same base URL as the face detection service, or use a completely separate URL? | Resolved (A – separate URL + API key) | 2026-06-21 | 2026-06-21 |
+| ~~Q-045-06~~ | 045 – NSFW Moderation | Medium | Detection log granularity — store every individual detection, or only summary flags on the photo? | Resolved (A modified – block/review/sensitive only, not all_detected) | 2026-06-21 | 2026-06-21 |
+| ~~Q-045-07~~ | 045 – NSFW Moderation | Medium | Per-album or per-user preset override — should this be supported in v1, or deferred? | Resolved (A – deferred) | 2026-06-21 | 2026-06-21 |
+| ~~Q-045-08~~ | 045 – NSFW Moderation | Medium | Multiple albums — if a photo belongs to multiple albums and `sensitive` action fires, which albums get `is_nsfw = true`? | Resolved (A – direct album only) | 2026-06-21 | 2026-06-21 |
+| ~~Q-045-09~~ | 045 – NSFW Moderation | Medium | Bulk scan scope — should bulk scan re-scan photos that previously completed, or only `nsfw_scan_status IS NULL`? | Resolved (B – NULL+failed default, force for completed) | 2026-06-21 | 2026-06-21 |
+| ~~Q-045-10~~ | 045 – NSFW Moderation | Medium | Moderation page integration — should NSFW-blocked photos appear in the existing Moderation view, or require a separate filter/tab? | Resolved (B – add NSFW badge in Moderation view) | 2026-06-21 | 2026-06-21 |
+| ~~Q-045-11~~ | 045 – NSFW Moderation | Low | Config category naming — should NSFW config keys use existing `mod-nsfw` category or a new one? | Resolved (Custom – use `ai` category) | 2026-06-21 | 2026-06-21 |
+| ~~Q-045-12~~ | 045 – NSFW Moderation | Medium | SE (Supporter Edition) gating — should NSFW detection endpoints require SE license? | Resolved (Custom – simple SE, not pro) | 2026-06-21 | 2026-06-21 |
 | ~~Q-044-01~~ | 044 – Folder Drop | High | `Timeline.vue` also calls `useMouseEvents` — extending the signature breaks it | Resolved (B+A) | 2026-06-13 | 2026-06-13 |
 | ~~Q-044-02~~ | 044 – Folder Drop | High | `setup` (UploadConfig) ownership — architectural resolution required | Resolved (A – TogglablesStateStore) | 2026-06-13 | 2026-06-13 |
 | ~~Q-044-03~~ | 044 – Folder Drop | Medium | `UploadPanel.uploadCompleted()` clears route-level cache only | Resolved (B – clear all album_ids) | 2026-06-13 | 2026-06-13 |
@@ -3278,6 +3290,142 @@ EXISTS (
 **Decision:** Option A - Migration adds columns with defaults, no backfill
 **Rationale:** Clean state (accurate: no ratings yet), fast migration, no assumptions about historical data.
 **Updated in spec:** Implementation plan I1 (migrations with default values)
+
+---
+
+### ~~Q-045-01~~ · How does the callback controller resolve the uploading user from the callback payload? ✅ RESOLVED
+
+**Status:** Resolved — **Option B** (snapshot trust level on photo at upload time)  
+**Feature:** 045 – NSFW Detection & Moderation  
+**Resolution:** New `upload_trust_level` column on `photos` table, populated by the `AutoScanNsfwOnUpload` pipe at upload time. Callback reads the snapshotted value from the photo instead of querying the user's current trust level. This captures the trust level in effect at upload time. Encoded in FR-045-07, FR-045-08, FR-045-14, T-045-05, T-045-13.
+
+**Question**  
+The NSFW callback endpoint receives `photo_id` but no user context. To apply trust-level-aware actions (FR-045-08: auto-approve moderation for trusted users), the controller needs to know who uploaded the photo. The `photos` table has an `owner_id` column (FK to `users.id`). Should the controller query `Photo::owner_id` to resolve the user's trust level, or should the uploading user's trust level be stored on the photo at upload time?
+
+---
+
+#### 🅰️ (**recommended**) Option A – Look up `owner_id` at callback time
+
+- **Idea:** When processing the callback, load `Photo` with `owner` relation, read `$photo->owner->upload_trust_level`. This is a single extra JOIN.
+- **Spec impact:** No new columns. T-045-15 controller logic includes `$photo->load('owner')`.
+- **Pros:**
+  - ✅ No schema changes — `owner_id` already exists on `photos`.
+  - ✅ Always reflects the user's current trust level (if admin changes trust level between upload and scan completion, the current level applies).
+  - ✅ Simplest implementation.
+- **Cons:**
+  - ❌ If trust level changed between upload and scan, the "current" level may not match intent at upload time.
+
+---
+
+#### 🅱️ Option B – Snapshot trust level on photo at upload time
+
+- **Idea:** Add `upload_trust_level` column to `photos` table, populated by the upload pipe. Callback reads this snapshot.
+- **Spec impact:** New column, new migration, pipe update.
+- **Pros:**
+  - ✅ Captures the trust level that was in effect when the upload occurred.
+- **Cons:**
+  - ❌ Extra column and migration.
+  - ❌ Stale data — if admin upgrades a user to trusted, already-pending scans still use the old level.
+
+---
+
+**Next action:** Decide before T-045-15 implementation. Option A is simpler and reflects the admin's latest trust decision, which is likely the desired behaviour.
+
+---
+
+### ~~Q-045-02~~ · "Block" action semantics — what happens to blocked photos? ✅ RESOLVED
+
+**Status:** Resolved — **Custom** (`nsfw_visibility` enum + `is_validated` combination)  
+**Feature:** 045 – NSFW Detection & Moderation  
+**Resolution:** New `nsfw_visibility` enum column on `photos` (nullable string; values: `visible`, `blocked`, `review`). Used in combination with `is_validated`:
+- When `nsfw_visibility` is set to `blocked` or `review`, `is_validated` is also set to `false` (depending on configured action).
+- Both columns are displayed in the Moderation admin panel, giving admins full context on why a photo is held.
+- Admin approval sets `nsfw_visibility = visible` and `is_validated = true`.
+This replaces the originally proposed `nsfw_blocked` boolean and provides richer NSFW state tracking while integrating with the existing moderation infrastructure. Encoded in FR-045-04, FR-045-05, FR-045-06, FR-045-13, DO-045-08, T-045-04, T-045-05.
+
+---
+
+### ~~Q-045-03~~ · Sensitive action on unsorted photos (no album) ✅ RESOLVED
+
+**Status:** Resolved — **Custom** (configurable: skip or fall back to moderate)  
+**Feature:** 045 – NSFW Detection & Moderation  
+**Resolution:** New config key `nsfw_sensitive_no_album_action` (string, category `AI Vision`) with two values:
+- `skip` — log warning ("Cannot mark album as sensitive: photo {id} has no album"), do not apply the sensitive action. Other actions (block, moderation) still apply if their conditions are met.
+- `moderate` — fall back to setting `nsfw_visibility = review` and `is_validated = false`. Ensures the photo is held for admin review even without an album to mark.
+
+Default value: `skip`. This gives the admin explicit control over the trade-off between silent inaction and implicit escalation. Encoded in FR-045-06, FR-045-15 (new), T-045-07 (config migration gains 8th key), T-045-10, S-045-18, S-045-23 (new).
+
+---
+
+### ~~Q-045-04~~ · User context in the upload pipe — how to resolve the uploader's trust level? ✅ RESOLVED
+
+**Status:** Resolved — subsumed by Q-045-01 → Option B  
+**Feature:** 045 – NSFW Detection & Moderation  
+**Resolution:** Since Q-045-01 resolved to snapshot `upload_trust_level` on the photo at upload time, the pipe loads `$state->photo->owner` (via the existing `owner_id` FK) to read the trust level and write it to the new `upload_trust_level` column. This resolves both questions: the pipe gets user context via `Photo::owner` (one extra query, acceptable per-upload), and the callback later reads the snapshotted value from the photo directly. No DTO changes needed. Encoded in T-045-13.
+
+---
+
+### ~~Q-045-05~~ · NSFW service URL — same host as face detection or separate? ✅ RESOLVED
+
+**Status:** Resolved — **Option A** (separate URL + API key)  
+**Feature:** 045 – NSFW Detection & Moderation  
+**Resolution:** Two new env vars: `AI_VISION_NSFW_URL` and `AI_VISION_NSFW_API_KEY`, independent of face detection. Operators can run each service on different hosts/ports. Encoded in NFR-045-02, T-045-08.
+
+---
+
+### ~~Q-045-06~~ · Detection log granularity — every detection or summary only? ✅ RESOLVED
+
+**Status:** Resolved — **Option A (modified)** — store individual detections from `block_detected`, `review_detected`, `sensitive_detected` only; `all_detected` NOT persisted  
+**Feature:** 045 – NSFW Detection & Moderation  
+**Resolution:** Each entry in `block_detected`, `review_detected`, `sensitive_detected` creates a row in `nsfw_detections` with label, confidence, bbox, area, and tier. Items from `all_detected` that do not appear in any action array are not stored — they represent detections below all configured thresholds and are not actionable. The `NsfwDetectionTier` enum drops the `DETECTED` case (3 values: `BLOCK`, `REVIEW`, `SENSITIVE`). Encoded in FR-045-09, DO-045-07, T-045-03, T-045-06, T-045-10.
+
+---
+
+### ~~Q-045-07~~ · Per-album or per-user preset override — v1 or deferred? ✅ RESOLVED
+
+**Status:** Resolved — **Option A** (deferred to follow-up)  
+**Feature:** 045 – NSFW Detection & Moderation  
+**Resolution:** Global preset only in v1. Per-album/user overrides tracked in plan.md Follow-ups/Backlog. Already reflected in spec Non-Goals.
+
+---
+
+### ~~Q-045-08~~ · Multiple albums — which get marked sensitive? ✅ RESOLVED
+
+**Status:** Resolved — **Option A** (direct album only)  
+**Feature:** 045 – NSFW Detection & Moderation  
+**Resolution:** Only the album referenced by `photo.album_id` is marked `is_nsfw = true`. Parent/ancestor albums are unaffected. Already reflected in FR-045-06 ("direct album").
+
+---
+
+### ~~Q-045-09~~ · Bulk scan scope — re-scan completed photos? ✅ RESOLVED
+
+**Status:** Resolved — **Option B** (NULL + failed by default; `force` for completed)  
+**Feature:** 045 – NSFW Detection & Moderation  
+**Resolution:** Default bulk scan targets `nsfw_scan_status IS NULL` or `failed`. Optional `force` boolean parameter re-scans `completed` photos as well. Enables preset changes to be applied retroactively. Encoded in FR-045-11, T-045-16, S-045-17, S-045-22.
+
+---
+
+### ~~Q-045-10~~ · Moderation page integration — existing view or separate? ✅ RESOLVED
+
+**Status:** Resolved — **Option B** (add NSFW badge/tag in Moderation view)  
+**Feature:** 045 – NSFW Detection & Moderation  
+**Resolution:** NSFW-blocked/review photos appear in the existing Moderation view (via `is_validated = false`) with a visible NSFW badge/tag showing the `nsfw_visibility` state (`blocked` or `review`). This lets admins immediately distinguish NSFW holds from manual moderation. Both `nsfw_visibility` and `is_validated` are exposed in the Moderation API response. Encoded in FR-045-13, new T-045-22.
+
+---
+
+### ~~Q-045-11~~ · Config category naming ✅ RESOLVED
+
+**Status:** Resolved — **Custom** (use `ai` category)  
+**Feature:** 045 – NSFW Detection & Moderation  
+**Resolution:** All new NSFW detection config keys use category `AI Vision`, grouping them with other AI-powered features. The existing NSFW display/visibility keys (e.g., `hide_nsfw_in_smart_albums`) remain under `mod-nsfw`. Encoded in T-045-07, T-045-19.
+
+---
+
+### ~~Q-045-12~~ · SE (Supporter Edition) gating for NSFW detection ✅ RESOLVED
+
+**Status:** Resolved — **Custom** (simple SE gating, not pro tier)  
+**Feature:** 045 – NSFW Detection & Moderation  
+**Resolution:** All NSFW endpoints use the `support` middleware (basic SE), not `support:pro`. This makes NSFW detection available to all SE supporters, not just pro-tier. Encoded in NFR-045-05, T-045-17.
 
 ---
 

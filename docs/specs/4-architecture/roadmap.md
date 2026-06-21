@@ -6,7 +6,7 @@ High-level planning document for Lychee features and architectural initiatives.
 
 | Feature ID | Name | Status | Priority | Assignee | Started | Updated | Progress |
 |------------|------|--------|----------|----------|---------|---------|----------|
-| 030 | AI Vision Service | Planning | P1 | LycheeOrg | 2026-03-15 | 2026-03-15 | Spec, plan, tasks drafted. 43 tasks across 19 increments (I1–I3 Python service, I4–I12 PHP backend, I13–I18 frontend, I19 docs). Q-030-01 through Q-030-12 resolved. 13 new open questions (Q-030-13 through Q-030-25) — 6 high, 7 medium. I1–I3 can start; I8 blocked on Q-030-13; I10 blocked on Q-030-14, Q-030-15, Q-030-17. |
+| 045 | NSFW Detection & Moderation | Planning | P1 | LycheeOrg | 2026-06-21 | 2026-06-21 | Spec, plan, tasks drafted. 26 tasks across 7 increments. All 12 questions resolved. No blockers — all increments can proceed. Key decisions: `nsfw_visibility` enum + `is_validated` combo (Q-045-02), trust level snapshot on photo (Q-045-01), `AI Vision` config category (Q-045-11), simple SE gating (Q-045-12), block/review/sensitive detections only logged (Q-045-06), configurable no-album fallback (Q-045-03). |
 
 ## Paused Features
 
@@ -26,6 +26,7 @@ High-level planning document for Lychee features and architectural initiatives.
 | 037 | Admin Dashboard & `/admin/` URL Reorg | 2026-04-22 | Config migration (`use_admin_dashboard` toggle), `AdminStatsService` with 5-min cache, `GET /api/v2/Admin/Stats` endpoint, 9 admin views relocated to `views/admin/`, `AdminDashboard.vue` tile grid + stats panel + Refresh, left-menu collapse toggle, 22-locale i18n, 13 backend tests passing, TypeScript/PHPStan clean. |
 | 034 | Bulk Album Edit | 2026-04-12 | Spec, plan, tasks drafted. 25 tasks across 11 increments (I1 backend scaffold, I2-I6 REST endpoints, I7-I10 frontend, I11 quality gates). 4 open questions (Q-034-01 to Q-034-04; 1 high, 2 medium, 1 low). |
 | 032 | Security Advisories Check | 2026-04-06 | Spec, plan, tasks drafted. 18 tasks across 6 increments (I1 config/DTO, I2 fetch service, I3 diagnostic pipe, I4 REST endpoint, I5 frontend modal, I6 quality gates). All open questions resolved in spec. |
+| 030 | AI Vision Service | 2026-03-15 | Spec, plan, tasks drafted. 43 tasks across 19 increments. |
 | 029 | Camera Capture | 2026-03-18 | "Take Photo" in `+` add menu (album and root views). CameraCapture.vue modal: live video → canvas capture → JPEG preview → push to existing UploadPanel queue. Secure-context guard, mobile layout fixes, `Permissions-Policy: camera=(self)` header. No backend changes. |
 | 028 | Search UI Refactor | 2026-05-30 | Full refactor: simple input + collapsible advanced panel (17 fields: title, description, location, tags, date range, type, orientation, rating, EXIF fields). Token assembler/parser composable. No-debounce on-demand search. Auto-scroll to first result. vue-tsc clean, 74 PHP tests passed, PHPStan 0 errors. |
 | 026 | Album Photo Tag Filter | 2026-03-09 | Spec, plan, tasks complete. 76 tasks across 9 increments (~32h estimated). All open questions resolved. |
@@ -115,4 +116,4 @@ features/
 
 ---
 
-*Last updated: 2026-06-13 (Feature 044 spec/plan/tasks drafted — Folder Drag-and-Drop Album Creation)*
+*Last updated: 2026-06-21 (Feature 045 spec/plan/tasks drafted — NSFW Detection & Moderation)*
