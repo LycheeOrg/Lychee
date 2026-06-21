@@ -84,6 +84,17 @@ return [
 	'assigned_faces' => 'Assigned :count face(s)',
 	'dismissed_faces' => 'Dismissed :count face(s)',
 	'clustering_started' => 'Clustering started. Reload when complete.',
+
+	'face_recognition_warning' => [
+		'title' => 'Legal Notice — Facial Recognition',
+		'legal_notice' => 'Facial recognition technology may be subject to strict legal restrictions or outright prohibited in your jurisdiction. Before deploying this service, ensure you comply with all applicable laws and regulations.',
+		'example_title' => 'Example — the Netherlands:',
+		'example_body' => 'Under the Dutch implementation of the EU General Data Protection Regulation (GDPR), biometric data (including facial recognition embeddings) is classified as special category data (Article 9 GDPR). Processing such data is prohibited unless a specific legal basis applies (e.g. explicit informed consent). The Dutch Data Protection Authority (Autoriteit Persoonsgegevens) has issued guidance making clear that using facial recognition on individuals without a valid legal ground constitutes a serious infringement, potentially <span class="text-muted-color-emphasis font-bold">carrying fines of up to €20 million or 4% of global annual turnover</span>.',
+		'similar_rules' => 'Similar or stricter rules may apply in other EU/EEA countries, the United Kingdom, Canada, and many other jurisdictions.',
+		'no_liability' => 'Lychee is developed under the <a href="https://lycheeorg.dev/license" class="text-primary-400 underline" target="_blank">MIT license</a>. <span class="text-muted-color-emphasis">The authors and contributors</span> of LycheeOrg <span class="text-muted-color-emphasis">accept no liability for unlawful use</span>.<br/>It is <span class="text-muted-color-emphasis">your sole responsibility to obtain any required consent, implement appropriate safeguards, and verify legality</span> before operating this software.',
+		'acknowledge' => 'I have read and understood the above legal notice',
+		'accept' => 'Accept & Dismiss Warning',
+	],
 	'merge' => [
 		'title' => 'Merge person',
 		'into' => 'into…',
