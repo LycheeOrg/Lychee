@@ -27,6 +27,7 @@ use App\Actions\Diagnostics\Pipes\Checks\IframeCheck;
 use App\Actions\Diagnostics\Pipes\Checks\ImageOptCheck;
 use App\Actions\Diagnostics\Pipes\Checks\ImagickPdfCheck;
 use App\Actions\Diagnostics\Pipes\Checks\IniSettingsCheck;
+use App\Actions\Diagnostics\Pipes\Checks\KeygenApiTokenCheck;
 use App\Actions\Diagnostics\Pipes\Checks\MigrationCheck;
 use App\Actions\Diagnostics\Pipes\Checks\OldLicenseCheck;
 use App\Actions\Diagnostics\Pipes\Checks\OpCacheCheck;
@@ -57,6 +58,7 @@ class Errors
 		BasicPermissionCheck::class,
 		ConfigSanityCheck::class,
 		OldLicenseCheck::class,
+		KeygenApiTokenCheck::class,
 		DBSupportCheck::class,
 		GDSupportCheck::class,
 		ImageOptCheck::class,

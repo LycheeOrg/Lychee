@@ -34,8 +34,10 @@ use App\Listeners\RecomputeAlbumSizeOnAlbumChange;
 use App\Listeners\RecomputeAlbumSizeOnPhotoMutation;
 use App\Listeners\RecomputeAlbumStatsOnAlbumChange;
 use App\Listeners\RecomputeAlbumStatsOnPhotoChange;
+use App\Listeners\RotateLicenseKeyOnLogin;
 use App\Listeners\TaggedRouteCacheCleaner;
 use App\Listeners\WebhookListener;
+use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Cache\Events\CacheHit;
 use Illuminate\Cache\Events\CacheMissed;
@@ -123,6 +125,8 @@ class EventServiceProvider extends ServiceProvider
 		Event::listen(PhotoDeleted::class, RecomputeAlbumSizeOnPhotoMutation::class . '@handlePhotoDeleted');
 		Event::listen(AlbumSaved::class, RecomputeAlbumSizeOnAlbumChange::class . '@handleAlbumSaved');
 		Event::listen(AlbumDeleted::class, RecomputeAlbumSizeOnAlbumChange::class . '@handleAlbumDeleted');
+
+		Event::listen(Login::class, RotateLicenseKeyOnLogin::class . '@handle');
 
 		// Webhook dispatch for photo lifecycle events
 		Event::listen(PhotoAdded::class, WebhookListener::class . '@handlePhotoAdded');

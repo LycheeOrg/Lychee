@@ -53,7 +53,9 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Laravel\Octane\Events\RequestTerminated;
 use Laravel\Octane\Facades\Octane;
+use LycheeVerify\Contract\VerifyFactory;
 use LycheeVerify\Contract\VerifyInterface;
+use LycheeVerify\DefaultVerifyFactory;
 use LycheeVerify\Verify;
 use Opcodes\LogViewer\Facades\LogViewer;
 use Safe\Exceptions\StreamException;
@@ -189,6 +191,11 @@ class AppServiceProvider extends ServiceProvider
 		$this->app->bind(
 			VerifyInterface::class,
 			Verify::class
+		);
+
+		$this->app->bind(
+			VerifyFactory::class,
+			DefaultVerifyFactory::class
 		);
 	}
 

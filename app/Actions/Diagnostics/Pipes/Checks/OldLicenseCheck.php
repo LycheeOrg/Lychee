@@ -13,6 +13,7 @@ use App\DTO\DiagnosticData;
 use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\Schema;
 use LycheeVerify\Contract\Status;
+use LycheeVerify\Rotation;
 use LycheeVerify\Verify;
 
 /**
@@ -22,6 +23,7 @@ class OldLicenseCheck implements DiagnosticPipe
 {
 	public function __construct(
 		private Verify $verify,
+		private Rotation $rotation,
 		protected readonly ConfigManager $config_manager,
 	) {
 	}
@@ -46,6 +48,19 @@ class OldLicenseCheck implements DiagnosticPipe
 			// Valid license - skip check
 			return $next($data);
 		}
+
+		// @codeCoverageIgnoreStart
+		/** @var string $api_key */
+		$api_key = config('verify.keygen_api_key', '');
+		if ($api_key !== '') {
+			$result = $this->rotation->rotate();
+			if ($result->success) {
+				$this->verify->reset_status();
+
+				return $next($data);
+			}
+		}
+		// @codeCoverageIgnoreEnd
 
 		$data[] = DiagnosticData::error('Your license has expired. Go to keygen.lycheeorg.dev to retrieve a new one or erase the value in the license field.', self::class);
 
