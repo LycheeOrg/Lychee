@@ -19,9 +19,7 @@
 		<div v-if="initData?.settings.can_edit" class="flex flex-row justify-between gap-3 border-t border-surface pt-4">
 			<div class="flex items-center gap-2">
 				<Checkbox v-model="acknowledged" binary inputId="face-warning-ack" />
-				<label for="face-warning-ack" class="text-sm cursor-pointer">{{
-					$t("people.face_recognition_warning.acknowledge")
-				}}</label>
+				<label for="face-warning-ack" class="text-sm cursor-pointer">{{ $t("people.face_recognition_warning.acknowledge") }}</label>
 			</div>
 			<div class="flex ltr:justify-end rtl:justify-start">
 				<Button
