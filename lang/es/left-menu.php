@@ -25,5 +25,5 @@ return [
     'messages' => 'Mensajes',
     'people' => 'People',
     'webhooks' => 'Webhooks',
-    'shopSizes' => 'Size Catalogue',
+    'shopSizes' => 'Catálogo de tallas',
 ];
