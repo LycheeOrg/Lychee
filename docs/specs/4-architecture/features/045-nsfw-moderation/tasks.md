@@ -33,27 +33,26 @@ _Last updated: 2026-06-22_
   - `make phpstan`  
   _Notes:_ Used in config validation and outbound request building.
 
-- [ ] T-045-05 – Create `NsfwScanStatus` enum (FR-045-12, DO-045-06).  
-  _Intent:_ `app/Enum/NsfwScanStatus.php` with 3 cases: `PENDING`, `COMPLETED`, `FAILED`. Mirrors `FaceScanStatus`.  
+- [ ] T-045-05 – Create `NsfwStatus` enum (FR-045-13, DO-045-06).  
+  _Intent:_ `app/Enum/NsfwStatus.php` with 4 cases: `PENDING`, `FAILED`, `REVIEW`, `VISIBLE`. Single enum replacing both scan status and visibility tracking. `null` = not yet scanned; `PENDING` = scan dispatched; `FAILED` = scan errored; `REVIEW` = held for moderation; `VISIBLE` = scan completed with no action or admin-approved. No `BLOCKED` value — block actions hard-delete the photo.  
   _Verification commands:_  
   - `make phpstan`
 
-- [ ] T-045-06 – Create action enums and visibility enum (FR-045-04, FR-045-06, FR-045-13, FR-045-15, DO-045-03, DO-045-04, DO-045-08, DO-045-10).  
-  _Intent:_ Five enums in `app/Enum/`:
-  - `NsfwBlockFindingAction`: `BLOCK`, `MODERATE` — controls what happens on block findings for check/monitor users
+- [ ] T-045-06 – Create action enums and detection label enum (FR-045-04, FR-045-06, FR-045-09, FR-045-15, DO-045-03, DO-045-04, DO-045-10, DO-045-11).  
+  _Intent:_ Four enums in `app/Enum/`:
+  - `NsfwBlockFindingAction`: `BLOCK`, `MODERATE`, `APPROVE` — controls what happens on block findings per trust tier. `APPROVE` only valid for `nsfw_trust_block_action` (trusted tier)
   - `NsfwSensitiveAlbumAction`: `MARK_ALBUM`, `NOTHING` — controls whether sensitive findings trigger album NSFW marking
   - `NsfwSensitiveNoAlbumAction`: `SKIP`, `MODERATE` — fallback when sensitive fires on unsorted photo
-  - `NsfwVisibility`: `VISIBLE`, `BLOCKED`, `REVIEW` — tracks NSFW-specific state on a photo  
+  - `NsfwDetectionLabel`: 18 cases matching the classifier output labels — `FEMALE_GENITALIA_COVERED`, `FACE_FEMALE`, `BUTTOCKS_EXPOSED`, `FEMALE_BREAST_EXPOSED`, `FEMALE_GENITALIA_EXPOSED`, `MALE_BREAST_EXPOSED`, `ANUS_EXPOSED`, `FEET_EXPOSED`, `BELLY_COVERED`, `FEET_COVERED`, `ARMPITS_COVERED`, `ARMPITS_EXPOSED`, `FACE_MALE`, `BELLY_EXPOSED`, `MALE_GENITALIA_EXPOSED`, `ANUS_COVERED`, `FEMALE_BREAST_COVERED`, `BUTTOCKS_COVERED`. Used as the `label` column type on `nsfw_detections`.  
   _Verification commands:_  
   - `make phpstan`  
-  _Notes:_ The old `NsfwModerationAction` and `NsfwSensitiveAction` are replaced. Review findings are not configurable (determined by trust-tier matrix). Sensitive findings have two separate configs: album action and no-album fallback.
+  _Notes:_ Review findings are not configurable (determined by trust-tier matrix). Sensitive findings have two separate configs: album action and no-album fallback.
 
-- [ ] T-045-07 – Create migration: add `nsfw_scan_status`, `nsfw_visibility`, and `upload_trust_level` to `photos` table (FR-045-12, FR-045-13, FR-045-14).  
+- [ ] T-045-07 – Create migration: add `nsfw_status` and `upload_trust_level` to `photos` table (FR-045-13, FR-045-14).  
   _Intent:_ Migration adds:
-  - `nsfw_scan_status` (nullable string, after `face_scan_status`) — pending/completed/failed.
-  - `nsfw_visibility` (nullable string, default null) — visible/blocked/review.
+  - `nsfw_status` (nullable string, after `face_scan_status`) — pending/failed/review/visible. Single column replacing both `nsfw_scan_status` and `nsfw_visibility`.
   - `upload_trust_level` (nullable string, default null) — snapshots the uploading user's trust level at upload time (Q-045-01 → Option B).
-  Down migration drops all three columns.  
+  Down migration drops both columns.  
   _Verification commands:_  
   - `php artisan test` (migration runs on test DB)  
   - `make phpstan`
@@ -64,19 +63,21 @@ _Last updated: 2026-06-22_
   - `php artisan test`  
   - `make phpstan`
 
-- [ ] T-045-09 – Create config migration: 7 NSFW config keys (FR-045-03, FR-045-04, FR-045-06, FR-045-08, FR-045-15, NFR-045-04).  
+- [ ] T-045-09 – Create config migration: 9 NSFW config keys (FR-045-03, FR-045-04, FR-045-06, FR-045-08, FR-045-15, NFR-045-04).  
   _Intent:_ Extends `BaseConfigMigration`. Keys:
   1. `ai_vision_nsfw_enabled` (bool, default `0`, cat `AI Vision`) — NSFW-specific toggle, mirrors `ai_vision_face_enabled`
   2. `nsfw_preset` (string, default `default`, cat `AI Vision`, type_range `default|strict|moderation|nude_female|permissive|social_media`)
   3. `nsfw_check_block_action` (string, default `block`, cat `AI Vision`, type_range `block|moderate`) — action for block findings on `check` users
   4. `nsfw_monitor_block_action` (string, default `moderate`, cat `AI Vision`, type_range `block|moderate`) — action for block findings on `monitor` users
-  5. `nsfw_sensitive_album_action` (string, default `mark_album`, cat `AI Vision`, type_range `mark_album|nothing`) — whether sensitive findings trigger album marking
-  6. `nsfw_sensitive_no_album_action` (string, default `skip`, cat `AI Vision`, type_range `skip|moderate`) — fallback when sensitive fires on unsorted photo
-  7. `nsfw_scan_trusted_users` (bool, default `0`, cat `AI Vision`)  
+  5. `nsfw_trust_but_verify_block_action` (string, default `moderate`, cat `AI Vision`, type_range `block|moderate`) — action for block findings on `trust_but_verify` users
+  6. `nsfw_trust_block_action` (string, default `approve`, cat `AI Vision`, type_range `block|moderate|approve`) — action for block findings on `trusted` users
+  7. `nsfw_sensitive_album_action` (string, default `mark_album`, cat `AI Vision`, type_range `mark_album|nothing`) — whether sensitive findings trigger album marking
+  8. `nsfw_sensitive_no_album_action` (string, default `skip`, cat `AI Vision`, type_range `skip|moderate`) — fallback when sensitive fires on unsorted photo
+  9. `nsfw_scan_trusted_users` (bool, default `0`, cat `AI Vision`)  
   _Verification commands:_  
   - `php artisan test`  
   - `make phpstan`  
-  _Notes:_ Block finding action is now per trust level: `check` defaults to `block` (strictest), `monitor` defaults to `moderate` (some trust). Removed from original spec: `nsfw_action_moderation` (review action hardcoded in matrix), `nsfw_auto_approve_trusted` (baked into matrix).
+  _Notes:_ Block finding action is configurable per trust level with progressively relaxed defaults: `check` → `block` (strictest), `monitor` → `moderate`, `trust_but_verify` → `moderate`, `trusted` → `approve` (most permissive). The `trusted` tier additionally supports `approve` to skip action entirely.
 
 ### I2 – Config & Service Layer
 
@@ -89,7 +90,7 @@ _Last updated: 2026-06-22_
 - [ ] T-045-11 – Create `NsfwDetectionService` (FR-045-01, API-045-03, S-045-28, S-045-29).  
   _Intent:_ `app/Services/Image/NsfwDetectionService.php`. Methods:
   - `dispatchPhoto(string $photo_id, ?string $album_id)` — reads photo path, builds payload, sends HTTP POST to NSFW service.
-  - `dispatchUnscannedPhotos(?string $album_id)` — queries photos with `nsfw_scan_status IS NULL`, batches dispatch.
+  - `dispatchUnscannedPhotos(?string $album_id)` — queries photos with `nsfw_status IS NULL` or `failed`, batches dispatch.
   - Preset handling: reads `nsfw_preset` from config; if `default`, omit `preset` field from payload.  
   Write unit tests for request building and preset omission.  
   _Verification commands:_  
@@ -100,7 +101,7 @@ _Last updated: 2026-06-22_
   _Intent:_ `app/Services/Image/NsfwActionService.php`. Core method:
   - `applyActions(Photo $photo, bool $should_block, bool $should_review, bool $is_sensitive)` — implements the trust-tier × finding-tier matrix:
     - Reads `$photo->upload_trust_level` (snapshotted at upload).
-    - **Block findings:** `check` → read `nsfw_check_block_action`: `block` = hard-delete photo, `moderate` = set review. `monitor` → read `nsfw_monitor_block_action`: same options. `trust_but_verify` → always moderate. `trusted` → approve (no action).
+    - **Block findings:** `check` → read `nsfw_check_block_action`: `block` = hard-delete photo, `moderate` = set review. `monitor` → read `nsfw_monitor_block_action`: same options. `trust_but_verify` → read `nsfw_trust_but_verify_block_action`: `block` or `moderate` (default `moderate`). `trusted` → read `nsfw_trust_block_action`: `block`, `moderate`, or `approve` (default `approve`).
     - **Review findings:** `check`/`monitor` → moderate. `trust_but_verify`/`trusted` → approve.
     - **Sensitive findings:** `check` → moderate photo + record for deferred album action (job dispatched at admin approval). `monitor`/`trust_but_verify`/`trusted` → read `nsfw_sensitive_album_action`: `mark_album` = dispatch `ApplyNsfwAlbumSensitivityJob` immediately. `nothing` = no action.
   - `logDetections(string $photo_id, array $block_detected, array $review_detected, array $sensitive_detected)` — creates `NsfwDetection` rows. Deduplicated by label+bbox.
@@ -117,14 +118,14 @@ _Last updated: 2026-06-22_
   - `make phpstan`
 
 - [ ] T-045-14 – Create `DispatchNsfwScanJob` (FR-045-01, S-045-28, S-045-29).  
-  _Intent:_ `app/Jobs/DispatchNsfwScanJob.php`. Accepts `photo_id`. Sets `nsfw_scan_status = pending`, calls `NsfwDetectionService::dispatchPhoto()`. 3 retries with exponential backoff. On final failure sets `nsfw_scan_status = failed`.  
+  _Intent:_ `app/Jobs/DispatchNsfwScanJob.php`. Accepts `photo_id`. Sets `nsfw_status = pending`, calls `NsfwDetectionService::dispatchPhoto()`. 3 retries with exponential backoff. On final failure sets `nsfw_status = failed`.  
   Write unit tests for job dispatch and failure handling.  
   _Verification commands:_  
   - `php artisan test --filter=DispatchNsfwScan`  
   - `make phpstan`
 
 - [ ] T-045-14b – Create `ApplyNsfwAlbumSensitivityJob` (FR-045-06, FR-045-17, S-045-14 to S-045-19, S-045-26, S-045-27, S-045-34, S-045-35).  
-  _Intent:_ `app/Jobs/ApplyNsfwAlbumSensitivityJob.php`. Accepts `photo_id`. Loads the photo and its direct parent album. Checks `is_recursive_nsfw` on album (via `AlbumBuilder::addVirtualIsRecursiveNSFW()`). If album exists and no ancestor is NSFW, sets `album.is_nsfw = true`. If no album (unsorted): reads `nsfw_sensitive_no_album_action` — `skip` logs warning, `moderate` sets `nsfw_visibility = review`, `is_validated = false`.  
+  _Intent:_ `app/Jobs/ApplyNsfwAlbumSensitivityJob.php`. Accepts `photo_id`. Loads the photo and its direct parent album. Checks `is_recursive_nsfw` on album (via `AlbumBuilder::addVirtualIsRecursiveNSFW()`). If album exists and no ancestor is NSFW, sets `album.is_nsfw = true`. If no album (unsorted): reads `nsfw_sensitive_no_album_action` — `skip` logs warning, `moderate` sets `nsfw_status = review`, `is_validated = false`.  
   Dispatched from two places:
   - **Auto-approval path** (callback time): `NsfwActionService::applyActions()` dispatches for `monitor`/`trust_but_verify`/`trusted` users when `nsfw_sensitive_album_action = mark_album`.
   - **Admin approval path**: `ModerationController::approve()` dispatches for `check` users when photo has `is_sensitive` detections and `nsfw_sensitive_album_action = mark_album`.  
@@ -158,7 +159,7 @@ _Last updated: 2026-06-22_
 
 - [ ] T-045-17 – Create `NsfwDetectionController` (FR-045-02, FR-045-11, API-045-01, API-045-02).  
   _Intent:_ `app/Http/Controllers/AiVision/NsfwDetectionController.php`. Methods:
-  - `results(NsfwDetectionResultsRequest $request)` — on error: set `nsfw_scan_status = failed`, log, return. On success: call `NsfwActionService::logDetections()` then `NsfwActionService::applyActions()`, set `nsfw_scan_status = completed`. Note: if block action deletes the photo, `nsfw_scan_status` is moot (row deleted).
+  - `results(NsfwDetectionResultsRequest $request)` — on error: set `nsfw_status = failed`, log, return. On success: call `NsfwActionService::logDetections()` then `NsfwActionService::applyActions()`. The action service sets `nsfw_status` to `review` or `visible` per the trust-tier matrix. Note: if block action deletes the photo, the row is gone.
   - `bulkScan(BulkNsfwScanRequest $request, NsfwDetectionService $service)` — call `service->dispatchUnscannedPhotos()`, return 202.  
   _Verification commands:_  
   - `make phpstan`
@@ -169,7 +170,7 @@ _Last updated: 2026-06-22_
   - `make phpstan`
 
 - [ ] T-045-19 – Update `ModerationController::approve()` to dispatch album sensitivity job (FR-045-17, S-045-34, S-045-35).  
-  _Intent:_ In `app/Http/Controllers/Admin/ModerationController.php`, after setting `is_validated = true` and `nsfw_visibility = visible` on approval:
+  _Intent:_ In `app/Http/Controllers/Admin/ModerationController.php`, after setting `is_validated = true` and `nsfw_status = visible` on approval:
   - Check if photo has `is_sensitive = true` detections in `nsfw_detections` AND `nsfw_sensitive_album_action = mark_album`.
   - If yes, dispatch `ApplyNsfwAlbumSensitivityJob` for the photo. The job handles the recursive NSFW check, album marking, and no-album fallback asynchronously.
   Write tests for approval with and without sensitive detections.  
@@ -189,14 +190,17 @@ _Last updated: 2026-06-22_
 - [ ] T-045-21 – Write feature tests for callback endpoint (S-045-04 to S-045-30).  
   _Intent:_ Feature test class `Tests\Feature_v2\Nsfw\NsfwDetectionResultsTest`. Test cases:
   1. `check` + `should_block` + `nsfw_check_block_action = block` → photo hard-deleted (S-045-04).
-  2. `check` + `should_block` + `nsfw_check_block_action = moderate` → `nsfw_visibility = review` (S-045-05).
-  3. `check` + `should_review` → `nsfw_visibility = review` (S-045-06).
+  2. `check` + `should_block` + `nsfw_check_block_action = moderate` → `nsfw_status = review` (S-045-05).
+  3. `check` + `should_review` → `nsfw_status = review` (S-045-06).
   4. `monitor` + `should_block` + `nsfw_monitor_block_action = block` → photo hard-deleted (S-045-07).
   5. `monitor` + `should_block` + `nsfw_monitor_block_action = moderate` → review (S-045-08).
   6. `monitor` + `should_review` → review (S-045-09).
-  7. `trust_but_verify` + `should_block` → review (always moderate) (S-045-10).
+  7. `trust_but_verify` + `should_block` + `nsfw_trust_but_verify_block_action = moderate` → review (S-045-10).
+  7b. `trust_but_verify` + `should_block` + `nsfw_trust_but_verify_block_action = block` → hard-deleted (S-045-10b).
   8. `trust_but_verify` + `should_review` → no action (S-045-11).
-  9. `trusted` + `should_block` → no action (S-045-12).
+  9. `trusted` + `should_block` + `nsfw_trust_block_action = approve` → no action (S-045-12).
+  9b. `trusted` + `should_block` + `nsfw_trust_block_action = moderate` → review (S-045-12b).
+  9c. `trusted` + `should_block` + `nsfw_trust_block_action = block` → hard-deleted (S-045-12c).
   10. `trusted` + `should_review` → no action (S-045-13).
   11. `check` + `is_sensitive` → moderate photo (S-045-14).
   12. `monitor` + `is_sensitive` + `mark_album` → album marked immediately (S-045-15).
@@ -204,7 +208,7 @@ _Last updated: 2026-06-22_
   14. `trust_but_verify` + `is_sensitive` + `mark_album` → album marked (S-045-17).
   15. `trusted` + `is_sensitive` + `mark_album` → album marked (S-045-18).
   16. Album already recursive NSFW + sensitive → album NOT re-marked (S-045-19).
-  17. Error status → `nsfw_scan_status = failed` (S-045-20).
+  17. Error status → `nsfw_status = failed` (S-045-20).
   18. Invalid API key → 403 (S-045-21).
   19. Bulk scan (default) → 202, `NULL` + `failed` queued (S-045-24).
   20. Bulk scan (`force = true`) → 202, all re-queued (S-045-25).
@@ -234,11 +238,10 @@ _Last updated: 2026-06-22_
   _Verification commands:_  
   - `npm run check`
 
-- [ ] T-045-25 – Update Moderation page: NSFW badge + blocked filter (FR-045-13, FR-045-16, UI-045-03, S-045-32, S-045-33).  
+- [ ] T-045-25 – Update Moderation page: NSFW status badge (FR-045-13, UI-045-03).  
   _Intent:_ 
-  - Update `ModerationResource` to include `nsfw_visibility` field.
-  - Update `ModerationController::list()` to exclude photos with `nsfw_visibility = blocked` by default. Accept `show_blocked` query parameter (boolean, default false) to include them.
-  - In `resources/js/views/admin/Moderation.vue`: display NSFW badge/tag on photos where `nsfw_visibility` is `blocked` or `review`. Add a toggle "Show blocked" (default off) that re-fetches with `show_blocked=true`. Badge text: "NSFW Review" for review, "NSFW Blocked" for blocked.  
+  - Update `ModerationResource` to include `nsfw_status` field.
+  - In `resources/js/views/admin/Moderation.vue`: display NSFW badge/tag on photos where `nsfw_status` is `review`. Badge text: "NSFW Review". No blocked filter needed — block actions hard-delete photos, so no blocked rows exist.  
   _Verification commands:_  
   - `npm run check`  
   - `npm run format`  
@@ -272,16 +275,16 @@ _Last updated: 2026-06-22_
 ### Key Changes from v1 Spec
 
 - **New trust tier**: `TRUST_BUT_VERIFY` added to `UserUploadTrustLevel` (4 tiers total).
-- **Block action = hard delete**: Block findings delete the photo entirely. Previous spec used `nsfw_visibility = blocked` to hide. Now `blocked` is a historical state — the photo is gone, but the value may appear if an admin switches from `block` to `moderate` config after some photos were processed.
-- **Trust-tier × finding-tier matrix**: Replaces the per-finding-tier config approach. The matrix is fixed (not configurable per cell) — three config settings modify it: `nsfw_check_block_action` (for check block findings), `nsfw_monitor_block_action` (for monitor block findings), and `nsfw_sensitive_album_action` (for album marking).
+- **Block action = hard delete**: Block findings delete the photo entirely. No `blocked` status — the photo row is gone.
+- **Trust-tier × finding-tier matrix**: Replaces the per-finding-tier config approach. Block findings are configurable per trust tier via four config settings: `nsfw_check_block_action` (default `block`), `nsfw_monitor_block_action` (default `moderate`), `nsfw_trust_but_verify_block_action` (default `moderate`), `nsfw_trust_block_action` (default `approve`; also supports `approve`). Album marking is controlled via `nsfw_sensitive_album_action`.
 - **Deferred album marking**: Sensitive findings for `check` users mark the album at approval time, not callback time. This prevents a moderated photo from prematurely flipping the album to NSFW.
 - **Recursive NSFW check**: Before marking an album NSFW, check `is_recursive_nsfw`. If any ancestor is already NSFW, skip marking (already effectively NSFW).
-- **Moderation page filtering**: Blocked findings hidden by default to avoid cluttering the moderation queue.
-- **Config keys**: 7 config keys. Block action split per trust level: `nsfw_check_block_action` (default `block`) and `nsfw_monitor_block_action` (default `moderate`). Removed from original spec: `nsfw_action_moderation` (review action hardcoded in matrix), `nsfw_auto_approve_trusted` (baked into matrix).
+- **Moderation page**: No blocked filter needed — block actions hard-delete photos. Moderation page shows `nsfw_status = review` entries.
+- **Config keys**: 9 config keys. Block action configurable per trust level: `nsfw_check_block_action` (default `block`), `nsfw_monitor_block_action` (default `moderate`), `nsfw_trust_but_verify_block_action` (default `moderate`), `nsfw_trust_block_action` (default `approve`).
 
 ### Resolved Questions
 - **Q-045-01 → B:** `upload_trust_level` snapshotted on `photos` at upload time. Now includes `trust_but_verify` value.
-- **Q-045-02 → Custom:** `nsfw_visibility` enum (visible/blocked/review) + `is_validated` combination. `blocked` now represents a hard-deleted state (photo row may not exist).
+- **Q-045-02 → Custom:** Single `nsfw_status` enum (pending/failed/review/visible) + `is_validated` combination. No `blocked` value — block actions hard-delete the photo row.
 - **Q-045-03 → Custom:** Configurable via `nsfw_sensitive_no_album_action` (skip/moderate).
 - **Q-045-04 → Subsumed** by Q-045-01. Pipe loads `$state->photo->owner` to snapshot trust level.
 - **Q-045-05 → A:** Separate URL (`AI_VISION_NSFW_URL`) and API key (`AI_VISION_NSFW_API_KEY`).
