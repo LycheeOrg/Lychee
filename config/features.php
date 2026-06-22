@@ -270,6 +270,17 @@ return [
 
 	/*
 	 |--------------------------------------------------------------------------
+	 | Use system temp directory for uploads
+	 |--------------------------------------------------------------------------
+	 |
+	 | When enabled, Lychee uses PHP's sys_get_temp_dir() for temporary upload
+	 | files. On shared hosting where that directory is not readable/writable,
+	 | set USE_SYSTEM_TEMP_DIR=false to use storage/tmp/uploads_parts instead.
+	 */
+	'use-system-temp-dir' => (bool) env('USE_SYSTEM_TEMP_DIR', true),
+
+	/*
+	 |--------------------------------------------------------------------------
 	 | Enable Request Caching
 	 |--------------------------------------------------------------------------
 	 |
