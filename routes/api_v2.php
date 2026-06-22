@@ -56,7 +56,7 @@ Route::get('/Album::albums', [Gallery\AlbumChildrenController::class, 'get'])->m
 Route::get('/Album::photos', [Gallery\AlbumPhotosController::class, 'get'])->middleware(['login_required:album', 'cache_control']);
 Route::get('/Album::tags', [Gallery\AlbumTagsController::class, 'get'])->middleware(['login_required:album', 'cache_control']);
 Route::get('/Album::getTargetListAlbums', [Gallery\AlbumController::class, 'getTargetListAlbums'])->middleware(['login_required:album', 'cache_control']);
-Route::post('/Album::unlock', [Gallery\AlbumController::class, 'unlock']);
+Route::post('/Album::unlock', [Gallery\AlbumController::class, 'unlock'])->middleware(['throttle:10,1']);
 Route::post('/Album', [Gallery\AlbumController::class, 'createAlbum']);
 Route::patch('/Album', [Gallery\AlbumController::class, 'updateAlbum']);
 Route::patch('/Album::rename', [Gallery\AlbumController::class, 'rename']);
