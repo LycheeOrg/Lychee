@@ -111,12 +111,14 @@ import UploadingLine from "@/components/forms/upload/UploadingLine.vue";
 import ScrollPanel from "primevue/scrollpanel";
 import ProgressBar from "primevue/progressbar";
 import AlbumService from "@/services/album-service";
+import { useRandomId } from "@/composables/useRandomId";
 import { useRoute } from "vue-router";
 import { storeToRefs } from "pinia";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 
 const togglableStore = useTogglablesStateStore();
 const { is_upload_visible, list_upload_files, upload_config: setup } = storeToRefs(togglableStore);
+const generateId = useRandomId();
 const route = useRoute();
 
 const albumId = ref(route.params.albumId ?? (null as string | null)) as Ref<string | null>;
@@ -150,7 +152,7 @@ function upload(event: Event) {
 	}
 
 	for (let i = 0; i < target.files.length; i++) {
-		list_upload_files.value.push({ uid: crypto.randomUUID(), file: target.files[i], status: "waiting" });
+		list_upload_files.value.push({ uid: generateId(), file: target.files[i], status: "waiting" });
 	}
 
 	// Start uploading chunks.
