@@ -1,6 +1,9 @@
 import AlbumService from "@/services/album-service";
+import { useRandomId } from "@/composables/useRandomId";
 import { type Ref } from "vue";
 import { type Uploadable } from "@/composables/album/uploadEvents";
+
+const generateId = useRandomId();
 
 export function getEntry(item: DataTransferItem): FileSystemEntry | null {
 	return item.webkitGetAsEntry?.() ?? (item as DataTransferItem & { getAsEntry?: () => FileSystemEntry | null }).getAsEntry?.() ?? null;
@@ -88,7 +91,7 @@ function processDirectory(
 				const filePromises = fileEntries.map((fe) =>
 					fileEntryToFile(fe).then((file) => {
 						list_upload_files.value.push({
-							uid: crypto.randomUUID(),
+							uid: generateId(),
 							file,
 							album_id: albumId,
 							albumTitle: dirEntry.name,
@@ -141,7 +144,7 @@ export function handleFolderDrop(
 	// Flat files go directly to the queue without an album_id override.
 	const flatFilePromises = fileEntries.map((fe) =>
 		fileEntryToFile(fe).then((file) => {
-			list_upload_files.value.push({ uid: crypto.randomUUID(), file, status: "waiting" });
+			list_upload_files.value.push({ uid: generateId(), file, status: "waiting" });
 		}),
 	);
 

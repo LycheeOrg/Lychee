@@ -70,8 +70,10 @@ import Dialog from "primevue/dialog";
 import { ref, watch, onUnmounted } from "vue";
 import { storeToRefs } from "pinia";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
+import { useRandomId } from "@/composables/useRandomId";
 import { trans } from "laravel-vue-i18n";
 const togglableStore = useTogglablesStateStore();
+const generateId = useRandomId();
 const { is_camera_capture_visible, is_upload_visible, list_upload_files } = storeToRefs(togglableStore);
 
 const videoEl = ref<HTMLVideoElement | null>(null);
@@ -176,7 +178,7 @@ function upload() {
 	const filename = `photo_${new Date().toISOString().replace(/[:.]/g, "-")}.jpg`;
 	const file = new File([capturedBlob.value], filename, { type: "image/jpeg" });
 
-	list_upload_files.value.push({ uid: crypto.randomUUID(), file, status: "waiting" });
+	list_upload_files.value.push({ uid: generateId(), file, status: "waiting" });
 	is_upload_visible.value = true;
 	is_camera_capture_visible.value = false;
 }

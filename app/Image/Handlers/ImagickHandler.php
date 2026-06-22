@@ -14,6 +14,7 @@ use App\Contracts\Image\StreamStats;
 use App\DTO\ImageDimension;
 use App\Exceptions\ImageProcessingException;
 use App\Exceptions\MediaFileOperationException;
+use App\Facades\Helpers;
 use App\Image\Files\FlysystemFile;
 use App\Image\Files\InMemoryBuffer;
 use App\Image\Files\NativeLocalFile;
@@ -105,7 +106,7 @@ class ImagickHandler extends BaseImageHandler
 				// .pdf path so Ghostscript recognises the format by extension. The outer
 				// try/finally guarantees the .pdf temp file is cleaned up even if fopen(),
 				// stream_copy_to_stream(), or readImage() throws.
-				$tmp_base = tempnam(sys_get_temp_dir(), 'lychee_');
+				$tmp_base = tempnam(Helpers::getTmpDir(), 'lychee_');
 				$tmp_path = $tmp_base . '.pdf';
 				rename($tmp_base, $tmp_path);
 				$pdf_path = $tmp_path;

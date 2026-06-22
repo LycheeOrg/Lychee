@@ -290,8 +290,8 @@ class PhotoPolicy extends BasePolicy
 		$visibility = $config_manager->getValueAsEnum('photos_star_visibility', PhotoHighlightVisibilityType::class);
 
 		return match ($visibility) {
-			PhotoHighlightVisibilityType::ANONYMOUS => true,
-			PhotoHighlightVisibilityType::AUTHENTICATED => $user !== null,
+			PhotoHighlightVisibilityType::ANONYMOUS => $this->canSee($user, $photo),
+			PhotoHighlightVisibilityType::AUTHENTICATED => $user !== null && $this->canSee($user, $photo),
 			PhotoHighlightVisibilityType::EDITOR => $user !== null && $this->canEdit($user, $photo),
 			default => false,
 		};

@@ -48,7 +48,7 @@ class SetPhotosHighlightedRequest extends BaseApiRequest implements HasPhotos
 		/** @var array<int,string> $photos_ids */
 		$photos_ids = $values[RequestAttribute::PHOTO_IDS_ATTRIBUTE];
 		$this->photos = Photo::query()
-			->with(['size_variants', 'albums'])
+			->with(['size_variants', 'albums', 'albums.access_permissions'])
 			->findOrFail($photos_ids);
 		$this->is_highlighted = static::toBoolean($values[RequestAttribute::IS_HIGHLIGHTED_ATTRIBUTE]);
 	}

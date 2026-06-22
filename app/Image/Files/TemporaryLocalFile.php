@@ -9,6 +9,7 @@
 namespace App\Image\Files;
 
 use App\Exceptions\MediaFileOperationException;
+use App\Facades\Helpers;
 
 /**
  * Class TemporaryLocalFile.
@@ -53,7 +54,7 @@ class TemporaryLocalFile extends NativeLocalFile
 	 */
 	protected function getFileBasePath(): string
 	{
-		return sys_get_temp_dir();
+		return Helpers::getTmpDir();
 	}
 
 	/**
