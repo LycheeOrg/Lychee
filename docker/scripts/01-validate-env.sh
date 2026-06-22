@@ -139,29 +139,6 @@ if [ -n "${REDIS_HOST:-}" ] || [ -n "${REDIS_PASSWORD:-}" ] || [ -n "${REDIS_PAS
 fi
 
 ###########################
-#   VALIDATE KEYGEN KEY   #
-###########################
-
-# Check if KEYGEN_API_KEY exists, with fallback mechanisms
-if [ -z "${KEYGEN_API_KEY:-}" ]; then
-  # Check if KEYGEN_API_KEY_FILE is set and load from file
-  if [ -n "${KEYGEN_API_KEY_FILE:-}" ]; then
-    if [ -f "$KEYGEN_API_KEY_FILE" ]; then
-      KEYGEN_API_KEY=$(cat "$KEYGEN_API_KEY_FILE")
-      export KEYGEN_API_KEY
-      echo "✅ Loaded KEYGEN_API_KEY from file: ${KEYGEN_API_KEY_FILE}"
-    else
-      echo "❌ ERROR: KEYGEN_API_KEY_FILE is set but file does not exist: ${KEYGEN_API_KEY_FILE}"
-      exit 1
-    fi
-  # Fallback to /app/.env if it exists
-  elif [ -f "/app/.env" ]; then
-    KEYGEN_API_KEY=$(grep "^KEYGEN_API_KEY=" /app/.env | cut -d= -f2- | tr -d '"' | tr -d "'")
-    export KEYGEN_API_KEY
-  fi
-fi
-
-###########################
 #     ADDITIONAL ENV      #
 ###########################
 
