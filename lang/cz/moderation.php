@@ -18,4 +18,6 @@ return [
     'col_owner' => 'Vlastník',
     'col_album' => 'Album',
     'col_uploaded' => 'Nahráno',
+    'col_nsfw' => 'NSFW',
+    'nsfw_review' => 'NSFW Review',
 ];

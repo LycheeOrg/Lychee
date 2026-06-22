@@ -18,4 +18,6 @@ return [
     'col_owner' => 'Owner',
     'col_album' => 'Album',
     'col_uploaded' => 'Uploaded',
+    'col_nsfw' => 'NSFW',
+    'nsfw_review' => 'NSFW Review',
 ];
