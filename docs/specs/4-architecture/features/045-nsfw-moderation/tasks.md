@@ -1,7 +1,8 @@
 # Feature 045 Tasks – NSFW Detection & Moderation
 
 _Status: Draft_  
-_Last updated: 2026-06-22_
+_Last updated: 2026-06-22_  
+_Revision: Q-045-13 through Q-045-19 incorporated_
 
 > Keep this checklist aligned with the feature plan increments. Stage tests before implementation, record verification commands beside each task, and prefer bite-sized entries (≤90 minutes).
 > **Mark tasks `[x]` immediately** after each one passes verification—do not batch completions.
@@ -57,8 +58,8 @@ _Last updated: 2026-06-22_
   - `php artisan test` (migration runs on test DB)  
   - `make phpstan`
 
-- [ ] T-045-08 – Create migration: `nsfw_detections` table (FR-045-09, DO-045-01).  
-  _Intent:_ Table with columns: `id` (bigIncrements), `photo_id` (string FK to photos.id, cascade delete), `label` (string), `confidence` (float), `bbox_x` (integer), `bbox_y` (integer), `bbox_width` (integer), `bbox_height` (integer), `area_pixels` (integer, nullable), `area_ratio` (float, nullable), `is_block` (boolean, default false), `is_review` (boolean, default false), `is_sensitive` (boolean, default false), `created_at` (timestamp). No `updated_at`. A detection appearing in multiple arrays (e.g., both `block_detected` and `sensitive_detected`) gets one row with multiple booleans set to true. Cascade delete ensures detections are removed when a photo is hard-deleted (block action).  
+- [ ] T-045-08 – Create migration: `nsfw_detections` table (FR-045-09, DO-045-01, Q-045-19).  
+  _Intent:_ Table with columns: `id` (bigIncrements), `photo_id` (string FK to photos.id), `label` (string), `confidence` (float), `bbox_x` (integer), `bbox_y` (integer), `bbox_width` (integer), `bbox_height` (integer), `area_pixels` (integer, nullable), `area_ratio` (float, nullable), `is_block` (boolean, default false), `is_review` (boolean, default false), `is_sensitive` (boolean, default false), `created_at` (timestamp). No `updated_at`. FK: `$table->foreign('photo_id')->references('id')->on('photos')->cascadeOnDelete()` — matching the `faces` table pattern (Q-045-19). A detection appearing in multiple arrays (e.g., both `block_detected` and `sensitive_detected`) gets one row with multiple booleans set to true.  
   _Verification commands:_  
   - `php artisan test`  
   - `make phpstan`
@@ -100,13 +101,13 @@ _Last updated: 2026-06-22_
   - `php artisan test --filter=NsfwDetectionService`  
   - `make phpstan`
 
-- [ ] T-045-12 – Create `NsfwActionService` (FR-045-04, FR-045-05, FR-045-06, FR-045-07, FR-045-08, FR-045-13, FR-045-17, FR-045-19).  
+- [ ] T-045-12 – Create `NsfwActionService` (FR-045-04, FR-045-05, FR-045-06, FR-045-07, FR-045-08, FR-045-13, FR-045-17, FR-045-19, Q-045-13, Q-045-14).  
   _Intent:_ `app/Services/Image/NsfwActionService.php`. Core method:
   - `applyActions(Photo $photo, bool $should_block, bool $should_review, bool $is_sensitive)` — implements the trust-tier × finding-tier matrix:
     - Reads `$photo->upload_trust_level` (snapshotted at upload).
-    - **Block findings:** `check` → read `nsfw_check_block_action`: `block` = hard-delete photo, `moderate` = set review. `monitor` → read `nsfw_monitor_block_action`: same options. `trust_but_verify` → read `nsfw_trust_but_verify_block_action`: `block` or `moderate` (default `moderate`). `trusted` → read `nsfw_trust_block_action`: `block`, `moderate`, or `approve` (default `approve`).
+    - **Block findings:** `check` → read `nsfw_check_block_action`: `block` = hard-delete photo via `Delete::forceDeletePhoto()` (Q-045-14 → A), `moderate` = set review. `monitor` → read `nsfw_monitor_block_action`: same options. `trust_but_verify` → read `nsfw_trust_but_verify_block_action`: `block` or `moderate` (default `moderate`). `trusted` → read `nsfw_trust_block_action`: `block`, `moderate`, or `approve` (default `approve`).
     - **Review findings:** `check`/`monitor` → moderate. `trust_but_verify`/`trusted` → approve.
-    - **Sensitive findings:** `check` → moderate photo + record for deferred album action (job dispatched at admin approval). `monitor`/`trust_but_verify`/`trusted` → read `nsfw_sensitive_album_action`: `mark_album` = dispatch `ApplyNsfwAlbumSensitivityJob` immediately. `nothing` = no action.
+    - **Sensitive findings:** `check` → moderate photo + record for deferred album action (job dispatched at admin approval). `monitor`/`trust_but_verify`/`trusted` → read `nsfw_sensitive_album_action`: `mark_album` = dispatch `ApplyNsfwAlbumSensitivityJob` immediately (job iterates all associated albums per Q-045-13 → A). `nothing` = no action.
     - **Hide-on-scan restore (FR-045-19):** After applying all actions, if the photo was NOT hard-deleted and was NOT moderated (i.e., no block or review findings triggered moderation), and the photo's `upload_trust_level` is not `check`: set `is_validated = true`. No need to check the hide-on-scan config at callback time — when hide-on-scan was off, `is_validated` is already `true` and the assignment is a no-op; when hide-on-scan was on, this restores visibility. If block or review findings caused moderation, `is_validated` remains `false` (normal matrix behaviour). `check` users are excluded because their `is_validated` is managed by the trust-level moderation system (`SetUploadValidated`).
   - `logDetections(string $photo_id, array $block_detected, array $review_detected, array $sensitive_detected)` — creates `NsfwDetection` rows. Deduplicated by photo_id+label+bbox.
   Write unit tests covering all matrix combinations (S-045-04 to S-045-19, S-045-26, S-045-27) and hide-on-scan restore (S-045-39 to S-045-43).  
@@ -143,28 +144,39 @@ _Last updated: 2026-06-22_
   - `php artisan test --filter=DispatchNsfwScan`  
   - `make phpstan`
 
-- [ ] T-045-14b – Create `ApplyNsfwAlbumSensitivityJob` (FR-045-06, FR-045-17, S-045-14 to S-045-19, S-045-26, S-045-27, S-045-34, S-045-35).  
-  _Intent:_ `app/Jobs/ApplyNsfwAlbumSensitivityJob.php`. Accepts `photo_id`. Loads the photo and its direct parent album. Checks `is_recursive_nsfw` on album (via `AlbumBuilder::addVirtualIsRecursiveNSFW()`). If album exists and no ancestor is NSFW, sets `album.is_nsfw = true`. If no album (unsorted): reads `nsfw_sensitive_no_album_action` — `skip` logs warning, `moderate` sets `nsfw_status = review`, `is_validated = false`.  
+- [ ] T-045-14b – Create `ApplyNsfwAlbumSensitivityJob` (FR-045-06, FR-045-17, S-045-14 to S-045-19, S-045-26, S-045-27, S-045-34, S-045-35, Q-045-13).  
+  _Intent:_ `app/Jobs/ApplyNsfwAlbumSensitivityJob.php`. Accepts `photo_id`. Loads the photo and **all** associated albums via `$photo->albums` (many-to-many `photo_album` pivot — Q-045-13 → A). For each album, checks `is_recursive_nsfw` (via `AlbumBuilder::addVirtualIsRecursiveNSFW()`); if no ancestor is NSFW, sets `album.is_nsfw = true`. If photo has no albums (`$photo->albums->isEmpty()` — unsorted): reads `nsfw_sensitive_no_album_action` — `skip` logs warning, `moderate` sets `nsfw_status = review`, `is_validated = false`.  
   Dispatched from two places:
   - **Auto-approval path** (callback time): `NsfwActionService::applyActions()` dispatches for `monitor`/`trust_but_verify`/`trusted` users when `nsfw_sensitive_album_action = mark_album`.
   - **Admin approval path**: `ModerationController::approve()` dispatches for `check` users when photo has `is_sensitive` detections and `nsfw_sensitive_album_action = mark_album`.  
-  Write unit tests for: album marking, recursive NSFW skip, no-album fallback (skip and moderate).  
+  Write unit tests for: multi-album marking, recursive NSFW skip, no-album fallback (skip and moderate).  
   _Verification commands:_  
   - `php artisan test --filter=ApplyNsfwAlbum`  
   - `make phpstan`
 
+- [ ] T-045-14c – Add `forceDeletePhoto()` to `Actions\Photo\Delete` (FR-045-04, Q-045-14).  
+  _Intent:_ In `app/Actions/Photo/Delete.php`, add method `forceDeletePhoto(string $photo_id): void`. Removes the photo unconditionally from all albums: (1) calls `PurchasableService::deleteMulitplePhotoPurchasables()`, (2) dispatches `PhotoWillBeDeleted` events, (3) builds `PhotosToBeDeletedDTO` with `force_delete_photo_ids: [$photo_id]`, `soft_delete_photo_ids: []`, `album_ids: []`, (4) calls `executeDelete()`, (5) dispatches `PhotoDeleted` for each formerly-associated album. Bypasses the album-context requirement of `Delete::do()`.  
+  _Verification commands:_  
+  - `php artisan test --filter=Delete`  
+  - `make phpstan`
+
+- [ ] T-045-14d – Update `PhotosToBeDeletedDTO::forceDelete()` for `nsfw_detections` cleanup (Q-045-19).  
+  _Intent:_ In `app/DTO/Delete/PhotosToBeDeletedDTO.php`, add `DB::table('nsfw_detections')->whereIn('photo_id', $chunk->all())->delete()` in the `forceDelete()` method's chunked loop, alongside the existing `size_variants`, `statistics`, `palettes`, and `photo_album` cleanup. This ensures `nsfw_detections` rows are explicitly removed during photo deletion, not relying solely on FK cascade.  
+  _Verification commands:_  
+  - `make phpstan`
+
 ### I4 – Upload Pipeline Pipe
 
-- [ ] T-045-15 – Create `AutoScanNsfwOnUpload` pipe (FR-045-01, FR-045-08, FR-045-14, FR-045-19, S-045-01 to S-045-03, S-045-22, S-045-23, S-045-31, S-045-39 to S-045-43).  
-  _Intent:_ `app/Actions/Photo/Pipes/Standalone/AutoScanNsfwOnUpload.php`. Implements `StandalonePipe`. After `$state = $next($state)`:
-  1. `$state->photo->isPhoto()` — skip non-photos.
-  2. Snapshot the uploader's trust level: `$state->photo->upload_trust_level = $state->upload_trust_level` (from the DTO, which carries the authenticated uploader's trust level — NOT `$state->photo->owner`, which is the album owner and may differ from the uploader).
-  3. `ai_vision_enabled` config — skip if global AI Vision is disabled.
-  4. `ai_vision_nsfw_enabled` config — skip if NSFW classification is disabled.
-  5. Trust level check using the just-snapshotted value: `check`/`monitor`/`trust_but_verify` → always dispatch. `trusted` → dispatch only if `nsfw_scan_trusted_users = true`.
-  6. **Hide-on-scan (FR-045-19):** If scan will be dispatched, check the hide-on-scan config for the trust level: `monitor` → `nsfw_monitor_hide_on_scan`, `trust_but_verify` → `nsfw_trust_but_verify_hide_on_scan`, `trusted` → `nsfw_trust_hide_on_scan`. If true, set `$state->photo->is_validated = false` to hide the photo until the classifier responds. (`check` users are already hidden via `SetUploadValidated`, so this step is skipped for them.)
-  7. Save the photo (persist `upload_trust_level` and potentially updated `is_validated`).
-  8. Dispatches `DispatchNsfwScanJob`.
+- [ ] T-045-15 – Create `AutoScanNsfwOnUpload` pipe (FR-045-01, FR-045-08, FR-045-14, FR-045-19, S-045-01 to S-045-03, S-045-22, S-045-23, S-045-31, S-045-39 to S-045-43, Q-045-18).  
+  _Intent:_ `app/Actions/Photo/Pipes/Standalone/AutoScanNsfwOnUpload.php`. Implements `StandalonePipe`. Execution ordering (Q-045-18 → B): set model attributes **before** `$next()`, dispatch scan job **after**.
+  **Before `$next()`:**
+  1. Snapshot the uploader's trust level on the in-memory model: `$state->photo->upload_trust_level = $state->upload_trust_level` (from the DTO — NOT `$state->photo->owner`).
+  2. Determine if scan will be dispatched: check `ai_vision_enabled`, `ai_vision_nsfw_enabled`, and trust-level gating (`check`/`monitor`/`trust_but_verify` → always; `trusted` → only if `nsfw_scan_trusted_users = true`).
+  3. **Hide-on-scan (FR-045-19):** If scan will be dispatched, check the hide-on-scan config for the trust level: `monitor` → `nsfw_monitor_hide_on_scan`, `trust_but_verify` → `nsfw_trust_but_verify_hide_on_scan`, `trusted` → `nsfw_trust_hide_on_scan`. If true, set `$state->photo->is_validated = false`. (`check` users are already hidden via `SetUploadValidated`, so this step is skipped for them.)
+  4. Call `$state = $next($state)` — pipeline persists the photo with `upload_trust_level` and `is_validated` already set. No extra `save()` needed, no visibility gap.
+  **After `$next()`:**
+  5. `$state->photo->isPhoto()` — skip non-photos.
+  6. If scan should be dispatched (determined in step 2), dispatch `DispatchNsfwScanJob`.
   Register in `Create` action's standalone pipe chain after `AutoScanFacesOnUpload`.  
   Write unit tests for all trust level branches (4 tiers) and hide-on-scan branches.  
   _Verification commands:_  
@@ -190,20 +202,23 @@ _Last updated: 2026-06-22_
   _Verification commands:_  
   - `make phpstan`
 
-- [ ] T-045-19 – Update `ModerationController::approve()` to dispatch album sensitivity job (FR-045-17, S-045-34, S-045-35).  
-  _Intent:_ In `app/Http/Controllers/Admin/ModerationController.php`, after setting `is_validated = true` and `nsfw_status = visible` on approval:
-  - Check if photo has `is_sensitive = true` detections in `nsfw_detections` AND `nsfw_sensitive_album_action = mark_album`.
-  - If yes, dispatch `ApplyNsfwAlbumSensitivityJob` for the photo. The job handles the recursive NSFW check, album marking, and no-album fallback asynchronously.
-  Write tests for approval with and without sensitive detections.  
+- [ ] T-045-19 – Update `ModerationController::approve()` for NSFW approval logic (FR-045-17, S-045-34, S-045-35, Q-045-16).  
+  _Intent:_ In `app/Http/Controllers/Admin/ModerationController.php`, use a **hybrid two-pass approach** (Q-045-16 → B):
+  **Pass 1 (bulk):** Keep the existing `Photo::whereIn('id', $chunk)->update(['is_validated' => true])` pattern — efficient for the common case (non-NSFW photos).
+  **Pass 2 (NSFW subset):** After the bulk update, separately query for photos among the approved IDs that had `nsfw_status = review`:
+  - Update their `nsfw_status` to `visible`.
+  - For each photo with `is_sensitive = true` detections in `nsfw_detections` where `nsfw_sensitive_album_action = mark_album`, dispatch `ApplyNsfwAlbumSensitivityJob`. The job handles the recursive NSFW check, multi-album marking (Q-045-13), and no-album fallback asynchronously.
+  Write tests for: approval with and without sensitive detections, approval of mixed NSFW + non-NSFW batch.  
   _Verification commands:_  
   - `php artisan test --filter=Moderation`  
   - `make phpstan`
 
-- [ ] T-045-20 – Register routes in `routes/api_v2.php` (API-045-01, API-045-02).  
-  _Intent:_ Add routes:
+- [ ] T-045-20 – Register routes and CSRF exemption (API-045-01, API-045-02, Q-045-15).  
+  _Intent:_ Add routes in `routes/api_v2.php`:
   - `POST /NsfwDetection/results` → `NsfwDetectionController::results()` (public, API-key auth only)
   - `POST /NsfwDetection/bulk-scan` → `NsfwDetectionController::bulkScan()` (admin middleware)  
   Register inside the existing `['feature:ai-vision', 'feature:v8']` middleware group. Add `support` middleware (basic SE gating, not `support:pro`) to the NSFW routes.  
+  Add `'/api/v2/NsfwDetection/results'` to `VerifyCsrfToken::$except` (Q-045-15) — matching the face detection callback pattern at line 30. Without this, the external classifier receives 419 responses.  
   _Verification commands:_  
   - `php artisan route:list --path=NsfwDetection`  
   - `make phpstan`
@@ -329,12 +344,12 @@ _Last updated: 2026-06-22_
 ### Key Changes from v1 Spec
 
 - **New trust tier**: `TRUST_BUT_VERIFY` added to `UserUploadTrustLevel` (4 tiers total).
-- **Block action = hard delete**: Block findings delete the photo entirely. No `blocked` status — the photo row is gone.
+- **Block action = hard delete**: Block findings delete the photo via `Delete::forceDeletePhoto()` — row, files, thumbnails removed from all albums. No `blocked` status — the photo row is gone.
 - **Trust-tier × finding-tier matrix**: Replaces the per-finding-tier config approach. Block findings are configurable per trust tier via four config settings: `nsfw_check_block_action` (default `block`), `nsfw_monitor_block_action` (default `moderate`), `nsfw_trust_but_verify_block_action` (default `moderate`), `nsfw_trust_block_action` (default `approve`; also supports `approve`). Album marking is controlled via `nsfw_sensitive_album_action`.
 - **Deferred album marking**: Sensitive findings for `check` users mark the album at approval time, not callback time. This prevents a moderated photo from prematurely flipping the album to NSFW.
-- **Recursive NSFW check**: Before marking an album NSFW, check `is_recursive_nsfw`. If any ancestor is already NSFW, skip marking (already effectively NSFW).
+- **Multi-album marking**: Photos use many-to-many `photo_album` pivot (Q-045-13). Sensitive action marks **all** associated albums, not just one. Before marking each album, check `is_recursive_nsfw`. If any ancestor is already NSFW, skip marking (already effectively NSFW).
 - **Moderation page**: No blocked filter needed — block actions hard-delete photos. Moderation page shows `nsfw_status = review` entries.
-- **Config keys**: 9 config keys. Block action configurable per trust level: `nsfw_check_block_action` (default `block`), `nsfw_monitor_block_action` (default `moderate`), `nsfw_trust_but_verify_block_action` (default `moderate`), `nsfw_trust_block_action` (default `approve`).
+- **Config keys**: 12 config keys (9 original + 3 hide-on-scan). Block action configurable per trust level: `nsfw_check_block_action` (default `block`), `nsfw_monitor_block_action` (default `moderate`), `nsfw_trust_but_verify_block_action` (default `moderate`), `nsfw_trust_block_action` (default `approve`).
 
 ### Resolved Questions
 - **Q-045-01 → B:** `upload_trust_level` snapshotted on `photos` at upload time from `$state->upload_trust_level` (the uploader's trust level, not the photo owner's). Now includes `trust_but_verify` value.
@@ -344,16 +359,26 @@ _Last updated: 2026-06-22_
 - **Q-045-05 → A:** Separate URL (`AI_VISION_NSFW_URL`) and API key (`AI_VISION_NSFW_API_KEY`).
 - **Q-045-06 → A (modified):** Store individual detections but only from `block_detected`/`review_detected`/`sensitive_detected`. `all_detected` NOT persisted.
 - **Q-045-07 → A:** Global preset only in v1.
-- **Q-045-08 → A:** Direct album only marked sensitive. Now with recursive NSFW check.
+- **Q-045-08 → A:** Direct album only marked sensitive. Now with recursive NSFW check. _(Superseded by Q-045-13 → A: mark **all** associated albums, not just one.)_
 - **Q-045-09 → B:** Bulk scan includes `NULL` + `failed` by default; `force` param re-scans `completed`.
 - **Q-045-10 → B:** NSFW badge/tag in Moderation view. Blocked hidden by default.
 - **Q-045-11 → Custom:** Config category is `AI Vision`.
 - **Q-045-12 → Custom:** Simple SE gating (`support` middleware, not `support:pro`).
+- **Q-045-13 → A:** Photos use a many-to-many `photo_album` pivot — no single `album_id` FK. `ApplyNsfwAlbumSensitivityJob` iterates all associated albums. "Unsorted" = `$photo->albums->isEmpty()`. Affects T-045-12, T-045-14b.
+- **Q-045-14 → A:** Block action hard-delete uses a new `Delete::forceDeletePhoto()` method, reusing pivot/purchasable/event/file cleanup. Bypasses album-context requirement. Affects T-045-12, T-045-14c.
+- **Q-045-15:** CSRF exemption for callback endpoint — add to `VerifyCsrfToken::$except`, matching face detection pattern. Affects T-045-20.
+- **Q-045-16 → B:** `ModerationController::approve()` uses hybrid two-pass: bulk `is_validated = true` first, then post-process NSFW subset (`nsfw_status → visible`, dispatch album jobs). Affects T-045-19.
+- **Q-045-17:** No fix needed — spec DSL already had `[BLOCK, MODERATE, APPROVE]` for `NsfwBlockFindingAction`.
+- **Q-045-18 → B:** `AutoScanNsfwOnUpload` sets `upload_trust_level` and `is_validated` on in-memory model before `$next()`, dispatches scan after. No visibility gap, no extra `save()`. Affects T-045-15.
+- **Q-045-19:** `nsfw_detections` FK uses `cascadeOnDelete` + `PhotosToBeDeletedDTO::forceDelete()` explicitly deletes rows. Affects T-045-08, T-045-14d.
 
 ### Implementation Notes
-- All 12 open questions remain resolved. No new questions introduced.
+- All 19 open questions resolved (Q-045-01 through Q-045-19).
 - Trust-tier matrix is the core decision logic — all action logic flows through `NsfwActionService::applyActions()`.
-- Hard-delete on block means `nsfw_detections` rows cascade-delete with the photo. The action is logged via telemetry before deletion.
+- Hard-delete on block uses `Delete::forceDeletePhoto()` (Q-045-14) — reuses existing pivot/purchasable/event/file cleanup infrastructure. `nsfw_detections` rows cleaned up both by `PhotosToBeDeletedDTO` and FK cascade (Q-045-19).
+- Photos use many-to-many album relationship via `photo_album` pivot (Q-045-13). Album marking iterates `$photo->albums`, not a single `album_id` FK. "Unsorted" = `$photo->albums->isEmpty()`.
+- `AutoScanNsfwOnUpload` sets model attributes before `$next()` and dispatches after (Q-045-18) — differs from `AutoScanFacesOnUpload` pattern because hide-on-scan requires `is_validated` set before persistence.
+- `ModerationController::approve()` uses hybrid two-pass approach (Q-045-16) — bulk update for common case, then NSFW subset post-processing.
 - `SetUploadValidated` already handles `trust_but_verify` correctly (anything != CHECK is validated), but a test should confirm this.
 - The `is_recursive_nsfw` virtual column on `AlbumBuilder` provides the ancestor NSFW check — use `Album::query()->addVirtualIsRecursiveNSFW()->find($albumId)` to load it.
 - **NSFW Config proxy** (T-045-10b): Pure pass-through — Lychee does not validate, transform, or cache the upstream response. The controller follows the same `Http::withHeaders(['X-API-Key' => ...])` pattern as `FacialRecognitionService`. The frontend page is read-only (no editing of upstream config from Lychee).

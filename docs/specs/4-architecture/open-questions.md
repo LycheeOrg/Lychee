@@ -19,6 +19,13 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 | Q-043-16 | 043 | Low | Translation key placement: which new strings belong in `webshop.php` vs `dialogs.php`? | Open | 2026-05-31 | 2026-05-31 |
 | Q-043-17 | 043 | Medium | `is_print` must be exposed in basket GET response (via `OrderItemResource`) before frontend `hasPrints` computed can work — cross-increment dependency not captured in tasks | Open | 2026-05-31 | 2026-05-31 |
 | Q-040-01 | 040 – Disable Request Caching | Medium | Analysis Gate never formally signed off: plan.md gate checklist has unchecked boxes yet I1–I4 tasks are marked complete; gate must be ticked before implementation is considered verified | Open | 2026-05-31 | 2026-05-31 |
+| ~~Q-045-13~~ | 045 – NSFW Moderation | High | Photo-Album is many-to-many — spec assumes `album_id` FK on photos but photos use a `photo_album` pivot table. "Direct parent album" is ambiguous when a photo is in multiple albums. | Resolved (A – mark all associated albums) | 2026-06-22 | 2026-06-22 |
+| ~~Q-045-14~~ | 045 – NSFW Moderation | High | Block action hard-delete mechanism — spec says "permanently removed" but doesn't specify whether to reuse the existing `Delete` action (handles pivot cleanup, purchasable cleanup, events) or use a simpler raw delete. | Resolved (A – reuse Delete with dedicated force-delete method) | 2026-06-22 | 2026-06-22 |
+| ~~Q-045-15~~ | 045 – NSFW Moderation | Medium | CSRF exemption for `POST /api/v2/NsfwDetection/results` callback — face detection callback is listed in `VerifyCsrfToken::$except` but the spec/plan don't mention adding the NSFW callback. | Resolved (not an issue — follows face detection pattern, add to CSRF exclusions) | 2026-06-22 | 2026-06-22 |
+| ~~Q-045-16~~ | 045 – NSFW Moderation | High | `ModerationController::approve()` is a bulk update — adding per-photo sensitive-detection checks and album-marking job dispatch requires loading detections per photo and iterating, breaking the current chunked `whereIn` pattern. | Resolved (B – hybrid: bulk update then post-process NSFW subset) | 2026-06-22 | 2026-06-22 |
+| ~~Q-045-17~~ | 045 – NSFW Moderation | Medium | `NsfwBlockFindingAction` enum inconsistency — DO-045-03 and the matrix list `APPROVE` as a valid value, but the spec DSL `values` array only lists `[BLOCK, MODERATE]`. The enum needs `APPROVE` to support `nsfw_trust_block_action`. | Resolved (fix spec DSL to include APPROVE) | 2026-06-22 | 2026-06-22 |
+| ~~Q-045-18~~ | 045 – NSFW Moderation | Medium | Pipe execution ordering — `AutoScanFacesOnUpload` calls `$next()` first (photo is persisted), then dispatches the scan job. Spec doesn't clarify whether `AutoScanNsfwOnUpload` should follow the same pattern or run before `$next()`. Hide-on-scan `is_validated = false` must be set before persistence. | Resolved (B – set values before `$next()`, dispatch after) | 2026-06-22 | 2026-06-22 |
+| ~~Q-045-19~~ | 045 – NSFW Moderation | Medium | `nsfw_detections` FK cascade policy not specified — the `faces` table uses `cascadeOnDelete` on `photo_id`. Should `nsfw_detections` follow the same pattern? Spec says "cascade-deleted with the photo" but only in prose, not in migration requirements. | Resolved (update PhotosToBeDeletedDTO + cascadeOnDelete FK) | 2026-06-22 | 2026-06-22 |
 | ~~Q-045-01~~ | 045 – NSFW Moderation | High | Callback stores `owner_id` on detection — how does the controller resolve the uploading user from the callback payload? | Resolved (B – snapshot trust level on photo) | 2026-06-21 | 2026-06-21 |
 | ~~Q-045-02~~ | 045 – NSFW Moderation | High | "Block" action semantics — should blocked photos be soft-deleted, hidden via `is_validated`, or use a dedicated visibility flag? | Resolved (Custom – single `nsfw_status` enum + `is_validated`; no `blocked` value, block = hard-delete) | 2026-06-21 | 2026-06-22 |
 | ~~Q-045-03~~ | 045 – NSFW Moderation | High | Sensitive action on unsorted photos (no album) — should it create a "Sensitive" album, mark as moderation instead, or skip? | Resolved (Custom – configurable: skip or fall back to moderate) | 2026-06-21 | 2026-06-21 |
@@ -39,9 +46,101 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 | ~~Q-044-06~~ | 044 – Folder Drop | Low | Plan.md "Out of scope" contradicts spec on recursive sub-folder processing | Resolved (implement recursive sub-albums) | 2026-06-13 | 2026-06-13 |
 | ~~Q-044-07~~ | 044 – Folder Drop | Low | `UploadPanel` internal drop zone bypasses `folderDrop.ts` | Resolved (A – out of scope, document boundary) | 2026-06-13 | 2026-06-13 |
 
-_No active questions._
-
 ## Question Details
+
+### ~~Q-045-13~~ · Photo-Album many-to-many breaks "direct parent album" assumption in sensitive action ✅ RESOLVED
+
+**Status:** Resolved — **Option A** (mark all associated albums)  
+**Feature:** 045 – NSFW Detection & Moderation  
+**Priority:** High  
+**Opened:** 2026-06-22  
+**Resolved:** 2026-06-22
+
+**Resolution:** `ApplyNsfwAlbumSensitivityJob` iterates all of the photo's associated albums (`$photo->albums`) and, for each album, checks `is_recursive_nsfw` before marking. The "no album" fallback fires when `$photo->albums->isEmpty()`. The spec language "direct parent album" and `album_id` FK references must be updated to reflect the many-to-many model. Q-045-08 resolution is superseded — all associated albums are now marked, not just one.
+
+**Spec impact:** FR-045-06, FR-045-17, Appendix "Album marking rules" updated: replace "direct parent album" / `album_id` with "all associated albums" / `$photo->albums`. FR-045-15 "unsorted" condition updated from `album_id IS NULL` to `$photo->albums->isEmpty()`.
+
+---
+
+### ~~Q-045-14~~ · Block action hard-delete mechanism ✅ RESOLVED
+
+**Status:** Resolved — **Option A** (reuse Delete with dedicated force-delete method)  
+**Feature:** 045 – NSFW Detection & Moderation  
+**Priority:** High  
+**Opened:** 2026-06-22  
+**Resolved:** 2026-06-22
+
+**Resolution:** Add a `forceDeletePhoto(string $photo_id)` method to `Actions\Photo\Delete` (or a new dedicated action) that: (1) removes all `photo_album` pivot entries, (2) cleans up purchasables, (3) fires `PhotoWillBeDeleted`/`PhotoDeleted` events, (4) delegates to `PhotosToBeDeletedDTO` for size variant file cleanup and record deletion — bypassing the album-context requirement of `Delete::do()`. This reuses the existing file cleanup, event dispatch, and purchasable cleanup infrastructure. Block-delete removes the photo from **all** albums unconditionally.
+
+**Spec impact:** FR-045-04 updated to note block-delete removes photo from all albums. I2/I3 plan steps reference the new method.
+
+---
+
+### ~~Q-045-15~~ · CSRF exemption for NSFW callback endpoint ✅ RESOLVED
+
+**Status:** Resolved — not an issue (follows face detection pattern)  
+**Feature:** 045 – NSFW Detection & Moderation  
+**Priority:** Medium  
+**Opened:** 2026-06-22  
+**Resolved:** 2026-06-22
+
+**Resolution:** Add `'/api/v2/NsfwDetection/results'` to `VerifyCsrfToken::$except`, matching the existing face detection callback pattern. This is a standard implementation detail — not an architectural question — and should be captured as a step in I5 tasks.
+
+---
+
+### ~~Q-045-16~~ · `ModerationController::approve()` needs per-photo logic for NSFW album marking ✅ RESOLVED
+
+**Status:** Resolved — **Option B** (hybrid: bulk update then post-process NSFW subset)  
+**Feature:** 045 – NSFW Detection & Moderation  
+**Priority:** High  
+**Opened:** 2026-06-22  
+**Resolved:** 2026-06-22
+
+**Resolution:** Keep the existing bulk `Photo::whereIn('id', $chunk)->update(['is_validated' => true])` pattern for the common case. After the bulk update, separately query for photos among the approved IDs that had `nsfw_status = review`: update their `nsfw_status` to `visible`, and for those with sensitive detections (`is_sensitive = true`) where `nsfw_sensitive_album_action = mark_album`, dispatch `ApplyNsfwAlbumSensitivityJob`. This two-pass approach preserves performance for non-NSFW approvals while correctly handling the NSFW subset.
+
+**Spec impact:** I5 step 5 updated to describe the two-pass pattern.
+
+---
+
+### ~~Q-045-17~~ · `NsfwBlockFindingAction` enum — `APPROVE` case ✅ RESOLVED
+
+**Status:** Resolved — no action needed (spec is already consistent)  
+**Feature:** 045 – NSFW Detection & Moderation  
+**Priority:** Medium  
+**Opened:** 2026-06-22  
+**Resolved:** 2026-06-22
+
+**Resolution:** On re-inspection, the spec DSL already lists `values: [BLOCK, MODERATE, APPROVE]` for `NsfwBlockFindingAction` (line 415), matching DO-045-03 and the config key definition. No fix needed — the initial analysis was incorrect.
+
+---
+
+### ~~Q-045-18~~ · `AutoScanNsfwOnUpload` pipe execution ordering vs hide-on-scan ✅ RESOLVED
+
+**Status:** Resolved — **Option B** (set values before `$next()`, dispatch after)  
+**Feature:** 045 – NSFW Detection & Moderation  
+**Priority:** Medium  
+**Opened:** 2026-06-22  
+**Resolved:** 2026-06-22
+
+**Resolution:** The pipe sets `$state->photo->upload_trust_level` and conditionally `$state->photo->is_validated = false` (for hide-on-scan) on the in-memory model **before** calling `$next()`. The pipeline persists the photo with these values already set — no visibility gap and no extra `save()` call. After `$next()` returns (photo persisted with ID), dispatch the scan job. This diverges from the `AutoScanFacesOnUpload` pattern (which calls `$next()` first) but is correct: face detection doesn't need to modify model attributes before persistence.
+
+**Spec impact:** I4 plan step 1 updated to specify the before-`$next()` pattern for attribute setting.
+
+---
+
+### ~~Q-045-19~~ · `nsfw_detections` FK cascade policy ✅ RESOLVED
+
+**Status:** Resolved — update `PhotosToBeDeletedDTO` + `cascadeOnDelete` FK  
+**Feature:** 045 – NSFW Detection & Moderation  
+**Priority:** Medium  
+**Opened:** 2026-06-22  
+**Resolved:** 2026-06-22
+
+**Resolution:** Two-pronged approach matching how existing related tables are handled: (1) The migration uses `$table->foreign('photo_id')->references('id')->on('photos')->cascadeOnDelete()` on `nsfw_detections`, matching the `faces` table pattern. (2) `PhotosToBeDeletedDTO::forceDelete()` is updated to explicitly `DB::table('nsfw_detections')->whereIn('photo_id', $chunk->all())->delete()` alongside the existing `size_variants`, `statistics`, `palettes`, and `photo_album` cleanup — matching how that method handles related data rather than relying solely on DB cascades.
+
+**Spec impact:** I1 migration task notes updated to specify `cascadeOnDelete`. I2/I3 notes to include `PhotosToBeDeletedDTO` update.
+
+---
 
 ### ❓ Q-044-01 · `Timeline.vue` also calls `useMouseEvents` — signature change will break it
 
