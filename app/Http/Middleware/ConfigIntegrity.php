@@ -117,7 +117,7 @@ class ConfigIntegrity
 		'ai_vision_nsfw_scan_trusted_users',
 		'ai_vision_nsfw_monitor_hide_on_scan',
 		'ai_vision_nsfw_trust_but_verify_hide_on_scan',
-		'ai_vision_nsfw_trust_hide_on_scan'
+		'ai_vision_nsfw_trust_hide_on_scan',
 	];
 
 	public const PRO_FIELDS = [

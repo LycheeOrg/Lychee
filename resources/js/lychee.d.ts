@@ -119,6 +119,30 @@ declare namespace App.Enum {
 	export type MessageType = "info" | "warning" | "error";
 	export type MetricsAccess = "public" | "logged-in users" | "owner" | "admin";
 	export type MetricsAction = "visit" | "favourite" | "download" | "shared";
+	export type NsfwBlockFindingAction = "block" | "moderate" | "approve";
+	export type NsfwDetectionLabel =
+		| "FEMALE_GENITALIA_COVERED"
+		| "FACE_FEMALE"
+		| "BUTTOCKS_EXPOSED"
+		| "FEMALE_BREAST_EXPOSED"
+		| "FEMALE_GENITALIA_EXPOSED"
+		| "MALE_BREAST_EXPOSED"
+		| "ANUS_EXPOSED"
+		| "FEET_EXPOSED"
+		| "BELLY_COVERED"
+		| "FEET_COVERED"
+		| "ARMPITS_COVERED"
+		| "ARMPITS_EXPOSED"
+		| "FACE_MALE"
+		| "BELLY_EXPOSED"
+		| "MALE_GENITALIA_EXPOSED"
+		| "ANUS_COVERED"
+		| "FEMALE_BREAST_COVERED"
+		| "BUTTOCKS_COVERED";
+	export type NsfwPreset = "default" | "strict" | "moderation" | "nude_female" | "permissive" | "social_media";
+	export type NsfwSensitiveAlbumAction = "mark_album" | "nothing";
+	export type NsfwSensitiveNoAlbumAction = "skip" | "moderate";
+	export type NsfwStatus = "pending" | "failed" | "review" | "visible";
 	export type OauthProvidersType =
 		| "amazon"
 		| "apple"
