@@ -68,6 +68,7 @@ The core decision engine maps each combination of user trust tier and detection 
 | FR-045-06 | **Sensitive finding action**: When the callback returns `is_sensitive = true`, the action depends on the photo's `upload_trust_level`. For `check`: moderate the photo (`nsfw_status = review`, `is_validated = false`) and mark the detection with `is_sensitive = true` so the album action can be applied at approval time. For `monitor`/`trust_but_verify`/`trusted`: the `nsfw_sensitive_album_action` config determines whether album marking is performed — `mark_album` or `nothing`. Album marking is always executed via a dispatched `ApplyNsfwAlbumSensitivityJob`. For non-moderated tiers (`monitor`/`trust_but_verify`/`trusted`), this job is dispatched **immediately** at callback time (auto-approval path). For `check` users, the job is dispatched at **admin approval time**. The job checks the photo's direct parent album, verifies none of its ancestors are already NSFW (`is_recursive_nsfw`), and sets `album.is_nsfw = true` if appropriate. If the photo has no album (unsorted), behaviour is controlled by `nsfw_sensitive_no_album_action` config: `skip` logs warning and does nothing; `moderate` falls back to `nsfw_status = review`, `is_validated = false`. | See trust-tier matrix above. Album marking via async job respects recursive NSFW check. | — | — | `nsfw.action.sensitive` | Owner directive |
 | FR-045-07 | **New trust tier — `trust_but_verify`**: A new `UserUploadTrustLevel` enum case `TRUST_BUT_VERIFY`. Uploads from these users are immediately validated (`is_validated = true`) like `trusted` users. NSFW scanning is always applied. Block findings are configurable via `nsfw_trust_but_verify_block_action` (default `moderate`). Review findings are auto-approved. Sensitive findings follow the configurable album action. | Upload: `is_validated = true`. NSFW scan always dispatched. Callback applies matrix actions. | — | — | — | Owner directive |
 | FR-045-08 | User trust level integration: uploaders with `upload_trust_level = check` or `monitor` always have NSFW scanning applied on upload. Uploaders with `upload_trust_level = trust_but_verify` always have NSFW scanning applied. Uploaders with `upload_trust_level = trusted` consult global config `nsfw_scan_trusted_users` (boolean) to determine if scanning is applied. The **uploader's** trust level (from `$state->upload_trust_level` on the pipeline DTO, not from `$state->photo->owner`) is snapshotted on the photo at upload time via a new `upload_trust_level` column on `photos` (Q-045-01 → Option B). | `check`/`monitor`/`trust_but_verify`: always scan. `trusted` + `nsfw_scan_trusted_users = true`: scan. `trusted` + `nsfw_scan_trusted_users = false`: skip. | — | — | — | Owner directive, Q-045-01 |
+| FR-045-19 | **Hide-on-scan (quarantine until result)**: Three per-trust-level boolean configs control whether a photo is temporarily hidden (`is_validated = false`) while the NSFW scan is in progress: `nsfw_monitor_hide_on_scan` (default `0`), `nsfw_trust_but_verify_hide_on_scan` (default `0`), `nsfw_trust_hide_on_scan` (default `0`). `check` users do not need this config because their photos are already hidden on upload (`is_validated = false` via `SetUploadValidated`). When the config is `true` for the photo's trust level, the `AutoScanNsfwOnUpload` pipe sets `is_validated = false` at dispatch time, placing the photo in the moderation queue. On callback, the restore logic is unconditional for non-`check` trust levels: if the photo's `upload_trust_level` is not `check` and there are no block or review findings (only sensitive or clean), `NsfwActionService` sets `is_validated = true`. This is safe because when hide-on-scan is off, `is_validated` is already `true` and the assignment is a no-op; when hide-on-scan is on, it restores visibility. If block or review findings exist, the normal action matrix applies (the photo is either hard-deleted, or remains in moderation with `is_validated = false`). **Rationale for making this a setting:** because the NSFW scan is asynchronous (round-trip to external service), if the classifier crashes or becomes unavailable, a photo hidden by this setting would remain in the moderation queue indefinitely. Admins who enable this accept that risk in exchange for preventing potentially NSFW photos from being temporarily visible during the scan round-trip. | Dispatch: `is_validated = false`. Callback clean: `is_validated = true` (unconditional for non-`check`). Callback block/review: normal matrix (delete/moderate). | Config must be bool. Only applies when NSFW scan is dispatched (both AI Vision toggles enabled). | Classifier crash → photo stays hidden in moderation queue until admin manually approves. | — | Owner directive |
 | FR-045-09 | Actionable detection results are logged to a `nsfw_detections` table with: `id`, `photo_id`, `label` (typed as `NsfwDetectionLabel` enum), `confidence`, `bbox_x`, `bbox_y`, `bbox_width`, `bbox_height`, `area_pixels`, `area_ratio`, `is_block` (bool), `is_review` (bool), `is_sensitive` (bool), `created_at`. Only detections from `block_detected`, `review_detected`, and `sensitive_detected` arrays are stored — `all_detected` is not persisted (Q-045-06). A single detection can appear in multiple arrays simultaneously; all three boolean columns reflect which tiers it belongs to. Dedup by photo_id+label+bbox: one row per unique detection per photo, booleans merged. | Each detection across `block_detected`, `review_detected`, `sensitive_detected` is matched by photo_id+label+bbox. One row created per unique detection with `is_block`, `is_review`, `is_sensitive` set according to which arrays it appears in. | — | — | — | Owner directive, Q-045-06 |
 | FR-045-10 | A new `NsfwPreset` enum with 6 cases: `DEFAULT`, `STRICT`, `MODERATION`, `NUDE_FEMALE`, `PERMISSIVE`, `SOCIAL_MEDIA`. Used for config validation and request building. | — | — | — | — | Owner directive |
 | FR-045-11 | Admin can trigger a bulk NSFW scan via `POST /api/v2/NsfwDetection/bulk-scan`. By default scans photos with `nsfw_status IS NULL` or `failed`. Optional `force` boolean parameter re-scans all photos including `visible` and `review` as well (Q-045-09 → B). | Default: `NULL` + `failed` photos dispatched. With `force = true`: all photos re-dispatched. | Admin-only endpoint (existing `AdminMiddleware`). `force` is optional boolean, defaults to `false`. | — | `nsfw.bulk_scan.dispatched` | Owner directive, Q-045-09 |
@@ -138,6 +139,18 @@ The core decision engine maps each combination of user trust tier and detection 
 │  ── Trust Level Integration ──────────────────────────────  │
 │                                                             │
 │  Scan trusted users        [Toggle ON/OFF]                  │
+│                                                             │
+│  ── Hide During Scan (quarantine until result) ───────────  │
+│                                                             │
+│  Hide monitor photos       [Toggle ON/OFF]                  │
+│  Hide trust-but-verify     [Toggle ON/OFF]                  │
+│    photos                                                   │
+│  Hide trusted photos       [Toggle ON/OFF]                  │
+│                                                             │
+│  ⚠ When enabled, photos are hidden (placed in moderation   │
+│  queue) while the NSFW scan is in progress. If the NSFW     │
+│  classifier crashes or is unavailable, the photo will       │
+│  remain hidden until manually approved by an admin.         │
 │                                                             │
 │  ── Trust-Tier × Finding Matrix (read-only summary) ─────  │
 │                                                             │
@@ -283,6 +296,11 @@ The core decision engine maps each combination of user trust tier and detection 
 | S-045-36 | Admin fetches NSFW config → proxy returns upstream JSON with `config` and `presets` sections |
 | S-045-37 | Admin fetches NSFW config but service URL not configured → 503 with config error |
 | S-045-38 | Admin fetches NSFW config but service unreachable → 503 with connectivity error |
+| S-045-39 | `monitor` user + `nsfw_monitor_hide_on_scan = true` → photo `is_validated = false` at dispatch; clean callback (no block/review) → `is_validated = true` restored (unconditional for non-`check`) |
+| S-045-40 | `trust_but_verify` user + `nsfw_trust_but_verify_hide_on_scan = true` → photo `is_validated = false` at dispatch; clean callback → `is_validated = true` restored |
+| S-045-41 | `trusted` user + `nsfw_trust_hide_on_scan = true` → photo `is_validated = false` at dispatch; clean callback → `is_validated = true` restored |
+| S-045-42 | `monitor` user + `nsfw_monitor_hide_on_scan = true` + callback with block/review findings → photo stays `is_validated = false` (normal matrix applies) |
+| S-045-43 | `monitor` user + `nsfw_monitor_hide_on_scan = false` → photo `is_validated` unchanged at dispatch (remains `true`); clean callback still sets `is_validated = true` (no-op) |
 
 ## Test Strategy
 
@@ -496,6 +514,21 @@ config_keys:
     type: bool
     default: "0"
     category: AI Vision
+  - key: nsfw_monitor_hide_on_scan
+    type: bool
+    default: "0"
+    category: AI Vision
+    description: "Hide monitor user photos while NSFW scan is in progress (is_validated=false). If classifier crashes, photo stays hidden."
+  - key: nsfw_trust_but_verify_hide_on_scan
+    type: bool
+    default: "0"
+    category: AI Vision
+    description: "Hide trust_but_verify user photos while NSFW scan is in progress. Same as above."
+  - key: nsfw_trust_hide_on_scan
+    type: bool
+    default: "0"
+    category: AI Vision
+    description: "Hide trusted user photos while NSFW scan is in progress. Same as above."
 ```
 
 ## Appendix
@@ -547,7 +580,7 @@ This new tier fills the gap between `monitor` and `trusted`:
 
 | Property | Check | Monitor | Trust but verify | Trusted |
 |---------|-------|---------|-----------------|---------|
-| `is_validated` on upload | `false` | `true` | `true` | `true` |
+| `is_validated` on upload | `false` | `true` (or `false` if `nsfw_monitor_hide_on_scan`) | `true` (or `false` if `nsfw_trust_but_verify_hide_on_scan`) | `true` (or `false` if `nsfw_trust_hide_on_scan`) |
 | NSFW scan dispatched | Always | Always | Always | Configurable |
 | Block finding | Block/Moderate | Block/Moderate | Block/Moderate | Block/Moderate/Approve |
 | Review finding | Moderate | Moderate | Approve | Approve |
@@ -568,6 +601,9 @@ Use case: users who are generally trusted but whose uploads should still be scre
 | `nsfw_sensitive_album_action` | string | `mark_album` | Action for sensitive findings: `mark_album` or `nothing` |
 | `nsfw_sensitive_no_album_action` | string | `skip` | Fallback when sensitive fires on unsorted photo: `skip` or `moderate` |
 | `nsfw_scan_trusted_users` | bool | `0` | Whether to scan trusted users' uploads |
+| `nsfw_monitor_hide_on_scan` | bool | `0` | Hide `monitor` user photos (`is_validated = false`) while NSFW scan is in progress. Restored on clean result; stays hidden if classifier crashes. |
+| `nsfw_trust_but_verify_hide_on_scan` | bool | `0` | Hide `trust_but_verify` user photos while NSFW scan is in progress. Same behaviour as above. |
+| `nsfw_trust_hide_on_scan` | bool | `0` | Hide `trusted` user photos while NSFW scan is in progress. Same behaviour as above. |
 
 ### Example Callback Payload (from NSFW classifier → Lychee)
 

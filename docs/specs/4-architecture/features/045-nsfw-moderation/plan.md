@@ -22,7 +22,7 @@ Enable automated NSFW content detection for Lychee photo uploads using the Lyche
 - **In scope:**
   - Backend: enums (including `NsfwStatus`, `NsfwDetectionLabel`), migration, model, service, job, pipe, controller, request classes, routes.
   - New `TRUST_BUT_VERIFY` case on `UserUploadTrustLevel` enum.
-  - Config: 9 new config keys via migration, 2 new `.env` variables.
+  - Config: 12 new config keys via migration (9 original + 3 hide-on-scan), 2 new `.env` variables.
   - Trust-tier × finding-tier action matrix implementation.
   - Approval-time album sensitivity marking with recursive NSFW check.
   - Admin Settings UI: NSFW settings section with trust-tier matrix summary.
@@ -64,8 +64,9 @@ Enable automated NSFW content detection for Lychee photo uploads using the Lyche
 - **Risks / Mitigations:**
   - NSFW service URL/key misconfigured → dispatch job validates config before HTTP call; logs clear error.
   - High volume of detections on bulk scan → batch dispatch with configurable chunk size (same as face detection).
-  - Race between NSFW callback and user viewing photo → async by design; photo visible until action applied. Acceptable for v1.
+  - Race between NSFW callback and user viewing photo → async by design; photo visible until action applied. Mitigated by optional hide-on-scan configs (FR-045-19) that hide photos during scan at the cost of photos staying hidden if the classifier crashes.
   - Hard-delete on block is irreversible → config defaults to `block` but admin can switch to `moderate` before enabling.
+  - Hide-on-scan classifier crash → photos remain in moderation queue indefinitely → setting is opt-in (default off) with UI warning. Admins who enable it accept the trade-off.
 
 ## Implementation Drift Gate
 
@@ -92,7 +93,7 @@ After I4 (all backend increments complete), run:
   8. Create `NsfwDetectionLabel` enum (`app/Enum/NsfwDetectionLabel.php`) — 18 classifier labels: `FEMALE_GENITALIA_COVERED`, `FACE_FEMALE`, `BUTTOCKS_EXPOSED`, `FEMALE_BREAST_EXPOSED`, `FEMALE_GENITALIA_EXPOSED`, `MALE_BREAST_EXPOSED`, `ANUS_EXPOSED`, `FEET_EXPOSED`, `BELLY_COVERED`, `FEET_COVERED`, `ARMPITS_COVERED`, `ARMPITS_EXPOSED`, `FACE_MALE`, `BELLY_EXPOSED`, `MALE_GENITALIA_EXPOSED`, `ANUS_COVERED`, `FEMALE_BREAST_COVERED`, `BUTTOCKS_COVERED`.
   9. Create migration: add `nsfw_status` and `upload_trust_level` to `photos` table.
   10. Create migration: `nsfw_detections` table.
-  11. Create config migration: 9 new config keys.
+  11. Create config migration: 12 new config keys (9 original + 3 hide-on-scan: `nsfw_monitor_hide_on_scan`, `nsfw_trust_but_verify_hide_on_scan`, `nsfw_trust_hide_on_scan`).
   12. Update TypeScript type `UserUploadTrustLevel` to include `trust_but_verify`.
 - _Commands:_ `make phpstan`
 - _Exit:_ Enums compile (including `NsfwStatus` and `NsfwDetectionLabel`), migration runs on test DB, `SetUploadValidated` handles new tier, PHPStan 0.
@@ -104,7 +105,7 @@ After I4 (all backend increments complete), run:
 - _Steps:_
   1. Add `nsfw-url` and `nsfw-api-key` to `config/features.php` under `ai-vision-service`.
   2. Create `NsfwDetectionService` (`app/Services/Image/NsfwDetectionService.php`) — HTTP client wrapper for `POST /api/nsfw/detect`. Queries use `nsfw_status` column for dispatch eligibility.
-  3. Create `NsfwActionService` (`app/Services/Image/NsfwActionService.php`) — implements the trust-tier × finding-tier matrix. Reads `upload_trust_level` from photo, applies configured actions. Sets `nsfw_status` to `review` or `visible` based on matrix outcome. For block findings: reads per-trust-level config (`nsfw_check_block_action`, `nsfw_monitor_block_action`, `nsfw_trust_but_verify_block_action`, or `nsfw_trust_block_action`). For album marking on non-moderated tiers: checks `is_recursive_nsfw` before marking. Album marking is triggered by a `ApplyNsfwAlbumSensitivityJob` dispatched on auto-approval or admin approval.
+  3. Create `NsfwActionService` (`app/Services/Image/NsfwActionService.php`) — implements the trust-tier × finding-tier matrix. Reads `upload_trust_level` from photo, applies configured actions. Sets `nsfw_status` to `review` or `visible` based on matrix outcome. For block findings: reads per-trust-level config (`nsfw_check_block_action`, `nsfw_monitor_block_action`, `nsfw_trust_but_verify_block_action`, or `nsfw_trust_block_action`). For album marking on non-moderated tiers: checks `is_recursive_nsfw` before marking. Album marking is triggered by a `ApplyNsfwAlbumSensitivityJob` dispatched on auto-approval or admin approval. **Hide-on-scan restore (FR-045-19):** after applying all actions, if no block/review findings triggered moderation and the photo's `upload_trust_level` is not `check`, unconditionally sets `is_validated = true` (no-op when hide-on-scan was off; restores visibility when it was on).
   4. Create `NsfwConfigController` (`app/Http/Controllers/AiVision/NsfwConfigController.php`) — single `show()` method that proxies `GET /api/nsfw/config` from the external NSFW classification service. Auth: admin session (within `feature:ai-vision` + `feature:v8` middleware group). Reads `nsfw-url` and `nsfw-api-key` from `config/features.php`. Returns upstream JSON as-is on success; 503 with error on misconfiguration or connectivity failure.
   5. Register route `GET /NsfwDetection/config` in `routes/api_v2.php` within the existing AI Vision middleware group.
   6. Write unit tests for `NsfwDetectionService` (preset omission, request building).
@@ -130,9 +131,9 @@ After I4 (all backend increments complete), run:
 - _Goal:_ Create `AutoScanNsfwOnUpload` standalone pipe.
 - _Preconditions:_ I3 complete.
 - _Steps:_
-  1. Create `AutoScanNsfwOnUpload` pipe — snapshots `upload_trust_level`, checks global + NSFW-specific toggles, dispatches scan. `check`/`monitor`/`trust_but_verify` always scan; `trusted` only if `nsfw_scan_trusted_users = true`.
+  1. Create `AutoScanNsfwOnUpload` pipe — snapshots `upload_trust_level`, checks global + NSFW-specific toggles, dispatches scan. `check`/`monitor`/`trust_but_verify` always scan; `trusted` only if `nsfw_scan_trusted_users = true`. **Hide-on-scan (FR-045-19):** if scan will be dispatched, check per-trust-level hide-on-scan config (`nsfw_monitor_hide_on_scan`, `nsfw_trust_but_verify_hide_on_scan`, `nsfw_trust_hide_on_scan`); if true, set `is_validated = false` before dispatching. `check` users are already hidden via `SetUploadValidated` so this is skipped for them.
   2. Register pipe in the `Create` action's standalone pipe chain (after `AutoScanFacesOnUpload`).
-  3. Write unit tests for all trust level branches including `trust_but_verify`.
+  3. Write unit tests for all trust level branches including `trust_but_verify` and hide-on-scan on/off.
 - _Commands:_ `php artisan test --filter=AutoScanNsfw`, `make phpstan`
 - _Exit:_ Pipe registered and tested.
 
@@ -156,7 +157,7 @@ After I4 (all backend increments complete), run:
 - _Goal:_ Add NSFW settings to admin Settings page, bulk scan card to Maintenance, and filtering to Moderation.
 - _Preconditions:_ I5 complete (config keys exist).
 - _Steps:_
-  1. Add NSFW Detection section to Settings view (toggles, dropdowns, trust-tier matrix summary per mock-up UI-045-01).
+  1. Add NSFW Detection section to Settings view (toggles, dropdowns, 3 hide-on-scan toggles with warning note, trust-tier matrix summary per mock-up UI-045-01).
   2. Add `MaintenanceBulkScanNsfw` component to Maintenance page (UI-045-02).
   3. Create `nsfw-detection-service.ts` frontend service.
   4. Update Moderation page: add `nsfw_status` column/badge (UI-045-03). No blocked filter needed — block actions hard-delete photos.
@@ -228,6 +229,11 @@ After I4 (all backend increments complete), run:
 | S-045-36 | I2 / T-045-10b | Config proxy: admin fetches → upstream JSON returned |
 | S-045-37 | I2 / T-045-10b | Config proxy: URL not configured → 503 |
 | S-045-38 | I2 / T-045-10b | Config proxy: service unreachable → 503 |
+| S-045-39 | I4 / T-045-15, I5 / T-045-21 | Hide-on-scan: monitor + config on + clean callback → is_validated restored |
+| S-045-40 | I4 / T-045-15, I5 / T-045-21 | Hide-on-scan: trust_but_verify + config on + clean callback → is_validated restored |
+| S-045-41 | I4 / T-045-15, I5 / T-045-21 | Hide-on-scan: trusted + config on + clean callback → is_validated restored |
+| S-045-42 | I5 / T-045-21 | Hide-on-scan: monitor + config on + block/review findings → is_validated stays false |
+| S-045-43 | I4 / T-045-15 | Hide-on-scan: monitor + config off → is_validated unchanged (true) |
 
 ## Analysis Gate
 
@@ -239,7 +245,7 @@ _Not yet completed. Run after I1–I5 are implemented._
 - [ ] `UserUploadTrustLevel` has 4 cases including `TRUST_BUT_VERIFY`.
 - [ ] `SetUploadValidated` handles `trust_but_verify` as validated.
 - [ ] Migration creates `nsfw_detections` table (with `NsfwDetectionLabel`-typed `label`), adds `nsfw_status` and `upload_trust_level` to `photos`.
-- [ ] 9 config keys inserted by migration.
+- [ ] 12 config keys inserted by migration (9 original + 3 hide-on-scan).
 - [ ] Trust-tier × finding-tier matrix fully implemented in `NsfwActionService`.
 - [ ] Block action hard-deletes photos when configured (no `blocked` status row).
 - [ ] Album marking respects recursive NSFW check.
@@ -247,6 +253,7 @@ _Not yet completed. Run after I1–I5 are implemented._
 - [ ] `POST /api/v2/NsfwDetection/results` endpoint handles all scenarios.
 - [ ] `POST /api/v2/NsfwDetection/bulk-scan` endpoint gated to admin.
 - [ ] Upload pipe dispatches scan with correct trust level gating (4 tiers).
+- [ ] Hide-on-scan configs (`nsfw_monitor_hide_on_scan`, `nsfw_trust_but_verify_hide_on_scan`, `nsfw_trust_hide_on_scan`) hide photos at dispatch and restore `is_validated = true` on clean callback.
 - [ ] PHPStan 0 errors, php-cs-fixer 0 changes, all tests green.
 - [ ] Knowledge map and roadmap updated.
 - [ ] Admin Settings UI renders NSFW section with trust-tier matrix summary.

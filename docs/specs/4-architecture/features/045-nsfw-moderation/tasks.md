@@ -63,7 +63,7 @@ _Last updated: 2026-06-22_
   - `php artisan test`  
   - `make phpstan`
 
-- [ ] T-045-09 – Create config migration: 9 NSFW config keys (FR-045-03, FR-045-04, FR-045-06, FR-045-08, FR-045-15, NFR-045-04).  
+- [ ] T-045-09 – Create config migration: 12 NSFW config keys (FR-045-03, FR-045-04, FR-045-06, FR-045-08, FR-045-15, FR-045-19, NFR-045-04).  
   _Intent:_ Extends `BaseConfigMigration`. Keys:
   1. `ai_vision_nsfw_enabled` (bool, default `0`, cat `AI Vision`) — NSFW-specific toggle, mirrors `ai_vision_face_enabled`
   2. `nsfw_preset` (string, default `default`, cat `AI Vision`, type_range `default|strict|moderation|nude_female|permissive|social_media`)
@@ -73,11 +73,14 @@ _Last updated: 2026-06-22_
   6. `nsfw_trust_block_action` (string, default `approve`, cat `AI Vision`, type_range `block|moderate|approve`) — action for block findings on `trusted` users
   7. `nsfw_sensitive_album_action` (string, default `mark_album`, cat `AI Vision`, type_range `mark_album|nothing`) — whether sensitive findings trigger album marking
   8. `nsfw_sensitive_no_album_action` (string, default `skip`, cat `AI Vision`, type_range `skip|moderate`) — fallback when sensitive fires on unsorted photo
-  9. `nsfw_scan_trusted_users` (bool, default `0`, cat `AI Vision`)  
+  9. `nsfw_scan_trusted_users` (bool, default `0`, cat `AI Vision`)
+  10. `nsfw_monitor_hide_on_scan` (bool, default `0`, cat `AI Vision`) — hide `monitor` user photos (`is_validated = false`) while NSFW scan is in progress. If the NSFW classifier crashes or is unavailable, the photo remains hidden in the moderation queue until manually approved by an admin.
+  11. `nsfw_trust_but_verify_hide_on_scan` (bool, default `0`, cat `AI Vision`) — same as above for `trust_but_verify` users
+  12. `nsfw_trust_hide_on_scan` (bool, default `0`, cat `AI Vision`) — same as above for `trusted` users. `check` users do not need this config because their photos are already hidden on upload via `SetUploadValidated`.  
   _Verification commands:_  
   - `php artisan test`  
   - `make phpstan`  
-  _Notes:_ Block finding action is configurable per trust level with progressively relaxed defaults: `check` → `block` (strictest), `monitor` → `moderate`, `trust_but_verify` → `moderate`, `trusted` → `approve` (most permissive). The `trusted` tier additionally supports `approve` to skip action entirely.
+  _Notes:_ Block finding action is configurable per trust level with progressively relaxed defaults: `check` → `block` (strictest), `monitor` → `moderate`, `trust_but_verify` → `moderate`, `trusted` → `approve` (most permissive). The `trusted` tier additionally supports `approve` to skip action entirely. The hide-on-scan configs default to off because enabling them means a classifier crash leaves photos stuck in moderation.
 
 ### I2 – Config & Service Layer
 
@@ -97,15 +100,16 @@ _Last updated: 2026-06-22_
   - `php artisan test --filter=NsfwDetectionService`  
   - `make phpstan`
 
-- [ ] T-045-12 – Create `NsfwActionService` (FR-045-04, FR-045-05, FR-045-06, FR-045-07, FR-045-08, FR-045-13, FR-045-17).  
+- [ ] T-045-12 – Create `NsfwActionService` (FR-045-04, FR-045-05, FR-045-06, FR-045-07, FR-045-08, FR-045-13, FR-045-17, FR-045-19).  
   _Intent:_ `app/Services/Image/NsfwActionService.php`. Core method:
   - `applyActions(Photo $photo, bool $should_block, bool $should_review, bool $is_sensitive)` — implements the trust-tier × finding-tier matrix:
     - Reads `$photo->upload_trust_level` (snapshotted at upload).
     - **Block findings:** `check` → read `nsfw_check_block_action`: `block` = hard-delete photo, `moderate` = set review. `monitor` → read `nsfw_monitor_block_action`: same options. `trust_but_verify` → read `nsfw_trust_but_verify_block_action`: `block` or `moderate` (default `moderate`). `trusted` → read `nsfw_trust_block_action`: `block`, `moderate`, or `approve` (default `approve`).
     - **Review findings:** `check`/`monitor` → moderate. `trust_but_verify`/`trusted` → approve.
     - **Sensitive findings:** `check` → moderate photo + record for deferred album action (job dispatched at admin approval). `monitor`/`trust_but_verify`/`trusted` → read `nsfw_sensitive_album_action`: `mark_album` = dispatch `ApplyNsfwAlbumSensitivityJob` immediately. `nothing` = no action.
+    - **Hide-on-scan restore (FR-045-19):** After applying all actions, if the photo was NOT hard-deleted and was NOT moderated (i.e., no block or review findings triggered moderation), and the photo's `upload_trust_level` is not `check`: set `is_validated = true`. No need to check the hide-on-scan config at callback time — when hide-on-scan was off, `is_validated` is already `true` and the assignment is a no-op; when hide-on-scan was on, this restores visibility. If block or review findings caused moderation, `is_validated` remains `false` (normal matrix behaviour). `check` users are excluded because their `is_validated` is managed by the trust-level moderation system (`SetUploadValidated`).
   - `logDetections(string $photo_id, array $block_detected, array $review_detected, array $sensitive_detected)` — creates `NsfwDetection` rows. Deduplicated by photo_id+label+bbox.
-  Write unit tests covering all matrix combinations (S-045-04 to S-045-19, S-045-26, S-045-27).  
+  Write unit tests covering all matrix combinations (S-045-04 to S-045-19, S-045-26, S-045-27) and hide-on-scan restore (S-045-39 to S-045-43).  
   _Verification commands:_  
   - `php artisan test --filter=NsfwActionService`  
   - `make phpstan`
@@ -151,16 +155,18 @@ _Last updated: 2026-06-22_
 
 ### I4 – Upload Pipeline Pipe
 
-- [ ] T-045-15 – Create `AutoScanNsfwOnUpload` pipe (FR-045-01, FR-045-08, FR-045-14, S-045-01 to S-045-03, S-045-22, S-045-23, S-045-31).  
+- [ ] T-045-15 – Create `AutoScanNsfwOnUpload` pipe (FR-045-01, FR-045-08, FR-045-14, FR-045-19, S-045-01 to S-045-03, S-045-22, S-045-23, S-045-31, S-045-39 to S-045-43).  
   _Intent:_ `app/Actions/Photo/Pipes/Standalone/AutoScanNsfwOnUpload.php`. Implements `StandalonePipe`. After `$state = $next($state)`:
   1. `$state->photo->isPhoto()` — skip non-photos.
   2. Snapshot the uploader's trust level: `$state->photo->upload_trust_level = $state->upload_trust_level` (from the DTO, which carries the authenticated uploader's trust level — NOT `$state->photo->owner`, which is the album owner and may differ from the uploader).
   3. `ai_vision_enabled` config — skip if global AI Vision is disabled.
   4. `ai_vision_nsfw_enabled` config — skip if NSFW classification is disabled.
   5. Trust level check using the just-snapshotted value: `check`/`monitor`/`trust_but_verify` → always dispatch. `trusted` → dispatch only if `nsfw_scan_trusted_users = true`.
-  6. Dispatches `DispatchNsfwScanJob`.
+  6. **Hide-on-scan (FR-045-19):** If scan will be dispatched, check the hide-on-scan config for the trust level: `monitor` → `nsfw_monitor_hide_on_scan`, `trust_but_verify` → `nsfw_trust_but_verify_hide_on_scan`, `trusted` → `nsfw_trust_hide_on_scan`. If true, set `$state->photo->is_validated = false` to hide the photo until the classifier responds. (`check` users are already hidden via `SetUploadValidated`, so this step is skipped for them.)
+  7. Save the photo (persist `upload_trust_level` and potentially updated `is_validated`).
+  8. Dispatches `DispatchNsfwScanJob`.
   Register in `Create` action's standalone pipe chain after `AutoScanFacesOnUpload`.  
-  Write unit tests for all trust level branches (4 tiers).  
+  Write unit tests for all trust level branches (4 tiers) and hide-on-scan branches.  
   _Verification commands:_  
   - `php artisan test --filter=AutoScanNsfw`  
   - `make phpstan`
@@ -229,15 +235,20 @@ _Last updated: 2026-06-22_
   20. Bulk scan (`force = true`) → 202, all re-queued (S-045-25).
   21. Sensitive + no album + `skip` → warning, no change (S-045-26).
   22. Sensitive + no album + `moderate` → review (S-045-27).
-  23. Detection logging: only `block_detected`/`review_detected`/`sensitive_detected` stored; dedup by photo_id+label+bbox (S-045-30).  
+  23. Detection logging: only `block_detected`/`review_detected`/`sensitive_detected` stored; dedup by photo_id+label+bbox (S-045-30).
+  24. `monitor` + `nsfw_monitor_hide_on_scan = true` + clean callback → `is_validated` restored to `true` (S-045-39).
+  25. `trust_but_verify` + `nsfw_trust_but_verify_hide_on_scan = true` + clean callback → `is_validated` restored to `true` (S-045-40).
+  26. `trusted` + `nsfw_trust_hide_on_scan = true` + clean callback → `is_validated` restored to `true` (S-045-41).
+  27. `monitor` + `nsfw_monitor_hide_on_scan = true` + callback with block/review → `is_validated` stays `false` (S-045-42).
+  28. `monitor` + `nsfw_monitor_hide_on_scan = false` → `is_validated` unchanged at dispatch, remains `true` (S-045-43).  
   _Verification commands:_  
   - `php artisan test --filter=NsfwDetectionResults`  
   - `make phpstan`
 
 ### I6 – Frontend Settings, Maintenance & Moderation
 
-- [ ] T-045-22 – Add NSFW settings section to admin Settings view (UI-045-01).  
-  _Intent:_ Add NSFW Detection section to the settings page under `AI Vision` category. Controls: enable toggle, preset dropdown, block finding action dropdown, sensitive album action dropdown, sensitive no-album fallback dropdown, scan trusted users toggle. Include a read-only trust-tier × finding matrix summary table. Uses existing settings infrastructure.  
+- [ ] T-045-22 – Add NSFW settings section to admin Settings view (UI-045-01, FR-045-19).  
+  _Intent:_ Add NSFW Detection section to the settings page under `AI Vision` category. Controls: enable toggle, preset dropdown, block finding action dropdown, sensitive album action dropdown, sensitive no-album fallback dropdown, scan trusted users toggle, **3 hide-on-scan toggles** (`nsfw_monitor_hide_on_scan`, `nsfw_trust_but_verify_hide_on_scan`, `nsfw_trust_hide_on_scan`). The hide-on-scan toggles should include a warning note explaining that if the NSFW classifier is unavailable, photos will remain hidden in the moderation queue until manually approved by an admin. Include a read-only trust-tier × finding matrix summary table. Uses existing settings infrastructure.  
   _Verification commands:_  
   - `npm run check`  
   - `npm run format`
