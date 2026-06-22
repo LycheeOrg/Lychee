@@ -13,7 +13,7 @@
 
 ## Overview
 
-Add automated NSFW content detection to Lychee via integration with the external [Lychee-NSFW-Classification](https://github.com/LycheeOrg/Lychee-NSFW-Classification) Python service. Following the same REST + webhook architecture as face detection (Feature 030), Lychee dispatches NSFW scan requests after photo upload and receives classification results via a callback endpoint. Affected modules: backend (controllers, jobs, pipes, models, config, enums), admin settings UI, moderation admin page. The feature leverages the existing `is_nsfw` album flag and `is_validated` photo flag, extends the user trust level system (Feature 033) with a new `trust_but_verify` tier, and introduces configurable actions (block, flag for moderation, mark sensitive) based on detection severity tiers. A single `nsfw_status` enum column on `photos` (values: `pending`, `failed`, `review`, `visible`) tracks both scan progress and NSFW-specific moderation state — `null` means not yet scanned; `pending` means scan dispatched; `failed` means scan errored; `review` means held for moderation; `visible` means scan completed with no action or admin-approved. When the action is "block", the photo is hard-deleted (no row survives, so no `blocked` status is needed). The `nsfw_status` column combined with `is_validated` is displayed in the Moderation admin panel. The uploader's trust level is snapshotted on the photo at upload time (`upload_trust_level` column) so the callback can resolve trust-level-aware actions without relying on the user's current trust level (Q-045-01 → Option B).
+Add automated NSFW content detection to Lychee via integration with the external [Lychee-NSFW-Classification](https://github.com/LycheeOrg/Lychee-NSFW-Classification) Python service. Following the same REST + webhook architecture as face detection (Feature 030), Lychee dispatches NSFW scan requests after photo upload and receives classification results via a callback endpoint. Affected modules: backend (controllers, jobs, pipes, models, config, enums), admin settings UI, moderation admin page. The feature leverages the existing `is_nsfw` album flag and `is_validated` photo flag, extends the user trust level system (Feature 033) with a new `trust_but_verify` tier, and introduces configurable actions (block, flag for moderation, mark sensitive) based on detection severity tiers. A single `nsfw_status` enum column on `photos` (values: `pending`, `failed`, `review`, `visible`) tracks both scan progress and NSFW-specific moderation state — `null` means not yet scanned; `pending` means scan dispatched; `failed` means scan errored; `review` means held for moderation; `visible` means scan completed with no action or admin-approved. When the action is "block", the photo is hard-deleted (no row survives, so no `blocked` status is needed). The `nsfw_status` column combined with `is_validated` is displayed in the Moderation admin panel. The **uploader's** trust level (not the photo owner's — they may differ when uploading to shared albums) is snapshotted on the photo at upload time (`upload_trust_level` column) so the callback can resolve trust-level-aware actions without relying on the user's current trust level (Q-045-01 → Option B).
 
 ### Trust-Tier × Finding-Tier Action Matrix
 
@@ -67,13 +67,14 @@ The core decision engine maps each combination of user trust tier and detection 
 | FR-045-05 | **Review finding action**: When the callback returns `should_review = true`, the action depends on the photo's `upload_trust_level`. For `check`/`monitor`: always moderate (`nsfw_status = review`, `is_validated = false`). For `trust_but_verify`/`trusted`: always approve (no action). | Moderate: `nsfw_status = review`, `is_validated = false`. Approve: `nsfw_status = visible`, scan logged. | — | — | `nsfw.action.moderate` | Owner directive |
 | FR-045-06 | **Sensitive finding action**: When the callback returns `is_sensitive = true`, the action depends on the photo's `upload_trust_level`. For `check`: moderate the photo (`nsfw_status = review`, `is_validated = false`) and mark the detection with `is_sensitive = true` so the album action can be applied at approval time. For `monitor`/`trust_but_verify`/`trusted`: the `nsfw_sensitive_album_action` config determines whether album marking is performed — `mark_album` or `nothing`. Album marking is always executed via a dispatched `ApplyNsfwAlbumSensitivityJob`. For non-moderated tiers (`monitor`/`trust_but_verify`/`trusted`), this job is dispatched **immediately** at callback time (auto-approval path). For `check` users, the job is dispatched at **admin approval time**. The job checks the photo's direct parent album, verifies none of its ancestors are already NSFW (`is_recursive_nsfw`), and sets `album.is_nsfw = true` if appropriate. If the photo has no album (unsorted), behaviour is controlled by `nsfw_sensitive_no_album_action` config: `skip` logs warning and does nothing; `moderate` falls back to `nsfw_status = review`, `is_validated = false`. | See trust-tier matrix above. Album marking via async job respects recursive NSFW check. | — | — | `nsfw.action.sensitive` | Owner directive |
 | FR-045-07 | **New trust tier — `trust_but_verify`**: A new `UserUploadTrustLevel` enum case `TRUST_BUT_VERIFY`. Uploads from these users are immediately validated (`is_validated = true`) like `trusted` users. NSFW scanning is always applied. Block findings are configurable via `nsfw_trust_but_verify_block_action` (default `moderate`). Review findings are auto-approved. Sensitive findings follow the configurable album action. | Upload: `is_validated = true`. NSFW scan always dispatched. Callback applies matrix actions. | — | — | — | Owner directive |
-| FR-045-08 | User trust level integration: users with `upload_trust_level = check` or `monitor` always have NSFW scanning applied on upload. Users with `upload_trust_level = trust_but_verify` always have NSFW scanning applied. Users with `upload_trust_level = trusted` consult global config `nsfw_scan_trusted_users` (boolean) to determine if scanning is applied. The uploader's trust level is snapshotted on the photo at upload time via a new `upload_trust_level` column on `photos` (Q-045-01 → Option B). | `check`/`monitor`/`trust_but_verify`: always scan. `trusted` + `nsfw_scan_trusted_users = true`: scan. `trusted` + `nsfw_scan_trusted_users = false`: skip. | — | — | — | Owner directive, Q-045-01 |
+| FR-045-08 | User trust level integration: uploaders with `upload_trust_level = check` or `monitor` always have NSFW scanning applied on upload. Uploaders with `upload_trust_level = trust_but_verify` always have NSFW scanning applied. Uploaders with `upload_trust_level = trusted` consult global config `nsfw_scan_trusted_users` (boolean) to determine if scanning is applied. The **uploader's** trust level (from `$state->upload_trust_level` on the pipeline DTO, not from `$state->photo->owner`) is snapshotted on the photo at upload time via a new `upload_trust_level` column on `photos` (Q-045-01 → Option B). | `check`/`monitor`/`trust_but_verify`: always scan. `trusted` + `nsfw_scan_trusted_users = true`: scan. `trusted` + `nsfw_scan_trusted_users = false`: skip. | — | — | — | Owner directive, Q-045-01 |
 | FR-045-09 | Actionable detection results are logged to a `nsfw_detections` table with: `id`, `photo_id`, `label` (typed as `NsfwDetectionLabel` enum), `confidence`, `bbox_x`, `bbox_y`, `bbox_width`, `bbox_height`, `area_pixels`, `area_ratio`, `is_block` (bool), `is_review` (bool), `is_sensitive` (bool), `created_at`. Only detections from `block_detected`, `review_detected`, and `sensitive_detected` arrays are stored — `all_detected` is not persisted (Q-045-06). A single detection can appear in multiple arrays simultaneously; all three boolean columns reflect which tiers it belongs to. Dedup by label+bbox: one row per unique detection, booleans merged. | Each detection across `block_detected`, `review_detected`, `sensitive_detected` is matched by label+bbox. One row created per unique detection with `is_block`, `is_review`, `is_sensitive` set according to which arrays it appears in. | — | — | — | Owner directive, Q-045-06 |
 | FR-045-10 | A new `NsfwPreset` enum with 6 cases: `DEFAULT`, `STRICT`, `MODERATION`, `NUDE_FEMALE`, `PERMISSIVE`, `SOCIAL_MEDIA`. Used for config validation and request building. | — | — | — | — | Owner directive |
 | FR-045-11 | Admin can trigger a bulk NSFW scan via `POST /api/v2/NsfwDetection/bulk-scan`. By default scans photos with `nsfw_status IS NULL` or `failed`. Optional `force` boolean parameter re-scans all photos including `visible` and `review` as well (Q-045-09 → B). | Default: `NULL` + `failed` photos dispatched. With `force = true`: all photos re-dispatched. | Admin-only endpoint (existing `AdminMiddleware`). `force` is optional boolean, defaults to `false`. | — | `nsfw.bulk_scan.dispatched` | Owner directive, Q-045-09 |
+| FR-045-18 | Admin can view the NSFW classification service's active runtime configuration and available presets via `GET /api/v2/NsfwDetection/config`. Lychee proxies the request to the external service's `GET /api/nsfw/config` endpoint, authenticated via `X-API-Key` header. The response contains two sections: `config` (active runtime settings as key-value strings) and `presets` (named preset objects, each with `name`, `description`, `block`, `review`, `sensitive` label-set configurations). The presets overview is displayed in a dedicated admin page accessible from the admin dashboard. | Proxy returns upstream JSON as-is. Frontend renders presets in a readable layout: each preset shows its name, description, and the three label-set tiers (block/review/sensitive) with their labels, confidence, area_ratio, and label_thresholds. | Service URL must be configured (`AI_VISION_NSFW_URL`). API key must be configured (`AI_VISION_NSFW_API_KEY`). | Service unreachable → 503 with error message. Service returns error → proxy returns upstream status. URL not configured → 503 with config error message. | — | Owner directive |
 | FR-045-12 | ~~Removed — merged into FR-045-13.~~ | — | — | — | — | — |
 | FR-045-13 | New single enum column `nsfw_status` on `photos` table (nullable string, default `null`). Values: `pending` (scan dispatched, awaiting results), `failed` (scan errored), `review` (moderation action applied — held for admin), `visible` (scan completed with no action, or admin-approved). `null` = not yet scanned. Combined with `is_validated` to provide full moderation context. When `nsfw_status` is set to `review`, `is_validated` is also set to `false`. Cleared by admin approval (set to `visible`, `is_validated = true`). On approval, if the photo has sensitive detections and `nsfw_sensitive_album_action = mark_album`, the album action is applied (see FR-045-06). There is no `blocked` value — block actions hard-delete the photo, so no row survives. | Set to `pending` on dispatch, `failed` on error, `review` or `visible` on callback success (per trust-tier matrix). Set by `NsfwActionService`. | — | — | — | Owner directive, Q-045-02 |
-| FR-045-14 | New column `upload_trust_level` on `photos` table (nullable string). Snapshots the uploading user's `upload_trust_level` at upload time. Used by the NSFW callback to resolve trust-level-aware actions. Populated by the `AutoScanNsfwOnUpload` pipe (or a preceding pipe) during photo creation. | Value is one of `check`, `monitor`, `trust_but_verify`, `trusted`, or null (for photos uploaded before this feature). | — | — | — | Owner directive, Q-045-01 |
+| FR-045-14 | New column `upload_trust_level` on `photos` table (nullable string). Snapshots the **uploader's** (not the photo owner's) trust level at upload time. The uploader and owner may differ — when User A uploads to User B's album, the photo is owned by B but the trust level is A's. The value comes from `$state->upload_trust_level` on the pipeline DTO (pre-resolved from the authenticated user at dispatch time), NOT from `$state->photo->owner`. Used by the NSFW callback to resolve trust-level-aware actions. Populated by the `AutoScanNsfwOnUpload` pipe during photo creation. | Value is one of `check`, `monitor`, `trust_but_verify`, `trusted`, or null (for photos uploaded before this feature). | — | — | — | Owner directive, Q-045-01 |
 | FR-045-15 | Global config `nsfw_sensitive_no_album_action` determines fallback behaviour when album marking fires but the photo has no album (`album_id IS NULL`). Options: `skip` (log warning, do nothing) or `moderate` (set `nsfw_status = review`, `is_validated = false`). Default: `skip`. | When `skip`: warning logged, photo left as-is. When `moderate`: `nsfw_status = review`, `is_validated = false`. | Config value must be `skip` or `moderate`. | — | `nsfw.action.sensitive.no_album_fallback` | Owner directive, Q-045-03 |
 | FR-045-16 | ~~Removed — blocked photos are hard-deleted, so there are no blocked rows to hide. The Moderation page shows photos with `nsfw_status = review` (held for moderation) alongside photos with `is_validated = false` (upload trust level moderation).~~ | — | — | — | — | — |
 | FR-045-17 | **`ApplyNsfwAlbumSensitivityJob`**: A queued job that applies the album NSFW marking for a photo with sensitive detections. Dispatched in two contexts: (1) **auto-approval path** — at callback time for `monitor`/`trust_but_verify`/`trusted` users when `nsfw_sensitive_album_action = mark_album`; (2) **admin approval path** — when an admin approves a moderated `check`-user photo that has `is_sensitive = true` detections and `nsfw_sensitive_album_action = mark_album`. The job loads the photo's direct parent album, checks `is_recursive_nsfw` (if any ancestor is already NSFW, skip), and sets `album.is_nsfw = true` if appropriate. If the photo has no album, the `nsfw_sensitive_no_album_action` config applies (`skip` = log warning; `moderate` = set `nsfw_status = review`, `is_validated = false`). | Job dispatched → album checked → marked if conditions met. | Album must exist; recursive NSFW check must pass. | No album → `nsfw_sensitive_no_album_action` applies. | `nsfw.action.sensitive.album_marked` | Owner directive |
@@ -153,6 +154,61 @@ The core decision engine maps each combination of user trust tier and detection 
 └─────────────────────────────────────────────────────────────┘
 ```
 
+### Admin — NSFW Presets Overview Page
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  [☰]          NSFW Classification Config          [Refresh] │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  ── Service Runtime Config ─────────────────────────────── │
+│                                                             │
+│  ┌────────────────────────┬───────────────────────────────┐ │
+│  │ confidence_threshold   │ 0.1                           │ │
+│  │ area_ratio_threshold   │ 0.0                           │ │
+│  │ queue_backend          │ database                      │ │
+│  │ thread_pool_size       │ 1                             │ │
+│  │ workers                │ 1                             │ │
+│  │ verify_ssl             │ true                          │ │
+│  └────────────────────────┴───────────────────────────────┘ │
+│                                                             │
+│  ── Available Presets (6) ─────────────────────────────────  │
+│                                                             │
+│  ┌─ default ──────────────────────────────────────────────┐ │
+│  │  Built-in default configuration used when no preset    │ │
+│  │  is selected.                                          │ │
+│  │                                                        │ │
+│  │  Block:     FEMALE_GENITALIA_EXPOSED,                  │ │
+│  │             MALE_GENITALIA_EXPOSED, ANUS_EXPOSED       │ │
+│  │  Review:    BUTTOCKS_EXPOSED, FEMALE_BREAST_EXPOSED    │ │
+│  │  Sensitive: FEMALE_BREAST_COVERED,                     │ │
+│  │             FEMALE_GENITALIA_COVERED, ANUS_COVERED,    │ │
+│  │             BUTTOCKS_COVERED, BELLY_EXPOSED            │ │
+│  └────────────────────────────────────────────────────────┘ │
+│                                                             │
+│  ┌─ strict ───────────────────────────────────────────────┐ │
+│  │  Block all exposed nudity. Covered intimate parts      │ │
+│  │  are flagged as sensitive.                             │ │
+│  │                                                        │ │
+│  │  Block:     BUTTOCKS_EXPOSED, FEMALE_BREAST_EXPOSED,   │ │
+│  │             FEMALE_GENITALIA_EXPOSED, ...              │ │
+│  │  Review:    FEMALE_BREAST_COVERED, ...                 │ │
+│  │  Sensitive: BELLY_EXPOSED, ...                         │ │
+│  └────────────────────────────────────────────────────────┘ │
+│                                                             │
+│  ┌─ moderation ───────────────────────────────────────────┐ │
+│  │  ...                                                   │ │
+│  └────────────────────────────────────────────────────────┘ │
+│                                                             │
+│  ┌─ permissive ───────────────────────────────────────────┐ │
+│  │  ...                                                   │ │
+│  └────────────────────────────────────────────────────────┘ │
+│                                                             │
+│  (+ nude_female, social_media)                              │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
 ### Admin Maintenance — Bulk NSFW Scan Card
 
 ```
@@ -224,6 +280,9 @@ The core decision engine maps each combination of user trust tier and detection 
 | ~~S-045-33~~ | ~~Removed — no blocked toggle needed.~~ |
 | S-045-34 | Admin approves photo with sensitive detections + `nsfw_sensitive_album_action = mark_album` + album not recursive NSFW → album marked NSFW |
 | S-045-35 | Admin approves photo with sensitive detections + album already recursive NSFW → album NOT re-marked |
+| S-045-36 | Admin fetches NSFW config → proxy returns upstream JSON with `config` and `presets` sections |
+| S-045-37 | Admin fetches NSFW config but service URL not configured → 503 with config error |
+| S-045-38 | Admin fetches NSFW config but service unreachable → 503 with connectivity error |
 
 ## Test Strategy
 
@@ -259,6 +318,8 @@ The core decision engine maps each combination of user trust tier and detection 
 | API-045-01 | REST POST /api/v2/NsfwDetection/results | Callback from NSFW classifier service | Auth: X-API-Key header. No user session. |
 | API-045-02 | REST POST /api/v2/NsfwDetection/bulk-scan | Admin: enqueue all unscanned photos for NSFW scan | Auth: admin middleware |
 | API-045-03 | HTTP POST /api/nsfw/detect (outbound) | Request sent to NSFW classifier service | Sent by `DispatchNsfwScanJob` |
+| API-045-04 | REST GET /api/v2/NsfwDetection/config | Admin: proxy to NSFW classifier `GET /api/nsfw/config` — returns runtime config and available presets | Auth: admin session. Proxies upstream response as-is. |
+| API-045-05 | HTTP GET /api/nsfw/config (outbound) | Config/presets request sent to NSFW classifier service | Proxied by `NsfwConfigController::show()` |
 
 ### Telemetry Events
 
@@ -279,6 +340,7 @@ The core decision engine maps each combination of user trust tier and detection 
 | UI-045-01 | NSFW settings section in admin Settings page | Admin navigates to Settings → NSFW Detection section visible with trust-tier matrix summary |
 | UI-045-02 | Bulk NSFW Scan card in Maintenance page | Admin navigates to Maintenance → card visible when `ai_vision_nsfw_enabled = true` |
 | UI-045-03 | Moderation page with NSFW status column | Photos with `nsfw_status = review` shown with NSFW badge; no blocked filter needed |
+| UI-045-04 | NSFW Presets overview admin page | Admin navigates to `/admin/nsfw-config` → page fetches upstream config, displays service runtime settings and all available presets with their block/review/sensitive label-set details. Accessible from admin dashboard tile (visible when AI Vision enabled). Shows loading spinner while fetching; error panel when service unreachable. |
 
 ## Telemetry & Observability
 
@@ -359,6 +421,13 @@ routes:
     method: POST
     path: /api/nsfw/detect
     direction: outbound
+  - id: API-045-04
+    method: GET
+    path: /api/v2/NsfwDetection/config
+  - id: API-045-05
+    method: GET
+    path: /api/nsfw/config
+    direction: outbound
 telemetry_events:
   - id: TE-045-01
     event: nsfw.scan.dispatched
@@ -381,6 +450,8 @@ ui_states:
     description: Bulk NSFW Scan card in Maintenance
   - id: UI-045-03
     description: Moderation page with NSFW status column
+  - id: UI-045-04
+    description: NSFW Presets overview admin page at /admin/nsfw-config
 config_keys:
   - key: ai_vision_nsfw_enabled
     type: bool
@@ -563,6 +634,64 @@ When preset is `default`, the request body is:
   "photo_path": "2024/01/photo.jpg"
 }
 ```
+
+### Example Upstream Config Response (NSFW classifier → Lychee via proxy)
+
+`GET /api/nsfw/config` — proxied through `GET /api/v2/NsfwDetection/config`:
+
+```json
+{
+  "config": {
+    "confidence_threshold": "0.1",
+    "area_ratio_threshold": "0.0",
+    "block": "{\"labels\": [\"FEMALE_GENITALIA_EXPOSED\", ...], \"confidence\": null, ...}",
+    "review": "...",
+    "sensitive": "...",
+    "queue_backend": "database",
+    "queue_max_size": "0",
+    "thread_pool_size": "1",
+    "verify_ssl": "true",
+    "workers": "1"
+  },
+  "presets": {
+    "default": {
+      "name": "default",
+      "description": "Built-in default configuration used when no preset is selected.",
+      "block": {
+        "labels": ["FEMALE_GENITALIA_EXPOSED", "MALE_GENITALIA_EXPOSED", "ANUS_EXPOSED"],
+        "confidence": null,
+        "area_ratio": null,
+        "label_thresholds": {}
+      },
+      "review": {
+        "labels": ["BUTTOCKS_EXPOSED", "FEMALE_BREAST_EXPOSED"],
+        "confidence": null,
+        "area_ratio": null,
+        "label_thresholds": {}
+      },
+      "sensitive": {
+        "labels": ["FEMALE_BREAST_COVERED", "FEMALE_GENITALIA_COVERED", "ANUS_COVERED", "BUTTOCKS_COVERED", "BELLY_EXPOSED"],
+        "confidence": null,
+        "area_ratio": null,
+        "label_thresholds": {}
+      }
+    },
+    "strict": { "name": "strict", "description": "Block all exposed nudity. ...", "block": {"...": "..."}, "review": {"...": "..."}, "sensitive": {"...": "..."} },
+    "moderation": { "...": "..." },
+    "nude_female": { "...": "..." },
+    "permissive": { "...": "..." },
+    "social_media": { "...": "..." }
+  }
+}
+```
+
+Each preset's `block`, `review`, and `sensitive` objects share the same label-set shape:
+- `labels` — `string[]` — detection labels assigned to this tier
+- `confidence` — `float|null` — global confidence threshold override (null = use service default)
+- `area_ratio` — `float|null` — global area ratio threshold override (null = use service default)
+- `label_thresholds` — `Record<string, float>` — per-label confidence overrides
+
+Reference: [Lychee-NSFW-Classification API docs](https://github.com/LycheeOrg/Lychee-NSFW-Classification/blob/master/docs/3-reference/api.md)
 
 ### Detection Storage
 

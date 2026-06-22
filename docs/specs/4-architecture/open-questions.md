@@ -22,7 +22,7 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 | ~~Q-045-01~~ | 045 – NSFW Moderation | High | Callback stores `owner_id` on detection — how does the controller resolve the uploading user from the callback payload? | Resolved (B – snapshot trust level on photo) | 2026-06-21 | 2026-06-21 |
 | ~~Q-045-02~~ | 045 – NSFW Moderation | High | "Block" action semantics — should blocked photos be soft-deleted, hidden via `is_validated`, or use a dedicated visibility flag? | Resolved (Custom – single `nsfw_status` enum + `is_validated`; no `blocked` value, block = hard-delete) | 2026-06-21 | 2026-06-22 |
 | ~~Q-045-03~~ | 045 – NSFW Moderation | High | Sensitive action on unsorted photos (no album) — should it create a "Sensitive" album, mark as moderation instead, or skip? | Resolved (Custom – configurable: skip or fall back to moderate) | 2026-06-21 | 2026-06-21 |
-| ~~Q-045-04~~ | 045 – NSFW Moderation | High | User context in upload pipe — `StandaloneDTO` may not carry the uploading user's trust level; how to resolve it? | Resolved (subsumed by Q-045-01 → B; pipe loads owner to snapshot) | 2026-06-21 | 2026-06-21 |
+| ~~Q-045-04~~ | 045 – NSFW Moderation | High | User context in upload pipe — `StandaloneDTO` may not carry the uploading user's trust level; how to resolve it? | Resolved (subsumed by Q-045-01 → B; pipe reads `$state->upload_trust_level` from DTO — uploader's level, not owner's) | 2026-06-21 | 2026-06-22 |
 | ~~Q-045-05~~ | 045 – NSFW Moderation | Medium | Should the NSFW service share the same base URL as the face detection service, or use a completely separate URL? | Resolved (A – separate URL + API key) | 2026-06-21 | 2026-06-21 |
 | ~~Q-045-06~~ | 045 – NSFW Moderation | Medium | Detection log granularity — store every individual detection, or only summary flags on the photo? | Resolved (A modified – block/review/sensitive only, not all_detected) | 2026-06-21 | 2026-06-21 |
 | ~~Q-045-07~~ | 045 – NSFW Moderation | Medium | Per-album or per-user preset override — should this be supported in v1, or deferred? | Resolved (A – deferred) | 2026-06-21 | 2026-06-21 |
@@ -3297,22 +3297,23 @@ EXISTS (
 
 **Status:** Resolved — **Option B** (snapshot trust level on photo at upload time)  
 **Feature:** 045 – NSFW Detection & Moderation  
-**Resolution:** New `upload_trust_level` column on `photos` table, populated by the `AutoScanNsfwOnUpload` pipe at upload time. Callback reads the snapshotted value from the photo instead of querying the user's current trust level. This captures the trust level in effect at upload time. Encoded in FR-045-07, FR-045-08, FR-045-14, T-045-05, T-045-13.
+**Resolution:** New `upload_trust_level` column on `photos` table, populated by the `AutoScanNsfwOnUpload` pipe at upload time from `$state->upload_trust_level` (the **uploader's** trust level from the pipeline DTO, not the photo owner's). This distinction matters because the uploader and owner may differ — when User A uploads to User B's album, `photo.owner_id` = B but the trust level should be A's. Callback reads the snapshotted value from the photo instead of querying the user's current trust level. Encoded in FR-045-07, FR-045-08, FR-045-14, T-045-05, T-045-13.
 
 **Question**  
-The NSFW callback endpoint receives `photo_id` but no user context. To apply trust-level-aware actions (FR-045-08: auto-approve moderation for trusted users), the controller needs to know who uploaded the photo. The `photos` table has an `owner_id` column (FK to `users.id`). Should the controller query `Photo::owner_id` to resolve the user's trust level, or should the uploading user's trust level be stored on the photo at upload time?
+The NSFW callback endpoint receives `photo_id` but no user context. To apply trust-level-aware actions (FR-045-08: auto-approve moderation for trusted users), the controller needs to know who uploaded the photo. The `photos` table has an `owner_id` column (FK to `users.id`), but `owner_id` reflects the **album owner** (via `SetOwnership` pipe), not necessarily the uploader. Should the controller query `Photo::owner_id` to resolve the user's trust level, or should the uploading user's trust level be stored on the photo at upload time?
 
 ---
 
-#### 🅰️ (**recommended**) Option A – Look up `owner_id` at callback time
+#### 🅰️ Option A – Look up `owner_id` at callback time _(rejected)_
 
 - **Idea:** When processing the callback, load `Photo` with `owner` relation, read `$photo->owner->upload_trust_level`. This is a single extra JOIN.
 - **Spec impact:** No new columns. T-045-15 controller logic includes `$photo->load('owner')`.
 - **Pros:**
   - ✅ No schema changes — `owner_id` already exists on `photos`.
-  - ✅ Always reflects the user's current trust level (if admin changes trust level between upload and scan completion, the current level applies).
+  - ✅ Always reflects the user's current trust level.
   - ✅ Simplest implementation.
 - **Cons:**
+  - ❌ **Critical flaw:** `owner_id` is the album owner, not the uploader. When User A uploads to User B's album, `owner_id = B` — this would apply B's trust level instead of A's.
   - ❌ If trust level changed between upload and scan, the "current" level may not match intent at upload time.
 
 ---
@@ -3329,7 +3330,7 @@ The NSFW callback endpoint receives `photo_id` but no user context. To apply tru
 
 ---
 
-**Next action:** Decide before T-045-15 implementation. Option A is simpler and reflects the admin's latest trust decision, which is likely the desired behaviour.
+**Next action:** Resolved → Option B. Option A is flawed because `owner_id` is the album owner, not the uploader. The DTO already carries `$state->upload_trust_level` (the authenticated uploader's trust level), so no extra query is needed.
 
 ---
 
@@ -3362,7 +3363,7 @@ Default value: `skip`. This gives the admin explicit control over the trade-off 
 
 **Status:** Resolved — subsumed by Q-045-01 → Option B  
 **Feature:** 045 – NSFW Detection & Moderation  
-**Resolution:** Since Q-045-01 resolved to snapshot `upload_trust_level` on the photo at upload time, the pipe loads `$state->photo->owner` (via the existing `owner_id` FK) to read the trust level and write it to the new `upload_trust_level` column. This resolves both questions: the pipe gets user context via `Photo::owner` (one extra query, acceptable per-upload), and the callback later reads the snapshotted value from the photo directly. No DTO changes needed. Encoded in T-045-13.
+**Resolution:** Since Q-045-01 resolved to snapshot `upload_trust_level` on the photo at upload time, the pipe reads `$state->upload_trust_level` from the pipeline DTO — this is the **uploader's** trust level, pre-resolved at dispatch time from the authenticated user. It does NOT use `$state->photo->owner` (which is the album owner, not the uploader). No extra query needed — the DTO already carries the uploader's trust level. Encoded in T-045-15.
 
 ---
 

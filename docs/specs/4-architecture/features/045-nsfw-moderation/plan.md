@@ -42,7 +42,7 @@ Enable automated NSFW content detection for Lychee photo uploads using the Lyche
 | Dependency | Type | Notes |
 |------------|------|-------|
 | Lychee-NSFW-Classification service | External | Must be running and accessible. Shared Docker volume for photo access. |
-| Feature 033 – Upload Trust Level | Internal | `upload_trust_level` column on `users` table. `UserUploadTrustLevel` enum — extended with `TRUST_BUT_VERIFY`. |
+| Feature 033 – Upload Trust Level | Internal | `upload_trust_level` column on `users` table. `UserUploadTrustLevel` enum — extended with `TRUST_BUT_VERIFY`. Note: the uploader's trust level (from the DTO) may differ from the photo owner's — when User A uploads to User B's album, `photo.owner_id = B` but the trust level is A's. |
 | `is_validated` column on `photos` | Internal | Used by moderation to hide photos from public views. Combined with `nsfw_status` for full moderation context. |
 | `is_nsfw` column on `base_albums` | Internal | Used to mark albums as sensitive. |
 | `is_recursive_nsfw` virtual column | Internal | AlbumBuilder query — checks if any ancestor album is NSFW. Used to avoid redundant marking. |
@@ -50,6 +50,7 @@ Enable automated NSFW content detection for Lychee photo uploads using the Lyche
 | `config/features.php` | Internal | New env vars for NSFW service URL and API key. |
 | `SetUploadValidated` pipe | Internal | Must be updated to handle `TRUST_BUT_VERIFY` (validated = true, like `MONITOR`/`TRUSTED`). |
 | `ModerationController` | Internal | Must be updated for approval-time album marking and `nsfw_status` display. |
+| `useAdminTiles.ts` | Internal | Admin dashboard tile for NSFW Config page. |
 
 ## Assumptions & Risks
 
@@ -104,10 +105,12 @@ After I4 (all backend increments complete), run:
   1. Add `nsfw-url` and `nsfw-api-key` to `config/features.php` under `ai-vision-service`.
   2. Create `NsfwDetectionService` (`app/Services/Image/NsfwDetectionService.php`) — HTTP client wrapper for `POST /api/nsfw/detect`. Queries use `nsfw_status` column for dispatch eligibility.
   3. Create `NsfwActionService` (`app/Services/Image/NsfwActionService.php`) — implements the trust-tier × finding-tier matrix. Reads `upload_trust_level` from photo, applies configured actions. Sets `nsfw_status` to `review` or `visible` based on matrix outcome. For block findings: reads per-trust-level config (`nsfw_check_block_action`, `nsfw_monitor_block_action`, `nsfw_trust_but_verify_block_action`, or `nsfw_trust_block_action`). For album marking on non-moderated tiers: checks `is_recursive_nsfw` before marking. Album marking is triggered by a `ApplyNsfwAlbumSensitivityJob` dispatched on auto-approval or admin approval.
-  4. Write unit tests for `NsfwDetectionService` (preset omission, request building).
-  5. Write unit tests for `NsfwActionService` (all matrix combinations from S-045-04 to S-045-19).
-- _Commands:_ `php artisan test --filter=NsfwDetection`, `make phpstan`
-- _Exit:_ Services instantiable, unit tests pass, PHPStan 0.
+  4. Create `NsfwConfigController` (`app/Http/Controllers/AiVision/NsfwConfigController.php`) — single `show()` method that proxies `GET /api/nsfw/config` from the external NSFW classification service. Auth: admin session (within `feature:ai-vision` + `feature:v8` middleware group). Reads `nsfw-url` and `nsfw-api-key` from `config/features.php`. Returns upstream JSON as-is on success; 503 with error on misconfiguration or connectivity failure.
+  5. Register route `GET /NsfwDetection/config` in `routes/api_v2.php` within the existing AI Vision middleware group.
+  6. Write unit tests for `NsfwDetectionService` (preset omission, request building).
+  7. Write unit tests for `NsfwActionService` (all matrix combinations from S-045-04 to S-045-19).
+- _Commands:_ `php artisan test --filter=NsfwDetection`, `php artisan test --filter=NsfwConfig`, `make phpstan`
+- _Exit:_ Services instantiable, config proxy endpoint returns upstream JSON, unit tests pass, PHPStan 0.
 
 ### I3 – Model & Jobs (≤90 min)
 
@@ -159,10 +162,14 @@ After I4 (all backend increments complete), run:
   4. Update Moderation page: add `nsfw_status` column/badge (UI-045-03). No blocked filter needed — block actions hard-delete photos.
   5. Update `ModerationResource` to include `nsfw_status`.
   6. Update `ModerationController::list()` — no blocked filtering needed (deleted photos have no rows).
-  7. Add translation keys for NSFW settings labels (English first, others as follow-up).
-  8. Update TypeScript type for `UserUploadTrustLevel` if not done in I1.
+  7. Create `nsfw-config-service.ts` — frontend service with `getConfig()` method calling `GET /NsfwDetection/config`.
+  8. Create `NsfwConfig.vue` admin page (`resources/js/views/admin/NsfwConfig.vue`) — fetches upstream config via `nsfw-config-service.ts`, displays: (a) service runtime config as a key-value table (excluding JSON-encoded fields `block`/`review`/`sensitive`), (b) each preset as a card showing name, description, and the three label-set tiers (block/review/sensitive) with their labels rendered as tag chips. Loading spinner while fetching; error panel when service unreachable. Refresh button to re-fetch. Per mockup UI-045-04.
+  9. Register frontend route `/admin/nsfw-config` → `NsfwConfig.vue` in `resources/js/router/routes.ts`.
+  10. Add admin dashboard tile for NSFW Config in `useAdminTiles.ts` — visible when `is_ai_vision_enabled` and `can_edit`. Icon: `pi pi-eye`, group: `extensions`.
+  11. Add translation keys for NSFW settings labels and presets overview page (English first, others as follow-up).
+  12. Update TypeScript type for `UserUploadTrustLevel` if not done in I1.
 - _Commands:_ `npm run check`, `npm run format`
-- _Exit:_ Settings section renders with matrix, moderation page shows NSFW status badge.
+- _Exit:_ Settings section renders with matrix, moderation page shows NSFW status badge, presets overview page loads and displays upstream config.
 
 ### I7 – Quality Gates & Documentation (≤30 min)
 
@@ -218,6 +225,9 @@ After I4 (all backend increments complete), run:
 | ~~S-045-33~~ | — | Removed — no blocked toggle needed |
 | S-045-34 | I5 / T-045-19 | Approval: sensitive + mark_album + not recursive → album marked |
 | S-045-35 | I5 / T-045-19 | Approval: sensitive + album recursive NSFW → skip |
+| S-045-36 | I2 / T-045-10b | Config proxy: admin fetches → upstream JSON returned |
+| S-045-37 | I2 / T-045-10b | Config proxy: URL not configured → 503 |
+| S-045-38 | I2 / T-045-10b | Config proxy: service unreachable → 503 |
 
 ## Analysis Gate
 
@@ -241,6 +251,8 @@ _Not yet completed. Run after I1–I5 are implemented._
 - [ ] Knowledge map and roadmap updated.
 - [ ] Admin Settings UI renders NSFW section with trust-tier matrix summary.
 - [ ] Admin Maintenance UI renders bulk scan card.
+- [ ] `GET /api/v2/NsfwDetection/config` proxies upstream config and returns presets JSON.
+- [ ] NSFW Presets overview page renders service config and preset cards at `/admin/nsfw-config`.
 
 ## Follow-ups / Backlog
 

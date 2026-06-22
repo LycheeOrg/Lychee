@@ -110,6 +110,21 @@ _Last updated: 2026-06-22_
   - `php artisan test --filter=NsfwActionService`  
   - `make phpstan`
 
+- [ ] T-045-10b – Create `NsfwConfigController` and register route (FR-045-18, API-045-04, API-045-05, S-045-36, S-045-37, S-045-38).  
+  _Intent:_ `app/Http/Controllers/AiVision/NsfwConfigController.php`. Single `show()` method:
+  - Reads `nsfw-url` and `nsfw-api-key` from `config('features.ai-vision-service')`.
+  - If URL not configured → return 503 with error message.
+  - Proxies `GET /api/nsfw/config` to the external NSFW classification service, authenticated via `X-API-Key` header.
+  - On success: return upstream JSON response as-is (contains `config` and `presets` sections).
+  - On upstream error: return 502 with error message.
+  - On connectivity failure: return 503 with error message.
+  Register route `GET /NsfwDetection/config` in `routes/api_v2.php` inside the existing `['feature:ai-vision', 'feature:v8']` middleware group (admin session required — inherits existing auth middleware).  
+  Write feature tests for: successful proxy, URL not configured (503), service unreachable (503).  
+  _Verification commands:_  
+  - `php artisan test --filter=NsfwConfig`  
+  - `make phpstan`  
+  _Notes:_ Follows the same `Http::withHeaders(['X-API-Key' => ...])` pattern as `FacialRecognitionService`. Timeout: 10s. Response is proxied as-is — Lychee does not validate or transform the upstream payload.
+
 ### I3 – Model & Jobs
 
 - [ ] T-045-13 – Create `NsfwDetection` model (DO-045-01).  
@@ -139,7 +154,7 @@ _Last updated: 2026-06-22_
 - [ ] T-045-15 – Create `AutoScanNsfwOnUpload` pipe (FR-045-01, FR-045-08, FR-045-14, S-045-01 to S-045-03, S-045-22, S-045-23, S-045-31).  
   _Intent:_ `app/Actions/Photo/Pipes/Standalone/AutoScanNsfwOnUpload.php`. Implements `StandalonePipe`. After `$state = $next($state)`:
   1. `$state->photo->isPhoto()` — skip non-photos.
-  2. Snapshot the uploading user's trust level: `$state->photo->upload_trust_level = $state->photo->owner->upload_trust_level` and save.
+  2. Snapshot the uploader's trust level: `$state->photo->upload_trust_level = $state->upload_trust_level` (from the DTO, which carries the authenticated uploader's trust level — NOT `$state->photo->owner`, which is the album owner and may differ from the uploader).
   3. `ai_vision_enabled` config — skip if global AI Vision is disabled.
   4. `ai_vision_nsfw_enabled` config — skip if NSFW classification is disabled.
   5. Trust level check using the just-snapshotted value: `check`/`monitor`/`trust_but_verify` → always dispatch. `trusted` → dispatch only if `nsfw_scan_trusted_users = true`.
@@ -238,6 +253,34 @@ _Last updated: 2026-06-22_
   _Verification commands:_  
   - `npm run check`
 
+- [ ] T-045-24b – Create `nsfw-config-service.ts` (API-045-04, FR-045-18).  
+  _Intent:_ `resources/js/services/nsfw-config-service.ts`. TypeScript types and service:
+  - Type `NsfwLabelSet`: `{ labels: string[], confidence: number | null, area_ratio: number | null, label_thresholds: Record<string, number> }`
+  - Type `NsfwPresetConfig`: `{ name: string, description: string, block: NsfwLabelSet, review: NsfwLabelSet, sensitive: NsfwLabelSet }`
+  - Type `NsfwConfigResponse`: `{ config: Record<string, string>, presets: Record<string, NsfwPresetConfig> }`
+  - Method `getConfig()` calling `GET /NsfwDetection/config`.  
+  _Verification commands:_  
+  - `npm run check`
+
+- [ ] T-045-24c – Create `NsfwConfig.vue` admin page (FR-045-18, UI-045-04).  
+  _Intent:_ `resources/js/views/admin/NsfwConfig.vue`. Dedicated admin page for viewing the NSFW classification service's presets overview:
+  - Fetches config via `nsfw-config-service.ts` `getConfig()` on mount.
+  - **Service Runtime Config** section: renders `config` object as a key-value table. Excludes JSON-encoded fields (`block`, `review`, `sensitive`) since they are the stringified defaults — the presets section provides the parsed version.
+  - **Available Presets** section: renders each preset as a card/panel showing:
+    - Preset name as header (highlight if it matches the active `nsfw_preset` config key).
+    - Description text.
+    - Three sub-sections (Block / Review / Sensitive) each showing labels as tag chips, plus confidence and area_ratio overrides if non-null.
+  - Toolbar with title and refresh button.
+  - Loading spinner (ProgressSpinner) while fetching.
+  - Error panel when service unreachable (show error message from API).
+  - Uses PrimeVue components: Panel, Tag, DataTable (for config), ProgressSpinner, Button.
+  Register route in `resources/js/router/routes.ts`: `{ name: "nsfw-config", path: "/admin/nsfw-config", component: NsfwConfig }`.  
+  Add admin dashboard tile in `resources/js/composables/useAdminTiles.ts`: key `nsfw-config`, group `extensions`, icon `pi pi-eye`, visible when `is_ai_vision_enabled` and `can_edit`.  
+  _Verification commands:_  
+  - `npm run check`  
+  - `npm run format`  
+  - Manual: navigate to `/admin/nsfw-config`, verify page loads and displays presets when service is configured.
+
 - [ ] T-045-25 – Update Moderation page: NSFW status badge (FR-045-13, UI-045-03).  
   _Intent:_ 
   - Update `ModerationResource` to include `nsfw_status` field.
@@ -248,8 +291,8 @@ _Last updated: 2026-06-22_
   - `php artisan test --filter=Moderation`  
   - `make phpstan`
 
-- [ ] T-045-26 – Add translation keys for NSFW settings (22 languages).  
-  _Intent:_ Add English translation keys first; other languages as follow-up. Keys for: section title, enable label, preset label, each preset name, block finding action labels, sensitive album action labels, no-album fallback labels, trust level labels, NSFW badge labels for Moderation view, trust-tier matrix labels.  
+- [ ] T-045-26 – Add translation keys for NSFW settings and presets page (22 languages).  
+  _Intent:_ Add English translation keys first; other languages as follow-up. Keys for: section title, enable label, preset label, each preset name, block finding action labels, sensitive album action labels, no-album fallback labels, trust level labels, NSFW badge labels for Moderation view, trust-tier matrix labels. Additionally for the presets overview page: page title, service config section header, presets section header, block/review/sensitive tier labels, refresh button label, loading text, error messages (service not configured, service unreachable).  
   _Verification commands:_  
   - `npm run check`
 
@@ -283,10 +326,10 @@ _Last updated: 2026-06-22_
 - **Config keys**: 9 config keys. Block action configurable per trust level: `nsfw_check_block_action` (default `block`), `nsfw_monitor_block_action` (default `moderate`), `nsfw_trust_but_verify_block_action` (default `moderate`), `nsfw_trust_block_action` (default `approve`).
 
 ### Resolved Questions
-- **Q-045-01 → B:** `upload_trust_level` snapshotted on `photos` at upload time. Now includes `trust_but_verify` value.
+- **Q-045-01 → B:** `upload_trust_level` snapshotted on `photos` at upload time from `$state->upload_trust_level` (the uploader's trust level, not the photo owner's). Now includes `trust_but_verify` value.
 - **Q-045-02 → Custom:** Single `nsfw_status` enum (pending/failed/review/visible) + `is_validated` combination. No `blocked` value — block actions hard-delete the photo row.
 - **Q-045-03 → Custom:** Configurable via `nsfw_sensitive_no_album_action` (skip/moderate).
-- **Q-045-04 → Subsumed** by Q-045-01. Pipe loads `$state->photo->owner` to snapshot trust level.
+- **Q-045-04 → Subsumed** by Q-045-01. Pipe reads `$state->upload_trust_level` from the DTO (the uploader's trust level, pre-resolved at dispatch time). Does NOT use `$state->photo->owner` — the owner may be the album owner, not the uploader.
 - **Q-045-05 → A:** Separate URL (`AI_VISION_NSFW_URL`) and API key (`AI_VISION_NSFW_API_KEY`).
 - **Q-045-06 → A (modified):** Store individual detections but only from `block_detected`/`review_detected`/`sensitive_detected`. `all_detected` NOT persisted.
 - **Q-045-07 → A:** Global preset only in v1.
@@ -302,3 +345,5 @@ _Last updated: 2026-06-22_
 - Hard-delete on block means `nsfw_detections` rows cascade-delete with the photo. The action is logged via telemetry before deletion.
 - `SetUploadValidated` already handles `trust_but_verify` correctly (anything != CHECK is validated), but a test should confirm this.
 - The `is_recursive_nsfw` virtual column on `AlbumBuilder` provides the ancestor NSFW check — use `Album::query()->addVirtualIsRecursiveNSFW()->find($albumId)` to load it.
+- **NSFW Config proxy** (T-045-10b): Pure pass-through — Lychee does not validate, transform, or cache the upstream response. The controller follows the same `Http::withHeaders(['X-API-Key' => ...])` pattern as `FacialRecognitionService`. The frontend page is read-only (no editing of upstream config from Lychee).
+- **Presets overview page** (T-045-24c): The upstream `config` object contains stringified JSON in `block`/`review`/`sensitive` keys (the service's active label-set defaults). These are excluded from the runtime config table since the parsed versions are already displayed in the presets section. The `presets` object always includes `default` plus any named presets (`strict`, `moderation`, `nude_female`, `permissive`, `social_media`).
