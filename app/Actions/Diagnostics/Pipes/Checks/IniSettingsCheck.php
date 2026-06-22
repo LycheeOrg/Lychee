@@ -133,15 +133,15 @@ class IniSettingsCheck implements DiagnosticPipe
 		}
 		// @codeCoverageIgnoreEnd
 
-		$path = sys_get_temp_dir();
+		$path = Helpers::getTmpDir();
 		if (!is_writable($path)) {
 			// @codeCoverageIgnoreStart
-			$data[] = DiagnosticData::error('sys_get_temp_dir() is not writable, this will prevent you from uploading pictures.', self::class);
+			$data[] = DiagnosticData::error('The temp directory (' . $path . ') is not writable, this will prevent you from uploading pictures. Set USE_SYSTEM_TEMP_DIR=false in .env to use storage/tmp/uploads_parts instead.', self::class);
 			// @codeCoverageIgnoreEnd
 		}
 		if (!is_readable($path)) {
 			// @codeCoverageIgnoreStart
-			$data[] = DiagnosticData::error('sys_get_temp_dir() is not readable, this will prevent you from uploading pictures.', self::class);
+			$data[] = DiagnosticData::error('The temp directory (' . $path . ') is not readable, this will prevent you from uploading pictures. Set USE_SYSTEM_TEMP_DIR=false in .env to use storage/tmp/uploads_parts instead.', self::class);
 			// @codeCoverageIgnoreEnd
 		}
 

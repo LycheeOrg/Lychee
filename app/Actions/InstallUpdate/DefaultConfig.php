@@ -138,6 +138,10 @@ class DefaultConfig
 					$this->config['requirements']['php'][] = $db_possibility[1];
 				}
 			}
+
+			if (config('features.use-system-temp-dir') === false) {
+				$this->config['permissions']['storage/tmp/uploads_parts/'] = 'file_exists|is_readable|is_writable|is_executable';
+			}
 			// @codeCoverageIgnoreStart
 		} catch (BindingResolutionException|ContainerExceptionInterface $e) {
 			throw new FrameworkException('Laravel\'s container component', $e);

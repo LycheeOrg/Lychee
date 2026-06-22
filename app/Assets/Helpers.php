@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Safe\Exceptions\FilesystemException;
 use Safe\Exceptions\InfoException;
 use function Safe\ini_get;
+use function Safe\mkdir;
 use function Safe\rmdir;
 use function Safe\unlink;
 
@@ -40,6 +41,26 @@ class Helpers
 		}
 
 		return (string) $short_id;
+	}
+
+	/**
+	 * Return the temporary directory path used for uploads.
+	 *
+	 * When features.use-system-temp-dir is true (default), returns sys_get_temp_dir().
+	 * Otherwise returns storage/tmp/uploads_parts, creating it if needed.
+	 */
+	public function getTmpDir(): string
+	{
+		if (config('features.use-system-temp-dir', true) === true) {
+			return sys_get_temp_dir();
+		}
+
+		$path = storage_path('tmp/uploads_parts');
+		if (!file_exists($path)) {
+			mkdir($path, 0755, true);
+		}
+
+		return $path;
 	}
 
 	/**
