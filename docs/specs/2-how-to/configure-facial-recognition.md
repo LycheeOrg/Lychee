@@ -12,22 +12,32 @@ Lychee's facial recognition feature is powered by a sidecar Python service ([`ly
 1. [Prerequisites](#prerequisites)
 2. [Docker Compose setup](#docker-compose-setup)
 3. [Shared volume configuration](#shared-volume-configuration)
-4. [Environment variables](#environment-variables)
-5. [Enabling the feature in Lychee admin](#enabling-the-feature-in-lychee-admin)
-6. [Permission modes](#permission-modes)
-7. [Running a bulk scan](#running-a-bulk-scan)
-8. [Clustering](#clustering)
-9. [Maintenance operations](#maintenance-operations)
-10. [Service health check](#service-health-check)
-11. [Troubleshooting](#troubleshooting)
+4. [Non-Docker (bare-metal) setup](#non-docker-bare-metal-setup)
+5. [Environment variables](#environment-variables)
+6. [Enabling the feature in Lychee admin](#enabling-the-feature-in-lychee-admin)
+7. [Permission modes](#permission-modes)
+8. [Running a bulk scan](#running-a-bulk-scan)
+9. [Clustering](#clustering)
+10. [Maintenance operations](#maintenance-operations)
+11. [Service health check](#service-health-check)
+12. [Troubleshooting](#troubleshooting)
 
 ---
 
 ## Prerequisites
 
+### Docker deployment
+
 - Docker and Docker Compose v2
 - A working Lychee deployment (see [docker-compose.yaml](../../../docker-compose.yaml))
 - The `lychee_worker` container running (face scans are processed through the queue)
+
+### Non-Docker (bare-metal) deployment
+
+- Python 3.13+ with [`uv`](https://docs.astral.sh/uv/)
+- A working Lychee installation (Apache/Nginx + PHP)
+- A running queue worker (`php artisan queue:work`) — face scans are processed through the queue
+- Git (to clone the facial recognition service repository)
 
 ---
 
@@ -101,6 +111,112 @@ The facial recognition service reads photo files directly from the filesystem �
 
 ---
 
+## Non-Docker (Bare-Metal) Setup
+
+If you run Lychee directly on a server (e.g. via Apache/Nginx + PHP), you can run the facial recognition service as a standalone Python process without Docker.
+
+### 1. Clone and install the service
+
+```bash
+cd /opt
+git clone https://github.com/LycheeOrg/Lychee-Facial-Recognition.git
+cd Lychee-Facial-Recognition
+
+# Install dependencies (uv will create a .venv automatically)
+uv sync
+```
+
+### 2. Configure the service
+
+Copy the example environment file and edit it:
+
+```bash
+cp .env.example .env
+```
+
+Key variables to set in the `.env` file:
+
+```bash
+# URL where Lychee is accessible (used for callbacks)
+VISION_FACE_LYCHEE_API_URL=http://localhost
+
+# Shared secret — must match AI_VISION_FACE_API_KEY in Lychee's .env
+VISION_FACE_API_KEY=changeme
+
+# Point directly to Lychee's uploads directory on disk
+VISION_FACE_PHOTOS_PATH=/var/www/lychee/public/uploads
+
+# Where to store the SQLite embedding database
+VISION_FACE_STORAGE_BACKEND=sqlite
+VISION_FACE_STORAGE_PATH=/opt/Lychee-Facial-Recognition/data/embeddings
+
+# SSL verification (set to false if Lychee is on localhost without HTTPS)
+VISION_FACE_VERIFY_SSL=false
+```
+
+> Adjust `VISION_FACE_PHOTOS_PATH` to match your actual Lychee uploads directory. The service reads photo files directly from the filesystem — it must have read access to this directory.
+
+### 3. Configure Lychee
+
+In your Lychee `.env` file, point to the facial recognition service:
+
+```bash
+AI_VISION_ENABLED=true
+AI_VISION_FACE_URL=http://localhost:8000
+AI_VISION_FACE_API_KEY=changeme
+```
+
+> **Important:** `AI_VISION_FACE_API_KEY` (Lychee) must match `VISION_FACE_API_KEY` (Python service).
+
+### 4. Start the service
+
+```bash
+cd /opt/Lychee-Facial-Recognition
+uv run uvicorn app.main:app --host 0.0.0.0 --port 8000
+```
+
+For production, run it as a background process using a process manager like systemd or supervisor.
+
+**Example systemd unit** (`/etc/systemd/system/lychee-facial-recognition.service`):
+
+```ini
+[Unit]
+Description=Lychee Facial Recognition Service
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/opt/Lychee-Facial-Recognition
+EnvironmentFile=/opt/Lychee-Facial-Recognition/.env
+ExecStart=/usr/bin/uv run uvicorn app.main:app --host 127.0.0.1 --port 8000
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable --now lychee-facial-recognition
+```
+
+### 5. Verify the service is running
+
+```bash
+curl http://localhost:8000/health
+```
+
+Expected response:
+```json
+{"status": "ok", "model_loaded": true, "embedding_count": 0}
+```
+
+> **Note:** On first start, the service will download the face detection model, which may take a few minutes depending on your internet connection.
+
+---
+
 ## Environment Variables
 
 ### Lychee API (`lychee_api` / `lychee_worker`)
@@ -131,7 +247,7 @@ Add these to `x-common-env` or the service's `environment` block:
 | **Clustering** | | |
 | `VISION_FACE_CLUSTER_EPS` | DBSCAN epsilon (max cosine distance); lower = tighter clusters | `0.6` |
 | **Storage** | | |
-| `VISION_FACE_PHOTOS_PATH` | Path where photos are mounted inside the container | `/data/photos` |
+| `VISION_FACE_PHOTOS_PATH` | Path where photos are accessible by the service (container mount or local directory) | `/data/photos` |
 | `VISION_FACE_STORAGE_BACKEND` | Embedding store engine: `sqlite` or `pgvector` | `sqlite` |
 | `VISION_FACE_STORAGE_PATH` | Directory for the SQLite embedding database | `/data/embeddings` |
 | **Concurrency** | | |
@@ -155,7 +271,7 @@ Add these to `x-common-env` or the service's `environment` block:
 
 ## Enabling the Feature in Lychee Admin
 
-After starting the containers, enable the feature in **Admin → Settings → AI Vision**:
+After starting the facial recognition service (Docker or bare-metal), enable the feature in **Admin → Settings → AI Vision**:
 
 1. **AI Vision enabled** — master toggle; set to `On`.
 2. **Facial recognition enabled** — sub-toggle; set to `On`.
@@ -219,7 +335,7 @@ php artisan lychee:scan-faces
 php artisan lychee:scan-faces --album={album_id}
 ```
 
-Scanning runs asynchronously through the queue. Ensure the `lychee_worker` container is running. Progress is visible in the queue job history.
+Scanning runs asynchronously through the queue. Ensure your queue worker is running (`lychee_worker` container in Docker, or `php artisan queue:work` on bare-metal). Progress is visible in the queue job history.
 
 ---
 
@@ -270,11 +386,14 @@ php artisan lychee:rescan-failed-faces --stuck-pending --older-than=60
 The facial recognition service exposes a `/health` endpoint:
 
 ```bash
-# Inside the lychee network, from another container:
+# Docker — from the host (default mapped port 8001):
+curl http://localhost:8001/health
+
+# Docker — inside the lychee network, from another container:
 curl http://lychee_facial_recognition:8000/health
 
-# From the host (default mapped port 8001):
-curl http://localhost:8001/health
+# Non-Docker — directly on the default port:
+curl http://localhost:8000/health
 ```
 
 A healthy response:
@@ -282,10 +401,17 @@ A healthy response:
 {"status": "ok", "model_loaded": true, "embedding_count": 1234}
 ```
 
-Docker will also report the container's health status — wait for `healthy` before triggering scans:
+**Docker** will also report the container's health status — wait for `healthy` before triggering scans:
 
 ```bash
 docker compose ps
+```
+
+**Non-Docker** — check the service process is running:
+
+```bash
+# If managed by systemd:
+systemctl status lychee-facial-recognition
 ```
 
 Lychee's **Admin → Diagnostics** page includes an AI Vision service health check that verifies connectivity, health status, and configuration consistency.
@@ -300,10 +426,14 @@ Lychee's **Admin → Diagnostics** page includes an AI Vision service health che
 
 ### Photos are not scanned / `face_scan_status` stays `pending`
 
-1. Verify the `lychee_worker` container is running (`docker compose ps`).
-2. Confirm `QUEUE_CONNECTION` is not `sync` in the Lychee worker environment.
+1. Verify the queue worker is running:
+   - **Docker:** `docker compose ps` — check that `lychee_worker` is up.
+   - **Non-Docker:** ensure `php artisan queue:work` is running (or check your supervisor/systemd unit).
+2. Confirm `QUEUE_CONNECTION` is not `sync` in Lychee's environment.
 3. Check the facial recognition service health endpoint.
-4. Review `lychee_worker` logs: `docker compose logs lychee-worker`.
+4. Review logs:
+   - **Docker:** `docker compose logs lychee-worker`
+   - **Non-Docker:** check your Laravel log at `storage/logs/laravel.log` and the service's stdout/journal.
 5. If photos are stuck in `pending` for a long time, reset them:
    ```bash
    php artisan lychee:rescan-failed-faces --stuck-pending --older-than=60
@@ -311,13 +441,16 @@ Lychee's **Admin → Diagnostics** page includes an AI Vision service health che
 
 ### Facial recognition service cannot find photos
 
-- Compare volume mounts: the host `./lychee/uploads` path must be the same in both the `lychee_api` and `lychee_facial_recognition` volume definitions.
-- Verify `VISION_FACE_PHOTOS_PATH` inside the container matches the volume mount destination.
+- **Docker:** compare volume mounts — the host `./lychee/uploads` path must be the same in both the `lychee_api` and `lychee_facial_recognition` volume definitions.
+- **Non-Docker:** verify `VISION_FACE_PHOTOS_PATH` points to your Lychee uploads directory (e.g. `/var/www/lychee/public/uploads`) and that the service process has read access to it.
+- In both cases, verify `VISION_FACE_PHOTOS_PATH` matches the actual path where photos are accessible by the service.
 
 ### API key mismatch errors (401 from either service)
 
 - `AI_VISION_FACE_API_KEY` (Lychee) must equal `VISION_FACE_API_KEY` (Python service). The same key is used in both directions via the `X-API-Key` header.
-- Restart both containers after changing the secret.
+- Restart both services after changing the secret:
+  - **Docker:** `docker compose restart`
+  - **Non-Docker:** restart the Python service and clear Lychee's config cache (`php artisan config:clear`).
 
 ### Selfie claim returns "no match found"
 
