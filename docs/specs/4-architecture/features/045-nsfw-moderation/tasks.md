@@ -104,7 +104,7 @@ _Last updated: 2026-06-22_
     - **Block findings:** `check` → read `nsfw_check_block_action`: `block` = hard-delete photo, `moderate` = set review. `monitor` → read `nsfw_monitor_block_action`: same options. `trust_but_verify` → read `nsfw_trust_but_verify_block_action`: `block` or `moderate` (default `moderate`). `trusted` → read `nsfw_trust_block_action`: `block`, `moderate`, or `approve` (default `approve`).
     - **Review findings:** `check`/`monitor` → moderate. `trust_but_verify`/`trusted` → approve.
     - **Sensitive findings:** `check` → moderate photo + record for deferred album action (job dispatched at admin approval). `monitor`/`trust_but_verify`/`trusted` → read `nsfw_sensitive_album_action`: `mark_album` = dispatch `ApplyNsfwAlbumSensitivityJob` immediately. `nothing` = no action.
-  - `logDetections(string $photo_id, array $block_detected, array $review_detected, array $sensitive_detected)` — creates `NsfwDetection` rows. Deduplicated by label+bbox.
+  - `logDetections(string $photo_id, array $block_detected, array $review_detected, array $sensitive_detected)` — creates `NsfwDetection` rows. Deduplicated by photo_id+label+bbox.
   Write unit tests covering all matrix combinations (S-045-04 to S-045-19, S-045-26, S-045-27).  
   _Verification commands:_  
   - `php artisan test --filter=NsfwActionService`  
@@ -229,7 +229,7 @@ _Last updated: 2026-06-22_
   20. Bulk scan (`force = true`) → 202, all re-queued (S-045-25).
   21. Sensitive + no album + `skip` → warning, no change (S-045-26).
   22. Sensitive + no album + `moderate` → review (S-045-27).
-  23. Detection logging: only `block_detected`/`review_detected`/`sensitive_detected` stored; dedup by label+bbox (S-045-30).  
+  23. Detection logging: only `block_detected`/`review_detected`/`sensitive_detected` stored; dedup by photo_id+label+bbox (S-045-30).  
   _Verification commands:_  
   - `php artisan test --filter=NsfwDetectionResults`  
   - `make phpstan`
