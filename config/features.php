@@ -245,6 +245,8 @@ return [
 		'face-api-key' => env('AI_VISION_FACE_API_KEY', ''),
 		'face-rescan-iou-threshold' => (float) env('AI_VISION_FACE_RESCAN_IOU_THRESHOLD', 0.3),
 		'face-stuck-scan-threshold-minutes' => (int) env('AI_VISION_FACE_STUCK_SCAN_THRESHOLD_MINUTES', 720),
+		'nsfw-url' => env('AI_VISION_NSFW_URL', ''),
+		'nsfw-api-key' => env('AI_VISION_NSFW_API_KEY', ''),
 	],
 
 	/*

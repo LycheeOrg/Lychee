@@ -43,6 +43,7 @@ const People = () => import("@/views/face-recog/People.vue");
 const PersonDetail = () => import("@/views/face-recog/PersonDetail.vue");
 const FaceClusters = () => import("@/views/face-recog/FaceClusters.vue");
 const FaceMaintenance = () => import("@/views/face-recog/FaceMaintenance.vue");
+const NsfwConfig = () => import("@/views/admin/NsfwConfig.vue");
 
 const routes_ = [
 	{
@@ -146,6 +147,11 @@ const routes_ = [
 		name: "face-maintenance",
 		path: "/admin/maintenance/faces",
 		component: FaceMaintenance,
+	},
+	{
+		name: "nsfw-config",
+		path: "/admin/nsfw-config",
+		component: NsfwConfig,
 	},
 	{
 		name: "tree",

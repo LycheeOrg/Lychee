@@ -171,7 +171,7 @@ declare namespace App.Enum {
 	export type UpdateStatus = 0 | 1 | 2 | 3;
 	export type UserGroupRole = "member" | "admin";
 	export type UserSharedAlbumsVisibility = "default" | "show" | "separate" | "separate_shared_only" | "hide";
-	export type UserUploadTrustLevel = "check" | "monitor" | "trusted";
+	export type UserUploadTrustLevel = "check" | "monitor" | "trust_but_verify" | "trusted";
 	export type VersionChannelType = "release" | "git" | "tag";
 	export type VisibilityType = "never" | "always" | "hover";
 	export type WatermarkPosition = "top-left" | "top" | "top-right" | "left" | "center" | "right" | "bottom-left" | "bottom" | "bottom-right";
@@ -829,6 +829,7 @@ declare namespace App.Http.Resources.Models {
 		album_id: string | null;
 		album_title: string | null;
 		created_at: string;
+		nsfw_status: string | null;
 	};
 	export type PersonResource = {
 		id: string;

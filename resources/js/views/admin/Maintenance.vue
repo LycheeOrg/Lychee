@@ -39,6 +39,7 @@
 		<MaintenanceCleaning path="filesystems.disks.image-jobs.root" />
 		<MaintenanceCleaning path="filesystems.disks.image-upload.root" />
 		<MaintenanceBulkScanFaces />
+		<MaintenanceBulkScanNsfw />
 		<MaintenanceRunClustering />
 		<MaintenanceDestroyDismissedFaces />
 		<MaintenanceSyncFaceEmbeddings />
@@ -65,6 +66,7 @@ import MaintenanceFulfillPrecompute from "@/components/maintenance/MaintenanceFu
 import MaintenanceBackfillAlbumSizes from "@/components/maintenance/MaintenanceBackfillAlbumSizes.vue";
 import MaintenanceFlushQueue from "@/components/maintenance/MaintenanceFlushQueue.vue";
 import MaintenanceBulkScanFaces from "@/components/maintenance/MaintenanceBulkScanFaces.vue";
+import MaintenanceBulkScanNsfw from "@/components/maintenance/MaintenanceBulkScanNsfw.vue";
 import MaintenanceRunClustering from "@/components/maintenance/MaintenanceRunClustering.vue";
 import MaintenanceDestroyDismissedFaces from "@/components/maintenance/MaintenanceDestroyDismissedFaces.vue";
 import MaintenanceSyncFaceEmbeddings from "@/components/maintenance/MaintenanceSyncFaceEmbeddings.vue";

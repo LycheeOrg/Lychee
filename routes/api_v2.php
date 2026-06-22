@@ -427,6 +427,13 @@ Route::middleware(['feature:ai-vision', 'feature:v8'])->group(function (): void 
 	Route::post('/FaceDetection/clusters/{label}/uncluster', [AiVision\FaceClusterController::class, 'uncluster']);
 
 	/**
+	 * AI VISION — NSFW DETECTION.
+	 */
+	Route::post('/NsfwDetection/results', [AiVision\NsfwDetectionController::class, 'results'])->withoutMiddleware(['auth']);
+	Route::post('/NsfwDetection/bulk-scan', [AiVision\NsfwDetectionController::class, 'bulkScan'])->middleware(['support']);
+	Route::get('/NsfwDetection/config', [AiVision\NsfwConfigController::class, 'show'])->middleware(['support']);
+
+	/**
 	 * AI VISION — MAINTENANCE.
 	 */
 	Route::get('/Maintenance::bulkScanFaces', [Admin\Maintenance\BulkScanFaces::class, 'check']);

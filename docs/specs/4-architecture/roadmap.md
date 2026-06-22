@@ -6,7 +6,7 @@ High-level planning document for Lychee features and architectural initiatives.
 
 | Feature ID | Name | Status | Priority | Assignee | Started | Updated | Progress |
 |------------|------|--------|----------|----------|---------|---------|----------|
-| 045 | NSFW Detection & Moderation | Planning | P1 | LycheeOrg | 2026-06-21 | 2026-06-21 | Spec, plan, tasks drafted. 26 tasks across 7 increments. All 12 questions resolved. No blockers — all increments can proceed. Key decisions: `nsfw_visibility` enum + `is_validated` combo (Q-045-02), trust level snapshot on photo (Q-045-01), `AI Vision` config category (Q-045-11), simple SE gating (Q-045-12), block/review/sensitive detections only logged (Q-045-06), configurable no-album fallback (Q-045-03). |
+| 045 | NSFW Detection & Moderation | Implementation | P1 | LycheeOrg | 2026-06-21 | 2026-06-22 | All 7 increments implemented (I1–I7). Backend: 7 enums, 3 migrations (12 config keys, 2 photo columns, nsfw_detections table), NsfwDetection model, NsfwDetectionService + NsfwActionService, DispatchNsfwScanJob + ApplyNsfwAlbumSensitivityJob, AutoScanNsfwOnUpload pipe, NsfwDetectionController + NsfwConfigController, callback/bulk-scan/config-proxy routes, CSRF exemption, ModerationController NSFW approval logic, Delete::forceDeletePhoto(). Frontend: NsfwConfig.vue admin page, MaintenanceBulkScanNsfw component, nsfw-detection-service.ts + nsfw-config-service.ts, Moderation NSFW badge, admin dashboard tile, translation keys. PHPStan 0, vue-tsc clean, php-cs-fixer clean. |
 
 ## Paused Features
 

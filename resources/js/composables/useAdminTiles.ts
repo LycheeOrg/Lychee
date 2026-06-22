@@ -118,6 +118,15 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			visible: computed(() => (initData.value?.settings.can_edit ?? false) && (initData.value?.modules.is_ai_vision_enabled ?? false)),
 		},
 		{
+			key: "nsfw-config",
+			group: "extensions",
+			label: "admin-dashboard.nsfw_config.title",
+			icon: "pi pi-eye",
+			to: "/admin/nsfw-config",
+			isExternal: false,
+			visible: computed(() => (initData.value?.settings.can_edit ?? false) && (initData.value?.modules.is_ai_vision_enabled ?? false)),
+		},
+		{
 			key: "moderation",
 			group: "core",
 			label: "moderation.title",

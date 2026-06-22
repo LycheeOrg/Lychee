@@ -1,0 +1,163 @@
+<?php
+
+/**
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2017-2018 Tobias Reich
+ * Copyright (c) 2018-2026 LycheeOrg.
+ */
+
+use App\Models\Extensions\BaseConfigMigration;
+
+return new class() extends BaseConfigMigration {
+	public const CAT = 'AI Vision';
+
+	public function getConfigs(): array
+	{
+		return [
+			[
+				'key' => 'ai_vision_nsfw_enabled',
+				'value' => '0',
+				'cat' => self::CAT,
+				'type_range' => self::BOOL,
+				'description' => 'Enable NSFW classification',
+				'details' => 'When enabled alongside the global AI Vision toggle, uploaded photos are automatically scanned for NSFW content via the external classification service.',
+				'is_expert' => false,
+				'is_secret' => false,
+				'level' => 1,
+				'order' => 20,
+			],
+			[
+				'key' => 'ai_vision_nsfw_preset',
+				'value' => 'default',
+				'cat' => self::CAT,
+				'type_range' => 'default|strict|moderation|nude_female|permissive|social_media',
+				'description' => 'NSFW detection preset',
+				'details' => 'Detection preset sent to the NSFW classifier. Controls sensitivity and which labels trigger block, review, or sensitive actions.',
+				'is_expert' => false,
+				'is_secret' => false,
+				'level' => 1,
+				'order' => 21,
+			],
+			[
+				'key' => 'ai_vision_nsfw_check_block_action',
+				'value' => 'block',
+				'cat' => self::CAT,
+				'type_range' => 'block|moderate',
+				'description' => 'Block finding action for Check users',
+				'details' => 'Action when a block-tier NSFW finding is detected on a photo from a Check trust-level user. Block permanently deletes the photo; moderate holds it for admin review.',
+				'is_expert' => false,
+				'is_secret' => false,
+				'level' => 1,
+				'order' => 22,
+			],
+			[
+				'key' => 'ai_vision_nsfw_monitor_block_action',
+				'value' => 'moderate',
+				'cat' => self::CAT,
+				'type_range' => 'block|moderate',
+				'description' => 'Block finding action for Monitor users',
+				'details' => 'Action when a block-tier NSFW finding is detected on a photo from a Monitor trust-level user.',
+				'is_expert' => false,
+				'is_secret' => false,
+				'level' => 1,
+				'order' => 23,
+			],
+			[
+				'key' => 'ai_vision_nsfw_trust_but_verify_block_action',
+				'value' => 'moderate',
+				'cat' => self::CAT,
+				'type_range' => 'block|moderate',
+				'description' => 'Block finding action for Trust-but-verify users',
+				'details' => 'Action when a block-tier NSFW finding is detected on a photo from a Trust-but-verify trust-level user.',
+				'is_expert' => false,
+				'is_secret' => false,
+				'level' => 1,
+				'order' => 24,
+			],
+			[
+				'key' => 'ai_vision_nsfw_trust_block_action',
+				'value' => 'approve',
+				'cat' => self::CAT,
+				'type_range' => 'block|moderate|approve',
+				'description' => 'Block finding action for Trusted users',
+				'details' => 'Action when a block-tier NSFW finding is detected on a photo from a Trusted user. Approve means the scan result is logged but no action is taken.',
+				'is_expert' => false,
+				'is_secret' => false,
+				'level' => 1,
+				'order' => 25,
+			],
+			[
+				'key' => 'ai_vision_nsfw_sensitive_album_action',
+				'value' => 'mark_album',
+				'cat' => self::CAT,
+				'type_range' => 'mark_album|nothing',
+				'description' => 'Sensitive finding album action',
+				'details' => 'Whether sensitive-tier NSFW findings trigger marking the photo\'s album(s) as NSFW.',
+				'is_expert' => false,
+				'is_secret' => false,
+				'level' => 1,
+				'order' => 26,
+			],
+			[
+				'key' => 'ai_vision_nsfw_sensitive_no_album_action',
+				'value' => 'skip',
+				'cat' => self::CAT,
+				'type_range' => 'skip|moderate',
+				'description' => 'Sensitive finding fallback (no album)',
+				'details' => 'Fallback when a sensitive finding fires on an unsorted photo with no album. Skip logs a warning; moderate holds the photo for admin review.',
+				'is_expert' => false,
+				'is_secret' => false,
+				'level' => 1,
+				'order' => 27,
+			],
+			[
+				'key' => 'ai_vision_nsfw_scan_trusted_users',
+				'value' => '0',
+				'cat' => self::CAT,
+				'type_range' => self::BOOL,
+				'description' => 'Scan trusted users',
+				'details' => 'Whether photos uploaded by Trusted users are also scanned for NSFW content.',
+				'is_expert' => false,
+				'is_secret' => false,
+				'level' => 1,
+				'order' => 28,
+			],
+			[
+				'key' => 'ai_vision_nsfw_monitor_hide_on_scan',
+				'value' => '0',
+				'cat' => self::CAT,
+				'type_range' => self::BOOL,
+				'description' => 'Hide Monitor photos during scan',
+				'details' => 'Temporarily hide Monitor-tier photos while the NSFW scan is in progress. If the classifier is unavailable, the photo remains hidden until manually approved.',
+				'is_expert' => true,
+				'is_secret' => false,
+				'level' => 1,
+				'order' => 29,
+			],
+			[
+				'key' => 'ai_vision_nsfw_trust_but_verify_hide_on_scan',
+				'value' => '0',
+				'cat' => self::CAT,
+				'type_range' => self::BOOL,
+				'description' => 'Hide Trust-but-verify photos during scan',
+				'details' => 'Temporarily hide Trust-but-verify photos while the NSFW scan is in progress. If the classifier is unavailable, the photo remains hidden until manually approved.',
+				'is_expert' => true,
+				'is_secret' => false,
+				'level' => 1,
+				'order' => 30,
+			],
+			[
+				'key' => 'ai_vision_nsfw_trust_hide_on_scan',
+				'value' => '0',
+				'cat' => self::CAT,
+				'type_range' => self::BOOL,
+				'description' => 'Hide Trusted photos during scan',
+				'details' => 'Temporarily hide Trusted photos while the NSFW scan is in progress. If the classifier is unavailable, the photo remains hidden until manually approved.',
+				'is_expert' => true,
+				'is_secret' => false,
+				'level' => 1,
+				'order' => 31,
+			],
+		];
+	}
+};
