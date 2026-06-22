@@ -54,13 +54,13 @@ class PhotoStarTest extends BaseApiWithDataTest
 		$this->assertUnprocessable($response);
 
 		$response = $this->postJson('Photo::highlight', [
-			'photo_ids' => [$this->photo1->id],
+			'photo_ids' => [$this->photo4->id],
 			'is_highlighted' => true,
 		]);
 		$this->assertNoContent($response);
 
 		$response = $this->actingAs($this->userNoUpload)->postJson('Photo::highlight', [
-			'photo_ids' => [$this->photo1->id],
+			'photo_ids' => [$this->photo4->id],
 			'is_highlighted' => true,
 		]);
 		$this->assertNoContent($response);
@@ -74,13 +74,13 @@ class PhotoStarTest extends BaseApiWithDataTest
 		$this->assertUnprocessable($response);
 
 		$response = $this->postJson('Photo::highlight', [
-			'photo_ids' => [$this->photo1->id],
+			'photo_ids' => [$this->photo4->id],
 			'is_highlighted' => true,
 		]);
 		$this->assertUnauthorized($response);
 
 		$response = $this->actingAs($this->userNoUpload)->postJson('Photo::highlight', [
-			'photo_ids' => [$this->photo1->id],
+			'photo_ids' => [$this->photo4->id],
 			'is_highlighted' => true,
 		]);
 		// Under AUTHENTICATED visibility, any logged-in user can star
