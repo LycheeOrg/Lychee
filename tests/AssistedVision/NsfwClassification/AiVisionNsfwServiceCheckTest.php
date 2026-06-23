@@ -19,6 +19,7 @@ use App\Repositories\ConfigManager;
 use App\Services\Image\NsfwDetectionService;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\Response;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Schema;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -112,6 +113,7 @@ class AiVisionNsfwServiceCheckTest extends AbstractTestCase
 			['ai_vision_nsfw_enabled', true],
 		]);
 		$this->nsfw_detection_service->method('isConfigured')->willReturn(true);
+		Auth::shouldReceive('user')->andReturn((object) ['may_administrate' => true]);
 
 		Config::set('features.ai-vision-service.nsfw-url', 'http://nsfw-service:8000');
 
@@ -137,6 +139,7 @@ class AiVisionNsfwServiceCheckTest extends AbstractTestCase
 			['ai_vision_nsfw_enabled', true],
 		]);
 		$this->nsfw_detection_service->method('isConfigured')->willReturn(true);
+		Auth::shouldReceive('user')->andReturn((object) ['may_administrate' => true]);
 
 		Config::set('features.ai-vision-service.nsfw-url', 'http://nsfw-service:8000');
 
@@ -163,6 +166,7 @@ class AiVisionNsfwServiceCheckTest extends AbstractTestCase
 			['ai_vision_nsfw_enabled', true],
 		]);
 		$this->nsfw_detection_service->method('isConfigured')->willReturn(true);
+		Auth::shouldReceive('user')->andReturn((object) ['may_administrate' => true]);
 
 		Config::set('features.ai-vision-service.nsfw-url', 'http://nsfw-service:8000');
 
@@ -190,6 +194,7 @@ class AiVisionNsfwServiceCheckTest extends AbstractTestCase
 			['ai_vision_nsfw_enabled', true],
 		]);
 		$this->nsfw_detection_service->method('isConfigured')->willReturn(true);
+		Auth::shouldReceive('user')->andReturn((object) ['may_administrate' => true]);
 
 		Config::set('features.ai-vision-service.nsfw-url', 'http://nsfw-service:8000');
 
@@ -213,6 +218,7 @@ class AiVisionNsfwServiceCheckTest extends AbstractTestCase
 			['ai_vision_nsfw_enabled', true],
 		]);
 		$this->nsfw_detection_service->method('isConfigured')->willReturn(true);
+		Auth::shouldReceive('user')->andReturn((object) ['may_administrate' => true]);
 
 		Config::set('features.ai-vision-service.nsfw-url', 'http://nsfw-service:8000');
 
@@ -238,6 +244,7 @@ class AiVisionNsfwServiceCheckTest extends AbstractTestCase
 			['ai_vision_nsfw_enabled', true],
 		]);
 		$this->nsfw_detection_service->method('isConfigured')->willReturn(true);
+		Auth::shouldReceive('user')->andReturn((object) ['may_administrate' => true]);
 
 		Config::set('features.ai-vision-service.nsfw-url', 'http://nsfw-service:8000');
 
