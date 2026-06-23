@@ -11,18 +11,15 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
 use App\Repositories\ConfigManager;
-use App\Services\Image\FacialRecognitionService;
+use App\Services\Image\NsfwDetectionService;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Schema;
 
-/**
- * Check if the AI Vision service is properly configured and reachable.
- */
-class AiVisionServiceCheck implements DiagnosticPipe
+class AiVisionNsfwServiceCheck implements DiagnosticPipe
 {
 	public function __construct(
 		protected readonly ConfigManager $config_manager,
-		protected readonly FacialRecognitionService $facial_recognition_service,
+		protected readonly NsfwDetectionService $nsfw_detection_service,
 	) {
 	}
 
@@ -35,14 +32,17 @@ class AiVisionServiceCheck implements DiagnosticPipe
 			return $next($data);
 		}
 
-		// Skip check if AI Vision is disabled
 		if (!$this->config_manager->getValueAsBool('ai_vision_enabled')) {
 			return $next($data);
 		}
 
-		if (!$this->facial_recognition_service->isConfigured()) {
+		if (!$this->config_manager->getValueAsBool('ai_vision_nsfw_enabled')) {
+			return $next($data);
+		}
+
+		if (!$this->nsfw_detection_service->isConfigured()) {
 			$data[] = DiagnosticData::error(
-				'AI Vision: Service URL is not configured. Set AI_VISION_FACE_URL in your .env file.',
+				'NSFW Classification: Service URL is not configured. Set AI_VISION_NSFW_URL in your .env file.',
 				self::class,
 				[]
 			);
@@ -56,24 +56,20 @@ class AiVisionServiceCheck implements DiagnosticPipe
 	}
 
 	/**
-	 * Check if the AI Vision service health endpoint is reachable and returns proper data.
-	 *
 	 * @param DiagnosticData[] &$data
-	 *
-	 * @return void
 	 */
 	private function checkServiceHealth(array &$data): void
 	{
-		$service_url = config('features.ai-vision-service.face-url', '');
+		$service_url = config('features.ai-vision-service.nsfw-url', '');
 
 		try {
-			$response = $this->facial_recognition_service->checkHealthRaw(5);
+			$response = $this->nsfw_detection_service->checkHealthRaw(5);
 
 			if (!$response->successful()) {
 				$data[] = DiagnosticData::error(
-					'AI Vision: Service health check failed with status ' . $response->status() . '. The service may be offline or unreachable.',
+					'NSFW Classification: Service health check failed with status ' . $response->status() . '. The service may be offline or unreachable.',
 					self::class,
-					['Check that the AI Vision service is running at: ' . $service_url]
+					['Check that the NSFW classification service is running at: ' . $service_url]
 				);
 
 				return;
@@ -82,7 +78,7 @@ class AiVisionServiceCheck implements DiagnosticPipe
 			$health_data = $response->json();
 			if (!is_array($health_data) || !isset($health_data['status'])) {
 				$data[] = DiagnosticData::error(
-					'AI Vision: Service health endpoint returned invalid response format. Expected JSON with "status" field.',
+					'NSFW Classification: Service health endpoint returned invalid response format. Expected JSON with "status" field.',
 					self::class,
 					['Response: ' . $response->body()]
 				);
@@ -92,21 +88,21 @@ class AiVisionServiceCheck implements DiagnosticPipe
 
 			if ($health_data['status'] !== 'ok' && $health_data['status'] !== 'healthy') {
 				$data[] = DiagnosticData::warn(
-					'AI Vision: Service reported unhealthy status: ' . $health_data['status'],
+					'NSFW Classification: Service reported unhealthy status: ' . $health_data['status'],
 					self::class,
 					[]
 				);
 			}
 		} catch (ConnectionException $e) {
 			$data[] = DiagnosticData::error(
-				'AI Vision: Could not connect to service at ' . rtrim($service_url, '/') . '/health',
+				'NSFW Classification: Could not connect to service at ' . rtrim($service_url, '/') . '/api/nsfw/health',
 				self::class,
-				['Check that the AI Vision service is running and the URL is correct.', $e->getMessage()]
+				['Check that the NSFW classification service is running and the URL is correct.', $e->getMessage()]
 			);
 		} catch (\Exception $e) {
 			// @codeCoverageIgnoreStart
 			$data[] = DiagnosticData::error(
-				'AI Vision: Service health check failed with error: ' . $e->getMessage(),
+				'NSFW Classification: Service health check failed with error: ' . $e->getMessage(),
 				self::class,
 				[]
 			);

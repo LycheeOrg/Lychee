@@ -9,8 +9,8 @@
 namespace App\Actions\Diagnostics;
 
 use App\Actions\Diagnostics\Pipes\Checks\AdminUserExistsCheck;
-use App\Actions\Diagnostics\Pipes\Checks\AiVisionServiceCheck;
-use App\Actions\Diagnostics\Pipes\Checks\AiVisionServiceConfigCheck;
+use App\Actions\Diagnostics\Pipes\Checks\AiVisionFaceRecognitionServiceCheck;
+use App\Actions\Diagnostics\Pipes\Checks\AiVisionFaceRecognitionServiceConfigCheck;
 use App\Actions\Diagnostics\Pipes\Checks\AppUrlMatchCheck;
 use App\Actions\Diagnostics\Pipes\Checks\AuthDisabledCheck;
 use App\Actions\Diagnostics\Pipes\Checks\BasicPermissionCheck;
@@ -29,6 +29,7 @@ use App\Actions\Diagnostics\Pipes\Checks\ImagickPdfCheck;
 use App\Actions\Diagnostics\Pipes\Checks\IniSettingsCheck;
 use App\Actions\Diagnostics\Pipes\Checks\KeygenApiTokenCheck;
 use App\Actions\Diagnostics\Pipes\Checks\MigrationCheck;
+use App\Actions\Diagnostics\Pipes\Checks\AiVisionNsfwServiceCheck;
 use App\Actions\Diagnostics\Pipes\Checks\OldLicenseCheck;
 use App\Actions\Diagnostics\Pipes\Checks\OpCacheCheck;
 use App\Actions\Diagnostics\Pipes\Checks\PHPVersionCheck;
@@ -80,8 +81,9 @@ class Errors
 		SupporterCheck::class,
 		ImagickPdfCheck::class,
 		WatermarkerEnabledCheck::class,
-		AiVisionServiceCheck::class,
-		AiVisionServiceConfigCheck::class,
+		AiVisionFaceRecognitionServiceCheck::class,
+		AiVisionFaceRecognitionServiceConfigCheck::class,
+		AiVisionNsfwServiceCheck::class,
 		StatisticsIntegrityCheck::class,
 		WebshopCheck::class,
 		SecurityAdvisoriesCheck::class,

@@ -35,6 +35,97 @@ class NsfwDetectionService
 	}
 
 	/**
+	 * @param int $timeout Request timeout in seconds
+	 *
+	 * @return Response
+	 *
+	 * @throws ExternalComponentMissingException
+	 */
+	public function checkHealthRaw(int $timeout = 5): Response
+	{
+		if (!$this->isConfigured()) {
+			throw new ExternalComponentMissingException('NSFW classification service is not configured.');
+		}
+
+		return Http::withHeaders(['X-API-Key' => $this->api_key])
+			->timeout($timeout)
+			->get($this->service_url . '/api/nsfw/health');
+	}
+
+	/**
+	 * @return array{status: string}|null
+	 */
+	public function checkHealth(): ?array
+	{
+		if (!$this->isConfigured()) {
+			Log::warning('NsfwDetectionService: checkHealth called but service is not configured.');
+
+			return null;
+		}
+
+		try {
+			$response = $this->checkHealthRaw();
+
+			return $response->successful() ? $response->json() : null;
+		} catch (\Exception) {
+			return null;
+		}
+	}
+
+	/**
+	 * @param int $timeout Request timeout in seconds
+	 *
+	 * @return Response
+	 *
+	 * @throws ExternalComponentMissingException
+	 */
+	public function getConfigurationRaw(int $timeout = 5): Response
+	{
+		if (!$this->isConfigured()) {
+			throw new ExternalComponentMissingException('NSFW classification service is not configured.');
+		}
+
+		return Http::withHeaders(['X-API-Key' => $this->api_key])
+			->timeout($timeout)
+			->get($this->service_url . '/api/nsfw/config');
+	}
+
+	/**
+	 * @return array<string,string>|null
+	 */
+	public function getConfiguration(): ?array
+	{
+		if (!$this->isConfigured()) {
+			Log::warning('NsfwDetectionService: getConfiguration called but service is not configured.');
+
+			return null;
+		}
+
+		try {
+			$response = $this->getConfigurationRaw();
+			if (!$response->successful()) {
+				return null;
+			}
+
+			$payload = $response->json();
+			if (!is_array($payload) || !isset($payload['config']) || !is_array($payload['config'])) {
+				return null;
+			}
+
+			$config = [];
+			foreach ($payload['config'] as $key => $value) {
+				if (is_string($key)) {
+					$config[$key] = (string) $value;
+				}
+			}
+
+			return $config;
+		} catch (\Exception) {
+			return null;
+		}
+	}
+
+	/**
 	 * Dispatch a single photo for NSFW scanning.
 	 */
 	public function dispatchPhoto(string $photo_id, ?string $photo_path): Response
