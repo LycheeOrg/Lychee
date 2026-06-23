@@ -13,6 +13,7 @@ use App\DTO\DiagnosticData;
 use App\Repositories\ConfigManager;
 use App\Services\Image\NsfwDetectionService;
 use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 
 class AiVisionNsfwServiceCheck implements DiagnosticPipe
@@ -47,6 +48,11 @@ class AiVisionNsfwServiceCheck implements DiagnosticPipe
 				[]
 			);
 
+			return $next($data);
+		}
+
+		// If we are not admin, bail out here, as we don't want to expose the service URL to non-admins.
+		if (Auth::user()?->may_administrate !== true) {
 			return $next($data);
 		}
 

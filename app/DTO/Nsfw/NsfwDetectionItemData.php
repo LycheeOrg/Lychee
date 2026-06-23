@@ -19,8 +19,8 @@ class NsfwDetectionItemData extends Data
 		public NsfwDetectionLabel $label,
 		public float $confidence,
 		public NsfwBboxData $bbox,
-		public int $area_pixels,
-		public float $area_ratio,
+		public int $area_pixels = 0,
+		public float $area_ratio = 0.0,
 	) {
 	}
 

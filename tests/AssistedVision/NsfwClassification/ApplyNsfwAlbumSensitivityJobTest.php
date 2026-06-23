@@ -16,7 +16,7 @@ namespace Tests\AssistedVision\NsfwClassification;
 use App\Enum\NsfwSensitiveNoAlbumAction;
 use App\Enum\NsfwStatus;
 use App\Jobs\ApplyNsfwAlbumSensitivityJob;
-use App\Models\Album;
+use App\Models\BaseAlbumImpl;
 use App\Models\Configs;
 use App\Models\Photo;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
@@ -77,7 +77,7 @@ class ApplyNsfwAlbumSensitivityJobTest extends BaseApiWithDataTest
 
 	public function testSkipsAlbumAlreadyMarkedNsfw(): void
 	{
-		Album::where('id', $this->album1->id)->update(['is_nsfw' => true]);
+		BaseAlbumImpl::where('id', $this->album1->id)->update(['is_nsfw' => true]);
 
 		$job = new ApplyNsfwAlbumSensitivityJob($this->photo1->id);
 		$job->handle(resolve(\App\Repositories\ConfigManager::class));

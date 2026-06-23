@@ -14,6 +14,7 @@
 namespace Tests\AssistedVision\NsfwClassification;
 
 use Illuminate\Support\Facades\Http;
+use LycheeVerify\Http\Middleware\VerifySupporterStatus;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class NsfwConfigControllerTest extends BaseApiWithDataTest
@@ -22,7 +23,8 @@ class NsfwConfigControllerTest extends BaseApiWithDataTest
 	{
 		config(['features.ai-vision-service.nsfw-url' => '']);
 
-		$response = $this->actingAs($this->admin)->getJson('NsfwDetection/config');
+		$response = $this->withoutMiddleware(VerifySupporterStatus::class)
+			->actingAs($this->admin)->getJson('NsfwDetection/config');
 
 		$this->assertStatus($response, 503);
 		self::assertArrayHasKey('error', $response->json());
@@ -40,7 +42,8 @@ class NsfwConfigControllerTest extends BaseApiWithDataTest
 			], 200),
 		]);
 
-		$response = $this->actingAs($this->admin)->getJson('NsfwDetection/config');
+		$response = $this->withoutMiddleware(VerifySupporterStatus::class)
+			->actingAs($this->admin)->getJson('NsfwDetection/config');
 
 		$this->assertOk($response);
 		self::assertEquals('default', $response->json('active_preset'));
@@ -55,7 +58,8 @@ class NsfwConfigControllerTest extends BaseApiWithDataTest
 			'http://fake-nsfw-service/api/nsfw/config' => Http::response([], 500),
 		]);
 
-		$response = $this->actingAs($this->admin)->getJson('NsfwDetection/config');
+		$response = $this->withoutMiddleware(VerifySupporterStatus::class)
+			->actingAs($this->admin)->getJson('NsfwDetection/config');
 
 		$this->assertStatus($response, 502);
 	}
@@ -69,7 +73,8 @@ class NsfwConfigControllerTest extends BaseApiWithDataTest
 			'http://fake-nsfw-service/api/nsfw/config' => Http::response(fn () => throw new \Exception('Connection refused')),
 		]);
 
-		$response = $this->actingAs($this->admin)->getJson('NsfwDetection/config');
+		$response = $this->withoutMiddleware(VerifySupporterStatus::class)
+			->actingAs($this->admin)->getJson('NsfwDetection/config');
 
 		$this->assertStatus($response, 503);
 	}

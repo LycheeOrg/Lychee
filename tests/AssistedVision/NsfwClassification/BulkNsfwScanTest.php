@@ -16,6 +16,7 @@ namespace Tests\AssistedVision\NsfwClassification;
 use App\Jobs\DispatchNsfwScanJob;
 use App\Models\Configs;
 use Illuminate\Support\Facades\Queue;
+use LycheeVerify\Http\Middleware\VerifySupporterStatus;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class BulkNsfwScanTest extends BaseApiWithDataTest
@@ -32,7 +33,8 @@ class BulkNsfwScanTest extends BaseApiWithDataTest
 	{
 		Queue::fake();
 
-		$response = $this->actingAs($this->admin)->postJson('NsfwDetection/bulk-scan');
+		$response = $this->withoutMiddleware(VerifySupporterStatus::class)
+			->actingAs($this->admin)->postJson('NsfwDetection/bulk-scan');
 		$this->assertNoContent($response);
 
 		Queue::assertPushed(DispatchNsfwScanJob::class);
@@ -40,13 +42,15 @@ class BulkNsfwScanTest extends BaseApiWithDataTest
 
 	public function testBulkScanAsUserForbidden(): void
 	{
-		$response = $this->actingAs($this->userMayUpload1)->postJson('NsfwDetection/bulk-scan');
+		$response = $this->withoutMiddleware(VerifySupporterStatus::class)
+			->actingAs($this->userMayUpload1)->postJson('NsfwDetection/bulk-scan');
 		$this->assertForbidden($response);
 	}
 
 	public function testBulkScanAsGuestUnauthorized(): void
 	{
-		$response = $this->postJson('NsfwDetection/bulk-scan');
+		$response = $this->withoutMiddleware(VerifySupporterStatus::class)
+			->postJson('NsfwDetection/bulk-scan');
 		$this->assertUnauthorized($response);
 	}
 
@@ -54,9 +58,10 @@ class BulkNsfwScanTest extends BaseApiWithDataTest
 	{
 		Queue::fake();
 
-		$response = $this->actingAs($this->admin)->postJson('NsfwDetection/bulk-scan', [
-			'album_id' => $this->album1->id,
-		]);
+		$response = $this->withoutMiddleware(VerifySupporterStatus::class)
+			->actingAs($this->admin)->postJson('NsfwDetection/bulk-scan', [
+				'album_id' => $this->album1->id,
+			]);
 		$this->assertNoContent($response);
 	}
 
@@ -64,9 +69,10 @@ class BulkNsfwScanTest extends BaseApiWithDataTest
 	{
 		Queue::fake();
 
-		$response = $this->actingAs($this->admin)->postJson('NsfwDetection/bulk-scan', [
-			'force' => true,
-		]);
+		$response = $this->withoutMiddleware(VerifySupporterStatus::class)
+			->actingAs($this->admin)->postJson('NsfwDetection/bulk-scan', [
+				'force' => true,
+			]);
 		$this->assertNoContent($response);
 	}
 }

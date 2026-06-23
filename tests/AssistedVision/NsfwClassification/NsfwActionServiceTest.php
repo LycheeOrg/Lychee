@@ -13,7 +13,10 @@
 
 namespace Tests\AssistedVision\NsfwClassification;
 
+use App\DTO\Nsfw\NsfwBboxData;
+use App\DTO\Nsfw\NsfwDetectionItemData;
 use App\Enum\NsfwBlockFindingAction;
+use App\Enum\NsfwDetectionLabel;
 use App\Enum\NsfwSensitiveAlbumAction;
 use App\Enum\NsfwSensitiveNoAlbumAction;
 use App\Enum\NsfwStatus;
@@ -221,10 +224,22 @@ class NsfwActionServiceTest extends BaseApiWithDataTest
 	public function testLogDetectionsCreatesRecords(): void
 	{
 		$block = [
-			['label' => 'FEMALE_BREAST_EXPOSED', 'confidence' => 0.95, 'bbox' => ['x' => 10, 'y' => 20, 'width' => 30, 'height' => 40]],
+			new NsfwDetectionItemData(
+				label: NsfwDetectionLabel::FEMALE_BREAST_EXPOSED,
+				confidence: 0.95,
+				bbox: new NsfwBboxData(x: 10, y: 20, width: 30, height: 40),
+				area_pixels: 1200,
+				area_ratio: 0.05,
+			),
 		];
 		$review = [
-			['label' => 'BUTTOCKS_EXPOSED', 'confidence' => 0.72, 'bbox' => ['x' => 50, 'y' => 60, 'width' => 25, 'height' => 35]],
+			new NsfwDetectionItemData(
+				label: NsfwDetectionLabel::BUTTOCKS_EXPOSED,
+				confidence: 0.72,
+				bbox: new NsfwBboxData(x: 50, y: 60, width: 25, height: 35),
+				area_pixels: 875,
+				area_ratio: 0.03,
+			),
 		];
 		$sensitive = [];
 
@@ -238,7 +253,13 @@ class NsfwActionServiceTest extends BaseApiWithDataTest
 
 	public function testLogDetectionsDeduplicatesSameBbox(): void
 	{
-		$detection = ['label' => 'FEMALE_BREAST_EXPOSED', 'confidence' => 0.95, 'bbox' => ['x' => 10, 'y' => 20, 'width' => 30, 'height' => 40]];
+		$detection = new NsfwDetectionItemData(
+			label: NsfwDetectionLabel::FEMALE_BREAST_EXPOSED,
+			confidence: 0.95,
+			bbox: new NsfwBboxData(x: 10, y: 20, width: 30, height: 40),
+			area_pixels: 1200,
+			area_ratio: 0.05,
+		);
 
 		$this->service->logDetections($this->photo1->id, [$detection], [$detection], []);
 

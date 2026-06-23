@@ -39,9 +39,9 @@ class AutoScanNsfwOnUploadTest extends AbstractTestCase
 		Queue::fake();
 
 		$config_manager = \Mockery::mock(ConfigManager::class);
-		$config_manager->shouldReceive('getValueAsString')
+		$config_manager->shouldReceive('getValueAsBool')
 			->with('ai_vision_enabled')
-			->andReturn('0');
+			->andReturn(false);
 
 		$pipe = new AutoScanNsfwOnUpload($config_manager);
 		$state = $this->createDto(UserUploadTrustLevel::MONITOR);
@@ -58,12 +58,12 @@ class AutoScanNsfwOnUploadTest extends AbstractTestCase
 		Queue::fake();
 
 		$config_manager = \Mockery::mock(ConfigManager::class);
-		$config_manager->shouldReceive('getValueAsString')
+		$config_manager->shouldReceive('getValueAsBool')
 			->with('ai_vision_enabled')
-			->andReturn('1');
-		$config_manager->shouldReceive('getValueAsString')
+			->andReturn(true);
+		$config_manager->shouldReceive('getValueAsBool')
 			->with('ai_vision_nsfw_enabled')
-			->andReturn('0');
+			->andReturn(false);
 
 		$pipe = new AutoScanNsfwOnUpload($config_manager);
 		$state = $this->createDto(UserUploadTrustLevel::MONITOR);
@@ -80,15 +80,15 @@ class AutoScanNsfwOnUploadTest extends AbstractTestCase
 		Queue::fake();
 
 		$config_manager = \Mockery::mock(ConfigManager::class);
-		$config_manager->shouldReceive('getValueAsString')
+		$config_manager->shouldReceive('getValueAsBool')
 			->with('ai_vision_enabled')
-			->andReturn('1');
-		$config_manager->shouldReceive('getValueAsString')
+			->andReturn(true);
+		$config_manager->shouldReceive('getValueAsBool')
 			->with('ai_vision_nsfw_enabled')
-			->andReturn('1');
-		$config_manager->shouldReceive('getValueAsString')
+			->andReturn(true);
+		$config_manager->shouldReceive('getValueAsBool')
 			->with('ai_vision_nsfw_scan_trusted_users')
-			->andReturn('0');
+			->andReturn(false);
 
 		$pipe = new AutoScanNsfwOnUpload($config_manager);
 		$state = $this->createDto(UserUploadTrustLevel::TRUSTED);
@@ -105,18 +105,18 @@ class AutoScanNsfwOnUploadTest extends AbstractTestCase
 		Queue::fake();
 
 		$config_manager = \Mockery::mock(ConfigManager::class);
-		$config_manager->shouldReceive('getValueAsString')
+		$config_manager->shouldReceive('getValueAsBool')
 			->with('ai_vision_enabled')
-			->andReturn('1');
-		$config_manager->shouldReceive('getValueAsString')
+			->andReturn(true);
+		$config_manager->shouldReceive('getValueAsBool')
 			->with('ai_vision_nsfw_enabled')
-			->andReturn('1');
-		$config_manager->shouldReceive('getValueAsString')
+			->andReturn(true);
+		$config_manager->shouldReceive('getValueAsBool')
 			->with('ai_vision_nsfw_scan_trusted_users')
-			->andReturn('1');
-		$config_manager->shouldReceive('getValueAsString')
+			->andReturn(true);
+		$config_manager->shouldReceive('getValueAsBool')
 			->with('ai_vision_nsfw_trust_hide_on_scan')
-			->andReturn('0');
+			->andReturn(false);
 
 		$pipe = new AutoScanNsfwOnUpload($config_manager);
 		$state = $this->createDto(UserUploadTrustLevel::TRUSTED, is_photo: true);
@@ -133,15 +133,15 @@ class AutoScanNsfwOnUploadTest extends AbstractTestCase
 		Queue::fake();
 
 		$config_manager = \Mockery::mock(ConfigManager::class);
-		$config_manager->shouldReceive('getValueAsString')
+		$config_manager->shouldReceive('getValueAsBool')
 			->with('ai_vision_enabled')
-			->andReturn('1');
-		$config_manager->shouldReceive('getValueAsString')
+			->andReturn(true);
+		$config_manager->shouldReceive('getValueAsBool')
 			->with('ai_vision_nsfw_enabled')
-			->andReturn('1');
-		$config_manager->shouldReceive('getValueAsString')
+			->andReturn(true);
+		$config_manager->shouldReceive('getValueAsBool')
 			->with('ai_vision_nsfw_monitor_hide_on_scan')
-			->andReturn('0');
+			->andReturn(false);
 
 		$pipe = new AutoScanNsfwOnUpload($config_manager);
 		$state = $this->createDto(UserUploadTrustLevel::MONITOR, is_photo: true);
@@ -158,15 +158,15 @@ class AutoScanNsfwOnUploadTest extends AbstractTestCase
 		Queue::fake();
 
 		$config_manager = \Mockery::mock(ConfigManager::class);
-		$config_manager->shouldReceive('getValueAsString')
+		$config_manager->shouldReceive('getValueAsBool')
 			->with('ai_vision_enabled')
-			->andReturn('1');
-		$config_manager->shouldReceive('getValueAsString')
+			->andReturn(true);
+		$config_manager->shouldReceive('getValueAsBool')
 			->with('ai_vision_nsfw_enabled')
-			->andReturn('1');
-		$config_manager->shouldReceive('getValueAsString')
+			->andReturn(true);
+		$config_manager->shouldReceive('getValueAsBool')
 			->with('ai_vision_nsfw_monitor_hide_on_scan')
-			->andReturn('1');
+			->andReturn(true);
 
 		$pipe = new AutoScanNsfwOnUpload($config_manager);
 		$state = $this->createDto(UserUploadTrustLevel::MONITOR, is_photo: true);
@@ -183,15 +183,15 @@ class AutoScanNsfwOnUploadTest extends AbstractTestCase
 		Queue::fake();
 
 		$config_manager = \Mockery::mock(ConfigManager::class);
-		$config_manager->shouldReceive('getValueAsString')
+		$config_manager->shouldReceive('getValueAsBool')
 			->with('ai_vision_enabled')
-			->andReturn('1');
-		$config_manager->shouldReceive('getValueAsString')
+			->andReturn(true);
+		$config_manager->shouldReceive('getValueAsBool')
 			->with('ai_vision_nsfw_enabled')
-			->andReturn('1');
-		$config_manager->shouldReceive('getValueAsString')
+			->andReturn(true);
+		$config_manager->shouldReceive('getValueAsBool')
 			->with('ai_vision_nsfw_monitor_hide_on_scan')
-			->andReturn('0');
+			->andReturn(false);
 
 		$pipe = new AutoScanNsfwOnUpload($config_manager);
 		$state = $this->createDto(UserUploadTrustLevel::MONITOR, is_photo: true);
@@ -211,15 +211,15 @@ class AutoScanNsfwOnUploadTest extends AbstractTestCase
 		Queue::fake();
 
 		$config_manager = \Mockery::mock(ConfigManager::class);
-		$config_manager->shouldReceive('getValueAsString')
+		$config_manager->shouldReceive('getValueAsBool')
 			->with('ai_vision_enabled')
-			->andReturn('1');
-		$config_manager->shouldReceive('getValueAsString')
+			->andReturn(true);
+		$config_manager->shouldReceive('getValueAsBool')
 			->with('ai_vision_nsfw_enabled')
-			->andReturn('1');
-		$config_manager->shouldReceive('getValueAsString')
+			->andReturn(true);
+		$config_manager->shouldReceive('getValueAsBool')
 			->with('ai_vision_nsfw_monitor_hide_on_scan')
-			->andReturn('0');
+			->andReturn(false);
 
 		$pipe = new AutoScanNsfwOnUpload($config_manager);
 		$state = $this->createDto(UserUploadTrustLevel::MONITOR, is_photo: false);
@@ -237,6 +237,7 @@ class AutoScanNsfwOnUploadTest extends AbstractTestCase
 		$attrs = ['is_validated' => true, 'id' => 'test-photo-id'];
 		$photo = \Mockery::mock(Photo::class)->makePartial();
 		$photo->shouldReceive('isPhoto')->andReturn($is_photo);
+		$photo->shouldReceive('save')->andReturn(true);
 		$photo->shouldReceive('setAttribute')->andReturnUsing(function ($key, $value) use (&$attrs) {
 			$attrs[$key] = $value;
 		});
