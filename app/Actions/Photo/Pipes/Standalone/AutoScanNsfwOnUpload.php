@@ -34,6 +34,7 @@ class AutoScanNsfwOnUpload implements StandalonePipe
 		if ($should_scan && $this->shouldHideOnScan($state->upload_trust_level)) {
 			$state->photo->is_validated = false;
 		}
+		$state->photo->save(); // Persist the changes to the photo model before dispatching the scan job.
 
 		// Step 4: Let the pipeline persist the photo with upload_trust_level and is_validated set.
 		$state = $next($state);
@@ -54,16 +55,16 @@ class AutoScanNsfwOnUpload implements StandalonePipe
 
 	private function shouldScan(UserUploadTrustLevel $trust_level): bool
 	{
-		if ($this->config_manager->getValueAsString('ai_vision_enabled') !== '1') {
+		if (!$this->config_manager->getValueAsBool('ai_vision_enabled')) {
 			return false;
 		}
 
-		if ($this->config_manager->getValueAsString('ai_vision_nsfw_enabled') !== '1') {
+		if (!$this->config_manager->getValueAsBool('ai_vision_nsfw_enabled')) {
 			return false;
 		}
 
 		if ($trust_level === UserUploadTrustLevel::TRUSTED) {
-			return $this->config_manager->getValueAsString('ai_vision_nsfw_scan_trusted_users') === '1';
+			return $this->config_manager->getValueAsBool('ai_vision_nsfw_scan_trusted_users');
 		}
 
 		return true;
@@ -72,9 +73,9 @@ class AutoScanNsfwOnUpload implements StandalonePipe
 	private function shouldHideOnScan(UserUploadTrustLevel $trust_level): bool
 	{
 		return match ($trust_level) {
-			UserUploadTrustLevel::MONITOR => $this->config_manager->getValueAsString('ai_vision_nsfw_monitor_hide_on_scan') === '1',
-			UserUploadTrustLevel::TRUST_BUT_VERIFY => $this->config_manager->getValueAsString('ai_vision_nsfw_trust_but_verify_hide_on_scan') === '1',
-			UserUploadTrustLevel::TRUSTED => $this->config_manager->getValueAsString('ai_vision_nsfw_trust_hide_on_scan') === '1',
+			UserUploadTrustLevel::MONITOR => $this->config_manager->getValueAsBool('ai_vision_nsfw_monitor_hide_on_scan'),
+			UserUploadTrustLevel::TRUST_BUT_VERIFY => $this->config_manager->getValueAsBool('ai_vision_nsfw_trust_but_verify_hide_on_scan'),
+			UserUploadTrustLevel::TRUSTED => $this->config_manager->getValueAsBool('ai_vision_nsfw_trust_hide_on_scan'),
 			default => false, // CHECK users are already hidden via SetUploadValidated
 		};
 	}

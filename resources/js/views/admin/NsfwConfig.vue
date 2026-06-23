@@ -29,7 +29,7 @@
 
 						<div class="flex flex-col gap-6">
 							<!-- Enable + Preset + Scan trusted -->
-							<Fieldset>
+							<Fieldset :legend="$t('admin-dashboard.nsfw_config.section_general')">
 								<div class="flex flex-col gap-4">
 									<BoolField
 										v-if="cfg.ai_vision_nsfw_enabled"
@@ -52,78 +52,9 @@
 								</div>
 							</Fieldset>
 
-							<!-- Block finding actions -->
-							<Fieldset :legend="$t('admin-dashboard.nsfw_config.section_actions')">
-								<div class="flex flex-col gap-4">
-									<SelectField
-										v-if="cfg.ai_vision_nsfw_check_block_action"
-										:label="$t('admin-dashboard.nsfw_config.block_check')"
-										:config="cfg.ai_vision_nsfw_check_block_action"
-										@filled="save"
-									/>
-									<SelectField
-										v-if="cfg.ai_vision_nsfw_monitor_block_action"
-										:label="$t('admin-dashboard.nsfw_config.block_monitor')"
-										:config="cfg.ai_vision_nsfw_monitor_block_action"
-										@filled="save"
-									/>
-									<SelectField
-										v-if="cfg.ai_vision_nsfw_trust_but_verify_block_action"
-										:label="$t('admin-dashboard.nsfw_config.block_tbv')"
-										:config="cfg.ai_vision_nsfw_trust_but_verify_block_action"
-										@filled="save"
-									/>
-									<SelectField
-										v-if="cfg.ai_vision_nsfw_trust_block_action"
-										:label="$t('admin-dashboard.nsfw_config.block_trusted')"
-										:config="cfg.ai_vision_nsfw_trust_block_action"
-										@filled="save"
-									/>
-									<div class="my-2" />
-									<SelectField
-										v-if="cfg.ai_vision_nsfw_sensitive_album_action"
-										:label="$t('admin-dashboard.nsfw_config.sensitive_album')"
-										:config="cfg.ai_vision_nsfw_sensitive_album_action"
-										@filled="save"
-									/>
-									<SelectField
-										v-if="cfg.ai_vision_nsfw_sensitive_no_album_action"
-										:label="$t('admin-dashboard.nsfw_config.sensitive_no_album')"
-										:config="cfg.ai_vision_nsfw_sensitive_no_album_action"
-										@filled="save"
-									/>
-								</div>
-							</Fieldset>
-
-							<!-- Hide on scan -->
-							<Fieldset :legend="$t('admin-dashboard.nsfw_config.section_hide_on_scan')">
-								<div class="flex flex-col gap-4">
-									<BoolField
-										v-if="cfg.ai_vision_nsfw_monitor_hide_on_scan"
-										:label="$t('admin-dashboard.nsfw_config.hide_monitor')"
-										:config="cfg.ai_vision_nsfw_monitor_hide_on_scan"
-										@filled="save"
-									/>
-									<BoolField
-										v-if="cfg.ai_vision_nsfw_trust_but_verify_hide_on_scan"
-										:label="$t('admin-dashboard.nsfw_config.hide_tbv')"
-										:config="cfg.ai_vision_nsfw_trust_but_verify_hide_on_scan"
-										@filled="save"
-									/>
-									<BoolField
-										v-if="cfg.ai_vision_nsfw_trust_hide_on_scan"
-										:label="$t('admin-dashboard.nsfw_config.hide_trusted')"
-										:config="cfg.ai_vision_nsfw_trust_hide_on_scan"
-										@filled="save"
-									/>
-									<Message severity="warn" :closable="false" class="text-sm">
-										<i class="pi pi-exclamation-triangle mr-2" />{{ $t("admin-dashboard.nsfw_config.hide_on_scan_warning") }}
-									</Message>
-								</div>
-							</Fieldset>
-
 							<!-- Trust-tier × finding matrix (read-only) -->
 							<Fieldset :legend="$t('admin-dashboard.nsfw_config.section_matrix')">
+								<p class="text-muted-color text-sm mb-4" v-html="$t('admin-dashboard.nsfw_config.matrix_explanation')" />
 								<div class="overflow-x-auto">
 									<table class="w-full text-sm border-collapse">
 										<thead>
@@ -135,98 +66,109 @@
 											</tr>
 										</thead>
 										<tbody>
-											<tr class="border-b border-surface-100 dark:border-surface-800">
-												<td class="py-2 pr-4 font-medium">{{ $t("admin-dashboard.nsfw_config.matrix_check") }}</td>
+											<tr
+												v-for="(row, idx) in matrixRows"
+												:key="idx"
+												:class="idx < matrixRows.length - 1 ? 'border-b border-surface-100 dark:border-surface-800' : ''"
+											>
+												<td class="py-2 pr-4 font-medium"><i :class="row.iconClass" class="mr-2"></i>{{ row.trustLevel }}</td>
 												<td class="py-2 pr-4">
-													<Tag
-														severity="danger"
-														:value="$t('admin-dashboard.nsfw_config.matrix_block_moderate')"
-														class="text-xs"
-													/>
+													<Tag :severity="row.block.severity" :value="row.block.label" class="text-xs" />
 												</td>
 												<td class="py-2 pr-4">
-													<Tag severity="warn" :value="$t('admin-dashboard.nsfw_config.matrix_moderate')" class="text-xs" />
+													<Tag :severity="row.review.severity" :value="row.review.label" class="text-xs" />
 												</td>
 												<td class="py-2">
-													<Tag
-														severity="info"
-														:value="$t('admin-dashboard.nsfw_config.matrix_moderate_album')"
-														class="text-xs"
-													/>
-												</td>
-											</tr>
-											<tr class="border-b border-surface-100 dark:border-surface-800">
-												<td class="py-2 pr-4 font-medium">{{ $t("admin-dashboard.nsfw_config.matrix_monitor") }}</td>
-												<td class="py-2 pr-4">
-													<Tag
-														severity="danger"
-														:value="$t('admin-dashboard.nsfw_config.matrix_block_moderate')"
-														class="text-xs"
-													/>
-												</td>
-												<td class="py-2 pr-4">
-													<Tag severity="warn" :value="$t('admin-dashboard.nsfw_config.matrix_moderate')" class="text-xs" />
-												</td>
-												<td class="py-2">
-													<Tag
-														severity="info"
-														:value="$t('admin-dashboard.nsfw_config.matrix_album_or_nothing')"
-														class="text-xs"
-													/>
-												</td>
-											</tr>
-											<tr class="border-b border-surface-100 dark:border-surface-800">
-												<td class="py-2 pr-4 font-medium">{{ $t("admin-dashboard.nsfw_config.matrix_tbv") }}</td>
-												<td class="py-2 pr-4">
-													<Tag
-														severity="danger"
-														:value="$t('admin-dashboard.nsfw_config.matrix_block_moderate')"
-														class="text-xs"
-													/>
-												</td>
-												<td class="py-2 pr-4">
-													<Tag
-														severity="success"
-														:value="$t('admin-dashboard.nsfw_config.matrix_approve')"
-														class="text-xs"
-													/>
-												</td>
-												<td class="py-2">
-													<Tag
-														severity="info"
-														:value="$t('admin-dashboard.nsfw_config.matrix_album_or_nothing')"
-														class="text-xs"
-													/>
-												</td>
-											</tr>
-											<tr>
-												<td class="py-2 pr-4 font-medium">{{ $t("admin-dashboard.nsfw_config.matrix_trusted") }}</td>
-												<td class="py-2 pr-4">
-													<Tag
-														severity="danger"
-														:value="$t('admin-dashboard.nsfw_config.matrix_block_moderate_approve')"
-														class="text-xs"
-													/>
-												</td>
-												<td class="py-2 pr-4">
-													<Tag
-														severity="success"
-														:value="$t('admin-dashboard.nsfw_config.matrix_approve')"
-														class="text-xs"
-													/>
-												</td>
-												<td class="py-2">
-													<Tag
-														severity="info"
-														:value="$t('admin-dashboard.nsfw_config.matrix_album_or_nothing')"
-														class="text-xs"
-													/>
+													<Tag :severity="row.sensitive.severity" :value="row.sensitive.label" class="text-xs" />
 												</td>
 											</tr>
 										</tbody>
 									</table>
 								</div>
+								<div class="flex flex-wrap gap-x-6 gap-y-2 mt-4 text-xs text-muted-color">
+									<span
+										><Tag severity="danger" :value="$t('admin-dashboard.nsfw_config.block')" class="text-xs mr-1" />{{
+											$t("admin-dashboard.nsfw_config.legend_block")
+										}}</span
+									>
+									<span
+										><Tag severity="warn" :value="$t('admin-dashboard.nsfw_config.matrix_moderate')" class="text-xs mr-1" />{{
+											$t("admin-dashboard.nsfw_config.legend_moderate")
+										}}</span
+									>
+									<span
+										><Tag severity="success" :value="$t('admin-dashboard.nsfw_config.matrix_approve')" class="text-xs mr-1" />{{
+											$t("admin-dashboard.nsfw_config.legend_approve")
+										}}</span
+									>
+									<span
+										><Tag severity="info" :value="$t('admin-dashboard.nsfw_config.matrix_mark_album')" class="text-xs mr-1" />{{
+											$t("admin-dashboard.nsfw_config.legend_mark_album")
+										}}</span
+									>
+									<span
+										><Tag severity="secondary" :value="$t('admin-dashboard.nsfw_config.matrix_nothing')" class="text-xs mr-1" />{{
+											$t("admin-dashboard.nsfw_config.legend_nothing")
+										}}</span
+									>
+								</div>
 							</Fieldset>
+							<div class="flex gap-8">
+								<!-- Block finding actions -->
+								<Fieldset :legend="$t('admin-dashboard.nsfw_config.section_actions')">
+									<p class="text-muted-color text-sm mb-4" v-html="$t('admin-dashboard.nsfw_config.actions_explanation')" />
+									<div class="flex flex-col gap-3">
+										<div v-for="row in blockActionRows" :key="row.key" class="flex items-center justify-between gap-4">
+											<div class="flex items-center gap-2 min-w-0">
+												<i :class="row.iconClass" />
+												<span class="font-medium">{{ row.label }}</span>
+											</div>
+											<Select
+												v-if="cfg[row.key]"
+												v-model="cfg[row.key]!.value"
+												:options="cfg[row.key]!.type.split('|')"
+												class="border-none shrink-0"
+												@update:model-value="(v: string) => save(row.key, v)"
+											/>
+										</div>
+									</div>
+									<p class="text-muted-color text-sm mt-6 mb-4" v-html="$t('admin-dashboard.nsfw_config.sensitive_explanation')" />
+									<div class="flex flex-col gap-3">
+										<div v-for="row in sensitiveActionRows" :key="row.key" class="flex items-center justify-between gap-4">
+											<span class="text-muted-color-emphasis">{{ row.label }}</span>
+											<Select
+												v-if="cfg[row.key]"
+												v-model="cfg[row.key]!.value"
+												:options="cfg[row.key]!.type.split('|')"
+												class="border-none shrink-0"
+												@update:model-value="(v: string) => save(row.key, v)"
+											/>
+										</div>
+									</div>
+								</Fieldset>
+
+								<!-- Hide on scan -->
+								<Fieldset :legend="$t('admin-dashboard.nsfw_config.section_hide_on_scan')">
+									<p class="text-muted-color text-sm mb-2" v-html="$t('admin-dashboard.nsfw_config.hide_on_scan_explanation')" />
+									<p class="text-sm my-4 text-muted-color-emphasis">
+										<i class="pi pi-exclamation-triangle text-amber-600 ltr:mr-2 rtl:ml-2"></i>
+										<span v-html="$t('admin-dashboard.nsfw_config.hide_on_scan_warning')" />
+									</p>
+									<div class="flex flex-col gap-3">
+										<div v-for="row in hideOnScanRows" :key="row.key" class="flex items-center justify-between gap-4">
+											<div class="flex items-center gap-2">
+												<i :class="row.iconClass" />
+												<span class="text-muted-color-emphasis">{{ row.label }}</span>
+											</div>
+											<ToggleSwitch
+												v-if="cfg[row.key]"
+												:model-value="cfg[row.key]!.value === '1'"
+												@update:model-value="(v: boolean) => save(row.key, v ? '1' : '0')"
+											/>
+										</div>
+									</div>
+								</Fieldset>
+							</div>
 						</div>
 					</TabPanel>
 
@@ -347,7 +289,6 @@ import { computed, onMounted, reactive, ref } from "vue";
 import Button from "primevue/button";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
-import Message from "primevue/message";
 import Panel from "primevue/panel";
 import ProgressSpinner from "primevue/progressspinner";
 import Tab from "primevue/tab";
@@ -359,6 +300,8 @@ import Tag from "primevue/tag";
 import Toolbar from "primevue/toolbar";
 import { useToast } from "primevue/usetoast";
 import { trans } from "laravel-vue-i18n";
+import Select from "primevue/select";
+import ToggleSwitch from "primevue/toggleswitch";
 import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
 import BoolField from "@/components/forms/settings/BoolField.vue";
 import SelectField from "@/components/forms/settings/SelectField.vue";
@@ -406,7 +349,11 @@ function loadSettings() {
 				}
 			}
 			for (const key of NSFW_KEYS) {
-				cfg[key] = all.find((c) => c.key === key);
+				const found = all.find((c) => c.key === key);
+				if (found) {
+					found.require_se = false;
+				}
+				cfg[key] = found;
 			}
 		})
 		.catch(() => {})
@@ -425,6 +372,110 @@ function save(configKey: string, value: string) {
 			toast.add({ severity: "error", summary: trans("toasts.error"), detail: "Failed to save setting.", life: 3000 });
 		});
 }
+
+// ── Action & hide-on-scan rows ─────────────────────────────────
+type NsfwKey = (typeof NSFW_KEYS)[number];
+type ActionRow = { key: NsfwKey; iconClass: string; label: string };
+
+const blockActionRows: ActionRow[] = [
+	{ key: "ai_vision_nsfw_check_block_action", iconClass: "pi pi-shield text-danger-600", label: trans("admin-dashboard.nsfw_config.matrix_check") },
+	{
+		key: "ai_vision_nsfw_monitor_block_action",
+		iconClass: "pi pi-shield text-yellow-500",
+		label: trans("admin-dashboard.nsfw_config.matrix_monitor"),
+	},
+	{
+		key: "ai_vision_nsfw_trust_but_verify_block_action",
+		iconClass: "pi pi-shield text-blue-500",
+		label: trans("admin-dashboard.nsfw_config.matrix_tbv"),
+	},
+	{
+		key: "ai_vision_nsfw_trust_block_action",
+		iconClass: "pi pi-shield text-create-600",
+		label: trans("admin-dashboard.nsfw_config.matrix_trusted"),
+	},
+];
+
+const sensitiveActionRows: ActionRow[] = [
+	{ key: "ai_vision_nsfw_sensitive_album_action", iconClass: "", label: trans("admin-dashboard.nsfw_config.sensitive_album") },
+	{ key: "ai_vision_nsfw_sensitive_no_album_action", iconClass: "", label: trans("admin-dashboard.nsfw_config.sensitive_no_album") },
+];
+
+const hideOnScanRows: ActionRow[] = [
+	{
+		key: "ai_vision_nsfw_monitor_hide_on_scan",
+		iconClass: "pi pi-shield text-yellow-500",
+		label: trans("admin-dashboard.nsfw_config.matrix_monitor"),
+	},
+	{
+		key: "ai_vision_nsfw_trust_but_verify_hide_on_scan",
+		iconClass: "pi pi-shield text-blue-500",
+		label: trans("admin-dashboard.nsfw_config.matrix_tbv"),
+	},
+	{
+		key: "ai_vision_nsfw_trust_hide_on_scan",
+		iconClass: "pi pi-shield text-create-600",
+		label: trans("admin-dashboard.nsfw_config.matrix_trusted"),
+	},
+];
+
+// ── Matrix (derived from current config) ───────────────────────
+type MatrixCell = { label: string; severity: "danger" | "warn" | "success" | "info" | "secondary" };
+
+function blockActionCell(configRef: CfgRef): MatrixCell {
+	switch (configRef?.value) {
+		case "block":
+			return { label: trans("admin-dashboard.nsfw_config.block"), severity: "danger" };
+		case "moderate":
+			return { label: trans("admin-dashboard.nsfw_config.matrix_moderate"), severity: "warn" };
+		case "approve":
+			return { label: trans("admin-dashboard.nsfw_config.matrix_approve"), severity: "success" };
+		default:
+			return { label: "—", severity: "secondary" };
+	}
+}
+
+function sensitiveCell(): MatrixCell {
+	switch (cfg.ai_vision_nsfw_sensitive_album_action?.value) {
+		case "mark_album":
+			return { label: trans("admin-dashboard.nsfw_config.matrix_mark_album"), severity: "info" };
+		case "nothing":
+			return { label: trans("admin-dashboard.nsfw_config.matrix_nothing"), severity: "secondary" };
+		default:
+			return { label: "—", severity: "secondary" };
+	}
+}
+
+const matrixRows = computed(() => [
+	{
+		trustLevel: trans("admin-dashboard.nsfw_config.matrix_check"),
+		iconClass: "pi pi-shield text-danger-600",
+		block: blockActionCell(cfg.ai_vision_nsfw_check_block_action),
+		review: { label: trans("admin-dashboard.nsfw_config.matrix_moderate"), severity: "warn" as const },
+		sensitive: { label: trans("admin-dashboard.nsfw_config.matrix_moderate"), severity: "warn" as const },
+	},
+	{
+		trustLevel: trans("admin-dashboard.nsfw_config.matrix_monitor"),
+		iconClass: "pi pi-shield text-yellow-500",
+		block: blockActionCell(cfg.ai_vision_nsfw_monitor_block_action),
+		review: { label: trans("admin-dashboard.nsfw_config.matrix_moderate"), severity: "warn" as const },
+		sensitive: sensitiveCell(),
+	},
+	{
+		trustLevel: trans("admin-dashboard.nsfw_config.matrix_tbv"),
+		iconClass: "pi pi-shield text-blue-500",
+		block: blockActionCell(cfg.ai_vision_nsfw_trust_but_verify_block_action),
+		review: { label: trans("admin-dashboard.nsfw_config.matrix_approve"), severity: "success" as const },
+		sensitive: sensitiveCell(),
+	},
+	{
+		trustLevel: trans("admin-dashboard.nsfw_config.matrix_trusted"),
+		iconClass: "pi pi-shield text-create-600",
+		block: blockActionCell(cfg.ai_vision_nsfw_trust_block_action),
+		review: { label: trans("admin-dashboard.nsfw_config.matrix_approve"), severity: "success" as const },
+		sensitive: sensitiveCell(),
+	},
+]);
 
 // ── Presets tab state ───────────────────────────────────────────
 const presetsLoading = ref(false);

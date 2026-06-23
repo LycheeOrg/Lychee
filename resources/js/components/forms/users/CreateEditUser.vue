@@ -107,6 +107,7 @@ import { trans } from "laravel-vue-i18n";
 
 const trustLevelOptions = [
 	{ value: "trusted" as App.Enum.UserUploadTrustLevel, label: "Trusted" },
+	{ value: "trust_but_verify" as App.Enum.UserUploadTrustLevel, label: "Trust but Verify" },
 	{ value: "monitor" as App.Enum.UserUploadTrustLevel, label: "Monitor" },
 	{ value: "check" as App.Enum.UserUploadTrustLevel, label: "Check" },
 ];

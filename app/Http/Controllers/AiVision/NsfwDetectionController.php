@@ -28,7 +28,7 @@ class NsfwDetectionController extends Controller
 	 */
 	public function results(NsfwDetectionResultsRequest $request, NsfwActionService $action_service): JsonResponse
 	{
-		$photo_id = $request->photoId();
+		$photo_id = $request->result->photo_id;
 		$photo = Photo::find($photo_id);
 
 		if ($photo === null) {
@@ -37,12 +37,12 @@ class NsfwDetectionController extends Controller
 			return response()->json(['status' => 'ok']);
 		}
 
-		if ($request->status() === 'error') {
+		if ($request->result->status === 'error') {
 			$photo->nsfw_status = NsfwStatus::FAILED;
 			$photo->save();
 			Log::warning("NsfwDetectionController: NSFW scan error for photo {$photo_id}.", [
-				'error_code' => $request->errorCode(),
-				'message' => $request->errorMessage(),
+				'error_code' => $request->result->error_code,
+				'message' => $request->result->message,
 			]);
 
 			return response()->json(['status' => 'ok']);
@@ -50,16 +50,16 @@ class NsfwDetectionController extends Controller
 
 		$action_service->logDetections(
 			$photo_id,
-			$request->blockDetected(),
-			$request->reviewDetected(),
-			$request->sensitiveDetected(),
+			$request->result->block_detected,
+			$request->result->review_detected,
+			$request->result->sensitive_detected,
 		);
 
 		$action_service->applyActions(
 			$photo,
-			$request->shouldBlock(),
-			$request->shouldReview(),
-			$request->isSensitive(),
+			$request->result->should_block,
+			$request->result->should_review,
+			$request->result->is_sensitive,
 		);
 
 		return response()->json(['status' => 'ok']);

@@ -12,6 +12,34 @@ declare namespace App.DTO {
 		order: App.Enum.OrderSortingType;
 	};
 }
+declare namespace App.DTO.Nsfw {
+	export type NsfwBboxData = {
+		x: number;
+		y: number;
+		width: number;
+		height: number;
+	};
+	export type NsfwDetectionItemData = {
+		label: App.Enum.NsfwDetectionLabel;
+		confidence: number;
+		bbox: App.DTO.Nsfw.NsfwBboxData;
+		area_pixels: number;
+		area_ratio: number;
+	};
+	export type NsfwDetectionResultsData = {
+		photo_id: string;
+		status: string;
+		should_block: boolean;
+		should_review: boolean;
+		is_sensitive: boolean;
+		all_detected: App.DTO.Nsfw.NsfwDetectionItemData[];
+		block_detected: App.DTO.Nsfw.NsfwDetectionItemData[];
+		review_detected: App.DTO.Nsfw.NsfwDetectionItemData[];
+		sensitive_detected: App.DTO.Nsfw.NsfwDetectionItemData[];
+		error_code: string | null;
+		message: string | null;
+	};
+}
 declare namespace App.Enum {
 	export type AlbumDecorationOrientation = "row" | "row-reverse" | "column" | "column-reverse";
 	export type AlbumDecorationType = "none" | "layers" | "album" | "photo" | "all";
@@ -1183,7 +1211,8 @@ declare namespace App.Http.Resources.Rights {
 		is_mod_renamer_enabled: boolean;
 		is_mod_webshop_enabled: boolean;
 		is_mod_webhook_enabled: boolean;
-		is_ai_vision_enabled: boolean;
+		is_face_recognition_enabled: boolean;
+		is_nsfw_classifier_enabled: boolean;
 		is_face_overlay_enabled: boolean;
 		is_face_recognition_warning_enabled: boolean;
 		is_contact_enabled: boolean;

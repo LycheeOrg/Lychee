@@ -8,7 +8,9 @@
 
 namespace App\Http\Requests\Nsfw;
 
+use App\DTO\Nsfw\NsfwDetectionResultsData;
 use App\Http\Requests\BaseApiRequest;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Request for receiving NSFW detection results from the classification service.
@@ -18,19 +20,7 @@ use App\Http\Requests\BaseApiRequest;
  */
 class NsfwDetectionResultsRequest extends BaseApiRequest
 {
-	private string $photo_id;
-	private string $status;
-	private bool $should_block = false;
-	private bool $should_review = false;
-	private bool $is_sensitive = false;
-	/** @var array<array-key,mixed> */
-	private array $block_detected = [];
-	/** @var array<array-key,mixed> */
-	private array $review_detected = [];
-	/** @var array<array-key,mixed> */
-	private array $sensitive_detected = [];
-	private ?string $error_code = null;
-	private ?string $message = null;
+	public NsfwDetectionResultsData $result;
 
 	public function authorize(): bool
 	{
@@ -95,68 +85,7 @@ class NsfwDetectionResultsRequest extends BaseApiRequest
 
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->photo_id = $values['photo_id'];
-		$this->status = $values['status'];
-		$this->should_block = ($values['should_block'] ?? false) === true;
-		$this->should_review = ($values['should_review'] ?? false) === true;
-		$this->is_sensitive = ($values['is_sensitive'] ?? false) === true;
-		$this->block_detected = $values['block_detected'] ?? [];
-		$this->review_detected = $values['review_detected'] ?? [];
-		$this->sensitive_detected = $values['sensitive_detected'] ?? [];
-		$this->error_code = $values['error_code'] ?? null;
-		$this->message = $values['message'] ?? null;
-	}
-
-	public function photoId(): string
-	{
-		return $this->photo_id;
-	}
-
-	public function status(): string
-	{
-		return $this->status;
-	}
-
-	public function shouldBlock(): bool
-	{
-		return $this->should_block;
-	}
-
-	public function shouldReview(): bool
-	{
-		return $this->should_review;
-	}
-
-	public function isSensitive(): bool
-	{
-		return $this->is_sensitive;
-	}
-
-	/** @return array<array-key,mixed> */
-	public function blockDetected(): array
-	{
-		return $this->block_detected;
-	}
-
-	/** @return array<array-key,mixed> */
-	public function reviewDetected(): array
-	{
-		return $this->review_detected;
-	}
-
-	/** @return array<array-key,mixed> */
-	public function sensitiveDetected(): array
-	{
-		return $this->sensitive_detected;
-	}
-
-	public function errorCode(): ?string
-	{
-		return $this->error_code;
-	}
-
-	public function errorMessage(): ?string
-	{
-		return $this->message;
+		Log::info('NsfwDetectionResultsRequest: processing validated values.', ['values' => $values]);
+		$this->result = NsfwDetectionResultsData::from($values); // Validate and transform the data
 	}
 }

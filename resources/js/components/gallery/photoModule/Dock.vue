@@ -44,7 +44,7 @@
 				@click="watermark"
 			/>
 			<DockButton
-				v-if="isAiVisionEnabled"
+				v-if="isFaceRecognitionEnabled"
 				v-tooltip.bottom="$t('people.scan_faces')"
 				pi="face-smile"
 				class="lg:hover:text-primary-500 text-white"
@@ -105,7 +105,9 @@ const isWatermarkerEnabled = computed(
 		needSizeVariantsWatermark(photoStore.photo.size_variants),
 );
 
-const isAiVisionEnabled = computed(() => leftMenu.initData?.modules.is_ai_vision_enabled && photoStore.photo && albumStore.rights?.can_edit);
+const isFaceRecognitionEnabled = computed(
+	() => leftMenu.initData?.modules.is_face_recognition_enabled && photoStore.photo && albumStore.rights?.can_edit,
+);
 
 function watermark() {
 	if (!photoStore.photo) {

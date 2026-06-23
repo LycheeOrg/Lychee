@@ -26,6 +26,7 @@ return [
         'upload_trust_level' => 'Vertrauensstufe zum hochladen',
         'upload_trust_level_check' => 'Prüfen - Uploads müssen erst vom Administrator genehmigt werden, bevor sie veröffentlicht werden.',
         'upload_trust_level_monitor' => 'Überwachen – Uploads sind öffentlich, es sei denn, sie werden wegen ihres Inhalts gemeldet.',
+        'upload_trust_level_trust_but_verify' => 'Trust but Verify – uploads are public; review findings auto-approved, block findings configurable.',
         'upload_trust_level_trusted' => 'Vertrauenswürdig – Uploads sind sofort öffentlich.',
         'quota' => 'Benutzer hat Kontingentgrenze.',
         'quota_kb' => 'Kontingent in kB (0 für Standardkontingent)',

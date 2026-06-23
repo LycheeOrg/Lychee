@@ -91,34 +91,36 @@ class ModerationController extends Controller
 	{
 		$ids = $request->photoIds();
 
-		// Pass 1: Bulk approve
-		collect($ids)->chunk(100)->each(function ($chunk): void {
+		collect($ids)->chunk(100)->each(function ($chunk) use ($config_manager): void {
+			// Pass 1: Bulk approve
 			Photo::whereIn('id', $chunk)->update(['is_validated' => true]);
-		});
 
-		// Pass 2: NSFW subset — update nsfw_status and dispatch album jobs
-		$nsfw_photos = Photo::whereIn('id', $ids)
-			->where('nsfw_status', NsfwStatus::REVIEW)
-			->get();
+			// Pass 2: NSFW subset — update nsfw_status and dispatch album jobs
+			$nsfw_photos = Photo::whereIn('id', $chunk)
+				->where('nsfw_status', NsfwStatus::REVIEW)
+				->select('id')
+				->get();
 
-		if ($nsfw_photos->isNotEmpty()) {
-			Photo::whereIn('id', $nsfw_photos->pluck('id'))->update(['nsfw_status' => NsfwStatus::VISIBLE->value]);
+			if ($nsfw_photos->isNotEmpty()) {
+				Photo::whereIn('id', $nsfw_photos->pluck('id'))->update(['nsfw_status' => NsfwStatus::VISIBLE->value]);
 
-			$album_action = NsfwSensitiveAlbumAction::tryFrom(
-				$config_manager->getValueAsString('ai_vision_nsfw_sensitive_album_action')
-			) ?? NsfwSensitiveAlbumAction::MARK_ALBUM;
+				$album_action = $config_manager->getValueAsEnum('ai_vision_nsfw_sensitive_album_action', NsfwSensitiveAlbumAction::class);
 
-			if ($album_action === NsfwSensitiveAlbumAction::MARK_ALBUM) {
-				$sensitive_photo_ids = NsfwDetection::whereIn('photo_id', $nsfw_photos->pluck('id'))
-					->where('is_sensitive', true)
-					->distinct()
-					->pluck('photo_id');
+				if ($album_action === NsfwSensitiveAlbumAction::MARK_ALBUM) {
+					$sensitive_photo_ids = NsfwDetection::whereIn('photo_id', $nsfw_photos->pluck('id'))
+						->where('is_sensitive', true)
+						->distinct()
+						->pluck('photo_id');
 
-				foreach ($sensitive_photo_ids as $photo_id) {
-					ApplyNsfwAlbumSensitivityJob::dispatch($photo_id);
+					// TODO: FIX ME
+					// It would be better here to dispatch per album, instead of for each photo.
+					// Faster
+					foreach ($sensitive_photo_ids as $photo_id) {
+						ApplyNsfwAlbumSensitivityJob::dispatch($photo_id);
+					}
 				}
 			}
-		}
+		});
 
 		return response()->noContent();
 	}

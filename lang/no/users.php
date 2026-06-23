@@ -27,6 +27,7 @@ return [
         'upload_trust_level' => 'Last opp tillitsnivå',
         'upload_trust_level_check' => 'Kryss av – opplastinger krever godkjenning fra administrator før de blir offentlige.',
         'upload_trust_level_monitor' => 'Overvåk – opplastinger er offentlige med mindre de er flagget for innhold.',
+        'upload_trust_level_trust_but_verify' => 'Trust but Verify – uploads are public; review findings auto-approved, block findings configurable.',
         'upload_trust_level_trusted' => 'Pålitelig – opplastinger blir umiddelbart offentlige.',
         'quota' => 'Brukeren har en kvotegrense.',
         'quota_kb' => 'kvote i kB (0 for standard)',

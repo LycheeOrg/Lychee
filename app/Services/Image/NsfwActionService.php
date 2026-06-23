@@ -9,7 +9,9 @@
 namespace App\Services\Image;
 
 use App\Actions\Photo\Delete;
+use App\DTO\Nsfw\NsfwDetectionItemData;
 use App\Enum\NsfwBlockFindingAction;
+use App\Enum\NsfwDetectionLabel;
 use App\Enum\NsfwSensitiveAlbumAction;
 use App\Enum\NsfwStatus;
 use App\Enum\UserUploadTrustLevel;
@@ -34,76 +36,35 @@ class NsfwActionService
 	public function applyActions(Photo $photo, bool $should_block, bool $should_review, bool $is_sensitive): bool
 	{
 		$trust_level = $photo->upload_trust_level;
+		if ($trust_level === null) {
+			Log::warning("NsfwActionService: photo {$photo->id} has no upload_trust_level, defaulting to CHECK.");
+			$trust_level = UserUploadTrustLevel::CHECK;
+		}
+
 		$was_moderated = false;
-		$was_deleted = false;
 
-		// Block findings
 		if ($should_block) {
-			$action = $this->getBlockAction($trust_level);
-
-			if ($action === NsfwBlockFindingAction::BLOCK) {
-				$delete = resolve(Delete::class);
-				$delete->forceDeletePhoto($photo->id);
-				Log::info("NsfwActionService: photo {$photo->id} hard-deleted (block finding, trust={$trust_level->value}).");
-				$was_deleted = true;
-			} elseif ($action === NsfwBlockFindingAction::MODERATE) {
-				$photo->nsfw_status = NsfwStatus::REVIEW;
-				$photo->is_validated = false;
-				$was_moderated = true;
-				Log::info("NsfwActionService: photo {$photo->id} moderated (block finding, trust={$trust_level->value}).");
-			} else {
-				$photo->nsfw_status = NsfwStatus::VISIBLE;
-				Log::info("NsfwActionService: photo {$photo->id} approved (block finding, trust={$trust_level->value}).");
+			$result = $this->applyBlockAction($photo, $trust_level);
+			// null = hard-deleted, true = moderated, false = approved
+			if ($result === null) {
+				return false;
 			}
+			$was_moderated = $result;
 		}
 
-		if ($was_deleted) {
-			return false;
-		}
-
-		// Review findings
 		if ($should_review && !$was_moderated) {
-			if ($trust_level === UserUploadTrustLevel::CHECK || $trust_level === UserUploadTrustLevel::MONITOR) {
-				$photo->nsfw_status = NsfwStatus::REVIEW;
-				$photo->is_validated = false;
-				$was_moderated = true;
-				Log::info("NsfwActionService: photo {$photo->id} moderated (review finding, trust={$trust_level->value}).");
-			} else {
-				if ($photo->nsfw_status !== NsfwStatus::REVIEW) {
-					$photo->nsfw_status = NsfwStatus::VISIBLE;
-				}
-				Log::info("NsfwActionService: photo {$photo->id} approved (review finding, trust={$trust_level->value}).");
-			}
+			$was_moderated = $this->applyReviewAction($photo, $trust_level);
+			// true = moderated, false = approved
 		}
 
-		// Sensitive findings
 		if ($is_sensitive) {
-			if ($trust_level === UserUploadTrustLevel::CHECK) {
-				if (!$was_moderated) {
-					$photo->nsfw_status = NsfwStatus::REVIEW;
-					$photo->is_validated = false;
-					$was_moderated = true;
-				}
-				Log::info("NsfwActionService: photo {$photo->id} moderated (sensitive finding, trust=check). Album action deferred to approval.");
-			} else {
-				$album_action = NsfwSensitiveAlbumAction::tryFrom(
-					$this->config_manager->getValueAsString('ai_vision_nsfw_sensitive_album_action')
-				) ?? NsfwSensitiveAlbumAction::MARK_ALBUM;
-
-				if ($album_action === NsfwSensitiveAlbumAction::MARK_ALBUM) {
-					ApplyNsfwAlbumSensitivityJob::dispatch($photo->id);
-					Log::info("NsfwActionService: dispatched album sensitivity job for photo {$photo->id} (sensitive finding, trust={$trust_level->value}).");
-				}
-			}
+			$was_moderated = $this->applySensitiveAction($photo, $trust_level, $was_moderated) || $was_moderated;
 		}
 
-		// Set visible if no action was taken
 		if (!$was_moderated && $photo->nsfw_status !== NsfwStatus::VISIBLE) {
 			$photo->nsfw_status = NsfwStatus::VISIBLE;
 		}
 
-		// Hide-on-scan restore: if no block/review findings caused moderation
-		// and the photo's trust level is not CHECK, unconditionally set is_validated = true.
 		if (!$was_moderated && $trust_level !== UserUploadTrustLevel::CHECK) {
 			$photo->is_validated = true;
 		}
@@ -114,27 +75,117 @@ class NsfwActionService
 	}
 
 	/**
+	 * Apply block actions based on the trust-tier × finding-tier matrix.
+	 *
+	 * @return bool|null null if photo was hard-deleted, true if moderated, false if approved
+	 */
+	private function applyBlockAction(Photo $photo, UserUploadTrustLevel $trust_level): ?bool
+	{
+		$action = $this->getBlockAction($trust_level);
+
+		if ($action === NsfwBlockFindingAction::BLOCK) {
+			Log::info("NsfwActionService: photo {$photo->id} hard-deleted (block finding, trust={$trust_level->value}).");
+			$delete = resolve(Delete::class);
+			$delete->forceDeletePhoto($photo->id);
+
+			return null;
+		}
+
+		if ($action === NsfwBlockFindingAction::MODERATE) {
+			Log::info("NsfwActionService: photo {$photo->id} moderated (block finding, trust={$trust_level->value}).");
+			$photo->nsfw_status = NsfwStatus::REVIEW;
+			$photo->is_validated = false;
+
+			return true;
+		}
+
+		Log::info("NsfwActionService: photo {$photo->id} approved (block finding, trust={$trust_level->value}).");
+		$photo->nsfw_status = NsfwStatus::VISIBLE;
+
+		return false;
+	}
+
+	/**
+	 * Apply review actions based on the trust-tier × finding-tier matrix.
+	 *
+	 * @return bool true if moderated, false if approved
+	 */
+	private function applyReviewAction(Photo $photo, UserUploadTrustLevel $trust_level): bool
+	{
+		if ($trust_level === UserUploadTrustLevel::CHECK || $trust_level === UserUploadTrustLevel::MONITOR) {
+			Log::info("NsfwActionService: photo {$photo->id} moderated (review finding, trust={$trust_level->value}).");
+			$photo->nsfw_status = NsfwStatus::REVIEW;
+			$photo->is_validated = false;
+
+			return true;
+		}
+
+		Log::info("NsfwActionService: photo {$photo->id} approved (review finding, trust={$trust_level->value}).");
+		if ($photo->nsfw_status !== NsfwStatus::REVIEW) {
+			$photo->nsfw_status = NsfwStatus::VISIBLE;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Apply sensitive actions based on the trust-tier × finding-tier matrix.
+	 *
+	 * @param Photo                $photo
+	 * @param UserUploadTrustLevel $trust_level
+	 * @param bool                 $was_moderated
+	 *
+	 * @return bool
+	 */
+	private function applySensitiveAction(Photo $photo, UserUploadTrustLevel $trust_level, bool $was_moderated): bool
+	{
+		if ($trust_level === UserUploadTrustLevel::CHECK) {
+			if (!$was_moderated) {
+				$photo->nsfw_status = NsfwStatus::REVIEW;
+				$photo->is_validated = false;
+			}
+			Log::info("NsfwActionService: photo {$photo->id} moderated (sensitive finding, trust=check). Album action deferred to approval.");
+
+			return !$was_moderated;
+		}
+
+		$album_action = $this->config_manager->getValueAsEnum('ai_vision_nsfw_sensitive_album_action', NsfwSensitiveAlbumAction::class);
+
+		if ($album_action === NsfwSensitiveAlbumAction::MARK_ALBUM) {
+			ApplyNsfwAlbumSensitivityJob::dispatch($photo->id);
+			Log::info("NsfwActionService: dispatched album sensitivity job for photo {$photo->id} (sensitive finding, trust={$trust_level->value}).");
+		}
+
+		return false;
+	}
+
+	/**
 	 * Log detection results to the nsfw_detections table.
 	 * Deduplicated by photo_id+label+bbox.
+	 *
+	 * @param string                  $photo_id
+	 * @param NsfwDetectionItemData[] $block_detected
+	 * @param NsfwDetectionItemData[] $review_detected
+	 * @param NsfwDetectionItemData[] $sensitive_detected
 	 */
 	public function logDetections(string $photo_id, array $block_detected, array $review_detected, array $sensitive_detected): void
 	{
 		$merged = [];
 
 		foreach ($block_detected as $detection) {
-			$key = $this->detectionKey($detection);
+			$key = $detection->detectionKey();
 			$merged[$key] = $merged[$key] ?? $this->initDetection($photo_id, $detection);
 			$merged[$key]['is_block'] = true;
 		}
 
 		foreach ($review_detected as $detection) {
-			$key = $this->detectionKey($detection);
+			$key = $detection->detectionKey();
 			$merged[$key] = $merged[$key] ?? $this->initDetection($photo_id, $detection);
 			$merged[$key]['is_review'] = true;
 		}
 
 		foreach ($sensitive_detected as $detection) {
-			$key = $this->detectionKey($detection);
+			$key = $detection->detectionKey();
 			$merged[$key] = $merged[$key] ?? $this->initDetection($photo_id, $detection);
 			$merged[$key]['is_sensitive'] = true;
 		}
@@ -154,38 +205,27 @@ class NsfwActionService
 			default => 'ai_vision_nsfw_check_block_action',
 		};
 
-		return NsfwBlockFindingAction::tryFrom(
-			$this->config_manager->getValueAsString($config_key)
-		) ?? NsfwBlockFindingAction::BLOCK;
+		return $this->config_manager->getValueAsEnum($config_key, NsfwBlockFindingAction::class);
 	}
 
-	private function detectionKey(array $detection): string
+	/**
+	 * @param string                $photo_id
+	 * @param NsfwDetectionItemData $detection
+	 *
+	 * @return array{photo_id:string,label:NsfwDetectionLabel,confidence:float,bbox_x:int,bbox_y:int,bbox_width:int,bbox_height:int,area_pixels:int,area_ratio:float,is_block:bool,is_review:bool,is_sensitive:bool}
+	 */
+	private function initDetection(string $photo_id, NsfwDetectionItemData $detection): array
 	{
-		$bbox = $detection['bbox'] ?? [];
-
-		return implode(':', [
-			$detection['label'] ?? '',
-			$bbox['x'] ?? 0,
-			$bbox['y'] ?? 0,
-			$bbox['width'] ?? 0,
-			$bbox['height'] ?? 0,
-		]);
-	}
-
-	private function initDetection(string $photo_id, array $detection): array
-	{
-		$bbox = $detection['bbox'] ?? [];
-
 		return [
 			'photo_id' => $photo_id,
-			'label' => $detection['label'] ?? '',
-			'confidence' => $detection['confidence'] ?? 0.0,
-			'bbox_x' => $bbox['x'] ?? 0,
-			'bbox_y' => $bbox['y'] ?? 0,
-			'bbox_width' => $bbox['width'] ?? 0,
-			'bbox_height' => $bbox['height'] ?? 0,
-			'area_pixels' => $detection['area_pixels'] ?? null,
-			'area_ratio' => $detection['area_ratio'] ?? null,
+			'label' => $detection->label,
+			'confidence' => $detection->confidence,
+			'bbox_x' => $detection->bbox->x,
+			'bbox_y' => $detection->bbox->y,
+			'bbox_width' => $detection->bbox->width,
+			'bbox_height' => $detection->bbox->height,
+			'area_pixels' => $detection->area_pixels,
+			'area_ratio' => $detection->area_ratio,
 			'is_block' => false,
 			'is_review' => false,
 			'is_sensitive' => false,
