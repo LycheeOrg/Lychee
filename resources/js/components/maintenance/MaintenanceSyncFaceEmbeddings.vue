@@ -48,11 +48,10 @@ const description = computed(() => {
 
 function load() {
 	loading.value = true;
-	MaintenanceService.syncFaceEmbeddingsCheck()
-		.then((response) => {
-			data.value = response.data;
-			loading.value = false;
-		});
+	MaintenanceService.syncFaceEmbeddingsCheck().then((response) => {
+		data.value = response.data;
+		loading.value = false;
+	});
 }
 
 function exec() {

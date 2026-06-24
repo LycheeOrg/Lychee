@@ -40,11 +40,10 @@ const toast = useToast();
 
 function load() {
 	loading.value = true;
-	MaintenanceService.runFaceClusteringCheck()
-		.then((response) => {
-			data.value = response.data;
-			loading.value = false;
-		});
+	MaintenanceService.runFaceClusteringCheck().then((response) => {
+		data.value = response.data;
+		loading.value = false;
+	});
 }
 
 function exec() {
