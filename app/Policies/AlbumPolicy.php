@@ -190,6 +190,11 @@ class AlbumPolicy extends BasePolicy
 			return $config_manager->getValueAsBool('grants_download');
 		}
 
+		// Check if user can access the album first.
+		if (!$this->canAccess($user, $abstract_album)) {
+			return false;
+		}
+
 		// User is logged in
 		// Or User can download.
 		if (!$abstract_album instanceof BaseAlbum) {

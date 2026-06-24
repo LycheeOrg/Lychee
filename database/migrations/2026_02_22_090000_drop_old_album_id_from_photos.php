@@ -58,6 +58,22 @@ return new class() extends Migration {
 			$this->optimize->dropIndexIfExists($table, 'photos_album_id_is_starred_description(128)_index');
 		});
 
+		if (DB::getDriverName() === 'sqlite') {
+			try {
+				// lychee[2334128]:
+				// lychee[2334128]:   SQLSTATE[HY000]: General error: 1 error in index idx_876e0d91137abcf after
+				// lychee[2334128]:   drop column: no such column: "old_album_id" - should this be a string liter
+				// lychee[2334128]:   al in single-quotes? (Connection: sqlite, Database: /var/www/html/Lychee/da
+				// lychee[2334128]:   tabase/database.sqlite, SQL: alter table "photos" drop column "old_album_id
+				// lychee[2334128]:   ")
+				// solution: https://github.com/LycheeOrg/Lychee/discussions/4137#discussioncomment-15976761
+				// workaround: drop the index by name instead of dropping the column first
+				DB::statement('DROP INDEX idx_876e0d91137abcf;');
+			} catch (\Throwable) {
+				// Ignore if the index does not exist
+			}
+		}
+
 		// ----------------------------------------------------------------
 		// Step 2: Drop the old_album_id column
 		// ----------------------------------------------------------------
