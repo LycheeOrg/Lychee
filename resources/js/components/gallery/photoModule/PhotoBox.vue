@@ -101,11 +101,7 @@
 		</div>
 		<!-- NSFW detection overlay: same positioning as faces -->
 		<div v-if="loadedNsfwDetections.length > 0" class="absolute z-10 pointer-events-none" :style="faceOverlayStyle">
-			<NsfwDetectionOverlay
-				:detections="loadedNsfwDetections"
-				:image-width="nsfwImageWidth"
-				:image-height="nsfwImageHeight"
-			/>
+			<NsfwDetectionOverlay :detections="loadedNsfwDetections" :image-width="nsfwImageWidth" :image-height="nsfwImageHeight" />
 		</div>
 	</div>
 </template>

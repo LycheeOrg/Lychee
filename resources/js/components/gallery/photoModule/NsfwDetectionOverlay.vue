@@ -84,6 +84,9 @@ function tierBadgeClass(detection: App.Http.Resources.Models.NsfwDetectionResour
 }
 
 function formatLabel(label: string): string {
-	return label.replace(/_/g, " ").toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
+	return label
+		.replace(/_/g, " ")
+		.toLowerCase()
+		.replace(/^\w/, (c) => c.toUpperCase());
 }
 </script>
