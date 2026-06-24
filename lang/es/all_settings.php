@@ -352,6 +352,8 @@ return [
         'album_enhanced_display_enabled' => 'Activar el encabezado mejorado del álbum',
         'album_header_size' => 'Tamaño de la cabecera del álbum',
         'album_header_landing_title_enabled' => 'Mostrar el título de la página de destino en el encabezado del álbum',
+        'sm_card_album_source' => 'Album photo source for social media cards',
+        'sm_card_image_url' => 'Fallback image URL or photo ID for social media cards',
     ],
     'details' => [
         'version' => '',
@@ -700,6 +702,8 @@ return [
         'album_enhanced_display_enabled' => 'Opción para activar un nuevo estilo de encabezado de álbum con un título más grande, un botón «Abrir galería» y la posibilidad de personalizar el estilo del título del álbum.',
         'album_header_size' => 'Configuración del tamaño de la imagen de cabecera en la vista de álbum.',
         'album_header_landing_title_enabled' => 'Muestra el título de la página de destino en la parte inferior del encabezado del álbum. Puedes configurar el título de la página de destino en el módulo «Página de destino».',
+        'sm_card_album_source' => 'Select whether the header or cover photo of an album is used as the Open Graph image when sharing links on social media.',
+        'sm_card_image_url' => 'URL or photo ID used as the Open Graph image when no album-specific image is available. If empty, the landing page background is used.',
     ],
     'category_name' => [
         'config' => 'Conceptos básicos',

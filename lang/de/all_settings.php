@@ -352,6 +352,8 @@ return [
         'album_enhanced_display_enabled' => 'Erweiterten Album-Header aktivieren',
         'album_header_size' => 'Größe des Album-Headers',
         'album_header_landing_title_enabled' => 'Landingpage-Titel im Album-Header anzeigen',
+        'sm_card_album_source' => 'Album photo source for social media cards',
+        'sm_card_image_url' => 'Fallback image URL or photo ID for social media cards',
     ],
     'details' => [
         'version' => '',
@@ -700,6 +702,8 @@ return [
         'album_enhanced_display_enabled' => 'Aktiviert einen neuen Stil für den Album-Header mit größerem Titel, einer „Galerie öffnen“-Schaltfläche und anpassbarem Titelstil.',
         'album_header_size' => 'Konfiguration der Größe des Header-Bildes in der Albenansicht.',
         'album_header_landing_title_enabled' => 'Zeigt den Landingpage-Titel am unteren Rand des Album-Headers an. Der Titel kann in den Landingpage-Einstellungen konfiguriert werden.',
+        'sm_card_album_source' => 'Select whether the header or cover photo of an album is used as the Open Graph image when sharing links on social media.',
+        'sm_card_image_url' => 'URL or photo ID used as the Open Graph image when no album-specific image is available. If empty, the landing page background is used.',
     ],
     'category_name' => [
         'config' => 'Grundeinstellungen',
