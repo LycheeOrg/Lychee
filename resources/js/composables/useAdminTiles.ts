@@ -118,6 +118,15 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			visible: computed(() => (initData.value?.settings.can_edit ?? false) && (initData.value?.modules.is_ai_vision_enabled ?? false)),
 		},
 		{
+			key: "bulk-album-edit",
+			group: "core",
+			label: "bulk_album_edit.title",
+			icon: "pi pi-folder",
+			to: "/bulk-album-edit",
+			isExternal: false,
+			visible: computed(() => initData.value?.settings.can_edit ?? false),
+		},
+		{
 			key: "moderation",
 			group: "core",
 			label: "moderation.title",
