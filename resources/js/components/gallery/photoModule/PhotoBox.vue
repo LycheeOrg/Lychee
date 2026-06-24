@@ -99,7 +99,7 @@
 		<div v-if="loadedFaces.length > 0 || hiddenFaceCount > 0" class="absolute z-10 pointer-events-none" :style="faceOverlayStyle">
 			<FaceOverlay :faces="loadedFaces" :hidden-face-count="hiddenFaceCount" @faces-updated="handleFacesUpdated" />
 		</div>
-		<!-- NSFW detection overlay: same positioning as faces -->
+		<!-- NSFW detection overlay: positioned to match the rendered image -->
 		<div v-if="loadedNsfwDetections.length > 0" class="absolute z-10 pointer-events-none" :style="faceOverlayStyle">
 			<NsfwDetectionOverlay :detections="loadedNsfwDetections" :image-width="nsfwImageWidth" :image-height="nsfwImageHeight" />
 		</div>

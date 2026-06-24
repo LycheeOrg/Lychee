@@ -3,7 +3,7 @@
 		<!-- NSFW detection bounding box overlays -->
 		<template v-for="detection in filteredDetections" :key="detection.id">
 			<div
-				class="absolute rounded transition-opacity duration-200 border-2"
+				class="group absolute rounded transition-opacity duration-200 border-2 pointer-events-auto hover:z-10"
 				:class="tierClass(detection)"
 				:style="{
 					left: (detection.bbox_x / imageWidth) * 100 + '%',
@@ -13,10 +13,11 @@
 				}"
 			>
 				<div
-					class="absolute top-full left-0 mt-0.5 px-1.5 py-0.5 text-xs rounded whitespace-nowrap max-w-40 truncate text-white"
+					class="absolute top-full left-0 mt-0.5 px-1.5 py-0.5 text-xs rounded text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200"
 					:class="tierBadgeClass(detection)"
 				>
-					{{ formatLabel(detection.label) }} {{ (detection.confidence * 100).toFixed(0) }}%
+					<div class="font-semibold whitespace-nowrap">{{ formatLabel(detection.label) }}</div>
+					<div class="whitespace-nowrap">Confidence: {{ (detection.confidence * 100).toFixed(0) }}% · Area: {{ areaLabel(detection) }}</div>
 				</div>
 			</div>
 		</template>
@@ -30,8 +31,6 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import { onKeyStroke } from "@vueuse/core";
-import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 
 const props = defineProps<{
@@ -41,8 +40,6 @@ const props = defineProps<{
 }>();
 
 const lycheeStore = useLycheeStateStore();
-
-const modes = ["hidden", "all", "block", "review", "sensitive"] as const;
 
 const isVisible = computed(() => lycheeStore.nsfw_overlay_mode !== "hidden");
 
@@ -63,14 +60,6 @@ const modeLabel = computed(() => {
 	return "NSFW: Sensitive";
 });
 
-onKeyStroke("h", () => {
-	if (shouldIgnoreKeystroke()) {
-		return;
-	}
-	const idx = modes.indexOf(lycheeStore.nsfw_overlay_mode as (typeof modes)[number]);
-	lycheeStore.nsfw_overlay_mode = modes[(idx + 1) % modes.length];
-});
-
 function tierClass(detection: App.Http.Resources.Models.NsfwDetectionResource): string[] {
 	if (detection.is_block) return ["border-red-500"];
 	if (detection.is_review) return ["border-orange-400"];
@@ -88,5 +77,10 @@ function formatLabel(label: string): string {
 		.replace(/_/g, " ")
 		.toLowerCase()
 		.replace(/^\w/, (c) => c.toUpperCase());
+}
+
+function areaLabel(detection: App.Http.Resources.Models.NsfwDetectionResource): string {
+	const ratio = ((detection.bbox_width * detection.bbox_height) / (props.imageWidth * props.imageHeight)) * 100;
+	return `${ratio.toFixed(1)}%`;
 }
 </script>

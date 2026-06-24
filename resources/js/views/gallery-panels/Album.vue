@@ -183,6 +183,7 @@ import ImportFromServer from "@/components/modals/ImportFromServer.vue";
 import { useOrderManagementStore } from "@/stores/OrderManagement";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { usePhotoStore } from "@/stores/PhotoState";
+import { usePhotoNsfwDetectionsStore } from "@/stores/PhotoNsfwDetectionsState";
 import { usePhotosStore } from "@/stores/PhotosState";
 import { useLayoutStore } from "@/stores/LayoutState";
 import { useAlbumsStore } from "@/stores/AlbumsState";
@@ -214,6 +215,7 @@ const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
 const orderManagement = useOrderManagementStore();
 const photoStore = usePhotoStore();
+const nsfwDetectionsStore = usePhotoNsfwDetectionsStore();
 const albumsStore = useAlbumsStore();
 const photosStore = usePhotosStore();
 const layoutStore = useLayoutStore();
@@ -367,7 +369,14 @@ function openSearch() {
 }
 
 // Album operations
-onKeyStroke("h", () => !shouldIgnoreKeystroke() && !photoStore.isLoaded && (are_nsfw_visible.value = !are_nsfw_visible.value));
+onKeyStroke("h", () => {
+	if (shouldIgnoreKeystroke()) return;
+	if (photoStore.isLoaded) {
+		lycheeStore.cycleNsfwOverlayMode(nsfwDetectionsStore.get(photoStore.photo?.id ?? "").detections);
+	} else {
+		are_nsfw_visible.value = !are_nsfw_visible.value;
+	}
+});
 onKeyStroke("f", () => !shouldIgnoreKeystroke() && !photoStore.isLoaded && togglableStore.toggleFullScreen());
 onKeyStroke(" ", () => !shouldIgnoreKeystroke() && !photoStore.isLoaded && unselect());
 onKeyStroke("n", () => !shouldIgnoreKeystroke() && !photoStore.isLoaded && (is_create_album_visible.value = true));

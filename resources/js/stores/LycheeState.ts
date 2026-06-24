@@ -253,5 +253,19 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					window.dispatchEvent(event);
 				});
 		},
+		cycleNsfwOverlayMode(detections?: App.Http.Resources.Models.NsfwDetectionResource[]): void {
+			const modes = ["hidden", "all", "block", "review", "sensitive"] as const;
+			const noSkip = new Set<string>(["hidden", "blurred", "all"]);
+			const hasCategory: Record<string, boolean> = {
+				block: detections?.some((d) => d.is_block) ?? false,
+				review: detections?.some((d) => d.is_review) ?? false,
+				sensitive: detections?.some((d) => d.is_sensitive) ?? false,
+			};
+			let idx = modes.indexOf(this.nsfw_overlay_mode as (typeof modes)[number]);
+			do {
+				idx = (idx + 1) % modes.length;
+			} while (!noSkip.has(modes[idx]) && !hasCategory[modes[idx]]);
+			this.nsfw_overlay_mode = modes[idx];
+		},
 	},
 });

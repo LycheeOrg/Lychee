@@ -127,6 +127,7 @@ import { useLayoutStore } from "@/stores/LayoutState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { usePhotosStore } from "@/stores/PhotosState";
+import { usePhotoNsfwDetectionsStore } from "@/stores/PhotoNsfwDetectionsState";
 import { usePhotoStore } from "@/stores/PhotoState";
 import { useTagStore } from "@/stores/TagState";
 import { useUserStore } from "@/stores/UserState";
@@ -164,6 +165,7 @@ const userStore = useUserStore();
 const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
 const photoStore = usePhotoStore();
+const nsfwDetectionsStore = usePhotoNsfwDetectionsStore();
 const photosStore = usePhotosStore();
 const albumsStore = useAlbumsStore();
 const layoutStore = useLayoutStore();
@@ -217,7 +219,14 @@ function toggleDetails() {
 // }
 
 // Album operations
-onKeyStroke("h", () => !shouldIgnoreKeystroke() && !photoStore.isLoaded && (are_nsfw_visible.value = !are_nsfw_visible.value));
+onKeyStroke("h", () => {
+	if (shouldIgnoreKeystroke()) return;
+	if (photoStore.isLoaded) {
+		lycheeStore.cycleNsfwOverlayMode(nsfwDetectionsStore.get(photoStore.photo?.id ?? "").detections);
+	} else {
+		are_nsfw_visible.value = !are_nsfw_visible.value;
+	}
+});
 onKeyStroke("f", () => !shouldIgnoreKeystroke() && !photoStore.isLoaded && togglableStore.toggleFullScreen());
 onKeyStroke(" ", () => !shouldIgnoreKeystroke() && !photoStore.isLoaded && unselect());
 onKeyStroke("a", (e) => {
