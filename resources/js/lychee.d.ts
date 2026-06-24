@@ -897,10 +897,28 @@ declare namespace App.Http.Resources.Models {
 		id: string;
 		title: string;
 	};
+	export type NsfwDetectionResource = {
+		id: number;
+		photo_id: string;
+		label: string;
+		confidence: number;
+		bbox_x: number;
+		bbox_y: number;
+		bbox_width: number;
+		bbox_height: number;
+		is_block: boolean;
+		is_review: boolean;
+		is_sensitive: boolean;
+	};
 	export type PhotoFacesResource = {
 		faces: App.Http.Resources.Models.FaceResource[];
 		hidden_face_count: number;
 		rights: App.Http.Resources.Rights.PhotoRightsResource;
+	};
+	export type PhotoNsfwDetectionsResource = {
+		detections: App.Http.Resources.Models.NsfwDetectionResource[];
+		image_width: number;
+		image_height: number;
 	};
 	export type PhotoRatingResource = {
 		rating_user: number;

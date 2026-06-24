@@ -308,6 +308,16 @@ class Photo extends Model implements HasUTCBasedTimes
 	}
 
 	/**
+	 * Return the NSFW detections for this photo.
+	 *
+	 * @return HasMany<NsfwDetection,$this>
+	 */
+	public function nsfwDetections(): HasMany
+	{
+		return $this->hasMany(NsfwDetection::class, 'photo_id', 'id');
+	}
+
+	/**
 	 * Returns the relationship between a tag and all photos with whom
 	 * this tag is attached.
 	 *

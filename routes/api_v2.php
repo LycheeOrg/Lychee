@@ -429,6 +429,7 @@ Route::middleware(['feature:ai-vision', 'feature:v8'])->group(function (): void 
 	/**
 	 * AI VISION — NSFW DETECTION.
 	 */
+	Route::get('/Photo/{id}/nsfw-detections', [AiVision\PhotoNsfwDetectionsController::class, 'show']);
 	Route::post('/NsfwDetection/results', [AiVision\NsfwDetectionController::class, 'results'])->withoutMiddleware(['auth']);
 	Route::post('/NsfwDetection/bulk-scan', [AiVision\NsfwDetectionController::class, 'bulkScan'])->middleware(['support:se']);
 	Route::get('/NsfwDetection/config', [AiVision\NsfwConfigController::class, 'show'])->middleware(['support:se']);

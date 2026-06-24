@@ -99,12 +99,21 @@
 		<div v-if="loadedFaces.length > 0 || hiddenFaceCount > 0" class="absolute z-10 pointer-events-none" :style="faceOverlayStyle">
 			<FaceOverlay :faces="loadedFaces" :hidden-face-count="hiddenFaceCount" @faces-updated="handleFacesUpdated" />
 		</div>
+		<!-- NSFW detection overlay: same positioning as faces -->
+		<div v-if="loadedNsfwDetections.length > 0" class="absolute z-10 pointer-events-none" :style="faceOverlayStyle">
+			<NsfwDetectionOverlay
+				:detections="loadedNsfwDetections"
+				:image-width="nsfwImageWidth"
+				:image-height="nsfwImageHeight"
+			/>
+		</div>
 	</div>
 </template>
 <script setup lang="ts">
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { usePhotoFacesStore } from "@/stores/PhotoFacesState";
+import { usePhotoNsfwDetectionsStore } from "@/stores/PhotoNsfwDetectionsState";
 import { useImageHelpers } from "@/utils/Helpers";
 import { useSwipe, type UseSwipeDirection } from "@vueuse/core";
 import { storeToRefs } from "pinia";
@@ -112,6 +121,7 @@ import { computed, reactive, watch, watchEffect, onUnmounted, ref } from "vue";
 import { useLtRorRtL } from "@/utils/Helpers";
 import { ImageViewMode, usePhotoStore } from "@/stores/PhotoState";
 import FaceOverlay from "./FaceOverlay.vue";
+import NsfwDetectionOverlay from "./NsfwDetectionOverlay.vue";
 
 const { isLTR } = useLtRorRtL();
 
@@ -136,6 +146,12 @@ const facesStore = usePhotoFacesStore();
 const faceData = computed(() => facesStore.get(photoStore.photo?.id ?? ""));
 const loadedFaces = computed(() => faceData.value.faces);
 const hiddenFaceCount = computed(() => faceData.value.hiddenFaceCount);
+
+const nsfwDetectionsStore = usePhotoNsfwDetectionsStore();
+const nsfwData = computed(() => nsfwDetectionsStore.get(photoStore.photo?.id ?? ""));
+const loadedNsfwDetections = computed(() => nsfwData.value.detections);
+const nsfwImageWidth = computed(() => nsfwData.value.imageWidth);
+const nsfwImageHeight = computed(() => nsfwData.value.imageHeight);
 
 function handleFacesUpdated() {
 	emits("facesUpdated");
@@ -187,6 +203,18 @@ watch(
 		}
 
 		facesStore.fetch(photoId);
+	},
+	{ immediate: true },
+);
+
+// Lazy fetch: only load NSFW detections when the overlay is toggled visible
+watch(
+	[() => photoStore.photo?.id, () => lycheeStore.nsfw_overlay_mode],
+	([photoId, mode]) => {
+		if (photoId === undefined || mode === "hidden") {
+			return;
+		}
+		nsfwDetectionsStore.fetch(photoId);
 	},
 	{ immediate: true },
 );

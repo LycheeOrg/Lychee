@@ -35,6 +35,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		is_mobile_dock_full_transparency_enabled: false,
 		is_photo_details_always_open: false,
 		is_face_overlay_visible: true,
+		nsfw_overlay_mode: "hidden" as "hidden" | "all" | "block" | "review" | "sensitive",
 
 		// keybinding help
 		show_keybinding_help_popup: false,
