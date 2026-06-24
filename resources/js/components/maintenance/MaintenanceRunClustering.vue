@@ -44,10 +44,6 @@ function load() {
 		.then((response) => {
 			data.value = response.data;
 			loading.value = false;
-		})
-		.catch((e) => {
-			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response.data.message, life: 3000 });
-			loading.value = false;
 		});
 }
 
@@ -59,7 +55,9 @@ function exec() {
 			loading.value = false;
 		})
 		.catch((e) => {
-			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });
+			if (e.response.status !== 501 && e.response.data.message !== "Feature 'v8' is disabled") {
+				toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response.data.message, life: 3000 });
+			}
 			loading.value = false;
 		})
 		.finally(load);
