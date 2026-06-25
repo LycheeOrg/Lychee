@@ -352,6 +352,8 @@ return [
         'album_enhanced_display_enabled' => 'Enable enhanced album header',
         'album_header_size' => 'Album header size',
         'album_header_landing_title_enabled' => 'Display landing title on album header',
+        'sm_card_album_source' => 'Album photo source for social media cards',
+        'sm_card_image_url' => 'Fallback image URL or photo ID for social media cards',
     ],
     'documentation' => [
         'version' => 'Version actuelle de Lychee',
@@ -700,6 +702,8 @@ return [
         'album_enhanced_display_enabled' => 'Activer l\'en-tête d\'album amélioré',
         'album_header_size' => 'Taille de l\'en-tête de l\'album',
         'album_header_landing_title_enabled' => 'Afficher le titre de la page d\'accueil dans l\'en-tête de l\'album',
+        'sm_card_album_source' => 'Select whether the header or cover photo of an album is used as the Open Graph image when sharing links on social media.',
+        'sm_card_image_url' => 'URL or photo ID used as the Open Graph image when no album-specific image is available. If empty, the landing page background is used.',
     ],
     'category_name' => [
         'config' => 'Les bases',

@@ -354,6 +354,8 @@ return [
         'album_enhanced_display_enabled' => 'Enable enhanced album header',
         'album_header_size' => 'Album header size',
         'album_header_landing_title_enabled' => 'Display landing title on album header',
+        'sm_card_album_source' => 'Album photo source for social media cards',
+        'sm_card_image_url' => 'Fallback image URL or photo ID for social media cards',
     ],
     'details' => [
         'version' => '',
@@ -702,6 +704,8 @@ return [
         'album_enhanced_display_enabled' => 'Option to enable a new style of album header with a larger title, an "Open Gallery" button, and customize the album title style.',
         'album_header_size' => 'Configuration of the size of the header image in album view.',
         'album_header_landing_title_enabled' => 'Display the landing title at the bottom of the Album header. You can configure the landing title in the Landing page module.',
+        'sm_card_album_source' => 'Select whether the header or cover photo of an album is used as the Open Graph image when sharing links on social media.',
+        'sm_card_image_url' => 'URL or photo ID used as the Open Graph image when no album-specific image is available. If empty, the landing page background is used.',
     ],
 
     'category_name' => [

@@ -352,6 +352,8 @@ return [
         'album_enhanced_display_enabled' => 'Активиране на разширени функции на заглавната част на албума',
         'album_header_size' => 'Размер на заглавната част на албума',
         'album_header_landing_title_enabled' => 'Display landing title on album header',
+        'sm_card_album_source' => 'Album photo source for social media cards',
+        'sm_card_image_url' => 'Fallback image URL or photo ID for social media cards',
     ],
     'details' => [
         'version' => '',
@@ -700,6 +702,8 @@ return [
         'album_enhanced_display_enabled' => 'Опция за включване на нов стил на заглавната част с по-голямо заглавие, бутон „Отвори галерията“ и възможност за персонализиране на стила на заглавието.',
         'album_header_size' => 'Опция за конфигуриране на размера на изображението в заглавната част.',
         'album_header_landing_title_enabled' => 'Display the landing title at the bottom of the Album header. You can configure the landing title in the Landing page module.',
+        'sm_card_album_source' => 'Select whether the header or cover photo of an album is used as the Open Graph image when sharing links on social media.',
+        'sm_card_image_url' => 'URL or photo ID used as the Open Graph image when no album-specific image is available. If empty, the landing page background is used.',
     ],
     'category_name' => [
         'config' => 'Основни',
