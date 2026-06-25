@@ -10,11 +10,14 @@ namespace App\View\Components;
 
 use App\Constants\FileSystem;
 use App\Contracts\Models\AbstractAlbum;
+use App\Enum\OgImageAlbumSourceType;
+use App\Enum\SizeVariantType;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Http\Resources\Traits\HasHeaderUrl;
 use App\Models\Album;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo;
+use App\Models\SizeVariant;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\Component;
@@ -67,7 +70,10 @@ class Meta extends Component
 
 		$this->page_title = request()->configs()->getValueAsString('site_title');
 		$this->page_description = '';
-		$this->image_url = request()->configs()->getValueAsString('landing_background_landscape');
+
+		$sm_card_image_url = request()->configs()->getValueAsString('sm_card_image_url');
+		$sm_card_image_url = $sm_card_image_url !== '' ? $sm_card_image_url : request()->configs()->getValueAsString('landing_background_landscape');
+		$this->image_url = $this->resolveSmCardImageUrl($sm_card_image_url);
 
 		// processing photo and album data
 		if (session()->has('access')) {
@@ -92,7 +98,7 @@ class Meta extends Component
 			if ($this->album instanceof BaseAlbum) {
 				$this->page_description = $this->album->description ?? request()->configs()->getValueAsString('site_title');
 			}
-			$this->image_url = $this->getHeaderUrl($this->album) ?? $this->image_url;
+			$this->image_url = $this->getAlbumOgImageUrl($this->album) ?? $this->image_url;
 		}
 
 		if ($this->photo !== null) {
@@ -125,5 +131,73 @@ class Meta extends Component
 
 		/** @disregard P1013 */
 		return Storage::disk(FileSystem::DIST)->url($file_name) . $css_cache_busting;
+	}
+
+	/**
+	 * Returns the image used for integration in social medias.
+	 *
+	 * @param AbstractAlbum $album
+	 *
+	 * @return string|null
+	 */
+	private function getAlbumOgImageUrl(AbstractAlbum $album): ?string
+	{
+		$source = request()->configs()->getValueAsEnum('sm_card_album_source', OgImageAlbumSourceType::class);
+
+		if ($source === OgImageAlbumSourceType::COVER) {
+			return $this->getCoverUrl($album);
+		}
+
+		return $this->getHeaderUrl($album);
+	}
+
+	/**
+	 * Return cover url if exists.
+	 *
+	 * @param AbstractAlbum $album
+	 *
+	 * @return string|null
+	 */
+	private function getCoverUrl(AbstractAlbum $album): ?string
+	{
+		if (!$album instanceof Album) {
+			return null;
+		}
+
+		$cover_id = $album->cover_id ?? $album->auto_cover_id_least_privilege;
+		if ($cover_id === null) {
+			return null;
+		}
+
+		return SizeVariant::query()
+			->where('photo_id', '=', $cover_id)
+			->whereIn('type', [SizeVariantType::MEDIUM2X, SizeVariantType::MEDIUM, SizeVariantType::SMALL2X, SizeVariantType::SMALL])
+			->orderBy('type', 'asc')
+			->first()?->url;
+	}
+
+	/**
+	 * Return the image url if exists.
+	 *
+	 * @param string $value
+	 *
+	 * @return string
+	 */
+	private function resolveSmCardImageUrl(string $value): string
+	{
+		if (str_contains($value, '://') || str_starts_with($value, '/')) {
+			return $value;
+		}
+
+		$photo = Photo::query()->with(['size_variants'])->find($value);
+		if ($photo === null) {
+			return $value;
+		}
+
+		return $photo->size_variants->getMedium2x()?->url
+			?? $photo->size_variants->getMedium()?->url
+			?? $photo->size_variants->getSmall2x()?->url
+			?? $photo->size_variants->getSmall()?->url
+			?? $value;
 	}
 }
