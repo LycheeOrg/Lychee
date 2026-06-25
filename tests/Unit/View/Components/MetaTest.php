@@ -21,14 +21,19 @@ namespace Tests\Unit\View\Components;
 use App\Constants\FileSystem;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\OgImageAlbumSourceType;
+use App\Enum\SizeVariantType;
+use App\Enum\StorageDiskType;
 use App\Http\Controllers\Gallery\AlbumController;
+use App\Image\Watermarker;
 use App\Models\Album;
 use App\Models\Extensions\SizeVariants;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use App\Repositories\ConfigManager;
+use App\Services\UrlGenerator;
 use App\View\Components\Meta;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Mockery\MockInterface;
 use Tests\AbstractTestCase;
@@ -493,6 +498,82 @@ class MetaTest extends AbstractTestCase
 		$meta = $this->buildMeta();
 
 		self::assertSame('https://example.com/card.jpg', $meta->image_url);
+	}
+
+	public function testAlbumWithHeaderSourceSetsImageUrl(): void
+	{
+		$album = \Mockery::mock(Album::class)->makePartial();
+		$album->shouldReceive('get_title')->andReturn('Album');
+		$album->shouldReceive('getAttribute')->with('description')->andReturn('Desc');
+
+		$this->config_manager->shouldReceive('getValueAsEnum')
+			->with('sm_card_album_source', OgImageAlbumSourceType::class)
+			->andReturn(OgImageAlbumSourceType::HEADER);
+
+		session(['album' => $album]);
+
+		$meta = \Mockery::mock(Meta::class)
+			->makePartial()
+			->shouldAllowMockingProtectedMethods();
+		$meta->shouldReceive('getHeaderUrl')
+			->once()
+			->andReturn('https://example.com/header.jpg');
+		$meta->__construct();
+
+		self::assertSame('https://example.com/header.jpg', $meta->image_url);
+		self::assertSame('Album', $meta->page_title);
+	}
+
+	public function testAlbumWithCoverSourceSetsImageUrl(): void
+	{
+		$album = \Mockery::mock(Album::class)->makePartial();
+		$album->shouldReceive('get_title')->andReturn('Album');
+		$album->shouldReceive('getAttribute')->with('description')->andReturn('Desc');
+		$album->shouldReceive('getAttribute')->with('cover_id')->andReturn('photo-123');
+		$album->shouldReceive('getAttribute')->with('auto_cover_id_least_privilege')->andReturn(null);
+
+		$this->config_manager->shouldReceive('getValueAsEnum')
+			->with('sm_card_album_source', OgImageAlbumSourceType::class)
+			->andReturn(OgImageAlbumSourceType::COVER);
+
+		session(['album' => $album]);
+
+		$mockStatement = \Mockery::mock(\PDOStatement::class);
+		$mockStatement->shouldReceive('setFetchMode')->andReturn(true);
+		$mockStatement->shouldReceive('bindValue')->andReturn(true);
+		$mockStatement->shouldReceive('execute')->andReturn(true);
+		$mockStatement->shouldReceive('fetchAll')->andReturn([
+			(object) [
+				'id' => 1,
+				'photo_id' => 'photo-123',
+				'type' => SizeVariantType::MEDIUM->value,
+				'short_path' => 'uploads/medium/test.jpg',
+				'short_path_watermarked' => null,
+				'storage_disk' => StorageDiskType::LOCAL->value,
+				'width' => 800,
+				'height' => 600,
+				'filesize' => 50000,
+				'ratio' => 1.33,
+			],
+		]);
+
+		$mockPdo = \Mockery::mock(\PDO::class);
+		$mockPdo->shouldReceive('prepare')->andReturn($mockStatement);
+
+		DB::connection()->setPdo($mockPdo);
+
+		$mockWatermarker = \Mockery::mock(Watermarker::class);
+		$mockWatermarker->shouldReceive('get_path')->andReturn('uploads/medium/test.jpg');
+		$this->app->instance(Watermarker::class, $mockWatermarker);
+
+		$mockUrlGen = \Mockery::mock(UrlGenerator::class);
+		$mockUrlGen->shouldReceive('pathToUrl')->andReturn('https://example.com/cover.jpg');
+		$this->app->instance(UrlGenerator::class, $mockUrlGen);
+
+		$meta = $this->buildMeta();
+
+		self::assertSame('https://example.com/cover.jpg', $meta->image_url);
+		self::assertSame('Album', $meta->page_title);
 	}
 
 	public function testRenderReturnsView(): void
