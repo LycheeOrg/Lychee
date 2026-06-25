@@ -30,21 +30,20 @@ use App\Repositories\ConfigManager;
 use App\View\Components\Meta;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Storage;
-use Mockery;
 use Mockery\MockInterface;
 use Tests\AbstractTestCase;
 
 class MetaTest extends AbstractTestCase
 {
-	private MockInterface&ConfigManager $configManager;
+	private MockInterface&ConfigManager $config_manager;
 
 	protected function setUp(): void
 	{
 		parent::setUp();
 		$this->withoutVite();
 
-		$this->configManager = Mockery::mock(ConfigManager::class);
-		request()->attributes->set('configs', $this->configManager);
+		$this->config_manager = \Mockery::mock(ConfigManager::class);
+		request()->attributes->set('configs', $this->config_manager);
 
 		$this->setUpDefaultConfig();
 		Storage::fake(FileSystem::DIST);
@@ -54,20 +53,20 @@ class MetaTest extends AbstractTestCase
 
 	private function setUpDefaultConfig(): void
 	{
-		$this->configManager->shouldReceive('getValueAsString')
+		$this->config_manager->shouldReceive('getValueAsString')
 			->with('site_owner')->andReturn('Test Owner')->byDefault();
-		$this->configManager->shouldReceive('getValueAsBool')
+		$this->config_manager->shouldReceive('getValueAsBool')
 			->with('rss_enable')->andReturn(false)->byDefault();
-		$this->configManager->shouldReceive('getValueAsString')
+		$this->config_manager->shouldReceive('getValueAsString')
 			->with('site_title')->andReturn('My Gallery')->byDefault();
-		$this->configManager->shouldReceive('getValueAsString')
+		$this->config_manager->shouldReceive('getValueAsString')
 			->with('sm_card_image_url')->andReturn('https://example.com/card.jpg')->byDefault();
-		$this->configManager->shouldReceive('getValueAsString')
+		$this->config_manager->shouldReceive('getValueAsString')
 			->with('landing_background_landscape')->andReturn('https://example.com/bg.jpg')->byDefault();
-		$this->configManager->shouldReceive('getValueAsEnum')
+		$this->config_manager->shouldReceive('getValueAsEnum')
 			->with('sm_card_album_source', OgImageAlbumSourceType::class)
 			->andReturn(OgImageAlbumSourceType::HEADER)->byDefault();
-		$this->configManager->shouldReceive('getValueAsBool')
+		$this->config_manager->shouldReceive('getValueAsBool')
 			->with('use_album_compact_header')->andReturn(true)->byDefault();
 	}
 
@@ -78,18 +77,18 @@ class MetaTest extends AbstractTestCase
 
 	private function makeSizeVariantMock(string $url): MockInterface&SizeVariant
 	{
-		$sv = Mockery::mock(SizeVariant::class);
+		$sv = \Mockery::mock(SizeVariant::class);
 		$sv->shouldReceive('offsetExists')->with('url')->andReturn(true);
 		$sv->shouldReceive('getAttribute')->with('url')->andReturn($url);
 
 		return $sv;
 	}
 
-	private function makePhotoMock(string $title, ?string $description, MockInterface $sizeVariants): MockInterface&Photo
+	private function makePhotoMock(string $title, ?string $description, MockInterface $size_variants): MockInterface&Photo
 	{
-		$photo = Mockery::mock(Photo::class)->makePartial();
+		$photo = \Mockery::mock(Photo::class)->makePartial();
 		$photo->forceFill(['title' => $title, 'description' => $description]);
-		$photo->setRelation('size_variants', $sizeVariants);
+		$photo->setRelation('size_variants', $size_variants);
 
 		return $photo;
 	}
@@ -107,7 +106,7 @@ class MetaTest extends AbstractTestCase
 
 	public function testRssEnabled(): void
 	{
-		$this->configManager->shouldReceive('getValueAsBool')
+		$this->config_manager->shouldReceive('getValueAsBool')
 			->with('rss_enable')->andReturn(true);
 
 		$meta = $this->buildMeta();
@@ -117,7 +116,7 @@ class MetaTest extends AbstractTestCase
 
 	public function testSmCardImageUrlFallsBackToLandingBackground(): void
 	{
-		$this->configManager->shouldReceive('getValueAsString')
+		$this->config_manager->shouldReceive('getValueAsString')
 			->with('sm_card_image_url')->andReturn('');
 
 		$meta = $this->buildMeta();
@@ -127,7 +126,7 @@ class MetaTest extends AbstractTestCase
 
 	public function testSmCardImageUrlWithAbsolutePath(): void
 	{
-		$this->configManager->shouldReceive('getValueAsString')
+		$this->config_manager->shouldReceive('getValueAsString')
 			->with('sm_card_image_url')->andReturn('/images/card.png');
 
 		$meta = $this->buildMeta();
@@ -137,7 +136,7 @@ class MetaTest extends AbstractTestCase
 
 	public function testSmCardImageUrlWithFullUrl(): void
 	{
-		$this->configManager->shouldReceive('getValueAsString')
+		$this->config_manager->shouldReceive('getValueAsString')
 			->with('sm_card_image_url')->andReturn('https://cdn.example.com/img.jpg');
 
 		$meta = $this->buildMeta();
@@ -186,7 +185,7 @@ class MetaTest extends AbstractTestCase
 
 	public function testAccessDeniedPreventsAlbumAndPhotoProcessing(): void
 	{
-		$album = Mockery::mock(Album::class);
+		$album = \Mockery::mock(Album::class);
 		$album->shouldReceive('get_title')->never();
 
 		session(['access' => false]);
@@ -200,13 +199,13 @@ class MetaTest extends AbstractTestCase
 
 	public function testAlbumInSessionSetsTitle(): void
 	{
-		$album = Mockery::mock(Album::class)->makePartial();
+		$album = \Mockery::mock(Album::class)->makePartial();
 		$album->shouldReceive('get_title')->andReturn('Vacation 2024');
 		$album->shouldReceive('getAttribute')->with('description')->andReturn('Summer photos');
 		$album->shouldReceive('getAttribute')->with('cover_id')->andReturn(null);
 		$album->shouldReceive('getAttribute')->with('auto_cover_id_least_privilege')->andReturn(null);
 
-		$this->configManager->shouldReceive('getValueAsEnum')
+		$this->config_manager->shouldReceive('getValueAsEnum')
 			->with('sm_card_album_source', OgImageAlbumSourceType::class)
 			->andReturn(OgImageAlbumSourceType::COVER);
 
@@ -220,13 +219,13 @@ class MetaTest extends AbstractTestCase
 
 	public function testAlbumWithNullDescriptionFallsBackToSiteTitle(): void
 	{
-		$album = Mockery::mock(Album::class)->makePartial();
+		$album = \Mockery::mock(Album::class)->makePartial();
 		$album->shouldReceive('get_title')->andReturn('Untitled');
 		$album->shouldReceive('getAttribute')->with('description')->andReturn(null);
 		$album->shouldReceive('getAttribute')->with('cover_id')->andReturn(null);
 		$album->shouldReceive('getAttribute')->with('auto_cover_id_least_privilege')->andReturn(null);
 
-		$this->configManager->shouldReceive('getValueAsEnum')
+		$this->config_manager->shouldReceive('getValueAsEnum')
 			->with('sm_card_album_source', OgImageAlbumSourceType::class)
 			->andReturn(OgImageAlbumSourceType::COVER);
 
@@ -240,7 +239,7 @@ class MetaTest extends AbstractTestCase
 
 	public function testNonBaseAlbumDoesNotSetDescription(): void
 	{
-		$album = Mockery::mock(AbstractAlbum::class);
+		$album = \Mockery::mock(AbstractAlbum::class);
 		$album->shouldReceive('get_title')->andReturn('Smart Album');
 		$album->shouldReceive('get_photos')->andReturn(new Collection());
 
@@ -256,7 +255,7 @@ class MetaTest extends AbstractTestCase
 	{
 		$svMock = $this->makeSizeVariantMock('https://example.com/medium.jpg');
 
-		$sizeVariants = Mockery::mock(SizeVariants::class);
+		$sizeVariants = \Mockery::mock(SizeVariants::class);
 		$sizeVariants->shouldReceive('getMedium')->andReturn($svMock);
 
 		$photo = $this->makePhotoMock('Sunset', 'A beautiful sunset', $sizeVariants);
@@ -272,7 +271,7 @@ class MetaTest extends AbstractTestCase
 
 	public function testPhotoWithNullDescriptionFallsBackToSiteTitle(): void
 	{
-		$sizeVariants = Mockery::mock(SizeVariants::class);
+		$sizeVariants = \Mockery::mock(SizeVariants::class);
 		$sizeVariants->shouldReceive('getMedium')->andReturn(null);
 		$sizeVariants->shouldReceive('getSmall')->andReturn(null);
 
@@ -291,7 +290,7 @@ class MetaTest extends AbstractTestCase
 	{
 		$svSmall = $this->makeSizeVariantMock('https://example.com/small.jpg');
 
-		$sizeVariants = Mockery::mock(SizeVariants::class);
+		$sizeVariants = \Mockery::mock(SizeVariants::class);
 		$sizeVariants->shouldReceive('getMedium')->andReturn(null);
 		$sizeVariants->shouldReceive('getSmall')->andReturn($svSmall);
 
@@ -306,7 +305,7 @@ class MetaTest extends AbstractTestCase
 
 	public function testPhotoFallsBackToDefaultWhenNoSizeVariants(): void
 	{
-		$sizeVariants = Mockery::mock(SizeVariants::class);
+		$sizeVariants = \Mockery::mock(SizeVariants::class);
 		$sizeVariants->shouldReceive('getMedium')->andReturn(null);
 		$sizeVariants->shouldReceive('getSmall')->andReturn(null);
 
@@ -321,19 +320,19 @@ class MetaTest extends AbstractTestCase
 
 	public function testPhotoOverridesAlbumWhenBothInSession(): void
 	{
-		$album = Mockery::mock(Album::class)->makePartial();
+		$album = \Mockery::mock(Album::class)->makePartial();
 		$album->shouldReceive('get_title')->andReturn('Album Title');
 		$album->shouldReceive('getAttribute')->with('description')->andReturn('Album Desc');
 		$album->shouldReceive('getAttribute')->with('cover_id')->andReturn(null);
 		$album->shouldReceive('getAttribute')->with('auto_cover_id_least_privilege')->andReturn(null);
 
-		$this->configManager->shouldReceive('getValueAsEnum')
+		$this->config_manager->shouldReceive('getValueAsEnum')
 			->with('sm_card_album_source', OgImageAlbumSourceType::class)
 			->andReturn(OgImageAlbumSourceType::COVER);
 
 		$svMedium = $this->makeSizeVariantMock('https://example.com/photo-medium.jpg');
 
-		$sizeVariants = Mockery::mock(SizeVariants::class);
+		$sizeVariants = \Mockery::mock(SizeVariants::class);
 		$sizeVariants->shouldReceive('getMedium')->andReturn($svMedium);
 
 		$photo = $this->makePhotoMock('Photo Title', 'Photo Desc', $sizeVariants);
@@ -349,11 +348,11 @@ class MetaTest extends AbstractTestCase
 
 	public function testSessionDataIsForgottenAfterConstruction(): void
 	{
-		$sizeVariants = Mockery::mock(SizeVariants::class);
+		$sizeVariants = \Mockery::mock(SizeVariants::class);
 		$sizeVariants->shouldReceive('getMedium')->andReturn(null);
 		$sizeVariants->shouldReceive('getSmall')->andReturn(null);
 
-		$album = Mockery::mock(AbstractAlbum::class);
+		$album = \Mockery::mock(AbstractAlbum::class);
 		$album->shouldReceive('get_title')->andReturn('T');
 		$album->shouldReceive('get_photos')->andReturn(new Collection());
 
@@ -398,11 +397,11 @@ class MetaTest extends AbstractTestCase
 
 	public function testAlbumWithCoverSourceAndNonAlbumTypeReturnsNull(): void
 	{
-		$album = Mockery::mock(AbstractAlbum::class);
+		$album = \Mockery::mock(AbstractAlbum::class);
 		$album->shouldReceive('get_title')->andReturn('Smart Album');
 		$album->shouldReceive('get_photos')->andReturn(new Collection());
 
-		$this->configManager->shouldReceive('getValueAsEnum')
+		$this->config_manager->shouldReceive('getValueAsEnum')
 			->with('sm_card_album_source', OgImageAlbumSourceType::class)
 			->andReturn(OgImageAlbumSourceType::COVER);
 
@@ -415,13 +414,13 @@ class MetaTest extends AbstractTestCase
 
 	public function testAlbumWithCoverSourceAndNullCoverIds(): void
 	{
-		$album = Mockery::mock(Album::class)->makePartial();
+		$album = \Mockery::mock(Album::class)->makePartial();
 		$album->shouldReceive('get_title')->andReturn('Album');
 		$album->shouldReceive('getAttribute')->with('description')->andReturn(null);
 		$album->shouldReceive('getAttribute')->with('cover_id')->andReturn(null);
 		$album->shouldReceive('getAttribute')->with('auto_cover_id_least_privilege')->andReturn(null);
 
-		$this->configManager->shouldReceive('getValueAsEnum')
+		$this->config_manager->shouldReceive('getValueAsEnum')
 			->with('sm_card_album_source', OgImageAlbumSourceType::class)
 			->andReturn(OgImageAlbumSourceType::COVER);
 
@@ -434,15 +433,15 @@ class MetaTest extends AbstractTestCase
 
 	public function testAlbumWithHeaderSourceAndCompactHeaderEnabled(): void
 	{
-		$album = Mockery::mock(Album::class)->makePartial();
+		$album = \Mockery::mock(Album::class)->makePartial();
 		$album->shouldReceive('get_title')->andReturn('Album');
 		$album->shouldReceive('getAttribute')->with('description')->andReturn('Desc');
 
-		$this->configManager->shouldReceive('getValueAsEnum')
+		$this->config_manager->shouldReceive('getValueAsEnum')
 			->with('sm_card_album_source', OgImageAlbumSourceType::class)
 			->andReturn(OgImageAlbumSourceType::HEADER);
 
-		$this->configManager->shouldReceive('getValueAsBool')
+		$this->config_manager->shouldReceive('getValueAsBool')
 			->with('use_album_compact_header')->andReturn(true);
 
 		session(['album' => $album]);
@@ -454,17 +453,17 @@ class MetaTest extends AbstractTestCase
 
 	public function testAlbumWithHeaderSourceAndCompactHeaderId(): void
 	{
-		$album = Mockery::mock(Album::class)->makePartial();
+		$album = \Mockery::mock(Album::class)->makePartial();
 		$album->shouldReceive('get_title')->andReturn('Album');
 		$album->shouldReceive('getAttribute')->with('description')->andReturn('Desc');
 		$album->shouldReceive('getAttribute')->with('header_id')->andReturn(AlbumController::COMPACT_HEADER);
 		$album->shouldReceive('get_photos')->andReturn(new Collection());
 
-		$this->configManager->shouldReceive('getValueAsEnum')
+		$this->config_manager->shouldReceive('getValueAsEnum')
 			->with('sm_card_album_source', OgImageAlbumSourceType::class)
 			->andReturn(OgImageAlbumSourceType::HEADER);
 
-		$this->configManager->shouldReceive('getValueAsBool')
+		$this->config_manager->shouldReceive('getValueAsBool')
 			->with('use_album_compact_header')->andReturn(false);
 
 		session(['album' => $album]);
@@ -476,17 +475,17 @@ class MetaTest extends AbstractTestCase
 
 	public function testAlbumWithHeaderSourceAndEmptyPhotos(): void
 	{
-		$album = Mockery::mock(Album::class)->makePartial();
+		$album = \Mockery::mock(Album::class)->makePartial();
 		$album->shouldReceive('get_title')->andReturn('Empty Album');
 		$album->shouldReceive('getAttribute')->with('description')->andReturn('No photos');
 		$album->shouldReceive('getAttribute')->with('header_id')->andReturn(null);
 		$album->shouldReceive('get_photos')->andReturn(new Collection());
 
-		$this->configManager->shouldReceive('getValueAsEnum')
+		$this->config_manager->shouldReceive('getValueAsEnum')
 			->with('sm_card_album_source', OgImageAlbumSourceType::class)
 			->andReturn(OgImageAlbumSourceType::HEADER);
 
-		$this->configManager->shouldReceive('getValueAsBool')
+		$this->config_manager->shouldReceive('getValueAsBool')
 			->with('use_album_compact_header')->andReturn(false);
 
 		session(['album' => $album]);
@@ -528,7 +527,7 @@ class MetaTest extends AbstractTestCase
 
 	public function testAccessTrueInSessionAllowsProcessing(): void
 	{
-		$album = Mockery::mock(AbstractAlbum::class);
+		$album = \Mockery::mock(AbstractAlbum::class);
 		$album->shouldReceive('get_title')->andReturn('Visible Album');
 		$album->shouldReceive('get_photos')->andReturn(new Collection());
 
