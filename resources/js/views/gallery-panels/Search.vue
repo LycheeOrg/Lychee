@@ -445,7 +445,7 @@ function goBack() {
 // Album operations
 onKeyStroke("h", () => {
 	if (shouldIgnoreKeystroke()) return;
-	if (photoStore.isLoaded) {
+	if (photoStore.isLoaded && lycheeStore.is_nsfw_classifier_enabled) {
 		lycheeStore.cycleNsfwOverlayMode(nsfwDetectionsStore.get(photoStore.photo?.id ?? "").detections);
 	} else {
 		are_nsfw_visible.value = !are_nsfw_visible.value;

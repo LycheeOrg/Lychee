@@ -183,6 +183,7 @@ declare namespace App.Enum {
 		| "microsoft"
 		| "nextcloud"
 		| "keycloak";
+	export type OgImageAlbumSourceType = "header" | "cover";
 	export type OmnipayProviderType = "Dummy" | "Mollie" | "PayPal" | "Stripe";
 	export type OrderSortingType = "ASC" | "DESC";
 	export type PaginationMode = "infinite_scroll" | "load_more_button" | "page_navigation";
@@ -588,6 +589,8 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		is_mobile_dock_full_transparency_enabled: boolean;
 		is_photo_details_always_open: boolean;
 		is_face_overlay_visible: boolean;
+		is_face_recognition_enabled: boolean;
+		is_nsfw_classifier_enabled: boolean;
 		display_thumb_album_overlay: App.Enum.VisibilityType;
 		display_thumb_photo_overlay: App.Enum.VisibilityType;
 		album_subtitle_type: App.Enum.ThumbAlbumSubtitleType;
@@ -883,6 +886,19 @@ declare namespace App.Http.Resources.Models {
 		created_at: string;
 		nsfw_status: string | null;
 	};
+	export type NsfwDetectionResource = {
+		id: number;
+		photo_id: string;
+		label: string;
+		confidence: number;
+		bbox_x: number;
+		bbox_y: number;
+		bbox_width: number;
+		bbox_height: number;
+		is_block: boolean;
+		is_review: boolean;
+		is_sensitive: boolean;
+	};
 	export type PersonResource = {
 		id: string;
 		name: string;
@@ -896,19 +912,6 @@ declare namespace App.Http.Resources.Models {
 	export type PhotoAlbumResource = {
 		id: string;
 		title: string;
-	};
-	export type NsfwDetectionResource = {
-		id: number;
-		photo_id: string;
-		label: string;
-		confidence: number;
-		bbox_x: number;
-		bbox_y: number;
-		bbox_width: number;
-		bbox_height: number;
-		is_block: boolean;
-		is_review: boolean;
-		is_sensitive: boolean;
 	};
 	export type PhotoFacesResource = {
 		faces: App.Http.Resources.Models.FaceResource[];

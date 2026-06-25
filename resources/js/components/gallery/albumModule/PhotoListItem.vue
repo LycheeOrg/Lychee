@@ -140,7 +140,7 @@ const ariaLabel = computed(() => {
 });
 
 function prefetchFaces() {
-	if ((props.photo.face_count ?? 0) > 0) {
+	if (lycheeStore.is_face_recognition_enabled && (props.photo.face_count ?? 0) > 0) {
 		facesStore.prefetch(props.photo.id);
 	}
 }
