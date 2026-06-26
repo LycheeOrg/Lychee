@@ -24,6 +24,8 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Safe\Exceptions\FilesystemException;
+use function Safe\realpath;
 
 /**
  * Controller responsible for serving files securely.
@@ -48,10 +50,6 @@ class SecurePathController extends Controller
 			throw new InvalidSignatureException();
 		}
 
-		if (is_null($path)) {
-			throw new WrongPathException();
-		}
-
 		if ($request->configs()->getValueAsBool('secure_image_link_enabled')) {
 			try {
 				$path = Crypt::decryptString($path);
@@ -60,7 +58,14 @@ class SecurePathController extends Controller
 			}
 		}
 
-		$file = Storage::disk(StorageDiskType::LOCAL->value)->path($path);
+		$this->prevalidation_path($path);
+
+		try {
+			$file = realpath(Storage::disk(StorageDiskType::LOCAL->value)->path($path));
+		} catch (FilesystemException) {
+			throw new WrongPathException();
+		}
+
 		$valid_path_start = Storage::disk(StorageDiskType::LOCAL->value)->path('');
 		if (!str_starts_with($file, $valid_path_start)) {
 			Log::error('Invalid path for secure path request.', [
@@ -103,5 +108,27 @@ class SecurePathController extends Controller
 		$expires = $request->query('expires') !== null ? intval($request->query('expires'), 10) : null;
 
 		return !($expires !== null && $expires !== '' && Carbon::now()->getTimestamp() > $expires);
+	}
+
+	/**
+	 * Validate the path.
+	 *
+	 * @param string|null $path
+	 *
+	 * @return void
+	 *
+	 * @throws WrongPathException
+	 */
+	private function prevalidation_path(?string $path): void
+	{
+		if (is_null($path)) {
+			throw new WrongPathException();
+		}
+
+		foreach (['..', '%2e', '%2f', '\\'] as $invalid_sequence) {
+			if (str_contains($path, $invalid_sequence)) {
+				throw new PathTraversalException('Invalid path for secure path request.');
+			}
+		}
 	}
 }
