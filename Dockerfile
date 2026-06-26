@@ -89,6 +89,7 @@ RUN apt-get update \
 	ghostscript \
     # Update with respect to vulnerabilities detected with Trivy
     libgssapi-krb5-2 \
+    libssh2-1t64 \
 	&& sed -i '/<\/policymap>/i \  <policy domain="coder" rights="read|write" pattern="PDF" \/>' /etc/ImageMagick-7/policy.xml \
     && install-php-extensions \
     pdo_mysql \

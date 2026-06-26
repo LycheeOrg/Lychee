@@ -121,4 +121,13 @@ class SecureImageLinksTest extends BaseApiWithDataTest
 		$response = $this->get($broken_url);
 		$this->assertUnauthorized($response);
 	}
+
+	public function testPathTraversalIsForbidden(): void
+	{
+		$this->setTemporaryLink();
+		$path = URL::route('image', ['path' => 'c3/3d/c661c594a5a781cd44db06828783.png']);
+		$traversal_path = str_replace('c3/3d/c661c594a5a781cd44db06828783.png', '../.env', $path);
+		$response = $this->actingAs($this->userMayUpload1)->get($traversal_path);
+		$this->assertStatus($response, 418);
+	}
 }
