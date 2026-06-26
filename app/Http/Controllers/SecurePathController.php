@@ -24,6 +24,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Safe\Exceptions\FilesystemException;
 
 use function Safe\realpath;
 
@@ -60,7 +61,12 @@ class SecurePathController extends Controller
 			}
 		}
 
-		$file = realpath(Storage::disk(StorageDiskType::LOCAL->value)->path($path));
+		try {
+			$file = realpath(Storage::disk(StorageDiskType::LOCAL->value)->path($path));
+		} catch (FilesystemException) {
+			throw new WrongPathException();
+		}
+
 		$valid_path_start = Storage::disk(StorageDiskType::LOCAL->value)->path('');
 		if (!str_starts_with($file, $valid_path_start)) {
 			Log::error('Invalid path for secure path request.', [
