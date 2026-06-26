@@ -50,8 +50,6 @@ class SecurePathController extends Controller
 			throw new InvalidSignatureException();
 		}
 
-		$this->prevalidation_path($path);
-
 		if ($request->configs()->getValueAsBool('secure_image_link_enabled')) {
 			try {
 				$path = Crypt::decryptString($path);
@@ -59,6 +57,8 @@ class SecurePathController extends Controller
 				throw new InvalidPayloadException();
 			}
 		}
+
+		$this->prevalidation_path($path);
 
 		try {
 			$file = realpath(Storage::disk(StorageDiskType::LOCAL->value)->path($path));
