@@ -25,7 +25,6 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Safe\Exceptions\FilesystemException;
-
 use function Safe\realpath;
 
 /**
@@ -114,8 +113,10 @@ class SecurePathController extends Controller
 	/**
 	 * Validate the path.
 	 *
-	 * @param null|string $path
+	 * @param string|null $path
+	 *
 	 * @return void
+	 *
 	 * @throws WrongPathException
 	 */
 	private function prevalidation_path(?string $path): void
