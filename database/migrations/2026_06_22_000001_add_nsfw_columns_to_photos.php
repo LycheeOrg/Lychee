@@ -18,11 +18,16 @@ return new class() extends Migration {
 			$table->string('upload_trust_level')->nullable()->default(null)->after('nsfw_status');
 		});
 
-		DB::table('users')->where('trust_level', '=', 'monitor')->update(['trust_level' => 'check']);
+		DB::table('users')->where('upload_trust_level', '=', 'monitor')->update(['upload_trust_level' => 'check']);
+		DB::table('configs')->where('key', '=', 'default_user_trust_level')->update(['type_range' => 'check|monitor|trust_but_verify|trusted']);
+		DB::table('configs')->where('key', '=', 'guest_upload_trust_level')->update(['type_range' => 'check|monitor|trust_but_verify|trusted']);
 	}
 
 	public function down(): void
 	{
+		DB::table('configs')->where('key', '=', 'default_user_trust_level')->update(['type_range' => 'check|monitor|trusted']);
+		DB::table('configs')->where('key', '=', 'guest_upload_trust_level')->update(['type_range' => 'check|monitor|trusted']);
+
 		Schema::table('photos', function (Blueprint $table): void {
 			$table->dropColumn(['nsfw_status', 'upload_trust_level']);
 		});
