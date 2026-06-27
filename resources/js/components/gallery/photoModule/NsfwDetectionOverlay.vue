@@ -17,7 +17,7 @@
 					:class="tierBadgeClass(detection)"
 				>
 					<div class="font-semibold whitespace-nowrap">{{ formatLabel(detection.label) }}</div>
-					<div class="whitespace-nowrap">Confidence: {{ (detection.confidence * 100).toFixed(0) }}% · Area: {{ areaLabel(detection) }}</div>
+					<div class="whitespace-nowrap">{{ trans("moderation.overlay_confidence", { value: (detection.confidence * 100).toFixed(0) }) }} · {{ trans("moderation.overlay_area", { value: areaLabel(detection) }) }}</div>
 				</div>
 			</div>
 		</template>
@@ -31,6 +31,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
+import { trans } from "laravel-vue-i18n";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 
 const props = defineProps<{
@@ -54,10 +55,10 @@ const filteredDetections = computed(() => {
 
 const modeLabel = computed(() => {
 	const mode = lycheeStore.nsfw_overlay_mode;
-	if (mode === "all") return "NSFW: All";
-	if (mode === "block") return "NSFW: Block";
-	if (mode === "review") return "NSFW: Review";
-	return "NSFW: Sensitive";
+	if (mode === "all") return trans("moderation.overlay_mode_all");
+	if (mode === "block") return trans("moderation.overlay_mode_block");
+	if (mode === "review") return trans("moderation.overlay_mode_review");
+	return trans("moderation.overlay_mode_sensitive");
 });
 
 function tierClass(detection: App.Http.Resources.Models.NsfwDetectionResource): string[] {

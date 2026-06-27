@@ -17,6 +17,8 @@ return new class() extends Migration {
 			$table->string('nsfw_status')->nullable()->default(null)->after('face_scan_status');
 			$table->string('upload_trust_level')->nullable()->default(null)->after('nsfw_status');
 		});
+
+		DB::table('users')->where('trust_level', '=', 'monitor')->update(['trust_level' => 'check']);
 	}
 
 	public function down(): void

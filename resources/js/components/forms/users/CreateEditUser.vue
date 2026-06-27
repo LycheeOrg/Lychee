@@ -88,7 +88,7 @@
 	</Dialog>
 </template>
 <script setup lang="ts">
-import { Ref, ref, watch } from "vue";
+import { computed, Ref, ref, watch } from "vue";
 import Dialog from "primevue/dialog";
 import Button from "primevue/button";
 import Checkbox from "primevue/checkbox";
@@ -105,15 +105,24 @@ import SETag from "@/components/icons/SETag.vue";
 import UsersService from "@/services/users-service";
 import { trans } from "laravel-vue-i18n";
 
-const trustLevelOptions = [
-	{ value: "trusted" as App.Enum.UserUploadTrustLevel, label: "Trusted" },
-	{ value: "trust_but_verify" as App.Enum.UserUploadTrustLevel, label: "Trust but Verify" },
-	{ value: "monitor" as App.Enum.UserUploadTrustLevel, label: "Monitor" },
-	{ value: "check" as App.Enum.UserUploadTrustLevel, label: "Check" },
-];
-
 const lycheeStore = useLycheeStateStore();
 const { is_se_preview_enabled, is_se_enabled } = storeToRefs(lycheeStore);
+
+const trustLevelOptions = computed(() => {
+	if (is_se_enabled.value || is_se_preview_enabled.value) {
+		return [
+			{ value: "trusted" as App.Enum.UserUploadTrustLevel, label: "Trusted" },
+			{ value: "trust_but_verify" as App.Enum.UserUploadTrustLevel, label: "Trust but Verify" },
+			{ value: "monitor" as App.Enum.UserUploadTrustLevel, label: "Monitor" },
+			{ value: "check" as App.Enum.UserUploadTrustLevel, label: "Check" },
+		];
+	} else {
+		return [
+			{ value: "trusted" as App.Enum.UserUploadTrustLevel, label: "Trusted" },
+			{ value: "check" as App.Enum.UserUploadTrustLevel, label: "Check" },
+		];
+	}
+});
 
 const visible = defineModel("visible") as Ref<boolean>;
 const props = defineProps<{
