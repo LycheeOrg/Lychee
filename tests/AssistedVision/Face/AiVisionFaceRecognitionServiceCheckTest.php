@@ -13,7 +13,7 @@
 
 namespace Tests\AssistedVision\Face;
 
-use App\Actions\Diagnostics\Pipes\Checks\AiVisionServiceCheck;
+use App\Actions\Diagnostics\Pipes\Checks\AiVisionFaceRecognitionServiceCheck;
 use App\Enum\MessageType;
 use App\Repositories\ConfigManager;
 use App\Services\Image\FacialRecognitionService;
@@ -24,13 +24,13 @@ use Illuminate\Support\Facades\Schema;
 use PHPUnit\Framework\MockObject\MockObject;
 use Tests\AbstractTestCase;
 
-class AiVisionServiceCheckTest extends AbstractTestCase
+class AiVisionFaceRecognitionServiceCheckTest extends AbstractTestCase
 {
 	/** @var ConfigManager&MockObject */
 	private ConfigManager $config_manager;
 	/** @var FacialRecognitionService&MockObject */
 	private FacialRecognitionService $facial_recognition_service;
-	private AiVisionServiceCheck $check;
+	private AiVisionFaceRecognitionServiceCheck $check;
 
 	protected function setUp(): void
 	{
@@ -38,7 +38,7 @@ class AiVisionServiceCheckTest extends AbstractTestCase
 
 		$this->config_manager = $this->createMock(ConfigManager::class);
 		$this->facial_recognition_service = $this->createMock(FacialRecognitionService::class);
-		$this->check = new AiVisionServiceCheck($this->config_manager, $this->facial_recognition_service);
+		$this->check = new AiVisionFaceRecognitionServiceCheck($this->config_manager, $this->facial_recognition_service);
 	}
 
 	private function passThrough(): \Closure

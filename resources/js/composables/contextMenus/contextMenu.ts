@@ -172,7 +172,7 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 					label: "gallery.menus.scan_faces",
 					icon: "pi pi-face-smile",
 					callback: photoCallbacks.toggleScanFaces,
-					access: (albumStore.rights?.can_edit ?? false) && (leftMenuStore.initData?.modules.is_ai_vision_enabled ?? false),
+					access: (albumStore.rights?.can_edit ?? false) && (leftMenuStore.initData?.modules.is_face_recognition_enabled ?? false),
 				},
 				{
 					is_divider: true,
@@ -273,7 +273,7 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 					label: "gallery.menus.scan_faces_all",
 					icon: "pi pi-face-smile",
 					callback: photoCallbacks.toggleScanFaces,
-					access: (albumStore.rights?.can_edit ?? false) && (leftMenuStore.initData?.modules.is_ai_vision_enabled ?? false),
+					access: (albumStore.rights?.can_edit ?? false) && (leftMenuStore.initData?.modules.is_face_recognition_enabled ?? false),
 				},
 				{
 					is_divider: true,
@@ -345,7 +345,7 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 					label: "gallery.menus.scan_faces",
 					icon: "pi pi-face-smile",
 					callback: albumCallbacks.toggleScanFaces,
-					access: (selectedAlbum.rights.can_edit ?? false) && (leftMenuStore.initData?.modules.is_ai_vision_enabled ?? false),
+					access: (selectedAlbum.rights.can_edit ?? false) && (leftMenuStore.initData?.modules.is_face_recognition_enabled ?? false),
 				},
 				{
 					label: "gallery.menus.merge",

@@ -15,8 +15,10 @@ use App\Constants\PhotoAlbum as PA;
 use App\Contracts\Models\HasUTCBasedTimes;
 use App\Enum\FaceScanStatus;
 use App\Enum\LicenseType;
+use App\Enum\NsfwStatus;
 use App\Enum\SmartAlbumType;
 use App\Enum\StorageDiskType;
+use App\Enum\UserUploadTrustLevel;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\LycheeAssertionError;
 use App\Exceptions\Internal\ZeroModuloException;
@@ -175,6 +177,8 @@ class Photo extends Model implements HasUTCBasedTimes
 		'rating_avg' => 'decimal:4',
 		'face_scan_status' => FaceScanStatus::class,
 		'face_count' => 'integer',
+		'nsfw_status' => NsfwStatus::class,
+		'upload_trust_level' => UserUploadTrustLevel::class,
 	];
 
 	/**
@@ -301,6 +305,16 @@ class Photo extends Model implements HasUTCBasedTimes
 	public function faces(): HasMany
 	{
 		return $this->hasMany(Face::class, 'photo_id', 'id');
+	}
+
+	/**
+	 * Return the NSFW detections for this photo.
+	 *
+	 * @return HasMany<NsfwDetection,$this>
+	 */
+	public function nsfwDetections(): HasMany
+	{
+		return $this->hasMany(NsfwDetection::class, 'photo_id', 'id');
 	}
 
 	/**

@@ -69,7 +69,7 @@ class PeopleController extends Controller
 	 */
 	public function store(StorePersonRequest $request): PersonResource
 	{
-		$is_searchable_default = app(ConfigManager::class)->getValueAsString('ai_vision_face_person_is_searchable_default') === '1';
+		$is_searchable_default = app(ConfigManager::class)->getValueAsBool('ai_vision_face_person_is_searchable_default');
 
 		$person = new Person();
 		$person->name = $request->name();

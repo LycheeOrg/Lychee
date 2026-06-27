@@ -180,10 +180,14 @@ final readonly class RouteCacheManager
 			'api/v2/Person/{id}' => false,
 			'api/v2/Person/{id}/photos' => false,
 			'api/v2/Photo/{id}/faces' => false,
+			'api/v2/Photo/{id}/nsfw-detections' => false,
 			'api/v2/Face/maintenance' => false,
 			'api/v2/FaceDetection/clusters' => false,
 			'api/v2/FaceDetection/clusters/{label}/faces' => false,
 			'api/v2/Album/{album_id}/people' => false,
+
+			// AI vision — NSFW Detection: cache the config, user/content-dependent.
+			'api/v2/NsfwDetection/config' => new RouteCacheConfig(tag: CacheTag::SETTINGS, user_dependant: true),
 
 			// AI Vision — Maintenance: never cache.
 			'api/v2/Maintenance::bulkScanFaces' => false,

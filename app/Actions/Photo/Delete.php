@@ -136,6 +136,43 @@ readonly class Delete
 	}
 
 	/**
+	 * Force-delete a single photo unconditionally from all albums.
+	 *
+	 * Used by NSFW block actions where the photo must be removed
+	 * regardless of album context.
+	 *
+	 * @throws ModelDBException
+	 */
+	public function forceDeletePhoto(string $photo_id): void
+	{
+		$album_ids = DB::table('photo_album')
+			->where('photo_id', $photo_id)
+			->pluck('album_id')
+			->all();
+
+		$this->purchasable_service->deleteMulitplePhotoPurchasables([$photo_id], $album_ids);
+
+		if (Features::active('webhook')) {
+			$this->dispatchWillBeDeletedEvents([$photo_id], $album_ids[0] ?? '');
+		}
+
+		$photos_to_be_deleted = new PhotosToBeDeletedDTO(
+			force_delete_photo_ids: [$photo_id],
+			soft_delete_photo_ids: [],
+			album_ids: [],
+		);
+		$jobs = $photos_to_be_deleted->executeDelete();
+
+		foreach ($album_ids as $album_id) {
+			PhotoDeleted::dispatch($album_id);
+		}
+
+		foreach ($jobs as $job) {
+			dispatch($job);
+		}
+	}
+
+	/**
 	 * Fire PhotoWillBeDeleted for each photo scheduled for hard deletion.
 	 *
 	 * Uses a lean DB query (no full Eloquent hydration) to load photo title

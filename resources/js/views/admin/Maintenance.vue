@@ -28,8 +28,8 @@
 		<MaintenanceFixJobs />
 		<MaintenanceFixTree />
 		<MaintenanceFilesize />
-		<MaintenanceOldOrders />
-		<MaintenanceFulfillOrders />
+		<MaintenanceOldOrders v-if="initData?.modules.is_mod_webshop_enabled" />
+		<MaintenanceFulfillOrders v-if="initData?.modules.is_mod_webshop_enabled" />
 		<MaintenanceFulfillPrecompute />
 		<MaintenanceBackfillAlbumSizes />
 		<MaintenanceFlushQueue />
@@ -38,11 +38,12 @@
 		<MaintenanceCleaning path="filesystems.disks.extract-jobs.root" />
 		<MaintenanceCleaning path="filesystems.disks.image-jobs.root" />
 		<MaintenanceCleaning path="filesystems.disks.image-upload.root" />
-		<MaintenanceBulkScanFaces />
-		<MaintenanceRunClustering />
-		<MaintenanceDestroyDismissedFaces />
-		<MaintenanceSyncFaceEmbeddings />
-		<MaintenanceResetFaceScanStatus />
+		<MaintenanceBulkScanFaces v-if="initData?.modules.is_face_recognition_enabled" />
+		<MaintenanceBulkScanNsfw v-if="initData?.modules.is_nsfw_classifier_enabled" />
+		<MaintenanceRunClustering v-if="initData?.modules.is_face_recognition_enabled" />
+		<MaintenanceDestroyDismissedFaces v-if="initData?.modules.is_face_recognition_enabled" />
+		<MaintenanceSyncFaceEmbeddings v-if="initData?.modules.is_face_recognition_enabled" />
+		<MaintenanceResetFaceScanStatus v-if="initData?.modules.is_face_recognition_enabled" />
 	</div>
 </template>
 <script setup lang="ts">
@@ -65,8 +66,14 @@ import MaintenanceFulfillPrecompute from "@/components/maintenance/MaintenanceFu
 import MaintenanceBackfillAlbumSizes from "@/components/maintenance/MaintenanceBackfillAlbumSizes.vue";
 import MaintenanceFlushQueue from "@/components/maintenance/MaintenanceFlushQueue.vue";
 import MaintenanceBulkScanFaces from "@/components/maintenance/MaintenanceBulkScanFaces.vue";
+import MaintenanceBulkScanNsfw from "@/components/maintenance/MaintenanceBulkScanNsfw.vue";
 import MaintenanceRunClustering from "@/components/maintenance/MaintenanceRunClustering.vue";
 import MaintenanceDestroyDismissedFaces from "@/components/maintenance/MaintenanceDestroyDismissedFaces.vue";
 import MaintenanceSyncFaceEmbeddings from "@/components/maintenance/MaintenanceSyncFaceEmbeddings.vue";
 import MaintenanceResetFaceScanStatus from "@/components/maintenance/MaintenanceResetFaceScanStatus.vue";
+import { storeToRefs } from "pinia";
+import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
+
+const leftMenu = useLeftMenuStateStore();
+const { initData } = storeToRefs(leftMenu);
 </script>

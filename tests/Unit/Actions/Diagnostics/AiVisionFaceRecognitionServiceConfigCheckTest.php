@@ -8,7 +8,7 @@
 
 namespace Tests\Unit\Actions\Diagnostics;
 
-use App\Actions\Diagnostics\Pipes\Checks\AiVisionServiceConfigCheck;
+use App\Actions\Diagnostics\Pipes\Checks\AiVisionFaceRecognitionServiceConfigCheck;
 use App\DTO\DiagnosticData;
 use App\Enum\MessageType;
 use App\Repositories\ConfigManager;
@@ -18,13 +18,13 @@ use Illuminate\Support\Facades\Schema;
 use PHPUnit\Framework\MockObject\MockObject;
 use Tests\AbstractTestCase;
 
-class AiVisionServiceConfigCheckTest extends AbstractTestCase
+class AiVisionFaceRecognitionServiceConfigCheckTest extends AbstractTestCase
 {
 	/** @var ConfigManager&MockObject */
 	private ConfigManager $config_manager;
 	/** @var FacialRecognitionService&MockObject */
 	private FacialRecognitionService $facial_recognition_service;
-	private AiVisionServiceConfigCheck $check;
+	private AiVisionFaceRecognitionServiceConfigCheck $check;
 
 	protected function setUp(): void
 	{
@@ -32,7 +32,7 @@ class AiVisionServiceConfigCheckTest extends AbstractTestCase
 
 		$this->config_manager = $this->createMock(ConfigManager::class);
 		$this->facial_recognition_service = $this->createMock(FacialRecognitionService::class);
-		$this->check = new AiVisionServiceConfigCheck($this->config_manager, $this->facial_recognition_service);
+		$this->check = new AiVisionFaceRecognitionServiceConfigCheck($this->config_manager, $this->facial_recognition_service);
 	}
 
 	/**

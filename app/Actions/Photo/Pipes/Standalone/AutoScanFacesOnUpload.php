@@ -36,12 +36,12 @@ class AutoScanFacesOnUpload implements StandalonePipe
 		}
 
 		// Check if AI vision is enabled
-		if ($this->config_manager->getValueAsString('ai_vision_enabled') !== '1') {
+		if (!$this->config_manager->getValueAsBool('ai_vision_enabled')) {
 			return $state;
 		}
 
 		// Check if face scanning is enabled
-		if ($this->config_manager->getValueAsString('ai_vision_face_enabled') !== '1') {
+		if (!$this->config_manager->getValueAsBool('ai_vision_face_enabled')) {
 			return $state;
 		}
 

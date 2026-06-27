@@ -207,6 +207,7 @@ class Create
 			Shared\ExtractColourPalette::class,
 			Shared\NotifyAlbums::class,
 			Standalone\AutoScanFacesOnUpload::class,
+			Standalone\AutoScanNsfwOnUpload::class,
 		];
 
 		return $this->executePipeOnDTO($pipes, $dto)->getPhoto();

@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Schema;
 /**
  * Check if the AI Vision service is properly configured and reachable.
  */
-class AiVisionServiceCheck implements DiagnosticPipe
+class AiVisionFaceRecognitionServiceCheck implements DiagnosticPipe
 {
 	public function __construct(
 		protected readonly ConfigManager $config_manager,

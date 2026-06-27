@@ -29,7 +29,7 @@
 						</span>
 					</span>
 					<span
-						v-if="isAiVisionEnabled && albumStore.album_people_total > 0"
+						v-if="isFaceRecognitionEnabled && albumStore.album_people_total > 0"
 						class="block text-muted-color text-sm cursor-pointer hover:text-color transition-colors duration-150"
 						@click="isPeopleOpen = !isPeopleOpen"
 					>
@@ -119,7 +119,7 @@
 							<i class="pi pi-barcode" />
 						</a>
 						<a
-							v-if="isAiVisionScanEnabled"
+							v-if="isFaceScanEnabled"
 							v-tooltip.bottom="$t('people.scan_faces')"
 							class="shrink-0 px-3 cursor-pointer text-muted-color inline-block transform duration-300 hover:scale-150 hover:text-color"
 							@click="emits('toggleScanFaces')"
@@ -172,7 +172,7 @@
 				class="w-full max-w-full my-4 text-justify text-muted-color text-base/5 prose dark:prose-invert prose-sm"
 				v-html="albumStore.album.preFormattedData.description"
 			/>
-			<AlbumPeopleFilter v-if="isAiVisionEnabled && isPeopleOpen && albumStore.album_people.length > 0" class="mt-2" />
+			<AlbumPeopleFilter v-if="isFaceRecognitionEnabled && isPeopleOpen && albumStore.album_people.length > 0" class="mt-2" />
 		</template>
 	</Card>
 </template>
@@ -220,7 +220,7 @@ const isWatermarkerEnabled = computed(
 		photosStore.photos.some((p) => needSizeVariantsWatermark(p.size_variants)),
 );
 
-const isAiVisionEnabled = computed(() => leftMenu.initData?.modules.is_ai_vision_enabled === true);
+const isFaceRecognitionEnabled = computed(() => leftMenu.initData?.modules.is_face_recognition_enabled === true);
 
 const isPeopleOpen = ref(false);
 
@@ -228,7 +228,7 @@ const isPeopleOpen = ref(false);
 watch(
 	() => albumStore.albumId,
 	(id) => {
-		if (id && isAiVisionEnabled.value) {
+		if (id && isFaceRecognitionEnabled.value) {
 			isPeopleOpen.value = false;
 			albumStore.loadAlbumPeople();
 		}
@@ -236,7 +236,7 @@ watch(
 	{ immediate: true },
 );
 
-const isAiVisionScanEnabled = computed(() => isAiVisionEnabled.value && albumStore.rights?.can_edit && photosStore.photos.length > 0);
+const isFaceScanEnabled = computed(() => isFaceRecognitionEnabled.value && albumStore.rights?.can_edit && photosStore.photos.length > 0);
 
 function needSizeVariantsWatermark(sizeVariants: App.Http.Resources.Models.SizeVariantsResouce): boolean {
 	return (

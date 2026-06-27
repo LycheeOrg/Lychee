@@ -14,6 +14,7 @@ use App\Enum\AlbumDecorationType;
 use App\Enum\AlbumHeaderSize;
 use App\Enum\AlbumLayoutType;
 use App\Enum\DefaultAlbumProtectionType;
+use App\Enum\FacePermissionMode;
 use App\Enum\ImageOverlayType;
 use App\Enum\PaginationMode;
 use App\Enum\PhotoHighlightVisibilityType;
@@ -56,6 +57,8 @@ class InitConfig extends Data
 	public bool $is_mobile_dock_full_transparency_enabled;
 	public bool $is_photo_details_always_open;
 	public bool $is_face_overlay_visible;
+	public bool $is_face_recognition_enabled;
+	public bool $is_nsfw_classifier_enabled;
 
 	// Thumbs configuration
 	public VisibilityType $display_thumb_album_overlay;
@@ -185,6 +188,8 @@ class InitConfig extends Data
 		$this->is_mobile_dock_full_transparency_enabled = request()->configs()->getValueAsBool('mobile_dock_full_transparency_enabled');
 		$this->is_photo_details_always_open = request()->configs()->getValueAsBool('enable_photo_details_always_open');
 		$this->is_face_overlay_visible = request()->configs()->getValueAsString('ai_vision_face_overlay_default_visibility') === 'visible';
+		$this->is_face_recognition_enabled = $this->isFaceRecognitionEnabled();
+		$this->is_nsfw_classifier_enabled = $this->isNsfwClassifierEnabled();
 
 		// Thumbs configuration
 		$this->display_thumb_album_overlay = request()->configs()->getValueAsEnum('display_thumb_album_overlay', VisibilityType::class);
@@ -266,6 +271,45 @@ class InitConfig extends Data
 		$this->use_admin_dashboard = request()->configs()->getValueAsBool('use_admin_dashboard');
 
 		$this->set_supporter_properties();
+	}
+
+	private function isFaceRecognitionEnabled(): bool
+	{
+		if (config('features.ai-vision') === false) {
+			return false;
+		}
+
+		if (!request()->configs()->getValueAsBool('ai_vision_enabled') ||
+			!request()->configs()->getValueAsBool('ai_vision_face_enabled')) {
+			return false;
+		}
+
+		if (Auth::guest()) {
+			$mode = request()->configs()->getValueAsEnum('ai_vision_face_permission_mode', FacePermissionMode::class)
+				?? FacePermissionMode::RESTRICTED;
+
+			return $mode === FacePermissionMode::PUBLIC;
+		}
+
+		return true;
+	}
+
+	private function isNsfwClassifierEnabled(): bool
+	{
+		if (config('features.ai-vision') === false) {
+			return false;
+		}
+
+		if (Auth::guest()) {
+			return false;
+		}
+
+		if (!request()->verify()->check()) {
+			return false;
+		}
+
+		return request()->configs()->getValueAsBool('ai_vision_enabled') &&
+			request()->configs()->getValueAsBool('ai_vision_nsfw_enabled');
 	}
 
 	/**

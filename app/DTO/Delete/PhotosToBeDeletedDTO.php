@@ -137,6 +137,7 @@ final class PhotosToBeDeletedDTO
 			DB::table('size_variants')->whereIn('photo_id', $chunk->all())->delete();
 			DB::table('statistics')->whereIn('photo_id', $chunk->all())->delete();
 			DB::table('palettes')->whereIn('photo_id', $chunk->all())->delete();
+			DB::table('nsfw_detections')->whereIn('photo_id', $chunk->all())->delete();
 			DB::table('photo_album')->whereIn('photo_id', $chunk->all())->delete(); // Just to be sure.
 			DB::table('photos')->whereIn('id', $chunk->all())->delete();
 		});

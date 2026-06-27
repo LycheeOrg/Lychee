@@ -27,6 +27,7 @@ class ModerationResource extends Data
 	public ?string $album_id;
 	public ?string $album_title;
 	public string $created_at;
+	public ?string $nsfw_status;
 
 	public function __construct(Photo $photo)
 	{
@@ -39,5 +40,6 @@ class ModerationResource extends Data
 		$this->album_id = $album?->id;
 		$this->album_title = $album?->title;
 		$this->created_at = $photo->created_at->toIso8601String();
+		$this->nsfw_status = $photo->nsfw_status?->value;
 	}
 }

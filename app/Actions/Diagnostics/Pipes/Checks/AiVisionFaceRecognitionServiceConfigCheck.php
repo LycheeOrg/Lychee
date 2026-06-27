@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Schema;
 /**
  * In debug mode, expose the AI Vision runtime configuration in diagnostics.
  */
-class AiVisionServiceConfigCheck implements DiagnosticPipe
+class AiVisionFaceRecognitionServiceConfigCheck implements DiagnosticPipe
 {
 	public function __construct(
 		protected readonly ConfigManager $config_manager,

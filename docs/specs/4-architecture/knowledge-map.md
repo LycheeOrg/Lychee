@@ -284,6 +284,23 @@ Shared volume architecture:
                   ──►  ai_vision:/data/photos           (read-only)
 ```
 
+### NSFW Detection Inter-Service Communication (Feature 045)
+Lychee uses the same **REST + webhook** pattern for NSFW content detection:
+
+1. **Scan trigger** — `AutoScanNsfwOnUpload` pipe snapshots `upload_trust_level` on the photo, dispatches `DispatchNsfwScanJob`
+2. **HTTP request** — Job sends `POST /api/nsfw/detect` to the NSFW classification service with `{photo_id, photo_path, preset?}`
+3. **Async callback** — Service POSTs results to `POST /api/v2/NsfwDetection/results` with detection arrays (`block_detected`, `review_detected`, `sensitive_detected`)
+4. **Action matrix** — `NsfwActionService` applies trust-tier × finding-tier matrix: block findings can hard-delete or moderate; review findings moderate or approve; sensitive findings mark albums as NSFW
+5. **Detection logging** — `NsfwDetection` rows stored with tier booleans (`is_block`, `is_review`, `is_sensitive`), deduplicated by photo+label+bbox
+
+Key modules:
+- **Enums**: `NsfwStatus`, `NsfwPreset`, `NsfwBlockFindingAction`, `NsfwSensitiveAlbumAction`, `NsfwSensitiveNoAlbumAction`, `NsfwDetectionLabel`
+- **Services**: `NsfwDetectionService` (HTTP client), `NsfwActionService` (action matrix)
+- **Jobs**: `DispatchNsfwScanJob`, `ApplyNsfwAlbumSensitivityJob`
+- **Controller**: `NsfwDetectionController` (callback + bulk scan), `NsfwConfigController` (config proxy)
+- **Pipe**: `AutoScanNsfwOnUpload` (upload pipeline integration)
+- **Model**: `NsfwDetection` (detection audit log)
+
 ## Cross-Module Contracts
 
 ### API Communication
