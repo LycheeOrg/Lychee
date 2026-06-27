@@ -4,6 +4,8 @@ name: Build Demo
 on:
   # Allow manually triggering the workflow.
   workflow_dispatch:
+  release:
+    types: [released]
 
 # Declare default permissions as read only.
 permissions: read-all
