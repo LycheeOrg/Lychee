@@ -17,7 +17,10 @@
 					:class="tierBadgeClass(detection)"
 				>
 					<div class="font-semibold whitespace-nowrap">{{ formatLabel(detection.label) }}</div>
-					<div class="whitespace-nowrap">{{ trans("moderation.overlay_confidence", { value: (detection.confidence * 100).toFixed(0) }) }} · {{ trans("moderation.overlay_area", { value: areaLabel(detection) }) }}</div>
+					<div class="whitespace-nowrap">
+						{{ trans("moderation.overlay_confidence", { value: (detection.confidence * 100).toFixed(0) }) }} ·
+						{{ trans("moderation.overlay_area", { value: areaLabel(detection) }) }}
+					</div>
 				</div>
 			</div>
 		</template>
