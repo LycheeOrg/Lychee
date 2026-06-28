@@ -12,6 +12,34 @@ declare namespace App.DTO {
 		order: App.Enum.OrderSortingType;
 	};
 }
+declare namespace App.DTO.Nsfw {
+	export type NsfwBboxData = {
+		x: number;
+		y: number;
+		width: number;
+		height: number;
+	};
+	export type NsfwDetectionItemData = {
+		label: App.Enum.NsfwDetectionLabel;
+		confidence: number;
+		bbox: App.DTO.Nsfw.NsfwBboxData;
+		area_pixels: number;
+		area_ratio: number;
+	};
+	export type NsfwDetectionResultsData = {
+		photo_id: string;
+		status: string;
+		should_block: boolean;
+		should_review: boolean;
+		is_sensitive: boolean;
+		all_detected: App.DTO.Nsfw.NsfwDetectionItemData[];
+		block_detected: App.DTO.Nsfw.NsfwDetectionItemData[];
+		review_detected: App.DTO.Nsfw.NsfwDetectionItemData[];
+		sensitive_detected: App.DTO.Nsfw.NsfwDetectionItemData[];
+		error_code: string | null;
+		message: string | null;
+	};
+}
 declare namespace App.Enum {
 	export type AlbumDecorationOrientation = "row" | "row-reverse" | "column" | "column-reverse";
 	export type AlbumDecorationType = "none" | "layers" | "album" | "photo" | "all";
@@ -119,6 +147,30 @@ declare namespace App.Enum {
 	export type MessageType = "info" | "warning" | "error";
 	export type MetricsAccess = "public" | "logged-in users" | "owner" | "admin";
 	export type MetricsAction = "visit" | "favourite" | "download" | "shared";
+	export type NsfwBlockFindingAction = "block" | "moderate" | "approve";
+	export type NsfwDetectionLabel =
+		| "FEMALE_GENITALIA_COVERED"
+		| "FACE_FEMALE"
+		| "BUTTOCKS_EXPOSED"
+		| "FEMALE_BREAST_EXPOSED"
+		| "FEMALE_GENITALIA_EXPOSED"
+		| "MALE_BREAST_EXPOSED"
+		| "ANUS_EXPOSED"
+		| "FEET_EXPOSED"
+		| "BELLY_COVERED"
+		| "FEET_COVERED"
+		| "ARMPITS_COVERED"
+		| "ARMPITS_EXPOSED"
+		| "FACE_MALE"
+		| "BELLY_EXPOSED"
+		| "MALE_GENITALIA_EXPOSED"
+		| "ANUS_COVERED"
+		| "FEMALE_BREAST_COVERED"
+		| "BUTTOCKS_COVERED";
+	export type NsfwPreset = "default" | "strict" | "moderation" | "nude_female" | "permissive" | "social_media";
+	export type NsfwSensitiveAlbumAction = "mark_album" | "nothing";
+	export type NsfwSensitiveNoAlbumAction = "skip" | "moderate";
+	export type NsfwStatus = "pending" | "failed" | "review" | "visible";
 	export type OauthProvidersType =
 		| "amazon"
 		| "apple"
@@ -131,6 +183,7 @@ declare namespace App.Enum {
 		| "microsoft"
 		| "nextcloud"
 		| "keycloak";
+	export type OgImageAlbumSourceType = "header" | "cover";
 	export type OmnipayProviderType = "Dummy" | "Mollie" | "PayPal" | "Stripe";
 	export type OrderSortingType = "ASC" | "DESC";
 	export type PaginationMode = "infinite_scroll" | "load_more_button" | "page_navigation";
@@ -171,7 +224,7 @@ declare namespace App.Enum {
 	export type UpdateStatus = 0 | 1 | 2 | 3;
 	export type UserGroupRole = "member" | "admin";
 	export type UserSharedAlbumsVisibility = "default" | "show" | "separate" | "separate_shared_only" | "hide";
-	export type UserUploadTrustLevel = "check" | "monitor" | "trusted";
+	export type UserUploadTrustLevel = "check" | "monitor" | "trust_but_verify" | "trusted";
 	export type VersionChannelType = "release" | "git" | "tag";
 	export type VisibilityType = "never" | "always" | "hover";
 	export type WatermarkPosition = "top-left" | "top" | "top-right" | "left" | "center" | "right" | "bottom-left" | "bottom" | "bottom-right";
@@ -536,6 +589,8 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		is_mobile_dock_full_transparency_enabled: boolean;
 		is_photo_details_always_open: boolean;
 		is_face_overlay_visible: boolean;
+		is_face_recognition_enabled: boolean;
+		is_nsfw_classifier_enabled: boolean;
 		display_thumb_album_overlay: App.Enum.VisibilityType;
 		display_thumb_photo_overlay: App.Enum.VisibilityType;
 		album_subtitle_type: App.Enum.ThumbAlbumSubtitleType;
@@ -651,6 +706,38 @@ declare namespace App.Http.Resources.GalleryConfigs {
 	export type ZipChunkData = {
 		total_chunks: number;
 		total_photos: number;
+	};
+}
+declare namespace App.Http.Resources.GalleryConfigs.Nsfw {
+	export type NsfwActionCategoryResource = {
+		labels: App.Enum.NsfwDetectionLabel[];
+		confidence: number | null;
+		area_ratio: number | null;
+		label_thresholds: number[];
+	};
+	export type NsfwConfigPresetResource = {
+		name: App.Enum.NsfwPreset;
+		description: string;
+		block: App.Http.Resources.GalleryConfigs.Nsfw.NsfwActionCategoryResource;
+		review: App.Http.Resources.GalleryConfigs.Nsfw.NsfwActionCategoryResource;
+		sensitive: App.Http.Resources.GalleryConfigs.Nsfw.NsfwActionCategoryResource;
+	};
+	export type NsfwConfigResource = {
+		config: App.Http.Resources.GalleryConfigs.Nsfw.NsfwConfigSettingsResource;
+		presets: App.Http.Resources.GalleryConfigs.Nsfw.NsfwConfigPresetResource[];
+	};
+	export type NsfwConfigSettingsResource = {
+		confidence_threshold: string;
+		area_ratio_threshold: string;
+		debug_detect_threshold: string;
+		block: App.Http.Resources.GalleryConfigs.Nsfw.NsfwActionCategoryResource;
+		review: App.Http.Resources.GalleryConfigs.Nsfw.NsfwActionCategoryResource;
+		sensitive: App.Http.Resources.GalleryConfigs.Nsfw.NsfwActionCategoryResource;
+		queue_backend: string;
+		queue_max_size: string;
+		thread_pool_size: string;
+		verify_ssl: string;
+		workers: string;
 	};
 }
 declare namespace App.Http.Resources.Models {
@@ -829,6 +916,20 @@ declare namespace App.Http.Resources.Models {
 		album_id: string | null;
 		album_title: string | null;
 		created_at: string;
+		nsfw_status: string | null;
+	};
+	export type NsfwDetectionResource = {
+		id: number;
+		photo_id: string;
+		label: string;
+		confidence: number;
+		bbox_x: number;
+		bbox_y: number;
+		bbox_width: number;
+		bbox_height: number;
+		is_block: boolean;
+		is_review: boolean;
+		is_sensitive: boolean;
 	};
 	export type PersonResource = {
 		id: string;
@@ -848,6 +949,11 @@ declare namespace App.Http.Resources.Models {
 		faces: App.Http.Resources.Models.FaceResource[];
 		hidden_face_count: number;
 		rights: App.Http.Resources.Rights.PhotoRightsResource;
+	};
+	export type PhotoNsfwDetectionsResource = {
+		detections: App.Http.Resources.Models.NsfwDetectionResource[];
+		image_width: number;
+		image_height: number;
 	};
 	export type PhotoRatingResource = {
 		rating_user: number;
@@ -1158,7 +1264,8 @@ declare namespace App.Http.Resources.Rights {
 		is_mod_renamer_enabled: boolean;
 		is_mod_webshop_enabled: boolean;
 		is_mod_webhook_enabled: boolean;
-		is_ai_vision_enabled: boolean;
+		is_face_recognition_enabled: boolean;
+		is_nsfw_classifier_enabled: boolean;
 		is_face_overlay_enabled: boolean;
 		is_face_recognition_warning_enabled: boolean;
 		is_contact_enabled: boolean;

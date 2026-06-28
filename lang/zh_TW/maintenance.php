@@ -161,4 +161,10 @@ return [
         'success' => 'Face scan statuses reset successfully.',
     ],
 
-    ];
+        'bulk-scan-nsfw' => [
+        'title' => 'Bulk NSFW Scan',
+        'description' => 'Scan all unscanned photos for NSFW content using the configured preset. Requires the NSFW classification service to be running.',
+        'button' => 'Scan All Unscanned',
+        'success' => 'NSFW scan dispatched successfully.',
+    ],
+];

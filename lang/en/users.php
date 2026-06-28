@@ -27,6 +27,7 @@ return [
         'upload_trust_level' => 'Upload trust level',
         'upload_trust_level_check' => 'Check – uploads require admin approval before becoming public.',
         'upload_trust_level_monitor' => 'Monitor – upload are publics unless flagged for content.',
+        'upload_trust_level_trust_but_verify' => 'Trust but Verify – uploads are public; review findings auto-approved, block findings configurable.',
         'upload_trust_level_trusted' => 'Trusted – uploads are immediately public.',
         'quota' => 'User has quota limit.',
         'quota_kb' => 'quota in kB (0 for default)',

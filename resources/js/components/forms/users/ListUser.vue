@@ -26,6 +26,11 @@
 						class="pi pi-shield text-create-600"
 					></i>
 					<i
+						v-else-if="props.user.upload_trust_level === 'trust_but_verify'"
+						v-tooltip.top="$t('users.create_edit.upload_trust_level_trust_but_verify')"
+						class="pi pi-shield text-blue-500"
+					></i>
+					<i
 						v-else-if="props.user.upload_trust_level === 'monitor'"
 						v-tooltip.top="$t('users.create_edit.upload_trust_level_monitor')"
 						class="pi pi-shield text-yellow-500"

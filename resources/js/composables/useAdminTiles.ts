@@ -115,7 +115,16 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			icon: "pi pi-face-smile",
 			to: "/admin/maintenance/faces",
 			isExternal: false,
-			visible: computed(() => (initData.value?.settings.can_edit ?? false) && (initData.value?.modules.is_ai_vision_enabled ?? false)),
+			visible: computed(() => (initData.value?.settings.can_edit ?? false) && (initData.value?.modules.is_face_recognition_enabled ?? false)),
+		},
+		{
+			key: "nsfw-config",
+			group: "extensions",
+			label: "admin-dashboard.nsfw_config.title",
+			icon: "pi pi-eye",
+			to: "/admin/nsfw-config",
+			isExternal: false,
+			visible: computed(() => (initData.value?.settings.can_edit ?? false) && (initData.value?.modules.is_nsfw_classifier_enabled ?? false)),
 		},
 		{
 			key: "bulk-album-edit",

@@ -13,6 +13,7 @@
 
 namespace Tests\AssistedVision\Face;
 
+use App\Exceptions\ExternalComponentFailedException;
 use App\Exceptions\ExternalComponentMissingException;
 use App\Services\Image\FacialRecognitionService;
 use Illuminate\Support\Facades\Config;
@@ -89,43 +90,6 @@ class FacialRecognitionServiceTest extends AbstractTestCase
 		$service->deleteEmbeddings(['face-1']);
 	}
 
-	// ── checkHealthRaw ──────────────────────────────────────────
-
-	public function testCheckHealthRawReturnsResponse(): void
-	{
-		Http::fake([
-			'ai-vision:8000/health' => Http::response(['status' => 'ok', 'model_loaded' => true, 'embedding_count' => 42], 200),
-		]);
-
-		$service = $this->makeService();
-		$response = $service->checkHealthRaw();
-
-		self::assertTrue($response->successful());
-		self::assertEquals('ok', $response->json('status'));
-		Http::assertSent(fn ($request) => $request->url() === 'http://ai-vision:8000/health' &&
-			$request->hasHeader('X-API-Key', 'test-key'));
-	}
-
-	public function testCheckHealthRawThrowsWhenNotConfigured(): void
-	{
-		$service = $this->makeUnconfiguredService();
-
-		$this->expectException(ExternalComponentMissingException::class);
-		$service->checkHealthRaw();
-	}
-
-	public function testCheckHealthRawRespectsTimeout(): void
-	{
-		Http::fake([
-			'ai-vision:8000/health' => Http::response(['status' => 'ok'], 200),
-		]);
-
-		$service = $this->makeService();
-		$response = $service->checkHealthRaw(10);
-
-		self::assertTrue($response->successful());
-	}
-
 	// ── checkHealth ─────────────────────────────────────────────
 
 	public function testCheckHealthReturnsArrayOnSuccess(): void
@@ -147,62 +111,50 @@ class FacialRecognitionServiceTest extends AbstractTestCase
 		self::assertEquals(42, $result['embedding_count']);
 	}
 
-	public function testCheckHealthReturnsNullOnFailure(): void
+	public function testCheckHealthThrowsOnFailure(): void
 	{
 		Http::fake([
 			'ai-vision:8000/health' => Http::response(null, 500),
 		]);
 
 		$service = $this->makeService();
-		$result = $service->checkHealth();
 
-		self::assertNull($result);
+		$this->expectException(ExternalComponentFailedException::class);
+		$service->checkHealth();
 	}
 
-	public function testCheckHealthReturnsNullWhenNotConfigured(): void
-	{
-		$service = $this->makeUnconfiguredService();
-		$result = $service->checkHealth();
-
-		self::assertNull($result);
-	}
-
-	public function testCheckHealthReturnsNullOnException(): void
-	{
-		Http::fake([
-			'ai-vision:8000/health' => fn () => throw new \RuntimeException('Connection refused'),
-		]);
-
-		$service = $this->makeService();
-		$result = $service->checkHealth();
-
-		self::assertNull($result);
-	}
-
-	// ── getConfigurationRaw ─────────────────────────────────────
-
-	public function testGetConfigurationRawReturnsResponse(): void
-	{
-		Http::fake([
-			'ai-vision:8000/config' => Http::response([
-				'config' => ['model_name' => 'ArcFace', 'api_key' => '***'],
-			], 200),
-		]);
-
-		$service = $this->makeService();
-		$response = $service->getConfigurationRaw();
-
-		self::assertTrue($response->successful());
-		Http::assertSent(fn ($request) => $request->url() === 'http://ai-vision:8000/config' &&
-			$request->hasHeader('X-API-Key', 'test-key'));
-	}
-
-	public function testGetConfigurationRawThrowsWhenNotConfigured(): void
+	public function testCheckHealthThrowsWhenNotConfigured(): void
 	{
 		$service = $this->makeUnconfiguredService();
 
 		$this->expectException(ExternalComponentMissingException::class);
-		$service->getConfigurationRaw();
+		$service->checkHealth();
+	}
+
+	public function testCheckHealthThrowsOnConnectionException(): void
+	{
+		Http::fake([
+			'ai-vision:8000/health' => function (): never {
+				throw new \Illuminate\Http\Client\ConnectionException('Connection refused');
+			},
+		]);
+
+		$service = $this->makeService();
+
+		$this->expectException(ExternalComponentFailedException::class);
+		$service->checkHealth();
+	}
+
+	public function testCheckHealthThrowsOnInvalidFormat(): void
+	{
+		Http::fake([
+			'ai-vision:8000/health' => Http::response(['unexpected' => 'data'], 200),
+		]);
+
+		$service = $this->makeService();
+
+		$this->expectException(ExternalComponentFailedException::class);
+		$service->checkHealth();
 	}
 
 	// ── getConfiguration ────────────────────────────────────────
@@ -223,48 +175,50 @@ class FacialRecognitionServiceTest extends AbstractTestCase
 		self::assertEquals('***', $result['api_key']);
 	}
 
-	public function testGetConfigurationReturnsNullOnFailure(): void
+	public function testGetConfigurationThrowsOnFailure(): void
 	{
 		Http::fake([
 			'ai-vision:8000/config' => Http::response(null, 500),
 		]);
 
 		$service = $this->makeService();
-		$result = $service->getConfiguration();
 
-		self::assertNull($result);
+		$this->expectException(ExternalComponentFailedException::class);
+		$service->getConfiguration();
 	}
 
-	public function testGetConfigurationReturnsNullWhenNotConfigured(): void
+	public function testGetConfigurationThrowsWhenNotConfigured(): void
 	{
 		$service = $this->makeUnconfiguredService();
-		$result = $service->getConfiguration();
 
-		self::assertNull($result);
+		$this->expectException(ExternalComponentMissingException::class);
+		$service->getConfiguration();
 	}
 
-	public function testGetConfigurationReturnsNullOnInvalidPayload(): void
+	public function testGetConfigurationThrowsOnInvalidPayload(): void
 	{
 		Http::fake([
 			'ai-vision:8000/config' => Http::response(['unexpected' => 'data'], 200),
 		]);
 
 		$service = $this->makeService();
-		$result = $service->getConfiguration();
 
-		self::assertNull($result);
+		$this->expectException(ExternalComponentFailedException::class);
+		$service->getConfiguration();
 	}
 
-	public function testGetConfigurationReturnsNullOnException(): void
+	public function testGetConfigurationThrowsOnConnectionException(): void
 	{
 		Http::fake([
-			'ai-vision:8000/config' => fn () => throw new \RuntimeException('timeout'),
+			'ai-vision:8000/config' => function (): never {
+				throw new \Illuminate\Http\Client\ConnectionException('timeout');
+			},
 		]);
 
 		$service = $this->makeService();
-		$result = $service->getConfiguration();
 
-		self::assertNull($result);
+		$this->expectException(ExternalComponentFailedException::class);
+		$service->getConfiguration();
 	}
 
 	public function testGetConfigurationFiltersNonStringKeys(): void

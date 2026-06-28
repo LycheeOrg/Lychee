@@ -100,7 +100,9 @@ trait RequiresEmptyPhotos
 				self::cleanupHelper($dirEntryPath);
 			}
 			if (is_file($dirEntryPath) || is_link($dirEntryPath)) {
-				unlink($dirEntryPath);
+				if (fileowner($dirEntryPath) === self::$effUserId) {
+					unlink($dirEntryPath);
+				}
 			}
 		}
 	}

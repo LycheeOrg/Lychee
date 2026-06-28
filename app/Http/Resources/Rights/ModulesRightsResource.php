@@ -31,7 +31,8 @@ class ModulesRightsResource extends Data
 	public bool $is_mod_renamer_enabled = false;
 	public bool $is_mod_webshop_enabled = false;
 	public bool $is_mod_webhook_enabled = false;
-	public bool $is_ai_vision_enabled = false;
+	public bool $is_face_recognition_enabled = false;
+	public bool $is_nsfw_classifier_enabled = false;
 	public bool $is_face_overlay_enabled = true;
 	public bool $is_face_recognition_warning_enabled = true;
 	public bool $is_contact_enabled = false;
@@ -49,7 +50,8 @@ class ModulesRightsResource extends Data
 		$this->is_mod_renamer_enabled = $this->isRenamerEnabled();
 		$this->is_mod_webshop_enabled = $this->isWebshopEnabled();
 		$this->is_mod_webhook_enabled = $this->isWebhookEnabled();
-		$this->is_ai_vision_enabled = $this->isAiVisionEnabled($is_logged_in);
+		$this->is_face_recognition_enabled = $this->isFaceRecognitionEnabled($is_logged_in);
+		$this->is_nsfw_classifier_enabled = $this->isNsfwClassifierEnabled($is_logged_in);
 		$this->is_face_overlay_enabled = request()->configs()->getValueAsBool('ai_vision_face_overlay_enabled');
 		$this->is_face_recognition_warning_enabled = request()->configs()->getValueAsBool('ai_vision_face_recognition_warning');
 		$this->isContactEnabled();
@@ -214,17 +216,13 @@ class ModulesRightsResource extends Data
 	}
 
 	/**
-	 * Check if AI Vision face detection is enabled and accessible to the current user.
-	 *
-	 * The AI Vision feature must be enabled via BOTH:
-	 * 1. The AI_VISION_ENABLED environment variable / feature flag
-	 * 2. The ai_vision_enabled database configuration setting
+	 * Check if face recognition is enabled and accessible to the current user.
 	 *
 	 * @param bool $is_logged_in
 	 *
-	 * @return bool true if AI Vision is enabled and accessible, false otherwise
+	 * @return bool true if face recognition is enabled and accessible, false otherwise
 	 */
-	private function isAiVisionEnabled(bool $is_logged_in): bool
+	private function isFaceRecognitionEnabled(bool $is_logged_in): bool
 	{
 		// Check feature flag first
 		if (config('features.ai-vision') === false) {
@@ -237,6 +235,34 @@ class ModulesRightsResource extends Data
 
 		return request()->configs()->getValueAsBool('ai_vision_enabled') &&
 			request()->configs()->getValueAsBool('ai_vision_face_enabled');
+	}
+
+	/**
+	 * Check if the NSFW classifier is enabled and accessible to the current user.
+	 *
+	 * Requires the AI Vision feature flag, user login, and both
+	 * ai_vision_enabled and ai_vision_nsfw_enabled config settings.
+	 *
+	 * @param bool $is_logged_in
+	 *
+	 * @return bool
+	 */
+	private function isNsfwClassifierEnabled(bool $is_logged_in): bool
+	{
+		if (config('features.ai-vision') === false) {
+			return false;
+		}
+
+		if (!$is_logged_in) {
+			return false;
+		}
+
+		if (!request()->verify()->check()) {
+			return false;
+		}
+
+		return request()->configs()->getValueAsBool('ai_vision_enabled') &&
+			request()->configs()->getValueAsBool('ai_vision_nsfw_enabled');
 	}
 
 	/**

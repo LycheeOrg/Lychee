@@ -35,6 +35,9 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		is_mobile_dock_full_transparency_enabled: false,
 		is_photo_details_always_open: false,
 		is_face_overlay_visible: true,
+		is_face_recognition_enabled: false,
+		is_nsfw_classifier_enabled: false,
+		nsfw_overlay_mode: "hidden" as "hidden" | "all" | "block" | "review" | "sensitive",
 
 		// keybinding help
 		show_keybinding_help_popup: false,
@@ -213,6 +216,8 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.is_mobile_dock_full_transparency_enabled = data.is_mobile_dock_full_transparency_enabled;
 					this.is_photo_details_always_open = data.is_photo_details_always_open;
 					this.is_face_overlay_visible = data.is_face_overlay_visible;
+					this.is_face_recognition_enabled = data.is_face_recognition_enabled;
+					this.is_nsfw_classifier_enabled = data.is_nsfw_classifier_enabled;
 					const togglableStore = useTogglablesStateStore();
 					// Initialize the details togglable according to the always open config
 					togglableStore.are_details_open = data.is_photo_details_always_open;
@@ -251,6 +256,20 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					const event = new CustomEvent("error", { detail: error.response.data });
 					window.dispatchEvent(event);
 				});
+		},
+		cycleNsfwOverlayMode(detections?: App.Http.Resources.Models.NsfwDetectionResource[]): void {
+			const modes = ["hidden", "all", "block", "review", "sensitive"] as const;
+			const noSkip = new Set<string>(["hidden", "blurred", "all"]);
+			const hasCategory: Record<string, boolean> = {
+				block: detections?.some((d) => d.is_block) ?? false,
+				review: detections?.some((d) => d.is_review) ?? false,
+				sensitive: detections?.some((d) => d.is_sensitive) ?? false,
+			};
+			let idx = modes.indexOf(this.nsfw_overlay_mode as (typeof modes)[number]);
+			do {
+				idx = (idx + 1) % modes.length;
+			} while (!noSkip.has(modes[idx]) && !hasCategory[modes[idx]]);
+			this.nsfw_overlay_mode = modes[idx];
 		},
 	},
 });

@@ -11,34 +11,34 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\AssistedVision\Face;
+namespace Tests\AssistedVision\NsfwClassification;
 
-use App\Actions\Diagnostics\Pipes\Checks\AiVisionServiceCheck;
+use App\Actions\Diagnostics\Pipes\Checks\AiVisionNsfwServiceCheck;
 use App\Enum\MessageType;
+use App\Exceptions\ExternalComponentFailedException;
+use App\Exceptions\ExternalComponentMissingException;
 use App\Repositories\ConfigManager;
-use App\Services\Image\FacialRecognitionService;
-use Illuminate\Http\Client\ConnectionException;
-use Illuminate\Http\Client\Response;
-use Illuminate\Support\Facades\Config;
+use App\Services\Image\NsfwDetectionService;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 use PHPUnit\Framework\MockObject\MockObject;
 use Tests\AbstractTestCase;
 
-class AiVisionServiceCheckTest extends AbstractTestCase
+class AiVisionNsfwServiceCheckTest extends AbstractTestCase
 {
 	/** @var ConfigManager&MockObject */
 	private ConfigManager $config_manager;
-	/** @var FacialRecognitionService&MockObject */
-	private FacialRecognitionService $facial_recognition_service;
-	private AiVisionServiceCheck $check;
+	/** @var NsfwDetectionService&MockObject */
+	private NsfwDetectionService $nsfw_detection_service;
+	private AiVisionNsfwServiceCheck $check;
 
 	protected function setUp(): void
 	{
 		parent::setUp();
 
 		$this->config_manager = $this->createMock(ConfigManager::class);
-		$this->facial_recognition_service = $this->createMock(FacialRecognitionService::class);
-		$this->check = new AiVisionServiceCheck($this->config_manager, $this->facial_recognition_service);
+		$this->nsfw_detection_service = $this->createMock(NsfwDetectionService::class);
+		$this->check = new AiVisionNsfwServiceCheck($this->config_manager, $this->nsfw_detection_service);
 	}
 
 	private function passThrough(): \Closure
@@ -69,13 +69,34 @@ class AiVisionServiceCheckTest extends AbstractTestCase
 		self::assertSame([], $result);
 	}
 
+	public function testSkipsWhenNsfwDisabled(): void
+	{
+		Schema::shouldReceive('hasTable')->with('configs')->andReturn(true);
+		$this->config_manager->method('getValueAsBool')->willReturnMap([
+			['ai_vision_enabled', true],
+			['ai_vision_nsfw_enabled', false],
+		]);
+
+		$data = [];
+		$result = $this->check->handle($data, $this->passThrough());
+
+		self::assertSame([], $result);
+	}
+
 	// ── not configured ──────────────────────────────────────────
 
 	public function testErrorWhenServiceNotConfigured(): void
 	{
 		Schema::shouldReceive('hasTable')->with('configs')->andReturn(true);
-		$this->config_manager->method('getValueAsBool')->with('ai_vision_enabled')->willReturn(true);
-		$this->facial_recognition_service->method('isConfigured')->willReturn(false);
+		$this->config_manager->method('getValueAsBool')->willReturnMap([
+			['ai_vision_enabled', true],
+			['ai_vision_nsfw_enabled', true],
+		]);
+		$this->nsfw_detection_service->method('isConfigured')->willReturn(false);
+		Auth::shouldReceive('user')->andReturn((object) ['may_administrate' => true]);
+
+		$this->nsfw_detection_service->method('checkHealth')
+			->willThrowException(new ExternalComponentMissingException('NSFW classification service is not configured.'));
 
 		$data = [];
 		$result = $this->check->handle($data, $this->passThrough());
@@ -90,16 +111,15 @@ class AiVisionServiceCheckTest extends AbstractTestCase
 	public function testErrorWhenHealthCheckReturnsNonSuccessStatus(): void
 	{
 		Schema::shouldReceive('hasTable')->with('configs')->andReturn(true);
-		$this->config_manager->method('getValueAsBool')->with('ai_vision_enabled')->willReturn(true);
-		$this->facial_recognition_service->method('isConfigured')->willReturn(true);
+		$this->config_manager->method('getValueAsBool')->willReturnMap([
+			['ai_vision_enabled', true],
+			['ai_vision_nsfw_enabled', true],
+		]);
+		$this->nsfw_detection_service->method('isConfigured')->willReturn(true);
+		Auth::shouldReceive('user')->andReturn((object) ['may_administrate' => true]);
 
-		Config::set('features.ai-vision-service.face-url', 'http://ai-vision:8000');
-
-		$response = $this->createMock(Response::class);
-		$response->method('successful')->willReturn(false);
-		$response->method('status')->willReturn(503);
-
-		$this->facial_recognition_service->method('checkHealthRaw')->willReturn($response);
+		$this->nsfw_detection_service->method('checkHealth')
+			->willThrowException(new ExternalComponentFailedException('NSFW classification service health check failed with status 503.'));
 
 		$data = [];
 		$result = $this->check->handle($data, $this->passThrough());
@@ -112,17 +132,15 @@ class AiVisionServiceCheckTest extends AbstractTestCase
 	public function testErrorWhenHealthCheckReturnsInvalidFormat(): void
 	{
 		Schema::shouldReceive('hasTable')->with('configs')->andReturn(true);
-		$this->config_manager->method('getValueAsBool')->with('ai_vision_enabled')->willReturn(true);
-		$this->facial_recognition_service->method('isConfigured')->willReturn(true);
+		$this->config_manager->method('getValueAsBool')->willReturnMap([
+			['ai_vision_enabled', true],
+			['ai_vision_nsfw_enabled', true],
+		]);
+		$this->nsfw_detection_service->method('isConfigured')->willReturn(true);
+		Auth::shouldReceive('user')->andReturn((object) ['may_administrate' => true]);
 
-		Config::set('features.ai-vision-service.face-url', 'http://ai-vision:8000');
-
-		$response = $this->createMock(Response::class);
-		$response->method('successful')->willReturn(true);
-		$response->method('json')->willReturn(['unexpected' => 'data']);
-		$response->method('body')->willReturn('{"unexpected":"data"}');
-
-		$this->facial_recognition_service->method('checkHealthRaw')->willReturn($response);
+		$this->nsfw_detection_service->method('checkHealth')
+			->willThrowException(new ExternalComponentFailedException('NSFW classification service health endpoint returned invalid response format.'));
 
 		$data = [];
 		$result = $this->check->handle($data, $this->passThrough());
@@ -135,16 +153,15 @@ class AiVisionServiceCheckTest extends AbstractTestCase
 	public function testWarnWhenHealthCheckReturnsUnhealthyStatus(): void
 	{
 		Schema::shouldReceive('hasTable')->with('configs')->andReturn(true);
-		$this->config_manager->method('getValueAsBool')->with('ai_vision_enabled')->willReturn(true);
-		$this->facial_recognition_service->method('isConfigured')->willReturn(true);
+		$this->config_manager->method('getValueAsBool')->willReturnMap([
+			['ai_vision_enabled', true],
+			['ai_vision_nsfw_enabled', true],
+		]);
+		$this->nsfw_detection_service->method('isConfigured')->willReturn(true);
+		Auth::shouldReceive('user')->andReturn((object) ['may_administrate' => true]);
 
-		Config::set('features.ai-vision-service.face-url', 'http://ai-vision:8000');
-
-		$response = $this->createMock(Response::class);
-		$response->method('successful')->willReturn(true);
-		$response->method('json')->willReturn(['status' => 'degraded']);
-
-		$this->facial_recognition_service->method('checkHealthRaw')->willReturn($response);
+		$this->nsfw_detection_service->method('checkHealth')
+			->willReturn(['status' => 'degraded']);
 
 		$data = [];
 		$result = $this->check->handle($data, $this->passThrough());
@@ -159,16 +176,15 @@ class AiVisionServiceCheckTest extends AbstractTestCase
 	public function testNoErrorsWhenHealthCheckReturnsOk(): void
 	{
 		Schema::shouldReceive('hasTable')->with('configs')->andReturn(true);
-		$this->config_manager->method('getValueAsBool')->with('ai_vision_enabled')->willReturn(true);
-		$this->facial_recognition_service->method('isConfigured')->willReturn(true);
+		$this->config_manager->method('getValueAsBool')->willReturnMap([
+			['ai_vision_enabled', true],
+			['ai_vision_nsfw_enabled', true],
+		]);
+		$this->nsfw_detection_service->method('isConfigured')->willReturn(true);
+		Auth::shouldReceive('user')->andReturn((object) ['may_administrate' => true]);
 
-		Config::set('features.ai-vision-service.face-url', 'http://ai-vision:8000');
-
-		$response = $this->createMock(Response::class);
-		$response->method('successful')->willReturn(true);
-		$response->method('json')->willReturn(['status' => 'ok']);
-
-		$this->facial_recognition_service->method('checkHealthRaw')->willReturn($response);
+		$this->nsfw_detection_service->method('checkHealth')
+			->willReturn(['status' => 'ok']);
 
 		$data = [];
 		$result = $this->check->handle($data, $this->passThrough());
@@ -179,16 +195,15 @@ class AiVisionServiceCheckTest extends AbstractTestCase
 	public function testNoErrorsWhenHealthCheckReturnsHealthy(): void
 	{
 		Schema::shouldReceive('hasTable')->with('configs')->andReturn(true);
-		$this->config_manager->method('getValueAsBool')->with('ai_vision_enabled')->willReturn(true);
-		$this->facial_recognition_service->method('isConfigured')->willReturn(true);
+		$this->config_manager->method('getValueAsBool')->willReturnMap([
+			['ai_vision_enabled', true],
+			['ai_vision_nsfw_enabled', true],
+		]);
+		$this->nsfw_detection_service->method('isConfigured')->willReturn(true);
+		Auth::shouldReceive('user')->andReturn((object) ['may_administrate' => true]);
 
-		Config::set('features.ai-vision-service.face-url', 'http://ai-vision:8000');
-
-		$response = $this->createMock(Response::class);
-		$response->method('successful')->willReturn(true);
-		$response->method('json')->willReturn(['status' => 'healthy']);
-
-		$this->facial_recognition_service->method('checkHealthRaw')->willReturn($response);
+		$this->nsfw_detection_service->method('checkHealth')
+			->willReturn(['status' => 'healthy']);
 
 		$data = [];
 		$result = $this->check->handle($data, $this->passThrough());
@@ -201,13 +216,15 @@ class AiVisionServiceCheckTest extends AbstractTestCase
 	public function testErrorWhenConnectionFails(): void
 	{
 		Schema::shouldReceive('hasTable')->with('configs')->andReturn(true);
-		$this->config_manager->method('getValueAsBool')->with('ai_vision_enabled')->willReturn(true);
-		$this->facial_recognition_service->method('isConfigured')->willReturn(true);
+		$this->config_manager->method('getValueAsBool')->willReturnMap([
+			['ai_vision_enabled', true],
+			['ai_vision_nsfw_enabled', true],
+		]);
+		$this->nsfw_detection_service->method('isConfigured')->willReturn(true);
+		Auth::shouldReceive('user')->andReturn((object) ['may_administrate' => true]);
 
-		Config::set('features.ai-vision-service.face-url', 'http://ai-vision:8000');
-
-		$this->facial_recognition_service->method('checkHealthRaw')
-			->willThrowException(new ConnectionException('Connection refused'));
+		$this->nsfw_detection_service->method('checkHealth')
+			->willThrowException(new ExternalComponentFailedException('Could not connect to NSFW classification service.'));
 
 		$data = [];
 		$result = $this->check->handle($data, $this->passThrough());

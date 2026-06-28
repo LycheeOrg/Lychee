@@ -10,6 +10,8 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
+use App\Exceptions\ExternalComponentFailedException;
+use App\Exceptions\ExternalComponentMissingException;
 use App\Repositories\ConfigManager;
 use App\Services\Image\FacialRecognitionService;
 use Illuminate\Support\Facades\Schema;
@@ -17,7 +19,7 @@ use Illuminate\Support\Facades\Schema;
 /**
  * In debug mode, expose the AI Vision runtime configuration in diagnostics.
  */
-class AiVisionServiceConfigCheck implements DiagnosticPipe
+class AiVisionFaceRecognitionServiceConfigCheck implements DiagnosticPipe
 {
 	public function __construct(
 		protected readonly ConfigManager $config_manager,
@@ -42,31 +44,28 @@ class AiVisionServiceConfigCheck implements DiagnosticPipe
 			return $next($data);
 		}
 
-		if (!$this->facial_recognition_service->isConfigured()) {
-			return $next($data);
-		}
+		try {
+			$configuration = $this->facial_recognition_service->getConfiguration();
 
-		$configuration = $this->facial_recognition_service->getConfiguration();
-		if ($configuration === null) {
+			$details = [];
+			foreach ($configuration as $key => $value) {
+				$details[] = $key . ': ' . $value;
+			}
+
+			$data[] = DiagnosticData::info(
+				'AI Vision: Runtime configuration from service (debug mode).',
+				self::class,
+				$details
+			);
+		} catch (ExternalComponentMissingException) {
+			// Not configured — skip silently in config check, the health check pipe handles this.
+		} catch (ExternalComponentFailedException $e) {
 			$data[] = DiagnosticData::warn(
-				'AI Vision: Could not fetch runtime configuration from the service while APP_DEBUG is enabled.',
+				'AI Vision: ' . $e->getMessage(),
 				self::class,
 				[]
 			);
-
-			return $next($data);
 		}
-
-		$details = [];
-		foreach ($configuration as $key => $value) {
-			$details[] = $key . ': ' . $value;
-		}
-
-		$data[] = DiagnosticData::info(
-			'AI Vision: Runtime configuration from service (debug mode).',
-			self::class,
-			$details
-		);
 
 		return $next($data);
 	}

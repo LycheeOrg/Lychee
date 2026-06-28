@@ -57,6 +57,7 @@
 					<th class="py-2 pr-3">{{ $t("moderation.col_owner") }}</th>
 					<th class="py-2 pr-3">{{ $t("moderation.col_album") }}</th>
 					<th class="py-2 pr-3">{{ $t("moderation.col_uploaded") }}</th>
+					<th class="py-2 pr-3">{{ $t("moderation.col_nsfw") }}</th>
 					<th class="py-2"></th>
 				</tr>
 			</thead>
@@ -94,6 +95,9 @@
 						<span v-else class="text-muted-color">—</span>
 					</td>
 					<td class="py-2 pr-3 whitespace-nowrap">{{ new Date(photo.created_at).toLocaleDateString() }}</td>
+					<td class="py-2 pr-3">
+						<Tag v-if="photo.nsfw_status === 'review'" severity="warn" :value="$t('moderation.nsfw_review')" class="text-xs" />
+					</td>
 					<td class="py-2">
 						<div class="flex gap-1" @click.stop>
 							<Button
@@ -136,6 +140,7 @@ import { computed, onMounted, onUnmounted, ref } from "vue";
 import { RouterLink } from "vue-router";
 import Button from "primevue/button";
 import Panel from "primevue/panel";
+import Tag from "primevue/tag";
 import Toolbar from "primevue/toolbar";
 import ProgressSpinner from "primevue/progressspinner";
 import { useToast } from "primevue/usetoast";

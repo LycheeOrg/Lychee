@@ -106,6 +106,18 @@ class ConfigIntegrity
 		'contact_form_security_answer',
 		'contact_form_custom_consent_required',
 		'guest_upload_trust_level',
+		'ai_vision_nsfw_enabled',
+		'ai_vision_nsfw_preset',
+		'ai_vision_nsfw_check_block_action',
+		'ai_vision_nsfw_monitor_block_action',
+		'ai_vision_nsfw_trust_but_verify_block_action',
+		'ai_vision_nsfw_trust_block_action',
+		'ai_vision_nsfw_sensitive_album_action',
+		'ai_vision_nsfw_sensitive_no_album_action',
+		'ai_vision_nsfw_scan_trusted_users',
+		'ai_vision_nsfw_monitor_hide_on_scan',
+		'ai_vision_nsfw_trust_but_verify_hide_on_scan',
+		'ai_vision_nsfw_trust_hide_on_scan',
 	];
 
 	public const PRO_FIELDS = [

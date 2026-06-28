@@ -14,13 +14,16 @@ namespace App\Enum;
  * Per-user trust level controlling whether newly uploaded photos are
  * immediately visible to the public or require admin approval first.
  *
- * - CHECK:   Uploads are hidden from the public until an admin approves them.
- * - MONITOR: Reserved for future use; currently behaves identically to TRUSTED.
- * - TRUSTED: Uploads are immediately publicly visible (subject to album visibility).
+ * - CHECK:            Uploads are hidden until an admin approves them.
+ * - MONITOR:          Uploads are immediately visible; NSFW scanning always applied.
+ * - TRUST_BUT_VERIFY: Uploads are immediately visible; NSFW scanning always applied;
+ *                     review findings auto-approved, block findings configurable.
+ * - TRUSTED:          Uploads are immediately visible (subject to album visibility).
  */
 enum UserUploadTrustLevel: string
 {
 	case CHECK = 'check';
 	case MONITOR = 'monitor';
+	case TRUST_BUT_VERIFY = 'trust_but_verify';
 	case TRUSTED = 'trusted';
 }

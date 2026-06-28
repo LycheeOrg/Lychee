@@ -96,8 +96,16 @@
 			:style="photoStore.style"
 		></div>
 		<!-- Face overlay: positioned to exactly match the rendered image via BoundingClientRect -->
-		<div v-if="loadedFaces.length > 0 || hiddenFaceCount > 0" class="absolute z-10 pointer-events-none" :style="faceOverlayStyle">
+		<div
+			v-if="isFaceEnabled && (loadedFaces.length > 0 || hiddenFaceCount > 0)"
+			class="absolute z-10 pointer-events-none"
+			:style="faceOverlayStyle"
+		>
 			<FaceOverlay :faces="loadedFaces" :hidden-face-count="hiddenFaceCount" @faces-updated="handleFacesUpdated" />
+		</div>
+		<!-- NSFW detection overlay: positioned to match the rendered image -->
+		<div v-if="isNsfwEnabled && loadedNsfwDetections.length > 0" class="absolute z-10 pointer-events-none" :style="faceOverlayStyle">
+			<NsfwDetectionOverlay :detections="loadedNsfwDetections" :image-width="nsfwImageWidth" :image-height="nsfwImageHeight" />
 		</div>
 	</div>
 </template>
@@ -105,6 +113,7 @@
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { usePhotoFacesStore } from "@/stores/PhotoFacesState";
+import { usePhotoNsfwDetectionsStore } from "@/stores/PhotoNsfwDetectionsState";
 import { useImageHelpers } from "@/utils/Helpers";
 import { useSwipe, type UseSwipeDirection } from "@vueuse/core";
 import { storeToRefs } from "pinia";
@@ -112,6 +121,7 @@ import { computed, reactive, watch, watchEffect, onUnmounted, ref } from "vue";
 import { useLtRorRtL } from "@/utils/Helpers";
 import { ImageViewMode, usePhotoStore } from "@/stores/PhotoState";
 import FaceOverlay from "./FaceOverlay.vue";
+import NsfwDetectionOverlay from "./NsfwDetectionOverlay.vue";
 
 const { isLTR } = useLtRorRtL();
 
@@ -121,6 +131,9 @@ const togglableStore = useTogglablesStateStore();
 
 const lycheeStore = useLycheeStateStore();
 const photoStore = usePhotoStore();
+
+const isFaceEnabled = computed(() => lycheeStore.is_face_recognition_enabled);
+const isNsfwEnabled = computed(() => lycheeStore.is_nsfw_classifier_enabled);
 
 const { is_swipe_vertically_to_go_back_enabled } = storeToRefs(lycheeStore);
 const { is_slideshow_active, is_full_screen } = storeToRefs(togglableStore);
@@ -136,6 +149,12 @@ const facesStore = usePhotoFacesStore();
 const faceData = computed(() => facesStore.get(photoStore.photo?.id ?? ""));
 const loadedFaces = computed(() => faceData.value.faces);
 const hiddenFaceCount = computed(() => faceData.value.hiddenFaceCount);
+
+const nsfwDetectionsStore = usePhotoNsfwDetectionsStore();
+const nsfwData = computed(() => nsfwDetectionsStore.get(photoStore.photo?.id ?? ""));
+const loadedNsfwDetections = computed(() => nsfwData.value.detections);
+const nsfwImageWidth = computed(() => nsfwData.value.imageWidth);
+const nsfwImageHeight = computed(() => nsfwData.value.imageHeight);
 
 function handleFacesUpdated() {
 	emits("facesUpdated");
@@ -180,13 +199,25 @@ watchEffect(
 onUnmounted(() => imageResizeObserver?.disconnect());
 
 watch(
-	() => photoStore.photo?.id,
-	(photoId) => {
-		if (photoId === undefined || (photoStore.photo?.face_count ?? 0) <= 0) {
+	[() => photoStore.photo?.id, isFaceEnabled],
+	([photoId, faceEnabled]) => {
+		if (!faceEnabled || photoId === undefined || (photoStore.photo?.face_count ?? 0) <= 0) {
 			return;
 		}
 
 		facesStore.fetch(photoId);
+	},
+	{ immediate: true },
+);
+
+// Lazy fetch: only load NSFW detections when the overlay is toggled visible
+watch(
+	[() => photoStore.photo?.id, () => lycheeStore.nsfw_overlay_mode, isNsfwEnabled],
+	([photoId, mode, nsfwEnabled]) => {
+		if (!nsfwEnabled || photoId === undefined || mode === "hidden") {
+			return;
+		}
+		nsfwDetectionsStore.fetch(photoId);
 	},
 	{ immediate: true },
 );

@@ -8,7 +8,7 @@
 
 namespace Tests\Unit\Actions\Diagnostics;
 
-use App\Actions\Diagnostics\Pipes\Checks\AiVisionServiceConfigCheck;
+use App\Actions\Diagnostics\Pipes\Checks\AiVisionFaceRecognitionServiceConfigCheck;
 use App\DTO\DiagnosticData;
 use App\Enum\MessageType;
 use App\Repositories\ConfigManager;
@@ -18,13 +18,13 @@ use Illuminate\Support\Facades\Schema;
 use PHPUnit\Framework\MockObject\MockObject;
 use Tests\AbstractTestCase;
 
-class AiVisionServiceConfigCheckTest extends AbstractTestCase
+class AiVisionFaceRecognitionServiceConfigCheckTest extends AbstractTestCase
 {
 	/** @var ConfigManager&MockObject */
 	private ConfigManager $config_manager;
 	/** @var FacialRecognitionService&MockObject */
 	private FacialRecognitionService $facial_recognition_service;
-	private AiVisionServiceConfigCheck $check;
+	private AiVisionFaceRecognitionServiceConfigCheck $check;
 
 	protected function setUp(): void
 	{
@@ -32,7 +32,7 @@ class AiVisionServiceConfigCheckTest extends AbstractTestCase
 
 		$this->config_manager = $this->createMock(ConfigManager::class);
 		$this->facial_recognition_service = $this->createMock(FacialRecognitionService::class);
-		$this->check = new AiVisionServiceConfigCheck($this->config_manager, $this->facial_recognition_service);
+		$this->check = new AiVisionFaceRecognitionServiceConfigCheck($this->config_manager, $this->facial_recognition_service);
 	}
 
 	/**
@@ -80,9 +80,6 @@ class AiVisionServiceConfigCheckTest extends AbstractTestCase
 			->with('ai_vision_enabled')
 			->willReturn(true);
 		$this->facial_recognition_service->expects($this->once())
-			->method('isConfigured')
-			->willReturn(true);
-		$this->facial_recognition_service->expects($this->once())
 			->method('getConfiguration')
 			->willReturn([
 				'api_key' => '***',
@@ -113,11 +110,8 @@ class AiVisionServiceConfigCheckTest extends AbstractTestCase
 			->with('ai_vision_enabled')
 			->willReturn(true);
 		$this->facial_recognition_service->expects($this->once())
-			->method('isConfigured')
-			->willReturn(true);
-		$this->facial_recognition_service->expects($this->once())
 			->method('getConfiguration')
-			->willReturn(null);
+			->willThrowException(new \App\Exceptions\ExternalComponentFailedException('Could not connect to AI Vision service.'));
 
 		$data = [];
 		$result = $this->check->handle($data, fn (array $diagnostics): array => $diagnostics);
@@ -125,9 +119,6 @@ class AiVisionServiceConfigCheckTest extends AbstractTestCase
 		$this->assertCount(1, $result);
 		$this->assertInstanceOf(DiagnosticData::class, $result[0]);
 		$this->assertEquals(MessageType::WARNING, $result[0]->type);
-		$this->assertEquals(
-			'AI Vision: Could not fetch runtime configuration from the service while APP_DEBUG is enabled.',
-			$result[0]->message
-		);
+		$this->assertStringContainsString('Could not connect', $result[0]->message);
 	}
 }

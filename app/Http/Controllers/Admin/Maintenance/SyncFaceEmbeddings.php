@@ -36,10 +36,11 @@ class SyncFaceEmbeddings extends Controller
 		}
 
 		$service = app(FacialRecognitionService::class);
-		$health = $service->checkHealth();
 
-		if ($health === null) {
-			Log::warning('SyncFaceEmbeddings::check — AI Vision service /health returned null.');
+		try {
+			$health = $service->checkHealth();
+		} catch (\Throwable $e) {
+			Log::warning('SyncFaceEmbeddings::check — AI Vision service health check failed: ' . $e->getMessage());
 
 			return 0;
 		}

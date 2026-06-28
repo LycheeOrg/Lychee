@@ -29,6 +29,7 @@ class VerifyCsrfToken extends Middleware
 		'/api/v2/Photo::random',
 		'/api/v2/FaceDetection/results', // This is only exposed internally and auth with a token.
 		'api/v2/FaceDetection/cluster-results', // This is only exposed internally and auth with a token.
+		'/api/v2/NsfwDetection/results', // NSFW classifier callback, X-API-Key authenticated.
 	];
 
 	/**
