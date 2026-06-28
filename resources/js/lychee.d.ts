@@ -880,6 +880,7 @@ declare namespace App.Http.Resources.Models {
 		slug: string | null;
 		owner_name: string | null;
 		copyright: string | null;
+		cover_id: string | null;
 		is_tag_album: boolean;
 		show_tags: Array<string>;
 		policy: App.Http.Resources.Models.Utils.AlbumProtectionPolicy;

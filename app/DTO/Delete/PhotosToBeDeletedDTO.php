@@ -101,6 +101,7 @@ final class PhotosToBeDeletedDTO
 		collect($this->force_delete_photo_ids)->chunk(self::CHUNK_SIZE)->each(function ($chunk): void {
 			DB::table('albums')->whereIn('header_id', $chunk->all())->update(['header_id' => null]);
 			DB::table('albums')->whereIn('cover_id', $chunk->all())->update(['cover_id' => null]);
+			DB::table('tag_albums')->whereIn('cover_id', $chunk->all())->update(['cover_id' => null]);
 		});
 
 		// Maybe consider doing multiple queries for the different storage types.

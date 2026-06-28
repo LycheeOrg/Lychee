@@ -8,25 +8,30 @@
 
 namespace App\Http\Requests\Album;
 
-use App\Contracts\Http\Requests\HasAlbum;
 use App\Contracts\Http\Requests\HasPhoto;
 use App\Contracts\Http\Requests\RequestAttribute;
 use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Traits\HasAlbumTrait;
 use App\Http\Requests\Traits\HasPhotoTrait;
 use App\Models\Album;
 use App\Models\Photo;
+use App\Models\TagAlbum;
 use App\Policies\AlbumPolicy;
 use App\Policies\PhotoPolicy;
 use App\Rules\RandomIDRule;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\ValidationException;
 
-class SetAsCoverRequest extends BaseApiRequest implements HasAlbum, HasPhoto
+class SetAsCoverRequest extends BaseApiRequest implements HasPhoto
 {
-	use HasAlbumTrait;
 	use HasPhotoTrait;
+
+	protected Album|TagAlbum|null $album = null;
+
+	public function album(): Album|TagAlbum|null
+	{
+		return $this->album;
+	}
 
 	public function authorize(): bool
 	{
@@ -55,7 +60,7 @@ class SetAsCoverRequest extends BaseApiRequest implements HasAlbum, HasPhoto
 			$values[RequestAttribute::ALBUM_ID_ATTRIBUTE]
 		);
 
-		if (!$album instanceof Album) {
+		if (!$album instanceof Album && !$album instanceof TagAlbum) {
 			throw ValidationException::withMessages([RequestAttribute::ALBUM_ID_ATTRIBUTE => 'album type not supported.']);
 		}
 
