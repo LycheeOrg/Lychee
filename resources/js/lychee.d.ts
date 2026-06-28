@@ -218,7 +218,15 @@ declare namespace App.Enum {
 		| "my_rated_pictures"
 		| "my_best_pictures";
 	export type StorageDiskType = "images" | "s3";
-	export type ThumbAlbumSubtitleType = "description" | "takedate" | "creation" | "oldstyle" | "num_photos" | "num_albums" | "num_photos_albums";
+	export type ThumbAlbumSubtitleType =
+		| "disabled"
+		| "description"
+		| "takedate"
+		| "creation"
+		| "oldstyle"
+		| "num_photos"
+		| "num_albums"
+		| "num_photos_albums";
 	export type TimelineAlbumGranularity = "default" | "disabled" | "year" | "month" | "day";
 	export type TimelinePhotoGranularity = "default" | "disabled" | "year" | "month" | "day" | "hour";
 	export type UpdateStatus = 0 | 1 | 2 | 3;
