@@ -51,7 +51,7 @@ class FaceMaintenanceTest extends BaseApiTest
 		Face::factory()->for_photo($this->photo)->create(['confidence' => 0.9, 'laplacian_variance' => 50.0]);
 		Face::factory()->for_photo($this->photo)->create(['confidence' => 0.7, 'laplacian_variance' => 200.0]);
 
-		$response = $this->actingAs($this->admin)->getJson('Face/maintenance?sort_by=confidence&sort_dir=asc');
+		$response = $this->actingAs($this->admin)->getJson('Face/maintenance?sort_by=confidence&sort_dir=ASC');
 		$this->assertOk($response);
 
 		$data = $response->json('data');
@@ -66,7 +66,7 @@ class FaceMaintenanceTest extends BaseApiTest
 		Face::factory()->for_photo($this->photo)->create(['confidence' => 0.6, 'laplacian_variance' => 10.0]);
 		Face::factory()->for_photo($this->photo)->create(['confidence' => 0.7, 'laplacian_variance' => 150.0]);
 
-		$response = $this->actingAs($this->admin)->getJson('Face/maintenance?sort_by=laplacian_variance&sort_dir=asc');
+		$response = $this->actingAs($this->admin)->getJson('Face/maintenance?sort_by=laplacian_variance&sort_dir=ASC');
 		$this->assertOk($response);
 
 		$data = $response->json('data');
@@ -85,7 +85,7 @@ class FaceMaintenanceTest extends BaseApiTest
 
 		$data = $response->json('data');
 		self::assertCount(2, $data);
-		// Default sort_by=confidence, sort_dir=asc: lowest confidence first
+		// Default sort_by=confidence, sort_dir=ASC: lowest confidence first
 		self::assertLessThanOrEqual($data[1]['confidence'], $data[0]['confidence']);
 	}
 

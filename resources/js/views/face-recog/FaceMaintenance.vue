@@ -33,6 +33,15 @@
 						@click="toggleDismissedOnly"
 					/>
 					<Button
+						:label="$t('maintenance.face_quality.show_unassigned')"
+						:severity="unassignedOnly ? 'primary' : 'secondary'"
+						size="small"
+						class="border-none"
+						:icon="unassignedOnly ? 'pi pi-user-minus' : 'pi pi-users'"
+						icon-pos="right"
+						@click="toggleUnassignedOnly"
+					/>
+					<Button
 						v-if="faces.length > 0"
 						:label="allSelected ? $t('maintenance.face_quality.deselect_all') : $t('maintenance.face_quality.select_all')"
 						severity="secondary"
@@ -88,7 +97,7 @@
 							{{ $t("maintenance.face_quality.col_confidence") }}
 							<i
 								v-if="sortBy === 'confidence'"
-								:class="sortDir === 'asc' ? 'pi pi-arrow-up' : 'pi pi-arrow-down'"
+								:class="sortDir === 'ASC' ? 'pi pi-arrow-up' : 'pi pi-arrow-down'"
 								class="text-xs ml-0.5"
 							></i>
 						</div>
@@ -96,7 +105,7 @@
 							{{ $t("maintenance.face_quality.col_blur") }}
 							<i
 								v-if="sortBy === 'laplacian_variance'"
-								:class="sortDir === 'asc' ? 'pi pi-arrow-up' : 'pi pi-arrow-down'"
+								:class="sortDir === 'ASC' ? 'pi pi-arrow-up' : 'pi pi-arrow-down'"
 								class="text-xs ml-0.5"
 							></i>
 						</div>
@@ -270,8 +279,9 @@ const dismissingId = ref<string | null>(null);
 const batchDismissing = ref(false);
 const batchReactivating = ref(false);
 const sortBy = ref<"confidence" | "laplacian_variance">("confidence");
-const sortDir = ref<"asc" | "desc">("asc");
+const sortDir = ref<"ASC" | "DESC">("ASC");
 const dismissedOnly = ref(false);
+const unassignedOnly = ref(false);
 
 // Selection state
 const selectedIds = ref<string[]>([]);
@@ -304,6 +314,7 @@ function load(page = 1): void {
 		sort_by: sortBy.value,
 		sort_dir: sortDir.value,
 		dismissed_only: dismissedOnly.value,
+		unassigned_only: unassignedOnly.value,
 		page,
 		per_page: 50,
 	})
@@ -332,16 +343,21 @@ function loadMore(): void {
 
 function setSort(field: "confidence" | "laplacian_variance"): void {
 	if (sortBy.value === field) {
-		sortDir.value = sortDir.value === "asc" ? "desc" : "asc";
+		sortDir.value = sortDir.value === "ASC" ? "DESC" : "ASC";
 	} else {
 		sortBy.value = field;
-		sortDir.value = "asc";
+		sortDir.value = "ASC";
 	}
 	load(1);
 }
 
 function toggleDismissedOnly(): void {
 	dismissedOnly.value = !dismissedOnly.value;
+	load(1);
+}
+
+function toggleUnassignedOnly(): void {
+	unassignedOnly.value = !unassignedOnly.value;
 	load(1);
 }
 
