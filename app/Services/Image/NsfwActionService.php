@@ -9,16 +9,19 @@
 namespace App\Services\Image;
 
 use App\Actions\Photo\Delete;
+use App\Constants\PhotoAlbum;
 use App\DTO\Nsfw\NsfwDetectionItemData;
 use App\Enum\NsfwBlockFindingAction;
 use App\Enum\NsfwDetectionLabel;
 use App\Enum\NsfwSensitiveAlbumAction;
+use App\Enum\NsfwSensitiveNoAlbumAction;
 use App\Enum\NsfwStatus;
 use App\Enum\UserUploadTrustLevel;
 use App\Jobs\ApplyNsfwAlbumSensitivityJob;
 use App\Models\NsfwDetection;
 use App\Models\Photo;
 use App\Repositories\ConfigManager;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class NsfwActionService
@@ -152,11 +155,35 @@ class NsfwActionService
 		$album_action = $this->config_manager->getValueAsEnum('ai_vision_nsfw_sensitive_album_action', NsfwSensitiveAlbumAction::class);
 
 		if ($album_action === NsfwSensitiveAlbumAction::MARK_ALBUM) {
-			ApplyNsfwAlbumSensitivityJob::dispatch($photo->id);
+			$all_album_ids = DB::table(PhotoAlbum::PHOTO_ALBUM)
+				->where(PhotoAlbum::PHOTO_ID, $photo->id)
+				->select(PhotoAlbum::ALBUM_ID)
+				->pluck('album_id')->all();
+
+			if ($all_album_ids === []) {
+				$this->handleNoAlbumFallback($photo);
+			} else {
+				ApplyNsfwAlbumSensitivityJob::dispatch($all_album_ids);
+			}
+
 			Log::info("NsfwActionService: dispatched album sensitivity job for photo {$photo->id} (sensitive finding, trust={$trust_level->value}).");
 		}
 
 		return false;
+	}
+
+	private function handleNoAlbumFallback(Photo $photo): void
+	{
+		if ($this->config_manager->getValueAsEnum('ai_vision_nsfw_sensitive_no_album_action', NsfwSensitiveNoAlbumAction::class) === NsfwSensitiveNoAlbumAction::SKIP) {
+			Log::warning("NsfwActionService: photo {$photo->id} has no albums (unsorted), skipping album marking.");
+
+			return;
+		}
+
+		$photo->nsfw_status = NsfwStatus::REVIEW;
+		$photo->is_validated = false;
+		$photo->save();
+		Log::info("NsfwActionService: photo {$photo->id} has no albums, moderated as fallback.");
 	}
 
 	/**

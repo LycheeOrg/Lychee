@@ -708,6 +708,38 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		total_photos: number;
 	};
 }
+declare namespace App.Http.Resources.GalleryConfigs.Nsfw {
+	export type NsfwActionCategoryResource = {
+		labels: App.Enum.NsfwDetectionLabel[];
+		confidence: number | null;
+		area_ratio: number | null;
+		label_thresholds: number[];
+	};
+	export type NsfwConfigPresetResource = {
+		name: App.Enum.NsfwPreset;
+		description: string;
+		block: App.Http.Resources.GalleryConfigs.Nsfw.NsfwActionCategoryResource;
+		review: App.Http.Resources.GalleryConfigs.Nsfw.NsfwActionCategoryResource;
+		sensitive: App.Http.Resources.GalleryConfigs.Nsfw.NsfwActionCategoryResource;
+	};
+	export type NsfwConfigResource = {
+		config: App.Http.Resources.GalleryConfigs.Nsfw.NsfwConfigSettingsResource;
+		presets: App.Http.Resources.GalleryConfigs.Nsfw.NsfwConfigPresetResource[];
+	};
+	export type NsfwConfigSettingsResource = {
+		confidence_threshold: string;
+		area_ratio_threshold: string;
+		debug_detect_threshold: string;
+		block: App.Http.Resources.GalleryConfigs.Nsfw.NsfwActionCategoryResource;
+		review: App.Http.Resources.GalleryConfigs.Nsfw.NsfwActionCategoryResource;
+		sensitive: App.Http.Resources.GalleryConfigs.Nsfw.NsfwActionCategoryResource;
+		queue_backend: string;
+		queue_max_size: string;
+		thread_pool_size: string;
+		verify_ssl: string;
+		workers: string;
+	};
+}
 declare namespace App.Http.Resources.Models {
 	export type AccessPermissionResource = {
 		id: number | null;

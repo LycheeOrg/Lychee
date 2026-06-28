@@ -10,9 +10,10 @@ namespace App\Actions\Diagnostics\Pipes\Checks;
 
 use App\Contracts\DiagnosticPipe;
 use App\DTO\DiagnosticData;
+use App\Exceptions\ExternalComponentFailedException;
+use App\Exceptions\ExternalComponentMissingException;
 use App\Repositories\ConfigManager;
 use App\Services\Image\NsfwDetectionService;
-use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 
@@ -41,56 +42,13 @@ class AiVisionNsfwServiceCheck implements DiagnosticPipe
 			return $next($data);
 		}
 
-		if (!$this->nsfw_detection_service->isConfigured()) {
-			$data[] = DiagnosticData::error(
-				'NSFW Classification: Service URL is not configured. Set AI_VISION_NSFW_URL in your .env file.',
-				self::class,
-				[]
-			);
-
-			return $next($data);
-		}
-
 		// If we are not admin, bail out here, as we don't want to expose the service URL to non-admins.
 		if (Auth::user()?->may_administrate !== true) {
 			return $next($data);
 		}
 
-		$this->checkServiceHealth($data);
-
-		return $next($data);
-	}
-
-	/**
-	 * @param DiagnosticData[] &$data
-	 */
-	private function checkServiceHealth(array &$data): void
-	{
-		$service_url = config('features.ai-vision-service.nsfw-url', '');
-
 		try {
-			$response = $this->nsfw_detection_service->checkHealthRaw(5);
-
-			if (!$response->successful()) {
-				$data[] = DiagnosticData::error(
-					'NSFW Classification: Service health check failed with status ' . $response->status() . '. The service may be offline or unreachable.',
-					self::class,
-					['Check that the NSFW classification service is running at: ' . $service_url]
-				);
-
-				return;
-			}
-
-			$health_data = $response->json();
-			if (!is_array($health_data) || !isset($health_data['status'])) {
-				$data[] = DiagnosticData::error(
-					'NSFW Classification: Service health endpoint returned invalid response format. Expected JSON with "status" field.',
-					self::class,
-					['Response: ' . $response->body()]
-				);
-
-				return;
-			}
+			$health_data = $this->nsfw_detection_service->checkHealth();
 
 			if ($health_data['status'] !== 'ok' && $health_data['status'] !== 'healthy') {
 				$data[] = DiagnosticData::warn(
@@ -99,20 +57,20 @@ class AiVisionNsfwServiceCheck implements DiagnosticPipe
 					[]
 				);
 			}
-		} catch (ConnectionException $e) {
+		} catch (ExternalComponentMissingException $e) {
 			$data[] = DiagnosticData::error(
-				'NSFW Classification: Could not connect to service at ' . rtrim($service_url, '/') . '/api/nsfw/health',
+				'NSFW Classification: ' . $e->getMessage(),
 				self::class,
-				['Check that the NSFW classification service is running and the URL is correct.', $e->getMessage()]
+				['Set AI_VISION_NSFW_URL in your .env file.']
 			);
-		} catch (\Exception $e) {
-			// @codeCoverageIgnoreStart
+		} catch (ExternalComponentFailedException $e) {
 			$data[] = DiagnosticData::error(
-				'NSFW Classification: Service health check failed with error: ' . $e->getMessage(),
+				'NSFW Classification: ' . $e->getMessage(),
 				self::class,
-				[]
+				['Check that the NSFW classification service is running and the URL is correct.']
 			);
-			// @codeCoverageIgnoreEnd
 		}
+
+		return $next($data);
 	}
 }

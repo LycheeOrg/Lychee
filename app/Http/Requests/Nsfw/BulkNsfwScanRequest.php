@@ -42,7 +42,7 @@ class BulkNsfwScanRequest extends BaseApiRequest
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		$this->album_id = $values['album_id'] ?? null;
-		$this->force = ($values['force'] ?? false) === true;
+		$this->force = self::toBoolean($values['force'] ?? false);
 	}
 
 	public function albumId(): ?string

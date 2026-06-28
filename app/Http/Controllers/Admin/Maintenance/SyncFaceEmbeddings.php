@@ -38,12 +38,6 @@ class SyncFaceEmbeddings extends Controller
 		$service = app(FacialRecognitionService::class);
 		$health = $service->checkHealth();
 
-		if ($health === null) {
-			Log::warning('SyncFaceEmbeddings::check — AI Vision service /health returned null.');
-
-			return 0;
-		}
-
 		$lychee_count = Face::count();
 		$ai_count = $health['embedding_count'];
 

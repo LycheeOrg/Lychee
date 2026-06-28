@@ -431,6 +431,7 @@ Route::middleware(['feature:ai-vision', 'feature:v8'])->group(function (): void 
 	 */
 	Route::get('/Photo/{id}/nsfw-detections', [AiVision\PhotoNsfwDetectionsController::class, 'show']);
 	Route::post('/NsfwDetection/results', [AiVision\NsfwDetectionController::class, 'results'])->withoutMiddleware(['auth']);
+	// TODO: Those should require admin no ???
 	Route::post('/NsfwDetection/bulk-scan', [AiVision\NsfwDetectionController::class, 'bulkScan'])->middleware(['support:se']);
 	Route::get('/NsfwDetection/config', [AiVision\NsfwConfigController::class, 'show'])->middleware(['support:se']);
 

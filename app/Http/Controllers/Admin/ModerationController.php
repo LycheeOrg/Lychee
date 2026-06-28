@@ -8,6 +8,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Constants\PhotoAlbum;
 use App\Enum\NsfwSensitiveAlbumAction;
 use App\Enum\NsfwStatus;
 use App\Http\Requests\Moderation\ApproveModerationRequest;
@@ -21,6 +22,8 @@ use App\Models\Photo;
 use App\Repositories\ConfigManager;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Controller for the admin moderation panel.
@@ -79,10 +82,6 @@ class ModerationController extends Controller
 	/**
 	 * Bulk-approve a set of photos by marking them as validated.
 	 *
-	 * Uses a hybrid two-pass approach:
-	 * Pass 1 (bulk): set is_validated = true for all photos.
-	 * Pass 2 (NSFW subset): update nsfw_status and dispatch album sensitivity jobs.
-	 *
 	 * @param ApproveModerationRequest $request
 	 *
 	 * @return Response
@@ -91,37 +90,63 @@ class ModerationController extends Controller
 	{
 		$ids = $request->photoIds();
 
-		collect($ids)->chunk(100)->each(function ($chunk) use ($config_manager): void {
-			// Pass 1: Bulk approve
-			Photo::whereIn('id', $chunk)->update(['is_validated' => true]);
-
-			// Pass 2: NSFW subset — update nsfw_status and dispatch album jobs
-			$nsfw_photos = Photo::whereIn('id', $chunk)
-				->where('nsfw_status', NsfwStatus::REVIEW)
-				->select('id')
-				->get();
-
-			if ($nsfw_photos->isNotEmpty()) {
-				Photo::whereIn('id', $nsfw_photos->pluck('id'))->update(['nsfw_status' => NsfwStatus::VISIBLE->value]);
-
-				$album_action = $config_manager->getValueAsEnum('ai_vision_nsfw_sensitive_album_action', NsfwSensitiveAlbumAction::class);
-
-				if ($album_action === NsfwSensitiveAlbumAction::MARK_ALBUM) {
-					$sensitive_photo_ids = NsfwDetection::whereIn('photo_id', $nsfw_photos->pluck('id'))
-						->where('is_sensitive', true)
-						->distinct()
-						->pluck('photo_id');
-
-					// TODO: FIX ME
-					// It would be better here to dispatch per album, instead of for each photo.
-					// Faster
-					foreach ($sensitive_photo_ids as $photo_id) {
-						ApplyNsfwAlbumSensitivityJob::dispatch($photo_id);
-					}
-				}
-			}
-		});
+		collect($ids)->chunk(100)->each(fn ($chunk) => $this->approvePhotos($chunk, $config_manager));
 
 		return response()->noContent();
+	}
+
+	/**
+	 * Here we do the approval on chunks.
+	 * We use early returns to simplify the logic and avoid deep nesting.
+	 *
+	 * Uses a hybrid two-pass approach:
+	 * Pass 1 (bulk): set is_validated = true for all photos.
+	 * Pass 2 (NSFW subset): update nsfw_status and dispatch album sensitivity jobs.
+	 *
+	 * @param Collection<string> $photo_ids
+	 * @param ConfigManager      $config_manager
+	 *
+	 * @return void
+	 */
+	private function approvePhotos(Collection $photo_ids, ConfigManager $config_manager): void
+	{
+		// Pass 1: Bulk approve
+		Photo::whereIn('id', $photo_ids)->update(['is_validated' => true]);
+
+		// Pass 2: NSFW subset — update nsfw_status and dispatch album jobs
+		$nsfw_photos = Photo::whereIn('id', $photo_ids)
+			->where('nsfw_status', NsfwStatus::REVIEW)
+			->select('id')
+			->pluck('id');
+
+		if ($nsfw_photos->isEmpty()) {
+			return;
+		}
+
+		Photo::whereIn('id', $nsfw_photos)->update(['nsfw_status' => NsfwStatus::VISIBLE->value]);
+
+		if ($config_manager->getValueAsEnum(
+			'ai_vision_nsfw_sensitive_album_action',
+			NsfwSensitiveAlbumAction::class)
+				!== NsfwSensitiveAlbumAction::MARK_ALBUM) {
+			return;
+		}
+
+		$sensitive_photo_ids = NsfwDetection::whereIn('photo_id', $nsfw_photos)
+			->where('is_sensitive', true)
+			->distinct()
+			->pluck('photo_id');
+
+		if ($sensitive_photo_ids->isNotEmpty()) {
+			$all_album_ids = DB::table(PhotoAlbum::PHOTO_ALBUM)
+				->whereIn(PhotoAlbum::PHOTO_ID, $sensitive_photo_ids)
+				->select(PhotoAlbum::ALBUM_ID)
+				->distinct()
+				->pluck('album_id')->all();
+
+			if ($all_album_ids !== []) {
+				ApplyNsfwAlbumSensitivityJob::dispatch($all_album_ids);
+			}
+		}
 	}
 }

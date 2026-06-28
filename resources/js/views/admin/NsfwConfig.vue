@@ -306,7 +306,7 @@ import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
 import BoolField from "@/components/forms/settings/BoolField.vue";
 import SelectField from "@/components/forms/settings/SelectField.vue";
 import Fieldset from "@/components/forms/basic/Fieldset.vue";
-import NsfwConfigService, { type NsfwConfigResponse } from "@/services/nsfw-config-service";
+import NsfwConfigService from "@/services/nsfw-config-service";
 import SettingsService from "@/services/settings-service";
 
 type CfgRef = App.Http.Resources.Models.ConfigResource | undefined;
@@ -480,7 +480,7 @@ const matrixRows = computed(() => [
 // ── Presets tab state ───────────────────────────────────────────
 const presetsLoading = ref(false);
 const presetsError = ref<string | null>(null);
-const presetsData = ref<NsfwConfigResponse | null>(null);
+const presetsData = ref<App.Http.Resources.GalleryConfigs.Nsfw.NsfwConfigResource | null>(null);
 
 const jsonKeys = new Set(["block", "review", "sensitive"]);
 

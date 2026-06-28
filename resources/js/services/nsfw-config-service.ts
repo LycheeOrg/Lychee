@@ -7,28 +7,8 @@
 import axios, { type AxiosResponse } from "axios";
 import Constants from "./constants";
 
-export type NsfwLabelSet = {
-	labels: string[];
-	confidence: number | null;
-	area_ratio: number | null;
-	label_thresholds: Record<string, number>;
-};
-
-export type NsfwPresetConfig = {
-	name: string;
-	description: string;
-	block: NsfwLabelSet;
-	review: NsfwLabelSet;
-	sensitive: NsfwLabelSet;
-};
-
-export type NsfwConfigResponse = {
-	config: Record<string, string>;
-	presets: Record<string, NsfwPresetConfig>;
-};
-
 const NsfwConfigService = {
-	getConfig(): Promise<AxiosResponse<NsfwConfigResponse>> {
+	getConfig(): Promise<AxiosResponse<App.Http.Resources.GalleryConfigs.Nsfw.NsfwConfigResource>> {
 		return axios.get(`${Constants.getApiUrl()}NsfwDetection/config`, { data: {} });
 	},
 };

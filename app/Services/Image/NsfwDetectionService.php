@@ -9,7 +9,9 @@
 namespace App\Services\Image;
 
 use App\Enum\NsfwStatus;
+use App\Exceptions\ExternalComponentFailedException;
 use App\Exceptions\ExternalComponentMissingException;
+use App\Http\Resources\GalleryConfigs\Nsfw\NsfwConfigResource;
 use App\Jobs\DispatchNsfwScanJob;
 use App\Models\Photo;
 use App\Repositories\ConfigManager;
@@ -35,94 +37,65 @@ class NsfwDetectionService
 	}
 
 	/**
-	 * @param int $timeout Request timeout in seconds
-	 *
-	 * @return Response
+	 * @return non-empty-array<mixed, mixed>
 	 *
 	 * @throws ExternalComponentMissingException
+	 * @throws ExternalComponentFailedException
 	 */
-	public function checkHealthRaw(int $timeout = 5): Response
+	public function checkHealth(): array
 	{
 		if (!$this->isConfigured()) {
 			throw new ExternalComponentMissingException('NSFW classification service is not configured.');
 		}
 
-		return Http::withHeaders(['X-API-Key' => $this->api_key])
-			->timeout($timeout)
-			->get($this->service_url . '/api/nsfw/health');
-	}
-
-	/**
-	 * @return array{status: string}|null
-	 */
-	public function checkHealth(): ?array
-	{
-		if (!$this->isConfigured()) {
-			Log::warning('NsfwDetectionService: checkHealth called but service is not configured.');
-
-			return null;
-		}
-
 		try {
-			$response = $this->checkHealthRaw();
-
-			return $response->successful() ? $response->json() : null;
-		} catch (\Exception) {
-			return null;
+			$response = Http::withHeaders(['X-API-Key' => $this->api_key])
+				->timeout(5)
+				->get($this->service_url . '/api/nsfw/health');
+		} catch (\Exception $e) {
+			throw new ExternalComponentFailedException('Could not connect to NSFW classification service.', $e);
 		}
+
+		if (!$response->successful()) {
+			throw new ExternalComponentFailedException('NSFW classification service health check failed with status ' . $response->status() . '.');
+		}
+
+		$health_data = $response->json();
+		if (!is_array($health_data) || !isset($health_data['status'])) {
+			throw new ExternalComponentFailedException('NSFW classification service health endpoint returned invalid response format.');
+		}
+
+		return $health_data;
 	}
 
 	/**
-	 * @param int $timeout Request timeout in seconds
-	 *
-	 * @return Response
-	 *
 	 * @throws ExternalComponentMissingException
+	 * @throws ExternalComponentFailedException
 	 */
-	public function getConfigurationRaw(int $timeout = 5): Response
+	public function getConfiguration(): NsfwConfigResource
 	{
 		if (!$this->isConfigured()) {
 			throw new ExternalComponentMissingException('NSFW classification service is not configured.');
 		}
 
-		return Http::withHeaders(['X-API-Key' => $this->api_key])
-			->timeout($timeout)
-			->get($this->service_url . '/api/nsfw/config');
-	}
-
-	/**
-	 * @return array<string,string>|null
-	 */
-	public function getConfiguration(): ?array
-	{
-		if (!$this->isConfigured()) {
-			Log::warning('NsfwDetectionService: getConfiguration called but service is not configured.');
-
-			return null;
-		}
-
 		try {
-			$response = $this->getConfigurationRaw();
-			if (!$response->successful()) {
-				return null;
-			}
-
-			$payload = $response->json();
-			if (!is_array($payload) || !isset($payload['config']) || !is_array($payload['config'])) {
-				return null;
-			}
-
-			$config = [];
-			foreach ($payload['config'] as $key => $value) {
-				if (is_string($key)) {
-					$config[$key] = (string) $value;
-				}
-			}
-
-			return $config;
-		} catch (\Exception) {
-			return null;
+			$response = Http::withHeaders(['X-API-Key' => $this->api_key])
+				->timeout(5)
+				->get($this->service_url . '/api/nsfw/config');
+		} catch (\Exception $e) {
+			throw new ExternalComponentFailedException('Could not connect to NSFW classification service.', $e);
 		}
+
+		if (!$response->successful()) {
+			throw new ExternalComponentFailedException('NSFW classification service returned an error.');
+		}
+
+		$payload = $response->json();
+		if (!is_array($payload) || !isset($payload['config']) || !is_array($payload['config'])) {
+			throw new ExternalComponentFailedException('NSFW classification service returned an unexpected response.');
+		}
+
+		return NsfwConfigResource::from($payload);
 	}
 
 	/**
