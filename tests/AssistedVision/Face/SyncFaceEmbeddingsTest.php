@@ -60,10 +60,11 @@ class SyncFaceEmbeddingsTest extends BaseApiWithDataTest
 		self::assertEquals(0, $response->json());
 	}
 
-	public function testCheckReturnsZeroWhenHealthReturnsNull(): void
+	public function testCheckReturnsZeroWhenHealthCheckFails(): void
 	{
 		$mock = $this->createMock(FacialRecognitionService::class);
-		$mock->method('checkHealth')->willReturn(null);
+		$mock->method('checkHealth')
+			->willThrowException(new \App\Exceptions\ExternalComponentFailedException('Service unavailable'));
 		$this->app->instance(FacialRecognitionService::class, $mock);
 
 		$response = $this->actingAs($this->admin)->getJson('Maintenance::syncFaceEmbeddings');

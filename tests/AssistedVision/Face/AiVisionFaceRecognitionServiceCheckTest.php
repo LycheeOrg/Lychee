@@ -15,11 +15,10 @@ namespace Tests\AssistedVision\Face;
 
 use App\Actions\Diagnostics\Pipes\Checks\AiVisionFaceRecognitionServiceCheck;
 use App\Enum\MessageType;
+use App\Exceptions\ExternalComponentFailedException;
+use App\Exceptions\ExternalComponentMissingException;
 use App\Repositories\ConfigManager;
 use App\Services\Image\FacialRecognitionService;
-use Illuminate\Http\Client\ConnectionException;
-use Illuminate\Http\Client\Response;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Schema;
 use PHPUnit\Framework\MockObject\MockObject;
 use Tests\AbstractTestCase;
@@ -77,6 +76,9 @@ class AiVisionFaceRecognitionServiceCheckTest extends AbstractTestCase
 		$this->config_manager->method('getValueAsBool')->with('ai_vision_enabled')->willReturn(true);
 		$this->facial_recognition_service->method('isConfigured')->willReturn(false);
 
+		$this->facial_recognition_service->method('checkHealth')
+			->willThrowException(new ExternalComponentMissingException('AI Vision service is not configured.'));
+
 		$data = [];
 		$result = $this->check->handle($data, $this->passThrough());
 
@@ -93,13 +95,8 @@ class AiVisionFaceRecognitionServiceCheckTest extends AbstractTestCase
 		$this->config_manager->method('getValueAsBool')->with('ai_vision_enabled')->willReturn(true);
 		$this->facial_recognition_service->method('isConfigured')->willReturn(true);
 
-		Config::set('features.ai-vision-service.face-url', 'http://ai-vision:8000');
-
-		$response = $this->createMock(Response::class);
-		$response->method('successful')->willReturn(false);
-		$response->method('status')->willReturn(503);
-
-		$this->facial_recognition_service->method('checkHealthRaw')->willReturn($response);
+		$this->facial_recognition_service->method('checkHealth')
+			->willThrowException(new ExternalComponentFailedException('AI Vision service health check failed with status 503.'));
 
 		$data = [];
 		$result = $this->check->handle($data, $this->passThrough());
@@ -115,14 +112,8 @@ class AiVisionFaceRecognitionServiceCheckTest extends AbstractTestCase
 		$this->config_manager->method('getValueAsBool')->with('ai_vision_enabled')->willReturn(true);
 		$this->facial_recognition_service->method('isConfigured')->willReturn(true);
 
-		Config::set('features.ai-vision-service.face-url', 'http://ai-vision:8000');
-
-		$response = $this->createMock(Response::class);
-		$response->method('successful')->willReturn(true);
-		$response->method('json')->willReturn(['unexpected' => 'data']);
-		$response->method('body')->willReturn('{"unexpected":"data"}');
-
-		$this->facial_recognition_service->method('checkHealthRaw')->willReturn($response);
+		$this->facial_recognition_service->method('checkHealth')
+			->willThrowException(new ExternalComponentFailedException('AI Vision service health endpoint returned invalid response format.'));
 
 		$data = [];
 		$result = $this->check->handle($data, $this->passThrough());
@@ -138,13 +129,8 @@ class AiVisionFaceRecognitionServiceCheckTest extends AbstractTestCase
 		$this->config_manager->method('getValueAsBool')->with('ai_vision_enabled')->willReturn(true);
 		$this->facial_recognition_service->method('isConfigured')->willReturn(true);
 
-		Config::set('features.ai-vision-service.face-url', 'http://ai-vision:8000');
-
-		$response = $this->createMock(Response::class);
-		$response->method('successful')->willReturn(true);
-		$response->method('json')->willReturn(['status' => 'degraded']);
-
-		$this->facial_recognition_service->method('checkHealthRaw')->willReturn($response);
+		$this->facial_recognition_service->method('checkHealth')
+			->willReturn(['status' => 'degraded']);
 
 		$data = [];
 		$result = $this->check->handle($data, $this->passThrough());
@@ -162,13 +148,8 @@ class AiVisionFaceRecognitionServiceCheckTest extends AbstractTestCase
 		$this->config_manager->method('getValueAsBool')->with('ai_vision_enabled')->willReturn(true);
 		$this->facial_recognition_service->method('isConfigured')->willReturn(true);
 
-		Config::set('features.ai-vision-service.face-url', 'http://ai-vision:8000');
-
-		$response = $this->createMock(Response::class);
-		$response->method('successful')->willReturn(true);
-		$response->method('json')->willReturn(['status' => 'ok']);
-
-		$this->facial_recognition_service->method('checkHealthRaw')->willReturn($response);
+		$this->facial_recognition_service->method('checkHealth')
+			->willReturn(['status' => 'ok']);
 
 		$data = [];
 		$result = $this->check->handle($data, $this->passThrough());
@@ -182,13 +163,8 @@ class AiVisionFaceRecognitionServiceCheckTest extends AbstractTestCase
 		$this->config_manager->method('getValueAsBool')->with('ai_vision_enabled')->willReturn(true);
 		$this->facial_recognition_service->method('isConfigured')->willReturn(true);
 
-		Config::set('features.ai-vision-service.face-url', 'http://ai-vision:8000');
-
-		$response = $this->createMock(Response::class);
-		$response->method('successful')->willReturn(true);
-		$response->method('json')->willReturn(['status' => 'healthy']);
-
-		$this->facial_recognition_service->method('checkHealthRaw')->willReturn($response);
+		$this->facial_recognition_service->method('checkHealth')
+			->willReturn(['status' => 'healthy']);
 
 		$data = [];
 		$result = $this->check->handle($data, $this->passThrough());
@@ -204,10 +180,8 @@ class AiVisionFaceRecognitionServiceCheckTest extends AbstractTestCase
 		$this->config_manager->method('getValueAsBool')->with('ai_vision_enabled')->willReturn(true);
 		$this->facial_recognition_service->method('isConfigured')->willReturn(true);
 
-		Config::set('features.ai-vision-service.face-url', 'http://ai-vision:8000');
-
-		$this->facial_recognition_service->method('checkHealthRaw')
-			->willThrowException(new ConnectionException('Connection refused'));
+		$this->facial_recognition_service->method('checkHealth')
+			->willThrowException(new ExternalComponentFailedException('Could not connect to AI Vision service.'));
 
 		$data = [];
 		$result = $this->check->handle($data, $this->passThrough());

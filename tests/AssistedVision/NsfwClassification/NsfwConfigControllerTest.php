@@ -19,15 +19,14 @@ use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class NsfwConfigControllerTest extends BaseApiWithDataTest
 {
-	public function testShowReturns503WhenNotConfigured(): void
+	public function testShowReturns501WhenNotConfigured(): void
 	{
 		config(['features.ai-vision-service.nsfw-url' => '']);
 
 		$response = $this->withoutMiddleware(VerifySupporterStatus::class)
 			->actingAs($this->admin)->getJson('NsfwDetection/config');
 
-		$this->assertStatus($response, 503);
-		self::assertArrayHasKey('error', $response->json());
+		$this->assertStatus($response, 501);
 	}
 
 	public function testShowProxiesConfigFromService(): void
@@ -35,10 +34,32 @@ class NsfwConfigControllerTest extends BaseApiWithDataTest
 		config(['features.ai-vision-service.nsfw-url' => 'http://fake-nsfw-service']);
 		config(['features.ai-vision-service.nsfw-api-key' => 'test-key']);
 
+		$actionCategory = ['labels' => ['FEMALE_GENITALIA_EXPOSED'], 'confidence' => 0.5, 'area_ratio' => 0.01, 'label_thresholds' => []];
+
 		Http::fake([
 			'http://fake-nsfw-service/api/nsfw/config' => Http::response([
-				'presets' => ['default', 'strict'],
-				'active_preset' => 'default',
+				'config' => [
+					'confidence_threshold' => '0.5',
+					'area_ratio_threshold' => '0.01',
+					'debug_detect_threshold' => '0.1',
+					'block' => $actionCategory,
+					'review' => $actionCategory,
+					'sensitive' => $actionCategory,
+					'queue_backend' => 'redis',
+					'queue_max_size' => '100',
+					'thread_pool_size' => '4',
+					'verify_ssl' => 'true',
+					'workers' => '2',
+				],
+				'presets' => [
+					[
+						'name' => 'default',
+						'description' => 'Default preset',
+						'block' => $actionCategory,
+						'review' => $actionCategory,
+						'sensitive' => $actionCategory,
+					],
+				],
 			], 200),
 		]);
 
@@ -46,10 +67,11 @@ class NsfwConfigControllerTest extends BaseApiWithDataTest
 			->actingAs($this->admin)->getJson('NsfwDetection/config');
 
 		$this->assertOk($response);
-		self::assertEquals('default', $response->json('active_preset'));
+		self::assertArrayHasKey('config', $response->json());
+		self::assertArrayHasKey('presets', $response->json());
 	}
 
-	public function testShowReturns502WhenServiceErrors(): void
+	public function testShowReturns503WhenServiceErrors(): void
 	{
 		config(['features.ai-vision-service.nsfw-url' => 'http://fake-nsfw-service']);
 		config(['features.ai-vision-service.nsfw-api-key' => 'test-key']);
@@ -61,7 +83,7 @@ class NsfwConfigControllerTest extends BaseApiWithDataTest
 		$response = $this->withoutMiddleware(VerifySupporterStatus::class)
 			->actingAs($this->admin)->getJson('NsfwDetection/config');
 
-		$this->assertStatus($response, 502);
+		$this->assertStatus($response, 503);
 	}
 
 	public function testShowReturns503WhenServiceUnreachable(): void
@@ -70,7 +92,9 @@ class NsfwConfigControllerTest extends BaseApiWithDataTest
 		config(['features.ai-vision-service.nsfw-api-key' => 'test-key']);
 
 		Http::fake([
-			'http://fake-nsfw-service/api/nsfw/config' => Http::response(fn () => throw new \Exception('Connection refused')),
+			'http://fake-nsfw-service/api/nsfw/config' => function (): never {
+				throw new \Illuminate\Http\Client\ConnectionException('Connection refused');
+			},
 		]);
 
 		$response = $this->withoutMiddleware(VerifySupporterStatus::class)

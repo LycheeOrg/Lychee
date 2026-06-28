@@ -15,12 +15,11 @@ namespace Tests\AssistedVision\NsfwClassification;
 
 use App\Actions\Diagnostics\Pipes\Checks\AiVisionNsfwServiceCheck;
 use App\Enum\MessageType;
+use App\Exceptions\ExternalComponentFailedException;
+use App\Exceptions\ExternalComponentMissingException;
 use App\Repositories\ConfigManager;
 use App\Services\Image\NsfwDetectionService;
-use Illuminate\Http\Client\ConnectionException;
-use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Schema;
 use PHPUnit\Framework\MockObject\MockObject;
 use Tests\AbstractTestCase;
@@ -94,6 +93,10 @@ class AiVisionNsfwServiceCheckTest extends AbstractTestCase
 			['ai_vision_nsfw_enabled', true],
 		]);
 		$this->nsfw_detection_service->method('isConfigured')->willReturn(false);
+		Auth::shouldReceive('user')->andReturn((object) ['may_administrate' => true]);
+
+		$this->nsfw_detection_service->method('checkHealth')
+			->willThrowException(new ExternalComponentMissingException('NSFW classification service is not configured.'));
 
 		$data = [];
 		$result = $this->check->handle($data, $this->passThrough());
@@ -115,13 +118,8 @@ class AiVisionNsfwServiceCheckTest extends AbstractTestCase
 		$this->nsfw_detection_service->method('isConfigured')->willReturn(true);
 		Auth::shouldReceive('user')->andReturn((object) ['may_administrate' => true]);
 
-		Config::set('features.ai-vision-service.nsfw-url', 'http://nsfw-service:8000');
-
-		$response = $this->createMock(Response::class);
-		$response->method('successful')->willReturn(false);
-		$response->method('status')->willReturn(503);
-
-		$this->nsfw_detection_service->method('checkHealthRaw')->willReturn($response);
+		$this->nsfw_detection_service->method('checkHealth')
+			->willThrowException(new ExternalComponentFailedException('NSFW classification service health check failed with status 503.'));
 
 		$data = [];
 		$result = $this->check->handle($data, $this->passThrough());
@@ -141,14 +139,8 @@ class AiVisionNsfwServiceCheckTest extends AbstractTestCase
 		$this->nsfw_detection_service->method('isConfigured')->willReturn(true);
 		Auth::shouldReceive('user')->andReturn((object) ['may_administrate' => true]);
 
-		Config::set('features.ai-vision-service.nsfw-url', 'http://nsfw-service:8000');
-
-		$response = $this->createMock(Response::class);
-		$response->method('successful')->willReturn(true);
-		$response->method('json')->willReturn(['unexpected' => 'data']);
-		$response->method('body')->willReturn('{"unexpected":"data"}');
-
-		$this->nsfw_detection_service->method('checkHealthRaw')->willReturn($response);
+		$this->nsfw_detection_service->method('checkHealth')
+			->willThrowException(new ExternalComponentFailedException('NSFW classification service health endpoint returned invalid response format.'));
 
 		$data = [];
 		$result = $this->check->handle($data, $this->passThrough());
@@ -168,13 +160,8 @@ class AiVisionNsfwServiceCheckTest extends AbstractTestCase
 		$this->nsfw_detection_service->method('isConfigured')->willReturn(true);
 		Auth::shouldReceive('user')->andReturn((object) ['may_administrate' => true]);
 
-		Config::set('features.ai-vision-service.nsfw-url', 'http://nsfw-service:8000');
-
-		$response = $this->createMock(Response::class);
-		$response->method('successful')->willReturn(true);
-		$response->method('json')->willReturn(['status' => 'degraded']);
-
-		$this->nsfw_detection_service->method('checkHealthRaw')->willReturn($response);
+		$this->nsfw_detection_service->method('checkHealth')
+			->willReturn(['status' => 'degraded']);
 
 		$data = [];
 		$result = $this->check->handle($data, $this->passThrough());
@@ -196,13 +183,8 @@ class AiVisionNsfwServiceCheckTest extends AbstractTestCase
 		$this->nsfw_detection_service->method('isConfigured')->willReturn(true);
 		Auth::shouldReceive('user')->andReturn((object) ['may_administrate' => true]);
 
-		Config::set('features.ai-vision-service.nsfw-url', 'http://nsfw-service:8000');
-
-		$response = $this->createMock(Response::class);
-		$response->method('successful')->willReturn(true);
-		$response->method('json')->willReturn(['status' => 'ok']);
-
-		$this->nsfw_detection_service->method('checkHealthRaw')->willReturn($response);
+		$this->nsfw_detection_service->method('checkHealth')
+			->willReturn(['status' => 'ok']);
 
 		$data = [];
 		$result = $this->check->handle($data, $this->passThrough());
@@ -220,13 +202,8 @@ class AiVisionNsfwServiceCheckTest extends AbstractTestCase
 		$this->nsfw_detection_service->method('isConfigured')->willReturn(true);
 		Auth::shouldReceive('user')->andReturn((object) ['may_administrate' => true]);
 
-		Config::set('features.ai-vision-service.nsfw-url', 'http://nsfw-service:8000');
-
-		$response = $this->createMock(Response::class);
-		$response->method('successful')->willReturn(true);
-		$response->method('json')->willReturn(['status' => 'healthy']);
-
-		$this->nsfw_detection_service->method('checkHealthRaw')->willReturn($response);
+		$this->nsfw_detection_service->method('checkHealth')
+			->willReturn(['status' => 'healthy']);
 
 		$data = [];
 		$result = $this->check->handle($data, $this->passThrough());
@@ -246,10 +223,8 @@ class AiVisionNsfwServiceCheckTest extends AbstractTestCase
 		$this->nsfw_detection_service->method('isConfigured')->willReturn(true);
 		Auth::shouldReceive('user')->andReturn((object) ['may_administrate' => true]);
 
-		Config::set('features.ai-vision-service.nsfw-url', 'http://nsfw-service:8000');
-
-		$this->nsfw_detection_service->method('checkHealthRaw')
-			->willThrowException(new ConnectionException('Connection refused'));
+		$this->nsfw_detection_service->method('checkHealth')
+			->willThrowException(new ExternalComponentFailedException('Could not connect to NSFW classification service.'));
 
 		$data = [];
 		$result = $this->check->handle($data, $this->passThrough());

@@ -36,7 +36,14 @@ class SyncFaceEmbeddings extends Controller
 		}
 
 		$service = app(FacialRecognitionService::class);
-		$health = $service->checkHealth();
+
+		try {
+			$health = $service->checkHealth();
+		} catch (\Throwable $e) {
+			Log::warning('SyncFaceEmbeddings::check — AI Vision service health check failed: ' . $e->getMessage());
+
+			return 0;
+		}
 
 		$lychee_count = Face::count();
 		$ai_count = $health['embedding_count'];
