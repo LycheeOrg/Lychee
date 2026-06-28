@@ -80,9 +80,6 @@ class AiVisionFaceRecognitionServiceConfigCheckTest extends AbstractTestCase
 			->with('ai_vision_enabled')
 			->willReturn(true);
 		$this->facial_recognition_service->expects($this->once())
-			->method('isConfigured')
-			->willReturn(true);
-		$this->facial_recognition_service->expects($this->once())
 			->method('getConfiguration')
 			->willReturn([
 				'api_key' => '***',
@@ -113,11 +110,8 @@ class AiVisionFaceRecognitionServiceConfigCheckTest extends AbstractTestCase
 			->with('ai_vision_enabled')
 			->willReturn(true);
 		$this->facial_recognition_service->expects($this->once())
-			->method('isConfigured')
-			->willReturn(true);
-		$this->facial_recognition_service->expects($this->once())
 			->method('getConfiguration')
-			->willReturn(null);
+			->willThrowException(new \App\Exceptions\ExternalComponentFailedException('Could not connect to AI Vision service.'));
 
 		$data = [];
 		$result = $this->check->handle($data, fn (array $diagnostics): array => $diagnostics);
@@ -125,9 +119,6 @@ class AiVisionFaceRecognitionServiceConfigCheckTest extends AbstractTestCase
 		$this->assertCount(1, $result);
 		$this->assertInstanceOf(DiagnosticData::class, $result[0]);
 		$this->assertEquals(MessageType::WARNING, $result[0]->type);
-		$this->assertEquals(
-			'AI Vision: Could not fetch runtime configuration from the service while APP_DEBUG is enabled.',
-			$result[0]->message
-		);
+		$this->assertStringContainsString('Could not connect', $result[0]->message);
 	}
 }
