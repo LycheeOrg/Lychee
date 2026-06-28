@@ -129,6 +129,7 @@ return [
         'batch_reactivate_error' => 'Failed to reactivate selected faces.',
         'show_dismissed' => 'Show dismissed',
         'show_active' => 'Show active',
+        'show_unassigned' => 'Unassigned only',
         'select_all' => 'Select all',
         'deselect_all' => 'Deselect all',
         'selected_count' => ':count selected',

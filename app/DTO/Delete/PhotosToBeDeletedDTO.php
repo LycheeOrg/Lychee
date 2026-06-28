@@ -10,7 +10,10 @@ namespace App\DTO\Delete;
 
 use App\Enum\SizeVariantType;
 use App\Enum\StorageDiskType;
+use App\Jobs\DeleteFaceEmbeddingsJob;
 use App\Jobs\FileDeleterJob;
+use App\Jobs\RecomputePersonStatsJob;
+use App\Models\Person;
 use App\Models\SizeVariant;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Collection;
@@ -50,14 +53,14 @@ final class PhotosToBeDeletedDTO
 	 */
 	public function executeDelete(): array
 	{
-		$delete_jobs = [];
+		$jobs = [];
 
-		DB::transaction(function () use (&$delete_jobs): void {
+		DB::transaction(function () use (&$jobs): void {
 			$this->softDelete();
-			$delete_jobs = $this->forceDelete();
+			$jobs = $this->forceDelete();
 		});
 
-		return $delete_jobs;
+		return $jobs;
 	}
 
 	/**
@@ -87,7 +90,7 @@ final class PhotosToBeDeletedDTO
 	/**
 	 * Execute the force deletion of photos and associated data.
 	 *
-	 * @return FileDeleterJob[] Jobs to be executed for the file deletions
+	 * @return (FileDeleterJob|DeleteFaceEmbeddingsJob)[] Jobs to be executed for the file deletions
 	 */
 	private function forceDelete(): array
 	{
@@ -119,13 +122,24 @@ final class PhotosToBeDeletedDTO
 		$live_photo_short_paths_local = $this->collectLivePhotoPathsByPhotoID($this->force_delete_photo_ids, StorageDiskType::LOCAL)->pluck('live_photo_short_path')->all();
 		$live_photo_short_paths_s3 = $this->collectLivePhotoPathsByPhotoID($this->force_delete_photo_ids, StorageDiskType::S3)->pluck('live_photo_short_path')->all();
 
-		$delete_jobs = [];
-		$delete_jobs[] = new FileDeleterJob(StorageDiskType::LOCAL, $short_paths_local);
-		$delete_jobs[] = new FileDeleterJob(StorageDiskType::LOCAL, $short_path_watermarked_local);
-		$delete_jobs[] = new FileDeleterJob(StorageDiskType::LOCAL, $live_photo_short_paths_local);
-		$delete_jobs[] = new FileDeleterJob(StorageDiskType::S3, $short_paths_s3);
-		$delete_jobs[] = new FileDeleterJob(StorageDiskType::S3, $short_path_watermarked_s3);
-		$delete_jobs[] = new FileDeleterJob(StorageDiskType::S3, $live_photo_short_paths_s3);
+		$jobs = [];
+		$jobs[] = new FileDeleterJob(StorageDiskType::LOCAL, $short_paths_local);
+		$jobs[] = new FileDeleterJob(StorageDiskType::LOCAL, $short_path_watermarked_local);
+		$jobs[] = new FileDeleterJob(StorageDiskType::LOCAL, $live_photo_short_paths_local);
+		$jobs[] = new FileDeleterJob(StorageDiskType::S3, $short_paths_s3);
+		$jobs[] = new FileDeleterJob(StorageDiskType::S3, $short_path_watermarked_s3);
+		$jobs[] = new FileDeleterJob(StorageDiskType::S3, $live_photo_short_paths_s3);
+
+		$affected_person_ids = $this->collectPersonAffected($this->force_delete_photo_ids);
+		if ($affected_person_ids !== []) {
+			// Recount person stats after faces have been cascade-deleted.
+			$jobs[] = new RecomputePersonStatsJob($affected_person_ids);
+		}
+
+		$face_ids_for_embeddings = $this->collectFacesForEmbeddingDeletion($this->force_delete_photo_ids);
+		if ($face_ids_for_embeddings !== []) {
+			$jobs[] = new DeleteFaceEmbeddingsJob($face_ids_for_embeddings);
+		}
 
 		// Now delete DB records.
 		// Chunk to avoid hitting the database placeholder limit (MySQL error 1390).
@@ -142,7 +156,71 @@ final class PhotosToBeDeletedDTO
 			DB::table('photos')->whereIn('id', $chunk->all())->delete();
 		});
 
-		return $delete_jobs;
+		return $jobs;
+	}
+
+	/**
+	 * Collect the affected person by the deletion of the given photo_ids.
+	 *
+	 * @param array $photo_ids
+	 *
+	 * @return array
+	 */
+	private function collectPersonAffected(array $photo_ids): array
+	{
+		if (count($photo_ids) === 0) {
+			return [];
+		}
+
+		// Chunk photo_ids to avoid hitting the database placeholder limit (MySQL error 1390).
+		$affected_person_ids = collect($photo_ids)->chunk(self::CHUNK_SIZE)->reduce(
+			function (array $carry, Collection $chunk): array {
+				return array_merge(
+					$carry,
+					DB::table('faces')
+						->whereIn('photo_id', $chunk->all())
+						->whereNotNull('person_id')
+						->where('is_dismissed', '=', false)
+						->distinct()
+						->pluck('person_id')
+						->all()
+				);
+			},
+			[]
+		);
+		$affected_person_ids = array_unique($affected_person_ids);
+
+		return $affected_person_ids;
+	}
+
+	/**
+	 * Collection the faces which will be deleted. We need to remove the embeddings.
+	 *
+	 * @param array $photo_ids
+	 *
+	 * @return array
+	 */
+	private function collectFacesForEmbeddingDeletion(array $photo_ids): array
+	{
+		if (count($photo_ids) === 0) {
+			return [];
+		}
+
+		// Chunk photo_ids to avoid hitting the database placeholder limit (MySQL error 1390).
+		$face_ids = collect($photo_ids)->chunk(self::CHUNK_SIZE)->reduce(
+			function (array $carry, Collection $chunk): array {
+				return array_merge(
+					$carry,
+					DB::table('faces')
+						->whereIn('photo_id', $chunk->all())
+						->pluck('id')
+						->all()
+				);
+			},
+			[]
+		);
+
+		return $face_ids;
 	}
 
 	/**
