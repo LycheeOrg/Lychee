@@ -74,10 +74,11 @@
 						<span class="pb-2 flex flex-wrap">
 							<a
 								v-for="tag in photoStore.photo.tags"
-								:key="`tag-${tag}`"
-								class="text-xs rounded-full py-1 px-2.5 mr-1.5 mb-2.5 bg-black/50"
+								:key="`tag-${tag.id}`"
+								class="text-xs rounded-full py-1 px-2.5 mr-1.5 mb-2.5 bg-black/50 cursor-pointer hover:bg-black/70 transition-colors"
+								@click="router.push({ name: 'tag', params: { tagId: tag.id } })"
 							>
-								{{ tag }}
+								{{ tag.name }}
 							</a>
 						</span>
 					</template>
