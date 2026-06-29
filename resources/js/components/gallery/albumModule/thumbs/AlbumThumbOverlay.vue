@@ -17,6 +17,7 @@
 			{{ props.album.title }}
 		</h1>
 		<span
+			v-if="album_subtitle_type !== 'disabled'"
 			:class="{
 				'hidden sm:block mt-0 mb-1.5 sm:mb-3 text-2xs text-surface-300': true,
 				'mr-0 ml-2 sm:ml-3 md:ml-4': isLTR(),
