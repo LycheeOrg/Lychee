@@ -20,6 +20,7 @@ export const useTogglablesStateStore = defineStore("togglables-store", {
 		// create albums
 		is_create_album_visible: false,
 		is_create_tag_album_visible: false,
+		is_create_person_album_visible: false,
 
 		// Album toggleables
 		is_album_edit_open: false,

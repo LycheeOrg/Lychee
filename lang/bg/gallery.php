@@ -198,6 +198,8 @@ return [
             'show_tags' => 'Задай тагове за показване',
             'tags_required' => 'Таговете са задължителни.',
             'all_tags_must_match' => 'Всички тагове трябва да съвпадат.',
+            'all_persons_must_match' => 'All persons must be present.',
+            'persons_required' => 'At least one person is required.',
         ],
     ],
     'photo' => [
@@ -330,6 +332,7 @@ return [
         'import_dropbox' => 'Импорт от Dropbox',
         'new_album' => 'Нов албум',
         'new_tag_album' => 'Нов таг албум',
+        'new_person_album' => 'New Person Album',
         'upload_track' => 'Качи трак',
         'delete_track' => 'Изтрий трак',
     ],

@@ -47,6 +47,7 @@ trait RequiresEmptyAlbums
 		$this->assertDatabaseCount('base_albums', 0);
 		$this->assertDatabaseCount('albums', 0);
 		$this->assertDatabaseCount('tag_albums', 0);
+		$this->assertDatabaseCount('person_albums', 0);
 
 		// We do not use assertDatabaseCount('access_permissions', 0)
 		// Because we must not forget about the smart album properties too.
@@ -65,6 +66,7 @@ trait RequiresEmptyAlbums
 		// For MySQL/MariaDB we must delete albums in the correct order to
 		// avoid breaking parent relationship although this is non-standard
 		// SQL.
+		DB::table('person_albums')->delete();
 		DB::table('tag_albums')->delete();
 		DB::table('albums')->orderBy('_lft', 'desc')->delete();
 		DB::table('base_albums')->delete();

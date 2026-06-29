@@ -16,6 +16,7 @@ use App\Enum\PhotoLayoutType;
 use App\Enum\TimelineAlbumGranularity;
 use App\Enum\TimelinePhotoGranularity;
 use App\Models\Album;
+use App\Models\PersonAlbum;
 use App\Models\TagAlbum;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
@@ -40,11 +41,13 @@ class EditableBaseAlbumResource extends Data
 
 	/** @var string[] */
 	public array $tags = [];
+	/** @var array<int,array{id:string,name:string}> */
+	public array $persons = [];
 	public bool $is_and = true;
 	public bool $is_model_album;
 	public bool $is_pinned;
 
-	public function __construct(Album|TagAlbum $album)
+	public function __construct(Album|TagAlbum|PersonAlbum $album)
 	{
 		$this->id = $album->id;
 		$this->title = $album->title;
@@ -77,9 +80,19 @@ class EditableBaseAlbumResource extends Data
 			$this->tags = $album->tags->map(fn ($t) => $t->name)->all();
 			$this->is_and = $album->is_and;
 		}
+
+		if ($album instanceof PersonAlbum) {
+			$user_id = \Illuminate\Support\Facades\Auth::id();
+			$this->persons = $album->persons
+				->filter(fn ($p) => $p->is_searchable || ($user_id !== null && $p->user_id === $user_id))
+				->map(fn ($p) => ['id' => $p->id, 'name' => $p->name])
+				->values()
+				->all();
+			$this->is_and = $album->is_and;
+		}
 	}
 
-	public static function fromModel(Album|TagAlbum $album): EditableBaseAlbumResource
+	public static function fromModel(Album|TagAlbum|PersonAlbum $album): EditableBaseAlbumResource
 	{
 		return new self($album);
 	}

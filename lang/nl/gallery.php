@@ -198,6 +198,8 @@ return [
             'show_tags' => 'Stel tags in om te tonen',
             'tags_required' => 'Tags zijn vereist.',
             'all_tags_must_match' => 'Alle tags moeten overeenkomen.',
+            'all_persons_must_match' => 'All persons must be present.',
+            'persons_required' => 'At least one person is required.',
         ],
     ],
     'photo' => [
@@ -330,6 +332,7 @@ return [
         'import_dropbox' => 'Importeer van Dropbox',
         'new_album' => 'Nieuw album',
         'new_tag_album' => 'Nieuw tag-album',
+        'new_person_album' => 'New Person Album',
         'upload_track' => 'Track uploaden',
         'delete_track' => 'Track verwijderen',
     ],

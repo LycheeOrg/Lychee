@@ -198,6 +198,8 @@ return [
             'show_tags' => '设置要显示的标签',
             'tags_required' => '标签为必填项。',
             'all_tags_must_match' => '所有标签必须匹配。',
+            'all_persons_must_match' => 'All persons must be present.',
+            'persons_required' => 'At least one person is required.',
         ],
     ],
     'photo' => [
@@ -330,6 +332,7 @@ return [
         'import_dropbox' => '从 Dropbox 导入',
         'new_album' => '新建相册',
         'new_tag_album' => '新建标签相册',
+        'new_person_album' => 'New Person Album',
         'upload_track' => '上传轨迹',
         'delete_track' => '删除轨迹',
     ],

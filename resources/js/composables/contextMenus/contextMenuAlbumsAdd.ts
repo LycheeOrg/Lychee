@@ -6,11 +6,17 @@ type Callbacks = {
 	toggleImportFromLink: () => void;
 	toggleCreateAlbum: () => void;
 	toggleCreateTagAlbum: () => void;
+	toggleCreatePersonAlbum: () => void;
 	toggleImportFromDropbox: () => void;
 	toggleImportFromServer: () => void;
 };
 
-export function useContextMenuAlbumsAdd(callbacks: Callbacks, dropbox_api_key: Ref<string>, is_owner: Ref<boolean>) {
+export function useContextMenuAlbumsAdd(
+	callbacks: Callbacks,
+	dropbox_api_key: Ref<string>,
+	is_owner: Ref<boolean>,
+	is_person_album_enabled: Ref<boolean>,
+) {
 	const addmenu = ref(); // ! Reference to the context menu
 	const addMenu = ref(
 		[
@@ -56,6 +62,12 @@ export function useContextMenuAlbumsAdd(callbacks: Callbacks, dropbox_api_key: R
 				label: "gallery.menus.new_tag_album",
 				icon: "pi pi-tags",
 				callback: callbacks.toggleCreateTagAlbum,
+			},
+			{
+				label: "gallery.menus.new_person_album",
+				icon: "pi pi-users",
+				callback: callbacks.toggleCreatePersonAlbum,
+				if: is_person_album_enabled.value === true,
 			},
 		].filter((item) => item.if === undefined || item.if !== false),
 	);

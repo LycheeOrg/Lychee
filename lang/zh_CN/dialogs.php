@@ -183,6 +183,13 @@ return [
         'set_tags' => '设置要显示的标签',
         'create' => '创建标签相册',
     ],
+    'new_person_album' => [
+        'menu' => 'Create Person Album',
+        'info' => 'Enter a title for the new person album:',
+        'title' => 'title',
+        'set_persons' => 'Select persons to include',
+        'create' => 'Create Person Album',
+    ],
     'delete_album' => [
         'confirmation' => '您确定要删除相册"%s"及其包含的所有照片吗？',
         'confirmation_tag' => '您确定要删除相册"%s"吗？',

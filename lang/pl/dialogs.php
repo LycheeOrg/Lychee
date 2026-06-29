@@ -182,6 +182,13 @@ return [
         'set_tags' => 'Ustawianie wyświetlania tagów',
         'create' => 'Utwórz album ze znacznikami',
     ],
+    'new_person_album' => [
+        'menu' => 'Create Person Album',
+        'info' => 'Enter a title for the new person album:',
+        'title' => 'title',
+        'set_persons' => 'Select persons to include',
+        'create' => 'Create Person Album',
+    ],
     'delete_album' => [
         'confirmation' => 'Czy na pewno chcesz usunąć album "%s" i wszystkie znajdujące się w nim zdjęcia?',
         'confirmation_tag' => 'Czy na pewno chcesz usunąć album "%s"?',

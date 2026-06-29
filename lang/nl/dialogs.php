@@ -182,6 +182,13 @@ return [
         'set_tags' => 'Stel tags in om weer te geven',
         'create' => 'Tag Album Aanmaken',
     ],
+    'new_person_album' => [
+        'menu' => 'Create Person Album',
+        'info' => 'Enter a title for the new person album:',
+        'title' => 'title',
+        'set_persons' => 'Select persons to include',
+        'create' => 'Create Person Album',
+    ],
     'delete_album' => [
         'confirmation' => 'Weet u zeker dat u het album “%s” en al de foto’s die het bevat wilt verwijderen?',        'confirmation_tag' => 'Weet u zeker dat u het album "%s" wilt verwijderen?',        'confirmation_multiple' => 'Weet u zeker dat u alle %d geselecteerde albums en al de foto’s die ze bevatten wilt verwijderen?',
         'warning' => 'Deze actie kan niet ongedaan worden gemaakt!',

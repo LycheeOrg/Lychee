@@ -198,6 +198,8 @@ return [
             'show_tags' => 'Nastavit zobrazované štítky',
             'tags_required' => 'Štítky jsou povinné.',
             'all_tags_must_match' => 'Všechny štítky se musí shodovat.',
+            'all_persons_must_match' => 'All persons must be present.',
+            'persons_required' => 'At least one person is required.',
         ],
     ],
     'photo' => [
@@ -330,6 +332,7 @@ return [
         'import_dropbox' => 'Importovat z Dropboxu',
         'new_album' => 'Nové album',
         'new_tag_album' => 'Nové album podle štítků',
+        'new_person_album' => 'New Person Album',
         'upload_track' => 'Nahrát stopu',
         'delete_track' => 'Odstranit stopu',
     ],

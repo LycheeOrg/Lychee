@@ -291,7 +291,7 @@
 
 				<div v-if="is_model_album" class="h-10 my-2 pt-4"></div>
 
-				<div v-if="!is_model_album" class="my-4 flex flex-col gap-2">
+				<div v-if="!is_model_album && !is_person_album" class="my-4 flex flex-col gap-2">
 					<FloatLabel variant="on">
 						<TagsInput v-model="tags" :add="false" />
 						<label for="tags">{{ $t("gallery.album.properties.show_tags") }}</label>
@@ -299,6 +299,25 @@
 					<div class="flex gap-2 items-center my-2">
 						<ToggleSwitch v-model="is_and" input-id="pp_is_and" />
 						<label for="pp_is_and" class="text-muted-color-emphasis">{{ $t("gallery.album.properties.all_tags_must_match") }}</label>
+					</div>
+				</div>
+				<div v-if="is_person_album" class="my-4 flex flex-col gap-2">
+					<FloatLabel variant="on">
+						<Select
+							v-model="selectedPersonIds"
+							:options="availablePersons"
+							option-label="name"
+							option-value="id"
+							filter
+							:placeholder="$t('dialogs.new_person_album.set_persons')"
+							class="w-full"
+							multiple
+						/>
+						<label>{{ $t("dialogs.new_person_album.set_persons") }}</label>
+					</FloatLabel>
+					<div class="flex gap-2 items-center my-2">
+						<ToggleSwitch v-model="is_and" input-id="pp_is_and" />
+						<label for="pp_is_and" class="text-muted-color-emphasis">{{ $t("gallery.album.properties.all_persons_must_match") }}</label>
 					</div>
 				</div>
 				<Button class="p-3 mt-4 w-full font-bold border-none shrink" @click="save">
@@ -317,7 +336,8 @@ import Select from "primevue/select";
 import FloatLabel from "primevue/floatlabel";
 import InputText from "@/components/forms/basic/InputText.vue";
 import Textarea from "@/components/forms/basic/Textarea.vue";
-import AlbumService, { UpdateAbumData, UpdateTagAlbumData } from "@/services/album-service";
+import AlbumService, { UpdateAbumData, UpdateTagAlbumData, UpdatePersonAlbumData } from "@/services/album-service";
+import PeopleService from "@/services/people-service";
 import {
 	photoSortingColumnsOptions,
 	albumSortingColumnsOptions,
@@ -394,6 +414,9 @@ const albumTimeline = ref<SelectOption<App.Enum.TimelineAlbumGranularity> | unde
 const license = ref<SelectOption<App.Enum.LicenseType> | undefined>(undefined);
 const copyright = ref<string | undefined>(undefined);
 const tags = ref<string[]>([]);
+const selectedPersonIds = ref<string[]>([]);
+const availablePersons = ref<App.Http.Resources.Models.PersonResource[]>([]);
+const is_person_album = ref<boolean>(false);
 const aspectRatio = ref<SelectOption<App.Enum.AspectRatioType> | undefined>(undefined);
 const header_id = ref<HeaderOption | undefined>(undefined);
 const is_and = ref<boolean>(false);
@@ -467,6 +490,20 @@ function load(editable: App.Http.Resources.Editable.EditableBaseAlbumResource, p
 	header_id.value = buildHeaderId(editable.header_id, photos);
 	tags.value = editable.tags;
 	is_and.value = editable.is_and ?? false;
+
+	if (editable.persons && editable.persons.length > 0) {
+		is_person_album.value = true;
+		selectedPersonIds.value = editable.persons.map((p) => p.id);
+		PeopleService.getPeople(1)
+			.then((response) => {
+				availablePersons.value = response.data.data;
+			})
+			.catch((error) => {
+				console.error(error);
+			});
+	} else {
+		is_person_album.value = false;
+	}
 }
 
 onMounted(() => {
@@ -479,6 +516,10 @@ onMounted(() => {
 function save() {
 	if (is_model_album.value) {
 		saveAlbum();
+		return;
+	}
+	if (is_person_album.value) {
+		savePersonAlbum();
 		return;
 	}
 	saveTagAlbum();
@@ -532,6 +573,33 @@ function saveTagAlbum() {
 		is_and: is_and.value,
 	};
 	AlbumService.updateTag(data).then(() => {
+		toast.add({ severity: "success", summary: trans("toasts.success"), life: 3000 });
+		AlbumService.clearCache(albumId.value);
+		albumStore.loadHead();
+	});
+}
+
+function savePersonAlbum() {
+	if (selectedPersonIds.value.length === 0) {
+		toast.add({ severity: "error", summary: trans("toasts.error"), detail: trans("gallery.album.properties.persons_required"), life: 3000 });
+		return;
+	}
+
+	const data: UpdatePersonAlbumData = {
+		album_id: albumId.value,
+		title: title.value,
+		slug: slug.value === "" ? null : slug.value,
+		persons: selectedPersonIds.value,
+		description: description.value,
+		photo_sorting_column: photoSortingColumn.value?.value ?? null,
+		photo_sorting_order: photoSortingOrder.value?.value ?? null,
+		copyright: copyright.value ?? null,
+		photo_layout: photoLayout.value?.value ?? null,
+		photo_timeline: photoTimeline.value?.value ?? null,
+		is_pinned: albumStore.tagOrModelAlbum?.editable?.is_pinned ?? false,
+		is_and: is_and.value,
+	};
+	AlbumService.updatePerson(data).then(() => {
 		toast.add({ severity: "success", summary: trans("toasts.success"), life: 3000 });
 		AlbumService.clearCache(albumId.value);
 		albumStore.loadHead();

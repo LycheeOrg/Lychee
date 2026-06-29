@@ -183,6 +183,13 @@ return [
         'set_tags' => 'تنظیم برچسب‌ها برای نمایش',
         'create' => 'ایجاد آلبوم برچسب',
     ],
+    'new_person_album' => [
+        'menu' => 'Create Person Album',
+        'info' => 'Enter a title for the new person album:',
+        'title' => 'title',
+        'set_persons' => 'Select persons to include',
+        'create' => 'Create Person Album',
+    ],
     'delete_album' => [
         'confirmation' => 'آیا مطمئن هستید که می‌خواهید آلبوم “%s” و تمام تصاویر موجود در آن را حذف کنید؟',        'confirmation_tag' => 'آیا مطمئن هستید که می‌خواهید آلبوم "%s" را حذف کنید؟',        'confirmation_multiple' => 'آیا مطمئن هستید که می‌خواهید همه %d آلبوم انتخاب شده و تمام تصاویر موجود در آنها را حذف کنید؟',
         'warning' => 'این عمل قابل بازگشت نیست!',

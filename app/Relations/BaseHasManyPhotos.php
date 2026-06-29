@@ -13,6 +13,7 @@ use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Models\Album;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Extensions\SortingDecorator;
+use App\Models\PersonAlbum;
 use App\Models\Photo;
 use App\Models\TagAlbum;
 use App\Policies\PhotoQueryPolicy;
@@ -24,7 +25,7 @@ use Illuminate\Database\Eloquent\Relations\Relation;
  * direct parent of the queried photos, but include the photo due to some
  * indirect condition.
  *
- * @template TDeclaringModel of TagAlbum|Album
+ * @template TDeclaringModel of TagAlbum|Album|PersonAlbum
  *
  * @extends Relation<Photo,TDeclaringModel,Collection<int,Photo>>
  */
@@ -32,7 +33,7 @@ abstract class BaseHasManyPhotos extends Relation
 {
 	protected PhotoQueryPolicy $photo_query_policy;
 
-	public function __construct(TagAlbum|Album $owning_album)
+	public function __construct(TagAlbum|Album|PersonAlbum $owning_album)
 	{
 		// Sic! We must initialize attributes of this class before we call
 		// the parent constructor.
@@ -57,7 +58,7 @@ abstract class BaseHasManyPhotos extends Relation
 		// Moreover, it is impossible to pass `null`.
 		// As a work-around we store the owning album in our own attribute
 		// `$owning_album` and always use that instead of `$parent`.
-		/** @var Album|TagAlbum $owning_album */
+		/** @var Album|TagAlbum|PersonAlbum $owning_album */
 		parent::__construct(
 			// Sic! We also must load the album eagerly.
 			// This relation is not used by albums which own the queried
@@ -102,14 +103,14 @@ abstract class BaseHasManyPhotos extends Relation
 	 * In this case, the default value is an empty collection of
 	 * {@link \App\Models\Photo}.
 	 *
-	 * @param array<int,TagAlbum|Album> $models   a list of owning models, i.e. a list of albums
-	 * @param string                    $relation the name of the relation on the owning models
+	 * @param array<int,TagAlbum|Album|PersonAlbum> $models   a list of owning models, i.e. a list of albums
+	 * @param string                                $relation the name of the relation on the owning models
 	 *
-	 * @return array<int,TagAlbum|Album> always returns $models
+	 * @return array<int,TagAlbum|Album|PersonAlbum> always returns $models
 	 */
 	public function initRelation(array $models, $relation): array
 	{
-		/** @var TagAlbum|Album $model */
+		/** @var TagAlbum|Album|PersonAlbum $model */
 		foreach ($models as $model) {
 			$model->setRelation($relation, $this->related->newCollection());
 		}

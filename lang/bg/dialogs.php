@@ -183,6 +183,13 @@ return [
         'set_tags' => 'Задай тагове за показване',
         'create' => 'Създай таг албум',
     ],
+    'new_person_album' => [
+        'menu' => 'Create Person Album',
+        'info' => 'Enter a title for the new person album:',
+        'title' => 'title',
+        'set_persons' => 'Select persons to include',
+        'create' => 'Create Person Album',
+    ],
     'delete_album' => [
         'confirmation' => 'Сигурни ли сте, че искате да изтриете албума „%s“ и всички снимки в него?',
         'confirmation_tag' => 'Сигурни ли сте, че искате да изтриете албума "%s"?',

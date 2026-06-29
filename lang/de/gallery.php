@@ -197,6 +197,8 @@ return [
             'show_tags' => 'Anzuzeigende Tags festlegen',
             'tags_required' => 'Tags sind erforderlich.',
             'all_tags_must_match' => 'Alle Tags müssen übereinstimmen.',
+            'all_persons_must_match' => 'All persons must be present.',
+            'persons_required' => 'At least one person is required.',
         ],
     ],
     'photo' => [
@@ -329,6 +331,7 @@ return [
         'import_dropbox' => 'Importieren aus der Dropbox',
         'new_album' => 'Neues Album',
         'new_tag_album' => 'Neues Tag-Album',
+        'new_person_album' => 'New Person Album',
         'upload_track' => 'GPS-Track hochladen',
         'delete_track' => 'GPS-Track löschen',
     ],

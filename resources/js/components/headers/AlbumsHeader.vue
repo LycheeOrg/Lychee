@@ -182,6 +182,7 @@ const router = useRouter();
 const {
 	toggleCreateAlbum,
 	toggleCreateTagAlbum,
+	toggleCreatePersonAlbum,
 	toggleImportFromLink,
 	toggleImportFromDropbox,
 	toggleUpload,
@@ -191,6 +192,8 @@ const {
 
 const is_owner = computed(() => albumsStore.rootRights?.can_import_from_server ?? false);
 
+const is_person_album_enabled = computed(() => lycheeStore.is_person_album_enabled ?? false);
+
 const { addmenu, addMenu } = useContextMenuAlbumsAdd(
 	{
 		toggleUpload: toggleUpload,
@@ -199,10 +202,12 @@ const { addmenu, addMenu } = useContextMenuAlbumsAdd(
 		toggleImportFromLink: toggleImportFromLink,
 		toggleImportFromDropbox: toggleImportFromDropbox,
 		toggleCreateTagAlbum: toggleCreateTagAlbum,
+		toggleCreatePersonAlbum: toggleCreatePersonAlbum,
 		toggleImportFromServer: toggleImportFromServer,
 	},
 	dropbox_api_key,
 	is_owner,
+	is_person_album_enabled,
 );
 
 function openAddMenu(event: Event) {

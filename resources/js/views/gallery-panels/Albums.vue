@@ -5,6 +5,7 @@
 	<KeybindingsHelp v-if="userStore.isLoggedIn" v-model:visible="is_keybindings_help_open" />
 	<AlbumCreateDialog v-if="albumsStore.rootRights?.can_upload" key="create_album_modal" />
 	<AlbumCreateTagDialog v-if="albumsStore.rootRights?.can_upload" key="create_tag_album_modal" />
+	<AlbumCreatePersonDialog v-if="albumsStore.rootRights?.can_upload && lycheeStore.is_person_album_enabled" key="create_person_album_modal" />
 	<LoginModal v-if="!userStore.isLoggedIn" @logged-in="onLoggedIn" />
 	<WebauthnModal v-if="!userStore.isLoggedIn" @logged-in="onLoggedIn" />
 	<SecurityAdvisoriesModal v-if="isAdvisoriesVisible" :visible="isAdvisoriesVisible" :advisories="advisories" @update:visible="advisoryDismiss" />
@@ -222,6 +223,7 @@ import UploadPanel from "@/components/modals/UploadPanel.vue";
 import CameraCapture from "@/components/modals/CameraCapture.vue";
 import AlbumCreateDialog from "@/components/forms/album/AlbumCreateDialog.vue";
 import AlbumCreateTagDialog from "@/components/forms/album/AlbumCreateTagDialog.vue";
+import AlbumCreatePersonDialog from "@/components/forms/album/AlbumCreatePersonDialog.vue";
 import { useScrollable } from "@/composables/album/scrollable";
 import { EmptyPhotoCallbacks } from "@/utils/Helpers";
 import WebauthnModal from "@/components/modals/WebauthnModal.vue";

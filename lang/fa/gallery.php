@@ -198,6 +198,8 @@ return [
             'show_tags' => 'تنظیم برچسب‌های قابل نمایش',
             'tags_required' => 'برچسب‌ها الزامی هستند.',
             'all_tags_must_match' => 'همه برچسب‌ها باید مطابقت داشته باشند.',
+            'all_persons_must_match' => 'All persons must be present.',
+            'persons_required' => 'At least one person is required.',
         ],
     ],
     'photo' => [
@@ -330,6 +332,7 @@ return [
         'import_dropbox' => 'وارد کردن از Dropbox',
         'new_album' => 'آلبوم جدید',
         'new_tag_album' => 'آلبوم برچسب جدید',
+        'new_person_album' => 'New Person Album',
         'upload_track' => 'بارگذاری ترک',
         'delete_track' => 'حذف ترک',
     ],

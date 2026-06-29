@@ -14,6 +14,7 @@ use App\Exceptions\Internal\InvalidSmartIdException;
 use App\Models\Album;
 use App\Models\BaseAlbumImpl;
 use App\Models\Extensions\BaseAlbum;
+use App\Models\PersonAlbum;
 use App\Models\TagAlbum;
 use App\Repositories\ConfigManager;
 use App\SmartAlbums\BaseSmartAlbum;
@@ -120,13 +121,15 @@ class AlbumFactory
 	{
 		$album_query = Album::query()->with(['access_permissions']);
 		$tag_album_query = TagAlbum::query()->with(['access_permissions']);
+		$person_album_query = PersonAlbum::query()->with(['access_permissions']);
 
 		if ($with_relations) {
 			$album_query->with(['photos', 'children', 'children.owner', 'photos.size_variants', 'photos.statistics', 'photos.palette', 'photos.tags', 'photos.rating']);
 			$tag_album_query->with(['tags', 'photos', 'photos.size_variants', 'photos.statistics', 'photos.palette', 'photos.tags', 'photos.rating']);
+			$person_album_query->with(['persons', 'photos', 'photos.size_variants', 'photos.statistics', 'photos.palette', 'photos.tags', 'photos.rating']);
 		}
 
-		$ret = $album_query->find($album_id) ?? $tag_album_query->find($album_id);
+		$ret = $album_query->find($album_id) ?? $tag_album_query->find($album_id) ?? $person_album_query->find($album_id);
 		if ($ret === null) {
 			throw (new ModelNotFoundException())->setModel(BaseAlbumImpl::class, [$album_id]);
 		}
@@ -176,7 +179,7 @@ class AlbumFactory
 	 *                                 shall be loaded, too.
 	 * @param bool     $albums_only    if true, only albums are returned, not tag albums
 	 *
-	 * @return ($albums_only is true ? Collection<int,Album> : Collection<int,Album|TagAlbum>) a possibly empty list of {@link BaseAlbum}
+	 * @return ($albums_only is true ? Collection<int,Album> : Collection<int,Album|TagAlbum|PersonAlbum>) a possibly empty list of {@link BaseAlbum}
 	 *
 	 * @throws ModelNotFoundException
 	 */
@@ -188,19 +191,24 @@ class AlbumFactory
 		$album_ids = array_diff(array_unique($album_ids), [null]);
 
 		$tag_album_query = TagAlbum::query();
+		$person_album_query = PersonAlbum::query();
 		$album_query = Album::query();
 
 		if ($with_relations) {
 			$tag_album_query->with(['tags', 'photos', 'photos.size_variants', 'photos.statistics', 'photos.palette', 'photos.tags', 'photos.rating']);
+			$person_album_query->with(['persons', 'photos', 'photos.size_variants', 'photos.statistics', 'photos.palette', 'photos.tags', 'photos.rating']);
 			$album_query->with(['photos', 'children', 'photos.size_variants', 'photos.statistics', 'photos.palette', 'photos.tags', 'photos.rating']);
 		}
 
 		/** @var ($albums_only is true ? array<int,Album> : array<int,TagAlbum>)&array */
 		$tag_albums = $albums_only ? [] : $tag_album_query->findMany($album_ids)->all(); /** @phpstan-ignore varTag.type */
 
+		/** @var array<int,PersonAlbum> $person_albums */
+		$person_albums = $albums_only ? [] : $person_album_query->findMany($album_ids)->all();
+
 		/** @var array<int,Album> $albums */
 		$albums = $album_query->findMany($album_ids)->all();
-		$result = new Collection(array_merge($tag_albums, $albums));
+		$result = new Collection(array_merge($tag_albums, $person_albums, $albums));
 
 		if ($result->count() !== count($album_ids)) {
 			throw (new ModelNotFoundException())->setModel(BaseAlbumImpl::class, $album_ids);

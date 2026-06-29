@@ -5,6 +5,7 @@ export function useGalleryModals(togglableStore: TogglablesStateStore) {
 	const {
 		is_create_album_visible,
 		is_create_tag_album_visible,
+		is_create_person_album_visible,
 		is_upload_visible,
 		is_rename_visible,
 		is_move_visible,
@@ -30,6 +31,10 @@ export function useGalleryModals(togglableStore: TogglablesStateStore) {
 
 	function toggleCreateTagAlbum() {
 		is_create_tag_album_visible.value = !is_create_tag_album_visible.value;
+	}
+
+	function toggleCreatePersonAlbum() {
+		is_create_person_album_visible.value = !is_create_person_album_visible.value;
 	}
 
 	function toggleRename() {
@@ -102,6 +107,8 @@ export function useGalleryModals(togglableStore: TogglablesStateStore) {
 		toggleCreateAlbum,
 		is_create_tag_album_visible,
 		toggleCreateTagAlbum,
+		is_create_person_album_visible,
+		toggleCreatePersonAlbum,
 		is_delete_visible,
 		toggleDelete,
 		is_merge_album_visible,

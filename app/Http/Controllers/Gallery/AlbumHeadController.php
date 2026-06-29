@@ -16,10 +16,12 @@ use App\Http\Requests\Traits\HasVisitorIdTrait;
 use App\Http\Resources\GalleryConfigs\AlbumConfig;
 use App\Http\Resources\Models\HeadAbstractAlbumResource;
 use App\Http\Resources\Models\HeadAlbumResource;
+use App\Http\Resources\Models\HeadPersonAlbumResource;
 use App\Http\Resources\Models\HeadSmartAlbumResource;
 use App\Http\Resources\Models\HeadTagAlbumResource;
 use App\Models\Album;
 use App\Models\Extensions\BaseAlbum;
+use App\Models\PersonAlbum;
 use App\Models\TagAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Routing\Controller;
@@ -47,6 +49,7 @@ class AlbumHeadController extends Controller
 
 		$album_resource = match (true) {
 			$request->album() instanceof BaseSmartAlbum => new HeadSmartAlbumResource($request->album()),
+			$request->album() instanceof PersonAlbum => new HeadPersonAlbumResource($request->album()),
 			$request->album() instanceof TagAlbum => new HeadTagAlbumResource($request->album()),
 			$request->album() instanceof Album => new HeadAlbumResource($request->album()),
 			// @codeCoverageIgnoreStart

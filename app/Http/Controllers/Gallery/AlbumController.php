@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\Gallery;
 
 use App\Actions\Album\Create;
+use App\Actions\Album\CreatePersonAlbum;
 use App\Actions\Album\CreateTagAlbum;
 use App\Actions\Album\Delete;
 use App\Actions\Album\ListAlbums;
@@ -26,6 +27,7 @@ use App\Events\AlbumRouteCacheUpdated;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\UnauthenticatedException;
 use App\Http\Requests\Album\AddAlbumRequest;
+use App\Http\Requests\Album\AddPersonAlbumRequest;
 use App\Http\Requests\Album\AddTagAlbumRequest;
 use App\Http\Requests\Album\DeleteAlbumsRequest;
 use App\Http\Requests\Album\DeleteTrackRequest;
@@ -42,6 +44,7 @@ use App\Http\Requests\Album\TransferAlbumRequest;
 use App\Http\Requests\Album\UnlockAlbumRequest;
 use App\Http\Requests\Album\UpdateAlbumHeaderRequest;
 use App\Http\Requests\Album\UpdateAlbumRequest;
+use App\Http\Requests\Album\UpdatePersonAlbumRequest;
 use App\Http\Requests\Album\UpdateTagAlbumRequest;
 use App\Http\Requests\Album\WatermarkAlbumRequest;
 use App\Http\Requests\Traits\HasVisitorIdTrait;
@@ -87,6 +90,16 @@ class AlbumController extends Controller
 		AlbumRouteCacheUpdated::dispatch('');
 
 		return $create->create($request->title(), $request->tags(), $request->is_and())->id;
+	}
+
+	/**
+	 * Create a person album.
+	 */
+	public function createPersonAlbum(AddPersonAlbumRequest $request, CreatePersonAlbum $create): string
+	{
+		AlbumRouteCacheUpdated::dispatch('');
+
+		return $create->create($request->title(), $request->personIds(), $request->is_and())->id;
 	}
 
 	/**
@@ -148,6 +161,32 @@ class AlbumController extends Controller
 		$album->tags()->sync($tag_models->pluck('id')->all());
 
 		// Root
+		return EditableBaseAlbumResource::fromModel($album);
+	}
+
+	/**
+	 * Update the info of a Person Album.
+	 */
+	public function updatePersonAlbum(UpdatePersonAlbumRequest $request): EditableBaseAlbumResource
+	{
+		$album = $request->album();
+		if ($album === null) {
+			// @codeCoverageIgnoreStart
+			throw new LycheeLogicException('album is null');
+			// @codeCoverageIgnoreEnd
+		}
+		$album->title = $request->title();
+		$album->description = $request->description();
+		$album->copyright = $request->copyright();
+		$album->photo_sorting = $request->photoSortingCriterion();
+		$album->photo_layout = $request->photoLayout();
+		$album->photo_timeline = $request->photo_timeline();
+		$album->is_pinned = $request->is_pinned();
+		$album->is_and = $request->is_and();
+		$album->save();
+
+		$album->persons()->sync($request->personIds());
+
 		return EditableBaseAlbumResource::fromModel($album);
 	}
 

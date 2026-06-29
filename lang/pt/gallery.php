@@ -198,6 +198,8 @@ return [
             'show_tags' => 'Set tags to show',
             'tags_required' => 'Tags are required.',
             'all_tags_must_match' => 'All tags must match.',
+            'all_persons_must_match' => 'All persons must be present.',
+            'persons_required' => 'At least one person is required.',
         ],
     ],
     'photo' => [
@@ -330,6 +332,7 @@ return [
         'import_dropbox' => 'Import from Dropbox',
         'new_album' => 'New Album',
         'new_tag_album' => 'New Tag Album',
+        'new_person_album' => 'New Person Album',
         'upload_track' => 'Upload track',
         'delete_track' => 'Delete track',
     ],

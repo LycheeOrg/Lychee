@@ -113,5 +113,7 @@ class PeopleController extends Controller
 	{
 		$person = Person::findOrFail($request->personId());
 		$person->delete();
+
+		\App\Jobs\CleanupOrphanedPersonAlbumsJob::dispatch();
 	}
 }
