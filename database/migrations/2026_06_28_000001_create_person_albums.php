@@ -8,7 +8,6 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class() extends Migration {
@@ -19,8 +18,6 @@ return new class() extends Migration {
 	public function up(): void
 	{
 		if (Schema::hasTable('person_albums')) {
-			$this->ensureConfigKeys();
-
 			return;
 		}
 
@@ -42,40 +39,11 @@ return new class() extends Migration {
 			$table->foreign(self::PERSON_ID)->references('id')->on('persons')->cascadeOnDelete();
 			$table->foreign(self::ALBUM_ID)->references('id')->on('person_albums')->cascadeOnUpdate()->cascadeOnDelete();
 		});
-
-		$this->ensureConfigKeys();
-	}
-
-	private function ensureConfigKeys(): void
-	{
-		if (DB::table('configs')->where('key', 'PA_override_visibility')->doesntExist()) {
-			DB::table('configs')->insert([
-				'key' => 'PA_override_visibility',
-				'value' => '0',
-				'cat' => 'smart-albums',
-				'type_range' => 'bool',
-				'is_secret' => false,
-				'description' => 'When true, Person Albums bypass album-based access control',
-				'level' => 0,
-			]);
-		}
-		if (DB::table('configs')->where('key', 'hide_nsfw_in_person_albums')->doesntExist()) {
-			DB::table('configs')->insert([
-				'key' => 'hide_nsfw_in_person_albums',
-				'value' => '1',
-				'cat' => 'smart-albums',
-				'type_range' => 'bool',
-				'is_secret' => false,
-				'description' => 'When true, NSFW photos are hidden from Person Albums',
-				'level' => 0,
-			]);
-		}
 	}
 
 	public function down(): void
 	{
 		Schema::dropIfExists('person_albums_persons');
 		Schema::dropIfExists('person_albums');
-		DB::table('configs')->whereIn('key', ['PA_override_visibility', 'hide_nsfw_in_person_albums'])->delete();
 	}
 };

@@ -10,6 +10,7 @@ namespace App\Actions\Album;
 
 use App\Actions\Shop\PurchasableService;
 use App\Constants\AccessPermissionConstants as APC;
+use App\Constants\PersonAlbumPersons;
 use App\Constants\PhotoAlbum as PA;
 use App\DTO\Delete\AlbumsToBeDeletedDTO;
 use App\DTO\Delete\PhotosToBeDeletedDTO;
@@ -79,7 +80,7 @@ class Delete
 
 		$this->deleteTagAlbums($tag_albums_ids);
 
-		$album_ids = array_diff($album_ids, $tag_albums_ids);
+		$album_ids = array_diff($album_ids, $tag_albums_ids, $person_albums_ids);
 		// Nothing else to do. Woop woop.
 		if (count($album_ids) === 0) {
 			return;
@@ -130,6 +131,7 @@ class Delete
 		DB::table('live_metrics')->whereIn('album_id', $tag_album_ids)->delete();
 		DB::table(APC::ACCESS_PERMISSIONS)->whereIn(APC::BASE_ALBUM_ID, $tag_album_ids)->delete();
 		DB::table('statistics')->whereIn('album_id', $tag_album_ids)->delete();
+		DB::table('tag_albums_tags')->whereIn('album_id', $tag_album_ids)->delete();
 		DB::table('tag_albums')->whereIn('id', $tag_album_ids)->delete();
 		DB::table('base_albums')->whereIn('id', $tag_album_ids)->delete();
 	}
@@ -152,6 +154,7 @@ class Delete
 		DB::table('live_metrics')->whereIn('album_id', $person_album_ids)->delete();
 		DB::table(APC::ACCESS_PERMISSIONS)->whereIn(APC::BASE_ALBUM_ID, $person_album_ids)->delete();
 		DB::table('statistics')->whereIn('album_id', $person_album_ids)->delete();
+		DB::table(PersonAlbumPersons::PERSON_ALBUM_PERSONS)->whereIn(PersonAlbumPersons::ALBUM_ID, $person_album_ids)->delete();
 		DB::table('person_albums')->whereIn('id', $person_album_ids)->delete();
 		DB::table('base_albums')->whereIn('id', $person_album_ids)->delete();
 	}

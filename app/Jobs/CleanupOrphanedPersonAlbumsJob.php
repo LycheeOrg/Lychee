@@ -9,6 +9,7 @@
 namespace App\Jobs;
 
 use App\Actions\Album\Delete;
+use App\Constants\PersonAlbumPersons;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -31,7 +32,9 @@ class CleanupOrphanedPersonAlbumsJob implements ShouldQueue
 	public function handle(): void
 	{
 		$orphaned_ids = DB::table('person_albums')
-			->leftJoin('person_albums_persons', 'person_albums.id', '=', 'person_albums_persons.album_id')
+			->leftJoin(
+				PersonAlbumPersons::PERSON_ALBUM_PERSONS,
+				'person_albums.id', '=', PersonAlbumPersons::ALBUM_ID)
 			->whereNull('person_albums_persons.id')
 			->pluck('person_albums.id')
 			->all();

@@ -15,16 +15,7 @@
 						<label for="title">{{ $t("dialogs.new_person_album.title") }}</label>
 					</FloatLabel>
 					<FloatLabel variant="on">
-						<Select
-							v-model="selectedPersons"
-							:options="availablePersons"
-							option-label="name"
-							option-value="id"
-							filter
-							:placeholder="$t('dialogs.new_person_album.set_persons')"
-							class="w-full"
-							multiple
-						/>
+						<PersonsInput v-model="selectedPersons" />
 						<label>{{ $t("dialogs.new_person_album.set_persons") }}</label>
 					</FloatLabel>
 					<div class="flex gap-2 items-center my-2">
@@ -49,7 +40,7 @@ import AlbumService from "@/services/album-service";
 import PeopleService from "@/services/people-service";
 import Dialog from "primevue/dialog";
 import FloatLabel from "primevue/floatlabel";
-import Select from "primevue/select";
+import PersonsInput from "@/components/forms/basic/PersonsInput.vue";
 import { computed, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import InputText from "@/components/forms/basic/InputText.vue";
@@ -92,9 +83,13 @@ function create() {
 		return;
 	}
 
+	const personIds = selectedPersons.value
+		.map((name) => availablePersons.value.find((p) => p.name === name)?.id)
+		.filter((id): id is string => id !== undefined);
+
 	AlbumService.createPerson({
 		title: title.value as string,
-		persons: selectedPersons.value,
+		persons: personIds,
 		is_and: is_and.value,
 	})
 		.then((response) => {

@@ -1,4 +1,5 @@
-import { Ref, ref } from "vue";
+import { computed, Ref, ref } from "vue";
+import { AddMenuItem } from "./contextMenuAlbumAdd";
 
 type Callbacks = {
 	toggleUpload: () => void;
@@ -18,8 +19,8 @@ export function useContextMenuAlbumsAdd(
 	is_person_album_enabled: Ref<boolean>,
 ) {
 	const addmenu = ref(); // ! Reference to the context menu
-	const addMenu = ref(
-		[
+	const addMenu = computed(function () {
+		const menu: AddMenuItem[] = [
 			{
 				label: "gallery.menus.upload_photo",
 				icon: "pi pi-upload",
@@ -69,8 +70,10 @@ export function useContextMenuAlbumsAdd(
 				callback: callbacks.toggleCreatePersonAlbum,
 				if: is_person_album_enabled.value === true,
 			},
-		].filter((item) => item.if === undefined || item.if !== false),
-	);
+		];
+
+		return menu.filter((item) => item.if === undefined || item.if !== false);
+	});
 
 	function openAddMenu(event: Event) {
 		addmenu.value.show(event);
