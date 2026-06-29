@@ -30,8 +30,9 @@ class OptimizeTablesTest extends AbstractTestCase
 	 */
 	public function testOptimizeTables(): void
 	{
+		$target = [48, 49];
 		$optimize = new OptimizeTables();
 		$output = count($optimize->do());
-		self::assertTrue(in_array($output, [48, 49], true), 'OptimizeTables should return either 46 (pgsql) or 47 (mysql): ' . $output);
+		self::assertTrue(in_array($output, $target, true), "OptimizeTables should return either ($target[0]) (pgsql) or {$target[1]} (mysql): {$output}");
 	}
 }
