@@ -15,6 +15,7 @@ use App\Http\Resources\Models\Utils\TimelineData;
 use App\Http\Resources\Rights\AlbumRightsResource;
 use App\Models\Album;
 use App\Models\Extensions\BaseAlbum;
+use App\Models\PersonAlbum;
 use App\Models\TagAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Support\Carbon;
@@ -37,6 +38,7 @@ class ThumbAlbumResource extends Data
 	public bool $is_password_required;
 
 	public bool $is_tag_album;
+	public bool $is_person_album;
 	public bool $has_subalbum;
 	public int $num_subalbums = 0;
 	public int $num_photos = 0;
@@ -93,6 +95,7 @@ class ThumbAlbumResource extends Data
 		$this->is_pinned = $data instanceof BaseAlbum ? $data->is_pinned : false;
 
 		$this->is_tag_album = $data instanceof TagAlbum;
+		$this->is_person_album = $data instanceof PersonAlbum;
 		// This aims to indicate whether the current thumb is used to determine the parent.
 		$this->has_subalbum = $data instanceof Album && !$data->isLeaf();
 

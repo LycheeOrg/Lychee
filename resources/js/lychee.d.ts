@@ -1088,6 +1088,7 @@ declare namespace App.Http.Resources.Models {
 		is_link_required: boolean;
 		is_password_required: boolean;
 		is_tag_album: boolean;
+		is_person_album: boolean;
 		has_subalbum: boolean;
 		num_subalbums: number;
 		num_photos: number;

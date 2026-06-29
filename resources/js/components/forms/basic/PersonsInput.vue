@@ -35,19 +35,26 @@ const modelValue = defineModel<Nullable<string[]>>();
 const persons = ref<App.Http.Resources.Models.PersonResource[]>([]);
 const filteredPersons = ref<string[]>([]);
 
-function fetchPersons(): void {
-	PeopleService.getPeople(1)
-		.then((response) => {
-			persons.value = response.data.data;
-		})
-		.catch(() => {
-			toast.add({
-				severity: "error",
-				summary: "Error",
-				detail: "Failed to fetch persons.",
-				life: 3000,
-			});
+async function fetchPersons(): Promise<void> {
+	try {
+		let page = 1;
+		let lastPage = 1;
+		const all: App.Http.Resources.Models.PersonResource[] = [];
+		do {
+			const response = await PeopleService.getPeople(page);
+			all.push(...response.data.data);
+			lastPage = response.data.last_page;
+			page++;
+		} while (page <= lastPage);
+		persons.value = all;
+	} catch {
+		toast.add({
+			severity: "error",
+			summary: "Error",
+			detail: "Failed to fetch persons.",
+			life: 3000,
 		});
+	}
 }
 
 function search(event: AutoCompleteCompleteEvent) {

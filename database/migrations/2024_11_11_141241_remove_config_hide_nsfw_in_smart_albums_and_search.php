@@ -18,7 +18,7 @@ return new class() extends BaseConfigMigrationReversed {
 				'cat' => 'Mod NSFW',
 				'type_range' => self::BOOL,
 				'description' => 'Do not show sensitive photos in Smart Albums and Search.',
-				'details' => 'Pictures placed in sensive albums will not be shown in Smart Albums and Search.',
+				'details' => 'Pictures placed in sensitive albums will not be shown in Smart Albums and Search.',
 				'is_secret' => false,
 				'level' => 0,
 			],

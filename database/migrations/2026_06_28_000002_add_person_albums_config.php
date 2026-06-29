@@ -32,7 +32,7 @@ return new class() extends BaseConfigMigration {
 				'cat' => self::CAT_NSFW,
 				'type_range' => self::BOOL,
 				'description' => 'Do not show sensitive photos in Person Albums',
-				'details' => '<span class="pi pi-exclamation-triangle text-orange-500"></span> Pictures placed in sensive albums will not be shown in Person Albums.',
+				'details' => '<span class="pi pi-exclamation-triangle text-orange-500"></span> Pictures placed in sensitive albums will not be shown in Person Albums.',
 				'is_secret' => false,
 				'is_expert' => false,
 				'level' => 0,
