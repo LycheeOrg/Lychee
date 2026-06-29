@@ -7,6 +7,7 @@ High-level planning document for Lychee features and architectural initiatives.
 | Feature ID | Name | Status | Priority | Assignee | Started | Updated | Progress |
 |------------|------|--------|----------|----------|---------|---------|----------|
 | 045 | NSFW Detection & Moderation | Implementation | P1 | LycheeOrg | 2026-06-21 | 2026-06-22 | All 7 increments implemented (I1–I7). Backend: 7 enums, 3 migrations (12 config keys, 2 photo columns, nsfw_detections table), NsfwDetection model, NsfwDetectionService + NsfwActionService, DispatchNsfwScanJob + ApplyNsfwAlbumSensitivityJob, AutoScanNsfwOnUpload pipe, NsfwDetectionController + NsfwConfigController, callback/bulk-scan/config-proxy routes, CSRF exemption, ModerationController NSFW approval logic, Delete::forceDeletePhoto(). Frontend: NsfwConfig.vue admin page, MaintenanceBulkScanNsfw component, nsfw-detection-service.ts + nsfw-config-service.ts, Moderation NSFW badge, admin dashboard tile, translation keys. PHPStan 0, vue-tsc clean, php-cs-fixer clean. |
+| 046 | Tag Album Custom Cover | Spec | P2 | ildyria | 2026-06-28 | 2026-06-28 | Spec, plan, tasks drafted. All 3 questions resolved (Q-046-01 B, Q-046-02 B, Q-046-03 N/A). Add `cover_id` to `tag_albums` table (not `base_albums`). 5 increments planned (I1 migration, I2 models, I3 API, I4 frontend, I5 tests), 14 tasks. Includes `PhotosToBeDeletedDTO` cover nullification (FR-046-10). Ready for implementation. |
 
 ## Paused Features
 

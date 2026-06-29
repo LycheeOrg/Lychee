@@ -5,7 +5,7 @@
 			:key="photo.id"
 			:photo="photo"
 			:is-selected="props.selectedPhotos.includes(photo.id)"
-			:is-cover-id="albumStore.modelAlbum?.cover_id === photo.id"
+			:is-cover-id="albumStore.coverId === photo.id"
 			:is-header-id="albumStore.modelAlbum?.header_id === photo.id"
 			@clicked="handleClicked"
 			@contexted="handleContexted"

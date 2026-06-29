@@ -546,6 +546,9 @@ export const useAlbumStore = defineStore("album-store", {
 			| undefined {
 			return state.modelAlbum || state.tagAlbum || state.smartAlbum;
 		},
+		coverId(state): string | undefined {
+			return (state.modelAlbum || state.tagAlbum)?.cover_id ?? undefined;
+		},
 		tagOrModelAlbum(state): App.Http.Resources.Models.HeadAlbumResource | App.Http.Resources.Models.HeadTagAlbumResource | undefined {
 			return state.modelAlbum || state.tagAlbum;
 		},

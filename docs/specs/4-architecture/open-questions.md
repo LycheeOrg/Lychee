@@ -18,6 +18,9 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 | Q-043-15 | 043 | Low | Naming inconsistency: existing `CatalogController` vs new `CatalogueSizesController` | Open | 2026-05-31 | 2026-05-31 |
 | Q-043-16 | 043 | Low | Translation key placement: which new strings belong in `webshop.php` vs `dialogs.php`? | Open | 2026-05-31 | 2026-05-31 |
 | Q-043-17 | 043 | Medium | `is_print` must be exposed in basket GET response (via `OrderItemResource`) before frontend `hasPrints` computed can work — cross-increment dependency not captured in tasks | Open | 2026-05-31 | 2026-05-31 |
+| ~~Q-046-01~~ | 046 – Tag Album Cover | High | Should `cover_id` move from `albums` to `base_albums`, or be added only to `tag_albums`? | Resolved (B – add to `tag_albums` only) | 2026-06-28 | 2026-06-28 |
+| ~~Q-046-02~~ | 046 – Tag Album Cover | Medium | Front-end guard: replace `is_model_album` with `has_cover_support` flag, or widen check to include tag albums? | Resolved (B – check `is_model_album \|\| tagAlbum` in context menu) | 2026-06-28 | 2026-06-28 |
+| ~~Q-046-03~~ | 046 – Tag Album Cover | Medium | Should `cover()` relationship and eager-loading live on `BaseAlbumImpl` or remain per-model? | Resolved (N/A – per-model with eager-load on TagAlbum) | 2026-06-28 | 2026-06-28 |
 | Q-040-01 | 040 – Disable Request Caching | Medium | Analysis Gate never formally signed off: plan.md gate checklist has unchecked boxes yet I1–I4 tasks are marked complete; gate must be ticked before implementation is considered verified | Open | 2026-05-31 | 2026-05-31 |
 | ~~Q-045-13~~ | 045 – NSFW Moderation | High | Photo-Album is many-to-many — spec assumes `album_id` FK on photos but photos use a `photo_album` pivot table. "Direct parent album" is ambiguous when a photo is in multiple albums. | Resolved (A – mark all associated albums) | 2026-06-22 | 2026-06-22 |
 | ~~Q-045-14~~ | 045 – NSFW Moderation | High | Block action hard-delete mechanism — spec says "permanently removed" but doesn't specify whether to reuse the existing `Delete` action (handles pivot cleanup, purchasable cleanup, events) or use a simpler raw delete. | Resolved (A – reuse Delete with dedicated force-delete method) | 2026-06-22 | 2026-06-22 |
@@ -3530,3 +3533,37 @@ Default value: `skip`. This gives the admin explicit control over the trade-off 
 
 ---
 
+
+### ~~Q-046-01~~ · Move cover_id to base_albums vs add to tag_albums only ✅ RESOLVED
+
+**Status:** Resolved — **Option B** (add to `tag_albums` only)
+**Feature:** F-046 – Tag Album Custom Cover
+**Priority:** High
+**Opened:** 2026-06-28
+**Resolved:** 2026-06-28
+
+**Resolution:** Option B chosen. `cover_id` is added to `tag_albums` only; `albums.cover_id` remains untouched. This avoids touching `HasAlbumThumb` which is tightly coupled to `Album` with its precomputed cover fields (`auto_cover_id_max_privilege`, `auto_cover_id_least_privilege`). Each model manages its own `cover()` relationship independently. Encoded in FR-046-01, FR-046-02.
+
+---
+
+### ~~Q-046-02~~ · Front-end guard mechanism for cover support ✅ RESOLVED
+
+**Status:** Resolved — **Option B** (check `is_model_album || tagAlbum` in context menu)
+**Feature:** F-046 – Tag Album Custom Cover
+**Priority:** Medium
+**Opened:** 2026-06-28
+**Resolved:** 2026-06-28
+
+**Resolution:** Option B chosen. No new `AlbumConfig` flag. The context menu guard block at `contextMenu.ts:126–148` is split: "Set as cover" uses `is_model_album || albumStore.tagAlbum !== undefined`; "Set as header" keeps the `is_model_album`-only guard. Encoded in FR-046-07, UI-046-03.
+
+---
+
+### ~~Q-046-03~~ · cover() relationship location and eager-loading strategy ✅ RESOLVED
+
+**Status:** Resolved — N/A (per-model with eager-load on TagAlbum)
+**Feature:** F-046 – Tag Album Custom Cover
+**Priority:** Medium
+**Opened:** 2026-06-28
+**Resolved:** 2026-06-28
+
+**Resolution:** Question no longer applies since `cover_id` stays per-model (Q-046-01 → B). `TagAlbum` defines its own `cover()` HasOne relationship and eager-loads it via `$with`. `Album` is unchanged. Encoded in FR-046-02, NFR-046-04.

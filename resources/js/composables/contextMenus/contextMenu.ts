@@ -123,14 +123,17 @@ export function useContextMenu(selectors: Selectors, photoCallbacks: PhotoCallba
 			});
 		}
 
-		if (selectors.config?.value?.is_model_album === true && selectors.album !== undefined) {
-			const parent_album = selectors.album.value as App.Http.Resources.Models.HeadAlbumResource;
+		if (selectors.album !== undefined && (selectors.config?.value?.is_model_album === true || albumStore.tagAlbum !== undefined)) {
 			menuItems.push({
 				label: "gallery.menus.set_cover",
 				icon: "pi pi-id-card",
 				callback: photoCallbacks.setAsCover,
-				access: parent_album.rights.can_edit ?? false,
+				access: selectors.album.value?.rights.can_edit ?? false,
 			});
+		}
+
+		if (selectors.config?.value?.is_model_album === true && selectors.album !== undefined) {
+			const parent_album = selectors.album.value as App.Http.Resources.Models.HeadAlbumResource;
 			if (parent_album.header_id === selectedPhoto.id) {
 				menuItems.push({
 					label: "gallery.menus.remove_header",

@@ -345,6 +345,9 @@ const photoCallbacks = {
 		if (albumStore.modelAlbum !== undefined) {
 			albumStore.modelAlbum.cover_id = albumStore.modelAlbum.cover_id === selectedPhoto.value!.id ? null : selectedPhoto.value!.id;
 		}
+		if (albumStore.tagAlbum !== undefined) {
+			albumStore.tagAlbum.cover_id = albumStore.tagAlbum.cover_id === selectedPhoto.value!.id ? null : selectedPhoto.value!.id;
+		}
 		AlbumService.clearCache(albumStore.album.id);
 	},
 	setAsHeader: () => {
