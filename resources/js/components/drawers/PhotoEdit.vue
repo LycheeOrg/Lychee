@@ -144,7 +144,7 @@ function load(photoToEdit: App.Http.Resources.Models.PhotoResource) {
 	photo_id.value = photoToEdit.id;
 	title.value = photoToEdit.title;
 	description.value = photoToEdit.description;
-	tags.value = photoToEdit.tags;
+	tags.value = photoToEdit.tags.map((t) => t.name);
 
 	const dataDate = (photoToEdit.created_at ?? "").slice(0, 19);
 	uploadTz.value = (photoToEdit.created_at ?? "").slice(19);

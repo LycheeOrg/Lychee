@@ -982,7 +982,7 @@ declare namespace App.Http.Resources.Models {
 		live_photo_url: string | null;
 		original_checksum: string;
 		size_variants: App.Http.Resources.Models.SizeVariantsResouce;
-		tags: Array<string>;
+		tags: App.Http.Resources.Tags.PhotoTagResource[];
 		taken_at: string | null;
 		taken_at_orig_tz: string | null;
 		title: string;
@@ -1528,6 +1528,10 @@ declare namespace App.Http.Resources.Statistics {
 	};
 }
 declare namespace App.Http.Resources.Tags {
+	export type PhotoTagResource = {
+		id: number;
+		name: string;
+	};
 	export type TagResource = {
 		id: number;
 		name: string;

@@ -78,7 +78,7 @@ class PhotoEditTest extends BaseApiWithDataTest
 		$response->assertJsonPath('photos.' . $idx . '.id', $this->photo1->id);
 		$response->assertJsonPath('photos.' . $idx . '.title', 'new title');
 		$response->assertJsonPath('photos.' . $idx . '.description', 'new description');
-		$response->assertJsonPath('photos.' . $idx . '.tags', ['tag1']);
+		$this->assertEquals(['tag1'], array_column($response->json('photos.' . $idx . '.tags'), 'name'));
 		$response->assertJsonPath('photos.' . $idx . '.license', 'none');
 		$response->assertJsonPath('photos.' . $idx . '.created_at', '2021-01-01T00:00:00+00:00');
 		$response->assertJsonPath('photos.' . $idx . '.precomputed.is_taken_at_modified', false);
@@ -104,7 +104,7 @@ class PhotoEditTest extends BaseApiWithDataTest
 		$response->assertJsonPath('photos.' . $idx . '.id', $this->photo1->id);
 		$response->assertJsonPath('photos.' . $idx . '.title', 'new title');
 		$response->assertJsonPath('photos.' . $idx . '.description', 'new description');
-		$response->assertJsonPath('photos.' . $idx . '.tags', ['tag1']);
+		$this->assertEquals(['tag1'], array_column($response->json('photos.' . $idx . '.tags'), 'name'));
 		$response->assertJsonPath('photos.' . $idx . '.license', 'none');
 		$response->assertJsonPath('photos.' . $idx . '.created_at', '2021-01-01T00:00:00+00:00');
 		$response->assertJsonPath('photos.' . $idx . '.taken_at', '2021-01-01T00:00:00+00:00');
@@ -131,7 +131,7 @@ class PhotoEditTest extends BaseApiWithDataTest
 		$response->assertJsonPath('photos.' . $idx . '.id', $this->photo1->id);
 		$response->assertJsonPath('photos.' . $idx . '.title', 'new title');
 		$response->assertJsonPath('photos.' . $idx . '.description', 'new description');
-		$response->assertJsonPath('photos.' . $idx . '.tags', ['tag1']);
+		$this->assertEquals(['tag1'], array_column($response->json('photos.' . $idx . '.tags'), 'name'));
 		$response->assertJsonPath('photos.' . $idx . '.license', 'none');
 		$response->assertJsonPath('photos.' . $idx . '.created_at', '2021-01-01T00:00:00+00:00');
 		$response->assertJsonPath('photos.' . $idx . '.precomputed.is_taken_at_modified', false);
@@ -162,7 +162,7 @@ class PhotoEditTest extends BaseApiWithDataTest
 		$response->assertJsonPath('photos.' . $idx . '.id', $this->photo1->id);
 		$response->assertJsonPath('photos.' . $idx . '.title', 'new title');
 		$response->assertJsonPath('photos.' . $idx . '.description', 'new description');
-		$response->assertJsonPath('photos.' . $idx . '.tags', ['tag1']);
+		$this->assertEquals(['tag1'], array_column($response->json('photos.' . $idx . '.tags'), 'name'));
 		$response->assertJsonPath('photos.' . $idx . '.license', 'none');
 		$response->assertJsonPath('photos.' . $idx . '.created_at', '2021-01-01T00:00:00+00:00');
 		$response->assertJsonPath('photos.' . $idx . '.taken_at', null);
@@ -189,7 +189,7 @@ class PhotoEditTest extends BaseApiWithDataTest
 		$response->assertJsonPath('photos.' . $idx . '.id', $this->photo1->id);
 		$response->assertJsonPath('photos.' . $idx . '.title', 'new title');
 		$response->assertJsonPath('photos.' . $idx . '.description', 'new description');
-		$response->assertJsonPath('photos.' . $idx . '.tags', ['tag1']);
+		$this->assertEquals(['tag1'], array_column($response->json('photos.' . $idx . '.tags'), 'name'));
 		$response->assertJsonPath('photos.' . $idx . '.license', 'none');
 		$response->assertJsonPath('photos.' . $idx . '.created_at', '2021-01-01T00:00:00+00:00');
 		$response->assertJsonPath('photos.' . $idx . '.taken_at', '2021-01-01T00:00:00+00:00');
@@ -216,7 +216,7 @@ class PhotoEditTest extends BaseApiWithDataTest
 		$response->assertJsonPath('photos.' . $idx . '.id', $this->photo1->id);
 		$response->assertJsonPath('photos.' . $idx . '.title', 'new title');
 		$response->assertJsonPath('photos.' . $idx . '.description', 'new description');
-		$response->assertJsonPath('photos.' . $idx . '.tags', ['tag1']);
+		$this->assertEquals(['tag1'], array_column($response->json('photos.' . $idx . '.tags'), 'name'));
 		$response->assertJsonPath('photos.' . $idx . '.license', 'none');
 		$response->assertJsonPath('photos.' . $idx . '.created_at', '2021-01-01T00:00:00+00:00');
 		$response->assertJsonPath('photos.' . $idx . '.taken_at', null);
