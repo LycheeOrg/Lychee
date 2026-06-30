@@ -18,11 +18,14 @@ use App\Relations\HasManyPhotosByTag;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 
 /**
  * App\Models\TagAlbum.
  *
+ * @property string|null         $cover_id
+ * @property Photo|null          $cover
  * @property Collection<int,Tag> $tags
  * @property bool                $is_and
  *
@@ -75,6 +78,7 @@ class TagAlbum extends BaseAlbum
 	 */
 	protected $attributes = [
 		'id' => null,
+		'cover_id' => null,
 		'is_and' => null,
 	];
 
@@ -106,6 +110,14 @@ class TagAlbum extends BaseAlbum
 	protected $appends = [
 		'thumb',
 	];
+
+	/**
+	 * @return HasOne<Photo,$this>
+	 */
+	public function cover(): HasOne
+	{
+		return $this->hasOne(Photo::class, 'id', 'cover_id');
+	}
 
 	/**
 	 * @phpstan-ignore method.childReturnType, method.childReturnType
@@ -141,6 +153,10 @@ class TagAlbum extends BaseAlbum
 	 */
 	protected function getThumbAttribute(): ?Thumb
 	{
+		if ($this->cover_id !== null) {
+			return Thumb::createFromPhoto($this->cover);
+		}
+
 		// Note, `photos()` already applies a "security filter" and
 		// only returns photos which are accessible by the current
 		// user

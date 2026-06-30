@@ -15,6 +15,7 @@ namespace App\Enum;
  */
 enum ThumbAlbumSubtitleType: string
 {
+	case DISABLED = 'disabled';
 	case DESCRIPTION = 'description';
 	case TAKEDATE = 'takedate';
 	case CREATION = 'creation';

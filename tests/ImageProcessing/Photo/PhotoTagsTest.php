@@ -56,7 +56,7 @@ class PhotoTagsTest extends BaseApiWithDataTest
 			'photos' => [
 				[
 					'id' => $this->photo1->id,
-					'tags' => ['tag1'],
+					'tags' => [['name' => 'tag1']],
 				],
 			],
 		]);
@@ -83,7 +83,7 @@ class PhotoTagsTest extends BaseApiWithDataTest
 			'photos' => [
 				[
 					'id' => $this->photo1->id,
-					'tags' => ['tag1'],
+					'tags' => [['name' => 'tag1']],
 				],
 			],
 		]);
@@ -110,7 +110,7 @@ class PhotoTagsTest extends BaseApiWithDataTest
 			'photos' => [
 				[
 					'id' => $this->photo1->id,
-					'tags' => ['tag1', 'tag2'],
+					'tags' => [['name' => 'tag1'], ['name' => 'tag2']],
 				],
 			],
 		]);
@@ -140,7 +140,7 @@ class PhotoTagsTest extends BaseApiWithDataTest
 				],
 			],
 		]);
-		$sorted_tags = $response->json('photos.0.tags');
+		$sorted_tags = array_column($response->json('photos.0.tags'), 'name');
 		sort($sorted_tags);
 		$this->assertEquals(['tag1', 'tag2'], $sorted_tags);
 	}
@@ -166,7 +166,7 @@ class PhotoTagsTest extends BaseApiWithDataTest
 			'photos' => [
 				[
 					'id' => $this->photo1->id,
-					'tags' => ['tag3'],
+					'tags' => [['name' => 'tag3']],
 				],
 			],
 		]);

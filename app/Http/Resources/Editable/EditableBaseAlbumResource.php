@@ -73,6 +73,7 @@ class EditableBaseAlbumResource extends Data
 		}
 
 		if ($album instanceof TagAlbum) {
+			$this->cover_id = $album->cover_id;
 			$this->tags = $album->tags->map(fn ($t) => $t->name)->all();
 			$this->is_and = $album->is_and;
 		}

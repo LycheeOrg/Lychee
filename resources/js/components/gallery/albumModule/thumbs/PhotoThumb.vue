@@ -62,7 +62,7 @@
 						:key="`photo-thumb${props.photo.id}-tag-${idx}`"
 						class="inline-block ltr:ml-3 rtl:mr-3 text-xs text-surface-300 bg-surface-800/50 rounded px-1.5 py-0.5"
 					>
-						{{ tag }}
+						{{ tag.name }}
 					</span>
 				</div>
 			</template>

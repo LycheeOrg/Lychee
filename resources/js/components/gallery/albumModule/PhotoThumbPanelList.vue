@@ -15,7 +15,7 @@
 			<PhotoThumb
 				:photo="photo"
 				:is-selected="props.selectedPhotos.includes(photo.id)"
-				:is-cover-id="albumStore.modelAlbum?.cover_id === photo.id"
+				:is-cover-id="albumStore.coverId === photo.id"
 				:is-header-id="albumStore.modelAlbum?.header_id === photo.id"
 				@click="(e: MouseEvent) => maySelect(photo.id, e)"
 				@contextmenu.prevent="(e: MouseEvent) => menuOpen(photo.id, e)"

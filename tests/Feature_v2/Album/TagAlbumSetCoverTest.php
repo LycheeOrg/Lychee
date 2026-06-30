@@ -1,0 +1,119 @@
+<?php
+
+/**
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2017-2018 Tobias Reich
+ * Copyright (c) 2018-2026 LycheeOrg.
+ */
+
+/**
+ * We don't care for unhandled exceptions in tests.
+ * It is the nature of a test to throw an exception.
+ * Without this suppression we had 100+ Linter warning in this file which
+ * don't help anything.
+ *
+ * @noinspection PhpDocMissingThrowsInspection
+ * @noinspection PhpUnhandledExceptionInspection
+ */
+
+namespace Tests\Feature_v2\Album;
+
+use Tests\Feature_v2\Base\BaseApiWithDataTest;
+
+class TagAlbumSetCoverTest extends BaseApiWithDataTest
+{
+	public function testSetCoverTagAlbumUnauthorizedForbidden(): void
+	{
+		$response = $this->postJson('Album::cover', []);
+		$this->assertUnprocessable($response);
+
+		$response = $this->postJson('Album::cover', [
+			'album_id' => $this->tagAlbum1->id,
+			'photo_id' => $this->photo1->id,
+		]);
+		$this->assertUnauthorized($response);
+
+		$response = $this->actingAs($this->userNoUpload)->postJson('Album::cover', [
+			'album_id' => $this->tagAlbum1->id,
+			'photo_id' => $this->photo1->id,
+		]);
+		$this->assertForbidden($response);
+	}
+
+	public function testSetCoverTagAlbumAllowed(): void
+	{
+		$response = $this->actingAs($this->userMayUpload1)->postJson('Album::cover', []);
+		$this->assertUnprocessable($response);
+
+		// Set the cover ID
+		$response = $this->postJson('Album::cover', [
+			'album_id' => $this->tagAlbum1->id,
+			'photo_id' => $this->photo1->id,
+		]);
+		$this->assertNoContent($response);
+
+		$this->tagAlbum1->refresh();
+		$this->assertEquals($this->photo1->id, $this->tagAlbum1->cover_id);
+
+		$response = $this->getJsonWithData('Album::head', ['album_id' => $this->tagAlbum1->id]);
+		$this->assertOk($response);
+		$response->assertJson([
+			'config' => [
+				'is_base_album' => true,
+				'is_model_album' => false,
+			],
+			'resource' => [
+				'id' => $this->tagAlbum1->id,
+				'cover_id' => $this->photo1->id,
+			],
+		]);
+
+		// Unset the cover_id by toggling (same photo ID)
+		$response = $this->postJson('Album::cover', [
+			'album_id' => $this->tagAlbum1->id,
+			'photo_id' => $this->photo1->id,
+		]);
+		$this->assertNoContent($response);
+
+		$this->tagAlbum1->refresh();
+		$this->assertNull($this->tagAlbum1->cover_id);
+
+		$response = $this->getJsonWithData('Album::head', ['album_id' => $this->tagAlbum1->id]);
+		$this->assertOk($response);
+		$response->assertJson([
+			'config' => [
+				'is_base_album' => true,
+				'is_model_album' => false,
+			],
+			'resource' => [
+				'id' => $this->tagAlbum1->id,
+				'cover_id' => null,
+			],
+		]);
+	}
+
+	public function testDeleteCoverPhotoNullifiesCoverId(): void
+	{
+		$this->actingAs($this->userMayUpload1);
+
+		// Set the cover
+		$response = $this->postJson('Album::cover', [
+			'album_id' => $this->tagAlbum1->id,
+			'photo_id' => $this->photo1->id,
+		]);
+		$this->assertNoContent($response);
+
+		$this->tagAlbum1->refresh();
+		$this->assertEquals($this->photo1->id, $this->tagAlbum1->cover_id);
+
+		// Delete the photo (from_id is required by DeletePhotosRequest)
+		$response = $this->deleteJson('Photo', [
+			'photo_ids' => [$this->photo1->id],
+			'from_id' => $this->album1->id,
+		]);
+		$this->assertNoContent($response);
+
+		$this->tagAlbum1->refresh();
+		$this->assertNull($this->tagAlbum1->cover_id);
+	}
+}

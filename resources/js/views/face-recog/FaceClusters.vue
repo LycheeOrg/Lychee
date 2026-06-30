@@ -2,7 +2,7 @@
 	<div class="h-svh overflow-y-auto">
 		<Toolbar class="w-full border-0 h-14 rounded-none">
 			<template #start>
-				<OpenLeftMenu />
+				<GoBack @go-back="$router.push({ name: 'people' })" />
 			</template>
 			<template #center>
 				{{ $t("people.clusters_title") }}
@@ -217,12 +217,12 @@ import AutoComplete from "primevue/autocomplete";
 import Dialog from "primevue/dialog";
 import { useToast } from "primevue/usetoast";
 import { trans } from "laravel-vue-i18n";
-import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
 import PaginationInfiniteScroll from "@/components/pagination/PaginationInfiniteScroll.vue";
 import FaceRecognitionWarning from "@/components/faceRecog/FaceRecognitionWarning.vue";
 import FaceClusterService from "@/services/face-cluster-service";
 import PeopleService from "@/services/people-service";
 import FaceDetectionService from "@/services/face-detection-service";
+import GoBack from "@/components/headers/GoBack.vue";
 
 const toast = useToast();
 

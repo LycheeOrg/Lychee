@@ -24,28 +24,18 @@ class FaceMaintenanceController extends Controller
 	 * Return a paginated list of all faces for admin quality review.
 	 *
 	 * GET /Face/maintenance
-	 *
-	 * Supports query params:
-	 *   sort_by  – 'confidence' (default) or 'laplacian_variance'
-	 *   sort_dir – 'asc' (default) or 'desc'
-	 *   page     – page number
-	 *   per_page – items per page (default 50)
 	 */
 	public function index(FaceMaintenanceIndexRequest $request): PaginatedFaceResource
 	{
-		$sort_by = in_array($request->query('sort_by'), ['confidence', 'laplacian_variance'], true)
-			? $request->query('sort_by')
-			: 'confidence';
+		$query = Face::with(['photo:id,title', 'person:id,name', 'suggestions'])
+			->where('is_dismissed', '=', $request->dismissed_only);
 
-		$sort_dir = $request->query('sort_dir') === 'desc' ? 'desc' : 'asc';
-		$dismissed_only = filter_var($request->query('dismissed_only', false), FILTER_VALIDATE_BOOLEAN) === true;
+		if ($request->unassigned_only) {
+			$query->whereNull('person_id');
+		}
 
-		$per_page = max(1, min(200, (int) ($request->query('per_page', 50))));
-
-		$paginated = Face::with(['photo:id,title', 'person:id,name', 'suggestions'])
-			->where('is_dismissed', '=', $dismissed_only)
-			->orderBy($sort_by, $sort_dir)
-			->paginate($per_page);
+		$paginated = $query->orderBy($request->sort_by, $request->sort_dir->value)
+			->paginate($request->per_page);
 
 		return new PaginatedFaceResource($paginated);
 	}

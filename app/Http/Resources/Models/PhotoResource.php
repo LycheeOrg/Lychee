@@ -12,12 +12,14 @@ use App\Enum\LicenseType;
 use App\Http\Resources\Models\Utils\PreComputedPhotoData;
 use App\Http\Resources\Models\Utils\PreformattedPhotoData;
 use App\Http\Resources\Models\Utils\TimelineData;
+use App\Http\Resources\Tags\PhotoTagResource;
 use App\Models\Photo;
 use App\Policies\PhotoPolicy;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Spatie\LaravelData\Data;
+use Spatie\TypeScriptTransformer\Attributes\LiteralTypeScriptType;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 #[TypeScript()]
@@ -35,7 +37,8 @@ class PhotoResource extends Data
 	public ?string $live_photo_url;
 	public string $original_checksum;
 	public SizeVariantsResouce $size_variants;
-	/** @var string[] */
+	/** @var PhotoTagResource[] */
+	#[LiteralTypeScriptType('App.Http.Resources.Tags.PhotoTagResource[]')]
 	public array $tags;
 	public ?string $taken_at;
 	public ?string $taken_at_orig_tz;
@@ -71,7 +74,7 @@ class PhotoResource extends Data
 		$this->live_photo_url = $photo->live_photo_url;
 		$this->original_checksum = $photo->original_checksum;
 		$this->size_variants = new SizeVariantsResouce($photo, $should_downgrade_size_variants);
-		$this->tags = $photo->tags->pluck('name')->all();
+		$this->tags = $photo->tags->map(fn ($tag) => new PhotoTagResource($tag->id, $tag->name))->all();
 		$this->taken_at = $photo->taken_at?->toIso8601String();
 		$this->taken_at_orig_tz = $photo->taken_at_orig_tz;
 		$this->title = (request()->configs()->getValueAsBool('file_name_hidden') && Auth::guest()) ? '' : $photo->title;
