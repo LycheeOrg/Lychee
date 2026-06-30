@@ -1,18 +1,24 @@
 <template>
 	<Toolbar
 		v-if="albumStore.album"
-		class="w-full border-0 transition-all duration-100 ease-in-out rounded-none"
+		class="w-full border-0 transition-all duration-100 ease-in-out rounded-none @container"
 		:class="{
 			'max-h-14': !is_full_screen,
 			'max-h-0': is_full_screen,
 		}"
 	>
 		<template #start>
-			<GoBack @go-back="emits('goBack')" />
+			<template v-if="showBreadcrumb">
+				<Breadcrumb :model="breadcrumbModel" class="hidden @min-[28rem]:block max-w-[45vw] border-none bg-transparent p-0" />
+				<div class="flex @min-[28rem]:hidden">
+					<GoBack @go-back="emits('goBack')" />
+				</div>
+			</template>
+			<GoBack v-else @go-back="emits('goBack')" />
 		</template>
 
 		<template #center>
-			{{ albumStore.album.title }}
+			<span :class="{ '@min-[28rem]:hidden': showBreadcrumb }">{{ albumStore.album.title }}</span>
 		</template>
 
 		<template #end>
@@ -99,6 +105,8 @@
 <script setup lang="ts">
 import Button from "primevue/button";
 import Toolbar from "primevue/toolbar";
+import Breadcrumb from "primevue/breadcrumb";
+import { type MenuItem, type MenuItemCommandEvent } from "primevue/menuitem";
 import ContextMenu from "primevue/contextmenu";
 import { useContextMenuAlbumAdd } from "@/composables/contextMenus/contextMenuAlbumAdd";
 import Divider from "primevue/divider";
@@ -109,12 +117,14 @@ import AlbumService from "@/services/album-service";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { useFavouriteStore } from "@/stores/FavouriteState";
 import GoBack from "./GoBack.vue";
-import { onMounted } from "vue";
+import { computed, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { useOrderManagementStore } from "@/stores/OrderManagement";
 import { isTouchDevice } from "@/utils/keybindings-utils";
 import { useAlbumActions } from "@/composables/album/albumActions";
 
+const router = useRouter();
 const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
 const favourites = useFavouriteStore();
@@ -136,6 +146,29 @@ const emits = defineEmits<{
 	showSelected: [];
 	openContextMenu: [event: MouseEvent];
 }>();
+
+const showBreadcrumb = computed(() => (albumStore.config?.is_breadcrumb_enabled ?? false) && (albumStore.modelAlbum?.breadcrumb.length ?? 0) > 0);
+
+const breadcrumbModel = computed<MenuItem[]>(() => {
+	const items: MenuItem[] = (albumStore.modelAlbum?.breadcrumb ?? []).map((ancestor) => {
+		const albumId = ancestor.id;
+		return {
+			label: ancestor.title,
+			disabled: albumId === null,
+			command:
+				albumId === null
+					? undefined
+					: (event: MenuItemCommandEvent) => {
+							event.originalEvent.preventDefault();
+							router.push({ name: "album", params: { albumId } });
+						},
+		};
+	});
+
+	items.push({ label: albumStore.album?.title ?? "", disabled: true });
+
+	return items;
+});
 
 function toggleUploadTrack() {
 	document.getElementById("upload_track_file")?.click();

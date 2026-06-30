@@ -54,7 +54,7 @@ class AlbumHeadController extends Controller
 		$album_resource = match (true) {
 			$request->album() instanceof BaseSmartAlbum => new HeadSmartAlbumResource($request->album()),
 			$request->album() instanceof TagAlbum => new HeadTagAlbumResource($request->album()),
-			$request->album() instanceof Album => new HeadAlbumResource($request->album(), $this->breadcrumb->do($request->album())),
+			$request->album() instanceof Album => new HeadAlbumResource($request->album(), $config->is_breadcrumb_enabled ? $this->breadcrumb->do($request->album()) : []),
 			// @codeCoverageIgnoreStart
 			default => throw new LycheeLogicException('This should not happen'),
 			// @codeCoverageIgnoreEnd
