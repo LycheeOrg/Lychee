@@ -52,9 +52,7 @@ class HeadPersonAlbumResource extends Data
 		$this->is_person_album = true;
 		$this->copyright = $person_album->copyright;
 
-		$user_id = Auth::id();
-		$this->show_persons = $person_album->persons
-			->filter(fn ($p) => $p->is_searchable || ($user_id !== null && $p->user_id === $user_id))
+		$this->show_persons = $person_album->visiblePersons
 			->map(fn ($p) => ['id' => $p->id, 'name' => $p->name])
 			->values()
 			->all();

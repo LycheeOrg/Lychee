@@ -54,6 +54,8 @@ class AlbumFactory
 		SmartAlbumType::MY_BEST_PICTURES->value => MyBestPicturesAlbum::class,
 	];
 
+	private const PHOTOS_RELATIONS = ['photos', 'photos.size_variants', 'photos.statistics', 'photos.palette', 'photos.tags', 'photos.rating'];
+
 	public function __construct(
 		protected readonly ConfigManager $config_manager,
 	) {
@@ -124,9 +126,9 @@ class AlbumFactory
 		$person_album_query = PersonAlbum::query()->with(['access_permissions']);
 
 		if ($with_relations) {
-			$album_query->with(['photos', 'children', 'children.owner', 'photos.size_variants', 'photos.statistics', 'photos.palette', 'photos.tags', 'photos.rating']);
-			$tag_album_query->with(['tags', 'photos', 'photos.size_variants', 'photos.statistics', 'photos.palette', 'photos.tags', 'photos.rating']);
-			$person_album_query->with(['persons', 'photos', 'photos.size_variants', 'photos.statistics', 'photos.palette', 'photos.tags', 'photos.rating']);
+			$album_query->with(array_merge(['children', 'children.owner'], self::PHOTOS_RELATIONS));
+			$tag_album_query->with(array_merge(['tags'], self::PHOTOS_RELATIONS));
+			$person_album_query->with(array_merge(['persons'], self::PHOTOS_RELATIONS));
 		}
 
 		$ret = $album_query->find($album_id) ?? $tag_album_query->find($album_id) ?? $person_album_query->find($album_id);
@@ -195,9 +197,9 @@ class AlbumFactory
 		$album_query = Album::query();
 
 		if ($with_relations) {
-			$tag_album_query->with(['tags', 'photos', 'photos.size_variants', 'photos.statistics', 'photos.palette', 'photos.tags', 'photos.rating']);
-			$person_album_query->with(['persons', 'photos', 'photos.size_variants', 'photos.statistics', 'photos.palette', 'photos.tags', 'photos.rating']);
-			$album_query->with(['photos', 'children', 'photos.size_variants', 'photos.statistics', 'photos.palette', 'photos.tags', 'photos.rating']);
+			$tag_album_query->with(array_merge(['tags'], self::PHOTOS_RELATIONS));
+			$person_album_query->with(array_merge(['persons'], self::PHOTOS_RELATIONS));
+			$album_query->with(array_merge(['children'], self::PHOTOS_RELATIONS));
 		}
 
 		/** @var ($albums_only is true ? array<int,Album> : array<int,TagAlbum>)&array */

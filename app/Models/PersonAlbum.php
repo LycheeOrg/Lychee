@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Query\Builder as BaseBuilder;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * App\Models\PersonAlbum.
@@ -125,6 +126,10 @@ class PersonAlbum extends BaseAlbum
 	}
 
 	/**
+	 * All persons attached to this album, regardless of visibility.
+	 * Used internally (e.g. to resolve the album's photos via {@link HasManyPhotosByPerson}) and for syncing.
+	 * Use {@link PersonAlbum::visiblePersons()} to display persons to the current user.
+	 *
 	 * @return BelongsToMany<Person,$this>
 	 */
 	public function persons(): BelongsToMany
@@ -135,5 +140,16 @@ class PersonAlbum extends BaseAlbum
 			'album_id',
 			'person_id',
 		);
+	}
+
+	/**
+	 * Persons attached to this album that are visible to the current user,
+	 * i.e. searchable persons, plus the person linked to the current user, if any.
+	 *
+	 * @return BelongsToMany<Person,$this>
+	 */
+	public function visiblePersons(): BelongsToMany
+	{
+		return $this->persons()->searchable(Auth::id());
 	}
 }

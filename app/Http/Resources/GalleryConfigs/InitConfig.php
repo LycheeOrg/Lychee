@@ -270,7 +270,7 @@ class InitConfig extends Data
 		$this->album_header_size = request()->configs()->getValueAsEnum('album_header_size', AlbumHeaderSize::class);
 		$this->is_album_header_landing_title_enabled = request()->configs()->getValueAsBool('album_header_landing_title_enabled');
 		$this->use_admin_dashboard = request()->configs()->getValueAsBool('use_admin_dashboard');
-		$this->is_person_album_enabled = config('features.v8') === true && request()->configs()->getValueAsBool('ai_vision_face_enabled');
+		$this->is_person_album_enabled = request()->configs()->getValueAsBool('ai_vision_face_enabled');
 
 		$this->set_supporter_properties();
 	}

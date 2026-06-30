@@ -89,14 +89,12 @@ class Top
 
 		/** @var BaseCollection<int,PersonAlbum> $person_albums */
 		$person_albums = collect();
-		if (config('features.v8') === true && $this->config_manager->getValueAsBool('ai_vision_face_enabled')) {
-			$person_album_query = $this->album_query_policy
-				->applyVisibilityFilter(PersonAlbum::query()->with(['access_permissions', 'owner']), $user);
+		$person_album_query = $this->album_query_policy
+		->applyVisibilityFilter(PersonAlbum::query()->with(['access_permissions', 'owner']), $user);
 
-			$person_albums = (new SortingDecorator($person_album_query))
-				->orderBy($this->sorting->column, $this->sorting->order)
-				->get();
-		}
+		$person_albums = (new SortingDecorator($person_album_query))
+			->orderBy($this->sorting->column, $this->sorting->order)
+			->get();
 
 		$pinned_album_query = $this->album_query_policy
 			->applyVisibilityFilter(Album::query()->with(['access_permissions', 'owner'])

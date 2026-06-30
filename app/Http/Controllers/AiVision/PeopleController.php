@@ -15,6 +15,7 @@ use App\Http\Requests\Person\StorePersonRequest;
 use App\Http\Requests\Person\UpdatePersonRequest;
 use App\Http\Resources\Collections\PaginatedPersonsResource;
 use App\Http\Resources\Models\PersonResource;
+use App\Jobs\CleanupOrphanedPersonAlbumsJob;
 use App\Models\Person;
 use App\Repositories\ConfigManager;
 use Illuminate\Routing\Controller;
@@ -114,6 +115,6 @@ class PeopleController extends Controller
 		$person = Person::findOrFail($request->personId());
 		$person->delete();
 
-		\App\Jobs\CleanupOrphanedPersonAlbumsJob::dispatch();
+		CleanupOrphanedPersonAlbumsJob::dispatch();
 	}
 }

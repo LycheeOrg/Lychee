@@ -82,9 +82,7 @@ class EditableBaseAlbumResource extends Data
 		}
 
 		if ($album instanceof PersonAlbum) {
-			$user_id = \Illuminate\Support\Facades\Auth::id();
-			$this->persons = $album->persons
-				->filter(fn ($p) => $p->is_searchable || ($user_id !== null && $p->user_id === $user_id))
+			$this->persons = $album->visiblePersons
 				->map(fn ($p) => ['id' => $p->id, 'name' => $p->name])
 				->values()
 				->all();

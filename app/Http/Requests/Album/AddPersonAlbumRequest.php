@@ -33,7 +33,6 @@ class AddPersonAlbumRequest extends BaseApiRequest implements HasTitle, HasIsAnd
 	public function authorize(): bool
 	{
 		return Gate::check(AlbumPolicy::CAN_EDIT, [AbstractAlbum::class, null]) &&
-			config('features.v8') === true &&
 			request()->configs()->getValueAsBool('ai_vision_face_enabled');
 	}
 
