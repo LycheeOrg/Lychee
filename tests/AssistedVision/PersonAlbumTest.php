@@ -30,7 +30,6 @@ class PersonAlbumTest extends BaseApiWithDataTest
 	{
 		parent::setUp();
 
-		config(['features.v8' => true]);
 		Configs::set('ai_vision_enabled', '1');
 		Configs::set('ai_vision_face_enabled', '1');
 
@@ -43,21 +42,8 @@ class PersonAlbumTest extends BaseApiWithDataTest
 	{
 		DB::table('person_albums_persons')->delete();
 		DB::table('persons')->delete();
-		config(['features.v8' => false]);
 
 		parent::tearDown();
-	}
-
-	public function testCreatePersonAlbumV8Disabled(): void
-	{
-		config(['features.v8' => false]);
-
-		$response = $this->actingAs($this->userMayUpload1)->postJson('PersonAlbum', [
-			'title' => 'test_person_album',
-			'persons' => [$this->person1->id],
-			'is_and' => false,
-		]);
-		$this->assertForbidden($response);
 	}
 
 	public function testCreatePersonAlbumFaceDisabled(): void
@@ -145,7 +131,7 @@ class PersonAlbumTest extends BaseApiWithDataTest
 		$response->assertJsonFragment(['id' => $album_id]);
 	}
 
-	public function testRootListingExcludesWhenFeatureDisabled(): void
+	public function testRootListingExcludesWhenFaceDisabled(): void
 	{
 		$response = $this->actingAs($this->userMayUpload1)->postJson('PersonAlbum', [
 			'title' => 'hidden_person_album',
@@ -154,7 +140,7 @@ class PersonAlbumTest extends BaseApiWithDataTest
 		]);
 		self::assertEquals(200, $response->getStatusCode());
 
-		config(['features.v8' => false]);
+		Configs::set('ai_vision_face_enabled', '0');
 
 		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Albums');
 		$this->assertOk($response);
