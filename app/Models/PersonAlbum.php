@@ -138,8 +138,8 @@ class PersonAlbum extends BaseAlbum
 		return $this->belongsToMany(
 			Person::class,
 			PersonAlbumPersons::PERSON_ALBUM_PERSONS,
-			PersonAlbumPersons::ALBUM_ID,
-			PersonAlbumPersons::PERSON_ID,
+			'album_id',
+			'person_id',
 		);
 	}
 
