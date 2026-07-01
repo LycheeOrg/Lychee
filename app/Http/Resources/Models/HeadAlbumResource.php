@@ -18,6 +18,7 @@ use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Spatie\LaravelData\Data;
+use Spatie\TypeScriptTransformer\Attributes\LiteralTypeScriptType;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 #[TypeScript()]
@@ -55,7 +56,14 @@ class HeadAlbumResource extends Data
 
 	public ?AlbumStatisticsResource $statistics = null;
 
-	public function __construct(Album $album)
+	/** @var BreadcrumbItemResource[] */
+	#[LiteralTypeScriptType('App.Http.Resources.Models.BreadcrumbItemResource[]')]
+	public array $breadcrumb;
+
+	/**
+	 * @param BreadcrumbItemResource[] $breadcrumb
+	 */
+	public function __construct(Album $album, array $breadcrumb = [])
 	{
 		$this->id = $album->id;
 		$this->title = $album->title;
@@ -85,6 +93,7 @@ class HeadAlbumResource extends Data
 		$url = $this->getHeaderUrl($album);
 		$this->preFormattedData = new PreFormattedAlbumData($album, $url);
 		$this->is_pinned = $album->is_pinned;
+		$this->breadcrumb = $breadcrumb;
 
 		if ($this->rights->can_edit) {
 			$this->editable = EditableBaseAlbumResource::fromModel($album);
@@ -95,8 +104,11 @@ class HeadAlbumResource extends Data
 		}
 	}
 
-	public static function fromModel(Album $album): HeadAlbumResource
+	/**
+	 * @param BreadcrumbItemResource[] $breadcrumb
+	 */
+	public static function fromModel(Album $album, array $breadcrumb = []): HeadAlbumResource
 	{
-		return new self($album);
+		return new self($album, $breadcrumb);
 	}
 }

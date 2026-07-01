@@ -255,6 +255,7 @@ const configForMenu = computed<App.Http.Resources.GalleryConfigs.AlbumConfig>(()
 		is_mod_frame_enabled: false,
 		is_search_accessible: false,
 		is_nsfw_warning_visible: false,
+		is_breadcrumb_enabled: false,
 		album_thumb_css_aspect_ratio: "aspect-square",
 		photo_layout: "justified",
 		is_album_timeline_enabled: false,

@@ -34,6 +34,7 @@ class SettingsController extends Controller
 		'site_logo',
 		'landing_logo',
 		'landing_header_logo',
+		'breadcrumb_enabled',
 	];
 
 	/**

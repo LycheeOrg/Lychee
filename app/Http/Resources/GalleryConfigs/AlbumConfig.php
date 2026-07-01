@@ -36,6 +36,7 @@ class AlbumConfig extends Data
 	public bool $is_mod_frame_enabled;
 	public bool $is_search_accessible;
 	public bool $is_nsfw_warning_visible;
+	public bool $is_breadcrumb_enabled;
 	public AspectRatioCSSType $album_thumb_css_aspect_ratio;
 	public PhotoLayoutType $photo_layout;
 	public bool $is_album_timeline_enabled = false;
@@ -49,6 +50,7 @@ class AlbumConfig extends Data
 
 		$this->is_base_album = $album instanceof BaseAlbum;
 		$this->is_model_album = $album instanceof Album;
+		$this->is_breadcrumb_enabled = $this->is_model_album && $config_manager->getValueAsBool('breadcrumb_enabled');
 		$this->is_password_protected = !$is_accessible && $public_perm?->password !== null;
 		$this->is_nsfw_warning_visible =
 			$album instanceof BaseAlbum &&
