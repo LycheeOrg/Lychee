@@ -8,6 +8,7 @@
 
 namespace App\Models;
 
+use App\Constants\PersonAlbumPersons;
 use App\Exceptions\InvalidPropertyException;
 use App\ModelFunctions\HasAbstractAlbumProperties;
 use App\Models\Builders\PersonAlbumBuilder;
@@ -136,9 +137,9 @@ class PersonAlbum extends BaseAlbum
 	{
 		return $this->belongsToMany(
 			Person::class,
-			'person_albums_persons',
-			'album_id',
-			'person_id',
+			PersonAlbumPersons::PERSON_ALBUM_PERSONS,
+			PersonAlbumPersons::ALBUM_ID,
+			PersonAlbumPersons::PERSON_ID,
 		);
 	}
 

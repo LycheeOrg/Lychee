@@ -8,17 +8,22 @@
 
 namespace App\Relations;
 
+use App\Constants\PersonAlbumPersons;
 use App\Contracts\Exceptions\InternalLycheeException;
 use App\Enum\OrderSortingType;
 use App\Exceptions\Internal\NotImplementedException;
 use App\Models\Builders\PhotoBuilder;
 use App\Models\Extensions\SortingDecorator;
+use App\Models\Person;
 use App\Models\PersonAlbum;
 use App\Models\Photo;
+use App\Models\User;
+use App\Policies\AlbumPolicy;
 use App\Repositories\ConfigManager;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Query\Builder as BaseBuilder;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -60,18 +65,24 @@ class HasManyPhotosByPerson extends BaseHasManyPhotos
 		/** @var PersonAlbum $album */
 		$album = $albums[0];
 
-		$person_ids = $album->relationLoaded('persons')
-			? $album->persons->pluck('id')->all()
-			: DB::table('person_albums_persons')
-			->where('album_id', '=', $album->id)
+		/** @var ?User $user */
+		$user = Auth::user();
+		$config_manager = app(ConfigManager::class);
+		$can_see_all_persons = $user?->may_administrate === true || $config_manager->getValueAsBool('PA_override_searchability');
+
+		$person_ids = DB::table(PersonAlbumPersons::PERSON_ALBUM_PERSONS)
+			->where(PersonAlbumPersons::ALBUM_ID, '=', $album->id)
+			->when(
+				!$can_see_all_persons,
+				fn (BaseBuilder $q) => $q
+				->join('persons', PersonAlbumPersons::PERSON_ID, '=', 'persons.id')
+				->where('persons.is_searchable', '=', true)
+			)
 			->pluck('person_id')
 			->all();
 		$person_ids = array_values(array_unique($person_ids));
 
-		$user = \Illuminate\Support\Facades\Auth::user();
-		$unlocked_album_ids = \App\Policies\AlbumPolicy::getUnlockedAlbumIDs();
-
-		$config_manager = app(ConfigManager::class);
+		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
 
 		/** @var PhotoBuilder<Photo> $ids_query */
 		$ids_query = Photo::query()->select('photos.id');
