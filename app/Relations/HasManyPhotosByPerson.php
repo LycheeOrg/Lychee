@@ -14,7 +14,6 @@ use App\Enum\OrderSortingType;
 use App\Exceptions\Internal\NotImplementedException;
 use App\Models\Builders\PhotoBuilder;
 use App\Models\Extensions\SortingDecorator;
-use App\Models\Person;
 use App\Models\PersonAlbum;
 use App\Models\Photo;
 use App\Models\User;

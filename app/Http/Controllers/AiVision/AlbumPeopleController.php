@@ -43,12 +43,9 @@ class AlbumPeopleController extends Controller
 					->whereHas('albums', fn ($qa) => $qa->where('albums.id', $album->id))
 				)
 			)
+			// Non-admin: only show searchable persons, plus the person linked to the current user
+			->when($user?->may_administrate !== true, fn ($q) => $q->searchable($user?->id))
 			->orderBy('name');
-
-		// Non-admin: only show searchable persons, plus the person linked to the current user
-		if ($user?->may_administrate !== true) {
-			$query->searchable($user?->id);
-		}
 
 		$persons = $query->paginate(50);
 

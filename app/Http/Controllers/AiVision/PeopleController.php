@@ -35,18 +35,9 @@ class PeopleController extends Controller
 	public function index(ListPersonsRequest $_request): PaginatedPersonsResource
 	{
 		$user = Auth::user();
-		$query = Person::query()->orderBy('name');
-
-		if ($user === null || !$user->may_administrate) {
-			// Non-admin: only show searchable persons, plus the person linked to the current user
-			$user_id = $user?->id;
-			$query->where(function ($q) use ($user_id): void {
-				$q->where('is_searchable', '=', true);
-				if ($user_id !== null) {
-					$q->orWhere('user_id', '=', $user_id);
-				}
-			});
-		}
+		$query = Person::query()
+			->when($user?->may_administrate !== true, fn ($q) => $q->searchable($user?->id))
+			->orderBy('name');
 
 		$persons = $query->paginate(50);
 
