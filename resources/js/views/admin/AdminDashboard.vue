@@ -142,6 +142,21 @@
 				</div>
 			</div>
 		</Panel>
+
+		<div class="flex items-center justify-center gap-6 mt-6 text-sm">
+			<a
+				v-if="initData?.settings.can_edit"
+				:href="`${Constants.BASE_URL}/docs/api`"
+				target="_blank"
+				rel="noopener noreferrer"
+				class="text-muted-color hover:text-color underline"
+			>
+				{{ $t("left-menu.api") }}
+			</a>
+			<RouterLink :to="{ name: 'changelogs' }" class="text-muted-color hover:text-color underline">
+				{{ $t("left-menu.changelog") }}
+			</RouterLink>
+		</div>
 	</div>
 </template>
 
@@ -160,6 +175,7 @@ import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
 import PiMiniIcon from "@/components/icons/PiMiniIcon.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
+import Constants from "@/services/constants";
 import SecurityAdvisoriesService from "@/services/security-advisories-service";
 import AdminStatsService, { type AdminUpdateStatusResource } from "@/services/admin-stats-service";
 import { useAdminTiles, type AdminTile, type AdminTileGroup } from "@/composables/useAdminTiles";

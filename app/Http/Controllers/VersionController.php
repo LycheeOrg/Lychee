@@ -95,12 +95,16 @@ class VersionController extends Controller
 	 */
 	protected function convert(string $response): array
 	{
-		// remove the </style> block at the beginning of the changelogs
-		$pos = strpos($response, '</style>');
-		if ($pos === false) {
-			return [];
+		// remove the first 12 lines at the beginning of the changelogs
+		$pos = 0;
+		for ($i = 0; $i < 12; $i++) {
+			$pos = strpos($response, "\n", $pos);
+			if ($pos === false) {
+				return [];
+			}
+			$pos++;
 		}
-		$changelog = substr($response, $pos + strlen('</style>'));
+		$changelog = substr($response, $pos);
 
 		// Apply the split and map functions
 		// to get the changelogs in the right format
