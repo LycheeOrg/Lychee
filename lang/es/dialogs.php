@@ -182,6 +182,13 @@ return [
         'set_tags' => 'Establecer etiquetas para mostrar',
         'create' => 'Crear álbum de etiquetas',
     ],
+    'new_person_album' => [
+        'menu' => 'Create Person Album',
+        'info' => 'Enter a title for the new person album:',
+        'title' => 'title',
+        'set_persons' => 'Select persons to include',
+        'create' => 'Create Person Album',
+    ],
     'delete_album' => [
         'confirmation' => '¿Estás seguro de que quieres eliminar el álbum «%s» y todas las fotos que contiene?',
         'confirmation_tag' => '¿Estás seguro de que deseas eliminar el álbum "%s"?',

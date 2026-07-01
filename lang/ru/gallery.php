@@ -198,6 +198,8 @@ return [
             'show_tags' => 'Установить отображаемые теги',
             'tags_required' => 'Теги обязательны.',
             'all_tags_must_match' => 'Все теги должны совпадать.',
+            'all_persons_must_match' => 'All persons must be present.',
+            'persons_required' => 'At least one person is required.',
         ],
     ],
     'photo' => [
@@ -330,6 +332,7 @@ return [
         'import_dropbox' => 'Импортировать из Dropbox',
         'new_album' => 'Новый альбом',
         'new_tag_album' => 'Новый альбом с тегами',
+        'new_person_album' => 'New Person Album',
         'upload_track' => 'Загрузить трек',
         'delete_track' => 'Удалить трек',
     ],

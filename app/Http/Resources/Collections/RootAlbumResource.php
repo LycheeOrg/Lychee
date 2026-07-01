@@ -41,6 +41,9 @@ class RootAlbumResource extends Data
 	public Collection $tag_albums;
 	/** @var Collection<int,ThumbAlbumResource> */
 	#[LiteralTypeScriptType('App.Http.Resources.Models.ThumbAlbumResource[]')]
+	public Collection $person_albums;
+	/** @var Collection<int,ThumbAlbumResource> */
+	#[LiteralTypeScriptType('App.Http.Resources.Models.ThumbAlbumResource[]')]
 	public Collection $pinned_albums;
 	/** @var Collection<int,ThumbAlbumResource> */
 	#[LiteralTypeScriptType('App.Http.Resources.Models.ThumbAlbumResource[]')]
@@ -55,6 +58,7 @@ class RootAlbumResource extends Data
 	/**
 	 * @param Collection<int,ThumbAlbumResource> $smart_albums
 	 * @param Collection<int,ThumbAlbumResource> $tag_albums
+	 * @param Collection<int,ThumbAlbumResource> $person_albums
 	 * @param Collection<int,ThumbAlbumResource> $pinned_albums
 	 * @param Collection<int,ThumbAlbumResource> $albums
 	 * @param Collection<int,ThumbAlbumResource> $shared_albums
@@ -65,6 +69,7 @@ class RootAlbumResource extends Data
 	public function __construct(
 		Collection $smart_albums,
 		Collection $tag_albums,
+		Collection $person_albums,
 		Collection $pinned_albums,
 		Collection $albums,
 		Collection $shared_albums,
@@ -73,6 +78,7 @@ class RootAlbumResource extends Data
 	) {
 		$this->smart_albums = $smart_albums;
 		$this->tag_albums = $tag_albums;
+		$this->person_albums = $person_albums;
 		$this->albums = $albums;
 		$this->pinned_albums = $pinned_albums;
 		$sorting = request()->configs()->getValueAsEnum('sorting_albums_col', ColumnSortingType::class);
@@ -88,6 +94,7 @@ class RootAlbumResource extends Data
 		return new self(
 			smart_albums: ThumbAlbumResource::collect($dto->smart_albums->values()),
 			tag_albums: ThumbAlbumResource::collect($dto->tag_albums),
+			person_albums: ThumbAlbumResource::collect($dto->person_albums),
 			pinned_albums: ThumbAlbumResource::collect($dto->pinned_albums),
 			albums: ThumbAlbumResource::collect($dto->albums),
 			shared_albums: $dto->shared_albums !== null ? ThumbAlbumResource::collect($dto->shared_albums) : collect([]),

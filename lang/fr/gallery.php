@@ -198,6 +198,8 @@ return [
             'show_tags' => 'Définir les étiquettes à afficher',
             'tags_required' => 'Les étiquettes sont obligatoires.',
             'all_tags_must_match' => 'Toutes les étiquettes doivent être présentes.',
+            'all_persons_must_match' => 'All persons must be present.',
+            'persons_required' => 'At least one person is required.',
         ],
     ],
     'photo' => [
@@ -330,6 +332,7 @@ return [
         'import_dropbox' => 'Importer depuis Dropbox',
         'new_album' => 'Nouvel album',
         'new_tag_album' => 'Nouvel album par étiquette',
+        'new_person_album' => 'New Person Album',
         'upload_track' => 'Téléverser une trace',
         'delete_track' => 'Supprimer la trace',
     ],

@@ -19,6 +19,7 @@ export const useAlbumsStore = defineStore("albums-store", {
 		isLoading: false as boolean,
 		baseSmartAlbums: [] as App.Http.Resources.Models.ThumbAlbumResource[],
 		tagAlbums: [] as App.Http.Resources.Models.ThumbAlbumResource[],
+		personAlbums: [] as App.Http.Resources.Models.ThumbAlbumResource[],
 		albums: [] as App.Http.Resources.Models.ThumbAlbumResource[],
 		pinnedAlbums: [] as App.Http.Resources.Models.ThumbAlbumResource[],
 		sharedAlbums: [] as SplitData<App.Http.Resources.Models.ThumbAlbumResource>[],
@@ -27,7 +28,7 @@ export const useAlbumsStore = defineStore("albums-store", {
 	}),
 	getters: {
 		smartAlbums(state): App.Http.Resources.Models.ThumbAlbumResource[] {
-			return state.baseSmartAlbums.concat(state.tagAlbums);
+			return state.baseSmartAlbums.concat(state.tagAlbums).concat(state.personAlbums);
 		},
 		// We use state here because we want the RETURN type inference
 		selectableAlbums(state): App.Http.Resources.Models.ThumbAlbumResource[] {
@@ -51,6 +52,7 @@ export const useAlbumsStore = defineStore("albums-store", {
 			this.isLoading = false;
 			this.baseSmartAlbums = [];
 			this.tagAlbums = [];
+			this.personAlbums = [];
 			this.albums = [];
 			this.pinnedAlbums = [];
 			this.sharedAlbums = [];
@@ -75,6 +77,7 @@ export const useAlbumsStore = defineStore("albums-store", {
 				.then((data) => {
 					this.baseSmartAlbums = data.data.smart_albums ?? [];
 					this.tagAlbums = data.data.tag_albums;
+					this.personAlbums = data.data.person_albums ?? [];
 					this.albums = data.data.albums;
 					this.pinnedAlbums = data.data.pinned_albums;
 					this.sharedAlbums = spliter(

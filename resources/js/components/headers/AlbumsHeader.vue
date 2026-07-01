@@ -174,7 +174,8 @@ const favourites = useFavouriteStore();
 const albumsStore = useAlbumsStore();
 const orderManagementStore = useOrderManagementStore();
 
-const { dropbox_api_key, is_favourite_enabled, is_se_preview_enabled, is_live_metrics_enabled, is_registration_enabled } = storeToRefs(lycheeStore);
+const { dropbox_api_key, is_favourite_enabled, is_se_preview_enabled, is_live_metrics_enabled, is_registration_enabled, is_person_album_enabled } =
+	storeToRefs(lycheeStore);
 const { is_login_open, is_upload_visible, is_create_album_visible, is_create_tag_album_visible, is_metrics_open } = storeToRefs(togglableStore);
 
 const router = useRouter();
@@ -182,6 +183,7 @@ const router = useRouter();
 const {
 	toggleCreateAlbum,
 	toggleCreateTagAlbum,
+	toggleCreatePersonAlbum,
 	toggleImportFromLink,
 	toggleImportFromDropbox,
 	toggleUpload,
@@ -199,10 +201,12 @@ const { addmenu, addMenu } = useContextMenuAlbumsAdd(
 		toggleImportFromLink: toggleImportFromLink,
 		toggleImportFromDropbox: toggleImportFromDropbox,
 		toggleCreateTagAlbum: toggleCreateTagAlbum,
+		toggleCreatePersonAlbum: toggleCreatePersonAlbum,
 		toggleImportFromServer: toggleImportFromServer,
 	},
 	dropbox_api_key,
 	is_owner,
+	is_person_album_enabled,
 );
 
 function openAddMenu(event: Event) {

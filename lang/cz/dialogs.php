@@ -183,6 +183,13 @@ return [
         'set_tags' => 'Vložte značky alba',
         'create' => 'Vytvořit Album ze štítků',
     ],
+    'new_person_album' => [
+        'menu' => 'Create Person Album',
+        'info' => 'Enter a title for the new person album:',
+        'title' => 'title',
+        'set_persons' => 'Select persons to include',
+        'create' => 'Create Person Album',
+    ],
     'delete_album' => [
         'confirmation' => 'Jste si jistý, že chcete smazat album „%s” a všechny fotografie v něm obsažené?',
         'confirmation_tag' => 'Jste si jistý, že chcete smazat album „%s"?',

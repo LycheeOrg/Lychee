@@ -148,6 +148,7 @@ const props = defineProps<{
 	album:
 		| App.Http.Resources.Models.HeadAlbumResource
 		| App.Http.Resources.Models.HeadTagAlbumResource
+		| App.Http.Resources.Models.HeadPersonAlbumResource
 		| App.Http.Resources.Models.HeadSmartAlbumResource;
 }>();
 

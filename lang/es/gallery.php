@@ -197,6 +197,8 @@ return [
             'show_tags' => 'Establecer etiquetas para mostrar',
             'tags_required' => 'Se requieren etiquetas.',
             'all_tags_must_match' => 'Todas las etiquetas deben coincidir.',
+            'all_persons_must_match' => 'All persons must be present.',
+            'persons_required' => 'At least one person is required.',
         ],
     ],
     'photo' => [
@@ -329,6 +331,7 @@ return [
         'import_dropbox' => 'Importar desde Dropbox',
         'new_album' => 'Nuevo álbum',
         'new_tag_album' => 'Nuevo álbum de Tag',
+        'new_person_album' => 'New Person Album',
         'upload_track' => 'Subir pista',
         'delete_track' => 'Eliminar pista',
     ],

@@ -17,7 +17,7 @@ class HeadAbstractAlbumResource extends Data
 {
 	public function __construct(
 		public AlbumConfig $config,
-		public HeadAlbumResource|HeadSmartAlbumResource|HeadTagAlbumResource $resource)
+		public HeadAlbumResource|HeadSmartAlbumResource|HeadTagAlbumResource|HeadPersonAlbumResource $resource)
 	{
 	}
 }

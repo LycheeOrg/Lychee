@@ -16,6 +16,7 @@ use App\Factories\AlbumFactory;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasAbstractAlbumTrait;
 use App\Models\Album;
+use App\Models\PersonAlbum;
 use App\Models\Tag;
 use App\Models\TagAlbum;
 use App\Policies\AlbumPolicy;
@@ -118,6 +119,9 @@ class GetAlbumPhotosRequest extends BaseApiRequest implements HasAbstractAlbum
 
 		// Load tag album if not found as regular album
 		$this->album ??= TagAlbum::find($values[RequestAttribute::ALBUM_ID_ATTRIBUTE]);
+
+		// Load person album if not found as tag album
+		$this->album ??= PersonAlbum::find($values[RequestAttribute::ALBUM_ID_ATTRIBUTE]);
 
 		// If neither found, throw ModelNotFoundException
 		$this->album ??= throw new ModelNotFoundException();

@@ -14,6 +14,7 @@ use App\Http\Requests\Album\GetAlbumPhotosRequest;
 use App\Http\Resources\Collections\PaginatedPhotosResource;
 use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
+use App\Models\PersonAlbum;
 use App\Models\Photo;
 use App\Models\TagAlbum;
 use App\Policies\AlbumPolicy;
@@ -45,7 +46,7 @@ class AlbumPhotosController extends Controller
 	 */
 	public function get(GetAlbumPhotosRequest $request): PaginatedPhotosResource
 	{
-		/** @var Album|TagAlbum|BaseSmartAlbum $album */
+		/** @var Album|TagAlbum|PersonAlbum|BaseSmartAlbum $album */
 		$album = $request->album();
 
 		$per_page = $request->configs()->getValueAsInt('photos_per_page');
@@ -62,8 +63,8 @@ class AlbumPhotosController extends Controller
 		$sorting = $album->getEffectivePhotoSorting();
 
 		// grants_full_photo_access
-		if ($album instanceof TagAlbum) {
-			// @phpstan-ignore method.private
+		if ($album instanceof TagAlbum || $album instanceof PersonAlbum) {
+			// @phpstan-ignore method.notFound
 			$query = $album->photos()->with(['size_variants', 'tags', 'palette', 'statistics', 'rating']);
 
 			// Apply sorting via SortingDecorator

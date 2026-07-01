@@ -55,6 +55,27 @@ export type UpdateTagAlbumData = {
 	is_and: boolean;
 };
 
+export type CreatePersonAlbumData = {
+	title: string;
+	persons: string[];
+	is_and: boolean;
+};
+
+export type UpdatePersonAlbumData = {
+	album_id: string;
+	title: string;
+	slug: string | null;
+	persons: string[];
+	description: string | null;
+	photo_sorting_column: App.Enum.ColumnSortingPhotoType | null;
+	photo_sorting_order: App.Enum.OrderSortingType | null;
+	copyright: string | null;
+	photo_layout: App.Enum.PhotoLayoutType | null;
+	photo_timeline: App.Enum.TimelinePhotoGranularity | null;
+	is_pinned: boolean;
+	is_and: boolean;
+};
+
 export type UpdateProtectionPolicyData = {
 	album_id: string;
 	password: string | undefined;
@@ -173,6 +194,14 @@ const AlbumService = {
 
 	updateTag(data: UpdateTagAlbumData): Promise<AxiosResponse> {
 		return axios.patch(`${Constants.getApiUrl()}TagAlbum`, data);
+	},
+
+	createPerson(data: CreatePersonAlbumData): Promise<AxiosResponse<string>> {
+		return axios.post(`${Constants.getApiUrl()}PersonAlbum`, data);
+	},
+
+	updatePerson(data: UpdatePersonAlbumData): Promise<AxiosResponse> {
+		return axios.patch(`${Constants.getApiUrl()}PersonAlbum`, data);
 	},
 
 	updateProtectionPolicy(data: UpdateProtectionPolicyData): Promise<AxiosResponse> {

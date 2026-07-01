@@ -182,6 +182,13 @@ return [
         'set_tags' => 'Anzuzeigende Tags festlegen',
         'create' => 'Tag-Album erstellen',
     ],
+    'new_person_album' => [
+        'menu' => 'Create Person Album',
+        'info' => 'Enter a title for the new person album:',
+        'title' => 'title',
+        'set_persons' => 'Select persons to include',
+        'create' => 'Create Person Album',
+    ],
     'delete_album' => [
         'confirmation' => 'Sicher, dass das Album „%s“ und alle darin enthaltenen Fotos gelöscht werden soll?',
         'confirmation_tag' => 'Sicher, dass das Album „%s“ gelöscht werden soll?',

@@ -364,6 +364,7 @@ declare namespace App.Http.Resources.Collections {
 	export type RootAlbumResource = {
 		smart_albums: App.Http.Resources.Models.ThumbAlbumResource[];
 		tag_albums: App.Http.Resources.Models.ThumbAlbumResource[];
+		person_albums: App.Http.Resources.Models.ThumbAlbumResource[];
 		pinned_albums: App.Http.Resources.Models.ThumbAlbumResource[];
 		albums: App.Http.Resources.Models.ThumbAlbumResource[];
 		shared_albums: App.Http.Resources.Models.ThumbAlbumResource[];
@@ -445,6 +446,7 @@ declare namespace App.Http.Resources.Editable {
 		album_timeline: App.Enum.TimelineAlbumGranularity | null;
 		photo_timeline: App.Enum.TimelinePhotoGranularity | null;
 		tags: Array<string>;
+		persons: Array<{ id: string; name: string }>;
 		is_and: boolean;
 		is_model_album: boolean;
 		is_pinned: boolean;
@@ -658,6 +660,7 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		album_header_size: App.Enum.AlbumHeaderSize;
 		is_album_header_landing_title_enabled: boolean;
 		use_admin_dashboard: boolean;
+		is_person_album_enabled: boolean;
 	};
 	export type LandingPageResource = {
 		landing_page_enable: boolean;
@@ -856,7 +859,8 @@ declare namespace App.Http.Resources.Models {
 		resource:
 			| App.Http.Resources.Models.HeadAlbumResource
 			| App.Http.Resources.Models.HeadSmartAlbumResource
-			| App.Http.Resources.Models.HeadTagAlbumResource;
+			| App.Http.Resources.Models.HeadTagAlbumResource
+			| App.Http.Resources.Models.HeadPersonAlbumResource;
 	};
 	export type HeadAlbumResource = {
 		id: string;
@@ -898,6 +902,20 @@ declare namespace App.Http.Resources.Models {
 		cover_id: string | null;
 		is_tag_album: boolean;
 		show_tags: Array<string>;
+		policy: App.Http.Resources.Models.Utils.AlbumProtectionPolicy;
+		rights: App.Http.Resources.Rights.AlbumRightsResource;
+		preFormattedData: App.Http.Resources.Models.Utils.PreFormattedAlbumData;
+		editable: App.Http.Resources.Editable.EditableBaseAlbumResource | null;
+		statistics: App.Http.Resources.Models.AlbumStatisticsResource | null;
+	};
+	export type HeadPersonAlbumResource = {
+		id: string;
+		title: string;
+		slug: string | null;
+		owner_name: string | null;
+		copyright: string | null;
+		is_person_album: boolean;
+		show_persons: Array<{ id: string; name: string }>;
 		policy: App.Http.Resources.Models.Utils.AlbumProtectionPolicy;
 		rights: App.Http.Resources.Rights.AlbumRightsResource;
 		preFormattedData: App.Http.Resources.Models.Utils.PreFormattedAlbumData;
@@ -1077,6 +1095,7 @@ declare namespace App.Http.Resources.Models {
 		is_link_required: boolean;
 		is_password_required: boolean;
 		is_tag_album: boolean;
+		is_person_album: boolean;
 		has_subalbum: boolean;
 		num_subalbums: number;
 		num_photos: number;

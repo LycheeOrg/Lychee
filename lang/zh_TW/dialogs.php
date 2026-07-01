@@ -182,6 +182,13 @@ return [
         'set_tags' => '設定要顯示的標籤',
         'create' => '建立標籤相簿',
     ],
+    'new_person_album' => [
+        'menu' => 'Create Person Album',
+        'info' => 'Enter a title for the new person album:',
+        'title' => 'title',
+        'set_persons' => 'Select persons to include',
+        'create' => 'Create Person Album',
+    ],
     'delete_album' => [
         'confirmation' => '您確定要刪除相簿%s及其中所包含的相片嗎？',
         'confirmation_tag' => '您確定要刪除相簿%s嗎？',

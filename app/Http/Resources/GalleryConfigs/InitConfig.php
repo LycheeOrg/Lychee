@@ -158,6 +158,7 @@ class InitConfig extends Data
 	public bool $is_album_header_landing_title_enabled;
 
 	public bool $use_admin_dashboard;
+	public bool $is_person_album_enabled;
 
 	public function __construct()
 	{
@@ -269,6 +270,7 @@ class InitConfig extends Data
 		$this->album_header_size = request()->configs()->getValueAsEnum('album_header_size', AlbumHeaderSize::class);
 		$this->is_album_header_landing_title_enabled = request()->configs()->getValueAsBool('album_header_landing_title_enabled');
 		$this->use_admin_dashboard = request()->configs()->getValueAsBool('use_admin_dashboard');
+		$this->is_person_album_enabled = request()->configs()->getValueAsBool('ai_vision_face_enabled');
 
 		$this->set_supporter_properties();
 	}

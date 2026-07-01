@@ -182,6 +182,13 @@ return [
         'set_tags' => 'تعيين العلامات للعرض',
         'create' => 'إنشاء ألبوم علامات',
     ],
+    'new_person_album' => [
+        'menu' => 'Create Person Album',
+        'info' => 'Enter a title for the new person album:',
+        'title' => 'title',
+        'set_persons' => 'Select persons to include',
+        'create' => 'Create Person Album',
+    ],
     'delete_album' => [
         'confirmation' => 'هل أنت متأكد أنك تريد حذف الألبوم "%s" وجميع الصور التي يحتوي عليها؟',
         'confirmation_tag' => 'هل أنت متأكد أنك تريد حذف الألبوم "%s"؟',

@@ -15,6 +15,7 @@ export const useAlbumStore = defineStore("album-store", {
 		albumId: undefined as string | undefined,
 		modelAlbum: undefined as App.Http.Resources.Models.HeadAlbumResource | undefined,
 		tagAlbum: undefined as App.Http.Resources.Models.HeadTagAlbumResource | undefined,
+		personAlbum: undefined as App.Http.Resources.Models.HeadPersonAlbumResource | undefined,
 		smartAlbum: undefined as App.Http.Resources.Models.HeadSmartAlbumResource | undefined,
 
 		isPasswordProtected: false as boolean,
@@ -64,6 +65,7 @@ export const useAlbumStore = defineStore("album-store", {
 		reset() {
 			this.modelAlbum = undefined;
 			this.tagAlbum = undefined;
+			this.personAlbum = undefined;
 			this.smartAlbum = undefined;
 			this.isPasswordProtected = false;
 			this.config = undefined;
@@ -137,7 +139,12 @@ export const useAlbumStore = defineStore("album-store", {
 						return;
 					}
 					if (data.data.config.is_base_album) {
-						this.tagAlbum = data.data.resource as App.Http.Resources.Models.HeadTagAlbumResource;
+						const resource = data.data.resource as Record<string, unknown>;
+						if ("is_person_album" in resource && resource.is_person_album) {
+							this.personAlbum = data.data.resource as App.Http.Resources.Models.HeadPersonAlbumResource;
+						} else {
+							this.tagAlbum = data.data.resource as App.Http.Resources.Models.HeadTagAlbumResource;
+						}
 						return;
 					}
 					this.smartAlbum = data.data.resource as App.Http.Resources.Models.HeadSmartAlbumResource;
@@ -484,7 +491,12 @@ export const useAlbumStore = defineStore("album-store", {
 						this.modelAlbum = data.data.resource as App.Http.Resources.Models.HeadAlbumResource;
 						loader.push(this.loadAlbums(1, false));
 					} else if (data.data.config.is_base_album) {
-						this.tagAlbum = data.data.resource as App.Http.Resources.Models.HeadTagAlbumResource;
+						const resource = data.data.resource as Record<string, unknown>;
+						if ("is_person_album" in resource && resource.is_person_album) {
+							this.personAlbum = data.data.resource as App.Http.Resources.Models.HeadPersonAlbumResource;
+						} else {
+							this.tagAlbum = data.data.resource as App.Http.Resources.Models.HeadTagAlbumResource;
+						}
 					} else {
 						this.smartAlbum = data.data.resource as App.Http.Resources.Models.HeadSmartAlbumResource;
 					}
@@ -543,17 +555,24 @@ export const useAlbumStore = defineStore("album-store", {
 			| App.Http.Resources.Models.HeadAlbumResource
 			| App.Http.Resources.Models.HeadSmartAlbumResource
 			| App.Http.Resources.Models.HeadTagAlbumResource
+			| App.Http.Resources.Models.HeadPersonAlbumResource
 			| undefined {
-			return state.modelAlbum || state.tagAlbum || state.smartAlbum;
+			return state.modelAlbum || state.tagAlbum || state.personAlbum || state.smartAlbum;
 		},
 		coverId(state): string | undefined {
 			return (state.modelAlbum || state.tagAlbum)?.cover_id ?? undefined;
 		},
-		tagOrModelAlbum(state): App.Http.Resources.Models.HeadAlbumResource | App.Http.Resources.Models.HeadTagAlbumResource | undefined {
-			return state.modelAlbum || state.tagAlbum;
+		tagOrModelAlbum(
+			state,
+		):
+			| App.Http.Resources.Models.HeadAlbumResource
+			| App.Http.Resources.Models.HeadTagAlbumResource
+			| App.Http.Resources.Models.HeadPersonAlbumResource
+			| undefined {
+			return state.modelAlbum || state.tagAlbum || state.personAlbum;
 		},
 		rights(state): App.Http.Resources.Rights.AlbumRightsResource | undefined {
-			return (state.modelAlbum || state.tagAlbum || state.smartAlbum)?.rights ?? undefined;
+			return (state.modelAlbum || state.tagAlbum || state.personAlbum || state.smartAlbum)?.rights ?? undefined;
 		},
 		isLoaded(): boolean {
 			return this.config !== undefined && this.album !== undefined;

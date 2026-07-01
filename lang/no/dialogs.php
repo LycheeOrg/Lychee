@@ -183,6 +183,13 @@ return [
         'set_tags' => 'Angi tagger som skal vises',
         'create' => 'Opprett tagalbum',
     ],
+    'new_person_album' => [
+        'menu' => 'Create Person Album',
+        'info' => 'Enter a title for the new person album:',
+        'title' => 'title',
+        'set_persons' => 'Select persons to include',
+        'create' => 'Create Person Album',
+    ],
     'delete_album' => [
         'confirmation' => 'Er du sikker på at du vil slette albumet “%s” og alle bildene det inneholder?',
         'confirmation_tag' => 'Er du sikker på at du vil slette albumet "%s"?',

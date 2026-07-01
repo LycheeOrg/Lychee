@@ -60,6 +60,7 @@
 			<ThumbBadge v-if="props.album.is_password_required && props.album.thumb === null" class="bg-orange-400" icon="lock-locked" />
 			<ThumbBadge v-if="props.album.is_password_required && props.album.thumb !== null" class="bg-red-700" icon="lock-unlocked" />
 			<ThumbBadge v-if="props.album.is_tag_album" class="bg-green-600" icon="tags" />
+			<ThumbBadge v-if="props.album.is_person_album" class="bg-purple-600" pi="users" />
 			<ThumbBadge v-if="props.cover_id === props.album.thumb?.id" class="bg-yellow-500" icon="folder-cover" />
 		</div>
 		<!-- v-if="props.config.album_decoration !== 'none'" -->

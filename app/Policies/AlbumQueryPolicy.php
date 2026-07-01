@@ -17,7 +17,9 @@ use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Album;
 use App\Models\BaseAlbumImpl;
 use App\Models\Builders\AlbumBuilder;
+use App\Models\Builders\PersonAlbumBuilder;
 use App\Models\Builders\TagAlbumBuilder;
+use App\Models\PersonAlbum;
 use App\Models\TagAlbum;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
@@ -68,7 +70,7 @@ class AlbumQueryPolicy
 		// "OR"-clause.
 		// The sub-query only uses properties (i.e. columns) which are
 		// defined on the common base model for all albums.
-		$visibility_sub_query = function (AlbumBuilder|TagAlbumBuilder $query2) use ($user_id): void {
+		$visibility_sub_query = function (AlbumBuilder|TagAlbumBuilder|PersonAlbumBuilder $query2) use ($user_id): void {
 			$query2
 				// We laverage that IS_LINK_REQUIRED is NULL if the album is NOT shared publically (left join).
 				->where(APC::COMPUTED_ACCESS_PERMISSIONS . '.' . APC::IS_LINK_REQUIRED, '=', false)
@@ -470,6 +472,7 @@ class AlbumQueryPolicy
 		if (
 			!($model instanceof Album ||
 				$model instanceof TagAlbum ||
+				$model instanceof PersonAlbum ||
 				$model instanceof BaseAlbumImpl
 			) ||
 			$table !== $model->getTable()
@@ -488,7 +491,7 @@ class AlbumQueryPolicy
 
 		// We MUST do a full join because we are also sorting on created_at, title and description.
 		// Those are stored in the base_albums.
-		if ($model instanceof Album || $model instanceof TagAlbum) {
+		if ($model instanceof Album || $model instanceof TagAlbum || $model instanceof PersonAlbum) {
 			$this->joinBaseAlbumOwnerId($query, $table . '.id');
 		}
 

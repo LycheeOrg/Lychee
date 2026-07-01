@@ -19,6 +19,7 @@ use App\Factories\AlbumFactory;
 use App\Models\Album;
 use App\Models\Builders\AlbumBuilder;
 use App\Models\Extensions\SortingDecorator;
+use App\Models\PersonAlbum;
 use App\Models\TagAlbum;
 use App\Models\User;
 use App\Policies\AlbumPolicy;
@@ -86,6 +87,17 @@ class Top
 			->orderBy($this->sorting->column, $this->sorting->order)
 			->get();
 
+		/** @var BaseCollection<int,PersonAlbum> $person_albums */
+		$person_albums = collect();
+		if ($this->config_manager->getValueAsBool('ai_vision_face_enabled')) {
+			$person_album_query = $this->album_query_policy
+				->applyVisibilityFilter(PersonAlbum::query()->with(['access_permissions', 'owner']), $user);
+
+			$person_albums = (new SortingDecorator($person_album_query))
+				->orderBy($this->sorting->column, $this->sorting->order)
+				->get();
+		}
+
 		$pinned_album_query = $this->album_query_policy
 			->applyVisibilityFilter(Album::query()->with(['access_permissions', 'owner'])
 			->joinSub(DB::table('base_albums')->select(['id', 'is_pinned'])->where('is_pinned', '=', true), 'pinned', 'pinned.id', '=', 'albums.id'), $user);
@@ -118,6 +130,7 @@ class Top
 			return new TopAlbumDTO(
 				smart_albums: $smart_albums,
 				tag_albums: $tag_albums,
+				person_albums: $person_albums,
 				pinned_albums: $pinned_albums,
 				albums: $a->values(),
 				shared_albums: $b->values());
@@ -132,6 +145,7 @@ class Top
 		return new TopAlbumDTO(
 			smart_albums: $smart_albums,
 			tag_albums: $tag_albums,
+			person_albums: $person_albums,
 			pinned_albums: $pinned_albums,
 			albums: $albums);
 	}

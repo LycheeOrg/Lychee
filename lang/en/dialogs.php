@@ -183,6 +183,13 @@ return [
         'set_tags' => 'Set tags to show',
         'create' => 'Create Tag Album',
     ],
+    'new_person_album' => [
+        'menu' => 'Create Person Album',
+        'info' => 'Enter a title for the new person album:',
+        'title' => 'title',
+        'set_persons' => 'Select persons to include',
+        'create' => 'Create Person Album',
+    ],
     'delete_album' => [
         'confirmation' => 'Are you sure you want to delete the album "%s" and all of the photos it contains?',
         'confirmation_tag' => 'Are you sure you want to delete the album "%s"?',

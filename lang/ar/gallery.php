@@ -198,6 +198,8 @@ return [
             'show_tags' => 'تعيين العلامات للعرض',
             'tags_required' => 'العلامات مطلوبة.',
             'all_tags_must_match' => 'يجب أن تتطابق جميع العلامات.',
+            'all_persons_must_match' => 'All persons must be present.',
+            'persons_required' => 'At least one person is required.',
         ],
     ],
     'photo' => [
@@ -330,6 +332,7 @@ return [
         'import_dropbox' => 'استيراد من Dropbox',
         'new_album' => 'ألبوم جديد',
         'new_tag_album' => 'ألبوم علامة جديدة',
+        'new_person_album' => 'New Person Album',
         'upload_track' => 'رفع مقطع',
         'delete_track' => 'حذف المقطع',
     ],

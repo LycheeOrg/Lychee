@@ -37,6 +37,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		is_face_overlay_visible: true,
 		is_face_recognition_enabled: false,
 		is_nsfw_classifier_enabled: false,
+		is_person_album_enabled: false,
 		nsfw_overlay_mode: "hidden" as "hidden" | "all" | "block" | "review" | "sensitive",
 
 		// keybinding help
@@ -218,6 +219,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.is_face_overlay_visible = data.is_face_overlay_visible;
 					this.is_face_recognition_enabled = data.is_face_recognition_enabled;
 					this.is_nsfw_classifier_enabled = data.is_nsfw_classifier_enabled;
+					this.is_person_album_enabled = data.is_person_album_enabled;
 					const togglableStore = useTogglablesStateStore();
 					// Initialize the details togglable according to the always open config
 					togglableStore.are_details_open = data.is_photo_details_always_open;

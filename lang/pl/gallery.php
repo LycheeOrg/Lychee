@@ -198,6 +198,8 @@ return [
             'show_tags' => 'Ustawianie wyświetlania tagów',
             'tags_required' => 'Wymagane są znaczniki.',
             'all_tags_must_match' => 'Wszystkie znaczniki muszą pasować.',
+            'all_persons_must_match' => 'All persons must be present.',
+            'persons_required' => 'At least one person is required.',
         ],
     ],
     'photo' => [
@@ -330,6 +332,7 @@ return [
         'import_dropbox' => 'Import z Dropbox',
         'new_album' => 'Nowy album',
         'new_tag_album' => 'Nowy album z tagami',
+        'new_person_album' => 'New Person Album',
         'upload_track' => 'Prześlij ścieżkę',
         'delete_track' => 'Usuń ścieżkę',
     ],

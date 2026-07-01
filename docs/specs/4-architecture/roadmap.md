@@ -6,8 +6,7 @@ High-level planning document for Lychee features and architectural initiatives.
 
 | Feature ID | Name | Status | Priority | Assignee | Started | Updated | Progress |
 |------------|------|--------|----------|----------|---------|---------|----------|
-| 045 | NSFW Detection & Moderation | Implementation | P1 | LycheeOrg | 2026-06-21 | 2026-06-22 | All 7 increments implemented (I1–I7). Backend: 7 enums, 3 migrations (12 config keys, 2 photo columns, nsfw_detections table), NsfwDetection model, NsfwDetectionService + NsfwActionService, DispatchNsfwScanJob + ApplyNsfwAlbumSensitivityJob, AutoScanNsfwOnUpload pipe, NsfwDetectionController + NsfwConfigController, callback/bulk-scan/config-proxy routes, CSRF exemption, ModerationController NSFW approval logic, Delete::forceDeletePhoto(). Frontend: NsfwConfig.vue admin page, MaintenanceBulkScanNsfw component, nsfw-detection-service.ts + nsfw-config-service.ts, Moderation NSFW badge, admin dashboard tile, translation keys. PHPStan 0, vue-tsc clean, php-cs-fixer clean. |
-| 046 | Tag Album Custom Cover | Spec | P2 | ildyria | 2026-06-28 | 2026-06-28 | Spec, plan, tasks drafted. All 3 questions resolved (Q-046-01 B, Q-046-02 B, Q-046-03 N/A). Add `cover_id` to `tag_albums` table (not `base_albums`). 5 increments planned (I1 migration, I2 models, I3 API, I4 frontend, I5 tests), 14 tasks. Includes `PhotosToBeDeletedDTO` cover nullification (FR-046-10). Ready for implementation. |
+| 047 | Person Smart Album | Planning | P2 | LycheeOrg | 2026-06-28 | 2026-06-28 | Spec, plan, tasks drafted. 37 tasks across 14 increments. Mirrors TagAlbum pattern: PersonAlbum model, HasManyPhotosByPerson relation, AND/OR person matching, feature-gated by v8 + ai_vision_face_enabled. |
 
 ## Paused Features
 
@@ -19,6 +18,8 @@ High-level planning document for Lychee features and architectural initiatives.
 
 | Feature ID | Name | Completed | Notes |
 |------------|------|-----------|-------|
+| 046 | Tag Album Custom Cover | 2026-06-28 | Spec, plan, tasks drafted. All 3 questions resolved (Q-046-01 B, Q-046-02 B, Q-046-03 N/A). Add `cover_id` to `tag_albums` table (not `base_albums`). 5 increments planned (I1 migration, I2 models, I3 API, I4 frontend, I5 tests), 14 tasks. Includes `PhotosToBeDeletedDTO` cover nullification (FR-046-10). |
+| 045 | NSFW Detection & Moderation | 2026-06-21 | All 7 increments implemented (I1–I7). Backend: 7 enums, 3 migrations (12 config keys, 2 photo columns, nsfw_detections table), NsfwDetection model, NsfwDetectionService + NsfwActionService, DispatchNsfwScanJob + ApplyNsfwAlbumSensitivityJob, AutoScanNsfwOnUpload pipe, NsfwDetectionController + NsfwConfigController, callback/bulk-scan/config-proxy routes, CSRF exemption, ModerationController NSFW approval logic, Delete::forceDeletePhoto(). Frontend: NsfwConfig.vue admin page, MaintenanceBulkScanNsfw component, nsfw-detection-service.ts + nsfw-config-service.ts, Moderation NSFW badge, admin dashboard tile, translation keys. |
 | 044 | Folder Drag-and-Drop Album Creation | 2026-06-13 | Spec, plan, tasks drafted. 14 tasks across 5 increments (I0 type extension, I1 UploadPanel, I2 folderDrop composable, I3 uploadEvents, I4 view wiring). Frontend-only — no backend changes. |
 | 043 | Webshop Print & Pixel Sizes | 2026-05-31 | Spec stub created. Blocked on 5 open questions (Q-043-01 … Q-043-05): pricing model, license-type applicability, pixel fulfillment, catalogue scope, SE gating. |
 | 042 | Photo Display Enrichment | 2026-06-12 | Part A (I1–I6) complete: `album_title` + `thumb_url` on `OrderItemResource`, unconditional eager-load in `OrderResource`, thumbnail/album-title UI in `OrderDownload.vue`, 4 backend tests passing, PHPStan 0, php-cs-fixer clean. |
@@ -117,4 +118,4 @@ features/
 
 ---
 
-*Last updated: 2026-06-21 (Feature 045 spec/plan/tasks drafted — NSFW Detection & Moderation)*
+*Last updated: 2026-06-28 (Feature 047 spec/plan/tasks drafted — Person Smart Album)*

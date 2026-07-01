@@ -182,6 +182,13 @@ return [
         'set_tags' => 'Установить теги для отображения',
         'create' => 'Создать альбом с тегами',
     ],
+    'new_person_album' => [
+        'menu' => 'Create Person Album',
+        'info' => 'Enter a title for the new person album:',
+        'title' => 'title',
+        'set_persons' => 'Select persons to include',
+        'create' => 'Create Person Album',
+    ],
     'delete_album' => [
         'confirmation' => 'Вы уверены, что хотите удалить альбом “%s” и все фотографии, которые он содержит?',        'confirmation_tag' => 'Вы уверены, что хотите удалить альбом "%s"?',        'confirmation_multiple' => 'Вы уверены, что хотите удалить все %d выбранных альбомов и все фотографии в них?',
         'warning' => 'Это действие нельзя отменить!',
