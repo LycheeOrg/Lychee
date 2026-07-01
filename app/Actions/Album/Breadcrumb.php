@@ -42,40 +42,28 @@ class Breadcrumb
 
 		$accessible_ids = $this->getAccessibleAncestorIds($ancestors->pluck('id')->all());
 
-		$is_supporter = request()->verify()->is_supporter();
-		$masked = false;
-		$breadcrumb = [];
-
-		foreach ($ancestors as $ancestor) {
-			if (!$masked && in_array($ancestor->id, $accessible_ids, true)) {
-				$breadcrumb[] = new BreadcrumbItemResource(
-					$ancestor->id,
-					$ancestor->title,
-					$is_supporter ? $ancestor->slug : null,
-				);
-			} else {
-				$masked = true;
-				$breadcrumb[] = new BreadcrumbItemResource(null, '...', null);
-			}
-		}
-
-		$breadcrumb = array_reverse($breadcrumb);
-
-		$result = [];
-		$prev_masked = false;
-		foreach ($breadcrumb as $item) {
-			if ($item->id === null) {
-				if (!$prev_masked) {
-					$result[] = $item;
-					$prev_masked = true;
+		/** @var BreadcrumbItemResource[] $batch */
+		[, $batch] = $ancestors->reduceSpread(
+			function (bool $mask, array $batch, object $ancestor) use ($accessible_ids): array {
+				if ($mask) {
+					return [true, $batch];
 				}
-			} else {
-				$result[] = $item;
-				$prev_masked = false;
-			}
-		}
 
-		return $result;
+				if (in_array($ancestor->id, $accessible_ids, true)) {
+					$batch[] = new BreadcrumbItemResource(
+						$ancestor->id,
+						$ancestor->title,
+						$ancestor->slug,
+					);
+				} else {
+					$batch[] = new BreadcrumbItemResource(null, '...', null);
+					$mask = true;
+				}
+
+				return [$mask, $batch];
+			}, false, []);
+
+		return array_reverse($batch);
 	}
 
 	/**
