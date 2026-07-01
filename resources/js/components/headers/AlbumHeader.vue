@@ -1,18 +1,24 @@
 <template>
 	<Toolbar
 		v-if="albumStore.album"
-		class="w-full border-0 transition-all duration-100 ease-in-out rounded-none"
+		class="w-full border-0 transition-all duration-100 ease-in-out rounded-none @container"
 		:class="{
 			'max-h-14': !is_full_screen,
 			'max-h-0': is_full_screen,
 		}"
 	>
 		<template #start>
-			<GoBack @go-back="emits('goBack')" />
+			<template v-if="showBreadcrumb">
+				<LycheeBreadcrumb :items="albumStore.modelAlbum?.breadcrumb ?? []" :current-title="albumStore.album?.title ?? ''" />
+				<div class="flex @min-[28rem]:hidden">
+					<GoBack @go-back="emits('goBack')" />
+				</div>
+			</template>
+			<GoBack v-else @go-back="emits('goBack')" />
 		</template>
 
 		<template #center>
-			{{ albumStore.album.title }}
+			<span :class="{ '@min-[28rem]:hidden': showBreadcrumb }">{{ albumStore.album.title }}</span>
 		</template>
 
 		<template #end>
@@ -99,6 +105,7 @@
 <script setup lang="ts">
 import Button from "primevue/button";
 import Toolbar from "primevue/toolbar";
+import LycheeBreadcrumb from "./LycheeBreadcrumb.vue";
 import ContextMenu from "primevue/contextmenu";
 import { useContextMenuAlbumAdd } from "@/composables/contextMenus/contextMenuAlbumAdd";
 import Divider from "primevue/divider";
@@ -109,7 +116,7 @@ import AlbumService from "@/services/album-service";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { useFavouriteStore } from "@/stores/FavouriteState";
 import GoBack from "./GoBack.vue";
-import { onMounted } from "vue";
+import { computed, onMounted } from "vue";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { useOrderManagementStore } from "@/stores/OrderManagement";
 import { isTouchDevice } from "@/utils/keybindings-utils";
@@ -136,6 +143,8 @@ const emits = defineEmits<{
 	showSelected: [];
 	openContextMenu: [event: MouseEvent];
 }>();
+
+const showBreadcrumb = computed(() => (albumStore.config?.is_breadcrumb_enabled ?? false) && (albumStore.modelAlbum?.breadcrumb.length ?? 0) > 0);
 
 function toggleUploadTrack() {
 	document.getElementById("upload_track_file")?.click();

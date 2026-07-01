@@ -547,6 +547,7 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		is_mod_frame_enabled: boolean;
 		is_search_accessible: boolean;
 		is_nsfw_warning_visible: boolean;
+		is_breadcrumb_enabled: boolean;
 		album_thumb_css_aspect_ratio: App.Enum.AspectRatioCSSType;
 		photo_layout: App.Enum.PhotoLayoutType;
 		is_album_timeline_enabled: boolean;
@@ -786,6 +787,11 @@ declare namespace App.Http.Resources.Models {
 		download_count: number;
 		shared_count: number;
 	};
+	export type BreadcrumbItemResource = {
+		id: string | null;
+		title: string;
+		slug: string | null;
+	};
 	export type ClusterPreviewResource = {
 		cluster_label: number;
 		face_count: number;
@@ -873,6 +879,7 @@ declare namespace App.Http.Resources.Models {
 		editable: App.Http.Resources.Editable.EditableBaseAlbumResource | null;
 		is_pinned: boolean;
 		statistics: App.Http.Resources.Models.AlbumStatisticsResource | null;
+		breadcrumb: App.Http.Resources.Models.BreadcrumbItemResource[];
 	};
 	export type HeadSmartAlbumResource = {
 		id: string;
