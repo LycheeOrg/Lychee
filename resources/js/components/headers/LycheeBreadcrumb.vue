@@ -8,8 +8,8 @@
 			>
 				{{ item.title }}
 			</RouterLink>
-			<span v-else class="text-base truncate max-w-32 opacity-60">{{ item.title }}</span>
-			<i :class="isLTR() ? 'pi pi-angle-right' : 'pi pi-angle-left'" class="text-sm mx-1 text-muted-color shrink-0" />
+			<span v-else class="text-base truncate max-w-32 text-muted-color">{{ item.title }}</span>
+			<i :class="isLTR() ? 'pi-angle-right' : 'pi-angle-left'" class="pi text-sm mx-1 text-muted-color shrink-0" />
 		</template>
 		<span class="text-base truncate max-w-32">{{ currentTitle }}</span>
 	</nav>
