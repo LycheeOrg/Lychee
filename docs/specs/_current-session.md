@@ -1,40 +1,42 @@
 # Current Session
 
-_Last updated: 2026-06-12_
+_Last updated: 2026-07-01_
 
 ## Active Features
 
-None currently in progress for Part A of Feature 042.
+Feature 048 – Fix Multi-Group Permissions: spec, plan, and tasks drafted (Draft status). Not yet implemented.
 
 ## Session Summary
 
-### Feature 042 Part A – Webshop Order Item Display — Complete
+### Feature 048 – Fix Multi-Group Permissions — Spec/Plan/Tasks Drafted
 
-**Status:** All I1–I6 tasks complete. PHPStan 0 errors. php-cs-fixer clean. npm format/check/lint clean. 4 backend tests passing.
+**Bug report:** A user who belongs to two groups on the same album (e.g. "All" = View only, "Support_VIP" = View+Access+Download) only received the grants of whichever group's `AccessPermission` row was created first. Reordering the shares flipped the outcome.
 
-**What was built:**
+**Root cause:** `BaseAlbumImpl::current_user_permissions()` (`app/Models/BaseAlbumImpl.php:261-271`) uses `Collection::first()` to pick a single matching `AccessPermission` row instead of merging every matching row.
 
-- **`OrderItemResource`** (`app/Http/Resources/Shop/OrderItemResource.php`): added `album_title: ?string` and `thumb_url: ?string` constructor params; `fromModel()` populates from `$item->album?->title` and `$item->photo?->size_variants->getSizeVariant(SizeVariantType::THUMB)?->url`.
-- **`OrderResource::fromModel()`** (`app/Http/Resources/Shop/OrderResource.php`): unconditionally eager-loads `items.album` and `items.photo.size_variants` (filtered to SMALL, SMALL2X, THUMB, THUMB2X, PLACEHOLDER types). The existing `items.size_variant` load for CLOSED orders is retained.
-- **Backend tests** (`tests/Webshop/OrderManagement/OrderItemDisplayTest.php`): 4 tests covering the happy path, absent album, absent photo, and missing THUMB variant.
-- **i18n** (`lang/php_en.json` + 22 other lang files): added `webshop.orderDownload.unknownAlbum` key ("Unknown album").
-- **TypeScript types** (`resources/js/lychee.d.ts`): added `album_title: string | null` and `thumb_url: string | null` to `OrderItemResource`.
-- **`OrderDownload.vue`** (`resources/js/views/webshop/OrderDownload.vue`): added `<img>` (with `loading="lazy"`) or `<i class="pi pi-image">` placeholder before the title block; added album title line below the photo title `RouterLink`.
+**Resolution direction (Q-048-01, resolved — Option A):** Collect every matching row (direct-user row + every row for a group the user belongs to) and OR each of the 5 boolean grant flags. No precedence between direct-user and group rows — most permissive always wins, matching the existing pattern already used elsewhere (`AlbumPolicy` ORs `current_user_permissions()` with `public_permissions()`; `canDeleteById`/`canEditById` already OR across groups in SQL).
 
-**Key implementation note:** `PhotoFactory::without_size_variants()` mutates factory state before the closure is bound; the closure captures the pre-clone `$this` so the flag has no effect. Worked around in the test by deleting the THUMB `SizeVariant` row directly after photo creation.
+**Follow-up design decision (user-requested):** instead of returning a synthetic `App\Models\AccessPermission` Eloquent instance (which is inherently persistable — mass-assignable, `save()`-able), the merged result is a new `App\DTO\EffectiveAccessPermission` (`final readonly class`, plain DTO, matches the existing `CheckoutDTO`/`PixelSizeAssignment` style). This makes "cannot be persisted by accident" a type-level guarantee (NFR-048-03). `current_user_permissions()`'s return type changes accordingly across `BaseAlbumImpl`, the `BaseAlbum` trait, and `@property` docblocks on `Album`/`TagAlbum`/`PersonAlbum` (FR-048-04).
+
+**Key constraint:** Zero new DB queries (NFR-048-01) — `access_permissions` is already eager-loaded via `BaseAlbumImpl::$with`, and `$user->user_groups` is already read by the current (buggy) code, so the fix is a pure in-memory `Collection` merge.
+
+**Not yet done:** Implementation (I1–I7 in plan.md / T-048-01–11 in tasks.md), ADR-0004, quality gates.
+
+### Feature 042 Part A – Webshop Order Item Display — Complete (prior session)
+All I1–I6 tasks complete. See roadmap.md for details; superseded as the session focus by Feature 048.
 
 ## Next Steps
-
-1. Implement Part B of Feature 042 (I7–I10): admin maintenance photo title links (`PhotoTitleLink.vue`, `DuplicateLine.vue`, `Moderation.vue`). Tasks T-042-16 to T-042-20 in [tasks.md](4-architecture/features/042-webshop-order-item-display/tasks.md).
-2. After Part B completes, move Feature 042 to "Completed" in roadmap with final completion date.
+1. Start Feature 048 implementation at T-048-01 (repo-wide caller sweep) then T-048-02/03 (unit tests reproducing the bug) — see [tasks.md](4-architecture/features/048-fix-multi-group-permissions/tasks.md).
+2. Work through T-048-04…11 (DTO implementation, wiring, feature regression test, query-count guard, regression pass, ADR-0004, roadmap/session sync, quality gates).
+3. Feature 047 (Person Smart Album) remains drafted but not implemented — no active work this session.
+4. Feature 042 Part B (I7–I10, admin maintenance photo title links) remains outstanding from the prior session — see [tasks.md](4-architecture/features/042-webshop-order-item-display/tasks.md) T-042-16 to T-042-20.
 
 ## Open Questions
-
-None.
+None blocking. Q-048-01 resolved 2026-07-01.
 
 ## Key Artefacts
-
-- Spec: [042-webshop-order-item-display/spec.md](4-architecture/features/042-webshop-order-item-display/spec.md)
-- Plan: [042-webshop-order-item-display/plan.md](4-architecture/features/042-webshop-order-item-display/plan.md)
-- Tasks: [042-webshop-order-item-display/tasks.md](4-architecture/features/042-webshop-order-item-display/tasks.md)
+- Spec: [048-fix-multi-group-permissions/spec.md](4-architecture/features/048-fix-multi-group-permissions/spec.md)
+- Plan: [048-fix-multi-group-permissions/plan.md](4-architecture/features/048-fix-multi-group-permissions/plan.md)
+- Tasks: [048-fix-multi-group-permissions/tasks.md](4-architecture/features/048-fix-multi-group-permissions/tasks.md)
+- Open questions: [open-questions.md](4-architecture/open-questions.md) (Q-048-01, resolved)
 - Roadmap: [roadmap.md](4-architecture/roadmap.md)
