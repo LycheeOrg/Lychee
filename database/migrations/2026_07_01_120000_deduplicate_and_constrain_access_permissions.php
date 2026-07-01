@@ -28,6 +28,10 @@ return new class() extends Migration {
 	private const USER_ID_UNIQUE_KEY = 'user_id_unique_key';
 	private const USER_GROUP_ID_UNIQUE_KEY = 'user_group_id_unique_key';
 
+	// Explicit name because Laravel's auto-generated name (concatenating all
+	// four column names) exceeds MySQL's 64-character identifier limit.
+	private const UNIQUE_INDEX_NAME = 'access_permissions_dedup_unique';
+
 	/**
 	 * Run the migrations.
 	 */
@@ -42,13 +46,26 @@ return new class() extends Migration {
 		}
 
 		Schema::table(self::TABLE_NAME, function (Blueprint $table) {
+			// MySQL/MariaDB refuses to add a STORED generated column to a table
+			// that still has an active foreign key: doing so requires an
+			// in-place table rebuild, which InnoDB rejects with error 1215
+			// ("Cannot add foreign key constraint"). Drop it here and
+			// recreate it once the new columns are in place.
+			$table->dropForeign([self::USER_ID]);
 			$table->dropUnique([self::BASE_ALBUM_ID, self::USER_ID]);
 			$table->unsignedInteger(self::USER_ID_UNIQUE_KEY)->nullable(false)->storedAs('COALESCE(' . self::USER_ID . ', 0)');
 			$table->unsignedInteger(self::USER_GROUP_ID_UNIQUE_KEY)->nullable(false)->storedAs('COALESCE(' . self::USER_GROUP_ID . ', 0)');
 		});
 
 		Schema::table(self::TABLE_NAME, function (Blueprint $table) {
-			$table->unique([self::BASE_ALBUM_ID, self::USER_ID_UNIQUE_KEY, self::USER_GROUP_ID_UNIQUE_KEY]);
+			$table->unique([self::BASE_ALBUM_ID, self::USER_ID_UNIQUE_KEY, self::USER_GROUP_ID_UNIQUE_KEY], self::UNIQUE_INDEX_NAME);
+			// MySQL prohibits CASCADE/SET NULL referential actions on a column
+			// that is a base column of a generated column (user_id_unique_key
+			// depends on user_id here), so this can no longer cascade at the
+			// DB level. This is not a behavior change in practice: User::delete()
+			// already deletes the user's AccessPermission rows explicitly before
+			// removing the user.
+			$table->foreign(self::USER_ID)->references('id')->on('users')->restrictOnUpdate()->restrictOnDelete();
 		});
 	}
 
@@ -58,9 +75,16 @@ return new class() extends Migration {
 	public function down(): void
 	{
 		Schema::table(self::TABLE_NAME, function (Blueprint $table) {
-			$table->dropUnique([self::BASE_ALBUM_ID, self::USER_ID_UNIQUE_KEY, self::USER_GROUP_ID_UNIQUE_KEY]);
+			$table->dropForeign([self::USER_ID]);
+			$table->dropUnique(self::UNIQUE_INDEX_NAME);
 			$table->dropColumn([self::USER_ID_UNIQUE_KEY, self::USER_GROUP_ID_UNIQUE_KEY]);
+		});
+
+		Schema::table(self::TABLE_NAME, function (Blueprint $table) {
 			$table->unique([self::BASE_ALBUM_ID, self::USER_ID]);
+			// The generated columns are already gone at this point, so the
+			// original CASCADE actions are legal again here.
+			$table->foreign(self::USER_ID)->references('id')->on('users')->cascadeOnUpdate()->cascadeOnDelete();
 		});
 	}
 
