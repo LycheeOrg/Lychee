@@ -15,12 +15,15 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Http\Requests\Album\GetAlbumPhotosRequest;
 use App\Models\Tag;
 use App\Policies\AlbumPolicy;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\ValidationException;
 use Tests\Unit\Http\Requests\Base\BaseRequestTest;
 
 class GetAlbumPhotosRequestTest extends BaseRequestTest
 {
+	use DatabaseTransactions;
+
 	public function testAuthorization(): void
 	{
 		Gate::shouldReceive('check')

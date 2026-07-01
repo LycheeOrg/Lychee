@@ -182,6 +182,40 @@ class SharingTest extends BaseApiWithDataTest
 		self::assertTrue($perm->grants_upload);
 	}
 
+	public function testUpdateDoesNotLeakUnrelatedAlbumGroupPermissions(): void
+	{
+		// Give an *unrelated* album (not in album1's tree) a group permission.
+		// A buggy query scoping in Propagate::applyUpdate would leak this into
+		// album1's descendants because it is not actually restricted to album1.
+		$response = $this->actingAs($this->userMayUpload2)->postJson('Sharing', [
+			'user_ids' => [],
+			'group_ids' => [$this->group2->id],
+			'album_ids' => [$this->album2->id],
+			'grants_edit' => true,
+			'grants_delete' => true,
+			'grants_download' => true,
+			'grants_full_photo_access' => true,
+			'grants_upload' => true,
+		]);
+		$this->assertOk($response);
+
+		// Propagate album1 (unrelated to album2) to its descendants.
+		$response = $this->actingAs($this->userMayUpload1)->putJson('Sharing', [
+			'album_id' => $this->album1->id,
+			'shall_override' => false,
+		]);
+		$this->assertNoContent($response);
+
+		// subAlbum1 should only inherit album1's own permissions (perm1, perm11),
+		// not the unrelated group2 permission that lives on album2.
+		self::assertEquals(2, AccessPermission::where(APC::BASE_ALBUM_ID, '=', $this->subAlbum1->id)->count());
+		self::assertEquals(0,
+			AccessPermission::query()
+				->where(APC::BASE_ALBUM_ID, '=', $this->subAlbum1->id)
+				->where(APC::USER_GROUP_ID, '=', $this->group2->id)
+				->count());
+	}
+
 	public function testOverride(): void
 	{
 		// Set up the permission in subSlbum
