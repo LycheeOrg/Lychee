@@ -28,6 +28,11 @@ class Breadcrumb
 	 */
 	public function do(Album $album): array
 	{
+		// Disable if v8 is disabled, as the breadcrumb feature is only available in v8.
+		if (config('features.v8') === false) {
+			return [];
+		}
+
 		$ancestors = DB::table('albums')
 			->join('base_albums', 'base_albums.id', '=', 'albums.id')
 			->where('albums._lft', '<', $album->_lft)
