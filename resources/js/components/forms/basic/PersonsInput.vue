@@ -5,6 +5,7 @@
 		v-model="modelValue"
 		:suggestions="filteredPersons"
 		:force-selection="true"
+		option-label="name"
 		multiple
 		class="pt-3 border-b hover:border-b-0 w-full"
 		pt:inputmultiple:class="w-full border-t-0 border-l-0 border-r-0 border-b hover:border-b-primary-400 focus:border-b-primary-400"
@@ -13,7 +14,7 @@
 	>
 		<template #option="slotProps">
 			<div class="flex items-center">
-				{{ slotProps.option }}
+				{{ slotProps.option.name }}
 			</div>
 		</template>
 	</AutoComplete>
@@ -30,39 +31,42 @@ const props = defineProps<{
 	placeholder?: string;
 }>();
 
-const modelValue = defineModel<Nullable<string[]>>();
+const modelValue = defineModel<Nullable<App.Http.Resources.Models.PersonResource[]>>();
 
 const persons = ref<App.Http.Resources.Models.PersonResource[]>([]);
-const filteredPersons = ref<string[]>([]);
+const filteredPersons = ref<App.Http.Resources.Models.PersonResource[]>([]);
 
-async function fetchPersons(): Promise<void> {
-	try {
-		let page = 1;
-		let lastPage = 1;
-		const all: App.Http.Resources.Models.PersonResource[] = [];
-		do {
-			const response = await PeopleService.getPeople(page);
+function fetchPage(page: number, all: App.Http.Resources.Models.PersonResource[]): void {
+	PeopleService.getPeople(page)
+		.then((response) => {
 			all.push(...response.data.data);
-			lastPage = response.data.last_page;
-			page++;
-		} while (page <= lastPage);
-		persons.value = all;
-	} catch {
-		toast.add({
-			severity: "error",
-			summary: "Error",
-			detail: "Failed to fetch persons.",
-			life: 3000,
+			const lastPage = response.data.last_page;
+			if (page < lastPage) {
+				fetchPage(page + 1, all);
+			} else {
+				persons.value = all;
+			}
+		})
+		.catch(() => {
+			toast.add({
+				severity: "error",
+				summary: "Error",
+				detail: "Failed to fetch persons.",
+				life: 3000,
+			});
 		});
-	}
+}
+
+function fetchPersons(): void {
+	fetchPage(1, []);
 }
 
 function search(event: AutoCompleteCompleteEvent) {
 	setTimeout(() => {
 		if (!event.query.trim().length) {
-			filteredPersons.value = persons.value.map((p) => p.name);
+			filteredPersons.value = persons.value;
 		} else {
-			filteredPersons.value = persons.value.filter((p) => p.name.toLowerCase().startsWith(event.query.toLowerCase())).map((p) => p.name);
+			filteredPersons.value = persons.value.filter((p) => p.name.toLowerCase().startsWith(event.query.toLowerCase()));
 		}
 	}, 250);
 }

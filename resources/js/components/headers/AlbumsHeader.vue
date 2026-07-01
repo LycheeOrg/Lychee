@@ -174,7 +174,8 @@ const favourites = useFavouriteStore();
 const albumsStore = useAlbumsStore();
 const orderManagementStore = useOrderManagementStore();
 
-const { dropbox_api_key, is_favourite_enabled, is_se_preview_enabled, is_live_metrics_enabled, is_registration_enabled } = storeToRefs(lycheeStore);
+const { dropbox_api_key, is_favourite_enabled, is_se_preview_enabled, is_live_metrics_enabled, is_registration_enabled, is_person_album_enabled } =
+	storeToRefs(lycheeStore);
 const { is_login_open, is_upload_visible, is_create_album_visible, is_create_tag_album_visible, is_metrics_open } = storeToRefs(togglableStore);
 
 const router = useRouter();
@@ -191,8 +192,6 @@ const {
 } = useGalleryModals(togglableStore);
 
 const is_owner = computed(() => albumsStore.rootRights?.can_import_from_server ?? false);
-
-const is_person_album_enabled = computed(() => lycheeStore.is_person_album_enabled ?? false);
 
 const { addmenu, addMenu } = useContextMenuAlbumsAdd(
 	{

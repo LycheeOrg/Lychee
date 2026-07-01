@@ -8,6 +8,7 @@
 
 namespace App\Http\Controllers\AiVision;
 
+use App\Constants\PersonAlbumPersons;
 use App\Http\Requests\Person\DestroyPersonRequest;
 use App\Http\Requests\Person\ListPersonsRequest;
 use App\Http\Requests\Person\ShowPersonRequest;
@@ -16,10 +17,12 @@ use App\Http\Requests\Person\UpdatePersonRequest;
 use App\Http\Resources\Collections\PaginatedPersonsResource;
 use App\Http\Resources\Models\PersonResource;
 use App\Jobs\CleanupOrphanedPersonAlbumsJob;
+use App\Models\Face;
 use App\Models\Person;
 use App\Repositories\ConfigManager;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 /**
  * CRUD controller for Person records.
@@ -104,6 +107,12 @@ class PeopleController extends Controller
 	public function destroy(DestroyPersonRequest $request): void
 	{
 		$person = Person::findOrFail($request->personId());
+		// Break the link between the person and its person albums
+		DB::table(PersonAlbumPersons::PERSON_ALBUM_PERSONS)->where('person_id', '=', $person->id)->delete();
+		// detach all faces from the person and mark them as dismissed
+		Face::where('person_id', '=', $person->id)->update(['person_id' => null, 'is_dismissed' => true]);
+
+		// Delete the person record (we should be clean).
 		$person->delete();
 
 		CleanupOrphanedPersonAlbumsJob::dispatch();

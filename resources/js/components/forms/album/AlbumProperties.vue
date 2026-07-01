@@ -303,17 +303,8 @@
 				</div>
 				<div v-if="is_person_album" class="my-4 flex flex-col gap-2">
 					<FloatLabel variant="on">
-						<Select
-							v-model="selectedPersonIds"
-							:options="availablePersons"
-							option-label="name"
-							option-value="id"
-							filter
-							:placeholder="$t('dialogs.new_person_album.set_persons')"
-							class="w-full"
-							multiple
-						/>
-						<label>{{ $t("dialogs.new_person_album.set_persons") }}</label>
+						<PersonsInput v-model="selectedPersons" :placeholder="$t('dialogs.new_person_album.set_persons')" />
+						<label for="persons">{{ $t("dialogs.new_person_album.set_persons") }}</label>
 					</FloatLabel>
 					<div class="flex gap-2 items-center my-2">
 						<ToggleSwitch v-model="is_and" input-id="pp_is_and" />
@@ -337,7 +328,7 @@ import FloatLabel from "primevue/floatlabel";
 import InputText from "@/components/forms/basic/InputText.vue";
 import Textarea from "@/components/forms/basic/Textarea.vue";
 import AlbumService, { UpdateAbumData, UpdateTagAlbumData, UpdatePersonAlbumData } from "@/services/album-service";
-import PeopleService from "@/services/people-service";
+import PersonsInput from "@/components/forms/basic/PersonsInput.vue";
 import {
 	photoSortingColumnsOptions,
 	albumSortingColumnsOptions,
@@ -414,8 +405,7 @@ const albumTimeline = ref<SelectOption<App.Enum.TimelineAlbumGranularity> | unde
 const license = ref<SelectOption<App.Enum.LicenseType> | undefined>(undefined);
 const copyright = ref<string | undefined>(undefined);
 const tags = ref<string[]>([]);
-const selectedPersonIds = ref<string[]>([]);
-const availablePersons = ref<App.Http.Resources.Models.PersonResource[]>([]);
+const selectedPersons = ref<App.Http.Resources.Models.PersonResource[]>([]);
 const is_person_album = ref<boolean>(false);
 const aspectRatio = ref<SelectOption<App.Enum.AspectRatioType> | undefined>(undefined);
 const header_id = ref<HeaderOption | undefined>(undefined);
@@ -493,14 +483,7 @@ function load(editable: App.Http.Resources.Editable.EditableBaseAlbumResource, p
 
 	if (editable.persons && editable.persons.length > 0) {
 		is_person_album.value = true;
-		selectedPersonIds.value = editable.persons.map((p) => p.id);
-		PeopleService.getPeople(1)
-			.then((response) => {
-				availablePersons.value = response.data.data;
-			})
-			.catch((error) => {
-				console.error(error);
-			});
+		selectedPersons.value = editable.persons as App.Http.Resources.Models.PersonResource[];
 	} else {
 		is_person_album.value = false;
 	}
@@ -580,7 +563,7 @@ function saveTagAlbum() {
 }
 
 function savePersonAlbum() {
-	if (selectedPersonIds.value.length === 0) {
+	if (selectedPersons.value.length === 0) {
 		toast.add({ severity: "error", summary: trans("toasts.error"), detail: trans("gallery.album.properties.persons_required"), life: 3000 });
 		return;
 	}
@@ -589,7 +572,7 @@ function savePersonAlbum() {
 		album_id: albumId.value,
 		title: title.value,
 		slug: slug.value === "" ? null : slug.value,
-		persons: selectedPersonIds.value,
+		persons: selectedPersons.value.map((p) => p.id),
 		description: description.value,
 		photo_sorting_column: photoSortingColumn.value?.value ?? null,
 		photo_sorting_order: photoSortingOrder.value?.value ?? null,

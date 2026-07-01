@@ -655,7 +655,7 @@ return [
         'hide_nsfw_in_tag_albums' => 'Pictures placed in sensitive albums will not be shown in Tag Albums.',
         'hide_nsfw_in_tag_listing' => 'Pictures placed in sensitive albums will not be shown on the phto listing of a given tag.',
         'PA_override_visibility' => '<span class="pi pi-exclamation-triangle text-orange-500"></span> This will make any photos matching the persons condition visible.',
-        'PA_override_searchability' => '<span class="pi pi-exclamation-triangle text-orange-500"></span> When disabled, non-searchable persons no longer contribute photos to Person Albums.',
+        'PA_override_searchability' => '<span class="pi pi-exclamation-triangle text-orange-500"></span> When enabled, photos of persons who are not searchable are still shown in Person Albums. When disabled, non-searchable persons no longer contribute photos to Person Albums.',
         'hide_nsfw_in_person_albums' => '<span class="pi pi-exclamation-triangle text-orange-500"></span> Pictures placed in sensitive albums will not be shown in Person Albums.',
         'sorting_pinned_albums_col' => '',
         'sorting_pinned_albums_order' => '',

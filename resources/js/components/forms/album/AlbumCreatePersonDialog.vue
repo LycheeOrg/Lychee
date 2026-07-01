@@ -37,11 +37,10 @@
 </template>
 <script setup lang="ts">
 import AlbumService from "@/services/album-service";
-import PeopleService from "@/services/people-service";
 import Dialog from "primevue/dialog";
 import FloatLabel from "primevue/floatlabel";
 import PersonsInput from "@/components/forms/basic/PersonsInput.vue";
-import { computed, onMounted, ref } from "vue";
+import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
 import InputText from "@/components/forms/basic/InputText.vue";
 import Button from "primevue/button";
@@ -58,38 +57,19 @@ const togglableStore = useTogglablesStateStore();
 const { is_create_person_album_visible } = storeToRefs(togglableStore);
 
 const title = ref<string | undefined>(undefined);
-const selectedPersons = ref<string[]>([]);
+const selectedPersons = ref<App.Http.Resources.Models.PersonResource[]>([]);
 const is_and = ref<boolean>(false);
-const availablePersons = ref<App.Http.Resources.Models.PersonResource[]>([]);
 
 const isValid = computed(() => title.value !== undefined && title.value.length > 0 && title.value.length <= 100 && selectedPersons.value.length > 0);
-
-onMounted(() => {
-	loadPersons();
-});
-
-function loadPersons() {
-	PeopleService.getPeople(1)
-		.then((response) => {
-			availablePersons.value = response.data.data;
-		})
-		.catch((error) => {
-			console.error(error);
-		});
-}
 
 function create() {
 	if (!isValid.value) {
 		return;
 	}
 
-	const personIds = selectedPersons.value
-		.map((name) => availablePersons.value.find((p) => p.name === name)?.id)
-		.filter((id): id is string => id !== undefined);
-
 	AlbumService.createPerson({
 		title: title.value as string,
-		persons: personIds,
+		persons: selectedPersons.value.map((p) => p.id),
 		is_and: is_and.value,
 	})
 		.then((response) => {
