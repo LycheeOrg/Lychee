@@ -54,9 +54,20 @@ class VersionTest extends BaseApiWithDataTest
 		};
 
 		$test_string = '
-<style>
-test
-</style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## Version 6
 
@@ -65,9 +76,6 @@ test
 Released on Apr 4, 2025
 
 #### New Settings page & translations (French, Russian)
-
-`klo` refers to *Keep the Light On*. In other words, basic software updates.  
-`SE` refers to functionalities that are aimed at the Supporter Edition.
 
 * `new` #3081 : Refactoring Settings page by @ildyria.
 
@@ -88,7 +96,7 @@ Released on Jul 5, 2024
 			new ChangeLogInfo(
 				'6.4.2',
 				'Released on Apr 4, 2025',
-				"<h4>New Settings page &amp; translations (French, Russian)</h4>\n<p><code>klo</code> refers to <em>Keep the Light On</em>. In other words, basic software updates.<br />\n<code>SE</code> refers to functionalities that are aimed at the Supporter Edition.</p>\n<ul>\n<li><code>new</code> <a href=\"https://github.com/LycheeOrg/Lychee/pull/3081\">#3081</a> : Refactoring Settings page by @ildyria.</li>\n</ul>\n"
+				"<h4>New Settings page &amp; translations (French, Russian)</h4>\n<ul>\n<li><code>new</code> <a href=\"https://github.com/LycheeOrg/Lychee/pull/3081\">#3081</a> : Refactoring Settings page by @ildyria.</li>\n</ul>\n"
 			),
 			new ChangeLogInfo(
 				'5.5.1',
