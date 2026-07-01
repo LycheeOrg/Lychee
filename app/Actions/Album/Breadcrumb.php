@@ -42,28 +42,16 @@ class Breadcrumb
 
 		$accessible_ids = $this->getAccessibleAncestorIds($ancestors->pluck('id')->all());
 
-		/** @var BreadcrumbItemResource[] $batch */
-		[, $batch] = $ancestors->reduceSpread(
-			function (bool $mask, array $batch, object $ancestor) use ($accessible_ids): array {
-				if ($mask) {
-					return [true, $batch];
-				}
+		$result = [];
+		foreach ($ancestors as $ancestor) {
+			if (!in_array($ancestor->id, $accessible_ids, true)) {
+				$result[] = new BreadcrumbItemResource(null, '...', null);
+				break;
+			}
+			$result[] = new BreadcrumbItemResource($ancestor->id, $ancestor->title, $ancestor->slug);
+		}
 
-				if (in_array($ancestor->id, $accessible_ids, true)) {
-					$batch[] = new BreadcrumbItemResource(
-						$ancestor->id,
-						$ancestor->title,
-						$ancestor->slug,
-					);
-				} else {
-					$batch[] = new BreadcrumbItemResource(null, '...', null);
-					$mask = true;
-				}
-
-				return [$mask, $batch];
-			}, false, []);
-
-		return array_reverse($batch);
+		return array_reverse($result);
 	}
 
 	/**
