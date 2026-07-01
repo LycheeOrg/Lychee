@@ -29,7 +29,7 @@ return new class() extends BaseConfigMigration {
 			],
 			[
 				'key' => 'PA_override_searchability',
-				'value' => '1',
+				'value' => '0',
 				'cat' => self::CAT,
 				'type_range' => self::BOOL,
 				'description' => 'Person album ignores the searchable flag of a person.',

@@ -82,7 +82,7 @@ class EditableBaseAlbumResource extends Data
 		}
 
 		if ($album instanceof PersonAlbum) {
-			$this->persons = $album->visiblePersons
+			$this->persons = $album->persons
 				->map(fn ($p) => ['id' => $p->id, 'name' => $p->name])
 				->values()
 				->all();
