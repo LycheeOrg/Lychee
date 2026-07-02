@@ -55,6 +55,14 @@
 							{{ $t("maintenance.face_quality.selected_count", { count: String(selectedIds.length) }) }}
 						</span>
 						<Button
+							:label="$t('people.batch_assign')"
+							icon="pi pi-user-plus"
+							severity="success"
+							size="small"
+							class="border-none"
+							@click="showBatchAssignModal = true"
+						/>
+						<Button
 							v-if="!dismissedOnly"
 							:label="$t('maintenance.face_quality.batch_dismiss')"
 							icon="pi pi-times"
@@ -225,6 +233,9 @@
 			@dismissed="onFaceDismissed"
 		/>
 
+		<!-- Batch Face Assignment Modal -->
+		<BatchFaceAssignmentModal v-model:visible="showBatchAssignModal" :face-ids="selectedIds" @assigned="onBatchAssigned" />
+
 		<!-- Photo Viewer Dialog -->
 		<Dialog v-model:visible="showPhotoViewer" modal :header="viewingPhoto?.title || 'Photo'" class="w-full max-w-4xl">
 			<div v-if="loadingPhoto" class="flex justify-center py-12">
@@ -265,6 +276,7 @@ import OpenLeftMenu from "@/components/headers/OpenLeftMenu.vue";
 import PaginationInfiniteScroll from "@/components/pagination/PaginationInfiniteScroll.vue";
 import FaceRecognitionWarning from "@/components/faceRecog/FaceRecognitionWarning.vue";
 import FaceAssignmentModal from "@/components/modals/faceRecog/FaceAssignmentModal.vue";
+import BatchFaceAssignmentModal from "@/components/modals/faceRecog/BatchFaceAssignmentModal.vue";
 import FaceMaintenanceService from "@/services/face-maintenance-service";
 import FaceDetectionService from "@/services/face-detection-service";
 import ModerationService from "@/services/moderation-service";
@@ -290,6 +302,9 @@ const lastSelectedIndex = ref<number>(-1);
 // Assignment modal state
 const showAssignmentModal = ref(false);
 const assigningFace = ref<App.Http.Resources.Models.FaceResource | null>(null);
+
+// Batch assignment modal state
+const showBatchAssignModal = ref(false);
 
 // Photo viewer state
 const showPhotoViewer = ref(false);
@@ -509,6 +524,12 @@ function onFaceDismissed(): void {
 		faces.value = faces.value.filter((f) => f.id !== assigningFace.value?.id);
 		selectedIds.value = selectedIds.value.filter((sid) => sid !== assigningFace.value?.id);
 	}
+}
+
+function onBatchAssigned(): void {
+	// Person names and unassigned-only filtering may both be affected; reload to stay accurate.
+	selectedIds.value = [];
+	load(1);
 }
 
 function openPhotoViewer(face: App.Http.Resources.Models.FaceResource): void {

@@ -22,9 +22,9 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import type { Nullable } from "@primevue/core";
-import PeopleService from "@/services/people-service";
 import { useToast } from "primevue/usetoast";
 import AutoComplete, { AutoCompleteCompleteEvent } from "primevue/autocomplete";
+import { usePeopleList } from "@/composables/usePeopleList";
 
 const toast = useToast();
 const props = defineProps<{
@@ -33,45 +33,27 @@ const props = defineProps<{
 
 const modelValue = defineModel<Nullable<App.Http.Resources.Models.PersonResource[]>>();
 
-const persons = ref<App.Http.Resources.Models.PersonResource[]>([]);
+const { people, load } = usePeopleList();
 const filteredPersons = ref<App.Http.Resources.Models.PersonResource[]>([]);
-
-function fetchPage(page: number, all: App.Http.Resources.Models.PersonResource[]): void {
-	PeopleService.getPeople(page)
-		.then((response) => {
-			all.push(...response.data.data);
-			const lastPage = response.data.last_page;
-			if (page < lastPage) {
-				fetchPage(page + 1, all);
-			} else {
-				persons.value = all;
-			}
-		})
-		.catch(() => {
-			toast.add({
-				severity: "error",
-				summary: "Error",
-				detail: "Failed to fetch persons.",
-				life: 3000,
-			});
-		});
-}
-
-function fetchPersons(): void {
-	fetchPage(1, []);
-}
 
 function search(event: AutoCompleteCompleteEvent) {
 	setTimeout(() => {
 		if (!event.query.trim().length) {
-			filteredPersons.value = persons.value;
+			filteredPersons.value = people.value;
 		} else {
-			filteredPersons.value = persons.value.filter((p) => p.name.toLowerCase().startsWith(event.query.toLowerCase()));
+			filteredPersons.value = people.value.filter((p) => p.name.toLowerCase().startsWith(event.query.toLowerCase()));
 		}
 	}, 250);
 }
 
 onMounted(() => {
-	fetchPersons();
+	load().catch(() => {
+		toast.add({
+			severity: "error",
+			summary: "Error",
+			detail: "Failed to fetch persons.",
+			life: 3000,
+		});
+	});
 });
 </script>

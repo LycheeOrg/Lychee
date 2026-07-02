@@ -26,6 +26,13 @@ const FaceMaintenanceService = {
 	batchDismiss(faceIds: string[]): Promise<AxiosResponse<{ dismissed_count: number }>> {
 		return axios.post(`${Constants.getApiUrl()}Face/maintenance/batch-dismiss`, { face_ids: faceIds });
 	},
+
+	batchAssign(
+		faceIds: string[],
+		data: { person_id?: string; new_person_name?: string },
+	): Promise<AxiosResponse<{ assigned_count: number; person_id: string }>> {
+		return axios.post(`${Constants.getApiUrl()}Face/maintenance/batch-assign`, { face_ids: faceIds, ...data });
+	},
 };
 
 export default FaceMaintenanceService;

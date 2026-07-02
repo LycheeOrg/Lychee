@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\Admin\Maintenance;
 
 use App\Http\Requests\Maintenance\MaintenanceRequest;
+use App\Models\Face;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Http;
@@ -29,7 +30,7 @@ class RunFaceClustering extends Controller
 	 */
 	public function check(MaintenanceRequest $request): int
 	{
-		return $request->configs()->getValueAsBool('ai_vision_enabled') ? 1 : 0;
+		return $request->configs()->getValueAsBool('ai_vision_enabled') ? Face::whereNull('person_id')->exists() : 0;
 	}
 
 	/**
