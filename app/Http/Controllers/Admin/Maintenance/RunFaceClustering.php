@@ -30,7 +30,12 @@ class RunFaceClustering extends Controller
 	 */
 	public function check(MaintenanceRequest $request): int
 	{
-		return $request->configs()->getValueAsBool('ai_vision_enabled') ? Face::whereNull('person_id')->exists() : 0;
+		if (!$request->configs()->getValueAsBool('ai_vision_enabled')) {
+			return 0;
+		}
+
+		// We do not check for dismissed faces here.
+		return Face::notDismissed()->whereNull('person_id')->exists() ? 1 : 0;
 	}
 
 	/**
