@@ -1,9 +1,10 @@
 # ADR-0005: Replace PrimeVue with Nuxt UI (standalone Vue mode)
 
-- **Status:** Accepted
+- **Status:** Accepted, partially superseded by **ADR-0006**
 - **Date:** 2026-07-02
 - **Related features/specs:** Feature 049 (docs/specs/4-architecture/features/049-nuxt-ui-migration/spec.md)
 - **Related open questions:** Q-049-01, Q-049-02, Q-049-03
+- **Amendment note:** Decision item 1 below (in-place, file-by-file migration with single-bundle transitional coexistence) is superseded by ADR-0006's dual-tree, feature-flag-gated cutover strategy (Q-049-04). The Q-049-01 sizing decision (full scope, tracked to completion under one roadmap entry), Q-049-02 (icon parity via `@iconify-json/prime`), and Q-049-03 (drop ripple) resolutions below are unaffected and still govern the feature — only *how* the two libraries coexist during implementation changed, not *what* gets built or *how much*.
 
 ## Context
 

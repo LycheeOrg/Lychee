@@ -9,6 +9,7 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 | ~~Q-049-01~~ | 049 – Nuxt UI Migration | High | Feature sizing — one long-running feature covering full PrimeVue removal (235 files) vs. split into a foundation feature plus follow-up features per area vs. foundation-only with rest deferred to backlog | Resolved (A – one feature, many grouped increments, tracked to full completion) | 2026-07-02 | 2026-07-02 |
 | ~~Q-049-02~~ | 049 – Nuxt UI Migration | High | Icon strategy — keep visual/icon parity via Iconify's `@iconify-json/prime` collection (mechanical swap) vs. adopt Nuxt UI's default Lucide icon set (visual redesign of ~107 distinct icons across ~134 files) | Resolved (A – icon parity via `@iconify-json/prime`) | 2026-07-02 | 2026-07-02 |
 | ~~Q-049-03~~ | 049 – Nuxt UI Migration | Medium | Ripple/focus-trap interaction parity — PrimeVue's `v-ripple` has no Nuxt UI/Reka UI equivalent; drop the ripple effect entirely vs. build a custom ripple directive to preserve current feel | Resolved (A – drop ripple, rely on Reka UI built-in focus-trap) | 2026-07-02 | 2026-07-02 |
+| ~~Q-049-04~~ | 049 – Nuxt UI Migration | High | Coexistence/cutover mechanism — in-place file-by-file migration in one bundle (ADR-0005 original) vs. dual-tree parallel implementation served via a feature flag, same URL paths, vs. path-prefix split (`/v8/*`) | Resolved (A – dual-tree + feature flag + same-path whole-app cutover) | 2026-07-02 | 2026-07-02 |
 | Q-043-06 | 043 | High | Album-level basket add for print/pixel sizes — scope unspecified | Open | 2026-05-31 | 2026-05-31 |
 | Q-043-07 | 043 | High | `{id}` type in `GET /api/v2/Shop/Catalogue/Purchasable/{id}/Sizes` — purchasable PK, photo_id, or album_id? | Open | 2026-05-31 | 2026-05-31 |
 | Q-043-08 | 043 | Medium | `canProcessPayment()` interaction — precedence of shipping-address guard vs existing email/FULL-size checks | Open | 2026-05-31 | 2026-05-31 |
@@ -140,6 +141,36 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 **Option B — Build a custom ripple directive to preserve the current feel.** Port PrimeVue's ripple behavior as a small standalone Vue directive reused across `<UButton>` and other clickable primitives.
 - *Pros:* Preserves the exact current interaction feel.
 - *Cons:* New custom code to maintain indefinitely for a purely cosmetic effect; must be re-verified against every Nuxt UI component's internal DOM structure (which can change across Nuxt UI versions) since ripple directives typically need to know the click target's box geometry.
+
+---
+
+### ~~Q-049-04~~ · Coexistence/cutover mechanism — in-place migration, dual-tree feature flag, or path-prefix split? ✅ RESOLVED
+
+**Status:** Resolved — **Option A** (dual-tree parallel implementation + feature flag + same-path whole-app cutover)
+**Feature:** 049 – Migration to Nuxt UI
+**Priority:** High
+**Opened:** 2026-07-02
+**Resolved:** 2026-07-02
+
+**Resolution:** Instead of ADR-0005's original in-place, file-by-file, single-bundle migration, build the Nuxt UI implementation as a parallel tree (`resources/js/v8/**`, mirroring `views/`, `components/`, `menus/`), served from a second Vite entry (`resources/js/app-v8.ts`), selected per HTTP request by a new Laravel feature flag (`Features::active('nuxt_ui')`, `config/features.php`) branching `resources/views/vueapp.blade.php`'s `@vite([...])` include. Both bundles register identical route paths via a new shared, component-free manifest (`resources/js/router/paths.ts`), so both UIs are reachable at the same URLs. Non-UI-coupled code (stores, services, most composables, types, utils) is shared, not duplicated. Cutover flips the flag once every route has a working `v8/` implementation (a coverage gate), then v7 + PrimeVue are deleted. Recorded in **ADR-0006** (amends ADR-0005's Decision item 1; Q-049-01/02/03 resolutions are unaffected).
+
+**Spec impact:** Overview, Goals, Non-Goals, FR-049-01/03/04/05/18 (revised), new FR-049-22/23/24, NFR-049-07 (revised) in spec.md; plan.md's Increment Map (new I0, revised target paths throughout, revised cutover increment); ADR-0006.
+
+**Context:** Raised after ADR-0005 was already accepted: the user asked whether PrimeVue (v7) and Nuxt UI (v8) could run as two complete, independently toggleable frontends rather than one app mid-migration, then clarified both must be reachable under the *same* URL paths (not a `/v8/*` prefix or subdomain) so bookmarks/deep links/external integrations are unaffected by which UI is active. The codebase already has a precedent for exactly this class of server-side toggle: `Features::active('legacy_v4_redirect')` already branches behavior in `vueapp.blade.php`.
+
+**Options:**
+
+**Option A (Recommended) — Dual tree + feature flag + same-path whole-app cutover.** Described in the Resolution above.
+- *Pros:* Zero production risk during the build-out (v7 untouched until cutover); instant, zero-deploy rollback; PrimeVue and Nuxt UI are never both mounted in the same document (eliminates, not just mitigates, the coexistence risk ADR-0005 flagged); enables a real full-app dogfood/beta period before cutover; same-path guarantee preserves all existing links/integrations.
+- *Cons:* Duplicates the full ~235-file UI surface rather than converting it in place; no incremental production value until the route-parity coverage gate is met (all value lands at cutover); new architectural surface (`router/paths.ts`, two app shells, two icon wrappers); both bundles are built/type-checked together for the whole window, raising CI cost throughout rather than just transitionally; cutover is all-or-nothing per environment (no partial-route production rollout).
+
+**Option B — Path-prefix split (e.g. `/v8/*` routes or a separate subdomain).** Serve Nuxt UI at a distinct URL namespace instead of branching the same paths.
+- *Pros:* Simpler routing (no need for a shared component-free path manifest); trivially supports both UIs being live simultaneously for different users/testers without a flag at all.
+- *Cons:* Rejected — the user explicitly wants both UIs under the *same* paths so bookmarks, deep links, and third-party integrations aren't affected by which UI is active; a prefix split would relocate the entire app to a different URL structure per variant.
+
+**Option C — ADR-0005's original mechanism (in-place, file-by-file, single-bundle transitional coexistence).** Kept as the superseded baseline.
+- *Pros:* Every completed increment immediately improves the one real running app; no duplicated files; smaller total build/CI footprint throughout.
+- *Cons:* Superseded per explicit user request for two parallel, toggleable UIs; production users see a part-migrated app for the full multi-session duration; PrimeVue/Nuxt UI coexist in the same document during the transition (real, if mitigated, risk of double CSS-reset/focus-ring conflicts).
 
 ---
 
