@@ -6,6 +6,7 @@ High-level planning document for Lychee features and architectural initiatives.
 
 | Feature ID | Name | Status | Priority | Assignee | Started | Updated | Progress |
 |------------|------|--------|----------|----------|---------|---------|----------|
+| 049 | Migration to Nuxt UI | Planning | P2 | User | 2026-07-02 | 2026-07-02 | Spec, plan, tasks drafted; analysis gate passed. 43 tasks across 15 phases (45 increments incl. sub-increments). Replaces PrimeVue (`primevue`, `@primeuix/themes`, `tailwindcss-primeui`, `primeicons`) with Nuxt UI (`@nuxt/ui`, standalone Vue mode) across 235 of 286 frontend files. Icon parity via `@iconify-json/prime` (Q-049-02 A); ripple effect dropped entirely (Q-049-03 A); full removal tracked as one feature (Q-049-01 A). New seams: `useAppToast()`, `useConfirmDialog()`. Embed bundle (`resources/js/embed/`) explicitly out of scope — zero PrimeVue coupling. No backend changes. ADR-0005 recorded. |
 | 048 | Fix Multi-Group Permissions | Planning | P1 (bug fix) | LycheeOrg | 2026-07-01 | 2026-07-01 | Spec, plan, tasks drafted. 11 tasks across 7 increments. Fixes `BaseAlbumImpl::current_user_permissions()` using `Collection::first()` (order-dependent) instead of merging every matching `AccessPermission` row (direct-user + all groups) via boolean OR. Merged result returned as a new non-persistable DTO (`App\DTO\EffectiveAccessPermission`, `final readonly class`) instead of a synthetic `AccessPermission` model instance, so it cannot be mass-assigned/`save()`d by accident. Zero new DB queries (NFR-048-01). Q-048-01 resolved (Option A — merge everything, most-permissive-wins). ADR-0004 planned. |
 | 047 | Person Smart Album | Planning | P2 | LycheeOrg | 2026-06-28 | 2026-06-28 | Spec, plan, tasks drafted. 37 tasks across 14 increments. Mirrors TagAlbum pattern: PersonAlbum model, HasManyPhotosByPerson relation, AND/OR person matching, feature-gated by v8 + ai_vision_face_enabled. |
 
@@ -119,4 +120,4 @@ features/
 
 ---
 
-*Last updated: 2026-06-28 (Feature 047 spec/plan/tasks drafted — Person Smart Album)*
+*Last updated: 2026-07-02 (Feature 049 spec/plan/tasks drafted — Migration to Nuxt UI)*

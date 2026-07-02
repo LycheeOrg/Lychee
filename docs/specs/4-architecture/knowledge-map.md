@@ -87,7 +87,7 @@ This document tracks modules, dependencies, and architectural relationships acro
 ### Frontend (Vue3/TypeScript)
 
 #### Components
-- **UI Components** (`resources/js/components/`) - PrimeVue-based interface elements
+- **UI Components** (`resources/js/components/`) - PrimeVue-based interface elements (migrating to Nuxt UI, Feature 049 — see Frontend Dependencies below)
   - Gallery components (album, photo, flow, search modules)
     - **PhotoThumbPanelControl** - Layout selector with star rating filter (Feature 006)
       - 5 clickable stars for minimum rating threshold filter
@@ -147,7 +147,7 @@ This document tracks modules, dependencies, and architectural relationships acro
 ### Frontend Dependencies
 - **Vue3** - Progressive JavaScript framework (Composition API)
 - **TypeScript** - Type-safe JavaScript
-- **PrimeVue** - UI component library
+- **PrimeVue** - UI component library (235 of 286 frontend files, as of 2026-07-02). Being replaced by **Nuxt UI** (`@nuxt/ui`, standalone Vue mode) — see Feature 049 (`docs/specs/4-architecture/features/049-nuxt-ui-migration/`), spec/plan/tasks drafted, implementation not yet started. Update this entry to reference Nuxt UI once Feature 049's dependency-removal task (T-049-41) lands.
 - **Axios** - HTTP client
 
 ## Architectural Patterns
