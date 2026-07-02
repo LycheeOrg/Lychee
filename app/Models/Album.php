@@ -10,6 +10,7 @@ namespace App\Models;
 
 use App\Actions\Album\Delete;
 use App\DTO\AlbumSortingCriterion;
+use App\DTO\EffectiveAccessPermission;
 use App\Enum\AlbumTitleColor;
 use App\Enum\AlbumTitlePosition;
 use App\Enum\AspectRatioType;
@@ -84,7 +85,7 @@ use Kalnoy\Nestedset\NodeTrait;
  *
  * @property Collection<int,AccessPermission> $access_permissions
  * @property int|null                         $access_permissions_count
- * @property AccessPermission|null            $current_user_permissions
+ * @property EffectiveAccessPermission|null   $current_user_permissions
  * @property AccessPermission|null            $public_permissions
  * @property Collection<int,User>             $shared_with
  * @property int|null                         $shared_with_count

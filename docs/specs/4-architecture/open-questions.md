@@ -22,6 +22,7 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 | ~~Q-046-02~~ | 046 – Tag Album Cover | Medium | Front-end guard: replace `is_model_album` with `has_cover_support` flag, or widen check to include tag albums? | Resolved (B – check `is_model_album \|\| tagAlbum` in context menu) | 2026-06-28 | 2026-06-28 |
 | ~~Q-046-03~~ | 046 – Tag Album Cover | Medium | Should `cover()` relationship and eager-loading live on `BaseAlbumImpl` or remain per-model? | Resolved (N/A – per-model with eager-load on TagAlbum) | 2026-06-28 | 2026-06-28 |
 | Q-040-01 | 040 – Disable Request Caching | Medium | Analysis Gate never formally signed off: plan.md gate checklist has unchecked boxes yet I1–I4 tasks are marked complete; gate must be ticked before implementation is considered verified | Open | 2026-05-31 | 2026-05-31 |
+| ~~Q-048-01~~ | 048 – Fix Multi-Group Permissions | High | Should a direct user-level `AccessPermission` override group permissions, or merge with them, once group-vs-group merging is fixed? | Resolved (A – merge everything via boolean OR) | 2026-07-01 | 2026-07-01 |
 | ~~Q-047-01~~ | 047 – Person Smart Album | High | `AlbumPhotosController` + `GetAlbumPhotosRequest` + `AlbumHeadController` have hardcoded `TagAlbum` branches — PersonAlbum falls through to wrong code path or throws | Resolved (A – add PersonAlbum branches) | 2026-06-28 | 2026-06-28 |
 | ~~Q-047-02~~ | 047 – Person Smart Album | High | `Delete::do()` only checks `tag_albums` table for non-regular albums — PersonAlbums silently skipped then treated as regular Album (tree validation fails) | Resolved (A – add `deletePersonAlbums()`) | 2026-06-28 | 2026-06-28 |
 | ~~Q-047-03~~ | 047 – Person Smart Album | High | `EditableBaseAlbumResource` constructor and `fromModel()` accept `Album\|TagAlbum` only — PersonAlbum passed to it will cause a type error | Resolved (A – widen to `Album\|TagAlbum\|PersonAlbum`) | 2026-06-28 | 2026-06-28 |
@@ -56,6 +57,20 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 | ~~Q-044-07~~ | 044 – Folder Drop | Low | `UploadPanel` internal drop zone bypasses `folderDrop.ts` | Resolved (A – out of scope, document boundary) | 2026-06-13 | 2026-06-13 |
 
 ## Question Details
+
+### ~~Q-048-01~~ · Direct user-level `AccessPermission` — override group grants, or merge with them? ✅ RESOLVED
+
+**Status:** Resolved — **Option A** (merge direct-user row + every matching group row via boolean OR)
+**Feature:** 048 – Fix Multi-Group Permissions
+**Priority:** High
+**Opened:** 2026-07-01
+**Resolved:** 2026-07-01
+
+**Resolution:** `current_user_permissions()` collects every `AccessPermission` row matching the current user — the direct `user_id` row (if any) plus every row whose `user_group_id` is one of the user's group ids — and returns a single synthetic, non-persisted `AccessPermission` whose 5 boolean grant flags are the logical OR across all collected rows. There is no precedence between a direct-user row and group rows; the most permissive applicable grant always wins, consistent with the existing public+current-user OR pattern in `AlbumPolicy` and the group-OR semantics already used in `canDeleteById`/`canEditById`.
+
+**Spec impact:** Captured in FR-048-01 and NFR-048-01 below.
+
+---
 
 ### ~~Q-047-01~~ · `AlbumPhotosController`, `GetAlbumPhotosRequest`, and `AlbumHeadController` don't handle PersonAlbum ✅ RESOLVED
 

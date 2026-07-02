@@ -11,6 +11,7 @@ namespace App\Models;
 use App\Constants\AccessPermissionConstants as APC;
 use App\Constants\RandomID;
 use App\Contracts\Models\HasRandomID;
+use App\DTO\EffectiveAccessPermission;
 use App\DTO\PhotoSortingCriterion;
 use App\Enum\ColumnSortingType;
 use App\Enum\OrderSortingType;
@@ -256,18 +257,27 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	}
 
 	/**
-	 * Returns the relationship between an album and its associated current user permissions.
+	 * Returns the merged, effective permissions of the current user on this album.
+	 *
+	 * Combines the direct-user AccessPermission row (if any) with every row for
+	 * a group the user belongs to: each grant flag is the logical OR across all
+	 * matching rows, independent of row order (there is no precedence between
+	 * a direct-user row and a group row — the most permissive grant wins).
 	 */
-	public function current_user_permissions(): AccessPermission|null
+	public function current_user_permissions(): EffectiveAccessPermission|null
 	{
 		if (Auth::guest()) {
 			return null; // No permissions for guests
 		}
 
 		$user = Auth::user();
+		$group_ids = $user->user_groups->map(fn ($g) => $g->id)->all();
 
-		return $this->access_permissions->first(fn (AccessPermission $p) => $p->user_id === $user->id)
-			?? $this->access_permissions->first(fn (AccessPermission $p) => in_array($p->user_group_id, $user->user_groups->map(fn ($g) => $g->id)->all(), true));
+		$matching = $this->access_permissions->filter(
+			fn (AccessPermission $p) => $p->user_id === $user->id || in_array($p->user_group_id, $group_ids, true)
+		);
+
+		return $matching->isEmpty() ? null : EffectiveAccessPermission::merge($matching);
 	}
 
 	/**

@@ -11,6 +11,7 @@ namespace App\Models\Extensions;
 use App\Constants\RandomID;
 use App\Contracts\Models\AbstractAlbum;
 use App\Contracts\Models\HasRandomID;
+use App\DTO\EffectiveAccessPermission;
 use App\DTO\PhotoSortingCriterion;
 use App\Enum\PhotoLayoutType;
 use App\Enum\TimelinePhotoGranularity;
@@ -115,7 +116,7 @@ abstract class BaseAlbum extends Model implements AbstractAlbum, HasRandomID
 	/**
 	 * Returns the relationship between an album and its associated current user permissions.
 	 */
-	public function current_user_permissions(): AccessPermission|null
+	public function current_user_permissions(): EffectiveAccessPermission|null
 	{
 		return $this->base_class->current_user_permissions();
 	}

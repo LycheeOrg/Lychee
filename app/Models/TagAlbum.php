@@ -8,6 +8,7 @@
 
 namespace App\Models;
 
+use App\DTO\EffectiveAccessPermission;
 use App\Exceptions\InvalidPropertyException;
 use App\ModelFunctions\HasAbstractAlbumProperties;
 use App\Models\Builders\TagAlbumBuilder;
@@ -39,7 +40,7 @@ use Illuminate\Database\Query\Builder as BaseBuilder;
  * @property int|null                          $shared_with_count
  * @property Collection<int, AccessPermission> $access_permissions
  * @property int|null                          $access_permissions_count
- * @property AccessPermission|null             $current_user_permissions
+ * @property EffectiveAccessPermission|null    $current_user_permissions
  * @property AccessPermission|null             $public_permissions
  * @property Collection<int, User>             $shared_with
  *
