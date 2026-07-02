@@ -14,6 +14,7 @@
 namespace Tests\AssistedVision\Face;
 
 use App\Models\Configs;
+use App\Models\Face;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
@@ -53,11 +54,19 @@ class RunFaceClusteringTest extends BaseApiWithDataTest
 		$this->assertForbidden($response);
 	}
 
-	public function testCheckReturnsOneWhenEnabled(): void
+	public function testCheckReturnsOneWhenFaceExists(): void
 	{
+		Face::factory()->count(1)->create(['photo_id' => $this->photo1->id, 'person_id' => null, 'is_dismissed' => false]);
 		$response = $this->actingAs($this->admin)->getJson('Maintenance::runFaceClustering');
 		$this->assertOk($response);
 		self::assertEquals(1, $response->json());
+	}
+
+	public function testCheckReturnsZeroWhenNoFaceExists(): void
+	{
+		$response = $this->actingAs($this->admin)->getJson('Maintenance::runFaceClustering');
+		$this->assertOk($response);
+		self::assertEquals(0, $response->json());
 	}
 
 	public function testCheckReturnsZeroWhenDisabled(): void

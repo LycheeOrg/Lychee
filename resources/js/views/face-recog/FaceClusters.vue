@@ -220,9 +220,9 @@ import { trans } from "laravel-vue-i18n";
 import PaginationInfiniteScroll from "@/components/pagination/PaginationInfiniteScroll.vue";
 import FaceRecognitionWarning from "@/components/faceRecog/FaceRecognitionWarning.vue";
 import FaceClusterService from "@/services/face-cluster-service";
-import PeopleService from "@/services/people-service";
 import FaceDetectionService from "@/services/face-detection-service";
 import GoBack from "@/components/headers/GoBack.vue";
+import { usePeopleList } from "@/composables/usePeopleList";
 
 const toast = useToast();
 
@@ -238,7 +238,7 @@ const currentPage = ref(1);
 const hasMorePages = ref(false);
 
 // All known persons for autocomplete
-const allPeople = ref<App.Http.Resources.Models.PersonResource[]>([]);
+const { people: allPeople, load: loadAllPeople } = usePeopleList();
 const personSuggestions = ref<App.Http.Resources.Models.PersonResource[]>([]);
 
 // Batch selection state
@@ -269,7 +269,7 @@ function searchPeople(event: { query: string }) {
 		personSuggestions.value = [
 			{
 				id: "",
-				name: q.trim(),
+				name: event.query.trim(),
 				photo_count: 0,
 				face_count: 0,
 				representative_crop_url: null,
@@ -341,16 +341,6 @@ function batchDismiss() {
 		});
 }
 
-function loadPeople() {
-	PeopleService.getPeople(1)
-		.then((response) => {
-			allPeople.value = response.data.data;
-		})
-		.catch(() => {
-			/* non-critical */
-		});
-}
-
 function load() {
 	loading.value = true;
 	FaceClusterService.getClusters(1)
@@ -415,7 +405,7 @@ function assignClusterWithSelection(label: number) {
 			clusters.value = clusters.value.filter((c) => c.cluster_label !== label);
 			delete clusterPersonSelect[label];
 			// Refresh people list after potential new person
-			loadPeople();
+			loadAllPeople().catch(() => {});
 		})
 		.catch((e) => {
 			console.error("Error assigning face cluster:", e);
@@ -568,7 +558,7 @@ function assignDetailCluster() {
 			});
 			clusters.value = clusters.value.filter((c) => c.cluster_label !== label);
 			detailDialogVisible.value = false;
-			loadPeople();
+			loadAllPeople().catch(() => {});
 		})
 		.catch((e: { response?: { data?: { message?: string } } }) => {
 			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });
@@ -603,6 +593,6 @@ function dismissDetailCluster() {
 
 onMounted(() => {
 	load();
-	loadPeople();
+	loadAllPeople().catch(() => {});
 });
 </script>

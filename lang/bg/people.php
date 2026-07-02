@@ -58,6 +58,7 @@ return [
 	'dismiss' => 'Dismiss',
 	'assignment' => [
 		'title' => 'Assign face to person',
+		'batch_title' => 'Assign :count face(s) to person',
 		'select_person' => 'Select existing person…',
 		'new_person' => 'Or create new person',
 		'new_person_placeholder' => 'New person name…',

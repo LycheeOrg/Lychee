@@ -410,6 +410,7 @@ Route::middleware(['feature:ai-vision', 'feature:v8'])->group(function (): void 
 	Route::get('/Photo/{id}/faces', [AiVision\PhotoFacesController::class, 'show']);
 	Route::get('/Face/maintenance', [AiVision\FaceMaintenanceController::class, 'index']);
 	Route::post('/Face/maintenance/batch-dismiss', [AiVision\FaceMaintenanceController::class, 'batchDismiss']);
+	Route::post('/Face/maintenance/batch-assign', [AiVision\FaceMaintenanceController::class, 'batchAssign']);
 
 	/**
 	 * AI VISION — FACE DETECTION.
