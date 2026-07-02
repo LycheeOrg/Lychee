@@ -8,7 +8,9 @@
 	>
 		<h1
 			:class="{
-				'w-full pt-3 pb-1 text-sm text-surface-0 font-bold text-ellipsis whitespace-nowrap overflow-x-hidden': true,
+				'w-full pt-3 pb-1 text-sm text-surface-0 font-bold text-ellipsis overflow-x-hidden': true,
+				'whitespace-nowrap': album_subtitle_type !== 'disabled',
+				'line-clamp-2': album_subtitle_type === 'disabled',
 				'pr-1 pl-2 sm:pl-3 md:pl-4': isLTR(),
 				'pl-1 pr-2 sm:pr-3 md:pr-4': !isLTR(),
 			}"
