@@ -7,7 +7,7 @@
 			<div></div>
 		</div>
 
-		<UContextMenu :items="menuSections" :disabled="Menu.length === 0" class="contents">
+		<UContextMenu :items="menuSections" :disabled="photosStore.photos.length === 0" class="contents">
 			<div id="galleryView" class="relative flex flex-wrap content-start w-full justify-start overflow-y-auto h-full">
 				<div
 					v-if="photosStore.photos.length === 0"
@@ -142,7 +142,9 @@ const { Menu } = useContextMenu(
 );
 
 // See AlbumPanel.vue for why the composable's imperative photoMenuOpen/albumMenuOpen are
-// bypassed in favor of a declarative UContextMenu wrapping the gallery view.
+// bypassed in favor of a declarative UContextMenu wrapping the gallery view, and why
+// `:disabled` above must not depend on `Menu.length` (that races against the selection
+// side-effect this handler performs on the very same contextmenu event).
 function contextMenuPhotoOpen(photoId: string, _e: MouseEvent): void {
 	if (!selectedPhotosIds.value.includes(photoId)) {
 		selectedPhotosIds.value = [photoId];

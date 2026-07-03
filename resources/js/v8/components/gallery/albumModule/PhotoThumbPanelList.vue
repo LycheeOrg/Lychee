@@ -18,7 +18,7 @@
 				:is-cover-id="albumStore.coverId === photo.id"
 				:is-header-id="albumStore.modelAlbum?.header_id === photo.id"
 				@click="(e: MouseEvent) => maySelect(photo.id, e)"
-				@contextmenu.prevent="(e: MouseEvent) => menuOpen(photo.id, e)"
+				@contextmenu="(e: MouseEvent) => menuOpen(photo.id, e)"
 				:is-buyable="isBuyable"
 				@toggleBuyMe="emits('toggleBuyMe', photo.id)"
 			/>

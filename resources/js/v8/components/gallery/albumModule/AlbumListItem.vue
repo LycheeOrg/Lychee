@@ -6,7 +6,7 @@
 		}"
 		:data-album-id="album.id"
 		@click="maySelect($event, album.id)"
-		@contextmenu.prevent="propagateContexted($event, album.id)"
+		@contextmenu="propagateContexted($event, album.id)"
 	>
 		<!-- Touch select overlay: sits above router-links so they don't capture clicks -->
 		<div v-if="is_touch_select_mode" class="absolute inset-0 z-10" />

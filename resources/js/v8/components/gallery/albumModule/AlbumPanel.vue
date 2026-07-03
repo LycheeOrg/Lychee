@@ -12,7 +12,7 @@
 			@open-context-menu="openContextMenuFromHeader"
 		/>
 		<template v-if="albumStore.album && albumStore.config && userStore.isLoaded">
-			<UContextMenu :items="menuSections" :disabled="Menu.length === 0" class="contents">
+			<UContextMenu :items="menuSections" :disabled="noData" class="contents">
 				<div id="galleryView" class="relative flex flex-wrap content-start w-full justify-start overflow-y-auto h-full select-none">
 					<SelectDrag :with-scroll="true" />
 					<AlbumEdit v-if="albumStore.rights?.can_edit" />
@@ -527,6 +527,14 @@ const { Menu } = useContextMenu(
 // In v8 the menu is opened declaratively by UContextMenu wrapping the gallery view, so we
 // replicate only the selection side-effects here and let the native contextmenu event bubble
 // up to UContextMenu's own trigger to open the menu.
+//
+// UContextMenu's `:disabled` is intentionally NOT `Menu.length === 0`: `Menu` only has
+// items once something is selected, and that selection is set by this very handler in
+// response to the same contextmenu event. Reka's ContextMenuTrigger reads its `disabled`
+// prop synchronously (before Vue can flush the reactive update from the line below), so
+// gating on `Menu.length` made right-click on a not-yet-selected photo/album silently
+// no-op forever. `noData` (no photos/albums to right-click on at all) is stable across
+// the click and doesn't race.
 function contextMenuPhotoOpen(photoId: string, _e: MouseEvent): void {
 	selectedAlbumsIds.value = [];
 	if (!selectedPhotosIds.value.includes(photoId)) {

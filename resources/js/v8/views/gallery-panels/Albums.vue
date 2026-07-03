@@ -14,7 +14,7 @@
 	<ImportFromServer v-if="albumsStore.rootRights?.can_import_from_server" v-model:open="is_import_from_server_open" @refresh="refresh" />
 	<DropBox v-if="albumsStore.rootRights?.can_upload" v-model:open="is_import_from_dropbox_open" @refresh="refresh" />
 
-	<UContextMenu :items="menuSections" :disabled="Menu.length === 0" class="contents">
+	<UContextMenu :items="menuSections" :disabled="albumsStore.albums.length === 0" class="contents">
 		<div v-if="albumsStore.rootConfig && albumsStore.rootRights" id="galleryView" class="relative w-full h-full select-none" @scroll="onScroll">
 			<SelectDrag :with-scroll="false" />
 			<Collapse :when="!is_full_screen">
@@ -317,7 +317,9 @@ const { Menu } = useContextMenu(
 );
 
 // See AlbumPanel.vue for why the composable's imperative albumMenuOpen is bypassed in favor of
-// a declarative UContextMenu wrapping the gallery view.
+// a declarative UContextMenu wrapping the gallery view, and why `:disabled` above must not
+// depend on `Menu.length` (that races against the selection side-effect this handler
+// performs on the very same contextmenu event).
 function contextMenuAlbumOpen(_e: MouseEvent, albumId: string): void {
 	if (!selectedAlbumsIds.value.includes(albumId)) {
 		selectedAlbumsIds.value = [albumId];

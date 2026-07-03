@@ -13,11 +13,14 @@ import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 import AppComponent from "@/v8/views/App.vue";
 import ui from "@nuxt/ui/vue-plugin";
 import { registerIconCollections } from "@/v8/icons";
+import { applyV8Theme } from "@/v8/theme";
 import "../sass/app-v8.css";
 
 declare global {
 	var assets_url: string;
 }
+
+applyV8Theme();
 
 const router = createRouter({
 	history: createWebHistory(),

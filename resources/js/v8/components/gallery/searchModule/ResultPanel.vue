@@ -1,5 +1,5 @@
 <template>
-	<UContextMenu :items="menuSections" :disabled="Menu.length === 0" class="contents">
+	<UContextMenu :items="menuSections" :disabled="albumsStore.albums.length === 0 && photosStore.photos.length === 0" class="contents">
 		<div class="contents">
 			<AlbumThumbPanel
 				v-if="albumsStore.albums.length > 0"
@@ -102,7 +102,9 @@ const { selectedPhotosIds, selectedAlbumsIds, photoSelect: selectPhoto, albumSel
 const { Menu } = useContextMenu(props.selectors, props.photoCallbacks, props.albumCallbacks);
 
 // See AlbumPanel.vue for why the composable's imperative photoMenuOpen/albumMenuOpen are
-// bypassed in favor of a declarative UContextMenu wrapping the gallery view.
+// bypassed in favor of a declarative UContextMenu wrapping the gallery view, and why
+// `:disabled` above must not depend on `Menu.length` (that races against the selection
+// side-effect this handler performs on the very same contextmenu event).
 function contextMenuPhotoOpen(photoId: string, _e: MouseEvent): void {
 	selectedAlbumsIds.value = [];
 	if (!selectedPhotosIds.value.includes(photoId)) {

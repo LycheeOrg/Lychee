@@ -103,7 +103,7 @@
 					<label for="pp_is_and" class="text-highlighted">{{ $t("gallery.album.properties.all_persons_must_match") }}</label>
 				</div>
 			</div>
-			<UButton class="p-3 mt-4 w-full font-bold justify-center" color="primary" @click="save">
+			<UButton class="mt-4 w-full font-bold justify-center" color="primary" @click="save">
 				{{ $t("dialogs.button.save") }}
 			</UButton>
 		</form>

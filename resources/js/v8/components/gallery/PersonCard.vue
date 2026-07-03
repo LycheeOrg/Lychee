@@ -2,7 +2,7 @@
 	<div
 		class="cursor-pointer hover:shadow-lg transition-shadow duration-200 rounded-xl overflow-hidden w-40"
 		@click="$router.push({ name: 'person', params: { personId: person.id } })"
-		@contextmenu.prevent="emit('contextmenu', $event)"
+		@contextmenu="emit('contextmenu', $event)"
 	>
 		<div class="mx-auto aspect-square overflow-hidden bg-neutral-800 flex items-center justify-center rounded-full w-18 h-18">
 			<img v-if="person.representative_crop_url" :src="person.representative_crop_url" :alt="person.name" class="w-full h-full object-cover" />

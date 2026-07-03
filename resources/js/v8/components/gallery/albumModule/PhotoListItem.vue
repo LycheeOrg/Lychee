@@ -9,7 +9,7 @@
 		role="row"
 		tabindex="0"
 		@click="emits('clicked', $event, photo.id)"
-		@contextmenu.prevent="emits('contexted', $event, photo.id)"
+		@contextmenu="emits('contexted', $event, photo.id)"
 		@keydown.enter="emits('clicked', $event, photo.id)"
 		@mouseenter="prefetchFaces"
 	>
