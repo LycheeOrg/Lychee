@@ -293,4 +293,16 @@ return [
 	 | the database settings.
 	 */
 	'enable-request-caching' => (bool) env('ENABLE_REQUEST_CACHING', false),
+
+	/*
+	 |--------------------------------------------------------------------------
+	 | Enable Nuxt UI front-end (v8)
+	 |--------------------------------------------------------------------------
+	 |
+	 | When enabled, serves the Nuxt-UI-based front-end bundle (app-v8.ts)
+	 | instead of the PrimeVue-based bundle (app.ts). See Feature 049
+	 | (Migration to Nuxt UI) for details. Disabled by default while the
+	 | v8 tree is being built out.
+	 */
+	'nuxt_ui' => (bool) env('NUXT_UI_ENABLED', false),
 ];

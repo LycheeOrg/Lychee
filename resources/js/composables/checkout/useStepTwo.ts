@@ -1,7 +1,7 @@
 import WebshopService, { CardDetails } from "@/services/webshop-service";
 import { OrderManagementStateStore } from "@/stores/OrderManagement";
 import { AxiosError, AxiosResponse } from "axios";
-import { ToastServiceMethods } from "primevue/toastservice";
+import { ToastLike } from "@/composables/toast-contract";
 import { Ref, ref } from "vue";
 import { trans } from "laravel-vue-i18n";
 import { useDummy } from "./useDummy";
@@ -23,7 +23,7 @@ export type ShippingRefs = {
 export function useStepTwo(
 	email: Ref<undefined | string>,
 	orderManagement: OrderManagementStateStore,
-	toast: ToastServiceMethods,
+	toast: ToastLike,
 	shipping?: ShippingRefs,
 ) {
 	const { cardDetails, isCardNumberNotEmpty, isCardNumberValid, getFakeNumber, processDummyPayment } = useDummy(toast);

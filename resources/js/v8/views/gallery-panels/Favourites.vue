@@ -1,0 +1,97 @@
+<template>
+	<div class="h-svh overflow-y-hidden">
+		<!-- Trick to avoid the scroll bar to appear on the right when switching to full screen -->
+		<Collapse :when="!is_full_screen">
+			<div class="w-full border-0 h-14 flex items-center justify-between px-2">
+				<GoBack @go-back="goBack" />
+				<span class="absolute left-1/2 -translate-x-1/2">{{ $t("gallery.favourites") }}</span>
+			</div>
+		</Collapse>
+		<div
+			id="galleryView"
+			class="relative flex flex-wrap content-start w-full justify-start overflow-y-auto"
+			:class="is_full_screen ? 'h-svh' : 'h-[calc(100vh-3.5rem)]'"
+			@scroll="onScroll"
+		>
+			<PhotoThumbPanel
+				v-if="layoutStore.config && photos.length > 0"
+				header="gallery.album.header_photos"
+				:photos="photos"
+				:photos-timeline="undefined"
+				:selected-photos="selectedPhotosIds"
+				:is-timeline="false"
+				:with-control="false"
+				@clicked="photoClick"
+			/>
+		</div>
+	</div>
+</template>
+<script setup lang="ts">
+import PhotoThumbPanel from "@/v8/components/gallery/albumModule/PhotoThumbPanel.vue";
+import GoBack from "@/v8/components/headers/GoBack.vue";
+import { useScrollable } from "@/composables/album/scrollable";
+import { useSelection } from "@/composables/selections/selections";
+import { ALL } from "@/config/constants";
+import { useAlbumsStore } from "@/stores/AlbumsState";
+import { useFavouriteStore } from "@/stores/FavouriteState";
+import { useLayoutStore } from "@/stores/LayoutState";
+import { useTogglablesStateStore } from "@/stores/ModalsState";
+import { usePhotosStore } from "@/stores/PhotosState";
+import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
+import { onKeyStroke } from "@vueuse/core";
+import { storeToRefs } from "pinia";
+import { ref, computed, onMounted } from "vue";
+import { Collapse } from "vue-collapsed";
+import { useRouter } from "vue-router";
+
+const albumId = ref("favourites");
+const togglableStore = useTogglablesStateStore();
+const layoutStore = useLayoutStore();
+const photosStore = usePhotosStore();
+const albumsStore = useAlbumsStore();
+const { is_full_screen } = storeToRefs(togglableStore);
+const { onScroll, setScroll } = useScrollable(togglableStore, albumId);
+const router = useRouter();
+
+function goBack() {
+	router.push({ name: "gallery" });
+}
+
+const favourites = useFavouriteStore();
+layoutStore.layout = "square";
+
+const photos = computed(() => favourites.photos ?? []);
+
+const { selectedPhotosIds } = useSelection(photosStore, albumsStore, togglableStore);
+
+function photoClick(photoId: string, _e: MouseEvent) {
+	const photo = photos.value.find((p) => p.id === photoId);
+	if (!photo) return;
+	router.push({ name: "album", params: { albumId: photo.album_id ?? ALL, photoId: photo.id } });
+}
+
+onKeyStroke("f", () => !shouldIgnoreKeystroke() && togglableStore.toggleFullScreen());
+onKeyStroke("Escape", () => {
+	// 1. lose focus
+	if (shouldIgnoreKeystroke() && document.activeElement instanceof HTMLElement) {
+		document.activeElement.blur();
+		return;
+	}
+
+	goBack();
+});
+
+onMounted(async () => {
+	const results = await Promise.allSettled([layoutStore.load()]);
+
+	results.forEach((result, index) => {
+		if (result.status === "rejected") {
+			console.warn(`Promise ${index} reject with reason: ${result.reason}`);
+		}
+	});
+
+	if (results.every((result) => result.status === "fulfilled")) {
+		setScroll();
+	}
+});
+</script>

@@ -5,10 +5,10 @@ import { PhotoStore } from "@/stores/PhotoState";
 import { usePhotosStore } from "@/stores/PhotosState";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { trans } from "laravel-vue-i18n";
-import { type ToastServiceMethods } from "primevue/toastservice";
+import { type ToastLike } from "@/composables/toast-contract";
 import { type Ref } from "vue";
 
-export function usePhotoActions(photoStore: PhotoStore, albumId: Ref<string | undefined>, toast: ToastServiceMethods, lycheeStore: LycheeStateStore) {
+export function usePhotoActions(photoStore: PhotoStore, albumId: Ref<string | undefined>, toast: ToastLike, lycheeStore: LycheeStateStore) {
 	const photosStore = usePhotosStore();
 	const albumStore = useAlbumStore();
 

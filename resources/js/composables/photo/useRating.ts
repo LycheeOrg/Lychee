@@ -3,10 +3,10 @@ import { PhotoStore } from "@/stores/PhotoState";
 import { usePhotosStore } from "@/stores/PhotosState";
 import { UserStore } from "@/stores/UserState";
 import { trans } from "laravel-vue-i18n";
-import { ToastServiceMethods } from "primevue/toastservice";
+import { ToastLike } from "@/composables/toast-contract";
 import { ref } from "vue";
 
-export function useRating(photoStore: PhotoStore, toast: ToastServiceMethods, userStore: UserStore) {
+export function useRating(photoStore: PhotoStore, toast: ToastLike, userStore: UserStore) {
 	const photosStore = usePhotosStore();
 	const loading = ref(false);
 

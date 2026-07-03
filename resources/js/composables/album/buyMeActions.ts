@@ -1,7 +1,7 @@
 import { AlbumStore } from "@/stores/AlbumState";
 import { CatalogStore } from "@/stores/CatalogState";
 import { OrderManagementStateStore } from "@/stores/OrderManagement";
-import { ToastServiceMethods } from "primevue/toastservice";
+import { ToastLike } from "@/composables/toast-contract";
 import { ref } from "vue";
 import { trans } from "laravel-vue-i18n";
 import { sprintf } from "sprintf-js";
@@ -24,7 +24,7 @@ export function useBuyMeActions(
 	photosStore: PhotosStore,
 	orderManagement: OrderManagementStateStore,
 	catalogStore: CatalogStore,
-	toast: ToastServiceMethods,
+	toast: ToastLike,
 ) {
 	async function toggleBuyMe(idx: string) {
 		// Sanity check

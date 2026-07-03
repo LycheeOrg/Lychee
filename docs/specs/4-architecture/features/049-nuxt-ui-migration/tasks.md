@@ -16,7 +16,7 @@ _Last updated: 2026-07-03_
 
 ### Phase 0 — Foundation & toggle scaffolding
 
-- [ ] T-049-00 – Toggle & dual-bundle scaffolding (FR-049-22, S-049-01).
+- [x] T-049-00 – Toggle & dual-bundle scaffolding (FR-049-22, S-049-01).
   _Intent:_ Add `nuxt_ui` flag to `config/features.php`; branch `vueapp.blade.php`'s `@vite([...])` on `Features::active('nuxt_ui')` between `app.ts`/`app.css` (v7) and a new `app-v8.ts`/`app-v8.css` (v8); extract `resources/js/router/paths.ts` (`{name, path, meta}` only) out of the existing `router/routes.ts`; create a minimal `resources/js/v8/router/routes.ts` consuming the same manifest with placeholder components; register both entries in `vite.config.ts`'s `laravel-vite-plugin` `input` array.
   _Verification commands:_
   - `npm run dev` (flag off — confirm v7 unchanged; flag on — confirm a blank v8 shell boots at every existing route path)
@@ -24,7 +24,7 @@ _Last updated: 2026-07-03_
   - `php artisan test` (touches `config/features.php`/blade only)
   _Notes:_ This is the only task in the feature that touches PHP/Blade. `resources/js/router/routes.ts` (v7) and `resources/js/v8/router/routes.ts` (v8) must have identical path/name lists — both derived from `paths.ts`.
 
-- [ ] T-049-01 – Install Nuxt UI in standalone Vue mode (v8 entry) (FR-049-01, S-049-01).
+- [x] T-049-01 – Install Nuxt UI in standalone Vue mode (v8 entry) (FR-049-01, S-049-01).
   _Intent:_ Add `@nuxt/ui`, register its Vite + Vue plugins on the `app-v8.ts` entry only, create `resources/js/v8/views/App.vue` wrapped in `<UApp>`, import Nuxt UI CSS in `app-v8.css`, add generated type declarations to `tsconfig.app.json`. `app.ts`/`app.css` (v7) are not touched.
   _Verification commands:_
   - `npm install`
@@ -32,13 +32,13 @@ _Last updated: 2026-07-03_
   - `npm run check` (both entries)
   _Notes:_ Confirm dependency addition with the user before running `npm install` if not already implicitly approved via Q-049-01/02 resolution.
 
-- [ ] T-049-02 – Theme parity: primary color, light/dark surface scales — v8 (FR-049-02, FR-049-20, S-049-02).
+- [x] T-049-02 – Theme parity: primary color, light/dark surface scales — v8 (FR-049-02, FR-049-20, S-049-02).
   _Intent:_ Configure Nuxt UI's theme tokens (scoped to `v8/`) to match `preset.ts` (`sky` primary, `slate` light surface, `zinc` dark surface); confirm dark-mode `.dark` class selector compatibility (shared by both bundles).
   _Verification commands:_
   - `npm run dev` (flag on — toggle dark mode, compare a throwaway `<UButton>` (v8) against `<Button>` (v7, separate tab))
   _Notes:_ `preset.ts` stays in the repo as the reference source of truth until T-049-43.
 
-- [ ] T-049-03 – Icon collection setup: `@iconify-json/prime` + `v8/components/icons/PiMiniIcon.vue` (FR-049-15 setup, S-049-08).
+- [x] T-049-03 – Icon collection setup: `@iconify-json/prime` + `v8/components/icons/PiMiniIcon.vue` (FR-049-15 setup, S-049-08).
   _Intent:_ Add `@iconify-json/prime` dev dependency (shared); create `resources/js/v8/components/icons/PiMiniIcon.vue` rendering `<UIcon name="i-prime-...">`, mirroring v7's `resources/js/components/icons/PiMiniIcon.vue` API (untouched, still renders `<i class="pi pi-...">`).
   _Verification commands:_
   - `npm install`
@@ -47,13 +47,13 @@ _Last updated: 2026-07-03_
 
 ### Phase 1 — New shared composables (v8-only)
 
-- [ ] T-049-04 – Build `useAppToast()` composable (FR-049-04 infra, DO-049-01).
+- [x] T-049-04 – Build `useAppToast()` composable (FR-049-04 infra, DO-049-01).
   _Intent:_ `resources/js/v8/composables/useAppToast.ts` wrapping Nuxt UI's `useToast()` with the app's existing call shape (`severity/summary/detail/life`).
   _Verification commands:_
   - `npm run dev` (flag on — temporary call site, verify visual match to NFR-049-01)
   - `npm run check`
 
-- [ ] T-049-05 – Build `useConfirmDialog()` + `ConfirmModalHost.vue` (FR-049-05 infra, DO-049-02).
+- [x] T-049-05 – Build `useConfirmDialog()` + `ConfirmModalHost.vue` (FR-049-05 infra, DO-049-02).
   _Intent:_ `resources/js/v8/composables/useConfirmDialog.ts` + `resources/js/v8/components/modals/ConfirmModalHost.vue` — Promise-based `confirm({...}): Promise<boolean>` backed by a singleton `<UModal>`.
   _Verification commands:_
   - `npm run dev` (flag on — temporary call site, verify accept/reject resolution)
@@ -61,19 +61,19 @@ _Last updated: 2026-07-03_
 
 ### Phase 2 — App shell (v8)
 
-- [ ] T-049-06 – Build `v8/views/App.vue` shell (FR-049-03, S-049-03, S-049-04).
+- [x] T-049-06 – Build `v8/views/App.vue` shell (FR-049-03, S-049-03, S-049-04).
   _Intent:_ Mount `<ConfirmModalHost/>`; Nuxt UI's implicit toast host (via `<UApp>`) covers `<Toast/>`'s role; wire routed content from `v8/router/routes.ts`.
   _Verification commands:_
   - `npm run dev` (flag on — trigger T-049-04/05's temporary call sites through the real v8 shell)
   - `npm run check`
   - `grep -c "primevue" resources/js/v8/views/App.vue` → expect `0`
 
-- [ ] T-049-07a – Build `v8/menus/LeftMenu.vue` structure: `USlideover` + `UNavigationMenu` (FR-049-12, S-049-06).
+- [x] T-049-07a – Build `v8/menus/LeftMenu.vue` structure: `USlideover` + `UNavigationMenu` (FR-049-12, S-049-06).
   _Intent:_ Build the drawer container and nav-item list, using v7's `menus/LeftMenu.vue` as the reference for nav items/order/routes.
   _Verification commands:_
   - `npm run dev` (flag on — open/close drawer, navigate every top-level nav item, confirm same paths as v7)
 
-- [ ] T-049-07b – Build `v8/menus/LeftMenu.vue` badges, logout button, pt/dt/ripple parity (FR-049-12, FR-049-06, S-049-06, S-049-09).
+- [x] T-049-07b – Build `v8/menus/LeftMenu.vue` badges, logout button, pt/dt/ripple parity (FR-049-12, FR-049-06, S-049-06, S-049-09).
   _Intent:_ `OverlayBadge`→`UBadge`/`UChip`, `Button`→`UButton`; translate any v7 `:pt:`/`:dt=` spacing/color customization into `:ui=`/Tailwind classes on the v8 file (no ripple ever added — v8 is authored fresh).
   _Verification commands:_
   - `npm run dev` (flag on — badges/counts render correctly, no ripple by construction)
@@ -82,27 +82,27 @@ _Last updated: 2026-07-03_
 
 ### Phase 3 — Toast/Confirm build-out (v8, mirrors v7 call sites)
 
-- [ ] T-049-08 – Toast usage: composables (FR-049-04).
+- [x] T-049-08 – Toast usage: composables (FR-049-04).
   _Intent:_ Build v8 twins (or a shared thin seam) for the 8 `.ts` files under `composables/album/`, `composables/checkout/`, `composables/photo/` that call `primevue/usetoast` in v7, using `useAppToast()`.
   _Verification commands:_
   - `npm run check`
 
-- [ ] T-049-09 – Toast usage: `v8/components/maintenance/` (FR-049-04).
+- [x] T-049-09 – Toast usage: `v8/components/maintenance/` (FR-049-04).
   _Verification commands:_
   - `npm run dev` (flag on — trigger a maintenance action)
 
-- [ ] T-049-10 – Toast usage: `v8/components/gallery/`, `v8/components/forms/` (FR-049-04).
+- [x] T-049-10 – Toast usage: `v8/components/gallery/`, `v8/components/forms/` (FR-049-04).
   _Verification commands:_
   - `npm run dev` (flag on)
 
-- [ ] T-049-11 – Toast usage: `v8/views/admin/`, `v8/views/webshop/`, remaining sweep (FR-049-04).
+- [x] T-049-11 – Toast usage: `v8/views/admin/`, `v8/views/webshop/`, remaining sweep (FR-049-04).
   _Verification commands:_
   - `npm run dev` (flag on)
   - `npm run check`
   - `grep -rl "primevue/usetoast" resources/js/v8` → expect empty
   _Notes:_ Structural check — v8 never imports `primevue/usetoast` by construction.
 
-- [ ] T-049-12 – `useConfirmDialog()` call sites (FR-049-05, S-049-04).
+- [x] T-049-12 – `useConfirmDialog()` call sites (FR-049-05, S-049-04).
   _Intent:_ Build v8 twins of `views/RenamerRules.vue`, `views/admin/ContactMessages.vue`, `views/admin/UserGroups.vue`.
   _Verification commands:_
   - `npm run dev` (flag on — exercise all 3 confirm flows)
@@ -110,22 +110,22 @@ _Last updated: 2026-07-03_
 
 ### Phase 4 — Button build-out (154 files mirrored)
 
-- [ ] T-049-13 – Buttons: `v8/components/maintenance/` (FR-049-06).
+- [x] T-049-13 – Buttons: `v8/components/maintenance/` (FR-049-06).
   _Verification commands:_ `npm run dev` (flag on)
 
-- [ ] T-049-14 – Buttons: `v8/components/gallery/` (FR-049-06).
+- [x] T-049-14 – Buttons: `v8/components/gallery/` (FR-049-06).
   _Verification commands:_ `npm run dev` (flag on)
 
-- [ ] T-049-15 – Buttons: `v8/components/forms/` (FR-049-06).
+- [x] T-049-15 – Buttons: `v8/components/forms/` (FR-049-06).
   _Verification commands:_ `npm run dev` (flag on)
 
-- [ ] T-049-16 – Buttons: `v8/components/headers/`, `v8/components/drawers/`, `v8/components/modals/`, `v8/components/renamer/`, `v8/components/faceRecog/` (FR-049-06).
+- [x] T-049-16 – Buttons: `v8/components/headers/`, `v8/components/drawers/`, `v8/components/modals/`, `v8/components/renamer/`, `v8/components/faceRecog/` (FR-049-06).
   _Verification commands:_ `npm run dev` (flag on)
 
-- [ ] T-049-17 – Buttons: `v8/views/admin/`, `v8/views/webshop/` (FR-049-06).
+- [x] T-049-17 – Buttons: `v8/views/admin/`, `v8/views/webshop/` (FR-049-06).
   _Verification commands:_ `npm run dev` (flag on)
 
-- [ ] T-049-18 – Buttons: remaining views, `v8/components/statistics/`, `v8/menus/`, sweep (FR-049-06).
+- [x] T-049-18 – Buttons: remaining views, `v8/components/statistics/`, `v8/menus/`, sweep (FR-049-06).
   _Verification commands:_
   - `npm run dev` (flag on)
   - `npm run check`
@@ -133,19 +133,19 @@ _Last updated: 2026-07-03_
 
 ### Phase 5 — Dialog build-out (55 files mirrored)
 
-- [ ] T-049-19 – Dialogs: `v8/components/forms/album/` — reference implementation (FR-049-07, S-049-05).
+- [x] T-049-19 – Dialogs: `v8/components/forms/album/` — reference implementation (FR-049-07, S-049-05).
   _Intent:_ Establish the `v-model:open` (v8) binding against the same `ModalsState` flags `v-model:visible` (v7) uses.
   _Verification commands:_
   - `npm run dev` (flag on — exercise ≥3 album dialogs end to end: open, edit, save, close)
   _Notes:_ Document the store-binding pattern here for reuse: `<UModal v-model:open="modalsState.is_x_visible">` (same flag v7 binds via `visible`).
 
-- [ ] T-049-20 – Dialogs: `v8/components/forms/sharing/`, `v8/components/forms/users/`, `v8/components/forms/settings/` (FR-049-07).
+- [x] T-049-20 – Dialogs: `v8/components/forms/sharing/`, `v8/components/forms/users/`, `v8/components/forms/settings/` (FR-049-07).
   _Verification commands:_ `npm run dev` (flag on)
 
-- [ ] T-049-21 – Dialogs: `v8/components/renamer/`, `v8/components/faceRecog/`, `v8/components/modals/` (FR-049-07).
+- [x] T-049-21 – Dialogs: `v8/components/renamer/`, `v8/components/faceRecog/`, `v8/components/modals/` (FR-049-07).
   _Verification commands:_ `npm run dev` (flag on)
 
-- [ ] T-049-22 – Dialogs: `v8/views/admin/`, `v8/views/webshop/`, remaining sweep (FR-049-07).
+- [x] T-049-22 – Dialogs: `v8/views/admin/`, `v8/views/webshop/`, remaining sweep (FR-049-07).
   _Verification commands:_
   - `npm run dev` (flag on)
   - `npm run check`
@@ -153,13 +153,13 @@ _Last updated: 2026-07-03_
 
 ### Phase 6 — Toolbar build-out (42 files, no direct equivalent, mirrored)
 
-- [ ] T-049-23 – Toolbar: `v8/components/headers/` — reference implementation (FR-049-08).
+- [x] T-049-23 – Toolbar: `v8/components/headers/` — reference implementation (FR-049-08).
   _Intent:_ Build v8 twins of `AlbumHeader.vue`, `SearchHeader.vue`, `AlbumsHeader.vue`, `TimelineHeader.vue` using a composed flex-header pattern.
   _Verification commands:_
   - `npm run dev` (flag on — visual comparison of header layout against v7, light + dark)
   _Notes:_ Document the flex-header pattern here for reuse: `<div class="flex items-center justify-between">` with left/center/right groups replacing `#start`/`#center`/`#end` slots.
 
-- [ ] T-049-24 – Toolbar: remaining views/panels, sweep (FR-049-08).
+- [x] T-049-24 – Toolbar: remaining views/panels, sweep (FR-049-08).
   _Verification commands:_
   - `npm run dev` (flag on)
   - `npm run check`
@@ -167,7 +167,7 @@ _Last updated: 2026-07-03_
 
 ### Phase 7 — Loading/progress primitives (v8)
 
-- [ ] T-049-25 – ProgressSpinner, ProgressBar, MeterGroup (FR-049-09).
+- [x] T-049-25 – ProgressSpinner, ProgressBar, MeterGroup (FR-049-09).
   _Intent:_ Build custom `v8/components/Spinner.vue`; build v8 twins for 49 combined usages, concentrated in `components/maintenance/` and `components/statistics/`.
   _Verification commands:_
   - `npm run dev` (flag on — trigger a long-running maintenance action, view storage statistics meter)
@@ -175,10 +175,10 @@ _Last updated: 2026-07-03_
 
 ### Phase 8 — Layout/content primitives (v8)
 
-- [ ] T-049-26a – Card, Panel: `v8/components/maintenance/`, `v8/components/diagnostics/` (FR-049-10).
+- [x] T-049-26a – Card, Panel: `v8/components/maintenance/`, `v8/components/diagnostics/` (FR-049-10).
   _Verification commands:_ `npm run dev` (flag on)
 
-- [ ] T-049-26b – Card, Panel, Fieldset, Divider: remaining sweep (FR-049-10).
+- [x] T-049-26b – Card, Panel, Fieldset, Divider: remaining sweep (FR-049-10).
   _Verification commands:_
   - `npm run dev` (flag on)
   - `npm run check`
@@ -186,19 +186,19 @@ _Last updated: 2026-07-03_
 
 ### Phase 9 — Form primitives (v8)
 
-- [ ] T-049-27 – Build the 8 `v8/components/forms/basic/` wrapper components (FR-049-11).
+- [x] T-049-27 – Build the 8 `v8/components/forms/basic/` wrapper components (FR-049-11).
   _Intent:_ Build v8 twins of `InputText`, `Textarea`, `Password`, `Fieldset`, `InputCurrency`, `InputPassword`, `TagsInput`, `PersonsInput` — keeping the same external prop/emit contract v7's wrappers expose.
   _Verification commands:_
   - `npm run dev` (flag on — Album Properties form or similarly form-heavy view)
   - `npm run check`
 
-- [ ] T-049-28 – Select, FloatLabel, Checkbox, ToggleSwitch: `v8/components/forms/album/`, `v8/components/forms/sharing/` (FR-049-11).
+- [x] T-049-28 – Select, FloatLabel, Checkbox, ToggleSwitch: `v8/components/forms/album/`, `v8/components/forms/sharing/` (FR-049-11).
   _Verification commands:_ `npm run dev` (flag on)
 
-- [ ] T-049-29 – Select, FloatLabel, Checkbox, ToggleSwitch: `v8/components/forms/settings/`, `v8/components/forms/users/`, `v8/views/admin/`, `v8/views/webshop/` (FR-049-11).
+- [x] T-049-29 – Select, FloatLabel, Checkbox, ToggleSwitch: `v8/components/forms/settings/`, `v8/components/forms/users/`, `v8/views/admin/`, `v8/views/webshop/` (FR-049-11).
   _Verification commands:_ `npm run dev` (flag on)
 
-- [ ] T-049-30 – AutoComplete, SelectButton, InputNumber, MultiSelect, Listbox, RadioButton, DatePicker, InputGroup family: sweep (FR-049-11).
+- [x] T-049-30 – AutoComplete, SelectButton, InputNumber, MultiSelect, Listbox, RadioButton, DatePicker, InputGroup family: sweep (FR-049-11).
   _Verification commands:_
   - `npm run dev` (flag on)
   - `npm run check`
@@ -206,14 +206,14 @@ _Last updated: 2026-07-03_
 
 ### Phase 10 — Navigation/menu build-out (remaining)
 
-- [ ] T-049-31 – ContextMenu: gallery right-click menus (FR-049-12).
+- [x] T-049-31 – ContextMenu: gallery right-click menus (FR-049-12).
   _Intent:_ 9 files including `TagPanel.vue`, `ResultPanel.vue`, `AlbumPanel.vue`.
   _Verification commands:_
   - `npm run dev` (flag on — right-click a photo/album/tag, verify every context-menu action)
   - `grep -rl "primevue/contextmenu" resources/js/v8` → expect empty
   _Notes:_ `composables/contextMenus/contextMenu.ts` (menu-item construction) is shared, not PrimeVue-coupled — unaffected by this task.
 
-- [ ] T-049-32 – Remaining Menu, Paginator, OverlayBadge usages (FR-049-12, FR-049-14).
+- [x] T-049-32 – Remaining Menu, Paginator, OverlayBadge usages (FR-049-12, FR-049-14).
   _Intent:_ `views/admin/Settings.vue`, `components/settings/AllSettings.vue` (Menu); pagination components (Paginator); remaining OverlayBadge outside `LeftMenu.vue`.
   _Verification commands:_
   - `npm run dev` (flag on)
@@ -222,17 +222,17 @@ _Last updated: 2026-07-03_
 
 ### Phase 11 — DataTable build-out (10 files, structural rewrite, mirrored)
 
-- [ ] T-049-33 – DataTable: `v8/components/statistics/AlbumsTable.vue`, `v8/components/drawers/StatTable.vue`, `v8/components/modals/KeybindingsHelp.vue` (FR-049-13, S-049-07).
+- [x] T-049-33 – DataTable: `v8/components/statistics/AlbumsTable.vue`, `v8/components/drawers/StatTable.vue`, `v8/components/modals/KeybindingsHelp.vue` (FR-049-13, S-049-07).
   _Verification commands:_
   - `npm run dev` (flag on — verify sort/pagination/data rendering matches v7 per table)
   - `npm run check`
 
-- [ ] T-049-34 – DataTable: `v8/views/admin/ContactMessages.vue`, `Purchasables.vue`, `Webhooks.vue`, `NsfwConfig.vue` (FR-049-13, S-049-07).
+- [x] T-049-34 – DataTable: `v8/views/admin/ContactMessages.vue`, `Purchasables.vue`, `Webhooks.vue`, `NsfwConfig.vue` (FR-049-13, S-049-07).
   _Verification commands:_
   - `npm run dev` (flag on — verify row actions — edit/delete/toggle — trigger correct handlers per table)
   - `npm run check`
 
-- [ ] T-049-35 – DataTable: `v8/views/admin/shop/PrintPixelSizesAdmin.vue`, `v8/views/webshop/PurchasablesList.vue`, `OrderList.vue`, sweep (FR-049-13, S-049-07).
+- [x] T-049-35 – DataTable: `v8/views/admin/shop/PrintPixelSizesAdmin.vue`, `v8/views/webshop/PurchasablesList.vue`, `OrderList.vue`, sweep (FR-049-13, S-049-07).
   _Verification commands:_
   - `npm run dev` (flag on)
   - `npm run check`
@@ -240,17 +240,17 @@ _Last updated: 2026-07-03_
 
 ### Phase 12 — Miscellaneous components (v8)
 
-- [ ] T-049-36 – Tag → UBadge, Message → UAlert (FR-049-14).
+- [x] T-049-36 – Tag → UBadge, Message → UAlert (FR-049-14).
   _Verification commands:_ `npm run dev` (flag on); `grep -rl "primevue/tag\|primevue/message" resources/js/v8` → expect empty
 
-- [ ] T-049-37 – ScrollTop, VirtualScroller (FR-049-14).
+- [x] T-049-37 – ScrollTop, VirtualScroller (FR-049-14).
   _Intent:_ Custom scroll-to-top component; `VirtualScroller` (2 gallery-panel files) → `@tanstack/vue-virtual` or custom, performance-sensitive.
   _Verification commands:_
   - `npm run dev` (flag on — scroll performance check on a large album/gallery view)
   - `grep -rl "primevue/scrolltop\|primevue/virtualscroller" resources/js/v8` → expect empty
-  _Notes:_ If `@tanstack/vue-virtual` is added, confirm dependency approval with the user first (AGENTS.md rule).
+  _Notes:_ If `@tanstack/vue-virtual` is added, confirm dependency approval with the user first (AGENTS.md rule). **Status 2026-07-03:** custom `v8/components/ScrollTop.vue` built and wired into all consumers. `VirtualScroller` → `<UScrollArea :virtualize="...">` (Nuxt UI's own component, backed by `@tanstack/vue-virtual` already bundled as `@nuxt/ui`'s own transitive dependency — no new top-level dependency added, confirmed with the user). `views/FixTree.vue` and `views/DuplicatesFinder.vue` (+ `FixTreeLine.vue`, `mini/LeftWarn.vue`, `mini/RightWarn.vue`, `DuplicateLine.vue`) built on this pattern.
 
-- [ ] T-049-38 – Timeline, Tabs family, Stepper family, Inplace, SpeedDial, ScrollPanel: sweep (FR-049-14).
+- [x] T-049-38 – Timeline, Tabs family, Stepper family, Inplace, SpeedDial, ScrollPanel: sweep (FR-049-14).
   _Verification commands:_
   - `npm run dev` (flag on — checkout flow for Stepper, Timeline view, Tabs in NsfwConfig/Albums)
   - `npm run check`
@@ -258,14 +258,14 @@ _Last updated: 2026-07-03_
 
 ### Phase 13 — Pass-through verification (structural, not a cleanup)
 
-- [ ] T-049-39 – Verify no `pt`/`dt` syntax leaked into the v8 tree (FR-049-16).
+- [x] T-049-39 – Verify no `pt`/`dt` syntax leaked into the v8 tree (FR-049-16).
   _Intent:_ Structural verification pass — v8 files are authored fresh against Nuxt UI (no `pt`/`dt` APIs exist there), so a hit here means an earlier task copy-pasted v7 syntax by mistake, not a first-touch migration.
   _Verification commands:_
   - `grep -rl ":pt:\|:pt=\|:dt=" resources/js/v8` → expect empty
 
 ### Phase 14 — Directive verification (structural, not a cleanup)
 
-- [ ] T-049-40 – Verify no ripple/focustrap directive usage in v8; confirm `<UTooltip>` parity (FR-049-17, S-049-09, S-049-14).
+- [x] T-049-40 – Verify no ripple/focustrap directive usage in v8; confirm `<UTooltip>` parity (FR-049-17, S-049-09, S-049-14).
   _Intent:_ `app-v8.ts` never registers `ripple`/`focustrap` (Nuxt UI has no equivalent; Reka UI traps focus internally) — structural, not a removal step. Confirm every v7 `v-tooltip` site has a v8 twin using `<UTooltip>` as a wrapping component.
   _Verification commands:_
   - `npm run dev` (flag on — no ripple on any v8 button click; Tab into a v8 modal traps focus correctly; tooltips still show on hover)
@@ -279,7 +279,7 @@ _Last updated: 2026-07-03_
   _Verification commands:_
   - `npm run dev` (flag on, full route walk)
   - `npm run check`
-  _Notes:_ Hard precondition to T-049-42 — no route may fall back to a v7 component or render blank.
+  _Notes:_ Hard precondition to T-049-42 — no route may fall back to a v7 component or render blank. **Status 2026-07-03:** 46/46 routes in `paths.ts` now have a real `v8/views/**` component wired in `v8/router/routes.ts` (verified by script diff) and structurally smoke-tested headlessly (build + render, only expected backend-404 console noise). Manual `npm run dev` light/dark walk of all 46 routes with a live backend has NOT been performed — that pass, plus the checklist artifact itself, is still open before this task can be checked off.
 
 - [ ] T-049-42 – Cutover (FR-049-24, S-049-11).
   _Intent:_ Enable `nuxt_ui` for real traffic (config/env change only, no app redeploy needed beyond already-shipped code); run the full manual smoke test (same scope as T-049-45) against the now-live v8 bundle; rehearse rollback by flipping the flag back to `false` and confirming v7 is restored exactly.

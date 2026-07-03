@@ -1,4 +1,4 @@
-import { ToastServiceMethods } from "primevue/toastservice";
+import { ToastLike } from "@/composables/toast-contract";
 import { Ref, ref } from "vue";
 import { $dt } from "@primeuix/themes";
 import { trans } from "laravel-vue-i18n";
@@ -31,7 +31,7 @@ async function waitForElement(id: string, timeoutMs: number = 5000): Promise<HTM
 	});
 }
 
-export function useMollie(toast: ToastServiceMethods) {
+export function useMollie(toast: ToastLike) {
 	async function mountMollie(options: Ref<undefined | App.Http.Resources.Shop.CheckoutOptionResource>) {
 		if (options.value?.mollie_profile_id === undefined || options.value?.mollie_profile_id === null || options.value?.mollie_profile_id === "") {
 			toast.add({

@@ -1,5 +1,6 @@
 import Album from "@/views/gallery-panels/Album.vue";
 import Albums from "@/views/gallery-panels/Albums.vue";
+import { paths } from "@/router/paths";
 
 const Landing = () => import("@/views/Landing.vue");
 const Favourites = () => import("@/views/gallery-panels/Favourites.vue");
@@ -45,249 +46,62 @@ const FaceClusters = () => import("@/views/face-recog/FaceClusters.vue");
 const FaceMaintenance = () => import("@/views/face-recog/FaceMaintenance.vue");
 const NsfwConfig = () => import("@/views/admin/NsfwConfig.vue");
 
-const routes_ = [
-	{
-		name: "landing",
-		path: "/",
-		component: Landing,
-	},
-	{
-		name: "favourites",
-		path: "/gallery/favourites",
-		component: Favourites,
-	},
-	{
-		name: "album",
-		path: "/gallery/:albumId/:photoId?",
-		component: Album,
-		props: true,
-	},
-	{
-		name: "home",
-		path: "/home",
-		component: Home,
-	},
-	{
-		name: "flow",
-		path: "/flow",
-		component: Flow,
-	},
-	{
-		name: "tags",
-		path: "/tags",
-		component: TagsManagement,
-	},
-	{
-		name: "renamer-rules",
-		path: "/renamerRules",
-		component: RenamerRules,
-	},
-	{
-		name: "tag",
-		path: "/tag/:tagId/:photoId?",
-		component: Tag,
-		props: true,
-	},
-	{
-		name: "flow-album",
-		path: "/flow/:albumId/:photoId?",
-		component: Album,
-		props: true,
-	},
-	{
-		name: "gallery",
-		path: "/gallery",
-		component: Albums,
-	},
-	{
-		name: "frame",
-		path: "/frame/:albumId?",
-		component: Frame,
-		props: true,
-	},
-	{
-		name: "timeline",
-		path: "/timeline/:date?/:photoId?",
-		component: Timeline,
-		props: true,
-	},
-	{
-		name: "map",
-		path: "/map/:albumId?",
-		component: MapView,
-		props: true,
-	},
-	{
-		name: "search",
-		path: "/search/:albumId?/:photoId?",
-		component: Search,
-		props: true,
-	},
-	{
-		name: "diagnostics",
-		path: "/diagnostics",
-		component: Diagnostics,
-	},
-	{
-		name: "permissions",
-		path: "/permissions",
-		component: Permissions,
-	},
-	{
-		name: "jobs",
-		path: "/admin/jobs",
-		component: Jobs,
-	},
-	{
-		name: "maintenance",
-		path: "/admin/maintenance",
-		component: Maintenance,
-	},
-	{
-		name: "face-maintenance",
-		path: "/admin/maintenance/faces",
-		component: FaceMaintenance,
-	},
-	{
-		name: "nsfw-config",
-		path: "/admin/nsfw-config",
-		component: NsfwConfig,
-	},
-	{
-		name: "tree",
-		path: "/fixTree",
-		component: FixTree,
-	},
-	{
-		name: "duplicates",
-		path: "/duplicatesFinder",
-		component: DuplicatesFinder,
-	},
-	{
-		name: "profile",
-		path: "/profile",
-		component: Profile,
-	},
-	{
-		name: "settings",
-		path: "/admin/settings/:tab?",
-		component: Settings,
-		props: true,
-	},
-	{
-		name: "sharing",
-		path: "/sharing",
-		component: Sharing,
-	},
-	{
-		name: "statistics",
-		path: "/statistics",
-		component: Statistics,
-	},
-	{
-		name: "users",
-		path: "/admin/users",
-		component: Users,
-	},
-	{
-		name: "changelogs",
-		path: "/changelogs",
-		component: Changelogs,
-	},
-	{
-		name: "login",
-		path: "/login",
-		component: LoginPage,
-	},
-	{
-		name: "user-groups",
-		path: "/admin/user-groups",
-		component: UserGroups,
-	},
-	{
-		name: "register",
-		path: "/register",
-		component: RegisterPage,
-	},
-	{
-		name: "contact",
-		path: "/contact",
-		component: Contact,
-	},
-	{
-		name: "contact-messages",
-		path: "/admin/contact-messages",
-		component: ContactMessages,
-	},
-	{
-		name: "webhooks",
-		path: "/admin/webhooks",
-		component: Webhooks,
-	},
-	{
-		name: "bulk-album-edit",
-		path: "/bulk-album-edit",
-		component: BulkAlbumEdit,
-	},
-	{
-		name: "moderation",
-		path: "/admin/moderation",
-		component: Moderation,
-	},
-	{
-		name: "purchasables",
-		path: "/admin/purchasables",
-		component: Purchasables,
-	},
-	{
-		name: "shop-sizes",
-		path: "/admin/shop/sizes",
-		component: PrintPixelSizesAdmin,
-	},
-	{
-		name: "admin-dashboard",
-		path: "/admin",
-		component: AdminDashboard,
-	},
-	{
-		name: "basket",
-		path: "/basket",
-		component: BasketList,
-	},
-	{
-		name: "checkout",
-		path: "/checkout/:step?",
-		component: CheckoutPage,
-		props: true,
-	},
-	{
-		name: "orders",
-		path: "/orders",
-		component: OrderList,
-	},
-	{
-		name: "order",
-		path: "/order/:orderId?/:transactionId?",
-		component: OrderDownload,
-		props: true,
-	},
-	{
-		name: "people",
-		path: "/people",
-		component: People,
-	},
-	{
-		name: "face-clusters",
-		path: "/people/clusters",
-		component: FaceClusters,
-	},
-	{
-		name: "person",
-		path: "/people/:personId/:photoId?",
-		component: PersonDetail,
-		props: true,
-	},
-];
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const componentByName: Record<string, any> = {
+	landing: Landing,
+	favourites: Favourites,
+	album: Album,
+	home: Home,
+	flow: Flow,
+	tags: TagsManagement,
+	"renamer-rules": RenamerRules,
+	tag: Tag,
+	"flow-album": Album,
+	gallery: Albums,
+	frame: Frame,
+	timeline: Timeline,
+	map: MapView,
+	search: Search,
+	diagnostics: Diagnostics,
+	permissions: Permissions,
+	jobs: Jobs,
+	maintenance: Maintenance,
+	"face-maintenance": FaceMaintenance,
+	"nsfw-config": NsfwConfig,
+	tree: FixTree,
+	duplicates: DuplicatesFinder,
+	profile: Profile,
+	settings: Settings,
+	sharing: Sharing,
+	statistics: Statistics,
+	users: Users,
+	changelogs: Changelogs,
+	login: LoginPage,
+	"user-groups": UserGroups,
+	register: RegisterPage,
+	contact: Contact,
+	"contact-messages": ContactMessages,
+	webhooks: Webhooks,
+	"bulk-album-edit": BulkAlbumEdit,
+	moderation: Moderation,
+	purchasables: Purchasables,
+	"shop-sizes": PrintPixelSizesAdmin,
+	"admin-dashboard": AdminDashboard,
+	basket: BasketList,
+	checkout: CheckoutPage,
+	orders: OrderList,
+	order: OrderDownload,
+	people: People,
+	"face-clusters": FaceClusters,
+	person: PersonDetail,
+};
+
+const routes_ = paths.map((p) => ({
+	name: p.name,
+	path: p.path,
+	component: componentByName[p.name],
+	...(p.props ? { props: true } : {}),
+}));
 
 if (import.meta.env.MODE === "development" && import.meta.env.VITE_LOCAL_DEV === "true") {
 	routes_.push({

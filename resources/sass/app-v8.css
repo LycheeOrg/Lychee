@@ -1,0 +1,13 @@
+@import "./fonts.css";
+@import "leaflet/dist/leaflet.css";
+@import "leaflet.markercluster/dist/MarkerCluster.css";
+
+@import "tailwindcss";
+@import "@nuxt/ui";
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+html {
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}

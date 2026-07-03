@@ -1,5 +1,5 @@
 import { trans } from "laravel-vue-i18n";
-import { type ToastServiceMethods } from "primevue/toastservice";
+import { type ToastLike } from "@/composables/toast-contract";
 import { sprintf } from "sprintf-js";
 import { ref, type Ref } from "vue";
 
@@ -22,7 +22,7 @@ export type AugmentedAlbum = App.Http.Resources.Diagnostics.AlbumTree & Augmente
 export function useTreeOperations(
 	originalAlbums: Ref<App.Http.Resources.Diagnostics.AlbumTree[] | undefined>,
 	albums: Ref<AugmentedAlbum[] | undefined>,
-	toast: ToastServiceMethods,
+	toast: ToastLike,
 ) {
 	const isValidated = ref(false);
 	const errors = ref<string[]>([]);

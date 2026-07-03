@@ -14,7 +14,11 @@
 <head>
     <meta charset="UTF-8">
     <x-meta />
+    @if(Features::active('nuxt_ui'))
+    @vite(['resources/js/app-v8.ts','resources/sass/app-v8.css'])
+    @else
     @vite(['resources/js/app.ts','resources/sass/app.css'])
+    @endif
 </head>
 {{-- Dirty work around but hey, backward compatibility... --}}
 @if(Features::active('legacy_v4_redirect'))
