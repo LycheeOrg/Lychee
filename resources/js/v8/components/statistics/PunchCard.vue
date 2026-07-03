@@ -123,7 +123,6 @@ function prepMonths() {
 		const candidate = formatter.format(weeks.value[i][0].date);
 		if (previous !== candidate && j > 0) {
 			months.value.push({ month: previous, colspan: j });
-			previous = candidate;
 			j = 0;
 		}
 		previous = candidate;
