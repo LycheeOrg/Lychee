@@ -72,6 +72,10 @@ None beyond ADR-0005's assessment. The feature flag is a global, admin/environme
 - Enabling `nuxt_ui` in a given environment is an operational action (a config/env change) gated behind the route-parity coverage check (new FR-049-23) — this should be treated with the same care as any other environment-flip that changes what all users of that environment see, not as a routine per-increment deploy.
 - No new telemetry, logging, or observability surface (consistent with ADR-0005 and Feature 049's spec).
 
+## Addendum (2026-07-03): v7 physically relocated to `resources/js/v7/`
+
+Once route-parity coverage (FR-049-23) reached 46/46, the v7 tree was moved — `resources/js/views/**` → `resources/js/v7/views/**`, `resources/js/components/**` → `resources/js/v7/components/**`, `resources/js/menus/**` → `resources/js/v7/menus/**`, `resources/js/router/routes.ts` → `resources/js/v7/router/routes.ts`, `resources/js/style/preset.ts` → `resources/js/v7/style/preset.ts` — so that Item 8's "Final removal" step becomes a single `rm -rf resources/js/v7` plus the `app.ts`/flag/dependency cleanup, instead of enumerating three top-level directories by name. `resources/js/app.ts` (the v7 entry point) and `resources/js/router/paths.ts` (the shared manifest) stay at the top level, matching `app-v8.ts`'s position and `v8/`'s existing pattern of importing shared infra (`stores/`, `services/`, `composables/`, `utils/`, `config/`) unprefixed. This was a pure `git mv` + import-path rewrite (no behavioral change, no v7 logic edited); see `docs/specs/4-architecture/features/049-nuxt-ui-migration/tasks.md` for verification. All other file-path references in this ADR and in `spec.md`/`plan.md` describing `resources/js/{views,components,menus}/**` refer to this now-relocated `resources/js/v7/{views,components,menus}/**`.
+
 ## Links
 
 - Related spec sections: `docs/specs/4-architecture/features/049-nuxt-ui-migration/spec.md` (Overview, Goals, Non-Goals, FR-049-01/03/04/05/18, new FR-049-22/23/24, NFR-049-07)

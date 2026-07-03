@@ -87,7 +87,7 @@ This document tracks modules, dependencies, and architectural relationships acro
 ### Frontend (Vue3/TypeScript)
 
 #### Components
-- **UI Components** (`resources/js/components/`) - PrimeVue-based interface elements (migrating to Nuxt UI, Feature 049 — see Frontend Dependencies below)
+- **UI Components** (`resources/js/v7/components/`) - PrimeVue-based interface elements (migrating to Nuxt UI, Feature 049 — see Frontend Dependencies below; parallel Nuxt UI tree lives at `resources/js/v8/components/`)
   - Gallery components (album, photo, flow, search modules)
     - **PhotoThumbPanelControl** - Layout selector with star rating filter (Feature 006)
       - 5 clickable stars for minimum rating threshold filter
@@ -100,9 +100,9 @@ This document tracks modules, dependencies, and architectural relationships acro
     - **SelfieClaimModal** - Upload a selfie to match and claim a Person profile (links Person ↔ User)
   - Maintenance components
     - **MaintenanceBulkScanFaces** - Card to trigger a bulk scan of all unscanned photos
-- **Views** (`resources/js/views/`) - Page-level Vue components
+- **Views** (`resources/js/v7/views/`) - Page-level Vue components (Nuxt UI twins at `resources/js/v8/views/`, Feature 049)
   - Gallery views: Albums, Album, Favourites, Flow, Frame, Map, Search
-  - Admin views (`resources/js/views/admin/`): AdminDashboard, Settings, Users, UserGroups, Purchasables, ContactMessages, Webhooks, Moderation, Maintenance, Jobs
+  - Admin views (`resources/js/v7/views/admin/`): AdminDashboard, Settings, Users, UserGroups, Purchasables, ContactMessages, Webhooks, Moderation, Maintenance, Jobs
   - Diagnostics remains at top-level (`views/Diagnostics.vue`)
   - People views: **People** (`/people`) — paginated PersonCard grid; **PersonDetail** (`/people/:personId`) — photos grid with edit/delete/merge actions
 - **Composables** (`resources/js/composables/`) - Reusable composition functions
