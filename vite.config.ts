@@ -88,7 +88,12 @@ const baseConfig = {
 		// actual --ui-color-* CSS custom properties are populated at runtime by
 		// resources/js/v8/theme.ts - this plugin option alone does not materialize
 		// them in Vue-standalone mode. See Feature 049 T-049-02.
-		ui({ ui: { colors: { primary: "sky", neutral: "slate" } } }),
+		ui({
+			ui: {
+				colors: { primary: "sky", neutral: "slate" },
+				card: { variants: { variant: { outline: { root: "ring-0" } } } },
+			},
+		}),
 		vue({ template: { transformAssetUrls: { base: null, includeAbsolute: false } } }),
 		i18n(),
 	],

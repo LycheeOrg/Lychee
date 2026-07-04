@@ -49,6 +49,7 @@ Documentation is organized following the [Diátaxis framework](https://diataxis.
 - [Frontend Architecture](specs/3-reference/frontend-architecture.md) - Vue3, TypeScript, Pinia, composables, and Lychee conventions
 - [Frontend Gallery Views](specs/3-reference/frontend-gallery.md) - Gallery viewing modes and component architecture
 - [Frontend Layout System](specs/3-reference/frontend-layouts.md) - Photo layout algorithms
+- [Customize the v8 (Nuxt UI) Frontend](specs/2-how-to/customize-v8-nuxt-ui.md) - How-to guide for theming, per-component style overrides, icons, and toasts/dialogs in the Nuxt UI migration
 
 ### Data Structures
 - [Album Tree Structure](specs/4-architecture/album-tree-structure.md) - Nested set model for hierarchical album organization
