@@ -13,7 +13,11 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
+require_once 'TemporaryModels/OptimizeTables.php';
+
 return new class() extends Migration {
+	private OptimizeTables $optimize;
+
 	private const TABLE_NAME = 'access_permissions';
 
 	private const BASE_ALBUM_ID = 'base_album_id';
@@ -31,6 +35,11 @@ return new class() extends Migration {
 	// Explicit name because Laravel's auto-generated name (concatenating all
 	// four column names) exceeds MySQL's 64-character identifier limit.
 	private const UNIQUE_INDEX_NAME = 'access_permissions_dedup_unique';
+
+	public function __construct()
+	{
+		$this->optimize = new OptimizeTables();
+	}
 
 	/**
 	 * Run the migrations.
@@ -51,10 +60,14 @@ return new class() extends Migration {
 			// in-place table rebuild, which InnoDB rejects with error 1215
 			// ("Cannot add foreign key constraint"). Drop it here and
 			// recreate it once the new columns are in place.
-			$table->dropForeign([self::USER_ID]);
-			$table->dropUnique([self::BASE_ALBUM_ID, self::USER_ID]);
-			$table->unsignedInteger(self::USER_ID_UNIQUE_KEY)->nullable(false)->storedAs('COALESCE(' . self::USER_ID . ', 0)');
-			$table->unsignedInteger(self::USER_GROUP_ID_UNIQUE_KEY)->nullable(false)->storedAs('COALESCE(' . self::USER_GROUP_ID . ', 0)');
+			$this->optimize->dropForeignIfExists($table, 'access_permissions_user_id_foreign');
+			$this->optimize->dropUniqueIfExists($table, 'access_permissions_base_album_id_user_id_unique');
+			// No ->nullable(false): MariaDB's grammar rejects an explicit NOT
+			// NULL clause on generated columns entirely (even in CREATE TABLE),
+			// so Laravel must omit it here. COALESCE already guarantees the
+			// stored value is never actually NULL.
+			$table->unsignedInteger(self::USER_ID_UNIQUE_KEY)->storedAs('COALESCE(' . self::USER_ID . ', 0)');
+			$table->unsignedInteger(self::USER_GROUP_ID_UNIQUE_KEY)->storedAs('COALESCE(' . self::USER_GROUP_ID . ', 0)');
 		});
 
 		Schema::table(self::TABLE_NAME, function (Blueprint $table) {
@@ -76,7 +89,7 @@ return new class() extends Migration {
 	{
 		Schema::table(self::TABLE_NAME, function (Blueprint $table) {
 			$table->dropForeign([self::USER_ID]);
-			$table->dropUnique(self::UNIQUE_INDEX_NAME);
+			$this->optimize->dropUniqueIfExists($table, self::UNIQUE_INDEX_NAME);
 			$table->dropColumn([self::USER_ID_UNIQUE_KEY, self::USER_GROUP_ID_UNIQUE_KEY]);
 		});
 
