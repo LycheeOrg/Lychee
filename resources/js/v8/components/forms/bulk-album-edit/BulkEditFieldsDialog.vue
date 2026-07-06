@@ -34,9 +34,9 @@
 								@update:model-value="(v: SelectOption<string> | undefined) => onEnumChange(field.key, v?.value ?? null)"
 							>
 								<template #item-label="{ item }">{{ $t(item.label) }}</template>
-								<template #default="{ modelValue }">
+								<!-- <template #default="{ modelValue }">
 									<span v-if="modelValue">{{ $t((modelValue as SelectOption<string>).label) }}</span>
-								</template>
+								</template> -->
 							</USelectMenu>
 						</UFormField>
 					</div>
@@ -54,9 +54,9 @@
 									@update:model-value="(v: SelectOption<string> | undefined) => onEnumChange(pair.col.key, v?.value ?? null)"
 								>
 									<template #item-label="{ item }">{{ $t(item.label) }}</template>
-									<template #default="{ modelValue }">
+									<!-- <template #default="{ modelValue }">
 										<span v-if="modelValue">{{ $t((modelValue as SelectOption<string>).label) }}</span>
-									</template>
+									</template> -->
 								</USelectMenu>
 							</UFormField>
 							<UCheckbox v-model="editEnabled[pair.order.key]" class="mt-2 shrink-0" />
@@ -70,9 +70,9 @@
 									@update:model-value="(v: SelectOption<string> | undefined) => onEnumChange(pair.order.key, v?.value ?? null)"
 								>
 									<template #item-label="{ item }">{{ $t(item.label) }}</template>
-									<template #default="{ modelValue }">
+									<!-- <template #default="{ modelValue }">
 										<span v-if="modelValue">{{ $t((modelValue as SelectOption<string>).label) }}</span>
-									</template>
+									</template> -->
 								</USelectMenu>
 							</UFormField>
 						</div>
@@ -97,7 +97,17 @@
 		</template>
 		<template #footer>
 			<div class="flex w-full gap-2">
-				<UButton class="flex-1 justify-center" :label="$t('bulk_album_edit.cancel')" color="neutral" variant="soft" @click="visible = false" />
+				<UButton
+					class="flex-1 justify-center"
+					:label="$t('bulk_album_edit.cancel')"
+					color="neutral"
+					variant="soft"
+					@click="
+						() => {
+							visible = false;
+						}
+					"
+				/>
 				<UButton
 					class="flex-1 justify-center"
 					:label="$t('bulk_album_edit.apply')"
@@ -170,7 +180,10 @@ const sortingPairs = [
 		col: { key: "album_sorting_col", label: "field_album_sorting_col", options: albumSortingColumnsOptions },
 		order: { key: "album_sorting_order", label: "field_album_sorting_order", options: sortingOrdersOptions },
 	},
-] as { col: { key: string; label: string; options: SelectOption<string>[] }; order: { key: string; label: string; options: SelectOption<string>[] } }[];
+] as {
+	col: { key: string; label: string; options: SelectOption<string>[] };
+	order: { key: string; label: string; options: SelectOption<string>[] };
+}[];
 
 const boolFields = [
 	{ key: "is_nsfw", label: "field_is_nsfw", red: true, seOnly: false },

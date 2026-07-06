@@ -9,7 +9,13 @@
 				<PrintSizePricesInput v-model="printSizes" />
 				<PixelSizePricesInput v-model="pixelSizes" />
 				<div class="flex gap-4">
-					<UButton icon="prime:plus" :label="$t('webshop.albumPurchasable.setPurchasable')" class="w-full justify-center" :disabled="!canSubmit" @click="makePurchasable" />
+					<UButton
+						icon="prime:plus"
+						:label="$t('webshop.albumPurchasable.setPurchasable')"
+						class="w-full justify-center"
+						:disabled="!canSubmit"
+						@click="makePurchasable"
+					/>
 					<UButton
 						icon="prime:forward"
 						color="error"
@@ -31,7 +37,9 @@
 				<PrintSizePricesInput v-model="printSizes" />
 				<PixelSizePricesInput v-model="pixelSizes" />
 				<div class="flex gap-4">
-					<UButton color="error" variant="ghost" class="font-bold w-full justify-center" @click="disable">{{ $t("webshop.albumPurchasable.disable") }}</UButton>
+					<UButton color="error" variant="ghost" class="font-bold w-full justify-center" @click="disable">{{
+						$t("webshop.albumPurchasable.disable")
+					}}</UButton>
 					<UButton class="w-full justify-center font-bold" :disabled="!canSubmit" @click="updatePrices">
 						{{ $t("webshop.albumPurchasable.update") }}
 					</UButton>

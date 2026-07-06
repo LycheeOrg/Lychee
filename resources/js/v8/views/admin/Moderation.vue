@@ -84,7 +84,13 @@
 					<td class="py-2">
 						<div class="flex gap-1" @click.stop>
 							<UButton icon="prime:check" color="success" variant="ghost" size="sm" @click="approveSingle(photo.photo_id)" />
-							<UButton icon="prime:trash" color="error" variant="ghost" size="sm" @click="deleteSingle(photo.photo_id, photo.album_id)" />
+							<UButton
+								icon="prime:trash"
+								color="error"
+								variant="ghost"
+								size="sm"
+								@click="deleteSingle(photo.photo_id, photo.album_id)"
+							/>
 						</div>
 					</td>
 				</tr>

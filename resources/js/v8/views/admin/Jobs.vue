@@ -8,12 +8,7 @@
 		<template v-else>
 			<div class="mb-8">
 				<div class="flex h-2 rounded-full overflow-hidden w-full bg-elevated">
-					<div
-						v-for="val in meter"
-						:key="val.label"
-						:style="{ width: val.value + '%', backgroundColor: val.color }"
-						:title="val.label"
-					/>
+					<div v-for="val in meter" :key="val.label" :style="{ width: val.value + '%', backgroundColor: val.color }" :title="val.label" />
 				</div>
 				<div class="flex flex-wrap gap-4 mt-2 text-xs text-muted">
 					<span v-for="val in meter" :key="`legend-${val.label}`" class="flex items-center gap-1">

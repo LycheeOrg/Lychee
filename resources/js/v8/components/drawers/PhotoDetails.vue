@@ -173,15 +173,11 @@
 				/>
 				<template v-if="photoStore.photo.precomputed.has_location">
 					<div class="flex gap-x-2 text-muted">
-						<span v-if="photoStore.photo.preformatted.latitude" class="w-full text-sm">{{
-							photoStore.photo.preformatted.latitude
-						}}</span>
+						<span v-if="photoStore.photo.preformatted.latitude" class="w-full text-sm">{{ photoStore.photo.preformatted.latitude }}</span>
 						<span v-if="photoStore.photo.preformatted.longitude" class="w-full text-sm">{{
 							photoStore.photo.preformatted.longitude
 						}}</span>
-						<span v-if="photoStore.photo.preformatted.altitude" class="w-full text-sm">{{
-							photoStore.photo.preformatted.altitude
-						}}</span>
+						<span v-if="photoStore.photo.preformatted.altitude" class="w-full text-sm">{{ photoStore.photo.preformatted.altitude }}</span>
 					</div>
 					<div v-if="photoStore.photo.preformatted.location" class="text-sm">
 						{{ photoStore.photo.preformatted.location }}

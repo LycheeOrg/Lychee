@@ -38,7 +38,10 @@
 								</a>
 							</template>
 							<hr class="my-2 border-default" />
-							<a class="px-4 py-2 rounded hover:bg-elevated cursor-pointer" @click="router.push({ name: 'settings', params: { tab: 'CssJs' } })">
+							<a
+								class="px-4 py-2 rounded hover:bg-elevated cursor-pointer"
+								@click="router.push({ name: 'settings', params: { tab: 'CssJs' } })"
+							>
 								{{ $t("settings.cssjs.header") }}
 							</a>
 							<a
@@ -54,11 +57,7 @@
 						<General v-if="tab === ''" :configs="configs" :hash="hash" @refresh="load" />
 						<CssJs v-if="tab === 'CssJs'" />
 						<template v-for="config in configs" :key="config.cat">
-							<Fieldset
-								v-if="tab === config.cat"
-								:legend="tCatName({ key: config.cat, name: config.name })"
-								class="pb-20 h-full"
-							>
+							<Fieldset v-if="tab === config.cat" :legend="tCatName({ key: config.cat, name: config.name })" class="pb-20 h-full">
 								<div
 									v-if="tCatDesc({ key: config.cat, description: config.description })"
 									class="configDescription w-full text-highlighted pl-6 pb-8"

@@ -19,7 +19,9 @@
 						<div class="w-9/12 lg:w-8/12 flex">
 							<span class="w-2/3 font-bold">{{ $t("users.username") }}</span>
 							<div class="w-1/3 flex justify-evenly">
-								<UTooltip :text="$t('users.upload_rights')"><span class="w-full text-center"><UIcon name="prime:upload" /></span></UTooltip>
+								<UTooltip :text="$t('users.upload_rights')"
+									><span class="w-full text-center"><UIcon name="prime:upload" /></span
+								></UTooltip>
 								<UTooltip :text="$t('users.edit_rights')">
 									<span class="w-full text-center"><UIcon name="prime:lock-open" /></span>
 								</UTooltip>

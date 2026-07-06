@@ -11,7 +11,9 @@
 			{{ data.extra }}
 		</div>
 		<template #footer>
-			<UButton v-if="canCheck" color="warning" class="w-full justify-center" @click="check">{{ $t("maintenance.update.check-button") }}</UButton>
+			<UButton v-if="canCheck" color="warning" class="w-full justify-center" @click="check">{{
+				$t("maintenance.update.check-button")
+			}}</UButton>
 			<UButton v-if="canUpdate" color="primary" class="w-full justify-center" to="/Update" target="_blank" rel="noopener">
 				{{ $t("maintenance.update.update-button") }}
 			</UButton>

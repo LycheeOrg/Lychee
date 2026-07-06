@@ -4,12 +4,7 @@
 			<p>{{ state.options.message }}</p>
 		</template>
 		<template #footer>
-			<UButton
-				:label="state.options.rejectLabel ?? 'Cancel'"
-				color="neutral"
-				variant="outline"
-				@click="settleConfirmDialog(false)"
-			/>
+			<UButton :label="state.options.rejectLabel ?? 'Cancel'" color="neutral" variant="outline" @click="settleConfirmDialog(false)" />
 			<UButton :label="state.options.acceptLabel ?? 'Confirm'" :color="acceptColor" @click="settleConfirmDialog(true)" />
 		</template>
 	</UModal>

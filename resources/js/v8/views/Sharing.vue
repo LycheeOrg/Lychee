@@ -9,7 +9,12 @@
 		<div class="w-full text-center text-highlighted">
 			{{ $t("sharing.info") }}
 		</div>
-		<UButton class="w-full font-bold justify-center mt-4 mb-12" :label="$t('sharing.bluk_share')" icon="prime:user-plus" @click="bulkSharingVisible = true" />
+		<UButton
+			class="w-full font-bold justify-center mt-4 mb-12"
+			:label="$t('sharing.bluk_share')"
+			icon="prime:user-plus"
+			@click="bulkSharingVisible = true"
+		/>
 		<div class="flex flex-col text-highlighted">
 			<div class="flex items-center">
 				<div class="w-5/12 flex items-center">

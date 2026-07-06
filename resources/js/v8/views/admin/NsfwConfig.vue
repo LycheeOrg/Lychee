@@ -60,7 +60,9 @@
 											:key="idx"
 											:class="idx < matrixRows.length - 1 ? 'border-b border-neutral-100 dark:border-neutral-800' : ''"
 										>
-											<td class="py-2 pr-4 font-medium flex items-center gap-2"><UIcon :name="row.iconClass" />{{ row.trustLevel }}</td>
+											<td class="py-2 pr-4 font-medium flex items-center gap-2">
+												<UIcon :name="row.iconClass" />{{ row.trustLevel }}
+											</td>
 											<td class="py-2 pr-4">
 												<UBadge :color="row.block.severity" class="text-xs">{{ row.block.label }}</UBadge>
 											</td>
@@ -144,7 +146,11 @@
 											<UIcon :name="row.iconClass" />
 											<span class="text-highlighted">{{ row.label }}</span>
 										</div>
-										<USwitch v-if="cfg[row.key]" :model-value="cfg[row.key]!.value === '1'" @update:model-value="(v: boolean) => save(row.key, v ? '1' : '0')" />
+										<USwitch
+											v-if="cfg[row.key]"
+											:model-value="cfg[row.key]!.value === '1'"
+											@update:model-value="(v: boolean) => save(row.key, v ? '1' : '0')"
+										/>
 									</div>
 								</div>
 							</Fieldset>
@@ -180,13 +186,17 @@
 
 						<!-- Available Presets -->
 						<UCard>
-							<template #header>{{ $t("admin-dashboard.nsfw_config.presets") }} ({{ Object.keys(presetsData.presets).length }})</template>
+							<template #header
+								>{{ $t("admin-dashboard.nsfw_config.presets") }} ({{ Object.keys(presetsData.presets).length }})</template
+							>
 							<div class="flex flex-col gap-4">
 								<UCard v-for="(preset, name) in presetsData.presets" :key="name">
 									<template #header>
 										<div class="flex items-center gap-2">
 											<span class="font-bold">{{ preset.name }}</span>
-											<UBadge v-if="isActivePreset(String(name))" color="success">{{ $t("admin-dashboard.nsfw_config.active") }}</UBadge>
+											<UBadge v-if="isActivePreset(String(name))" color="success">{{
+												$t("admin-dashboard.nsfw_config.active")
+											}}</UBadge>
 										</div>
 									</template>
 									<p class="text-muted text-sm mb-3">{{ preset.description }}</p>
@@ -195,7 +205,9 @@
 										<div>
 											<span class="font-semibold text-sm">{{ $t("admin-dashboard.nsfw_config.block") }}:</span>
 											<div class="flex flex-wrap gap-1 mt-1">
-												<UBadge v-for="label in preset.block.labels" :key="label" color="error" class="text-xs">{{ label }}</UBadge>
+												<UBadge v-for="label in preset.block.labels" :key="label" color="error" class="text-xs">{{
+													label
+												}}</UBadge>
 												<span v-if="preset.block.labels.length === 0" class="text-muted text-xs italic">{{
 													$t("admin-dashboard.nsfw_config.none")
 												}}</span>
@@ -204,7 +216,9 @@
 										<div>
 											<span class="font-semibold text-sm">{{ $t("admin-dashboard.nsfw_config.review") }}:</span>
 											<div class="flex flex-wrap gap-1 mt-1">
-												<UBadge v-for="label in preset.review.labels" :key="label" color="warning" class="text-xs">{{ label }}</UBadge>
+												<UBadge v-for="label in preset.review.labels" :key="label" color="warning" class="text-xs">{{
+													label
+												}}</UBadge>
 												<span v-if="preset.review.labels.length === 0" class="text-muted text-xs italic">{{
 													$t("admin-dashboard.nsfw_config.none")
 												}}</span>
@@ -213,7 +227,9 @@
 										<div>
 											<span class="font-semibold text-sm">{{ $t("admin-dashboard.nsfw_config.sensitive") }}:</span>
 											<div class="flex flex-wrap gap-1 mt-1">
-												<UBadge v-for="label in preset.sensitive.labels" :key="label" color="info" class="text-xs">{{ label }}</UBadge>
+												<UBadge v-for="label in preset.sensitive.labels" :key="label" color="info" class="text-xs">{{
+													label
+												}}</UBadge>
 												<span v-if="preset.sensitive.labels.length === 0" class="text-muted text-xs italic">{{
 													$t("admin-dashboard.nsfw_config.none")
 												}}</span>

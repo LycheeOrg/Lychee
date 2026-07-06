@@ -20,12 +20,7 @@ export type ShippingRefs = {
 	shippingCountry: Ref<string>;
 };
 
-export function useStepTwo(
-	email: Ref<undefined | string>,
-	orderManagement: OrderManagementStateStore,
-	toast: ToastLike,
-	shipping?: ShippingRefs,
-) {
+export function useStepTwo(email: Ref<undefined | string>, orderManagement: OrderManagementStateStore, toast: ToastLike, shipping?: ShippingRefs) {
 	const { cardDetails, isCardNumberNotEmpty, isCardNumberValid, getFakeNumber, processDummyPayment } = useDummy(toast);
 	const { processMolliePayment } = useMollie(toast);
 

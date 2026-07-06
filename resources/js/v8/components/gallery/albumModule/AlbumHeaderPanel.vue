@@ -52,7 +52,12 @@
 				<div class="relative">
 					<UButton
 						v-if="mode === 'edit'"
-						:class="['h-8', 'w-8', 'bg-black/40 rounded-md border-0 cursor-pointer hover:bg-white/30 ', 'top-1/2 -left-16 absolute! text-white']"
+						:class="[
+							'h-8',
+							'w-8',
+							'bg-black/40 rounded-md border-0 cursor-pointer hover:bg-white/30 ',
+							'top-1/2 -left-16 absolute! text-white',
+						]"
 						icon="prime:chevron-left"
 						@click="setColor(selectedColorIndex - 1)"
 					/>

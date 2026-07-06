@@ -26,7 +26,13 @@
 			></div>
 			<div class="flex flex-col mb-2 gap-1">
 				<UFormField :label="$t('profile.login.email')">
-					<UInput id="email" v-model="email" class="w-full" :color="errors.email !== undefined ? 'error' : undefined" @update:model-value="validate" />
+					<UInput
+						id="email"
+						v-model="email"
+						class="w-full"
+						:color="errors.email !== undefined ? 'error' : undefined"
+						@update:model-value="validate"
+					/>
 				</UFormField>
 				<span class="text-muted text-xs"> {{ $t("webshop.infoSection.emailUsageNote") }} </span>
 				<span v-if="errors.email" class="text-error text-sm">{{ errors.email }}</span>

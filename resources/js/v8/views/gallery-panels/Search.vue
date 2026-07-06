@@ -87,13 +87,7 @@
 	</template>
 	<template v-else-if="!noData">
 		<!-- Dialogs -->
-		<PhotoTagDialog
-			v-model:open="is_tag_visible"
-			:parent-id="albumId"
-			:photo="selectedPhoto"
-			:photo-ids="selectedPhotosIds"
-			@tagged="refresh"
-		/>
+		<PhotoTagDialog v-model:open="is_tag_visible" :parent-id="albumId" :photo="selectedPhoto" :photo-ids="selectedPhotosIds" @tagged="refresh" />
 		<PhotoLicenseDialog
 			v-model:open="is_license_visible"
 			:parent-id="albumId"

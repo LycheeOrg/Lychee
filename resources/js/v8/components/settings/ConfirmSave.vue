@@ -62,11 +62,9 @@
 	</div>
 	<div v-else class="sticky z-30 w-full top-0 flex bg-white dark:bg-neutral-800 h-auto lg:h-11">
 		<UAlert color="warning" class="w-full ltr:rounded-r-none rtl:rounded-l-none" :description="$t('settings.all.change_detected')" />
-		<UButton
-			class="bg-error-800 text-white font-bold px-8 hover:bg-error-700 rtl:rounded-r-none ltr:rounded-l-none"
-			@click="emits('save')"
-			>{{ $t("settings.all.save") }}</UButton
-		>
+		<UButton class="bg-error-800 text-white font-bold px-8 hover:bg-error-700 rtl:rounded-r-none ltr:rounded-l-none" @click="emits('save')">{{
+			$t("settings.all.save")
+		}}</UButton>
 	</div>
 </template>
 <script setup lang="ts">

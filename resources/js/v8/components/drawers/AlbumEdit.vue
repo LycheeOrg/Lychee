@@ -82,7 +82,10 @@
 		<div v-if="activeTab === 4 && canManagePurchase" class="w-full xl:w-5/6 flex justify-center flex-wrap mb-4 sm:mt-7 ltr:pl-7 rtl:pr-7">
 			<AlbumPurchasable :key="`purchasable_${albumStore.album?.id}`" />
 		</div>
-		<div v-if="activeTab === 3 && (canDelete || canTransfer)" class="w-full xl:w-5/6 flex justify-center flex-wrap mb-4 sm:mt-7 ltr:pl-7 rtl:pr-7">
+		<div
+			v-if="activeTab === 3 && (canDelete || canTransfer)"
+			class="w-full xl:w-5/6 flex justify-center flex-wrap mb-4 sm:mt-7 ltr:pl-7 rtl:pr-7"
+		>
 			<AlbumTransfer v-if="canTransfer" :key="`transfer_${albumStore.album?.id}`" />
 			<AlbumDelete v-if="canDelete" :key="`delete_${albumStore.album?.id}`" @deleted="close" />
 		</div>

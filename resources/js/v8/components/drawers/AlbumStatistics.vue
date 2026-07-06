@@ -7,7 +7,10 @@
 		<UCard
 			v-if="photosStore.photos.length > 0 && photosData !== undefined"
 			class="border-0 w-full max-w-7xl"
-			:ui="{ header: 'hidden', body: 'flex justify-evenly flex-wrap lg:flex-nowrap shadow-inner shad shadow-black/10 rounded-xl p-4 bg-elevated/50' }"
+			:ui="{
+				header: 'hidden',
+				body: 'flex justify-evenly flex-wrap lg:flex-nowrap shadow-inner shad shadow-black/10 rounded-xl p-4 bg-elevated/50',
+			}"
 		>
 			<StatTable :value="photosData.lens" :header="$t('gallery.album.stats.lens')" />
 			<StatTable :value="photosData.shutter" :header="$t('gallery.album.stats.shutter')" />

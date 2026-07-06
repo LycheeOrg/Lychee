@@ -22,13 +22,28 @@
 		<!-- Row 2: Tags / Date from / Date to -->
 		<div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
 			<UFormField :label="$t('gallery.search.advanced.tags')">
-				<UInput v-model="tags" class="w-full" :placeholder="$t('gallery.search.advanced.tags_placeholder')" @update:model-value="onFieldChange" />
+				<UInput
+					v-model="tags"
+					class="w-full"
+					:placeholder="$t('gallery.search.advanced.tags_placeholder')"
+					@update:model-value="onFieldChange"
+				/>
 			</UFormField>
 			<UFormField :label="$t('gallery.search.advanced.date_from')">
-				<input v-model="dateFromInput" type="date" class="w-full border border-default rounded-md px-2 py-1.5 bg-default text-sm" @change="onFieldChange" />
+				<input
+					v-model="dateFromInput"
+					type="date"
+					class="w-full border border-default rounded-md px-2 py-1.5 bg-default text-sm"
+					@change="onFieldChange"
+				/>
 			</UFormField>
 			<UFormField :label="$t('gallery.search.advanced.date_to')">
-				<input v-model="dateToInput" type="date" class="w-full border border-default rounded-md px-2 py-1.5 bg-default text-sm" @change="onFieldChange" />
+				<input
+					v-model="dateToInput"
+					type="date"
+					class="w-full border border-default rounded-md px-2 py-1.5 bg-default text-sm"
+					@change="onFieldChange"
+				/>
 			</UFormField>
 		</div>
 

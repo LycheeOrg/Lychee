@@ -17,7 +17,13 @@
 						class="w-full"
 						:model-value="Math.round((counts.completed * 100) / counts.files)"
 						:color="
-							counts.completed === counts.files ? (counts.errors > 0 ? 'error' : counts.warnings > 0 ? 'warning' : 'success') : 'primary'
+							counts.completed === counts.files
+								? counts.errors > 0
+									? 'error'
+									: counts.warnings > 0
+										? 'warning'
+										: 'success'
+								: 'primary'
 						"
 					/>
 				</div>
@@ -69,7 +75,14 @@
 				<UButton v-if="showCancel" color="neutral" variant="soft" class="flex-1 justify-center font-bold" @click="cancel">
 					{{ $t("dialogs.button.cancel") }}
 				</UButton>
-				<UButton v-if="!showResume" color="neutral" variant="soft" class="flex-1 justify-center font-bold" :disabled="showCancel" @click="close">
+				<UButton
+					v-if="!showResume"
+					color="neutral"
+					variant="soft"
+					class="flex-1 justify-center font-bold"
+					:disabled="showCancel"
+					@click="close"
+				>
 					{{ $t("dialogs.button.close") }}
 				</UButton>
 				<UButton v-else color="neutral" class="flex-1 justify-center font-bold" @click="() => uploadNext()">

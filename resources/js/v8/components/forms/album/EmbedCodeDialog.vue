@@ -1,7 +1,9 @@
 <template>
 	<UModal v-model:open="is_embed_code_visible" :dismissible="true">
 		<template #header>
-			<span class="font-bold text-xl">{{ config.mode === "stream" ? $t("dialogs.embed_code.title_stream") : $t("dialogs.embed_code.title") }}</span>
+			<span class="font-bold text-xl">{{
+				config.mode === "stream" ? $t("dialogs.embed_code.title_stream") : $t("dialogs.embed_code.title")
+			}}</span>
 		</template>
 		<template #body>
 			<div class="inline-flex flex-col gap-4 w-full">
@@ -45,12 +47,26 @@
 					<div class="grid grid-cols-2 gap-4">
 						<!-- Maximum Photos -->
 						<UFormField :label="$t('dialogs.embed_code.max_photos')">
-							<USelectMenu id="maxPhotos" v-model="config.maxPhotos" :items="maxPhotosOptions" value-key="value" label-key="label" class="w-full" />
+							<USelectMenu
+								id="maxPhotos"
+								v-model="config.maxPhotos"
+								:items="maxPhotosOptions"
+								value-key="value"
+								label-key="label"
+								class="w-full"
+							/>
 						</UFormField>
 
 						<!-- Sort Order -->
 						<UFormField :label="$t('dialogs.embed_code.sort_order')">
-							<USelectMenu id="sortOrder" v-model="config.sortOrder" :items="sortOrderOptions" value-key="value" label-key="label" class="w-full" />
+							<USelectMenu
+								id="sortOrder"
+								v-model="config.sortOrder"
+								:items="sortOrderOptions"
+								value-key="value"
+								label-key="label"
+								class="w-full"
+							/>
 						</UFormField>
 
 						<!-- Spacing -->
@@ -59,7 +75,10 @@
 						</UFormField>
 
 						<!-- Target Row Height (for justified) -->
-						<UFormField v-if="config.layout === 'justified' || config.layout === 'filmstrip'" :label="$t('dialogs.embed_code.row_height')">
+						<UFormField
+							v-if="config.layout === 'justified' || config.layout === 'filmstrip'"
+							:label="$t('dialogs.embed_code.row_height')"
+						>
 							<UInputNumber id="rowHeight" v-model="config.targetRowHeight" :min="100" :max="800" class="w-full" />
 						</UFormField>
 

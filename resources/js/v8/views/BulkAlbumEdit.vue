@@ -191,7 +191,10 @@
 									label-key="label"
 									size="sm"
 									class="text-xs w-32"
-									@update:model-value="(v: SelectOption<App.Enum.ColumnSortingPhotoType> | undefined) => savePhotoSortingCol(album.id, v?.value ?? null)"
+									@update:model-value="
+										(v: SelectOption<App.Enum.ColumnSortingPhotoType> | undefined) =>
+											savePhotoSortingCol(album.id, v?.value ?? null)
+									"
 									@update:open="(o: boolean) => !o && closeEditSorting()"
 								>
 									<template #item-label="{ item }">{{ $t(item.label) }}</template>
@@ -212,7 +215,9 @@
 									color="neutral"
 									:icon="album.photo_sorting_order === 'DESC' ? 'prime:sort-amount-down-alt' : 'prime:sort-amount-up-alt'"
 									:disabled="album.photo_sorting_col === null"
-									@click="onInlineSortingChange(album.id, 'photo_sorting_order', album.photo_sorting_order === 'DESC' ? 'ASC' : 'DESC')"
+									@click="
+										onInlineSortingChange(album.id, 'photo_sorting_order', album.photo_sorting_order === 'DESC' ? 'ASC' : 'DESC')
+									"
 								/>
 							</div>
 						</td>
@@ -225,7 +230,10 @@
 									label-key="label"
 									size="sm"
 									class="text-xs w-32"
-									@update:model-value="(v: SelectOption<App.Enum.ColumnSortingAlbumType> | undefined) => saveAlbumSortingCol(album.id, v?.value ?? null)"
+									@update:model-value="
+										(v: SelectOption<App.Enum.ColumnSortingAlbumType> | undefined) =>
+											saveAlbumSortingCol(album.id, v?.value ?? null)
+									"
 									@update:open="(o: boolean) => !o && closeEditSorting()"
 								>
 									<template #item-label="{ item }">{{ $t(item.label) }}</template>
@@ -246,7 +254,9 @@
 									color="neutral"
 									:icon="album.album_sorting_order === 'DESC' ? 'prime:sort-amount-down-alt' : 'prime:sort-amount-up-alt'"
 									:disabled="album.album_sorting_col === null"
-									@click="onInlineSortingChange(album.id, 'album_sorting_order', album.album_sorting_order === 'DESC' ? 'ASC' : 'DESC')"
+									@click="
+										onInlineSortingChange(album.id, 'album_sorting_order', album.album_sorting_order === 'DESC' ? 'ASC' : 'DESC')
+									"
 								/>
 							</div>
 						</td>

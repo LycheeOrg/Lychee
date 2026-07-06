@@ -2,20 +2,40 @@
 	<div class="flex flex-col gap-2 w-full">
 		<div v-for="(price, index) in pricesValues" :key="`price-${index}`" class="flex flex-row gap-2">
 			<div class="w-full">
-				<InputCurrency :value="price.price" :currency="currency" @update:model-value="(value: number) => (pricesValues[index].price = value)" />
+				<InputCurrency
+					:value="price.price"
+					:currency="currency"
+					@update:model-value="(value: number) => (pricesValues[index].price = value)"
+				/>
 			</div>
 			<div class="w-full">
-				<USelectMenu v-model="price.license_type" :items="licenseTypeOptions" :placeholder="$t('webshop.pricesInput.licenseType')" class="w-full" />
+				<USelectMenu
+					v-model="price.license_type"
+					:items="licenseTypeOptions"
+					:placeholder="$t('webshop.pricesInput.licenseType')"
+					class="w-full"
+				/>
 			</div>
 			<div class="w-full">
-				<USelectMenu v-model="price.size_variant_type" :items="sizeVariantOptions" :placeholder="$t('webshop.pricesInput.variant')" class="w-full" />
+				<USelectMenu
+					v-model="price.size_variant_type"
+					:items="sizeVariantOptions"
+					:placeholder="$t('webshop.pricesInput.variant')"
+					class="w-full"
+				/>
 			</div>
 			<div>
 				<UButton color="error" variant="ghost" icon="prime:trash" @click="pricesValues.splice(index, 1)" />
 			</div>
 		</div>
 		<UAlert v-if="!isValid" color="error" :description="$t('webshop.pricesInput.duplicateError')" />
-		<UButton :label="$t('webshop.pricesInput.addPrice')" icon="prime:plus" variant="outline" size="sm" @click="pricesValues.push({ ..._priceDefault })" />
+		<UButton
+			:label="$t('webshop.pricesInput.addPrice')"
+			icon="prime:plus"
+			variant="outline"
+			size="sm"
+			@click="pricesValues.push({ ..._priceDefault })"
+		/>
 	</div>
 </template>
 <script setup lang="ts">

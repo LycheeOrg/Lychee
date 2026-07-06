@@ -69,14 +69,21 @@ const printColumns: TableColumn<App.Http.Resources.Shop.PrintSizeResource>[] = [
 	{
 		id: "active",
 		header: trans("webshop.sizeCatalogue.active"),
-		cell: ({ row }) => h(Icon, { icon: row.original.is_active ? "prime:check" : "prime:times", class: row.original.is_active ? "text-success" : "text-error" }),
+		cell: ({ row }) =>
+			h(Icon, { icon: row.original.is_active ? "prime:check" : "prime:times", class: row.original.is_active ? "text-success" : "text-error" }),
 	},
 	{
 		id: "actions",
 		header: trans("webshop.sizeCatalogue.actions"),
 		cell: ({ row }) =>
 			h("div", { class: "flex justify-end gap-1" }, [
-				h(UButton, { icon: "prime:pencil", variant: "ghost", color: "neutral", size: "sm", onClick: () => openEditPrintDialog(row.original) }),
+				h(UButton, {
+					icon: "prime:pencil",
+					variant: "ghost",
+					color: "neutral",
+					size: "sm",
+					onClick: () => openEditPrintDialog(row.original),
+				}),
 				h(UButton, { icon: "prime:trash", variant: "ghost", color: "error", size: "sm", onClick: () => openDeletePrintDialog(row.original) }),
 			]),
 	},
@@ -92,14 +99,21 @@ const pixelColumns: TableColumn<App.Http.Resources.Shop.PixelSizeResource>[] = [
 	{
 		id: "active",
 		header: trans("webshop.sizeCatalogue.active"),
-		cell: ({ row }) => h(Icon, { icon: row.original.is_active ? "prime:check" : "prime:times", class: row.original.is_active ? "text-success" : "text-error" }),
+		cell: ({ row }) =>
+			h(Icon, { icon: row.original.is_active ? "prime:check" : "prime:times", class: row.original.is_active ? "text-success" : "text-error" }),
 	},
 	{
 		id: "actions",
 		header: trans("webshop.sizeCatalogue.actions"),
 		cell: ({ row }) =>
 			h("div", { class: "flex justify-end gap-1" }, [
-				h(UButton, { icon: "prime:pencil", variant: "ghost", color: "neutral", size: "sm", onClick: () => openEditPixelDialog(row.original) }),
+				h(UButton, {
+					icon: "prime:pencil",
+					variant: "ghost",
+					color: "neutral",
+					size: "sm",
+					onClick: () => openEditPixelDialog(row.original),
+				}),
 				h(UButton, { icon: "prime:trash", variant: "ghost", color: "error", size: "sm", onClick: () => openDeletePixelDialog(row.original) }),
 			]),
 	},

@@ -46,14 +46,28 @@
 							<label for="resync_metadata" class="cursor-pointer text-sm">{{ $t("import_from_server.resync_metadata") }}</label>
 						</div>
 						<div class="flex items-center gap-2">
-							<USwitch id="delete_missing_photos" v-model="importState.options.delete_missing_photos" class="cursor-pointer" color="warning" />
+							<USwitch
+								id="delete_missing_photos"
+								v-model="importState.options.delete_missing_photos"
+								class="cursor-pointer"
+								color="warning"
+							/>
 							<UIcon v-if="importState.options.delete_missing_photos" name="prime:exclamation-triangle" class="text-warning text-xs" />
-							<label for="delete_missing_photos" class="cursor-pointer text-sm">{{ $t("import_from_server.delete_missing_photos") }}</label>
+							<label for="delete_missing_photos" class="cursor-pointer text-sm">{{
+								$t("import_from_server.delete_missing_photos")
+							}}</label>
 						</div>
 						<div class="flex items-center gap-2">
-							<USwitch id="delete_missing_albums" v-model="importState.options.delete_missing_albums" class="cursor-pointer" color="warning" />
+							<USwitch
+								id="delete_missing_albums"
+								v-model="importState.options.delete_missing_albums"
+								class="cursor-pointer"
+								color="warning"
+							/>
 							<UIcon v-if="importState.options.delete_missing_albums" name="prime:exclamation-triangle" class="text-warning text-xs" />
-							<label for="delete_missing_albums" class="cursor-pointer text-sm">{{ $t("import_from_server.delete_missing_albums") }}</label>
+							<label for="delete_missing_albums" class="cursor-pointer text-sm">{{
+								$t("import_from_server.delete_missing_albums")
+							}}</label>
 						</div>
 					</form>
 				</div>

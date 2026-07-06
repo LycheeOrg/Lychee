@@ -6,9 +6,7 @@
 
 		<div class="text-highlighted">
 			{{ $t("statistics.punch_card.less") }}
-			<UTooltip text="= 0"
-				><span class="mx-0.5 inline-block h-3 w-3 bg-transparent border border-default"></span
-			></UTooltip>
+			<UTooltip text="= 0"><span class="mx-0.5 inline-block h-3 w-3 bg-transparent border border-default"></span></UTooltip>
 			<UTooltip :text="`0 < ${props.low}`"
 				><span class="mx-0.5 inline-block h-3 w-3 bg-sky-100 dark:bg-sky-100/60 border border-default"></span
 			></UTooltip>

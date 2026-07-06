@@ -45,7 +45,11 @@
 					@click="emits('showSelected')"
 				/>
 				<RouterLink v-if="orderManagementStore.hasItems" :to="{ name: 'basket' }" class="hidden sm:block">
-					<UButton icon="prime:shopping-cart" :color="orderManagementStore.order?.status === 'processing' ? 'error' : 'neutral'" variant="ghost" />
+					<UButton
+						icon="prime:shopping-cart"
+						:color="orderManagementStore.order?.status === 'processing' ? 'error' : 'neutral'"
+						variant="ghost"
+					/>
 				</RouterLink>
 				<RouterLink v-if="is_favourite_enabled && (favourites.photos?.length ?? 0) > 0" :to="{ name: 'favourites' }" class="hidden sm:block">
 					<UButton icon="prime:heart" color="neutral" variant="ghost" />

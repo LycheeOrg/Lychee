@@ -108,18 +108,24 @@
 						<div class="flex flex-col">
 							<div class="flex items-center gap-2">
 								<USwitch id="is_enabled" v-model="form.is_enabled" />
-								<label for="is_enabled"><span class="font-semibold">{{ $t("renamer.enabled") }}</span></label>
+								<label for="is_enabled"
+									><span class="font-semibold">{{ $t("renamer.enabled") }}</span></label
+								>
 							</div>
 							<small class="text-muted ltr:text-left rtl:text-right">{{ $t("renamer.enabled_help") }}</small>
 						</div>
 						<div class="flex flex-col">
 							<div class="flex items-center gap-2">
 								<USwitch id="is_photo_rule" v-model="form.is_photo_rule" />
-								<label for="is_photo_rule"><span class="font-semibold">{{ $t("renamer.photo_rule") }}</span></label>
+								<label for="is_photo_rule"
+									><span class="font-semibold">{{ $t("renamer.photo_rule") }}</span></label
+								>
 							</div>
 							<div class="flex items-center gap-2">
 								<USwitch id="is_album_rule" v-model="form.is_album_rule" />
-								<label for="is_album_rule"><span class="font-semibold">{{ $t("renamer.album_rule") }}</span></label>
+								<label for="is_album_rule"
+									><span class="font-semibold">{{ $t("renamer.album_rule") }}</span></label
+								>
 							</div>
 						</div>
 					</div>

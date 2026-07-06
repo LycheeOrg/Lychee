@@ -1,5 +1,11 @@
 <template>
-	<UTable v-if="albumData === undefined || albumData.length > 0" :data="albumData ?? []" :columns="columns" :loading="albumData === undefined" class="max-h-[600px]" />
+	<UTable
+		v-if="albumData === undefined || albumData.length > 0"
+		:data="albumData ?? []"
+		:columns="columns"
+		:loading="albumData === undefined"
+		class="max-h-[600px]"
+	/>
 </template>
 <script setup lang="ts">
 import { sizeToUnit } from "@/utils/StatsSizeVariantToColours";

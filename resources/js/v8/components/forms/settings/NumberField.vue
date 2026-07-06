@@ -7,7 +7,14 @@
 			</div>
 			<div class="flex gap-4 items-center">
 				<ResetField v-if="changed" @click="reset" />
-				<UInputNumber v-model="val" :id="props.config.key" :min="props.min" :max="props?.max ?? undefined" class="w-28" @update:model-value="update" />
+				<UInputNumber
+					v-model="val"
+					:id="props.config.key"
+					:min="props.min"
+					:max="props?.max ?? undefined"
+					class="w-28"
+					@update:model-value="update"
+				/>
 			</div>
 		</div>
 		<div v-if="props.config.details" class="text-muted text-sm hidden sm:block" v-html="tDetails(props.config)" />

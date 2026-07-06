@@ -7,7 +7,10 @@
 				<p class="my-1.5">{{ $t("dialogs.visibility.public_expl") }}</p>
 			</div>
 			<Collapse v-if="albumStore.config?.is_base_album" :when="is_public">
-				<div class="relative h-12 my-4 ltr:pl-9 rtl:pr-9 transition-color duration-300" :class="is_public ? 'text-highlighted' : 'text-muted'">
+				<div
+					class="relative h-12 my-4 ltr:pl-9 rtl:pr-9 transition-color duration-300"
+					:class="is_public ? 'text-highlighted' : 'text-muted'"
+				>
 					<USwitch
 						v-model="grants_full_photo_access"
 						input-id="pp_dialog_full_check"
@@ -17,7 +20,10 @@
 					<label class="font-bold" for="pp_dialog_full_check">{{ $t("dialogs.visibility.full") }}</label>
 					<p class="my-1.5">{{ $t("dialogs.visibility.full_expl") }}</p>
 				</div>
-				<div class="relative h-12 my-4 ltr:pl-9 rtl:pr-9 transition-color duration-300" :class="is_public ? 'text-highlighted' : 'text-muted'">
+				<div
+					class="relative h-12 my-4 ltr:pl-9 rtl:pr-9 transition-color duration-300"
+					:class="is_public ? 'text-highlighted' : 'text-muted'"
+				>
 					<USwitch
 						v-model="is_link_required"
 						input-id="pp_dialog_link_check"
@@ -27,7 +33,10 @@
 					<label class="font-bold" for="pp_dialog_link_check">{{ $t("dialogs.visibility.hidden") }}</label>
 					<p class="my-1.5">{{ $t("dialogs.visibility.hidden_expl") }}</p>
 				</div>
-				<div class="relative h-12 my-4 ltr:pl-9 rtl:pr-9 transition-color duration-300" :class="is_public ? 'text-highlighted' : 'text-muted'">
+				<div
+					class="relative h-12 my-4 ltr:pl-9 rtl:pr-9 transition-color duration-300"
+					:class="is_public ? 'text-highlighted' : 'text-muted'"
+				>
 					<USwitch
 						v-model="grants_download"
 						input-id="pp_dialog_downloadable_check"
@@ -94,13 +103,7 @@
 			<template v-if="albumStore.config?.is_base_album">
 				<hr class="block mt-8 mb-8 w-full border-t border-solid border-default" />
 				<div class="relative h-12 my-4 transition-color duration-300">
-					<USwitch
-						v-model="is_nsfw"
-						input-id="pp_dialog_nsfw_check"
-						class="ltr:mr-2 rtl:ml-2 translate-y-1"
-						color="error"
-						@change="save"
-					/>
+					<USwitch v-model="is_nsfw" input-id="pp_dialog_nsfw_check" class="ltr:mr-2 rtl:ml-2 translate-y-1" color="error" @change="save" />
 					<label for="pp_dialog_nsfw_check" class="font-bold" :class="is_nsfw ? ' text-red-700' : ''">
 						{{ $t("dialogs.visibility.nsfw") }}
 					</label>

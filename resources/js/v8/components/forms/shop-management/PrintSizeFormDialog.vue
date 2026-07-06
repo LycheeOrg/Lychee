@@ -1,7 +1,9 @@
 <template>
 	<UModal v-model:open="visible" :dismissible="false">
 		<template #header>
-			<span class="font-bold text-lg">{{ editingSize ? $t("webshop.sizeCatalogue.editPrintSize") : $t("webshop.sizeCatalogue.addPrintSize") }}</span>
+			<span class="font-bold text-lg">{{
+				editingSize ? $t("webshop.sizeCatalogue.editPrintSize") : $t("webshop.sizeCatalogue.addPrintSize")
+			}}</span>
 		</template>
 		<template #body>
 			<div class="flex flex-col gap-4">

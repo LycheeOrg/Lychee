@@ -21,7 +21,12 @@
 				@click="togglePerson(person.id)"
 			>
 				<div class="w-14 h-14 rounded-full overflow-hidden bg-accented flex items-center justify-center shrink-0">
-					<img v-if="person.representative_crop_url" :src="person.representative_crop_url" :alt="person.name" class="w-full h-full object-cover" />
+					<img
+						v-if="person.representative_crop_url"
+						:src="person.representative_crop_url"
+						:alt="person.name"
+						class="w-full h-full object-cover"
+					/>
 					<UIcon v-else name="prime:user" class="text-2xl text-muted" />
 				</div>
 				<span class="text-xs font-medium text-default truncate max-w-16 text-center">{{ person.name }}</span>

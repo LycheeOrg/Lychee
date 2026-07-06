@@ -2,7 +2,11 @@
 	<template v-if="is_debug_enabled">
 		<template v-if="lycheeError !== null">
 			<div v-if="lycheeError.exception" class="w-full h-full fixed top-0 left-0 bg-default z-50 flex flex-col">
-				<UAlert color="error" :title="lycheeError.exception ? `${lycheeError.exception} in ${lycheeError.file}:${lycheeError.line}` : lycheeError.message" @click="closeError" />
+				<UAlert
+					color="error"
+					:title="lycheeError.exception ? `${lycheeError.exception} in ${lycheeError.file}:${lycheeError.line}` : lycheeError.message"
+					@click="closeError"
+				/>
 				<UCard class="h-full overflow-y-scroll">
 					<template #header>
 						<div class="flex items-center justify-between">

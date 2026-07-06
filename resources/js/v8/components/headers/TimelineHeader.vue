@@ -42,7 +42,14 @@
 			<!-- Maybe logged in. -->
 			<div class="hidden lg:flex items-center gap-1">
 				<template v-for="(item, idx) in menu" :key="`menu-item-${idx}`">
-					<UButton v-if="item.type === 'link'" as="router-link" :to="item.to" :icon="toIconifyName(item.icon)" color="neutral" variant="ghost" />
+					<UButton
+						v-if="item.type === 'link'"
+						as="router-link"
+						:to="item.to"
+						:icon="toIconifyName(item.icon)"
+						color="neutral"
+						variant="ghost"
+					/>
 					<UButton v-else :icon="toIconifyName(item.icon)" color="neutral" variant="ghost" @click="item.callback" />
 				</template>
 				<UDropdownMenu v-if="timelineStore.rootRights?.can_upload" :items="addMenuSections">

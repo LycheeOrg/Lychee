@@ -1,11 +1,5 @@
 <template>
-	<UInput
-		v-model="uiValue"
-		:class="classValue"
-		:disabled="props.invalid"
-		:type="show ? 'text' : 'password'"
-		:ui="{ trailing: 'pe-1' }"
-	>
+	<UInput v-model="uiValue" :class="classValue" :disabled="props.invalid" :type="show ? 'text' : 'password'" :ui="{ trailing: 'pe-1' }">
 		<template #trailing>
 			<UButton
 				color="neutral"

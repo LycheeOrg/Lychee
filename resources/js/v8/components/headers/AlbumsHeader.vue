@@ -37,13 +37,7 @@
 
 		<div class="flex items-center gap-1">
 			<template v-if="userStore.isGuest">
-				<UButton
-					as="router-link"
-					:to="{ name: 'login' }"
-					color="neutral"
-					variant="ghost"
-					class="py-2 px-4 rounded-xl hidden xl:inline-flex"
-				>
+				<UButton as="router-link" :to="{ name: 'login' }" color="neutral" variant="ghost" class="py-2 px-4 rounded-xl hidden xl:inline-flex">
 					{{ $t("dialogs.login.signin") }}
 				</UButton>
 				<UButton
@@ -72,7 +66,13 @@
 						:color="(item.severity as 'secondary' | 'danger') ?? 'neutral'"
 						variant="ghost"
 					/>
-					<UButton v-else :icon="toIconifyName(item.icon)" :color="(item.severity as 'secondary' | 'danger') ?? 'neutral'" variant="ghost" @click="item.callback" />
+					<UButton
+						v-else
+						:icon="toIconifyName(item.icon)"
+						:color="(item.severity as 'secondary' | 'danger') ?? 'neutral'"
+						variant="ghost"
+						@click="item.callback"
+					/>
 				</template>
 				<UDropdownMenu v-if="albumsStore.rootRights?.can_upload" :items="addMenuSections">
 					<UButton icon="prime:plus" color="neutral" variant="ghost" />

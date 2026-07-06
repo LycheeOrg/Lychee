@@ -60,7 +60,9 @@
 		</template>
 		<template v-else-if="steps === 2 && options?.is_offline === true">
 			<div class="flex flex-col h-48">
-				<div class="border-2 border-dashed border-default rounded bg-elevated/50 flex-auto flex justify-center items-center font-medium text-center">
+				<div
+					class="border-2 border-dashed border-default rounded bg-elevated/50 flex-auto flex justify-center items-center font-medium text-center"
+				>
 					{{ $t("webshop.checkout.offlineThankYou") }}<br />
 					<!-- Message is payment is required. -->
 					{{ $t("webshop.checkout.offlinePaymentMessage") }}<br />

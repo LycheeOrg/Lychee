@@ -11,7 +11,14 @@
 		/>
 		<div class="flex gap-4 items-center">
 			<ResetField v-if="changed" @click="reset" />
-			<USelectMenu :id="props.config.key" v-model="val" class="border-none" label-key="label" :items="props.options" @update:model-value="update">
+			<USelectMenu
+				:id="props.config.key"
+				v-model="val"
+				class="border-none"
+				label-key="label"
+				:items="props.options"
+				@update:model-value="update"
+			>
 				<template #item-label="{ item }">{{ $t(item.label) }}</template>
 			</USelectMenu>
 		</div>

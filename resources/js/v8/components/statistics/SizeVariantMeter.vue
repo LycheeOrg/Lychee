@@ -1,11 +1,17 @@
 <template>
-	<div v-if="sizeVariantSpaceMeter && sizeVariantSpaceMeter.length > 0" class="flex flex-wrap gap-2 xl:gap-6 w-full sm:justify-between justify-center">
+	<div
+		v-if="sizeVariantSpaceMeter && sizeVariantSpaceMeter.length > 0"
+		class="flex flex-wrap gap-2 xl:gap-6 w-full sm:justify-between justify-center"
+	>
 		<template v-for="val of sizeVariantSpaceMeter" :key="val.label">
 			<UCard class="w-2/5 sm:w-auto border border-default shadow-none">
 				<div class="flex justify-between gap-8">
 					<div class="flex gap-1 flex-col">
 						<span class="text-xs sm:text-sm">
-							<span class="rounded-full h-3 w-3 inline-block ltr:mr-1 rtl:mk-1 ltr:sm:mr-2 rtl:sm:ml-2" :style="'background-color: ' + val.color" />
+							<span
+								class="rounded-full h-3 w-3 inline-block ltr:mr-1 rtl:mk-1 ltr:sm:mr-2 rtl:sm:ml-2"
+								:style="'background-color: ' + val.color"
+							/>
 							{{ val.label }}
 						</span>
 						<span class="font-bold text-base rtl:text-right" dir="ltr">{{ val.size }}</span>

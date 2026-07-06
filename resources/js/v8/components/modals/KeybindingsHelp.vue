@@ -57,10 +57,7 @@ const doNotShowAgain = ref(false);
 const hideHeaderButton = ref(false);
 const LycheeState = useLycheeStateStore();
 
-const columns: TableColumn<{ action: string; key: string }>[] = [
-	{ accessorKey: "action" },
-	{ accessorKey: "key" },
-];
+const columns: TableColumn<{ action: string; key: string }>[] = [{ accessorKey: "action" }, { accessorKey: "key" }];
 
 function closeCallback() {
 	LycheeState.show_keybinding_help_popup = false;

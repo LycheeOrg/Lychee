@@ -26,11 +26,7 @@
 							{{ advisory.cve_id ?? advisory.ghsa_id }}
 						</a>
 						<span class="text-muted text-xs">
-							{{
-								advisory.cvss_score !== null
-									? `CVSS ${advisory.cvss_score.toFixed(1)}`
-									: $t("dialogs.security_advisories.no_cvss")
-							}}
+							{{ advisory.cvss_score !== null ? `CVSS ${advisory.cvss_score.toFixed(1)}` : $t("dialogs.security_advisories.no_cvss") }}
 						</span>
 					</div>
 					<p class="ltr:ml-4 rtl:mr-4 text-muted text-xs">{{ advisory.summary }}</p>

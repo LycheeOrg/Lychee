@@ -19,7 +19,12 @@
 					</span>
 					<span v-if="!version.is_new_release_available && version.is_git_update_available" class="text-sm font-normal text-center">
 						–
-						<a target="_blank" class="border-b-neutral-200 border-b-[1px] border-dashed" rel="noopener" href="https://github.com/LycheeOrg/Lychee">
+						<a
+							target="_blank"
+							class="border-b-neutral-200 border-b-[1px] border-dashed"
+							rel="noopener"
+							href="https://github.com/LycheeOrg/Lychee"
+						>
 							{{ $t("dialogs.about.update_available") }}
 						</a>
 					</span>
@@ -33,7 +38,8 @@
 				<p v-if="is_se_enabled" class="text-muted text-center font-bold mt-8">{{ $t("dialogs.about.thank_you") }}</p>
 				<p v-if="!is_se_enabled && !is_se_info_hidden" class="text-muted text-center font-bold mt-8">
 					<span v-html="supporter" />
-					<a class="text-primary underline cursor-pointer ltr:ml-1 rtl:mr-1" @click="toggleRegistration"> {{ $t("dialogs.about.here") }} </a>.<br />
+					<a class="text-primary underline cursor-pointer ltr:ml-1 rtl:mr-1" @click="toggleRegistration"> {{ $t("dialogs.about.here") }} </a
+					>.<br />
 				</p>
 			</div>
 		</template>

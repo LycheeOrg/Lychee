@@ -51,7 +51,13 @@
 				Lychee <span v-if="is_se_enabled" class="text-primary-500">SE</span>
 			</div>
 			<div class="flex items-center gap-2 mt-4">
-				<UButton v-if="closeCallback !== undefined" color="neutral" variant="soft" class="flex-1 justify-center font-bold" @click="props.closeCallback">
+				<UButton
+					v-if="closeCallback !== undefined"
+					color="neutral"
+					variant="soft"
+					class="flex-1 justify-center font-bold"
+					@click="props.closeCallback"
+				>
 					{{ $t("dialogs.button.cancel") }}
 				</UButton>
 				<UButton color="neutral" class="flex-1 justify-center font-bold" @click="login">
@@ -60,7 +66,13 @@
 			</div>
 		</template>
 		<div v-else class="flex items-center gap-2 mt-4">
-			<UButton v-if="closeCallback !== undefined" color="neutral" variant="soft" class="flex-1 justify-center font-bold" @click="props.closeCallback">
+			<UButton
+				v-if="closeCallback !== undefined"
+				color="neutral"
+				variant="soft"
+				class="flex-1 justify-center font-bold"
+				@click="props.closeCallback"
+			>
 				{{ $t("dialogs.button.cancel") }}
 			</UButton>
 			<UButton color="neutral" class="flex-1 justify-center font-bold" @click="login">

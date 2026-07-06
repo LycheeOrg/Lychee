@@ -4,7 +4,13 @@
 			<p class="mb-5 text-muted text-base">{{ $t("dialogs.import_from_link.instructions") }}</p>
 			<form>
 				<div class="my-3 first:mt-0 last:mb-0" dir="ltr">
-					<Textarea id="links" v-model="urls" :rows="5" placeholder="https://&#10;https://&#10;..." :invalid="!isValidInput && urls.length > 0" />
+					<Textarea
+						id="links"
+						v-model="urls"
+						:rows="5"
+						placeholder="https://&#10;https://&#10;..."
+						:invalid="!isValidInput && urls.length > 0"
+					/>
 				</div>
 			</form>
 		</template>
@@ -13,12 +19,7 @@
 				<UButton color="neutral" variant="soft" class="flex-1 justify-center font-bold" @click="closeCallback">
 					{{ $t("dialogs.button.cancel") }}
 				</UButton>
-				<UButton
-					color="neutral"
-					class="flex-1 justify-center font-bold"
-					:disabled="!isValidInput || urls.length === 0"
-					@click="submit"
-				>
+				<UButton color="neutral" class="flex-1 justify-center font-bold" :disabled="!isValidInput || urls.length === 0" @click="submit">
 					{{ $t("dialogs.import_from_link.import") }}
 				</UButton>
 			</div>

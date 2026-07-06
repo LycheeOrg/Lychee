@@ -10,7 +10,14 @@
 				<div class="pb-4 text-muted">
 					{{ $t("profile.shared_albums.instruction") }}
 				</div>
-				<USelectMenu v-model="selectedMode" :items="visibilityOptions" value-key="value" label-key="label" class="w-full" @update:model-value="markChanged">
+				<USelectMenu
+					v-model="selectedMode"
+					:items="visibilityOptions"
+					value-key="value"
+					label-key="label"
+					class="w-full"
+					@update:model-value="markChanged"
+				>
 					<template #item-label="{ item }">
 						<div class="flex items-center justify-between w-full gap-3">
 							<span class="text-highlighted w-full">{{ item.label }}</span>

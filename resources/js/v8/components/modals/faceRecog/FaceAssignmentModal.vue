@@ -4,7 +4,12 @@
 			<div class="flex flex-col gap-4">
 				<!-- Face crop preview -->
 				<div class="flex justify-center">
-					<img v-if="face.crop_url" :src="face.crop_url" alt="Face crop" class="w-24 h-24 rounded-full object-cover border-2 border-default" />
+					<img
+						v-if="face.crop_url"
+						:src="face.crop_url"
+						alt="Face crop"
+						class="w-24 h-24 rounded-full object-cover border-2 border-default"
+					/>
 					<div v-else class="w-24 h-24 rounded-full bg-elevated flex items-center justify-center">
 						<UIcon name="prime:user" class="text-4xl text-muted" />
 					</div>

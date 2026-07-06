@@ -4,7 +4,9 @@
 			<p class="text-center text-highlighted max-w-xl text-wrap">
 				{{ $t("webshop.sizeCatalogue.confirmDeleteMessage") }}<br /><br />
 				<span class="text-muted">
-					<UIcon name="prime:exclamation-triangle" class="ltr:mr-2 rtl:ml-2 text-warning" />{{ $t("webshop.sizeCatalogue.confirmDeleteHeader") }}
+					<UIcon name="prime:exclamation-triangle" class="ltr:mr-2 rtl:ml-2 text-warning" />{{
+						$t("webshop.sizeCatalogue.confirmDeleteHeader")
+					}}
 				</span>
 			</p>
 		</template>

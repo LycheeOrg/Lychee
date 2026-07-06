@@ -90,7 +90,9 @@
 						<div class="flex flex-col gap-2 w-full" @click.stop>
 							<span class="text-sm text-muted">{{ cluster.face_count }} {{ $t("people.faces") }}</span>
 							<UInputMenu
-								:model-value="(clusterPersonSelect[cluster.cluster_label] ?? undefined) as App.Http.Resources.Models.PersonResource | undefined"
+								:model-value="
+									(clusterPersonSelect[cluster.cluster_label] ?? undefined) as App.Http.Resources.Models.PersonResource | undefined
+								"
 								:items="allPeople"
 								label-key="name"
 								create-item

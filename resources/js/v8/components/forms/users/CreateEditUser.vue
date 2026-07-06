@@ -18,9 +18,7 @@
 				</div>
 				<div v-if="is_se_enabled || is_se_preview_enabled" class="w-full flex items-center gap-2 text-muted">
 					<UCheckbox v-model="may_administrate" id="mayAdministrate" color="warning" />
-					<label for="mayAdministrate" class="cursor-pointer">
-						{{ $t("users.create_edit.admin_rights") }} <SETag />
-					</label>
+					<label for="mayAdministrate" class="cursor-pointer"> {{ $t("users.create_edit.admin_rights") }} <SETag /> </label>
 				</div>
 				<div class="w-full flex items-center text-muted gap-2 pt-1">
 					<label class="shrink-0">{{ $t("users.create_edit.upload_trust_level") }}</label>

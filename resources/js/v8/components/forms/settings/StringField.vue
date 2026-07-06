@@ -11,7 +11,12 @@
 				</UTooltip>
 			</template>
 		</UInput>
-		<UAlert v-if="changed && isVersion" class="w-full h-8 mt-0.5" color="error" description="We strongly recommend you do not modify this value." />
+		<UAlert
+			v-if="changed && isVersion"
+			class="w-full h-8 mt-0.5"
+			color="error"
+			description="We strongly recommend you do not modify this value."
+		/>
 		<div v-if="!changed || !isVersion" class="w-full text-muted">
 			{{ tDoc(props.config) }}
 			<br v-if="props.config.details" />

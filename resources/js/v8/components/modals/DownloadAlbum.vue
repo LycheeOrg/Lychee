@@ -12,7 +12,13 @@
 					<p class="text-muted text-center mb-2">
 						{{ $t("gallery.download_album") }}
 					</p>
-					<UButton v-if="is_raw_download_enabled" color="neutral" class="w-full justify-center" icon="prime:cloud-download" @click="download('RAW')">
+					<UButton
+						v-if="is_raw_download_enabled"
+						color="neutral"
+						class="w-full justify-center"
+						icon="prime:cloud-download"
+						@click="download('RAW')"
+					>
 						{{ $t("gallery.raw") }}
 					</UButton>
 					<UButton color="neutral" class="w-full justify-center" icon="prime:cloud-download" @click="download('ORIGINAL')">

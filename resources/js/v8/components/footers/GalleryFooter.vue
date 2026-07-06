@@ -42,7 +42,10 @@
 				rel="noopener"
 			></a>
 		</div>
-		<p v-if="footerData.footer_show_copyright && footerData.copyright !== ''" class="home_copyright w-full uppercase text-muted leading-6 font-normal">
+		<p
+			v-if="footerData.footer_show_copyright && footerData.copyright !== ''"
+			class="home_copyright w-full uppercase text-muted leading-6 font-normal"
+		>
 			{{ footerData.copyright }}
 		</p>
 		<p

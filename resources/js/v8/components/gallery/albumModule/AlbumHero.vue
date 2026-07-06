@@ -190,7 +190,8 @@ const albumStore = useAlbumStore();
 const albumsStore = useAlbumsStore();
 const photosStore = usePhotosStore();
 
-const { is_se_enabled, is_se_preview_enabled, are_nsfw_visible, is_slideshow_enabled, album_header_size, is_embed_enabled } = storeToRefs(lycheeStore);
+const { is_se_enabled, is_se_preview_enabled, are_nsfw_visible, is_slideshow_enabled, album_header_size, is_embed_enabled } =
+	storeToRefs(lycheeStore);
 
 function toggleAlbumView(mode: "grid" | "list") {
 	lycheeStore.album_view_mode = mode;

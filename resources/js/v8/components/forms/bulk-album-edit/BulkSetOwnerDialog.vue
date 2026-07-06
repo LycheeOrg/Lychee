@@ -15,7 +15,17 @@
 		</template>
 		<template #footer>
 			<div class="flex w-full gap-2">
-				<UButton class="flex-1 justify-center" :label="$t('bulk_album_edit.cancel')" color="neutral" variant="soft" @click="visible = false" />
+				<UButton
+					class="flex-1 justify-center"
+					:label="$t('bulk_album_edit.cancel')"
+					color="neutral"
+					variant="soft"
+					@click="
+						() => {
+							visible = false;
+						}
+					"
+				/>
 				<UButton
 					class="flex-1 justify-center"
 					:label="$t('bulk_album_edit.transfer')"

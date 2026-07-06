@@ -85,12 +85,17 @@
 				<!-- Face rows -->
 				<div v-else class="flex flex-col divide-y divide-default">
 					<!-- Header row -->
-					<div class="hidden sm:grid grid-cols-[2.5rem_3rem_1fr_1fr_5rem_5rem_5rem] gap-3 items-center px-2 py-1 text-xs text-muted font-medium">
+					<div
+						class="hidden sm:grid grid-cols-[2.5rem_3rem_1fr_1fr_5rem_5rem_5rem] gap-3 items-center px-2 py-1 text-xs text-muted font-medium"
+					>
 						<div></div>
 						<div>{{ $t("maintenance.face_quality.col_face") }}</div>
 						<div>{{ $t("maintenance.face_quality.col_person") }}</div>
 						<div>{{ $t("maintenance.face_quality.col_cluster") }}</div>
-						<div class="text-right cursor-pointer hover:text-primary-500 transition-colors flex items-center justify-end gap-1" @click="setSort('confidence')">
+						<div
+							class="text-right cursor-pointer hover:text-primary-500 transition-colors flex items-center justify-end gap-1"
+							@click="setSort('confidence')"
+						>
 							{{ $t("maintenance.face_quality.col_confidence") }}
 							<UIcon v-if="sortBy === 'confidence'" :name="sortDir === 'ASC' ? 'prime:arrow-up' : 'prime:arrow-down'" class="text-xs" />
 						</div>
@@ -99,7 +104,11 @@
 							@click="setSort('laplacian_variance')"
 						>
 							{{ $t("maintenance.face_quality.col_blur") }}
-							<UIcon v-if="sortBy === 'laplacian_variance'" :name="sortDir === 'ASC' ? 'prime:arrow-up' : 'prime:arrow-down'" class="text-xs" />
+							<UIcon
+								v-if="sortBy === 'laplacian_variance'"
+								:name="sortDir === 'ASC' ? 'prime:arrow-up' : 'prime:arrow-down'"
+								class="text-xs"
+							/>
 						</div>
 						<div></div>
 					</div>
@@ -150,7 +159,9 @@
 
 						<!-- Blur -->
 						<div class="hidden sm:block text-right text-sm">
-							<span :class="face.laplacian_variance < 50 ? 'text-red-500' : 'text-muted'">{{ face.laplacian_variance.toFixed(0) }}</span>
+							<span :class="face.laplacian_variance < 50 ? 'text-red-500' : 'text-muted'">{{
+								face.laplacian_variance.toFixed(0)
+							}}</span>
 						</div>
 
 						<!-- Actions: Assign & Dismiss -->

@@ -125,8 +125,7 @@ const columns: TableColumn<Message>[] = [
 	{
 		accessorKey: "email",
 		header: trans("contact.admin.email_column"),
-		cell: ({ row }) =>
-			h("a", { href: `mailto:${row.original.email}`, class: "underline text-muted" }, row.original.email),
+		cell: ({ row }) => h("a", { href: `mailto:${row.original.email}`, class: "underline text-muted" }, row.original.email),
 	},
 	{
 		accessorKey: "message",

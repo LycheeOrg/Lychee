@@ -22,7 +22,13 @@
 				<UButton color="error" variant="ghost" icon="prime:trash" @click="items.splice(index, 1)" />
 			</div>
 		</div>
-		<UButton :label="$t('webshop.pixelSizePricesInput.addSize')" icon="prime:plus" variant="outline" size="sm" @click="items.push({ ..._defaultItem })" />
+		<UButton
+			:label="$t('webshop.pixelSizePricesInput.addSize')"
+			icon="prime:plus"
+			variant="outline"
+			size="sm"
+			@click="items.push({ ..._defaultItem })"
+		/>
 	</div>
 </template>
 

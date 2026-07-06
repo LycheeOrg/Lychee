@@ -59,11 +59,21 @@
 							/>
 						</template>
 						<UTooltip :text="$t('people.merge.title')">
-							<UButton icon="prime:arrow-down-left-and-arrow-up-right-to-center" color="neutral" variant="ghost" @click="isMergeModalOpen = true" />
+							<UButton
+								icon="prime:arrow-down-left-and-arrow-up-right-to-center"
+								color="neutral"
+								variant="ghost"
+								@click="isMergeModalOpen = true"
+							/>
 						</UTooltip>
 
 						<UTooltip :text="$t('people.person.toggle_searchable')">
-							<UButton :icon="person.is_searchable ? 'prime:eye' : 'prime:eye-slash'" color="neutral" variant="ghost" @click="toggleSearchable" />
+							<UButton
+								:icon="person.is_searchable ? 'prime:eye' : 'prime:eye-slash'"
+								color="neutral"
+								variant="ghost"
+								@click="toggleSearchable"
+							/>
 						</UTooltip>
 						<UTooltip :text="$t('people.person.delete')">
 							<UButton icon="prime:trash" color="error" variant="ghost" @click="confirmDelete" />

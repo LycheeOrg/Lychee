@@ -14,10 +14,16 @@
 		</div>
 
 		<div class="p-3 border-t border-default flex justify-end gap-2">
-			<button @click="$emit('cancel')" class="px-3 py-1 rounded bg-elevated hover:bg-accented text-highlighted text-sm font-medium transition-colors cursor-pointer">
+			<button
+				@click="$emit('cancel')"
+				class="px-3 py-1 rounded bg-elevated hover:bg-accented text-highlighted text-sm font-medium transition-colors cursor-pointer"
+			>
 				{{ $t("gallery.cancel") }}
 			</button>
-			<button @click="$emit('close')" class="px-3 py-1 rounded bg-primary hover:bg-primary/90 text-inverted text-sm font-medium transition-colors cursor-pointer">
+			<button
+				@click="$emit('close')"
+				class="px-3 py-1 rounded bg-primary hover:bg-primary/90 text-inverted text-sm font-medium transition-colors cursor-pointer"
+			>
 				{{ $t("gallery.done") }}
 			</button>
 		</div>
