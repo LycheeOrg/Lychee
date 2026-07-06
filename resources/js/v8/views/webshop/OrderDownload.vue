@@ -148,7 +148,10 @@
 											item.is_print ? $t('webshop.orderDownload.enterTrackingUrl') : $t('webshop.orderDownload.enterContentUrl')
 										"
 										class="w-full text-left"
-										@update:model-value="(v) => updateItemLink({ id: item.id, download_link: typeof v === 'string' ? v : '' })"
+										@update:model-value="
+											(v: string | number | bigint | boolean | null | undefined) =>
+												updateItemLink({ id: item.id, download_link: typeof v === 'string' ? v : '' })
+										"
 									/>
 								</div>
 								<template v-else-if="item.content_url">

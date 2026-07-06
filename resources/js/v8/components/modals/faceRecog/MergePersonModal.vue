@@ -1,5 +1,5 @@
 <template>
-	<UModal v-model:open="visible" :dismissible="true" @update:open="(v) => v && onShow()">
+	<UModal v-model:open="visible" :dismissible="true" @update:open="(v: boolean) => v && onShow()">
 		<template #header>
 			<span class="font-bold">{{ $t("people.merge.title") }}</span>
 		</template>

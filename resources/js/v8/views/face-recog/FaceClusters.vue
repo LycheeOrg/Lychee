@@ -96,7 +96,10 @@
 								create-item
 								:placeholder="$t('people.enter_name')"
 								class="w-full"
-								@update:model-value="(v) => (clusterPersonSelect[cluster.cluster_label] = v ?? null)"
+								@update:model-value="
+									(v: App.Http.Resources.Models.PersonResource | string | undefined) =>
+										(clusterPersonSelect[cluster.cluster_label] = v ?? null)
+								"
 								@create="(name: string) => (clusterPersonSelect[cluster.cluster_label] = name)"
 								@keydown.enter.stop="assignClusterWithSelection(cluster.cluster_label)"
 							/>
@@ -167,7 +170,9 @@
 							create-item
 							:placeholder="$t('people.enter_name')"
 							class="flex-1"
-							@update:model-value="(v) => (detailPersonSelect = v ?? null)"
+							@update:model-value="
+								(v: App.Http.Resources.Models.PersonResource | string | undefined) => (detailPersonSelect = v ?? null)
+							"
 							@create="(name: string) => (detailPersonSelect = name)"
 							@keydown.enter.stop="assignDetailCluster"
 						/>

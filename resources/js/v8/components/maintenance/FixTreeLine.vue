@@ -71,8 +71,8 @@
 				class="w-32"
 				searchable
 				:items="props.parentIdOptions"
-				@update:model-value="(v) => updateParentId(v as string | undefined)"
-				@update:open="(o) => !o && close()"
+				@update:model-value="(v: string | undefined) => updateParentId(v)"
+				@update:open="(o: boolean) => !o && close()"
 			>
 				<template #item-label="{ item }">{{ (item as string).slice(0, 6) }}</template>
 				<template #default="{ modelValue }">
