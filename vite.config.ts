@@ -137,6 +137,15 @@ const baseConfig = {
 	},
 	build: {
 		rollupOptions: {
+			// @vueuse/core ships /* #__PURE__ */ comments in positions Rolldown's
+			// stricter checker rejects (harmless - just a missed tree-shaking hint),
+			// spamming the build output with INVALID_ANNOTATION warnings we can't fix upstream.
+			onwarn(warning, warn) {
+				if (warning.code === "INVALID_ANNOTATION" && warning.id?.includes("@vueuse/core")) {
+					return;
+				}
+				warn(warning);
+			},
 			output: {
 				// Per-package chunking (rather than a manual named group keyed on a
 				// path regex) - with two entries now sharing this build, a regex-based
