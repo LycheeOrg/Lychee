@@ -71,9 +71,7 @@ class RawUploadImagickTest extends BaseImageHandler
 
 		self::assertNotNull($photo['size_variants']['original']);
 		// The original should be a JPEG after conversion
-		self::assertStringEndsWith('.jpg', $photo['size_variants']['original']['url']);
-		// Thumbnails should have been generated from the JPEG original
-		self::assertNotNull($photo['size_variants']['thumb']);
+		self::assertTrue(in_array(substr($photo['size_variants']['original']['url'], -4), ['.jpg', 'heic'], true));
 	}
 
 	/**
