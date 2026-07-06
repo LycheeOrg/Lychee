@@ -39,7 +39,9 @@
     },
     "dependencies": {
         "@fortawesome/fontawesome-free": "^7.2.0",
+        "@iconify-json/prime": "^1.2.5",
         "@mollie/api-client": "^4.5.0",
+        "@nuxt/ui": "^4.9.0",
         "@paypal/paypal-js": "^10.0.0",
         "@primeuix/themes": "^2.0.3",
         "@sidsbrmnn/scrollspy": "^1.1.0",

@@ -4,6 +4,7 @@ import laravel from "laravel-vite-plugin";
 import vue from "@vitejs/plugin-vue";
 import i18n from "laravel-vue-i18n/vite";
 import tailwindcss from "@tailwindcss/vite";
+import ui from "@nuxt/ui/vite";
 import type { Plugin } from 'vite';
 
 
@@ -28,7 +29,7 @@ function leafletGlobalPlugin(): Plugin {
 }
 
 const laravelPlugin = laravel({
-	input: ["resources/sass/app.css", "resources/js/app.ts"],
+	input: ["resources/sass/app.css", "resources/js/app.ts", "resources/sass/app-v8.css", "resources/js/app-v8.ts"],
 	refresh: true,
 });
 
@@ -83,6 +84,21 @@ const baseConfig = {
 	plugins: [
 		leafletGlobalPlugin(),
 		tailwindcss(),
+		// Declares intent (component logic reads this appConfig in places), but the
+		// actual --ui-color-* CSS custom properties are populated at runtime by
+		// resources/js/v8/theme.ts - this plugin option alone does not materialize
+		// them in Vue-standalone mode. See Feature 049 T-049-02.
+		ui({
+			ui: {
+				colors: { primary: "sky", neutral: "slate" },
+				card: { variants: { variant: { outline: { root: "ring-0" } } } },
+				// Nuxt UI's `text-inverted` flips to a dark neutral in dark mode (so
+				// solid buttons stay readable on the lighter shade-400 background it
+				// picks for dark mode) - Lychee always wants white text on the primary
+				// solid button regardless of color scheme.
+				button: { compoundVariants: [{ color: "primary", variant: "solid", class: "text-white" }] },
+			},
+		}),
 		vue({ template: { transformAssetUrls: { base: null, includeAbsolute: false } } }),
 		i18n(),
 	],
@@ -109,28 +125,42 @@ const baseConfig = {
 			vue: "vue/dist/vue.runtime.esm-bundler.js",
 		},
 	},
+	optimizeDeps: {
+		// @primeuix/themes/types/* and primevue/* subpaths (imported by v7 for
+		// DesignTokens/MenuItem types, some via inline `import { type X } from ...`)
+		// only expose a `types` export condition, no runtime `import` condition. With
+		// two Vite entries (app.ts + app-v8.ts) sharing one dependency scan, the
+		// optimizer now eagerly resolves those paths and fails. `npm run build` is
+		// unaffected (native ESM resolution handles them fine at request time) -
+		// this only skips the dev-server pre-bundling scan for them.
+		exclude: ["@primeuix/themes", "primevue"],
+	},
 	build: {
 		rollupOptions: {
+			// @vueuse/core ships /* #__PURE__ */ comments in positions Rolldown's
+			// stricter checker rejects (harmless - just a missed tree-shaking hint),
+			// spamming the build output with INVALID_ANNOTATION warnings we can't fix upstream.
+			onwarn(warning, warn) {
+				if (warning.code === "INVALID_ANNOTATION" && warning.id?.includes("@vueuse/core")) {
+					return;
+				}
+				warn(warning);
+			},
 			output: {
-				codeSplitting: {
-				groups: [
-					{
-						test: /primevue/,
-						name: 'primevue',
-					},
-				],
+				// Per-package chunking (rather than a manual named group keyed on a
+				// path regex) - with two entries now sharing this build, a regex-based
+				// group can end up co-locating shared vendor code (e.g. vue's own
+				// runtime helpers) inside a chunk named after one entry's dependency,
+				// which then gets pulled into the OTHER entry too. Splitting strictly
+				// by node_modules package name keeps every dependency - PrimeVue
+				// included - in its own chunk, so app-v8 never references it.
+				manualChunks(id) {
+					if (id.includes("node_modules")) {
+						return id.toString().split("node_modules/")[1].split("/")[0].toString();
+					}
 				},
 			},
-		}
-		// rollupOptions: {
-		// 	output: {
-		// 		// manualChunks(id) {
-		// 		// 	if (id.includes("node_modules")) {
-		// 		// 		return id.toString().split("node_modules/")[1].split("/")[0].toString();
-		// 		// 	}
-		// 		// },
-		// 	},
-		// },
+		},
 	},
 } as UserConfig;
 

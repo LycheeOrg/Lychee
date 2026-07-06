@@ -1,0 +1,84 @@
+<template>
+	<Toolbar class="w-full border-0 h-14 rounded-none">
+		<template #start>
+			<OpenLeftMenu />
+		</template>
+
+		<template #center>
+			{{ $t("diagnostics.title") }}
+		</template>
+
+		<template #end>
+			<Button
+				v-if="isSecureContext"
+				v-tooltip="$t('diagnostics.copy_to_clipboard')"
+				:disabled="!canCopy"
+				text
+				aria-label="Copy"
+				icon="pi pi-copy"
+				@click="copy"
+			/>
+			<Button v-else v-tooltip="$t('diagnostics.copy_on_secure_context')" :disabled="true" text aria-label="Copy" icon="pi pi-copy" />
+		</template>
+	</Toolbar>
+	<ErrorsDiagnotics @loaded="loadError" />
+	<InfoDiagnostics v-if="user?.id" @loaded="loadInfo" />
+	<SpaceDiagnostics v-if="user?.id" />
+	<ConfigurationsDiagnostics v-if="user?.id" @loaded="loadConfig" />
+</template>
+<script setup lang="ts">
+import { ref, computed } from "vue";
+import Toolbar from "primevue/toolbar";
+import Button from "primevue/button";
+import ConfigurationsDiagnostics from "@/v7/components/diagnostics/ConfigurationsDiagnostics.vue";
+import InfoDiagnostics from "@/v7/components/diagnostics/InfoDiagnostics.vue";
+import ErrorsDiagnotics from "@/v7/components/diagnostics/ErrorsDiagnostics.vue";
+import SpaceDiagnostics from "@/v7/components/diagnostics/SpaceDiagnostics.vue";
+import { useUserStore } from "@/stores/UserState";
+import { storeToRefs } from "pinia";
+import { useToast } from "primevue/usetoast";
+import { trans } from "laravel-vue-i18n";
+import OpenLeftMenu from "@/v7/components/headers/OpenLeftMenu.vue";
+
+const userStore = useUserStore();
+const { user } = storeToRefs(userStore);
+userStore.load();
+
+const toast = useToast();
+
+const errorLoaded = ref<string[] | undefined>(undefined);
+const infoLoaded = ref<string[] | undefined>(undefined);
+const configurationLoaded = ref<string[] | undefined>(undefined);
+
+const canCopy = computed(() => errorLoaded.value !== undefined && infoLoaded.value !== undefined && configurationLoaded.value !== undefined);
+
+function loadError(val: string[]) {
+	errorLoaded.value = val;
+}
+
+function loadInfo(val: string[]) {
+	infoLoaded.value = val;
+}
+
+function loadConfig(val: string[]) {
+	configurationLoaded.value = val;
+}
+
+const isSecureContext = computed(() => window.isSecureContext);
+
+function copy() {
+	if (!canCopy.value) {
+		return;
+	}
+
+	const errorText: string = errorLoaded.value?.join("\n") ?? "";
+	const infoText: string = infoLoaded.value?.join("\n") ?? "";
+	const configurationText: string = configurationLoaded.value?.join("\n") ?? "";
+
+	const toClipBoard = `Self-diagnosis:\n${"-".repeat(20)}\n${errorText}\n\n\nInfo:\n${"-".repeat(20)}\n${infoText}\n\n\nConfig:\n${"-".repeat(20)}\n${configurationText}`;
+
+	navigator.clipboard
+		.writeText(toClipBoard)
+		.then(() => toast.add({ severity: "info", summary: trans("diagnostics.toast.info"), detail: trans("diagnostics.toast.copy"), life: 3000 }));
+}
+</script>

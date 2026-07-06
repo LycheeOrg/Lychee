@@ -1,6 +1,6 @@
 import MaintenanceService from "@/services/maintenance-service";
 import WebshopService from "@/services/webshop-service";
-import { ToastServiceMethods } from "primevue/toastservice";
+import { ToastLike } from "@/composables/toast-contract";
 import { ref } from "vue";
 import { Router } from "vue-router";
 import { trans } from "laravel-vue-i18n";
@@ -8,7 +8,7 @@ import { trans } from "laravel-vue-i18n";
 const orders = ref<App.Http.Resources.Shop.OrderResource[] | undefined>(undefined);
 const numOldOrders = ref<number>(0);
 
-export function useOrder(toast: ToastServiceMethods, router: Router) {
+export function useOrder(toast: ToastLike, router: Router) {
 	function load() {
 		return Promise.all([
 			WebshopService.Order.list()

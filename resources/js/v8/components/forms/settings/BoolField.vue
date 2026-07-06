@@ -1,0 +1,62 @@
+<template>
+	<div class="w-full">
+		<div class="w-full flex gap-4 justify-between flex-wrap sm:flex-nowrap min-h-8 items-center">
+			<label
+				:for="props.config.key"
+				class="w-1/2 sm:w-full"
+				:class="props.config.require_se ? 'text-primary-emphasis' : 'text-highlighted'"
+				v-html="props.label ?? tDoc(props.config)"
+			/>
+			<span class="flex gap-4">
+				<ResetField v-if="changed" @click="reset" />
+				<USwitch v-model="val" :id="props.config.key" class="text-sm translate-y-1" @update:model-value="update"></USwitch>
+			</span>
+		</div>
+		<div
+			v-if="props.config.details || details !== undefined"
+			class="text-muted text-sm w-full"
+			v-html="props.details ?? tDetails(props.config)"
+		/>
+	</div>
+</template>
+<script setup lang="ts">
+import { computed, ref, watch } from "vue";
+import ResetField from "@/v8/components/forms/settings/ResetField.vue";
+import { useTranslation } from "@/composables/useTranslation";
+
+const { tDoc, tDetails } = useTranslation();
+
+const props = defineProps<{
+	config: App.Http.Resources.Models.ConfigResource;
+	label?: string;
+	details?: string;
+}>();
+
+const val = ref<boolean>(props.config.value === "1");
+
+const changed = computed(() => val.value !== (props.config.value === "1"));
+
+const emits = defineEmits<{
+	filled: [key: string, value: string];
+	reset: [key: string];
+}>();
+
+function update() {
+	if (changed.value) {
+		emits("filled", props.config.key, val.value ? "1" : "0");
+	} else {
+		emits("reset", props.config.key);
+	}
+}
+
+function reset() {
+	emits("reset", props.config.key);
+	val.value = props.config.value === "1";
+}
+
+// We watch props in case of updates.
+watch(
+	() => props.config,
+	(newValue, _oldValue) => (val.value = newValue.value === "1"),
+);
+</script>

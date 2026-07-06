@@ -1,0 +1,194 @@
+<template>
+	<div :id="`upload${index}`" class="w-full flex flex-col">
+		<div class="flex gap-x-4 justify-between relative" :class="errorFlexClass">
+			<span class="text-ellipsis min-w-0 w-full overflow-hidden text-nowrap text-muted">
+				<span v-if="albumTitle" class="text-xs text-muted mr-1">{{ albumTitle }} /</span>{{ file.name }}
+			</span>
+			<span v-if="progress < 100 && progress > 0" :class="statusClass">{{ progress }}%</span>
+			<span :class="statusClass">{{ statusMessage }}</span>
+		</div>
+		<span class="text-center w-full hidden group-hover:block text-error cursor-pointer" @click="controller.abort()">
+			{{ $t("dialogs.button.cancel") }}
+		</span>
+		<UProgress :model-value="progressBar" :color="progressColor" />
+	</div>
+</template>
+<script setup lang="ts">
+import UploadService, { UploadData } from "@/services/upload-service";
+import { AxiosError, type AxiosProgressEvent } from "axios";
+import { trans } from "laravel-vue-i18n";
+import { computed, ref, watch } from "vue";
+
+type UploadingLineProps = {
+	albumId: string | null;
+	albumTitle?: string;
+	file: File;
+	chunkSize: number;
+	status: "uploading" | "waiting" | "done" | "error" | "warning";
+	index: number;
+	applyWatermark: boolean;
+	message: string | undefined;
+};
+
+const props = withDefaults(defineProps<UploadingLineProps>(), {
+	chunkSize: 1024,
+	message: undefined,
+});
+
+const emits = defineEmits<{
+	"upload:completed": [index: number, status: "done" | "warning" | "error", message: string | undefined];
+}>();
+
+const status = ref(props.status);
+const file = ref(props.file);
+const progress = ref(0);
+const chunkStart = ref(0);
+const size = ref(file.value.size);
+const meta = ref({
+	file_name: file.value.name,
+	extension: null,
+	uuid_name: null,
+	stage: "uploading",
+	chunk_number: 0,
+	total_chunks: Math.ceil(size.value / props.chunkSize),
+} as App.Http.Resources.Editable.UploadMetaResource);
+const controller = ref(new AbortController());
+const errorMessage = ref<string | undefined>(undefined);
+
+// prettier-ignore
+const statusMessage = computed(() => {
+	switch (status.value) {
+		case "uploading": return trans("dialogs.upload.uploading");
+		case "done":      return trans("dialogs.upload.finished");
+		case "warning":   return props.message ?? errorMessage.value ?? trans("dialogs.upload.failed_error");
+		case "error":     return props.message ?? errorMessage.value ?? trans("dialogs.upload.failed_error");
+		default:          return "";
+	}
+});
+
+// prettier-ignore
+const errorFlexClass = computed(() => {
+	switch (status.value) {
+		case "error": return "flex-wrap";
+		case "warning": return "flex-wrap";
+		default:      return "";
+	}
+});
+
+// prettier-ignore
+const statusClass = computed(() => {
+	switch (status.value) {
+		case "uploading": return "text-sky-500 text-right pr-1  text-xs";
+		case "done":      return "text-green-600 text-right pr-1  text-xs";
+		case "warning":   return "text-warning text-right pr-1  text-xs";
+		case "error":     return "text-error text-right pr-1  text-xs";
+		default:          return "text-warning text-right pr-1  text-xs";
+	}
+});
+
+const progressBar = computed(() => (status.value === "done" ? 100 : progress.value));
+// prettier-ignore
+const progressColor = computed<"success" | "warning" | "error" | "primary">(() => {
+	switch (status.value) {
+		case "done":  return "success";
+		case "warning": return "warning";
+		case "error": return "error";
+		default:      return "primary";
+	}
+});
+
+function process() {
+	meta.value.chunk_number = meta.value.chunk_number + 1;
+	const chunkEnd = Math.min(chunkStart.value + props.chunkSize, size.value);
+	const chunk = file.value.slice(chunkStart.value, chunkEnd);
+	const data: UploadData = {
+		album_id: props.albumId,
+		file: chunk,
+		file_last_modified_time: file.value.lastModified,
+		meta: meta.value,
+		apply_watermark: props.applyWatermark,
+		onUploadProgress: (progressEvent: AxiosProgressEvent) => {
+			const percent = progressEvent.loaded / (progressEvent.total ?? 1);
+			progress.value = Math.round(((chunkStart.value + percent * (chunkEnd - chunkStart.value)) / size.value) * 100);
+		},
+	};
+
+	UploadService.upload(data, controller.value)
+		.then((response) => {
+			meta.value = response.data;
+			if (response.data.chunk_number === response.data.total_chunks) {
+				progress.value = 100;
+				status.value = "done";
+				emits("upload:completed", props.index, "done", undefined);
+			} else {
+				chunkStart.value += props.chunkSize;
+				process();
+			}
+		})
+		.catch(handleError);
+}
+
+function handleError(error: AxiosError<{ message: string }>) {
+	if (!error.response) {
+		progress.value = 100;
+		status.value = "error";
+		errorMessage.value = error.message;
+		emits("upload:completed", props.index, "error", errorMessage.value);
+		return;
+	}
+
+	switch (error.response.status) {
+		case 409:
+			errorMessage.value = error.response.data.message;
+			progress.value = 100;
+			status.value = "warning";
+			emits("upload:completed", props.index, "warning", errorMessage.value);
+			return; // duplicate found
+		case 413:
+			errorMessage.value = error.response.data.message;
+			progress.value = 100;
+			status.value = "error";
+			emits("upload:completed", props.index, "error", errorMessage.value);
+			return;
+		case 422:
+			errorMessage.value = error.response.data.message;
+			progress.value = 100;
+			status.value = "error";
+			emits("upload:completed", props.index, "error", errorMessage.value);
+			return;
+		case 500:
+			errorMessage.value = "Something went wrong, check the logs.";
+			if (error.response.data.message.includes("Failed to open stream: Permission denied")) {
+				errorMessage.value = "Failed to open stream: Permission denied";
+			}
+			progress.value = 100;
+			status.value = "error";
+			emits("upload:completed", props.index, "error", errorMessage.value);
+			return;
+		case 504:
+			errorMessage.value = "The server took too long to respond.";
+			progress.value = 100;
+			status.value = "warning";
+			emits("upload:completed", props.index, "warning", errorMessage.value);
+			return;
+		default:
+			progress.value = 100;
+			status.value = "error";
+			emits("upload:completed", props.index, "error", undefined);
+			return;
+	}
+}
+
+if (status.value === "uploading") {
+	process();
+}
+
+watch(
+	() => props.status,
+	(newStatus, oldStatus) => {
+		if (oldStatus === "waiting" && newStatus === "uploading") {
+			process();
+		}
+	},
+);
+</script>

@@ -1,7 +1,7 @@
 import WebshopService, { CardDetails } from "@/services/webshop-service";
 import { AxiosError, AxiosResponse } from "axios";
 import { trans } from "laravel-vue-i18n";
-import { ToastServiceMethods } from "primevue/toastservice";
+import { ToastLike } from "@/composables/toast-contract";
 import { ref } from "vue";
 
 const cardDetails = ref<CardDetails>({
@@ -11,7 +11,7 @@ const cardDetails = ref<CardDetails>({
 	cvv: "",
 });
 
-export function useDummy(toast: ToastServiceMethods) {
+export function useDummy(toast: ToastLike) {
 	function getFakeNumber() {
 		navigator.clipboard
 			.writeText("4111111111111152")

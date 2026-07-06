@@ -1,4 +1,4 @@
-import { ToastServiceMethods } from "primevue/toastservice";
+import { ToastLike } from "@/composables/toast-contract";
 import { Ref, ref } from "vue";
 import { trans } from "laravel-vue-i18n";
 import { loadScript, type PayPalNamespace } from "@paypal/paypal-js";
@@ -22,7 +22,7 @@ async function waitForElement(id: string, timeoutMs: number = 5000): Promise<HTM
 	});
 }
 
-export function usePaypal(toast: ToastServiceMethods) {
+export function usePaypal(toast: ToastLike) {
 	async function mountPaypal(options: Ref<undefined | App.Http.Resources.Shop.CheckoutOptionResource>) {
 		if (options.value?.paypal_client_id === undefined || options.value?.paypal_client_id === null || options.value?.paypal_client_id === "") {
 			toast.add({

@@ -1,0 +1,90 @@
+@import "./fonts.css";
+@import "leaflet/dist/leaflet.css";
+@import "leaflet.markercluster/dist/MarkerCluster.css";
+
+@import "tailwindcss";
+@import "@nuxt/ui";
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+html {
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+/*
+  Shared animation utilities used by v8 templates, ported here rather than
+  imported from a dependency:
+  - `--animate-*`/`@keyframes pulseToNull|zoomIn|popIn|fadeOut` mirror
+    resources/sass/app.css's `@theme` block (v7's own custom animations).
+  - `.animate-fadeout`/`.animate-fill-forwards`/`.animate-delay-*`/`.animate-infinite`
+    mirror utilities that v7 gets for free from the `tailwindcss-primeui` Tailwind
+    plugin (`@plugin "tailwindcss-primeui";` in app.css) - not pulled in as a
+    dependency here since it's a PrimeVue-adjacent plugin scheduled for removal
+    once Feature 049 cuts over (see ADR-0006).
+*/
+@theme {
+	--animate-pulseTo0: pulseToNull 2s infinite;
+	--animate-zoomIn: zoomIn 0.2s forwards cubic-bezier(0.51, 0.92, 0.24, 1);
+	--animate-landingIntroPopIn: popIn 2s forwards ease-in-out;
+	--animate-landingIntroFadeOut: fadeOut 2s 2s forwards ease-in-out;
+	--animate-landingSlidesPopIn: popIn 2s 3s forwards ease-in-out;
+	--animate-landingEnterPopIn: zoomIn 2s 4s forwards ease-in-out;
+}
+@keyframes pulseToNull {
+	50% {
+		opacity: 0.1;
+	}
+}
+@keyframes fadeOut {
+	0% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+	}
+}
+@keyframes zoomIn {
+	0% {
+		opacity: 0;
+		transform: scale(0.8);
+	}
+	100% {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+@keyframes popIn {
+	0% {
+		opacity: 0;
+		transform: scale(1.1);
+	}
+	100% {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+@keyframes fadeout {
+	0% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+	}
+}
+.animate-fadeout {
+	animation: 0.15s linear fadeout;
+}
+.animate-fill-forwards {
+	animation-fill-mode: forwards;
+}
+.animate-delay-500 {
+	animation-delay: 0.5s;
+}
+.animate-delay-1000 {
+	animation-delay: 1s;
+}
+.animate-infinite {
+	animation-iteration-count: infinite;
+}

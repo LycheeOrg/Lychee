@@ -1,0 +1,172 @@
+<template>
+	<div class="h-svh overflow-y-hidden flex flex-col">
+		<!-- Trick to avoid the scroll bar to appear on the right when switching to full screen -->
+		<Toolbar class="w-full border-0 h-14 rounded-none" v-if="tagStore.tag">
+			<template #start>
+				<GoBack @go-back="emits('goBack')" />
+			</template>
+			<template #center>
+				{{ tagStore.tag.name }}
+			</template>
+			<template #end> </template>
+		</Toolbar>
+
+		<div id="galleryView" class="relative flex flex-wrap content-start w-full justify-start overflow-y-auto h-full">
+			<div
+				v-if="photosStore.photos.length === 0"
+				class="flex w-full flex-col h-full items-center justify-center text-xl text-muted-color gap-8"
+			>
+				<span class="block">
+					{{ $t("gallery.album.no_results") }}
+				</span>
+			</div>
+			<PhotoThumbPanel
+				v-else
+				header="gallery.album.header_photos"
+				:photos="photosStore.photos"
+				:selected-photos="selectedPhotosIds"
+				:with-control="true"
+				@clicked="photoClick"
+				@selected="selectPhoto"
+				@contexted="contextMenuPhotoOpen"
+			/>
+			<GalleryFooter v-once />
+			<ScrollTop v-if="!photoStore.isLoaded" target="parent" />
+		</div>
+
+		<!-- Dialogs -->
+		<DownloadAlbum v-model:visible="is_download_photo_visible" :photo-ids="downloadPhotoIds" :from-id="downloadFromId" />
+		<ContextMenu ref="menu" :model="Menu" :class="Menu.length === 0 ? 'hidden' : ''">
+			<template #item="{ item, props }">
+				<Divider v-if="item.is_divider" />
+				<a v-else v-ripple v-bind="props.action" @click="item.callback">
+					<span :class="item.icon" />
+					<span class="ml-2">
+						<!-- @vue-ignore -->
+						{{ $t(item.label) }}
+					</span>
+				</a>
+			</template>
+		</ContextMenu>
+	</div>
+</template>
+<script setup lang="ts">
+import PhotoThumbPanel from "@/v7/components/gallery/albumModule/PhotoThumbPanel.vue";
+import { useSelection } from "@/composables/selections/selections";
+import Divider from "primevue/divider";
+import ScrollTop from "primevue/scrolltop";
+import ContextMenu from "primevue/contextmenu";
+import { useContextMenu } from "@/composables/contextMenus/contextMenu";
+import PhotoService from "@/services/photo-service";
+import AlbumService from "@/services/album-service";
+import ModerationService from "@/services/moderation-service";
+import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
+import GalleryFooter from "@/v7/components/footers/GalleryFooter.vue";
+import { useTogglablesStateStore } from "@/stores/ModalsState";
+import { usePhotoRoute } from "@/composables/photo/photoRoute";
+import { useRouter } from "vue-router";
+import GoBack from "@/v7/components/headers/GoBack.vue";
+import Toolbar from "primevue/toolbar";
+import { usePhotosStore } from "@/stores/PhotosState";
+import { useTagStore } from "@/stores/TagState";
+import { useAlbumsStore } from "@/stores/AlbumsState";
+import { usePhotoStore } from "@/stores/PhotoState";
+import DownloadAlbum from "@/v7/components/modals/DownloadAlbum.vue";
+import { ref } from "vue";
+
+const router = useRouter();
+const togglableStore = useTogglablesStateStore();
+const photosStore = usePhotosStore();
+const tagStore = useTagStore();
+const albumsStore = useAlbumsStore();
+const photoStore = usePhotoStore();
+
+const emits = defineEmits<{
+	refresh: [];
+	goBack: [];
+}>();
+
+const { toggleDelete, toggleMove, toggleRename, toggleTag, toggleLicense, toggleCopy, toggleApplyRenamer } = useGalleryModals(togglableStore);
+
+const { selectedPhoto, selectedPhotos, selectedPhotosIds, photoSelect: selectPhoto } = useSelection(photosStore, albumsStore, togglableStore);
+
+const { photoRoute, getParentId } = usePhotoRoute(router);
+
+const is_download_photo_visible = ref(false);
+const downloadPhotoIds = ref<string[]>([]);
+const downloadFromId = ref<string | null>(null);
+
+function photoClick(photoId: string, _e: MouseEvent) {
+	router.push(photoRoute(photoId));
+}
+
+const photoCallbacks = {
+	star: () => {
+		PhotoService.highlight(selectedPhotosIds.value, true);
+		AlbumService.clearCache();
+		emits("refresh");
+	},
+	unstar: () => {
+		PhotoService.highlight(selectedPhotosIds.value, false);
+		AlbumService.clearCache();
+		emits("refresh");
+	},
+	setAsCover: () => {},
+	setAsHeader: () => {},
+	toggleTag: toggleTag,
+	toggleLicense: toggleLicense,
+	toggleRename: toggleRename,
+	toggleCopyTo: toggleCopy,
+	toggleMove: toggleMove,
+	toggleDelete: toggleDelete,
+	toggleDownload: () => {
+		downloadPhotoIds.value = [...selectedPhotosIds.value];
+		downloadFromId.value = getParentId() ?? null;
+		is_download_photo_visible.value = true;
+	},
+	toggleApplyRenamer: toggleApplyRenamer,
+	toggleScanFaces: () => {},
+	toggleApprove: () => {
+		ModerationService.approve(selectedPhotosIds.value).then(() => {
+			selectedPhotosIds.value.forEach((photoId) => {
+				const photo = photosStore.photos.find((p) => p.id === photoId);
+				if (photo) {
+					photo.is_validated = true;
+				}
+			});
+		});
+	},
+};
+
+const albumCallbacks = {
+	setAsCover: () => {},
+	toggleRename: () => {},
+	toggleMerge: () => {},
+	toggleMove: () => {},
+	toggleDelete: () => {},
+	toggleDownload: () => {},
+	togglePin: () => {},
+	toggleApplyRenamer: () => {},
+	toggleScanFaces: () => {},
+};
+
+const {
+	menu,
+	Menu,
+	photoMenuOpen: contextMenuPhotoOpen,
+} = useContextMenu(
+	{
+		selectedPhoto: selectedPhoto,
+		selectedPhotos: selectedPhotos,
+		selectedPhotosIds: selectedPhotosIds,
+	},
+	photoCallbacks,
+	albumCallbacks,
+);
+</script>
+<style lang="css">
+/* Kill the border of ScrollTop */
+.p-scrolltop {
+	border: none;
+}
+</style>
