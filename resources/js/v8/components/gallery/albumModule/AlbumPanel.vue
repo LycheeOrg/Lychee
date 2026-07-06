@@ -172,7 +172,7 @@ import type { ContextMenuItem } from "@nuxt/ui";
 const router = useRouter();
 const toast = useAppToast();
 
-const props = defineProps<{
+defineProps<{
 	isPhotoOpen: boolean;
 }>();
 

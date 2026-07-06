@@ -280,7 +280,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { storeToRefs } from "pinia";
 import { trans, trans_choice } from "laravel-vue-i18n";
 import { useAppToast } from "@/v8/composables/useAppToast";

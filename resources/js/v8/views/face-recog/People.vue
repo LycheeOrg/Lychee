@@ -157,7 +157,7 @@ const contextMenuSections = computed<ContextMenuItem[][]>(() => [
 	})),
 ]);
 
-function openContextMenu(event: MouseEvent, person: App.Http.Resources.Models.PersonResource) {
+function openContextMenu(_event: MouseEvent, person: App.Http.Resources.Models.PersonResource) {
 	contextMenuPerson.value = person;
 	contextMenuItems.value = buildContextMenuItems(person);
 }
