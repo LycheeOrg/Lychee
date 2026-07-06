@@ -1,12 +1,14 @@
 <template>
 	<UApp>
-		<ConfirmModalHost />
-		<Error />
-		<LeftMenu />
-		<EmbedCodeDialog />
-		<main>
-			<router-view />
-		</main>
+		<UTheme :props="{ modal: { close: false } }">
+			<ConfirmModalHost />
+			<Error />
+			<LeftMenu />
+			<EmbedCodeDialog />
+			<main>
+				<router-view />
+			</main>
+		</UTheme>
 	</UApp>
 </template>
 

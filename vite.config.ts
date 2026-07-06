@@ -92,6 +92,11 @@ const baseConfig = {
 			ui: {
 				colors: { primary: "sky", neutral: "slate" },
 				card: { variants: { variant: { outline: { root: "ring-0" } } } },
+				// Nuxt UI's `text-inverted` flips to a dark neutral in dark mode (so
+				// solid buttons stay readable on the lighter shade-400 background it
+				// picks for dark mode) - Lychee always wants white text on the primary
+				// solid button regardless of color scheme.
+				button: { compoundVariants: [{ color: "primary", variant: "solid", class: "text-white" }] },
 			},
 		}),
 		vue({ template: { transformAssetUrls: { base: null, includeAbsolute: false } } }),

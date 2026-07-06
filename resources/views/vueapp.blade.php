@@ -43,7 +43,7 @@
 @endif
         <x-warning-misconfiguration />
     @include('includes.svg')
-	<div id="app" class="w-full3">
+	<div id="app" class="w-full3 isolate">
         <app/>
 	</div>
 	<x-webshop />

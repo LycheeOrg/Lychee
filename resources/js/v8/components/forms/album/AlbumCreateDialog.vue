@@ -17,7 +17,7 @@
 				<UButton color="neutral" variant="soft" class="flex-1 justify-center font-bold" @click="is_create_album_visible = false">
 					{{ $t("dialogs.button.cancel") }}
 				</UButton>
-				<UButton color="neutral" class="flex-1 justify-center font-bold" :disabled="!isValid" @click="create">
+				<UButton color="primary" class="flex-1 justify-center font-bold" :disabled="!isValid" @click="create">
 					{{ $t("dialogs.new_album.create") }}
 				</UButton>
 			</div>
