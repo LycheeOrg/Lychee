@@ -14,7 +14,6 @@
         "vca": "vca -- --dir resources/js"
     },
     "devDependencies": {
-        "@iconify-json/prime": "^1.2.5",
         "@types/dropbox-chooser": "^1.0.8",
         "@types/jsdom": "^28.0.3",
         "@types/justified-layout": "^4.1.4",
@@ -40,6 +39,7 @@
     },
     "dependencies": {
         "@fortawesome/fontawesome-free": "^7.2.0",
+        "@iconify-json/prime": "^1.2.5",
         "@mollie/api-client": "^4.5.0",
         "@nuxt/ui": "^4.9.0",
         "@paypal/paypal-js": "^10.0.0",
