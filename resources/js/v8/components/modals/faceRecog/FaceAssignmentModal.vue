@@ -52,7 +52,17 @@
 				:loading="dismissing"
 				@click="dismiss"
 			/>
-			<UButton class="w-full justify-center" :label="$t('people.assignment.cancel')" color="neutral" variant="ghost" @click="open = false" />
+			<UButton
+				class="w-full justify-center"
+				:label="$t('people.assignment.cancel')"
+				color="neutral"
+				variant="ghost"
+				@click="
+					() => {
+						open = false;
+					}
+				"
+			/>
 			<UButton
 				class="w-full justify-center"
 				:label="$t('people.assignment.confirm')"

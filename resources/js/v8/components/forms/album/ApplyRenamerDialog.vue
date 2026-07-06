@@ -42,7 +42,11 @@
 								size="xs"
 								:color="target === option.value ? 'primary' : 'neutral'"
 								:variant="target === option.value ? 'solid' : 'outline'"
-								@click="target = option.value"
+								@click="
+									() => {
+										target = option.value;
+									}
+								"
 							>
 								{{ option.label }}
 							</UButton>
@@ -57,7 +61,11 @@
 								size="xs"
 								:color="scope === option.value ? 'primary' : 'neutral'"
 								:variant="scope === option.value ? 'solid' : 'outline'"
-								@click="scope = option.value"
+								@click="
+									() => {
+										scope = option.value;
+									}
+								"
 							>
 								{{ option.label }}
 							</UButton>

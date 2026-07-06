@@ -6,7 +6,11 @@
 			<UButton
 				:label="$t('webshop.infoSection.goToLogin')"
 				icon="prime:sign-in"
-				@click="router.push({ name: 'login', query: { redirect: 'checkout' } })"
+				@click="
+					() => {
+						router.push({ name: 'login', query: { redirect: 'checkout' } });
+					}
+				"
 			/>
 		</div>
 		<template v-else>

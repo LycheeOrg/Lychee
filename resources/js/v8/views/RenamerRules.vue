@@ -61,7 +61,17 @@
 			<div class="flex items-center justify-end w-full">
 				<div class="flex items-center gap-4">
 					<span class="text-sm text-muted">{{ $t("renamer.rules_count", { count: rules.length.toString() }) }}</span>
-					<UButton v-if="rules.length > 0" icon="prime:plus" size="sm" :label="$t('renamer.create_rule')" @click="showCreateModal = true" />
+					<UButton
+						v-if="rules.length > 0"
+						icon="prime:plus"
+						size="sm"
+						:label="$t('renamer.create_rule')"
+						@click="
+							() => {
+								showCreateModal = true;
+							}
+						"
+					/>
 				</div>
 			</div>
 
@@ -70,7 +80,15 @@
 					<UIcon name="prime:file-edit" class="text-4xl" />
 				</div>
 				<p class="text-muted mb-4">{{ $t("renamer.no_rules") }}</p>
-				<UButton icon="prime:plus" :label="$t('renamer.create_first_rule')" @click="showCreateModal = true" />
+				<UButton
+					icon="prime:plus"
+					:label="$t('renamer.create_first_rule')"
+					@click="
+						() => {
+							showCreateModal = true;
+						}
+					"
+				/>
 			</div>
 
 			<div v-if="rules.length > 0">

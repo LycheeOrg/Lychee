@@ -14,7 +14,16 @@
 			</div>
 		</template>
 		<template #footer>
-			<UButton color="neutral" variant="ghost" class="w-full font-bold justify-center" @click="open = false">
+			<UButton
+				color="neutral"
+				variant="ghost"
+				class="w-full font-bold justify-center"
+				@click="
+					() => {
+						open = false;
+					}
+				"
+			>
 				{{ $t("dialogs.button.cancel") }}
 			</UButton>
 			<UButton icon="prime:forward" color="error" class="w-full justify-center font-bold" :label="$t('sharing.propagate')" @click="propagate" />

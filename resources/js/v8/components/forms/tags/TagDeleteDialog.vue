@@ -10,7 +10,16 @@
 		</template>
 		<template #footer>
 			<div class="flex w-full gap-2">
-				<UButton class="flex-1 justify-center" color="neutral" variant="soft" @click="visible = false">
+				<UButton
+					class="flex-1 justify-center"
+					color="neutral"
+					variant="soft"
+					@click="
+						() => {
+							visible = false;
+						}
+					"
+				>
 					{{ $t("dialogs.button.cancel") }}
 				</UButton>
 				<UButton class="flex-1 justify-center" color="error" @click="execute">

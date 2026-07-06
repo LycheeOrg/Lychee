@@ -89,7 +89,11 @@
 							:label="$t('webshop.orderDownload.edit')"
 							icon="prime:pencil"
 							size="sm"
-							@click="edit = !edit"
+							@click="
+								() => {
+									edit = !edit;
+								}
+							"
 						/>
 						<UButton
 							v-else-if="initData?.settings.can_edit && edit"
@@ -98,7 +102,11 @@
 							:label="$t('webshop.orderDownload.view')"
 							icon="prime:eye"
 							size="sm"
-							@click="edit = !edit"
+							@click="
+								() => {
+									edit = !edit;
+								}
+							"
 						/>
 					</div>
 					<div class="space-y-3">

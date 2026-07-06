@@ -13,7 +13,11 @@
 					:label="$t('people.assignment.cancel')"
 					color="neutral"
 					variant="soft"
-					@click="visible = false"
+					@click="
+						() => {
+							visible = false;
+						}
+					"
 				/>
 				<UButton
 					class="flex-1 justify-center"

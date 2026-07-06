@@ -64,7 +64,11 @@
 				variant="soft"
 				:label="$t('bulk_album_edit.action_delete')"
 				icon="prime:trash"
-				@click="isDeleteVisible = true"
+				@click="
+					() => {
+						isDeleteVisible = true;
+					}
+				"
 			/>
 			<UButton
 				v-if="selectedIds.length > 0 && numUsers > 1"
@@ -73,7 +77,11 @@
 				variant="soft"
 				:label="$t('bulk_album_edit.action_set_owner')"
 				icon="prime:user"
-				@click="isSetOwnerVisible = true"
+				@click="
+					() => {
+						isSetOwnerVisible = true;
+					}
+				"
 			/>
 			<UButton
 				v-if="selectedIds.length > 0"
@@ -81,7 +89,11 @@
 				color="primary"
 				:label="$t('bulk_album_edit.action_edit_fields')"
 				icon="prime:pencil"
-				@click="isEditFieldsVisible = true"
+				@click="
+					() => {
+						isEditFieldsVisible = true;
+					}
+				"
 			/>
 		</div>
 

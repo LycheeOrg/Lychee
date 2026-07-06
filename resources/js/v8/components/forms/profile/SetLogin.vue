@@ -13,7 +13,11 @@
 					color="neutral"
 					variant="soft"
 					class="w-full font-bold shrink rounded-xl mt-4 justify-center"
-					@click="isApiTokenOpen = !isApiTokenOpen"
+					@click="
+						() => {
+							isApiTokenOpen = !isApiTokenOpen;
+						}
+					"
 				>
 					{{ $t("profile.login.api_token") }}
 				</UButton>
@@ -61,7 +65,11 @@
 						color="neutral"
 						variant="soft"
 						class="w-full font-bold shrink rounded-none ltr:rounded-r-xl rtl:rounded-l-xl justify-center"
-						@click="isApiTokenOpen = !isApiTokenOpen"
+						@click="
+							() => {
+								isApiTokenOpen = !isApiTokenOpen;
+							}
+						"
 					>
 						{{ $t("profile.login.api_token") }}
 					</UButton>

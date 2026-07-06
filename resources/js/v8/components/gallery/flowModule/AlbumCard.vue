@@ -74,7 +74,11 @@
 					variant="ghost"
 					class="font-bold text-muted hover:text-highlighted cursor-pointer p-0"
 					color="neutral"
-					@click="seeMore = true"
+					@click="
+						() => {
+							seeMore = true;
+						}
+					"
 				>
 					{{ $t("flow.show_more") }}
 				</UButton>

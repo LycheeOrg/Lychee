@@ -16,7 +16,16 @@
 				<InputCurrency :value="item.price" :currency="currency" @update:model-value="(value: number) => (item.price = value)" />
 			</div>
 			<div>
-				<UButton color="error" variant="ghost" icon="prime:trash" @click="items.splice(index, 1)" />
+				<UButton
+					color="error"
+					variant="ghost"
+					icon="prime:trash"
+					@click="
+						() => {
+							items.splice(index, 1);
+						}
+					"
+				/>
 			</div>
 		</div>
 		<UButton
@@ -24,7 +33,11 @@
 			icon="prime:plus"
 			variant="outline"
 			size="sm"
-			@click="items.push({ ..._defaultItem })"
+			@click="
+				() => {
+					items.push({ ..._defaultItem });
+				}
+			"
 		/>
 	</div>
 </template>

@@ -25,8 +25,7 @@ jobs:
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - name: 'Dependency Review'
         uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
-        # with:
-        #   # No fix available yet
-        #   # Note that the model is directly baked into the inage
-        #   # So the risk is limited.
-        #   allow-ghsas: GHSA-hqmj-h5c6-369m
+        with:
+          # Something related to windows.
+          # We don't care because we use Linux, hue hue hue.
+          allow-ghsas: GHSA-g7r4-m6w7-qqqr

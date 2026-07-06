@@ -61,7 +61,7 @@ import { onKeyStroke } from "@vueuse/core";
 import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import { trans } from "laravel-vue-i18n";
 
-const visible = defineModel("visible", { default: false });
+const visible = defineModel<boolean>("visible", { default: false });
 
 const toast = useToast();
 const doNotShowAgain = ref(false);
@@ -167,5 +167,7 @@ const shortcutsList = ref([
 	},
 ]);
 
-onKeyStroke("?", () => !shouldIgnoreKeystroke() && (visible.value = true));
+onKeyStroke("?", () => {
+	if (!shouldIgnoreKeystroke()) visible.value = true;
+});
 </script>

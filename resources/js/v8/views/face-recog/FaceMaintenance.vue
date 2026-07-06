@@ -53,7 +53,11 @@
 							icon="prime:user-plus"
 							color="success"
 							size="sm"
-							@click="showBatchAssignModal = true"
+							@click="
+								() => {
+									showBatchAssignModal = true;
+								}
+							"
 						/>
 						<UButton
 							v-if="!dismissedOnly"

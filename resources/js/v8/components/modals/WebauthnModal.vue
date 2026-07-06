@@ -9,7 +9,16 @@
 		</template>
 		<template #footer>
 			<div class="flex w-full gap-2">
-				<UButton color="neutral" variant="soft" class="flex-1 justify-center font-bold" @click="is_webauthn_open = false">
+				<UButton
+					color="neutral"
+					variant="soft"
+					class="flex-1 justify-center font-bold"
+					@click="
+						() => {
+							is_webauthn_open = false;
+						}
+					"
+				>
 					{{ $t("dialogs.button.cancel") }}
 				</UButton>
 				<UButton color="neutral" class="flex-1 justify-center font-bold" @click="login">

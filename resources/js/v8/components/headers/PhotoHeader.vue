@@ -47,7 +47,11 @@
 						icon="prime:cloud-download"
 						class="ltr:mr-2 rtl:ml-2"
 						color="neutral"
-						@click="isDownloadOpen = !isDownloadOpen"
+						@click="
+							() => {
+								isDownloadOpen = !isDownloadOpen;
+							}
+						"
 					/>
 					<UButton
 						v-if="albumStore.rights?.can_edit"
@@ -55,7 +59,11 @@
 						icon="prime:pencil"
 						class="ltr:mr-2 rtl:ml-2"
 						color="neutral"
-						@click="is_photo_edit_open = !is_photo_edit_open"
+						@click="
+							() => {
+								is_photo_edit_open = !is_photo_edit_open;
+							}
+						"
 					/>
 					<UButton
 						v-if="!is_exif_disabled"
@@ -63,7 +71,11 @@
 						icon="prime:info-circle"
 						class="ltr:mr-2 rtl:ml-2"
 						color="neutral"
-						@click="are_details_open = !are_details_open"
+						@click="
+							() => {
+								are_details_open = !are_details_open;
+							}
+						"
 					/>
 				</div>
 			</div>

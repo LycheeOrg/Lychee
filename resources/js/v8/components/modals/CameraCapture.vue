@@ -28,7 +28,11 @@
 					color="neutral"
 					variant="soft"
 					class="flex-1 justify-center"
-					@click="is_camera_capture_visible = false"
+					@click="
+						() => {
+							is_camera_capture_visible = false;
+						}
+					"
 				/>
 				<UButton
 					:disabled="!cameraReady"
@@ -46,7 +50,11 @@
 					color="neutral"
 					variant="soft"
 					class="flex-1 justify-center"
-					@click="is_camera_capture_visible = false"
+					@click="
+						() => {
+							is_camera_capture_visible = false;
+						}
+					"
 				/>
 				<UButton
 					icon="prime:refresh"

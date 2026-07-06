@@ -15,7 +15,11 @@
 			icon="prime:exclamation-triangle"
 			variant="ghost"
 			color="warning"
-			@click="router.push({ name: 'order', params: { orderId: props.order.id } })"
+			@click="
+				() => {
+					router.push({ name: 'order', params: { orderId: props.order.id } });
+				}
+			"
 		/>
 		<UButton
 			v-else-if="props.order.status === 'completed'"
@@ -32,7 +36,11 @@
 		icon="prime:eye"
 		variant="ghost"
 		color="primary"
-		@click="router.push({ name: 'order', params: { orderId: props.order.id } })"
+		@click="
+			() => {
+				router.push({ name: 'order', params: { orderId: props.order.id } });
+			}
+		"
 	/>
 </template>
 <script setup lang="ts">

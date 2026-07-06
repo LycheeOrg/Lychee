@@ -11,7 +11,17 @@
 
 		<!-- Selfie claim button -->
 		<div class="flex justify-center mt-6 pb-8">
-			<UButton :label="$t('people.claim_by_selfie')" icon="prime:camera" color="neutral" variant="outline" @click="isSelfieOpen = true" />
+			<UButton
+				:label="$t('people.claim_by_selfie')"
+				icon="prime:camera"
+				color="neutral"
+				variant="outline"
+				@click="
+					() => {
+						isSelfieOpen = true;
+					}
+				"
+			/>
 		</div>
 		<SelfieClaimModal v-model:visible="isSelfieOpen" />
 	</div>

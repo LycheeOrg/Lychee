@@ -10,7 +10,16 @@
 		</template>
 		<template #footer>
 			<div class="flex w-full gap-2">
-				<UButton color="neutral" variant="soft" class="flex-1 justify-center font-bold" @click="visible = false">
+				<UButton
+					color="neutral"
+					variant="soft"
+					class="flex-1 justify-center font-bold"
+					@click="
+						() => {
+							visible = false;
+						}
+					"
+				>
 					{{ $t("webhook.cancel") }}
 				</UButton>
 				<UButton color="error" class="flex-1 justify-center font-bold" :loading="isDeleting" @click="execute">

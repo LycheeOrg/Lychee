@@ -17,7 +17,16 @@
 		</template>
 		<template #footer>
 			<div class="flex w-full gap-2">
-				<UButton color="neutral" variant="soft" class="flex-1 justify-center font-bold" @click="is_create_tag_album_visible = false">
+				<UButton
+					color="neutral"
+					variant="soft"
+					class="flex-1 justify-center font-bold"
+					@click="
+						() => {
+							is_create_tag_album_visible = false;
+						}
+					"
+				>
 					{{ $t("dialogs.button.cancel") }}
 				</UButton>
 				<UButton color="neutral" class="flex-1 justify-center font-bold" :disabled="!isValid" @click="create">

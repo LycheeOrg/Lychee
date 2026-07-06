@@ -23,7 +23,11 @@
 				variant="ghost"
 				class="shrink-0"
 				:icon="advancedOpen ? 'prime:chevron-up' : 'prime:chevron-down'"
-				@click="advancedOpen = !advancedOpen"
+				@click="
+					() => {
+						advancedOpen = !advancedOpen;
+					}
+				"
 			/>
 		</div>
 		<div

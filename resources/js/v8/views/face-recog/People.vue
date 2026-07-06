@@ -10,14 +10,22 @@
 					color="neutral"
 					variant="outline"
 					icon="prime:filter"
-					@click="$router.push({ name: 'face-maintenance' })"
+					@click="
+						() => {
+							$router.push({ name: 'face-maintenance' });
+						}
+					"
 				/>
 				<UButton
 					:label="$t('people.clusters_title')"
 					color="neutral"
 					variant="outline"
 					icon="prime:sitemap"
-					@click="$router.push('/people/clusters')"
+					@click="
+						() => {
+							$router.push('/people/clusters');
+						}
+					"
 				/>
 			</div>
 		</div>
@@ -60,7 +68,16 @@
 			</template>
 			<template #footer>
 				<div class="flex gap-2 justify-end w-full">
-					<UButton :label="$t('gallery.cancel')" color="neutral" variant="soft" @click="userPickerVisible = false" />
+					<UButton
+						:label="$t('gallery.cancel')"
+						color="neutral"
+						variant="soft"
+						@click="
+							() => {
+								userPickerVisible = false;
+							}
+						"
+					/>
 					<UButton :label="$t('gallery.done')" color="neutral" :disabled="!selectedUser" @click="confirmAssignUser" />
 				</div>
 			</template>

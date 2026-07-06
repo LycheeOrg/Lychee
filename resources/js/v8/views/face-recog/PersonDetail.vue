@@ -1,7 +1,16 @@
 <template>
 	<div class="h-svh overflow-y-auto">
 		<div class="w-full border-0 h-14 flex items-center justify-between px-2">
-			<UButton icon="prime:chevron-left" color="neutral" variant="ghost" @click="$router.push({ name: 'people' })" />
+			<UButton
+				icon="prime:chevron-left"
+				color="neutral"
+				variant="ghost"
+				@click="
+					() => {
+						$router.push({ name: 'people' });
+					}
+				"
+			/>
 			<span v-if="person" class="absolute left-1/2 -translate-x-1/2">{{ person.name }}</span>
 			<span />
 		</div>
@@ -63,7 +72,11 @@
 								icon="prime:arrow-down-left-and-arrow-up-right-to-center"
 								color="neutral"
 								variant="ghost"
-								@click="isMergeModalOpen = true"
+								@click="
+									() => {
+										isMergeModalOpen = true;
+									}
+								"
 							/>
 						</UTooltip>
 

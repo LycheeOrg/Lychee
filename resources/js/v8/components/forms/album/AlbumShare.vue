@@ -26,7 +26,11 @@
 					color="primary"
 					class="p-3 w-full mt-4 font-bold justify-center rounded-xl"
 					:label="$t('sharing.add_new_access_permission')"
-					@click="dialogVisible = true"
+					@click="
+						() => {
+							dialogVisible = true;
+						}
+					"
 				/>
 				<UButton
 					icon="prime:forward"
@@ -34,7 +38,11 @@
 					:disabled="perms.length === 0"
 					class="p-3 w-full mt-4 font-bold justify-center rounded-xl disabled:opacity-50"
 					:label="$t('sharing.propagate')"
-					@click="dialogPropagateVisible = true"
+					@click="
+						() => {
+							dialogPropagateVisible = true;
+						}
+					"
 				/>
 			</div>
 		</template>

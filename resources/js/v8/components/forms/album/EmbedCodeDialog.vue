@@ -17,7 +17,11 @@
 							size="sm"
 							:color="config.layout === option.value ? 'primary' : 'neutral'"
 							:variant="config.layout === option.value ? 'solid' : 'outline'"
-							@click="config.layout = option.value"
+							@click="
+								() => {
+									config.layout = option.value;
+								}
+							"
 						>
 							{{ option.label }}
 						</UButton>
@@ -31,7 +35,11 @@
 					variant="ghost"
 					icon="prime:angle-down"
 					:label="$t('dialogs.embed_code.show_advanced')"
-					@click="showAdvanced = true"
+					@click="
+						() => {
+							showAdvanced = true;
+						}
+					"
 				/>
 
 				<!-- Advanced Options -->
@@ -41,7 +49,11 @@
 						variant="ghost"
 						icon="prime:angle-up"
 						:label="$t('dialogs.embed_code.hide_advanced')"
-						@click="showAdvanced = false"
+						@click="
+							() => {
+								showAdvanced = false;
+							}
+						"
 					/>
 
 					<div class="grid grid-cols-2 gap-4">
@@ -98,7 +110,11 @@
 								size="sm"
 								:color="config.headerPlacement === option.value ? 'primary' : 'neutral'"
 								:variant="config.headerPlacement === option.value ? 'solid' : 'outline'"
-								@click="config.headerPlacement = option.value"
+								@click="
+									() => {
+										config.headerPlacement = option.value;
+									}
+								"
 							>
 								{{ option.label }}
 							</UButton>

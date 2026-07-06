@@ -27,7 +27,11 @@
 					color="neutral"
 					variant="soft"
 					class="flex-1 justify-center"
-					@click="visible = false"
+					@click="
+						() => {
+							visible = false;
+						}
+					"
 				/>
 				<UButton
 					:label="groupId === undefined ? $t('user-groups.create.create') : $t('user-groups.create.edit')"

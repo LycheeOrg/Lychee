@@ -30,7 +30,11 @@
 					<UButton
 						class="bg-black/40 rounded-lg border-0 px-2 py-1 text-white hover:bg-white/30 cursor-pointer"
 						:label="$t('gallery.set_focus')"
-						@click="isFocusPickerVisible = true"
+						@click="
+							() => {
+								isFocusPickerVisible = true;
+							}
+						"
 					/>
 				</template>
 			</div>

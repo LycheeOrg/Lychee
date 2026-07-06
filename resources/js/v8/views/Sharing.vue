@@ -13,7 +13,11 @@
 			class="w-full font-bold justify-center mt-4 mb-12"
 			:label="$t('sharing.bluk_share')"
 			icon="prime:user-plus"
-			@click="bulkSharingVisible = true"
+			@click="
+				() => {
+					bulkSharingVisible = true;
+				}
+			"
 		/>
 		<div class="flex flex-col text-highlighted">
 			<div class="flex items-center">

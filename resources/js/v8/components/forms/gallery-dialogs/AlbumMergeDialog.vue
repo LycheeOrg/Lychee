@@ -28,7 +28,17 @@
 					{{ $t("dialogs.merge.merge") }}
 				</UButton>
 			</div>
-			<UButton v-else color="neutral" variant="soft" class="w-full justify-center font-bold" @click="visible = false">
+			<UButton
+				v-else
+				color="neutral"
+				variant="soft"
+				class="w-full justify-center font-bold"
+				@click="
+					() => {
+						visible = false;
+					}
+				"
+			>
 				{{ $t("dialogs.button.cancel") }}
 			</UButton>
 		</template>

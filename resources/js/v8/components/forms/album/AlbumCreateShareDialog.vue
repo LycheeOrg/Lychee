@@ -36,7 +36,16 @@
 			</div>
 		</template>
 		<template #footer>
-			<UButton color="neutral" variant="ghost" class="w-full font-bold justify-center" @click="open = false">
+			<UButton
+				color="neutral"
+				variant="ghost"
+				class="w-full font-bold justify-center"
+				@click="
+					() => {
+						open = false;
+					}
+				"
+			>
 				{{ $t("dialogs.button.cancel") }}
 			</UButton>
 			<UButton color="success" variant="ghost" class="font-bold w-full justify-center" :disabled="!newShareUser" @click="create">

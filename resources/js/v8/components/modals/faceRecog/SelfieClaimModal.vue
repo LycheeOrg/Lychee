@@ -58,7 +58,16 @@
 					:disabled="!selectedFile"
 					@click="submit"
 				/>
-				<UButton v-if="matchedPerson" :label="$t('gallery.done')" color="success" @click="visible = false" />
+				<UButton
+					v-if="matchedPerson"
+					:label="$t('gallery.done')"
+					color="success"
+					@click="
+						() => {
+							visible = false;
+						}
+					"
+				/>
 			</div>
 		</template>
 	</UModal>

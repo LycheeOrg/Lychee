@@ -25,7 +25,16 @@
 				/>
 			</div>
 			<div>
-				<UButton color="error" variant="ghost" icon="prime:trash" @click="pricesValues.splice(index, 1)" />
+				<UButton
+					color="error"
+					variant="ghost"
+					icon="prime:trash"
+					@click="
+						() => {
+							pricesValues.splice(index, 1);
+						}
+					"
+				/>
 			</div>
 		</div>
 		<UAlert v-if="!isValid" color="error" :description="$t('webshop.pricesInput.duplicateError')" />
@@ -34,7 +43,11 @@
 			icon="prime:plus"
 			variant="outline"
 			size="sm"
-			@click="pricesValues.push({ ..._priceDefault })"
+			@click="
+				() => {
+					pricesValues.push({ ..._priceDefault });
+				}
+			"
 		/>
 	</div>
 </template>

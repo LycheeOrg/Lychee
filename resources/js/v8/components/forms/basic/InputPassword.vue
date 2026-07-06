@@ -7,7 +7,11 @@
 				size="sm"
 				:icon="show ? 'prime:eye-slash' : 'prime:eye'"
 				:aria-label="show ? 'Hide password' : 'Show password'"
-				@click="show = !show"
+				@click="
+					() => {
+						show = !show;
+					}
+				"
 			/>
 		</template>
 	</UInput>

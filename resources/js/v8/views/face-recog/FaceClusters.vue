@@ -243,9 +243,7 @@ const detailDismissing = ref(false);
 const detailScrollSentinel = ref<HTMLElement | null>(null);
 let detailScrollObserver: IntersectionObserver | null = null;
 
-function clusterPersonModelValue(
-	cluster: App.Http.Resources.Models.ClusterPreviewResource,
-): App.Http.Resources.Models.PersonResource | undefined {
+function clusterPersonModelValue(cluster: App.Http.Resources.Models.ClusterPreviewResource): App.Http.Resources.Models.PersonResource | undefined {
 	return (clusterPersonSelect[cluster.cluster_label] ?? undefined) as App.Http.Resources.Models.PersonResource | undefined;
 }
 

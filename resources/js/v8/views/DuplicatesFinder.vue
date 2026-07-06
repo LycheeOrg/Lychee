@@ -53,7 +53,11 @@
 					color="error"
 					class="w-full font-bold mb-4 justify-center"
 					:disabled="selectedIds.length === 0"
-					@click="isDeleteVisible = true"
+					@click="
+						() => {
+							isDeleteVisible = true;
+						}
+					"
 				>
 					{{ $t("duplicate-finder.delete-selected") }}
 				</UButton>
