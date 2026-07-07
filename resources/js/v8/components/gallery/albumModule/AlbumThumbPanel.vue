@@ -1,5 +1,5 @@
 <template>
-	<div v-if="isTimeline === false" class="border-0 w-full" :class="paddingTopClass">
+	<div v-if="isTimeline === false" class="border-0 w-full px-4" :class="paddingTopClass">
 		<template v-if="isAlone">
 			<div class="flex flex-wrap flex-row shrink w-full justify-start gap-1 sm:gap-2 md:gap-4 pt-4">
 				<AlbumListView

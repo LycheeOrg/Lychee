@@ -2,10 +2,13 @@
 	<div class="h-svh overflow-y-hidden">
 		<!-- Trick to avoid the scroll bar to appear on the right when switching to full screen -->
 		<Collapse :when="!is_full_screen">
-			<div class="w-full border-0 h-14 flex items-center justify-between px-2">
-				<GoBack @go-back="goBack" />
+			<UHeader :toggle="false" :ui="{ root: 'border-b-0', center: 'flex' }">
+				<template #left>
+					<GoBack @go-back="goBack" />
+				</template>
+
 				<span class="absolute left-1/2 -translate-x-1/2">{{ $t("gallery.favourites") }}</span>
-			</div>
+			</UHeader>
 		</Collapse>
 		<div
 			id="galleryView"

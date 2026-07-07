@@ -36,6 +36,9 @@
 				{{ $t("profile.register.signup") }}
 			</router-link>
 		</div>
+		<div v-if="!is_white_label_enabled" class="text-muted text-right font-semibold mt-8">
+			Lychee <span v-if="is_se_enabled" class="text-primary-500">SE</span>
+		</div>
 	</UCard>
 </template>
 <script setup lang="ts">
@@ -56,7 +59,7 @@ const lycheeStore = useLycheeStateStore();
 const leftMenuStore = useLeftMenuStateStore();
 const userStore = useUserStore();
 const { advisoryCheck } = useAdvisoryModal();
-const { title, is_registration_enabled, is_basic_auth_enabled } = storeToRefs(lycheeStore);
+const { title, is_registration_enabled, is_basic_auth_enabled, is_white_label_enabled, is_se_enabled } = storeToRefs(lycheeStore);
 const is_loaded = ref(false);
 
 async function goBack() {

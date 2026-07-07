@@ -2,10 +2,10 @@
 	<ImportFromLink v-if="timelineStore.rootRights?.can_upload" v-model:open="is_import_from_link_open" />
 	<ImportFromServer v-if="timelineStore.rootRights?.can_import_from_server" v-model:open="is_import_from_server_open" />
 	<DropBox v-if="timelineStore.rootRights?.can_upload" v-model:open="is_import_from_dropbox_open" />
-	<div class="relative w-full border-0 h-14 z-10 flex items-center justify-between px-2 flex-nowrap">
-		<div class="flex items-center">
+	<UHeader :toggle="false" class="z-10" :ui="{ root: 'border-b-0', center: 'flex' }">
+		<template #left>
 			<OpenLeftMenu />
-		</div>
+		</template>
 
 		<div class="absolute top-0 py-3 left-1/2 -translate-x-1/2 h-14 flex items-center">
 			<template v-if="lycheeStore.site_logo !== ''">
@@ -21,7 +21,7 @@
 			</template>
 		</div>
 
-		<div class="flex items-center gap-1">
+		<template #right>
 			<template v-if="userStore.isGuest">
 				<UButton as="router-link" :to="{ name: 'login' }" color="neutral" variant="ghost" class="py-2 px-4 rounded-xl hidden xl:inline-flex">
 					{{ $t("dialogs.login.signin") }}
@@ -59,8 +59,8 @@
 			<UDropdownMenu :items="mobileMenuSections" class="lg:hidden">
 				<UButton icon="prime:angle-double-down" color="neutral" variant="ghost" />
 			</UDropdownMenu>
-		</div>
-	</div>
+		</template>
+	</UHeader>
 </template>
 <script setup lang="ts">
 import ImportFromLink from "@/v8/components/modals/ImportFromLink.vue";

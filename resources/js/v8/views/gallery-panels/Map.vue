@@ -1,10 +1,12 @@
 <template>
 	<Collapse :when="!is_full_screen">
-		<div class="w-full border-0 h-14 flex items-center justify-between px-2">
-			<GoBack @go-back="goBack" />
+		<UHeader :toggle="false" :ui="{ root: 'border-b-0', center: 'flex' }">
+			<template #left>
+				<GoBack @go-back="goBack" />
+			</template>
+
 			<span class="absolute left-1/2 -translate-x-1/2 pointer-events-none">{{ $t(lycheeStore.title) }}</span>
-			<div></div>
-		</div>
+		</UHeader>
 	</Collapse>
 	<div
 		id="lychee_map_container"

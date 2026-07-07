@@ -12,6 +12,11 @@ html {
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
+:root{
+	--ui-container: 100%;
+	--ui-header-height: 3.5rem;
+}
+
 /*
   Shared animation utilities used by v8 templates, ported here rather than
   imported from a dependency:
@@ -30,6 +35,21 @@ html {
 	--animate-landingIntroFadeOut: fadeOut 2s 2s forwards ease-in-out;
 	--animate-landingSlidesPopIn: popIn 2s 3s forwards ease-in-out;
 	--animate-landingEnterPopIn: zoomIn 2s 4s forwards ease-in-out;
+
+	--text-2xs: 0.65rem;
+	--text-2xs--line-height: 0.8rem;
+	--text-3xs: 0.55rem;
+	--text-3xs--line-height: 0.7rem;
+
+	--brightness-25: 0.25;
+	--brightness-175: 1.75;
+
+	--aspect-4x5: 4 / 5;
+	--aspect-5x4: 5 / 4;
+	--aspect-2x3: 2 / 3;
+	--aspect-3x2: 3 / 2;
+	--aspect-square: 1 / 1;
+	--aspect-video: 16 / 9;
 }
 @keyframes pulseToNull {
 	50% {

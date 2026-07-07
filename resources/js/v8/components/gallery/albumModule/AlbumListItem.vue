@@ -35,7 +35,22 @@
 				'aspect-video': 'aspect-video' === aspectRatio,
 			}"
 		>
+
+			<ListBadge v-if="album.id === 'highlighted'" class="fill-yellow-500" icon="star" />
+			<ListBadge v-else-if="album.id === 'unsorted'" class="fill-red-700" icon="list" />
+			<ListBadge v-else-if="album.id === 'recent'" class="fill-blue-700" icon="clock" />
+			<ListBadge v-else-if="album.id === 'on_this_day'" class="fill-green-600" icon="calendar" />
+			<ListBadge v-else-if="album.id === 'untagged'" class="fill-gray-500" icon="tags" />
+			<ListBadge v-else-if="album.id === 'one_star'" class="fill-yellow-500" icon="star-1" />
+			<ListBadge v-else-if="album.id === 'two_stars'" class="fill-yellow-500" icon="star-2" />
+			<ListBadge v-else-if="album.id === 'three_stars'" class="fill-yellow-500" icon="star-3" />
+			<ListBadge v-else-if="album.id === 'four_stars'" class="fill-yellow-500" icon="star-4" />
+			<ListBadge v-else-if="album.id === 'five_stars'" class="fill-yellow-500" icon="star-5" />
+			<ListBadge v-else-if="album.id === 'best_pictures'" class="text-cyan-500" pi="trophy" />
+			<ListBadge v-else-if="album.id === 'my_rated_pictures'" class="text-orange-500" pi="trophy" />
+			<ListBadge v-else-if="album.id === 'my_best_pictures'" class="text-yellow-500" pi="trophy" />
 			<AlbumThumbImage
+				v-else
 				class="border-none! hover:scale-800 hover:ltr:-translate-x-full hover:rtl:translate-x-full ltr:origin-left rtl:origin-right hover:z-30 top-0 left-0"
 				:thumb="album.thumb"
 				:is-password-protected="album.is_password_required"
@@ -71,11 +86,6 @@
 		<!-- Badges (if any) -->
 		<div class="flex gap-1">
 			<ListBadge v-if="album.is_nsfw" class="fill-[#ff82ee]" icon="warning" />
-			<ListBadge v-if="album.id === 'highlighted'" class="fill-yellow-500" icon="star" />
-			<ListBadge v-if="album.id === 'unsorted'" class="fill-red-700" icon="list" />
-			<ListBadge v-if="album.id === 'recent'" class="fill-blue-700" icon="clock" />
-			<ListBadge v-if="album.id === 'on_this_day'" class="fill-green-600" icon="calendar" />
-			<ListBadge v-if="album.id === 'untagged'" class="fill-gray-500" icon="tags" />
 			<ListBadge v-if="album.is_public" :class="album.is_link_required ? 'fill-orange-400' : 'fill-green-600'" icon="eye" />
 			<ListBadge v-if="album.is_password_required && album.thumb === null" class="fill-orange-400" icon="lock-locked" />
 			<ListBadge v-if="album.is_password_required && album.thumb !== null" class="fill-red-700" icon="lock-unlocked" />

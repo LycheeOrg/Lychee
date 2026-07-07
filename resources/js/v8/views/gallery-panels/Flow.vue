@@ -1,10 +1,13 @@
 <template>
 	<LoadingProgress v-model:loading="isLoading" />
 	<div class="h-svh overflow-y-auto">
-		<div class="w-full border-0 h-14 bg-transparent mb-8 flex items-center justify-between px-2">
-			<OpenLeftMenu />
+		<UHeader :toggle="false" class="mb-8" :ui="{ root: 'bg-transparent border-b-0', center: 'flex' }">
+			<template #left>
+				<OpenLeftMenu />
+			</template>
+
 			<span class="absolute left-1/2 -translate-x-1/2 text-lg font-semibold text-center hidden md:block">{{ title }}</span>
-		</div>
+		</UHeader>
 		<div class="absolute top-0 left-1/2 text-center text-lg font-semibold text-surface-0 w-xs -translate-x-1/2 md:hidden">
 			{{ title }}
 		</div>

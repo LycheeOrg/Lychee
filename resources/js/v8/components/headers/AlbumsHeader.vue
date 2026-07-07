@@ -1,16 +1,16 @@
 <template>
-	<div
+	<UHeader
 		v-if="albumsStore.rootConfig && albumsStore.rootRights"
-		class="w-full z-10 border-0 h-14 flex-nowrap relative flex items-center justify-between px-2"
 		:class="{
 			'bg-transparent': albumsStore.rootConfig.is_header_bar_transparent,
 			'bg-linear-to-b dark:from-surface-800 from-surface-50 via-75% light:via-surface-50/80 light:to-surface-50/20':
 				albumsStore.rootConfig.is_header_bar_gradient,
 		}"
+		:toggle="false"
 	>
-		<div class="flex items-center">
+		<template #left>
 			<OpenLeftMenu />
-		</div>
+		</template>
 
 		<div class="absolute top-0 py-3 left-1/2 -translate-x-1/2 h-14 flex items-center">
 			<template v-if="albumsStore.rootConfig.header_image_url === ''">
@@ -35,7 +35,7 @@
 			</template>
 		</div>
 
-		<div class="flex items-center gap-1">
+		<template #right>
 			<template v-if="userStore.isGuest">
 				<UButton as="router-link" :to="{ name: 'login' }" color="neutral" variant="ghost" class="py-2 px-4 rounded-xl hidden xl:inline-flex">
 					{{ $t("dialogs.login.signin") }}
@@ -81,8 +81,8 @@
 			<UDropdownMenu :items="mobileMenuSections" class="lg:hidden">
 				<UButton icon="prime:angle-double-down" color="neutral" variant="ghost" />
 			</UDropdownMenu>
-		</div>
-	</div>
+		</template>
+	</UHeader>
 	<div v-if="albumsStore.rootConfig?.header_image_url !== ''" class="relative w-full h-[50vh] -mt-14 z-0">
 		<img :src="albumsStore.rootConfig?.header_image_url" class="object-cover h-full w-full" />
 		<div class="absolute top-0 left-0 w-full h-full flex items-center justify-center px-20">

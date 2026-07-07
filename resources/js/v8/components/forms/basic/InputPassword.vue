@@ -36,6 +36,13 @@ const uiValue = computed<string | undefined>({
 		modelValue.value = v;
 	},
 });
-const classValue = ref((props.class ?? "") + " border-0 w-full border-b hover:border-b-error focus:border-b-error");
+const classValue = ref((props.class ?? "") + " border-0 w-full");
 const show = ref(false);
 </script>
+
+<style lang="css" scoped>
+/* Hide the password reveal button in Edge */
+::-ms-reveal {
+    display: none;
+}
+</style>

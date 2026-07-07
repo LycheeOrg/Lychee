@@ -1,25 +1,26 @@
 <template>
-	<div
+	<UHeader
 		v-if="albumStore.album"
-		class="w-full transition-all duration-100 ease-in-out @container flex items-center justify-between px-4 overflow-hidden"
 		:class="{
 			'max-h-14': !is_full_screen,
 			'max-h-0': is_full_screen,
 		}"
+		:toggle="false"
 	>
-		<div class="flex items-center min-w-0">
-			<template v-if="showBreadcrumb">
-				<LycheeBreadcrumb :items="albumStore.modelAlbum?.breadcrumb ?? []" :current-title="albumStore.album?.title ?? ''" />
-				<div class="flex @min-[28rem]:hidden">
-					<GoBack @go-back="emits('goBack')" />
-				</div>
-			</template>
+		<template #title>
+			<LycheeBreadcrumb
+				v-if="showBreadcrumb"
+				:key="`albumheader-${albumStore.albumId}`"
+				:items="albumStore.modelAlbum?.breadcrumb ?? []"
+				:current-title="albumStore.album?.title ?? ''"
+				@go-back="emits('goBack')"
+			/>
 			<GoBack v-else @go-back="emits('goBack')" />
-		</div>
+		</template>
 
-		<span :class="{ '@min-[28rem]:hidden': showBreadcrumb }">{{ albumStore.album.title }}</span>
+		<span v-if="!showBreadcrumb">{{ albumStore.album.title }}</span>
 
-		<div class="flex items-center gap-1">
+	    <template #right>
 			<UButton
 				v-if="is_touch_select_mode && (selectedPhotosIds.length > 0 || selectedAlbumsIds.length > 0)"
 				icon="prime:ellipsis-v"
@@ -75,8 +76,8 @@
 					/>
 				</template>
 			</template>
-		</div>
-	</div>
+		</template>
+	</UHeader>
 	<input id="upload_track_file" type="file" name="fileElem" accept="application/x-gpx+xml" class="hidden" @change="uploadTrack" />
 </template>
 <script setup lang="ts">

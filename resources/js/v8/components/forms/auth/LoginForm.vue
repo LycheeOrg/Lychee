@@ -47,9 +47,6 @@
 				<UCheckbox v-model="rememberMe" id="remember_me" />
 				<label for="remember_me" class="cursor-pointer">{{ $t("dialogs.login.remember_me") }}</label>
 			</div>
-			<div v-if="!is_white_label_enabled" class="text-muted text-right font-semibold">
-				Lychee <span v-if="is_se_enabled" class="text-primary-500">SE</span>
-			</div>
 			<div class="flex items-center gap-2 mt-4">
 				<UButton
 					v-if="closeCallback !== undefined"
@@ -60,7 +57,7 @@
 				>
 					{{ $t("dialogs.button.cancel") }}
 				</UButton>
-				<UButton color="neutral" class="flex-1 justify-center font-bold" @click="login">
+				<UButton color="primary" class="flex-1 justify-center font-bold" @click="login">
 					{{ $t("dialogs.login.signin") }}
 				</UButton>
 			</div>
@@ -115,7 +112,7 @@ const rememberMe = ref(false);
 const userStore = useUserStore();
 const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
-const { is_se_enabled, is_basic_auth_enabled, is_webauthn_enabled, is_white_label_enabled } = storeToRefs(lycheeStore);
+const { is_basic_auth_enabled, is_webauthn_enabled } = storeToRefs(lycheeStore);
 const { is_login_open, is_webauthn_open } = storeToRefs(togglableStore);
 const invalidPassword = ref(false);
 
