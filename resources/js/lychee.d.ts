@@ -51,14 +51,7 @@ declare namespace App.Enum {
 	export type AspectRatioType = "5/4" | "3/2" | "1/1" | "2/3" | "4/5" | "16/9";
 	export type CacheTag = "gallery" | "auth" | "user" | "settings" | "statistics" | "users";
 	export type ColumnSortingAlbumType =
-		| "owner_id"
-		| "created_at"
-		| "title"
-		| "description"
-		| "title_strict"
-		| "description_strict"
-		| "min_taken_at"
-		| "max_taken_at";
+		"owner_id" | "created_at" | "title" | "description" | "title_strict" | "description_strict" | "min_taken_at" | "max_taken_at";
 	export type ColumnSortingPhotoType =
 		| "owner_id"
 		| "created_at"
@@ -84,17 +77,7 @@ declare namespace App.Enum {
 		| "type"
 		| "rating_avg";
 	export type ConfigType =
-		| "int"
-		| "positive"
-		| "string"
-		| "string_required"
-		| "0|1"
-		| "0|1|2"
-		| ""
-		| "admin_user"
-		| "license"
-		| "map_provider"
-		| "currency";
+		"int" | "positive" | "string" | "string_required" | "0|1" | "0|1|2" | "" | "admin_user" | "license" | "map_provider" | "currency";
 	export type CountType = "taken_at" | "created_at";
 	export type CoverFitType = "cover" | "fit";
 	export type DateOrderingType = "older_younger" | "younger_older";
@@ -172,17 +155,7 @@ declare namespace App.Enum {
 	export type NsfwSensitiveNoAlbumAction = "skip" | "moderate";
 	export type NsfwStatus = "pending" | "failed" | "review" | "visible";
 	export type OauthProvidersType =
-		| "amazon"
-		| "apple"
-		| "authelia"
-		| "authentik"
-		| "facebook"
-		| "github"
-		| "google"
-		| "mastodon"
-		| "microsoft"
-		| "nextcloud"
-		| "keycloak";
+		"amazon" | "apple" | "authelia" | "authentik" | "facebook" | "github" | "google" | "mastodon" | "microsoft" | "nextcloud" | "keycloak";
 	export type OgImageAlbumSourceType = "header" | "cover";
 	export type OmnipayProviderType = "Dummy" | "Mollie" | "PayPal" | "Stripe";
 	export type OrderSortingType = "ASC" | "DESC";
@@ -219,14 +192,7 @@ declare namespace App.Enum {
 		| "my_best_pictures";
 	export type StorageDiskType = "images" | "s3";
 	export type ThumbAlbumSubtitleType =
-		| "disabled"
-		| "description"
-		| "takedate"
-		| "creation"
-		| "oldstyle"
-		| "num_photos"
-		| "num_albums"
-		| "num_photos_albums";
+		"disabled" | "description" | "takedate" | "creation" | "oldstyle" | "num_photos" | "num_albums" | "num_photos_albums";
 	export type TimelineAlbumGranularity = "default" | "disabled" | "year" | "month" | "day";
 	export type TimelinePhotoGranularity = "default" | "disabled" | "year" | "month" | "day" | "hour";
 	export type UpdateStatus = 0 | 1 | 2 | 3;
