@@ -17,9 +17,7 @@
 	<UContextMenu :items="menuSections" :disabled="albumsStore.albums.length === 0" class="contents">
 		<div v-if="albumsStore.rootConfig && albumsStore.rootRights" id="galleryView" class="relative w-full h-full select-none" @scroll="onScroll">
 			<SelectDrag :with-scroll="false" />
-			<Collapse :when="!is_full_screen">
-				<AlbumsHeader v-if="userStore.isLoaded" :title="title" @refresh="refresh" @help="is_keybindings_help_open = true" />
-			</Collapse>
+			<AlbumsHeader v-if="userStore.isLoaded" :title="title" @refresh="refresh" @help="is_keybindings_help_open = true" />
 
 			<!-- Smart Albums (always visible, above tabs per spec) -->
 			<AlbumThumbPanel
@@ -168,8 +166,6 @@ import { computed, ref, onMounted, onUnmounted } from "vue";
 import AlbumsHeader from "@/v8/components/headers/AlbumsHeader.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
-import { onKeyStroke } from "@vueuse/core";
-import { getModKey, shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import KeybindingsHelp from "@/v8/components/modals/KeybindingsHelp.vue";
 import { useSelection } from "@/composables/selections/selections";
 import { useContextMenu } from "@/composables/contextMenus/contextMenu";
@@ -178,7 +174,6 @@ import AlbumMergeDialog from "@/v8/components/forms/gallery-dialogs/AlbumMergeDi
 import DeleteDialog from "@/v8/components/forms/gallery-dialogs/DeleteDialog.vue";
 import RenameDialog from "@/v8/components/forms/gallery-dialogs/RenameDialog.vue";
 import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
-import { Collapse } from "vue-collapsed";
 import AlbumService from "@/services/album-service";
 import { useMouseEvents } from "@/v8/composables/album/uploadEvents";
 import GalleryFooter from "@/v8/components/footers/GalleryFooter.vue";
@@ -246,16 +241,8 @@ async function onLoggedIn() {
 const albumId = ref("gallery");
 
 const { onScroll, setScroll } = useScrollable(togglableStore, albumId);
-const {
-	is_full_screen,
-	is_login_open,
-	is_upload_visible,
-	list_upload_files,
-	upload_config,
-	is_webauthn_open,
-	is_import_from_server_open,
-	is_keybindings_help_open,
-} = storeToRefs(togglableStore);
+const { is_login_open, is_upload_visible, list_upload_files, upload_config, is_webauthn_open, is_import_from_server_open, is_keybindings_help_open } =
+	storeToRefs(togglableStore);
 const { are_nsfw_visible, title } = storeToRefs(lycheeStore);
 
 const { selectedAlbum, selectedAlbums, selectedAlbumsIds, albumSelect, selectEverything, unselect, hasSelection } = useSelection(
@@ -346,20 +333,34 @@ const menuSections = computed<ContextMenuItem[][]>(() => {
 	return sections.filter((s) => s.length > 0);
 });
 
-onKeyStroke("h", () => !shouldIgnoreKeystroke() && (are_nsfw_visible.value = !are_nsfw_visible.value));
-onKeyStroke("f", () => !shouldIgnoreKeystroke() && togglableStore.toggleFullScreen());
-onKeyStroke(" ", () => !shouldIgnoreKeystroke() && unselect());
-onKeyStroke("m", () => !shouldIgnoreKeystroke() && albumsStore.rootRights?.can_edit && hasSelection() && toggleMove());
-onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && albumsStore.rootRights?.can_edit && hasSelection() && toggleDelete());
-
-onKeyStroke("a", (e) => {
-	if (!shouldIgnoreKeystroke() && e.getModifierState(getModKey()) && !e.shiftKey && !e.altKey) {
-		e.preventDefault();
+defineShortcuts({
+	h: () => (are_nsfw_visible.value = !are_nsfw_visible.value),
+	f: () => togglableStore.toggleFullScreen(),
+	" ": () => unselect(),
+	m: () => albumsStore.rootRights?.can_edit && hasSelection() && toggleMove(),
+	Delete: () => albumsStore.rootRights?.can_edit && hasSelection() && toggleDelete(),
+	Backspace: () => albumsStore.rootRights?.can_edit && hasSelection() && toggleDelete(),
+	meta_a: () => {
 		selectEverything();
-	}
+	},
+	l: () => !userStore.isLoggedIn && (is_login_open.value = true),
+	k: () => !userStore.isLoggedIn && (is_webauthn_open.value = true),
 });
-onKeyStroke("l", () => !shouldIgnoreKeystroke() && !userStore.isLoggedIn && (is_login_open.value = true));
-onKeyStroke("k", () => !shouldIgnoreKeystroke() && !userStore.isLoggedIn && (is_webauthn_open.value = true));
+
+// onKeyStroke("h", () => !shouldIgnoreKeystroke() && (are_nsfw_visible.value = !are_nsfw_visible.value));
+// onKeyStroke("f", () => !shouldIgnoreKeystroke() && togglableStore.toggleFullScreen());
+// onKeyStroke(" ", () => !shouldIgnoreKeystroke() && unselect());
+// onKeyStroke("m", () => !shouldIgnoreKeystroke() && albumsStore.rootRights?.can_edit && hasSelection() && toggleMove());
+// onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && albumsStore.rootRights?.can_edit && hasSelection() && toggleDelete());
+
+// onKeyStroke("a", (e) => {
+// 	if (!shouldIgnoreKeystroke() && e.getModifierState(getModKey()) && !e.shiftKey && !e.altKey) {
+// 		e.preventDefault();
+// 		selectEverything();
+// 	}
+// });
+// onKeyStroke("l", () => !shouldIgnoreKeystroke() && !userStore.isLoggedIn && (is_login_open.value = true));
+// onKeyStroke("k", () => !shouldIgnoreKeystroke() && !userStore.isLoggedIn && (is_webauthn_open.value = true));
 
 const can_upload = computed(() => albumsStore.rootRights?.can_upload === true);
 const root_parent_id = ref<string | null>(null);

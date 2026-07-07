@@ -5,6 +5,9 @@ export const theme: ThemeProps = {
 		modal: {
 			close: false,
 		},
+		progress: {
+			size: "sm",
+		},
 	},
 	ui: {
 		slideover: {

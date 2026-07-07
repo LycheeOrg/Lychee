@@ -5,6 +5,8 @@
 			'bg-transparent': albumsStore.rootConfig.is_header_bar_transparent,
 			'bg-linear-to-b dark:from-surface-800 from-surface-50 via-75% light:via-surface-50/80 light:to-surface-50/20':
 				albumsStore.rootConfig.is_header_bar_gradient,
+			'max-h-14': !is_full_screen,
+			'max-h-0 overflow-hidden': is_full_screen,
 		}"
 		:toggle="false"
 	>
@@ -143,7 +145,8 @@ const orderManagementStore = useOrderManagementStore();
 
 const { dropbox_api_key, is_favourite_enabled, is_se_preview_enabled, is_live_metrics_enabled, is_registration_enabled, is_person_album_enabled } =
 	storeToRefs(lycheeStore);
-const { is_login_open, is_upload_visible, is_create_album_visible, is_create_tag_album_visible, is_metrics_open } = storeToRefs(togglableStore);
+const { is_login_open, is_upload_visible, is_create_album_visible, is_create_tag_album_visible, is_metrics_open, is_full_screen } =
+	storeToRefs(togglableStore);
 
 const router = useRouter();
 

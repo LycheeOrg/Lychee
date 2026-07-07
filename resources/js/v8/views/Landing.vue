@@ -85,14 +85,14 @@
 				>
 					{{ $t("landing.access_gallery") }}<br class="md:hidden" />
 					<template v-if="isLTR()">
-						<UIcon name="prime:angle-right" class="animate-pulseTo0 text-2xl animate-infinite" />
-						<UIcon name="prime:angle-right" class="animate-pulseTo0 text-2xl animate-delay-500 animate-infinite -ml-1" />
-						<UIcon name="prime:angle-right" class="animate-pulseTo0 text-2xl animate-delay-1000 animate-infinite -ml-1" />
+						<UIcon name="prime:angle-right" size="3rem" class="inline-block animate-pulseTo0 animate-infinite" />
+						<UIcon name="prime:angle-right" size="3rem" class="inline-block animate-pulseTo0 animate-delay-500 animate-infinite -ml-8" />
+						<UIcon name="prime:angle-right" size="3rem" class="inline-block animate-pulseTo0 animate-delay-1000 animate-infinite -ml-8" />
 					</template>
 					<template v-else>
-						<UIcon name="prime:angle-left" class="animate-pulseTo0 text-2xl animate-infinite" />
-						<UIcon name="prime:angle-left" class="animate-pulseTo0 text-2xl animate-delay-500 animate-infinite -mr-1" />
-						<UIcon name="prime:angle-left" class="animate-pulseTo0 text-2xl animate-delay-1000 animate-infinite -mr-1" />
+						<UIcon name="prime:angle-left" size="3rem" class="inline-block animate-pulseTo0 animate-infinite" />
+						<UIcon name="prime:angle-left" size="3rem" class="inline-block animate-pulseTo0 animate-delay-500 animate-infinite -mr-8" />
+						<UIcon name="prime:angle-left" size="3rem" class="inline-block animate-pulseTo0 animate-delay-1000 animate-infinite -mr-8" />
 					</template>
 				</RouterLink>
 			</div>

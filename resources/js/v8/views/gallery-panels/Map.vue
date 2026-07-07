@@ -1,13 +1,17 @@
 <template>
-	<Collapse :when="!is_full_screen">
-		<UHeader :toggle="false" :ui="{ root: 'border-b-0', center: 'flex' }">
-			<template #left>
-				<GoBack @go-back="goBack" />
-			</template>
+	<UHeader
+		:toggle="false"
+		:class="{
+			'max-h-14': !is_full_screen,
+			'max-h-0': is_full_screen,
+		}"
+	>
+		<template #left>
+			<GoBack @go-back="goBack" />
+		</template>
 
-			<span class="absolute left-1/2 -translate-x-1/2 pointer-events-none">{{ $t(lycheeStore.title) }}</span>
-		</UHeader>
-	</Collapse>
+		{{ $t(lycheeStore.title) }}
+	</UHeader>
 	<div
 		id="lychee_map_container"
 		class="leaflet-container leaflet-touch leaflet-retina leaflet-fade-anim leaflet-grab leaflet-touch-drag leaflet-touch-zoom w-full"
@@ -22,7 +26,6 @@ import { useLycheeStateStore } from "@/stores/LycheeState";
 import { trans } from "laravel-vue-i18n";
 import { storeToRefs } from "pinia";
 import { ref, Ref } from "vue";
-import { Collapse } from "vue-collapsed";
 import { useRouter } from "vue-router";
 import L, { LatLngBoundsLiteral } from "leaflet";
 import "leaflet-rotatedmarker/leaflet.rotatedMarker.js";
