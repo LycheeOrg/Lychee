@@ -70,9 +70,11 @@ class RssTest extends BaseApiWithDataTest
 
 	/**
 	 * A single photo (one row in `photos`) that belongs to two albums (two rows
-	 * in `photo_album`) must appear exactly once per album in the RSS feed.
+	 * in `photo_album`) must appear exactly once in the RSS feed: as a single
+	 * item that links to the newest of its albums (by `created_at`) and lists
+	 * every one of its albums as a `<category>`.
 	 */
-	public function testRSSPhotoInMultipleAlbumsIsNotDuplicated(): void
+	public function testRSSPhotoInMultipleAlbumsAppearsOnceWithAllCategories(): void
 	{
 		$config_manager = resolve(ConfigManager::class);
 		$init_config_value = $config_manager->getValue('rss_enable');
@@ -87,22 +89,80 @@ class RssTest extends BaseApiWithDataTest
 				->create();
 			$photo->albums()->attach($this->album2->id);
 
+			// The item links to whichever album is newest by created_at; compute
+			// it here so the test is robust to the fixtures' creation order.
+			$newest = $this->album1->created_at >= $this->album2->created_at ? $this->album1 : $this->album2;
+			$older = $newest->id === $this->album1->id ? $this->album2 : $this->album1;
+
 			$response = $this->actingAs($this->admin)->get('/feed');
 			$this->assertOk($response);
 			$content = $response->getContent();
 
-			// `<guid>` is rendered exactly once per feed item, so it is a reliable
-			// per-item marker (the page link itself also appears in `<link>`).
-			$guid_album1 = '<guid>' . route('gallery', ['albumId' => $this->album1->id, 'photoId' => $photo->id]) . '</guid>';
-			$guid_album2 = '<guid>' . route('gallery', ['albumId' => $this->album2->id, 'photoId' => $photo->id]) . '</guid>';
+			// The `<link>` carries the album the item points at (the `<guid>` is
+			// now a photo-scoped identifier), so it marks both the single item
+			// and which album that item links to.
+			$link_newest = '<link>' . route('gallery', ['albumId' => $newest->id, 'photoId' => $photo->id]) . '</link>';
+			$link_older = '<link>' . route('gallery', ['albumId' => $older->id, 'photoId' => $photo->id]) . '</link>';
 
-			// The photo is in two albums, so it must appear exactly once per album.
-			$this->assertSame(1, substr_count($content, $guid_album1), 'photo should appear once for album1');
-			$this->assertSame(1, substr_count($content, $guid_album2), 'photo should appear once for album2');
+			// Exactly one item, linking to the newest album only.
+			$this->assertSame(1, substr_count($content, $link_newest), 'photo should appear once, linked to the newest album');
+			$this->assertSame(0, substr_count($content, $link_older), 'photo must not produce a second item for the older album');
+
+			// Both albums appear as categories on that one item (Blade escapes the text).
+			$this->assertStringContainsString('<category>' . e($this->album1->title) . '</category>', $content, 'album1 should be a category');
+			$this->assertStringContainsString('<category>' . e($this->album2->title) . '</category>', $content, 'album2 should be a category');
 		} catch (\Exception $e) {
 			$this->assertTrue(false, 'Exception occurred: ' . $e->getMessage());
 		} finally {
 			Configs::set('rss_enable', $init_config_value);
 		}
+	}
+
+	/**
+	 * A photo's `<guid>` identifies the photo itself, so it must stay constant
+	 * even as the photo's album membership (and therefore its `<link>`) changes.
+	 */
+	public function testRSSPhotoGuidIsStableAcrossAlbumMembership(): void
+	{
+		$config_manager = resolve(ConfigManager::class);
+		$init_config_value = $config_manager->getValue('rss_enable');
+
+		try {
+			Configs::set('rss_enable', '1');
+
+			$photo = Photo::factory()->owned_by($this->admin)->in($this->album1)->create();
+
+			// GUID while the photo is in a single album. It identifies the photo,
+			// not the album, so it must not embed the album id.
+			$guid = $this->fetchPhotoGuid($photo->id);
+			$this->assertStringNotContainsString($this->album1->id, $guid, 'GUID must not embed the album id');
+
+			// Adding a second album must not change it.
+			$photo->albums()->attach($this->album2->id);
+			$this->assertSame($guid, $this->fetchPhotoGuid($photo->id), 'GUID must be stable when an album is added');
+
+			// Nor must moving the photo to a different album entirely.
+			$photo->albums()->detach($this->album1->id);
+			$this->assertSame($guid, $this->fetchPhotoGuid($photo->id), 'GUID must be stable when album membership changes');
+		} catch (\Exception $e) {
+			$this->assertTrue(false, 'Exception occurred: ' . $e->getMessage());
+		} finally {
+			Configs::set('rss_enable', $init_config_value);
+		}
+	}
+
+	/**
+	 * Fetches the RSS feed as admin and returns the `<guid>` text of the single
+	 * feed item belonging to the given photo.
+	 */
+	private function fetchPhotoGuid(string $photo_id): string
+	{
+		$content = $this->actingAs($this->admin)->get('/feed')->getContent();
+		self::assertIsString($content);
+
+		$count = preg_match_all('#<guid[^>]*>([^<]*' . preg_quote($photo_id, '#') . '[^<]*)</guid>#', $content, $matches);
+		self::assertSame(1, $count, 'feed should contain exactly one guid for the photo');
+
+		return $matches[1][0];
 	}
 }
