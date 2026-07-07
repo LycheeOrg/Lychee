@@ -1,37 +1,14 @@
 import type { Photo, PositionedPhoto, LayoutResult } from "@/embed/types";
+import { square } from "./wasmLayouts";
 
 /**
  * Square Layout Algorithm
  *
  * All photos displayed as perfect squares in a regular grid pattern.
  * Photos are cropped to fit squares, row heights are synchronized.
- */
-
-interface ColumnData {
-	left: number;
-	height: number;
-}
-
-/**
- * Calculate number of columns and final square size
  *
- * @param containerWidth Available container width
- * @param targetSize Target square size
- * @param gap Gap between squares
- * @returns Column count and adjusted square size
+ * Requires the WASM module to already be initialized (see `initLayouts` in ./wasmLayouts).
  */
-function calculateSquareColumns(containerWidth: number, targetSize: number, gap: number): { columns: number; finalSquareSize: number } {
-	if (containerWidth <= 0) {
-		return { columns: 1, finalSquareSize: 0 };
-	}
-
-	const bucketSize = targetSize + gap;
-	const columns = Math.max(1, Math.floor(containerWidth / bucketSize));
-	const usableWidth = containerWidth - (columns - 1) * gap;
-	const finalSquareSize = Math.max(0, Math.floor(usableWidth / columns));
-
-	return { columns, finalSquareSize };
-}
 
 /**
  * Square layout implementation
@@ -47,42 +24,27 @@ export function layoutSquare(photos: Photo[], containerWidth: number, targetSize
 		return { photos: [], containerHeight: 0 };
 	}
 
-	// Calculate columns and final square size
-	const { columns, finalSquareSize } = calculateSquareColumns(containerWidth, targetSize, gap);
+	// Aspect ratios are ignored by the square algorithm; only the count matters.
+	const ratios = new Float64Array(photos.length).fill(1);
 
-	// Initialize column tracking
-	const columnData: ColumnData[] = Array.from({ length: columns }, (_, i) => ({
-		left: i * (finalSquareSize + gap),
-		height: 0,
-	}));
+	const geometry = square(ratios, containerWidth, targetSize, gap);
 
-	// Position photos
 	const positionedPhotos: PositionedPhoto[] = photos.map((photo, index) => {
-		const columnIndex = index % columns;
-		const column = columnData[columnIndex];
+		const box = geometry.boxes[index];
 
-		// Create positioned photo
-		const positioned: PositionedPhoto = {
+		return {
 			...photo,
 			position: {
-				width: finalSquareSize,
-				height: finalSquareSize, // Square!
-				left: column.left,
-				top: column.height,
+				width: box.width,
+				height: box.height,
+				left: box.left,
+				top: box.top,
 			},
 		};
-
-		// Update column height
-		column.height += finalSquareSize + gap;
-
-		return positioned;
 	});
-
-	// Calculate final container height
-	const containerHeight = Math.max(0, Math.max(...columnData.map((c) => c.height)) - gap);
 
 	return {
 		photos: positionedPhotos,
-		containerHeight,
+		containerHeight: geometry.containerHeight,
 	};
 }

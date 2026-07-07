@@ -13,22 +13,23 @@
 					{{ $t("dialogs.apply_renamer.no_rules") }}
 				</div>
 				<div v-else class="text-left space-y-2 max-h-60 overflow-y-auto">
-					<div v-for="rule in rules" :key="rule.id" class="flex items-start gap-2 p-2 rounded hover:bg-elevated">
-						<UCheckbox v-model="selected_rule_ids" :value="rule.id" :input-id="'rule-' + rule.id" class="mt-0.5" />
-						<label :for="'rule-' + rule.id" class="cursor-pointer flex-1">
-							<div class="font-semibold text-sm">{{ rule.rule }}</div>
-							<div class="text-xs text-muted mt-1 space-y-0.5">
-								<div class="flex gap-2">
-									<span class="font-mono bg-elevated px-1.5 py-0.5 rounded">{{ rule.mode }}</span>
-									<span v-if="['first', 'all', 'regex', 'trim'].includes(rule.mode)">
-										<span class="text-error">"{{ rule.needle }}"</span>
-										<span class="mx-1">→</span>
-										<span class="text-success">"{{ rule.replacement }}"</span>
-									</span>
+					<div v-for="rule in rules" :key="rule.id" class="p-2 rounded hover:bg-elevated">
+						<UCheckbox v-model="selected_rule_ids" :value="rule.id" class="w-full">
+							<template #label>
+								<div class="font-semibold text-sm">{{ rule.rule }}</div>
+								<div class="text-xs text-muted mt-1 space-y-0.5">
+									<div class="flex gap-2">
+										<span class="font-mono bg-elevated px-1.5 py-0.5 rounded">{{ rule.mode }}</span>
+										<span v-if="['first', 'all', 'regex', 'trim'].includes(rule.mode)">
+											<span class="text-error">"{{ rule.needle }}"</span>
+											<span class="mx-1">→</span>
+											<span class="text-success">"{{ rule.replacement }}"</span>
+										</span>
+									</div>
+									<div v-if="rule.description" class="text-muted/80">{{ rule.description }}</div>
 								</div>
-								<div v-if="rule.description" class="text-muted/80">{{ rule.description }}</div>
-							</div>
-						</label>
+							</template>
+						</UCheckbox>
 					</div>
 				</div>
 

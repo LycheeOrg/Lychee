@@ -10,7 +10,7 @@
 						–
 						<a
 							target="_blank"
-							class="border-b-neutral-200 border-b-[1px] border-dashed"
+							class="border-b-neutral-200 border-b border-dashed"
 							rel="noopener"
 							href="https://github.com/LycheeOrg/Lychee/releases"
 						>
@@ -21,7 +21,7 @@
 						–
 						<a
 							target="_blank"
-							class="border-b-neutral-200 border-b-[1px] border-dashed"
+							class="border-b-neutral-200 border-b border-dashed"
 							rel="noopener"
 							href="https://github.com/LycheeOrg/Lychee"
 						>

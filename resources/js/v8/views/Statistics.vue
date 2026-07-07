@@ -13,7 +13,7 @@
 	<UCard class="max-w-5xl mx-auto" :ui="{ header: 'hidden' }">
 		<template v-if="userStore.isLoggedIn && total !== undefined && showTotal">
 			<TotalCard :total="total" />
-			<div class="py-4"><USwitch v-model="is_collapsed" class="text-sm" /> {{ $t("statistics.collapse") }}</div>
+			<USwitch v-model="is_collapsed" class="py-4" :label="$t('statistics.collapse')" :ui="{ label: 'text-sm' }" />
 		</template>
 		<AlbumsTable
 			v-if="userStore.isLoggedIn"

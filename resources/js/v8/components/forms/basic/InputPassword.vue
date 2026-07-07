@@ -1,5 +1,14 @@
 <template>
-	<UInput v-model="uiValue" :class="classValue" :disabled="props.invalid" :type="show ? 'text' : 'password'" :ui="{ trailing: 'pe-1' }">
+	<UInput
+		v-model="uiValue"
+		:class="classValue"
+		:disabled="props.disabled"
+		:type="show ? 'text' : 'password'"
+		:ui="{
+			trailing: 'pe-1',
+			base: props.invalid ? 'border border-error focus:border-none active:border-none' : '',
+		}"
+	>
 		<template #trailing>
 			<UButton
 				color="neutral"
@@ -20,10 +29,8 @@
 import { computed, ref } from "vue";
 
 const props = defineProps<{
-	size?: "small" | "large" | undefined;
+	disabled?: boolean | undefined;
 	invalid?: boolean | undefined;
-	variant?: "outlined" | "filled" | undefined;
-	fluid?: boolean;
 	class?: string;
 }>();
 
@@ -36,13 +43,13 @@ const uiValue = computed<string | undefined>({
 		modelValue.value = v;
 	},
 });
-const classValue = ref((props.class ?? "") + " border-0 w-full");
+const classValue = computed(() => (props.class ?? "") + " w-full");
 const show = ref(false);
 </script>
 
 <style lang="css" scoped>
 /* Hide the password reveal button in Edge */
 ::-ms-reveal {
-    display: none;
+	display: none;
 }
 </style>

@@ -41,15 +41,11 @@
 				<span class="text-muted text-xs"> {{ $t("webshop.infoSection.emailUsageNote") }} </span>
 				<span v-if="errors.email" class="text-error text-sm">{{ errors.email }}</span>
 			</div>
-			<div class="flex items-center gap-2">
-				<UCheckbox v-model="consentGiven" id="consent" class="mt-4" />
-				<label
-					for="consent"
-					class="text-sm text-highlighted"
-					v-html="sprintf(trans('webshop.infoSection.consentAgreement'), options.privacy_url, options.terms_url)"
-				>
-				</label>
-			</div>
+			<UCheckbox v-model="consentGiven" class="mt-4" :ui="{ label: 'text-sm text-highlighted' }">
+				<template #label>
+					<span v-html="sprintf(trans('webshop.infoSection.consentAgreement'), options.privacy_url, options.terms_url)"></span>
+				</template>
+			</UCheckbox>
 
 			<!-- Shipping address (required when basket contains print items) -->
 			<template v-if="orderManagementStore.hasPrintItems">

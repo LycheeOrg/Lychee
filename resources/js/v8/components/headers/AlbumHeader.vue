@@ -20,7 +20,7 @@
 
 		<span v-if="!showBreadcrumb">{{ albumStore.album.title }}</span>
 
-	    <template #right>
+		<template #right>
 			<UButton
 				v-if="is_touch_select_mode && (selectedPhotosIds.length > 0 || selectedAlbumsIds.length > 0)"
 				icon="prime:ellipsis-v"
@@ -120,7 +120,7 @@ const emits = defineEmits<{
 	openContextMenu: [event: MouseEvent];
 }>();
 
-const showBreadcrumb = computed(() => (albumStore.config?.is_breadcrumb_enabled ?? false) && (albumStore.modelAlbum?.breadcrumb.length ?? 0) > 0);
+const showBreadcrumb = computed(() => albumStore.config?.is_breadcrumb_enabled ?? false);
 
 function toggleUploadTrack() {
 	document.getElementById("upload_track_file")?.click();

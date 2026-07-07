@@ -26,7 +26,7 @@
 	</div>
 </template>
 <script setup lang="ts">
-import { useLayouts, type TimelineData } from "@/layouts/PhotoLayout";
+import { useLayouts, type TimelineData } from "@/v8/layouts/PhotoLayout";
 import { computed, onMounted, onUnmounted, onUpdated, watch } from "vue";
 import PhotoThumb from "./thumbs/PhotoThumb.vue";
 import PhotoListView from "./PhotoListView.vue";

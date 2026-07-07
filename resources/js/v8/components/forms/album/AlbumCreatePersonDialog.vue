@@ -9,10 +9,12 @@
 				<UFormField :label="$t('dialogs.new_person_album.set_persons')">
 					<PersonsInput v-model="selectedPersons" />
 				</UFormField>
-				<div class="flex gap-2 items-center my-2">
-					<USwitch v-model="is_and" id="pp_is_and" />
-					<label for="pp_is_and" class="text-highlighted">{{ $t("gallery.album.properties.all_persons_must_match") }}</label>
-				</div>
+				<USwitch
+					v-model="is_and"
+					class="my-2"
+					:label="$t('gallery.album.properties.all_persons_must_match')"
+					:ui="{ label: 'text-highlighted' }"
+				/>
 			</div>
 		</template>
 		<template #footer>

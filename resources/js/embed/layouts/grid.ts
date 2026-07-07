@@ -1,5 +1,6 @@
 import type { Photo, PositionedPhoto, LayoutResult } from "@/embed/types";
 import { getAspectRatio, getSafeDimensions } from "@/embed/utils/columns";
+import { grid } from "./wasmLayouts";
 
 /**
  * Grid Layout Algorithm
@@ -8,38 +9,9 @@ import { getAspectRatio, getSafeDimensions } from "@/embed/utils/columns";
  * Aspect ratios preserved within columns.
  * Row heights synchronized across columns.
  * Balanced between uniformity and aspect ratios.
- */
-
-interface ColumnData {
-	left: number;
-	height: number;
-}
-
-/**
- * Calculate number of columns and final column width
  *
- * @param containerWidth Available container width
- * @param targetWidth Target column width
- * @param gap Gap between columns
- * @returns Column count and adjusted width
+ * Requires the WASM module to already be initialized (see `initLayouts` in ./wasmLayouts).
  */
-function calculateGridColumns(containerWidth: number, targetWidth: number, gap: number): { columns: number; finalWidth: number } {
-	// How many columns fit?
-	const columns = Math.max(1, Math.floor((containerWidth + gap) / (targetWidth + gap)));
-
-	// Remaining space after fitting columns + gaps
-	const usedSpace = columns * targetWidth + (columns - 1) * gap;
-	const remainingSpace = containerWidth - usedSpace;
-
-	// Distribute remaining space evenly across all columns
-	// Use Math.floor to prevent width overflow
-	const spread = Math.floor(remainingSpace / columns);
-
-	// Final column width after distributing extra space
-	const finalWidth = targetWidth + spread;
-
-	return { columns, finalWidth };
-}
 
 /**
  * Grid layout implementation
@@ -55,53 +27,31 @@ export function layoutGrid(photos: Photo[], containerWidth: number, targetColumn
 		return { photos: [], containerHeight: 0 };
 	}
 
-	// Calculate columns and final width
-	const { columns, finalWidth } = calculateGridColumns(containerWidth, targetColumnWidth, gap);
+	const aspectRatios = Float64Array.from(
+		photos.map((photo) => {
+			const { width, height } = getSafeDimensions(photo.size_variants);
+			return getAspectRatio(width, height);
+		}),
+	);
 
-	// Initialize column tracking
-	const columnData: ColumnData[] = Array.from({ length: columns }, (_, i) => ({
-		left: i * (finalWidth + gap),
-		height: 0,
-	}));
+	const geometry = grid(aspectRatios, containerWidth, targetColumnWidth, gap);
 
-	// Position photos using round-robin with row synchronization
 	const positionedPhotos: PositionedPhoto[] = photos.map((photo, index) => {
-		const columnIndex = index % columns; // Round-robin distribution
-		const column = columnData[columnIndex];
+		const box = geometry.boxes[index];
 
-		// Synchronize row heights at start of each new row
-		if (index % columns === 0 && index > 0) {
-			const maxHeight = Math.max(...columnData.map((c) => c.height));
-			columnData.forEach((c) => (c.height = maxHeight));
-		}
-
-		// Calculate height maintaining aspect ratio
-		const { width, height: photoHeight } = getSafeDimensions(photo.size_variants);
-		const aspectRatio = getAspectRatio(width, photoHeight);
-		const height = Math.floor(finalWidth / aspectRatio);
-
-		// Create positioned photo
-		const positioned: PositionedPhoto = {
+		return {
 			...photo,
 			position: {
-				width: finalWidth,
-				height: height,
-				left: column.left,
-				top: column.height,
+				width: box.width,
+				height: box.height,
+				left: box.left,
+				top: box.top,
 			},
 		};
-
-		// Update column height
-		column.height += height + gap;
-
-		return positioned;
 	});
-
-	// Calculate final container height
-	const containerHeight = Math.max(...columnData.map((c) => c.height)) - gap;
 
 	return {
 		photos: positionedPhotos,
-		containerHeight,
+		containerHeight: geometry.containerHeight,
 	};
 }

@@ -19,21 +19,32 @@
 		<div class="md:max-w-md mt-2 mb-16 mx-auto">
 			<ul v-if="is_se_enabled || is_se_preview_enabled" class="mb-4">
 				<li class="ltr:ml-2 rtl:mr-2 pt-1 flex items-center gap-x-4">
-					<UCheckbox v-model="withChecksumConstraint" :disabled="is_se_preview_enabled" @update:model-value="fetch" />
-					<label for="withChecksumConstraint" :class="{ 'text-highlighted': isValid, 'text-warning': !isValid }">
-						{{ $t("duplicate-finder.checksum-must-match") }}
-					</label>
+					<UCheckbox
+						v-model="withChecksumConstraint"
+						:disabled="is_se_preview_enabled"
+						:label="$t('duplicate-finder.checksum-must-match')"
+						:ui="{ label: isValid ? 'text-highlighted' : 'text-warning' }"
+						@update:model-value="fetch"
+					/>
 				</li>
 				<li class="ltr:ml-2 rtl:mr-2 pt-1 flex items-center gap-x-4">
-					<UCheckbox v-model="withTitleConstraint" :disabled="is_se_preview_enabled" @update:model-value="fetch" />
-					<label for="withTitleConstraint" :class="{ 'text-highlighted': isValid, 'text-warning': !isValid }">
-						{{ $t("duplicate-finder.title-must-match") }}
-					</label>
+					<UCheckbox
+						v-model="withTitleConstraint"
+						:disabled="is_se_preview_enabled"
+						:label="$t('duplicate-finder.title-must-match')"
+						:ui="{ label: isValid ? 'text-highlighted' : 'text-warning' }"
+						@update:model-value="fetch"
+					/>
 					<SETag />
 				</li>
 				<li class="ltr:ml-2 rtl:mr-2 pt-1 flex items-center gap-x-4">
-					<UCheckbox v-model="withAlbumConstraint" :disabled="is_se_preview_enabled" @update:model-value="fetch" />
-					<label for="withAlbumConstraint" class="text-muted"> {{ $t("duplicate-finder.must-be-in-same-album") }} </label>
+					<UCheckbox
+						v-model="withAlbumConstraint"
+						:disabled="is_se_preview_enabled"
+						:label="$t('duplicate-finder.must-be-in-same-album')"
+						:ui="{ label: 'text-muted' }"
+						@update:model-value="fetch"
+					/>
 					<SETag />
 				</li>
 			</ul>

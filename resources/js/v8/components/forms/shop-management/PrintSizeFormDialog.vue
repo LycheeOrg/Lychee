@@ -24,10 +24,7 @@
 				<UFormField :label="$t('webshop.sizeCatalogue.paperType')">
 					<UInput id="print-paper-type" v-model="form.paper_type" class="w-full" />
 				</UFormField>
-				<div class="flex items-center gap-2">
-					<UCheckbox v-model="form.is_active" id="print-active" />
-					<label for="print-active">{{ $t("webshop.sizeCatalogue.active") }}</label>
-				</div>
+				<UCheckbox v-model="form.is_active" :label="$t('webshop.sizeCatalogue.active')" />
 			</div>
 		</template>
 		<template #footer>

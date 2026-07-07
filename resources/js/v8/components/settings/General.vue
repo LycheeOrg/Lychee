@@ -166,12 +166,8 @@
 			<div class="mb-4 text-muted">
 				<p>
 					{{ $t("settings.gallery.license_help") }}
-					<a
-						href="https://creativecommons.org/choose/"
-						target="_blank"
-						class="pl-2 border-b border-dashed border-b-primary-500 text-primary-500"
-					>
-						<UIcon name="prime:link" />
+					<a href="https://creativecommons.org/choose/" target="_blank" class="ml-2 text-primary-500">
+						<UIcon name="prime:link" class="inline" />
 					</a>
 				</p>
 			</div>

@@ -33,10 +33,9 @@
 					'opacity-100': props.hasExperts,
 				}"
 			>
-				<USwitch v-model="is_expert_mode" id="expertModeToggle" :disabled="!props.hasExperts"></USwitch>
-				<label for="expertModeToggle" class="text-muted flex items-center gap-2"
-					>{{ $t("settings.all.expert_settings") }}<UIcon name="prime:graduation-cap"
-				/></label>
+				<USwitch v-model="is_expert_mode" :disabled="!props.hasExperts" :ui="{ label: 'text-muted flex items-center gap-2' }">
+					<template #label>{{ $t("settings.all.expert_settings") }}<UIcon name="prime:graduation-cap" /></template>
+				</USwitch>
 			</div>
 			<div class="flex items-center w-full justify-end">
 				<UTooltip :text="$t('settings.all.old_setting_style')">

@@ -35,7 +35,6 @@
 				'aspect-video': 'aspect-video' === aspectRatio,
 			}"
 		>
-
 			<ListBadge v-if="album.id === 'highlighted'" class="fill-yellow-500" icon="star" />
 			<ListBadge v-else-if="album.id === 'unsorted'" class="fill-red-700" icon="list" />
 			<ListBadge v-else-if="album.id === 'recent'" class="fill-blue-700" icon="clock" />

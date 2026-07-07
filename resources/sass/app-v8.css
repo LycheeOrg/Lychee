@@ -12,7 +12,7 @@ html {
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
-:root{
+:root {
 	--ui-container: 100%;
 	--ui-header-height: 3.5rem;
 }

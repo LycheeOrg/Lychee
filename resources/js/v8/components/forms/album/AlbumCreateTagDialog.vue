@@ -9,10 +9,12 @@
 				<UFormField :label="$t('dialogs.new_tag_album.set_tags')">
 					<TagsInput v-model="tags" :add="false" />
 				</UFormField>
-				<div class="flex gap-2 items-center my-2">
-					<USwitch v-model="is_and" id="pp_is_and" />
-					<label for="pp_is_and" class="text-highlighted">{{ $t("gallery.album.properties.all_tags_must_match") }}</label>
-				</div>
+				<USwitch
+					v-model="is_and"
+					class="my-2"
+					:label="$t('gallery.album.properties.all_tags_must_match')"
+					:ui="{ label: 'text-highlighted' }"
+				/>
 			</div>
 		</template>
 		<template #footer>

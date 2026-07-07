@@ -1,6 +1,6 @@
-import justifiedLayout from "justified-layout";
 import type { Photo, PositionedPhoto, LayoutResult } from "@/embed/types";
 import { getAspectRatio, getSafeDimensions } from "@/embed/utils/columns";
+import { justified } from "./wasmLayouts";
 
 /**
  * Justified Layout Algorithm (Flickr-style)
@@ -8,7 +8,9 @@ import { getAspectRatio, getSafeDimensions } from "@/embed/utils/columns";
  * Photos arranged in rows with consistent height.
  * Aspect ratios preserved.
  * Photos scaled to fit perfectly within rows.
- * Uses Flickr's justified-layout library v4.1.0.
+ * Uses the @lychee-org/layouts WASM implementation of Flickr's justified-layout algorithm.
+ *
+ * Requires the WASM module to already be initialized (see `initLayouts` in ./wasmLayouts).
  */
 
 /**
@@ -26,23 +28,15 @@ export function layoutJustified(photos: Photo[], containerWidth: number, targetR
 	}
 
 	// Extract aspect ratios from photos
-	const aspectRatios = photos.map((photo) => {
-		const { width, height } = getSafeDimensions(photo.size_variants);
-		return getAspectRatio(width, height);
-	});
+	const aspectRatios = Float64Array.from(
+		photos.map((photo) => {
+			const { width, height } = getSafeDimensions(photo.size_variants);
+			return getAspectRatio(width, height);
+		}),
+	);
 
-	// Calculate layout geometry using justified-layout library
-	const geometry = justifiedLayout(aspectRatios, {
-		containerWidth: containerWidth,
-		containerPadding: 0,
-		targetRowHeight: targetRowHeight,
-		boxSpacing: {
-			horizontal: gap,
-			vertical: gap,
-		},
-		// Ensure last row is justified (not left-aligned)
-		fullWidthBreakoutRowCadence: false,
-	});
+	// Calculate layout geometry using the WASM justified layout engine
+	const geometry = justified(aspectRatios, containerWidth, targetRowHeight, gap);
 
 	// Position photos according to calculated geometry
 	const positionedPhotos: PositionedPhoto[] = photos.map((photo, index) => {

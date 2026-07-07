@@ -80,10 +80,15 @@
 
 					<p class="font-semibold text-sm mt-2">{{ $t("bulk_album_edit.section_visibility") }}</p>
 
-					<div class="grid grid-cols-2 gap-3">
+					<div class="grid grid-cols-2 gap-3 text-sm">
 						<div v-for="field in visibleBoolFields" :key="field.key" class="flex items-center gap-2">
-							<UCheckbox v-model="editEnabled[field.key]" class="shrink-0" :disabled="field.seOnly === true && !is_se_enabled" />
-							<label class="text-sm flex-1" :class="field.red ? 'text-error' : ''">{{ $t("bulk_album_edit." + field.label) }}</label>
+							<UCheckbox
+								v-model="editEnabled[field.key]"
+								class="flex-1"
+								:disabled="field.seOnly === true && !is_se_enabled"
+								:label="$t('bulk_album_edit.' + field.label)"
+								:ui="{ label: field.red ? 'text-error' : '' }"
+							/>
 							<USwitch
 								:model-value="editBoolValues[field.key]"
 								:disabled="field.seOnly === true && !is_se_enabled"

@@ -203,6 +203,7 @@ import { layoutMasonry } from "@/embed/layouts/masonry";
 import { layoutGrid } from "@/embed/layouts/grid";
 import { layoutJustified } from "@/embed/layouts/justified";
 import { layoutFilmstrip, filmstripToLayoutResult } from "@/embed/layouts/filmstrip";
+import { initLayouts } from "@/embed/layouts/wasmLayouts";
 import Lightbox from "./Lightbox.vue";
 
 interface Props {
@@ -273,7 +274,7 @@ function getBestSizeVariant(photo: PositionedPhoto): string {
 /**
  * Calculate layout based on selected algorithm
  */
-function calculateLayout() {
+async function calculateLayout() {
 	if (!albumData.value || !gridContainer.value) {
 		return;
 	}
@@ -283,6 +284,8 @@ function calculateLayout() {
 	const maxPhotos = props.config.maxPhotos ?? 18;
 	const photos = maxPhotos === "none" ? albumData.value.photos : albumData.value.photos.slice(0, maxPhotos);
 	const spacing = props.config.spacing ?? 8;
+
+	await initLayouts();
 
 	let result;
 

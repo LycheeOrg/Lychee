@@ -18,10 +18,7 @@
 						<UInputNumber id="pixel-height" v-model="form.height" :min="1" class="w-full" />
 					</UFormField>
 				</div>
-				<div class="flex items-center gap-2">
-					<UCheckbox v-model="form.is_active" id="pixel-active" />
-					<label for="pixel-active">{{ $t("webshop.sizeCatalogue.active") }}</label>
-				</div>
+				<UCheckbox v-model="form.is_active" :label="$t('webshop.sizeCatalogue.active')" />
 			</div>
 		</template>
 		<template #footer>

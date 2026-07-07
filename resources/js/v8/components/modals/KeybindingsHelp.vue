@@ -10,26 +10,26 @@
 					:key="`list-${idx}`"
 					:data="list.shortcuts"
 					:columns="columns"
-					class="max-w-2xs  w-full"
+					class="max-w-2xs w-full"
 					:ui="{ thead: 'hidden', td: 'px-2 py-1' }"
 				>
 					<template #key-cell="{ row }">
 						<div class="ltr:text-right rtl:text-left">
-						<UKbd
-							v-for="k in (row.original.key as string).split(' ')"
-							:key="`key-${idx}-${k}`"
-							variant="subtle"
-							class="ml-2"
-							:value="k"
+							<UKbd
+								v-for="k in (row.original.key as string).split(' ')"
+								:key="`key-${idx}-${k}`"
+								variant="subtle"
+								class="ml-2"
+								:value="k"
 							/>
 						</div>
 					</template>
 				</UTable>
 				<div class="w-full flex justify-center mt-4 items-center gap-2">
-					<UCheckbox v-model="doNotShowAgain" :ui="{label: 'text-muted'}" :label="trans('dialogs.keybindings.don_t_show_again')" />
+					<UCheckbox v-model="doNotShowAgain" :ui="{ label: 'text-muted' }" :label="trans('dialogs.keybindings.don_t_show_again')" />
 				</div>
 				<div class="w-full flex justify-center mb-4 items-center gap-2">
-					<UCheckbox v-model="hideHeaderButton" :ui="{label: 'text-muted'}" :label="trans('dialogs.keybindings.hide_header_button')" />
+					<UCheckbox v-model="hideHeaderButton" :ui="{ label: 'text-muted' }" :label="trans('dialogs.keybindings.hide_header_button')" />
 				</div>
 			</div>
 		</template>

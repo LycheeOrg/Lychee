@@ -83,9 +83,12 @@
 			</UFormField>
 
 			<!-- Consent (optional) -->
-			<div v-if="contactConfig.is_consent_required" class="flex items-start gap-3">
-				<UCheckbox v-model="form.consent_agreed" id="contact-consent" :color="errors.consent_agreed !== '' ? 'error' : undefined" />
-				<label for="contact-consent" class="text-sm cursor-pointer">
+			<UCheckbox
+				v-if="contactConfig.is_consent_required"
+				v-model="form.consent_agreed"
+				:color="errors.consent_agreed !== '' ? 'error' : undefined"
+			>
+				<template #label>
 					{{ contactConfig.consent_text ? contactConfig.consent_text : $t("contact.consent_label") }} <span class="text-error">*</span
 					><br />
 					<a
@@ -97,8 +100,8 @@
 					>
 						{{ $t("contact.consent_privacy_link") }}
 					</a>
-				</label>
-			</div>
+				</template>
+			</UCheckbox>
 			<small v-if="errors.consent_agreed" class="text-error">{{ errors.consent_agreed }}</small>
 
 			<!-- Global error -->

@@ -178,7 +178,7 @@ import { useAppToast } from "@/v8/composables/useAppToast";
 import Spinner from "@/v8/components/Spinner.vue";
 import { trans } from "laravel-vue-i18n";
 import { useDebounceFn, onKeyStroke } from "@vueuse/core";
-import createJustifiedLayout from "justified-layout";
+import { initLayouts, justified } from "@/v8/layouts/wasmLayouts";
 import MergePersonModal from "@/v8/components/modals/faceRecog/MergePersonModal.vue";
 import PaginationInfiniteScroll from "@/v8/components/pagination/PaginationInfiniteScroll.vue";
 import PhotoPanel from "@/v8/components/gallery/photoModule/PhotoPanel.vue";
@@ -237,22 +237,25 @@ const hasMorePhotos = ref(false);
 const photoListingRef = ref<HTMLElement | null>(null);
 const photoListingHeight = ref(0);
 
-function runJustifiedLayout() {
+async function runJustifiedLayout() {
 	const el = photoListingRef.value;
 	if (!el) return;
 	const containerWidth = el.clientWidth;
 	if (containerWidth <= 0) return;
 	const items = [...el.childNodes].filter((n) => n.nodeType === 1) as HTMLElement[];
-	const ratios = items.map((item) => {
-		const w = parseFloat(item.dataset.width ?? "1");
-		const h = parseFloat(item.dataset.height ?? "1");
-		return h > 0 ? w / h : 1;
-	});
+	const ratios = Float64Array.from(
+		items.map((item) => {
+			const w = parseFloat(item.dataset.width ?? "1");
+			const h = parseFloat(item.dataset.height ?? "1");
+			return h > 0 ? w / h : 1;
+		}),
+	);
 	if (ratios.length === 0) {
 		photoListingHeight.value = 0;
 		return;
 	}
-	const geometry = createJustifiedLayout(ratios, { containerWidth, containerPadding: 0, targetRowHeight: 220, boxSpacing: 4 });
+	await initLayouts();
+	const geometry = justified(ratios, containerWidth, 220, 4);
 	photoListingHeight.value = geometry.containerHeight;
 	items.forEach((item, i) => {
 		const box = geometry.boxes[i];

@@ -89,19 +89,23 @@
 				<UFormField :label="$t('gallery.album.properties.show_tags')">
 					<TagsInput v-model="tags" :add="false" />
 				</UFormField>
-				<div class="flex gap-2 items-center my-2">
-					<USwitch v-model="is_and" input-id="pp_is_and" />
-					<label for="pp_is_and" class="text-highlighted">{{ $t("gallery.album.properties.all_tags_must_match") }}</label>
-				</div>
+				<USwitch
+					v-model="is_and"
+					class="my-2"
+					:label="$t('gallery.album.properties.all_tags_must_match')"
+					:ui="{ label: 'text-highlighted' }"
+				/>
 			</div>
 			<div v-if="is_person_album" class="flex flex-col gap-2">
 				<UFormField :label="$t('dialogs.new_person_album.set_persons')">
 					<PersonsInput v-model="selectedPersons" :placeholder="$t('dialogs.new_person_album.set_persons')" />
 				</UFormField>
-				<div class="flex gap-2 items-center my-2">
-					<USwitch v-model="is_and" input-id="pp_is_and" />
-					<label for="pp_is_and" class="text-highlighted">{{ $t("gallery.album.properties.all_persons_must_match") }}</label>
-				</div>
+				<USwitch
+					v-model="is_and"
+					class="my-2"
+					:label="$t('gallery.album.properties.all_persons_must_match')"
+					:ui="{ label: 'text-highlighted' }"
+				/>
 			</div>
 			<UButton class="mt-4 w-full font-bold justify-center" color="primary" @click="save">
 				{{ $t("dialogs.button.save") }}

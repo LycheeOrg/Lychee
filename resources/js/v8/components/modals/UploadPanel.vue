@@ -60,9 +60,8 @@
 						<em class="italic text-highlighted hover:text-muted">{{ $t("dialogs.upload.drag") }}</em>
 					</label>
 					<input id="myFiles" type="file" multiple class="hidden" @change="upload" />
-					<div v-if="setup?.can_watermark_optout" class="flex items-center justify-center gap-2">
-						<label for="watermark-toggle" class="cursor-pointer">{{ $t("dialogs.upload.apply_watermark") }}</label>
-						<USwitch id="watermark-toggle" v-model="applyWatermark" :disabled="showCancel" />
+					<div v-if="setup?.can_watermark_optout" class="flex items-center justify-center">
+						<USwitch v-model="applyWatermark" :disabled="showCancel" :label="$t('dialogs.upload.apply_watermark')" />
 					</div>
 				</div>
 			</div>

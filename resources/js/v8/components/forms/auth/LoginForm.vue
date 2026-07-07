@@ -43,10 +43,7 @@
 				<InputPassword id="password" v-model="password" autocomplete="current-password" @keydown.enter="login" />
 				<UAlert v-if="invalidPassword" color="error" variant="soft" class="mt-2" :description="$t('dialogs.login.unknown_invalid')" />
 			</UFormField>
-			<div class="inline-flex items-center gap-2">
-				<UCheckbox v-model="rememberMe" id="remember_me" />
-				<label for="remember_me" class="cursor-pointer">{{ $t("dialogs.login.remember_me") }}</label>
-			</div>
+			<UCheckbox v-model="rememberMe" :label="$t('dialogs.login.remember_me')" />
 			<div class="flex items-center gap-2 mt-4">
 				<UButton
 					v-if="closeCallback !== undefined"
