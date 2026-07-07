@@ -113,6 +113,7 @@ volumes:
 
 - **Pre-built releases:** Download from [GitHub Releases](https://github.com/LycheeOrg/Lychee/releases)
 - **From source:** Requires PHP 8.4+, Composer, and npm
+- **Managed hosting:** [![Deploy with Zenith](https://cdn.zenith.hosting/buttons/deploy-with-zenith.svg)](https://zenith.hosting/host/lychee)
 
 For detailed installation, configuration, and update instructions, see our **[Documentation](https://lycheeorg.dev/docs/)**.
 
