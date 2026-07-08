@@ -3,7 +3,7 @@
 		v-if="albumsStore.rootConfig && albumsStore.rootRights"
 		:class="{
 			'bg-transparent': albumsStore.rootConfig.is_header_bar_transparent,
-			'bg-linear-to-b dark:from-surface-800 from-surface-50 via-75% light:via-surface-50/80 light:to-surface-50/20':
+			'bg-linear-to-b from-neutral-50 via-75% via-neutral-50/80 to-neutral-50/20 dark:from-neutral-800 dark:via-neutral-800/80 dark:to-neutral-800/20':
 				albumsStore.rootConfig.is_header_bar_gradient,
 			'max-h-14': !is_full_screen,
 			'max-h-0 overflow-hidden': is_full_screen,
@@ -97,7 +97,7 @@
 			/>
 			<h1
 				v-else
-				class="text-sm font-bold sm:text-lg md:text-3xl md:font-normal text-surface-0 uppercase text-center text-shadow-md text-shadow-black/25"
+				class="text-sm font-bold sm:text-lg md:text-3xl md:font-normal text-white uppercase text-center text-shadow-md text-shadow-black/25"
 				id="header-site-text"
 			>
 				{{ props.title }}

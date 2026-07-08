@@ -35,7 +35,7 @@
 					:class="{ 'ltr:border-l rtl:border-r border-neutral-300 dark:border-neutral-600 ltr:pl-4 rtl:pr-4': isLeftBorderVisible }"
 					v-intersection-observer="onIntersectionObserver"
 				>
-					<div class="w-full ltr:text-left rtl:text-right font-semibold text-muted-color-emphasis text-lg">
+					<div class="w-full ltr:text-left rtl:text-right font-semibold text-toned text-lg">
 						{{ photoTimeline.header }}
 					</div>
 					<PhotoThumbPanelList

@@ -126,9 +126,9 @@
 								@keydown.space.prevent="navigateTile(tile)"
 							>
 								<UChip v-if="tile.num && tile.num.value > 0" :text="tile.num.value" color="primary">
-									<PiMiniIcon :icon="tile.icon" class="w-6 h-6 text-2xl fill-surface-0" />
+									<PiMiniIcon :icon="tile.icon" class="w-6 h-6 text-2xl fill-white" />
 								</UChip>
-								<PiMiniIcon v-else :icon="tile.icon" class="w-6 h-6 text-2xl fill-surface-0" />
+								<PiMiniIcon v-else :icon="tile.icon" class="w-6 h-6 text-2xl fill-white" />
 								<span class="text-sm">{{ $t(tile.label) }}</span>
 							</component>
 						</template>

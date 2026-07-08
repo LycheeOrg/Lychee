@@ -27,5 +27,8 @@ export const theme: ThemeProps = {
 		header: {
 			// root: "bg-transparent",
 		},
+		icon: {
+			root: "inline-block",
+		},
 	},
 };

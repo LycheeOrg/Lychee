@@ -27,7 +27,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware(['rss_feed_meta'])->group(function () {
+Route::middleware(['rss_feed_meta'])->group(function (): void {
 	Route::feeds();
 });
 

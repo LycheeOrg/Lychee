@@ -42,26 +42,30 @@
 			<img class="h-full w-full" alt="play" :src="getPlayIcon()" />
 		</span>
 		<div v-if="userStore.isLoggedIn" class="badges absolute -mt-px ml-1 top-0 left-0 flex">
-			<ThumbBadge v-if="props.album.is_nsfw" class="bg-[#ff82ee]" icon="warning" />
-			<ThumbBadge v-if="props.album.id === 'highlighted'" class="bg-yellow-500" pi="flag-fill" />
-			<ThumbBadge v-if="props.album.id === 'unsorted'" class="bg-red-700" icon="list" />
-			<ThumbBadge v-if="props.album.id === 'recent'" class="bg-blue-700" icon="clock" />
-			<ThumbBadge v-if="props.album.id === 'on_this_day'" class="bg-green-600" icon="calendar" />
-			<ThumbBadge v-if="props.album.id === 'untagged'" class="bg-gray-500" icon="tags" />
-			<ThumbBadge v-if="props.album.id === 'one_star'" class="bg-yellow-500" icon="star-1" />
-			<ThumbBadge v-if="props.album.id === 'two_stars'" class="bg-yellow-500" icon="star-2" />
-			<ThumbBadge v-if="props.album.id === 'three_stars'" class="bg-yellow-500" icon="star-3" />
-			<ThumbBadge v-if="props.album.id === 'four_stars'" class="bg-yellow-500" icon="star-4" />
-			<ThumbBadge v-if="props.album.id === 'five_stars'" class="bg-yellow-500" icon="star-5" />
-			<ThumbBadge v-if="props.album.id === 'best_pictures'" class="bg-cyan-500" pi="trophy" />
-			<ThumbBadge v-if="props.album.id === 'my_rated_pictures'" class="bg-orange-500" pi="trophy" />
-			<ThumbBadge v-if="props.album.id === 'my_best_pictures'" class="bg-yellow-500" pi="trophy" />
-			<ThumbBadge v-if="props.album.is_public" :class="props.album.is_link_required ? 'bg-orange-400' : 'bg-green-600'" icon="eye" />
-			<ThumbBadge v-if="props.album.is_password_required && props.album.thumb === null" class="bg-orange-400" icon="lock-locked" />
-			<ThumbBadge v-if="props.album.is_password_required && props.album.thumb !== null" class="bg-red-700" icon="lock-unlocked" />
-			<ThumbBadge v-if="props.album.is_tag_album" class="bg-green-600" icon="tags" />
-			<ThumbBadge v-if="props.album.is_person_album" class="bg-purple-600" pi="users" />
-			<ThumbBadge v-if="props.cover_id === props.album.thumb?.id" class="bg-yellow-500" icon="folder-cover" />
+			<ThumbBadge v-if="props.album.is_nsfw" :class="ALBUM_BADGE_BG.nsfw" icon="warning" />
+			<ThumbBadge v-if="props.album.id === 'highlighted'" :class="ALBUM_BADGE_BG.favorite" pi="flag-fill" />
+			<ThumbBadge v-if="props.album.id === 'unsorted'" :class="ALBUM_BADGE_BG.danger" icon="list" />
+			<ThumbBadge v-if="props.album.id === 'recent'" :class="ALBUM_BADGE_BG.info" icon="clock" />
+			<ThumbBadge v-if="props.album.id === 'on_this_day'" :class="ALBUM_BADGE_BG.success" icon="calendar" />
+			<ThumbBadge v-if="props.album.id === 'untagged'" :class="ALBUM_BADGE_BG.neutral" icon="tags" />
+			<ThumbBadge v-if="props.album.id === 'one_star'" :class="ALBUM_BADGE_BG.favorite" icon="star-1" />
+			<ThumbBadge v-if="props.album.id === 'two_stars'" :class="ALBUM_BADGE_BG.favorite" icon="star-2" />
+			<ThumbBadge v-if="props.album.id === 'three_stars'" :class="ALBUM_BADGE_BG.favorite" icon="star-3" />
+			<ThumbBadge v-if="props.album.id === 'four_stars'" :class="ALBUM_BADGE_BG.favorite" icon="star-4" />
+			<ThumbBadge v-if="props.album.id === 'five_stars'" :class="ALBUM_BADGE_BG.favorite" icon="star-5" />
+			<ThumbBadge v-if="props.album.id === 'best_pictures'" :class="ALBUM_BADGE_BG.trophy" pi="trophy" />
+			<ThumbBadge v-if="props.album.id === 'my_rated_pictures'" :class="ALBUM_BADGE_BG.rated" pi="trophy" />
+			<ThumbBadge v-if="props.album.id === 'my_best_pictures'" :class="ALBUM_BADGE_BG.favorite" pi="trophy" />
+			<ThumbBadge
+				v-if="props.album.is_public"
+				:class="props.album.is_link_required ? ALBUM_BADGE_BG.link : ALBUM_BADGE_BG.success"
+				icon="eye"
+			/>
+			<ThumbBadge v-if="props.album.is_password_required && props.album.thumb === null" :class="ALBUM_BADGE_BG.link" icon="lock-locked" />
+			<ThumbBadge v-if="props.album.is_password_required && props.album.thumb !== null" :class="ALBUM_BADGE_BG.danger" icon="lock-unlocked" />
+			<ThumbBadge v-if="props.album.is_tag_album" :class="ALBUM_BADGE_BG.success" icon="tags" />
+			<ThumbBadge v-if="props.album.is_person_album" :class="ALBUM_BADGE_BG.person" pi="users" />
+			<ThumbBadge v-if="props.cover_id === props.album.thumb?.id" :class="ALBUM_BADGE_BG.favorite" icon="folder-cover" />
 		</div>
 		<AlbumThumbDecorations :album="props.album" />
 		<!-- Touch select overlay: stops the click from reaching the router-link navigate handler -->
@@ -94,6 +98,7 @@ import { useAlbumActions } from "@/composables/album/albumActions";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { useAlbumsStore } from "@/stores/AlbumsState";
+import { ALBUM_BADGE_BG } from "@/v8/utils/albumBadgeColors";
 
 export type AlbumThumbConfig = {
 	album_thumb_css_aspect_ratio: string;

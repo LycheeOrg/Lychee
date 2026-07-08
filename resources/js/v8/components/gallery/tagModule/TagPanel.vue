@@ -9,10 +9,7 @@
 
 		<UContextMenu :items="menuSections" :disabled="photosStore.photos.length === 0" class="contents">
 			<div id="galleryView" class="relative flex flex-wrap content-start w-full justify-start overflow-y-auto h-full">
-				<div
-					v-if="photosStore.photos.length === 0"
-					class="flex w-full flex-col h-full items-center justify-center text-xl text-muted-color gap-8"
-				>
+				<div v-if="photosStore.photos.length === 0" class="flex w-full flex-col h-full items-center justify-center text-xl text-muted gap-8">
 					<span class="block">
 						{{ $t("gallery.album.no_results") }}
 					</span>

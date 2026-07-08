@@ -16,7 +16,7 @@
 				<div id="galleryView" class="relative flex flex-wrap content-start w-full justify-start overflow-y-auto h-full select-none">
 					<SelectDrag :with-scroll="true" />
 					<AlbumEdit v-if="albumStore.rights?.can_edit" />
-					<div v-if="noData" class="flex w-full flex-col h-full items-center justify-center text-xl text-muted-color gap-8">
+					<div v-if="noData" class="flex w-full flex-col h-full items-center justify-center text-xl text-muted gap-8">
 						<span class="block">
 							{{ $t("gallery.album.no_results") }}
 						</span>

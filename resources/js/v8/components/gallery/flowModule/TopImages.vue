@@ -1,7 +1,7 @@
 <template>
 	<div
 		:class="{
-			'w-full bg-surface-800 flex h-(--header-height) gap-1': true,
+			'w-full bg-neutral-800 flex h-(--header-height) gap-1': true,
 			'flex-wrap': !isShort,
 		}"
 	>

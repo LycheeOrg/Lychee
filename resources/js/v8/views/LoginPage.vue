@@ -9,7 +9,7 @@
 				<img :src="initdata.landing_logo" alt="logo" class="max-h-24 max-w-xs object-contain mx-auto" />
 			</template>
 			<template v-else>
-				<h1 class="text-center text-2xl text-surface-0 uppercase font-extralight">
+				<h1 class="text-center text-2xl text-white uppercase font-extralight">
 					{{ initdata.landing_title }}
 				</h1>
 				<h2 class="text-center text-base text-muted uppercase font-extralight">
@@ -22,7 +22,7 @@
 				<img :src="lycheeStore.site_logo" alt="logo" class="max-h-24 max-w-xs object-contain mx-auto" />
 			</template>
 			<template v-else>
-				<h1 class="text-center text-2xl text-surface-0 uppercase font-extralight">
+				<h1 class="text-center text-2xl text-white uppercase font-extralight">
 					{{ title }}
 				</h1>
 			</template>

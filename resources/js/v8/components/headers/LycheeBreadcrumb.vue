@@ -31,7 +31,6 @@ const props = defineProps<{
 
 const { isLTR } = useLtRorRtL();
 
-console.log("props.items", props.items);
 const emits = defineEmits<{
 	goBack: [];
 }>();

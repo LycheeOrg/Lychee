@@ -8,7 +8,7 @@
 
 			<span class="absolute left-1/2 -translate-x-1/2 text-lg font-semibold text-center hidden md:block">{{ title }}</span>
 		</UHeader>
-		<div class="absolute top-0 left-1/2 text-center text-lg font-semibold text-surface-0 w-xs -translate-x-1/2 md:hidden">
+		<div class="absolute top-0 left-1/2 text-center text-lg font-semibold text-white w-xs -translate-x-1/2 md:hidden">
 			{{ title }}
 		</div>
 		<div v-if="config !== undefined" class="flex flex-col items-center gap-16 mb-16 px-8">

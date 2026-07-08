@@ -91,7 +91,7 @@ const meter = computed(() => {
 		vals.push({
 			label: `${translateStatus("started")} — ${started_count}`,
 			value: started_percent,
-			color: "var(--p-primary-500)",
+			color: "var(--ui-color-primary-500)",
 		});
 	}
 	return vals;

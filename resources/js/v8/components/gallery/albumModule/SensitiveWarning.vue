@@ -3,7 +3,7 @@
 		v-if="albumId !== undefined && nsfwConsentedStore.hasConsented(albumId) === false"
 		id="sensitive_warning"
 		:class="{
-			'fixed z-30 flex flex-col items-center justify-center text-center text-surface-0 text-shadow top-0 left-0 h-full w-full': true,
+			'fixed z-30 flex flex-col items-center justify-center text-center text-white text-shadow top-0 left-0 h-full w-full': true,
 			'bg-red-950': !is_nsfw_banner_backdrop_blurred,
 			'backdrop-blur-lg': is_nsfw_banner_backdrop_blurred,
 		}"

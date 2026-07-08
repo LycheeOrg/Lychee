@@ -168,11 +168,11 @@ const COLORS = computed(() => {
 	return [
 		"white",
 		"black",
-		p?.colour_1 ?? "#2563eb",
-		p?.colour_2 ?? "#dc2626",
-		p?.colour_3 ?? "#16a34a",
-		p?.colour_4 ?? "#9333ea",
-		p?.colour_5 ?? "#ca8a04",
+		p?.colour_1 ?? "var(--color-blue-600)",
+		p?.colour_2 ?? "var(--color-red-600)",
+		p?.colour_3 ?? "var(--color-green-600)",
+		p?.colour_4 ?? "var(--color-purple-600)",
+		p?.colour_5 ?? "var(--color-yellow-600)",
 	];
 });
 

@@ -1,7 +1,7 @@
 <template>
 	<main v-if="initdata" id="landing" class="w-screen h-screen bg-black roboto overflow-hidden">
 		<div id="header" class="fixed top-0 left-0 right-0 z-50 overflow-y-hidden">
-			<div id="logo" class="float-left p-4 text-surface-0 animate-landingAnimateDown">
+			<div id="logo" class="float-left p-4 text-white animate-landingAnimateDown">
 				<a href="#">
 					<img
 						v-if="initdata.landing_header_logo !== ''"
@@ -24,7 +24,7 @@
 			<div id="menu" class="w-full animate-landingAnimateDown">
 				<ul class="menu list-none">
 					<li class="menu-item relative block float-right pt-6 pb-5 px-3">
-						<RouterLink :to="{ name: 'home' }" class="cursor-pointer block text-xs uppercase font-normal text-surface-0 hover:text-muted">
+						<RouterLink :to="{ name: 'home' }" class="cursor-pointer block text-xs uppercase font-normal text-white hover:text-muted">
 							{{ $t("landing.gallery") }}
 						</RouterLink>
 					</li>
@@ -46,7 +46,7 @@
 					class="max-h-32 max-w-xs object-contain animate-landingIntroPopIn"
 				/>
 				<template v-else>
-					<h1 class="text-center text-2xl text-surface-0 uppercase font-extralight animate-landingIntroPopIn">
+					<h1 class="text-center text-2xl text-white uppercase font-extralight animate-landingIntroPopIn">
 						{{ initdata.landing_title }}
 					</h1>
 					<h2>
@@ -81,7 +81,7 @@
 			<div class="flex w-full h-1/2 absolute top-1/3 md:top-1/2 left-0 items-center justify-center animate-landingEnterPopIn opacity-0">
 				<RouterLink
 					:to="{ name: 'home' }"
-					class="cursor-pointer block text-2xl uppercase text-surface-0 hover:scale-125 transition-all duration-300 p-10 filter-shadow text-center"
+					class="cursor-pointer block text-2xl uppercase text-white hover:scale-125 transition-all duration-300 p-10 filter-shadow text-center"
 				>
 					{{ $t("landing.access_gallery") }}<br class="md:hidden" />
 					<template v-if="isLTR()">

@@ -40,7 +40,7 @@
 		</span>
 		<div
 			:class="{
-				'overlay w-full absolute bottom-0 m-0 bg-linear-to-t from-[#00000066] text-shadow-sm': true,
+				'overlay w-full absolute bottom-0 m-0 bg-linear-to-t from-black/40 text-shadow-sm': true,
 				'opacity-0 group-hover:opacity-100 transition-all ease-out': display_thumb_photo_overlay === 'hover',
 				hidden: display_thumb_photo_overlay === 'never',
 			}"

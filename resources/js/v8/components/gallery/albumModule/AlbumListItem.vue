@@ -35,19 +35,19 @@
 				'aspect-video': 'aspect-video' === aspectRatio,
 			}"
 		>
-			<ListBadge v-if="album.id === 'highlighted'" class="fill-yellow-500" icon="star" />
-			<ListBadge v-else-if="album.id === 'unsorted'" class="fill-red-700" icon="list" />
-			<ListBadge v-else-if="album.id === 'recent'" class="fill-blue-700" icon="clock" />
-			<ListBadge v-else-if="album.id === 'on_this_day'" class="fill-green-600" icon="calendar" />
-			<ListBadge v-else-if="album.id === 'untagged'" class="fill-gray-500" icon="tags" />
-			<ListBadge v-else-if="album.id === 'one_star'" class="fill-yellow-500" icon="star-1" />
-			<ListBadge v-else-if="album.id === 'two_stars'" class="fill-yellow-500" icon="star-2" />
-			<ListBadge v-else-if="album.id === 'three_stars'" class="fill-yellow-500" icon="star-3" />
-			<ListBadge v-else-if="album.id === 'four_stars'" class="fill-yellow-500" icon="star-4" />
-			<ListBadge v-else-if="album.id === 'five_stars'" class="fill-yellow-500" icon="star-5" />
-			<ListBadge v-else-if="album.id === 'best_pictures'" class="text-cyan-500" pi="trophy" />
-			<ListBadge v-else-if="album.id === 'my_rated_pictures'" class="text-orange-500" pi="trophy" />
-			<ListBadge v-else-if="album.id === 'my_best_pictures'" class="text-yellow-500" pi="trophy" />
+			<ListBadge v-if="album.id === 'highlighted'" :class="ALBUM_BADGE_FILL.favorite" icon="star" />
+			<ListBadge v-else-if="album.id === 'unsorted'" :class="ALBUM_BADGE_FILL.danger" icon="list" />
+			<ListBadge v-else-if="album.id === 'recent'" :class="ALBUM_BADGE_FILL.info" icon="clock" />
+			<ListBadge v-else-if="album.id === 'on_this_day'" :class="ALBUM_BADGE_FILL.success" icon="calendar" />
+			<ListBadge v-else-if="album.id === 'untagged'" :class="ALBUM_BADGE_FILL.neutral" icon="tags" />
+			<ListBadge v-else-if="album.id === 'one_star'" :class="ALBUM_BADGE_FILL.favorite" icon="star-1" />
+			<ListBadge v-else-if="album.id === 'two_stars'" :class="ALBUM_BADGE_FILL.favorite" icon="star-2" />
+			<ListBadge v-else-if="album.id === 'three_stars'" :class="ALBUM_BADGE_FILL.favorite" icon="star-3" />
+			<ListBadge v-else-if="album.id === 'four_stars'" :class="ALBUM_BADGE_FILL.favorite" icon="star-4" />
+			<ListBadge v-else-if="album.id === 'five_stars'" :class="ALBUM_BADGE_FILL.favorite" icon="star-5" />
+			<ListBadge v-else-if="album.id === 'best_pictures'" :class="ALBUM_BADGE_TEXT.trophy" pi="trophy" />
+			<ListBadge v-else-if="album.id === 'my_rated_pictures'" :class="ALBUM_BADGE_TEXT.rated" pi="trophy" />
+			<ListBadge v-else-if="album.id === 'my_best_pictures'" :class="ALBUM_BADGE_TEXT.favorite" pi="trophy" />
 			<AlbumThumbImage
 				v-else
 				class="border-none! hover:scale-800 hover:ltr:-translate-x-full hover:rtl:translate-x-full ltr:origin-left rtl:origin-right hover:z-30 top-0 left-0"
@@ -84,11 +84,11 @@
 
 		<!-- Badges (if any) -->
 		<div class="flex gap-1">
-			<ListBadge v-if="album.is_nsfw" class="fill-[#ff82ee]" icon="warning" />
-			<ListBadge v-if="album.is_public" :class="album.is_link_required ? 'fill-orange-400' : 'fill-green-600'" icon="eye" />
-			<ListBadge v-if="album.is_password_required && album.thumb === null" class="fill-orange-400" icon="lock-locked" />
-			<ListBadge v-if="album.is_password_required && album.thumb !== null" class="fill-red-700" icon="lock-unlocked" />
-			<ListBadge v-if="album.is_tag_album" class="fill-green-600" icon="tags" />
+			<ListBadge v-if="album.is_nsfw" :class="ALBUM_BADGE_FILL.nsfw" icon="warning" />
+			<ListBadge v-if="album.is_public" :class="album.is_link_required ? ALBUM_BADGE_FILL.link : ALBUM_BADGE_FILL.success" icon="eye" />
+			<ListBadge v-if="album.is_password_required && album.thumb === null" :class="ALBUM_BADGE_FILL.link" icon="lock-locked" />
+			<ListBadge v-if="album.is_password_required && album.thumb !== null" :class="ALBUM_BADGE_FILL.danger" icon="lock-unlocked" />
+			<ListBadge v-if="album.is_tag_album" :class="ALBUM_BADGE_FILL.success" icon="tags" />
 		</div>
 	</div>
 </template>
@@ -103,6 +103,7 @@ import ListBadge from "./thumbs/ListBadge.vue";
 import { usePropagateAlbumEvents } from "@/composables/album/propagateEvents";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { storeToRefs } from "pinia";
+import { ALBUM_BADGE_FILL, ALBUM_BADGE_TEXT } from "@/v8/utils/albumBadgeColors";
 
 const albumStore = useAlbumStore();
 const albumsStore = useAlbumsStore();

@@ -54,7 +54,7 @@
 				class="flex flex-wrap flex-row shrink w-full justify-start gap-1 sm:gap-2 md:gap-4 pb-8"
 				:class="{ 'ltr:border-l rtl:border-r border-neutral-300 dark:border-neutral-600 ltr:pl-4 rtl:pr-4': isLeftBorderVisible }"
 			>
-				<div class="w-full ltr:text-left rtl:text-right font-semibold text-muted-color-emphasis text-lg">{{ albumTimeline.header }}</div>
+				<div class="w-full ltr:text-left rtl:text-right font-semibold text-toned text-lg">{{ albumTimeline.header }}</div>
 
 				<AlbumListView
 					v-if="album_view_mode === 'list'"

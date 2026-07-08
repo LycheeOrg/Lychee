@@ -97,7 +97,7 @@ onMounted(async () => {
 .mollie-component--cardHolder {
 	width: 100%;
 	background: transparent;
-	border-bottom: 1px solid var(--p-surface-300);
+	border-bottom: 1px solid var(--ui-color-neutral-300);
 }
 
 .dark .mollie-component--cardNumber,
@@ -106,10 +106,10 @@ onMounted(async () => {
 .dark .mollie-component--cardHolder {
 	background: transparent;
 	padding-bottom: 0.15rem;
-	border-bottom: 1px solid var(--p-surface-300);
+	border-bottom: 1px solid var(--ui-color-neutral-300);
 
 	&:hover {
-		border-bottom: 1px solid var(--p-primary-400);
+		border-bottom: 1px solid var(--ui-color-primary-400);
 	}
 }
 
@@ -124,6 +124,6 @@ onMounted(async () => {
 }
 
 .has-focus {
-	border-bottom: 1px solid var(--p-primary-400) !important;
+	border-bottom: 1px solid var(--ui-color-primary-400) !important;
 }
 </style>
