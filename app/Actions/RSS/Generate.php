@@ -107,6 +107,7 @@ class Generate
 				'photos.title',
 				'photos.description',
 				'photos.type',
+				'photos.created_at',
 				'photos.updated_at',
 				'outer_' . PA::ALBUM_ID,
 				'base_albums.title as album_title',
@@ -117,6 +118,7 @@ class Generate
 				'users.display_name',
 			]
 			)
+			->distinct()
 			->where('photos.created_at', '>=', $now_minus)
 			->limit($rss_max)
 			->orderBy('photos.created_at', 'desc')
