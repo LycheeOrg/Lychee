@@ -27,7 +27,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::feeds();
+Route::middleware(['rss_feed_meta'])->group(function () {
+	Route::feeds();
+});
 
 Route::get('/up', function () {
 	Event::dispatch(new DiagnosingHealth());

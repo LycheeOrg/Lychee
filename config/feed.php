@@ -21,6 +21,10 @@ return [
 			// ? Correct value should be '/feed'
 			'url' => '/feed',
 
+			// These are the defaults. They are overridden per-request by the
+			// SetRssFeedMeta middleware when the admin sets the `rss_title` /
+			// `rss_description` config, so editing them here only affects installs
+			// that leave those settings blank.
 			'title' => 'Latest pictures',
 			'description' => 'Latest added pictures.',
 			'language' => 'en-US',
