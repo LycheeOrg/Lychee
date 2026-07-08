@@ -69,6 +69,77 @@ class RssTest extends BaseApiWithDataTest
 	}
 
 	/**
+	 * The admin-configured `rss_title` / `rss_description` settings must drive the
+	 * feed's channel title and description.
+	 */
+	public function testRSSFeedTitleAndDescription(): void
+	{
+		$config_manager = resolve(ConfigManager::class);
+		$init_enable = $config_manager->getValue('rss_enable');
+		$init_title = $config_manager->getValue('rss_title');
+		$init_description = $config_manager->getValue('rss_description');
+
+		try {
+			Configs::set('rss_enable', '1');
+			Configs::set('rss_title', 'Custom Feed Title');
+			Configs::set('rss_description', 'Custom feed description');
+
+			$response = $this->get('/feed');
+			$this->assertOk($response);
+			$content = $response->getContent();
+
+			// Assert the full channel-level CDATA markup from rss.blade.php, not
+			// just the inner text (items carry <title>/<description> too).
+			$this->assertStringContainsString('<title><![CDATA[Custom Feed Title]]></title>', $content);
+			$this->assertStringContainsString('<description><![CDATA[Custom feed description]]></description>', $content);
+		} catch (\Exception $e) {
+			$this->assertTrue(false, 'Exception occurred: ' . $e->getMessage());
+		} finally {
+			Configs::set('rss_enable', $init_enable);
+			Configs::set('rss_title', $init_title);
+			Configs::set('rss_description', $init_description);
+		}
+	}
+
+	/**
+	 * A blank `rss_title` / `rss_description` must fall back to the static defaults
+	 * in config/feed.php rather than emit an empty channel title/description.
+	 */
+	public function testRSSFeedTitleFallsBackToDefaultsWhenBlank(): void
+	{
+		$config_manager = resolve(ConfigManager::class);
+		$init_enable = $config_manager->getValue('rss_enable');
+		$init_title = $config_manager->getValue('rss_title');
+		$init_description = $config_manager->getValue('rss_description');
+
+		// Capture the config/feed.php defaults BEFORE the request: the middleware
+		// mutates the shared config repository in-process, so reading these after
+		// the request would tautologically match whatever the request produced.
+		$default_title = config('feed.feeds.main.title');
+		$default_description = config('feed.feeds.main.description');
+
+		try {
+			Configs::set('rss_enable', '1');
+			Configs::set('rss_title', '');
+			Configs::set('rss_description', '');
+
+			$response = $this->get('/feed');
+			$this->assertOk($response);
+			$content = $response->getContent();
+
+			// A blank setting must fall back to the config/feed.php defaults.
+			$this->assertStringContainsString('<title><![CDATA[' . $default_title . ']]></title>', $content);
+			$this->assertStringContainsString('<description><![CDATA[' . $default_description . ']]></description>', $content);
+		} catch (\Exception $e) {
+			$this->assertTrue(false, 'Exception occurred: ' . $e->getMessage());
+		} finally {
+			Configs::set('rss_enable', $init_enable);
+			Configs::set('rss_title', $init_title);
+			Configs::set('rss_description', $init_description);
+		}
+	}
+
+	/**
 	 * A single photo (one row in `photos`) that belongs to two albums (two rows
 	 * in `photo_album`) must appear exactly once per album in the RSS feed.
 	 */
