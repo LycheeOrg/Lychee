@@ -5,8 +5,17 @@ import { type RouteLocationNormalizedLoaded } from "vue-router";
 export function getWidth(timelineData: TimelineData, route: RouteLocationNormalizedLoaded): number {
 	const baseWidth = window.innerWidth;
 
-	const paddingLeft = parseInt(window.getComputedStyle(document.getElementById("lychee_view_content")!).getPropertyValue("padding-left"));
-	const paddingRight = parseInt(window.getComputedStyle(document.getElementById("lychee_view_content")!).getPropertyValue("padding-right"));
+	const v7Container = document.querySelector(".p-panel-content") as HTMLElement | null;
+	let paddingLeft: number;
+	let paddingRight: number;
+	if (v7Container) {
+		paddingLeft = Math.max(20, parseInt(window.getComputedStyle(v7Container!).getPropertyValue("padding-left")));
+		paddingRight = Math.max(20, parseInt(window.getComputedStyle(v7Container!).getPropertyValue("padding-right")));
+	} else {
+		const v8Container = document.getElementById("lychee_view_content");
+		paddingLeft = parseInt(window.getComputedStyle(v8Container!).getPropertyValue("padding-left"));
+		paddingRight = parseInt(window.getComputedStyle(v8Container!).getPropertyValue("padding-right"));
+	}
 
 	let scrollBarWidth = 15;
 	if (isTouchDevice()) {
