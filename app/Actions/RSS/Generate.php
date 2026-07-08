@@ -15,6 +15,7 @@ use App\Exceptions\Internal\FrameworkException;
 use App\Models\Extensions\UTCBasedTimes;
 use App\Models\Photo;
 use App\Policies\AlbumPolicy;
+use App\Policies\AlbumQueryPolicy;
 use App\Policies\PhotoQueryPolicy;
 use App\Repositories\ConfigManager;
 use App\Services\UrlGenerator;
@@ -39,6 +40,7 @@ class Generate
 
 	public function __construct(
 		protected PhotoQueryPolicy $photo_query_policy,
+		protected AlbumQueryPolicy $album_query_policy,
 		protected readonly ConfigManager $config_manager,
 		protected readonly UrlGenerator $url_generator,
 	) {
@@ -145,9 +147,41 @@ class Generate
 		// All album memberships of the selected photos, newest-first so first()
 		// is the album each item links to: the most recently created album that
 		// holds the photo (album_id breaks created_at ties for a stable choice).
-		$albums_by_photo = DB::table(PA::PHOTO_ALBUM)
+		//
+		// The same accessibility/NSFW constraints the photo query applies must
+		// also be applied here: a photo can be shared into a locked or sensitive
+		// album, and that album must not surface as the item's link or as a
+		// <category> to a viewer who cannot reach it.
+		$albums_query = DB::table(PA::PHOTO_ALBUM)
 			->join('base_albums', 'base_albums.id', '=', PA::ALBUM_ID)
-			->whereIn(PA::PHOTO_ID, $photos->pluck('id')->all())
+			->whereIn(PA::PHOTO_ID, $photos->pluck('id')->all());
+
+		// Accessibility: keep only albums the current user (or a guest, when
+		// $user is null) may access, honouring password locks. Admins may reach
+		// every album, so — like the album policies themselves — they skip this.
+		if ($user?->may_administrate !== true) {
+			$this->album_query_policy->joinSubComputedAccessPermissions(
+				query: $albums_query,
+				second: PA::ALBUM_ID,
+				type: 'left',
+				user: $user,
+			);
+			$albums_query->where(fn (BaseBuilder $q) => $this->album_query_policy
+				->appendAccessibilityConditions($q, $user, $unlocked_album_ids));
+		}
+
+		// NSFW: when the feed is configured to hide sensitive content, drop
+		// albums that are marked sensitive or sit under a sensitive ancestor.
+		// This mirrors the include_nsfw filter applied to the photo query above
+		// (which is applied to admins too), so it is applied unconditionally.
+		if ($this->config_manager->getValueAsBool('hide_nsfw_in_rss')) {
+			$albums_query
+				->join('albums', 'albums.id', '=', PA::ALBUM_ID)
+				->whereNotExists(fn (BaseBuilder $q) => $this->album_query_policy
+					->appendRecursiveSensitiveAlbumsCondition($q, null, null));
+		}
+
+		$albums_by_photo = $albums_query
 			->orderBy('base_albums.created_at', 'desc')
 			->orderBy(PA::ALBUM_ID)
 			->get([
@@ -167,6 +201,12 @@ class Generate
 				if ($albums === null) {
 					return null;
 				}
+
+				// The computed-access-permissions join can return an album more
+				// than once (e.g. shared to several of the user's groups), so
+				// collapse to one row per album before listing categories. first()
+				// still yields the newest album for the link (order is preserved).
+				$albums = $albums->unique('album_id');
 
 				return $this->toFeedItem(
 					$photo,
