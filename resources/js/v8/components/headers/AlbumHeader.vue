@@ -1,9 +1,10 @@
 <template>
+	<input id="upload_track_file" type="file" name="fileElem" accept="application/x-gpx+xml" class="hidden" @change="uploadTrack" />
 	<UHeader
 		v-if="albumStore.album"
 		:class="{
 			'max-h-14': !is_full_screen,
-			'max-h-0': is_full_screen,
+			'max-h-0 overflow-hidden': is_full_screen,
 		}"
 		:toggle="false"
 	>
@@ -78,7 +79,6 @@
 			</template>
 		</template>
 	</UHeader>
-	<input id="upload_track_file" type="file" name="fileElem" accept="application/x-gpx+xml" class="hidden" @change="uploadTrack" />
 </template>
 <script setup lang="ts">
 import LycheeBreadcrumb from "./LycheeBreadcrumb.vue";

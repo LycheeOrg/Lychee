@@ -24,5 +24,8 @@ export const theme: ThemeProps = {
 		switch: {
 			label: "cursor-pointer",
 		},
+		header: {
+			// root: "bg-transparent",
+		},
 	},
 };

@@ -1,5 +1,5 @@
 <template>
-	<div id="lychee_view_content" class="w-full border-0">
+	<UContainer id="lychee_view_content" class="w-full border-0">
 		<div class="flex items-center justify-between gap-2 py-2">
 			<h2 class="font-semibold text-highlighted">{{ $t(props.header) }}</h2>
 			<div class="flex items-center gap-1" v-if="withControl">
@@ -51,7 +51,7 @@
 				</div>
 			</template>
 		</template>
-	</div>
+	</UContainer>
 </template>
 <script setup lang="ts">
 import { computed, onMounted } from "vue";
