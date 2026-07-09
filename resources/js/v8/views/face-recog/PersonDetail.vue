@@ -119,7 +119,7 @@
 					v-for="(photo, idx) in photos"
 					:key="photo.id"
 					class="absolute overflow-hidden rounded-lg bg-elevated group cursor-pointer"
-					:class="{ 'outline outline-2 outline-primary': isBatchMode && isPhotoSelected(photo) }"
+					:class="{ 'outline-2 outline-primary': isBatchMode && isPhotoSelected(photo) }"
 					:data-width="photo.size_variants.original?.width ?? photo.size_variants.small?.width ?? 1"
 					:data-height="photo.size_variants.original?.height ?? photo.size_variants.small?.height ?? 1"
 					:data-photo-id="photo.id"
