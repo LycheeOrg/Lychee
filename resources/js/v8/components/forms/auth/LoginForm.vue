@@ -17,7 +17,7 @@
 				title="WebAuthn"
 				@click="openWebAuthn"
 			>
-				<i class="fa-solid fa-fingerprint" />
+				<UIcon name="prime:key" />
 				<span v-if="!is_basic_auth_enabled" class="ml-2 text-base">{{ sprintf(trans("dialogs.login.auth_with"), "WebAuthn") }}</span>
 			</a>
 			<a

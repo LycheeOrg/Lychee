@@ -251,11 +251,11 @@
 								:alt="face.person_name ?? $t('people.unknown')"
 								class="w-12 h-12 rounded-full object-cover border-2"
 								:class="{
-									'border-neutral-600': !ctrlHeld || isTouchDev,
+									'border-default': !ctrlHeld || isTouchDev,
 									'border-2 border-dashed border-red-500': ctrlHeld && !isTouchDev,
 								}"
 							/>
-							<div v-else class="w-12 h-12 rounded-full bg-neutral-800 flex items-center justify-center border-2 border-neutral-600">
+							<div v-else class="w-12 h-12 rounded-full bg-neutral-800 flex items-center justify-center border-2 border-default">
 								<UIcon name="prime:user" class="text-xl text-muted" />
 							</div>
 							<span class="text-xs text-muted text-center max-w-14 truncate">

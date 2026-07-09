@@ -152,6 +152,18 @@
 				:mapper="SelectBuilders.buildOverlay"
 				@filled="save"
 			/>
+			<BoolField
+				v-if="rounded_corners_enabled !== undefined"
+				:label="$t('settings.gallery.rounded_corners_enabled')"
+				:config="rounded_corners_enabled"
+				@filled="save"
+			/>
+			<BoolField
+				v-if="album_border_enabled !== undefined"
+				:label="$t('settings.gallery.album_border_enabled')"
+				:config="album_border_enabled"
+				@filled="save"
+			/>
 		</div>
 		<!-- LICENSE -->
 		<div class="flex flex-col">
@@ -272,6 +284,8 @@ const default_license = ref<App.Http.Resources.Models.ConfigResource | undefined
 const aspectRatio = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined);
 const lang = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined);
 const layout = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined);
+const rounded_corners_enabled = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined);
+const album_border_enabled = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined);
 const nsfwVisible = ref<boolean | undefined>(undefined);
 
 const dark_mode_enabled = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined);
@@ -347,6 +361,8 @@ function load(configs: App.Http.Resources.Models.ConfigCategoryResource[]) {
 	album_decoration.value = configurations.find((config) => config.key === "album_decoration");
 	album_decoration_orientation.value = configurations.find((config) => config.key === "album_decoration_orientation");
 	image_overlay_type.value = configurations.find((config) => config.key === "image_overlay_type");
+	rounded_corners_enabled.value = configurations.find((config) => config.key === "rounded_corners_enabled");
+	album_border_enabled.value = configurations.find((config) => config.key === "album_border_enabled");
 
 	map_display.value = configurations.find((config) => config.key === "map_display");
 	map_display_public.value = configurations.find((config) => config.key === "map_display_public");

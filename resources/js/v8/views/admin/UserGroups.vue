@@ -8,11 +8,12 @@
 		:user-list="allUsers"
 		@refresh="fetchUserGroups"
 	/>
-	<div class="w-full border-0 h-14 flex items-center justify-between px-2">
-		<OpenLeftMenu />
-		<span class="absolute left-1/2 -translate-x-1/2 pointer-events-none">{{ $t("user-groups.title") }}</span>
-		<div></div>
-	</div>
+	<UHeader :toggle="false">
+		<template #left>
+			<OpenLeftMenu />
+		</template>
+		{{ $t("user-groups.title") }}
+	</UHeader>
 	<div class="max-w-3xl mx-auto p-4">
 		<div v-if="can_create_user_groups" class="w-full">
 			<p class="text-highlighted">{{ $t("user-groups.explanation") }}</p>
@@ -34,7 +35,7 @@
 				:key="`G${group.id}`"
 				:class="{
 					'text-left text-highlighted my-8 relative pt-4': true,
-					'border-t border-neutral-400': idx > 0,
+					'border-t border-accented': idx > 0,
 				}"
 			>
 				<div class="flex justify-between items-start">
@@ -79,7 +80,7 @@
 						</button>
 						<button
 							v-if="group.rights.can_manage"
-							class="border-neutral-400 rounded-full inline-flex items-center justify-center border p-0.5 text-3xs hover:border-error hover:text-error"
+							class="border-accented rounded-full inline-flex items-center justify-center border p-0.5 text-3xs hover:border-error hover:text-error"
 							@click="deleteMember(group, member)"
 						>
 							<UIcon name="prime:times" />

@@ -32,7 +32,7 @@
 					data-type="timelineBlock"
 					:data-date="photoTimeline.data[0].timeline?.time_date"
 					class="flex flex-wrap flex-row shrink w-full justify-start gap-1 sm:gap-2 md:gap-4 pb-8"
-					:class="{ 'ltr:border-l rtl:border-r border-neutral-300 dark:border-neutral-600 ltr:pl-4 rtl:pr-4': isLeftBorderVisible }"
+					:class="{ 'ltr:border-l rtl:border-r border-accented ltr:pl-4 rtl:pr-4': isLeftBorderVisible }"
 					v-intersection-observer="onIntersectionObserver"
 				>
 					<div class="w-full ltr:text-left rtl:text-right font-semibold text-toned text-lg">

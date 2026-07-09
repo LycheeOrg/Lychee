@@ -3,7 +3,7 @@
 		<label
 			:class="{
 				'w-1/2 sm:w-full': true,
-				'text-primary-emphasis': props.config.require_se,
+				'text-primary': props.config.require_se,
 				'text-highlighted': !props.config.require_se,
 			}"
 			:for="props.config.key"

@@ -4,7 +4,7 @@
 			<label
 				:for="props.config.key"
 				class="w-1/2 sm:w-full"
-				:class="props.config.require_se ? 'text-primary-emphasis' : 'text-highlighted'"
+				:class="props.config.require_se ? 'text-primary' : 'text-highlighted'"
 				v-html="props.label ?? tDoc(props.config)"
 			/>
 			<span class="flex gap-4">

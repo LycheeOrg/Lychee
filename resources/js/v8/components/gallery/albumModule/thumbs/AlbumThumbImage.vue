@@ -1,7 +1,10 @@
 <template>
 	<span
-		class="thumbimg absolute w-full h-full bg-neutral-800 shadow-md shadow-black/25 border-solid border border-neutral-400 ease-out transition-transform overflow-hidden"
-		:class="isDragging && !isSelectable ? '' : props.class"
+		class="thumbimg absolute w-full h-full bg-neutral-800 shadow-md shadow-black/25 ease-out transition-transform overflow-hidden"
+		:class="[
+			isDragging && !isSelectable ? '' : props.class,
+			{ 'rounded-lg': is_rounded_corners_enabled, 'border-solid border border-accented': is_album_border_enabled },
+		]"
 	>
 		<img
 			v-show="placeholderSrc"
@@ -29,6 +32,7 @@
 <script setup lang="ts">
 import { useImageHelpers } from "@/utils/Helpers";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
+import { useLycheeStateStore } from "@/stores/LycheeState";
 import { watch, ref, computed } from "vue";
 import { storeToRefs } from "pinia";
 
@@ -43,6 +47,8 @@ const props = defineProps<{
 
 const togglableStore = useTogglablesStateStore();
 const { isDragging } = storeToRefs(togglableStore);
+const lycheeStore = useLycheeStateStore();
+const { is_rounded_corners_enabled, is_album_border_enabled } = storeToRefs(lycheeStore);
 
 const isImageLoaded = ref(false);
 const src = ref("");

@@ -28,8 +28,8 @@
 						:data-date-pointer="monthChunk.time_date"
 						:class="{
 							'cursor-pointer transition-all duration-150 scale-75 ease-in-out ltr:origin-right rtl:origin-left': true,
-							'hover:text-primary-emphasis hover:font-bold hover:scale-100': !isTouch,
-							'scale-110  text-primary-emphasis font-bold': currentDate === monthChunk.time_date,
+							'hover:text-primary hover:opacity-80 hover:font-bold hover:scale-100': !isTouch,
+							'scale-110  text-primary font-bold': currentDate === monthChunk.time_date,
 						}"
 						@click="emits('load', monthChunk.time_date)"
 						>{{ monthChunk.format }}

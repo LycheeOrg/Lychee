@@ -3,8 +3,6 @@
 		v-if="albumsStore.rootConfig && albumsStore.rootRights"
 		:class="{
 			'bg-transparent': albumsStore.rootConfig.is_header_bar_transparent,
-			'bg-linear-to-b from-neutral-50 via-75% via-neutral-50/80 to-neutral-50/20 dark:from-neutral-800 dark:via-neutral-800/80 dark:to-neutral-800/20':
-				albumsStore.rootConfig.is_header_bar_gradient,
 			'max-h-14': !is_full_screen,
 			'max-h-0 overflow-hidden': is_full_screen,
 		}"
@@ -316,7 +314,7 @@ const menu = computed(() =>
 			key: "metrics",
 		},
 		{
-			icon: "pi pi-bell text-primary-emphasis",
+			icon: "pi pi-bell text-primary",
 			type: "fn",
 			callback: () => (is_metrics_open.value = true),
 			if: is_se_preview_enabled.value && albumsStore.rootRights?.can_see_live_metrics,

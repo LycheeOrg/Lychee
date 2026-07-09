@@ -34,20 +34,20 @@
 				}"
 			>
 				<USwitch v-model="is_expert_mode" :disabled="!props.hasExperts" :ui="{ label: 'text-muted flex items-center gap-2' }">
-					<template #label>{{ $t("settings.all.expert_settings") }}<UIcon name="prime:graduation-cap" /></template>
+					<template #label>{{ $t("settings.all.expert_settings") }}<UIcon name="lucide:graduation-cap" size="1.25em" /></template>
 				</USwitch>
 			</div>
 			<div class="flex items-center w-full justify-end">
 				<UTooltip :text="$t('settings.all.old_setting_style')">
-					<UIcon
-						name="prime:pen-to-square"
+					<div
 						:class="{
 							'cursor-pointer px-4': true,
 							'text-primary-400': is_old_style,
 							'text-muted': !is_old_style,
 						}"
-						@click="is_old_style = !is_old_style"
-					/>
+					>
+						<UIcon name="lucide:edit" @click="is_old_style = !is_old_style" />
+					</div>
 				</UTooltip>
 			</div>
 			<div

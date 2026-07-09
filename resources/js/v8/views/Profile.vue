@@ -1,13 +1,17 @@
 <template>
 	<div class="h-svh overflow-y-auto">
-		<div class="w-full border-0 h-14 flex items-center justify-between px-2">
-			<OpenLeftMenu />
-			<span class="absolute left-1/2 -translate-x-1/2">{{ $t("profile.title") }}</span>
-		</div>
-		<SetLogin />
-		<SetOauth />
-		<SetSecondFactor v-if="is_webauthn_enabled" />
-		<SetSharedAlbumsVisibility />
+		<UHeader :toggle="false">
+			<template #left>
+				<OpenLeftMenu />
+			</template>
+			{{ $t("profile.title") }}
+		</UHeader>
+		<UContainer class="max-w-3xl mx-auto flex flex-col gap-4">
+			<SetLogin />
+			<SetOauth />
+			<SetSecondFactor v-if="is_webauthn_enabled" />
+			<SetSharedAlbumsVisibility />
+		</UContainer>
 
 		<!-- Selfie claim button -->
 		<div class="flex justify-center mt-6 pb-8">

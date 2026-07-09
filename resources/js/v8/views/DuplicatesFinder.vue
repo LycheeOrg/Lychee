@@ -1,9 +1,11 @@
 <template>
 	<UProgress v-if="groupedDuplicates === undefined" class="rounded-none absolute w-full" />
-	<div class="w-full border-0 h-14 flex items-center justify-between px-2">
-		<OpenLeftMenu />
-		<span class="absolute left-1/2 -translate-x-1/2">{{ $t("duplicate-finder.title") }}</span>
-	</div>
+	<UHeader :toggle="false">
+		<template #left>
+			<OpenLeftMenu />
+		</template>
+		{{ $t("duplicate-finder.title") }}
+	</UHeader>
 	<div class="text-muted text-center mt-2 p-2">
 		<p class="mb-4">
 			{{ $t("duplicate-finder.intro") }}

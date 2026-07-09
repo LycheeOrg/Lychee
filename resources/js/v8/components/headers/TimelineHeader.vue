@@ -240,7 +240,7 @@ const menu = computed(() =>
 			key: "metrics",
 		},
 		{
-			icon: "pi pi-bell text-primary-emphasis",
+			icon: "pi pi-bell text-primary",
 			type: "fn",
 			callback: () => (is_metrics_open.value = true),
 			if: is_se_preview_enabled.value && timelineStore.rootRights?.can_see_live_metrics,

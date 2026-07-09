@@ -53,7 +53,7 @@
 						<span class="text-3xl">{{ $t("dialogs.upload.release") }}</span>
 					</div>
 					<label
-						class="flex flex-col w-full items-center justify-center hover:text-highlighted dark:border-neutral-900 dark:hover:bg-neutral-900/10 dark:hover:border-neutral-950 border shadow cursor-pointer h-1/2 rounded-2xl p-6"
+						class="flex flex-col w-full items-center justify-center hover:text-highlighted border-default hover:bg-elevated/50 hover:border-accented border shadow cursor-pointer h-1/2 rounded-2xl p-6"
 						for="myFiles"
 					>
 						<h3 class="text-xl text-center">{{ $t("dialogs.upload.select") }}</h3>

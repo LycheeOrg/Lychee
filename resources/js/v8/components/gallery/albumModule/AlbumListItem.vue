@@ -16,7 +16,7 @@
 			class="relative z-20 shrink-0 w-5 h-5 rounded-full flex items-center justify-center"
 			:class="{
 				'bg-primary-500 border-2 border-white': isSelected,
-				'border-2 border-neutral-400 bg-neutral-100 dark:bg-neutral-800': !isSelected,
+				'border-2 border-accented bg-neutral-100 dark:bg-neutral-800': !isSelected,
 			}"
 		>
 			<UIcon v-if="isSelected" name="prime:check" class="text-white" style="font-size: 0.6rem" />

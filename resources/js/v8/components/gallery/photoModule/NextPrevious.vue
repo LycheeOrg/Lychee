@@ -4,7 +4,7 @@
 			:id="props.is_next ? 'nextButton' : 'previousButton'"
 			:to="photoRoute(props.photoId)"
 			:class="{
-				'absolute top-1/2 border border-solid border-neutral-200 dark:border-neutral-700': true,
+				'absolute top-1/2 border border-solid border-muted': true,
 				'-mt-5 transition-all opacity-0 group-hover:opacity-100 bg-cover': true,
 				'py-10.75 px-11': photo_previous_next_size === 'large',
 				'py-2 px-3': photo_previous_next_size === 'small',

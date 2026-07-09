@@ -32,7 +32,7 @@
 		</template>
 
 		<!-- Privacy notice for hidden faces -->
-		<div v-if="hiddenFaceCount > 0" class="absolute bottom-2 left-2 bg-black/60 text-white text-xs px-2 py-1 rounded pointer-events-none">
+		<div v-if="hiddenFaceCount > 0" class="absolute bottom-2 left-2 bg-black/60 text-inverted text-xs px-2 py-1 rounded pointer-events-none">
 			{{ hiddenFaceCount }} {{ $t("people.hidden_faces") }}
 		</div>
 

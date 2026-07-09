@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<div class="flex items-center gap-4 justify-between">
-			<div class="w-1/2 sm:w-full" :class="props.config.require_se ? 'text-primary-emphasis' : 'text-highlighted'">
+			<div class="w-1/2 sm:w-full" :class="props.config.require_se ? 'text-primary' : 'text-highlighted'">
 				{{ tDoc(props.config) }}
 				<SETag v-if="config.require_se" />
 			</div>

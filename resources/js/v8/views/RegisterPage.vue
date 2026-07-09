@@ -17,7 +17,7 @@
 			</h1>
 		</div>
 		<div class="w-full max-w-md text-right">
-			<router-link :to="{ name: 'login' }" class="hover:text-primary-emphasis">
+			<router-link :to="{ name: 'login' }" class="hover:text-primary/80">
 				{{ $t("left-menu.login") }} <UIcon name="prime:angle-double-right" class="ml-1" />
 			</router-link>
 		</div>

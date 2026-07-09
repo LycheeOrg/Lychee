@@ -1,9 +1,10 @@
 <template>
-	<div class="w-full border-0 h-14 flex items-center justify-between px-2">
-		<OpenLeftMenu />
-		<span class="absolute left-1/2 -translate-x-1/2 pointer-events-none">{{ $t("admin-dashboard.nsfw_config.title") }}</span>
-		<div></div>
-	</div>
+	<UHeader :toggle="false">
+		<template #left>
+			<OpenLeftMenu />
+		</template>
+		{{ $t("admin-dashboard.nsfw_config.title") }}
+	</UHeader>
 
 	<div class="max-w-5xl mx-auto mt-4 px-4 pb-8">
 		<!-- Loading -->
@@ -47,7 +48,7 @@
 							<div class="overflow-x-auto">
 								<table class="w-full text-sm border-collapse">
 									<thead>
-										<tr class="text-left text-muted border-b border-neutral-200 dark:border-neutral-700">
+										<tr class="text-left text-muted border-b border-muted">
 											<th class="py-2 pr-4">{{ $t("admin-dashboard.nsfw_config.matrix_trust_level") }}</th>
 											<th class="py-2 pr-4">{{ $t("admin-dashboard.nsfw_config.block") }}</th>
 											<th class="py-2 pr-4">{{ $t("admin-dashboard.nsfw_config.review") }}</th>
@@ -58,7 +59,7 @@
 										<tr
 											v-for="(row, idx) in matrixRows"
 											:key="idx"
-											:class="idx < matrixRows.length - 1 ? 'border-b border-neutral-100 dark:border-neutral-800' : ''"
+											:class="idx < matrixRows.length - 1 ? 'border-b border-default' : ''"
 										>
 											<td class="py-2 pr-4 font-medium flex items-center gap-2">
 												<UIcon :name="row.iconClass" />{{ row.trustLevel }}

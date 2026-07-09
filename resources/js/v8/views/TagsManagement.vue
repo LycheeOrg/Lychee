@@ -29,10 +29,12 @@
 		"
 	/>
 
-	<div class="w-full border-0 h-14 flex items-center justify-between px-2">
-		<OpenLeftMenu />
-		<span class="absolute left-1/2 -translate-x-1/2">{{ $t("tags.title") }}</span>
-	</div>
+	<UHeader :toggle="false">
+		<template #left>
+			<OpenLeftMenu />
+		</template>
+		{{ $t("tags.title") }}
+	</UHeader>
 	<UCard v-if="tags !== undefined" class="p-9 mx-auto max-w-3xl" :ui="{ header: 'hidden' }">
 		<div class="text-muted text-center mb-8" v-html="$t('tags.description')"></div>
 		<div v-if="tags.length === 0" class="p-4 text-center">{{ $t("tags.no_tags") }}</div>

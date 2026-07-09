@@ -1,8 +1,10 @@
 <template>
-	<div class="w-full border-0 h-14 flex items-center justify-between px-2">
-		<OpenLeftMenu />
-		<span class="absolute left-1/2 -translate-x-1/2">{{ contactConfig?.header ? contactConfig.header : $t("contact.title") }}</span>
-	</div>
+	<UHeader :toggle="false">
+		<template #left>
+			<OpenLeftMenu />
+		</template>
+		{{ contactConfig?.header ? contactConfig.header : $t("contact.title") }}
+	</UHeader>
 
 	<UCard v-if="contactConfig" class="max-w-2xl mx-auto mt-6">
 		<div v-if="submitted" class="text-center p-8">

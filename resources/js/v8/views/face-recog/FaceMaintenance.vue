@@ -1,10 +1,11 @@
 <template>
 	<div class="h-svh overflow-y-auto">
-		<div class="w-full border-0 h-14 flex items-center justify-between px-2 sticky top-0 z-10 bg-default">
-			<OpenLeftMenu />
-			<span class="absolute left-1/2 -translate-x-1/2 pointer-events-none">{{ $t("maintenance.face_quality.title") }}</span>
-			<div></div>
-		</div>
+		<UHeader :toggle="false">
+			<template #left>
+				<OpenLeftMenu />
+			</template>
+			{{ $t("maintenance.face_quality.title") }}
+		</UHeader>
 
 		<FaceRecognitionWarning />
 

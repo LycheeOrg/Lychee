@@ -1,11 +1,12 @@
 <template>
 	<div class="h-svh overflow-y-auto">
 		<!-- Header -->
-		<div class="w-full border-0 h-14 flex items-center justify-between px-2">
-			<OpenLeftMenu />
-			<span class="absolute left-1/2 -translate-x-1/2 pointer-events-none">{{ $t("renamer.title") }}</span>
-			<div></div>
-		</div>
+		<UHeader :toggle="false">
+			<template #left>
+				<OpenLeftMenu />
+			</template>
+			{{ $t("renamer.title") }}
+		</UHeader>
 
 		<!-- Content -->
 		<div v-if="rules !== undefined" class="text-highlighted max-w-5xl mx-auto p-4">

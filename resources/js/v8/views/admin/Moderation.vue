@@ -1,9 +1,10 @@
 <template>
-	<div class="w-full border-0 h-14 flex items-center justify-between px-2">
-		<OpenLeftMenu />
-		<span class="absolute left-1/2 -translate-x-1/2 pointer-events-none">{{ $t("moderation.title") }}</span>
-		<div></div>
-	</div>
+	<UHeader :toggle="false">
+		<template #left>
+			<OpenLeftMenu />
+		</template>
+		{{ $t("moderation.title") }}
+	</UHeader>
 
 	<UCard class="max-w-5xl mx-auto mt-4">
 		<p class="text-muted mb-6 text-center">{{ $t("moderation.description") }}</p>
@@ -33,7 +34,7 @@
 		<!-- Photos table -->
 		<table v-if="photos.length > 0" class="w-full text-sm">
 			<thead>
-				<tr class="text-left text-muted border-b border-neutral-200 dark:border-neutral-700">
+				<tr class="text-left text-muted border-b border-muted">
 					<th class="py-2 pr-3 w-10"><input type="checkbox" :checked="allSelected" @change="toggleAll" /></th>
 					<th class="py-2 pr-3 w-20">{{ $t("moderation.col_thumbnail") }}</th>
 					<th class="py-2 pr-3">{{ $t("moderation.col_title") }}</th>
@@ -48,7 +49,7 @@
 				<tr
 					v-for="photo in photos"
 					:key="photo.photo_id"
-					class="border-b border-neutral-100 dark:border-neutral-800 hover:bg-elevated/50 cursor-pointer"
+					class="border-b border-default hover:bg-elevated/50 cursor-pointer"
 					@click="toggleOne(photo.photo_id)"
 				>
 					<td class="py-2 pr-3">

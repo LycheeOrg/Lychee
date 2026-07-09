@@ -1,5 +1,5 @@
 <template>
-	<Fieldset v-if="oauths !== undefined" :legend="title" :toggleable="true" class="mb-4 hover:border-primary pt-2 max-w-xl mx-auto">
+	<Fieldset v-if="oauths !== undefined" :legend="title" :toggleable="true" class="hover:border-primary pt-2">
 		<div v-if="oauths.length === 0" class="pt-5">
 			<p class="text-muted">{{ $t("profile.oauth.setup_env") }}</p>
 		</div>

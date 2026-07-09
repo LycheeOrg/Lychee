@@ -1,8 +1,10 @@
 <template>
-	<div class="w-full border-0 h-14 flex items-center justify-between px-2">
-		<OpenLeftMenu />
-		<span class="absolute left-1/2 -translate-x-1/2">{{ $t("statistics.title") }}</span>
-	</div>
+	<UHeader :toggle="false">
+		<template #left>
+			<OpenLeftMenu />
+		</template>
+		{{ $t("statistics.title") }}
+	</UHeader>
 	<UCard v-if="is_se_preview_enabled" class="text-center text-highlighted">
 		<div v-html="$t('statistics.preview_text')" />
 	</UCard>

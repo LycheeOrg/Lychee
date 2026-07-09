@@ -1,9 +1,10 @@
 <template>
-	<div class="w-full border-0 h-14 flex items-center justify-between px-2">
-		<OpenLeftMenu />
-		<span class="absolute left-1/2 -translate-x-1/2 pointer-events-none">{{ $t("webshop.orderList.orders") }}</span>
-		<div></div>
-	</div>
+	<UHeader :toggle="false">
+		<template #left>
+			<OpenLeftMenu />
+		</template>
+		{{ $t("webshop.orderList.orders") }}
+	</UHeader>
 	<div class="text-center lg:hidden font-bold text-error py-3" v-html="$t('settings.small_screen')"></div>
 	<div class="md:max-w-3xl lg:max-w-5xl xl:max-w-7xl mt-8 mx-auto w-full p-4">
 		<div v-if="numOldOrders > 0" class="flex justify-center items-center gap-4 mb-8">

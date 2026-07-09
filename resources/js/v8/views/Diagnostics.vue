@@ -1,16 +1,18 @@
 <template>
-	<div class="w-full border-0 h-14 flex items-center justify-between px-2">
-		<OpenLeftMenu />
-		<span class="absolute left-1/2 -translate-x-1/2 pointer-events-none">{{ $t("diagnostics.title") }}</span>
-		<div class="flex items-center">
+	<UHeader :toggle="false">
+		<template #left>
+			<OpenLeftMenu />
+		</template>
+		{{ $t("diagnostics.title") }}
+		<template #right>
 			<UTooltip v-if="isSecureContext" :text="$t('diagnostics.copy_to_clipboard')">
 				<UButton :disabled="!canCopy" variant="ghost" color="neutral" aria-label="Copy" icon="prime:copy" @click="copy" />
 			</UTooltip>
 			<UTooltip v-else :text="$t('diagnostics.copy_on_secure_context')">
 				<UButton :disabled="true" variant="ghost" color="neutral" aria-label="Copy" icon="prime:copy" />
 			</UTooltip>
-		</div>
-	</div>
+		</template>
+	</UHeader>
 	<ErrorsDiagnotics @loaded="loadError" />
 	<InfoDiagnostics v-if="user?.id" @loaded="loadInfo" />
 	<SpaceDiagnostics v-if="user?.id" />

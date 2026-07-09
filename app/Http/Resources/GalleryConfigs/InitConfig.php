@@ -70,6 +70,8 @@ class InitConfig extends Data
 	public int $number_albums_per_row_mobile;
 	public PhotoThumbInfoType $photo_thumb_info;
 	public bool $is_photo_thumb_tags_enabled;
+	public bool $is_rounded_corners_enabled;
+	public bool $is_album_border_enabled;
 
 	// Album view mode
 	public AlbumLayoutType $album_layout;
@@ -201,6 +203,8 @@ class InitConfig extends Data
 		$this->number_albums_per_row_mobile = request()->configs()->getValueAsInt('number_albums_per_row_mobile');
 		$this->photo_thumb_info = request()->configs()->getValueAsEnum('photo_thumb_info', PhotoThumbInfoType::class);
 		$this->is_photo_thumb_tags_enabled = request()->configs()->getValueAsBool('photo_thumb_tags_enabled');
+		$this->is_rounded_corners_enabled = request()->configs()->getValueAsBool('rounded_corners_enabled');
+		$this->is_album_border_enabled = request()->configs()->getValueAsBool('album_border_enabled');
 		$this->album_layout = request()->configs()->getValueAsEnum('album_layout', AlbumLayoutType::class);
 
 		// Download configuration

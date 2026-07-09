@@ -1,8 +1,10 @@
 <template>
-	<div class="w-full border-0 h-14 flex items-center justify-between px-2">
-		<GoBack @go-back="backToGallery" />
-		<span class="absolute left-1/2 -translate-x-1/2">{{ sprintf($t("webshop.orderDownload.order"), props.orderId) }}</span>
-	</div>
+	<UHeader :toggle="false">
+		<template #left>
+			<GoBack @go-back="backToGallery" />
+		</template>
+		{{ sprintf($t("webshop.orderDownload.order"), props.orderId) }}
+	</UHeader>
 	<UCard class="border-0 md:max-w-3xl lg:max-w-5xl xl:max-w-7xl mt-8 mx-auto w-full" :ui="{ header: 'hidden' }">
 		<!-- If we are loading, wait. -->
 		<div v-if="loading" class="flex justify-center items-center p-8">

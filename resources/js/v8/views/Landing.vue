@@ -1,5 +1,5 @@
 <template>
-	<main v-if="initdata" id="landing" class="w-screen h-screen bg-black roboto overflow-hidden">
+	<main v-if="initdata" id="landing" class="w-screen h-screen bg-black overflow-hidden">
 		<div id="header" class="fixed top-0 left-0 right-0 z-50 overflow-y-hidden">
 			<div id="logo" class="float-left p-4 text-white animate-landingAnimateDown">
 				<a href="#">
@@ -11,7 +11,7 @@
 						class="h-10 object-contain"
 					/>
 					<template v-else>
-						<h1 class="text-lg font-bold uppercase text-center roboto">
+						<h1 class="text-lg font-bold uppercase text-center">
 							{{ initdata.landing_title }}
 							<span class="p-0 text-2xs block font-thin tracking-wide leading-0">{{ initdata.landing_subtitle }}</span>
 						</h1>

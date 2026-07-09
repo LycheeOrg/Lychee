@@ -1,10 +1,5 @@
 <template>
-	<Fieldset
-		v-if="user && user.id !== null"
-		:legend="$t('profile.login.header')"
-		:toggleable="true"
-		class="mb-4 hover:border-primary pt-2 max-w-xl mx-auto"
-	>
+	<Fieldset v-if="user && user.id !== null" :legend="$t('profile.login.header')" :toggleable="true" class="hover:border-primary pt-2">
 		<form>
 			<div v-if="user.is_ldap" class="w-full p-4 text-muted">
 				<UIcon name="prime:info-circle" class="ltr:mr-2 rtl:ml-2" />
@@ -53,18 +48,14 @@
 						<InputText id="email" v-model="email" />
 					</UFormField>
 				</div>
-				<div class="flex w-full mt-4">
-					<UButton
-						color="neutral"
-						class="w-full font-bold shrink rounded-none ltr:rounded-l-xl rtl:rounded-r-xl justify-center"
-						@click="save"
-					>
+				<UFieldGroup class="w-full mt-4">
+					<UButton color="neutral" class="flex-1 font-bold justify-center" @click="save">
 						{{ $t("profile.login.change") }}
 					</UButton>
 					<UButton
 						color="neutral"
 						variant="soft"
-						class="w-full font-bold shrink rounded-none ltr:rounded-r-xl rtl:rounded-l-xl justify-center"
+						class="flex-1 font-bold justify-center"
 						@click="
 							() => {
 								isApiTokenOpen = !isApiTokenOpen;
@@ -73,7 +64,7 @@
 					>
 						{{ $t("profile.login.api_token") }}
 					</UButton>
-				</div>
+				</UFieldGroup>
 			</template>
 		</form>
 	</Fieldset>

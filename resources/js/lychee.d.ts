@@ -576,6 +576,8 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		number_albums_per_row_mobile: 1 | 2 | 3;
 		photo_thumb_info: App.Enum.PhotoThumbInfoType;
 		is_photo_thumb_tags_enabled: boolean;
+		is_rounded_corners_enabled: boolean;
+		is_album_border_enabled: boolean;
 		album_layout: App.Enum.AlbumLayoutType;
 		is_raw_download_enabled: boolean;
 		is_thumb_download_enabled: boolean;

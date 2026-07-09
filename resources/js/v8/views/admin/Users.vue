@@ -1,11 +1,12 @@
 <template>
 	<InviteUser v-model:visible="isInviteUserVisible" />
 	<CreateEditUser v-model:visible="isCreateUserVisible" class="mt-10" :user="selectedUser" :is-edit="isEdit" @refresh="load" />
-	<div class="w-full border-0 h-14 flex items-center justify-between px-2">
-		<OpenLeftMenu />
-		<span class="absolute left-1/2 -translate-x-1/2 pointer-events-none">{{ $t("users.title") }}</span>
-		<div></div>
-	</div>
+	<UHeader :toggle="false">
+		<template #left>
+			<OpenLeftMenu />
+		</template>
+		{{ $t("users.title") }}
+	</UHeader>
 	<div class="max-w-6xl mx-auto p-4">
 		<div class="flex flex-wrap justify-center gap-4">
 			<div class="w-full lg:w-2/3 xl:w-3/6">

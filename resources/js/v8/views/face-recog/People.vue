@@ -1,9 +1,11 @@
 <template>
 	<div class="h-svh overflow-y-auto">
-		<div class="w-full border-0 h-14 flex items-center justify-between px-2">
-			<OpenLeftMenu />
-			<span class="absolute left-1/2 -translate-x-1/2 pointer-events-none">{{ $t("people.title") }}</span>
-			<div class="flex items-center gap-2">
+		<UHeader :toggle="false">
+			<template #left>
+				<OpenLeftMenu />
+			</template>
+			{{ $t("people.title") }}
+			<template #right>
 				<UButton
 					v-if="userStore.isAdmin"
 					:label="$t('maintenance.face_quality.title')"
@@ -27,8 +29,8 @@
 						}
 					"
 				/>
-			</div>
-		</div>
+			</template>
+		</UHeader>
 
 		<div v-if="loading" class="flex justify-center items-center mt-20">
 			<Spinner class="text-4xl" />
