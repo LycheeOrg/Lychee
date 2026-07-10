@@ -23,7 +23,7 @@ return [
     'support' => 'Asistencia',
     'contact' => 'Contacto',
     'messages' => 'Mensajes',
-    'people' => 'People',
+    'people' => 'Gente',
     'webhooks' => 'Webhooks',
     'shopSizes' => 'Catálogo de tallas',
 ];
