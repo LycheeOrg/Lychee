@@ -41,7 +41,6 @@ import { useLayoutStore } from "@/stores/LayoutState";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { usePhotosStore } from "@/stores/PhotosState";
 import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
-import { onKeyStroke } from "@vueuse/core";
 import { storeToRefs } from "pinia";
 import { ref, computed, onMounted } from "vue";
 import { Collapse } from "vue-collapsed";
@@ -73,15 +72,20 @@ function photoClick(photoId: string, _e: MouseEvent) {
 	router.push({ name: "album", params: { albumId: photo.album_id ?? ALL, photoId: photo.id } });
 }
 
-onKeyStroke("f", () => !shouldIgnoreKeystroke() && togglableStore.toggleFullScreen());
-onKeyStroke("Escape", () => {
-	// 1. lose focus
-	if (shouldIgnoreKeystroke() && document.activeElement instanceof HTMLElement) {
-		document.activeElement.blur();
-		return;
-	}
+defineShortcuts({
+	f: () => togglableStore.toggleFullScreen(),
+	escape: {
+		usingInput: true,
+		handler: () => {
+			// 1. lose focus
+			if (shouldIgnoreKeystroke() && document.activeElement instanceof HTMLElement) {
+				document.activeElement.blur();
+				return;
+			}
 
-	goBack();
+			goBack();
+		},
+	},
 });
 
 onMounted(async () => {

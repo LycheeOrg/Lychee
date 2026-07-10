@@ -33,7 +33,6 @@ import "leaflet.markercluster/dist/leaflet.markercluster.js";
 import "leaflet/dist/leaflet.css";
 import "leaflet-gpx/gpx.js";
 import { useAppToast } from "@/v8/composables/useAppToast";
-import { onKeyStroke } from "@vueuse/core";
 import Constants from "@/services/constants";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { onMounted } from "vue";
@@ -285,8 +284,11 @@ function updateZoom() {
 	}
 }
 
-onKeyStroke("Escape", () => {
-	goBack();
+defineShortcuts({
+	escape: {
+		usingInput: true,
+		handler: () => goBack(),
+	},
 });
 
 onMounted(() => {

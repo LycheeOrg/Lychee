@@ -45,8 +45,6 @@ import SettingsService from "@/services/settings-service";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { ref } from "vue";
 import { useAppToast } from "@/v8/composables/useAppToast";
-import { onKeyStroke } from "@vueuse/core";
-import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import { trans } from "laravel-vue-i18n";
 import type { TableColumn } from "@nuxt/ui";
 
@@ -150,5 +148,7 @@ const shortcutsList = ref([
 	},
 ]);
 
-onKeyStroke("?", () => !shouldIgnoreKeystroke() && (open.value = true));
+defineShortcuts({
+	"?": () => (open.value = true),
+});
 </script>

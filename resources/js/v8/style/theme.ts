@@ -10,6 +10,9 @@ export const theme: ThemeProps = {
 		},
 	},
 	ui: {
+		button: {
+			base: "rounded-xl",
+		},
 		slideover: {
 			body: "border-b-0 pt-0 sm:pt-0",
 			header: "border-b-0",

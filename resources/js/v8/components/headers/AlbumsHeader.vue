@@ -37,7 +37,7 @@
 
 		<template #right>
 			<template v-if="userStore.isGuest">
-				<UButton as="router-link" :to="{ name: 'login' }" color="neutral" variant="ghost" class="py-2 px-4 rounded-xl hidden xl:inline-flex">
+				<UButton as="router-link" :to="{ name: 'login' }" color="neutral" variant="ghost" class="py-2 px-4 hidden xl:inline-flex">
 					{{ $t("dialogs.login.signin") }}
 				</UButton>
 				<UButton
@@ -46,7 +46,7 @@
 					:to="{ name: 'register' }"
 					color="neutral"
 					variant="ghost"
-					class="py-2 px-4 rounded-xl mr-12 lg:mr-0 inline-flex"
+					class="py-2 px-4 mr-12 lg:mr-0 inline-flex"
 				>
 					{{ $t("profile.register.signup") }}
 				</UButton>
@@ -105,9 +105,8 @@
 </template>
 <script setup lang="ts">
 import { computed, ComputedRef } from "vue";
-import { onKeyStroke } from "@vueuse/core";
 import { useLycheeStateStore } from "@/stores/LycheeState";
-import { isTouchDevice, shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
+import { isTouchDevice } from "@/utils/keybindings-utils";
 import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
@@ -216,41 +215,45 @@ function toggleToList() {
 	lycheeStore.album_view_mode = "list";
 }
 
-onKeyStroke("n", () => !shouldIgnoreKeystroke() && albumsStore.rootRights?.can_upload && (is_create_album_visible.value = true));
-onKeyStroke("u", () => !shouldIgnoreKeystroke() && albumsStore.rootRights?.can_upload && (is_upload_visible.value = true));
-onKeyStroke("/", () => !shouldIgnoreKeystroke() && albumsStore.rootConfig?.is_search_accessible && openSearch());
-
-// on key stroke escape:
-// 1. lose focus
-// 2. close modals
-// 3. go back
-onKeyStroke("Escape", () => {
+defineShortcuts({
+	n: () => albumsStore.rootRights?.can_upload && (is_create_album_visible.value = true),
+	u: () => albumsStore.rootRights?.can_upload && (is_upload_visible.value = true),
+	"/": () => albumsStore.rootConfig?.is_search_accessible && openSearch(),
+	// on key stroke escape:
 	// 1. lose focus
-	if (document.activeElement instanceof HTMLElement) {
-		document.activeElement.blur();
-		return;
-	}
-
 	// 2. close modals
-	if (is_login_open.value) {
-		is_login_open.value = false;
-		return;
-	}
+	// 3. go back
+	escape: {
+		usingInput: true,
+		handler: () => {
+			// 1. lose focus
+			if (document.activeElement instanceof HTMLElement) {
+				document.activeElement.blur();
+				return;
+			}
 
-	if (is_upload_visible.value) {
-		is_upload_visible.value = false;
-		return;
-	}
-	if (is_create_album_visible.value) {
-		is_create_album_visible.value = false;
-		return;
-	}
-	if (is_create_tag_album_visible.value) {
-		is_create_tag_album_visible.value = false;
-		return;
-	}
+			// 2. close modals
+			if (is_login_open.value) {
+				is_login_open.value = false;
+				return;
+			}
 
-	leftMenuStore.left_menu_open = false;
+			if (is_upload_visible.value) {
+				is_upload_visible.value = false;
+				return;
+			}
+			if (is_create_album_visible.value) {
+				is_create_album_visible.value = false;
+				return;
+			}
+			if (is_create_tag_album_visible.value) {
+				is_create_tag_album_visible.value = false;
+				return;
+			}
+
+			leftMenuStore.left_menu_open = false;
+		},
+	},
 });
 
 type Link = {

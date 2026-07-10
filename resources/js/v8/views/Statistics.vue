@@ -34,8 +34,6 @@ import { useUserStore } from "@/stores/UserState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
-import { onKeyStroke } from "@vueuse/core";
-import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import SizeVariantMeter from "@/v8/components/statistics/SizeVariantMeter.vue";
 import TotalCard from "@/v8/components/statistics/TotalCard.vue";
 import AlbumsTable from "@/v8/components/statistics/AlbumsTable.vue";
@@ -63,5 +61,7 @@ onMounted(async () => {
 	}
 });
 
-onKeyStroke("h", () => !shouldIgnoreKeystroke() && (are_nsfw_visible.value = !are_nsfw_visible.value));
+defineShortcuts({
+	h: () => (are_nsfw_visible.value = !are_nsfw_visible.value),
+});
 </script>

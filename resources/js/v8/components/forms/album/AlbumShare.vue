@@ -24,7 +24,7 @@
 				<UButton
 					icon="prime:plus"
 					color="primary"
-					class="p-3 w-full mt-4 font-bold justify-center rounded-xl"
+					class="p-3 w-full mt-4 font-bold justify-center"
 					:label="$t('sharing.add_new_access_permission')"
 					@click="
 						() => {
@@ -36,7 +36,7 @@
 					icon="prime:forward"
 					color="error"
 					:disabled="perms.length === 0"
-					class="p-3 w-full mt-4 font-bold justify-center rounded-xl disabled:opacity-50"
+					class="p-3 w-full mt-4 font-bold justify-center disabled:opacity-50"
 					:label="$t('sharing.propagate')"
 					@click="
 						() => {

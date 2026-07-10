@@ -21,7 +21,6 @@ import GoBack from "@/v8/components/headers/GoBack.vue";
 import { useSlideshowFunction } from "@/composables/photo/slideshow";
 import AlbumService from "@/services/album-service";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
-import { onKeyStroke } from "@vueuse/core";
 import { ref, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 
@@ -89,8 +88,11 @@ function goBack() {
 	}
 }
 
-onKeyStroke("Escape", () => {
-	goBack();
+defineShortcuts({
+	escape: {
+		usingInput: true,
+		handler: () => goBack(),
+	},
 });
 
 onMounted(() => {

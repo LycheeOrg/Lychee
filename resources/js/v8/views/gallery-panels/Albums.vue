@@ -338,29 +338,14 @@ defineShortcuts({
 	f: () => togglableStore.toggleFullScreen(),
 	" ": () => unselect(),
 	m: () => albumsStore.rootRights?.can_edit && hasSelection() && toggleMove(),
-	Delete: () => albumsStore.rootRights?.can_edit && hasSelection() && toggleDelete(),
-	Backspace: () => albumsStore.rootRights?.can_edit && hasSelection() && toggleDelete(),
+	delete: () => albumsStore.rootRights?.can_edit && hasSelection() && toggleDelete(),
+	backspace: () => albumsStore.rootRights?.can_edit && hasSelection() && toggleDelete(),
 	meta_a: () => {
 		selectEverything();
 	},
 	l: () => !userStore.isLoggedIn && (is_login_open.value = true),
 	k: () => !userStore.isLoggedIn && (is_webauthn_open.value = true),
 });
-
-// onKeyStroke("h", () => !shouldIgnoreKeystroke() && (are_nsfw_visible.value = !are_nsfw_visible.value));
-// onKeyStroke("f", () => !shouldIgnoreKeystroke() && togglableStore.toggleFullScreen());
-// onKeyStroke(" ", () => !shouldIgnoreKeystroke() && unselect());
-// onKeyStroke("m", () => !shouldIgnoreKeystroke() && albumsStore.rootRights?.can_edit && hasSelection() && toggleMove());
-// onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && albumsStore.rootRights?.can_edit && hasSelection() && toggleDelete());
-
-// onKeyStroke("a", (e) => {
-// 	if (!shouldIgnoreKeystroke() && e.getModifierState(getModKey()) && !e.shiftKey && !e.altKey) {
-// 		e.preventDefault();
-// 		selectEverything();
-// 	}
-// });
-// onKeyStroke("l", () => !shouldIgnoreKeystroke() && !userStore.isLoggedIn && (is_login_open.value = true));
-// onKeyStroke("k", () => !shouldIgnoreKeystroke() && !userStore.isLoggedIn && (is_webauthn_open.value = true));
 
 const can_upload = computed(() => albumsStore.rootRights?.can_upload === true);
 const root_parent_id = ref<string | null>(null);

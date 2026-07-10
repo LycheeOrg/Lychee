@@ -7,7 +7,7 @@
 				<UButton
 					color="neutral"
 					variant="soft"
-					class="w-full font-bold shrink rounded-xl mt-4 justify-center"
+					class="w-full font-bold shrink mt-4 justify-center"
 					@click="
 						() => {
 							isApiTokenOpen = !isApiTokenOpen;

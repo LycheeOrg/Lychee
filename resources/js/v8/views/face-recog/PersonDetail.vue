@@ -178,7 +178,7 @@ import { useRouter } from "vue-router";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import Spinner from "@/v8/components/Spinner.vue";
 import { trans } from "laravel-vue-i18n";
-import { useDebounceFn, onKeyStroke } from "@vueuse/core";
+import { useDebounceFn } from "@vueuse/core";
 import { initLayouts, justified } from "@/v8/layouts/wasmLayouts";
 import MergePersonModal from "@/v8/components/modals/faceRecog/MergePersonModal.vue";
 import PaginationInfiniteScroll from "@/v8/components/pagination/PaginationInfiniteScroll.vue";
@@ -614,37 +614,40 @@ function onMerged(targetPersonId: string) {
 }
 
 // Keybindings
-// Photo operations (arrow keys are flipped for RTL languages)
-onKeyStroke("ArrowLeft", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && isLTR() && photoStore.hasPrevious && previous());
-onKeyStroke("ArrowRight", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && isLTR() && photoStore.hasNext && next());
-onKeyStroke("ArrowLeft", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && !isLTR() && photoStore.hasNext && next());
-onKeyStroke("ArrowRight", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && !isLTR() && photoStore.hasPrevious && previous());
-onKeyStroke("i", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && toggleDetails());
-onKeyStroke("o", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && rotateOverlay());
-onKeyStroke(" ", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && is_slideshow_enabled.value && slideshow());
-onKeyStroke("f", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && togglableStore.toggleFullScreen());
+defineShortcuts({
+	// Photo operations (arrow keys are flipped for RTL languages)
+	arrowleft: () => photoStore.isLoaded && (isLTR() ? photoStore.hasPrevious && previous() : photoStore.hasNext && next()),
+	arrowright: () => photoStore.isLoaded && (isLTR() ? photoStore.hasNext && next() : photoStore.hasPrevious && previous()),
+	i: () => photoStore.isLoaded && toggleDetails(),
+	o: () => photoStore.isLoaded && rotateOverlay(),
+	" ": () => photoStore.isLoaded && is_slideshow_enabled.value && slideshow(),
+	f: () => photoStore.isLoaded && togglableStore.toggleFullScreen(),
 
-// Escape handling
-onKeyStroke("Escape", () => {
-	// Stop slideshow if active
-	if (is_slideshow_active.value) {
-		stop();
-		return;
-	}
+	// Escape handling
+	escape: {
+		usingInput: true,
+		handler: () => {
+			// Stop slideshow if active
+			if (is_slideshow_active.value) {
+				stop();
+				return;
+			}
 
-	// Lose focus if input is focused
-	if (shouldIgnoreKeystroke() && document.activeElement instanceof HTMLElement) {
-		document.activeElement.blur();
-		return;
-	}
+			// Lose focus if input is focused
+			if (shouldIgnoreKeystroke() && document.activeElement instanceof HTMLElement) {
+				document.activeElement.blur();
+				return;
+			}
 
-	// If photo is open, close it
-	if (photoStore.isLoaded) {
-		closePhoto();
-		return;
-	}
+			// If photo is open, close it
+			if (photoStore.isLoaded) {
+				closePhoto();
+				return;
+			}
 
-	// Otherwise, go back to people list
-	router.push({ name: "people" });
+			// Otherwise, go back to people list
+			router.push({ name: "people" });
+		},
+	},
 });
 </script>

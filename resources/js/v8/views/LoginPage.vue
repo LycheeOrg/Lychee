@@ -28,7 +28,7 @@
 			</template>
 		</div>
 		<LoginForm padding="" @logged-in="goBack" />
-		<UButton color="neutral" variant="soft" class="w-full max-w-md font-bold rounded-xl justify-center" @click="goBack">
+		<UButton color="neutral" variant="soft" class="w-full max-w-md font-bold justify-center" @click="goBack">
 			{{ $t("dialogs.button.cancel") }}
 		</UButton>
 		<div v-if="is_registration_enabled && is_basic_auth_enabled" class="text-center mt-4">

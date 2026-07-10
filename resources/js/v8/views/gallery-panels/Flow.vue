@@ -37,7 +37,7 @@ import { useFlowStateStore } from "@/stores/FlowState";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { isTouchDevice, shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
-import { onKeyStroke, useIntersectionObserver } from "@vueuse/core";
+import { useIntersectionObserver } from "@vueuse/core";
 import { storeToRefs } from "pinia";
 import { onMounted } from "vue";
 import { onUnmounted } from "vue";
@@ -169,19 +169,22 @@ function previous() {
 	photoStore.photo = selectedAlbum.value?.photos.find((photo) => photo.id === photoStore.photo?.previous_photo_id);
 }
 
-onKeyStroke("ArrowLeft", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && isLTR() && photoStore.hasPrevious && previous());
-onKeyStroke("ArrowRight", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && isLTR() && photoStore.hasNext && next());
-onKeyStroke("ArrowLeft", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && !isLTR() && photoStore.hasNext && next());
-onKeyStroke("ArrowRight", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && !isLTR() && photoStore.hasPrevious && previous());
-onKeyStroke("o", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && rotateOverlay());
-onKeyStroke("Escape", () => {
-	// 1. lose focus
-	if (shouldIgnoreKeystroke() && document.activeElement instanceof HTMLElement) {
-		document.activeElement.blur();
-		return;
-	}
+defineShortcuts({
+	arrowleft: () => photoStore.isLoaded && (isLTR() ? photoStore.hasPrevious && previous() : photoStore.hasNext && next()),
+	arrowright: () => photoStore.isLoaded && (isLTR() ? photoStore.hasNext && next() : photoStore.hasPrevious && previous()),
+	o: () => photoStore.isLoaded && rotateOverlay(),
+	escape: {
+		usingInput: true,
+		handler: () => {
+			// 1. lose focus
+			if (shouldIgnoreKeystroke() && document.activeElement instanceof HTMLElement) {
+				document.activeElement.blur();
+				return;
+			}
 
-	goBack();
+			goBack();
+		},
+	},
 });
 </script>
 <style>

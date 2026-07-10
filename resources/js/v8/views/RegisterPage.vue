@@ -39,7 +39,7 @@
 				<UAlert v-if="confirmationError" color="error" variant="soft" class="text-sm mt-2" :description="confirmationError" />
 			</div>
 			<div class="flex items-center mt-9">
-				<UButton :disabled="!isFormValid" color="neutral" class="w-full font-bold justify-center rounded-xl" @click="register">
+				<UButton :disabled="!isFormValid" color="neutral" class="w-full font-bold justify-center" @click="register">
 					{{ $t("profile.register.signup") }}
 				</UButton>
 			</div>
