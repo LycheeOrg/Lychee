@@ -56,6 +56,8 @@ return [
         'album_decoration' => 'Zobrazit dekorace na obálce alba (počet podalb a/nebo fotografií)',
         'album_decoration_direction' => 'Zarovnat dekorace alba vodorovně nebo svisle',
         'photo_overlay' => 'Výchozí informace o překrytí obrázků',
+        'rounded_corners_enabled' => 'Zaoblit rohy miniatur fotografií a alb',
+        'album_border_enabled' => 'Zobrazit okraj kolem miniatur fotografií a alb',
         'license_default' => 'Výchozí licence používaná pro alba',
         'license_help' => 'Potřebujete pomoc s výběrem?',
     ],

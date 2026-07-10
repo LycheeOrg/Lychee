@@ -56,6 +56,8 @@ return [
         'album_decoration' => 'Pokaż dekoracje na okładce albumu (liczba podalbumów i/lub zdjęć)',
         'album_decoration_direction' => 'Wyrównanie dekoracji albumu w poziomie lub w pionie',
         'photo_overlay' => 'Domyślne informacje o nakładce obrazu',
+        'rounded_corners_enabled' => 'Zaokrąglaj rogi miniatur zdjęć i albumów',
+        'album_border_enabled' => 'Pokaż obramowanie wokół miniatur zdjęć i albumów',
         'license_default' => 'Domyślna licencja używana dla albumów',
         'license_help' => 'Potrzebujesz pomocy w wyborze?',
     ],
