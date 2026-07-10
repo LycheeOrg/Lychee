@@ -2,7 +2,10 @@
 	<div
 		class=""
 		:class="{
-			'overlay absolute mb-px mx-px p-0 border-0 w-[calc(100%-2px)] bottom-0 bg-linear-to-t from-[#00000099] text-shadow-sm': true,
+			'overlay absolute p-0 border-0 bottom-0 bg-linear-to-t from-black/60 text-shadow-sm': true,
+			'mb-px mx-px w-[calc(100%-2px)]': is_album_border_enabled,
+			'w-full': !is_album_border_enabled,
+			'rounded-b-lg': is_rounded_corners_enabled,
 			'opacity-0 group-hover:opacity-100 transition-all ease-out': display_thumb_album_overlay === 'hover',
 		}"
 	>
@@ -41,7 +44,7 @@ import { storeToRefs } from "pinia";
 const { isLTR } = useLtRorRtL();
 
 const lycheeStore = useLycheeStateStore();
-const { album_subtitle_type, display_thumb_album_overlay } = storeToRefs(lycheeStore);
+const { album_subtitle_type, display_thumb_album_overlay, is_album_border_enabled, is_rounded_corners_enabled } = storeToRefs(lycheeStore);
 
 const subtitle = computed(() => {
 	switch (album_subtitle_type.value) {

@@ -1,5 +1,5 @@
 <template>
-	<div v-if="isTimeline === false" class="border-0 w-full" :class="paddingTopClass">
+	<div v-if="isTimeline === false" class="border-0 w-full px-4" :class="paddingTopClass">
 		<template v-if="isAlone">
 			<div class="flex flex-wrap flex-row shrink w-full justify-start gap-1 sm:gap-2 md:gap-4 pt-4">
 				<AlbumListView
@@ -52,9 +52,9 @@
 			<div
 				v-if="albumTimeline.data.filter((a) => !a.is_nsfw || are_nsfw_visible).length > 0"
 				class="flex flex-wrap flex-row shrink w-full justify-start gap-1 sm:gap-2 md:gap-4 pb-8"
-				:class="{ 'ltr:border-l rtl:border-r border-neutral-300 dark:border-neutral-600 ltr:pl-4 rtl:pr-4': isLeftBorderVisible }"
+				:class="{ 'ltr:border-l rtl:border-r border-accented ltr:pl-4 rtl:pr-4': isLeftBorderVisible }"
 			>
-				<div class="w-full ltr:text-left rtl:text-right font-semibold text-muted-color-emphasis text-lg">{{ albumTimeline.header }}</div>
+				<div class="w-full ltr:text-left rtl:text-right font-semibold text-toned text-lg">{{ albumTimeline.header }}</div>
 
 				<AlbumListView
 					v-if="album_view_mode === 'list'"

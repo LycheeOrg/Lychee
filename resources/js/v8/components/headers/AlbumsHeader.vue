@@ -1,16 +1,16 @@
 <template>
-	<div
+	<UHeader
 		v-if="albumsStore.rootConfig && albumsStore.rootRights"
-		class="w-full z-10 border-0 h-14 flex-nowrap relative flex items-center justify-between px-2"
 		:class="{
 			'bg-transparent': albumsStore.rootConfig.is_header_bar_transparent,
-			'bg-linear-to-b dark:from-surface-800 from-surface-50 via-75% light:via-surface-50/80 light:to-surface-50/20':
-				albumsStore.rootConfig.is_header_bar_gradient,
+			'max-h-14': !is_full_screen,
+			'max-h-0 overflow-hidden': is_full_screen,
 		}"
+		:toggle="false"
 	>
-		<div class="flex items-center">
+		<template #left>
 			<OpenLeftMenu />
-		</div>
+		</template>
 
 		<div class="absolute top-0 py-3 left-1/2 -translate-x-1/2 h-14 flex items-center">
 			<template v-if="albumsStore.rootConfig.header_image_url === ''">
@@ -35,9 +35,9 @@
 			</template>
 		</div>
 
-		<div class="flex items-center gap-1">
+		<template #right>
 			<template v-if="userStore.isGuest">
-				<UButton as="router-link" :to="{ name: 'login' }" color="neutral" variant="ghost" class="py-2 px-4 rounded-xl hidden xl:inline-flex">
+				<UButton as="router-link" :to="{ name: 'login' }" color="neutral" variant="ghost" class="py-2 px-4 hidden xl:inline-flex">
 					{{ $t("dialogs.login.signin") }}
 				</UButton>
 				<UButton
@@ -46,7 +46,7 @@
 					:to="{ name: 'register' }"
 					color="neutral"
 					variant="ghost"
-					class="py-2 px-4 rounded-xl mr-12 lg:mr-0 inline-flex"
+					class="py-2 px-4 mr-12 lg:mr-0 inline-flex"
 				>
 					{{ $t("profile.register.signup") }}
 				</UButton>
@@ -81,8 +81,8 @@
 			<UDropdownMenu :items="mobileMenuSections" class="lg:hidden">
 				<UButton icon="prime:angle-double-down" color="neutral" variant="ghost" />
 			</UDropdownMenu>
-		</div>
-	</div>
+		</template>
+	</UHeader>
 	<div v-if="albumsStore.rootConfig?.header_image_url !== ''" class="relative w-full h-[50vh] -mt-14 z-0">
 		<img :src="albumsStore.rootConfig?.header_image_url" class="object-cover h-full w-full" />
 		<div class="absolute top-0 left-0 w-full h-full flex items-center justify-center px-20">
@@ -95,7 +95,7 @@
 			/>
 			<h1
 				v-else
-				class="text-sm font-bold sm:text-lg md:text-3xl md:font-normal text-surface-0 uppercase text-center text-shadow-md text-shadow-black/25"
+				class="text-sm font-bold sm:text-lg md:text-3xl md:font-normal text-white uppercase text-center text-shadow-md text-shadow-black/25"
 				id="header-site-text"
 			>
 				{{ props.title }}
@@ -105,9 +105,8 @@
 </template>
 <script setup lang="ts">
 import { computed, ComputedRef } from "vue";
-import { onKeyStroke } from "@vueuse/core";
 import { useLycheeStateStore } from "@/stores/LycheeState";
-import { isTouchDevice, shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
+import { isTouchDevice } from "@/utils/keybindings-utils";
 import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
@@ -143,7 +142,8 @@ const orderManagementStore = useOrderManagementStore();
 
 const { dropbox_api_key, is_favourite_enabled, is_se_preview_enabled, is_live_metrics_enabled, is_registration_enabled, is_person_album_enabled } =
 	storeToRefs(lycheeStore);
-const { is_login_open, is_upload_visible, is_create_album_visible, is_create_tag_album_visible, is_metrics_open } = storeToRefs(togglableStore);
+const { is_login_open, is_upload_visible, is_create_album_visible, is_create_tag_album_visible, is_metrics_open, is_full_screen } =
+	storeToRefs(togglableStore);
 
 const router = useRouter();
 
@@ -215,41 +215,45 @@ function toggleToList() {
 	lycheeStore.album_view_mode = "list";
 }
 
-onKeyStroke("n", () => !shouldIgnoreKeystroke() && albumsStore.rootRights?.can_upload && (is_create_album_visible.value = true));
-onKeyStroke("u", () => !shouldIgnoreKeystroke() && albumsStore.rootRights?.can_upload && (is_upload_visible.value = true));
-onKeyStroke("/", () => !shouldIgnoreKeystroke() && albumsStore.rootConfig?.is_search_accessible && openSearch());
-
-// on key stroke escape:
-// 1. lose focus
-// 2. close modals
-// 3. go back
-onKeyStroke("Escape", () => {
+defineShortcuts({
+	n: () => albumsStore.rootRights?.can_upload && (is_create_album_visible.value = true),
+	u: () => albumsStore.rootRights?.can_upload && (is_upload_visible.value = true),
+	"/": () => albumsStore.rootConfig?.is_search_accessible && openSearch(),
+	// on key stroke escape:
 	// 1. lose focus
-	if (document.activeElement instanceof HTMLElement) {
-		document.activeElement.blur();
-		return;
-	}
-
 	// 2. close modals
-	if (is_login_open.value) {
-		is_login_open.value = false;
-		return;
-	}
+	// 3. go back
+	escape: {
+		usingInput: true,
+		handler: () => {
+			// 1. lose focus
+			if (document.activeElement instanceof HTMLElement) {
+				document.activeElement.blur();
+				return;
+			}
 
-	if (is_upload_visible.value) {
-		is_upload_visible.value = false;
-		return;
-	}
-	if (is_create_album_visible.value) {
-		is_create_album_visible.value = false;
-		return;
-	}
-	if (is_create_tag_album_visible.value) {
-		is_create_tag_album_visible.value = false;
-		return;
-	}
+			// 2. close modals
+			if (is_login_open.value) {
+				is_login_open.value = false;
+				return;
+			}
 
-	leftMenuStore.left_menu_open = false;
+			if (is_upload_visible.value) {
+				is_upload_visible.value = false;
+				return;
+			}
+			if (is_create_album_visible.value) {
+				is_create_album_visible.value = false;
+				return;
+			}
+			if (is_create_tag_album_visible.value) {
+				is_create_tag_album_visible.value = false;
+				return;
+			}
+
+			leftMenuStore.left_menu_open = false;
+		},
+	},
 });
 
 type Link = {
@@ -313,7 +317,7 @@ const menu = computed(() =>
 			key: "metrics",
 		},
 		{
-			icon: "pi pi-bell text-primary-emphasis",
+			icon: "pi pi-bell text-primary",
 			type: "fn",
 			callback: () => (is_metrics_open.value = true),
 			if: is_se_preview_enabled.value && albumsStore.rootRights?.can_see_live_metrics,

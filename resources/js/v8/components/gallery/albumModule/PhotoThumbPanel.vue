@@ -1,5 +1,5 @@
 <template>
-	<div id="lychee_view_content" class="w-full border-0">
+	<UContainer id="lychee_view_content" class="w-full border-0">
 		<div class="flex items-center justify-between gap-2 py-2">
 			<h2 class="font-semibold text-highlighted">{{ $t(props.header) }}</h2>
 			<div class="flex items-center gap-1" v-if="withControl">
@@ -32,10 +32,10 @@
 					data-type="timelineBlock"
 					:data-date="photoTimeline.data[0].timeline?.time_date"
 					class="flex flex-wrap flex-row shrink w-full justify-start gap-1 sm:gap-2 md:gap-4 pb-8"
-					:class="{ 'ltr:border-l rtl:border-r border-neutral-300 dark:border-neutral-600 ltr:pl-4 rtl:pr-4': isLeftBorderVisible }"
+					:class="{ 'ltr:border-l rtl:border-r border-accented ltr:pl-4 rtl:pr-4': isLeftBorderVisible }"
 					v-intersection-observer="onIntersectionObserver"
 				>
-					<div class="w-full ltr:text-left rtl:text-right font-semibold text-muted-color-emphasis text-lg">
+					<div class="w-full ltr:text-left rtl:text-right font-semibold text-toned text-lg">
 						{{ photoTimeline.header }}
 					</div>
 					<PhotoThumbPanelList
@@ -51,7 +51,7 @@
 				</div>
 			</template>
 		</template>
-	</div>
+	</UContainer>
 </template>
 <script setup lang="ts">
 import { computed, onMounted } from "vue";

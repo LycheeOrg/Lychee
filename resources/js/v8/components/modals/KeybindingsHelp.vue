@@ -4,32 +4,32 @@
 			<h1 class="text-center text-xl font-bold w-full">{{ $t("dialogs.keybindings.header") }}</h1>
 		</template>
 		<template #body>
-			<div class="flex flex-wrap gap-2 justify-center align-top max-h-[80vh] overflow-y-auto">
+			<div class="flex flex-wrap gap-4 justify-center align-top">
 				<UTable
 					v-for="(list, idx) in shortcutsList"
 					:key="`list-${idx}`"
 					:data="list.shortcuts"
 					:columns="columns"
-					class="max-w-xs w-full"
-					:ui="{ thead: 'hidden' }"
+					class="max-w-2xs w-full"
+					:ui="{ thead: 'hidden', td: 'px-2 py-1' }"
 				>
 					<template #key-cell="{ row }">
-						<kbd
-							v-for="k in (row.original.key as string).split(' ')"
-							:key="`key-${idx}-${k}`"
-							class="py-0.5 px-2 ml-2 rounded border border-black/30 text-xs shadow-black/5 bg-elevated shadow-sm font-mono"
-						>
-							{{ k }}
-						</kbd>
+						<div class="ltr:text-right rtl:text-left">
+							<UKbd
+								v-for="k in (row.original.key as string).split(' ')"
+								:key="`key-${idx}-${k}`"
+								variant="subtle"
+								class="ml-2"
+								:value="k"
+							/>
+						</div>
 					</template>
 				</UTable>
 				<div class="w-full flex justify-center mt-4 items-center gap-2">
-					<UCheckbox v-model="doNotShowAgain" input-id="doNotShowAgain" />
-					<label for="doNotShowAgain" class="text-sm text-muted">{{ $t("dialogs.keybindings.don_t_show_again") }}</label>
+					<UCheckbox v-model="doNotShowAgain" :ui="{ label: 'text-muted' }" :label="trans('dialogs.keybindings.don_t_show_again')" />
 				</div>
 				<div class="w-full flex justify-center mb-4 items-center gap-2">
-					<UCheckbox v-model="hideHeaderButton" input-id="hideHeaderButton" />
-					<label for="hideHeaderButton" class="text-sm text-muted">{{ $t("dialogs.keybindings.hide_header_button") }}</label>
+					<UCheckbox v-model="hideHeaderButton" :ui="{ label: 'text-muted' }" :label="trans('dialogs.keybindings.hide_header_button')" />
 				</div>
 			</div>
 		</template>
@@ -45,8 +45,6 @@ import SettingsService from "@/services/settings-service";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { ref } from "vue";
 import { useAppToast } from "@/v8/composables/useAppToast";
-import { onKeyStroke } from "@vueuse/core";
-import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import { trans } from "laravel-vue-i18n";
 import type { TableColumn } from "@nuxt/ui";
 
@@ -115,7 +113,7 @@ const shortcutsList = ref([
 			{ action: trans("dialogs.keybindings.upload_photos"), key: "u" },
 			{ action: trans("dialogs.keybindings.search"), key: "/" },
 			{ action: trans("dialogs.keybindings.show_this_modal"), key: "?" },
-			{ action: trans("dialogs.keybindings.select_all"), key: "ctrl/cmd a" },
+			{ action: trans("dialogs.keybindings.select_all"), key: "meta a" },
 			{ action: trans("dialogs.keybindings.move_selection"), key: "m" },
 			{ action: trans("dialogs.keybindings.delete_selection"), key: "BckSpace" },
 		],
@@ -127,7 +125,7 @@ const shortcutsList = ref([
 			{ action: trans("dialogs.keybindings.upload_photos"), key: "u" },
 			{ action: trans("dialogs.keybindings.search"), key: "/" },
 			{ action: trans("dialogs.keybindings.slideshow"), key: "Space" },
-			{ action: trans("dialogs.keybindings.select_all"), key: "ctrl/cmd a" },
+			{ action: trans("dialogs.keybindings.select_all"), key: "meta a" },
 			{ action: trans("dialogs.keybindings.move_selection"), key: "m" },
 			{ action: trans("dialogs.keybindings.delete_selection"), key: "BckSpace" },
 			{ action: trans("dialogs.keybindings.toggle"), key: "i" },
@@ -150,5 +148,7 @@ const shortcutsList = ref([
 	},
 ]);
 
-onKeyStroke("?", () => !shouldIgnoreKeystroke() && (open.value = true));
+defineShortcuts({
+	"?": () => (open.value = true),
+});
 </script>

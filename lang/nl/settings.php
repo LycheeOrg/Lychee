@@ -56,6 +56,8 @@ return [
         'album_decoration' => 'Toon decoraties op albumhoes (sub-album en/of aantal foto’s)',
         'album_decoration_direction' => 'Lijn albumdecoraties horizontaal of verticaal uit',
         'photo_overlay' => 'Standaard overlay-informatie voor afbeeldingen',
+        'rounded_corners_enabled' => 'Rond de hoeken van foto- en albumminiaturen af',
+        'album_border_enabled' => 'Toon een rand rond foto- en albumminiaturen',
         'license_default' => 'Standaardlicentie gebruikt voor albums',
         'license_help' => 'Hulp nodig bij het kiezen?',
     ],

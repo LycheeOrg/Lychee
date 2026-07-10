@@ -1,17 +1,23 @@
 <template>
-	<div class="w-full border-0 h-14 flex items-center justify-between px-2">
-		<OpenLeftMenu />
-		<span class="absolute left-1/2 -translate-x-1/2 pointer-events-none">{{ $t("admin-dashboard.title") }}</span>
-		<UButton
-			v-if="initData?.settings.can_edit"
-			:label="$t('admin-dashboard.refresh')"
-			icon="prime:refresh"
-			:disabled="isLoading"
-			color="neutral"
-			variant="ghost"
-			@click="refreshStats"
-		/>
-	</div>
+	<UHeader :toggle="false">
+		<template #left>
+			<OpenLeftMenu />
+		</template>
+
+		{{ $t("admin-dashboard.title") }}
+
+		<template #right>
+			<UButton
+				v-if="initData?.settings.can_edit"
+				:label="$t('admin-dashboard.refresh')"
+				icon="prime:refresh"
+				:disabled="isLoading"
+				color="neutral"
+				variant="ghost"
+				@click="refreshStats"
+			/>
+		</template>
+	</UHeader>
 
 	<div class="admin-dashboard max-w-7xl mx-auto p-4">
 		<!-- Update Status (only for full admins) -->
@@ -126,9 +132,9 @@
 								@keydown.space.prevent="navigateTile(tile)"
 							>
 								<UChip v-if="tile.num && tile.num.value > 0" :text="tile.num.value" color="primary">
-									<PiMiniIcon :icon="tile.icon" class="w-6 h-6 text-2xl fill-surface-0" />
+									<PiMiniIcon :icon="tile.icon" class="w-6 h-6 text-2xl fill-white" />
 								</UChip>
-								<PiMiniIcon v-else :icon="tile.icon" class="w-6 h-6 text-2xl fill-surface-0" />
+								<PiMiniIcon v-else :icon="tile.icon" class="w-6 h-6 text-2xl fill-white" />
 								<span class="text-sm">{{ $t(tile.label) }}</span>
 							</component>
 						</template>

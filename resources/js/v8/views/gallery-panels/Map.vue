@@ -1,11 +1,17 @@
 <template>
-	<Collapse :when="!is_full_screen">
-		<div class="w-full border-0 h-14 flex items-center justify-between px-2">
+	<UHeader
+		:toggle="false"
+		:class="{
+			'max-h-14': !is_full_screen,
+			'max-h-0': is_full_screen,
+		}"
+	>
+		<template #left>
 			<GoBack @go-back="goBack" />
-			<span class="absolute left-1/2 -translate-x-1/2 pointer-events-none">{{ $t(lycheeStore.title) }}</span>
-			<div></div>
-		</div>
-	</Collapse>
+		</template>
+
+		{{ $t(lycheeStore.title) }}
+	</UHeader>
 	<div
 		id="lychee_map_container"
 		class="leaflet-container leaflet-touch leaflet-retina leaflet-fade-anim leaflet-grab leaflet-touch-drag leaflet-touch-zoom w-full"
@@ -20,7 +26,6 @@ import { useLycheeStateStore } from "@/stores/LycheeState";
 import { trans } from "laravel-vue-i18n";
 import { storeToRefs } from "pinia";
 import { ref, Ref } from "vue";
-import { Collapse } from "vue-collapsed";
 import { useRouter } from "vue-router";
 import L, { LatLngBoundsLiteral } from "leaflet";
 import "leaflet-rotatedmarker/leaflet.rotatedMarker.js";
@@ -28,7 +33,6 @@ import "leaflet.markercluster/dist/leaflet.markercluster.js";
 import "leaflet/dist/leaflet.css";
 import "leaflet-gpx/gpx.js";
 import { useAppToast } from "@/v8/composables/useAppToast";
-import { onKeyStroke } from "@vueuse/core";
 import Constants from "@/services/constants";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { onMounted } from "vue";
@@ -139,9 +143,9 @@ function open() {
 		if (photo.url2x !== "") {
 			template = template.concat(
 				'<img class=" w-full h-auto" src="{url}" srcset="{url} 1x, {url2x} 2x" data-album-id="{albumID}" data-photo-id="{photoID}"/>',
-				'<div class=" pointer-events-none absolute w-full bottom-0 m-0 bg-gradient-to-t from-[#00000066] text-shadow" style="width:401px; bottom: 13px;">',
-				'<h1 class=" min-h-[19px] mt-3 mb-1 ml-3 text-color text-base font-bold overflow-hidden whitespace-nowrap text-ellipsis">{name}</h1>',
-				'<p class="block mt-0 mr-0 mb-2 ml-3 text-xs text-muted-color-emphasis">',
+				'<div class=" pointer-events-none absolute w-full bottom-0 m-0 bg-gradient-to-t from-black/40 text-shadow" style="width:401px; bottom: 13px;">',
+				'<h1 class=" min-h-[19px] mt-3 mb-1 ml-3 text-white text-base font-bold overflow-hidden whitespace-nowrap text-ellipsis">{name}</h1>',
+				'<p class="block mt-0 mr-0 mb-2 ml-3 text-xs text-white/70">',
 				'<span class="inline-block mx-2" title="' + camera_date + '">',
 				'<svg class="inline-block h-3 w-3 fill-neutral-400"><use xlink:href="#camera-slr" /></svg>',
 				"</span>",
@@ -151,9 +155,9 @@ function open() {
 		} else {
 			template = template.concat(
 				'<img class=" w-full h-auto" src="{url}" data-album-id="{albumID}" data-photo-id="{photoID}"/>',
-				'<div class=" pointer-events-none absolute w-full bottom-0 m-0 bg-gradient-to-t from-[#00000066] text-shadow" style="width:401px; bottom: 13px;">',
-				'<h1 class=" min-h-[19px] mt-3 mb-1 ml-3 text-color text-base font-bold overflow-hidden whitespace-nowrap text-ellipsis">{name}</h1>',
-				'<p class="block mt-0 mr-0 mb-2 ml-3 text-xs text-muted-color-emphasis">',
+				'<div class=" pointer-events-none absolute w-full bottom-0 m-0 bg-gradient-to-t from-black/40 text-shadow" style="width:401px; bottom: 13px;">',
+				'<h1 class=" min-h-[19px] mt-3 mb-1 ml-3 text-white text-base font-bold overflow-hidden whitespace-nowrap text-ellipsis">{name}</h1>',
+				'<p class="block mt-0 mr-0 mb-2 ml-3 text-xs text-white/70">',
 				'<span class="inline-block mx-2" title="' + camera_date + '">',
 				'<svg class="inline-block h-3 w-3 fill-neutral-400"><use xlink:href="#camera-slr" /></svg>',
 				"</span>",
@@ -280,8 +284,11 @@ function updateZoom() {
 	}
 }
 
-onKeyStroke("Escape", () => {
-	goBack();
+defineShortcuts({
+	escape: {
+		usingInput: true,
+		handler: () => goBack(),
+	},
 });
 
 onMounted(() => {

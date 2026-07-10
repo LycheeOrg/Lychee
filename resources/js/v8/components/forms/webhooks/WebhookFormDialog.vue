@@ -59,29 +59,23 @@
 
 					<!-- Payload toggles -->
 					<div class="grid grid-cols-2 gap-3 ltr:text-left rtl:text-right">
-						<div class="flex items-center gap-2">
-							<USwitch v-model="form.send_photo_id" id="send_photo_id" />
-							<label for="send_photo_id" class="font-semibold text-sm">{{ $t("webhook.field_send_photo_id") }}</label>
-						</div>
-						<div class="flex items-center gap-2">
-							<USwitch v-model="form.send_album_id" id="send_album_id" />
-							<label for="send_album_id" class="font-semibold text-sm">{{ $t("webhook.field_send_album_id") }}</label>
-						</div>
-						<div class="flex items-center gap-2">
-							<USwitch v-model="form.send_title" id="send_title" />
-							<label for="send_title" class="font-semibold text-sm">{{ $t("webhook.field_send_title") }}</label>
-						</div>
-						<div class="flex items-center gap-2">
-							<USwitch v-model="form.send_size_variants" id="send_size_variants" />
-							<label for="send_size_variants" class="font-semibold text-sm">{{ $t("webhook.field_send_size_variants") }}</label>
-						</div>
+						<USwitch v-model="form.send_photo_id" :label="$t('webhook.field_send_photo_id')" :ui="{ label: 'font-semibold text-sm' }" />
+						<USwitch v-model="form.send_album_id" :label="$t('webhook.field_send_album_id')" :ui="{ label: 'font-semibold text-sm' }" />
+						<USwitch v-model="form.send_title" :label="$t('webhook.field_send_title')" :ui="{ label: 'font-semibold text-sm' }" />
+						<USwitch
+							v-model="form.send_size_variants"
+							:label="$t('webhook.field_send_size_variants')"
+							:ui="{ label: 'font-semibold text-sm' }"
+						/>
 					</div>
 
 					<!-- Enabled -->
-					<div class="flex items-center gap-2 ltr:text-left rtl:text-right">
-						<USwitch v-model="form.enabled" id="wh_enabled" />
-						<label for="wh_enabled" class="font-semibold">{{ $t("webhook.field_enabled") }}</label>
-					</div>
+					<USwitch
+						v-model="form.enabled"
+						class="ltr:text-left rtl:text-right"
+						:label="$t('webhook.field_enabled')"
+						:ui="{ label: 'font-semibold' }"
+					/>
 				</div>
 			</form>
 		</template>

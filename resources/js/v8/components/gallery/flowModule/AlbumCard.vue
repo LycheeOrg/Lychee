@@ -40,7 +40,7 @@
 					{{ props.album.published_created_at }}
 				</p>
 				<p v-if="props.album.min_max_text" class="text-sm text-muted">
-					<MiniIcon icon="camera-slr" class="w-3 h-3 m-0 mr-1 -mt-1 fill-surface-400" />{{ props.album.min_max_text }}
+					<MiniIcon icon="camera-slr" class="w-3 h-3 m-0 mr-1 -mt-1 fill-muted" />{{ props.album.min_max_text }}
 				</p>
 				<p v-if="props.album.num_children" class="block text-muted text-sm">
 					{{ props.album.num_children }} {{ $t("gallery.album.hero.subalbums") }}

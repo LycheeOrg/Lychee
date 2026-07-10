@@ -1,12 +1,16 @@
 import { addCollection } from "@iconify/vue";
 import { icons as primeIcons } from "@iconify-json/prime";
+import { icons as lucideIcons } from "@iconify-json/lucide";
 
 /**
- * Registers the prime Iconify collection offline so icon lookups never hit
- * the public Iconify API at runtime - see Feature 049 T-049-03.
+ * Registers Iconify collections offline so icon lookups never hit the public
+ * Iconify API at runtime - see Feature 049 T-049-03. Lychee must be usable
+ * with zero network connection, so any new icon set must be added here as a
+ * local @iconify-json/* dependency rather than resolved remotely.
  */
 export function registerIconCollections(): void {
 	addCollection(primeIcons);
+	addCollection(lucideIcons);
 }
 
 /**

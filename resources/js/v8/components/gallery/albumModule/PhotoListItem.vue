@@ -32,7 +32,7 @@
 		<!-- Content (title + metadata) -->
 		<div class="flex-1 min-w-0 flex flex-col md:flex-row md:items-center md:gap-4 ltr:text-left rtl:text-right">
 			<!-- Title -->
-			<span class="text-muted-color-emphasis font-medium truncate md:flex-1">
+			<span class="text-toned font-medium truncate md:flex-1">
 				{{ photo.title }}
 			</span>
 

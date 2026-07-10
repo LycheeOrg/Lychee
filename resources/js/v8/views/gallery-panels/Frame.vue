@@ -10,7 +10,7 @@
 				:srcset="imgSrcset"
 			/>
 		</div>
-		<div id="shutter" class="absolute w-screen h-dvh bg-surface-950 transition-opacity duration-1000 ease-in-out top-0 left-0"></div>
+		<div id="shutter" class="absolute w-screen h-dvh bg-neutral-950 transition-opacity duration-1000 ease-in-out top-0 left-0"></div>
 		<div class="absolute top-0 ltr:left-0 rtl:right-0 p-3">
 			<GoBack @go-back="goBack" />
 		</div>
@@ -21,7 +21,6 @@ import GoBack from "@/v8/components/headers/GoBack.vue";
 import { useSlideshowFunction } from "@/composables/photo/slideshow";
 import AlbumService from "@/services/album-service";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
-import { onKeyStroke } from "@vueuse/core";
 import { ref, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 
@@ -89,8 +88,11 @@ function goBack() {
 	}
 }
 
-onKeyStroke("Escape", () => {
-	goBack();
+defineShortcuts({
+	escape: {
+		usingInput: true,
+		handler: () => goBack(),
+	},
 });
 
 onMounted(() => {

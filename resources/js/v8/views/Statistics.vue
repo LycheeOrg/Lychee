@@ -1,8 +1,10 @@
 <template>
-	<div class="w-full border-0 h-14 flex items-center justify-between px-2">
-		<OpenLeftMenu />
-		<span class="absolute left-1/2 -translate-x-1/2">{{ $t("statistics.title") }}</span>
-	</div>
+	<UHeader :toggle="false">
+		<template #left>
+			<OpenLeftMenu />
+		</template>
+		{{ $t("statistics.title") }}
+	</UHeader>
 	<UCard v-if="is_se_preview_enabled" class="text-center text-highlighted">
 		<div v-html="$t('statistics.preview_text')" />
 	</UCard>
@@ -13,7 +15,7 @@
 	<UCard class="max-w-5xl mx-auto" :ui="{ header: 'hidden' }">
 		<template v-if="userStore.isLoggedIn && total !== undefined && showTotal">
 			<TotalCard :total="total" />
-			<div class="py-4"><USwitch v-model="is_collapsed" class="text-sm" /> {{ $t("statistics.collapse") }}</div>
+			<USwitch v-model="is_collapsed" class="py-4" :label="$t('statistics.collapse')" :ui="{ label: 'text-sm' }" />
 		</template>
 		<AlbumsTable
 			v-if="userStore.isLoggedIn"
@@ -32,8 +34,6 @@ import { useUserStore } from "@/stores/UserState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
-import { onKeyStroke } from "@vueuse/core";
-import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import SizeVariantMeter from "@/v8/components/statistics/SizeVariantMeter.vue";
 import TotalCard from "@/v8/components/statistics/TotalCard.vue";
 import AlbumsTable from "@/v8/components/statistics/AlbumsTable.vue";
@@ -61,5 +61,7 @@ onMounted(async () => {
 	}
 });
 
-onKeyStroke("h", () => !shouldIgnoreKeystroke() && (are_nsfw_visible.value = !are_nsfw_visible.value));
+defineShortcuts({
+	h: () => (are_nsfw_visible.value = !are_nsfw_visible.value),
+});
 </script>

@@ -55,6 +55,8 @@ return [
         'album_decoration' => 'Hinweise auf dem Albumcover anzeigen (Anzahl der Unteralben und/oder Fotos)',
         'album_decoration_direction' => 'Album-Hinweise horizontal oder vertikal ausrichten',
         'photo_overlay' => 'Standard-Bildüberlagerungsinformationen',
+        'rounded_corners_enabled' => 'Ecken der Foto- und Albumvorschaubilder abrunden',
+        'album_border_enabled' => 'Rahmen um Foto- und Albumvorschaubilder anzeigen',
         'license_default' => 'Standardlizenz für Alben',
         'license_help' => 'Brauchen Sie Hilfe bei der Auswahl?',
     ],

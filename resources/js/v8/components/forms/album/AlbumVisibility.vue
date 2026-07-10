@@ -1,120 +1,95 @@
 <template>
 	<UCard class="text-sm p-4 xl:px-9 w-full xl:basis-1/3 xl:min-w-0" :ui="{ body: 'p-0' }">
 		<form>
-			<div class="h-12">
-				<USwitch v-model="is_public" input-id="pp_dialog_public_check" class="ltr:mr-2 rtl:ml-2 translate-y-1" @change="save" />
-				<label for="pp_dialog_public_check" class="font-bold">{{ $t("dialogs.visibility.public") }}</label>
-				<p class="my-1.5">{{ $t("dialogs.visibility.public_expl") }}</p>
-			</div>
+			<USwitch
+				v-model="is_public"
+				:label="$t('dialogs.visibility.public')"
+				:description="$t('dialogs.visibility.public_expl')"
+				:ui="{ label: `font-bold` }"
+				@change="save"
+			/>
 			<Collapse v-if="albumStore.config?.is_base_album" :when="is_public">
-				<div
-					class="relative h-12 my-4 ltr:pl-9 rtl:pr-9 transition-color duration-300"
-					:class="is_public ? 'text-highlighted' : 'text-muted'"
-				>
-					<USwitch
-						v-model="grants_full_photo_access"
-						input-id="pp_dialog_full_check"
-						class="ltr:-ml-10 ltr:mr-2 rtl:-mr-10 rtl:ml-2 translate-y-1"
-						@change="save"
-					/>
-					<label class="font-bold" for="pp_dialog_full_check">{{ $t("dialogs.visibility.full") }}</label>
-					<p class="my-1.5">{{ $t("dialogs.visibility.full_expl") }}</p>
-				</div>
-				<div
-					class="relative h-12 my-4 ltr:pl-9 rtl:pr-9 transition-color duration-300"
-					:class="is_public ? 'text-highlighted' : 'text-muted'"
-				>
-					<USwitch
-						v-model="is_link_required"
-						input-id="pp_dialog_link_check"
-						class="ltr:-ml-10 ltr:mr-2 rtl:-mr-10 rtl:ml-2 translate-y-1"
-						@change="save"
-					/>
-					<label class="font-bold" for="pp_dialog_link_check">{{ $t("dialogs.visibility.hidden") }}</label>
-					<p class="my-1.5">{{ $t("dialogs.visibility.hidden_expl") }}</p>
-				</div>
-				<div
-					class="relative h-12 my-4 ltr:pl-9 rtl:pr-9 transition-color duration-300"
-					:class="is_public ? 'text-highlighted' : 'text-muted'"
-				>
-					<USwitch
-						v-model="grants_download"
-						input-id="pp_dialog_downloadable_check"
-						class="ltr:-ml-10 ltr:mr-2 rtl:-mr-10 rtl:ml-2 translate-y-1"
-						@change="save"
-					/>
-					<label class="font-bold" for="pp_dialog_downloadable_check">{{ $t("dialogs.visibility.downloadable") }}</label>
-					<p class="my-1.5">{{ $t("dialogs.visibility.downloadable_expl") }}</p>
-				</div>
-				<div
+				<USwitch
+					v-model="grants_full_photo_access"
+					class="my-4"
+					:label="$t('dialogs.visibility.full')"
+					:description="$t('dialogs.visibility.full_expl')"
+					:ui="{ label: `font-bold` }"
+					@change="save"
+				/>
+				<USwitch
+					v-model="is_link_required"
+					class="my-4"
+					:label="$t('dialogs.visibility.hidden')"
+					:description="$t('dialogs.visibility.hidden_expl')"
+					:ui="{ label: `font-bold` }"
+					@change="save"
+				/>
+				<USwitch
+					v-model="grants_download"
+					class="my-4"
+					:label="$t('dialogs.visibility.downloadable')"
+					:description="$t('dialogs.visibility.downloadable_expl')"
+					:ui="{ label: `font-bold` }"
+					@change="save"
+				/>
+				<USwitch
 					v-if="is_se_enabled || is_se_preview_enabled"
-					class="relative h-12 my-4 ltr:pl-9 rtl:pr-9 transition-color duration-300"
-					:class="is_public ? 'text-highlighted' : 'text-muted'"
+					v-model="grants_upload"
+					:disabled="!is_se_enabled"
+					class="my-4"
+					color="error"
+					:ui="{ label: grants_upload ? 'font-bold text-red-700' : 'font-bold' }"
+					@change="save"
 				>
-					<USwitch
-						v-model="grants_upload"
-						input-id="pp_dialog_upload_check"
-						:disabled="!is_se_enabled"
-						class="ltr:-ml-10 ltr:mr-2 rtl:-mr-10 rtl:ml-2 translate-y-1"
-						color="error"
-						@change="save"
-					/>
-					<label class="font-bold inline-flex items-center" for="pp_dialog_upload_check">
-						{{ $t("dialogs.visibility.upload") }} <SETag v-if="is_se_preview_enabled" class="ml-2" />
-					</label>
-					<p class="my-1.5" v-html="$t('dialogs.visibility.upload_expl')"></p>
-				</div>
-				<div
+					<template #label>{{ $t("dialogs.visibility.upload") }} <SETag v-if="is_se_preview_enabled" class="ml-2" /></template>
+					<template #description><span v-html="$t('dialogs.visibility.upload_expl')"></span></template>
+				</USwitch>
+				<USwitch
 					v-if="!can_pasword_protect && is_password_required"
-					class="relative my-4 ltr:pl-9 rtl:pr-9 transition-color duration-300"
-					:class="is_public ? 'text-highlighted' : 'text-muted'"
+					v-model="is_password_required"
+					class="my-4"
+					color="error"
+					:ui="{ label: 'font-bold inline-flex items-center gap-2', description: 'text-error/80' }"
+					@change="save"
 				>
-					<USwitch
-						v-model="is_password_required"
-						input-id="pp_dialog_password_check_2"
-						class="ltr:-ml-10 ltr:mr-2 rtl:-mr-10 rtl:ml-2 translate-y-1"
-						color="error"
-						@change="save"
-					/>
-					<label class="font-bold inline-flex items-center gap-2" for="pp_dialog_password_check_2">
+					<template #label>
 						<span class="border-b border-dashed border-error">{{ $t("dialogs.visibility.password_prot") }}</span>
 						<UIcon name="prime:exclamation-triangle" class="text-error" />
-					</label>
-					<p class="mt-1.5 mb-4 text-error/80" v-html="$t('dialogs.visibility.password_prop_not_compatible')"></p>
-				</div>
-				<div
-					v-else-if="can_pasword_protect"
-					class="relative my-4 ltr:pl-9 rtl:pr-9 transition-color duration-300"
-					:class="is_public ? 'text-highlighted' : 'text-muted'"
-				>
+					</template>
+					<template #description><span v-html="$t('dialogs.visibility.password_prop_not_compatible')"></span></template>
+				</USwitch>
+				<template v-else-if="can_pasword_protect">
 					<USwitch
 						v-model="is_password_required"
-						input-id="pp_dialog_password_check"
-						class="ltr:-ml-10 ltr:mr-2 rtl:-mr-10 rtl:ml-2 translate-y-1"
+						class="my-4"
+						:label="$t('dialogs.visibility.password_prot')"
+						:description="$t('dialogs.visibility.password_prot_expl')"
+						:ui="{ label: `font-bold ${publicStateTextClass}`, description: publicStateTextClass }"
 						@change="save"
 					/>
-					<label class="font-bold" for="pp_dialog_password_check">{{ $t("dialogs.visibility.password_prot") }}</label>
-					<p class="mt-1.5 mb-4">{{ $t("dialogs.visibility.password_prot_expl") }}</p>
 					<UFormField v-if="is_password_required" :label="$t('dialogs.visibility.password')">
 						<InputPassword id="password" v-model="password" autocomplete="new-password" @change="save" />
 					</UFormField>
-				</div>
+				</template>
 			</Collapse>
 			<template v-if="albumStore.config?.is_base_album">
 				<hr class="block mt-8 mb-8 w-full border-t border-solid border-default" />
-				<div class="relative h-12 my-4 transition-color duration-300">
-					<USwitch v-model="is_nsfw" input-id="pp_dialog_nsfw_check" class="ltr:mr-2 rtl:ml-2 translate-y-1" color="error" @change="save" />
-					<label for="pp_dialog_nsfw_check" class="font-bold" :class="is_nsfw ? ' text-red-700' : ''">
-						{{ $t("dialogs.visibility.nsfw") }}
-					</label>
-					<p class="my-1.5">{{ $t("dialogs.visibility.nsfw_expl") }}</p>
-				</div>
+				<USwitch
+					v-model="is_nsfw"
+					class="my-4"
+					color="error"
+					:label="$t('dialogs.visibility.nsfw')"
+					:description="$t('dialogs.visibility.nsfw_expl')"
+					:ui="{ label: is_nsfw ? 'font-bold text-red-700' : 'font-bold' }"
+					@change="save"
+				/>
 			</template>
 		</form>
 	</UCard>
 </template>
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import InputPassword from "@/v8/components/forms/basic/InputPassword.vue";
 import AlbumService, { UpdateProtectionPolicyData } from "@/services/album-service";
 import { useAppToast } from "@/v8/composables/useAppToast";
@@ -141,6 +116,8 @@ const grants_upload = ref<boolean>(albumStore.album?.policy.grants_upload ?? fal
 
 const lycheeStore = useLycheeStateStore();
 const { is_se_enabled, is_se_preview_enabled } = storeToRefs(lycheeStore);
+
+const publicStateTextClass = computed(() => (is_public.value ? "text-highlighted" : "text-muted"));
 
 function save() {
 	const data: UpdateProtectionPolicyData = {

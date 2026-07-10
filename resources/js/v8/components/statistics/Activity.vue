@@ -11,12 +11,12 @@
 				<PunchCardCaption :low="low" :medium="medium" :high="high" />
 			</div>
 			<div class="flex flex-col gap-2 w-32">
-				<div class="flex items-center">
-					<USwitch id="pp_taken_at_created_at" v-model="isTakenAt" class="mr-2" @update:model-value="load" />
-					<label class="text-sm" for="pp_taken_at_created_at">
-						{{ isTakenAt ? $t("statistics.punch_card.taken_at") : $t("statistics.punch_card.created_at") }}
-					</label>
-				</div>
+				<USwitch
+					v-model="isTakenAt"
+					:label="isTakenAt ? $t('statistics.punch_card.taken_at') : $t('statistics.punch_card.created_at')"
+					:ui="{ label: 'text-sm' }"
+					@update:model-value="load"
+				/>
 				<div class="text-right">
 					<div class="w-32 h-24 overflow-y-auto flex flex-col">
 						<span

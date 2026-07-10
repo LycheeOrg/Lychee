@@ -56,6 +56,8 @@ return [
         'album_decoration' => 'Afficher les décorations sur la couverture des albums (nombre de sous-albums ou de photos)',
         'album_decoration_direction' => 'Aligner les décorations d’album horizontalement ou verticalement',
         'photo_overlay' => 'Superposition d’information par défaut sur les images',
+        'rounded_corners_enabled' => 'Arrondir les coins des vignettes de photos et d’albums',
+        'album_border_enabled' => 'Afficher une bordure autour des vignettes de photos et d’albums',
         'license_default' => 'Licence par défaut utilisée pour les albums',
         'license_help' => 'Besoin d’aide pour choisir ?',
     ],

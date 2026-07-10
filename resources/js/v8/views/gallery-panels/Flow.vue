@@ -1,11 +1,14 @@
 <template>
 	<LoadingProgress v-model:loading="isLoading" />
 	<div class="h-svh overflow-y-auto">
-		<div class="w-full border-0 h-14 bg-transparent mb-8 flex items-center justify-between px-2">
-			<OpenLeftMenu />
+		<UHeader :toggle="false" class="mb-8" :ui="{ root: 'bg-transparent border-b-0', center: 'flex' }">
+			<template #left>
+				<OpenLeftMenu />
+			</template>
+
 			<span class="absolute left-1/2 -translate-x-1/2 text-lg font-semibold text-center hidden md:block">{{ title }}</span>
-		</div>
-		<div class="absolute top-0 left-1/2 text-center text-lg font-semibold text-surface-0 w-xs -translate-x-1/2 md:hidden">
+		</UHeader>
+		<div class="absolute top-0 left-1/2 text-center text-lg font-semibold text-white w-xs -translate-x-1/2 md:hidden">
 			{{ title }}
 		</div>
 		<div v-if="config !== undefined" class="flex flex-col items-center gap-16 mb-16 px-8">
@@ -34,7 +37,7 @@ import { useFlowStateStore } from "@/stores/FlowState";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { isTouchDevice, shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
-import { onKeyStroke, useIntersectionObserver } from "@vueuse/core";
+import { useIntersectionObserver } from "@vueuse/core";
 import { storeToRefs } from "pinia";
 import { onMounted } from "vue";
 import { onUnmounted } from "vue";
@@ -166,19 +169,22 @@ function previous() {
 	photoStore.photo = selectedAlbum.value?.photos.find((photo) => photo.id === photoStore.photo?.previous_photo_id);
 }
 
-onKeyStroke("ArrowLeft", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && isLTR() && photoStore.hasPrevious && previous());
-onKeyStroke("ArrowRight", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && isLTR() && photoStore.hasNext && next());
-onKeyStroke("ArrowLeft", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && !isLTR() && photoStore.hasNext && next());
-onKeyStroke("ArrowRight", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && !isLTR() && photoStore.hasPrevious && previous());
-onKeyStroke("o", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && rotateOverlay());
-onKeyStroke("Escape", () => {
-	// 1. lose focus
-	if (shouldIgnoreKeystroke() && document.activeElement instanceof HTMLElement) {
-		document.activeElement.blur();
-		return;
-	}
+defineShortcuts({
+	arrowleft: () => photoStore.isLoaded && (isLTR() ? photoStore.hasPrevious && previous() : photoStore.hasNext && next()),
+	arrowright: () => photoStore.isLoaded && (isLTR() ? photoStore.hasNext && next() : photoStore.hasPrevious && previous()),
+	o: () => photoStore.isLoaded && rotateOverlay(),
+	escape: {
+		usingInput: true,
+		handler: () => {
+			// 1. lose focus
+			if (shouldIgnoreKeystroke() && document.activeElement instanceof HTMLElement) {
+				document.activeElement.blur();
+				return;
+			}
 
-	goBack();
+			goBack();
+		},
+	},
 });
 </script>
 <style>

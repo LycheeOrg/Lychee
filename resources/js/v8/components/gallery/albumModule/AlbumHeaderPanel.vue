@@ -17,18 +17,18 @@
 			<div class="absolute right-1 top-1 flex flex-col gap-2 z-100">
 				<UButton
 					v-if="albumStore.rights?.can_edit && mode === 'normal'"
-					class="bg-black/40 rounded-lg border-0 px-2 py-1 text-white hover:bg-white/30 cursor-pointer"
+					class="bg-black/40 rounded-lg border-0 px-2 py-1 text-inverted hover:bg-white/30 cursor-pointer"
 					:label="$t('gallery.album.hero.edit')"
 					@click="enableEditMode"
 				/>
 				<template v-if="albumStore.rights?.can_edit && mode === 'edit'">
 					<UButton
-						class="bg-black/40 rounded-lg border-0 px-2 py-1 text-white hover:bg-white/30 cursor-pointer"
+						class="bg-black/40 rounded-lg border-0 px-2 py-1 text-inverted hover:bg-white/30 cursor-pointer"
 						:label="$t('gallery.album.hero.save')"
 						@click="saveChanges"
 					/>
 					<UButton
-						class="bg-black/40 rounded-lg border-0 px-2 py-1 text-white hover:bg-white/30 cursor-pointer"
+						class="bg-black/40 rounded-lg border-0 px-2 py-1 text-inverted hover:bg-white/30 cursor-pointer"
 						:label="$t('gallery.set_focus')"
 						@click="
 							() => {
@@ -60,7 +60,7 @@
 							'h-8',
 							'w-8',
 							'bg-black/40 rounded-md border-0 cursor-pointer hover:bg-white/30 ',
-							'top-1/2 -left-16 absolute! text-white',
+							'top-1/2 -left-16 absolute! text-inverted',
 						]"
 						icon="prime:chevron-left"
 						@click="setColor(selectedColorIndex - 1)"
@@ -71,14 +71,14 @@
 							'h-8',
 							'w-8',
 							'bg-black/40 rounded-md border-0 cursor-pointer hover:bg-white/30 ',
-							'top-1/2 -right-16 absolute! text-white',
+							'top-1/2 -right-16 absolute! text-inverted',
 						]"
 						icon="prime:chevron-right"
 						@click="setColor(selectedColorIndex + 1)"
 					/>
 					<div
 						v-if="mode === 'edit'"
-						class="bg-black/40 text-white rounded-lg p-1 flex flex-row grow left-1/2 -translate-x-1/2 absolute top-5 -translate-y-1/2 z-10 w-70"
+						class="bg-black/40 text-inverted rounded-lg p-1 flex flex-row grow left-1/2 -translate-x-1/2 absolute top-5 -translate-y-1/2 z-10 w-70"
 					>
 						<HeaderEditButton @setPosition="setPosition('top-left')" :position="'top-left'" />
 						<HeaderEditButton @setPosition="setPosition('bottom-left')" :position="'bottom-left'" />
@@ -168,11 +168,11 @@ const COLORS = computed(() => {
 	return [
 		"white",
 		"black",
-		p?.colour_1 ?? "#2563eb",
-		p?.colour_2 ?? "#dc2626",
-		p?.colour_3 ?? "#16a34a",
-		p?.colour_4 ?? "#9333ea",
-		p?.colour_5 ?? "#ca8a04",
+		p?.colour_1 ?? "var(--color-blue-600)",
+		p?.colour_2 ?? "var(--color-red-600)",
+		p?.colour_3 ?? "var(--color-green-600)",
+		p?.colour_4 ?? "var(--color-purple-600)",
+		p?.colour_5 ?? "var(--color-yellow-600)",
 	];
 });
 

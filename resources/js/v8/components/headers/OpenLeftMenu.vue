@@ -1,5 +1,5 @@
 <template>
-	<UButton icon="prime:bars" color="neutral" variant="ghost" class="ltr:mr-2 rtl:ml-2" @click="openLeftMenu" />
+	<UButton icon="prime:bars" color="neutral" variant="ghost" @click="openLeftMenu" />
 </template>
 <script setup lang="ts">
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";

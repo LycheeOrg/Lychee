@@ -2,10 +2,13 @@
 	<div class="h-svh overflow-y-hidden">
 		<!-- Trick to avoid the scroll bar to appear on the right when switching to full screen -->
 		<Collapse :when="!is_full_screen">
-			<div class="w-full border-0 h-14 flex items-center justify-between px-2">
-				<GoBack @go-back="goBack" />
+			<UHeader :toggle="false" :ui="{ root: 'border-b-0', center: 'flex' }">
+				<template #left>
+					<GoBack @go-back="goBack" />
+				</template>
+
 				<span class="absolute left-1/2 -translate-x-1/2">{{ $t("gallery.favourites") }}</span>
-			</div>
+			</UHeader>
 		</Collapse>
 		<div
 			id="galleryView"
@@ -38,7 +41,6 @@ import { useLayoutStore } from "@/stores/LayoutState";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { usePhotosStore } from "@/stores/PhotosState";
 import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
-import { onKeyStroke } from "@vueuse/core";
 import { storeToRefs } from "pinia";
 import { ref, computed, onMounted } from "vue";
 import { Collapse } from "vue-collapsed";
@@ -70,15 +72,20 @@ function photoClick(photoId: string, _e: MouseEvent) {
 	router.push({ name: "album", params: { albumId: photo.album_id ?? ALL, photoId: photo.id } });
 }
 
-onKeyStroke("f", () => !shouldIgnoreKeystroke() && togglableStore.toggleFullScreen());
-onKeyStroke("Escape", () => {
-	// 1. lose focus
-	if (shouldIgnoreKeystroke() && document.activeElement instanceof HTMLElement) {
-		document.activeElement.blur();
-		return;
-	}
+defineShortcuts({
+	f: () => togglableStore.toggleFullScreen(),
+	escape: {
+		usingInput: true,
+		handler: () => {
+			// 1. lose focus
+			if (shouldIgnoreKeystroke() && document.activeElement instanceof HTMLElement) {
+				document.activeElement.blur();
+				return;
+			}
 
-	goBack();
+			goBack();
+		},
+	},
 });
 
 onMounted(async () => {

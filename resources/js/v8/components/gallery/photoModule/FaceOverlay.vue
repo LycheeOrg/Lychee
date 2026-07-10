@@ -32,7 +32,7 @@
 		</template>
 
 		<!-- Privacy notice for hidden faces -->
-		<div v-if="hiddenFaceCount > 0" class="absolute bottom-2 left-2 bg-black/60 text-white text-xs px-2 py-1 rounded pointer-events-none">
+		<div v-if="hiddenFaceCount > 0" class="absolute bottom-2 left-2 bg-black/60 text-inverted text-xs px-2 py-1 rounded pointer-events-none">
 			{{ hiddenFaceCount }} {{ $t("people.hidden_faces") }}
 		</div>
 
@@ -49,12 +49,11 @@
 
 <script setup lang="ts">
 import { computed, ref, onMounted, onUnmounted } from "vue";
-import { onKeyStroke } from "@vueuse/core";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import { trans } from "laravel-vue-i18n";
 import FaceAssignmentModal from "@/v8/components/modals/faceRecog/FaceAssignmentModal.vue";
 import FaceDetectionService from "@/services/face-detection-service";
-import { shouldIgnoreKeystroke, isTouchDevice } from "@/utils/keybindings-utils";
+import { isTouchDevice } from "@/utils/keybindings-utils";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
@@ -82,11 +81,8 @@ const overlayEnabled = computed(() => initData.value?.modules.is_face_overlay_en
 const isVisible = computed(() => lycheeStore.is_face_overlay_visible);
 
 // P key toggles overlay visibility
-onKeyStroke("p", () => {
-	if (shouldIgnoreKeystroke()) {
-		return;
-	}
-	lycheeStore.is_face_overlay_visible = !lycheeStore.is_face_overlay_visible;
+defineShortcuts({
+	p: () => (lycheeStore.is_face_overlay_visible = !lycheeStore.is_face_overlay_visible),
 });
 
 // CTRL+click dismiss mode — desktop only

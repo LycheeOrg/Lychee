@@ -8,28 +8,31 @@
 				<UFormField :label="$t('users.password')">
 					<InputPassword id="password" v-model="password" aria-label="Password" />
 				</UFormField>
-				<div class="w-full flex items-center gap-2 text-muted">
-					<UCheckbox v-model="may_upload" id="mayUpload" />
-					<label for="mayUpload" class="cursor-pointer">{{ $t("users.create_edit.upload_rights") }}</label>
-				</div>
-				<div class="w-full flex items-center gap-2 text-muted">
-					<UCheckbox v-model="may_edit_own_settings" id="mayEdit" />
-					<label for="mayEdit" class="cursor-pointer">{{ $t("users.create_edit.edit_rights") }}</label>
-				</div>
-				<div v-if="is_se_enabled || is_se_preview_enabled" class="w-full flex items-center gap-2 text-muted">
-					<UCheckbox v-model="may_administrate" id="mayAdministrate" color="warning" />
-					<label for="mayAdministrate" class="cursor-pointer"> {{ $t("users.create_edit.admin_rights") }} <SETag /> </label>
-				</div>
+				<UCheckbox v-model="may_upload" class="w-full" :label="$t('users.create_edit.upload_rights')" :ui="{ label: 'text-muted' }" />
+				<UCheckbox
+					v-model="may_edit_own_settings"
+					class="w-full"
+					:label="$t('users.create_edit.edit_rights')"
+					:ui="{ label: 'text-muted' }"
+				/>
+				<UCheckbox
+					v-if="is_se_enabled || is_se_preview_enabled"
+					v-model="may_administrate"
+					class="w-full"
+					color="warning"
+					:ui="{ label: 'text-muted' }"
+				>
+					<template #label> {{ $t("users.create_edit.admin_rights") }} <SETag /> </template>
+				</UCheckbox>
 				<div class="w-full flex items-center text-muted gap-2 pt-1">
 					<label class="shrink-0">{{ $t("users.create_edit.upload_trust_level") }}</label>
 					<USelectMenu v-model="uploadTrustLevelOption" :items="trustLevelOptions" label-key="label" class="w-full">
 						<template #item-label="{ item }">{{ item.label }}</template>
 					</USelectMenu>
 				</div>
-				<div v-if="is_se_enabled || is_se_preview_enabled" class="w-full flex items-center gap-2 text-muted">
-					<UCheckbox v-model="has_quota" id="hasQuota" />
-					<label for="hasQuota" class="cursor-pointer">{{ $t("users.create_edit.quota") }} <SETag /></label>
-				</div>
+				<UCheckbox v-if="is_se_enabled || is_se_preview_enabled" v-model="has_quota" class="w-full" :ui="{ label: 'text-muted' }">
+					<template #label>{{ $t("users.create_edit.quota") }} <SETag /></template>
+				</UCheckbox>
 				<div v-if="has_quota === true" class="w-full flex items-center gap-2 text-muted">
 					<UInput id="quotaKb" v-model="quota_kb" class="w-1/2" aria-label="quotaKb" />
 					<label class="pl-4 w-1/2" for="quotaKb">{{ $t("users.create_edit.quota_kb") }}</label>

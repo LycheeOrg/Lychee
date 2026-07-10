@@ -1,17 +1,9 @@
 <template>
 	<div v-if="configs">
 		<div class="flex relative items-start flex-row-reverse justify-between gap-8">
-			<nav id="navMain" class="top-11 hidden sticky sm:block">
-				<a
-					v-for="section in sections"
-					:key="section.link"
-					:href="section.link"
-					class="nav-link block hover:text-primary-400 ltr:border-l rtl:border-r border-solid border-neutral-700 hover:border-primary-400 px-4 capitalize"
-					@click.prevent="goto(section.link)"
-				>
-					<span>{{ section.label }}</span>
-				</a>
-			</nav>
+			<UPageAside class="top-11 hidden sticky sm:block">
+				<UNavigationMenu orientation="vertical" :items="navItems" highlight />
+			</UPageAside>
 			<div id="allSettings" class="w-full">
 				<Fieldset
 					v-for="(configGroup, key) in props.configs"
@@ -28,13 +20,11 @@
 	</div>
 </template>
 <script setup lang="ts">
-import { computed, onUpdated, ref } from "vue";
-// @ts-expect-error There is no type definition for this package
-import scrollSpy from "@sidsbrmnn/scrollspy";
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
 import ConfigGroup from "./ConfigGroup.vue";
-import { onMounted } from "vue";
 import Fieldset from "@/v8/components/forms/basic/Fieldset.vue";
 import { useTranslation } from "@/composables/useTranslation";
+import type { NavigationMenuItem } from "@nuxt/ui";
 
 const { tCatName } = useTranslation();
 
@@ -56,47 +46,77 @@ function filled(key: string, value: string) {
 	emits("filled", key, value);
 }
 
-const active = ref<string[]>([]);
+// Index of the settings category currently scrolled into view, tracked via IntersectionObserver
+// below (replaces the previous @sidsbrmnn/scrollspy dependency).
+const activeIndex = ref(0);
 
-const sections = computed(function () {
+const navItems = computed<NavigationMenuItem[]>(() => {
 	if (!props.configs) {
 		return [];
 	}
-	return props.configs.map((c, key) => {
-		return {
-			label: tCatName({ key: c.cat, name: c.name }),
-			link: "#" + key,
-		};
-	});
+	return props.configs.map((c, key) => ({
+		label: tCatName({ key: c.cat, name: c.name }),
+		active: activeIndex.value === key,
+		onSelect: (e: Event) => {
+			e.preventDefault();
+			goto(key);
+		},
+	}));
 });
 
-function load(configs: App.Http.Resources.Models.ConfigCategoryResource[]) {
-	active.value = configs.map((_c, i: number) => i.toString());
-}
-
-function goto(section: string) {
-	const el = document.getElementById(section.slice(1));
+function goto(index: number) {
+	const el = document.getElementById(String(index));
 	if (el) {
 		el.scrollIntoView({ behavior: "smooth" });
 	}
 }
 
-onMounted(() => load(props.configs));
+let observer: IntersectionObserver | null = null;
 
-onUpdated(function () {
-	const elem = document.getElementById("navMain");
-	if (!elem) {
+function cleanupObserver() {
+	observer?.disconnect();
+	observer = null;
+}
+
+function setupObserver() {
+	cleanupObserver();
+
+	const sections = props.configs.map((_c, key) => document.getElementById(String(key))).filter((el): el is HTMLElement => el !== null);
+
+	if (sections.length === 0) {
 		return;
 	}
 
-	const spy = scrollSpy(document.getElementById("navMain"), {
-		sectionSelector: "#allSettings .v8-fieldset", // Query selector to your sections
-		targetSelector: ".nav-link", // Query select
-		activeClass: "!text-primary-500 !border-primary-500",
-	});
-	// Set the first section as active.
-	const admin = spy.sections[0];
-	const adminMenuItem = spy.getCurrentMenuItem(admin);
-	spy.setActive(adminMenuItem, admin);
+	// Triggers once a section crosses roughly the top third of the viewport, so the highlighted
+	// nav item tracks whichever section is currently "in reading position", not just any overlap.
+	observer = new IntersectionObserver(
+		(entries) => {
+			for (const entry of entries) {
+				if (entry.isIntersecting) {
+					const index = sections.indexOf(entry.target as HTMLElement);
+					if (index !== -1) {
+						activeIndex.value = index;
+					}
+				}
+			}
+		},
+		{ rootMargin: "-10% 0px -70% 0px", threshold: 0 },
+	);
+
+	sections.forEach((el) => observer?.observe(el));
+}
+
+onMounted(() => {
+	nextTick(() => setupObserver());
 });
+
+onUnmounted(cleanupObserver);
+
+watch(
+	() => props.hash,
+	() => {
+		activeIndex.value = 0;
+		nextTick(() => setupObserver());
+	},
+);
 </script>

@@ -11,11 +11,12 @@
 
 	<WebhookFormDialog v-model:open="isFormDialogVisible" :webhook="editingWebhook" @saved="load" />
 
-	<div class="w-full border-0 h-14 flex items-center justify-between px-2">
-		<OpenLeftMenu />
-		<span class="absolute left-1/2 -translate-x-1/2 pointer-events-none">{{ $t("webhook.title") }}</span>
-		<div></div>
-	</div>
+	<UHeader :toggle="false">
+		<template #left>
+			<OpenLeftMenu />
+		</template>
+		{{ $t("webhook.title") }}
+	</UHeader>
 
 	<UCard class="max-w-5xl mx-auto mt-4">
 		<p class="text-muted mb-6 text-center">{{ $t("webhook.description") }}</p>

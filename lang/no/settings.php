@@ -56,6 +56,8 @@ return [
         'album_decoration' => 'Show decorations on album cover (sub-album and/or photo count)',
         'album_decoration_direction' => 'Align album decorations horizontally or vertically',
         'photo_overlay' => 'Default image overlay information',
+        'rounded_corners_enabled' => 'Round the corners of photo and album thumbnails',
+        'album_border_enabled' => 'Show a border around photo and album thumbnails',
         'license_default' => 'Default license used for albums',
         'license_help' => 'Need help choosing?',
     ],

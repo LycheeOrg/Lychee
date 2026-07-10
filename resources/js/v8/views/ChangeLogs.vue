@@ -1,8 +1,10 @@
 <template>
-	<div class="w-full border-0 h-14 flex items-center justify-between px-2">
-		<OpenLeftMenu />
-		<span class="absolute left-1/2 -translate-x-1/2">{{ $t("changelogs.title") }}</span>
-	</div>
+	<UHeader :toggle="false">
+		<template #left>
+			<OpenLeftMenu />
+		</template>
+		{{ $t("changelogs.title") }}
+	</UHeader>
 	<UCard class="max-w-3xl mx-auto my-12 text-muted" :ui="{ header: 'hidden' }">
 		<div v-html="$t('changelogs.description')"></div>
 	</UCard>

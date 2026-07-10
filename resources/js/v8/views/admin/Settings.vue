@@ -1,9 +1,10 @@
 <template>
-	<div class="w-full border-0 h-14 flex items-center justify-between px-2">
-		<OpenLeftMenu />
-		<span class="absolute left-1/2 -translate-x-1/2 pointer-events-none">{{ $t("settings.title") }}</span>
-		<div></div>
-	</div>
+	<UHeader :toggle="false">
+		<template #left>
+			<OpenLeftMenu />
+		</template>
+		{{ $t("settings.title") }}
+	</UHeader>
 	<div class="text-center lg:hidden font-bold text-error py-3" v-html="$t('settings.small_screen')"></div>
 	<div class="pl-[calc(100vw-100%)] flex justify-center pb-10">
 		<div class="max-w-6xl w-full p-4">

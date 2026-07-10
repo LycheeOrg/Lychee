@@ -5,7 +5,7 @@
 				v-if="props.footerData.sm_facebook_url !== ''"
 				id="facebook"
 				:href="props.footerData.sm_facebook_url"
-				class="inline-block hover:scale-150 hover:text-muted-color transition-all ease-in-out duration-300 text-surface-0 socials text-2xl my-4 mx-5 socialicons"
+				class="inline-block hover:scale-150 hover:text-muted transition-all ease-in-out duration-300 text-white socials text-2xl my-4 mx-5 socialicons"
 				target="_blank"
 				rel="noopener"
 			></a>
@@ -13,7 +13,7 @@
 				v-if="props.footerData.sm_flickr_url !== ''"
 				id="flickr"
 				:href="props.footerData.sm_flickr_url"
-				class="inline-block hover:scale-150 hover:text-muted-color transition-all ease-in-out duration-300 text-surface-0 socials text-2xl my-4 mx-5 socialicons"
+				class="inline-block hover:scale-150 hover:text-muted transition-all ease-in-out duration-300 text-white socials text-2xl my-4 mx-5 socialicons"
 				target="_blank"
 				rel="noopener"
 			></a>
@@ -21,7 +21,7 @@
 				v-if="props.footerData.sm_twitter_url !== ''"
 				id="twitter"
 				:href="props.footerData.sm_twitter_url"
-				class="inline-block hover:scale-150 hover:text-muted-color transition-all ease-in-out duration-300 text-surface-0 socials text-2xl my-4 mx-5 socialicons"
+				class="inline-block hover:scale-150 hover:text-muted transition-all ease-in-out duration-300 text-white socials text-2xl my-4 mx-5 socialicons"
 				target="_blank"
 				rel="noopener"
 			></a>
@@ -29,7 +29,7 @@
 				v-if="props.footerData.sm_instagram_url !== ''"
 				id="instagram"
 				:href="props.footerData.sm_instagram_url"
-				class="inline-block hover:scale-150 hover:text-muted-color transition-all ease-in-out duration-300 text-surface-0 socials text-2xl my-4 mx-5 socialicons"
+				class="inline-block hover:scale-150 hover:text-muted transition-all ease-in-out duration-300 text-white socials text-2xl my-4 mx-5 socialicons"
 				target="_blank"
 				rel="noopener"
 			></a>
@@ -37,20 +37,17 @@
 				v-if="props.footerData.sm_youtube_url !== ''"
 				id="youtube"
 				:href="props.footerData.sm_youtube_url"
-				class="inline-block hover:scale-150 hover:text-muted-color transition-all ease-in-out duration-300 text-surface-0 socials text-2xl my-4 mx-5 socialicons"
+				class="inline-block hover:scale-150 hover:text-muted transition-all ease-in-out duration-300 text-white socials text-2xl my-4 mx-5 socialicons"
 				target="_blank"
 				rel="noopener"
 			></a>
 		</div>
-		<p
-			v-if="props.footerData.footer_show_copyright"
-			class="home_copyright uppercase text-surface-0 text-3xs font-normal animate-landingAnimateUp"
-		>
+		<p v-if="props.footerData.footer_show_copyright" class="home_copyright uppercase text-white text-3xs font-normal animate-landingAnimateUp">
 			{{ props.footerData.copyright }}
 		</p>
 		<p
 			v-if="props.footerData.footer_additional_text !== ''"
-			class="personal_text text-surface-0 text-3xs font-normal animate-landingAnimateUp"
+			class="personal_text text-white text-3xs font-normal animate-landingAnimateUp"
 			v-html="props.footerData.footer_additional_text"
 		></p>
 	</div>

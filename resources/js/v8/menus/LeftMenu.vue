@@ -23,7 +23,9 @@
 					<SETag v-if="(item as LeftMenuItem).seTag" />
 				</template>
 			</UNavigationMenu>
-			<div v-if="user?.id !== null" class="mt-auto">
+		</template>
+		<template #footer>
+			<div v-if="user?.id !== null" class="w-full">
 				<UNavigationMenu orientation="vertical" :items="profileSections">
 					<template #item-leading="{ item }">
 						<PiMiniIcon :icon="(item as LeftMenuItem).rawIcon" class="w-3 h-3" />
@@ -37,7 +39,7 @@
 						<PiMiniIcon icon="person" class="w-3 h-3" />
 						<div class="capitalize ml-2 text-muted">
 							{{ userStore.user?.username }}
-							<PiMiniIcon v-if="canSeeAdmin" icon="pi pi-crown" class="w-3 h-3 text-orange-400" />
+							<PiMiniIcon v-if="canSeeAdmin" icon="pi pi-crown" class="w-6 h-6 text-orange-400 inline-block" />
 						</div>
 					</div>
 					<UButton variant="ghost" color="neutral" class="cursor-pointer" @click="logout">

@@ -56,6 +56,8 @@ return [
         'album_decoration' => '在相册封面显示装饰（子相册 和/或 照片数量）',
         'album_decoration_direction' => '相册装饰水平或垂直对齐',
         'photo_overlay' => '默认图片覆盖信息',
+        'rounded_corners_enabled' => '圆角化照片和相册缩略图',
+        'album_border_enabled' => '在照片和相册缩略图周围显示边框',
         'license_default' => '相册默认许可证',
         'license_help' => '需要帮助选择？',
     ],

@@ -1,10 +1,12 @@
 <template>
-	<div class="w-full border-0 h-14 flex items-center justify-between px-2">
-		<router-link :to="{ name: 'gallery' }">
-			<UButton icon="prime:angle-left" color="neutral" variant="ghost" />
-		</router-link>
-		<span class="absolute left-1/2 -translate-x-1/2">{{ $t("diagnostics.title") }}</span>
-	</div>
+	<UHeader :toggle="false">
+		<template #left>
+			<router-link :to="{ name: 'gallery' }">
+				<UButton icon="prime:angle-left" color="neutral" variant="ghost" />
+			</router-link>
+		</template>
+		{{ $t("diagnostics.title") }}
+	</UHeader>
 	<UCard v-if="left.length && right.length" class="p-9">
 		<div class="grid" style="grid-template-columns: 1fr 1fr 1fr">
 			<div></div>

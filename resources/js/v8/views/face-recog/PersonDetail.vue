@@ -1,19 +1,20 @@
 <template>
 	<div class="h-svh overflow-y-auto">
-		<div class="w-full border-0 h-14 flex items-center justify-between px-2">
-			<UButton
-				icon="prime:chevron-left"
-				color="neutral"
-				variant="ghost"
-				@click="
-					() => {
-						$router.push({ name: 'people' });
-					}
-				"
-			/>
-			<span v-if="person" class="absolute left-1/2 -translate-x-1/2">{{ person.name }}</span>
-			<span />
-		</div>
+		<UHeader :toggle="false">
+			<template #left>
+				<UButton
+					icon="prime:chevron-left"
+					color="neutral"
+					variant="ghost"
+					@click="
+						() => {
+							$router.push({ name: 'people' });
+						}
+					"
+				/>
+			</template>
+			<template v-if="person">{{ person.name }}</template>
+		</UHeader>
 
 		<div v-if="loading" class="flex justify-center items-center mt-20">
 			<Spinner />
@@ -118,7 +119,7 @@
 					v-for="(photo, idx) in photos"
 					:key="photo.id"
 					class="absolute overflow-hidden rounded-lg bg-elevated group cursor-pointer"
-					:class="{ 'outline outline-2 outline-primary': isBatchMode && isPhotoSelected(photo) }"
+					:class="{ 'outline-2 outline-primary': isBatchMode && isPhotoSelected(photo) }"
 					:data-width="photo.size_variants.original?.width ?? photo.size_variants.small?.width ?? 1"
 					:data-height="photo.size_variants.original?.height ?? photo.size_variants.small?.height ?? 1"
 					:data-photo-id="photo.id"
@@ -137,7 +138,7 @@
 					<!-- Remove from person compact × badge (shown on hover when not in batch mode) -->
 					<button
 						v-if="canEdit && !isBatchMode"
-						class="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/60 text-white text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+						class="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/60 text-inverted text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
 						:title="$t('people.remove_from_person')"
 						@click.stop="removeFromPerson(photo)"
 					>
@@ -177,8 +178,8 @@ import { useRouter } from "vue-router";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import Spinner from "@/v8/components/Spinner.vue";
 import { trans } from "laravel-vue-i18n";
-import { useDebounceFn, onKeyStroke } from "@vueuse/core";
-import createJustifiedLayout from "justified-layout";
+import { useDebounceFn } from "@vueuse/core";
+import { initLayouts, justified } from "@/v8/layouts/wasmLayouts";
 import MergePersonModal from "@/v8/components/modals/faceRecog/MergePersonModal.vue";
 import PaginationInfiniteScroll from "@/v8/components/pagination/PaginationInfiniteScroll.vue";
 import PhotoPanel from "@/v8/components/gallery/photoModule/PhotoPanel.vue";
@@ -237,22 +238,25 @@ const hasMorePhotos = ref(false);
 const photoListingRef = ref<HTMLElement | null>(null);
 const photoListingHeight = ref(0);
 
-function runJustifiedLayout() {
+async function runJustifiedLayout() {
 	const el = photoListingRef.value;
 	if (!el) return;
 	const containerWidth = el.clientWidth;
 	if (containerWidth <= 0) return;
 	const items = [...el.childNodes].filter((n) => n.nodeType === 1) as HTMLElement[];
-	const ratios = items.map((item) => {
-		const w = parseFloat(item.dataset.width ?? "1");
-		const h = parseFloat(item.dataset.height ?? "1");
-		return h > 0 ? w / h : 1;
-	});
+	const ratios = Float64Array.from(
+		items.map((item) => {
+			const w = parseFloat(item.dataset.width ?? "1");
+			const h = parseFloat(item.dataset.height ?? "1");
+			return h > 0 ? w / h : 1;
+		}),
+	);
 	if (ratios.length === 0) {
 		photoListingHeight.value = 0;
 		return;
 	}
-	const geometry = createJustifiedLayout(ratios, { containerWidth, containerPadding: 0, targetRowHeight: 220, boxSpacing: 4 });
+	await initLayouts();
+	const geometry = justified(ratios, containerWidth, 220, 4);
 	photoListingHeight.value = geometry.containerHeight;
 	items.forEach((item, i) => {
 		const box = geometry.boxes[i];
@@ -610,37 +614,40 @@ function onMerged(targetPersonId: string) {
 }
 
 // Keybindings
-// Photo operations (arrow keys are flipped for RTL languages)
-onKeyStroke("ArrowLeft", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && isLTR() && photoStore.hasPrevious && previous());
-onKeyStroke("ArrowRight", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && isLTR() && photoStore.hasNext && next());
-onKeyStroke("ArrowLeft", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && !isLTR() && photoStore.hasNext && next());
-onKeyStroke("ArrowRight", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && !isLTR() && photoStore.hasPrevious && previous());
-onKeyStroke("i", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && toggleDetails());
-onKeyStroke("o", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && rotateOverlay());
-onKeyStroke(" ", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && is_slideshow_enabled.value && slideshow());
-onKeyStroke("f", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && togglableStore.toggleFullScreen());
+defineShortcuts({
+	// Photo operations (arrow keys are flipped for RTL languages)
+	arrowleft: () => photoStore.isLoaded && (isLTR() ? photoStore.hasPrevious && previous() : photoStore.hasNext && next()),
+	arrowright: () => photoStore.isLoaded && (isLTR() ? photoStore.hasNext && next() : photoStore.hasPrevious && previous()),
+	i: () => photoStore.isLoaded && toggleDetails(),
+	o: () => photoStore.isLoaded && rotateOverlay(),
+	" ": () => photoStore.isLoaded && is_slideshow_enabled.value && slideshow(),
+	f: () => photoStore.isLoaded && togglableStore.toggleFullScreen(),
 
-// Escape handling
-onKeyStroke("Escape", () => {
-	// Stop slideshow if active
-	if (is_slideshow_active.value) {
-		stop();
-		return;
-	}
+	// Escape handling
+	escape: {
+		usingInput: true,
+		handler: () => {
+			// Stop slideshow if active
+			if (is_slideshow_active.value) {
+				stop();
+				return;
+			}
 
-	// Lose focus if input is focused
-	if (shouldIgnoreKeystroke() && document.activeElement instanceof HTMLElement) {
-		document.activeElement.blur();
-		return;
-	}
+			// Lose focus if input is focused
+			if (shouldIgnoreKeystroke() && document.activeElement instanceof HTMLElement) {
+				document.activeElement.blur();
+				return;
+			}
 
-	// If photo is open, close it
-	if (photoStore.isLoaded) {
-		closePhoto();
-		return;
-	}
+			// If photo is open, close it
+			if (photoStore.isLoaded) {
+				closePhoto();
+				return;
+			}
 
-	// Otherwise, go back to people list
-	router.push({ name: "people" });
+			// Otherwise, go back to people list
+			router.push({ name: "people" });
+		},
+	},
 });
 </script>

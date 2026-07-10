@@ -26,7 +26,7 @@
 			@click="emits('clicked')"
 		/>
 		<Blur v-if="props.isNsfw">
-			<UIcon name="prime:eye-slash" class="text-6xl text-surface-0" />
+			<UIcon name="prime:eye-slash" class="text-6xl text-white" />
 		</Blur>
 	</div>
 </template>

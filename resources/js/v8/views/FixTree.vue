@@ -1,9 +1,11 @@
 <template>
 	<LoadingProgress v-model:loading="isLoading" />
-	<div class="w-full border-0 h-14 flex items-center justify-between px-2">
-		<OpenLeftMenu />
-		<span class="absolute left-1/2 -translate-x-1/2">{{ $t("fix-tree.title") }}</span>
-	</div>
+	<UHeader :toggle="false">
+		<template #left>
+			<OpenLeftMenu />
+		</template>
+		{{ $t("fix-tree.title") }}
+	</UHeader>
 	<div class="text-muted">
 		<div class="text-center mt-2 p-2">
 			<span v-html="$t('fix-tree.intro')" /><br />

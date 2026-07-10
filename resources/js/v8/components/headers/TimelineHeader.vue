@@ -2,10 +2,10 @@
 	<ImportFromLink v-if="timelineStore.rootRights?.can_upload" v-model:open="is_import_from_link_open" />
 	<ImportFromServer v-if="timelineStore.rootRights?.can_import_from_server" v-model:open="is_import_from_server_open" />
 	<DropBox v-if="timelineStore.rootRights?.can_upload" v-model:open="is_import_from_dropbox_open" />
-	<div class="relative w-full border-0 h-14 z-10 flex items-center justify-between px-2 flex-nowrap">
-		<div class="flex items-center">
+	<UHeader :toggle="false" class="z-10" :ui="{ root: 'border-b-0', center: 'flex' }">
+		<template #left>
 			<OpenLeftMenu />
-		</div>
+		</template>
 
 		<div class="absolute top-0 py-3 left-1/2 -translate-x-1/2 h-14 flex items-center">
 			<template v-if="lycheeStore.site_logo !== ''">
@@ -21,9 +21,9 @@
 			</template>
 		</div>
 
-		<div class="flex items-center gap-1">
+		<template #right>
 			<template v-if="userStore.isGuest">
-				<UButton as="router-link" :to="{ name: 'login' }" color="neutral" variant="ghost" class="py-2 px-4 rounded-xl hidden xl:inline-flex">
+				<UButton as="router-link" :to="{ name: 'login' }" color="neutral" variant="ghost" class="py-2 px-4 hidden xl:inline-flex">
 					{{ $t("dialogs.login.signin") }}
 				</UButton>
 				<UButton
@@ -32,7 +32,7 @@
 					:to="{ name: 'register' }"
 					color="neutral"
 					variant="ghost"
-					class="py-2 px-4 rounded-xl mr-12 lg:mr-0 inline-flex"
+					class="py-2 px-4 mr-12 lg:mr-0 inline-flex"
 				>
 					{{ $t("profile.register.signup") }}
 				</UButton>
@@ -59,17 +59,16 @@
 			<UDropdownMenu :items="mobileMenuSections" class="lg:hidden">
 				<UButton icon="prime:angle-double-down" color="neutral" variant="ghost" />
 			</UDropdownMenu>
-		</div>
-	</div>
+		</template>
+	</UHeader>
 </template>
 <script setup lang="ts">
 import ImportFromLink from "@/v8/components/modals/ImportFromLink.vue";
 import ImportFromServer from "@/v8/components/modals/ImportFromServer.vue";
 import DropBox from "@/v8/components/modals/DropBox.vue";
 import { computed, ComputedRef } from "vue";
-import { onKeyStroke } from "@vueuse/core";
 import { useLycheeStateStore } from "@/stores/LycheeState";
-import { isTouchDevice, shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
+import { isTouchDevice } from "@/utils/keybindings-utils";
 import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
@@ -165,41 +164,45 @@ function openSearch() {
 	router.push({ name: "search" });
 }
 
-onKeyStroke("n", () => !shouldIgnoreKeystroke() && timelineStore.rootRights?.can_upload && (is_create_album_visible.value = true));
-onKeyStroke("u", () => !shouldIgnoreKeystroke() && timelineStore.rootRights?.can_upload && (is_upload_visible.value = true));
-onKeyStroke("/", () => !shouldIgnoreKeystroke() && timelineStore.rootConfig?.is_search_accessible && openSearch());
-
-// on key stroke escape:
-// 1. lose focus
-// 2. close modals
-// 3. go back
-onKeyStroke("Escape", () => {
+defineShortcuts({
+	n: () => timelineStore.rootRights?.can_upload && (is_create_album_visible.value = true),
+	u: () => timelineStore.rootRights?.can_upload && (is_upload_visible.value = true),
+	"/": () => timelineStore.rootConfig?.is_search_accessible && openSearch(),
+	// on key stroke escape:
 	// 1. lose focus
-	if (document.activeElement instanceof HTMLElement) {
-		document.activeElement.blur();
-		return;
-	}
-
 	// 2. close modals
-	if (is_login_open.value) {
-		is_login_open.value = false;
-		return;
-	}
+	// 3. go back
+	escape: {
+		usingInput: true,
+		handler: () => {
+			// 1. lose focus
+			if (document.activeElement instanceof HTMLElement) {
+				document.activeElement.blur();
+				return;
+			}
 
-	if (is_upload_visible.value) {
-		is_upload_visible.value = false;
-		return;
-	}
-	if (is_create_album_visible.value) {
-		is_create_album_visible.value = false;
-		return;
-	}
-	if (is_create_tag_album_visible.value) {
-		is_create_tag_album_visible.value = false;
-		return;
-	}
+			// 2. close modals
+			if (is_login_open.value) {
+				is_login_open.value = false;
+				return;
+			}
 
-	leftMenuStore.left_menu_open = false;
+			if (is_upload_visible.value) {
+				is_upload_visible.value = false;
+				return;
+			}
+			if (is_create_album_visible.value) {
+				is_create_album_visible.value = false;
+				return;
+			}
+			if (is_create_tag_album_visible.value) {
+				is_create_tag_album_visible.value = false;
+				return;
+			}
+
+			leftMenuStore.left_menu_open = false;
+		},
+	},
 });
 
 type Link = {
@@ -240,7 +243,7 @@ const menu = computed(() =>
 			key: "metrics",
 		},
 		{
-			icon: "pi pi-bell text-primary-emphasis",
+			icon: "pi pi-bell text-primary",
 			type: "fn",
 			callback: () => (is_metrics_open.value = true),
 			if: is_se_preview_enabled.value && timelineStore.rootRights?.can_see_live_metrics,

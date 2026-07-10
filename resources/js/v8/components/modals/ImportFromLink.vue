@@ -4,12 +4,13 @@
 			<p class="mb-5 text-muted text-base">{{ $t("dialogs.import_from_link.instructions") }}</p>
 			<form>
 				<div class="my-3 first:mt-0 last:mb-0" dir="ltr">
-					<Textarea
+					<UTextarea
 						id="links"
 						v-model="urls"
+						class="w-full"
 						:rows="5"
 						placeholder="https://&#10;https://&#10;..."
-						:invalid="!isValidInput && urls.length > 0"
+						:color="!isValidInput && urls.length > 0 ? 'error' : undefined"
 					/>
 				</div>
 			</form>
@@ -31,7 +32,6 @@ import { computed, ref } from "vue";
 import PhotoService from "@/services/photo-service";
 import { useRouter } from "vue-router";
 import { usePhotoRoute } from "@/composables/photo/photoRoute";
-import Textarea from "@/v8/components/forms/basic/Textarea.vue";
 import AlbumService from "@/services/album-service";
 
 const open = defineModel<boolean>("open", { default: false });

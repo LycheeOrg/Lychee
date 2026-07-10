@@ -143,8 +143,7 @@ import { useUserStore } from "@/stores/UserState";
 import { ref, watch, onMounted, onUnmounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useLycheeStateStore } from "@/stores/LycheeState";
-import { onKeyStroke, useDebounceFn } from "@vueuse/core";
-import { getModKey, shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
+import { useDebounceFn } from "@vueuse/core";
 import { storeToRefs } from "pinia";
 import { useSelection } from "@/composables/selections/selections";
 import RenameDialog from "@/v8/components/forms/gallery-dialogs/RenameDialog.vue";
@@ -368,113 +367,81 @@ function openSearch() {
 	router.push({ name: "search", params: { albumId: albumStore.album.id } });
 }
 
-// Album operations
-onKeyStroke("h", () => {
-	if (shouldIgnoreKeystroke()) return;
-	if (photoStore.isLoaded && lycheeStore.is_nsfw_classifier_enabled) {
-		lycheeStore.cycleNsfwOverlayMode(nsfwDetectionsStore.get(photoStore.photo?.id ?? "").detections);
-	} else {
-		are_nsfw_visible.value = !are_nsfw_visible.value;
-	}
-});
-onKeyStroke("f", () => !shouldIgnoreKeystroke() && !photoStore.isLoaded && togglableStore.toggleFullScreen());
-onKeyStroke(" ", () => !shouldIgnoreKeystroke() && !photoStore.isLoaded && unselect());
-onKeyStroke("n", () => !shouldIgnoreKeystroke() && !photoStore.isLoaded && (is_create_album_visible.value = true));
-onKeyStroke("u", () => !shouldIgnoreKeystroke() && !photoStore.isLoaded && (is_upload_visible.value = true));
-onKeyStroke("i", () => !shouldIgnoreKeystroke() && !photoStore.isLoaded && toggleEdit());
-onKeyStroke("l", () => !shouldIgnoreKeystroke() && !photoStore.isLoaded && !userStore.isLoggedIn && (is_login_open.value = true));
-onKeyStroke("/", () => !shouldIgnoreKeystroke() && !photoStore.isLoaded && albumStore.config?.is_search_accessible && openSearch());
-onKeyStroke("a", (e) => {
-	if (!shouldIgnoreKeystroke() && !photoStore.isLoaded && e.getModifierState(getModKey()) && !e.shiftKey && !e.altKey) {
-		e.preventDefault();
-		selectEverything();
-	}
-});
+defineShortcuts({
+	h: () => {
+		if (photoStore.isLoaded && lycheeStore.is_nsfw_classifier_enabled) {
+			lycheeStore.cycleNsfwOverlayMode(nsfwDetectionsStore.get(photoStore.photo?.id ?? "").detections);
+		} else {
+			are_nsfw_visible.value = !are_nsfw_visible.value;
+		}
+	},
+	f: () => togglableStore.toggleFullScreen(),
+	" ": () => (photoStore.isLoaded ? is_slideshow_enabled.value && slideshow() : unselect()),
+	n: () => !photoStore.isLoaded && (is_create_album_visible.value = true),
+	u: () => !photoStore.isLoaded && (is_upload_visible.value = true),
+	i: () => (photoStore.isLoaded ? toggleDetails() : toggleEdit()),
+	l: () => !photoStore.isLoaded && !userStore.isLoggedIn && (is_login_open.value = true),
+	"/": () => !photoStore.isLoaded && albumStore.config?.is_search_accessible && openSearch(),
+	meta_a: () => !photoStore.isLoaded && selectEverything(),
+	arrowleft: () => photoStore.isLoaded && (isLTR() ? photoStore.hasPrevious && previous(true) : photoStore.hasNext && next(true)),
+	arrowright: () => photoStore.isLoaded && (isLTR() ? photoStore.hasNext && next(true) : photoStore.hasPrevious && previous(true)),
+	o: () => photoStore.isLoaded && rotateOverlay(),
+	escape: () => {
+		if (photoStore.isLoaded && is_slideshow_active.value) {
+			stop();
+		}
 
-// Photo operations (note that the arrow keys are flipped for RTL languages)
-onKeyStroke("ArrowLeft", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && isLTR() && photoStore.hasPrevious && previous(true));
-onKeyStroke("ArrowRight", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && isLTR() && photoStore.hasNext && next(true));
-onKeyStroke("ArrowLeft", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && !isLTR() && photoStore.hasNext && next(true));
-onKeyStroke("ArrowRight", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && !isLTR() && photoStore.hasPrevious && previous(true));
-onKeyStroke("o", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && rotateOverlay());
-onKeyStroke(" ", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && is_slideshow_enabled.value && slideshow());
-onKeyStroke("i", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && toggleDetails());
-onKeyStroke("f", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && togglableStore.toggleFullScreen());
-onKeyStroke("Escape", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && is_slideshow_active.value && stop());
+		if (are_details_open.value && lycheeStore.is_photo_details_always_open === false) {
+			are_details_open.value = false;
+			return;
+		}
 
-// Privileged Album actions
-onKeyStroke("m", () => !shouldIgnoreKeystroke() && !photoStore.isLoaded && albumStore.rights?.can_move && hasSelection() && toggleMove());
-onKeyStroke(
-	["Delete", "Backspace"],
-	() => !shouldIgnoreKeystroke() && !photoStore.isLoaded && albumStore.rights?.can_delete && hasSelection() && toggleDelete(),
-);
+		if (is_move_visible.value) {
+			is_move_visible.value = false;
+			return;
+		}
 
-// Priviledged Photo operations
-onKeyStroke("m", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && albumStore.rights?.can_edit && toggleMove());
-onKeyStroke("e", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && albumStore.rights?.can_edit && toggleEdit());
-onKeyStroke(
-	"s",
-	() =>
-		!shouldIgnoreKeystroke() &&
-		photoStore.isLoaded &&
-		(albumsStore.rootRights?.can_highlight || albumStore.rights?.can_edit) &&
-		toggleHighlight(),
-);
-onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && photoStore.isLoaded && albumStore.rights?.can_delete && toggleDelete());
-onKeyStroke("0", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && handleRatingClick(photoStore.photo!.id, 0));
-onKeyStroke("1", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && handleRatingClick(photoStore.photo!.id, 1));
-onKeyStroke("2", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && handleRatingClick(photoStore.photo!.id, 2));
-onKeyStroke("3", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && handleRatingClick(photoStore.photo!.id, 3));
-onKeyStroke("4", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && handleRatingClick(photoStore.photo!.id, 4));
-onKeyStroke("5", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && handleRatingClick(photoStore.photo!.id, 5));
+		if (is_delete_visible.value) {
+			is_delete_visible.value = false;
+			return;
+		}
 
-// on key stroke escape:
-// 1. lose focus
-// 2. close modals
-// 3. go back
-onKeyStroke("Escape", () => {
-	// 1. lose focus
-	if (shouldIgnoreKeystroke() && document.activeElement instanceof HTMLElement) {
-		document.activeElement.blur();
-		return;
-	}
+		if (is_rename_visible.value) {
+			is_rename_visible.value = false;
+			return;
+		}
 
-	if (are_details_open.value && lycheeStore.is_photo_details_always_open === false) {
-		are_details_open.value = false;
-		return;
-	}
+		if (is_tag_visible.value) {
+			is_tag_visible.value = false;
+			return;
+		}
 
-	if (is_move_visible.value) {
-		is_move_visible.value = false;
-		return;
-	}
+		if (is_copy_visible.value) {
+			is_copy_visible.value = false;
+			return;
+		}
 
-	if (is_delete_visible.value) {
-		is_delete_visible.value = false;
-		return;
-	}
+		if (is_move_visible.value) {
+			is_move_visible.value = false;
+			return;
+		}
 
-	if (is_rename_visible.value) {
-		is_rename_visible.value = false;
-		return;
-	}
-
-	if (is_tag_visible.value) {
-		is_tag_visible.value = false;
-		return;
-	}
-
-	if (is_copy_visible.value) {
-		is_copy_visible.value = false;
-		return;
-	}
-
-	if (is_move_visible.value) {
-		is_move_visible.value = false;
-		return;
-	}
-
-	goBack();
+		goBack();
+	},
+	// privileged album/photo actions
+	m: () => (photoStore.isLoaded ? albumStore.rights?.can_edit && toggleMove() : albumStore.rights?.can_move && hasSelection() && toggleMove()),
+	delete: () =>
+		photoStore.isLoaded ? albumStore.rights?.can_delete && toggleDelete() : albumStore.rights?.can_delete && hasSelection() && toggleDelete(),
+	backspace: () =>
+		photoStore.isLoaded ? albumStore.rights?.can_delete && toggleDelete() : albumStore.rights?.can_delete && hasSelection() && toggleDelete(),
+	e: () => photoStore.isLoaded && albumStore.rights?.can_edit && toggleEdit(),
+	s: () => photoStore.isLoaded && (albumsStore.rootRights?.can_highlight || albumStore.rights?.can_edit) && toggleHighlight(),
+	"0": () => photoStore.isLoaded && handleRatingClick(photoStore.photo!.id, 0),
+	"1": () => photoStore.isLoaded && handleRatingClick(photoStore.photo!.id, 1),
+	"2": () => photoStore.isLoaded && handleRatingClick(photoStore.photo!.id, 2),
+	"3": () => photoStore.isLoaded && handleRatingClick(photoStore.photo!.id, 3),
+	"4": () => photoStore.isLoaded && handleRatingClick(photoStore.photo!.id, 4),
+	"5": () => photoStore.isLoaded && handleRatingClick(photoStore.photo!.id, 5),
 });
 
 // We prevent the drag mechanism when a photo is loaded.

@@ -1,8 +1,10 @@
 <template>
-	<div class="w-full border-0 h-14 flex items-center justify-between px-2">
-		<OpenLeftMenu />
-		<span class="absolute left-1/2 -translate-x-1/2">{{ contactConfig?.header ? contactConfig.header : $t("contact.title") }}</span>
-	</div>
+	<UHeader :toggle="false">
+		<template #left>
+			<OpenLeftMenu />
+		</template>
+		{{ contactConfig?.header ? contactConfig.header : $t("contact.title") }}
+	</UHeader>
 
 	<UCard v-if="contactConfig" class="max-w-2xl mx-auto mt-6">
 		<div v-if="submitted" class="text-center p-8">
@@ -83,9 +85,12 @@
 			</UFormField>
 
 			<!-- Consent (optional) -->
-			<div v-if="contactConfig.is_consent_required" class="flex items-start gap-3">
-				<UCheckbox v-model="form.consent_agreed" id="contact-consent" :color="errors.consent_agreed !== '' ? 'error' : undefined" />
-				<label for="contact-consent" class="text-sm cursor-pointer">
+			<UCheckbox
+				v-if="contactConfig.is_consent_required"
+				v-model="form.consent_agreed"
+				:color="errors.consent_agreed !== '' ? 'error' : undefined"
+			>
+				<template #label>
 					{{ contactConfig.consent_text ? contactConfig.consent_text : $t("contact.consent_label") }} <span class="text-error">*</span
 					><br />
 					<a
@@ -97,8 +102,8 @@
 					>
 						{{ $t("contact.consent_privacy_link") }}
 					</a>
-				</label>
-			</div>
+				</template>
+			</UCheckbox>
 			<small v-if="errors.consent_agreed" class="text-error">{{ errors.consent_agreed }}</small>
 
 			<!-- Global error -->

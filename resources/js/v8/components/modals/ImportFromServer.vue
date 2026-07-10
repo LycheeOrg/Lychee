@@ -28,47 +28,47 @@
 				</div>
 				<div class="flex flex-col gap-2 mt-4">
 					<form>
-						<div class="flex items-center gap-2">
-							<USwitch id="delete_imported" v-model="importState.options.delete_imported" class="cursor-pointer" color="error" />
-							<UIcon v-if="importState.options.delete_imported" name="prime:exclamation-triangle" class="text-error text-xs" />
-							<label for="delete_imported" class="cursor-pointer text-sm">{{ $t("import_from_server.delete_imported") }}</label>
-						</div>
-						<div class="flex items-center gap-2">
-							<USwitch id="import_via_symlink" v-model="importState.options.import_via_symlink" class="cursor-pointer" />
-							<label for="import_via_symlink" class="cursor-pointer text-sm">{{ $t("import_from_server.import_via_symlink") }}</label>
-						</div>
-						<div class="flex items-center gap-2">
-							<USwitch id="skip_duplicates" v-model="importState.options.skip_duplicates" class="cursor-pointer" />
-							<label for="skip_duplicates" class="cursor-pointer text-sm">{{ $t("import_from_server.skip_duplicates") }}</label>
-						</div>
-						<div class="flex items-center gap-2">
-							<USwitch id="resync_metadata" v-model="importState.options.resync_metadata" class="cursor-pointer" />
-							<label for="resync_metadata" class="cursor-pointer text-sm">{{ $t("import_from_server.resync_metadata") }}</label>
-						</div>
-						<div class="flex items-center gap-2">
-							<USwitch
-								id="delete_missing_photos"
-								v-model="importState.options.delete_missing_photos"
-								class="cursor-pointer"
-								color="warning"
-							/>
-							<UIcon v-if="importState.options.delete_missing_photos" name="prime:exclamation-triangle" class="text-warning text-xs" />
-							<label for="delete_missing_photos" class="cursor-pointer text-sm">{{
-								$t("import_from_server.delete_missing_photos")
-							}}</label>
-						</div>
-						<div class="flex items-center gap-2">
-							<USwitch
-								id="delete_missing_albums"
-								v-model="importState.options.delete_missing_albums"
-								class="cursor-pointer"
-								color="warning"
-							/>
-							<UIcon v-if="importState.options.delete_missing_albums" name="prime:exclamation-triangle" class="text-warning text-xs" />
-							<label for="delete_missing_albums" class="cursor-pointer text-sm">{{
-								$t("import_from_server.delete_missing_albums")
-							}}</label>
-						</div>
+						<USwitch v-model="importState.options.delete_imported" color="error" :ui="{ label: 'text-sm' }">
+							<template #label>
+								{{ $t("import_from_server.delete_imported") }}
+								<UIcon v-if="importState.options.delete_imported" name="prime:exclamation-triangle" class="text-error text-xs" />
+							</template>
+						</USwitch>
+						<USwitch
+							v-model="importState.options.import_via_symlink"
+							:label="$t('import_from_server.import_via_symlink')"
+							:ui="{ label: 'text-sm' }"
+						/>
+						<USwitch
+							v-model="importState.options.skip_duplicates"
+							:label="$t('import_from_server.skip_duplicates')"
+							:ui="{ label: 'text-sm' }"
+						/>
+						<USwitch
+							v-model="importState.options.resync_metadata"
+							:label="$t('import_from_server.resync_metadata')"
+							:ui="{ label: 'text-sm' }"
+						/>
+						<USwitch v-model="importState.options.delete_missing_photos" color="warning" :ui="{ label: 'text-sm' }">
+							<template #label>
+								{{ $t("import_from_server.delete_missing_photos") }}
+								<UIcon
+									v-if="importState.options.delete_missing_photos"
+									name="prime:exclamation-triangle"
+									class="text-warning text-xs"
+								/>
+							</template>
+						</USwitch>
+						<USwitch v-model="importState.options.delete_missing_albums" color="warning" :ui="{ label: 'text-sm' }">
+							<template #label>
+								{{ $t("import_from_server.delete_missing_albums") }}
+								<UIcon
+									v-if="importState.options.delete_missing_albums"
+									name="prime:exclamation-triangle"
+									class="text-warning text-xs"
+								/>
+							</template>
+						</USwitch>
 					</form>
 				</div>
 			</div>

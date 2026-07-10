@@ -151,7 +151,7 @@ function printPlural(data: LiveMetrics) {
 
 function titlize(title: string) {
 	const t = title.length > 20 ? title.substring(0, 20) + "..." : title;
-	return `<span class="font-bold text-primary-emphasis">${t}</span>`;
+	return `<span class="font-bold text-primary">${t}</span>`;
 }
 
 function prettifyData() {

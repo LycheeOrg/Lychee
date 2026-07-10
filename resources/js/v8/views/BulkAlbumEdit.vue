@@ -9,10 +9,12 @@
 	<BulkEditFieldsDialog v-model:visible="isEditFieldsVisible" :album-ids="selectedIds" @patched="onPatched" />
 
 	<!-- Toolbar -->
-	<div class="w-full border-0 h-14 flex items-center justify-between px-2">
-		<OpenLeftMenu />
-		<span class="absolute left-1/2 -translate-x-1/2">{{ $t("bulk_album_edit.title") }}</span>
-	</div>
+	<UHeader :toggle="false">
+		<template #left>
+			<OpenLeftMenu />
+		</template>
+		{{ $t("bulk_album_edit.title") }}
+	</UHeader>
 
 	<UCard class="max-w-7xl mx-auto mt-4">
 		<p class="text-center text-muted text-sm mb-4">{{ $t("bulk_album_edit.description") }}</p>

@@ -123,7 +123,7 @@ import { AlbumThumbConfig } from "@/v8/components/gallery/albumModule/thumbs/Alb
 import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
 import { useSelection } from "@/composables/selections/selections";
 import { useLycheeStateStore } from "@/stores/LycheeState";
-import { onKeyStroke, useDebounceFn } from "@vueuse/core";
+import { useDebounceFn } from "@vueuse/core";
 import { storeToRefs } from "pinia";
 import { computed, nextTick, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
@@ -436,91 +436,82 @@ function goBack() {
 	}
 }
 
-// Album operations
-onKeyStroke("h", () => {
-	if (shouldIgnoreKeystroke()) return;
-	if (photoStore.isLoaded && lycheeStore.is_nsfw_classifier_enabled) {
-		lycheeStore.cycleNsfwOverlayMode(nsfwDetectionsStore.get(photoStore.photo?.id ?? "").detections);
-	} else {
-		are_nsfw_visible.value = !are_nsfw_visible.value;
-	}
-});
-onKeyStroke("f", () => !shouldIgnoreKeystroke() && !photoStore.isLoaded && togglableStore.toggleFullScreen());
+defineShortcuts({
+	// Album operations
+	h: () => {
+		if (photoStore.isLoaded && lycheeStore.is_nsfw_classifier_enabled) {
+			lycheeStore.cycleNsfwOverlayMode(nsfwDetectionsStore.get(photoStore.photo?.id ?? "").detections);
+		} else {
+			are_nsfw_visible.value = !are_nsfw_visible.value;
+		}
+	},
+	f: () => togglableStore.toggleFullScreen(),
 
-// Photo operations (note that the arrow keys are flipped for RTL languages)
-onKeyStroke("ArrowLeft", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && isLTR() && photoStore.hasPrevious && previous(true));
-onKeyStroke("ArrowRight", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && isLTR() && photoStore.hasNext && next(true));
-onKeyStroke("ArrowLeft", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && !isLTR() && photoStore.hasNext && next(true));
-onKeyStroke("ArrowRight", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && !isLTR() && photoStore.hasPrevious && previous(true));
-onKeyStroke("o", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && rotateOverlay());
-onKeyStroke(" ", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && is_slideshow_enabled.value && slideshow());
-onKeyStroke("i", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && toggleDetails());
-onKeyStroke("f", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && togglableStore.toggleFullScreen());
-onKeyStroke("Escape", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && is_slideshow_active.value && stop());
+	// Photo operations (note that the arrow keys are flipped for RTL languages)
+	arrowleft: () => photoStore.isLoaded && (isLTR() ? photoStore.hasPrevious && previous(true) : photoStore.hasNext && next(true)),
+	arrowright: () => photoStore.isLoaded && (isLTR() ? photoStore.hasNext && next(true) : photoStore.hasPrevious && previous(true)),
+	o: () => photoStore.isLoaded && rotateOverlay(),
+	" ": () => photoStore.isLoaded && is_slideshow_enabled.value && slideshow(),
+	i: () => photoStore.isLoaded && toggleDetails(),
 
-// Priviledged Photo operations
-onKeyStroke("m", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && albumStore.rights?.can_edit && toggleMove());
-onKeyStroke(
-	"e",
-	() => !shouldIgnoreKeystroke() && photoStore.isLoaded && albumStore.rights?.can_edit && (is_photo_edit_open.value = !is_photo_edit_open.value),
-);
-onKeyStroke(
-	"s",
-	() =>
-		!shouldIgnoreKeystroke() &&
-		photoStore.isLoaded &&
-		(albumsStore.rootRights?.can_highlight || albumStore.rights?.can_edit) &&
-		toggleHighlight(),
-);
-onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && photoStore.isLoaded && albumStore.album?.rights.can_delete && toggleDelete());
+	// Priviledged Photo operations
+	m: () => photoStore.isLoaded && albumStore.rights?.can_edit && toggleMove(),
+	e: () => photoStore.isLoaded && albumStore.rights?.can_edit && (is_photo_edit_open.value = !is_photo_edit_open.value),
+	s: () => photoStore.isLoaded && (albumsStore.rootRights?.can_highlight || albumStore.rights?.can_edit) && toggleHighlight(),
+	delete: () => photoStore.isLoaded && albumStore.album?.rights.can_delete && toggleDelete(),
+	backspace: () => photoStore.isLoaded && albumStore.album?.rights.can_delete && toggleDelete(),
 
-// on key stroke escape:
-// 1. lose focus
-// 2. close modals
-// 3. go back
-onKeyStroke("Escape", () => {
-	// 1. lose focus
-	if (shouldIgnoreKeystroke() && document.activeElement instanceof HTMLElement) {
-		document.activeElement.blur();
-		return;
-	}
+	// on key stroke escape:
+	// 1. stop an active slideshow
+	// 2. lose focus
+	// 3. close modals
+	// 4. go back
+	escape: {
+		usingInput: true,
+		handler: () => {
+			if (photoStore.isLoaded && is_slideshow_active.value) {
+				stop();
+			}
 
-	if (are_details_open.value) {
-		are_details_open.value = false;
-		return;
-	}
+			// 2. lose focus
+			if (shouldIgnoreKeystroke() && document.activeElement instanceof HTMLElement) {
+				document.activeElement.blur();
+				return;
+			}
 
-	if (is_move_visible.value) {
-		is_move_visible.value = false;
-		return;
-	}
+			if (are_details_open.value) {
+				are_details_open.value = false;
+				return;
+			}
 
-	if (is_delete_visible.value) {
-		is_delete_visible.value = false;
-		return;
-	}
+			if (is_move_visible.value) {
+				is_move_visible.value = false;
+				return;
+			}
 
-	if (is_rename_visible.value) {
-		is_rename_visible.value = false;
-		return;
-	}
+			if (is_delete_visible.value) {
+				is_delete_visible.value = false;
+				return;
+			}
 
-	if (is_tag_visible.value) {
-		is_tag_visible.value = false;
-		return;
-	}
+			if (is_rename_visible.value) {
+				is_rename_visible.value = false;
+				return;
+			}
 
-	if (is_copy_visible.value) {
-		is_copy_visible.value = false;
-		return;
-	}
+			if (is_tag_visible.value) {
+				is_tag_visible.value = false;
+				return;
+			}
 
-	if (is_move_visible.value) {
-		is_move_visible.value = false;
-		return;
-	}
+			if (is_copy_visible.value) {
+				is_copy_visible.value = false;
+				return;
+			}
 
-	goBack();
+			goBack();
+		},
+	},
 });
 
 onMounted(async () => {

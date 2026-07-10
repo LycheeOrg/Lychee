@@ -1,11 +1,11 @@
 <template>
-	<div>
+	<div class="w-full">
 		<div class="flex items-center justify-between gap-x-4 flex-wrap sm:flex-nowrap">
 			<label
 				:for="props.config.key"
 				:class="{
 					'w-full': true,
-					'text-primary-emphasis': props.config.require_se,
+					'text-primary': props.config.require_se,
 					'text-highlighted': !props.config.require_se,
 				}"
 				v-html="props.label ?? tDoc(props.config)"

@@ -130,8 +130,7 @@ import { usePhotoStore } from "@/stores/PhotoState";
 import { useTagStore } from "@/stores/TagState";
 import { useUserStore } from "@/stores/UserState";
 import { useLtRorRtL } from "@/utils/Helpers";
-import { getModKey, shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
-import { onKeyStroke } from "@vueuse/core";
+import { shouldIgnoreKeystroke } from "@/utils/keybindings-utils";
 import { storeToRefs } from "pinia";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import { computed, onMounted, ref, watch } from "vue";
@@ -208,88 +207,81 @@ function toggleDetails() {
 	are_details_open.value = !are_details_open.value;
 }
 
-// Album operations
-onKeyStroke("h", () => {
-	if (shouldIgnoreKeystroke()) return;
-	if (photoStore.isLoaded && lycheeStore.is_nsfw_classifier_enabled) {
-		lycheeStore.cycleNsfwOverlayMode(nsfwDetectionsStore.get(photoStore.photo?.id ?? "").detections);
-	} else {
-		are_nsfw_visible.value = !are_nsfw_visible.value;
-	}
-});
-onKeyStroke("f", () => !shouldIgnoreKeystroke() && !photoStore.isLoaded && togglableStore.toggleFullScreen());
-onKeyStroke(" ", () => !shouldIgnoreKeystroke() && !photoStore.isLoaded && unselect());
-onKeyStroke("a", (e) => {
-	if (!shouldIgnoreKeystroke() && !photoStore.isLoaded && e.getModifierState(getModKey()) && !e.shiftKey && !e.altKey) {
-		e.preventDefault();
-		selectEverything();
-	}
-});
+defineShortcuts({
+	// Album operations
+	h: () => {
+		if (photoStore.isLoaded && lycheeStore.is_nsfw_classifier_enabled) {
+			lycheeStore.cycleNsfwOverlayMode(nsfwDetectionsStore.get(photoStore.photo?.id ?? "").detections);
+		} else {
+			are_nsfw_visible.value = !are_nsfw_visible.value;
+		}
+	},
+	f: () => togglableStore.toggleFullScreen(),
+	" ": () => (photoStore.isLoaded ? is_slideshow_enabled.value && slideshow() : unselect()),
+	meta_a: () => !photoStore.isLoaded && selectEverything(),
 
-// Photo operations (note that the arrow keys are flipped for RTL languages)
-onKeyStroke("ArrowLeft", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && isLTR() && photoStore.hasPrevious && previous(true));
-onKeyStroke("ArrowRight", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && isLTR() && photoStore.hasNext && next(true));
-onKeyStroke("ArrowLeft", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && !isLTR() && photoStore.hasNext && next(true));
-onKeyStroke("ArrowRight", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && !isLTR() && photoStore.hasPrevious && previous(true));
-onKeyStroke("o", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && rotateOverlay());
-onKeyStroke(" ", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && is_slideshow_enabled.value && slideshow());
-onKeyStroke("i", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && toggleDetails());
-onKeyStroke("f", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && togglableStore.toggleFullScreen());
-onKeyStroke("Escape", () => !shouldIgnoreKeystroke() && photoStore.isLoaded && is_slideshow_active.value && stop());
+	// Photo operations (note that the arrow keys are flipped for RTL languages)
+	arrowleft: () => photoStore.isLoaded && (isLTR() ? photoStore.hasPrevious && previous(true) : photoStore.hasNext && next(true)),
+	arrowright: () => photoStore.isLoaded && (isLTR() ? photoStore.hasNext && next(true) : photoStore.hasPrevious && previous(true)),
+	o: () => photoStore.isLoaded && rotateOverlay(),
+	i: () => photoStore.isLoaded && toggleDetails(),
 
-// Privileges Photos view operations
-onKeyStroke("m", () => !shouldIgnoreKeystroke() && !photoStore.isLoaded && hasSelection() && toggleMove());
-onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && !photoStore.isLoaded && hasSelection() && toggleDelete());
+	// Privileges Photos view operations
+	m: () => !photoStore.isLoaded && hasSelection() && toggleMove(),
+	delete: () => (photoStore.isLoaded ? toggleDelete() : hasSelection() && toggleDelete()),
+	backspace: () => (photoStore.isLoaded ? toggleDelete() : hasSelection() && toggleDelete()),
 
-onKeyStroke(["Delete", "Backspace"], () => !shouldIgnoreKeystroke() && photoStore.isLoaded && toggleDelete());
+	// on key stroke escape:
+	// 1. stop an active slideshow
+	// 2. lose focus
+	// 3. close modals
+	// 4. go back
+	escape: {
+		usingInput: true,
+		handler: () => {
+			if (photoStore.isLoaded && is_slideshow_active.value) {
+				stop();
+			}
 
-// on key stroke escape:
-// 1. lose focus
-// 2. close modals
-// 3. go back
-onKeyStroke("Escape", () => {
-	// 1. lose focus
-	if (shouldIgnoreKeystroke() && document.activeElement instanceof HTMLElement) {
-		document.activeElement.blur();
-		return;
-	}
+			// 2. lose focus
+			if (shouldIgnoreKeystroke() && document.activeElement instanceof HTMLElement) {
+				document.activeElement.blur();
+				return;
+			}
 
-	if (are_details_open.value) {
-		are_details_open.value = false;
-		return;
-	}
+			if (are_details_open.value) {
+				are_details_open.value = false;
+				return;
+			}
 
-	if (is_move_visible.value) {
-		is_move_visible.value = false;
-		return;
-	}
+			if (is_move_visible.value) {
+				is_move_visible.value = false;
+				return;
+			}
 
-	if (is_delete_visible.value) {
-		is_delete_visible.value = false;
-		return;
-	}
+			if (is_delete_visible.value) {
+				is_delete_visible.value = false;
+				return;
+			}
 
-	if (is_rename_visible.value) {
-		is_rename_visible.value = false;
-		return;
-	}
+			if (is_rename_visible.value) {
+				is_rename_visible.value = false;
+				return;
+			}
 
-	if (is_tag_visible.value) {
-		is_tag_visible.value = false;
-		return;
-	}
+			if (is_tag_visible.value) {
+				is_tag_visible.value = false;
+				return;
+			}
 
-	if (is_copy_visible.value) {
-		is_copy_visible.value = false;
-		return;
-	}
+			if (is_copy_visible.value) {
+				is_copy_visible.value = false;
+				return;
+			}
 
-	if (is_move_visible.value) {
-		is_move_visible.value = false;
-		return;
-	}
-
-	goBack();
+			goBack();
+		},
+	},
 });
 
 async function refresh() {

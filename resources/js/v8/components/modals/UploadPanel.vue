@@ -53,16 +53,15 @@
 						<span class="text-3xl">{{ $t("dialogs.upload.release") }}</span>
 					</div>
 					<label
-						class="flex flex-col w-full items-center justify-center hover:text-highlighted dark:border-neutral-900 dark:hover:bg-neutral-900/10 dark:hover:border-neutral-950 border shadow cursor-pointer h-1/2 rounded-2xl p-6"
+						class="flex flex-col w-full items-center justify-center hover:text-highlighted border-default hover:bg-elevated/50 hover:border-accented border shadow cursor-pointer h-1/2 rounded-2xl p-6"
 						for="myFiles"
 					>
 						<h3 class="text-xl text-center">{{ $t("dialogs.upload.select") }}</h3>
 						<em class="italic text-highlighted hover:text-muted">{{ $t("dialogs.upload.drag") }}</em>
 					</label>
 					<input id="myFiles" type="file" multiple class="hidden" @change="upload" />
-					<div v-if="setup?.can_watermark_optout" class="flex items-center justify-center gap-2">
-						<label for="watermark-toggle" class="cursor-pointer">{{ $t("dialogs.upload.apply_watermark") }}</label>
-						<USwitch id="watermark-toggle" v-model="applyWatermark" :disabled="showCancel" />
+					<div v-if="setup?.can_watermark_optout" class="flex items-center justify-center">
+						<USwitch v-model="applyWatermark" :disabled="showCancel" :label="$t('dialogs.upload.apply_watermark')" />
 					</div>
 				</div>
 			</div>

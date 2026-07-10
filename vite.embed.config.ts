@@ -1,7 +1,28 @@
-import { defineConfig } from 'vite';
+import { defineConfig, type Plugin } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import { fileURLToPath, URL } from 'node:url';
 import { resolve } from 'path';
+import { readFileSync } from 'node:fs';
+
+/**
+ * The UMD output format has no `import.meta.url`, so wasm-pack's default
+ * `new URL('foo.wasm', import.meta.url)` fetch path (used by @lychee-org/layouts)
+ * can't resolve at runtime. Inline any .wasm import as a base64 string instead,
+ * so it instantiates directly from bytes already in the bundle.
+ */
+function inlineWasmAsBase64(): Plugin {
+	return {
+		name: 'inline-wasm-as-base64',
+		enforce: 'pre',
+		load(id) {
+			if (!id.endsWith('.wasm')) {
+				return null;
+			}
+			const bytes = readFileSync(id.split('?')[0]);
+			return `export default ${JSON.stringify(bytes.toString('base64'))};`;
+		},
+	};
+}
 
 /**
  * Vite configuration for building the embeddable widget.
@@ -14,7 +35,7 @@ import { resolve } from 'path';
  * - Optimized and minified output
  */
 export default defineConfig({
-	plugins: [vue()],
+	plugins: [vue(), inlineWasmAsBase64()],
 	publicDir: false,
 	resolve: {
 		alias: {

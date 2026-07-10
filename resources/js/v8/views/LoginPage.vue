@@ -9,7 +9,7 @@
 				<img :src="initdata.landing_logo" alt="logo" class="max-h-24 max-w-xs object-contain mx-auto" />
 			</template>
 			<template v-else>
-				<h1 class="text-center text-2xl text-surface-0 uppercase font-extralight">
+				<h1 class="text-center text-2xl text-white uppercase font-extralight">
 					{{ initdata.landing_title }}
 				</h1>
 				<h2 class="text-center text-base text-muted uppercase font-extralight">
@@ -22,19 +22,22 @@
 				<img :src="lycheeStore.site_logo" alt="logo" class="max-h-24 max-w-xs object-contain mx-auto" />
 			</template>
 			<template v-else>
-				<h1 class="text-center text-2xl text-surface-0 uppercase font-extralight">
+				<h1 class="text-center text-2xl text-white uppercase font-extralight">
 					{{ title }}
 				</h1>
 			</template>
 		</div>
 		<LoginForm padding="" @logged-in="goBack" />
-		<UButton color="neutral" variant="soft" class="w-full max-w-md font-bold rounded-xl justify-center" @click="goBack">
+		<UButton color="neutral" variant="soft" class="w-full max-w-md font-bold justify-center" @click="goBack">
 			{{ $t("dialogs.button.cancel") }}
 		</UButton>
 		<div v-if="is_registration_enabled && is_basic_auth_enabled" class="text-center mt-4">
 			<router-link to="/register" class="text-highlighted text-sm font-bold hover:underline">
 				{{ $t("profile.register.signup") }}
 			</router-link>
+		</div>
+		<div v-if="!is_white_label_enabled" class="text-muted text-right font-semibold mt-8">
+			Lychee <span v-if="is_se_enabled" class="text-primary-500">SE</span>
 		</div>
 	</UCard>
 </template>
@@ -56,7 +59,7 @@ const lycheeStore = useLycheeStateStore();
 const leftMenuStore = useLeftMenuStateStore();
 const userStore = useUserStore();
 const { advisoryCheck } = useAdvisoryModal();
-const { title, is_registration_enabled, is_basic_auth_enabled } = storeToRefs(lycheeStore);
+const { title, is_registration_enabled, is_basic_auth_enabled, is_white_label_enabled, is_se_enabled } = storeToRefs(lycheeStore);
 const is_loaded = ref(false);
 
 async function goBack() {

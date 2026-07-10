@@ -1,10 +1,5 @@
 <template>
-	<Fieldset
-		v-if="user && user.id !== null"
-		:legend="$t('profile.preferences.header')"
-		:toggleable="true"
-		class="mb-4 hover:border-primary pt-2 max-w-xl mx-auto"
-	>
+	<Fieldset v-if="user && user.id !== null" :legend="$t('profile.preferences.header')" :toggleable="true" class="hover:border-primary pt-2">
 		<form>
 			<div class="w-full mb-6">
 				<div class="pb-4 text-muted">
@@ -26,19 +21,14 @@
 					</template>
 				</USelectMenu>
 			</div>
-			<div class="flex w-full mt-4">
-				<UButton color="neutral" class="w-full font-bold shrink rounded-none ltr:rounded-l-xl rtl:rounded-r-xl justify-center" @click="save">
+			<UFieldGroup class="w-full mt-4">
+				<UButton color="neutral" class="flex-1 font-bold justify-center" @click="save">
 					{{ $t("profile.preferences.save") }}
 				</UButton>
-				<UButton
-					color="neutral"
-					variant="soft"
-					class="w-full font-bold shrink rounded-none ltr:rounded-r-xl rtl:rounded-l-xl justify-center"
-					@click="reset"
-				>
+				<UButton color="neutral" variant="soft" class="flex-1 font-bold justify-center" @click="reset">
 					{{ $t("profile.preferences.reset") }}
 				</UButton>
-			</div>
+			</UFieldGroup>
 		</form>
 	</Fieldset>
 </template>

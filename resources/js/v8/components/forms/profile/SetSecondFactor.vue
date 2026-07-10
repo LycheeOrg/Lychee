@@ -1,5 +1,5 @@
 <template>
-	<Fieldset v-if="u2f" :legend="$t('profile.u2f.header')" :toggleable="true" class="mb-4 hover:border-primary pt-2 max-w-xl mx-auto">
+	<Fieldset v-if="u2f" :legend="$t('profile.u2f.header')" :toggleable="true" class="hover:border-primary pt-2">
 		<div class="text-muted text-center">{{ $t("profile.u2f.info") }}</div>
 		<SetSecondFactorLine v-for="credential in u2f" :key="credential.id" :u2f="credential" @delete="deleteU2F" />
 		<div v-if="u2f.length === 0">

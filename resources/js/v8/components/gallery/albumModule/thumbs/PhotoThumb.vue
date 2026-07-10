@@ -3,6 +3,8 @@
 		:class="{
 			'photo group shadow-md shadow-black/25 animate-zoomIn transition-all ease-in duration-200 block absolute cursor-pointer': true,
 			'outline outline-1.5 outline-primary-500': props.isSelected,
+			'rounded-lg overflow-hidden': is_rounded_corners_enabled,
+			'border-solid border border-accented': is_album_border_enabled,
 		}"
 		:data-width="props.photo.size_variants.original?.width"
 		:data-height="props.photo.size_variants.original?.height"
@@ -40,7 +42,7 @@
 		</span>
 		<div
 			:class="{
-				'overlay w-full absolute bottom-0 m-0 bg-linear-to-t from-[#00000066] text-shadow-sm': true,
+				'overlay w-full absolute bottom-0 m-0 bg-linear-to-t from-black/40 text-shadow-sm': true,
 				'opacity-0 group-hover:opacity-100 transition-all ease-out': display_thumb_photo_overlay === 'hover',
 				hidden: display_thumb_photo_overlay === 'never',
 			}"
@@ -155,8 +157,15 @@ const orderStore = useOrderManagementStore();
 const albumsStore = useAlbumsStore();
 const albumStore = useAlbumStore();
 const togglableStore = useTogglablesStateStore();
-const { is_favourite_enabled, display_thumb_photo_overlay, photo_thumb_info, is_photo_thumb_tags_enabled, rating_album_view_mode } =
-	storeToRefs(lycheeStore);
+const {
+	is_favourite_enabled,
+	display_thumb_photo_overlay,
+	photo_thumb_info,
+	is_photo_thumb_tags_enabled,
+	rating_album_view_mode,
+	is_rounded_corners_enabled,
+	is_album_border_enabled,
+} = storeToRefs(lycheeStore);
 const facesStore = usePhotoFacesStore();
 const { is_touch_select_mode } = storeToRefs(togglableStore);
 const srcPlay = ref(getPlayIcon());

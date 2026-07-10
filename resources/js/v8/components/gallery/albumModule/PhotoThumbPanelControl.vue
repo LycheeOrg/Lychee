@@ -1,11 +1,11 @@
 <template>
 	<!-- Tag filtering -->
-	<div class="inline-flex items-center gap-0.5 pr-2 mr-2 border-r border-neutral-300 dark:border-neutral-600 h-8" v-if="albumStore.modelAlbum">
+	<div class="inline-flex items-center gap-0.5 pr-2 mr-2 border-r border-accented h-8" v-if="albumStore.modelAlbum">
 		<UButton icon="prime:tag" color="neutral" variant="ghost" class="hover:text-default" @click="modalStore.toggleFilters" />
 	</div>
 	<!-- Star Rating Filter (visible only when rated photos exist) -->
 	<div
-		class="inline-flex items-center gap-0.5 pr-2 mr-2 border-r border-neutral-300 dark:border-neutral-600 h-8"
+		class="inline-flex items-center gap-0.5 pr-2 mr-2 border-r border-accented h-8"
 		v-if="lycheeStore.is_se_enabled && (albumsStore.rootRights?.can_highlight || albumStore.album?.rights?.can_edit)"
 	>
 		<UTooltip :text="$t('gallery.album.show_highlighted')">
@@ -23,7 +23,7 @@
 		v-if="photosStore.hasRatedPhotos"
 		role="group"
 		:aria-label="$t('gallery.filter.by_rating')"
-		class="inline-flex items-center gap-0.5 pr-2 mr-2 border-r border-neutral-300 dark:border-neutral-600 h-8"
+		class="inline-flex items-center gap-0.5 pr-2 mr-2 border-r border-accented h-8"
 	>
 		<button
 			v-for="star in 5"
@@ -32,7 +32,7 @@
 			type="button"
 			:aria-label="$t('gallery.filter.n_stars_or_higher', { n: star.toString() })"
 			:aria-pressed="photosStore.photoRatingFilter === star"
-			class="p-1 cursor-pointer transition-transform duration-150 hover:scale-110 focus:outline-none rounded"
+			class="p-1 cursor-pointer transition-transform duration-150 hover:scale-110 rounded outline-primary/25 focus-visible:outline-3 focus-visible:ring-primary"
 			@click="handleStarClick(star)"
 			@keydown="handleKeyDown($event, star)"
 		>

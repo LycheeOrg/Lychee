@@ -4,7 +4,7 @@
 			:for="props.config.key"
 			:class="{
 				'w-full': true,
-				'text-primary-emphasis': props.config.require_se,
+				'text-primary': props.config.require_se,
 				'text-highlighted': !props.config.require_se,
 			}"
 			v-html="props.label ?? tDoc(props.config)"

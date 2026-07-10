@@ -1,9 +1,10 @@
 <template>
-	<div class="w-full border-0 h-14 flex items-center justify-between px-2">
-		<OpenLeftMenu />
-		<span class="absolute left-1/2 -translate-x-1/2 pointer-events-none">{{ $t("sharing.title") }}</span>
-		<div></div>
-	</div>
+	<UHeader :toggle="false">
+		<template #left>
+			<OpenLeftMenu />
+		</template>
+		{{ $t("sharing.title") }}
+	</UHeader>
 	<BulkSharingModal v-model:visible="bulkSharingVisible" @created-permission="load" />
 	<UCard v-if="perms !== undefined" class="mx-auto max-w-3xl mt-4" :ui="{ header: 'hidden' }">
 		<div class="w-full text-center text-highlighted">

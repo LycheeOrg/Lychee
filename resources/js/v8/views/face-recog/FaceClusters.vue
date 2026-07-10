@@ -1,10 +1,11 @@
 <template>
 	<div class="h-svh overflow-y-auto">
-		<div class="w-full border-0 h-14 flex items-center justify-between px-2">
-			<GoBack @go-back="$router.push({ name: 'people' })" />
-			<span class="absolute left-1/2 -translate-x-1/2 pointer-events-none">{{ $t("people.clusters_title") }}</span>
-			<div></div>
-		</div>
+		<UHeader :toggle="false">
+			<template #left>
+				<GoBack @go-back="$router.push({ name: 'people' })" />
+			</template>
+			{{ $t("people.clusters_title") }}
+		</UHeader>
 
 		<FaceRecognitionWarning />
 
@@ -150,7 +151,7 @@
 									<UIcon name="prime:user" class="text-xl text-muted" />
 								</div>
 								<button
-									class="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/60 text-white text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+									class="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/60 text-inverted text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
 									@click="dismissSingleFace(face)"
 								>
 									×

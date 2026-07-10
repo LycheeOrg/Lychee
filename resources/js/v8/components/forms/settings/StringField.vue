@@ -1,6 +1,6 @@
 <template>
 	<div class="flex flex-wrap items-center w-full">
-		<div class="w-1/2" :class="props.config.require_se ? 'text-primary-emphasis' : 'text-highlighted'">
+		<div class="w-1/2" :class="props.config.require_se ? 'text-primary' : 'text-highlighted'">
 			{{ props.config.key }}
 			<sub v-if="props.config.order !== null" class="text-muted text-2xs"> ({{ props.config.order }}) </sub>
 		</div>
