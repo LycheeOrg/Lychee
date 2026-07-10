@@ -3,6 +3,7 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
+		"precheck": "bash scripts/generate-js-types.sh",
 		"check": "vue-tsc --noEmit -p tsconfig.json --composite false --skipLibCheck",
 		"dev": "vite",
 		"build": "vite build && vite build --config vite.embed.config.ts",
