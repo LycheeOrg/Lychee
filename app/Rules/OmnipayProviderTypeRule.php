@@ -30,6 +30,11 @@ final class OmnipayProviderTypeRule implements ValidationRule
 			return;
 		}
 
+		if (!is_string($value)) {
+			$fail("Error: This provider must be a string.");
+			return;
+		}
+
 		$provider = OmnipayProviderType::tryFrom($value);
 		if ($provider?->isAllowed() === true) {
 			return;
