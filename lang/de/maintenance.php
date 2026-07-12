@@ -121,7 +121,7 @@ return [
         'dismiss_error' => 'Das Gesicht konnte nicht ausgeblendet werden.',
         'readd_error' => 'Das erneute Hinzufügen der Fläche ist fehlgeschlagen.',
         'batch_dismiss' => 'Auswahl aufheben',
-        'batch_dismissed' => ':Anzahl der abgelehnten Gesichter.',
+        'batch_dismissed' => ':count der abgelehnten Gesichter.',
         'batch_dismiss_error' => 'Die ausgewählten Flächen konnten nicht entfernt werden.',
         'batch_reactivate' => 'Ausgewählte wieder aktivieren',
         'batch_reactivated' => ':Anzahl der reaktivierten Gesichter.',
