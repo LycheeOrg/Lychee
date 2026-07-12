@@ -13,7 +13,7 @@ use App\Contracts\Http\Requests\RequestAttribute;
 use App\Enum\OmnipayProviderType;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Traits\HasBasketTrait;
-use Illuminate\Validation\Rules\Enum;
+use App\Rules\OmnipayProviderTypeRule;
 
 class CreateSessionRequest extends BaseApiRequest implements HasBasket
 {
@@ -41,7 +41,7 @@ class CreateSessionRequest extends BaseApiRequest implements HasBasket
 	public function rules(): array
 	{
 		return [
-			RequestAttribute::PROVIDER_ATTRIBUTE => ['sometimes', new Enum(OmnipayProviderType::class)],
+			RequestAttribute::PROVIDER_ATTRIBUTE => ['sometimes', new OmnipayProviderTypeRule(true)],
 			RequestAttribute::EMAIL_ATTRIBUTE => ['sometimes', 'email'],
 			'shipping_street_name' => ['sometimes', 'nullable', 'string', 'max:255'],
 			'shipping_street_number' => ['sometimes', 'nullable', 'string', 'max:50'],

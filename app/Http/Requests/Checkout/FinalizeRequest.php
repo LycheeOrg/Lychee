@@ -14,8 +14,8 @@ use App\Enum\OmnipayProviderType;
 use App\Enum\PaymentStatusType;
 use App\Http\Requests\BaseApiRequest;
 use App\Models\Order;
+use App\Rules\OmnipayProviderTypeRule;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Validation\Rules\Enum;
 
 /**
  * Fetched from the url.
@@ -47,7 +47,7 @@ class FinalizeRequest extends BaseApiRequest implements HasBasket
 	public function rules(): array
 	{
 		return [
-			RequestAttribute::PROVIDER_ATTRIBUTE => ['required', new Enum(OmnipayProviderType::class)],
+			RequestAttribute::PROVIDER_ATTRIBUTE => ['required', new OmnipayProviderTypeRule(false)],
 			RequestAttribute::TRANSACTION_ID_ATTRIBUTE => ['required', 'string'],
 		];
 	}
