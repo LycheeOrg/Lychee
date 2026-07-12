@@ -26,6 +26,7 @@ export type UpdateAbumData = {
 	album_aspect_ratio: App.Enum.AspectRatioType | null;
 	photo_layout: App.Enum.PhotoLayoutType | null;
 	copyright: string | null;
+	tags?: string[];
 	header_id: string | null;
 	is_compact: boolean;
 	is_pinned: boolean;

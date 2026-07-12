@@ -194,6 +194,7 @@ return [
             'album_timeline' => 'Establecer el modo de línea de tiempo del álbum',
             'photo_timeline' => 'Establecer el modo de línea de tiempo de fotos',
             'layout' => 'Establecer el diseño de la foto',
+            'tags' => 'Etiquetas',
             'show_tags' => 'Establecer etiquetas para mostrar',
             'tags_required' => 'Se requieren etiquetas.',
             'all_tags_must_match' => 'Todas las etiquetas deben coincidir.',

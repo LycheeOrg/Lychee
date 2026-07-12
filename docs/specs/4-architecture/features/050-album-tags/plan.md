@@ -1,7 +1,7 @@
 # Feature Plan 050 – Album Tags
 
 _Linked specification:_ `docs/specs/4-architecture/features/050-album-tags/spec.md`
-_Status:_ Draft
+_Status:_ Implementation complete (T-050-17 manual browser verification pending)
 _Last updated:_ 2026-07-12
 
 > Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant.
@@ -144,6 +144,44 @@ To be executed once all tasks are complete: re-run `docs/specs/5-operations/anal
 - `docs/specs/4-architecture/tag-system.md` updated.
 - Implementation Drift Gate report appended above.
 - Roadmap entry moved from Active to Completed.
+
+## Implementation Drift Gate Report
+
+**Date:** 2026-07-12
+**Reviewer:** Implementing agent (self-review per RCI)
+
+1. **Preconditions**
+   - All 20 tasks in `tasks.md` marked `[x]` except T-050-17 (manual browser verification), which could not be executed — the sandbox's frontend toolchain is broken independent of this feature (missing `@iconify-json/lucide` npm package breaks `npm run check`'s `precheck` vite build; `vue-tsc` is not installed, confirmed pre-existing via `git stash` on a clean checkout before any of this feature's changes).
+   - `php-cs-fixer fix` clean (1 file auto-fixed on first run: docblock alignment in `AlbumSearch.php`; `--dry-run` clean on final check). `make phpstan`/`vendor/bin/phpstan analyse` clean (2602 files, 0 errors).
+   - Full `php artisan test`: first run surfaced 4 failures, 2 caused by this feature (fixed, see Divergence 3/4 below) and 2 pre-existing/unrelated (confirmed via `git stash` on a clean checkout: `PhotoEditTest`'s two `created_at` timezone assertions fail identically with none of this feature's changes applied — a system-timezone-dependent test, not caused by Feature 050). Final re-run: **2 failed (the pre-existing timezone tests), 2798 passed, 111531 assertions**.
+
+2. **Cross-artifact validation**
+   - FR-050-01 → `database/migrations/2026_07_12_000000_create_albums_tags_table.php`, `Album::tags()`/`Tag::albums()` — `tests/Feature_v2/Tags/AlbumTagRelationTest.php`.
+   - FR-050-02 → `UpdateAlbumRequest`, `AlbumController::updateAlbum()` — `tests/Feature_v2/Album/AlbumUpdateTest.php` (including the `tagsProvided()` v7-compatibility refinement discovered during implementation, documented in the spec).
+   - FR-050-03 → `EditableBaseAlbumResource` Album branch — `AlbumUpdateTest` response assertions; v8 `AlbumProperties.vue` wiring.
+   - FR-050-04/FR-050-05 → `GetTagWithPhotos::getAccessibleAlbums()`, `TagWithPhotosResource.albums` — `tests/Feature_v2/Tags/GetTagsTest.php`; v8 `TagPanel.vue` Albums section (code complete, manual visual check pending per above).
+   - FR-050-06/07 → `AlbumTagStrategy`, `AlbumFieldLikeStrategy` plain-text extension, `AlbumSearch` registry split — `tests/Feature_v2/Search/AlbumSearchTest.php` (includes the NFR-050-01 regression guard `testTagModifierHasNoEffectOnQueryTagAlbums`).
+   - FR-050-08 → `ListTags` split-count query, `TagResource` — `tests/Feature_v2/Tags/ListTagsTest.php`; v8 `TagsManagement.vue` split chips.
+   - FR-050-09 → `TagCleanupTrait`, `MergeTag::handleAlbums()`, `DeleteTag` — `tests/Feature_v2/Tags/AlbumTagsImpactTest.php`.
+   - NFR-050-01 → enforced structurally (no `tag` strategy in `queryTagAlbums()`'s registry) and via regression test (`testTagModifierDoesNotMatchTagAlbumsOwnCriteriaTags`, `testTagModifierHasNoEffectOnQueryTagAlbums`).
+   - NFR-050-02 → no `resources/js/v7/**` *feature* work; two mechanical one-line fixes were required in v7 (`TagsInput.vue`, `TagsManagement.vue`) purely to keep existing v7 code compiling against the renamed shared `TagResource.num` → `num_photos`/`num_albums` fields — no new v7 behaviour was added. This is a divergence from the letter of "no v7 changes" and is called out explicitly here per the drift-gate's divergence-handling step; judged low-impact (two 1-line mechanical renames, not feature work) and corrected directly rather than escalated.
+   - NFR-050-03 → `AlbumTagsImpactTest` covers non-admin ownership-scoping for merge/delete, mirroring existing photo/tag-album coverage.
+
+3. **Divergence handling**
+   - **Divergence 1 (low-impact, corrected directly):** FR-050-02's original draft used `present|array` for the `tags` validation rule; implementation revealed v7's `AlbumProperties.vue` also calls `PATCH /Album` without a `tags` key, so `present` would have 422'd every v7 album save. Fixed to `sometimes|array` + a `tagsProvided()` flag so the key is truly optional and omitting it never touches existing tags. Spec updated in place (FR-050-02); no new open question needed since there was only one correct behaviour once the constraint was discovered.
+   - **Divergence 2 (low-impact, corrected directly):** the two mechanical v7 fixes noted above (NFR-050-02).
+   - **Divergence 3 (low-impact, corrected directly):** `tests/Unit/Http/Requests/Album/UpdateAlbumRequestTest::testRules()` asserted an exact rule count (17); adding the two new `tags`/`tags.*` rules bumped it to 19 and broke this pre-existing test. Fixed by adding the two new expected entries to its rule map.
+   - **Divergence 4 (low-impact, corrected directly):** `tests/Unit/LangTest::testLanguageConsistency()` requires every locale's `lang/<locale>/gallery.php` to have exactly the same keys as `lang/en/gallery.php`. Adding the new `gallery.album.properties.tags` key only to `en` broke this test for all 22 other locales. Fixed by adding the same key to all 22 locale files, deriving each locale's word for "tags" from the existing (adjacent) `show_tags`/`tags_required` keys where already translated, and falling back to the literal English string where those neighbours were themselves still untranslated (matching the file's existing, pre-feature translation-completeness state, e.g. `it`, `pt`, `zh_TW`, `sk`, `sv`, `vi`, `hu`, `el`).
+   - No high/medium-impact gaps identified.
+
+4. **Coverage confirmation**
+   - Scenarios S-050-01 through S-050-10 all have passing test coverage (see per-scenario references in the Scenario Tracking table above).
+   - T-050-17 (manual `/tag/{id}` browser verification) is the one exception, documented above as an environment limitation rather than claimed as done.
+
+5. **Report & retrospective**
+   - Lesson: when a feature extends an existing multi-frontend endpoint (v7 + v8 dual-tree), always grep for *all* callers of that endpoint/type before assuming a field can be `present`/required — the v7/v8 split makes it easy to miss a caller that predates the feature.
+   - Lesson: `EditableBaseAlbumResource.tags` being reused for two semantically different purposes (Album's own tags vs. TagAlbum's matching-criteria tags) worked cleanly here because the two populating branches are mutually exclusive by `instanceof`, but it's worth flagging to future readers (done via inline comment).
+   - Follow-up: T-050-17 manual verification should be completed by a human (or an agent with a working frontend build) before this feature is considered fully shipped.
 
 ## Follow-ups / Backlog
 

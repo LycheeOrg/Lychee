@@ -9,6 +9,14 @@
 
 		<UContextMenu :items="menuSections" :disabled="photosStore.photos.length === 0" class="contents">
 			<div id="galleryView" class="relative flex flex-wrap content-start w-full justify-start overflow-y-auto h-full">
+				<AlbumThumbPanel
+					v-if="(tagStore.tag?.albums.length ?? 0) > 0"
+					header="gallery.album.header_albums"
+					:albums="tagStore.tag!.albums"
+					:is-alone="false"
+					:selected-albums="[]"
+					:is-timeline="false"
+				/>
 				<div v-if="photosStore.photos.length === 0" class="flex w-full flex-col h-full items-center justify-center text-xl text-muted gap-8">
 					<span class="block">
 						{{ $t("gallery.album.no_results") }}
@@ -33,6 +41,7 @@
 	</div>
 </template>
 <script setup lang="ts">
+import AlbumThumbPanel from "@/v8/components/gallery/albumModule/AlbumThumbPanel.vue";
 import PhotoThumbPanel from "@/v8/components/gallery/albumModule/PhotoThumbPanel.vue";
 import { useSelection } from "@/composables/selections/selections";
 import { useContextMenu } from "@/composables/contextMenus/contextMenu";

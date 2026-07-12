@@ -27,6 +27,13 @@ trait TagCleanupTrait
 						->whereColumn('photos_tags.tag_id', 'tags.id');
 				}
 			)
+			->whereNotExists(
+				function (Builder $query): void {
+					$query->select(DB::raw(1))
+						->from('albums_tags')
+						->whereColumn('albums_tags.tag_id', 'tags.id');
+				}
+			)
 			->pluck('id')
 			->all();
 
@@ -36,6 +43,12 @@ trait TagCleanupTrait
 
 		// Just to be sure.
 		DB::table('photos_tags')
+			->whereIn('tag_id', $ids)
+			->delete();
+
+		// Remove any links to the tags in albums (should already be empty
+		// per the whereNotExists above, but kept for symmetry/safety).
+		DB::table('albums_tags')
 			->whereIn('tag_id', $ids)
 			->delete();
 

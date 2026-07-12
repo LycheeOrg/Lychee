@@ -15,6 +15,7 @@ namespace Tests\Feature_v2\Search;
 
 use App\Actions\Search\AlbumSearch;
 use App\Actions\Search\SearchTokenParser;
+use App\Models\Tag;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 /**
@@ -124,15 +125,74 @@ class AlbumSearchTest extends BaseApiWithDataTest
 		$response->assertJson(['albums' => []]);
 	}
 
-	public function testTagOnlyTokenReturnsNoAlbums(): void
+	public function testTagModifierWithNoMatchingAlbumReturnsNoAlbums(): void
 	{
 		$response = $this->actingAs($this->userMayUpload1)
 			->getJsonWithData('Search', [
 				'album_id' => null,
-				'terms' => base64_encode('tag:sunset'),
+				'terms' => base64_encode('tag:__no_matching_album_tag_' . uniqid() . '__'),
 			]);
 		$this->assertOk($response);
 		$response->assertJson(['albums' => []]);
+	}
+
+	// ---------------------------------------------------------------------------
+	// Album tag matching (Feature 050 - Album Tags)
+	// ---------------------------------------------------------------------------
+
+	public function testTagModifierMatchesAlbumWithOwnTag(): void
+	{
+		$this->album1->tags()->sync([Tag::factory()->with_name('vacation')->create()->id]);
+
+		$response = $this->actingAs($this->userMayUpload1)
+			->getJsonWithData('Search', [
+				'album_id' => null,
+				'terms' => base64_encode('tag:vacation'),
+			]);
+		$this->assertOk($response);
+		$found = collect($response->json('albums'))->where('id', $this->album1->id);
+		$this->assertTrue($found->isNotEmpty(), 'Expected album1 to appear via its own tag: modifier.');
+	}
+
+	public function testTagModifierDoesNotMatchTagAlbumsOwnCriteriaTags(): void
+	{
+		$this->be($this->userMayUpload1);
+
+		// tagAlbum1 is linked (via tag_albums_tags) to tag_test, i.e. its matching
+		// criteria is "test". A `tag:test` query against queryAlbums() must never
+		// pick up tagAlbum1 via its own (unrelated) tags() relation.
+		$tokens = SearchTokenParser::parse('tag:' . $this->tag_test->name);
+		$results = app(AlbumSearch::class)->queryAlbums($tokens);
+
+		$this->assertNotContains($this->tagAlbum1->id, $results->pluck('id')->toArray());
+	}
+
+	public function testTagModifierHasNoEffectOnQueryTagAlbums(): void
+	{
+		$this->be($this->userMayUpload1);
+
+		// Regression guard for NFR-050-01: `tag:` must never be wired into the
+		// TagAlbum search registry. tagAlbum1 does not match "test" by title,
+		// so if `tag:` leaked in and matched via tags(), this would wrongly
+		// return tagAlbum1.
+		$tokens = SearchTokenParser::parse('tag:' . $this->tag_test->name);
+		$results = app(AlbumSearch::class)->queryTagAlbums($tokens);
+
+		$this->assertEmpty($results);
+	}
+
+	public function testPlainTextMatchesAlbumOwnTag(): void
+	{
+		$this->album1->tags()->sync([Tag::factory()->with_name('greece')->create()->id]);
+
+		$response = $this->actingAs($this->userMayUpload1)
+			->getJsonWithData('Search', [
+				'album_id' => null,
+				'terms' => base64_encode('greece'),
+			]);
+		$this->assertOk($response);
+		$found = collect($response->json('albums'))->where('id', $this->album1->id);
+		$this->assertTrue($found->isNotEmpty(), 'Expected album1 to appear via plain-text tag match.');
 	}
 
 	// ---------------------------------------------------------------------------

@@ -10,6 +10,7 @@ namespace App\Actions\Search;
 
 use App\Actions\Search\Strategies\Album\AlbumDateStrategy;
 use App\Actions\Search\Strategies\Album\AlbumFieldLikeStrategy;
+use App\Actions\Search\Strategies\Album\AlbumTagStrategy;
 use App\Contracts\Exceptions\InternalLycheeException;
 use App\Contracts\Search\AlbumSearchTokenStrategy;
 use App\DTO\AlbumSortingCriterion;
@@ -50,7 +51,10 @@ class AlbumSearch
 			TagAlbum::query(),
 			$user
 		);
-		$this->addSearchCondition($tokens, $album_query);
+		// `include_tags: false` -- TagAlbum::tags() defines photo-matching
+		// criteria, not album-level metadata, and must never be probed by
+		// the album `tag:`/plain-text-tag strategies (NFR-050-01).
+		$this->addSearchCondition($tokens, $album_query, include_tags: false);
 
 		$sorting = AlbumSortingCriterion::createDefault();
 
@@ -77,7 +81,7 @@ class AlbumSearch
 			->join('base_albums', 'base_albums.id', '=', 'albums.id')
 			->when($album !== null, fn ($q) => $q->where('albums._lft', '>=', $album->_lft)
 				->where('albums._rgt', '<=', $album->_rgt));
-		$this->addSearchCondition($tokens, $album_query);
+		$this->addSearchCondition($tokens, $album_query, include_tags: true);
 		$this->album_query_policy->applyBrowsabilityFilter($album_query, $user, $unlocked_album_ids);
 
 		$sorting = AlbumSortingCriterion::createDefault();
@@ -101,10 +105,12 @@ class AlbumSearch
 	 *
 	 * @param array<int,SearchToken>                                                            $tokens
 	 * @param AlbumBuilder|TagAlbumBuilder|FixedQueryBuilder<TagAlbum>|FixedQueryBuilder<Album> $query
+	 * @param bool                                                                              $include_tags whether the `tag:`/plain-text-tag strategies apply
+	 *                                                                                                        (Album only, never TagAlbum -- NFR-050-01)
 	 */
-	private function addSearchCondition(array $tokens, AlbumBuilder|TagAlbumBuilder|FixedQueryBuilder $query): void
+	private function addSearchCondition(array $tokens, AlbumBuilder|TagAlbumBuilder|FixedQueryBuilder $query, bool $include_tags): void
 	{
-		$strategies = $this->buildAlbumStrategyRegistry();
+		$strategies = $this->buildAlbumStrategyRegistry($include_tags);
 		$applied = false;
 
 		foreach ($tokens as $token) {
@@ -127,17 +133,27 @@ class AlbumSearch
 	/**
 	 * Build the map from modifier string (or empty string for plain text) to an album strategy instance.
 	 *
+	 * @param bool $include_tags whether to register the `tag:` modifier and extend the
+	 *                           plain-text fallback to match album tags. Must be `false`
+	 *                           for {@link TagAlbum} queries (NFR-050-01).
+	 *
 	 * @return array<string, AlbumSearchTokenStrategy>
 	 */
-	private function buildAlbumStrategyRegistry(): array
+	private function buildAlbumStrategyRegistry(bool $include_tags): array
 	{
-		$plain_text = new AlbumFieldLikeStrategy(null);
+		$plain_text = new AlbumFieldLikeStrategy(null, $include_tags);
 
-		return [
+		$strategies = [
 			'' => $plain_text,
 			'title' => new AlbumFieldLikeStrategy('title'),
 			'description' => new AlbumFieldLikeStrategy('description'),
 			'date' => new AlbumDateStrategy(),
 		];
+
+		if ($include_tags) {
+			$strategies['tag'] = new AlbumTagStrategy();
+		}
+
+		return $strategies;
 	}
 }

@@ -121,6 +121,8 @@ class UpdateAlbumRequestTest extends BaseRequestTest
 			RequestAttribute::ALBUM_ASPECT_RATIO_ATTRIBUTE => ['present', 'nullable', new Enum(AspectRatioType::class)],
 			RequestAttribute::ALBUM_PHOTO_LAYOUT => ['present', 'nullable', new Enum(PhotoLayoutType::class)],
 			RequestAttribute::COPYRIGHT_ATTRIBUTE => ['present', 'nullable', new CopyrightRule()],
+			RequestAttribute::TAGS_ATTRIBUTE => 'sometimes|array',
+			RequestAttribute::TAGS_ATTRIBUTE . '.*' => 'required|string|min:1',
 			RequestAttribute::IS_COMPACT_ATTRIBUTE => ['required', 'boolean'],
 			RequestAttribute::IS_PINNED_ATTRIBUTE => ['present', 'boolean'],
 			RequestAttribute::HEADER_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],

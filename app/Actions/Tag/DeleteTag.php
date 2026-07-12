@@ -51,6 +51,18 @@ class DeleteTag
 			)
 			->delete();
 
+		DB::table('albums_tags')
+			->whereIn('tag_id', $tag_ids)
+			->when(
+				$user->may_administrate === false,
+				fn ($q) => $q
+					->whereExists(fn (Builder $query) => $query->select(DB::raw(1))
+							->from('base_albums')
+							->whereColumn('base_albums.id', 'albums_tags.album_id')
+							->where('base_albums.owner_id', $user->id))
+			)
+			->delete();
+
 		$this->cleanupUnusedTags();
 	}
 }

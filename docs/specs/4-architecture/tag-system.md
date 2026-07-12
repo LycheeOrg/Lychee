@@ -32,6 +32,17 @@ class Tag extends Model
             'photo_id'      // related key in pivot
         );
     }
+
+    // Feature 050 - Album Tags
+    public function albums(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Album::class,
+            'albums_tags',  // pivot table
+            'tag_id',       // foreign key in pivot
+            'album_id'      // related key in pivot
+        );
+    }
 }
 ```
 
@@ -66,6 +77,29 @@ Tag Albums (`app/Models/TagAlbum.php`) are virtual collections of photos sharing
 - Extends `BaseAlbum`
 - Contains a `BelongsToMany` relationship to `Tag` via `tag_albums_tags` pivot table
 - Implements a custom `photos()` relation that fetches photos containing all assigned tags
+
+### 1.4 Album Tags (Feature 050)
+
+Regular albums (`app/Models/Album.php`) can also carry `Tag`s directly, as plain descriptive metadata — analogous to title/description — completely independent of the tags carried by the photos inside the album:
+
+```php
+// In Album model
+public function tags(): BelongsToMany
+{
+    return $this->belongsToMany(
+        Tag::class,
+        'albums_tags',  // pivot table
+        'album_id',
+        'tag_id',
+    );
+}
+```
+
+This is a **distinct concept** from `TagAlbum::tags()` above, despite the identical relation name:
+- `Album::tags()` (via `albums_tags`) — album-level metadata a user attaches to a regular album, unified with the shared `Tag` vocabulary. Editable through the album properties panel, searchable via `Search`'s `tag:` modifier and plain-text fallback, and surfaced on the `/tag/{id}` page (an "Albums" section alongside the tagged photos already shown there) and the global `/tags` management page (split `num_photos`/`num_albums` counts).
+- `TagAlbum::tags()` (via `tag_albums_tags`) — the *criteria* defining which photos populate a smart tag album (AND/OR matched against `photos_tags`, see §2).
+
+The two are never mixed: the album `tag:` search strategy (`App\Actions\Search\Strategies\Album\AlbumTagStrategy`) is registered only for `Album` queries (`AlbumSearch::queryAlbums()`), never for `TagAlbum` queries (`AlbumSearch::queryTagAlbums()`) — a `TagAlbum` is never probed for "album tags" it doesn't have.
 
 ## 2. Custom Tag Album Photo Query
 
@@ -116,7 +150,7 @@ This approach ensures:
 
 ## 4. Tag Cleanup
 
-The `TagCleanupTrait` provides automatic cleanup of unused tags:
+The `TagCleanupTrait` provides automatic cleanup of unused tags. A tag is only deleted once it has **zero** rows in `photos_tags`, `tag_albums_tags`, **and** `albums_tags` (Feature 050 added the third check — without it, a tag attached only to an album with no matching photo tag would be silently deleted the next time any unrelated tag rename/merge/delete triggered cleanup):
 
 ```php
 // Simplified from TagCleanupTrait
@@ -126,14 +160,14 @@ public function cleanupUnusedTags(): int
         ->from('photos_tags')
         ->whereColumn('photos_tags.tag_id', 'tags.id'))
     ->whereNotExists(fn ($q) => $q->select(DB::raw(1))
-        ->from('tag_albums_tags')
-        ->whereColumn('tag_albums_tags.tag_id', 'tags.id'))
+        ->from('albums_tags')
+        ->whereColumn('albums_tags.tag_id', 'tags.id'))
     ->delete();
 }
 ```
 
-This trait is used by operations like merge and delete to maintain database efficiency.
+This trait is used by operations like merge and delete to maintain database efficiency. `MergeTag::handleAlbums()` and `DeleteTag::do()` extend the same multi-user-safe, ownership-scoped transfer/removal logic described in §3 to `albums_tags` as well (mirroring the existing `handleTagAlbums()`/`photos_tags` handling).
 
 ---
 
-*Last updated: December 22, 2025*
+*Last updated: 2026-07-12 (Feature 050 - Album Tags)*

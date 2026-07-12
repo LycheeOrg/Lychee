@@ -34,6 +34,7 @@ use App\Repositories\ConfigManager;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Query\Builder as BaseBuilder;
@@ -77,6 +78,7 @@ use Kalnoy\Nestedset\NodeTrait;
  * @property BaseAlbumImpl            $base_class
  * @property User|null                $owner
  * @property bool                     $is_recursive_nsfw             /!\ This attribute is not loaded by default.
+ * @property Collection<int,Tag>      $tags
  *
  * @method static AlbumBuilder|Album query()                       Begin querying the model.
  * @method static AlbumBuilder|Album with(array|string $relations) Begin querying the model with eager loading.
@@ -243,6 +245,24 @@ class Album extends BaseAlbum implements Node
 	public function thumb(): HasAlbumThumb
 	{
 		return new HasAlbumThumb($this);
+	}
+
+	/**
+	 * Returns the relationship between an album and the tags directly
+	 * assigned to it (album-level metadata, unrelated to the tags of the
+	 * photos it contains and unrelated to {@link TagAlbum::tags()} which
+	 * defines photo-matching criteria for a tag album).
+	 *
+	 * @return BelongsToMany<Tag,$this>
+	 */
+	public function tags(): BelongsToMany
+	{
+		return $this->belongsToMany(
+			Tag::class,
+			'albums_tags',
+			'album_id',
+			'tag_id',
+		);
 	}
 
 	/**

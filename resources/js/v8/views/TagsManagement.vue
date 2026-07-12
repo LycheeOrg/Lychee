@@ -55,35 +55,16 @@
 			</div>
 			<div class="flex justify-center items-center flex-wrap gap-y-6 gap-x-6">
 				<template v-for="tag in tags" :key="tag.id">
-					<UChip v-if="tag.num > 0" :text="tag.num" size="lg">
-						<UBadge
-							color="neutral"
-							variant="soft"
-							size="lg"
-							:class="{
-								'pr-3 shadow text-highlighted cursor-pointer border rounded-full': true,
-								'border-transparent': selected?.id !== tag.id,
-								'hover:border-primary': isEditing || isMerging,
-								'hover:bg-red-800': isDeleting,
-								'border-primary': (selected?.id === tag.id || into?.id === tag.id) && (isEditing || isMerging),
-								'border-red-800': selected?.id === tag.id && isDeleting,
-							}"
-							@click="handle(tag.id)"
-							>{{ tag.name }}</UBadge
-						>
+					<UChip v-if="tag.num_albums > 0" :text="tag.num_albums" size="lg" color="secondary" position="top-left">
+						<UChip v-if="tag.num_photos > 0" :text="tag.num_photos" size="lg" position="top-right">
+							<UBadge color="neutral" variant="soft" size="lg" :class="badgeClass(tag)" @click="handle(tag.id)">{{ tag.name }}</UBadge>
+						</UChip>
+						<UBadge v-else color="neutral" variant="soft" size="lg" :class="badgeClass(tag)" @click="handle(tag.id)">{{ tag.name }}</UBadge>
 					</UChip>
-					<UBadge
-						v-else
-						color="neutral"
-						variant="soft"
-						size="lg"
-						:class="{
-							'shadow text-highlighted cursor-pointer rounded-full': true,
-							'hover:bg-red-800': isDeleting,
-						}"
-						@click="handle(tag.id)"
-						>{{ tag.name }}</UBadge
-					>
+					<UChip v-else-if="tag.num_photos > 0" :text="tag.num_photos" size="lg" position="top-right">
+						<UBadge color="neutral" variant="soft" size="lg" :class="badgeClass(tag)" @click="handle(tag.id)">{{ tag.name }}</UBadge>
+					</UChip>
+					<UBadge v-else color="neutral" variant="soft" size="lg" :class="badgeClass(tag)" @click="handle(tag.id)">{{ tag.name }}</UBadge>
 				</template>
 			</div>
 		</template>
@@ -122,6 +103,17 @@ const {
 	toggleMerging,
 	toggleDeleting,
 } = useTagsActions(tags, router);
+
+function badgeClass(tag: App.Http.Resources.Tags.TagResource) {
+	return {
+		"pr-3 shadow text-highlighted cursor-pointer border rounded-full": true,
+		"border-transparent": selected.value?.id !== tag.id,
+		"hover:border-primary": isEditing.value || isMerging.value,
+		"hover:bg-red-800": isDeleting.value,
+		"border-primary": (selected.value?.id === tag.id || into.value?.id === tag.id) && (isEditing.value || isMerging.value),
+		"border-red-800": selected.value?.id === tag.id && isDeleting.value,
+	};
+}
 
 onMounted(load);
 

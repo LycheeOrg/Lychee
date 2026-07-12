@@ -195,6 +195,7 @@ return [
             'album_timeline' => 'Set album timeline mode',
             'photo_timeline' => 'Set photo timeline mode',
             'layout' => 'Set photo layout',
+            'tags' => 'タグ',
             'show_tags' => 'Set tags to show',
             'tags_required' => 'Tags are required.',
             'all_tags_must_match' => 'All tags must match.',

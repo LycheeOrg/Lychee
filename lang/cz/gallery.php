@@ -195,6 +195,7 @@ return [
             'album_timeline' => 'Nastavit režim časové osy alba',
             'photo_timeline' => 'Nastavit režim časové osy fotografií',
             'layout' => 'Nastavit rozložení fotografií',
+            'tags' => 'Štítky',
             'show_tags' => 'Nastavit zobrazované štítky',
             'tags_required' => 'Štítky jsou povinné.',
             'all_tags_must_match' => 'Všechny štítky se musí shodovat.',
