@@ -83,7 +83,7 @@ class OmnipayProviderTypeRuleTest extends AbstractTestCase
 		$rule = new OmnipayProviderTypeRule(allow_nullable: false);
 		$msg = "don't worry";
 		$rule->validate('provider', null, function ($message) use (&$msg): void { $msg = $message; });
-		self::assertEquals('Error: This provider must be a string.', $msg);
+		self::assertEquals('Error: This provider null is not allowed.', $msg);
 	}
 
 	public function testNullPassesWhenNullable(): void
