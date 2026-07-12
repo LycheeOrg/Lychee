@@ -18,6 +18,9 @@
 
 namespace Tests\ImageProcessing\Image\Handlers;
 
+use function Safe\date;
+use function Safe\file_get_contents;
+use function Safe\file_put_contents;
 use Tests\Constants\TestConstants;
 use Tests\Traits\InteractsWithRaw;
 use Tests\Traits\RequiresImageHandler;
@@ -58,6 +61,40 @@ class PhotosAddHandlerImagickTest extends BaseImageHandler
 		self::assertNotNull($photo['size_variants']['thumb']);
 		self::assertEquals(200, $photo['size_variants']['thumb']['width']);
 		self::assertEquals(200, $photo['size_variants']['thumb']['height']);
+	}
+
+	/**
+	 * Tests that a PDF declaring an oversized `/MediaBox` on its first page
+	 * is rejected before ever being handed to Ghostscript.
+	 *
+	 * A crafted PDF can declare an enormous page size while remaining tiny on
+	 * disk. Without an upfront check, Ghostscript would spend a large amount
+	 * of CPU time attempting to rasterize such a page before ultimately
+	 * failing to produce any output.
+	 *
+	 * As with other thumbnail-generation failures (e.g. a broken Google
+	 * Motion Photo, see {@see testBrokenGoogleMotionPhotoUpload}), the import
+	 * follows a best-effort approach: the upload still succeeds and the
+	 * original file is kept, but no size variants are generated and the
+	 * error is logged. What matters here is that this happens near-instantly
+	 * rather than after minutes of wasted CPU time.
+	 *
+	 * @return void
+	 */
+	public function testOversizedPdfMediaBoxIsRejected(): void
+	{
+		file_put_contents(storage_path('logs/daily-' . date('Y-m-d') . '.log'), '');
+
+		$started_at = microtime(true);
+		$response = $this->uploadImage(TestConstants::SAMPLE_FILE_PDF_OVERSIZED_MEDIABOX);
+		$elapsed = microtime(true) - $started_at;
+
+		$photo = $response->json('photos.0');
+
+		self::assertEquals(TestConstants::MIME_TYPE_APP_PDF, $photo['type']);
+		self::assertEquals(null, $photo['size_variants']['thumb']);
+		self::assertNotEmpty(file_get_contents(storage_path('logs/daily-' . date('Y-m-d') . '.log')));
+		self::assertLessThan(10, $elapsed);
 	}
 
 	/**
