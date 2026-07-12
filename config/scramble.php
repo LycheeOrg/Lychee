@@ -93,7 +93,6 @@ return [
 
 	'middleware' => [
 		'web',
-		'throttle:1,1',
 		\App\Http\Middleware\RestrictApiDocsAccess::class,
 	],
 

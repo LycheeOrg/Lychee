@@ -9,6 +9,8 @@
 namespace App\Http\Middleware;
 
 use App\Assets\Features;
+use Dedoc\Scramble\Generator;
+use Dedoc\Scramble\Scramble;
 use Illuminate\Http\Request;
 
 /**
@@ -31,6 +33,33 @@ class RestrictApiDocsAccess
 			abort(404);
 		}
 
+		$this->ensureDocumentationIsCached();
+
 		return $next($request);
+	}
+
+	/**
+	 * Warm the OpenAPI document cache on demand if it is not already cached.
+	 */
+	private function ensureDocumentationIsCached(): void
+	{
+		$store = config('scramble.cache.store');
+		$keyBase = config('scramble.cache.key');
+
+		if ($store === null || $keyBase === null) {
+			return;
+		}
+
+		$cache = cache()->store($store);
+		$key = $keyBase . ':' . Scramble::DEFAULT_API;
+
+		if ($cache->has($key)) {
+			return;
+		}
+
+		$config = Scramble::getGeneratorConfig(Scramble::DEFAULT_API);
+		$generator = app(Generator::class);
+
+		$cache->forever($key, $generator($config));
 	}
 }
