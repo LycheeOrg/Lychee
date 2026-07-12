@@ -83,6 +83,8 @@ web)
   run_as_www php artisan route:cache
   run_as_www php artisan view:clear
   run_as_www php artisan view:cache
+  run_as_www php artisan scramble:clear
+  run_as_www php artisan scramble:cache
 
   echo "✅ Application ready!"
 
