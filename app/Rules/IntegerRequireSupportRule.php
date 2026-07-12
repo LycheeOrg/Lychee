@@ -13,7 +13,8 @@ use LycheeVerify\Contract\Status;
 use LycheeVerify\Contract\VerifyInterface;
 
 /**
- * This rule is designed specifically to avoid path injection.
+ * This rule is designed specifically to ensure that only allowed integer values are used,
+ * and if not, it checks for the required edition of Lychee.
  */
 final class IntegerRequireSupportRule implements ValidationRule
 {
