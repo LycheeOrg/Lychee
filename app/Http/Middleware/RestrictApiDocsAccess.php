@@ -44,14 +44,14 @@ class RestrictApiDocsAccess
 	private function ensureDocumentationIsCached(): void
 	{
 		$store = config('scramble.cache.store');
-		$keyBase = config('scramble.cache.key');
+		$key_base = config('scramble.cache.key');
 
-		if ($store === null || $keyBase === null) {
+		if ($store === null || $key_base === null) {
 			return;
 		}
 
 		$cache = cache()->store($store);
-		$key = $keyBase . ':' . Scramble::DEFAULT_API;
+		$key = $key_base . ':' . Scramble::DEFAULT_API;
 
 		if ($cache->has($key)) {
 			return;
