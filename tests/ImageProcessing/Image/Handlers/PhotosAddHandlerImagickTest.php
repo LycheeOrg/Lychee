@@ -92,7 +92,7 @@ class PhotosAddHandlerImagickTest extends BaseImageHandler
 		$photo = $response->json('photos.0');
 
 		self::assertEquals(TestConstants::MIME_TYPE_APP_PDF, $photo['type']);
-		self::assertNull( $photo['size_variants']['thumb']);
+		self::assertNull($photo['size_variants']['thumb']);
 		self::assertNotEmpty(file_get_contents(storage_path('logs/daily-' . date('Y-m-d') . '.log')));
 		self::assertLessThan(10, $elapsed);
 	}
@@ -121,7 +121,7 @@ class PhotosAddHandlerImagickTest extends BaseImageHandler
 		$photo = $response->json('photos.0');
 
 		self::assertEquals(TestConstants::MIME_TYPE_APP_PDF, $photo['type']);
-		self::assertNull( $photo['size_variants']['thumb']);
+		self::assertNull($photo['size_variants']['thumb']);
 		self::assertNotEmpty(file_get_contents(storage_path('logs/daily-' . date('Y-m-d') . '.log')));
 		self::assertLessThan(10, $elapsed);
 	}
