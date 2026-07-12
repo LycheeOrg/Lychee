@@ -113,7 +113,7 @@ return [
     ],
     'upload' => [
         'completed' => 'Abgeschlossen',
-        'completed_with_errors' => 'Abgeschlossen — :Fehler beim Hochladen',
+        'completed_with_errors' => 'Abgeschlossen — :errors beim Hochladen',
         'completed_with_warnings' => 'Abgeschlossen — :warnings Upload(s) mit Warnungen',
         'uploaded' => 'Hochgeladen:',
         'release' => 'Datei zum Hochladen freigeben!',
