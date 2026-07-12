@@ -121,7 +121,7 @@ return [
         'dismiss_error' => 'No se ha podido eliminar el rostro.',
         'readd_error' => 'No se ha podido volver a añadir la cara.',
         'batch_dismiss' => 'Descartar los seleccionados',
-        'batch_dismissed' => ':número de caras descartadas.',
+        'batch_dismissed' => ':count de caras descartadas.',
         'batch_dismiss_error' => 'No se han podido eliminar las caras seleccionadas.',
         'batch_reactivate' => 'Reactivar los seleccionados',
         'batch_reactivated' => ':número de caras reactivadas.',
