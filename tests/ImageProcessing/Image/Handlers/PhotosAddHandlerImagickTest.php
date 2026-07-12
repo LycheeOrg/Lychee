@@ -92,7 +92,36 @@ class PhotosAddHandlerImagickTest extends BaseImageHandler
 		$photo = $response->json('photos.0');
 
 		self::assertEquals(TestConstants::MIME_TYPE_APP_PDF, $photo['type']);
-		self::assertEquals(null, $photo['size_variants']['thumb']);
+		self::assertNull( $photo['size_variants']['thumb']);
+		self::assertNotEmpty(file_get_contents(storage_path('logs/daily-' . date('Y-m-d') . '.log')));
+		self::assertLessThan(10, $elapsed);
+	}
+
+	/**
+	 * Tests that a PDF whose `/MediaBox` is implausibly large relative to its
+	 * file size is rejected, even though its dimensions individually stay
+	 * under the absolute cap tested by {@see testOversizedPdfMediaBoxIsRejected}.
+	 *
+	 * A ~350-byte file declaring a 20000x20000pt page has no plausible
+	 * legitimate content behind it (a real single-page PDF, even a lean
+	 * vector-only one, sits in the tens to low hundreds of sq. pt per byte;
+	 * this file is at roughly 1,000,000 sq. pt/byte) and would still burn
+	 * substantial CPU to rasterize despite passing the per-dimension check.
+	 *
+	 * @return void
+	 */
+	public function testDisproportionateMediaBoxIsRejected(): void
+	{
+		file_put_contents(storage_path('logs/daily-' . date('Y-m-d') . '.log'), '');
+
+		$started_at = microtime(true);
+		$response = $this->uploadImage(TestConstants::SAMPLE_FILE_PDF_DISPROPORTIONATE_MEDIABOX);
+		$elapsed = microtime(true) - $started_at;
+
+		$photo = $response->json('photos.0');
+
+		self::assertEquals(TestConstants::MIME_TYPE_APP_PDF, $photo['type']);
+		self::assertNull( $photo['size_variants']['thumb']);
 		self::assertNotEmpty(file_get_contents(storage_path('logs/daily-' . date('Y-m-d') . '.log')));
 		self::assertLessThan(10, $elapsed);
 	}

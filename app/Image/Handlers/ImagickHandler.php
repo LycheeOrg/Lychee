@@ -23,6 +23,7 @@ use App\Repositories\ConfigManager;
 use App\Services\Image\FileExtensionService;
 use Imagick;
 use function Safe\fclose;
+use function Safe\filesize;
 use function Safe\fopen;
 use function Safe\fread;
 use function Safe\preg_match;
@@ -44,6 +45,19 @@ class ImagickHandler extends BaseImageHandler
 	 * Rejecting such files up front avoids that wasted cost.
 	 */
 	private const MAX_PDF_MEDIABOX_POINTS = 32000;
+
+	/**
+	 * Maximum plausible `/MediaBox` area (width x height, in sq. points) per byte of PDF file size.
+	 *
+	 * A hand-crafted, near-empty PDF can declare a huge page while weighing only a few
+	 * hundred bytes (e.g. 383 bytes for a 32000x32000pt page, a ratio of ~2,700,000
+	 * sq. pt/byte). Real single-page PDFs, even lean vector-only ones, sit in the tens
+	 * to low hundreds of sq. pt/byte (e.g. ~24 for a 20 KB Letter page, ~40 for a 200 KB
+	 * A0 poster). This threshold sits ~1,000x above that realistic range and ~50x below
+	 * the crafted PoC, so it catches implausibly large/empty pages even when their
+	 * dimensions individually stay under {@see MAX_PDF_MEDIABOX_POINTS}.
+	 */
+	private const MAX_MEDIABOX_AREA_PER_BYTE = 50_000;
 
 	/** Number of leading bytes scanned for a `/MediaBox` entry; ample for the first page object of any real-world PDF. */
 	private const MEDIABOX_SCAN_LIMIT = 1_048_576;
@@ -181,6 +195,13 @@ class ImagickHandler extends BaseImageHandler
 
 		if ($width > self::MAX_PDF_MEDIABOX_POINTS || $height > self::MAX_PDF_MEDIABOX_POINTS) {
 			throw new MediaFileUnsupportedException(\sprintf('PDF page size (%dx%d pt) exceeds the maximum supported dimension of %d pt', $width, $height, self::MAX_PDF_MEDIABOX_POINTS));
+		}
+
+		$filesize = filesize($pdf_path);
+		$area_per_byte = ($width * $height) / $filesize;
+
+		if ($area_per_byte > self::MAX_MEDIABOX_AREA_PER_BYTE) {
+			throw new MediaFileUnsupportedException(\sprintf('PDF page size (%dx%d pt) is implausibly large for a %d byte file', $width, $height, $filesize));
 		}
 	}
 
