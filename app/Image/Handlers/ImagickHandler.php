@@ -14,6 +14,7 @@ use App\Contracts\Image\StreamStats;
 use App\DTO\ImageDimension;
 use App\Exceptions\ImageProcessingException;
 use App\Exceptions\MediaFileOperationException;
+use App\Exceptions\MediaFileUnsupportedException;
 use App\Facades\Helpers;
 use App\Image\Files\FlysystemFile;
 use App\Image\Files\InMemoryBuffer;
@@ -22,7 +23,10 @@ use App\Repositories\ConfigManager;
 use App\Services\Image\FileExtensionService;
 use Imagick;
 use function Safe\fclose;
+use function Safe\filesize;
 use function Safe\fopen;
+use function Safe\fread;
+use function Safe\preg_match;
 use function Safe\rename;
 use function Safe\stream_copy_to_stream;
 use function Safe\tempnam;
@@ -30,6 +34,34 @@ use function Safe\unlink;
 
 class ImagickHandler extends BaseImageHandler
 {
+	/**
+	 * Maximum accepted `/MediaBox` width or height, in PDF points (1/72 inch).
+	 *
+	 * Mirrors the `width`/`height` resource limits already configured in
+	 * ImageMagick's `policy.xml` (32,000 pixels). PDFs are rendered at the
+	 * default 72 DPI, so a MediaBox beyond this threshold is guaranteed to be
+	 * rejected by that policy anyway - but only after Ghostscript has already
+	 * spent tens of seconds to minutes of CPU time attempting to rasterize it.
+	 * Rejecting such files up front avoids that wasted cost.
+	 */
+	private const MAX_PDF_MEDIABOX_POINTS = 32000;
+
+	/**
+	 * Maximum plausible `/MediaBox` area (width x height, in sq. points) per byte of PDF file size.
+	 *
+	 * A hand-crafted, near-empty PDF can declare a huge page while weighing only a few
+	 * hundred bytes (e.g. 383 bytes for a 32000x32000pt page, a ratio of ~2,700,000
+	 * sq. pt/byte). Real single-page PDFs, even lean vector-only ones, sit in the tens
+	 * to low hundreds of sq. pt/byte (e.g. ~24 for a 20 KB Letter page, ~40 for a 200 KB
+	 * A0 poster). This threshold sits ~1,000x above that realistic range and ~50x below
+	 * the crafted PoC, so it catches implausibly large/empty pages even when their
+	 * dimensions individually stay under {@see MAX_PDF_MEDIABOX_POINTS}.
+	 */
+	private const MAX_MEDIABOX_AREA_PER_BYTE = 50_000;
+
+	/** Number of leading bytes scanned for a `/MediaBox` entry; ample for the first page object of any real-world PDF. */
+	private const MEDIABOX_SCAN_LIMIT = 1_048_576;
+
 	/** @var \Imagick|null the internal Imagick image */
 	private ?\Imagick $im_image = null;
 
@@ -118,6 +150,8 @@ class ImagickHandler extends BaseImageHandler
 				}
 			}
 
+			$this->assertPdfPageSizeIsSafe($pdf_path);
+
 			// The [0] suffix tells Imagick to read only the first page of the PDF,
 			// avoiding the overhead of rendering all pages just to generate a thumbnail.
 			$this->im_image->readImage($pdf_path . '[0]');
@@ -125,6 +159,49 @@ class ImagickHandler extends BaseImageHandler
 			if ($tmp_path !== null && is_file($tmp_path)) {
 				unlink($tmp_path);
 			}
+		}
+	}
+
+	/**
+	 * Rejects PDFs whose first page declares a `/MediaBox` larger than we're willing
+	 * to rasterize.
+	 *
+	 * A crafted PDF can declare an enormous page size while remaining tiny on disk
+	 * (a few hundred bytes). Ghostscript will still attempt to rasterize such a page
+	 * at full resolution before Imagick's own pixel-cache policy has a chance to
+	 * reject the result, burning CPU for tens of seconds to minutes per request for
+	 * no usable output. This check is a cheap, best-effort guard performed before
+	 * handing the file to Ghostscript; it does not replace the resource policy
+	 * itself, and legitimate PDFs without a plainly readable `/MediaBox` are passed
+	 * through unchanged.
+	 *
+	 * @throws MediaFileUnsupportedException
+	 */
+	private function assertPdfPageSizeIsSafe(string $pdf_path): void
+	{
+		$handle = fopen($pdf_path, 'rb');
+		try {
+			$head = fread($handle, self::MEDIABOX_SCAN_LIMIT);
+		} finally {
+			fclose($handle);
+		}
+
+		if (preg_match('/\/MediaBox\s*\[\s*(-?[\d.]+)\s+(-?[\d.]+)\s+(-?[\d.]+)\s+(-?[\d.]+)/', $head, $matches) !== 1) {
+			return;
+		}
+
+		$width = abs((float) $matches[3] - (float) $matches[1]);
+		$height = abs((float) $matches[4] - (float) $matches[2]);
+
+		if ($width > self::MAX_PDF_MEDIABOX_POINTS || $height > self::MAX_PDF_MEDIABOX_POINTS) {
+			throw new MediaFileUnsupportedException(\sprintf('PDF page size (%dx%d pt) exceeds the maximum supported dimension of %d pt', $width, $height, self::MAX_PDF_MEDIABOX_POINTS));
+		}
+
+		$filesize = filesize($pdf_path);
+		$area_per_byte = ($width * $height) / $filesize;
+
+		if ($area_per_byte > self::MAX_MEDIABOX_AREA_PER_BYTE) {
+			throw new MediaFileUnsupportedException(\sprintf('PDF page size (%dx%d pt) is implausibly large for a %d byte file', $width, $height, $filesize));
 		}
 	}
 
