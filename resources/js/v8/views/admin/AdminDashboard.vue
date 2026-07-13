@@ -145,7 +145,7 @@
 
 		<div class="flex items-center justify-center gap-6 mt-6 text-sm">
 			<a
-				v-if="initData?.settings.can_edit"
+				v-if="initData?.settings.can_edit && !lycheeStore.is_white_label_enabled"
 				:href="`${Constants.BASE_URL}/docs/api`"
 				target="_blank"
 				rel="noopener noreferrer"

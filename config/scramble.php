@@ -20,6 +20,17 @@ return [
 	 */
 	'export_path' => 'api.json',
 
+	/*
+	 * Cache configuration for the generated OpenAPI document.
+	 *
+	 * Use `php artisan scramble:cache` to warm the cache and
+	 * `php artisan scramble:clear` to invalidate it.
+	 */
+	'cache' => [
+		'key' => 'scramble.openapi',
+		'store' => config('cache.default'),
+	],
+
 	'info' => [
 		/*
 		 * API version.
@@ -82,7 +93,7 @@ return [
 
 	'middleware' => [
 		'web',
-		// RestrictedDocsAccess::class,
+		\App\Http\Middleware\RestrictApiDocsAccess::class,
 	],
 
 	'extensions' => [
