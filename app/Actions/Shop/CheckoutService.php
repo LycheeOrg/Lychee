@@ -242,7 +242,20 @@ class CheckoutService
 			$params['name'] = $order->user->name;
 		}
 
+		// Remove any keys from $additional_data that are already in $params
+		// This ensures that $additional_data does not overwrite existing keys in $params
+		// Fixes that sneaky @5ud0er ;p
+		$param_keys = array_keys($params);
+		foreach ($param_keys as $key) {
+			if (array_key_exists($key, $additional_data)) {
+				unset($additional_data[$key]);
+			}
+		}
+
 		// Merge any additional data
+		// We could flip the order of the merge, but we want to make sure that the
+		// additional data does not overwrite existing keys in $params
+		// Better be clear than trying to be smart.
 		return array_merge($params, $additional_data);
 	}
 }
