@@ -66,8 +66,16 @@ return new class() extends Migration {
 			// NULL clause on generated columns entirely (even in CREATE TABLE),
 			// so Laravel must omit it here. COALESCE already guarantees the
 			// stored value is never actually NULL.
-			$table->unsignedInteger(self::USER_ID_UNIQUE_KEY)->storedAs('COALESCE(' . self::USER_ID . ', 0)');
-			$table->unsignedInteger(self::USER_GROUP_ID_UNIQUE_KEY)->storedAs('COALESCE(' . self::USER_GROUP_ID . ', 0)');
+			// SQLite's ALTER TABLE ADD COLUMN refuses STORED generated columns
+			// outright (only VIRTUAL is allowed there); VIRTUAL is fine since
+			// these columns only exist to be indexed below, not read directly.
+			if (DB::getDriverName() === 'sqlite') {
+				$table->unsignedInteger(self::USER_ID_UNIQUE_KEY)->virtualAs('COALESCE(' . self::USER_ID . ', 0)');
+				$table->unsignedInteger(self::USER_GROUP_ID_UNIQUE_KEY)->virtualAs('COALESCE(' . self::USER_GROUP_ID . ', 0)');
+			} else {
+				$table->unsignedInteger(self::USER_ID_UNIQUE_KEY)->storedAs('COALESCE(' . self::USER_ID . ', 0)');
+				$table->unsignedInteger(self::USER_GROUP_ID_UNIQUE_KEY)->storedAs('COALESCE(' . self::USER_GROUP_ID . ', 0)');
+			}
 		});
 
 		Schema::table(self::TABLE_NAME, function (Blueprint $table) {
