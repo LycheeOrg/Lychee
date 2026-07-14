@@ -8,6 +8,7 @@
 
 namespace App\Actions\Search\Strategies\Album;
 
+use App\Actions\Search\Strategies\Traits\EscapesLikeWildcards;
 use App\Contracts\Search\AlbumSearchTokenStrategy;
 use App\DTO\Search\SearchToken;
 use Illuminate\Database\Eloquent\Builder;
@@ -27,13 +28,15 @@ use Illuminate\Database\Eloquent\Builder;
  */
 class AlbumTagStrategy implements AlbumSearchTokenStrategy
 {
+	use EscapesLikeWildcards;
+
 	public function apply(Builder $query, SearchToken $token): void
 	{
 		$value = $token->value;
 
 		if ($token->is_prefix) {
-			$escaped = str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $value);
-			$query->whereHas('tags', fn (Builder $tq) => $tq->whereRaw('LOWER(name) LIKE LOWER(?)', [$escaped . '%']));
+			$pattern = $this->escapeLike($value) . '%';
+			$query->whereHas('tags', fn (Builder $tq) => $tq->whereRaw("LOWER(name) LIKE LOWER(?) ESCAPE '!'", [$pattern]));
 		} else {
 			$query->whereHas('tags', fn (Builder $tq) => $tq->whereRaw('LOWER(name) = LOWER(?)', [$value]));
 		}

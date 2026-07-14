@@ -8,6 +8,7 @@
 
 namespace App\Actions\Search\Strategies;
 
+use App\Actions\Search\Strategies\Traits\EscapesLikeWildcards;
 use App\Contracts\Search\PhotoSearchTokenStrategy;
 use App\DTO\Search\SearchToken;
 use Illuminate\Database\Eloquent\Builder;
@@ -22,6 +23,8 @@ use Illuminate\Database\Eloquent\Builder;
  */
 class PlainTextStrategy implements PhotoSearchTokenStrategy
 {
+	use EscapesLikeWildcards;
+
 	public function apply(Builder $query, SearchToken $token): void
 	{
 		$value = $this->escapeLike($token->value);
@@ -34,10 +37,5 @@ class PlainTextStrategy implements PhotoSearchTokenStrategy
 				->orWhereRaw("model LIKE ? ESCAPE '!'", [$pattern])
 				->orWhereHas('tags', fn (Builder $tq) => $tq->whereRaw("name LIKE ? ESCAPE '!'", [$pattern]));
 		});
-	}
-
-	private function escapeLike(string $value): string
-	{
-		return str_replace(['!', '%', '_'], ['!!', '!%', '!_'], $value);
 	}
 }

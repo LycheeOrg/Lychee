@@ -8,6 +8,7 @@
 
 namespace App\Actions\Search\Strategies\Album;
 
+use App\Actions\Search\Strategies\Traits\EscapesLikeWildcards;
 use App\Contracts\Search\AlbumSearchTokenStrategy;
 use App\DTO\Search\SearchToken;
 use Illuminate\Database\Eloquent\Builder;
@@ -24,6 +25,8 @@ use Illuminate\Database\Query\Builder as QueryBuilder;
  */
 class AlbumFieldLikeStrategy implements AlbumSearchTokenStrategy
 {
+	use EscapesLikeWildcards;
+
 	/**
 	 * @param string|null $column       when null the strategy matches both title and description
 	 * @param bool        $include_tags whether the plain-text fallback (only relevant when
@@ -52,10 +55,5 @@ class AlbumFieldLikeStrategy implements AlbumSearchTokenStrategy
 				}
 			});
 		}
-	}
-
-	private function escapeLike(string $value): string
-	{
-		return str_replace(['!', '%', '_'], ['!!', '!%', '!_'], $value);
 	}
 }

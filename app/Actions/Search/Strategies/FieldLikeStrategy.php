@@ -8,6 +8,7 @@
 
 namespace App\Actions\Search\Strategies;
 
+use App\Actions\Search\Strategies\Traits\EscapesLikeWildcards;
 use App\Contracts\Search\PhotoSearchTokenStrategy;
 use App\DTO\Search\SearchToken;
 use Illuminate\Database\Eloquent\Builder;
@@ -23,13 +24,15 @@ use Illuminate\Database\Eloquent\Builder;
  */
 class FieldLikeStrategy implements PhotoSearchTokenStrategy
 {
+	use EscapesLikeWildcards;
+
 	public function __construct(private readonly string $column)
 	{
 	}
 
 	public function apply(Builder $query, SearchToken $token): void
 	{
-		$escaped = str_replace(['!', '%', '_'], ['!!', '!%', '!_'], $token->value);
+		$escaped = $this->escapeLike($token->value);
 
 		if ($token->is_prefix) {
 			$query->whereRaw("{$this->column} LIKE ? ESCAPE '!'", [$escaped . '%']);
