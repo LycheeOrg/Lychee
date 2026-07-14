@@ -7,7 +7,7 @@ return [
     |--------------------------------------------------------------------------
     */
     'title' => 'Tags',
-    'description' => 'Manage your tags here. You can rename, merge, and delete tags.<br>The number indicates how many photos are associated with that tag.',
+    'description' => 'Manage your tags here. You can rename, merge, and delete tags.',
     'no_tags' => 'No tags found.',
     'loading' => 'Loading tags...',
     'rename' => 'Rename',
