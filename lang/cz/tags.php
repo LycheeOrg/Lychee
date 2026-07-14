@@ -14,7 +14,12 @@ return [
     'merge' => 'Sloučit',
     'delete' => 'Odstranit',
 
+    'column_name' => 'Název',
+    'column_photos' => 'Fotografie',
+    'column_albums' => 'Alba',
+
     'delete_confirm' => 'Opravdu chcete odstranit štítek „%s“?',
+    'delete_confirm_multiple' => 'Opravdu chcete odstranit těchto %d štítků?',
     'delete_warning' => 'Tuto akci nelze vrátit zpět! Všechny fotografie spojené s tímto štítkem již nebudou mít tento štítek.',
 
     'merge_confirm' => 'Opravdu chcete sloučit štítek „%1$s“ se štítkem „%2$s“?',

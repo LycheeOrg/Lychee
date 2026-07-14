@@ -14,7 +14,12 @@ return [
     'merge' => 'Zusammenführen',
     'delete' => 'Löschen',
 
+    'column_name' => 'Name',
+    'column_photos' => 'Fotos',
+    'column_albums' => 'Alben',
+
     'delete_confirm' => 'Sind Sie sicher, dass Sie den Tag „%s“ löschen möchten?',
+    'delete_confirm_multiple' => 'Sind Sie sicher, dass Sie diese %d Tags löschen möchten?',
     'delete_warning' => 'Diese Aktion kann nicht rückgängig gemacht werden! Alle mit diesem Tag verknüpften Fotos werden diesen Tag verlieren.',
 
     'merge_confirm' => 'Sind Sie sicher, dass Sie den Tag „%1$s“ mit dem Tag „%2$s“ zusammenführen möchten?',
