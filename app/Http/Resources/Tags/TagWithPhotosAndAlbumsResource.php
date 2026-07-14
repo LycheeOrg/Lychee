@@ -17,7 +17,7 @@ use Spatie\TypeScriptTransformer\Attributes\LiteralTypeScriptType;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 #[TypeScript()]
-class TagWithPhotosResource extends Data
+class TagWithPhotosAndAlbumsResource extends Data
 {
 	use HasPrepPhotoCollection;
 

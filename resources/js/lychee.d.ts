@@ -1532,7 +1532,7 @@ declare namespace App.Http.Resources.Tags {
 		num_photos: number;
 		num_albums: number;
 	};
-	export type TagWithPhotosResource = {
+	export type TagWithPhotosAndAlbumsResource = {
 		id: number;
 		name: string;
 		photos: App.Http.Resources.Models.PhotoResource[];

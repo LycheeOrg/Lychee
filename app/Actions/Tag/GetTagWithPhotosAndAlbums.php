@@ -10,7 +10,7 @@ namespace App\Actions\Tag;
 
 use App\Http\Resources\Models\PhotoResource;
 use App\Http\Resources\Models\ThumbAlbumResource;
-use App\Http\Resources\Tags\TagWithPhotosResource;
+use App\Http\Resources\Tags\TagWithPhotosAndAlbumsResource;
 use App\Models\Album;
 use App\Models\Photo;
 use App\Models\Tag;
@@ -23,7 +23,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
 /**
- * GetTagWithPhotos retrieves a tag along with its associated photos and
+ * GetTagWithPhotosAndAlbums retrieves a tag along with its associated photos and
  * accessible albums (Feature 050 - Album Tags).
  *
  * Note that if this actions is called from a non admin user,
@@ -32,7 +32,7 @@ use Illuminate\Support\Facades\Auth;
  * This is to ensure that users only see their own photos and albums
  * associated with the tag, maintaining privacy and security.
  */
-class GetTagWithPhotos
+class GetTagWithPhotosAndAlbums
 {
 	public function __construct(
 		private PhotoQueryPolicy $photo_query_policy,
@@ -44,13 +44,29 @@ class GetTagWithPhotos
 	/**
 	 * Returns a tag with its associated photos and accessible albums.
 	 *
-	 * @return TagWithPhotosResource
+	 * @return TagWithPhotosAndAlbumsResource
 	 */
-	public function do(Tag $tag): TagWithPhotosResource
+	public function do(Tag $tag): TagWithPhotosAndAlbumsResource
 	{
 		/** @var User $user */
 		$user = Auth::user();
 
+		return new TagWithPhotosAndAlbumsResource(
+			id: $tag->id,
+			name: $tag->name,
+			photos: $this->getAccessiblePhotos($tag, $user),
+			albums: $this->getAccessibleAlbums($tag, $user),
+		);
+	}
+
+	/**
+	 * Returns the photos carrying the given tag which are accessible by the
+	 * current user.
+	 *
+	 * @return Collection<int,PhotoResource>
+	 */
+	private function getAccessiblePhotos(Tag $tag, User $user): Collection
+	{
 		$base_query = Photo::query()
 			->with(['size_variants', 'statistics', 'palette', 'tags', 'rating'])
 			->when(
@@ -68,18 +84,12 @@ class GetTagWithPhotos
 
 		/** @var Collection<int,Photo> $photos */
 		$photos = $photos_query->get();
-		$photo_resources = $photos->map(fn ($photo) => new PhotoResource(
+
+		return $photos->map(fn ($photo) => new PhotoResource(
 			photo: $photo,
 			album_id: null,
 			should_downgrade_size_variants: $user->may_administrate !== true && $user->id !== $photo->owner_id
 		));
-
-		return new TagWithPhotosResource(
-			id: $tag->id,
-			name: $tag->name,
-			photos: $photo_resources,
-			albums: $this->getAccessibleAlbums($tag, $user),
-		);
 	}
 
 	/**
