@@ -12,7 +12,7 @@
 			<div v-if="timelineStore.minPage > 1" class="flex justify-center pt-2">
 				<UButton
 					variant="ghost"
-					icon="prime:angle-double-up"
+					icon="lucide:chevrons-up"
 					color="neutral"
 					@click="timelineStore.loadLess"
 					:label="$t('gallery.timeline.load_previous')"
@@ -156,7 +156,7 @@ import PhotoLicenseDialog from "@/v8/components/forms/photo/PhotoLicenseDialog.v
 import PhotoCopyDialog from "@/v8/components/forms/photo/PhotoCopyDialog.vue";
 import MoveDialog from "@/v8/components/forms/gallery-dialogs/MoveDialog.vue";
 import DeleteDialog from "@/v8/components/forms/gallery-dialogs/DeleteDialog.vue";
-import { useContextMenu } from "@/composables/contextMenus/contextMenu";
+import { useContextMenu } from "@/v8/composables/contextMenus/contextMenu";
 import PhotoService from "@/services/photo-service";
 import AlbumService from "@/services/album-service";
 import ModerationService from "@/services/moderation-service";
@@ -384,10 +384,6 @@ function contextMenuPhotoOpen(photoId: string, _e: MouseEvent): void {
 	}
 }
 
-function toIconifyName(icon: string): string {
-	return "prime:" + icon.replace(/^pi\s+pi-/, "").replace(/^pi-/, "");
-}
-
 const menuSections = computed<ContextMenuItem[][]>(() => {
 	const sections: ContextMenuItem[][] = [[]];
 	for (const entry of Menu.value) {
@@ -397,7 +393,7 @@ const menuSections = computed<ContextMenuItem[][]>(() => {
 		}
 		sections[sections.length - 1].push({
 			label: trans(entry.label ?? ""),
-			icon: toIconifyName(entry.icon ?? ""),
+			icon: entry.icon,
 			onSelect: entry.callback,
 		});
 	}

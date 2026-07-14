@@ -1,7 +1,7 @@
 <template>
 	<WebauthnModal @logged-in="goBack" />
 	<div class="absolute top-0 left-0">
-		<UButton icon="prime:angle-left" class="mr-2" color="neutral" variant="ghost" @click="goBack" />
+		<UButton icon="lucide:chevron-left" class="mr-2" color="neutral" variant="ghost" @click="goBack" />
 	</div>
 	<UCard v-if="is_loaded" class="p-9 mx-auto max-w-3xl" :ui="{ header: 'hidden', body: 'flex flex-col items-center' }">
 		<div v-if="initdata" class="my-12">

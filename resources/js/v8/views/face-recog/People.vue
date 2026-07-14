@@ -11,7 +11,7 @@
 					:label="$t('maintenance.face_quality.title')"
 					color="neutral"
 					variant="outline"
-					icon="prime:filter"
+					icon="lucide:filter"
 					@click="
 						() => {
 							$router.push({ name: 'face-maintenance' });
@@ -22,7 +22,7 @@
 					:label="$t('people.clusters_title')"
 					color="neutral"
 					variant="outline"
-					icon="prime:sitemap"
+					icon="lucide:list-tree"
 					@click="
 						() => {
 							$router.push('/people/clusters');
@@ -146,7 +146,7 @@ function buildContextMenuItems(person: App.Http.Resources.Models.PersonResource)
 	const items: ContextMenuAction[] = [
 		{
 			label: trans("people.person.toggle_searchable"),
-			icon: person.is_searchable ? "prime:eye-slash" : "prime:eye",
+			icon: person.is_searchable ? "lucide:eye-off" : "lucide:eye",
 			command: () => toggleSearchable(person),
 		},
 	];
@@ -154,14 +154,14 @@ function buildContextMenuItems(person: App.Http.Resources.Models.PersonResource)
 	if (initData.value?.user_management.can_edit) {
 		items.push({
 			label: trans("people.assign_to_user"),
-			icon: "prime:user-edit",
+			icon: "lucide:user-pen",
 			command: () => openUserPicker(person),
 		});
 	}
 
 	items.push({
 		label: trans("people.person.delete"),
-		icon: "prime:trash",
+		icon: "lucide:trash",
 		command: () => openDeleteDialog(person),
 	});
 

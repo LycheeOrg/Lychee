@@ -55,7 +55,7 @@
 				>
 					<template #label>
 						<span class="border-b border-dashed border-error">{{ $t("dialogs.visibility.password_prot") }}</span>
-						<UIcon name="prime:exclamation-triangle" class="text-error" />
+						<UIcon name="lucide:triangle-alert" class="text-error" />
 					</template>
 					<template #description><span v-html="$t('dialogs.visibility.password_prop_not_compatible')"></span></template>
 				</USwitch>

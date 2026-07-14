@@ -49,7 +49,7 @@
 								class="px-4 py-2 rounded hover:bg-elevated cursor-pointer flex items-center gap-2"
 								@click="router.push({ name: 'settings', params: { tab: 'all' } })"
 							>
-								<UIcon name="prime:exclamation-triangle" class="text-warning-600" />
+								<UIcon name="lucide:triangle-alert" class="text-warning-600" />
 								{{ $t("settings.tabs.all_settings") }}
 							</a>
 						</nav>

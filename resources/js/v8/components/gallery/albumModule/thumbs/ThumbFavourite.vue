@@ -7,7 +7,7 @@
 				'md:opacity-0 md:group-hover:opacity-50 md:transition-all md:ease-out': !props.isFavourite,
 			}"
 		>
-			<UIcon :name="props.isFavourite ? 'prime:heart-fill' : 'prime:heart'" />
+			<UIcon name="lucide:heart" :class="props.isFavourite ? FILL_OVERRIDE_CLASS : ''" />
 		</div>
 		<!-- React when mouse over the icon -->
 		<div
@@ -17,11 +17,13 @@
 			}"
 			@click="propagateClick"
 		>
-			<UIcon :name="props.isFavourite ? 'prime:heart' : 'prime:heart-fill'" />
+			<UIcon name="lucide:heart" :class="props.isFavourite ? '' : FILL_OVERRIDE_CLASS" />
 		</div>
 	</div>
 </template>
 <script setup lang="ts">
+import { FILL_OVERRIDE_CLASS } from "@/v8/icons";
+
 const props = defineProps<{
 	isFavourite: boolean;
 }>();

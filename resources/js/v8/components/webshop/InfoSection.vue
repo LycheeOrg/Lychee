@@ -5,7 +5,7 @@
 			<div class="text-error font-medium mb-4">{{ $t("webshop.infoSection.mustBeLoggedIn") }}</div>
 			<UButton
 				:label="$t('webshop.infoSection.goToLogin')"
-				icon="prime:sign-in"
+				icon="lucide:log-in"
 				@click="
 					() => {
 						router.push({ name: 'login', query: { redirect: 'checkout' } });

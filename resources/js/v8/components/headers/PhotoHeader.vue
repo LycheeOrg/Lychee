@@ -21,18 +21,19 @@
 			>
 				<UButton
 					variant="ghost"
-					:icon="photoStore.photo.is_highlighted ? 'prime:flag-fill' : 'prime:flag'"
+					icon="lucide:flag"
+					:ui="{ leadingIcon: photoStore.photo.is_highlighted ? FILL_OVERRIDE_CLASS : '' }"
 					:class="photoStore.photo.is_highlighted ? 'text-yellow-500' : 'text-white hover:text-yellow-500'"
 					color="neutral"
 					@click="emits('toggleHighlight')"
 				/>
 			</UTooltip>
 			<div class="flex items-center gap-1.5" :class="is_slideshow_active ? 'hidden' : 'flex'">
-				<UButton v-if="is_slideshow_enabled" variant="ghost" icon="prime:play" color="neutral" @click="emits('toggleSlideShow')" />
+				<UButton v-if="is_slideshow_enabled" variant="ghost" icon="lucide:play" color="neutral" @click="emits('toggleSlideShow')" />
 				<UButton
 					v-if="albumStore.rights?.can_access_original && photoStore.photo.size_variants.original?.url"
 					variant="ghost"
-					icon="prime:window-maximize"
+					icon="lucide:app-window"
 					class="font-bold"
 					color="neutral"
 					@click="openInNewTab(photoStore.photo.size_variants.original.url)"
@@ -40,7 +41,7 @@
 				<UButton
 					v-if="albumStore.rights?.can_download"
 					variant="ghost"
-					icon="prime:cloud-download"
+					icon="lucide:cloud-download"
 					color="neutral"
 					@click="
 						() => {
@@ -51,7 +52,7 @@
 				<UButton
 					v-if="albumStore.rights?.can_edit"
 					variant="ghost"
-					icon="prime:pencil"
+					icon="lucide:pencil"
 					color="neutral"
 					@click="
 						() => {
@@ -62,7 +63,7 @@
 				<UButton
 					v-if="!is_exif_disabled"
 					variant="ghost"
-					icon="prime:info-circle"
+					icon="lucide:info"
 					color="neutral"
 					@click="
 						() => {
@@ -85,6 +86,7 @@ import GoBack from "./GoBack.vue";
 import { usePhotoStore } from "@/stores/PhotoState";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
+import { FILL_OVERRIDE_CLASS } from "@/v8/icons";
 
 const emits = defineEmits<{
 	toggleDetails: [];

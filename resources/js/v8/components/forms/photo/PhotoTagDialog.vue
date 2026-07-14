@@ -5,7 +5,7 @@
 				{{ question }}
 				<br />
 				<span class="text-highlighted flex items-center justify-center gap-1">
-					<UIcon name="prime:exclamation-triangle" class="text-warning-600" />Press Enter to confirm each tag.
+					<UIcon name="lucide:triangle-alert" class="text-warning-600" />Press Enter to confirm each tag.
 				</span>
 			</p>
 			<div class="my-3 first:mt-0 last:mb-0">

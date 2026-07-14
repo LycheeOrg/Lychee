@@ -10,7 +10,7 @@
 			<UButton
 				v-if="initData?.settings.can_edit"
 				:label="$t('admin-dashboard.refresh')"
-				icon="prime:refresh"
+				icon="lucide:refresh-cw"
 				:disabled="isLoading"
 				color="neutral"
 				variant="ghost"
@@ -24,7 +24,7 @@
 		<UCard v-if="initData?.settings.can_edit && updateStatus?.enabled && updateStatus?.has_update" class="mb-4">
 			<template #header>
 				<div class="flex items-center gap-2 font-bold text-primary-500">
-					<UIcon name="prime:arrow-circle-up" class="text-lg" />
+					<UIcon name="lucide:circle-arrow-up" class="text-lg" />
 					<span>{{ $t("admin-dashboard.update.title") }}</span>
 				</div>
 			</template>
@@ -42,7 +42,7 @@
 		<UCard v-if="initData?.settings.can_edit && advisories.length > 0" class="mb-4">
 			<template #header>
 				<div class="flex items-center gap-2 text-orange-400 font-bold">
-					<UIcon name="prime:exclamation-triangle" class="text-lg" />
+					<UIcon name="lucide:triangle-alert" class="text-lg" />
 					<span>{{ $t("admin-dashboard.security.title") }}</span>
 				</div>
 			</template>
@@ -174,7 +174,7 @@ import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
 import Constants from "@/services/constants";
 import SecurityAdvisoriesService from "@/services/security-advisories-service";
 import AdminStatsService, { type AdminUpdateStatusResource } from "@/services/admin-stats-service";
-import { useAdminTiles, type AdminTile, type AdminTileGroup } from "@/composables/useAdminTiles";
+import { useAdminTiles, type AdminTile, type AdminTileGroup } from "@/v8/composables/useAdminTiles";
 
 const lycheeStore = useLycheeStateStore();
 const leftMenuStore = useLeftMenuStateStore();

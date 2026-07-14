@@ -63,7 +63,7 @@
 			<!-- Pagination -->
 			<div v-if="pagination.total > pagination.per_page" class="flex justify-center gap-2 mt-6 items-center">
 				<UButton
-					icon="prime:chevron-left"
+					icon="lucide:chevron-left"
 					:disabled="pagination.current_page <= 1"
 					color="neutral"
 					variant="ghost"
@@ -73,7 +73,7 @@
 					{{ pagination.current_page }} / {{ Math.ceil(pagination.total / pagination.per_page) }}
 				</span>
 				<UButton
-					icon="prime:chevron-right"
+					icon="lucide:chevron-right"
 					:disabled="pagination.current_page >= Math.ceil(pagination.total / pagination.per_page)"
 					color="neutral"
 					variant="ghost"
@@ -153,7 +153,7 @@ const columns: TableColumn<Message>[] = [
 		id: "actions",
 		cell: ({ row }) =>
 			h(UButton, {
-				icon: "prime:trash",
+				icon: "lucide:trash",
 				color: "error",
 				variant: "ghost",
 				size: "sm",

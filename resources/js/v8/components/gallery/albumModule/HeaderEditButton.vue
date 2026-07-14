@@ -11,11 +11,11 @@ const props = defineProps<{
 }>();
 
 const POSITION_ICONS: { [key: string]: string } = {
-	"top-left": "prime:arrow-up-left",
-	"top-right": "prime:arrow-up-right",
-	"bottom-left": "prime:arrow-down-left",
-	"bottom-right": "prime:arrow-down-right",
-	center: "prime:circle",
+	"top-left": "lucide:arrow-up-left",
+	"top-right": "lucide:arrow-up-right",
+	"bottom-left": "lucide:arrow-down-left",
+	"bottom-right": "lucide:arrow-down-right",
+	center: "lucide:circle",
 };
 
 const positionIcon = computed(() => POSITION_ICONS[props.position]);

@@ -3,7 +3,7 @@
 	<Transition name="scroll-top-fade">
 		<UButton
 			v-if="visible"
-			icon="prime:arrow-up"
+			icon="lucide:arrow-up"
 			color="neutral"
 			variant="solid"
 			class="fixed bottom-5 right-5 rounded-full z-50 shadow-lg"

@@ -3,7 +3,7 @@
 		<div class="p-3 border-b border-default flex justify-between items-center">
 			<h3 class="text-sm font-semibold text-highlighted">{{ $t("gallery.set_header_focus") }}</h3>
 			<button @click="$emit('cancel')" class="text-muted hover:text-highlighted transition-colors cursor-pointer">
-				<UIcon name="prime:times" class="text-sm" />
+				<UIcon name="lucide:x" class="text-sm" />
 			</button>
 		</div>
 

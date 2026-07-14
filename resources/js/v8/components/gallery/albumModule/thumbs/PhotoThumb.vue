@@ -89,7 +89,7 @@
 				'border border-white bg-black/40': !props.isSelected,
 			}"
 		>
-			<UIcon v-if="props.isSelected" name="prime:check-circle" class="text-lg text-primary" />
+			<UIcon v-if="props.isSelected" name="lucide:check-circle" class="text-lg text-primary" />
 		</div>
 		<div v-else class="absolute top-0 ltr:right-0 rtl:left-0 w-1/4 flex flex-row-reverse px-1">
 			<ThumbBuyMe :is-in-basket="isInBasket" @click="toggleBuyMe" v-if="props.isBuyable" />
@@ -99,15 +99,15 @@
 			<ThumbBadge
 				v-if="(albumsStore.rootRights?.can_highlight || albumStore.rights?.can_edit) && props.photo.is_highlighted"
 				class="bg-yellow-500"
-				pi="flag-fill"
+				:pi="`lucide:flag ${FILL_OVERRIDE_CLASS}`"
 			/>
 			<ThumbBadge v-if="userStore.isLoggedIn && props.isCoverId" class="bg-yellow-500" icon="folder-cover" />
-			<ThumbBadge v-if="userStore.isLoggedIn && props.isHeaderId" class="bg-slate-400 hidden sm:block" pi="image" />
+			<ThumbBadge v-if="userStore.isLoggedIn && props.isHeaderId" class="bg-slate-400 hidden sm:block" pi="lucide:image" />
 			<ThumbBadge
 				v-if="!props.photo.is_validated"
 				class="bg-neutral-800"
 				border-color="border-none"
-				pi="shield text-amber-500 text-shadow-md"
+				pi="lucide:shield text-amber-500 text-shadow-md"
 			/>
 		</div>
 		<!-- Rating Overlay -->
@@ -133,6 +133,7 @@ import { useAlbumsStore } from "@/stores/AlbumsState";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { usePhotoFacesStore } from "@/stores/PhotoFacesState";
+import { FILL_OVERRIDE_CLASS } from "@/v8/icons";
 
 const { getNoImageIcon, getPlayIcon } = useImageHelpers();
 

@@ -17,7 +17,7 @@
 		<div class="flex justify-center mt-6 pb-8">
 			<UButton
 				:label="$t('people.claim_by_selfie')"
-				icon="prime:camera"
+				icon="lucide:camera"
 				color="neutral"
 				variant="outline"
 				@click="

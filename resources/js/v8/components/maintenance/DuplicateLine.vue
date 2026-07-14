@@ -10,14 +10,14 @@
 			>
 				<div class="shrink">
 					<UIcon
-						name="prime:trash"
+						name="lucide:trash"
 						class="ltr:mr-2 rtl:ml-2"
 						:class="selectedIds.includes(duplicate.photo_id) ? 'text-red-700' : 'text-transparent'"
 					/>
 				</div>
 				<div class="w-1/3 flex-none flex items-center gap-2 group">
 					<RouterLink :to="{ name: 'album', params: { albumId: duplicate.album_id } }" target="_blank">
-						<UIcon name="prime:link" class="text-primary hover:text-primary/80" />
+						<UIcon name="lucide:link" class="text-primary hover:text-primary/80" />
 					</RouterLink>
 					<span
 						class="w-full inline-block whitespace-nowrap text-ellipsis overflow-hidden cursor-pointer"
@@ -28,7 +28,7 @@
 				</div>
 				<div class="w-1/3 flex-none flex gap-2 group">
 					<RouterLink :to="{ name: 'album', params: { albumId: duplicate.album_id, photoId: duplicate.photo_id } }" target="_blank">
-						<UIcon name="prime:link" class="text-primary hover:text-primary/80" />
+						<UIcon name="lucide:link" class="text-primary hover:text-primary/80" />
 					</RouterLink>
 					<span
 						class="w-full inline-block whitespace-nowrap text-ellipsis overflow-hidden cursor-pointer"

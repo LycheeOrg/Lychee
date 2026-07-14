@@ -2,7 +2,7 @@
 	<nav id="header-breadcrumb" class="hidden sm:flex flex-row-reverse justify-end max-w-[45vw] items-center overflow-hidden whitespace-nowrap h-12">
 		<span class="text-base truncate max-w-32 shrink-0">{{ currentTitle }}</span>
 		<template v-for="(item, index) in reversedItems" :key="item.id ?? index">
-			<UIcon :name="isLTR() ? 'prime:angle-right' : 'prime:angle-left'" class="text-sm mx-1 text-muted shrink-0" />
+			<UIcon :name="isLTR() ? 'lucide:chevron-right' : 'lucide:chevron-left'" class="text-sm mx-1 text-muted shrink-0" />
 			<RouterLink
 				v-if="item.id !== null"
 				:to="{ name: 'album', params: { albumId: item.id } }"

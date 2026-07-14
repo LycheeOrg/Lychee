@@ -38,7 +38,7 @@
 					{{ $t("webshop.orderDownload.transactionId") }} {{ order.transaction_id }}
 					<UIcon
 						v-if="order.status === 'closed'"
-						name="prime:copy"
+						name="lucide:copy"
 						class="cursor-pointer hover:text-primary ltr:ml-2 rtl:mr-2"
 						@click="copyToClipboard"
 					/>
@@ -80,7 +80,7 @@
 						<UButton
 							v-if="initData?.settings.can_edit && itemsToUpdate.length > 0"
 							:label="$t('webshop.orderDownload.deliver')"
-							icon="prime:save"
+							icon="lucide:save"
 							size="sm"
 							@click="markAsDelivered"
 						/>
@@ -89,7 +89,7 @@
 							variant="ghost"
 							color="error"
 							:label="$t('webshop.orderDownload.edit')"
-							icon="prime:pencil"
+							icon="lucide:pencil"
 							size="sm"
 							@click="
 								() => {
@@ -102,7 +102,7 @@
 							variant="ghost"
 							color="neutral"
 							:label="$t('webshop.orderDownload.view')"
-							icon="prime:eye"
+							icon="lucide:eye"
 							size="sm"
 							@click="
 								() => {
@@ -121,7 +121,7 @@
 									class="w-12 h-12 object-cover rounded shrink-0"
 									:alt="item.title"
 								/>
-								<UIcon v-else name="prime:image" class="text-muted text-2xl w-12 h-12 flex items-center justify-center shrink-0" />
+								<UIcon v-else name="lucide:image" class="text-muted text-2xl w-12 h-12 flex items-center justify-center shrink-0" />
 								<div class="">
 									<div class="font-medium">
 										<RouterLink :to="{ name: 'album', params: { albumId: item.album_id, photoId: item.photo_id } }">{{
@@ -163,15 +163,15 @@
 										target="_blank"
 										rel="noopener noreferrer"
 									>
-										<UButton icon="prime:truck" :label="$t('webshop.orderDownload.trackShipment')" size="sm" color="primary" />
+										<UButton icon="lucide:truck" :label="$t('webshop.orderDownload.trackShipment')" size="sm" color="primary" />
 									</a>
 									<div v-else-if="item.is_print" class="flex items-center gap-2 text-sm text-muted">
-										<UIcon name="prime:truck" />
+										<UIcon name="lucide:truck" />
 										<span>{{ item.content_url }}</span>
 									</div>
 									<UButton
 										v-else
-										icon="prime:cloud-download"
+										icon="lucide:cloud-download"
 										:label="$t('webshop.orderDownload.download')"
 										size="sm"
 										color="primary"

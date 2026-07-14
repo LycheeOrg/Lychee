@@ -15,6 +15,11 @@ html {
 :root {
 	--ui-container: 100%;
 	--ui-header-height: 3.5rem;
+
+	/* Height units */
+	--svh25: 25svh;
+	--svh50: 50svh;
+	--svh75: 75svh;
 }
 
 /*

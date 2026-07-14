@@ -37,7 +37,7 @@
 				size="sm"
 				color="neutral"
 				variant="soft"
-				:icon="paginationMode === 'numbered' ? 'prime:list' : 'prime:align-justify'"
+				:icon="paginationMode === 'numbered' ? 'lucide:list' : 'lucide:align-justify'"
 				:label="$t(paginationMode === 'numbered' ? 'bulk_album_edit.mode_infinite' : 'bulk_album_edit.mode_paginated')"
 				@click="togglePaginationMode"
 			/>
@@ -65,7 +65,7 @@
 				color="error"
 				variant="soft"
 				:label="$t('bulk_album_edit.action_delete')"
-				icon="prime:trash"
+				icon="lucide:trash"
 				@click="
 					() => {
 						isDeleteVisible = true;
@@ -78,7 +78,7 @@
 				color="neutral"
 				variant="soft"
 				:label="$t('bulk_album_edit.action_set_owner')"
-				icon="prime:user"
+				icon="lucide:user"
 				@click="
 					() => {
 						isSetOwnerVisible = true;
@@ -90,7 +90,7 @@
 				size="sm"
 				color="primary"
 				:label="$t('bulk_album_edit.action_edit_fields')"
-				icon="prime:pencil"
+				icon="lucide:pencil"
 				@click="
 					() => {
 						isEditFieldsVisible = true;
@@ -227,7 +227,7 @@
 									size="sm"
 									variant="ghost"
 									color="neutral"
-									:icon="album.photo_sorting_order === 'DESC' ? 'prime:sort-amount-down-alt' : 'prime:sort-amount-up-alt'"
+									:icon="album.photo_sorting_order === 'DESC' ? 'lucide:arrow-down-wide-narrow' : 'lucide:arrow-up-wide-narrow'"
 									:disabled="album.photo_sorting_col === null"
 									@click="
 										onInlineSortingChange(album.id, 'photo_sorting_order', album.photo_sorting_order === 'DESC' ? 'ASC' : 'DESC')
@@ -266,7 +266,7 @@
 									size="sm"
 									variant="ghost"
 									color="neutral"
-									:icon="album.album_sorting_order === 'DESC' ? 'prime:sort-amount-down-alt' : 'prime:sort-amount-up-alt'"
+									:icon="album.album_sorting_order === 'DESC' ? 'lucide:arrow-down-wide-narrow' : 'lucide:arrow-up-wide-narrow'"
 									:disabled="album.album_sorting_col === null"
 									@click="
 										onInlineSortingChange(album.id, 'album_sorting_order', album.album_sorting_order === 'DESC' ? 'ASC' : 'DESC')
@@ -276,7 +276,7 @@
 						</td>
 						<td class="p-2 text-muted text-xs w-32">{{ formatDate(album.created_at) }}</td>
 						<td class="p-2 w-10 text-center">
-							<UButton size="sm" variant="ghost" color="neutral" icon="prime:pencil" @click="quickEditAlbum(album.id)" />
+							<UButton size="sm" variant="ghost" color="neutral" icon="lucide:pencil" @click="quickEditAlbum(album.id)" />
 						</td>
 					</tr>
 				</tbody>

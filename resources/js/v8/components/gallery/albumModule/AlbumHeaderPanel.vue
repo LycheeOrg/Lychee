@@ -1,7 +1,7 @@
 <template>
 	<div
 		v-if="albumStore.album && albumStore.album.preFormattedData.url"
-		:class="['w-full', album_header_size === 'half_screen' ? 'h-1/2' : 'h-full', 'relative', album_header_size]"
+		:class="['w-full', album_header_size === 'half_screen' ? 'h-(--svh50)' : 'h-svh', 'relative', album_header_size]"
 	>
 		<template v-if="!is_album_enhanced_display_enabled">
 			<img class="absolute block top-0 left-0 w-full h-full object-cover object-center z-0" :src="albumStore.album.preFormattedData.url" />
@@ -62,7 +62,7 @@
 							'bg-black/40 rounded-md border-0 cursor-pointer hover:bg-white/30 ',
 							'top-1/2 -left-16 absolute! text-inverted',
 						]"
-						icon="prime:chevron-left"
+						icon="lucide:chevron-left"
 						@click="setColor(selectedColorIndex - 1)"
 					/>
 					<UButton
@@ -73,7 +73,7 @@
 							'bg-black/40 rounded-md border-0 cursor-pointer hover:bg-white/30 ',
 							'top-1/2 -right-16 absolute! text-inverted',
 						]"
-						icon="prime:chevron-right"
+						icon="lucide:chevron-right"
 						@click="setColor(selectedColorIndex + 1)"
 					/>
 					<div

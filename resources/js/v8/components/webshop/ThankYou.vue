@@ -12,7 +12,7 @@
 		</div>
 		<div class="text-muted text-center">
 			<p class="text-muted">
-				<UIcon name="prime:exclamation-triangle" class="ltr:mr-2 rtl:mr-2 text-warning" />
+				<UIcon name="lucide:triangle-alert" class="ltr:mr-2 rtl:mr-2 text-warning" />
 				{{ $t("webshop.checkout.noteWarning") }}
 				<strong class="text-highlighted">{{ $t("webshop.checkout.noteTransactionId") }}</strong>
 				{{ $t("webshop.checkout.noteOrderNumber") }}
@@ -27,7 +27,7 @@
 			v-if="order?.status === 'closed'"
 			variant="ghost"
 			:label="$t('webshop.checkout.toMyDownloads')"
-			icon="prime:link"
+			icon="lucide:link"
 			@click="openOrderPage"
 		/>
 	</div>

@@ -1,5 +1,5 @@
 <template>
-	<UIcon name="prime:spinner" class="animate-spin" />
+	<UIcon name="lucide:loader-circle" class="animate-spin" />
 </template>
 
 <script setup lang="ts"></script>

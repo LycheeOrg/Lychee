@@ -25,7 +25,7 @@
 			/>
 			<!-- Video play icon overlay -->
 			<div v-if="photo.precomputed.is_video" class="absolute inset-0 flex items-center justify-center">
-				<UIcon name="prime:play-circle" class="text-white text-xl drop-shadow-lg" />
+				<UIcon name="lucide:play-circle" class="text-white text-xl drop-shadow-lg" />
 			</div>
 		</div>
 
@@ -40,34 +40,34 @@
 			<div class="flex items-center gap-3 text-xs text-gray-600 dark:text-gray-400 flex-wrap md:flex-nowrap">
 				<!-- Type badge -->
 				<span v-if="photo.precomputed.is_video" class="flex items-center gap-1 text-blue-500">
-					<UIcon name="prime:video" class="text-2xs" />
+					<UIcon name="lucide:video" class="text-2xs" />
 					<span class="hidden sm:inline">Video</span>
 				</span>
 				<span v-else-if="photo.precomputed.is_livephoto" class="flex items-center gap-1 text-purple-500">
-					<UIcon name="prime:mobile" class="text-2xs" />
+					<UIcon name="lucide:smartphone" class="text-2xs" />
 					<span class="hidden sm:inline">Live</span>
 				</span>
 				<span v-else-if="photo.precomputed.is_raw" class="flex items-center gap-1 text-orange-500">
 					<span class="text-2xs font-bold">RAW</span>
 				</span>
 				<span v-else class="flex items-center gap-1">
-					<UIcon name="prime:image" class="text-2xs" />
+					<UIcon name="lucide:image" class="text-2xs" />
 					<span class="hidden sm:inline">Photo</span>
 				</span>
 
 				<!-- Date -->
 				<span v-if="photo.preformatted.taken_at" class="flex items-center gap-1 whitespace-nowrap">
-					<UIcon name="prime:calendar" class="text-2xs" />
+					<UIcon name="lucide:calendar" class="text-2xs" />
 					{{ photo.preformatted.taken_at }}
 				</span>
 				<span v-else-if="photo.preformatted.created_at" class="flex items-center gap-1 whitespace-nowrap">
-					<UIcon name="prime:calendar" class="text-2xs" />
+					<UIcon name="lucide:calendar" class="text-2xs" />
 					{{ photo.preformatted.created_at }}
 				</span>
 
 				<!-- File size -->
 				<span v-if="photo.preformatted.filesize" class="hidden sm:flex items-center gap-1 whitespace-nowrap">
-					<UIcon name="prime:file" class="text-2xs" />
+					<UIcon name="lucide:file" class="text-2xs" />
 					{{ photo.preformatted.filesize }}
 				</span>
 			</div>
@@ -79,8 +79,10 @@
 				v-for="star in 5"
 				:key="star"
 				class="text-2xs"
-				:name="star <= (photo.rating?.rating_user ?? 0) ? 'prime:star-fill' : 'prime:star'"
-				:class="star <= (photo.rating?.rating_user ?? 0) ? 'text-yellow-500' : 'text-neutral-300 dark:text-neutral-600'"
+				name="lucide:star"
+				:class="
+					star <= (photo.rating?.rating_user ?? 0) ? `text-yellow-500 ${FILL_OVERRIDE_CLASS}` : 'text-neutral-300 dark:text-neutral-600'
+				"
 			/>
 		</div>
 
@@ -88,11 +90,11 @@
 		<div class="flex gap-1 items-center">
 			<ListBadge
 				v-if="photo.is_highlighted && (albumsStore.rootRights?.can_highlight || albumStore.rights?.can_edit)"
-				class="fill-yellow-500"
-				pi="flag-fill"
+				:class="`text-yellow-500 ${FILL_OVERRIDE_CLASS}`"
+				pi="lucide:flag"
 			/>
 			<ListBadge v-if="userStore.isLoggedIn && isCoverId" class="fill-yellow-500" icon="folder-cover" />
-			<ListBadge v-if="userStore.isLoggedIn && isHeaderId" class="fill-slate-400" pi="image" />
+			<ListBadge v-if="userStore.isLoggedIn && isHeaderId" class="text-slate-400" pi="lucide:image" />
 		</div>
 	</div>
 </template>
@@ -107,6 +109,7 @@ import { useAlbumsStore } from "@/stores/AlbumsState";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { usePhotoFacesStore } from "@/stores/PhotoFacesState";
 import { storeToRefs } from "pinia";
+import { FILL_OVERRIDE_CLASS } from "@/v8/icons";
 
 const props = defineProps<{
 	photo: App.Http.Resources.Models.PhotoResource;

@@ -17,13 +17,13 @@
 			<!-- Page body controls -->
 			<div class="px-6 pt-4 pb-2 flex flex-wrap gap-2 items-center">
 				<UTooltip v-if="!isBatchMode" :text="$t('people.batch_select')">
-					<UButton icon="prime:check-square" color="neutral" variant="ghost" @click="startBatchMode" />
+					<UButton icon="lucide:check-square" color="neutral" variant="ghost" @click="startBatchMode" />
 				</UTooltip>
 				<template v-else>
 					<UButton :label="$t('people.batch_cancel')" color="neutral" variant="ghost" @click="cancelBatchMode" />
 					<UButton
 						:label="$t('people.dismiss')"
-						icon="prime:times"
+						icon="lucide:x"
 						color="error"
 						variant="ghost"
 						:disabled="selectedLabels.length === 0"
@@ -33,7 +33,7 @@
 				</template>
 				<UButton
 					:label="$t('people.run_clustering')"
-					icon="prime:refresh"
+					icon="lucide:refresh-cw"
 					color="neutral"
 					variant="outline"
 					:loading="runningClustering"
@@ -109,7 +109,7 @@
 						<div class="flex gap-2 shrink-0" @click.stop>
 							<UButton
 								:label="$t('people.assign')"
-								icon="prime:check"
+								icon="lucide:check"
 								color="success"
 								size="sm"
 								:disabled="!getClusterAssignName(cluster.cluster_label)"
@@ -118,7 +118,7 @@
 							/>
 							<UButton
 								:label="$t('people.dismiss')"
-								icon="prime:times"
+								icon="lucide:x"
 								color="error"
 								variant="outline"
 								size="sm"
@@ -148,7 +148,7 @@
 							<div v-for="face in detailFaces" :key="face.id" class="relative aspect-square group">
 								<img v-if="face.crop_url" :src="face.crop_url" class="w-full h-full object-cover rounded-lg" loading="lazy" />
 								<div v-else class="w-full h-full bg-neutral-200 dark:bg-neutral-700 rounded-lg flex items-center justify-center">
-									<UIcon name="prime:user" class="text-xl text-muted" />
+									<UIcon name="lucide:user" class="text-xl text-muted" />
 								</div>
 								<button
 									class="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/60 text-inverted text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
@@ -180,7 +180,7 @@
 						<div class="flex gap-2">
 							<UButton
 								:label="$t('people.assign')"
-								icon="prime:check"
+								icon="lucide:check"
 								color="success"
 								:disabled="!getDetailAssignName()"
 								:loading="detailAssigning"
@@ -188,7 +188,7 @@
 							/>
 							<UButton
 								:label="$t('people.dismiss')"
-								icon="prime:times"
+								icon="lucide:x"
 								color="error"
 								variant="outline"
 								:loading="detailDismissing"

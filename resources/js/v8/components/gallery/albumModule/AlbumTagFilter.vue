@@ -19,7 +19,7 @@
 			<div class="flex">
 				<UButton
 					:label="$t('gallery.menus.tag_filter_apply')"
-					icon="prime:filter"
+					icon="lucide:filter"
 					size="sm"
 					class="rounded-r-none"
 					color="neutral"
@@ -28,7 +28,7 @@
 				/>
 				<UButton
 					:label="$t('gallery.menus.tag_filter_clear')"
-					icon="prime:times"
+					icon="lucide:x"
 					size="sm"
 					class="rounded-l-none"
 					color="neutral"
@@ -41,7 +41,7 @@
 
 		<!-- Active Filter Summary -->
 		<div v-if="isFilterActive" class="text-xs text-neutral-600 dark:text-neutral-400 flex justify-end items-center gap-2">
-			<UIcon name="prime:filter" />
+			<UIcon name="lucide:filter" />
 			<span>{{
 				$t("gallery.menus.tag_filter_active_summary", {
 					count: selectedTagIds.length.toString(),

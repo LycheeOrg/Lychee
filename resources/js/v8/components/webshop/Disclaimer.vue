@@ -1,11 +1,11 @@
 <template>
 	<div class="w-full mb-8" v-if="options?.is_lycheeorg_disclaimer_enabled && initData?.settings.can_edit">
 		<h2 class="w-full text-xl font-bold mb-2 flex items-center gap-2">
-			<UIcon name="prime:exclamation-triangle" class="text-warning-600" /> <span>{{ $t("webshop.disclaimer.title") }}</span>
+			<UIcon name="lucide:triangle-alert" class="text-warning-600" /> <span>{{ $t("webshop.disclaimer.title") }}</span>
 		</h2>
 		<p class="text-muted" v-html="$t('webshop.disclaimer.message')"></p>
 		<div class="flex ltr:justify-end rtl:justify-start mt-4">
-			<UButton :label="$t('webshop.disclaimer.iUnderstand')" icon="prime:check" color="primary" @click="accept" />
+			<UButton :label="$t('webshop.disclaimer.iUnderstand')" icon="lucide:check" color="primary" @click="accept" />
 		</div>
 	</div>
 </template>

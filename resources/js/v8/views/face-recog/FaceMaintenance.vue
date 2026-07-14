@@ -26,7 +26,7 @@
 						:color="dismissedOnly ? 'primary' : 'neutral'"
 						size="sm"
 						:trailing="true"
-						:icon="dismissedOnly ? 'prime:eye' : 'prime:eye-slash'"
+						:icon="dismissedOnly ? 'lucide:eye' : 'lucide:eye-off'"
 						@click="toggleDismissedOnly"
 					/>
 					<UButton
@@ -34,7 +34,7 @@
 						:color="unassignedOnly ? 'primary' : 'neutral'"
 						size="sm"
 						:trailing="true"
-						:icon="unassignedOnly ? 'prime:user-minus' : 'prime:users'"
+						:icon="unassignedOnly ? 'lucide:user-minus' : 'lucide:users'"
 						@click="toggleUnassignedOnly"
 					/>
 					<UButton
@@ -51,7 +51,7 @@
 						</span>
 						<UButton
 							:label="$t('people.batch_assign')"
-							icon="prime:user-plus"
+							icon="lucide:user-plus"
 							color="success"
 							size="sm"
 							@click="
@@ -63,7 +63,7 @@
 						<UButton
 							v-if="!dismissedOnly"
 							:label="$t('maintenance.face_quality.batch_dismiss')"
-							icon="prime:times"
+							icon="lucide:x"
 							color="error"
 							size="sm"
 							:loading="batchDismissing"
@@ -72,7 +72,7 @@
 						<UButton
 							v-else
 							:label="$t('maintenance.face_quality.batch_reactivate')"
-							icon="prime:undo"
+							icon="lucide:undo"
 							color="success"
 							size="sm"
 							:loading="batchReactivating"
@@ -83,7 +83,7 @@
 
 				<!-- Empty state -->
 				<div v-if="faces.length === 0" class="text-center py-12 text-muted">
-					<UIcon name="prime:check-circle" class="text-4xl mb-4 block mx-auto" />
+					<UIcon name="lucide:check-circle" class="text-4xl mb-4 block mx-auto" />
 					{{ $t("maintenance.face_quality.no_faces") }}
 				</div>
 
@@ -102,7 +102,11 @@
 							@click="setSort('confidence')"
 						>
 							{{ $t("maintenance.face_quality.col_confidence") }}
-							<UIcon v-if="sortBy === 'confidence'" :name="sortDir === 'ASC' ? 'prime:arrow-up' : 'prime:arrow-down'" class="text-xs" />
+							<UIcon
+								v-if="sortBy === 'confidence'"
+								:name="sortDir === 'ASC' ? 'lucide:arrow-up' : 'lucide:arrow-down'"
+								class="text-xs"
+							/>
 						</div>
 						<div
 							class="text-right cursor-pointer hover:text-primary-500 transition-colors flex items-center justify-end gap-1"
@@ -111,7 +115,7 @@
 							{{ $t("maintenance.face_quality.col_blur") }}
 							<UIcon
 								v-if="sortBy === 'laplacian_variance'"
-								:name="sortDir === 'ASC' ? 'prime:arrow-up' : 'prime:arrow-down'"
+								:name="sortDir === 'ASC' ? 'lucide:arrow-up' : 'lucide:arrow-down'"
 								class="text-xs"
 							/>
 						</div>
@@ -137,7 +141,7 @@
 						>
 							<img v-if="face.crop_url" :src="face.crop_url" alt="" class="w-full h-full object-cover" loading="lazy" />
 							<div v-else class="w-full h-full flex items-center justify-center">
-								<UIcon name="prime:user" class="text-muted" />
+								<UIcon name="lucide:user" class="text-muted" />
 							</div>
 						</div>
 
@@ -172,12 +176,12 @@
 						<!-- Actions: Assign & Dismiss -->
 						<div class="flex justify-center gap-1" @click.stop>
 							<UTooltip :text="$t('people.assign_face')">
-								<UButton icon="prime:user-plus" color="neutral" variant="ghost" size="sm" @click="openAssignmentModal(face)" />
+								<UButton icon="lucide:user-plus" color="neutral" variant="ghost" size="sm" @click="openAssignmentModal(face)" />
 							</UTooltip>
 							<UTooltip :text="$t('maintenance.face_quality.dismiss')">
 								<UButton
 									v-if="!dismissedOnly"
-									icon="prime:times"
+									icon="lucide:x"
 									color="error"
 									variant="ghost"
 									size="sm"
@@ -188,7 +192,7 @@
 							<UTooltip :text="$t('maintenance.face_quality.readd')">
 								<UButton
 									v-if="dismissedOnly"
-									icon="prime:undo"
+									icon="lucide:undo"
 									color="success"
 									variant="ghost"
 									size="sm"

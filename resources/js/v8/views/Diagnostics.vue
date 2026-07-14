@@ -6,10 +6,10 @@
 		{{ $t("diagnostics.title") }}
 		<template #right>
 			<UTooltip v-if="isSecureContext" :text="$t('diagnostics.copy_to_clipboard')">
-				<UButton :disabled="!canCopy" variant="ghost" color="neutral" aria-label="Copy" icon="prime:copy" @click="copy" />
+				<UButton :disabled="!canCopy" variant="ghost" color="neutral" aria-label="Copy" icon="lucide:copy" @click="copy" />
 			</UTooltip>
 			<UTooltip v-else :text="$t('diagnostics.copy_on_secure_context')">
-				<UButton :disabled="true" variant="ghost" color="neutral" aria-label="Copy" icon="prime:copy" />
+				<UButton :disabled="true" variant="ghost" color="neutral" aria-label="Copy" icon="lucide:copy" />
 			</UTooltip>
 		</template>
 	</UHeader>

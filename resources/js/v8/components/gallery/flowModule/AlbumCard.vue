@@ -66,8 +66,8 @@
 					class="font-bold -mb-2 -mx-2"
 				>
 					{{ $t("flow.open_album") }}
-					<UIcon v-if="isLTR()" name="prime:angle-double-right" />
-					<UIcon v-if="!isLTR()" name="prime:angle-double-left" />
+					<UIcon v-if="isLTR()" name="lucide:chevrons-right" />
+					<UIcon v-if="!isLTR()" name="lucide:chevrons-left" />
 				</UButton>
 				<UButton
 					v-if="hasMore && !seeMore"

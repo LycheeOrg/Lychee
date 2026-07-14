@@ -16,19 +16,19 @@
 						v-if="is_raw_download_enabled"
 						color="neutral"
 						class="w-full justify-center"
-						icon="prime:cloud-download"
+						icon="lucide:cloud-download"
 						@click="download('RAW')"
 					>
 						{{ $t("gallery.raw") }}
 					</UButton>
-					<UButton color="neutral" class="w-full justify-center" icon="prime:cloud-download" @click="download('ORIGINAL')">
+					<UButton color="neutral" class="w-full justify-center" icon="lucide:cloud-download" @click="download('ORIGINAL')">
 						{{ $t("gallery.original") }}
 					</UButton>
 					<UButton
 						v-if="is_medium2x_download_enabled"
 						color="neutral"
 						class="w-full justify-center"
-						icon="prime:cloud-download"
+						icon="lucide:cloud-download"
 						@click="download('MEDIUM2X')"
 					>
 						{{ $t("gallery.medium_hidpi") }}
@@ -37,7 +37,7 @@
 						v-if="is_medium_download_enabled"
 						color="neutral"
 						class="w-full justify-center"
-						icon="prime:cloud-download"
+						icon="lucide:cloud-download"
 						@click="download('MEDIUM')"
 					>
 						{{ $t("gallery.medium") }}
@@ -46,7 +46,7 @@
 						v-if="is_small2x_download_enabled"
 						color="neutral"
 						class="w-full justify-center"
-						icon="prime:cloud-download"
+						icon="lucide:cloud-download"
 						@click="download('SMALL2X')"
 					>
 						{{ $t("gallery.small_hidpi") }}
@@ -55,7 +55,7 @@
 						v-if="is_small_download_enabled"
 						color="neutral"
 						class="w-full justify-center"
-						icon="prime:cloud-download"
+						icon="lucide:cloud-download"
 						@click="download('SMALL')"
 					>
 						{{ $t("gallery.small") }}
@@ -64,7 +64,7 @@
 						v-if="is_thum2x_download_enabled"
 						color="neutral"
 						class="w-full justify-center"
-						icon="prime:cloud-download"
+						icon="lucide:cloud-download"
 						@click="download('THUMB2X')"
 					>
 						{{ $t("gallery.thumb_hidpi") }}
@@ -73,7 +73,7 @@
 						v-if="is_thumb_download_enabled"
 						color="neutral"
 						class="w-full justify-center"
-						icon="prime:cloud-download"
+						icon="lucide:cloud-download"
 						@click="download('THUMB')"
 					>
 						{{ $t("gallery.thumb") }}

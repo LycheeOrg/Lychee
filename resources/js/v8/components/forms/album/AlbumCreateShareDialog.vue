@@ -6,21 +6,21 @@
 					<span class="w-full">{{ $t("sharing.username") }}</span>
 				</div>
 				<div class="w-1/2 flex justify-around items-center">
-					<UTooltip :text="$t('sharing.grants.read')"><UIcon name="prime:eye" /></UTooltip>
-					<UTooltip :text="$t('sharing.grants.original')"><UIcon name="prime:window-maximize" /></UTooltip>
-					<UTooltip :text="$t('sharing.grants.download')"><UIcon name="prime:cloud-download" /></UTooltip>
-					<UTooltip :text="$t('sharing.grants.upload')"><UIcon name="prime:upload" /></UTooltip>
-					<UTooltip :text="$t('sharing.grants.edit')"><UIcon name="prime:file-edit" /></UTooltip>
-					<UTooltip :text="$t('sharing.grants.delete')"><UIcon name="prime:trash" /></UTooltip>
+					<UTooltip :text="$t('sharing.grants.read')"><UIcon name="lucide:eye" /></UTooltip>
+					<UTooltip :text="$t('sharing.grants.original')"><UIcon name="lucide:app-window" /></UTooltip>
+					<UTooltip :text="$t('sharing.grants.download')"><UIcon name="lucide:cloud-download" /></UTooltip>
+					<UTooltip :text="$t('sharing.grants.upload')"><UIcon name="lucide:upload" /></UTooltip>
+					<UTooltip :text="$t('sharing.grants.edit')"><UIcon name="lucide:file-edit" /></UTooltip>
+					<UTooltip :text="$t('sharing.grants.delete')"><UIcon name="lucide:trash" /></UTooltip>
 				</div>
 			</div>
 			<div class="flex text-highlighted w-full">
 				<div v-if="newShareUser" class="w-1/2 flex items-center">
 					<span class="w-full">
-						<UIcon v-if="newShareUser.type === 'group'" name="prime:users" class="ltr:mr-1 rtl:ml-1" />
+						<UIcon v-if="newShareUser.type === 'group'" name="lucide:users" class="ltr:mr-1 rtl:ml-1" />
 						{{ newShareUser.name }}
 					</span>
-					<span @click="newShareUser = undefined"><UIcon name="prime:times" /></span>
+					<span @click="newShareUser = undefined"><UIcon name="lucide:x" /></span>
 				</div>
 				<div v-if="!newShareUser" class="w-1/2">
 					<SearchTargetUser :filtered-users-ids="props.filteredUsersIds" :with-groups="true" @selected="selectUser" />
@@ -49,7 +49,7 @@
 				{{ $t("dialogs.button.cancel") }}
 			</UButton>
 			<UButton color="success" variant="ghost" class="font-bold w-full justify-center" :disabled="!newShareUser" @click="create">
-				<UIcon name="prime:user-plus" /><span class="hidden md:inline">{{ $t("sharing.share") }}</span>
+				<UIcon name="lucide:user-plus" /><span class="hidden md:inline">{{ $t("sharing.share") }}</span>
 			</UButton>
 		</template>
 	</UModal>

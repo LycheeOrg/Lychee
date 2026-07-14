@@ -8,7 +8,7 @@
 		<template v-if="props.toggleable">
 			<UCollapsible v-model:open="isOpen">
 				<button type="button" class="flex items-center gap-2 w-full text-left font-semibold capitalize py-1">
-					<UIcon name="prime:chevron-down" class="transition-transform" :class="{ '-rotate-90': !isOpen }" />
+					<UIcon name="lucide:chevron-down" class="transition-transform" :class="{ '-rotate-90': !isOpen }" />
 					<slot name="legend">{{ props.legend }}</slot>
 				</button>
 				<template #content>

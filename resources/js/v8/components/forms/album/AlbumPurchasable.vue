@@ -10,14 +10,14 @@
 				<PixelSizePricesInput v-model="pixelSizes" />
 				<div class="flex gap-4">
 					<UButton
-						icon="prime:plus"
+						icon="lucide:plus"
 						:label="$t('webshop.albumPurchasable.setPurchasable')"
 						class="w-full justify-center"
 						:disabled="!canSubmit"
 						@click="makePurchasable"
 					/>
 					<UButton
-						icon="prime:forward"
+						icon="lucide:forward"
 						color="error"
 						:label="$t('webshop.albumPurchasable.setPurchasablePropagate')"
 						class="font-bold w-full justify-center"

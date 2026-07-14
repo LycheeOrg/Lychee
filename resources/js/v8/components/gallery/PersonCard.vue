@@ -6,7 +6,7 @@
 	>
 		<div class="mx-auto aspect-square overflow-hidden bg-neutral-800 flex items-center justify-center rounded-full w-18 h-18">
 			<img v-if="person.representative_crop_url" :src="person.representative_crop_url" :alt="person.name" class="w-full h-full object-cover" />
-			<UIcon v-else name="prime:user" class="text-6xl text-muted" />
+			<UIcon v-else name="lucide:user" class="text-6xl text-muted" />
 		</div>
 		<div class="flex items-center gap-2 justify-center">
 			<span class="text-lg truncate font-semibold text-default">{{ person.name }}</span>

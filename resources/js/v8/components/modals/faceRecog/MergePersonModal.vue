@@ -13,7 +13,7 @@
 						:alt="sourcePerson.name"
 						class="w-10 h-10 rounded-full object-cover shrink-0"
 					/>
-					<UIcon v-else name="prime:user" class="w-10 h-10 flex items-center justify-center text-xl text-muted shrink-0" />
+					<UIcon v-else name="lucide:user" class="w-10 h-10 flex items-center justify-center text-xl text-muted shrink-0" />
 					<div>
 						<div class="font-semibold">{{ sourcePerson.name }}</div>
 						<div class="text-xs text-muted">{{ sourcePerson.face_count }} {{ $t("people.faces_label") }}</div>
@@ -40,7 +40,7 @@
 								class="w-6 h-6 rounded-full object-cover shrink-0"
 								alt=""
 							/>
-							<UIcon v-else name="prime:user" class="w-6 h-6 flex items-center justify-center text-muted shrink-0" />
+							<UIcon v-else name="lucide:user" class="w-6 h-6 flex items-center justify-center text-muted shrink-0" />
 							<span class="flex-1 truncate">{{ item.name }}</span>
 							<span class="text-xs text-muted shrink-0">{{ item.face_count }}</span>
 						</div>
@@ -49,7 +49,7 @@
 
 				<!-- Warning -->
 				<div class="text-xs text-warning flex items-start gap-2">
-					<UIcon name="prime:exclamation-triangle" class="mt-0.5 shrink-0" />
+					<UIcon name="lucide:triangle-alert" class="mt-0.5 shrink-0" />
 					<span>{{ $t("people.merge.warning") }}</span>
 				</div>
 			</div>

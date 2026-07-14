@@ -4,7 +4,7 @@
 			<p class="text-center text-muted max-w-xl text-wrap">
 				{{ confirmation }}<br />
 				<span class="text-warning flex items-center justify-center gap-1 mt-1">
-					<UIcon name="prime:exclamation-triangle" />{{ $t("dialogs.delete_album.warning") }}
+					<UIcon name="lucide:triangle-alert" />{{ $t("dialogs.delete_album.warning") }}
 				</span>
 			</p>
 		</template>

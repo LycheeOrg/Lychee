@@ -17,7 +17,7 @@
 		<!-- Empty state -->
 		<div v-else-if="!loading && photos.length === 0" class="text-center py-12">
 			<div class="text-muted mb-4">
-				<UIcon name="prime:check-circle" class="text-4xl" />
+				<UIcon name="lucide:check-circle" class="text-4xl" />
 			</div>
 			<p class="text-muted">{{ $t("moderation.no_pending") }}</p>
 		</div>
@@ -26,8 +26,8 @@
 		<div class="flex items-center gap-2 mb-3 px-1 h-8">
 			<span class="text-muted text-sm">{{ selectedIds.size }} {{ $t("moderation.selected") }}</span>
 			<template v-if="selectedIds.size > 0">
-				<UButton icon="prime:check" color="success" size="sm" :label="$t('moderation.approve_selected')" @click="approveSelected" />
-				<UButton icon="prime:trash" color="error" size="sm" :label="$t('moderation.delete_selected')" @click="deleteSelected" />
+				<UButton icon="lucide:check" color="success" size="sm" :label="$t('moderation.approve_selected')" @click="approveSelected" />
+				<UButton icon="lucide:trash" color="error" size="sm" :label="$t('moderation.delete_selected')" @click="deleteSelected" />
 			</template>
 		</div>
 
@@ -63,7 +63,7 @@
 							:alt="photo.title"
 							@click.stop="openPhoto(photo.photo_id)"
 						/>
-						<UIcon v-else name="prime:image" class="text-2xl text-muted" />
+						<UIcon v-else name="lucide:image" class="text-2xl text-muted" />
 					</td>
 					<td class="py-2 pr-3">{{ photo.title }}</td>
 					<td class="py-2 pr-3">{{ photo.owner_username }}</td>
@@ -84,9 +84,9 @@
 					</td>
 					<td class="py-2">
 						<div class="flex gap-1" @click.stop>
-							<UButton icon="prime:check" color="success" variant="ghost" size="sm" @click="approveSingle(photo.photo_id)" />
+							<UButton icon="lucide:check" color="success" variant="ghost" size="sm" @click="approveSingle(photo.photo_id)" />
 							<UButton
-								icon="prime:trash"
+								icon="lucide:trash"
 								color="error"
 								variant="ghost"
 								size="sm"

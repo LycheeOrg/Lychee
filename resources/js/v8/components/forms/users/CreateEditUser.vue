@@ -63,7 +63,7 @@
 					:disabled="username === undefined || password === undefined || username === '' || password === ''"
 					@click="createUser"
 				>
-					<UIcon name="prime:user-plus" /><span class="hidden md:inline">{{ $t("users.create_edit.create") }}</span>
+					<UIcon name="lucide:user-plus" /><span class="hidden md:inline">{{ $t("users.create_edit.create") }}</span>
 				</UButton>
 				<UButton
 					v-else
@@ -72,7 +72,7 @@
 					:disabled="username === undefined || username === ''"
 					@click="editUser"
 				>
-					<UIcon name="prime:user-edit" /><span class="hidden md:inline">{{ $t("users.create_edit.edit") }}</span>
+					<UIcon name="lucide:user-pen" /><span class="hidden md:inline">{{ $t("users.create_edit.edit") }}</span>
 				</UButton>
 			</div>
 		</template>

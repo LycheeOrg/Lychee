@@ -1,7 +1,7 @@
 <template>
 	<!-- Tag filtering -->
 	<div class="inline-flex items-center gap-0.5 pr-2 mr-2 border-r border-accented h-8" v-if="albumStore.modelAlbum">
-		<UButton icon="prime:tag" color="neutral" variant="ghost" class="hover:text-default" @click="modalStore.toggleFilters" />
+		<UButton icon="lucide:tag" color="neutral" variant="ghost" class="hover:text-default" @click="modalStore.toggleFilters" />
 	</div>
 	<!-- Star Rating Filter (visible only when rated photos exist) -->
 	<div
@@ -10,7 +10,8 @@
 	>
 		<UTooltip :text="$t('gallery.album.show_highlighted')">
 			<UButton
-				:icon="photosStore.photoRatingFilter === 'highlighted' ? 'prime:flag-fill' : 'prime:flag'"
+				icon="lucide:flag"
+				:ui="{ leadingIcon: photosStore.photoRatingFilter === 'highlighted' ? FILL_OVERRIDE_CLASS : '' }"
 				:label="String(photosStore.highlightedPhotosCount)"
 				color="neutral"
 				variant="ghost"
@@ -36,7 +37,7 @@
 			@click="handleStarClick(star)"
 			@keydown="handleKeyDown($event, star)"
 		>
-			<UIcon :name="starIconName(star)" :class="starIconClass(star)" />
+			<UIcon name="lucide:star" :class="starIconClass(star)" />
 		</button>
 	</div>
 	<!-- Layout buttons -->
@@ -66,6 +67,7 @@ import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { usePhotosStore, type PhotoRatingFilter } from "@/stores/PhotosState";
 import { storeToRefs } from "pinia";
 import { ref, type Ref } from "vue";
+import { FILL_OVERRIDE_CLASS } from "@/v8/icons";
 
 const layoutStore = useLayoutStore();
 const photosStore = usePhotosStore();
@@ -112,18 +114,9 @@ function handleKeyDown(event: KeyboardEvent, star: number): void {
 	}
 }
 
-/**
- * Get the icon for a star based on the current filter state
- */
-function starIconName(star: number): string {
-	const filter = photosStore.photoRatingFilter;
-	const filled = typeof filter === "number" && star <= filter;
-	return filled ? "prime:star-fill" : "prime:star";
-}
-
 function starIconClass(star: number): string {
 	const filter = photosStore.photoRatingFilter;
 	const filled = typeof filter === "number" && star <= filter;
-	return filled ? "text-yellow-500 text-base" : "text-neutral-400 dark:text-neutral-500 hover:text-yellow-400 text-base";
+	return filled ? `text-yellow-500 text-base ${FILL_OVERRIDE_CLASS}` : "text-neutral-400 dark:text-neutral-500 hover:text-yellow-400 text-base";
 }
 </script>

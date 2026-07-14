@@ -6,7 +6,7 @@
 				'text-highlighted': !isVisible,
 				'text-primary-500': isVisible,
 			}"
-			name="prime:question-circle"
+			name="lucide:circle-help"
 			@click="toggle"
 		/>
 	</div>
@@ -26,52 +26,52 @@
 				<div class="mb-2">{{ $t("webshop.orderLegend.flowsIntro") }}</div>
 				<div class="flex justify-center gap-2 items-center">
 					<OrderStatus size="small" status="pending" />
-					<UIcon name="prime:arrow-right" />
+					<UIcon name="lucide:arrow-right" />
 					<OrderStatus size="small" status="processing" />
-					<UIcon name="prime:arrow-right" />
+					<UIcon name="lucide:arrow-right" />
 					<OrderStatus size="small" status="completed" />
-					<UIcon name="prime:arrow-right" />
+					<UIcon name="lucide:arrow-right" />
 					<OrderStatus size="small" status="closed" />
 				</div>
 				<div class="flex justify-center gap-2 items-center">
 					<OrderStatus size="small" status="pending" />
-					<UIcon name="prime:arrow-right" />
+					<UIcon name="lucide:arrow-right" />
 					<OrderStatus size="small" status="processing" />
-					<UIcon name="prime:arrow-right" />
+					<UIcon name="lucide:arrow-right" />
 					<OrderStatus size="small" status="cancelled" />
 				</div>
 				<div class="flex justify-center gap-2 items-center">
 					<OrderStatus size="small" status="pending" />
-					<UIcon name="prime:arrow-right" />
+					<UIcon name="lucide:arrow-right" />
 					<OrderStatus size="small" status="processing" />
-					<UIcon name="prime:arrow-right" />
+					<UIcon name="lucide:arrow-right" />
 					<OrderStatus size="small" status="failed" />
 				</div>
 				<div class="flex justify-center gap-2 items-center">
 					<OrderStatus size="small" status="pending" />
-					<UIcon name="prime:arrow-right" />
+					<UIcon name="lucide:arrow-right" />
 					<OrderStatus size="small" status="offline" />
-					<UIcon name="prime:arrow-right" />
+					<UIcon name="lucide:arrow-right" />
 					<OrderStatus size="small" status="completed" />
-					<UIcon name="prime:arrow-right" />
+					<UIcon name="lucide:arrow-right" />
 					<OrderStatus size="small" status="closed" />
 				</div>
 				<div class="flex justify-center gap-2 items-center">
 					<OrderStatus size="small" status="cancelled" />
-					<UIcon name="prime:arrow-right" />
+					<UIcon name="lucide:arrow-right" />
 					<OrderStatus size="small" status="processing" />
-					<UIcon name="prime:arrow-right" />
+					<UIcon name="lucide:arrow-right" />
 					<OrderStatus size="small" status="completed" />
-					<UIcon name="prime:arrow-right" />
+					<UIcon name="lucide:arrow-right" />
 					<OrderStatus size="small" status="closed" />
 				</div>
 				<div class="flex justify-center gap-2 items-center">
 					<OrderStatus size="small" status="failed" />
-					<UIcon name="prime:arrow-right" />
+					<UIcon name="lucide:arrow-right" />
 					<OrderStatus size="small" status="processing" />
-					<UIcon name="prime:arrow-right" />
+					<UIcon name="lucide:arrow-right" />
 					<OrderStatus size="small" status="completed" />
-					<UIcon name="prime:arrow-right" />
+					<UIcon name="lucide:arrow-right" />
 					<OrderStatus size="small" status="closed" />
 				</div>
 			</div>

@@ -8,7 +8,7 @@
 
 	<UCard v-if="contactConfig" class="max-w-2xl mx-auto mt-6">
 		<div v-if="submitted" class="text-center p-8">
-			<UIcon name="prime:check-circle" class="text-success text-5xl mb-4 block" />
+			<UIcon name="lucide:check-circle" class="text-success text-5xl mb-4 block" />
 			<p class="text-lg">{{ contactConfig.thank_you_message ? contactConfig.thank_you_message : $t("contact.success_message") }}</p>
 			<UButton class="mt-6" color="neutral" variant="soft" :label="$t('contact.clear_button')" @click="reset" />
 		</div>

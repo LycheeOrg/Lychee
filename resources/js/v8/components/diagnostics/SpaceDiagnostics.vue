@@ -3,7 +3,7 @@
 		<template #header>
 			<span class="font-bold">{{ $t("diagnostics.space") }}</span>
 		</template>
-		<UButton v-if="!requested" icon="prime:refresh" class="w-48 justify-center font-bold" @click="load">{{
+		<UButton v-if="!requested" icon="lucide:refresh-cw" class="w-48 justify-center font-bold" @click="load">{{
 			$t("diagnostics.load_space")
 		}}</UButton>
 		<div v-if="requested && !space" class="text-sky-400 font-bold">{{ $t("diagnostics.loading") }}</div>

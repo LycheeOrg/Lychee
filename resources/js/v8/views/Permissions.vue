@@ -2,7 +2,7 @@
 	<UHeader :toggle="false">
 		<template #left>
 			<router-link :to="{ name: 'gallery' }">
-				<UButton icon="prime:angle-left" color="neutral" variant="ghost" />
+				<UButton icon="lucide:chevron-left" color="neutral" variant="ghost" />
 			</router-link>
 		</template>
 		{{ $t("diagnostics.title") }}

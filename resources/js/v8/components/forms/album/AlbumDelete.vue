@@ -3,7 +3,7 @@
 		<p class="mb-4 text-center">
 			{{ confirm }}<br />
 			<span class="text-warning">
-				<UIcon name="prime:exclamation-triangle" class="ltr:mr-2 rtl:ml-2" />{{ $t("dialogs.delete_album.warning") }}
+				<UIcon name="lucide:triangle-alert" class="ltr:mr-2 rtl:ml-2" />{{ $t("dialogs.delete_album.warning") }}
 			</span>
 		</p>
 		<UButton color="error" variant="ghost" class="font-bold w-full justify-center" @click="execute">

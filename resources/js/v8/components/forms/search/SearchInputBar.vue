@@ -22,7 +22,7 @@
 				color="neutral"
 				variant="ghost"
 				class="shrink-0"
-				:icon="advancedOpen ? 'prime:chevron-up' : 'prime:chevron-down'"
+				:icon="advancedOpen ? 'lucide:chevron-up' : 'lucide:chevron-down'"
 				@click="
 					() => {
 						advancedOpen = !advancedOpen;

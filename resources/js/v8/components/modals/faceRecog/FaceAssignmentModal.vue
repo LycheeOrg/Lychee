@@ -11,7 +11,7 @@
 						class="w-24 h-24 rounded-full object-cover border-2 border-default"
 					/>
 					<div v-else class="w-24 h-24 rounded-full bg-elevated flex items-center justify-center">
-						<UIcon name="prime:user" class="text-4xl text-muted" />
+						<UIcon name="lucide:user" class="text-4xl text-muted" />
 					</div>
 				</div>
 				<div class="text-center text-sm text-muted grid grid-cols-2 gap-1">

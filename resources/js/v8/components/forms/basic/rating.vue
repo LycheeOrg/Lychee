@@ -14,15 +14,20 @@
 			@click="handleRatingClick(rating as 1 | 2 | 3 | 4 | 5)"
 		>
 			<UIcon
-				:name="rating <= (hoverRating ?? selectedRating ?? 0) ? 'prime:star-fill' : 'prime:star'"
+				name="lucide:star"
 				class="text-xl"
-				:class="rating <= (hoverRating ?? selectedRating ?? 0) ? (props.amber ? 'text-amber-500' : 'text-primary') : 'text-muted'"
+				:class="
+					rating <= (hoverRating ?? selectedRating ?? 0)
+						? `${props.amber ? 'text-amber-500' : 'text-primary'} ${FILL_OVERRIDE_CLASS}`
+						: 'text-muted'
+				"
 			/>
 		</button>
 	</div>
 </template>
 <script setup lang="ts">
 import { ref, watch } from "vue";
+import { FILL_OVERRIDE_CLASS } from "@/v8/icons";
 
 const props = defineProps<{
 	loading: boolean;

@@ -46,18 +46,18 @@
 						v-if="item.type === 'link'"
 						as="router-link"
 						:to="item.to"
-						:icon="toIconifyName(item.icon)"
-						color="neutral"
+						:icon="item.icon"
+						:color="item.color ?? 'neutral'"
 						variant="ghost"
 					/>
-					<UButton v-else :icon="toIconifyName(item.icon)" color="neutral" variant="ghost" @click="item.callback" />
+					<UButton v-else :icon="item.icon" :color="item.color ?? 'neutral'" variant="ghost" @click="item.callback" />
 				</template>
 				<UDropdownMenu v-if="timelineStore.rootRights?.can_upload" :items="addMenuSections">
-					<UButton icon="prime:plus" color="neutral" variant="ghost" />
+					<UButton icon="lucide:plus" color="neutral" variant="ghost" />
 				</UDropdownMenu>
 			</div>
 			<UDropdownMenu :items="mobileMenuSections" class="lg:hidden">
-				<UButton icon="prime:angle-double-down" color="neutral" variant="ghost" />
+				<UButton icon="lucide:chevrons-down" color="neutral" variant="ghost" />
 			</UDropdownMenu>
 		</template>
 	</UHeader>
@@ -72,7 +72,7 @@ import { isTouchDevice } from "@/utils/keybindings-utils";
 import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
-import { useContextMenuAlbumsAdd } from "@/composables/contextMenus/contextMenuAlbumsAdd";
+import { useContextMenuAlbumsAdd } from "@/v8/composables/contextMenus/contextMenuAlbumsAdd";
 import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
 import BackLinkButton from "./BackLinkButton.vue";
 import OpenLeftMenu from "./OpenLeftMenu.vue";
@@ -82,7 +82,7 @@ import { useTimelineStore } from "@/stores/TimelineState";
 import { useUserStore } from "@/stores/UserState";
 import { trans } from "laravel-vue-i18n";
 import type { DropdownMenuItem } from "@nuxt/ui";
-import type { AddMenuItem } from "@/composables/contextMenus/contextMenuAlbumAdd";
+import type { AddMenuItem } from "@/v8/composables/contextMenus/contextMenuAlbumAdd";
 
 const emits = defineEmits<{
 	refresh: [];
@@ -133,10 +133,6 @@ const { addMenu } = useContextMenuAlbumsAdd(
 	is_person_album_enabled,
 );
 
-function toIconifyName(icon: string): string {
-	return "prime:" + icon.replace(/^pi\s+pi-/, "").replace(/^pi-/, "");
-}
-
 const addMenuSections = computed<DropdownMenuItem[][]>(() => {
 	const sections: DropdownMenuItem[][] = [[]];
 	for (const entry of addMenu.value as AddMenuItem[]) {
@@ -149,7 +145,7 @@ const addMenuSections = computed<DropdownMenuItem[][]>(() => {
 		}
 		sections[sections.length - 1].push({
 			label: trans(entry.label),
-			icon: toIconifyName(entry.icon),
+			icon: entry.icon,
 			onSelect: entry.callback,
 		});
 	}
@@ -216,6 +212,7 @@ type Callback = {
 type Item = {
 	icon: string;
 	if: boolean;
+	color?: "primary" | "neutral";
 };
 type MenuRight = (Item & Link) | (Item & Callback);
 
@@ -224,33 +221,34 @@ const menu = computed(() =>
 		{
 			to: { name: "favourites" },
 			type: "link",
-			icon: "pi pi-heart",
+			icon: "lucide:heart",
 			if: is_favourite_enabled.value && (favourites.photos?.length ?? 0) > 0,
 			key: "favourites",
 		},
 		{
-			icon: "pi pi-search",
+			icon: "lucide:search",
 			type: "fn",
 			callback: openSearch,
 			if: timelineStore.rootConfig?.is_search_accessible,
 			key: "search",
 		},
 		{
-			icon: "pi pi-bell",
+			icon: "lucide:bell",
 			type: "fn",
 			callback: () => (is_metrics_open.value = true),
 			if: is_live_metrics_enabled.value && timelineStore.rootRights?.can_see_live_metrics,
 			key: "metrics",
 		},
 		{
-			icon: "pi pi-bell text-primary",
+			icon: "lucide:bell",
+			color: "primary",
 			type: "fn",
 			callback: () => (is_metrics_open.value = true),
 			if: is_se_preview_enabled.value && timelineStore.rootRights?.can_see_live_metrics,
 			key: "se_preview",
 		},
 		{
-			icon: "pi pi-question-circle",
+			icon: "lucide:circle-help",
 			type: "fn",
 			callback: openHelp,
 			if: !isTouchDevice() && userStore.isLoggedIn && timelineStore.rootConfig?.show_keybinding_help_button && document.body.scrollWidth > 800,
@@ -263,13 +261,13 @@ const menu = computed(() =>
 const mobileMenuSections = computed<DropdownMenuItem[][]>(() => {
 	const items: DropdownMenuItem[] = menu.value.map((item) => ({
 		label: "",
-		icon: toIconifyName(item.icon),
+		icon: item.icon,
 		to: item.type === "link" ? item.to : undefined,
 		onSelect: item.type === "fn" ? item.callback : undefined,
 	}));
 	if (timelineStore.rootRights?.can_upload) {
 		items.push({
-			icon: "prime:plus",
+			icon: "lucide:plus",
 			label: trans("gallery.menus.add"),
 			children: addMenuSections.value,
 		} as DropdownMenuItem);

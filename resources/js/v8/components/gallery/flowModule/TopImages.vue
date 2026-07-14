@@ -22,7 +22,7 @@
 			<Blur v-if="props.isNsfw" />
 		</div>
 		<div v-if="props.photos.length > 5" class="aspect-square flex items-center justify-center px-16 text-muted text-2xl">
-			<UIcon name="prime:plus" class="mx-2" />
+			<UIcon name="lucide:plus" class="mx-2" />
 			{{ props.photos.length - 5 }}
 		</div>
 	</div>

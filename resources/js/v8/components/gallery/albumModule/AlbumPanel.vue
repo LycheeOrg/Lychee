@@ -1,6 +1,7 @@
 <template>
 	<BuyMeDialog />
-	<div class="h-svh overflow-y-hidden flex flex-col">
+	<UMain>
+		<!-- <div class="h-svh overflow-y-hidden flex flex-col"> -->
 		<!-- Trick to avoid the scroll bar to appear on the right when switching to full screen -->
 		<AlbumHeader
 			v-if="albumStore.isLoaded && userStore.isLoaded"
@@ -13,7 +14,7 @@
 		/>
 		<template v-if="albumStore.album && albumStore.config && userStore.isLoaded">
 			<UContextMenu :items="menuSections" :disabled="noData" class="contents">
-				<div id="galleryView" class="relative flex flex-wrap content-start w-full justify-start overflow-y-auto h-full select-none">
+				<div id="galleryView" class="relative flex flex-wrap content-start w-full justify-start select-none">
 					<SelectDrag :with-scroll="true" />
 					<AlbumEdit v-if="albumStore.rights?.can_edit" />
 					<div v-if="noData" class="flex w-full flex-col h-full items-center justify-center text-xl text-muted gap-8">
@@ -24,7 +25,7 @@
 							v-if="albumStore.rights?.can_upload && albumStore.modelAlbum !== undefined"
 							color="warning"
 							class="rounded max-w-xs w-full font-bold justify-center"
-							icon="prime:upload"
+							icon="lucide:upload"
 							@click="toggleUpload"
 							>{{ $t("gallery.album.upload") }}</UButton
 						>
@@ -125,7 +126,8 @@
 			<DownloadAlbum v-model:open="is_download_album_visible" :album-ids="downloadAlbumIds" />
 			<DownloadAlbum v-model:open="is_download_photo_visible" :photo-ids="downloadPhotoIds" :from-id="downloadFromId" />
 		</template>
-	</div>
+		<!-- </div> -->
+	</UMain>
 </template>
 <script setup lang="ts">
 import { computed, ref, ComponentPublicInstance } from "vue";
@@ -139,7 +141,7 @@ import Spinner from "@/v8/components/Spinner.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import { useSelection } from "@/composables/selections/selections";
-import { useContextMenu } from "@/composables/contextMenus/contextMenu";
+import { useContextMenu } from "@/v8/composables/contextMenus/contextMenu";
 import PhotoService from "@/services/photo-service";
 import AlbumService from "@/services/album-service";
 import FaceDetectionService from "@/services/face-detection-service";
@@ -549,10 +551,6 @@ function contextMenuAlbumOpen(_e: MouseEvent, albumId: string): void {
 	}
 }
 
-function toIconifyName(icon: string): string {
-	return "prime:" + icon.replace(/^pi\s+pi-/, "").replace(/^pi-/, "");
-}
-
 const menuSections = computed<ContextMenuItem[][]>(() => {
 	const sections: ContextMenuItem[][] = [[]];
 	for (const entry of Menu.value) {
@@ -562,7 +560,7 @@ const menuSections = computed<ContextMenuItem[][]>(() => {
 		}
 		sections[sections.length - 1].push({
 			label: trans(entry.label ?? ""),
-			icon: toIconifyName(entry.icon ?? ""),
+			icon: entry.icon,
 			onSelect: entry.callback,
 		});
 	}

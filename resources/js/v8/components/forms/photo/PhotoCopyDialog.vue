@@ -5,7 +5,7 @@
 				<p class="text-center text-muted flex items-center justify-center gap-2">
 					{{ confirmation }}
 					<UButton
-						icon="prime:times"
+						icon="lucide:x"
 						color="error"
 						variant="ghost"
 						size="xs"

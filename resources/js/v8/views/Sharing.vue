@@ -13,7 +13,7 @@
 		<UButton
 			class="w-full font-bold justify-center mt-4 mb-12"
 			:label="$t('sharing.bluk_share')"
-			icon="prime:user-plus"
+			icon="lucide:user-plus"
 			@click="
 				() => {
 					bulkSharingVisible = true;
@@ -27,12 +27,12 @@
 					<span class="w-full">{{ $t("sharing.username") }}</span>
 				</div>
 				<div class="w-1/2 flex items-center justify-around">
-					<UTooltip :text="$t('sharing.grants.read')"><UIcon name="prime:eye" /></UTooltip>
-					<UTooltip :text="$t('sharing.grants.original')"><UIcon name="prime:window-maximize" /></UTooltip>
-					<UTooltip :text="$t('sharing.grants.download')"><UIcon name="prime:cloud-download" /></UTooltip>
-					<UTooltip :text="$t('sharing.grants.upload')"><UIcon name="prime:upload" /></UTooltip>
-					<UTooltip :text="$t('sharing.grants.edit')"><UIcon name="prime:file-edit" /></UTooltip>
-					<UTooltip :text="$t('sharing.grants.delete')"><UIcon name="prime:trash" /></UTooltip>
+					<UTooltip :text="$t('sharing.grants.read')"><UIcon name="lucide:eye" /></UTooltip>
+					<UTooltip :text="$t('sharing.grants.original')"><UIcon name="lucide:app-window" /></UTooltip>
+					<UTooltip :text="$t('sharing.grants.download')"><UIcon name="lucide:cloud-download" /></UTooltip>
+					<UTooltip :text="$t('sharing.grants.upload')"><UIcon name="lucide:upload" /></UTooltip>
+					<UTooltip :text="$t('sharing.grants.edit')"><UIcon name="lucide:file-edit" /></UTooltip>
+					<UTooltip :text="$t('sharing.grants.delete')"><UIcon name="lucide:trash" /></UTooltip>
 				</div>
 				<div class="w-1/6"></div>
 			</div>

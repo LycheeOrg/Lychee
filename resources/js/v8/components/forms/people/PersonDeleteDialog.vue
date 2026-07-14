@@ -4,7 +4,7 @@
 			<p class="text-center text-highlighted max-w-xl text-wrap">
 				{{ sprintf($t("people.person.delete_confirm"), person.name) }}<br /><br />
 				<span class="text-muted flex items-center justify-center gap-1">
-					<UIcon name="prime:exclamation-triangle" class="text-warning-700" />{{ $t("people.person.delete_warning") }}
+					<UIcon name="lucide:triangle-alert" class="text-warning-700" />{{ $t("people.person.delete_warning") }}
 				</span>
 			</p>
 		</template>

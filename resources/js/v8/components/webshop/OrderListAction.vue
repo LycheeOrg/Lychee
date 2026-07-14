@@ -4,7 +4,7 @@
 		<UButton
 			v-if="props.order.status === 'offline'"
 			:label="$t('webshop.orderListAction.markAsPaid')"
-			icon="prime:check"
+			icon="lucide:check"
 			variant="ghost"
 			color="neutral"
 			@click="markAsPaid(props.order.id)"
@@ -12,7 +12,7 @@
 		<UButton
 			v-else-if="requireAttention(props.order)"
 			:label="$t('webshop.orderListAction.requireAttention')"
-			icon="prime:exclamation-triangle"
+			icon="lucide:triangle-alert"
 			variant="ghost"
 			color="warning"
 			@click="
@@ -24,7 +24,7 @@
 		<UButton
 			v-else-if="props.order.status === 'completed'"
 			:label="$t('webshop.orderListAction.markAsDelivered')"
-			icon="prime:check"
+			icon="lucide:check"
 			variant="ghost"
 			color="neutral"
 			@click="markAsDelivered(props.order.id)"
@@ -33,7 +33,7 @@
 	<UButton
 		v-if="props.order.status === 'closed' && !requireAttention(props.order)"
 		:label="$t('webshop.orderListAction.viewDetails')"
-		icon="prime:eye"
+		icon="lucide:eye"
 		variant="ghost"
 		color="primary"
 		@click="

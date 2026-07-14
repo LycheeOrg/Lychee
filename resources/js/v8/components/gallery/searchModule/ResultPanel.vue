@@ -33,7 +33,7 @@
 	</UContextMenu>
 </template>
 <script setup lang="ts">
-import { useContextMenu, type PhotoCallbacks, type AlbumCallbacks, type Selectors } from "@/composables/contextMenus/contextMenu";
+import { useContextMenu, type PhotoCallbacks, type AlbumCallbacks, type Selectors } from "@/v8/composables/contextMenus/contextMenu";
 import { useSelection } from "@/composables/selections/selections";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import PhotoThumbPanel from "@/v8/components/gallery/albumModule/PhotoThumbPanel.vue";
@@ -119,10 +119,6 @@ function contextMenuAlbumOpen(_e: MouseEvent, albumId: string): void {
 	}
 }
 
-function toIconifyName(icon: string): string {
-	return "prime:" + icon.replace(/^pi\s+pi-/, "").replace(/^pi-/, "");
-}
-
 const menuSections = computed<ContextMenuItem[][]>(() => {
 	const sections: ContextMenuItem[][] = [[]];
 	for (const entry of Menu.value) {
@@ -132,7 +128,7 @@ const menuSections = computed<ContextMenuItem[][]>(() => {
 		}
 		sections[sections.length - 1].push({
 			label: trans(entry.label ?? ""),
-			icon: toIconifyName(entry.icon ?? ""),
+			icon: entry.icon,
 			onSelect: entry.callback,
 		});
 	}

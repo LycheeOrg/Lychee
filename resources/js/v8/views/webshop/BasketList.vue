@@ -36,7 +36,7 @@
 				<div class="font-bold shrink">{{ item.price }}</div>
 				<UTooltip :text="$t('webshop.basketList.removeItem')">
 					<UButton
-						icon="prime:trash"
+						icon="lucide:trash"
 						color="neutral"
 						variant="ghost"
 						class="h-12"
@@ -48,7 +48,7 @@
 			<div class="flex flex-row-reverse p-4 items-center">
 				<UTooltip :text="$t('webshop.basketList.clearBasket')">
 					<UButton
-						icon="prime:trash"
+						icon="lucide:trash"
 						color="neutral"
 						variant="ghost"
 						class="h-12"
@@ -61,7 +61,7 @@
 				</div>
 			</div>
 			<div class="flex ltr:justify-end rtl:justify-start">
-				<UButton :to="{ name: 'checkout' }" icon="prime:credit-card" class="px-8" :label="$t('webshop.basketList.proceedToCheckout')" />
+				<UButton :to="{ name: 'checkout' }" icon="lucide:credit-card" class="px-8" :label="$t('webshop.basketList.proceedToCheckout')" />
 			</div>
 		</div>
 		<div v-else class="text-center py-10 text-muted">{{ $t("webshop.basketList.emptyBasket") }}</div>

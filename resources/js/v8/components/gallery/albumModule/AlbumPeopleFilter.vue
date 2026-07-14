@@ -2,9 +2,9 @@
 	<div class="album-people-filter w-full flex flex-col gap-3">
 		<!-- Active filter banner -->
 		<div v-if="activePerson" class="flex items-center gap-2 text-sm text-muted justify-end">
-			<UIcon name="prime:filter" />
+			<UIcon name="lucide:filter" />
 			<span>{{ $t("people.filter_active", { name: activePerson.name }) }}</span>
-			<UButton icon="prime:times" size="sm" variant="ghost" color="neutral" class="p-0" @click="albumStore.clearPersonFilter()" />
+			<UButton icon="lucide:x" size="sm" variant="ghost" color="neutral" class="p-0" @click="albumStore.clearPersonFilter()" />
 		</div>
 
 		<!-- People grid -->
@@ -27,7 +27,7 @@
 						:alt="person.name"
 						class="w-full h-full object-cover"
 					/>
-					<UIcon v-else name="prime:user" class="text-2xl text-muted" />
+					<UIcon v-else name="lucide:user" class="text-2xl text-muted" />
 				</div>
 				<span class="text-xs font-medium text-default truncate max-w-16 text-center">{{ person.name }}</span>
 				<span class="text-xs text-muted">{{ person.photo_count }}</span>

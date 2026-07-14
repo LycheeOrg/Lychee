@@ -21,16 +21,16 @@
 							<span class="w-2/3 font-bold">{{ $t("users.username") }}</span>
 							<div class="w-1/3 flex justify-evenly">
 								<UTooltip :text="$t('users.upload_rights')"
-									><span class="w-full text-center"><UIcon name="prime:upload" /></span
+									><span class="w-full text-center"><UIcon name="lucide:upload" /></span
 								></UTooltip>
 								<UTooltip :text="$t('users.edit_rights')">
-									<span class="w-full text-center"><UIcon name="prime:lock-open" /></span>
+									<span class="w-full text-center"><UIcon name="lucide:lock-open" /></span>
 								</UTooltip>
 								<UTooltip :text="$t('users.upload_trust_level')">
-									<span class="w-full text-center"><UIcon name="prime:shield" /></span>
+									<span class="w-full text-center"><UIcon name="lucide:shield" /></span>
 								</UTooltip>
 								<UTooltip v-if="isQuotaEnabled" :text="$t('users.quota')">
-									<span class="w-full text-center"><UIcon name="prime:chart-pie" /></span>
+									<span class="w-full text-center"><UIcon name="lucide:chart-pie" /></span>
 								</UTooltip>
 							</div>
 						</div>
@@ -53,19 +53,19 @@
 				<template #header>{{ $t("users.legend") }}</template>
 				<ul class="text-sm">
 					<li class="ltr:ml-2 rtl:mr-2 pt-2 flex items-start gap-x-4">
-						<UIcon name="prime:upload" />
+						<UIcon name="lucide:upload" />
 						<span>{{ $t("users.upload_rights") }}</span>
 					</li>
 					<li class="ltr:ml-2 rtl:mr-2 pt-2 flex items-start gap-x-4">
-						<UIcon name="prime:lock-open" />
+						<UIcon name="lucide:lock-open" />
 						<span>{{ $t("users.edit_rights") }}</span>
 					</li>
 					<li class="ltr:ml-2 rtl:mr-2 pt-2 flex items-start gap-x-4">
-						<UIcon name="prime:shield" class="text-success" />
+						<UIcon name="lucide:shield" class="text-success" />
 						<span>{{ $t("users.upload_trust_level") }}</span>
 					</li>
 					<li v-if="is_se_enabled" class="ltr:ml-2 rtl:mr-2 pt-2 flex items-start gap-x-4">
-						<UIcon name="prime:chart-pie" />
+						<UIcon name="lucide:chart-pie" />
 						<span>{{ $t("users.quota") }}</span>
 					</li>
 				</ul>

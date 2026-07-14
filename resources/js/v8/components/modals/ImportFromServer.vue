@@ -31,7 +31,7 @@
 						<USwitch v-model="importState.options.delete_imported" color="error" :ui="{ label: 'text-sm' }">
 							<template #label>
 								{{ $t("import_from_server.delete_imported") }}
-								<UIcon v-if="importState.options.delete_imported" name="prime:exclamation-triangle" class="text-error text-xs" />
+								<UIcon v-if="importState.options.delete_imported" name="lucide:triangle-alert" class="text-error text-xs" />
 							</template>
 						</USwitch>
 						<USwitch
@@ -52,21 +52,13 @@
 						<USwitch v-model="importState.options.delete_missing_photos" color="warning" :ui="{ label: 'text-sm' }">
 							<template #label>
 								{{ $t("import_from_server.delete_missing_photos") }}
-								<UIcon
-									v-if="importState.options.delete_missing_photos"
-									name="prime:exclamation-triangle"
-									class="text-warning text-xs"
-								/>
+								<UIcon v-if="importState.options.delete_missing_photos" name="lucide:triangle-alert" class="text-warning text-xs" />
 							</template>
 						</USwitch>
 						<USwitch v-model="importState.options.delete_missing_albums" color="warning" :ui="{ label: 'text-sm' }">
 							<template #label>
 								{{ $t("import_from_server.delete_missing_albums") }}
-								<UIcon
-									v-if="importState.options.delete_missing_albums"
-									name="prime:exclamation-triangle"
-									class="text-warning text-xs"
-								/>
+								<UIcon v-if="importState.options.delete_missing_albums" name="lucide:triangle-alert" class="text-warning text-xs" />
 							</template>
 						</USwitch>
 					</form>

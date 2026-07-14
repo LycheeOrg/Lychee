@@ -7,12 +7,12 @@
 					<span class="w-full">{{ $t("sharing.username") }}</span>
 				</div>
 				<div class="w-1/2 flex justify-around items-center">
-					<UTooltip :text="$t('sharing.grants.read')"><UIcon name="prime:eye" /></UTooltip>
-					<UTooltip :text="$t('sharing.grants.original')"><UIcon name="prime:window-maximize" /></UTooltip>
-					<UTooltip :text="$t('sharing.grants.download')"><UIcon name="prime:cloud-download" /></UTooltip>
-					<UTooltip :text="$t('sharing.grants.upload')"><UIcon name="prime:upload" /></UTooltip>
-					<UTooltip :text="$t('sharing.grants.edit')"><UIcon name="prime:file-edit" /></UTooltip>
-					<UTooltip :text="$t('sharing.grants.delete')"><UIcon name="prime:trash" /></UTooltip>
+					<UTooltip :text="$t('sharing.grants.read')"><UIcon name="lucide:eye" /></UTooltip>
+					<UTooltip :text="$t('sharing.grants.original')"><UIcon name="lucide:app-window" /></UTooltip>
+					<UTooltip :text="$t('sharing.grants.download')"><UIcon name="lucide:cloud-download" /></UTooltip>
+					<UTooltip :text="$t('sharing.grants.upload')"><UIcon name="lucide:upload" /></UTooltip>
+					<UTooltip :text="$t('sharing.grants.edit')"><UIcon name="lucide:file-edit" /></UTooltip>
+					<UTooltip :text="$t('sharing.grants.delete')"><UIcon name="lucide:trash" /></UTooltip>
 				</div>
 				<div class="w-1/6"></div>
 			</div>
@@ -22,7 +22,7 @@
 			</div>
 			<div class="flex gap-4">
 				<UButton
-					icon="prime:plus"
+					icon="lucide:plus"
 					color="primary"
 					class="p-3 w-full mt-4 font-bold justify-center"
 					:label="$t('sharing.add_new_access_permission')"
@@ -33,7 +33,7 @@
 					"
 				/>
 				<UButton
-					icon="prime:forward"
+					icon="lucide:forward"
 					color="error"
 					:disabled="perms.length === 0"
 					class="p-3 w-full mt-4 font-bold justify-center disabled:opacity-50"

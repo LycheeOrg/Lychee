@@ -55,7 +55,7 @@
 						color="primary"
 						variant="ghost"
 						class="rounded font-bold"
-						icon="prime:cart-arrow-down"
+						icon="lucide:shopping-cart"
 						@click="addPhotoToOrder(price.size_variant, price.license_type)"
 					/>
 				</div>
@@ -79,7 +79,7 @@
 						color="primary"
 						variant="ghost"
 						class="rounded font-bold"
-						icon="prime:cart-arrow-down"
+						icon="lucide:shopping-cart"
 						@click="addPrintPhotoToOrder(ps.print_size_id, ps.price)"
 					/>
 				</div>
@@ -102,7 +102,7 @@
 						color="primary"
 						variant="ghost"
 						class="rounded font-bold"
-						icon="prime:cart-arrow-down"
+						icon="lucide:shopping-cart"
 						@click="addPixelPhotoToOrder(px.pixel_size_id, px.license_type, px.price)"
 					/>
 				</div>

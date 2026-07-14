@@ -1,45 +1,49 @@
 <template>
-	<div v-if="photoStore.photo" class="absolute z-20 top-0 left-0 w-full flex h-full overflow-hidden bg-black">
-		<PhotoHeader @toggle-slide-show="emits('toggleSlideShow')" @go-back="emits('goBack')" @toggle-highlight="emits('toggleHighlight')" />
-		<div class="w-0 flex-auto relative">
-			<div class="animate-zoomIn w-full h-full">
-				<Transition :name="disable_swipe_effect ? '' : photoStore.transition">
-					<PhotoBox
-						:key="photoStore.photo.id"
-						@go-back="emits('goBack')"
-						@next="emits('next')"
-						@previous="emits('previous')"
-						@rotate-overlay="emits('rotateOverlay')"
+	<UModal v-if="photoStore.photo" :open="true" fullscreen :dismissible="false" :close="false" :ui="{ content: 'bg-black' }">
+		<template #content>
+			<div class="w-full flex h-full overflow-hidden bg-black">
+				<PhotoHeader @toggle-slide-show="emits('toggleSlideShow')" @go-back="emits('goBack')" @toggle-highlight="emits('toggleHighlight')" />
+				<div class="w-0 flex-auto relative">
+					<div class="animate-zoomIn w-full h-full">
+						<Transition :name="disable_swipe_effect ? '' : photoStore.transition">
+							<PhotoBox
+								:key="photoStore.photo.id"
+								@go-back="emits('goBack')"
+								@next="emits('next')"
+								@previous="emits('previous')"
+								@rotate-overlay="emits('rotateOverlay')"
+							/>
+						</Transition>
+					</div>
+					<NextPrevious
+						v-if="photoStore.photo.previous_photo_id !== null && !is_slideshow_active"
+						:photo-id="photoStore.photo.previous_photo_id"
+						:is_next="false"
+						:style="photoStore.previousStyle"
 					/>
-				</Transition>
+					<NextPrevious
+						v-if="photoStore.photo.next_photo_id !== null && !is_slideshow_active"
+						:photo-id="photoStore.photo.next_photo_id"
+						:is_next="true"
+						:style="photoStore.nextStyle"
+					/>
+					<Overlay v-if="!is_exif_disabled && photoStore.imageViewMode !== ImageViewMode.Pdf" />
+					<PhotoRatingOverlay />
+					<Dock
+						v-if="albumStore.rights?.can_edit && !is_photo_edit_open"
+						:is-narrow-menu="photoStore.imageViewMode === ImageViewMode.Pdf"
+						@toggle-highlight="emits('toggleHighlight')"
+						@set-album-header="emits('setAlbumHeader')"
+						@rotate-photo-c-c-w="emits('rotatePhotoCCW')"
+						@rotate-photo-c-w="emits('rotatePhotoCW')"
+						@toggle-move="emits('toggleMove')"
+						@toggle-delete="emits('toggleDelete')"
+					/>
+				</div>
+				<PhotoDetails v-if="!is_exif_disabled" v-model:are-details-open="are_details_open" :is-map-visible="props.isMapVisible" />
 			</div>
-			<NextPrevious
-				v-if="photoStore.photo.previous_photo_id !== null && !is_slideshow_active"
-				:photo-id="photoStore.photo.previous_photo_id"
-				:is_next="false"
-				:style="photoStore.previousStyle"
-			/>
-			<NextPrevious
-				v-if="photoStore.photo.next_photo_id !== null && !is_slideshow_active"
-				:photo-id="photoStore.photo.next_photo_id"
-				:is_next="true"
-				:style="photoStore.nextStyle"
-			/>
-			<Overlay v-if="!is_exif_disabled && photoStore.imageViewMode !== ImageViewMode.Pdf" />
-			<PhotoRatingOverlay />
-			<Dock
-				v-if="albumStore.rights?.can_edit && !is_photo_edit_open"
-				:is-narrow-menu="photoStore.imageViewMode === ImageViewMode.Pdf"
-				@toggle-highlight="emits('toggleHighlight')"
-				@set-album-header="emits('setAlbumHeader')"
-				@rotate-photo-c-c-w="emits('rotatePhotoCCW')"
-				@rotate-photo-c-w="emits('rotatePhotoCW')"
-				@toggle-move="emits('toggleMove')"
-				@toggle-delete="emits('toggleDelete')"
-			/>
-		</div>
-		<PhotoDetails v-if="!is_exif_disabled" v-model:are-details-open="are_details_open" :is-map-visible="props.isMapVisible" />
-	</div>
+		</template>
+	</UModal>
 </template>
 <script setup lang="ts">
 import { useLycheeStateStore } from "@/stores/LycheeState";

@@ -3,7 +3,7 @@
 		<!-- Panel header -->
 		<div class="flex items-center justify-between mb-4">
 			<span class="font-semibold text-sm text-muted uppercase tracking-wide">{{ $t("gallery.search.advanced.title") }}</span>
-			<UButton :label="$t('gallery.search.advanced.clear')" color="neutral" variant="ghost" size="sm" icon="prime:times" @click="onClear" />
+			<UButton :label="$t('gallery.search.advanced.clear')" color="neutral" variant="ghost" size="sm" icon="lucide:x" @click="onClear" />
 		</div>
 
 		<!-- Row 1: Title / Description / Location -->
@@ -61,7 +61,7 @@
 							}"
 							@click="updateType('image')"
 						>
-							<UIcon name="prime:image" />
+							<UIcon name="lucide:image" />
 						</button>
 					</UTooltip>
 					<UTooltip :text="$t('gallery.search.advanced.type_video')">
@@ -73,7 +73,7 @@
 							}"
 							@click="updateType('video')"
 						>
-							<UIcon name="prime:video" />
+							<UIcon name="lucide:video" />
 						</button>
 					</UTooltip>
 					<UTooltip :text="$t('gallery.search.advanced.type_raw')">
@@ -85,7 +85,7 @@
 							}"
 							@click="updateType('raw')"
 						>
-							<UIcon name="prime:file" />
+							<UIcon name="lucide:file" />
 						</button>
 					</UTooltip>
 					<UTooltip :text="$t('gallery.search.advanced.type_live')">
@@ -97,7 +97,7 @@
 							}"
 							@click="updateType('live')"
 						>
-							<UIcon name="prime:mobile" />
+							<UIcon name="lucide:smartphone" />
 						</button>
 					</UTooltip>
 				</div>
