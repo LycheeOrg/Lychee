@@ -220,7 +220,7 @@ const isFaceRecognitionEnabled = computed(() => leftMenu.initData?.modules.is_fa
 // `editable` is only populated by the backend when the current user has edit
 // rights on the album (owner or admin), so its presence is enough to gate
 // display of the album's own tags here.
-const albumTags = computed(() => albumStore.album?.editable?.tags ?? []);
+const albumTags = computed(() => albumStore.tagOrModelAlbum?.editable?.tags ?? []);
 
 const isPeopleOpen = ref(false);
 
