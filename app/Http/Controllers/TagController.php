@@ -10,7 +10,7 @@ namespace App\Http\Controllers;
 
 use App\Actions\Tag\DeleteTag;
 use App\Actions\Tag\EditTag;
-use App\Actions\Tag\GetTagWithPhotos;
+use App\Actions\Tag\GetTagWithPhotosAndAlbums;
 use App\Actions\Tag\ListTags;
 use App\Actions\Tag\MergeTag;
 use App\Http\Requests\Tags\DeleteTagRequest;
@@ -19,7 +19,7 @@ use App\Http\Requests\Tags\GetTagRequest;
 use App\Http\Requests\Tags\ListTagRequest;
 use App\Http\Requests\Tags\MergeTagRequest;
 use App\Http\Resources\Tags\TagsResource;
-use App\Http\Resources\Tags\TagWithPhotosResource;
+use App\Http\Resources\Tags\TagWithPhotosAndAlbumsResource;
 use Illuminate\Routing\Controller;
 
 class TagController extends Controller
@@ -29,11 +29,11 @@ class TagController extends Controller
 		return $list_tags->do();
 	}
 
-	public function get(GetTagRequest $request, GetTagWithPhotos $get_tag_with_photos): TagWithPhotosResource
+	public function get(GetTagRequest $request, GetTagWithPhotosAndAlbums $get_tag_with_photos_and_albums): TagWithPhotosAndAlbumsResource
 	{
 		$tag = $request->tag();
 
-		return $get_tag_with_photos->do($tag);
+		return $get_tag_with_photos_and_albums->do($tag);
 	}
 
 	public function edit(EditTagRequest $request, EditTag $edit_tag): void

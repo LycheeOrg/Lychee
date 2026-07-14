@@ -8,7 +8,7 @@ const TagsService = {
 		axiosWithCache.storage.remove("tags");
 	},
 
-	get(tagId: string): Promise<AxiosResponse<App.Http.Resources.Tags.TagWithPhotosResource>> {
+	get(tagId: string): Promise<AxiosResponse<App.Http.Resources.Tags.TagWithPhotosAndAlbumsResource>> {
 		const requester = axios as unknown as AxiosCacheInstance;
 		return requester.get(`${Constants.getApiUrl()}Tag`, { params: { tag_id: tagId }, data: {}, id: `tag-${tagId}` });
 	},
@@ -18,9 +18,9 @@ const TagsService = {
 		return requester.get(`${Constants.getApiUrl()}Tags`, { data: {}, id: "tags" });
 	},
 
-	delete(tagId: number): Promise<AxiosResponse<void>> {
+	delete(tagIds: number | number[]): Promise<AxiosResponse<void>> {
 		this.clearCache();
-		return axios.delete(`${Constants.getApiUrl()}Tag`, { data: { tags: [tagId] } });
+		return axios.delete(`${Constants.getApiUrl()}Tag`, { data: { tags: Array.isArray(tagIds) ? tagIds : [tagIds] } });
 	},
 
 	rename(tagId: number, newName: string): Promise<AxiosResponse<void>> {

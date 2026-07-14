@@ -195,6 +195,7 @@ return [
             'album_timeline' => 'Ustawianie trybu osi czasu albumu',
             'photo_timeline' => 'Ustawianie trybu osi czasu zdjęć',
             'layout' => 'Ustawianie układu zdjęć',
+            'tags' => 'Tagi',
             'show_tags' => 'Ustawianie wyświetlania tagów',
             'tags_required' => 'Wymagane są znaczniki.',
             'all_tags_must_match' => 'Wszystkie znaczniki muszą pasować.',

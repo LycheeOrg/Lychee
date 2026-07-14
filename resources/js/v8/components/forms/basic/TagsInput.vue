@@ -2,7 +2,7 @@
 	<UInputTags
 		id="tags"
 		v-model="modelValue"
-		class="pt-3 border-b hover:border-b-0 w-full"
+		class="w-full"
 		:placeholder="(modelValue?.length ?? 0) === 0 ? (props.placeholder ?? '') : ''"
 		@update:model-value="($event: string[]) => emits('updated', $event)"
 	/>

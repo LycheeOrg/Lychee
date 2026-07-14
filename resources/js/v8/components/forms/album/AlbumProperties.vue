@@ -85,11 +85,12 @@
 				</UFormField>
 			</div>
 
-			<div v-if="!is_model_album && !is_person_album" class="flex flex-col gap-2">
-				<UFormField :label="$t('gallery.album.properties.show_tags')">
+			<div v-if="!is_person_album" class="flex flex-col gap-2">
+				<UFormField :label="$t(is_model_album ? 'gallery.album.properties.tags' : 'gallery.album.properties.show_tags')">
 					<TagsInput v-model="tags" :add="false" />
 				</UFormField>
 				<USwitch
+					v-if="!is_model_album"
 					v-model="is_and"
 					class="my-2"
 					:label="$t('gallery.album.properties.all_tags_must_match')"
@@ -322,6 +323,7 @@ function saveAlbum() {
 		album_sorting_order: albumSortingOrder.value?.value ?? null,
 		album_aspect_ratio: aspectRatio.value?.value ?? null,
 		copyright: copyright.value ?? null,
+		tags: tags.value,
 		header_id: header_id.value?.id === "compact" ? null : (header_id.value?.id ?? null),
 		is_compact: header_id.value?.id === "compact",
 		photo_layout: photoLayout.value?.value ?? null,

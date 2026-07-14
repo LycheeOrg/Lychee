@@ -60,7 +60,7 @@
 			</div>
 			<div class="flex justify-center items-center flex-wrap gap-y-6 gap-x-6">
 				<template v-for="tag in tags" :key="tag.id">
-					<OverlayBadge v-if="tag.num > 0" :value="tag.num" size="small" class="outlined">
+					<OverlayBadge v-if="tag.num_photos > 0" :value="tag.num_photos" size="small" class="outlined">
 						<Tag
 							severity="secondary"
 							:value="tag.name"

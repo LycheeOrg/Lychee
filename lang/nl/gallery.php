@@ -195,6 +195,7 @@ return [
             'album_timeline' => 'Stel album tijdlijnmodus in',
             'photo_timeline' => 'Stel foto tijdlijnmodus in',
             'layout' => 'Stel foto-indeling in',
+            'tags' => 'Tags',
             'show_tags' => 'Stel tags in om te tonen',
             'tags_required' => 'Tags zijn vereist.',
             'all_tags_must_match' => 'Alle tags moeten overeenkomen.',

@@ -194,6 +194,7 @@ return [
             'album_timeline' => 'Zeitstrahl-Modus des Albums festlegen',
             'photo_timeline' => 'Zeitstrahl-Modus der Fotos festlegen',
             'layout' => 'Fotolayout festlegen',
+            'tags' => 'Tags',
             'show_tags' => 'Anzuzeigende Tags festlegen',
             'tags_required' => 'Tags sind erforderlich.',
             'all_tags_must_match' => 'Alle Tags müssen übereinstimmen.',

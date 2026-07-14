@@ -14,7 +14,12 @@ return [
     'merge' => 'Fusionner',
     'delete' => 'Supprimer',
 
+    'column_name' => 'Nom',
+    'column_photos' => 'Photos',
+    'column_albums' => 'Albums',
+
     'delete_confirm' => 'Êtes-vous sûr de vouloir supprimer le tag “%s” ?',
+    'delete_confirm_multiple' => 'Êtes-vous sûr de vouloir supprimer ces %d tags ?',
     'delete_warning' => 'Cette action est irréversible ! Toutes les photos associées à ce tag n’auront plus ce tag.',
 
     'merge_confirm' => 'Êtes-vous sûr de vouloir fusionner le tag “%s” avec le tag “%s” ?',

@@ -194,6 +194,7 @@ return [
             'album_timeline' => 'Angi tidslinjemodus for album',
             'photo_timeline' => 'Angi tidslinjemodus for bilder',
             'layout' => 'Angi bildeoppsett',
+            'tags' => 'Tagger',
             'show_tags' => 'Set tags to show',
             'tags_required' => 'Tagger er obligatoriske.',
             'all_tags_must_match' => 'Alle taggene må samsvare.',

@@ -75,6 +75,23 @@ class Tag extends Model
 	}
 
 	/**
+	 * Returns the relationship between a tag and all albums to which
+	 * this tag is directly assigned (album-level metadata; see
+	 * {@link Album::tags()}).
+	 *
+	 * @return BelongsToMany<Album,$this>
+	 */
+	public function albums(): BelongsToMany
+	{
+		return $this->belongsToMany(
+			Album::class,
+			'albums_tags',
+			'tag_id',
+			'album_id',
+		);
+	}
+
+	/**
 	 * Fetches the tags from the database, creating them if they do not exist.
 	 *
 	 * @param array $tags

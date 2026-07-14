@@ -18,6 +18,7 @@
 
 namespace Tests\Feature_v2\Album;
 
+use App\Models\Tag;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class AlbumUpdateTest extends BaseApiWithDataTest
@@ -29,6 +30,7 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 			'title' => 'title',
 			'license' => 'none',
 			'description' => '',
+			'tags' => [],
 			'photo_sorting_column' => 'title',
 			'photo_sorting_order' => 'ASC',
 			'album_sorting_column' => 'title',
@@ -49,6 +51,7 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 			'title' => 'title',
 			'license' => 'none',
 			'description' => '',
+			'tags' => [],
 			'photo_sorting_column' => 'title',
 			'photo_sorting_order' => 'ASC',
 			'album_sorting_column' => 'title',
@@ -72,6 +75,7 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 			'title' => 'title',
 			'license' => 'none',
 			'description' => '',
+			'tags' => ['vacation', 'greece'],
 			'photo_sorting_column' => 'title',
 			'photo_sorting_order' => 'ASC',
 			'album_sorting_column' => 'title',
@@ -86,6 +90,95 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 			'photo_timeline' => null,
 		]);
 		$this->assertOk($response);
+		$this->assertEqualsCanonicalizing(['vacation', 'greece'], $response->json('tags'));
+
+		$this->assertDatabaseHas('tags', ['name' => 'vacation']);
+		$this->assertDatabaseHas('tags', ['name' => 'greece']);
+	}
+
+	/**
+	 * The legacy v7 (PrimeVue) frontend does not know about album tags and
+	 * never sends the `tags` key on `PATCH /Album`. Omitting the key entirely
+	 * must leave existing album tags untouched, both for backward
+	 * compatibility with v7 and so v7/v8 updates never race each other into
+	 * silently wiping tags set from the other tree.
+	 */
+	public function testUpdateAlbumWithoutTagsKeyLeavesExistingTagsUntouched(): void
+	{
+		$this->album1->tags()->sync([Tag::factory()->with_name('vacation')->create()->id]);
+
+		$response = $this->actingAs($this->userMayUpload1)->patchJson('Album', [
+			'album_id' => $this->album1->id,
+			'title' => 'title',
+			'license' => 'none',
+			'description' => '',
+			'photo_sorting_column' => 'title',
+			'photo_sorting_order' => 'ASC',
+			'album_sorting_column' => 'title',
+			'album_sorting_order' => 'DESC',
+			'album_aspect_ratio' => '1/1',
+			'photo_layout' => null,
+			'copyright' => '',
+			'is_compact' => false,
+			'is_pinned' => false,
+			'header_id' => null,
+			'album_timeline' => null,
+			'photo_timeline' => null,
+		]);
+		$this->assertOk($response);
+
+		$this->assertDatabaseHas('albums_tags', ['album_id' => $this->album1->id]);
+		$this->assertEqualsCanonicalizing(['vacation'], $response->json('tags'));
+	}
+
+	public function testUpdateAlbumTagsCanBeCleared(): void
+	{
+		$response = $this->actingAs($this->userMayUpload1)->patchJson('Album', [
+			'album_id' => $this->album1->id,
+			'title' => 'title',
+			'license' => 'none',
+			'description' => '',
+			'tags' => ['vacation'],
+			'photo_sorting_column' => 'title',
+			'photo_sorting_order' => 'ASC',
+			'album_sorting_column' => 'title',
+			'album_sorting_order' => 'DESC',
+			'album_aspect_ratio' => '1/1',
+			'photo_layout' => null,
+			'copyright' => '',
+			'is_compact' => false,
+			'is_pinned' => false,
+			'header_id' => null,
+			'album_timeline' => null,
+			'photo_timeline' => null,
+		]);
+		$this->assertOk($response);
+		$this->assertDatabaseHas('albums_tags', ['album_id' => $this->album1->id]);
+
+		$response = $this->actingAs($this->userMayUpload1)->patchJson('Album', [
+			'album_id' => $this->album1->id,
+			'title' => 'title',
+			'license' => 'none',
+			'description' => '',
+			'tags' => [],
+			'photo_sorting_column' => 'title',
+			'photo_sorting_order' => 'ASC',
+			'album_sorting_column' => 'title',
+			'album_sorting_order' => 'DESC',
+			'album_aspect_ratio' => '1/1',
+			'photo_layout' => null,
+			'copyright' => '',
+			'is_compact' => false,
+			'is_pinned' => false,
+			'header_id' => null,
+			'album_timeline' => null,
+			'photo_timeline' => null,
+		]);
+		$this->assertOk($response);
+		$response->assertJson([
+			'tags' => [],
+		]);
+		$this->assertDatabaseMissing('albums_tags', ['album_id' => $this->album1->id]);
 	}
 
 	public function testUpdateTagAlbumUnauthorizedForbidden(): void
@@ -169,6 +262,7 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 			'title' => 'Pinned Album',
 			'license' => 'none',
 			'description' => '',
+			'tags' => [],
 			'photo_sorting_column' => 'title',
 			'photo_sorting_order' => 'ASC',
 			'album_sorting_column' => 'title',
@@ -216,6 +310,7 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 			'title' => 'Unpinned Album',
 			'license' => 'none',
 			'description' => '',
+			'tags' => [],
 			'photo_sorting_column' => 'title',
 			'photo_sorting_order' => 'ASC',
 			'album_sorting_column' => 'title',
@@ -266,6 +361,7 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 			'title' => 'Unauthorized Pinned Album',
 			'license' => 'none',
 			'description' => '',
+			'tags' => [],
 			'photo_sorting_column' => 'title',
 			'photo_sorting_order' => 'ASC',
 			'album_sorting_column' => 'title',
@@ -303,6 +399,7 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 			'title' => 'Locked User Pinned Album',
 			'license' => 'none',
 			'description' => '',
+			'tags' => [],
 			'photo_sorting_column' => 'title',
 			'photo_sorting_order' => 'ASC',
 			'album_sorting_column' => 'title',

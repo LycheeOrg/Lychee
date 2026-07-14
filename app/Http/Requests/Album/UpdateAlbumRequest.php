@@ -19,6 +19,7 @@ use App\Contracts\Http\Requests\HasLicense;
 use App\Contracts\Http\Requests\HasPhoto;
 use App\Contracts\Http\Requests\HasPhotoLayout;
 use App\Contracts\Http\Requests\HasPhotoSortingCriterion;
+use App\Contracts\Http\Requests\HasTags;
 use App\Contracts\Http\Requests\HasTimelineAlbum;
 use App\Contracts\Http\Requests\HasTimelinePhoto;
 use App\Contracts\Http\Requests\HasTitle;
@@ -46,6 +47,7 @@ use App\Http\Requests\Traits\HasLicenseTrait;
 use App\Http\Requests\Traits\HasPhotoLayoutTrait;
 use App\Http\Requests\Traits\HasPhotoSortingCriterionTrait;
 use App\Http\Requests\Traits\HasPhotoTrait;
+use App\Http\Requests\Traits\HasTagsTrait;
 use App\Http\Requests\Traits\HasTimelineAlbumTrait;
 use App\Http\Requests\Traits\HasTimelinePhotoTrait;
 use App\Http\Requests\Traits\HasTitleTrait;
@@ -64,7 +66,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Validation\ValidationException;
 
-class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, HasDescription, HasLicense, HasPhotoSortingCriterion, HasAlbumSortingCriterion, HasCopyright, HasPhoto, HasCompactBoolean, HasPhotoLayout, HasTimelineAlbum, HasTimelinePhoto, HasIsPinned
+class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, HasDescription, HasLicense, HasPhotoSortingCriterion, HasAlbumSortingCriterion, HasCopyright, HasPhoto, HasCompactBoolean, HasPhotoLayout, HasTimelineAlbum, HasTimelinePhoto, HasIsPinned, HasTags
 {
 	use HasAlbumTrait;
 	use HasLicenseTrait;
@@ -80,6 +82,20 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 	use HasTimelineAlbumTrait;
 	use HasTimelinePhotoTrait;
 	use HasIsPinnedTrait;
+	use HasTagsTrait;
+
+	private bool $tags_provided = false;
+
+	/**
+	 * Whether the `tags` key was present in the request payload at all.
+	 *
+	 * The legacy v7 frontend never sends this key; `PATCH /Album` must leave
+	 * existing album tags untouched in that case rather than clearing them.
+	 */
+	public function tagsProvided(): bool
+	{
+		return $this->tags_provided;
+	}
 
 	public function authorize(): bool
 	{
@@ -119,6 +135,11 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 			RequestAttribute::ALBUM_ASPECT_RATIO_ATTRIBUTE => ['present', 'nullable', new Enum(AspectRatioType::class)],
 			RequestAttribute::ALBUM_PHOTO_LAYOUT => ['present', 'nullable', new Enum(PhotoLayoutType::class)],
 			RequestAttribute::COPYRIGHT_ATTRIBUTE => ['present', 'nullable', new CopyrightRule()],
+			// Optional (not `present`): the legacy v7 frontend does not know about
+			// album tags and never sends this key. Omitting it must leave existing
+			// album tags untouched (see UpdateAlbumRequest::tagsProvided()).
+			RequestAttribute::TAGS_ATTRIBUTE => 'sometimes|array',
+			RequestAttribute::TAGS_ATTRIBUTE . '.*' => 'required|string|min:1',
 			RequestAttribute::IS_COMPACT_ATTRIBUTE => ['required', 'boolean'],
 			RequestAttribute::IS_PINNED_ATTRIBUTE => ['present', 'boolean'],
 			RequestAttribute::HEADER_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
@@ -166,6 +187,8 @@ class UpdateAlbumRequest extends BaseApiRequest implements HasAlbum, HasTitle, H
 		$this->photo_timeline = TimelinePhotoGranularity::tryFrom($values[RequestAttribute::ALBUM_TIMELINE_PHOTO]);
 
 		$this->copyright = $values[RequestAttribute::COPYRIGHT_ATTRIBUTE];
+		$this->tags_provided = array_key_exists(RequestAttribute::TAGS_ATTRIBUTE, $values);
+		$this->tags = $values[RequestAttribute::TAGS_ATTRIBUTE] ?? [];
 
 		$this->is_compact = static::toBoolean($values[RequestAttribute::IS_COMPACT_ATTRIBUTE]);
 		$this->is_pinned = static::toBoolean($values[RequestAttribute::IS_PINNED_ATTRIBUTE]);

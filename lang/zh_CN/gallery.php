@@ -195,6 +195,7 @@ return [
             'album_timeline' => '设置相册时间线模式',
             'photo_timeline' => '设置照片时间线模式',
             'layout' => '设置照片布局',
+            'tags' => '标签',
             'show_tags' => '设置要显示的标签',
             'tags_required' => '标签为必填项。',
             'all_tags_must_match' => '所有标签必须匹配。',

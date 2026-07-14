@@ -3,7 +3,12 @@ import { usePhotosStore } from "./PhotosState";
 import TagsService from "@/services/tags-service";
 
 export type TagStore = ReturnType<typeof useTagStore>;
-export type TagData = { name: string; id: number; num: number };
+export type TagData = {
+	name: string;
+	id: number;
+	num: number;
+	albums: App.Http.Resources.Models.ThumbAlbumResource[];
+};
 
 export const useTagStore = defineStore("tag-store", {
 	state: () => ({
@@ -32,7 +37,12 @@ export const useTagStore = defineStore("tag-store", {
 						return;
 					}
 					photosStore.setPhotos(data.data.photos, false);
-					this.tag = { name: data.data.name, id: data.data.id, num: data.data.photos.length };
+					this.tag = {
+						name: data.data.name,
+						id: data.data.id,
+						num: data.data.photos.length,
+						albums: data.data.albums,
+					};
 				})
 				.finally(() => {
 					if (this.tagId === requestedTagId) {

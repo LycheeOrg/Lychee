@@ -64,4 +64,54 @@ class ListTagsTest extends BaseApiWithDataTest
 		$this->assertOk($response);
 		$this->assertCount(2, $response->json()['tags']);
 	}
+
+	public function testGetTagsSplitCounts(): void
+	{
+		$response = $this->actingAs($this->userMayUpload1)->getJson('Tags');
+		$this->assertOk($response);
+		$tags = collect($response->json()['tags']);
+		$tag_test_resource = $tags->firstWhere('name', $this->tag_test->name);
+		$this->assertEquals(1, $tag_test_resource['num_photos']);
+		$this->assertEquals(0, $tag_test_resource['num_albums']);
+	}
+
+	public function testGetTagsAlbumOnlyTagIsVisibleToOwner(): void
+	{
+		// `roadtrip` is attached only to album1 (owned by userMayUpload1), no photos anywhere.
+		$roadtrip = Tag::create(['name' => 'roadtrip']);
+		$this->album1->tags()->sync([$roadtrip->id]);
+
+		$response = $this->actingAs($this->userMayUpload1)->getJson('Tags');
+		$this->assertOk($response);
+		$tags = collect($response->json()['tags']);
+		$roadtrip_resource = $tags->firstWhere('name', 'roadtrip');
+		$this->assertNotNull($roadtrip_resource);
+		$this->assertEquals(0, $roadtrip_resource['num_photos']);
+		$this->assertEquals(1, $roadtrip_resource['num_albums']);
+	}
+
+	public function testGetTagsAlbumOnlyTagIsHiddenFromOtherNonAdmin(): void
+	{
+		$roadtrip = Tag::create(['name' => 'roadtrip']);
+		$this->album1->tags()->sync([$roadtrip->id]);
+
+		// userMayUpload2 does not own album1 and has no access to it.
+		$response = $this->actingAs($this->userMayUpload2)->getJson('Tags');
+		$this->assertOk($response);
+		$tags = collect($response->json()['tags']);
+		$this->assertNull($tags->firstWhere('name', 'roadtrip'));
+	}
+
+	public function testGetTagsAlbumOnlyTagIsVisibleToAdmin(): void
+	{
+		$roadtrip = Tag::create(['name' => 'roadtrip']);
+		$this->album1->tags()->sync([$roadtrip->id]);
+
+		$response = $this->actingAs($this->admin)->getJson('Tags');
+		$this->assertOk($response);
+		$tags = collect($response->json()['tags']);
+		$roadtrip_resource = $tags->firstWhere('name', 'roadtrip');
+		$this->assertNotNull($roadtrip_resource);
+		$this->assertEquals(1, $roadtrip_resource['num_albums']);
+	}
 }

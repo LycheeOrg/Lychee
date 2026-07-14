@@ -27,6 +27,7 @@ trait RequiresEmptyTags
 	protected function setUpRequiresEmptyTags(): void
 	{
 		$this->assertDatabaseCount('photos_tags', 0);
+		$this->assertDatabaseCount('albums_tags', 0);
 		$this->assertDatabaseCount('tags', 0);
 	}
 
@@ -34,5 +35,6 @@ trait RequiresEmptyTags
 	{
 		DB::table('tags')->delete();
 		DB::table('photos_tags')->delete();
+		DB::table('albums_tags')->delete();
 	}
 }

@@ -11,19 +11,21 @@ namespace App\Actions\Tag;
 use App\Http\Resources\Tags\TagResource;
 use App\Http\Resources\Tags\TagsResource;
 use App\Models\User;
+use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 /**
- * We list all the tags with their photo counts.
+ * We list all the tags with their photo and album counts (Feature 050).
  *
- * We also make sure to only return the taags which are associated with photos of the current user (unless it's the admin).
+ * We also make sure to only return the tags which are associated with photos
+ * or albums of the current user (unless it's the admin).
  */
 class ListTags
 {
 	/**
-	 * Returns the list of all tags with their photo counts.
+	 * Returns the list of all tags with their photo and album counts.
 	 *
 	 * @return TagsResource
 	 */
@@ -31,27 +33,55 @@ class ListTags
 	{
 		/** @var User $user */
 		$user = Auth::user();
+		$is_admin = $user->may_administrate;
 
-		/** @var Collection<int,object{id:int,name:string,num:int}> $tags */
+		$num_photos_subquery = DB::table('photos_tags')
+			->selectRaw('COUNT(*)')
+			->whereColumn('photos_tags.tag_id', 'tags.id')
+			->when(!$is_admin, fn ($q) => $q
+				->join('photos', 'photos.id', '=', 'photos_tags.photo_id')
+				->where('photos.owner_id', $user->id));
+
+		$num_albums_subquery = DB::table('albums_tags')
+			->selectRaw('COUNT(*)')
+			->whereColumn('albums_tags.tag_id', 'tags.id')
+			->when(!$is_admin, fn ($q) => $q
+				->join('base_albums', 'base_albums.id', '=', 'albums_tags.album_id')
+				->where('base_albums.owner_id', $user->id));
+
+		/** @var Collection<int,object{id:int,name:string,num_photos:int,num_albums:int}> $tags */
 		$tags = DB::table('tags')
-			->leftJoin('photos_tags', 'tags.id', '=', 'photos_tags.tag_id')
-			->when(
-				$user->may_administrate === false,
-				fn ($q) => $q
-					->leftJoin('photos', 'photos.id', '=', 'photos_tags.photo_id')
-					->where('photos.owner_id', $user->id)
-			)
-			->select(['tags.id', 'tags.name', DB::raw('COUNT(photos_tags.photo_id) AS num')])
-			->groupBy(['tags.id', 'tags.name'])
+			->select(['tags.id', 'tags.name'])
+			->selectSub($num_photos_subquery, 'num_photos')
+			->selectSub($num_albums_subquery, 'num_albums')
+			// Exclude tags with no accessible photo and no accessible album => this
+			// makes sure we do not leak tags from other users (non-admins) nor
+			// fully-orphaned tags (admin).
+			->where(function ($query) use ($user, $is_admin): void {
+				$query->whereExists(function (Builder $sub) use ($user, $is_admin): void {
+					$sub->selectRaw(1)
+						->from('photos_tags')
+						->whereColumn('photos_tags.tag_id', 'tags.id')
+						->when(!$is_admin, fn ($q) => $q
+							->join('photos', 'photos.id', '=', 'photos_tags.photo_id')
+							->where('photos.owner_id', $user->id));
+				})->orWhereExists(function (Builder $sub) use ($user, $is_admin): void {
+					$sub->selectRaw(1)
+						->from('albums_tags')
+						->whereColumn('albums_tags.tag_id', 'tags.id')
+						->when(!$is_admin, fn ($q) => $q
+							->join('base_albums', 'base_albums.id', '=', 'albums_tags.album_id')
+							->where('base_albums.owner_id', $user->id));
+				});
+			})
 			->orderBy('tags.name')
-			->havingRaw('COUNT(photos_tags.photo_id) > 0') // Exclude tags with no photos => this makes sure we do not leak tags from other users.
-			// Here we can not use `->having('num', '>', 0)` because the aliasing in Postgresql is done AFTER the `HAVING` clause...
 			->get();
 
 		return new TagsResource($tags->map(fn ($tag) => new TagResource(
 			id: $tag->id,
 			name: $tag->name,
-			num: $tag->num
+			num_photos: $tag->num_photos,
+			num_albums: $tag->num_albums,
 		)));
 	}
 }

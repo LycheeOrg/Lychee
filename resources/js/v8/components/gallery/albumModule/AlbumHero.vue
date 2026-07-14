@@ -27,6 +27,11 @@
 						&mdash; {{ albumStore.album.preFormattedData.license }}
 					</span>
 				</span>
+				<span v-if="albumTags.length > 0" class="flex flex-wrap gap-1.5 mt-1">
+					<span v-for="tag in albumTags" :key="`album-tag-${tag}`" class="text-xs rounded-full py-1 px-2.5 bg-black/50 cursor-default">
+						{{ tag }}
+					</span>
+				</span>
 				<span
 					v-if="isFaceRecognitionEnabled && albumStore.album_people_total > 0"
 					class="block text-muted text-sm cursor-pointer hover:text-default transition-colors duration-150"
@@ -211,6 +216,11 @@ const isWatermarkerEnabled = computed(
 );
 
 const isFaceRecognitionEnabled = computed(() => leftMenu.initData?.modules.is_face_recognition_enabled === true);
+
+// `editable` is only populated by the backend when the current user has edit
+// rights on the album (owner or admin), so its presence is enough to gate
+// display of the album's own tags here.
+const albumTags = computed(() => albumStore.tagOrModelAlbum?.editable?.tags ?? []);
 
 const isPeopleOpen = ref(false);
 

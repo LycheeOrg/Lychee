@@ -48,7 +48,7 @@ const filteredTags = ref<string[]>([]);
 // This is not optimal, maybe we can consider using a map later?
 function getNum(tag: string) {
 	const foundTag = tags.value.find((t) => t.name === tag);
-	return foundTag ? foundTag.num : 0;
+	return foundTag ? foundTag.num_photos : 0;
 }
 
 function fetchTags(): void {

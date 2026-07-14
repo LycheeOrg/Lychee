@@ -17,7 +17,8 @@ class TagResource extends Data
 	public function __construct(
 		public int $id,
 		public string $name,
-		public int $num,
+		public int $num_photos,
+		public int $num_albums,
 	) {
 	}
 }

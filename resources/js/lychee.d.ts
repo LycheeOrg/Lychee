@@ -1529,12 +1529,14 @@ declare namespace App.Http.Resources.Tags {
 	export type TagResource = {
 		id: number;
 		name: string;
-		num: number;
+		num_photos: number;
+		num_albums: number;
 	};
-	export type TagWithPhotosResource = {
+	export type TagWithPhotosAndAlbumsResource = {
 		id: number;
 		name: string;
 		photos: App.Http.Resources.Models.PhotoResource[];
+		albums: App.Http.Resources.Models.ThumbAlbumResource[];
 	};
 	export type TagsResource = {
 		can_edit: boolean;
