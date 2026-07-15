@@ -230,9 +230,19 @@ const emits = defineEmits<{
 	facesUpdated: [];
 }>();
 
+// While the user has pinch-zoomed the page (native viewport zoom, see meta.blade.php
+// `maximum-scale=4.0 user-scalable=yes`), a single-finger drag is panning around the
+// zoomed photo, not a navigation swipe — so next/previous/goBack must be suppressed.
+function isPageZoomed(): boolean {
+	return typeof window !== "undefined" && window.visualViewport !== null && window.visualViewport.scale > 1.01;
+}
+
 useSwipe(swipe, {
 	onSwipe(_e: TouchEvent) {},
 	onSwipeEnd(_e: TouchEvent, direction: UseSwipeDirection) {
+		if (isPageZoomed()) {
+			return;
+		}
 		if (direction === "left" && isLTR()) {
 			emits("next");
 		} else if (direction === "right" && isLTR()) {
