@@ -40,11 +40,11 @@
 		<template v-else>
 			<div v-if="canEdit" class="flex justify-end gap-4 mb-8">
 				<UButton :disabled="!canMerge" variant="ghost" color="primary" size="sm" @click="openMerge">
-					<UIcon name="prime:arrow-down-left-and-arrow-up-right-to-center" />
+					<UIcon name="lucide:shrink" />
 					{{ $t("tags.merge") }}
 				</UButton>
 				<UButton :disabled="!canDelete" variant="ghost" color="error" size="sm" @click="openDelete">
-					<UIcon name="prime:trash" />
+					<UIcon name="lucide:trash" />
 					{{ $t("tags.delete") }}
 				</UButton>
 			</div>
@@ -76,7 +76,7 @@
 									variant="ghost"
 									color="neutral"
 									size="sm"
-									icon="prime:pencil"
+									icon="lucide:pencil"
 									class="cursor-pointer"
 									@click="openRenameFor(tag)"
 								/>

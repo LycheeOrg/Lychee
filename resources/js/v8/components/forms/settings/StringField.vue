@@ -38,7 +38,7 @@ const val = ref<string>(props.config.value);
 
 const changed = computed(() => val.value !== props.config.value);
 const isVersion = computed(() => props.config.key === "version");
-const iconName = computed(() => (isVersion.value ? "prime:exclamation-triangle" : "prime:exclamation-circle"));
+const iconName = computed(() => (isVersion.value ? "lucide:triangle-alert" : "lucide:circle-alert"));
 const iconColorClass = computed(() => (isVersion.value ? "text-error" : "text-warning-600"));
 
 const emits = defineEmits<{

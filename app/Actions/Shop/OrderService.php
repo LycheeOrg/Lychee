@@ -343,7 +343,7 @@ class OrderService
 	{
 		$user = Auth::user();
 
-		return Order::without(['items'])->with(['user'])
+		return Order::with(['user', 'items', 'items.album'])
 			->when($user?->may_administrate !== true, function ($query) use ($user): void {
 				$query->where('user_id', $user?->id);
 			})

@@ -372,6 +372,8 @@ return [
         'sm_card_album_source' => 'Fuente de las fotos del álbum para las tarjetas de redes sociales',
         'sm_card_image_url' => 'URL de la imagen alternativa o ID de la foto para las tarjetas de redes sociales',
         'breadcrumb_enabled' => 'Activar la navegación por ruta de navegación en el encabezado del álbum',
+        'selection_border_enabled' => 'Mostrar un borde alrededor de las miniaturas de fotos seleccionadas',
+        'selection_overlay_enabled' => 'Mostrar una superposición azul claro en las miniaturas de fotos seleccionadas',
     ],
     'details' => [
         'version' => '',
@@ -740,6 +742,8 @@ return [
         'sm_card_album_source' => 'Selecciona si se utiliza la foto de cabecera o la foto de portada de un álbum como imagen de Open Graph al compartir enlaces en las redes sociales.',
         'sm_card_image_url' => 'URL o imagen de identificación que se utiliza como imagen de Open Graph cuando no hay ninguna imagen específica del álbum disponible. Si se deja en blanco, se utiliza el fondo de la página de destino.',
         'breadcrumb_enabled' => 'Mostrar la jerarquía del álbum como ruta de navegación en la barra de encabezado, en lugar del botón «Atrás» y el título.',
+        'selection_border_enabled' => 'Cuando está activado, las miniaturas de fotos seleccionadas se resaltan con un borde.',
+        'selection_overlay_enabled' => 'Cuando está activado, las miniaturas de fotos seleccionadas se tiñen con una superposición azul claro.',
     ],
     'category_name' => [
         'config' => 'Conceptos básicos',

@@ -3,7 +3,7 @@
 		<template #header>
 			<div v-if="user?.id === null">
 				<RouterLink :to="{ name: 'login' }" class="flex items-center gap-2 text-muted hover:text-primary">
-					<PiMiniIcon icon="pi pi-sign-in" class="w-4 h-4" />
+					<PiMiniIcon icon="lucide:log-in" class="w-4 h-4" />
 					{{ $t("left-menu.login") }}
 				</RouterLink>
 			</div>
@@ -14,32 +14,52 @@
 			</div>
 		</template>
 		<template #body>
-			<UNavigationMenu v-if="initData" orientation="vertical" :items="navSections">
+			<UNavigationMenu v-if="initData" orientation="vertical" :items="items">
 				<template #item-leading="{ item }">
-					<PiMiniIcon :icon="(item as LeftMenuItem).rawIcon" class="w-3 h-3" />
+					<PiMiniIcon :icon="item.icon" class="w-3 h-3" />
 				</template>
 				<template #item-trailing="{ item }">
-					<UBadge v-if="(item as LeftMenuItem).count" size="sm" color="primary">{{ (item as LeftMenuItem).count }}</UBadge>
-					<SETag v-if="(item as LeftMenuItem).seTag" />
+					<UBadge v-if="item.count" size="sm" color="primary">{{ item.count }}</UBadge>
+					<SETag v-if="item.seTag" />
 				</template>
 			</UNavigationMenu>
+			<template v-if="!use_admin_dashboard">
+				<div class="mt-4 px-2.5 text-lg text-toned font-bold">{{ $t("left-menu.admin") }}</div>
+				<UNavigationMenu v-if="initData" orientation="vertical" :items="adminItems">
+					<template #item-leading="{ item }">
+						<PiMiniIcon :icon="item.icon" class="w-3 h-3" />
+					</template>
+					<template #item-trailing="{ item }">
+						<UBadge v-if="item.count" size="sm" color="primary">{{ item.count }}</UBadge>
+						<SETag v-if="item.seTag" />
+					</template>
+				</UNavigationMenu>
+			</template>
+			<template v-if="!is_white_label_enabled">
+				<div class="mt-4 px-2.5 text-lg text-toned font-bold">Lychee</div>
+				<UNavigationMenu orientation="vertical" :items="lycheeItems">
+					<template #item-leading="{ item }">
+						<PiMiniIcon :icon="item.icon" class="w-3 h-3" />
+					</template>
+				</UNavigationMenu>
+			</template>
 		</template>
 		<template #footer>
 			<div v-if="user?.id !== null" class="w-full">
 				<UNavigationMenu orientation="vertical" :items="profileSections">
 					<template #item-leading="{ item }">
-						<PiMiniIcon :icon="(item as LeftMenuItem).rawIcon" class="w-3 h-3" />
+						<PiMiniIcon :icon="item.icon" class="w-3 h-3" />
 					</template>
 					<template #item-trailing="{ item }">
-						<SETag v-if="(item as LeftMenuItem).seTag" />
+						<SETag v-if="item.seTag" />
 					</template>
 				</UNavigationMenu>
-				<div class="border-t border-default pt-2 flex justify-between items-center pr-0">
+				<div class="border-t border-default pt-2 flex justify-between items-center px-2.5">
 					<div class="flex items-center gap-2">
 						<PiMiniIcon icon="person" class="w-3 h-3" />
 						<div class="capitalize ml-2 text-muted">
 							{{ userStore.user?.username }}
-							<PiMiniIcon v-if="canSeeAdmin" icon="pi pi-crown" class="w-6 h-6 text-orange-400 inline-block" />
+							<PiMiniIcon v-if="canSeeAdmin" icon="lucide:crown" class="w-4 h-4 text-orange-400 inline-block" />
 						</div>
 					</div>
 					<UButton variant="ghost" color="neutral" class="cursor-pointer" @click="logout">
@@ -53,7 +73,6 @@
 </template>
 <script setup lang="ts">
 import { computed, watch, onMounted } from "vue";
-import type { NavigationMenuItem } from "@nuxt/ui";
 import PiMiniIcon from "@/v8/components/icons/PiMiniIcon.vue";
 import SETag from "@/v8/components/icons/SETag.vue";
 import AboutLychee from "@/v8/components/modals/AboutLychee.vue";
@@ -63,7 +82,7 @@ import AlbumService from "@/services/album-service";
 import Constants from "@/services/constants";
 import { useRoute } from "vue-router";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
-import { useLeftMenu, type MenyType } from "@/composables/contextMenus/leftMenu";
+import { useLeftMenu, type LeftMenuItem } from "@/v8/composables/contextMenus/leftMenu";
 import { useFavouriteStore } from "@/stores/FavouriteState";
 import { useLtRorRtL } from "@/utils/Helpers";
 import { useUserStore } from "@/stores/UserState";
@@ -72,8 +91,7 @@ import { useAlbumsStore } from "@/stores/AlbumsState";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { usePhotoStore } from "@/stores/PhotoState";
 import { trans } from "laravel-vue-i18n";
-
-type LeftMenuItem = NavigationMenuItem & { rawIcon?: string; seTag?: boolean; count?: number };
+import { storeToRefs } from "pinia";
 
 const leftMenuState = useLeftMenuStateStore();
 const route = useRoute();
@@ -84,10 +102,11 @@ const albumStore = useAlbumStore();
 const photoStore = usePhotoStore();
 
 const lycheeStore = useLycheeStateStore();
+const { is_white_label_enabled, use_admin_dashboard } = storeToRefs(lycheeStore);
 const favouritesStore = useFavouriteStore();
 const { isLTR } = useLtRorRtL();
 
-const { user, left_menu_open, initData, canSeeAdmin, load, items, profileItems, openLycheeAbout } = useLeftMenu(
+const { user, left_menu_open, initData, canSeeAdmin, load, items, adminItems, profileItems, openLycheeAbout } = useLeftMenu(
 	lycheeStore,
 	leftMenuState,
 	userStore,
@@ -95,30 +114,44 @@ const { user, left_menu_open, initData, canSeeAdmin, load, items, profileItems, 
 	route,
 );
 
-function toLeafItem(item: MenyType): LeftMenuItem {
-	const leaf = item as Extract<MenyType, { icon: string }> & { num?: number };
-	return {
-		label: trans(leaf.label),
-		rawIcon: leaf.icon,
-		seTag: leaf.seTag,
-		count: leaf.num && leaf.num > 0 ? leaf.num : undefined,
-		to: leaf.route ?? leaf.url,
-		target: leaf.target as LeftMenuItem["target"],
-		onSelect: leaf.command,
-	};
-}
+// Hardcoded (not user/permission-driven data from the API): the app's own "about" links.
+const lycheeItems = computed<LeftMenuItem[]>(() => {
+	const entries: (LeftMenuItem & { access: boolean })[] = [
+		{
+			label: trans("left-menu.about"),
+			icon: "info",
+			access: true,
+			onSelect: () => (openLycheeAbout.value = true),
+		},
+		{
+			label: trans("left-menu.changelog"),
+			icon: "copywriting",
+			access: true,
+			to: "/changelogs",
+		},
+		{
+			label: trans("left-menu.api"),
+			icon: "book",
+			access: initData.value?.settings.can_edit ?? false,
+			to: Constants.BASE_URL + "/docs/api",
+		},
+		{
+			label: trans("left-menu.source_code"),
+			icon: "code",
+			access: user.value?.id === null || lycheeStore.is_se_info_hidden === false,
+			to: "https://github.com/LycheeOrg/Lychee",
+		},
+		{
+			label: trans("left-menu.support"),
+			icon: "heart",
+			access: lycheeStore.is_se_info_hidden === false,
+			to: "https://lycheeorg.dev/get-supporter-edition/",
+		},
+	];
+	return entries.filter((entry) => entry.access);
+});
 
-function toSections(menu: MenyType[]): LeftMenuItem[][] {
-	return menu.map((item) => {
-		if ("items" in item) {
-			return [{ label: trans(item.label), type: "label" as const }, ...item.items.map(toLeafItem)];
-		}
-		return [toLeafItem(item)];
-	});
-}
-
-const navSections = computed(() => toSections(items.value));
-const profileSections = computed(() => toSections(profileItems.value));
+const profileSections = computed(() => profileItems.value.map((item) => [item]));
 
 function logout() {
 	AuthService.logout().then(() => {

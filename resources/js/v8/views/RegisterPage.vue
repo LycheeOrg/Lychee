@@ -1,6 +1,6 @@
 <template>
 	<div class="absolute top-0 left-0">
-		<UButton icon="prime:angle-left" class="mr-2" color="neutral" variant="ghost" @click="goBack" />
+		<UButton icon="lucide:chevron-left" class="mr-2" color="neutral" variant="ghost" @click="goBack" />
 	</div>
 	<UCard v-if="is_loaded" class="mx-auto max-w-3xl" :ui="{ header: 'hidden', body: 'flex flex-col items-center' }">
 		<div v-if="initdata" class="my-12">
@@ -18,7 +18,7 @@
 		</div>
 		<div class="w-full max-w-md text-right">
 			<router-link :to="{ name: 'login' }" class="hover:text-primary/80">
-				{{ $t("left-menu.login") }} <UIcon name="prime:angle-double-right" class="ml-1" />
+				{{ $t("left-menu.login") }} <UIcon name="lucide:chevrons-right" class="ml-1" />
 			</router-link>
 		</div>
 		<UAlert v-if="errorMessage" color="error" variant="soft" class="mb-4 text-center" :description="errorMessage" />

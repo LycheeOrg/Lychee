@@ -7,7 +7,7 @@
 					<UInput id="title" v-model="title" class="w-full" />
 				</UFormField>
 				<div v-if="visibilityInfo" class="text-xs text-muted mt-2 flex items-center gap-1">
-					<UIcon name="prime:info-circle" />
+					<UIcon name="lucide:info" />
 					{{ $t(visibilityInfo) }}
 				</div>
 			</div>

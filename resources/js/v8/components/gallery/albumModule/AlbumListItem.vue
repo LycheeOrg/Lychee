@@ -19,7 +19,7 @@
 				'border-2 border-accented bg-neutral-100 dark:bg-neutral-800': !isSelected,
 			}"
 		>
-			<UIcon v-if="isSelected" name="prime:check" class="text-white" style="font-size: 0.6rem" />
+			<UIcon v-if="isSelected" name="lucide:check" class="text-white" style="font-size: 0.6rem" />
 		</div>
 		<!-- Thumbnail -->
 		<router-link
@@ -45,9 +45,9 @@
 			<ListBadge v-else-if="album.id === 'three_stars'" :class="ALBUM_BADGE_FILL.favorite" icon="star-3" />
 			<ListBadge v-else-if="album.id === 'four_stars'" :class="ALBUM_BADGE_FILL.favorite" icon="star-4" />
 			<ListBadge v-else-if="album.id === 'five_stars'" :class="ALBUM_BADGE_FILL.favorite" icon="star-5" />
-			<ListBadge v-else-if="album.id === 'best_pictures'" :class="ALBUM_BADGE_TEXT.trophy" pi="trophy" />
-			<ListBadge v-else-if="album.id === 'my_rated_pictures'" :class="ALBUM_BADGE_TEXT.rated" pi="trophy" />
-			<ListBadge v-else-if="album.id === 'my_best_pictures'" :class="ALBUM_BADGE_TEXT.favorite" pi="trophy" />
+			<ListBadge v-else-if="album.id === 'best_pictures'" :class="ALBUM_BADGE_TEXT.trophy" pi="lucide:trophy" />
+			<ListBadge v-else-if="album.id === 'my_rated_pictures'" :class="ALBUM_BADGE_TEXT.rated" pi="lucide:trophy" />
+			<ListBadge v-else-if="album.id === 'my_best_pictures'" :class="ALBUM_BADGE_TEXT.favorite" pi="lucide:trophy" />
 			<AlbumThumbImage
 				v-else
 				class="border-none! hover:scale-800 hover:ltr:-translate-x-full hover:rtl:translate-x-full ltr:origin-left rtl:origin-right hover:z-30 top-0 left-0"
@@ -70,13 +70,13 @@
 			<div class="flex gap-2 text-xs text-neutral-600 dark:text-neutral-400">
 				<!-- Photo count (only if > 0) -->
 				<span v-if="album.num_photos > 0" class="flex items-center gap-1">
-					<UIcon name="prime:image" class="text-2xs" />
+					<UIcon name="lucide:image" class="text-2xs" />
 					{{ album.num_photos }}
 				</span>
 
 				<!-- Sub-album count (only if > 0) -->
 				<span v-if="album.num_subalbums > 0" class="flex items-center gap-1">
-					<UIcon name="prime:folder" class="text-2xs" />
+					<UIcon name="lucide:folder" class="text-2xs" />
 					{{ album.num_subalbums }}
 				</span>
 			</div>

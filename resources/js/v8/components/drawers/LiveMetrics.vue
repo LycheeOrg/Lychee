@@ -30,12 +30,12 @@
 								class="text-2xs"
 								:name="
 									item.action === 'favourite'
-										? 'prime:bookmark'
+										? 'lucide:bookmark'
 										: item.action === 'download'
-											? 'prime:download'
+											? 'lucide:download'
 											: item.action === 'shared'
-												? 'prime:share-alt'
-												: 'prime:eye'
+												? 'lucide:share-2'
+												: 'lucide:eye'
 								"
 							/>
 						</div>

@@ -14,7 +14,7 @@
 			<span class="text-highlighted">{{ duplicates?.length }}</span> {{ $t("duplicate-finder.found") }}
 		</p>
 		<p v-if="!isValid" class="text-highlighted">
-			<UIcon name="prime:exclamation-triangle" class="text-warning ltr:mr-2 rtl:ml-2" /> {{ $t("duplicate-finder.invalid-search") }}
+			<UIcon name="lucide:triangle-alert" class="text-warning ltr:mr-2 rtl:ml-2" /> {{ $t("duplicate-finder.invalid-search") }}
 		</p>
 	</div>
 	<div class="text-muted">
@@ -54,7 +54,7 @@
 		<div class="flex justify-between md:max-w-3xl lg:max-w-5xl xl:max-w-7xl mx-auto gap-4 xl:gap-8">
 			<div class="w-1/4 flex-none"></div>
 			<div class="pb-2 w-full flex justify-between items-center font-bold text-lg text-highlighted border-b border-b-white/50">
-				<div><UIcon name="prime:trash" class="text-transparent mr-2" /></div>
+				<div><UIcon name="lucide:trash" class="text-transparent mr-2" /></div>
 				<div class="w-1/3">{{ $t("duplicate-finder.columns.album") }}</div>
 				<div class="w-1/3">{{ $t("duplicate-finder.columns.photo") }}</div>
 				<div class="w-1/4">{{ $t("duplicate-finder.columns.checksum") }}</div>

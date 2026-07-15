@@ -29,7 +29,7 @@
 				'ml-0 mr-2 sm:mr-3 md:mr-4': !isLTR(),
 			}"
 		>
-			<UIcon v-if="album_subtitle_type === 'takedate' || album_subtitle_type === 'creation'" name="prime:camera" />
+			<UIcon v-if="album_subtitle_type === 'takedate' || album_subtitle_type === 'creation'" name="lucide:camera" />
 			{{ subtitle }}
 		</span>
 	</div>

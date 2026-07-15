@@ -1,6 +1,6 @@
 <template>
 	<div v-if="scriptLoaded && dropboxChooserIsSupported">
-		<UButton icon="prime:box" color="primary" class="w-64 justify-center" @click="dropboxIconClicked">Open dropbox picker</UButton>
+		<UButton icon="lucide:box" color="primary" class="w-64 justify-center" @click="dropboxIconClicked">Open dropbox picker</UButton>
 	</div>
 </template>
 

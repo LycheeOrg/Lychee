@@ -46,8 +46,8 @@
 				@click="handleRatingClick(props.photoId, rating as 1 | 2 | 3 | 4 | 5)"
 			>
 				<UIcon
-					:name="rating <= (hoverRating ?? props.rating.rating_user) ? 'prime:star-fill' : 'prime:star'"
-					:class="rating <= (hoverRating ?? props.rating.rating_user) ? 'text-primary' : 'text-muted'"
+					name="lucide:star"
+					:class="rating <= (hoverRating ?? props.rating.rating_user) ? `text-primary ${FILL_OVERRIDE_CLASS}` : 'text-muted'"
 				/>
 			</button>
 		</div>
@@ -69,6 +69,7 @@ import StarRow from "@/v8/components/icons/StarRow.vue";
 import Spinner from "@/v8/components/Spinner.vue";
 import { useRating } from "@/composables/photo/useRating";
 import { ref } from "vue";
+import { FILL_OVERRIDE_CLASS } from "@/v8/icons";
 
 const lycheeStore = useLycheeStateStore();
 const photoStore = usePhotoStore();

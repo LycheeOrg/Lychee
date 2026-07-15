@@ -49,7 +49,7 @@
 							variant="ghost"
 							color="primary"
 							:label="$t('user-groups.edit')"
-							icon="prime:pencil"
+							icon="lucide:pencil"
 							@click="edit(group)"
 						/>
 						<UButton
@@ -58,7 +58,7 @@
 							variant="ghost"
 							color="error"
 							:label="$t('user-groups.delete')"
-							icon="prime:trash"
+							icon="lucide:trash"
 							@click="confirmDelete(group)"
 						/>
 						<USelectMenu
@@ -75,7 +75,7 @@
 				<div v-if="group.members.length > 0" class="flex flex-wrap gap-y-1 gap-x-4 mt-3">
 					<span v-for="member in group.members" :key="`G${group.id}:${member.id}`" class="flex items-center hover:text-highlighted">
 						<button class="mr-1 cursor-pointer flex items-center gap-1" @click="editRole(group, member.id, member.role)">
-							<UIcon v-if="member.role === 'admin'" name="prime:crown" class="text-orange-400" />
+							<UIcon v-if="member.role === 'admin'" name="lucide:crown" class="text-orange-400" />
 							{{ member.username }}
 						</button>
 						<button
@@ -83,7 +83,7 @@
 							class="border-accented rounded-full inline-flex items-center justify-center border p-0.5 text-3xs hover:border-error hover:text-error"
 							@click="deleteMember(group, member)"
 						>
-							<UIcon name="prime:times" />
+							<UIcon name="lucide:x" />
 						</button>
 					</span>
 				</div>
@@ -91,7 +91,7 @@
 					{{ $t("user-groups.empty_group") }}
 				</div>
 				<div v-else class="flex items-center gap-2">
-					<UIcon name="prime:exclamation-triangle" class="text-orange-500" />
+					<UIcon name="lucide:triangle-alert" class="text-orange-500" />
 					{{ $t("user-groups.no_permission_members") }}
 				</div>
 			</div>

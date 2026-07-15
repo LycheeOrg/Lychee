@@ -2,7 +2,7 @@
 	<a
 		:class="{
 			'photo group shadow-md shadow-black/25 animate-zoomIn transition-all ease-in duration-200 block absolute cursor-pointer': true,
-			'outline outline-1.5 outline-primary-500': props.isSelected,
+			'outline-2 outline-primary-500': props.isSelected && is_selection_border_enabled,
 			'rounded-lg overflow-hidden': is_rounded_corners_enabled,
 			'border-solid border border-accented': is_album_border_enabled,
 		}"
@@ -40,6 +40,10 @@
 				@load="onImageLoad"
 			/>
 		</span>
+		<div
+			v-if="props.isSelected && is_selection_overlay_enabled"
+			class="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none bg-primary/20"
+		></div>
 		<div
 			:class="{
 				'overlay w-full absolute bottom-0 m-0 bg-linear-to-t from-black/40 text-shadow-sm': true,
@@ -89,7 +93,7 @@
 				'border border-white bg-black/40': !props.isSelected,
 			}"
 		>
-			<UIcon v-if="props.isSelected" name="prime:check-circle" class="text-lg text-primary" />
+			<UIcon v-if="props.isSelected" name="lucide:check-circle" class="text-lg text-primary" />
 		</div>
 		<div v-else class="absolute top-0 ltr:right-0 rtl:left-0 w-1/4 flex flex-row-reverse px-1">
 			<ThumbBuyMe :is-in-basket="isInBasket" @click="toggleBuyMe" v-if="props.isBuyable" />
@@ -99,15 +103,15 @@
 			<ThumbBadge
 				v-if="(albumsStore.rootRights?.can_highlight || albumStore.rights?.can_edit) && props.photo.is_highlighted"
 				class="bg-yellow-500"
-				pi="flag-fill"
+				:pi="`lucide:flag ${FILL_OVERRIDE_CLASS}`"
 			/>
 			<ThumbBadge v-if="userStore.isLoggedIn && props.isCoverId" class="bg-yellow-500" icon="folder-cover" />
-			<ThumbBadge v-if="userStore.isLoggedIn && props.isHeaderId" class="bg-slate-400 hidden sm:block" pi="image" />
+			<ThumbBadge v-if="userStore.isLoggedIn && props.isHeaderId" class="bg-slate-400 hidden sm:block" pi="lucide:image" />
 			<ThumbBadge
 				v-if="!props.photo.is_validated"
 				class="bg-neutral-800"
 				border-color="border-none"
-				pi="shield text-amber-500 text-shadow-md"
+				pi="lucide:shield text-amber-500 text-shadow-md"
 			/>
 		</div>
 		<!-- Rating Overlay -->
@@ -133,6 +137,7 @@ import { useAlbumsStore } from "@/stores/AlbumsState";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { usePhotoFacesStore } from "@/stores/PhotoFacesState";
+import { FILL_OVERRIDE_CLASS } from "@/v8/icons";
 
 const { getNoImageIcon, getPlayIcon } = useImageHelpers();
 
@@ -165,6 +170,8 @@ const {
 	rating_album_view_mode,
 	is_rounded_corners_enabled,
 	is_album_border_enabled,
+	is_selection_border_enabled,
+	is_selection_overlay_enabled,
 } = storeToRefs(lycheeStore);
 const facesStore = usePhotoFacesStore();
 const { is_touch_select_mode } = storeToRefs(togglableStore);

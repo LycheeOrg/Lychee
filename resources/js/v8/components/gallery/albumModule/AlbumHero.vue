@@ -38,7 +38,7 @@
 					@click="isPeopleOpen = !isPeopleOpen"
 				>
 					{{ trans_choice("people.people_detected", albumStore.album_people_total, { count: albumStore.album_people_total.toString() }) }}
-					<UIcon :name="isPeopleOpen ? 'prime:chevron-up' : 'prime:chevron-down'" class="text-xs ml-1" />
+					<UIcon :name="isPeopleOpen ? 'lucide:chevron-up' : 'lucide:chevron-down'" class="text-xs ml-1" />
 				</span>
 			</div>
 			<div class="flex flex-col w-full gap-2">
@@ -49,7 +49,7 @@
 						:title="$t('gallery.album.hero.download')"
 						@click="download"
 					>
-						<UIcon name="prime:cloud-download" />
+						<UIcon name="lucide:cloud-download" />
 					</a>
 					<a
 						v-if="albumStore.rights?.can_share"
@@ -57,14 +57,14 @@
 						:title="$t('gallery.album.hero.share')"
 						@click="openSharingModal"
 					>
-						<UIcon name="prime:share-alt" />
+						<UIcon name="lucide:share-2" />
 					</a>
 					<UTooltip v-if="isEmbeddable" :text="$t('gallery.album.hero.embed')">
 						<a
 							class="shrink-0 px-3 cursor-pointer text-muted inline-block transform duration-300 hover:scale-150 hover:text-default"
 							@click="openEmbedCode"
 						>
-							<UIcon name="prime:code" />
+							<UIcon name="lucide:code" />
 						</a>
 					</UTooltip>
 					<a
@@ -72,11 +72,11 @@
 						class="shrink-0 px-3 cursor-pointer inline-block transform duration-300 hover:scale-150 hover:text-default"
 						@click="openStatistics"
 					>
-						<UIcon name="prime:chart-scatter" class="text-primary" />
+						<UIcon name="lucide:chart-scatter" class="text-primary" />
 					</a>
 					<UTooltip v-if="is_se_preview_enabled && userStore.isLoggedIn" :text="$t('gallery.album.hero.stats_only_se')">
 						<a class="shrink-0 px-3 cursor-not-allowed text-primary">
-							<UIcon name="prime:chart-scatter" />
+							<UIcon name="lucide:chart-scatter" />
 						</a>
 					</UTooltip>
 					<UTooltip v-if="albumStore.config?.is_mod_frame_enabled" text="Frame">
@@ -84,7 +84,7 @@
 							:to="{ name: 'frame', params: { albumId: albumStore.album.id } }"
 							class="shrink-0 px-3 cursor-pointer text-muted inline-block transform duration-300 hover:scale-150 hover:text-default"
 						>
-							<UIcon name="prime:desktop" />
+							<UIcon name="lucide:monitor" />
 						</RouterLink>
 					</UTooltip>
 					<RouterLink
@@ -92,14 +92,14 @@
 						:to="{ name: 'map', params: { albumId: albumStore.album.id } }"
 						class="shrink-0 px-3 cursor-pointer text-muted inline-block transform duration-300 hover:scale-150 hover:text-default"
 					>
-						<UIcon name="prime:map" />
+						<UIcon name="lucide:map" />
 					</RouterLink>
 					<UTooltip v-if="photosStore.photos.length > 0 && is_slideshow_enabled" text="Start slideshow">
 						<a
 							class="shrink-0 px-3 cursor-pointer text-muted inline-block transform duration-300 hover:scale-150 hover:text-default"
 							@click="emits('toggleSlideShow')"
 						>
-							<UIcon name="prime:play" />
+							<UIcon name="lucide:play" />
 						</a>
 					</UTooltip>
 					<UTooltip v-if="isRenamerEnabled" :text="$t('gallery.album.hero.apply_renamer')">
@@ -107,7 +107,7 @@
 							class="shrink-0 px-3 cursor-pointer text-muted inline-block transform duration-300 hover:scale-150 hover:text-default"
 							@click="emits('toggleApplyRenamer')"
 						>
-							<UIcon name="prime:pencil" />
+							<UIcon name="lucide:pencil" />
 						</a>
 					</UTooltip>
 					<UTooltip v-if="isWatermarkerEnabled" :text="$t('gallery.album.hero.watermark')">
@@ -115,7 +115,7 @@
 							class="shrink-0 px-3 cursor-pointer text-muted inline-block transform duration-300 hover:scale-150 hover:text-default"
 							@click="emits('toggleWatermarkConfirm')"
 						>
-							<UIcon name="prime:barcode" />
+							<UIcon name="lucide:barcode" />
 						</a>
 					</UTooltip>
 					<UTooltip v-if="isFaceScanEnabled" :text="$t('people.scan_faces')">
@@ -123,21 +123,21 @@
 							class="shrink-0 px-3 cursor-pointer text-muted inline-block transform duration-300 hover:scale-150 hover:text-default"
 							@click="emits('toggleScanFaces')"
 						>
-							<UIcon name="prime:face-smile" />
+							<UIcon name="lucide:smile" />
 						</a>
 					</UTooltip>
 
 					<!-- Album view toggle buttons -->
 					<UButton
 						v-if="lycheeStore.album_view_mode === 'list' && albumsStore.albums.length > 0"
-						icon="prime:th-large"
+						icon="lucide:layout-grid"
 						color="neutral"
 						variant="ghost"
 						@click="toggleAlbumView('grid')"
 					/>
 					<UButton
 						v-else-if="albumsStore.albums.length > 0"
-						icon="prime:list"
+						icon="lucide:list"
 						color="neutral"
 						variant="ghost"
 						@click="toggleAlbumView('list')"
@@ -150,7 +150,7 @@
 							:title="'hide hidden'"
 							@click="are_nsfw_visible = false"
 						>
-							<UIcon name="prime:eye-slash" />
+							<UIcon name="lucide:eye-off" />
 						</a>
 						<a
 							v-if="albumsStore.hasHidden && !are_nsfw_visible"
@@ -158,7 +158,7 @@
 							:title="'show hidden'"
 							@click="are_nsfw_visible = true"
 						>
-							<UIcon name="prime:eye" />
+							<UIcon name="lucide:eye" />
 						</a>
 					</template>
 				</div>

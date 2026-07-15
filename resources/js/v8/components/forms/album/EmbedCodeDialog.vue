@@ -33,7 +33,7 @@
 					v-if="!showAdvanced"
 					color="neutral"
 					variant="ghost"
-					icon="prime:angle-down"
+					icon="lucide:chevron-down"
 					:label="$t('dialogs.embed_code.show_advanced')"
 					@click="
 						() => {
@@ -47,7 +47,7 @@
 					<UButton
 						color="neutral"
 						variant="ghost"
-						icon="prime:angle-up"
+						icon="lucide:chevron-up"
 						:label="$t('dialogs.embed_code.hide_advanced')"
 						@click="
 							() => {
@@ -140,7 +140,7 @@
 				<UButton class="flex-1 justify-center" color="neutral" variant="soft" @click="closeCallback">
 					{{ $t("dialogs.button.close") }}
 				</UButton>
-				<UButton class="flex-1 justify-center" icon="prime:copy" @click="copyCode">
+				<UButton class="flex-1 justify-center" icon="lucide:copy" @click="copyCode">
 					{{ copied ? $t("dialogs.embed_code.copied") : $t("dialogs.embed_code.copy") }}
 				</UButton>
 			</div>

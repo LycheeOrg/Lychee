@@ -2,7 +2,7 @@
 	<UModal v-model:open="visible" :dismissible="true">
 		<template #body>
 			<h1 class="mb-6 text-center text-2xl font-bold text-warning">
-				<UIcon name="prime:exclamation-triangle" class="mr-2" /> {{ $t("dialogs.session_expired.title") }}
+				<UIcon name="lucide:triangle-alert" class="mr-2" /> {{ $t("dialogs.session_expired.title") }}
 			</h1>
 			<p class="text-muted text-center" v-html="$t('dialogs.session_expired.message')" />
 		</template>

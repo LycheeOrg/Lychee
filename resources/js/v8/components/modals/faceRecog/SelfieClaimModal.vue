@@ -15,7 +15,7 @@
 					@dragover.prevent
 					@drop.prevent="onDrop"
 				>
-					<UIcon name="prime:camera" class="text-4xl text-muted" />
+					<UIcon name="lucide:camera" class="text-4xl text-muted" />
 					<div class="text-sm text-muted text-center">{{ $t("people.claim_by_selfie_description") }}</div>
 					<UButton color="primary" variant="outline" size="sm" :label="$t('gallery.upload') || 'Upload'" />
 					<input ref="fileInput" type="file" accept="image/*" class="hidden" @change="onFileSelected" />
@@ -35,7 +35,7 @@
 							:alt="matchedPerson.name"
 							class="w-full h-full object-cover"
 						/>
-						<UIcon v-else name="prime:user" class="text-4xl text-muted" />
+						<UIcon v-else name="lucide:user" class="text-4xl text-muted" />
 					</div>
 					<div class="text-center">
 						<div class="font-semibold text-lg">{{ matchedPerson.name }}</div>

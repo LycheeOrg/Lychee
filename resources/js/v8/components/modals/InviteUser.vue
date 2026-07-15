@@ -3,7 +3,7 @@
 		<template #body>
 			<div class="flex flex-col items-center">
 				<div class="rounded-full bg-orange-500 text-white inline-flex justify-center items-center h-16 w-16 -mt-8">
-					<UIcon name="prime:exclamation-triangle" class="text-4xl" />
+					<UIcon name="lucide:triangle-alert" class="text-4xl" />
 				</div>
 				<div class="pt-4 pb-9 text-center">
 					<h2 class="font-bold text-xl">{{ $t("users.invite.links_are_not_revokable") }}</h2>

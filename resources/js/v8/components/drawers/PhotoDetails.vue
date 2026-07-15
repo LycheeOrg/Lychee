@@ -43,7 +43,7 @@
 					<div class="flex gap-1 items-center" id="photo-details-created-at">
 						<span class="w-6 inline-block">
 							<UTooltip :text="$t('gallery.photo.details.uploaded')">
-								<UIcon name="prime:upload" />
+								<UIcon name="lucide:upload" />
 							</UTooltip>
 						</span>
 						<span class="text-sm">{{ photoStore.photo.preformatted.created_at }}</span>
@@ -51,7 +51,7 @@
 					<div v-if="photoStore.photo.preformatted.taken_at" class="flex gap-1 items-start" id="photo-details-taken-at">
 						<span class="w-6 inline-block">
 							<UTooltip :text="$t('gallery.photo.details.captured')">
-								<UIcon name="prime:camera" class="w-6 pt-1 inline-block" />
+								<UIcon name="lucide:camera" class="w-6 pt-1 inline-block" />
 							</UTooltip>
 						</span>
 						<span class="text-sm">
@@ -106,7 +106,7 @@
 					<span>{{ $t("gallery.photo.details.albums_loading") }}</span>
 				</div>
 				<div v-else-if="albums_error" class="text-sm text-muted">
-					<UIcon name="prime:exclamation-triangle" class="mr-1" />
+					<UIcon name="lucide:triangle-alert" class="mr-1" />
 					{{ $t("gallery.photo.details.albums_loading_error") }}
 				</div>
 				<div v-else-if="albums.length === 0" class="text-sm text-muted">
@@ -152,7 +152,7 @@
 						</div>
 						<div class="flex w-1/2 gap-2 items-center">
 							<UTooltip :text="$t('gallery.photo.details.shutter')">
-								<UIcon name="prime:stopwatch" class="h-6 w-6 text-base text-center pt-0.5 text-muted" />
+								<UIcon name="lucide:timer" class="h-6 w-6 text-base text-center pt-0.5 text-muted" />
 							</UTooltip>
 							<span class="text-sm" dir="ltr">{{ photoStore.photo.preformatted.shutter }}</span>
 						</div>
@@ -198,25 +198,25 @@
 					<div class="flex flex-wrap text-muted text-sm gap-y-0.5">
 						<div class="w-1/2">
 							<UTooltip :text="$t('gallery.photo.details.stats.number_of_visits')">
-								<UIcon name="prime:eye" class="mr-2" />
+								<UIcon name="lucide:eye" class="mr-2" />
 							</UTooltip>
 							{{ photoStore.photo.statistics.visit_count }}
 						</div>
 						<div class="w-1/2">
 							<UTooltip :text="$t('gallery.photo.details.stats.number_of_downloads')">
-								<UIcon name="prime:cloud-download" class="mr-2" />
+								<UIcon name="lucide:cloud-download" class="mr-2" />
 							</UTooltip>
 							{{ photoStore.photo.statistics.download_count }}
 						</div>
 						<div class="w-1/2">
 							<UTooltip :text="$t('gallery.photo.details.stats.number_of_shares')">
-								<UIcon name="prime:share-alt" class="mr-2" />
+								<UIcon name="lucide:share-2" class="mr-2" />
 							</UTooltip>
 							{{ photoStore.photo.statistics.shared_count }}
 						</div>
 						<div class="w-1/2">
 							<UTooltip :text="$t('gallery.photo.details.stats.number_of_favourites')">
-								<UIcon name="prime:heart" class="mr-2" />
+								<UIcon name="lucide:heart" class="mr-2" />
 							</UTooltip>
 							{{ photoStore.photo.statistics.favourite_count }}
 						</div>
@@ -256,7 +256,7 @@
 								}"
 							/>
 							<div v-else class="w-12 h-12 rounded-full bg-neutral-800 flex items-center justify-center border-2 border-default">
-								<UIcon name="prime:user" class="text-xl text-muted" />
+								<UIcon name="lucide:user" class="text-xl text-muted" />
 							</div>
 							<span class="text-xs text-muted text-center max-w-14 truncate">
 								{{ face.person_name ?? "???" }}

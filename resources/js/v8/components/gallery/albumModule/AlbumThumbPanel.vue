@@ -22,7 +22,7 @@
 		</template>
 		<UCollapsible v-else v-model:open="isOpen" class="w-full">
 			<button type="button" class="flex items-center gap-2 w-full text-left font-semibold text-highlighted py-2">
-				<UIcon name="prime:chevron-down" class="transition-transform" :class="{ '-rotate-90': !isOpen }" />
+				<UIcon name="lucide:chevron-down" class="transition-transform" :class="{ '-rotate-90': !isOpen }" />
 				{{ $t(props.header) }}
 			</button>
 			<template #content>

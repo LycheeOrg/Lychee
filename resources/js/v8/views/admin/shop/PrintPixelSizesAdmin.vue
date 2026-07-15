@@ -13,7 +13,7 @@
 		<div class="mt-6">
 			<div class="flex flex-row items-center justify-between mb-3">
 				<h2 class="text-xl font-semibold">{{ $t("webshop.sizeCatalogue.printSizes") }}</h2>
-				<UButton icon="prime:plus" :label="$t('webshop.sizeCatalogue.addPrintSize')" size="sm" @click="openCreatePrintDialog" />
+				<UButton icon="lucide:plus" :label="$t('webshop.sizeCatalogue.addPrintSize')" size="sm" @click="openCreatePrintDialog" />
 			</div>
 			<UTable :data="printSizes ?? []" :columns="printColumns" :loading="printSizes === undefined" class="border rounded" />
 		</div>
@@ -22,7 +22,7 @@
 		<div class="mt-8">
 			<div class="flex flex-row items-center justify-between mb-3">
 				<h2 class="text-xl font-semibold">{{ $t("webshop.sizeCatalogue.pixelSizes") }}</h2>
-				<UButton icon="prime:plus" :label="$t('webshop.sizeCatalogue.addPixelSize')" size="sm" @click="openCreatePixelDialog" />
+				<UButton icon="lucide:plus" :label="$t('webshop.sizeCatalogue.addPixelSize')" size="sm" @click="openCreatePixelDialog" />
 			</div>
 			<UTable :data="pixelSizes ?? []" :columns="pixelColumns" :loading="pixelSizes === undefined" class="border rounded" />
 		</div>
@@ -72,7 +72,7 @@ const printColumns: TableColumn<App.Http.Resources.Shop.PrintSizeResource>[] = [
 		id: "active",
 		header: trans("webshop.sizeCatalogue.active"),
 		cell: ({ row }) =>
-			h(Icon, { icon: row.original.is_active ? "prime:check" : "prime:times", class: row.original.is_active ? "text-success" : "text-error" }),
+			h(Icon, { icon: row.original.is_active ? "lucide:check" : "lucide:x", class: row.original.is_active ? "text-success" : "text-error" }),
 	},
 	{
 		id: "actions",
@@ -80,13 +80,19 @@ const printColumns: TableColumn<App.Http.Resources.Shop.PrintSizeResource>[] = [
 		cell: ({ row }) =>
 			h("div", { class: "flex justify-end gap-1" }, [
 				h(UButton, {
-					icon: "prime:pencil",
+					icon: "lucide:pencil",
 					variant: "ghost",
 					color: "neutral",
 					size: "sm",
 					onClick: () => openEditPrintDialog(row.original),
 				}),
-				h(UButton, { icon: "prime:trash", variant: "ghost", color: "error", size: "sm", onClick: () => openDeletePrintDialog(row.original) }),
+				h(UButton, {
+					icon: "lucide:trash",
+					variant: "ghost",
+					color: "error",
+					size: "sm",
+					onClick: () => openDeletePrintDialog(row.original),
+				}),
 			]),
 	},
 ];
@@ -102,7 +108,7 @@ const pixelColumns: TableColumn<App.Http.Resources.Shop.PixelSizeResource>[] = [
 		id: "active",
 		header: trans("webshop.sizeCatalogue.active"),
 		cell: ({ row }) =>
-			h(Icon, { icon: row.original.is_active ? "prime:check" : "prime:times", class: row.original.is_active ? "text-success" : "text-error" }),
+			h(Icon, { icon: row.original.is_active ? "lucide:check" : "lucide:x", class: row.original.is_active ? "text-success" : "text-error" }),
 	},
 	{
 		id: "actions",
@@ -110,13 +116,19 @@ const pixelColumns: TableColumn<App.Http.Resources.Shop.PixelSizeResource>[] = [
 		cell: ({ row }) =>
 			h("div", { class: "flex justify-end gap-1" }, [
 				h(UButton, {
-					icon: "prime:pencil",
+					icon: "lucide:pencil",
 					variant: "ghost",
 					color: "neutral",
 					size: "sm",
 					onClick: () => openEditPixelDialog(row.original),
 				}),
-				h(UButton, { icon: "prime:trash", variant: "ghost", color: "error", size: "sm", onClick: () => openDeletePixelDialog(row.original) }),
+				h(UButton, {
+					icon: "lucide:trash",
+					variant: "ghost",
+					color: "error",
+					size: "sm",
+					onClick: () => openDeletePixelDialog(row.original),
+				}),
 			]),
 	},
 ];

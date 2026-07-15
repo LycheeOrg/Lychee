@@ -2,7 +2,7 @@
 	<Fieldset v-if="user && user.id !== null" :legend="$t('profile.login.header')" :toggleable="true" class="hover:border-primary pt-2">
 		<form>
 			<div v-if="user.is_ldap" class="w-full p-4 text-muted">
-				<UIcon name="prime:info-circle" class="ltr:mr-2 rtl:ml-2" />
+				<UIcon name="lucide:info" class="ltr:mr-2 rtl:ml-2" />
 				<span>{{ $t("profile.login.ldap_managed") }}</span>
 				<UButton
 					color="neutral"

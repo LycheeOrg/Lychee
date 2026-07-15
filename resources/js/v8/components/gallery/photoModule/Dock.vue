@@ -16,26 +16,30 @@
 	>
 		<span class="absolute left-1/2 -translate-x-1/2 p-1 min-w-[25%] w-full filter-shadow text-center">
 			<UTooltip v-if="photoStore.photo.is_highlighted" :text="$t('gallery.photo.actions.unhighlight')">
-				<DockButton pi="flag-fill" class="text-yellow-500 lg:hover:text-yellow-100" @click="emits('toggleHighlight')" />
+				<DockButton
+					:pi="`lucide:flag ${FILL_OVERRIDE_CLASS}`"
+					class="text-yellow-500 lg:hover:text-yellow-100"
+					@click="emits('toggleHighlight')"
+				/>
 			</UTooltip>
 			<UTooltip v-else :text="$t('gallery.photo.actions.highlight')">
-				<DockButton pi="flag" class="text-white lg:hover:text-yellow-500" @click="emits('toggleHighlight')" />
+				<DockButton pi="lucide:flag" class="text-white lg:hover:text-yellow-500" @click="emits('toggleHighlight')" />
 			</UTooltip>
 			<UTooltip v-if="!isTimeline" :text="$t('gallery.photo.actions.set_album_header')">
-				<DockButton pi="image" class="lg:hover:text-primary-500 text-white" @click="emits('setAlbumHeader')" />
+				<DockButton pi="lucide:image" class="lg:hover:text-primary-500 text-white" @click="emits('setAlbumHeader')" />
 			</UTooltip>
 			<UTooltip v-if="isWatermarkerEnabled" text="Watermark">
-				<DockButton pi="barcode" class="lg:hover:text-primary-500 text-white" @click="watermark" />
+				<DockButton pi="lucide:barcode" class="lg:hover:text-primary-500 text-white" @click="watermark" />
 			</UTooltip>
 			<UTooltip v-if="isFaceRecognitionEnabled" :text="$t('people.scan_faces')">
-				<DockButton pi="face-smile" class="lg:hover:text-primary-500 text-white" @click="scanFaces" />
+				<DockButton pi="lucide:smile" class="lg:hover:text-primary-500 text-white" @click="scanFaces" />
 			</UTooltip>
 			<template v-if="lycheeStore.can_rotate">
 				<DockButton icon="counterclockwise" class="fill-white lg:hover:fill-primary-500" @click="emits('rotatePhotoCCW')" />
 				<DockButton icon="clockwise" class="fill-white lg:hover:fill-primary-500" @click="emits('rotatePhotoCW')" />
 			</template>
 			<UTooltip :text="$t('gallery.photo.actions.move')">
-				<DockButton pi="folder" class="lg:hover:text-primary-500 text-white" @click="emits('toggleMove')" />
+				<DockButton pi="lucide:folder" class="lg:hover:text-primary-500 text-white" @click="emits('toggleMove')" />
 			</UTooltip>
 			<UTooltip :text="$t('gallery.photo.actions.delete')">
 				<DockButton icon="trash" class="fill-red-600 lg:fill-white lg:hover:fill-red-600" @click="emits('toggleDelete')" />
@@ -58,6 +62,7 @@ import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
 import { useRoute } from "vue-router";
 import { usePhotoStore } from "@/stores/PhotoState";
 import { useAlbumStore } from "@/stores/AlbumState";
+import { FILL_OVERRIDE_CLASS } from "@/v8/icons";
 
 const toast = useAppToast();
 const lycheeStore = useLycheeStateStore();

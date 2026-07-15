@@ -27,18 +27,18 @@
 						:placeholder="$t('sharing.users')"
 					>
 						<template #item-leading="{ item }">
-							<UIcon v-if="(item as unknown as UserOrGroup).type === 'group'" name="prime:users" />
+							<UIcon v-if="(item as unknown as UserOrGroup).type === 'group'" name="lucide:users" />
 						</template>
 					</USelectMenu>
 				</div>
 
 				<div class="w-1/2 flex justify-around items-center">
-					<UTooltip :text="$t('sharing.grants.read')"><UIcon name="prime:eye" /></UTooltip>
-					<UTooltip :text="$t('sharing.grants.original')"><UIcon name="prime:window-maximize" /></UTooltip>
-					<UTooltip :text="$t('sharing.grants.download')"><UIcon name="prime:cloud-download" /></UTooltip>
-					<UTooltip :text="$t('sharing.grants.upload')"><UIcon name="prime:upload" /></UTooltip>
-					<UTooltip :text="$t('sharing.grants.edit')"><UIcon name="prime:file-edit" /></UTooltip>
-					<UTooltip :text="$t('sharing.grants.delete')"><UIcon name="prime:trash" /></UTooltip>
+					<UTooltip :text="$t('sharing.grants.read')"><UIcon name="lucide:eye" /></UTooltip>
+					<UTooltip :text="$t('sharing.grants.original')"><UIcon name="lucide:app-window" /></UTooltip>
+					<UTooltip :text="$t('sharing.grants.download')"><UIcon name="lucide:cloud-download" /></UTooltip>
+					<UTooltip :text="$t('sharing.grants.upload')"><UIcon name="lucide:upload" /></UTooltip>
+					<UTooltip :text="$t('sharing.grants.edit')"><UIcon name="lucide:file-edit" /></UTooltip>
+					<UTooltip :text="$t('sharing.grants.delete')"><UIcon name="lucide:trash" /></UTooltip>
 				</div>
 				<div class="w-1/2 flex items-center justify-around">
 					<UCheckbox v-model="grantsReadAccess" disabled />
@@ -58,7 +58,7 @@
 				<UButton
 					:disabled="!selectedAlbums.length || !selectedUsersOrGroups.length"
 					color="success"
-					icon="prime:user-plus"
+					icon="lucide:user-plus"
 					class="flex-1 justify-center"
 					@click="create"
 				>

@@ -43,7 +43,7 @@
 						<small class="text-muted ltr:text-left rtl:text-right">
 							<template v-if="form.mode === 'regex'"
 								>{{ $t("renamer.mode_regex_description") }}
-								<UIcon name="prime:question-circle" class="text-xs cursor-pointer" @click="showHelpRegex = !showHelpRegex" />
+								<UIcon name="lucide:circle-help" class="text-xs cursor-pointer" @click="showHelpRegex = !showHelpRegex" />
 							</template>
 							<template v-else>{{ modeOptions.find((o) => o.value === form.mode)?.description }}</template>
 						</small>
@@ -70,7 +70,7 @@
 						class="text-muted text-justify text-xs -mt-4 bg-elevated rounded p-2"
 						@click="showHelpRegex = false"
 					>
-						<UIcon name="prime:question-circle" class="ltr:mr-2 rtl:ml-2" />
+						<UIcon name="lucide:circle-help" class="ltr:mr-2 rtl:ml-2" />
 						<span class="renamer-help-regex" v-html="$t('renamer.regex_help')"></span><br />
 						<a href="https://regex101.com" target="_blank" rel="noopener noreferrer" class="text-primary-500 hover:underline"
 							>https://regex101.com</a

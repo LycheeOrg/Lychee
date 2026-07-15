@@ -12,7 +12,7 @@
 	</UTooltip>
 	<UIcon
 		v-if="props.order.status === 'closed'"
-		name="prime:copy"
+		name="lucide:copy"
 		class="cursor-pointer hover:text-primary-400 ltr:ml-2 rtl:mr-2"
 		@click="copyTransactionIdToClipboard(props.order.transaction_id)"
 	/>

@@ -23,7 +23,7 @@
 			<div class="flex w-full gap-2">
 				<UButton
 					:label="$t('user-groups.create.cancel')"
-					icon="prime:times"
+					icon="lucide:x"
 					color="neutral"
 					variant="soft"
 					class="flex-1 justify-center"
@@ -35,7 +35,7 @@
 				/>
 				<UButton
 					:label="groupId === undefined ? $t('user-groups.create.create') : $t('user-groups.create.edit')"
-					icon="prime:check"
+					icon="lucide:check"
 					class="flex-1 justify-center"
 					@click="submitForm"
 				/>

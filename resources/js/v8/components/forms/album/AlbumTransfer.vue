@@ -4,11 +4,11 @@
 			<p class="w-full mb-4 text-center text-highlighted">
 				{{ sprintf($t("dialogs.transfer.confirmation"), newOwner.name, albumStore.album?.title) }}<br />
 				<span class="text-warning">
-					<UIcon name="prime:exclamation-triangle" class="ltr:mr-2 rtl:ml-2" />
+					<UIcon name="lucide:triangle-alert" class="ltr:mr-2 rtl:ml-2" />
 					{{ $t("dialogs.transfer.lost_access_warning") }} </span
 				><br />
 				<span class="text-warning">
-					<UIcon name="prime:exclamation-triangle" class="ltr:mr-2 rtl:ml-2" />
+					<UIcon name="lucide:triangle-alert" class="ltr:mr-2 rtl:ml-2" />
 					{{ $t("dialogs.transfer.warning") }}
 				</span>
 			</p>

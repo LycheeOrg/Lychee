@@ -7,7 +7,7 @@
 				}}</RouterLink>
 			</span>
 			<span class="w-full">
-				<UIcon v-if="props.perm.user_group_id !== null" name="prime:users" class="ltr:mr-1 rtl:ml-1" />
+				<UIcon v-if="props.perm.user_group_id !== null" name="lucide:users" class="ltr:mr-1 rtl:ml-1" />
 				{{ props.perm.username ?? props.perm.user_group_name }}
 			</span>
 		</div>
@@ -20,7 +20,7 @@
 			<UCheckbox v-model="grantsDelete" @update:model-value="edit" />
 		</div>
 		<UButton color="error" variant="ghost" class="w-1/6" @click="deletePermission">
-			<UIcon name="prime:user-minus" /><span class="hidden md:inline">{{ $t("dialogs.button.delete") }}</span>
+			<UIcon name="lucide:user-minus" /><span class="hidden md:inline">{{ $t("dialogs.button.delete") }}</span>
 		</UButton>
 	</div>
 </template>

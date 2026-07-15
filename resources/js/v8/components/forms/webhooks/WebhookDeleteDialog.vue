@@ -4,7 +4,7 @@
 			<p class="text-center text-highlighted max-w-xl text-wrap">
 				{{ $t("webhook.confirm_delete_message", { name: webhook.name }) }}<br /><br />
 				<span class="text-muted flex items-center justify-center gap-1">
-					<UIcon name="prime:exclamation-triangle" class="text-warning-700" />{{ $t("webhook.delete_warning") }}
+					<UIcon name="lucide:triangle-alert" class="text-warning-700" />{{ $t("webhook.delete_warning") }}
 				</span>
 			</p>
 		</template>

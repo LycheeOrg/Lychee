@@ -578,6 +578,8 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		is_photo_thumb_tags_enabled: boolean;
 		is_rounded_corners_enabled: boolean;
 		is_album_border_enabled: boolean;
+		is_selection_border_enabled: boolean;
+		is_selection_overlay_enabled: boolean;
 		album_layout: App.Enum.AlbumLayoutType;
 		is_raw_download_enabled: boolean;
 		is_thumb_download_enabled: boolean;

@@ -3,7 +3,7 @@
 		<UHeader :toggle="false">
 			<template #left>
 				<UButton
-					icon="prime:chevron-left"
+					icon="lucide:chevron-left"
 					color="neutral"
 					variant="ghost"
 					@click="
@@ -30,12 +30,12 @@
 						:alt="person.name"
 						class="w-full h-full object-cover"
 					/>
-					<UIcon v-else name="prime:user" class="text-4xl text-muted" />
+					<UIcon v-else name="lucide:user" class="text-4xl text-muted" />
 				</div>
 				<div class="flex flex-col gap-2 text-center sm:text-left">
 					<h1 v-if="!isEditing" class="text-2xl font-bold text-highlighted cursor-text" @click="canEdit && openEdit()">
 						{{ person.name }}
-						<UIcon v-if="canEdit" name="prime:pencil" class="text-sm text-muted ml-2 opacity-50" />
+						<UIcon v-if="canEdit" name="lucide:pencil" class="text-sm text-muted ml-2 opacity-50" />
 					</h1>
 					<UInput
 						v-else
@@ -54,13 +54,13 @@
 					}}</UBadge>
 					<div v-if="canEdit" class="flex gap-2 flex-wrap justify-center sm:justify-start mt-2">
 						<UTooltip v-if="!isBatchMode" :text="$t('people.batch_select')">
-							<UButton icon="prime:check-square" color="neutral" variant="ghost" @click="startBatchMode" />
+							<UButton icon="lucide:check-square" color="neutral" variant="ghost" @click="startBatchMode" />
 						</UTooltip>
 						<template v-else>
 							<UButton :label="$t('people.batch_cancel')" color="neutral" variant="ghost" @click="cancelBatchMode" />
 							<UButton
 								:label="$t('people.batch_unassign')"
-								icon="prime:minus-circle"
+								icon="lucide:minus-circle"
 								color="error"
 								variant="ghost"
 								:disabled="selectedPhotoIds.length === 0"
@@ -70,7 +70,7 @@
 						</template>
 						<UTooltip :text="$t('people.merge.title')">
 							<UButton
-								icon="prime:arrow-down-left-and-arrow-up-right-to-center"
+								icon="lucide:shrink"
 								color="neutral"
 								variant="ghost"
 								@click="
@@ -83,14 +83,14 @@
 
 						<UTooltip :text="$t('people.person.toggle_searchable')">
 							<UButton
-								:icon="person.is_searchable ? 'prime:eye' : 'prime:eye-slash'"
+								:icon="person.is_searchable ? 'lucide:eye' : 'lucide:eye-off'"
 								color="neutral"
 								variant="ghost"
 								@click="toggleSearchable"
 							/>
 						</UTooltip>
 						<UTooltip :text="$t('people.person.delete')">
-							<UButton icon="prime:trash" color="error" variant="ghost" @click="confirmDelete" />
+							<UButton icon="lucide:trash" color="error" variant="ghost" @click="confirmDelete" />
 						</UTooltip>
 					</div>
 				</div>
@@ -133,7 +133,7 @@
 						loading="lazy"
 					/>
 					<div v-else class="w-full h-full flex items-center justify-center">
-						<UIcon name="prime:image" class="text-3xl text-muted" />
+						<UIcon name="lucide:image" class="text-3xl text-muted" />
 					</div>
 					<!-- Remove from person compact × badge (shown on hover when not in batch mode) -->
 					<button

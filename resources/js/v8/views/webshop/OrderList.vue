@@ -9,7 +9,7 @@
 	<div class="md:max-w-3xl lg:max-w-5xl xl:max-w-7xl mt-8 mx-auto w-full p-4">
 		<div v-if="numOldOrders > 0" class="flex justify-center items-center gap-4 mb-8">
 			<p>{{ sprintf($t("webshop.orderList.numStaleOrders"), numOldOrders) }}</p>
-			<UButton :label="$t('webshop.orderList.cleanStaleOrders')" icon="prime:trash" color="warning" @click="clean" />
+			<UButton :label="$t('webshop.orderList.cleanStaleOrders')" icon="lucide:trash" color="warning" @click="clean" />
 		</div>
 		<Disclaimer />
 		<OrderLegend />

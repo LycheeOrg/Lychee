@@ -1,18 +1,14 @@
 <template>
-	<template v-if="props.icon">
-		<MiniIcon v-if="!props.icon.startsWith('pi')" :icon="props.icon" :class="props.class ?? 'w-3 h-3'" />
-		<UIcon v-else :name="iconifyName" :class="props.class ?? 'w-3 h-3'" />
-	</template>
+	<!-- A colon means the value is already a resolved Iconify name (e.g. "lucide:heart"); otherwise
+			it's a legacy sprite id rendered by the old SVG-sprite icon system. -->
+	<MiniIcon v-if="!props.icon?.includes(':')" :icon="props.icon" :class="props.class ?? 'w-3 h-3'" />
+	<UIcon v-else :name="props.icon" :class="props.class ?? 'w-3 h-3'" />
 </template>
 <script lang="ts" setup>
-import { computed } from "vue";
 import MiniIcon from "./MiniIcon.vue";
-import { primeIconToIconifyName } from "@/v8/icons";
 
 const props = defineProps<{
-	icon: string | undefined;
+	icon: string;
 	class?: string;
 }>();
-
-const iconifyName = computed(() => (props.icon ? primeIconToIconifyName(props.icon) : ""));
 </script>

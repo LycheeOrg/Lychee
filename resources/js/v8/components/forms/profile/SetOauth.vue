@@ -5,7 +5,7 @@
 		</div>
 		<template v-else>
 			<div v-for="oauth in oauths" :key="oauth.providerType" class="text-highlighted">
-				<UIcon :name="toIconifyName(oauth.icon)" class="align-middle" :class="oauth.isEnabled ? 'text-success' : ''" />
+				<UIcon :name="oauth.icon" class="align-middle" :class="oauth.isEnabled ? 'text-success' : ''" />
 				<span v-if="oauth.isEnabled" class="ltr:ml-2 rtl:mr-2">
 					{{ sprintf($t("profile.oauth.token_registered"), capitalize(oauth.providerType)) }}
 					<a class="ltr:ml-2 rtl:mr-2 cursor-pointer italic text-muted hover:text-error" @click="clear(oauth.providerType)">
@@ -41,10 +41,6 @@ const title = computed(() => {
 
 	return trans("profile.oauth.header");
 });
-
-function toIconifyName(icon: string): string {
-	return "prime:" + icon.replace(/^pi\s+pi-/, "").replace(/^pi-/, "");
-}
 
 function refresh() {
 	OauthService.list().then((response) => {

@@ -23,7 +23,7 @@
 		<template #footer>
 			<div v-if="!capturedBlob" class="flex w-full gap-2">
 				<UButton
-					icon="prime:times"
+					icon="lucide:x"
 					:label="$t('dialogs.button.cancel')"
 					color="neutral"
 					variant="soft"
@@ -36,7 +36,7 @@
 				/>
 				<UButton
 					:disabled="!cameraReady"
-					icon="prime:camera"
+					icon="lucide:camera"
 					:label="$t('dialogs.camera.capture')"
 					color="primary"
 					class="flex-1 justify-center"
@@ -45,7 +45,7 @@
 			</div>
 			<div v-else class="flex w-full gap-2">
 				<UButton
-					icon="prime:times"
+					icon="lucide:x"
 					:label="$t('dialogs.button.cancel')"
 					color="neutral"
 					variant="soft"
@@ -57,14 +57,14 @@
 					"
 				/>
 				<UButton
-					icon="prime:refresh"
+					icon="lucide:refresh-cw"
 					:label="$t('dialogs.camera.retake')"
 					color="neutral"
 					variant="soft"
 					class="flex-1 justify-center"
 					@click="retake"
 				/>
-				<UButton icon="prime:upload" :label="$t('dialogs.camera.upload')" color="primary" class="flex-1 justify-center" @click="upload" />
+				<UButton icon="lucide:upload" :label="$t('dialogs.camera.upload')" color="primary" class="flex-1 justify-center" @click="upload" />
 			</div>
 		</template>
 	</UModal>

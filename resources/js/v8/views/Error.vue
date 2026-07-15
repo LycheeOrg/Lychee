@@ -11,7 +11,7 @@
 					<template #header>
 						<div class="flex items-center justify-between">
 							<span class="font-bold text-xl">{{ lycheeError.message }}</span>
-							<UButton icon="prime:times" color="neutral" variant="ghost" @click="closeError" />
+							<UButton icon="lucide:x" color="neutral" variant="ghost" @click="closeError" />
 						</div>
 					</template>
 					<USeparator />

@@ -12,7 +12,7 @@
 					</a>
 				</template>
 				<template v-else>
-					<span><UIcon name="prime:exclamation-triangle" class="text-error ltr:mr-2 rtl:ml-2" />{{ $t("profile.token.warning") }}</span>
+					<span><UIcon name="lucide:triangle-alert" class="text-error ltr:mr-2 rtl:ml-2" />{{ $t("profile.token.warning") }}</span>
 					<UInput v-model="token" readonly class="w-full" />
 				</template>
 			</div>

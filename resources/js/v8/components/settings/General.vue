@@ -54,7 +54,7 @@
 			<label for="disable_se_call_for_actions">{{ $t("settings.lychee_se.hide_call4action") }}</label>
 			<USwitch id="disable_se_call_for_actions" v-model="disable_se_call_for_actions" class="text-sm" @update:model-value="saveHideC4A" />
 			<span class="mt-1 w-full text-muted flex items-center gap-2"
-				><UIcon name="prime:exclamation-triangle" class="text-orange-500" />{{ $t("settings.lychee_se.hide_warning") }}</span
+				><UIcon name="lucide:triangle-alert" class="text-orange-500" />{{ $t("settings.lychee_se.hide_warning") }}</span
 			>
 		</p>
 	</Fieldset>
@@ -67,7 +67,7 @@
 		<p class="mb-4 text-muted">
 			{{ $t("settings.dropbox.instruction") }}
 			<a href="https://www.dropbox.com/developers/saver" class="pl-2 border-b border-dashed border-b-primary-500 text-primary-500">
-				<UIcon name="prime:link" />
+				<UIcon name="lucide:link" />
 			</a>
 		</p>
 		<div class="flex gap-4">
@@ -179,7 +179,7 @@
 				<p>
 					{{ $t("settings.gallery.license_help") }}
 					<a href="https://creativecommons.org/choose/" target="_blank" class="ml-2 text-primary-500">
-						<UIcon name="prime:link" class="inline" />
+						<UIcon name="lucide:link" class="inline" />
 					</a>
 				</p>
 			</div>

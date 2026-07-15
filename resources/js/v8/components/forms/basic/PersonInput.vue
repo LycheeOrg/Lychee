@@ -21,7 +21,7 @@
 							class="w-6 h-6 rounded-full object-cover shrink-0"
 							alt=""
 						/>
-						<UIcon v-else name="prime:user" class="w-6 h-6 flex items-center justify-center text-muted shrink-0" />
+						<UIcon v-else name="lucide:user" class="w-6 h-6 flex items-center justify-center text-muted shrink-0" />
 						<span class="flex-1 truncate">{{ item.name }}</span>
 						<span class="text-xs text-muted shrink-0">{{ item.face_count }}</span>
 					</div>

@@ -16,7 +16,7 @@
 			<div class="flex pt-6 ltr:justify-end rtl:justify-start">
 				<UButton
 					:label="$t('webshop.checkout.next')"
-					:icon="ltr ? 'prime:arrow-right' : 'prime:arrow-left'"
+					:icon="ltr ? 'lucide:arrow-right' : 'lucide:arrow-left'"
 					:disabled="!isStepOneValid"
 					@click="next"
 				/>
@@ -30,20 +30,20 @@
 			</div>
 			<div class="flex pt-6 justify-between">
 				<template v-if="ltr">
-					<UButton :label="$t('webshop.checkout.back')" color="neutral" variant="soft" icon="prime:arrow-left" @click="goToInfo" />
+					<UButton :label="$t('webshop.checkout.back')" color="neutral" variant="soft" icon="lucide:arrow-left" @click="goToInfo" />
 					<UButton
 						:label="$t('webshop.checkout.next')"
-						icon="prime:arrow-right"
+						icon="lucide:arrow-right"
 						trailing
 						:disabled="!isStepTwoValid"
 						@click="processPayment"
 					/>
 				</template>
 				<template v-else>
-					<UButton :label="$t('webshop.checkout.back')" color="neutral" variant="soft" icon="prime:arrow-right" @click="goToInfo" />
+					<UButton :label="$t('webshop.checkout.back')" color="neutral" variant="soft" icon="lucide:arrow-right" @click="goToInfo" />
 					<UButton
 						:label="$t('webshop.checkout.next')"
-						icon="prime:arrow-left"
+						icon="lucide:arrow-left"
 						trailing
 						:disabled="!isStepTwoValid"
 						@click="processPayment"
@@ -56,7 +56,7 @@
 				<ThankYou v-if="['completed', 'closed'].includes(order?.status ?? '')" />
 				<CancelledFailed v-else />
 				<div class="flex pt-6 ltr:justify-end rtl:justify-start">
-					<UButton :label="$t('webshop.checkout.toTheGallery')" icon="prime:arrow-right" @click="backToGallery" />
+					<UButton :label="$t('webshop.checkout.toTheGallery')" icon="lucide:arrow-right" @click="backToGallery" />
 				</div>
 			</div>
 		</template>
@@ -72,7 +72,7 @@
 					{{ $t("webshop.checkout.offlineProcessingMessage") }}
 				</div>
 				<div class="flex pt-6 ltr:justify-end rtl:justify-start">
-					<UButton :label="$t('webshop.checkout.toTheGallery')" icon="prime:arrow-right" @click="backToGallery" />
+					<UButton :label="$t('webshop.checkout.toTheGallery')" icon="lucide:arrow-right" @click="backToGallery" />
 				</div>
 			</div>
 		</template>

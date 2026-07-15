@@ -29,14 +29,14 @@
 		<!-- Empty state -->
 		<div v-else-if="webhooks.length === 0" class="text-center py-12">
 			<div class="text-muted mb-4">
-				<UIcon name="prime:send" class="text-4xl" />
+				<UIcon name="lucide:send" class="text-4xl" />
 			</div>
 			<p class="text-muted mb-4">{{ $t("webhook.no_webhooks") }}</p>
-			<UButton icon="prime:plus" :label="$t('webhook.create_first')" @click="openCreateModal" />
+			<UButton icon="lucide:plus" :label="$t('webhook.create_first')" @click="openCreateModal" />
 		</div>
 		<template v-else>
 			<div class="flex mb-4 justify-end">
-				<UButton icon="prime:plus" size="sm" :label="$t('webhook.create')" @click="openCreateModal" />
+				<UButton icon="lucide:plus" size="sm" :label="$t('webhook.create')" @click="openCreateModal" />
 			</div>
 
 			<!-- Webhooks table -->
@@ -128,8 +128,8 @@ const columns: TableColumn<Webhook>[] = [
 		header: trans("webhook.col_actions"),
 		cell: ({ row }) =>
 			h("div", { class: "flex justify-center gap-2" }, [
-				h(UButton, { icon: "prime:pencil", color: "neutral", variant: "ghost", size: "sm", onClick: () => openEditModal(row.original) }),
-				h(UButton, { icon: "prime:trash", color: "error", variant: "ghost", size: "sm", onClick: () => openDeleteModal(row.original) }),
+				h(UButton, { icon: "lucide:pencil", color: "neutral", variant: "ghost", size: "sm", onClick: () => openEditModal(row.original) }),
+				h(UButton, { icon: "lucide:trash", color: "error", variant: "ghost", size: "sm", onClick: () => openDeleteModal(row.original) }),
 			]),
 	},
 ];

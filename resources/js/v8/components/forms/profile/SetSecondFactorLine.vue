@@ -4,10 +4,10 @@
 		<UInput v-model="alias" class="w-1/2!" aria-label="Alias" :color="isInvalid ? 'error' : undefined" />
 		<span v-if="isInvalid" class="w-1/4 text-xs text-muted text-center">{{ $t("profile.u2f.5_chars") }}</span>
 		<UButton v-if="isModified && !isInvalid" color="primary" variant="ghost" class="w-1/4" @click="saveU2F">
-			<UIcon name="prime:save" /><span class="hidden md:inline">{{ $t("dialogs.button.save") }}</span>
+			<UIcon name="lucide:save" /><span class="hidden md:inline">{{ $t("dialogs.button.save") }}</span>
 		</UButton>
 		<UButton v-if="!isModified" color="error" variant="ghost" class="w-1/4" @click="deleteU2F">
-			<UIcon name="prime:trash" /><span class="hidden md:inline">{{ $t("dialogs.button.delete") }}</span>
+			<UIcon name="lucide:trash" /><span class="hidden md:inline">{{ $t("dialogs.button.delete") }}</span>
 		</UButton>
 	</div>
 </template>

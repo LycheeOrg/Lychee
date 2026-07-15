@@ -168,7 +168,7 @@ import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import KeybindingsHelp from "@/v8/components/modals/KeybindingsHelp.vue";
 import { useSelection } from "@/composables/selections/selections";
-import { useContextMenu } from "@/composables/contextMenus/contextMenu";
+import { useContextMenu } from "@/v8/composables/contextMenus/contextMenu";
 import MoveDialog from "@/v8/components/forms/gallery-dialogs/MoveDialog.vue";
 import AlbumMergeDialog from "@/v8/components/forms/gallery-dialogs/AlbumMergeDialog.vue";
 import DeleteDialog from "@/v8/components/forms/gallery-dialogs/DeleteDialog.vue";
@@ -313,10 +313,6 @@ function contextMenuAlbumOpen(_e: MouseEvent, albumId: string): void {
 	}
 }
 
-function toIconifyName(icon: string): string {
-	return "prime:" + icon.replace(/^pi\s+pi-/, "").replace(/^pi-/, "");
-}
-
 const menuSections = computed<ContextMenuItem[][]>(() => {
 	const sections: ContextMenuItem[][] = [[]];
 	for (const entry of Menu.value) {
@@ -326,7 +322,7 @@ const menuSections = computed<ContextMenuItem[][]>(() => {
 		}
 		sections[sections.length - 1].push({
 			label: trans(entry.label ?? ""),
-			icon: toIconifyName(entry.icon ?? ""),
+			icon: entry.icon,
 			onSelect: entry.callback,
 		});
 	}

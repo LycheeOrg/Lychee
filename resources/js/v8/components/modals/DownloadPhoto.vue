@@ -4,12 +4,12 @@
 			<div class="flex flex-col gap-1 justify-center">
 				<template v-for="(sv, svid) in photoStore.photo.size_variants" :key="`sv-${svid}`">
 					<UButton v-if="sv?.locale && isDownloadable(sv.type)" color="neutral" class="w-full justify-center" @click="download(sv.type)">
-						<UIcon name="prime:cloud-download" /> {{ sv?.locale }} - {{ sv?.width }}x{{ sv?.height }} ({{ sv?.filesize }})
+						<UIcon name="lucide:cloud-download" /> {{ sv?.locale }} - {{ sv?.width }}x{{ sv?.height }} ({{ sv?.filesize }})
 					</UButton>
 				</template>
 				<template v-if="photoStore.photo.precomputed.is_livephoto">
 					<UButton color="neutral" class="w-full justify-center" @click="downloadVariant('LIVEPHOTOVIDEO')">
-						<UIcon name="prime:cloud-download" /> {{ $t("gallery.live_video") }} - {{ photoStore.photo.preformatted.resolution }}
+						<UIcon name="lucide:cloud-download" /> {{ $t("gallery.live_video") }} - {{ photoStore.photo.preformatted.resolution }}
 					</UButton>
 				</template>
 			</div>

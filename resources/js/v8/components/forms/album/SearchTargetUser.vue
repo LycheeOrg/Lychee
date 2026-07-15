@@ -10,7 +10,7 @@
 		@update:model-value="selected"
 	>
 		<template #item-leading="{ item }">
-			<UIcon v-if="(item as unknown as UserOrGroup).type === 'group'" name="prime:users" />
+			<UIcon v-if="(item as unknown as UserOrGroup).type === 'group'" name="lucide:users" />
 		</template>
 	</USelectMenu>
 </template>

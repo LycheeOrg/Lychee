@@ -114,6 +114,9 @@ class OrderItem extends Model
 	 */
 	protected $with = [
 		'size_variant',
+		'album',
+		'photo',
+		'photo.size_variants',
 	];
 
 	/**

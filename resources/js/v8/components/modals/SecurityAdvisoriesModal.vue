@@ -3,11 +3,11 @@
 		<template #header>
 			<div class="flex items-center justify-between w-full">
 				<div class="flex items-center gap-2 text-orange-400 font-bold text-base">
-					<UIcon name="prime:exclamation-triangle" class="text-xl" />
+					<UIcon name="lucide:triangle-alert" class="text-xl" />
 					<span>{{ $t("dialogs.security_advisories.title") }}</span>
 				</div>
 				<button class="text-muted hover:text-primary-400 transition-colors" @click="dismiss">
-					<UIcon name="prime:times" />
+					<UIcon name="lucide:x" />
 				</button>
 			</div>
 		</template>

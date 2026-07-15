@@ -19,7 +19,7 @@
 				<UButton
 					color="error"
 					variant="ghost"
-					icon="prime:trash"
+					icon="lucide:trash"
 					@click="
 						() => {
 							items.splice(index, 1);
@@ -30,7 +30,7 @@
 		</div>
 		<UButton
 			:label="$t('webshop.printSizePricesInput.addSize')"
-			icon="prime:plus"
+			icon="lucide:plus"
 			variant="outline"
 			size="sm"
 			@click="

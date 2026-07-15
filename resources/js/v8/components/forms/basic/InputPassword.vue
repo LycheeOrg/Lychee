@@ -14,7 +14,7 @@
 				color="neutral"
 				variant="link"
 				size="sm"
-				:icon="show ? 'prime:eye-slash' : 'prime:eye'"
+				:icon="show ? 'lucide:eye-off' : 'lucide:eye'"
 				:aria-label="show ? 'Hide password' : 'Show password'"
 				@click="
 					() => {

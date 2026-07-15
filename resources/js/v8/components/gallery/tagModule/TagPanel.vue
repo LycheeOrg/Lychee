@@ -44,7 +44,7 @@
 import AlbumThumbPanel from "@/v8/components/gallery/albumModule/AlbumThumbPanel.vue";
 import PhotoThumbPanel from "@/v8/components/gallery/albumModule/PhotoThumbPanel.vue";
 import { useSelection } from "@/composables/selections/selections";
-import { useContextMenu } from "@/composables/contextMenus/contextMenu";
+import { useContextMenu } from "@/v8/composables/contextMenus/contextMenu";
 import PhotoService from "@/services/photo-service";
 import AlbumService from "@/services/album-service";
 import ModerationService from "@/services/moderation-service";
@@ -157,10 +157,6 @@ function contextMenuPhotoOpen(photoId: string, _e: MouseEvent): void {
 	}
 }
 
-function toIconifyName(icon: string): string {
-	return "prime:" + icon.replace(/^pi\s+pi-/, "").replace(/^pi-/, "");
-}
-
 const menuSections = computed<ContextMenuItem[][]>(() => {
 	const sections: ContextMenuItem[][] = [[]];
 	for (const entry of Menu.value) {
@@ -170,7 +166,7 @@ const menuSections = computed<ContextMenuItem[][]>(() => {
 		}
 		sections[sections.length - 1].push({
 			label: trans(entry.label ?? ""),
-			icon: toIconifyName(entry.icon ?? ""),
+			icon: entry.icon,
 			onSelect: entry.callback,
 		});
 	}

@@ -1,7 +1,7 @@
 <template>
 	<UCard v-if="initData?.modules.is_face_recognition_warning_enabled" class="max-w-6xl mx-auto">
 		<h2 class="text-xl font-bold mb-4 flex items-center gap-2">
-			<UIcon name="prime:exclamation-triangle" class="text-warning-600" />
+			<UIcon name="lucide:triangle-alert" class="text-warning-600" />
 			<span>{{ $t("people.face_recognition_warning.title") }}</span>
 		</h2>
 
@@ -21,7 +21,7 @@
 			<div class="flex ltr:justify-end rtl:justify-start">
 				<UButton
 					:label="$t('people.face_recognition_warning.accept')"
-					icon="prime:check"
+					icon="lucide:check"
 					color="primary"
 					:disabled="!acknowledged"
 					@click="accept"

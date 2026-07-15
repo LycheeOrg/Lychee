@@ -4,11 +4,11 @@
 			<MiniIcon icon="layers" class="fill-white w-3 h-3" />
 		</div>
 		<div v-if="showPhotosCount">
-			<UIcon name="prime:images" class="text-shadow-sm text-xs" />
+			<UIcon name="lucide:images" class="text-shadow-sm text-xs" />
 			<span class="ml-1 text-xs text-shadow-sm">{{ props.album.num_photos }}</span>
 		</div>
 		<div v-if="showAlbumsCount">
-			<UIcon name="prime:folder" class="text-shadow-sm text-xs" />
+			<UIcon name="lucide:folder" class="text-shadow-sm text-xs" />
 			<span class="ml-1 text-xs text-shadow-sm">{{ props.album.num_subalbums }}</span>
 		</div>
 	</div>

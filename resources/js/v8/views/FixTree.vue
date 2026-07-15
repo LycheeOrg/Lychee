@@ -10,12 +10,12 @@
 		<div class="text-center mt-2 p-2">
 			<span v-html="$t('fix-tree.intro')" /><br />
 			<span class="text-error text-lg font-bold"
-				><UIcon name="prime:exclamation-triangle" class="ltr:mr-2 rtl:ml-2" />{{ $t("fix-tree.warning") }}</span
+				><UIcon name="lucide:triangle-alert" class="ltr:mr-2 rtl:ml-2" />{{ $t("fix-tree.warning") }}</span
 			>
 		</div>
 		<div class="md:max-w-3xl lg:max-w-5xl xl:max-w-7xl mt-9 mx-auto">
 			<h2 class="text-highlighted text-lg font-bold">
-				<UIcon name="prime:question-circle" class="ltr:mr-2 rtl:ml-2" />{{ $t("fix-tree.help.header") }}
+				<UIcon name="lucide:circle-help" class="ltr:mr-2 rtl:ml-2" />{{ $t("fix-tree.help.header") }}
 			</h2>
 			<ul class="list-disc list-inside">
 				<li v-html="$t('fix-tree.help.hover')" />
@@ -32,7 +32,7 @@
 						)
 					"
 				/>
-				<li><UIcon name="prime:exclamation-triangle" class="ltr:mr-2 rtl:ml-2 text-orange-500" />{{ $t("fix-tree.help.slowness") }}</li>
+				<li><UIcon name="lucide:triangle-alert" class="ltr:mr-2 rtl:ml-2 text-orange-500" />{{ $t("fix-tree.help.slowness") }}</li>
 			</ul>
 		</div>
 
@@ -43,7 +43,7 @@
 			<UButton variant="ghost" color="neutral" class="px-8 font-bold" @click="fetch">{{ $t("fix-tree.buttons.reset") }}</UButton>
 			<UButton color="warning" class="px-8 font-bold" @click="check">{{ $t("fix-tree.buttons.check") }}</UButton>
 			<UButton color="error" class="px-8 font-bold" @click="apply">
-				<UIcon v-if="!isValidated" name="prime:exclamation-triangle" />{{ $t("fix-tree.buttons.apply") }}
+				<UIcon v-if="!isValidated" name="lucide:triangle-alert" />{{ $t("fix-tree.buttons.apply") }}
 			</UButton>
 		</div>
 		<div

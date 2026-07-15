@@ -138,7 +138,7 @@
 							<Fieldset :legend="$t('admin-dashboard.nsfw_config.section_hide_on_scan')">
 								<p class="text-muted text-sm mb-2" v-html="$t('admin-dashboard.nsfw_config.hide_on_scan_explanation')" />
 								<p class="text-sm my-4 text-highlighted flex items-start gap-2">
-									<UIcon name="prime:exclamation-triangle" class="text-amber-600" />
+									<UIcon name="lucide:triangle-alert" class="text-amber-600" />
 									<span v-html="$t('admin-dashboard.nsfw_config.hide_on_scan_warning')" />
 								</p>
 								<div class="flex flex-col gap-3">
@@ -161,7 +161,7 @@
 
 				<template #presets>
 					<div class="flex justify-end mb-4">
-						<UButton icon="prime:refresh" variant="ghost" color="neutral" :loading="presetsLoading" @click="fetchPresets" />
+						<UButton icon="lucide:refresh-cw" variant="ghost" color="neutral" :loading="presetsLoading" @click="fetchPresets" />
 					</div>
 
 					<!-- Loading -->
@@ -172,7 +172,7 @@
 					<!-- Error -->
 					<UCard v-else-if="presetsError">
 						<div class="text-center py-8">
-							<UIcon name="prime:exclamation-triangle" class="text-4xl text-orange-500 mb-4" />
+							<UIcon name="lucide:triangle-alert" class="text-4xl text-orange-500 mb-4" />
 							<p class="text-muted">{{ presetsError }}</p>
 						</div>
 					</UCard>
@@ -266,8 +266,8 @@ const toast = useAppToast();
 const activeTab = ref("settings");
 
 const tabItems: TabsItem[] = [
-	{ label: trans("admin-dashboard.nsfw_config.tab_settings"), value: "settings", icon: "prime:cog", slot: "settings" },
-	{ label: trans("admin-dashboard.nsfw_config.tab_presets"), value: "presets", icon: "prime:eye", slot: "presets" },
+	{ label: trans("admin-dashboard.nsfw_config.tab_settings"), value: "settings", icon: "lucide:cog", slot: "settings" },
+	{ label: trans("admin-dashboard.nsfw_config.tab_presets"), value: "presets", icon: "lucide:eye", slot: "presets" },
 ];
 
 // -- Settings tab state --
@@ -336,22 +336,22 @@ type ActionRow = { key: NsfwKey; iconClass: string; label: string };
 const blockActionRows: ActionRow[] = [
 	{
 		key: "ai_vision_nsfw_check_block_action",
-		iconClass: "prime:shield text-error",
+		iconClass: "lucide:shield text-error",
 		label: trans("admin-dashboard.nsfw_config.matrix_check"),
 	},
 	{
 		key: "ai_vision_nsfw_monitor_block_action",
-		iconClass: "prime:shield text-yellow-500",
+		iconClass: "lucide:shield text-yellow-500",
 		label: trans("admin-dashboard.nsfw_config.matrix_monitor"),
 	},
 	{
 		key: "ai_vision_nsfw_trust_but_verify_block_action",
-		iconClass: "prime:shield text-blue-500",
+		iconClass: "lucide:shield text-blue-500",
 		label: trans("admin-dashboard.nsfw_config.matrix_tbv"),
 	},
 	{
 		key: "ai_vision_nsfw_trust_block_action",
-		iconClass: "prime:shield text-success",
+		iconClass: "lucide:shield text-success",
 		label: trans("admin-dashboard.nsfw_config.matrix_trusted"),
 	},
 ];
@@ -364,17 +364,17 @@ const sensitiveActionRows: ActionRow[] = [
 const hideOnScanRows: ActionRow[] = [
 	{
 		key: "ai_vision_nsfw_monitor_hide_on_scan",
-		iconClass: "prime:shield text-yellow-500",
+		iconClass: "lucide:shield text-yellow-500",
 		label: trans("admin-dashboard.nsfw_config.matrix_monitor"),
 	},
 	{
 		key: "ai_vision_nsfw_trust_but_verify_hide_on_scan",
-		iconClass: "prime:shield text-blue-500",
+		iconClass: "lucide:shield text-blue-500",
 		label: trans("admin-dashboard.nsfw_config.matrix_tbv"),
 	},
 	{
 		key: "ai_vision_nsfw_trust_hide_on_scan",
-		iconClass: "prime:shield text-success",
+		iconClass: "lucide:shield text-success",
 		label: trans("admin-dashboard.nsfw_config.matrix_trusted"),
 	},
 ];
@@ -409,28 +409,28 @@ function sensitiveCell(): MatrixCell {
 const matrixRows = computed(() => [
 	{
 		trustLevel: trans("admin-dashboard.nsfw_config.matrix_check"),
-		iconClass: "prime:shield text-error",
+		iconClass: "lucide:shield text-error",
 		block: blockActionCell(cfg.ai_vision_nsfw_check_block_action),
 		review: { label: trans("admin-dashboard.nsfw_config.matrix_moderate"), severity: "warning" as const },
 		sensitive: { label: trans("admin-dashboard.nsfw_config.matrix_moderate"), severity: "warning" as const },
 	},
 	{
 		trustLevel: trans("admin-dashboard.nsfw_config.matrix_monitor"),
-		iconClass: "prime:shield text-yellow-500",
+		iconClass: "lucide:shield text-yellow-500",
 		block: blockActionCell(cfg.ai_vision_nsfw_monitor_block_action),
 		review: { label: trans("admin-dashboard.nsfw_config.matrix_moderate"), severity: "warning" as const },
 		sensitive: sensitiveCell(),
 	},
 	{
 		trustLevel: trans("admin-dashboard.nsfw_config.matrix_tbv"),
-		iconClass: "prime:shield text-blue-500",
+		iconClass: "lucide:shield text-blue-500",
 		block: blockActionCell(cfg.ai_vision_nsfw_trust_but_verify_block_action),
 		review: { label: trans("admin-dashboard.nsfw_config.matrix_approve"), severity: "success" as const },
 		sensitive: sensitiveCell(),
 	},
 	{
 		trustLevel: trans("admin-dashboard.nsfw_config.matrix_trusted"),
-		iconClass: "prime:shield text-success",
+		iconClass: "lucide:shield text-success",
 		block: blockActionCell(cfg.ai_vision_nsfw_trust_block_action),
 		review: { label: trans("admin-dashboard.nsfw_config.matrix_approve"), severity: "success" as const },
 		sensitive: sensitiveCell(),

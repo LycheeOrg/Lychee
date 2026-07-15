@@ -58,7 +58,7 @@
 					<span class="text-sm text-muted">{{ $t("renamer.rules_count", { count: rules.length.toString() }) }}</span>
 					<UButton
 						v-if="rules.length > 0"
-						icon="prime:plus"
+						icon="lucide:plus"
 						size="sm"
 						:label="$t('renamer.create_rule')"
 						@click="
@@ -72,11 +72,11 @@
 
 			<div v-if="rules.length === 0" class="text-center py-8">
 				<div class="text-muted mb-4">
-					<UIcon name="prime:file-edit" class="text-4xl" />
+					<UIcon name="lucide:file-edit" class="text-4xl" />
 				</div>
 				<p class="text-muted mb-4">{{ $t("renamer.no_rules") }}</p>
 				<UButton
-					icon="prime:plus"
+					icon="lucide:plus"
 					:label="$t('renamer.create_first_rule')"
 					@click="
 						() => {

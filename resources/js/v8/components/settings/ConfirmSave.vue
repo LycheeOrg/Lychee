@@ -23,7 +23,7 @@
 						hidden: !props.areAllSettingsEnabled,
 					}"
 				>
-					<UButton :icon="isLTR() ? 'prime:angle-double-left' : 'prime:angle-double-right'" variant="ghost" color="primary" />
+					<UButton :icon="isLTR() ? 'lucide:chevrons-left' : 'lucide:chevrons-right'" variant="ghost" color="primary" />
 				</router-link>
 			</UTooltip>
 			<div

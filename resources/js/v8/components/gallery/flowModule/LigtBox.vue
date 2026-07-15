@@ -1,6 +1,6 @@
 <template>
 	<div v-if="photoStore.photo" class="absolute z-20 top-0 left-0 w-full flex h-full overflow-hidden bg-black">
-		<UButton color="neutral" variant="ghost" icon="prime:times" class="absolute top-2 left-2 rounded-full" @click="emits('goBack')" />
+		<UButton color="neutral" variant="ghost" icon="lucide:x" class="absolute top-2 left-2 rounded-full" @click="emits('goBack')" />
 		<div class="animate-zoomIn w-full h-full">
 			<Transition name="fade">
 				<PhotoBox @go-back="emits('goBack')" @next="emits('next')" @previous="emits('previous')" @click="emits('next')" />

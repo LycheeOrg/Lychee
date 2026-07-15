@@ -6,7 +6,7 @@
 				'md:opacity-0 md:group-hover:opacity-50 md:transition-all md:ease-out': !props.isInBasket,
 			}"
 		>
-			<UIcon :name="props.isInBasket ? 'prime:check-circle' : 'prime:cart-arrow-down'" />
+			<UIcon :name="props.isInBasket ? 'lucide:check-circle' : 'lucide:shopping-cart'" />
 		</div>
 		<div
 			:class="{
@@ -15,7 +15,7 @@
 			}"
 			@click="propagateClick"
 		>
-			<UIcon :name="props.isInBasket ? 'prime:check-circle' : 'prime:cart-arrow-down'" />
+			<UIcon :name="props.isInBasket ? 'lucide:check-circle' : 'lucide:shopping-cart'" />
 		</div>
 	</div>
 </template>

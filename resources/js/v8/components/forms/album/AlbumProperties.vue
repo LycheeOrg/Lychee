@@ -12,7 +12,7 @@
 				</UTooltip>
 				<UInput id="slug" v-model="slugForInput" type="text" :disabled="is_se_preview_enabled" class="flex-1" />
 				<UTooltip :text="$t('gallery.album.properties.generate_slug')">
-					<UButton icon="prime:sync" variant="ghost" color="primary" :disabled="is_se_preview_enabled" @click="generateSlug" />
+					<UButton icon="lucide:refresh-cw" variant="ghost" color="primary" :disabled="is_se_preview_enabled" @click="generateSlug" />
 				</UTooltip>
 			</div>
 			<UFormField :label="$t('gallery.album.properties.description')">
@@ -46,7 +46,7 @@
 				<UFormField :label="$t('gallery.album.properties.header')">
 					<USelectMenu v-model="header_id" :items="headersOptions" label-key="title" class="w-72">
 						<template #item-leading="{ item }">
-							<UIcon v-if="item.id === 'compact'" name="prime:arrow-down-left-and-arrow-up-right-to-center" />
+							<UIcon v-if="item.id === 'compact'" name="lucide:shrink" />
 							<img v-else :src="item.thumb ?? undefined" alt="poster" class="w-4 rounded-sm" />
 						</template>
 					</USelectMenu>

@@ -97,6 +97,7 @@ return [
         'processing' => 'In Bearbeitung',
         'failed' => 'Fehlgeschlagen',
         'closed' => 'Geschlossen',
+        'cancelled' => 'Cancelled',
     ],
     'orderList' => [
         'orders' => 'Bestellungen',

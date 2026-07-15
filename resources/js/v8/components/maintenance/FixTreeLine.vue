@@ -28,8 +28,8 @@
 					:step="1"
 					placeholder="_lft"
 				/>
-				<UButton variant="ghost" color="neutral" icon="prime:angle-up" class="py-0.5" @click="incrementLft" />
-				<UButton variant="ghost" color="neutral" icon="prime:angle-down" class="py-0.5" @click="decrementLft" />
+				<UButton variant="ghost" color="neutral" icon="lucide:chevron-up" class="py-0.5" @click="incrementLft" />
+				<UButton variant="ghost" color="neutral" icon="lucide:chevron-down" class="py-0.5" @click="decrementLft" />
 			</div>
 			<div class="flex">
 				<UInputNumber
@@ -39,8 +39,8 @@
 					:step="1"
 					placeholder="_rgt"
 				/>
-				<UButton variant="ghost" color="neutral" icon="prime:angle-up" class="py-0.5" @click="incrementRgt" />
-				<UButton variant="ghost" color="neutral" icon="prime:angle-down" class="py-0.5" @click="decrementRgt" />
+				<UButton variant="ghost" color="neutral" icon="lucide:chevron-up" class="py-0.5" @click="incrementRgt" />
+				<UButton variant="ghost" color="neutral" icon="lucide:chevron-down" class="py-0.5" @click="decrementRgt" />
 			</div>
 		</div>
 		<div class="flex w-1/4 justify-between items-center">

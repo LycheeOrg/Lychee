@@ -13,7 +13,7 @@
 			<UInput :id="props.config.key" v-model="val" type="text" class="w-full grow" @update:model-value="update">
 				<template v-if="changed" #trailing>
 					<UTooltip text="Click me to reset!">
-						<UIcon name="prime:exclamation-circle" class="text-warning-600 cursor-pointer" @click="reset" />
+						<UIcon name="lucide:circle-alert" class="text-warning-600 cursor-pointer" @click="reset" />
 					</UTooltip>
 				</template>
 			</UInput>

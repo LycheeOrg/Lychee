@@ -33,8 +33,8 @@
 
 		<!-- Actions -->
 		<div class="flex items-center gap-2">
-			<UButton v-if="canEdit" color="neutral" size="sm" icon="prime:pencil" @click="$emit('edit')" />
-			<UButton v-if="canDelete" color="error" size="sm" icon="prime:trash" @click="$emit('delete')" />
+			<UButton v-if="canEdit" color="neutral" size="sm" icon="lucide:pencil" @click="$emit('edit')" />
+			<UButton v-if="canDelete" color="error" size="sm" icon="lucide:trash" @click="$emit('delete')" />
 		</div>
 	</div>
 </template>

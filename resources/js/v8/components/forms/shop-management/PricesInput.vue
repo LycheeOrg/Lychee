@@ -28,7 +28,7 @@
 				<UButton
 					color="error"
 					variant="ghost"
-					icon="prime:trash"
+					icon="lucide:trash"
 					@click="
 						() => {
 							pricesValues.splice(index, 1);
@@ -40,7 +40,7 @@
 		<UAlert v-if="!isValid" color="error" :description="$t('webshop.pricesInput.duplicateError')" />
 		<UButton
 			:label="$t('webshop.pricesInput.addPrice')"
-			icon="prime:plus"
+			icon="lucide:plus"
 			variant="outline"
 			size="sm"
 			@click="

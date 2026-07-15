@@ -3,7 +3,7 @@
 		<template v-for="config in props.configs" :key="`config-${config.key}`">
 			<div v-if="show(config)" class="flex gap-2">
 				<div class="shrink h-8 w-4 flex items-center">
-					<UIcon v-if="config.is_expert" name="prime:graduation-cap" class="text-primary-500" />
+					<UIcon v-if="config.is_expert" name="lucide:graduation-cap" class="text-primary-500" />
 				</div>
 				<template v-if="is_old_style">
 					<OldField :config="config" @filled="filled" @reset="reset" />

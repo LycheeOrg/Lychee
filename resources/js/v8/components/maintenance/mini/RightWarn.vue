@@ -1,3 +1,3 @@
 <template>
-	<UIcon name="prime:chevron-circle-right" class="text-warning" />
+	<UIcon name="lucide:circle-chevron-right" class="text-warning" />
 </template>

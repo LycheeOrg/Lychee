@@ -4,7 +4,7 @@
 			<p class="text-center text-highlighted max-w-xl text-wrap">
 				{{ confirmMessage }}<br /><br />
 				<span class="text-muted">
-					<UIcon name="prime:exclamation-triangle" class="ltr:mr-2 rtl:ml-2 text-warning" />{{ $t("tags.delete_warning") }}
+					<UIcon name="lucide:triangle-alert" class="ltr:mr-2 rtl:ml-2 text-warning" />{{ $t("tags.delete_warning") }}
 				</span>
 			</p>
 		</template>
