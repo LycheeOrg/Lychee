@@ -105,7 +105,7 @@ class Order extends Model
 		'provider' => OmnipayProviderType::class,
 	];
 
-	protected $with = ['items', 'user'];
+	protected $with = ['items', 'items.album', 'user'];
 
 	/**
 	 * Get the user who placed this order.

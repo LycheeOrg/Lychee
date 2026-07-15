@@ -30,7 +30,7 @@ export const useLayoutStore = defineStore("layout-store", {
 			return BASE + HOVER_STROKE + (this.layout === "square" ? "stroke-primary-400" : "stroke-neutral-400");
 		},
 		justifiedClass(): string {
-			return BASE + (this.layout === "justified" ? "fill-primary-400" : "fill-neutral-400 group-hover:fill-black");
+			return BASE + (this.layout === "justified" ? "fill-primary-400" : "fill-neutral-400 group-hover:fill-white");
 		},
 		masonryClass(): string {
 			return BASE + HOVER_STROKE + (this.layout === "masonry" ? "stroke-primary-400" : "stroke-neutral-400");

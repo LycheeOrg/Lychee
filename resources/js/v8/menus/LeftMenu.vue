@@ -54,12 +54,12 @@
 						<SETag v-if="item.seTag" />
 					</template>
 				</UNavigationMenu>
-				<div class="border-t border-default pt-2 flex justify-between items-center pr-0">
+				<div class="border-t border-default pt-2 flex justify-between items-center px-2.5">
 					<div class="flex items-center gap-2">
 						<PiMiniIcon icon="person" class="w-3 h-3" />
 						<div class="capitalize ml-2 text-muted">
 							{{ userStore.user?.username }}
-							<PiMiniIcon v-if="canSeeAdmin" icon="lucide:crown" class="w-6 h-6 text-orange-400 inline-block" />
+							<PiMiniIcon v-if="canSeeAdmin" icon="lucide:crown" class="w-4 h-4 text-orange-400 inline-block" />
 						</div>
 					</div>
 					<UButton variant="ghost" color="neutral" class="cursor-pointer" @click="logout">

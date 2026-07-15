@@ -374,6 +374,8 @@ return [
         'sm_card_album_source' => 'Album photo source for social media cards',
         'sm_card_image_url' => 'Fallback image URL or photo ID for social media cards',
         'breadcrumb_enabled' => 'Enable breadcrumb navigation in the album header',
+        'selection_border_enabled' => '在选中的照片缩略图周围显示边框',
+        'selection_overlay_enabled' => '在选中的照片缩略图上显示浅蓝色叠加层',
     ],
     'details' => [
         'version' => '',
@@ -742,6 +744,8 @@ return [
         'sm_card_album_source' => 'Select whether the header or cover photo of an album is used as the Open Graph image when sharing links on social media.',
         'sm_card_image_url' => 'URL or photo ID used as the Open Graph image when no album-specific image is available. If empty, the landing page background is used.',
         'breadcrumb_enabled' => 'Display the album ancestry as breadcrumbs in the header bar instead of the back button and title.',
+        'selection_border_enabled' => '启用后，选中的照片缩略图将带有边框。',
+        'selection_overlay_enabled' => '启用后，选中的照片缩略图将被浅蓝色叠加层染色。',
     ],
 
     'category_name' => [

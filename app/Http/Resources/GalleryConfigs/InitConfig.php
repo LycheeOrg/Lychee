@@ -72,6 +72,8 @@ class InitConfig extends Data
 	public bool $is_photo_thumb_tags_enabled;
 	public bool $is_rounded_corners_enabled;
 	public bool $is_album_border_enabled;
+	public bool $is_selection_border_enabled;
+	public bool $is_selection_overlay_enabled;
 
 	// Album view mode
 	public AlbumLayoutType $album_layout;
@@ -205,6 +207,8 @@ class InitConfig extends Data
 		$this->is_photo_thumb_tags_enabled = request()->configs()->getValueAsBool('photo_thumb_tags_enabled');
 		$this->is_rounded_corners_enabled = request()->configs()->getValueAsBool('rounded_corners_enabled');
 		$this->is_album_border_enabled = request()->configs()->getValueAsBool('album_border_enabled');
+		$this->is_selection_border_enabled = request()->configs()->getValueAsBool('selection_border_enabled');
+		$this->is_selection_overlay_enabled = request()->configs()->getValueAsBool('selection_overlay_enabled');
 		$this->album_layout = request()->configs()->getValueAsEnum('album_layout', AlbumLayoutType::class);
 
 		// Download configuration

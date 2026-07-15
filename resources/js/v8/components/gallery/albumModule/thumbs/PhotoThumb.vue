@@ -2,7 +2,7 @@
 	<a
 		:class="{
 			'photo group shadow-md shadow-black/25 animate-zoomIn transition-all ease-in duration-200 block absolute cursor-pointer': true,
-			'outline outline-1.5 outline-primary-500': props.isSelected,
+			'outline-2 outline-primary-500': props.isSelected && is_selection_border_enabled,
 			'rounded-lg overflow-hidden': is_rounded_corners_enabled,
 			'border-solid border border-accented': is_album_border_enabled,
 		}"
@@ -40,6 +40,10 @@
 				@load="onImageLoad"
 			/>
 		</span>
+		<div
+			v-if="props.isSelected && is_selection_overlay_enabled"
+			class="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none bg-primary/20"
+		></div>
 		<div
 			:class="{
 				'overlay w-full absolute bottom-0 m-0 bg-linear-to-t from-black/40 text-shadow-sm': true,
@@ -166,6 +170,8 @@ const {
 	rating_album_view_mode,
 	is_rounded_corners_enabled,
 	is_album_border_enabled,
+	is_selection_border_enabled,
+	is_selection_overlay_enabled,
 } = storeToRefs(lycheeStore);
 const facesStore = usePhotoFacesStore();
 const { is_touch_select_mode } = storeToRefs(togglableStore);

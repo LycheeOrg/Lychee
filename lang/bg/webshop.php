@@ -97,6 +97,7 @@ return [
         'processing' => 'Обработва се',
         'failed' => 'Неуспешно',
         'closed' => 'Затворено',
+        'cancelled' => 'Cancelled',
     ],
     'orderList' => [
         'orders' => 'Поръчки',

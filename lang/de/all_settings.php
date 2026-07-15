@@ -372,6 +372,8 @@ return [
         'sm_card_album_source' => 'Quelle der Fotos aus dem Album für die Social-Media-Karten',
         'sm_card_image_url' => 'URL des Alternativbildes oder Foto-ID für Social-Media-Karten',
         'breadcrumb_enabled' => 'Die Navigation über den Navigationspfad in der Kopfzeile des Albums aktivieren',
+        'selection_border_enabled' => 'Rahmen um ausgewählte Fotominiaturen anzeigen',
+        'selection_overlay_enabled' => 'Hellblaue Überlagerung bei ausgewählten Fotominiaturen anzeigen',
     ],
     'details' => [
         'version' => '',
@@ -740,6 +742,8 @@ return [
         'sm_card_album_source' => 'Wähle aus, ob beim Teilen von Links in sozialen Netzwerken das Titelbild oder das Coverfoto eines Albums als Open-Graph-Bild verwendet werden soll.',
         'sm_card_image_url' => 'URL oder Identifikationsbild, das als Open-Graph-Bild verwendet wird, wenn kein spezifisches Bild aus dem Album verfügbar ist. Wird dieses Feld leer gelassen, wird der Hintergrund der Zielseite verwendet.',
         'breadcrumb_enabled' => 'Die Albumhierarchie als Navigationspfad in der Kopfzeile anzeigen, anstelle der Schaltfläche „Zurück“ und des Titels.',
+        'selection_border_enabled' => 'Wenn aktiviert, werden ausgewählte Fotominiaturen mit einem Rahmen umrandet.',
+        'selection_overlay_enabled' => 'Wenn aktiviert, werden ausgewählte Fotominiaturen mit einer hellblauen Überlagerung eingefärbt.',
     ],
     'category_name' => [
         'config' => 'Grundeinstellungen',

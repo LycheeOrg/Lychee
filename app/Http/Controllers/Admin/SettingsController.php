@@ -37,6 +37,8 @@ class SettingsController extends Controller
 		'breadcrumb_enabled',
 		'rounded_corners_enabled',
 		'album_border_enabled',
+		'selection_border_enabled',
+		'selection_overlay_enabled',
 	];
 
 	/**
