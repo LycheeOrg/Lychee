@@ -53,6 +53,7 @@ return [
         'mark_unread' => 'Als ungelesen markieren',
         'delete_confirm_header' => 'Nachricht löschen',
         'delete_confirm_message' => 'Sind Sie sicher, dass Sie diese Nachricht löschen möchten?',
+        'delete_warning' => 'Diese Aktion kann nicht rückgängig gemacht werden.',
         'delete_success' => 'Nachricht gelöscht.',
         'delete_error' => 'Fehler beim Löschen der Nachricht.',
         'update_error' => 'Fehler beim Aktualisieren der Nachricht.',
