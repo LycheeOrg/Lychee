@@ -11,7 +11,8 @@ namespace App\Http\Controllers\Gallery;
 use App\Actions\Search\AlbumSearch;
 use App\Actions\Search\PhotoSearch;
 use App\Contracts\Models\AbstractAlbum;
-use App\Enum\ColumnSortingPhotoType;
+use App\DTO\PhotoSortingCriterion;
+use App\Enum\ColumnSortingType;
 use App\Enum\OrderSortingType;
 use App\Http\Requests\Search\GetSearchRequest;
 use App\Http\Requests\Search\InitSearchRequest;
@@ -52,13 +53,15 @@ class SearchController extends Controller
 			$should_downgrade = Gate::check(AlbumPolicy::CAN_ACCESS_FULL_PHOTO, [AbstractAlbum::class, null]) === false;
 		}
 
+		$photo_sorting = $request->photoSortingCriterion() ?? new PhotoSortingCriterion(ColumnSortingType::TAKEN_AT, OrderSortingType::ASC);
+
 		/** @disregard P1013 Undefined method withQueryString() (stupid intelephense) */
 		$photo_results = $photo_search
 			->sqlQuery($tokens, $album)
-			->orderBy(ColumnSortingPhotoType::TAKEN_AT->value, OrderSortingType::ASC->value)
+			->orderBy($photo_sorting->column->toColumn(), $photo_sorting->order->value)
 			->paginate($request->configs()->getValueAsInt('search_pagination_limit'));
 
-		$album_results = $album_search->queryAlbums($tokens, $album);
+		$album_results = $album_search->queryAlbums($tokens, $album, $request->albumSortingCriterion());
 
 		return ResultsResource::fromData(
 			albums: $album_results,

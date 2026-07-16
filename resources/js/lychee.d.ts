@@ -168,6 +168,7 @@ declare namespace App.Enum {
 	export type PurchasableLicenseType = "personal" | "commercial" | "extended" | "print";
 	export type PurchasableSizeVariantType = "medium" | "medium2x" | "original" | "full";
 	export type RenamerModeType = "first" | "all" | "regex" | "trim" | "strtolower" | "strtoupper" | "ucwords" | "ucfirst";
+	export type SearchSortingType = "title" | "created_at" | "taken_at";
 	export type SeverityType = "emergency" | "alert" | "critical" | "error" | "warning" | "notice" | "info" | "debug";
 	export type SharedAlbumsVisibility = "show" | "separate" | "separate_shared_only" | "hide";
 	export type ShiftType = "relative" | "absolute";

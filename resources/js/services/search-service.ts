@@ -18,9 +18,20 @@ const SearchService = {
 		});
 	},
 
-	search(album_id: string | undefined, terms: string, page: number = 1): Promise<AxiosResponse<App.Http.Resources.Search.ResultsResource>> {
+	search(
+		album_id: string | undefined,
+		terms: string,
+		page: number = 1,
+		sorting_column?: App.Enum.SearchSortingType,
+		sorting_order?: App.Enum.OrderSortingType,
+	): Promise<AxiosResponse<App.Http.Resources.Search.ResultsResource>> {
 		return axios.get(`${Constants.getApiUrl()}Search`, {
-			params: { album_id: this.albumId(album_id), terms: base64encode(terms), page: page },
+			params: {
+				album_id: this.albumId(album_id),
+				terms: base64encode(terms),
+				page: page,
+				...(sorting_column !== undefined ? { sorting_column: sorting_column, sorting_order: sorting_order } : {}),
+			},
 			data: {},
 		});
 	},
