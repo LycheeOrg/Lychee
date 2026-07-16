@@ -44,6 +44,7 @@ return [
         'title' => 'Suche',
         'no_results' => 'Keine Übereinstimmung mit Ihrer Suchanfrage.',
         'searchbox' => 'Suche…',
+        'clear_scope' => 'Stattdessen alle Alben durchsuchen',
         'minimum_chars' => 'Mindestens %s Zeichen erforderlich.',
         'photos' => 'Fotos (%s)',
         'albums' => 'Alben (%s)',

@@ -53,6 +53,7 @@ return [
         'mark_unread' => 'Mark as unread',
         'delete_confirm_header' => 'Delete Message',
         'delete_confirm_message' => 'Are you sure you want to delete this message?',
+        'delete_warning' => 'This action cannot be undone.',
         'delete_success' => 'Message deleted.',
         'delete_error' => 'Failed to delete the message.',
         'update_error' => 'Failed to update the message.',

@@ -45,6 +45,7 @@ return [
         'title' => '搜索',
         'no_results' => '没有找到匹配的内容。',
         'searchbox' => '搜索…',
+        'clear_scope' => '改为搜索所有相册',
         'minimum_chars' => '至少需要 %s 个字符。',
         'photos' => '照片（%s）',
         'albums' => '相册（%s）',

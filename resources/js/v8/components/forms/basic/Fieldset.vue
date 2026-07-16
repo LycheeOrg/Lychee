@@ -1,7 +1,7 @@
 <template>
 	<div
 		:class="
-			'v8-fieldset border rounded-lg border-b-0 ltr:border-r-0 ltr:rounded-r-none rtl:border-l-0 rtl:rounded-l-none rounded-b-none p-4 ' +
+			'v8-fieldset border border-(--ui-text-muted) rounded-lg border-b-0 ltr:border-r-0 ltr:rounded-r-none rtl:border-l-0 rtl:rounded-l-none rounded-b-none p-4 ' +
 			(props.class ?? '')
 		"
 	>

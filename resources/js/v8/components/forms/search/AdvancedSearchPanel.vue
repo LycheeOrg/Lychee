@@ -1,5 +1,5 @@
 <template>
-	<div class="w-full border border-default rounded-lg bg-elevated/30 p-4 mb-2">
+	<div class="w-full p-4 pt-0">
 		<!-- Panel header -->
 		<div class="flex items-center justify-between mb-4">
 			<span class="font-semibold text-sm text-muted uppercase tracking-wide">{{ $t("gallery.search.advanced.title") }}</span>
@@ -109,7 +109,7 @@
 						<button
 							class="block mt-2 h-4 w-6 border hover:border-highlighted transition duration-100 cursor-pointer rounded-sm"
 							:class="{
-								'border-default': orientation !== 'landscape',
+								'border-(--ui-text-muted)': orientation !== 'landscape',
 								'border-primary': orientation === 'landscape',
 							}"
 							@click="updateOrientation('landscape')"
@@ -119,7 +119,7 @@
 						<button
 							class="block h-6 w-4 border hover:border-highlighted transition duration-100 cursor-pointer rounded-sm"
 							:class="{
-								'border-default': orientation !== 'portrait',
+								'border-(--ui-text-muted)': orientation !== 'portrait',
 								'border-primary': orientation === 'portrait',
 							}"
 							@click="updateOrientation('portrait')"
@@ -129,7 +129,7 @@
 						<button
 							class="block mt-2 h-4 w-4 border hover:border-highlighted transition duration-100 cursor-pointer rounded-sm"
 							:class="{
-								'border-default': orientation !== 'square',
+								'border-(--ui-text-muted)': orientation !== 'square',
 								'border-primary': orientation === 'square',
 							}"
 							@click="updateOrientation('square')"

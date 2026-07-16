@@ -45,6 +45,7 @@ return [
         'title' => 'Search',
         'no_results' => 'Nothing matches your search query.',
         'searchbox' => 'Search…',
+        'clear_scope' => 'Search all albums instead',
         'minimum_chars' => 'Minimum %s characters required.',
         'photos' => 'Photos (%s)',
         'albums' => 'Albums (%s)',

@@ -45,6 +45,7 @@ return [
         'title' => 'Zoeken',
         'no_results' => 'Niets komt overeen met uw zoekopdracht.',
         'searchbox' => 'Zoeken…',
+        'clear_scope' => 'In plaats daarvan in alle albums zoeken',
         'minimum_chars' => 'Minimaal %s tekens vereist.',
         'photos' => 'Foto’s (%s)',
         'albums' => 'Albums (%s)',

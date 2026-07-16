@@ -4,7 +4,14 @@
 	<div class="h-svh overflow-y-hidden">
 		<!-- Trick to avoid the scroll bar to appear on the right when switching to full screen -->
 		<Collapse :when="!is_full_screen">
-			<SearchHeader :title="title" @go-back="goBack" />
+			<SearchHeader
+				:title="title"
+				:scoped-album-title="scopedAlbumTitle"
+				:show-breadcrumb="showBreadcrumb"
+				:breadcrumb-items="breadcrumbItems"
+				@go-back="goBack"
+				@clear-scope="clearScope"
+			/>
 		</Collapse>
 		<div
 			:class="{
@@ -13,7 +20,7 @@
 				'h-[calc(100vh-3.5rem)]': !is_full_screen,
 			}"
 		>
-			<SearchPanel :no-data="noData" @clear="searchStore.clear" @search="onSearch" />
+			<SearchPanel :no-data="noData" @clear="searchStore.clear" @search="onSearch" @clear-scope="clearScope" />
 			<div ref="resultsMarkerRef" aria-hidden="true" class="w-full h-0" data-search-results></div>
 			<ResultPanel
 				v-model:first="searchStore.from"
@@ -227,12 +234,27 @@ const downloadFromId = ref<string | null>(null);
 const is_download_album_visible = ref(false);
 const downloadAlbumIds = ref<string[]>([]);
 
-const title = computed<string>(() => {
-	if (albumStore.album === undefined) {
-		return trans(lycheeStore.title);
+const title = computed<string>(() => trans("gallery.search.title"));
+
+const isAlbumScoped = computed<boolean>(() => albumId.value !== undefined && albumId.value !== ALL && albumId.value !== "");
+
+const scopedAlbumTitle = computed<string | undefined>(() => (isAlbumScoped.value ? albumStore.album?.title : undefined));
+
+const showBreadcrumb = computed<boolean>(() => isAlbumScoped.value && (albumStore.config?.is_breadcrumb_enabled ?? false));
+
+const breadcrumbItems = computed<App.Http.Resources.Models.BreadcrumbItemResource[]>(() => albumStore.modelAlbum?.breadcrumb ?? []);
+
+function clearScope() {
+	if (!isAlbumScoped.value) {
+		return;
 	}
-	return albumStore.album.title;
-});
+	albumId.value = ALL;
+	albumStore.reset();
+	router.replace({ name: "search", params: { albumId: undefined, photoId: photoId.value } });
+	if (searchStore.searchTerm !== undefined) {
+		onSearch(searchStore.searchTerm);
+	}
+}
 
 const noData = computed<boolean>(() => albumsStore.albums.length === 0 && photosStore.photos.length === 0);
 
@@ -519,6 +541,18 @@ onMounted(async () => {
 	photoId.value = props.photoId;
 
 	await load();
+
+	// AlbumsState/PhotosState are shared with the browsing views (Gallery/Album/Timeline).
+	// When scoped to an album, the albumStore.load() call above (needed just to get the
+	// album's title/config for the header) has the side effect of populating albumsStore
+	// with that album's own sub-albums, exactly like the Album browsing view does. On a
+	// fresh search entry (no search performed yet) that leftover browsing data must not be
+	// shown as if it were search results. Must run *after* load(), not before, since load()
+	// is what (re)populates it.
+	if (searchStore.searchTerm === undefined) {
+		searchStore.clear();
+	}
+
 	setScroll();
 });
 

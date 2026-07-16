@@ -1,4 +1,14 @@
 <template>
+	<ContactMessageDeleteDialog
+		v-if="deletingMessage !== undefined"
+		v-model:open="isDeleteDialogVisible"
+		:message="deletingMessage"
+		@deleted="
+			deletingMessage = undefined;
+			load(pagination.current_page);
+		"
+	/>
+
 	<UHeader :toggle="false">
 		<template #left>
 			<OpenLeftMenu />
@@ -46,19 +56,27 @@
 
 		<!-- Messages list -->
 		<template v-else>
-			<UTable v-model:expanded="expandedRows" :data="messages" :columns="columns" class="w-full">
-				<template #expanded="{ row }">
-					<div class="p-4 bg-elevated rounded-lg">
-						<p class="text-sm text-muted mb-1">
-							<strong>{{ $t("contact.admin.name_column") }}:</strong> {{ row.original.name }}
-							&nbsp;|&nbsp;
-							<strong>{{ $t("contact.admin.email_column") }}:</strong>
-							<a :href="`mailto:${row.original.email}`" class="underline">{{ row.original.email }}</a>
-						</p>
-						<p class="whitespace-pre-wrap mt-2">{{ row.original.message }}</p>
-					</div>
-				</template>
-			</UTable>
+			<div class="overflow-x-auto">
+				<UTable
+					v-model:expanded="expandedRows"
+					:data="messages"
+					:columns="columns"
+					:on-select="(_e: Event, row: TableRow<Message>) => row.toggleExpanded()"
+					class="w-full"
+				>
+					<template #expanded="{ row }">
+						<div class="p-4 bg-elevated rounded-lg">
+							<p class="text-sm text-muted mb-1">
+								<strong>{{ $t("contact.admin.name_column") }}:</strong> {{ row.original.name }}
+								&nbsp;|&nbsp;
+								<strong>{{ $t("contact.admin.email_column") }}:</strong>
+								<a :href="`mailto:${row.original.email}`" class="underline">{{ row.original.email }}</a>
+							</p>
+							<p class="whitespace-pre-wrap mt-2">{{ row.original.message }}</p>
+						</div>
+					</template>
+				</UTable>
+			</div>
 
 			<!-- Pagination -->
 			<div v-if="pagination.total > pagination.per_page" class="flex justify-center gap-2 mt-6 items-center">
@@ -86,14 +104,14 @@
 
 <script setup lang="ts">
 import { h, onMounted, ref } from "vue";
-import { useConfirmDialog } from "@/v8/composables/useConfirmDialog";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import { trans } from "laravel-vue-i18n";
 import OpenLeftMenu from "@/v8/components/headers/OpenLeftMenu.vue";
 import Spinner from "@/v8/components/Spinner.vue";
+import ContactMessageDeleteDialog from "@/v8/components/forms/contact/ContactMessageDeleteDialog.vue";
 import ContactService from "@/services/contact-service";
 import { useLycheeStateStore } from "@/stores/LycheeState";
-import type { TableColumn } from "@nuxt/ui";
+import type { TableColumn, TableRow } from "@nuxt/ui";
 import UButton from "@nuxt/ui/components/Button.vue";
 import UCheckbox from "@nuxt/ui/components/Checkbox.vue";
 
@@ -108,9 +126,10 @@ const expandedRows = ref({});
 const searchQuery = ref("");
 const readFilter = ref<boolean | null>(null);
 const pagination = ref({ total: 0, per_page: 20, current_page: 1 });
+const deletingMessage = ref<Message | undefined>(undefined);
+const isDeleteDialogVisible = ref(false);
 let searchTimeout: ReturnType<typeof setTimeout> | null = null;
 
-const { confirm } = useConfirmDialog();
 const toast = useAppToast();
 
 function formatDate(iso: string): string {
@@ -121,7 +140,7 @@ const columns: TableColumn<Message>[] = [
 	{
 		accessorKey: "name",
 		header: trans("contact.admin.name_column"),
-		cell: ({ row }) => h("span", { class: row.original.is_read ? "" : "font-bold" }, row.original.name),
+		cell: ({ row }) => h("span", { class: row.original.is_read ? "" : "font-bold text-primary" }, row.original.name),
 	},
 	{
 		accessorKey: "email",
@@ -131,7 +150,7 @@ const columns: TableColumn<Message>[] = [
 	{
 		accessorKey: "message",
 		header: trans("contact.admin.message_column"),
-		cell: ({ row }) => h("span", { class: "text-muted line-clamp-2" }, row.original.message),
+		cell: ({ row }) => h("span", { class: "text-muted line-clamp-1" }, row.original.message),
 	},
 	{
 		accessorKey: "created_at",
@@ -142,12 +161,10 @@ const columns: TableColumn<Message>[] = [
 		id: "is_read",
 		header: trans("contact.admin.read_column"),
 		cell: ({ row }) =>
-			h("div", { class: "flex justify-center" }, [
-				h(UCheckbox, {
-					modelValue: row.original.is_read,
-					"onUpdate:modelValue": () => toggleRead(row.original),
-				}),
-			]),
+			h(UCheckbox, {
+				modelValue: row.original.is_read,
+				"onUpdate:modelValue": () => toggleRead(row.original),
+			}),
 	},
 	{
 		id: "actions",
@@ -157,7 +174,7 @@ const columns: TableColumn<Message>[] = [
 				color: "error",
 				variant: "ghost",
 				size: "sm",
-				onClick: () => confirmDelete(row.original),
+				onClick: () => openDeleteModal(row.original),
 			}),
 	},
 ];
@@ -210,26 +227,9 @@ function toggleRead(message: Message): void {
 		});
 }
 
-function confirmDelete(message: Message): void {
-	confirm({
-		title: trans("contact.admin.delete_confirm_header"),
-		message: trans("contact.admin.delete_confirm_message"),
-		acceptLabel: trans("contact.admin.delete"),
-		rejectLabel: trans("contact.admin.cancel"),
-		severity: "danger",
-	}).then((confirmed) => {
-		if (!confirmed) {
-			return;
-		}
-		ContactService.deleteMessage(message.id)
-			.then(() => {
-				toast.add({ severity: "success", summary: trans("toasts.success"), detail: trans("contact.admin.delete_success"), life: 3000 });
-				load(pagination.value.current_page);
-			})
-			.catch(() => {
-				toast.add({ severity: "error", summary: trans("toasts.error"), detail: trans("contact.admin.delete_error"), life: 3000 });
-			});
-	});
+function openDeleteModal(message: Message): void {
+	deletingMessage.value = message;
+	isDeleteDialogVisible.value = true;
 }
 
 onMounted(() => {

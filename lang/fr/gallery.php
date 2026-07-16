@@ -45,6 +45,7 @@ return [
         'title' => 'Recherche',
         'no_results' => 'Aucun résultat ne correspond à votre recherche.',
         'searchbox' => 'Rechercher…',
+        'clear_scope' => 'Rechercher dans tous les albums à la place',
         'minimum_chars' => 'Minimum %s caractères requis.',
         'photos' => 'Photos (%s)',
         'albums' => 'Albums (%s)',

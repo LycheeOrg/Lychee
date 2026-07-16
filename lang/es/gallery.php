@@ -44,6 +44,7 @@ return [
         'title' => 'Buscar',
         'no_results' => 'Nada coincide con tu consulta de búsqueda.',
         'searchbox' => 'Buscar…',
+        'clear_scope' => 'Buscar en todos los álbumes en su lugar',
         'minimum_chars' => 'Se requieren un mínimo de %s caracteres.',
         'photos' => 'Fotos (%s)',
         'albums' => 'Álbumes (%s)',

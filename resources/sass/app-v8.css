@@ -12,6 +12,23 @@ html {
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
+/*
+  Tailwind's preflight sets `svg { display: block }`. UIcon (and any other Iconify
+  usage) renders a real `<svg class="iconify ...">`, so that reset silently wins over
+  Iconify's own `display: inline-block` default, breaking every "icon next to/above
+  centered text via a `text-center` ancestor" layout: the icon becomes a block box,
+  which text-align does not affect, so it renders flush at the start edge instead of
+  centered. Restoring inline-block here (same layer as preflight, but a class beats a
+  bare element selector) fixes that by default everywhere, while any element with its
+  own explicit display utility (`block`, `flex`, etc. - always in the later `utilities`
+  layer) still wins as expected.
+*/
+@layer base {
+	.iconify {
+		display: inline-block;
+	}
+}
+
 :root {
 	--ui-container: 100%;
 	--ui-header-height: 3.5rem;
