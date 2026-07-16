@@ -148,7 +148,7 @@
 		</div>
 
 		<!-- EXIF sub-section -->
-		<div class="border-t border-default pt-3">
+		<div class="border-t border-default pt-3 mb-3">
 			<span class="text-xs font-semibold text-muted uppercase tracking-wide mb-3 block">{{ $t("gallery.search.advanced.exif") }}</span>
 			<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
 				<UFormField :label="$t('gallery.search.advanced.make')">
@@ -176,15 +176,31 @@
 				</UFormField>
 			</div>
 		</div>
+
+		<!-- Sort -->
+		<div class="border-t border-default pt-3">
+			<span class="text-xs font-semibold text-muted uppercase tracking-wide mb-3 block">{{ $t("gallery.search.advanced.sort_title") }}</span>
+			<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+				<UFormField :label="$t('gallery.search.advanced.sort_by')">
+					<USelectMenu v-model="sortColumnOption" :items="sortColumnItems" value-key="value" label-key="label" class="w-full" />
+				</UFormField>
+				<UFormField :label="$t('gallery.search.advanced.sort_direction')">
+					<URadioGroup v-model="sortDirection" orientation="horizontal" :items="sortDirectionItems" :disabled="sortColumnOption === ''" />
+				</UFormField>
+			</div>
+		</div>
 	</div>
 </template>
 <script lang="ts" setup>
 import { computed, ref } from "vue";
+import { trans } from "laravel-vue-i18n";
 import { useUserStore } from "@/stores/UserState";
+import { useSearchStore } from "@/stores/SearchState";
 import { assembleTokens, parseTokens, type AdvancedSearchState } from "@/composables/useSearchTokenAssembler";
 import rating from "@/v8/components/forms/basic/rating.vue";
 
 const userStore = useUserStore();
+const searchStore = useSearchStore();
 
 const emits = defineEmits<{
 	"update:tokens": [tokens: string];
@@ -211,6 +227,39 @@ const aperture = ref("");
 const shutter = ref("");
 const focal = ref("");
 const iso = ref("");
+
+// ---------------------------------------------------------------------------
+// Sort (v8 only, not shared with v7's advanced panel: it lives directly on
+// the search store rather than the token/remainder round-trip below, since
+// it's an ORDER BY, not a search filter).
+// ---------------------------------------------------------------------------
+type SortColumnOption = App.Enum.SearchSortingType | "";
+
+const sortColumnItems = computed(() => [
+	{ label: trans("gallery.search.advanced.sort_default"), value: "" as SortColumnOption },
+	{ label: trans("gallery.search.advanced.sort_option_title"), value: "title" as SortColumnOption },
+	{ label: trans("gallery.search.advanced.sort_option_created_at"), value: "created_at" as SortColumnOption },
+	{ label: trans("gallery.search.advanced.sort_option_taken_at"), value: "taken_at" as SortColumnOption },
+]);
+
+const sortDirectionItems = computed(() => [
+	{ label: trans("gallery.search.advanced.sort_asc"), value: "ASC" as App.Enum.OrderSortingType },
+	{ label: trans("gallery.search.advanced.sort_desc"), value: "DESC" as App.Enum.OrderSortingType },
+]);
+
+const sortColumnOption = computed<SortColumnOption>({
+	get: () => searchStore.sortingColumn ?? "",
+	set: (value: SortColumnOption) => {
+		searchStore.sortingColumn = value === "" ? undefined : value;
+	},
+});
+
+const sortDirection = computed<App.Enum.OrderSortingType>({
+	get: () => searchStore.sortingOrder,
+	set: (value: App.Enum.OrderSortingType) => {
+		searchStore.sortingOrder = value;
+	},
+});
 
 const dateFromInput = computed<string>({
 	get: () => formatDate(dateFrom.value),
