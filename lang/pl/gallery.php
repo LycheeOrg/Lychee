@@ -45,6 +45,7 @@ return [
         'title' => 'Wyszukiwanie',
         'no_results' => 'Nic nie pasuje do wyszukiwanego hasła.',
         'searchbox' => 'Szukaj...',
+        'clear_scope' => 'Przeszukaj wszystkie albumy zamiast tego',
         'minimum_chars' => 'Wymagane minimum %s znaków.',
         'photos' => 'Zdjęcia (%s)',
         'albums' => 'Albumy (%s)',

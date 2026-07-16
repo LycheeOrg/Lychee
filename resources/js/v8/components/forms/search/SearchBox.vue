@@ -1,14 +1,17 @@
 <template>
-	<div v-if="searchStore.config !== undefined" class="w-full max-w-5xl mx-auto">
-		<SearchInputBar
-			v-model="rawInput"
-			v-model:advanced-open="advancedOpen"
-			:min-length="searchStore.config.search_minimum_length"
-			@search="onSearch"
-		/>
-		<Collapse :when="advancedOpen">
-			<AdvancedSearchPanel ref="advancedPanelRef" @update:tokens="onAdvancedTokens" @clear="onClear" />
-		</Collapse>
+	<div v-if="searchStore.config !== undefined" class="w-full max-w-5xl mx-auto mt-5 mb-2 px-4">
+		<div class="w-full rounded-xl overflow-hidden">
+			<SearchInputBar
+				v-model="rawInput"
+				v-model:advanced-open="advancedOpen"
+				:min-length="searchStore.config.search_minimum_length"
+				@search="onSearch"
+				@clear-scope="emits('clearScope')"
+			/>
+			<Collapse :when="advancedOpen">
+				<AdvancedSearchPanel ref="advancedPanelRef" @update:tokens="onAdvancedTokens" @clear="onClear" />
+			</Collapse>
+		</div>
 	</div>
 </template>
 <script lang="ts" setup>
@@ -24,6 +27,7 @@ const searchStore = useSearchStore();
 const emits = defineEmits<{
 	search: [terms: string];
 	clear: [];
+	clearScope: [];
 }>();
 
 // The query string displayed in the text input.

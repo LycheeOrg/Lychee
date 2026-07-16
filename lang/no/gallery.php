@@ -44,6 +44,7 @@ return [
         'title' => 'Søk',
         'no_results' => 'Ingenting samsvarer med søket ditt.',
         'searchbox' => 'Søk…',
+        'clear_scope' => 'Søk i alle album i stedet',
         'minimum_chars' => 'Minst %s tegn kreves.',
         'photos' => 'Bilder (%s)',
         'albums' => 'Album (%s)',

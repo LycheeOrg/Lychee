@@ -45,6 +45,7 @@ return [
         'title' => 'Hledání',
         'no_results' => 'Žádný výsledek neodpovídá vašemu vyhledávacímu dotazu.',
         'searchbox' => 'Hledat...',
+        'clear_scope' => 'Hledat ve všech albech místo toho',
         'minimum_chars' => 'Je třeba zadat alespoň %s znaků.',
         'photos' => 'Fotografie (%s)',
         'albums' => 'Alba (%s)',

@@ -2,7 +2,7 @@
 	<UHeader
 		v-if="albumsStore.rootConfig && albumsStore.rootRights"
 		:class="{
-			'bg-transparent': albumsStore.rootConfig.is_header_bar_transparent,
+			'bg-transparent': true || albumsStore.rootConfig.is_header_bar_transparent,
 			'max-h-14': !is_full_screen,
 			'max-h-0 overflow-hidden': is_full_screen,
 		}"
