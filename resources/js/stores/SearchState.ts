@@ -13,6 +13,10 @@ export const useSearchStore = defineStore("search-store", {
 		config: undefined as undefined | App.Http.Resources.Search.InitResource,
 		searchTerm: undefined as undefined | string,
 
+		// Sorting (v8 advanced search only; left undefined by v7, which never sets it).
+		sortingColumn: undefined as undefined | App.Enum.SearchSortingType,
+		sortingOrder: "ASC" as App.Enum.OrderSortingType,
+
 		// Pagination
 		searchPage: 1,
 		from: 0,
@@ -24,6 +28,8 @@ export const useSearchStore = defineStore("search-store", {
 			this.isSearching = false;
 			this.config = undefined;
 			this.searchTerm = undefined;
+			this.sortingColumn = undefined;
+			this.sortingOrder = "ASC";
 			this.searchPage = 1;
 			this.from = 0;
 			this.perPage = 0;
@@ -58,7 +64,7 @@ export const useSearchStore = defineStore("search-store", {
 			this.searchTerm = terms;
 			this.searchPage = 1;
 			this.isSearching = true;
-			return SearchService.search(albumStore.albumId, this.searchTerm, this.searchPage)
+			return SearchService.search(albumStore.albumId, this.searchTerm, this.searchPage, this.sortingColumn, this.sortingOrder)
 				.then((response) => {
 					albumsStore.albums = response.data.albums;
 					photosStore.setPhotos(response.data.photos, false);
@@ -82,7 +88,7 @@ export const useSearchStore = defineStore("search-store", {
 			}
 			this.isSearching = true;
 			this.searchPage = Math.ceil(this.from / this.perPage) + 1;
-			return SearchService.search(albumStore.albumId, this.searchTerm, this.searchPage)
+			return SearchService.search(albumStore.albumId, this.searchTerm, this.searchPage, this.sortingColumn, this.sortingOrder)
 				.then((response) => {
 					albumsStore.albums = response.data.albums;
 					photosStore.setPhotos(response.data.photos, false);
@@ -100,6 +106,9 @@ export const useSearchStore = defineStore("search-store", {
 			const photosStore = usePhotosStore();
 			albumsStore.albums = [];
 			photosStore.reset();
+
+			this.sortingColumn = undefined;
+			this.sortingOrder = "ASC";
 
 			this.from = 0;
 			this.perPage = 0;

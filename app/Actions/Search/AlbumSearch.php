@@ -64,14 +64,15 @@ class AlbumSearch
 	}
 
 	/**
-	 * @param array<int,SearchToken> $tokens
-	 * @param Album|null             $album  the optional top album which is used as a search base
+	 * @param array<int,SearchToken>     $tokens
+	 * @param Album|null                 $album   the optional top album which is used as a search base
+	 * @param AlbumSortingCriterion|null $sorting overrides the site-wide default sort order (e.g. from the search page's sort control)
 	 *
 	 * @return Collection<int,Album>
 	 *
 	 * @throws InternalLycheeException
 	 */
-	public function queryAlbums(array $tokens, ?Album $album = null): Collection
+	public function queryAlbums(array $tokens, ?Album $album = null, ?AlbumSortingCriterion $sorting = null): Collection
 	{
 		$user = Auth::user();
 		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
@@ -84,7 +85,7 @@ class AlbumSearch
 		$this->addSearchCondition($tokens, $album_query, include_tags: true);
 		$this->album_query_policy->applyBrowsabilityFilter($album_query, $user, $unlocked_album_ids);
 
-		$sorting = AlbumSortingCriterion::createDefault();
+		$sorting ??= AlbumSortingCriterion::createDefault();
 
 		return (new SortingDecorator($album_query))
 			->orderBy($sorting->column, $sorting->order)
