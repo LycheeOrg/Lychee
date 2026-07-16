@@ -13,74 +13,74 @@ return [
     |--------------------------------------------------------------------------
     */
 
-    'title' => 'Webhooks',
-    'description' => 'Configure outgoing webhooks that are triggered when photos are added, moved, or deleted.',
+    'title' => 'وب‌هوک‌ها',
+    'description' => 'وب‌هوک‌های خروجی که هنگام افزودن، جابه‌جایی یا حذف عکس‌ها فعال می‌شوند را پیکربندی کنید.',
 
     // Empty state
-    'no_webhooks' => 'No webhooks configured yet.',
-    'create_first' => 'Create your first webhook',
+    'no_webhooks' => 'هنوز هیچ وب‌هوکی پیکربندی نشده است.',
+    'create_first' => 'اولین وب‌هوک خود را ایجاد کنید',
 
     // Table columns
-    'col_name' => 'Name',
-    'col_event' => 'Event',
-    'col_method' => 'Method',
-    'col_url' => 'URL',
-    'col_format' => 'Format',
-    'col_enabled' => 'Enabled',
-    'col_actions' => 'Actions',
+    'col_name' => 'نام',
+    'col_event' => 'رویداد',
+    'col_method' => 'روش',
+    'col_url' => 'آدرس',
+    'col_format' => 'قالب',
+    'col_enabled' => 'فعال',
+    'col_actions' => 'عملیات',
 
     // Event labels
-    'event_photo_add' => 'Photo Added',
-    'event_photo_move' => 'Photo Moved',
-    'event_photo_delete' => 'Photo Deleted',
+    'event_photo_add' => 'عکس افزوده شد',
+    'event_photo_move' => 'عکس جابه‌جا شد',
+    'event_photo_delete' => 'عکس حذف شد',
 
     // Payload format labels
     'format_json' => 'JSON',
-    'format_query_string' => 'Query String',
+    'format_query_string' => 'رشته پرسمان (Query String)',
 
     // Buttons
-    'create' => 'Create Webhook',
-    'edit' => 'Edit',
-    'delete' => 'Delete',
-    'cancel' => 'Cancel',
-    'save' => 'Save',
+    'create' => 'ایجاد وب‌هوک',
+    'edit' => 'ویرایش',
+    'delete' => 'حذف',
+    'cancel' => 'انصراف',
+    'save' => 'ذخیره',
 
     // Form fields
-    'field_name' => 'Name',
-    'field_name_placeholder' => 'e.g. My Webhook',
-    'field_event' => 'Event',
-    'field_method' => 'HTTP Method',
-    'field_url' => 'URL',
+    'field_name' => 'نام',
+    'field_name_placeholder' => 'مثلاً: وب‌هوک من',
+    'field_event' => 'رویداد',
+    'field_method' => 'روش HTTP',
+    'field_url' => 'آدرس',
     'field_url_placeholder' => 'https://example.com/hook',
-    'field_format' => 'Payload Format',
-    'field_enabled' => 'Enabled',
-    'field_secret' => 'Secret',
-    'field_secret_placeholder' => 'Leave empty to keep existing secret',
-    'field_secret_header' => 'Secret Header',
+    'field_format' => 'قالب محتوا',
+    'field_enabled' => 'فعال',
+    'field_secret' => 'رمز',
+    'field_secret_placeholder' => 'برای حفظ رمز موجود، خالی بگذارید',
+    'field_secret_header' => 'هدر رمز',
     'field_secret_header_placeholder' => 'X-Webhook-Secret',
-    'field_send_photo_id' => 'Send Photo ID',
-    'field_send_album_id' => 'Send Album ID',
-    'field_send_title' => 'Send Title',
-    'field_send_size_variants' => 'Send Size Variants',
+    'field_send_photo_id' => 'ارسال شناسه عکس',
+    'field_send_album_id' => 'ارسال شناسه آلبوم',
+    'field_send_title' => 'ارسال عنوان',
+    'field_send_size_variants' => 'ارسال نسخه‌های اندازه',
 
     // Modal titles
-    'modal_create_title' => 'Create Webhook',
-    'modal_edit_title' => 'Edit Webhook',
+    'modal_create_title' => 'ایجاد وب‌هوک',
+    'modal_edit_title' => 'ویرایش وب‌هوک',
 
     // Delete confirmation
-    'confirm_delete_header' => 'Delete Webhook',
-    'confirm_delete_message' => 'Are you sure you want to delete the webhook ":name"? This action cannot be undone.',
-    'delete_warning' => 'This action cannot be undone.',
+    'confirm_delete_header' => 'حذف وب‌هوک',
+    'confirm_delete_message' => 'آیا مطمئن هستید که می‌خواهید وب‌هوک ":name" را حذف کنید؟ این عمل قابل بازگشت نیست.',
+    'delete_warning' => 'این عمل قابل بازگشت نیست.',
 
     // Toasts
-    'created' => 'Webhook created successfully.',
-    'updated' => 'Webhook updated successfully.',
-    'deleted' => 'Webhook deleted successfully.',
-    'error_load' => 'Failed to load webhooks.',
-    'error_save' => 'Failed to save webhook.',
-    'error_delete' => 'Failed to delete webhook.',
+    'created' => 'وب‌هوک با موفقیت ایجاد شد.',
+    'updated' => 'وب‌هوک با موفقیت به‌روزرسانی شد.',
+    'deleted' => 'وب‌هوک با موفقیت حذف شد.',
+    'error_load' => 'بارگذاری وب‌هوک‌ها ناموفق بود.',
+    'error_save' => 'ذخیره وب‌هوک ناموفق بود.',
+    'error_delete' => 'حذف وب‌هوک ناموفق بود.',
 
     // Secret badge
-    'has_secret' => 'Secret set',
-    'no_secret' => 'No secret',
+    'has_secret' => 'رمز تنظیم شده',
+    'no_secret' => 'بدون رمز',
 ];

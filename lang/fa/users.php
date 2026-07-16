@@ -14,7 +14,7 @@ return [
     'legend' => 'راهنما',
     'upload_rights' => 'در صورت انتخاب، کاربر می‌تواند محتوا بارگذاری کند.',
     'edit_rights' => 'در صورت انتخاب، کاربر می‌تواند پروفایل خود (نام کاربری، رمزعبور) را ویرایش کند.',
-    'upload_trust_level' => 'Upload trust level — controls whether uploads are immediately public.',
+    'upload_trust_level' => 'سطح اعتماد بارگذاری — تعیین می‌کند که آیا محتوای بارگذاری‌شده بلافاصله عمومی می‌شود یا خیر.',
 
     'quota' => 'در صورت تنظیم، کاربر دارای سهمیه فضا برای تصاویر (بر حسب کیلوبایت) است.',
     'user_deleted' => 'کاربر حذف شد',
@@ -25,11 +25,11 @@ return [
         'upload_rights' => 'کاربر می‌تواند محتوا بارگذاری کند.',
         'edit_rights' => 'کاربر می‌تواند پروفایل خود (نام کاربری، رمزعبور) را ویرایش کند.',
         'admin_rights' => 'كاربر داراي حقوق ادمين است',
-        'upload_trust_level' => 'Upload trust level',
-        'upload_trust_level_check' => 'Check – uploads require admin approval before becoming public.',
-        'upload_trust_level_monitor' => 'Monitor – upload are publics unless flagged for content.',
-        'upload_trust_level_trust_but_verify' => 'Trust but Verify – uploads are public; review findings auto-approved, block findings configurable.',
-        'upload_trust_level_trusted' => 'Trusted – uploads are immediately public.',
+        'upload_trust_level' => 'سطح اعتماد بارگذاری',
+        'upload_trust_level_check' => 'بررسی – محتوای بارگذاری‌شده پیش از عمومی شدن نیاز به تأیید مدیر دارد.',
+        'upload_trust_level_monitor' => 'پایش – محتوای بارگذاری‌شده عمومی است مگر اینکه به دلیل محتوا علامت‌گذاری شود.',
+        'upload_trust_level_trust_but_verify' => 'قابل‌اعتماد-با-بررسی – محتوای بارگذاری‌شده عمومی است؛ یافته‌های بازبینی به‌طور خودکار تأیید می‌شوند و یافته‌های مسدود قابل پیکربندی هستند.',
+        'upload_trust_level_trusted' => 'مورد اعتماد – محتوای بارگذاری‌شده بلافاصله عمومی می‌شود.',
 
         'quota' => 'کاربر دارای محدودیت سهمیه است.',
         'quota_kb' => 'سهمیه بر حسب کیلو بایت(سهمیه پیش فرض 0 است)',
@@ -38,9 +38,9 @@ return [
         'edit' => 'ویرایش',
     ],
     'invite' => [
-        'button' => 'Invite user',
-        'links_are_not_revokable' => 'Invitation links are not revokable.',
-        'link_is_valid_x_days' => 'This link is valid for %d days.',
+        'button' => 'دعوت کاربر',
+        'links_are_not_revokable' => 'لینک‌های دعوت قابل لغو نیستند.',
+        'link_is_valid_x_days' => 'این لینک به مدت %d روز معتبر است.',
     ],
     'line' => [
         'owner' => 'مالك',

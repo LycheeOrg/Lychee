@@ -6,34 +6,34 @@ return [
     | User Groups page
     |--------------------------------------------------------------------------
     */
-    'title' => 'User Groups',
-    'explanation' => 'User groups allow you to organize users and manage permissions collectively.',
+    'title' => 'گروه‌های کاربری',
+    'explanation' => 'گروه‌های کاربری به شما امکان می‌دهند کاربران را سازمان‌دهی کرده و مجوزها را به‌صورت گروهی مدیریت کنید.',
 
-    'create_group' => 'Create Group',
-    'edit' => 'Edit',
-    'delete' => 'Delete',
+    'create_group' => 'ایجاد گروه',
+    'edit' => 'ویرایش',
+    'delete' => 'حذف',
 
-    'loading' => 'Loading groups...',
-    'empty' => 'No groups found.',
+    'loading' => 'در حال بارگذاری گروه‌ها...',
+    'empty' => 'هیچ گروهی یافت نشد.',
 
-    'add_member' => 'Add member...',
-    'empty_group' => 'This group is empty.',
-    'no_permission_members' => 'You do not have the permission to see the members of this group.',
-    'remove_success' => '%s has been removed from %s.',
+    'add_member' => 'افزودن عضو...',
+    'empty_group' => 'این گروه خالی است.',
+    'no_permission_members' => 'شما مجوز مشاهده اعضای این گروه را ندارید.',
+    'remove_success' => '%s از %s حذف شد.',
 
-    'confirm_delete_header' => 'Delete Group',
-    'confirm_delete_message' => 'Are you sure you want to delete this group?',
-    'cancel' => 'Cancel',
-    'confirm' => 'Delete',
+    'confirm_delete_header' => 'حذف گروه',
+    'confirm_delete_message' => 'آیا مطمئن هستید که می‌خواهید این گروه را حذف کنید؟',
+    'cancel' => 'انصراف',
+    'confirm' => 'حذف',
 
     'create' => [
-        'name' => 'Group Name',
-        'description' => 'Description',
-        'users' => 'Users',
-        'cancel' => 'Cancel',
-        'create' => 'Create',
-        'edit' => 'Edit',
+        'name' => 'نام گروه',
+        'description' => 'توضیحات',
+        'users' => 'کاربران',
+        'cancel' => 'انصراف',
+        'create' => 'ایجاد',
+        'edit' => 'ویرایش',
 
-        'error_name_required' => 'Group name is required.',
+        'error_name_required' => 'نام گروه الزامی است.',
     ],
 ];
