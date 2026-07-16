@@ -150,7 +150,7 @@ const columns: TableColumn<Message>[] = [
 	{
 		accessorKey: "message",
 		header: trans("contact.admin.message_column"),
-		cell: ({ row }) => h("span", { class: "text-muted line-clamp" }, row.original.message),
+		cell: ({ row }) => h("span", { class: "text-muted line-clamp-1" }, row.original.message),
 	},
 	{
 		accessorKey: "created_at",
