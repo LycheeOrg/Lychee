@@ -59,7 +59,7 @@
 							<th v-if="canEdit" class="p-2 w-10"></th>
 						</tr>
 					</thead>
-					<tbody>
+					<tbody class="divide-y divide-default">
 						<tr v-for="tag in tags" :key="tag.id" :class="rowClass(tag.id)">
 							<td v-if="canEdit" class="p-2 text-center" @click.stop>
 								<UCheckbox :model-value="isSelected(tag.id)" @update:model-value="() => toggleSelect(tag.id)" />
