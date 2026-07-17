@@ -12,7 +12,8 @@
 					:placeholder="$t('dialogs.photo_license.select_license')"
 					class="w-full"
 				>
-					<template #item-label="{ item }">{{ item.label }}</template>
+					<template #default="{ modelValue }">{{ selectedLabel(modelValue) }}</template>
+					<template #item-label="{ item }">{{ $t(item.label) }}</template>
 				</USelectMenu>
 			</div>
 		</template>
@@ -58,6 +59,10 @@ const question = computed(() => {
 	}
 	return sprintf(trans("dialogs.photo_license.question_multiple"), props.photoIds?.length);
 });
+
+function selectedLabel(option: SelectOption<App.Enum.LicenseType> | undefined): string {
+	return option ? trans(option.label) : "";
+}
 
 const selectedLicense = ref<SelectOption<App.Enum.LicenseType> | undefined>(licenseOptions[0]);
 
