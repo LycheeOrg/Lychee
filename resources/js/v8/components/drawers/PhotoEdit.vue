@@ -60,6 +60,7 @@
 
 					<label for="license" class="font-bold mt-4 md:mt-0 self-center">{{ $t("gallery.photo.edit.set_license") }}</label>
 					<USelectMenu id="license" v-model="license" class="w-72" :items="licenseOptions" label-key="label">
+						<template #default="{ modelValue }">{{ selectedLabel(modelValue) }}</template>
 						<template #item-label="{ item }">{{ $t(item.label) }}</template>
 					</USelectMenu>
 					<UButton color="primary" class="w-full col-span-2 justify-center font-bold" @click="save">
@@ -72,6 +73,7 @@
 </template>
 <script setup lang="ts">
 import { computed, onMounted, ref, Ref, watch } from "vue";
+import { trans } from "laravel-vue-i18n";
 import { licenseOptions, SelectOption, SelectBuilders, timeZoneOptions } from "@/config/constants";
 import PhotoService from "@/services/photo-service";
 import { useAppToast } from "@/v8/composables/useAppToast";
@@ -100,6 +102,10 @@ const uploadDate = ref<Date | undefined>(undefined);
 const takenAtDate = ref<Date | undefined>(undefined);
 const tags = ref<string[]>([]);
 const is_taken_at_modified = ref<boolean>(false);
+function selectedLabel<T>(option: SelectOption<T> | undefined): string {
+	return option ? trans(option.label) : "";
+}
+
 const license = ref<SelectOption<App.Enum.LicenseType> | undefined>(undefined);
 const uploadTz = ref<string | undefined>(undefined);
 const takenAtTz = ref<string | undefined>(undefined);

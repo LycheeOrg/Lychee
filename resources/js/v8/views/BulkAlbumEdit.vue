@@ -211,6 +211,7 @@
 									"
 									@update:open="(o: boolean) => !o && closeEditSorting()"
 								>
+									<template #default="{ modelValue }">{{ selectedLabel(modelValue) }}</template>
 									<template #item-label="{ item }">{{ $t(item.label) }}</template>
 								</USelectMenu>
 								<span
@@ -250,6 +251,7 @@
 									"
 									@update:open="(o: boolean) => !o && closeEditSorting()"
 								>
+									<template #default="{ modelValue }">{{ selectedLabel(modelValue) }}</template>
 									<template #item-label="{ item }">{{ $t(item.label) }}</template>
 								</USelectMenu>
 								<span
@@ -368,6 +370,10 @@ const isPageAllSelected = computed<boolean>(() => {
 
 function findOption<T extends string>(options: SelectOption<T>[], value: string | null): SelectOption<T> | undefined {
 	return options.find((o) => o.value === value);
+}
+
+function selectedLabel<T>(option: SelectOption<T> | undefined): string {
+	return option ? trans(option.label) : "";
 }
 
 function formatDate(iso: string): string {

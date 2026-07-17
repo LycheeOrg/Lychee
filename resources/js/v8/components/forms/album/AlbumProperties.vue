@@ -21,11 +21,13 @@
 			<div class="flex gap-4 flex-wrap">
 				<UFormField :label="$t('gallery.album.properties.photo_ordering')">
 					<USelectMenu v-model="photoSortingColumn" :items="photoSortingColumnsOptions" label-key="label" class="w-62">
+						<template #default="{ modelValue }">{{ selectedLabel(modelValue) }}</template>
 						<template #item-label="{ item }">{{ $t(item.label) }}</template>
 					</USelectMenu>
 				</UFormField>
 				<UFormField :label="$t('gallery.album.properties.asc/desc')">
 					<USelectMenu v-model="photoSortingOrder" :items="sortingOrdersOptions" label-key="label" class="w-62">
+						<template #default="{ modelValue }">{{ selectedLabel(modelValue) }}</template>
 						<template #item-label="{ item }">{{ $t(item.label) }}</template>
 					</USelectMenu>
 				</UFormField>
@@ -34,11 +36,13 @@
 				<div class="flex gap-4 flex-wrap">
 					<UFormField :label="$t('gallery.album.properties.children_ordering')">
 						<USelectMenu v-model="albumSortingColumn" :items="albumSortingColumnsOptions" label-key="label" class="w-62">
+							<template #default="{ modelValue }">{{ selectedLabel(modelValue) }}</template>
 							<template #item-label="{ item }">{{ $t(item.label) }}</template>
 						</USelectMenu>
 					</UFormField>
 					<UFormField :label="$t('gallery.album.properties.asc/desc')">
 						<USelectMenu v-model="albumSortingOrder" :items="sortingOrdersOptions" label-key="label" class="w-62">
+							<template #default="{ modelValue }">{{ selectedLabel(modelValue) }}</template>
 							<template #item-label="{ item }">{{ $t(item.label) }}</template>
 						</USelectMenu>
 					</UFormField>
@@ -53,6 +57,7 @@
 				</UFormField>
 				<UFormField :label="$t('gallery.album.properties.license')">
 					<USelectMenu v-model="license" :items="licenseOptions" label-key="label" class="w-72">
+						<template #default="{ modelValue }">{{ selectedLabel(modelValue) }}</template>
 						<template #item-label="{ item }">{{ $t(item.label) }}</template>
 					</USelectMenu>
 				</UFormField>
@@ -62,11 +67,13 @@
 				<div class="flex flex-wrap gap-4">
 					<UFormField :label="$t('gallery.album.properties.aspect_ratio')">
 						<USelectMenu v-model="aspectRatio" :items="aspectRatioOptions" label-key="label" class="w-72">
+							<template #default="{ modelValue }">{{ selectedLabel(modelValue) }}</template>
 							<template #item-label="{ item }">{{ $t(item.label) }}</template>
 						</USelectMenu>
 					</UFormField>
 					<UFormField :label="$t('gallery.album.properties.album_timeline')">
 						<USelectMenu v-model="albumTimeline" :items="albumTimelineOptions" label-key="label" class="w-72">
+							<template #default="{ modelValue }">{{ selectedLabel(modelValue) }}</template>
 							<template #item-label="{ item }">{{ $t(item.label) }}</template>
 						</USelectMenu>
 					</UFormField>
@@ -75,11 +82,13 @@
 			<div class="flex flex-wrap gap-4">
 				<UFormField :label="$t('gallery.album.properties.layout')">
 					<USelectMenu v-model="photoLayout" :items="photoLayoutOptions" label-key="label" class="w-72">
+						<template #default="{ modelValue }">{{ selectedLabel(modelValue) }}</template>
 						<template #item-label="{ item }">{{ $t(item.label) }}</template>
 					</USelectMenu>
 				</UFormField>
 				<UFormField :label="$t('gallery.album.properties.photo_timeline')">
 					<USelectMenu v-model="photoTimeline" :items="photoTimelineOptions" label-key="label" class="w-72">
+						<template #default="{ modelValue }">{{ selectedLabel(modelValue) }}</template>
 						<template #item-label="{ item }">{{ $t(item.label) }}</template>
 					</USelectMenu>
 				</UFormField>
@@ -197,6 +206,10 @@ const descriptionForInput = computed<string | undefined>({
 		description.value = v ?? null;
 	},
 });
+function selectedLabel<T>(option: SelectOption<T> | undefined): string {
+	return option ? trans(option.label) : "";
+}
+
 const photoSortingColumn = ref<SelectOption<App.Enum.ColumnSortingPhotoType> | undefined>(undefined);
 const photoSortingOrder = ref<SelectOption<App.Enum.OrderSortingType> | undefined>(undefined);
 const albumSortingColumn = ref<SelectOption<App.Enum.ColumnSortingAlbumType> | undefined>(undefined);
