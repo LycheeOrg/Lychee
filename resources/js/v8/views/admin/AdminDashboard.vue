@@ -87,7 +87,7 @@
 					<div class="text-muted text-sm">{{ $t("admin-dashboard.metrics.users_count") }}</div>
 				</div>
 				<div class="bg-elevated rounded p-4 text-center">
-					<div class="text-2xl font-bold">{{ formatBytes(stats.storage_bytes) }}</div>
+					<div class="text-2xl font-bold" dir="ltr">{{ formatBytes(stats.storage_bytes) }}</div>
 					<div class="text-muted text-sm">{{ $t("admin-dashboard.metrics.storage_bytes") }}</div>
 				</div>
 				<div class="bg-elevated rounded p-4 text-center">

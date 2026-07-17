@@ -13,7 +13,7 @@
 		</div>
 
 		<template v-else>
-			<UTabs v-model="activeTab" :items="tabItems" class="w-full">
+			<UTabs v-model="activeTab" :items="tabItems" class="w-full" :dir="isLTR() ? 'ltr' : 'rtl'" >
 				<template #settings>
 					<p class="text-muted mb-6 text-center text-sm">{{ $t("admin-dashboard.nsfw_config.description") }}</p>
 
@@ -259,6 +259,7 @@ import NsfwConfigService from "@/services/nsfw-config-service";
 import SettingsService from "@/services/settings-service";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import type { TableColumn, TabsItem } from "@nuxt/ui";
+import { useLtRorRtL } from "@/utils/Helpers";
 
 type CfgRef = App.Http.Resources.Models.ConfigResource | undefined;
 
@@ -292,6 +293,8 @@ const NSFW_KEYS = [
 const cfg = reactive<Record<(typeof NSFW_KEYS)[number], CfgRef>>(
 	Object.fromEntries(NSFW_KEYS.map((k) => [k, undefined])) as Record<(typeof NSFW_KEYS)[number], CfgRef>,
 );
+
+const { isLTR } = useLtRorRtL();
 
 function loadSettings() {
 	settingsLoading.value = true;
