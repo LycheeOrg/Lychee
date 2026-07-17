@@ -6,17 +6,16 @@ return [
     | Import from Server
     |--------------------------------------------------------------------------
     */
-    'title' => 'Synchronize your server files',
-    'description' => 'Synchronize your server files with Lychee. This will import photos from a directory and all children directories. This process is very slow and we recommend using workers and queues in order to avoid timeout.',
-    'sync' => 'Synchronize',
-    'loading' => 'Loading...',
-    'selected_directory' => 'Current selected directory:',
-    'resync_metadata' => 'Re-sync metadata of existing files.',
-    'delete_imported' => 'Delete the original files.',
-    'import_via_symlink' => 'Import photos via symlink instead of copying the files.',
-    'skip_duplicates' => 'Skip photos and albums if they already exist in the gallery.',
-    'delete_missing_photos' => 'Delete photos in the album that are not present in the synced directory.',
-    'delete_missing_albums' => 'Delete albums in the parent album that are not present in the synced directory.',
-    'importing_please_be_patient' => 'Importing, please be patient...',
+    'title' => 'همگام‌سازی فایل‌های سرور شما',
+    'description' => 'فایل‌های سرور خود را با Lychee همگام‌سازی کنید. این کار عکس‌ها را از یک پوشه و تمام زیرپوشه‌های آن وارد می‌کند. این فرآیند بسیار کند است و توصیه می‌شود برای جلوگیری از اتمام زمان، از ورکرها و صف‌ها استفاده کنید.',
+    'sync' => 'همگام‌سازی',
+    'loading' => 'در حال بارگذاری...',
+    'selected_directory' => 'پوشهٔ انتخاب‌شدهٔ فعلی:',
+    'resync_metadata' => 'همگام‌سازی مجدد ابرداده‌های فایل‌های موجود.',
+    'delete_imported' => 'حذف فایل‌های اصلی.',
+    'import_via_symlink' => 'وارد کردن عکس‌ها از طریق پیوند نمادین (symlink) به‌جای کپی کردن فایل‌ها.',
+    'skip_duplicates' => 'رد کردن عکس‌ها و آلبوم‌هایی که از قبل در گالری وجود دارند.',
+    'delete_missing_photos' => 'حذف عکس‌های موجود در آلبوم که در پوشهٔ همگام‌سازی‌شده وجود ندارند.',
+    'delete_missing_albums' => 'حذف آلبوم‌های موجود در آلبوم والد که در پوشهٔ همگام‌سازی‌شده وجود ندارند.',
+    'importing_please_be_patient' => 'در حال وارد کردن، لطفاً شکیبا باشید...',
 ];
-

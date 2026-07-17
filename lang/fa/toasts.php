@@ -8,6 +8,6 @@ return [
     */
     'error' => 'خطا',
     'success' => 'موفق',
-    'album_updated' => 'Album updated',
-    'update_failed' => 'Failed to update album',
+    'album_updated' => 'آلبوم به‌روزرسانی شد',
+    'update_failed' => 'به‌روزرسانی آلبوم ناموفق بود',
 ];
