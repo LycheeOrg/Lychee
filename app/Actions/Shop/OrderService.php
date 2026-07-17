@@ -337,15 +337,20 @@ class OrderService
 	 * Note: This method currently loads all orders at once. Pagination should
 	 * be implemented for large datasets to avoid memory issues.
 	 *
+	 * @param bool $include_pending Whether to include orders still in PENDING status (unfinished carts)
+	 *
 	 * @return array<int,Order> All orders accessible to the current user
 	 */
-	public function getAll(): array
+	public function getAll(bool $include_pending = false): array
 	{
 		$user = Auth::user();
 
 		return Order::with(['user', 'items', 'items.album'])
 			->when($user?->may_administrate !== true, function ($query) use ($user): void {
 				$query->where('user_id', $user?->id);
+			})
+			->when(!$include_pending, function ($query): void {
+				$query->where('status', '!=', PaymentStatusType::PENDING);
 			})
 			->orderBy('updated_at', 'desc')->get()->all();
 	}

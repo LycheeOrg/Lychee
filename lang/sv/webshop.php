@@ -107,6 +107,7 @@ return [
         'transactionId' => 'Transaction ID',
         'status' => 'Status',
         'amount' => 'Amount',
+        'showPending' => 'Show pending orders',
     ],
     'purchasablesList' => [
         'purchasables' => 'Purchasables',

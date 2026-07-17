@@ -107,6 +107,7 @@ return [
         'transactionId' => 'Идентификатор на транзакция',
         'status' => 'Статус',
         'amount' => 'Сума',
+        'showPending' => 'Показване на чакащите поръчки',
     ],
     'purchasablesList' => [
         'purchasables' => 'Продукти за покупка',
