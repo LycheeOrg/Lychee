@@ -7,21 +7,21 @@
  */
 
 return [
-    'title' => 'داشبورد مدیریت',
+    'title' => 'داشبورد ادمین',
     'overview' => 'نمای کلی',
     'tools' => 'ابزارها',
     'tool_groups' => [
         'core' => 'مدیریت',
-        'monitoring' => 'پایش',
-        'extensions' => 'افزونه‌ها',
+        'monitoring' => 'نظارت',
+        'extensions' => 'برنامه‌های جانبی',
     ],
-    'refresh' => 'بازخوانی',
+    'refresh' => 'به‌روزرسانی',
     'metrics' => [
         'photos_count' => 'عکس‌ها',
         'albums_count' => 'آلبوم‌ها',
         'users_count' => 'کاربران',
-        'storage_bytes' => 'فضای ذخیره‌سازی استفاده‌شده',
-        'queued_jobs' => 'وظایف در صف',
+        'storage_bytes' => 'فضای استفاده‌شده',
+        'queued_jobs' => 'کارهای در صف',
         'failed_jobs_24h' => 'وظایف ناموفق (۲۴ ساعت گذشته)',
         'last_successful_job_at' => 'آخرین وظیفهٔ موفق',
     ],
@@ -68,7 +68,7 @@ return [
         'matrix_monitor' => 'پایش',
         'matrix_tbv' => 'قابل‌اعتماد-با-بررسی',
         'matrix_trusted' => 'مورد اعتماد',
-        'runtime_config' => 'پیکربندی زمان اجرای سرویس',
+        'runtime_config' => 'تنظیمات زمان اجرای سرویس',
         'presets' => 'پیش‌تنظیم‌های موجود',
         'key' => 'کلید',
         'value' => 'مقدار',
