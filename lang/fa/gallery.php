@@ -217,6 +217,7 @@ return [
         'actions' => [
             'highlight' => 'ستاره‌دار',
             'unhighlight' => 'بدون ستاره',
+            'share_card' => 'کارت اشتراک‌گذاری',
             'set_album_header' => 'تنظیم به عنوان هدر آلبوم',
             'move' => 'انتقال',
             'delete' => 'حذف',

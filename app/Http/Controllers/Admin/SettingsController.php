@@ -39,6 +39,7 @@ class SettingsController extends Controller
 		'album_border_enabled',
 		'selection_border_enabled',
 		'selection_overlay_enabled',
+		'photo_share_card_enabled',
 	];
 
 	/**

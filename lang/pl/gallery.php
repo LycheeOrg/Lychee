@@ -217,6 +217,7 @@ return [
         'actions' => [
             'highlight' => 'Wyróżnienie',
             'unhighlight' => 'Cofnij wyróżnienie',
+            'share_card' => 'Karta udostępniania',
             'set_album_header' => 'Ustaw jako nagłówek albumu',
             'move' => 'Przenieś',
             'delete' => 'Usuń',

@@ -374,6 +374,7 @@ return [
         'breadcrumb_enabled' => 'Activar la navegación por ruta de navegación en el encabezado del álbum',
         'selection_border_enabled' => 'Mostrar un borde alrededor de las miniaturas de fotos seleccionadas',
         'selection_overlay_enabled' => 'Mostrar una superposición azul claro en las miniaturas de fotos seleccionadas',
+        'photo_share_card_enabled' => 'Habilitar la tarjeta para compartir foto en la barra de encabezado de la foto.',
     ],
     'details' => [
         'version' => '',
@@ -744,6 +745,7 @@ return [
         'breadcrumb_enabled' => 'Mostrar la jerarquía del álbum como ruta de navegación en la barra de encabezado, en lugar del botón «Atrás» y el título.',
         'selection_border_enabled' => 'Cuando está activado, las miniaturas de fotos seleccionadas se resaltan con un borde.',
         'selection_overlay_enabled' => 'Cuando está activado, las miniaturas de fotos seleccionadas se tiñen con una superposición azul claro.',
+        'photo_share_card_enabled' => 'Cuando está activado, se muestra un botón en la barra de encabezado de la foto que abre una tarjeta con el título de la foto, un código QR con enlace directo a la foto, el propietario del sitio web y la licencia de la foto.',
     ],
     'category_name' => [
         'config' => 'Conceptos básicos',

@@ -80,6 +80,9 @@ return [
     'share_album' => [
         'url_copied' => 'URL kopierte til utklippstavlen!',
     ],
+    'photo_share_card' => [
+        'by' => 'av :name',
+    ],
     'embed_code' => [
         'title' => 'Bygg inn album',
         'title_stream' => 'Bygg inn bildestrøm',

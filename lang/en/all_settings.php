@@ -376,6 +376,7 @@ return [
         'breadcrumb_enabled' => 'Enable breadcrumb navigation in the album header',
         'selection_border_enabled' => 'Show a border around selected photo thumbnails',
         'selection_overlay_enabled' => 'Show a light blue overlay on selected photo thumbnails',
+        'photo_share_card_enabled' => 'Enable the photo share card in the photo header bar.',
     ],
     'details' => [
         'version' => '',
@@ -746,6 +747,7 @@ return [
         'breadcrumb_enabled' => 'Display the album ancestry as breadcrumbs in the header bar instead of the back button and title.',
         'selection_border_enabled' => 'When enabled, selected photo thumbnails are outlined with a border.',
         'selection_overlay_enabled' => 'When enabled, selected photo thumbnails are tinted with a light blue overlay.',
+        'photo_share_card_enabled' => 'When enabled, a button is shown in the photo header bar which opens a card displaying the photo title, a QR code linking directly to the photo, the website owner and the photo license.',
     ],
 
     'category_name' => [

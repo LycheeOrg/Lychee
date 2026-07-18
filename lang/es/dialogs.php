@@ -79,6 +79,9 @@ return [
     'share_album' => [
         'url_copied' => '¡Copiado URL al portapapeles!',
     ],
+    'photo_share_card' => [
+        'by' => 'por :name',
+    ],
     'embed_code' => [
         'title' => 'Incrustar álbum',
         'title_stream' => 'Incrustar flujo de fotos',

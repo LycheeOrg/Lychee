@@ -376,6 +376,7 @@ return [
         'breadcrumb_enabled' => 'Enable breadcrumb navigation in the album header',
         'selection_border_enabled' => 'إظهار حدّ حول الصور المصغّرة المحددة',
         'selection_overlay_enabled' => 'إظهار طبقة زرقاء فاتحة فوق الصور المصغّرة المحددة',
+        'photo_share_card_enabled' => 'تفعيل بطاقة مشاركة الصورة في شريط رأس الصورة.',
     ],
     'details' => [
         'version' => '',
@@ -746,6 +747,7 @@ return [
         'breadcrumb_enabled' => 'Display the album ancestry as breadcrumbs in the header bar instead of the back button and title.',
         'selection_border_enabled' => 'عند التفعيل، يتم تحديد الصور المصغّرة المختارة بحدّ.',
         'selection_overlay_enabled' => 'عند التفعيل، يتم تلوين الصور المصغّرة المختارة بطبقة زرقاء فاتحة.',
+        'photo_share_card_enabled' => 'عند التفعيل، يظهر زر في شريط رأس الصورة يفتح بطاقة تعرض عنوان الصورة، ورمز QR يؤدي مباشرة إلى الصورة، ومالك الموقع، ورخصة الصورة.',
     ],
 
     'category_name' => [

@@ -217,6 +217,7 @@ return [
         'actions' => [
             'highlight' => 'Отбележи',
             'unhighlight' => 'Премахни отметка',
+            'share_card' => 'Карта за споделяне',
             'set_album_header' => 'Задай като заглавка на албума',
             'move' => 'Премести',
             'delete' => 'Изтрий',

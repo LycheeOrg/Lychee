@@ -376,6 +376,7 @@ return [
         'breadcrumb_enabled' => 'Enable breadcrumb navigation in the album header',
         'selection_border_enabled' => 'Hiển thị viền quanh ảnh thu nhỏ đã chọn',
         'selection_overlay_enabled' => 'Hiển thị lớp phủ xanh nhạt trên ảnh thu nhỏ đã chọn',
+        'photo_share_card_enabled' => 'Bật thẻ chia sẻ ảnh trên thanh tiêu đề ảnh.',
     ],
     'details' => [
         'version' => '',
@@ -746,6 +747,7 @@ return [
         'breadcrumb_enabled' => 'Display the album ancestry as breadcrumbs in the header bar instead of the back button and title.',
         'selection_border_enabled' => 'Khi bật, ảnh thu nhỏ được chọn sẽ có viền bao quanh.',
         'selection_overlay_enabled' => 'Khi bật, ảnh thu nhỏ được chọn sẽ được phủ một lớp màu xanh nhạt.',
+        'photo_share_card_enabled' => 'Khi bật, một nút sẽ hiển thị trên thanh tiêu đề ảnh, mở ra một thẻ hiển thị tiêu đề ảnh, mã QR liên kết trực tiếp đến ảnh, chủ sở hữu trang web và giấy phép của ảnh.',
     ],
 
     'category_name' => [

@@ -80,6 +80,9 @@ return [
     'share_album' => [
         'url_copied' => 'URL naar klembord gekopieerd!',
     ],
+    'photo_share_card' => [
+        'by' => 'door :name',
+    ],
     'embed_code' => [
         'title' => 'Embed Album',
         'title_stream' => 'Embed Photo Stream',

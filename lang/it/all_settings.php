@@ -376,6 +376,7 @@ return [
         'breadcrumb_enabled' => 'Enable breadcrumb navigation in the album header',
         'selection_border_enabled' => 'Mostra un bordo intorno alle miniature delle foto selezionate',
         'selection_overlay_enabled' => 'Mostra una sovrapposizione blu chiaro sulle miniature delle foto selezionate',
+        'photo_share_card_enabled' => 'Abilita la scheda di condivisione della foto nella barra di intestazione della foto.',
     ],
     'details' => [
         'version' => '',
@@ -746,6 +747,7 @@ return [
         'breadcrumb_enabled' => 'Display the album ancestry as breadcrumbs in the header bar instead of the back button and title.',
         'selection_border_enabled' => 'Se abilitato, le miniature delle foto selezionate vengono delineate con un bordo.',
         'selection_overlay_enabled' => 'Se abilitato, le miniature delle foto selezionate vengono colorate con una sovrapposizione blu chiaro.',
+        'photo_share_card_enabled' => 'Se abilitato, viene mostrato un pulsante nella barra di intestazione della foto che apre una scheda con il titolo della foto, un codice QR con link diretto alla foto, il proprietario del sito e la licenza della foto.',
     ],
 
     'category_name' => [

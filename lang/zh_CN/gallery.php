@@ -217,6 +217,7 @@ return [
         'actions' => [
             'highlight' => '标星',
             'unhighlight' => '取消标星',
+            'share_card' => '分享卡片',
             'set_album_header' => '设为相册页眉图片',
             'move' => '移动',
             'delete' => '删除',

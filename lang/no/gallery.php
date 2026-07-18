@@ -216,6 +216,7 @@ return [
         'actions' => [
             'highlight' => 'Stjerne',
             'unhighlight' => 'Fjern Stjerne',
+            'share_card' => 'Delekort',
             'set_album_header' => 'Angi som albumoverskrift',
             'move' => 'Flytt',
             'delete' => 'Slett',

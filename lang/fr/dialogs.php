@@ -80,6 +80,9 @@ return [
     'share_album' => [
         'url_copied' => 'URL copiée dans le presse-papiers !',
     ],
+    'photo_share_card' => [
+        'by' => 'par :name',
+    ],
     'embed_code' => [
         'title' => 'Embed Album',
         'title_stream' => 'Embed Photo Stream',

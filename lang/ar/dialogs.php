@@ -80,6 +80,9 @@ return [
     'share_album' => [
         'url_copied' => 'تم نسخ عنوان URL إلى الحافظة!',
     ],
+    'photo_share_card' => [
+        'by' => 'بواسطة :name',
+    ],
     'embed_code' => [
         'title' => 'Embed Album',
         'title_stream' => 'Embed Photo Stream',

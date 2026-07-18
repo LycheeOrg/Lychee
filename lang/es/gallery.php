@@ -216,6 +216,7 @@ return [
         'actions' => [
             'highlight' => 'Marcar',
             'unhighlight' => 'Desmarcar',
+            'share_card' => 'Tarjeta para compartir',
             'set_album_header' => 'Establecer como encabezado de álbum',
             'move' => 'Mover',
             'delete' => 'Borrar',

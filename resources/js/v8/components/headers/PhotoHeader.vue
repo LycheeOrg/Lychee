@@ -71,14 +71,28 @@
 						}
 					"
 				/>
+				<UTooltip v-if="is_photo_share_card_enabled" :text="$t('gallery.photo.actions.share_card')">
+					<UButton
+						variant="ghost"
+						icon="lucide:qr-code"
+						color="neutral"
+						@click="
+							() => {
+								isPhotoShareCardOpen = !isPhotoShareCardOpen;
+							}
+						"
+					/>
+				</UTooltip>
 			</div>
 		</template>
 	</UHeader>
 	<DownloadPhoto v-model:open="isDownloadOpen" />
+	<PhotoShareCard v-model:open="isPhotoShareCardOpen" />
 </template>
 <script setup lang="ts">
 import { ref } from "vue";
 import DownloadPhoto from "@/v8/components/modals/DownloadPhoto.vue";
+import PhotoShareCard from "@/v8/components/modals/PhotoShareCard.vue";
 import { storeToRefs } from "pinia";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
@@ -101,9 +115,10 @@ const albumStore = useAlbumStore();
 const togglableStore = useTogglablesStateStore();
 const { is_full_screen, is_photo_edit_open, are_details_open, is_slideshow_active } = storeToRefs(togglableStore);
 const isDownloadOpen = ref(false);
+const isPhotoShareCardOpen = ref(false);
 const lycheeStore = useLycheeStateStore();
 const leftMenuStore = useLeftMenuStateStore();
-const { is_exif_disabled, is_slideshow_enabled } = storeToRefs(lycheeStore);
+const { is_exif_disabled, is_slideshow_enabled, is_photo_share_card_enabled } = storeToRefs(lycheeStore);
 
 function openInNewTab(url: string) {
 	window?.open(url, "_blank")?.focus();

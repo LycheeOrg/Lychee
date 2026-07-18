@@ -376,6 +376,7 @@ return [
         'breadcrumb_enabled' => 'Enable breadcrumb navigation in the album header',
         'selection_border_enabled' => '選択した写真サムネイルの周囲に枠線を表示する',
         'selection_overlay_enabled' => '選択した写真サムネイルに薄い青色のオーバーレイを表示する',
+        'photo_share_card_enabled' => '写真のヘッダーバーに写真共有カードを有効にします。',
     ],
     'details' => [
         'version' => '',
@@ -746,6 +747,7 @@ return [
         'breadcrumb_enabled' => 'Display the album ancestry as breadcrumbs in the header bar instead of the back button and title.',
         'selection_border_enabled' => '有効にすると、選択した写真サムネイルに枠線が表示されます。',
         'selection_overlay_enabled' => '有効にすると、選択した写真サムネイルが薄い青色のオーバーレイで着色されます。',
+        'photo_share_card_enabled' => '有効にすると、写真のヘッダーバーにボタンが表示され、写真のタイトル、写真への直接リンクを含むQRコード、サイト運営者、写真のライセンスを表示するカードが開きます。',
     ],
 
     'category_name' => [

@@ -80,6 +80,9 @@ return [
     'share_album' => [
         'url_copied' => 'URL адресът е копиран в клипборда!',
     ],
+    'photo_share_card' => [
+        'by' => 'от :name',
+    ],
     'embed_code' => [
         'title' => 'Вграждане на албум',
         'title_stream' => 'Вграждане на поток от снимки',

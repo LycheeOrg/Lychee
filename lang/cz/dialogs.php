@@ -80,6 +80,9 @@ return [
     'share_album' => [
         'url_copied' => 'Adresa zkopírována do schránky!',
     ],
+    'photo_share_card' => [
+        'by' => 'od :name',
+    ],
     'embed_code' => [
         'title' => 'Vloži Album',
         'title_stream' => 'Vložit Photo Stream',

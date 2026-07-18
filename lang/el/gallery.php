@@ -217,6 +217,7 @@ return [
         'actions' => [
             'highlight' => 'Star',
             'unhighlight' => 'Unstar',
+            'share_card' => 'Κάρτα κοινής χρήσης',
             'set_album_header' => 'Set as album header',
             'move' => 'Move',
             'delete' => 'Delete',

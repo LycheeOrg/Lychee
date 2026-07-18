@@ -376,6 +376,7 @@ return [
         'breadcrumb_enabled' => 'Enable breadcrumb navigation in the album header',
         'selection_border_enabled' => 'Εμφάνιση περιγράμματος γύρω από τις επιλεγμένες μικρογραφίες φωτογραφιών',
         'selection_overlay_enabled' => 'Εμφάνιση ανοιχτού μπλε επικάλυψης στις επιλεγμένες μικρογραφίες φωτογραφιών',
+        'photo_share_card_enabled' => 'Ενεργοποίηση της κάρτας κοινής χρήσης φωτογραφίας στη γραμμή κεφαλίδας φωτογραφίας.',
     ],
     'details' => [
         'version' => '',
@@ -746,6 +747,7 @@ return [
         'breadcrumb_enabled' => 'Display the album ancestry as breadcrumbs in the header bar instead of the back button and title.',
         'selection_border_enabled' => 'Όταν είναι ενεργοποιημένο, οι επιλεγμένες μικρογραφίες φωτογραφιών περιγράφονται με ένα περίγραμμα.',
         'selection_overlay_enabled' => 'Όταν είναι ενεργοποιημένο, οι επιλεγμένες μικρογραφίες φωτογραφιών βάφονται με μια ανοιχτόχρωμη μπλε επικάλυψη.',
+        'photo_share_card_enabled' => 'Όταν είναι ενεργοποιημένο, εμφανίζεται ένα κουμπί στη γραμμή κεφαλίδας φωτογραφίας που ανοίγει μια κάρτα με τον τίτλο της φωτογραφίας, έναν κωδικό QR που συνδέεται απευθείας με τη φωτογραφία, τον ιδιοκτήτη του ιστότοπου και την άδεια χρήσης της φωτογραφίας.',
     ],
 
     'category_name' => [

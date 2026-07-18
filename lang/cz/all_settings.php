@@ -376,6 +376,7 @@ return [
         'breadcrumb_enabled' => 'Enable breadcrumb navigation in the album header',
         'selection_border_enabled' => 'Zobrazit okraj kolem vybraných miniatur fotografií',
         'selection_overlay_enabled' => 'Zobrazit světle modrý překryv na vybraných miniaturách fotografií',
+        'photo_share_card_enabled' => 'Povolit sdílecí kartu fotografie v hlavičce fotografie.',
     ],
     'details' => [
         'version' => '',
@@ -746,6 +747,7 @@ return [
         'breadcrumb_enabled' => 'Display the album ancestry as breadcrumbs in the header bar instead of the back button and title.',
         'selection_border_enabled' => 'Když je povoleno, vybrané miniatury fotografií jsou orámovány okrajem.',
         'selection_overlay_enabled' => 'Když je povoleno, vybrané miniatury fotografií jsou zabarveny světle modrým překryvem.',
+        'photo_share_card_enabled' => 'Když je povoleno, v hlavičce fotografie se zobrazí tlačítko, které otevře kartu se zobrazením názvu fotografie, QR kódem s přímým odkazem na fotografii, vlastníkem webu a licencí fotografie.',
     ],
 
     'category_name' => [

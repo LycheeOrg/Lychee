@@ -217,6 +217,7 @@ return [
         'actions' => [
             'highlight' => 'Highlight',
             'unhighlight' => 'Unhighlight',
+            'share_card' => 'Share Card',
             'set_album_header' => 'Set as album header',
             'move' => 'Move',
             'delete' => 'Delete',

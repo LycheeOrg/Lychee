@@ -139,6 +139,10 @@ class InitConfig extends Data
 	// Embed
 	public bool $is_embed_enabled = true;
 
+	// Photo Share Card
+	public bool $is_photo_share_card_enabled = true;
+	public string $site_owner;
+
 	// Homepage
 	public string $default_homepage;
 	public bool $is_timeline_page_enabled = false;
@@ -256,6 +260,10 @@ class InitConfig extends Data
 
 		// Embed
 		$this->is_embed_enabled = request()->configs()->getValueAsBool('is_embed_enabled');
+
+		// Photo Share Card
+		$this->is_photo_share_card_enabled = request()->configs()->getValueAsBool('photo_share_card_enabled');
+		$this->site_owner = request()->configs()->getValueAsString('site_owner');
 
 		// Homepage
 		$this->default_homepage = request()->configs()->getValueAsString('home_page_default');

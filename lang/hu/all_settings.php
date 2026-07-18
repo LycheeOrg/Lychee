@@ -376,6 +376,7 @@ return [
         'breadcrumb_enabled' => 'Enable breadcrumb navigation in the album header',
         'selection_border_enabled' => 'Keret megjelenítése a kijelölt fényképminiatűrök körül',
         'selection_overlay_enabled' => 'Világoskék átfedés megjelenítése a kijelölt fényképminiatűrökön',
+        'photo_share_card_enabled' => 'A fénykép megosztókártyájának engedélyezése a fénykép fejlécében.',
     ],
     'details' => [
         'version' => '',
@@ -746,6 +747,7 @@ return [
         'breadcrumb_enabled' => 'Display the album ancestry as breadcrumbs in the header bar instead of the back button and title.',
         'selection_border_enabled' => 'Ha engedélyezve van, a kijelölt fényképminiatűrök keretet kapnak.',
         'selection_overlay_enabled' => 'Ha engedélyezve van, a kijelölt fényképminiatűrök világoskék átfedéssel jelennek meg.',
+        'photo_share_card_enabled' => 'Ha engedélyezve van, egy gomb jelenik meg a fénykép fejlécében, amely megnyit egy kártyát a fénykép címével, egy közvetlenül a fényképre mutató QR-kóddal, a weboldal tulajdonosával és a fénykép licencével.',
     ],
 
     'category_name' => [

@@ -217,6 +217,7 @@ return [
         'actions' => [
             'highlight' => 'Star',
             'unhighlight' => 'Unstar',
+            'share_card' => 'Zdieľacia karta',
             'set_album_header' => 'Set as album header',
             'move' => 'Move',
             'delete' => 'Delete',

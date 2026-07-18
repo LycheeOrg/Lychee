@@ -376,6 +376,7 @@ return [
         'breadcrumb_enabled' => 'Enable breadcrumb navigation in the album header',
         'selection_border_enabled' => 'Показывать рамку вокруг выбранных миниатюр фотографий',
         'selection_overlay_enabled' => 'Показывать светло-голубую подсветку на выбранных миниатюрах фотографий',
+        'photo_share_card_enabled' => 'Включить карточку обмена фото на панели заголовка фото.',
     ],
     'details' => [
         'version' => '',
@@ -746,6 +747,7 @@ return [
         'breadcrumb_enabled' => 'Display the album ancestry as breadcrumbs in the header bar instead of the back button and title.',
         'selection_border_enabled' => 'Если включено, выбранные миниатюры фотографий выделяются рамкой.',
         'selection_overlay_enabled' => 'Если включено, выбранные миниатюры фотографий окрашиваются светло-голубой подсветкой.',
+        'photo_share_card_enabled' => 'Если включено, на панели заголовка фото отображается кнопка, открывающая карточку с названием фото, QR-кодом с прямой ссылкой на фото, владельцем сайта и лицензией фото.',
     ],
 
     'category_name' => [

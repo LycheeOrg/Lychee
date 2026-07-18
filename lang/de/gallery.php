@@ -216,6 +216,7 @@ return [
         'actions' => [
             'highlight' => 'Mit Stern bewerten',
             'unhighlight' => 'Stern entfernen',
+            'share_card' => 'Fotokarte teilen',
             'set_album_header' => 'Als Album-Header festlegen',
             'move' => 'Verschieben',
             'delete' => 'Löschen',

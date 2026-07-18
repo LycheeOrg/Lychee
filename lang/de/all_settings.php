@@ -374,6 +374,7 @@ return [
         'breadcrumb_enabled' => 'Die Navigation über den Navigationspfad in der Kopfzeile des Albums aktivieren',
         'selection_border_enabled' => 'Rahmen um ausgewählte Fotominiaturen anzeigen',
         'selection_overlay_enabled' => 'Hellblaue Überlagerung bei ausgewählten Fotominiaturen anzeigen',
+        'photo_share_card_enabled' => 'Aktiviert die Fotokarte in der Foto-Kopfzeile.',
     ],
     'details' => [
         'version' => '',
@@ -744,6 +745,7 @@ return [
         'breadcrumb_enabled' => 'Die Albumhierarchie als Navigationspfad in der Kopfzeile anzeigen, anstelle der Schaltfläche „Zurück“ und des Titels.',
         'selection_border_enabled' => 'Wenn aktiviert, werden ausgewählte Fotominiaturen mit einem Rahmen umrandet.',
         'selection_overlay_enabled' => 'Wenn aktiviert, werden ausgewählte Fotominiaturen mit einer hellblauen Überlagerung eingefärbt.',
+        'photo_share_card_enabled' => 'Wenn aktiviert, wird in der Foto-Kopfzeile eine Schaltfläche angezeigt, die eine Karte mit dem Fototitel, einem QR-Code mit direktem Link zum Foto, dem Website-Betreiber und der Fotolizenz öffnet.',
     ],
     'category_name' => [
         'config' => 'Grundeinstellungen',

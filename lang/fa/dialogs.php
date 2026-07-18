@@ -80,6 +80,9 @@ return [
     'share_album' => [
         'url_copied' => 'آدرس URL به کلیپ‌بورد کپی شد!',
     ],
+    'photo_share_card' => [
+        'by' => 'توسط :name',
+    ],
     'embed_code' => [
         'title' => 'جاسازی آلبوم',
         'title_stream' => 'جاسازی جریان عکس',

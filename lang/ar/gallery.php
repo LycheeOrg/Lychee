@@ -217,6 +217,7 @@ return [
         'actions' => [
             'highlight' => 'تمييز',
             'unhighlight' => 'إلغاء التمييز',
+            'share_card' => 'بطاقة المشاركة',
             'set_album_header' => 'تعيين كعنوان ألبوم',
             'move' => 'نقل',
             'delete' => 'حذف',

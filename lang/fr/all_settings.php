@@ -374,6 +374,7 @@ return [
         'breadcrumb_enabled' => 'Enable breadcrumb navigation in the album header',
         'selection_border_enabled' => 'Afficher une bordure autour des vignettes de photos sélectionnées',
         'selection_overlay_enabled' => 'Afficher une superposition bleu clair sur les vignettes de photos sélectionnées',
+        'photo_share_card_enabled' => 'Lorsque cette option est activée, un bouton apparaît dans la barre d’en-tête de la photo et ouvre une carte affichant le titre de la photo, un code QR renvoyant directement à la photo, le propriétaire du site et la licence de la photo.',
     ],
     'documentation' => [
         'version' => 'Version actuelle de Lychee',
@@ -744,6 +745,7 @@ return [
         'breadcrumb_enabled' => 'Display the album ancestry as breadcrumbs in the header bar instead of the back button and title.',
         'selection_border_enabled' => 'Lorsque cette option est activée, les vignettes de photos sélectionnées sont entourées d’une bordure.',
         'selection_overlay_enabled' => 'Lorsque cette option est activée, les vignettes de photos sélectionnées sont teintées d’une superposition bleu clair.',
+        'photo_share_card_enabled' => 'Active la carte de partage de la photo dans la barre d’en-tête de la photo.',
     ],
     'category_name' => [
         'config' => 'Les bases',

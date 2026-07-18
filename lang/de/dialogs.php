@@ -79,6 +79,9 @@ return [
     'share_album' => [
         'url_copied' => 'URL in die Zwischenablage kopiert!',
     ],
+    'photo_share_card' => [
+        'by' => 'von :name',
+    ],
     'embed_code' => [
         'title' => 'Album einbetten',
         'title_stream' => 'Fotostream einbetten',

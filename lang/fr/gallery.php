@@ -217,6 +217,7 @@ return [
         'actions' => [
             'highlight' => 'Favori',
             'unhighlight' => 'Retirer des favoris',
+            'share_card' => 'Carte de partage',
             'set_album_header' => 'Définir comme en-tête d’album',
             'move' => 'Déplacer',
             'delete' => 'Supprimer',

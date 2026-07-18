@@ -80,6 +80,9 @@ return [
     'share_album' => [
         'url_copied' => '链接已复制到剪贴板！',
     ],
+    'photo_share_card' => [
+        'by' => '由 :name',
+    ],
     'embed_code' => [
         'title' => 'Embed Album',
         'title_stream' => 'Embed Photo Stream',

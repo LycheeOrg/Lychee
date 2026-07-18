@@ -217,6 +217,7 @@ return [
         'actions' => [
             'highlight' => 'Označit hvězdičkou',
             'unhighlight' => 'Odstraň hvězdičku',
+            'share_card' => 'Sdílecí karta',
             'set_album_header' => 'Nastavit jako záhlaví alba',
             'move' => 'Přesunout',
             'delete' => 'Smazat',

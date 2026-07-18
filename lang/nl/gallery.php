@@ -217,6 +217,7 @@ return [
         'actions' => [
             'highlight' => 'Ster',
             'unhighlight' => 'Ster verwijderen',
+            'share_card' => 'Deelkaart',
             'set_album_header' => 'Instellen als albumkop',
             'move' => 'Verplaatsen',
             'delete' => 'Verwijderen',

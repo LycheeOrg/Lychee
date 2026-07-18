@@ -376,6 +376,7 @@ return [
         'breadcrumb_enabled' => 'Enable breadcrumb navigation in the album header',
         'selection_border_enabled' => '在选中的照片缩略图周围显示边框',
         'selection_overlay_enabled' => '在选中的照片缩略图上显示浅蓝色叠加层',
+        'photo_share_card_enabled' => '在照片标题栏中启用照片分享卡片。',
     ],
     'details' => [
         'version' => '',
@@ -746,6 +747,7 @@ return [
         'breadcrumb_enabled' => 'Display the album ancestry as breadcrumbs in the header bar instead of the back button and title.',
         'selection_border_enabled' => '启用后，选中的照片缩略图将带有边框。',
         'selection_overlay_enabled' => '启用后，选中的照片缩略图将被浅蓝色叠加层染色。',
+        'photo_share_card_enabled' => '启用后，照片标题栏中会显示一个按钮，点击后会打开一张卡片，显示照片标题、直接链接到该照片的二维码、网站所有者以及照片的许可协议。',
     ],
 
     'category_name' => [

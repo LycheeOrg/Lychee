@@ -374,6 +374,7 @@ return [
         'breadcrumb_enabled' => 'Enable breadcrumb navigation in the album header',
         'selection_border_enabled' => 'Vis en kant rundt valgte bildeminiatyrer',
         'selection_overlay_enabled' => 'Vis et lyseblått overlegg på valgte bildeminiatyrer',
+        'photo_share_card_enabled' => 'Aktiver delekortet for bilder i bildetoppteksten.',
     ],
     'details' => [
         'version' => '',
@@ -744,6 +745,7 @@ return [
         'breadcrumb_enabled' => 'Display the album ancestry as breadcrumbs in the header bar instead of the back button and title.',
         'selection_border_enabled' => 'Når aktivert, vises valgte bildeminiatyrer med en kant.',
         'selection_overlay_enabled' => 'Når aktivert, farges valgte bildeminiatyrer med et lyseblått overlegg.',
+        'photo_share_card_enabled' => 'Når aktivert, vises en knapp i bildetoppteksten som åpner et kort med bildetittelen, en QR-kode med direkte lenke til bildet, nettstedeieren og bildets lisens.',
     ],
     'category_name' => [
         'config' => 'Basics',
