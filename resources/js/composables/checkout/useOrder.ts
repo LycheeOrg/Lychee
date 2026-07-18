@@ -7,11 +7,12 @@ import { trans } from "laravel-vue-i18n";
 
 const orders = ref<App.Http.Resources.Shop.OrderResource[] | undefined>(undefined);
 const numOldOrders = ref<number>(0);
+const showPending = ref<boolean>(false);
 
 export function useOrder(toast: ToastLike, router: Router) {
 	function load() {
 		return Promise.all([
-			WebshopService.Order.list()
+			WebshopService.Order.list(showPending.value)
 				.then((response) => {
 					orders.value = response.data;
 				})
@@ -113,5 +114,6 @@ export function useOrder(toast: ToastLike, router: Router) {
 		clean,
 		orders,
 		numOldOrders,
+		showPending,
 	};
 }

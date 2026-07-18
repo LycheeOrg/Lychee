@@ -37,7 +37,7 @@ class OrderController extends Controller
 	 */
 	public function list(ListOrderRequest $request): array
 	{
-		return OrderResource::collect($this->order_service->getAll());
+		return OrderResource::collect($this->order_service->getAll($request->include_pending));
 	}
 
 	/**

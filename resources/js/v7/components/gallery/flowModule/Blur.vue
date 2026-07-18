@@ -1,7 +1,7 @@
 <template>
 	<div
 		v-if="isBlurred"
-		class="cursor-pointer absolute top-0 left-0 w-full h-full bg-[url(/img/noise.png)] backdrop-blur transition-opacity duration-1000 hover:opacity-0 flex justify-center items-center"
+		class="cursor-pointer absolute top-0 left-0 w-full h-full bg-noise backdrop-blur transition-opacity duration-1000 hover:opacity-0 flex justify-center items-center"
 		@click="are_nsfw_consented = true"
 	>
 		<slot></slot>

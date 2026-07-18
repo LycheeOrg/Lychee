@@ -8,6 +8,10 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+@utility bg-noise {
+	background-image: url("/img/noise.png");
+}
+
 html {
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }

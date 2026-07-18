@@ -19,13 +19,7 @@
 					</span>
 				</div>
 			</div>
-			<div
-				v-for="(job, idx) in jobs"
-				:id="`job${idx}`"
-				:key="`job-${idx}`"
-				class="flex text-xs sm:text-base flex-wrap sm:flex-nowrap"
-				dir="ltr"
-			>
+			<div v-for="(job, idx) in jobs" :id="`job${idx}`" :key="`job-${idx}`" class="flex text-xs sm:text-base flex-wrap sm:flex-nowrap">
 				<span class="hidden sm:inline-block sm:w-2/5 text-muted">{{ prettyDate(job.created_at) }}</span>
 				<span class="w-1/6 sm:w-1/4" :class="textCss(job.status)">{{ translateStatus(job.status) }}</span>
 				<span class="w-5/6 sm:w-1/4">{{ job.username }}</span>

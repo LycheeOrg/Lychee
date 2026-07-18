@@ -36,6 +36,10 @@
 	}
 }
 
+@utility bg-noise {
+	background-image: url("/img/noise.png");
+}
+
 @theme {
 	--color-ready-400: var(--ready);
 	--color-danger-600: var(--danger);

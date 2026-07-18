@@ -8,7 +8,8 @@
 
 namespace App\Http\Requests\Order;
 
-use App\Http\Requests\AbstractEmptyRequest;
+use App\Contracts\Http\Requests\RequestAttribute;
+use App\Http\Requests\BaseApiRequest;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -16,10 +17,38 @@ use Illuminate\Support\Facades\Auth;
  *
  * Only usable by logged in users.
  */
-class ListOrderRequest extends AbstractEmptyRequest
+class ListOrderRequest extends BaseApiRequest
 {
+	public bool $include_pending = false;
+
 	public function authorize(): bool
 	{
 		return Auth::check();
+	}
+
+	protected function prepareForValidation(): void
+	{
+		/** @disregard */
+		$this->merge([
+			RequestAttribute::INCLUDE_PENDING_ATTRIBUTE => strval($this->input(RequestAttribute::INCLUDE_PENDING_ATTRIBUTE, '0')),
+		]);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function rules(): array
+	{
+		return [
+			RequestAttribute::INCLUDE_PENDING_ATTRIBUTE => ['present', 'boolean'],
+		];
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	protected function processValidatedValues(array $values, array $files): void
+	{
+		$this->include_pending = static::toBoolean($values[RequestAttribute::INCLUDE_PENDING_ATTRIBUTE] ?? false);
 	}
 }

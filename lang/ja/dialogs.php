@@ -236,7 +236,7 @@ return [
         'no_tags' => 'No Tags',
         'set_tags' => 'Set Tags',
         'updated' => 'Tags updated!',
-        'tags_override_info' => 'If this is unchecked, the tags will be added to the existing tags of the photo.',
+        'tags_override_info' => 'If this is checked, the existing tags on each image will be overwritten and replaced.',
     ],
     'photo_license' => [
         'question' => 'Select a license for this photo.',

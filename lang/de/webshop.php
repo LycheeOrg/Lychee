@@ -107,6 +107,7 @@ return [
         'transactionId' => 'Transaktions-ID',
         'status' => 'Status',
         'amount' => 'Betrag',
+        'show_pending' => 'Ausstehende Bestellungen anzeigen',
     ],
     'purchasablesList' => [
         'purchasables' => 'Kaufbare Artikel',

@@ -24,7 +24,6 @@
 		</p>
 		<p
 			v-if="image_overlay_type === 'exif' && !photoStore.photo.precomputed.is_video && photoStore.photo.preformatted.shutter !== ''"
-			dir="ltr"
 			class="mt-1 text-base sm:text-xl text-neutral-400 rtl:text-right ltr:text-left"
 		>
 			{{ photoStore.photo.preformatted.shutter }} at &fnof; / {{ photoStore.photo.preformatted.aperture }},
