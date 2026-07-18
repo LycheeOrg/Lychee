@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8441d1d9d903c967692d20e744f60c4e",
+    "content-hash": "b830c47986291e380de1c207bede1ae5",
     "packages": [
         {
             "name": "apimatic/core",
@@ -14273,6 +14273,83 @@
                 "issues": "https://github.com/LycheeOrg/phpstan-lychee/issues"
             },
             "time": "2025-12-23T09:51:26+00:00"
+        },
+        {
+            "name": "lychee-org/phpstan-sensitive-parameter-values",
+            "version": "1.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/LycheeOrg/phpstan-sensitive-parameter-values.git",
+                "reference": "e0b2df9e2f5ccc14c34556efceaabbf36d57ae91"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/LycheeOrg/phpstan-sensitive-parameter-values/zipball/e0b2df9e2f5ccc14c34556efceaabbf36d57ae91",
+                "reference": "e0b2df9e2f5ccc14c34556efceaabbf36d57ae91",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.2",
+                "phpstan/phpstan": "^2.1.3"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.22",
+                "pestphp/pest": "^3.8"
+            },
+            "type": "phpstan-extension",
+            "extra": {
+                "phpstan": {
+                    "includes": [
+                        "extension.neon"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "LycheeOrg\\PHPStan\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "LycheeOrg",
+                    "homepage": "https://github.com/LycheeOrg/phpstan-sensitive-parameter-values"
+                },
+                {
+                    "name": "Josh Priddle",
+                    "homepage": "https://github.com/built-fast/phpstan-sensitive-parameter"
+                }
+            ],
+            "description": "PHPStan extension for better support of SensitiveParameter and SensitiveParameterValue attributes.",
+            "homepage": "https://github.com/LycheeOrg/phpstan-sensitive-parameter-values",
+            "keywords": [
+                "PHPStan",
+                "code-quality",
+                "php",
+                "phpstan-extension",
+                "security",
+                "sensitive-parameter",
+                "static-analysis"
+            ],
+            "support": {
+                "forum": "https://github.com/LycheeOrg/phpstan-sensitive-parameter-values/discussions",
+                "issues": "https://github.com/LycheeOrg/phpstan-sensitive-parameter-values/issues",
+                "source": "https://github.com/LycheeOrg/phpstan-sensitive-parameter-values"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/LycheeOrg",
+                    "type": "github"
+                },
+                {
+                    "url": "https://opencollective.com/LycheeOrg",
+                    "type": "open_collective"
+                }
+            ],
+            "time": "2026-07-18T21:22:17+00:00"
         },
         {
             "name": "marc-mabe/php-enum",

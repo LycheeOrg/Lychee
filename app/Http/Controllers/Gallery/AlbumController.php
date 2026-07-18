@@ -230,7 +230,7 @@ class AlbumController extends Controller
 		BaseAlbum $album,
 		AlbumProtectionPolicy $protection_policy,
 		bool $shall_set_password,
-		?string $password,
+		#[\SensitiveParameter] ?string $password,
 		SetProtectionPolicy $set_protection_policy): AlbumProtectionPolicy
 	{
 		$set_protection_policy->do(

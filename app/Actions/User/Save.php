@@ -37,7 +37,7 @@ class Save
 	 */
 	public function do(User $user,
 		string $username,
-		?string $password,
+		#[\SensitiveParameter] ?string $password,
 		bool $may_upload,
 		bool $may_edit_own_settings,
 		bool $may_administrate = false,

@@ -19,6 +19,7 @@ class WebAuthnResource extends Data
 	public ?string $alias;
 	public string $created_at;
 
+	/** @phpstan-ignore sensitiveParameter.missing (nothing secret here) */
 	public function __construct(WebAuthnCredential $credential)
 	{
 		$this->id = $credential->id;
@@ -26,6 +27,7 @@ class WebAuthnResource extends Data
 		$this->created_at = $credential->created_at->toIso8601String();
 	}
 
+	/** @phpstan-ignore sensitiveParameter.missing (nothing secret here) */
 	public static function fromModel(WebAuthnCredential $credential): WebAuthnResource
 	{
 		return new self($credential);

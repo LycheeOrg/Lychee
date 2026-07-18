@@ -175,7 +175,7 @@ class Oauth
 	 *
 	 * @return void
 	 */
-	private function saveOauth(OauthProvidersType $provider, int $authed_user_id, string $oauth_id): void
+	private function saveOauth(OauthProvidersType $provider, int $authed_user_id, #[\SensitiveParameter] string $oauth_id): void
 	{
 		$credential = OauthCredential::create([
 			'provider' => $provider,

@@ -61,7 +61,7 @@ class WebhookFactory extends Factory
 	/**
 	 * State: webhook has a secret configured.
 	 */
-	public function withSecret(string $secret = 'test-secret', string $header = 'X-Webhook-Secret'): static
+	public function withSecret(#[\SensitiveParameter] string $secret = 'test-secret', string $header = 'X-Webhook-Secret'): static
 	{
 		return $this->state(fn (array $attributes) => [
 			'secret' => $secret,

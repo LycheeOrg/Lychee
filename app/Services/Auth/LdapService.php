@@ -46,7 +46,7 @@ class LdapService
 	 *
 	 * @return LdapUser|null User data on success, null on authentication failure
 	 */
-	public function authenticate(string $username, string $password): ?LdapUser
+	public function authenticate(string $username, #[\SensitiveParameter] string $password): ?LdapUser
 	{
 		Log::debug('LDAP authentication attempt', [
 			'username' => $username,
