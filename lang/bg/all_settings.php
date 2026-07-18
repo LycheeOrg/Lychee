@@ -374,7 +374,6 @@ return [
         'breadcrumb_enabled' => 'Enable breadcrumb navigation in the album header',
         'selection_border_enabled' => 'Показване на рамка около избраните миниатюри на снимки',
         'selection_overlay_enabled' => 'Показване на светлосиньо покритие върху избраните миниатюри на снимки',
-        'nfc_share_enabled' => 'Разрешаване на споделянето на текущия адрес на снимка или албум чрез NFC.',
         'photo_share_card_enabled' => 'Разрешаване на картата за споделяне на снимка в лентата на снимката.',
     ],
     'details' => [
@@ -746,7 +745,6 @@ return [
         'breadcrumb_enabled' => 'Display the album ancestry as breadcrumbs in the header bar instead of the back button and title.',
         'selection_border_enabled' => 'Когато е активирано, избраните миниатюри на снимки се очертават с рамка.',
         'selection_overlay_enabled' => 'Когато е активирано, избраните миниатюри на снимки се оцветяват със светлосиньо покритие.',
-        'nfc_share_enabled' => 'Когато е активирано и устройството поддържа Web NFC, в лентите за снимки и албуми се показва бутон за споделяне на текущия адрес чрез докосване на NFC етикет или друго NFC устройство.',
         'photo_share_card_enabled' => 'Когато е активирано, в лентата на снимката се показва бутон, който отваря карта със заглавието на снимката, QR код с директна връзка към снимката, собственика на сайта и лиценза на снимката.',
     ],
     'category_name' => [

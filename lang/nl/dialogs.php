@@ -80,12 +80,6 @@ return [
     'share_album' => [
         'url_copied' => 'URL naar klembord gekopieerd!',
     ],
-    'share_nfc' => [
-        'prompt' => 'Houd je apparaat tegen een NFC-tag om de link te delen…',
-        'success' => 'Link gedeeld via NFC!',
-        'error' => 'Delen via NFC is mislukt.',
-        'not_supported' => 'NFC delen wordt niet ondersteund op dit apparaat.',
-    ],
     'photo_share_card' => [
         'by' => 'door :name',
     ],

@@ -374,7 +374,6 @@ return [
         'breadcrumb_enabled' => 'Enable breadcrumb navigation in the album header',
         'selection_border_enabled' => 'Vis en kant rundt valgte bildeminiatyrer',
         'selection_overlay_enabled' => 'Vis et lyseblått overlegg på valgte bildeminiatyrer',
-        'nfc_share_enabled' => 'Aktiver deling av gjeldende bilde- eller albumadresse via NFC.',
         'photo_share_card_enabled' => 'Aktiver delekortet for bilder i bildetoppteksten.',
     ],
     'details' => [
@@ -746,7 +745,6 @@ return [
         'breadcrumb_enabled' => 'Display the album ancestry as breadcrumbs in the header bar instead of the back button and title.',
         'selection_border_enabled' => 'Når aktivert, vises valgte bildeminiatyrer med en kant.',
         'selection_overlay_enabled' => 'Når aktivert, farges valgte bildeminiatyrer med et lyseblått overlegg.',
-        'nfc_share_enabled' => 'Når aktivert, og enheten støtter Web NFC, vises en knapp i bilde- og albumtoppteksten for å dele gjeldende URL ved å holde enheten mot en NFC-brikke eller en annen NFC-kompatibel enhet.',
         'photo_share_card_enabled' => 'Når aktivert, vises en knapp i bildetoppteksten som åpner et kort med bildetittelen, en QR-kode med direkte lenke til bildet, nettstedeieren og bildets lisens.',
     ],
     'category_name' => [

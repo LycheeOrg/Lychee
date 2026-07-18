@@ -80,12 +80,6 @@ return [
     'share_album' => [
         'url_copied' => 'URL copiée dans le presse-papiers !',
     ],
-    'share_nfc' => [
-        'prompt' => 'Approchez votre appareil d’un tag NFC pour partager le lien…',
-        'success' => 'Lien partagé via NFC !',
-        'error' => 'Impossible de partager via NFC.',
-        'not_supported' => 'Le partage via NFC n’est pas pris en charge sur cet appareil.',
-    ],
     'photo_share_card' => [
         'by' => 'par :name',
     ],

@@ -64,9 +64,6 @@
 					class="hidden sm:inline-flex"
 					@click="emits('openSearch')"
 				/>
-				<UTooltip v-if="isNfcShareEnabled" :text="$t('gallery.album.hero.share_nfc')">
-					<UButton icon="lucide:nfc" color="neutral" variant="ghost" @click="shareCurrentUrlViaNfc" />
-				</UTooltip>
 				<UDropdownMenu v-if="albumStore.rights?.can_upload" :items="addMenuSections">
 					<UButton icon="lucide:plus" color="neutral" variant="ghost" />
 				</UDropdownMenu>
@@ -100,7 +97,6 @@ import { isTouchDevice } from "@/utils/keybindings-utils";
 import { useAlbumActions } from "@/composables/album/albumActions";
 import { trans } from "laravel-vue-i18n";
 import type { DropdownMenuItem } from "@nuxt/ui";
-import { isNfcShareSupported, useNfcShare } from "@/v8/composables/useNfcShare";
 
 const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
@@ -108,13 +104,7 @@ const favourites = useFavouriteStore();
 const albumStore = useAlbumStore();
 const orderManagementStore = useOrderManagementStore();
 
-const { dropbox_api_key, is_favourite_enabled, is_se_enabled, is_nfc_share_enabled } = storeToRefs(lycheeStore);
-const { shareUrlViaNfc } = useNfcShare();
-const isNfcShareEnabled = computed(() => is_nfc_share_enabled.value && isNfcShareSupported());
-
-function shareCurrentUrlViaNfc() {
-	shareUrlViaNfc(window.location.href);
-}
+const { dropbox_api_key, is_favourite_enabled, is_se_enabled } = storeToRefs(lycheeStore);
 const { canInteractPhoto } = useAlbumActions();
 const { is_album_edit_open, is_full_screen, is_touch_select_mode, selectedPhotosIds, selectedAlbumsIds } = storeToRefs(togglableStore);
 

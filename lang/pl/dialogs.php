@@ -80,12 +80,6 @@ return [
     'share_album' => [
         'url_copied' => 'Skopiowano adres URL do schowka!',
     ],
-    'share_nfc' => [
-        'prompt' => 'Zbliż urządzenie do znacznika NFC, aby udostępnić link…',
-        'success' => 'Link udostępniony przez NFC!',
-        'error' => 'Nie udało się udostępnić przez NFC.',
-        'not_supported' => 'Udostępnianie przez NFC nie jest obsługiwane na tym urządzeniu.',
-    ],
     'photo_share_card' => [
         'by' => 'od :name',
     ],

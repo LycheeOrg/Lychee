@@ -374,7 +374,6 @@ return [
         'breadcrumb_enabled' => 'Activar la navegación por ruta de navegación en el encabezado del álbum',
         'selection_border_enabled' => 'Mostrar un borde alrededor de las miniaturas de fotos seleccionadas',
         'selection_overlay_enabled' => 'Mostrar una superposición azul claro en las miniaturas de fotos seleccionadas',
-        'nfc_share_enabled' => 'Habilitar compartir la URL actual de la foto o el álbum a través de NFC.',
         'photo_share_card_enabled' => 'Habilitar la tarjeta para compartir foto en la barra de encabezado de la foto.',
     ],
     'details' => [
@@ -746,7 +745,6 @@ return [
         'breadcrumb_enabled' => 'Mostrar la jerarquía del álbum como ruta de navegación en la barra de encabezado, en lugar del botón «Atrás» y el título.',
         'selection_border_enabled' => 'Cuando está activado, las miniaturas de fotos seleccionadas se resaltan con un borde.',
         'selection_overlay_enabled' => 'Cuando está activado, las miniaturas de fotos seleccionadas se tiñen con una superposición azul claro.',
-        'nfc_share_enabled' => 'Cuando está activado y el dispositivo admite Web NFC, se muestra un botón en las barras de encabezado de foto y álbum para compartir la URL actual acercando el dispositivo a una etiqueta NFC u otro dispositivo compatible con NFC.',
         'photo_share_card_enabled' => 'Cuando está activado, se muestra un botón en la barra de encabezado de la foto que abre una tarjeta con el título de la foto, un código QR con enlace directo a la foto, el propietario del sitio web y la licencia de la foto.',
     ],
     'category_name' => [

@@ -376,7 +376,6 @@ return [
         'breadcrumb_enabled' => 'Enable breadcrumb navigation in the album header',
         'selection_border_enabled' => 'Keret megjelenítése a kijelölt fényképminiatűrök körül',
         'selection_overlay_enabled' => 'Világoskék átfedés megjelenítése a kijelölt fényképminiatűrökön',
-        'nfc_share_enabled' => 'Az aktuális fénykép vagy album URL-jének NFC-n keresztüli megosztásának engedélyezése.',
         'photo_share_card_enabled' => 'A fénykép megosztókártyájának engedélyezése a fénykép fejlécében.',
     ],
     'details' => [
@@ -748,7 +747,6 @@ return [
         'breadcrumb_enabled' => 'Display the album ancestry as breadcrumbs in the header bar instead of the back button and title.',
         'selection_border_enabled' => 'Ha engedélyezve van, a kijelölt fényképminiatűrök keretet kapnak.',
         'selection_overlay_enabled' => 'Ha engedélyezve van, a kijelölt fényképminiatűrök világoskék átfedéssel jelennek meg.',
-        'nfc_share_enabled' => 'Ha engedélyezve van, és az eszköz támogatja a Web NFC-t, egy gomb jelenik meg a fénykép- és albumfejlécben, amellyel az aktuális URL megosztható egy NFC-címkéhez vagy másik NFC-képes eszközhöz érintéssel.',
         'photo_share_card_enabled' => 'Ha engedélyezve van, egy gomb jelenik meg a fénykép fejlécében, amely megnyit egy kártyát a fénykép címével, egy közvetlenül a fényképre mutató QR-kóddal, a weboldal tulajdonosával és a fénykép licencével.',
     ],
 

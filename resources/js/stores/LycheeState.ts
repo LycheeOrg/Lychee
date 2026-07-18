@@ -89,7 +89,6 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		default_homepage: "gallery",
 		is_timeline_page_enabled: false,
 		is_embed_enabled: true,
-		is_nfc_share_enabled: true,
 		is_photo_share_card_enabled: true,
 		site_owner: "",
 
@@ -250,7 +249,6 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.default_homepage = data.default_homepage;
 					this.is_timeline_page_enabled = data.is_timeline_page_enabled;
 					this.is_embed_enabled = data.is_embed_enabled;
-					this.is_nfc_share_enabled = data.is_nfc_share_enabled;
 					this.is_photo_share_card_enabled = data.is_photo_share_card_enabled;
 					this.site_owner = data.site_owner;
 

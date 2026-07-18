@@ -80,12 +80,6 @@ return [
     'share_album' => [
         'url_copied' => 'Copied URL to clipboard!',
     ],
-    'share_nfc' => [
-        'prompt' => 'Aproxime o dispositivo de uma tag NFC para partilhar a ligação…',
-        'success' => 'Ligação partilhada via NFC!',
-        'error' => 'Não foi possível partilhar via NFC.',
-        'not_supported' => 'A partilha via NFC não é suportada neste dispositivo.',
-    ],
     'photo_share_card' => [
         'by' => 'por :name',
     ],

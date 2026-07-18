@@ -15,18 +15,6 @@ return new class() extends BaseConfigMigration {
 	{
 		return [
 			[
-				'key' => 'nfc_share_enabled',
-				'value' => '1',
-				'cat' => self::CAT,
-				'type_range' => self::BOOL,
-				'description' => 'Enable sharing the current photo or album URL via NFC.',
-				'details' => 'When enabled and the device supports Web NFC, a button is shown in the photo and album header bars to share the current URL by tapping an NFC tag or another NFC-capable device.',
-				'is_secret' => false,
-				'is_expert' => false,
-				'level' => 0,
-				'order' => 90,
-			],
-			[
 				'key' => 'photo_share_card_enabled',
 				'value' => '1',
 				'cat' => self::CAT,

@@ -616,7 +616,6 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		is_rating_show_avg_in_album_view_enabled: boolean;
 		rating_album_view_mode: App.Enum.VisibilityType;
 		is_embed_enabled: boolean;
-		is_nfc_share_enabled: boolean;
 		is_photo_share_card_enabled: boolean;
 		site_owner: string;
 		default_homepage: string;

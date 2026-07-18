@@ -139,9 +139,6 @@ class InitConfig extends Data
 	// Embed
 	public bool $is_embed_enabled = true;
 
-	// NFC Share
-	public bool $is_nfc_share_enabled = true;
-
 	// Photo Share Card
 	public bool $is_photo_share_card_enabled = true;
 	public string $site_owner;
@@ -263,9 +260,6 @@ class InitConfig extends Data
 
 		// Embed
 		$this->is_embed_enabled = request()->configs()->getValueAsBool('is_embed_enabled');
-
-		// NFC Share
-		$this->is_nfc_share_enabled = request()->configs()->getValueAsBool('nfc_share_enabled');
 
 		// Photo Share Card
 		$this->is_photo_share_card_enabled = request()->configs()->getValueAsBool('photo_share_card_enabled');

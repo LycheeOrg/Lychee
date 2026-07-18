@@ -376,7 +376,6 @@ return [
         'breadcrumb_enabled' => 'Enable breadcrumb navigation in the album header',
         'selection_border_enabled' => 'Pokaż ramkę wokół zaznaczonych miniatur zdjęć',
         'selection_overlay_enabled' => 'Pokaż jasnoniebieską nakładkę na zaznaczonych miniaturach zdjęć',
-        'nfc_share_enabled' => 'Włącz udostępnianie bieżącego adresu URL zdjęcia lub albumu przez NFC.',
         'photo_share_card_enabled' => 'Włącz kartę udostępniania zdjęcia na pasku nagłówka zdjęcia.',
     ],
     'details' => [
@@ -748,7 +747,6 @@ return [
         'breadcrumb_enabled' => 'Display the album ancestry as breadcrumbs in the header bar instead of the back button and title.',
         'selection_border_enabled' => 'Gdy włączone, zaznaczone miniatury zdjęć są obramowane ramką.',
         'selection_overlay_enabled' => 'Gdy włączone, zaznaczone miniatury zdjęć są zabarwione jasnoniebieską nakładką.',
-        'nfc_share_enabled' => 'Gdy włączone i urządzenie obsługuje Web NFC, w paskach nagłówka zdjęcia i albumu pojawia się przycisk umożliwiający udostępnienie bieżącego adresu URL poprzez zbliżenie urządzenia do znacznika NFC lub innego urządzenia obsługującego NFC.',
         'photo_share_card_enabled' => 'Gdy włączone, na pasku nagłówka zdjęcia pojawia się przycisk otwierający kartę z tytułem zdjęcia, kodem QR prowadzącym bezpośrednio do zdjęcia, właścicielem strony oraz licencją zdjęcia.',
     ],
 

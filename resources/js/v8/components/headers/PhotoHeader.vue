@@ -83,9 +83,6 @@
 						"
 					/>
 				</UTooltip>
-				<UTooltip v-if="isNfcShareEnabled" :text="$t('gallery.photo.actions.share_nfc')">
-					<UButton variant="ghost" icon="lucide:nfc" color="neutral" @click="shareCurrentUrlViaNfc" />
-				</UTooltip>
 			</div>
 		</template>
 	</UHeader>
@@ -93,7 +90,7 @@
 	<PhotoShareCard v-model:open="isPhotoShareCardOpen" />
 </template>
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { ref } from "vue";
 import DownloadPhoto from "@/v8/components/modals/DownloadPhoto.vue";
 import PhotoShareCard from "@/v8/components/modals/PhotoShareCard.vue";
 import { storeToRefs } from "pinia";
@@ -104,7 +101,6 @@ import { usePhotoStore } from "@/stores/PhotoState";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
 import { FILL_OVERRIDE_CLASS } from "@/v8/icons";
-import { isNfcShareSupported, useNfcShare } from "@/v8/composables/useNfcShare";
 
 const emits = defineEmits<{
 	toggleDetails: [];
@@ -122,15 +118,9 @@ const isDownloadOpen = ref(false);
 const isPhotoShareCardOpen = ref(false);
 const lycheeStore = useLycheeStateStore();
 const leftMenuStore = useLeftMenuStateStore();
-const { is_exif_disabled, is_slideshow_enabled, is_nfc_share_enabled, is_photo_share_card_enabled } = storeToRefs(lycheeStore);
-const { shareUrlViaNfc } = useNfcShare();
-const isNfcShareEnabled = computed(() => is_nfc_share_enabled.value && isNfcShareSupported());
+const { is_exif_disabled, is_slideshow_enabled, is_photo_share_card_enabled } = storeToRefs(lycheeStore);
 
 function openInNewTab(url: string) {
 	window?.open(url, "_blank")?.focus();
-}
-
-function shareCurrentUrlViaNfc() {
-	shareUrlViaNfc(window.location.href);
 }
 </script>

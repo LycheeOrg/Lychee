@@ -80,12 +80,6 @@ return [
     'share_album' => [
         'url_copied' => 'تم نسخ عنوان URL إلى الحافظة!',
     ],
-    'share_nfc' => [
-        'prompt' => 'قرّب جهازك من علامة NFC لمشاركة الرابط…',
-        'success' => 'تمت مشاركة الرابط عبر NFC!',
-        'error' => 'تعذّرت المشاركة عبر NFC.',
-        'not_supported' => 'المشاركة عبر NFC غير مدعومة على هذا الجهاز.',
-    ],
     'photo_share_card' => [
         'by' => 'بواسطة :name',
     ],

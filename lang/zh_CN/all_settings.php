@@ -376,7 +376,6 @@ return [
         'breadcrumb_enabled' => 'Enable breadcrumb navigation in the album header',
         'selection_border_enabled' => '在选中的照片缩略图周围显示边框',
         'selection_overlay_enabled' => '在选中的照片缩略图上显示浅蓝色叠加层',
-        'nfc_share_enabled' => '启用通过 NFC 分享当前照片或相册链接。',
         'photo_share_card_enabled' => '在照片标题栏中启用照片分享卡片。',
     ],
     'details' => [
@@ -748,7 +747,6 @@ return [
         'breadcrumb_enabled' => 'Display the album ancestry as breadcrumbs in the header bar instead of the back button and title.',
         'selection_border_enabled' => '启用后，选中的照片缩略图将带有边框。',
         'selection_overlay_enabled' => '启用后，选中的照片缩略图将被浅蓝色叠加层染色。',
-        'nfc_share_enabled' => '启用后，如果设备支持 Web NFC，照片和相册的标题栏中会显示一个按钮，可通过将设备靠近 NFC 标签或其他支持 NFC 的设备来分享当前链接。',
         'photo_share_card_enabled' => '启用后，照片标题栏中会显示一个按钮，点击后会打开一张卡片，显示照片标题、直接链接到该照片的二维码、网站所有者以及照片的许可协议。',
     ],
 

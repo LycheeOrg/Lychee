@@ -80,12 +80,6 @@ return [
     'share_album' => [
         'url_copied' => 'Copied URL to clipboard!',
     ],
-    'share_nfc' => [
-        'prompt' => 'Chạm thiết bị của bạn vào thẻ NFC để chia sẻ liên kết…',
-        'success' => 'Đã chia sẻ liên kết qua NFC!',
-        'error' => 'Không thể chia sẻ qua NFC.',
-        'not_supported' => 'Thiết bị này không hỗ trợ chia sẻ qua NFC.',
-    ],
     'photo_share_card' => [
         'by' => 'bởi :name',
     ],

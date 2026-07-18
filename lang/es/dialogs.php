@@ -79,12 +79,6 @@ return [
     'share_album' => [
         'url_copied' => '¡Copiado URL al portapapeles!',
     ],
-    'share_nfc' => [
-        'prompt' => 'Acerca tu dispositivo a una etiqueta NFC para compartir el enlace…',
-        'success' => '¡Enlace compartido vía NFC!',
-        'error' => 'No se pudo compartir vía NFC.',
-        'not_supported' => 'La compartición vía NFC no es compatible con este dispositivo.',
-    ],
     'photo_share_card' => [
         'by' => 'por :name',
     ],

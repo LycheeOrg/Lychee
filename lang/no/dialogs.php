@@ -80,12 +80,6 @@ return [
     'share_album' => [
         'url_copied' => 'URL kopierte til utklippstavlen!',
     ],
-    'share_nfc' => [
-        'prompt' => 'Hold enheten mot en NFC-brikke for å dele lenken…',
-        'success' => 'Lenke delt via NFC!',
-        'error' => 'Kunne ikke dele via NFC.',
-        'not_supported' => 'NFC-deling støttes ikke på denne enheten.',
-    ],
     'photo_share_card' => [
         'by' => 'av :name',
     ],
