@@ -80,6 +80,15 @@ return [
     'share_album' => [
         'url_copied' => 'Adresa zkopírována do schránky!',
     ],
+    'share_nfc' => [
+        'prompt' => 'Přiložte zařízení ke štítku NFC pro sdílení odkazu…',
+        'success' => 'Odkaz sdílen přes NFC!',
+        'error' => 'Sdílení přes NFC se nezdařilo.',
+        'not_supported' => 'Sdílení přes NFC není na tomto zařízení podporováno.',
+    ],
+    'photo_share_card' => [
+        'by' => 'od :name',
+    ],
     'embed_code' => [
         'title' => 'Vloži Album',
         'title_stream' => 'Vložit Photo Stream',

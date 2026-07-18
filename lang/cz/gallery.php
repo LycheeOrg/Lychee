@@ -169,6 +169,7 @@ return [
             'images' => 'Fotografie',
             'download' => 'Stáhnout album',
             'share' => 'Sdílet album',
+            'share_nfc' => 'Sdílet album přes NFC',
             'embed' => 'Vložit album',
             'stats_only_se' => 'Statistiky dostupné v edici Supporter',
             'edit' => 'Upravit',
@@ -217,6 +218,8 @@ return [
         'actions' => [
             'highlight' => 'Označit hvězdičkou',
             'unhighlight' => 'Odstraň hvězdičku',
+            'share_card' => 'Sdílecí karta',
+            'share_nfc' => 'Sdílet přes NFC',
             'set_album_header' => 'Nastavit jako záhlaví alba',
             'move' => 'Přesunout',
             'delete' => 'Smazat',

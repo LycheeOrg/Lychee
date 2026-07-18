@@ -169,6 +169,7 @@ return [
             'images' => '照片',
             'download' => '下载相册',
             'share' => '分享相册',
+            'share_nfc' => '通过 NFC 分享相册',
             'embed' => 'Embed Album',
             'stats_only_se' => '统计功能仅在支持者版本中可用',
             'edit' => 'Edit',
@@ -217,6 +218,8 @@ return [
         'actions' => [
             'highlight' => '标星',
             'unhighlight' => '取消标星',
+            'share_card' => '分享卡片',
+            'share_nfc' => '通过 NFC 分享',
             'set_album_header' => '设为相册页眉图片',
             'move' => '移动',
             'delete' => '删除',

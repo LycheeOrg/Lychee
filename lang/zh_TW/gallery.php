@@ -169,6 +169,7 @@ return [
             'images' => 'Photos',
             'download' => 'Download Album',
             'share' => 'Share Album',
+            'share_nfc' => '透過 NFC 分享相簿',
             'embed' => 'Embed Album',
             'stats_only_se' => 'Statistics available in the Supporter Edition',
             'edit' => 'Edit',
@@ -217,6 +218,8 @@ return [
         'actions' => [
             'highlight' => 'Star',
             'unhighlight' => 'Unstar',
+            'share_card' => '分享卡片',
+            'share_nfc' => '透過 NFC 分享',
             'set_album_header' => 'Set as album header',
             'move' => 'Move',
             'delete' => 'Delete',

@@ -375,6 +375,8 @@ return [
         'breadcrumb_enabled' => 'Enable breadcrumb navigation in the album header',
         'selection_border_enabled' => 'Seçili fotoğraf küçük resimlerinin çevresinde kenarlık göster',
         'selection_overlay_enabled' => 'Seçili fotoğraf küçük resimlerinde açık mavi bir katman göster',
+        'nfc_share_enabled' => 'Mevcut fotoğraf veya albüm URL\'sinin NFC ile paylaşılmasını etkinleştirir.',
+        'photo_share_card_enabled' => 'Fotoğraf başlık çubuğunda fotoğraf paylaşım kartını etkinleştirir.',
     ],
     'details' => [
         'version' => '',
@@ -745,6 +747,8 @@ return [
         'breadcrumb_enabled' => 'Display the album ancestry as breadcrumbs in the header bar instead of the back button and title.',
         'selection_border_enabled' => 'Etkinleştirildiğinde, seçili fotoğraf küçük resimleri bir kenarlıkla çevrelenir.',
         'selection_overlay_enabled' => 'Etkinleştirildiğinde, seçili fotoğraf küçük resimleri açık mavi bir katmanla renklendirilir.',
+        'nfc_share_enabled' => 'Etkinleştirildiğinde ve cihaz Web NFC\'yi destekliyorsa, fotoğraf ve albüm başlık çubuklarında, cihazı bir NFC etiketine veya başka bir NFC destekli cihaza yaklaştırarak mevcut URL\'yi paylaşmak için bir düğme gösterilir.',
+        'photo_share_card_enabled' => 'Etkinleştirildiğinde, fotoğraf başlık çubuğunda, fotoğrafın başlığını, fotoğrafa doğrudan bağlanan bir QR kodunu, site sahibini ve fotoğrafın lisansını gösteren bir kart açan bir düğme görüntülenir.',
     ],
     'category_name' => [
         'config' => 'Basics',

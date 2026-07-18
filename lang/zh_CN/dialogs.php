@@ -80,6 +80,15 @@ return [
     'share_album' => [
         'url_copied' => '链接已复制到剪贴板！',
     ],
+    'share_nfc' => [
+        'prompt' => '将设备靠近 NFC 标签以分享链接…',
+        'success' => '已通过 NFC 分享链接！',
+        'error' => '无法通过 NFC 分享。',
+        'not_supported' => '此设备不支持 NFC 分享。',
+    ],
+    'photo_share_card' => [
+        'by' => '由 :name',
+    ],
     'embed_code' => [
         'title' => 'Embed Album',
         'title_stream' => 'Embed Photo Stream',

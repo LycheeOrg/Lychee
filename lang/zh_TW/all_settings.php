@@ -376,6 +376,8 @@ return [
         'breadcrumb_enabled' => 'Enable breadcrumb navigation in the album header',
         'selection_border_enabled' => '在選取的照片縮圖周圍顯示邊框',
         'selection_overlay_enabled' => '在選取的照片縮圖上顯示淺藍色疊加層',
+        'nfc_share_enabled' => '啟用透過 NFC 分享目前照片或相簿連結。',
+        'photo_share_card_enabled' => '在照片標題列中啟用照片分享卡片。',
     ],
     'details' => [
         'version' => '',
@@ -746,6 +748,8 @@ return [
         'breadcrumb_enabled' => 'Display the album ancestry as breadcrumbs in the header bar instead of the back button and title.',
         'selection_border_enabled' => '啟用後，選取的照片縮圖將帶有邊框。',
         'selection_overlay_enabled' => '啟用後，選取的照片縮圖將被淺藍色疊加層染色。',
+        'nfc_share_enabled' => '啟用後，如果裝置支援 Web NFC，照片和相簿的標題列中會顯示一個按鈕，可透過將裝置靠近 NFC 標籤或其他支援 NFC 的裝置來分享目前連結。',
+        'photo_share_card_enabled' => '啟用後，照片標題列中會顯示一個按鈕，點擊後會開啟一張卡片，顯示照片標題、直接連結到該照片的 QR Code、網站擁有者以及照片的授權條款。',
     ],
 
     'category_name' => [

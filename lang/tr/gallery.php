@@ -169,6 +169,7 @@ return [
             'images' => 'Photos',
             'download' => 'Download Album',
             'share' => 'Share Album',
+            'share_nfc' => 'Albümü NFC ile paylaş',
             'embed' => 'Embed Album',
             'stats_only_se' => 'Statistics available in the Supporter Edition',
             'edit' => 'Edit',
@@ -217,6 +218,8 @@ return [
         'actions' => [
             'highlight' => 'Highlight',
             'unhighlight' => 'Unhighlight',
+            'share_card' => 'Paylaşım Kartı',
+            'share_nfc' => 'NFC ile paylaş',
             'set_album_header' => 'Set as album header',
             'move' => 'Move',
             'delete' => 'Delete',

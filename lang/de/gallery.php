@@ -168,6 +168,7 @@ return [
             'images' => 'Fotos',
             'download' => 'Album herunterladen',
             'share' => 'Album teilen',
+            'share_nfc' => 'Album via NFC teilen',
             'embed' => 'Album einbetten',
             'stats_only_se' => 'In der Supporter-Edition verfügbare Statistiken',
             'edit' => 'Bearbeiten',
@@ -216,6 +217,8 @@ return [
         'actions' => [
             'highlight' => 'Mit Stern bewerten',
             'unhighlight' => 'Stern entfernen',
+            'share_card' => 'Fotokarte teilen',
+            'share_nfc' => 'Über NFC teilen',
             'set_album_header' => 'Als Album-Header festlegen',
             'move' => 'Verschieben',
             'delete' => 'Löschen',

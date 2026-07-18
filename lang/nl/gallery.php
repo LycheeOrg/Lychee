@@ -169,6 +169,7 @@ return [
             'images' => 'Foto’s',
             'download' => 'Download Album',
             'share' => 'Deel Album',
+            'share_nfc' => 'Album delen via NFC',
             'embed' => 'Embed Album',
             'stats_only_se' => 'Statistieken beschikbaar in de Supporter Edition',
             'edit' => 'Edit',
@@ -217,6 +218,8 @@ return [
         'actions' => [
             'highlight' => 'Ster',
             'unhighlight' => 'Ster verwijderen',
+            'share_card' => 'Deelkaart',
+            'share_nfc' => 'Delen via NFC',
             'set_album_header' => 'Instellen als albumkop',
             'move' => 'Verplaatsen',
             'delete' => 'Verwijderen',

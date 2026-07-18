@@ -169,6 +169,7 @@ return [
             'images' => 'Снимки',
             'download' => 'Изтегли албума',
             'share' => 'Сподели албума',
+            'share_nfc' => 'Споделяне на албума чрез NFC',
             'embed' => 'Вгради албума',
             'stats_only_se' => 'Статистиката е налична в Supporter Edition',
             'edit' => 'Редактирай',
@@ -217,6 +218,8 @@ return [
         'actions' => [
             'highlight' => 'Отбележи',
             'unhighlight' => 'Премахни отметка',
+            'share_card' => 'Карта за споделяне',
+            'share_nfc' => 'Споделяне чрез NFC',
             'set_album_header' => 'Задай като заглавка на албума',
             'move' => 'Премести',
             'delete' => 'Изтрий',

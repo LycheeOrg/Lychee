@@ -169,6 +169,7 @@ return [
             'images' => 'Zdjęcia',
             'download' => 'Pobierz album',
             'share' => 'Udostępnij album',
+            'share_nfc' => 'Udostępnij album przez NFC',
             'embed' => 'Embed Album',
             'stats_only_se' => 'Statystyki dostępne w Supporter Edition',
             'edit' => 'Edit',
@@ -217,6 +218,8 @@ return [
         'actions' => [
             'highlight' => 'Wyróżnienie',
             'unhighlight' => 'Cofnij wyróżnienie',
+            'share_card' => 'Karta udostępniania',
+            'share_nfc' => 'Udostępnij przez NFC',
             'set_album_header' => 'Ustaw jako nagłówek albumu',
             'move' => 'Przenieś',
             'delete' => 'Usuń',

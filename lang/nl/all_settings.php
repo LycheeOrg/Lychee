@@ -376,6 +376,8 @@ return [
         'breadcrumb_enabled' => 'Enable breadcrumb navigation in the album header',
         'selection_border_enabled' => 'Toon een rand rond geselecteerde fotominiaturen',
         'selection_overlay_enabled' => 'Toon een lichtblauwe overlay op geselecteerde fotominiaturen',
+        'nfc_share_enabled' => 'Schakel het delen van de huidige foto- of albumurl via NFC in.',
+        'photo_share_card_enabled' => 'Schakel de deelkaart voor foto\'s in op de fotokopbalk.',
     ],
     'details' => [
         'version' => '',
@@ -746,6 +748,8 @@ return [
         'breadcrumb_enabled' => 'Display the album ancestry as breadcrumbs in the header bar instead of the back button and title.',
         'selection_border_enabled' => 'Indien ingeschakeld, worden geselecteerde fotominiaturen omlijnd met een rand.',
         'selection_overlay_enabled' => 'Indien ingeschakeld, worden geselecteerde fotominiaturen getint met een lichtblauwe overlay.',
+        'nfc_share_enabled' => 'Indien ingeschakeld en het apparaat ondersteunt Web NFC, wordt een knop getoond in de foto- en albumkopbalk om de huidige URL te delen door het apparaat tegen een NFC-tag of een ander NFC-apparaat te houden.',
+        'photo_share_card_enabled' => 'Indien ingeschakeld, wordt een knop getoond in de fotokopbalk die een kaart opent met de fototitel, een QR-code die direct naar de foto linkt, de eigenaar van de website en de licentie van de foto.',
     ],
 
     'category_name' => [

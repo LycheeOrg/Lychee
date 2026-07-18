@@ -80,6 +80,15 @@ return [
     'share_album' => [
         'url_copied' => 'URL скопирован в буфер обмена!',
     ],
+    'share_nfc' => [
+        'prompt' => 'Поднесите устройство к метке NFC, чтобы поделиться ссылкой…',
+        'success' => 'Ссылка передана через NFC!',
+        'error' => 'Не удалось поделиться через NFC.',
+        'not_supported' => 'Обмен через NFC не поддерживается на этом устройстве.',
+    ],
+    'photo_share_card' => [
+        'by' => 'от :name',
+    ],
     'embed_code' => [
         'title' => 'Embed Album',
         'title_stream' => 'Embed Photo Stream',

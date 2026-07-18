@@ -376,6 +376,8 @@ return [
         'breadcrumb_enabled' => 'Enable breadcrumb navigation in the album header',
         'selection_border_enabled' => 'Zobraziť okraj okolo vybraných miniatúr fotografií',
         'selection_overlay_enabled' => 'Zobraziť svetlomodrý prekryv na vybraných miniatúrach fotografií',
+        'nfc_share_enabled' => 'Povoliť zdieľanie aktuálnej adresy URL fotografie alebo albumu cez NFC.',
+        'photo_share_card_enabled' => 'Povoliť zdieľaciu kartu fotografie v hlavičke fotografie.',
     ],
     'details' => [
         'version' => '',
@@ -746,6 +748,8 @@ return [
         'breadcrumb_enabled' => 'Display the album ancestry as breadcrumbs in the header bar instead of the back button and title.',
         'selection_border_enabled' => 'Ak je povolené, vybrané miniatúry fotografií sú orámované okrajom.',
         'selection_overlay_enabled' => 'Ak je povolené, vybrané miniatúry fotografií sú zafarbené svetlomodrým prekryvom.',
+        'nfc_share_enabled' => 'Ak je povolené a zariadenie podporuje Web NFC, v hlavičke fotografie a albumu sa zobrazí tlačidlo na zdieľanie aktuálnej adresy URL priložením zariadenia k NFC štítku alebo inému zariadeniu podporujúcemu NFC.',
+        'photo_share_card_enabled' => 'Ak je povolené, v hlavičke fotografie sa zobrazí tlačidlo, ktoré otvorí kartu so zobrazením názvu fotografie, QR kódom s priamym odkazom na fotografiu, vlastníkom webu a licenciou fotografie.',
     ],
 
     'category_name' => [

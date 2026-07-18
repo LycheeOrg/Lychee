@@ -169,6 +169,7 @@ return [
             'images' => 'Photos',
             'download' => 'Télécharger l\'album',
             'share' => 'Partager l\'album',
+            'share_nfc' => 'Partager l’album via NFC',
             'embed' => 'Embed Album',
             'edit' => 'Edit',
             'save' => 'Save',
@@ -217,6 +218,8 @@ return [
         'actions' => [
             'highlight' => 'Favori',
             'unhighlight' => 'Retirer des favoris',
+            'share_card' => 'Carte de partage',
+            'share_nfc' => 'Partager via NFC',
             'set_album_header' => 'Définir comme en-tête d’album',
             'move' => 'Déplacer',
             'delete' => 'Supprimer',

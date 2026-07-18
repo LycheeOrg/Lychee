@@ -79,6 +79,15 @@ return [
     'share_album' => [
         'url_copied' => 'URL in die Zwischenablage kopiert!',
     ],
+    'share_nfc' => [
+        'prompt' => 'Halte dein Gerät an ein NFC-Tag, um den Link zu teilen…',
+        'success' => 'Link über NFC geteilt!',
+        'error' => 'Teilen über NFC fehlgeschlagen.',
+        'not_supported' => 'NFC-Freigabe wird auf diesem Gerät nicht unterstützt.',
+    ],
+    'photo_share_card' => [
+        'by' => 'von :name',
+    ],
     'embed_code' => [
         'title' => 'Album einbetten',
         'title_stream' => 'Fotostream einbetten',

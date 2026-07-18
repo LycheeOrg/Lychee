@@ -80,6 +80,15 @@ return [
     'share_album' => [
         'url_copied' => 'Copied URL to clipboard!',
     ],
+    'share_nfc' => [
+        'prompt' => 'Tartsa az eszközét egy NFC-címkéhez a link megosztásához…',
+        'success' => 'A hivatkozás megosztva NFC-n keresztül!',
+        'error' => 'Nem sikerült megosztani NFC-n keresztül.',
+        'not_supported' => 'Az NFC-megosztás nem támogatott ezen az eszközön.',
+    ],
+    'photo_share_card' => [
+        'by' => 'Készítette: :name',
+    ],
     'embed_code' => [
         'title' => 'Embed Album',
         'title_stream' => 'Embed Photo Stream',

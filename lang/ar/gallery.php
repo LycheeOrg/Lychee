@@ -169,6 +169,7 @@ return [
             'images' => 'الصور',
             'download' => 'تنزيل الألبوم',
             'share' => 'مشاركة الألبوم',
+            'share_nfc' => 'مشاركة الألبوم عبر NFC',
             'embed' => 'Embed Album',
             'stats_only_se' => 'الإحصائيات متاحة في إصدار الدعم فقط',
             'edit' => 'Edit',
@@ -217,6 +218,8 @@ return [
         'actions' => [
             'highlight' => 'تمييز',
             'unhighlight' => 'إلغاء التمييز',
+            'share_card' => 'بطاقة المشاركة',
+            'share_nfc' => 'مشاركة عبر NFC',
             'set_album_header' => 'تعيين كعنوان ألبوم',
             'move' => 'نقل',
             'delete' => 'حذف',

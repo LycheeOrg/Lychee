@@ -168,6 +168,7 @@ return [
             'images' => 'Bilder',
             'download' => 'Last ned Album',
             'share' => 'Del Album',
+            'share_nfc' => 'Del album via NFC',
             'embed' => 'Embed Album',
             'stats_only_se' => 'Statistikk tilgjengelig i Supporter Edition',
             'edit' => 'Edit',
@@ -216,6 +217,8 @@ return [
         'actions' => [
             'highlight' => 'Stjerne',
             'unhighlight' => 'Fjern Stjerne',
+            'share_card' => 'Delekort',
+            'share_nfc' => 'Del via NFC',
             'set_album_header' => 'Angi som albumoverskrift',
             'move' => 'Flytt',
             'delete' => 'Slett',

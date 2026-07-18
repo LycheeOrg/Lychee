@@ -80,6 +80,15 @@ return [
     'share_album' => [
         'url_copied' => 'Copied URL to clipboard!',
     ],
+    'share_nfc' => [
+        'prompt' => 'リンクを共有するには、デバイスをNFCタグにかざしてください…',
+        'success' => 'NFCでリンクを共有しました！',
+        'error' => 'NFCでの共有に失敗しました。',
+        'not_supported' => 'このデバイスはNFC共有に対応していません。',
+    ],
+    'photo_share_card' => [
+        'by' => ':name より',
+    ],
     'embed_code' => [
         'title' => 'Embed Album',
         'title_stream' => 'Embed Photo Stream',
