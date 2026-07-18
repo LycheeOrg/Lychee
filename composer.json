@@ -118,6 +118,7 @@
         "laracraft-tech/laravel-xhprof": "^1.2",
         "larastan/larastan": "^3.2",
         "lychee-org/phpstan-lychee": "^2.0.1",
+        "lychee-org/phpstan-sensitive-parameter-values": "^1.0",
         "mockery/mockery": "^1.5",
         "nunomaduro/collision": "^8.3",
         "php-parallel-lint/php-parallel-lint": "^1.3",

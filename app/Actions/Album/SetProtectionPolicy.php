@@ -29,7 +29,7 @@ class SetProtectionPolicy
 	 * @throws ModelDBException
 	 * @throws FrameworkException
 	 */
-	public function do(BaseAlbum $album, AlbumProtectionPolicy $protection_policy, bool $shall_set_password, ?string $password): void
+	public function do(BaseAlbum $album, AlbumProtectionPolicy $protection_policy, bool $shall_set_password, #[\SensitiveParameter] ?string $password): void
 	{
 		$album->is_nsfw = $protection_policy->is_nsfw;
 		$album->save();

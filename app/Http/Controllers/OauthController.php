@@ -32,6 +32,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse as HttpFoundationRedirectR
 
 class OauthController extends Controller
 {
+	/** @phpstan-ignore sensitiveParameter.missing (Nothing to see here)  */
 	public function __construct(
 		private Oauth $oauth,
 	) {

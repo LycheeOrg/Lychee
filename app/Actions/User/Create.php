@@ -29,7 +29,7 @@ class Create
 	 */
 	public function do(
 		string $username,
-		string $password,
+		#[\SensitiveParameter] string $password,
 		?string $email = null,
 		bool $may_upload = false,
 		bool $may_edit_own_settings = false,

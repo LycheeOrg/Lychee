@@ -136,7 +136,7 @@ class AuthController extends Controller
 	 *
 	 * @return bool True if authentication succeeded, false otherwise
 	 */
-	private function attemptLdapLogin(string $username, string $password, bool $remember = false): bool
+	private function attemptLdapLogin(string $username, #[\SensitiveParameter] string $password, bool $remember = false): bool
 	{
 		try {
 			// Create LDAP configuration and service

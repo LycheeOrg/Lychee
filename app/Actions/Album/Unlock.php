@@ -34,7 +34,7 @@ class Unlock
 	 *
 	 * @throws UnauthorizedException
 	 */
-	public function do(BaseAlbum $album, string $password): void
+	public function do(BaseAlbum $album, #[\SensitiveParameter] string $password): void
 	{
 		if ($album->public_permissions() !== null) {
 			$album_password = $album->public_permissions()->password;
@@ -62,7 +62,7 @@ class Unlock
 	/**
 	 * Provided a password, add all the albums that the password unlocks.
 	 */
-	private function propagate(string $password): void
+	private function propagate(#[\SensitiveParameter] string $password): void
 	{
 		// Only propagate if the option is enabled
 		$config_manager = app(ConfigManager::class);

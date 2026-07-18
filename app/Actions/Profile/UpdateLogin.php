@@ -76,7 +76,7 @@ class UpdateLogin
 	 *
 	 * @return User
 	 */
-	public function updatePassword(User &$user, ?string $password): User
+	public function updatePassword(User &$user, #[\SensitiveParameter] ?string $password): User
 	{
 		if ($password === null) {
 			return $user;

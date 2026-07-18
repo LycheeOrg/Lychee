@@ -97,7 +97,7 @@ class WebAuthnLoginController extends Controller
 	 *
 	 * @param array<string,string> $credentials
 	 */
-	private function isSignedChallenge(array $credentials): bool
+	private function isSignedChallenge(#[\SensitiveParameter] array $credentials): bool
 	{
 		return isset($credentials['id'], $credentials['rawId'], $credentials['response'], $credentials['type']);
 	}
@@ -107,7 +107,7 @@ class WebAuthnLoginController extends Controller
 	 *
 	 * @param array<string,string> $credentials
 	 */
-	public function retrieveByCredentials(array $credentials): User|null
+	public function retrieveByCredentials(#[\SensitiveParameter] array $credentials): User|null
 	{
 		/** @var User|null $user */
 		$user = User::whereHas('webAuthnCredentials',

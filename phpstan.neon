@@ -1,6 +1,7 @@
 includes:
 	- vendor/larastan/larastan/extension.neon
 	- vendor/lychee-org/phpstan-lychee/phpstan.neon
+	- vendor/lychee-org/phpstan-sensitive-parameter-values/extension.neon
 	- phpstan-baseline.neon
 
 parameters:
@@ -9,6 +10,8 @@ parameters:
 		treatPhpDocTypesAsCertain: false
 	treatPhpDocTypesAsCertain: true
 	checkOctaneCompatibility: true
+	sensitiveParameter:
+		keywords: ['apiKey', 'auth', 'bearer', 'card', 'ccv', 'credential', 'credit', 'csrf', 'cvv', 'hash', 'nonce', 'otp', 'passcode', 'password', 'private', 'salt', 'secret', 'signature', 'ssn']
 	paths:
 		- app
 		- config
@@ -36,3 +39,7 @@ parameters:
 			message: '#Dynamic call to static method App\\Http\\Requests\\.*::verify\(\)\.#'
 		-
 			message: '#Dynamic call to static method App\\Http\\Requests\\.*::configs\(\)\.#'
+		-
+			message: '#Parameter \$authed_user_id in App\\Actions\\Oauth\\Oauth::saveOauth#'
+		-
+			message: '#Parameter \$authors in App\\Http\\Controllers\\Gallery\\EmbedController#'
