@@ -5,14 +5,7 @@
 		</template>
 		{{ $t("watermark.preview.title") }}
 		<template #right>
-			<UButton
-				:label="$t('watermark.preview.save')"
-				:loading="saving"
-				icon="lucide:save"
-				color="neutral"
-				variant="ghost"
-				@click="save"
-			/>
+			<UButton :label="$t('watermark.preview.save')" :loading="saving" icon="lucide:save" color="neutral" variant="ghost" @click="save" />
 		</template>
 	</UHeader>
 
@@ -113,22 +106,13 @@
 						style="max-height: 600px; display: block"
 						alt="Preview background"
 					/>
-					<div
-						v-else
-						class="flex flex-col items-center justify-center text-muted gap-2"
-						style="min-height: 400px"
-					>
+					<div v-else class="flex flex-col items-center justify-center text-muted gap-2" style="min-height: 400px">
 						<UIcon name="lucide:image" class="text-5xl opacity-30" />
 						<p class="text-sm opacity-50">{{ $t("watermark.preview.no_preview_photo") }}</p>
 					</div>
 
 					<!-- Watermark overlay -->
-					<img
-						:src="watermarkImageUrl"
-						class="absolute pointer-events-none"
-						:style="watermarkStyle"
-						alt="Watermark"
-					/>
+					<img :src="watermarkImageUrl" class="absolute pointer-events-none" :style="watermarkStyle" alt="Watermark" />
 				</div>
 			</Fieldset>
 		</div>
@@ -146,16 +130,7 @@ import { useAppToast } from "@/v8/composables/useAppToast";
 import SettingsService from "@/services/settings-service";
 import ModerationService from "@/services/moderation-service";
 
-type WatermarkPosition =
-	| "top-left"
-	| "top"
-	| "top-right"
-	| "left"
-	| "center"
-	| "right"
-	| "bottom-left"
-	| "bottom"
-	| "bottom-right";
+type WatermarkPosition = "top-left" | "top" | "top-right" | "left" | "center" | "right" | "bottom-left" | "bottom" | "bottom-right";
 
 const lycheeStore = useLycheeStateStore();
 const toast = useAppToast();
@@ -198,13 +173,13 @@ const watermarkStyle = computed(() => {
 
 	const positionMap: Record<WatermarkPosition, string> = {
 		"top-left": "top: 0; left: 0;",
-		"top": "top: 0; left: 50%; transform: translateX(-50%);",
+		top: "top: 0; left: 50%; transform: translateX(-50%);",
 		"top-right": "top: 0; right: 0;",
-		"left": "top: 50%; left: 0; transform: translateY(-50%);",
-		"center": "top: 50%; left: 50%; transform: translate(-50%, -50%);",
-		"right": "top: 50%; right: 0; transform: translateY(-50%);",
+		left: "top: 50%; left: 0; transform: translateY(-50%);",
+		center: "top: 50%; left: 50%; transform: translate(-50%, -50%);",
+		right: "top: 50%; right: 0; transform: translateY(-50%);",
 		"bottom-left": "bottom: 0; left: 0;",
-		"bottom": "bottom: 0; left: 50%; transform: translateX(-50%);",
+		bottom: "bottom: 0; left: 50%; transform: translateX(-50%);",
 		"bottom-right": "bottom: 0; right: 0;",
 	};
 
