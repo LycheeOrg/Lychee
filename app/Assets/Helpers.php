@@ -192,6 +192,37 @@ class Helpers
 	}
 
 	/**
+	 * Parses a human-readable file size (e.g. "512MB", "10 GB") into bytes.
+	 *
+	 * Unlike {@see self::convertSize()} (which parses PHP ini-style suffixes
+	 * like "30M"), this accepts the two-letter unit suffixes used by
+	 * user-facing configuration values.
+	 *
+	 * @param string $size e.g. "100MB", "10GB", "512 KB"
+	 *
+	 * @return int equivalent number of bytes
+	 */
+	public function humanSizeToBytes(string $size): int
+	{
+		if (preg_match('/^(\d+(?:\.\d+)?)\s?(B|KB|MB|GB|TB)$/i', trim($size), $matches) !== 1) {
+			return 0;
+		}
+
+		$value = (float) $matches[1];
+		$unit = strtoupper($matches[2]);
+
+		$multipliers = [
+			'B' => 1,
+			'KB' => 1024,
+			'MB' => 1024 ** 2,
+			'GB' => 1024 ** 3,
+			'TB' => 1024 ** 4,
+		];
+
+		return (int) round($value * $multipliers[$unit]);
+	}
+
+	/**
 	 * Converts a decimal degree into integer degree, minutes and seconds.
 	 *
 	 * @param bool $type - indicates if the passed decimal indicates a

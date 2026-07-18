@@ -54,7 +54,7 @@ class Save
 		}
 
 		if ($quota_kb === 0) {
-			$default = $this->config_manager->getValueAsInt('default_user_quota');
+			$default = intdiv($this->config_manager->getValueAsByteSize('default_user_quota'), 1024);
 			$quota_kb = $default === 0 ? null : $default;
 		}
 

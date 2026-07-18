@@ -133,4 +133,29 @@ class HelpersUnitTest extends AbstractTestCase
 		$result = Helpers::isExecAvailable();
 		self::assertIsBool($result);
 	}
+
+	public function testHumanSizeToBytes(): void
+	{
+		self::assertEquals(0, Helpers::humanSizeToBytes('0B'));
+		self::assertEquals(0, Helpers::humanSizeToBytes('0 B'));
+		self::assertEquals(512, Helpers::humanSizeToBytes('512B'));
+		self::assertEquals(1024, Helpers::humanSizeToBytes('1KB'));
+		self::assertEquals(1024 * 1024, Helpers::humanSizeToBytes('1MB'));
+		self::assertEquals(1024 * 1024 * 1024, Helpers::humanSizeToBytes('1GB'));
+		self::assertEquals(1024 * 1024 * 1024 * 1024, Helpers::humanSizeToBytes('1TB'));
+		self::assertEquals(1024 * 1024 * 1024, Helpers::humanSizeToBytes('1 GB'));
+		self::assertEquals(1024 * 1024, Helpers::humanSizeToBytes('1mb'));
+		self::assertEquals((int) (1.5 * 1024 * 1024 * 1024), Helpers::humanSizeToBytes('1.5GB'));
+		self::assertEquals(5 * 1024 * 1024 * 1024, Helpers::humanSizeToBytes('5GB'));
+		self::assertEquals(10 * 1024 * 1024 * 1024, Helpers::humanSizeToBytes('10GB'));
+	}
+
+	public function testHumanSizeToBytesInvalid(): void
+	{
+		self::assertEquals(0, Helpers::humanSizeToBytes(''));
+		self::assertEquals(0, Helpers::humanSizeToBytes('10'));
+		self::assertEquals(0, Helpers::humanSizeToBytes('GB'));
+		self::assertEquals(0, Helpers::humanSizeToBytes('garbage'));
+		self::assertEquals(0, Helpers::humanSizeToBytes('10 PB')); // unsupported unit
+	}
 }

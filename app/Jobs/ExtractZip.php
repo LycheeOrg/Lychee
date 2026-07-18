@@ -19,6 +19,8 @@ use App\Models\Album;
 use App\Models\JobHistory;
 use App\Repositories\ConfigManager;
 use App\Services\Image\FileExtensionService;
+use App\Services\Zip\SafeZipExtractor;
+use App\Services\Zip\ZipBombDetectedException;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -159,16 +161,58 @@ class ExtractZip implements ShouldQueue
 	}
 
 	/**
-	 * Validates a ZIP file for potential security issues like zip slip attacks.
+	 * Builds a SafeZipExtractor configured from the "Image Processing" zip-bomb
+	 * protection settings (expert settings, in the admin config).
+	 *
+	 * @return SafeZipExtractor
+	 */
+	private function makeSafeZipExtractor(): SafeZipExtractor
+	{
+		$config_manager = app(ConfigManager::class);
+
+		return new SafeZipExtractor(
+			maxTotalSize: $config_manager->getValueAsByteSize('zip_bomb_max_total_size'),
+			maxFileSize: $config_manager->getValueAsByteSize('zip_bomb_max_file_size'),
+			maxEntries: $config_manager->getValueAsInt('zip_bomb_max_entries'),
+			maxRatio: $config_manager->getValueAsInt('zip_bomb_max_ratio'),
+		);
+	}
+
+	/**
+	 * Deletes the uploaded zip file, if configured to do so, once it has been
+	 * detected as a zip bomb.
+	 *
+	 * @return void
+	 */
+	private function deleteRejectedFileIfConfigured(): void
+	{
+		if (!app(ConfigManager::class)->getValueAsBool('zip_bomb_delete_rejected_file')) {
+			return;
+		}
+		if (!file_exists($this->file_path)) {
+			return;
+		}
+
+		try {
+			unlink($this->file_path);
+		} catch (\Throwable $e) {
+			Log::channel('jobs')->error('Could not delete rejected zip bomb file ' . $this->file_path . ': ' . $e->getMessage());
+		}
+	}
+
+	/**
+	 * Validates a ZIP file for potential security issues like zip slip and zip-bomb attacks.
 	 *
 	 * This method scans the ZIP archive for entries that could be potentially dangerous,
-	 * such as paths starting with '/' (absolute paths) or containing '../' (directory traversal).
+	 * such as paths starting with '/' (absolute paths) or containing '../' (directory traversal),
+	 * and pre-flight checks the archive's declared sizes against the configured zip-bomb limits.
 	 * If any unsafe entries are found, the job is marked as failed, the issue is logged as critical,
-	 * and a ZipExtractionException is thrown.
+	 * and a ZipInvalidException is thrown.
 	 *
 	 * @return void
 	 *
-	 * @throws ZipExtractionException If the ZIP file cannot be opened or contains unsafe entries
+	 * @throws ZipExtractionException If the ZIP file cannot be opened
+	 * @throws ZipInvalidException    If the archive contains unsafe entries or exceeds the zip-bomb limits
 	 */
 	private function validate_zip(): void
 	{
@@ -201,6 +245,24 @@ class ExtractZip implements ShouldQueue
 				throw new ZipInvalidException($this->file_path . ' contains unsafe entries.');
 			}
 
+			try {
+				$is_safe = $this->makeSafeZipExtractor()->inspect($this->file_path);
+			} catch (\Throwable $e) {
+				Log::channel('jobs')->critical('Zip file ' . $this->file_path . ' could not be inspected: ' . $e->getMessage());
+				$is_safe = false;
+			}
+
+			if (!$is_safe) {
+				Log::channel('jobs')->critical('Zip file ' . $this->file_path . ' exceeds the configured zip-bomb protection limits.');
+
+				$this->history->status = JobStatus::FAILURE;
+				$this->history->save();
+
+				$this->deleteRejectedFileIfConfigured();
+
+				throw new ZipInvalidException($this->file_path . ' exceeds the configured zip-bomb protection limits.');
+			}
+
 			return;
 		}
 		// @codeCoverageIgnoreStart
@@ -211,7 +273,9 @@ class ExtractZip implements ShouldQueue
 	/**
 	 * Extracts the contents of a ZIP file to the specified path.
 	 *
-	 * This method opens the ZIP archive and extracts all its contents to the target directory.
+	 * This method streams the ZIP archive's content to the target directory via
+	 * {@see SafeZipExtractor}, enforcing the configured zip-bomb limits on the real
+	 * bytes written (not just the declared header values).
 	 * After successful extraction, it deletes the original ZIP file and updates the job status.
 	 * If extraction fails, a ZipExtractionException is thrown.
 	 *
@@ -220,25 +284,35 @@ class ExtractZip implements ShouldQueue
 	 * @return void
 	 *
 	 * @throws ZipExtractionException If the ZIP file cannot be opened or extraction fails
+	 * @throws ZipInvalidException    If the archive exceeds the zip-bomb limits during streaming
 	 */
 	private function extract_zip(string $path_extracted): void
 	{
-		$zip = new \ZipArchive();
-		if ($zip->open($this->file_path) === true) {
-			$zip->extractTo($path_extracted);
-			$zip->close();
+		try {
+			$this->makeSafeZipExtractor()->extract($this->file_path, $path_extracted);
+		} catch (ZipBombDetectedException $e) {
+			Log::channel('jobs')->critical('Zip file ' . $this->file_path . ' exceeds the configured zip-bomb protection limits: ' . $e->getMessage());
 
-			// clean up the zip file
-			unlink($this->file_path);
-
-			$this->history->status = JobStatus::SUCCESS;
+			$this->history->status = JobStatus::FAILURE;
 			$this->history->save();
 
-			return;
+			$this->deleteRejectedFileIfConfigured();
+
+			throw new ZipInvalidException($this->file_path . ' exceeds the configured zip-bomb protection limits.');
+		} catch (\Throwable $e) {
+			Log::channel('jobs')->critical('Could not extract ' . $this->file_path . ': ' . $e->getMessage());
+
+			$this->history->status = JobStatus::FAILURE;
+			$this->history->save();
+
+			throw ZipExtractionException::fromTo($this->file_path, $path_extracted);
 		}
-		// @codeCoverageIgnoreStart
-		throw ZipExtractionException::fromTo($this->file_path, $path_extracted);
-		// @codeCoverageIgnoreEnd
+
+		// clean up the zip file
+		unlink($this->file_path);
+
+		$this->history->status = JobStatus::SUCCESS;
+		$this->history->save();
 	}
 
 	/**

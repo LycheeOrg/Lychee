@@ -110,6 +110,11 @@ class Configs extends Model
 					$message = 'Error: ' . $this->key . ' empty or not set';
 				}
 				break;
+			case ConfigType::FILE_SIZE->value:
+				if (preg_match('/^\d+(\.\d+)?\s?(B|KB|MB|GB|TB)$/i', $candidate_value ?? '') !== 1) {
+					$message = sprintf($message_template, 'a file size like "512MB" or "10GB"');
+				}
+				break;
 			case ConfigType::INT->value:
 				// we make sure that we only have digits in the chosen value.
 				if (!ctype_digit(strval($candidate_value))) {
