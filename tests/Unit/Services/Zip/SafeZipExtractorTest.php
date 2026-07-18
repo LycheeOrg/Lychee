@@ -18,8 +18,8 @@
 
 namespace Tests\Unit\Services\Zip;
 
+use App\Exceptions\Internal\ZipBombDetectedException;
 use App\Services\Zip\SafeZipExtractor;
-use App\Services\Zip\ZipBombDetectedException;
 use RuntimeException;
 use Tests\AbstractTestCase;
 use ZipArchive;
@@ -82,8 +82,8 @@ class SafeZipExtractorTest extends AbstractTestCase
 		$path = tempnam(sys_get_temp_dir(), 'safezip_src_') . '.zip';
 		$this->cleanupPaths[] = $path;
 
-		$zip = new ZipArchive();
-		$zip->open($path, ZipArchive::CREATE | ZipArchive::OVERWRITE);
+		$zip = new \ZipArchive();
+		$zip->open($path, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
 		foreach ($entries as $name => $content) {
 			if (str_ends_with($name, '/')) {
 				$zip->addEmptyDir(rtrim($name, '/'));
@@ -91,7 +91,7 @@ class SafeZipExtractorTest extends AbstractTestCase
 			}
 			$zip->addFromString($name, $content);
 			if ($compress) {
-				$zip->setCompressionName($name, ZipArchive::CM_DEFLATE, 9);
+				$zip->setCompressionName($name, \ZipArchive::CM_DEFLATE, 9);
 			}
 		}
 		$zip->close();
@@ -166,7 +166,7 @@ class SafeZipExtractorTest extends AbstractTestCase
 	public function testInspectAcceptsArchiveWithinLimits(): void
 	{
 		$zip = $this->makeZip(['a.txt' => 'hello', 'b.txt' => 'world']);
-		$extractor = new SafeZipExtractor(maxTotalSize: 1000, maxFileSize: 500, maxEntries: 10, maxRatio: 1000);
+		$extractor = new SafeZipExtractor(max_total_size: 1000, max_file_size: 500, max_entries: 10, max_ratio: 1000);
 
 		self::assertTrue($extractor->inspect($zip));
 	}
@@ -178,7 +178,7 @@ class SafeZipExtractorTest extends AbstractTestCase
 			$entries["file{$i}.txt"] = 'x';
 		}
 		$zip = $this->makeZip($entries);
-		$extractor = new SafeZipExtractor(maxTotalSize: 1000, maxFileSize: 500, maxEntries: 3, maxRatio: 1000);
+		$extractor = new SafeZipExtractor(max_total_size: 1000, max_file_size: 500, max_entries: 3, max_ratio: 1000);
 
 		self::assertFalse($extractor->inspect($zip));
 	}
@@ -186,7 +186,7 @@ class SafeZipExtractorTest extends AbstractTestCase
 	public function testInspectRejectsSingleFileTooLarge(): void
 	{
 		$zip = $this->makeZip(['big.txt' => str_repeat('x', 200)]);
-		$extractor = new SafeZipExtractor(maxTotalSize: 10000, maxFileSize: 100, maxEntries: 10, maxRatio: 1000);
+		$extractor = new SafeZipExtractor(max_total_size: 10000, max_file_size: 100, max_entries: 10, max_ratio: 1000);
 
 		self::assertFalse($extractor->inspect($zip));
 	}
@@ -197,7 +197,7 @@ class SafeZipExtractorTest extends AbstractTestCase
 			'a.txt' => str_repeat('x', 60),
 			'b.txt' => str_repeat('x', 60),
 		]);
-		$extractor = new SafeZipExtractor(maxTotalSize: 100, maxFileSize: 1000, maxEntries: 10, maxRatio: 1000);
+		$extractor = new SafeZipExtractor(max_total_size: 100, max_file_size: 1000, max_entries: 10, max_ratio: 1000);
 
 		self::assertFalse($extractor->inspect($zip));
 	}
@@ -206,7 +206,7 @@ class SafeZipExtractorTest extends AbstractTestCase
 	{
 		// Highly repetitive content compresses extremely well.
 		$zip = $this->makeZip(['bomb.txt' => str_repeat('A', 200_000)], compress: true);
-		$extractor = new SafeZipExtractor(maxTotalSize: PHP_INT_MAX, maxFileSize: PHP_INT_MAX, maxEntries: 10, maxRatio: 10);
+		$extractor = new SafeZipExtractor(max_total_size: PHP_INT_MAX, max_file_size: PHP_INT_MAX, max_entries: 10, max_ratio: 10);
 
 		self::assertFalse($extractor->inspect($zip));
 	}
@@ -215,16 +215,16 @@ class SafeZipExtractorTest extends AbstractTestCase
 	{
 		$zip = $this->makeZip(['bomb.txt' => str_repeat('A', 200_000)], compress: true);
 		// Same archive, but the ratio cap is generous enough to allow it.
-		$extractor = new SafeZipExtractor(maxTotalSize: PHP_INT_MAX, maxFileSize: PHP_INT_MAX, maxEntries: 10, maxRatio: 100_000);
+		$extractor = new SafeZipExtractor(max_total_size: PHP_INT_MAX, max_file_size: PHP_INT_MAX, max_entries: 10, max_ratio: 100_000);
 
 		self::assertTrue($extractor->inspect($zip));
 	}
 
 	public function testInspectThrowsWhenArchiveCannotBeOpened(): void
 	{
-		$extractor = new SafeZipExtractor(maxTotalSize: 1000, maxFileSize: 1000, maxEntries: 10, maxRatio: 1000);
+		$extractor = new SafeZipExtractor(max_total_size: 1000, max_file_size: 1000, max_entries: 10, max_ratio: 1000);
 
-		self::expectException(RuntimeException::class);
+		self::expectException(\RuntimeException::class);
 		$extractor->inspect('/does/not/exist.zip');
 	}
 
@@ -235,7 +235,7 @@ class SafeZipExtractorTest extends AbstractTestCase
 			'sub/b.txt' => 'world',
 		]);
 		$dest = $this->makeDestDir();
-		$extractor = new SafeZipExtractor(maxTotalSize: 1000, maxFileSize: 500, maxEntries: 10, maxRatio: 1000);
+		$extractor = new SafeZipExtractor(max_total_size: 1000, max_file_size: 500, max_entries: 10, max_ratio: 1000);
 
 		$extractor->extract($zip, $dest);
 
@@ -255,7 +255,7 @@ class SafeZipExtractorTest extends AbstractTestCase
 	{
 		$zip = $this->makeZip(['/etc/evil.txt' => 'pwned']);
 		$dest = $this->makeDestDir();
-		$extractor = new SafeZipExtractor(maxTotalSize: 1000, maxFileSize: 500, maxEntries: 10, maxRatio: 1000);
+		$extractor = new SafeZipExtractor(max_total_size: 1000, max_file_size: 500, max_entries: 10, max_ratio: 1000);
 
 		$extractor->extract($zip, $dest);
 
@@ -273,12 +273,12 @@ class SafeZipExtractorTest extends AbstractTestCase
 	{
 		$zip = $this->makeZip(['../evil.txt' => 'pwned']);
 		$dest = $this->makeDestDir();
-		$extractor = new SafeZipExtractor(maxTotalSize: 1000, maxFileSize: 500, maxEntries: 10, maxRatio: 1000);
+		$extractor = new SafeZipExtractor(max_total_size: 1000, max_file_size: 500, max_entries: 10, max_ratio: 1000);
 
 		try {
 			$extractor->extract($zip, $dest);
 			self::fail('Expected a RuntimeException to be thrown.');
-		} catch (RuntimeException $e) {
+		} catch (\RuntimeException $e) {
 			self::assertNotInstanceOf(ZipBombDetectedException::class, $e);
 		}
 
@@ -289,7 +289,7 @@ class SafeZipExtractorTest extends AbstractTestCase
 	{
 		$zip = $this->makeZip(['big.txt' => str_repeat('x', 200)]);
 		$dest = $this->makeDestDir();
-		$extractor = new SafeZipExtractor(maxTotalSize: 1000, maxFileSize: 100, maxEntries: 10, maxRatio: 1000);
+		$extractor = new SafeZipExtractor(max_total_size: 1000, max_file_size: 100, max_entries: 10, max_ratio: 1000);
 
 		self::expectException(ZipBombDetectedException::class);
 		$extractor->extract($zip, $dest);
@@ -308,7 +308,7 @@ class SafeZipExtractorTest extends AbstractTestCase
 		$dest = $this->makeDestDir();
 
 		// The declared size (100) comfortably passes inspection...
-		$extractor = new SafeZipExtractor(maxTotalSize: 10_000, maxFileSize: 1_000, maxEntries: 10, maxRatio: 1_000_000);
+		$extractor = new SafeZipExtractor(max_total_size: 10_000, max_file_size: 1_000, max_entries: 10, max_ratio: 1_000_000);
 		self::assertTrue($extractor->inspect($zip));
 
 		// ...but the real, streamed bytes (100,000) must still trip the per-file limit.

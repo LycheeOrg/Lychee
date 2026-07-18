@@ -13,8 +13,10 @@ use Exception;
 use Illuminate\Http\Request;
 use Safe\Exceptions\FilesystemException;
 use Safe\Exceptions\InfoException;
+use Safe\Exceptions\PcreException;
 use function Safe\ini_get;
 use function Safe\mkdir;
+use function Safe\preg_match;
 use function Safe\rmdir;
 use function Safe\unlink;
 
@@ -204,7 +206,12 @@ class Helpers
 	 */
 	public function humanSizeToBytes(string $size): int
 	{
-		if (preg_match('/^(\d+(?:\.\d+)?)\s?(B|KB|MB|GB|TB)$/i', trim($size), $matches) !== 1) {
+		try {
+			$matched = preg_match('/^(\d+(?:\.\d+)?)\s?(B|KB|MB|GB|TB)$/i', trim($size), $matches) === 1;
+		} catch (PcreException) {
+			$matched = false;
+		}
+		if (!$matched) {
 			return 0;
 		}
 

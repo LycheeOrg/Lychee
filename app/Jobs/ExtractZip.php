@@ -12,6 +12,7 @@ use App\Actions\Import\Exec;
 use App\Contracts\Models\AbstractAlbum;
 use App\DTO\ImportMode;
 use App\Enum\JobStatus;
+use App\Exceptions\Internal\ZipBombDetectedException;
 use App\Exceptions\Internal\ZipExtractionException;
 use App\Exceptions\ZipInvalidException;
 use App\Image\Files\ProcessableJobFile;
@@ -20,7 +21,6 @@ use App\Models\JobHistory;
 use App\Repositories\ConfigManager;
 use App\Services\Image\FileExtensionService;
 use App\Services\Zip\SafeZipExtractor;
-use App\Services\Zip\ZipBombDetectedException;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -171,10 +171,10 @@ class ExtractZip implements ShouldQueue
 		$config_manager = app(ConfigManager::class);
 
 		return new SafeZipExtractor(
-			maxTotalSize: $config_manager->getValueAsByteSize('zip_bomb_max_total_size'),
-			maxFileSize: $config_manager->getValueAsByteSize('zip_bomb_max_file_size'),
-			maxEntries: $config_manager->getValueAsInt('zip_bomb_max_entries'),
-			maxRatio: $config_manager->getValueAsInt('zip_bomb_max_ratio'),
+			max_total_size: $config_manager->getValueAsByteSize('zip_bomb_max_total_size'),
+			max_file_size: $config_manager->getValueAsByteSize('zip_bomb_max_file_size'),
+			max_entries: $config_manager->getValueAsInt('zip_bomb_max_entries'),
+			max_ratio: $config_manager->getValueAsInt('zip_bomb_max_ratio'),
 		);
 	}
 

@@ -10,9 +10,15 @@ declare(strict_types=1);
 
 namespace App\Services\Zip;
 
+use App\Exceptions\Internal\ZipBombDetectedException;
 use RuntimeException;
-use Throwable;
-use ZipArchive;
+use function Safe\fclose;
+use function Safe\fopen;
+use function Safe\fread;
+use function Safe\fwrite;
+use function Safe\mkdir;
+use function Safe\realpath;
+use function Safe\unlink;
 
 /**
  * SafeZipExtractor.
@@ -31,15 +37,15 @@ final class SafeZipExtractor
 {
 	public function __construct(
 		// Max combined uncompressed size of the whole archive, in bytes.
-		private int $maxTotalSize,
+		private int $max_total_size,
 		// Max uncompressed size of any single entry, in bytes.
-		private int $maxFileSize,
+		private int $max_file_size,
 		// Max number of entries (guards against "many tiny files" DoS).
-		private int $maxEntries,
+		private int $max_entries,
 		// Max overall compression ratio (uncompressed / compressed).
-		private int $maxRatio,
+		private int $max_ratio,
 		// Read chunk size while streaming.
-		private int $chunkSize = 8192,
+		private int $chunk_size = 8192,
 	) {
 	}
 
@@ -50,20 +56,20 @@ final class SafeZipExtractor
 	 * NOTE: A malicious archive can under-report sizes, so this is a
 	 * fast first filter only — extraction still enforces real limits.
 	 */
-	public function inspect(string $zipPath): bool
+	public function inspect(string $zip_path): bool
 	{
-		$zip = new ZipArchive();
-		if ($zip->open($zipPath, ZipArchive::RDONLY) !== true) {
-			throw new RuntimeException('Unable to open archive.');
+		$zip = new \ZipArchive();
+		if ($zip->open($zip_path, \ZipArchive::RDONLY) !== true) {
+			throw new \RuntimeException('Unable to open archive.');
 		}
 
 		try {
-			if ($zip->numFiles > $this->maxEntries) {
+			if ($zip->numFiles > $this->max_entries) {
 				return false;
 			}
 
-			$totalUncompressed = 0;
-			$totalCompressed = 0;
+			$total_uncompressed = 0;
+			$total_compressed = 0;
 
 			for ($i = 0; $i < $zip->numFiles; $i++) {
 				$stat = $zip->statIndex($i);
@@ -71,20 +77,20 @@ final class SafeZipExtractor
 					return false;
 				}
 
-				if ($stat['size'] > $this->maxFileSize) {
+				if ($stat['size'] > $this->max_file_size) {
 					return false;
 				}
 
-				$totalUncompressed += $stat['size'];
-				$totalCompressed += $stat['comp_size'];
+				$total_uncompressed += $stat['size'];
+				$total_compressed += $stat['comp_size'];
 
-				if ($totalUncompressed > $this->maxTotalSize) {
+				if ($total_uncompressed > $this->max_total_size) {
 					return false;
 				}
 			}
 
-			if ($totalCompressed > 0
-				&& ($totalUncompressed / $totalCompressed) > $this->maxRatio) {
+			if ($total_compressed > 0 &&
+				($total_uncompressed / $total_compressed) > $this->max_ratio) {
 				return false;
 			}
 
@@ -95,29 +101,26 @@ final class SafeZipExtractor
 	}
 
 	/**
-	 * Safely extract the archive to $destDir.
+	 * Safely extract the archive to $dest_dir.
 	 * Throws RuntimeException the moment anything looks like an attack.
 	 */
-	public function extract(string $zipPath, string $destDir): void
+	public function extract(string $zip_path, string $dest_dir): void
 	{
-		if (!$this->inspect($zipPath)) {
+		if (!$this->inspect($zip_path)) {
 			throw new ZipBombDetectedException('Archive rejected by pre-flight inspection.');
 		}
 
-		if (!is_dir($destDir) && !mkdir($destDir, 0755, true) && !is_dir($destDir)) {
-			throw new RuntimeException('Cannot create destination directory.');
+		if (!is_dir($dest_dir)) {
+			mkdir($dest_dir, 0755, true);
 		}
-		$baseReal = realpath($destDir);
-		if ($baseReal === false) {
-			throw new RuntimeException('Destination directory is invalid.');
+		$base_real = realpath($dest_dir);
+
+		$zip = new \ZipArchive();
+		if ($zip->open($zip_path, \ZipArchive::RDONLY) !== true) {
+			throw new \RuntimeException('Unable to open archive.');
 		}
 
-		$zip = new ZipArchive();
-		if ($zip->open($zipPath, ZipArchive::RDONLY) !== true) {
-			throw new RuntimeException('Unable to open archive.');
-		}
-
-		$writtenTotal = 0;
+		$written_total = 0;
 
 		try {
 			for ($i = 0; $i < $zip->numFiles; $i++) {
@@ -125,64 +128,62 @@ final class SafeZipExtractor
 				$name = $stat['name'];
 
 				// Skip directory entries after resolving their safe path.
-				$target = $this->resolveSafeTarget($baseReal, $name);
+				$target = $this->resolveSafeTarget($base_real, $name);
 				if ($target === null) {
-					throw new RuntimeException("Blocked path traversal: {$name}");
+					throw new \RuntimeException("Blocked path traversal: {$name}");
 				}
 
 				if (str_ends_with($name, '/')) {
-					if (!is_dir($target) && !mkdir($target, 0755, true) && !is_dir($target)) {
-						throw new RuntimeException("Cannot create directory: {$name}");
+					if (!is_dir($target)) {
+						mkdir($target, 0755, true);
 					}
 					continue;
 				}
 
 				$dir = dirname($target);
-				if (!is_dir($dir) && !mkdir($dir, 0755, true) && !is_dir($dir)) {
-					throw new RuntimeException("Cannot create directory for: {$name}");
+				if (!is_dir($dir)) {
+					mkdir($dir, 0755, true);
 				}
 
 				$in = $zip->getStream($name);
 				if ($in === false) {
-					throw new RuntimeException("Cannot read entry: {$name}");
+					throw new \RuntimeException("Cannot read entry: {$name}");
 				}
 
-				$out = fopen($target, 'wb');
-				if ($out === false) {
+				try {
+					$out = fopen($target, 'wb');
+				} catch (\Throwable $e) {
 					fclose($in);
-					throw new RuntimeException("Cannot write file: {$name}");
+					throw new \RuntimeException("Cannot write file: {$name}", previous: $e);
 				}
 
-				$fileWritten = 0;
+				$file_written = 0;
 
 				try {
 					while (!feof($in)) {
-						$chunk = fread($in, $this->chunkSize);
-						if ($chunk === false) {
-							throw new RuntimeException("Read error on: {$name}");
-						}
+						$chunk = fread($in, $this->chunk_size);
 
 						$len = strlen($chunk);
-						$fileWritten += $len;
-						$writtenTotal += $len;
+						$file_written += $len;
+						$written_total += $len;
 
 						// The real, non-negotiable limits — measured from
 						// bytes actually produced, not from the header.
-						if ($fileWritten > $this->maxFileSize) {
+						if ($file_written > $this->max_file_size) {
 							throw new ZipBombDetectedException("Entry exceeds per-file limit: {$name}");
 						}
-						if ($writtenTotal > $this->maxTotalSize) {
+						if ($written_total > $this->max_total_size) {
 							throw new ZipBombDetectedException('Archive exceeds total size limit.');
 						}
 
-						if (fwrite($out, $chunk) === false) {
-							throw new RuntimeException("Write error on: {$name}");
-						}
+						fwrite($out, $chunk);
 					}
-				} catch (Throwable $e) {
+				} catch (\Throwable $e) {
 					fclose($in);
 					fclose($out);
-					@unlink($target);   // don't leave a partial bomb on disk
+					if (is_file($target)) {
+						unlink($target);   // don't leave a partial bomb on disk
+					}
 					throw $e;
 				}
 
@@ -196,16 +197,16 @@ final class SafeZipExtractor
 
 	/**
 	 * Resolve an entry name to an absolute path guaranteed to live inside
-	 * $baseReal, or null if the entry tries to escape (zip slip).
+	 * $base_real, or null if the entry tries to escape (zip slip).
 	 */
-	private function resolveSafeTarget(string $baseReal, string $entryName): ?string
+	private function resolveSafeTarget(string $base_real, string $entry_name): ?string
 	{
-		if ($entryName === '' || str_contains($entryName, "\0")) {
+		if ($entry_name === '' || str_contains($entry_name, "\0")) {
 			return null;
 		}
 
 		// Normalise separators and strip any leading slashes / drive letters.
-		$entry = str_replace('\\', '/', $entryName);
+		$entry = str_replace('\\', '/', $entry_name);
 		$entry = ltrim($entry, '/');
 
 		$parts = [];
@@ -214,7 +215,7 @@ final class SafeZipExtractor
 				continue;
 			}
 			if ($segment === '..') {
-				if (empty($parts)) {
+				if (count($parts) === 0) {
 					return null; // trying to climb above base
 				}
 				array_pop($parts);
@@ -223,14 +224,14 @@ final class SafeZipExtractor
 			$parts[] = $segment;
 		}
 
-		if (empty($parts)) {
+		if (count($parts) === 0) {
 			return null;
 		}
 
-		$target = $baseReal . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, $parts);
+		$target = $base_real . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, $parts);
 
 		// Final belt-and-braces prefix check.
-		if (!str_starts_with($target, $baseReal . DIRECTORY_SEPARATOR)) {
+		if (!str_starts_with($target, $base_real . DIRECTORY_SEPARATOR)) {
 			return null;
 		}
 
