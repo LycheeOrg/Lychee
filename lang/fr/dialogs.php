@@ -229,7 +229,7 @@ return [
         'no_tags' => 'Aucune étiquette',
         'set_tags' => 'Définir les étiquettes',
         'updated' => 'Étiquettes mises à jour !',
-        'tags_override_info' => 'Si cette case est pas cochée, les étiquettes existantes seront remplacées.',
+        'tags_override_info' => 'Si cette case est cochée, les étiquettes existantes seront remplacées.',
     ],
     'photo_license' => [
         'question' => 'Select a license for this photo.',
