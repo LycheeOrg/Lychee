@@ -93,7 +93,7 @@ const OrderService = {
 		return axios.delete(`${Constants.getApiUrl()}Shop/Basket`, { data: {} });
 	},
 	list(includePending: boolean = false): Promise<AxiosResponse<App.Http.Resources.Shop.OrderResource[]>> {
-		return axios.get(`${Constants.getApiUrl()}Shop/Order/List`, { data: { include_pending: includePending } });
+		return axios.get(`${Constants.getApiUrl()}Shop/Order/List`, { params: { include_pending: includePending ? '1' : '0' }, data: {} });
 	},
 	get(orderId: number, transactionId?: string): Promise<AxiosResponse<App.Http.Resources.Shop.OrderResource>> {
 		return axios.get(`${Constants.getApiUrl()}Shop/Order/${orderId}`, { data: {}, params: { transaction_id: transactionId } });

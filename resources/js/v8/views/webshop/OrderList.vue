@@ -13,7 +13,7 @@
 		</div>
 		<Disclaimer />
 		<div class="flex justify-end">
-			<UCheckbox v-model="showPending" :label="$t('webshop.orderList.showPending')" @update:model-value="load" />
+			<UCheckbox v-model="showPending" :label="$t('webshop.orderList.show_pending')" @update:model-value="load" />
 		</div>
 		<OrderLegend />
 		<UTable :data="orders ?? []" :columns="columns" :loading="orders === undefined" class="mt-4" />

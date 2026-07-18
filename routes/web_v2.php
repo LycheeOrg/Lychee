@@ -118,5 +118,7 @@ Route::get('image/{path}', SecurePathController::class)
 	->name('image')
 	->where('path', '.*');
 
+Route::get('/.well-known/appspecific/com.chrome.devtools.json', fn () => response()->noContent());
+
 // This route must be defined last because it is a catch all.
 Route::match(['get', 'post'], '{path}', HoneyPotController::class)->where('path', '.*');

@@ -26,13 +26,21 @@ class ListOrderRequest extends BaseApiRequest
 		return Auth::check();
 	}
 
+	protected function prepareForValidation(): void
+	{
+		/** @disregard */
+		$this->merge([
+			RequestAttribute::INCLUDE_PENDING_ATTRIBUTE => strval($this->input(RequestAttribute::INCLUDE_PENDING_ATTRIBUTE, '0')),
+		]);
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
 	public function rules(): array
 	{
 		return [
-			RequestAttribute::INCLUDE_PENDING_ATTRIBUTE => ['nullable', 'boolean'],
+			RequestAttribute::INCLUDE_PENDING_ATTRIBUTE => ['present', 'boolean'],
 		];
 	}
 

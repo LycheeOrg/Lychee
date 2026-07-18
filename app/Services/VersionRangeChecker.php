@@ -38,7 +38,6 @@ class VersionRangeChecker
 	 */
 	public function matches(Version $version, string $range): bool
 	{
-		return true;
 		$range = trim($range);
 
 		if ($range === '') {
