@@ -134,7 +134,7 @@ class OrderListingAccessTest extends BaseApiWithDataTest
 
 	/**
 	 * Test listing orders as admin user.
-	 * Should return all orders in the system.
+	 * Should return all non-pending orders in the system by default.
 	 */
 	public function testListOrdersAsAdmin(): void
 	{
@@ -145,7 +145,27 @@ class OrderListingAccessTest extends BaseApiWithDataTest
 		$orders = $response->json();
 		$this->assertIsArray($orders);
 
-		// Admin should see all orders
+		// Admin should see all non-pending orders, but not the pending one
+		$orderIds = collect($orders)->pluck('id')->toArray();
+		$this->assertContains($this->order1->id, $orderIds);
+		$this->assertNotContains($this->order2->id, $orderIds);
+		$this->assertContains($this->order3->id, $orderIds);
+	}
+
+	/**
+	 * Test listing orders as admin user with pending orders included.
+	 * Should return all orders in the system, including pending ones.
+	 */
+	public function testListOrdersAsAdminIncludingPending(): void
+	{
+		$response = $this->actingAs($this->admin)->getJson('Shop/Order/List?include_pending=1');
+
+		$this->assertOk($response);
+
+		$orders = $response->json();
+		$this->assertIsArray($orders);
+
+		// Admin should see all orders, including the pending one
 		$orderIds = collect($orders)->pluck('id')->toArray();
 		$this->assertContains($this->order1->id, $orderIds);
 		$this->assertContains($this->order2->id, $orderIds);

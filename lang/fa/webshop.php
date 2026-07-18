@@ -107,6 +107,7 @@ return [
         'transactionId' => 'شناسه تراکنش',
         'status' => 'وضعیت',
         'amount' => 'مبلغ',
+        'show_pending' => 'نمایش سفارش‌های در انتظار',
     ],
     'purchasablesList' => [
         'purchasables' => 'موارد قابل خرید',

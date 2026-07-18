@@ -85,6 +85,7 @@ class RequestAttribute
 	public const IS_AND_ATTRIBUTE = 'is_and';
 
 	public const ALL_ATTRIBUTE = 'all';
+	public const INCLUDE_PENDING_ATTRIBUTE = 'include_pending';
 
 	public const FILE_ATTRIBUTE = 'file';
 	public const SHALL_OVERRIDE_ATTRIBUTE = 'shall_override';

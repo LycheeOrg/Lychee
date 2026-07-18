@@ -12,6 +12,9 @@
 			<UButton :label="$t('webshop.orderList.cleanStaleOrders')" icon="lucide:trash" color="warning" @click="clean" />
 		</div>
 		<Disclaimer />
+		<div class="flex justify-end">
+			<UCheckbox v-model="showPending" :label="$t('webshop.orderList.show_pending')" @update:model-value="load" />
+		</div>
 		<OrderLegend />
 		<UTable :data="orders ?? []" :columns="columns" :loading="orders === undefined" class="mt-4" />
 	</div>
@@ -43,7 +46,7 @@ const toast = useAppToast();
 const leftMenuStore = useLeftMenuStateStore();
 const { initData } = storeToRefs(leftMenuStore);
 
-const { isZero, load, clean, orders, numOldOrders } = useOrder(toast, router);
+const { isZero, load, clean, orders, numOldOrders, showPending } = useOrder(toast, router);
 
 const columns: TableColumn<Order>[] = [
 	{
