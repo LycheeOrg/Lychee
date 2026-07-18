@@ -13,7 +13,7 @@
 		</div>
 
 		<template v-else>
-			<UTabs v-model="activeTab" :items="tabItems" class="w-full" :dir="isLTR() ? 'ltr' : 'rtl'" >
+			<UTabs v-model="activeTab" :items="tabItems" class="w-full" :dir="isLTR() ? 'ltr' : 'rtl'">
 				<template #settings>
 					<p class="text-muted mb-6 text-center text-sm">{{ $t("admin-dashboard.nsfw_config.description") }}</p>
 
