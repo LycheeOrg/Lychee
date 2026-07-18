@@ -15,6 +15,7 @@ use App\Enum\JobStatus;
 use App\Exceptions\Internal\ZipBombDetectedException;
 use App\Exceptions\Internal\ZipExtractionException;
 use App\Exceptions\ZipInvalidException;
+use App\Facades\Helpers;
 use App\Image\Files\ProcessableJobFile;
 use App\Models\Album;
 use App\Models\JobHistory;
@@ -297,6 +298,7 @@ class ExtractZip implements ShouldQueue
 			$this->history->save();
 
 			$this->deleteRejectedFileIfConfigured();
+			$this->cleanUpExtractedFolder($path_extracted);
 
 			throw new ZipInvalidException($this->file_path . ' exceeds the configured zip-bomb protection limits.');
 		} catch (\Throwable $e) {
@@ -304,6 +306,8 @@ class ExtractZip implements ShouldQueue
 
 			$this->history->status = JobStatus::FAILURE;
 			$this->history->save();
+
+			$this->cleanUpExtractedFolder($path_extracted);
 
 			throw ZipExtractionException::fromTo($this->file_path, $path_extracted);
 		}
@@ -313,6 +317,32 @@ class ExtractZip implements ShouldQueue
 
 		$this->history->status = JobStatus::SUCCESS;
 		$this->history->save();
+	}
+
+	/**
+	 * Removes the job-specific extraction directory, including any partial
+	 * content already written before extraction failed.
+	 *
+	 * This runs synchronously (instead of relying on {@see CleanUpExtraction},
+	 * which only removes already-empty directories once import has consumed
+	 * their contents) so that rejected archives never leave partially
+	 * extracted files behind to fill up the extraction disk.
+	 *
+	 * @param string $path_extracted The absolute path where the ZIP contents were being extracted
+	 *
+	 * @return void
+	 */
+	private function cleanUpExtractedFolder(string $path_extracted): void
+	{
+		if (!is_dir($path_extracted)) {
+			return;
+		}
+
+		try {
+			Helpers::remove_dir($path_extracted);
+		} catch (\Throwable $e) {
+			Log::channel('jobs')->error('Could not clean up extraction folder ' . $path_extracted . ': ' . $e->getMessage());
+		}
 	}
 
 	/**

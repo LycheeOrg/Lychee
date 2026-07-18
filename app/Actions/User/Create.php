@@ -42,8 +42,8 @@ class Create
 			throw new ConflictingPropertyException('Username already exists');
 		}
 		if ($quota_kb === 0) {
-			$default = intdiv($this->config_manager->getValueAsByteSize('default_user_quota'), 1024);
-			$quota_kb = $default === 0 ? null : $default;
+			$default_bytes = $this->config_manager->getValueAsByteSize('default_user_quota');
+			$quota_kb = $default_bytes === 0 ? null : max(1, intdiv($default_bytes, 1024));
 		}
 		$user = new User();
 		$user->may_upload = $may_upload;
