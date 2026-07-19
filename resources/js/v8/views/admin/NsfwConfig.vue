@@ -114,7 +114,7 @@
 											v-if="cfg[row.key]"
 											:model-value="cfg[row.key]!.value"
 											:items="cfg[row.key]!.type.split('|')"
-											class="shrink-0"
+											class="w-40 shrink-0"
 											@update:model-value="(v: string | number) => save(row.key, v as string)"
 										/>
 									</div>
@@ -127,7 +127,7 @@
 											v-if="cfg[row.key]"
 											:model-value="cfg[row.key]!.value"
 											:items="cfg[row.key]!.type.split('|')"
-											class="shrink-0"
+											class="w-40 shrink-0"
 											@update:model-value="(v: string | number) => save(row.key, v as string)"
 										/>
 									</div>

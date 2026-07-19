@@ -268,8 +268,16 @@
 			</Fieldset>
 
 			<!-- Save -->
-			<div class="flex justify-end">
-				<UButton :label="$t('watermark.preview.save')" :loading="saving" icon="lucide:save" color="primary" @click="save" />
+			<div class="flex flex-col items-end gap-1">
+				<UButton
+					:label="$t('watermark.preview.save')"
+					:loading="saving"
+					:disabled="!is_se_enabled"
+					icon="lucide:save"
+					color="primary"
+					@click="save"
+				/>
+				<small v-if="!is_se_enabled" class="text-muted text-xs">{{ $t("watermark.preview.save_requires_se") }}</small>
 			</div>
 		</div>
 	</div>

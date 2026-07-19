@@ -11,7 +11,13 @@
 		/>
 		<div class="flex gap-4 items-center">
 			<ResetField v-if="changed" @click="reset" />
-			<USelectMenu :id="props.config.key" v-model="val" class="border-none" :items="options" @update:model-value="update" />
+			<USelectMenu
+				:id="props.config.key"
+				v-model="val"
+				class="w-48 shrink-0 border-none sm:w-56"
+				:items="options"
+				@update:model-value="update"
+			/>
 		</div>
 	</div>
 </template>

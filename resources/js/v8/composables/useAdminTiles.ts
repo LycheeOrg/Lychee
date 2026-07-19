@@ -133,7 +133,12 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			icon: "lucide:image",
 			to: "/admin/watermark",
 			isExternal: false,
-			visible: computed(() => (initData.value?.settings.can_edit ?? false) && (is_se_enabled.value || is_se_preview_enabled.value)),
+			visible: computed(
+				() =>
+					(initData.value?.settings.can_edit ?? false) &&
+					(is_se_enabled.value || is_se_preview_enabled.value) &&
+					(initData.value?.modules.is_watermarker_enabled ?? false),
+			),
 		},
 		{
 			key: "bulk-album-edit",

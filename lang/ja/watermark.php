@@ -61,6 +61,7 @@ return [
         'save' => 'Save Settings',
         'saved' => 'Watermark settings saved.',
         'save_error' => 'Failed to save watermark settings.',
+        'save_requires_se' => 'Saving watermark settings requires a full Supporter Edition (SE) license. SE Preview only allows previewing the effect.',
 
         'no_watermark_image' => 'No watermark image configured. Enter a watermark photo ID and click "Load" to preview.',
         'no_preview_photo' => 'Enter a background photo ID above to preview the watermark overlay.',
