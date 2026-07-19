@@ -82,6 +82,7 @@ Route::get('/admin/user-groups', VueController::class)->middleware(['migration:c
 Route::get('/admin/contact-messages', VueController::class)->middleware(['migration:complete', 'login_required:always']);
 Route::get('/admin/webhooks', VueController::class)->middleware(['migration:complete', 'login_required:always']);
 Route::get('/admin/moderation', VueController::class)->middleware(['migration:complete', 'login_required:always']);
+Route::get('/admin/watermark', VueController::class)->middleware(['migration:complete', 'login_required:always']);
 Route::get('/admin/purchasables', VueController::class)->middleware(['migration:complete', 'login_required:always']);
 Route::get('/admin/jobs', VueController::class)->middleware(['migration:complete', 'login_required:always']);
 Route::get('/admin/maintenance/{faces?}', VueController::class)->middleware(['migration:complete', 'login_required:always']);
