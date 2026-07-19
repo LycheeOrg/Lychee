@@ -111,6 +111,20 @@ class ConfigManager
 	}
 
 	/**
+	 * Get a human-readable file size configuration value (e.g. "512MB") as bytes.
+	 *
+	 * @param string $key
+	 *
+	 * @return int
+	 *
+	 * @throws ConfigurationKeyMissingException
+	 */
+	public function getValueAsByteSize(string $key): int
+	{
+		return Helpers::humanSizeToBytes($this->getValueAsString($key));
+	}
+
+	/**
 	 * @template T of \BackedEnum
 	 *
 	 * @param string          $key

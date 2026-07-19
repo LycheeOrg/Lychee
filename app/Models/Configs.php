@@ -20,6 +20,8 @@ use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Repositories\ConfigManager;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Safe\Exceptions\PcreException;
+use function Safe\preg_match;
 
 /**
  * App\Models\Configs.
@@ -108,6 +110,16 @@ class Configs extends Model
 			case ConfigType::STRING_REQ->value:
 				if ($candidate_value === '' || $candidate_value === null) {
 					$message = 'Error: ' . $this->key . ' empty or not set';
+				}
+				break;
+			case ConfigType::FILE_SIZE->value:
+				try {
+					$is_valid_file_size = preg_match('/^\d+(\.\d+)?\s?(B|KB|MB|GB|TB)$/i', $candidate_value ?? '') === 1;
+				} catch (PcreException) {
+					$is_valid_file_size = false;
+				}
+				if (!$is_valid_file_size) {
+					$message = sprintf($message_template, 'a file size like "512MB" or "10GB"');
 				}
 				break;
 			case ConfigType::INT->value:

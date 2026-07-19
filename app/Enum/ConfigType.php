@@ -19,6 +19,7 @@ enum ConfigType: string
 	case POSTIIVE = 'positive';
 	case STRING = 'string';
 	case STRING_REQ = 'string_required';
+	case FILE_SIZE = 'string_file_size';
 	case BOOL = '0|1';
 	case TERNARY = '0|1|2';
 	case DISABLED = '';

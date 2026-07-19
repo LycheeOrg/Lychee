@@ -13,8 +13,10 @@ use Exception;
 use Illuminate\Http\Request;
 use Safe\Exceptions\FilesystemException;
 use Safe\Exceptions\InfoException;
+use Safe\Exceptions\PcreException;
 use function Safe\ini_get;
 use function Safe\mkdir;
+use function Safe\preg_match;
 use function Safe\rmdir;
 use function Safe\unlink;
 
@@ -189,6 +191,42 @@ class Helpers
 		}
 
 		return $size;
+	}
+
+	/**
+	 * Parses a human-readable file size (e.g. "512MB", "10 GB") into bytes.
+	 *
+	 * Unlike {@see self::convertSize()} (which parses PHP ini-style suffixes
+	 * like "30M"), this accepts the two-letter unit suffixes used by
+	 * user-facing configuration values.
+	 *
+	 * @param string $size e.g. "100MB", "10GB", "512 KB"
+	 *
+	 * @return int equivalent number of bytes
+	 */
+	public function humanSizeToBytes(string $size): int
+	{
+		try {
+			$matched = preg_match('/^(\d+(?:\.\d+)?)\s?(B|KB|MB|GB|TB)$/i', trim($size), $matches) === 1;
+		} catch (PcreException) {
+			$matched = false;
+		}
+		if (!$matched) {
+			return 0;
+		}
+
+		$value = (float) $matches[1];
+		$unit = strtoupper($matches[2]);
+
+		$multipliers = [
+			'B' => 1,
+			'KB' => 1024,
+			'MB' => 1024 ** 2,
+			'GB' => 1024 ** 3,
+			'TB' => 1024 ** 4,
+		];
+
+		return (int) round($value * $multipliers[$unit]);
 	}
 
 	/**

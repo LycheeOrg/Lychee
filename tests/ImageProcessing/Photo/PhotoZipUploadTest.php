@@ -19,6 +19,8 @@
 namespace Tests\ImageProcessing\Photo;
 
 use App\Exceptions\ZipInvalidException;
+use App\Models\Configs;
+use Illuminate\Support\Facades\Storage;
 use function Safe\unlink;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\Constants\TestConstants;
@@ -132,5 +134,108 @@ class PhotoZipUploadTest extends BaseApiWithDataTest
 
 		$response = $this->actingAs($this->admin)->upload('Photo', filename: TestConstants::SAMPLE_TEST_ZIP, album_id: $this->album5->id);
 		$this->assertStatus($response, Response::HTTP_I_AM_A_TEAPOT);
+	}
+
+	public function testZipBombRejectedByMaxFileSize(): void
+	{
+		// Force an unreasonably tiny per-file limit so a normal sample image trips it.
+		Configs::set('zip_bomb_max_file_size', '1B');
+
+		$zip = new \ZipArchive();
+		if ($zip->open(TestConstants::SAMPLE_TEST_ZIP, \ZipArchive::CREATE) !== true) {
+			$this->fail('Could not create zip file for testing.');
+		}
+		$zip->addFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE, 'night.jpg');
+		$zip->close();
+
+		$response = $this->actingAs($this->admin)->upload('Photo', filename: TestConstants::SAMPLE_TEST_ZIP, album_id: $this->album5->id);
+		$this->assertStatus($response, Response::HTTP_I_AM_A_TEAPOT);
+	}
+
+	public function testZipBombRejectedByMaxTotalSize(): void
+	{
+		// Force an unreasonably tiny total-size limit so a normal sample image trips it.
+		Configs::set('zip_bomb_max_total_size', '1B');
+
+		$zip = new \ZipArchive();
+		if ($zip->open(TestConstants::SAMPLE_TEST_ZIP, \ZipArchive::CREATE) !== true) {
+			$this->fail('Could not create zip file for testing.');
+		}
+		$zip->addFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE, 'night.jpg');
+		$zip->close();
+
+		$response = $this->actingAs($this->admin)->upload('Photo', filename: TestConstants::SAMPLE_TEST_ZIP, album_id: $this->album5->id);
+		$this->assertStatus($response, Response::HTTP_I_AM_A_TEAPOT);
+	}
+
+	public function testZipBombRejectedByMaxEntries(): void
+	{
+		Configs::set('zip_bomb_max_entries', '1');
+
+		$zip = new \ZipArchive();
+		if ($zip->open(TestConstants::SAMPLE_TEST_ZIP, \ZipArchive::CREATE) !== true) {
+			$this->fail('Could not create zip file for testing.');
+		}
+		$zip->addFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE, 'night.jpg');
+		$zip->addFile(TestConstants::SAMPLE_FILE_SUNSET_IMAGE, 'sunset.jpg');
+		$zip->close();
+
+		$response = $this->actingAs($this->admin)->upload('Photo', filename: TestConstants::SAMPLE_TEST_ZIP, album_id: $this->album5->id);
+		$this->assertStatus($response, Response::HTTP_I_AM_A_TEAPOT);
+	}
+
+	/**
+	 * @return string[] the currently-present *.zip paths on the 'image-jobs' disk
+	 */
+	private function currentImageJobZips(): array
+	{
+		return array_values(array_filter(
+			Storage::disk('image-jobs')->allFiles(),
+			fn (string $path) => str_ends_with(strtolower($path), '.zip')
+		));
+	}
+
+	public function testZipBombDeletesRejectedFileByDefault(): void
+	{
+		Configs::set('zip_bomb_max_file_size', '1B');
+
+		$zip = new \ZipArchive();
+		if ($zip->open(TestConstants::SAMPLE_TEST_ZIP, \ZipArchive::CREATE) !== true) {
+			$this->fail('Could not create zip file for testing.');
+		}
+		$zip->addFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE, 'night.jpg');
+		$zip->close();
+
+		$zips_before = $this->currentImageJobZips();
+
+		$response = $this->actingAs($this->admin)->upload('Photo', filename: TestConstants::SAMPLE_TEST_ZIP, album_id: $this->album5->id);
+		$this->assertStatus($response, Response::HTTP_I_AM_A_TEAPOT);
+
+		// The rejected upload must not leave a new *.zip file behind.
+		self::assertEquals($zips_before, $this->currentImageJobZips());
+	}
+
+	public function testZipBombKeepsRejectedFileWhenDeletionDisabled(): void
+	{
+		Configs::set('zip_bomb_max_file_size', '1B');
+		Configs::set('zip_bomb_delete_rejected_file', '0');
+
+		$zip = new \ZipArchive();
+		if ($zip->open(TestConstants::SAMPLE_TEST_ZIP, \ZipArchive::CREATE) !== true) {
+			$this->fail('Could not create zip file for testing.');
+		}
+		$zip->addFile(TestConstants::SAMPLE_FILE_NIGHT_IMAGE, 'night.jpg');
+		$zip->close();
+
+		$zips_before = $this->currentImageJobZips();
+
+		$response = $this->actingAs($this->admin)->upload('Photo', filename: TestConstants::SAMPLE_TEST_ZIP, album_id: $this->album5->id);
+		$this->assertStatus($response, Response::HTTP_I_AM_A_TEAPOT);
+
+		$new_zips = array_diff($this->currentImageJobZips(), $zips_before);
+		self::assertCount(1, $new_zips);
+
+		// Clean up the file this test deliberately left behind.
+		Storage::disk('image-jobs')->delete(array_values($new_zips)[0]);
 	}
 }

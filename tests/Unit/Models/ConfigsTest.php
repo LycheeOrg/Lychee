@@ -53,5 +53,15 @@ class ConfigsTest extends AbstractTestCase
 
 		$config->type_range = '1|2|3|4';
 		self::assertEquals('Error: Wrong property for key, expected 1 or 2 or 3 or 4, got 5.', $config->sanity('5'));
+
+		$config->type_range = ConfigType::FILE_SIZE->value;
+		self::assertEquals('', $config->sanity('10GB'));
+		self::assertEquals('', $config->sanity('10 GB'));
+		self::assertEquals('', $config->sanity('10gb'));
+		self::assertEquals('', $config->sanity('1.5MB'));
+		self::assertEquals('', $config->sanity('0 B'));
+		self::assertEquals('Error: Wrong property for key, expected a file size like "512MB" or "10GB", got 10.', $config->sanity('10'));
+		self::assertEquals('Error: Wrong property for key, expected a file size like "512MB" or "10GB", got GB.', $config->sanity('GB'));
+		self::assertEquals('Error: Wrong property for key, expected a file size like "512MB" or "10GB", got NULL.', $config->sanity(null));
 	}
 }

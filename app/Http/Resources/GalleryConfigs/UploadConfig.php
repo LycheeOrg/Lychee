@@ -43,7 +43,7 @@ class UploadConfig extends Data
 	public static function getUploadLimit(): int
 	{
 		$config_manager = resolve(ConfigManager::class);
-		$size = $config_manager->getValueAsInt('upload_chunk_size');
+		$size = $config_manager->getValueAsByteSize('upload_chunk_size');
 		if ($size === 0) {
 			try {
 				$memory_size = Helpers::convertSize(ini_get('memory_limit')) / 10;
