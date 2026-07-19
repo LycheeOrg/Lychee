@@ -23,7 +23,7 @@ export type AdminTile = {
 };
 
 export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: LeftMenuStateStore): AdminTile[] {
-	const { clockwork_url } = storeToRefs(lycheeStore);
+	const { clockwork_url, is_se_enabled, is_se_preview_enabled } = storeToRefs(lycheeStore);
 	const { initData } = storeToRefs(leftMenuStore);
 
 	return [
@@ -125,6 +125,20 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			to: "/admin/nsfw-config",
 			isExternal: false,
 			visible: computed(() => (initData.value?.settings.can_edit ?? false) && (initData.value?.modules.is_nsfw_classifier_enabled ?? false)),
+		},
+		{
+			key: "watermark-preview",
+			group: "extensions",
+			label: "watermark.preview.title",
+			icon: "lucide:image",
+			to: "/admin/watermark",
+			isExternal: false,
+			visible: computed(
+				() =>
+					(initData.value?.settings.can_edit ?? false) &&
+					(is_se_enabled.value || is_se_preview_enabled.value) &&
+					(initData.value?.modules.is_watermarker_enabled ?? false),
+			),
 		},
 		{
 			key: "bulk-album-edit",

@@ -102,6 +102,10 @@ export const paths: RoutePath[] = [
 		path: "/admin/nsfw-config",
 	},
 	{
+		name: "watermark-preview",
+		path: "/admin/watermark",
+	},
+	{
 		name: "tree",
 		path: "/fixTree",
 	},

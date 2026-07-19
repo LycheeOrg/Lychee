@@ -14,7 +14,7 @@
 			</div>
 		</template>
 		<template #body>
-			<UNavigationMenu v-if="initData" orientation="vertical" :items="items">
+			<UNavigationMenu v-if="initData" orientation="vertical" :items="items" :dir="dir">
 				<template #item-leading="{ item }">
 					<PiMiniIcon :icon="item.icon" class="w-3 h-3" />
 				</template>
@@ -25,7 +25,7 @@
 			</UNavigationMenu>
 			<template v-if="!use_admin_dashboard">
 				<div class="mt-4 px-2.5 text-lg text-toned font-bold">{{ $t("left-menu.admin") }}</div>
-				<UNavigationMenu v-if="initData" orientation="vertical" :items="adminItems">
+				<UNavigationMenu v-if="initData" orientation="vertical" :items="adminItems" :dir="dir">
 					<template #item-leading="{ item }">
 						<PiMiniIcon :icon="item.icon" class="w-3 h-3" />
 					</template>
@@ -37,7 +37,7 @@
 			</template>
 			<template v-if="!is_white_label_enabled">
 				<div class="mt-4 px-2.5 text-lg text-toned font-bold">Lychee</div>
-				<UNavigationMenu orientation="vertical" :items="lycheeItems">
+				<UNavigationMenu orientation="vertical" :items="lycheeItems" :dir="dir">
 					<template #item-leading="{ item }">
 						<PiMiniIcon :icon="item.icon" class="w-3 h-3" />
 					</template>
@@ -46,7 +46,7 @@
 		</template>
 		<template #footer>
 			<div v-if="user?.id !== null" class="w-full">
-				<UNavigationMenu orientation="vertical" :items="profileSections">
+				<UNavigationMenu orientation="vertical" :items="profileSections" :dir="dir">
 					<template #item-leading="{ item }">
 						<PiMiniIcon :icon="item.icon" class="w-3 h-3" />
 					</template>
@@ -105,6 +105,8 @@ const lycheeStore = useLycheeStateStore();
 const { is_white_label_enabled, use_admin_dashboard } = storeToRefs(lycheeStore);
 const favouritesStore = useFavouriteStore();
 const { isLTR } = useLtRorRtL();
+
+const dir = computed(() => (isLTR() ? "ltr" : "rtl"));
 
 const { user, left_menu_open, initData, canSeeAdmin, load, items, adminItems, profileItems, openLycheeAbout } = useLeftMenu(
 	lycheeStore,

@@ -14,7 +14,7 @@
 			<USelectMenu
 				:id="props.config.key"
 				v-model="val"
-				class="border-none"
+				class="w-56 shrink-0 border-none sm:w-72"
 				label-key="label"
 				:items="props.options"
 				@update:model-value="update"
