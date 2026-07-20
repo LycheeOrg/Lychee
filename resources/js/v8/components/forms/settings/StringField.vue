@@ -1,9 +1,11 @@
 <template>
 	<div class="flex flex-wrap items-center w-full">
-		<div class="w-1/2" :class="props.config.require_se ? 'text-primary' : 'text-highlighted'">
-			{{ props.config.key }}
-			<sub v-if="props.config.order !== null" class="text-muted text-2xs"> ({{ props.config.order }}) </sub>
-		</div>
+		<label
+			:for="props.config.key"
+			class="w-1/2"
+			:class="props.config.require_se ? 'text-primary' : 'text-highlighted'"
+			v-html="tDoc(props.config)"
+		/>
 		<UInput :id="props.config.key" v-model="val" type="text" class="w-1/2" @update:model-value="update">
 			<template v-if="changed" #trailing>
 				<UTooltip text="Click me to reset!">
@@ -17,11 +19,7 @@
 			color="error"
 			description="We strongly recommend you do not modify this value."
 		/>
-		<div v-if="!changed || !isVersion" class="w-full text-muted">
-			{{ tDoc(props.config) }}
-			<br v-if="props.config.details" />
-			<span v-html="tDetails(props.config)"></span>
-		</div>
+		<div v-if="props.config.details" class="w-full text-muted text-sm" v-html="tDetails(props.config)" />
 	</div>
 </template>
 <script setup lang="ts">

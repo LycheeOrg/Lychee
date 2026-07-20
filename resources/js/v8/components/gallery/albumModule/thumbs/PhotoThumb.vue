@@ -100,26 +100,17 @@
 			<ThumbFavourite v-if="is_favourite_enabled" :is-favourite="isFavourite" @click="toggleFavourite" />
 		</div>
 		<div class="badges absolute -mt-px ltr:ml-1 rtl:mr-1 top-0 ltr:left-0 rtl:right-0 flex">
-			<ThumbBadge
-				v-if="(albumsStore.rootRights?.can_highlight || albumStore.rights?.can_edit) && props.photo.is_highlighted"
-				class="bg-yellow-500"
-				:pi="`lucide:flag ${FILL_OVERRIDE_CLASS}`"
-			/>
-			<ThumbBadge v-if="userStore.isLoggedIn && props.isCoverId" class="bg-yellow-500" icon="folder-cover" />
-			<ThumbBadge v-if="userStore.isLoggedIn && props.isHeaderId" class="bg-slate-400 hidden sm:block" pi="lucide:image" />
-			<ThumbBadge
-				v-if="!props.photo.is_validated"
-				class="bg-neutral-800"
-				border-color="border-none"
-				pi="lucide:shield text-amber-500 text-shadow-md"
-			/>
+			<ThumbBadge v-if="showHighlightedFlag" class="bg-yellow-500" :pi="`lucide:flag ${FILL_OVERRIDE_CLASS}`" />
+			<ThumbBadge v-if="showCoverIdFlag" class="bg-yellow-500" icon="folder-cover" />
+			<ThumbBadge v-if="showHeaderIdFlag" class="bg-slate-400 hidden sm:block" pi="lucide:image" />
+			<ThumbBadge v-if="showValidatedFlag" class="bg-neutral-800" border-color="border-none" pi="lucide:shield text-amber-500 text-shadow-md" />
 		</div>
 		<!-- Rating Overlay -->
 		<ThumbRatingOverlay v-if="rating_album_view_mode !== 'never' && props.photo.rating !== null" :rating="props.photo.rating" />
 	</a>
 </template>
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, ref, toRef, watch } from "vue";
 import MiniIcon from "@/v8/components/icons/MiniIcon.vue";
 import ThumbBadge from "@/v8/components/gallery/albumModule/thumbs/ThumbBadge.vue";
 import ThumbRatingOverlay from "@/v8/components/gallery/albumModule/thumbs/ThumbRatingOverlay.vue";
@@ -132,12 +123,10 @@ import { useRouter } from "vue-router";
 import { usePhotoRoute } from "@/composables/photo/photoRoute";
 import ThumbBuyMe from "./ThumbBuyMe.vue";
 import { useOrderManagementStore } from "@/stores/OrderManagement";
-import { useUserStore } from "@/stores/UserState";
-import { useAlbumsStore } from "@/stores/AlbumsState";
-import { useAlbumStore } from "@/stores/AlbumState";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { usePhotoFacesStore } from "@/stores/PhotoFacesState";
 import { FILL_OVERRIDE_CLASS } from "@/v8/icons";
+import { usePhotoFlags } from "@/v8/composables/photo/photoFlags";
 
 const { getNoImageIcon, getPlayIcon } = useImageHelpers();
 
@@ -155,12 +144,9 @@ const emits = defineEmits<{
 
 const router = useRouter();
 const { getParentId } = usePhotoRoute(router);
-const userStore = useUserStore();
 const favourites = useFavouriteStore();
 const lycheeStore = useLycheeStateStore();
 const orderStore = useOrderManagementStore();
-const albumsStore = useAlbumsStore();
-const albumStore = useAlbumStore();
 const togglableStore = useTogglablesStateStore();
 const {
 	is_favourite_enabled,
@@ -179,6 +165,12 @@ const srcPlay = ref(getPlayIcon());
 const srcNoImage = ref(getNoImageIcon());
 const isImageLoaded = ref(false);
 const photoId = ref(props.photo.id);
+
+const { showHighlightedFlag, showCoverIdFlag, showHeaderIdFlag, showValidatedFlag } = usePhotoFlags(
+	toRef(props, "photo"),
+	toRef(props, "isCoverId"),
+	toRef(props, "isHeaderId"),
+);
 
 function toggleFavourite() {
 	favourites.toggle(props.photo, getParentId());

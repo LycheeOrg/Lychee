@@ -8,102 +8,102 @@ return [
     */
 
     // Page title
-    'title' => 'Renamer Rules',
+    'title' => 'Règles de renommage',
 
     // Modal titles
-    'create_rule' => 'Create Renamer Rule',
-    'edit_rule' => 'Edit Renamer Rule',
+    'create_rule' => 'Créer une règle de renommage',
+    'edit_rule' => 'Modifier la règle de renommage',
 
     // Form fields
-    'rule_name' => 'Rule Name',
+    'rule_name' => 'Nom de la règle',
     'description' => 'Description',
-    'pattern' => 'Pattern',
-    'replacement' => 'Replacement',
+    'pattern' => 'Motif',
+    'replacement' => 'Remplacement',
     'mode' => 'Mode',
-    'order' => 'Order',
-    'enabled' => 'Enabled',
-    'photo_rule' => 'Rule applied to Photos',
-    'album_rule' => 'Rule applied to Albums',
+    'order' => 'Ordre',
+    'enabled' => 'Activé',
+    'photo_rule' => 'Règle appliquée aux photos',
+    'album_rule' => 'Règle appliquée aux albums',
 
     // Form placeholders and help text
-    'description_placeholder' => 'Optional description of what this rule does',
-    'pattern_help' => 'Pattern to match (e.g., IMG_, DSC_)',
-    'replacement_help' => 'Replacement text (e.g., Photo_, Camera_)',
-    'order_help' => 'Lower numbers are processed first (1 = highest priority)',
-    'enabled_help' => '(Only enabled rules will be applied during renaming)',
+    'description_placeholder' => 'Description facultative de ce que fait cette règle',
+    'pattern_help' => 'Motif à rechercher (ex. IMG_, DSC_)',
+    'replacement_help' => 'Texte de remplacement (ex. Photo_, Camera_)',
+    'order_help' => 'Les nombres les plus petits sont traités en premier (1 = priorité la plus élevée)',
+    'enabled_help' => '(Seules les règles activées seront appliquées lors du renommage)',
 
     // Mode options
-    'mode_first' => 'First occurrence',
-    'mode_all' => 'All occurrences',
-    'mode_regex' => 'Regular expression',
-    'mode_trim' => 'Trim whitespace',
-    'mode_strtolower' => 'lowercase',
-    'mode_strtoupper' => 'UPPERCASE',
-    'mode_ucwords' => 'Uppercase Each Word',
-    'mode_ucfirst' => 'Uppercase first letter',
+    'mode_first' => 'Première occurrence',
+    'mode_all' => 'Toutes les occurrences',
+    'mode_regex' => 'Expression régulière',
+    'mode_trim' => 'Supprimer les espaces',
+    'mode_strtolower' => 'minuscules',
+    'mode_strtoupper' => 'MAJUSCULES',
+    'mode_ucwords' => 'Majuscule à chaque mot',
+    'mode_ucfirst' => 'Majuscule en première lettre',
 
-    'mode_first_description' => 'Replace only the first occurrence',
-    'mode_all_description' => 'Replace all occurrences',
-    'mode_regex_description' => 'Use regex pattern matching',
-    'mode_trim_description' => 'Trim whitespace',
-    'mode_strtolower_description' => 'Convert string to lowercases',
-    'mode_strtoupper_description' => 'Convert string to UPPERCASE',
-    'mode_ucwords_description' => 'Capitalize each words',
-    'mode_ucfirst_description' => 'Capitalize only the first letter',
+    'mode_first_description' => 'Remplacer uniquement la première occurrence',
+    'mode_all_description' => 'Remplacer toutes les occurrences',
+    'mode_regex_description' => 'Utiliser une expression régulière pour la recherche',
+    'mode_trim_description' => 'Supprimer les espaces',
+    'mode_strtolower_description' => 'Convertir le texte en minuscules',
+    'mode_strtoupper_description' => 'Convertir le texte en MAJUSCULES',
+    'mode_ucwords_description' => 'Mettre une majuscule à chaque mot',
+    'mode_ucfirst_description' => 'Mettre une majuscule uniquement à la première lettre',
 
-    'regex_help' => 'Use regular expressions to match patterns. For example, to replace <code>IMG_1234.jpeg</code> with <code>1234_JPG.jpeg</code>, you can use <code>/IMG_(\d+)/</code> as needle and <code>$1_JPG</code> as replacement. You can find more explanations and examples in the following links.',
+    'regex_help' => 'Utilisez des expressions régulières pour rechercher des motifs. Par exemple, pour remplacer <code>IMG_1234.jpeg</code> par <code>1234_JPG.jpeg</code>, vous pouvez utiliser <code>/IMG_(\d+)/</code> comme motif et <code>$1_JPG</code> comme remplacement. Vous trouverez davantage d’explications et d’exemples dans les liens suivants.',
 
     // Buttons
-    'cancel' => 'Cancel',
-    'create' => 'Create',
-    'update' => 'Update',
-    'create_first_rule' => 'Create your first rule',
+    'cancel' => 'Annuler',
+    'create' => 'Créer',
+    'update' => 'Mettre à jour',
+    'create_first_rule' => 'Créez votre première règle',
 
     // Validation messages
-    'rule_name_required' => 'Rule name is required',
-    'pattern_required' => 'Pattern is required',
-    'replacement_required' => 'Replacement is required',
-    'mode_required' => 'Mode is required',
-    'order_positive' => 'Order must be a positive number',
+    'rule_name_required' => 'Le nom de la règle est requis',
+    'pattern_required' => 'Le motif est requis',
+    'replacement_required' => 'Le remplacement est requis',
+    'mode_required' => 'Le mode est requis',
+    'order_positive' => 'L’ordre doit être un nombre positif',
 
     // Success messages
-    'rule_created' => 'Renamer rule created successfully',
-    'rule_updated' => 'Renamer rule updated successfully',
-    'rule_deleted' => 'Renamer rule deleted successfully',
+    'rule_created' => 'Règle de renommage créée avec succès',
+    'rule_updated' => 'Règle de renommage mise à jour avec succès',
+    'rule_deleted' => 'Règle de renommage supprimée avec succès',
 
     // Error messages
-    'failed_to_create' => 'Failed to create renamer rule',
-    'failed_to_update' => 'Failed to update renamer rule',
-    'failed_to_delete' => 'Failed to delete renamer rule',
-    'failed_to_load' => 'Failed to load renamer rules',
+    'failed_to_create' => 'Échec de la création de la règle de renommage',
+    'failed_to_update' => 'Échec de la mise à jour de la règle de renommage',
+    'failed_to_delete' => 'Échec de la suppression de la règle de renommage',
+    'failed_to_load' => 'Échec du chargement des règles de renommage',
 
     // List view
-    'rules_count' => ':count rules',
-    'no_rules' => 'No renamer rules found',
-    'loading' => 'Loading renamer rules...',
-    'pattern_label' => 'Pattern',
-    'replace_with_label' => 'Replace with',
+    'rules_count' => ':count règles',
+    'no_rules' => 'Aucune règle de renommage trouvée',
+    'loading' => 'Chargement des règles de renommage...',
+    'pattern_label' => 'Motif',
+    'replace_with_label' => 'Remplacer par',
     'photo' => 'Photo',
     'album' => 'Album',
 
     // Delete confirmation
-    'confirm_delete_header' => 'Confirm Deletion',
-    'confirm_delete_message' => 'Are you sure you want to delete the rule ":rule"?',
-    'delete' => 'Delete',
+    'confirm_delete_header' => 'Confirmer la suppression',
+    'confirm_delete_message' => 'Êtes-vous sûr de vouloir supprimer la règle « :rule » ?',
+    'delete' => 'Supprimer',
 
     // Status messages
-    'success' => 'Success',
-    'error' => 'Error',
+    'success' => 'Succès',
+    'error' => 'Erreur',
 
     // Placeholders
-    'select_mode' => 'Select renaming mode',
-    'execution_order' => 'Execution order',
+    'select_mode' => 'Sélectionner le mode de renommage',
+    'execution_order' => 'Ordre d’exécution',
 
     // Test functionality
-    'test_input_placeholder' => 'Enter a filename to test your renamer rules (e.g., IMG_1234.jpg)',
+    'test_input_placeholder' => 'Saisissez un nom de fichier pour tester vos règles de renommage (ex. IMG_1234.jpg)',
     'test_original' => 'Original',
-    'test_result' => 'Result',
-    'test_failed' => 'Failed to test renamer rules',
-    'apply_photo_rules' => 'Apply photo rules',
-    'apply_album_rules' => 'Apply album rules',
+    'test_result' => 'Résultat',
+    'test_failed' => 'Échec du test des règles de renommage',
+    'apply_photo_rules' => 'Appliquer les règles pour les photos',
+    'apply_album_rules' => 'Appliquer les règles pour les albums',
 ];

@@ -1,0 +1,163 @@
+<?php
+
+/**
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2017-2018 Tobias Reich
+ * Copyright (c) 2018-2026 LycheeOrg.
+ */
+
+use App\Models\Extensions\BaseConfigMigration;
+
+return new class() extends BaseConfigMigration {
+	public const CAT = 'Gallery';
+
+	public function getConfigs(): array
+	{
+		return [
+			[
+				'key' => 'flags_enabled',
+				'value' => '1',
+				'cat' => self::CAT,
+				'type_range' => self::BOOL,
+				'is_secret' => false,
+				'description' => 'Enable all flags',
+				'details' => 'Master switch for every status flag shown on album and photo thumbnails (public, hidden, password, sensitive, highlighted, smart album icons). Turning this off hides all of them, regardless of the settings below.',
+				'level' => 0,
+				'order' => 92,
+				'is_expert' => false,
+			],
+			[
+				'key' => 'photo_flags_enabled',
+				'value' => '1',
+				'cat' => self::CAT,
+				'type_range' => self::BOOL,
+				'is_secret' => false,
+				'description' => 'Enable photo flags',
+				'details' => 'Show the cover, header, highlighted and not-validated flags on photo thumbnails. Turning this off hides all of them, regardless of the settings below.',
+				'level' => 0,
+				'order' => 93,
+				'is_expert' => true,
+			],
+			[
+				'key' => 'cover_id_flag_enabled',
+				'value' => '1',
+				'cat' => self::CAT,
+				'type_range' => self::BOOL,
+				'is_secret' => false,
+				'description' => 'Enable cover photo flag',
+				'details' => 'Show the cover badge on the photo currently used as an album cover.',
+				'level' => 0,
+				'order' => 94,
+				'is_expert' => true,
+			],
+			[
+				'key' => 'header_id_flag_enabled',
+				'value' => '1',
+				'cat' => self::CAT,
+				'type_range' => self::BOOL,
+				'is_secret' => false,
+				'description' => 'Enable header photo flag',
+				'details' => 'Show the header badge on the photo currently used as an album header.',
+				'level' => 0,
+				'order' => 95,
+				'is_expert' => true,
+			],
+			[
+				'key' => 'highlighted_flag_enabled',
+				'value' => '1',
+				'cat' => self::CAT,
+				'type_range' => self::BOOL,
+				'is_secret' => false,
+				'description' => 'Enable highlighted photo flag',
+				'details' => 'Show the highlighted flag on photo thumbnails.',
+				'level' => 0,
+				'order' => 96,
+				'is_expert' => true,
+			],
+			[
+				'key' => 'validated_flag_enabled',
+				'value' => '1',
+				'cat' => self::CAT,
+				'type_range' => self::BOOL,
+				'is_secret' => false,
+				'description' => 'Enable validated photo flag',
+				'details' => 'Show the not-validated flag on photo thumbnails.',
+				'level' => 0,
+				'order' => 97,
+				'is_expert' => true,
+			],
+			[
+				'key' => 'smart_album_flags_enabled',
+				'value' => '1',
+				'cat' => self::CAT,
+				'type_range' => self::BOOL,
+				'is_secret' => false,
+				'description' => 'Enable smart album flags',
+				'details' => 'Show the smart album icons (Unsorted, Recent, On this day, ratings, etc.) on smart album thumbnails.',
+				'level' => 0,
+				'order' => 98,
+				'is_expert' => true,
+			],
+			[
+				'key' => 'album_flags_enabled',
+				'value' => '1',
+				'cat' => self::CAT,
+				'type_range' => self::BOOL,
+				'is_secret' => false,
+				'description' => 'Enable album flags',
+				'details' => 'Show the public, hidden, password and sensitive flags on regular (non-smart) album thumbnails.',
+				'level' => 0,
+				'order' => 98,
+				'is_expert' => true,
+			],
+			[
+				'key' => 'public_hidden_flag_enabled',
+				'value' => '1',
+				'cat' => self::CAT,
+				'type_range' => self::BOOL,
+				'is_secret' => false,
+				'description' => 'Enable public hidden flag',
+				'details' => 'Show the orange eye icon on albums that are only accessible via a shared link (hidden from the public gallery).',
+				'level' => 0,
+				'order' => 99,
+				'is_expert' => true,
+			],
+			[
+				'key' => 'public_visible_flag_enabled',
+				'value' => '1',
+				'cat' => self::CAT,
+				'type_range' => self::BOOL,
+				'is_secret' => false,
+				'description' => 'Enable public visible flag',
+				'details' => 'Show the green eye icon on albums that are publicly visible.',
+				'level' => 0,
+				'order' => 100,
+				'is_expert' => true,
+			],
+			[
+				'key' => 'password_flag_enabled',
+				'value' => '1',
+				'cat' => self::CAT,
+				'type_range' => self::BOOL,
+				'is_secret' => false,
+				'description' => 'Enable password flag',
+				'details' => 'Show the lock icon on password-protected albums.',
+				'level' => 0,
+				'order' => 101,
+				'is_expert' => true,
+			],
+			[
+				'key' => 'sensitive_flag_enabled',
+				'value' => '1',
+				'cat' => self::CAT,
+				'type_range' => self::BOOL,
+				'is_secret' => false,
+				'description' => 'Enable sensitive flag',
+				'details' => 'Show the warning icon on albums marked as sensitive (NSFW).',
+				'level' => 0,
+				'order' => 102,
+				'is_expert' => true,
+			],
+		];
+	}
+};

@@ -1,6 +1,6 @@
 <template>
-	<div class="w-full flex flex-wrap md:flex-nowrap items-center">
-		<div class="w-9/12 lg:w-8/12 flex flex-wrap">
+	<div class="w-full flex flex-wrap md:flex-nowrap items-center h-8">
+		<div class="w-9/12 flex flex-wrap">
 			<div class="w-2/3 flex items-center gap-1">
 				{{ props.user.username }}
 				<UTooltip v-if="props.user.may_administrate && props.user.is_owner" :text="$t('users.line.owner')">
@@ -44,15 +44,15 @@
 			</div>
 			<template v-if="showMetterBar">
 				<UTooltip v-if="value > 0" :text="formattedSpace">
-					<UProgress :model-value="value" class="w-full mt-1.5 mb-3.5" :color="meterColor" />
+					<UProgress :model-value="value" class="w-full" :color="meterColor" />
 				</UTooltip>
 			</template>
 		</div>
-		<UButton color="neutral" class="w-1/12 lg:w-2/12 justify-center" :disabled="props.user.is_owner" @click="editUser">
-			<UIcon name="lucide:user-pen" /><span class="hidden md:inline">{{ $t("users.line.edit") }}</span>
+		<UButton color="neutral" class="w-1/12 justify-center" :disabled="props.user.is_owner" @click="editUser">
+			<UIcon name="lucide:user-pen" />
 		</UButton>
-		<UButton color="error" variant="ghost" class="w-1/12 lg:w-2/12 justify-center" :disabled="props.user.is_owner" @click="deleteUser">
-			<UIcon name="lucide:user-minus" /><span class="hidden md:inline">{{ $t("users.line.delete") }}</span>
+		<UButton color="error" variant="ghost" class="w-1/12 justify-center" :disabled="props.user.is_owner" @click="deleteUser">
+			<UIcon name="lucide:user-minus" />
 		</UButton>
 	</div>
 </template>

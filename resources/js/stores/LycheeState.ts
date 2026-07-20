@@ -132,6 +132,18 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		albums_per_page: 30,
 		photos_infinite_scroll_threshold: 10,
 		albums_infinite_scroll_threshold: 10,
+
+		// Flags visibility settings
+		is_cover_id_flag_enabled: true,
+		is_header_id_flag_enabled: true,
+		is_highlighted_flag_enabled: true,
+		is_validated_flag_enabled: true,
+		is_smart_album_flags_enabled: true,
+		is_album_flags_enabled: true,
+		is_public_hidden_flag_enabled: true,
+		is_public_visible_flag_enabled: true,
+		is_password_flag_enabled: true,
+		is_sensitive_flag_enabled: true,
 	}),
 	actions: {
 		async load(): Promise<void> {
@@ -261,6 +273,17 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 
 					this.default_album_protection = data.default_album_protection;
 					this.use_admin_dashboard = data.use_admin_dashboard;
+
+					this.is_cover_id_flag_enabled = data.is_cover_id_flag_enabled;
+					this.is_header_id_flag_enabled = data.is_header_id_flag_enabled;
+					this.is_highlighted_flag_enabled = data.is_highlighted_flag_enabled;
+					this.is_validated_flag_enabled = data.is_validated_flag_enabled;
+					this.is_smart_album_flags_enabled = data.is_smart_album_flags_enabled;
+					this.is_album_flags_enabled = data.is_album_flags_enabled;
+					this.is_public_hidden_flag_enabled = data.is_public_hidden_flag_enabled;
+					this.is_public_visible_flag_enabled = data.is_public_visible_flag_enabled;
+					this.is_password_flag_enabled = data.is_password_flag_enabled;
+					this.is_sensitive_flag_enabled = data.is_sensitive_flag_enabled;
 				})
 				.catch((error) => {
 					// In this specific case, even though it has been possibly disabled, we really need to see the error.

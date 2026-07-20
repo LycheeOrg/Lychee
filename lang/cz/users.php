@@ -30,7 +30,12 @@ return [
         'upload_trust_level_monitor' => 'Dohled - nahraný obsah veřejně přístupný, pokud není označen jako nevhodný.',
         'upload_trust_level_trust_but_verify' => 'Trust but Verify – uploads are public; review findings auto-approved, block findings configurable.',
         'upload_trust_level_trusted' => 'Důvěryhodný - nahraný obsah je okamžitě zveřejněn.',
-
+        'trust_level_options' => [
+            'trusted' => 'Důvěryhodný',
+            'trust_but_verify' => 'Trust but Verify',
+            'monitor' => 'Dohled',
+            'check' => 'Kontrola',
+        ],
         'quota' => 'Uživatel má nastavený limit objemu.',
         'quota_kb' => 'limit v kB (0 pro přednastavenou hodnotu)',
         'note' => 'Poznámka admina (není veřejně viditelná)',

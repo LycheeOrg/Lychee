@@ -30,7 +30,12 @@ return [
         'upload_trust_level_monitor' => 'Monitor – geüploade inhoud is openbaar, tenzij deze wordt gemarkeerd vanwege de inhoud.',
         'upload_trust_level_trust_but_verify' => 'Vertrouwen maar verifiëren – geüploade inhoud is openbaar; bevindingen van het type “beoordelen” worden automatisch goedgekeurd, bevindingen van het type “blokkeren” zijn configureerbaar.',
         'upload_trust_level_trusted' => 'Vertrouwd – geüploade inhoud is direct openbaar.',
-
+        'trust_level_options' => [
+            'trusted' => 'Vertrouwd',
+            'trust_but_verify' => 'Vertrouwen maar verifiëren',
+            'monitor' => 'Monitor',
+            'check' => 'Controle',
+        ],
         'quota' => 'Gebruiker heeft een quotumlimiet.',
         'quota_kb' => 'quotum in kB (0 voor standaard)',
         'note' => 'Beheerdersnotitie (niet openbaar zichtbaar)',

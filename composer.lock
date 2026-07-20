@@ -1595,6 +1595,56 @@
             "time": "2025-03-06T22:45:56+00:00"
         },
         {
+            "name": "entropy/entropy",
+            "version": "0.4.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/TomasVotruba/entropy.git",
+                "reference": "415f69258150409db7c36aa747923e28aa53e9f6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/TomasVotruba/entropy/zipball/415f69258150409db7c36aa747923e28aa53e9f6",
+                "reference": "415f69258150409db7c36aa747923e28aa53e9f6",
+                "shasum": ""
+            },
+            "require": {
+                "ext-tokenizer": "*",
+                "php": "^8.4",
+                "webmozart/assert": "^2.4"
+            },
+            "require-dev": {
+                "phpstan/extension-installer": "^1.4",
+                "phpstan/phpstan": "^2.1",
+                "phpunit/phpunit": "^12.5",
+                "rector/jack": "^1.0",
+                "rector/rector": "^2.4",
+                "rector/swiss-knife": "^2.4",
+                "shipmonk/composer-dependency-analyser": "^1.8",
+                "symplify/easy-coding-standard": "^13.1",
+                "symplify/phpstan-rules": "^14.10",
+                "tomasvotruba/type-coverage": "^2.2",
+                "tomasvotruba/unused-public": "^2.2",
+                "tracy/tracy": "^2.12"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Entropy\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "proprietary"
+            ],
+            "description": "Entropy framework",
+            "support": {
+                "issues": "https://github.com/TomasVotruba/entropy/issues",
+                "source": "https://github.com/TomasVotruba/entropy/tree/0.4.6"
+            },
+            "time": "2026-06-20T10:04:38+00:00"
+        },
+        {
             "name": "evenement/evenement",
             "version": "v3.0.2",
             "source": {
@@ -10325,89 +10375,6 @@
             "time": "2026-05-23T16:22:37+00:00"
         },
         {
-            "name": "symfony/polyfill-ctype",
-            "version": "v1.37.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/polyfill-ctype.git",
-                "reference": "141046a8f9477948ff284fa65be2095baafb94f2"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-ctype/zipball/141046a8f9477948ff284fa65be2095baafb94f2",
-                "reference": "141046a8f9477948ff284fa65be2095baafb94f2",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.2"
-            },
-            "provide": {
-                "ext-ctype": "*"
-            },
-            "suggest": {
-                "ext-ctype": "For best performance"
-            },
-            "type": "library",
-            "extra": {
-                "thanks": {
-                    "url": "https://github.com/symfony/polyfill",
-                    "name": "symfony/polyfill"
-                }
-            },
-            "autoload": {
-                "files": [
-                    "bootstrap.php"
-                ],
-                "psr-4": {
-                    "Symfony\\Polyfill\\Ctype\\": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Gert de Pagter",
-                    "email": "BackEndTea@gmail.com"
-                },
-                {
-                    "name": "Symfony Community",
-                    "homepage": "https://symfony.com/contributors"
-                }
-            ],
-            "description": "Symfony polyfill for ctype functions",
-            "homepage": "https://symfony.com",
-            "keywords": [
-                "compatibility",
-                "ctype",
-                "polyfill",
-                "portable"
-            ],
-            "support": {
-                "source": "https://github.com/symfony/polyfill-ctype/tree/v1.37.0"
-            },
-            "funding": [
-                {
-                    "url": "https://symfony.com/sponsor",
-                    "type": "custom"
-                },
-                {
-                    "url": "https://github.com/fabpot",
-                    "type": "github"
-                },
-                {
-                    "url": "https://github.com/nicolas-grekas",
-                    "type": "github"
-                },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
-                    "type": "tidelift"
-                }
-            ],
-            "time": "2026-04-10T16:19:22+00:00"
-        },
-        {
             "name": "symfony/polyfill-intl-grapheme",
             "version": "v1.38.1",
             "source": {
@@ -10575,176 +10542,6 @@
                 }
             ],
             "time": "2026-05-25T15:22:23+00:00"
-        },
-        {
-            "name": "symfony/polyfill-intl-normalizer",
-            "version": "v1.38.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/polyfill-intl-normalizer.git",
-                "reference": "2d446c214bdbe5b71bde5011b060a05fece3ae6b"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-intl-normalizer/zipball/2d446c214bdbe5b71bde5011b060a05fece3ae6b",
-                "reference": "2d446c214bdbe5b71bde5011b060a05fece3ae6b",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.2"
-            },
-            "suggest": {
-                "ext-intl": "For best performance"
-            },
-            "type": "library",
-            "extra": {
-                "thanks": {
-                    "url": "https://github.com/symfony/polyfill",
-                    "name": "symfony/polyfill"
-                }
-            },
-            "autoload": {
-                "files": [
-                    "bootstrap.php"
-                ],
-                "psr-4": {
-                    "Symfony\\Polyfill\\Intl\\Normalizer\\": ""
-                },
-                "classmap": [
-                    "Resources/stubs"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Nicolas Grekas",
-                    "email": "p@tchwork.com"
-                },
-                {
-                    "name": "Symfony Community",
-                    "homepage": "https://symfony.com/contributors"
-                }
-            ],
-            "description": "Symfony polyfill for intl's Normalizer class and related functions",
-            "homepage": "https://symfony.com",
-            "keywords": [
-                "compatibility",
-                "intl",
-                "normalizer",
-                "polyfill",
-                "portable",
-                "shim"
-            ],
-            "support": {
-                "source": "https://github.com/symfony/polyfill-intl-normalizer/tree/v1.38.0"
-            },
-            "funding": [
-                {
-                    "url": "https://symfony.com/sponsor",
-                    "type": "custom"
-                },
-                {
-                    "url": "https://github.com/fabpot",
-                    "type": "github"
-                },
-                {
-                    "url": "https://github.com/nicolas-grekas",
-                    "type": "github"
-                },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
-                    "type": "tidelift"
-                }
-            ],
-            "time": "2026-05-25T13:48:31+00:00"
-        },
-        {
-            "name": "symfony/polyfill-mbstring",
-            "version": "v1.38.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/polyfill-mbstring.git",
-                "reference": "d3d318bad5e7a1bfbd026009c8bfb8d8f99ae6b6"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/d3d318bad5e7a1bfbd026009c8bfb8d8f99ae6b6",
-                "reference": "d3d318bad5e7a1bfbd026009c8bfb8d8f99ae6b6",
-                "shasum": ""
-            },
-            "require": {
-                "ext-iconv": "*",
-                "php": ">=7.2"
-            },
-            "provide": {
-                "ext-mbstring": "*"
-            },
-            "suggest": {
-                "ext-mbstring": "For best performance"
-            },
-            "type": "library",
-            "extra": {
-                "thanks": {
-                    "url": "https://github.com/symfony/polyfill",
-                    "name": "symfony/polyfill"
-                }
-            },
-            "autoload": {
-                "files": [
-                    "bootstrap.php"
-                ],
-                "psr-4": {
-                    "Symfony\\Polyfill\\Mbstring\\": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Nicolas Grekas",
-                    "email": "p@tchwork.com"
-                },
-                {
-                    "name": "Symfony Community",
-                    "homepage": "https://symfony.com/contributors"
-                }
-            ],
-            "description": "Symfony polyfill for the Mbstring extension",
-            "homepage": "https://symfony.com",
-            "keywords": [
-                "compatibility",
-                "mbstring",
-                "polyfill",
-                "portable",
-                "shim"
-            ],
-            "support": {
-                "source": "https://github.com/symfony/polyfill-mbstring/tree/v1.38.2"
-            },
-            "funding": [
-                {
-                    "url": "https://symfony.com/sponsor",
-                    "type": "custom"
-                },
-                {
-                    "url": "https://github.com/fabpot",
-                    "type": "github"
-                },
-                {
-                    "url": "https://github.com/nicolas-grekas",
-                    "type": "github"
-                },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
-                    "type": "tidelift"
-                }
-            ],
-            "time": "2026-05-27T06:59:30+00:00"
         },
         {
             "name": "symfony/polyfill-php80",
@@ -12184,6 +11981,75 @@
                 "source": "https://github.com/tijsverkoyen/CssToInlineStyles/tree/v2.4.0"
             },
             "time": "2025-12-02T11:56:42+00:00"
+        },
+        {
+            "name": "tomasvotruba/class-leak",
+            "version": "2.1.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/TomasVotruba/class-leak.git",
+                "reference": "3ebe4d7bebfb40ab3a85a36431821367b0ac57ab"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/TomasVotruba/class-leak/zipball/3ebe4d7bebfb40ab3a85a36431821367b0ac57ab",
+                "reference": "3ebe4d7bebfb40ab3a85a36431821367b0ac57ab",
+                "shasum": ""
+            },
+            "require": {
+                "entropy/entropy": "^0.4.6",
+                "nette/utils": "^4.1",
+                "nikic/php-parser": "^5.7",
+                "php": ">=8.4",
+                "symfony/finder": "^7.4|^8.0",
+                "webmozart/assert": "^2.0"
+            },
+            "replace": {
+                "symfony/polyfill-ctype": "*",
+                "symfony/polyfill-intl-normalizer": "*",
+                "symfony/polyfill-mbstring": "*"
+            },
+            "require-dev": {
+                "phpstan/extension-installer": "^1.4",
+                "phpstan/phpstan": "^2.2",
+                "phpunit/phpunit": "^13.0",
+                "rector/jack": "^1.0",
+                "rector/rector": "^2.4",
+                "symplify/easy-coding-standard": "^13.0",
+                "symplify/phpstan-extensions": "^12",
+                "tomasvotruba/unused-public": "^2.2",
+                "tracy/tracy": "^2.12"
+            },
+            "bin": [
+                "bin/class-leak",
+                "bin/class-leak.php"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "TomasVotruba\\ClassLeak\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Detect leaking classes",
+            "support": {
+                "issues": "https://github.com/TomasVotruba/class-leak/issues",
+                "source": "https://github.com/TomasVotruba/class-leak/tree/2.1.8"
+            },
+            "funding": [
+                {
+                    "url": "https://www.paypal.me/rectorphp",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/tomasvotruba",
+                    "type": "github"
+                }
+            ],
+            "time": "2026-06-20T16:19:43+00:00"
         },
         {
             "name": "vlucas/phpdotenv",
@@ -17969,54 +17835,6 @@
                 }
             ],
             "time": "2025-11-17T20:03:58+00:00"
-        },
-        {
-            "name": "tomasvotruba/class-leak",
-            "version": "2.1.4",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/TomasVotruba/class-leak.git",
-                "reference": "c13a50f0d4593d17fb19a2278a59556662e663af"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/TomasVotruba/class-leak/zipball/c13a50f0d4593d17fb19a2278a59556662e663af",
-                "reference": "c13a50f0d4593d17fb19a2278a59556662e663af",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.2"
-            },
-            "bin": [
-                "bin/class-leak",
-                "bin/class-leak.php"
-            ],
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "TomasVotruba\\ClassLeak\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "Detect leaking classes",
-            "support": {
-                "issues": "https://github.com/TomasVotruba/class-leak/issues",
-                "source": "https://github.com/TomasVotruba/class-leak/tree/2.1.4"
-            },
-            "funding": [
-                {
-                    "url": "https://www.paypal.me/rectorphp",
-                    "type": "custom"
-                },
-                {
-                    "url": "https://github.com/tomasvotruba",
-                    "type": "github"
-                }
-            ],
-            "time": "2026-05-27T08:33:55+00:00"
         }
     ],
     "aliases": [],
@@ -18049,5 +17867,5 @@
     "platform-overrides": {
         "php": "8.4"
     },
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.9.0"
 }
