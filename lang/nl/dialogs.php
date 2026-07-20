@@ -1,5 +1,4 @@
 <?php
-
 return [
     'button' => [
         /*
@@ -177,7 +176,8 @@ return [
         'visibility_public' => 'Dit album is openbaar (zichtbaar voor iedereen)',
         'visibility_public_hidden' => 'Dit album is openbaar maar verborgen in lijsten',
         'visibility_inherit' => 'Dit album erft de zichtbaarheid van het hoofdalbum',
-        'visibility_inherit_no_parent' => 'Dit album is privé (geen hoofdalbum)',    ],
+        'visibility_inherit_no_parent' => 'Dit album is privé (geen hoofdalbum)',
+    ],
     'new_tag_album' => [
         'menu' => 'Tag Album Aanmaken',
         'info' => 'Voer een titel in voor het nieuwe tag album:',
@@ -193,7 +193,9 @@ return [
         'create' => 'Create Person Album',
     ],
     'delete_album' => [
-        'confirmation' => 'Weet u zeker dat u het album “%s” en al de foto’s die het bevat wilt verwijderen?',        'confirmation_tag' => 'Weet u zeker dat u het album "%s" wilt verwijderen?',        'confirmation_multiple' => 'Weet u zeker dat u alle %d geselecteerde albums en al de foto’s die ze bevatten wilt verwijderen?',
+        'confirmation' => 'Weet u zeker dat u het album “%s” en al de foto’s die het bevat wilt verwijderen?',
+        'confirmation_tag' => 'Weet u zeker dat u het album "%s" wilt verwijderen?',
+        'confirmation_multiple' => 'Weet u zeker dat u alle %d geselecteerde albums en al de foto’s die ze bevatten wilt verwijderen?',
         'warning' => 'Deze actie kan niet ongedaan worden gemaakt!',
         'delete' => 'Album en Foto’s Verwijderen',
     ],
