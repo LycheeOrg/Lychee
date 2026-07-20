@@ -97,7 +97,8 @@
 			<ListBadge v-if="showPublicVisibleFlag" :class="ALBUM_BADGE_FILL.success" icon="eye" />
 			<ListBadge v-if="showPasswordFlag && album.thumb === null" :class="ALBUM_BADGE_FILL.link" icon="lock-locked" />
 			<ListBadge v-if="showPasswordFlag && album.thumb !== null" :class="ALBUM_BADGE_FILL.danger" icon="lock-unlocked" />
-			<ListBadge v-if="album.is_tag_album" :class="ALBUM_BADGE_FILL.success" icon="tags" />
+			<ListBadge v-if="scopeFlagsEnabled && album.is_tag_album" :class="ALBUM_BADGE_FILL.success" icon="tags" />
+			<ListBadge v-if="scopeFlagsEnabled && album.is_person_album" :class="ALBUM_BADGE_FILL.success" icon="users" />
 		</div>
 	</div>
 </template>
@@ -127,7 +128,9 @@ const props = defineProps<{
 	isSelected: boolean;
 }>();
 
-const { isSmartAlbum, showSensitiveFlag, showPublicHiddenFlag, showPublicVisibleFlag, showPasswordFlag } = useAlbumFlags(toRef(props, "album"));
+const { isSmartAlbum, showSensitiveFlag, showPublicHiddenFlag, showPublicVisibleFlag, showPasswordFlag, scopeFlagsEnabled } = useAlbumFlags(
+	toRef(props, "album"),
+);
 
 const emits = defineEmits<{
 	clicked: [event: MouseEvent, id: string];

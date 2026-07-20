@@ -31,6 +31,7 @@ export function useAlbumFlags(album: Ref<App.Http.Resources.Models.ThumbAlbumRes
 
 	return {
 		isSmartAlbum,
+		scopeFlagsEnabled,
 		showSensitiveFlag,
 		showPublicHiddenFlag,
 		showPublicVisibleFlag,
