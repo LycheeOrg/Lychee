@@ -11,8 +11,7 @@ export function usePhotoFlags(photo: Ref<App.Http.Resources.Models.PhotoResource
 	const albumStore = useAlbumStore();
 	const albumsStore = useAlbumsStore();
 
-	const { is_highlighted_flag_enabled, is_cover_id_flag_enabled, is_header_id_flag_enabled, is_validated_flag_enabled } =
-		storeToRefs(lycheeStore);
+	const { is_highlighted_flag_enabled, is_cover_id_flag_enabled, is_header_id_flag_enabled, is_validated_flag_enabled } = storeToRefs(lycheeStore);
 
 	const canHighlight = computed(() => albumsStore.rootRights?.can_highlight || albumStore.rights?.can_edit);
 
