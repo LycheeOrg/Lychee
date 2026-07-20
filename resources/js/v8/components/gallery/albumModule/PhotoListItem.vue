@@ -88,32 +88,22 @@
 
 		<!-- Badges -->
 		<div class="flex gap-1 items-center">
-			<ListBadge
-				v-if="
-					lycheeStore.is_highlighted_flag_enabled &&
-					photo.is_highlighted &&
-					(albumsStore.rootRights?.can_highlight || albumStore.rights?.can_edit)
-				"
-				:class="`text-yellow-500 ${FILL_OVERRIDE_CLASS}`"
-				pi="lucide:flag"
-			/>
-			<ListBadge v-if="lycheeStore.is_cover_id_flag_enabled && userStore.isLoggedIn && isCoverId" class="fill-yellow-500" icon="folder-cover" />
-			<ListBadge v-if="lycheeStore.is_header_id_flag_enabled && userStore.isLoggedIn && isHeaderId" class="text-slate-400" pi="lucide:image" />
+			<ListBadge v-if="showHighlightedFlag" :class="`text-yellow-500 ${FILL_OVERRIDE_CLASS}`" pi="lucide:flag" />
+			<ListBadge v-if="showCoverIdFlag" class="fill-yellow-500" icon="folder-cover" />
+			<ListBadge v-if="showHeaderIdFlag" class="text-slate-400" pi="lucide:image" />
 		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, toRef } from "vue";
 import ListBadge from "./thumbs/ListBadge.vue";
 import { useImageHelpers } from "@/utils/Helpers";
 import { useLycheeStateStore } from "@/stores/LycheeState";
-import { useUserStore } from "@/stores/UserState";
-import { useAlbumsStore } from "@/stores/AlbumsState";
-import { useAlbumStore } from "@/stores/AlbumState";
 import { usePhotoFacesStore } from "@/stores/PhotoFacesState";
 import { storeToRefs } from "pinia";
 import { FILL_OVERRIDE_CLASS } from "@/v8/icons";
+import { usePhotoFlags } from "@/v8/composables/photo/photoFlags";
 
 const props = defineProps<{
 	photo: App.Http.Resources.Models.PhotoResource;
@@ -130,11 +120,14 @@ const emits = defineEmits<{
 const { getNoImageIcon } = useImageHelpers();
 const facesStore = usePhotoFacesStore();
 const lycheeStore = useLycheeStateStore();
-const userStore = useUserStore();
-const albumsStore = useAlbumsStore();
-const albumStore = useAlbumStore();
 
 const { rating_album_view_mode } = storeToRefs(lycheeStore);
+
+const { showHighlightedFlag, showCoverIdFlag, showHeaderIdFlag } = usePhotoFlags(
+	toRef(props, "photo"),
+	toRef(props, "isCoverId"),
+	toRef(props, "isHeaderId"),
+);
 const srcNoImage = getNoImageIcon();
 
 const showRating = computed(() => rating_album_view_mode.value !== "never");

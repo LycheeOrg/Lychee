@@ -26,7 +26,7 @@
 			:to="{ name: 'album', params: { albumId: album.id } }"
 			class="relative block h-8 md:h-5"
 			:class="{
-				blurred: lycheeStore.is_nsfw_background_blurred && album.is_nsfw,
+				blurred: is_nsfw_background_blurred && album.is_nsfw,
 				'aspect-4x5': 'aspect-4x5' === aspectRatio,
 				'aspect-5x4': 'aspect-5x4' === aspectRatio,
 				'aspect-2x3': 'aspect-2x3' === aspectRatio,
@@ -35,7 +35,7 @@
 				'aspect-video': 'aspect-video' === aspectRatio,
 			}"
 		>
-			<template v-if="isSmartAlbum && lycheeStore.is_smart_album_flags_enabled">
+			<template v-if="isSmartAlbum && is_smart_album_flags_enabled">
 				<ListBadge v-if="album.id === 'highlighted'" :class="ALBUM_BADGE_FILL.favorite" icon="star" />
 				<ListBadge v-else-if="album.id === 'unsorted'" :class="ALBUM_BADGE_FILL.danger" icon="list" />
 				<ListBadge v-else-if="album.id === 'recent'" :class="ALBUM_BADGE_FILL.info" icon="clock" />
@@ -92,38 +92,18 @@
 
 		<!-- Badges (if any) -->
 		<div class="flex gap-1">
-			<ListBadge
-				v-if="scopeFlagsEnabled && lycheeStore.is_sensitive_flag_enabled && album.is_nsfw"
-				:class="ALBUM_BADGE_FILL.nsfw"
-				icon="warning"
-			/>
-			<ListBadge
-				v-if="
-					scopeFlagsEnabled &&
-					album.is_public &&
-					((album.is_link_required && lycheeStore.is_public_hidden_flag_enabled) ||
-						(!album.is_link_required && lycheeStore.is_public_visible_flag_enabled))
-				"
-				:class="album.is_link_required ? ALBUM_BADGE_FILL.link : ALBUM_BADGE_FILL.success"
-				icon="eye"
-			/>
-			<ListBadge
-				v-if="scopeFlagsEnabled && lycheeStore.is_password_flag_enabled && album.is_password_required && album.thumb === null"
-				:class="ALBUM_BADGE_FILL.link"
-				icon="lock-locked"
-			/>
-			<ListBadge
-				v-if="scopeFlagsEnabled && lycheeStore.is_password_flag_enabled && album.is_password_required && album.thumb !== null"
-				:class="ALBUM_BADGE_FILL.danger"
-				icon="lock-unlocked"
-			/>
+			<ListBadge v-if="showSensitiveFlag" :class="ALBUM_BADGE_FILL.nsfw" icon="warning" />
+			<ListBadge v-if="showPublicHiddenFlag" :class="ALBUM_BADGE_FILL.link" icon="eye" />
+			<ListBadge v-if="showPublicVisibleFlag" :class="ALBUM_BADGE_FILL.success" icon="eye" />
+			<ListBadge v-if="showPasswordFlag && album.thumb === null" :class="ALBUM_BADGE_FILL.link" icon="lock-locked" />
+			<ListBadge v-if="showPasswordFlag && album.thumb !== null" :class="ALBUM_BADGE_FILL.danger" icon="lock-unlocked" />
 			<ListBadge v-if="album.is_tag_album" :class="ALBUM_BADGE_FILL.success" icon="tags" />
 		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, toRef } from "vue";
 import AlbumThumbImage from "./thumbs/AlbumThumbImage.vue";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
@@ -133,18 +113,21 @@ import { usePropagateAlbumEvents } from "@/composables/album/propagateEvents";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { storeToRefs } from "pinia";
 import { ALBUM_BADGE_FILL, ALBUM_BADGE_TEXT } from "@/v8/utils/albumBadgeColors";
-import { isSmartAlbumId } from "@/v8/utils/smartAlbum";
+import { useAlbumFlags } from "@/v8/composables/album/albumFlags";
 
 const albumStore = useAlbumStore();
 const albumsStore = useAlbumsStore();
 const lycheeStore = useLycheeStateStore();
 const togglableStore = useTogglablesStateStore();
 const { is_touch_select_mode } = storeToRefs(togglableStore);
+const { is_nsfw_background_blurred, is_smart_album_flags_enabled } = storeToRefs(lycheeStore);
 
 const props = defineProps<{
 	album: App.Http.Resources.Models.ThumbAlbumResource;
 	isSelected: boolean;
 }>();
+
+const { isSmartAlbum, showSensitiveFlag, showPublicHiddenFlag, showPublicVisibleFlag, showPasswordFlag } = useAlbumFlags(toRef(props, "album"));
 
 const emits = defineEmits<{
 	clicked: [event: MouseEvent, id: string];
@@ -165,7 +148,4 @@ function maySelect(e: MouseEvent, id: string) {
 const aspectRatio = computed(
 	() => albumStore.config?.album_thumb_css_aspect_ratio ?? albumsStore.rootConfig?.album_thumb_css_aspect_ratio ?? "aspect-square",
 );
-
-const isSmartAlbum = computed(() => isSmartAlbumId(props.album.id));
-const scopeFlagsEnabled = computed(() => (isSmartAlbum.value ? lycheeStore.is_smart_album_flags_enabled : lycheeStore.is_album_flags_enabled));
 </script>
