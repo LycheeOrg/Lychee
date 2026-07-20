@@ -19,5 +19,5 @@ return [
         'info' => 'Informations',
         'copy' => 'Diagnostics copiés dans le presse-papiers !',
     ],
-    'copy_on_secure_context' => 'Copying diagnostics is only available in secure contexts (HTTPS).',
+    'copy_on_secure_context' => 'La copie des diagnostics n’est disponible que dans un contexte sécurisé (HTTPS).',
 ];
