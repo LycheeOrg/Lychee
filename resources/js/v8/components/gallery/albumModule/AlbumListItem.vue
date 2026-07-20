@@ -35,19 +35,27 @@
 				'aspect-video': 'aspect-video' === aspectRatio,
 			}"
 		>
-			<ListBadge v-if="album.id === 'highlighted'" :class="ALBUM_BADGE_FILL.favorite" icon="star" />
-			<ListBadge v-else-if="album.id === 'unsorted'" :class="ALBUM_BADGE_FILL.danger" icon="list" />
-			<ListBadge v-else-if="album.id === 'recent'" :class="ALBUM_BADGE_FILL.info" icon="clock" />
-			<ListBadge v-else-if="album.id === 'on_this_day'" :class="ALBUM_BADGE_FILL.success" icon="calendar" />
-			<ListBadge v-else-if="album.id === 'untagged'" :class="ALBUM_BADGE_FILL.neutral" icon="tags" />
-			<ListBadge v-else-if="album.id === 'one_star'" :class="ALBUM_BADGE_FILL.favorite" icon="star-1" />
-			<ListBadge v-else-if="album.id === 'two_stars'" :class="ALBUM_BADGE_FILL.favorite" icon="star-2" />
-			<ListBadge v-else-if="album.id === 'three_stars'" :class="ALBUM_BADGE_FILL.favorite" icon="star-3" />
-			<ListBadge v-else-if="album.id === 'four_stars'" :class="ALBUM_BADGE_FILL.favorite" icon="star-4" />
-			<ListBadge v-else-if="album.id === 'five_stars'" :class="ALBUM_BADGE_FILL.favorite" icon="star-5" />
-			<ListBadge v-else-if="album.id === 'best_pictures'" :class="ALBUM_BADGE_TEXT.trophy" pi="lucide:trophy" />
-			<ListBadge v-else-if="album.id === 'my_rated_pictures'" :class="ALBUM_BADGE_TEXT.rated" pi="lucide:trophy" />
-			<ListBadge v-else-if="album.id === 'my_best_pictures'" :class="ALBUM_BADGE_TEXT.favorite" pi="lucide:trophy" />
+			<template v-if="isSmartAlbum && lycheeStore.is_smart_album_flags_enabled">
+				<ListBadge v-if="album.id === 'highlighted'" :class="ALBUM_BADGE_FILL.favorite" icon="star" />
+				<ListBadge v-else-if="album.id === 'unsorted'" :class="ALBUM_BADGE_FILL.danger" icon="list" />
+				<ListBadge v-else-if="album.id === 'recent'" :class="ALBUM_BADGE_FILL.info" icon="clock" />
+				<ListBadge v-else-if="album.id === 'on_this_day'" :class="ALBUM_BADGE_FILL.success" icon="calendar" />
+				<ListBadge v-else-if="album.id === 'untagged'" :class="ALBUM_BADGE_FILL.neutral" icon="tags" />
+				<ListBadge v-else-if="album.id === 'one_star'" :class="ALBUM_BADGE_FILL.favorite" icon="star-1" />
+				<ListBadge v-else-if="album.id === 'two_stars'" :class="ALBUM_BADGE_FILL.favorite" icon="star-2" />
+				<ListBadge v-else-if="album.id === 'three_stars'" :class="ALBUM_BADGE_FILL.favorite" icon="star-3" />
+				<ListBadge v-else-if="album.id === 'four_stars'" :class="ALBUM_BADGE_FILL.favorite" icon="star-4" />
+				<ListBadge v-else-if="album.id === 'five_stars'" :class="ALBUM_BADGE_FILL.favorite" icon="star-5" />
+				<ListBadge v-else-if="album.id === 'best_pictures'" :class="ALBUM_BADGE_TEXT.trophy" pi="lucide:trophy" />
+				<ListBadge v-else-if="album.id === 'my_rated_pictures'" :class="ALBUM_BADGE_TEXT.rated" pi="lucide:trophy" />
+				<ListBadge v-else-if="album.id === 'my_best_pictures'" :class="ALBUM_BADGE_TEXT.favorite" pi="lucide:trophy" />
+				<AlbumThumbImage
+					v-else
+					class="border-none! hover:scale-800 hover:ltr:-translate-x-full hover:rtl:translate-x-full ltr:origin-left rtl:origin-right hover:z-30 top-0 left-0"
+					:thumb="album.thumb"
+					:is-password-protected="album.is_password_required"
+				/>
+			</template>
 			<AlbumThumbImage
 				v-else
 				class="border-none! hover:scale-800 hover:ltr:-translate-x-full hover:rtl:translate-x-full ltr:origin-left rtl:origin-right hover:z-30 top-0 left-0"
@@ -84,10 +92,31 @@
 
 		<!-- Badges (if any) -->
 		<div class="flex gap-1">
-			<ListBadge v-if="album.is_nsfw" :class="ALBUM_BADGE_FILL.nsfw" icon="warning" />
-			<ListBadge v-if="album.is_public" :class="album.is_link_required ? ALBUM_BADGE_FILL.link : ALBUM_BADGE_FILL.success" icon="eye" />
-			<ListBadge v-if="album.is_password_required && album.thumb === null" :class="ALBUM_BADGE_FILL.link" icon="lock-locked" />
-			<ListBadge v-if="album.is_password_required && album.thumb !== null" :class="ALBUM_BADGE_FILL.danger" icon="lock-unlocked" />
+			<ListBadge
+				v-if="scopeFlagsEnabled && lycheeStore.is_sensitive_flag_enabled && album.is_nsfw"
+				:class="ALBUM_BADGE_FILL.nsfw"
+				icon="warning"
+			/>
+			<ListBadge
+				v-if="
+					scopeFlagsEnabled &&
+					album.is_public &&
+					((album.is_link_required && lycheeStore.is_public_hidden_flag_enabled) ||
+						(!album.is_link_required && lycheeStore.is_public_visible_flag_enabled))
+				"
+				:class="album.is_link_required ? ALBUM_BADGE_FILL.link : ALBUM_BADGE_FILL.success"
+				icon="eye"
+			/>
+			<ListBadge
+				v-if="scopeFlagsEnabled && lycheeStore.is_password_flag_enabled && album.is_password_required && album.thumb === null"
+				:class="ALBUM_BADGE_FILL.link"
+				icon="lock-locked"
+			/>
+			<ListBadge
+				v-if="scopeFlagsEnabled && lycheeStore.is_password_flag_enabled && album.is_password_required && album.thumb !== null"
+				:class="ALBUM_BADGE_FILL.danger"
+				icon="lock-unlocked"
+			/>
 			<ListBadge v-if="album.is_tag_album" :class="ALBUM_BADGE_FILL.success" icon="tags" />
 		</div>
 	</div>
@@ -104,6 +133,7 @@ import { usePropagateAlbumEvents } from "@/composables/album/propagateEvents";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { storeToRefs } from "pinia";
 import { ALBUM_BADGE_FILL, ALBUM_BADGE_TEXT } from "@/v8/utils/albumBadgeColors";
+import { isSmartAlbumId } from "@/v8/utils/smartAlbum";
 
 const albumStore = useAlbumStore();
 const albumsStore = useAlbumsStore();
@@ -111,7 +141,7 @@ const lycheeStore = useLycheeStateStore();
 const togglableStore = useTogglablesStateStore();
 const { is_touch_select_mode } = storeToRefs(togglableStore);
 
-defineProps<{
+const props = defineProps<{
 	album: App.Http.Resources.Models.ThumbAlbumResource;
 	isSelected: boolean;
 }>();
@@ -135,4 +165,7 @@ function maySelect(e: MouseEvent, id: string) {
 const aspectRatio = computed(
 	() => albumStore.config?.album_thumb_css_aspect_ratio ?? albumsStore.rootConfig?.album_thumb_css_aspect_ratio ?? "aspect-square",
 );
+
+const isSmartAlbum = computed(() => isSmartAlbumId(props.album.id));
+const scopeFlagsEnabled = computed(() => (isSmartAlbum.value ? lycheeStore.is_smart_album_flags_enabled : lycheeStore.is_album_flags_enabled));
 </script>

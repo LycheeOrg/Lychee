@@ -89,12 +89,16 @@
 		<!-- Badges -->
 		<div class="flex gap-1 items-center">
 			<ListBadge
-				v-if="photo.is_highlighted && (albumsStore.rootRights?.can_highlight || albumStore.rights?.can_edit)"
+				v-if="
+					lycheeStore.is_highlighted_flag_enabled &&
+					photo.is_highlighted &&
+					(albumsStore.rootRights?.can_highlight || albumStore.rights?.can_edit)
+				"
 				:class="`text-yellow-500 ${FILL_OVERRIDE_CLASS}`"
 				pi="lucide:flag"
 			/>
-			<ListBadge v-if="userStore.isLoggedIn && isCoverId" class="fill-yellow-500" icon="folder-cover" />
-			<ListBadge v-if="userStore.isLoggedIn && isHeaderId" class="text-slate-400" pi="lucide:image" />
+			<ListBadge v-if="lycheeStore.is_cover_id_flag_enabled && userStore.isLoggedIn && isCoverId" class="fill-yellow-500" icon="folder-cover" />
+			<ListBadge v-if="lycheeStore.is_header_id_flag_enabled && userStore.isLoggedIn && isHeaderId" class="text-slate-400" pi="lucide:image" />
 		</div>
 	</div>
 </template>

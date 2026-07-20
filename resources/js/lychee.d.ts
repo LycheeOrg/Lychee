@@ -634,6 +634,16 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		is_album_header_landing_title_enabled: boolean;
 		use_admin_dashboard: boolean;
 		is_person_album_enabled: boolean;
+		is_cover_id_flag_enabled: boolean;
+		is_header_id_flag_enabled: boolean;
+		is_highlighted_flag_enabled: boolean;
+		is_validated_flag_enabled: boolean;
+		is_smart_album_flags_enabled: boolean;
+		is_album_flags_enabled: boolean;
+		is_public_hidden_flag_enabled: boolean;
+		is_public_visible_flag_enabled: boolean;
+		is_password_flag_enabled: boolean;
+		is_sensitive_flag_enabled: boolean;
 	};
 	export type LandingPageResource = {
 		landing_page_enable: boolean;

@@ -40,6 +40,18 @@ class SettingsController extends Controller
 		'selection_border_enabled',
 		'selection_overlay_enabled',
 		'photo_share_card_enabled',
+		'flags_enabled',
+		'photo_flags_enabled',
+		'cover_id_flag_enabled',
+		'header_id_flag_enabled',
+		'highlighted_flag_enabled',
+		'validated_flag_enabled',
+		'smart_album_flags_enabled',
+		'album_flags_enabled',
+		'public_hidden_flag_enabled',
+		'public_visible_flag_enabled',
+		'password_flag_enabled',
+		'sensitive_flag_enabled',
 	];
 
 	/**

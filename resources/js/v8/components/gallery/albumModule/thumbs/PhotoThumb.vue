@@ -101,14 +101,26 @@
 		</div>
 		<div class="badges absolute -mt-px ltr:ml-1 rtl:mr-1 top-0 ltr:left-0 rtl:right-0 flex">
 			<ThumbBadge
-				v-if="(albumsStore.rootRights?.can_highlight || albumStore.rights?.can_edit) && props.photo.is_highlighted"
+				v-if="
+					lycheeStore.is_highlighted_flag_enabled &&
+					(albumsStore.rootRights?.can_highlight || albumStore.rights?.can_edit) &&
+					props.photo.is_highlighted
+				"
 				class="bg-yellow-500"
 				:pi="`lucide:flag ${FILL_OVERRIDE_CLASS}`"
 			/>
-			<ThumbBadge v-if="userStore.isLoggedIn && props.isCoverId" class="bg-yellow-500" icon="folder-cover" />
-			<ThumbBadge v-if="userStore.isLoggedIn && props.isHeaderId" class="bg-slate-400 hidden sm:block" pi="lucide:image" />
 			<ThumbBadge
-				v-if="!props.photo.is_validated"
+				v-if="lycheeStore.is_cover_id_flag_enabled && userStore.isLoggedIn && props.isCoverId"
+				class="bg-yellow-500"
+				icon="folder-cover"
+			/>
+			<ThumbBadge
+				v-if="lycheeStore.is_header_id_flag_enabled && userStore.isLoggedIn && props.isHeaderId"
+				class="bg-slate-400 hidden sm:block"
+				pi="lucide:image"
+			/>
+			<ThumbBadge
+				v-if="lycheeStore.is_validated_flag_enabled && !props.photo.is_validated"
 				class="bg-neutral-800"
 				border-color="border-none"
 				pi="lucide:shield text-amber-500 text-shadow-md"
