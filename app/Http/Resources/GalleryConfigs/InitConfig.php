@@ -168,6 +168,18 @@ class InitConfig extends Data
 	public bool $use_admin_dashboard;
 	public bool $is_person_album_enabled;
 
+	// Flags visibility settings
+	public bool $is_cover_id_flag_enabled;
+	public bool $is_header_id_flag_enabled;
+	public bool $is_highlighted_flag_enabled;
+	public bool $is_validated_flag_enabled;
+	public bool $is_smart_album_flags_enabled;
+	public bool $is_album_flags_enabled;
+	public bool $is_public_hidden_flag_enabled;
+	public bool $is_public_visible_flag_enabled;
+	public bool $is_password_flag_enabled;
+	public bool $is_sensitive_flag_enabled;
+
 	public function __construct()
 	{
 		// Debug mode
@@ -287,6 +299,20 @@ class InitConfig extends Data
 		$this->is_album_header_landing_title_enabled = request()->configs()->getValueAsBool('album_header_landing_title_enabled');
 		$this->use_admin_dashboard = request()->configs()->getValueAsBool('use_admin_dashboard');
 		$this->is_person_album_enabled = request()->configs()->getValueAsBool('ai_vision_face_enabled');
+
+		// Flags visibility settings
+		$flags_enabled = request()->configs()->getValueAsBool('flags_enabled');
+		$photo_flags_enabled = $flags_enabled && request()->configs()->getValueAsBool('photo_flags_enabled');
+		$this->is_cover_id_flag_enabled = $photo_flags_enabled && request()->configs()->getValueAsBool('cover_id_flag_enabled');
+		$this->is_header_id_flag_enabled = $photo_flags_enabled && request()->configs()->getValueAsBool('header_id_flag_enabled');
+		$this->is_highlighted_flag_enabled = $photo_flags_enabled && request()->configs()->getValueAsBool('highlighted_flag_enabled');
+		$this->is_validated_flag_enabled = $photo_flags_enabled && request()->configs()->getValueAsBool('validated_flag_enabled');
+		$this->is_smart_album_flags_enabled = $flags_enabled && request()->configs()->getValueAsBool('smart_album_flags_enabled');
+		$this->is_album_flags_enabled = $flags_enabled && request()->configs()->getValueAsBool('album_flags_enabled');
+		$this->is_public_hidden_flag_enabled = $flags_enabled && request()->configs()->getValueAsBool('public_hidden_flag_enabled');
+		$this->is_public_visible_flag_enabled = $flags_enabled && request()->configs()->getValueAsBool('public_visible_flag_enabled');
+		$this->is_password_flag_enabled = $flags_enabled && request()->configs()->getValueAsBool('password_flag_enabled');
+		$this->is_sensitive_flag_enabled = $flags_enabled && request()->configs()->getValueAsBool('sensitive_flag_enabled');
 
 		$this->set_supporter_properties();
 	}
