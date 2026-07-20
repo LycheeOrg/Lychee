@@ -19,7 +19,7 @@ return [
     'col_album' => 'Album',
     'col_uploaded' => 'Envoyée',
     'col_nsfw' => 'NSFW',
-    'nsfw_review' => 'Révision NSFW',
+    'nsfw_review' => 'Modération NSFW',
     'overlay_confidence' => 'Confiance : :value %',
     'overlay_area' => 'Zone : :value',
     'overlay_mode_all' => 'NSFW : Tout',

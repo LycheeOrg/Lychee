@@ -29,6 +29,12 @@ return [
         'upload_trust_level_monitor' => 'Overvåk – opplastinger er offentlige med mindre de er flagget for innhold.',
         'upload_trust_level_trust_but_verify' => 'Trust but Verify – uploads are public; review findings auto-approved, block findings configurable.',
         'upload_trust_level_trusted' => 'Pålitelig – opplastinger blir umiddelbart offentlige.',
+        'trust_level_options' => [
+            'trusted' => 'Pålitelig',
+            'trust_but_verify' => 'Trust but Verify',
+            'monitor' => 'Overvåk',
+            'check' => 'Kryss av',
+        ],
         'quota' => 'Brukeren har en kvotegrense.',
         'quota_kb' => 'kvote i kB (0 for standard)',
         'note' => 'Adminnotat (ikke offentlig synlig)',

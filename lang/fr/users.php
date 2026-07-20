@@ -28,7 +28,12 @@ return [
         'upload_trust_level_monitor' => 'Surveiller – les téléversements sont publics, sauf s’ils sont signalés pour leur contenu.',
         'upload_trust_level_trust_but_verify' => 'Confiance vérifiée – les téléversements sont publics ; les éléments signalés pour vérification sont automatiquement approuvés, ceux signalés pour blocage restent configurables.',
         'upload_trust_level_trusted' => 'De confiance – les téléversements sont immédiatement publics.',
-
+        'trust_level_options' => [
+            'trusted' => 'De confiance',
+            'trust_but_verify' => 'Confiance vérifiée',
+            'monitor' => 'Surveiller',
+            'check' => 'Vérifier',
+        ],
         'quota' => 'Quota d’espace (en Ko).',
         'quota_kb' => 'quota en Ko (0 par défaut)',
         'note' => 'Note admin (non visible publiquement)',

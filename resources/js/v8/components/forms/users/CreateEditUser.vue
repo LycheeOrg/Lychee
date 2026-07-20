@@ -97,15 +97,15 @@ type TrustLevelOption = { value: App.Enum.UserUploadTrustLevel; label: string };
 const trustLevelOptions = computed<TrustLevelOption[]>(() => {
 	if (is_se_enabled.value || is_se_preview_enabled.value) {
 		return [
-			{ value: "trusted", label: "Trusted" },
-			{ value: "trust_but_verify", label: "Trust but Verify" },
-			{ value: "monitor", label: "Monitor" },
-			{ value: "check", label: "Check" },
+			{ value: "trusted", label: trans("users.create_edit.trust_level_options.trusted") },
+			{ value: "trust_but_verify", label: trans("users.create_edit.trust_level_options.trust_but_verify") },
+			{ value: "monitor", label: trans("users.create_edit.trust_level_options.monitor") },
+			{ value: "check", label: trans("users.create_edit.trust_level_options.check") },
 		];
 	} else {
 		return [
-			{ value: "trusted", label: "Trusted" },
-			{ value: "check", label: "Check" },
+			{ value: "trusted", label: trans("users.create_edit.trust_level_options.trusted") },
+			{ value: "check", label: trans("users.create_edit.trust_level_options.check") },
 		];
 	}
 });

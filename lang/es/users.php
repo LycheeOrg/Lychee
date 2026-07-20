@@ -28,6 +28,12 @@ return [
         'upload_trust_level_monitor' => 'Monitoreo - las subidas son públicas a menos que estén marcadas por contenido',
         'upload_trust_level_trust_but_verify' => 'Trust but Verify – uploads are public; review findings auto-approved, block findings configurable.',
         'upload_trust_level_trusted' => 'De confianza: las subidas son públicas de inmediato',
+        'trust_level_options' => [
+            'trusted' => 'De confianza',
+            'trust_but_verify' => 'Trust but Verify',
+            'monitor' => 'Monitoreo',
+            'check' => 'Verificación',
+        ],
         'quota' => 'El usuario tiene un límite de cuota.',
         'quota_kb' => 'cuota en kB (0 por defecto)',
         'note' => 'Nota de administrador (no visible públicamente)',

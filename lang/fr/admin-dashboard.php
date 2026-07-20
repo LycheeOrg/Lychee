@@ -47,7 +47,7 @@ return [
         'scan_trusted' => 'Analyser les utilisateurs De confiance',
         'section_general' => 'Général',
         'section_actions' => 'Actions',
-        'actions_explanation' => 'Configurez ce qui se passe lorsqu’une constatation <b>Bloquer</b> est détectée, selon le niveau de confiance. Les constatations <b>Réviser</b> envoient toujours les utilisateurs Vérifier et Surveiller en modération et sont automatiquement approuvées pour les utilisateurs Confiance vérifiée et De confiance.',
+        'actions_explanation' => 'Configurez ce qui se passe lorsqu’une constatation <b>Bloquer</b> est détectée, selon le niveau de confiance. Les constatations <b>Modérer</b> envoient toujours les utilisateurs Vérifier et Surveiller en modération et sont automatiquement approuvées pour les utilisateurs Confiance vérifiée et De confiance.',
         'sensitive_explanation' => 'Les constatations <b>Sensible</b> pour les utilisateurs Vérifier sont toujours envoyées en modération. Pour les autres niveaux de confiance, les paramètres suivants déterminent si l’album de la photo est signalé comme sensible et ce qui se passe lorsque la photo n’a pas d’album.',
         'sensitive_album' => 'Sensible : action sur l’album',
         'sensitive_no_album' => 'Sensible : solution de repli sans album',

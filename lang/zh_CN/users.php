@@ -30,7 +30,12 @@ return [
         'upload_trust_level_monitor' => 'Monitor – upload are publics unless flagged for content.',
         'upload_trust_level_trust_but_verify' => 'Trust but Verify – uploads are public; review findings auto-approved, block findings configurable.',
         'upload_trust_level_trusted' => 'Trusted – uploads are immediately public.',
-
+        'trust_level_options' => [
+            'trusted' => 'Trusted',
+            'trust_but_verify' => 'Trust but Verify',
+            'monitor' => 'Monitor',
+            'check' => 'Check',
+        ],
         'quota' => '用户有配额限制。',
         'quota_kb' => '配额（kB，0 表示使用默认值）',
         'note' => '管理员备注（不公开显示）',
