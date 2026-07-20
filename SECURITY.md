@@ -28,7 +28,7 @@ Please **do not report** security **vulnerabilities which are direct output of y
 
 > [!CAUTION]
 > For each low quality report that is closed, you gain 1 strike: :baseball:  
-> **3 strikes (:baseball: :baseball: :baseball:) and you will be blocked from reporting this repository.**
+> **3 strikes ( :baseball: :baseball: :baseball: ) and you will be blocked from reporting this repository.**
 
 ## Well known false positives
 
