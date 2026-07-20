@@ -32,7 +32,7 @@ return [
         'users' => 'Gebruikers',
         'cancel' => 'Annuleren',
         'create' => 'Aanmaken',
-        'edit' => 'Edit',
+        'edit' => 'Bewerken',
 
         'error_name_required' => 'Groepsnaam is verplicht.',
     ],

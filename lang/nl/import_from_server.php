@@ -6,17 +6,17 @@ return [
     | Import from Server
     |--------------------------------------------------------------------------
     */
-    'title' => 'Synchronize your server files',
-    'description' => 'Synchronize your server files with Lychee. This will import photos from a directory and all children directories. This process is very slow and we recommend using workers and queues in order to avoid timeout.',
-    'sync' => 'Synchronize',
-    'loading' => 'Loading...',
-    'selected_directory' => 'Current selected directory:',
-    'resync_metadata' => 'Re-sync metadata of existing files.',
-    'delete_imported' => 'Delete the original files.',
-    'import_via_symlink' => 'Import photos via symlink instead of copying the files.',
-    'skip_duplicates' => 'Skip photos and albums if they already exist in the gallery.',
-    'delete_missing_photos' => 'Delete photos in the album that are not present in the synced directory.',
-    'delete_missing_albums' => 'Delete albums in the parent album that are not present in the synced directory.',
-    'importing_please_be_patient' => 'Importing, please be patient...',
+    'title' => 'Synchroniseer uw serverbestanden',
+    'description' => 'Synchroniseer uw serverbestanden met Lychee. Hiermee worden foto’s geïmporteerd uit een map en alle onderliggende mappen. Dit proces is erg traag en we raden aan om workers en wachtrijen te gebruiken om een time-out te voorkomen.',
+    'sync' => 'Synchroniseren',
+    'loading' => 'Laden...',
+    'selected_directory' => 'Huidig geselecteerde map:',
+    'resync_metadata' => 'Metadata van bestaande bestanden opnieuw synchroniseren.',
+    'delete_imported' => 'Verwijder de originele bestanden.',
+    'import_via_symlink' => 'Importeer foto’s via een symbolische koppeling in plaats van bestanden te kopiëren.',
+    'skip_duplicates' => 'Sla foto’s en albums over als ze al in de galerij bestaan.',
+    'delete_missing_photos' => 'Verwijder foto’s in het album die niet aanwezig zijn in de gesynchroniseerde map.',
+    'delete_missing_albums' => 'Verwijder albums in het bovenliggende album die niet aanwezig zijn in de gesynchroniseerde map.',
+    'importing_please_be_patient' => 'Bezig met importeren, even geduld...',
 ];
 
