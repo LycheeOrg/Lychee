@@ -17,7 +17,7 @@
 				</div>
 				<div class="flex flex-col">
 					<div class="flex flex-wrap md:flex-nowrap border-b border-solid border-b-neutral-700 mb-4 pb-4">
-						<div class="w-9/12 lg:w-8/12 flex">
+						<div class="w-9/12 flex">
 							<span class="w-2/3 font-bold">{{ $t("users.username") }}</span>
 							<div class="w-1/3 flex justify-evenly">
 								<UTooltip :text="$t('users.upload_rights')"
@@ -34,8 +34,7 @@
 								</UTooltip>
 							</div>
 						</div>
-						<span class="w-1/12 lg:w-2/12"></span>
-						<span class="w-1/12 lg:w-2/12"></span>
+						<span class="w-1/12"></span>
 					</div>
 
 					<ListUser
@@ -53,19 +52,19 @@
 				<template #header>{{ $t("users.legend") }}</template>
 				<ul class="text-sm">
 					<li class="ltr:ml-2 rtl:mr-2 pt-2 flex items-start gap-x-4">
-						<UIcon name="lucide:upload" />
+						<UIcon name="lucide:upload" class="text-2xl" />
 						<span>{{ $t("users.upload_rights") }}</span>
 					</li>
 					<li class="ltr:ml-2 rtl:mr-2 pt-2 flex items-start gap-x-4">
-						<UIcon name="lucide:lock-open" />
+						<UIcon name="lucide:lock-open" class="text-3xl" />
 						<span>{{ $t("users.edit_rights") }}</span>
 					</li>
 					<li class="ltr:ml-2 rtl:mr-2 pt-2 flex items-start gap-x-4">
-						<UIcon name="lucide:shield" class="text-success" />
+						<UIcon name="lucide:shield" class="text-success text-4xl -mt-1" />
 						<span>{{ $t("users.upload_trust_level") }}</span>
 					</li>
 					<li v-if="is_se_enabled" class="ltr:ml-2 rtl:mr-2 pt-2 flex items-start gap-x-4">
-						<UIcon name="lucide:chart-pie" />
+						<UIcon name="lucide:chart-pie" class="text-2xl" />
 						<span>{{ $t("users.quota") }}</span>
 					</li>
 				</ul>

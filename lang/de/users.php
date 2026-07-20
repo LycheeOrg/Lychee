@@ -28,6 +28,12 @@ return [
         'upload_trust_level_monitor' => 'Überwachen – Uploads sind öffentlich, es sei denn, sie werden wegen ihres Inhalts gemeldet.',
         'upload_trust_level_trust_but_verify' => 'Trust but Verify – uploads are public; review findings auto-approved, block findings configurable.',
         'upload_trust_level_trusted' => 'Vertrauenswürdig – Uploads sind sofort öffentlich.',
+        'trust_level_options' => [
+            'trusted' => 'Vertrauenswürdig',
+            'trust_but_verify' => 'Trust but Verify',
+            'monitor' => 'Überwachen',
+            'check' => 'Prüfen',
+        ],
         'quota' => 'Benutzer hat Kontingentgrenze.',
         'quota_kb' => 'Kontingent in kB (0 für Standardkontingent)',
         'note' => 'Verwaltungshinweis (nicht öffentlich sichtbar)',

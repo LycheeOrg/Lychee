@@ -1,28 +1,27 @@
 <template>
-	<div class="w-full">
-		<div class="flex items-center justify-between gap-x-4 flex-wrap sm:flex-nowrap">
-			<label
-				:for="props.config.key"
-				:class="{
-					'w-full': true,
-					'text-primary': props.config.require_se,
-					'text-highlighted': !props.config.require_se,
-				}"
-				v-html="props.label ?? tDoc(props.config)"
-			/>
-			<UInput :id="props.config.key" v-model="val" type="text" class="w-full grow" @update:model-value="update">
-				<template v-if="changed" #trailing>
-					<UTooltip text="Click me to reset!">
-						<UIcon name="lucide:circle-alert" class="text-warning-600 cursor-pointer" @click="reset" />
-					</UTooltip>
-				</template>
-			</UInput>
+	<div class="flex flex-wrap items-center w-full">
+		<div class="w-1/2" :class="props.config.require_se ? 'text-primary' : 'text-highlighted'">
+			{{ props.config.key }}
+			<sub v-if="props.config.order !== null" class="text-muted text-2xs"> ({{ props.config.order }}) </sub>
 		</div>
-		<div
-			v-if="props.config.details || details !== undefined"
-			class="text-muted text-sm hidden sm:block"
-			v-html="props.details ?? tDetails(props.config)"
+		<UInput :id="props.config.key" v-model="val" type="text" class="w-1/2" @update:model-value="update">
+			<template v-if="changed" #trailing>
+				<UTooltip text="Click me to reset!">
+					<UIcon :name="iconName" :class="[iconColorClass, 'cursor-pointer']" @click="reset" />
+				</UTooltip>
+			</template>
+		</UInput>
+		<UAlert
+			v-if="changed && isVersion"
+			class="w-full h-8 mt-0.5"
+			color="error"
+			description="We strongly recommend you do not modify this value."
 		/>
+		<div v-if="!changed || !isVersion" class="w-full text-muted">
+			{{ tDoc(props.config) }}
+			<br v-if="props.config.details" />
+			<span v-html="tDetails(props.config)"></span>
+		</div>
 	</div>
 </template>
 <script setup lang="ts">
@@ -33,13 +32,14 @@ const { tDoc, tDetails } = useTranslation();
 
 const props = defineProps<{
 	config: App.Http.Resources.Models.ConfigResource;
-	label?: string;
-	details?: string;
 }>();
 
 const val = ref<string>(props.config.value);
 
 const changed = computed(() => val.value !== props.config.value);
+const isVersion = computed(() => props.config.key === "version");
+const iconName = computed(() => (isVersion.value ? "lucide:triangle-alert" : "lucide:circle-alert"));
+const iconColorClass = computed(() => (isVersion.value ? "text-error" : "text-warning-600"));
 
 const emits = defineEmits<{
 	filled: [key: string, value: string];

@@ -70,8 +70,8 @@ return [
         'location_decoding' => 'Utiliser le décodage de position GPS',
         'location_show' => 'Afficher la localisation extraite des coordonnées GPS',
         'location_show_public' => 'Les utilisateurs anonymes peuvent accéder à la localisation extraite',
-        'gps_coordinate_display' => 'Display the GPS coordinates',
-        'gps_coordinate_display_public' => 'Allow anonymous users to access the GPS coordinates',
+        'gps_coordinate_display' => 'Afficher les coordonnées GPS',
+        'gps_coordinate_display_public' => 'Permettre aux utilisateurs anonymes d’accéder aux coordonnées GPS',
     ],
     'cssjs' => [
         'header' => 'CSS & JS personnalisés',
@@ -98,8 +98,8 @@ return [
     ],
     'config' => [
         'use_admin_dashboard' => [
-            'label' => 'Use admin dashboard',
-            'help' => 'Replace the nested admin submenu with a single link to the new admin dashboard page.',
+            'label' => 'Utiliser le tableau de bord d’administration',
+            'help' => 'Remplace le sous-menu d’administration imbriqué par un lien unique vers la nouvelle page de tableau de bord d’administration.',
         ],
     ],
 ];

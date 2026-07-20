@@ -31,7 +31,12 @@ return [
         'upload_trust_level_monitor' => 'Monitor – upload are publics unless flagged for content.',
         'upload_trust_level_trust_but_verify' => 'Trust but Verify – uploads are public; review findings auto-approved, block findings configurable.',
         'upload_trust_level_trusted' => 'Trusted – uploads are immediately public.',
-
+        'trust_level_options' => [
+            'trusted' => 'Trusted',
+            'trust_but_verify' => 'Trust but Verify',
+            'monitor' => 'Monitor',
+            'check' => 'Check',
+        ],
         'quota' => 'Потребителят има ограничение на квотата.',
         'quota_kb' => 'квота в kB (0 за подразбиране)',
         'note' => 'Бележка на админа (не е видима публично)',
