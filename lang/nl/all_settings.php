@@ -337,7 +337,7 @@ return [
         'webshop_offline' => 'Houd de webshop offline',
         'deduplicate_pinned_albums' => 'Voorkom dubbele vermeldingen van uitgelichte albums.',
         'desktop_dock_full_transparency_enabled' => 'Schakel volledige transparantie van het dock in voor desktop.',
-        'mobile_dock_full_transparency_enabled' => 'Schakel dock-transparantie in voor mobiel,',
+        'mobile_dock_full_transparency_enabled' => 'Schakel dock-transparantie in voor mobiel.',
         'enable_smart_album_per_owner' => 'Toon in slimme albums alleen foto\'s die eigendom zijn van de gebruiker.',
         'album_layout' => 'Standaard weergave-lay-out voor albums.',
         'albums_per_page' => 'Aantal subalbums per pagina.',
