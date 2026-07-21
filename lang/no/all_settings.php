@@ -335,7 +335,7 @@ return [
         'webshop_offline' => 'Hold nettbutikken offline',
         'deduplicate_pinned_albums' => 'Fjern duplikater av fremhevede album.',
         'desktop_dock_full_transparency_enabled' => 'Aktiver full gjennomsiktighet for dokk på skrivebord.',
-        'mobile_dock_full_transparency_enabled' => 'Aktiver dokk-gjennomsiktighet for mobil,',
+        'mobile_dock_full_transparency_enabled' => 'Aktiver dokk-gjennomsiktighet for mobil.',
         'enable_smart_album_per_owner' => 'Vis kun bilder eid av brukeren i smartalbum.',
         'album_layout' => 'Standard albumvisningslayout.',
         'albums_per_page' => 'Antall underalbum per side.',
