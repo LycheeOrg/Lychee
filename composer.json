@@ -32,10 +32,6 @@
         {
             "type": "vcs",
             "url": "https://github.com/LycheeOrg/verify"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/LycheeOrg/secure-headers"
         }
     ],
     "license": "MIT",
@@ -53,7 +49,7 @@
         "ext-pdo": "*",
         "ext-tokenizer": "*",
         "ext-xml": "*",
-        "bepsvpt/secure-headers": "dev-add-wasm-support",
+        "bepsvpt/secure-headers": "^9.1.1",
         "composer/semver": "^3.4",
         "dedoc/scramble": "^0.13.1",
         "directorytree/ldaprecord-laravel": "^4.0.0",
