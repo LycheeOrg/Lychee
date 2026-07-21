@@ -19,5 +19,5 @@ return [
         'info' => 'Informasjon',
         'copy' => 'Diagnostikk kopiert til utklippstavlen!',
     ],
-    'copy_on_secure_context' => 'Copying diagnostics is only available in secure contexts (HTTPS).',
+    'copy_on_secure_context' => 'Kopiering av diagnostikk er kun tilgjengelig i sikre kontekster (HTTPS).',
 ];

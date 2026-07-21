@@ -6,24 +6,24 @@ return [
     | Tags page
     |--------------------------------------------------------------------------
     */
-    'title' => 'Tags',
-    'description' => 'Manage your tags here. You can rename, merge, and delete tags.',
-    'no_tags' => 'No tags found.',
-    'loading' => 'Loading tags...',
-    'rename' => 'Rename',
-    'merge' => 'Merge',
-    'delete' => 'Delete',
+    'title' => 'Tagger',
+    'description' => 'Administrer taggene dine her. Du kan gi dem nytt navn, slå dem sammen og slette dem.',
+    'no_tags' => 'Ingen tagger funnet.',
+    'loading' => 'Laster tagger…',
+    'rename' => 'Gi nytt navn',
+    'merge' => 'Slå sammen',
+    'delete' => 'Slett',
 
-    'column_name' => 'Name',
-    'column_photos' => 'Photos',
-    'column_albums' => 'Albums',
+    'column_name' => 'Navn',
+    'column_photos' => 'Bilder',
+    'column_albums' => 'Album',
 
-    'delete_confirm' => 'Are you sure you want to delete the tag “%s”?',
-    'delete_confirm_multiple' => 'Are you sure you want to delete these %d tags?',
-    'delete_warning' => 'This action cannot be undone! All photos associated with this tag will no longer have this tag.',
+    'delete_confirm' => 'Er du sikker på at du vil slette taggen «%s»?',
+    'delete_confirm_multiple' => 'Er du sikker på at du vil slette disse %d taggene?',
+    'delete_warning' => 'Denne handlingen kan ikke angres! Alle bilder tilknyttet denne taggen vil ikke lenger ha denne taggen.',
 
-    'merge_confirm' => 'Are you sure you want to merge the tag “%1$s” into the tag “%2$s”?',
-    'merge_warning' => 'This action cannot be undone! All photos associated with the source tag will be moved to the destination tag.',
+    'merge_confirm' => 'Er du sikker på at du vil slå sammen taggen «%1$s» med taggen «%2$s»?',
+    'merge_warning' => 'Denne handlingen kan ikke angres! Alle bilder tilknyttet kildetaggen vil bli flyttet til måltaggen.',
 
-    'rename_tag' => 'Rename Tag',
+    'rename_tag' => 'Gi taggen nytt navn',
 ];
