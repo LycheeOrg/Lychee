@@ -337,7 +337,7 @@ return [
         'webshop_offline' => 'إبقاء المتجر الإلكتروني غير متصل',
         'deduplicate_pinned_albums' => 'إزالة تكرار الألبومات المميزة.',
         'desktop_dock_full_transparency_enabled' => 'تفعيل الشفافية الكاملة لشريط الأدوات في سطح المكتب.',
-        'mobile_dock_full_transparency_enabled' => 'تفعيل شفافية شريط الأدوات في الجوال،',
+        'mobile_dock_full_transparency_enabled' => 'تفعيل شفافية شريط الأدوات في الجوال.',
         'enable_smart_album_per_owner' => 'عرض الصور المملوكة للمستخدم فقط في الألبومات الذكية.',
         'album_layout' => 'تخطيط عرض الألبوم الافتراضي.',
         'albums_per_page' => 'عدد الألبومات الفرعية في كل صفحة.',
