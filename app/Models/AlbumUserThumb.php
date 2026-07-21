@@ -22,12 +22,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * enum value (e.g. 'recent') - smart albums have no associated DB row, so there is
  * no foreign key on this column, mirroring access_permissions.base_album_id.
  *
- * @property int         $id
- * @property int|null    $user_id  Null means the public/guest view of the album
- * @property string      $album_id base_albums.id or a SmartAlbumType value
- * @property string      $photo_id
- * @property User|null   $user
- * @property Photo       $photo
+ * @property int       $id
+ * @property int|null  $user_id  Null means the public/guest view of the album
+ * @property string    $album_id base_albums.id or a SmartAlbumType value
+ * @property string    $photo_id
+ * @property User|null $user
+ * @property Photo     $photo
  *
  * @method static \Illuminate\Database\Eloquent\Builder|AlbumUserThumb newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|AlbumUserThumb newQuery()
