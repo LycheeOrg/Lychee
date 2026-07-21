@@ -16,7 +16,6 @@ use App\Exceptions\Internal\InvalidQueryModelException;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -39,7 +38,7 @@ class MyBestPicturesAlbum extends BaseSmartAlbum
 		parent::__construct(
 			id: SmartAlbumType::MY_BEST_PICTURES,
 			smart_condition: fn (Builder $q) => $q->whereHas('ratings', function ($query): void {
-				$query->where('user_id', '=', Auth::id() ?? 0);
+				$query->where('user_id', '=', $this->resolveUserId());
 			})
 		);
 	}
@@ -80,7 +79,7 @@ class MyBestPicturesAlbum extends BaseSmartAlbum
 		$query = $this->photos()
 			->join('photo_ratings as pr_filter', function ($join) use ($cutoff_rating): void {
 				$join->on('photos.id', '=', 'pr_filter.photo_id')
-					->where('pr_filter.user_id', '=', Auth::id() ?? 0)
+					->where('pr_filter.user_id', '=', $this->resolveUserId())
 					->where('pr_filter.rating', '>=', $cutoff_rating);
 			})
 			->select('photos.*'); // Ensure we only select photo columns
@@ -107,7 +106,7 @@ class MyBestPicturesAlbum extends BaseSmartAlbum
 	 */
 	private function getCutoffRating(int $limit): ?int
 	{
-		$user_id = Auth::id() ?? 0;
+		$user_id = $this->resolveUserId();
 
 		// Get the Nth highest rating from current user
 		$nth_rating = DB::table('photo_ratings')
