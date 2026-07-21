@@ -8,6 +8,6 @@ return [
     */
     'error' => 'خطأ',
     'success' => 'نجاح',
-    'album_updated' => 'Album updated',
-    'update_failed' => 'Failed to update album',
+    'album_updated' => 'تم تحديث الألبوم',
+    'update_failed' => 'فشل تحديث الألبوم',
 ];

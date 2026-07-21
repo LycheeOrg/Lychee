@@ -32,7 +32,7 @@ return [
         'users' => 'المستخدمون',
         'cancel' => 'إلغاء',
         'create' => 'إنشاء',
-        'edit' => 'Edit',
+        'edit' => 'تعديل',
 
         'error_name_required' => 'اسم المجموعة مطلوب.',
     ],
