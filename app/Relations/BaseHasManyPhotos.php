@@ -12,15 +12,14 @@ use App\Eloquent\FixedQueryBuilder;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Models\Album;
 use App\Models\Extensions\BaseAlbum;
+use App\Models\Extensions\ResolvesUserContext;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\PersonAlbum;
 use App\Models\Photo;
 use App\Models\TagAlbum;
-use App\Models\User;
 use App\Policies\PhotoQueryPolicy;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\Relation;
-use Illuminate\Support\Facades\Auth;
 
 /**
  * Common base class of all photo relations for albums which are not the
@@ -33,17 +32,14 @@ use Illuminate\Support\Facades\Auth;
  */
 abstract class BaseHasManyPhotos extends Relation
 {
-	protected PhotoQueryPolicy $photo_query_policy;
-
 	/**
-	 * Explicit user context, overriding the currently authenticated user.
-	 * Set by subclasses before calling {@link BaseHasManyPhotos::__construct()},
+	 * $for_user/$user_is_set (see {@link ResolvesUserContext}) must be set by
+	 * subclasses before calling {@link BaseHasManyPhotos::__construct()},
 	 * since the parent constructor already triggers `addEagerConstraints()`.
-	 * Used by {@link \App\Jobs\RecomputeAlbumUserThumbsJob} to compute photos
-	 * "as seen by" an arbitrary user outside of an HTTP request.
 	 */
-	protected ?User $for_user = null;
-	protected bool $user_is_set = false;
+	use ResolvesUserContext;
+
+	protected PhotoQueryPolicy $photo_query_policy;
 
 	public function __construct(TagAlbum|Album|PersonAlbum $owning_album)
 	{
@@ -81,18 +77,6 @@ abstract class BaseHasManyPhotos extends Relation
 			Photo::query()->with(['albums', 'size_variants', 'palette', 'tags']),
 			$owning_album
 		);
-	}
-
-	/**
-	 * Resolves the user whose permissions should be used to query photos:
-	 * the explicit override set by the subclass constructor, or the
-	 * currently authenticated user otherwise.
-	 *
-	 * @return ?User
-	 */
-	protected function resolveUser(): ?User
-	{
-		return $this->user_is_set ? $this->for_user : Auth::user();
 	}
 
 	/**

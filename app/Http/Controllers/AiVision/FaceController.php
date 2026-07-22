@@ -46,7 +46,7 @@ class FaceController extends Controller
 			$face->person_id = $person->id;
 		}
 		$face->save();
-		PhotoPersonsChanged::dispatch($face->photo_id);
+		PhotoPersonsChanged::dispatch([$face->photo_id]);
 
 		return FaceResource::fromModel($face->load(['suggestions.suggestedFace.person', 'person']));
 	}
@@ -68,7 +68,7 @@ class FaceController extends Controller
 			$face->person_id = null;
 		}
 		$face->save();
-		PhotoPersonsChanged::dispatch($face->photo_id);
+		PhotoPersonsChanged::dispatch([$face->photo_id]);
 
 		if ($old_person_id !== null) {
 			$this->recountOrDeletePersons([$old_person_id]);
@@ -102,8 +102,8 @@ class FaceController extends Controller
 			$query->update(['person_id' => null]);
 
 			$this->recountOrDeletePersons($affected_person_ids);
-			foreach ($affected_photo_ids as $photo_id) {
-				PhotoPersonsChanged::dispatch($photo_id);
+			if ($affected_photo_ids !== []) {
+				PhotoPersonsChanged::dispatch($affected_photo_ids);
 			}
 
 			return ['affected_count' => $count, 'person_id' => null];
@@ -126,8 +126,8 @@ class FaceController extends Controller
 		$person->save();
 
 		$this->recountOrDeletePersons($old_person_ids);
-		foreach ($affected_photo_ids as $photo_id) {
-			PhotoPersonsChanged::dispatch($photo_id);
+		if ($affected_photo_ids !== []) {
+			PhotoPersonsChanged::dispatch($affected_photo_ids);
 		}
 
 		return ['affected_count' => $count, 'person_id' => $person->id];

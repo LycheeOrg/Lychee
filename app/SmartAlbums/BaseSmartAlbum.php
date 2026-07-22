@@ -20,6 +20,7 @@ use App\Exceptions\Internal\InvalidQueryModelException;
 use App\Exceptions\InvalidPropertyException;
 use App\Models\AccessPermission;
 use App\Models\Extensions\CachesAlbumUserThumb;
+use App\Models\Extensions\ResolvesUserContext;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\Extensions\Thumb;
 use App\Models\Extensions\ToArrayThrowsNotImplemented;
@@ -33,7 +34,6 @@ use App\SmartAlbums\Utils\MimicModel;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\Auth;
 
 /**
  * Class BaseSmartAlbum.
@@ -50,6 +50,7 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	use UTCBasedTimes;
 	use ToArrayThrowsNotImplemented;
 	use CachesAlbumUserThumb;
+	use ResolvesUserContext;
 
 	protected PhotoQueryPolicy $photo_query_policy;
 	protected string $id;
@@ -60,15 +61,6 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	protected \Closure $smart_photo_condition;
 	protected AccessPermission|null $public_permissions;
 	protected ConfigManager $config_manager;
-
-	/**
-	 * Explicit user context, set via {@link BaseSmartAlbum::forUser()}.
-	 * Used to compute this album's thumb/photos "as seen by" an arbitrary
-	 * user (e.g. from a queued job), instead of the currently authenticated
-	 * user. Null value + $user_is_set=true means "as seen by a guest".
-	 */
-	protected ?User $for_user = null;
-	protected bool $user_is_set = false;
 
 	/**
 	 * @throws ConfigurationKeyMissingException
@@ -165,18 +157,6 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 		$this->thumb = null;
 
 		return $this;
-	}
-
-	/**
-	 * Resolves the user whose permissions should be used to query photos:
-	 * the explicit override set via {@link BaseSmartAlbum::forUser()}, or
-	 * the currently authenticated user otherwise.
-	 *
-	 * @return ?User
-	 */
-	protected function resolveUser(): ?User
-	{
-		return $this->user_is_set ? $this->for_user : Auth::user();
 	}
 
 	/**

@@ -10,6 +10,7 @@ namespace App\Jobs;
 
 use App\Constants\AccessPermissionConstants as APC;
 use App\Constants\PhotoAlbum as PA;
+use App\Jobs\Traits\DebouncesLatestJobTrait;
 use App\Models\AccessPermission;
 use App\Models\Album;
 use App\Models\Photo;

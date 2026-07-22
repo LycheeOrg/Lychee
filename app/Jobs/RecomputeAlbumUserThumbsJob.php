@@ -10,6 +10,7 @@ namespace App\Jobs;
 
 use App\DTO\PhotoSortingCriterion;
 use App\Factories\AlbumFactory;
+use App\Jobs\Traits\DebouncesLatestJobTrait;
 use App\Models\AlbumUserThumb;
 use App\Models\Extensions\Thumb;
 use App\Models\PersonAlbum;
@@ -118,6 +119,9 @@ class RecomputeAlbumUserThumbsJob implements ShouldQueue
 		);
 	}
 
+	/**
+	 * Resolve the thumb for a tag album, or null if the album is gone or no photo qualifies for this viewer.
+	 */
 	private function resolveTagThumb(?User $user): ?Thumb
 	{
 		$album = TagAlbum::find($this->album_id);
@@ -130,6 +134,9 @@ class RecomputeAlbumUserThumbsJob implements ShouldQueue
 		return Thumb::createFromQueryable($relation, $album->getEffectivePhotoSorting());
 	}
 
+	/**
+	 * Resolve the thumb for a person album, or null if the album is gone or no photo qualifies for this viewer.
+	 */
 	private function resolvePersonThumb(?User $user): ?Thumb
 	{
 		$album = PersonAlbum::find($this->album_id);
@@ -142,6 +149,9 @@ class RecomputeAlbumUserThumbsJob implements ShouldQueue
 		return Thumb::createFromQueryable($relation, $album->getEffectivePhotoSorting());
 	}
 
+	/**
+	 * Resolve the thumb for a built-in smart album, or null if {@link self::$album_id} isn't a known smart album type.
+	 */
 	private function resolveSmartThumb(?User $user): ?Thumb
 	{
 		$smart_album_class = AlbumFactory::BUILTIN_SMARTS_CLASS[$this->album_id] ?? null;

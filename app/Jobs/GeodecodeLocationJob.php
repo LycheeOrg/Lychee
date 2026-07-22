@@ -9,6 +9,7 @@
 namespace App\Jobs;
 
 use App\Enum\JobStatus;
+use App\Jobs\Traits\HasFailedTrait;
 use App\Metadata\Extractor;
 use App\Metadata\Geodecoder;
 use App\Models\JobHistory;

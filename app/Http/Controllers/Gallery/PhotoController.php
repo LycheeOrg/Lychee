@@ -189,12 +189,11 @@ class PhotoController extends Controller
 	 */
 	public function highlight(SetPhotosHighlightedRequest $request): void
 	{
-		$photo_ids = [];
 		foreach ($request->photos() as $photo) {
 			$photo->is_highlighted = $request->isHighlighted();
 			$photo->save();
-			$photo_ids[] = $photo->id;
 		}
+		$photo_ids = $request->photos()->map(fn (Photo $photo) => $photo->id)->all();
 
 		PhotoHighlightToggled::dispatch($photo_ids);
 	}

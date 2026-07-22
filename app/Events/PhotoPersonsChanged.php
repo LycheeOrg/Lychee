@@ -18,8 +18,10 @@ class PhotoPersonsChanged
 
 	/**
 	 * Create a new event instance.
+	 *
+	 * @param array<int,string> $photo_ids batched so listeners can resolve affected albums once per call instead of once per photo
 	 */
-	public function __construct(public string $photo_id)
+	public function __construct(public array $photo_ids)
 	{
 	}
 }

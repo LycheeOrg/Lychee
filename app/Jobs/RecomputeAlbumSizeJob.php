@@ -10,6 +10,7 @@ namespace App\Jobs;
 
 use App\Constants\PhotoAlbum as PA;
 use App\Enum\SizeVariantType;
+use App\Jobs\Traits\DebouncesLatestJobTrait;
 use App\Models\Album;
 use App\Models\AlbumSizeStatistics;
 use Illuminate\Bus\Queueable;
