@@ -16,7 +16,7 @@
 				<ProgressSpinner v-if="loading" class="w-full" />
 			</ScrollPanel>
 			<div class="flex gap-4 mt-1">
-				<Button v-if="data !== 0 && !loading" severity="danger" class="w-full font-bold border-none" @click="exec">
+				<Button v-if="data !== 0 && !loading" severity="danger" class="w-full border-none" @click="exec">
 					{{ $t("maintenance.destroy-dismissed-faces.action") }}
 				</Button>
 			</div>

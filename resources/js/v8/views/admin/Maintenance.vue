@@ -13,7 +13,6 @@
 	>
 		<MaintenanceUpdate />
 		<MaintenanceOptimize />
-		<MaintenanceDuplicateChecker />
 		<MaintenanceFlushCache />
 		<MaintenanceGenSizevariants :sv="2" />
 		<MaintenanceGenSizevariants :sv="3" />

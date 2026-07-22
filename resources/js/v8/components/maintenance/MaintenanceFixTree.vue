@@ -1,7 +1,7 @@
 <template>
-	<UCard v-if="data !== undefined && fixable" class="min-h-40 relative" :ui="{ body: 'h-full flex flex-col justify-between gap-4' }">
+	<UCard v-if="data !== undefined && fixable" class="min-h-40 relative bg-muted/50">
 		<template #header>
-			<div class="text-center">
+			<div class="text-center font-bold">
 				{{ $t("maintenance.fix-tree.title") }}
 			</div>
 		</template>
@@ -14,11 +14,11 @@
 			</div>
 			<Spinner v-if="loading" class="w-full" />
 		</div>
-		<div class="flex gap-4 mt-1">
+		<template #footer>
 			<UButton v-if="fixable && !loading" :to="{ name: 'tree' }" color="primary" class="w-full justify-center">
 				{{ $t("maintenance.fix-tree.button") }}
 			</UButton>
-		</div>
+		</template>
 	</UCard>
 </template>
 

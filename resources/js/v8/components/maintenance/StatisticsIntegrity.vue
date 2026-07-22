@@ -1,7 +1,7 @@
 <template>
 	<UCard
 		v-if="data !== undefined && data.missing_albums !== 0 && data.missing_photos !== 0"
-		class="min-h-40 relative"
+		class="min-h-40 relative bg-muted/50"
 		:ui="{ body: 'h-full flex flex-col justify-between gap-4' }"
 	>
 		<template #header>
@@ -16,11 +16,11 @@
 			</div>
 			<Spinner v-if="loading" class="w-full" />
 		</div>
-		<div class="flex gap-4 mt-1">
+		<template #footer>
 			<UButton v-if="!loading" color="primary" class="w-full font-bold justify-center" @click="exec">
 				{{ $t("maintenance.statistics-check.button") }}
 			</UButton>
-		</div>
+		</template>
 	</UCard>
 </template>
 
