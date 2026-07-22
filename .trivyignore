@@ -13,3 +13,8 @@
 # PHP's own hash_hmac() and openssl_sign() behave identically and have no CVEs for this.
 # NVD agrees — hence the Disputed tag and no score from NIST.
 CVE-2025-45769
+
+# Unfortunately, this CVE does not have a fix yet.
+# google.golang.org/grpc │ GHSA-hrxh-6v49-42gf │ HIGH     │ fixed  │ v1.81.1           │ 1.82.1        │ gRPC-Go: xDS RBAC and HTTP/2 Vulnerabilities
+# Nasty nasty
+GHSA-hrxh-6v49-42gf
