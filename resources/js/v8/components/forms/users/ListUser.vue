@@ -58,7 +58,9 @@
 </template>
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
-import { sizeToUnit } from "@/utils/StatsSizeVariantToColours";
+import { useSizeVariantStats } from "@/v8/composables/useSizeVariantStats";
+
+const { sizeToUnit } = useSizeVariantStats();
 
 const props = defineProps<{
 	user: App.Http.Resources.Models.UserManagementResource;

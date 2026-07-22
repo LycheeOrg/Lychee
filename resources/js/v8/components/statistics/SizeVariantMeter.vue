@@ -1,24 +1,30 @@
 <template>
-	<div
-		v-if="sizeVariantSpaceMeter && sizeVariantSpaceMeter.length > 0"
-		class="flex flex-wrap gap-2 xl:gap-6 w-full sm:justify-between justify-center"
-	>
-		<template v-for="val of sizeVariantSpaceMeter" :key="val.label">
-			<UCard class="w-2/5 sm:w-auto border border-default shadow-none">
-				<div class="flex justify-between gap-8">
-					<div class="flex gap-1 flex-col">
-						<span class="text-xs sm:text-sm">
-							<span
-								class="rounded-full h-3 w-3 inline-block ltr:mr-1 rtl:mk-1 ltr:sm:mr-2 rtl:sm:ml-2"
-								:style="'background-color: ' + val.color"
-							/>
-							{{ val.label }}
-						</span>
-						<span class="font-bold text-base rtl:text-right" dir="ltr">{{ val.size }}</span>
+	<div v-if="sizeVariantSpaceMeter && sizeVariantSpaceMeter.length > 0" class="flex flex-col gap-4 w-full">
+		<div class="flex w-full h-2 sm:h-3 rounded-full overflow-hidden bg-elevated">
+			<div
+				v-for="val of sizeVariantSpaceMeter"
+				:key="val.label"
+				:style="{ width: val.value + '%', backgroundColor: val.color }"
+			/>
+		</div>
+		<div class="flex flex-wrap gap-2 xl:gap-6 w-full sm:justify-between justify-center">
+			<template v-for="val of sizeVariantSpaceMeter" :key="val.label">
+				<UCard class="w-2/5 sm:w-auto border border-default shadow-none">
+					<div class="flex justify-between gap-8">
+						<div class="flex gap-1 flex-col">
+							<span class="text-xs sm:text-sm">
+								<span
+									class="rounded-full h-3 w-3 inline-block ltr:mr-1 rtl:mk-1 ltr:sm:mr-2 rtl:sm:ml-2"
+									:style="'background-color: ' + val.color"
+								/>
+								{{ val.label }}
+							</span>
+							<span class="font-bold text-base rtl:text-right" dir="ltr">{{ val.size }}</span>
+						</div>
 					</div>
-				</div>
-			</UCard>
-		</template>
+				</UCard>
+			</template>
+		</div>
 	</div>
 	<div v-else class="text-center">{{ $t("statistics.no_data") }}</div>
 </template>
@@ -27,9 +33,11 @@ import { usePreviewData } from "@/composables/preview/getPreviewInfo";
 import StatisticsService from "@/services/statistics-service";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
-import { sizeToUnit, sizeVariantToColour } from "@/utils/StatsSizeVariantToColours";
+import { useSizeVariantStats } from "@/v8/composables/useSizeVariantStats";
 import { storeToRefs } from "pinia";
 import { ref } from "vue";
+
+const { sizeToUnit, sizeVariantToColour } = useSizeVariantStats();
 
 type SizeVariantData = {
 	label: string;

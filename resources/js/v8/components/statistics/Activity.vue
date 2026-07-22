@@ -5,7 +5,7 @@
 			{{ caption }}
 			<UTooltip v-if="isTakenAt" :text="$t('statistics.punch_card.with-exif')"><span class="ml-1">*</span></UTooltip>
 		</div>
-		<div class="flex items-start justify-center gap-4 w-[calc(1024px-2rem)]">
+		<div class="flex items-start justify-center gap-4 w-248">
 			<div class="flex justify-center flex-col items-center">
 				<PunchCard :key="getKey(counts)" :low="low" :medium="medium" :high="high" :data="counts" :year="year" />
 				<PunchCardCaption :low="low" :medium="medium" :high="high" />
