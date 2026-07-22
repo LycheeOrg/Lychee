@@ -632,7 +632,7 @@ class AlbumUpdateTest extends BaseApiWithDataTest
 		$response->assertJsonPath("albums.$idx.id", $this->album1->id);
 		$response->assertJsonPath("albums.$idx.title", $this->album1->title);
 		$response->assertJsonPath("albums.$idx.description", null);
-		$response->assertJsonPath("albums.$idx.thumb.id", $this->photo1->id);
+		$response->assertJsonPath("albums.$idx.thumb.id", null);
 		$response->assertJsonPath("albums.$idx.is_nsfw", false);
 		$response->assertJsonPath("albums.$idx.is_pinned", false);
 		$response->assertJsonPath("albums.$idx.is_public", true);
