@@ -307,11 +307,6 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 			return null;
 		}
 
-		if ($permissions->some(fn ($perm) => $perm->user_id === null && $perm->user_group_id === null && $perm->is_link_required === false && $perm->password === null)) {
-			// Album is public visible
-			return $this->getPhotoIdForUser($album, null, $is_nsfw_context);
-		}
-
 		// Album is not public visible
 		// Find out who can access this album
 		if ($permissions->count() === 1 && $permissions->first()->user_id !== null) {

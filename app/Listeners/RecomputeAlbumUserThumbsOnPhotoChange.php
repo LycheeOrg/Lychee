@@ -65,7 +65,7 @@ class RecomputeAlbumUserThumbsOnPhotoChange
 
 	public function handlePhotoTagsChanged(PhotoTagsChanged $event): void
 	{
-		$this->refreshForPhotoId($event->photo_id);
+		$this->refreshForPhotoIds($event->photo_ids);
 	}
 
 	public function handlePhotoPersonsChanged(PhotoPersonsChanged $event): void

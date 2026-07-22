@@ -41,7 +41,7 @@ trait DebouncesLatestJobTrait
 	 */
 	protected function registerAsLatestJob(): void
 	{
-		$this->jobId = uniqid('job_', true);
+		$this->jobId = 'job_' . base64_encode(random_bytes(17));
 
 		Cache::put(
 			$this->latestJobCacheKey(),

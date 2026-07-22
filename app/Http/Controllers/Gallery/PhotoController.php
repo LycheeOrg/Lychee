@@ -169,7 +169,7 @@ class PhotoController extends Controller
 		$existing_tags = Tag::from($request->tags());
 		$photo->tags()->sync($existing_tags->pluck('id'));
 		$photo->load('tags');
-		PhotoTagsChanged::dispatch($photo->id);
+		PhotoTagsChanged::dispatch([$photo->id]);
 		$photo->license = $request->license()->value;
 
 		// if the request takenAt is null, then we set the initial value back.
@@ -310,6 +310,7 @@ class PhotoController extends Controller
 			});
 			DB::commit();
 		});
+		PhotoTagsChanged::dispatch($photo_ids->all());
 	}
 
 	/**

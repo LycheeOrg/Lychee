@@ -13,7 +13,6 @@ use App\Actions\Sharing\Propagate;
 use App\Actions\Sharing\Share;
 use App\Constants\AccessPermissionConstants as APC;
 use App\Exceptions\Internal\LycheeLogicException;
-use App\Exceptions\UnauthenticatedException;
 use App\Http\Requests\Sharing\AddSharingRequest;
 use App\Http\Requests\Sharing\DeleteSharingRequest;
 use App\Http\Requests\Sharing\EditSharingRequest;
@@ -149,7 +148,7 @@ class SharingController extends Controller
 	public function listAlbums(ListAllSharingRequest $request, ListAlbums $list_albums): array
 	{
 		/** @var User $user */
-		$user = Auth::user() ?? throw new UnauthenticatedException();
+		$user = Auth::user();
 		if ($user->may_administrate) {
 			$owner_id = null;
 		} else {
