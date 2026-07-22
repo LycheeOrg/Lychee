@@ -1,99 +1,87 @@
 <?php
-
-/**
+return [
+    /**
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2017-2018 Tobias Reich
  * Copyright (c) 2018-2026 LycheeOrg.
  */
-
-return [
     /*
     |--------------------------------------------------------------------------
     | Bulk Album Edit admin page
     |--------------------------------------------------------------------------
     */
-
-    'title' => 'Bulk Album Edit',
-    'description' => 'Edit metadata and visibility settings for multiple albums at once.',
-    'warning' => 'Changes made here are applied immediately and cannot be undone. Tag albums are not shown.',
-
+    'title' => 'Album-Massenbearbeitung',
+    'description' => 'Bearbeiten Sie Metadaten und Sichtbarkeitseinstellungen für mehrere Alben gleichzeitig.',
+    'warning' => 'Die hier vorgenommenen Änderungen werden sofort übernommen und können nicht rückgängig gemacht werden. Tag-Alben werden nicht angezeigt.',
     // Table columns
-    'col_title' => 'Title',
-    'col_owner' => 'Owner',
-    'col_license' => 'License',
-    'col_is_nsfw' => 'Sensitive',
-    'col_is_public' => 'Public',
+    'col_title' => 'Titel',
+    'col_owner' => 'Eigentümer',
+    'col_license' => 'Lizenz',
+    'col_is_nsfw' => 'Empfindlich',
+    'col_is_public' => 'Öffentlich',
     'col_is_link_required' => 'Link',
-    'col_grants_full_photo_access' => 'Full Photo',
-    'col_grants_download' => 'Download',
-    'col_grants_upload' => 'Upload',
-    'col_photo_sorting' => 'Photo Sort',
-    'col_album_sorting' => 'Album Sort',
-    'col_created_at' => 'Created',
-
+    'col_grants_full_photo_access' => 'Foto in voller Größe',
+    'col_grants_download' => 'Herunterladen',
+    'col_grants_upload' => 'Hochladen',
+    'col_photo_sorting' => 'Fotosortierung',
+    'col_album_sorting' => 'Album „Sort“',
+    'col_created_at' => 'Erstellt',
     // Filter
-    'filter_placeholder' => 'Search by title...',
-
+    'filter_placeholder' => 'Nach Titel suchen...',
     // Pagination
-    'per_page' => 'Per page',
-    'total_selected' => ':n album selected|:n albums selected',
-    'select_all_page' => 'Select all on this page',
-    'select_all_matching' => 'Select all matching',
-    'cap_warning' => 'Only the first 1,000 albums have been selected.',
-
+    'per_page' => 'Für Seite',
+    'total_selected' => ':n Album ausgewählt|:n albums selected',
+    'select_all_page' => 'Alles auf dieser Seite auswählen',
+    'select_all_matching' => 'Alle Übereinstimmungen auswählen',
+    'cap_warning' => 'Es wurden nur die ersten 1.000 Alben ausgewählt.',
     // Mode toggle
-    'mode_paginated' => 'Paginated',
-    'mode_infinite' => 'Infinite scroll',
-
+    'mode_paginated' => 'Paginiert',
+    'mode_infinite' => 'Unendliches Scrollen',
     // Action buttons
-    'action_delete' => 'Delete',
-    'action_set_owner' => 'Set Owner',
-    'action_edit_fields' => 'Edit Fields',
-
+    'action_delete' => 'Löschen',
+    'action_set_owner' => 'Eigentümer festlegen',
+    'action_edit_fields' => 'Felder bearbeiten',
     // Edit Fields modal
-    'edit_fields_title' => 'Edit Fields',
-    'edit_fields_description' => 'Only checked fields will be updated. Empty values clear the field.',
-    'section_metadata' => 'Metadata',
-    'section_visibility' => 'Visibility',
-    'field_description' => 'Description',
-    'field_copyright' => 'Copyright',
-    'field_license' => 'License',
-    'field_photo_layout' => 'Photo Layout',
-    'field_photo_sorting_col' => 'Photo Sort Column',
-    'field_photo_sorting_order' => 'Photo Sort Order',
-    'field_album_sorting_col' => 'Album Sort Column',
-    'field_album_sorting_order' => 'Album Sort Order',
-    'field_album_thumb_aspect_ratio' => 'Thumb Aspect Ratio',
-    'field_album_timeline' => 'Album Timeline',
-    'field_photo_timeline' => 'Photo Timeline',
-    'field_is_nsfw' => 'Sensitive',
-    'field_is_public' => 'Public',
-    'field_is_link_required' => 'Link Required',
-    'field_grants_full_photo_access' => 'Full Photo Access',
-    'field_grants_download' => 'Download',
-    'field_grants_upload' => 'Upload (SE)',
-    'apply' => 'Apply',
-    'cancel' => 'Cancel',
-
+    'edit_fields_title' => 'Felder bearbeiten',
+    'edit_fields_description' => 'Es werden nur die markierten Felder aktualisiert. Leere Werte löschen den Inhalt des Feldes.',
+    'section_metadata' => 'Metadaten',
+    'section_visibility' => 'Sichtbarkeit',
+    'field_description' => 'Beschreibung',
+    'field_copyright' => 'Urheberrecht',
+    'field_license' => 'Lizenz',
+    'field_photo_layout' => 'Fotolayout',
+    'field_photo_sorting_col' => 'Spalte „Fotos sortieren“',
+    'field_photo_sorting_order' => 'Sortierreihenfolge der Fotos',
+    'field_album_sorting_col' => 'Spalte „Album sortieren“',
+    'field_album_sorting_order' => 'Sortierreihenfolge der Alben',
+    'field_album_thumb_aspect_ratio' => 'Seitenverhältnis des Vorschaubilds',
+    'field_album_timeline' => 'Album-Chronologie',
+    'field_photo_timeline' => 'Foto-Zeitleiste',
+    'field_is_nsfw' => 'Empfindlich',
+    'field_is_public' => 'Öffentlich',
+    'field_is_link_required' => 'Link erforderlich',
+    'field_grants_full_photo_access' => 'Voller Zugriff auf Fotos',
+    'field_grants_download' => 'Herunterladen',
+    'field_grants_upload' => 'Hochladen (SE)',
+    'apply' => 'Anwenden',
+    'cancel' => 'Abbrechen',
     // Set Owner modal
-    'set_owner_title' => 'Set Owner',
-    'set_owner_description' => 'All selected albums will be moved to the root level and their descendants will also be transferred.',
-    'set_owner_select_user' => 'Select new owner',
-    'transfer' => 'Transfer',
-
+    'set_owner_title' => 'Besitzer setzen',
+    'set_owner_description' => 'Alle ausgewählten Alben werden in die oberste Ebene verschoben, und ihre untergeordneten Elemente werden ebenfalls übertragen.',
+    'set_owner_select_user' => 'Neuen Eigentümer auswählen',
+    'transfer' => 'Übertragung',
     // Delete confirmation modal
-    'delete_title' => 'Delete Albums',
-    'delete_confirm' => 'You are about to permanently delete :count album and all its sub-albums and photos. This action cannot be undone.|You are about to permanently delete :count albums and all their sub-albums and photos. This action cannot be undone.',
-    'confirm_delete' => 'Confirm Delete',
-
+    'delete_title' => 'Alben löschen',
+    'delete_confirm' => 'Sie sind dabei, das Album „:count“ sowie alle darin enthaltenen Unteralben und Fotos endgültig zu löschen. Dieser Vorgang kann nicht rückgängig gemacht werden.|You are about to permanently delete :count albums and all their sub-albums and photos. This action cannot be undone.',
+    'confirm_delete' => 'Löschen bestätigen',
     // Toasts
-    'success_patch' => 'Albums updated successfully.',
-    'success_set_owner' => 'Ownership transferred successfully.',
-    'success_delete' => 'Albums deleted successfully.',
-    'error_load' => 'Failed to load albums.',
-    'error_load_ids' => 'Failed to load album IDs.',
-    'error_patch' => 'Failed to update albums.',
-    'error_set_owner' => 'Failed to transfer ownership.',
-    'error_delete' => 'Failed to delete albums.',
-    'error_load_users' => 'Failed to load users.',
+    'success_patch' => 'Die Alben wurden erfolgreich aktualisiert.',
+    'success_set_owner' => 'Das Eigentumsrecht wurde erfolgreich übertragen.',
+    'success_delete' => 'Die Alben wurden erfolgreich gelöscht.',
+    'error_load' => 'Alben konnten nicht geladen werden.',
+    'error_load_ids' => 'Das Laden der Album-IDs ist fehlgeschlagen.',
+    'error_patch' => 'Die Aktualisierung der Alben ist fehlgeschlagen.',
+    'error_set_owner' => 'Die Eigentumsübertragung ist fehlgeschlagen.',
+    'error_delete' => 'Das Löschen der Alben ist fehlgeschlagen.',
+    'error_load_users' => 'Das Laden der Benutzer ist fehlgeschlagen.',
 ];
