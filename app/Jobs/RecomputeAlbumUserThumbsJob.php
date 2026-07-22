@@ -21,9 +21,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\Middleware\Skip;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -42,6 +40,7 @@ class RecomputeAlbumUserThumbsJob implements ShouldQueue
 	use InteractsWithQueue;
 	use Queueable;
 	use SerializesModels;
+	use DebouncesLatestJobTrait;
 
 	public const KIND_TAG = 'tag';
 	public const KIND_PERSON = 'person';
@@ -64,44 +63,17 @@ class RecomputeAlbumUserThumbsJob implements ShouldQueue
 		public string $album_kind,
 		public string $album_id,
 	) {
-		$this->jobId = uniqid('job_', true);
-
-		// Register this as the latest job for this album
-		Cache::put(
-			$this->cacheKey(),
-			$this->jobId,
-			ttl: now()->plus(days: 1)
-		);
+		$this->registerAsLatestJob();
 	}
 
-	private function cacheKey(): string
+	protected function latestJobCacheKey(): string
 	{
 		return 'album_user_thumb_latest_job:' . $this->album_kind . ':' . $this->album_id;
 	}
 
-	/**
-	 * Get the middleware the job should pass through.
-	 *
-	 * @return array<int,object>
-	 */
-	public function middleware(): array
+	protected function latestJobLogContext(): string
 	{
-		return [
-			Skip::when(fn () => $this->hasNewerJobQueued()),
-		];
-	}
-
-	protected function hasNewerJobQueued(): bool
-	{
-		$latest_job_id = Cache::get($this->cacheKey());
-
-		// We skip if there is no newer job, or if the latest job is not this one
-		$has_newer_job = $latest_job_id !== null && $latest_job_id !== $this->jobId;
-		if ($has_newer_job) {
-			Log::channel('jobs')->debug("Skipping job {$this->jobId} for {$this->album_kind} album {$this->album_id} due to newer job {$latest_job_id} queued.");
-		}
-
-		return $has_newer_job;
+		return "{$this->album_kind} album {$this->album_id}";
 	}
 
 	/**
@@ -112,7 +84,7 @@ class RecomputeAlbumUserThumbsJob implements ShouldQueue
 	public function handle(): void
 	{
 		Log::channel('jobs')->info("Recomputing user thumbs for {$this->album_kind} album {$this->album_id}");
-		Cache::forget($this->cacheKey());
+		$this->forgetLatestJobMarker();
 
 		/** @var array<int,int|null> $user_ids */
 		$user_ids = AlbumUserThumb::query()->where('album_id', '=', $this->album_id)->pluck('user_id')->all();

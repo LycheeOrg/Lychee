@@ -10,11 +10,11 @@ namespace App\Listeners;
 
 use App\Constants\PersonAlbumPersons as PAP;
 use App\Enum\SmartAlbumType;
+use App\Events\PhotoHighlightToggled;
 use App\Events\PhotoMoved;
 use App\Events\PhotoPersonsChanged;
 use App\Events\PhotoRatingChanged;
 use App\Events\PhotoSaved;
-use App\Events\PhotoStarToggled;
 use App\Events\PhotoTagsChanged;
 use App\Events\PhotoWillBeDeleted;
 use App\Jobs\RecomputeAlbumUserThumbsJob;
@@ -53,9 +53,9 @@ class RecomputeAlbumUserThumbsOnPhotoChange
 		$this->refreshForPhotoId($event->photo_id);
 	}
 
-	public function handlePhotoStarToggled(PhotoStarToggled $event): void
+	public function handlePhotoHighlightToggled(PhotoHighlightToggled $event): void
 	{
-		$this->refreshForPhotoId($event->photo_id);
+		$this->refreshForPhotoIds($event->photo_ids);
 	}
 
 	public function handlePhotoRatingChanged(PhotoRatingChanged $event): void
@@ -75,11 +75,27 @@ class RecomputeAlbumUserThumbsOnPhotoChange
 
 	private function refreshForPhotoId(string $photo_id): void
 	{
+		$this->refreshForPhotoIds([$photo_id]);
+	}
+
+	/**
+	 * Batched so a multi-photo change (e.g. bulk highlight toggle) resolves
+	 * the affected album set once across the whole batch, instead of
+	 * dispatching a full set of {@link RecomputeAlbumUserThumbsJob}s per photo.
+	 *
+	 * @param array<int,string> $photo_ids
+	 */
+	private function refreshForPhotoIds(array $photo_ids): void
+	{
+		if ($photo_ids === []) {
+			return;
+		}
+
 		foreach (SmartAlbumType::cases() as $smart_album_type) {
 			RecomputeAlbumUserThumbsJob::dispatch(RecomputeAlbumUserThumbsJob::KIND_SMART, $smart_album_type->value);
 		}
 
-		$tag_ids = DB::table('photos_tags')->where('photo_id', '=', $photo_id)->pluck('tag_id');
+		$tag_ids = DB::table('photos_tags')->whereIn('photo_id', $photo_ids)->distinct()->pluck('tag_id');
 		if ($tag_ids->isNotEmpty()) {
 			$tag_album_ids = DB::table('tag_albums_tags')->whereIn('tag_id', $tag_ids)->distinct()->pluck('album_id');
 			foreach ($tag_album_ids as $tag_album_id) {
@@ -88,7 +104,7 @@ class RecomputeAlbumUserThumbsOnPhotoChange
 		}
 
 		$person_ids = DB::table('faces')
-			->where('photo_id', '=', $photo_id)
+			->whereIn('photo_id', $photo_ids)
 			->whereNotNull('person_id')
 			->where('is_dismissed', '=', false)
 			->distinct()
@@ -100,10 +116,10 @@ class RecomputeAlbumUserThumbsOnPhotoChange
 			}
 		}
 
-		// Backward lookup: albums which currently cache this exact photo as
-		// their thumb, regardless of whether it still matches their tag/person
-		// set today (e.g. its last matching tag was just removed).
-		$cached_album_ids = AlbumUserThumb::query()->where('photo_id', '=', $photo_id)->distinct()->pluck('album_id');
+		// Backward lookup: albums which currently cache any of these photos as
+		// their thumb, regardless of whether they still match their tag/person
+		// set today (e.g. the last matching tag was just removed).
+		$cached_album_ids = AlbumUserThumb::query()->whereIn('photo_id', $photo_ids)->distinct()->pluck('album_id');
 		foreach ($cached_album_ids as $album_id) {
 			if (SmartAlbumType::tryFrom($album_id) !== null) {
 				// Already covered by the unconditional smart album refresh above.

@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Query\Builder as BaseBuilder;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * App\Models\TagAlbum.
@@ -30,6 +31,7 @@ use Illuminate\Database\Query\Builder as BaseBuilder;
  * @property Photo|null          $cover
  * @property Collection<int,Tag> $tags
  * @property bool                $is_and
+ * @property AlbumUserThumb|null $userThumbRow
  *
  * @method static TagAlbumBuilder|TagAlbum query()                       Begin querying the model.
  * @method static TagAlbumBuilder|TagAlbum with(array|string $relations) Begin querying the model with eager loading.
@@ -123,6 +125,24 @@ class TagAlbum extends BaseAlbum
 	}
 
 	/**
+	 * The current viewer's `album_user_thumbs` cache row for this album, if any.
+	 *
+	 * Unlike the live thumb computation (see the note on {@link TagAlbum::getThumbAttribute()}),
+	 * this cache row has a uniform shape across every tag album, so it can be
+	 * eager-loaded (`->with('userThumbRow.photo.size_variants')`) to resolve
+	 * an entire list of tag albums' thumbs in a single query instead of one
+	 * query per album.
+	 *
+	 * @return HasOne<AlbumUserThumb,$this>
+	 */
+	public function userThumbRow(): HasOne
+	{
+		$query = $this->hasOne(AlbumUserThumb::class, 'album_id', 'id');
+
+		return Auth::check() ? $query->where('user_id', '=', Auth::id()) : $query->whereNull('user_id');
+	}
+
+	/**
 	 * @phpstan-ignore method.childReturnType, method.childReturnType
 	 */
 	public function photos(): HasManyPhotosByTag
@@ -133,13 +153,10 @@ class TagAlbum extends BaseAlbum
 	/**
 	 * Returns the value for the virtual attribute {@link TagAlbum::$thumb}.
 	 *
-	 * Note, opposed to {@link Album} the thumbnail of a tag album cannot be
-	 * converted into a proper relation (cp. {@link Album::thumb()}).
-	 * However, doing so would enable to eagerly load all thumbs of all
-	 * tag albums at once (using a single query) and cache the result.
-	 * This would speed up rendering the root album.
-	 * The main obstacle is the way how tags of photos and tags of albums
-	 * are matched to each other.
+	 * Note, opposed to {@link Album} the *live* thumbnail computation (i.e.
+	 * matching photos to this album's tags) cannot itself be converted into
+	 * a proper relation (cp. {@link Album::thumb()}): the main obstacle is
+	 * the way tags of photos and tags of albums are matched to each other.
 	 * At the moment this requires string operations on the PHP level and
 	 * the SQL query for each tag album has an individual number of
 	 * `WHERE`-clauses which is specific for the particular
@@ -150,6 +167,13 @@ class TagAlbum extends BaseAlbum
 	 * two n:m-relations between photos and tags and tags and albums.
 	 * This would allow to create a single `JOIN`-query for all tag albums.
 	 *
+	 * The *cached* thumb (the `album_user_thumbs` row seeded once the live
+	 * computation above has run at least once for this viewer) has no such
+	 * obstacle - see {@link TagAlbum::userThumbRow()} - so it is preferred
+	 * here whenever it has been eager-loaded, and only falls back to the
+	 * per-instance query in {@link CachesAlbumUserThumb::getCachedOrLiveThumb()}
+	 * otherwise.
+	 *
 	 * @return Thumb|null
 	 *
 	 * @throws InvalidPropertyException
@@ -158,6 +182,10 @@ class TagAlbum extends BaseAlbum
 	{
 		if ($this->cover_id !== null) {
 			return Thumb::createFromPhoto($this->cover);
+		}
+
+		if ($this->relationLoaded('userThumbRow') && $this->userThumbRow !== null) {
+			return Thumb::createFromPhoto($this->userThumbRow->photo);
 		}
 
 		// Note, `photos()` already applies a "security filter" and

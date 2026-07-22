@@ -22,6 +22,13 @@ use Illuminate\Support\Facades\Auth;
  *
  * The cache is kept warm on write events by {@link \App\Jobs\RecomputeAlbumUserThumbsJob},
  * which only refreshes viewers who already have a row (see that class for why).
+ *
+ * {@link \App\Models\TagAlbum} and {@link \App\Models\PersonAlbum} additionally
+ * expose this cache row as a proper `userThumbRow()` relation, so a whole list
+ * of tag/person albums can eager-load their thumb in a single query instead of
+ * once per album; this trait's per-instance query remains the fallback for
+ * whenever that relation wasn't eager-loaded, and is the only path available
+ * to smart albums (which have no such relation, see {@link \App\SmartAlbums\BaseSmartAlbum}).
  */
 trait CachesAlbumUserThumb
 {

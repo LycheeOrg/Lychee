@@ -17,7 +17,7 @@ use App\Constants\FileSystem;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\FileStatus;
 use App\Enum\SizeVariantType;
-use App\Events\PhotoStarToggled;
+use App\Events\PhotoHighlightToggled;
 use App\Events\PhotoTagsChanged;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\ConflictingPropertyException;
@@ -189,11 +189,14 @@ class PhotoController extends Controller
 	 */
 	public function highlight(SetPhotosHighlightedRequest $request): void
 	{
+		$photo_ids = [];
 		foreach ($request->photos() as $photo) {
 			$photo->is_highlighted = $request->isHighlighted();
 			$photo->save();
-			PhotoStarToggled::dispatch($photo->id);
+			$photo_ids[] = $photo->id;
 		}
+
+		PhotoHighlightToggled::dispatch($photo_ids);
 	}
 
 	/**

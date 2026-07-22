@@ -16,9 +16,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\Middleware\Skip;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -35,6 +33,7 @@ class RecomputeAlbumSizeJob implements ShouldQueue
 	use InteractsWithQueue;
 	use Queueable;
 	use SerializesModels;
+	use DebouncesLatestJobTrait;
 
 	private string $jobId;
 
@@ -52,40 +51,17 @@ class RecomputeAlbumSizeJob implements ShouldQueue
 		public string $album_id,
 		public bool $propagate_to_parent = true,
 	) {
-		$this->jobId = uniqid('job_', true);
-
-		// Register this as the latest job for this album
-		Cache::put(
-			'album_size_latest_job:' . $this->album_id,
-			$this->jobId,
-			ttl: now()->plus(days: 1)
-		);
+		$this->registerAsLatestJob();
 	}
 
-	/**
-	 * Get the middleware the job should pass through.
-	 *
-	 * @return array<int,object>
-	 */
-	public function middleware(): array
+	protected function latestJobCacheKey(): string
 	{
-		return [
-			Skip::when(fn () => $this->hasNewerJobQueued()),
-		];
+		return 'album_size_latest_job:' . $this->album_id;
 	}
 
-	protected function hasNewerJobQueued(): bool
+	protected function latestJobLogContext(): string
 	{
-		$cache_key = 'album_size_latest_job:' . $this->album_id;
-		$latest_job_id = Cache::get($cache_key);
-
-		// We skip if there is a newer job queued (latest job ID is different from this one)
-		$has_newer_job = $latest_job_id !== null && $latest_job_id !== $this->jobId;
-		if ($has_newer_job) {
-			Log::channel('jobs')->debug("Skipping job {$this->jobId} for album {$this->album_id} due to newer job {$latest_job_id} queued.");
-		}
-
-		return $has_newer_job;
+		return "album {$this->album_id}";
 	}
 
 	/**
@@ -96,7 +72,7 @@ class RecomputeAlbumSizeJob implements ShouldQueue
 	public function handle(): void
 	{
 		Log::channel('jobs')->info("Recomputing sizes for album {$this->album_id} (job {$this->jobId})");
-		Cache::forget("album_size_latest_job:{$this->album_id}");
+		$this->forgetLatestJobMarker();
 
 		try {
 			// Fetch the album
