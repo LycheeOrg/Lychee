@@ -8,6 +8,7 @@
 
 namespace App\Http\Controllers\AiVision;
 
+use App\Events\PhotoPersonsChanged;
 use App\Factories\PersonFactory;
 use App\Http\Requests\Face\AssignFaceRequest;
 use App\Http\Requests\Face\BatchFaceRequest;
@@ -45,6 +46,7 @@ class FaceController extends Controller
 			$face->person_id = $person->id;
 		}
 		$face->save();
+		PhotoPersonsChanged::dispatch($face->photo_id);
 
 		return FaceResource::fromModel($face->load(['suggestions.suggestedFace.person', 'person']));
 	}
@@ -66,6 +68,7 @@ class FaceController extends Controller
 			$face->person_id = null;
 		}
 		$face->save();
+		PhotoPersonsChanged::dispatch($face->photo_id);
 
 		if ($old_person_id !== null) {
 			$this->recountOrDeletePersons([$old_person_id]);
@@ -94,10 +97,14 @@ class FaceController extends Controller
 			}
 
 			$affected_person_ids = (clone $query)->whereNotNull('person_id')->distinct()->pluck('person_id')->all();
+			$affected_photo_ids = (clone $query)->distinct()->pluck('photo_id')->all();
 			$count = $query->count();
 			$query->update(['person_id' => null]);
 
 			$this->recountOrDeletePersons($affected_person_ids);
+			foreach ($affected_photo_ids as $photo_id) {
+				PhotoPersonsChanged::dispatch($photo_id);
+			}
 
 			return ['affected_count' => $count, 'person_id' => null];
 		}
@@ -110,6 +117,7 @@ class FaceController extends Controller
 		}
 
 		$old_person_ids = Face::whereIn('id', $face_ids)->whereNotNull('person_id')->distinct()->pluck('person_id')->all();
+		$affected_photo_ids = Face::whereIn('id', $face_ids)->distinct()->pluck('photo_id')->all();
 		$count = Face::whereIn('id', $face_ids)->update(['person_id' => $person->id]);
 
 		// Bulk update bypasses FaceObserver, so recount denormalized counters manually.
@@ -118,6 +126,9 @@ class FaceController extends Controller
 		$person->save();
 
 		$this->recountOrDeletePersons($old_person_ids);
+		foreach ($affected_photo_ids as $photo_id) {
+			PhotoPersonsChanged::dispatch($photo_id);
+		}
 
 		return ['affected_count' => $count, 'person_id' => $person->id];
 	}

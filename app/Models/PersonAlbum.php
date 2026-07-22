@@ -14,6 +14,7 @@ use App\Exceptions\InvalidPropertyException;
 use App\ModelFunctions\HasAbstractAlbumProperties;
 use App\Models\Builders\PersonAlbumBuilder;
 use App\Models\Extensions\BaseAlbum;
+use App\Models\Extensions\CachesAlbumUserThumb;
 use App\Models\Extensions\Thumb;
 use App\Models\Extensions\ToArrayThrowsNotImplemented;
 use App\Relations\HasManyPhotosByPerson;
@@ -61,6 +62,7 @@ class PersonAlbum extends BaseAlbum
 	use ToArrayThrowsNotImplemented;
 	use HasFactory;
 	use HasAbstractAlbumProperties;
+	use CachesAlbumUserThumb;
 
 	/**
 	 * @var array<string, mixed>
@@ -111,9 +113,12 @@ class PersonAlbum extends BaseAlbum
 	 */
 	protected function getThumbAttribute(): ?Thumb
 	{
-		return Thumb::createFromQueryable(
-			$this->photos(),
-			$this->getEffectivePhotoSorting(),
+		return $this->getCachedOrLiveThumb(
+			$this->id,
+			fn () => Thumb::createFromQueryable(
+				$this->photos(),
+				$this->getEffectivePhotoSorting(),
+			),
 		);
 	}
 

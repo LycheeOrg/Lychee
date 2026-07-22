@@ -13,6 +13,7 @@ use App\Exceptions\InvalidPropertyException;
 use App\ModelFunctions\HasAbstractAlbumProperties;
 use App\Models\Builders\TagAlbumBuilder;
 use App\Models\Extensions\BaseAlbum;
+use App\Models\Extensions\CachesAlbumUserThumb;
 use App\Models\Extensions\Thumb;
 use App\Models\Extensions\ToArrayThrowsNotImplemented;
 use App\Relations\HasManyPhotosByTag;
@@ -65,6 +66,7 @@ class TagAlbum extends BaseAlbum
 	/** @phpstan-use HasFactory<\Database\Factories\TagAlbumFactory> */
 	use HasFactory;
 	use HasAbstractAlbumProperties;
+	use CachesAlbumUserThumb;
 
 	/**
 	 * The model's attributes.
@@ -161,9 +163,12 @@ class TagAlbum extends BaseAlbum
 		// Note, `photos()` already applies a "security filter" and
 		// only returns photos which are accessible by the current
 		// user
-		return Thumb::createFromQueryable(
-			$this->photos(),
-			$this->getEffectivePhotoSorting(),
+		return $this->getCachedOrLiveThumb(
+			$this->id,
+			fn () => Thumb::createFromQueryable(
+				$this->photos(),
+				$this->getEffectivePhotoSorting(),
+			),
 		);
 	}
 
