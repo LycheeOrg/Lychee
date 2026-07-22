@@ -45,7 +45,6 @@ import MaintenanceCleaning from "@/v8/components/maintenance/MaintenanceCleaning
 import MaintenanceFilesize from "@/v8/components/maintenance/MaintenanceFilesize.vue";
 import MaintenanceFixJobs from "@/v8/components/maintenance/MaintenanceFixJobs.vue";
 import MaintenanceFixTree from "@/v8/components/maintenance/MaintenanceFixTree.vue";
-import MaintenanceDuplicateChecker from "@/v8/components/maintenance/MaintenanceDuplicateChecker.vue";
 import MaintenanceGenSizevariants from "@/v8/components/maintenance/MaintenanceGenSizevariants.vue";
 import MaintenanceOptimize from "@/v8/components/maintenance/MaintenanceOptimize.vue";
 import MaintenanceUpdate from "@/v8/components/maintenance/MaintenanceUpdate.vue";
