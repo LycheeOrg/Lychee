@@ -1,5 +1,4 @@
 <?php
-
 return [
     /*
     |--------------------------------------------------------------------------
@@ -7,23 +6,23 @@ return [
     |--------------------------------------------------------------------------
     */
     'title' => 'Moderation',
-    'description' => 'Review and approve photos uploaded by users with the "check" trust level before they become publicly visible.',
-    'approve_selected' => 'Approve Selected',
-    'delete_selected' => 'Delete Selected',
-    'selected' => 'selected',
-    'no_pending' => 'No photos are awaiting moderation.',
-    'approved' => 'Photos approved successfully.',
-    'col_thumbnail' => 'Thumbnail',
-    'col_title' => 'Title',
-    'col_owner' => 'Owner',
+    'description' => 'Überprüfen und genehmigen Sie Fotos, die von Nutzern mit der Vertrauensstufe „Check“ hochgeladen wurden, bevor sie öffentlich sichtbar werden.',
+    'approve_selected' => 'Ausgewählte genehmigen',
+    'delete_selected' => 'Ausgewählte löschen',
+    'selected' => 'ausgewählt',
+    'no_pending' => 'Es stehen keine Fotos zur Freigabe an.',
+    'approved' => 'Fotos wurden erfolgreich genehmigt.',
+    'col_thumbnail' => 'Miniaturansicht',
+    'col_title' => 'Titel',
+    'col_owner' => 'Eigentümer',
     'col_album' => 'Album',
-    'col_uploaded' => 'Uploaded',
-    'col_nsfw' => 'NSFW',
-    'nsfw_review' => 'NSFW Review',
-    'overlay_confidence' => 'Confidence: :value%',
-    'overlay_area' => 'Area: :value',
-    'overlay_mode_all' => 'NSFW: All',
-    'overlay_mode_block' => 'NSFW: Block',
-    'overlay_mode_review' => 'NSFW: Review',
-    'overlay_mode_sensitive' => 'NSFW: Sensitive',
+    'col_uploaded' => 'Hochgeladen',
+    'col_nsfw' => 'Nicht für den Arbeitsplatz geeignet',
+    'nsfw_review' => 'Rezension: „Nicht für die Arbeit geeignet“',
+    'overlay_confidence' => 'Vertrauen: :value%',
+    'overlay_area' => 'Fläche: :value',
+    'overlay_mode_all' => 'Nicht arbeitsplatztauglich: Alle',
+    'overlay_mode_block' => 'Nicht arbeitsplatztauglich: Blockieren',
+    'overlay_mode_review' => 'Nicht für den Arbeitsplatz geeignet: Rezension',
+    'overlay_mode_sensitive' => 'NSFW: Anstößig',
 ];
