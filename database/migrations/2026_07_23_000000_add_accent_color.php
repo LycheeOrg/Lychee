@@ -37,7 +37,7 @@ return new class() extends Migration {
 	 */
 	final public function up(): void
 	{
-		DB::table('configs')->where('order', '>', '0')->where('cat', self::CAT)->increment('order', 2);
+		DB::table('configs')->where('order', '>', '0')->where('order', '<', '1000')->where('cat', self::CAT)->increment('order', 2);
 		DB::table('configs')->where('key', 'use_admin_dashboard')->update(['order' => '2']);
 		DB::table('configs')->insert($this->getConfigs());
 	}
@@ -51,6 +51,6 @@ return new class() extends Migration {
 	{
 		$keys = collect($this->getConfigs())->map(fn ($v) => $v['key'])->all();
 		DB::table('configs')->whereIn('key', $keys)->delete();
-		DB::table('configs')->where('order', '>', '0')->where('cat', self::CAT)->decrement('order', 2);
+		DB::table('configs')->where('order', '>', '0')->where('order', '<', '1000')->where('cat', self::CAT)->decrement('order', 2);
 	}
 };
