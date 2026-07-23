@@ -392,6 +392,7 @@ return [
         'public_visible_flag_enabled' => 'Aktiver flagg for offentlig synlig',
         'password_flag_enabled' => 'Aktiver passordflagg',
         'sensitive_flag_enabled' => 'Aktiver følsomt-flagg',
+        'accent_color' => 'Aksentfarge.',
     ],
     'details' => [
         'version' => '',
@@ -780,6 +781,7 @@ return [
         'public_visible_flag_enabled' => 'Vis det grønne øyeikonet på album som er offentlig synlige.',
         'password_flag_enabled' => 'Vis hengelåsikonet på passordbeskyttede album.',
         'sensitive_flag_enabled' => 'Vis advarselsikonet på album merket som følsomme (NSFW).',
+        'accent_color' => 'Velg en farge, den nærmeste fargepaletten vil bli brukt. Hvis du lar dette stå tomt, vil standard aksentfarge bli brukt.<br>Merk: du må oppdatere siden for å se endringene.',
     ],
     'category_name' => [
         'config' => 'Grunnleggende',

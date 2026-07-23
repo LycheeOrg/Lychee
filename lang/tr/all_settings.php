@@ -393,6 +393,7 @@ return [
         'public_visible_flag_enabled' => 'Enable public visible flag',
         'password_flag_enabled' => 'Enable password flag',
         'sensitive_flag_enabled' => 'Enable sensitive flag',
+        'accent_color' => 'Accent color.',
     ],
     'details' => [
         'version' => '',
@@ -781,6 +782,7 @@ return [
         'public_visible_flag_enabled' => 'Show the green eye icon on albums that are publicly visible.',
         'password_flag_enabled' => 'Show the lock icon on password-protected albums.',
         'sensitive_flag_enabled' => 'Show the warning icon on albums marked as sensitive (NSFW).',
+        'accent_color' => 'Pick a colour, the nearest colour palette will be used. If you leave this empty, the default accent color will be used.<br>Note: you will need to refresh the page to see the changes.',
     ],
     'category_name' => [
         'config' => 'Basics',

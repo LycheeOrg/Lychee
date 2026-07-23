@@ -3,7 +3,7 @@
 		<template #header>
 			<span class="font-bold">{{ $t("diagnostics.self-diagnosis") }}</span>
 		</template>
-		<div v-if="!errors" class="text-sky-400 font-bold">{{ $t("diagnostics.loading") }}</div>
+		<div v-if="!errors" class="text-primary font-bold">{{ $t("diagnostics.loading") }}</div>
 		<div v-for="(error, idx) in errors" v-else class="flex flex-col" :key="`error-${idx}`">
 			<div class="w-full flex">
 				<div class="w-24 flex-none capitalize" :class="getCss(error.type)">{{ error.type }}</div>

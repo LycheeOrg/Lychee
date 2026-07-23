@@ -21,7 +21,7 @@
 			</div>
 		</template>
 		<UCollapsible v-else v-model:open="isOpen" class="w-full">
-			<button type="button" class="flex items-center gap-2 w-full text-left font-semibold text-highlighted py-2">
+			<button type="button" class="flex items-center gap-2 ltr:pr-4 rtl:pl-4 text-left font-semibold text-highlighted py-2">
 				<UIcon name="lucide:chevron-down" class="transition-transform" :class="{ '-rotate-90': !isOpen }" />
 				{{ $t(props.header) }}
 			</button>

@@ -23,11 +23,11 @@
 					id="header-site-logo-title"
 				/>
 				<template v-else>
-					<span class="lg:hidden font-bold text-shadow-sm text-shadow-black">
+					<span class="lg:hidden font-bold text-shadow-sm dark:text-shadow-black light:text-shadow-white">
 						{{ $t("gallery.albums") }}
 					</span>
 					<span
-						class="hidden lg:block font-bold text-shadow-sm text-shadow-black text-sm lg:text-base text-center w-full"
+						class="hidden lg:block font-bold text-shadow-sm dark:text-shadow-black light:text-shadow-white text-sm lg:text-base text-center w-full"
 						@click="is_metrics_open = !is_metrics_open"
 						>{{ props.title }}</span
 					>

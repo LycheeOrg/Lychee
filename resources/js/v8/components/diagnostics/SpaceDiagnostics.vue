@@ -6,7 +6,7 @@
 		<UButton v-if="!requested" icon="lucide:refresh-cw" class="w-48 justify-center font-bold" @click="load">{{
 			$t("diagnostics.load_space")
 		}}</UButton>
-		<div v-if="requested && !space" class="text-sky-400 font-bold">{{ $t("diagnostics.loading") }}</div>
+		<div v-if="requested && !space" class="text-primary font-bold">{{ $t("diagnostics.loading") }}</div>
 		<pre v-if="space"><div v-for="(spaceLine, idx) in space" class=" text-muted font-mono" :key="`space-${idx}`">{{ spaceLine }}</div>
 		</pre>
 	</UCard>

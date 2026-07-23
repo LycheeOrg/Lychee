@@ -32,6 +32,7 @@ class SettingsController extends Controller
 {
 	public const V8_CONFIGS = [
 		'site_logo',
+		'accent_color',
 		'landing_logo',
 		'landing_header_logo',
 		'breadcrumb_enabled',

@@ -21,11 +21,11 @@
 							:class="{
 								'h-3 w-3 m-0.5 rounded-xs border border-default': true,
 								'bg-transparent': week[d].count === 0,
-								'bg-sky-100 dark:bg-sky-100/60': week[d].count > 0 && week[d].count < low,
-								'bg-sky-300 dark:bg-sky-300/80': week[d].count >= low && week[d].count < medium,
-								'bg-sky-500 dark:bg-sky-500/80': week[d].count >= medium && week[d].count < high,
-								'bg-sky-700 dark:bg-sky-700': week[d].count >= high,
-								'border-sky-400!': week[d].date.getMonth() === 0 && week[d].date.getDate() === 1,
+								'bg-primary-100 dark:bg-primary-100/60': week[d].count > 0 && week[d].count < low,
+								'bg-primary-300 dark:bg-primary-300/80': week[d].count >= low && week[d].count < medium,
+								'bg-primary-500 dark:bg-primary-500/80': week[d].count >= medium && week[d].count < high,
+								'bg-primary-700 dark:bg-primary-700': week[d].count >= high,
+								'border-primary!': week[d].date.getMonth() === 0 && week[d].date.getDate() === 1,
 							}"
 						></td>
 					</UTooltip>

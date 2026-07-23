@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6767efe97871e0e17966551474d7f244",
+    "content-hash": "9daf788212dfcc14c66310438129b374",
     "packages": [
         {
             "name": "apimatic/core",
@@ -584,6 +584,56 @@
                 }
             ],
             "time": "2023-12-11T17:09:12+00:00"
+        },
+        {
+            "name": "charlieetienne/palette-generator",
+            "version": "v1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/CharlieEtienne/palette-generator.git",
+                "reference": "2a40ca0a81bcd1d64ec36e52c98e9f821d9f9301"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/CharlieEtienne/palette-generator/zipball/2a40ca0a81bcd1d64ec36e52c98e9f821d9f9301",
+                "reference": "2a40ca0a81bcd1d64ec36e52c98e9f821d9f9301",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.4"
+            },
+            "require-dev": {
+                "pestphp/pest": "^2.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "CharlieEtienne\\PaletteGenerator\\PaletteGeneratorServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "CharlieEtienne\\PaletteGenerator\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Charlie Etienne",
+                    "email": "hello@charlieetienne.com"
+                }
+            ],
+            "description": "A PHP library for generating tailwind v4 color palettes from a hexadecimal color",
+            "support": {
+                "issues": "https://github.com/CharlieEtienne/palette-generator/issues",
+                "source": "https://github.com/CharlieEtienne/palette-generator/tree/v1.1"
+            },
+            "time": "2025-07-08T22:23:35+00:00"
         },
         {
             "name": "clue/stream-filter",

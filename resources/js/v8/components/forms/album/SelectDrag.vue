@@ -2,7 +2,7 @@
 	<div
 		v-if="initialPosition !== undefined"
 		id="selector"
-		class="absolute bg-blue-500/20 border border-sky-400 rounded-sm z-50"
+		class="absolute bg-primary-500/20 border border-primary rounded-sm z-50"
 		:style="position"
 	></div>
 </template>

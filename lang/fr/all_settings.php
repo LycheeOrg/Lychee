@@ -392,6 +392,7 @@ return [
         'public_visible_flag_enabled' => 'Afficher l’icône œil verte sur les albums visibles publiquement.',
         'password_flag_enabled' => 'Afficher l’icône de cadenas sur les albums protégés par mot de passe.',
         'sensitive_flag_enabled' => 'Afficher l’icône d’avertissement sur les albums marqués comme sensibles (NSFW).',
+        'accent_color' => 'Couleur d’accent.',
     ],
     'documentation' => [
         'version' => 'Version actuelle de Lychee',
@@ -780,6 +781,7 @@ return [
         'public_visible_flag_enabled' => 'Activer le drapeau public visible',
         'password_flag_enabled' => 'Activer le drapeau mot de passe',
         'sensitive_flag_enabled' => 'Activer le drapeau sensible',
+        'accent_color' => 'Choisissez une couleur, la palette de couleurs la plus proche sera utilisée. Si vous laissez ce champ vide, la couleur d’accent par défaut sera utilisée.<br>Remarque : vous devrez actualiser la page pour voir les changements.',
     ],
     'category_name' => [
         'config' => 'Les bases',
