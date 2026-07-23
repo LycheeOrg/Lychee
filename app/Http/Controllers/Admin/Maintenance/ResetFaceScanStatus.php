@@ -37,7 +37,7 @@ class ResetFaceScanStatus extends Controller
 			return 0;
 		}
 
-		$threshold_minutes = (int) config('features.ai-vision-service.face-stuck-scan-threshold-minutes', 720);
+		$threshold_minutes = (int) config('services.face_recognition.stuck_scan_threshold', 720);
 		$cutoff = Carbon::now()->subMinutes($threshold_minutes);
 
 		$stuck_count = Photo::where('face_scan_status', '=', FaceScanStatus::PENDING->value)
@@ -57,7 +57,7 @@ class ResetFaceScanStatus extends Controller
 	 */
 	public function do(MaintenanceRequest $_request): array
 	{
-		$threshold_minutes = (int) config('features.ai-vision-service.face-stuck-scan-threshold-minutes', 720);
+		$threshold_minutes = (int) config('services.face_recognition.stuck_scan_threshold', 720);
 		$cutoff = Carbon::now()->subMinutes($threshold_minutes);
 
 		// Reset failed scans

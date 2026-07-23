@@ -24,16 +24,16 @@ class FacialRecognitionServiceTest extends AbstractTestCase
 {
 	private function makeService(string $url = 'http://ai-vision:8000', string $key = 'test-key'): FacialRecognitionService
 	{
-		Config::set('features.ai-vision-service.face-url', $url);
-		Config::set('features.ai-vision-service.face-api-key', $key);
+		Config::set('services.face_recognition.base_url', $url);
+		Config::set('services.face_recognition.api_key', $key);
 
 		return new FacialRecognitionService();
 	}
 
 	private function makeUnconfiguredService(): FacialRecognitionService
 	{
-		Config::set('features.ai-vision-service.face-url', '');
-		Config::set('features.ai-vision-service.face-api-key', '');
+		Config::set('services.face_recognition.base_url', '');
+		Config::set('services.face_recognition.api_key', '');
 
 		return new FacialRecognitionService();
 	}
