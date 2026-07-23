@@ -70,8 +70,8 @@ return [
         'location_decoding' => 'استخدام فك تشفير موقع GPS',
         'location_show' => 'عرض الموقع المستخرج من إحداثيات GPS',
         'location_show_public' => 'يمكن للمستخدمين المجهولين الوصول إلى الموقع المستخرج من إحداثيات GPS',
-        'gps_coordinate_display' => 'Display the GPS coordinates',
-        'gps_coordinate_display_public' => 'Allow anonymous users to access the GPS coordinates',
+        'gps_coordinate_display' => 'عرض إحداثيات GPS',
+        'gps_coordinate_display_public' => 'السماح للمستخدمين المجهولين بالوصول إلى إحداثيات GPS',
     ],
     'cssjs' => [
         'header' => 'CSS وJs مخصص',
@@ -98,8 +98,8 @@ return [
     ],
     'config' => [
         'use_admin_dashboard' => [
-            'label' => 'Use admin dashboard',
-            'help' => 'Replace the nested admin submenu with a single link to the new admin dashboard page.',
+            'label' => 'استخدام لوحة تحكم المسؤول',
+            'help' => 'استبدال القائمة الفرعية المتداخلة للمسؤول برابط واحد لصفحة لوحة تحكم المسؤول الجديدة.',
         ],
     ],
 ];
