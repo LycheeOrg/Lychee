@@ -7,23 +7,23 @@ return [
     |--------------------------------------------------------------------------
     */
     'title' => 'Tags',
-    'description' => 'Manage your tags here. You can rename, merge, and delete tags.',
-    'no_tags' => 'No tags found.',
-    'loading' => 'Loading tags...',
-    'rename' => 'Rename',
-    'merge' => 'Merge',
-    'delete' => 'Delete',
+    'description' => 'Beheer hier uw tags. U kunt tags hernoemen, samenvoegen en verwijderen.',
+    'no_tags' => 'Geen tags gevonden.',
+    'loading' => 'Tags laden...',
+    'rename' => 'Hernoemen',
+    'merge' => 'Samenvoegen',
+    'delete' => 'Verwijderen',
 
-    'column_name' => 'Name',
-    'column_photos' => 'Photos',
+    'column_name' => 'Naam',
+    'column_photos' => 'Foto’s',
     'column_albums' => 'Albums',
 
-    'delete_confirm' => 'Are you sure you want to delete the tag “%s”?',
-    'delete_confirm_multiple' => 'Are you sure you want to delete these %d tags?',
-    'delete_warning' => 'This action cannot be undone! All photos associated with this tag will no longer have this tag.',
+    'delete_confirm' => 'Weet u zeker dat u de tag “%s” wilt verwijderen?',
+    'delete_confirm_multiple' => 'Weet u zeker dat u deze %d tags wilt verwijderen?',
+    'delete_warning' => 'Deze actie kan niet ongedaan worden gemaakt! Alle foto’s die aan deze tag gekoppeld zijn, verliezen deze tag.',
 
-    'merge_confirm' => 'Are you sure you want to merge the tag “%1$s” into the tag “%2$s”?',
-    'merge_warning' => 'This action cannot be undone! All photos associated with the source tag will be moved to the destination tag.',
+    'merge_confirm' => 'Weet u zeker dat u de tag “%1$s” wilt samenvoegen met de tag “%2$s”?',
+    'merge_warning' => 'Deze actie kan niet ongedaan worden gemaakt! Alle foto’s die aan de brontag gekoppeld zijn, worden verplaatst naar de doeltag.',
 
-    'rename_tag' => 'Rename Tag',
+    'rename_tag' => 'Tag hernoemen',
 ];
