@@ -140,11 +140,11 @@ All keys below belong to the `AI Vision` config category (`cat = 'AI Vision'`) a
 
 #### `config/features.php` — AI Vision infrastructure keys
 
-Read via `config('features.ai-vision-service.face-url')` and `config('features.ai-vision-service.face-api-key')`. Never visible in the admin UI or included in config API responses.
+Read via `config('services.face_recognition.base_url')` and `config('services.face_recognition.api_key')`. Never visible in the admin UI or included in config API responses.
 
 | PHP key | `.env` variable | Default | Description |
 |---------|----------------|---------|-------------|
-| `features.ai-vision-service.face-url` | `AI_VISION_FACE_URL` | `""` | Base URL of the Python face-recognition service (e.g. `http://ai-vision:8000`). Must not have a trailing slash. |
+| `services.face_recognition.base_url` | `AI_VISION_FACE_URL` | `""` | Base URL of the Python face-recognition service (e.g. `http://ai-vision:8000`). Must not have a trailing slash. |
 | `features.ai-vision.face-api-key` | `AI_VISION_FACE_API_KEY` | `""` | Shared API key for both directions: sent as `X-API-Key` in Lychee→Python scan requests; expected as `X-API-Key` in Python→Lychee callbacks. Must match `VISION_FACE_API_KEY` on the Python side. |
 
 #### `configs` table — AI Vision admin-configurable keys
@@ -986,7 +986,7 @@ Person ◄──many──► Photo  (derived through Face: Person has many Face
 
 ### Inter-Service Communication (REST + Webhook Callbacks + Shared Volume)
 
-Communication uses REST API with webhook callbacks. Photo files are accessed via **shared Docker volume** (Q-030-07 resolved). Authentication via a single shared symmetric API key stored in `.env` as `AI_VISION_FACE_API_KEY` and read via `config('features.ai-vision-service.face-api-key')` — **never** from the `configs` table. Header: `X-API-Key: <key>`. *(Q-030-15 resolved: single key, both directions; Q-030-19 resolved: ai_vision_* naming)*
+Communication uses REST API with webhook callbacks. Photo files are accessed via **shared Docker volume** (Q-030-07 resolved). Authentication via a single shared symmetric API key stored in `.env` as `AI_VISION_FACE_API_KEY` and read via `config('services.face_recognition.api_key')` — **never** from the `configs` table. Header: `X-API-Key: <key>`. *(Q-030-15 resolved: single key, both directions; Q-030-19 resolved: ai_vision_* naming)*
 
 > **Separation of concerns:** The `POST /api/v2/FaceDetection/results` callback endpoint is authenticated **exclusively** via the `X-API-Key` header. It is not accessible via user session or admin session — even an authenticated admin cannot call this endpoint through the normal auth middleware.
 

@@ -13,6 +13,47 @@ return [
 	|
 	*/
 
+	/*
+	 |--------------------------------------------------------------------------
+	 | Reverse Geocoding service integration.
+	 |--------------------------------------------------------------------------
+	 */
+	'local-geo-decoding' => [
+		'base_url' => env('LOCAL_GEO_DECODING_URL', ''),
+	],
+
+	/*
+	 |--------------------------------------------------------------------------
+	 | Facial recognition service integration.
+	 |--------------------------------------------------------------------------
+	 |
+	 | Infrastructure keys for the external Facial recognition service.
+	 | These are NOT stored in the configs table to avoid exposing the service URL
+	 | or shared API key through the admin settings UI.
+	 */
+	'face_recognition' => [
+		'base_url' => env('AI_VISION_FACE_URL', ''),
+		'api_key' => env('AI_VISION_FACE_API_KEY', ''),
+		'rescan_iou_threshold' => (float) env('AI_VISION_FACE_RESCAN_IOU_THRESHOLD', 0.3),
+		'stuck_scan_threshold-minutes' => (int) env('AI_VISION_FACE_STUCK_SCAN_THRESHOLD_MINUTES', 720),
+		'nsfw-url' => env('AI_VISION_NSFW_URL', ''),
+		'nsfw-api-key' => env('AI_VISION_NSFW_API_KEY', ''),
+	],
+
+	/*
+	 |--------------------------------------------------------------------------
+	 | NSFW detection service integration.
+	 |--------------------------------------------------------------------------
+	 |
+	 | Infrastructure keys for the external NSFW detection service.
+	 | These are NOT stored in the configs table to avoid exposing the service URL
+	 | or shared API key through the admin settings UI.
+	 */
+	'nsfw_detection' => [
+		'base_url' => env('AI_VISION_NSFW_URL', ''),
+		'api_key' => env('AI_VISION_NSFW_API_KEY', ''),
+	],
+
 	'mailgun' => [
 		'domain' => env('MAILGUN_DOMAIN'),
 		'secret' => env('MAILGUN_SECRET'),

@@ -25,8 +25,8 @@ class FacialRecognitionService
 
 	public function __construct()
 	{
-		$this->service_url = config('features.ai-vision-service.face-url', '');
-		$this->api_key = config('features.ai-vision-service.face-api-key', '');
+		$this->service_url = config('services.face_recognition.base_url', '');
+		$this->api_key = config('services.face_recognition.api_key', '');
 	}
 
 	/**

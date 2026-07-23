@@ -186,7 +186,7 @@ _Revision: Q-045-13 through Q-045-19 incorporated_
 ### I5 – Callback Controller, Approval Logic & Routes
 
 - [ ] T-045-16 – Create `NsfwDetectionResultsRequest` (FR-045-02, API-045-01, S-045-21).  
-  _Intent:_ `app/Http/Requests/Nsfw/NsfwDetectionResultsRequest.php`. Authorizes via `X-API-Key` header against `config('features.ai-vision-service.nsfw-api-key')`. Validates full callback payload: `photo_id`, `status`, `should_block`, `should_review`, `is_sensitive`, `all_detected.*`, `block_detected.*`, `review_detected.*`, `sensitive_detected.*` including nested `bbox` objects.  
+  _Intent:_ `app/Http/Requests/Nsfw/NsfwDetectionResultsRequest.php`. Authorizes via `X-API-Key` header against `config('services.nsfw_detection.api_key')`. Validates full callback payload: `photo_id`, `status`, `should_block`, `should_review`, `is_sensitive`, `all_detected.*`, `block_detected.*`, `review_detected.*`, `sensitive_detected.*` including nested `bbox` objects.  
   _Verification commands:_  
   - `make phpstan`
 
