@@ -394,6 +394,7 @@ return [
         'public_visible_flag_enabled' => 'Enable public visible flag',
         'password_flag_enabled' => 'Enable password flag',
         'sensitive_flag_enabled' => 'Enable sensitive flag',
+        'accent_color' => 'Accentkleur.',
     ],
     'details' => [
         'version' => '',
@@ -782,6 +783,7 @@ return [
         'public_visible_flag_enabled' => 'Show the green eye icon on albums that are publicly visible.',
         'password_flag_enabled' => 'Show the lock icon on password-protected albums.',
         'sensitive_flag_enabled' => 'Show the warning icon on albums marked as sensitive (NSFW).',
+        'accent_color' => 'Kies een kleur, het dichtstbijzijnde kleurenpalet wordt gebruikt. Als u dit leeg laat, wordt de standaard accentkleur gebruikt.<br>Let op: u moet de pagina vernieuwen om de wijzigingen te zien.',
     ],
 
     'category_name' => [

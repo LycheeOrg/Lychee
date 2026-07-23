@@ -1,11 +1,7 @@
 <template>
 	<div v-if="sizeVariantSpaceMeter && sizeVariantSpaceMeter.length > 0" class="flex flex-col gap-4 w-full">
 		<div class="flex w-full h-2 sm:h-3 rounded-full overflow-hidden bg-elevated">
-			<div
-				v-for="val of sizeVariantSpaceMeter"
-				:key="val.label"
-				:style="{ width: val.value + '%', backgroundColor: val.color }"
-			/>
+			<div v-for="val of sizeVariantSpaceMeter" :key="val.label" :style="{ width: val.value + '%', backgroundColor: val.color }" />
 		</div>
 		<div class="flex flex-wrap gap-2 xl:gap-6 w-full sm:justify-between justify-center">
 			<template v-for="val of sizeVariantSpaceMeter" :key="val.label">

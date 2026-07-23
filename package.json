@@ -39,6 +39,7 @@
 		"vue-tsc": "^3.3.7"
 	},
 	"dependencies": {
+		"@dayflow/blossom-color-picker-vue": "^1.2.1",
 		"@fortawesome/fontawesome-free": "^7.2.0",
 		"@iconify-json/lucide": "^1.2.116",
 		"@lychee-org/layouts": "^0.1.0",
