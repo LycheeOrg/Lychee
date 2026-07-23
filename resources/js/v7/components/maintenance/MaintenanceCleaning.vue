@@ -16,7 +16,7 @@
 				<ProgressSpinner v-if="loading" class="w-full"></ProgressSpinner>
 			</ScrollPanel>
 			<div class="flex gap-4 mt-1">
-				<Button v-if="data.is_not_empty && !loading" severity="danger" class="w-full font-bold border-none" @click="exec">{{
+				<Button v-if="data.is_not_empty && !loading" severity="danger" class="w-full border-none" @click="exec">{{
 					$t("maintenance.cleaning.button")
 				}}</Button>
 			</div>

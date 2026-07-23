@@ -8,6 +8,7 @@
 
 namespace App\Actions\Photo;
 
+use App\Events\PhotoRatingChanged;
 use App\Exceptions\ConflictingPropertyException;
 use App\Models\Photo;
 use App\Models\PhotoRating;
@@ -101,6 +102,8 @@ class Rating
 
 			// Reload photo with fresh statistics
 			$photo->refresh();
+
+			PhotoRatingChanged::dispatch($photo->id);
 
 			return $photo;
 		} catch (\Throwable $e) {

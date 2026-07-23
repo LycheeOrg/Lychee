@@ -17,6 +17,8 @@ use App\Constants\FileSystem;
 use App\Contracts\Models\AbstractAlbum;
 use App\Enum\FileStatus;
 use App\Enum\SizeVariantType;
+use App\Events\PhotoHighlightToggled;
+use App\Events\PhotoTagsChanged;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\ConflictingPropertyException;
 use App\Factories\IdFactory;
@@ -167,6 +169,7 @@ class PhotoController extends Controller
 		$existing_tags = Tag::from($request->tags());
 		$photo->tags()->sync($existing_tags->pluck('id'));
 		$photo->load('tags');
+		PhotoTagsChanged::dispatch([$photo->id]);
 		$photo->license = $request->license()->value;
 
 		// if the request takenAt is null, then we set the initial value back.
@@ -190,6 +193,9 @@ class PhotoController extends Controller
 			$photo->is_highlighted = $request->isHighlighted();
 			$photo->save();
 		}
+		$photo_ids = $request->photos()->map(fn (Photo $photo) => $photo->id)->all();
+
+		PhotoHighlightToggled::dispatch($photo_ids);
 	}
 
 	/**
@@ -304,6 +310,7 @@ class PhotoController extends Controller
 			});
 			DB::commit();
 		});
+		PhotoTagsChanged::dispatch($photo_ids->all());
 	}
 
 	/**

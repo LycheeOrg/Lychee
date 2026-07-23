@@ -17,6 +17,7 @@ use App\Exceptions\Internal\ZipExtractionException;
 use App\Exceptions\ZipInvalidException;
 use App\Facades\Helpers;
 use App\Image\Files\ProcessableJobFile;
+use App\Jobs\Traits\HasFailedTrait;
 use App\Models\Album;
 use App\Models\JobHistory;
 use App\Repositories\ConfigManager;

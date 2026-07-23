@@ -69,7 +69,7 @@ _Last updated: 2026-01-02_
   - Implement ShouldQueue, add traits
 
 - [x] T-004-09 – Implement constructor with unique job ID and cache storage (FR-004-02, Q-004-03 resolution).
-  _Intent:_ Generate `uniqid('job_', true)`, store in cache `album_size_latest_job:{album_id}` with TTL 1 day.
+  _Intent:_ Generate `'job_' . base64_encode(random_bytes(17))`, store in cache `album_size_latest_job:{album_id}` with TTL 1 day.
   _Verification commands:_
   - Test job construction
   - Verify cache key set

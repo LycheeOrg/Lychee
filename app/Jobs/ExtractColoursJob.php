@@ -13,6 +13,7 @@ use App\Exceptions\ColourPaletteExtractionException;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Image\ColourExtractor\FarzaiExtractor;
 use App\Image\ColourExtractor\LeagueExtractor;
+use App\Jobs\Traits\HasFailedTrait;
 use App\Models\Colour;
 use App\Models\JobHistory;
 use App\Models\Palette;

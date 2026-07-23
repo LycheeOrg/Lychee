@@ -51,6 +51,7 @@ use App\Http\Requests\Traits\HasVisitorIdTrait;
 use App\Http\Resources\Editable\EditableBaseAlbumResource;
 use App\Http\Resources\Models\TargetAlbumResource;
 use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
+use App\Jobs\RecomputeAlbumUserThumbsJob;
 use App\Jobs\WatermarkerJob;
 use App\Models\Album;
 use App\Models\Extensions\BaseAlbum;
@@ -164,6 +165,7 @@ class AlbumController extends Controller
 
 		$tag_models = Tag::from($request->tags());
 		$album->tags()->sync($tag_models->pluck('id')->all());
+		RecomputeAlbumUserThumbsJob::dispatch(RecomputeAlbumUserThumbsJob::KIND_TAG, $album->id);
 
 		// Root
 		return EditableBaseAlbumResource::fromModel($album);
@@ -191,6 +193,7 @@ class AlbumController extends Controller
 		$album->save();
 
 		$album->persons()->sync($request->personIds());
+		RecomputeAlbumUserThumbsJob::dispatch(RecomputeAlbumUserThumbsJob::KIND_PERSON, $album->id);
 
 		return EditableBaseAlbumResource::fromModel($album);
 	}

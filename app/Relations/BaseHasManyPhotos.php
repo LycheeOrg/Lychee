@@ -12,6 +12,7 @@ use App\Eloquent\FixedQueryBuilder;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Models\Album;
 use App\Models\Extensions\BaseAlbum;
+use App\Models\Extensions\ResolvesUserContext;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\PersonAlbum;
 use App\Models\Photo;
@@ -31,6 +32,13 @@ use Illuminate\Database\Eloquent\Relations\Relation;
  */
 abstract class BaseHasManyPhotos extends Relation
 {
+	/**
+	 * $for_user/$user_is_set (see {@link ResolvesUserContext}) must be set by
+	 * subclasses before calling {@link BaseHasManyPhotos::__construct()},
+	 * since the parent constructor already triggers `addEagerConstraints()`.
+	 */
+	use ResolvesUserContext;
+
 	protected PhotoQueryPolicy $photo_query_policy;
 
 	public function __construct(TagAlbum|Album|PersonAlbum $owning_album)

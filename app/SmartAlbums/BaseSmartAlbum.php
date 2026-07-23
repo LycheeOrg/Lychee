@@ -19,6 +19,8 @@ use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Exceptions\Internal\InvalidQueryModelException;
 use App\Exceptions\InvalidPropertyException;
 use App\Models\AccessPermission;
+use App\Models\Extensions\CachesAlbumUserThumb;
+use App\Models\Extensions\ResolvesUserContext;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\Extensions\Thumb;
 use App\Models\Extensions\ToArrayThrowsNotImplemented;
@@ -32,7 +34,6 @@ use App\SmartAlbums\Utils\MimicModel;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\Auth;
 
 /**
  * Class BaseSmartAlbum.
@@ -48,6 +49,8 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	use MimicModel;
 	use UTCBasedTimes;
 	use ToArrayThrowsNotImplemented;
+	use CachesAlbumUserThumb;
+	use ResolvesUserContext;
 
 	protected PhotoQueryPolicy $photo_query_policy;
 	protected string $id;
@@ -110,7 +113,7 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	public function photos(): Builder
 	{
 		/** @var ?User $user */
-		$user = Auth::user();
+		$user = $this->resolveUser();
 		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
 
 		$base_query = Photo::query()->leftJoin(PA::PHOTO_ALBUM, 'photos.id', '=', PA::PHOTO_ID)->with(['size_variants', 'statistics', 'palette', 'tags', 'rating']);
@@ -119,8 +122,8 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 			return $this->photo_query_policy
 				->applySearchabilityFilter(query: $base_query, user: $user, unlocked_album_ids: $unlocked_album_ids, origin: null, include_nsfw: !$this->config_manager->getValueAsBool('hide_nsfw_in_smart_albums'))
 				->when(
-					$this->config_manager->getValueAsBool('enable_smart_album_per_owner') && Auth::check(),
-					fn (Builder $query) => $query->where('photos.owner_id', '=', Auth::id())
+					$this->config_manager->getValueAsBool('enable_smart_album_per_owner') && $user !== null,
+					fn (Builder $query) => $query->where('photos.owner_id', '=', $user->id)
 				)
 				->where($this->smart_photo_condition);
 		}
@@ -129,6 +132,39 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 		// in this smart album. We still need to apply the smart album condition, though.
 		return $this->photo_query_policy->applySensitivityFilter(query: $base_query, user: $user, origin: null, include_nsfw: !$this->config_manager->getValueAsBool('hide_nsfw_in_smart_albums'))
 			->where($this->smart_photo_condition);
+	}
+
+	/**
+	 * Sets an explicit user context for this album instance, overriding the
+	 * currently authenticated user for {@link BaseSmartAlbum::photos()} and
+	 * {@link BaseSmartAlbum::getThumbAttribute()}.
+	 *
+	 * Used by {@link \App\Jobs\RecomputeAlbumUserThumbsJob} to compute this
+	 * album's thumb "as seen by" an arbitrary user outside of an HTTP request.
+	 * Pass `null` to compute "as seen by a guest" (as opposed to not calling
+	 * this method at all, which keeps using the currently authenticated user).
+	 *
+	 * @param ?User $user
+	 *
+	 * @return $this
+	 */
+	public function forUser(?User $user): static
+	{
+		$this->for_user = $user;
+		$this->user_is_set = true;
+		// Any previously cached photos/thumb were computed for a different user context.
+		$this->photos = null;
+		$this->thumb = null;
+
+		return $this;
+	}
+
+	/**
+	 * @return int the resolved user's ID, or 0 if there is none (guest)
+	 */
+	protected function resolveUserId(): int
+	{
+		return $this->resolveUser()?->id ?? 0;
 	}
 
 	/**
@@ -180,21 +216,27 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	 */
 	protected function getThumbAttribute(): ?Thumb
 	{
+		if ($this->thumb !== null) {
+			return $this->thumb;
+		}
+
+		if ($this->config_manager->getValueAsBool('SA_random_thumbs')) {
+			// A random thumb must not be cached in album_user_thumbs, or it
+			// would stop being random after the first request.
+			// @codeCoverageIgnoreStart
+			return $this->thumb = Thumb::createFromRandomQueryable($this->photos());
+			// @codeCoverageIgnoreEnd
+		}
+
 		/*
 			* Note, `photos()` already applies a "security filter" and
 			* only returns photos which are accessible by the current
 			* user.
 			*/
-		$this->thumb ??= $this->config_manager->getValueAsBool('SA_random_thumbs')
-		// @codeCoverageIgnoreStart
-		? Thumb::createFromRandomQueryable($this->photos())
-		// @codeCoverageIgnoreEnd
-		: $this->thumb = Thumb::createFromQueryable(
-			$this->photos(),
-			PhotoSortingCriterion::createDefault()
+		return $this->thumb = $this->getCachedOrLiveThumb(
+			$this->id,
+			fn () => Thumb::createFromQueryable($this->photos(), PhotoSortingCriterion::createDefault()),
 		);
-
-		return $this->thumb;
 	}
 
 	public function public_permissions(): ?AccessPermission

@@ -197,8 +197,8 @@ class AlbumFactory
 		$album_query = Album::query();
 
 		if ($with_relations) {
-			$tag_album_query->with(array_merge(['tags'], self::PHOTOS_RELATIONS));
-			$person_album_query->with(array_merge(['persons'], self::PHOTOS_RELATIONS));
+			$tag_album_query->with(array_merge(['tags', 'userThumbRow.photo.size_variants'], self::PHOTOS_RELATIONS));
+			$person_album_query->with(array_merge(['persons', 'userThumbRow.photo.size_variants'], self::PHOTOS_RELATIONS));
 			$album_query->with(array_merge(['children'], self::PHOTOS_RELATIONS));
 		}
 

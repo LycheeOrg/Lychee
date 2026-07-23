@@ -22,7 +22,6 @@ use App\Repositories\ConfigManager;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Query\Builder as BaseBuilder;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -32,8 +31,12 @@ use Illuminate\Support\Facades\DB;
  */
 class HasManyPhotosByPerson extends BaseHasManyPhotos
 {
-	public function __construct(PersonAlbum $owning_album)
+	public function __construct(PersonAlbum $owning_album, ?User $for_user = null, bool $user_is_set = false)
 	{
+		// Sic! We must set these before calling the parent constructor,
+		// since it triggers `addEagerConstraints()` (see BaseHasManyPhotos).
+		$this->for_user = $for_user;
+		$this->user_is_set = $user_is_set;
 		parent::__construct($owning_album);
 	}
 
@@ -65,7 +68,7 @@ class HasManyPhotosByPerson extends BaseHasManyPhotos
 		$album = $albums[0];
 
 		/** @var ?User $user */
-		$user = Auth::user();
+		$user = $this->resolveUser();
 		$config_manager = app(ConfigManager::class);
 		$can_see_all_persons = $user?->may_administrate === true || $config_manager->getValueAsBool('PA_override_searchability');
 

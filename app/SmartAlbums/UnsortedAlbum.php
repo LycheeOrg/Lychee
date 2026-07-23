@@ -15,7 +15,6 @@ use App\Exceptions\Internal\FrameworkException;
 use App\Models\Photo;
 use App\Repositories\ConfigManager;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Auth;
 
 class UnsortedAlbum extends BaseSmartAlbum
 {
@@ -47,7 +46,7 @@ class UnsortedAlbum extends BaseSmartAlbum
 	public function photos(): Builder
 	{
 		$config_manager = resolve(ConfigManager::class);
-		if ($this->public_permissions !== null && (!Auth::check() || !$config_manager->getValueAsBool('enable_smart_album_per_owner'))) {
+		if ($this->public_permissions !== null && ($this->resolveUser() === null || !$config_manager->getValueAsBool('enable_smart_album_per_owner'))) {
 			return Photo::query()->leftJoin(PA::PHOTO_ALBUM, 'photos.id', '=', PA::PHOTO_ID)->with(['size_variants', 'statistics', 'palette', 'tags', 'rating'])
 			->where($this->smart_photo_condition);
 		}

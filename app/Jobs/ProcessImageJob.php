@@ -17,6 +17,7 @@ use App\Exceptions\OwnerRequiredException;
 use App\Factories\AlbumFactory;
 use App\Image\Files\ProcessableJobFile;
 use App\Image\Files\TemporaryJobFile;
+use App\Jobs\Traits\HasFailedTrait;
 use App\Models\Album;
 use App\Models\JobHistory;
 use App\Models\Photo;
