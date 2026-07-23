@@ -48,8 +48,9 @@ function stringToBlossomColorPickerValue(color: string): BlossomColorPickerValue
 	const hsl = hexToHsl(color);
 	return {
 		hue: hsl.h,
-		saturation: hsl.s * 0.75,
+		saturation: 50,
 		lightness: hsl.l,
+		originalSaturation: hsl.s,
 		alpha: 100,
 		layer: "outer",
 	};

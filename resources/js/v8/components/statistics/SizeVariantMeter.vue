@@ -10,7 +10,7 @@
 						<div class="flex gap-1 flex-col">
 							<span class="text-xs sm:text-sm">
 								<span
-									class="rounded-full h-3 w-3 inline-block ltr:mr-1 rtl:mk-1 ltr:sm:mr-2 rtl:sm:ml-2"
+									class="rounded-full h-3 w-3 inline-block ltr:mr-1 rtl:ml-1 ltr:sm:mr-2 rtl:sm:ml-2"
 									:style="'background-color: ' + val.color"
 								/>
 								{{ val.label }}
@@ -62,7 +62,10 @@ function prepSizeVariantData() {
 		return;
 	}
 
-	const total = sizeVariantSpace.value.reduce((acc, sv) => acc + sv.size, 0);
+	const total = Math.max(
+		1,
+		sizeVariantSpace.value.reduce((acc, sv) => acc + sv.size, 0),
+	);
 	sizeVariantSpaceMeter.value = sizeVariantSpace.value.map((sv: App.Http.Resources.Statistics.Sizes) => {
 		return {
 			label: sv.label,
