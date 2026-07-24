@@ -34,7 +34,7 @@
 		"eslint": "^10.7.0",
 		"eslint-plugin-vue": "~10.10.0",
 		"jsdom": "^29.1.0",
-		"prettier": "3.9.5",
+		"prettier": "3.9.6",
 		"sass": "^1.101.0",
 		"vue-tsc": "^3.3.7"
 	},
