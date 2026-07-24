@@ -18,6 +18,11 @@ updates:
         dependency-type: "production"
       development-dependencies:
         dependency-type: "development"
+    ignore:
+      - dependency-name: "typescript"
+        versions: [">=7.0.0"]
+      - dependency-name: "primevue"
+        versions: [">=5.0.0"]
 
   - package-ecosystem: composer
     directory: /
