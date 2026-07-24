@@ -17,7 +17,7 @@
 				@ready="isReady = true"
 			/>
 			<template v-if="isReady && configs !== undefined">
-				<div v-if="tab !== 'all'" class="flex gap-4 flex-wrap lg:flex-nowrap">
+				<div v-if="tab !== 'all'" class="flex gap-4 flex-wrap lg:flex-nowrap mt-2">
 					<div class="w-full lg:w-3xs shrink-0">
 						<nav class="border-0 lg:sticky top-11 mt-2 flex flex-col">
 							<a

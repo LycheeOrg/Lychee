@@ -27,4 +27,10 @@ class AccessPermissionConstants
 	public const GRANTS_EDIT = 'grants_edit';
 	public const GRANTS_DELETE = 'grants_delete';
 	public const PASSWORD = 'password';
+
+	// Generated columns (see database/migrations/2026_07_01_120000_deduplicate_and_constrain_access_permissions.php).
+	// MySQL rejects explicit inserts into STORED generated columns, so these
+	// must never be copied via Model::replicate().
+	public const USER_ID_UNIQUE_KEY = 'user_id_unique_key';
+	public const USER_GROUP_ID_UNIQUE_KEY = 'user_group_id_unique_key';
 }
