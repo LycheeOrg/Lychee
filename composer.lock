@@ -8286,16 +8286,16 @@
         },
         {
             "name": "socialiteproviders/microsoft",
-            "version": "4.9.1",
+            "version": "4.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/SocialiteProviders/Microsoft.git",
-                "reference": "664c946a57994abeeca0208c3ed187dd3d73ccc4"
+                "reference": "e86ad86734df16a54d869b21103b9e2ec3842000"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SocialiteProviders/Microsoft/zipball/664c946a57994abeeca0208c3ed187dd3d73ccc4",
-                "reference": "664c946a57994abeeca0208c3ed187dd3d73ccc4",
+                "url": "https://api.github.com/repos/SocialiteProviders/Microsoft/zipball/e86ad86734df16a54d869b21103b9e2ec3842000",
+                "reference": "e86ad86734df16a54d869b21103b9e2ec3842000",
                 "shasum": ""
             },
             "require": {
@@ -8332,7 +8332,7 @@
                 "issues": "https://github.com/socialiteproviders/providers/issues",
                 "source": "https://github.com/socialiteproviders/providers"
             },
-            "time": "2026-03-26T00:32:34+00:00"
+            "time": "2026-07-21T22:20:53+00:00"
         },
         {
             "name": "socialiteproviders/nextcloud",
