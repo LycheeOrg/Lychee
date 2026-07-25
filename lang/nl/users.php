@@ -32,7 +32,7 @@ return [
         'upload_trust_level_trusted' => 'Vertrouwd – geüploade inhoud is direct openbaar.',
         'trust_level_options' => [
             'trusted' => 'Vertrouwd',
-            'trust_but_verify' => 'Vertrouwen maar verifiëren',
+            'trust_but_verify' => 'Vertrouwen maar well controleren',
             'monitor' => 'Monitor',
             'check' => 'Controle',
         ],
