@@ -153,6 +153,7 @@ return [
         'photo_actions' => 'Bildehandlinger',
         'no_results' => 'Ingenting å se her',
         'upload' => 'Last opp bilder',
+        'edit_title' => 'Albuminnstillinger',
         'tabs' => [
             'about' => 'Om Album',
             'share' => 'Del Album',

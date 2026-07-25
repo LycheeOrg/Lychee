@@ -154,6 +154,7 @@ return [
         'photo_actions' => 'Photo actions',
         'no_results' => 'Nothing to see here',
         'upload' => 'Upload photos',
+        'edit_title' => 'アルバム設定',
         'tabs' => [
             'about' => 'About Album',
             'share' => 'Share Album',

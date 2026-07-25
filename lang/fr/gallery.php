@@ -154,6 +154,7 @@ return [
         'photo_actions' => 'Actions sur la photo',
         'no_results' => 'Rien à voir ici',
         'upload' => 'Téléverser des photos',
+        'edit_title' => 'Paramètres de l’album',
         'tabs' => [
             'about' => 'À propos de l’album',
             'share' => 'Partager l’album',

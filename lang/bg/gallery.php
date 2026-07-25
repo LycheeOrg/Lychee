@@ -154,6 +154,7 @@ return [
         'photo_actions' => 'Photo actions',
         'no_results' => 'Няма какво да се покаже',
         'upload' => 'Качване на снимки',
+        'edit_title' => 'Настройки на албума',
         'tabs' => [
             'about' => 'За албума',
             'share' => 'Споделяне',

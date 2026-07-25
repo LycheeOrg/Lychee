@@ -153,6 +153,7 @@ return [
         'photo_actions' => 'Aktionen für Fotos',
         'no_results' => 'Hier gibt es nichts zu sehen',
         'upload' => 'Fotos hochladen',
+        'edit_title' => 'Albumeinstellungen',
         'tabs' => [
             'about' => 'Über das Album',
             'share' => 'Album teilen',

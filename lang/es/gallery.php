@@ -153,6 +153,7 @@ return [
         'photo_actions' => 'Acciones fotográficas',
         'no_results' => 'No hay nada que ver aquí',
         'upload' => 'Subir fotos',
+        'edit_title' => 'Ajustes del álbum',
         'tabs' => [
             'about' => 'Acerca del álbum',
             'share' => 'Compartir álbum',

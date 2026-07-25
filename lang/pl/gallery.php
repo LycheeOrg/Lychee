@@ -154,6 +154,7 @@ return [
         'photo_actions' => 'Photo actions',
         'no_results' => 'Nie ma tu nic do oglądania',
         'upload' => 'Przesyłanie zdjęć',
+        'edit_title' => 'Ustawienia albumu',
         'tabs' => [
             'about' => 'Informacje o albumie',
             'share' => 'Udostępnij album',

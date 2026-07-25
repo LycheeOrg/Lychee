@@ -154,6 +154,7 @@ return [
         'photo_actions' => 'Photo actions',
         'no_results' => 'Zde není nic k vidění',
         'upload' => 'Nahrát fotografie',
+        'edit_title' => 'Nastavení alba',
         'tabs' => [
             'about' => 'O albu',
             'share' => 'Sdílet album',

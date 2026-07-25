@@ -154,6 +154,7 @@ return [
         'photo_actions' => 'Photo actions',
         'no_results' => '这里什么都没有',
         'upload' => '上传照片',
+        'edit_title' => '相册设置',
         'tabs' => [
             'about' => '关于相册',
             'share' => '分享相册',

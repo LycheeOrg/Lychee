@@ -154,6 +154,7 @@ return [
         'photo_actions' => 'Photo actions',
         'no_results' => 'Niets te zien hier',
         'upload' => 'Foto’s uploaden',
+        'edit_title' => 'Albuminstellingen',
         'tabs' => [
             'about' => 'Over Album',
             'share' => 'Deel Album',

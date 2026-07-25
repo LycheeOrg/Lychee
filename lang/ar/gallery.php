@@ -154,6 +154,7 @@ return [
         'photo_actions' => 'Photo actions',
         'no_results' => 'لا يوجد شيء هنا',
         'upload' => 'رفع الصور',
+        'edit_title' => 'إعدادات الألبوم',
         'tabs' => [
             'about' => 'حول الألبوم',
             'share' => 'مشاركة الألبوم',
