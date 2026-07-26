@@ -7,6 +7,7 @@
 			'max-h-0 overflow-hidden': is_full_screen,
 		}"
 		:toggle="false"
+		to=""
 	>
 		<template #title>
 			<LycheeBreadcrumb

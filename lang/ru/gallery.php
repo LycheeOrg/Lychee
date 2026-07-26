@@ -157,6 +157,7 @@ return [
         'edit_title' => 'Настройки альбома',
         'tabs' => [
             'about' => 'О альбоме',
+            'visibility' => 'Видимость',
             'share' => 'Поделиться альбомом',
             'embed' => 'Embed Album',
             'move' => 'Переместить альбом',
@@ -212,6 +213,8 @@ return [
             'all_tags_must_match' => 'Все теги должны совпадать.',
             'all_persons_must_match' => 'All persons must be present.',
             'persons_required' => 'At least one person is required.',
+            'autosave_hint' => 'Изменения сохраняются автоматически.',
+            'expert_mode' => 'Экспертный режим',
         ],
     ],
     'photo' => [

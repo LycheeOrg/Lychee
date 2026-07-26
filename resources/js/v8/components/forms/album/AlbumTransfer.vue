@@ -1,5 +1,5 @@
 <template>
-	<UCard class="sm:p-4 xl:px-9 max-w-3xl w-full">
+	<div class="w-full">
 		<div v-if="newOwner !== undefined">
 			<p class="w-full mb-4 text-center text-highlighted">
 				{{ sprintf($t("dialogs.transfer.confirmation"), newOwner.name, albumStore.album?.title) }}<br />
@@ -20,7 +20,7 @@
 		<UButton color="error" variant="ghost" class="font-bold w-full justify-center" :disabled="newOwner === undefined" @click="execute">
 			{{ $t("dialogs.transfer.transfer") }}
 		</UButton>
-	</UCard>
+	</div>
 </template>
 
 <script setup lang="ts">

@@ -157,6 +157,7 @@ return [
         'edit_title' => 'Album Settings',
         'tabs' => [
             'about' => 'About Album',
+            'visibility' => 'Visibilità',
             'share' => 'Share Album',
             'embed' => 'Embed Album',
             'move' => 'Move Album',
@@ -212,6 +213,8 @@ return [
             'all_tags_must_match' => 'All tags must match.',
             'all_persons_must_match' => 'All persons must be present.',
             'persons_required' => 'At least one person is required.',
+            'autosave_hint' => 'Changes are saved automatically.',
+            'expert_mode' => 'Expert Mode',
         ],
     ],
     'photo' => [

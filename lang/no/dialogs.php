@@ -197,6 +197,7 @@ return [
         'confirmation_tag' => 'Er du sikker på at du vil slette albumet "%s"?',
         'confirmation_multiple' => 'Er du sikker på at du vil slette alle %dvalgte album og alle bildene de inneholder?',
         'warning' => 'Denne handlingen kan ikke angres!',
+        'type_to_confirm' => 'Skriv “%s” for å bekrefte.',
         'delete' => 'Slett album og bilder',
     ],
     'transfer' => [

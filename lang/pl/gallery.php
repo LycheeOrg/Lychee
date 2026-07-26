@@ -157,6 +157,7 @@ return [
         'edit_title' => 'Ustawienia albumu',
         'tabs' => [
             'about' => 'Informacje o albumie',
+            'visibility' => 'Widoczność',
             'share' => 'Udostępnij album',
             'embed' => 'Embed Album',
             'move' => 'Przenieś album',
@@ -212,6 +213,8 @@ return [
             'all_tags_must_match' => 'Wszystkie znaczniki muszą pasować.',
             'all_persons_must_match' => 'All persons must be present.',
             'persons_required' => 'At least one person is required.',
+            'autosave_hint' => 'Zmiany są zapisywane automatycznie.',
+            'expert_mode' => 'Expert Mode',
         ],
     ],
     'photo' => [

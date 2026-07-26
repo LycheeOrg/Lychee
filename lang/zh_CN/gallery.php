@@ -157,6 +157,7 @@ return [
         'edit_title' => '相册设置',
         'tabs' => [
             'about' => '关于相册',
+            'visibility' => '可见性',
             'share' => '分享相册',
             'embed' => 'Embed Album',
             'move' => '移动相册',
@@ -212,6 +213,8 @@ return [
             'all_tags_must_match' => '所有标签必须匹配。',
             'all_persons_must_match' => 'All persons must be present.',
             'persons_required' => 'At least one person is required.',
+            'autosave_hint' => '更改会自动保存。',
+            'expert_mode' => 'Expert Mode',
         ],
     ],
     'photo' => [

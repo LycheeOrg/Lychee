@@ -157,6 +157,7 @@ return [
         'edit_title' => 'إعدادات الألبوم',
         'tabs' => [
             'about' => 'حول الألبوم',
+            'visibility' => 'الظهور',
             'share' => 'مشاركة الألبوم',
             'embed' => 'تضمين الألبوم',
             'move' => 'نقل الألبوم',
@@ -212,6 +213,8 @@ return [
             'all_tags_must_match' => 'يجب أن تتطابق جميع العلامات.',
             'all_persons_must_match' => 'All persons must be present.',
             'persons_required' => 'At least one person is required.',
+            'autosave_hint' => 'التغييرات تُحفظ تلقائيًا.',
+            'expert_mode' => 'وضع الخبير',
         ],
     ],
     'photo' => [

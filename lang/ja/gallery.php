@@ -157,6 +157,7 @@ return [
         'edit_title' => 'アルバム設定',
         'tabs' => [
             'about' => 'About Album',
+            'visibility' => 'Visibility',
             'share' => 'Share Album',
             'embed' => 'Embed Album',
             'move' => 'Move Album',
@@ -212,6 +213,8 @@ return [
             'all_tags_must_match' => 'All tags must match.',
             'all_persons_must_match' => 'All persons must be present.',
             'persons_required' => 'At least one person is required.',
+            'autosave_hint' => '変更は自動的に保存されます。',
+            'expert_mode' => 'Expert Mode',
         ],
     ],
     'photo' => [

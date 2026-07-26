@@ -157,6 +157,7 @@ return [
         'edit_title' => 'Nastavení alba',
         'tabs' => [
             'about' => 'O albu',
+            'visibility' => 'Viditelnost',
             'share' => 'Sdílet album',
             'embed' => 'Vložit album',
             'move' => 'Přesunout album',
@@ -212,6 +213,8 @@ return [
             'all_tags_must_match' => 'Všechny štítky se musí shodovat.',
             'all_persons_must_match' => 'All persons must be present.',
             'persons_required' => 'At least one person is required.',
+            'autosave_hint' => 'Změny se ukládají automaticky.',
+            'expert_mode' => 'Režim pro pokročilé',
         ],
     ],
     'photo' => [

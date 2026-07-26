@@ -44,6 +44,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 		show_keybinding_help_popup: false,
 
 		// album stuff
+		expert_album_settings: false,
 		default_album_protection: "private" as App.Enum.DefaultAlbumProtectionType,
 		display_thumb_album_overlay: "always" as App.Enum.VisibilityType,
 		display_thumb_photo_overlay: "always" as App.Enum.VisibilityType,
@@ -272,6 +273,7 @@ export const useLycheeStateStore = defineStore("lychee-store", {
 					this.albums_infinite_scroll_threshold = data.albums_infinite_scroll_threshold;
 
 					this.default_album_protection = data.default_album_protection;
+					this.expert_album_settings = data.expert_album_settings;
 					this.use_admin_dashboard = data.use_admin_dashboard;
 
 					this.is_cover_id_flag_enabled = data.is_cover_id_flag_enabled;

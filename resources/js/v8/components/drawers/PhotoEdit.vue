@@ -103,7 +103,9 @@ const takenAtDate = ref<Date | undefined>(undefined);
 const tags = ref<string[]>([]);
 const is_taken_at_modified = ref<boolean>(false);
 function selectedLabel<T>(option: SelectOption<T> | undefined): string {
-	return option ? trans(option.label) : "";
+	// A single space (matching USelectMenu's own placeholder fallback) keeps the
+	// trigger's line box at its normal height; an empty string collapses it.
+	return option ? trans(option.label) : " ";
 }
 
 const license = ref<SelectOption<App.Enum.LicenseType> | undefined>(undefined);

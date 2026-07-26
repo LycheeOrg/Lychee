@@ -156,6 +156,7 @@ return [
         'edit_title' => 'Albuminnstillinger',
         'tabs' => [
             'about' => 'Om Album',
+            'visibility' => 'Synlighet',
             'share' => 'Del Album',
             'embed' => 'Bygg inn album',
             'move' => 'Flytt Album',
@@ -211,6 +212,8 @@ return [
             'all_tags_must_match' => 'Alle taggene må samsvare.',
             'all_persons_must_match' => 'Alle personer må være til stede.',
             'persons_required' => 'Minst én person er påkrevd.',
+            'autosave_hint' => 'Endringer lagres automatisk.',
+            'expert_mode' => 'Ekspertmodus',
         ],
     ],
     'photo' => [

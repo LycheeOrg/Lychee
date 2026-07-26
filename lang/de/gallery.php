@@ -156,6 +156,7 @@ return [
         'edit_title' => 'Albumeinstellungen',
         'tabs' => [
             'about' => 'Über das Album',
+            'visibility' => 'Sichtbarkeit',
             'share' => 'Album teilen',
             'embed' => 'Album einbetten',
             'move' => 'Album verschieben',
@@ -211,6 +212,8 @@ return [
             'all_tags_must_match' => 'Alle Tags müssen übereinstimmen.',
             'all_persons_must_match' => 'Alle Personen müssen anwesend sein.',
             'persons_required' => 'Es ist mindestens eine Person erforderlich.',
+            'autosave_hint' => 'Änderungen werden automatisch gespeichert.',
+            'expert_mode' => 'Experten Modus',
         ],
     ],
     'photo' => [

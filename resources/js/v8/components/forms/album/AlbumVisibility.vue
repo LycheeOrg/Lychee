@@ -1,5 +1,8 @@
 <template>
-	<UCard class="text-sm p-4 xl:px-9 w-full xl:basis-1/3 xl:min-w-0" :ui="{ body: 'p-0' }">
+	<Fieldset class="text-sm w-full">
+		<template #legend>
+			<span class="flex items-center gap-2"><UIcon :name="legendIcon" />{{ legendLabel }}</span>
+		</template>
 		<form>
 			<USwitch
 				v-model="is_public"
@@ -86,10 +89,11 @@
 				/>
 			</template>
 		</form>
-	</UCard>
+	</Fieldset>
 </template>
 <script setup lang="ts">
 import { computed, ref } from "vue";
+import Fieldset from "@/v8/components/forms/basic/Fieldset.vue";
 import InputPassword from "@/v8/components/forms/basic/InputPassword.vue";
 import AlbumService, { UpdateProtectionPolicyData } from "@/services/album-service";
 import { useAppToast } from "@/v8/composables/useAppToast";
@@ -99,6 +103,11 @@ import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import SETag from "@/v8/components/icons/SETag.vue";
 import { useAlbumStore } from "@/stores/AlbumState";
+
+defineProps<{
+	legendIcon: string;
+	legendLabel: string;
+}>();
 
 const albumStore = useAlbumStore();
 

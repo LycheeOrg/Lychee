@@ -396,6 +396,11 @@ defineShortcuts({
 			return;
 		}
 
+		if (is_album_edit_open.value) {
+			is_album_edit_open.value = false;
+			return;
+		}
+
 		if (is_move_visible.value) {
 			is_move_visible.value = false;
 			return;
