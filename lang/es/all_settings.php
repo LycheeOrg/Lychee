@@ -392,6 +392,7 @@ return [
         'public_visible_flag_enabled' => 'Enable public visible flag',
         'password_flag_enabled' => 'Enable password flag',
         'sensitive_flag_enabled' => 'Enable sensitive flag',
+        'expert_album_settings' => 'Mostrar los ajustes avanzados del álbum de forma predeterminada',
         'accent_color' => 'Accent color.',
     ],
     'details' => [
@@ -781,6 +782,7 @@ return [
         'public_visible_flag_enabled' => 'Show the green eye icon on albums that are publicly visible.',
         'password_flag_enabled' => 'Show the lock icon on password-protected albums.',
         'sensitive_flag_enabled' => 'Show the warning icon on albums marked as sensitive (NSFW).',
+        'expert_album_settings' => 'Si está activado, el cuadro de ajustes del álbum muestra los campos avanzados (encabezado, licencia, copyright) de forma predeterminada, en lugar de ocultarlos tras el interruptor de «modo experto».',
         'accent_color' => 'Pick a colour, the nearest colour palette will be used. If you leave this empty, the default accent color will be used.<br>Note: you will need to refresh the page to see the changes.',
     ],
     'category_name' => [

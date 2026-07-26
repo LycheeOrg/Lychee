@@ -394,6 +394,7 @@ return [
         'public_visible_flag_enabled' => 'Enable public visible flag',
         'password_flag_enabled' => 'Enable password flag',
         'sensitive_flag_enabled' => 'Enable sensitive flag',
+        'expert_album_settings' => '預設顯示進階相簿設定',
         'accent_color' => 'Accent color.',
     ],
     'details' => [
@@ -783,6 +784,7 @@ return [
         'public_visible_flag_enabled' => 'Show the green eye icon on albums that are publicly visible.',
         'password_flag_enabled' => 'Show the lock icon on password-protected albums.',
         'sensitive_flag_enabled' => 'Show the warning icon on albums marked as sensitive (NSFW).',
+        'expert_album_settings' => '啟用後，相簿設定對話框將預設顯示進階欄位（頁首、授權、版權），而不是隱藏在「專家模式」切換開關之後。',
         'accent_color' => 'Pick a colour, the nearest colour palette will be used. If you leave this empty, the default accent color will be used.<br>Note: you will need to refresh the page to see the changes.',
     ],
 
