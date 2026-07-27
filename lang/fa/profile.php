@@ -15,6 +15,7 @@ return [
         'username' => 'نام کاربری',
         'new_password' => 'رمزعبور جدید',
         'confirm_new_password' => 'تأیید رمزعبور جدید',
+        'password_strength_info' => 'قدرت رمز عبور تخمینی است که با استفاده از <a href="https://github.com/dropbox/zxcvbn" class="inline-block border-b border-info border-dashed" target="_blank" rel="noreferrer">الگوریتم zxcvbn</a> محاسبه می‌شود.',
         'email_instruction' => 'برای فعال سازی دریافت اعلان‌های ایمیلی، ایمیل خود را وارد کنید. برای توقف دریافت ایمیل، کافی است ایمیل خود را حذف کنید.',
         'email' => 'ایمیل',
         'change' => 'تأیید تغییرات',
@@ -28,6 +29,14 @@ return [
         'signup' => 'ثبت‌نام',
         'error' => 'خطایی هنگام ثبت‌نام حساب کاربری شما رخ داد.',
         'success' => 'حساب کاربری شما با موفقیت ایجاد شد.',
+    ],
+    'admin_setup' => [
+        'header' => 'حساب مدیر خود را تنظیم کنید',
+        'welcome' => 'به Lychee خوش آمدید،<br>بیایید با ایجاد یک حساب مدیر شروع کنیم.',
+        'submit' => 'ایجاد حساب مدیر',
+        'success' => 'حساب مدیر با موفقیت ایجاد شد.',
+        'error' => 'خطایی هنگام ایجاد حساب مدیر رخ داد.',
+        'already_exists' => 'یک حساب مدیر قبلاً تنظیم شده است.',
     ],
     'token' => [
         'unavailable' => 'شما قبلاً این توکن را مشاهده کرده‌اید.',

@@ -8,12 +8,12 @@
 
 namespace App\Http\Controllers\Install;
 
+use App\Actions\User\Create;
+use App\Enum\UserUploadTrustLevel;
 use App\Http\Requests\Install\SetUpAdminRequest;
-use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 
 /**
  * Class SetUpAdminController.
@@ -40,20 +40,22 @@ class SetUpAdminController extends Controller
 	 *
 	 * @return View
 	 */
-	public function create(SetUpAdminRequest $request): View
+	public function create(SetUpAdminRequest $request, Create $create_user): View
 	{
 		$error = '';
 		try {
-			$user = new User();
-			$user->may_upload = true;
-			$user->may_edit_own_settings = true;
-			$user->may_administrate = true;
-			$user->username = $request->username();
-			$user->password = Hash::make($request->password());
-			$user->save();
-
-			// Set the owner_id config to the new user's id
-			DB::table('configs')->where('key', 'owner_id')->update(['value' => $user->id]);
+			$user = $create_user->do(
+				$request->username(),
+				$request->password(),
+				null,
+				true,
+				true,
+				true,
+				null,
+				null,
+				UserUploadTrustLevel::TRUSTED,
+			);
+			DB::table('configs')->where('key', '=', 'owner_id')->update(['value' => $user->id]);
 		} catch (\Throwable $e) {
 			$error = $e->getMessage();
 			$error .= '<br>' . $e->getPrevious()?->getMessage() ?? '';

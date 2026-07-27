@@ -13,9 +13,11 @@ use App\Actions\User\Create;
 use App\Actions\User\TokenDisable;
 use App\Actions\User\TokenReset;
 use App\Enum\CacheTag;
+use App\Enum\UserUploadTrustLevel;
 use App\Events\TaggedRouteCacheUpdated;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
+use App\Http\Requests\Install\SetUpAdminRequest;
 use App\Http\Requests\Profile\ChangeTokenRequest;
 use App\Http\Requests\Profile\RegistrationRequest;
 use App\Http\Requests\Profile\UpdateProfileRequest;
@@ -26,6 +28,7 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ProfileController extends Controller
 {
@@ -49,6 +52,30 @@ class ProfileController extends Controller
 		Auth::login($user);
 
 		return response()->json(['message' => 'User registered successfully'], 201);
+	}
+
+	/**
+	 * Creates the first admin user for the v8 (Nuxt UI) admin-setup page (Feature 051).
+	 */
+	public function store(SetUpAdminRequest $request, Create $create_user): JsonResponse
+	{
+		$user = $create_user->do(
+			$request->username(),
+			$request->password(),
+			null,
+			true,
+			true,
+			true,
+			null,
+			null,
+			UserUploadTrustLevel::TRUSTED,
+		);
+
+		DB::table('configs')->where('key', '=', 'owner_id')->update(['value' => $user->id]);
+
+		Auth::login($user);
+
+		return response()->json(['message' => 'Admin account created successfully'], 201);
 	}
 
 	/**

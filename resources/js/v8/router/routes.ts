@@ -3,6 +3,7 @@ import { paths } from "@/router/paths";
 const Placeholder = () => import("@/v8/views/Placeholder.vue");
 
 const Landing = () => import("@/v8/views/Landing.vue");
+const AdminSetupPage = () => import("@/v8/views/AdminSetupPage.vue");
 const Home = () => import("@/v8/views/Home.vue");
 const Album = () => import("@/v8/views/gallery-panels/Album.vue");
 const Albums = () => import("@/v8/views/gallery-panels/Albums.vue");
@@ -58,6 +59,7 @@ const DuplicatesFinder = () => import("@/v8/views/DuplicatesFinder.vue");
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const componentByName: Record<string, any> = {
 	landing: Landing,
+	"admin-setup": AdminSetupPage,
 	home: Home,
 	album: Album,
 	"flow-album": Album,

@@ -16,36 +16,49 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Unit\Redirections;
+namespace Tests\Install;
 
-use App\Http\Redirections\ToAdminSetter;
+use App\Models\User;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\AbstractTestCase;
 
-class ToAdminSetterTest extends AbstractTestCase
+class AdminSetupTest extends AbstractTestCase
 {
-	public function testRedirection(): void
-	{
-		$response = ToAdminSetter::go();
-		self::assertEquals(307, $response->getStatusCode());
-	}
+	use DatabaseTransactions;
 
 	public function testRedirectsToLegacyInstallWhenNuxtUiInactive(): void
 	{
 		config(['features.nuxt_ui' => false]);
 
-		$response = ToAdminSetter::go();
+		$response = $this->get('/');
 		self::assertEquals(307, $response->getStatusCode());
-		self::assertStringEndsWith('/install/admin', $response->getTargetUrl());
+		$response->assertRedirect('/install/admin');
 	}
 
 	public function testRedirectsToV8SetupWhenNuxtUiActive(): void
 	{
 		config(['features.nuxt_ui' => true]);
 
-		$response = ToAdminSetter::go();
+		$response = $this->get('/');
 		self::assertEquals(307, $response->getStatusCode());
-		self::assertStringEndsWith('/setup-admin', $response->getTargetUrl());
+		$response->assertRedirect('/setup-admin');
 
 		config(['features.nuxt_ui' => false]);
+	}
+
+	public function testSetupAdminRouteServesVueAppWhenNoAdmin(): void
+	{
+		$this->withoutVite();
+		$response = $this->get('/setup-admin');
+		$this->assertOk($response);
+		$response->assertViewIs('vueapp');
+	}
+
+	public function testSetupAdminRouteGuardedOnceAdminExists(): void
+	{
+		User::factory()->may_administrate()->create();
+
+		$response = $this->get('/setup-admin');
+		self::assertNotEquals(200, $response->getStatusCode());
 	}
 }

@@ -8,6 +8,7 @@
 
 namespace App\Http\Redirections;
 
+use App\Assets\Features;
 use App\Contracts\Http\Redirection;
 use App\Exceptions\InstallationFailedException;
 use App\Exceptions\Internal\FrameworkException;
@@ -26,7 +27,9 @@ class ToAdminSetter implements Redirection
 	 */
 	public static function go(): RedirectResponse
 	{
-		return redirect(route('install-admin'), Response::HTTP_TEMPORARY_REDIRECT, [
+		$route_name = Features::active('nuxt_ui') ? 'admin-setup' : 'install-admin';
+
+		return redirect(route($route_name), Response::HTTP_TEMPORARY_REDIRECT, [
 			'Cache-Control' => 'no-cache, must-revalidate',
 		]);
 	}

@@ -15,6 +15,7 @@ return [
         'username' => 'Brukernavn',
         'new_password' => 'Nytt passord',
         'confirm_new_password' => 'Bekreft nytt passord',
+        'password_strength_info' => 'Passordstyrken er et estimat basert på <a href="https://github.com/dropbox/zxcvbn" class="inline-block border-b border-info border-dashed" target="_blank" rel="noreferrer">zxcvbn-algoritmen</a>.',
         'email_instruction' => 'Legg til e-postadressen din nedenfor for å aktivere mottak av e-postvarsler. For å slutte å motta e-poster, fjern ganske enkelt e-postadressen din nedenfor.',
         'email' => 'Epostadresse',
         'change' => 'Endre pålogging',
@@ -28,6 +29,14 @@ return [
         'signup' => 'Registrer deg',
         'error' => 'Det oppsto en feil under registrering av kontoen din.',
         'success' => 'Kontoen din er opprettet.',
+    ],
+    'admin_setup' => [
+        'header' => 'Sett opp administratorkontoen din',
+        'welcome' => 'Velkommen til Lychee,<br>la oss starte med å opprette en administratorkonto.',
+        'submit' => 'Opprett administratorkonto',
+        'success' => 'Administratorkontoen ble opprettet.',
+        'error' => 'Det oppsto en feil under opprettelsen av administratorkontoen.',
+        'already_exists' => 'En administratorkonto er allerede satt opp.',
     ],
     'token' => [
         'unavailable' => 'Du har allerede sett denne tokenen.',
