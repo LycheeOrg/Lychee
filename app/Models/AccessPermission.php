@@ -141,7 +141,12 @@ class AccessPermission extends Model
 	 */
 	public static function ofAccessPermission(AccessPermission $access_permission): self
 	{
-		return $access_permission->replicate([APC::PASSWORD, APC::BASE_ALBUM_ID]);
+		return $access_permission->replicate([
+			APC::PASSWORD,
+			APC::BASE_ALBUM_ID,
+			APC::USER_ID_UNIQUE_KEY,
+			APC::USER_GROUP_ID_UNIQUE_KEY,
+		]);
 	}
 
 	/**

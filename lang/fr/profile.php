@@ -15,6 +15,7 @@ return [
         'username' => 'Nom d’utilisateur',
         'new_password' => 'Nouveau mot de passe',
         'confirm_new_password' => 'Confirmer le nouveau mot de passe',
+        'password_strength_info' => 'La robustesse du mot de passe est une estimation calculée avec l’<a href="https://github.com/dropbox/zxcvbn" class="inline-block border-b border-info border-dashed" target="_blank" rel="noreferrer">algorithme zxcvbn</a>.',
         'email_instruction' => 'Ajoutez votre adresse e-mail ci-dessous pour recevoir des notifications par mail. Pour ne plus en recevoir, supprimez simplement votre adresse.',
         'email' => 'E-mail',
         'change' => 'Modifier l’identifiant',
@@ -28,6 +29,14 @@ return [
         'signup' => 'S’inscrire',
         'error' => 'Une erreur est survenue lors de l’enregistrement de votre compte.',
         'success' => 'Votre compte a été créé avec succès.',
+    ],
+    'admin_setup' => [
+        'header' => 'Configurez votre compte administrateur',
+        'welcome' => 'Bienvenue sur Lychee,<br>commençons par créer un compte administrateur.',
+        'submit' => 'Créer le compte administrateur',
+        'success' => 'Compte administrateur créé avec succès.',
+        'error' => 'Une erreur est survenue lors de la création du compte administrateur.',
+        'already_exists' => 'Un compte administrateur a déjà été configuré.',
     ],
     'token' => [
         'unavailable' => 'Vous avez déjà visualisé ce jeton.',

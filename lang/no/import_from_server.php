@@ -6,17 +6,17 @@ return [
     | Import from Server
     |--------------------------------------------------------------------------
     */
-    'title' => 'Synchronize your server files',
-    'description' => 'Synchronize your server files with Lychee. This will import photos from a directory and all children directories. This process is very slow and we recommend using workers and queues in order to avoid timeout.',
-    'sync' => 'Synchronize',
-    'loading' => 'Loading...',
-    'selected_directory' => 'Current selected directory:',
-    'resync_metadata' => 'Re-sync metadata of existing files.',
-    'delete_imported' => 'Delete the original files.',
-    'import_via_symlink' => 'Import photos via symlink instead of copying the files.',
-    'skip_duplicates' => 'Skip photos and albums if they already exist in the gallery.',
-    'delete_missing_photos' => 'Delete photos in the album that are not present in the synced directory.',
-    'delete_missing_albums' => 'Delete albums in the parent album that are not present in the synced directory.',
-    'importing_please_be_patient' => 'Importing, please be patient...',
+    'title' => 'Synkroniser filene dine på serveren',
+    'description' => 'Synkroniser filene dine på serveren med Lychee. Dette vil importere bilder fra en mappe og alle undermapper. Denne prosessen er svært treg, og vi anbefaler å bruke arbeidere og køer for å unngå tidsavbrudd.',
+    'sync' => 'Synkroniser',
+    'loading' => 'Laster…',
+    'selected_directory' => 'Valgt mappe:',
+    'resync_metadata' => 'Synkroniser metadata for eksisterende filer på nytt.',
+    'delete_imported' => 'Slett originalfilene.',
+    'import_via_symlink' => 'Importer bilder via symlink i stedet for å kopiere filene.',
+    'skip_duplicates' => 'Hopp over bilder og album som allerede finnes i galleriet.',
+    'delete_missing_photos' => 'Slett bilder i albumet som ikke finnes i den synkroniserte mappen.',
+    'delete_missing_albums' => 'Slett album i foreldrealbumet som ikke finnes i den synkroniserte mappen.',
+    'importing_please_be_patient' => 'Importerer, vennligst vær tålmodig…',
 ];
 

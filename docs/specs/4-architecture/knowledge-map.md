@@ -41,6 +41,7 @@ This document tracks modules, dependencies, and architectural relationships acro
     - Graceful error handling with connection timeout (default: 5 seconds)
     - Dependencies: LdapRecord Laravel package, php-ldap extension
 - **Actions** (`app/Actions/`) - Single-responsibility command objects
+  - **CreateInitialAdmin** (`app/Actions/User/CreateInitialAdmin.php`) - Creates the first admin user; wraps `User\Create` plus the `configs.owner_id` update; throws `AdminUserAlreadySetException` if an admin already exists. Shared by `SetUpAdminController` (v7/Blade) and `AdminSetupController` (v8/API, Feature 051).
   - **ProvisionLdapUser** (`app/Actions/User/ProvisionLdapUser.php`) - Auto-provision users from LDAP
     - Creates or updates local user from LdapUser DTO
     - Syncs attributes (email, display_name) on each login
@@ -105,6 +106,7 @@ This document tracks modules, dependencies, and architectural relationships acro
   - Admin views (`resources/js/v7/views/admin/`): AdminDashboard, Settings, Users, UserGroups, Purchasables, ContactMessages, Webhooks, Moderation, Maintenance, Jobs
   - Diagnostics remains at top-level (`views/Diagnostics.vue`)
   - People views: **People** (`/people`) — paginated PersonCard grid; **PersonDetail** (`/people/:personId`) — photos grid with edit/delete/merge actions
+  - **AdminSetupPage** (`/setup-admin`, v8-only, Feature 051) — first-admin creation form shown instead of the legacy Blade `install/admin` page when `nuxt_ui` is active and no admin user exists yet; posts to `POST /Admin::Setup`, then navigates to `gallery` on success. Registered in the shared `router/paths.ts` manifest; v7's `componentByName` lookup falls back to a new `Placeholder.vue` for this and any other unmapped route name.
 - **Composables** (`resources/js/composables/`) - Reusable composition functions
   - Album, photo, search, selection, context menu composables
   - **useAdminTiles** (`resources/js/composables/useAdminTiles.ts`) - Returns `AdminTile[]` with per-tile visibility driven by capability flags; used by `AdminDashboard.vue`.

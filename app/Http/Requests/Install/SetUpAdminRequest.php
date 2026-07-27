@@ -11,6 +11,8 @@ namespace App\Http\Requests\Install;
 use App\Contracts\Http\Requests\HasPassword;
 use App\Contracts\Http\Requests\HasUsername;
 use App\Contracts\Http\Requests\RequestAttribute;
+use App\Exceptions\AdminUserAlreadySetException;
+use App\Http\Middleware\Checks\HasAdminUser;
 use App\Http\Requests\Traits\HasPasswordTrait;
 use App\Http\Requests\Traits\HasUsernameTrait;
 use App\Rules\PasswordRule;
@@ -37,12 +39,17 @@ class SetUpAdminRequest extends FormRequest implements HasUsername, HasPassword
 
 	/**
 	 * This Request is only available if the application is not installed yet.
-	 * Thus, there's no authorization check here.
 	 *
 	 * @return bool
+	 *
+	 * @throws AdminUserAlreadySetException if an admin user already exists
 	 */
-	public function authorize(): bool
+	public function authorize(HasAdminUser $has_admin_user): bool
 	{
+		if ($has_admin_user->assert()) {
+			throw new AdminUserAlreadySetException();
+		}
+
 		return true;
 	}
 

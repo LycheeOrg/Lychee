@@ -15,6 +15,7 @@ return [
         'username' => 'Gebruikersnaam',
         'new_password' => 'Nieuw wachtwoord',
         'confirm_new_password' => 'Bevestig nieuw wachtwoord',
+        'password_strength_info' => 'De wachtwoordsterkte is een schatting op basis van het <a href="https://github.com/dropbox/zxcvbn" class="inline-block border-b border-info border-dashed" target="_blank" rel="noreferrer">zxcvbn-algoritme</a>.',
         'email_instruction' => 'Voeg hieronder uw e-mailadres toe om e-mailmeldingen te ontvangen. Om geen e-mails meer te ontvangen, verwijdert u eenvoudig uw e-mailadres hieronder.',
         'email' => 'E-mail',
         'change' => 'Inloggegevens wijzigen',
@@ -28,6 +29,14 @@ return [
         'signup' => 'Aanmelden',
         'error' => 'Er is een fout opgetreden bij het registreren van uw account.',
         'success' => 'Uw account is succesvol aangemaakt.',
+    ],
+    'admin_setup' => [
+        'header' => 'Stel uw beheerdersaccount in',
+        'welcome' => 'Welkom bij Lychee,<br>laten we beginnen met het aanmaken van een beheerdersaccount.',
+        'submit' => 'Beheerdersaccount aanmaken',
+        'success' => 'Beheerdersaccount succesvol aangemaakt.',
+        'error' => 'Er is een fout opgetreden bij het aanmaken van het beheerdersaccount.',
+        'already_exists' => 'Er is al een beheerdersaccount ingesteld.',
     ],
     'token' => [
         'unavailable' => 'U heeft dit token al bekeken.',

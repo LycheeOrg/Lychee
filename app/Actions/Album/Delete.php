@@ -132,6 +132,7 @@ class Delete
 		DB::table(APC::ACCESS_PERMISSIONS)->whereIn(APC::BASE_ALBUM_ID, $tag_album_ids)->delete();
 		DB::table('statistics')->whereIn('album_id', $tag_album_ids)->delete();
 		DB::table('tag_albums_tags')->whereIn('album_id', $tag_album_ids)->delete();
+		DB::table('album_user_thumbs')->whereIn('album_id', $tag_album_ids)->delete();
 		DB::table('tag_albums')->whereIn('id', $tag_album_ids)->delete();
 		DB::table('base_albums')->whereIn('id', $tag_album_ids)->delete();
 	}
@@ -155,6 +156,7 @@ class Delete
 		DB::table(APC::ACCESS_PERMISSIONS)->whereIn(APC::BASE_ALBUM_ID, $person_album_ids)->delete();
 		DB::table('statistics')->whereIn('album_id', $person_album_ids)->delete();
 		DB::table(PersonAlbumPersons::PERSON_ALBUM_PERSONS)->whereIn(PersonAlbumPersons::ALBUM_ID, $person_album_ids)->delete();
+		DB::table('album_user_thumbs')->whereIn('album_id', $person_album_ids)->delete();
 		DB::table('person_albums')->whereIn('id', $person_album_ids)->delete();
 		DB::table('base_albums')->whereIn('id', $person_album_ids)->delete();
 	}

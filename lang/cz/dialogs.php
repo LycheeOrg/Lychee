@@ -197,6 +197,7 @@ return [
         'confirmation_tag' => 'Jste si jistý, že chcete smazat album „%s"?',
         'confirmation_multiple' => 'Jste si jistý, že chcete smazat všechna - %d - a všechny fotografie v nich obsažené?',
         'warning' => 'Tuto akci nelze vzít zpět!',
+        'type_to_confirm' => 'Napište „%s” pro potvrzení.',
         'delete' => 'Smazat Album a fotografie',
     ],
     'transfer' => [

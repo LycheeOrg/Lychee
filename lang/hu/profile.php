@@ -15,6 +15,7 @@ return [
         'username' => 'Username',
         'new_password' => 'New password',
         'confirm_new_password' => 'Confirm new password',
+        'password_strength_info' => 'The password strength is an estimate using the <a href="https://github.com/dropbox/zxcvbn" class="inline-block border-b border-info border-dashed" target="_blank" rel="noreferrer">zxcvbn algorithm</a>.',
         'email_instruction' => 'Add your email below to enable receiving email notifications. To stop receiving emails, simply remove your email below.',
         'email' => 'Email',
         'change' => 'Change Login',
@@ -57,6 +58,14 @@ return [
         'signup' => 'Sign Up',
         'error' => 'An error occurred while registering your account.',
         'success' => 'Your account has been successfully created.',
+    ],
+    'admin_setup' => [
+        'header' => 'Set up your admin account',
+        'welcome' => 'Welcome to Lychee,<br>let\'s start by creating an admin account.',
+        'submit' => 'Create admin account',
+        'success' => 'Admin account created successfully.',
+        'error' => 'An error occurred while creating the admin account.',
+        'already_exists' => 'An admin account has already been set up.',
     ],
     'preferences' => [
         'header' => 'Preferences',

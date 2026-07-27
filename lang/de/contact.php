@@ -1,5 +1,4 @@
 <?php
-
 return [
     /*
     |--------------------------------------------------------------------------
@@ -30,13 +29,12 @@ return [
     'submit_error' => 'Beim Senden Ihrer Nachricht ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.',
     'rate_limit_error' => 'Zu viele Anfragen. Bitte versuchen Sie es später noch einmal.',
     'validation_error' => 'Bitte korrigieren Sie die Fehler unten.',
-
-    /*
+    'admin' => [
+        /*
     |--------------------------------------------------------------------------
     | Admin contact messages page
     |--------------------------------------------------------------------------
     */
-    'admin' => [
         'title' => 'Kontaktanfragen',
         'description' => 'Über das Kontaktformular gesendete Nachrichten.',
         'no_messages' => 'Noch keine Kontaktanfragen vorhanden.',

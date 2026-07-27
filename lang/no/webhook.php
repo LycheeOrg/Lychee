@@ -14,73 +14,73 @@ return [
     */
 
     'title' => 'Webhooks',
-    'description' => 'Configure outgoing webhooks that are triggered when photos are added, moved, or deleted.',
+    'description' => 'Konfigurer utgående webhooks som utløses når bilder legges til, flyttes eller slettes.',
 
     // Empty state
-    'no_webhooks' => 'No webhooks configured yet.',
-    'create_first' => 'Create your first webhook',
+    'no_webhooks' => 'Ingen webhooks konfigurert ennå.',
+    'create_first' => 'Opprett din første webhook',
 
     // Table columns
-    'col_name' => 'Name',
-    'col_event' => 'Event',
-    'col_method' => 'Method',
+    'col_name' => 'Navn',
+    'col_event' => 'Hendelse',
+    'col_method' => 'Metode',
     'col_url' => 'URL',
     'col_format' => 'Format',
-    'col_enabled' => 'Enabled',
-    'col_actions' => 'Actions',
+    'col_enabled' => 'Aktivert',
+    'col_actions' => 'Handlinger',
 
     // Event labels
-    'event_photo_add' => 'Photo Added',
-    'event_photo_move' => 'Photo Moved',
-    'event_photo_delete' => 'Photo Deleted',
+    'event_photo_add' => 'Bilde lagt til',
+    'event_photo_move' => 'Bilde flyttet',
+    'event_photo_delete' => 'Bilde slettet',
 
     // Payload format labels
     'format_json' => 'JSON',
-    'format_query_string' => 'Query String',
+    'format_query_string' => 'Spørrestreng',
 
     // Buttons
-    'create' => 'Create Webhook',
-    'edit' => 'Edit',
-    'delete' => 'Delete',
-    'cancel' => 'Cancel',
-    'save' => 'Save',
+    'create' => 'Opprett webhook',
+    'edit' => 'Rediger',
+    'delete' => 'Slett',
+    'cancel' => 'Avbryt',
+    'save' => 'Lagre',
 
     // Form fields
-    'field_name' => 'Name',
-    'field_name_placeholder' => 'e.g. My Webhook',
-    'field_event' => 'Event',
-    'field_method' => 'HTTP Method',
+    'field_name' => 'Navn',
+    'field_name_placeholder' => 'f.eks. Min webhook',
+    'field_event' => 'Hendelse',
+    'field_method' => 'HTTP-metode',
     'field_url' => 'URL',
     'field_url_placeholder' => 'https://example.com/hook',
-    'field_format' => 'Payload Format',
-    'field_enabled' => 'Enabled',
-    'field_secret' => 'Secret',
-    'field_secret_placeholder' => 'Leave empty to keep existing secret',
-    'field_secret_header' => 'Secret Header',
+    'field_format' => 'Nyttelastformat',
+    'field_enabled' => 'Aktivert',
+    'field_secret' => 'Hemmelighet',
+    'field_secret_placeholder' => 'La stå tom for å beholde eksisterende hemmelighet',
+    'field_secret_header' => 'Hemmelighetsheader',
     'field_secret_header_placeholder' => 'X-Webhook-Secret',
-    'field_send_photo_id' => 'Send Photo ID',
-    'field_send_album_id' => 'Send Album ID',
-    'field_send_title' => 'Send Title',
-    'field_send_size_variants' => 'Send Size Variants',
+    'field_send_photo_id' => 'Send bilde-ID',
+    'field_send_album_id' => 'Send album-ID',
+    'field_send_title' => 'Send tittel',
+    'field_send_size_variants' => 'Send størrelsesvarianter',
 
     // Modal titles
-    'modal_create_title' => 'Create Webhook',
-    'modal_edit_title' => 'Edit Webhook',
+    'modal_create_title' => 'Opprett webhook',
+    'modal_edit_title' => 'Rediger webhook',
 
     // Delete confirmation
-    'confirm_delete_header' => 'Delete Webhook',
-    'confirm_delete_message' => 'Are you sure you want to delete the webhook ":name"? This action cannot be undone.',
-    'delete_warning' => 'This action cannot be undone.',
+    'confirm_delete_header' => 'Slett webhook',
+    'confirm_delete_message' => 'Er du sikker på at du vil slette webhooken «:name»? Denne handlingen kan ikke angres.',
+    'delete_warning' => 'Denne handlingen kan ikke angres.',
 
     // Toasts
-    'created' => 'Webhook created successfully.',
-    'updated' => 'Webhook updated successfully.',
-    'deleted' => 'Webhook deleted successfully.',
-    'error_load' => 'Failed to load webhooks.',
-    'error_save' => 'Failed to save webhook.',
-    'error_delete' => 'Failed to delete webhook.',
+    'created' => 'Webhook opprettet.',
+    'updated' => 'Webhook oppdatert.',
+    'deleted' => 'Webhook slettet.',
+    'error_load' => 'Kunne ikke laste inn webhooks.',
+    'error_save' => 'Kunne ikke lagre webhook.',
+    'error_delete' => 'Kunne ikke slette webhook.',
 
     // Secret badge
-    'has_secret' => 'Secret set',
-    'no_secret' => 'No secret',
+    'has_secret' => 'Hemmelighet angitt',
+    'no_secret' => 'Ingen hemmelighet',
 ];

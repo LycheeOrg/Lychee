@@ -147,6 +147,7 @@
 						@filled="filled"
 						@reset="reset"
 					/>
+					<ColorField v-else-if="config.type === 'color'" :config="config" @filled="filled" @reset="reset" />
 					<SelectLang v-else-if="config.key === 'lang'" :config="config" @filled="filled" @reset="reset" />
 					<SelectField v-else-if="config.key === 'album_decoration'" :config="config" @filled="filled" @reset="reset" />
 					<SelectField v-else-if="config.key === 'album_decoration_orientation'" :config="config" @filled="filled" @reset="reset" />
@@ -196,6 +197,7 @@ import ZipSliderField from "@/v8/components/forms/settings/ZipSliderField.vue";
 import OldField from "@/v8/components/forms/settings/OldField.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
+import ColorField from "../forms/settings/ColorField.vue";
 
 const lycheeStore = useLycheeStateStore();
 const { is_old_style, is_expert_mode, is_debug_enabled } = storeToRefs(lycheeStore);

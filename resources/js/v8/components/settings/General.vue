@@ -7,6 +7,7 @@
 				:config="dark_mode_enabled"
 				@filled="saveDarkMode"
 			/>
+			<ColorField v-if="accent_color" :config="accent_color" @filled="save" />
 			<SelectLang v-if="lang !== undefined" :label="$t('settings.system.language')" :config="lang" @filled="saveLang" />
 			<div class="flex flex-wrap justify-between">
 				<label for="pp_dialog_nsfw_visible" class="text-highlighted">{{ $t("settings.system.nsfw_album_visibility") }}</label>
@@ -263,6 +264,7 @@ import MaintenanceService from "@/services/maintenance-service";
 import { onMounted, watch } from "vue";
 import Fieldset from "@/v8/components/forms/basic/Fieldset.vue";
 import { loadLanguageAsync } from "laravel-vue-i18n";
+import ColorField from "../forms/settings/ColorField.vue";
 
 const toast = useAppToast();
 
@@ -272,6 +274,7 @@ const props = defineProps<{
 }>();
 const emits = defineEmits<{ refresh: [] }>();
 
+const accent_color = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined);
 const dropbox_key = ref<string | undefined>(undefined);
 const photoSortingColumn = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined);
 const photoSortingOrder = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined);
@@ -346,6 +349,7 @@ function load(configs: App.Http.Resources.Models.ConfigCategoryResource[]) {
 	configs.forEach((config) => (config.configs as App.Http.Resources.Models.ConfigResource[]).forEach((value) => configurations.push(value)));
 
 	lang.value = configurations.find((config) => config.key === "lang");
+	accent_color.value = configurations.find((config) => config.key === "accent_color");
 	dark_mode_enabled.value = configurations.find((config) => config.key === "dark_mode_enabled");
 	nsfwVisible.value = configurations.find((config) => config.key === "nsfw_visible")?.value === "1";
 	dropbox_key.value = configurations.find((config) => config.key === "dropbox_key")?.value ?? "";

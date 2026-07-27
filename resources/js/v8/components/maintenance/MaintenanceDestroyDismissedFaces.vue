@@ -1,7 +1,7 @@
 <template>
-	<UCard v-if="data !== undefined && data !== 0" class="min-h-40 relative" :ui="{ body: 'h-full flex flex-col justify-between gap-4' }">
+	<UCard v-if="data !== undefined && data !== 0" class="min-h-40 relative bg-muted/50">
 		<template #header>
-			<div class="text-center">
+			<div class="text-center font-bold">
 				{{ $t("maintenance.destroy-dismissed-faces.title") }}
 			</div>
 		</template>
@@ -9,11 +9,11 @@
 			<div v-if="!loading" class="w-full ltr:text-left rtl:text-right" v-html="description"></div>
 			<Spinner v-if="loading" class="w-full" />
 		</div>
-		<div class="flex gap-4 mt-1">
-			<UButton v-if="data !== 0 && !loading" color="error" class="w-full font-bold justify-center" @click="exec">
+		<template #footer>
+			<UButton v-if="data !== 0 && !loading" color="error" class="w-full justify-center" @click="exec">
 				{{ $t("maintenance.destroy-dismissed-faces.action") }}
 			</UButton>
-		</div>
+		</template>
 	</UCard>
 </template>
 

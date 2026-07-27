@@ -1,7 +1,7 @@
 <template>
-	<UCard class="min-h-40 relative" :ui="{ body: 'h-full flex flex-col justify-between gap-4' }">
+	<UCard class="min-h-40 relative bg-muted/50">
 		<template #header>
-			<div class="text-center">
+			<div class="text-center font-bold">
 				{{ $t("maintenance.bulk-scan-nsfw.title") }}
 			</div>
 		</template>
@@ -11,11 +11,11 @@
 			</div>
 			<Spinner v-if="loading" class="w-full" />
 		</div>
-		<div class="flex gap-4 mt-1">
-			<UButton v-if="!loading" color="primary" class="w-full font-bold justify-center" @click="exec">
+		<template #footer>
+			<UButton v-if="!loading" color="primary" class="w-full justify-center" @click="exec">
 				{{ $t("maintenance.bulk-scan-nsfw.button") }}
 			</UButton>
-		</div>
+		</template>
 	</UCard>
 </template>
 

@@ -1,7 +1,7 @@
 <template>
-	<UCard class="min-h-40 relative" :ui="{ body: 'h-full flex flex-col justify-between gap-4' }">
+	<UCard class="min-h-40 relative bg-muted/50">
 		<template #header>
-			<div class="text-center">
+			<div class="text-center font-bold">
 				{{ $t("maintenance.optimize.title") }}
 			</div>
 		</template>
@@ -10,11 +10,11 @@
 			<Spinner v-if="loading && data.length === 0" class="w-full" />
 			<pre v-if="data.length > 0" class="text-2xs m-4">{{ data.join("\n") }}</pre>
 		</div>
-		<div class="flex gap-4 mt-1">
-			<UButton v-if="data.length === 0 && !loading" color="warning" class="w-full justify-center" @click="exec">
+		<template #footer>
+			<UButton v-if="data.length === 0 && !loading" color="secondary" class="w-full justify-center" @click="exec">
 				{{ $t("maintenance.optimize.button") }}
 			</UButton>
-		</div>
+		</template>
 	</UCard>
 </template>
 

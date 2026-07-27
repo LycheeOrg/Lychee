@@ -394,6 +394,8 @@ return [
         'public_visible_flag_enabled' => 'Enable public visible flag',
         'password_flag_enabled' => 'Enable password flag',
         'sensitive_flag_enabled' => 'Enable sensitive flag',
+        'expert_album_settings' => 'إظهار إعدادات الألبوم المتقدمة افتراضيًا',
+        'accent_color' => 'لون التمييز.',
     ],
     'details' => [
         'version' => '',
@@ -782,6 +784,8 @@ return [
         'public_visible_flag_enabled' => 'Show the green eye icon on albums that are publicly visible.',
         'password_flag_enabled' => 'Show the lock icon on password-protected albums.',
         'sensitive_flag_enabled' => 'Show the warning icon on albums marked as sensitive (NSFW).',
+        'expert_album_settings' => 'عند التفعيل، تعرض نافذة إعدادات الألبوم الحقول المتقدمة (الترويسة، الترخيص، حقوق النشر) افتراضيًا بدلاً من إخفائها خلف مفتاح "الوضع المتقدم".',
+        'accent_color' => 'اختر لونًا، وسيتم استخدام أقرب لوحة ألوان. إذا تركت هذا الحقل فارغًا، سيتم استخدام لون التمييز الافتراضي.<br>ملاحظة: ستحتاج إلى تحديث الصفحة لرؤية التغييرات.',
     ],
 
     'category_name' => [

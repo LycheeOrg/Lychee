@@ -10,6 +10,7 @@ namespace App\Jobs;
 
 use App\Enum\JobStatus;
 use App\Facades\Helpers;
+use App\Jobs\Traits\HasFailedTrait;
 use App\Models\JobHistory;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;

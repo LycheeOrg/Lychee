@@ -6,7 +6,7 @@
  * Copyright (c) 2018-2026 LycheeOrg.
  */
 
-namespace App\Jobs;
+namespace App\Jobs\Traits;
 
 use App\Enum\JobStatus;
 use App\Models\JobHistory;

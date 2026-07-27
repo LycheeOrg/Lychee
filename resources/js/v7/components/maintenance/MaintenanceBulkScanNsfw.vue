@@ -17,7 +17,7 @@
 				<ProgressSpinner v-if="loading" class="w-full" />
 			</ScrollPanel>
 			<div class="flex gap-4 mt-1">
-				<Button v-if="!loading" severity="primary" class="w-full font-bold border-none" @click="exec">
+				<Button v-if="!loading" severity="primary" class="w-full border-none" @click="exec">
 					{{ $t("maintenance.bulk-scan-nsfw.button") }}
 				</Button>
 			</div>

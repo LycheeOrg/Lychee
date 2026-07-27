@@ -28,6 +28,18 @@ use Spatie\GuzzleRateLimiterMiddleware\RateLimiterMiddleware;
 class Geodecoder
 {
 	/**
+	 * The local reverse geo-decoding endpoint, or '' if unset or the v8 feature is disabled.
+	 */
+	public static function localBaseUrl(): string
+	{
+		if (config('features.v8') !== true) {
+			return '';
+		}
+
+		return config('services.local-geo-decoding.base_url', '');
+	}
+
+	/**
 	 * Get http provider with caching.
 	 *
 	 * @return ProviderCache Geocoder Provider
@@ -38,8 +50,15 @@ class Geodecoder
 	{
 		$config_manager = app(ConfigManager::class);
 		try {
+			$local_base_url = self::localBaseUrl();
+			$is_local = $local_base_url !== '';
+
 			$stack = HandlerStack::create();
-			$stack->push(RateLimiterMiddleware::perSecond(config('features.location_decoding_requests_per_second', 1)));
+			if (!$is_local) {
+				// The public Nominatim server enforces a strict usage policy; a self-hosted
+				// instance has no such limit, so requests can be sent unthrottled.
+				$stack->push(RateLimiterMiddleware::perSecond(config('features.location_decoding_requests_per_second', 1)));
+			}
 
 			$http_client = new \GuzzleHttp\Client([
 				'handler' => $stack,
@@ -48,7 +67,9 @@ class Geodecoder
 
 			$http_adapter = new \Http\Adapter\Guzzle7\Client($http_client);
 
-			$provider = new Nominatim($http_adapter, 'https://nominatim.openstreetmap.org', config('app.name'));
+			$root_url = $is_local ? $local_base_url : 'https://nominatim.openstreetmap.org';
+
+			$provider = new Nominatim($http_adapter, $root_url, config('app.name'));
 
 			return new ProviderCache($provider, app('cache.store'));
 		} catch (GeocoderException|GuzzleException|\RuntimeException|BindingResolutionException|\InvalidArgumentException $e) {

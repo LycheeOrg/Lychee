@@ -394,6 +394,8 @@ return [
         'public_visible_flag_enabled' => 'Enable public visible flag',
         'password_flag_enabled' => 'Enable password flag',
         'sensitive_flag_enabled' => 'Enable sensitive flag',
+        'expert_album_settings' => 'Standaard geavanceerde albuminstellingen tonen',
+        'accent_color' => 'Accentkleur.',
     ],
     'details' => [
         'version' => '',
@@ -782,6 +784,8 @@ return [
         'public_visible_flag_enabled' => 'Show the green eye icon on albums that are publicly visible.',
         'password_flag_enabled' => 'Show the lock icon on password-protected albums.',
         'sensitive_flag_enabled' => 'Show the warning icon on albums marked as sensitive (NSFW).',
+        'expert_album_settings' => 'Indien ingeschakeld, toont het instellingenvenster van het album standaard de geavanceerde velden (koptekst, licentie, copyright) in plaats van ze te verbergen achter de schakelaar „expertmodus”.',
+        'accent_color' => 'Kies een kleur, het dichtstbijzijnde kleurenpalet wordt gebruikt. Als u dit leeg laat, wordt de standaard accentkleur gebruikt.<br>Let op: u moet de pagina vernieuwen om de wijzigingen te zien.',
     ],
 
     'category_name' => [

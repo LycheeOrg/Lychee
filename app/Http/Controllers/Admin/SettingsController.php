@@ -32,6 +32,7 @@ class SettingsController extends Controller
 {
 	public const V8_CONFIGS = [
 		'site_logo',
+		'accent_color',
 		'landing_logo',
 		'landing_header_logo',
 		'breadcrumb_enabled',
@@ -52,6 +53,7 @@ class SettingsController extends Controller
 		'public_visible_flag_enabled',
 		'password_flag_enabled',
 		'sensitive_flag_enabled',
+		'expert_album_settings',
 	];
 
 	/**

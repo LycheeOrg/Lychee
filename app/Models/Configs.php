@@ -107,6 +107,17 @@ class Configs extends Model
 			case ConfigType::STRING->value:
 			case ConfigType::DISABLED->value:
 				break;
+			case ConfigType::COLOR->value:
+				$candidate = $candidate_value ?? '';
+				try {
+					$is_valid_color = preg_match('/^#[0-9a-fA-F]{6}$/', $candidate) === 1;
+				} catch (PcreException) {
+					$is_valid_color = false;
+				}
+				if (!$is_valid_color && $candidate !== '') {
+					$message = sprintf($message_template, 'a color in hex format like "#00bcff"');
+				}
+				break;
 			case ConfigType::STRING_REQ->value:
 				if ($candidate_value === '' || $candidate_value === null) {
 					$message = 'Error: ' . $this->key . ' empty or not set';

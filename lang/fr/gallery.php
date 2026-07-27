@@ -154,8 +154,10 @@ return [
         'photo_actions' => 'Actions sur la photo',
         'no_results' => 'Rien à voir ici',
         'upload' => 'Téléverser des photos',
+        'edit_title' => 'Paramètres de l’album',
         'tabs' => [
             'about' => 'À propos de l’album',
+            'visibility' => 'Visibilité',
             'share' => 'Partager l’album',
             'embed' => 'Intégrer l’album',
             'move' => 'Déplacer l’album',
@@ -211,6 +213,8 @@ return [
             'all_tags_must_match' => 'Toutes les étiquettes doivent être présentes.',
             'all_persons_must_match' => 'Toutes les personnes doivent être présentes.',
             'persons_required' => 'Au moins une personne est requise.',
+            'autosave_hint' => 'Les modifications sont enregistrées automatiquement.',
+            'expert_mode' => 'Mode expert',
         ],
     ],
     'photo' => [

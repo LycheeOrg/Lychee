@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b830c47986291e380de1c207bede1ae5",
+    "content-hash": "9daf788212dfcc14c66310438129b374",
     "packages": [
         {
             "name": "apimatic/core",
@@ -279,16 +279,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.388.9",
+            "version": "3.388.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "d537c1143942ba8b7a0203a20c223127b9ba7108"
+                "reference": "ee6462591ad92c79635fb453732a34f245787e0f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/d537c1143942ba8b7a0203a20c223127b9ba7108",
-                "reference": "d537c1143942ba8b7a0203a20c223127b9ba7108",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/ee6462591ad92c79635fb453732a34f245787e0f",
+                "reference": "ee6462591ad92c79635fb453732a34f245787e0f",
                 "shasum": ""
             },
             "require": {
@@ -370,22 +370,22 @@
             "support": {
                 "forum": "https://github.com/aws/aws-sdk-php/discussions",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.388.9"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.388.11"
             },
-            "time": "2026-07-17T18:11:29+00:00"
+            "time": "2026-07-21T18:08:14+00:00"
         },
         {
             "name": "bepsvpt/secure-headers",
-            "version": "dev-add-wasm-support",
+            "version": "9.1.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/LycheeOrg/secure-headers.git",
-                "reference": "f6be0be8e0e0701c43f968e5c2a9e810a34077eb"
+                "url": "https://github.com/bepsvpt/secure-headers.git",
+                "reference": "dd972411f9a231259cdd7a66c2d9fa3f1c39858a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/LycheeOrg/secure-headers/zipball/f6be0be8e0e0701c43f968e5c2a9e810a34077eb",
-                "reference": "f6be0be8e0e0701c43f968e5c2a9e810a34077eb",
+                "url": "https://api.github.com/repos/bepsvpt/secure-headers/zipball/dd972411f9a231259cdd7a66c2d9fa3f1c39858a",
+                "reference": "dd972411f9a231259cdd7a66c2d9fa3f1c39858a",
                 "shasum": ""
             },
             "require": {
@@ -412,31 +412,14 @@
                 }
             },
             "autoload": {
-                "psr-4": {
-                    "Bepsvpt\\SecureHeaders\\": "src/"
-                },
                 "files": [
                     "src/helpers.php"
-                ]
-            },
-            "autoload-dev": {
+                ],
                 "psr-4": {
-                    "Bepsvpt\\SecureHeaders\\Tests\\": "tests/"
+                    "Bepsvpt\\SecureHeaders\\": "src/"
                 }
             },
-            "scripts": {
-                "analyse": [
-                    "phpstan analyse --ansi -vvv --memory-limit=-1"
-                ],
-                "format": [
-                    "@putenv XDEBUG_MODE=off",
-                    "pint --ansi -vvv"
-                ],
-                "test": [
-                    "@putenv XDEBUG_MODE=coverage",
-                    "phpunit"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -462,15 +445,16 @@
                 "referrer-policy"
             ],
             "support": {
-                "source": "https://github.com/LycheeOrg/secure-headers/tree/add-wasm-support"
+                "issues": "https://github.com/bepsvpt/secure-headers/issues",
+                "source": "https://github.com/bepsvpt/secure-headers/tree/9.1.1"
             },
             "funding": [
                 {
-                    "type": "open_collective",
-                    "url": "https://opencollective.com/secure-headers"
+                    "url": "https://opencollective.com/secure-headers",
+                    "type": "open_collective"
                 }
             ],
-            "time": "2026-07-18T14:32:09+00:00"
+            "time": "2026-07-21T05:26:45+00:00"
         },
         {
             "name": "brick/math",
@@ -600,6 +584,56 @@
                 }
             ],
             "time": "2023-12-11T17:09:12+00:00"
+        },
+        {
+            "name": "charlieetienne/palette-generator",
+            "version": "v1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/CharlieEtienne/palette-generator.git",
+                "reference": "2a40ca0a81bcd1d64ec36e52c98e9f821d9f9301"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/CharlieEtienne/palette-generator/zipball/2a40ca0a81bcd1d64ec36e52c98e9f821d9f9301",
+                "reference": "2a40ca0a81bcd1d64ec36e52c98e9f821d9f9301",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.4"
+            },
+            "require-dev": {
+                "pestphp/pest": "^2.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "CharlieEtienne\\PaletteGenerator\\PaletteGeneratorServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "CharlieEtienne\\PaletteGenerator\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Charlie Etienne",
+                    "email": "hello@charlieetienne.com"
+                }
+            ],
+            "description": "A PHP library for generating tailwind v4 color palettes from a hexadecimal color",
+            "support": {
+                "issues": "https://github.com/CharlieEtienne/palette-generator/issues",
+                "source": "https://github.com/CharlieEtienne/palette-generator/tree/v1.1"
+            },
+            "time": "2025-07-08T22:23:35+00:00"
         },
         {
             "name": "clue/stream-filter",
@@ -1045,16 +1079,16 @@
         },
         {
             "name": "doctrine/dbal",
-            "version": "3.10.5",
+            "version": "3.10.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/dbal.git",
-                "reference": "95d84866bf3c04b2ddca1df7c049714660959aef"
+                "reference": "c95589d775a0b2e543467d40f8c3ecccf586f2b4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/dbal/zipball/95d84866bf3c04b2ddca1df7c049714660959aef",
-                "reference": "95d84866bf3c04b2ddca1df7c049714660959aef",
+                "url": "https://api.github.com/repos/doctrine/dbal/zipball/c95589d775a0b2e543467d40f8c3ecccf586f2b4",
+                "reference": "c95589d775a0b2e543467d40f8c3ecccf586f2b4",
                 "shasum": ""
             },
             "require": {
@@ -1139,7 +1173,7 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/dbal/issues",
-                "source": "https://github.com/doctrine/dbal/tree/3.10.5"
+                "source": "https://github.com/doctrine/dbal/tree/3.10.6"
             },
             "funding": [
                 {
@@ -1155,7 +1189,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-02-24T08:03:57+00:00"
+            "time": "2026-07-21T12:57:49+00:00"
         },
         {
             "name": "doctrine/deprecations",
@@ -3244,16 +3278,16 @@
         },
         {
             "name": "laravel/octane",
-            "version": "v2.17.5",
+            "version": "v2.18.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/octane.git",
-                "reference": "058ae4d7109eed40836dc42960f9388b9bf71f73"
+                "reference": "404a2f98370c5dea7fb65ecce03c807e8d324074"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/octane/zipball/058ae4d7109eed40836dc42960f9388b9bf71f73",
-                "reference": "058ae4d7109eed40836dc42960f9388b9bf71f73",
+                "url": "https://api.github.com/repos/laravel/octane/zipball/404a2f98370c5dea7fb65ecce03c807e8d324074",
+                "reference": "404a2f98370c5dea7fb65ecce03c807e8d324074",
                 "shasum": ""
             },
             "require": {
@@ -3329,7 +3363,7 @@
                 "issues": "https://github.com/laravel/octane/issues",
                 "source": "https://github.com/laravel/octane"
             },
-            "time": "2026-06-04T09:05:08+00:00"
+            "time": "2026-07-21T13:23:39+00:00"
         },
         {
             "name": "laravel/prompts",
@@ -3392,16 +3426,16 @@
         },
         {
             "name": "laravel/serializable-closure",
-            "version": "v2.0.13",
+            "version": "v2.0.15",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/serializable-closure.git",
-                "reference": "b566ee0dd251f3c4078bed003a7ce015f5ea6dce"
+                "reference": "dccd8bcb851bb03fcc005df650b708b57cc52661"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/serializable-closure/zipball/b566ee0dd251f3c4078bed003a7ce015f5ea6dce",
-                "reference": "b566ee0dd251f3c4078bed003a7ce015f5ea6dce",
+                "url": "https://api.github.com/repos/laravel/serializable-closure/zipball/dccd8bcb851bb03fcc005df650b708b57cc52661",
+                "reference": "dccd8bcb851bb03fcc005df650b708b57cc52661",
                 "shasum": ""
             },
             "require": {
@@ -3449,20 +3483,20 @@
                 "issues": "https://github.com/laravel/serializable-closure/issues",
                 "source": "https://github.com/laravel/serializable-closure"
             },
-            "time": "2026-04-16T14:03:50+00:00"
+            "time": "2026-07-21T16:49:22+00:00"
         },
         {
             "name": "laravel/socialite",
-            "version": "v5.28.0",
+            "version": "v5.29.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/socialite.git",
-                "reference": "4c131ff4b24d8881a9c8fe4eecb5ffeff9803f26"
+                "reference": "cd343a5841f02292af119ee607edc71300c9ae4f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/socialite/zipball/4c131ff4b24d8881a9c8fe4eecb5ffeff9803f26",
-                "reference": "4c131ff4b24d8881a9c8fe4eecb5ffeff9803f26",
+                "url": "https://api.github.com/repos/laravel/socialite/zipball/cd343a5841f02292af119ee607edc71300c9ae4f",
+                "reference": "cd343a5841f02292af119ee607edc71300c9ae4f",
                 "shasum": ""
             },
             "require": {
@@ -3521,7 +3555,7 @@
                 "issues": "https://github.com/laravel/socialite/issues",
                 "source": "https://github.com/laravel/socialite"
             },
-            "time": "2026-06-12T03:24:05+00:00"
+            "time": "2026-07-01T13:50:23+00:00"
         },
         {
             "name": "lcobucci/clock",
@@ -8252,16 +8286,16 @@
         },
         {
             "name": "socialiteproviders/microsoft",
-            "version": "4.9.1",
+            "version": "4.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/SocialiteProviders/Microsoft.git",
-                "reference": "664c946a57994abeeca0208c3ed187dd3d73ccc4"
+                "reference": "e86ad86734df16a54d869b21103b9e2ec3842000"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SocialiteProviders/Microsoft/zipball/664c946a57994abeeca0208c3ed187dd3d73ccc4",
-                "reference": "664c946a57994abeeca0208c3ed187dd3d73ccc4",
+                "url": "https://api.github.com/repos/SocialiteProviders/Microsoft/zipball/e86ad86734df16a54d869b21103b9e2ec3842000",
+                "reference": "e86ad86734df16a54d869b21103b9e2ec3842000",
                 "shasum": ""
             },
             "require": {
@@ -8298,7 +8332,7 @@
                 "issues": "https://github.com/socialiteproviders/providers/issues",
                 "source": "https://github.com/socialiteproviders/providers"
             },
-            "time": "2026-03-26T00:32:34+00:00"
+            "time": "2026-07-21T22:20:53+00:00"
         },
         {
             "name": "socialiteproviders/nextcloud",
@@ -13611,16 +13645,16 @@
         },
         {
             "name": "friendsofphp/php-cs-fixer",
-            "version": "v3.95.15",
+            "version": "v3.95.17",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer.git",
-                "reference": "3e47e5d50046f87e3244acde2fe655d1a3b72555"
+                "reference": "0ee88422118f3cc59c8c3def222ba7f1493b6d5b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHP-CS-Fixer/PHP-CS-Fixer/zipball/3e47e5d50046f87e3244acde2fe655d1a3b72555",
-                "reference": "3e47e5d50046f87e3244acde2fe655d1a3b72555",
+                "url": "https://api.github.com/repos/PHP-CS-Fixer/PHP-CS-Fixer/zipball/0ee88422118f3cc59c8c3def222ba7f1493b6d5b",
+                "reference": "0ee88422118f3cc59c8c3def222ba7f1493b6d5b",
                 "shasum": ""
             },
             "require": {
@@ -13660,10 +13694,10 @@
                 "php-coveralls/php-coveralls": "^2.9.1",
                 "php-cs-fixer/phpunit-constraint-isidenticalstring": "^1.8",
                 "php-cs-fixer/phpunit-constraint-xmlmatchesxsd": "^1.8",
-                "phpunit/phpunit": "^9.6.35 || ^10.5.64 || ^11.5.56 || ^12.5.31",
+                "phpunit/phpunit": "^9.6.35 || ^10.5.64 || ^11.5.56 || ^12.5.31 || ^13.0.6",
                 "symfony/polyfill-php85": "^1.38",
-                "symfony/var-dumper": "^5.4.48 || ^6.4.36 || ^7.4.8 || ^8.1.0",
-                "symfony/yaml": "^5.4.53 || ^6.4.41 || ^7.4.13 || ^8.1.0"
+                "symfony/var-dumper": "^5.4.48 || ^6.4.36 || ^7.4.8 || ^8.1.1",
+                "symfony/yaml": "^5.4.53 || ^6.4.41 || ^7.4.13 || ^8.1.1"
             },
             "suggest": {
                 "ext-dom": "For handling output formats in XML",
@@ -13704,7 +13738,7 @@
             ],
             "support": {
                 "issues": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/issues",
-                "source": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/tree/v3.95.15"
+                "source": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/tree/v3.95.17"
             },
             "funding": [
                 {
@@ -13712,7 +13746,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-07-15T09:51:47+00:00"
+            "time": "2026-07-24T13:54:39+00:00"
         },
         {
             "name": "hamcrest/hamcrest-php",
@@ -14932,27 +14966,28 @@
         },
         {
             "name": "phpstan/phpstan-strict-rules",
-            "version": "2.0.11",
+            "version": "2.0.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-strict-rules.git",
-                "reference": "9b000a578b85b32945b358b172c7b20e91189024"
+                "reference": "2bc5ae19ae965663b62ac907ee6342c3903ec93b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-strict-rules/zipball/9b000a578b85b32945b358b172c7b20e91189024",
-                "reference": "9b000a578b85b32945b358b172c7b20e91189024",
+                "url": "https://api.github.com/repos/phpstan/phpstan-strict-rules/zipball/2bc5ae19ae965663b62ac907ee6342c3903ec93b",
+                "reference": "2bc5ae19ae965663b62ac907ee6342c3903ec93b",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.4 || ^8.0",
-                "phpstan/phpstan": "^2.1.39"
+                "phpstan/phpstan": "^2.1.52"
             },
             "require-dev": {
                 "php-parallel-lint/php-parallel-lint": "^1.2",
                 "phpstan/phpstan-deprecation-rules": "^2.0",
                 "phpstan/phpstan-phpunit": "^2.0",
-                "phpunit/phpunit": "^9.6"
+                "phpunit/phpunit": "^9.6",
+                "shipmonk/name-collision-detector": "^2.1"
             },
             "type": "phpstan-extension",
             "extra": {
@@ -14977,9 +15012,9 @@
             ],
             "support": {
                 "issues": "https://github.com/phpstan/phpstan-strict-rules/issues",
-                "source": "https://github.com/phpstan/phpstan-strict-rules/tree/2.0.11"
+                "source": "https://github.com/phpstan/phpstan-strict-rules/tree/2.0.12"
             },
-            "time": "2026-05-02T06:54:10+00:00"
+            "time": "2026-07-19T07:24:06+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -17840,7 +17875,6 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "bepsvpt/secure-headers": 20,
         "opcodesio/log-viewer": 20
     },
     "prefer-stable": true,

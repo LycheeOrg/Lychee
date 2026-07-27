@@ -29,6 +29,7 @@ use App\Actions\Diagnostics\Pipes\Checks\ImageOptCheck;
 use App\Actions\Diagnostics\Pipes\Checks\ImagickPdfCheck;
 use App\Actions\Diagnostics\Pipes\Checks\IniSettingsCheck;
 use App\Actions\Diagnostics\Pipes\Checks\KeygenApiTokenCheck;
+use App\Actions\Diagnostics\Pipes\Checks\LocalGeoDecodingServiceCheck;
 use App\Actions\Diagnostics\Pipes\Checks\MigrationCheck;
 use App\Actions\Diagnostics\Pipes\Checks\OldLicenseCheck;
 use App\Actions\Diagnostics\Pipes\Checks\OpCacheCheck;
@@ -84,6 +85,7 @@ class Errors
 		AiVisionFaceRecognitionServiceCheck::class,
 		AiVisionFaceRecognitionServiceConfigCheck::class,
 		AiVisionNsfwServiceCheck::class,
+		LocalGeoDecodingServiceCheck::class,
 		StatisticsIntegrityCheck::class,
 		WebshopCheck::class,
 		SecurityAdvisoriesCheck::class,

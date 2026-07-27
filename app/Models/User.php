@@ -254,6 +254,10 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		}
 
 		AccessPermission::query()->where(APC::USER_ID, '=', $this->id)->delete();
+		// The FK on album_user_thumbs.user_id cannot CASCADE (it is a base
+		// column of a generated column, see the album_user_thumbs migration),
+		// so this row cleanup must happen explicitly, same as AccessPermission.
+		AlbumUserThumb::query()->where('user_id', '=', $this->id)->delete();
 		WebAuthnCredential::query()->where('authenticatable_id', '=', $this->id)->delete();
 
 		return $this->parentDelete();

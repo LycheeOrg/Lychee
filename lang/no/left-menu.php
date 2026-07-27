@@ -22,9 +22,9 @@ return [
     'api' => 'API-dokumentasjon',
     'source_code' => 'Kildekode',
     'support' => 'Brukerstøtte',
-    'contact' => 'Contact',
-    'messages' => 'Messages',
-    'people' => 'People',
+    'contact' => 'Kontakt',
+    'messages' => 'Meldinger',
+    'people' => 'Personer',
     'webhooks' => 'Webhooks',
-    'shopSizes' => 'Size Catalogue',
+    'shopSizes' => 'Størrelseskatalog',
 ];

@@ -7,6 +7,7 @@
 			'max-h-0 overflow-hidden': is_full_screen,
 		}"
 		:toggle="false"
+		to=""
 	>
 		<template #title>
 			<LycheeBreadcrumb
@@ -69,7 +70,7 @@
 				</UDropdownMenu>
 				<template v-if="albumStore.rights?.can_edit">
 					<UButton
-						:icon="is_album_edit_open ? 'lucide:chevron-up' : 'lucide:chevron-down'"
+						icon="lucide:settings"
 						color="neutral"
 						variant="ghost"
 						:class="{ 'ltr:mr-2 rtl:ml-2': true, 'text-primary': is_album_edit_open }"

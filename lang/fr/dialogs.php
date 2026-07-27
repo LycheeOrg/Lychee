@@ -198,6 +198,7 @@ return [
         'confirmation_tag' => 'Confirmez-vous la suppression de l’album « %s » ?',
         'confirmation_multiple' => 'Êtes-vous sûr de vouloir supprimer les %d albums sélectionnés et toutes les photos qu’ils contiennent ?',
         'warning' => 'Cette action est irréversible !',
+        'type_to_confirm' => 'Saisissez « %s » pour confirmer.',
         'delete' => 'Supprimer l’album et les photos',
     ],
     'transfer' => [

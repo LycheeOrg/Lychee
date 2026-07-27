@@ -21,8 +21,12 @@ use App\Events\Metrics\PhotoVisit;
 use App\Events\OrderCompleted;
 use App\Events\PhotoAdded;
 use App\Events\PhotoDeleted;
+use App\Events\PhotoHighlightToggled;
 use App\Events\PhotoMoved;
+use App\Events\PhotoPersonsChanged;
+use App\Events\PhotoRatingChanged;
 use App\Events\PhotoSaved;
+use App\Events\PhotoTagsChanged;
 use App\Events\PhotoWillBeDeleted;
 use App\Events\TaggedRouteCacheUpdated;
 use App\Listeners\AlbumCacheCleaner;
@@ -34,6 +38,7 @@ use App\Listeners\RecomputeAlbumSizeOnAlbumChange;
 use App\Listeners\RecomputeAlbumSizeOnPhotoMutation;
 use App\Listeners\RecomputeAlbumStatsOnAlbumChange;
 use App\Listeners\RecomputeAlbumStatsOnPhotoChange;
+use App\Listeners\RecomputeAlbumUserThumbsOnPhotoChange;
 use App\Listeners\RotateLicenseKeyOnLogin;
 use App\Listeners\TaggedRouteCacheCleaner;
 use App\Listeners\WebhookListener;
@@ -125,6 +130,14 @@ class EventServiceProvider extends ServiceProvider
 		Event::listen(PhotoDeleted::class, RecomputeAlbumSizeOnPhotoMutation::class . '@handlePhotoDeleted');
 		Event::listen(AlbumSaved::class, RecomputeAlbumSizeOnAlbumChange::class . '@handleAlbumSaved');
 		Event::listen(AlbumDeleted::class, RecomputeAlbumSizeOnAlbumChange::class . '@handleAlbumDeleted');
+
+		Event::listen(PhotoSaved::class, RecomputeAlbumUserThumbsOnPhotoChange::class . '@handlePhotoSaved');
+		Event::listen(PhotoWillBeDeleted::class, RecomputeAlbumUserThumbsOnPhotoChange::class . '@handlePhotoWillBeDeleted');
+		Event::listen(PhotoMoved::class, RecomputeAlbumUserThumbsOnPhotoChange::class . '@handlePhotoMoved');
+		Event::listen(PhotoHighlightToggled::class, RecomputeAlbumUserThumbsOnPhotoChange::class . '@handlePhotoHighlightToggled');
+		Event::listen(PhotoRatingChanged::class, RecomputeAlbumUserThumbsOnPhotoChange::class . '@handlePhotoRatingChanged');
+		Event::listen(PhotoTagsChanged::class, RecomputeAlbumUserThumbsOnPhotoChange::class . '@handlePhotoTagsChanged');
+		Event::listen(PhotoPersonsChanged::class, RecomputeAlbumUserThumbsOnPhotoChange::class . '@handlePhotoPersonsChanged');
 
 		Event::listen(Login::class, RotateLicenseKeyOnLogin::class . '@handle');
 

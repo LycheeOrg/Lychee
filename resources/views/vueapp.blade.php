@@ -16,6 +16,7 @@
     <x-meta />
     @if(Features::active('nuxt_ui'))
     @vite(['resources/js/app-v8.ts','resources/sass/app-v8.css'])
+	<x-style />
     @else
     @vite(['resources/js/app.ts','resources/sass/app.css'])
     @endif

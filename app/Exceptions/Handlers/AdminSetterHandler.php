@@ -68,9 +68,31 @@ class AdminSetterHandler implements HttpExceptionHandler
 				return $redirect_response;
 			}
 
+			// The legacy Blade installer's admin-setup form re-renders itself inline
+			// with an error message rather than a hard redirect/error page (it wants
+			// to keep the user's already-entered values on screen). Historically that
+			// happened via a try/catch in SetUpAdminController::create() around
+			// CreateInitialAdmin::do(); now that "an admin already exists" is asserted
+			// by SetUpAdminRequest::authorize() (which runs before the controller body),
+			// the exception never reaches that catch, so we special-case it here.
+			if ($e instanceof AdminUserAlreadySetException && request()->routeIs('install-admin')) {
+				return $this->renderLegacyInstallerError($e);
+			}
+
 			return $default_response;
 		} catch (\Throwable) {
 			return $default_response;
 		}
+	}
+
+	private function renderLegacyInstallerError(AdminUserAlreadySetException $e): SymfonyResponse
+	{
+		$error = $e->getMessage() . '<br>' . ($e->getPrevious()?->getMessage() ?? '');
+
+		return response()->view('install.setup-admin', [
+			'title' => 'Lychee-setup-admin',
+			'step' => 5,
+			'error' => $error,
+		]);
 	}
 }
