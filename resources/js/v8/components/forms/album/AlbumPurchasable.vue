@@ -1,5 +1,8 @@
 <template>
-	<UCard class="sm:p-4 xl:px-9 max-w-3xl w-full py-0" :ui="{ body: 'p-0' }">
+	<Fieldset class="w-full">
+		<template #legend>
+			<span class="flex items-center gap-2"><UIcon :name="legendIcon" />{{ legendLabel }}</span>
+		</template>
 		<div v-if="albumPurchasable !== undefined" class="flex flex-col gap-4">
 			<template v-if="albumPurchasable === null">
 				<p class="font-bold text-muted text-lg text-center">{{ $t("webshop.albumPurchasable.notPurchasableYet") }}</p>
@@ -28,7 +31,7 @@
 						"
 					/>
 				</div>
-				<UAlert v-if="!canSubmit" color="error" :description="$t('webshop.albumPurchasable.setAtLeastOnePrice')" />
+				<p v-if="!canSubmit" class="text-error text-sm text-center">{{ $t("webshop.albumPurchasable.setAtLeastOnePrice") }}</p>
 			</template>
 			<template v-else>
 				<UTextarea v-model="description" :placeholder="$t('webshop.albumPurchasable.descriptionPlaceholder')" class="w-full" />
@@ -44,12 +47,13 @@
 						{{ $t("webshop.albumPurchasable.update") }}
 					</UButton>
 				</div>
-				<UAlert v-if="!canSubmit" color="error" :description="$t('webshop.albumPurchasable.setAtLeastOnePrice')" />
+				<p v-if="!canSubmit" class="text-error text-sm text-center">{{ $t("webshop.albumPurchasable.setAtLeastOnePrice") }}</p>
 			</template>
 		</div>
-	</UCard>
+	</Fieldset>
 </template>
 <script setup lang="ts">
+import Fieldset from "@/v8/components/forms/basic/Fieldset.vue";
 import ShopManagementService, { Price, PrintSizeAssignment, PixelSizeAssignment } from "@/services/shop-management-service";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import { onMounted, ref, computed } from "vue";
@@ -58,6 +62,11 @@ import PrintSizePricesInput from "@/v8/components/forms/shop-management/PrintSiz
 import PixelSizePricesInput from "@/v8/components/forms/shop-management/PixelSizePricesInput.vue";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { trans } from "laravel-vue-i18n";
+
+defineProps<{
+	legendIcon: string;
+	legendLabel: string;
+}>();
 
 const toast = useAppToast();
 const albumStore = useAlbumStore();

@@ -53,6 +53,7 @@ class SettingsController extends Controller
 		'public_visible_flag_enabled',
 		'password_flag_enabled',
 		'sensitive_flag_enabled',
+		'expert_album_settings',
 	];
 
 	/**

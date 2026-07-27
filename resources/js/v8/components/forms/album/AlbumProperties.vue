@@ -1,10 +1,13 @@
 <template>
-	<UCard class="sm:p-4 xl:px-9 max-sm:w-full sm:min-w-3xl shrink-0" :ui="{ body: 'p-0' }">
+	<Fieldset class="w-full shrink-0">
+		<template #legend>
+			<span class="flex items-center gap-2"><UIcon :name="legendIcon" />{{ legendLabel }}</span>
+		</template>
 		<form class="flex flex-col gap-4">
 			<UFormField :label="$t('gallery.album.properties.title')">
 				<UInput id="title" v-model="title" type="text" class="w-full" />
 			</UFormField>
-			<div v-if="is_se_enabled || is_se_preview_enabled" dir="ltr" class="flex items-center gap-1">
+			<div v-if="(is_se_enabled || is_se_preview_enabled) && is_expert_mode" dir="ltr" class="flex items-center gap-1">
 				<UTooltip :text="$t('gallery.album.properties.copy_slug_url')">
 					<div class="text-muted flex items-center" :class="{ 'cursor-pointer': slug }" @click="copySlugUrl">
 						<span>{{ Constants.BASE_URL }}/gallery/</span>
@@ -47,41 +50,43 @@
 						</USelectMenu>
 					</UFormField>
 				</div>
-				<UFormField :label="$t('gallery.album.properties.header')">
-					<USelectMenu v-model="header_id" :items="headersOptions" label-key="title" class="w-72">
-						<template #item-leading="{ item }">
-							<UIcon v-if="item.id === 'compact'" name="lucide:shrink" />
-							<img v-else :src="item.thumb ?? undefined" alt="poster" class="w-4 rounded-sm" />
-						</template>
-					</USelectMenu>
-				</UFormField>
-				<UFormField :label="$t('gallery.album.properties.license')">
-					<USelectMenu v-model="license" :items="licenseOptions" label-key="label" class="w-72">
+				<template v-if="is_expert_mode">
+					<UFormField :label="$t('gallery.album.properties.header')">
+						<USelectMenu v-model="header_id" :items="headersOptions" label-key="title" class="w-72">
+							<template #item-leading="{ item }">
+								<UIcon v-if="item.id === 'compact'" name="lucide:shrink" />
+								<img v-else :src="item.thumb ?? undefined" alt="poster" class="w-4 rounded-sm" />
+							</template>
+						</USelectMenu>
+					</UFormField>
+					<UFormField :label="$t('gallery.album.properties.license')">
+						<USelectMenu v-model="license" :items="licenseOptions" label-key="label" class="w-72">
+							<template #default="{ modelValue }">{{ selectedLabel(modelValue) }}</template>
+							<template #item-label="{ item }">{{ $t(item.label) }}</template>
+						</USelectMenu>
+					</UFormField>
+					<UFormField :label="$t('gallery.album.properties.copyright')">
+						<UInput id="copyright" v-model="copyright" class="w-full" />
+					</UFormField>
+				</template>
+			</template>
+			<div class="flex flex-wrap gap-4">
+				<UFormField v-if="is_model_album" :label="$t('gallery.album.properties.aspect_ratio')">
+					<USelectMenu v-model="aspectRatio" :items="aspectRatioOptions" label-key="label" class="w-72">
 						<template #default="{ modelValue }">{{ selectedLabel(modelValue) }}</template>
 						<template #item-label="{ item }">{{ $t(item.label) }}</template>
 					</USelectMenu>
 				</UFormField>
-				<UFormField :label="$t('gallery.album.properties.copyright')">
-					<UInput id="copyright" v-model="copyright" class="w-full" />
-				</UFormField>
-				<div class="flex flex-wrap gap-4">
-					<UFormField :label="$t('gallery.album.properties.aspect_ratio')">
-						<USelectMenu v-model="aspectRatio" :items="aspectRatioOptions" label-key="label" class="w-72">
-							<template #default="{ modelValue }">{{ selectedLabel(modelValue) }}</template>
-							<template #item-label="{ item }">{{ $t(item.label) }}</template>
-						</USelectMenu>
-					</UFormField>
-					<UFormField :label="$t('gallery.album.properties.album_timeline')">
-						<USelectMenu v-model="albumTimeline" :items="albumTimelineOptions" label-key="label" class="w-72">
-							<template #default="{ modelValue }">{{ selectedLabel(modelValue) }}</template>
-							<template #item-label="{ item }">{{ $t(item.label) }}</template>
-						</USelectMenu>
-					</UFormField>
-				</div>
-			</template>
-			<div class="flex flex-wrap gap-4">
 				<UFormField :label="$t('gallery.album.properties.layout')">
 					<USelectMenu v-model="photoLayout" :items="photoLayoutOptions" label-key="label" class="w-72">
+						<template #default="{ modelValue }">{{ selectedLabel(modelValue) }}</template>
+						<template #item-label="{ item }">{{ $t(item.label) }}</template>
+					</USelectMenu>
+				</UFormField>
+			</div>
+			<div v-if="is_expert_mode" class="flex flex-wrap gap-4">
+				<UFormField v-if="is_model_album" :label="$t('gallery.album.properties.album_timeline')">
+					<USelectMenu v-model="albumTimeline" :items="albumTimelineOptions" label-key="label" class="w-72">
 						<template #default="{ modelValue }">{{ selectedLabel(modelValue) }}</template>
 						<template #item-label="{ item }">{{ $t(item.label) }}</template>
 					</USelectMenu>
@@ -94,7 +99,7 @@
 				</UFormField>
 			</div>
 
-			<div v-if="!is_person_album" class="flex flex-col gap-2">
+			<div v-if="!is_person_album && (!is_model_album || is_expert_mode)" class="flex flex-col gap-2">
 				<UFormField :label="$t(is_model_album ? 'gallery.album.properties.tags' : 'gallery.album.properties.show_tags')">
 					<TagsInput v-model="tags" :add="false" />
 				</UFormField>
@@ -117,15 +122,14 @@
 					:ui="{ label: 'text-highlighted' }"
 				/>
 			</div>
-			<UButton class="mt-4 w-full font-bold justify-center" color="primary" @click="save">
-				{{ $t("dialogs.button.save") }}
-			</UButton>
 		</form>
-	</UCard>
+	</Fieldset>
 </template>
 <script setup lang="ts">
+import Fieldset from "@/v8/components/forms/basic/Fieldset.vue";
 import Constants from "@/services/constants";
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, onMounted, ref, watch, nextTick } from "vue";
+import { useDebounceFn } from "@vueuse/core";
 import AlbumService, { UpdateAbumData, UpdateTagAlbumData, UpdatePersonAlbumData } from "@/services/album-service";
 import PersonsInput from "@/v8/components/forms/basic/PersonsInput.vue";
 import {
@@ -154,6 +158,12 @@ type HeaderOption = {
 	thumb?: string | null;
 };
 
+const props = defineProps<{
+	expertMode: boolean;
+	legendIcon: string;
+	legendLabel: string;
+}>();
+
 const LycheeState = useLycheeStateStore();
 const albumStore = useAlbumStore();
 const { is_se_enabled, is_se_preview_enabled } = storeToRefs(LycheeState);
@@ -161,7 +171,9 @@ const { is_se_enabled, is_se_preview_enabled } = storeToRefs(LycheeState);
 const photosStore = usePhotosStore();
 
 const toast = useAppToast();
+const isLoading = ref(true);
 const is_model_album = ref(true);
+const is_expert_mode = computed(() => props.expertMode);
 const albumId = ref("");
 const title = ref("");
 const slug = ref<string | null>(null);
@@ -207,7 +219,9 @@ const descriptionForInput = computed<string | undefined>({
 	},
 });
 function selectedLabel<T>(option: SelectOption<T> | undefined): string {
-	return option ? trans(option.label) : "";
+	// A non-breaking space (matching USelectMenu's own placeholder fallback) keeps the
+	// trigger's line box at its normal height; an empty string collapses it.
+	return option ? trans(option.label) : " ";
 }
 
 const photoSortingColumn = ref<SelectOption<App.Enum.ColumnSortingPhotoType> | undefined>(undefined);
@@ -278,6 +292,7 @@ function buildHeaderId(value: string | null, photos: App.Http.Resources.Models.P
 }
 
 function load(editable: App.Http.Resources.Editable.EditableBaseAlbumResource, photos: App.Http.Resources.Models.PhotoResource[]) {
+	isLoading.value = true;
 	is_model_album.value = editable.is_model_album;
 	albumId.value = editable.id;
 	title.value = editable.title;
@@ -302,6 +317,12 @@ function load(editable: App.Http.Resources.Editable.EditableBaseAlbumResource, p
 	} else {
 		is_person_album.value = false;
 	}
+
+	// Fields set above trigger the autosave watcher; only lift the guard once
+	// Vue has flushed those updates, so the load itself is never mistaken for a user edit.
+	nextTick(() => {
+		isLoading.value = false;
+	});
 }
 
 onMounted(() => {
@@ -412,5 +433,40 @@ watch(
 			load(editable as App.Http.Resources.Editable.EditableBaseAlbumResource, photos as App.Http.Resources.Models.PhotoResource[]);
 		}
 	},
+);
+
+const debouncedSave = useDebounceFn(save, 800);
+
+// Autosaves every field below so users never have to remember to hit a Save button.
+// `isLoading` distinguishes user edits from `load()` populating these same refs
+// (on mount and whenever the album is reloaded after a save), which would otherwise
+// re-trigger a save in a loop.
+watch(
+	[
+		title,
+		slug,
+		description,
+		photoSortingColumn,
+		photoSortingOrder,
+		albumSortingColumn,
+		albumSortingOrder,
+		photoLayout,
+		photoTimeline,
+		albumTimeline,
+		license,
+		copyright,
+		aspectRatio,
+		header_id,
+		tags,
+		is_and,
+		selectedPersons,
+	],
+	() => {
+		if (isLoading.value) {
+			return;
+		}
+		debouncedSave();
+	},
+	{ deep: true },
 );
 </script>
