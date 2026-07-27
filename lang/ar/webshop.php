@@ -108,6 +108,7 @@ return [
         'status' => 'الحالة',
         'amount' => 'المبلغ',
         'show_pending' => 'إظهار الطلبات المعلقة',
+        'date' => 'التاريخ',
     ],
     'purchasablesList' => [
         'purchasables' => 'العناصر القابلة للشراء',

@@ -178,7 +178,7 @@ const toast = useAppToast();
 
 const selectedUser = ref<User | undefined>(undefined);
 const isEdit = ref(false);
-const isQuotaEnabled = computed(() => is_se_enabled && users.value.reduce((acc, user) => acc || user.quota_kb !== null, false));
+const isQuotaEnabled = computed(() => is_se_enabled.value && users.value.reduce((acc, user) => acc || user.quota_kb !== null, false));
 
 function spaceRatio(user: User): number {
 	if (user.quota_kb !== null) {
@@ -204,9 +204,9 @@ function meterColor(user: User): "error" | "warning" | "success" | "primary" {
 		if (ratio > 80) {
 			return "warning";
 		}
-		return ratio > 100 ? "error" : "success";
+		return ratio > 90 ? "error" : "success";
 	}
-	return ratio > 100 ? "error" : "primary";
+	return ratio > 90 ? "error" : "primary";
 }
 
 function trustLevelInfo(level: string): { text: string; class: string } {

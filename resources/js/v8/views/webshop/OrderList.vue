@@ -10,11 +10,11 @@
 		<div v-if="numOldOrders > 0" class="flex justify-center items-center gap-4 mb-8">
 			<p>{{ sprintf($t("webshop.orderList.numStaleOrders"), numOldOrders) }}</p>
 			<UButton :label="$t('webshop.orderList.cleanStaleOrders')" icon="lucide:trash" color="warning" @click="clean" />
+			<div class="flex justify-end">
+				<UCheckbox v-model="showPending" :label="$t('webshop.orderList.show_pending')" @update:model-value="load" />
+			</div>
 		</div>
 		<Disclaimer />
-		<div class="flex justify-end">
-			<UCheckbox v-model="showPending" :label="$t('webshop.orderList.show_pending')" @update:model-value="load" />
-		</div>
 		<OrderLegend />
 		<UTable :data="orders ?? []" :columns="columns" :loading="orders === undefined" class="mt-4">
 			<template #client-cell="{ row }">
@@ -54,6 +54,7 @@ import OrderStatus from "@/v8/components/webshop/OrderStatus.vue";
 import OrderDate from "@/v8/components/webshop/OrderDate.vue";
 import OrderListAction from "@/v8/components/webshop/OrderListAction.vue";
 import { sprintf } from "sprintf-js";
+import { trans } from "laravel-vue-i18n";
 import type { TableColumn } from "@nuxt/ui";
 
 type Order = App.Http.Resources.Shop.OrderResource;
@@ -67,11 +68,13 @@ const { initData } = storeToRefs(leftMenuStore);
 const { isZero, load, clean, orders, numOldOrders, showPending } = useOrder(toast, router);
 
 const columns: TableColumn<Order>[] = [
-	{ id: "client" },
-	...(initData.value?.settings.can_edit ? [{ id: "transaction_id" } as TableColumn<Order>] : []),
-	{ id: "status" },
-	{ id: "amount" },
-	{ id: "date" },
+	{ id: "client", header: trans("webshop.orderList.client") },
+	...(initData.value?.settings.can_edit
+		? [{ id: "transaction_id", header: trans("webshop.orderList.transactionId") } as TableColumn<Order>]
+		: []),
+	{ id: "status", header: trans("webshop.orderList.status") },
+	{ id: "amount", header: trans("webshop.orderList.amount") },
+	{ id: "date", header: trans("webshop.orderList.date") },
 	{ id: "actions" },
 ];
 

@@ -108,6 +108,7 @@ return [
         'status' => 'وضعیت',
         'amount' => 'مبلغ',
         'show_pending' => 'نمایش سفارش‌های در انتظار',
+        'date' => 'تاریخ',
     ],
     'purchasablesList' => [
         'purchasables' => 'موارد قابل خرید',

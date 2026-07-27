@@ -108,6 +108,7 @@ return [
         'status' => 'Status',
         'amount' => 'Amount',
         'show_pending' => 'Show pending orders',
+        'date' => 'Ημερομηνία',
     ],
     'purchasablesList' => [
         'purchasables' => 'Purchasables',

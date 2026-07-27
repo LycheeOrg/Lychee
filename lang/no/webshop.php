@@ -108,6 +108,7 @@ return [
         'status' => 'Status',
         'amount' => 'Beløp',
         'show_pending' => 'Vis ventende bestillinger',
+        'date' => 'Dato',
     ],
     'purchasablesList' => [
         'purchasables' => 'Kjøpbare varer',
