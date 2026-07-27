@@ -126,12 +126,8 @@ const {
 	navigate,
 } = useTagsActions(tags, router);
 
-function rowClass(row: TableRow<Tag>) {
-	return {
-		"cursor-pointer": true,
-		"hover:bg-elevated/50": true,
-		"bg-primary/10": isSelected(row.original.id),
-	};
+function rowClass(row: TableRow<Tag>): string {
+	return isSelected(row.original.id) ? "cursor-pointer bg-primary/10" : "cursor-pointer hover:bg-elevated/50";
 }
 
 const columns = computed<TableColumn<Tag>[]>(() => {
