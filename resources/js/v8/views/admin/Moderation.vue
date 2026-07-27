@@ -32,76 +32,69 @@
 		</div>
 
 		<!-- Photos table -->
-		<table v-if="photos.length > 0" class="w-full text-sm">
-			<thead>
-				<tr class="text-left text-muted border-b border-muted">
-					<th class="py-2 pr-3 w-10"><input type="checkbox" :checked="allSelected" @change="toggleAll" /></th>
-					<th class="py-2 pr-3 w-20">{{ $t("moderation.col_thumbnail") }}</th>
-					<th class="py-2 pr-3">{{ $t("moderation.col_title") }}</th>
-					<th class="py-2 pr-3">{{ $t("moderation.col_owner") }}</th>
-					<th class="py-2 pr-3">{{ $t("moderation.col_album") }}</th>
-					<th class="py-2 pr-3">{{ $t("moderation.col_uploaded") }}</th>
-					<th class="py-2 pr-3">{{ $t("moderation.col_nsfw") }}</th>
-					<th class="py-2"></th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr
-					v-for="photo in photos"
-					:key="photo.photo_id"
-					class="border-b border-default hover:bg-elevated/50 cursor-pointer"
-					@click="toggleOne(photo.photo_id)"
+		<UTable v-if="photos.length > 0" :data="photos" :columns="columns" sticky class="max-h-[65vh] text-sm">
+			<template #select-header>
+				<UCheckbox :model-value="allSelected" @update:model-value="toggleAll" />
+			</template>
+			<template #select-cell="{ row }">
+				<UCheckbox :model-value="selectedIds.has(row.original.photo_id)" @update:model-value="() => toggleOne(row.original.photo_id)" />
+			</template>
+
+			<template #thumbnail-cell="{ row }">
+				<img
+					v-if="row.original.thumb_url"
+					:src="row.original.thumb_url"
+					:alt="row.original.title"
+					class="w-16 h-16 object-cover rounded cursor-pointer hover:opacity-80"
+					@click="openPhoto(row.original.photo_id)"
+				/>
+				<UIcon v-else name="lucide:image" class="text-2xl text-muted" />
+			</template>
+
+			<template #album-cell="{ row }">
+				<RouterLink
+					v-if="row.original.album_title"
+					:to="{ name: 'album', params: { albumId: row.original.album_id } }"
+					class="text-primary-400 hover:underline"
 				>
-					<td class="py-2 pr-3">
-						<input type="checkbox" :checked="selectedIds.has(photo.photo_id)" @click.stop @change="toggleOne(photo.photo_id)" />
-					</td>
-					<td class="py-2 pr-3">
-						<img
-							v-if="photo.thumb_url"
-							:src="photo.thumb_url"
-							class="w-16 h-16 object-cover rounded cursor-pointer hover:opacity-80"
-							:alt="photo.title"
-							@click.stop="openPhoto(photo.photo_id)"
-						/>
-						<UIcon v-else name="lucide:image" class="text-2xl text-muted" />
-					</td>
-					<td class="py-2 pr-3">{{ photo.title }}</td>
-					<td class="py-2 pr-3">{{ photo.owner_username }}</td>
-					<td class="py-2 pr-3">
-						<RouterLink
-							v-if="photo.album_title"
-							:to="{ name: 'album', params: { albumId: photo.album_id } }"
-							class="text-primary-400 hover:underline"
-							@click.stop
-						>
-							{{ photo.album_title }}
-						</RouterLink>
-						<span v-else class="text-muted">—</span>
-					</td>
-					<td class="py-2 pr-3 whitespace-nowrap">{{ new Date(photo.created_at).toLocaleDateString() }}</td>
-					<td class="py-2 pr-3">
-						<UBadge v-if="photo.nsfw_status === 'review'" color="warning" class="text-xs">{{ $t("moderation.nsfw_review") }}</UBadge>
-					</td>
-					<td class="py-2">
-						<div class="flex gap-1" @click.stop>
-							<UButton icon="lucide:check" color="success" variant="ghost" size="sm" @click="approveSingle(photo.photo_id)" />
-							<UButton
-								icon="lucide:trash"
-								color="error"
-								variant="ghost"
-								size="sm"
-								@click="deleteSingle(photo.photo_id, photo.album_id)"
-							/>
+					{{ row.original.album_title }}
+				</RouterLink>
+				<span v-else class="text-muted">—</span>
+			</template>
+
+			<template #created_at-cell="{ row }">
+				<span class="whitespace-nowrap">{{ new Date(row.original.created_at).toLocaleDateString() }}</span>
+			</template>
+
+			<template #nsfw_status-cell="{ row }">
+				<UBadge v-if="row.original.nsfw_status === 'review'" color="warning" class="text-xs">
+					{{ $t("moderation.nsfw_review") }}
+				</UBadge>
+			</template>
+
+			<template #actions-cell="{ row }">
+				<div class="flex gap-1">
+					<UButton icon="lucide:check" color="success" variant="ghost" size="sm" @click="approveSingle(row.original.photo_id)" />
+					<UButton
+						icon="lucide:trash"
+						color="error"
+						variant="ghost"
+						size="sm"
+						@click="deleteSingle(row.original.photo_id, row.original.album_id)"
+					/>
+				</div>
+			</template>
+
+			<template #body-bottom>
+				<tr>
+					<td colspan="8">
+						<div ref="sentinel" class="flex justify-center py-4">
+							<Spinner v-if="loading && photos.length > 0" class="text-2xl" />
 						</div>
 					</td>
 				</tr>
-			</tbody>
-		</table>
-
-		<!-- Infinite scroll sentinel -->
-		<div ref="sentinel" class="flex justify-center py-4">
-			<Spinner v-if="loading && photos.length > 0" class="text-2xl" />
-		</div>
+			</template>
+		</UTable>
 	</UCard>
 
 	<!-- Photo lightbox (full screen) -->
@@ -110,7 +103,7 @@
 	</div>
 </template>
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { RouterLink } from "vue-router";
 import OpenLeftMenu from "@/v8/components/headers/OpenLeftMenu.vue";
 import Spinner from "@/v8/components/Spinner.vue";
@@ -120,13 +113,19 @@ import PhotoService from "@/services/photo-service";
 import { usePhotoStore } from "@/stores/PhotoState";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import { trans } from "laravel-vue-i18n";
+import UButton from "@nuxt/ui/components/Button.vue";
+import UCheckbox from "@nuxt/ui/components/Checkbox.vue";
+import UBadge from "@nuxt/ui/components/Badge.vue";
+import type { TableColumn } from "@nuxt/ui";
+
+type Photo = App.Http.Resources.Models.ModerationResource;
 
 const toast = useAppToast();
 const photoStore = usePhotoStore();
 
 const loading = ref(false);
 const photoVisible = ref(false);
-const photos = ref<App.Http.Resources.Models.ModerationResource[]>([]);
+const photos = ref<Photo[]>([]);
 const selectedIds = ref(new Set<string>());
 const currentPage = ref(1);
 const lastPage = ref(1);
@@ -135,6 +134,17 @@ const sentinel = ref<HTMLElement | null>(null);
 let observer: IntersectionObserver | null = null;
 
 const allSelected = computed(() => photos.value.length > 0 && photos.value.every((p) => selectedIds.value.has(p.photo_id)));
+
+const columns: TableColumn<Photo>[] = [
+	{ id: "select" },
+	{ id: "thumbnail", header: trans("moderation.col_thumbnail") },
+	{ accessorKey: "title", header: trans("moderation.col_title") },
+	{ accessorKey: "owner_username", header: trans("moderation.col_owner") },
+	{ id: "album", header: trans("moderation.col_album") },
+	{ id: "created_at", header: trans("moderation.col_uploaded") },
+	{ id: "nsfw_status", header: trans("moderation.col_nsfw") },
+	{ id: "actions" },
+];
 
 function toggleAll() {
 	if (allSelected.value) {
@@ -250,8 +260,13 @@ onMounted(() => {
 		},
 		{ threshold: 0.1 },
 	);
-	if (sentinel.value) {
-		observer.observe(sentinel.value);
+});
+
+// The sentinel only mounts once the table (and its `body-bottom` slot) renders,
+// which happens asynchronously after the first page loads.
+watch(sentinel, (el) => {
+	if (el) {
+		observer?.observe(el);
 	}
 });
 

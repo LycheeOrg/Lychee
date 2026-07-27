@@ -16,11 +16,29 @@
 			<UCheckbox v-model="showPending" :label="$t('webshop.orderList.show_pending')" @update:model-value="load" />
 		</div>
 		<OrderLegend />
-		<UTable :data="orders ?? []" :columns="columns" :loading="orders === undefined" class="mt-4" />
+		<UTable :data="orders ?? []" :columns="columns" :loading="orders === undefined" class="mt-4">
+			<template #client-cell="{ row }">
+				<UsernameEmail :username="row.original.username" :email="row.original.email" />
+			</template>
+			<template #transaction_id-cell="{ row }">
+				<TransactionIdLink :order="row.original" />
+			</template>
+			<template #status-cell="{ row }">
+				<OrderStatus :status="row.original.status" />
+			</template>
+			<template #amount-cell="{ row }">
+				<span :class="isZero(row.original.amount) ? 'text-muted' : 'font-bold'">{{ row.original.amount }}</span>
+			</template>
+			<template #date-cell="{ row }">
+				<OrderDate :order="row.original" />
+			</template>
+			<template #actions-cell="{ row }">
+				<OrderListAction :order="row.original" />
+			</template>
+		</UTable>
 	</div>
 </template>
 <script setup lang="ts">
-import { h } from "vue";
 import OpenLeftMenu from "@/v8/components/headers/OpenLeftMenu.vue";
 import Disclaimer from "@/v8/components/webshop/Disclaimer.vue";
 import OrderLegend from "@/v8/components/webshop/OrderLegend.vue";
@@ -49,40 +67,12 @@ const { initData } = storeToRefs(leftMenuStore);
 const { isZero, load, clean, orders, numOldOrders, showPending } = useOrder(toast, router);
 
 const columns: TableColumn<Order>[] = [
-	{
-		id: "client",
-		header: () => "",
-		cell: ({ row }) => h(UsernameEmail, { username: row.original.username, email: row.original.email }),
-	},
-	...(initData.value?.settings.can_edit
-		? [
-				{
-					id: "transaction_id",
-					header: () => "",
-					cell: ({ row }: { row: { original: Order } }) => h(TransactionIdLink, { order: row.original }),
-				} as TableColumn<Order>,
-			]
-		: []),
-	{
-		id: "status",
-		header: () => "",
-		cell: ({ row }) => h(OrderStatus, { status: row.original.status }),
-	},
-	{
-		id: "amount",
-		header: () => "",
-		cell: ({ row }) => h("span", { class: isZero(row.original.amount) ? "text-muted" : "font-bold" }, row.original.amount),
-	},
-	{
-		id: "date",
-		header: () => "",
-		cell: ({ row }) => h(OrderDate, { order: row.original }),
-	},
-	{
-		id: "actions",
-		header: () => "",
-		cell: ({ row }) => h(OrderListAction, { order: row.original }),
-	},
+	{ id: "client" },
+	...(initData.value?.settings.can_edit ? [{ id: "transaction_id" } as TableColumn<Order>] : []),
+	{ id: "status" },
+	{ id: "amount" },
+	{ id: "date" },
+	{ id: "actions" },
 ];
 
 onMounted(() => {

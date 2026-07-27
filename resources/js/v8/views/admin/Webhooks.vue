@@ -40,13 +40,40 @@
 			</div>
 
 			<!-- Webhooks table -->
-			<UTable :data="webhooks" :columns="columns" class="w-full" />
+			<UTable :data="webhooks" :columns="columns" class="w-full">
+				<template #name-cell="{ row }">
+					<span class="font-medium">{{ row.original.name }}</span>
+				</template>
+				<template #event-cell="{ row }">
+					<UBadge color="neutral">{{ eventLabel(row.original.event) }}</UBadge>
+				</template>
+				<template #method-cell="{ row }">
+					<code class="text-xs bg-elevated px-1.5 py-0.5 rounded">{{ row.original.method }}</code>
+				</template>
+				<template #url-cell="{ row }">
+					<span class="text-muted text-sm truncate max-w-xs block" :title="row.original.url">{{ row.original.url }}</span>
+				</template>
+				<template #format-cell="{ row }">
+					<span class="text-muted text-sm">{{ formatLabel(row.original.payload_format) }}</span>
+				</template>
+				<template #enabled-cell="{ row }">
+					<div class="flex justify-center">
+						<USwitch :model-value="row.original.enabled" @update:model-value="() => toggleEnabled(row.original)" />
+					</div>
+				</template>
+				<template #actions-cell="{ row }">
+					<div class="flex justify-center gap-2">
+						<UButton icon="lucide:pencil" color="neutral" variant="ghost" size="sm" @click="openEditModal(row.original)" />
+						<UButton icon="lucide:trash" color="error" variant="ghost" size="sm" @click="openDeleteModal(row.original)" />
+					</div>
+				</template>
+			</UTable>
 		</template>
 	</UCard>
 </template>
 
 <script setup lang="ts">
-import { h, onMounted, ref } from "vue";
+import { onMounted, ref } from "vue";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import { trans } from "laravel-vue-i18n";
 import OpenLeftMenu from "@/v8/components/headers/OpenLeftMenu.vue";
@@ -90,48 +117,13 @@ function formatLabel(format: App.Enum.WebhookPayloadFormat): string {
 }
 
 const columns: TableColumn<Webhook>[] = [
-	{
-		accessorKey: "name",
-		header: trans("webhook.col_name"),
-		cell: ({ row }) => h("span", { class: "font-medium" }, row.original.name),
-	},
-	{
-		id: "event",
-		header: trans("webhook.col_event"),
-		cell: ({ row }) => h(UBadge, { color: "neutral" }, () => eventLabel(row.original.event)),
-	},
-	{
-		accessorKey: "method",
-		header: trans("webhook.col_method"),
-		cell: ({ row }) => h("code", { class: "text-xs bg-elevated px-1.5 py-0.5 rounded" }, row.original.method),
-	},
-	{
-		accessorKey: "url",
-		header: trans("webhook.col_url"),
-		cell: ({ row }) => h("span", { class: "text-muted text-sm truncate max-w-xs block", title: row.original.url }, row.original.url),
-	},
-	{
-		id: "format",
-		header: trans("webhook.col_format"),
-		cell: ({ row }) => h("span", { class: "text-muted text-sm" }, formatLabel(row.original.payload_format)),
-	},
-	{
-		id: "enabled",
-		header: trans("webhook.col_enabled"),
-		cell: ({ row }) =>
-			h("div", { class: "flex justify-center" }, [
-				h(USwitch, { modelValue: row.original.enabled, "onUpdate:modelValue": () => toggleEnabled(row.original) }),
-			]),
-	},
-	{
-		id: "actions",
-		header: trans("webhook.col_actions"),
-		cell: ({ row }) =>
-			h("div", { class: "flex justify-center gap-2" }, [
-				h(UButton, { icon: "lucide:pencil", color: "neutral", variant: "ghost", size: "sm", onClick: () => openEditModal(row.original) }),
-				h(UButton, { icon: "lucide:trash", color: "error", variant: "ghost", size: "sm", onClick: () => openDeleteModal(row.original) }),
-			]),
-	},
+	{ accessorKey: "name", header: trans("webhook.col_name") },
+	{ id: "event", header: trans("webhook.col_event") },
+	{ accessorKey: "method", header: trans("webhook.col_method") },
+	{ accessorKey: "url", header: trans("webhook.col_url") },
+	{ id: "format", header: trans("webhook.col_format") },
+	{ id: "enabled", header: trans("webhook.col_enabled") },
+	{ id: "actions", header: trans("webhook.col_actions") },
 ];
 
 function load(): void {
