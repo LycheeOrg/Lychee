@@ -15,7 +15,21 @@
 				<h2 class="text-xl font-semibold">{{ $t("webshop.sizeCatalogue.printSizes") }}</h2>
 				<UButton icon="lucide:plus" :label="$t('webshop.sizeCatalogue.addPrintSize')" size="sm" @click="openCreatePrintDialog" />
 			</div>
-			<UTable :data="printSizes ?? []" :columns="printColumns" :loading="printSizes === undefined" class="border rounded" />
+			<UTable :data="printSizes ?? []" :columns="printColumns" :loading="printSizes === undefined" :ui="{ td: 'px-2 py-1', th: 'px-2' }">
+				<template #dimensions-cell="{ row }"> {{ row.original.width }}×{{ row.original.height }} {{ row.original.unit }} </template>
+				<template #active-cell="{ row }">
+					<Icon
+						:icon="row.original.is_active ? 'lucide:check' : 'lucide:x'"
+						:class="row.original.is_active ? 'text-success' : 'text-error'"
+					/>
+				</template>
+				<template #actions-cell="{ row }">
+					<div class="flex justify-end gap-1">
+						<UButton icon="lucide:pencil" variant="ghost" color="neutral" size="sm" @click="openEditPrintDialog(row.original)" />
+						<UButton icon="lucide:trash" variant="ghost" color="error" size="sm" @click="openDeletePrintDialog(row.original)" />
+					</div>
+				</template>
+			</UTable>
 		</div>
 
 		<!-- Pixel sizes -->
@@ -24,7 +38,21 @@
 				<h2 class="text-xl font-semibold">{{ $t("webshop.sizeCatalogue.pixelSizes") }}</h2>
 				<UButton icon="lucide:plus" :label="$t('webshop.sizeCatalogue.addPixelSize')" size="sm" @click="openCreatePixelDialog" />
 			</div>
-			<UTable :data="pixelSizes ?? []" :columns="pixelColumns" :loading="pixelSizes === undefined" class="border rounded" />
+			<UTable :data="pixelSizes ?? []" :columns="pixelColumns" :loading="pixelSizes === undefined" :ui="{ td: 'px-2 py-1', th: 'px-2' }">
+				<template #dimensions-cell="{ row }"> {{ row.original.width }}×{{ row.original.height }} px </template>
+				<template #active-cell="{ row }">
+					<Icon
+						:icon="row.original.is_active ? 'lucide:check' : 'lucide:x'"
+						:class="row.original.is_active ? 'text-success' : 'text-error'"
+					/>
+				</template>
+				<template #actions-cell="{ row }">
+					<div class="flex justify-end gap-1">
+						<UButton icon="lucide:pencil" variant="ghost" color="neutral" size="sm" @click="openEditPixelDialog(row.original)" />
+						<UButton icon="lucide:trash" variant="ghost" color="error" size="sm" @click="openDeletePixelDialog(row.original)" />
+					</div>
+				</template>
+			</UTable>
 		</div>
 	</UCard>
 
@@ -41,7 +69,7 @@ import PrintSizeFormDialog from "@/v8/components/forms/shop-management/PrintSize
 import PixelSizeFormDialog from "@/v8/components/forms/shop-management/PixelSizeFormDialog.vue";
 import SizeDeleteDialog from "@/v8/components/forms/shop-management/SizeDeleteDialog.vue";
 import ShopManagementService from "@/services/shop-management-service";
-import { h, onMounted, ref } from "vue";
+import { onMounted, ref } from "vue";
 import { trans } from "laravel-vue-i18n";
 import type { TableColumn } from "@nuxt/ui";
 import UButton from "@nuxt/ui/components/Button.vue";
@@ -62,75 +90,17 @@ const deletingPixelSize = ref<App.Http.Resources.Shop.PixelSizeResource | null>(
 
 const printColumns: TableColumn<App.Http.Resources.Shop.PrintSizeResource>[] = [
 	{ accessorKey: "label", header: trans("webshop.sizeCatalogue.label") },
-	{
-		id: "dimensions",
-		header: trans("webshop.sizeCatalogue.dimensions"),
-		cell: ({ row }) => `${row.original.width}×${row.original.height} ${row.original.unit}`,
-	},
+	{ id: "dimensions", header: trans("webshop.sizeCatalogue.dimensions") },
 	{ accessorKey: "paper_type", header: trans("webshop.sizeCatalogue.paperType") },
-	{
-		id: "active",
-		header: trans("webshop.sizeCatalogue.active"),
-		cell: ({ row }) =>
-			h(Icon, { icon: row.original.is_active ? "lucide:check" : "lucide:x", class: row.original.is_active ? "text-success" : "text-error" }),
-	},
-	{
-		id: "actions",
-		header: trans("webshop.sizeCatalogue.actions"),
-		cell: ({ row }) =>
-			h("div", { class: "flex justify-end gap-1" }, [
-				h(UButton, {
-					icon: "lucide:pencil",
-					variant: "ghost",
-					color: "neutral",
-					size: "sm",
-					onClick: () => openEditPrintDialog(row.original),
-				}),
-				h(UButton, {
-					icon: "lucide:trash",
-					variant: "ghost",
-					color: "error",
-					size: "sm",
-					onClick: () => openDeletePrintDialog(row.original),
-				}),
-			]),
-	},
+	{ id: "active", header: trans("webshop.sizeCatalogue.active") },
+	{ id: "actions", header: trans("webshop.sizeCatalogue.actions"), meta: { class: { th: "text-right", td: "text-right" } } },
 ];
 
 const pixelColumns: TableColumn<App.Http.Resources.Shop.PixelSizeResource>[] = [
 	{ accessorKey: "label", header: trans("webshop.sizeCatalogue.label") },
-	{
-		id: "dimensions",
-		header: trans("webshop.sizeCatalogue.dimensions"),
-		cell: ({ row }) => `${row.original.width}×${row.original.height} px`,
-	},
-	{
-		id: "active",
-		header: trans("webshop.sizeCatalogue.active"),
-		cell: ({ row }) =>
-			h(Icon, { icon: row.original.is_active ? "lucide:check" : "lucide:x", class: row.original.is_active ? "text-success" : "text-error" }),
-	},
-	{
-		id: "actions",
-		header: trans("webshop.sizeCatalogue.actions"),
-		cell: ({ row }) =>
-			h("div", { class: "flex justify-end gap-1" }, [
-				h(UButton, {
-					icon: "lucide:pencil",
-					variant: "ghost",
-					color: "neutral",
-					size: "sm",
-					onClick: () => openEditPixelDialog(row.original),
-				}),
-				h(UButton, {
-					icon: "lucide:trash",
-					variant: "ghost",
-					color: "error",
-					size: "sm",
-					onClick: () => openDeletePixelDialog(row.original),
-				}),
-			]),
-	},
+	{ id: "dimensions", header: trans("webshop.sizeCatalogue.dimensions") },
+	{ id: "active", header: trans("webshop.sizeCatalogue.active") },
+	{ id: "actions", header: trans("webshop.sizeCatalogue.actions"), meta: { class: { th: "text-right", td: "text-right" } } },
 ];
 
 function loadPrintSizes() {

@@ -108,6 +108,7 @@ return [
         'status' => 'Status',
         'amount' => 'Amount',
         'show_pending' => 'Show pending orders',
+        'date' => '日付',
     ],
     'purchasablesList' => [
         'purchasables' => 'Purchasables',

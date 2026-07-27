@@ -63,7 +63,26 @@
 					:columns="columns"
 					:on-select="(_e: Event, row: TableRow<Message>) => row.toggleExpanded()"
 					class="w-full"
+					:ui="{ td: 'px-2 py-1', th: 'px-2' }"
 				>
+					<template #name-cell="{ row }">
+						<span :class="row.original.is_read ? '' : 'font-bold text-primary'">{{ row.original.name }}</span>
+					</template>
+					<template #email-cell="{ row }">
+						<a :href="`mailto:${row.original.email}`" class="underline text-muted">{{ row.original.email }}</a>
+					</template>
+					<template #message-cell="{ row }">
+						<span class="text-muted line-clamp-1">{{ row.original.message }}</span>
+					</template>
+					<template #created_at-cell="{ row }">
+						<span class="text-muted text-sm">{{ formatDate(row.original.created_at) }}</span>
+					</template>
+					<template #is_read-cell="{ row }">
+						<UCheckbox :model-value="row.original.is_read" @update:model-value="() => toggleRead(row.original)" />
+					</template>
+					<template #actions-cell="{ row }">
+						<UButton icon="lucide:trash" color="error" variant="ghost" size="sm" @click="openDeleteModal(row.original)" />
+					</template>
 					<template #expanded="{ row }">
 						<div class="p-4 bg-elevated rounded-lg">
 							<p class="text-sm text-muted mb-1">
@@ -103,7 +122,7 @@
 </template>
 
 <script setup lang="ts">
-import { h, onMounted, ref } from "vue";
+import { onMounted, ref } from "vue";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import { trans } from "laravel-vue-i18n";
 import OpenLeftMenu from "@/v8/components/headers/OpenLeftMenu.vue";
@@ -137,46 +156,12 @@ function formatDate(iso: string): string {
 }
 
 const columns: TableColumn<Message>[] = [
-	{
-		accessorKey: "name",
-		header: trans("contact.admin.name_column"),
-		cell: ({ row }) => h("span", { class: row.original.is_read ? "" : "font-bold text-primary" }, row.original.name),
-	},
-	{
-		accessorKey: "email",
-		header: trans("contact.admin.email_column"),
-		cell: ({ row }) => h("a", { href: `mailto:${row.original.email}`, class: "underline text-muted" }, row.original.email),
-	},
-	{
-		accessorKey: "message",
-		header: trans("contact.admin.message_column"),
-		cell: ({ row }) => h("span", { class: "text-muted line-clamp-1" }, row.original.message),
-	},
-	{
-		accessorKey: "created_at",
-		header: trans("contact.admin.date_column"),
-		cell: ({ row }) => h("span", { class: "text-muted text-sm" }, formatDate(row.original.created_at)),
-	},
-	{
-		id: "is_read",
-		header: trans("contact.admin.read_column"),
-		cell: ({ row }) =>
-			h(UCheckbox, {
-				modelValue: row.original.is_read,
-				"onUpdate:modelValue": () => toggleRead(row.original),
-			}),
-	},
-	{
-		id: "actions",
-		cell: ({ row }) =>
-			h(UButton, {
-				icon: "lucide:trash",
-				color: "error",
-				variant: "ghost",
-				size: "sm",
-				onClick: () => openDeleteModal(row.original),
-			}),
-	},
+	{ accessorKey: "name", header: trans("contact.admin.name_column") },
+	{ accessorKey: "email", header: trans("contact.admin.email_column") },
+	{ accessorKey: "message", header: trans("contact.admin.message_column") },
+	{ accessorKey: "created_at", header: trans("contact.admin.date_column") },
+	{ id: "is_read", header: trans("contact.admin.read_column") },
+	{ id: "actions" },
 ];
 
 function load(page = 1): void {

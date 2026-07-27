@@ -12,4 +12,8 @@ return [
     'success' => 'Réussi',
     'failure' => 'Erreur',
     'started' => 'En cours',
+    'col_date' => 'Date',
+    'col_status' => 'Status',
+    'col_username' => 'User',
+    'col_job' => 'Job',
 ];

@@ -8,6 +8,7 @@
 		:user-list="allUsers"
 		@refresh="fetchUserGroups"
 	/>
+	<DeleteUserGroupDialog v-model:open="isDeleteVisible" :group="groupToDelete" @deleted="fetchUserGroups" />
 	<UHeader :toggle="false">
 		<template #left>
 			<OpenLeftMenu />
@@ -104,9 +105,9 @@ import { ref, onMounted } from "vue";
 import { UserGroupService } from "@/services/user-group-service";
 import OpenLeftMenu from "@/v8/components/headers/OpenLeftMenu.vue";
 import AddUserGroupModal from "@/v8/components/forms/group/AddUserGroupModal.vue";
+import DeleteUserGroupDialog from "@/v8/components/forms/group/DeleteUserGroupDialog.vue";
 import UsersService from "@/services/users-service";
 import { useAppToast } from "@/v8/composables/useAppToast";
-import { useConfirmDialog } from "@/v8/composables/useConfirmDialog";
 import { trans } from "laravel-vue-i18n";
 import { sprintf } from "sprintf-js";
 
@@ -123,7 +124,9 @@ const selectedGroupDescription = ref<string | undefined>(undefined);
 const selectedUserToAdd = ref<App.Http.Resources.Models.LightUserResource | undefined>(undefined);
 const allUsers = ref<App.Http.Resources.Models.LightUserResource[] | undefined>(undefined);
 
-const { confirm } = useConfirmDialog();
+const isDeleteVisible = ref(false);
+const groupToDelete = ref<App.Http.Resources.Models.UserGroupResource | undefined>(undefined);
+
 function confirmDelete(group: App.Http.Resources.Models.UserGroupResource) {
 	if (can_create_user_groups.value === false) {
 		toast.add({
@@ -135,18 +138,8 @@ function confirmDelete(group: App.Http.Resources.Models.UserGroupResource) {
 		return;
 	}
 
-	confirm({
-		title: trans("user-groups.confirm_delete_header"),
-		message: trans("user-groups.confirm_delete_message"),
-		acceptLabel: trans("user-groups.delete"),
-		rejectLabel: trans("user-groups.cancel"),
-		severity: "danger",
-	}).then((confirmed) => {
-		if (!confirmed) {
-			return;
-		}
-		UserGroupService.deleteUserGroup(group.id).then(fetchUserGroups);
-	});
+	groupToDelete.value = group;
+	isDeleteVisible.value = true;
 }
 
 function fetchUserGroups() {

@@ -87,18 +87,57 @@
 					{{ $t("maintenance.face_quality.no_faces") }}
 				</div>
 
-				<!-- Face rows -->
-				<div v-else class="flex flex-col divide-y divide-default">
-					<!-- Header row -->
-					<div
-						class="hidden sm:grid grid-cols-[2.5rem_3rem_1fr_1fr_5rem_5rem_5rem] gap-3 items-center px-2 py-1 text-xs text-muted font-medium"
-					>
-						<div></div>
-						<div>{{ $t("maintenance.face_quality.col_face") }}</div>
-						<div>{{ $t("maintenance.face_quality.col_person") }}</div>
-						<div>{{ $t("maintenance.face_quality.col_cluster") }}</div>
+				<!-- Face table -->
+				<UTable
+					v-else
+					:data="faces"
+					:columns="columns"
+					:meta="{ class: { tr: rowClass } }"
+					:on-select="(e: Event, row: TableRow<Face>) => toggleSelection(row.original.id, row.index, e as MouseEvent)"
+					class="w-full"
+				>
+					<template #select-cell="{ row }">
+						<div class="flex justify-center" @click.stop>
+							<UCheckbox
+								:model-value="selectedIds.includes(row.original.id)"
+								@click.stop="toggleSelection(row.original.id, row.index, $event as MouseEvent)"
+							/>
+						</div>
+					</template>
+
+					<template #face-cell="{ row }">
 						<div
-							class="text-right cursor-pointer hover:text-primary-500 transition-colors flex items-center justify-end gap-1"
+							class="w-10 h-10 rounded-md overflow-hidden bg-neutral-200 dark:bg-neutral-700 shrink-0 cursor-pointer hover:ring-2 hover:ring-primary-400 transition-all"
+							@click.stop="openPhotoViewer(row.original)"
+						>
+							<img v-if="row.original.crop_url" :src="row.original.crop_url" alt="" class="w-full h-full object-cover" loading="lazy" />
+							<div v-else class="w-full h-full flex items-center justify-center">
+								<UIcon name="lucide:user" class="text-muted" />
+							</div>
+						</div>
+					</template>
+
+					<template #person-cell="{ row }">
+						<div class="min-w-0">
+							<span v-if="row.original.person_name" class="font-medium truncate block">{{ row.original.person_name }}</span>
+							<span v-else class="text-muted italic text-sm">{{ $t("maintenance.face_quality.unassigned") }}</span>
+							<!-- Cluster: shown here on mobile, since the dedicated cluster column is hidden below sm -->
+							<UBadge v-if="row.original.cluster_label !== null" color="neutral" class="sm:hidden mt-0.5 text-xs py-0 px-1">
+								#{{ row.original.cluster_label }}
+							</UBadge>
+						</div>
+					</template>
+
+					<template #cluster-cell="{ row }">
+						<UBadge v-if="row.original.cluster_label !== null" color="neutral" class="text-xs py-0 px-1">
+							#{{ row.original.cluster_label }}
+						</UBadge>
+						<span v-else class="text-muted">—</span>
+					</template>
+
+					<template #confidence-header>
+						<div
+							class="cursor-pointer hover:text-primary-500 transition-colors flex items-center justify-end gap-1"
 							@click="setSort('confidence')"
 						>
 							{{ $t("maintenance.face_quality.col_confidence") }}
@@ -108,8 +147,14 @@
 								class="text-xs"
 							/>
 						</div>
+					</template>
+					<template #confidence-cell="{ row }">
+						<span :class="row.original.confidence < 0.5 ? 'text-red-500' : 'text-muted'">{{ row.original.confidence.toFixed(2) }}</span>
+					</template>
+
+					<template #laplacian_variance-header>
 						<div
-							class="text-right cursor-pointer hover:text-primary-500 transition-colors flex items-center justify-end gap-1"
+							class="cursor-pointer hover:text-primary-500 transition-colors flex items-center justify-end gap-1"
 							@click="setSort('laplacian_variance')"
 						>
 							{{ $t("maintenance.face_quality.col_blur") }}
@@ -119,64 +164,23 @@
 								class="text-xs"
 							/>
 						</div>
-						<div></div>
-					</div>
+					</template>
+					<template #laplacian_variance-cell="{ row }">
+						<span :class="row.original.laplacian_variance < 50 ? 'text-red-500' : 'text-muted'">{{
+							row.original.laplacian_variance.toFixed(0)
+						}}</span>
+					</template>
 
-					<div
-						v-for="(face, idx) in faces"
-						:key="face.id"
-						class="grid grid-cols-[2.5rem_3rem_1fr_5rem] sm:grid-cols-[2.5rem_3rem_1fr_1fr_5rem_5rem_5rem] gap-3 items-center px-2 py-2 cursor-pointer select-none hover:bg-elevated/50 transition-colors"
-						:class="{ 'bg-primary-50 dark:bg-primary-900/20': selectedIds.includes(face.id) }"
-						@click="toggleSelection(face.id, idx, $event)"
-					>
-						<!-- Checkbox -->
-						<div class="flex justify-center" @click.stop>
-							<UCheckbox :model-value="selectedIds.includes(face.id)" @click.stop="toggleSelection(face.id, idx, $event)" />
-						</div>
-
-						<!-- Face image -->
-						<div
-							class="w-10 h-10 rounded-md overflow-hidden bg-neutral-200 dark:bg-neutral-700 shrink-0 cursor-pointer hover:ring-2 hover:ring-primary-400 transition-all"
-							@click.stop="openPhotoViewer(face)"
-						>
-							<img v-if="face.crop_url" :src="face.crop_url" alt="" class="w-full h-full object-cover" loading="lazy" />
-							<div v-else class="w-full h-full flex items-center justify-center">
-								<UIcon name="lucide:user" class="text-muted" />
-							</div>
-						</div>
-
-						<!-- Person -->
-						<div class="min-w-0">
-							<span v-if="face.person_name" class="font-medium truncate block">{{ face.person_name }}</span>
-							<span v-else class="text-muted italic text-sm">{{ $t("maintenance.face_quality.unassigned") }}</span>
-							<!-- Cluster: shown here on mobile -->
-							<UBadge v-if="face.cluster_label !== null" color="neutral" class="sm:hidden mt-0.5 text-xs py-0 px-1">
-								#{{ face.cluster_label }}
-							</UBadge>
-						</div>
-
-						<!-- Cluster (hidden on mobile, shown in own column on sm+) -->
-						<div class="hidden sm:block">
-							<UBadge v-if="face.cluster_label !== null" color="neutral" class="text-xs py-0 px-1"> #{{ face.cluster_label }} </UBadge>
-							<span v-else class="text-muted">—</span>
-						</div>
-
-						<!-- Confidence -->
-						<div class="hidden sm:block text-right text-sm">
-							<span :class="face.confidence < 0.5 ? 'text-red-500' : 'text-muted'">{{ face.confidence.toFixed(2) }}</span>
-						</div>
-
-						<!-- Blur -->
-						<div class="hidden sm:block text-right text-sm">
-							<span :class="face.laplacian_variance < 50 ? 'text-red-500' : 'text-muted'">{{
-								face.laplacian_variance.toFixed(0)
-							}}</span>
-						</div>
-
-						<!-- Actions: Assign & Dismiss -->
+					<template #actions-cell="{ row }">
 						<div class="flex justify-center gap-1" @click.stop>
 							<UTooltip :text="$t('people.assign_face')">
-								<UButton icon="lucide:user-plus" color="neutral" variant="ghost" size="sm" @click="openAssignmentModal(face)" />
+								<UButton
+									icon="lucide:user-plus"
+									color="neutral"
+									variant="ghost"
+									size="sm"
+									@click="openAssignmentModal(row.original)"
+								/>
 							</UTooltip>
 							<UTooltip :text="$t('maintenance.face_quality.dismiss')">
 								<UButton
@@ -185,8 +189,8 @@
 									color="error"
 									variant="ghost"
 									size="sm"
-									:loading="dismissingId === face.id"
-									@click="dismissFace(face.id)"
+									:loading="dismissingId === row.original.id"
+									@click="dismissFace(row.original.id)"
 								/>
 							</UTooltip>
 							<UTooltip :text="$t('maintenance.face_quality.readd')">
@@ -196,13 +200,13 @@
 									color="success"
 									variant="ghost"
 									size="sm"
-									:loading="dismissingId === face.id"
-									@click="readdFace(face.id)"
+									:loading="dismissingId === row.original.id"
+									@click="readdFace(row.original.id)"
 								/>
 							</UTooltip>
 						</div>
-					</div>
-				</div>
+					</template>
+				</UTable>
 
 				<!-- Infinite scroll sentinel -->
 				<PaginationInfiniteScroll :loading="loadingMore" :hasMore="hasMorePages" @loadMore="loadMore" />
@@ -265,6 +269,9 @@ import FaceMaintenanceService from "@/services/face-maintenance-service";
 import FaceDetectionService from "@/services/face-detection-service";
 import ModerationService from "@/services/moderation-service";
 import Spinner from "@/v8/components/Spinner.vue";
+import type { TableColumn, TableRow } from "@nuxt/ui";
+
+type Face = App.Http.Resources.Models.FaceResource;
 
 const faces = ref<App.Http.Resources.Models.FaceResource[]>([]);
 const loading = ref(false);
@@ -298,6 +305,32 @@ const loadingPhoto = ref(false);
 const allSelected = computed(() => faces.value.length > 0 && selectedIds.value.length === faces.value.length);
 
 const toast = useAppToast();
+
+const columns: TableColumn<Face>[] = [
+	{ id: "select", meta: { class: { td: "w-10" } } },
+	{ id: "face", header: trans("maintenance.face_quality.col_face"), meta: { class: { td: "w-14" } } },
+	{ id: "person", header: trans("maintenance.face_quality.col_person") },
+	{
+		id: "cluster",
+		header: trans("maintenance.face_quality.col_cluster"),
+		meta: { class: { th: "hidden sm:table-cell", td: "hidden sm:table-cell" } },
+	},
+	{
+		id: "confidence",
+		meta: { class: { th: "hidden sm:table-cell text-right", td: "hidden sm:table-cell text-right" } },
+	},
+	{
+		id: "laplacian_variance",
+		meta: { class: { th: "hidden sm:table-cell text-right", td: "hidden sm:table-cell text-right" } },
+	},
+	{ id: "actions", meta: { class: { td: "w-28" } } },
+];
+
+function rowClass(row: TableRow<Face>): string {
+	return selectedIds.value.includes(row.original.id)
+		? "cursor-pointer select-none bg-primary-50 dark:bg-primary-900/20"
+		: "cursor-pointer select-none hover:bg-elevated/50 transition-colors";
+}
 
 function load(page = 1): void {
 	if (page === 1) {

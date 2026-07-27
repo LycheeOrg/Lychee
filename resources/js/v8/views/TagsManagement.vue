@@ -39,52 +39,47 @@
 		<div v-if="tags.length === 0" class="p-4 text-center">{{ $t("tags.no_tags") }}</div>
 		<template v-else>
 			<div v-if="canEdit" class="flex justify-end gap-4 mb-8">
-				<UButton :disabled="!canMerge" variant="ghost" color="primary" size="sm" @click="openMerge">
+				<UButton :disabled="!canMerge" variant="ghost" color="primary" @click="openMerge">
 					<UIcon name="lucide:shrink" />
 					{{ $t("tags.merge") }}
 				</UButton>
-				<UButton :disabled="!canDelete" variant="ghost" color="error" size="sm" @click="openDelete">
+				<UButton :disabled="!canDelete" variant="ghost" color="error" @click="openDelete">
 					<UIcon name="lucide:trash" />
 					{{ $t("tags.delete") }}
 				</UButton>
 			</div>
-			<div class="overflow-x-auto">
-				<table class="w-full text-sm border-collapse">
-					<thead>
-						<tr class="border-b border-default text-left">
-							<th v-if="canEdit" class="p-2 w-10"></th>
-							<th class="p-2">{{ $t("tags.column_name") }}</th>
-							<th class="p-2 w-24 text-center">{{ $t("tags.column_photos") }}</th>
-							<th class="p-2 w-24 text-center">{{ $t("tags.column_albums") }}</th>
-							<th v-if="canEdit" class="p-2 w-10"></th>
-						</tr>
-					</thead>
-					<tbody class="divide-y divide-default">
-						<tr v-for="tag in tags" :key="tag.id" :class="rowClass(tag.id)">
-							<td v-if="canEdit" class="p-2 text-center" @click.stop>
-								<UCheckbox :model-value="isSelected(tag.id)" @update:model-value="() => toggleSelect(tag.id)" />
-							</td>
-							<td class="p-2 cursor-pointer" @click="navigate(tag.id)">{{ tag.name }}</td>
-							<td class="p-2 text-center text-muted cursor-pointer" @click="navigate(tag.id)">
-								{{ tag.num_photos > 0 ? tag.num_photos : "" }}
-							</td>
-							<td class="p-2 text-center text-muted cursor-pointer" @click="navigate(tag.id)">
-								{{ tag.num_albums > 0 ? tag.num_albums : "" }}
-							</td>
-							<td v-if="canEdit" class="p-2 text-center">
-								<UButton
-									variant="ghost"
-									color="neutral"
-									size="sm"
-									icon="lucide:pencil"
-									class="cursor-pointer"
-									@click="openRenameFor(tag)"
-								/>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
+			<UTable
+				:data="tags"
+				:columns="columns"
+				:meta="{ class: { tr: rowClass } }"
+				:on-select="(_e: Event, row: TableRow<Tag>) => navigate(row.original.id)"
+				class="w-full text-sm"
+				:ui="{ td: 'px-2 py-1', th: 'px-2' }"
+			>
+				<template #select-cell="{ row }">
+					<div class="text-center" @click.stop>
+						<UCheckbox :model-value="isSelected(row.original.id)" @update:model-value="() => toggleSelect(row.original.id)" />
+					</div>
+				</template>
+				<template #num_photos-cell="{ row }">
+					<span class="text-muted">{{ row.original.num_photos > 0 ? row.original.num_photos : "" }}</span>
+				</template>
+				<template #num_albums-cell="{ row }">
+					<span class="text-muted">{{ row.original.num_albums > 0 ? row.original.num_albums : "" }}</span>
+				</template>
+				<template #actions-cell="{ row }">
+					<div @click.stop>
+						<UButton
+							variant="ghost"
+							color="neutral"
+							size="sm"
+							icon="lucide:pencil"
+							class="cursor-pointer"
+							@click="openRenameFor(row.original)"
+						/>
+					</div>
+				</template>
+			</UTable>
 		</template>
 	</UCard>
 	<div v-else class="flex justify-center items-center p-4">
@@ -94,7 +89,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from "vue";
+import { computed, onMounted } from "vue";
 import OpenLeftMenu from "@/v8/components/headers/OpenLeftMenu.vue";
 import Spinner from "@/v8/components/Spinner.vue";
 import { useTagsRefresher } from "@/composables/tags/tagsRefresher";
@@ -104,6 +99,10 @@ import TagMergeDialog from "@/v8/components/forms/tags/TagMergeDialog.vue";
 import TagDeleteDialog from "@/v8/components/forms/tags/TagDeleteDialog.vue";
 import { onKeyDown } from "@vueuse/core";
 import { useRouter } from "vue-router";
+import { trans } from "laravel-vue-i18n";
+import type { TableColumn, TableRow } from "@nuxt/ui";
+
+type Tag = App.Http.Resources.Tags.TagResource;
 
 const router = useRouter();
 const { tags, canEdit, load } = useTagsRefresher();
@@ -127,13 +126,29 @@ const {
 	navigate,
 } = useTagsActions(tags, router);
 
-function rowClass(tagId: number) {
-	return {
-		"cursor-pointer": true,
-		"hover:bg-elevated/50": true,
-		"bg-primary/10": isSelected(tagId),
-	};
+function rowClass(row: TableRow<Tag>): string {
+	return isSelected(row.original.id) ? "cursor-pointer bg-primary/10" : "cursor-pointer hover:bg-elevated/50";
 }
+
+const columns = computed<TableColumn<Tag>[]>(() => {
+	const cols: TableColumn<Tag>[] = [];
+
+	if (canEdit.value) {
+		cols.push({ id: "select", meta: { class: { td: "w-10" } } });
+	}
+
+	cols.push(
+		{ accessorKey: "name", header: trans("tags.column_name") },
+		{ id: "num_photos", header: trans("tags.column_photos"), meta: { class: { th: "text-center w-24", td: "text-center w-24" } } },
+		{ id: "num_albums", header: trans("tags.column_albums"), meta: { class: { th: "text-center w-24", td: "text-center w-24" } } },
+	);
+
+	if (canEdit.value) {
+		cols.push({ id: "actions", meta: { class: { td: "w-10" } } });
+	}
+
+	return cols;
+});
 
 onMounted(load);
 

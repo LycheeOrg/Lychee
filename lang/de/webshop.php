@@ -108,6 +108,7 @@ return [
         'status' => 'Status',
         'amount' => 'Betrag',
         'show_pending' => 'Ausstehende Bestellungen anzeigen',
+        'date' => 'Datum',
     ],
     'purchasablesList' => [
         'purchasables' => 'Kaufbare Artikel',

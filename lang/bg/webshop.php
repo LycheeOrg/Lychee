@@ -108,6 +108,7 @@ return [
         'status' => 'Статус',
         'amount' => 'Сума',
         'show_pending' => 'Показване на чакащите поръчки',
+        'date' => 'Дата',
     ],
     'purchasablesList' => [
         'purchasables' => 'Продукти за покупка',
