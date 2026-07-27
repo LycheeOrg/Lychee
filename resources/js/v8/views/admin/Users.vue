@@ -7,76 +7,146 @@
 		</template>
 		{{ $t("users.title") }}
 	</UHeader>
-	<div class="max-w-6xl mx-auto p-4">
-		<div class="flex flex-wrap justify-center gap-4">
-			<div class="w-full lg:w-2/3 xl:w-3/6">
-				<p class="text-highlighted">{{ $t("users.description") }}</p>
-				<div class="flex justify-between mt-8 mb-8">
-					<UButton color="primary" @click="inviteUser">{{ $t("users.invite.button") }}</UButton>
-					<UButton color="primary" @click="createUser">{{ $t("users.create") }}</UButton>
-				</div>
-				<div class="flex flex-col">
-					<div class="flex flex-wrap md:flex-nowrap border-b border-solid border-b-neutral-700 mb-4 pb-4">
-						<div class="w-9/12 flex">
-							<span class="w-2/3 font-bold">{{ $t("users.username") }}</span>
-							<div class="w-1/3 flex justify-evenly">
-								<UTooltip :text="$t('users.upload_rights')"
-									><span class="w-full text-center"><UIcon name="lucide:upload" /></span
-								></UTooltip>
-								<UTooltip :text="$t('users.edit_rights')">
-									<span class="w-full text-center"><UIcon name="lucide:lock-open" /></span>
-								</UTooltip>
-								<UTooltip :text="$t('users.upload_trust_level')">
-									<span class="w-full text-center"><UIcon name="lucide:shield" /></span>
-								</UTooltip>
-								<UTooltip v-if="isQuotaEnabled" :text="$t('users.quota')">
-									<span class="w-full text-center"><UIcon name="lucide:chart-pie" /></span>
-								</UTooltip>
-							</div>
-						</div>
-						<span class="w-1/12"></span>
-					</div>
+	<USlideover v-model:open="isLegendOpen" side="right" class="w-sm">
+		<template #header
+			><span class="text-xl">{{ $t("users.legend") }}</span></template
+		>
+		<template #body>
+			<ul class="text-muted flex flex-col gap-y-4">
+				<li class="text-sm flex items-start gap-x-4">
+					<UIcon name="lucide:upload" class="text-lg" />
+					<span>{{ $t("users.upload_rights") }}</span>
+				</li>
+				<li class="text-sm flex items-start gap-x-4">
+					<UIcon name="lucide:lock-open" class="text-xl" />
+					<span>{{ $t("users.edit_rights") }}</span>
+				</li>
+				<li class="text-sm flex items-start gap-x-4">
+					<UIcon name="lucide:shield" class="text-success text-xl -mt-1" />
+					<span>{{ $t("users.upload_trust_level") }}</span>
+				</li>
+				<li v-if="is_se_enabled" class="text-sm flex items-start gap-x-4">
+					<UIcon name="lucide:chart-pie" class="text-lg" />
+					<span>{{ $t("users.quota") }}</span>
+				</li>
+			</ul>
+		</template>
+	</USlideover>
 
-					<ListUser
-						v-for="user in users"
-						:key="user.id"
-						:user="user"
-						:total-used-space="totalUsedSpace"
-						:is-quota-enabled="isQuotaEnabled"
-						@delete-user="deleteUser"
-						@edit-user="editUser"
+	<div class="max-w-3xl mx-auto p-4">
+		<div class="flex items-start justify-between gap-4">
+			<p class="text-highlighted">{{ $t("users.description") }}</p>
+			<UButton
+				icon="lucide:circle-help"
+				color="neutral"
+				variant="ghost"
+				size="sm"
+				:aria-label="$t('users.legend')"
+				@click="isLegendOpen = true"
+			/>
+		</div>
+		<div class="flex justify-end my-8 gap-2">
+			<UButton color="warning" @click="inviteUser">{{ $t("users.invite.button") }}</UButton>
+			<UButton color="success" @click="createUser">{{ $t("users.create") }}</UButton>
+		</div>
+
+		<UTable
+			:data="users"
+			:columns="columns"
+			sticky
+			:virtualize="{ estimateSize: 29, overscan: 12 }"
+			:ui="{ base: 'table-fixed', td: 'px-4 py-1' }"
+			class="max-h-[65vh]"
+		>
+			<template #username-cell="{ row }">
+				<span class="flex items-center gap-1">
+					{{ row.original.username }}
+					<UTooltip v-if="row.original.may_administrate" :text="$t(row.original.is_owner ? 'users.line.owner' : 'users.line.admin')">
+						<UIcon name="lucide:crown" :class="row.original.is_owner ? 'text-red-600' : 'text-orange-400'" />
+					</UTooltip>
+				</span>
+			</template>
+
+			<template #may_upload-header>
+				<UTooltip :text="$t('users.upload_rights')">
+					<UIcon name="lucide:upload" />
+				</UTooltip>
+			</template>
+			<template #may_upload-cell="{ row }">
+				<UIcon
+					:name="row.original.may_upload ? 'lucide:check' : 'lucide:x'"
+					:class="row.original.may_upload ? 'text-success' : 'text-muted opacity-30'"
+				/>
+			</template>
+
+			<template #may_edit_own_settings-header>
+				<UTooltip :text="$t('users.edit_rights')">
+					<UIcon name="lucide:lock-open" />
+				</UTooltip>
+			</template>
+			<template #may_edit_own_settings-cell="{ row }">
+				<UIcon
+					:name="row.original.may_edit_own_settings ? 'lucide:check' : 'lucide:x'"
+					:class="row.original.may_edit_own_settings ? 'text-success' : 'text-muted opacity-30'"
+				/>
+			</template>
+
+			<template #upload_trust_level-header>
+				<UTooltip :text="$t('users.upload_trust_level')">
+					<UIcon name="lucide:shield" />
+				</UTooltip>
+			</template>
+			<template #upload_trust_level-cell="{ row }">
+				<UTooltip :text="trustLevelInfo(row.original.upload_trust_level).text">
+					<UIcon name="lucide:shield" :class="trustLevelInfo(row.original.upload_trust_level).class" />
+				</UTooltip>
+			</template>
+
+			<template #quota-header>
+				<UTooltip :text="$t('users.quota')">
+					<UIcon name="lucide:chart-pie" class="text-lg" />
+				</UTooltip>
+			</template>
+			<template #quota-cell="{ row }">
+				<UTooltip v-if="row.original.quota_kb !== null" :text="formattedQuota(row.original)">
+					<UIcon name="lucide:chart-pie" class="text-lg" />
+				</UTooltip>
+			</template>
+
+			<template #space-cell="{ row }">
+				<div v-if="row.original.space !== null && spaceRatio(row.original) > 0">
+					<UProgress :model-value="spaceRatio(row.original)" :color="meterColor(row.original)" class="w-full min-w-16" />
+					<span dir="ltr">{{ formattedSpace(row.original) }}</span>
+				</div>
+			</template>
+
+			<template #actions-cell="{ row }">
+				<div class="flex justify-end">
+					<UButton
+						color="neutral"
+						:disabled="row.original.is_owner"
+						variant="ghost"
+						icon="lucide:user-pen"
+						:label="$t('users.line.edit')"
+						@click="editUser(row.original.id)"
+					/>
+					<UButton
+						color="error"
+						variant="ghost"
+						:disabled="row.original.is_owner"
+						icon="lucide:user-minus"
+						:label="$t('users.line.delete')"
+						@click="deleteUser(row.original.id)"
 					/>
 				</div>
-			</div>
-			<UCard class="text-muted w-full lg:w-2/3 xl:w-2/6 xl:pl-12">
-				<template #header>{{ $t("users.legend") }}</template>
-				<ul class="text-sm">
-					<li class="ltr:ml-2 rtl:mr-2 pt-2 flex items-start gap-x-4">
-						<UIcon name="lucide:upload" class="text-2xl" />
-						<span>{{ $t("users.upload_rights") }}</span>
-					</li>
-					<li class="ltr:ml-2 rtl:mr-2 pt-2 flex items-start gap-x-4">
-						<UIcon name="lucide:lock-open" class="text-3xl" />
-						<span>{{ $t("users.edit_rights") }}</span>
-					</li>
-					<li class="ltr:ml-2 rtl:mr-2 pt-2 flex items-start gap-x-4">
-						<UIcon name="lucide:shield" class="text-success text-4xl -mt-1" />
-						<span>{{ $t("users.upload_trust_level") }}</span>
-					</li>
-					<li v-if="is_se_enabled" class="ltr:ml-2 rtl:mr-2 pt-2 flex items-start gap-x-4">
-						<UIcon name="lucide:chart-pie" class="text-2xl" />
-						<span>{{ $t("users.quota") }}</span>
-					</li>
-				</ul>
-			</UCard>
-		</div>
+			</template>
+		</UTable>
 	</div>
 </template>
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { storeToRefs } from "pinia";
 import CreateEditUser from "@/v8/components/forms/users/CreateEditUser.vue";
-import ListUser from "@/v8/components/forms/users/ListUser.vue";
 import OpenLeftMenu from "@/v8/components/headers/OpenLeftMenu.vue";
 import UserManagementService from "@/services/user-management-service";
 import UsersService from "@/services/users-service";
@@ -84,21 +154,86 @@ import { useLycheeStateStore } from "@/stores/LycheeState";
 import { trans } from "laravel-vue-i18n";
 import InviteUser from "@/v8/components/modals/InviteUser.vue";
 import { useAppToast } from "@/v8/composables/useAppToast";
+import { useSizeVariantStats } from "@/v8/composables/useSizeVariantStats";
+import UButton from "@nuxt/ui/components/Button.vue";
+import UTooltip from "@nuxt/ui/components/Tooltip.vue";
+import UProgress from "@nuxt/ui/components/Progress.vue";
+import type { TableColumn } from "@nuxt/ui";
+
+type User = App.Http.Resources.Models.UserManagementResource;
+
+const { sizeToUnit } = useSizeVariantStats();
 
 const lycheeStore = useLycheeStateStore();
 lycheeStore.load();
 const { is_se_enabled } = storeToRefs(lycheeStore);
 
-const users = ref<App.Http.Resources.Models.UserManagementResource[]>([]);
+const users = ref<User[]>([]);
 const isCreateUserVisible = ref(false);
 const isInviteUserVisible = ref(false);
+const isLegendOpen = ref(false);
 const totalUsedSpace = ref(0);
 
 const toast = useAppToast();
 
-const selectedUser = ref<App.Http.Resources.Models.UserManagementResource | undefined>(undefined);
+const selectedUser = ref<User | undefined>(undefined);
 const isEdit = ref(false);
 const isQuotaEnabled = computed(() => is_se_enabled && users.value.reduce((acc, user) => acc || user.quota_kb !== null, false));
+
+function spaceRatio(user: User): number {
+	if (user.quota_kb !== null) {
+		return ((user.space ?? 0) * 100) / (user.quota_kb * 1024);
+	}
+	return ((user.space ?? 0) * 100) / (totalUsedSpace.value || 1);
+}
+
+function formattedQuota(user: User): string {
+	return user.quota_kb !== null ? sizeToUnit(user.quota_kb * 1024) : "";
+}
+
+function formattedSpace(user: User): string {
+	if (user.quota_kb !== null) {
+		return `${sizeToUnit(user.space ?? 0)} / ${sizeToUnit(user.quota_kb * 1024)}`;
+	}
+	return user.space !== null ? sizeToUnit(user.space) : "";
+}
+
+function meterColor(user: User): "error" | "warning" | "success" | "primary" {
+	const ratio = spaceRatio(user);
+	if (user.quota_kb !== null) {
+		if (ratio > 80) {
+			return "warning";
+		}
+		return ratio > 100 ? "error" : "success";
+	}
+	return ratio > 100 ? "error" : "primary";
+}
+
+function trustLevelInfo(level: string): { text: string; class: string } {
+	const map: Record<string, { text: string; class: string }> = {
+		trusted: { text: trans("users.create_edit.upload_trust_level_trusted"), class: "text-success" },
+		trust_but_verify: { text: trans("users.create_edit.upload_trust_level_trust_but_verify"), class: "text-blue-500" },
+		monitor: { text: trans("users.create_edit.upload_trust_level_monitor"), class: "text-yellow-500" },
+	};
+	return map[level] ?? { text: trans("users.create_edit.upload_trust_level_check"), class: "text-error" };
+}
+
+const columns = computed<TableColumn<User>[]>(() => {
+	const cols: TableColumn<User>[] = [
+		{ accessorKey: "username", header: trans("users.username") },
+		{ id: "may_upload" },
+		{ id: "may_edit_own_settings" },
+		{ id: "upload_trust_level" },
+	];
+
+	if (isQuotaEnabled.value) {
+		cols.push({ id: "quota" });
+	}
+
+	cols.push({ id: "space" }, { id: "actions" });
+
+	return cols;
+});
 
 function load() {
 	UserManagementService.get().then((response) => {
