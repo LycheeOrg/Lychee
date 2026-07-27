@@ -23,8 +23,8 @@ return [
     'source_code' => 'Broncode',
     'support' => 'Ondersteuning',
     'contact' => 'Contact',
-    'messages' => 'Messages',
-    'people' => 'People',
+    'messages' => 'Berichten',
+    'people' => 'Personen',
     'webhooks' => 'Webhooks',
-    'shopSizes' => 'Size Catalogue',
+    'shopSizes' => 'Maatcatalogus',
 ];

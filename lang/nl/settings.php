@@ -69,8 +69,8 @@ return [
         'map_include_subalbums' => 'Inclusief foto’s van de subalbums op de kaart',
         'location_decoding' => 'Gebruik GPS-locatiecodering',
         'location_show' => 'Toon locatie geëxtraheerd uit GPS-coördinaten',
-        'location_show_public' => 'Anonieme gebruikers kunnen de geëxtraheerde locatie van GPS-coördinaten openen',        'gps_coordinate_display' => 'Display the GPS coordinates',
-        'gps_coordinate_display_public' => 'Allow anonymous users to access the GPS coordinates',    ],
+        'location_show_public' => 'Anonieme gebruikers kunnen de geëxtraheerde locatie van GPS-coördinaten openen',        'gps_coordinate_display' => 'Toon de GPS-coördinaten',
+        'gps_coordinate_display_public' => 'Sta anonieme gebruikers toe de GPS-coördinaten te bekijken',    ],
     'cssjs' => [
         'header' => 'Aangepaste CSS & Js',
         'change_css' => 'CSS wijzigen',
@@ -96,8 +96,8 @@ return [
     ],
     'config' => [
         'use_admin_dashboard' => [
-            'label' => 'Use admin dashboard',
-            'help' => 'Replace the nested admin submenu with a single link to the new admin dashboard page.',
+            'label' => 'Beheerdersdashboard gebruiken',
+            'help' => 'Vervang het geneste beheersubmenu door één link naar de nieuwe beheerdersdashboardpagina.',
         ],
     ],
 ];
