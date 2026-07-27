@@ -34,13 +34,23 @@
 					class="flex-1 min-h-0"
 					:ui="{ base: 'table-fixed', td: 'px-4 py-1' }"
 					:meta="{ class: { tr: rowClass } }"
-				/>
+				>
+					<template #created_at-cell="{ row }">
+						<span class="text-muted">{{ prettyDate(row.original.created_at) }}</span>
+					</template>
+					<template #status-cell="{ row }">
+						<span :class="textCss(row.original.status)">{{ translateStatus(row.original.status) }}</span>
+					</template>
+					<template #job-cell="{ row }">
+						<span class="text-muted">{{ ellispis(row.original.job, 90) }}</span>
+					</template>
+				</UTable>
 			</template>
 		</UCard>
 	</UMain>
 </template>
 <script setup lang="ts">
-import { computed, h, onMounted, onUnmounted, ref, watch } from "vue";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import JobService from "@/services/jobs-service";
 import OpenLeftMenu from "@/v8/components/headers/OpenLeftMenu.vue";
 import { trans } from "laravel-vue-i18n";
@@ -60,13 +70,11 @@ const columns: TableColumn<Job>[] = [
 	{
 		accessorKey: "created_at",
 		header: trans("jobs.col_date"),
-		cell: ({ row }) => h("span", { class: "text-muted" }, prettyDate(row.original.created_at)),
 		meta: { class: { th: "w-44", td: "w-44" } },
 	},
 	{
 		accessorKey: "status",
 		header: trans("jobs.col_status"),
-		cell: ({ row }) => h("span", { class: textCss(row.original.status) }, translateStatus(row.original.status)),
 		meta: { class: { th: "w-28", td: "w-28" } },
 	},
 	{
@@ -78,7 +86,6 @@ const columns: TableColumn<Job>[] = [
 		accessorKey: "job",
 		header: trans("jobs.col_job"),
 		meta: { class: { td: "truncate" } },
-		cell: ({ row }) => h("span", { class: "text-muted" }, ellispis(row.original.job, 90)),
 	},
 ];
 async function load(): Promise<void> {
