@@ -2,6 +2,8 @@ import Album from "@/v7/views/gallery-panels/Album.vue";
 import Albums from "@/v7/views/gallery-panels/Albums.vue";
 import { paths } from "@/router/paths";
 
+const Placeholder = () => import("@/v7/views/Placeholder.vue");
+
 const Landing = () => import("@/v7/views/Landing.vue");
 const Favourites = () => import("@/v7/views/gallery-panels/Favourites.vue");
 const Home = () => import("@/v7/views/Home.vue");
@@ -99,7 +101,7 @@ const componentByName: Record<string, any> = {
 const routes_ = paths.map((p) => ({
 	name: p.name,
 	path: p.path,
-	component: componentByName[p.name],
+	component: componentByName[p.name] ?? Placeholder,
 	...(p.props ? { props: true } : {}),
 }));
 

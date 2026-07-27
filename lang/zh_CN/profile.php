@@ -15,6 +15,7 @@ return [
         'username' => '用户名',
         'new_password' => '新密码',
         'confirm_new_password' => '确认新密码',
+        'password_strength_info' => '密码强度是使用 <a href="https://github.com/dropbox/zxcvbn" class="inline-block border-b border-info border-dashed" target="_blank" rel="noreferrer">zxcvbn 算法</a>估算的。',
         'email_instruction' => '添加您的邮箱以启用邮件通知。如需停止接收邮件，只需删除下方的邮箱地址即可。',
         'email' => '邮箱',
         'change' => '修改登录信息',
@@ -28,6 +29,14 @@ return [
         'signup' => '注册',
         'error' => '注册账户时发生错误。',
         'success' => '您的账户已成功创建。',
+    ],
+    'admin_setup' => [
+        'header' => '设置您的管理员账户',
+        'welcome' => '欢迎使用 Lychee，<br>让我们从创建管理员账户开始。',
+        'submit' => '创建管理员账户',
+        'success' => '管理员账户创建成功。',
+        'error' => '创建管理员账户时发生错误。',
+        'already_exists' => '管理员账户已设置。',
     ],
     'token' => [
         'unavailable' => '您已查看过此令牌。',

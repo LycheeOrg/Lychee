@@ -26,6 +26,13 @@ Route::get('/LandingPage', LandingPageController::class)->middleware(['cache_con
 Route::get('/Frame', [Gallery\FrameController::class, 'get']);
 
 /**
+ * ADMIN SETUP (v8, Feature 051).
+ * Unauthenticated by necessity (there is no admin yet); guarded internally by
+ * SetUpAdminRequest, which rejects once an admin user already exists.
+ */
+Route::post('/Admin::Setup', [ProfileController::class, 'store']);
+
+/**
  * CONTACT FORM.
  */
 Route::get('/Contact::Init', [Contact\ContactController::class, 'init'])->middleware(['cache_control', 'support:se']);

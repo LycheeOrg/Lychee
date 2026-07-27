@@ -6,7 +6,7 @@
 					<UInput id="username" v-model="username" class="w-full" aria-label="Username" :autofocus="true" />
 				</UFormField>
 				<UFormField :label="$t('users.password')">
-					<InputPassword id="password" v-model="password" aria-label="Password" />
+					<InputPassword id="password" v-model="password" aria-label="Password" has-check />
 				</UFormField>
 				<UCheckbox v-model="may_upload" class="w-full" :label="$t('users.create_edit.upload_rights')" :ui="{ label: 'text-muted' }" />
 				<UCheckbox
