@@ -26,7 +26,6 @@ export function usePasswordStrength(modelValue: Ref<string | null | undefined>) 
 
 	const color = computed(() => {
 		if (!result.value) return "neutral";
-		console.log("result.value", result.value);
 		if (result.value.score <= 1) return "error";
 		if (result.value.score <= 2) return "warning";
 		if (result.value.score === 3) return "warning";
