@@ -197,6 +197,7 @@ return [
         'confirmation_tag' => 'Czy na pewno chcesz usunąć album "%s"?',
         'confirmation_multiple' => 'Czy na pewno chcesz usunąć wszystkie %d wybrane albumy i wszystkie zawarte w nich zdjęcia?',
         'warning' => 'Tego działania nie można cofnąć!',
+        'type_to_confirm' => 'Wpisz "%s", aby potwierdzić.',
         'delete' => 'Usuwanie albumu i zdjęć',
     ],
     'transfer' => [

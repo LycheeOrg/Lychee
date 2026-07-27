@@ -1,15 +1,18 @@
 <template>
-	<UCard class="sm:p-4 xl:px-9 max-w-3xl">
+	<div class="max-w-3xl">
 		<p class="mb-4 text-center">
 			{{ confirm }}<br />
 			<span class="text-warning">
 				<UIcon name="lucide:triangle-alert" class="ltr:mr-2 rtl:ml-2" />{{ $t("dialogs.delete_album.warning") }}
 			</span>
 		</p>
-		<UButton color="error" variant="ghost" class="font-bold w-full justify-center" @click="execute">
+		<UFormField :label="typeToConfirmLabel" class="mb-4">
+			<UInput v-model="confirmText" :placeholder="albumStore.album?.title" class="w-full" />
+		</UFormField>
+		<UButton color="error" variant="ghost" class="font-bold w-full justify-center" :disabled="!isConfirmed" @click="execute">
 			{{ $t("dialogs.delete_album.delete") }}
 		</UButton>
-	</UCard>
+	</div>
 </template>
 
 <script setup lang="ts">
@@ -18,7 +21,7 @@ import AlbumService from "@/services/album-service";
 import { sprintf } from "sprintf-js";
 import { useAlbumStore } from "@/stores/AlbumState";
 import { usePhotosStore } from "@/stores/PhotosState";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { trans } from "laravel-vue-i18n";
 
 const albumStore = useAlbumStore();
@@ -37,8 +40,12 @@ const confirm = computed(() => {
 	return sprintf(trans("dialogs.delete_album.confirmation_tag"), albumStore.album?.title);
 });
 
+const confirmText = ref("");
+const typeToConfirmLabel = computed(() => sprintf(trans("dialogs.delete_album.type_to_confirm"), albumStore.album?.title));
+const isConfirmed = computed(() => confirmText.value !== "" && confirmText.value === albumStore.album?.title);
+
 function execute() {
-	if (albumStore.album === undefined) {
+	if (albumStore.album === undefined || !isConfirmed.value) {
 		return;
 	}
 

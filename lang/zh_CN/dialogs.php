@@ -197,6 +197,7 @@ return [
         'confirmation_tag' => '您确定要删除相册"%s"吗？',
         'confirmation_multiple' => '您确定要删除所有 %d 个选定的相册及其包含的所有照片吗？',
         'warning' => '此操作无法撤销！',
+        'type_to_confirm' => '输入"%s"以确认。',
         'delete' => '删除相册和照片',
     ],
     'transfer' => [

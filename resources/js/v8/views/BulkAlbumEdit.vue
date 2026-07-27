@@ -373,7 +373,9 @@ function findOption<T extends string>(options: SelectOption<T>[], value: string 
 }
 
 function selectedLabel<T>(option: SelectOption<T> | undefined): string {
-	return option ? trans(option.label) : "";
+	// A single space (matching USelectMenu's own placeholder fallback) keeps the
+	// trigger's line box at its normal height; an empty string collapses it.
+	return option ? trans(option.label) : " ";
 }
 
 function formatDate(iso: string): string {
