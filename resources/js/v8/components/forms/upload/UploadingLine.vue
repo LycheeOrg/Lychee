@@ -78,7 +78,7 @@ const errorFlexClass = computed(() => {
 // prettier-ignore
 const statusClass = computed(() => {
 	switch (status.value) {
-		case "uploading": return "text-sky-500 text-right pr-1  text-xs";
+		case "uploading": return "text-primary text-right pr-1  text-xs";
 		case "done":      return "text-green-600 text-right pr-1  text-xs";
 		case "warning":   return "text-warning text-right pr-1  text-xs";
 		case "error":     return "text-error text-right pr-1  text-xs";

@@ -197,6 +197,7 @@ return [
         'confirmation_tag' => '您確定要刪除相簿%s嗎？',
         'confirmation_multiple' => '您確定要刪除所有 %d 已選相簿及其中所包含的照片嗎？',
         'warning' => '此操作無法復原！',
+        'type_to_confirm' => '請輸入%s以確認。',
         'delete' => '刪除相簿及相片',
     ],
     'transfer' => [

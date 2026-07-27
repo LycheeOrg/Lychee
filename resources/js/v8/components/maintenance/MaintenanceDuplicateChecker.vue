@@ -1,7 +1,7 @@
 <template>
-	<UCard class="min-h-40 relative" :ui="{ body: 'h-full flex flex-col justify-between gap-4' }">
+	<UCard class="min-h-40 relative bg-muted/50">
 		<template #header>
-			<div class="text-center">
+			<div class="text-center font-bold">
 				{{ $t("maintenance.duplicate-finder.title") }}
 			</div>
 		</template>
@@ -16,14 +16,14 @@
 				<Spinner v-if="data === undefined && isLoaded" class="w-full" />
 			</div>
 		</div>
-		<div class="flex gap-4 mt-1">
+		<template #footer>
 			<UButton v-if="data !== undefined && data.pure_duplicates" to="/duplicatesFinder" color="primary" class="w-full justify-center self-end">
 				{{ $t("maintenance.duplicate-finder.show") }}
 			</UButton>
 			<UButton v-if="!isLoaded" color="primary" class="w-full justify-center self-end" @click="load">
 				{{ $t("maintenance.duplicate-finder.load") }}
 			</UButton>
-		</div>
+		</template>
 	</UCard>
 </template>
 

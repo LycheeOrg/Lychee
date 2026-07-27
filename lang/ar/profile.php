@@ -15,6 +15,7 @@ return [
         'username' => 'اسم المستخدم',
         'new_password' => 'كلمة المرور الجديدة',
         'confirm_new_password' => 'تأكيد كلمة المرور الجديدة',
+        'password_strength_info' => 'قوة كلمة المرور هي تقدير باستخدام <a href="https://github.com/dropbox/zxcvbn" class="inline-block border-b border-info border-dashed" target="_blank" rel="noreferrer">خوارزمية zxcvbn</a>.',
         'email_instruction' => 'أضف بريدك الإلكتروني أدناه لتفعيل استلام الإشعارات عبر البريد الإلكتروني. لإيقاف استلام الإشعارات، قم ببساطة بإزالة بريدك الإلكتروني أدناه.',
         'email' => 'البريد الإلكتروني',
         'change' => 'تغيير تسجيل الدخول',
@@ -28,6 +29,14 @@ return [
         'signup' => 'إنشاء حساب',
         'error' => 'حدث خطأ أثناء تسجيل حسابك.',
         'success' => 'تم إنشاء حسابك بنجاح.',
+    ],
+    'admin_setup' => [
+        'header' => 'إعداد حساب المسؤول الخاص بك',
+        'welcome' => 'مرحبًا بك في Lychee،<br>لنبدأ بإنشاء حساب مسؤول.',
+        'submit' => 'إنشاء حساب المسؤول',
+        'success' => 'تم إنشاء حساب المسؤول بنجاح.',
+        'error' => 'حدث خطأ أثناء إنشاء حساب المسؤول.',
+        'already_exists' => 'تم إعداد حساب مسؤول بالفعل.',
     ],
     'token' => [
         'unavailable' => 'لقد قمت بعرض هذا الرمز مسبقًا.',

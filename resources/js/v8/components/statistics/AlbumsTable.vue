@@ -4,17 +4,17 @@
 		:data="albumData ?? []"
 		:columns="columns"
 		:loading="albumData === undefined"
-		class="max-h-[600px]"
+		class="max-h-150"
 	/>
 </template>
 <script setup lang="ts">
-import { sizeToUnit } from "@/utils/StatsSizeVariantToColours";
 import { computed, h, ref } from "vue";
 import StatisticsService from "@/services/statistics-service";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import { usePreviewData } from "@/composables/preview/getPreviewInfo";
 import { TotalAlbum, useAlbumsStatistics } from "@/composables/album/albumStatistics";
+import { useSizeVariantStats } from "@/v8/composables/useSizeVariantStats";
 import type { TableColumn } from "@nuxt/ui";
 import { trans } from "laravel-vue-i18n";
 
@@ -22,6 +22,7 @@ const lycheeStore = useLycheeStateStore();
 const { is_se_preview_enabled, are_nsfw_visible } = storeToRefs(lycheeStore);
 const { getAlbumSizeData } = usePreviewData();
 const { computeTotal } = useAlbumsStatistics();
+const { sizeToUnit } = useSizeVariantStats();
 
 const props = defineProps<{
 	showUsername: boolean;

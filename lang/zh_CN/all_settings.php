@@ -394,6 +394,8 @@ return [
         'public_visible_flag_enabled' => 'Enable public visible flag',
         'password_flag_enabled' => 'Enable password flag',
         'sensitive_flag_enabled' => 'Enable sensitive flag',
+        'expert_album_settings' => '默认显示专家级相册设置',
+        'accent_color' => 'Accent color.',
     ],
     'details' => [
         'version' => '',
@@ -782,6 +784,8 @@ return [
         'public_visible_flag_enabled' => 'Show the green eye icon on albums that are publicly visible.',
         'password_flag_enabled' => 'Show the lock icon on password-protected albums.',
         'sensitive_flag_enabled' => 'Show the warning icon on albums marked as sensitive (NSFW).',
+        'expert_album_settings' => '启用后，相册设置对话框将默认显示高级字段（页眉、许可证、版权），而不是隐藏在“专家模式”开关之后。',
+        'accent_color' => 'Pick a colour, the nearest colour palette will be used. If you leave this empty, the default accent color will be used.<br>Note: you will need to refresh the page to see the changes.',
     ],
 
     'category_name' => [

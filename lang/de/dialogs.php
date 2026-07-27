@@ -197,6 +197,7 @@ return [
         'confirmation_tag' => 'Sicher, dass das Album „%s“ gelöscht werden soll?',
         'confirmation_multiple' => 'Sicher, dass alle %d ausgewählten Alben und alle darin enthaltenen Fotos gelöscht werden sollen?',
         'warning' => 'Diese Aktion kann nicht rückgängig gemacht werden!',
+        'type_to_confirm' => 'Gib „%s“ ein, um zu bestätigen.',
         'delete' => 'Album und Fotos löschen',
     ],
     'transfer' => [

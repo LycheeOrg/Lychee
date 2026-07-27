@@ -198,6 +198,7 @@ return [
         'confirmation_tag' => 'Are you sure you want to delete the album "%s"?',
         'confirmation_multiple' => 'Are you sure you want to delete all %d selected albums and all of the photos they contain?',
         'warning' => 'This action can not be undone!',
+        'type_to_confirm' => 'Type "%s" to confirm.',
         'delete' => 'Delete Album and Photos',
     ],
     'transfer' => [

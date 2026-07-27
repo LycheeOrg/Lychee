@@ -19,6 +19,10 @@ export const paths: RoutePath[] = [
 		path: "/",
 	},
 	{
+		name: "admin-setup",
+		path: "/setup-admin",
+	},
+	{
 		name: "favourites",
 		path: "/gallery/favourites",
 	},

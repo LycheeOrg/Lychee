@@ -50,6 +50,7 @@
         "ext-tokenizer": "*",
         "ext-xml": "*",
         "bepsvpt/secure-headers": "^9.1.1",
+        "charlieetienne/palette-generator": "^1.1",
         "composer/semver": "^3.4",
         "dedoc/scramble": "^0.13.1",
         "directorytree/ldaprecord-laravel": "^4.0.0",

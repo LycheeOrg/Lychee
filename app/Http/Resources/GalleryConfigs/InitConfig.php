@@ -159,6 +159,7 @@ class InitConfig extends Data
 	// Album settings
 	public DefaultAlbumProtectionType $default_album_protection;
 	public PhotoHighlightVisibilityType $photos_star_visibility;
+	public bool $expert_album_settings;
 
 	// Enhanced Album Display
 	public bool $is_album_enhanced_display_enabled;
@@ -292,6 +293,7 @@ class InitConfig extends Data
 		// Album settings
 		$this->default_album_protection = request()->configs()->getValueAsEnum('default_album_protection', DefaultAlbumProtectionType::class);
 		$this->photos_star_visibility = request()->configs()->getValueAsEnum('photos_star_visibility', PhotoHighlightVisibilityType::class);
+		$this->expert_album_settings = request()->configs()->getValueAsBool('expert_album_settings');
 
 		// Enhanced Album Display
 		$this->is_album_enhanced_display_enabled = request()->configs()->getValueAsBool('album_enhanced_display_enabled');

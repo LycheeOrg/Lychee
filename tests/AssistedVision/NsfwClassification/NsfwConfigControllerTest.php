@@ -21,7 +21,7 @@ class NsfwConfigControllerTest extends BaseApiWithDataTest
 {
 	public function testShowReturns501WhenNotConfigured(): void
 	{
-		config(['features.ai-vision-service.nsfw-url' => '']);
+		config(['services.nsfw_detection.base_url' => '']);
 
 		$response = $this->withoutMiddleware(VerifySupporterStatus::class)
 			->actingAs($this->admin)->getJson('NsfwDetection/config');
@@ -31,8 +31,8 @@ class NsfwConfigControllerTest extends BaseApiWithDataTest
 
 	public function testShowProxiesConfigFromService(): void
 	{
-		config(['features.ai-vision-service.nsfw-url' => 'http://fake-nsfw-service']);
-		config(['features.ai-vision-service.nsfw-api-key' => 'test-key']);
+		config(['services.nsfw_detection.base_url' => 'http://fake-nsfw-service']);
+		config(['services.nsfw_detection.api_key' => 'test-key']);
 
 		$actionCategory = ['labels' => ['FEMALE_GENITALIA_EXPOSED'], 'confidence' => 0.5, 'area_ratio' => 0.01, 'label_thresholds' => []];
 
@@ -73,8 +73,8 @@ class NsfwConfigControllerTest extends BaseApiWithDataTest
 
 	public function testShowReturns503WhenServiceErrors(): void
 	{
-		config(['features.ai-vision-service.nsfw-url' => 'http://fake-nsfw-service']);
-		config(['features.ai-vision-service.nsfw-api-key' => 'test-key']);
+		config(['services.nsfw_detection.base_url' => 'http://fake-nsfw-service']);
+		config(['services.nsfw_detection.api_key' => 'test-key']);
 
 		Http::fake([
 			'http://fake-nsfw-service/api/nsfw/config' => Http::response([], 500),
@@ -88,8 +88,8 @@ class NsfwConfigControllerTest extends BaseApiWithDataTest
 
 	public function testShowReturns503WhenServiceUnreachable(): void
 	{
-		config(['features.ai-vision-service.nsfw-url' => 'http://fake-nsfw-service']);
-		config(['features.ai-vision-service.nsfw-api-key' => 'test-key']);
+		config(['services.nsfw_detection.base_url' => 'http://fake-nsfw-service']);
+		config(['services.nsfw_detection.api_key' => 'test-key']);
 
 		Http::fake([
 			'http://fake-nsfw-service/api/nsfw/config' => function (): never {

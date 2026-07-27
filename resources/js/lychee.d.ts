@@ -629,6 +629,7 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		albums_infinite_scroll_threshold: number;
 		default_album_protection: App.Enum.DefaultAlbumProtectionType;
 		photos_star_visibility: App.Enum.PhotoHighlightVisibilityType;
+		expert_album_settings: boolean;
 		is_album_enhanced_display_enabled: boolean;
 		album_header_size: App.Enum.AlbumHeaderSize;
 		is_album_header_landing_title_enabled: boolean;

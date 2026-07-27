@@ -17,6 +17,7 @@ use App\Models\Album;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\PersonAlbum;
 use App\Models\TagAlbum;
+use App\Policies\AlbumPolicy;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
@@ -60,8 +61,6 @@ class ThumbAlbumResource extends Data
 	{
 		$date_format = request()->configs()->getValueAsString('date_format_album_thumb');
 
-		$this->id = $data->get_id();
-		$this->thumb = ThumbResource::fromModel($data->get_thumb());
 		$this->title = $data->get_title();
 
 		if ($data instanceof BaseSmartAlbum) {
@@ -85,6 +84,13 @@ class ThumbAlbumResource extends Data
 		if ($data instanceof Album) {
 			$this->num_photos = $data->num_photos;
 			$this->num_subalbums = $data->num_children;
+		}
+
+		$this->id = $data->get_id();
+		if ($policy->is_password_required === true && !resolve(AlbumPolicy::class)->isUnlocked($data)) {
+			$this->thumb = null;
+		} else {
+			$this->thumb = ThumbResource::fromModel($data->get_thumb());
 		}
 
 		$this->is_nsfw = $policy->is_nsfw;

@@ -197,6 +197,7 @@ return [
         'confirmation_tag' => 'Weet u zeker dat u het album "%s" wilt verwijderen?',
         'confirmation_multiple' => 'Weet u zeker dat u alle %d geselecteerde albums en al de foto’s die ze bevatten wilt verwijderen?',
         'warning' => 'Deze actie kan niet ongedaan worden gemaakt!',
+        'type_to_confirm' => 'Typ “%s” om te bevestigen.',
         'delete' => 'Album en Foto’s Verwijderen',
     ],
     'transfer' => [

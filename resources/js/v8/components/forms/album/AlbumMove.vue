@@ -1,5 +1,8 @@
 <template>
-	<UCard v-if="albumStore.album" class="sm:p-4 xl:px-9 max-w-3xl">
+	<Fieldset v-if="albumStore.album" class="w-full">
+		<template #legend>
+			<span class="flex items-center gap-2"><UIcon :name="legendIcon" />{{ legendLabel }}</span>
+		</template>
 		<div v-if="titleMovedTo !== undefined">
 			<p class="mb-4 text-center text-muted">
 				{{ sprintf($t("dialogs.move_album.confirm_single"), albumStore.album.title, titleMovedTo) }}
@@ -15,17 +18,23 @@
 		<div v-else>
 			<p class="text-center text-muted">{{ $t("dialogs.move_album.no_album_target") }}</p>
 		</div>
-	</UCard>
+	</Fieldset>
 </template>
 <script setup lang="ts">
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { trans } from "laravel-vue-i18n";
 import { sprintf } from "sprintf-js";
+import Fieldset from "@/v8/components/forms/basic/Fieldset.vue";
 import SearchTargetAlbum from "@/v8/components/forms/album/SearchTargetAlbum.vue";
 import AlbumService from "@/services/album-service";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import { useAlbumStore } from "@/stores/AlbumState";
+
+defineProps<{
+	legendIcon: string;
+	legendLabel: string;
+}>();
 
 const toast = useAppToast();
 const router = useRouter();

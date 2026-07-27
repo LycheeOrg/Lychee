@@ -197,6 +197,7 @@ return [
         'confirmation_tag' => '¿Estás seguro de que deseas eliminar el álbum "%s"?',
         'confirmation_multiple' => '¿Estás seguro de que deseas eliminar los %d álbumes seleccionados y todas las fotos que contienen?',
         'warning' => '¡Esta acción no se puede deshacer!',
+        'type_to_confirm' => 'Escribe «%s» para confirmar.',
         'delete' => 'Eliminar álbum y fotos',
     ],
     'transfer' => [

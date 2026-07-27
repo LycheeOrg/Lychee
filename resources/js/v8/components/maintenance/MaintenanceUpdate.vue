@@ -1,7 +1,7 @@
 <template>
-	<UCard v-if="data && data.is_docker !== true" class="min-h-40 relative" :ui="{ body: 'h-full flex flex-col justify-between gap-4' }">
+	<UCard v-if="data && data.is_docker !== true" class="min-h-40 relative bg-muted/50">
 		<template #header>
-			<div class="text-center">
+			<div class="text-center font-bold">
 				{{ $t("maintenance.update.title") }}
 			</div>
 		</template>
@@ -11,7 +11,7 @@
 			{{ data.extra }}
 		</div>
 		<template #footer>
-			<UButton v-if="canCheck" color="warning" class="w-full justify-center" @click="check">{{
+			<UButton v-if="canCheck" color="secondary" class="w-full justify-center" @click="check">{{
 				$t("maintenance.update.check-button")
 			}}</UButton>
 			<UButton v-if="canUpdate" color="primary" class="w-full justify-center" to="/Update" target="_blank" rel="noopener">

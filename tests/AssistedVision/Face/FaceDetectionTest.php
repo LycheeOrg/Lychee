@@ -35,7 +35,7 @@ class FaceDetectionTest extends BaseApiWithDataTest
 		Configs::set('ai_vision_face_permission_mode', 'public');
 
 		$this->api_key = 'test-api-key-12345';
-		config(['features.ai-vision-service.face-api-key' => $this->api_key]);
+		config(['services.face_recognition.api_key' => $this->api_key]);
 	}
 
 	public function tearDown(): void

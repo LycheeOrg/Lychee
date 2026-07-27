@@ -14,7 +14,6 @@ use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Auth;
 
 /**
  * Smart album containing all photos rated by the current user.
@@ -35,7 +34,7 @@ class MyRatedPicturesAlbum extends BaseSmartAlbum
 		parent::__construct(
 			id: SmartAlbumType::MY_RATED_PICTURES,
 			smart_condition: fn (Builder $q) => $q->whereHas('ratings', function ($query): void {
-				$query->where('user_id', '=', Auth::id() ?? 0);
+				$query->where('user_id', '=', $this->resolveUserId());
 			})
 		);
 	}
@@ -62,7 +61,7 @@ class MyRatedPicturesAlbum extends BaseSmartAlbum
 		return $query
 			->leftJoin('photo_ratings', function ($join): void {
 				$join->on('photos.id', '=', 'photo_ratings.photo_id')
-					->where('photo_ratings.user_id', '=', Auth::id() ?? 0);
+					->where('photo_ratings.user_id', '=', $this->resolveUserId());
 			})
 			->orderByRaw('photo_ratings.rating DESC')
 			->orderBy('photos.created_at', 'DESC')

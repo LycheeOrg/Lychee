@@ -55,6 +55,10 @@ Route::get('/octane-health', function () {
 	return response()->json($status);
 });
 
+Route::get('setup-admin', VueController::class)->name('admin-setup')
+	->withoutMiddleware(['admin_user:set'])
+	->middleware(['admin_user:unset', 'migration:complete']);
+
 Route::get('/', VueController::class)->name('home')->middleware(['migration:complete']);
 Route::get('/home', VueController::class)->name('homepage')->middleware(['migration:complete']);
 Route::get('/flow/{albumId?}/{photoId?}', [VueController::class, 'gallery'])->name('flow')->middleware(['migration:complete', 'unlock_with_password', 'resolve_album_slug']);

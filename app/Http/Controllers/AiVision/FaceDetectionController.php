@@ -195,7 +195,7 @@ class FaceDetectionController extends Controller
 	 */
 	private function processFaceResults(string $photo_id, array $incoming_faces): array
 	{
-		$iou_threshold = (float) config('features.ai-vision-service.face-rescan-iou-threshold', self::DEFAULT_IOU_THRESHOLD);
+		$iou_threshold = (float) config('services.face_recognition.rescan_iou_threshold', self::DEFAULT_IOU_THRESHOLD);
 
 		// Load existing faces for this photo
 		$old_faces = Face::where('photo_id', '=', $photo_id)->get();

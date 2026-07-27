@@ -1,5 +1,5 @@
 <template>
-	<UHeader :toggle="false">
+	<UHeader :toggle="false" to="">
 		<template #title>
 			<LycheeBreadcrumb
 				v-if="scopedAlbumTitle && showBreadcrumb"

@@ -233,24 +233,6 @@ return [
 
 	/*
 	 |--------------------------------------------------------------------------
-	 | AI Vision service integration.
-	 |--------------------------------------------------------------------------
-	 |
-	 | Infrastructure keys for the external AI Vision (facial recognition) service.
-	 | These are NOT stored in the configs table to avoid exposing the service URL
-	 | or shared API key through the admin settings UI.
-	 */
-	'ai-vision-service' => [
-		'face-url' => env('AI_VISION_FACE_URL', ''),
-		'face-api-key' => env('AI_VISION_FACE_API_KEY', ''),
-		'face-rescan-iou-threshold' => (float) env('AI_VISION_FACE_RESCAN_IOU_THRESHOLD', 0.3),
-		'face-stuck-scan-threshold-minutes' => (int) env('AI_VISION_FACE_STUCK_SCAN_THRESHOLD_MINUTES', 720),
-		'nsfw-url' => env('AI_VISION_NSFW_URL', ''),
-		'nsfw-api-key' => env('AI_VISION_NSFW_API_KEY', ''),
-	],
-
-	/*
-	 |--------------------------------------------------------------------------
 	 | White Label
 	 |--------------------------------------------------------------------------
 	 |

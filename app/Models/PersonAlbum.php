@@ -14,12 +14,14 @@ use App\Exceptions\InvalidPropertyException;
 use App\ModelFunctions\HasAbstractAlbumProperties;
 use App\Models\Builders\PersonAlbumBuilder;
 use App\Models\Extensions\BaseAlbum;
+use App\Models\Extensions\CachesAlbumUserThumb;
 use App\Models\Extensions\Thumb;
 use App\Models\Extensions\ToArrayThrowsNotImplemented;
 use App\Relations\HasManyPhotosByPerson;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Support\Facades\Auth;
 
@@ -28,6 +30,7 @@ use Illuminate\Support\Facades\Auth;
  *
  * @property Collection<int,Person> $persons
  * @property bool                   $is_and
+ * @property AlbumUserThumb|null    $userThumbRow
  *
  * @method static PersonAlbumBuilder|PersonAlbum query()                       Begin querying the model.
  * @method static PersonAlbumBuilder|PersonAlbum with(array|string $relations) Begin querying the model with eager loading.
@@ -61,6 +64,7 @@ class PersonAlbum extends BaseAlbum
 	use ToArrayThrowsNotImplemented;
 	use HasFactory;
 	use HasAbstractAlbumProperties;
+	use CachesAlbumUserThumb;
 
 	/**
 	 * @var array<string, mixed>
@@ -105,15 +109,37 @@ class PersonAlbum extends BaseAlbum
 	}
 
 	/**
+	 * The current viewer's `album_user_thumbs` cache row for this album, if
+	 * any. Eager-loadable (`->with('userThumbRow.photo.size_variants')`) so
+	 * a whole list of person albums resolves their thumb in a single query
+	 * instead of one query per album (cp. {@link CachesAlbumUserThumb}).
+	 *
+	 * @return HasOne<AlbumUserThumb,$this>
+	 */
+	public function userThumbRow(): HasOne
+	{
+		$query = $this->hasOne(AlbumUserThumb::class, 'album_id', 'id');
+
+		return Auth::check() ? $query->where('user_id', '=', Auth::id()) : $query->whereNull('user_id');
+	}
+
+	/**
 	 * @return Thumb|null
 	 *
 	 * @throws InvalidPropertyException
 	 */
 	protected function getThumbAttribute(): ?Thumb
 	{
-		return Thumb::createFromQueryable(
-			$this->photos(),
-			$this->getEffectivePhotoSorting(),
+		if ($this->relationLoaded('userThumbRow') && $this->userThumbRow !== null) {
+			return Thumb::createFromPhoto($this->userThumbRow->photo);
+		}
+
+		return $this->getCachedOrLiveThumb(
+			$this->id,
+			fn () => Thumb::createFromQueryable(
+				$this->photos(),
+				$this->getEffectivePhotoSorting(),
+			),
 		);
 	}
 

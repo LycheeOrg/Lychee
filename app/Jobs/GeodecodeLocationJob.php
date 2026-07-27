@@ -9,6 +9,7 @@
 namespace App\Jobs;
 
 use App\Enum\JobStatus;
+use App\Jobs\Traits\HasFailedTrait;
 use App\Metadata\Extractor;
 use App\Metadata\Geodecoder;
 use App\Models\JobHistory;
@@ -59,6 +60,12 @@ class GeodecodeLocationJob implements ShouldQueue
 	 */
 	public function middleware()
 	{
+		// The public Nominatim server enforces a strict usage policy; a self-hosted
+		// instance has no such limit, so jobs can be processed unthrottled.
+		if (config('features.v8') === true && config('services.local-geo-decoding.base_url', '') !== '') {
+			return [];
+		}
+
 		return [new RateLimited('geo-queue')];
 	}
 

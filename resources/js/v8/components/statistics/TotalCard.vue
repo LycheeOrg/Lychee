@@ -15,7 +15,9 @@
 </template>
 <script setup lang="ts">
 import { TotalAlbum } from "@/composables/album/albumStatistics";
-import { sizeToUnit } from "@/utils/StatsSizeVariantToColours";
+import { useSizeVariantStats } from "@/v8/composables/useSizeVariantStats";
+
+const { sizeToUnit } = useSizeVariantStats();
 
 const props = defineProps<{ total: TotalAlbum }>();
 </script>

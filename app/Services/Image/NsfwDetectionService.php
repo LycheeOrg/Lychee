@@ -27,8 +27,8 @@ class NsfwDetectionService
 	public function __construct(
 		private readonly ConfigManager $config_manager,
 	) {
-		$this->service_url = config('features.ai-vision-service.nsfw-url', '');
-		$this->api_key = config('features.ai-vision-service.nsfw-api-key', '');
+		$this->service_url = config('services.nsfw_detection.base_url', '');
+		$this->api_key = config('services.nsfw_detection.api_key', '');
 	}
 
 	public function isConfigured(): bool

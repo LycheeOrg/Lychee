@@ -28,8 +28,8 @@ class RunFaceClusteringTest extends BaseApiWithDataTest
 		Configs::set('ai_vision_enabled', '1');
 		Configs::set('ai_vision_face_enabled', '1');
 
-		config(['features.ai-vision-service.face-url' => 'http://fake-vision-service:8000']);
-		config(['features.ai-vision-service.face-api-key' => 'test-api-key']);
+		config(['services.face_recognition.base_url' => 'http://fake-vision-service:8000']);
+		config(['services.face_recognition.api_key' => 'test-api-key']);
 	}
 
 	public function tearDown(): void
@@ -94,7 +94,7 @@ class RunFaceClusteringTest extends BaseApiWithDataTest
 
 	public function testDoReturns503WhenServiceNotConfigured(): void
 	{
-		config(['features.ai-vision-service.face-url' => '']);
+		config(['services.face_recognition.base_url' => '']);
 
 		$response = $this->actingAs($this->admin)->postJson('Maintenance::runFaceClustering');
 		$this->assertStatus($response, 503);

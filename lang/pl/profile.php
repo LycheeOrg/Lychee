@@ -15,6 +15,7 @@ return [
         'username' => 'Nazwa użytkownika',
         'new_password' => 'Nowe hasło',
         'confirm_new_password' => 'Potwierdź nowe hasło',
+        'password_strength_info' => 'Siła hasła jest szacowana za pomocą <a href="https://github.com/dropbox/zxcvbn" class="inline-block border-b border-info border-dashed" target="_blank" rel="noreferrer">algorytmu zxcvbn</a>.',
         'email_instruction' => 'Dodaj swój adres e-mail poniżej, aby włączyć otrzymywanie powiadomień e-mail. Aby przestać otrzymywać wiadomości e-mail, po prostu usuń swój adres e-mail poniżej.',
         'email' => 'E-mail',
         'change' => 'Zmień login',
@@ -28,6 +29,14 @@ return [
         'signup' => 'Zarejestruj się',
         'error' => 'Wystąpił błąd podczas rejestrowania konta.',
         'success' => 'Twoje konto zostało pomyślnie utworzone.',
+    ],
+    'admin_setup' => [
+        'header' => 'Skonfiguruj swoje konto administratora',
+        'welcome' => 'Witamy w Lychee,<br>zacznijmy od utworzenia konta administratora.',
+        'submit' => 'Utwórz konto administratora',
+        'success' => 'Konto administratora zostało pomyślnie utworzone.',
+        'error' => 'Wystąpił błąd podczas tworzenia konta administratora.',
+        'already_exists' => 'Konto administratora zostało już skonfigurowane.',
     ],
     'token' => [
         'unavailable' => 'Ten token został już wyświetlony.',

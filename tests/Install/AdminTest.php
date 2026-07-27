@@ -70,6 +70,10 @@ class AdminTest extends AbstractTestCase
 			'password_confirmation' => 'admin',
 		]);
 		$this->assertOk($response);
-		$response->assertViewIs('install.setup-admin');
+		// The response is rendered from AdminSetterHandler (exception-handling
+		// pipeline), which flattens it to raw content before it reaches the test
+		// client - Laravel's toIlluminateResponse() discards the View object, so
+		// assertViewIs() cannot be used here; assert on the rendered error instead.
+		$response->assertSee('Admin User has already been set', false);
 	}
 }

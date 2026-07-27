@@ -15,6 +15,7 @@ use App\Models\Builders\PhotoBuilder;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
 use App\Models\TagAlbum;
+use App\Models\User;
 use App\Repositories\ConfigManager;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -28,8 +29,12 @@ use Illuminate\Support\Facades\DB;
  */
 class HasManyPhotosByTag extends BaseHasManyPhotos
 {
-	public function __construct(TagAlbum $owning_album)
+	public function __construct(TagAlbum $owning_album, ?User $for_user = null, bool $user_is_set = false)
 	{
+		// Sic! We must set these before calling the parent constructor,
+		// since it triggers `addEagerConstraints()` (see BaseHasManyPhotos).
+		$this->for_user = $for_user;
+		$this->user_is_set = $user_is_set;
 		parent::__construct($owning_album);
 	}
 
@@ -80,7 +85,7 @@ class HasManyPhotosByTag extends BaseHasManyPhotos
 			->all();
 		$tag_ids = array_values(array_unique($tag_ids));
 
-		$user = \Illuminate\Support\Facades\Auth::user();
+		$user = $this->resolveUser();
 		$unlocked_album_ids = \App\Policies\AlbumPolicy::getUnlockedAlbumIDs();
 
 		$config_manager = app(ConfigManager::class);

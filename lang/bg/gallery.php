@@ -154,8 +154,10 @@ return [
         'photo_actions' => 'Photo actions',
         'no_results' => 'Няма какво да се покаже',
         'upload' => 'Качване на снимки',
+        'edit_title' => 'Настройки на албума',
         'tabs' => [
             'about' => 'За албума',
+            'visibility' => 'Видимост',
             'share' => 'Споделяне',
             'embed' => 'Вграждане',
             'move' => 'Преместване',
@@ -211,6 +213,8 @@ return [
             'all_tags_must_match' => 'Всички тагове трябва да съвпадат.',
             'all_persons_must_match' => 'All persons must be present.',
             'persons_required' => 'At least one person is required.',
+            'autosave_hint' => 'Промените се запазват автоматично.',
+            'expert_mode' => 'Режим експерт',
         ],
     ],
     'photo' => [

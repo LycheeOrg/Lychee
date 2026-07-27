@@ -14,6 +14,7 @@ use App\Enum\JobStatus;
 use App\Enum\UserUploadTrustLevel;
 use App\Factories\AlbumFactory;
 use App\Image\Files\NativeLocalFile;
+use App\Jobs\Traits\HasFailedTrait;
 use App\Models\Album;
 use App\Models\JobHistory;
 use App\Models\Photo;

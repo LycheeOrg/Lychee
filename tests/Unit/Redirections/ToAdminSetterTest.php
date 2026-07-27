@@ -28,4 +28,24 @@ class ToAdminSetterTest extends AbstractTestCase
 		$response = ToAdminSetter::go();
 		self::assertEquals(307, $response->getStatusCode());
 	}
+
+	public function testRedirectsToLegacyInstallWhenNuxtUiInactive(): void
+	{
+		config(['features.nuxt_ui' => false]);
+
+		$response = ToAdminSetter::go();
+		self::assertEquals(307, $response->getStatusCode());
+		self::assertStringEndsWith('/install/admin', $response->getTargetUrl());
+	}
+
+	public function testRedirectsToV8SetupWhenNuxtUiActive(): void
+	{
+		config(['features.nuxt_ui' => true]);
+
+		$response = ToAdminSetter::go();
+		self::assertEquals(307, $response->getStatusCode());
+		self::assertStringEndsWith('/setup-admin', $response->getTargetUrl());
+
+		config(['features.nuxt_ui' => false]);
+	}
 }

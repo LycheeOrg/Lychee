@@ -154,8 +154,10 @@ return [
         'photo_actions' => 'Photo actions',
         'no_results' => 'Niets te zien hier',
         'upload' => 'Foto’s uploaden',
+        'edit_title' => 'Albuminstellingen',
         'tabs' => [
             'about' => 'Over Album',
+            'visibility' => 'Zichtbaarheid',
             'share' => 'Deel Album',
             'embed' => 'Embed Album',
             'move' => 'Verplaats Album',
@@ -211,6 +213,8 @@ return [
             'all_tags_must_match' => 'Alle tags moeten overeenkomen.',
             'all_persons_must_match' => 'All persons must be present.',
             'persons_required' => 'At least one person is required.',
+            'autosave_hint' => 'Wijzigingen worden automatisch opgeslagen.',
+            'expert_mode' => 'Expertmodus',
         ],
     ],
     'photo' => [

@@ -35,7 +35,7 @@ class NsfwDetectionResultsTest extends BaseApiWithDataTest
 		Configs::set('ai_vision_nsfw_monitor_block_action', NsfwBlockFindingAction::MODERATE->value);
 
 		$this->api_key = 'test-nsfw-api-key-12345';
-		config(['features.ai-vision-service.nsfw-api-key' => $this->api_key]);
+		config(['services.nsfw_detection.api_key' => $this->api_key]);
 	}
 
 	public function tearDown(): void

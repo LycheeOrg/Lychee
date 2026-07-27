@@ -28,8 +28,8 @@ class FaceDetectionServiceUnavailableTest extends BaseApiWithDataTest
 		Configs::set('ai_vision_face_enabled', '1');
 		Configs::set('ai_vision_face_permission_mode', 'public');
 
-		config(['features.ai-vision-service.face-url' => 'http://fake-vision-service:8000']);
-		config(['features.ai-vision-service.face-api-key' => 'test-api-key']);
+		config(['services.face_recognition.base_url' => 'http://fake-vision-service:8000']);
+		config(['services.face_recognition.api_key' => 'test-api-key']);
 	}
 
 	public function tearDown(): void

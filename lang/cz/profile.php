@@ -15,6 +15,7 @@ return [
         'username' => 'Uživatelské jméno',
         'new_password' => 'Nové heslo',
         'confirm_new_password' => 'Potvrďte nové heslo',
+        'password_strength_info' => 'Síla hesla je odhad pomocí <a href="https://github.com/dropbox/zxcvbn" class="inline-block border-b border-info border-dashed" target="_blank" rel="noreferrer">algoritmu zxcvbn</a>.',
         'email_instruction' => 'Zadejte níže svou e-mailovou adresu, abyste mohli dostávat e-mailová oznámení. Chcete-li odběr e-mailů zrušit, jednoduše smažte e-mailovou adresu.',
         'email' => 'E-mail',
         'change' => 'Změnit přihlašovací údaje',
@@ -28,6 +29,14 @@ return [
         'signup' => 'Zaregistrovat se',
         'error' => 'Při registraci účtu došlo k chybě.',
         'success' => 'Váš účet byl úspěšně vytvořen.',
+    ],
+    'admin_setup' => [
+        'header' => 'Nastavte svůj administrátorský účet',
+        'welcome' => 'Vítejte v Lychee,<br>začněme vytvořením administrátorského účtu.',
+        'submit' => 'Vytvořit administrátorský účet',
+        'success' => 'Administrátorský účet byl úspěšně vytvořen.',
+        'error' => 'Při vytváření administrátorského účtu došlo k chybě.',
+        'already_exists' => 'Administrátorský účet již byl nastaven.',
     ],
     'token' => [
         'unavailable' => 'Tento token jste již zobrazili.',
