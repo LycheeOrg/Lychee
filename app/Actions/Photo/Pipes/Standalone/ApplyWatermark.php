@@ -10,6 +10,7 @@ namespace App\Actions\Photo\Pipes\Standalone;
 
 use App\Contracts\PhotoCreate\StandalonePipe;
 use App\DTO\PhotoCreate\StandaloneDTO;
+use App\Enum\SizeVariantType;
 use App\Exceptions\Handler;
 use App\Image\Watermarker;
 use App\Repositories\ConfigManager;
@@ -49,7 +50,7 @@ class ApplyWatermark implements StandalonePipe
 		// Create remaining size variants if we were able to successfully
 		// extract a reference image
 		if ($state->source_image?->isLoaded()) {
-			$size_variants = $state->getPhoto()->size_variants->toCollection()->filter(fn ($v) => $v !== null);
+			$size_variants = $state->getPhoto()->size_variants->toCollection()->filter(fn ($v) => $v !== null && $v->type !== SizeVariantType::PLACEHOLDER);
 			foreach ($size_variants as $variant) {
 				try {
 					$this->watermarker->do($variant);

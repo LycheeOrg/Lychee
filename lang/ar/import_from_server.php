@@ -6,17 +6,16 @@ return [
     | Import from Server
     |--------------------------------------------------------------------------
     */
-    'title' => 'Synchronize your server files',
-    'description' => 'Synchronize your server files with Lychee. This will import photos from a directory and all children directories. This process is very slow and we recommend using workers and queues in order to avoid timeout.',
-    'sync' => 'Synchronize',
-    'loading' => 'Loading...',
-    'selected_directory' => 'Current selected directory:',
-    'resync_metadata' => 'Re-sync metadata of existing files.',
-    'delete_imported' => 'Delete the original files.',
-    'import_via_symlink' => 'Import photos via symlink instead of copying the files.',
-    'skip_duplicates' => 'Skip photos and albums if they already exist in the gallery.',
-    'delete_missing_photos' => 'Delete photos in the album that are not present in the synced directory.',
-    'delete_missing_albums' => 'Delete albums in the parent album that are not present in the synced directory.',
-    'importing_please_be_patient' => 'Importing, please be patient...',
+    'title' => 'مزامنة ملفات الخادم الخاص بك',
+    'description' => 'مزامنة ملفات الخادم الخاص بك مع Lychee. سيؤدي هذا إلى استيراد الصور من مجلد وجميع المجلدات الفرعية. هذه العملية بطيئة جدًا، ونوصي باستخدام العمال وقوائم الانتظار لتجنب انتهاء المهلة.',
+    'sync' => 'مزامنة',
+    'loading' => 'جارٍ التحميل...',
+    'selected_directory' => 'المجلد المحدد حاليًا:',
+    'resync_metadata' => 'إعادة مزامنة البيانات الوصفية للملفات الموجودة.',
+    'delete_imported' => 'حذف الملفات الأصلية.',
+    'import_via_symlink' => 'استيراد الصور عبر رابط رمزي (symlink) بدلاً من نسخ الملفات.',
+    'skip_duplicates' => 'تخطي الصور والألبومات إذا كانت موجودة بالفعل في المعرض.',
+    'delete_missing_photos' => 'حذف الصور الموجودة في الألبوم وغير موجودة في المجلد المتزامن.',
+    'delete_missing_albums' => 'حذف الألبومات الموجودة في الألبوم الأصل وغير موجودة في المجلد المتزامن.',
+    'importing_please_be_patient' => 'جارٍ الاستيراد، يرجى الانتظار...',
 ];
-
