@@ -69,9 +69,7 @@ const { isZero, load, clean, orders, numOldOrders, showPending } = useOrder(toas
 
 const columns: TableColumn<Order>[] = [
 	{ id: "client", header: trans("webshop.orderList.client") },
-	...(initData.value?.settings.can_edit
-		? [{ id: "transaction_id", header: trans("webshop.orderList.transactionId") } as TableColumn<Order>]
-		: []),
+	...(initData.value?.settings.can_edit ? [{ id: "transaction_id", header: trans("webshop.orderList.transactionId") } as TableColumn<Order>] : []),
 	{ id: "status", header: trans("webshop.orderList.status") },
 	{ id: "amount", header: trans("webshop.orderList.amount") },
 	{ id: "date", header: trans("webshop.orderList.date") },
