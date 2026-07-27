@@ -6,24 +6,24 @@ return [
     | Tags page
     |--------------------------------------------------------------------------
     */
-    'title' => 'Tags',
-    'description' => 'Manage your tags here. You can rename, merge, and delete tags.',
-    'no_tags' => 'No tags found.',
-    'loading' => 'Loading tags...',
-    'rename' => 'Rename',
-    'merge' => 'Merge',
-    'delete' => 'Delete',
+    'title' => 'العلامات',
+    'description' => 'إدارة العلامات هنا. يمكنك إعادة تسمية العلامات ودمجها وحذفها.',
+    'no_tags' => 'لم يتم العثور على أي علامات.',
+    'loading' => 'جارٍ تحميل العلامات...',
+    'rename' => 'إعادة تسمية',
+    'merge' => 'دمج',
+    'delete' => 'حذف',
 
-    'column_name' => 'Name',
-    'column_photos' => 'Photos',
-    'column_albums' => 'Albums',
+    'column_name' => 'الاسم',
+    'column_photos' => 'الصور',
+    'column_albums' => 'الألبومات',
 
-    'delete_confirm' => 'Are you sure you want to delete the tag “%s”?',
-    'delete_confirm_multiple' => 'Are you sure you want to delete these %d tags?',
-    'delete_warning' => 'This action cannot be undone! All photos associated with this tag will no longer have this tag.',
+    'delete_confirm' => 'هل أنت متأكد أنك تريد حذف العلامة "%s"؟',
+    'delete_confirm_multiple' => 'هل أنت متأكد أنك تريد حذف هذه العلامات البالغ عددها %d؟',
+    'delete_warning' => 'لا يمكن التراجع عن هذا الإجراء! لن تحمل جميع الصور المرتبطة بهذه العلامة هذه العلامة بعد الآن.',
 
-    'merge_confirm' => 'Are you sure you want to merge the tag “%1$s” into the tag “%2$s”?',
-    'merge_warning' => 'This action cannot be undone! All photos associated with the source tag will be moved to the destination tag.',
+    'merge_confirm' => 'هل أنت متأكد أنك تريد دمج العلامة "%1$s" في العلامة "%2$s"؟',
+    'merge_warning' => 'لا يمكن التراجع عن هذا الإجراء! سيتم نقل جميع الصور المرتبطة بالعلامة المصدر إلى العلامة الوجهة.',
 
-    'rename_tag' => 'Rename Tag',
+    'rename_tag' => 'إعادة تسمية العلامة',
 ];
