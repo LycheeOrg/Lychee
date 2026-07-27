@@ -15,8 +15,7 @@
 		</template>
 		{{ $t("bulk_album_edit.title") }}
 	</UHeader>
-
-	<UCard class="max-w-7xl mx-auto mt-4">
+	<UMain class="p-4">
 		<p class="text-center text-muted text-sm mb-4">{{ $t("bulk_album_edit.description") }}</p>
 		<!-- Warning -->
 		<p class="text-center text-highlighted text-sm mb-4">{{ $t("bulk_album_edit.warning") }}</p>
@@ -105,194 +104,193 @@
 		</div>
 
 		<!-- Table -->
-		<div v-else class="overflow-x-auto">
-			<table class="w-full text-sm border-collapse">
-				<thead>
-					<tr class="border-b border-default text-left">
-						<th class="p-2 w-10 text-center">
-							<UCheckbox
-								:model-value="isPageAllSelected"
-								@update:model-value="(v: boolean | 'indeterminate') => toggleSelectPage(v === true)"
-							/>
-						</th>
-						<th class="p-2">{{ $t("bulk_album_edit.col_title") }}</th>
-						<th class="p-2 w-32">{{ $t("bulk_album_edit.col_owner") }}</th>
-						<th class="p-2 w-28 text-center">{{ $t("bulk_album_edit.col_license") }}</th>
-						<th class="p-2 w-14 text-center">{{ $t("bulk_album_edit.col_is_nsfw") }}</th>
-						<th class="p-2 w-14 text-center">{{ $t("bulk_album_edit.col_is_public") }}</th>
-						<th class="p-2 w-14 text-center">{{ $t("bulk_album_edit.col_is_link_required") }}</th>
-						<th class="p-2 w-14 text-center">{{ $t("bulk_album_edit.col_grants_download") }}</th>
-						<th class="p-2 w-14 text-center">{{ $t("bulk_album_edit.col_grants_full_photo_access") }}</th>
-						<th v-if="is_se_enabled || is_se_preview_enabled" class="p-2 w-14 text-center text-error">
-							{{ $t("bulk_album_edit.col_grants_upload") }}
-						</th>
-						<th class="p-2 w-52 text-center">{{ $t("bulk_album_edit.col_photo_sorting") }}</th>
-						<th class="p-2 w-52 text-center">{{ $t("bulk_album_edit.col_album_sorting") }}</th>
-						<th class="p-2 w-32 text-left">{{ $t("bulk_album_edit.col_created_at") }}</th>
-						<th class="p-2 w-10"></th>
+		<div v-else>
+			<UTable
+				:data="albums"
+				:columns="columns"
+				sticky
+				:ui="{ base: 'table-fixed', td: 'px-4 py-0', tr: 'hover:bg-primary/5 border-none' }"
+				:virtualize="{ estimateSize: 28, overscan: 50 }"
+				class="max-h-[65vh] text-sm"
+			>
+				<template #select-header>
+					<UCheckbox
+						:model-value="isPageAllSelected"
+						@update:model-value="(v: boolean | 'indeterminate') => toggleSelectPage(v === true)"
+					/>
+				</template>
+				<template #select-cell="{ row }">
+					<UCheckbox :model-value="selectedIds.includes(row.original.id)" @update:model-value="() => toggleRow(row.original.id)" />
+				</template>
+				<template #title-cell="{ row }">
+					<span :style="`padding-left: ${(albumDepths[row.index] - 1) * 1.25}rem`" class="inline-flex items-center gap-1">
+						<span v-if="albumDepths[row.index] > 0" class="text-muted mr-1">└─</span>
+						<UInput
+							v-if="editingTitleId === row.original.id"
+							v-model="editingTitleValue"
+							size="sm"
+							class="w-64"
+							@blur="saveTitle(row.original)"
+							@keyup.enter="saveTitle(row.original)"
+							@keyup.escape="cancelEditTitle"
+						/>
+						<span v-else class="cursor-text hover:text-primary" @click="startEditTitle(row.original)">{{ row.original.title }}</span>
+					</span>
+				</template>
+				<template #is_nsfw-cell="{ row }">
+					<USwitch
+						size="xs"
+						:model-value="row.original.is_nsfw"
+						color="error"
+						@update:model-value="(val: boolean) => onInlineToggle(row.original.id, 'is_nsfw', val)"
+					/>
+				</template>
+				<template #is_public-cell="{ row }">
+					<USwitch
+						size="xs"
+						:model-value="row.original.is_public"
+						@update:model-value="(val: boolean) => onInlineToggle(row.original.id, 'is_public', val)"
+					/>
+				</template>
+				<template #is_link_required-cell="{ row }">
+					<USwitch
+						size="xs"
+						:model-value="row.original.is_link_required"
+						:disabled="!row.original.is_public"
+						@update:model-value="(val: boolean) => onInlineToggle(row.original.id, 'is_link_required', val)"
+					/>
+				</template>
+				<template #grants_download-cell="{ row }">
+					<USwitch
+						size="xs"
+						:model-value="row.original.grants_download"
+						:disabled="!row.original.is_public"
+						@update:model-value="(val: boolean) => onInlineToggle(row.original.id, 'grants_download', val)"
+					/>
+				</template>
+				<template #grants_full_photo_access-cell="{ row }">
+					<USwitch
+						size="xs"
+						:model-value="row.original.grants_full_photo_access"
+						:disabled="!row.original.is_public"
+						@update:model-value="(val: boolean) => onInlineToggle(row.original.id, 'grants_full_photo_access', val)"
+					/>
+				</template>
+				<template #grants_upload-cell="{ row }">
+					<USwitch
+						size="xs"
+						:model-value="row.original.grants_upload"
+						:disabled="!row.original.is_public || !is_se_enabled"
+						color="error"
+						@update:model-value="(val: boolean) => onInlineToggle(row.original.id, 'grants_upload', val)"
+					/>
+				</template>
+				<template #photo_sorting-cell="{ row }">
+					<div class="flex items-center justify-center gap-1">
+						<USelectMenu
+							v-if="editingSortingId === row.original.id + '_photo'"
+							:model-value="findOption(photoSortingColumnsOptions, row.original.photo_sorting_col)"
+							:items="photoSortingColumnsOptions"
+							label-key="label"
+							size="sm"
+							class="text-xs w-32"
+							@update:model-value="
+								(v: SelectOption<App.Enum.ColumnSortingPhotoType> | undefined) =>
+									savePhotoSortingCol(row.original.id, v?.value ?? null)
+							"
+							@update:open="(o: boolean) => !o && closeEditSorting()"
+						>
+							<template #default="{ modelValue }">{{ selectedLabel(modelValue) }}</template>
+							<template #item-label="{ item }">{{ $t(item.label) }}</template>
+						</USelectMenu>
+						<span
+							v-else
+							class="cursor-text text-xs hover:text-primary w-32 text-center"
+							@click="startEditPhotoSorting(row.original.id)"
+							>{{
+								photoSortingColumnsOptions.find((o) => o.value === row.original.photo_sorting_col)?.label !== undefined
+									? $t(photoSortingColumnsOptions.find((o) => o.value === row.original.photo_sorting_col)!.label)
+									: "—"
+							}}</span
+						>
+						<UButton
+							size="sm"
+							variant="ghost"
+							color="neutral"
+							:icon="row.original.photo_sorting_order === 'DESC' ? 'lucide:arrow-down-wide-narrow' : 'lucide:arrow-up-wide-narrow'"
+							:disabled="row.original.photo_sorting_col === null"
+							@click="
+								onInlineSortingChange(
+									row.original.id,
+									'photo_sorting_order',
+									row.original.photo_sorting_order === 'DESC' ? 'ASC' : 'DESC',
+								)
+							"
+						/>
+					</div>
+				</template>
+				<template #album_sorting-cell="{ row }">
+					<div class="flex items-center justify-center gap-1">
+						<USelectMenu
+							v-if="editingSortingId === row.original.id + '_album'"
+							:model-value="findOption(albumSortingColumnsOptions, row.original.album_sorting_col)"
+							:items="albumSortingColumnsOptions"
+							label-key="label"
+							size="sm"
+							class="text-xs w-32"
+							@update:model-value="
+								(v: SelectOption<App.Enum.ColumnSortingAlbumType> | undefined) =>
+									saveAlbumSortingCol(row.original.id, v?.value ?? null)
+							"
+							@update:open="(o: boolean) => !o && closeEditSorting()"
+						>
+							<template #default="{ modelValue }">{{ selectedLabel(modelValue) }}</template>
+							<template #item-label="{ item }">{{ $t(item.label) }}</template>
+						</USelectMenu>
+						<span
+							v-else
+							class="cursor-text text-xs hover:text-primary w-32 text-center"
+							@click="startEditAlbumSorting(row.original.id)"
+							>{{
+								albumSortingColumnsOptions.find((o) => o.value === row.original.album_sorting_col)?.label !== undefined
+									? $t(albumSortingColumnsOptions.find((o) => o.value === row.original.album_sorting_col)!.label)
+									: "—"
+							}}</span
+						>
+						<UButton
+							size="sm"
+							variant="ghost"
+							color="neutral"
+							:icon="row.original.album_sorting_order === 'DESC' ? 'lucide:arrow-down-wide-narrow' : 'lucide:arrow-up-wide-narrow'"
+							:disabled="row.original.album_sorting_col === null"
+							@click="
+								onInlineSortingChange(
+									row.original.id,
+									'album_sorting_order',
+									row.original.album_sorting_order === 'DESC' ? 'ASC' : 'DESC',
+								)
+							"
+						/>
+					</div>
+				</template>
+				<template #actions-cell="{ row }">
+					<UButton size="sm" variant="ghost" color="neutral" icon="lucide:pencil" @click="quickEditAlbum(row.original.id)" />
+				</template>
+				<template v-if="paginationMode === 'infinite'" #body-bottom>
+					<tr>
+						<td colspan="100">
+							<div ref="sentinel" class="h-4" />
+						</td>
 					</tr>
-				</thead>
-				<tbody>
-					<tr v-for="(album, idx) in albums" :key="album.id" class="hover:bg-elevated/50">
-						<td class="p-2 text-center">
-							<UCheckbox :model-value="selectedIds.includes(album.id)" @update:model-value="() => toggleRow(album.id)" />
-						</td>
-						<td class="p-2 whitespace-nowrap">
-							<span :style="`padding-left: ${(albumDepths[idx] - 1) * 1.25}rem`" class="inline-flex items-center gap-1">
-								<span v-if="albumDepths[idx] > 0" class="text-muted mr-1">└─</span>
-								<UInput
-									v-if="editingTitleId === album.id"
-									v-model="editingTitleValue"
-									size="sm"
-									class="w-64"
-									@blur="saveTitle(album)"
-									@keyup.enter="saveTitle(album)"
-									@keyup.escape="cancelEditTitle"
-								/>
-								<span v-else class="cursor-text hover:text-primary" @click="startEditTitle(album)">{{ album.title }}</span>
-							</span>
-						</td>
-						<td class="p-2 text-muted text-xs w-32">{{ album.owner_name }}</td>
-						<td class="p-2 text-muted text-xs text-center w-28">{{ album.license ?? "—" }}</td>
-						<td class="p-2 text-center w-14">
-							<USwitch
-								:model-value="album.is_nsfw"
-								color="error"
-								@update:model-value="(val: boolean) => onInlineToggle(album.id, 'is_nsfw', val)"
-							/>
-						</td>
-						<td class="p-2 text-center w-14">
-							<USwitch
-								:model-value="album.is_public"
-								@update:model-value="(val: boolean) => onInlineToggle(album.id, 'is_public', val)"
-							/>
-						</td>
-						<td class="p-2 text-center w-14">
-							<USwitch
-								:model-value="album.is_link_required"
-								:disabled="!album.is_public"
-								@update:model-value="(val: boolean) => onInlineToggle(album.id, 'is_link_required', val)"
-							/>
-						</td>
-						<td class="p-2 text-center w-14">
-							<USwitch
-								:model-value="album.grants_download"
-								:disabled="!album.is_public"
-								@update:model-value="(val: boolean) => onInlineToggle(album.id, 'grants_download', val)"
-							/>
-						</td>
-						<td class="p-2 text-center w-14">
-							<USwitch
-								:model-value="album.grants_full_photo_access"
-								:disabled="!album.is_public"
-								@update:model-value="(val: boolean) => onInlineToggle(album.id, 'grants_full_photo_access', val)"
-							/>
-						</td>
-						<td v-if="is_se_enabled || is_se_preview_enabled" class="p-2 text-center w-14">
-							<USwitch
-								:model-value="album.grants_upload"
-								:disabled="!album.is_public || !is_se_enabled"
-								color="error"
-								@update:model-value="(val: boolean) => onInlineToggle(album.id, 'grants_upload', val)"
-							/>
-						</td>
-						<td class="py-2 text-center w-52">
-							<div class="flex items-center justify-center gap-1">
-								<USelectMenu
-									v-if="editingSortingId === album.id + '_photo'"
-									:model-value="findOption(photoSortingColumnsOptions, album.photo_sorting_col)"
-									:items="photoSortingColumnsOptions"
-									label-key="label"
-									size="sm"
-									class="text-xs w-32"
-									@update:model-value="
-										(v: SelectOption<App.Enum.ColumnSortingPhotoType> | undefined) =>
-											savePhotoSortingCol(album.id, v?.value ?? null)
-									"
-									@update:open="(o: boolean) => !o && closeEditSorting()"
-								>
-									<template #default="{ modelValue }">{{ selectedLabel(modelValue) }}</template>
-									<template #item-label="{ item }">{{ $t(item.label) }}</template>
-								</USelectMenu>
-								<span
-									v-else
-									class="cursor-text text-xs hover:text-primary w-32 text-center"
-									@click="startEditPhotoSorting(album.id)"
-									>{{
-										photoSortingColumnsOptions.find((o) => o.value === album.photo_sorting_col)?.label !== undefined
-											? $t(photoSortingColumnsOptions.find((o) => o.value === album.photo_sorting_col)!.label)
-											: "—"
-									}}</span
-								>
-								<UButton
-									size="sm"
-									variant="ghost"
-									color="neutral"
-									:icon="album.photo_sorting_order === 'DESC' ? 'lucide:arrow-down-wide-narrow' : 'lucide:arrow-up-wide-narrow'"
-									:disabled="album.photo_sorting_col === null"
-									@click="
-										onInlineSortingChange(album.id, 'photo_sorting_order', album.photo_sorting_order === 'DESC' ? 'ASC' : 'DESC')
-									"
-								/>
-							</div>
-						</td>
-						<td class="py-2 text-center w-52">
-							<div class="flex items-center justify-center gap-1">
-								<USelectMenu
-									v-if="editingSortingId === album.id + '_album'"
-									:model-value="findOption(albumSortingColumnsOptions, album.album_sorting_col)"
-									:items="albumSortingColumnsOptions"
-									label-key="label"
-									size="sm"
-									class="text-xs w-32"
-									@update:model-value="
-										(v: SelectOption<App.Enum.ColumnSortingAlbumType> | undefined) =>
-											saveAlbumSortingCol(album.id, v?.value ?? null)
-									"
-									@update:open="(o: boolean) => !o && closeEditSorting()"
-								>
-									<template #default="{ modelValue }">{{ selectedLabel(modelValue) }}</template>
-									<template #item-label="{ item }">{{ $t(item.label) }}</template>
-								</USelectMenu>
-								<span
-									v-else
-									class="cursor-text text-xs hover:text-primary w-32 text-center"
-									@click="startEditAlbumSorting(album.id)"
-									>{{
-										albumSortingColumnsOptions.find((o) => o.value === album.album_sorting_col)?.label !== undefined
-											? $t(albumSortingColumnsOptions.find((o) => o.value === album.album_sorting_col)!.label)
-											: "—"
-									}}</span
-								>
-								<UButton
-									size="sm"
-									variant="ghost"
-									color="neutral"
-									:icon="album.album_sorting_order === 'DESC' ? 'lucide:arrow-down-wide-narrow' : 'lucide:arrow-up-wide-narrow'"
-									:disabled="album.album_sorting_col === null"
-									@click="
-										onInlineSortingChange(album.id, 'album_sorting_order', album.album_sorting_order === 'DESC' ? 'ASC' : 'DESC')
-									"
-								/>
-							</div>
-						</td>
-						<td class="p-2 text-muted text-xs w-32">{{ formatDate(album.created_at) }}</td>
-						<td class="p-2 w-10 text-center">
-							<UButton size="sm" variant="ghost" color="neutral" icon="lucide:pencil" @click="quickEditAlbum(album.id)" />
-						</td>
-					</tr>
-				</tbody>
-			</table>
+				</template>
+			</UTable>
 
 			<!-- Pagination (numbered mode) -->
 			<div v-if="paginationMode === 'numbered'" class="flex justify-center mt-2">
 				<UPagination v-model:page="currentPage" :total="total" :items-per-page="perPage" @update:page="() => load()" />
 			</div>
-
-			<!-- Infinite scroll sentinel -->
-			<div v-if="paginationMode === 'infinite'" ref="sentinel" class="h-4" />
 		</div>
-	</UCard>
+	</UMain>
 </template>
 
 <script setup lang="ts">
@@ -310,6 +308,7 @@ import AlbumService from "@/services/album-service";
 import UsersService from "@/services/users-service";
 import { photoSortingColumnsOptions, albumSortingColumnsOptions, type SelectOption } from "@/config/constants";
 import { useLycheeStateStore } from "@/stores/LycheeState";
+import type { TableColumn } from "@nuxt/ui";
 
 const toast = useAppToast();
 
@@ -366,6 +365,39 @@ const albumDepths = computed<number[]>(() => {
 
 const isPageAllSelected = computed<boolean>(() => {
 	return albums.value.length > 0 && albums.value.every((a) => selectedIds.value.includes(a.id));
+});
+
+const centered = { class: { th: "text-center", td: "text-center" } };
+
+const columns = computed<TableColumn<BulkAlbumResource>[]>(() => {
+	const cols: TableColumn<BulkAlbumResource>[] = [
+		{ id: "select", meta: centered },
+		{ id: "title", header: trans("bulk_album_edit.col_title") },
+		{ id: "owner", accessorKey: "owner_name", header: trans("bulk_album_edit.col_owner") },
+		{ id: "license", header: trans("bulk_album_edit.col_license"), cell: ({ row }) => row.original.license ?? "—", meta: centered },
+		{ id: "is_nsfw", header: trans("bulk_album_edit.col_is_nsfw"), meta: centered },
+		{ id: "is_public", header: trans("bulk_album_edit.col_is_public"), meta: centered },
+		{ id: "is_link_required", header: trans("bulk_album_edit.col_is_link_required"), meta: centered },
+		{ id: "grants_download", header: trans("bulk_album_edit.col_grants_download"), meta: centered },
+		{ id: "grants_full_photo_access", header: trans("bulk_album_edit.col_grants_full_photo_access"), meta: centered },
+	];
+
+	if (is_se_enabled.value || is_se_preview_enabled.value) {
+		cols.push({ id: "grants_upload", header: trans("bulk_album_edit.col_grants_upload"), meta: centered });
+	}
+
+	cols.push(
+		{ id: "photo_sorting", header: trans("bulk_album_edit.col_photo_sorting"), meta: centered },
+		{ id: "album_sorting", header: trans("bulk_album_edit.col_album_sorting"), meta: centered },
+		{
+			id: "created_at",
+			header: trans("bulk_album_edit.col_created_at"),
+			cell: ({ row }) => formatDate(row.original.created_at),
+		},
+		{ id: "actions", meta: centered },
+	);
+
+	return cols;
 });
 
 function findOption<T extends string>(options: SelectOption<T>[], value: string | null): SelectOption<T> | undefined {
