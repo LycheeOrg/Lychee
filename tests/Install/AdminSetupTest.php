@@ -48,6 +48,7 @@ class AdminSetupTest extends AbstractTestCase
 
 	public function testSetupAdminRouteServesVueAppWhenNoAdmin(): void
 	{
+		$this->withoutVite();
 		$response = $this->get('/setup-admin');
 		$this->assertOk($response);
 		$response->assertViewIs('vueapp');
