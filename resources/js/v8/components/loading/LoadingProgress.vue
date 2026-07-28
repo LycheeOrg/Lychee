@@ -2,7 +2,7 @@
 	<Transition name="lychee-loading-fade">
 		<div
 			v-if="loading"
-			class="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
+			class="fixed inset-0 z-50 flex items-center justify-center dark:bg-black/60 light:bg-white/60 backdrop:backdrop-blur-2xl"
 			role="status"
 			:aria-label="$t('dialogs.upload.loading')"
 		>
@@ -66,7 +66,7 @@ const loading = defineModel("loading") as Ref<boolean>;
 <style scoped>
 .lychee-loading-fade-enter-active,
 .lychee-loading-fade-leave-active {
-	transition: opacity 0.25s ease;
+	transition: opacity 1s ease;
 }
 .lychee-loading-fade-enter-from,
 .lychee-loading-fade-leave-to {
@@ -74,75 +74,80 @@ const loading = defineModel("loading") as Ref<boolean>;
 }
 
 .lychee-loading-stage {
+	--lychee-loading-cycle: 2.5s;
 	opacity: 0;
+	animation-duration: var(--lychee-loading-cycle);
+	animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
+	animation-iteration-count: infinite;
 }
 
 .lychee-loading-stage--leaf {
-	animation: lychee-loading-leaf 3s ease-in-out infinite;
+	animation-name: lychee-loading-leaf;
 }
 .lychee-loading-stage--fruit-top-right {
-	animation: lychee-loading-fruit-top-right 3s ease-in-out infinite;
+	animation-name: lychee-loading-fruit-top-right;
 }
 .lychee-loading-stage--fruit-bottom-right {
-	animation: lychee-loading-fruit-bottom-right 3s ease-in-out infinite;
+	animation-name: lychee-loading-fruit-bottom-right;
 }
 .lychee-loading-stage--fruit-bottom-left {
-	animation: lychee-loading-fruit-bottom-left 3s ease-in-out infinite;
+	animation-name: lychee-loading-fruit-bottom-left;
 }
 
+/* Each shape fades in on its own offset, but all share the same fade-out window (78%-92%) so they vanish together. */
 @keyframes lychee-loading-leaf {
 	0%,
 	100% {
 		opacity: 0;
 	}
-	5%,
+	40%,
 	80% {
 		opacity: 1;
 	}
-	92% {
-		opacity: 0;
-	}
+	/* 90% { */
+		/* opacity: 0; */
+	/* } */
 }
 @keyframes lychee-loading-fruit-top-right {
 	0%,
-	22%,
+	10%,
 	100% {
 		opacity: 0;
 	}
-	28%,
+	60%,
 	80% {
 		opacity: 1;
 	}
-	92% {
-		opacity: 0;
-	}
+	/* 90% { */
+		/* opacity: 0; */
+	/* } */
 }
 @keyframes lychee-loading-fruit-bottom-right {
 	0%,
-	42%,
+	30%,
 	100% {
 		opacity: 0;
 	}
-	48%,
+	70%,
 	80% {
 		opacity: 1;
 	}
-	92% {
-		opacity: 0;
-	}
+	/* 90% { */
+		/* opacity: 0; */
+	/* } */
 }
 @keyframes lychee-loading-fruit-bottom-left {
 	0%,
-	62%,
+	50%,
 	100% {
 		opacity: 0;
 	}
-	68%,
+	80%,
 	80% {
 		opacity: 1;
 	}
-	92% {
-		opacity: 0;
-	}
+	/* 90% { */
+		/* opacity: 0; */
+	/* } */
 }
 </style>
