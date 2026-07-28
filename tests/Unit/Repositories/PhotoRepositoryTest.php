@@ -82,7 +82,7 @@ class PhotoRepositoryTest extends AbstractTestCase
 		// pre-existing CacheListener, which does its own unrelated `configs` table read.
 		DB::enableQueryLog();
 		$second = $this->repository->getPhotosForAlbumPaginated($this->album->id, $this->sorting(), 10);
-		$photo_queries = array_filter(DB::getQueryLog(), fn ($q) => str_contains(strtolower($q['query']), 'from "photos"'));
+		$photo_queries = array_filter(DB::getQueryLog(), fn ($q) => preg_match('/from\s*[`"]?photos[`"]?/i', $q['query']) === 1);
 		DB::flushQueryLog();
 		DB::disableQueryLog();
 
@@ -100,7 +100,7 @@ class PhotoRepositoryTest extends AbstractTestCase
 
 		DB::enableQueryLog();
 		$this->repository->getPhotosForAlbumPaginated($this->album->id, $this->sorting(), 10);
-		$photo_queries = array_filter(DB::getQueryLog(), fn ($q) => str_contains(strtolower($q['query']), 'from "photos"'));
+		$photo_queries = array_filter(DB::getQueryLog(), fn ($q) => preg_match('/from\s*[`"]?photos[`"]?/i', $q['query']) === 1);
 		DB::flushQueryLog();
 		DB::disableQueryLog();
 

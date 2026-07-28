@@ -231,7 +231,7 @@ class AlbumRepositoryTest extends AbstractTestCase
 		// than an absolute zero.
 		DB::enableQueryLog();
 		$second = $this->repository->getChildrenPaginated($this->parentAlbum->id, $sorting, 10);
-		$album_queries = array_filter(DB::getQueryLog(), fn ($q) => str_contains(strtolower($q['query']), 'from "albums"'));
+		$album_queries = array_filter(DB::getQueryLog(), fn ($q) => preg_match('/from\s*[`"]?albums[`"]?/i', $q['query']) === 1);
 		DB::flushQueryLog();
 		DB::disableQueryLog();
 
