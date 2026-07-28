@@ -9,12 +9,18 @@
 namespace App\DTO\Profiling;
 
 /**
- * Metadata sidecar stored alongside each `.pprof` trace dump under
- * `storage/profiling` (DO-053-01).
+ * Metadata sidecar stored under `storage/profiling` for each profiled
+ * request (DO-053-01). `spx_report_key` correlates this sidecar with the
+ * `spx` extension's own report files (`{spx_report_key}.json` /
+ * `{spx_report_key}.txt.gz`, written directly by the extension into the
+ * same directory), so the admin page can show meaningful per-request
+ * context (route, method, status) while linking out to SPX's own analysis
+ * screen for the actual call-graph.
  */
 final class ProfilingTraceMeta
 {
 	public function __construct(
+		public readonly ?string $spx_report_key,
 		public readonly ?string $route_name,
 		public readonly string $method,
 		public readonly string $path,
@@ -27,11 +33,12 @@ final class ProfilingTraceMeta
 	}
 
 	/**
-	 * @return array{route_name:?string,method:string,path:string,status_code:int,duration_ms:float,peak_memory_bytes:int,user_id:?int,created_at:string}
+	 * @return array{spx_report_key:?string,route_name:?string,method:string,path:string,status_code:int,duration_ms:float,peak_memory_bytes:int,user_id:?int,created_at:string}
 	 */
 	public function toJsonArray(): array
 	{
 		return [
+			'spx_report_key' => $this->spx_report_key,
 			'route_name' => $this->route_name,
 			'method' => $this->method,
 			'path' => $this->path,
@@ -44,11 +51,12 @@ final class ProfilingTraceMeta
 	}
 
 	/**
-	 * @param array{route_name?:?string,method?:string,path?:string,status_code?:int,duration_ms?:float,peak_memory_bytes?:int,user_id?:?int,created_at?:string} $data
+	 * @param array{spx_report_key?:?string,route_name?:?string,method?:string,path?:string,status_code?:int,duration_ms?:float,peak_memory_bytes?:int,user_id?:?int,created_at?:string} $data
 	 */
 	public static function fromJsonArray(array $data): self
 	{
 		return new self(
+			spx_report_key: $data['spx_report_key'] ?? null,
 			route_name: $data['route_name'] ?? null,
 			method: $data['method'] ?? '',
 			path: $data['path'] ?? '',

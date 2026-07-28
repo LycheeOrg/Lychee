@@ -41,11 +41,11 @@ class TracePrunerTest extends AbstractTestCase
 		parent::tearDown();
 	}
 
-	private function seedTrace(string $basename, string $created_at): void
+	private function seedTrace(string $sidecar_basename, string $spx_report_key, string $created_at): void
 	{
 		$disk = Storage::disk(FileSystem::PROFILING);
-		$disk->put($basename . '.pprof', 'content');
-		$disk->put($basename . '.json', json_encode([
+		$disk->put('lychee-' . $sidecar_basename . '.json', json_encode([
+			'spx_report_key' => $spx_report_key,
 			'route_name' => null,
 			'method' => 'GET',
 			'path' => 'foo',
@@ -55,15 +55,16 @@ class TracePrunerTest extends AbstractTestCase
 			'user_id' => null,
 			'created_at' => $created_at,
 		]));
-		$disk->put($basename . '.svg', '<svg/>');
+		$disk->put($spx_report_key . '.json', '{"key":"' . $spx_report_key . '"}');
+		$disk->put($spx_report_key . '.txt.gz', 'content');
 	}
 
 	public function testKeepsAllWhenUnderCap(): void
 	{
 		config(['features.memory-profiler-max-traces' => 5]);
 
-		$this->seedTrace('a', '2026-07-28T10:00:00+00:00');
-		$this->seedTrace('b', '2026-07-28T10:01:00+00:00');
+		$this->seedTrace('a', 'spx-full-a', '2026-07-28T10:00:00+00:00');
+		$this->seedTrace('b', 'spx-full-b', '2026-07-28T10:01:00+00:00');
 
 		$removed = (new TracePruner())->prune();
 
@@ -75,19 +76,21 @@ class TracePrunerTest extends AbstractTestCase
 	{
 		config(['features.memory-profiler-max-traces' => 2]);
 
-		$this->seedTrace('oldest', '2026-07-28T09:00:00+00:00');
-		$this->seedTrace('middle', '2026-07-28T10:00:00+00:00');
-		$this->seedTrace('newest', '2026-07-28T11:00:00+00:00');
+		$this->seedTrace('oldest', 'spx-full-oldest', '2026-07-28T09:00:00+00:00');
+		$this->seedTrace('middle', 'spx-full-middle', '2026-07-28T10:00:00+00:00');
+		$this->seedTrace('newest', 'spx-full-newest', '2026-07-28T11:00:00+00:00');
 
 		$removed = (new TracePruner())->prune();
 
 		self::assertSame(1, $removed);
 
 		$disk = Storage::disk(FileSystem::PROFILING);
-		self::assertFalse($disk->exists('oldest.pprof'));
-		self::assertFalse($disk->exists('oldest.json'));
-		self::assertFalse($disk->exists('oldest.svg'));
-		self::assertTrue($disk->exists('middle.pprof'));
-		self::assertTrue($disk->exists('newest.pprof'));
+		self::assertFalse($disk->exists('lychee-oldest.json'));
+		self::assertFalse($disk->exists('spx-full-oldest.json'));
+		self::assertFalse($disk->exists('spx-full-oldest.txt.gz'));
+		self::assertTrue($disk->exists('lychee-middle.json'));
+		self::assertTrue($disk->exists('spx-full-middle.json'));
+		self::assertTrue($disk->exists('lychee-newest.json'));
+		self::assertTrue($disk->exists('spx-full-newest.json'));
 	}
 }

@@ -25,7 +25,7 @@ parameters:
 		- phpstan/stubs/imageexception.stub
 		- phpstan/stubs/image.stub
 	bootstrapFiles:
-		- phpstan/stubs/memprof.stub
+		- phpstan/stubs/spx.stub
 	ignoreErrors:
 		-
 			message: '#Cast to bool is forbidden.#'

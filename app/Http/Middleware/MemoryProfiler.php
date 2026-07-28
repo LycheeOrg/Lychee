@@ -11,7 +11,7 @@ namespace App\Http\Middleware;
 use App\Assets\Features;
 use App\Constants\FileSystem;
 use App\DTO\Profiling\ProfilingTraceMeta;
-use App\Services\Profiling\MemprofRecorder;
+use App\Services\Profiling\SpxRecorder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -21,25 +21,29 @@ use function Safe\json_encode;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Captures a memory-allocation profile (via {@see MemprofRecorder}) for the
+ * Bounds a memory-profiling span (via {@see SpxRecorder}, i.e. the `spx`
+ * PECL extension's `spx_profiler_start()`/`spx_profiler_stop()`) around the
  * whole lifetime of a request, when the `memory-profiler` feature flag is
- * enabled and the `memprof` extension is loaded. See Feature 053.
+ * enabled and the extension is loaded. See Feature 053.
+ *
+ * Manual start/stop (rather than SPX's own ini-only "always profiling" mode)
+ * is deliberate: it guarantees a correct per-request span regardless of
+ * whether the host runtime (Octane/FrankenPHP's persistent worker model)
+ * fires fresh Zend request-lifecycle hooks per HTTP request — see
+ * NFR-053-06 / ADR-0008. Requires `spx.http_profiling_auto_start=0` (set by
+ * the Docker startup script, `docker/scripts/06-configure-profiler.sh`).
  *
  * State is intentionally carried on the {@see Request} instance (attributes)
  * rather than on `$this`, because Laravel resolves a **new** middleware
  * instance from the container for {@see self::terminate()} — the instance
- * that ran {@see self::handle()} is not the same object (this also keeps
- * the class free of per-request mutable instance state, which matters for
- * Octane-hosted deployments; see NFR-053-06 / ADR-0008 for the separate,
- * still-open question of whether the `memprof` extension's own internal
- * state is itself request-scoped under Octane).
+ * that ran {@see self::handle()} is not the same object.
  */
 class MemoryProfiler
 {
 	private const ATTR_START_TIME = 'memory_profiler.start_time';
 
 	public function __construct(
-		private MemprofRecorder $recorder,
+		private SpxRecorder $recorder,
 	) {
 	}
 
@@ -50,7 +54,7 @@ class MemoryProfiler
 		}
 
 		$request->attributes->set(self::ATTR_START_TIME, microtime(true));
-		$this->recorder->enable();
+		$this->recorder->start();
 
 		return $next($request);
 	}
@@ -62,15 +66,14 @@ class MemoryProfiler
 			return;
 		}
 
-		$this->recorder->disable();
+		$spx_report_key = $this->recorder->stop();
 
 		try {
 			$disk = Storage::disk(FileSystem::PROFILING);
-			$basename = $this->generateBasename();
-
-			$this->recorder->dumpPprof($disk->path($basename . '.pprof'));
+			$basename = 'lychee-' . $this->generateBasename();
 
 			$meta = new ProfilingTraceMeta(
+				spx_report_key: $spx_report_key,
 				route_name: $request->route()?->getName(),
 				method: $request->getMethod(),
 				path: $request->path(),

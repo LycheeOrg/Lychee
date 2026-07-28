@@ -10,44 +10,48 @@ namespace App\Http\Controllers\Admin;
 
 use App\Constants\FileSystem;
 use App\DTO\Profiling\ProfilingTraceMeta;
-use App\Services\Profiling\PprofRenderer;
 use App\Services\Profiling\TracePruner;
-use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use function Safe\json_decode;
-use function Safe\preg_match;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Owner-only admin surface for browsing memory-profiler traces
  * (Feature 053). Blade-only, no Vue/API surface (NFR-053-03).
+ *
+ * Traces themselves are captured by the `spx` extension (via
+ * {@see \App\Http\Middleware\MemoryProfiler}); this controller only lists
+ * our own metadata sidecars (`lychee-*.json`) and links out to SPX's own
+ * analysis screen (protected by `spx.http_key` / `spx.http_ip_whitelist`,
+ * not by this page's owner-only gate — see ADR-0008) for the call-graph
+ * itself. There is no in-app rendering.
  */
 class ProfilerController extends Controller
 {
+	private const SIDECAR_PREFIX = 'lychee-';
+
 	/**
-	 * List every trace pair currently in `storage/profiling` (FR-053-03).
+	 * List every trace currently in `storage/profiling` (FR-053-03).
 	 */
 	public function index(): View
 	{
 		$disk = Storage::disk(FileSystem::PROFILING);
+		$spx_key = config('features.memory-profiler-spx-key');
 
 		$traces = collect($disk->files())
-			->filter(static fn (string $file): bool => str_ends_with($file, '.json'))
-			->map(function (string $json_file) use ($disk): array {
-				$basename = substr($json_file, 0, -\strlen('.json'));
+			->filter(static fn (string $file): bool => str_starts_with($file, self::SIDECAR_PREFIX) && str_ends_with($file, '.json'))
+			->map(function (string $json_file) use ($disk, $spx_key): array {
 				/** @var array<string,mixed> $decoded */
 				$decoded = json_decode($disk->get($json_file), true);
 				$meta = ProfilingTraceMeta::fromJsonArray($decoded);
-				$pprof_file = $basename . '.pprof';
 
 				return [
-					'basename' => $basename,
 					'meta' => $meta,
-					'size' => $disk->exists($pprof_file) ? $disk->size($pprof_file) : 0,
+					'spx_url' => $meta->spx_report_key !== null && \is_string($spx_key) && $spx_key !== ''
+						? $this->buildSpxAnalysisUrl($meta->spx_report_key, $spx_key)
+						: null,
 				];
 			})
 			->sortByDesc(static fn (array $trace): string => $trace['meta']->created_at)
@@ -56,6 +60,7 @@ class ProfilerController extends Controller
 		return view('admin.profiler.index', [
 			'traces' => $traces,
 			'is_octane' => getenv('LARAVEL_OCTANE') !== false,
+			'spx_key_configured' => \is_string($spx_key) && $spx_key !== '',
 		]);
 	}
 
@@ -72,79 +77,17 @@ class ProfilerController extends Controller
 	}
 
 	/**
-	 * Render (or return a cached render of) a trace's SVG call-graph
-	 * (FR-053-04). `$trace` is resolved against an allow-list of basenames
-	 * actually present on disk before ever touching the filesystem
-	 * (NFR-053-04) — it is never used to build a path directly.
+	 * Builds the URL for SPX's own analysis screen for a given report key,
+	 * per SPX's documented pattern: `/?SPX_UI_URI=/report.html&key=<report key>`.
+	 * `SPX_KEY` must additionally match the extension's own `spx.http_key`
+	 * ini value for SPX to honour the request at all (see ADR-0008).
 	 */
-	public function svg(string $trace, PprofRenderer $renderer): View
+	private function buildSpxAnalysisUrl(string $spx_report_key, string $spx_key): string
 	{
-		$disk = Storage::disk(FileSystem::PROFILING);
-		$basename = $this->resolveTraceBasename($trace, $disk);
-
-		$meta = $disk->exists($basename . '.json')
-			? ProfilingTraceMeta::fromJsonArray(json_decode($disk->get($basename . '.json'), true))
-			: null;
-
-		if ($disk->exists($basename . '.svg')) {
-			return view('admin.profiler.show', [
-				'trace' => $basename,
-				'meta' => $meta,
-				'svg' => $disk->get($basename . '.svg'),
-				'error_message' => null,
-			]);
-		}
-
-		$result = $renderer->render($disk->path($basename . '.pprof'));
-
-		if (!$result->success) {
-			Log::error('memory_profiler.svg_render_failed', [
-				'trace_file' => $basename,
-				'reason' => $result->reason,
-			]);
-
-			return view('admin.profiler.show', [
-				'trace' => $basename,
-				'meta' => $meta,
-				'svg' => null,
-				'error_message' => $result->error_message,
-			]);
-		}
-
-		$disk->put($basename . '.svg', $result->svg);
-
-		return view('admin.profiler.show', [
-			'trace' => $basename,
-			'meta' => $meta,
-			'svg' => $result->svg,
-			'error_message' => null,
+		return url('/') . '?' . http_build_query([
+			'SPX_UI_URI' => '/report.html',
+			'SPX_KEY' => $spx_key,
+			'key' => $spx_report_key,
 		]);
-	}
-
-	/**
-	 * Stream the raw `.pprof` dump for a trace, for operators who prefer to
-	 * inspect it with their own tooling (e.g. `pprof --web`).
-	 */
-	public function download(string $trace): \Symfony\Component\HttpFoundation\BinaryFileResponse
-	{
-		$disk = Storage::disk(FileSystem::PROFILING);
-		$basename = $this->resolveTraceBasename($trace, $disk);
-
-		return response()->download($disk->path($basename . '.pprof'), $basename . '.pprof');
-	}
-
-	/**
-	 * Resolves the `{trace}` route parameter to a basename that actually
-	 * exists on the `profiling` disk, rejecting anything else with a 404
-	 * (NFR-053-04). The regex allow-list alone rules out path separators
-	 * and `..` traversal segments.
-	 */
-	private function resolveTraceBasename(string $trace, FilesystemAdapter $disk): string
-	{
-		if (preg_match('/^[A-Za-z0-9_\-]+$/', $trace) !== 1 || !$disk->exists($trace . '.pprof')) {
-			throw new NotFoundHttpException('Trace not found.');
-		}
-
-		return $trace;
 	}
 }

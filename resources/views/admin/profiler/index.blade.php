@@ -72,8 +72,15 @@
 
 		@if ($is_octane)
 			<div class="warning">
-				⚠ This server is running under Laravel Octane/FrankenPHP. Trace accuracy under this runtime is
-				unverified — see <code>docs/specs/2-how-to/enable-memory-profiler.md</code> and ADR-0008.
+				⚠ This server is running under Laravel Octane/FrankenPHP. Capture uses SPX's manual
+				start/stop spans specifically to remain correct under this runtime — see ADR-0008 for details.
+			</div>
+		@endif
+
+		@if (!$spx_key_configured)
+			<div class="warning">
+				⚠ <code>MEMORY_PROFILER_SPX_KEY</code> is not set. Traces will still be captured, but the
+				"view" link below cannot be built without it — see <code>docs/specs/2-how-to/enable-memory-profiler.md</code>.
 			</div>
 		@endif
 
@@ -85,7 +92,7 @@
 		@if ($traces->isEmpty())
 			<div class="empty-state">
 				No traces collected yet. Make sure <code>MEMORY_PROFILER_ENABLED=true</code> and the
-				<code>memprof</code> extension is loaded — see
+				<code>spx</code> extension is loaded — see
 				<code>docs/specs/2-how-to/enable-memory-profiler.md</code>.
 			</div>
 		@else
@@ -99,7 +106,6 @@
 						<th>Status</th>
 						<th>Duration</th>
 						<th>Peak mem</th>
-						<th>Size</th>
 						<th></th>
 					</tr>
 				</thead>
@@ -113,8 +119,13 @@
 							<td>{{ $trace['meta']->status_code }}</td>
 							<td>{{ number_format($trace['meta']->duration_ms, 1) }} ms</td>
 							<td>{{ \Illuminate\Support\Number::fileSize($trace['meta']->peak_memory_bytes, 1) }}</td>
-							<td>{{ \Illuminate\Support\Number::fileSize($trace['size'], 1) }}</td>
-							<td><a class="view-link" href="{{ route('admin.profiler.svg', ['trace' => $trace['basename']]) }}">view</a></td>
+							<td>
+								@if ($trace['spx_url'] !== null)
+									<a class="view-link" href="{{ $trace['spx_url'] }}" target="_blank" rel="noopener">open in SPX &rarr;</a>
+								@else
+									<span title="No SPX report key captured for this trace, or MEMORY_PROFILER_SPX_KEY is not set">—</span>
+								@endif
+							</td>
 						</tr>
 					@endforeach
 				</tbody>

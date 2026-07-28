@@ -20,7 +20,7 @@ namespace Tests\Unit\Middleware;
 
 use App\Constants\FileSystem;
 use App\Http\Middleware\MemoryProfiler;
-use App\Services\Profiling\MemprofRecorder;
+use App\Services\Profiling\SpxRecorder;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
@@ -28,50 +28,42 @@ use Illuminate\Support\Facades\Storage;
 use Tests\AbstractTestCase;
 
 /**
- * Fake recorder so these tests never require the real `memprof` PECL
- * extension to be installed (see spec.md NFR-053-05 / plan.md risk notes).
+ * Fake recorder so these tests never require the real `spx` PECL extension
+ * to be installed (see spec.md NFR-053-05 / plan.md risk notes).
  */
-class FakeMemprofRecorder extends MemprofRecorder
+class FakeSpxRecorder extends SpxRecorder
 {
-	public int $enable_calls = 0;
-	public int $disable_calls = 0;
-	public int $dump_calls = 0;
+	public int $start_calls = 0;
+	public int $stop_calls = 0;
 	public bool $available = true;
-	public bool $throw_on_dump = false;
+	public ?string $next_report_key = 'spx-full-fake-key';
 
 	public function isAvailable(): bool
 	{
 		return $this->available;
 	}
 
-	public function enable(): void
+	public function start(): void
 	{
-		$this->enable_calls++;
+		$this->start_calls++;
 	}
 
-	public function disable(): void
+	public function stop(): ?string
 	{
-		$this->disable_calls++;
-	}
+		$this->stop_calls++;
 
-	public function dumpPprof(string $absolute_path): void
-	{
-		$this->dump_calls++;
-		if ($this->throw_on_dump) {
-			throw new \RuntimeException('simulated dump failure');
-		}
-		file_put_contents($absolute_path, 'fake-pprof-content');
+		return $this->next_report_key;
 	}
 }
 
 class MemoryProfilerTest extends AbstractTestCase
 {
-	private FakeMemprofRecorder $recorder;
+	private FakeSpxRecorder $recorder;
 
 	protected function setUp(): void
 	{
 		parent::setUp();
-		$this->recorder = new FakeMemprofRecorder();
+		$this->recorder = new FakeSpxRecorder();
 
 		foreach (Storage::disk(FileSystem::PROFILING)->allFiles() as $file) {
 			Storage::disk(FileSystem::PROFILING)->delete($file);
@@ -95,8 +87,7 @@ class MemoryProfilerTest extends AbstractTestCase
 		$middleware->handle($request, fn ($req) => new Response('ok'));
 		$middleware->terminate($request, new Response('ok'));
 
-		self::assertSame(0, $this->recorder->enable_calls);
-		self::assertSame(0, $this->recorder->dump_calls);
+		self::assertSame(0, $this->recorder->start_calls);
 		self::assertCount(0, Storage::disk(FileSystem::PROFILING)->allFiles());
 	}
 
@@ -110,8 +101,7 @@ class MemoryProfilerTest extends AbstractTestCase
 		$middleware->handle($request, fn ($req) => new Response('ok'));
 		$middleware->terminate($request, new Response('ok'));
 
-		self::assertSame(0, $this->recorder->enable_calls);
-		self::assertSame(0, $this->recorder->dump_calls);
+		self::assertSame(0, $this->recorder->start_calls);
 		self::assertCount(0, Storage::disk(FileSystem::PROFILING)->allFiles());
 	}
 
@@ -124,25 +114,44 @@ class MemoryProfilerTest extends AbstractTestCase
 		$middleware->handle($request, fn ($req) => new Response('ok'));
 		$middleware->terminate($request, new Response('ok', 201));
 
-		self::assertSame(1, $this->recorder->enable_calls);
-		self::assertSame(1, $this->recorder->disable_calls);
-		self::assertSame(1, $this->recorder->dump_calls);
+		self::assertSame(1, $this->recorder->start_calls);
+		self::assertSame(1, $this->recorder->stop_calls);
 
 		$files = Storage::disk(FileSystem::PROFILING)->allFiles();
-		self::assertCount(2, $files);
+		self::assertCount(1, $files);
+		self::assertStringStartsWith('lychee-', $files[0]);
 
-		$json_file = collect($files)->first(fn ($f) => str_ends_with($f, '.json'));
-		self::assertNotNull($json_file);
-		$meta = json_decode(Storage::disk(FileSystem::PROFILING)->get($json_file), true);
+		$meta = json_decode(Storage::disk(FileSystem::PROFILING)->get($files[0]), true);
 		self::assertSame('POST', $meta['method']);
 		self::assertSame('foo/bar', $meta['path']);
 		self::assertSame(201, $meta['status_code']);
+		self::assertSame('spx-full-fake-key', $meta['spx_report_key']);
+	}
+
+	public function testCapturesTraceWithNullReportKeyWhenSpxDidNotProduceOne(): void
+	{
+		config(['features.memory-profiler' => true]);
+		$this->recorder->next_report_key = null;
+		$middleware = new MemoryProfiler($this->recorder);
+		$request = Request::create('/foo', 'GET');
+
+		$middleware->handle($request, fn ($req) => new Response('ok'));
+		$middleware->terminate($request, new Response('ok'));
+
+		$files = Storage::disk(FileSystem::PROFILING)->allFiles();
+		self::assertCount(1, $files);
+		$meta = json_decode(Storage::disk(FileSystem::PROFILING)->get($files[0]), true);
+		self::assertNull($meta['spx_report_key']);
 	}
 
 	public function testDumpFailureIsLoggedAndDoesNotThrow(): void
 	{
 		config(['features.memory-profiler' => true]);
-		$this->recorder->throw_on_dump = true;
+
+		$broken_disk = \Mockery::mock(\Illuminate\Contracts\Filesystem\Filesystem::class);
+		$broken_disk->shouldReceive('put')->andThrow(new \RuntimeException('simulated disk failure'));
+		Storage::set(FileSystem::PROFILING, $broken_disk);
+
 		$middleware = new MemoryProfiler($this->recorder);
 		$request = Request::create('/foo', 'GET');
 
@@ -151,6 +160,6 @@ class MemoryProfilerTest extends AbstractTestCase
 		$middleware->handle($request, fn ($req) => new Response('ok'));
 		$middleware->terminate($request, new Response('ok'));
 
-		self::assertCount(0, Storage::disk(FileSystem::PROFILING)->allFiles());
+		Storage::forgetDisk(FileSystem::PROFILING);
 	}
 }

@@ -293,12 +293,21 @@ return [
 	 | Enable Memory Profiler
 	 |--------------------------------------------------------------------------
 	 |
-	 | When enabled, a global middleware captures a memory-allocation profile
-	 | (via the `memprof` PHP extension, if loaded) for every request and
-	 | stores it under storage/profiling. Traces can be browsed and rendered
-	 | as SVG call-graphs at /admin/profiler (owner-only). See Feature 053
-	 | and docs/specs/2-how-to/enable-memory-profiler.md. Disabled by default;
+	 | When enabled, a global middleware bounds a memory-profiling span (via
+	 | the `spx` PECL extension's spx_profiler_start()/spx_profiler_stop(), if
+	 | loaded) around every request and stores a metadata sidecar under
+	 | storage/profiling. Traces can be browsed at /admin/profiler
+	 | (owner-only), linking out to SPX's own analysis screen for the actual
+	 | call-graph. See Feature 053 and
+	 | docs/specs/2-how-to/enable-memory-profiler.md. Disabled by default;
 	 | intended for debugging, not for continuous production use.
+	 |
+	 | Note: the `spx` extension's own ini settings (spx.http_profiling_*,
+	 | spx.http_key, ...) are PHP_INI_SYSTEM — they cannot be toggled from
+	 | here at request time. This flag only gates the Laravel-side middleware
+	 | and admin routes; the extension's own ini config is written by
+	 | docker/scripts/06-configure-profiler.sh at container start, from the
+	 | same MEMORY_PROFILER_ENABLED env var.
 	 */
 	'memory-profiler' => (bool) env('MEMORY_PROFILER_ENABLED', false),
 
@@ -307,20 +316,23 @@ return [
 	 | Memory Profiler: retention cap
 	 |--------------------------------------------------------------------------
 	 |
-	 | Maximum number of trace pairs (.pprof + .json) kept under
-	 | storage/profiling. Oldest traces are pruned automatically once this
-	 | cap is exceeded (php artisan lychee:profiler:prune).
+	 | Maximum number of trace pairs kept under storage/profiling (our own
+	 | metadata sidecar + the corresponding `spx` report files). Oldest traces
+	 | are pruned automatically once this cap is exceeded
+	 | (php artisan lychee:profiler:prune).
 	 */
 	'memory-profiler-max-traces' => (int) env('MEMORY_PROFILER_MAX_TRACES', 200),
 
 	/*
 	 |--------------------------------------------------------------------------
-	 | Memory Profiler: pprof binary name
+	 | Memory Profiler: SPX analysis-screen link
 	 |--------------------------------------------------------------------------
 	 |
-	 | Name of the `pprof`/`google-pprof` CLI used to render trace SVGs.
-	 | The official Docker image installs `google-perftools`, which provides
-	 | `google-pprof` (Debian/Ubuntu naming).
+	 | The `spx.http_key` value configured for the `spx` extension (see
+	 | docker/scripts/06-configure-profiler.sh), used to build the "Open in
+	 | SPX Profiler" link on the admin page. Must match the extension's own
+	 | ini value exactly, and must be a long random secret, not a guessable
+	 | default (there is deliberately no fallback value here).
 	 */
-	'memory-profiler-pprof-bin' => env('MEMORY_PROFILER_PPROF_BIN', 'google-pprof'),
+	'memory-profiler-spx-key' => env('MEMORY_PROFILER_SPX_KEY'),
 ];

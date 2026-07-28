@@ -33,8 +33,8 @@ class MemoryProfilerConfigTest extends AbstractTestCase
 		self::assertSame(200, config('features.memory-profiler-max-traces'));
 	}
 
-	public function testDefaultPprofBinary(): void
+	public function testDefaultSpxKeyIsUnset(): void
 	{
-		self::assertSame('google-pprof', config('features.memory-profiler-pprof-bin'));
+		self::assertNull(config('features.memory-profiler-spx-key'));
 	}
 }

@@ -46,8 +46,9 @@ class PruneTracesTest extends AbstractTestCase
 		$disk = Storage::disk(FileSystem::PROFILING);
 
 		foreach (['a', 'b', 'c'] as $i => $basename) {
-			$disk->put($basename . '.pprof', 'content');
-			$disk->put($basename . '.json', json_encode([
+			$spx_key = 'spx-full-' . $basename;
+			$disk->put('lychee-' . $basename . '.json', json_encode([
+				'spx_report_key' => $spx_key,
 				'route_name' => null,
 				'method' => 'GET',
 				'path' => 'foo',
@@ -57,12 +58,14 @@ class PruneTracesTest extends AbstractTestCase
 				'user_id' => null,
 				'created_at' => sprintf('2026-07-28T%02d:00:00+00:00', $i),
 			]));
+			$disk->put($spx_key . '.json', '{}');
+			$disk->put($spx_key . '.txt.gz', 'content');
 		}
 
 		$this->artisan('lychee:profiler:prune')
 			->expectsOutputToContain('Removed 2 trace pair(s)')
 			->assertExitCode(0);
 
-		self::assertCount(2, Storage::disk(FileSystem::PROFILING)->allFiles());
+		self::assertCount(3, Storage::disk(FileSystem::PROFILING)->allFiles());
 	}
 }

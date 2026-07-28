@@ -83,12 +83,15 @@ class ProfilerControllerTest extends BaseApiTest
 		$response->assertSee('No traces collected yet');
 	}
 
-	public function testOwnerSeesPopulatedListing(): void
+	public function testOwnerSeesPopulatedListingWithSpxLink(): void
 	{
-		config(['features.memory-profiler' => true]);
+		config([
+			'features.memory-profiler' => true,
+			'features.memory-profiler-spx-key' => 'test-secret-key',
+		]);
 
-		Storage::disk(FileSystem::PROFILING)->put('20260728_101402_abc12345.pprof', 'fake-content');
-		Storage::disk(FileSystem::PROFILING)->put('20260728_101402_abc12345.json', json_encode([
+		Storage::disk(FileSystem::PROFILING)->put('lychee-20260728_101402_abc12345.json', json_encode([
+			'spx_report_key' => 'spx-full-20260728_101402-host-123-456',
 			'route_name' => 'gallery.index',
 			'method' => 'GET',
 			'path' => 'gallery',
@@ -103,14 +106,41 @@ class ProfilerControllerTest extends BaseApiTest
 		$this->assertOk($response);
 		$response->assertSee('gallery.index');
 		$response->assertSee('200');
+		$response->assertSee('SPX_KEY=test-secret-key', false);
+		$response->assertSee('key=spx-full-20260728_101402-host-123-456', false);
+	}
+
+	public function testOwnerSeesPopulatedListingWithoutSpxKeyConfigured(): void
+	{
+		config([
+			'features.memory-profiler' => true,
+			'features.memory-profiler-spx-key' => null,
+		]);
+
+		Storage::disk(FileSystem::PROFILING)->put('lychee-20260728_101402_abc12345.json', json_encode([
+			'spx_report_key' => 'spx-full-20260728_101402-host-123-456',
+			'route_name' => 'gallery.index',
+			'method' => 'GET',
+			'path' => 'gallery',
+			'status_code' => 200,
+			'duration_ms' => 12.3,
+			'peak_memory_bytes' => 1024,
+			'user_id' => $this->owner->id,
+			'created_at' => '2026-07-28T10:14:02+00:00',
+		]));
+
+		$response = $this->actingAs($this->owner)->get('/admin/profiler');
+		$this->assertOk($response);
+		$response->assertSee('gallery.index');
+		$response->assertDontSee('SPX_KEY=test-secret-key', false);
 	}
 
 	public function testPruneRedirectsToIndex(): void
 	{
 		config(['features.memory-profiler' => true, 'features.memory-profiler-max-traces' => 0]);
 
-		Storage::disk(FileSystem::PROFILING)->put('old.pprof', 'content');
-		Storage::disk(FileSystem::PROFILING)->put('old.json', json_encode([
+		Storage::disk(FileSystem::PROFILING)->put('lychee-old.json', json_encode([
+			'spx_report_key' => 'spx-full-old',
 			'route_name' => null,
 			'method' => 'GET',
 			'path' => 'foo',
@@ -120,9 +150,12 @@ class ProfilerControllerTest extends BaseApiTest
 			'user_id' => null,
 			'created_at' => '2026-07-28T10:00:00+00:00',
 		]));
+		Storage::disk(FileSystem::PROFILING)->put('spx-full-old.json', '{}');
+		Storage::disk(FileSystem::PROFILING)->put('spx-full-old.txt.gz', 'content');
 
 		$response = $this->actingAs($this->owner)->post('/admin/profiler/prune');
 		$this->assertRedirect($response);
-		self::assertFalse(Storage::disk(FileSystem::PROFILING)->exists('old.pprof'));
+		self::assertFalse(Storage::disk(FileSystem::PROFILING)->exists('lychee-old.json'));
+		self::assertFalse(Storage::disk(FileSystem::PROFILING)->exists('spx-full-old.json'));
 	}
 }
