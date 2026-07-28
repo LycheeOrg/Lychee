@@ -22,6 +22,9 @@
 <meta property="og:image" content="{{ $image_url }}">
 <meta property="og:url" content="{{ $page_url }}">
 
+@if(Features::active('nuxt_ui'))
+<link rel="icon" type="image/svg+xml" href="{{ URL::asset('img/logo4.svg') }}">
+@endif
 <link rel="shortcut icon" href="{{ URL::asset('favicon.ico') }}">
 <link rel="apple-touch-icon" href="{{ URL::asset('img/apple-touch-icon-ipad.png') }}" sizes="120x120">
 <link rel="apple-touch-icon" href="{{ URL::asset('img/apple-touch-icon-iphone.png') }}" sizes="152x152">
