@@ -8,6 +8,8 @@
 
 namespace Tests\Feature_v2\UserGroups;
 
+use App\Events\UserGroupMembershipChanged;
+use Illuminate\Support\Facades\Event;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class UserGroupMembershipTest extends BaseApiWithDataTest
@@ -144,5 +146,48 @@ class UserGroupMembershipTest extends BaseApiWithDataTest
 		$this->assertOk($response);
 		$response->assertJsonPath('members.0.role', 'admin');
 		$response->assertJsonPath('members.1.role', 'admin');
+	}
+
+	public function testAddUserToGroupDispatchesUserGroupMembershipChanged(): void
+	{
+		Event::fake([UserGroupMembershipChanged::class]);
+
+		$response = $this->actingAs($this->userWithGroupAdmin)->postJson('/UserGroups/Users', [
+			'user_id' => $this->userNoUpload->id,
+			'group_id' => $this->group1->id,
+		]);
+		$this->assertCreated($response);
+
+		Event::assertDispatchedTimes(UserGroupMembershipChanged::class, 1);
+		Event::assertDispatched(UserGroupMembershipChanged::class, fn (UserGroupMembershipChanged $event) => $event->user_id === $this->userNoUpload->id);
+	}
+
+	public function testRemoveUserFromGroupDispatchesUserGroupMembershipChanged(): void
+	{
+		Event::fake([UserGroupMembershipChanged::class]);
+
+		$response = $this->actingAs($this->userWithGroupAdmin)->deleteJson('/UserGroups/Users', [
+			'user_id' => $this->userWithGroup1->id,
+			'group_id' => $this->group1->id,
+		]);
+		$this->assertOk($response);
+
+		Event::assertDispatchedTimes(UserGroupMembershipChanged::class, 1);
+		Event::assertDispatched(UserGroupMembershipChanged::class, fn (UserGroupMembershipChanged $event) => $event->user_id === $this->userWithGroup1->id);
+	}
+
+	public function testUpdateUserRoleDispatchesUserGroupMembershipChanged(): void
+	{
+		Event::fake([UserGroupMembershipChanged::class]);
+
+		$response = $this->actingAs($this->userWithGroupAdmin)->patchJson('/UserGroups/Users', [
+			'user_id' => $this->userWithGroup1->id,
+			'group_id' => $this->group1->id,
+			'role' => 'admin',
+		]);
+		$this->assertOk($response);
+
+		Event::assertDispatchedTimes(UserGroupMembershipChanged::class, 1);
+		Event::assertDispatched(UserGroupMembershipChanged::class, fn (UserGroupMembershipChanged $event) => $event->user_id === $this->userWithGroup1->id);
 	}
 }

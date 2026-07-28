@@ -18,7 +18,9 @@
 
 namespace Tests\Feature_v2\Album;
 
+use App\Events\AlbumSaved;
 use App\Models\AccessPermission;
+use Illuminate\Support\Facades\Event;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class AlbumMoveTest extends BaseApiWithDataTest
@@ -51,6 +53,39 @@ class AlbumMoveTest extends BaseApiWithDataTest
 		$response = $this->getJson('Albums');
 		$this->assertOk($response);
 		$response->assertSee($this->subAlbum1->id);
+	}
+
+	public function testMoveAlbumToRootDispatchesAlbumSaved(): void
+	{
+		Event::fake([AlbumSaved::class]);
+
+		$response = $this->actingAs($this->userMayUpload1)->postJson('Album::move', [
+			'album_id' => null,
+			'album_ids' => [$this->subAlbum1->id],
+		]);
+		$this->assertNoContent($response);
+
+		Event::assertDispatched(AlbumSaved::class, fn (AlbumSaved $event) => $event->album->id === $this->subAlbum1->id);
+	}
+
+	public function testMoveAlbumIntoAnotherAlbumDispatchesAlbumSavedForMovedAlbumAndOldParent(): void
+	{
+		Event::fake([AlbumSaved::class]);
+
+		// subAlbum1 starts out as a child of album1; moving it to album5 changes its parent.
+		$response = $this->actingAs($this->admin)->postJson('Album::move', [
+			'album_id' => $this->album5->id,
+			'album_ids' => [$this->subAlbum1->id],
+		]);
+		$this->assertNoContent($response);
+
+		// The moved album itself, plus its *old* parent (album1) — S-052-06: moving an
+		// album must invalidate both the old and the new parent's cached children list.
+		// (album5, the new parent, is covered separately via the moved album's own
+		// post-move parent_id — see ManagedCacheAlbumInvalidator::handleAlbumSaved.)
+		Event::assertDispatched(AlbumSaved::class, 2);
+		Event::assertDispatched(AlbumSaved::class, fn (AlbumSaved $event) => $event->album->id === $this->subAlbum1->id);
+		Event::assertDispatched(AlbumSaved::class, fn (AlbumSaved $event) => $event->album->id === $this->album1->id);
 	}
 
 	public function testMoveAlbumAuthorizedUser(): void

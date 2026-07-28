@@ -13,7 +13,9 @@ use App\DTO\PhotoSortingCriterion;
 use App\Models\Extensions\FiltersUploadValidation;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
+use App\Services\Cache\ManagedCacheService;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -24,6 +26,12 @@ use Illuminate\Support\Facades\Auth;
 class PhotoRepository
 {
 	use FiltersUploadValidation;
+
+	public function __construct(
+		protected ManagedCacheService $managed_cache_service,
+		protected ConfigManager $config_manager,
+	) {
+	}
 
 	/**
 	 * Get paginated photos for an album with all necessary relations eager-loaded.
@@ -58,38 +66,60 @@ class PhotoRepository
 		string $tag_logic = 'OR',
 		?string $person_id = null,
 	): LengthAwarePaginator {
-		$relations = ['size_variants', 'tags', 'palette', 'statistics', 'rating'];
-
-		// Build query for photos belonging to the album via the photo_album pivot table
-		$query = Photo::query()
-			->join(PA::PHOTO_ALBUM, PA::PHOTO_ID, '=', 'photos.id')
-			->where(PA::ALBUM_ID, '=', $album_id)
-			->select('photos.*')
-			->with($relations);
-
-		// Apply tag filtering if tag_ids provided and not empty
-		if ($tag_ids !== null && count($tag_ids) > 0) {
-			$this->applyTagFilter($query, $tag_ids, $tag_logic);
-		}
-
-		// Apply person filtering if person_id provided
-		if ($person_id !== null) {
-			$query->whereHas('faces', fn ($q) => $q->where('person_id', $person_id));
-		}
-
-		// Non-admins must not see unvalidated photos uploaded by other users.
 		$user = Auth::user();
-		if ($user?->may_administrate !== true) {
-			$this->applyUploadValidationFilter($query, $user?->id);
-		}
+		$page = Paginator::resolveCurrentPage();
+		$key = sprintf(
+			'photos:%s:%s:%s:%d:%d:%s:%s:%s:%s',
+			$album_id,
+			$sorting->column->value,
+			$sorting->order->value,
+			$per_page,
+			$page,
+			implode(',', $tag_ids ?? []),
+			$tag_logic,
+			$person_id ?? '',
+			$user?->id ?? 'guest',
+		);
 
-		// Apply sorting via SortingDecorator
-		/** @var SortingDecorator<Photo> */
-		$sorting_decorator = new SortingDecorator($query);
+		/** @var LengthAwarePaginator<int,Photo> */
+		return $this->managed_cache_service->remember(
+			$key,
+			['album:' . $album_id],
+			$this->config_manager->getValueAsInt('managed_cache_ttl'),
+			function () use ($album_id, $sorting, $per_page, $tag_ids, $tag_logic, $person_id, $user): LengthAwarePaginator {
+				$relations = ['size_variants', 'tags', 'palette', 'statistics', 'rating'];
 
-		return $sorting_decorator
-			->orderPhotosBy($sorting->column, $sorting->order)
-			->paginate($per_page);
+				// Build query for photos belonging to the album via the photo_album pivot table
+				$query = Photo::query()
+					->join(PA::PHOTO_ALBUM, PA::PHOTO_ID, '=', 'photos.id')
+					->where(PA::ALBUM_ID, '=', $album_id)
+					->select('photos.*')
+					->with($relations);
+
+				// Apply tag filtering if tag_ids provided and not empty
+				if ($tag_ids !== null && count($tag_ids) > 0) {
+					$this->applyTagFilter($query, $tag_ids, $tag_logic);
+				}
+
+				// Apply person filtering if person_id provided
+				if ($person_id !== null) {
+					$query->whereHas('faces', fn ($q) => $q->where('person_id', $person_id));
+				}
+
+				// Non-admins must not see unvalidated photos uploaded by other users.
+				if ($user?->may_administrate !== true) {
+					$this->applyUploadValidationFilter($query, $user?->id);
+				}
+
+				// Apply sorting via SortingDecorator
+				/** @var SortingDecorator<Photo> */
+				$sorting_decorator = new SortingDecorator($query);
+
+				return $sorting_decorator
+					->orderPhotosBy($sorting->column, $sorting->order)
+					->paginate($per_page);
+			},
+		);
 	}
 
 	/**

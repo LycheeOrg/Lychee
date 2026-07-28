@@ -23,9 +23,11 @@ use App\Enum\ColumnSortingType;
 use App\Enum\OrderSortingType;
 use App\Models\AccessPermission;
 use App\Models\Album;
+use App\Models\Configs;
 use App\Models\User;
 use App\Repositories\AlbumRepository;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 use Tests\AbstractTestCase;
 use Tests\Traits\RequiresEmptyAlbums;
 use Tests\Traits\RequiresEmptyUsers;
@@ -208,5 +210,50 @@ class AlbumRepositoryTest extends AbstractTestCase
 		$this->assertGreaterThanOrEqual(1, $result->total());
 		$albumIds = array_map(fn ($item) => $item->id, $result->items());
 		$this->assertContains($this->parentAlbum->id, $albumIds);
+	}
+
+	public function testGetChildrenPaginatedCacheHitPerformsNoExtraQueries(): void
+	{
+		Configs::set('managed_cache_enabled', '1');
+		Album::factory()->count(3)->children_of($this->parentAlbum)->owned_by($this->user)->create();
+		$sorting = new AlbumSortingCriterion(ColumnSortingType::CREATED_AT, OrderSortingType::DESC);
+		$this->actingAs($this->user);
+
+		// Cache miss - executes the query and caches the result.
+		$first = $this->repository->getChildrenPaginated($this->parentAlbum->id, $sorting, 10);
+		self::assertEquals(3, $first->total());
+
+		// Cache hit - must not re-execute the underlying album/owner query. Some
+		// unrelated queries are expected regardless (e.g. Illuminate\Cache\Events\*
+		// firing on every Cache::get()/put() call, handled by the pre-existing
+		// CacheListener, which itself reads a config value) — those aren't what
+		// NFR-052-03 is about, so this asserts no *album* query re-runs rather
+		// than an absolute zero.
+		DB::enableQueryLog();
+		$second = $this->repository->getChildrenPaginated($this->parentAlbum->id, $sorting, 10);
+		$album_queries = array_filter(DB::getQueryLog(), fn ($q) => str_contains(strtolower($q['query']), 'from "albums"'));
+		DB::flushQueryLog();
+		DB::disableQueryLog();
+
+		self::assertCount(0, $album_queries, 'A managed-cache hit must not re-execute the album query.');
+		self::assertEquals(3, $second->total());
+	}
+
+	public function testGetChildrenPaginatedIgnoresCacheWhenManagedCacheDisabled(): void
+	{
+		Configs::set('managed_cache_enabled', '0');
+		Album::factory()->count(2)->children_of($this->parentAlbum)->owned_by($this->user)->create();
+		$sorting = new AlbumSortingCriterion(ColumnSortingType::CREATED_AT, OrderSortingType::DESC);
+		$this->actingAs($this->user);
+
+		$this->repository->getChildrenPaginated($this->parentAlbum->id, $sorting, 10);
+
+		DB::enableQueryLog();
+		$this->repository->getChildrenPaginated($this->parentAlbum->id, $sorting, 10);
+		$query_count = count(DB::getQueryLog());
+		DB::flushQueryLog();
+		DB::disableQueryLog();
+
+		self::assertGreaterThan(0, $query_count, 'With managed_cache_enabled=false every call must recompute.');
 	}
 }
