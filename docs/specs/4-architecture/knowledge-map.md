@@ -12,6 +12,8 @@ This document tracks modules, dependencies, and architectural relationships acro
 - **Requests** (`app/Http/Requests/`) - Validate and sanitize incoming requests
 - **Resources** (`app/Http/Resources/`) - Transform models to API responses (use Spatie Data)
 - **Middleware** (`app/Http/Middleware/`) - Request/response filtering and authentication
+  - **MemoryProfiler** (`app/Http/Middleware/MemoryProfiler.php`, Feature 053) - Global (registered in `Kernel::$middleware`, applies to every request/route group), terminable middleware. Gated by `features.memory-profiler` (`MEMORY_PROFILER_ENABLED`, off by default). Enables the optional `memprof` PECL extension (via `App\Services\Profiling\MemprofRecorder`, guarded by `function_exists`) at request start, dumps a pprof-format profile + JSON metadata sidecar (`App\DTO\Profiling\ProfilingTraceMeta`) to the `profiling` disk (`storage/profiling`) in `terminate()`. State is carried on `$request->attributes`, never on `$this`, because Laravel resolves a fresh middleware instance for `terminate()`. Unverified under Octane/FrankenPHP (the default runtime) — see ADR-0008.
+  - **OwnerOnly** (`app/Http/Middleware/OwnerOnly.php`, alias `owner`, Feature 053) - Restricts a route to the single configured instance owner (`config('owner_id')` === `Auth::id()`), mirroring `App\Rules\OwnerIdRule`. Reusable beyond Feature 053.
 
 #### Domain Layer
 - **Models** (`app/Models/`) - Eloquent ORM models for database entities
@@ -32,6 +34,7 @@ This document tracks modules, dependencies, and architectural relationships acro
     - `auto_cover_id_max_privilege` - Cover photo for admin/owner view (ignores access control)
     - `auto_cover_id_least_privilege` - Cover photo for public view (respects PhotoQueryPolicy + AlbumQueryPolicy)
 - **Services** (`app/Services/`) - Business logic and orchestration
+  - **Profiling Services** (`app/Services/Profiling/`, Feature 053) - `MemprofRecorder` (thin `memprof_*` wrapper), `PprofRenderer` (shells out to `pprof`/`google-pprof`, config `memory-profiler-pprof-bin`, to render a `.pprof` dump as SVG — see `App\DTO\Profiling\PprofRenderResult`), `TracePruner` (count-based retention, `memory-profiler-max-traces`, shared by the `lychee:profiler:prune` command and the admin page's prune button).
   - **AdminStatsService** (`app/Services/AdminStatsService.php`) - Aggregates system-wide metrics (photos, albums, users, storage, jobs) with 5-minute cache under key `admin.stats`. Supports forced refresh via `$force = true`. Returns `AdminStatsOverview` DTO; partial failures captured in `errors[]` and suppress caching.
   - **LDAP Service** (`app/Services/Auth/LdapService.php`) - Enterprise directory integration (wrapper over LdapRecord)
     - Search-first authentication pattern: searches for user by username → gets DN → binds with DN + password
@@ -368,4 +371,4 @@ Key modules:
 
 ---
 
-*Last updated: March 22, 2026*
+*Last updated: 2026-07-28 (Feature 053 — Memory Profiler middleware/services/admin surface)*

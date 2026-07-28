@@ -287,4 +287,40 @@ return [
 	 | v8 tree is being built out.
 	 */
 	'nuxt_ui' => (bool) env('NUXT_UI_ENABLED', false),
+
+	/*
+	 |--------------------------------------------------------------------------
+	 | Enable Memory Profiler
+	 |--------------------------------------------------------------------------
+	 |
+	 | When enabled, a global middleware captures a memory-allocation profile
+	 | (via the `memprof` PHP extension, if loaded) for every request and
+	 | stores it under storage/profiling. Traces can be browsed and rendered
+	 | as SVG call-graphs at /admin/profiler (owner-only). See Feature 053
+	 | and docs/specs/2-how-to/enable-memory-profiler.md. Disabled by default;
+	 | intended for debugging, not for continuous production use.
+	 */
+	'memory-profiler' => (bool) env('MEMORY_PROFILER_ENABLED', false),
+
+	/*
+	 |--------------------------------------------------------------------------
+	 | Memory Profiler: retention cap
+	 |--------------------------------------------------------------------------
+	 |
+	 | Maximum number of trace pairs (.pprof + .json) kept under
+	 | storage/profiling. Oldest traces are pruned automatically once this
+	 | cap is exceeded (php artisan lychee:profiler:prune).
+	 */
+	'memory-profiler-max-traces' => (int) env('MEMORY_PROFILER_MAX_TRACES', 200),
+
+	/*
+	 |--------------------------------------------------------------------------
+	 | Memory Profiler: pprof binary name
+	 |--------------------------------------------------------------------------
+	 |
+	 | Name of the `pprof`/`google-pprof` CLI used to render trace SVGs.
+	 | The official Docker image installs `google-perftools`, which provides
+	 | `google-pprof` (Debian/Ubuntu naming).
+	 */
+	'memory-profiler-pprof-bin' => env('MEMORY_PROFILER_PPROF_BIN', 'google-pprof'),
 ];

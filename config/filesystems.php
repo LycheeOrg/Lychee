@@ -147,5 +147,13 @@ return [
 			'root' => storage_path('tmp/uploads'),
 			'visibility' => 'private',
 		],
+
+		// Memory Profiler (Feature 053): per-request pprof dumps + JSON
+		// metadata sidecars, browsable at /admin/profiler (owner-only).
+		FileSystem::PROFILING => [
+			'driver' => 'local',
+			'root' => env('LYCHEE_PROFILING', storage_path('profiling')),
+			'visibility' => 'private',
+		],
 	],
 ];

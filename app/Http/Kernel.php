@@ -20,6 +20,7 @@ class Kernel extends HttpKernel
 	 * @var array<int,string>
 	 */
 	protected $middleware = [
+		\App\Http\Middleware\MemoryProfiler::class,
 		\App\Http\Middleware\FixStatusCode::class,
 		\Illuminate\Http\Middleware\TrustProxies::class,
 		\Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance::class,
@@ -111,5 +112,6 @@ class Kernel extends HttpKernel
 		'legacy_id_redirect' => \App\Http\Middleware\LegacyLocalIdRedirect::class,
 		'feature' => \App\Http\Middleware\FeatureEnabled::class,
 		'rss_feed_meta' => \App\Http\Middleware\SetRssFeedMeta::class,
+		'owner' => \App\Http\Middleware\OwnerOnly::class,
 	];
 }

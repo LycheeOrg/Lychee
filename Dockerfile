@@ -87,6 +87,8 @@ RUN apt-get update \
     bash \
     gosu \
 	ghostscript \
+    google-perftools \
+    graphviz \
     # Update with respect to vulnerabilities detected with Trivy
     libgssapi-krb5-2 \
     libssh2-1t64 \
