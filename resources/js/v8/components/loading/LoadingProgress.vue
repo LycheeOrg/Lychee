@@ -105,7 +105,7 @@ const loading = defineModel("loading") as Ref<boolean>;
 		opacity: 1;
 	}
 	/* 90% { */
-		/* opacity: 0; */
+	/* opacity: 0; */
 	/* } */
 }
 @keyframes lychee-loading-fruit-top-right {
@@ -119,7 +119,7 @@ const loading = defineModel("loading") as Ref<boolean>;
 		opacity: 1;
 	}
 	/* 90% { */
-		/* opacity: 0; */
+	/* opacity: 0; */
 	/* } */
 }
 @keyframes lychee-loading-fruit-bottom-right {
@@ -133,7 +133,7 @@ const loading = defineModel("loading") as Ref<boolean>;
 		opacity: 1;
 	}
 	/* 90% { */
-		/* opacity: 0; */
+	/* opacity: 0; */
 	/* } */
 }
 @keyframes lychee-loading-fruit-bottom-left {
@@ -147,7 +147,7 @@ const loading = defineModel("loading") as Ref<boolean>;
 		opacity: 1;
 	}
 	/* 90% { */
-		/* opacity: 0; */
+	/* opacity: 0; */
 	/* } */
 }
 </style>
