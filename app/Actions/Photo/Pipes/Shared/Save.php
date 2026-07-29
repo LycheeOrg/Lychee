@@ -10,6 +10,7 @@ namespace App\Actions\Photo\Pipes\Shared;
 
 use App\Contracts\PhotoCreate\PhotoDTO;
 use App\Contracts\PhotoCreate\PhotoPipe;
+use App\Events\PhotoSaved;
 
 /**
  * Persist current Photo object into database.
@@ -20,6 +21,7 @@ class Save implements PhotoPipe
 	{
 		$state->getPhoto()->save();
 		$state->getPhoto()->tags()->sync($state->getTags()->pluck('id')->all());
+		PhotoSaved::dispatch($state->getPhoto()->id);
 
 		return $next($state);
 	}

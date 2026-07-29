@@ -18,6 +18,7 @@ use App\Contracts\Models\AbstractAlbum;
 use App\Enum\FileStatus;
 use App\Enum\SizeVariantType;
 use App\Events\PhotoHighlightToggled;
+use App\Events\PhotoSaved;
 use App\Events\PhotoTagsChanged;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\ConflictingPropertyException;
@@ -176,6 +177,7 @@ class PhotoController extends Controller
 		$photo->taken_at = $request->takenAt() ?? $photo->initial_taken_at;
 
 		$photo->save();
+		PhotoSaved::dispatch($photo->id);
 
 		return new PhotoResource(
 			photo: $photo,
