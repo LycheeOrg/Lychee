@@ -1,0 +1,240 @@
+UI v8 (Nuxt UI) frontend go-live checklist
+For manual verification, flag on (NUXT_UI_ENABLED=true), `npm run dev`.
+Check each section in BOTH light and dark mode unless noted.
+"Renders" = no blank page, no console error, layout/spacing/icons match the old v7 app.
+
+
+=== 1. Navigation shell ===
+- [ ] LeftMenu opens/closes (OpenLeftMenu button), all links navigate to the right route
+- [ ] LeftMenu highlights the active route correctly
+- [ ] Breadcrumb (LycheeBreadcrumb) shows correct path and each crumb is clickable
+- [ ] GoBack / BackLinkButton returns to the expected previous view (not just router.back() into a broken state)
+- [ ] GalleryFooter and LandingFooter render with correct links
+- [ ] AlbumsHeader / AlbumHeader / PhotoHeader / SearchHeader / TimelineHeader all show correct
+      title, action buttons, and those buttons are wired (not dead)
+
+
+=== 2. Gallery browsing (Home, Albums, Album, Photo) ===
+- [ ] /home renders top-level albums/photos correctly
+- [ ] /gallery list view (AlbumListView / AlbumListItem) and thumb view (AlbumThumbPanel /
+      AlbumThumbPanelList) both render and can be toggled
+- [ ] Opening an album (/gallery/:albumId): AlbumHero / AlbumHeaderImage / AlbumHeaderPanel
+      render; sub-albums (AlbumPanel) and photos (PhotoThumbPanel / PhotoThumbPanelList) both show
+- [ ] AlbumPeopleFilter and AlbumTagFilter filter the visible photos correctly
+- [ ] AlbumStatistics drawer opens with correct counts
+- [ ] Photo click opens PhotoBox / PhotoPanel (lightbox) with NextPrevious navigation working
+      (arrow keys + on-screen buttons), Dock/DockButton actions all present and functional
+- [ ] PhotoBox media-type matrix — each ImageViewMode renders correctly, not just plain images:
+      - [ ] Video file: HTML5 `<video>` player loads and plays (ImageViewMode.Video)
+      - [ ] Live Photo: still shows first, hover/press plays the motion clip
+            (LivePhotoMedium / LivePhotoOriginal), `data-video-src` (live_photo_url) resolves
+      - [ ] RAW file: fallback preview renders, no broken image icon (ImageViewMode.Raw)
+      - [ ] PDF file: renders inline or via correct viewer (ImageViewMode.Pdf)
+      - [ ] Oversized/original image (ImageViewMode.Original vs Medium) loads the right resolution
+- [ ] PhotoRatingWidget / PhotoRatingOverlay: set/change a star rating, persists on reload
+- [ ] ColourSquare (dominant color) displays
+- [ ] FaceOverlay draws correctly over a photo with detected faces
+- [ ] NsfwDetectionOverlay shows the NSFW warning/blur where expected (SensitiveWarning too, at
+      album level); confirm blur actually hides content until explicitly revealed
+- [ ] MapInclude (photo location mini-map) and LinksInclude render on photo detail
+- [ ] HeaderFocusPicker / HeaderEditButton (album header image picker/edit) works
+- [ ] Favourites (/gallery/favourites): add/remove a photo from favourites, list updates
+- [ ] Pagination — both modes, for both albums and photos (LycheeState
+      albums_infinite_scroll_threshold / photos_infinite_scroll_threshold config):
+      - [ ] Infinite-scroll mode: PaginationInfiniteScroll's IntersectionObserver fires once per
+            threshold crossing (not double-fired), loading spinner shows, stops requesting once
+            hasMore is false
+      - [ ] Load-more mode: PaginationLoadMore button shows loading state while fetching, label
+            updates, button disappears/disables when no more pages
+- [ ] Empty states: an album with zero photos, zero sub-albums, and a fresh account with zero
+      albums all show a sane empty message (not a blank panel or spinner stuck forever)
+- [ ] Album that contains only sub-albums (no direct photos) — Map button/entry still reachable
+- [ ] Flow view (/flow, /flow/:albumId/:photoId): AlbumCard, CarouselImages, LigtBox (lightbox),
+      TopImages, HeaderImage, Blur all render and lightbox opens/closes correctly
+- [ ] Frame view (/frame/:albumId) renders slideshow-style correctly
+- [ ] Timeline (/timeline, /timeline/:date/:photoId): TimelineDates scrubber jumps to correct date
+- [ ] Tag view (/tag/:tagId/:photoId): TagPanel lists correct photos
+- [ ] Map view (/map, /map/:albumId): pins render, clicking a pin opens the right photo
+- [ ] Search (/search, /search/:albumId/:photoId): SearchPanel input returns results in
+      ResultPanel; scoped-to-album vs global search both work
+
+
+=== 3. Album & photo actions (dialogs) ===
+Trigger each from its real entry point (context menu / action button), not just by inspecting code.
+- [ ] AlbumCreateDialog — create a new album, appears in the tree
+- [ ] AlbumCreatePersonDialog — create a person from an album context
+- [ ] AlbumCreateShareDialog / AlbumShare / ShareLine — create a share link, copy link works
+- [ ] AlbumCreateTagDialog — create/attach a tag
+- [ ] AlbumDelete — delete confirmation works, cancel doesn't delete, confirm actually deletes;
+      also test deleting an album that still has sub-albums/photos inside it
+- [ ] AlbumMove — move an album into another, tree updates; test moving into a descendant is
+      correctly blocked/disabled (no circular tree)
+- [ ] AlbumProperties — edit title/description/dates, saves and reflects immediately
+- [ ] AlbumPurchasable — attach/detach a purchasable price list
+- [ ] AlbumTransfer — transfer ownership to another user; test this dialog's visibility is
+      correctly gated (owner/admin only — should not appear for a regular viewer)
+- [ ] AlbumVisibility — toggle public/private/password, setting sticks; test the password
+      variant specifically (set password, log out, confirm Unlock is required, wrong password
+      rejected, correct password grants access)
+- [ ] ApplyRenamerDialog — apply a renamer rule, filenames update
+- [ ] ConfirmSharingDialog — confirmation copy/behavior correct before sharing
+- [ ] EmbedCodeDialog — generated embed snippet is correct and copyable
+- [ ] SearchTargetAlbum / SearchTargetUser (share-target pickers) — search & select works
+- [ ] SelectDrag — drag-select multiple photos in an album, bulk action bar appears
+- [ ] Unlock — password-protected album prompts and unlocks correctly
+- [ ] WatermarkConfirmDialog — shows before applying a watermark, cancel/confirm both correct
+- [ ] AlbumEdit / PhotoEdit drawers — open, edit fields, save, drawer closes and reflects changes
+- [ ] PhotoDetails drawer — all metadata fields populated correctly (EXIF, size, etc.)
+- [ ] PhotoCopyDialog — copy a photo to another album
+- [ ] PhotoLicenseDialog — change photo license, persists
+- [ ] PhotoTagDialog — add/remove tags on a single photo
+- [ ] DownloadAlbum / DownloadPhoto modals — download options correct, actual download triggers
+
+
+=== 4. Upload ===
+- [ ] UploadPanel modal opens from the upload button
+- [ ] Drag-and-drop file(s) onto the drop zone triggers upload (DropBoxChooser)
+- [ ] UploadingLine shows per-file progress, error state on a bad file (wrong type / too large)
+- [ ] ImportFromLink — import via URL works
+- [ ] ImportFromServer — import from server path works (if enabled for this instance)
+- [ ] CameraCapture — capture-from-camera modal opens and captures (if device has a camera)
+- [ ] Multiple simultaneous uploads don't visually clash or drop progress rows
+- [ ] Upload edge cases: duplicate filename already in the album (skip/overwrite/rename prompt),
+      zero-byte/corrupt file, network interruption mid-upload (retry or clear error, not a
+      silently-stuck progress bar)
+- [ ] Uploading a video and a Live Photo pair both process correctly and later render right in
+      section 2's media-type matrix
+
+
+=== 5. Face recognition & People ===
+- [ ] /people list renders, search/filter works
+- [ ] /people/:personId/:photoId detail page shows correct faces/photos for that person
+- [ ] PersonCard renders correctly in list/grid
+- [ ] /people/clusters (FaceClusters): cluster grid renders sample crops correctly
+- [ ] BatchFaceAssignmentModal — assign multiple faces to a person/new person at once
+- [ ] MergePersonModal — merge two people, face counts combine correctly
+- [ ] PersonDeleteDialog — delete confirmation, cancel vs confirm both correct
+- [ ] Cluster detail dialog — paginated face grid loads more on scroll, dismiss single face works
+- [ ] Assign / Dismiss buttons on a cluster row show loading state and update the list after
+
+
+=== 6. Sharing & Tags management ===
+- [ ] /sharing page: BulkSharingModal bulk-create/edit works, ShareLine rows show correct info
+- [ ] Revoke a share link, it stops working / disappears from the list
+- [ ] /tags (TagsManagement): create, rename, delete a tag
+- [ ] Bulk album edit (/bulk-album-edit): multi-select rows, apply a field change to all
+      selected (visibility, NSFW flag, etc.), confirm change actually applied
+
+
+=== 7. Admin & Settings ===
+- [ ] /admin dashboard: widgets/stats render (AdminDashboard)
+- [ ] /admin/settings/:tab — walk EVERY settings category tab, each one its own checklist row:
+      - [ ] Admin
+      - [ ] config
+      - [ ] Footer
+      - [ ] Gallery
+      - [ ] Image Processing
+      - [ ] lychee SE
+      - [ ] Mod Back Button
+      - [ ] Mod Cache
+      - [ ] Mod Flow
+      - [ ] Mod Frame
+      - [ ] Mod Map
+      - [ ] Mod NSFW
+      - [ ] Mod Privacy
+      - [ ] Mod Pro
+      - [ ] Mod RSS
+      - [ ] Mod Search
+      - [ ] Mod Timeline
+      - [ ] Mod Welcome
+      - [ ] Smart Albums
+      - [ ] Symbolic Link
+      - [ ] Users Management
+      - [ ] special "CssJs" tab (raw CSS/JS editor — syntax highlighting, save works)
+      - [ ] special "all" tab (every category rendered on one page, no layout collision between
+            categories, still scrolls/saves correctly)
+- [ ] Every field type inside a category tab: toggle/boolean, text input, number input, select
+      dropdown, and secret/password-masked field (is_secret) all render and save correctly
+- [ ] Change a setting value, save, reload page, value persisted
+- [ ] /admin/users: CreateEditUser — create a user, edit a user, ListUser shows updated list
+- [ ] /admin/user-groups: create/edit a group, assign a user to it
+- [ ] /admin/jobs: job list renders, statuses correct, can trigger/cancel a job if applicable
+- [ ] /admin/maintenance and /admin/maintenance/faces: maintenance actions run and report result
+- [ ] /admin/nsfw-config: toggle NSFW detection settings, saves
+- [ ] /admin/contact-messages: list renders, opening a message shows full content
+- [ ] /admin/webhooks: create/edit/delete a webhook, test-trigger if available
+- [ ] /admin/moderation: moderation queue renders, approve/reject actions work
+- [ ] /admin/purchasables and /admin/shop/sizes (PrintPixelSizesAdmin): create/edit a
+      purchasable and a print size, both save correctly
+- [ ] /fixTree: tree-fix diff view renders, applying a fix works
+- [ ] /duplicatesFinder: duplicate groups render, resolving a duplicate works
+- [ ] /diagnostics: diagnostic checks run and report pass/fail correctly
+- [ ] /permissions: permission matrix renders and toggles save
+- [ ] /renamerRules: create/edit/delete a renamer rule
+
+
+=== 8. Webshop / checkout ===
+- [ ] /basket: add/remove items, quantity updates, totals recalculate
+- [ ] /checkout/:step stepper (UStepper) — step "info" -> "payment" -> "completed" all render
+      and the stepper indicator updates correctly
+- [ ] Offline payment path (is_offline) shows the correct alternate step 2/3 flow
+      (useStepOffline / markAsOffline) — order is created and marked pending, no PayPal UI shown
+- [ ] Online payment path (PayPal, usePaypal.ts): isStepTwoValid gating actually blocks submit
+      until valid; the `#paypal-button-container` renders real PayPal buttons (client ID/currency
+      loaded from options); a completed sandbox/test payment moves to the "completed" step and
+      creates a transaction record
+- [ ] PayPal script failure (missing/invalid paypal_client_id) is handled gracefully, not a
+      blank container or unhandled console error
+- [ ] Navigating back a step (router push to "info") preserves entered data
+- [ ] /orders list renders; /order/:orderId/:transactionId shows correct order detail
+- [ ] OrderDownload: download link/content-url fields save correctly per item
+- [ ] /admin/purchasables list reflected correctly in the storefront
+
+
+=== 9. Auth & account ===
+- [ ] /login — LoginModal / LoginPage: correct credentials succeed, wrong credentials show error
+- [ ] /register — RegisterLychee / RegisterPage: new account flow completes
+- [ ] WebauthnModal — passkey/WebAuthn registration and login (if configured)
+- [ ] InviteUser modal — invite flow sends/creates correctly
+- [ ] /profile: edit profile fields, change password, save
+- [ ] SessionExpiredReload modal appears on session expiry and reload button works
+
+
+=== 10. Misc modals ===
+- [ ] AboutLychee — version/info correct
+- [ ] KeybindingsHelp — shortcut list renders and matches actual bound keys
+- [ ] SecurityAdvisoriesModal — renders correctly when triggered
+
+
+=== 11. Cross-cutting UI mechanics ===
+- [ ] Toasts (useAppToast) show/dismiss correctly for both success and error cases, stack
+      properly when multiple fire close together
+- [ ] Confirm dialogs (useConfirmDialog) block/resolve correctly, cancel truly cancels
+- [ ] Modals (UModal) — no double scrollbar, backdrop click dismisses, ESC closes
+- [ ] Tab-key focus trapping works inside every modal opened above
+- [ ] Tooltips show on hover everywhere they used to in v7
+- [ ] All icons render (no missing-glyph boxes) across every page visited above
+- [ ] No PrimeVue-looking artifacts (ripple effect, old focus rings, mismatched fonts) anywhere
+- [ ] Light/dark toggle works and persists across navigation and full page reload
+- [ ] Responsive/mobile layout check specifically on: gallery/album view, photo lightbox,
+      admin settings, bulk album edit, checkout
+- [ ] Keyboard-only pass: can reach and operate every primary action (open album, open photo,
+      next/prev, upload, save a dialog) using only Tab/Enter/Space/Esc/arrow keys
+- [ ] Screen-reader spot check on one flow (e.g. login, or album creation) — form fields have
+      labels, modal announces its title on open
+
+
+=== 12. Role/permission matrix ===
+Repeat a sample of section 2/3/7 with each role, since UI is often only tested as admin:
+- [ ] Guest / not-logged-in: only public albums visible, no edit affordances rendered at all
+      (not just disabled buttons)
+- [ ] Regular logged-in user (non-admin): sees own albums + shared-with-them albums; admin-only
+      dialogs (AlbumTransfer, admin nav items, /admin/* routes) are absent, not just blocked
+- [ ] Admin: full access confirmed across section 7
+
+
+=== 13. Tooling sanity (frontend only) ===
+- [ ] `npm run check` passes with no type errors
+- [ ] `npm run build` succeeds
+- [ ] `npm run format` clean
+- [ ] No leftover TODO/FIXME in resources/js/v8 that blocks a real feature

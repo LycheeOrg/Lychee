@@ -1,0 +1,7 @@
+{
+  "files": ["resources/views/vueapp.blade.php"],
+  "exclude": [],
+  "insertBefore": "</body>",
+  "commentSyntax": "html",
+  "cspChecked": true
+}

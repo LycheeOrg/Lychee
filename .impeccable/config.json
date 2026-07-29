@@ -1,0 +1,10 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [
+      "resources/js/embed/**",
+      "resources/js/v7/**"
+    ],
+    "ignoreValues": []
+  }
+}
