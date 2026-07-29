@@ -1,4 +1,5 @@
 <template>
+	<LoadingProgress :loading="options === undefined || order === undefined" />
 	<UHeader :toggle="false">
 		<template #left>
 			<GoBack @go-back="backToGallery" />
@@ -99,6 +100,7 @@ import WebshopService from "@/services/webshop-service";
 import ThankYou from "@/v8/components/webshop/ThankYou.vue";
 import { useLtRorRtL } from "@/utils/Helpers";
 import GoBack from "@/v8/components/headers/GoBack.vue";
+import LoadingProgress from "@/v8/components/loading/LoadingProgress.vue";
 import CancelledFailed from "@/v8/components/webshop/CancelledFailed.vue";
 import { trans } from "laravel-vue-i18n";
 import type { StepperItem } from "@nuxt/ui";

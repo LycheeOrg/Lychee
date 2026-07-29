@@ -1,4 +1,5 @@
 <template>
+	<LoadingProgress :loading="!initdata" />
 	<main v-if="initdata" id="landing" class="w-screen h-screen bg-black overflow-hidden">
 		<div id="header" class="fixed top-0 left-0 right-0 z-50 overflow-y-hidden">
 			<div id="logo" class="float-left p-4 text-white animate-landingAnimateDown">
@@ -121,6 +122,7 @@ import { ref } from "vue";
 import { RouterLink, useRouter } from "vue-router";
 import InitService from "@/services/init-service";
 import LandingFooter from "@/v8/components/footers/LandingFooter.vue";
+import LoadingProgress from "@/v8/components/loading/LoadingProgress.vue";
 import { useLtRorRtL } from "@/utils/Helpers";
 
 const { isLTR } = useLtRorRtL();

@@ -1,4 +1,5 @@
 <template>
+	<LoadingProgress :loading="!isReady || configs === undefined" />
 	<UHeader :toggle="false">
 		<template #left>
 			<OpenLeftMenu />
@@ -76,6 +77,7 @@
 </template>
 <script setup lang="ts">
 import OpenLeftMenu from "@/v8/components/headers/OpenLeftMenu.vue";
+import LoadingProgress from "@/v8/components/loading/LoadingProgress.vue";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import { ref } from "vue";
 import { computed } from "vue";

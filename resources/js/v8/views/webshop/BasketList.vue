@@ -1,4 +1,5 @@
 <template>
+	<LoadingProgress :loading="order === undefined" />
 	<UHeader :toggle="false">
 		<template #left>
 			<OpenLeftMenu />
@@ -70,6 +71,7 @@
 
 <script setup lang="ts">
 import OpenLeftMenu from "@/v8/components/headers/OpenLeftMenu.vue";
+import LoadingProgress from "@/v8/components/loading/LoadingProgress.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useOrderManagementStore } from "@/stores/OrderManagement";
 import { storeToRefs } from "pinia";

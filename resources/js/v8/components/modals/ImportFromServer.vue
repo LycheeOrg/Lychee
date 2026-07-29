@@ -3,7 +3,7 @@
 		<template #body>
 			<div v-if="importing">
 				<div class="flex flex-col items-center justify-center gap-4 py-4">
-					<Spinner class="text-4xl text-primary-500" />
+					<Spinner class="text-4xl" />
 					<p class="text-base text-muted">{{ $t("import_from_server.importing_please_be_patient") }}</p>
 				</div>
 			</div>

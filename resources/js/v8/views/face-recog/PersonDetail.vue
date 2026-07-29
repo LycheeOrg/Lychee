@@ -103,7 +103,10 @@
 			</div>
 
 			<!-- Photos grid -->
-			<div v-if="photos.length === 0 && !photosLoading" class="text-muted text-center mt-10 p-4">
+			<div v-if="photos.length === 0 && photosLoading" class="flex justify-center items-center mt-10 p-4">
+				<Spinner class="text-2xl" />
+			</div>
+			<div v-else-if="photos.length === 0" class="text-muted text-center mt-10 p-4">
 				{{ $t("search.no_results") }}
 			</div>
 			<div

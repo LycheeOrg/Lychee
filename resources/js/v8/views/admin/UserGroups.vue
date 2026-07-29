@@ -22,10 +22,9 @@
 				<UButton color="primary" @click="create">{{ $t("user-groups.create_group") }}</UButton>
 			</div>
 		</div>
-		<div v-if="userGroups === undefined">
-			<div class="text-center text-highlighted mt-4">
-				{{ $t("user-groups.loading") }}
-			</div>
+		<div v-if="userGroups === undefined" class="flex justify-center items-center gap-2 text-highlighted mt-4">
+			<Spinner />
+			{{ $t("user-groups.loading") }}
 		</div>
 		<div v-else-if="userGroups.length === 0" class="text-center text-highlighted mt-4">
 			{{ $t("user-groups.empty") }}
@@ -104,6 +103,7 @@
 import { ref, onMounted } from "vue";
 import { UserGroupService } from "@/services/user-group-service";
 import OpenLeftMenu from "@/v8/components/headers/OpenLeftMenu.vue";
+import Spinner from "@/v8/components/Spinner.vue";
 import AddUserGroupModal from "@/v8/components/forms/group/AddUserGroupModal.vue";
 import DeleteUserGroupDialog from "@/v8/components/forms/group/DeleteUserGroupDialog.vue";
 import UsersService from "@/services/users-service";

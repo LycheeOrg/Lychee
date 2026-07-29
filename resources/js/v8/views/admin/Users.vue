@@ -53,6 +53,7 @@
 		<UTable
 			:data="users"
 			:columns="columns"
+			:loading="isLoadingUsers"
 			sticky
 			:virtualize="{ estimateSize: 29, overscan: 12 }"
 			:ui="{ base: 'table-fixed', td: 'px-4 py-1' }"
@@ -169,6 +170,7 @@ lycheeStore.load();
 const { is_se_enabled } = storeToRefs(lycheeStore);
 
 const users = ref<User[]>([]);
+const isLoadingUsers = ref(true);
 const isCreateUserVisible = ref(false);
 const isInviteUserVisible = ref(false);
 const isLegendOpen = ref(false);
@@ -236,9 +238,11 @@ const columns = computed<TableColumn<User>[]>(() => {
 });
 
 function load() {
+	isLoadingUsers.value = true;
 	UserManagementService.get().then((response) => {
 		users.value = response.data;
 		totalUsedSpace.value = response.data.reduce((acc, user) => acc + (user.space ?? 0), 0);
+		isLoadingUsers.value = false;
 	});
 }
 

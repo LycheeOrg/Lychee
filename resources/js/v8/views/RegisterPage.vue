@@ -1,4 +1,5 @@
 <template>
+	<LoadingProgress :loading="!is_loaded" />
 	<div class="absolute top-0 left-0">
 		<UButton icon="lucide:chevron-left" class="mr-2" color="neutral" variant="ghost" @click="goBack" />
 	</div>
@@ -49,6 +50,7 @@
 
 <script setup lang="ts">
 import InputPassword from "@/v8/components/forms/basic/InputPassword.vue";
+import LoadingProgress from "@/v8/components/loading/LoadingProgress.vue";
 import InitService from "@/services/init-service";
 import ProfileService from "@/services/profile-service";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";

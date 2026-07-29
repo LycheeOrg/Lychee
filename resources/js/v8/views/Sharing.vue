@@ -1,4 +1,5 @@
 <template>
+	<LoadingProgress :loading="perms === undefined" />
 	<UHeader :toggle="false">
 		<template #left>
 			<OpenLeftMenu />
@@ -49,6 +50,7 @@
 import { onMounted, ref } from "vue";
 import ShareLine from "@/v8/components/forms/sharing/ShareLine.vue";
 import OpenLeftMenu from "@/v8/components/headers/OpenLeftMenu.vue";
+import LoadingProgress from "@/v8/components/loading/LoadingProgress.vue";
 import BulkSharingModal from "@/v8/components/forms/sharing/BulkSharingModal.vue";
 import SharingService from "@/services/sharing-service";
 import { useAppToast } from "@/v8/composables/useAppToast";

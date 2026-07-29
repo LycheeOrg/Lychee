@@ -1,4 +1,5 @@
 <template>
+	<LoadingProgress :loading="!is_loaded" />
 	<WebauthnModal @logged-in="goBack" />
 	<div class="absolute top-0 left-0">
 		<UButton icon="lucide:chevron-left" class="mr-2" color="neutral" variant="ghost" @click="goBack" />
@@ -43,6 +44,7 @@
 </template>
 <script setup lang="ts">
 import LoginForm from "@/v8/components/forms/auth/LoginForm.vue";
+import LoadingProgress from "@/v8/components/loading/LoadingProgress.vue";
 import WebauthnModal from "@/v8/components/modals/WebauthnModal.vue";
 import InitService from "@/services/init-service";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";

@@ -1,4 +1,5 @@
 <template>
+	<LoadingProgress :loading="isLoading" />
 	<UHeader :toggle="false">
 		<template #left>
 			<router-link :to="{ name: 'gallery' }">
@@ -30,14 +31,17 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import DiagnosticsService from "@/services/diagnostics-service";
+import LoadingProgress from "@/v8/components/loading/LoadingProgress.vue";
 
 const same = ref(true);
 const left = ref<string[]>([]);
 const right = ref<string[]>([]);
+const isLoading = ref(true);
 
 DiagnosticsService.permissions().then((response) => {
 	left.value = response.data.left.split("\n");
 	right.value = response.data.right.split("\n");
 	same.value = response.data.left === response.data.right;
+	isLoading.value = false;
 });
 </script>

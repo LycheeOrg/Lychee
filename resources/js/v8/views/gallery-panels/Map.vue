@@ -1,4 +1,5 @@
 <template>
+	<LoadingProgress v-model:loading="isLoading" />
 	<UHeader
 		:toggle="false"
 		:class="{
@@ -38,6 +39,7 @@ import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { onMounted } from "vue";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
 import GoBack from "@/v8/components/headers/GoBack.vue";
+import LoadingProgress from "@/v8/components/loading/LoadingProgress.vue";
 import { clusterFunc } from "@/composables/photo";
 
 type MapPhotoEntry = {
@@ -67,6 +69,7 @@ const props = defineProps<{
 
 const toast = useAppToast();
 const router = useRouter();
+const isLoading = ref(true);
 const leftMenuStore = useLeftMenuStateStore();
 const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
@@ -122,6 +125,7 @@ function fetchData() {
 	AlbumService.getMapData(props.albumId).then((mapData) => {
 		data.value = mapData.data;
 		addContentsToMap();
+		isLoading.value = false;
 	});
 }
 

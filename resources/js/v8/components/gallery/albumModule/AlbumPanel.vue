@@ -49,68 +49,63 @@
 							v-model:open="areStatisticsOpen"
 						/>
 					</template>
-					<div v-if="albumStore.isLoading" class="flex w-full items-center justify-center">
-						<Spinner class="text-4xl text-primary-400" />
-					</div>
-					<template v-else>
-						<AlbumThumbPanel
-							v-if="albumsStore.albums.length > 0"
-							header="gallery.album.header_albums"
-							:albums="albumsStore.albums"
-							:config="albumPanelConfig"
-							:is-alone="photosStore.photos.length === 0"
-							:selected-albums="selectedAlbumsIds"
-							:is-timeline="albumStore.config.is_album_timeline_enabled"
-							@clicked="albumSelect"
-							@selected="albumSelect"
-							@contexted="contextMenuAlbumOpen"
-						/>
-						<!-- Pagination for albums -->
-						<Pagination
-							v-if="albumsStore.albums.length > 0 && albumStore.hasAlbumsPagination"
-							:mode="lycheeStore.albums_pagination_mode"
-							:loading="albumStore.albums_loading"
-							:has-more="albumStore.hasMoreAlbums"
-							:current-page="albumStore.albums_current_page"
-							:last-page="albumStore.albums_last_page"
-							:per-page="albumStore.albums_per_page"
-							:total="albumStore.albums_total"
-							:remaining="albumStore.albumsRemainingCount"
-							resource-type="albums"
-							@load-more="albumStore.loadMoreAlbums()"
-							@go-to-page="goToAlbumsPage"
-						/>
-						<!-- Tag Filter -->
-						<PhotoThumbPanel
-							v-if="layoutStore.config && photosStore.photos.length > 0"
-							header="gallery.album.header_photos"
-							:photos="photosStore.filteredPhotos"
-							:photos-timeline="photosStore.filteredPhotosTimeline"
-							:selected-photos="selectedPhotosIds"
-							:is-timeline="albumStore.config.is_photo_timeline_enabled"
-							:with-control="true"
-							@clicked="photoClick"
-							@selected="photoSelect"
-							@contexted="contextMenuPhotoOpen"
-							@toggle-buy-me="toggleBuyMe"
-							ref="photoPanel"
-						/>
-						<!-- Pagination for photos -->
-						<Pagination
-							v-if="photosStore.photos.length > 0 && albumStore.hasPhotosPagination"
-							:mode="lycheeStore.photos_pagination_mode"
-							:loading="albumStore.photos_loading"
-							:has-more="albumStore.hasMorePhotos"
-							:current-page="albumStore.photos_current_page"
-							:last-page="albumStore.photos_last_page"
-							:per-page="albumStore.photos_per_page"
-							:total="albumStore.photos_total"
-							:remaining="albumStore.photosRemainingCount"
-							resource-type="photos"
-							@load-more="albumStore.loadMorePhotos()"
-							@go-to-page="goToPhotosPage"
-						/>
-					</template>
+					<AlbumThumbPanel
+						v-if="albumsStore.albums.length > 0"
+						header="gallery.album.header_albums"
+						:albums="albumsStore.albums"
+						:config="albumPanelConfig"
+						:is-alone="photosStore.photos.length === 0"
+						:selected-albums="selectedAlbumsIds"
+						:is-timeline="albumStore.config.is_album_timeline_enabled"
+						@clicked="albumSelect"
+						@selected="albumSelect"
+						@contexted="contextMenuAlbumOpen"
+					/>
+					<!-- Pagination for albums -->
+					<Pagination
+						v-if="albumsStore.albums.length > 0 && albumStore.hasAlbumsPagination"
+						:mode="lycheeStore.albums_pagination_mode"
+						:loading="albumStore.albums_loading"
+						:has-more="albumStore.hasMoreAlbums"
+						:current-page="albumStore.albums_current_page"
+						:last-page="albumStore.albums_last_page"
+						:per-page="albumStore.albums_per_page"
+						:total="albumStore.albums_total"
+						:remaining="albumStore.albumsRemainingCount"
+						resource-type="albums"
+						@load-more="albumStore.loadMoreAlbums()"
+						@go-to-page="goToAlbumsPage"
+					/>
+					<!-- Tag Filter -->
+					<PhotoThumbPanel
+						v-if="layoutStore.config && photosStore.photos.length > 0"
+						header="gallery.album.header_photos"
+						:photos="photosStore.filteredPhotos"
+						:photos-timeline="photosStore.filteredPhotosTimeline"
+						:selected-photos="selectedPhotosIds"
+						:is-timeline="albumStore.config.is_photo_timeline_enabled"
+						:with-control="true"
+						@clicked="photoClick"
+						@selected="photoSelect"
+						@contexted="contextMenuPhotoOpen"
+						@toggle-buy-me="toggleBuyMe"
+						ref="photoPanel"
+					/>
+					<!-- Pagination for photos -->
+					<Pagination
+						v-if="photosStore.photos.length > 0 && albumStore.hasPhotosPagination"
+						:mode="lycheeStore.photos_pagination_mode"
+						:loading="albumStore.photos_loading"
+						:has-more="albumStore.hasMorePhotos"
+						:current-page="albumStore.photos_current_page"
+						:last-page="albumStore.photos_last_page"
+						:per-page="albumStore.photos_per_page"
+						:total="albumStore.photos_total"
+						:remaining="albumStore.photosRemainingCount"
+						resource-type="photos"
+						@load-more="albumStore.loadMorePhotos()"
+						@go-to-page="goToPhotosPage"
+					/>
 					<GalleryFooter v-once />
 				</div>
 			</UContextMenu>
@@ -137,7 +132,6 @@ import ShareAlbum from "@/v8/components/modals/ShareAlbum.vue";
 import AlbumHero from "@/v8/components/gallery/albumModule/AlbumHero.vue";
 import AlbumEdit from "@/v8/components/drawers/AlbumEdit.vue";
 import AlbumHeader from "@/v8/components/headers/AlbumHeader.vue";
-import Spinner from "@/v8/components/Spinner.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import { useSelection } from "@/composables/selections/selections";
