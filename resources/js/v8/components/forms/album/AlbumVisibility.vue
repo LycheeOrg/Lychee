@@ -42,7 +42,7 @@
 					:disabled="!is_se_enabled"
 					class="my-4"
 					color="error"
-					:ui="{ label: grants_upload ? 'font-bold text-red-700' : 'font-bold' }"
+					:ui="{ label: grants_upload ? 'font-bold text-error' : 'font-bold' }"
 					@change="save"
 				>
 					<template #label>{{ $t("dialogs.visibility.upload") }} <SETag v-if="is_se_preview_enabled" class="ml-2" /></template>
@@ -84,7 +84,7 @@
 					color="error"
 					:label="$t('dialogs.visibility.nsfw')"
 					:description="$t('dialogs.visibility.nsfw_expl')"
-					:ui="{ label: is_nsfw ? 'font-bold text-red-700' : 'font-bold' }"
+					:ui="{ label: is_nsfw ? 'font-bold text-error' : 'font-bold' }"
 					@change="save"
 				/>
 			</template>
