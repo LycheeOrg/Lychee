@@ -82,9 +82,16 @@ return [
 	'assign_to_user' => 'Tilordne til bruker',
 	'search_user' => 'Søk bruker…',
 	'cluster_detail_title' => 'Klynge (:count ansikter)',
+	'review_queue_position' => 'Klynge :current av :total',
+	'skip' => 'Hopp over',
 	'assigned_faces_to' => 'Tilordnet :count ansikt(er) til «:name»',
 	'assigned_faces' => 'Tilordnet :count ansikt(er)',
 	'dismissed_faces' => 'Avviste :count ansikt(er)',
+	'dismiss_cluster_confirm' => 'Avvis denne klyngen med :count ansikt(er)? Du kan angre rett etterpå fra bekreftelsesvarselet.',
+	'dismiss_batch_confirm' => 'Avvis :count valgte klynger? Du kan angre rett etterpå fra bekreftelsesvarselet.',
+	'dismiss_warning' => 'Avviste ansikter blir ikke foreslått igjen med mindre du angrer, eller noen fjerner avviste ansikter permanent i Vedlikehold.',
+	'undo' => 'Angre',
+	'restored_faces' => ':count ansikt(er) gjenopprettet.',
 	'clustering_started' => 'Klynging startet. Last inn siden på nytt når den er fullført.',
 
 	'face_recognition_warning' => [

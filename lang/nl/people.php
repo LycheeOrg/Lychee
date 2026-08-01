@@ -82,9 +82,16 @@ return [
 	'assign_to_user' => 'Toewijzen aan gebruiker',
 	'search_user' => 'Gebruiker zoeken…',
 	'cluster_detail_title' => 'Cluster (:count gezichten)',
+	'review_queue_position' => 'Cluster :current van :total',
+	'skip' => 'Overslaan',
 	'assigned_faces_to' => ':count gezicht(en) toegewezen aan ":name"',
 	'assigned_faces' => ':count gezicht(en) toegewezen',
 	'dismissed_faces' => ':count gezicht(en) afgewezen',
+	'dismiss_cluster_confirm' => 'Deze cluster van :count gezicht(en) afwijzen? U kunt dit direct daarna ongedaan maken via de bevestigingsmelding.',
+	'dismiss_batch_confirm' => ':count geselecteerde clusters afwijzen? U kunt dit direct daarna ongedaan maken via de bevestigingsmelding.',
+	'dismiss_warning' => 'Afgewezen gezichten worden niet opnieuw voorgesteld, tenzij u dit ongedaan maakt of iemand ze permanent verwijdert via Onderhoud.',
+	'undo' => 'Ongedaan maken',
+	'restored_faces' => ':count gezicht(en) hersteld.',
 	'clustering_started' => 'Clustering gestart. Herlaad de pagina wanneer voltooid.',
 
 	'face_recognition_warning' => [

@@ -82,9 +82,16 @@ return [
 	'assign_to_user' => 'تعيين لمستخدم',
 	'search_user' => 'البحث عن مستخدم…',
 	'cluster_detail_title' => 'مجموعة (:count وجه)',
+	'review_queue_position' => 'المجموعة :current من :total',
+	'skip' => 'تخطي',
 	'assigned_faces_to' => 'تم تعيين :count وجه (وجوه) لـ ":name"',
 	'assigned_faces' => 'تم تعيين :count وجه (وجوه)',
 	'dismissed_faces' => 'تم تجاهل :count وجه (وجوه)',
+	'dismiss_cluster_confirm' => 'هل تريد تجاهل هذه المجموعة المكونة من :count وجه (وجوه)؟ يمكنك التراجع فورًا من إشعار التأكيد.',
+	'dismiss_batch_confirm' => 'هل تريد تجاهل المجموعات المحددة البالغ عددها :count؟ يمكنك التراجع فورًا من إشعار التأكيد.',
+	'dismiss_warning' => 'لن يتم اقتراح الوجوه المتجاهلة مرة أخرى ما لم تتراجع عن ذلك، أو يقوم شخص ما بمسحها نهائيًا من الصيانة.',
+	'undo' => 'تراجع',
+	'restored_faces' => 'تمت استعادة :count وجه (وجوه).',
 	'clustering_started' => 'بدأ التجميع. أعد تحميل الصفحة عند الانتهاء.',
 
 	'face_recognition_warning' => [

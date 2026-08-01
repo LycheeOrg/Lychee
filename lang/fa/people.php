@@ -82,9 +82,16 @@ return [
 	'assign_to_user' => 'اختصاص به کاربر',
 	'search_user' => 'جستجوی کاربر…',
 	'cluster_detail_title' => 'خوشه (:count چهره)',
+	'review_queue_position' => 'خوشه :current از :total',
+	'skip' => 'رد شدن',
 	'assigned_faces_to' => ':count چهره به ":name" اختصاص داده شد',
 	'assigned_faces' => ':count چهره اختصاص داده شد',
 	'dismissed_faces' => ':count چهره رد شد',
+	'dismiss_cluster_confirm' => 'این خوشه شامل :count چهره رد شود؟ می‌توانید بلافاصله از پیام تأیید آن را بازگردانید.',
+	'dismiss_batch_confirm' => ':count خوشه انتخاب‌شده رد شود؟ می‌توانید بلافاصله از پیام تأیید آن را بازگردانید.',
+	'dismiss_warning' => 'چهره‌های رد شده دیگر پیشنهاد نمی‌شوند مگر اینکه بازگردانی کنید یا کسی آن‌ها را به‌طور دائم از بخش نگهداری پاک کند.',
+	'undo' => 'بازگردانی',
+	'restored_faces' => ':count چهره بازگردانی شد.',
 	'clustering_started' => 'خوشه‌بندی آغاز شد. پس از اتمام، صفحه را دوباره بارگذاری کنید.',
 
 	'face_recognition_warning' => [

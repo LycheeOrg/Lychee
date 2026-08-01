@@ -82,9 +82,16 @@ return [
 	'assign_to_user' => 'Assign to user',
 	'search_user' => 'Search user…',
 	'cluster_detail_title' => 'Cluster (:count faces)',
+	'review_queue_position' => 'Cluster :current of :total',
+	'skip' => 'Skip',
 	'assigned_faces_to' => 'Assigned :count face(s) to ":name"',
 	'assigned_faces' => 'Assigned :count face(s)',
 	'dismissed_faces' => 'Dismissed :count face(s)',
+	'dismiss_cluster_confirm' => 'Dismiss this cluster of :count face(s)? You can undo right after from the confirmation toast.',
+	'dismiss_batch_confirm' => 'Dismiss :count selected clusters? You can undo right after from the confirmation toast.',
+	'dismiss_warning' => 'Dismissed faces won\'t be suggested again unless you undo, or someone permanently clears dismissed faces in Maintenance.',
+	'undo' => 'Undo',
+	'restored_faces' => 'Restored :count face(s).',
 	'clustering_started' => 'Clustering started. Reload when complete.',
 
 	'face_recognition_warning' => [

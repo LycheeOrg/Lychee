@@ -82,9 +82,16 @@ return [
 	'assign_to_user' => 'Assigner à un utilisateur',
 	'search_user' => 'Rechercher un utilisateur…',
 	'cluster_detail_title' => 'Cluster (:count visages)',
+	'review_queue_position' => 'Cluster :current sur :total',
+	'skip' => 'Passer',
 	'assigned_faces_to' => 'Assigné :count visage(s) à « :name »',
 	'assigned_faces' => 'Assigné :count visage(s)',
 	'dismissed_faces' => 'Ignoré :count visage(s)',
+	'dismiss_cluster_confirm' => 'Ignorer ce cluster de :count visage(s) ? Vous pourrez annuler juste après depuis la notification de confirmation.',
+	'dismiss_batch_confirm' => 'Ignorer les :count clusters sélectionnés ? Vous pourrez annuler juste après depuis la notification de confirmation.',
+	'dismiss_warning' => 'Les visages ignorés ne seront plus suggérés, sauf si vous annulez, ou si quelqu\'un les supprime définitivement dans Maintenance.',
+	'undo' => 'Annuler',
+	'restored_faces' => ':count visage(s) restauré(s).',
 	'clustering_started' => 'Clustering démarré. Rechargez la page une fois terminé.',
 
 	'face_recognition_warning' => [
