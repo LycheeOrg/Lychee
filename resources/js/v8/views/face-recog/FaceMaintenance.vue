@@ -90,11 +90,12 @@
 				<!-- Face table -->
 				<UTable
 					v-else
+					sticky
 					:data="faces"
 					:columns="columns"
 					:meta="{ class: { tr: rowClass } }"
 					:on-select="(e: Event, row: TableRow<Face>) => toggleSelection(row.original.id, row.index, e as MouseEvent)"
-					class="w-full"
+					class="w-full max-h-[65vh]"
 				>
 					<template #select-cell="{ row }">
 						<div class="flex justify-center" @click.stop>
@@ -206,10 +207,17 @@
 							</UTooltip>
 						</div>
 					</template>
-				</UTable>
 
-				<!-- Infinite scroll sentinel -->
-				<PaginationInfiniteScroll :loading="loadingMore" :hasMore="hasMorePages" @loadMore="loadMore" />
+					<!-- Infinite scroll sentinel: lives inside the table's own scrollable body (not after
+					     the table) so it tracks scrolling within the bounded, sticky-header table itself. -->
+					<template #body-bottom>
+						<tr>
+							<td :colspan="columns.length">
+								<PaginationInfiniteScroll :loading="loadingMore" :hasMore="hasMorePages" @loadMore="loadMore" />
+							</td>
+						</tr>
+					</template>
+				</UTable>
 			</UCard>
 		</template>
 

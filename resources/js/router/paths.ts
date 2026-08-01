@@ -106,6 +106,10 @@ export const paths: RoutePath[] = [
 		path: "/admin/nsfw-config",
 	},
 	{
+		name: "design-system",
+		path: "/admin/design",
+	},
+	{
 		name: "watermark-preview",
 		path: "/admin/watermark",
 	},

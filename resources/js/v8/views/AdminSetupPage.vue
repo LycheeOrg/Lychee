@@ -14,7 +14,7 @@
 			{{ $t("profile.admin_setup.header") }}
 		</h2>
 		<UAlert v-if="errorMessage" color="error" variant="soft" class="mb-4 text-center" :description="errorMessage" />
-		<form class="flex flex-col gap-4 relative max-w-md w-full text-sm rounded-md pb-9">
+		<form class="flex flex-col gap-4 relative max-w-md w-full text-sm rounded-md pb-9" @submit.prevent="submit">
 			<div class="inline-flex flex-col gap-4">
 				<UFormField :label="$t('profile.login.username')">
 					<UInput id="username" v-model="username" autocomplete="username" :autofocus="true" class="w-full" />
@@ -28,7 +28,13 @@
 				<UAlert v-if="confirmationError" color="error" variant="soft" class="text-sm mt-2" :description="confirmationError" />
 			</div>
 			<div class="flex items-center mt-9">
-				<UButton :disabled="!isFormValid" color="primary" class="w-full font-bold justify-center" @click="submit">
+				<UButton
+					type="submit"
+					:disabled="!isFormValid || isSubmitting"
+					:loading="isSubmitting"
+					color="primary"
+					class="w-full font-bold justify-center"
+				>
 					{{ $t("profile.admin_setup.submit") }}
 				</UButton>
 			</div>
@@ -58,6 +64,7 @@ const username = ref("");
 const password = ref("");
 const passwordConfirmation = ref("");
 const errorMessage = ref("");
+const isSubmitting = ref(false);
 
 const confirmationError = computed(() => {
 	return password.value !== passwordConfirmation.value ? trans("profile.register.password_mismatch") : "";
@@ -68,6 +75,10 @@ const isFormValid = computed(() => {
 });
 
 function submit() {
+	if (isSubmitting.value) {
+		return;
+	}
+	isSubmitting.value = true;
 	AdminSetupService.create({
 		username: username.value,
 		password: password.value,
@@ -86,6 +97,9 @@ function submit() {
 			} else {
 				errorMessage.value = error.response?.data?.message || trans("profile.admin_setup.error");
 			}
+		})
+		.finally(() => {
+			isSubmitting.value = false;
 		});
 }
 </script>

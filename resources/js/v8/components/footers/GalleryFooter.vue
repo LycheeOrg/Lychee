@@ -1,5 +1,6 @@
 <template>
-	<div v-if="footerData" id="footer" class="w-full flex flex-col justify-end flex-wrap align-bottom self-end text-center py-5 px-0 text-3xs">
+	<UFooter v-if="footerData" id="footer">
+		<div class="w-full flex flex-col justify-end flex-wrap align-bottom self-end text-center py-5 px-0 text-3xs">
 		<div v-if="footerData.footer_show_social_media" id="home_socials" class="w-full text-muted text-base space-x-2">
 			<a
 				v-if="footerData.sm_facebook_url !== ''"
@@ -63,7 +64,8 @@
 				{{ footerData.contact_header ? footerData.contact_header : $t("contact.title") }}
 			</a>
 		</p>
-	</div>
+		</div>
+	</UFooter>
 </template>
 <script setup lang="ts">
 import InitService from "@/services/init-service";
