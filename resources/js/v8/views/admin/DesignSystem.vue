@@ -165,6 +165,20 @@
 						:description="$t('design-system.feedback.empty_description')"
 					/>
 				</div>
+				<div class="flex flex-wrap gap-8 mt-6">
+					<div class="flex flex-col items-center gap-2">
+						<LycheeLoadingIcon class="w-16 h-16" />
+						<span class="text-2xs text-muted font-mono">{{ $t("design-system.loading.full_page") }}</span>
+					</div>
+					<div class="flex flex-col items-center gap-2">
+						<LycheeLoadingIcon fast class="text-xl" />
+						<span class="text-2xs text-muted font-mono">{{ $t("design-system.loading.mini_spinner") }}</span>
+					</div>
+				</div>
+				<p class="text-3xs text-muted mt-3 max-w-2xl">
+					{{ $t("design-system.loading.full_page_description") }}
+					{{ $t("design-system.loading.mini_spinner_description") }}
+				</p>
 			</Fieldset>
 
 			<!-- Radius & elevation -->
@@ -189,6 +203,7 @@
 import { reactive, ref, type ComponentPublicInstance } from "vue";
 import OpenLeftMenu from "@/v8/components/headers/OpenLeftMenu.vue";
 import Fieldset from "@/v8/components/forms/basic/Fieldset.vue";
+import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 import { trans } from "laravel-vue-i18n";
 
 const shades = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950] as const;

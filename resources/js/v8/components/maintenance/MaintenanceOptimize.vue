@@ -7,7 +7,7 @@
 		</template>
 		<div class="w-full h-40 overflow-y-auto text-sm text-muted">
 			<div v-if="data.length === 0 && !loading">{{ $t("maintenance.optimize.description") }}</div>
-			<Spinner v-if="loading && data.length === 0" class="w-full" />
+			<LycheeLoadingIcon fast v-if="loading && data.length === 0" class="w-full" />
 			<pre v-if="data.length > 0" class="text-2xs m-4">{{ data.join("\n") }}</pre>
 		</div>
 		<template #footer>
@@ -20,7 +20,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import Spinner from "@/v8/components/Spinner.vue";
+import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 import MaintenanceService from "@/services/maintenance-service";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import { trans } from "laravel-vue-i18n";

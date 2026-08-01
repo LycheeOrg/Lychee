@@ -99,7 +99,7 @@
 			</div>
 		</div>
 		<div v-else class="flex justify-center items-center p-4">
-			<Spinner class="text-2xl" />
+			<LycheeLoadingIcon fast class="text-2xl" />
 			<span class="ml-2">{{ $t("renamer.loading") }}</span>
 		</div>
 
@@ -117,7 +117,7 @@ import OpenLeftMenu from "@/v8/components/headers/OpenLeftMenu.vue";
 import RenamerRuleLine from "@/v8/components/renamer/RenamerRuleLine.vue";
 import RenamerRuleModal from "@/v8/components/renamer/RenamerRuleModal.vue";
 import RenamerService, { type TestRenamerResponse } from "@/services/renamer-service";
-import Spinner from "@/v8/components/Spinner.vue";
+import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 
 const rules = ref<App.Http.Resources.Models.RenamerRuleResource[] | undefined>(undefined);
 const showCreateModal = ref(false);

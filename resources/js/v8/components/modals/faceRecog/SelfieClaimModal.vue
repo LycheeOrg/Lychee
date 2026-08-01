@@ -44,7 +44,7 @@
 					<div class="text-sm text-success">{{ $t("people.claims.success") }}</div>
 				</div>
 
-				<Spinner v-if="uploading" class="mx-auto w-8 h-8" />
+				<LycheeLoadingIcon fast v-if="uploading" class="mx-auto w-8 h-8" />
 			</div>
 		</template>
 		<template #footer>
@@ -78,7 +78,7 @@ import { ref } from "vue";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import { trans } from "laravel-vue-i18n";
 import PeopleService from "@/services/people-service";
-import Spinner from "@/v8/components/Spinner.vue";
+import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 
 const emits = defineEmits<{
 	claimed: [person: App.Http.Resources.Models.PersonResource];

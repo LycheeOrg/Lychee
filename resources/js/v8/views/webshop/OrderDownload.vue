@@ -8,7 +8,7 @@
 	<UCard class="border-0 md:max-w-3xl lg:max-w-5xl xl:max-w-7xl mt-8 mx-auto w-full" :ui="{ header: 'hidden' }">
 		<!-- If we are loading, wait. -->
 		<div v-if="loading" class="flex justify-center items-center p-8">
-			<Spinner />
+			<LycheeLoadingIcon fast />
 		</div>
 
 		<!-- If order is undefined. This means that we did not have access, ask for the transaction ID. -->
@@ -199,7 +199,7 @@
 <script setup lang="ts">
 import OrderStatus from "@/v8/components/webshop/OrderStatus.vue";
 import UsernameEmail from "@/v8/components/webshop/UsernameEmail.vue";
-import Spinner from "@/v8/components/Spinner.vue";
+import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 import Constants from "@/services/constants";
 import InitService from "@/services/init-service";
 import WebshopService, { ItemLink } from "@/services/webshop-service";

@@ -14,7 +14,7 @@
 				{{ sprintf($t("maintenance.statistics-check.missing_albums"), data.missing_albums) }}<br />
 				{{ sprintf($t("maintenance.statistics-check.missing_photos"), data.missing_photos) }}<br />
 			</div>
-			<Spinner v-if="loading" class="w-full" />
+			<LycheeLoadingIcon fast v-if="loading" class="w-full" />
 		</div>
 		<template #footer>
 			<UButton v-if="!loading" color="primary" class="w-full font-bold justify-center" @click="exec">
@@ -26,7 +26,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import Spinner from "@/v8/components/Spinner.vue";
+import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import MaintenanceService from "@/services/maintenance-service";
 import { trans } from "laravel-vue-i18n";

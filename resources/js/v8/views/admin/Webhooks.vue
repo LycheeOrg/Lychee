@@ -23,7 +23,7 @@
 
 		<!-- Loading -->
 		<div v-if="loading" class="flex justify-center py-12">
-			<Spinner class="text-3xl" />
+			<LycheeLoadingIcon fast class="text-3xl" />
 		</div>
 
 		<!-- Empty state -->
@@ -80,7 +80,7 @@ import OpenLeftMenu from "@/v8/components/headers/OpenLeftMenu.vue";
 import WebhookDeleteDialog from "@/v8/components/forms/webhooks/WebhookDeleteDialog.vue";
 import WebhookFormDialog from "@/v8/components/forms/webhooks/WebhookFormDialog.vue";
 import WebhookService from "@/services/webhook-service";
-import Spinner from "@/v8/components/Spinner.vue";
+import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 import UButton from "@nuxt/ui/components/Button.vue";
 import USwitch from "@nuxt/ui/components/Switch.vue";
 import UBadge from "@nuxt/ui/components/Badge.vue";

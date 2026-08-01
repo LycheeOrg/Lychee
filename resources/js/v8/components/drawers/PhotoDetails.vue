@@ -102,7 +102,7 @@
 					{{ $t("gallery.photo.details.albums") }}
 				</h2>
 				<div v-if="albums_loading" class="flex items-center gap-2 text-muted text-sm">
-					<Spinner class="text-lg" />
+					<LycheeLoadingIcon fast class="text-lg" />
 					<span>{{ $t("gallery.photo.details.albums_loading") }}</span>
 				</div>
 				<div v-else-if="albums_error" class="text-sm text-muted">
@@ -281,7 +281,7 @@
 import { Ref, ref, watch, onMounted, computed, onUnmounted } from "vue";
 import MapInclude from "@/v8/components/gallery/photoModule/MapInclude.vue";
 import MiniIcon from "@/v8/components/icons/MiniIcon.vue";
-import Spinner from "@/v8/components/Spinner.vue";
+import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 import ColourSquare from "@/v8/components/gallery/photoModule/ColourSquare.vue";
 import PhotoRatingWidget from "@/v8/components/gallery/photoModule/PhotoRatingWidget.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";

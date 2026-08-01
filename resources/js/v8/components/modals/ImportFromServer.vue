@@ -3,7 +3,7 @@
 		<template #body>
 			<div v-if="importing">
 				<div class="flex flex-col items-center justify-center gap-4 py-4">
-					<Spinner class="text-4xl" />
+					<LycheeLoadingIcon fast class="text-4xl" />
 					<p class="text-base text-muted">{{ $t("import_from_server.importing_please_be_patient") }}</p>
 				</div>
 			</div>
@@ -86,7 +86,7 @@ import { usePhotoRoute } from "@/composables/photo/photoRoute";
 import { onMounted, ref, watch } from "vue";
 import ImportService, { ImportFromServerRequest } from "@/services/import-service";
 import AlbumService from "@/services/album-service";
-import Spinner from "@/v8/components/Spinner.vue";
+import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import { useImportState } from "@/stores/ImportState";
 

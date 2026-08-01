@@ -13,7 +13,7 @@
 					{{ $t("maintenance.duplicate-finder.duplicates-title") }}: {{ data.title_duplicates }}<br />
 					{{ $t("maintenance.duplicate-finder.duplicates-per-album") }}: {{ data.duplicates_within_album }}<br />
 				</p>
-				<Spinner v-if="data === undefined && isLoaded" class="w-full" />
+				<LycheeLoadingIcon fast v-if="data === undefined && isLoaded" class="w-full" />
 			</div>
 		</div>
 		<template #footer>
@@ -29,7 +29,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import Spinner from "@/v8/components/Spinner.vue";
+import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 import MaintenanceService from "@/services/maintenance-service";
 
 const data = ref<App.Http.Resources.Models.Duplicates.DuplicateCount | undefined>(undefined);

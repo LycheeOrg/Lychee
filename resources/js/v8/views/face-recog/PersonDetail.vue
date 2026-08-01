@@ -17,7 +17,7 @@
 		</UHeader>
 
 		<div v-if="loading" class="flex justify-center items-center mt-20">
-			<Spinner />
+			<LycheeLoadingIcon fast />
 		</div>
 
 		<template v-else-if="person">
@@ -104,7 +104,7 @@
 
 			<!-- Photos grid -->
 			<div v-if="photos.length === 0 && photosLoading" class="flex justify-center items-center mt-10 p-4">
-				<Spinner class="text-2xl" />
+				<LycheeLoadingIcon fast class="text-2xl" />
 			</div>
 			<div v-else-if="photos.length === 0" class="text-muted text-center mt-10 p-4">
 				{{ $t("search.no_results") }}
@@ -179,7 +179,7 @@
 import { ref, computed, onMounted, onUpdated, onUnmounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useAppToast } from "@/v8/composables/useAppToast";
-import Spinner from "@/v8/components/Spinner.vue";
+import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 import { trans } from "laravel-vue-i18n";
 import { useDebounceFn } from "@vueuse/core";
 import { initLayouts, justified } from "@/v8/layouts/wasmLayouts";

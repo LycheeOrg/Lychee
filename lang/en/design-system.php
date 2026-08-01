@@ -21,6 +21,13 @@ return [
 		'radius' => 'Radius & elevation',
 	],
 
+	'loading' => [
+		'full_page' => 'Full-page loader',
+		'full_page_description' => 'Slow, staggered reveal — used behind the full-screen blackout while a view loads.',
+		'mini_spinner' => 'Mini spinner',
+		'mini_spinner_description' => 'Fast variant, visible immediately — used inline for buttons, lists, and small loading states.',
+	],
+
 	'foundations' => [
 		'system' => 'Component kit',
 		'system_value' => '@nuxt/ui on Tailwind CSS v4',

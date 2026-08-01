@@ -10,7 +10,7 @@
 		<FaceRecognitionWarning />
 
 		<div v-if="loading && faces.length === 0" class="flex justify-center py-12">
-			<Spinner class="text-3xl" />
+			<LycheeLoadingIcon fast class="text-3xl" />
 		</div>
 
 		<template v-else>
@@ -240,7 +240,7 @@
 			</template>
 			<template #body>
 				<div v-if="loadingPhoto" class="flex justify-center py-12">
-					<Spinner class="text-3xl" />
+					<LycheeLoadingIcon fast class="text-3xl" />
 				</div>
 				<div v-else-if="viewingPhoto" class="flex flex-col gap-4">
 					<img
@@ -276,7 +276,7 @@ import BatchFaceAssignmentModal from "@/v8/components/modals/faceRecog/BatchFace
 import FaceMaintenanceService from "@/services/face-maintenance-service";
 import FaceDetectionService from "@/services/face-detection-service";
 import ModerationService from "@/services/moderation-service";
-import Spinner from "@/v8/components/Spinner.vue";
+import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 import type { TableColumn, TableRow } from "@nuxt/ui";
 
 type Face = App.Http.Resources.Models.FaceResource;

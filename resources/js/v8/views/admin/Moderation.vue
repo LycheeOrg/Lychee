@@ -11,7 +11,7 @@
 
 		<!-- Loading initial -->
 		<div v-if="loading && photos.length === 0" class="flex justify-center py-12">
-			<Spinner class="text-3xl" />
+			<LycheeLoadingIcon fast class="text-3xl" />
 		</div>
 
 		<!-- Empty state -->
@@ -89,7 +89,7 @@
 				<tr>
 					<td colspan="8">
 						<div ref="sentinel" class="flex justify-center py-4">
-							<Spinner v-if="loading && photos.length > 0" class="text-2xl" />
+							<LycheeLoadingIcon fast v-if="loading && photos.length > 0" class="text-2xl" />
 						</div>
 					</td>
 				</tr>
@@ -106,7 +106,7 @@
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { RouterLink } from "vue-router";
 import OpenLeftMenu from "@/v8/components/headers/OpenLeftMenu.vue";
-import Spinner from "@/v8/components/Spinner.vue";
+import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 import PhotoBox from "@/v8/components/gallery/photoModule/PhotoBox.vue";
 import ModerationService from "@/services/moderation-service";
 import PhotoService from "@/services/photo-service";

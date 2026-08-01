@@ -4,7 +4,7 @@
 			<span class="flex items-center gap-2"><UIcon :name="legendIcon" />{{ legendLabel }}</span>
 		</template>
 		<div class="flex justify-center flex-col">
-			<Spinner v-if="perms === undefined" />
+			<LycheeLoadingIcon fast v-if="perms === undefined" />
 			<template v-else>
 				<div class="flex text-highlighted">
 					<div class="w-5/12 flex">
@@ -66,7 +66,7 @@
 import { computed, onMounted, ref } from "vue";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import Fieldset from "@/v8/components/forms/basic/Fieldset.vue";
-import Spinner from "@/v8/components/Spinner.vue";
+import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 import SharingService from "@/services/sharing-service";
 import ShareLine from "@/v8/components/forms/sharing/ShareLine.vue";
 import { trans } from "laravel-vue-i18n";

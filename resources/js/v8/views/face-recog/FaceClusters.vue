@@ -10,7 +10,7 @@
 		<FaceRecognitionWarning />
 
 		<div v-if="loading" class="flex justify-center items-center mt-20">
-			<Spinner class="text-3xl" />
+			<LycheeLoadingIcon fast class="text-3xl" />
 		</div>
 
 		<template v-else>
@@ -145,7 +145,7 @@
 			</template>
 			<template #body>
 				<div v-if="detailFacesLoading" class="flex justify-center py-6">
-					<Spinner class="text-2xl" />
+					<LycheeLoadingIcon fast class="text-2xl" />
 				</div>
 				<div v-else class="flex flex-col gap-4">
 					<div ref="detailScrollContainer" class="overflow-x-auto">
@@ -164,7 +164,7 @@
 								</button>
 							</div>
 							<div v-if="detailHasMorePages || detailFacesLoadingMore" class="flex items-center justify-center w-24 h-24 shrink-0">
-								<Spinner class="text-lg" />
+								<LycheeLoadingIcon fast class="text-lg" />
 							</div>
 							<div ref="detailScrollSentinel" class="shrink-0 w-1" />
 						</div>
@@ -251,7 +251,7 @@ import FaceRecognitionWarning from "@/v8/components/faceRecog/FaceRecognitionWar
 import FaceClusterService from "@/services/face-cluster-service";
 import FaceDetectionService from "@/services/face-detection-service";
 import GoBack from "@/v8/components/headers/GoBack.vue";
-import Spinner from "@/v8/components/Spinner.vue";
+import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 import { usePeopleList } from "@/composables/usePeopleList";
 
 const toast = useAppToast();

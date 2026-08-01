@@ -12,7 +12,7 @@
 				{{ $t("maintenance.fix-tree.Wrong parents") }}: {{ data.wrong_parent }}<br />
 				{{ $t("maintenance.fix-tree.Missing parents") }}: {{ data.missing_parent }}<br />
 			</div>
-			<Spinner v-if="loading" class="w-full" />
+			<LycheeLoadingIcon fast v-if="loading" class="w-full" />
 		</div>
 		<template #footer>
 			<UButton v-if="fixable && !loading" :to="{ name: 'tree' }" color="primary" class="w-full justify-center">
@@ -24,7 +24,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import Spinner from "@/v8/components/Spinner.vue";
+import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import MaintenanceService from "@/services/maintenance-service";
 import { trans } from "laravel-vue-i18n";

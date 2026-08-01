@@ -83,7 +83,7 @@
 		</template>
 	</UCard>
 	<div v-else class="flex justify-center items-center p-4">
-		<Spinner />
+		<LycheeLoadingIcon fast />
 		<span class="ml-2">{{ $t("tags.loading") }}</span>
 	</div>
 </template>
@@ -91,7 +91,7 @@
 <script setup lang="ts">
 import { computed, onMounted } from "vue";
 import OpenLeftMenu from "@/v8/components/headers/OpenLeftMenu.vue";
-import Spinner from "@/v8/components/Spinner.vue";
+import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 import { useTagsRefresher } from "@/composables/tags/tagsRefresher";
 import { useTagsActions } from "@/v8/composables/tags/tagsActions";
 import TagRenameDialog from "@/v8/components/forms/tags/TagRenameDialog.vue";

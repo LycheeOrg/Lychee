@@ -1,12 +1,12 @@
 <template>
 	<div ref="sentinel" class="w-full h-4" />
 	<div v-if="loading" class="flex justify-center w-full py-4">
-		<Spinner class="text-2xl" />
+		<LycheeLoadingIcon fast class="text-2xl" />
 	</div>
 </template>
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch } from "vue";
-import Spinner from "@/v8/components/Spinner.vue";
+import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 
 const LycheeState = useLycheeStateStore();
