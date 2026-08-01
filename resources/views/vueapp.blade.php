@@ -16,6 +16,10 @@
     <x-meta />
     @if(Features::active('nuxt_ui'))
     @vite(['resources/js/app-v8.ts','resources/sass/app-v8.css'])
+	{{-- <x-style /> overrides app-v8.css's --ui-color-* custom properties via plain
+	     unlayered same-specificity, later-source-wins cascade (app-v8.css has no
+	     @layer around those declarations) - it must stay after the app-v8.css
+	     @vite tag above, or admin-picked theme colors silently stop applying. --}}
 	<x-style />
     @else
     @vite(['resources/js/app.ts','resources/sass/app.css'])

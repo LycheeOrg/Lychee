@@ -395,7 +395,14 @@ return [
         'password_flag_enabled' => 'Enable password flag',
         'sensitive_flag_enabled' => 'Enable sensitive flag',
         'expert_album_settings' => 'Show expert album settings by default',
-        'accent_color' => 'Accent color.',
+        'primary_color' => 'Accent color.',
+        'enable_design_system' => 'Enable design system',
+        'secondary_color' => 'Secondary color',
+        'success_color' => 'Success color',
+        'warning_color' => 'Warning color',
+        'error_color' => 'Error color',
+        'info_color' => 'Info color',
+        'neutral_color' => 'Neutral color',
     ],
     'details' => [
         'version' => '',
@@ -785,7 +792,14 @@ return [
         'password_flag_enabled' => 'Show the lock icon on password-protected albums.',
         'sensitive_flag_enabled' => 'Show the warning icon on albums marked as sensitive (NSFW).',
         'expert_album_settings' => 'When enabled, the album settings modal shows advanced fields (header, license, copyright) by default instead of behind an "expert mode" toggle.',
-        'accent_color' => 'Pick a colour, the nearest colour palette will be used. If you leave this empty, the default accent color will be used.<br>Note: you will need to refresh the page to see the changes.',
+        'primary_color' => 'Pick a colour, the nearest colour palette will be used. If you leave this empty, the default accent color will be used.<br>Note: you will need to refresh the page to see the changes.',
+        'enable_design_system' => 'Enables the design system preview in the admin panel (this is mostly a dev feature).',
+        'secondary_color' => 'Pick a colour, the nearest colour palette will be used. If you leave this empty, the default color will be used.<br>Note: you will need to refresh the page to see the changes.',
+        'success_color' => 'Pick a colour, the nearest colour palette will be used. If you leave this empty, the default color will be used.<br>Note: you will need to refresh the page to see the changes.',
+        'warning_color' => 'Pick a colour, the nearest colour palette will be used. If you leave this empty, the default color will be used.<br>Note: you will need to refresh the page to see the changes.',
+        'error_color' => 'Pick a colour, the nearest colour palette will be used. If you leave this empty, the default color will be used.<br>Note: you will need to refresh the page to see the changes.',
+        'info_color' => 'Pick a colour, the nearest colour palette will be used. If you leave this empty, the default color will be used.<br>Note: you will need to refresh the page to see the changes.',
+        'neutral_color' => 'Pick a colour, the nearest colour palette will be used. If you leave this empty, the default color will be used.<br>Note: you will need to refresh the page to see the changes. Pick a near-gray color for best results — a saturated color will tint every gray in the interface.',
     ],
 
     'category_name' => [
@@ -816,6 +830,7 @@ return [
         'Mod Rating' => 'Photo star rating',
         'Mod Webshop' => 'Webshop',
         'AI Vision' => 'AI Vision',
+        'Theme Colors' => 'Theme Colors',
     ],
 
     'category_description' => [
@@ -846,5 +861,6 @@ return [
         'Mod Rating' => 'This modules enable rating of photos. The user can set a rating from 1 to 5 stars per photo. The average rating is displayed where configured.',
         'Mod Webshop' => 'This module allows you manage and sell your pictures.<br><br><span class="pi pi-exclamation-triangle text-orange-500 ltr:mr-2 rtl:ml-2"></span><span class="text-muted-color">Lychee is developed under the <a href="https://lycheeorg.dev/license" class="text-primary-400">MIT license</a>. This means that <span class="text-muted-color-emphasis">LycheeOrg is not responsible</span> nor liable <span class="text-muted-color-emphasis">for any issues or losses</span> arising from the use of the webshop module and/or the payment processing capabilities. It is critical that you verify and <span class="text-muted-color-emphasis">ensure that your setup is working correctly and securely before using it in a production environment.</span>',
         'AI Vision' => 'AI-powered features including facial recognition and NSFW content detection. Requires an external AI Vision sidecar service.',
+        'Theme Colors' => 'Customize the secondary, semantic, and neutral colors used across the v8 interface. Each picked color generates a full palette, the same way the accent color above does.',
     ],
 ];

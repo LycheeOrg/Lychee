@@ -1,128 +1,128 @@
 <template>
 	<BuyMeDialog />
-		<!-- <div class="h-svh overflow-y-hidden flex flex-col"> -->
-		<!-- Trick to avoid the scroll bar to appear on the right when switching to full screen -->
-		<AlbumHeader
-			v-if="albumStore.isLoaded && userStore.isLoaded"
-			@refresh="emits('refresh')"
-			@toggle-edit="emits('toggleEdit')"
-			@open-search="emits('openSearch')"
-			@go-back="emits('goBack')"
-			@show-selected="albumCallbacks.copyHighlighted()"
-			@open-context-menu="openContextMenuFromHeader"
-		/>
-		<UMain>
-			<template v-if="albumStore.album && albumStore.config && userStore.isLoaded">
-				<UContextMenu :items="menuSections" :disabled="noData" class="contents">
-					<div id="galleryView" class="relative flex flex-wrap content-start w-full justify-start select-none">
-						<SelectDrag :with-scroll="true" />
-						<AlbumEdit v-if="albumStore.rights?.can_edit" />
-						<div v-if="noData" class="flex w-full flex-col h-[calc(100svh-12rem)] items-center justify-center text-xl text-muted gap-8">
-							<span class="block">
-								{{ $t("gallery.album.no_results") }}
-							</span>
-							<UButton
-								v-if="albumStore.rights?.can_upload && albumStore.modelAlbum !== undefined"
-								color="warning"
-								class="rounded max-w-xs w-full font-bold justify-center"
-								icon="lucide:upload"
-								@click="toggleUpload"
-								>{{ $t("gallery.album.upload") }}</UButton
-							>
-						</div>
-						<AlbumHero
-							v-if="!noData"
-							@open-sharing-modal="toggleShareAlbum"
-							@open-embed-code="toggleEmbedCode"
-							@open-statistics="toggleStatistics"
-							@toggle-slide-show="emits('toggleSlideShow')"
-							@scroll-to-pictures="albumCallbacks.scrollToPaginatorTop"
-							@toggle-apply-renamer="toggleApplyRenamer"
-							@toggle-watermark-confirm="toggleWatermarkConfirm"
-							@toggle-download-album="toggleDownloadAlbumFromHero"
-							@toggle-scan-faces="toggleScanFacesFromHero"
-						/>
-						<template v-if="is_se_enabled && userStore.isLoggedIn">
-							<AlbumStatistics
-								v-if="photosStore.photos.length > 0"
-								:key="`statistics_${albumStore.album?.id}`"
-								v-model:open="areStatisticsOpen"
-							/>
-						</template>
-						<AlbumThumbPanel
-							v-if="albumsStore.albums.length > 0"
-							header="gallery.album.header_albums"
-							:albums="albumsStore.albums"
-							:config="albumPanelConfig"
-							:is-alone="photosStore.photos.length === 0"
-							:selected-albums="selectedAlbumsIds"
-							:is-timeline="albumStore.config.is_album_timeline_enabled"
-							@clicked="albumSelect"
-							@selected="albumSelect"
-							@contexted="contextMenuAlbumOpen"
-						/>
-						<!-- Pagination for albums -->
-						<Pagination
-							v-if="albumsStore.albums.length > 0 && albumStore.hasAlbumsPagination"
-							:mode="lycheeStore.albums_pagination_mode"
-							:loading="albumStore.albums_loading"
-							:has-more="albumStore.hasMoreAlbums"
-							:current-page="albumStore.albums_current_page"
-							:last-page="albumStore.albums_last_page"
-							:per-page="albumStore.albums_per_page"
-							:total="albumStore.albums_total"
-							:remaining="albumStore.albumsRemainingCount"
-							resource-type="albums"
-							@load-more="albumStore.loadMoreAlbums()"
-							@go-to-page="goToAlbumsPage"
-						/>
-						<!-- Tag Filter -->
-						<PhotoThumbPanel
-							v-if="layoutStore.config && photosStore.photos.length > 0"
-							header="gallery.album.header_photos"
-							:photos="photosStore.filteredPhotos"
-							:photos-timeline="photosStore.filteredPhotosTimeline"
-							:selected-photos="selectedPhotosIds"
-							:is-timeline="albumStore.config.is_photo_timeline_enabled"
-							:with-control="true"
-							@clicked="photoClick"
-							@selected="photoSelect"
-							@contexted="contextMenuPhotoOpen"
-							@toggle-buy-me="toggleBuyMe"
-							ref="photoPanel"
-						/>
-						<!-- Pagination for photos -->
-						<Pagination
-							v-if="photosStore.photos.length > 0 && albumStore.hasPhotosPagination"
-							:mode="lycheeStore.photos_pagination_mode"
-							:loading="albumStore.photos_loading"
-							:has-more="albumStore.hasMorePhotos"
-							:current-page="albumStore.photos_current_page"
-							:last-page="albumStore.photos_last_page"
-							:per-page="albumStore.photos_per_page"
-							:total="albumStore.photos_total"
-							:remaining="albumStore.photosRemainingCount"
-							resource-type="photos"
-							@load-more="albumStore.loadMorePhotos()"
-							@go-to-page="goToPhotosPage"
-						/>
+	<!-- <div class="h-svh overflow-y-hidden flex flex-col"> -->
+	<!-- Trick to avoid the scroll bar to appear on the right when switching to full screen -->
+	<AlbumHeader
+		v-if="albumStore.isLoaded && userStore.isLoaded"
+		@refresh="emits('refresh')"
+		@toggle-edit="emits('toggleEdit')"
+		@open-search="emits('openSearch')"
+		@go-back="emits('goBack')"
+		@show-selected="albumCallbacks.copyHighlighted()"
+		@open-context-menu="openContextMenuFromHeader"
+	/>
+	<UMain>
+		<template v-if="albumStore.album && albumStore.config && userStore.isLoaded">
+			<UContextMenu :items="menuSections" :disabled="noData" class="contents">
+				<div id="galleryView" class="relative flex flex-wrap content-start w-full justify-start select-none">
+					<SelectDrag :with-scroll="true" />
+					<AlbumEdit v-if="albumStore.rights?.can_edit" />
+					<div v-if="noData" class="flex w-full flex-col h-[calc(100svh-12rem)] items-center justify-center text-xl text-muted gap-8">
+						<span class="block">
+							{{ $t("gallery.album.no_results") }}
+						</span>
+						<UButton
+							v-if="albumStore.rights?.can_upload && albumStore.modelAlbum !== undefined"
+							color="warning"
+							class="rounded max-w-xs w-full font-bold justify-center"
+							icon="lucide:upload"
+							@click="toggleUpload"
+							>{{ $t("gallery.album.upload") }}</UButton
+						>
 					</div>
-				</UContextMenu>
-				<ShareAlbum :key="`share_modal_${albumStore.album.id}`" v-model:open="is_share_album_visible" :title="albumStore.album.title" />
-				<ApplyRenamerDialog
-					v-model:open="is_apply_renamer_visible"
-					:album-id="albumStore.album.id"
-					:photo-ids="selectedPhotosIds"
-					:album-ids="selectedAlbumsIds"
-					@applied="emits('refresh')"
-				/>
-				<WatermarkConfirmDialog v-model:open="is_watermark_confirm_visible" :album-id="albumStore.album.id" @watermarked="emits('refresh')" />
-				<DownloadAlbum v-model:open="is_download_album_visible" :album-ids="downloadAlbumIds" />
-				<DownloadAlbum v-model:open="is_download_photo_visible" :photo-ids="downloadPhotoIds" :from-id="downloadFromId" />
-			</template>
-			<!-- </div> -->
+					<AlbumHero
+						v-if="!noData"
+						@open-sharing-modal="toggleShareAlbum"
+						@open-embed-code="toggleEmbedCode"
+						@open-statistics="toggleStatistics"
+						@toggle-slide-show="emits('toggleSlideShow')"
+						@scroll-to-pictures="albumCallbacks.scrollToPaginatorTop"
+						@toggle-apply-renamer="toggleApplyRenamer"
+						@toggle-watermark-confirm="toggleWatermarkConfirm"
+						@toggle-download-album="toggleDownloadAlbumFromHero"
+						@toggle-scan-faces="toggleScanFacesFromHero"
+					/>
+					<template v-if="is_se_enabled && userStore.isLoggedIn">
+						<AlbumStatistics
+							v-if="photosStore.photos.length > 0"
+							:key="`statistics_${albumStore.album?.id}`"
+							v-model:open="areStatisticsOpen"
+						/>
+					</template>
+					<AlbumThumbPanel
+						v-if="albumsStore.albums.length > 0"
+						header="gallery.album.header_albums"
+						:albums="albumsStore.albums"
+						:config="albumPanelConfig"
+						:is-alone="photosStore.photos.length === 0"
+						:selected-albums="selectedAlbumsIds"
+						:is-timeline="albumStore.config.is_album_timeline_enabled"
+						@clicked="albumSelect"
+						@selected="albumSelect"
+						@contexted="contextMenuAlbumOpen"
+					/>
+					<!-- Pagination for albums -->
+					<Pagination
+						v-if="albumsStore.albums.length > 0 && albumStore.hasAlbumsPagination"
+						:mode="lycheeStore.albums_pagination_mode"
+						:loading="albumStore.albums_loading"
+						:has-more="albumStore.hasMoreAlbums"
+						:current-page="albumStore.albums_current_page"
+						:last-page="albumStore.albums_last_page"
+						:per-page="albumStore.albums_per_page"
+						:total="albumStore.albums_total"
+						:remaining="albumStore.albumsRemainingCount"
+						resource-type="albums"
+						@load-more="albumStore.loadMoreAlbums()"
+						@go-to-page="goToAlbumsPage"
+					/>
+					<!-- Tag Filter -->
+					<PhotoThumbPanel
+						v-if="layoutStore.config && photosStore.photos.length > 0"
+						header="gallery.album.header_photos"
+						:photos="photosStore.filteredPhotos"
+						:photos-timeline="photosStore.filteredPhotosTimeline"
+						:selected-photos="selectedPhotosIds"
+						:is-timeline="albumStore.config.is_photo_timeline_enabled"
+						:with-control="true"
+						@clicked="photoClick"
+						@selected="photoSelect"
+						@contexted="contextMenuPhotoOpen"
+						@toggle-buy-me="toggleBuyMe"
+						ref="photoPanel"
+					/>
+					<!-- Pagination for photos -->
+					<Pagination
+						v-if="photosStore.photos.length > 0 && albumStore.hasPhotosPagination"
+						:mode="lycheeStore.photos_pagination_mode"
+						:loading="albumStore.photos_loading"
+						:has-more="albumStore.hasMorePhotos"
+						:current-page="albumStore.photos_current_page"
+						:last-page="albumStore.photos_last_page"
+						:per-page="albumStore.photos_per_page"
+						:total="albumStore.photos_total"
+						:remaining="albumStore.photosRemainingCount"
+						resource-type="photos"
+						@load-more="albumStore.loadMorePhotos()"
+						@go-to-page="goToPhotosPage"
+					/>
+				</div>
+			</UContextMenu>
+			<ShareAlbum :key="`share_modal_${albumStore.album.id}`" v-model:open="is_share_album_visible" :title="albumStore.album.title" />
+			<ApplyRenamerDialog
+				v-model:open="is_apply_renamer_visible"
+				:album-id="albumStore.album.id"
+				:photo-ids="selectedPhotosIds"
+				:album-ids="selectedAlbumsIds"
+				@applied="emits('refresh')"
+			/>
+			<WatermarkConfirmDialog v-model:open="is_watermark_confirm_visible" :album-id="albumStore.album.id" @watermarked="emits('refresh')" />
+			<DownloadAlbum v-model:open="is_download_album_visible" :album-ids="downloadAlbumIds" />
+			<DownloadAlbum v-model:open="is_download_photo_visible" :photo-ids="downloadPhotoIds" :from-id="downloadFromId" />
+		</template>
+		<!-- </div> -->
 		<GalleryFooter v-once />
-		</UMain>
+	</UMain>
 </template>
 <script setup lang="ts">
 import { computed, ref, ComponentPublicInstance } from "vue";

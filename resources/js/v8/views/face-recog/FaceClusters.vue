@@ -276,9 +276,7 @@ const isBatchMode = ref(false);
 const selectedLabels = ref<number[]>([]);
 
 // Dismiss confirmation (single cluster or batch)
-type PendingDismiss =
-	| { kind: "cluster"; cluster: App.Http.Resources.Models.ClusterPreviewResource }
-	| { kind: "batch"; labels: number[] };
+type PendingDismiss = { kind: "cluster"; cluster: App.Http.Resources.Models.ClusterPreviewResource } | { kind: "batch"; labels: number[] };
 const confirmDialogVisible = ref(false);
 const pendingDismiss = ref<PendingDismiss | null>(null);
 const confirmingDismiss = ref(false);
@@ -466,7 +464,9 @@ function performDismissCluster(cluster: App.Http.Resources.Models.ClusterPreview
 
 function performBatchDismiss(labels: number[]): Promise<void> {
 	const targets = clusters.value.filter((c) => labels.includes(c.cluster_label));
-	return Promise.all(targets.map((cluster) => fetchAllClusterFaceIds(cluster.cluster_label, cluster.face_count).then((faceIds) => ({ cluster, faceIds }))))
+	return Promise.all(
+		targets.map((cluster) => fetchAllClusterFaceIds(cluster.cluster_label, cluster.face_count).then((faceIds) => ({ cluster, faceIds }))),
+	)
 		.then((prepared) =>
 			Promise.all(prepared.map((p) => FaceClusterService.dismissCluster(p.cluster.cluster_label))).then((responses) => {
 				const totalDismissed = responses.reduce((sum, r) => sum + r.data.dismissed_count, 0);

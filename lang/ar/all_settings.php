@@ -395,7 +395,14 @@ return [
         'password_flag_enabled' => 'تفعيل شارة كلمة المرور',
         'sensitive_flag_enabled' => 'تفعيل شارة المحتوى الحساس',
         'expert_album_settings' => 'إظهار إعدادات الألبوم المتقدمة افتراضيًا',
-        'accent_color' => 'لون التمييز.',
+        'primary_color' => 'لون التمييز.',
+        'enable_design_system' => 'Enable design system',
+        'secondary_color' => 'Secondary color',
+        'success_color' => 'Success color',
+        'warning_color' => 'Warning color',
+        'error_color' => 'Error color',
+        'info_color' => 'Info color',
+        'neutral_color' => 'Neutral color',
     ],
     'details' => [
         'version' => '',
@@ -785,7 +792,14 @@ return [
         'password_flag_enabled' => 'إظهار أيقونة القفل على الألبومات المحمية بكلمة مرور.',
         'sensitive_flag_enabled' => 'إظهار أيقونة التحذير على الألبومات المُعلَّمة كحساسة.',
         'expert_album_settings' => 'عند التفعيل، تعرض نافذة إعدادات الألبوم الحقول المتقدمة (الترويسة، الترخيص، حقوق النشر) افتراضيًا بدلاً من إخفائها خلف مفتاح "الوضع المتقدم".',
-        'accent_color' => 'اختر لونًا، وسيتم استخدام أقرب لوحة ألوان. إذا تركت هذا الحقل فارغًا، سيتم استخدام لون التمييز الافتراضي.<br>ملاحظة: ستحتاج إلى تحديث الصفحة لرؤية التغييرات.',
+        'primary_color' => 'اختر لونًا، وسيتم استخدام أقرب لوحة ألوان. إذا تركت هذا الحقل فارغًا، سيتم استخدام لون التمييز الافتراضي.<br>ملاحظة: ستحتاج إلى تحديث الصفحة لرؤية التغييرات.',
+        'enable_design_system' => 'Enables the design system preview in the admin panel (this is mostly a dev feature).',
+        'secondary_color' => 'Pick a colour, the nearest colour palette will be used. If you leave this empty, the default color will be used.<br>Note: you will need to refresh the page to see the changes.',
+        'success_color' => 'Pick a colour, the nearest colour palette will be used. If you leave this empty, the default color will be used.<br>Note: you will need to refresh the page to see the changes.',
+        'warning_color' => 'Pick a colour, the nearest colour palette will be used. If you leave this empty, the default color will be used.<br>Note: you will need to refresh the page to see the changes.',
+        'error_color' => 'Pick a colour, the nearest colour palette will be used. If you leave this empty, the default color will be used.<br>Note: you will need to refresh the page to see the changes.',
+        'info_color' => 'Pick a colour, the nearest colour palette will be used. If you leave this empty, the default color will be used.<br>Note: you will need to refresh the page to see the changes.',
+        'neutral_color' => 'Pick a colour, the nearest colour palette will be used. If you leave this empty, the default color will be used.<br>Note: you will need to refresh the page to see the changes. Pick a near-gray color for best results — a saturated color will tint every gray in the interface.',
     ],
 
     'category_name' => [
@@ -816,6 +830,7 @@ return [
         'Mod Rating' => 'تقييم الصور بالنجوم',
         'Mod Webshop' => 'المتجر الإلكتروني',
         'AI Vision' => 'الرؤية بالذكاء الاصطناعي',
+        'Theme Colors' => 'Theme Colors',
     ],
 
     'category_description' => [
@@ -846,5 +861,6 @@ return [
         'Mod Rating' => 'تُفعّل هذه الوحدة تقييم الصور. يمكن للمستخدم تحديد تقييم من 1 إلى 5 نجوم لكل صورة. يُعرض متوسط التقييم أينما تمت تهيئته.',
         'Mod Webshop' => 'تتيح لك هذه الوحدة إدارة صورك وبيعها.<br><br><span class="pi pi-exclamation-triangle text-orange-500 ltr:mr-2 rtl:ml-2"></span><span class="text-muted-color">تم تطوير Lychee بموجب <a href="https://lycheeorg.dev/license" class="text-primary-400">ترخيص MIT</a>. وهذا يعني أن <span class="text-muted-color-emphasis">LycheeOrg غير مسؤولة</span> ولا تتحمل أي التزام <span class="text-muted-color-emphasis">عن أي مشكلات أو خسائر</span> ناتجة عن استخدام وحدة المتجر الإلكتروني و/أو إمكانيات معالجة الدفع. من الضروري أن تتحقق و<span class="text-muted-color-emphasis">تتأكد من أن إعدادك يعمل بشكل صحيح وآمن قبل استخدامه في بيئة الإنتاج.</span>',
         'AI Vision' => 'ميزات مدعومة بالذكاء الاصطناعي تشمل التعرف على الوجوه وكشف المحتوى الحساس. تتطلب خدمة مساعدة خارجية للرؤية بالذكاء الاصطناعي.',
+        'Theme Colors' => 'Customize the secondary, semantic, and neutral colors used across the v8 interface. Each picked color generates a full palette, the same way the accent color above does.',
     ],
 ];

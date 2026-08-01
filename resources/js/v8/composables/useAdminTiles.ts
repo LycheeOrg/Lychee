@@ -43,7 +43,7 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			icon: "lucide:palette",
 			to: "/admin/design",
 			isExternal: false,
-			visible: computed(() => initData.value?.settings.can_edit ?? false),
+			visible: computed(() => (initData.value?.settings.can_edit ?? false) && (initData.value?.modules.is_design_system_enabled ?? false)),
 		},
 		{
 			key: "diagnostics",
