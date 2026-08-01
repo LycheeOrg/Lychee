@@ -143,7 +143,7 @@
 						v-if="canEdit && !isBatchMode"
 						class="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/60 text-inverted text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
 						:title="$t('people.remove_from_person')"
-						@click.stop="removeFromPerson(photo)"
+						@click.stop="promptRemoveFromPerson(photo)"
 					>
 						×
 					</button>
@@ -154,6 +154,14 @@
 
 		<PersonDeleteDialog v-if="person" v-model:open="deletePersonVisible" :person="person" @deleted="router.push({ name: 'people' })" />
 		<MergePersonModal v-if="person && isMergeModalOpen" v-model:visible="isMergeModalOpen" :source-person="person" @merged="onMerged" />
+		<RemovePhotoFromPersonDialog
+			v-if="person && photoToRemove"
+			v-model:open="removePhotoDialogVisible"
+			:photo="photoToRemove"
+			:person-id="props.personId"
+			:person-name="person.name"
+			@removed="onPhotoRemoved($event)"
+		/>
 
 		<!-- Photo lightbox overlay -->
 		<PhotoPanel
@@ -187,6 +195,7 @@ import MergePersonModal from "@/v8/components/modals/faceRecog/MergePersonModal.
 import PaginationInfiniteScroll from "@/v8/components/pagination/PaginationInfiniteScroll.vue";
 import PhotoPanel from "@/v8/components/gallery/photoModule/PhotoPanel.vue";
 import PersonDeleteDialog from "@/v8/components/forms/people/PersonDeleteDialog.vue";
+import RemovePhotoFromPersonDialog from "@/v8/components/forms/people/RemovePhotoFromPersonDialog.vue";
 import PeopleService from "@/services/people-service";
 import FaceBatchService from "@/services/face-batch-service";
 import { useUserStore } from "@/stores/UserState";
@@ -425,19 +434,25 @@ function batchUnassign() {
 		});
 }
 
-function removeFromPerson(photo: App.Http.Resources.Models.PhotoResource) {
-	FaceBatchService.batchUnassignByPhotos([photo.id], props.personId)
-		.then((data) => {
-			toast.add({ severity: "success", summary: trans("toasts.success"), detail: trans("people.remove_from_person_success"), life: 3000 });
-			photos.value = photos.value.filter((p) => p.id !== photo.id);
-			if (person.value) {
-				person.value.face_count = Math.max(0, person.value.face_count - data.affected_count);
-				person.value.photo_count = Math.max(0, person.value.photo_count - data.affected_count);
-			}
-		})
-		.catch((e: { response?: { data?: { message?: string } } }) => {
-			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });
-		});
+const photoToRemove = ref<App.Http.Resources.Models.PhotoResource | undefined>(undefined);
+const removePhotoDialogVisible = ref(false);
+
+function promptRemoveFromPerson(photo: App.Http.Resources.Models.PhotoResource) {
+	photoToRemove.value = photo;
+	removePhotoDialogVisible.value = true;
+}
+
+function onPhotoRemoved(affectedCount: number) {
+	const removedId = photoToRemove.value?.id;
+	if (!removedId) {
+		return;
+	}
+	photos.value = photos.value.filter((p) => p.id !== removedId);
+	if (person.value) {
+		person.value.face_count = Math.max(0, person.value.face_count - affectedCount);
+		person.value.photo_count = Math.max(0, person.value.photo_count - affectedCount);
+	}
+	photoToRemove.value = undefined;
 }
 
 function load() {

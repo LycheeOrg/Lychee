@@ -72,6 +72,7 @@ return [
 	'filter_active' => 'Affichage des photos avec :name',
 	'people_in_photo' => 'Personnes sur cette photo',
 	'remove_from_person' => 'Retirer de la personne',
+	'remove_from_person_confirm' => 'Retirer cette photo de « :name » ?',
 	'remove_from_person_success' => 'Visage retiré avec succès.',
 	'batch_select' => 'Sélectionner des visages',
 	'batch_cancel' => 'Annuler la sélection',

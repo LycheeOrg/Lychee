@@ -1,6 +1,6 @@
 <template>
 	<div
-		class="cursor-pointer w-40 rounded-lg bg-elevated shadow-[0_0_16px] shadow-primary-500/25 dark:shadow-primary-400/30 p-3 flex flex-col items-center gap-2 transition-[transform,box-shadow] duration-200 hover:-translate-y-1 hover:shadow-[0_0_28px] hover:shadow-primary-500/40 dark:hover:shadow-primary-400/45"
+		class="cursor-pointer w-40 rounded-lg bg-elevated shadow-md shadow-black/25 border border-transparent p-3 flex flex-col items-center gap-2 transition-colors duration-200 hover:border-primary"
 		@click="$router.push({ name: 'person', params: { personId: person.id } })"
 		@contextmenu="emit('contextmenu', $event)"
 	>

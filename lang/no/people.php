@@ -72,6 +72,7 @@ return [
 	'filter_active' => 'Viser bilder med :name',
 	'people_in_photo' => 'Personer på dette bildet',
 	'remove_from_person' => 'Fjern fra person',
+	'remove_from_person_confirm' => 'Fjern dette bildet fra «:name»?',
 	'remove_from_person_success' => 'Ansikt fjernet.',
 	'batch_select' => 'Velg ansikter',
 	'batch_cancel' => 'Avbryt utvalg',

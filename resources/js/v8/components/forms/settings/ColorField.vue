@@ -37,37 +37,37 @@ const { isLTR } = useLtRorRtL();
 const sliderPosition = computed(() => (isLTR() ? "right" : "left"));
 const openOnHover = computed(() => (isTouchDevice() ? false : false));
 
-const COLORS = ['primary_color', 'secondary_color', 'warning_color', 'error_color', 'success_color', 'info_color', 'neutral_color'];
+const COLORS = ["primary_color", "secondary_color", "warning_color", "error_color", "success_color", "info_color", "neutral_color"];
 
 const chip = computed(() => {
 	if (COLORS.includes(props.config.key)) {
-		return props.config.key.replace('_color','');
+		return props.config.key.replace("_color", "");
 	}
-	return '';
+	return "";
 });
 
 function getDefaultColor(key: string): string {
 	switch (key) {
-		case 'primary_color':
-			return '#00a6f4'; // sky
-		case 'secondary_color':
-			return '#615fff'; // violet
-		case 'success_color':
-			return '#00bc7d'; // emerald
-		case 'info_color':
-			return '#00b8db'; // cyan
-		case 'warning_color':
-			return '#fe9a00'; // amber
-		case 'error_color':
-			return '#ff2056'; // rose
-		case 'neutral_color':
+		case "primary_color":
+			return "#00a6f4"; // sky
+		case "secondary_color":
+			return "#615fff"; // violet
+		case "success_color":
+			return "#00bc7d"; // emerald
+		case "info_color":
+			return "#00b8db"; // cyan
+		case "warning_color":
+			return "#fe9a00"; // amber
+		case "error_color":
+			return "#ff2056"; // rose
+		case "neutral_color":
 			const b = document.querySelector("body");
-			if (b?.classList.contains('dark')) {
-				return '#71717b'; // dark mode: zinc color
+			if (b?.classList.contains("dark")) {
+				return "#71717b"; // dark mode: zinc color
 			}
-			return '#62748e'; // or slate color
+			return "#62748e"; // or slate color
 		default:
-			return '#00a6f4'; // default to primary color
+			return "#00a6f4"; // default to primary color
 	}
 }
 
@@ -78,7 +78,7 @@ const props = defineProps<{
 function stringToBlossomColorPickerValue(config: App.Http.Resources.Models.ConfigResource): BlossomColorPickerValue | undefined {
 	let color = config.value;
 	if (!config.value) {
-		color = getDefaultColor(props.config.key)
+		color = getDefaultColor(props.config.key);
 	}
 
 	const hsl = hexToHsl(color);

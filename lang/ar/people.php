@@ -72,6 +72,7 @@ return [
 	'filter_active' => 'عرض الصور التي تحتوي على :name',
 	'people_in_photo' => 'الأشخاص في هذه الصورة',
 	'remove_from_person' => 'إزالة من الشخص',
+	'remove_from_person_confirm' => 'هل تريد إزالة هذه الصورة من ":name"؟',
 	'remove_from_person_success' => 'تمت إزالة الوجه بنجاح.',
 	'batch_select' => 'تحديد الوجوه',
 	'batch_cancel' => 'إلغاء التحديد',
