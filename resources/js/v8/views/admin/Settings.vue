@@ -163,10 +163,15 @@ const menuGroups = computed(() => {
 });
 
 function load() {
-	SettingsService.getAll().then((response) => {
-		configs.value = response.data as App.Http.Resources.Models.ConfigCategoryResource[];
-		hash.value = Math.random().toString(16).substring(2, 12);
-	});
+	SettingsService.getAll()
+		.then((response) => {
+			configs.value = response.data as App.Http.Resources.Models.ConfigCategoryResource[];
+			hash.value = Math.random().toString(16).substring(2, 12);
+		})
+		.catch((e) => {
+			toast.add({ severity: "error", summary: trans("settings.toasts.error"), detail: e.response?.data?.message, life: 3000 });
+			configs.value = [];
+		});
 }
 
 function update(configKey: string, value: string) {

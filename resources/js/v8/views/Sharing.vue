@@ -80,9 +80,14 @@ function deletePermission(id: number) {
 
 function load() {
 	perms.value = undefined;
-	SharingService.list().then((response) => {
-		perms.value = response.data;
-	});
+	SharingService.list()
+		.then((response) => {
+			perms.value = response.data;
+		})
+		.catch((e) => {
+			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });
+			perms.value = [];
+		});
 }
 
 onMounted(() => {

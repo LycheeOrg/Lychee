@@ -2,7 +2,7 @@
 	<Transition name="lychee-loading-fade">
 		<div
 			v-if="loading"
-			class="fixed inset-0 z-50 flex items-center justify-center dark:bg-black/60 light:bg-white/60 backdrop:backdrop-blur-2xl"
+			class="fixed inset-0 z-50 flex items-center justify-center bg-white/60 dark:bg-black/60 backdrop-blur-2xl"
 			role="status"
 			:aria-label="$t('dialogs.upload.loading')"
 		>

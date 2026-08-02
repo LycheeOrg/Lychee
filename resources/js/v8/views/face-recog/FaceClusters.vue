@@ -380,19 +380,27 @@ function confirmDismiss() {
 
 // Fetch every face id currently in a cluster (before dismissing it) so a later "Undo" can un-dismiss exactly those faces.
 // The faces() endpoint excludes already-dismissed faces, so this must run before the dismiss call, not after.
-async function fetchAllClusterFaceIds(label: number, expectedCount: number): Promise<string[]> {
-	const ids: string[] = [];
-	let page = 1;
+function fetchAllClusterFaceIds(label: number, expectedCount: number): Promise<string[]> {
 	const MAX_PAGES = 200; // safety cap (10,000 faces @ 50/page); real clusters are far smaller
-	while (ids.length < expectedCount && page <= MAX_PAGES) {
-		const response = await FaceClusterService.getClusterFaces(label, page);
-		const items = response.data.data as unknown as App.Http.Resources.Models.FaceResource[];
-		if (items.length === 0) break;
-		ids.push(...items.map((f) => f.id));
-		if (response.data.current_page >= response.data.last_page) break;
-		page += 1;
+
+	function fetchPage(page: number, ids: string[]): Promise<string[]> {
+		if (ids.length >= expectedCount || page > MAX_PAGES) {
+			return Promise.resolve(ids);
+		}
+		return FaceClusterService.getClusterFaces(label, page).then((response) => {
+			const items = response.data.data as unknown as App.Http.Resources.Models.FaceResource[];
+			if (items.length === 0) {
+				return ids;
+			}
+			const nextIds = [...ids, ...items.map((f) => f.id)];
+			if (response.data.current_page >= response.data.last_page) {
+				return nextIds;
+			}
+			return fetchPage(page + 1, nextIds);
+		});
 	}
-	return ids;
+
+	return fetchPage(1, []);
 }
 
 interface DismissedEntry {
@@ -419,6 +427,7 @@ function showDismissedToast(entries: DismissedEntry[], dismissedCount: number) {
 
 function undoDismiss(entries: DismissedEntry[]) {
 	const allFaceIds = entries.flatMap((e) => e.faceIds);
+	const activeLabel = queueCluster.value?.cluster_label;
 	Promise.all(allFaceIds.map((id) => FaceDetectionService.toggleDismissed(id)))
 		.then(() => {
 			let restoredCount = 0;
@@ -429,6 +438,15 @@ function undoDismiss(entries: DismissedEntry[]) {
 				}
 			});
 			totalClusters.value += restoredCount;
+			// Prepending restored clusters shifts every existing index by `restoredCount`, so
+			// re-anchor the queue to the same cluster label rather than leaving `queueIndex` pointing
+			// at whatever cluster now happens to sit at that position.
+			if (activeLabel !== undefined) {
+				const newIndex = clusters.value.findIndex((c) => c.cluster_label === activeLabel);
+				if (newIndex !== -1) {
+					queueIndex.value = newIndex;
+				}
+			}
 			toast.add({
 				severity: "success",
 				summary: trans("toasts.success"),

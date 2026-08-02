@@ -52,7 +52,9 @@
 			/>
 
 			<div class="sentinel" v-intersection-observer="onIntersectionObserver" v-if="timelineStore.maxPage < timelineStore.lastPage"></div>
-			<LycheeLoadingIcon fast class="flex justify-center text-2xl" v-if="timelineStore.isLoading && !isTouchDevice()" />
+			<div class="flex justify-center" v-if="timelineStore.isLoading && !isTouchDevice()">
+				<LycheeLoadingIcon fast class="text-2xl" />
+			</div>
 			<TimelineDates :dates="timelineStore.dates" v-if="!photoStore.isLoaded" @load="goToDate" />
 
 			<!-- Dialogs -->

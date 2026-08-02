@@ -78,7 +78,7 @@ const props = defineProps<{
 function stringToBlossomColorPickerValue(config: App.Http.Resources.Models.ConfigResource): BlossomColorPickerValue | undefined {
 	let color = config.value;
 	if (!config.value) {
-		color = getDefaultColor(props.config.key);
+		color = getDefaultColor(config.key);
 	}
 
 	const hsl = hexToHsl(color);

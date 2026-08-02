@@ -239,11 +239,17 @@ const columns = computed<TableColumn<User>[]>(() => {
 
 function load() {
 	isLoadingUsers.value = true;
-	UserManagementService.get().then((response) => {
-		users.value = response.data;
-		totalUsedSpace.value = response.data.reduce((acc, user) => acc + (user.space ?? 0), 0);
-		isLoadingUsers.value = false;
-	});
+	UserManagementService.get()
+		.then((response) => {
+			users.value = response.data;
+			totalUsedSpace.value = response.data.reduce((acc, user) => acc + (user.space ?? 0), 0);
+		})
+		.catch((e) => {
+			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });
+		})
+		.finally(() => {
+			isLoadingUsers.value = false;
+		});
 }
 
 function inviteUser() {

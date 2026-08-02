@@ -40,8 +40,9 @@
 			</UFormField>
 			<UButton
 				v-if="!is_se_enabled"
-				class="w-1/4 justify-center font-bold bg-primary-500/20 hover:bg-primary-500"
-				color="neutral"
+				class="w-1/4 justify-center font-bold"
+				color="primary"
+				variant="soft"
 				:disabled="!isValidRegistrationForm"
 				@click="register"
 				>{{ $t("dialogs.register.register") }}

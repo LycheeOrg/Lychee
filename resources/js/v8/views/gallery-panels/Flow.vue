@@ -19,7 +19,9 @@
 			<div v-if="currentPage < lastPage" ref="sentinel" class="sentinel"></div>
 		</div>
 		<LigtBox @go-back="goBack" @next="next" @previous="previous" />
-		<LycheeLoadingIcon fast v-if="isLoading && !isTouchDevice()" class="flex justify-center" />
+		<div v-if="isLoading && !isTouchDevice()" class="flex justify-center">
+			<LycheeLoadingIcon fast class="text-2xl" />
+		</div>
 		<GalleryFooter v-once />
 		<ScrollTop v-if="photoStore.isLoaded" target="parent" />
 	</div>

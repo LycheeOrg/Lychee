@@ -124,22 +124,30 @@ import InitService from "@/services/init-service";
 import LandingFooter from "@/v8/components/footers/LandingFooter.vue";
 import LoadingProgress from "@/v8/components/loading/LoadingProgress.vue";
 import { useLtRorRtL } from "@/utils/Helpers";
+import { useAppToast } from "@/v8/composables/useAppToast";
+import { trans } from "laravel-vue-i18n";
 
 const { isLTR } = useLtRorRtL();
+const toast = useAppToast();
 
 const introVisible = ref(true);
 
 const initdata = ref<App.Http.Resources.GalleryConfigs.LandingPageResource | undefined>(undefined);
 const router = useRouter();
 
-InitService.fetchLandingData().then((data) => {
-	if (data.data.landing_page_enable === false) {
+InitService.fetchLandingData()
+	.then((data) => {
+		if (data.data.landing_page_enable === false) {
+			router.push({ name: "home" });
+		} else {
+			initdata.value = data.data;
+			setTimeout(() => (introVisible.value = false), 4000);
+		}
+	})
+	.catch((e) => {
+		toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });
 		router.push({ name: "home" });
-	} else {
-		initdata.value = data.data;
-		setTimeout(() => (introVisible.value = false), 4000);
-	}
-});
+	});
 </script>
 <style lang="css" scoped>
 .animate-landingAnimateDown {

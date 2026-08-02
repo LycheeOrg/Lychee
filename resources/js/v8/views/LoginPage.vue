@@ -51,6 +51,8 @@ import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useUserStore } from "@/stores/UserState";
 import { useAdvisoryModal } from "@/composables/modals/useAdvisoryModal";
+import { useAppToast } from "@/v8/composables/useAppToast";
+import { trans } from "laravel-vue-i18n";
 import { storeToRefs } from "pinia";
 import { ref } from "vue";
 import { onMounted } from "vue";
@@ -61,6 +63,7 @@ const lycheeStore = useLycheeStateStore();
 const leftMenuStore = useLeftMenuStateStore();
 const userStore = useUserStore();
 const { advisoryCheck } = useAdvisoryModal();
+const toast = useAppToast();
 const { title, is_registration_enabled, is_basic_auth_enabled, is_white_label_enabled, is_se_enabled } = storeToRefs(lycheeStore);
 const is_loaded = ref(false);
 
@@ -76,11 +79,17 @@ onMounted(() => {
 	// Close the left menu if it is open
 	leftMenuStore.left_menu_open = false;
 
-	Promise.all([lycheeStore.load(), InitService.fetchLandingData()]).then(([_lycheeData, initData]) => {
-		is_loaded.value = true;
-		if (initData.data.landing_page_enable === true) {
-			initdata.value = initData.data;
-		}
-	});
+	Promise.all([lycheeStore.load(), InitService.fetchLandingData()])
+		.then(([_lycheeData, initData]) => {
+			if (initData.data.landing_page_enable === true) {
+				initdata.value = initData.data;
+			}
+		})
+		.catch((e) => {
+			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });
+		})
+		.finally(() => {
+			is_loaded.value = true;
+		});
 });
 </script>

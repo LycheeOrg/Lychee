@@ -94,10 +94,15 @@ const trackLayer = ref<unknown>(undefined);
 const data = ref<App.Http.Resources.Collections.PositionDataResource | undefined>(undefined);
 
 function loadMapProvider() {
-	AlbumService.getMapProvider().then((data) => {
-		map_provider.value = data.data;
-		mapInit();
-	});
+	AlbumService.getMapProvider()
+		.then((data) => {
+			map_provider.value = data.data;
+			mapInit();
+		})
+		.catch((e) => {
+			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });
+			isLoading.value = false;
+		});
 }
 
 function mapInit() {
@@ -122,11 +127,17 @@ function mapInit() {
 }
 
 function fetchData() {
-	AlbumService.getMapData(props.albumId).then((mapData) => {
-		data.value = mapData.data;
-		addContentsToMap();
-		isLoading.value = false;
-	});
+	AlbumService.getMapData(props.albumId)
+		.then((mapData) => {
+			data.value = mapData.data;
+			addContentsToMap();
+		})
+		.catch((e) => {
+			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });
+		})
+		.finally(() => {
+			isLoading.value = false;
+		});
 }
 
 function open() {

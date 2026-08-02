@@ -3,11 +3,15 @@
 		<div class="flex flex-col gap-4">
 			<div>
 				<UTextarea v-model="css" class="w-full h-48" :rows="10" />
-				<UButton color="primary" class="w-full justify-center font-bold" @click="saveCss">{{ $t("settings.cssjs.change_css") }}</UButton>
+				<UButton color="primary" variant="soft" class="w-full justify-center font-bold" @click="saveCss">{{
+					$t("settings.cssjs.change_css")
+				}}</UButton>
 			</div>
 			<div>
 				<UTextarea v-model="js" class="w-full h-48" :rows="10" />
-				<UButton color="primary" class="w-full justify-center font-bold" @click="saveJs">{{ $t("settings.cssjs.change_js") }}</UButton>
+				<UButton color="primary" variant="soft" class="w-full justify-center font-bold" @click="saveJs">{{
+					$t("settings.cssjs.change_js")
+				}}</UButton>
 			</div>
 		</div>
 	</Fieldset>

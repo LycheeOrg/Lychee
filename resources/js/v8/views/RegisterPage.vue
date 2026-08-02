@@ -140,11 +140,17 @@ onMounted(() => {
 	// Close the left menu if it is open
 	leftMenuStore.left_menu_open = false;
 
-	Promise.all([lycheeStore.load(), InitService.fetchLandingData()]).then(([_lycheeData, initData]) => {
-		is_loaded.value = true;
-		if (initData.data.landing_page_enable === true) {
-			initdata.value = initData.data;
-		}
-	});
+	Promise.all([lycheeStore.load(), InitService.fetchLandingData()])
+		.then(([_lycheeData, initData]) => {
+			if (initData.data.landing_page_enable === true) {
+				initdata.value = initData.data;
+			}
+		})
+		.catch((e) => {
+			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });
+		})
+		.finally(() => {
+			is_loaded.value = true;
+		});
 });
 </script>

@@ -1,5 +1,5 @@
 <template>
-	<LoadingProgress :loading="order === undefined" />
+	<LoadingProgress :loading="order === undefined && !loadFailed" />
 	<UHeader :toggle="false">
 		<template #left>
 			<OpenLeftMenu />
@@ -74,14 +74,18 @@ import OpenLeftMenu from "@/v8/components/headers/OpenLeftMenu.vue";
 import LoadingProgress from "@/v8/components/loading/LoadingProgress.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useOrderManagementStore } from "@/stores/OrderManagement";
+import { useAppToast } from "@/v8/composables/useAppToast";
+import { trans } from "laravel-vue-i18n";
 import { storeToRefs } from "pinia";
-import { onMounted } from "vue";
+import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 
 const lycheeStateStore = useLycheeStateStore();
 const orderStore = useOrderManagementStore();
 const { order } = storeToRefs(orderStore);
 const router = useRouter();
+const toast = useAppToast();
+const loadFailed = ref(false);
 
 function removeItem(itemId: number) {
 	orderStore.removeItem(itemId);
@@ -94,21 +98,27 @@ function removeBasket() {
 
 onMounted(async () => {
 	await lycheeStateStore.load();
-	orderStore.load().then(() => {
-		if (order.value === undefined || order.value?.items === null || order.value.items.length === 0) {
-			// Redirect to basket if no items
-			router.push({ name: "gallery" });
-		}
+	orderStore
+		.load()
+		.then(() => {
+			if (order.value === undefined || order.value?.items === null || order.value.items.length === 0) {
+				// Redirect to basket if no items
+				router.push({ name: "gallery" });
+			}
 
-		// Handle order status
-		if (order.value?.status === "processing") {
-			// Switch to step 2 if payment is in progress
-			router.push({ name: "checkout", params: { step: "payment" } });
-		}
+			// Handle order status
+			if (order.value?.status === "processing") {
+				// Switch to step 2 if payment is in progress
+				router.push({ name: "checkout", params: { step: "payment" } });
+			}
 
-		if (["completed", "closed", "offline"].includes(order.value?.status || "")) {
-			router.push({ name: "checkout", params: { step: "completed" } });
-		}
-	});
+			if (["completed", "closed", "offline"].includes(order.value?.status || "")) {
+				router.push({ name: "checkout", params: { step: "completed" } });
+			}
+		})
+		.catch((e) => {
+			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });
+			loadFailed.value = true;
+		});
 });
 </script>

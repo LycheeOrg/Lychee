@@ -39,6 +39,7 @@
 					<UButton
 						icon="lucide:forward"
 						color="error"
+						variant="soft"
 						:disabled="perms.length === 0"
 						class="p-3 w-full mt-4 font-bold justify-center disabled:opacity-50"
 						:label="$t('sharing.propagate')"
