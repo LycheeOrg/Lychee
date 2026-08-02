@@ -112,6 +112,7 @@
 			</UButton>
 			<UButton
 				v-if="step === 'select'"
+				variant="solid"
 				color="neutral"
 				class="font-bold w-full justify-center"
 				:disabled="selected_rule_ids.length === 0"
@@ -119,7 +120,14 @@
 			>
 				{{ $t("dialogs.apply_renamer.preview") }}
 			</UButton>
-			<UButton v-else color="neutral" class="font-bold w-full justify-center" :disabled="preview_items.length === 0" @click="applyRules">
+			<UButton
+				v-else
+				color="neutral"
+				variant="solid"
+				class="font-bold w-full justify-center"
+				:disabled="preview_items.length === 0"
+				@click="applyRules"
+			>
 				{{ $t("dialogs.apply_renamer.apply") }}
 			</UButton>
 		</template>

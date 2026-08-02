@@ -41,6 +41,7 @@
 		<UButton
 			:label="$t('webshop.pricesInput.addPrice')"
 			icon="lucide:plus"
+			color="primary"
 			variant="outline"
 			size="sm"
 			@click="

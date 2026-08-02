@@ -19,7 +19,7 @@
 				>
 					{{ $t("dialogs.button.cancel") }}
 				</UButton>
-				<UButton color="error" class="flex-1 justify-center font-bold" :loading="loading" @click="execute">
+				<UButton color="error" variant="solid" class="flex-1 justify-center font-bold" :loading="loading" @click="execute">
 					{{ $t("people.remove_from_person") }}
 				</UButton>
 			</div>

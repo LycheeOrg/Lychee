@@ -32,6 +32,7 @@
 			:label="$t('webshop.printSizePricesInput.addSize')"
 			icon="lucide:plus"
 			variant="outline"
+			color="primary"
 			size="sm"
 			@click="
 				() => {

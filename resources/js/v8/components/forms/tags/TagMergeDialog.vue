@@ -22,7 +22,7 @@
 				>
 					{{ $t("dialogs.button.cancel") }}
 				</UButton>
-				<UButton class="flex-1 justify-center" color="error" @click="execute">
+				<UButton class="flex-1 justify-center" variant="solid" color="error" @click="execute">
 					{{ $t("tags.merge") }}
 				</UButton>
 			</div>

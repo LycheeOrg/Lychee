@@ -24,7 +24,7 @@
 						<UButton
 							v-if="albumStore.rights?.can_upload && albumStore.modelAlbum !== undefined"
 							color="warning"
-							class="rounded max-w-xs w-full font-bold justify-center"
+							variant="solid"
 							icon="lucide:upload"
 							@click="toggleUpload"
 							>{{ $t("gallery.album.upload") }}</UButton

@@ -22,7 +22,7 @@
 				</USelectMenu>
 			</div>
 			<UFieldGroup class="w-full mt-4">
-				<UButton color="neutral" class="flex-1 font-bold justify-center" @click="save">
+				<UButton color="neutral" variant="solid" class="flex-1 font-bold justify-center" @click="save">
 					{{ $t("profile.preferences.save") }}
 				</UButton>
 				<UButton color="neutral" variant="soft" class="flex-1 font-bold justify-center" @click="reset">

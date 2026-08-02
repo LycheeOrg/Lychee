@@ -35,6 +35,7 @@
 			:label="$t('webshop.pixelSizePricesInput.addSize')"
 			icon="lucide:plus"
 			variant="outline"
+			color="primary"
 			size="sm"
 			@click="
 				() => {

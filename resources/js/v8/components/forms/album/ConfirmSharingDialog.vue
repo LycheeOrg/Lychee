@@ -27,6 +27,7 @@
 			</UButton>
 			<UButton
 				icon="lucide:forward"
+				variant="solid"
 				color="error"
 				class="w-full justify-center font-bold"
 				:label="$t('sharing.propagate')"

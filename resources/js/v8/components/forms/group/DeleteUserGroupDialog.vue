@@ -19,7 +19,7 @@
 				>
 					{{ $t("user-groups.cancel") }}
 				</UButton>
-				<UButton color="error" class="flex-1 justify-center font-bold" @click="execute">
+				<UButton color="error" variant="solid" class="flex-1 justify-center font-bold" @click="execute">
 					{{ $t("user-groups.delete") }}
 				</UButton>
 			</div>

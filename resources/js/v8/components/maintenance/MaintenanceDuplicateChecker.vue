@@ -20,7 +20,7 @@
 			<UButton v-if="data !== undefined && data.pure_duplicates" to="/duplicatesFinder" color="primary" class="w-full justify-center self-end">
 				{{ $t("maintenance.duplicate-finder.show") }}
 			</UButton>
-			<UButton v-if="!isLoaded" color="primary" class="w-full justify-center self-end" @click="load">
+			<UButton v-if="!isLoaded" color="primary" variant="solid" class="w-full justify-center self-end" @click="load">
 				{{ $t("maintenance.duplicate-finder.load") }}
 			</UButton>
 		</template>

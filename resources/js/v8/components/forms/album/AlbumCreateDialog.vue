@@ -26,7 +26,7 @@
 				>
 					{{ $t("dialogs.button.cancel") }}
 				</UButton>
-				<UButton color="primary" class="flex-1 justify-center font-bold" :disabled="!isValid" @click="create">
+				<UButton color="primary" variant="solid" class="flex-1 justify-center font-bold" :disabled="!isValid" @click="create">
 					{{ $t("dialogs.new_album.create") }}
 				</UButton>
 			</div>

@@ -63,7 +63,7 @@
 						<template #default="{ modelValue }">{{ selectedLabel(modelValue) }}</template>
 						<template #item-label="{ item }">{{ $t(item.label) }}</template>
 					</USelectMenu>
-					<UButton color="primary" class="w-full col-span-2 justify-center font-bold" @click="save">
+					<UButton color="primary" variant="solid" class="w-full col-span-2 justify-center font-bold" @click="save">
 						{{ $t("dialogs.button.save") }}
 					</UButton>
 				</form>

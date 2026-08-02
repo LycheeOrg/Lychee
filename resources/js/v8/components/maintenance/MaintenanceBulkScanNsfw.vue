@@ -12,7 +12,7 @@
 			<LycheeLoadingIcon fast v-if="loading" class="w-full" />
 		</div>
 		<template #footer>
-			<UButton v-if="!loading" color="primary" class="w-full justify-center" @click="exec">
+			<UButton v-if="!loading" color="primary" variant="solid" class="w-full justify-center" @click="exec">
 				{{ $t("maintenance.bulk-scan-nsfw.button") }}
 			</UButton>
 		</template>

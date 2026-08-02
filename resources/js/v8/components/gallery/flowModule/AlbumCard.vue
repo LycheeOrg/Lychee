@@ -60,6 +60,7 @@
 			<div class="flex justify-between items-end flex-row-reverse">
 				<UButton
 					v-if="props.config.is_display_open_album_button"
+					variant="solid"
 					as="a"
 					:href="router.resolve({ name: 'flow-album', params: { albumId: props.album.id } }).href"
 					color="neutral"

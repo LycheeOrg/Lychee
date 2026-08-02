@@ -27,6 +27,7 @@
 				<UButton
 					:disabled="!isValid || modelValue === ''"
 					:label="$t('gallery.search.advanced.search_button')"
+					variant="solid"
 					color="primary"
 					class="shrink-0"
 					@click="emits('search')"

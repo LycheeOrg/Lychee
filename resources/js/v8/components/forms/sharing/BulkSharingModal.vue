@@ -58,6 +58,7 @@
 				<UButton
 					:disabled="!selectedAlbums.length || !selectedUsersOrGroups.length"
 					color="success"
+					variant="solid"
 					icon="lucide:user-plus"
 					class="flex-1 justify-center"
 					@click="create"

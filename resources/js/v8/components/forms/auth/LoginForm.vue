@@ -54,7 +54,7 @@
 				>
 					{{ $t("dialogs.button.cancel") }}
 				</UButton>
-				<UButton color="primary" class="flex-1 justify-center font-bold" @click="login">
+				<UButton color="primary" variant="solid" class="flex-1 justify-center font-bold" @click="login">
 					{{ $t("dialogs.login.signin") }}
 				</UButton>
 			</div>
@@ -69,7 +69,7 @@
 			>
 				{{ $t("dialogs.button.cancel") }}
 			</UButton>
-			<UButton color="neutral" class="flex-1 justify-center font-bold" @click="login">
+			<UButton color="neutral" variant="solid" class="flex-1 justify-center font-bold" @click="login">
 				{{ $t("dialogs.login.signin") }}
 			</UButton>
 		</div>

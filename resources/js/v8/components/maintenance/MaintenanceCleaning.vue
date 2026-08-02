@@ -10,7 +10,7 @@
 			<LycheeLoadingIcon fast v-if="loading" class="w-full" />
 		</div>
 		<template #footer>
-			<UButton v-if="data.is_not_empty && !loading" color="error" class="w-full justify-center" @click="exec">{{
+			<UButton v-if="data.is_not_empty && !loading" variant="solid" color="error" class="w-full justify-center" @click="exec">{{
 				$t("maintenance.cleaning.button")
 			}}</UButton>
 		</template>

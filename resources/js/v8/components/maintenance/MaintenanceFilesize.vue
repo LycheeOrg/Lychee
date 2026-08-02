@@ -10,7 +10,7 @@
 			<LycheeLoadingIcon fast v-if="loading" class="w-full" />
 		</div>
 		<template #footer>
-			<UButton v-if="data > 0 && !loading" color="primary" class="w-full justify-center" @click="exec">
+			<UButton v-if="data > 0 && !loading" color="primary" variant="solid" class="w-full justify-center" @click="exec">
 				{{ $t("maintenance.fill-filesize-sizevariants.button") }}
 			</UButton>
 		</template>
