@@ -21,7 +21,7 @@
 				>
 					{{ $t("dialogs.button.cancel") }}
 				</UButton>
-				<UButton color="neutral" class="flex-1 justify-center font-bold" @click="login">
+				<UButton variant="solid" color="neutral" class="flex-1 justify-center font-bold" @click="login">
 					{{ $t("dialogs.webauthn.u2f") }}
 				</UButton>
 			</div>

@@ -123,6 +123,7 @@
 			<div class="flex w-full gap-2">
 				<UButton :label="$t('renamer.cancel')" color="neutral" variant="soft" class="flex-1 justify-center font-bold" @click="onHide" />
 				<UButton
+					variant="solid"
 					:label="isEdit ? $t('renamer.update') : $t('renamer.create')"
 					color="neutral"
 					class="flex-1 justify-center font-bold"

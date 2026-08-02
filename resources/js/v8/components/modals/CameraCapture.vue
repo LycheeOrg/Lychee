@@ -35,6 +35,7 @@
 					"
 				/>
 				<UButton
+					variant="solid"
 					:disabled="!cameraReady"
 					icon="lucide:camera"
 					:label="$t('dialogs.camera.capture')"
@@ -64,7 +65,14 @@
 					class="flex-1 justify-center"
 					@click="retake"
 				/>
-				<UButton icon="lucide:upload" :label="$t('dialogs.camera.upload')" color="primary" class="flex-1 justify-center" @click="upload" />
+				<UButton
+					variant="solid"
+					icon="lucide:upload"
+					:label="$t('dialogs.camera.upload')"
+					color="primary"
+					class="flex-1 justify-center"
+					@click="upload"
+				/>
 			</div>
 		</template>
 	</UModal>

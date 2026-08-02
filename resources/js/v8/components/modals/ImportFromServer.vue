@@ -73,7 +73,7 @@
 				<UButton color="neutral" variant="soft" class="flex-1 justify-center font-bold" @click="closeCallback">
 					{{ $t("dialogs.button.cancel") }}
 				</UButton>
-				<UButton color="neutral" class="flex-1 justify-center font-bold" @click="submit">
+				<UButton variant="solid" color="neutral" class="flex-1 justify-center font-bold" @click="submit">
 					{{ $t("import_from_server.sync") }}
 				</UButton>
 			</div>

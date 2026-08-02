@@ -113,6 +113,8 @@
 			<div class="flex gap-3 justify-end">
 				<UButton type="button" color="neutral" variant="soft" :label="$t('contact.clear_button')" @click="reset" />
 				<UButton
+					color="primary"
+					variant="solid"
 					type="submit"
 					:label="contactConfig.submit_button_text ? contactConfig.submit_button_text : $t('contact.submit_button')"
 					:loading="loading"

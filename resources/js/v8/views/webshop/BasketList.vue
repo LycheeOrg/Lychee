@@ -62,7 +62,14 @@
 				</div>
 			</div>
 			<div class="flex ltr:justify-end rtl:justify-start">
-				<UButton :to="{ name: 'checkout' }" icon="lucide:credit-card" class="px-8" :label="$t('webshop.basketList.proceedToCheckout')" />
+				<UButton
+					color="primary"
+					variant="solid"
+					:to="{ name: 'checkout' }"
+					icon="lucide:credit-card"
+					class="px-8"
+					:label="$t('webshop.basketList.proceedToCheckout')"
+				/>
 			</div>
 		</div>
 		<div v-else class="text-center py-10 text-muted">{{ $t("webshop.basketList.emptyBasket") }}</div>

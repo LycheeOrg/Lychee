@@ -19,7 +19,7 @@
 		<div v-if="can_create_user_groups" class="w-full">
 			<p class="text-highlighted">{{ $t("user-groups.explanation") }}</p>
 			<div class="flex justify-end mt-8 mb-8">
-				<UButton color="primary" @click="create">{{ $t("user-groups.create_group") }}</UButton>
+				<UButton variant="solid" color="primary" @click="create">{{ $t("user-groups.create_group") }}</UButton>
 			</div>
 		</div>
 		<div v-if="userGroups === undefined" class="flex justify-center items-center gap-2 text-highlighted mt-4">

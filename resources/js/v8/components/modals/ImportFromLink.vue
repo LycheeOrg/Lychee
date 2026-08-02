@@ -20,7 +20,13 @@
 				<UButton color="neutral" variant="soft" class="flex-1 justify-center font-bold" @click="closeCallback">
 					{{ $t("dialogs.button.cancel") }}
 				</UButton>
-				<UButton color="neutral" class="flex-1 justify-center font-bold" :disabled="!isValidInput || urls.length === 0" @click="submit">
+				<UButton
+					variant="solid"
+					color="neutral"
+					class="flex-1 justify-center font-bold"
+					:disabled="!isValidInput || urls.length === 0"
+					@click="submit"
+				>
 					{{ $t("dialogs.import_from_link.import") }}
 				</UButton>
 			</div>

@@ -76,7 +76,7 @@
 			<UFormField class="w-full grow" :label="$t('settings.dropbox.api_key')">
 				<InputPassword id="api_key" v-model="dropbox_key" />
 			</UFormField>
-			<UButton color="neutral" class="w-full justify-center bg-primary-500/20 hover:bg-primary-500" @click="saveDropboxKey">{{
+			<UButton variant="solid" color="neutral" class="w-full justify-center bg-primary-500/20 hover:bg-primary-500" @click="saveDropboxKey">{{
 				$t("settings.dropbox.set_key")
 			}}</UButton>
 		</div>

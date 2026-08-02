@@ -18,7 +18,7 @@
 				<UButton color="neutral" variant="soft" class="flex-1 justify-center font-bold" @click="close">
 					{{ $t("dialogs.button.cancel") }}
 				</UButton>
-				<UButton color="neutral" class="flex-1 justify-center font-bold" @click="execute">
+				<UButton variant="solid" color="neutral" class="flex-1 justify-center font-bold" @click="execute">
 					{{ $t("dialogs.photo_tags.set_tags") }}
 				</UButton>
 			</div>

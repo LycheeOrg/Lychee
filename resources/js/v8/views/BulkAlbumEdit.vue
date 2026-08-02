@@ -85,6 +85,7 @@
 				"
 			/>
 			<UButton
+				variant="solid"
 				v-if="selectedIds.length > 0"
 				size="sm"
 				color="primary"

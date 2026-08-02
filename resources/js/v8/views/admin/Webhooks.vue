@@ -32,11 +32,11 @@
 				<UIcon name="lucide:send" class="text-4xl" />
 			</div>
 			<p class="text-muted mb-4">{{ $t("webhook.no_webhooks") }}</p>
-			<UButton icon="lucide:plus" :label="$t('webhook.create_first')" @click="openCreateModal" />
+			<UButton color="primary" variant="solid" icon="lucide:plus" :label="$t('webhook.create_first')" @click="openCreateModal" />
 		</div>
 		<template v-else>
 			<div class="flex mb-4 justify-end">
-				<UButton icon="lucide:plus" size="sm" :label="$t('webhook.create')" @click="openCreateModal" />
+				<UButton color="primary" variant="solid" icon="lucide:plus" size="sm" :label="$t('webhook.create')" @click="openCreateModal" />
 			</div>
 
 			<!-- Webhooks table -->

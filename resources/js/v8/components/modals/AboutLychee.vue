@@ -44,7 +44,7 @@
 			</div>
 		</template>
 		<template #footer>
-			<UButton class="w-full justify-center" @click="closeCallback">
+			<UButton color="primary" variant="solid" class="w-full justify-center" @click="closeCallback">
 				{{ $t("dialogs.button.close") }}
 			</UButton>
 		</template>

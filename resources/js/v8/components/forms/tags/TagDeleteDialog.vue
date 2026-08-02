@@ -22,7 +22,7 @@
 				>
 					{{ $t("dialogs.button.cancel") }}
 				</UButton>
-				<UButton class="flex-1 justify-center" color="error" @click="execute">
+				<UButton variant="solid" class="flex-1 justify-center" color="error" @click="execute">
 					{{ $t("tags.delete") }}
 				</UButton>
 			</div>

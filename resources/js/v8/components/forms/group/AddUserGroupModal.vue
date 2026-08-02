@@ -34,6 +34,7 @@
 					"
 				/>
 				<UButton
+					color="primary"
 					:label="groupId === undefined ? $t('user-groups.create.create') : $t('user-groups.create.edit')"
 					variant="solid"
 					icon="lucide:check"

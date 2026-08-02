@@ -15,7 +15,7 @@
 			<LycheeLoadingIcon fast v-if="loading" class="w-full" />
 		</div>
 		<template #footer>
-			<UButton v-if="fixable && !loading" :to="{ name: 'tree' }" color="primary" class="w-full justify-center">
+			<UButton variant="solid" v-if="fixable && !loading" :to="{ name: 'tree' }" color="primary" class="w-full justify-center">
 				{{ $t("maintenance.fix-tree.button") }}
 			</UButton>
 		</template>

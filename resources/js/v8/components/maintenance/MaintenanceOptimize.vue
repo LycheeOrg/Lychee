@@ -11,7 +11,7 @@
 			<pre v-if="data.length > 0" class="text-2xs m-4">{{ data.join("\n") }}</pre>
 		</div>
 		<template #footer>
-			<UButton v-if="data.length === 0 && !loading" color="secondary" class="w-full justify-center" @click="exec">
+			<UButton variant="solid" v-if="data.length === 0 && !loading" color="secondary" class="w-full justify-center" @click="exec">
 				{{ $t("maintenance.optimize.button") }}
 			</UButton>
 		</template>

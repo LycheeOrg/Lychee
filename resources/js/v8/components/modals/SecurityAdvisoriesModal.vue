@@ -38,7 +38,7 @@
 				<UButton color="neutral" variant="soft" class="flex-1 justify-center font-bold" @click="goToDiagnostics">
 					{{ $t("dialogs.security_advisories.go_to_diagnostics") }}
 				</UButton>
-				<UButton color="neutral" class="flex-1 justify-center font-bold" @click="dismiss">
+				<UButton variant="solid" color="neutral" class="flex-1 justify-center font-bold" @click="dismiss">
 					{{ $t("dialogs.button.close") }}
 				</UButton>
 			</div>

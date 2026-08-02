@@ -41,8 +41,8 @@
 			class="md:max-w-3xl lg:max-w-5xl xl:max-w-7xl mt-9 mx-auto sticky z-30 w-full top-0 flex h-11 justify-center"
 		>
 			<UButton variant="ghost" color="neutral" class="px-8 font-bold" @click="fetch">{{ $t("fix-tree.buttons.reset") }}</UButton>
-			<UButton color="warning" class="px-8 font-bold" @click="check">{{ $t("fix-tree.buttons.check") }}</UButton>
-			<UButton color="error" class="px-8 font-bold" @click="apply">
+			<UButton variant="solid" color="warning" class="px-8 font-bold" @click="check">{{ $t("fix-tree.buttons.check") }}</UButton>
+			<UButton variant="solid" color="error" class="px-8 font-bold" @click="apply">
 				<UIcon v-if="!isValidated" name="lucide:triangle-alert" />{{ $t("fix-tree.buttons.apply") }}
 			</UButton>
 		</div>

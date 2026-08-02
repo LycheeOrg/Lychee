@@ -80,7 +80,7 @@
 							}
 						"
 					/>
-					<UButton :label="$t('gallery.done')" color="neutral" :disabled="!selectedUser" @click="confirmAssignUser" />
+					<UButton variant="solid" :label="$t('gallery.done')" color="neutral" :disabled="!selectedUser" @click="confirmAssignUser" />
 				</div>
 			</template>
 		</UModal>

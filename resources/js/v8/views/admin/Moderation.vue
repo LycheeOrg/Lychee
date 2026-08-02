@@ -26,8 +26,22 @@
 		<div class="flex items-center gap-2 mb-3 px-1 h-8">
 			<span class="text-muted text-sm">{{ selectedIds.size }} {{ $t("moderation.selected") }}</span>
 			<template v-if="selectedIds.size > 0">
-				<UButton icon="lucide:check" color="success" size="sm" :label="$t('moderation.approve_selected')" @click="approveSelected" />
-				<UButton icon="lucide:trash" color="error" size="sm" :label="$t('moderation.delete_selected')" @click="deleteSelected" />
+				<UButton
+					variant="solid"
+					icon="lucide:check"
+					color="success"
+					size="sm"
+					:label="$t('moderation.approve_selected')"
+					@click="approveSelected"
+				/>
+				<UButton
+					variant="solid"
+					icon="lucide:trash"
+					color="error"
+					size="sm"
+					:label="$t('moderation.delete_selected')"
+					@click="deleteSelected"
+				/>
 			</template>
 		</div>
 

@@ -29,6 +29,7 @@
 			</div>
 			<div class="flex items-center mt-9">
 				<UButton
+					variant="solid"
 					type="submit"
 					:disabled="!isFormValid || isSubmitting"
 					:loading="isSubmitting"

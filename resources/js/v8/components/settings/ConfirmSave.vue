@@ -65,9 +65,13 @@
 			class="w-full ltr:rounded-r-none rtl:rounded-l-none font-bold border-none"
 			:description="$t('settings.all.change_detected')"
 		/>
-		<UButton class="bg-error-800 text-white font-bold px-8 hover:bg-error-700 rtl:rounded-r-none ltr:rounded-l-none" @click="emits('save')">{{
-			$t("settings.all.save")
-		}}</UButton>
+		<UButton
+			color="primary"
+			variant="solid"
+			class="bg-error-800 text-white font-bold px-8 hover:bg-error-700 rtl:rounded-r-none ltr:rounded-l-none"
+			@click="emits('save')"
+			>{{ $t("settings.all.save") }}</UButton
+		>
 	</div>
 </template>
 <script setup lang="ts">

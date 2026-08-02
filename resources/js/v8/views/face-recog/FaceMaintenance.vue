@@ -22,6 +22,7 @@
 				<!-- Controls -->
 				<div class="flex flex-wrap gap-3 mb-4 items-center">
 					<UButton
+						variant="solid"
 						:label="dismissedOnly ? $t('maintenance.face_quality.show_active') : $t('maintenance.face_quality.show_dismissed')"
 						:color="dismissedOnly ? 'primary' : 'neutral'"
 						size="sm"
@@ -30,6 +31,7 @@
 						@click="toggleDismissedOnly"
 					/>
 					<UButton
+						variant="solid"
 						:label="$t('maintenance.face_quality.show_unassigned')"
 						:color="unassignedOnly ? 'primary' : 'neutral'"
 						size="sm"
@@ -50,6 +52,7 @@
 							{{ $t("maintenance.face_quality.selected_count", { count: String(selectedIds.length) }) }}
 						</span>
 						<UButton
+							variant="solid"
 							:label="$t('people.batch_assign')"
 							icon="lucide:user-plus"
 							color="success"
@@ -61,6 +64,7 @@
 							"
 						/>
 						<UButton
+							variant="solid"
 							v-if="!dismissedOnly"
 							:label="$t('maintenance.face_quality.batch_dismiss')"
 							icon="lucide:x"
@@ -70,6 +74,7 @@
 							@click="batchDismiss"
 						/>
 						<UButton
+							variant="solid"
 							v-else
 							:label="$t('maintenance.face_quality.batch_reactivate')"
 							icon="lucide:undo"

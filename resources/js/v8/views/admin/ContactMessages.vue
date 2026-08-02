@@ -24,18 +24,21 @@
 			<UInput v-model="searchQuery" :placeholder="$t('contact.admin.search_placeholder')" class="w-64" @input="onSearchInput" />
 			<div class="flex gap-2">
 				<UButton
+					variant="solid"
 					:label="$t('contact.admin.filter_all')"
 					:color="readFilter === null ? 'primary' : 'neutral'"
 					size="sm"
 					@click="setReadFilter(null)"
 				/>
 				<UButton
+					variant="solid"
 					:label="$t('contact.admin.filter_unread')"
 					:color="readFilter === false ? 'primary' : 'neutral'"
 					size="sm"
 					@click="setReadFilter(false)"
 				/>
 				<UButton
+					variant="solid"
 					:label="$t('contact.admin.filter_read')"
 					:color="readFilter === true ? 'primary' : 'neutral'"
 					size="sm"

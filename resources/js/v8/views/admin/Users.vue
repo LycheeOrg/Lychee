@@ -46,8 +46,8 @@
 			/>
 		</div>
 		<div class="flex justify-end my-8 gap-2">
-			<UButton color="warning" @click="inviteUser">{{ $t("users.invite.button") }}</UButton>
-			<UButton color="success" @click="createUser">{{ $t("users.create") }}</UButton>
+			<UButton variant="solid" color="warning" @click="inviteUser">{{ $t("users.invite.button") }}</UButton>
+			<UButton variant="solid" color="success" @click="createUser">{{ $t("users.create") }}</UButton>
 		</div>
 
 		<UTable

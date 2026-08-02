@@ -11,7 +11,7 @@
 				<UButton class="flex-1 justify-center" color="neutral" variant="soft" @click="closeAndReload">
 					{{ $t("dialogs.session_expired.reload") }}
 				</UButton>
-				<UButton class="flex-1 justify-center" @click="gotoGallery">
+				<UButton color="primary" variant="solid" class="flex-1 justify-center" @click="gotoGallery">
 					{{ $t("dialogs.session_expired.go_to_gallery") }}
 				</UButton>
 			</div>

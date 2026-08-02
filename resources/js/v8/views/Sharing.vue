@@ -12,6 +12,8 @@
 			{{ $t("sharing.info") }}
 		</div>
 		<UButton
+			color="primary"
+			variant="solid"
 			class="w-full font-bold justify-center mt-4 mb-12"
 			:label="$t('sharing.bluk_share')"
 			icon="lucide:user-plus"

@@ -63,6 +63,7 @@
 		<div class="flex justify-between md:max-w-3xl lg:max-w-5xl xl:max-w-7xl mx-auto gap-4 xl:gap-8">
 			<div class="w-1/4 flex flex-col flex-none">
 				<UButton
+					variant="solid"
 					color="error"
 					class="w-full font-bold mb-4 justify-center"
 					:disabled="selectedIds.length === 0"

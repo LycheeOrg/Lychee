@@ -68,6 +68,7 @@
 					"
 				/>
 				<UButton
+					variant="solid"
 					class="flex-1 justify-center"
 					:label="$t('people.merge.confirm')"
 					color="error"

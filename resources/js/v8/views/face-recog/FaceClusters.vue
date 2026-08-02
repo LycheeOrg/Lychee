@@ -107,6 +107,7 @@
 
 						<div class="flex gap-2 shrink-0" @click.stop>
 							<UButton
+								variant="solid"
 								:label="$t('people.assign')"
 								icon="lucide:check"
 								color="success"
@@ -185,6 +186,7 @@
 						/>
 						<div class="flex gap-2">
 							<UButton
+								variant="solid"
 								:label="$t('people.assign')"
 								icon="lucide:check"
 								color="success"
@@ -232,7 +234,13 @@
 					>
 						{{ $t("dialogs.button.cancel") }}
 					</UButton>
-					<UButton color="error" class="flex-1 justify-center font-bold" :loading="confirmingDismiss" @click="confirmDismiss">
+					<UButton
+						variant="solid"
+						color="error"
+						class="flex-1 justify-center font-bold"
+						:loading="confirmingDismiss"
+						@click="confirmDismiss"
+					>
 						{{ $t("people.dismiss") }}
 					</UButton>
 				</div>

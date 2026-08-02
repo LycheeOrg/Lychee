@@ -270,6 +270,7 @@
 			<!-- Save -->
 			<div class="flex flex-col items-end gap-1">
 				<UButton
+					variant="solid"
 					:label="$t('watermark.preview.save')"
 					:loading="saving"
 					:disabled="!is_se_enabled"

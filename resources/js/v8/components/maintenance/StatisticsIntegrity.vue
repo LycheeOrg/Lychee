@@ -17,7 +17,7 @@
 			<LycheeLoadingIcon fast v-if="loading" class="w-full" />
 		</div>
 		<template #footer>
-			<UButton v-if="!loading" color="primary" class="w-full font-bold justify-center" @click="exec">
+			<UButton variant="solid" v-if="!loading" color="primary" class="w-full font-bold justify-center" @click="exec">
 				{{ $t("maintenance.statistics-check.button") }}
 			</UButton>
 		</template>

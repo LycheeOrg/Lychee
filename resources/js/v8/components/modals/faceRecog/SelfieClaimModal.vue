@@ -51,6 +51,7 @@
 			<div class="flex gap-2 justify-end w-full">
 				<UButton :label="$t('gallery.cancel')" color="neutral" variant="soft" @click="reset" />
 				<UButton
+					variant="solid"
 					v-if="selectedFile && !matchedPerson"
 					:label="$t('people.claim_by_selfie')"
 					color="primary"
@@ -59,6 +60,7 @@
 					@click="submit"
 				/>
 				<UButton
+					variant="solid"
 					v-if="matchedPerson"
 					:label="$t('gallery.done')"
 					color="success"

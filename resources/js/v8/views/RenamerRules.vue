@@ -57,6 +57,8 @@
 				<div class="flex items-center gap-4">
 					<span class="text-sm text-muted">{{ $t("renamer.rules_count", { count: rules.length.toString() }) }}</span>
 					<UButton
+						color="primary"
+						variant="solid"
 						v-if="rules.length > 0"
 						icon="lucide:plus"
 						size="sm"
@@ -76,6 +78,8 @@
 				</div>
 				<p class="text-muted mb-4">{{ $t("renamer.no_rules") }}</p>
 				<UButton
+					color="primary"
+					variant="solid"
 					icon="lucide:plus"
 					:label="$t('renamer.create_first_rule')"
 					@click="
