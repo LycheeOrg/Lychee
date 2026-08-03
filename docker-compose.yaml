@@ -440,11 +440,16 @@ x-common-env:
   ###################################################################
   # Facial recognition                                              #
   ###################################################################
-  AI_VISION_ENABLED: "${AI_VISION_ENABLED:-true}"
-  AI_VISION_FACE_API_KEY: "${AI_VISION_API_KEY:-}"
   AI_VISION_FACE_URL: "http://lychee_facial_recognition:8000"
-  # AI_VISION_NSFW_API_KEY: "${AI_VISION_NSFW_API_KEY:-}"
+  AI_VISION_FACE_API_KEY: "${AI_VISION_API_KEY:-}"
+  # AI_VISION_FACE_API_KEY_FILE: "/run/secrets/ai_vision_face_api_key"
+
+  ###################################################################
+  # NSFW classification (requires SE)
+  ###################################################################
   # AI_VISION_NSFW_URL: "http://lychee_nsfw_classification:8000"
+  # AI_VISION_NSFW_API_KEY: "${AI_VISION_NSFW_API_KEY:-}"
+  # AI_VISION_NSFW_API_KEY_FILE: "/run/secrets/ai_vision_nsfw_api_key"
 
 
 services:
@@ -578,8 +583,8 @@ services:
       start_period: 10s
 
   lychee_facial_recognition:
-    ports:
-      - "${APP_PORT_AI_FACE:-8001}:8000"
+    # ports:
+    #   - "${APP_PORT_AI_FACE:-8001}:8000"
     image: ghcr.io/lycheeorg/lychee-facial-recognition:latest
     restart: unless-stopped
     security_opt:
@@ -590,7 +595,7 @@ services:
       # Lychee instance base URL (no trailing slash)
       VISION_FACE_LYCHEE_API_URL: "http://lychee_api:8000"
       # Shared API key — must match AI_VISION_FACE_API_KEY in Lychee's .env
-      VISION_FACE_API_KEY: "${AI_VISION_API_KEY:-changeme}"
+      VISION_FACE_API_KEY: "${AI_VISION_API_KEY:-}"
       # Set to false for development environments with self-signed certificates
       VISION_FACE_VERIFY_SSL: "${AI_VISION_VERIFY_SSL:-true}"
       # Skip the Lychee connectivity check at startup (useful for local dev)
@@ -667,8 +672,8 @@ services:
   # Note: unlike every other LycheeOrg repo (MIT), this one is AGPL-3.0-licensed because it
   # bundles NudeNet, which is itself AGPL-3.0.
   lychee_nsfw_classification:
-    ports:
-      - "${APP_PORT_AI_NSFW:-8002}:8000"
+    # ports:
+    #   - "${APP_PORT_AI_NSFW:-8002}:8000"
     image: ghcr.io/lycheeorg/lychee-nsfw-classification:latest
     restart: unless-stopped
     security_opt:

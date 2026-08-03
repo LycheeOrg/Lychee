@@ -163,6 +163,11 @@ load_secret_from_file() {
     exit 1
   fi
 
+  if [ ! -r "${file_path}" ]; then
+    echo "❌ ERROR: ${file_var_name} points to a file that is not readable: ${file_path}"
+    exit 1
+  fi
+
   export "${var_name}=$(cat "${file_path}")"
   echo "✅ Loaded ${var_name} from file: ${file_path}"
 }
