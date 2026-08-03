@@ -24,7 +24,7 @@ For even more advanced features, consider the Supporter Edition (SE). The SE ver
 
 ## ⚠️ Upgrade Notice to Version 7.0
 
-**Version 7.0 introduces significant changes on the docker image.** Please refer to our [Upgrade Guide](https://lycheeorg.dev/docs/upgrade.html#upgrading-lychee-docker-installations-from-v6-to-v7) for detailed instructions on how to upgrade from previous versions.
+**Version 7.0 introduces significant changes on the docker image.** Please refer to our [Upgrade Guide](https://lycheeorg.dev/docs/administration/upgrade/) for detailed instructions on how to upgrade from previous versions.
 
 ## Support the Team
 
