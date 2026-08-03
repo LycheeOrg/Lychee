@@ -14,6 +14,14 @@
 #   app_key:
 #     file: ./secrets/app_key
 
+# More generally, EVERY confidential value backing config/services.php (the
+# third-party OAuth/AWS/mail/AI-vision credentials further below) also supports
+# the same Docker/Kubernetes secrets convention: set "<VAR>_FILE" to the path of
+# a mounted file instead of setting "<VAR>" directly, and leave "<VAR>" itself
+# unset. This is resolved by docker/scripts/01-validate-env.sh at container
+# startup, before Lychee/PHP ever runs. See the commented "_FILE" examples next
+# to each credential below.
+
 ##########################################################################################
 # Common settings for Lychee services
 ##########################################################################################
@@ -327,6 +335,7 @@ x-common-env:
 
   # AMAZON_SIGNIN_CLIENT_ID=
   # AMAZON_SIGNIN_SECRET=
+  # AMAZON_SIGNIN_SECRET_FILE=/run/secrets/amazon_signin_secret
   # AMAZON_SIGNIN_REDIRECT_URI=/auth/amazon/redirect
 
   # https://developer.okta.com/blog/2019/06/04/what-the-heck-is-sign-in-with-apple
@@ -336,37 +345,45 @@ x-common-env:
   # https://bannister.me/blog/generating-a-client-secret-for-sign-in-with-apple-on-each-request
   # APPLE_CLIENT_ID=
   # APPLE_CLIENT_SECRET=
+  # APPLE_CLIENT_SECRET_FILE=/run/secrets/apple_client_secret
   # APPLE_REDIRECT_URI=/auth/apple/redirect
 
   # FACEBOOK_CLIENT_ID=
   # FACEBOOK_CLIENT_SECRET=
+  # FACEBOOK_CLIENT_SECRET_FILE=/run/secrets/facebook_client_secret
   # FACEBOOK_REDIRECT_URI=/auth/facebook/redirect
 
   # GITHUB_CLIENT_ID=
   # GITHUB_CLIENT_SECRET=
+  # GITHUB_CLIENT_SECRET_FILE=/run/secrets/github_client_secret
   # GITHUB_REDIRECT_URI=/auth/github/redirect
 
   # GOOGLE_CLIENT_ID=
   # GOOGLE_CLIENT_SECRET=
+  # GOOGLE_CLIENT_SECRET_FILE=/run/secrets/google_client_secret
   # GOOGLE_REDIRECT_URI=/auth/google/redirect
 
   # MASTODON_DOMAIN=https://mastodon.social
   # MASTODON_ID=
   # MASTODON_SECRET=
+  # MASTODON_SECRET_FILE=/run/secrets/mastodon_secret
   # MASTODON_REDIRECT_URI=/auth/mastodon/redirect
 
   # MICROSOFT_CLIENT_ID=
   # MICROSOFT_CLIENT_SECRET=
+  # MICROSOFT_CLIENT_SECRET_FILE=/run/secrets/microsoft_client_secret
   # MICROSOFT_REDIRECT_URI=/auth/microsoft/redirect
   # MICROSOFT_TENANT_ID=
 
   # NEXTCLOUD_CLIENT_ID=
   # NEXTCLOUD_CLIENT_SECRET=
+  # NEXTCLOUD_CLIENT_SECRET_FILE=/run/secrets/nextcloud_client_secret
   # NEXTCLOUD_REDIRECT_URI=/auth/nextcloud/redirect
   # NEXTCLOUD_BASE_URI=
 
   # KEYCLOAK_CLIENT_ID=
   # KEYCLOAK_CLIENT_SECRET=
+  # KEYCLOAK_CLIENT_SECRET_FILE=/run/secrets/keycloak_client_secret
   # KEYCLOAK_REDIRECT_URI=/auth/keycloak/redirect
   # KEYCLOAK_BASE_URL=
   # KEYCLOAK_REALM=
@@ -374,17 +391,21 @@ x-common-env:
   # AUTHENTIK_BASE_URL=
   # AUTHENTIK_CLIENT_ID=
   # AUTHENTIK_CLIENT_SECRET=
+  # AUTHENTIK_CLIENT_SECRET_FILE=/run/secrets/authentik_client_secret
   # AUTHENTIK_REDIRECT_URI=/auth/authentik/redirect
 
   # AUTHELIA_BASE_URL=
   # AUTHELIA_CLIENT_ID=
   # AUTHELIA_CLIENT_SECRET=
+  # AUTHELIA_CLIENT_SECRET_FILE=/run/secrets/authelia_client_secret
   # AUTHELIA_REDIRECT_URI=/auth/authelia/redirect
 
   # AWS support data
 
   # AWS_ACCESS_KEY_ID=
+  # AWS_ACCESS_KEY_ID_FILE=/run/secrets/aws_access_key_id
   # AWS_SECRET_ACCESS_KEY=
+  # AWS_SECRET_ACCESS_KEY_FILE=/run/secrets/aws_secret_access_key
   # AWS_DEFAULT_REGION=
   # AWS_BUCKET=
   # AWS_URL=
@@ -419,9 +440,17 @@ x-common-env:
   ###################################################################
   # Facial recognition                                              #
   ###################################################################
-  AI_VISION_ENABLED: "${AI_VISION_ENABLED:-true}"
-  AI_VISION_FACE_API_KEY: "${AI_VISION_API_KEY:-changeme}"
   AI_VISION_FACE_URL: "http://lychee_facial_recognition:8000"
+  AI_VISION_FACE_API_KEY: "${AI_VISION_API_KEY:-}"
+  # AI_VISION_FACE_API_KEY_FILE: "/run/secrets/ai_vision_face_api_key"
+
+  ###################################################################
+  # NSFW classification (requires SE)
+  ###################################################################
+  # AI_VISION_NSFW_URL: "http://lychee_nsfw_classification:8000"
+  # AI_VISION_NSFW_API_KEY: "${AI_VISION_NSFW_API_KEY:-}"
+  # AI_VISION_NSFW_API_KEY_FILE: "/run/secrets/ai_vision_nsfw_api_key"
+
 
 services:
   ##########################################################################################
@@ -554,10 +583,8 @@ services:
       start_period: 10s
 
   lychee_facial_recognition:
-    expose:
-      - "${APP_PORT_AI_FACE:-8001}"
-    ports:
-      - "${APP_PORT_AI_FACE:-8001}:8000"
+    # ports:
+    #   - "${APP_PORT_AI_FACE:-8001}:8000"
     image: ghcr.io/lycheeorg/lychee-facial-recognition:latest
     restart: unless-stopped
     security_opt:
@@ -568,7 +595,7 @@ services:
       # Lychee instance base URL (no trailing slash)
       VISION_FACE_LYCHEE_API_URL: "http://lychee_api:8000"
       # Shared API key — must match AI_VISION_FACE_API_KEY in Lychee's .env
-      VISION_FACE_API_KEY: "${AI_VISION_API_KEY:-changeme}"
+      VISION_FACE_API_KEY: "${AI_VISION_API_KEY:-}"
       # Set to false for development environments with self-signed certificates
       VISION_FACE_VERIFY_SSL: "${AI_VISION_VERIFY_SSL:-true}"
       # Skip the Lychee connectivity check at startup (useful for local dev)
@@ -636,6 +663,88 @@ services:
       retries: 3
       start_period: 60s
 
+  ##########################################################################################
+  # NSFW Classification Service (disabled by default - opt in with --profile nsfw)
+  ##########################################################################################
+  #
+  # Sidecar for https://github.com/LycheeOrg/Lychee-NSFW-Classification, following the same
+  # REST + webhook architecture as lychee_facial_recognition above.
+  # Note: unlike every other LycheeOrg repo (MIT), this one is AGPL-3.0-licensed because it
+  # bundles NudeNet, which is itself AGPL-3.0.
+  lychee_nsfw_classification:
+    # ports:
+    #   - "${APP_PORT_AI_NSFW:-8002}:8000"
+    image: ghcr.io/lycheeorg/lychee-nsfw-classification:latest
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    profiles:
+      - nsfw
+    environment:
+      # Lychee instance base URL used for result callbacks (no trailing slash)
+      VISION_NSFW_LYCHEE_API_URL: "http://lychee_api:8000"
+      # Shared API key — must match AI_VISION_NSFW_API_KEY in Lychee's .env
+      VISION_NSFW_API_KEY: "${AI_VISION_NSFW_API_KEY:-}"
+      # Set to false for development environments with self-signed certificates
+      VISION_NSFW_VERIFY_SSL: "${AI_VISION_VERIFY_SSL:-true}"
+      # Skip the Lychee connectivity check at startup (useful for local dev)
+      VISION_NSFW_SKIP_LYCHEE_CHECK: "false"
+      # Shared Docker-volume mount point for photo files
+      VISION_NSFW_PHOTOS_PATH: "/data/photos"
+      # SQLite job-queue storage directory (used when queue backend = database, the default)
+      VISION_NSFW_STORAGE_PATH: "/data/queue"
+      # Uvicorn/application log level (debug, info, warning, error, critical)
+      VISION_NSFW_LOG_LEVEL: "info"
+
+      # Check the following for more env variables (presets, per-tier thresholds, etc.)
+      # https://github.com/LycheeOrg/Lychee-NSFW-Classification/blob/master/.env.example
+    volumes:
+      - ./lychee/uploads:/data/photos:ro
+      - nsfw_queue:/data/queue
+    networks:
+      - lychee
+    depends_on:
+      lychee_api:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/api/nsfw/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  ##########################################################################################
+  # Local Reverse Geo-Decoding Service (disabled by default - opt in with --profile geo-decoding)
+  ##########################################################################################
+  #
+  # Sidecar for https://github.com/LycheeOrg/Lychee-Reverse-Geo-Coding: a self-contained,
+  # Nominatim-"/reverse"-compatible service backed by data embedded in the binary (Natural
+  # Earth country/province/city polygons via rgeo). No API key, no external data download, no
+  # outbound network calls, no persistent volume - country/province/city resolution only (not
+  # street-level). config/services.php -> local-geo-decoding.base_url (LOCAL_GEO_DECODING_URL)
+  # points Lychee at it instead of the public nominatim.openstreetmap.org server.
+  lychee_geo_decoding:
+    image: ghcr.io/lycheeorg/lychee-reverse-geo-coding:latest
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    profiles:
+      - geo-decoding
+    ports:
+      - "${APP_PORT_GEO_DECODING:-8003}:8080"
+    networks:
+      - lychee
+    healthcheck:
+      test: [ "CMD", "wget", "-qO-", "http://localhost:8080/health" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
 networks:
   lychee:
 
@@ -645,4 +754,7 @@ volumes:
     driver: local
   ai_vision_embeddings:
     name: lychee_ai_vision_embeddings
+    driver: local
+  nsfw_queue:
+    name: lychee_nsfw_queue
     driver: local

@@ -138,6 +138,68 @@ if [ -n "${REDIS_HOST:-}" ] || [ -n "${REDIS_PASSWORD:-}" ] || [ -n "${REDIS_PAS
   fi
 fi
 
+##################################
+#   OPTIONAL SERVICE SECRETS     #
+##################################
+
+# Generic helper: if <VAR> is empty and <VAR>_FILE is set, load the value from
+# the file it points to into <VAR> (Docker/Kubernetes secrets convention).
+# Unlike APP_KEY/DB_PASSWORD/REDIS_PASSWORD above, these are all optional
+# credentials (config/services.php third-party integrations, plus
+# KEYGEN_API_KEY), so an unset value is not an error - it just means the
+# corresponding integration stays disabled.
+load_secret_from_file() {
+  local var_name="$1"
+  local file_var_name="${var_name}_FILE"
+  local current_value="${!var_name:-}"
+  local file_path="${!file_var_name:-}"
+
+  if [ -n "${current_value}" ] || [ -z "${file_path}" ]; then
+    return
+  fi
+
+  if [ ! -f "${file_path}" ]; then
+    echo "❌ ERROR: ${file_var_name} is set but file does not exist: ${file_path}"
+    exit 1
+  fi
+
+  if [ ! -r "${file_path}" ]; then
+    echo "❌ ERROR: ${file_var_name} points to a file that is not readable: ${file_path}"
+    exit 1
+  fi
+
+  export "${var_name}=$(cat "${file_path}")"
+  echo "✅ Loaded ${var_name} from file: ${file_path}"
+}
+
+# All confidential keys backing config/services.php, plus KEYGEN_API_KEY - each
+# supports the matching "<VAR>_FILE" env var so secrets can be mounted as files
+# instead of passed as plaintext environment variables.
+SERVICES_SECRET_VARS=(
+  AI_VISION_FACE_API_KEY
+  AI_VISION_NSFW_API_KEY
+  MAILGUN_SECRET
+  POSTMARK_TOKEN
+  AWS_ACCESS_KEY_ID
+  AWS_SECRET_ACCESS_KEY
+  AMAZON_SIGNIN_SECRET
+  APPLE_CLIENT_SECRET
+  AUTHELIA_CLIENT_SECRET
+  AUTHENTIK_CLIENT_SECRET
+  FACEBOOK_CLIENT_SECRET
+  GITHUB_CLIENT_SECRET
+  GOOGLE_CLIENT_SECRET
+  MASTODON_SECRET
+  MICROSOFT_CLIENT_SECRET
+  NEXTCLOUD_CLIENT_SECRET
+  KEYCLOAK_CLIENT_SECRET
+  KEYGEN_API_KEY
+)
+
+for service_secret_var in "${SERVICES_SECRET_VARS[@]}"; do
+  load_secret_from_file "${service_secret_var}"
+done
+
 ###########################
 #     ADDITIONAL ENV      #
 ###########################
