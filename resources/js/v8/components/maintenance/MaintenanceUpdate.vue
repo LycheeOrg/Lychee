@@ -1,31 +1,22 @@
 <template>
-	<UCard v-if="data && data.is_docker !== true" class="min-h-40 relative bg-muted/50">
-		<template #header>
-			<div class="text-center font-bold">
-				{{ $t("maintenance.update.title") }}
-			</div>
-		</template>
-		<div class="w-full h-40 overflow-y-auto text-center text-muted text-sm">
-			{{ data.channel_name }}<br />
-			{{ data.info }}<br />
-			{{ data.extra }}
-		</div>
-		<template #footer>
-			<UButton variant="solid" v-if="canCheck" color="secondary" class="w-full justify-center" @click="check">{{
-				$t("maintenance.update.check-button")
-			}}</UButton>
-			<UButton variant="solid" v-if="canUpdate" color="primary" class="w-full justify-center" to="/Update" target="_blank" rel="noopener">
+	<MaintenanceRow v-if="data && data.is_docker !== true">
+		<template #title>{{ $t("maintenance.update.title") }}</template>
+		{{ [data.channel_name, data.info, data.extra].filter(Boolean).join(" · ") }}
+		<template #actions>
+			<UButton variant="soft" v-if="canCheck" color="neutral" @click="check">{{ $t("maintenance.update.check-button") }}</UButton>
+			<UButton variant="soft" v-if="canUpdate" color="primary" to="/Update" target="_blank" rel="noopener">
 				{{ $t("maintenance.update.update-button") }}
 			</UButton>
-			<div v-if="!canCheck && !canUpdate && !loading" class="w-full text-center">
+			<span v-if="!canCheck && !canUpdate && !loading" class="text-sm text-muted whitespace-nowrap">
 				{{ $t("maintenance.update.no-pending-updates") }}
-			</div>
+			</span>
 		</template>
-	</UCard>
+	</MaintenanceRow>
 </template>
 
 <script setup lang="ts">
 import { ref } from "vue";
+import MaintenanceRow from "@/v8/components/maintenance/MaintenanceRow.vue";
 import MaintenanceService from "@/services/maintenance-service";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import { trans } from "laravel-vue-i18n";

@@ -1,6 +1,7 @@
 <template>
 	<UInput
 		v-model="uiValue"
+		v-bind="$attrs"
 		:class="classValue"
 		:disabled="props.disabled"
 		:type="show ? 'text' : 'password'"

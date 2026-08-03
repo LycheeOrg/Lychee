@@ -8,9 +8,7 @@
 	<div class="text-muted text-center mt-2 p-2">
 		{{ $t("maintenance.description") }}
 	</div>
-	<div
-		class="md:max-w-3xl lg:max-w-5xl xl:max-w-7xl mt-9 mx-auto grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 md:gap-8 lg:grid-cols-4 w-full"
-	>
+	<div class="max-w-7xl mt-9 mx-auto flex flex-col divide-y divide-default w-full px-4 sm:px-6">
 		<MaintenanceUpdate />
 		<MaintenanceOptimize />
 		<MaintenanceFlushCache />
