@@ -33,10 +33,10 @@
 		"@vue/tsconfig": "^0.9.1",
 		"eslint": "^10.8.0",
 		"eslint-plugin-vue": "~10.10.0",
-		"jsdom": "^30.0.0",
+		"jsdom": "^30.0.1",
 		"prettier": "3.9.6",
 		"sass": "^1.102.0",
-		"vue-tsc": "^3.3.7"
+		"vue-tsc": "^3.3.9"
 	},
 	"dependencies": {
 		"@dayflow/blossom-color-picker-vue": "^1.2.1",
