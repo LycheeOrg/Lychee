@@ -218,7 +218,7 @@ class OrderFactory extends Factory
 	 */
 	public function canCheckout(): self
 	{
-		return $this->has(OrderItem::factory()->forPhoto()->fullSize()->count(1))->pending()->withEmail();
+		return $this->has(OrderItem::factory()->forPhoto()->fullSize()->count(1), 'items')->pending()->withEmail();
 	}
 
 	/**

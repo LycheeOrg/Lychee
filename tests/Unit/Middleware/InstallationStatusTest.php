@@ -18,9 +18,9 @@
 
 namespace Tests\Unit\Middleware;
 
-use App\Exceptions\Internal\LycheeInvalidArgumentException;
 use App\Exceptions\InstallationAlreadyCompletedException;
 use App\Exceptions\InstallationRequiredException;
+use App\Exceptions\Internal\LycheeInvalidArgumentException;
 use App\Http\Middleware\Checks\IsInstalled;
 use App\Http\Middleware\InstallationStatus;
 use Illuminate\Http\Request;
