@@ -161,6 +161,12 @@ return [
         'success' => 'Status for ansiktsskanning tilbakestilt.',
     ],
 
+        'purge-orphan-face-embeddings' => [
+            'title' => 'Purge Orphan Face Embeddings',
+            'description' => 'The AI Vision service may be holding up to %d embedding(s) that no longer exist in Lychee. Purging will push the current list of faces to AI Vision and permanently delete anything left over.',
+            'action' => 'Purge Now',
+            'success' => 'Orphaned face embeddings purged successfully.',
+        ],
         'bulk-scan-nsfw' => [
         'title' => 'Masseskanning for NSFW',
         'description' => 'Skann alle uskannede bilder for NSFW-innhold ved hjelp av den konfigurerte forhåndsinnstillingen. Krever at NSFW-klassifiseringstjenesten kjører.',
