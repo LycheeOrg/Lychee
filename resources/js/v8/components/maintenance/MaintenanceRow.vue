@@ -1,6 +1,6 @@
 <template>
 	<div class="flex items-center gap-4 py-3 ltr:flex-row rtl:flex-row-reverse">
-		<p class="line-clamp-1 min-w-0 flex-1">
+		<p class="min-w-0 flex-1">
 			<span class="font-semibold text-highlighted"><slot name="title" /></span>
 			<span class="text-muted"> – <slot /></span>
 		</p>

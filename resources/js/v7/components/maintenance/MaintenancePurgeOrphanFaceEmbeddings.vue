@@ -7,7 +7,7 @@
 	>
 		<template #title>
 			<div class="text-center">
-				{{ $t("maintenance.sync-face-embeddings.title") }}
+				{{ $t("maintenance.purge-orphan-face-embeddings.title") }}
 			</div>
 		</template>
 		<template #content>
@@ -17,7 +17,7 @@
 			</ScrollPanel>
 			<div class="flex gap-4 mt-1">
 				<Button v-if="data !== 0 && !loading" severity="warning" class="w-full border-none" @click="exec">
-					{{ $t("maintenance.sync-face-embeddings.action") }}
+					{{ $t("maintenance.purge-orphan-face-embeddings.action") }}
 				</Button>
 			</div>
 		</template>
@@ -35,6 +35,8 @@ import { trans } from "laravel-vue-i18n";
 import { sprintf } from "sprintf-js";
 import MaintenanceService from "@/services/maintenance-service";
 
+const emit = defineEmits<{ purged: [] }>();
+
 const data = ref<number | undefined>(undefined);
 const loading = ref(false);
 const toast = useToast();
@@ -43,12 +45,12 @@ const description = computed(() => {
 	if (data.value === 0) {
 		return "";
 	}
-	return sprintf(trans("maintenance.sync-face-embeddings.description"), data.value);
+	return sprintf(trans("maintenance.purge-orphan-face-embeddings.description"), data.value);
 });
 
 function load() {
 	loading.value = true;
-	MaintenanceService.syncFaceEmbeddingsCheck().then((response) => {
+	MaintenanceService.purgeOrphanFaceEmbeddingsCheck().then((response) => {
 		data.value = response.data;
 		loading.value = false;
 	});
@@ -56,15 +58,16 @@ function load() {
 
 function exec() {
 	loading.value = true;
-	MaintenanceService.syncFaceEmbeddingsDo()
+	MaintenanceService.purgeOrphanFaceEmbeddingsDo()
 		.then(() => {
 			toast.add({
 				severity: "success",
 				summary: trans("toasts.success"),
-				detail: trans("maintenance.sync-face-embeddings.success"),
+				detail: trans("maintenance.purge-orphan-face-embeddings.success"),
 				life: 3000,
 			});
 			loading.value = false;
+			emit("purged");
 		})
 		.catch((e) => {
 			if (e.response.status !== 501 && e.response.data.message !== "Feature 'v8' is disabled") {
@@ -74,8 +77,6 @@ function exec() {
 		})
 		.finally(load);
 }
-
-defineExpose({ load });
 
 load();
 </script>
