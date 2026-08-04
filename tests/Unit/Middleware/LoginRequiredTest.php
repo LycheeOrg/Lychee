@@ -62,4 +62,14 @@ class LoginRequiredTest extends AbstractTestCase
 		$middleware = new LoginRequired();
 		$this->assertThrows(fn () => $middleware->handle($request, fn () => 1, 'nope'), LycheeInvalidArgumentException::class);
 	}
+
+	public function testAlwaysRedirectsAnonymousUsers(): void
+	{
+		$request = Request::create('/some/protected/route');
+		$middleware = new LoginRequired();
+
+		$response = $middleware->handle($request, fn () => 1, 'always');
+
+		self::assertEquals(302, $response->getStatusCode());
+	}
 }

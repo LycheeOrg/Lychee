@@ -18,6 +18,7 @@
 
 namespace Tests\Unit\Middleware;
 
+use App\Exceptions\AdminUserAlreadySetException;
 use App\Exceptions\AdminUserRequiredException;
 use App\Exceptions\Internal\LycheeInvalidArgumentException;
 use App\Http\Middleware\AdminUserStatus;
@@ -49,5 +50,38 @@ class HasAdminUserTest extends AbstractTestCase
 
 		$middleware = new AdminUserStatus($mock);
 		$this->assertThrows(fn () => $middleware->handle($request, fn () => 1, 'nope'), LycheeInvalidArgumentException::class);
+	}
+
+	public function testProceedsWhenAdminSetAndRequired(): void
+	{
+		$mock = $this->mock(HasAdminUser::class, function (MockInterface $mock): void {
+			$mock->shouldReceive('assert')->once()->andReturn(true);
+		});
+		$request = $this->mock(Request::class);
+
+		$middleware = new AdminUserStatus($mock);
+		self::assertEquals(1, $middleware->handle($request, fn () => 1, 'set'));
+	}
+
+	public function testExceptionAdminAlreadySet(): void
+	{
+		$mock = $this->mock(HasAdminUser::class, function (MockInterface $mock): void {
+			$mock->shouldReceive('assert')->once()->andReturn(true);
+		});
+		$request = $this->mock(Request::class);
+
+		$middleware = new AdminUserStatus($mock);
+		$this->assertThrows(fn () => $middleware->handle($request, fn () => 1, 'unset'), AdminUserAlreadySetException::class);
+	}
+
+	public function testProceedsWhenAdminUnsetAndNotRequired(): void
+	{
+		$mock = $this->mock(HasAdminUser::class, function (MockInterface $mock): void {
+			$mock->shouldReceive('assert')->once()->andReturn(false);
+		});
+		$request = $this->mock(Request::class);
+
+		$middleware = new AdminUserStatus($mock);
+		self::assertEquals(1, $middleware->handle($request, fn () => 1, 'unset'));
 	}
 }
