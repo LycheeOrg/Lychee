@@ -171,6 +171,9 @@ EXPOSE 8000
 # Set entrypoint
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
+# Health check against the Octane web server
+HEALTHCHECK CMD ["sh", "-c", "curl --fail http://localhost:8000/ || exit 1"]
+
 # Default command: run Octane with FrankenPHP
 # Container mode is controlled by LYCHEE_MODE environment variable:
 # - "web" (default): Runs FrankenPHP/Octane web server (this CMD)
