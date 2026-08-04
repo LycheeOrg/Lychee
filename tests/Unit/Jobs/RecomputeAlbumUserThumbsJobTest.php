@@ -113,13 +113,13 @@ class RecomputeAlbumUserThumbsJobTest extends AbstractTestCase
 		$user = User::factory()->create();
 		AlbumUserThumb::query()->create([
 			'user_id' => $user->id,
-			'album_id' => 'gone-person-album-id-0000',
+			'album_id' => 'gone-person-album-id-000',
 			'photo_id' => Photo::factory()->owned_by($user)->create()->id,
 		]);
 
-		(new RecomputeAlbumUserThumbsJob(RecomputeAlbumUserThumbsJob::KIND_PERSON, 'gone-person-album-id-0000'))->handle();
+		(new RecomputeAlbumUserThumbsJob(RecomputeAlbumUserThumbsJob::KIND_PERSON, 'gone-person-album-id-000'))->handle();
 
-		self::assertDatabaseMissing('album_user_thumbs', ['album_id' => 'gone-person-album-id-0000']);
+		self::assertDatabaseMissing('album_user_thumbs', ['album_id' => 'gone-person-album-id-000']);
 	}
 
 	public function testDeletesCachedThumbForUnknownAlbumKind(): void
