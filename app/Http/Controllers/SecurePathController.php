@@ -34,9 +34,8 @@ use function Safe\realpath;
 class SecurePathController extends Controller
 {
 	public function __construct(
-		protected DockerVersionInfo $docker_version_info
-	)
-	{
+		protected DockerVersionInfo $docker_version_info,
+	) {
 	}
 
 	public function __invoke(SecurePathRequest $request, ?string $path)
