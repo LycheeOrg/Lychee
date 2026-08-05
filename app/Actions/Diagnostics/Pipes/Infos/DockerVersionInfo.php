@@ -61,7 +61,7 @@ class DockerVersionInfo implements DiagnosticStringPipe
 	 *
 	 * @return bool
 	 */
-	private function isLinuxServer(): bool
+	public function isLinuxServer(): bool
 	{
 		return is_file('/build_version');
 	}
@@ -71,7 +71,7 @@ class DockerVersionInfo implements DiagnosticStringPipe
 	 *
 	 * @return bool
 	 */
-	private function isLycheeOrg(): bool
+	public function isLycheeOrg(): bool
 	{
 		return is_file(base_path('/docker_target'));
 	}
@@ -81,7 +81,7 @@ class DockerVersionInfo implements DiagnosticStringPipe
 	 *
 	 * @return bool
 	 */
-	private function isLycheeFrankenPHP(): bool
+	public function isLycheeFrankenPHP(): bool
 	{
 		return is_file(base_path('/frankenphp_target'));
 	}

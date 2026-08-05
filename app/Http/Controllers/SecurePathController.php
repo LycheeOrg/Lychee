@@ -8,6 +8,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Diagnostics\Pipes\Infos\DockerVersionInfo;
 use App\Enum\StorageDiskType;
 use App\Exceptions\SecurePaths\InvalidPayloadException;
 use App\Exceptions\SecurePaths\InvalidSignatureException;
@@ -32,6 +33,11 @@ use function Safe\realpath;
  */
 class SecurePathController extends Controller
 {
+	public function __construct(
+		protected DockerVersionInfo $docker_version_info,
+	) {
+	}
+
 	public function __invoke(SecurePathRequest $request, ?string $path)
 	{
 		$url_generator = new UrlGenerator($request->configs());
@@ -67,6 +73,12 @@ class SecurePathController extends Controller
 		}
 
 		$valid_path_start = Storage::disk(StorageDiskType::LOCAL->value)->path('');
+
+		// If we are on LinuxServer.io docker image they moved the photo folder to /pictures.
+		if ($this->docker_version_info->isDocker() && $this->docker_version_info->isLinuxServer()) {
+			$valid_path_start = '/pictures/';
+		}
+
 		if (!str_starts_with($file, $valid_path_start)) {
 			Log::error('Invalid path for secure path request.', [
 				'path' => $file,

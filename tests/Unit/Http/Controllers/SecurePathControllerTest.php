@@ -18,6 +18,7 @@
 
 namespace Tests\Unit\Http\Controllers;
 
+use App\Actions\Diagnostics\Pipes\Infos\DockerVersionInfo;
 use App\Enum\StorageDiskType;
 use App\Exceptions\SecurePaths\InvalidPayloadException;
 use App\Exceptions\SecurePaths\PathTraversalException;
@@ -51,7 +52,7 @@ class SecurePathControllerTest extends AbstractTestCase
 	public function setUp(): void
 	{
 		parent::setUp();
-		$this->controller = new SecurePathController();
+		$this->controller = new SecurePathController(new DockerVersionInfo());
 	}
 
 	/**
