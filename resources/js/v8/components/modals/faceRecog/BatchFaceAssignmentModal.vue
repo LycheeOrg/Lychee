@@ -20,6 +20,7 @@
 					"
 				/>
 				<UButton
+					variant="solid"
 					class="flex-1 justify-center"
 					:label="$t('people.assignment.confirm')"
 					color="primary"

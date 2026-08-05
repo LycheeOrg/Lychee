@@ -10,7 +10,7 @@
 			<UButton color="neutral" variant="ghost" class="font-bold w-full justify-center" @click="close">
 				{{ $t("dialogs.button.cancel") }}
 			</UButton>
-			<UButton color="primary" class="font-bold w-full justify-center" @click="confirm">
+			<UButton color="primary" variant="solid" class="font-bold w-full justify-center" @click="confirm">
 				{{ $t("dialogs.watermark_confirm.confirm") }}
 			</UButton>
 		</template>

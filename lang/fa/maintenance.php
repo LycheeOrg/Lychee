@@ -161,6 +161,12 @@ return [
         'success' => 'وضعیت‌های اسکن چهره با موفقیت بازنشانی شدند.',
     ],
 
+        'purge-orphan-face-embeddings' => [
+            'title' => 'Purge Orphan Face Embeddings',
+            'description' => 'The AI Vision service may be holding up to %d embedding(s) that no longer exist in Lychee. Purging will push the current list of faces to AI Vision and permanently delete anything left over.',
+            'action' => 'Purge Now',
+            'success' => 'Orphaned face embeddings purged successfully.',
+        ],
         'bulk-scan-nsfw' => [
         'title' => 'اسکن گروهی محتوای نامناسب',
         'description' => 'تمام عکس‌های اسکن‌نشده را برای محتوای نامناسب با استفاده از پیش‌تنظیم پیکربندی‌شده اسکن کنید. نیازمند فعال بودن سرویس طبقه‌بندی محتوای نامناسب است.',

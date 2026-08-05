@@ -18,7 +18,7 @@
 					:label="$t('gallery.timeline.load_previous')"
 					v-if="!timelineStore.isLoading"
 				/>
-				<Spinner class="text-2xl" v-if="timelineStore.isLoading && !isTouchDevice()" />
+				<LycheeLoadingIcon fast class="text-2xl" v-if="timelineStore.isLoading && !isTouchDevice()" />
 			</div>
 			<PhotoThumbPanel
 				v-if="layoutStore.config !== undefined && photosStore.photos.length > 0"
@@ -52,7 +52,9 @@
 			/>
 
 			<div class="sentinel" v-intersection-observer="onIntersectionObserver" v-if="timelineStore.maxPage < timelineStore.lastPage"></div>
-			<Spinner class="flex justify-center text-2xl" v-if="timelineStore.isLoading && !isTouchDevice()" />
+			<div class="flex justify-center" v-if="timelineStore.isLoading && !isTouchDevice()">
+				<LycheeLoadingIcon fast class="text-2xl" />
+			</div>
 			<TimelineDates :dates="timelineStore.dates" v-if="!photoStore.isLoaded" @load="goToDate" />
 
 			<!-- Dialogs -->
@@ -139,7 +141,7 @@ import PhotoThumbPanel from "@/v8/components/gallery/albumModule/PhotoThumbPanel
 import TimelineHeader from "@/v8/components/headers/TimelineHeader.vue";
 import CameraCapture from "@/v8/components/modals/CameraCapture.vue";
 import { onMounted } from "vue";
-import Spinner from "@/v8/components/Spinner.vue";
+import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 import PhotoPanel from "@/v8/components/gallery/photoModule/PhotoPanel.vue";
 import LoadingProgress from "@/v8/components/loading/LoadingProgress.vue";
 import LoginModal from "@/v8/components/modals/LoginModal.vue";

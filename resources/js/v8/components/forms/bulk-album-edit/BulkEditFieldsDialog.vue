@@ -111,6 +111,7 @@
 					class="flex-1 justify-center"
 					:label="$t('bulk_album_edit.apply')"
 					color="primary"
+					variant="solid"
 					:disabled="!hasAnyEnabled"
 					@click="doEditFields"
 				/>

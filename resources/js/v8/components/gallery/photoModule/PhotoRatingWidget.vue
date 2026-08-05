@@ -54,7 +54,7 @@
 
 		<!-- Loading indicator -->
 		<div v-if="loading" class="mt-2 text-sm text-muted">
-			<Spinner class="mr-1" />
+			<LycheeLoadingIcon fast class="mr-1" />
 			{{ $t("gallery.photo.rating.saving") }}
 		</div>
 	</div>
@@ -66,7 +66,7 @@ import { usePhotoStore } from "@/stores/PhotoState";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import { useUserStore } from "@/stores/UserState";
 import StarRow from "@/v8/components/icons/StarRow.vue";
-import Spinner from "@/v8/components/Spinner.vue";
+import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 import { useRating } from "@/composables/photo/useRating";
 import { ref } from "vue";
 import { FILL_OVERRIDE_CLASS } from "@/v8/icons";

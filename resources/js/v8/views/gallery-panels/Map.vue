@@ -1,4 +1,5 @@
 <template>
+	<LoadingProgress v-model:loading="isLoading" />
 	<UHeader
 		:toggle="false"
 		:class="{
@@ -38,6 +39,7 @@ import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { onMounted } from "vue";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
 import GoBack from "@/v8/components/headers/GoBack.vue";
+import LoadingProgress from "@/v8/components/loading/LoadingProgress.vue";
 import { clusterFunc } from "@/composables/photo";
 
 type MapPhotoEntry = {
@@ -67,6 +69,7 @@ const props = defineProps<{
 
 const toast = useAppToast();
 const router = useRouter();
+const isLoading = ref(true);
 const leftMenuStore = useLeftMenuStateStore();
 const togglableStore = useTogglablesStateStore();
 const lycheeStore = useLycheeStateStore();
@@ -91,10 +94,15 @@ const trackLayer = ref<unknown>(undefined);
 const data = ref<App.Http.Resources.Collections.PositionDataResource | undefined>(undefined);
 
 function loadMapProvider() {
-	AlbumService.getMapProvider().then((data) => {
-		map_provider.value = data.data;
-		mapInit();
-	});
+	AlbumService.getMapProvider()
+		.then((data) => {
+			map_provider.value = data.data;
+			mapInit();
+		})
+		.catch((e) => {
+			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });
+			isLoading.value = false;
+		});
 }
 
 function mapInit() {
@@ -119,10 +127,17 @@ function mapInit() {
 }
 
 function fetchData() {
-	AlbumService.getMapData(props.albumId).then((mapData) => {
-		data.value = mapData.data;
-		addContentsToMap();
-	});
+	AlbumService.getMapData(props.albumId)
+		.then((mapData) => {
+			data.value = mapData.data;
+			addContentsToMap();
+		})
+		.catch((e) => {
+			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });
+		})
+		.finally(() => {
+			isLoading.value = false;
+		});
 }
 
 function open() {

@@ -38,7 +38,7 @@
 		<template #footer>
 			<UButton
 				color="neutral"
-				variant="ghost"
+				variant="soft"
 				class="w-full font-bold justify-center"
 				@click="
 					() => {
@@ -48,7 +48,7 @@
 			>
 				{{ $t("dialogs.button.cancel") }}
 			</UButton>
-			<UButton color="success" variant="ghost" class="font-bold w-full justify-center" :disabled="!newShareUser" @click="create">
+			<UButton color="success" variant="solid" class="font-bold w-full justify-center" :disabled="!newShareUser" @click="create">
 				<UIcon name="lucide:user-plus" /><span class="hidden md:inline">{{ $t("sharing.share") }}</span>
 			</UButton>
 		</template>

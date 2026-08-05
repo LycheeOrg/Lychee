@@ -12,7 +12,7 @@
 					<UIcon
 						name="lucide:trash"
 						class="ltr:mr-2 rtl:ml-2"
-						:class="selectedIds.includes(duplicate.photo_id) ? 'text-red-700' : 'text-transparent'"
+						:class="selectedIds.includes(duplicate.photo_id) ? 'text-error' : 'text-transparent'"
 					/>
 				</div>
 				<div class="w-1/3 flex-none flex items-center gap-2 group">

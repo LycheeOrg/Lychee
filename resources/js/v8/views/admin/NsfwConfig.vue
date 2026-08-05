@@ -9,7 +9,7 @@
 	<div class="max-w-5xl mx-auto mt-4 px-4 pb-8">
 		<!-- Loading -->
 		<div v-if="settingsLoading && configs.length === 0" class="flex justify-center py-12">
-			<Spinner class="text-3xl" />
+			<LycheeLoadingIcon fast class="text-3xl" />
 		</div>
 
 		<template v-else>
@@ -166,7 +166,7 @@
 
 					<!-- Loading -->
 					<div v-if="presetsLoading && !presetsData" class="flex justify-center py-12">
-						<Spinner class="text-3xl" />
+						<LycheeLoadingIcon fast class="text-3xl" />
 					</div>
 
 					<!-- Error -->
@@ -254,7 +254,7 @@ import OpenLeftMenu from "@/v8/components/headers/OpenLeftMenu.vue";
 import BoolField from "@/v8/components/forms/settings/BoolField.vue";
 import SelectField from "@/v8/components/forms/settings/SelectField.vue";
 import Fieldset from "@/v8/components/forms/basic/Fieldset.vue";
-import Spinner from "@/v8/components/Spinner.vue";
+import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 import NsfwConfigService from "@/services/nsfw-config-service";
 import SettingsService from "@/services/settings-service";
 import { useAppToast } from "@/v8/composables/useAppToast";

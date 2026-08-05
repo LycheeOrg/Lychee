@@ -19,7 +19,9 @@
 			<div v-if="currentPage < lastPage" ref="sentinel" class="sentinel"></div>
 		</div>
 		<LigtBox @go-back="goBack" @next="next" @previous="previous" />
-		<Spinner v-if="isLoading && !isTouchDevice()" class="flex justify-center" />
+		<div v-if="isLoading && !isTouchDevice()" class="flex justify-center">
+			<LycheeLoadingIcon fast class="text-2xl" />
+		</div>
 		<GalleryFooter v-once />
 		<ScrollTop v-if="photoStore.isLoaded" target="parent" />
 	</div>
@@ -30,7 +32,7 @@ import AlbumCard from "@/v8/components/gallery/flowModule/AlbumCard.vue";
 import LigtBox from "@/v8/components/gallery/flowModule/LigtBox.vue";
 import OpenLeftMenu from "@/v8/components/headers/OpenLeftMenu.vue";
 import LoadingProgress from "@/v8/components/loading/LoadingProgress.vue";
-import Spinner from "@/v8/components/Spinner.vue";
+import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 import ScrollTop from "@/v8/components/ScrollTop.vue";
 import FlowService from "@/services/flow-service";
 import { useFlowStateStore } from "@/stores/FlowState";

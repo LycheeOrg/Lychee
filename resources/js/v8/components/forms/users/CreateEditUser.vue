@@ -59,6 +59,7 @@
 				<UButton
 					v-if="!props.isEdit"
 					color="success"
+					variant="solid"
 					class="flex-1 justify-center font-bold"
 					:disabled="username === undefined || password === undefined || username === '' || password === ''"
 					@click="createUser"
@@ -68,6 +69,7 @@
 				<UButton
 					v-else
 					color="neutral"
+					variant="solid"
 					class="flex-1 justify-center font-bold"
 					:disabled="username === undefined || username === ''"
 					@click="editUser"

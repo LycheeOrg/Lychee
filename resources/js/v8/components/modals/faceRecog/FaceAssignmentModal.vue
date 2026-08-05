@@ -64,6 +64,7 @@
 				"
 			/>
 			<UButton
+				variant="solid"
 				class="w-full justify-center"
 				:label="$t('people.assignment.confirm')"
 				color="primary"

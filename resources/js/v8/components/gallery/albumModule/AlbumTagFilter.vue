@@ -22,6 +22,7 @@
 					icon="lucide:filter"
 					size="sm"
 					class="rounded-r-none"
+					variant="solid"
 					color="neutral"
 					:disabled="selectedTagIds.length === 0"
 					@click="applyFilter"

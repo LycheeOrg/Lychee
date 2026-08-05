@@ -5,7 +5,7 @@
 		</h2>
 		<p class="text-muted" v-html="$t('webshop.disclaimer.message')"></p>
 		<div class="flex ltr:justify-end rtl:justify-start mt-4">
-			<UButton :label="$t('webshop.disclaimer.iUnderstand')" icon="lucide:check" color="primary" @click="accept" />
+			<UButton variant="solid" :label="$t('webshop.disclaimer.iUnderstand')" icon="lucide:check" color="primary" @click="accept" />
 		</div>
 	</div>
 </template>

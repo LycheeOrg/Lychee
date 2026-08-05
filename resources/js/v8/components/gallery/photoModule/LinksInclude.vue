@@ -6,15 +6,15 @@
 		<div class="flex flex-col">
 			<div class="flex gap-2 items-center" @click="copy(a)">
 				<pre class="block text-xs overflow-x-scroll text-muted pt-2">{{ a }}</pre>
-				<UButton variant="ghost" class="py-0.5 shrink-0">{{ $t("gallery.photo.details.links.copy") }}</UButton>
+				<UButton variant="ghost" color="primary" class="py-0.5 shrink-0">{{ $t("gallery.photo.details.links.copy") }}</UButton>
 			</div>
 			<div class="flex gap-2 items-center" @click="copy(bb)">
 				<pre class="block text-xs overflow-x-scroll text-muted pt-2">{{ bb }}</pre>
-				<UButton variant="ghost" class="py-0.5 shrink-0">{{ $t("gallery.photo.details.links.copy") }}</UButton>
+				<UButton variant="ghost" color="primary" class="py-0.5 shrink-0">{{ $t("gallery.photo.details.links.copy") }}</UButton>
 			</div>
 			<div class="flex gap-2 items-center" @click="copy(md)">
 				<pre class="block text-xs overflow-x-scroll text-muted pt-2">{{ md }}</pre>
-				<UButton variant="ghost" class="py-0.5 shrink-0">{{ $t("gallery.photo.details.links.copy") }}</UButton>
+				<UButton variant="ghost" color="primary" class="py-0.5 shrink-0">{{ $t("gallery.photo.details.links.copy") }}</UButton>
 			</div>
 		</div>
 	</template>

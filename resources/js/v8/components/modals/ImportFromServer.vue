@@ -3,7 +3,7 @@
 		<template #body>
 			<div v-if="importing">
 				<div class="flex flex-col items-center justify-center gap-4 py-4">
-					<Spinner class="text-4xl text-primary-500" />
+					<LycheeLoadingIcon fast class="text-4xl" />
 					<p class="text-base text-muted">{{ $t("import_from_server.importing_please_be_patient") }}</p>
 				</div>
 			</div>
@@ -73,7 +73,7 @@
 				<UButton color="neutral" variant="soft" class="flex-1 justify-center font-bold" @click="closeCallback">
 					{{ $t("dialogs.button.cancel") }}
 				</UButton>
-				<UButton color="neutral" class="flex-1 justify-center font-bold" @click="submit">
+				<UButton variant="solid" color="neutral" class="flex-1 justify-center font-bold" @click="submit">
 					{{ $t("import_from_server.sync") }}
 				</UButton>
 			</div>
@@ -86,7 +86,7 @@ import { usePhotoRoute } from "@/composables/photo/photoRoute";
 import { onMounted, ref, watch } from "vue";
 import ImportService, { ImportFromServerRequest } from "@/services/import-service";
 import AlbumService from "@/services/album-service";
-import Spinner from "@/v8/components/Spinner.vue";
+import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import { useImportState } from "@/stores/ImportState";
 

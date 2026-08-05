@@ -9,7 +9,7 @@
 				<div v-if="!capturedBlob" class="relative w-full">
 					<video ref="videoEl" autoplay playsinline class="w-full max-h-[60vh] rounded-xl object-contain" />
 					<div v-if="cameraLoading" class="absolute inset-0 flex items-center justify-center rounded-xl bg-neutral-900/50">
-						<Spinner class="text-3xl text-white" />
+						<LycheeLoadingIcon fast class="text-3xl text-white" />
 					</div>
 				</div>
 
@@ -35,6 +35,7 @@
 					"
 				/>
 				<UButton
+					variant="solid"
 					:disabled="!cameraReady"
 					icon="lucide:camera"
 					:label="$t('dialogs.camera.capture')"
@@ -64,13 +65,20 @@
 					class="flex-1 justify-center"
 					@click="retake"
 				/>
-				<UButton icon="lucide:upload" :label="$t('dialogs.camera.upload')" color="primary" class="flex-1 justify-center" @click="upload" />
+				<UButton
+					variant="solid"
+					icon="lucide:upload"
+					:label="$t('dialogs.camera.upload')"
+					color="primary"
+					class="flex-1 justify-center"
+					@click="upload"
+				/>
 			</div>
 		</template>
 	</UModal>
 </template>
 <script setup lang="ts">
-import Spinner from "@/v8/components/Spinner.vue";
+import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 import { ref, watch, onUnmounted } from "vue";
 import { storeToRefs } from "pinia";
 import { useTogglablesStateStore } from "@/stores/ModalsState";

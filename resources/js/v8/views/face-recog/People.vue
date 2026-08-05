@@ -33,7 +33,7 @@
 		</UHeader>
 
 		<div v-if="loading" class="flex justify-center items-center mt-20">
-			<Spinner class="text-4xl" />
+			<LycheeLoadingIcon fast class="text-4xl" />
 		</div>
 
 		<div v-else-if="people.length === 0" class="text-muted text-center mt-20 p-4">
@@ -80,7 +80,7 @@
 							}
 						"
 					/>
-					<UButton :label="$t('gallery.done')" color="neutral" :disabled="!selectedUser" @click="confirmAssignUser" />
+					<UButton variant="solid" :label="$t('gallery.done')" color="neutral" :disabled="!selectedUser" @click="confirmAssignUser" />
 				</div>
 			</template>
 		</UModal>
@@ -94,7 +94,7 @@ import { trans } from "laravel-vue-i18n";
 import OpenLeftMenu from "@/v8/components/headers/OpenLeftMenu.vue";
 import PersonCard from "@/v8/components/gallery/PersonCard.vue";
 import PersonDeleteDialog from "@/v8/components/forms/people/PersonDeleteDialog.vue";
-import Spinner from "@/v8/components/Spinner.vue";
+import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 import PeopleService from "@/services/people-service";
 import UserManagementService from "@/services/user-management-service";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";

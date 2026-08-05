@@ -85,6 +85,7 @@
 				"
 			/>
 			<UButton
+				variant="solid"
 				v-if="selectedIds.length > 0"
 				size="sm"
 				color="primary"
@@ -100,7 +101,7 @@
 
 		<!-- Loading state -->
 		<div v-if="loading" class="flex justify-center py-12">
-			<Spinner />
+			<LycheeLoadingIcon fast />
 		</div>
 
 		<!-- Table -->
@@ -298,7 +299,7 @@ import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { storeToRefs } from "pinia";
 import { trans, trans_choice } from "laravel-vue-i18n";
 import { useAppToast } from "@/v8/composables/useAppToast";
-import Spinner from "@/v8/components/Spinner.vue";
+import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 import OpenLeftMenu from "@/v8/components/headers/OpenLeftMenu.vue";
 import DeleteDialog from "@/v8/components/forms/gallery-dialogs/DeleteDialog.vue";
 import BulkSetOwnerDialog from "@/v8/components/forms/bulk-album-edit/BulkSetOwnerDialog.vue";

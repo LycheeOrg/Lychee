@@ -197,4 +197,51 @@ class FacialRecognitionService
 
 		return $response->successful() ? $response->json() : null;
 	}
+
+	/**
+	 * Mark a batch of face IDs as present in the AI Vision service's sync session.
+	 *
+	 * Call with $batch = 0 to start a new sync session: all embeddings stored by
+	 * the AI Vision service are reset to "absent" before the given IDs are marked
+	 * present. Send subsequent batches with incrementing $batch values to mark
+	 * more IDs as present. Finish the session with {@see purgeAbsentEmbeddings()}.
+	 *
+	 * @param list<string> $face_ids The Lychee face IDs to mark as present in this batch
+	 * @param int          $batch    The batch index (0 starts a new session)
+	 *
+	 * @return array{marked: int}|null
+	 */
+	public function syncEmbeddingsBatch(array $face_ids, int $batch): ?array
+	{
+		if (!$this->isConfigured()) {
+			Log::warning('FacialRecognitionService: syncEmbeddingsBatch called but service is not configured.');
+
+			return null;
+		}
+
+		$response = Http::withHeaders(['X-API-Key' => $this->api_key])
+			->delete($this->service_url . '/embeddings/sync', ['face_ids' => $face_ids, 'batch' => $batch]);
+
+		return $response->successful() ? $response->json() : null;
+	}
+
+	/**
+	 * Permanently delete all embeddings in the AI Vision service that were not
+	 * marked present by the most recent sync session (see {@see syncEmbeddingsBatch()}).
+	 *
+	 * @return array{deleted: int}|null
+	 */
+	public function purgeAbsentEmbeddings(): ?array
+	{
+		if (!$this->isConfigured()) {
+			Log::warning('FacialRecognitionService: purgeAbsentEmbeddings called but service is not configured.');
+
+			return null;
+		}
+
+		$response = Http::withHeaders(['X-API-Key' => $this->api_key])
+			->delete($this->service_url . '/embeddings/purge');
+
+		return $response->successful() ? $response->json() : null;
+	}
 }

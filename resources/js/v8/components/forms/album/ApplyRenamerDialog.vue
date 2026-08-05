@@ -7,7 +7,7 @@
 				<p class="text-sm/8 mb-4">{{ $t("dialogs.apply_renamer.description") }}</p>
 
 				<div v-if="is_loading_rules" class="flex justify-center py-4">
-					<Spinner class="text-2xl" />
+					<LycheeLoadingIcon fast class="text-2xl" />
 				</div>
 				<div v-else-if="rules.length === 0" class="py-4 text-sm text-muted">
 					{{ $t("dialogs.apply_renamer.no_rules") }}
@@ -80,7 +80,7 @@
 				<p class="text-sm/8 font-bold mb-4">{{ $t("dialogs.apply_renamer.preview_title") }}</p>
 
 				<div v-if="is_loading_preview" class="flex justify-center py-4">
-					<Spinner class="text-2xl" />
+					<LycheeLoadingIcon fast class="text-2xl" />
 				</div>
 				<div v-else-if="preview_items.length === 0" class="py-4 text-sm text-muted">
 					{{ $t("dialogs.apply_renamer.no_changes") }}
@@ -112,6 +112,7 @@
 			</UButton>
 			<UButton
 				v-if="step === 'select'"
+				variant="solid"
 				color="neutral"
 				class="font-bold w-full justify-center"
 				:disabled="selected_rule_ids.length === 0"
@@ -119,7 +120,14 @@
 			>
 				{{ $t("dialogs.apply_renamer.preview") }}
 			</UButton>
-			<UButton v-else color="neutral" class="font-bold w-full justify-center" :disabled="preview_items.length === 0" @click="applyRules">
+			<UButton
+				v-else
+				color="neutral"
+				variant="solid"
+				class="font-bold w-full justify-center"
+				:disabled="preview_items.length === 0"
+				@click="applyRules"
+			>
 				{{ $t("dialogs.apply_renamer.apply") }}
 			</UButton>
 		</template>
@@ -130,7 +138,7 @@ import { ref, watch } from "vue";
 import RenamerService, { type PreviewRenameItem } from "@/services/renamer-service";
 import AlbumService from "@/services/album-service";
 import { useAppToast } from "@/v8/composables/useAppToast";
-import Spinner from "@/v8/components/Spinner.vue";
+import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 import { trans } from "laravel-vue-i18n";
 import { sprintf } from "sprintf-js";
 

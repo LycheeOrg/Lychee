@@ -23,7 +23,7 @@
 
 		<!-- Loading -->
 		<div v-if="loading" class="flex justify-center py-12">
-			<Spinner class="text-3xl" />
+			<LycheeLoadingIcon fast class="text-3xl" />
 		</div>
 
 		<!-- Empty state -->
@@ -32,11 +32,11 @@
 				<UIcon name="lucide:send" class="text-4xl" />
 			</div>
 			<p class="text-muted mb-4">{{ $t("webhook.no_webhooks") }}</p>
-			<UButton icon="lucide:plus" :label="$t('webhook.create_first')" @click="openCreateModal" />
+			<UButton color="primary" variant="solid" icon="lucide:plus" :label="$t('webhook.create_first')" @click="openCreateModal" />
 		</div>
 		<template v-else>
 			<div class="flex mb-4 justify-end">
-				<UButton icon="lucide:plus" size="sm" :label="$t('webhook.create')" @click="openCreateModal" />
+				<UButton color="primary" variant="solid" icon="lucide:plus" size="sm" :label="$t('webhook.create')" @click="openCreateModal" />
 			</div>
 
 			<!-- Webhooks table -->
@@ -80,7 +80,7 @@ import OpenLeftMenu from "@/v8/components/headers/OpenLeftMenu.vue";
 import WebhookDeleteDialog from "@/v8/components/forms/webhooks/WebhookDeleteDialog.vue";
 import WebhookFormDialog from "@/v8/components/forms/webhooks/WebhookFormDialog.vue";
 import WebhookService from "@/services/webhook-service";
-import Spinner from "@/v8/components/Spinner.vue";
+import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 import UButton from "@nuxt/ui/components/Button.vue";
 import USwitch from "@nuxt/ui/components/Switch.vue";
 import UBadge from "@nuxt/ui/components/Badge.vue";

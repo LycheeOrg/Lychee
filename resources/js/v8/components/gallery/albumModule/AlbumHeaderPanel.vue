@@ -16,6 +16,8 @@
 			<AlbumHeaderImage :src="albumStore.album.preFormattedData.url" :focus-x="focusX" :focus-y="focusY" />
 			<div class="absolute right-1 top-1 flex flex-col gap-2 z-100">
 				<UButton
+					color="primary"
+					variant="solid"
 					v-if="albumStore.rights?.can_edit && mode === 'normal'"
 					class="bg-black/40 rounded-lg border-0 px-2 py-1 text-inverted hover:bg-white/30 cursor-pointer"
 					:label="$t('gallery.album.hero.edit')"
@@ -23,11 +25,15 @@
 				/>
 				<template v-if="albumStore.rights?.can_edit && mode === 'edit'">
 					<UButton
+						color="primary"
+						variant="solid"
 						class="bg-black/40 rounded-lg border-0 px-2 py-1 text-inverted hover:bg-white/30 cursor-pointer"
 						:label="$t('gallery.album.hero.save')"
 						@click="saveChanges"
 					/>
 					<UButton
+						color="primary"
+						variant="solid"
 						class="bg-black/40 rounded-lg border-0 px-2 py-1 text-inverted hover:bg-white/30 cursor-pointer"
 						:label="$t('gallery.set_focus')"
 						@click="
@@ -55,6 +61,8 @@
 			>
 				<div class="relative">
 					<UButton
+						color="primary"
+						variant="solid"
 						v-if="mode === 'edit'"
 						:class="[
 							'h-8',
@@ -66,6 +74,8 @@
 						@click="setColor(selectedColorIndex - 1)"
 					/>
 					<UButton
+						color="primary"
+						variant="solid"
 						v-if="mode === 'edit'"
 						:class="[
 							'h-8',

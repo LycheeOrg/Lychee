@@ -1,14 +1,28 @@
 <template>
-	<UProgress v-if="isLoadingDesktop" class="rounded-none absolute w-full" />
-	<Spinner v-if="isLoadingMobile" class="left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 absolute z-10 text-4xl" />
+	<Transition name="lychee-loading-fade">
+		<div
+			v-if="loading"
+			class="fixed inset-0 z-50 flex items-center justify-center bg-white/60 dark:bg-black/60 backdrop-blur-2xl"
+			role="status"
+			:aria-label="$t('dialogs.upload.loading')"
+		>
+			<LycheeLoadingIcon class="w-24 h-24 sm:w-32 sm:h-32" />
+		</div>
+	</Transition>
 </template>
 <script setup lang="ts">
-import { computed, type Ref } from "vue";
-import { isTouchDevice } from "@/utils/keybindings-utils";
-import Spinner from "@/v8/components/Spinner.vue";
+import type { Ref } from "vue";
+import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 
 const loading = defineModel("loading") as Ref<boolean>;
-
-const isLoadingMobile = computed(() => isTouchDevice() && loading.value);
-const isLoadingDesktop = computed(() => !isTouchDevice() && loading.value);
 </script>
+<style scoped>
+.lychee-loading-fade-enter-active,
+.lychee-loading-fade-leave-active {
+	transition: opacity 1s ease;
+}
+.lychee-loading-fade-enter-from,
+.lychee-loading-fade-leave-to {
+	opacity: 0;
+}
+</style>

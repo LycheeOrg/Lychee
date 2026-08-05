@@ -10,7 +10,7 @@
 		<FaceRecognitionWarning />
 
 		<div v-if="loading && faces.length === 0" class="flex justify-center py-12">
-			<Spinner class="text-3xl" />
+			<LycheeLoadingIcon fast class="text-3xl" />
 		</div>
 
 		<template v-else>
@@ -22,6 +22,7 @@
 				<!-- Controls -->
 				<div class="flex flex-wrap gap-3 mb-4 items-center">
 					<UButton
+						variant="solid"
 						:label="dismissedOnly ? $t('maintenance.face_quality.show_active') : $t('maintenance.face_quality.show_dismissed')"
 						:color="dismissedOnly ? 'primary' : 'neutral'"
 						size="sm"
@@ -30,6 +31,7 @@
 						@click="toggleDismissedOnly"
 					/>
 					<UButton
+						variant="solid"
 						:label="$t('maintenance.face_quality.show_unassigned')"
 						:color="unassignedOnly ? 'primary' : 'neutral'"
 						size="sm"
@@ -50,6 +52,7 @@
 							{{ $t("maintenance.face_quality.selected_count", { count: String(selectedIds.length) }) }}
 						</span>
 						<UButton
+							variant="solid"
 							:label="$t('people.batch_assign')"
 							icon="lucide:user-plus"
 							color="success"
@@ -61,6 +64,7 @@
 							"
 						/>
 						<UButton
+							variant="solid"
 							v-if="!dismissedOnly"
 							:label="$t('maintenance.face_quality.batch_dismiss')"
 							icon="lucide:x"
@@ -70,6 +74,7 @@
 							@click="batchDismiss"
 						/>
 						<UButton
+							variant="solid"
 							v-else
 							:label="$t('maintenance.face_quality.batch_reactivate')"
 							icon="lucide:undo"
@@ -90,11 +95,12 @@
 				<!-- Face table -->
 				<UTable
 					v-else
+					sticky
 					:data="faces"
 					:columns="columns"
 					:meta="{ class: { tr: rowClass } }"
 					:on-select="(e: Event, row: TableRow<Face>) => toggleSelection(row.original.id, row.index, e as MouseEvent)"
-					class="w-full"
+					class="w-full max-h-[65vh]"
 				>
 					<template #select-cell="{ row }">
 						<div class="flex justify-center" @click.stop>
@@ -206,10 +212,17 @@
 							</UTooltip>
 						</div>
 					</template>
-				</UTable>
 
-				<!-- Infinite scroll sentinel -->
-				<PaginationInfiniteScroll :loading="loadingMore" :hasMore="hasMorePages" @loadMore="loadMore" />
+					<!-- Infinite scroll sentinel: lives inside the table's own scrollable body (not after
+					     the table) so it tracks scrolling within the bounded, sticky-header table itself. -->
+					<template #body-bottom>
+						<tr>
+							<td :colspan="columns.length">
+								<PaginationInfiniteScroll :loading="loadingMore" :hasMore="hasMorePages" @loadMore="loadMore" />
+							</td>
+						</tr>
+					</template>
+				</UTable>
 			</UCard>
 		</template>
 
@@ -232,7 +245,7 @@
 			</template>
 			<template #body>
 				<div v-if="loadingPhoto" class="flex justify-center py-12">
-					<Spinner class="text-3xl" />
+					<LycheeLoadingIcon fast class="text-3xl" />
 				</div>
 				<div v-else-if="viewingPhoto" class="flex flex-col gap-4">
 					<img
@@ -268,7 +281,7 @@ import BatchFaceAssignmentModal from "@/v8/components/modals/faceRecog/BatchFace
 import FaceMaintenanceService from "@/services/face-maintenance-service";
 import FaceDetectionService from "@/services/face-detection-service";
 import ModerationService from "@/services/moderation-service";
-import Spinner from "@/v8/components/Spinner.vue";
+import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 import type { TableColumn, TableRow } from "@nuxt/ui";
 
 type Face = App.Http.Resources.Models.FaceResource;

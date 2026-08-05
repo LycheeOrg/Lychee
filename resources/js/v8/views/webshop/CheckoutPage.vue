@@ -1,4 +1,5 @@
 <template>
+	<LoadingProgress :loading="options === undefined || order === undefined" />
 	<UHeader :toggle="false">
 		<template #left>
 			<GoBack @go-back="backToGallery" />
@@ -15,6 +16,8 @@
 			</div>
 			<div class="flex pt-6 ltr:justify-end rtl:justify-start">
 				<UButton
+					color="primary"
+					variant="solid"
 					:label="$t('webshop.checkout.next')"
 					:icon="ltr ? 'lucide:arrow-right' : 'lucide:arrow-left'"
 					:disabled="!isStepOneValid"
@@ -32,6 +35,8 @@
 				<template v-if="ltr">
 					<UButton :label="$t('webshop.checkout.back')" color="neutral" variant="soft" icon="lucide:arrow-left" @click="goToInfo" />
 					<UButton
+						color="primary"
+						variant="solid"
 						:label="$t('webshop.checkout.next')"
 						icon="lucide:arrow-right"
 						trailing
@@ -42,6 +47,8 @@
 				<template v-else>
 					<UButton :label="$t('webshop.checkout.back')" color="neutral" variant="soft" icon="lucide:arrow-right" @click="goToInfo" />
 					<UButton
+						color="primary"
+						variant="solid"
 						:label="$t('webshop.checkout.next')"
 						icon="lucide:arrow-left"
 						trailing
@@ -56,7 +63,13 @@
 				<ThankYou v-if="['completed', 'closed'].includes(order?.status ?? '')" />
 				<CancelledFailed v-else />
 				<div class="flex pt-6 ltr:justify-end rtl:justify-start">
-					<UButton :label="$t('webshop.checkout.toTheGallery')" icon="lucide:arrow-right" @click="backToGallery" />
+					<UButton
+						color="primary"
+						variant="solid"
+						:label="$t('webshop.checkout.toTheGallery')"
+						icon="lucide:arrow-right"
+						@click="backToGallery"
+					/>
 				</div>
 			</div>
 		</template>
@@ -72,7 +85,13 @@
 					{{ $t("webshop.checkout.offlineProcessingMessage") }}
 				</div>
 				<div class="flex pt-6 ltr:justify-end rtl:justify-start">
-					<UButton :label="$t('webshop.checkout.toTheGallery')" icon="lucide:arrow-right" @click="backToGallery" />
+					<UButton
+						color="primary"
+						variant="solid"
+						:label="$t('webshop.checkout.toTheGallery')"
+						icon="lucide:arrow-right"
+						@click="backToGallery"
+					/>
 				</div>
 			</div>
 		</template>
@@ -99,6 +118,7 @@ import WebshopService from "@/services/webshop-service";
 import ThankYou from "@/v8/components/webshop/ThankYou.vue";
 import { useLtRorRtL } from "@/utils/Helpers";
 import GoBack from "@/v8/components/headers/GoBack.vue";
+import LoadingProgress from "@/v8/components/loading/LoadingProgress.vue";
 import CancelledFailed from "@/v8/components/webshop/CancelledFailed.vue";
 import { trans } from "laravel-vue-i18n";
 import type { StepperItem } from "@nuxt/ui";

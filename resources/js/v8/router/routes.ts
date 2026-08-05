@@ -14,6 +14,7 @@ const MapView = () => import("@/v8/views/gallery-panels/Map.vue");
 const Diagnostics = () => import("@/v8/views/Diagnostics.vue");
 const FaceMaintenance = () => import("@/v8/views/face-recog/FaceMaintenance.vue");
 const NsfwConfig = () => import("@/v8/views/admin/NsfwConfig.vue");
+const DesignSystem = () => import("@/v8/views/admin/DesignSystem.vue");
 const WatermarkPreview = () => import("@/v8/views/admin/WatermarkPreview.vue");
 const Settings = () => import("@/v8/views/admin/Settings.vue");
 const Sharing = () => import("@/v8/views/Sharing.vue");
@@ -71,6 +72,7 @@ const componentByName: Record<string, any> = {
 	diagnostics: Diagnostics,
 	"face-maintenance": FaceMaintenance,
 	"nsfw-config": NsfwConfig,
+	"design-system": DesignSystem,
 	"watermark-preview": WatermarkPreview,
 	settings: Settings,
 	sharing: Sharing,

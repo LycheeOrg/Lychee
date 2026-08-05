@@ -140,7 +140,7 @@
 				<UButton class="flex-1 justify-center" color="neutral" variant="soft" @click="closeCallback">
 					{{ $t("dialogs.button.close") }}
 				</UButton>
-				<UButton class="flex-1 justify-center" icon="lucide:copy" @click="copyCode">
+				<UButton class="flex-1 justify-center" variant="solid" color="primary" icon="lucide:copy" @click="copyCode">
 					{{ copied ? $t("dialogs.embed_code.copied") : $t("dialogs.embed_code.copy") }}
 				</UButton>
 			</div>

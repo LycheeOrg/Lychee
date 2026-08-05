@@ -16,7 +16,7 @@ return new class() extends Migration {
 	{
 		return [
 			[
-				'key' => 'accent_color',
+				'key' => 'primary_color',
 				'value' => '',
 				'cat' => self::CAT,
 				'type_range' => 'color',

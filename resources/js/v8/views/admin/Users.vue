@@ -46,13 +46,14 @@
 			/>
 		</div>
 		<div class="flex justify-end my-8 gap-2">
-			<UButton color="warning" @click="inviteUser">{{ $t("users.invite.button") }}</UButton>
-			<UButton color="success" @click="createUser">{{ $t("users.create") }}</UButton>
+			<UButton variant="solid" color="warning" @click="inviteUser">{{ $t("users.invite.button") }}</UButton>
+			<UButton variant="solid" color="success" @click="createUser">{{ $t("users.create") }}</UButton>
 		</div>
 
 		<UTable
 			:data="users"
 			:columns="columns"
+			:loading="isLoadingUsers"
 			sticky
 			:virtualize="{ estimateSize: 29, overscan: 12 }"
 			:ui="{ base: 'table-fixed', td: 'px-4 py-1' }"
@@ -169,6 +170,7 @@ lycheeStore.load();
 const { is_se_enabled } = storeToRefs(lycheeStore);
 
 const users = ref<User[]>([]);
+const isLoadingUsers = ref(true);
 const isCreateUserVisible = ref(false);
 const isInviteUserVisible = ref(false);
 const isLegendOpen = ref(false);
@@ -236,10 +238,18 @@ const columns = computed<TableColumn<User>[]>(() => {
 });
 
 function load() {
-	UserManagementService.get().then((response) => {
-		users.value = response.data;
-		totalUsedSpace.value = response.data.reduce((acc, user) => acc + (user.space ?? 0), 0);
-	});
+	isLoadingUsers.value = true;
+	UserManagementService.get()
+		.then((response) => {
+			users.value = response.data;
+			totalUsedSpace.value = response.data.reduce((acc, user) => acc + (user.space ?? 0), 0);
+		})
+		.catch((e) => {
+			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });
+		})
+		.finally(() => {
+			isLoadingUsers.value = false;
+		});
 }
 
 function inviteUser() {

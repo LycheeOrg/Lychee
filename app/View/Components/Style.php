@@ -19,45 +19,40 @@ use Illuminate\View\View;
  */
 class Style extends Component
 {
-	// default is sky colour palette, but it will be replaced by the accent color palette if set
-	public string $ui_50 = 'oklch(97.7% 0.013 236.62)';
-	public string $ui_100 = 'oklch(95.1% 0.026 236.824)';
-	public string $ui_200 = 'oklch(90.1% 0.058 230.902)';
-	public string $ui_300 = 'oklch(82.8% 0.111 230.318)';
-	public string $ui_400 = 'oklch(74.6% 0.16 232.661)';
-	public string $ui_500 = 'oklch(68.5% 0.169 237.323)';
-	public string $ui_600 = 'oklch(58.8% 0.158 241.966)';
-	public string $ui_700 = 'oklch(50% 0.134 242.749)';
-	public string $ui_800 = 'oklch(44.3% 0.11 240.79)';
-	public string $ui_900 = 'oklch(39.1% 0.09 240.876)';
-	public string $ui_950 = 'oklch(29.3% 0.066 243.157)';
+	/**
+	 * Maps a design token to the config key that customizes it. Any token
+	 * left at its default ('') is omitted from $palettes entirely, so
+	 * app-v8.css's static ramp for that token applies unchanged - no
+	 * hardcoded fallback values to keep in sync here.
+	 */
+	private const TOKEN_KEYS = [
+		'primary' => 'primary_color',
+		'secondary' => 'secondary_color',
+		'success' => 'success_color',
+		'warning' => 'warning_color',
+		'error' => 'error_color',
+		'info' => 'info_color',
+		'neutral' => 'neutral_color',
+	];
+
+	/** @var array<string,array<string,string>> token => (shade => oklch value) */
+	public array $palettes = [];
 
 	public function __construct()
 	{
-		// default data
-		$accent_color = request()->configs()->getValueAsString('accent_color');
+		$configs = request()->configs();
 
-		if ($accent_color === '') {
-			return;
+		foreach (self::TOKEN_KEYS as $token => $key) {
+			$color = $configs->getValueAsString($key);
+
+			if ($color === '') {
+				continue;
+			}
+
+			$this->palettes[$token] = Cache::rememberForever($color, function () use ($color) {
+				return PaletteGenerator::generatePalette($color);
+			});
 		}
-
-		$palette = Cache::rememberForever($accent_color, function () use ($accent_color) {
-			$palette = PaletteGenerator::generatePalette($accent_color);
-
-			return $palette;
-		});
-
-		$this->ui_50 = $palette['50'];
-		$this->ui_100 = $palette['100'];
-		$this->ui_200 = $palette['200'];
-		$this->ui_300 = $palette['300'];
-		$this->ui_400 = $palette['400'];
-		$this->ui_500 = $palette['500'];
-		$this->ui_600 = $palette['600'];
-		$this->ui_700 = $palette['700'];
-		$this->ui_800 = $palette['800'];
-		$this->ui_900 = $palette['900'];
-		$this->ui_950 = $palette['950'];
 	}
 
 	/**

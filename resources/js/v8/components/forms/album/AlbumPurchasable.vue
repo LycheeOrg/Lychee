@@ -13,6 +13,8 @@
 				<PixelSizePricesInput v-model="pixelSizes" />
 				<div class="flex gap-4">
 					<UButton
+						variant="solid"
+						color="primary"
 						icon="lucide:plus"
 						:label="$t('webshop.albumPurchasable.setPurchasable')"
 						class="w-full justify-center"
@@ -21,6 +23,7 @@
 					/>
 					<UButton
 						icon="lucide:forward"
+						variant="ghost"
 						color="error"
 						:label="$t('webshop.albumPurchasable.setPurchasablePropagate')"
 						class="font-bold w-full justify-center"
@@ -43,7 +46,7 @@
 					<UButton color="error" variant="ghost" class="font-bold w-full justify-center" @click="disable">{{
 						$t("webshop.albumPurchasable.disable")
 					}}</UButton>
-					<UButton class="w-full justify-center font-bold" :disabled="!canSubmit" @click="updatePrices">
+					<UButton class="w-full justify-center font-bold" variant="solid" color="primary" :disabled="!canSubmit" @click="updatePrices">
 						{{ $t("webshop.albumPurchasable.update") }}
 					</UButton>
 				</div>

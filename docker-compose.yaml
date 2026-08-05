@@ -75,7 +75,6 @@ x-base-lychee-setup:
   # To configure Lychee, you can do it via:
   # - environment variables (see the environment section below)
   # - .env file (recommended for sensitive data)
-  # - mapping .env file to /app/.env (not necessary anymore if you use env_file)
   env_file:
     - path: ./.env
 

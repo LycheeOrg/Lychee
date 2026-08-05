@@ -195,6 +195,7 @@ final readonly class RouteCacheManager
 			'api/v2/Maintenance::destroyDismissedFaces' => false,
 			'api/v2/Maintenance::syncFaceEmbeddings' => false,
 			'api/v2/Maintenance::resetFaceScanStatus' => false,
+			'api/v2/Maintenance::purgeOrphanFaceEmbeddings' => false,
 		];
 	}
 

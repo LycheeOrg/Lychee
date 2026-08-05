@@ -41,7 +41,7 @@
 				>
 					{{ $t("dialogs.button.cancel") }}
 				</UButton>
-				<UButton class="flex-1 justify-center" :disabled="!canSubmit" @click="save">
+				<UButton class="flex-1 justify-center" variant="solid" color="primary" :disabled="!canSubmit" @click="save">
 					{{ $t("dialogs.button.save") }}
 				</UButton>
 			</div>

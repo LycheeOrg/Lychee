@@ -84,7 +84,8 @@
 				<UButton :label="$t('webhook.cancel')" color="neutral" variant="soft" class="flex-1 justify-center font-bold" @click="onHide" />
 				<UButton
 					:label="webhook ? $t('webhook.save') : $t('webhook.create')"
-					color="neutral"
+					color="primary"
+					variant="solid"
 					class="flex-1 justify-center font-bold"
 					:loading="isSaving"
 					@click="save"

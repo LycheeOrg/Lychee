@@ -44,13 +44,14 @@
 					<div class="text-sm text-success">{{ $t("people.claims.success") }}</div>
 				</div>
 
-				<Spinner v-if="uploading" class="mx-auto w-8 h-8" />
+				<LycheeLoadingIcon fast v-if="uploading" class="mx-auto w-8 h-8" />
 			</div>
 		</template>
 		<template #footer>
 			<div class="flex gap-2 justify-end w-full">
 				<UButton :label="$t('gallery.cancel')" color="neutral" variant="soft" @click="reset" />
 				<UButton
+					variant="solid"
 					v-if="selectedFile && !matchedPerson"
 					:label="$t('people.claim_by_selfie')"
 					color="primary"
@@ -59,6 +60,7 @@
 					@click="submit"
 				/>
 				<UButton
+					variant="solid"
 					v-if="matchedPerson"
 					:label="$t('gallery.done')"
 					color="success"
@@ -78,7 +80,7 @@ import { ref } from "vue";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import { trans } from "laravel-vue-i18n";
 import PeopleService from "@/services/people-service";
-import Spinner from "@/v8/components/Spinner.vue";
+import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 
 const emits = defineEmits<{
 	claimed: [person: App.Http.Resources.Models.PersonResource];

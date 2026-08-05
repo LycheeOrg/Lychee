@@ -109,7 +109,9 @@
 			</div>
 		</template>
 		<template #footer>
-			<UButton color="neutral" class="font-bold w-full justify-center" @click="resetBuyMeDialog">{{ $t("dialogs.button.cancel") }}</UButton>
+			<UButton color="neutral" variant="solid" class="font-bold w-full justify-center" @click="resetBuyMeDialog">{{
+				$t("dialogs.button.cancel")
+			}}</UButton>
 		</template>
 	</UModal>
 </template>

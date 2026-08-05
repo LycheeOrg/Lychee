@@ -1289,6 +1289,7 @@ declare namespace App.Http.Resources.Rights {
 		is_face_recognition_warning_enabled: boolean;
 		is_contact_enabled: boolean;
 		messages_count: number;
+		is_design_system_enabled: boolean;
 	};
 	export type PhotoRightsResource = {
 		can_edit: boolean;

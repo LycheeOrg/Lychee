@@ -1,4 +1,5 @@
 <template>
+	<LoadingProgress :loading="!is_loaded" />
 	<div class="absolute top-0 left-0">
 		<UButton icon="lucide:chevron-left" class="mr-2" color="neutral" variant="ghost" @click="goBack" />
 	</div>
@@ -39,7 +40,7 @@
 				<UAlert v-if="confirmationError" color="error" variant="soft" class="text-sm mt-2" :description="confirmationError" />
 			</div>
 			<div class="flex items-center mt-9">
-				<UButton :disabled="!isFormValid" color="neutral" class="w-full font-bold justify-center" @click="register">
+				<UButton variant="solid" :disabled="!isFormValid" color="neutral" class="w-full font-bold justify-center" @click="register">
 					{{ $t("profile.register.signup") }}
 				</UButton>
 			</div>
@@ -49,6 +50,7 @@
 
 <script setup lang="ts">
 import InputPassword from "@/v8/components/forms/basic/InputPassword.vue";
+import LoadingProgress from "@/v8/components/loading/LoadingProgress.vue";
 import InitService from "@/services/init-service";
 import ProfileService from "@/services/profile-service";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
@@ -138,11 +140,17 @@ onMounted(() => {
 	// Close the left menu if it is open
 	leftMenuStore.left_menu_open = false;
 
-	Promise.all([lycheeStore.load(), InitService.fetchLandingData()]).then(([_lycheeData, initData]) => {
-		is_loaded.value = true;
-		if (initData.data.landing_page_enable === true) {
-			initdata.value = initData.data;
-		}
-	});
+	Promise.all([lycheeStore.load(), InitService.fetchLandingData()])
+		.then(([_lycheeData, initData]) => {
+			if (initData.data.landing_page_enable === true) {
+				initdata.value = initData.data;
+			}
+		})
+		.catch((e) => {
+			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });
+		})
+		.finally(() => {
+			is_loaded.value = true;
+		});
 });
 </script>

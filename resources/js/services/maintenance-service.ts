@@ -165,6 +165,12 @@ const MaintenanceService = {
 	resetFaceScanStatusDo(): Promise<AxiosResponse<{ reset_count: number }>> {
 		return axios.post(`${Constants.getApiUrl()}Maintenance::resetFaceScanStatus`, {});
 	},
+	purgeOrphanFaceEmbeddingsCheck(): Promise<AxiosResponse<number>> {
+		return axios.get(`${Constants.getApiUrl()}Maintenance::purgeOrphanFaceEmbeddings`, { data: {} });
+	},
+	purgeOrphanFaceEmbeddingsDo(): Promise<AxiosResponse<{ purged_count: number }>> {
+		return axios.post(`${Constants.getApiUrl()}Maintenance::purgeOrphanFaceEmbeddings`, {});
+	},
 };
 
 export default MaintenanceService;

@@ -19,13 +19,12 @@
 		<div v-if="can_create_user_groups" class="w-full">
 			<p class="text-highlighted">{{ $t("user-groups.explanation") }}</p>
 			<div class="flex justify-end mt-8 mb-8">
-				<UButton color="primary" @click="create">{{ $t("user-groups.create_group") }}</UButton>
+				<UButton variant="solid" color="primary" @click="create">{{ $t("user-groups.create_group") }}</UButton>
 			</div>
 		</div>
-		<div v-if="userGroups === undefined">
-			<div class="text-center text-highlighted mt-4">
-				{{ $t("user-groups.loading") }}
-			</div>
+		<div v-if="userGroups === undefined" class="flex justify-center items-center gap-2 text-highlighted mt-4">
+			<LycheeLoadingIcon fast />
+			{{ $t("user-groups.loading") }}
 		</div>
 		<div v-else-if="userGroups.length === 0" class="text-center text-highlighted mt-4">
 			{{ $t("user-groups.empty") }}
@@ -104,6 +103,7 @@
 import { ref, onMounted } from "vue";
 import { UserGroupService } from "@/services/user-group-service";
 import OpenLeftMenu from "@/v8/components/headers/OpenLeftMenu.vue";
+import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 import AddUserGroupModal from "@/v8/components/forms/group/AddUserGroupModal.vue";
 import DeleteUserGroupDialog from "@/v8/components/forms/group/DeleteUserGroupDialog.vue";
 import UsersService from "@/services/users-service";

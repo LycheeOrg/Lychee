@@ -1,30 +1,20 @@
 <template>
-	<UCard v-if="data !== undefined && fixable" class="min-h-40 relative bg-muted/50">
-		<template #header>
-			<div class="text-center font-bold">
-				{{ $t("maintenance.fix-tree.title") }}
-			</div>
-		</template>
-		<div class="w-full h-40 overflow-y-auto text-sm text-muted">
-			<div v-if="!loading" class="w-full ltr:text-left rtl:text-right">
-				{{ $t("maintenance.fix-tree.Oddness") }}: {{ data.oddness }}<br />
-				{{ $t("maintenance.fix-tree.Duplicates") }}: {{ data.duplicates }}<br />
-				{{ $t("maintenance.fix-tree.Wrong parents") }}: {{ data.wrong_parent }}<br />
-				{{ $t("maintenance.fix-tree.Missing parents") }}: {{ data.missing_parent }}<br />
-			</div>
-			<Spinner v-if="loading" class="w-full" />
-		</div>
-		<template #footer>
-			<UButton v-if="fixable && !loading" :to="{ name: 'tree' }" color="primary" class="w-full justify-center">
+	<MaintenanceRow v-if="data !== undefined && fixable">
+		<template #title>{{ $t("maintenance.fix-tree.title") }}</template>
+		<span v-if="!loading">{{ stats }}</span>
+		<LycheeLoadingIcon fast v-if="loading" class="inline-block text-2xl" />
+		<template #actions>
+			<UButton variant="soft" v-if="fixable && !loading" :to="{ name: 'tree' }" color="primary">
 				{{ $t("maintenance.fix-tree.button") }}
 			</UButton>
 		</template>
-	</UCard>
+	</MaintenanceRow>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import Spinner from "@/v8/components/Spinner.vue";
+import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
+import MaintenanceRow from "@/v8/components/maintenance/MaintenanceRow.vue";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import MaintenanceService from "@/services/maintenance-service";
 import { trans } from "laravel-vue-i18n";
@@ -35,6 +25,17 @@ const toast = useAppToast();
 
 const fixable = computed(() => {
 	return data.value && (data.value.oddness > 0 || data.value.duplicates > 0 || data.value.wrong_parent > 0 || data.value.missing_parent > 0);
+});
+const stats = computed(() => {
+	if (data.value === undefined) {
+		return "";
+	}
+	return [
+		`${trans("maintenance.fix-tree.Oddness")}: ${data.value.oddness}`,
+		`${trans("maintenance.fix-tree.Duplicates")}: ${data.value.duplicates}`,
+		`${trans("maintenance.fix-tree.Wrong parents")}: ${data.value.wrong_parent}`,
+		`${trans("maintenance.fix-tree.Missing parents")}: ${data.value.missing_parent}`,
+	].join(" · ");
 });
 function load() {
 	loading.value = true;

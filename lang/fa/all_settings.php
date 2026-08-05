@@ -395,7 +395,14 @@ return [
         'password_flag_enabled' => 'فعال‌سازی نشان رمز عبور',
         'sensitive_flag_enabled' => 'فعال‌سازی نشان حساس',
         'expert_album_settings' => 'نمایش پیش‌فرض تنظیمات پیشرفته آلبوم',
-        'accent_color' => 'رنگ تأکیدی.',
+        'primary_color' => 'رنگ تأکیدی.',
+        'enable_design_system' => 'Enable design system',
+        'secondary_color' => 'Secondary color',
+        'success_color' => 'Success color',
+        'warning_color' => 'Warning color',
+        'error_color' => 'Error color',
+        'info_color' => 'Info color',
+        'neutral_color' => 'Neutral color',
     ],
     'details' => [
         'version' => '',
@@ -785,7 +792,14 @@ return [
         'password_flag_enabled' => 'نمایش آیکون قفل روی آلبوم‌های محافظت‌شده با رمز عبور.',
         'sensitive_flag_enabled' => 'نمایش آیکون هشدار روی آلبوم‌هایی که به‌عنوان حساس (NSFW) علامت‌گذاری شده‌اند.',
         'expert_album_settings' => 'در صورت فعال بودن، کادر تنظیمات آلبوم فیلدهای پیشرفته (سربرگ، مجوز، حق نشر) را به‌طور پیش‌فرض نمایش می‌دهد، به‌جای پنهان کردن آن‌ها پشت کلید «حالت پیشرفته».',
-        'accent_color' => 'یک رنگ انتخاب کنید، نزدیک‌ترین پالت رنگی استفاده خواهد شد. اگر این را خالی بگذارید، رنگ تأکیدی پیش‌فرض استفاده خواهد شد.<br>توجه: برای مشاهده تغییرات باید صفحه را تازه‌سازی کنید.',
+        'primary_color' => 'یک رنگ انتخاب کنید، نزدیک‌ترین پالت رنگی استفاده خواهد شد. اگر این را خالی بگذارید، رنگ تأکیدی پیش‌فرض استفاده خواهد شد.<br>توجه: برای مشاهده تغییرات باید صفحه را تازه‌سازی کنید.',
+        'enable_design_system' => 'Enables the design system preview in the admin panel (this is mostly a dev feature).',
+        'secondary_color' => 'Pick a colour, the nearest colour palette will be used. If you leave this empty, the default color will be used.<br>Note: you will need to refresh the page to see the changes.',
+        'success_color' => 'Pick a colour, the nearest colour palette will be used. If you leave this empty, the default color will be used.<br>Note: you will need to refresh the page to see the changes.',
+        'warning_color' => 'Pick a colour, the nearest colour palette will be used. If you leave this empty, the default color will be used.<br>Note: you will need to refresh the page to see the changes.',
+        'error_color' => 'Pick a colour, the nearest colour palette will be used. If you leave this empty, the default color will be used.<br>Note: you will need to refresh the page to see the changes.',
+        'info_color' => 'Pick a colour, the nearest colour palette will be used. If you leave this empty, the default color will be used.<br>Note: you will need to refresh the page to see the changes.',
+        'neutral_color' => 'Pick a colour, the nearest colour palette will be used. If you leave this empty, the default color will be used.<br>Note: you will need to refresh the page to see the changes. Pick a near-gray color for best results — a saturated color will tint every gray in the interface.',
     ],
 
     'category_name' => [
@@ -816,6 +830,7 @@ return [
         'Mod Rating' => 'امتیازدهی ستاره‌ای عکس',
         'Mod Webshop' => 'فروشگاه اینترنتی',
         'AI Vision' => 'بینایی هوشمند',
+        'Theme Colors' => 'Theme Colors',
     ],
 
     'category_description' => [
@@ -846,5 +861,6 @@ return [
         'Mod Rating' => 'این ماژول امتیازدهی به عکس‌ها را فعال می‌کند. کاربر می‌تواند برای هر عکس امتیازی از ۱ تا ۵ ستاره تعیین کند. میانگین امتیاز در جایی که پیکربندی شده باشد نمایش داده می‌شود.',
         'Mod Webshop' => 'این ماژول به شما امکان می‌دهد عکس‌های خود را مدیریت و بفروشید.<br><br><span class="pi pi-exclamation-triangle text-orange-500 ltr:mr-2 rtl:ml-2"></span><span class="text-muted-color">Lychee تحت <a href="https://lycheeorg.dev/license" class="text-primary-400">مجوز MIT</a> توسعه یافته است. این بدان معناست که <span class="text-muted-color-emphasis">LycheeOrg مسئول</span> یا ضامن <span class="text-muted-color-emphasis">هیچ مشکل یا خسارتی</span> ناشی از استفاده از ماژول فروشگاه اینترنتی و/یا قابلیت‌های پردازش پرداخت نیست. بسیار مهم است که <span class="text-muted-color-emphasis">پیش از استفاده در محیط عملیاتی، از صحت و امنیت پیکربندی خود اطمینان حاصل کنید.</span>',
         'AI Vision' => 'ویژگی‌های مبتنی بر هوش مصنوعی از جمله تشخیص چهره و شناسایی محتوای NSFW. به یک سرویس جانبی AI Vision خارجی نیاز دارد.',
+        'Theme Colors' => 'Customize the secondary, semantic, and neutral colors used across the v8 interface. Each picked color generates a full palette, the same way the accent color above does.',
     ],
 ];

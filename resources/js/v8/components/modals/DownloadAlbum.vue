@@ -13,6 +13,7 @@
 						{{ $t("gallery.download_album") }}
 					</p>
 					<UButton
+						variant="solid"
 						v-if="is_raw_download_enabled"
 						color="neutral"
 						class="w-full justify-center"
@@ -21,10 +22,11 @@
 					>
 						{{ $t("gallery.raw") }}
 					</UButton>
-					<UButton color="neutral" class="w-full justify-center" icon="lucide:cloud-download" @click="download('ORIGINAL')">
+					<UButton variant="solid" color="neutral" class="w-full justify-center" icon="lucide:cloud-download" @click="download('ORIGINAL')">
 						{{ $t("gallery.original") }}
 					</UButton>
 					<UButton
+						variant="solid"
 						v-if="is_medium2x_download_enabled"
 						color="neutral"
 						class="w-full justify-center"
@@ -34,6 +36,7 @@
 						{{ $t("gallery.medium_hidpi") }}
 					</UButton>
 					<UButton
+						variant="solid"
 						v-if="is_medium_download_enabled"
 						color="neutral"
 						class="w-full justify-center"
@@ -43,6 +46,7 @@
 						{{ $t("gallery.medium") }}
 					</UButton>
 					<UButton
+						variant="solid"
 						v-if="is_small2x_download_enabled"
 						color="neutral"
 						class="w-full justify-center"
@@ -52,6 +56,7 @@
 						{{ $t("gallery.small_hidpi") }}
 					</UButton>
 					<UButton
+						variant="solid"
 						v-if="is_small_download_enabled"
 						color="neutral"
 						class="w-full justify-center"
@@ -61,6 +66,7 @@
 						{{ $t("gallery.small") }}
 					</UButton>
 					<UButton
+						variant="solid"
 						v-if="is_thum2x_download_enabled"
 						color="neutral"
 						class="w-full justify-center"
@@ -70,6 +76,7 @@
 						{{ $t("gallery.thumb_hidpi") }}
 					</UButton>
 					<UButton
+						variant="solid"
 						v-if="is_thumb_download_enabled"
 						color="neutral"
 						class="w-full justify-center"

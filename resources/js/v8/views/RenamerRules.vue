@@ -57,6 +57,8 @@
 				<div class="flex items-center gap-4">
 					<span class="text-sm text-muted">{{ $t("renamer.rules_count", { count: rules.length.toString() }) }}</span>
 					<UButton
+						color="primary"
+						variant="solid"
 						v-if="rules.length > 0"
 						icon="lucide:plus"
 						size="sm"
@@ -76,6 +78,8 @@
 				</div>
 				<p class="text-muted mb-4">{{ $t("renamer.no_rules") }}</p>
 				<UButton
+					color="primary"
+					variant="solid"
 					icon="lucide:plus"
 					:label="$t('renamer.create_first_rule')"
 					@click="
@@ -99,7 +103,7 @@
 			</div>
 		</div>
 		<div v-else class="flex justify-center items-center p-4">
-			<Spinner class="text-2xl" />
+			<LycheeLoadingIcon fast class="text-2xl" />
 			<span class="ml-2">{{ $t("renamer.loading") }}</span>
 		</div>
 
@@ -117,7 +121,7 @@ import OpenLeftMenu from "@/v8/components/headers/OpenLeftMenu.vue";
 import RenamerRuleLine from "@/v8/components/renamer/RenamerRuleLine.vue";
 import RenamerRuleModal from "@/v8/components/renamer/RenamerRuleModal.vue";
 import RenamerService, { type TestRenamerResponse } from "@/services/renamer-service";
-import Spinner from "@/v8/components/Spinner.vue";
+import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 
 const rules = ref<App.Http.Resources.Models.RenamerRuleResource[] | undefined>(undefined);
 const showCreateModal = ref(false);

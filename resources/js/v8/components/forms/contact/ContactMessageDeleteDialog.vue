@@ -22,7 +22,7 @@
 				>
 					{{ $t("contact.admin.cancel") }}
 				</UButton>
-				<UButton color="error" class="flex-1 justify-center font-bold" :loading="isDeleting" @click="execute">
+				<UButton color="error" variant="solid" class="flex-1 justify-center font-bold" :loading="isDeleting" @click="execute">
 					{{ $t("contact.admin.delete") }}
 				</UButton>
 			</div>

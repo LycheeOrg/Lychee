@@ -11,7 +11,7 @@
 				<UButton color="neutral" variant="soft" class="flex-1 justify-center font-bold" @click="hide">
 					{{ $t("dialogs.button.cancel") }}
 				</UButton>
-				<UButton color="neutral" class="flex-1 justify-center font-bold" :disabled="!deactivate" @click="unlock">
+				<UButton color="primary" variant="solid" class="flex-1 justify-center font-bold" :disabled="!deactivate" @click="unlock">
 					{{ $t("dialogs.unlock.unlock") }}
 				</UButton>
 			</div>

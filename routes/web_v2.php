@@ -91,6 +91,7 @@ Route::get('/admin/purchasables', VueController::class)->middleware(['migration:
 Route::get('/admin/jobs', VueController::class)->middleware(['migration:complete', 'login_required:always']);
 Route::get('/admin/maintenance/{faces?}', VueController::class)->middleware(['migration:complete', 'login_required:always']);
 Route::get('/admin/nsfw-config', VueController::class)->middleware(['migration:complete', 'login_required:always']);
+Route::get('/admin/design', VueController::class)->middleware(['migration:complete', 'login_required:always']);
 Route::get('/permissions', VueController::class)->middleware(['migration:complete', 'login_required:always']);
 Route::get('/fixTree', VueController::class)->middleware(['migration:complete', 'login_required:always']);
 Route::get('/duplicatesFinder', VueController::class)->middleware(['migration:complete', 'login_required:always']);

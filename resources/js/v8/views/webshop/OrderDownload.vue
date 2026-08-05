@@ -8,7 +8,7 @@
 	<UCard class="border-0 md:max-w-3xl lg:max-w-5xl xl:max-w-7xl mt-8 mx-auto w-full" :ui="{ header: 'hidden' }">
 		<!-- If we are loading, wait. -->
 		<div v-if="loading" class="flex justify-center items-center p-8">
-			<Spinner />
+			<LycheeLoadingIcon fast />
 		</div>
 
 		<!-- If order is undefined. This means that we did not have access, ask for the transaction ID. -->
@@ -21,6 +21,8 @@
 				<div class="flex flex-col gap-4">
 					<UInput v-model="transactionId" :placeholder="$t('webshop.orderDownload.enterTransactionId')" class="w-full" />
 					<UButton
+						color="primary"
+						variant="solid"
 						:label="$t('webshop.orderDownload.loadOrder')"
 						:disabled="!transactionId || transactionId.trim() === ''"
 						class="w-full justify-center"
@@ -78,6 +80,8 @@
 					<div class="flex justify-between mb-3">
 						<h3 class="text-xl font-bold mt-3">{{ $t("webshop.orderDownload.items") }}</h3>
 						<UButton
+							color="primary"
+							variant="solid"
 							v-if="initData?.settings.can_edit && itemsToUpdate.length > 0"
 							:label="$t('webshop.orderDownload.deliver')"
 							icon="lucide:save"
@@ -163,13 +167,20 @@
 										target="_blank"
 										rel="noopener noreferrer"
 									>
-										<UButton icon="lucide:truck" :label="$t('webshop.orderDownload.trackShipment')" size="sm" color="primary" />
+										<UButton
+											variant="solid"
+											icon="lucide:truck"
+											:label="$t('webshop.orderDownload.trackShipment')"
+											size="sm"
+											color="primary"
+										/>
 									</a>
 									<div v-else-if="item.is_print" class="flex items-center gap-2 text-sm text-muted">
 										<UIcon name="lucide:truck" />
 										<span>{{ item.content_url }}</span>
 									</div>
 									<UButton
+										variant="solid"
 										v-else
 										icon="lucide:cloud-download"
 										:label="$t('webshop.orderDownload.download')"
@@ -199,7 +210,7 @@
 <script setup lang="ts">
 import OrderStatus from "@/v8/components/webshop/OrderStatus.vue";
 import UsernameEmail from "@/v8/components/webshop/UsernameEmail.vue";
-import Spinner from "@/v8/components/Spinner.vue";
+import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 import Constants from "@/services/constants";
 import InitService from "@/services/init-service";
 import WebshopService, { ItemLink } from "@/services/webshop-service";

@@ -65,16 +65,22 @@
 			class="w-full ltr:rounded-r-none rtl:rounded-l-none font-bold border-none"
 			:description="$t('settings.all.change_detected')"
 		/>
-		<UButton class="bg-error-800 text-white font-bold px-8 hover:bg-error-700 rtl:rounded-r-none ltr:rounded-l-none" @click="emits('save')">{{
-			$t("settings.all.save")
-		}}</UButton>
+		<UButton
+			color="primary"
+			variant="solid"
+			class="bg-error-800 text-white font-bold px-8 hover:bg-error-700 rtl:rounded-r-none ltr:rounded-l-none"
+			@click="emits('save')"
+			>{{ $t("settings.all.save") }}</UButton
+		>
 	</div>
 </template>
 <script setup lang="ts">
 import SettingsService from "@/services/settings-service";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useLtRorRtL } from "@/utils/Helpers";
+import { useAppToast } from "@/v8/composables/useAppToast";
 import { storeToRefs } from "pinia";
+import { trans } from "laravel-vue-i18n";
 import { onMounted } from "vue";
 
 const props = defineProps<{
@@ -88,6 +94,7 @@ const { isLTR } = useLtRorRtL();
 
 const lycheeStore = useLycheeStateStore();
 const { is_old_style, is_expert_mode } = storeToRefs(lycheeStore);
+const toast = useAppToast();
 
 const emits = defineEmits<{
 	save: [];
@@ -95,11 +102,17 @@ const emits = defineEmits<{
 }>();
 
 function load() {
-	SettingsService.init().then((response) => {
-		lycheeStore.is_old_style = response.data.default_old_settings;
-		lycheeStore.is_expert_mode = response.data.default_expert_settings;
-		emits("ready");
-	});
+	SettingsService.init()
+		.then((response) => {
+			lycheeStore.is_old_style = response.data.default_old_settings;
+			lycheeStore.is_expert_mode = response.data.default_expert_settings;
+		})
+		.catch((e) => {
+			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });
+		})
+		.finally(() => {
+			emits("ready");
+		});
 }
 
 onMounted(() => {

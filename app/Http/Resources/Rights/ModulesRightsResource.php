@@ -37,6 +37,7 @@ class ModulesRightsResource extends Data
 	public bool $is_face_recognition_warning_enabled = true;
 	public bool $is_contact_enabled = false;
 	public int $messages_count = 0;
+	public bool $is_design_system_enabled = false;
 
 	public function __construct()
 	{
@@ -54,6 +55,7 @@ class ModulesRightsResource extends Data
 		$this->is_nsfw_classifier_enabled = $this->isNsfwClassifierEnabled($is_logged_in);
 		$this->is_face_overlay_enabled = request()->configs()->getValueAsBool('ai_vision_face_overlay_enabled');
 		$this->is_face_recognition_warning_enabled = request()->configs()->getValueAsBool('ai_vision_face_recognition_warning');
+		$this->is_design_system_enabled = request()->configs()->getValueAsBool('enable_design_system');
 		$this->isContactEnabled();
 	}
 

@@ -1,4 +1,5 @@
 <template>
+	<LoadingProgress :loading="!is_loaded" />
 	<WebauthnModal @logged-in="goBack" />
 	<div class="absolute top-0 left-0">
 		<UButton icon="lucide:chevron-left" class="mr-2" color="neutral" variant="ghost" @click="goBack" />
@@ -43,12 +44,15 @@
 </template>
 <script setup lang="ts">
 import LoginForm from "@/v8/components/forms/auth/LoginForm.vue";
+import LoadingProgress from "@/v8/components/loading/LoadingProgress.vue";
 import WebauthnModal from "@/v8/components/modals/WebauthnModal.vue";
 import InitService from "@/services/init-service";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { useUserStore } from "@/stores/UserState";
 import { useAdvisoryModal } from "@/composables/modals/useAdvisoryModal";
+import { useAppToast } from "@/v8/composables/useAppToast";
+import { trans } from "laravel-vue-i18n";
 import { storeToRefs } from "pinia";
 import { ref } from "vue";
 import { onMounted } from "vue";
@@ -59,6 +63,7 @@ const lycheeStore = useLycheeStateStore();
 const leftMenuStore = useLeftMenuStateStore();
 const userStore = useUserStore();
 const { advisoryCheck } = useAdvisoryModal();
+const toast = useAppToast();
 const { title, is_registration_enabled, is_basic_auth_enabled, is_white_label_enabled, is_se_enabled } = storeToRefs(lycheeStore);
 const is_loaded = ref(false);
 
@@ -74,11 +79,17 @@ onMounted(() => {
 	// Close the left menu if it is open
 	leftMenuStore.left_menu_open = false;
 
-	Promise.all([lycheeStore.load(), InitService.fetchLandingData()]).then(([_lycheeData, initData]) => {
-		is_loaded.value = true;
-		if (initData.data.landing_page_enable === true) {
-			initdata.value = initData.data;
-		}
-	});
+	Promise.all([lycheeStore.load(), InitService.fetchLandingData()])
+		.then(([_lycheeData, initData]) => {
+			if (initData.data.landing_page_enable === true) {
+				initdata.value = initData.data;
+			}
+		})
+		.catch((e) => {
+			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });
+		})
+		.finally(() => {
+			is_loaded.value = true;
+		});
 });
 </script>

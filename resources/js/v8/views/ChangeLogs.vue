@@ -1,4 +1,5 @@
 <template>
+	<LoadingProgress :loading="changeLogs === undefined" />
 	<UHeader :toggle="false">
 		<template #left>
 			<OpenLeftMenu />
@@ -22,6 +23,7 @@
 <script setup lang="ts">
 import OpenLeftMenu from "@/v8/components/headers/OpenLeftMenu.vue";
 import InitService from "@/services/init-service";
+import LoadingProgress from "@/v8/components/loading/LoadingProgress.vue";
 import { ref } from "vue";
 
 const changeLogs = ref<App.Http.Resources.Diagnostics.ChangeLogInfo[] | undefined>(undefined);
@@ -32,5 +34,6 @@ InitService.fetchChangeLog()
 	})
 	.catch((error) => {
 		console.error("Error fetching change logs:", error);
+		changeLogs.value = [];
 	});
 </script>

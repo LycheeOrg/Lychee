@@ -29,7 +29,8 @@
 				<UButton
 					class="flex-1 justify-center"
 					:label="$t('bulk_album_edit.transfer')"
-					color="primary"
+					color="error"
+					variant="solid"
 					:disabled="selectedOwner === undefined"
 					@click="doSetOwner"
 				/>

@@ -84,7 +84,7 @@
 				>
 					{{ $t("dialogs.button.close") }}
 				</UButton>
-				<UButton v-else color="neutral" class="flex-1 justify-center font-bold" @click="() => uploadNext()">
+				<UButton variant="solid" v-else color="neutral" class="flex-1 justify-center font-bold" @click="() => uploadNext()">
 					{{ $t("dialogs.upload.resume") }}
 				</UButton>
 			</div>

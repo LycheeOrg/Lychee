@@ -75,6 +75,8 @@ function exec() {
 		.finally(load);
 }
 
+defineExpose({ load });
+
 load();
 </script>
 

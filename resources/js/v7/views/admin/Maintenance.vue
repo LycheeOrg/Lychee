@@ -42,8 +42,9 @@
 		<MaintenanceBulkScanNsfw v-if="initData?.modules.is_nsfw_classifier_enabled" />
 		<MaintenanceRunClustering v-if="initData?.modules.is_face_recognition_enabled" />
 		<MaintenanceDestroyDismissedFaces v-if="initData?.modules.is_face_recognition_enabled" />
-		<MaintenanceSyncFaceEmbeddings v-if="initData?.modules.is_face_recognition_enabled" />
+		<MaintenanceSyncFaceEmbeddings v-if="initData?.modules.is_face_recognition_enabled" ref="syncFaceEmbeddingsRef" />
 		<MaintenanceResetFaceScanStatus v-if="initData?.modules.is_face_recognition_enabled" />
+		<MaintenancePurgeOrphanFaceEmbeddings v-if="initData?.modules.is_face_recognition_enabled" @purged="syncFaceEmbeddingsRef?.load()" />
 	</div>
 </template>
 <script setup lang="ts">
@@ -71,9 +72,12 @@ import MaintenanceRunClustering from "@/v7/components/maintenance/MaintenanceRun
 import MaintenanceDestroyDismissedFaces from "@/v7/components/maintenance/MaintenanceDestroyDismissedFaces.vue";
 import MaintenanceSyncFaceEmbeddings from "@/v7/components/maintenance/MaintenanceSyncFaceEmbeddings.vue";
 import MaintenanceResetFaceScanStatus from "@/v7/components/maintenance/MaintenanceResetFaceScanStatus.vue";
+import MaintenancePurgeOrphanFaceEmbeddings from "@/v7/components/maintenance/MaintenancePurgeOrphanFaceEmbeddings.vue";
 import { storeToRefs } from "pinia";
 import { useLeftMenuStateStore } from "@/stores/LeftMenuState";
+import { useTemplateRef } from "vue";
 
 const leftMenu = useLeftMenuStateStore();
 const { initData } = storeToRefs(leftMenu);
+const syncFaceEmbeddingsRef = useTemplateRef<InstanceType<typeof MaintenanceSyncFaceEmbeddings>>("syncFaceEmbeddingsRef");
 </script>

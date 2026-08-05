@@ -22,7 +22,7 @@
 				<UButton class="flex-1 justify-center" color="neutral" variant="soft" @click="close">
 					{{ $t("dialogs.button.close") }}
 				</UButton>
-				<UButton v-if="!isDisabled && token === undefined" class="flex-1 justify-center" color="error" @click="disable">
+				<UButton v-if="!isDisabled && token === undefined" variant="solid" class="flex-1 justify-center" color="error" @click="disable">
 					{{ $t("profile.token.disable") }}
 				</UButton>
 			</div>

@@ -1,6 +1,14 @@
 <template>
 	<div v-if="hasMore" class="flex justify-center w-full py-4">
-		<UButton :label="buttonLabel" :loading="loading" :disabled="loading" color="neutral" class="rounded" @click="emit('loadMore')" />
+		<UButton
+			variant="solid"
+			:label="buttonLabel"
+			:loading="loading"
+			:disabled="loading"
+			color="neutral"
+			class="rounded"
+			@click="emit('loadMore')"
+		/>
 	</div>
 </template>
 <script setup lang="ts">

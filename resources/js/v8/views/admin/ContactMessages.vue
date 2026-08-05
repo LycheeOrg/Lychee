@@ -24,18 +24,21 @@
 			<UInput v-model="searchQuery" :placeholder="$t('contact.admin.search_placeholder')" class="w-64" @input="onSearchInput" />
 			<div class="flex gap-2">
 				<UButton
+					variant="solid"
 					:label="$t('contact.admin.filter_all')"
 					:color="readFilter === null ? 'primary' : 'neutral'"
 					size="sm"
 					@click="setReadFilter(null)"
 				/>
 				<UButton
+					variant="solid"
 					:label="$t('contact.admin.filter_unread')"
 					:color="readFilter === false ? 'primary' : 'neutral'"
 					size="sm"
 					@click="setReadFilter(false)"
 				/>
 				<UButton
+					variant="solid"
 					:label="$t('contact.admin.filter_read')"
 					:color="readFilter === true ? 'primary' : 'neutral'"
 					size="sm"
@@ -46,7 +49,7 @@
 
 		<!-- Loading -->
 		<div v-if="loading" class="flex justify-center py-12">
-			<Spinner class="text-3xl" />
+			<LycheeLoadingIcon fast class="text-3xl" />
 		</div>
 
 		<!-- Empty state -->
@@ -126,7 +129,7 @@ import { onMounted, ref } from "vue";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import { trans } from "laravel-vue-i18n";
 import OpenLeftMenu from "@/v8/components/headers/OpenLeftMenu.vue";
-import Spinner from "@/v8/components/Spinner.vue";
+import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 import ContactMessageDeleteDialog from "@/v8/components/forms/contact/ContactMessageDeleteDialog.vue";
 import ContactService from "@/services/contact-service";
 import { useLycheeStateStore } from "@/stores/LycheeState";

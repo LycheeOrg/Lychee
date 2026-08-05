@@ -395,7 +395,14 @@ return [
         'password_flag_enabled' => 'Enable password flag',
         'sensitive_flag_enabled' => 'Enable sensitive flag',
         'expert_album_settings' => 'Standaard geavanceerde albuminstellingen tonen',
-        'accent_color' => 'Accentkleur.',
+        'primary_color' => 'Accentkleur.',
+        'enable_design_system' => 'Enable design system',
+        'secondary_color' => 'Secondary color',
+        'success_color' => 'Success color',
+        'warning_color' => 'Warning color',
+        'error_color' => 'Error color',
+        'info_color' => 'Info color',
+        'neutral_color' => 'Neutral color',
     ],
     'details' => [
         'version' => '',
@@ -785,7 +792,14 @@ return [
         'password_flag_enabled' => 'Show the lock icon on password-protected albums.',
         'sensitive_flag_enabled' => 'Show the warning icon on albums marked as sensitive (NSFW).',
         'expert_album_settings' => 'Indien ingeschakeld, toont het instellingenvenster van het album standaard de geavanceerde velden (koptekst, licentie, copyright) in plaats van ze te verbergen achter de schakelaar „expertmodus”.',
-        'accent_color' => 'Kies een kleur, het dichtstbijzijnde kleurenpalet wordt gebruikt. Als u dit leeg laat, wordt de standaard accentkleur gebruikt.<br>Let op: u moet de pagina vernieuwen om de wijzigingen te zien.',
+        'primary_color' => 'Kies een kleur, het dichtstbijzijnde kleurenpalet wordt gebruikt. Als u dit leeg laat, wordt de standaard accentkleur gebruikt.<br>Let op: u moet de pagina vernieuwen om de wijzigingen te zien.',
+        'enable_design_system' => 'Enables the design system preview in the admin panel (this is mostly a dev feature).',
+        'secondary_color' => 'Pick a colour, the nearest colour palette will be used. If you leave this empty, the default color will be used.<br>Note: you will need to refresh the page to see the changes.',
+        'success_color' => 'Pick a colour, the nearest colour palette will be used. If you leave this empty, the default color will be used.<br>Note: you will need to refresh the page to see the changes.',
+        'warning_color' => 'Pick a colour, the nearest colour palette will be used. If you leave this empty, the default color will be used.<br>Note: you will need to refresh the page to see the changes.',
+        'error_color' => 'Pick a colour, the nearest colour palette will be used. If you leave this empty, the default color will be used.<br>Note: you will need to refresh the page to see the changes.',
+        'info_color' => 'Pick a colour, the nearest colour palette will be used. If you leave this empty, the default color will be used.<br>Note: you will need to refresh the page to see the changes.',
+        'neutral_color' => 'Pick a colour, the nearest colour palette will be used. If you leave this empty, the default color will be used.<br>Note: you will need to refresh the page to see the changes. Pick a near-gray color for best results — a saturated color will tint every gray in the interface.',
     ],
 
     'category_name' => [
@@ -816,6 +830,7 @@ return [
         'Mod Rating' => 'Fotobeoordeling met sterren',
         'Mod Webshop' => 'Webshop',
         'AI Vision' => 'AI Vision',
+        'Theme Colors' => 'Theme Colors',
     ],
 
     'category_description' => [
@@ -846,5 +861,6 @@ return [
         'Mod Rating' => 'Deze module schakelt het beoordelen van foto\'s in. De gebruiker kan per foto een beoordeling van 1 tot 5 sterren geven. De gemiddelde beoordeling wordt getoond waar dit is geconfigureerd.',
         'Mod Webshop' => 'Met deze module kunt u uw foto\'s beheren en verkopen.<br><br><span class="pi pi-exclamation-triangle text-orange-500 ltr:mr-2 rtl:ml-2"></span><span class="text-muted-color">Lychee wordt ontwikkeld onder de <a href="https://lycheeorg.dev/license" class="text-primary-400">MIT-licentie</a>. Dit betekent dat <span class="text-muted-color-emphasis">LycheeOrg niet verantwoordelijk</span> of aansprakelijk is <span class="text-muted-color-emphasis">voor eventuele problemen of verliezen</span> die voortvloeien uit het gebruik van de webshopmodule en/of de betaalverwerkingsmogelijkheden. Het is van cruciaal belang dat u controleert en <span class="text-muted-color-emphasis">ervoor zorgt dat uw configuratie correct en veilig werkt voordat u deze in een productieomgeving gebruikt.</span>',
         'AI Vision' => 'Op AI gebaseerde functies, waaronder gezichtsherkenning en detectie van NSFW-content. Vereist een externe AI Vision-sidecarservice.',
+        'Theme Colors' => 'Customize the secondary, semantic, and neutral colors used across the v8 interface. Each picked color generates a full palette, the same way the accent color above does.',
     ],
 ];

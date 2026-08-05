@@ -19,7 +19,14 @@
 				<UButton class="flex-1 justify-center" color="neutral" variant="soft" @click="closeCallback">
 					{{ $t("dialogs.button.close") }}
 				</UButton>
-				<UButton v-if="!is_se_enabled" class="flex-1 justify-center" :disabled="!isValidForm" @click="register">
+				<UButton
+					color="primary"
+					variant="solid"
+					v-if="!is_se_enabled"
+					class="flex-1 justify-center"
+					:disabled="!isValidForm"
+					@click="register"
+				>
 					{{ $t("dialogs.register.register") }}
 				</UButton>
 			</div>

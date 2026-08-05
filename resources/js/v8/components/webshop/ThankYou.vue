@@ -24,6 +24,7 @@
 		</p>
 		<p class="text-muted">{{ $t("webshop.checkout.enjoyPurchase") }}</p>
 		<UButton
+			color="primary"
 			v-if="order?.status === 'closed'"
 			variant="ghost"
 			:label="$t('webshop.checkout.toMyDownloads')"

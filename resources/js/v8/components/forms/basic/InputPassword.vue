@@ -1,6 +1,7 @@
 <template>
 	<UInput
 		v-model="uiValue"
+		v-bind="$attrs"
 		:class="classValue"
 		:disabled="props.disabled"
 		:type="show ? 'text' : 'password'"
@@ -22,6 +23,7 @@
 					</template>
 					<UIcon
 						name="lucide:triangle-alert"
+						tabindex="-1"
 						:class="{
 							'inline-block size-4': true,
 							'text-error': result.feedback.warning,
@@ -34,6 +36,7 @@
 				color="neutral"
 				variant="link"
 				size="sm"
+				tabindex="-1"
 				:icon="show ? 'lucide:eye-off' : 'lucide:eye'"
 				:aria-label="show ? 'Hide password' : 'Show password'"
 				@click="

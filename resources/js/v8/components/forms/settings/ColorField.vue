@@ -2,7 +2,7 @@
 	<div>
 		<div class="flex items-center gap-4 justify-between">
 			<div class="w-1/2 sm:w-full" :class="props.config.require_se ? 'text-primary' : 'text-highlighted'">
-				{{ tDoc(props.config) }}
+				<UChip v-if="chip !== ''" standalone inset :color="chip" size="xl" /> {{ tDoc(props.config) }}
 				<SETag v-if="config.require_se" />
 			</div>
 			<div class="flex gap-4 items-center">
@@ -37,14 +37,50 @@ const { isLTR } = useLtRorRtL();
 const sliderPosition = computed(() => (isLTR() ? "right" : "left"));
 const openOnHover = computed(() => (isTouchDevice() ? false : false));
 
+const COLORS = ["primary_color", "secondary_color", "warning_color", "error_color", "success_color", "info_color", "neutral_color"];
+
+const chip = computed(() => {
+	if (COLORS.includes(props.config.key)) {
+		return props.config.key.replace("_color", "");
+	}
+	return "";
+});
+
+function getDefaultColor(key: string): string {
+	switch (key) {
+		case "primary_color":
+			return "#00a6f4"; // sky
+		case "secondary_color":
+			return "#615fff"; // violet
+		case "success_color":
+			return "#00bc7d"; // emerald
+		case "info_color":
+			return "#00b8db"; // cyan
+		case "warning_color":
+			return "#fe9a00"; // amber
+		case "error_color":
+			return "#ff2056"; // rose
+		case "neutral_color":
+			const b = document.querySelector("body");
+			if (b?.classList.contains("dark")) {
+				return "#71717b"; // dark mode: zinc color
+			}
+			return "#62748e"; // or slate color
+		default:
+			return "#00a6f4"; // default to primary color
+	}
+}
+
 const props = defineProps<{
 	config: App.Http.Resources.Models.ConfigResource;
 }>();
 
-function stringToBlossomColorPickerValue(color: string): BlossomColorPickerValue | undefined {
-	if (!color) {
-		color = "#00a6f4";
+function stringToBlossomColorPickerValue(config: App.Http.Resources.Models.ConfigResource): BlossomColorPickerValue | undefined {
+	let color = config.value;
+	if (!config.value) {
+		color = getDefaultColor(config.key);
 	}
+
 	const hsl = hexToHsl(color);
 	return {
 		hue: hsl.h,
@@ -55,10 +91,10 @@ function stringToBlossomColorPickerValue(color: string): BlossomColorPickerValue
 		layer: "outer",
 	};
 }
-const val = ref<BlossomColorPickerValue | undefined>(stringToBlossomColorPickerValue(props.config.value));
+const val = ref<BlossomColorPickerValue | undefined>(stringToBlossomColorPickerValue(props.config));
 
 const changed = computed(() => {
-	const originalValue = stringToBlossomColorPickerValue(props.config.value);
+	const originalValue = stringToBlossomColorPickerValue(props.config);
 
 	return (
 		val.value?.hue !== originalValue?.hue ||
@@ -74,7 +110,7 @@ const emits = defineEmits<{
 
 function reset() {
 	emits("reset", props.config.key);
-	val.value = stringToBlossomColorPickerValue(props.config.value);
+	val.value = stringToBlossomColorPickerValue(props.config);
 }
 
 const debouncedHandleChange = useDebounceFn((newColor: BlossomColorPickerColor) => {
@@ -89,7 +125,7 @@ function handleChange(newColor: BlossomColorPickerColor) {
 // We watch props in case of updates.
 watch(
 	() => props.config,
-	(newValue, _oldValue) => (val.value = stringToBlossomColorPickerValue(newValue.value)),
+	(newValue, _oldValue) => (val.value = stringToBlossomColorPickerValue(newValue)),
 );
 </script>
 <style>

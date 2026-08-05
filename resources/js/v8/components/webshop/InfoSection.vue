@@ -4,6 +4,8 @@
 		<div v-if="options.allow_guest_checkout === false && userStore.isGuest">
 			<div class="text-error font-medium mb-4">{{ $t("webshop.infoSection.mustBeLoggedIn") }}</div>
 			<UButton
+				color="primary"
+				variant="solid"
 				:label="$t('webshop.infoSection.goToLogin')"
 				icon="lucide:log-in"
 				@click="

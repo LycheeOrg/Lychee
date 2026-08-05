@@ -75,3 +75,10 @@ public/vendor/
 **/caddy
 frankenphp
 frankenphp-worker.php
+
+PRODUCT.md
+.agents/skills
+.claude/
+.github/hooks/impeccable.json
+.github/skills/impeccable/*
+.impeccable/

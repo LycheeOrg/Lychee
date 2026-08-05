@@ -1,25 +1,20 @@
 <template>
-	<UCard class="min-h-40 relative bg-muted/50">
-		<template #header>
-			<div class="text-center font-bold">
-				{{ $t("maintenance.flush-cache.title") }}
-			</div>
-		</template>
-		<div class="w-full h-40 overflow-y-auto text-sm text-muted">
-			<div v-if="!loading">{{ $t("maintenance.flush-cache.description") }}</div>
-			<Spinner v-if="loading" class="w-full" />
-		</div>
-		<template #footer>
-			<UButton v-if="!loading" color="warning" class="w-full justify-center" @click="exec">
+	<MaintenanceRow>
+		<template #title>{{ $t("maintenance.flush-cache.title") }}</template>
+		<span v-if="!loading">{{ $t("maintenance.flush-cache.description") }}</span>
+		<LycheeLoadingIcon fast v-if="loading" class="inline-block text-2xl" />
+		<template #actions>
+			<UButton variant="soft" v-if="!loading" color="warning" @click="exec">
 				{{ $t("maintenance.flush-cache.button") }}
 			</UButton>
 		</template>
-	</UCard>
+	</MaintenanceRow>
 </template>
 
 <script setup lang="ts">
 import { ref } from "vue";
-import Spinner from "@/v8/components/Spinner.vue";
+import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
+import MaintenanceRow from "@/v8/components/maintenance/MaintenanceRow.vue";
 import MaintenanceService from "@/services/maintenance-service";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import { trans } from "laravel-vue-i18n";

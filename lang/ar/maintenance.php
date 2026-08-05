@@ -161,6 +161,12 @@ return [
         'success' => 'تمت إعادة تعيين حالات فحص الوجوه بنجاح.',
     ],
 
+        'purge-orphan-face-embeddings' => [
+            'title' => 'Purge Orphan Face Embeddings',
+            'description' => 'The AI Vision service may be holding up to %d embedding(s) that no longer exist in Lychee. Purging will push the current list of faces to AI Vision and permanently delete anything left over.',
+            'action' => 'Purge Now',
+            'success' => 'Orphaned face embeddings purged successfully.',
+        ],
         'bulk-scan-nsfw' => [
         'title' => 'فحص جماعي للمحتوى الحساس (NSFW)',
         'description' => 'فحص جميع الصور غير المفحوصة بحثًا عن محتوى حساس (NSFW) باستخدام الإعداد المسبق المُهيَّأ. يتطلب تشغيل خدمة تصنيف المحتوى الحساس (NSFW).',

@@ -107,7 +107,7 @@
 				{{ $t("admin-dashboard.errors.partial") }}
 			</div>
 			<div v-if="!stats && !isLoading" class="text-muted text-center py-4">
-				<Spinner class="text-2xl" />
+				<LycheeLoadingIcon fast class="text-2xl" />
 			</div>
 		</UCard>
 
@@ -166,7 +166,7 @@ import { RouterLink, useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import { trans } from "laravel-vue-i18n";
-import Spinner from "@/v8/components/Spinner.vue";
+import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 import OpenLeftMenu from "@/v8/components/headers/OpenLeftMenu.vue";
 import PiMiniIcon from "@/v8/components/icons/PiMiniIcon.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";

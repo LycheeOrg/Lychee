@@ -1,4 +1,5 @@
 <template>
+	<LoadingProgress :loading="perms === undefined" />
 	<UHeader :toggle="false">
 		<template #left>
 			<OpenLeftMenu />
@@ -11,6 +12,8 @@
 			{{ $t("sharing.info") }}
 		</div>
 		<UButton
+			color="primary"
+			variant="solid"
 			class="w-full font-bold justify-center mt-4 mb-12"
 			:label="$t('sharing.bluk_share')"
 			icon="lucide:user-plus"
@@ -49,6 +52,7 @@
 import { onMounted, ref } from "vue";
 import ShareLine from "@/v8/components/forms/sharing/ShareLine.vue";
 import OpenLeftMenu from "@/v8/components/headers/OpenLeftMenu.vue";
+import LoadingProgress from "@/v8/components/loading/LoadingProgress.vue";
 import BulkSharingModal from "@/v8/components/forms/sharing/BulkSharingModal.vue";
 import SharingService from "@/services/sharing-service";
 import { useAppToast } from "@/v8/composables/useAppToast";
@@ -78,9 +82,14 @@ function deletePermission(id: number) {
 
 function load() {
 	perms.value = undefined;
-	SharingService.list().then((response) => {
-		perms.value = response.data;
-	});
+	SharingService.list()
+		.then((response) => {
+			perms.value = response.data;
+		})
+		.catch((e) => {
+			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });
+			perms.value = [];
+		});
 }
 
 onMounted(() => {

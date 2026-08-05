@@ -10,7 +10,7 @@
 		<FaceRecognitionWarning />
 
 		<div v-if="loading" class="flex justify-center items-center mt-20">
-			<Spinner class="text-3xl" />
+			<LycheeLoadingIcon fast class="text-3xl" />
 		</div>
 
 		<template v-else>
@@ -27,8 +27,7 @@
 						color="error"
 						variant="ghost"
 						:disabled="selectedLabels.length === 0"
-						:loading="batchDismissing"
-						@click="batchDismiss"
+						@click="requestBatchDismiss"
 					/>
 				</template>
 				<UButton
@@ -62,7 +61,7 @@
 						:key="cluster.cluster_label"
 						class="relative border border-default rounded-lg p-4 flex flex-col items-start gap-3 cursor-pointer hover:border-primary transition-colors"
 						:class="{ 'ring-2 ring-primary': isBatchMode && selectedLabels.includes(cluster.cluster_label) }"
-						@click="isBatchMode ? toggleClusterSelection(cluster.cluster_label) : openClusterDetail(cluster)"
+						@click="isBatchMode ? toggleClusterSelection(cluster.cluster_label) : openQueue(cluster)"
 					>
 						<!-- Batch checkbox -->
 						<div v-if="isBatchMode" class="absolute top-2 right-2">
@@ -108,6 +107,7 @@
 
 						<div class="flex gap-2 shrink-0" @click.stop>
 							<UButton
+								variant="solid"
 								:label="$t('people.assign')"
 								icon="lucide:check"
 								color="success"
@@ -122,8 +122,7 @@
 								color="error"
 								variant="outline"
 								size="sm"
-								:loading="dismissingLabel === cluster.cluster_label"
-								@click="dismissCluster(cluster.cluster_label)"
+								@click="requestDismissCluster(cluster)"
 							/>
 						</div>
 					</div>
@@ -133,35 +132,43 @@
 			<PaginationInfiniteScroll :loading="loadingMore" :hasMore="hasMorePages" @loadMore="loadMore" />
 		</template>
 
-		<!-- Cluster detail dialog -->
-		<UModal v-model:open="detailDialogVisible" :dismissible="true">
+		<!-- Cluster review queue: one cluster at a time, contact-sheet strip, auto-advances on decision -->
+		<UModal v-model:open="queueVisible" :dismissible="true">
 			<template #header>
-				<span class="font-bold">{{ $t("people.cluster_detail_title", { count: String(detailCluster?.face_count ?? 0) }) }}</span>
+				<div class="flex items-center justify-between w-full gap-2">
+					<span class="font-bold">
+						{{ $t("people.review_queue_position", { current: String((queueIndex ?? 0) + 1), total: String(totalClusters) }) }}
+					</span>
+					<UTooltip :text="$t('people.skip')">
+						<UButton icon="lucide:skip-forward" color="neutral" variant="ghost" size="sm" @click="skipQueueCluster" />
+					</UTooltip>
+				</div>
 			</template>
 			<template #body>
 				<div v-if="detailFacesLoading" class="flex justify-center py-6">
-					<Spinner class="text-2xl" />
+					<LycheeLoadingIcon fast class="text-2xl" />
 				</div>
 				<div v-else class="flex flex-col gap-4">
-					<div class="overflow-y-auto max-h-[60vh]">
-						<div class="grid grid-cols-3 sm:grid-cols-4 gap-2">
-							<div v-for="face in detailFaces" :key="face.id" class="relative aspect-square group">
+					<div ref="detailScrollContainer" class="overflow-x-auto">
+						<div class="flex gap-2 pb-2">
+							<div v-for="face in detailFaces" :key="face.id" class="relative shrink-0 w-24 h-24 group">
 								<img v-if="face.crop_url" :src="face.crop_url" class="w-full h-full object-cover rounded-lg" loading="lazy" />
-								<div v-else class="w-full h-full bg-neutral-200 dark:bg-neutral-700 rounded-lg flex items-center justify-center">
+								<div v-else class="w-full h-full bg-elevated rounded-lg flex items-center justify-center">
 									<UIcon name="lucide:user" class="text-xl text-muted" />
 								</div>
 								<button
-									class="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/60 text-inverted text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+									class="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/60 text-inverted text-xs flex items-center justify-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity hover:bg-red-600"
+									:title="$t('people.remove_from_person')"
 									@click="dismissSingleFace(face)"
 								>
 									×
 								</button>
 							</div>
+							<div v-if="detailHasMorePages || detailFacesLoadingMore" class="flex items-center justify-center w-24 h-24 shrink-0">
+								<LycheeLoadingIcon fast class="text-lg" />
+							</div>
+							<div ref="detailScrollSentinel" class="shrink-0 w-1" />
 						</div>
-						<div v-if="detailHasMorePages || detailFacesLoadingMore" class="flex justify-center py-2">
-							<Spinner class="text-lg" />
-						</div>
-						<div ref="detailScrollSentinel" />
 					</div>
 					<div class="flex flex-col sm:flex-row gap-3 items-end border-t border-default pt-2">
 						<UInputMenu
@@ -175,27 +182,67 @@
 								(v: App.Http.Resources.Models.PersonResource | string | undefined) => (detailPersonSelect = v ?? null)
 							"
 							@create="(name: string) => (detailPersonSelect = name)"
-							@keydown.enter.stop="assignDetailCluster"
+							@keydown.enter.stop="assignQueueCluster"
 						/>
 						<div class="flex gap-2">
 							<UButton
+								variant="solid"
 								:label="$t('people.assign')"
 								icon="lucide:check"
 								color="success"
 								:disabled="!getDetailAssignName()"
 								:loading="detailAssigning"
-								@click="assignDetailCluster"
+								@click="assignQueueCluster"
 							/>
 							<UButton
 								:label="$t('people.dismiss')"
 								icon="lucide:x"
 								color="error"
 								variant="outline"
-								:loading="detailDismissing"
-								@click="dismissDetailCluster"
+								@click="queueCluster && requestDismissCluster(queueCluster)"
 							/>
 						</div>
 					</div>
+				</div>
+			</template>
+		</UModal>
+
+		<!-- Dismiss confirmation dialog (single cluster or batch) -->
+		<UModal v-model:open="confirmDialogVisible" :dismissible="true">
+			<template #body>
+				<p class="text-center text-highlighted max-w-xl text-wrap">
+					<template v-if="pendingDismiss?.kind === 'cluster'">
+						{{ $t("people.dismiss_cluster_confirm", { count: String(pendingDismiss.cluster.face_count) }) }}
+					</template>
+					<template v-else-if="pendingDismiss?.kind === 'batch'">
+						{{ $t("people.dismiss_batch_confirm", { count: String(pendingDismiss.labels.length) }) }}
+					</template>
+					<br /><br />
+					<span class="text-muted flex items-center justify-center gap-1">
+						<UIcon name="lucide:triangle-alert" class="text-warning" />{{ $t("people.dismiss_warning") }}
+					</span>
+				</p>
+			</template>
+			<template #footer>
+				<div class="flex w-full gap-2">
+					<UButton
+						color="neutral"
+						variant="soft"
+						class="flex-1 justify-center font-bold"
+						:disabled="confirmingDismiss"
+						@click="cancelDismissConfirm"
+					>
+						{{ $t("dialogs.button.cancel") }}
+					</UButton>
+					<UButton
+						variant="solid"
+						color="error"
+						class="flex-1 justify-center font-bold"
+						:loading="confirmingDismiss"
+						@click="confirmDismiss"
+					>
+						{{ $t("people.dismiss") }}
+					</UButton>
 				</div>
 			</template>
 		</UModal>
@@ -203,18 +250,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, watch } from "vue";
+import { ref, reactive, computed, onMounted, watch } from "vue";
 import { useAppToast } from "@/v8/composables/useAppToast";
+import { useToast } from "@nuxt/ui/composables/useToast";
 import { trans } from "laravel-vue-i18n";
 import PaginationInfiniteScroll from "@/v8/components/pagination/PaginationInfiniteScroll.vue";
 import FaceRecognitionWarning from "@/v8/components/faceRecog/FaceRecognitionWarning.vue";
 import FaceClusterService from "@/services/face-cluster-service";
 import FaceDetectionService from "@/services/face-detection-service";
 import GoBack from "@/v8/components/headers/GoBack.vue";
-import Spinner from "@/v8/components/Spinner.vue";
+import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 import { usePeopleList } from "@/composables/usePeopleList";
 
 const toast = useAppToast();
+const rawToast = useToast();
 
 const clusters = ref<App.Http.Resources.Models.ClusterPreviewResource[]>([]);
 // Per-cluster selected person (string name or PersonResource)
@@ -223,9 +272,9 @@ const loading = ref(false);
 const loadingMore = ref(false);
 const runningClustering = ref(false);
 const assigningLabel = ref<number | null>(null);
-const dismissingLabel = ref<number | null>(null);
 const currentPage = ref(1);
 const hasMorePages = ref(false);
+const totalClusters = ref(0);
 
 // All known persons for autocomplete
 const { people: allPeople, load: loadAllPeople } = usePeopleList();
@@ -233,11 +282,22 @@ const { people: allPeople, load: loadAllPeople } = usePeopleList();
 // Batch selection state
 const isBatchMode = ref(false);
 const selectedLabels = ref<number[]>([]);
-const batchDismissing = ref(false);
 
-// Cluster detail dialog state
-const detailDialogVisible = ref(false);
-const detailCluster = ref<App.Http.Resources.Models.ClusterPreviewResource | null>(null);
+// Dismiss confirmation (single cluster or batch)
+type PendingDismiss = { kind: "cluster"; cluster: App.Http.Resources.Models.ClusterPreviewResource } | { kind: "batch"; labels: number[] };
+const confirmDialogVisible = ref(false);
+const pendingDismiss = ref<PendingDismiss | null>(null);
+const confirmingDismiss = ref(false);
+
+// Cluster review queue: steps through `clusters.value` starting at the clicked cluster.
+// Deciding (assign/dismiss) removes the cluster from `clusters.value`, which naturally shifts
+// the next cluster into the same index - no manual index bump needed on that path.
+const queueVisible = ref(false);
+const queueIndex = ref<number | null>(null);
+const queueCluster = computed<App.Http.Resources.Models.ClusterPreviewResource | null>(() =>
+	queueIndex.value !== null ? (clusters.value[queueIndex.value] ?? null) : null,
+);
+
 const detailFaces = ref<App.Http.Resources.Models.FaceResource[]>([]);
 const detailFacesLoading = ref(false);
 const detailFacesLoadingMore = ref(false);
@@ -245,7 +305,7 @@ const detailCurrentPage = ref(1);
 const detailHasMorePages = ref(false);
 const detailPersonSelect = ref<App.Http.Resources.Models.PersonResource | string | null>(null);
 const detailAssigning = ref(false);
-const detailDismissing = ref(false);
+const detailScrollContainer = ref<HTMLElement | null>(null);
 const detailScrollSentinel = ref<HTMLElement | null>(null);
 let detailScrollObserver: IntersectionObserver | null = null;
 
@@ -298,22 +358,154 @@ function toggleSelectAllClusters() {
 	}
 }
 
-function batchDismiss() {
+function requestDismissCluster(cluster: App.Http.Resources.Models.ClusterPreviewResource) {
+	pendingDismiss.value = { kind: "cluster", cluster };
+	confirmDialogVisible.value = true;
+}
+
+function requestBatchDismiss() {
 	if (selectedLabels.value.length === 0) return;
-	batchDismissing.value = true;
-	const toDissmiss = [...selectedLabels.value];
-	Promise.all(toDissmiss.map((label) => FaceClusterService.dismissCluster(label)))
+	pendingDismiss.value = { kind: "batch", labels: [...selectedLabels.value] };
+	confirmDialogVisible.value = true;
+}
+
+function cancelDismissConfirm() {
+	confirmDialogVisible.value = false;
+	pendingDismiss.value = null;
+}
+
+function confirmDismiss() {
+	if (!pendingDismiss.value) return;
+	const pending = pendingDismiss.value;
+	confirmingDismiss.value = true;
+	const action = pending.kind === "cluster" ? performDismissCluster(pending.cluster) : performBatchDismiss(pending.labels);
+	action.finally(() => {
+		confirmingDismiss.value = false;
+		confirmDialogVisible.value = false;
+		pendingDismiss.value = null;
+	});
+}
+
+// Fetch every face id currently in a cluster (before dismissing it) so a later "Undo" can un-dismiss exactly those faces.
+// The faces() endpoint excludes already-dismissed faces, so this must run before the dismiss call, not after.
+function fetchAllClusterFaceIds(label: number, expectedCount: number): Promise<string[]> {
+	const MAX_PAGES = 200; // safety cap (10,000 faces @ 50/page); real clusters are far smaller
+
+	function fetchPage(page: number, ids: string[]): Promise<string[]> {
+		if (ids.length >= expectedCount || page > MAX_PAGES) {
+			return Promise.resolve(ids);
+		}
+		return FaceClusterService.getClusterFaces(label, page).then((response) => {
+			const items = response.data.data as unknown as App.Http.Resources.Models.FaceResource[];
+			if (items.length === 0) {
+				return ids;
+			}
+			const nextIds = [...ids, ...items.map((f) => f.id)];
+			if (response.data.current_page >= response.data.last_page) {
+				return nextIds;
+			}
+			return fetchPage(page + 1, nextIds);
+		});
+	}
+
+	return fetchPage(1, []);
+}
+
+interface DismissedEntry {
+	cluster: App.Http.Resources.Models.ClusterPreviewResource;
+	faceIds: string[];
+}
+
+function showDismissedToast(entries: DismissedEntry[], dismissedCount: number) {
+	rawToast.add({
+		color: "info",
+		title: trans("toasts.success"),
+		description: trans("people.dismissed_faces", { count: String(dismissedCount) }),
+		duration: 8000,
+		actions: [
+			{
+				label: trans("people.undo"),
+				color: "neutral",
+				variant: "outline",
+				onClick: () => undoDismiss(entries),
+			},
+		],
+	});
+}
+
+function undoDismiss(entries: DismissedEntry[]) {
+	const allFaceIds = entries.flatMap((e) => e.faceIds);
+	const activeLabel = queueCluster.value?.cluster_label;
+	Promise.all(allFaceIds.map((id) => FaceDetectionService.toggleDismissed(id)))
 		.then(() => {
-			clusters.value = clusters.value.filter((c) => !toDissmiss.includes(c.cluster_label));
-			selectedLabels.value = [];
-			isBatchMode.value = false;
-			toast.add({ severity: "success", summary: trans("toasts.success"), life: 3000 });
+			let restoredCount = 0;
+			entries.forEach(({ cluster }) => {
+				if (!clusters.value.some((c) => c.cluster_label === cluster.cluster_label)) {
+					clusters.value = [cluster, ...clusters.value];
+					restoredCount += 1;
+				}
+			});
+			totalClusters.value += restoredCount;
+			// Prepending restored clusters shifts every existing index by `restoredCount`, so
+			// re-anchor the queue to the same cluster label rather than leaving `queueIndex` pointing
+			// at whatever cluster now happens to sit at that position.
+			if (activeLabel !== undefined) {
+				const newIndex = clusters.value.findIndex((c) => c.cluster_label === activeLabel);
+				if (newIndex !== -1) {
+					queueIndex.value = newIndex;
+				}
+			}
+			toast.add({
+				severity: "success",
+				summary: trans("toasts.success"),
+				detail: trans("people.restored_faces", { count: String(allFaceIds.length) }),
+				life: 3000,
+			});
 		})
 		.catch((e: { response?: { data?: { message?: string } } }) => {
 			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });
-		})
-		.finally(() => {
-			batchDismissing.value = false;
+		});
+}
+
+function performDismissCluster(cluster: App.Http.Resources.Models.ClusterPreviewResource): Promise<void> {
+	const label = cluster.cluster_label;
+	return fetchAllClusterFaceIds(label, cluster.face_count)
+		.then((faceIds) =>
+			FaceClusterService.dismissCluster(label).then((response) => {
+				const wasQueueCluster = queueCluster.value?.cluster_label === label;
+				clusters.value = clusters.value.filter((c) => c.cluster_label !== label);
+				delete clusterPersonSelect[label];
+				totalClusters.value = Math.max(0, totalClusters.value - 1);
+				if (wasQueueCluster) {
+					advanceQueueAfterRemoval();
+				}
+				showDismissedToast([{ cluster, faceIds }], response.data.dismissed_count);
+			}),
+		)
+		.catch((e: { response?: { data?: { message?: string } } }) => {
+			console.error("Error dismissing face cluster:", e);
+			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });
+		});
+}
+
+function performBatchDismiss(labels: number[]): Promise<void> {
+	const targets = clusters.value.filter((c) => labels.includes(c.cluster_label));
+	return Promise.all(
+		targets.map((cluster) => fetchAllClusterFaceIds(cluster.cluster_label, cluster.face_count).then((faceIds) => ({ cluster, faceIds }))),
+	)
+		.then((prepared) =>
+			Promise.all(prepared.map((p) => FaceClusterService.dismissCluster(p.cluster.cluster_label))).then((responses) => {
+				const totalDismissed = responses.reduce((sum, r) => sum + r.data.dismissed_count, 0);
+				clusters.value = clusters.value.filter((c) => !labels.includes(c.cluster_label));
+				labels.forEach((l) => delete clusterPersonSelect[l]);
+				totalClusters.value = Math.max(0, totalClusters.value - labels.length);
+				selectedLabels.value = [];
+				isBatchMode.value = false;
+				showDismissedToast(prepared, totalDismissed);
+			}),
+		)
+		.catch((e: { response?: { data?: { message?: string } } }) => {
+			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });
 		});
 }
 
@@ -325,6 +517,7 @@ function load() {
 			clusters.value = Array.isArray(items) ? items : (Object.values(items) as App.Http.Resources.Models.ClusterPreviewResource[]);
 			currentPage.value = 1;
 			hasMorePages.value = response.data.current_page < response.data.last_page;
+			totalClusters.value = response.data.total;
 		})
 		.catch((e) => {
 			console.error("Error loading face clusters:", e);
@@ -335,16 +528,17 @@ function load() {
 		});
 }
 
-function loadMore() {
+function loadMore(): Promise<void> {
 	loadingMore.value = true;
 	const nextPage = currentPage.value + 1;
-	FaceClusterService.getClusters(nextPage)
+	return FaceClusterService.getClusters(nextPage)
 		.then((response) => {
 			const items = response.data.data;
 			const newItems = Array.isArray(items) ? items : (Object.values(items) as App.Http.Resources.Models.ClusterPreviewResource[]);
 			clusters.value = [...clusters.value, ...newItems];
 			currentPage.value = nextPage;
 			hasMorePages.value = response.data.current_page < response.data.last_page;
+			totalClusters.value = response.data.total;
 		})
 		.catch((e) => {
 			console.error("Error loading more face clusters:", e);
@@ -380,6 +574,7 @@ function assignClusterWithSelection(label: number) {
 			});
 			clusters.value = clusters.value.filter((c) => c.cluster_label !== label);
 			delete clusterPersonSelect[label];
+			totalClusters.value = Math.max(0, totalClusters.value - 1);
 			// Refresh people list after potential new person
 			loadAllPeople().catch(() => {});
 		})
@@ -389,31 +584,6 @@ function assignClusterWithSelection(label: number) {
 		})
 		.finally(() => {
 			assigningLabel.value = null;
-		});
-}
-
-function dismissCluster(label: number) {
-	dismissingLabel.value = label;
-	FaceClusterService.dismissCluster(label)
-		.then((response) => {
-			toast.add({
-				severity: "info",
-				summary: trans("toasts.success"),
-				detail: trans("people.dismissed_faces", { count: String(response.data.dismissed_count) }),
-				life: 3000,
-			});
-			clusters.value = clusters.value.filter((c) => c.cluster_label !== label);
-			delete clusterPersonSelect[label];
-			if (detailCluster.value?.cluster_label === label) {
-				detailDialogVisible.value = false;
-			}
-		})
-		.catch((e) => {
-			console.error("Error dismissing face cluster:", e);
-			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });
-		})
-		.finally(() => {
-			dismissingLabel.value = null;
 		});
 }
 
@@ -433,15 +603,23 @@ function runClustering() {
 		});
 }
 
-// -- Cluster detail dialog --
+// -- Cluster review queue --
 
-function openClusterDetail(cluster: App.Http.Resources.Models.ClusterPreviewResource) {
-	detailCluster.value = cluster;
+function openQueue(cluster: App.Http.Resources.Models.ClusterPreviewResource) {
+	const idx = clusters.value.findIndex((c) => c.cluster_label === cluster.cluster_label);
+	if (idx === -1) return;
+	queueIndex.value = idx;
+	queueVisible.value = true;
+	loadQueueClusterFaces();
+}
+
+function loadQueueClusterFaces() {
+	const cluster = queueCluster.value;
+	if (!cluster) return;
 	detailFaces.value = [];
 	detailPersonSelect.value = null;
 	detailCurrentPage.value = 1;
 	detailHasMorePages.value = false;
-	detailDialogVisible.value = true;
 	detailFacesLoading.value = true;
 	FaceClusterService.getClusterFaces(cluster.cluster_label, 1)
 		.then((response) => {
@@ -457,11 +635,59 @@ function openClusterDetail(cluster: App.Http.Resources.Models.ClusterPreviewReso
 		});
 }
 
+// Deciding a cluster removes it from `clusters.value`, which shifts the next cluster into the
+// same `queueIndex` - so we reload at the same index rather than incrementing it. Only advance
+// past the end (or fetch another page) when the queue has actually run out at that index.
+function advanceQueueAfterRemoval() {
+	if (queueIndex.value === null) return;
+	if (queueIndex.value < clusters.value.length) {
+		loadQueueClusterFaces();
+		return;
+	}
+	if (hasMorePages.value) {
+		loadMore().then(() => {
+			if (queueIndex.value !== null && queueIndex.value < clusters.value.length) {
+				loadQueueClusterFaces();
+			} else {
+				closeQueue();
+			}
+		});
+	} else {
+		closeQueue();
+	}
+}
+
+// Skip moves the queue forward without deciding anything - unlike assign/dismiss, nothing is
+// removed from `clusters.value`, so the index itself has to advance.
+function skipQueueCluster() {
+	if (queueIndex.value === null) return;
+	const nextIndex = queueIndex.value + 1;
+	if (nextIndex < clusters.value.length) {
+		queueIndex.value = nextIndex;
+		return;
+	}
+	if (hasMorePages.value) {
+		loadMore().then(() => {
+			if (nextIndex < clusters.value.length) {
+				queueIndex.value = nextIndex;
+			} else {
+				closeQueue();
+			}
+		});
+	} else {
+		closeQueue();
+	}
+}
+
+function closeQueue() {
+	queueVisible.value = false;
+}
+
 function loadMoreDetailFaces() {
-	if (!detailCluster.value || detailFacesLoadingMore.value || !detailHasMorePages.value) return;
+	if (!queueCluster.value || detailFacesLoadingMore.value || !detailHasMorePages.value) return;
 	detailFacesLoadingMore.value = true;
 	const nextPage = detailCurrentPage.value + 1;
-	FaceClusterService.getClusterFaces(detailCluster.value.cluster_label, nextPage)
+	FaceClusterService.getClusterFaces(queueCluster.value.cluster_label, nextPage)
 		.then((response) => {
 			detailFaces.value = [...detailFaces.value, ...(response.data.data as unknown as App.Http.Resources.Models.FaceResource[])];
 			detailCurrentPage.value = response.data.current_page;
@@ -477,13 +703,15 @@ function loadMoreDetailFaces() {
 
 function setupDetailScrollObserver() {
 	detailScrollObserver?.disconnect();
+	// Root against the horizontal strip itself, not the viewport - the sentinel is scrolled
+	// sideways within `detailScrollContainer`, so intersection has to be measured against that.
 	detailScrollObserver = new IntersectionObserver(
 		(entries) => {
 			if (entries[0]?.isIntersecting) {
 				loadMoreDetailFaces();
 			}
 		},
-		{ threshold: 0.1 },
+		{ root: detailScrollContainer.value, threshold: 0.1 },
 	);
 	if (detailScrollSentinel.value) {
 		detailScrollObserver.observe(detailScrollSentinel.value);
@@ -496,30 +724,80 @@ watch(detailScrollSentinel, (el) => {
 	}
 });
 
-watch(detailDialogVisible, (visible) => {
+watch(queueIndex, (idx) => {
+	if (idx !== null && queueVisible.value) {
+		loadQueueClusterFaces();
+	}
+});
+
+watch(queueVisible, (visible) => {
 	if (!visible) {
+		queueIndex.value = null;
 		detailScrollObserver?.disconnect();
 		detailScrollObserver = null;
 	}
 });
 
-function dismissSingleFace(face: App.Http.Resources.Models.FaceResource) {
+// Keybindings, active only while the review queue is open and no confirm dialog is blocking it.
+defineShortcuts({
+	d: () => queueVisible.value && !confirmDialogVisible.value && !!queueCluster.value && requestDismissCluster(queueCluster.value),
+	arrowright: () => queueVisible.value && !confirmDialogVisible.value && skipQueueCluster(),
+	" ": () => queueVisible.value && !confirmDialogVisible.value && skipQueueCluster(),
+});
+
+function undoSingleFace(face: App.Http.Resources.Models.FaceResource, clusterLabel: number) {
 	FaceDetectionService.toggleDismissed(face.id)
 		.then(() => {
-			detailFaces.value = detailFaces.value.filter((f) => f.id !== face.id);
-			const cluster = clusters.value.find((c) => c.cluster_label === detailCluster.value?.cluster_label);
-			if (cluster) {
-				cluster.face_count = Math.max(0, cluster.face_count - 1);
+			if (queueCluster.value?.cluster_label === clusterLabel && !detailFaces.value.some((f) => f.id === face.id)) {
+				detailFaces.value = [face, ...detailFaces.value];
 			}
+			const cluster = clusters.value.find((c) => c.cluster_label === clusterLabel);
+			if (cluster) {
+				cluster.face_count += 1;
+			}
+			toast.add({ severity: "success", summary: trans("toasts.success"), life: 3000 });
 		})
 		.catch((e: { response?: { data?: { message?: string } } }) => {
 			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });
 		});
 }
 
-function assignDetailCluster() {
-	if (!detailCluster.value) return;
-	const label = detailCluster.value.cluster_label;
+function dismissSingleFace(face: App.Http.Resources.Models.FaceResource) {
+	const clusterLabel = queueCluster.value?.cluster_label;
+	FaceDetectionService.toggleDismissed(face.id)
+		.then(() => {
+			detailFaces.value = detailFaces.value.filter((f) => f.id !== face.id);
+			const cluster = clusters.value.find((c) => c.cluster_label === clusterLabel);
+			if (cluster) {
+				cluster.face_count = Math.max(0, cluster.face_count - 1);
+			}
+			rawToast.add({
+				color: "info",
+				title: trans("toasts.success"),
+				description: trans("people.assignment.dismissed"),
+				duration: 6000,
+				actions:
+					clusterLabel !== undefined
+						? [
+								{
+									label: trans("people.undismiss_face"),
+									color: "neutral",
+									variant: "outline",
+									onClick: () => undoSingleFace(face, clusterLabel),
+								},
+							]
+						: [],
+			});
+		})
+		.catch((e: { response?: { data?: { message?: string } } }) => {
+			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });
+		});
+}
+
+function assignQueueCluster() {
+	if (!queueCluster.value) return;
+	const cluster = queueCluster.value;
+	const label = cluster.cluster_label;
 	const payload = resolveAssignPayload(detailPersonSelect.value);
 	if (!payload.person_id && !payload.new_person_name) return;
 
@@ -533,37 +811,15 @@ function assignDetailCluster() {
 				life: 3000,
 			});
 			clusters.value = clusters.value.filter((c) => c.cluster_label !== label);
-			detailDialogVisible.value = false;
+			totalClusters.value = Math.max(0, totalClusters.value - 1);
 			loadAllPeople().catch(() => {});
+			advanceQueueAfterRemoval();
 		})
 		.catch((e: { response?: { data?: { message?: string } } }) => {
 			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });
 		})
 		.finally(() => {
 			detailAssigning.value = false;
-		});
-}
-
-function dismissDetailCluster() {
-	if (!detailCluster.value) return;
-	const label = detailCluster.value.cluster_label;
-	detailDismissing.value = true;
-	FaceClusterService.dismissCluster(label)
-		.then((response) => {
-			toast.add({
-				severity: "info",
-				summary: trans("toasts.success"),
-				detail: trans("people.dismissed_faces", { count: String(response.data.dismissed_count) }),
-				life: 3000,
-			});
-			clusters.value = clusters.value.filter((c) => c.cluster_label !== label);
-			detailDialogVisible.value = false;
-		})
-		.catch((e: { response?: { data?: { message?: string } } }) => {
-			toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });
-		})
-		.finally(() => {
-			detailDismissing.value = false;
 		});
 }
 

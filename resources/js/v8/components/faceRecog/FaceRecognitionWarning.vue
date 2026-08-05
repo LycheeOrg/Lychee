@@ -23,6 +23,7 @@
 					:label="$t('people.face_recognition_warning.accept')"
 					icon="lucide:check"
 					color="primary"
+					variant="solid"
 					:disabled="!acknowledged"
 					@click="accept"
 				/>

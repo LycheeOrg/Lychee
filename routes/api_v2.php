@@ -458,6 +458,8 @@ Route::middleware(['feature:ai-vision', 'feature:v8'])->group(function (): void 
 	Route::post('/Maintenance::syncFaceEmbeddings', [Admin\Maintenance\SyncFaceEmbeddings::class, 'do']);
 	Route::get('/Maintenance::resetFaceScanStatus', [Admin\Maintenance\ResetFaceScanStatus::class, 'check']);
 	Route::post('/Maintenance::resetFaceScanStatus', [Admin\Maintenance\ResetFaceScanStatus::class, 'do']);
+	Route::get('/Maintenance::purgeOrphanFaceEmbeddings', [Admin\Maintenance\PurgeOrphanFaceEmbeddings::class, 'check']);
+	Route::post('/Maintenance::purgeOrphanFaceEmbeddings', [Admin\Maintenance\PurgeOrphanFaceEmbeddings::class, 'do']);
 
 	/**
 	 * AI VISION — ALBUM PEOPLE.

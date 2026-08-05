@@ -1,4 +1,5 @@
 <template>
+	<LoadingProgress v-model:loading="isLoading" />
 	<div class="h-svh overflow-y-hidden">
 		<!-- Trick to avoid the scroll bar to appear on the right when switching to full screen -->
 		<Collapse :when="!is_full_screen">
@@ -32,6 +33,7 @@
 <script setup lang="ts">
 import PhotoThumbPanel from "@/v8/components/gallery/albumModule/PhotoThumbPanel.vue";
 import GoBack from "@/v8/components/headers/GoBack.vue";
+import LoadingProgress from "@/v8/components/loading/LoadingProgress.vue";
 import { useScrollable } from "@/composables/album/scrollable";
 import { useSelection } from "@/composables/selections/selections";
 import { ALL } from "@/config/constants";
@@ -46,6 +48,7 @@ import { ref, computed, onMounted } from "vue";
 import { Collapse } from "vue-collapsed";
 import { useRouter } from "vue-router";
 
+const isLoading = ref(true);
 const albumId = ref("favourites");
 const togglableStore = useTogglablesStateStore();
 const layoutStore = useLayoutStore();
@@ -96,6 +99,8 @@ onMounted(async () => {
 			console.warn(`Promise ${index} reject with reason: ${result.reason}`);
 		}
 	});
+
+	isLoading.value = false;
 
 	if (results.every((result) => result.status === "fulfilled")) {
 		setScroll();

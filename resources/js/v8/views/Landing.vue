@@ -1,4 +1,5 @@
 <template>
+	<LoadingProgress :loading="!initdata" />
 	<main v-if="initdata" id="landing" class="w-screen h-screen bg-black overflow-hidden">
 		<div id="header" class="fixed top-0 left-0 right-0 z-50 overflow-y-hidden">
 			<div id="logo" class="float-left p-4 text-white animate-landingAnimateDown">
@@ -121,23 +122,32 @@ import { ref } from "vue";
 import { RouterLink, useRouter } from "vue-router";
 import InitService from "@/services/init-service";
 import LandingFooter from "@/v8/components/footers/LandingFooter.vue";
+import LoadingProgress from "@/v8/components/loading/LoadingProgress.vue";
 import { useLtRorRtL } from "@/utils/Helpers";
+import { useAppToast } from "@/v8/composables/useAppToast";
+import { trans } from "laravel-vue-i18n";
 
 const { isLTR } = useLtRorRtL();
+const toast = useAppToast();
 
 const introVisible = ref(true);
 
 const initdata = ref<App.Http.Resources.GalleryConfigs.LandingPageResource | undefined>(undefined);
 const router = useRouter();
 
-InitService.fetchLandingData().then((data) => {
-	if (data.data.landing_page_enable === false) {
+InitService.fetchLandingData()
+	.then((data) => {
+		if (data.data.landing_page_enable === false) {
+			router.push({ name: "home" });
+		} else {
+			initdata.value = data.data;
+			setTimeout(() => (introVisible.value = false), 4000);
+		}
+	})
+	.catch((e) => {
+		toast.add({ severity: "error", summary: trans("toasts.error"), detail: e.response?.data?.message, life: 3000 });
 		router.push({ name: "home" });
-	} else {
-		initdata.value = data.data;
-		setTimeout(() => (introVisible.value = false), 4000);
-	}
-});
+	});
 </script>
 <style lang="css" scoped>
 .animate-landingAnimateDown {

@@ -1,27 +1,20 @@
 <template>
-	<UCard class="min-h-40 relative bg-muted/50">
-		<template #header>
-			<div class="text-center font-bold">
-				{{ $t("maintenance.bulk-scan-nsfw.title") }}
-			</div>
-		</template>
-		<div class="w-full h-40 overflow-y-auto text-sm text-muted">
-			<div v-if="!loading" class="w-full ltr:text-left rtl:text-right">
-				{{ $t("maintenance.bulk-scan-nsfw.description") }}
-			</div>
-			<Spinner v-if="loading" class="w-full" />
-		</div>
-		<template #footer>
-			<UButton v-if="!loading" color="primary" class="w-full justify-center" @click="exec">
+	<MaintenanceRow>
+		<template #title>{{ $t("maintenance.bulk-scan-nsfw.title") }}</template>
+		<span v-if="!loading">{{ $t("maintenance.bulk-scan-nsfw.description") }}</span>
+		<LycheeLoadingIcon fast v-if="loading" class="inline-block text-2xl" />
+		<template #actions>
+			<UButton v-if="!loading" color="primary" variant="soft" @click="exec">
 				{{ $t("maintenance.bulk-scan-nsfw.button") }}
 			</UButton>
 		</template>
-	</UCard>
+	</MaintenanceRow>
 </template>
 
 <script setup lang="ts">
 import { ref } from "vue";
-import Spinner from "@/v8/components/Spinner.vue";
+import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
+import MaintenanceRow from "@/v8/components/maintenance/MaintenanceRow.vue";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import { trans } from "laravel-vue-i18n";
 import NsfwDetectionService from "@/services/nsfw-detection-service";

@@ -1,32 +1,23 @@
 <template>
-	<UCard
-		v-if="data !== undefined && data.missing_albums !== 0 && data.missing_photos !== 0"
-		class="min-h-40 relative bg-muted/50"
-		:ui="{ body: 'h-full flex flex-col justify-between gap-4' }"
-	>
-		<template #header>
-			<div class="text-center">
-				{{ $t("maintenance.statistics-check.title") }}
-			</div>
-		</template>
-		<div class="w-full h-40 overflow-y-auto text-sm text-muted">
-			<div v-if="!loading" class="w-full text-left">
-				{{ sprintf($t("maintenance.statistics-check.missing_albums"), data.missing_albums) }}<br />
-				{{ sprintf($t("maintenance.statistics-check.missing_photos"), data.missing_photos) }}<br />
-			</div>
-			<Spinner v-if="loading" class="w-full" />
-		</div>
-		<template #footer>
-			<UButton v-if="!loading" color="primary" class="w-full font-bold justify-center" @click="exec">
+	<MaintenanceRow v-if="data !== undefined && data.missing_albums !== 0 && data.missing_photos !== 0">
+		<template #title>{{ $t("maintenance.statistics-check.title") }}</template>
+		<span v-if="!loading"
+			>{{ sprintf($t("maintenance.statistics-check.missing_albums"), data.missing_albums) }} ·
+			{{ sprintf($t("maintenance.statistics-check.missing_photos"), data.missing_photos) }}</span
+		>
+		<LycheeLoadingIcon fast v-if="loading" class="inline-block text-2xl" />
+		<template #actions>
+			<UButton variant="soft" v-if="!loading" color="primary" class="font-bold" @click="exec">
 				{{ $t("maintenance.statistics-check.button") }}
 			</UButton>
 		</template>
-	</UCard>
+	</MaintenanceRow>
 </template>
 
 <script setup lang="ts">
 import { ref } from "vue";
-import Spinner from "@/v8/components/Spinner.vue";
+import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
+import MaintenanceRow from "@/v8/components/maintenance/MaintenanceRow.vue";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import MaintenanceService from "@/services/maintenance-service";
 import { trans } from "laravel-vue-i18n";

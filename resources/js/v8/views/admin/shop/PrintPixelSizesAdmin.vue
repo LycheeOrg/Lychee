@@ -13,7 +13,14 @@
 		<div class="mt-6">
 			<div class="flex flex-row items-center justify-between mb-3">
 				<h2 class="text-xl font-semibold">{{ $t("webshop.sizeCatalogue.printSizes") }}</h2>
-				<UButton icon="lucide:plus" :label="$t('webshop.sizeCatalogue.addPrintSize')" size="sm" @click="openCreatePrintDialog" />
+				<UButton
+					color="primary"
+					variant="solid"
+					icon="lucide:plus"
+					:label="$t('webshop.sizeCatalogue.addPrintSize')"
+					size="sm"
+					@click="openCreatePrintDialog"
+				/>
 			</div>
 			<UTable :data="printSizes ?? []" :columns="printColumns" :loading="printSizes === undefined" :ui="{ td: 'px-2 py-1', th: 'px-2' }">
 				<template #dimensions-cell="{ row }"> {{ row.original.width }}×{{ row.original.height }} {{ row.original.unit }} </template>
@@ -36,7 +43,14 @@
 		<div class="mt-8">
 			<div class="flex flex-row items-center justify-between mb-3">
 				<h2 class="text-xl font-semibold">{{ $t("webshop.sizeCatalogue.pixelSizes") }}</h2>
-				<UButton icon="lucide:plus" :label="$t('webshop.sizeCatalogue.addPixelSize')" size="sm" @click="openCreatePixelDialog" />
+				<UButton
+					color="primary"
+					variant="solid"
+					icon="lucide:plus"
+					:label="$t('webshop.sizeCatalogue.addPixelSize')"
+					size="sm"
+					@click="openCreatePixelDialog"
+				/>
 			</div>
 			<UTable :data="pixelSizes ?? []" :columns="pixelColumns" :loading="pixelSizes === undefined" :ui="{ td: 'px-2 py-1', th: 'px-2' }">
 				<template #dimensions-cell="{ row }"> {{ row.original.width }}×{{ row.original.height }} px </template>

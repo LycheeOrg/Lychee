@@ -53,7 +53,7 @@
 					</UFormField>
 				</div>
 				<UFieldGroup class="w-full mt-4">
-					<UButton color="neutral" class="flex-1 font-bold justify-center" @click="save">
+					<UButton color="primary" variant="solid" class="flex-1 font-bold justify-center" @click="save">
 						{{ $t("profile.login.change") }}
 					</UButton>
 					<UButton
