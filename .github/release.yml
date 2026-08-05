@@ -2,6 +2,7 @@ changelog:
   exclude:
     labels:
       - ignore-for-release
+      - v8
     authors:
       - octocat
       - dependabot
