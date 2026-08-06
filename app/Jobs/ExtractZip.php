@@ -12,6 +12,7 @@ use App\Actions\Import\Exec;
 use App\Contracts\Models\AbstractAlbum;
 use App\DTO\ImportMode;
 use App\Enum\JobStatus;
+use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\Internal\ZipBombDetectedException;
 use App\Exceptions\Internal\ZipExtractionException;
 use App\Exceptions\ZipInvalidException;
@@ -33,6 +34,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use function Safe\date;
+use function Safe\realpath;
 use function Safe\unlink;
 
 class ExtractZip implements ShouldQueue
@@ -87,7 +89,17 @@ class ExtractZip implements ShouldQueue
 
 		$this->validate_zip();
 
-		$path_extracted = Storage::disk('extract-jobs')->path(date('Ymd') . ' ' . $this->getExtractFolderName());
+		$valid_path = realpath(Storage::disk('extract-jobs')->path(''));
+		$path_extracted = realpath(Storage::disk('extract-jobs')->path(date('Ymd') . ' ' . $this->getExtractFolderName()));
+
+		if (str_starts_with($path_extracted, $valid_path) === false) {
+			Log::channel('jobs')->critical("Extraction path {$path_extracted} is not within the valid extraction directory {$valid_path}.");
+			$this->history->status = JobStatus::FAILURE;
+			$this->history->save();
+
+			throw new LycheeLogicException("Extraction path {$path_extracted} is not within the valid extraction directory {$valid_path}.");
+		}
+
 		$this->extract_zip($path_extracted);
 
 		$config_manager = app(ConfigManager::class);
