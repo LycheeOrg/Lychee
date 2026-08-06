@@ -73,6 +73,7 @@ class FilenameRuleTest extends AbstractTestCase
 
 	public function testPathTraversalAttempts(): void
 	{
+		$this->assertFails('.');
 		$this->assertFails('../secret.jpg');
 		$this->assertFails('../../etc/passwd');
 		$this->assertFails('..\\..\\windows\\win.ini');

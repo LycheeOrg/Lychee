@@ -27,6 +27,12 @@ final class FilenameRule implements ValidationRule
 			return;
 		}
 
+		if ($value === '.') {
+			$fail(':attribute is not a valid file name.');
+
+			return;
+		}
+
 		$dir_name = pathinfo($value, PATHINFO_DIRNAME);
 		if ($dir_name !== '' && $dir_name !== '.') {
 			$fail(':attribute contains a directory, give proper filename.');

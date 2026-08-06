@@ -54,6 +54,7 @@ class ExtractZip implements ShouldQueue
 	public ?int $file_last_modified_time;
 
 	private FileExtensionService $file_extension_service;
+	private ?string $base_extract_dir = null;
 
 	/**
 	 * Create a new job instance.
@@ -87,18 +88,10 @@ class ExtractZip implements ShouldQueue
 		$this->history->status = JobStatus::STARTED;
 		$this->history->save();
 
+		$this->base_extract_dir = realpath(Storage::disk('extract-jobs')->path(''));
 		$this->validate_zip();
 
-		$valid_path = realpath(Storage::disk('extract-jobs')->path(''));
-		$path_extracted = realpath(Storage::disk('extract-jobs')->path(date('Ymd') . ' ' . $this->getExtractFolderName()));
-
-		if (str_starts_with($path_extracted, $valid_path) === false) {
-			Log::channel('jobs')->critical("Extraction path {$path_extracted} is not within the valid extraction directory {$valid_path}.");
-			$this->history->status = JobStatus::FAILURE;
-			$this->history->save();
-
-			throw new LycheeLogicException("Extraction path {$path_extracted} is not within the valid extraction directory {$valid_path}.");
-		}
+		$path_extracted = Storage::disk('extract-jobs')->path(date('Ymd') . ' ' . $this->getExtractFolderName());
 
 		$this->extract_zip($path_extracted);
 
@@ -178,10 +171,17 @@ class ExtractZip implements ShouldQueue
 	 * Builds a SafeZipExtractor configured from the "Image Processing" zip-bomb
 	 * protection settings (expert settings, in the admin config).
 	 *
+	 * @param string $base_extract_dir The base directory where the ZIP file will be extracted.
+	 *                                 This is used to prevent path traversal attacks (zip slip).
+	 *
 	 * @return SafeZipExtractor
 	 */
-	private function makeSafeZipExtractor(): SafeZipExtractor
+	private function makeSafeZipExtractor(?string $base_extract_dir): SafeZipExtractor
 	{
+		if ($base_extract_dir === null) {
+			throw new LycheeLogicException('Base extract directory must be set before creating SafeZipExtractor.');
+		}
+
 		$config_manager = app(ConfigManager::class);
 
 		return new SafeZipExtractor(
@@ -189,6 +189,7 @@ class ExtractZip implements ShouldQueue
 			max_file_size: $config_manager->getValueAsByteSize('zip_bomb_max_file_size'),
 			max_entries: $config_manager->getValueAsInt('zip_bomb_max_entries'),
 			max_ratio: $config_manager->getValueAsInt('zip_bomb_max_ratio'),
+			base_extract_dir: $base_extract_dir,
 		);
 	}
 
@@ -260,7 +261,7 @@ class ExtractZip implements ShouldQueue
 			}
 
 			try {
-				$is_safe = $this->makeSafeZipExtractor()->inspect($this->file_path);
+				$is_safe = $this->makeSafeZipExtractor($this->base_extract_dir)->inspect($this->file_path);
 			} catch (\Throwable $e) {
 				Log::channel('jobs')->critical('Zip file ' . $this->file_path . ' could not be inspected: ' . $e->getMessage());
 				$is_safe = false;
@@ -303,7 +304,7 @@ class ExtractZip implements ShouldQueue
 	private function extract_zip(string $path_extracted): void
 	{
 		try {
-			$this->makeSafeZipExtractor()->extract($this->file_path, $path_extracted);
+			$this->makeSafeZipExtractor($this->base_extract_dir)->extract($this->file_path, $path_extracted);
 		} catch (ZipBombDetectedException $e) {
 			Log::channel('jobs')->critical('Zip file ' . $this->file_path . ' exceeds the configured zip-bomb protection limits: ' . $e->getMessage());
 
