@@ -156,7 +156,11 @@ function titlize(title: string) {
     title = tmp.textContent || tmp.innerText || '';
 	// Truncate the title if it's too long
 	const t = title.length > 20 ? title.substring(0, 20) + "..." : title;
-	return `<span class="font-bold text-primary">${t}</span>`;
+
+	const span = document.createElement('span');
+	span.className = 'font-bold text-primary';
+	span.textContent = t;
+	return span.outerHTML;
 }
 
 function prettifyData() {
