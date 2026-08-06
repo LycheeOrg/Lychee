@@ -112,10 +112,12 @@ final class SafeZipExtractor
 			throw new ZipBombDetectedException('Archive rejected by pre-flight inspection.');
 		}
 
-		$dest_dir = DIRECTORY_SEPARATOR . $this->resolveTarget($dest_dir);
+		$dest_dir = $this->resolveTarget($dest_dir);
 		if ($dest_dir === null) {
 			throw new \RuntimeException('Invalid destination directory.');
 		}
+		// Ensure the destination directory is absolute and starts with a slash.
+		$dest_dir = DIRECTORY_SEPARATOR . ltrim($dest_dir, DIRECTORY_SEPARATOR);
 
 		if ($this->base_extract_dir !== '' && !str_starts_with($dest_dir, $this->base_extract_dir)) {
 			throw new \RuntimeException('Destination directory is outside the allowed base directory.');
