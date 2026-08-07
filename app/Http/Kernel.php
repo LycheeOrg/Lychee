@@ -81,8 +81,6 @@ class Kernel extends HttpKernel
 			\Illuminate\Routing\Middleware\SubstituteBindings::class,
 			\App\Http\Middleware\Latency::class,
 			\App\Http\Middleware\ResolveAlbumSlug::class,
-			'response_cache',
-			'album_cache_refresher',
 		],
 	];
 
@@ -101,13 +99,11 @@ class Kernel extends HttpKernel
 		'accept_content_type' => \App\Http\Middleware\AcceptContentType::class,
 		'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
 		'login_required' => \App\Http\Middleware\LoginRequired::class,
-		'cache_control' => \App\Http\Middleware\Caching\CacheControl::class,
+		'cache_control' => \App\Http\Middleware\CacheControl::class,
 		'support' => \LycheeVerify\Http\Middleware\VerifySupporterStatus::class,
 		'config_integrity' => \App\Http\Middleware\ConfigIntegrity::class,
 		'unlock_with_password' => \App\Http\Middleware\UnlockWithPassword::class,
 		'resolve_album_slug' => \App\Http\Middleware\ResolveAlbumSlug::class,
-		'response_cache' => \App\Http\Middleware\Caching\ResponseCache::class,
-		'album_cache_refresher' => \App\Http\Middleware\Caching\AlbumRouteCacheRefresher::class,
 		'legacy_id_redirect' => \App\Http\Middleware\LegacyLocalIdRedirect::class,
 		'feature' => \App\Http\Middleware\FeatureEnabled::class,
 		'rss_feed_meta' => \App\Http\Middleware\SetRssFeedMeta::class,

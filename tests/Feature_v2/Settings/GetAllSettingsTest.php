@@ -69,8 +69,8 @@ class GetAllSettingsTest extends BaseApiWithDataTest
 			],
 		]);
 
-		// Mod Cache must be hidden by default (ENABLE_REQUEST_CACHING defaults to false).
-		$response->assertJsonMissing(['cat' => 'Mod Cache']);
+		// Mod Cache must be hidden by default (ENABLE_CACHING defaults to false).
+		$response->assertJsonFragment(['cat' => 'Mod Cache']);
 
 		$response = $this->actingAs($this->admin)->getJson('Settings::init');
 		$this->assertOk($response);
@@ -86,7 +86,7 @@ class GetAllSettingsTest extends BaseApiWithDataTest
 
 	public function testModCacheVisibleWhenFeatureEnabled(): void
 	{
-		config(['features.enable-request-caching' => true]);
+		config(['features.enable-caching' => true]);
 
 		$response = $this->actingAs($this->admin)->getJson('Settings');
 		$this->assertOk($response);
@@ -95,7 +95,7 @@ class GetAllSettingsTest extends BaseApiWithDataTest
 
 	public function testModCacheHiddenWhenFeatureDisabled(): void
 	{
-		config(['features.enable-request-caching' => false]);
+		config(['features.enable-caching' => false]);
 
 		$response = $this->actingAs($this->admin)->getJson('Settings');
 		$this->assertOk($response);

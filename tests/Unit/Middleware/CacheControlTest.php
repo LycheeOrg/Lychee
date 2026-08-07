@@ -16,9 +16,9 @@
  * @noinspection PhpUnhandledExceptionInspection
  */
 
-namespace Tests\Unit\Middleware\Caching;
+namespace Tests\Unit\Middleware;
 
-use App\Http\Middleware\Caching\CacheControl;
+use App\Http\Middleware\CacheControl;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Tests\AbstractTestCase;

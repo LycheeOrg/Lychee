@@ -9,7 +9,6 @@
 namespace App\Providers;
 
 use App\Events\AlbumDeleted;
-use App\Events\AlbumRouteCacheUpdated;
 use App\Events\AlbumSaved;
 use App\Events\Metrics\AlbumDownload;
 use App\Events\Metrics\AlbumShared;
@@ -28,8 +27,6 @@ use App\Events\PhotoRatingChanged;
 use App\Events\PhotoSaved;
 use App\Events\PhotoTagsChanged;
 use App\Events\PhotoWillBeDeleted;
-use App\Events\TaggedRouteCacheUpdated;
-use App\Listeners\AlbumCacheCleaner;
 use App\Listeners\CacheListener;
 use App\Listeners\LogQueryTimeout;
 use App\Listeners\MetricsListener;
@@ -40,7 +37,6 @@ use App\Listeners\RecomputeAlbumStatsOnAlbumChange;
 use App\Listeners\RecomputeAlbumStatsOnPhotoChange;
 use App\Listeners\RecomputeAlbumUserThumbsOnPhotoChange;
 use App\Listeners\RotateLicenseKeyOnLogin;
-use App\Listeners\TaggedRouteCacheCleaner;
 use App\Listeners\WebhookListener;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Registered;
@@ -100,9 +96,6 @@ class EventServiceProvider extends ServiceProvider
 		Event::listen(CacheMissed::class, CacheListener::class . '@handle');
 		Event::listen(KeyForgotten::class, CacheListener::class . '@handle');
 		Event::listen(KeyWritten::class, CacheListener::class . '@handle');
-
-		Event::listen(AlbumRouteCacheUpdated::class, AlbumCacheCleaner::class . '@handle');
-		Event::listen(TaggedRouteCacheUpdated::class, TaggedRouteCacheCleaner::class . '@handle');
 
 		// Log slow/timeout SQL queries when DB_LOG_SQL is enabled
 		// @codeCoverageIgnoreStart

@@ -15,8 +15,6 @@ use App\Actions\Diagnostics\Pipes\Checks\AiVisionNsfwServiceCheck;
 use App\Actions\Diagnostics\Pipes\Checks\AppUrlMatchCheck;
 use App\Actions\Diagnostics\Pipes\Checks\AuthDisabledCheck;
 use App\Actions\Diagnostics\Pipes\Checks\BasicPermissionCheck;
-use App\Actions\Diagnostics\Pipes\Checks\CachePasswordCheck;
-use App\Actions\Diagnostics\Pipes\Checks\CacheTemporaryUrlCheck;
 use App\Actions\Diagnostics\Pipes\Checks\ConfigSanityCheck;
 use App\Actions\Diagnostics\Pipes\Checks\CountSizeVariantsCheck;
 use App\Actions\Diagnostics\Pipes\Checks\DBIntegrityCheck;
@@ -77,8 +75,6 @@ class Errors
 		SmallMediumExistsCheck::class,
 		PlaceholderExistsCheck::class,
 		CountSizeVariantsCheck::class,
-		CachePasswordCheck::class,
-		CacheTemporaryUrlCheck::class,
 		SupporterCheck::class,
 		ImagickPdfCheck::class,
 		WatermarkerEnabledCheck::class,
