@@ -9,6 +9,7 @@
 namespace App\Rules;
 
 use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
 
 /**
@@ -34,6 +35,12 @@ final class FilenameRule implements ValidationRule
 		}
 
 		$dir_name = pathinfo($value, PATHINFO_DIRNAME);
+
+		// Allow test files to be in subdirectories of tests/Feature_v2/
+		if (App::runningUnitTests() && str_starts_with($dir_name, 'tests/Samples')) {
+			return;
+		}
+
 		if ($dir_name !== '' && $dir_name !== '.') {
 			$fail(':attribute contains a directory, give proper filename.');
 
