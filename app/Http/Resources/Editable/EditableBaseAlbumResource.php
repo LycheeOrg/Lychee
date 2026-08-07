@@ -15,6 +15,7 @@ use App\Enum\LicenseType;
 use App\Enum\PhotoLayoutType;
 use App\Enum\TimelineAlbumGranularity;
 use App\Enum\TimelinePhotoGranularity;
+use App\Http\Resources\Models\Utils\PersonNameResource;
 use App\Models\Album;
 use App\Models\PersonAlbum;
 use App\Models\TagAlbum;
@@ -41,7 +42,7 @@ class EditableBaseAlbumResource extends Data
 
 	/** @var string[] */
 	public array $tags = [];
-	/** @var array<int,array{id:string,name:string}> */
+	/** @var array<PersonNameResource> */
 	public array $persons = [];
 	public bool $is_and = true;
 	public bool $is_model_album;
@@ -86,7 +87,7 @@ class EditableBaseAlbumResource extends Data
 
 		if ($album instanceof PersonAlbum) {
 			$this->persons = $album->persons
-				->map(fn ($p) => ['id' => $p->id, 'name' => $p->name])
+				->map(fn ($p) => new PersonNameResource($p))
 				->values()
 				->all();
 			$this->is_and = $album->is_and;

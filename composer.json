@@ -97,7 +97,7 @@
         "spatie/laravel-data": "^4.7",
         "spatie/laravel-feed": "^4.0",
         "spatie/laravel-image-optimizer": "^1.8",
-        "spatie/laravel-typescript-transformer": "^2.4",
+        "spatie/laravel-typescript-transformer": "^3.3",
         "symfony/cache": "^v8.0.10",
         "thecodingmachine/safe": "^3.3"
     },
@@ -105,8 +105,8 @@
         "ext-imagick": "*",
         "ext-posix": "*",
         "ext-zip": "*",
-        "barryvdh/laravel-debugbar": "^4.0",
-        "barryvdh/laravel-ide-helper": "^3.0",
+        "fruitcake/laravel-debugbar": "^4.4",
+        "barryvdh/laravel-ide-helper": "^3.7",
         "brianium/paratest": "^7.4",
         "dominikb/composer-license-checker": "^3.0",
         "fakerphp/faker": "^1.23.0",
@@ -160,7 +160,7 @@
     },
     "config": {
         "platform": {
-            "php": "8.4"
+            "php": "8.4.24"
         },
         "preferred-install": "dist",
         "sort-packages": true,

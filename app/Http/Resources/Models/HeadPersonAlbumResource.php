@@ -10,6 +10,7 @@ namespace App\Http\Resources\Models;
 
 use App\Http\Resources\Editable\EditableBaseAlbumResource;
 use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
+use App\Http\Resources\Models\Utils\PersonNameResource;
 use App\Http\Resources\Models\Utils\PreFormattedAlbumData;
 use App\Http\Resources\Rights\AlbumRightsResource;
 use App\Http\Resources\Traits\HasHeaderUrl;
@@ -32,7 +33,7 @@ class HeadPersonAlbumResource extends Data
 	public ?string $copyright;
 	public bool $is_person_album;
 
-	/** @var array<int,array{id:string,name:string}> */
+	/** @var array<PersonNameResource> */
 	public array $show_persons;
 
 	// security
@@ -53,7 +54,7 @@ class HeadPersonAlbumResource extends Data
 		$this->copyright = $person_album->copyright;
 
 		$this->show_persons = $person_album->visiblePersons
-			->map(fn ($p) => ['id' => $p->id, 'name' => $p->name])
+			->map(fn ($p) => new PersonNameResource($p))
 			->values()
 			->all();
 
