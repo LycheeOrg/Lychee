@@ -8,6 +8,7 @@
 
 namespace App\Providers;
 
+use App\Events\AccessPermissionChanged;
 use App\Events\AlbumDeleted;
 use App\Events\AlbumRouteCacheUpdated;
 use App\Events\AlbumSaved;
@@ -29,9 +30,12 @@ use App\Events\PhotoSaved;
 use App\Events\PhotoTagsChanged;
 use App\Events\PhotoWillBeDeleted;
 use App\Events\TaggedRouteCacheUpdated;
+use App\Events\UserGroupMembershipChanged;
 use App\Listeners\AlbumCacheCleaner;
 use App\Listeners\CacheListener;
 use App\Listeners\LogQueryTimeout;
+use App\Listeners\ManagedCacheAlbumInvalidator;
+use App\Listeners\ManagedCacheUserInvalidator;
 use App\Listeners\MetricsListener;
 use App\Listeners\OrderCompletedListener;
 use App\Listeners\RecomputeAlbumSizeOnAlbumChange;
@@ -140,6 +144,15 @@ class EventServiceProvider extends ServiceProvider
 		Event::listen(PhotoPersonsChanged::class, RecomputeAlbumUserThumbsOnPhotoChange::class . '@handlePhotoPersonsChanged');
 
 		Event::listen(Login::class, RotateLicenseKeyOnLogin::class . '@handle');
+
+		Event::listen(AlbumSaved::class, ManagedCacheAlbumInvalidator::class . '@handleAlbumSaved');
+		Event::listen(AlbumDeleted::class, ManagedCacheAlbumInvalidator::class . '@handleAlbumDeleted');
+		Event::listen(AccessPermissionChanged::class, ManagedCacheAlbumInvalidator::class . '@handleAccessPermissionChanged');
+		Event::listen(PhotoSaved::class, ManagedCacheAlbumInvalidator::class . '@handlePhotoSaved');
+		Event::listen(PhotoAdded::class, ManagedCacheAlbumInvalidator::class . '@handlePhotoAdded');
+		Event::listen(PhotoDeleted::class, ManagedCacheAlbumInvalidator::class . '@handlePhotoDeleted');
+		Event::listen(PhotoMoved::class, ManagedCacheAlbumInvalidator::class . '@handlePhotoMoved');
+		Event::listen(UserGroupMembershipChanged::class, ManagedCacheUserInvalidator::class . '@handle');
 
 		// Webhook dispatch for photo lifecycle events
 		Event::listen(PhotoAdded::class, WebhookListener::class . '@handlePhotoAdded');

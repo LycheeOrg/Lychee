@@ -69,8 +69,13 @@ class GetAllSettingsTest extends BaseApiWithDataTest
 			],
 		]);
 
-		// Mod Cache must be hidden by default (ENABLE_REQUEST_CACHING defaults to false).
-		$response->assertJsonMissing(['cat' => 'Mod Cache']);
+		// Feature-040 "Mod Cache" rows are hidden by default (ENABLE_REQUEST_CACHING defaults to false)...
+		$response->assertJsonMissing(['key' => 'cache_enabled']);
+		$response->assertJsonMissing(['key' => 'cache_ttl']);
+		$response->assertJsonMissing(['key' => 'cache_event_logging']);
+		// ...but managed_cache_* (Feature 052) stays visible regardless (Q-052-07).
+		$response->assertJsonFragment(['key' => 'managed_cache_enabled']);
+		$response->assertJsonFragment(['key' => 'managed_cache_ttl']);
 
 		$response = $this->actingAs($this->admin)->getJson('Settings::init');
 		$this->assertOk($response);
@@ -91,6 +96,7 @@ class GetAllSettingsTest extends BaseApiWithDataTest
 		$response = $this->actingAs($this->admin)->getJson('Settings');
 		$this->assertOk($response);
 		$response->assertJsonFragment(['cat' => 'Mod Cache']);
+		$response->assertJsonFragment(['key' => 'cache_enabled']);
 	}
 
 	public function testModCacheHiddenWhenFeatureDisabled(): void
@@ -99,6 +105,29 @@ class GetAllSettingsTest extends BaseApiWithDataTest
 
 		$response = $this->actingAs($this->admin)->getJson('Settings');
 		$this->assertOk($response);
-		$response->assertJsonMissing(['cat' => 'Mod Cache']);
+		$response->assertJsonMissing(['key' => 'cache_enabled']);
+		$response->assertJsonMissing(['key' => 'cache_ttl']);
+		$response->assertJsonMissing(['key' => 'cache_event_logging']);
+	}
+
+	public function testManagedCacheConfigVisibleRegardlessOfRequestCachingFeature(): void
+	{
+		config(['features.enable-request-caching' => false]);
+
+		$response = $this->actingAs($this->admin)->getJson('Settings');
+		$this->assertOk($response);
+		// "Mod Cache" category is still present (Q-052-07, Option B), but only for these two keys.
+		$response->assertJsonFragment(['cat' => 'Mod Cache']);
+		$response->assertJsonFragment(['key' => 'managed_cache_enabled']);
+		$response->assertJsonFragment(['key' => 'managed_cache_ttl']);
+		$response->assertJsonMissing(['key' => 'cache_enabled']);
+
+		config(['features.enable-request-caching' => true]);
+
+		$response = $this->actingAs($this->admin)->getJson('Settings');
+		$this->assertOk($response);
+		$response->assertJsonFragment(['key' => 'managed_cache_enabled']);
+		$response->assertJsonFragment(['key' => 'managed_cache_ttl']);
+		$response->assertJsonFragment(['key' => 'cache_enabled']);
 	}
 }

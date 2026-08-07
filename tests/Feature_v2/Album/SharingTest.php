@@ -19,7 +19,9 @@
 namespace Tests\Feature_v2\Album;
 
 use App\Constants\AccessPermissionConstants as APC;
+use App\Events\AccessPermissionChanged;
 use App\Models\AccessPermission;
+use Illuminate\Support\Facades\Event;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class SharingTest extends BaseApiWithDataTest
@@ -323,5 +325,97 @@ class SharingTest extends BaseApiWithDataTest
 				->where(APC::BASE_ALBUM_ID, '=', $this->subAlbum1->id)
 				->where(APC::USER_ID, '=', $this->userNoUpload->id)
 				->count());
+	}
+
+	public function testCreateDispatchesAccessPermissionChangedPerAlbum(): void
+	{
+		Event::fake([AccessPermissionChanged::class]);
+
+		$response = $this->actingAs($this->userMayUpload1)->postJson('Sharing', [
+			'user_ids' => [$this->userLocked->id],
+			'group_ids' => [],
+			'album_ids' => [$this->subAlbum1->id, $this->album1->id],
+			'grants_edit' => true,
+			'grants_delete' => true,
+			'grants_download' => true,
+			'grants_full_photo_access' => true,
+			'grants_upload' => true,
+		]);
+		$this->assertOk($response);
+
+		Event::assertDispatchedTimes(AccessPermissionChanged::class, 2);
+		Event::assertDispatched(AccessPermissionChanged::class, fn (AccessPermissionChanged $event) => $event->base_album_id === $this->subAlbum1->id);
+		Event::assertDispatched(AccessPermissionChanged::class, fn (AccessPermissionChanged $event) => $event->base_album_id === $this->album1->id);
+	}
+
+	public function testEditDispatchesAccessPermissionChanged(): void
+	{
+		$this->actingAs($this->userMayUpload1)->postJson('Sharing', [
+			'user_ids' => [$this->userLocked->id],
+			'group_ids' => [],
+			'album_ids' => [$this->subAlbum1->id],
+			'grants_edit' => true,
+			'grants_delete' => true,
+			'grants_download' => true,
+			'grants_full_photo_access' => true,
+			'grants_upload' => true,
+		]);
+		$perm = AccessPermission::where(APC::BASE_ALBUM_ID, '=', $this->subAlbum1->id)->where(APC::USER_ID, '=', $this->userLocked->id)->firstOrFail();
+
+		Event::fake([AccessPermissionChanged::class]);
+
+		$response = $this->actingAs($this->userMayUpload1)->patchJson('Sharing', [
+			'perm_id' => $perm->id,
+			'grants_edit' => false,
+			'grants_delete' => false,
+			'grants_download' => false,
+			'grants_full_photo_access' => false,
+			'grants_upload' => false,
+		]);
+		$this->assertOk($response);
+
+		Event::assertDispatchedTimes(AccessPermissionChanged::class, 1);
+		Event::assertDispatched(AccessPermissionChanged::class, fn (AccessPermissionChanged $event) => $event->base_album_id === $this->subAlbum1->id);
+	}
+
+	public function testDeleteDispatchesAccessPermissionChanged(): void
+	{
+		$this->actingAs($this->userMayUpload1)->postJson('Sharing', [
+			'user_ids' => [$this->userLocked->id],
+			'group_ids' => [],
+			'album_ids' => [$this->subAlbum1->id],
+			'grants_edit' => true,
+			'grants_delete' => true,
+			'grants_download' => true,
+			'grants_full_photo_access' => true,
+			'grants_upload' => true,
+		]);
+		$perm = AccessPermission::where(APC::BASE_ALBUM_ID, '=', $this->subAlbum1->id)->where(APC::USER_ID, '=', $this->userLocked->id)->firstOrFail();
+
+		Event::fake([AccessPermissionChanged::class]);
+
+		$response = $this->actingAs($this->userMayUpload1)->deleteJson('Sharing', [
+			'perm_id' => $perm->id,
+		]);
+		$this->assertNoContent($response);
+
+		Event::assertDispatchedTimes(AccessPermissionChanged::class, 1);
+		Event::assertDispatched(AccessPermissionChanged::class, fn (AccessPermissionChanged $event) => $event->base_album_id === $this->subAlbum1->id);
+	}
+
+	public function testPropagateDispatchesAccessPermissionChangedForSourceAndDescendants(): void
+	{
+		Event::fake([AccessPermissionChanged::class]);
+
+		$response = $this->actingAs($this->userMayUpload1)->putJson('Sharing', [
+			'album_id' => $this->album1->id,
+			'shall_override' => false,
+		]);
+		$this->assertNoContent($response);
+
+		// album1 (source) + subAlbum1 (its only descendant).
+		Event::assertDispatchedTimes(AccessPermissionChanged::class, 2);
+		Event::assertDispatched(AccessPermissionChanged::class, fn (AccessPermissionChanged $event) => $event->base_album_id === $this->album1->id);
+		Event::assertDispatched(AccessPermissionChanged::class, fn (AccessPermissionChanged $event) => $event->base_album_id === $this->subAlbum1->id);
 	}
 }

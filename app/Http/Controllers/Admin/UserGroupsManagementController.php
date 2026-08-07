@@ -8,6 +8,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Events\UserGroupMembershipChanged;
 use App\Http\Requests\UserGroup\GetUserGroupRequest;
 use App\Http\Requests\UserGroup\ManageUserGroupRequest;
 use App\Http\Resources\Models\UserGroupResource;
@@ -26,6 +27,7 @@ class UserGroupsManagementController extends Controller
 	public function addUser(ManageUserGroupRequest $request): UserGroupResource
 	{
 		$request->user_group()->users()->attach($request->user2()->id, ['role' => $request->role()->value]);
+		UserGroupMembershipChanged::dispatch($request->user2()->id);
 
 		return new UserGroupResource($request->user_group());
 	}
@@ -33,6 +35,7 @@ class UserGroupsManagementController extends Controller
 	public function removeUser(ManageUserGroupRequest $request): UserGroupResource
 	{
 		$request->user_group()->users()->detach($request->user2()->id);
+		UserGroupMembershipChanged::dispatch($request->user2()->id);
 
 		return new UserGroupResource($request->user_group());
 	}
@@ -41,6 +44,7 @@ class UserGroupsManagementController extends Controller
 	{
 		$request->user_group()->users()->updateExistingPivot($request->user2()->id, ['role' => $request->role()->value]);
 		$request->user_group()->load('users');
+		UserGroupMembershipChanged::dispatch($request->user2()->id);
 
 		return new UserGroupResource($request->user_group());
 	}
