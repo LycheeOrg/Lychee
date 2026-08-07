@@ -166,6 +166,18 @@
 				:config="album_border_enabled"
 				@filled="save"
 			/>
+			<BoolField
+				v-if="photo_highlight_on_hover !== undefined"
+				:label="$t('settings.gallery.photo_highlight_on_hover')"
+				:config="photo_highlight_on_hover"
+				@filled="save"
+			/>
+			<BoolField
+				v-if="photo_zoom_on_hover !== undefined"
+				:label="$t('settings.gallery.photo_zoom_on_hover')"
+				:config="photo_zoom_on_hover"
+				@filled="save"
+			/>
 		</div>
 		<!-- LICENSE -->
 		<div class="flex flex-col">
@@ -290,6 +302,8 @@ const lang = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined
 const layout = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined);
 const rounded_corners_enabled = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined);
 const album_border_enabled = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined);
+const photo_highlight_on_hover = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined);
+const photo_zoom_on_hover = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined);
 const nsfwVisible = ref<boolean | undefined>(undefined);
 
 const dark_mode_enabled = ref<App.Http.Resources.Models.ConfigResource | undefined>(undefined);
@@ -368,6 +382,8 @@ function load(configs: App.Http.Resources.Models.ConfigCategoryResource[]) {
 	image_overlay_type.value = configurations.find((config) => config.key === "image_overlay_type");
 	rounded_corners_enabled.value = configurations.find((config) => config.key === "rounded_corners_enabled");
 	album_border_enabled.value = configurations.find((config) => config.key === "album_border_enabled");
+	photo_highlight_on_hover.value = configurations.find((config) => config.key === "photo_highlight_on_hover");
+	photo_zoom_on_hover.value = configurations.find((config) => config.key === "photo_zoom_on_hover");
 
 	map_display.value = configurations.find((config) => config.key === "map_display");
 	map_display_public.value = configurations.find((config) => config.key === "map_display_public");

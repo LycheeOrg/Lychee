@@ -58,6 +58,8 @@ return [
         'photo_overlay' => 'Информация по умолчанию для наложения на изображение',
         'rounded_corners_enabled' => 'Скруглять углы миниатюр фотографий и альбомов',
         'album_border_enabled' => 'Показывать рамку вокруг миниатюр фотографий и альбомов',
+        'photo_highlight_on_hover' => 'Highlight the hovered photo and dim the others',
+        'photo_zoom_on_hover' => 'Zoom in on a photo thumbnail on hover',
         'license_default' => 'Лицензия по умолчанию для альбомов',
         'license_help' => 'Нужна помощь в выборе?',
     ],

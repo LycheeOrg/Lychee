@@ -58,6 +58,8 @@ return [
         'photo_overlay' => 'Domyślne informacje o nakładce obrazu',
         'rounded_corners_enabled' => 'Zaokrąglaj rogi miniatur zdjęć i albumów',
         'album_border_enabled' => 'Pokaż obramowanie wokół miniatur zdjęć i albumów',
+        'photo_highlight_on_hover' => 'Highlight the hovered photo and dim the others',
+        'photo_zoom_on_hover' => 'Zoom in on a photo thumbnail on hover',
         'license_default' => 'Domyślna licencja używana dla albumów',
         'license_help' => 'Potrzebujesz pomocy w wyborze?',
     ],

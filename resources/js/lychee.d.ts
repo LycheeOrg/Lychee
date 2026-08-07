@@ -581,6 +581,8 @@ declare namespace App.Http.Resources.GalleryConfigs {
 		is_album_border_enabled: boolean;
 		is_selection_border_enabled: boolean;
 		is_selection_overlay_enabled: boolean;
+		is_photo_highlight_on_hover: boolean;
+		is_photo_zoom_on_hover: boolean;
 		album_layout: App.Enum.AlbumLayoutType;
 		is_raw_download_enabled: boolean;
 		is_thumb_download_enabled: boolean;

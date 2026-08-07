@@ -74,6 +74,8 @@ class InitConfig extends Data
 	public bool $is_album_border_enabled;
 	public bool $is_selection_border_enabled;
 	public bool $is_selection_overlay_enabled;
+	public bool $is_photo_highlight_on_hover;
+	public bool $is_photo_zoom_on_hover;
 
 	// Album view mode
 	public AlbumLayoutType $album_layout;
@@ -226,6 +228,8 @@ class InitConfig extends Data
 		$this->is_album_border_enabled = request()->configs()->getValueAsBool('album_border_enabled');
 		$this->is_selection_border_enabled = request()->configs()->getValueAsBool('selection_border_enabled');
 		$this->is_selection_overlay_enabled = request()->configs()->getValueAsBool('selection_overlay_enabled');
+		$this->is_photo_highlight_on_hover = request()->configs()->getValueAsBool('photo_highlight_on_hover');
+		$this->is_photo_zoom_on_hover = request()->configs()->getValueAsBool('photo_zoom_on_hover');
 		$this->album_layout = request()->configs()->getValueAsEnum('album_layout', AlbumLayoutType::class);
 
 		// Download configuration

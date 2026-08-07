@@ -58,6 +58,8 @@ return [
         'photo_overlay' => 'Standard informasjon for bildeoverlegg',
         'rounded_corners_enabled' => 'Avrund hjørnene på bilde- og albumminiatyrer',
         'album_border_enabled' => 'Vis en kant rundt bilde- og albumminiatyrer',
+        'photo_highlight_on_hover' => 'Highlight the hovered photo and dim the others',
+        'photo_zoom_on_hover' => 'Zoom in on a photo thumbnail on hover',
         'license_default' => 'Standardlisens brukt for album',
         'license_help' => 'Trenger du hjelp til å velge?',
     ],

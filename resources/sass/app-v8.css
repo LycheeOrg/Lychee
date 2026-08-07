@@ -41,6 +41,44 @@ html {
 	--svh25: 25svh;
 	--svh50: 50svh;
 	--svh75: 75svh;
+
+	/*
+	  Photo grid hover effects, see the `photo_highlight_on_hover` and
+	  `photo_zoom_on_hover` settings and PhotoThumbPanelList.vue.
+	*/
+	--photo-hover-base-brightness: 0.95;
+	--photo-hover-dim-brightness: 0.9;
+	--photo-hover-active-brightness: 1;
+	--photo-hover-zoom-scale: 1.04;
+	--photo-hover-zoom-duration: 200ms;
+}
+
+/*
+  Highlight-on-hover: photos sit slightly dimmed by default; hovering the
+  grid dims the other photos further while the hovered one brightens back up.
+*/
+.photo-highlight-on-hover .photo {
+	filter: brightness(var(--photo-hover-base-brightness));
+}
+.photo-highlight-on-hover:hover .photo {
+	filter: brightness(var(--photo-hover-dim-brightness));
+}
+.photo-highlight-on-hover .photo:hover {
+	filter: brightness(var(--photo-hover-active-brightness));
+}
+
+/*
+  Zoom-on-hover: scale the thumbnail <img> itself, cropped by its always-clipped
+  `.thumbimg` wrapper, so the tile's own box (and its neighbours) never move.
+  We scale the image rather than the `.photo` tile because `.photo` also carries
+  the `animate-zoomIn` entrance animation, whose held `forwards` end state would
+  otherwise take precedence over a `:hover` transform on the same property.
+*/
+.photo-zoom-on-hover .photo .thumbimg img {
+	transition: transform var(--photo-hover-zoom-duration) ease;
+}
+.photo-zoom-on-hover .photo:hover .thumbimg img {
+	transform: scale(var(--photo-hover-zoom-scale));
 }
 
 /*
