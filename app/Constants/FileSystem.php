@@ -13,4 +13,5 @@ class FileSystem
 	public const DIST = 'dist';
 	public const IMAGE_UPLOAD = 'image-upload';
 	public const IMAGE_JOBS = 'image-jobs';
+	public const PROFILING = 'profiling';
 }

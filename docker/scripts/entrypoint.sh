@@ -30,6 +30,9 @@ source /usr/local/bin/04-user-setup.sh
 # Check and set permissions
 source /usr/local/bin/05-permissions-check.sh
 
+# Configure the Memory Profiler (spx extension) ini settings from env vars
+source /usr/local/bin/06-configure-profiler.sh
+
 echo "Checking RUN_AS_ROOT setting"
 RUN_AS_ROOT=${RUN_AS_ROOT:-no}
 if [ "$RUN_AS_ROOT" = "yes" ]; then

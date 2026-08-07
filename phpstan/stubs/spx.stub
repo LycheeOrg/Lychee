@@ -1,0 +1,24 @@
+<?php
+
+/**
+ * Stub for the `spx` PECL extension (NoiseByNorthwest/php-spx), which is not
+ * a Composer dependency and is not installed on the analysis machine (it is
+ * an optional, manually-installed opt-in extension — see Feature 053 and
+ * docs/specs/2-how-to/enable-memory-profiler.md).
+ *
+ * Every call site guards these functions behind `function_exists()` via
+ * App\Services\Profiling\SpxRecorder; this stub exists only so PHPStan can
+ * type-check those call sites instead of reporting "function not found".
+ */
+
+function spx_profiler_start(): void
+{
+}
+
+function spx_profiler_stop(): ?string
+{
+}
+
+function spx_profiler_full_report_set_custom_metadata_str(string $customMetadataStr): void
+{
+}

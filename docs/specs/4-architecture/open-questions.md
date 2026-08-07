@@ -6,6 +6,14 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 | Question ID | Feature | Priority | Summary | Status | Opened | Updated |
 |-------------|---------|----------|---------|--------|--------|---------|
+| ~~Q-053-01~~ | 053 – Memory Profiler | High | `memprof` semantics under Laravel Octane/FrankenPHP (default runtime) — is process-global profiling state per-request or does it leak across requests handled by the same persistent worker? | Resolved (A – ship with banner; validation attempt found `memprof` cannot even install on this image, ZTS incompatible; superseded by `spx`, empirically verified correct under Octane — ADR-0008) | 2026-07-28 | 2026-07-28 |
+| ~~Q-053-02~~ | 053 – Memory Profiler | High | Flame-graph SVG rendering requires an external `pprof`/`google-pprof` + Graphviz `dot` toolchain beyond the `memprof` extension itself — how should this be delivered? | Superseded — `memprof` (and the pprof/Graphviz SVG pipeline built around it) abandoned entirely after the engine pivot to `spx` (see Q-053-05); `pprof`/`google-pprof`/Graphviz were removed from the Dockerfile again | 2026-07-28 | 2026-07-28 |
+| ~~Q-053-03~~ | 053 – Memory Profiler | Medium | Retention policy for `storage/profiling` — every enabled request writes a new trace; how is unbounded disk growth prevented? | Resolved (A – count-based cap, `MEMORY_PROFILER_MAX_TRACES` default 200) | 2026-07-28 | 2026-07-28 |
+| ~~Q-053-04~~ | 053 – Memory Profiler | Medium | Profiling scope — always-on for every request while the flag is enabled, or a per-request opt-in trigger to avoid profiling every single request in a shared/staging environment? | Resolved (A – always-on while the flag is enabled, no per-request trigger in v1) | 2026-07-28 | 2026-07-28 |
+| ~~Q-053-05~~ | 053 – Memory Profiler | High | `memprof` confirmed impossible to bundle (ZTS incompatibility) — what alternative memory-profiling engine should replace it? | Resolved (`spx` — NoiseByNorthwest/php-spx; ZTS support verified empirically by compiling it against the exact base image) | 2026-07-28 | 2026-07-28 |
+| ~~Q-053-06~~ | 053 – Memory Profiler | High | XHProf-family tools (`tideways_xhprof`, modern `xhprof` PECL fork) are ZTS-compatible, but is their `mu`/`pmu` usage-delta metric sufficient for the actual goal ("hunt leaks")? | Resolved — No (user correction): usage deltas don't distinguish freed from leaked memory; `spx`'s allocation/free byte+count metrics (`zmac`/`zmab`/`zmfc`/`zmfb`) were chosen instead | 2026-07-28 | 2026-07-28 |
+| ~~Q-053-07~~ | 053 – Memory Profiler | High | `spx` produces no SVG/pprof output for web requests (only its own proprietary JSON report for its bundled JS viewer) — how should the admin page render a trace? | Resolved (embed/link to SPX's own bundled analysis screen — reversed from an initial pivot to "write a JSON→pprof converter", then reconsidered back to embedding once Q-053-08's access-control trade-off was accepted) | 2026-07-28 | 2026-07-28 |
+| ~~Q-053-08~~ | 053 – Memory Profiler | High | SPX's own analysis screen is intercepted by the extension before Laravel's router runs, so it can't be gated by the `owner` middleware the normal way — how should access be restricted? | Resolved (A – SPX's own `spx.http_key` + `spx.http_ip_whitelist`; user judged this "secure enough") | 2026-07-28 | 2026-07-28 |
 | ~~Q-051-01~~ | 051 – v8 Admin Setup Page | High | Architectural mechanism for letting v8 show its own "no admin" page instead of the Blade redirect | Resolved (A – new route exempted from `admin_user:set`) | 2026-07-26 | 2026-07-26 |
 | ~~Q-051-02~~ | 051 – v8 Admin Setup Page | Medium | Should admin-creation logic be extracted into a shared Action reused by the legacy Blade controller and the new API endpoint? | Resolved (A – shared Action) | 2026-07-26 | 2026-07-26 |
 | ~~Q-051-03~~ | 051 – v8 Admin Setup Page | Medium | Post-success navigation — auto-redirect with toast vs. a distinct success screen | Resolved (A – toast + auto-redirect) | 2026-07-26 | 2026-07-26 |
@@ -4064,3 +4072,295 @@ Default value: `skip`. This gives the admin explicit control over the trade-off 
 **Resolved:** 2026-06-28
 
 **Resolution:** Question no longer applies since `cover_id` stays per-model (Q-046-01 → B). `TagAlbum` defines its own `cover()` HasOne relationship and eager-loads it via `$with`. `Album` is unchanged. Encoded in FR-046-02, NFR-046-04.
+
+---
+
+### ~~Q-053-01~~ · `memprof` semantics under Laravel Octane/FrankenPHP ✅ RESOLVED
+
+**Status:** Resolved — **Option A** (ship with a documented risk banner; validate empirically as part of the feature's own tasks)
+**Feature:** 053 – Memory Profiler
+**Priority:** High
+**Opened:** 2026-07-28
+**Resolved:** 2026-07-28
+
+**Resolution:** Ship Feature 053 under the default Octane/FrankenPHP runtime without blocking or hard-disabling. A persistent banner appears on `/admin/profiler` when Octane is detected (UI-053-05), and the how-to guide documents the situation prominently. Recorded in **ADR-0008** (`docs/specs/6-decisions/ADR-0008-memory-profiler-octane-risk.md`) since this is an architecturally significant risk trade-off for a cross-cutting global middleware.
+
+**Update (same day, via T-053-24):** the planned empirical validation ("run under Octane, hit the same route twice, diff the dumps") turned out to be moot. While implementing Q-053-02's Dockerfile bundling, adding `memprof` to the official image's `install-php-extensions` step failed the build outright with `#error "ZTS build not supported (yet)"` — the base image's PHP is a ZTS build (required by FrankenPHP), and `memprof`'s current release does not support ZTS at all ([arnaud-lb/php-memory-profiler#24](https://github.com/arnaud-lb/php-memory-profiler/issues/24), unresolved upstream). So the original question ("does memprof behave correctly across requests in the same Octane worker?") is superseded by a stronger, confirmed fact: **`memprof` cannot run under the official image at all**, regardless of request semantics. ADR-0008 has been amended to record this as a confirmed incompatibility rather than an unverified risk; the banner/how-to wording now states it plainly.
+
+**Spec impact:** NFR-053-06, UI-053-05, Non-Goals; ADR-0008.
+
+**Question**
+Lychee's default production runtime (`Dockerfile`'s `CMD`, and `deploy-worker-mode.md`'s "Web mode (default): Run FrankenPHP/Octane web server") keeps the PHP process — and therefore any process-global extension state — alive across many requests inside the same worker. `memprof`'s documented API (`memprof_enable()`/`memprof_disable()`/`memprof_dump_pprof()`) is written against a traditional per-request PHP-FPM/CLI-script lifecycle; the upstream project does not document Octane/persistent-worker behaviour at all. It is unknown whether calling `memprof_enable()` at the start of request N and `memprof_disable()`+dump at the end of request N correctly scopes the profile to *only* request N's allocations, or whether it also captures residual/leaked memory from requests 1..N-1 handled by the same worker (which would make every trace misleading, especially for a long-lived worker).
+
+---
+
+#### 🅰️ (**recommended**) Option A – Ship with a documented risk banner; validate empirically as a task
+
+- **Idea:** Build the feature as specified (FR-053-01..07). Add a visible banner on the `/admin/profiler` listing page when the app is detected running under Octane, and a prominent caveat in the new how-to guide, both stating that trace accuracy under Octane is unverified. Add a manual (non-automated) task — run the same route twice inside one Octane worker with the flag on, diff the two dumps — and record the real-world observation in the how-to guide once available. If the observation shows contamination, file a follow-up ADR/feature to fix or restrict the behaviour.
+- **Spec impact:** NFR-053-06, UI-053-05, T-053-24 already encode this in the drafted spec/plan/tasks.
+- **Pros:**
+  - ✅ Ships the requested feature now instead of blocking on a potentially lengthy compatibility investigation.
+  - ✅ Turns the risk into a concrete, scheduled validation step instead of silent hope.
+  - ✅ Matches how this codebase already treats other opt-in diagnostic tooling (XHProf's how-to guide carries similar "know what you're doing" caveats).
+- **Cons:**
+  - ❌ The feature could ship and be actively misleading in the *default* deployment mode until the manual check happens and, if needed, a fix lands.
+
+---
+
+#### 🅱️ Option B – Hard-disable the feature under Octane
+
+- **Idea:** Add an Octane-detection guard (e.g. `app()->bound('octane')` or equivalent) directly inside `MemoryProfiler::handle()`; if detected, the middleware always no-ops and the admin page shows "unavailable while running under Octane" instead of a listing, regardless of the feature flag.
+- **Spec impact:** New FR/S rows for the hard-disable path; T-053-08 gains an Octane-detection branch; T-053-24 becomes a permanent regression test instead of a one-off manual check.
+- **Pros:**
+  - ✅ Never ships a misleading trace to a user running the default runtime.
+- **Cons:**
+  - ❌ Since Octane is the *default* runtime, this could make the feature unusable out-of-the-box for most installs, defeating the purpose of building it at all, unless the operator also knows to run a non-Octane mode specifically to profile.
+  - ❌ Requires reliable Octane detection, which is itself an extra piece of untested logic.
+
+---
+
+#### 🅲 Option C – Spike/validate first, before finalizing scope
+
+- **Idea:** Before writing any implementation code, run a small standalone script under `octane:start` that calls `memprof_enable()`/allocates memory/`memprof_disable()`+dumps twice in a row inside the same worker, and inspect whether the second dump includes the first request's allocations. Use the result to decide between A and B up front.
+- **Spec impact:** Delays plan/tasks execution start (already gated on this question) by the length of the spike, but produces a definitive answer instead of a documented assumption.
+- **Pros:**
+  - ✅ Removes the uncertainty before any code is written, rather than after.
+- **Cons:**
+  - ❌ Requires the `memprof` extension to be installed in this environment to run the spike at all — likely not currently installed here (opt-in system extension), so the spike itself may be blocked pending an environment change.
+  - ❌ Slower to first value than A.
+
+---
+
+**Next action**
+Confirm 🅰️ vs 🅱️ vs 🅲 with the user. Absent a preference, proceed with 🅰️ (already reflected in the drafted spec/plan/tasks) since it ships the feature while still producing hard evidence via T-053-24.
+
+---
+
+### ~~Q-053-02~~ · Flame-graph SVG rendering toolchain ✅ RESOLVED (then SUPERSEDED)
+
+> **Superseded 2026-07-28.** Everything below (the pprof/`google-pprof`/Graphviz SVG pipeline built around `memprof`) was abandoned once `memprof` itself was confirmed impossible to bundle and the engine pivoted to `spx` (Q-053-05). `spx` cannot produce pprof/SVG output for web requests at all, so this whole rendering approach no longer applies — see Q-053-07 for the final viewing-model decision (link to SPX's own bundled analysis screen) and `Dockerfile`, which no longer installs `google-perftools`/`graphviz`. Kept below for historical context only.
+
+**Status:** Resolved — **Option A** (render SVG server-side on demand; `pprof`/`google-pprof` + Graphviz bundled into the production `Dockerfile`; `memprof` itself confirmed impossible to bundle)
+**Feature:** 053 – Memory Profiler
+**Priority:** High
+**Opened:** 2026-07-28
+**Resolved:** 2026-07-28 (amended twice same day)
+
+**Resolution:** User confirmed Option A's server-side rendering approach. Initial resolution bundled only `google-perftools` (providing the `google-pprof` binary) and `graphviz` into the production `Dockerfile`'s `apt-get install` step, leaving the `memprof` PHP extension itself manually-installed (mirroring XHProf). **First amendment:** the user asked for `memprof` to also be bundled — `libjudy-dev` (memprof's build dependency) and `memprof` were added to the `Dockerfile`. **Second amendment (same session):** rebuilding the image with this change failed deterministically with `#error "ZTS build not supported (yet)"`. Root cause confirmed: the base image (`dunglas/frankenphp:...-trixie`) ships a **ZTS** PHP build (`PHP 8.5.8 (ZTS)`, verified via `docker run ... php -v`) because FrankenPHP requires ZTS for its worker model; `memprof`'s current mainline release (3.1.0) explicitly refuses to compile against ZTS builds. This is a long-standing, unresolved upstream limitation — see [arnaud-lb/php-memory-profiler#24](https://github.com/arnaud-lb/php-memory-profiler/issues/24) (open since the extension's early history; community PRs #7/#25/#26 attempted ZTS support but were never merged). The `memprof` + `libjudy-dev` `Dockerfile` addition was reverted. `App\Services\Profiling\MemprofRecorder::isAvailable()`'s `function_exists()` guard already handles this correctly (no-op when absent) and needed no code change. `MEMORY_PROFILER_PPROF_BIN` still defaults to `google-pprof` (the Debian/Ubuntu package's binary name). Verified empirically: `docker build .` with only `google-perftools`+`graphviz` succeeds, with `google-pprof --version` and `dot -V` both working in the built image.
+
+**Spec impact:** FR-053-01, FR-053-04, NFR-053-05, NFR-053-06, Non-Goals; plan.md Scope Alignment + I6b; tasks.md T-053-19a, T-053-24; [ADR-0008](../6-decisions/ADR-0008-memory-profiler-octane-risk.md) (amended).
+
+**Question**
+The originally-supplied code sample assumed a `dumpToFile()`/`dumpToDot()` API that does not exist. The real `memprof` extension only writes callgrind or pprof-format dumps (`memprof_dump_callgrind()`, `memprof_dump_pprof()`); neither is an SVG. Callgrind format targets desktop GUI tools (KCacheGrind/QCacheGrind) with no web/SVG output at all. Pprof format can be turned into an SVG via the external `pprof`/`google-pprof` CLI (`pprof --svg file.heap`), which itself shells out to Graphviz's `dot` binary — meaning **two more system-level dependencies**, beyond the `memprof` extension, are needed to satisfy "give the ability to open each trace as svg."
+
+---
+
+#### 🅰️ (**recommended**) Option A – Document as optional dependencies; render SVG server-side on demand, with a graceful error state
+
+- **Idea:** Treat `pprof`/`google-pprof` + Graphviz exactly like the existing XHProf precedent (`enable-hprof.md`): documented, manually-installed, not bundled. The admin page's SVG route shells out to the configured binary (`MEMORY_PROFILER_PPROF_BIN`) at view time and caches the result. If the binaries are missing, show a clear error state (already drafted as FR-053-04/UI-053-04) instead of a 500.
+- **Spec impact:** Already fully encoded in FR-053-04, NFR-053-05, I6/T-053-16..19, and the new how-to guide (T-053-22).
+- **Pros:**
+  - ✅ Reuses a real, well-tested external tool instead of reimplementing flame-graph rendering.
+  - ✅ Matches existing project convention for optional profiling tooling (XHProf).
+  - ✅ Small implementation surface (shell-out + cache).
+- **Cons:**
+  - ❌ A third opt-in system dependency to document and troubleshoot (extension + pprof + Graphviz).
+  - ❌ Requires `exec`/`proc_open`-style shell-out from PHP, which needs care around argument escaping (mitigated by never interpolating user input into the command — the `{trace}` parameter is resolved to a filesystem path via an allow-list, never passed as a raw shell argument from the URL).
+
+---
+
+#### 🅱️ Option B – Raw dump download only, no server-side SVG rendering
+
+- **Idea:** The admin page offers a "download .pprof" link per trace; the operator runs `pprof --web` (or similar) on their own machine. No shell-out from the PHP process at all.
+- **Spec impact:** Drops FR-053-04 (SVG-in-browser) entirely; UI mock-up loses the SVG view; simplifies I6 to a single download route.
+- **Pros:**
+  - ✅ Zero new server-side system dependency, zero shell-out risk.
+  - ✅ Simplest to implement and maintain.
+- **Cons:**
+  - ❌ Does not satisfy the explicit ask ("give the ability to open each trace as svg" — implying in-browser, not a manual local step).
+
+---
+
+#### 🅲 Option C – Pure-PHP/JS flame-graph rendering (no external binaries)
+
+- **Idea:** Parse `memprof_dump_array()`'s nested tree structure directly in PHP and render a Brendan-Gregg-style flame graph as inline SVG (or via a small bundled JS renderer) without shelling out to `pprof`/Graphviz at all.
+- **Spec impact:** Replaces the pprof-format dump + `pprof` CLI dependency with a custom renderer; removes NFR-053-05's Graphviz/pprof documentation need but adds a nontrivial from-scratch rendering component.
+- **Pros:**
+  - ✅ No new system-level binary dependencies at all — fully self-contained, fits the offline-only ethos even more tightly.
+- **Cons:**
+  - ❌ Meaningfully larger implementation effort (flame-graph layout algorithm) for a diagnostic tool that is only used by the site owner, occasionally.
+  - ❌ Reinvents a wheel that `pprof`/Graphviz already solve robustly.
+
+---
+
+**Next action**
+Confirm 🅰️ vs 🅱️ vs 🅲 with the user; 🅰️ is already reflected in the drafted spec/plan/tasks as the working assumption.
+
+---
+
+### ~~Q-053-03~~ · Retention policy for `storage/profiling` ✅ RESOLVED
+
+**Status:** Resolved — **Option A** (count-based cap with automatic pruning)
+**Feature:** 053 – Memory Profiler
+**Priority:** Medium
+**Opened:** 2026-07-28
+**Resolved:** 2026-07-28
+
+**Resolution:** `MEMORY_PROFILER_MAX_TRACES` (default 200) bounds `storage/profiling`; `php artisan lychee:profiler:prune` deletes the oldest trace pairs beyond the cap, runnable manually, from an admin-page button, or on a daily schedule. Encoded in FR-053-07, CLI-053-01, plan I7, tasks T-053-20/21.
+
+**Spec impact:** FR-053-07, CLI-053-01.
+
+**Question**
+If the middleware writes a trace pair for every request while the feature is enabled, `storage/profiling` grows without bound on any busy or long-lived install. The user's brief didn't specify a retention policy. How should this be bounded?
+
+---
+
+#### 🅰️ (**recommended**) Option A – Count-based cap, prune oldest first
+
+- **Idea:** Configurable `MEMORY_PROFILER_MAX_TRACES` (default 200). A console command (`lychee:profiler:prune`) — runnable manually, from a button on the admin page, or on a daily schedule — deletes the oldest trace pairs once the count is exceeded.
+- **Spec impact:** Already encoded as FR-053-07, CLI-053-01, I7/T-053-20/21.
+- **Pros:**
+  - ✅ Predictable worst-case disk usage regardless of traffic volume.
+  - ✅ Simple to reason about and test.
+- **Cons:**
+  - ❌ A traffic spike could rotate out traces the owner wanted to keep, faster than expected.
+
+---
+
+#### 🅱️ Option B – Age-based cap
+
+- **Idea:** Configurable `MEMORY_PROFILER_MAX_AGE_DAYS` (e.g. 7); scheduled daily job deletes trace pairs older than that.
+- **Spec impact:** Same shape as Option A but keyed on `created_at` instead of count; T-053-20/21 change their assertion from "newest N" to "younger than X days."
+- **Pros:**
+  - ✅ More intuitive framing for a debugging tool ("traces from the last week").
+- **Cons:**
+  - ❌ Disk usage is no longer bounded independent of traffic — a very busy install could still fill the disk within the retention window.
+
+---
+
+#### 🅲 Option C – No automatic cleanup in v1
+
+- **Idea:** Ship without any pruning; document the risk in the how-to guide and rely on the operator to manage `storage/profiling` manually (or leave the feature flag off outside of active debugging sessions).
+- **Spec impact:** Drops FR-053-07, CLI-053-01, I7 entirely; smaller feature surface.
+- **Pros:**
+  - ✅ Least implementation effort.
+- **Cons:**
+  - ❌ Real risk of an operator leaving the flag on and silently filling the disk — the failure mode is a full outage (disk-full), not merely a UI inconvenience.
+
+---
+
+**Next action**
+Confirm 🅰️ vs 🅱️ vs 🅲 with the user; 🅰️ is already reflected in the drafted spec/plan/tasks as the working assumption.
+
+---
+
+### ~~Q-053-04~~ · Profiling scope — always-on vs. opt-in trigger ✅ RESOLVED
+
+**Status:** Resolved — **Option A** (always-on for every request while the feature flag is enabled)
+**Feature:** 053 – Memory Profiler
+**Priority:** Medium
+**Opened:** 2026-07-28
+**Resolved:** 2026-07-28
+
+**Resolution:** No per-request opt-in trigger or sampling rate in v1 — while `MEMORY_PROFILER_ENABLED=true`, every request through the global middleware is profiled, matching the literal brief. A narrower per-request trigger (Option B) is deferred to the Follow-ups/Backlog if always-on proves too noisy in practice. Encoded in FR-053-01, Non-Goals.
+
+**Spec impact:** FR-053-01, Non-Goals.
+
+**Question**
+The brief says the middleware "starts the profiler at the beginning of the request and ends at the end" — read literally, this means *every* request is profiled while the flag is on, with no way to scope it down further. `memprof` itself natively supports a narrower per-request opt-in convention (`MEMPROF_PROFILE` GET/POST parameter or env var) that the brief doesn't mention. Should Lychee's middleware support that narrower trigger too, so the flag can be left on in a shared/staging environment without profiling literally every single request (including polling/health-check traffic)?
+
+---
+
+#### 🅰️ (**recommended**) Option A – Always-on for every request while the flag is enabled
+
+- **Idea:** Build exactly what was asked: while `MEMORY_PROFILER_ENABLED=true`, every request through the global middleware is profiled, full stop. No per-request trigger in v1.
+- **Spec impact:** Already encoded as the spec's Non-Goals ("No per-request opt-in trigger... in v1") and FR-053-01.
+- **Pros:**
+  - ✅ Matches the literal instruction exactly, simplest to reason about and test.
+  - ✅ Nothing to configure beyond the single on/off flag.
+- **Cons:**
+  - ❌ Combined with Q-053-03's retention policy, could mean fast trace turnover on busy installs, and profiling overhead (however small when the extension itself is active, per NFR-053-01's flag-off case only) applies to *every* request including health checks/asset requests, not just the ones the operator actually cares about.
+
+---
+
+#### 🅱️ Option B – Support both always-on and a narrower opt-in trigger
+
+- **Idea:** Keep the always-on mode from Option A as the default, but also let the middleware check for a request-level trigger (matching `memprof`'s own convention, e.g. a `MEMORY_PROFILER=1` header/query param) so an operator could, in principle, leave the feature flag on in a shared environment and only capture the specific requests they're debugging.
+- **Spec impact:** Adds a new FR + config option (`MEMORY_PROFILER_MODE=always|trigger`); expands I4/T-053-08's scope and test matrix.
+- **Pros:**
+  - ✅ More flexible for a shared/staging deployment where "profile everything all the time" is undesirable but the operator still wants the feature available.
+- **Cons:**
+  - ❌ Expands v1 scope beyond what was literally asked; introduces a second configuration axis to document and test.
+  - ❌ A GET/POST-triggered profiling toggle on a *public-facing* endpoint is itself a minor attack-surface consideration (an anonymous visitor could force profiling on for their own request) that would need its own guardrail.
+
+---
+
+**Next action**
+Confirm 🅰️ vs 🅱️ with the user; 🅰️ is already reflected in the drafted spec/plan/tasks as the working assumption (and is the simpler, more literal reading of the original request).
+
+---
+
+### ~~Q-053-05~~ · Alternative memory-profiling engine after `memprof` was confirmed impossible ✅ RESOLVED
+
+**Status:** Resolved — **`spx`** (NoiseByNorthwest/php-spx)
+**Feature:** 053 – Memory Profiler
+**Priority:** High
+**Opened:** 2026-07-28
+**Resolved:** 2026-07-28
+
+**Question:** With `memprof` confirmed unable to compile against the official image's ZTS PHP build (Q-053-02), what should replace it?
+
+**Resolution:** Several alternatives were researched (not assumed) before choosing: `tideways_xhprof`/modern `xhprof` PECL fork (ZTS-compatible but usage-only metrics, see Q-053-06), `php-meminfo` (best conceptual fit for leak-hunting in a persistent worker, but official PHP support tops out at 8.0 — not viable for Lychee's PHP 8.4/8.5 requirement, and PHP 8.1+ support is only an open unmerged PR), `excimer` (Wikimedia, battle-tested, but CPU/wall-time sampling, not memory-allocation tracking), Blackfire (real memory profiling but SaaS-by-default, conflicts with the offline-only requirement). `spx` was chosen and its ZTS support was **verified empirically** (not just read from its README): built and loaded successfully against the exact `dunglas/frankenphp:...-trixie` base image via `install-php-extensions spx`.
+
+**Spec impact:** Overview, FR-053-01, NFR-053-05; `Dockerfile` (`spx` + `zlib1g-dev`); ADR-0008.
+
+---
+
+### ~~Q-053-06~~ · Are XHProf-family usage-delta metrics sufficient for hunting leaks? ✅ RESOLVED
+
+**Status:** Resolved — **No** (user correction)
+**Feature:** 053 – Memory Profiler
+**Priority:** High
+**Opened:** 2026-07-28
+**Resolved:** 2026-07-28
+
+**Question:** `tideways_xhprof` and the modern PECL `xhprof` fork both support ZTS and expose a `XHPROF_FLAGS_MEMORY` mode (`mu`/`pmu` per function). Is that enough to satisfy the actual underlying need — hunting memory leaks?
+
+**Resolution:** The user explicitly corrected this line of investigation: "but it is not enough to hunt for leaks." `mu`/`pmu` report memory-usage deltas (allocated during a function's execution), which includes memory that is later properly freed — it doesn't distinguish "used and released" from "leaked." `spx` was chosen partly because it exposes allocation *and* free counts/bytes per call node (`zmac`/`zmab`/`zmfc`/`zmfb`), plus process RSS (`mor`, which SPX's own docs describe as "useful to highlight a memory leak"), which is a materially closer fit for the actual goal.
+
+**Spec impact:** Overview ("Why not an XHProf-family tool" section); NFR referencing `spx`'s metric selection (`spx.http_profiling_metrics`).
+
+---
+
+### ~~Q-053-07~~ · Trace-viewing mechanism when `spx` produces no SVG/pprof for web requests ✅ RESOLVED
+
+**Status:** Resolved — **Embed/link to SPX's own bundled analysis screen** (reversed once, then reconfirmed)
+**Feature:** 053 – Memory Profiler
+**Priority:** High
+**Opened:** 2026-07-28
+**Resolved:** 2026-07-28
+
+**Question:** `spx` only supports its own proprietary `full` JSON report type for web requests (meant for its own bundled JS/canvas viewer) — no SVG, no pprof-compatible format. How should Lychee's admin page let the owner view a trace?
+
+**Resolution (with its own back-and-forth, recorded for accuracy):**
+1. First presented as a 3-way choice: (A) write a JSON→pprof converter and reuse the already-built `PprofRenderer`/SVG pipeline, (B) embed SPX's own bundled web UI, (C) write a from-scratch SVG flame-graph renderer. User initially chose **(B) embed SPX's own bundled web UI**.
+2. Implementing (B) surfaced a security-relevant fact (Q-053-08): SPX's own UI bypasses Laravel's routing entirely, so it can't be gated by the `owner` middleware. When this was explained, the user initially asked to **reconsider option (A)** specifically to keep everything inside Laravel's `OwnerOnly` gate.
+3. Before implementing (A), the user reviewed SPX's own mitigations (`spx.http_key` + `spx.http_ip_whitelist`) and said **"That is secure enough for me"** — reverting the decision back to **(B) embed/link to SPX's own bundled analysis screen**, which is what was ultimately implemented.
+
+**Spec impact:** FR-053-04, Non-Goals, UI mock-up; `ProfilerController::buildSpxAnalysisUrl()`; ADR-0008 (Alternatives Considered).
+
+---
+
+### ~~Q-053-08~~ · Access control for SPX's own analysis screen (bypasses Laravel routing) ✅ RESOLVED
+
+**Status:** Resolved — **Option A** (SPX's own `spx.http_key` + `spx.http_ip_whitelist`, judged "secure enough")
+**Feature:** 053 – Memory Profiler
+**Priority:** High
+**Opened:** 2026-07-28
+**Resolved:** 2026-07-28
+
+**Question:** SPX's own analysis screen is triggered by any URL carrying `?SPX_UI_URI=...&SPX_KEY=...` query params, intercepted by the extension at `PHP_RINIT_FUNCTION` — before Laravel's kernel or router ever runs. This means Lychee's `OwnerOnly` middleware and owner-only Blade gate cannot protect that specific request at all. How should access to it be restricted?
+
+**Resolution:** Three options were presented: (A) rely on SPX's own `spx.http_key` (long random secret, no shipped default) + `spx.http_ip_whitelist`/`spx.http_trusted_proxies`; (B) reconsider the JSON→pprof converter approach instead, to avoid exposing SPX's UI at all (see Q-053-07's back-and-forth); (C) accept the gap with just a secret key, no IP whitelist, document the caveat. The user confirmed Option A explicitly: **"That is secure enough for me."** `.env.example` ships no default for `MEMORY_PROFILER_SPX_KEY`, forcing an explicit, presumably-random value; `MEMORY_PROFILER_SPX_IP_WHITELIST` is documented as strongly recommended.
+
+**Spec impact:** NFR-053-04; `.env.example`; how-to guide ("Securing the analysis screen" section); ADR-0008 (Security / Privacy Impact).

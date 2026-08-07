@@ -87,6 +87,7 @@ RUN apt-get update \
     bash \
     gosu \
 	ghostscript \
+    zlib1g-dev \
     # Update with respect to vulnerabilities detected with Trivy
     libgssapi-krb5-2 \
     libssh2-1t64 \
@@ -105,6 +106,7 @@ RUN apt-get update \
     intl \
     imagick \
     redis \
+    spx \
 	&& apt-get clean -qy \
     && rm -rf /var/lib/apt/lists/*
 
@@ -151,6 +153,7 @@ COPY docker/scripts/02-dump-env.sh /usr/local/bin/02-dump-env.sh
 COPY docker/scripts/03-db-check.sh /usr/local/bin/03-db-check.sh
 COPY docker/scripts/04-user-setup.sh /usr/local/bin/04-user-setup.sh
 COPY docker/scripts/05-permissions-check.sh /usr/local/bin/05-permissions-check.sh
+COPY docker/scripts/06-configure-profiler.sh /usr/local/bin/06-configure-profiler.sh
 COPY docker/scripts/create-admin-user.sh /usr/local/bin/create-admin-user.sh
 COPY docker/scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
 
@@ -160,6 +163,7 @@ RUN chmod +x /usr/local/bin/00-conf-check.sh \
     /usr/local/bin/03-db-check.sh \
     /usr/local/bin/04-user-setup.sh \
     /usr/local/bin/05-permissions-check.sh \
+    /usr/local/bin/06-configure-profiler.sh \
     /usr/local/bin/create-admin-user.sh \
     /usr/local/bin/entrypoint.sh \
     && mkdir -p /data /config \

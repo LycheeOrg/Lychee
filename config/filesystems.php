@@ -147,5 +147,14 @@ return [
 			'root' => storage_path('tmp/uploads'),
 			'visibility' => 'private',
 		],
+
+		// Memory Profiler (Feature 053): per-request metadata sidecars (JSON)
+		// + the `spx` extension's own report files, browsable at
+		// /admin/profiler (owner-only).
+		FileSystem::PROFILING => [
+			'driver' => 'local',
+			'root' => env('LYCHEE_PROFILING', storage_path('profiling')),
+			'visibility' => 'private',
+		],
 	],
 ];
