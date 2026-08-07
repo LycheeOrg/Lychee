@@ -58,6 +58,8 @@ return [
         'photo_overlay' => 'Default image overlay information',
         'rounded_corners_enabled' => 'Round the corners of photo and album thumbnails',
         'album_border_enabled' => 'Show a border around photo and album thumbnails',
+        'photo_highlight_on_hover' => 'Highlight the hovered photo and dim the others',
+        'photo_zoom_on_hover' => 'Zoom in on a photo thumbnail on hover',
         'license_default' => 'Default license used for albums',
         'license_help' => 'Need help choosing?',
     ],

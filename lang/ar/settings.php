@@ -58,6 +58,8 @@ return [
         'photo_overlay' => 'معلومات التراكب الافتراضية للصورة',
         'rounded_corners_enabled' => 'تدوير زوايا الصور المصغرة للصور والألبومات',
         'album_border_enabled' => 'إظهار حد حول الصور المصغرة للصور والألبومات',
+        'photo_highlight_on_hover' => 'Highlight the hovered photo and dim the others',
+        'photo_zoom_on_hover' => 'Zoom in on a photo thumbnail on hover',
         'license_default' => 'الترخيص الافتراضي المستخدم للألبومات',
         'license_help' => 'تحتاج مساعدة في الاختيار؟',
     ],

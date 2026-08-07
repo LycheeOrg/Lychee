@@ -57,6 +57,8 @@ return [
         'photo_overlay' => 'Información de superposición de imágenes predeterminada',
         'rounded_corners_enabled' => 'Redondear las esquinas de las miniaturas de fotos y álbumes',
         'album_border_enabled' => 'Mostrar un borde alrededor de las miniaturas de fotos y álbumes',
+        'photo_highlight_on_hover' => 'Highlight the hovered photo and dim the others',
+        'photo_zoom_on_hover' => 'Zoom in on a photo thumbnail on hover',
         'license_default' => 'Licencia predeterminada utilizada para álbumes',
         'license_help' => '¿Necesitas ayuda para elegir?',
     ],

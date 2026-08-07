@@ -58,6 +58,8 @@ return [
         'photo_overlay' => 'اطلاعات پیش فرض پوشش تصویر',
         'rounded_corners_enabled' => 'گرد کردن گوشه‌های تصاویر بندانگشتی عکس‌ها و آلبوم‌ها',
         'album_border_enabled' => 'نمایش حاشیه دور تصاویر بندانگشتی عکس‌ها و آلبوم‌ها',
+        'photo_highlight_on_hover' => 'Highlight the hovered photo and dim the others',
+        'photo_zoom_on_hover' => 'Zoom in on a photo thumbnail on hover',
         'license_default' => 'مجوز پیش فرض برای آلبوم‌ها',
         'license_help' => 'در انتخاب نیاز به راهنمایی دارید؟',
     ],

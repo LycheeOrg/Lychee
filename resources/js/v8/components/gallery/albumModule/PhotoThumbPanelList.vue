@@ -1,5 +1,9 @@
 <template>
-	<div :id="'photoListing' + props.groupIdx" class="relative flex flex-wrap flex-row shrink w-full justify-start align-top">
+	<div
+		:id="'photoListing' + props.groupIdx"
+		class="relative flex flex-wrap flex-row shrink w-full justify-start align-top"
+		:class="{ 'photo-highlight-on-hover': is_photo_highlight_on_hover, 'photo-zoom-on-hover': is_photo_zoom_on_hover }"
+	>
 		<!-- List view -->
 		<PhotoListView
 			v-if="layoutStore.layout === 'list'"
@@ -56,7 +60,7 @@ const togglableStore = useTogglablesStateStore();
 const { is_touch_select_mode } = storeToRefs(togglableStore);
 
 const isBuyable = computed(() => catalogStore.catalog?.album_purchasable !== undefined && catalogStore.catalog.album_purchasable !== null);
-const { is_timeline_left_border_visible } = storeToRefs(lycheeStore);
+const { is_timeline_left_border_visible, is_photo_highlight_on_hover, is_photo_zoom_on_hover } = storeToRefs(lycheeStore);
 
 const route = useRoute();
 

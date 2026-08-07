@@ -57,6 +57,8 @@ return [
         'photo_overlay' => 'Standard-Bildüberlagerungsinformationen',
         'rounded_corners_enabled' => 'Ecken der Foto- und Albumvorschaubilder abrunden',
         'album_border_enabled' => 'Rahmen um Foto- und Albumvorschaubilder anzeigen',
+        'photo_highlight_on_hover' => 'Highlight the hovered photo and dim the others',
+        'photo_zoom_on_hover' => 'Zoom in on a photo thumbnail on hover',
         'license_default' => 'Standardlizenz für Alben',
         'license_help' => 'Brauchen Sie Hilfe bei der Auswahl?',
     ],
