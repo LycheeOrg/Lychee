@@ -53,9 +53,14 @@ class ManagedCacheService
 			return $callback();
 		}
 
-		$value = Cache::get($key);
-		if (!is_null($value)) {
-			return $value;
+		try {
+			$value = Cache::get($key);
+			if (!is_null($value)) {
+				return $value;
+			}
+		} catch (\Exception $e) {
+			// If we can't read the cache, we will just compute the value.
+			Log::error(__METHOD__ . ':' . __LINE__ . ' Could not read the cache.', ['exception' => $e]);
 		}
 
 		$value = $callback();
