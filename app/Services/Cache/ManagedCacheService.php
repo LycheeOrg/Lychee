@@ -6,21 +6,30 @@
  * Copyright (c) 2018-2026 LycheeOrg.
  */
 
-namespace App\Metadata\Cache;
+namespace App\Services\Cache;
 
 use App\Exceptions\Internal\LycheeLogicException;
-use Closure;
+use App\Repositories\ConfigManager;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 /**
- * RouteCacher also associate the route data with the cache key.
- * That way it is easier to erase the associated cache keys when the route is updated.
+ * Generic, domain-agnostic memoize-with-tag-eviction service.
+ *
+ * Tags are not a native cache-store primitive (the default `file` driver has
+ * no tagging support): a tag is itself a cache entry whose value is the set
+ * of member keys currently associated with it, mirroring the pattern already
+ * proven by `RouteCacher::rememberTags()`/`forgetTag()`, reimplemented here
+ * independently so this service has no dependency on routes or requests.
  */
-class RouteCacher
+class ManagedCacheService
 {
-	public const TAG = 'T:';
-	public const ROUTE = 'R:';
+	public const TAG = 'MC:';
+
+	public function __construct(
+		protected ConfigManager $config_manager,
+	) {
+	}
 
 	/**
 	 * Get an item from the cache, or execute the given Closure and store the result.
@@ -28,25 +37,23 @@ class RouteCacher
 	 * @template TCacheValue
 	 *
 	 * @param string                                    $key
-	 * @param string                                    $route
+	 * @param string[]                                  $tags
 	 * @param \DateTimeInterface|\DateInterval|int|null $ttl
 	 * @param \Closure(): TCacheValue                   $callback
-	 * @param string[]                                  $tags
 	 *
 	 * @return TCacheValue
 	 */
 	public function remember(
 		string $key,
-		string $route,
+		array $tags,
 		\DateTimeInterface|\DateInterval|int|null $ttl,
 		\Closure $callback,
-		array $tags,
 	): mixed {
-		$value = Cache::get($key);
+		if (!$this->config_manager->getValueAsBool('managed_cache_enabled')) {
+			return $callback();
+		}
 
-		// If the item exists in the cache we will just return this immediately and if
-		// not we will execute the given Closure and cache the result of that for a
-		// given number of seconds so it's available for all subsequent requests.
+		$value = Cache::get($key);
 		if (!is_null($value)) {
 			return $value;
 		}
@@ -54,11 +61,6 @@ class RouteCacher
 		$value = $callback();
 		try {
 			Cache::put($key, $value, $ttl);
-
-			// Update the list of keys for the given route.
-			$this->rememberRoute($route, $key);
-
-			// Update the tags for the given key.
 			$this->rememberTags($tags, $key);
 			// @codeCoverageIgnoreStart
 		} catch (\Exception $e) {
@@ -71,25 +73,32 @@ class RouteCacher
 	}
 
 	/**
-	 * Forget all the keys related to the given route.
+	 * Associate additional tags with an already-cached key, without recomputing
+	 * or re-storing its value.
 	 *
-	 * @param string $route
+	 * Useful when the full set of tags a value depends on can only be known
+	 * after the value itself has been computed (e.g. tagging a cached listing
+	 * with the id of every item it currently contains, alongside the parent
+	 * tag known up-front via {@see self::remember()}). A no-op if the key is
+	 * not currently cached (e.g. the managed cache is disabled, or the entry
+	 * has already expired).
+	 *
+	 * @param string   $key
+	 * @param string[] $tags
 	 *
 	 * @return void
 	 */
-	public function forgetRoute(string $route): void
+	public function addTags(string $key, array $tags): void
 	{
-		$keys = Cache::get($route, []);
-
-		foreach (array_keys($keys) as $key) {
-			if (!is_string($key)) {
-				throw new LycheeLogicException('The keys should be a string');
-			}
-
-			Cache::forget($key);
+		if (!$this->config_manager->getValueAsBool('managed_cache_enabled')) {
+			return;
 		}
 
-		Cache::forget($route);
+		if (is_null(Cache::get($key))) {
+			return;
+		}
+
+		$this->rememberTags($tags, $key);
 	}
 
 	/**
@@ -115,24 +124,8 @@ class RouteCacher
 	}
 
 	/**
-	 * Remember the route for the given key.
-	 * This allows to later erase all the keys related to the route.
-	 *
-	 * @param string $route
-	 * @param string $key
-	 *
-	 * @return void
-	 */
-	private function rememberRoute(string $route, string $key): void
-	{
-		$already_cached_for_routes = Cache::get($route, []);
-		$already_cached_for_routes[$key] = true;
-		Cache::put($route, $already_cached_for_routes);
-	}
-
-	/**
-	 * This is like the function above: rememberRoute() but with specific tags.
-	 * That way we can later erase all the keys related to the tag (e.g. the album id).
+	 * Remember the tags for the given key.
+	 * This allows to later erase all the keys related to a tag (e.g. an album id).
 	 *
 	 * @param string[] $tags
 	 * @param string   $key

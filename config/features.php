@@ -265,16 +265,16 @@ return [
 
 	/*
 	 |--------------------------------------------------------------------------
-	 | Enable Request Caching
+	 | Enable Caching
 	 |--------------------------------------------------------------------------
 	 |
-	 | When enabled, admins can configure Redis-backed response caching from
+	 | When enabled, admins can configure Redis-backed caching from
 	 | the settings panel (cache_enabled, cache_ttl, cache_event_logging).
-	 | Disabled by default — set ENABLE_REQUEST_CACHING=true to activate.
+	 | Disabled by default — set ENABLE_CACHING=true to activate.
 	 | Note: caching is only active when cache_enabled is also set to 1 in
 	 | the database settings.
 	 */
-	'enable-request-caching' => (bool) env('ENABLE_REQUEST_CACHING', false),
+	'enable-caching' => (bool) env('ENABLE_CACHING', true),
 
 	/*
 	 |--------------------------------------------------------------------------

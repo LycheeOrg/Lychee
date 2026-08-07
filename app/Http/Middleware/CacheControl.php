@@ -6,7 +6,7 @@
  * Copyright (c) 2018-2026 LycheeOrg.
  */
 
-namespace App\Http\Middleware\Caching;
+namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
 

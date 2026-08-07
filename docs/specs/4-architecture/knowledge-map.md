@@ -66,9 +66,15 @@ This document tracks modules, dependencies, and architectural relationships acro
 - **Events** (`app/Events/`) - Domain event definitions
   - `PhotoSaved`, `PhotoDeleted` - Trigger album stats recomputation when photos change
   - `AlbumSaved`, `AlbumDeleted` - Trigger parent album stats recomputation when album structure changes
+  - `AccessPermissionChanged` (Feature 052) - Dispatched by `SharingController::create/edit/delete/propagate`; carries `base_album_id`
+  - `UserGroupMembershipChanged` (Feature 052) - Dispatched by `UserGroupsManagementController::addUser/removeUser/updateUserRole`; carries `user_id`
 - **Listeners** (`app/Listeners/`) - Event handlers
   - `RecomputeAlbumStatsOnPhotoChange` - Dispatches recomputation job for photo's album
   - `RecomputeAlbumStatsOnAlbumChange` - Dispatches recomputation job for parent album
+  - `ManagedCacheAlbumInvalidator` (Feature 052) - Reacts to `AlbumSaved`/`AlbumDeleted`/`AccessPermissionChanged`/`PhotoSaved`/`PhotoAdded`/`PhotoDeleted`/`PhotoMoved`; evicts `ManagedCacheService` tags for the affected album and its immediate parent (photo events resolved to their album via the `photo_album` pivot, mirroring `AlbumRouteCacheRefresher`)
+  - `ManagedCacheUserInvalidator` (Feature 052) - Reacts to `UserGroupMembershipChanged`; evicts the affected user's `ManagedCacheService` tag
+- **Services** (`app/Services/Cache/`)
+  - `ManagedCacheService` (Feature 052) - Generic `remember(key, tags, ttl, callback)`/`forgetTag(tag)`/`addTags(key, tags)` memoize-with-tag-eviction service, independent of `RouteCacher`/HTTP. Tags are hand-rolled key-list bookkeeping (no native cache-tagging store required — works on the default `file` driver). Gated by config `managed_cache_enabled` (default `true`) and `managed_cache_ttl`, both under the `Mod Cache` settings category. Adopted by `AlbumRepository::getChildrenPaginated()` and `PhotoRepository::getPhotosForAlbumPaginated()`.
 - **Jobs** (`app/Jobs/`) - Asynchronous task definitions
   - `RecomputeAlbumStatsJob` - Recomputes album statistics and propagates changes to ancestors
   - `ScanFacesJob` - Dispatches face detection requests to the Python AI Vision service for a batch of photo IDs; sets `face_scan_status = pending` on dispatch, `scanned` on completion
@@ -368,4 +374,4 @@ Key modules:
 
 ---
 
-*Last updated: March 22, 2026*
+*Last updated: July 28, 2026*
