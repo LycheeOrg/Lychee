@@ -36,8 +36,12 @@ final class FilenameRule implements ValidationRule
 
 		$dir_name = pathinfo($value, PATHINFO_DIRNAME);
 
-		// Allow test files to be in subdirectories of tests/Feature_v2/
-		if (App::runningUnitTests() && str_starts_with($dir_name, 'tests/Samples')) {
+		// Allow test files to be in subdirectories of tests/Samples,
+		// but not in any other subdirectory.
+		if (App::runningUnitTests()
+			&& str_starts_with($dir_name, 'tests/Samples')
+			&& !str_contains($dir_name, '..')
+		) {
 			return;
 		}
 

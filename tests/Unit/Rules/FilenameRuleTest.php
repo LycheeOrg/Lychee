@@ -75,6 +75,7 @@ class FilenameRuleTest extends AbstractTestCase
 	{
 		$this->assertFails('.');
 		$this->assertFails('../secret.jpg');
+		$this->assertFails('test/Samples/../secret.jpg');
 		$this->assertFails('../../etc/passwd');
 		$this->assertFails('..\\..\\windows\\win.ini');
 		$this->assertFails('foo\\bar.jpg');
