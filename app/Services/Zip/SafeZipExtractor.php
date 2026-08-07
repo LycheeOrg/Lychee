@@ -46,6 +46,8 @@ final class SafeZipExtractor
 		private int $max_ratio,
 		// Read chunk size while streaming.
 		private int $chunk_size = 8192,
+		// Base extract directory (for path traversal checks).
+		private string $base_extract_dir = '',
 	) {
 	}
 
@@ -110,9 +112,21 @@ final class SafeZipExtractor
 			throw new ZipBombDetectedException('Archive rejected by pre-flight inspection.');
 		}
 
+		$dest_dir = $this->resolveTarget($dest_dir);
+		if ($dest_dir === null) {
+			throw new \RuntimeException('Invalid destination directory.');
+		}
+		// Ensure the destination directory is absolute and starts with a slash.
+		$dest_dir = DIRECTORY_SEPARATOR . ltrim($dest_dir, DIRECTORY_SEPARATOR);
+
+		if ($this->base_extract_dir !== '' && !str_starts_with($dest_dir, $this->base_extract_dir)) {
+			throw new \RuntimeException('Destination directory is outside the allowed base directory.');
+		}
+
 		if (!is_dir($dest_dir)) {
 			mkdir($dest_dir, 0755, true);
 		}
+
 		$base_real = realpath($dest_dir);
 
 		$zip = new \ZipArchive();
@@ -201,6 +215,24 @@ final class SafeZipExtractor
 	 */
 	private function resolveSafeTarget(string $base_real, string $entry_name): ?string
 	{
+		$target = $this->resolveTarget($entry_name);
+		if ($target === null) {
+			// Invalid entry name (empty, null byte, or path traversal).
+			return null;
+		}
+
+		return $base_real . DIRECTORY_SEPARATOR . $target;
+	}
+
+	/**
+	 * Resolve the target path while getting rid of any path traversal attempts.
+	 *
+	 * @param string $entry_name
+	 *
+	 * @return string|null the resolved path relative to the base directory, or null if the entry is invalid or tries to escape
+	 */
+	private function resolveTarget(string $entry_name): string|null
+	{
 		if ($entry_name === '' || str_contains($entry_name, "\0")) {
 			return null;
 		}
@@ -228,13 +260,6 @@ final class SafeZipExtractor
 			return null;
 		}
 
-		$target = $base_real . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, $parts);
-
-		// Final belt-and-braces prefix check.
-		if (!str_starts_with($target, $base_real . DIRECTORY_SEPARATOR)) {
-			return null;
-		}
-
-		return $target;
+		return implode(DIRECTORY_SEPARATOR, $parts);
 	}
 }

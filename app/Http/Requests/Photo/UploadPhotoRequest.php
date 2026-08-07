@@ -20,6 +20,7 @@ use App\Policies\AlbumPolicy;
 use App\Rules\AlbumIDRule;
 use App\Rules\DescriptionRule;
 use App\Rules\ExtensionRule;
+use App\Rules\FilenameRule;
 use App\Rules\FileUuidRule;
 use App\Rules\TitleRule;
 use Illuminate\Http\UploadedFile;
@@ -56,7 +57,7 @@ class UploadPhotoRequest extends BaseApiRequest implements HasAbstractAlbum
 			RequestAttribute::ALBUM_ID_ATTRIBUTE => ['present', new AlbumIDRule(true)],
 			RequestAttribute::FILE_LAST_MODIFIED_TIME => 'sometimes|nullable|numeric',
 			RequestAttribute::FILE_ATTRIBUTE => ['required', 'file'],
-			'file_name' => 'required|string',
+			'file_name' => ['required', new FilenameRule()],
 			'uuid_name' => ['present', new FileUuidRule()],
 			'extension' => ['present', new ExtensionRule()],
 			'chunk_number' => 'required|integer|min:1',

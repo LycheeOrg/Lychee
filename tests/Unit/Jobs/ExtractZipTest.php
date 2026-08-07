@@ -68,6 +68,14 @@ class ExtractZipTest extends AbstractTestCase
 
 	private function callValidateZip(ExtractZip $job): void
 	{
+		// `base_extract_dir` is normally set by handle() before validate_zip()
+		// runs. Since these tests invoke validate_zip() directly (handle()
+		// performs a real import that isn't unit-testable), it must be seeded
+		// here, or makeSafeZipExtractor() throws and validate_zip() silently
+		// treats the archive as unsafe.
+		$base_extract_dir = new \ReflectionProperty(ExtractZip::class, 'base_extract_dir');
+		$base_extract_dir->setValue($job, sys_get_temp_dir());
+
 		$method = new \ReflectionMethod(ExtractZip::class, 'validate_zip');
 		$method->invoke($job);
 	}
