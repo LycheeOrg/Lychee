@@ -8,15 +8,14 @@
 
 namespace App\Actions\Photo\Pipes\Standalone;
 
-use App\Contracts\PhotoCreate\StandalonePipe;
 use App\DTO\ImageDimension;
 use App\DTO\PhotoCreate\StandaloneDTO;
 use App\Enum\SizeVariantType;
 use App\Image\StreamStat;
 
-class CreateOriginalSizeVariant implements StandalonePipe
+class CreateOriginalSizeVariant extends AbstractStandalonePipe
 {
-	public function handle(StandaloneDTO $state, \Closure $next): StandaloneDTO
+	protected function execute(StandaloneDTO $state, \Closure $next): StandaloneDTO
 	{
 		/** @var StreamStat $stat */
 		$stat = $state->stream_stat;
@@ -36,5 +35,10 @@ class CreateOriginalSizeVariant implements StandalonePipe
 		);
 
 		return $next($state);
+	}
+
+	protected function getSpanName(): string
+	{
+		return 'photo.create_original_size_variant';
 	}
 }

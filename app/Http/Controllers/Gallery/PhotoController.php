@@ -52,6 +52,7 @@ use App\Models\Tag;
 use App\Policies\AlbumPolicy;
 use App\Policies\PhotoPolicy;
 use App\Repositories\ConfigManager;
+use App\Services\Telemetry\TraceService;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -65,45 +66,59 @@ use LycheeVerify\Contract\VerifyInterface;
  */
 class PhotoController extends Controller
 {
+	public function __construct(
+		private readonly TraceService $trace,
+	) {
+	}
+
 	/**
 	 * Upload a picture.
 	 */
 	public function upload(UploadPhotoRequest $request): UploadMetaResource
 	{
-		$meta = $request->meta();
-		$file = new UploadedFile($request->uploaded_file_chunk());
+		// Reset max memory usage before measuring
+		memory_reset_peak_usage();
 
-		// Set up meta data if not already present
-		$meta->extension ??= '.' . pathinfo($meta->file_name, PATHINFO_EXTENSION);
-		$meta->uuid_name ??= strtr(base64_encode(random_bytes(12)), '+/', '-_') . $meta->extension;
+		return $this->trace->traceMethod('photo.upload', function () use ($request) {
+			$this->trace->addEventWithMemToCurrentSpan('Upload photo');
 
-		$final = new NativeLocalFile(Storage::disk(FileSystem::IMAGE_UPLOAD)->path($meta->uuid_name));
-		$final->append($file->read());
+			$meta = $request->meta();
+			$file = new UploadedFile($request->uploaded_file_chunk());
 
-		if ($meta->chunk_number < $meta->total_chunks) {
-			// Not the last chunk
-			return $meta;
-		}
+			// Set up meta data if not already present
+			$meta->extension ??= '.' . pathinfo($meta->file_name, PATHINFO_EXTENSION);
+			$meta->uuid_name ??= strtr(base64_encode(random_bytes(12)), '+/', '-_') . $meta->extension;
 
-		// Last chunk — generate expected_id for non-zip uploads and store title/description.
-		$meta->stage = FileStatus::PROCESSING;
-		$meta->title = $request->title();
-		$meta->description = $request->description();
+			$final = new NativeLocalFile(Storage::disk(FileSystem::IMAGE_UPLOAD)->path($meta->uuid_name));
+			$final->append($file->read());
 
-		$is_zip = strtolower(pathinfo($meta->file_name, PATHINFO_EXTENSION)) === 'zip';
-		if (!$is_zip) {
-			$id_factory = resolve(IdFactory::class);
-			$meta->expected_id = $id_factory->createRandomID();
-		}
+			if ($meta->chunk_number < $meta->total_chunks) {
+				// Not the last chunk
+				return $meta;
+			}
 
-		return $this->process(
-			$request->verify(),
-			$request->configs(),
-			$final,
-			$request->album(),
-			$request->file_last_modified_time(),
-			$request->apply_watermark(),
-			$meta);
+			// Last chunk — generate expected_id for non-zip uploads and store title/description.
+			$meta->stage = FileStatus::PROCESSING;
+			$meta->title = $request->title();
+			$meta->description = $request->description();
+
+			$is_zip = strtolower(pathinfo($meta->file_name, PATHINFO_EXTENSION)) === 'zip';
+			if (!$is_zip) {
+				$id_factory = resolve(IdFactory::class);
+				$meta->expected_id = $id_factory->createRandomID();
+			}
+
+			$this->trace->addMemoryInfoToCurrentSpan();
+
+			return $this->process(
+				$request->verify(),
+				$request->configs(),
+				$final,
+				$request->album(),
+				$request->file_last_modified_time(),
+				$request->apply_watermark(),
+				$meta);
+		});
 	}
 
 	private function process(
@@ -115,34 +130,49 @@ class PhotoController extends Controller
 		?bool $apply_watermark,
 		UploadMetaResource $meta,
 	): UploadMetaResource {
-		$processable_file = new ProcessableJobFile(
-			$final->getOriginalExtension(),
-			$meta->file_name
-		);
-		$processable_file->write($final->read());
+		return $this->trace->traceMethod('photo.process', function () use ($verify,
+			$config_manager,
+			$final,
+			$album,
+			$file_last_modified_time,
+			$apply_watermark,
+			$meta) {
+			$processable_file = new ProcessableJobFile(
+				$final->getOriginalExtension(),
+				$meta->file_name
+			);
+			$processable_file->write($final->read());
 
-		$final->close();
-		$final->delete();
-		$processable_file->close();
-		// End of work-around
+			$final->close();
+			$final->delete();
+			$processable_file->close();
+			// End of work-around
 
-		$is_zip = strtolower(pathinfo($meta->file_name, PATHINFO_EXTENSION)) === 'zip';
-		$is_se = $verify->is_supporter();
+			$is_zip = strtolower(pathinfo($meta->file_name, PATHINFO_EXTENSION)) === 'zip';
+			$is_se = $verify->is_supporter();
 
-		if ($is_se && $config_manager->getValueAsBool('extract_zip_on_upload') && $is_zip) {
-			ExtractZip::dispatch($processable_file, $album?->get_id(), $file_last_modified_time);
-			// We return DONE no matter what:
-			// - if we are in sync mode, this will be executed after the job
-			// - if we are in async mode, the job will be executed later, but we need to notify the front-end we are clear.
-			$meta->stage = FileStatus::DONE;
+			if ($is_se && $config_manager->getValueAsBool('extract_zip_on_upload') && $is_zip) {
+				ExtractZip::dispatch($processable_file, $album?->get_id(), $file_last_modified_time);
+				// We return DONE no matter what:
+				// - if we are in sync mode, this will be executed after the job
+				// - if we are in async mode, the job will be executed later, but we need to notify the front-end we are clear.
+				$meta->stage = FileStatus::DONE;
+
+				return $meta;
+			}
+
+			$this->trace->traceMethod('photo.dispatch', function () use ($processable_file,
+				$album,
+				$file_last_modified_time,
+				$apply_watermark, $meta): void {
+				ProcessImageJob::dispatch($processable_file, $album, $file_last_modified_time, $apply_watermark, $meta->expected_id, $meta->title, $meta->description);
+				$meta->stage = config('queue.default') === 'sync' ? FileStatus::DONE : FileStatus::READY;
+			});
+
+			$this->trace->addEventWithMemToCurrentSpan('End of image processing');
 
 			return $meta;
-		}
-
-		ProcessImageJob::dispatch($processable_file, $album, $file_last_modified_time, $apply_watermark, $meta->expected_id, $meta->title, $meta->description);
-		$meta->stage = config('queue.default') === 'sync' ? FileStatus::DONE : FileStatus::READY;
-
-		return $meta;
+		});
 	}
 
 	/**

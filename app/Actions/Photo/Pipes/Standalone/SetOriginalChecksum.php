@@ -8,14 +8,16 @@
 
 namespace App\Actions\Photo\Pipes\Standalone;
 
-use App\Contracts\PhotoCreate\StandalonePipe;
 use App\DTO\PhotoCreate\StandaloneDTO;
 use App\Image\StreamStat;
+use Illuminate\Support\Facades\Log;
 
-class SetOriginalChecksum implements StandalonePipe
+class SetOriginalChecksum extends AbstractStandalonePipe
 {
-	public function handle(StandaloneDTO $state, \Closure $next): StandaloneDTO
+	protected function execute(StandaloneDTO $state, \Closure $next): StandaloneDTO
 	{
+		Log::info('Computing original checksum');
+
 		// Unfortunately, we must read the entire file once to create the
 		// true, original checksum.
 		// It does **not** suffice to use the stream statistics, when the
@@ -31,5 +33,10 @@ class SetOriginalChecksum implements StandalonePipe
 		$state->photo->original_checksum = StreamStat::createFromLocalFile($state->source_file)->checksum;
 
 		return $next($state);
+	}
+
+	protected function getSpanName(): string
+	{
+		return 'photo.set_original_checksum';
 	}
 }
