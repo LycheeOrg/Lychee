@@ -1,8 +1,10 @@
 # Feature Plan 052 – Managed Cache Service
 
 _Linked specification:_ `docs/specs/4-architecture/features/052-managed-cache-service/spec.md`
-_Status:_ Implemented
-_Last updated:_ 2026-07-28
+_Status:_ In Progress — reworked; only `ManagedCacheService` itself is implemented
+_Last updated:_ 2026-08-08
+
+> **Rework note (2026-08-08):** The increment map, drift gate, and "Result: Pass. Feature 052 marked Complete." verdict below describe the *original* plan, most of which was **not carried out**. Only Increment 1 (`ManagedCacheService` core) landed; the config migration, events, listeners, and pilot-consumer adoption described in Increments 2–13 were not implemented. See `spec.md`'s "Current Status" section and its "Superseded Design" appendix for what is and isn't real. The rest of this document is kept for historical reference only and is not being resumed as written — the next iteration will introduce per-part cache configuration instead, design TBD.
 
 > Guardrail: Keep this plan traceable back to the governing spec. Q-052-01..07 are all resolved and captured in spec.md's normative sections (Q-052-06: Option A, evict `AlbumDeleted`'s parent tag only, no event change; Q-052-07: Option B, reuse the `'Mod Cache'` category with a patched `SettingsController` visibility filter — the non-default, non-recommended choice, noted explicitly below). See [docs/specs/4-architecture/open-questions.md](../../open-questions.md) for full Decision Cards.
 
