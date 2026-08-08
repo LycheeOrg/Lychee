@@ -24,13 +24,13 @@ class CountsData extends Data
 	public string $min_taken_at;
 
 	/**
-	 * @param Collection<int,object{date:string,uploads:int}> $data
+	 * @param Collection<int,object{date:string,uploads:int}> $rows
 	 *
 	 * @return void
 	 */
-	public function __construct(Collection $data, string $min_taken_at, string $min_created_at)
+	public function __construct(Collection $rows, string $min_taken_at, string $min_created_at)
 	{
-		$this->data = $data->map(fn ($v) => new DayCount($v->date, $v->uploads))->all();
+		$this->data = $rows->map(fn ($v) => new DayCount($v->date, $v->uploads))->all();
 		$this->low_number_of_shoots_per_day = request()->configs()->getValueAsInt('low_number_of_shoots_per_day');
 		$this->medium_number_of_shoots_per_day = request()->configs()->getValueAsInt('medium_number_of_shoots_per_day');
 		$this->high_number_of_shoots_per_day = request()->configs()->getValueAsInt('high_number_of_shoots_per_day');

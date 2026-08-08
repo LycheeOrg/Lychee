@@ -238,6 +238,7 @@ return [
 		App\Providers\EventServiceProvider::class,
 		App\Providers\RouteServiceProvider::class,
 		LycheeVerify\VerifyServiceProvider::class,
+		App\Providers\TypeScriptTransformerServiceProvider::class,
 	],
 
 	/*

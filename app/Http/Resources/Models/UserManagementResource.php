@@ -32,12 +32,12 @@ class UserManagementResource extends Data
 
 	/**
 	 * @param User                   $user
-	 * @param array{id:int,size:int} $space
+	 * @param array{id:int,size:int} $space_usage
 	 * @param bool                   $is_se
 	 *
 	 * @return void
 	 */
-	public function __construct(User $user, array $space, bool $is_se)
+	public function __construct(User $user, array $space_usage, bool $is_se)
 	{
 		$this->id = $user->id;
 		$this->username = $user->username;
@@ -50,9 +50,9 @@ class UserManagementResource extends Data
 			$this->quota_kb = $user->quota_kb;
 			$this->description = $user->description;
 			$this->note = $user->note;
-			$this->space = $space['size'];
+			$this->space = $space_usage['size'];
 		}
-		if ($user->id !== $space['id']) {
+		if ($user->id !== $space_usage['id']) {
 			throw new \RuntimeException('User and space id do not match');
 		}
 	}

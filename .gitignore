@@ -40,6 +40,8 @@ storage/bootstrap/cache/*
 storage/image-jobs/*
 **/__pycache__/**
 .coverage
+typescript-transformer-manifest.json 
+
 
 # used by Vite
 public/hot
