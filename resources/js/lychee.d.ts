@@ -1131,10 +1131,7 @@ declare namespace App {
 					quota_kb: number | null;
 					description: string | null;
 					note: string | null;
-					space: {
-						id: number;
-						size: number;
-					};
+					space: number | null;
 				};
 				export type UserMemberGroupResource = {
 					id: number;
@@ -1540,10 +1537,7 @@ declare namespace App {
 					size: number;
 				};
 				export type CountsData = {
-					data: {
-						date: string;
-						uploads: number;
-					}[];
+					data: App.Http.Resources.Statistics.DayCount[];
 					low_number_of_shoots_per_day: number;
 					medium_number_of_shoots_per_day: number;
 					high_number_of_shoots_per_day: number;
