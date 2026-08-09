@@ -6,7 +6,7 @@ High-level planning document for Lychee features and architectural initiatives.
 
 | Feature ID | Name | Status | Priority | Assignee | Started | Updated | Progress |
 |------------|------|--------|----------|----------|---------|---------|----------|
-| - | - | - | - | - | - | - | - |
+| 053 | Album Listing Caching | Draft (spec/plan/tasks complete, not implemented) | Medium | LycheeOrg | 2026-08-08 | 2026-08-08 | 0/24 tasks |
 
 ## Paused Features
 
