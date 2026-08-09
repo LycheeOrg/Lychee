@@ -78,6 +78,38 @@ class ManagedCacheService
 	}
 
 	/**
+	 * Like {@see self::remember()}, but conditionally: when `$condition` is
+	 * `false`, invokes and returns the callback directly, with no cache I/O
+	 * attempted at all (not even a read probe). When `true`, delegates
+	 * unchanged to {@see self::remember()} (which still separately checks
+	 * `managed_cache_enabled` — both switches are ANDed, neither overrides
+	 * the other).
+	 *
+	 * @template TCacheValue
+	 *
+	 * @param bool                                      $condition
+	 * @param string                                    $key
+	 * @param string[]                                  $tags
+	 * @param \DateTimeInterface|\DateInterval|int|null $ttl
+	 * @param \Closure(): TCacheValue                   $callback
+	 *
+	 * @return TCacheValue
+	 */
+	public function rememberIf(
+		bool $condition,
+		string $key,
+		array $tags,
+		\DateTimeInterface|\DateInterval|int|null $ttl,
+		\Closure $callback,
+	): mixed {
+		if (!$condition) {
+			return $callback();
+		}
+
+		return $this->remember($key, $tags, $ttl, $callback);
+	}
+
+	/**
 	 * Associate additional tags with an already-cached key, without recomputing
 	 * or re-storing its value.
 	 *

@@ -10,6 +10,7 @@ namespace App\Actions\Admin;
 
 use App\Actions\Album\SetProtectionPolicy;
 use App\DTO\BulkAlbumPatchData;
+use App\Events\AlbumSaved;
 use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
 use App\Models\Album;
 use App\Models\BaseAlbumImpl;
@@ -155,6 +156,22 @@ class BulkEditAlbumsAction
 
 				$this->set_protection_policy->do($album, $protection_policy, false, null);
 			}
+		}
+
+		// One lightweight `id`,`parent_id` projection query, not a full hydrate,
+		// to evict every touched album's own tag and its parent's listing tag —
+		// closes the Group-1/2 raw-`->update()` gap, which dispatches nothing.
+		// `without()` strips Album's default `$with` (cover/thumb/etc.), whose
+		// eager-load constraints would otherwise require their FK columns
+		// (e.g. `cover_id`) to also be selected.
+		$touched_albums = Album::query()
+			->select(['id', 'parent_id'])
+			->without(['cover', 'cover.size_variants', 'min_privilege_cover', 'min_privilege_cover.size_variants', 'max_privilege_cover', 'max_privilege_cover.size_variants', 'thumb'])
+			->whereIn('id', $album_ids)
+			->get()
+			->all();
+		foreach ($touched_albums as $album) {
+			AlbumSaved::dispatch($album);
 		}
 	}
 }

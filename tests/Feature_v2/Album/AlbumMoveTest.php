@@ -18,11 +18,49 @@
 
 namespace Tests\Feature_v2\Album;
 
+use App\Events\AlbumChildrenChanged;
+use App\Events\AlbumListingCacheFlushRequested;
+use App\Events\AlbumSaved;
 use App\Models\AccessPermission;
+use App\Models\Album;
+use Illuminate\Support\Facades\Event;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class AlbumMoveTest extends BaseApiWithDataTest
 {
+	public function testMoveLeafAlbumDispatchesAlbumSavedAndChildrenChangedButNoCoarseFlush(): void
+	{
+		Event::fake([AlbumSaved::class, AlbumChildrenChanged::class, AlbumListingCacheFlushRequested::class]);
+
+		// subAlbum1 is a leaf (no descendants), moved from album1 to root.
+		$response = $this->actingAs($this->userMayUpload1)->postJson('Album::move', [
+			'album_id' => null,
+			'album_ids' => [$this->subAlbum1->id],
+		]);
+		$this->assertNoContent($response);
+
+		Event::assertDispatched(AlbumSaved::class, fn (AlbumSaved $e) => $e->album->id === $this->subAlbum1->id);
+		Event::assertDispatched(AlbumChildrenChanged::class, fn (AlbumChildrenChanged $e) => $e->parent_id === $this->album1->id);
+		Event::assertNotDispatched(AlbumListingCacheFlushRequested::class);
+	}
+
+	public function testMoveAlbumWithDescendantsDispatchesCoarseFlush(): void
+	{
+		$target = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+
+		Event::fake([AlbumSaved::class, AlbumChildrenChanged::class, AlbumListingCacheFlushRequested::class]);
+
+		// album1 has a descendant (subAlbum1), so moving it must trigger the coarse flush too.
+		$response = $this->actingAs($this->userMayUpload1)->postJson('Album::move', [
+			'album_id' => $target->id,
+			'album_ids' => [$this->album1->id],
+		]);
+		$this->assertNoContent($response);
+
+		Event::assertDispatched(AlbumSaved::class, fn (AlbumSaved $e) => $e->album->id === $this->album1->id);
+		Event::assertDispatched(AlbumListingCacheFlushRequested::class);
+	}
+
 	public function testMoveAlbumUnauthorizedForbidden(): void
 	{
 		$response = $this->postJson('Album::move', []);

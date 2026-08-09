@@ -8,6 +8,7 @@
 
 namespace App\Console\Commands;
 
+use App\Events\AlbumListingCacheFlushRequested;
 use App\Models\Album;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Model;
@@ -61,6 +62,10 @@ class FixTree extends Command
 		$fixed_nodes = $query->fixTree();
 		Model::shouldBeStrict(true);
 		$this->line('Fixed ' . $fixed_nodes . ' nodes.');
+
+		if ($fixed_nodes > 0) {
+			AlbumListingCacheFlushRequested::dispatch();
+		}
 
 		return 0;
 	}

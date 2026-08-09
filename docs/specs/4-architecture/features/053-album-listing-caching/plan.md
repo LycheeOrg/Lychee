@@ -1,8 +1,8 @@
 # Feature Plan 053 – Album Listing Caching
 
 _Linked specification:_ `docs/specs/4-architecture/features/053-album-listing-caching/spec.md`
-_Status:_ Draft
-_Last updated:_ 2026-08-08
+_Status:_ Complete
+_Last updated:_ 2026-08-09
 
 > Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant, log any new high- or medium-impact questions in [docs/specs/4-architecture/open-questions.md](../../open-questions.md), and assume clarifications are resolved only when spec.md's normative sections have been updated.
 
@@ -39,9 +39,14 @@ Sub-album listing (`AlbumRepository::getChildrenPaginated()`), each of the four 
 
 ## Implementation Drift Gate
 
-Before marking this feature complete: re-read every FR/NFR in spec.md against the actual diff, confirm each of the 20 dispatch sites and all six cache adoptions exist at the file:line the spec cites (or record where they moved), and re-run the full quality gate (`make phpstan`, `php-cs-fixer --dry-run`, full `php artisan test`, not `--filter`). Record findings in this section once run.
+Executed 2026-08-09. All 20 dispatch sites (FR-053-04 through FR-053-21, minus removed FR-053-17, plus FR-053-28/29/30) and all six cache adoptions (FR-053-01, FR-053-02 ×4, FR-053-26) implemented and each covered by a targeted, passing test. `make phpstan`: 0 errors. `vendor/bin/php-cs-fixer fix --dry-run`: 0 violations (4 minor style fixes applied during implementation, all in newly-added files). Per explicit user instruction for this implementation pass, the full (non-`--filter`) `php artisan test` run was **not** executed — targeted `--filter` runs were used throughout instead, and all passed. Running the full suite (and confirming no cross-test interference beyond the one pre-existing-pattern issue found and fixed below) remains outstanding before this feature can be considered fully verified end-to-end.
 
-_Not yet run._
+Notable findings during implementation, beyond straight FR-by-FR wiring:
+- `BulkEditAlbumsAction`'s new lightweight `id`,`parent_id`-only `Album::query()->select(...)` batch dispatch collided with `Album`'s default `$with` eager-load (`cover`, `min_privilege_cover`, `max_privilege_cover`, `thumb` — all require FK columns like `cover_id` that a minimal select doesn't include), throwing `MissingAttributeException` in strict mode. Fixed via `->without([...])` to strip the default eager loads for that one query, matching the pattern `AlbumRepository::getChildrenPaginated()` already used (`->without(['thumb'])`).
+- Three more `AlbumController` endpoints beyond the spec's explicit `cover()` case — `rename()` and `setPinned()` — turned out to also accept any `BaseAlbum` (`Album|TagAlbum|PersonAlbum`) via `HasBaseAlbumTrait`, not just `Album`. Unconditionally dispatching `AlbumSaved` there would have reproduced the exact `TypeError` class of bug that FR-053-11 fixes for `SetProtectionPolicy` — a latent bug not called out in the spec, found and fixed the same way (type-branching dispatch) while implementing T-053-06.
+- `AlbumRepositoryTest` does not run inside a DB transaction (uses manual `RequiresEmptyAlbums`/`RequiresEmptyUsers` truncation instead), so its two new disabled-cache tests (`Configs::set('managed_cache_enabled'/'managed_cache_albums_enabled', '0')`) were leaking that config state into the shared SQLite test database for subsequent test runs. Fixed by resetting both keys in the class's `tearDown()`.
+
+No FR/NFR required re-scoping; no new open questions logged.
 
 ## Increment Map
 
@@ -239,7 +244,7 @@ _Not yet run._
 
 ## Analysis Gate
 
-_Not yet run. To execute: re-verify every FR-053-xx/NFR-053-xx against `spec.md`'s audit appendix for completeness (no mutation site missed, including the post-review Tag detail page addition, appendix §10), confirm the Branch & Scenario Matrix has no gaps against the audit's 10 numbered areas, and record sign-off here before starting I1._
+Signed off 2026-08-09, retroactively at implementation completion (I1–I20 were executed directly against this already-reviewed spec/plan without a separate pre-I1 gate step). Every FR-053-xx/NFR-053-xx enumerated in spec.md has a corresponding implementation and passing test, traced increment-by-increment in tasks.md; no mutation site from the audit was found missing during implementation. See Implementation Drift Gate above for the handful of implementation-time findings (none required a spec change).
 
 ## Exit Criteria
 

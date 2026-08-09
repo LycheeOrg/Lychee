@@ -18,10 +18,22 @@
 
 namespace Tests\Feature_v2\Tags;
 
+use App\Events\AlbumTagsChanged;
+use Illuminate\Support\Facades\Event;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class DeleteTagsTest extends BaseApiWithDataTest
 {
+	public function testDeleteTagDispatchesAlbumTagsChanged(): void
+	{
+		Event::fake([AlbumTagsChanged::class]);
+
+		$response = $this->actingAs($this->userMayUpload1)->deleteJson('Tag', ['tags' => [$this->tag_test->id]]);
+		$this->assertNoContent($response);
+
+		Event::assertDispatched(AlbumTagsChanged::class, fn (AlbumTagsChanged $e) => $e->tag_ids === [$this->tag_test->id]);
+	}
+
 	public function testDeleteTagGuest(): void
 	{
 		$response = $this->deleteJson('Tag');

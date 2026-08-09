@@ -8,6 +8,7 @@
 
 namespace App\Actions\Tag;
 
+use App\Events\AlbumTagsChanged;
 use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Contracts\Database\Query\Builder;
@@ -206,5 +207,7 @@ class MergeTag
 				->whereIn('album_id', $source_album_ids) // Only the albums associated with the source tag and owned by the user
 				->delete();
 		});
+
+		AlbumTagsChanged::dispatch([$source->id, $into->id]);
 	}
 }

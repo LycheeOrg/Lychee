@@ -19,6 +19,7 @@ use App\Policies\AlbumPolicy;
 use App\Policies\AlbumQueryPolicy;
 use App\Policies\PhotoQueryPolicy;
 use App\Repositories\ConfigManager;
+use App\Services\Cache\ManagedCacheService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
@@ -38,6 +39,7 @@ class GetTagWithPhotosAndAlbums
 		private PhotoQueryPolicy $photo_query_policy,
 		private AlbumQueryPolicy $album_query_policy,
 		protected readonly ConfigManager $config_manager,
+		protected readonly ManagedCacheService $managed_cache_service,
 	) {
 	}
 
@@ -102,15 +104,32 @@ class GetTagWithPhotosAndAlbums
 	private function getAccessibleAlbums(Tag $tag, User $user): Collection
 	{
 		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
+		$user_key = Auth::id() ?? 'guest';
+		// `applyBrowsabilityFilter()` is session-scoped (depends on
+		// `getUnlockedAlbumIDs()`, not just the user), unlike the other five
+		// cached queries in this feature — a session that unlocks a
+		// password-protected album must get a fresh key, not a stale one
+		// from before the unlock (NFR-053-07).
+		$unlocked_hash = md5(implode(',', $unlocked_album_ids));
+		$key = "tag-albums:{$tag->id}:user:{$user_key}:unlocked:{$unlocked_hash}";
 
-		$album_query = Album::query()
-			->select(['albums.*'])
-			->join('base_albums', 'base_albums.id', '=', 'albums.id')
-			->whereHas('tags', fn ($q) => $q->where('tags.id', $tag->id));
+		$albums = $this->managed_cache_service->rememberIf(
+			$this->config_manager->getValueAsBool('managed_cache_albums_enabled'),
+			$key,
+			["tag:{$tag->id}", "user:{$user_key}", 'album-listing-global'],
+			$this->config_manager->getValueAsInt('managed_cache_ttl'),
+			function () use ($tag, $user, $unlocked_album_ids) {
+				$album_query = Album::query()
+					->select(['albums.*'])
+					->join('base_albums', 'base_albums.id', '=', 'albums.id')
+					->whereHas('tags', fn ($q) => $q->where('tags.id', $tag->id));
 
-		$this->album_query_policy->applyBrowsabilityFilter($album_query, $user, $unlocked_album_ids);
+				$this->album_query_policy->applyBrowsabilityFilter($album_query, $user, $unlocked_album_ids);
 
-		$albums = $album_query->get();
+				return $album_query->get();
+			}
+		);
+		$this->managed_cache_service->addTags($key, $albums->map(fn (Album $album) => 'album:' . $album->id)->all());
 
 		return $albums->map(fn (Album $album) => ThumbAlbumResource::fromModel($album));
 	}

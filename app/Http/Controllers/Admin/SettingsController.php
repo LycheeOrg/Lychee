@@ -11,6 +11,7 @@ namespace App\Http\Controllers\Admin;
 use App\Actions\Diagnostics\Pipes\Infos\DockerVersionInfo;
 use App\Constants\FileSystem;
 use App\Enum\CacheTag;
+use App\Events\AlbumListingCacheFlushRequested;
 use App\Events\TaggedRouteCacheUpdated;
 use App\Exceptions\InsufficientFilesystemPermissions;
 use App\Http\Requests\Settings\GetAllConfigsRequest;
@@ -30,6 +31,33 @@ use Illuminate\Support\Facades\Storage;
  */
 class SettingsController extends Controller
 {
+	/**
+	 * Config keys whose change affects an album listing with no per-album row
+	 * to hook (global sort/pagination/feature-toggle config) — closes over
+	 * every cached album listing via one coarse, instance-wide flush.
+	 */
+	public const ALBUM_LISTING_COARSE_FLUSH_CONFIGS = [
+		'sorting_albums_col',
+		'sorting_albums_order',
+		'sorting_pinned_albums_col',
+		'sorting_pinned_albums_order',
+		'deduplicate_pinned_albums',
+		'ai_vision_face_enabled',
+		'albums_per_page',
+	];
+
+	/**
+	 * Config keys under the 'Mod Cache' category which stay visible even when
+	 * `features.enable-caching` is disabled, because they gate
+	 * {@see \App\Services\Cache\ManagedCacheService}, which is fully
+	 * independent from the HTTP response cache governed by that flag.
+	 */
+	public const MANAGED_CACHE_CONFIGS = [
+		'managed_cache_enabled',
+		'managed_cache_ttl',
+		'managed_cache_albums_enabled',
+	];
+
 	public const V8_CONFIGS = [
 		'site_logo',
 		'primary_color',
@@ -80,7 +108,10 @@ class SettingsController extends Controller
 		$editable_configs = ConfigCategory::with([
 			'configs' => fn ($query) => $query
 				->when(config('features.hide-lychee-SE', false) === true, fn ($q) => $q->where('cat', '!=', 'lychee SE'))
-				->when(config('features.enable-caching') === false, fn ($q) => $q->where('cat', '!=', 'Mod Cache'))
+				->when(
+					config('features.enable-caching') === false,
+					fn ($q) => $q->where(fn ($q2) => $q2->where('cat', '!=', 'Mod Cache')->orWhereIn('key', self::MANAGED_CACHE_CONFIGS))
+				)
 				->when($docker_info->isDocker(), fn ($q) => $q->where('not_on_docker', '!=', true))
 				->when(!$request->verify()->is_supporter() && !$request->configs()->getValueAsBool('enable_se_preview'), fn ($q) => $q->where('level', '=', 0))
 				->when(!$request->verify()->is_pro(), fn ($q) => $q->where('level', '<', 2))
@@ -106,6 +137,10 @@ class SettingsController extends Controller
 		$configs->each(function ($config): void {
 			Configs::query()->where('key', $config->key)->update(['value' => $config->value ?? '']);
 		});
+
+		if ($configs->pluck('key')->intersect(self::ALBUM_LISTING_COARSE_FLUSH_CONFIGS)->isNotEmpty()) {
+			AlbumListingCacheFlushRequested::dispatch();
+		}
 
 		$request->configs()->invalidateCache();
 		TaggedRouteCacheUpdated::dispatch(CacheTag::SETTINGS);

@@ -99,6 +99,12 @@ class GetAllSettingsTest extends BaseApiWithDataTest
 
 		$response = $this->actingAs($this->admin)->getJson('Settings');
 		$this->assertOk($response);
-		$response->assertJsonMissing(['cat' => 'Mod Cache']);
+		// The response-cache-specific keys (Feature 040) are hidden...
+		$response->assertJsonMissing(['key' => 'cache_enabled']);
+		// ...but the managed-cache keys (Feature 052/053) stay visible regardless,
+		// since ManagedCacheService is fully independent of the response cache.
+		$response->assertJsonFragment(['key' => 'managed_cache_enabled']);
+		$response->assertJsonFragment(['key' => 'managed_cache_ttl']);
+		$response->assertJsonFragment(['key' => 'managed_cache_albums_enabled']);
 	}
 }

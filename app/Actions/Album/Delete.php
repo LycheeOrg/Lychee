@@ -16,6 +16,7 @@ use App\DTO\Delete\AlbumsToBeDeletedDTO;
 use App\DTO\Delete\PhotosToBeDeletedDTO;
 use App\Enum\StorageDiskType;
 use App\Events\AlbumDeleted;
+use App\Events\BaseAlbumRemoved;
 use App\Exceptions\CorruptedTreeException;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
@@ -135,6 +136,10 @@ class Delete
 		DB::table('album_user_thumbs')->whereIn('album_id', $tag_album_ids)->delete();
 		DB::table('tag_albums')->whereIn('id', $tag_album_ids)->delete();
 		DB::table('base_albums')->whereIn('id', $tag_album_ids)->delete();
+
+		foreach ($tag_album_ids as $tag_album_id) {
+			BaseAlbumRemoved::dispatch($tag_album_id);
+		}
 	}
 
 	/**
@@ -159,6 +164,10 @@ class Delete
 		DB::table('album_user_thumbs')->whereIn('album_id', $person_album_ids)->delete();
 		DB::table('person_albums')->whereIn('id', $person_album_ids)->delete();
 		DB::table('base_albums')->whereIn('id', $person_album_ids)->delete();
+
+		foreach ($person_album_ids as $person_album_id) {
+			BaseAlbumRemoved::dispatch($person_album_id);
+		}
 	}
 
 	/**

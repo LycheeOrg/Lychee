@@ -1,11 +1,10 @@
 # Current Session
 
-_Last updated: 2026-07-28_
+_Last updated: 2026-08-10_
 
 ## Active Features
 
-- Feature 053 – Album Listing Caching: spec, plan, and tasks drafted (Draft status) this session. Not yet implemented. Analysis gate not yet run.
-- Feature 052 – Managed Cache Service: **Completed** (T-052-01..22 all `[x]`). Q-052-01..07 all resolved. Full quality gate green; moved to roadmap.md Completed Features. Its two deferred tasks (T-052-05/06) are now tracked as T-053-01 under Feature 053.
+- Feature 052 – Managed Cache Service: **Completed** (T-052-01..22 all `[x]`). Q-052-01..07 all resolved. Full quality gate green; moved to roadmap.md Completed Features. Its two deferred tasks (T-052-05/06) are now tracked and completed as T-053-01 under Feature 053.
 - Feature 049 – Migration to Nuxt UI: spec, plan, and tasks drafted (Draft status), analysis gate passed. Not yet implemented.
 - Feature 048 – Fix Multi-Group Permissions: spec, plan, and tasks drafted (Draft status). Not yet implemented.
 
@@ -39,9 +38,22 @@ _Last updated: 2026-07-28_
 
 **Post-draft correction #5 (same session, user request — full consistency review, Q-053-11/12/13):** user asked for a dedicated pass over spec.md/plan.md/tasks.md looking for ambiguities, inconsistencies, and unknowns. Found one real, previously-unnoticed correctness bug (Q-053-11, High): `Top()`'s tag-albums, person-albums, and root/shared-albums sub-query cache keys (FR-053-02) were specified only as "user id + resolved sort criteria," but `app/Actions/Albums/Top.php` sorts all three by the *identical* `AlbumSortingCriterion::createDefault()` source — confirmed directly against the live code. Without a type-discriminating prefix, the three would generate textually identical cache keys for the same user, silently serving one query's cached data as another's. Fixed by giving each of the four sub-query keys an explicit type prefix matching its tag name, and adding a new NFR-053-08 with a dedicated key-uniqueness test. Also found and fixed: FR-053-01/02/26 never explicitly stated the `$ttl` argument's source (`managed_cache_ttl`, Q-053-12); and a batch of purely textual staleness (Q-053-13) — `SVC-053-02`/Domain Objects still described `Top::get()`/`TopAlbumDTO` as cached (contradicting the Q-053-10 fix), stale dispatch-site counts not accounting for `FR-053-17`'s removal, "both `getChildrenPaginated()` and `Top()`" language undercounting the now-six cached queries in several spots, and `tasks.md` using `F-053-` instead of this repo's established `FR-053-` ID prefix (~22 places) plus one malformed event-ID reference. All fixed directly (no design decision required); spec.md now includes NFR-053-08, so the NFR range bumped to NFR-053-01..08 throughout.
 
-**Analysis gate:** not yet run. **Not yet done:** everything — implementation has not started.
+**Analysis gate:** signed off retroactively 2026-08-09 at implementation completion (see plan.md).
 
-### Feature 052 – Managed Cache Service — Implemented (this session, 2026-07-28)
+### Feature 053 – Album Listing Caching — Implemented (2026-08-09/10)
+
+**Request (new session):** implement `docs/specs/4-architecture/features/053-album-listing-caching/tasks.md` end-to-end. Explicit instruction: no full-suite `php artisan test` runs during the session (too slow) — targeted `--filter` runs only.
+
+**Result:** all 24 tasks (T-053-01..24) implemented and green via targeted tests. Six independently-cached SQL queries across three consumers (`AlbumRepository::getChildrenPaginated()`; `Top::get()`'s four constituent queries, each keyed with its own type-discriminating prefix per NFR-053-08; `GetTagWithPhotosAndAlbums::getAccessibleAlbums()`, keyed with a hash of the session-scoped unlocked-album set per NFR-053-07) via new `ManagedCacheService::rememberIf()`. 9 new domain events, 20 dispatch sites, new `ManagedCacheAlbumListingInvalidator`/`ManagedCacheUserListingInvalidator` listeners (11 event→tag bindings), new `managed_cache_albums_enabled` config toggle plus the `managed_cache_enabled`/`managed_cache_ttl` migration + `SettingsController` exemption Feature 052 left undone. `make phpstan`: 0 errors throughout. `php-cs-fixer`: 0 violations (4 minor auto-fixes applied, all in new files).
+
+**Three implementation-time findings beyond straight FR wiring (all fixed, no spec change needed — see plan.md's Implementation Drift Gate for full detail):**
+1. `Album`'s default `$with` eager-load (`cover`/`min_privilege_cover`/`max_privilege_cover`/`thumb`) breaks under a minimal `select(['id','parent_id'])` query in strict mode (`MissingAttributeException`) — hit in `BulkEditAlbumsAction`'s new lightweight dispatch batch, fixed via `->without([...])`, matching the pattern `AlbumRepository` already used.
+2. Two more `AlbumController` endpoints (`rename()`, `setPinned()`) turned out to accept any `BaseAlbum` type via `HasBaseAlbumTrait`, not just `Album` — the same latent `TypeError`-on-dispatch bug class FR-053-11 fixes for `SetProtectionPolicy`, not called out in the spec for these two. Fixed the same way (type-branching dispatch).
+3. `AlbumRepositoryTest` doesn't run inside a DB transaction (manual truncation traits instead); its new disabled-cache tests were leaking `managed_cache_enabled`/`managed_cache_albums_enabled` config state into the shared SQLite test DB across runs. Fixed via `tearDown()` reset. (Root cause: an earlier throwaway debug script run outside any test transaction had already polluted the same shared DB mid-session — recovered via `migrate:fresh`, twice.)
+
+**Not yet done:** a full (non-`--filter`) `php artisan test` run, deferred per this session's explicit instruction — recommended before treating this feature as fully verified end-to-end, per Feature 052's own documented full-suite pitfalls (`set_time_limit(600)` timer reset, SQLite auto-increment drift).
+
+### Feature 052 – Managed Cache Service — Implemented (prior session, 2026-07-28)
 
 **Request:** Write plan.md/tasks.md for the already-spec-complete Feature 052, do a clarification pass, then implement.
 
@@ -123,7 +135,7 @@ _Last updated: 2026-07-28_
 
 ## Next Steps
 
-1. Feature 053 is spec/plan/tasks-complete but unimplemented — run the Analysis Gate, then start at T-053-01 (config migration + `SettingsController` patch, resuming Feature 052's deferred T-052-05/06) — see [tasks.md](4-architecture/features/053-album-listing-caching/tasks.md).
+1. Feature 053 is implemented and quality-gated (phpstan/cs-fixer green via targeted tests) — a full non-`--filter` `php artisan test` run is still recommended before treating it as fully end-to-end verified (deferred this session per explicit instruction).
 2. Feature 052 is otherwise done — no further follow-up unless broader `ManagedCacheService` adoption beyond Feature 053 (e.g. photo-listing caching, deferred per Feature 053's Non-Goals) is picked up later.
 3. Confirm dependency approvals (`@nuxt/ui`, `@iconify-json/prime`) with the user, then start Feature 049 implementation at T-049-01 (install Nuxt UI in standalone Vue mode) — see [tasks.md](4-architecture/features/049-nuxt-ui-migration/tasks.md).
 4. Alternatively/in parallel across sessions: start Feature 048 implementation at T-048-01 (repo-wide caller sweep) then T-048-02/03 (unit tests reproducing the bug) — see [tasks.md](4-architecture/features/048-fix-multi-group-permissions/tasks.md).
@@ -132,14 +144,14 @@ _Last updated: 2026-07-28_
 
 ## Open Questions
 
-None blocking. Q-053-01..06 all resolved 2026-08-08 (see spec.md and open-questions.md for full rationale). Q-052-01..07 all resolved (01-05 on 2026-07-21, 06-07 on 2026-07-28). Q-049-01, Q-049-02, Q-049-03 resolved 2026-07-02 (ADR-0005). Q-048-01 resolved 2026-07-01.
+None blocking. Q-053-01..13 all resolved 2026-08-08/09 (see spec.md and open-questions.md for full rationale). Q-052-01..07 all resolved (01-05 on 2026-07-21, 06-07 on 2026-07-28). Q-049-01, Q-049-02, Q-049-03 resolved 2026-07-02 (ADR-0005). Q-048-01 resolved 2026-07-01.
 
 ## Key Artefacts
 
-- Feature 053: [spec.md](4-architecture/features/053-album-listing-caching/spec.md) · [plan.md](4-architecture/features/053-album-listing-caching/plan.md) · [tasks.md](4-architecture/features/053-album-listing-caching/tasks.md) (drafted, not implemented, T-053-01..22 all `[ ]`)
-- Feature 052: [spec.md](4-architecture/features/052-managed-cache-service/spec.md) · [plan.md](4-architecture/features/052-managed-cache-service/plan.md) · [tasks.md](4-architecture/features/052-managed-cache-service/tasks.md) (implemented, T-052-01..22 all `[x]`; T-052-05/06 resumed as Feature 053's T-053-01)
+- Feature 053: [spec.md](4-architecture/features/053-album-listing-caching/spec.md) · [plan.md](4-architecture/features/053-album-listing-caching/plan.md) · [tasks.md](4-architecture/features/053-album-listing-caching/tasks.md) (implemented, T-053-01..24 all `[x]`; full-suite `php artisan test` run still outstanding)
+- Feature 052: [spec.md](4-architecture/features/052-managed-cache-service/spec.md) · [plan.md](4-architecture/features/052-managed-cache-service/plan.md) · [tasks.md](4-architecture/features/052-managed-cache-service/tasks.md) (implemented, T-052-01..22 all `[x]`; T-052-05/06 resumed and completed as Feature 053's T-053-01)
 - Feature 049: [spec.md](4-architecture/features/049-nuxt-ui-migration/spec.md) · [plan.md](4-architecture/features/049-nuxt-ui-migration/plan.md) · [tasks.md](4-architecture/features/049-nuxt-ui-migration/tasks.md) · [ADR-0005](6-decisions/ADR-0005-nuxt-ui-migration.md)
 - Feature 048: [spec.md](4-architecture/features/048-fix-multi-group-permissions/spec.md) · [plan.md](4-architecture/features/048-fix-multi-group-permissions/plan.md) · [tasks.md](4-architecture/features/048-fix-multi-group-permissions/tasks.md)
-- Open questions: [open-questions.md](4-architecture/open-questions.md) (Q-053-01..06, Q-052-01..07, Q-049-01..03, Q-048-01 — all resolved)
+- Open questions: [open-questions.md](4-architecture/open-questions.md) (Q-053-01..13, Q-052-01..07, Q-049-01..03, Q-048-01 — all resolved)
 - Roadmap: [roadmap.md](4-architecture/roadmap.md)
-- Knowledge map: [knowledge-map.md](4-architecture/knowledge-map.md) (Frontend Dependencies section annotated with the pending PrimeVue→Nuxt UI swap; Feature 052's `ManagedCacheService`/events/listeners documented under Infrastructure Layer; Feature 053's tag/event scheme not yet added, pending implementation)
+- Knowledge map: [knowledge-map.md](4-architecture/knowledge-map.md) (Frontend Dependencies section annotated with the pending PrimeVue→Nuxt UI swap; Feature 052/053's `ManagedCacheService`/events/listeners documented under Infrastructure Layer)

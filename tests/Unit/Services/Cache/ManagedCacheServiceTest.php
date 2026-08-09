@@ -121,6 +121,48 @@ class ManagedCacheServiceTest extends AbstractTestCase
 		self::assertNull(Cache::get('mc-test:multi-tag'), 'evicting the second tag should also evict the key');
 	}
 
+	// ── rememberIf() ────────────────────────────────────────────
+
+	public function testRememberIfWithFalseConditionAlwaysInvokesCallbackAndSkipsCacheIO(): void
+	{
+		$service = $this->makeService(enabled: true);
+		$calls = 0;
+		$callback = function () use (&$calls) {
+			$calls++;
+
+			return 'value-' . $calls;
+		};
+
+		$first = $service->rememberIf(false, 'mc-test:rememberif-false', ['tag:a'], 60, $callback);
+		$second = $service->rememberIf(false, 'mc-test:rememberif-false', ['tag:a'], 60, $callback);
+
+		self::assertSame('value-1', $first);
+		self::assertSame('value-2', $second);
+		self::assertSame(2, $calls);
+		self::assertNull(Cache::get('mc-test:rememberif-false'));
+	}
+
+	public function testRememberIfWithTrueConditionDelegatesToRemember(): void
+	{
+		$service = $this->makeService(enabled: true);
+		$calls = 0;
+
+		$first = $service->rememberIf(true, 'mc-test:rememberif-true', ['tag:a'], 60, function () use (&$calls) {
+			$calls++;
+
+			return 'computed-' . $calls;
+		});
+		$second = $service->rememberIf(true, 'mc-test:rememberif-true', ['tag:a'], 60, function () use (&$calls) {
+			$calls++;
+
+			return 'computed-' . $calls;
+		});
+
+		self::assertSame('computed-1', $first);
+		self::assertSame('computed-1', $second, 'second call should be a cache hit, not recomputed');
+		self::assertSame(1, $calls);
+	}
+
 	// ── addTags() ───────────────────────────────────────────────
 
 	public function testAddTagsAssociatesAdditionalTagsWithAnAlreadyCachedKey(): void

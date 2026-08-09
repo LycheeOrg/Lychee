@@ -25,6 +25,7 @@ use App\Models\User;
 use App\Policies\AlbumPolicy;
 use App\Policies\AlbumQueryPolicy;
 use App\Repositories\ConfigManager;
+use App\Services\Cache\ManagedCacheService;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Support\Collection as BaseCollection;
 use Illuminate\Support\Facades\Auth;
@@ -43,6 +44,7 @@ class Top
 		private AlbumFactory $album_factory,
 		private AlbumQueryPolicy $album_query_policy,
 		protected readonly ConfigManager $config_manager,
+		protected readonly ManagedCacheService $managed_cache_service,
 	) {
 		$this->sorting = AlbumSortingCriterion::createDefault();
 	}
@@ -71,60 +73,121 @@ class Top
 		/** @var ?User $user */
 		$user = Auth::user();
 		$user_id = $user?->id;
+		$user_key = $user_id ?? 'guest';
+		$managed_cache_albums_enabled = $this->config_manager->getValueAsBool('managed_cache_albums_enabled');
+		$ttl = $this->config_manager->getValueAsInt('managed_cache_ttl');
 
 		// Do not eagerly load the relation `photos` for each smart album.
 		// On the albums overview, we only need a thumbnail for each album.
+		// Involves no SQL query (Gate::check()-filtered, config-driven,
+		// in-memory list) — never wrapped in the managed cache.
 		/** @var BaseCollection<int,BaseSmartAlbum> $smart_albums */
 		$smart_albums = $this->album_factory
 			->getAllBuiltInSmartAlbums(false)
 			->filter(fn ($smart_album) => Gate::check(AlbumPolicy::CAN_SEE, $smart_album));
 
-		$tag_album_query = $this->album_query_policy
-			->applyVisibilityFilter(TagAlbum::query()->with(['access_permissions', 'owner', 'userThumbRow.photo.size_variants']), $user);
-
+		// ── Tag albums ──────────────────────────────────────────────
+		$tag_albums_key = "tag-albums-listing:user:{$user_key}:sort:{$this->sorting->column->value}:{$this->sorting->order->value}";
 		/** @var BaseCollection<int,TagAlbum> $tag_albums */
-		$tag_albums = (new SortingDecorator($tag_album_query))
-			->orderBy($this->sorting->column, $this->sorting->order)
-			->get();
+		$tag_albums = $this->managed_cache_service->rememberIf(
+			$managed_cache_albums_enabled,
+			$tag_albums_key,
+			['tag-albums-listing', "user:{$user_key}", 'album-listing-global'],
+			$ttl,
+			function () use ($user): BaseCollection {
+				$tag_album_query = $this->album_query_policy
+					->applyVisibilityFilter(TagAlbum::query()->with(['access_permissions', 'owner', 'userThumbRow.photo.size_variants']), $user);
 
+				return (new SortingDecorator($tag_album_query))
+					->orderBy($this->sorting->column, $this->sorting->order)
+					->get();
+			}
+		);
+		$this->managed_cache_service->addTags($tag_albums_key, $tag_albums->map(fn (TagAlbum $a) => 'album:' . $a->id)->all());
+
+		// ── Person albums ───────────────────────────────────────────
 		/** @var BaseCollection<int,PersonAlbum> $person_albums */
 		$person_albums = collect();
 		if ($this->config_manager->getValueAsBool('ai_vision_face_enabled')) {
-			$person_album_query = $this->album_query_policy
-				->applyVisibilityFilter(PersonAlbum::query()->with(['access_permissions', 'owner', 'userThumbRow.photo.size_variants']), $user);
+			$person_albums_key = "person-albums-listing:user:{$user_key}:sort:{$this->sorting->column->value}:{$this->sorting->order->value}";
+			$person_albums = $this->managed_cache_service->rememberIf(
+				$managed_cache_albums_enabled,
+				$person_albums_key,
+				['person-albums-listing', "user:{$user_key}", 'album-listing-global'],
+				$ttl,
+				function () use ($user): BaseCollection {
+					$person_album_query = $this->album_query_policy
+						->applyVisibilityFilter(PersonAlbum::query()->with(['access_permissions', 'owner', 'userThumbRow.photo.size_variants']), $user);
 
-			$person_albums = (new SortingDecorator($person_album_query))
-				->orderBy($this->sorting->column, $this->sorting->order)
-				->get();
+					return (new SortingDecorator($person_album_query))
+						->orderBy($this->sorting->column, $this->sorting->order)
+						->get();
+				}
+			);
+			$this->managed_cache_service->addTags($person_albums_key, $person_albums->map(fn (PersonAlbum $a) => 'album:' . $a->id)->all());
 		}
 
-		$pinned_album_query = $this->album_query_policy
-			->applyVisibilityFilter(Album::query()->with(['access_permissions', 'owner'])
-			->joinSub(DB::table('base_albums')->select(['id', 'is_pinned'])->where('is_pinned', '=', true), 'pinned', 'pinned.id', '=', 'albums.id'), $user);
-
+		// ── Pinned albums ───────────────────────────────────────────
+		$pinned_col = $this->config_manager->getValueAsEnum('sorting_pinned_albums_col', ColumnSortingType::class);
+		$pinned_order = $this->config_manager->getValueAsEnum('sorting_pinned_albums_order', OrderSortingType::class);
+		$pinned_albums_key = 'pinned-albums-listing:user:' . $user_key . ':sort:' . ($pinned_col?->value ?? 'null') . ':' . ($pinned_order?->value ?? 'null');
 		/** @var BaseCollection<int,Album> $pinned_albums */
-		$pinned_albums = (new SortingDecorator($pinned_album_query))
-			->orderBy(
-				$this->config_manager->getValueAsEnum('sorting_pinned_albums_col', ColumnSortingType::class),
-				$this->config_manager->getValueAsEnum('sorting_pinned_albums_order', OrderSortingType::class)
-			)
-			->get();
+		$pinned_albums = $this->managed_cache_service->rememberIf(
+			$managed_cache_albums_enabled,
+			$pinned_albums_key,
+			['pinned-albums-listing', "user:{$user_key}", 'album-listing-global'],
+			$ttl,
+			function () use ($user, $pinned_col, $pinned_order): BaseCollection {
+				$pinned_album_query = $this->album_query_policy
+					->applyVisibilityFilter(Album::query()->with(['access_permissions', 'owner'])
+					->joinSub(DB::table('base_albums')->select(['id', 'is_pinned'])->where('is_pinned', '=', true), 'pinned', 'pinned.id', '=', 'albums.id'), $user);
 
-		/** @var AlbumBuilder $query */
-		$query = $this->album_query_policy
-			->applyVisibilityFilter(Album::query()->with(['access_permissions', 'owner'])->whereIsRoot()
-			->when(
-				$this->config_manager->getValueAsBool('deduplicate_pinned_albums'),
-				fn ($q) => $q
-					->joinSub(DB::table('base_albums')->select(['id', 'is_pinned'])->where('is_pinned', '=', false), 'not_pinned', 'not_pinned.id', '=', 'albums.id')
-			), $user);
+				return (new SortingDecorator($pinned_album_query))
+					->orderBy($pinned_col, $pinned_order)
+					->get();
+			}
+		);
+		$this->managed_cache_service->addTags($pinned_albums_key, $pinned_albums->map(fn (Album $a) => 'album:' . $a->id)->all());
+
+		// ── Root / shared albums ────────────────────────────────────
+		$root_key = "album-children:root:user:{$user_key}:sort:{$this->sorting->column->value}:{$this->sorting->order->value}";
+		/** @var BaseCollection<int,Album> $albums */
+		$albums = $this->managed_cache_service->rememberIf(
+			$managed_cache_albums_enabled,
+			$root_key,
+			['album-children:root', "user:{$user_key}", 'album-listing-global'],
+			$ttl,
+			function () use ($user, $user_id): BaseCollection {
+				/** @var AlbumBuilder $query */
+				$query = $this->album_query_policy
+					->applyVisibilityFilter(Album::query()->with(['access_permissions', 'owner'])->whereIsRoot()
+					->when(
+						$this->config_manager->getValueAsBool('deduplicate_pinned_albums'),
+						fn ($q) => $q
+							->joinSub(DB::table('base_albums')->select(['id', 'is_pinned'])->where('is_pinned', '=', false), 'not_pinned', 'not_pinned.id', '=', 'albums.id')
+					), $user);
+
+				if ($user_id !== null) {
+					// For authenticated users we group albums by ownership.
+					return (new SortingDecorator($query))
+						->orderBy(ColumnSortingType::OWNER_ID, OrderSortingType::ASC)
+						->orderBy($this->sorting->column, $this->sorting->order)
+						->get();
+				}
+
+				// For anonymous users we don't want to implicitly expose
+				// ownership via sorting.
+				return (new SortingDecorator($query))
+					->orderBy($this->sorting->column, $this->sorting->order)
+					->get();
+			}
+		);
+		$this->managed_cache_service->addTags($root_key, $albums->map(fn (Album $a) => 'album:' . $a->id)->all());
+
 		if ($user_id !== null) {
-			// For authenticated users we group albums by ownership.
-			$albums = (new SortingDecorator($query))
-				->orderBy(ColumnSortingType::OWNER_ID, OrderSortingType::ASC)
-				->orderBy($this->sorting->column, $this->sorting->order)
-				->get();
-
+			// Ownership partitioning stays in-memory, applied after
+			// retrieving the (possibly cached) result — not part of the
+			// cached value itself.
 			list($a, $b) = $albums->partition(fn ($album) => $album->owner_id === $user_id);
 
 			return new TopAlbumDTO(
@@ -135,12 +198,6 @@ class Top
 				albums: $a->values(),
 				shared_albums: $b->values());
 		}
-		// For anonymous users we don't want to implicitly expose
-		// ownership via sorting.
-		/** @var BaseCollection<int,Album> */
-		$albums = (new SortingDecorator($query))
-			->orderBy($this->sorting->column, $this->sorting->order)
-			->get();
 
 		return new TopAlbumDTO(
 			smart_albums: $smart_albums,

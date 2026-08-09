@@ -8,6 +8,7 @@
 
 namespace App\Jobs;
 
+use App\Events\AlbumSaved;
 use App\Models\Album;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -53,6 +54,8 @@ class ApplyNsfwAlbumSensitivityJob implements ShouldQueue
 
 			$album->is_nsfw = true;
 			$album->save();
+
+			AlbumSaved::dispatch($album);
 			Log::info("ApplyNsfwAlbumSensitivityJob: marked album {$album_id} as NSFW.");
 		}
 	}

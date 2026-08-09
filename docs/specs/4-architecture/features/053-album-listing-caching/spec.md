@@ -2,8 +2,8 @@
 
 | Field | Value |
 |-------|-------|
-| Status | Draft |
-| Last updated | 2026-08-08 |
+| Status | Complete |
+| Last updated | 2026-08-09 |
 | Owners | LycheeOrg |
 | Linked plan | `docs/specs/4-architecture/features/053-album-listing-caching/plan.md` |
 | Linked tasks | `docs/specs/4-architecture/features/053-album-listing-caching/tasks.md` |
