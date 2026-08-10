@@ -36,10 +36,10 @@ class ManagedCacheService
 	 *
 	 * @template TCacheValue
 	 *
-	 * @param string                                     $key
-	 * @param string[]                                   $tags
-	 * @param \Closure(): TCacheValue                    $callback
-	 * @param \DateTimeInterface|\DateInterval|int|null   $ttl  when `null`, falls back to the `managed_cache_ttl` config value
+	 * @param string                                    $key
+	 * @param string[]                                  $tags
+	 * @param \Closure(): TCacheValue                   $callback
+	 * @param \DateTimeInterface|\DateInterval|int|null $ttl      when `null`, falls back to the `managed_cache_ttl` config value
 	 *
 	 * @return TCacheValue
 	 */
@@ -89,11 +89,11 @@ class ManagedCacheService
 	 *
 	 * @template TCacheValue
 	 *
-	 * @param bool                                       $condition
-	 * @param string                                     $key
-	 * @param string[]                                   $tags
-	 * @param \Closure(): TCacheValue                    $callback
-	 * @param \DateTimeInterface|\DateInterval|int|null   $ttl  when `null`, falls back to the `managed_cache_ttl` config value
+	 * @param bool                                      $condition
+	 * @param string                                    $key
+	 * @param string[]                                  $tags
+	 * @param \Closure(): TCacheValue                   $callback
+	 * @param \DateTimeInterface|\DateInterval|int|null $ttl       when `null`, falls back to the `managed_cache_ttl` config value
 	 *
 	 * @return TCacheValue
 	 */
