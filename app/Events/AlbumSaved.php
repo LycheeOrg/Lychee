@@ -27,6 +27,7 @@ class AlbumSaved
 	 */
 	public function __construct(public array $album_ids, array $parent_ids)
 	{
+		// @phpstan-ignore arrayFilter.strict (We ignore this one voluntarily)
 		$this->parent_ids = array_values(array_filter($parent_ids));
 	}
 }
