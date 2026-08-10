@@ -40,10 +40,12 @@ class GetTagsTest extends BaseApiWithDataTest
 		// `getAccessiblePhotos()` query also references "albums" (via its
 		// NSFW-sensitivity subquery), so a blanket substring match on
 		// "albums" would false-positive on that unrelated, intentionally
-		// uncached query.
+		// uncached query. Identifier quoting is driver-specific (SQLite/
+		// Postgres use "double quotes", MySQL/MariaDB use `backticks`) — strip
+		// both before matching so this works under any test DB driver.
 		$album_query_count = count(array_filter(
 			DB::getQueryLog(),
-			fn (array $q) => str_contains($q['query'], 'inner join "base_albums" on "base_albums"."id" = "albums"."id"')
+			fn (array $q) => str_contains(str_replace(['"', '`'], '', $q['query']), 'inner join base_albums on base_albums.id = albums.id')
 		));
 		DB::flushQueryLog();
 		DB::disableQueryLog();

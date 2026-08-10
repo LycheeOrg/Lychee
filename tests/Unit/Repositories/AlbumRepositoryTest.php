@@ -228,7 +228,10 @@ class AlbumRepositoryTest extends AbstractTestCase
 		$callback();
 		$count = count(array_filter(
 			DB::getQueryLog(),
-			fn (array $q) => str_contains($q['query'], '"albums"') || str_contains($q['query'], '"base_albums"')
+			// Identifier quoting is driver-specific (SQLite/Postgres use
+			// "double quotes", MySQL/MariaDB use `backticks`) — strip both
+			// before matching so this works under any test DB driver.
+			fn (array $q) => str_contains(str_replace(['"', '`'], '', $q['query']), 'albums')
 		));
 		DB::flushQueryLog();
 		DB::disableQueryLog();

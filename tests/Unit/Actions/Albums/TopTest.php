@@ -47,10 +47,13 @@ class TopTest extends AbstractTestCase
 		$callback();
 		$count = count(array_filter(
 			DB::getQueryLog(),
-			fn (array $q) => str_contains($q['query'], '"albums"') ||
-				str_contains($q['query'], '"base_albums"') ||
-				str_contains($q['query'], '"tag_albums"') ||
-				str_contains($q['query'], '"person_albums"')
+			function (array $q): bool {
+				// Identifier quoting is driver-specific (SQLite/Postgres use
+				// "double quotes", MySQL/MariaDB use `backticks`) — strip both
+				// before matching so this works under any test DB driver.
+				// "albums" alone covers albums/base_albums/tag_albums/person_albums.
+				return str_contains(str_replace(['"', '`'], '', $q['query']), 'albums');
+			}
 		));
 		DB::flushQueryLog();
 		DB::disableQueryLog();
