@@ -6,7 +6,7 @@ High-level planning document for Lychee features and architectural initiatives.
 
 | Feature ID | Name | Status | Priority | Assignee | Started | Updated | Progress |
 |------------|------|--------|----------|----------|---------|---------|----------|
-| - | - | - | - | - | - | - | - |
+| 054 | Configurable Landing Page | Planning | P2 | LycheeOrg | 2026-08-10 | 2026-08-10 | Spec, plan, tasks drafted, then extended same-day across four follow-up rounds. 10 decisions resolved via direct user confirmation (Q-054-01..10): 4 named layouts (classic/portfolio/minimal/studio), v8-only, classic+links free / portfolio+minimal+studio+premium animations SE-gated, CTA-text override, Contact-form surfacing (→`/contact`), portfolio scroll indicator; a dedicated `LandingConfig.vue` admin page (mirrors Feature 045's `NsfwConfig.vue`) absorbing the **entire** pre-existing `Mod Welcome` settings category (not just new keys) across 3 tabs (Settings/Links/Featured), with that category filtered out of the flat generic Settings list; landing-specific custom CSS dropped in favour of Lychee's existing global custom CSS/JS mechanism; featured content redesigned as automatic-by-default with full manual photo/album curation via a new `LandingFeaturedItem` CRUD (mirrors `LandingLink`); `LandingLink.icon` confirmed free-text (default `lucide:link`). All references to the external site that inspired the `portfolio` layout removed from the spec per explicit instruction. ~55 tasks across 16 increments (incl. I9a for `studio`, I6a/I6b/I6c for featured-item CRUD/manual resolution). Not yet implemented. |
 
 ## Paused Features
 
@@ -124,4 +124,4 @@ features/
 
 ---
 
-*Last updated: 2026-07-28 (Feature 052 implemented and moved to Completed)*
+*Last updated: 2026-08-10 (Feature 054 added to Active Features)*
