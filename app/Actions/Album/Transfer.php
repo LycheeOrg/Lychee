@@ -35,7 +35,7 @@ class Transfer
 		// If this is an Album, we also need to fix the children and photos ownership
 		if ($base_album instanceof Album) {
 			$old_parent_id = $base_album->parent_id;
-			$has_descendants = $base_album->_rgt - $base_album->_lft > 1;
+			$has_descendants = !$base_album->isLeaf();
 
 			$base_album->makeRoot();
 			$base_album->save();
@@ -53,7 +53,7 @@ class Transfer
 		}
 
 		match (true) {
-			$base_album instanceof TagAlbum => TagAlbumSaved::dispatch($base_album),
+			$base_album instanceof TagAlbum => TagAlbumSaved::dispatch([$base_album->id]),
 			$base_album instanceof PersonAlbum => PersonAlbumSaved::dispatch($base_album),
 			default => null,
 		};

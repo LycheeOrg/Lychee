@@ -35,12 +35,15 @@ use Illuminate\Support\Facades\Auth;
  */
 class GetTagWithPhotosAndAlbums
 {
+	private bool $is_cache_enabled;
+
 	public function __construct(
 		private PhotoQueryPolicy $photo_query_policy,
 		private AlbumQueryPolicy $album_query_policy,
 		protected readonly ConfigManager $config_manager,
 		protected readonly ManagedCacheService $managed_cache_service,
 	) {
+		$this->is_cache_enabled = $this->config_manager->getValueAsBool('managed_cache_albums_enabled');
 	}
 
 	/**
@@ -110,11 +113,14 @@ class GetTagWithPhotosAndAlbums
 		// cached queries in this feature — a session that unlocks a
 		// password-protected album must get a fresh key, not a stale one
 		// from before the unlock (NFR-053-07).
-		$unlocked_hash = md5(implode(',', $unlocked_album_ids));
+		//
+		// We do not need a cryptographically secure hash here,
+		// just a fast one that is unlikely to collide.
+		$unlocked_hash = hash('xxh3', implode(',', $unlocked_album_ids));
 		$key = "tag-albums:{$tag->id}:user:{$user_key}:unlocked:{$unlocked_hash}";
 
 		$albums = $this->managed_cache_service->rememberIf(
-			$this->config_manager->getValueAsBool('managed_cache_albums_enabled'),
+			$this->is_cache_enabled,
 			$key,
 			["tag:{$tag->id}", "user:{$user_key}", 'album-listing-global'],
 			fn () => $this->queryAccessibleAlbums($tag, $user, $unlocked_album_ids)

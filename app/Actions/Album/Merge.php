@@ -59,7 +59,7 @@ class Merge
 		foreach ($albums as $album) {
 			foreach ($album->children as $child_album) {
 				$target_gains_children = true;
-				$has_descendants = $child_album->_rgt - $child_album->_lft > 1;
+				$has_descendants = !$child_album->isLeaf();
 
 				// Don't set attribute `parent_id` manually, but use specialized
 				// methods of the nested set `NodeTrait` to keep the enumeration

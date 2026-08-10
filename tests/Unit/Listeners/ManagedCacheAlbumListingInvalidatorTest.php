@@ -171,7 +171,7 @@ class ManagedCacheAlbumListingInvalidatorTest extends AbstractTestCase
 		$this->seedCache('k:tag-albums', ['tag-albums-listing']);
 		$this->seedCache('k:person-albums', ['person-albums-listing']);
 
-		$this->listener->handleTagAlbumSaved(new TagAlbumSaved($tag_album));
+		$this->listener->handleTagAlbumSaved(new TagAlbumSaved([$tag_album->id]));
 
 		$this->assertEvicted('k:album');
 		$this->assertEvicted('k:tag-albums');

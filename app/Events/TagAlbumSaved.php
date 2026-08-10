@@ -8,7 +8,6 @@
 
 namespace App\Events;
 
-use App\Models\TagAlbum;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
@@ -19,8 +18,10 @@ class TagAlbumSaved
 
 	/**
 	 * Create a new event instance.
+	 *
+	 * @param array<int,string> $tag_album_ids IDs of the saved tag albums, batched so listeners can act once per call instead of once per tag album
 	 */
-	public function __construct(public TagAlbum $tag_album)
+	public function __construct(public array $tag_album_ids)
 	{
 	}
 }

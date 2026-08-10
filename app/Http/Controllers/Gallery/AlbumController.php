@@ -179,7 +179,7 @@ class AlbumController extends Controller
 		$album->tags()->sync($tag_models->pluck('id')->all());
 		RecomputeAlbumUserThumbsJob::dispatch(RecomputeAlbumUserThumbsJob::KIND_TAG, $album->id);
 
-		TagAlbumSaved::dispatch($album);
+		TagAlbumSaved::dispatch([$album->id]);
 
 		// Root
 		return EditableBaseAlbumResource::fromModel($album);
@@ -386,7 +386,7 @@ class AlbumController extends Controller
 	{
 		match (true) {
 			$album instanceof Album => AlbumSaved::dispatch([$album->id], [$album->parent_id]),
-			$album instanceof TagAlbum => TagAlbumSaved::dispatch($album),
+			$album instanceof TagAlbum => TagAlbumSaved::dispatch([$album->id]),
 			$album instanceof PersonAlbum => PersonAlbumSaved::dispatch($album),
 			default => null,
 		};

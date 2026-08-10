@@ -128,15 +128,13 @@ final class PhotosToBeDeletedDTO
 			DB::table('tag_albums')->whereIn('cover_id', $chunk->all())->update(['cover_id' => null]);
 		});
 
-		$affected_albums = Album::query()->whereIn('id', array_unique($affected_album_ids))->get()->all();
-		if ($affected_albums !== []) {
-			AlbumSaved::dispatch(
-				array_map(fn (Album $affected_album) => $affected_album->id, $affected_albums),
-				array_map(fn (Album $affected_album) => $affected_album->parent_id, $affected_albums),
-			);
+		$affected_albums = Album::query()->whereIn('id', array_unique($affected_album_ids))->pluck('parent_id', 'id');
+		if ($affected_albums->isNotEmpty()) {
+			AlbumSaved::dispatch($affected_albums->keys()->all(), $affected_albums->values()->all());
 		}
-		foreach (TagAlbum::query()->whereIn('id', array_unique($affected_tag_album_ids))->get()->all() as $affected_tag_album) {
-			TagAlbumSaved::dispatch($affected_tag_album);
+		$affected_tag_album_ids_verified = TagAlbum::query()->whereIn('id', array_unique($affected_tag_album_ids))->pluck('id')->all();
+		if ($affected_tag_album_ids_verified !== []) {
+			TagAlbumSaved::dispatch($affected_tag_album_ids_verified);
 		}
 
 		// Maybe consider doing multiple queries for the different storage types.

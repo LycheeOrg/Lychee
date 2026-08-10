@@ -46,18 +46,6 @@ class SettingsController extends Controller
 		'albums_per_page',
 	];
 
-	/**
-	 * Config keys under the 'Mod Cache' category which stay visible even when
-	 * `features.enable-caching` is disabled, because they gate
-	 * {@see \App\Services\Cache\ManagedCacheService}, which is fully
-	 * independent from the HTTP response cache governed by that flag.
-	 */
-	public const MANAGED_CACHE_CONFIGS = [
-		'managed_cache_enabled',
-		'managed_cache_ttl',
-		'managed_cache_albums_enabled',
-	];
-
 	public const V8_CONFIGS = [
 		'site_logo',
 		'primary_color',
@@ -110,7 +98,7 @@ class SettingsController extends Controller
 				->when(config('features.hide-lychee-SE', false) === true, fn ($q) => $q->where('cat', '!=', 'lychee SE'))
 				->when(
 					config('features.enable-caching') === false,
-					fn ($q) => $q->where(fn ($q2) => $q2->where('cat', '!=', 'Mod Cache')->orWhereIn('key', self::MANAGED_CACHE_CONFIGS))
+					fn ($q) => $q->where(fn ($q2) => $q2->where('cat', '!=', 'Mod Cache'))
 				)
 				->when($docker_info->isDocker(), fn ($q) => $q->where('not_on_docker', '!=', true))
 				->when(!$request->verify()->is_supporter() && !$request->configs()->getValueAsBool('enable_se_preview'), fn ($q) => $q->where('level', '=', 0))

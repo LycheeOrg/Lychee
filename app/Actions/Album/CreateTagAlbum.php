@@ -45,7 +45,7 @@ class CreateTagAlbum
 
 		$this->setStatistics($album);
 
-		TagAlbumSaved::dispatch($album);
+		TagAlbumSaved::dispatch([$album->id]);
 
 		return $album;
 	}

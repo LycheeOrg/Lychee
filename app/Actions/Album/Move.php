@@ -34,7 +34,7 @@ class Move
 		if ($target_album !== null) {
 			/** @var Album $album */
 			foreach ($albums as $album) {
-				$has_descendants = $album->_rgt - $album->_lft > 1;
+				$has_descendants = !$album->isLeaf();
 
 				// Don't set attribute `parent_id` manually, but use specialized
 				// methods of the nested set `NodeTrait` to keep the enumeration
@@ -50,7 +50,7 @@ class Move
 		} else {
 			/** @var Album $album */
 			foreach ($albums as $album) {
-				$has_descendants = $album->_rgt - $album->_lft > 1;
+				$has_descendants = !$album->isLeaf();
 
 				// Don't set attribute `parent_id` manually, but use specialized
 				// methods of the nested set `NodeTrait` to keep the enumeration

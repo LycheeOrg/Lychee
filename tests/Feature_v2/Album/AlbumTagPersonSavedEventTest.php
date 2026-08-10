@@ -39,7 +39,7 @@ class AlbumTagPersonSavedEventTest extends BaseApiWithDataTest
 		$this->assertOk($response);
 		$album_id = $response->getOriginalContent();
 
-		Event::assertDispatched(TagAlbumSaved::class, fn (TagAlbumSaved $e) => $e->tag_album->id === $album_id);
+		Event::assertDispatched(TagAlbumSaved::class, fn (TagAlbumSaved $e) => $e->tag_album_ids === [$album_id]);
 	}
 
 	public function testUpdateTagAlbumDispatchesTagAlbumSavedEvent(): void
@@ -61,7 +61,7 @@ class AlbumTagPersonSavedEventTest extends BaseApiWithDataTest
 		]);
 		$this->assertOk($response);
 
-		Event::assertDispatched(TagAlbumSaved::class, fn (TagAlbumSaved $e) => $e->tag_album->id === $this->tagAlbum1->id);
+		Event::assertDispatched(TagAlbumSaved::class, fn (TagAlbumSaved $e) => $e->tag_album_ids === [$this->tagAlbum1->id]);
 	}
 
 	public function testCreatePersonAlbumDispatchesPersonAlbumSavedEvent(): void

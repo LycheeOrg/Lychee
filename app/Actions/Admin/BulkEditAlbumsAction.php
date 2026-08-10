@@ -158,23 +158,17 @@ class BulkEditAlbumsAction
 			}
 		}
 
-		// One lightweight `id`,`parent_id` projection query, not a full hydrate,
-		// to evict every touched album's own tag and its parent's listing tag —
-		// closes the Group-1/2 raw-`->update()` gap, which dispatches nothing.
-		// `without()` strips Album's default `$with` (cover/thumb/etc.), whose
-		// eager-load constraints would otherwise require their FK columns
-		// (e.g. `cover_id`) to also be selected.
-		$touched_albums = Album::query()
-			->select(['id', 'parent_id'])
-			->without(['cover', 'cover.size_variants', 'min_privilege_cover', 'min_privilege_cover.size_variants', 'max_privilege_cover', 'max_privilege_cover.size_variants', 'thumb'])
+		// `pluck()` goes straight to the query builder (no model hydration,
+		// no `$with` eager-loads to fight), and doubles as the source of
+		// truth for which IDs actually exist — `$album_ids` isn't validated
+		// against the `albums` table, so it may contain phantom IDs that
+		// must not reach `AlbumSaved` (its listeners dispatch per-album jobs).
+		$touched = Album::query()
 			->whereIn('id', $album_ids)
-			->get()
-			->all();
-		if ($touched_albums !== []) {
-			AlbumSaved::dispatch(
-				array_map(fn (Album $album) => $album->id, $touched_albums),
-				array_map(fn (Album $album) => $album->parent_id, $touched_albums),
-			);
+			->pluck('parent_id', 'id');
+
+		if ($touched->isNotEmpty()) {
+			AlbumSaved::dispatch($touched->keys()->all(), $touched->values()->all());
 		}
 	}
 }

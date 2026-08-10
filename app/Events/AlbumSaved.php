@@ -27,6 +27,6 @@ class AlbumSaved
 	 */
 	public function __construct(public array $album_ids, array $parent_ids)
 	{
-		$this->parent_ids = array_values(array_filter($parent_ids, fn (?string $parent_id): bool => $parent_id !== null));
+		$this->parent_ids = array_values(array_filter($parent_ids));
 	}
 }

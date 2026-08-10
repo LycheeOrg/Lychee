@@ -48,7 +48,7 @@ class AlbumRenameTest extends BaseApiWithDataTest
 		]);
 		$this->assertNoContent($response);
 
-		Event::assertDispatched(TagAlbumSaved::class, fn (TagAlbumSaved $e) => $e->tag_album->id === $this->tagAlbum1->id);
+		Event::assertDispatched(TagAlbumSaved::class, fn (TagAlbumSaved $e) => $e->tag_album_ids === [$this->tagAlbum1->id]);
 		Event::assertNotDispatched(AlbumSaved::class);
 	}
 

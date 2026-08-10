@@ -72,7 +72,7 @@ class SetProtectionPolicyTest extends AbstractTestCase
 		// constructor is typed `Album`.
 		(new SetProtectionPolicy())->do($album, $this->policy(true), false, null);
 
-		Event::assertDispatched(TagAlbumSaved::class, fn (TagAlbumSaved $e) => $e->tag_album->id === $album->id);
+		Event::assertDispatched(TagAlbumSaved::class, fn (TagAlbumSaved $e) => $e->tag_album_ids === [$album->id]);
 		Event::assertNotDispatched(AlbumSaved::class);
 		Event::assertNotDispatched(PersonAlbumSaved::class);
 	}
@@ -86,7 +86,7 @@ class SetProtectionPolicyTest extends AbstractTestCase
 
 		(new SetProtectionPolicy())->do($album, $this->policy(false), false, null);
 
-		Event::assertDispatched(TagAlbumSaved::class, fn (TagAlbumSaved $e) => $e->tag_album->id === $album->id);
+		Event::assertDispatched(TagAlbumSaved::class, fn (TagAlbumSaved $e) => $e->tag_album_ids === [$album->id]);
 		Event::assertNotDispatched(AlbumSaved::class);
 	}
 

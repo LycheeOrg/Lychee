@@ -85,7 +85,7 @@ class SetProtectionPolicy
 	{
 		match (true) {
 			$album instanceof Album => AlbumSaved::dispatch([$album->id], [$album->parent_id]),
-			$album instanceof TagAlbum => TagAlbumSaved::dispatch($album),
+			$album instanceof TagAlbum => TagAlbumSaved::dispatch([$album->id]),
 			$album instanceof PersonAlbum => PersonAlbumSaved::dispatch($album),
 			default => null,
 		};

@@ -58,7 +58,7 @@ class ManagedCacheAlbumListingInvalidator
 
 	public function handleTagAlbumSaved(TagAlbumSaved $event): void
 	{
-		$this->cache->forgetTag('album:' . $event->tag_album->id);
+		$this->cache->forgetTags(array_map(fn (string $tag_album_id) => 'album:' . $tag_album_id, $event->tag_album_ids));
 		$this->cache->forgetTag('tag-albums-listing');
 	}
 

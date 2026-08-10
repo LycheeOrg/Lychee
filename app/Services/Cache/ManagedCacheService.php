@@ -49,6 +49,13 @@ class ManagedCacheService
 		\Closure $callback,
 		\DateTimeInterface|\DateInterval|int|null $ttl = null,
 	): mixed {
+		// Fully skip if the managed cache is disabled, this is a safe no-op to ensure
+		// there is a fallback if things go south.
+		if (config('features.enable-caching') === false) {
+			return $callback();
+		}
+
+		// Fully skip if the managed cache is disabled in settings
 		if (!$this->config_manager->getValueAsBool('managed_cache_enabled')) {
 			return $callback();
 		}

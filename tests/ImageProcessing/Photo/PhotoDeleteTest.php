@@ -68,7 +68,7 @@ class PhotoDeleteTest extends BaseApiWithDataTest
 
 		$tag_album->refresh();
 		$this->assertNull($tag_album->cover_id);
-		Event::assertDispatched(TagAlbumSaved::class, fn (TagAlbumSaved $e) => $e->tag_album->id === $tag_album->id);
+		Event::assertDispatched(TagAlbumSaved::class, fn (TagAlbumSaved $e) => in_array($tag_album->id, $e->tag_album_ids, true));
 	}
 
 	public function testDeletePhotoUnauthorizedForbidden(): void
