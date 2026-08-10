@@ -1,7 +1,7 @@
 # Feature 054 Tasks – Configurable Landing Page
 
 _Status: Draft_
-_Last updated: 2026-08-10 (rev 4 — removed T-054-18b/T-054-23a's custom-CSS half (feature dropped); I6 split into I6/I6a/I6b/I6c for automatic + manual (LandingFeaturedItem) featured-content resolution; I11 rebuilt for LandingConfig.vue's 3 tabs (Settings absorbs the entire Mod Welcome category + flat-list filtering, Links, Featured); renamed featured-albums-* tasks to featured-items-*; rev 3 — I11 rebuilt around a dedicated `LandingConfig.vue` page mirroring `NsfwConfig.vue`; rev 2 — added T-054-33a..c for the `studio` layout)_
+_Last updated: 2026-08-10 (rev 5 — folded in fixes for Q-054-11..19: icon length validation (T-054-08), Reorder contract fully specified (T-054-10/11/21e/21f), route registration needs both router files (T-054-38), SE badge is selectable + shows stored value (T-054-36c); rev 4 — removed T-054-18b/T-054-23a's custom-CSS half (feature dropped); I6 split into I6/I6a/I6b/I6c for automatic + manual (LandingFeaturedItem) featured-content resolution; I11 rebuilt for LandingConfig.vue's 3 tabs (Settings absorbs the entire Mod Welcome category + flat-list filtering, Links, Featured); renamed featured-albums-* tasks to featured-items-*; rev 3 — I11 rebuilt around a dedicated `LandingConfig.vue` page mirroring `NsfwConfig.vue`; rev 2 — added T-054-33a..c for the `studio` layout)_
 
 > Keep this checklist aligned with the feature plan increments. Stage tests before implementation, record verification commands beside each task, and prefer bite-sized entries (≤90 minutes).
 > **Mark tasks `[x]` immediately** after each one passes verification—do not batch completions. Update the roadmap status when all tasks are done.
@@ -56,7 +56,7 @@ _Last updated: 2026-08-10 (rev 4 — removed T-054-18b/T-054-23a's custom-CSS ha
 ### I3 – `LandingLink` admin CRUD (REST)
 
 - [ ] T-054-08 – `StoreLandingLinkRequest` / `UpdateLandingLinkRequest` validation (F-054-11).
-  _Intent:_ `label` required ≤255, `url` required valid absolute URL ≤2048, `placement`/`icon`/`open_in_new_tab`/`sort_order`/`enabled` validated per spec.
+  _Intent:_ `label` required ≤255, `url` required valid absolute URL ≤2048, `icon` nullable ≤255 (matches `landing_links.icon` column width — Q-054-18), `placement`/`open_in_new_tab`/`sort_order`/`enabled` validated per spec.
   _Verification commands:_
   - `php artisan test --filter=LandingLinkRequest`
 
@@ -66,13 +66,13 @@ _Last updated: 2026-08-10 (rev 4 — removed T-054-18b/T-054-23a's custom-CSS ha
   - `npm run check` (TypeScript type generated correctly)
 
 - [ ] T-054-10 – `App\Http\Controllers\Admin\LandingLinkController` — index/store/show/update/patch/destroy/reorder (F-054-12, API-054-02..08).
-  _Intent:_ Mirror `WebhookController`'s structure; `reorder()` accepts an ordered ID array and bulk-updates `sort_order`.
+  _Intent:_ index/store/show/update/patch/destroy mirror `WebhookController`'s structure. `reorder()` implements FR-054-12's bespoke contract (no existing precedent in this codebase, Q-054-17): body `{ ids: string[] }` must be the complete set of existing `LandingLink` IDs — reject (422) on any mismatch, don't partially apply; set `sort_order` = array index inside a DB transaction; respond with the freshly re-ordered index-shaped list.
   _Verification commands:_
   - `php artisan test --filter=LandingLinkController`
   - `make phpstan`
 
 - [ ] T-054-11 – Routes in `routes/api_v2.php` under the admin group (API-054-02..08).
-  _Intent:_ `GET/POST /LandingLink`, `GET/PUT/PATCH/DELETE /LandingLink/{landingLink}`, `PATCH /LandingLink/Reorder`.
+  _Intent:_ `GET/POST /LandingLink`, `GET/PUT/PATCH/DELETE /LandingLink/{landingLink}`, `PATCH /LandingLink/Reorder` (full-list-resync contract, T-054-10).
   _Verification commands:_
   - `php artisan route:list | grep LandingLink`
 
@@ -159,7 +159,7 @@ _Last updated: 2026-08-10 (rev 4 — removed T-054-18b/T-054-23a's custom-CSS ha
   - `php artisan test --filter=LandingFeaturedItemRequest`
 
 - [ ] T-054-21e – `App\Http\Controllers\Admin\LandingFeaturedItemController` — index/store/show/update/patch/destroy/reorder (F-054-28, API-054-09..15).
-  _Intent:_ Mirror `LandingLinkController`'s structure (T-054-10) exactly.
+  _Intent:_ Mirror `LandingLinkController`'s structure (T-054-10) exactly, including `reorder()`'s identical full-list-resync contract (not independently designed — Q-054-17).
   _Verification commands:_
   - `php artisan test --filter=LandingFeaturedItemController`
   - `make phpstan`
@@ -298,11 +298,11 @@ _Last updated: 2026-08-10 (rev 4 — removed T-054-18b/T-054-23a's custom-CSS ha
   - `npm run check`
   - Manual: every field in the category loads current value and saves correctly.
 
-- [ ] T-054-36c – SE badge/disabled-state on the `landing_layout` dropdown's `portfolio`/`minimal`/`studio` options and the `landing_animation_preset` dropdown's premium-preset options (UI-054-01, UI-054-02, UI-054-04).
-  _Intent:_ Bespoke to this dropdown's rendering — read existing `is_se_enabled`/`is_se_preview_enabled` init data; whole-field `require_se` (as NSFW sets client-side) doesn't fit since only some enum *values* are SE-gated.
+- [ ] T-054-36c – SE badge (visible, **not disabled**) on the `landing_layout` dropdown's `portfolio`/`minimal`/`studio` options and the `landing_animation_preset` dropdown's premium-preset options; tab shows the stored value, never the post-fallback effective value (UI-054-01, UI-054-02, UI-054-04, UI-054-08, Q-054-13).
+  _Intent:_ Bespoke to this dropdown's rendering — read existing `is_se_enabled`/`is_se_preview_enabled` init data; whole-field `require_se` (as NSFW sets client-side) doesn't fit since only some enum *values* are SE-gated. Options stay selectable so a non-SE admin can pre-configure before upgrading.
   _Verification commands:_
   - `npm run check`
-  - Manual: non-SE install sees badges/disabled state on `portfolio`/`minimal`/`studio`/premium animation options.
+  - Manual: non-SE install sees badges (not disabled) on `portfolio`/`minimal`/`studio`/premium animation options; saving one and reloading still shows the stored (not classic/classic_fade) value in the dropdown.
 
 - [ ] T-054-37 – Links tab: `LandingLink` list/create/edit/delete UI, reusing API-054-02..07 (F-054-19, S-054-16).
   _Verification commands:_
@@ -330,8 +330,8 @@ _Last updated: 2026-08-10 (rev 4 — removed T-054-18b/T-054-23a's custom-CSS ha
   - `php artisan test --filter=GetAllSettings`
   - Manual: flat Settings list no longer shows a "Landing page" category/section.
 
-- [ ] T-054-38 – Register `landing-config` route (`router/paths.ts`) and admin tile (`useAdminTiles.ts`, `group: "core"`, visible whenever `can_edit`) (F-054-19, UI-054-06).
-  _Intent:_ Mirrors `nsfw-config`'s registration.
+- [ ] T-054-38 – Register `landing-config` route in **both** `router/paths.ts` (name/path) and `resources/js/v8/router/routes.ts` (component import + mapping), plus an admin tile (`useAdminTiles.ts`, `group: "core"`, visible whenever `can_edit`) (F-054-19, UI-054-06).
+  _Intent:_ Mirrors `nsfw-config`'s registration exactly — both router files are required (Q-054-15).
   _Verification commands:_
   - Manual: page reachable from the admin dashboard at `/admin/landing-config`.
 

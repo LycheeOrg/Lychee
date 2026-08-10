@@ -66,6 +66,35 @@ Note: Feature 053 (Album Listing Caching) exists on branch `caching-enablement` 
 
 **Not yet done:** Same as above — implementation not started.
 
+### Feature 054 — Review Pass Found 9 More Gaps (Q-054-11..19), All Investigated and Resolved (same session, 2026-08-10)
+
+**Request:** "where are the details for the questions 11 to 19?" — Q-054-11..19 turned out to already exist in `open-questions.md` (not authored by this session's assistant turns — found via a fresh grep, likely added by a review pass), each pointing at a real gap or unverified claim in the freshly-rewritten spec. Explicit follow-up instructions: no clarifying questions, resolve and apply directly; commit and push once done.
+
+**Investigated each against the actual codebase (not guessed):**
+- **Q-054-11** (stats on `minimal`?): FR-054-09 inconsistently said stats "may" show on both `portfolio`/`minimal`, but `minimal`'s own description never included them. Fixed: `portfolio`-only, consistent with `minimal` already excluding featured content for the same reason.
+- **Q-054-12** (does the Featured tab's `Search` picker see private content?): Read `SearchController`→`AlbumSearch`/`PhotoSearch`→`AlbumQueryPolicy::applyVisibilityFilter()` — confirmed `may_administrate === true` bypasses the visibility filter entirely (`AlbumQueryPolicy.php:62`), so an admin session (the only session that can reach this picker) already sees private content through the existing endpoint. No code change needed, just documented the confirmation.
+- **Q-054-13** (SE-badge dropdown: disabled or just badged? stored or effective value shown?): Decided badged-but-selectable + always-stored-value — lets a non-SE admin pre-configure before upgrading, consistent with the existing `is_se_preview_enabled` pattern.
+- **Q-054-14** (orphaned `FR-054-26`/`S-054-27` gap): Confirmed intentional (retired along with dropped custom-CSS), added explanatory notes above both tables rather than renumbering everything downstream.
+- **Q-054-15** (`router/paths.ts` citation wrong?): Checked — both `resources/js/router/paths.ts` (shared name/path manifest) and `resources/js/v8/router/routes.ts` (v8 component mapping) are real and both required; citation was incomplete, not wrong.
+- **Q-054-16** (Q-052-07 citation unverifiable?): Grepped `SettingsController.php` — confirmed live at line 83 (`->where('cat', '!=', 'Mod Cache')`); FR-054-27 now cites the exact line instead of asserting from memory.
+- **Q-054-17** (no `Reorder` endpoint precedent exists — confirmed by repo-wide search): Designed the contract from scratch since none existed to mirror — full-list resync (`{ ids: string[] }`, reject on set mismatch, transactional), applied identically to both `LandingLink` and `LandingFeaturedItem`.
+- **Q-054-18** (missing `icon` length validation): Straightforward gap, added `≤255 chars` matching the DB column.
+- **Q-054-19** (`studio` secondary link not configurable): Confirmed and documented as deliberate minimalism (only the primary CTA is overridable), added as an explicit Non-Goals bullet instead of leaving it silently ambiguous.
+
+**All 9 written up as full Decision Cards** (spec.md Appendix, same template as Q-054-01..10) and cross-referenced from `open-questions.md`. spec.md/plan.md/tasks.md all updated with the concrete fixes (not just documented as findings) — this pass changed actual requirement text (FR-054-09/11/12/19/21/27/28), not only added commentary.
+
+**Not yet done:** Implementation still not started. Committing and pushing this documentation round per explicit instruction.
+
+### Feature 054 — Decision Cards Added for All 10 Resolved Questions (same session, 2026-08-10)
+
+**Request:** "Great to add the open questions, but what about the details???" — after the Q-054-07..10 rows were added to `open-questions.md` as one-line summaries.
+
+**Gap found:** `docs/specs/4-architecture/spec-guidelines/open-questions-format.md` defines a formal "Decision Card" template (Question, lettered options each with Idea/Spec impact/Pros/Cons, preferred option, Next action) intended for exactly this — but the spec.md Appendix only had loose prose bullets for Q-054-01..10, and `open-questions.md`'s table has no options column at all (confirmed this is true of every existing row in the file, not just this feature's — a repo-wide gap between the documented format and actual practice, not something introduced this session).
+
+**Fix:** Replaced spec.md's "Resolved Scope Decisions"/"Admin UI Architecture Decision" prose sections with full Decision Cards for all 10 questions (Q-054-01..10), following the template exactly — including Q-054-03 and Q-054-09, where the resolved option was **not** the one originally recommended (Q-054-03: user picked the SE-gated option over the recommended free-for-everyone one, same override pattern as Q-052-07; Q-054-09 went through two rounds of refinement, C→B→A, all three stages documented as options with the evolution explained in "Next action"). Also updated `open-questions.md`'s 10 Q-054 rows to cross-reference the cards' A/B/C lettering and preferred option, per the format guide's stated relationship between the index and the cards.
+
+**Not yet done:** Same as above — implementation not started.
+
 ### Feature 054 — Admin UI Architecture Revision (same session, 2026-08-10)
 
 **Request:** "I think we may want to have a configuration page similar to the NSFW classifier."
@@ -171,7 +200,7 @@ Note: Feature 053 (Album Listing Caching) exists on branch `caching-enablement` 
 
 ## Open Questions
 
-None blocking. Q-054-01..10 resolved 2026-08-10 (see spec.md Appendix for full rationale). Q-052-01..07 all resolved (01-05 on 2026-07-21, 06-07 on 2026-07-28 — see spec.md and open-questions.md for full rationale, including Q-052-07's non-default Option B resolution). Q-049-01, Q-049-02, Q-049-03 resolved 2026-07-02 (ADR-0005). Q-048-01 resolved 2026-07-01.
+None blocking. Q-054-01..19 resolved 2026-08-10 (see spec.md Appendix for full Decision Cards). Q-052-01..07 all resolved (01-05 on 2026-07-21, 06-07 on 2026-07-28 — see spec.md and open-questions.md for full rationale, including Q-052-07's non-default Option B resolution). Q-049-01, Q-049-02, Q-049-03 resolved 2026-07-02 (ADR-0005). Q-048-01 resolved 2026-07-01.
 
 ## Key Artefacts
 
