@@ -38,8 +38,8 @@ class ManagedCacheAlbumListingInvalidator
 
 	public function handleAlbumSaved(AlbumSaved $event): void
 	{
-		$this->cache->forgetTag('album:' . $event->album->id);
-		$this->cache->forgetTag('album-children:' . ($event->album->parent_id ?? 'root'));
+		$this->cache->forgetTags(array_map(fn (string $album_id) => 'album:' . $album_id, $event->album_ids));
+		$this->cache->forgetTags(array_map(fn (string $parent_id) => 'album-children:' . $parent_id, $event->parent_ids));
 		$this->cache->forgetTag('album-children:root');
 		$this->cache->forgetTag('pinned-albums-listing');
 	}
@@ -53,7 +53,7 @@ class ManagedCacheAlbumListingInvalidator
 
 	public function handleAlbumChildrenChanged(AlbumChildrenChanged $event): void
 	{
-		$this->cache->forgetTag('album-children:' . ($event->parent_id ?? 'root'));
+		$this->cache->forgetTags(array_map(fn (?string $parent_id) => 'album-children:' . ($parent_id ?? 'root'), $event->parent_ids));
 	}
 
 	public function handleTagAlbumSaved(TagAlbumSaved $event): void
@@ -116,8 +116,6 @@ class ManagedCacheAlbumListingInvalidator
 
 	public function handleAlbumTagsChanged(AlbumTagsChanged $event): void
 	{
-		foreach ($event->tag_ids as $tag_id) {
-			$this->cache->forgetTag('tag:' . $tag_id);
-		}
+		$this->cache->forgetTags(array_map(fn (int $tag_id) => 'tag:' . $tag_id, $event->tag_ids));
 	}
 }

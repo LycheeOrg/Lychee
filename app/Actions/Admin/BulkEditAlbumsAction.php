@@ -170,8 +170,11 @@ class BulkEditAlbumsAction
 			->whereIn('id', $album_ids)
 			->get()
 			->all();
-		foreach ($touched_albums as $album) {
-			AlbumSaved::dispatch($album);
+		if ($touched_albums !== []) {
+			AlbumSaved::dispatch(
+				array_map(fn (Album $album) => $album->id, $touched_albums),
+				array_map(fn (Album $album) => $album->parent_id, $touched_albums),
+			);
 		}
 	}
 }

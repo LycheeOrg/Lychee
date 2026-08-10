@@ -56,7 +56,7 @@ class SetProtectionPolicyTest extends AbstractTestCase
 
 		(new SetProtectionPolicy())->do($album, $this->policy(true), false, null);
 
-		Event::assertDispatched(AlbumSaved::class, fn (AlbumSaved $e) => $e->album->id === $album->id);
+		Event::assertDispatched(AlbumSaved::class, fn (AlbumSaved $e) => in_array($album->id, $e->album_ids));
 		Event::assertNotDispatched(TagAlbumSaved::class);
 		Event::assertNotDispatched(PersonAlbumSaved::class);
 	}

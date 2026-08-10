@@ -36,22 +36,24 @@ class ManagedCacheService
 	 *
 	 * @template TCacheValue
 	 *
-	 * @param string                                    $key
-	 * @param string[]                                  $tags
-	 * @param \DateTimeInterface|\DateInterval|int|null $ttl
-	 * @param \Closure(): TCacheValue                   $callback
+	 * @param string                                     $key
+	 * @param string[]                                   $tags
+	 * @param \Closure(): TCacheValue                    $callback
+	 * @param \DateTimeInterface|\DateInterval|int|null   $ttl  when `null`, falls back to the `managed_cache_ttl` config value
 	 *
 	 * @return TCacheValue
 	 */
 	public function remember(
 		string $key,
 		array $tags,
-		\DateTimeInterface|\DateInterval|int|null $ttl,
 		\Closure $callback,
+		\DateTimeInterface|\DateInterval|int|null $ttl = null,
 	): mixed {
 		if (!$this->config_manager->getValueAsBool('managed_cache_enabled')) {
 			return $callback();
 		}
+
+		$ttl ??= $this->config_manager->getValueAsInt('managed_cache_ttl');
 
 		try {
 			$value = Cache::get($key);
@@ -87,11 +89,11 @@ class ManagedCacheService
 	 *
 	 * @template TCacheValue
 	 *
-	 * @param bool                                      $condition
-	 * @param string                                    $key
-	 * @param string[]                                  $tags
-	 * @param \DateTimeInterface|\DateInterval|int|null $ttl
-	 * @param \Closure(): TCacheValue                   $callback
+	 * @param bool                                       $condition
+	 * @param string                                     $key
+	 * @param string[]                                   $tags
+	 * @param \Closure(): TCacheValue                    $callback
+	 * @param \DateTimeInterface|\DateInterval|int|null   $ttl  when `null`, falls back to the `managed_cache_ttl` config value
 	 *
 	 * @return TCacheValue
 	 */
@@ -99,14 +101,14 @@ class ManagedCacheService
 		bool $condition,
 		string $key,
 		array $tags,
-		\DateTimeInterface|\DateInterval|int|null $ttl,
 		\Closure $callback,
+		\DateTimeInterface|\DateInterval|int|null $ttl = null,
 	): mixed {
 		if (!$condition) {
 			return $callback();
 		}
 
-		return $this->remember($key, $tags, $ttl, $callback);
+		return $this->remember($key, $tags, $callback, $ttl);
 	}
 
 	/**
@@ -147,17 +149,43 @@ class ManagedCacheService
 	 */
 	public function forgetTag(string $tag): void
 	{
-		$keys = Cache::get(self::TAG . $tag, []);
+		$this->forgetTags([$tag]);
+	}
 
-		foreach (array_keys($keys) as $key) {
-			if (!is_string($key)) {
-				throw new LycheeLogicException('The keys should be a string');
+	/**
+	 * Forget all the keys related to each of the given tags.
+	 *
+	 * Keys are aggregated across all tags first (de-duplicating any key
+	 * shared by more than one tag) and forgotten in a single pass, before
+	 * the tags themselves are forgotten.
+	 *
+	 * @param string[] $tags
+	 *
+	 * @return void
+	 */
+	public function forgetTags(array $tags): void
+	{
+		$keys_to_forget = [];
+
+		foreach ($tags as $tag) {
+			$keys = Cache::get(self::TAG . $tag, []);
+
+			foreach (array_keys($keys) as $key) {
+				if (!is_string($key)) {
+					throw new LycheeLogicException('The keys should be a string');
+				}
+
+				$keys_to_forget[$key] = true;
 			}
+		}
 
+		foreach (array_keys($keys_to_forget) as $key) {
 			Cache::forget($key);
 		}
 
-		Cache::forget(self::TAG . $tag);
+		foreach ($tags as $tag) {
+			Cache::forget(self::TAG . $tag);
+		}
 	}
 
 	/**

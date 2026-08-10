@@ -36,7 +36,7 @@ class PatchTest extends BaseApiWithDataTest
 		]);
 		$this->assertNoContent($response);
 
-		Event::assertDispatched(AlbumSaved::class, fn (AlbumSaved $e) => $e->album->id === $this->album1->id);
+		Event::assertDispatched(AlbumSaved::class, fn (AlbumSaved $e) => in_array($this->album1->id, $e->album_ids));
 	}
 
 	public function testPatchSortingOnlyDispatchesAlbumSaved(): void
@@ -50,7 +50,7 @@ class PatchTest extends BaseApiWithDataTest
 		]);
 		$this->assertNoContent($response);
 
-		Event::assertDispatched(AlbumSaved::class, fn (AlbumSaved $e) => $e->album->id === $this->album1->id);
+		Event::assertDispatched(AlbumSaved::class, fn (AlbumSaved $e) => in_array($this->album1->id, $e->album_ids));
 	}
 
 	public function testPatchMultipleAlbumsDispatchesAlbumSavedPerAlbum(): void
@@ -63,8 +63,8 @@ class PatchTest extends BaseApiWithDataTest
 		]);
 		$this->assertNoContent($response);
 
-		Event::assertDispatched(AlbumSaved::class, fn (AlbumSaved $e) => $e->album->id === $this->album1->id);
-		Event::assertDispatched(AlbumSaved::class, fn (AlbumSaved $e) => $e->album->id === $this->album2->id);
+		Event::assertDispatched(AlbumSaved::class, fn (AlbumSaved $e) => in_array($this->album1->id, $e->album_ids));
+		Event::assertDispatched(AlbumSaved::class, fn (AlbumSaved $e) => in_array($this->album2->id, $e->album_ids));
 	}
 
 	// ── authentication / authorization ────────────────────────────────────────

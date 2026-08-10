@@ -74,7 +74,7 @@ class Merge
 		}
 
 		if ($target_gains_children) {
-			AlbumChildrenChanged::dispatch($target_album->id);
+			AlbumChildrenChanged::dispatch([$target_album->id]);
 		}
 
 		// Now we delete the source albums

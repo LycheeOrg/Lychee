@@ -128,8 +128,12 @@ final class PhotosToBeDeletedDTO
 			DB::table('tag_albums')->whereIn('cover_id', $chunk->all())->update(['cover_id' => null]);
 		});
 
-		foreach (Album::query()->whereIn('id', array_unique($affected_album_ids))->get()->all() as $affected_album) {
-			AlbumSaved::dispatch($affected_album);
+		$affected_albums = Album::query()->whereIn('id', array_unique($affected_album_ids))->get()->all();
+		if ($affected_albums !== []) {
+			AlbumSaved::dispatch(
+				array_map(fn (Album $affected_album) => $affected_album->id, $affected_albums),
+				array_map(fn (Album $affected_album) => $affected_album->parent_id, $affected_albums),
+			);
 		}
 		foreach (TagAlbum::query()->whereIn('id', array_unique($affected_tag_album_ids))->get()->all() as $affected_tag_album) {
 			TagAlbumSaved::dispatch($affected_tag_album);

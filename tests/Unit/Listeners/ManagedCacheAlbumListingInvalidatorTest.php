@@ -66,7 +66,7 @@ class ManagedCacheAlbumListingInvalidatorTest extends AbstractTestCase
 	/** @param string[] $tags */
 	private function seedCache(string $key, array $tags): void
 	{
-		$this->cache_service->remember($key, $tags, 60, fn () => 'value');
+		$this->cache_service->remember($key, $tags, fn () => 'value', 60);
 	}
 
 	private function assertEvicted(string $key): void
@@ -95,7 +95,7 @@ class ManagedCacheAlbumListingInvalidatorTest extends AbstractTestCase
 		$this->seedCache('k:person-albums', ['person-albums-listing']);
 		$this->seedCache('k:global', ['album-listing-global']);
 
-		$this->listener->handleAlbumSaved(new AlbumSaved($album));
+		$this->listener->handleAlbumSaved(new AlbumSaved([$album->id], [$album->parent_id]));
 
 		$this->assertEvicted('k:album');
 		$this->assertEvicted('k:parent');
@@ -113,7 +113,7 @@ class ManagedCacheAlbumListingInvalidatorTest extends AbstractTestCase
 
 		$this->seedCache('k:root', ['album-children:root']);
 
-		$this->listener->handleAlbumSaved(new AlbumSaved($album));
+		$this->listener->handleAlbumSaved(new AlbumSaved([$album->id], [$album->parent_id]));
 
 		$this->assertEvicted('k:root');
 	}
@@ -152,7 +152,7 @@ class ManagedCacheAlbumListingInvalidatorTest extends AbstractTestCase
 		$this->seedCache('k:root', ['album-children:root']);
 		$this->seedCache('k:pinned', ['pinned-albums-listing']);
 
-		$this->listener->handleAlbumChildrenChanged(new AlbumChildrenChanged('the-parent-id'));
+		$this->listener->handleAlbumChildrenChanged(new AlbumChildrenChanged(['the-parent-id']));
 
 		$this->assertEvicted('k:parent');
 		// Must NOT imply is_pinned relevance — root/pinned untouched.
@@ -317,9 +317,9 @@ class ManagedCacheAlbumListingInvalidatorTest extends AbstractTestCase
 
 		$this->seedCache('k:global', ['album-listing-global']);
 
-		$this->listener->handleAlbumSaved(new AlbumSaved($album));
+		$this->listener->handleAlbumSaved(new AlbumSaved([$album->id], [$album->parent_id]));
 		$this->listener->handleAlbumDeleted(new AlbumDeleted(null));
-		$this->listener->handleAlbumChildrenChanged(new AlbumChildrenChanged(null));
+		$this->listener->handleAlbumChildrenChanged(new AlbumChildrenChanged([null]));
 		$this->listener->handleAlbumComputedDataUpdated(new AlbumComputedDataUpdated($album->id));
 		$this->listener->handleAccessPermissionChanged(new AccessPermissionChanged($album->id));
 

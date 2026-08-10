@@ -34,7 +34,7 @@ class AlbumSetPinnedTest extends BaseApiWithDataTest
 		]);
 		$this->assertNoContent($response);
 
-		Event::assertDispatched(AlbumSaved::class, fn (AlbumSaved $e) => $e->album->id === $this->album1->id);
+		Event::assertDispatched(AlbumSaved::class, fn (AlbumSaved $e) => in_array($this->album1->id, $e->album_ids));
 	}
 
 	public function testSetPinnedAlbumUnauthorizedForbidden(): void

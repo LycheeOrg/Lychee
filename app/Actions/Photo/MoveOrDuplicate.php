@@ -53,7 +53,9 @@ class MoveOrDuplicate
 				->delete();
 
 			// Dispatch event for origin album (photos moved out)
-			AlbumSaved::dispatchIf($from_album instanceof Album, $from_album);
+			if ($from_album instanceof Album) {
+				AlbumSaved::dispatch([$from_album->id], [$from_album->parent_id]);
+			}
 		}
 
 		// Dispatch event for source album (photos removed)
@@ -71,7 +73,7 @@ class MoveOrDuplicate
 			DB::table(PA::PHOTO_ALBUM)->insert(array_map(fn (string $id) => ['photo_id' => $id, 'album_id' => $to_album->id], $photos_ids));
 
 			// Dispatch event for destination album (photos added)
-			AlbumSaved::dispatchIf($to_album instanceof Album, $to_album);
+			AlbumSaved::dispatch([$to_album->id], [$to_album->parent_id]);
 		}
 
 		// In case of move, we need to remove the header_id of said photos.

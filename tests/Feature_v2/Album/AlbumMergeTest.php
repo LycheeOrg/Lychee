@@ -37,7 +37,7 @@ class AlbumMergeTest extends BaseApiWithDataTest
 		]);
 		$this->assertNoContent($response);
 
-		Event::assertDispatched(AlbumChildrenChanged::class, fn (AlbumChildrenChanged $e) => $e->parent_id === $this->album1->id);
+		Event::assertDispatched(AlbumChildrenChanged::class, fn (AlbumChildrenChanged $e) => in_array($this->album1->id, $e->parent_ids));
 		Event::assertNotDispatched(AlbumListingCacheFlushRequested::class);
 	}
 
@@ -56,7 +56,7 @@ class AlbumMergeTest extends BaseApiWithDataTest
 		]);
 		$this->assertNoContent($response);
 
-		Event::assertDispatched(AlbumChildrenChanged::class, fn (AlbumChildrenChanged $e) => $e->parent_id === $this->album1->id);
+		Event::assertDispatched(AlbumChildrenChanged::class, fn (AlbumChildrenChanged $e) => in_array($this->album1->id, $e->parent_ids));
 		Event::assertDispatched(AlbumListingCacheFlushRequested::class);
 	}
 

@@ -49,7 +49,7 @@ class PhotoDeleteTest extends BaseApiWithDataTest
 
 		$this->album2->refresh();
 		$this->assertNull($this->album2->cover_id);
-		Event::assertDispatched(AlbumSaved::class, fn (AlbumSaved $e) => $e->album->id === $this->album2->id);
+		Event::assertDispatched(AlbumSaved::class, fn (AlbumSaved $e) => in_array($this->album2->id, $e->album_ids));
 	}
 
 	public function testForceDeletingPhotoNullifiesCrossAlbumTagAlbumCoverAndDispatchesTagAlbumSaved(): void

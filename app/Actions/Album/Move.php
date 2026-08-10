@@ -28,6 +28,7 @@ class Move
 	{
 		/** @var Collection<int,string|null> $old_parent_ids */
 		$old_parent_ids = $albums->map(fn (Album $album) => $album->parent_id)->unique();
+		$moved_album_ids = $albums->pluck('id')->all();
 
 		// Move source albums into target
 		if ($target_album !== null) {
@@ -41,7 +42,6 @@ class Move
 				// `appendNode` also internally calls `save` on the model
 				$target_album->appendNode($album);
 
-				AlbumSaved::dispatch($album);
 				if ($has_descendants) {
 					AlbumListingCacheFlushRequested::dispatch();
 				}
@@ -57,15 +57,18 @@ class Move
 				// of the tree consistent
 				$album->saveAsRoot();
 
-				AlbumSaved::dispatch($album);
 				if ($has_descendants) {
 					AlbumListingCacheFlushRequested::dispatch();
 				}
 			}
 		}
 
-		foreach ($old_parent_ids as $old_parent_id) {
-			AlbumChildrenChanged::dispatch($old_parent_id);
+		if ($moved_album_ids !== []) {
+			AlbumSaved::dispatch($moved_album_ids, [$target_album?->id]);
+		}
+
+		if ($old_parent_ids->isNotEmpty()) {
+			AlbumChildrenChanged::dispatch($old_parent_ids->all());
 		}
 	}
 }

@@ -77,14 +77,14 @@ class SetProtectionPolicy
 	/**
 	 * Dispatches the type-appropriate "saved" event for the given album.
 	 *
-	 * `AlbumSaved`'s constructor is typed `Album`; dispatching it for a
 	 * `TagAlbum`/`PersonAlbum` (both also `BaseAlbum`, reachable via
-	 * `AlbumController::updateProtectionPolicy()`) throws a `TypeError`.
+	 * `AlbumController::updateProtectionPolicy()`) have their own dedicated
+	 * events, since only a plain `Album` carries a `parent_id`.
 	 */
 	private function dispatchSaved(BaseAlbum $album): void
 	{
 		match (true) {
-			$album instanceof Album => AlbumSaved::dispatch($album),
+			$album instanceof Album => AlbumSaved::dispatch([$album->id], [$album->parent_id]),
 			$album instanceof TagAlbum => TagAlbumSaved::dispatch($album),
 			$album instanceof PersonAlbum => PersonAlbumSaved::dispatch($album),
 			default => null,

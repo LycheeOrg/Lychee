@@ -45,7 +45,7 @@ class Create
 		$this->setStatistics($album);
 
 		// Dispatch event for album stats recomputation
-		AlbumSaved::dispatch($album);
+		AlbumSaved::dispatch([$album->id], [$album->parent_id]);
 
 		return $album;
 	}

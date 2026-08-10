@@ -149,7 +149,7 @@ class AlbumController extends Controller
 			shall_override: true
 		);
 
-		AlbumSaved::dispatch($album);
+		AlbumSaved::dispatch([$album->id], [$album->parent_id]);
 
 		return EditableBaseAlbumResource::fromModel($album);
 	}
@@ -331,7 +331,7 @@ class AlbumController extends Controller
 	{
 		$album = $set_header->do($request->album(), $request->is_compact(), $request->photo());
 
-		AlbumSaved::dispatch($album);
+		AlbumSaved::dispatch([$album->id], [$album->parent_id]);
 	}
 
 	/**
@@ -345,7 +345,7 @@ class AlbumController extends Controller
 		$album->header_photo_focus = $request->headerPhotoFocus();
 		$album->save();
 
-		AlbumSaved::dispatch($album);
+		AlbumSaved::dispatch([$album->id], [$album->parent_id]);
 
 		return EditableBaseAlbumResource::fromModel($album);
 	}
@@ -377,15 +377,15 @@ class AlbumController extends Controller
 	/**
 	 * Dispatches the type-appropriate "saved" event for the given album.
 	 *
-	 * `AlbumSaved`'s constructor is typed `Album`; several endpoints
-	 * (`cover`, `rename`, `setPinned`) accept any `BaseAlbum`
-	 * (`Album`/`TagAlbum`/`PersonAlbum`), since `cover_id`, title, and
-	 * `is_pinned` are all shared `base_albums` attributes.
+	 * Several endpoints (`cover`, `rename`, `setPinned`) accept any
+	 * `BaseAlbum` (`Album`/`TagAlbum`/`PersonAlbum`), since `cover_id`,
+	 * title, and `is_pinned` are all shared `base_albums` attributes, but
+	 * only a plain `Album` carries a `parent_id`.
 	 */
 	private function dispatchSaved(BaseAlbum $album): void
 	{
 		match (true) {
-			$album instanceof Album => AlbumSaved::dispatch($album),
+			$album instanceof Album => AlbumSaved::dispatch([$album->id], [$album->parent_id]),
 			$album instanceof TagAlbum => TagAlbumSaved::dispatch($album),
 			$album instanceof PersonAlbum => PersonAlbumSaved::dispatch($album),
 			default => null,

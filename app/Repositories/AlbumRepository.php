@@ -61,31 +61,35 @@ class AlbumRepository
 			$this->config_manager->getValueAsBool('managed_cache_albums_enabled'),
 			$key,
 			$tags,
-			$this->config_manager->getValueAsInt('managed_cache_ttl'),
-			function () use ($album_id, $sorting, $per_page): LengthAwarePaginator {
-				// Build query for child albums
-				$query = Album::query()
-					->with(['owner'])
-					->without(['thumb']) // Yes we do NOT want them yet.
-					->where('parent_id', '=', $album_id);
-
-				// Apply visibility filter
-				/** @var ?User $user */
-				$user = Auth::user();
-				$query = $this->album_query_policy->applyVisibilityFilter($query, $user);
-
-				// Apply sorting via SortingDecorator
-				/** @var SortingDecorator<Album> */
-				$sorting_decorator = new SortingDecorator($query);
-
-				return $sorting_decorator
-					->orderBy($sorting->column, $sorting->order)
-					->paginate($per_page);
-			}
+			fn (): LengthAwarePaginator => $this->queryChildrenPaginated($album_id, $sorting, $per_page)
 		);
 
 		$this->managed_cache_service->addTags($key, array_map(fn (Album $album) => 'album:' . $album->id, $result->items()));
 
 		return $result;
+	}
+
+	/**
+	 * @return LengthAwarePaginator<Album>
+	 */
+	private function queryChildrenPaginated(?string $album_id, AlbumSortingCriterion $sorting, int $per_page): LengthAwarePaginator
+	{
+		$query = Album::query()
+			->with(['owner'])
+			->without(['thumb']) // Yes we do NOT want them yet.
+			->where('parent_id', '=', $album_id);
+
+		// Apply visibility filter
+		/** @var ?User $user */
+		$user = Auth::user();
+		$query = $this->album_query_policy->applyVisibilityFilter($query, $user);
+
+		// Apply sorting via SortingDecorator
+		/** @var SortingDecorator<Album> */
+		$sorting_decorator = new SortingDecorator($query);
+
+		return $sorting_decorator
+			->orderBy($sorting->column, $sorting->order)
+			->paginate($per_page);
 	}
 }

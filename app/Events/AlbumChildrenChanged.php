@@ -19,9 +19,9 @@ class AlbumChildrenChanged
 	/**
 	 * Create a new event instance.
 	 *
-	 * @param string|null $parent_id The ID of the parent album whose set of direct children changed (`null` for root)
+	 * @param array<int,string|null> $parent_ids IDs of the parent albums whose set of direct children changed (`null` for root), batched so listeners can act once per call instead of once per parent
 	 */
-	public function __construct(public ?string $parent_id)
+	public function __construct(public array $parent_ids)
 	{
 	}
 }

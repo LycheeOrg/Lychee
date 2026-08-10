@@ -41,9 +41,9 @@ class Transfer
 			$base_album->save();
 			$base_album->fixOwnershipOfChildren();
 
-			AlbumSaved::dispatch($base_album);
+			AlbumSaved::dispatch([$base_album->id], [$base_album->parent_id]);
 			if ($old_parent_id !== null) {
-				AlbumChildrenChanged::dispatch($old_parent_id);
+				AlbumChildrenChanged::dispatch([$old_parent_id]);
 			}
 			if ($has_descendants) {
 				AlbumListingCacheFlushRequested::dispatch();

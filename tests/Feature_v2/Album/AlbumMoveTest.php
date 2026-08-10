@@ -39,8 +39,8 @@ class AlbumMoveTest extends BaseApiWithDataTest
 		]);
 		$this->assertNoContent($response);
 
-		Event::assertDispatched(AlbumSaved::class, fn (AlbumSaved $e) => $e->album->id === $this->subAlbum1->id);
-		Event::assertDispatched(AlbumChildrenChanged::class, fn (AlbumChildrenChanged $e) => $e->parent_id === $this->album1->id);
+		Event::assertDispatched(AlbumSaved::class, fn (AlbumSaved $e) => in_array($this->subAlbum1->id, $e->album_ids));
+		Event::assertDispatched(AlbumChildrenChanged::class, fn (AlbumChildrenChanged $e) => in_array($this->album1->id, $e->parent_ids));
 		Event::assertNotDispatched(AlbumListingCacheFlushRequested::class);
 	}
 
@@ -57,7 +57,7 @@ class AlbumMoveTest extends BaseApiWithDataTest
 		]);
 		$this->assertNoContent($response);
 
-		Event::assertDispatched(AlbumSaved::class, fn (AlbumSaved $e) => $e->album->id === $this->album1->id);
+		Event::assertDispatched(AlbumSaved::class, fn (AlbumSaved $e) => in_array($this->album1->id, $e->album_ids));
 		Event::assertDispatched(AlbumListingCacheFlushRequested::class);
 	}
 
