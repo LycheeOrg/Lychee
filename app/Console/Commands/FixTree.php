@@ -63,9 +63,7 @@ class FixTree extends Command
 		Model::shouldBeStrict(true);
 		$this->line('Fixed ' . $fixed_nodes . ' nodes.');
 
-		if ($fixed_nodes > 0) {
-			AlbumListingCacheFlushRequested::dispatch();
-		}
+		AlbumListingCacheFlushRequested::dispatchIf($fixed_nodes > 0);
 
 		return 0;
 	}

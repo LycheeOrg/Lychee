@@ -34,6 +34,7 @@ use App\Models\PersonAlbum;
 use App\Models\TagAlbum;
 use App\Models\User;
 use App\Repositories\ConfigManager;
+use App\Services\Cache\CacheKeyProvider;
 use App\Services\Cache\ManagedCacheService;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Cache;
@@ -44,6 +45,7 @@ class ManagedCacheAlbumListingInvalidatorTest extends AbstractTestCase
 	use DatabaseTransactions;
 
 	private ManagedCacheService $cache_service;
+	private CacheKeyProvider $cache_key_provider;
 	private ManagedCacheAlbumListingInvalidator $listener;
 
 	protected function setUp(): void
@@ -54,7 +56,8 @@ class ManagedCacheAlbumListingInvalidatorTest extends AbstractTestCase
 		$config_manager->shouldReceive('getValueAsBool')->with('managed_cache_enabled')->andReturn(true);
 
 		$this->cache_service = new ManagedCacheService($config_manager);
-		$this->listener = new ManagedCacheAlbumListingInvalidator($this->cache_service);
+		$this->cache_key_provider = new CacheKeyProvider();
+		$this->listener = new ManagedCacheAlbumListingInvalidator($this->cache_service, $this->cache_key_provider);
 	}
 
 	protected function tearDown(): void
@@ -87,13 +90,13 @@ class ManagedCacheAlbumListingInvalidatorTest extends AbstractTestCase
 		$parent = Album::factory()->as_root()->owned_by($user)->create();
 		$album = Album::factory()->children_of($parent)->owned_by($user)->create();
 
-		$this->seedCache('k:album', ['album:' . $album->id]);
-		$this->seedCache('k:parent', ['album-children:' . $parent->id]);
-		$this->seedCache('k:root', ['album-children:root']);
-		$this->seedCache('k:pinned', ['pinned-albums-listing']);
-		$this->seedCache('k:tag-albums', ['tag-albums-listing']);
-		$this->seedCache('k:person-albums', ['person-albums-listing']);
-		$this->seedCache('k:global', ['album-listing-global']);
+		$this->seedCache('k:album', [$this->cache_key_provider->albumTag($album->id)]);
+		$this->seedCache('k:parent', [$this->cache_key_provider->albumChildrenTag($parent->id)]);
+		$this->seedCache('k:root', [$this->cache_key_provider->albumChildrenTag(null)]);
+		$this->seedCache('k:pinned', [$this->cache_key_provider->pinnedAlbumsListingTag()]);
+		$this->seedCache('k:tag-albums', [$this->cache_key_provider->tagAlbumsListingTag()]);
+		$this->seedCache('k:person-albums', [$this->cache_key_provider->personAlbumsListingTag()]);
+		$this->seedCache('k:global', [$this->cache_key_provider->albumListingGlobalTag()]);
 
 		$this->listener->handleAlbumSaved(new AlbumSaved([$album->id], [$album->parent_id]));
 
@@ -111,7 +114,7 @@ class ManagedCacheAlbumListingInvalidatorTest extends AbstractTestCase
 		$user = User::factory()->create();
 		$album = Album::factory()->as_root()->owned_by($user)->create();
 
-		$this->seedCache('k:root', ['album-children:root']);
+		$this->seedCache('k:root', [$this->cache_key_provider->albumChildrenTag(null)]);
 
 		$this->listener->handleAlbumSaved(new AlbumSaved([$album->id], [$album->parent_id]));
 
@@ -122,10 +125,10 @@ class ManagedCacheAlbumListingInvalidatorTest extends AbstractTestCase
 
 	public function testAlbumDeletedEvictsParentAndRootAndPinnedTags(): void
 	{
-		$this->seedCache('k:parent', ['album-children:some-parent-id']);
-		$this->seedCache('k:root', ['album-children:root']);
-		$this->seedCache('k:pinned', ['pinned-albums-listing']);
-		$this->seedCache('k:tag-albums', ['tag-albums-listing']);
+		$this->seedCache('k:parent', [$this->cache_key_provider->albumChildrenTag('some-parent-id')]);
+		$this->seedCache('k:root', [$this->cache_key_provider->albumChildrenTag(null)]);
+		$this->seedCache('k:pinned', [$this->cache_key_provider->pinnedAlbumsListingTag()]);
+		$this->seedCache('k:tag-albums', [$this->cache_key_provider->tagAlbumsListingTag()]);
 
 		$this->listener->handleAlbumDeleted(new AlbumDeleted('some-parent-id'));
 
@@ -137,7 +140,7 @@ class ManagedCacheAlbumListingInvalidatorTest extends AbstractTestCase
 
 	public function testAlbumDeletedWithNullParentEvictsRootTag(): void
 	{
-		$this->seedCache('k:root', ['album-children:root']);
+		$this->seedCache('k:root', [$this->cache_key_provider->albumChildrenTag(null)]);
 
 		$this->listener->handleAlbumDeleted(new AlbumDeleted(null));
 
@@ -148,9 +151,9 @@ class ManagedCacheAlbumListingInvalidatorTest extends AbstractTestCase
 
 	public function testAlbumChildrenChangedEvictsOnlyItsOwnParentTag(): void
 	{
-		$this->seedCache('k:parent', ['album-children:the-parent-id']);
-		$this->seedCache('k:root', ['album-children:root']);
-		$this->seedCache('k:pinned', ['pinned-albums-listing']);
+		$this->seedCache('k:parent', [$this->cache_key_provider->albumChildrenTag('the-parent-id')]);
+		$this->seedCache('k:root', [$this->cache_key_provider->albumChildrenTag(null)]);
+		$this->seedCache('k:pinned', [$this->cache_key_provider->pinnedAlbumsListingTag()]);
 
 		$this->listener->handleAlbumChildrenChanged(new AlbumChildrenChanged(['the-parent-id']));
 
@@ -167,9 +170,9 @@ class ManagedCacheAlbumListingInvalidatorTest extends AbstractTestCase
 		$user = User::factory()->create();
 		$tag_album = TagAlbum::factory()->owned_by($user)->create();
 
-		$this->seedCache('k:album', ['album:' . $tag_album->id]);
-		$this->seedCache('k:tag-albums', ['tag-albums-listing']);
-		$this->seedCache('k:person-albums', ['person-albums-listing']);
+		$this->seedCache('k:album', [$this->cache_key_provider->albumTag($tag_album->id)]);
+		$this->seedCache('k:tag-albums', [$this->cache_key_provider->tagAlbumsListingTag()]);
+		$this->seedCache('k:person-albums', [$this->cache_key_provider->personAlbumsListingTag()]);
 
 		$this->listener->handleTagAlbumSaved(new TagAlbumSaved([$tag_album->id]));
 
@@ -187,9 +190,9 @@ class ManagedCacheAlbumListingInvalidatorTest extends AbstractTestCase
 		$person_album->is_and = true;
 		$person_album->save();
 
-		$this->seedCache('k:album', ['album:' . $person_album->id]);
-		$this->seedCache('k:tag-albums', ['tag-albums-listing']);
-		$this->seedCache('k:person-albums', ['person-albums-listing']);
+		$this->seedCache('k:album', [$this->cache_key_provider->albumTag($person_album->id)]);
+		$this->seedCache('k:tag-albums', [$this->cache_key_provider->tagAlbumsListingTag()]);
+		$this->seedCache('k:person-albums', [$this->cache_key_provider->personAlbumsListingTag()]);
 
 		$this->listener->handlePersonAlbumSaved(new PersonAlbumSaved($person_album));
 
@@ -202,11 +205,11 @@ class ManagedCacheAlbumListingInvalidatorTest extends AbstractTestCase
 
 	public function testBaseAlbumRemovedEvictsBothTagAndPersonAlbumsListing(): void
 	{
-		$this->seedCache('k:album', ['album:removed-id']);
-		$this->seedCache('k:tag-albums', ['tag-albums-listing']);
-		$this->seedCache('k:person-albums', ['person-albums-listing']);
+		$this->seedCache('k:album', [$this->cache_key_provider->albumTag('removed-id')]);
+		$this->seedCache('k:tag-albums', [$this->cache_key_provider->tagAlbumsListingTag()]);
+		$this->seedCache('k:person-albums', [$this->cache_key_provider->personAlbumsListingTag()]);
 
-		$this->listener->handleBaseAlbumRemoved(new BaseAlbumRemoved('removed-id'));
+		$this->listener->handleBaseAlbumRemoved(new BaseAlbumRemoved(['removed-id']));
 
 		$this->assertEvicted('k:album');
 		$this->assertEvicted('k:tag-albums');
@@ -221,11 +224,11 @@ class ManagedCacheAlbumListingInvalidatorTest extends AbstractTestCase
 		$parent = Album::factory()->as_root()->owned_by($user)->create();
 		$album = Album::factory()->children_of($parent)->owned_by($user)->create();
 
-		$this->seedCache('k:album', ['album:' . $album->id]);
-		$this->seedCache('k:parent', ['album-children:' . $parent->id]);
-		$this->seedCache('k:root', ['album-children:root']);
-		$this->seedCache('k:pinned', ['pinned-albums-listing']);
-		$this->seedCache('k:tag-albums', ['tag-albums-listing']);
+		$this->seedCache('k:album', [$this->cache_key_provider->albumTag($album->id)]);
+		$this->seedCache('k:parent', [$this->cache_key_provider->albumChildrenTag($parent->id)]);
+		$this->seedCache('k:root', [$this->cache_key_provider->albumChildrenTag(null)]);
+		$this->seedCache('k:pinned', [$this->cache_key_provider->pinnedAlbumsListingTag()]);
+		$this->seedCache('k:tag-albums', [$this->cache_key_provider->tagAlbumsListingTag()]);
 
 		$this->listener->handleAccessPermissionChanged(new AccessPermissionChanged($album->id));
 
@@ -241,10 +244,10 @@ class ManagedCacheAlbumListingInvalidatorTest extends AbstractTestCase
 		$user = User::factory()->create();
 		$tag_album = TagAlbum::factory()->owned_by($user)->create();
 
-		$this->seedCache('k:album', ['album:' . $tag_album->id]);
-		$this->seedCache('k:tag-albums', ['tag-albums-listing']);
-		$this->seedCache('k:person-albums', ['person-albums-listing']);
-		$this->seedCache('k:root', ['album-children:root']);
+		$this->seedCache('k:album', [$this->cache_key_provider->albumTag($tag_album->id)]);
+		$this->seedCache('k:tag-albums', [$this->cache_key_provider->tagAlbumsListingTag()]);
+		$this->seedCache('k:person-albums', [$this->cache_key_provider->personAlbumsListingTag()]);
+		$this->seedCache('k:root', [$this->cache_key_provider->albumChildrenTag(null)]);
 
 		$this->listener->handleAccessPermissionChanged(new AccessPermissionChanged($tag_album->id));
 
@@ -263,9 +266,9 @@ class ManagedCacheAlbumListingInvalidatorTest extends AbstractTestCase
 		$person_album->is_and = true;
 		$person_album->save();
 
-		$this->seedCache('k:album', ['album:' . $person_album->id]);
-		$this->seedCache('k:tag-albums', ['tag-albums-listing']);
-		$this->seedCache('k:person-albums', ['person-albums-listing']);
+		$this->seedCache('k:album', [$this->cache_key_provider->albumTag($person_album->id)]);
+		$this->seedCache('k:tag-albums', [$this->cache_key_provider->tagAlbumsListingTag()]);
+		$this->seedCache('k:person-albums', [$this->cache_key_provider->personAlbumsListingTag()]);
 
 		$this->listener->handleAccessPermissionChanged(new AccessPermissionChanged($person_album->id));
 
@@ -278,9 +281,9 @@ class ManagedCacheAlbumListingInvalidatorTest extends AbstractTestCase
 
 	public function testAlbumComputedDataUpdatedEvictsOnlyOwnTag(): void
 	{
-		$this->seedCache('k:album', ['album:some-id']);
-		$this->seedCache('k:root', ['album-children:root']);
-		$this->seedCache('k:pinned', ['pinned-albums-listing']);
+		$this->seedCache('k:album', [$this->cache_key_provider->albumTag('some-id')]);
+		$this->seedCache('k:root', [$this->cache_key_provider->albumChildrenTag(null)]);
+		$this->seedCache('k:pinned', [$this->cache_key_provider->pinnedAlbumsListingTag()]);
 
 		$this->listener->handleAlbumComputedDataUpdated(new AlbumComputedDataUpdated('some-id'));
 
@@ -293,10 +296,10 @@ class ManagedCacheAlbumListingInvalidatorTest extends AbstractTestCase
 
 	public function testAlbumListingCacheFlushRequestedEvictsOnlyGlobalTag(): void
 	{
-		$this->seedCache('k:global', ['album-listing-global']);
-		$this->seedCache('k:root', ['album-children:root']);
-		$this->seedCache('k:pinned', ['pinned-albums-listing']);
-		$this->seedCache('k:tag-albums', ['tag-albums-listing']);
+		$this->seedCache('k:global', [$this->cache_key_provider->albumListingGlobalTag()]);
+		$this->seedCache('k:root', [$this->cache_key_provider->albumChildrenTag(null)]);
+		$this->seedCache('k:pinned', [$this->cache_key_provider->pinnedAlbumsListingTag()]);
+		$this->seedCache('k:tag-albums', [$this->cache_key_provider->tagAlbumsListingTag()]);
 
 		$this->listener->handleAlbumListingCacheFlushRequested(new AlbumListingCacheFlushRequested());
 
@@ -315,7 +318,7 @@ class ManagedCacheAlbumListingInvalidatorTest extends AbstractTestCase
 		$user = User::factory()->create();
 		$album = Album::factory()->as_root()->owned_by($user)->create();
 
-		$this->seedCache('k:global', ['album-listing-global']);
+		$this->seedCache('k:global', [$this->cache_key_provider->albumListingGlobalTag()]);
 
 		$this->listener->handleAlbumSaved(new AlbumSaved([$album->id], [$album->parent_id]));
 		$this->listener->handleAlbumDeleted(new AlbumDeleted(null));
@@ -330,9 +333,9 @@ class ManagedCacheAlbumListingInvalidatorTest extends AbstractTestCase
 
 	public function testAlbumTagsChangedEvictsEachTagId(): void
 	{
-		$this->seedCache('k:tag1', ['tag:1']);
-		$this->seedCache('k:tag2', ['tag:2']);
-		$this->seedCache('k:tag3', ['tag:3']);
+		$this->seedCache('k:tag1', [$this->cache_key_provider->albumTagTag(1)]);
+		$this->seedCache('k:tag2', [$this->cache_key_provider->albumTagTag(2)]);
+		$this->seedCache('k:tag3', [$this->cache_key_provider->albumTagTag(3)]);
 
 		$this->listener->handleAlbumTagsChanged(new AlbumTagsChanged([1, 2]));
 

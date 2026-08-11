@@ -67,15 +67,11 @@ class Merge
 				// `appendNode` also internally calls `save` on the model
 				$target_album->appendNode($child_album);
 
-				if ($has_descendants) {
-					AlbumListingCacheFlushRequested::dispatch();
-				}
+				AlbumListingCacheFlushRequested::dispatchIf($has_descendants);
 			}
 		}
 
-		if ($target_gains_children) {
-			AlbumChildrenChanged::dispatch([$target_album->id]);
-		}
+		AlbumChildrenChanged::dispatchIf($target_gains_children, [$target_album->id]);
 
 		// Now we delete the source albums
 		// We must use the special `Delete` action in order to not break the

@@ -158,17 +158,11 @@ class BulkEditAlbumsAction
 			}
 		}
 
-		// `pluck()` goes straight to the query builder (no model hydration,
-		// no `$with` eager-loads to fight), and doubles as the source of
-		// truth for which IDs actually exist — `$album_ids` isn't validated
-		// against the `albums` table, so it may contain phantom IDs that
-		// must not reach `AlbumSaved` (its listeners dispatch per-album jobs).
-		$touched = Album::query()
+		$parent_ids = Album::query()
 			->whereIn('id', $album_ids)
-			->pluck('parent_id', 'id');
+			->toBase()
+			->pluck('parent_id');
 
-		if ($touched->isNotEmpty()) {
-			AlbumSaved::dispatch($touched->keys()->all(), $touched->values()->all());
-		}
+		AlbumSaved::dispatch($album_ids, $parent_ids->all());
 	}
 }

@@ -126,9 +126,7 @@ class SettingsController extends Controller
 			Configs::query()->where('key', $config->key)->update(['value' => $config->value ?? '']);
 		});
 
-		if ($configs->pluck('key')->intersect(self::ALBUM_LISTING_COARSE_FLUSH_CONFIGS)->isNotEmpty()) {
-			AlbumListingCacheFlushRequested::dispatch();
-		}
+		AlbumListingCacheFlushRequested::dispatchIf($configs->pluck('key')->intersect(self::ALBUM_LISTING_COARSE_FLUSH_CONFIGS)->isNotEmpty());
 
 		$request->configs()->invalidateCache();
 		TaggedRouteCacheUpdated::dispatch(CacheTag::SETTINGS);

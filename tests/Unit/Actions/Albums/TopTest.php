@@ -24,6 +24,7 @@ use App\Models\Configs;
 use App\Models\PersonAlbum;
 use App\Models\TagAlbum;
 use App\Models\User;
+use App\Services\Cache\CacheKeyProvider;
 use App\Services\Cache\ManagedCacheService;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\DB;
@@ -116,7 +117,7 @@ class TopTest extends AbstractTestCase
 		resolve(Top::class)->get();
 
 		// Evict only the pinned-albums-listing cache entry.
-		resolve(ManagedCacheService::class)->forgetTag('pinned-albums-listing');
+		resolve(ManagedCacheService::class)->forgetTag(resolve(CacheKeyProvider::class)->pinnedAlbumsListingTag());
 
 		$second_call_count = $this->countListingTableQueries(fn () => resolve(Top::class)->get());
 
@@ -125,10 +126,11 @@ class TopTest extends AbstractTestCase
 		// pinned query itself also touches `albums`, we can only assert this
 		// is strictly less than a fully-uncached call, not zero.
 		$fully_uncached_count = $this->countListingTableQueries(function (): void {
-			resolve(ManagedCacheService::class)->forgetTag('tag-albums-listing');
-			resolve(ManagedCacheService::class)->forgetTag('person-albums-listing');
-			resolve(ManagedCacheService::class)->forgetTag('album-children:root');
-			resolve(ManagedCacheService::class)->forgetTag('pinned-albums-listing');
+			$cache_key_provider = resolve(CacheKeyProvider::class);
+			resolve(ManagedCacheService::class)->forgetTag($cache_key_provider->tagAlbumsListingTag());
+			resolve(ManagedCacheService::class)->forgetTag($cache_key_provider->personAlbumsListingTag());
+			resolve(ManagedCacheService::class)->forgetTag($cache_key_provider->albumChildrenTag(null));
+			resolve(ManagedCacheService::class)->forgetTag($cache_key_provider->pinnedAlbumsListingTag());
 			resolve(Top::class)->get();
 		});
 

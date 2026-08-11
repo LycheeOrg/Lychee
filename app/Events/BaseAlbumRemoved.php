@@ -19,9 +19,9 @@ class BaseAlbumRemoved
 	/**
 	 * Create a new event instance.
 	 *
-	 * @param string $base_album_id The ID of the removed tag or person album
+	 * @param string[] $base_album_ids The IDs of the removed tag and/or person albums
 	 */
-	public function __construct(public string $base_album_id)
+	public function __construct(public array $base_album_ids)
 	{
 	}
 }

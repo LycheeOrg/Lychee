@@ -19,6 +19,7 @@ use App\Policies\AlbumPolicy;
 use App\Policies\AlbumQueryPolicy;
 use App\Policies\PhotoQueryPolicy;
 use App\Repositories\ConfigManager;
+use App\Services\Cache\CacheKeyProvider;
 use App\Services\Cache\ManagedCacheService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -42,6 +43,7 @@ class GetTagWithPhotosAndAlbums
 		private AlbumQueryPolicy $album_query_policy,
 		protected readonly ConfigManager $config_manager,
 		protected readonly ManagedCacheService $managed_cache_service,
+		protected readonly CacheKeyProvider $cache_key_provider,
 	) {
 		$this->is_cache_enabled = $this->config_manager->getValueAsBool('managed_cache_albums_enabled');
 	}
@@ -107,7 +109,7 @@ class GetTagWithPhotosAndAlbums
 	private function getAccessibleAlbums(Tag $tag, User $user): Collection
 	{
 		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
-		$user_key = Auth::id() ?? 'guest';
+		$user_id = Auth::id();
 		// `applyBrowsabilityFilter()` is session-scoped (depends on
 		// `getUnlockedAlbumIDs()`, not just the user), unlike the other five
 		// cached queries in this feature — a session that unlocks a
@@ -117,15 +119,21 @@ class GetTagWithPhotosAndAlbums
 		// We do not need a cryptographically secure hash here,
 		// just a fast one that is unlikely to collide.
 		$unlocked_hash = hash('xxh3', implode(',', $unlocked_album_ids));
-		$key = "tag-albums:{$tag->id}:user:{$user_key}:unlocked:{$unlocked_hash}";
+		$key = $this->cache_key_provider->tagAlbumsKey($tag->id, $user_id, $unlocked_hash);
 
 		$albums = $this->managed_cache_service->rememberIf(
 			$this->is_cache_enabled,
 			$key,
-			["tag:{$tag->id}", "user:{$user_key}", 'album-listing-global'],
+			[
+				$this->cache_key_provider->albumTagTag($tag->id),
+				$this->cache_key_provider->userTag($user_id),
+				$this->cache_key_provider->albumListingGlobalTag(),
+			],
 			fn () => $this->queryAccessibleAlbums($tag, $user, $unlocked_album_ids)
 		);
-		$this->managed_cache_service->addTags($key, $albums->map(fn (Album $album) => 'album:' . $album->id)->all());
+		$this->managed_cache_service->addTags($key, $this->cache_key_provider->albumTags(
+			$albums->map(fn (Album $album) => $album->id)->all()
+		));
 
 		return $albums->map(fn (Album $album) => ThumbAlbumResource::fromModel($album));
 	}

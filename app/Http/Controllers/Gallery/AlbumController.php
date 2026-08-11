@@ -137,9 +137,7 @@ class AlbumController extends Controller
 			$tag_models = Tag::from($request->tags());
 			$changes = $album->tags()->sync($tag_models->pluck('id')->all());
 			$changed_tag_ids = array_values(array_unique([...$changes['attached'], ...$changes['detached']]));
-			if ($changed_tag_ids !== []) {
-				AlbumTagsChanged::dispatch($changed_tag_ids);
-			}
+			AlbumTagsChanged::dispatchIf($changed_tag_ids !== [], $changed_tag_ids);
 		}
 
 		$album = $set_header->do(

@@ -25,6 +25,7 @@ use App\Models\User;
 use App\Policies\AlbumPolicy;
 use App\Policies\AlbumQueryPolicy;
 use App\Repositories\ConfigManager;
+use App\Services\Cache\CacheKeyProvider;
 use App\Services\Cache\ManagedCacheService;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Support\Collection as BaseCollection;
@@ -46,6 +47,7 @@ class Top
 		private AlbumQueryPolicy $album_query_policy,
 		protected readonly ConfigManager $config_manager,
 		protected readonly ManagedCacheService $managed_cache_service,
+		protected readonly CacheKeyProvider $cache_key_provider,
 	) {
 		$this->sorting = AlbumSortingCriterion::createDefault();
 		$this->is_cache_albums_enabled = $this->config_manager->getValueAsBool('managed_cache_albums_enabled');
@@ -75,7 +77,6 @@ class Top
 		/** @var ?User $user */
 		$user = Auth::user();
 		$user_id = $user?->id;
-		$user_key = $user_id ?? 'guest';
 
 		// Do not eagerly load the relation `photos` for each smart album.
 		// On the albums overview, we only need a thumbnail for each album.
@@ -87,53 +88,53 @@ class Top
 			->filter(fn ($smart_album) => Gate::check(AlbumPolicy::CAN_SEE, $smart_album));
 
 		// ── Tag albums ──────────────────────────────────────────────
-		$tag_albums_key = "tag-albums-listing:user:{$user_key}:sort:{$this->sorting->column->value}:{$this->sorting->order->value}";
+		$tag_albums_key = $this->cache_key_provider->tagAlbumsListingKey($user_id, $this->sorting);
 		/** @var BaseCollection<int,TagAlbum> $tag_albums */
 		$tag_albums = $this->managed_cache_service->rememberIf(
 			$this->is_cache_albums_enabled,
 			$tag_albums_key,
-			['tag-albums-listing', "user:{$user_key}", 'album-listing-global'],
+			[$this->cache_key_provider->tagAlbumsListingTag(), $this->cache_key_provider->userTag($user_id), $this->cache_key_provider->albumListingGlobalTag()],
 			fn (): BaseCollection => $this->queryTagAlbums($user)
 		);
-		$this->managed_cache_service->addTags($tag_albums_key, $tag_albums->map(fn (TagAlbum $a) => 'album:' . $a->id)->all());
+		$this->managed_cache_service->addTags($tag_albums_key, $this->cache_key_provider->albumTags($tag_albums->map(fn (TagAlbum $a) => $a->id)->all()));
 
 		// ── Person albums ───────────────────────────────────────────
 		/** @var BaseCollection<int,PersonAlbum> $person_albums */
 		$person_albums = collect();
 		if ($this->config_manager->getValueAsBool('ai_vision_face_enabled')) {
-			$person_albums_key = "person-albums-listing:user:{$user_key}:sort:{$this->sorting->column->value}:{$this->sorting->order->value}";
+			$person_albums_key = $this->cache_key_provider->personAlbumsListingKey($user_id, $this->sorting);
 			$person_albums = $this->managed_cache_service->rememberIf(
 				$this->is_cache_albums_enabled,
 				$person_albums_key,
-				['person-albums-listing', "user:{$user_key}", 'album-listing-global'],
+				[$this->cache_key_provider->personAlbumsListingTag(), $this->cache_key_provider->userTag($user_id), $this->cache_key_provider->albumListingGlobalTag()],
 				fn (): BaseCollection => $this->queryPersonAlbums($user)
 			);
-			$this->managed_cache_service->addTags($person_albums_key, $person_albums->map(fn (PersonAlbum $a) => 'album:' . $a->id)->all());
+			$this->managed_cache_service->addTags($person_albums_key, $this->cache_key_provider->albumTags($person_albums->map(fn (PersonAlbum $a) => $a->id)->all()));
 		}
 
 		// ── Pinned albums ───────────────────────────────────────────
 		$pinned_col = $this->config_manager->getValueAsEnum('sorting_pinned_albums_col', ColumnSortingType::class);
 		$pinned_order = $this->config_manager->getValueAsEnum('sorting_pinned_albums_order', OrderSortingType::class);
-		$pinned_albums_key = 'pinned-albums-listing:user:' . $user_key . ':sort:' . ($pinned_col?->value ?? 'null') . ':' . ($pinned_order?->value ?? 'null');
+		$pinned_albums_key = $this->cache_key_provider->pinnedAlbumsListingKey($user_id, $pinned_col, $pinned_order);
 		/** @var BaseCollection<int,Album> $pinned_albums */
 		$pinned_albums = $this->managed_cache_service->rememberIf(
 			$this->is_cache_albums_enabled,
 			$pinned_albums_key,
-			['pinned-albums-listing', "user:{$user_key}", 'album-listing-global'],
+			[$this->cache_key_provider->pinnedAlbumsListingTag(), $this->cache_key_provider->userTag($user_id), $this->cache_key_provider->albumListingGlobalTag()],
 			fn (): BaseCollection => $this->queryPinnedAlbums($user, $pinned_col, $pinned_order)
 		);
-		$this->managed_cache_service->addTags($pinned_albums_key, $pinned_albums->map(fn (Album $a) => 'album:' . $a->id)->all());
+		$this->managed_cache_service->addTags($pinned_albums_key, $this->cache_key_provider->albumTags($pinned_albums->map(fn (Album $a) => $a->id)->all()));
 
 		// ── Root / shared albums ────────────────────────────────────
-		$root_key = "album-children:root:user:{$user_key}:sort:{$this->sorting->column->value}:{$this->sorting->order->value}";
+		$root_key = $this->cache_key_provider->rootAlbumsListingKey($user_id, $this->sorting);
 		/** @var BaseCollection<int,Album> $albums */
 		$albums = $this->managed_cache_service->rememberIf(
 			$this->is_cache_albums_enabled,
 			$root_key,
-			['album-children:root', "user:{$user_key}", 'album-listing-global'],
+			[$this->cache_key_provider->albumChildrenTag(null), $this->cache_key_provider->userTag($user_id), $this->cache_key_provider->albumListingGlobalTag()],
 			fn (): BaseCollection => $this->queryRootAlbums($user, $user_id)
 		);
-		$this->managed_cache_service->addTags($root_key, $albums->map(fn (Album $a) => 'album:' . $a->id)->all());
+		$this->managed_cache_service->addTags($root_key, $this->cache_key_provider->albumTags($albums->map(fn (Album $a) => $a->id)->all()));
 
 		if ($user_id !== null) {
 			// Ownership partitioning stays in-memory, applied after

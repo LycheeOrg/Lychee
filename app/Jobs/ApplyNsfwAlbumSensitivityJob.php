@@ -63,8 +63,6 @@ class ApplyNsfwAlbumSensitivityJob implements ShouldQueue
 			Log::info("ApplyNsfwAlbumSensitivityJob: marked album {$album_id} as NSFW.");
 		}
 
-		if ($saved_album_ids !== []) {
-			AlbumSaved::dispatch($saved_album_ids, $saved_parent_ids);
-		}
+		AlbumSaved::dispatchIf($saved_album_ids !== [], $saved_album_ids, $saved_parent_ids);
 	}
 }

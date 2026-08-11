@@ -127,6 +127,10 @@ class Delete
 	 */
 	private function deleteTagAlbums(array $tag_album_ids): void
 	{
+		if (count($tag_album_ids) === 0) {
+			return;
+		}
+
 		$purchasable_service = resolve(PurchasableService::class);
 		$purchasable_service->deleteMultipleAlbumPurchasables($tag_album_ids);
 		DB::table('live_metrics')->whereIn('album_id', $tag_album_ids)->delete();
@@ -137,9 +141,7 @@ class Delete
 		DB::table('tag_albums')->whereIn('id', $tag_album_ids)->delete();
 		DB::table('base_albums')->whereIn('id', $tag_album_ids)->delete();
 
-		foreach ($tag_album_ids as $tag_album_id) {
-			BaseAlbumRemoved::dispatch($tag_album_id);
-		}
+		BaseAlbumRemoved::dispatch($tag_album_ids);
 	}
 
 	/**
@@ -165,9 +167,7 @@ class Delete
 		DB::table('person_albums')->whereIn('id', $person_album_ids)->delete();
 		DB::table('base_albums')->whereIn('id', $person_album_ids)->delete();
 
-		foreach ($person_album_ids as $person_album_id) {
-			BaseAlbumRemoved::dispatch($person_album_id);
-		}
+		BaseAlbumRemoved::dispatch($person_album_ids);
 	}
 
 	/**

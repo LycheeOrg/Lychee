@@ -129,13 +129,9 @@ final class PhotosToBeDeletedDTO
 		});
 
 		$affected_albums = Album::query()->whereIn('id', array_unique($affected_album_ids))->pluck('parent_id', 'id');
-		if ($affected_albums->isNotEmpty()) {
-			AlbumSaved::dispatch($affected_albums->keys()->all(), $affected_albums->values()->all());
-		}
+		AlbumSaved::dispatchIf($affected_albums->isNotEmpty(), $affected_albums->keys()->all(), $affected_albums->values()->all());
 		$affected_tag_album_ids_verified = TagAlbum::query()->whereIn('id', array_unique($affected_tag_album_ids))->pluck('id')->all();
-		if ($affected_tag_album_ids_verified !== []) {
-			TagAlbumSaved::dispatch($affected_tag_album_ids_verified);
-		}
+		TagAlbumSaved::dispatchIf($affected_tag_album_ids_verified !== [], $affected_tag_album_ids_verified);
 
 		// Maybe consider doing multiple queries for the different storage types.
 		$exclude_size_variants_ids = DB::table('order_items')->select(['size_variant_id'])->pluck('size_variant_id')->all();

@@ -18,6 +18,7 @@ use App\Events\AlbumTagsChanged;
 use App\Events\BaseAlbumRemoved;
 use App\Events\PersonAlbumSaved;
 use App\Events\TagAlbumSaved;
+use App\Services\Cache\CacheKeyProvider;
 use App\Services\Cache\ManagedCacheService;
 use Illuminate\Support\Facades\DB;
 
@@ -33,89 +34,90 @@ class ManagedCacheAlbumListingInvalidator
 {
 	public function __construct(
 		private ManagedCacheService $cache,
+		private CacheKeyProvider $cache_key_provider,
 	) {
 	}
 
 	public function handleAlbumSaved(AlbumSaved $event): void
 	{
-		$this->cache->forgetTags(array_map(fn (string $album_id) => 'album:' . $album_id, $event->album_ids));
-		$this->cache->forgetTags(array_map(fn (string $parent_id) => 'album-children:' . $parent_id, $event->parent_ids));
-		$this->cache->forgetTag('album-children:root');
-		$this->cache->forgetTag('pinned-albums-listing');
+		$this->cache->forgetTags($this->cache_key_provider->albumTags($event->album_ids));
+		$this->cache->forgetTags($this->cache_key_provider->albumChildrenTags($event->parent_ids));
+		$this->cache->forgetTag($this->cache_key_provider->albumChildrenTag(null));
+		$this->cache->forgetTag($this->cache_key_provider->pinnedAlbumsListingTag());
 	}
 
 	public function handleAlbumDeleted(AlbumDeleted $event): void
 	{
-		$this->cache->forgetTag('album-children:' . ($event->parent_id ?? 'root'));
-		$this->cache->forgetTag('album-children:root');
-		$this->cache->forgetTag('pinned-albums-listing');
+		$this->cache->forgetTag($this->cache_key_provider->albumChildrenTag($event->parent_id));
+		$this->cache->forgetTag($this->cache_key_provider->albumChildrenTag(null));
+		$this->cache->forgetTag($this->cache_key_provider->pinnedAlbumsListingTag());
 	}
 
 	public function handleAlbumChildrenChanged(AlbumChildrenChanged $event): void
 	{
-		$this->cache->forgetTags(array_map(fn (?string $parent_id) => 'album-children:' . ($parent_id ?? 'root'), $event->parent_ids));
+		$this->cache->forgetTags($this->cache_key_provider->albumChildrenTags($event->parent_ids));
 	}
 
 	public function handleTagAlbumSaved(TagAlbumSaved $event): void
 	{
-		$this->cache->forgetTags(array_map(fn (string $tag_album_id) => 'album:' . $tag_album_id, $event->tag_album_ids));
-		$this->cache->forgetTag('tag-albums-listing');
+		$this->cache->forgetTags($this->cache_key_provider->albumTags($event->tag_album_ids));
+		$this->cache->forgetTag($this->cache_key_provider->tagAlbumsListingTag());
 	}
 
 	public function handlePersonAlbumSaved(PersonAlbumSaved $event): void
 	{
-		$this->cache->forgetTag('album:' . $event->person_album->id);
-		$this->cache->forgetTag('person-albums-listing');
+		$this->cache->forgetTag($this->cache_key_provider->albumTag($event->person_album->id));
+		$this->cache->forgetTag($this->cache_key_provider->personAlbumsListingTag());
 	}
 
 	public function handleBaseAlbumRemoved(BaseAlbumRemoved $event): void
 	{
-		$this->cache->forgetTag('album:' . $event->base_album_id);
+		$this->cache->forgetTags($this->cache_key_provider->albumTags($event->base_album_ids));
 		// Cheap, rare operation — not worth a type lookup, evict both.
-		$this->cache->forgetTag('tag-albums-listing');
-		$this->cache->forgetTag('person-albums-listing');
+		$this->cache->forgetTag($this->cache_key_provider->tagAlbumsListingTag());
+		$this->cache->forgetTag($this->cache_key_provider->personAlbumsListingTag());
 	}
 
 	public function handleAccessPermissionChanged(AccessPermissionChanged $event): void
 	{
-		$this->cache->forgetTag('album:' . $event->base_album_id);
+		$this->cache->forgetTag($this->cache_key_provider->albumTag($event->base_album_id));
 
 		// The event payload only carries the id; resolve which of the three
 		// album types it is via a lightweight, non-Eloquent lookup.
 		$album = DB::table('albums')->where('id', '=', $event->base_album_id)->select('parent_id')->first();
 		if ($album !== null) {
-			$this->cache->forgetTag('album-children:' . ($album->parent_id ?? 'root'));
-			$this->cache->forgetTag('album-children:root');
-			$this->cache->forgetTag('pinned-albums-listing');
+			$this->cache->forgetTag($this->cache_key_provider->albumChildrenTag($album->parent_id));
+			$this->cache->forgetTag($this->cache_key_provider->albumChildrenTag(null));
+			$this->cache->forgetTag($this->cache_key_provider->pinnedAlbumsListingTag());
 
 			return;
 		}
 
 		if (DB::table('tag_albums')->where('id', '=', $event->base_album_id)->exists()) {
-			$this->cache->forgetTag('tag-albums-listing');
+			$this->cache->forgetTag($this->cache_key_provider->tagAlbumsListingTag());
 
 			return;
 		}
 
 		if (DB::table('person_albums')->where('id', '=', $event->base_album_id)->exists()) {
-			$this->cache->forgetTag('person-albums-listing');
+			$this->cache->forgetTag($this->cache_key_provider->personAlbumsListingTag());
 		}
 	}
 
 	public function handleAlbumComputedDataUpdated(AlbumComputedDataUpdated $event): void
 	{
-		$this->cache->forgetTag('album:' . $event->album_id);
+		$this->cache->forgetTag($this->cache_key_provider->albumTag($event->album_id));
 	}
 
 	public function handleAlbumListingCacheFlushRequested(AlbumListingCacheFlushRequested $event): void
 	{
 		// Sufficient alone: every cached entry across all six query types
 		// carries this tag in addition to its own specific tag(s).
-		$this->cache->forgetTag('album-listing-global');
+		$this->cache->forgetTag($this->cache_key_provider->albumListingGlobalTag());
 	}
 
 	public function handleAlbumTagsChanged(AlbumTagsChanged $event): void
 	{
-		$this->cache->forgetTags(array_map(fn (int $tag_id) => 'tag:' . $tag_id, $event->tag_ids));
+		$this->cache->forgetTags($this->cache_key_provider->albumTagTags($event->tag_ids));
 	}
 }

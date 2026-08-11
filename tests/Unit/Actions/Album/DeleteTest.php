@@ -162,9 +162,9 @@ class DeleteTest extends AbstractTestCase
 
 		$this->assertDatabaseMissing('tag_albums', ['id' => $tag_album_1->id]);
 		$this->assertDatabaseMissing('tag_albums', ['id' => $tag_album_2->id]);
-		Event::assertDispatched(BaseAlbumRemoved::class, fn (BaseAlbumRemoved $e) => $e->base_album_id === $tag_album_1->id);
-		Event::assertDispatched(BaseAlbumRemoved::class, fn (BaseAlbumRemoved $e) => $e->base_album_id === $tag_album_2->id);
-		Event::assertDispatchedTimes(BaseAlbumRemoved::class, 2);
+		Event::assertDispatched(BaseAlbumRemoved::class, fn (BaseAlbumRemoved $e) => in_array($tag_album_1->id, $e->base_album_ids, true) &&
+			in_array($tag_album_2->id, $e->base_album_ids, true));
+		Event::assertDispatchedTimes(BaseAlbumRemoved::class, 1);
 	}
 
 	public function testDeletePersonAlbumDispatchesBaseAlbumRemoved(): void
@@ -181,7 +181,7 @@ class DeleteTest extends AbstractTestCase
 		(new Delete())->do([$person_album->id]);
 
 		$this->assertDatabaseMissing('person_albums', ['id' => $person_album->id]);
-		Event::assertDispatched(BaseAlbumRemoved::class, fn (BaseAlbumRemoved $e) => $e->base_album_id === $person_album->id);
+		Event::assertDispatched(BaseAlbumRemoved::class, fn (BaseAlbumRemoved $e) => in_array($person_album->id, $e->base_album_ids, true));
 	}
 
 	public function testDeleteMixedBatchOfRegularAndTagAlbumsDispatchesBothEvents(): void
@@ -197,7 +197,7 @@ class DeleteTest extends AbstractTestCase
 
 		$this->assertDatabaseMissing('albums', ['id' => $regular_album->id]);
 		$this->assertDatabaseMissing('tag_albums', ['id' => $tag_album->id]);
-		Event::assertDispatched(BaseAlbumRemoved::class, fn (BaseAlbumRemoved $e) => $e->base_album_id === $tag_album->id);
+		Event::assertDispatched(BaseAlbumRemoved::class, fn (BaseAlbumRemoved $e) => in_array($tag_album->id, $e->base_album_ids, true));
 		Event::assertDispatched(AlbumDeleted::class);
 	}
 }

@@ -42,9 +42,7 @@ class Move
 				// `appendNode` also internally calls `save` on the model
 				$target_album->appendNode($album);
 
-				if ($has_descendants) {
-					AlbumListingCacheFlushRequested::dispatch();
-				}
+				AlbumListingCacheFlushRequested::dispatchIf($has_descendants);
 			}
 			$target_album->fixOwnershipOfChildren();
 		} else {
@@ -57,18 +55,11 @@ class Move
 				// of the tree consistent
 				$album->saveAsRoot();
 
-				if ($has_descendants) {
-					AlbumListingCacheFlushRequested::dispatch();
-				}
+				AlbumListingCacheFlushRequested::dispatchIf($has_descendants);
 			}
 		}
 
-		if ($moved_album_ids !== []) {
-			AlbumSaved::dispatch($moved_album_ids, [$target_album?->id]);
-		}
-
-		if ($old_parent_ids->isNotEmpty()) {
-			AlbumChildrenChanged::dispatch($old_parent_ids->all());
-		}
+		AlbumSaved::dispatchIf($moved_album_ids !== [], $moved_album_ids, [$target_album?->id]);
+		AlbumChildrenChanged::dispatchIf($old_parent_ids->isNotEmpty(), $old_parent_ids->all());
 	}
 }

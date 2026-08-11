@@ -13,6 +13,7 @@ use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\User;
 use App\Policies\AlbumQueryPolicy;
+use App\Services\Cache\CacheKeyProvider;
 use App\Services\Cache\ManagedCacheService;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
@@ -28,6 +29,7 @@ class AlbumRepository
 	public function __construct(
 		protected AlbumQueryPolicy $album_query_policy,
 		protected ManagedCacheService $managed_cache_service,
+		protected CacheKeyProvider $cache_key_provider,
 		protected ConfigManager $config_manager,
 	) {
 	}
@@ -49,12 +51,15 @@ class AlbumRepository
 		AlbumSortingCriterion $sorting,
 		int $per_page,
 	): LengthAwarePaginator {
-		$parent_key = $album_id ?? 'root';
-		$user_key = Auth::id() ?? 'guest';
+		$user_id = Auth::id();
 		$page = Paginator::resolveCurrentPage();
 
-		$key = "album-children:{$parent_key}:user:{$user_key}:page:{$page}:sort:{$sorting->column->value}:{$sorting->order->value}";
-		$tags = ["album-children:{$parent_key}", "user:{$user_key}", 'album-listing-global'];
+		$key = $this->cache_key_provider->albumChildrenPageKey($album_id, $user_id, $page, $sorting);
+		$tags = [
+			$this->cache_key_provider->albumChildrenTag($album_id),
+			$this->cache_key_provider->userTag($user_id),
+			$this->cache_key_provider->albumListingGlobalTag(),
+		];
 
 		/** @var LengthAwarePaginator<Album> $result */
 		$result = $this->managed_cache_service->rememberIf(
@@ -64,7 +69,9 @@ class AlbumRepository
 			fn (): LengthAwarePaginator => $this->queryChildrenPaginated($album_id, $sorting, $per_page)
 		);
 
-		$this->managed_cache_service->addTags($key, array_map(fn (Album $album) => 'album:' . $album->id, $result->items()));
+		$this->managed_cache_service->addTags($key, $this->cache_key_provider->albumTags(
+			array_map(fn (Album $album) => $album->id, $result->items())
+		));
 
 		return $result;
 	}

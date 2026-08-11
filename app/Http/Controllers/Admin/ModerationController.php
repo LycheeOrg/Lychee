@@ -144,9 +144,7 @@ class ModerationController extends Controller
 				->distinct()
 				->pluck('album_id')->all();
 
-			if ($all_album_ids !== []) {
-				ApplyNsfwAlbumSensitivityJob::dispatch($all_album_ids);
-			}
+			ApplyNsfwAlbumSensitivityJob::dispatchIf($all_album_ids !== [], $all_album_ids);
 		}
 	}
 }
