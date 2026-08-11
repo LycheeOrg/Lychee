@@ -83,7 +83,35 @@ Note: Feature 053 (Album Listing Caching) exists on branch `caching-enablement` 
 
 **All 9 written up as full Decision Cards** (spec.md Appendix, same template as Q-054-01..10) and cross-referenced from `open-questions.md`. spec.md/plan.md/tasks.md all updated with the concrete fixes (not just documented as findings) — this pass changed actual requirement text (FR-054-09/11/12/19/21/27/28), not only added commentary.
 
-**Not yet done:** Implementation still not started. Committing and pushing this documentation round per explicit instruction.
+**Not yet done:** Implementation still not started. This round was committed and pushed to `origin/new-landing` per explicit instruction.
+
+### Feature 054 — Two Direct Corrections After Push (same session, 2026-08-10)
+
+**User corrected two of the just-pushed resolutions:**
+- Q-054-13 (SE-gated dropdown behaviour): "No. not selectable." — reversed from badged-but-selectable (Option A) to actually disabled/unselectable (Option B). UI-054-01/02/04 reworded; UI-054-08 (stored-value display for a previously-configured SE-only value) kept, since it's independent of the selectability question.
+- Icon field: "We said links and no icon selection." — clarified via a follow-up question that this meant **remove `icon` from `LandingLink` entirely**, not just "the earlier validation fix wasn't newsworthy." New Q-054-20 card records this, reversing Q-054-10 (free-text icon) and mooting Q-054-18 (the icon-length-validation fix from the prior round). `icon` dropped from FR-054-11/13, DO-054-01, MIG-054-02, the Spec DSL, and all three tasks/plan mentions — `LandingLink` is now `label`+`url`+`placement`+`open_in_new_tab`+`sort_order`+`enabled` only.
+
+**Also asked (via IDE selection on plan.md's I5 increment): "WHAT IS THAT FOR? WHY DO WE NEED THOSE?"** regarding the stats feature (`landing_show_stats`/`public_photo_count`/`public_album_count`, FR-054-09). This was never an explicit user request — it was invented during the very first spec draft as one interpretation of "what info to display on the landing page" (the user's original stated goal), alongside About text and featured content. Not yet resolved whether to keep or cut; answered inline, decision pending.
+
+**Not yet done:** Implementation not started. This correction round not yet committed/pushed — holding until the stats question above is resolved so it can go in the same commit.
+
+### Feature 054 — Stats Cut, Then Admin-UI Architecture Reversed a Second Time (same session, 2026-08-10)
+
+**Stats question resolved:** "Cut it entirely." Removed `landing_show_stats`, `public_photo_count`/`public_album_count`, FR-054-09, S-054-12, I5/T-054-19, and every other mention across spec/plan/tasks. Scalar-config count drops to 10. New Q-054-21 Decision Card records the reasoning (never explicitly requested — one of three things invented while fleshing out "what info to display," alongside About text and featured content, both of which survive).
+
+**Then, via an IDE selection on Goal #11 ("all landing-page settings live in exactly one dedicated admin page"):** "We want to still have all the settings in the global setting pages etc, but additionally we want to have a config page for preview etc... a bit like the watermarker module." This reverses Q-054-08 entirely.
+
+**Investigated `resources/js/v8/views/admin/WatermarkPreview.vue`** before touching anything: confirmed it's a genuinely different pattern from `NsfwConfig.vue` — a two-column settings-form (left) + live-reactive-preview (right) page, where edits are held in local component state and only persisted on an explicit **Save** click (`SettingsService.setConfigs()`), and — critically — its own settings (`Mod Watermarker` category) are **not** filtered from the flat generic Settings list (only `Mod Cache` is, confirmed by reading `SettingsController::getAll()`). This directly falsifies Q-054-08's core assumption that full-category absorption implies filtering makes sense.
+
+**Asked one clarifying question** (preview fidelity: instant reactive vs. save-then-view) since Watermarker's live-overlay pattern doesn't map 1:1 onto a whole page with 4 different layouts, and guessing wrong a third time on this same page would have been costly. Answered: instant reactive, matching Watermarker exactly.
+
+**Resolved (Q-054-22/23, logged in `open-questions.md`):**
+- Q-054-22: `LandingConfig.vue`'s 10 settings coexist with the flat list — reverses Q-054-08. FR-054-27 (the filter) removed entirely; FR-054-19 rewritten around the watermarker pattern; S-054-31 rewritten to assert the opposite of its original claim; Q-054-08's card marked reversed (kept for history).
+- Q-054-23: the preview is instantly reactive to unsaved form state, not a save-then-iframe flow. New FR-054-30 specifies this precisely: the right column renders the actual `LandingClassic.vue`/`LandingPortfolio.vue`/`LandingMinimal.vue`/`LandingStudio.vue` component (whichever matches the in-progress layout selection) fed via a new `preview` prop assembled from unsaved form state plus already-persisted links/featured-items. This requires a new plan increment, **I10a**, refactoring all 4 layout components from self-fetching (`InitService.fetchLandingData()`) to accepting their data via prop — the public `Landing.vue` dispatcher keeps fetching and now passes the result down, so both the real route and the preview panel share one component contract.
+
+**Spec/plan/tasks updated in place again** — FR-054-19 rewritten, FR-054-27 removed (gap documented alongside FR-054-09/26), new FR-054-30, Goal #11 rewritten, Overview paragraph rewritten, the `LandingConfig.vue` mockup rebuilt as a two-column watermarker-style layout, S-054-31 reversed, Q-054-08/16 cards marked reversed/moot, two new Decision Cards (Q-054-22/23) added. plan.md's I11 rebuilt around the two-column form+preview design with an explicit Save step; new I10a increment added before it. tasks.md: I11's tasks rebuilt (T-054-36a-d), new I10a tasks (T-054-35a/b), T-054-38a added as an explicit regression guard confirming the flat list still shows everything.
+
+**Not yet done:** Implementation not started. Multiple large reversals landed this session (custom CSS dropped, icon field dropped, stats dropped, admin-UI architecture reversed twice) — holding this whole accumulated diff for explicit review/commit confirmation before pushing again, given how much has changed since the last push.
 
 ### Feature 054 — Decision Cards Added for All 10 Resolved Questions (same session, 2026-08-10)
 
