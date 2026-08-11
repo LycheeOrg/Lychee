@@ -150,6 +150,15 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 			),
 		},
 		{
+			key: "landing-config",
+			group: "core",
+			label: "landing_config.title",
+			icon: "lucide:layout-template",
+			to: "/admin/landing-config",
+			isExternal: false,
+			visible: computed(() => initData.value?.settings.can_edit ?? false),
+		},
+		{
 			key: "bulk-album-edit",
 			group: "core",
 			label: "bulk_album_edit.title",

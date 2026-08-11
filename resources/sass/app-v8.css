@@ -242,6 +242,8 @@ html {
 	--animate-landingIntroFadeOut: fadeOut 2s 2s forwards ease-in-out;
 	--animate-landingSlidesPopIn: popIn 2s 3s forwards ease-in-out;
 	--animate-landingEnterPopIn: zoomIn 2s 4s forwards ease-in-out;
+	--animate-landingZoomReveal: landingZoomReveal 1s ease-out forwards;
+	--animate-landingSlideReveal: landingSlideReveal 0.8s ease-out forwards;
 
 	--text-2xs: 0.65rem;
 	--text-2xs--line-height: 0.8rem;
@@ -289,6 +291,26 @@ html {
 	100% {
 		opacity: 1;
 		transform: scale(1);
+	}
+}
+@keyframes landingZoomReveal {
+	0% {
+		opacity: 0;
+		transform: scale(1.08);
+	}
+	100% {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+@keyframes landingSlideReveal {
+	0% {
+		opacity: 0;
+		transform: translateY(2.5rem);
+	}
+	100% {
+		opacity: 1;
+		transform: translateY(0);
 	}
 }
 

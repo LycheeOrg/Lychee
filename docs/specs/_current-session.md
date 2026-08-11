@@ -1,10 +1,10 @@
 # Current Session
 
-_Last updated: 2026-08-10_
+_Last updated: 2026-08-11_
 
 ## Active Features
 
-- Feature 054 – Configurable Landing Page: spec, plan, and tasks drafted (Planning status) on branch `new-landing`. 3 high-impact architecture questions resolved via direct user confirmation same-day. Not yet implemented.
+- Feature 054 – Configurable Landing Page: **Completed** (T-054-01..63 all `[x]`, incl. T-054-15a). Q-054-01 resolved. Full quality gate green; moved to roadmap.md Completed Features.
 - Feature 052 – Managed Cache Service: **Completed** (T-052-01..22 all `[x]`). Q-052-01..07 all resolved. Full quality gate green; moved to roadmap.md Completed Features.
 - Feature 049 – Migration to Nuxt UI: spec, plan, and tasks drafted (Draft status), analysis gate passed. Not yet implemented.
 - Feature 048 – Fix Multi-Group Permissions: spec, plan, and tasks drafted (Draft status). Not yet implemented.
@@ -12,6 +12,26 @@ _Last updated: 2026-08-10_
 Note: Feature 053 (Album Listing Caching) exists on branch `caching-enablement` (commit `fab22c04`), not on this branch — intentionally skipped per user instruction; not tracked here.
 
 ## Session Summary
+
+### Feature 054 – Configurable Landing Page — Fully Implemented (new session, 2026-08-11)
+
+**Request:** Implement all 63 tasks in tasks.md end to end (backend + frontend + admin UI + translations), not just plan them.
+
+**Backend (I1–I5c):** 6 new enums (`LandingLayoutType`, `LandingTextPosition`, `LandingAnimationPreset`, `LandingLinkPlacement`, `LandingFeaturedItemsMode`, `LandingFeaturedItemType`); migration adding the 12 new `Mod Welcome` scalar configs. Introduced a new `int:MIN:MAX` bounded-integer `type_range` convention (`Configs::sanity()` + `ConfigGroup.vue`'s `NumberField` dispatch) since no existing config type supported a parameterised numeric range — needed for `landing_hero_text_opacity` (0-100) and `landing_featured_items_count` (3-12). `LandingLink`/`LandingFeaturedItem` models + migrations + factories, each with full admin CRUD (Requests/Resources/Controllers/routes) mirroring `Webhook`'s shape, plus a genuinely new pattern: a `PATCH .../Reorder` endpoint taking `{ ids: string[] }` as the complete existing-ID set, validated and applied inside a `DB::transaction()` (no prior bulk-reorder precedent existed anywhere in the codebase to follow). `LandingPageResource` extended with SE-fallback `layout`/`animation_preset` resolution (mirrors `InitConfig::set_supporter_properties`'s `is_se_enabled` derivation exactly) and both automatic-mode (public-albums query, same shape as Feature 025's `resolveLatestAlbumCover`) and manual-mode (direct PK lookup, deliberately bypassing `AlbumQueryPolicy`/`PhotoQueryPolicy`, admin-trusted) featured-content resolution via a new unified `LandingFeaturedContentResource`.
+
+**Frontend (I6–I9a):** Built `LandingClassic.vue`/`LandingPortfolio.vue`/`LandingMinimal.vue`/`LandingStudio.vue` (all new, under `resources/js/v8/views/landing/`) directly prop-driven from the start — `Landing.vue` became a thin single-fetch dispatcher immediately, rather than doing the self-fetching-extraction-then-refactor two-step the task breakdown described (same end state, fewer commits). New `useLandingTextPosition`/`useLandingAnimation`/`useScrollReveal` composables — the last is the `parallax_scroll` preset's `IntersectionObserver`-driven per-section reveal (the only preset that's scroll-linked; `zoom_in`/`slide_reveal` play once on mount via new `landingZoomReveal`/`landingSlideReveal` CSS keyframes added to `app-v8.css`).
+
+**Admin UI (I10):** New `LandingConfig.vue` — Settings tab mirrors `WatermarkPreview.vue`'s local-draft-then-explicit-Save pattern, with a live scaled-down preview built by fetching the real `LandingPageResource` once as a baseline and overlaying the in-progress draft field values (reuses the actual layout components, no separate preview-only markup). `landing_hero_text_color` reuses `ColorField.vue` directly by constructing a synthetic `ConfigResource`-shaped object, per the task's explicit instruction not to build a new component. Links and Featured tabs are immediate-save CRUD with native-HTML5 drag-and-drop reorder (`draggable`/`dragstart`/`drop`) — no drag library exists anywhere in this repo and none was added, per the existing-precedent-first convention. Featured tab's manual-curation search reuses the existing `GET /api/v2/Search` endpoint unmodified. Discovered mid-implementation that `/admin/landing-config` needed an explicit `Route::get(...)` entry in `routes/web_v2.php` (not just the SPA route manifest) for hard navigation to resolve — every other `/admin/*` v8 page already has this, it just wasn't called out in the task breakdown.
+
+**Resolved 1 new question, Q-054-01** (open-questions.md): T-054-03/FR-054-20 said to add the 12 new keys to `ConfigIntegrity`'s `SE_FIELDS`/`PRO_FIELDS` whitelist, but that mechanism raises the DB `level` column which hides `level>0` configs from non-SE admins in the flat Settings list — directly contradicting T-054-58's regression guard that all 12 keys stay visible everywhere. Resolved as: leave `level=0` (the migration default) for all 12 keys; SE-gating is enforced only by `LandingPageResource`'s render-time fallback and by disabling (not hiding) SE-only dropdown options client-side. `ConfigIntegrity` itself was left unmodified. FR-054-20 and the task file were both updated to record this.
+
+**Translations (I11):** Propagated the new keys across all 22 non-English locales via a small one-off script (English placeholder text for untranslated values — matches the repo's existing convention, confirmed by finding pre-existing untranslated keys in `ja`/`zh_CN`). Added a 3rd new lang file, `landing_config.php` (admin page-shell copy), beyond the 2 named in the task (`landing_link.php`, `landing_featured_item.php`). Confirmed the repo's translation-completeness check is `php artisan test --filter=LangTest`.
+
+**Manual verification:** No `chromium-cli` was available in this sandbox, so Playwright/Chromium were installed ad hoc (and removed afterward) to drive a real logged-in browser session against `php artisan serve` + a production Vite build. Screenshot-verified: classic default (pixel-equivalent to pre-feature), SE on/off fallback for `portfolio`/`studio`, `minimal`, hero text position/color/opacity styling, `cta_text` overrides per layout, the about section, links rendering, and the full admin `LandingConfig.vue` flow (live preview, Links CRUD create, Featured tab mode switch). A temporary devadmin user and a few config values were created/mutated in the local dev DB for this and cleaned up afterward (`.env`'s `NUXT_UI_ENABLED` was also temporarily added and removed).
+
+**Quality gates:** `make phpstan` 0 errors (full-repo run, not just touched files). `php artisan test --filter=Landing` and the full unscoped suite both run repeatedly during the session; only pre-existing/unrelated failures remain (`OptimizeTablesTest`, `PhotosAddHandlerImagickTest`, `PhotoAddTest` apple-live-photo cases — none touch Landing code). `npm run check`/`npm run format`/`eslint` all clean. `git diff --stat -- resources/js/v7/` confirmed empty (NFR-054-08). `vendor/bin/php-cs-fixer fix` clean.
+
+**Not done / known gaps:** Not every Branch & Scenario Matrix row (S-054-01..30) was re-confirmed via a manual browser click-through in this session — several are covered only by the passing automated feature tests (see T-054-62's note in tasks.md for the exact list). The `parallax_scroll`/`zoom_in`/`slide_reveal` presets were visually spot-checked only at the "does it render without error" level, not frame-by-frame animation-timing review.
 
 ### Feature 054 – Configurable Landing Page — Spec/Plan/Tasks Drafted (this session, 2026-08-10)
 
@@ -219,7 +239,7 @@ Note: Feature 053 (Album Listing Caching) exists on branch `caching-enablement` 
 
 ## Next Steps
 
-1. Feature 054 spec/plan/tasks are drafted but implementation has not started — begin at T-054-01 (enums + scalar config migration) on branch `new-landing` — see [tasks.md](4-architecture/features/054-configurable-landing-page/tasks.md). Run the plan's Implementation Drift Gate re-read first (`LandingPageResource.php`, `AlbumHeaderPanel.vue`, `AllSettings.vue`) since it was not run this session.
+1. Feature 054 is done — no follow-up required unless the deferred-to-backlog items (true modular section builder, mosaic/grid-first layout, second About image slot, testimonials block, shared `AlbumHeaderPanel.vue`/landing position-class utility) are picked up as a future feature. See tasks.md's T-054-62 note for the small set of Branch & Scenario Matrix rows verified only at the automated-test level rather than re-clicked through a browser.
 2. Feature 052 is done — no follow-up required unless broader `ManagedCacheService` adoption (deferred per spec Non-Goals) is picked up as a future feature.
 2. Confirm dependency approvals (`@nuxt/ui`, `@iconify-json/prime`) with the user, then start Feature 049 implementation at T-049-01 (install Nuxt UI in standalone Vue mode) — see [tasks.md](4-architecture/features/049-nuxt-ui-migration/tasks.md).
 3. Alternatively/in parallel across sessions: start Feature 048 implementation at T-048-01 (repo-wide caller sweep) then T-048-02/03 (unit tests reproducing the bug) — see [tasks.md](4-architecture/features/048-fix-multi-group-permissions/tasks.md).
@@ -228,11 +248,11 @@ Note: Feature 053 (Album Listing Caching) exists on branch `caching-enablement` 
 
 ## Open Questions
 
-None blocking. Q-054-01..19 resolved 2026-08-10 (see spec.md Appendix for full Decision Cards). Q-052-01..07 all resolved (01-05 on 2026-07-21, 06-07 on 2026-07-28 — see spec.md and open-questions.md for full rationale, including Q-052-07's non-default Option B resolution). Q-049-01, Q-049-02, Q-049-03 resolved 2026-07-02 (ADR-0005). Q-048-01 resolved 2026-07-01.
+None blocking. Q-054-01..19 resolved 2026-08-10 (spec-drafting session, see spec.md Appendix for full Decision Cards); the implementation-session Q-054-01 (open-questions.md's `ConfigIntegrity` whitelist question, distinct numbering — logged in open-questions.md, not spec.md's Decision Cards) resolved 2026-08-11. Q-052-01..07 all resolved (01-05 on 2026-07-21, 06-07 on 2026-07-28 — see spec.md and open-questions.md for full rationale, including Q-052-07's non-default Option B resolution). Q-049-01, Q-049-02, Q-049-03 resolved 2026-07-02 (ADR-0005). Q-048-01 resolved 2026-07-01.
 
 ## Key Artefacts
 
-- Feature 054: [spec.md](4-architecture/features/054-configurable-landing-page/spec.md) · [plan.md](4-architecture/features/054-configurable-landing-page/plan.md) · [tasks.md](4-architecture/features/054-configurable-landing-page/tasks.md) (drafted, not yet implemented)
+- Feature 054: [spec.md](4-architecture/features/054-configurable-landing-page/spec.md) · [plan.md](4-architecture/features/054-configurable-landing-page/plan.md) · [tasks.md](4-architecture/features/054-configurable-landing-page/tasks.md) (implemented, T-054-01..63 all `[x]`)
 - Feature 052: [spec.md](4-architecture/features/052-managed-cache-service/spec.md) · [plan.md](4-architecture/features/052-managed-cache-service/plan.md) · [tasks.md](4-architecture/features/052-managed-cache-service/tasks.md) (implemented, T-052-01..22 all `[x]`)
 - Feature 049: [spec.md](4-architecture/features/049-nuxt-ui-migration/spec.md) · [plan.md](4-architecture/features/049-nuxt-ui-migration/plan.md) · [tasks.md](4-architecture/features/049-nuxt-ui-migration/tasks.md) · [ADR-0005](6-decisions/ADR-0005-nuxt-ui-migration.md)
 - Feature 048: [spec.md](4-architecture/features/048-fix-multi-group-permissions/spec.md) · [plan.md](4-architecture/features/048-fix-multi-group-permissions/plan.md) · [tasks.md](4-architecture/features/048-fix-multi-group-permissions/tasks.md)

@@ -103,7 +103,13 @@ declare namespace App {
 		export type FlowStrategy = "auto" | "opt-in";
 		export type ImageOverlayType = "none" | "desc" | "date" | "exif";
 		export type JobStatus = 0 | 1 | 2 | 3;
+		export type LandingAnimationPreset = "none" | "classic_fade" | "zoom_in" | "parallax_scroll" | "slide_reveal";
 		export type LandingBackgroundModeType = "static" | "photo_id" | "random" | "latest_album_cover" | "random_from_album";
+		export type LandingFeaturedItemType = "photo" | "album";
+		export type LandingFeaturedItemsMode = "automatic" | "manual";
+		export type LandingLayoutType = "classic" | "portfolio" | "minimal" | "studio";
+		export type LandingLinkPlacement = "nav" | "footer" | "both";
+		export type LandingTextPosition = "top_left" | "top_right" | "bottom_left" | "bottom_right" | "center";
 		export type LicenseType =
 			| "none"
 			| "reserved"
@@ -287,6 +293,12 @@ declare namespace App {
 					current_page: number;
 					per_page: number;
 					total: number;
+				};
+				export type LandingFeaturedItemCollection = {
+					landing_featured_items: App.Http.Resources.Models.LandingFeaturedItemResource[];
+				};
+				export type LandingLinkCollection = {
+					landing_links: App.Http.Resources.Models.LandingLinkResource[];
 				};
 				export type PaginatedAlbumsResource = {
 					data: App.Http.Resources.Models.ThumbAlbumResource[];
@@ -663,6 +675,21 @@ declare namespace App {
 					is_password_flag_enabled: boolean;
 					is_sensitive_flag_enabled: boolean;
 				};
+				export type LandingFeaturedContentResource = {
+					item_type: App.Enum.LandingFeaturedItemType;
+					id: string;
+					title: string;
+					thumb_url: string;
+					url: string;
+					num_photos: number | null;
+				};
+				export type LandingLinkEmbedResource = {
+					id: string;
+					label: string;
+					url: string;
+					placement: App.Enum.LandingLinkPlacement;
+					open_in_new_tab: boolean;
+				};
 				export type LandingPageResource = {
 					landing_page_enable: boolean;
 					landing_background_landscape: string;
@@ -674,6 +701,19 @@ declare namespace App {
 					landing_logo: string;
 					landing_header_logo: string;
 					footer: App.Http.Resources.GalleryConfigs.FooterConfig;
+					layout: App.Enum.LandingLayoutType;
+					intro_screen_enabled: boolean;
+					hero_text_position: App.Enum.LandingTextPosition;
+					hero_text_color: string;
+					hero_text_opacity: number;
+					animation_preset: App.Enum.LandingAnimationPreset;
+					about_enabled: boolean;
+					about_text: string;
+					featured_items_enabled: boolean;
+					featured_items_mode: App.Enum.LandingFeaturedItemsMode;
+					featured_items: App.Http.Resources.GalleryConfigs.LandingFeaturedContentResource[];
+					links: App.Http.Resources.GalleryConfigs.LandingLinkEmbedResource[];
+					cta_text: string;
 				};
 				export type MapProviderData = {
 					layer: string;
@@ -929,6 +969,26 @@ declare namespace App {
 					created_at: string;
 					updated_at: string;
 					job: string;
+				};
+				export type LandingFeaturedItemResource = {
+					id: string;
+					item_type: App.Enum.LandingFeaturedItemType;
+					item_id: string;
+					sort_order: number;
+					enabled: boolean;
+					created_at: string;
+					updated_at: string;
+				};
+				export type LandingLinkResource = {
+					id: string;
+					label: string;
+					url: string;
+					placement: App.Enum.LandingLinkPlacement;
+					open_in_new_tab: boolean;
+					sort_order: number;
+					enabled: boolean;
+					created_at: string;
+					updated_at: string;
 				};
 				export type LightUserResource = {
 					id: number;

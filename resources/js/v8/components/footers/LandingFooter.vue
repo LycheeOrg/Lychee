@@ -50,14 +50,31 @@
 			class="personal_text text-white text-3xs font-normal animate-landingAnimateUp"
 			v-html="props.footerData.footer_additional_text"
 		></p>
+		<p v-if="footerLinks.length > 0" class="text-white text-3xs font-normal animate-landingAnimateUp space-x-4">
+			<a
+				v-for="link in footerLinks"
+				:key="link.id"
+				:href="link.url"
+				:target="link.open_in_new_tab ? '_blank' : undefined"
+				:rel="link.open_in_new_tab ? 'noopener' : undefined"
+				class="uppercase hover:text-muted transition-all ease-in-out duration-300"
+			>
+				{{ link.label }}
+			</a>
+		</p>
 	</div>
 </template>
 <script setup lang="ts">
+import { computed } from "vue";
+
 type FooterProps = {
 	footerData: App.Http.Resources.GalleryConfigs.FooterConfig;
+	links?: App.Http.Resources.GalleryConfigs.LandingLinkEmbedResource[];
 };
 
 const props = defineProps<FooterProps>();
+
+const footerLinks = computed(() => (props.links ?? []).filter((link) => link.placement === "footer" || link.placement === "both"));
 </script>
 <style lang="css" scoped>
 .animate-landingAnimateUp {

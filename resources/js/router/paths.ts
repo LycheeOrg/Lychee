@@ -114,6 +114,10 @@ export const paths: RoutePath[] = [
 		path: "/admin/watermark",
 	},
 	{
+		name: "landing-config",
+		path: "/admin/landing-config",
+	},
+	{
 		name: "tree",
 		path: "/fixTree",
 	},

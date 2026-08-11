@@ -8,11 +8,19 @@
 
 namespace App\Http\Resources\GalleryConfigs;
 
+use App\Enum\LandingAnimationPreset;
 use App\Enum\LandingBackgroundModeType;
+use App\Enum\LandingFeaturedItemsMode;
+use App\Enum\LandingFeaturedItemType;
+use App\Enum\LandingLayoutType;
+use App\Enum\LandingTextPosition;
 use App\Models\Album;
+use App\Models\LandingFeaturedItem;
+use App\Models\LandingLink;
 use App\Models\Photo;
 use App\Policies\AlbumQueryPolicy;
 use App\Policies\PhotoQueryPolicy;
+use LycheeVerify\Verify;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
@@ -30,7 +38,29 @@ class LandingPageResource extends Data
 	public string $landing_header_logo;
 	public FooterConfig $footer;
 
+	public LandingLayoutType $layout;
+	public bool $intro_screen_enabled;
+	public LandingTextPosition $hero_text_position;
+	public string $hero_text_color;
+	public int $hero_text_opacity;
+	public LandingAnimationPreset $animation_preset;
+	public bool $about_enabled;
+	public string $about_text;
+	public bool $featured_items_enabled;
+	public LandingFeaturedItemsMode $featured_items_mode;
+	/** @var LandingFeaturedContentResource[] */
+	public array $featured_items;
+	/** @var LandingLinkEmbedResource[] */
+	public array $links;
+	public string $cta_text;
+
 	private const FALLBACK_IMAGE = 'dist/cat.webp';
+
+	/** SE-only landing layouts. Non-SE requesters silently fall back to `classic`. */
+	private const SE_LAYOUTS = [LandingLayoutType::PORTFOLIO, LandingLayoutType::MINIMAL, LandingLayoutType::STUDIO];
+
+	/** SE-only animation presets. Non-SE requesters silently fall back to `classic_fade`. */
+	private const SE_ANIMATION_PRESETS = [LandingAnimationPreset::ZOOM_IN, LandingAnimationPreset::PARALLAX_SCROLL, LandingAnimationPreset::SLIDE_REVEAL];
 
 	public function __construct()
 	{
@@ -52,6 +82,120 @@ class LandingPageResource extends Data
 		$this->site_title = request()->configs()->getValueAsString('site_title');
 		$this->landing_logo = request()->configs()->getValueAsString('landing_logo');
 		$this->landing_header_logo = request()->configs()->getValueAsString('landing_header_logo');
+
+		$is_se_enabled = $this->isSeEnabled();
+
+		$stored_layout = request()->configs()->getValueAsEnum('landing_layout', LandingLayoutType::class) ?? LandingLayoutType::CLASSIC;
+		$this->layout = ($is_se_enabled || !in_array($stored_layout, self::SE_LAYOUTS, true)) ? $stored_layout : LandingLayoutType::CLASSIC;
+
+		$stored_animation_preset = request()->configs()->getValueAsEnum('landing_animation_preset', LandingAnimationPreset::class) ?? LandingAnimationPreset::CLASSIC_FADE;
+		$this->animation_preset = ($is_se_enabled || !in_array($stored_animation_preset, self::SE_ANIMATION_PRESETS, true))
+			? $stored_animation_preset
+			: LandingAnimationPreset::CLASSIC_FADE;
+
+		$this->intro_screen_enabled = request()->configs()->getValueAsBool('landing_intro_screen_enabled');
+		$this->hero_text_position = request()->configs()->getValueAsEnum('landing_hero_text_position', LandingTextPosition::class) ?? LandingTextPosition::CENTER;
+		$this->hero_text_color = request()->configs()->getValueAsString('landing_hero_text_color');
+		$this->hero_text_opacity = request()->configs()->getValueAsInt('landing_hero_text_opacity');
+
+		$this->about_enabled = request()->configs()->getValueAsBool('landing_about_enabled');
+		$this->about_text = request()->configs()->getValueAsString('landing_about_text');
+
+		$this->cta_text = request()->configs()->getValueAsString('landing_cta_text');
+
+		$this->links = LandingLink::query()->enabled()->orderBy('sort_order')->get()
+			->map(fn (LandingLink $landing_link) => new LandingLinkEmbedResource($landing_link))
+			->all();
+
+		// Featured content is SE-gated in its entirety (Goal 6 / FR-054-09).
+		$this->featured_items_enabled = $is_se_enabled && request()->configs()->getValueAsBool('landing_featured_items_enabled');
+
+		$stored_featured_items_mode = request()->configs()->getValueAsEnum('landing_featured_items_mode', LandingFeaturedItemsMode::class) ?? LandingFeaturedItemsMode::AUTOMATIC;
+		$this->featured_items_mode = ($is_se_enabled || $stored_featured_items_mode !== LandingFeaturedItemsMode::MANUAL)
+			? $stored_featured_items_mode
+			: LandingFeaturedItemsMode::AUTOMATIC;
+
+		$this->featured_items = $this->featured_items_enabled ? $this->resolveFeaturedItems($this->featured_items_mode) : [];
+	}
+
+	/**
+	 * Mirrors `InitConfig::set_supporter_properties()`'s `is_se_enabled` derivation.
+	 */
+	private function isSeEnabled(): bool
+	{
+		$verify = request()->verify();
+
+		return $verify instanceof Verify && $verify->validate() && $verify->is_supporter();
+	}
+
+	/**
+	 * @return LandingFeaturedContentResource[]
+	 */
+	private function resolveFeaturedItems(LandingFeaturedItemsMode $mode): array
+	{
+		try {
+			return match ($mode) {
+				LandingFeaturedItemsMode::AUTOMATIC => $this->resolveAutomaticFeaturedItems(),
+				LandingFeaturedItemsMode::MANUAL => $this->resolveManualFeaturedItems(),
+			};
+		} catch (\Throwable $e) {
+			\Log::notice('Landing featured-items resolution failed', [
+				'mode' => $mode->value,
+				'error' => $e->getMessage(),
+			]);
+
+			return [];
+		}
+	}
+
+	/**
+	 * Most-recently-published public albums, same query shape as
+	 * `resolveLatestAlbumCover()` (Feature 025).
+	 *
+	 * @return LandingFeaturedContentResource[]
+	 */
+	private function resolveAutomaticFeaturedItems(): array
+	{
+		$count = request()->configs()->getValueAsInt('landing_featured_items_count');
+
+		$album_query_policy = resolve(AlbumQueryPolicy::class);
+		$query = Album::query()->with(['cover.size_variants', 'min_privilege_cover.size_variants']);
+		$query = $album_query_policy->applyVisibilityFilter($query, null);
+
+		$albums = $query
+			->orderBy('published_at', 'DESC')
+			->orderBy('created_at', 'DESC')
+			->orderBy('id', 'DESC')
+			->limit($count)
+			->get();
+
+		return $albums->map(fn (Album $album) => new LandingFeaturedContentResource($album))->all();
+	}
+
+	/**
+	 * Admin-curated photos/albums, resolved by direct lookup on `item_id`
+	 * without a visibility-policy check (admin-trusted, mirrors
+	 * `resolvePhotoById()`'s precedent). Missing/deleted items are skipped.
+	 *
+	 * @return LandingFeaturedContentResource[]
+	 */
+	private function resolveManualFeaturedItems(): array
+	{
+		$items = LandingFeaturedItem::query()->enabled()->orderBy('sort_order')->get();
+
+		$resolved = [];
+		foreach ($items as $item) {
+			$model = match ($item->item_type) {
+				LandingFeaturedItemType::PHOTO => Photo::query()->with('size_variants')->find($item->item_id),
+				LandingFeaturedItemType::ALBUM => Album::query()->with(['cover.size_variants', 'min_privilege_cover.size_variants'])->find($item->item_id),
+			};
+
+			if ($model !== null) {
+				$resolved[] = new LandingFeaturedContentResource($model);
+			}
+		}
+
+		return $resolved;
 	}
 
 	/**
