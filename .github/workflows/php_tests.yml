@@ -67,7 +67,7 @@ jobs:
           # Maps tcp port 5432 on service container to the host
           - 5432:5432
     env:
-      extensions: bcmath, curl, dom, gd, imagick, json, libxml, mbstring, pcntl, pdo, pdo_sqlite, pdo_mysql, pdo_pgsql, pgsql, sqlite3, zip
+      extensions: bcmath, curl, dom, gd, imagick, json, libxml, mbstring, pcntl, pdo, pdo_sqlite, pdo_mysql, pdo_pgsql, pgsql, sqlite3, zip, opentelemetry
 
     steps:
       - name: Harden Runner
@@ -97,6 +97,11 @@ jobs:
           extensions: ${{ env.extensions }}
           coverage: xdebug
           tools: pecl, composer
+
+      - name: Check OpenTelemetry
+        run: |
+          php -v
+          php --ri opentelemetry
 
       - name: Install Composer dependencies
         uses: ramsey/composer-install@65e4f84970763564f46a70b8a54b90d033b3bdda # 4.0.0
