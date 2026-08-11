@@ -98,9 +98,9 @@ jobs:
           coverage: xdebug
           tools: pecl, composer
 
-      - name: Check OpenTelemetry
+      - name: Install OpenTelemetry PHP extension
         run: |
-          php -v
+          pecl install opentelemetry
           php --ri opentelemetry
 
       - name: Install Composer dependencies

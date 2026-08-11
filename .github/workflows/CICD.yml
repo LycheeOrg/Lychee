@@ -89,6 +89,11 @@ jobs:
         with:
           php-version: 8.4
 
+      - name: Install OpenTelemetry PHP extension
+        run: |
+          pecl install opentelemetry
+          php --ri opentelemetry
+
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
@@ -120,6 +125,11 @@ jobs:
         with:
           php-version: 8.4
 
+      - name: Install OpenTelemetry PHP extension
+        run: |
+          pecl install opentelemetry
+          php --ri opentelemetry
+
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
@@ -149,6 +159,11 @@ jobs:
           php-version: 8.4
           coverage: none
 
+      - name: Install OpenTelemetry PHP extension
+        run: |
+          pecl install opentelemetry
+          php --ri opentelemetry
+
       - name: Install Composer dependencies
         uses: ramsey/composer-install@65e4f84970763564f46a70b8a54b90d033b3bdda # 4.0.0
 
@@ -174,6 +189,11 @@ jobs:
         with:
           php-version: 8.4
           coverage: none
+
+      - name: Install OpenTelemetry PHP extension
+        run: |
+          pecl install opentelemetry
+          php --ri opentelemetry
 
       - name: Install Composer dependencies
         uses: ramsey/composer-install@65e4f84970763564f46a70b8a54b90d033b3bdda # 4.0.0
@@ -220,6 +240,11 @@ jobs:
           extensions: bcmath, curl, dom, gd, imagick, json, libxml, mbstring, pcntl, pdo, pdo_sqlite, sqlite3, zip, opentelemetry
           coverage: xdebug
           tools: pecl, composer
+
+      - name: Install OpenTelemetry PHP extension
+        run: |
+          pecl install opentelemetry
+          php --ri opentelemetry
 
       - name: Install Composer dependencies
         uses: ramsey/composer-install@65e4f84970763564f46a70b8a54b90d033b3bdda # 4.0.0
