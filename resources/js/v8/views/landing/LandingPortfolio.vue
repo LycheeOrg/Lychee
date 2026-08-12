@@ -35,30 +35,31 @@
 			<img
 				:src="data.landing_background_landscape"
 				alt=""
-				class="portrait:hidden absolute inset-0 w-full h-full object-cover"
-				:class="heroEntranceClass"
+				class="absolute inset-0 w-full h-full object-cover"
+				:class="[landscapeImageClass, heroEntranceClass]"
 			/>
 			<img
 				:src="data.landing_background_portrait"
 				alt=""
-				class="landscape:hidden absolute inset-0 w-full h-full object-cover"
-				:class="heroEntranceClass"
+				class="absolute inset-0 w-full h-full object-cover"
+				:class="[portraitImageClass, heroEntranceClass]"
 			/>
 			<div class="absolute inset-0 bg-black/30" />
 			<div class="relative flex w-full h-full" :class="positionClasses">
-				<div class="flex flex-col gap-6" :class="positionClasses.includes('items-center') ? 'items-center' : 'items-start'">
-					<div :class="heroEntranceClass">
-						<h1 class="text-4xl md:text-6xl font-bold uppercase" :style="heroTextStyle">{{ data.landing_title }}</h1>
-						<p class="mt-2 text-base md:text-lg" :style="heroTextStyle">{{ data.landing_subtitle }}</p>
-					</div>
-					<RouterLink
-						:to="{ name: 'home' }"
-						class="inline-block px-8 py-3 bg-white text-black uppercase text-sm tracking-wide hover:scale-105 transition-transform"
-						:class="heroEntranceClass"
-					>
-						{{ ctaText }}
-					</RouterLink>
+				<div :class="heroEntranceClass">
+					<h1 class="text-4xl md:text-6xl font-bold uppercase" :style="heroTextStyle">{{ data.landing_title }}</h1>
+					<p class="mt-2 text-base md:text-lg" :style="heroTextStyle">{{ data.landing_subtitle }}</p>
 				</div>
+			</div>
+
+			<div :style="ctaStyle">
+				<RouterLink
+					:to="{ name: 'home' }"
+					class="inline-block px-8 py-3 bg-white text-black uppercase text-sm tracking-wide hover:scale-105 transition-transform"
+					:class="heroEntranceClass"
+				>
+					{{ ctaText }}
+				</RouterLink>
 			</div>
 
 			<button
@@ -112,24 +113,34 @@
 			</div>
 		</section>
 
-		<LandingFooter :footer-data="data.footer" :links="data.links" />
+		<LandingFooter :footer-data="data.footer" :links="data.links" :animated="effectivePreset !== 'none'" />
+
+		<LandingIntroScreen :data="data" :effective-preset="effectivePreset" />
 	</main>
 </template>
 <script setup lang="ts">
 import { computed, toRef } from "vue";
 import { RouterLink } from "vue-router";
 import LandingFooter from "@/v8/components/footers/LandingFooter.vue";
-import { useLandingTextPosition } from "@/v8/composables/useLandingTextPosition";
-import { useLandingAnimation } from "@/v8/composables/useLandingAnimation";
+import LandingIntroScreen from "@/v8/components/landing/LandingIntroScreen.vue";
+import { useLandingTextPosition } from "@/v8/composables/landing/useLandingTextPosition";
+import { useLandingAnimation } from "@/v8/composables/landing/useLandingAnimation";
+import { useLandingCtaPosition } from "@/v8/composables/landing/useLandingCtaPosition";
+import { useLandingBackgroundOrientation, type LandingPreviewOrientation } from "@/v8/composables/landing/useLandingBackgroundOrientation";
 import { useScrollReveal } from "@/v8/composables/useScrollReveal";
 import { trans } from "laravel-vue-i18n";
 
 const props = defineProps<{
 	data: App.Http.Resources.GalleryConfigs.LandingPageResource;
+	previewOrientation?: LandingPreviewOrientation;
 }>();
 
-const { positionClasses } = useLandingTextPosition(toRef(() => props.data.hero_text_position));
-const { effectivePreset, isReducedMotion } = useLandingAnimation(toRef(() => props.data.animation_preset));
+const landingData = toRef(props, "data");
+const { landscapeImageClass, portraitImageClass } = useLandingBackgroundOrientation(toRef(props, "previewOrientation"));
+
+const { positionClasses } = useLandingTextPosition(landingData);
+const { effectivePreset, isReducedMotion } = useLandingAnimation(landingData);
+const { ctaStyle } = useLandingCtaPosition(landingData);
 
 const navLinks = computed(() => props.data.links.filter((link) => link.placement === "nav" || link.placement === "both"));
 

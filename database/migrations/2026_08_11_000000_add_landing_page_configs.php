@@ -10,12 +10,16 @@ use App\Models\Extensions\BaseConfigMigration;
 
 return new class() extends BaseConfigMigration {
 	public const MOD_WELCOME = 'Mod Welcome';
-	public const LAYOUT = 'classic|portfolio|minimal|studio';
+	public const LAYOUT = 'classic|portfolio|meridian|studio';
 	public const TEXT_POSITION = 'top_left|top_right|bottom_left|bottom_right|center';
 	public const ANIMATION_PRESET = 'none|classic_fade|zoom_in|parallax_scroll|slide_reveal';
 	public const FEATURED_ITEMS_MODE = 'automatic|manual';
 	public const OPACITY_RANGE = 'int:0:100';
 	public const FEATURED_COUNT_RANGE = 'int:3:12';
+	public const CTA_POSITION = 'top-left|top|top-right|left|center|right|bottom-left|bottom|bottom-right';
+	public const SHIFT_TYPE = 'relative|absolute';
+	public const SHIFT_X_DIRECTION = 'left|right';
+	public const SHIFT_Y_DIRECTION = 'up|down';
 
 	public function getConfigs(): array
 	{
@@ -26,7 +30,7 @@ return new class() extends BaseConfigMigration {
 				'cat' => self::MOD_WELCOME,
 				'type_range' => self::LAYOUT,
 				'description' => 'Landing page layout',
-				'details' => 'Options: classic (default, free), portfolio/minimal/studio (require Lychee SE).',
+				'details' => 'Options: classic (default, free), portfolio/meridian/studio (require Lychee SE).',
 				'is_secret' => false,
 				'is_expert' => false,
 				'level' => 0,
@@ -38,7 +42,7 @@ return new class() extends BaseConfigMigration {
 				'cat' => self::MOD_WELCOME,
 				'type_range' => self::BOOL,
 				'description' => 'Enable the animated intro splash screen',
-				'details' => 'Applies to the classic and portfolio layouts. Disable to skip straight to the hero.',
+				'details' => 'Applies to every layout. Disable to skip straight to the hero.',
 				'is_secret' => false,
 				'is_expert' => false,
 				'level' => 0,
@@ -50,7 +54,7 @@ return new class() extends BaseConfigMigration {
 				'cat' => self::MOD_WELCOME,
 				'type_range' => self::TEXT_POSITION,
 				'description' => 'Hero headline/subtitle/CTA position',
-				'details' => 'Applies to the classic and portfolio layouts.',
+				'details' => 'Applies to the portfolio layout.',
 				'is_secret' => false,
 				'is_expert' => false,
 				'level' => 0,
@@ -62,7 +66,7 @@ return new class() extends BaseConfigMigration {
 				'cat' => self::MOD_WELCOME,
 				'type_range' => 'color',
 				'description' => 'Hero headline/subtitle text color',
-				'details' => 'Leave empty to use the default white. Applies to the headline and subtitle text only, on every layout.',
+				'details' => 'Leave empty to use the default white. Applies to the headline and subtitle text on the portfolio and studio layouts.',
 				'is_secret' => false,
 				'is_expert' => false,
 				'level' => 0,
@@ -74,7 +78,7 @@ return new class() extends BaseConfigMigration {
 				'cat' => self::MOD_WELCOME,
 				'type_range' => self::OPACITY_RANGE,
 				'description' => 'Hero headline/subtitle text opacity (%)',
-				'details' => 'Range 0-100. Applies to the headline and subtitle text only, on every layout.',
+				'details' => 'Range 0-100. Applies to the headline and subtitle text on the portfolio and studio layouts.',
 				'is_secret' => false,
 				'is_expert' => false,
 				'level' => 0,
@@ -98,7 +102,7 @@ return new class() extends BaseConfigMigration {
 				'cat' => self::MOD_WELCOME,
 				'type_range' => self::BOOL,
 				'description' => 'Enable the about section',
-				'details' => 'Applies to the portfolio and minimal layouts.',
+				'details' => 'Applies to the portfolio and studio layouts.',
 				'is_secret' => false,
 				'is_expert' => false,
 				'level' => 0,
@@ -163,6 +167,78 @@ return new class() extends BaseConfigMigration {
 				'is_expert' => false,
 				'level' => 0,
 				'order' => 24,
+			],
+			[
+				'key' => 'landing_cta_position',
+				'value' => 'bottom',
+				'cat' => self::MOD_WELCOME,
+				'type_range' => self::CTA_POSITION,
+				'description' => 'Call-to-action button anchor position',
+				'details' => 'Applies to the classic, meridian, studio and portfolio layouts, independently of the hero text position.',
+				'is_secret' => false,
+				'is_expert' => false,
+				'level' => 0,
+				'order' => 25,
+			],
+			[
+				'key' => 'landing_cta_shift_type',
+				'value' => 'relative',
+				'cat' => self::MOD_WELCOME,
+				'type_range' => self::SHIFT_TYPE,
+				'description' => 'Shift the CTA relatively to the viewport',
+				'details' => 'When using relative, the CTA will be shifted proportionally to the size of the viewport.<br>When using absolute the CTA will be shifted by a quantity of pixels.',
+				'is_secret' => false,
+				'is_expert' => true,
+				'level' => 0,
+				'order' => 26,
+			],
+			[
+				'key' => 'landing_cta_shift_x',
+				'value' => '0',
+				'cat' => self::MOD_WELCOME,
+				'type_range' => self::INT,
+				'description' => 'CTA horizontal shift',
+				'details' => 'Number of pixel/proportional translation applied horizontally to the CTA anchor.',
+				'is_secret' => false,
+				'is_expert' => true,
+				'level' => 0,
+				'order' => 27,
+			],
+			[
+				'key' => 'landing_cta_shift_x_direction',
+				'value' => 'right',
+				'cat' => self::MOD_WELCOME,
+				'type_range' => self::SHIFT_X_DIRECTION,
+				'description' => 'Direction of the CTA horizontal shift',
+				'details' => 'Direction of the translation applied to the CTA: to the left or to the right?',
+				'is_secret' => false,
+				'is_expert' => true,
+				'level' => 0,
+				'order' => 28,
+			],
+			[
+				'key' => 'landing_cta_shift_y',
+				'value' => '30',
+				'cat' => self::MOD_WELCOME,
+				'type_range' => self::INT,
+				'description' => 'CTA vertical shift',
+				'details' => 'Number of pixel/proportional translation applied vertically to the CTA anchor.',
+				'is_secret' => false,
+				'is_expert' => true,
+				'level' => 0,
+				'order' => 29,
+			],
+			[
+				'key' => 'landing_cta_shift_y_direction',
+				'value' => 'up',
+				'cat' => self::MOD_WELCOME,
+				'type_range' => self::SHIFT_Y_DIRECTION,
+				'description' => 'Direction of the CTA vertical shift',
+				'details' => 'Direction of the translation applied to the CTA: up or down?',
+				'is_secret' => false,
+				'is_expert' => true,
+				'level' => 0,
+				'order' => 30,
 			],
 		];
 	}

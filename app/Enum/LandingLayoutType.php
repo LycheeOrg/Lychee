@@ -17,6 +17,6 @@ enum LandingLayoutType: string
 {
 	case CLASSIC = 'classic';
 	case PORTFOLIO = 'portfolio';
-	case MINIMAL = 'minimal';
+	case MERIDIAN = 'meridian';
 	case STUDIO = 'studio';
 }

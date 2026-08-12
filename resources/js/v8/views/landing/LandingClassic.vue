@@ -1,7 +1,7 @@
 <template>
-	<main id="landing" class="w-screen h-screen bg-black overflow-hidden">
+	<main id="landing" class="fixed inset-0 bg-black overflow-hidden">
 		<div id="header" class="fixed top-0 left-0 right-0 z-50 overflow-y-hidden">
-			<div id="logo" class="float-left p-4 text-white" :class="entranceDownClass">
+			<div id="logo" class="float-left p-4 text-white" :class="[entranceDownClass, introDelayClass]">
 				<a href="#">
 					<img
 						v-if="data.landing_header_logo !== ''"
@@ -21,7 +21,7 @@
 		</div>
 
 		<div id="menu_wrap" class="fixed top-0 right-0 z-50 w-4/5 overflow-y-hidden">
-			<div id="menu" class="w-full" :class="entranceDownClass">
+			<div id="menu" class="w-full" :class="[entranceDownClass, introDelayClass]">
 				<ul class="menu list-none">
 					<li v-for="link in navLinks" :key="link.id" class="menu-item relative block float-right pt-6 pb-5 px-3">
 						<a
@@ -42,144 +42,109 @@
 			</div>
 		</div>
 
-		<div
-			v-if="data.intro_screen_enabled"
-			id="intro"
-			:class="{ hidden: !introVisible, 'animate-landingIntroFadeOut': effectivePreset !== 'none' }"
-			class="z-50 bg-black fixed flex align-middle justify-center left-0 right-0 top-0 bottom-0"
-		>
-			<div id="intro_content" class="self-center">
-				<img
-					v-if="data.landing_logo !== ''"
-					id="landing-title-logo"
-					:src="data.landing_logo"
-					alt="logo"
-					class="max-h-32 max-w-xs object-contain"
-					:class="{ 'animate-landingIntroPopIn': effectivePreset !== 'none' }"
-				/>
-				<template v-else>
-					<h1
-						class="text-center text-2xl uppercase font-extralight"
-						:class="{ 'animate-landingIntroPopIn': effectivePreset !== 'none' }"
-						:style="heroTextStyle"
-					>
-						{{ data.landing_title }}
-					</h1>
-					<h2>
-						<span
-							class="text-center text-base uppercase font-extralight block"
-							:class="{ 'animate-landingIntroPopIn': effectivePreset !== 'none' }"
-							:style="heroTextStyle"
-						>
-							{{ data.landing_subtitle }}
-						</span>
-					</h2>
-				</template>
-			</div>
-		</div>
+		<LandingIntroScreen :data="data" :effective-preset="effectivePreset" />
 
-		<div id="slides" class="bg-black absolute overflow-hidden left-0 top-0 w-screen h-[98vh]">
-			<div class="slides-container w-full h-full" :class="effectivePreset !== 'none' ? 'opacity-0 animate-landingSlidesPopIn' : ''">
+		<div id="slides" class="bg-black absolute overflow-hidden top-0 left-0 right-0 bottom-[2%]">
+			<div
+				class="slides-container w-full h-full"
+				:class="effectivePreset !== 'none' ? ['opacity-0', 'animate-landingSlidesPopIn', introDelayClass] : ''"
+			>
 				<ul class="list-none">
 					<li class="w-full h-full">
 						<img
-							class="portrait:hidden w-full h-full object-cover absolute top-0 left-0"
+							class="w-full h-full object-cover absolute top-0 left-0"
+							:class="landscapeImageClass"
 							:src="data.landing_background_landscape"
 							alt="landing image"
 						/>
 						<img
-							class="landscape:hidden w-full h-full object-cover absolute top-0 left-0"
+							class="w-full h-full object-cover absolute top-0 left-0"
+							:class="portraitImageClass"
 							:src="data.landing_background_portrait"
 							alt="landing image"
 						/>
 					</li>
 				</ul>
 			</div>
-			<div class="flex w-full h-full absolute top-0 left-0" :class="positionClasses">
-				<div class="relative">
-					<span
-						class="pointer-events-none absolute inset-0 flex items-center justify-center text-transparent uppercase text-3xl filter-shadow-darker py-10 px-40"
-						aria-hidden="true"
-					>
-						{{ ctaText }}
-					</span>
-					<RouterLink
-						:to="{ name: 'home' }"
-						class="cursor-pointer block text-2xl uppercase text-white hover:scale-125 transition-all duration-300 p-10 filter-shadow text-center"
-						:class="effectivePreset !== 'none' ? 'animate-landingEnterPopIn opacity-0' : ''"
-					>
-						{{ ctaText }}<br class="md:hidden" />
-						<template v-if="isLTR()">
-							<UIcon name="lucide:chevron-right" size="3rem" class="inline-block animate-pulseTo0 animate-infinite" />
-							<UIcon
-								name="lucide:chevron-right"
-								size="3rem"
-								class="inline-block animate-pulseTo0 animate-delay-500 animate-infinite -ml-8"
-							/>
-							<UIcon
-								name="lucide:chevron-right"
-								size="3rem"
-								class="inline-block animate-pulseTo0 animate-delay-1000 animate-infinite -ml-8"
-							/>
-						</template>
-						<template v-else>
-							<UIcon name="lucide:chevron-left" size="3rem" class="inline-block animate-pulseTo0 animate-infinite" />
-							<UIcon
-								name="lucide:chevron-left"
-								size="3rem"
-								class="inline-block animate-pulseTo0 animate-delay-500 animate-infinite -mr-8"
-							/>
-							<UIcon
-								name="lucide:chevron-left"
-								size="3rem"
-								class="inline-block animate-pulseTo0 animate-delay-1000 animate-infinite -mr-8"
-							/>
-						</template>
-					</RouterLink>
-				</div>
+			<div :style="ctaStyle">
+				<span
+					class="pointer-events-none absolute inset-0 flex items-center justify-center text-transparent uppercase text-3xl filter-shadow-darker py-10 px-40"
+					aria-hidden="true"
+				>
+					{{ ctaText }}
+				</span>
+				<RouterLink
+					:to="{ name: 'home' }"
+					class="cursor-pointer block text-2xl uppercase text-white hover:scale-125 transition-all duration-300 p-10 filter-shadow text-center"
+					:class="effectivePreset !== 'none' ? ['animate-landingEnterPopIn', 'opacity-0', introDelayClass] : ''"
+				>
+					{{ ctaText }}<br class="md:hidden" />
+					<template v-if="isLTR()">
+						<UIcon name="lucide:chevron-right" size="3rem" class="inline-block animate-pulseTo0 animate-infinite" />
+						<UIcon
+							name="lucide:chevron-right"
+							size="3rem"
+							class="inline-block animate-pulseTo0 animate-delay-500 animate-infinite -ml-8"
+						/>
+						<UIcon
+							name="lucide:chevron-right"
+							size="3rem"
+							class="inline-block animate-pulseTo0 animate-delay-1000 animate-infinite -ml-8"
+						/>
+					</template>
+					<template v-else>
+						<UIcon name="lucide:chevron-left" size="3rem" class="inline-block animate-pulseTo0 animate-infinite" />
+						<UIcon
+							name="lucide:chevron-left"
+							size="3rem"
+							class="inline-block animate-pulseTo0 animate-delay-500 animate-infinite -mr-8"
+						/>
+						<UIcon
+							name="lucide:chevron-left"
+							size="3rem"
+							class="inline-block animate-pulseTo0 animate-delay-1000 animate-infinite -mr-8"
+						/>
+					</template>
+				</RouterLink>
 			</div>
 		</div>
-		<LandingFooter :footer-data="data.footer" :links="data.links" />
+		<LandingFooter
+			:footer-data="data.footer"
+			:links="data.links"
+			:animated="effectivePreset !== 'none'"
+			:no-intro-delay="!data.intro_screen_enabled"
+		/>
 	</main>
 </template>
 <script setup lang="ts">
-import { computed, onMounted, ref, toRef } from "vue";
+import { computed, toRef } from "vue";
 import { RouterLink } from "vue-router";
 import LandingFooter from "@/v8/components/footers/LandingFooter.vue";
+import LandingIntroScreen from "@/v8/components/landing/LandingIntroScreen.vue";
 import { useLtRorRtL } from "@/utils/Helpers";
-import { useLandingTextPosition } from "@/v8/composables/useLandingTextPosition";
-import { useLandingAnimation } from "@/v8/composables/useLandingAnimation";
+import { useLandingCtaPosition } from "@/v8/composables/landing/useLandingCtaPosition";
+import { useLandingAnimation } from "@/v8/composables/landing/useLandingAnimation";
+import { useLandingBackgroundOrientation, type LandingPreviewOrientation } from "@/v8/composables/landing/useLandingBackgroundOrientation";
 import { trans } from "laravel-vue-i18n";
 
 const { isLTR } = useLtRorRtL();
 
 const props = defineProps<{
 	data: App.Http.Resources.GalleryConfigs.LandingPageResource;
+	previewOrientation?: LandingPreviewOrientation;
 }>();
 
-const introVisible = ref(true);
+const landingData = toRef(props, "data");
 
-const { positionClasses } = useLandingTextPosition(toRef(() => props.data.hero_text_position));
-const { effectivePreset } = useLandingAnimation(toRef(() => props.data.animation_preset));
+const { ctaStyle } = useLandingCtaPosition(landingData);
+const { effectivePreset, introDelayClass } = useLandingAnimation(landingData);
+const { landscapeImageClass, portraitImageClass } = useLandingBackgroundOrientation(toRef(props, "previewOrientation"));
 
 const entranceDownClass = computed(() => (effectivePreset.value !== "none" ? "animate-landingAnimateDown" : ""));
 
 const ctaText = computed(() => (props.data.cta_text !== "" ? props.data.cta_text : trans("landing.access_gallery")));
 
 const navLinks = computed(() => props.data.links.filter((link) => link.placement === "nav" || link.placement === "both"));
-
-const heroTextStyle = computed(() => ({
-	color: props.data.hero_text_color !== "" ? props.data.hero_text_color : "#ffffff",
-	opacity: props.data.hero_text_opacity / 100,
-}));
-
-onMounted(() => {
-	if (props.data.intro_screen_enabled) {
-		setTimeout(() => (introVisible.value = false), 4000);
-	} else {
-		introVisible.value = false;
-	}
-});
 </script>
 <style lang="css" scoped>
 .animate-landingAnimateDown {
@@ -202,5 +167,13 @@ onMounted(() => {
 		transform: translateY(0);
 		opacity: 1;
 	}
+}
+
+.no-intro-delay {
+	animation-delay: 0s !important;
+}
+
+.light-delay {
+	animation-delay: 0.5s !important;
 }
 </style>

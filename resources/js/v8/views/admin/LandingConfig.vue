@@ -46,23 +46,25 @@
 
 							<Fieldset :legend="$t('landing_config.section_hero')">
 								<div class="flex flex-col gap-4">
-									<div class="flex items-center gap-4">
-										<label class="font-semibold w-1/2">{{ $t("landing_config.field_hero_text_position") }}</label>
-										<USelectMenu v-model="selectedPosition" :items="positionOptions" label-key="label" class="w-1/2">
-											<template #item-label="{ item }">{{ item.label }}</template>
-										</USelectMenu>
-									</div>
+									<template v-if="!isSingleScreenLayout">
+										<div class="flex items-center gap-4">
+											<label class="font-semibold w-1/2">{{ $t("landing_config.field_hero_text_position") }}</label>
+											<USelectMenu v-model="selectedPosition" :items="positionOptions" label-key="label" class="w-1/2">
+												<template #item-label="{ item }">{{ item.label }}</template>
+											</USelectMenu>
+										</div>
 
-									<ColorField
-										:config="heroColorConfig"
-										@filled="(_key, value) => (draft.hero_text_color = value)"
-										@reset="() => (draft.hero_text_color = '')"
-									/>
+										<ColorField
+											:config="heroColorConfig"
+											@filled="(_key, value) => (draft.hero_text_color = value)"
+											@reset="() => (draft.hero_text_color = '')"
+										/>
 
-									<div class="flex items-center gap-4">
-										<label class="font-semibold w-1/2">{{ $t("landing_config.field_hero_text_opacity") }}</label>
-										<UInputNumber v-model="draft.hero_text_opacity" :min="0" :max="100" class="w-1/2" />
-									</div>
+										<div class="flex items-center gap-4">
+											<label class="font-semibold w-1/2">{{ $t("landing_config.field_hero_text_opacity") }}</label>
+											<UInputNumber v-model="draft.hero_text_opacity" :min="0" :max="100" class="w-1/2" />
+										</div>
+									</template>
 
 									<div class="flex items-center gap-4">
 										<label class="font-semibold w-1/2">{{ $t("landing_config.field_animation_preset") }}</label>
@@ -73,7 +75,24 @@
 											</template>
 										</USelectMenu>
 									</div>
+								</div>
+							</Fieldset>
 
+							<LandingBackgroundField
+								v-model:mode="draft.background_landscape_mode"
+								v-model:value="draft.background_landscape"
+								v-model:resolved-url="resolvedBackgroundLandscape"
+								:label="$t('landing_config.section_background_landscape')"
+							/>
+							<LandingBackgroundField
+								v-model:mode="draft.background_portrait_mode"
+								v-model:value="draft.background_portrait"
+								v-model:resolved-url="resolvedBackgroundPortrait"
+								:label="$t('landing_config.section_background_portrait')"
+							/>
+
+							<Fieldset :legend="$t('landing_config.section_cta_position')">
+								<div class="flex flex-col gap-4">
 									<UFormField :label="$t('landing_config.field_cta_text')">
 										<UInput
 											v-model="draft.cta_text"
@@ -81,10 +100,114 @@
 											:placeholder="$t('landing_config.field_cta_text_placeholder')"
 										/>
 									</UFormField>
+
+									<!-- Anchor grid -->
+									<div class="flex flex-col gap-1">
+										<label class="text-sm font-medium">{{ $t("landing_config.field_cta_position") }}</label>
+										<div class="grid grid-cols-3 gap-1" dir="ltr">
+											<UButton
+												v-for="pos in ctaPositionOptions"
+												:key="pos.value"
+												:label="pos.label"
+												size="xs"
+												:color="draft.cta_position === pos.value ? 'primary' : 'neutral'"
+												:variant="draft.cta_position === pos.value ? 'solid' : 'ghost'"
+												class="text-xs"
+												:ui="{ label: 'w-full text-center' }"
+												@click="draft.cta_position = pos.value"
+											/>
+										</div>
+									</div>
+
+									<!-- Shift unit -->
+									<div class="grid grid-cols-2 gap-1">
+										<label class="text-sm font-medium">{{ $t("landing_config.field_cta_shift_type") }}</label>
+										<div class="grid grid-cols-2 gap-1">
+											<UButton
+												:label="$t('landing_config.cta_shift_type_options.relative')"
+												size="xs"
+												:color="draft.cta_shift_type === 'relative' ? 'primary' : 'neutral'"
+												:variant="draft.cta_shift_type === 'relative' ? 'solid' : 'ghost'"
+												class="text-xs"
+												:ui="{ label: 'w-full text-center' }"
+												@click="draft.cta_shift_type = 'relative'"
+											/>
+											<UButton
+												:label="$t('landing_config.cta_shift_type_options.absolute')"
+												size="xs"
+												:color="draft.cta_shift_type === 'absolute' ? 'primary' : 'neutral'"
+												:variant="draft.cta_shift_type === 'absolute' ? 'solid' : 'ghost'"
+												class="text-xs"
+												:ui="{ label: 'w-full text-center' }"
+												@click="draft.cta_shift_type = 'absolute'"
+											/>
+										</div>
+										<small class="col-span-2 text-muted text-xs">{{ $t("landing_config.cta_shift_type_hint") }}</small>
+									</div>
+
+									<!-- Horizontal shift (locked to LTR: "left"/"right" refer to the physical viewport, not text direction) -->
+									<div class="flex flex-col gap-1" dir="ltr">
+										<label class="group text-sm font-medium cursor-pointer select-none w-full" @click="sliderCtaX = 0">
+											<span class="group-hover:hidden">{{
+												$t("landing_config.field_cta_shift_x", { value: String(sliderCtaX) })
+											}}</span>
+											<span class="hidden group-hover:inline">{{ $t("landing_config.reset_to_zero") }}</span>
+										</label>
+										<div class="flex items-center gap-2">
+											<span class="text-xs text-muted w-10 shrink-0 text-right">{{
+												$t("landing_config.cta_shift_x_direction_options.left")
+											}}</span>
+											<div class="relative flex-1">
+												<div class="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 h-full w-px bg-muted/50" />
+												<input
+													type="range"
+													min="-100"
+													max="100"
+													step="1"
+													class="w-full accent-primary-500"
+													:value="String(sliderCtaX)"
+													@input="sliderCtaX = Number(($event.target as HTMLInputElement).value)"
+												/>
+											</div>
+											<span class="text-xs text-muted w-10 shrink-0">{{
+												$t("landing_config.cta_shift_x_direction_options.right")
+											}}</span>
+										</div>
+									</div>
+
+									<!-- Vertical shift -->
+									<div class="flex flex-col gap-1" dir="ltr">
+										<label class="group text-sm font-medium cursor-pointer select-none w-full" @click="sliderCtaY = 0">
+											<span class="group-hover:hidden">{{
+												$t("landing_config.field_cta_shift_y", { value: String(sliderCtaY) })
+											}}</span>
+											<span class="hidden group-hover:inline">{{ $t("landing_config.reset_to_zero") }}</span>
+										</label>
+										<div class="flex items-center gap-2">
+											<span class="text-xs text-muted w-10 shrink-0 text-right">{{
+												$t("landing_config.cta_shift_y_direction_options.down")
+											}}</span>
+											<div class="relative flex-1">
+												<div class="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 h-full w-px bg-muted/50" />
+												<input
+													type="range"
+													min="-100"
+													max="100"
+													step="1"
+													class="w-full accent-primary-500"
+													:value="String(sliderCtaY)"
+													@input="sliderCtaY = Number(($event.target as HTMLInputElement).value)"
+												/>
+											</div>
+											<span class="text-xs text-muted w-10 shrink-0">{{
+												$t("landing_config.cta_shift_y_direction_options.up")
+											}}</span>
+										</div>
+									</div>
 								</div>
 							</Fieldset>
 
-							<Fieldset :legend="$t('landing_config.section_content')">
+							<Fieldset v-if="!isSingleScreenLayout" :legend="$t('landing_config.section_content')">
 								<div class="flex flex-col gap-4">
 									<USwitch
 										v-model="draft.about_enabled"
@@ -97,20 +220,57 @@
 								</div>
 							</Fieldset>
 
-							<div class="flex justify-end">
-								<UButton color="primary" variant="solid" :loading="isSaving" :label="$t('landing_config.save')" @click="save" />
-							</div>
 							<p class="text-muted text-xs text-center">{{ $t("landing_config.flat_list_hint") }}</p>
 						</div>
 
 						<!-- Live preview -->
 						<div class="flex-1">
 							<div class="sticky top-4">
-								<h3 class="font-semibold mb-2">{{ $t("landing_config.preview_title") }}</h3>
-								<p class="text-muted text-xs mb-2">{{ $t("landing_config.preview_hint") }}</p>
-								<div class="border border-default rounded-lg overflow-hidden bg-black" style="aspect-ratio: 16 / 10">
+								<div class="flex items-center justify-between gap-4 mb-2">
+									<h3 class="font-semibold">{{ $t("landing_config.preview_title") }}</h3>
+									<UButton color="primary" variant="solid" :loading="isSaving" :label="$t('landing_config.save')" @click="save" />
+								</div>
+								<div class="flex items-center justify-between gap-4 mb-2">
+									<p class="text-muted text-xs">{{ $t("landing_config.preview_hint") }}</p>
+									<div class="flex gap-1">
+										<UButton
+											icon="lucide:rectangle-horizontal"
+											size="xs"
+											:color="previewOrientation === 'landscape' ? 'primary' : 'neutral'"
+											:variant="previewOrientation === 'landscape' ? 'solid' : 'ghost'"
+											:aria-label="$t('landing_config.preview_orientation_landscape')"
+											@click="previewOrientation = 'landscape'"
+										/>
+										<UButton
+											icon="lucide:rectangle-vertical"
+											size="xs"
+											:color="previewOrientation === 'portrait' ? 'primary' : 'neutral'"
+											:variant="previewOrientation === 'portrait' ? 'solid' : 'ghost'"
+											:aria-label="$t('landing_config.preview_orientation_portrait')"
+											@click="previewOrientation = 'portrait'"
+										/>
+									</div>
+								</div>
+								<div class="border border-default rounded-lg overflow-hidden bg-black mx-auto" :style="previewFrameStyle">
 									<div class="origin-top-left" style="transform: scale(0.5); width: 200%; height: 200%">
-										<component :is="previewComponent" v-if="previewData" :data="previewData" />
+										<template v-if="previewData">
+											<LandingStudio
+												v-if="draft.landing_layout === 'studio'"
+												:data="previewData"
+												:preview-orientation="previewOrientation"
+											/>
+											<LandingMeridian
+												v-else-if="draft.landing_layout === 'meridian'"
+												:data="previewData"
+												:preview-orientation="previewOrientation"
+											/>
+											<LandingPortfolio
+												v-else-if="draft.landing_layout === 'portfolio'"
+												:data="previewData"
+												:preview-orientation="previewOrientation"
+											/>
+											<LandingClassic v-else :data="previewData" :preview-orientation="previewOrientation" />
+										</template>
 									</div>
 								</div>
 							</div>
@@ -246,7 +406,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref, watch } from "vue";
 import { trans } from "laravel-vue-i18n";
 import { storeToRefs } from "pinia";
 import OpenLeftMenu from "@/v8/components/headers/OpenLeftMenu.vue";
@@ -254,9 +414,11 @@ import Fieldset from "@/v8/components/forms/basic/Fieldset.vue";
 import ColorField from "@/v8/components/forms/settings/ColorField.vue";
 import LycheeLoadingIcon from "@/v8/components/LycheeLoadingIcon.vue";
 import LandingLinkFormDialog from "@/v8/components/forms/landing/LandingLinkFormDialog.vue";
+import LandingBackgroundField from "@/v8/components/landing/LandingBackgroundField.vue";
+import type { LandingPreviewOrientation } from "@/v8/composables/landing/useLandingBackgroundOrientation";
 import LandingClassic from "@/v8/views/landing/LandingClassic.vue";
 import LandingPortfolio from "@/v8/views/landing/LandingPortfolio.vue";
-import LandingMinimal from "@/v8/views/landing/LandingMinimal.vue";
+import LandingMeridian from "@/v8/views/landing/LandingMeridian.vue";
 import LandingStudio from "@/v8/views/landing/LandingStudio.vue";
 import InitService from "@/services/init-service";
 import SettingsService from "@/services/settings-service";
@@ -278,11 +440,6 @@ const { is_se_enabled, is_se_preview_enabled } = storeToRefs(lycheeStore);
 const isSeAvailable = computed(() => is_se_enabled.value || is_se_preview_enabled.value);
 
 const activeTab = ref("settings");
-const tabItems: TabsItem[] = [
-	{ label: trans("landing_config.tab_settings"), value: "settings", icon: "lucide:cog", slot: "settings" },
-	{ label: trans("landing_config.tab_links"), value: "links", icon: "lucide:link", slot: "links" },
-	{ label: trans("landing_config.tab_featured"), value: "featured", icon: "lucide:star", slot: "featured" },
-];
 
 const loading = ref(true);
 const isSaving = ref(false);
@@ -297,6 +454,16 @@ type Draft = {
 	about_enabled: boolean;
 	about_text: string;
 	cta_text: string;
+	cta_position: App.Enum.LandingCtaPosition;
+	cta_shift_type: App.Enum.ShiftType;
+	cta_shift_x: number;
+	cta_shift_x_direction: App.Enum.ShiftX;
+	cta_shift_y: number;
+	cta_shift_y_direction: App.Enum.ShiftY;
+	background_landscape_mode: App.Enum.LandingBackgroundModeType;
+	background_landscape: string;
+	background_portrait_mode: App.Enum.LandingBackgroundModeType;
+	background_portrait: string;
 };
 
 const draft = reactive<Draft>({
@@ -309,7 +476,40 @@ const draft = reactive<Draft>({
 	about_enabled: false,
 	about_text: "",
 	cta_text: "",
+	cta_position: "bottom",
+	cta_shift_type: "relative",
+	cta_shift_x: 0,
+	cta_shift_x_direction: "right",
+	cta_shift_y: 0,
+	cta_shift_y_direction: "up",
+	background_landscape_mode: "static",
+	background_landscape: "",
+	background_portrait_mode: "static",
+	background_portrait: "",
 });
+
+const tabItems = computed<TabsItem[]>(() => [
+	{ label: trans("landing_config.tab_settings"), value: "settings", icon: "lucide:cog", slot: "settings" },
+	{ label: trans("landing_config.tab_links"), value: "links", icon: "lucide:link", slot: "links" },
+	{
+		label: trans("landing_config.tab_featured"),
+		value: "featured",
+		icon: "lucide:star",
+		slot: "featured",
+		disabled: draft.landing_layout !== "portfolio",
+	},
+]);
+
+// Featured content only renders on the portfolio layout (LandingPortfolio.vue's showFeatured) —
+// switching away while the now-disabled tab is active would strand the user on a dead tab.
+watch(
+	() => draft.landing_layout,
+	(layout) => {
+		if (layout !== "portfolio" && activeTab.value === "featured") {
+			activeTab.value = "settings";
+		}
+	},
+);
 
 const baseline = ref<App.Http.Resources.GalleryConfigs.LandingPageResource | undefined>(undefined);
 
@@ -348,6 +548,36 @@ function loadSettings(): Promise<void> {
 				case "landing_cta_text":
 					draft.cta_text = config.value;
 					break;
+				case "landing_cta_position":
+					draft.cta_position = config.value as App.Enum.LandingCtaPosition;
+					break;
+				case "landing_cta_shift_type":
+					draft.cta_shift_type = config.value as App.Enum.ShiftType;
+					break;
+				case "landing_cta_shift_x":
+					draft.cta_shift_x = parseInt(config.value, 10) || 0;
+					break;
+				case "landing_cta_shift_x_direction":
+					draft.cta_shift_x_direction = config.value as App.Enum.ShiftX;
+					break;
+				case "landing_cta_shift_y":
+					draft.cta_shift_y = parseInt(config.value, 10) || 0;
+					break;
+				case "landing_cta_shift_y_direction":
+					draft.cta_shift_y_direction = config.value as App.Enum.ShiftY;
+					break;
+				case "landing_background_landscape_mode":
+					draft.background_landscape_mode = config.value as App.Enum.LandingBackgroundModeType;
+					break;
+				case "landing_background_landscape":
+					draft.background_landscape = config.value;
+					break;
+				case "landing_background_portrait_mode":
+					draft.background_portrait_mode = config.value as App.Enum.LandingBackgroundModeType;
+					break;
+				case "landing_background_portrait":
+					draft.background_portrait = config.value;
+					break;
 				case "landing_featured_items_enabled":
 					featuredEnabled.value = config.value === "1";
 					break;
@@ -375,6 +605,16 @@ function save(): void {
 			{ key: "landing_about_enabled", value: draft.about_enabled ? "1" : "0" },
 			{ key: "landing_about_text", value: draft.about_text },
 			{ key: "landing_cta_text", value: draft.cta_text },
+			{ key: "landing_cta_position", value: draft.cta_position },
+			{ key: "landing_cta_shift_type", value: draft.cta_shift_type },
+			{ key: "landing_cta_shift_x", value: String(draft.cta_shift_x) },
+			{ key: "landing_cta_shift_x_direction", value: draft.cta_shift_x_direction },
+			{ key: "landing_cta_shift_y", value: String(draft.cta_shift_y) },
+			{ key: "landing_cta_shift_y_direction", value: draft.cta_shift_y_direction },
+			{ key: "landing_background_landscape_mode", value: draft.background_landscape_mode },
+			{ key: "landing_background_landscape", value: draft.background_landscape },
+			{ key: "landing_background_portrait_mode", value: draft.background_portrait_mode },
+			{ key: "landing_background_portrait", value: draft.background_portrait },
 		],
 	})
 		.then(() => {
@@ -395,7 +635,7 @@ type Option<T> = { label: string; value: T; disabled?: boolean };
 const layoutOptions = computed<Option<App.Enum.LandingLayoutType>[]>(() => [
 	{ label: "Classic", value: "classic" },
 	{ label: "Portfolio", value: "portfolio", disabled: !isSeAvailable.value },
-	{ label: "Minimal", value: "minimal", disabled: !isSeAvailable.value },
+	{ label: "Meridian", value: "meridian", disabled: !isSeAvailable.value },
 	{ label: "Studio", value: "studio", disabled: !isSeAvailable.value },
 ]);
 const selectedLayout = computed<Option<App.Enum.LandingLayoutType> | undefined>({
@@ -404,6 +644,10 @@ const selectedLayout = computed<Option<App.Enum.LandingLayoutType> | undefined>(
 		if (v && !v.disabled) draft.landing_layout = v.value;
 	},
 });
+
+// Classic and meridian are single, fixed hero screens: no title/subtitle overlay to color/position,
+// and no room for a scrollable about blurb (matches LandingClassic.vue/LandingMeridian.vue).
+const isSingleScreenLayout = computed(() => draft.landing_layout === "classic" || draft.landing_layout === "meridian");
 
 const positionOptions: Option<App.Enum.LandingTextPosition>[] = [
 	{ label: "Top left", value: "top_left" },
@@ -419,17 +663,58 @@ const selectedPosition = computed<Option<App.Enum.LandingTextPosition> | undefin
 	},
 });
 
-const animationOptions = computed<Option<App.Enum.LandingAnimationPreset>[]>(() => [
-	{ label: "None", value: "none" },
-	{ label: "Classic fade", value: "classic_fade" },
-	{ label: "Zoom in", value: "zoom_in", disabled: !isSeAvailable.value },
-	{ label: "Parallax scroll", value: "parallax_scroll", disabled: !isSeAvailable.value },
-	{ label: "Slide reveal", value: "slide_reveal", disabled: !isSeAvailable.value },
-]);
+const animationOptions = computed<Option<App.Enum.LandingAnimationPreset>[]>(() => {
+	const options: Option<App.Enum.LandingAnimationPreset>[] = [
+		{ label: "None", value: "none" },
+		{ label: "Classic fade", value: "classic_fade" },
+	];
+	// The classic layout only ever distinguishes "none" from "not none" (see
+	// LandingClassic.vue's entranceDownClass/introDelayClass): zoom_in, parallax_scroll and
+	// slide_reveal render identically to classic_fade there, so hide the redundant options.
+	if (draft.landing_layout === "classic") {
+		return options;
+	}
+	return [
+		...options,
+		{ label: "Zoom in", value: "zoom_in", disabled: !isSeAvailable.value },
+		{ label: "Parallax scroll", value: "parallax_scroll", disabled: !isSeAvailable.value },
+		{ label: "Slide reveal", value: "slide_reveal", disabled: !isSeAvailable.value },
+	];
+});
 const selectedAnimation = computed<Option<App.Enum.LandingAnimationPreset> | undefined>({
 	get: () => animationOptions.value.find((o) => o.value === draft.animation_preset),
 	set: (v) => {
 		if (v && !v.disabled) draft.animation_preset = v.value;
+	},
+});
+
+const ctaPositionOptions: { value: App.Enum.LandingCtaPosition; label: string }[] = [
+	{ value: "top-left", label: trans("landing_config.cta_position_options.top-left") },
+	{ value: "top", label: trans("landing_config.cta_position_options.top") },
+	{ value: "top-right", label: trans("landing_config.cta_position_options.top-right") },
+	{ value: "left", label: trans("landing_config.cta_position_options.left") },
+	{ value: "center", label: trans("landing_config.cta_position_options.center") },
+	{ value: "right", label: trans("landing_config.cta_position_options.right") },
+	{ value: "bottom-left", label: trans("landing_config.cta_position_options.bottom-left") },
+	{ value: "bottom", label: trans("landing_config.cta_position_options.bottom") },
+	{ value: "bottom-right", label: trans("landing_config.cta_position_options.bottom-right") },
+];
+
+// Single signed slider (-100..100) standing in for the magnitude + direction pair: negative
+// values map to "left"/"down", positive values map to "right"/"up". Mirrors WatermarkPreview.vue's
+// sliderX/sliderY.
+const sliderCtaX = computed<number>({
+	get: () => (draft.cta_shift_x_direction === "left" ? -draft.cta_shift_x : draft.cta_shift_x),
+	set: (v) => {
+		draft.cta_shift_x_direction = v < 0 ? "left" : "right";
+		draft.cta_shift_x = Math.abs(v);
+	},
+});
+const sliderCtaY = computed<number>({
+	get: () => (draft.cta_shift_y_direction === "down" ? -draft.cta_shift_y : draft.cta_shift_y),
+	set: (v) => {
+		draft.cta_shift_y_direction = v < 0 ? "down" : "up";
+		draft.cta_shift_y = Math.abs(v);
 	},
 });
 
@@ -445,18 +730,13 @@ const heroColorConfig = computed<App.Http.Resources.Models.ConfigResource>(() =>
 }));
 
 // Live preview
-const previewComponent = computed(() => {
-	switch (draft.landing_layout) {
-		case "studio":
-			return LandingStudio;
-		case "minimal":
-			return LandingMinimal;
-		case "portfolio":
-			return LandingPortfolio;
-		default:
-			return LandingClassic;
-	}
-});
+const previewOrientation = ref<LandingPreviewOrientation>("landscape");
+const resolvedBackgroundLandscape = ref<string | null>(null);
+const resolvedBackgroundPortrait = ref<string | null>(null);
+
+const previewFrameStyle = computed(() =>
+	previewOrientation.value === "portrait" ? { aspectRatio: "9 / 16", maxWidth: "20rem" } : { aspectRatio: "16 / 10" },
+);
 
 const previewData = computed<App.Http.Resources.GalleryConfigs.LandingPageResource | undefined>(() => {
 	if (!baseline.value) {
@@ -465,6 +745,8 @@ const previewData = computed<App.Http.Resources.GalleryConfigs.LandingPageResour
 	return {
 		...baseline.value,
 		layout: draft.landing_layout,
+		landing_background_landscape: resolvedBackgroundLandscape.value ?? baseline.value.landing_background_landscape,
+		landing_background_portrait: resolvedBackgroundPortrait.value ?? baseline.value.landing_background_portrait,
 		intro_screen_enabled: draft.intro_screen_enabled,
 		hero_text_position: draft.hero_text_position,
 		hero_text_color: draft.hero_text_color,
@@ -473,6 +755,12 @@ const previewData = computed<App.Http.Resources.GalleryConfigs.LandingPageResour
 		about_enabled: draft.about_enabled,
 		about_text: draft.about_text,
 		cta_text: draft.cta_text,
+		cta_position: draft.cta_position,
+		cta_shift_type: draft.cta_shift_type,
+		cta_shift_x: draft.cta_shift_x,
+		cta_shift_x_direction: draft.cta_shift_x_direction,
+		cta_shift_y: draft.cta_shift_y,
+		cta_shift_y_direction: draft.cta_shift_y_direction,
 		links: links.value
 			.filter((l) => l.enabled)
 			.map((l) => ({ id: l.id, label: l.label, url: l.url, placement: l.placement, open_in_new_tab: l.open_in_new_tab })),

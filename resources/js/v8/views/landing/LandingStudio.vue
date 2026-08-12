@@ -4,13 +4,15 @@
 			v-if="hasBackground"
 			:src="data.landing_background_landscape"
 			alt=""
-			class="portrait:hidden absolute inset-0 w-full h-full object-cover opacity-50"
+			class="absolute inset-0 w-full h-full object-cover opacity-50"
+			:class="landscapeImageClass"
 		/>
 		<img
 			v-if="hasBackground"
 			:src="data.landing_background_portrait"
 			alt=""
-			class="landscape:hidden absolute inset-0 w-full h-full object-cover opacity-50"
+			class="absolute inset-0 w-full h-full object-cover opacity-50"
+			:class="portraitImageClass"
 		/>
 		<div v-if="hasBackground" class="absolute inset-0 bg-black/40" />
 
@@ -23,14 +25,17 @@
 			<p v-if="data.landing_subtitle !== ''" class="mt-2 text-sm md:text-base" :style="heroTextStyle">{{ data.landing_subtitle }}</p>
 			<p v-if="showAbout" class="mt-4 max-w-lg text-sm text-muted prose prose-invert prose-sm" v-html="data.about_text" />
 
+			<RouterLink :to="{ name: 'home' }" class="mt-8 text-xs uppercase text-muted hover:text-white transition-colors">
+				{{ $t("landing.view_public_gallery") }}
+			</RouterLink>
+		</div>
+
+		<div :style="ctaStyle">
 			<RouterLink
 				:to="{ name: 'login' }"
-				class="mt-8 inline-block px-10 py-3 bg-white text-black uppercase text-sm tracking-wide hover:scale-105 transition-transform"
+				class="inline-block px-10 py-3 bg-white text-black uppercase text-sm tracking-wide hover:scale-105 transition-transform"
 			>
 				{{ primaryCtaText }}
-			</RouterLink>
-			<RouterLink :to="{ name: 'home' }" class="mt-4 text-xs uppercase text-muted hover:text-white transition-colors">
-				{{ $t("landing.view_public_gallery") }}
 			</RouterLink>
 		</div>
 
@@ -90,19 +95,30 @@
 				</a>
 			</div>
 		</footer>
+
+		<LandingIntroScreen :data="data" :effective-preset="effectivePreset" />
 	</main>
 </template>
 <script setup lang="ts">
 import { computed, toRef } from "vue";
 import { RouterLink } from "vue-router";
-import { useLandingAnimation } from "@/v8/composables/useLandingAnimation";
+import LandingIntroScreen from "@/v8/components/landing/LandingIntroScreen.vue";
+import { useLandingAnimation } from "@/v8/composables/landing/useLandingAnimation";
+import { useLandingCtaPosition } from "@/v8/composables/landing/useLandingCtaPosition";
+import { useLandingBackgroundOrientation, type LandingPreviewOrientation } from "@/v8/composables/landing/useLandingBackgroundOrientation";
 import { trans } from "laravel-vue-i18n";
 
 const props = defineProps<{
 	data: App.Http.Resources.GalleryConfigs.LandingPageResource;
+	previewOrientation?: LandingPreviewOrientation;
 }>();
 
-const { effectivePreset } = useLandingAnimation(toRef(() => props.data.animation_preset));
+const { landscapeImageClass, portraitImageClass } = useLandingBackgroundOrientation(toRef(props, "previewOrientation"));
+
+const landingData = toRef(props, "data");
+
+const { effectivePreset } = useLandingAnimation(landingData);
+const { ctaStyle } = useLandingCtaPosition(landingData);
 
 const entranceClass = computed(() => {
 	switch (effectivePreset.value) {

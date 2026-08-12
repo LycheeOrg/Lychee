@@ -241,7 +241,7 @@ html {
 	--animate-landingIntroPopIn: popIn 2s forwards ease-in-out;
 	--animate-landingIntroFadeOut: fadeOut 2s 2s forwards ease-in-out;
 	--animate-landingSlidesPopIn: popIn 2s 3s forwards ease-in-out;
-	--animate-landingEnterPopIn: zoomIn 2s 4s forwards ease-in-out;
+	--animate-landingEnterPopIn: zoomIn 2s 3s forwards ease-in-out;
 	--animate-landingZoomReveal: landingZoomReveal 1s ease-out forwards;
 	--animate-landingSlideReveal: landingSlideReveal 0.8s ease-out forwards;
 
@@ -336,4 +336,12 @@ html {
 }
 .animate-infinite {
 	animation-iteration-count: infinite;
+}
+
+.filter-shadow {
+	filter: drop-shadow(0 0 0.5rem black);
+}
+
+.filter-shadow-darker {
+	filter: drop-shadow(0 0 1rem black) drop-shadow(0 0 2rem black) drop-shadow(0 0 4rem black);
 }

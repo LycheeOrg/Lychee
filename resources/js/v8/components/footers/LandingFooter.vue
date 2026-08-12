@@ -1,6 +1,10 @@
 <template>
 	<div id="footer" class="absolute bg-black z-10 left-0 right-0 bottom-0 text-center py-1 px-0 overflow-clip">
-		<div id="home_socials" class="fixed bottom-8 left-0 right-0 text-center z-10 animate-landingAnimateUp">
+		<div
+			id="home_socials"
+			class="fixed bottom-8 left-0 right-0 text-center z-10"
+			:class="{ 'animate-landingAnimateUp': props.animated, 'no-intro-delay': props.noIntroDelay }"
+		>
 			<a
 				v-if="props.footerData.sm_facebook_url !== ''"
 				id="facebook"
@@ -42,15 +46,24 @@
 				rel="noopener"
 			></a>
 		</div>
-		<p v-if="props.footerData.footer_show_copyright" class="home_copyright uppercase text-white text-3xs font-normal animate-landingAnimateUp">
+		<p
+			v-if="props.footerData.footer_show_copyright"
+			class="home_copyright uppercase text-white text-3xs font-normal"
+			:class="{ 'animate-landingAnimateUp': props.animated, 'no-intro-delay': props.noIntroDelay }"
+		>
 			{{ props.footerData.copyright }}
 		</p>
 		<p
 			v-if="props.footerData.footer_additional_text !== ''"
-			class="personal_text text-white text-3xs font-normal animate-landingAnimateUp"
+			class="personal_text text-white text-3xs font-normal"
+			:class="{ 'animate-landingAnimateUp': props.animated, 'no-intro-delay': props.noIntroDelay }"
 			v-html="props.footerData.footer_additional_text"
 		></p>
-		<p v-if="footerLinks.length > 0" class="text-white text-3xs font-normal animate-landingAnimateUp space-x-4">
+		<p
+			v-if="footerLinks.length > 0"
+			class="text-white text-3xs font-normal space-x-4"
+			:class="{ 'animate-landingAnimateUp': props.animated, 'no-intro-delay': props.noIntroDelay }"
+		>
 			<a
 				v-for="link in footerLinks"
 				:key="link.id"
@@ -70,6 +83,8 @@ import { computed } from "vue";
 type FooterProps = {
 	footerData: App.Http.Resources.GalleryConfigs.FooterConfig;
 	links?: App.Http.Resources.GalleryConfigs.LandingLinkEmbedResource[];
+	noIntroDelay?: boolean;
+	animated?: boolean;
 };
 
 const props = defineProps<FooterProps>();
@@ -97,5 +112,9 @@ const footerLinks = computed(() => (props.links ?? []).filter((link) => link.pla
 		opacity: 1;
 		transform: translateY(0px);
 	}
+}
+
+.no-intro-delay {
+	animation-delay: 0s !important;
 }
 </style>

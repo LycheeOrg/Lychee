@@ -1,18 +1,18 @@
 <template>
-	<LoadingProgress :loading="!initdata" />
-	<LandingStudio v-if="initdata && initdata.layout === 'studio'" :data="initdata" />
-	<LandingMinimal v-else-if="initdata && initdata.layout === 'minimal'" :data="initdata" />
-	<LandingPortfolio v-else-if="initdata && initdata.layout === 'portfolio'" :data="initdata" />
-	<LandingClassic v-else-if="initdata" :data="initdata" />
+	<div>
+		<LandingStudio v-if="initdata && initdata.layout === 'studio'" :data="initdata" />
+		<LandingMeridian v-else-if="initdata && initdata.layout === 'meridian'" :data="initdata" />
+		<LandingPortfolio v-else-if="initdata && initdata.layout === 'portfolio'" :data="initdata" />
+		<LandingClassic v-else-if="initdata" :data="initdata" />
+	</div>
 </template>
 <script setup lang="ts">
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import InitService from "@/services/init-service";
-import LoadingProgress from "@/v8/components/loading/LoadingProgress.vue";
 import LandingClassic from "@/v8/views/landing/LandingClassic.vue";
 import LandingPortfolio from "@/v8/views/landing/LandingPortfolio.vue";
-import LandingMinimal from "@/v8/views/landing/LandingMinimal.vue";
+import LandingMeridian from "@/v8/views/landing/LandingMeridian.vue";
 import LandingStudio from "@/v8/views/landing/LandingStudio.vue";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import { trans } from "laravel-vue-i18n";

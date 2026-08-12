@@ -105,9 +105,10 @@ declare namespace App {
 		export type JobStatus = 0 | 1 | 2 | 3;
 		export type LandingAnimationPreset = "none" | "classic_fade" | "zoom_in" | "parallax_scroll" | "slide_reveal";
 		export type LandingBackgroundModeType = "static" | "photo_id" | "random" | "latest_album_cover" | "random_from_album";
+		export type LandingCtaPosition = "top-left" | "top" | "top-right" | "left" | "center" | "right" | "bottom-left" | "bottom" | "bottom-right";
 		export type LandingFeaturedItemType = "photo" | "album";
 		export type LandingFeaturedItemsMode = "automatic" | "manual";
-		export type LandingLayoutType = "classic" | "portfolio" | "minimal" | "studio";
+		export type LandingLayoutType = "classic" | "portfolio" | "meridian" | "studio";
 		export type LandingLinkPlacement = "nav" | "footer" | "both";
 		export type LandingTextPosition = "top_left" | "top_right" | "bottom_left" | "bottom_right" | "center";
 		export type LicenseType =
@@ -714,6 +715,12 @@ declare namespace App {
 					featured_items: App.Http.Resources.GalleryConfigs.LandingFeaturedContentResource[];
 					links: App.Http.Resources.GalleryConfigs.LandingLinkEmbedResource[];
 					cta_text: string;
+					cta_position: App.Enum.LandingCtaPosition;
+					cta_shift_type: App.Enum.ShiftType;
+					cta_shift_x: number;
+					cta_shift_x_direction: App.Enum.ShiftX;
+					cta_shift_y: number;
+					cta_shift_y_direction: App.Enum.ShiftY;
 				};
 				export type MapProviderData = {
 					layer: string;

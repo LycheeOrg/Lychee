@@ -16,12 +16,14 @@ function prefersReducedMotion(): boolean {
 	return typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
-export function useLandingAnimation(preset: Ref<App.Enum.LandingAnimationPreset>): {
+export function useLandingAnimation(data: Ref<App.Http.Resources.GalleryConfigs.LandingPageResource>): {
 	effectivePreset: ComputedRef<App.Enum.LandingAnimationPreset>;
 	isReducedMotion: ComputedRef<boolean>;
+	introDelayClass: ComputedRef<string>;
 } {
 	const isReducedMotion = computed(() => prefersReducedMotion());
-	const effectivePreset = computed<App.Enum.LandingAnimationPreset>(() => (isReducedMotion.value ? "none" : preset.value));
+	const effectivePreset = computed<App.Enum.LandingAnimationPreset>(() => (isReducedMotion.value ? "none" : data.value.animation_preset));
+	const introDelayClass = computed(() => (data.value.intro_screen_enabled ? "" : "no-intro-delay"));
 
-	return { effectivePreset, isReducedMotion };
+	return { effectivePreset, isReducedMotion, introDelayClass };
 }

@@ -19,10 +19,12 @@ return [
         'featured' => 'Recent Work',
         'scroll_down' => 'Scroll down',
     ],
-    'minimal' => [
-        'about' => 'About',
-    ],
     'studio' => [
         'welcome_back' => 'Welcome back',
+    ],
+    'meridian' => [
+        'explore_label' => 'Explore',
+        'explore_caption' => 'View the gallery',
+        'contact_caption' => 'Get in touch',
     ],
 ];

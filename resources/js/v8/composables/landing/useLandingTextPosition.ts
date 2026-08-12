@@ -20,10 +20,10 @@ const POSITION_CLASSES: Record<App.Enum.LandingTextPosition, string> = {
 	center: "items-center justify-center text-center",
 };
 
-export function useLandingTextPosition(position: Ref<App.Enum.LandingTextPosition>): {
+export function useLandingTextPosition(data: Ref<App.Http.Resources.GalleryConfigs.LandingPageResource>): {
 	positionClasses: ComputedRef<string>;
 } {
-	const positionClasses = computed(() => POSITION_CLASSES[position.value] ?? POSITION_CLASSES.center);
+	const positionClasses = computed(() => POSITION_CLASSES[data.value.hero_text_position] ?? POSITION_CLASSES.center);
 
 	return { positionClasses };
 }

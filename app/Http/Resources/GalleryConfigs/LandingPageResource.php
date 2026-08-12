@@ -10,10 +10,14 @@ namespace App\Http\Resources\GalleryConfigs;
 
 use App\Enum\LandingAnimationPreset;
 use App\Enum\LandingBackgroundModeType;
+use App\Enum\LandingCtaPosition;
 use App\Enum\LandingFeaturedItemsMode;
 use App\Enum\LandingFeaturedItemType;
 use App\Enum\LandingLayoutType;
 use App\Enum\LandingTextPosition;
+use App\Enum\ShiftType;
+use App\Enum\ShiftX;
+use App\Enum\ShiftY;
 use App\Models\Album;
 use App\Models\LandingFeaturedItem;
 use App\Models\LandingLink;
@@ -53,11 +57,17 @@ class LandingPageResource extends Data
 	/** @var LandingLinkEmbedResource[] */
 	public array $links;
 	public string $cta_text;
+	public LandingCtaPosition $cta_position;
+	public ShiftType $cta_shift_type;
+	public int $cta_shift_x;
+	public ShiftX $cta_shift_x_direction;
+	public int $cta_shift_y;
+	public ShiftY $cta_shift_y_direction;
 
 	private const FALLBACK_IMAGE = 'dist/cat.webp';
 
 	/** SE-only landing layouts. Non-SE requesters silently fall back to `classic`. */
-	private const SE_LAYOUTS = [LandingLayoutType::PORTFOLIO, LandingLayoutType::MINIMAL, LandingLayoutType::STUDIO];
+	private const SE_LAYOUTS = [LandingLayoutType::PORTFOLIO, LandingLayoutType::MERIDIAN, LandingLayoutType::STUDIO];
 
 	/** SE-only animation presets. Non-SE requesters silently fall back to `classic_fade`. */
 	private const SE_ANIMATION_PRESETS = [LandingAnimationPreset::ZOOM_IN, LandingAnimationPreset::PARALLAX_SCROLL, LandingAnimationPreset::SLIDE_REVEAL];
@@ -102,6 +112,12 @@ class LandingPageResource extends Data
 		$this->about_text = request()->configs()->getValueAsString('landing_about_text');
 
 		$this->cta_text = request()->configs()->getValueAsString('landing_cta_text');
+		$this->cta_position = request()->configs()->getValueAsEnum('landing_cta_position', LandingCtaPosition::class) ?? LandingCtaPosition::BOTTOM;
+		$this->cta_shift_type = request()->configs()->getValueAsEnum('landing_cta_shift_type', ShiftType::class) ?? ShiftType::RELATIVE;
+		$this->cta_shift_x = request()->configs()->getValueAsInt('landing_cta_shift_x');
+		$this->cta_shift_x_direction = request()->configs()->getValueAsEnum('landing_cta_shift_x_direction', ShiftX::class) ?? ShiftX::RIGHT;
+		$this->cta_shift_y = request()->configs()->getValueAsInt('landing_cta_shift_y');
+		$this->cta_shift_y_direction = request()->configs()->getValueAsEnum('landing_cta_shift_y_direction', ShiftY::class) ?? ShiftY::UP;
 
 		$this->links = LandingLink::query()->enabled()->orderBy('sort_order')->get()
 			->map(fn (LandingLink $landing_link) => new LandingLinkEmbedResource($landing_link))
