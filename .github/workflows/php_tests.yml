@@ -98,10 +98,6 @@ jobs:
           coverage: xdebug
           tools: pecl, composer
 
-      - name: Validate OpenTelemetry PHP extension
-        run: |
-          php --ri opentelemetry
-
       - name: Install Composer dependencies
         uses: ramsey/composer-install@65e4f84970763564f46a70b8a54b90d033b3bdda # 4.0.0
 

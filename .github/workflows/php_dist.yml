@@ -68,11 +68,6 @@ jobs:
           extensions: ${{ env.extensions }}
           tools: pecl, composer
 
-      - name: Install OpenTelemetry PHP extension
-        run: |
-          pecl install opentelemetry
-          php --ri opentelemetry
-
       - name: Build Dist
         run: |
           make dist-clean
