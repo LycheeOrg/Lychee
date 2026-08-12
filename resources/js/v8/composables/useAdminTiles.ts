@@ -146,12 +146,12 @@ export function useAdminTiles(lycheeStore: LycheeStateStore, leftMenuStore: Left
 				() =>
 					(initData.value?.settings.can_edit ?? false) &&
 					(is_se_enabled.value || is_se_preview_enabled.value) &&
-					(initData.value?.modules.is_watermarker_enabled ?? false),
+					(initData.value?.modules.is_watermarker_available ?? false),
 			),
 		},
 		{
 			key: "landing-config",
-			group: "core",
+			group: "extensions",
 			label: "landing_config.title",
 			icon: "lucide:layout-template",
 			to: "/admin/landing-config",

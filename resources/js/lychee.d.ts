@@ -1367,6 +1367,7 @@ declare namespace App {
 					is_mod_frame_enabled: boolean;
 					is_mod_flow_enabled: boolean;
 					is_watermarker_enabled: boolean;
+					is_watermarker_available: boolean;
 					is_photo_timeline_enabled: boolean;
 					is_mod_renamer_enabled: boolean;
 					is_mod_webshop_enabled: boolean;
