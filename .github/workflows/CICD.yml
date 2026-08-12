@@ -88,10 +88,10 @@ jobs:
         uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
         with:
           php-version: 8.4
+          extensions: opentelemetry
 
-      - name: Install OpenTelemetry PHP extension
+      - name: Validate OpenTelemetry PHP extension
         run: |
-          pecl install opentelemetry
           php --ri opentelemetry
 
       - name: Checkout code
@@ -124,10 +124,10 @@ jobs:
         uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
         with:
           php-version: 8.4
+          extensions: opentelemetry
 
-      - name: Install OpenTelemetry PHP extension
+      - name: Validate OpenTelemetry PHP extension
         run: |
-          pecl install opentelemetry
           php --ri opentelemetry
 
       - name: Checkout code
@@ -158,10 +158,10 @@ jobs:
         with:
           php-version: 8.4
           coverage: none
+          extensions: opentelemetry
 
-      - name: Install OpenTelemetry PHP extension
+      - name: Validate OpenTelemetry PHP extension
         run: |
-          pecl install opentelemetry
           php --ri opentelemetry
 
       - name: Install Composer dependencies
@@ -189,10 +189,10 @@ jobs:
         with:
           php-version: 8.4
           coverage: none
+          extensions: opentelemetry
 
-      - name: Install OpenTelemetry PHP extension
+      - name: Validate OpenTelemetry PHP extension
         run: |
-          pecl install opentelemetry
           php --ri opentelemetry
 
       - name: Install Composer dependencies
@@ -241,9 +241,8 @@ jobs:
           coverage: xdebug
           tools: pecl, composer
 
-      - name: Install OpenTelemetry PHP extension
+      - name: Validate OpenTelemetry PHP extension
         run: |
-          pecl install opentelemetry
           php --ri opentelemetry
 
       - name: Install Composer dependencies
