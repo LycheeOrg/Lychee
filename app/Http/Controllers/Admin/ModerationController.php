@@ -44,7 +44,7 @@ class ModerationController extends Controller
 	 */
 	public function list(ListModerationRequest $request): PaginatedModerationResource
 	{
-		$per_page = min((int) $request->query('per_page', 30), 100);
+		$per_page = min((int) $request->query('per_page', 100), 100);
 
 		/** @var \Illuminate\Pagination\LengthAwarePaginator<Photo> $paginated */
 		$paginated = Photo::where('is_validated', false)
