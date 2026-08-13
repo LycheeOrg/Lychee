@@ -37,6 +37,7 @@ class TopTest extends AbstractTestCase
 	protected function setUp(): void
 	{
 		parent::setUp();
+		config(['features.enable-caching' => true]);
 		Configs::set('ai_vision_enabled', '1');
 		Configs::set('ai_vision_face_enabled', '1');
 	}

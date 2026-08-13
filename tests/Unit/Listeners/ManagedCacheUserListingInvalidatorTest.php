@@ -28,6 +28,12 @@ use Tests\AbstractTestCase;
 
 class ManagedCacheUserListingInvalidatorTest extends AbstractTestCase
 {
+	protected function setUp(): void
+	{
+		parent::setUp();
+		config(['features.enable-caching' => true]);
+	}
+
 	protected function tearDown(): void
 	{
 		\Mockery::close();

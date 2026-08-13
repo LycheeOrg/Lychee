@@ -47,6 +47,7 @@ class AlbumRepositoryTest extends AbstractTestCase
 	public function setUp(): void
 	{
 		parent::setUp();
+		config(['features.enable-caching' => true]);
 		$this->setUpRequiresEmptyUsers();
 		$this->setUpRequiresEmptyAlbums();
 

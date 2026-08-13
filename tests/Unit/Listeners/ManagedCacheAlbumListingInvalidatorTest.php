@@ -51,6 +51,7 @@ class ManagedCacheAlbumListingInvalidatorTest extends AbstractTestCase
 	protected function setUp(): void
 	{
 		parent::setUp();
+		config(['features.enable-caching' => true]);
 
 		$config_manager = \Mockery::mock(ConfigManager::class);
 		$config_manager->shouldReceive('getValueAsBool')->with('managed_cache_enabled')->andReturn(true);
