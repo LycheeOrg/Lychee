@@ -177,7 +177,7 @@ class IndexTest extends BaseApiWithDataTest
 		$data = $response->json();
 		$this->assertSame(1, $data['current_page']);
 		$this->assertGreaterThanOrEqual(1, $data['last_page']);
-		$this->assertSame(25, $data['per_page']);
+		$this->assertSame(100, $data['per_page']);
 		$this->assertIsInt($data['total']);
 	}
 
