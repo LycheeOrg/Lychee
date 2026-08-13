@@ -273,7 +273,7 @@ const menu = computed(() =>
 			to: { name: "basket" },
 			type: "link",
 			icon: "lucide:shopping-cart",
-			severity: orderManagementStore.order?.status === "processing" ? "danger" : "secondary",
+			severity: orderManagementStore.order?.status === "processing" ? "danger" : "neutral",
 			if: orderManagementStore.hasItems,
 			key: "basket",
 		},
