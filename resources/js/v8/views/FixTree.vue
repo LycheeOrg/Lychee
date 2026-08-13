@@ -86,7 +86,7 @@ import { ref, onMounted } from "vue";
 import MaintenanceService from "@/services/maintenance-service";
 import { useAppToast } from "@/v8/composables/useAppToast";
 import AlbumService from "@/services/album-service";
-import { AugmentedAlbum, useTreeOperations } from "@/composables/album/treeOperations";
+import { AugmentedAlbum, useTreeOperations } from "@/v8/composables/album/treeOperations";
 import OpenLeftMenu from "@/v8/components/headers/OpenLeftMenu.vue";
 import FixTreeLine from "@/v8/components/maintenance/FixTreeLine.vue";
 import LoadingProgress from "@/v8/components/loading/LoadingProgress.vue";
@@ -114,7 +114,7 @@ function fetch() {
 		originalAlbums.value = data.data;
 		albumIds.value = originalAlbums.value.map((a) => a.id);
 		isLoading.value = false;
-		prepareAlbums();
+		void prepareAlbums();
 	});
 }
 

@@ -85,7 +85,7 @@
 </template>
 <script setup lang="ts">
 import { ref, type Ref, watch } from "vue";
-import { AugmentedAlbum } from "@/composables/album/treeOperations";
+import { AugmentedAlbum } from "@/v8/composables/album/treeOperations";
 import LeftWarn from "./mini/LeftWarn.vue";
 import RightWarn from "./mini/RightWarn.vue";
 import { useLtRorRtL } from "@/utils/Helpers";
