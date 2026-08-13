@@ -70,7 +70,7 @@ class GetAllSettingsTest extends BaseApiWithDataTest
 		]);
 
 		// Mod Cache must be hidden by default (ENABLE_CACHING defaults to false).
-		$response->assertJsonFragment(['cat' => 'Mod Cache']);
+		$response->assertJsonMissing(['cat' => 'Mod Cache']);
 
 		$response = $this->actingAs($this->admin)->getJson('Settings::init');
 		$this->assertOk($response);

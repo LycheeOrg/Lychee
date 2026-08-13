@@ -94,9 +94,9 @@ class Top
 			$this->is_cache_albums_enabled,
 			$tag_albums_key,
 			[$this->cache_key_provider->tagAlbumsListingTag(), $this->cache_key_provider->userTag($user_id), $this->cache_key_provider->albumListingGlobalTag()],
-			fn (): BaseCollection => $this->queryTagAlbums($user)
+			fn (): BaseCollection => $this->queryTagAlbums($user),
+			fn (BaseCollection $albums): array => $this->cache_key_provider->albumTags($albums->map(fn (TagAlbum $a) => $a->id)->all()),
 		);
-		$this->managed_cache_service->addTags($tag_albums_key, $this->cache_key_provider->albumTags($tag_albums->map(fn (TagAlbum $a) => $a->id)->all()));
 
 		// ── Person albums ───────────────────────────────────────────
 		/** @var BaseCollection<int,PersonAlbum> $person_albums */
@@ -107,9 +107,9 @@ class Top
 				$this->is_cache_albums_enabled,
 				$person_albums_key,
 				[$this->cache_key_provider->personAlbumsListingTag(), $this->cache_key_provider->userTag($user_id), $this->cache_key_provider->albumListingGlobalTag()],
-				fn (): BaseCollection => $this->queryPersonAlbums($user)
+				fn (): BaseCollection => $this->queryPersonAlbums($user),
+				fn (BaseCollection $albums): array => $this->cache_key_provider->albumTags($albums->map(fn (PersonAlbum $a) => $a->id)->all()),
 			);
-			$this->managed_cache_service->addTags($person_albums_key, $this->cache_key_provider->albumTags($person_albums->map(fn (PersonAlbum $a) => $a->id)->all()));
 		}
 
 		// ── Pinned albums ───────────────────────────────────────────
@@ -121,9 +121,9 @@ class Top
 			$this->is_cache_albums_enabled,
 			$pinned_albums_key,
 			[$this->cache_key_provider->pinnedAlbumsListingTag(), $this->cache_key_provider->userTag($user_id), $this->cache_key_provider->albumListingGlobalTag()],
-			fn (): BaseCollection => $this->queryPinnedAlbums($user, $pinned_col, $pinned_order)
+			fn (): BaseCollection => $this->queryPinnedAlbums($user, $pinned_col, $pinned_order),
+			fn (BaseCollection $albums): array => $this->cache_key_provider->albumTags($albums->map(fn (Album $a) => $a->id)->all()),
 		);
-		$this->managed_cache_service->addTags($pinned_albums_key, $this->cache_key_provider->albumTags($pinned_albums->map(fn (Album $a) => $a->id)->all()));
 
 		// ── Root / shared albums ────────────────────────────────────
 		$root_key = $this->cache_key_provider->rootAlbumsListingKey($user_id, $this->sorting);
@@ -132,9 +132,9 @@ class Top
 			$this->is_cache_albums_enabled,
 			$root_key,
 			[$this->cache_key_provider->albumChildrenTag(null), $this->cache_key_provider->userTag($user_id), $this->cache_key_provider->albumListingGlobalTag()],
-			fn (): BaseCollection => $this->queryRootAlbums($user, $user_id)
+			fn (): BaseCollection => $this->queryRootAlbums($user, $user_id),
+			fn (BaseCollection $albums): array => $this->cache_key_provider->albumTags($albums->map(fn (Album $a) => $a->id)->all()),
 		);
-		$this->managed_cache_service->addTags($root_key, $this->cache_key_provider->albumTags($albums->map(fn (Album $a) => $a->id)->all()));
 
 		if ($user_id !== null) {
 			// Ownership partitioning stays in-memory, applied after

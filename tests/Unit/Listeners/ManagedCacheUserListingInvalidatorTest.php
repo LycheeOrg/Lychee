@@ -48,8 +48,8 @@ class ManagedCacheUserListingInvalidatorTest extends AbstractTestCase
 		$cache_key_provider = new CacheKeyProvider();
 		$listener = new ManagedCacheUserListingInvalidator($cache_service, $cache_key_provider);
 
-		$cache_service->remember('k:user1', [$cache_key_provider->userTag(1)], fn () => 'value', 60);
-		$cache_service->remember('k:user2', [$cache_key_provider->userTag(2)], fn () => 'value', 60);
+		$cache_service->remember('k:user1', [$cache_key_provider->userTag(1)], fn () => 'value', ttl: 60);
+		$cache_service->remember('k:user2', [$cache_key_provider->userTag(2)], fn () => 'value', ttl: 60);
 
 		$listener->handle(new UserGroupMembershipChanged(1));
 

@@ -70,7 +70,7 @@ class ManagedCacheAlbumListingInvalidatorTest extends AbstractTestCase
 	/** @param string[] $tags */
 	private function seedCache(string $key, array $tags): void
 	{
-		$this->cache_service->remember($key, $tags, fn () => 'value', 60);
+		$this->cache_service->remember($key, $tags, fn () => 'value', ttl: 60);
 	}
 
 	private function assertEvicted(string $key): void

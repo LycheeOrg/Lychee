@@ -54,7 +54,7 @@ class AlbumRepository
 		$user_id = Auth::id();
 		$page = Paginator::resolveCurrentPage();
 
-		$key = $this->cache_key_provider->albumChildrenPageKey($album_id, $user_id, $page, $sorting);
+		$key = $this->cache_key_provider->albumChildrenPageKey($album_id, $user_id, $page, $per_page, $sorting);
 		$tags = [
 			$this->cache_key_provider->albumChildrenTag($album_id),
 			$this->cache_key_provider->userTag($user_id),
@@ -66,12 +66,11 @@ class AlbumRepository
 			$this->config_manager->getValueAsBool('managed_cache_albums_enabled'),
 			$key,
 			$tags,
-			fn (): LengthAwarePaginator => $this->queryChildrenPaginated($album_id, $sorting, $per_page)
+			fn (): LengthAwarePaginator => $this->queryChildrenPaginated($album_id, $sorting, $per_page),
+			fn (LengthAwarePaginator $result): array => $this->cache_key_provider->albumTags(
+				array_map(fn (Album $album) => $album->id, $result->items())
+			),
 		);
-
-		$this->managed_cache_service->addTags($key, $this->cache_key_provider->albumTags(
-			array_map(fn (Album $album) => $album->id, $result->items())
-		));
 
 		return $result;
 	}

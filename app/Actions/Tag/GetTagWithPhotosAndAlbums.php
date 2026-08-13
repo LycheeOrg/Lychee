@@ -129,11 +129,11 @@ class GetTagWithPhotosAndAlbums
 				$this->cache_key_provider->userTag($user_id),
 				$this->cache_key_provider->albumListingGlobalTag(),
 			],
-			fn () => $this->queryAccessibleAlbums($tag, $user, $unlocked_album_ids)
+			fn () => $this->queryAccessibleAlbums($tag, $user, $unlocked_album_ids),
+			fn (\Illuminate\Database\Eloquent\Collection $albums): array => $this->cache_key_provider->albumTags(
+				$albums->map(fn (Album $album) => $album->id)->all()
+			),
 		);
-		$this->managed_cache_service->addTags($key, $this->cache_key_provider->albumTags(
-			$albums->map(fn (Album $album) => $album->id)->all()
-		));
 
 		return $albums->map(fn (Album $album) => ThumbAlbumResource::fromModel($album));
 	}

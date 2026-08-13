@@ -39,7 +39,7 @@ class ApplyNsfwAlbumSensitivityJobTest extends BaseApiWithDataTest
 		$job = new ApplyNsfwAlbumSensitivityJob([$this->album1->id]);
 		$job->handle();
 
-		Event::assertDispatched(AlbumSaved::class, fn (AlbumSaved $e) => in_array($this->album1->id, $e->album_ids));
+		Event::assertDispatched(AlbumSaved::class, fn (AlbumSaved $e) => in_array($this->album1->id, $e->album_ids, true));
 	}
 
 	public function testSkipsNonExistentAlbumId(): void

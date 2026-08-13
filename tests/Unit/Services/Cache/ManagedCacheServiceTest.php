@@ -59,7 +59,7 @@ class ManagedCacheServiceTest extends AbstractTestCase
 			$calls++;
 
 			return 'computed-value';
-		}, 60);
+		}, ttl: 60);
 
 		self::assertSame('computed-value', $result);
 		self::assertSame(1, $calls);
@@ -76,7 +76,7 @@ class ManagedCacheServiceTest extends AbstractTestCase
 			$calls++;
 
 			return 'recomputed-value';
-		}, 60);
+		}, ttl: 60);
 
 		self::assertSame('cached-value', $result);
 		self::assertSame(0, $calls);
@@ -92,8 +92,8 @@ class ManagedCacheServiceTest extends AbstractTestCase
 			return 'value-' . $calls;
 		};
 
-		$first = $service->remember('mc-test:disabled', ['tag:a'], $callback, 60);
-		$second = $service->remember('mc-test:disabled', ['tag:a'], $callback, 60);
+		$first = $service->remember('mc-test:disabled', ['tag:a'], $callback, ttl: 60);
+		$second = $service->remember('mc-test:disabled', ['tag:a'], $callback, ttl: 60);
 
 		self::assertSame('value-1', $first);
 		self::assertSame('value-2', $second);
@@ -106,7 +106,7 @@ class ManagedCacheServiceTest extends AbstractTestCase
 	{
 		$service = $this->makeService(enabled: true);
 
-		$result = $service->remember('mc-test:no-tags', [], fn () => 'untagged-value', 60);
+		$result = $service->remember('mc-test:no-tags', [], fn () => 'untagged-value', ttl: 60);
 
 		self::assertSame('untagged-value', $result);
 		self::assertSame('untagged-value', Cache::get('mc-test:no-tags'));
@@ -116,13 +116,13 @@ class ManagedCacheServiceTest extends AbstractTestCase
 	{
 		$service = $this->makeService(enabled: true);
 
-		$service->remember('mc-test:multi-tag', ['tag:x', 'tag:y'], fn () => 'value', 60);
+		$service->remember('mc-test:multi-tag', ['tag:x', 'tag:y'], fn () => 'value', ttl: 60);
 
 		// Either tag independently evicts the same key.
 		$service->forgetTag('tag:x');
 		self::assertNull(Cache::get('mc-test:multi-tag'), 'evicting the first tag should evict the key');
 
-		$service->remember('mc-test:multi-tag', ['tag:x', 'tag:y'], fn () => 'value-again', 60);
+		$service->remember('mc-test:multi-tag', ['tag:x', 'tag:y'], fn () => 'value-again', ttl: 60);
 		$service->forgetTag('tag:y');
 		self::assertNull(Cache::get('mc-test:multi-tag'), 'evicting the second tag should also evict the key');
 	}
@@ -139,8 +139,8 @@ class ManagedCacheServiceTest extends AbstractTestCase
 			return 'value-' . $calls;
 		};
 
-		$first = $service->rememberIf(false, 'mc-test:rememberif-false', ['tag:a'], $callback, 60);
-		$second = $service->rememberIf(false, 'mc-test:rememberif-false', ['tag:a'], $callback, 60);
+		$first = $service->rememberIf(false, 'mc-test:rememberif-false', ['tag:a'], $callback, ttl: 60);
+		$second = $service->rememberIf(false, 'mc-test:rememberif-false', ['tag:a'], $callback, ttl: 60);
 
 		self::assertSame('value-1', $first);
 		self::assertSame('value-2', $second);
@@ -157,12 +157,12 @@ class ManagedCacheServiceTest extends AbstractTestCase
 			$calls++;
 
 			return 'computed-' . $calls;
-		}, 60);
+		}, ttl: 60);
 		$second = $service->rememberIf(true, 'mc-test:rememberif-true', ['tag:a'], function () use (&$calls) {
 			$calls++;
 
 			return 'computed-' . $calls;
-		}, 60);
+		}, ttl: 60);
 
 		self::assertSame('computed-1', $first);
 		self::assertSame('computed-1', $second, 'second call should be a cache hit, not recomputed');
@@ -174,7 +174,7 @@ class ManagedCacheServiceTest extends AbstractTestCase
 	public function testAddTagsAssociatesAdditionalTagsWithAnAlreadyCachedKey(): void
 	{
 		$service = $this->makeService(enabled: true);
-		$service->remember('mc-test:add-tags', ['tag:known'], fn () => 'value', 60);
+		$service->remember('mc-test:add-tags', ['tag:known'], fn () => 'value', ttl: 60);
 
 		$service->addTags('mc-test:add-tags', ['tag:late']);
 
@@ -207,8 +207,8 @@ class ManagedCacheServiceTest extends AbstractTestCase
 	public function testForgetTagEvictsEveryMemberKeyAndTheTagItself(): void
 	{
 		$service = $this->makeService(enabled: true);
-		$service->remember('mc-test:shared-1', ['tag:shared'], fn () => 'value-1', 60);
-		$service->remember('mc-test:shared-2', ['tag:shared'], fn () => 'value-2', 60);
+		$service->remember('mc-test:shared-1', ['tag:shared'], fn () => 'value-1', ttl: 60);
+		$service->remember('mc-test:shared-2', ['tag:shared'], fn () => 'value-2', ttl: 60);
 
 		$service->forgetTag('tag:shared');
 
@@ -231,7 +231,7 @@ class ManagedCacheServiceTest extends AbstractTestCase
 		$service = $this->makeService(enabled: true);
 		// A purely-numeric key is coerced to an int array key by PHP, so the
 		// stored member set no longer satisfies `is_string($key)`.
-		$service->remember('12345', ['tag:numeric-key'], fn () => 'value', 60);
+		$service->remember('12345', ['tag:numeric-key'], fn () => 'value', ttl: 60);
 
 		$this->expectException(LycheeLogicException::class);
 

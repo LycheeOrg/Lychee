@@ -39,7 +39,13 @@ class ManagedCacheService
 	 * @param string                                    $key
 	 * @param string[]                                  $tags
 	 * @param \Closure(): TCacheValue                   $callback
-	 * @param \DateTimeInterface|\DateInterval|int|null $ttl      when `null`, falls back to the `managed_cache_ttl` config value
+	 * @param \Closure(TCacheValue): string[]|null      $extra_tags computes additional tags from the freshly computed
+	 *                                                              value (e.g. the id of each item it contains). Only
+	 *                                                              invoked on a cache miss, since a cache hit's value
+	 *                                                              is already tagged from when it was first stored —
+	 *                                                              avoids the extra cache round trips a separate
+	 *                                                              {@see self::addTags()} call on every hit would cost.
+	 * @param \DateTimeInterface|\DateInterval|int|null $ttl        when `null`, falls back to the `managed_cache_ttl` config value
 	 *
 	 * @return TCacheValue
 	 */
@@ -47,6 +53,7 @@ class ManagedCacheService
 		string $key,
 		array $tags,
 		\Closure $callback,
+		\Closure|null $extra_tags = null,
 		\DateTimeInterface|\DateInterval|int|null $ttl = null,
 	): mixed {
 		// Fully skip if the managed cache is disabled, this is a safe no-op to ensure
@@ -75,7 +82,8 @@ class ManagedCacheService
 		$value = $callback();
 		try {
 			Cache::put($key, $value, $ttl);
-			$this->rememberTags($tags, $key);
+			$all_tags = $extra_tags === null ? $tags : [...$tags, ...$extra_tags($value)];
+			$this->rememberTags($all_tags, $key);
 			// @codeCoverageIgnoreStart
 		} catch (\Exception $e) {
 			// If we can't cache the value, we will just return the value.
@@ -100,7 +108,8 @@ class ManagedCacheService
 	 * @param string                                    $key
 	 * @param string[]                                  $tags
 	 * @param \Closure(): TCacheValue                   $callback
-	 * @param \DateTimeInterface|\DateInterval|int|null $ttl       when `null`, falls back to the `managed_cache_ttl` config value
+	 * @param \Closure(TCacheValue): string[]|null      $extra_tags see {@see self::remember()}
+	 * @param \DateTimeInterface|\DateInterval|int|null $ttl        when `null`, falls back to the `managed_cache_ttl` config value
 	 *
 	 * @return TCacheValue
 	 */
@@ -109,13 +118,14 @@ class ManagedCacheService
 		string $key,
 		array $tags,
 		\Closure $callback,
+		\Closure|null $extra_tags = null,
 		\DateTimeInterface|\DateInterval|int|null $ttl = null,
 	): mixed {
 		if (!$condition) {
 			return $callback();
 		}
 
-		return $this->remember($key, $tags, $callback, $ttl);
+		return $this->remember($key, $tags, $callback, $extra_tags, $ttl);
 	}
 
 	/**
@@ -173,25 +183,30 @@ class ManagedCacheService
 	public function forgetTags(array $tags): void
 	{
 		$keys_to_forget = [];
+		try {
+			foreach ($tags as $tag) {
+				$keys = Cache::get(self::TAG . $tag, []);
 
-		foreach ($tags as $tag) {
-			$keys = Cache::get(self::TAG . $tag, []);
+				foreach (array_keys($keys) as $key) {
+					if (!is_string($key)) {
+						throw new LycheeLogicException('The keys should be a string');
+					}
 
-			foreach (array_keys($keys) as $key) {
-				if (!is_string($key)) {
-					throw new LycheeLogicException('The keys should be a string');
+					$keys_to_forget[$key] = true;
 				}
-
-				$keys_to_forget[$key] = true;
 			}
-		}
 
-		foreach (array_keys($keys_to_forget) as $key) {
-			Cache::forget($key);
-		}
+			foreach (array_keys($keys_to_forget) as $key) {
+				Cache::forget($key);
+			}
 
-		foreach ($tags as $tag) {
-			Cache::forget(self::TAG . $tag);
+			foreach ($tags as $tag) {
+				Cache::forget(self::TAG . $tag);
+			}
+		} catch (LycheeLogicException $e) {
+			throw $e;
+		} catch (\Exception $e) {
+			Log::error(__METHOD__ . ':' . __LINE__ . ' Could not invalidate the cache tags.', ['exception' => $e, 'tags' => $tags]);
 		}
 	}
 

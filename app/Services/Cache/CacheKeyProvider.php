@@ -118,12 +118,12 @@ class CacheKeyProvider
 	// ── Keys ──────────────────────────────────────────────────────
 	// A key identifies one memoized value.
 
-	public function albumChildrenPageKey(?string $parent_id, int|string|null $user_id, int $page, SortingCriterion $sorting): string
+	public function albumChildrenPageKey(?string $parent_id, int|string|null $user_id, int $page, int $per_page, SortingCriterion $sorting): string
 	{
 		$album_children_tag = $this->albumChildrenTag($parent_id);
 		$user_tag = $this->userTag($user_id);
 
-		return "{$album_children_tag}:{$user_tag}:page:{$page}:sort:{$sorting->column->value}:{$sorting->order->value}";
+		return "{$album_children_tag}:{$user_tag}:page:{$page}:per_page:{$per_page}:sort:{$sorting->column->value}:{$sorting->order->value}";
 	}
 
 	public function rootAlbumsListingKey(int|string|null $user_id, SortingCriterion $sorting): string
