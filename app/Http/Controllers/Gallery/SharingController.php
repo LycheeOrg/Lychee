@@ -12,6 +12,8 @@ use App\Actions\Album\ListAlbums;
 use App\Actions\Sharing\Propagate;
 use App\Actions\Sharing\Share;
 use App\Constants\AccessPermissionConstants as APC;
+use App\Events\AccessPermissionChanged;
+use App\Events\AlbumListingCacheFlushRequested;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Http\Requests\Sharing\AddSharingRequest;
 use App\Http\Requests\Sharing\DeleteSharingRequest;
@@ -77,6 +79,10 @@ class SharingController extends Controller
 			}
 		}
 
+		foreach ($request->albumIds() as $album_id) {
+			AccessPermissionChanged::dispatch($album_id);
+		}
+
 		return AccessPermissionResource::collect($access_permissions);
 	}
 
@@ -97,6 +103,8 @@ class SharingController extends Controller
 			'grants_edit' => $request->permResource()->grants_edit,
 			'grants_delete' => $request->permResource()->grants_delete,
 		]);
+
+		AccessPermissionChanged::dispatch($perm->base_album_id);
 
 		return AccessPermissionResource::fromModel($perm);
 	}
@@ -173,7 +181,10 @@ class SharingController extends Controller
 	 */
 	public function delete(DeleteSharingRequest $request): void
 	{
+		$base_album_id = $request->perm()->base_album_id;
 		AccessPermission::query()->where('id', '=', $request->perm()->id)->delete();
+
+		AccessPermissionChanged::dispatch($base_album_id);
 	}
 
 	/**
@@ -195,5 +206,7 @@ class SharingController extends Controller
 		} else {
 			$propagate->update($album);
 		}
+
+		AlbumListingCacheFlushRequested::dispatch();
 	}
 }

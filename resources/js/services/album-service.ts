@@ -101,6 +101,7 @@ const AlbumService = {
 			}
 			// Clear new paginated endpoint caches
 			axiosWithCache.storage.remove(`album_head_${album_id}`);
+			axiosWithCache.storage.remove(`album_tags_${album_id}`);
 			for (let page = 1; page <= 50; page++) {
 				axiosWithCache.storage.remove(`album_albums_${album_id}_page${page}`);
 				axiosWithCache.storage.remove(`album_photos_${album_id}_page${page}`);
@@ -136,12 +137,18 @@ const AlbumService = {
 		});
 	},
 
+	/**
+	 * @param force - Skip the cached entry and refresh it with a new response.
+	 *                Needed after in-place photo edits because the cache key of a
+	 *                filtered request is not enumerable by `clearCache()`.
+	 */
 	getPhotos(
 		album_id: string,
 		page: number = 1,
 		tag_ids: number[] | null = null,
 		tag_logic: string = "OR",
 		person_id: string | null = null,
+		force: boolean = false,
 	): Promise<AxiosResponse<App.Http.Resources.Collections.PaginatedPhotosResource>> {
 		const requester = axios as unknown as AxiosCacheInstance;
 
@@ -166,6 +173,7 @@ const AlbumService = {
 		return requester.get(`${Constants.getApiUrl()}Album::photos?album_id=${album_id}&page=${page}${param}`, {
 			data: {},
 			id: cacheKey,
+			cache: force ? { override: true } : undefined,
 		});
 	},
 
@@ -306,8 +314,17 @@ const AlbumService = {
 		return axios.post(`${Constants.getApiUrl()}Album::watermark`, { album_id: album_id });
 	},
 
-	getAlbumTags(album_id: string): Promise<AxiosResponse<{ tags: App.Http.Resources.Tags.TagResource[] }>> {
-		return axios.get(`${Constants.getApiUrl()}Album::tags`, { params: { album_id: album_id }, data: {} });
+	/**
+	 * @param force - Skip the cached entry and refresh it with a new response.
+	 */
+	getAlbumTags(album_id: string, force: boolean = false): Promise<AxiosResponse<{ tags: App.Http.Resources.Tags.TagResource[] }>> {
+		const requester = axios as unknown as AxiosCacheInstance;
+		return requester.get(`${Constants.getApiUrl()}Album::tags`, {
+			params: { album_id: album_id },
+			data: {},
+			id: `album_tags_${album_id}`,
+			cache: force ? { override: true } : undefined,
+		});
 	},
 };
 

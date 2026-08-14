@@ -24,9 +24,11 @@ class RecomputeAlbumStatsOnAlbumChange
 	 */
 	public function handleAlbumSaved(AlbumSaved $event): void
 	{
-		// When an album is saved, recompute its stats
-		Log::info("Album {$event->album->id} saved, dispatching recompute job");
-		RecomputeAlbumStatsJob::dispatch($event->album->id);
+		// When albums are saved, recompute their stats
+		foreach ($event->album_ids as $album_id) {
+			Log::info("Album {$album_id} saved, dispatching recompute job");
+			RecomputeAlbumStatsJob::dispatch($album_id);
+		}
 	}
 
 	/**

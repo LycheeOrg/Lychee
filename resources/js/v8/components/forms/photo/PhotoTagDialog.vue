@@ -41,6 +41,7 @@ import { trans } from "laravel-vue-i18n";
 import TagsService from "@/services/tags-service";
 import TagsInput from "@/v8/components/forms/basic/TagsInput.vue";
 import { useExistingTags } from "@/composables/tags/existingTags";
+import { useAlbumStore } from "@/stores/AlbumState";
 
 const props = defineProps<{
 	parentId: string | undefined;
@@ -55,6 +56,7 @@ const emits = defineEmits<{
 }>();
 
 const toast = useAppToast();
+const albumStore = useAlbumStore();
 
 const question = computed(() => {
 	if (props.photo) {
@@ -94,6 +96,7 @@ function execute() {
 		});
 		AlbumService.clearCache(props.parentId);
 		TagsService.clearCache();
+		albumStore.bumpTagsRevision();
 		close();
 		emits("tagged");
 	});

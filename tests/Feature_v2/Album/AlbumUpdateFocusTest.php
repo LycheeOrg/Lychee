@@ -8,11 +8,29 @@
 
 namespace Tests\Feature_v2\Album;
 
+use App\Events\AlbumSaved;
+use Illuminate\Support\Facades\Event;
 use LycheeVerify\Http\Middleware\VerifySupporterStatus;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class AlbumUpdateFocusTest extends BaseApiWithDataTest
 {
+	public function testUpdateAlbumHeaderDispatchesAlbumSavedEvent(): void
+	{
+		Event::fake([AlbumSaved::class]);
+
+		$response = $this->withoutMiddleware(VerifySupporterStatus::class)
+			->actingAs($this->userMayUpload1)->patchJson('Album::header', [
+				'album_id' => $this->album1->id,
+				'header_photo_focus' => ['x' => 0.5, 'y' => 0.5],
+				'title_color' => null,
+				'title_position' => null,
+			]);
+		$response->assertOk();
+
+		Event::assertDispatched(AlbumSaved::class, fn (AlbumSaved $e) => in_array($this->album1->id, $e->album_ids));
+	}
+
 	public function testUpdateAlbumWithEmptyFocus(): void
 	{
 		$response = $this->withoutMiddleware(VerifySupporterStatus::class)

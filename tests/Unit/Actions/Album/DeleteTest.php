@@ -19,11 +19,16 @@
 namespace Tests\Unit\Actions\Album;
 
 use App\Actions\Album\Delete;
+use App\Events\AlbumDeleted;
+use App\Events\BaseAlbumRemoved;
 use App\Models\Album;
+use App\Models\PersonAlbum;
 use App\Models\Photo;
+use App\Models\TagAlbum;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Tests\AbstractTestCase;
 
 class DeleteTest extends AbstractTestCase
@@ -143,5 +148,56 @@ class DeleteTest extends AbstractTestCase
 			'album_id' => $album_z->id,
 			'photo_id' => $photo_c->id,
 		]);
+	}
+
+	public function testDeletePureTagAlbumBatchDispatchesBaseAlbumRemoved(): void
+	{
+		Event::fake([BaseAlbumRemoved::class]);
+
+		$user = User::factory()->create();
+		$tag_album_1 = TagAlbum::factory()->owned_by($user)->create();
+		$tag_album_2 = TagAlbum::factory()->owned_by($user)->create();
+
+		(new Delete())->do([$tag_album_1->id, $tag_album_2->id]);
+
+		$this->assertDatabaseMissing('tag_albums', ['id' => $tag_album_1->id]);
+		$this->assertDatabaseMissing('tag_albums', ['id' => $tag_album_2->id]);
+		Event::assertDispatched(BaseAlbumRemoved::class, fn (BaseAlbumRemoved $e) => in_array($tag_album_1->id, $e->base_album_ids, true) &&
+			in_array($tag_album_2->id, $e->base_album_ids, true));
+		Event::assertDispatchedTimes(BaseAlbumRemoved::class, 1);
+	}
+
+	public function testDeletePersonAlbumDispatchesBaseAlbumRemoved(): void
+	{
+		Event::fake([BaseAlbumRemoved::class]);
+
+		$user = User::factory()->create();
+		$person_album = new PersonAlbum();
+		$person_album->title = 'Test Person Album';
+		$person_album->owner_id = $user->id;
+		$person_album->is_and = true;
+		$person_album->save();
+
+		(new Delete())->do([$person_album->id]);
+
+		$this->assertDatabaseMissing('person_albums', ['id' => $person_album->id]);
+		Event::assertDispatched(BaseAlbumRemoved::class, fn (BaseAlbumRemoved $e) => in_array($person_album->id, $e->base_album_ids, true));
+	}
+
+	public function testDeleteMixedBatchOfRegularAndTagAlbumsDispatchesBothEvents(): void
+	{
+		Event::fake([BaseAlbumRemoved::class, AlbumDeleted::class]);
+
+		$user = User::factory()->create();
+		$parent_album = Album::factory()->as_root()->owned_by($user)->create();
+		$regular_album = Album::factory()->children_of($parent_album)->owned_by($user)->create();
+		$tag_album = TagAlbum::factory()->owned_by($user)->create();
+
+		(new Delete())->do([$regular_album->id, $tag_album->id]);
+
+		$this->assertDatabaseMissing('albums', ['id' => $regular_album->id]);
+		$this->assertDatabaseMissing('tag_albums', ['id' => $tag_album->id]);
+		Event::assertDispatched(BaseAlbumRemoved::class, fn (BaseAlbumRemoved $e) => in_array($tag_album->id, $e->base_album_ids, true));
+		Event::assertDispatched(AlbumDeleted::class);
 	}
 }

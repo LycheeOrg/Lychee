@@ -9,12 +9,14 @@
 namespace Tests\Precomputing\SizeComputations;
 
 use App\Enum\SizeVariantType;
+use App\Events\AlbumComputedDataUpdated;
 use App\Jobs\RecomputeAlbumSizeJob;
 use App\Models\Album;
 use App\Models\AlbumSizeStatistics;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use App\Models\User;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Tests\Precomputing\Base\BasePrecomputingTest;
 
@@ -23,6 +25,21 @@ use Tests\Precomputing\Base\BasePrecomputingTest;
  */
 class RecomputeAlbumSizeJobTest extends BasePrecomputingTest
 {
+	public function testHandleDispatchesAlbumComputedDataUpdated(): void
+	{
+		$user = User::factory()->create();
+		$album = Album::factory()->as_root()->owned_by($user)->create();
+		$photo = Photo::factory()->owned_by($user)->create();
+		$photo->albums()->attach($album->id);
+
+		Event::fake([AlbumComputedDataUpdated::class]);
+
+		$job = new RecomputeAlbumSizeJob($album->id, propagate_to_parent: false);
+		$job->handle();
+
+		Event::assertDispatched(AlbumComputedDataUpdated::class, fn (AlbumComputedDataUpdated $e) => $e->album_id === $album->id);
+	}
+
 	/**
 	 * Test job computes size statistics correctly for single album.
 	 *

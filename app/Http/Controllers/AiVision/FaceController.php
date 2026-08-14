@@ -102,9 +102,7 @@ class FaceController extends Controller
 			$query->update(['person_id' => null]);
 
 			$this->recountOrDeletePersons($affected_person_ids);
-			if ($affected_photo_ids !== []) {
-				PhotoPersonsChanged::dispatch($affected_photo_ids);
-			}
+			PhotoPersonsChanged::dispatchIf($affected_photo_ids !== [], $affected_photo_ids);
 
 			return ['affected_count' => $count, 'person_id' => null];
 		}
@@ -182,9 +180,7 @@ class FaceController extends Controller
 			$count++;
 		}
 
-		if ($face_ids !== []) {
-			DeleteFaceEmbeddingsJob::dispatch($face_ids);
-		}
+		DeleteFaceEmbeddingsJob::dispatchIf($face_ids !== [], $face_ids);
 
 		return ['deleted_count' => $count];
 	}

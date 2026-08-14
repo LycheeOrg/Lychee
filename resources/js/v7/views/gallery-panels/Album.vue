@@ -56,36 +56,16 @@
 			:parent-id="albumId"
 			:photo="selectedPhoto"
 			:photo-ids="selectedPhotosIds"
-			@tagged="
-				() => {
-					unselect();
-					refresh();
-				}
-			"
+			@tagged="refreshInPlace"
 		/>
 		<PhotoLicenseDialog
 			v-model:visible="is_license_visible"
 			:parent-id="albumId"
 			:photo="selectedPhoto"
 			:photo-ids="selectedPhotosIds"
-			@licensed="
-				() => {
-					unselect();
-					refresh();
-				}
-			"
+			@licensed="refreshInPlace"
 		/>
-		<PhotoCopyDialog
-			v-model:visible="is_copy_visible"
-			:photo="selectedPhoto"
-			:photo-ids="selectedPhotosIds"
-			@copied="
-				() => {
-					unselect();
-					refresh();
-				}
-			"
-		/>
+		<PhotoCopyDialog v-model:visible="is_copy_visible" :photo="selectedPhoto" :photo-ids="selectedPhotosIds" @copied="refreshInPlace" />
 		<MoveDialog
 			v-model:visible="is_move_visible"
 			:photo="selectedPhoto"
@@ -310,11 +290,25 @@ function toggleSlideShow() {
 	router.push({ name: albumRoutes().album, params: { albumId: albumStore.album.id, photoId: photosStore.photos[0].id } });
 }
 
-const { selectedPhoto, selectedAlbum, selectedPhotosIds, selectedAlbumsIds, selectEverything, unselect, hasSelection } = useSelection(
+const { selectedPhoto, selectedAlbum, selectedPhotosIds, selectedAlbumsIds, selectEverything, unselect, pruneSelection, hasSelection } = useSelection(
 	photosStore,
 	albumsStore,
 	togglableStore,
 );
+
+/**
+ * Refresh after an operation which leaves the photos of this album where they
+ * are: a metadata edit (tags, license) or a copy to another album.
+ *
+ * Only the thumbnails currently loaded are re-fetched, in place: the album panel
+ * is never torn down, so the scroll position, the loaded page window and the
+ * current selection are all preserved.  Operations which do take photos out of
+ * the album (move, delete, …) keep using the full `refresh()` and drop the
+ * selection.
+ */
+function refreshInPlace() {
+	return albumStore.reloadLoadedPhotos().then(() => pruneSelection());
+}
 
 const { handleRatingClick } = useRating(photoStore, toast, userStore);
 
@@ -469,8 +463,11 @@ onKeyStroke("Escape", () => {
 		return;
 	}
 
-	if (is_move_visible.value) {
-		is_move_visible.value = false;
+	// Escape drops the current selection before navigating away, so that a
+	// selection surviving an in-place edit can be cleared without leaving the
+	// album.
+	if (hasSelection()) {
+		unselect();
 		return;
 	}
 

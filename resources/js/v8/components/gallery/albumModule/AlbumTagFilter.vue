@@ -54,9 +54,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
 import { trans } from "laravel-vue-i18n";
 import AlbumService from "@/services/album-service";
+import { useAlbumStore } from "@/stores/AlbumState";
+
+const albumStore = useAlbumStore();
 
 const props = defineProps<{
 	albumId: string;
@@ -98,8 +101,8 @@ function clearFilter() {
 	emits("clear");
 }
 
-async function fetchTags() {
-	AlbumService.getAlbumTags(props.albumId)
+async function fetchTags(force: boolean = false) {
+	AlbumService.getAlbumTags(props.albumId, force)
 		.then((response) => {
 			availableTags.value = response.data.tags;
 		})
@@ -113,4 +116,11 @@ async function fetchTags() {
 onMounted(() => {
 	fetchTags();
 });
+
+// The photos of the album have been (re)tagged: the component is not remounted
+// in that case, so the tag list has to be pulled again from the server.
+watch(
+	() => albumStore.tags_revision,
+	() => fetchTags(true),
+);
 </script>

@@ -10,6 +10,7 @@ namespace App\Actions\Admin;
 
 use App\Actions\Album\SetProtectionPolicy;
 use App\DTO\BulkAlbumPatchData;
+use App\Events\AlbumSaved;
 use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
 use App\Models\Album;
 use App\Models\BaseAlbumImpl;
@@ -156,5 +157,12 @@ class BulkEditAlbumsAction
 				$this->set_protection_policy->do($album, $protection_policy, false, null);
 			}
 		}
+
+		$parent_ids = Album::query()
+			->whereIn('id', $album_ids)
+			->toBase()
+			->pluck('parent_id');
+
+		AlbumSaved::dispatch($album_ids, $parent_ids->all());
 	}
 }

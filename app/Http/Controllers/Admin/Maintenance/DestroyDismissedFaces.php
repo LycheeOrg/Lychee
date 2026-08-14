@@ -57,9 +57,7 @@ class DestroyDismissedFaces extends Controller
 			$count++;
 		}
 
-		if ($face_ids !== []) {
-			DeleteFaceEmbeddingsJob::dispatch($face_ids);
-		}
+		DeleteFaceEmbeddingsJob::dispatchIf($face_ids !== [], $face_ids);
 
 		return ['deleted_count' => $count];
 	}

@@ -13,8 +13,10 @@
 
 namespace Tests\AssistedVision\NsfwClassification;
 
+use App\Events\AlbumSaved;
 use App\Jobs\ApplyNsfwAlbumSensitivityJob;
 use App\Models\BaseAlbumImpl;
+use Illuminate\Support\Facades\Event;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class ApplyNsfwAlbumSensitivityJobTest extends BaseApiWithDataTest
@@ -28,6 +30,16 @@ class ApplyNsfwAlbumSensitivityJobTest extends BaseApiWithDataTest
 
 		$this->album1->refresh();
 		self::assertTrue($this->album1->is_nsfw);
+	}
+
+	public function testMarkingAlbumAsNsfwDispatchesAlbumSaved(): void
+	{
+		Event::fake([AlbumSaved::class]);
+
+		$job = new ApplyNsfwAlbumSensitivityJob([$this->album1->id]);
+		$job->handle();
+
+		Event::assertDispatched(AlbumSaved::class, fn (AlbumSaved $e) => in_array($this->album1->id, $e->album_ids, true));
 	}
 
 	public function testSkipsNonExistentAlbumId(): void
