@@ -230,6 +230,8 @@ return [
         'question' => '为此照片输入标签。',
         'question_multiple' => '为所有 %d 张选定的照片输入标签。现有标签将被覆盖。',
         'no_tags' => '无标签',
+        'existing_tags' => '已有标签：',
+        'partial_tags_info' => '括号中的标签仅存在于部分选中的照片上。',
         'set_tags' => '设置标签',
         'updated' => '标签已更新！',
         'tags_override_info' => '如果取消选中此项，标签将添加到照片的现有标签中。',

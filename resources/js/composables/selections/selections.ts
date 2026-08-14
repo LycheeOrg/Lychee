@@ -45,6 +45,19 @@ export function useSelection(photosStore: PhotosStore, albumsStore: AlbumsStore,
 		selectedPhotosIds.value = [];
 	}
 
+	/**
+	 * Drop from the selection the photos and albums which are no longer part of the
+	 * loaded collection.
+	 *
+	 * Called after a reload which keeps the selection alive (e.g. tagging), so that
+	 * an item which disappeared in the meantime cannot be targeted by a later bulk
+	 * action even though it is not displayed any more.
+	 */
+	function pruneSelection(): void {
+		selectedPhotosIds.value = selectedPhotosIds.value.filter((id) => photosStore.photos.some((p) => p.id === id));
+		selectedAlbumsIds.value = selectedAlbumsIds.value.filter((id) => albumsStore.selectableAlbums.some((a) => a.id === id));
+	}
+
 	function addToPhotoSelection(photoId: string): void {
 		if (!selectedPhotosIds.value.includes(photoId)) {
 			selectedPhotosIds.value.push(photoId);
@@ -273,6 +286,7 @@ export function useSelection(photosStore: PhotosStore, albumsStore: AlbumsStore,
 		albumSelect,
 		selectEverything,
 		unselect,
+		pruneSelection,
 		hasSelection,
 	};
 }

@@ -9,6 +9,18 @@
 						<i class="text-warning-600 pi pi-exclamation-triangle ltr:mr-2 rtl:ml-2" />Press Enter to confirm each tag.
 					</span>
 				</p>
+				<div v-if="hasExistingTags" class="my-3">
+					<p class="text-xs mb-1">{{ $t("dialogs.photo_tags.existing_tags") }}</p>
+					<div class="flex flex-wrap items-center justify-center gap-x-1 gap-y-1.5">
+						<code v-for="tag in commonTags" :key="`common-${tag}`" :class="tagChipClass">{{ tag }}</code>
+						<template v-if="partialTags.length > 0">
+							<span class="text-2xl leading-none ltr:ml-1 rtl:mr-1">(</span>
+							<code v-for="tag in partialTags" :key="`partial-${tag}`" :class="tagChipClass">{{ tag }}</code>
+							<span class="text-2xl leading-none ltr:mr-1 rtl:ml-1">)</span>
+						</template>
+					</div>
+					<p v-if="partialTags.length > 0" class="text-xs mt-1.5 italic">{{ $t("dialogs.photo_tags.partial_tags_info") }}</p>
+				</div>
 				<div class="my-3 first:mt-0 last:mb-0">
 					<TagsInput v-model="tags" :placeholder="$t('dialogs.photo_tags.no_tags')" :add="true" />
 				</div>
@@ -29,7 +41,7 @@
 	</Dialog>
 </template>
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, toRef } from "vue";
 import PhotoService from "@/services/photo-service";
 import AlbumService from "@/services/album-service";
 import { sprintf } from "sprintf-js";
@@ -40,6 +52,8 @@ import Checkbox from "primevue/checkbox";
 import { trans } from "laravel-vue-i18n";
 import TagsService from "@/services/tags-service";
 import TagsInput from "@/v7/components/forms/basic/TagsInput.vue";
+import { useExistingTags } from "@/composables/tags/existingTags";
+import { useAlbumStore } from "@/stores/AlbumState";
 
 const props = defineProps<{
 	parentId: string | undefined;
@@ -54,6 +68,7 @@ const emits = defineEmits<{
 }>();
 
 const toast = useToast();
+const albumStore = useAlbumStore();
 
 const question = computed(() => {
 	if (props.photo) {
@@ -61,6 +76,12 @@ const question = computed(() => {
 	}
 	return sprintf(trans("dialogs.photo_tags.question_multiple"), props.photoIds?.length);
 });
+
+const { commonTags, partialTags, hasExistingTags } = useExistingTags(toRef(props, "photo"), toRef(props, "photoIds"));
+
+// Slack-like inline code rendering for the tags already set on the photos.
+const tagChipClass =
+	"font-mono text-xs px-1.5 py-0.5 rounded-sm border border-surface-400 dark:border-surface-700 bg-surface-100 dark:bg-surface-800 text-red-500";
 
 const shallOverride = ref(false);
 const tags = ref<string[]>([]);
@@ -91,6 +112,7 @@ function execute() {
 		});
 		AlbumService.clearCache(props.parentId);
 		TagsService.clearCache();
+		albumStore.bumpTagsRevision();
 		close();
 		emits("tagged");
 	});
