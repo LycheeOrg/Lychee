@@ -35,36 +35,16 @@
 			:parent-id="undefined"
 			:photo="selectedPhoto"
 			:photo-ids="selectedPhotosIds"
-			@tagged="
-				() => {
-					unselect();
-					refresh();
-				}
-			"
+			@tagged="refreshInPlace"
 		/>
 		<PhotoLicenseDialog
 			v-model:visible="is_license_visible"
 			:parent-id="undefined"
 			:photo="selectedPhoto"
 			:photo-ids="selectedPhotosIds"
-			@licensed="
-				() => {
-					unselect();
-					refresh();
-				}
-			"
+			@licensed="refreshInPlace"
 		/>
-		<PhotoCopyDialog
-			v-model:visible="is_copy_visible"
-			:photo="selectedPhoto"
-			:photo-ids="selectedPhotosIds"
-			@copied="
-				() => {
-					unselect();
-					refresh();
-				}
-			"
-		/>
+		<PhotoCopyDialog v-model:visible="is_copy_visible" :photo="selectedPhoto" :photo-ids="selectedPhotosIds" @copied="refreshInPlace" />
 		<MoveDialog
 			v-model:visible="is_move_visible"
 			:photo="selectedPhoto"
@@ -184,7 +164,11 @@ const { toggleHighlight, rotatePhotoCCW, rotatePhotoCW, setAlbumHeader, rotateOv
 const { getNext, getPrevious } = getNextPreviousPhoto(router, photoStore);
 const { slideshow, next, previous, stop } = useSlideshowFunction(1000, is_slideshow_active, slideshow_timeout, videoElement, getNext, getPrevious);
 
-const { selectedPhoto, selectedPhotosIds, selectEverything, unselect, hasSelection } = useSelection(photosStore, albumsStore, togglableStore);
+const { selectedPhoto, selectedPhotosIds, selectEverything, unselect, pruneSelection, hasSelection } = useSelection(
+	photosStore,
+	albumsStore,
+	togglableStore,
+);
 
 function goBack() {
 	if (is_slideshow_active.value) {
@@ -303,6 +287,14 @@ onKeyStroke("Escape", () => {
 		return;
 	}
 
+	// Escape drops the current selection before navigating away, so that a
+	// selection surviving an in-place edit can be cleared without leaving the
+	// album.
+	if (hasSelection()) {
+		unselect();
+		return;
+	}
+
 	goBack();
 });
 
@@ -310,6 +302,18 @@ async function refresh() {
 	await Promise.allSettled([userStore.load(), layoutStore.load(), lycheeStore.load(), tagStore.load()]);
 	advisoryCheck();
 	photoStore.load();
+}
+
+/**
+ * Refresh after an operation which leaves the photos of this album where they
+ * are: a metadata edit (tags, license) or a copy to another album.
+ *
+ * The selection is kept alive across the reload — only the entries whose photo
+ * left the album are dropped.  Operations which do take photos out of the album
+ * (move, delete, …) keep clearing the selection entirely.
+ */
+function refreshInPlace() {
+	return refresh().then(() => pruneSelection());
 }
 
 onMounted(async () => {
