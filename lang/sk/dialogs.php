@@ -229,6 +229,8 @@ return [
         'question' => 'Enter your tags for this photo.',
         'question_multiple' => 'Enter your tags for all %d selected photos. Existing tags will be overwritten.',
         'no_tags' => 'No Tags',
+        'existing_tags' => 'Existujúce štítky:',
+        'partial_tags_info' => 'Štítky v zátvorkách sú iba na niektorých vybraných fotografiách.',
         'set_tags' => 'Set Tags',
         'updated' => 'Tags updated!',
         'tags_override_info' => 'If this is checked, the existing tags on each image will be overwritten and replaced.',

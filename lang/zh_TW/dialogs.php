@@ -230,6 +230,8 @@ return [
         'question' => '輸入此相片的標籤。',
         'question_multiple' => '請為所有%d選取的相片輸入標籤，已存在的標籤將被覆寫。',
         'no_tags' => '沒有標籤',
+        'existing_tags' => '已有標籤：',
+        'partial_tags_info' => '括號中的標籤僅存在於部分選取的照片上。',
         'set_tags' => '設定標籤',
         'updated' => '已更新標籤！',
         'tags_override_info' => '如果未勾選，標籤將會新增到照片現有的標籤中。',

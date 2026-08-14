@@ -231,6 +231,8 @@ return [
         'question' => 'Entrez les étiquettes pour cette photo.',
         'question_multiple' => 'Entrez les étiquettes pour les %d photos sélectionnées. Les étiquettes existantes seront écrasées.',
         'no_tags' => 'Aucune étiquette',
+        'existing_tags' => 'Étiquettes déjà présentes :',
+        'partial_tags_info' => 'Les étiquettes entre parenthèses ne sont présentes que sur certaines des photos sélectionnées.',
         'set_tags' => 'Définir les étiquettes',
         'updated' => 'Étiquettes mises à jour !',
         'tags_override_info' => 'Si cette case est cochée, les étiquettes existantes seront remplacées.',

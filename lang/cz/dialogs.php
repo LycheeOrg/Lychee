@@ -230,6 +230,8 @@ return [
         'question' => 'Zadejte Štítky k této fotografii.',
         'question_multiple' => 'Zadejte Štítky pro všechny vybrané fotografie (celkem %d). Existující štítky budou přepsány.',
         'no_tags' => 'Žádné Štítky',
+        'existing_tags' => 'Stávající štítky:',
+        'partial_tags_info' => 'Štítky v závorkách jsou pouze na některých vybraných fotografiích.',
         'set_tags' => 'Nastvit Štítky',
         'updated' => 'Štítky aktualizovány!',
         'tags_override_info' => 'Přidat Štítky k existujícím Štítkům u fotografií.',
