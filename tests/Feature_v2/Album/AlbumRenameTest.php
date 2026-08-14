@@ -18,10 +18,40 @@
 
 namespace Tests\Feature_v2\Album;
 
+use App\Events\AlbumSaved;
+use App\Events\TagAlbumSaved;
+use Illuminate\Support\Facades\Event;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class AlbumRenameTest extends BaseApiWithDataTest
 {
+	public function testRenameAlbumDispatchesAlbumSavedEvent(): void
+	{
+		Event::fake([AlbumSaved::class]);
+
+		$response = $this->actingAs($this->userMayUpload1)->patchJson('Album::rename', [
+			'album_id' => $this->album1->id,
+			'title' => 'new title',
+		]);
+		$this->assertNoContent($response);
+
+		Event::assertDispatched(AlbumSaved::class, fn (AlbumSaved $e) => in_array($this->album1->id, $e->album_ids));
+	}
+
+	public function testRenameTagAlbumDispatchesTagAlbumSavedEventNotAlbumSaved(): void
+	{
+		Event::fake([AlbumSaved::class, TagAlbumSaved::class]);
+
+		$response = $this->actingAs($this->userMayUpload1)->patchJson('Album::rename', [
+			'album_id' => $this->tagAlbum1->id,
+			'title' => 'new tag album title',
+		]);
+		$this->assertNoContent($response);
+
+		Event::assertDispatched(TagAlbumSaved::class, fn (TagAlbumSaved $e) => $e->tag_album_ids === [$this->tagAlbum1->id]);
+		Event::assertNotDispatched(AlbumSaved::class);
+	}
+
 	public function testRenameAlbumUnauthorizedForbidden(): void
 	{
 		$response = $this->patchJson('Album::rename', []);

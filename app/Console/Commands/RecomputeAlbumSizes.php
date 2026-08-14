@@ -134,10 +134,8 @@ class RecomputeAlbumSizes extends Command
 			->toBase()
 			->chunk($chunk_size, function ($albums) use ($dry_run, &$processed, $bar): void {
 				foreach ($albums as $album) {
-					if (!$dry_run) {
-						// Dispatch job to recompute stats for this album
-						RecomputeAlbumSizeJob::dispatch($album->id, false);
-					}
+					// Dispatch job to recompute stats for this album
+					RecomputeAlbumSizeJob::dispatchIf(!$dry_run, $album->id, false);
 
 					$processed++;
 					$bar->advance();

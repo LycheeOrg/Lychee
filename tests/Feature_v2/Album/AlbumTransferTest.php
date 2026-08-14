@@ -18,10 +18,61 @@
 
 namespace Tests\Feature_v2\Album;
 
+use App\Events\AlbumChildrenChanged;
+use App\Events\AlbumListingCacheFlushRequested;
+use App\Events\AlbumSaved;
+use App\Events\TagAlbumSaved;
+use Illuminate\Support\Facades\Event;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class AlbumTransferTest extends BaseApiWithDataTest
 {
+	public function testTransferRootAlbumWithDescendantsDispatchesAlbumSavedAndCoarseFlush(): void
+	{
+		Event::fake([AlbumSaved::class, AlbumChildrenChanged::class, AlbumListingCacheFlushRequested::class]);
+
+		// album1 is root (no old parent) and has subAlbum1 as a descendant.
+		$response = $this->actingAs($this->userMayUpload1)->postJson('Album::transfer', [
+			'album_id' => $this->album1->id,
+			'user_id' => $this->userLocked->id,
+		]);
+		$this->assertNoContent($response);
+
+		Event::assertDispatched(AlbumSaved::class, fn (AlbumSaved $e) => in_array($this->album1->id, $e->album_ids));
+		Event::assertDispatched(AlbumListingCacheFlushRequested::class);
+		Event::assertNotDispatched(AlbumChildrenChanged::class);
+	}
+
+	public function testTransferLeafSubAlbumDispatchesAlbumChildrenChangedForOldParent(): void
+	{
+		Event::fake([AlbumSaved::class, AlbumChildrenChanged::class, AlbumListingCacheFlushRequested::class]);
+
+		// subAlbum1 is a leaf child of album1.
+		$response = $this->actingAs($this->userMayUpload1)->postJson('Album::transfer', [
+			'album_id' => $this->subAlbum1->id,
+			'user_id' => $this->userLocked->id,
+		]);
+		$this->assertNoContent($response);
+
+		Event::assertDispatched(AlbumSaved::class, fn (AlbumSaved $e) => in_array($this->subAlbum1->id, $e->album_ids));
+		Event::assertDispatched(AlbumChildrenChanged::class, fn (AlbumChildrenChanged $e) => in_array($this->album1->id, $e->parent_ids));
+		Event::assertNotDispatched(AlbumListingCacheFlushRequested::class);
+	}
+
+	public function testTransferTagAlbumDispatchesTagAlbumSavedNotAlbumSaved(): void
+	{
+		Event::fake([AlbumSaved::class, TagAlbumSaved::class]);
+
+		$response = $this->actingAs($this->userMayUpload1)->postJson('Album::transfer', [
+			'album_id' => $this->tagAlbum1->id,
+			'user_id' => $this->userLocked->id,
+		]);
+		$this->assertNoContent($response);
+
+		Event::assertDispatched(TagAlbumSaved::class, fn (TagAlbumSaved $e) => $e->tag_album_ids === [$this->tagAlbum1->id]);
+		Event::assertNotDispatched(AlbumSaved::class);
+	}
+
 	public function testTransferAlbumUnauthorizedForbidden(): void
 	{
 		$response = $this->postJson('Album::transfer', []);

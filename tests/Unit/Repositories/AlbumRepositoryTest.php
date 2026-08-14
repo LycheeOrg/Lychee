@@ -23,9 +23,11 @@ use App\Enum\ColumnSortingType;
 use App\Enum\OrderSortingType;
 use App\Models\AccessPermission;
 use App\Models\Album;
+use App\Models\Configs;
 use App\Models\User;
 use App\Repositories\AlbumRepository;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 use Tests\AbstractTestCase;
 use Tests\Traits\RequiresEmptyAlbums;
 use Tests\Traits\RequiresEmptyUsers;
@@ -45,6 +47,7 @@ class AlbumRepositoryTest extends AbstractTestCase
 	public function setUp(): void
 	{
 		parent::setUp();
+		config(['features.enable-caching' => true]);
 		$this->setUpRequiresEmptyUsers();
 		$this->setUpRequiresEmptyAlbums();
 
@@ -55,6 +58,13 @@ class AlbumRepositoryTest extends AbstractTestCase
 
 	public function tearDown(): void
 	{
+		// This test class does not run inside a DB transaction (see
+		// RequiresEmptyAlbums/RequiresEmptyUsers), so any config toggled by
+		// an individual test must be restored here to avoid leaking state
+		// into the shared test database for other test classes.
+		Configs::set('managed_cache_albums_enabled', '1');
+		Configs::set('managed_cache_enabled', '1');
+
 		$this->tearDownRequiresEmptyAlbums();
 		$this->tearDownRequiresEmptyUsers();
 
@@ -208,5 +218,72 @@ class AlbumRepositoryTest extends AbstractTestCase
 		$this->assertGreaterThanOrEqual(1, $result->total());
 		$albumIds = array_map(fn ($item) => $item->id, $result->items());
 		$this->assertContains($this->parentAlbum->id, $albumIds);
+	}
+
+	// ── Managed cache adoption (Feature 053) ─────────────────────
+
+	private function countAlbumTableQueries(\Closure $callback): int
+	{
+		DB::flushQueryLog();
+		DB::enableQueryLog();
+		$callback();
+		$count = count(array_filter(
+			DB::getQueryLog(),
+			// Identifier quoting is driver-specific (SQLite/Postgres use
+			// "double quotes", MySQL/MariaDB use `backticks`) — strip both
+			// before matching so this works under any test DB driver.
+			fn (array $q) => str_contains(str_replace(['"', '`'], '', $q['query']), 'albums')
+		));
+		DB::flushQueryLog();
+		DB::disableQueryLog();
+
+		return $count;
+	}
+
+	public function testCacheHitPerformsNoAlbumsTableQueries(): void
+	{
+		Album::factory()->count(3)->children_of($this->parentAlbum)->owned_by($this->user)->create();
+		$sorting = new AlbumSortingCriterion(ColumnSortingType::CREATED_AT, OrderSortingType::DESC);
+
+		$this->actingAs($this->user);
+		$this->repository->getChildrenPaginated($this->parentAlbum->id, $sorting, 10);
+
+		$second_call_count = $this->countAlbumTableQueries(
+			fn () => $this->repository->getChildrenPaginated($this->parentAlbum->id, $sorting, 10)
+		);
+
+		$this->assertSame(0, $second_call_count, 'A cache hit must not run any query against albums/base_albums.');
+	}
+
+	public function testManagedCacheAlbumsDisabledAlwaysRunsLiveQuery(): void
+	{
+		Configs::set('managed_cache_albums_enabled', '0');
+		Album::factory()->count(2)->children_of($this->parentAlbum)->owned_by($this->user)->create();
+		$sorting = new AlbumSortingCriterion(ColumnSortingType::CREATED_AT, OrderSortingType::DESC);
+
+		$this->actingAs($this->user);
+		$this->repository->getChildrenPaginated($this->parentAlbum->id, $sorting, 10);
+
+		$second_call_count = $this->countAlbumTableQueries(
+			fn () => $this->repository->getChildrenPaginated($this->parentAlbum->id, $sorting, 10)
+		);
+
+		$this->assertGreaterThan(0, $second_call_count, 'managed_cache_albums_enabled=false must disable caching for this consumer.');
+	}
+
+	public function testManagedCacheDisabledAlwaysRunsLiveQuery(): void
+	{
+		Configs::set('managed_cache_enabled', '0');
+		Album::factory()->count(2)->children_of($this->parentAlbum)->owned_by($this->user)->create();
+		$sorting = new AlbumSortingCriterion(ColumnSortingType::CREATED_AT, OrderSortingType::DESC);
+
+		$this->actingAs($this->user);
+		$this->repository->getChildrenPaginated($this->parentAlbum->id, $sorting, 10);
+
+		$second_call_count = $this->countAlbumTableQueries(
+			fn () => $this->repository->getChildrenPaginated($this->parentAlbum->id, $sorting, 10)
+		);
+
+		$this->assertGreaterThan(0, $second_call_count, 'The master managed_cache_enabled switch must win regardless of the per-part toggle.');
 	}
 }

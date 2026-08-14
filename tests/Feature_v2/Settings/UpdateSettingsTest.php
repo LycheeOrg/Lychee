@@ -18,10 +18,46 @@
 
 namespace Tests\Feature_v2\Settings;
 
+use App\Events\AlbumListingCacheFlushRequested;
+use Illuminate\Support\Facades\Event;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class UpdateSettingsTest extends BaseApiWithDataTest
 {
+	public function testChangingAlbumSortingConfigDispatchesCoarseFlush(): void
+	{
+		Event::fake([AlbumListingCacheFlushRequested::class]);
+
+		$response = $this->actingAs($this->admin)->postJson('Settings::setConfigs', [
+			'configs' => [
+				[
+					'key' => 'sorting_albums_col',
+					'value' => 'created_at',
+				],
+			],
+		]);
+		$this->assertOk($response);
+
+		Event::assertDispatched(AlbumListingCacheFlushRequested::class);
+	}
+
+	public function testChangingUnrelatedConfigDoesNotDispatchCoarseFlush(): void
+	{
+		Event::fake([AlbumListingCacheFlushRequested::class]);
+
+		$response = $this->actingAs($this->admin)->postJson('Settings::setConfigs', [
+			'configs' => [
+				[
+					'key' => 'version',
+					'value' => '1',
+				],
+			],
+		]);
+		$this->assertOk($response);
+
+		Event::assertNotDispatched(AlbumListingCacheFlushRequested::class);
+	}
+
 	public function testUpdateSettingsGuest(): void
 	{
 		$response = $this->postJson('Settings::setConfigs', []);

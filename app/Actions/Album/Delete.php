@@ -16,6 +16,7 @@ use App\DTO\Delete\AlbumsToBeDeletedDTO;
 use App\DTO\Delete\PhotosToBeDeletedDTO;
 use App\Enum\StorageDiskType;
 use App\Events\AlbumDeleted;
+use App\Events\BaseAlbumRemoved;
 use App\Exceptions\CorruptedTreeException;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
@@ -126,6 +127,10 @@ class Delete
 	 */
 	private function deleteTagAlbums(array $tag_album_ids): void
 	{
+		if (count($tag_album_ids) === 0) {
+			return;
+		}
+
 		$purchasable_service = resolve(PurchasableService::class);
 		$purchasable_service->deleteMultipleAlbumPurchasables($tag_album_ids);
 		DB::table('live_metrics')->whereIn('album_id', $tag_album_ids)->delete();
@@ -135,6 +140,8 @@ class Delete
 		DB::table('album_user_thumbs')->whereIn('album_id', $tag_album_ids)->delete();
 		DB::table('tag_albums')->whereIn('id', $tag_album_ids)->delete();
 		DB::table('base_albums')->whereIn('id', $tag_album_ids)->delete();
+
+		BaseAlbumRemoved::dispatch($tag_album_ids);
 	}
 
 	/**
@@ -159,6 +166,8 @@ class Delete
 		DB::table('album_user_thumbs')->whereIn('album_id', $person_album_ids)->delete();
 		DB::table('person_albums')->whereIn('id', $person_album_ids)->delete();
 		DB::table('base_albums')->whereIn('id', $person_album_ids)->delete();
+
+		BaseAlbumRemoved::dispatch($person_album_ids);
 	}
 
 	/**

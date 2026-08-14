@@ -115,7 +115,7 @@ class EventListenersTest extends BasePrecomputingTest
 		$album = Album::factory()->as_root()->owned_by($user)->create();
 
 		// Dispatch AlbumSaved event
-		$event = new AlbumSaved($album);
+		$event = new AlbumSaved([$album->id], [$album->parent_id]);
 		$listener = new RecomputeAlbumStatsOnAlbumChange();
 		$listener->handleAlbumSaved($event);
 

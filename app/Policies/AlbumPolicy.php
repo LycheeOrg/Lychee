@@ -593,7 +593,12 @@ class AlbumPolicy extends BasePolicy
 	 */
 	public static function getUnlockedAlbumIDs(): array
 	{
-		return Session::get(self::UNLOCKED_ALBUMS_SESSION_KEY, []);
+		$unlocked_album_ids = Session::get(AlbumPolicy::UNLOCKED_ALBUMS_SESSION_KEY, []);
+		// We sort the array to ensure that the order of the IDs is consistent,
+		// which can be important for caching or comparison purposes.
+		sort($unlocked_album_ids);
+
+		return $unlocked_album_ids;
 	}
 
 	/**

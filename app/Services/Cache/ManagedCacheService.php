@@ -38,20 +38,36 @@ class ManagedCacheService
 	 *
 	 * @param string                                    $key
 	 * @param string[]                                  $tags
-	 * @param \DateTimeInterface|\DateInterval|int|null $ttl
 	 * @param \Closure(): TCacheValue                   $callback
+	 * @param \Closure(TCacheValue): string[]|null      $extra_tags computes additional tags from the freshly computed
+	 *                                                              value (e.g. the id of each item it contains). Only
+	 *                                                              invoked on a cache miss, since a cache hit's value
+	 *                                                              is already tagged from when it was first stored —
+	 *                                                              avoids the extra cache round trips a separate
+	 *                                                              {@see self::addTags()} call on every hit would cost.
+	 * @param \DateTimeInterface|\DateInterval|int|null $ttl        when `null`, falls back to the `managed_cache_ttl` config value
 	 *
 	 * @return TCacheValue
 	 */
 	public function remember(
 		string $key,
 		array $tags,
-		\DateTimeInterface|\DateInterval|int|null $ttl,
 		\Closure $callback,
+		\Closure|null $extra_tags = null,
+		\DateTimeInterface|\DateInterval|int|null $ttl = null,
 	): mixed {
+		// Fully skip if the managed cache is disabled, this is a safe no-op to ensure
+		// there is a fallback if things go south.
+		if (config('features.enable-caching') === false) {
+			return $callback();
+		}
+
+		// Fully skip if the managed cache is disabled in settings
 		if (!$this->config_manager->getValueAsBool('managed_cache_enabled')) {
 			return $callback();
 		}
+
+		$ttl ??= $this->config_manager->getValueAsInt('managed_cache_ttl');
 
 		try {
 			$value = Cache::get($key);
@@ -66,7 +82,8 @@ class ManagedCacheService
 		$value = $callback();
 		try {
 			Cache::put($key, $value, $ttl);
-			$this->rememberTags($tags, $key);
+			$all_tags = $extra_tags === null ? $tags : [...$tags, ...$extra_tags($value)];
+			$this->rememberTags($all_tags, $key);
 			// @codeCoverageIgnoreStart
 		} catch (\Exception $e) {
 			// If we can't cache the value, we will just return the value.
@@ -75,6 +92,40 @@ class ManagedCacheService
 		// @codeCoverageIgnoreEnd
 
 		return $value;
+	}
+
+	/**
+	 * Like {@see self::remember()}, but conditionally: when `$condition` is
+	 * `false`, invokes and returns the callback directly, with no cache I/O
+	 * attempted at all (not even a read probe). When `true`, delegates
+	 * unchanged to {@see self::remember()} (which still separately checks
+	 * `managed_cache_enabled` — both switches are ANDed, neither overrides
+	 * the other).
+	 *
+	 * @template TCacheValue
+	 *
+	 * @param bool                                      $condition
+	 * @param string                                    $key
+	 * @param string[]                                  $tags
+	 * @param \Closure(): TCacheValue                   $callback
+	 * @param \Closure(TCacheValue): string[]|null      $extra_tags see {@see self::remember()}
+	 * @param \DateTimeInterface|\DateInterval|int|null $ttl        when `null`, falls back to the `managed_cache_ttl` config value
+	 *
+	 * @return TCacheValue
+	 */
+	public function rememberIf(
+		bool $condition,
+		string $key,
+		array $tags,
+		\Closure $callback,
+		\Closure|null $extra_tags = null,
+		\DateTimeInterface|\DateInterval|int|null $ttl = null,
+	): mixed {
+		if (!$condition) {
+			return $callback();
+		}
+
+		return $this->remember($key, $tags, $callback, $extra_tags, $ttl);
 	}
 
 	/**
@@ -115,17 +166,48 @@ class ManagedCacheService
 	 */
 	public function forgetTag(string $tag): void
 	{
-		$keys = Cache::get(self::TAG . $tag, []);
+		$this->forgetTags([$tag]);
+	}
 
-		foreach (array_keys($keys) as $key) {
-			if (!is_string($key)) {
-				throw new LycheeLogicException('The keys should be a string');
+	/**
+	 * Forget all the keys related to each of the given tags.
+	 *
+	 * Keys are aggregated across all tags first (de-duplicating any key
+	 * shared by more than one tag) and forgotten in a single pass, before
+	 * the tags themselves are forgotten.
+	 *
+	 * @param string[] $tags
+	 *
+	 * @return void
+	 */
+	public function forgetTags(array $tags): void
+	{
+		$keys_to_forget = [];
+		try {
+			foreach ($tags as $tag) {
+				$keys = Cache::get(self::TAG . $tag, []);
+
+				foreach (array_keys($keys) as $key) {
+					if (!is_string($key)) {
+						throw new LycheeLogicException('The keys should be a string');
+					}
+
+					$keys_to_forget[$key] = true;
+				}
 			}
 
-			Cache::forget($key);
-		}
+			foreach (array_keys($keys_to_forget) as $key) {
+				Cache::forget($key);
+			}
 
-		Cache::forget(self::TAG . $tag);
+			foreach ($tags as $tag) {
+				Cache::forget(self::TAG . $tag);
+			}
+		} catch (LycheeLogicException $e) {
+			throw $e;
+		} catch (\Exception $e) {
+			Log::error(__METHOD__ . ':' . __LINE__ . ' Could not invalidate the cache tags.', ['exception' => $e, 'tags' => $tags]);
+		}
 	}
 
 	/**

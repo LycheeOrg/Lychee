@@ -32,6 +32,8 @@ _Last updated: 2026-08-08_
 
 Per-part configuration of what gets cached is the intended next direction, but the design hasn't been written up yet — no tasks exist for it. Before resuming any of the superseded work below, the `managed_cache_enabled`/`managed_cache_ttl` config migration (previously T-052-05) will need to land regardless of the final design, since `ManagedCacheService` already depends on it at the code level (see T-052-03's note).
 
+**2026-08-08 update:** T-052-05 (config migration) and T-052-06 (`SettingsController` `'Mod Cache'` exemption) are now tracked and completed as `T-053-01` under [Feature 053 – Album Listing Caching](../053-album-listing-caching/tasks.md), which resumes the album-listing half of this feature's superseded design (with a materially larger event/invalidation surface, found via a full repository audit). Photo-listing caching (the other superseded pilot consumer, `PhotoRepository::getPhotosForAlbumPaginated()`) remains unclaimed — see Feature 053's Non-Goals/Follow-ups.
+
 ## Superseded Tasks (not implemented)
 
 The tasks below were written for the original design — event-driven invalidation wired into `AlbumRepository`/`PhotoRepository` — which was reworked and not carried out. None of the referenced files (events, listeners, migration, controller patches, repository wrapping) exist in the repo. Kept unchecked and verbatim for historical reference; do not resume from this list without first reconciling it against whatever the per-part cache-configuration design turns out to be.
