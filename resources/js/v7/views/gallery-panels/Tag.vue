@@ -312,9 +312,8 @@ async function refresh() {
  * left the album are dropped.  Operations which do take photos out of the album
  * (move, delete, …) keep clearing the selection entirely.
  */
-async function refreshInPlace() {
-	await refresh();
-	pruneSelection();
+function refreshInPlace() {
+	return refresh().then(() => pruneSelection());
 }
 
 onMounted(async () => {

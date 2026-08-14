@@ -306,9 +306,8 @@ const { selectedPhoto, selectedAlbum, selectedPhotosIds, selectedAlbumsIds, sele
  * the album (move, delete, …) keep using the full `refresh()` and drop the
  * selection.
  */
-async function refreshInPlace() {
-	await albumStore.reloadLoadedPhotos();
-	pruneSelection();
+function refreshInPlace() {
+	return albumStore.reloadLoadedPhotos().then(() => pruneSelection());
 }
 
 const { handleRatingClick } = useRating(photoStore, toast, userStore);
