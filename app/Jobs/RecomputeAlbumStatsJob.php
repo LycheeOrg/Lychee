@@ -10,6 +10,7 @@ namespace App\Jobs;
 
 use App\Constants\AccessPermissionConstants as APC;
 use App\Constants\PhotoAlbum as PA;
+use App\Events\AlbumComputedDataUpdated;
 use App\Jobs\Traits\DebouncesLatestJobTrait;
 use App\Models\AccessPermission;
 use App\Models\Album;
@@ -118,6 +119,8 @@ class RecomputeAlbumStatsJob implements ShouldQueue
 			$album->auto_cover_id_least_privilege = $this->computeLeastPrivilegeCover($album, $is_nsfw_context);
 			Log::channel('jobs')->debug("Computed covers for album {$album->id}: max_privilege=" . ($album->auto_cover_id_max_privilege ?? 'null') . ', least_privilege=' . ($album->auto_cover_id_least_privilege ?? 'null'));
 			$album->save();
+
+			AlbumComputedDataUpdated::dispatch($album->id);
 
 			// Propagate to parent if exists
 			if ($album->parent_id !== null && $this->propagate_to_parent) {

@@ -18,10 +18,48 @@
 
 namespace Tests\Feature_v2\Album;
 
+use App\Events\AlbumChildrenChanged;
+use App\Events\AlbumListingCacheFlushRequested;
+use App\Models\Album;
+use Illuminate\Support\Facades\Event;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class AlbumMergeTest extends BaseApiWithDataTest
 {
+	public function testMergeAlbumDispatchesAlbumChildrenChangedButNoCoarseFlush(): void
+	{
+		Event::fake([AlbumChildrenChanged::class, AlbumListingCacheFlushRequested::class]);
+
+		// album2 has subAlbum2 (a leaf, no grandchildren) as a child.
+		$response = $this->actingAs($this->userMayUpload2)->postJson('Album::merge', [
+			'album_id' => $this->album1->id, // has edit rights
+			'album_ids' => [$this->album2->id], // own
+		]);
+		$this->assertNoContent($response);
+
+		Event::assertDispatched(AlbumChildrenChanged::class, fn (AlbumChildrenChanged $e) => in_array($this->album1->id, $e->parent_ids));
+		Event::assertNotDispatched(AlbumListingCacheFlushRequested::class);
+	}
+
+	public function testMergeAlbumWithGrandchildDispatchesCoarseFlush(): void
+	{
+		// Build: sourceAlbum (owned by userMayUpload1) -> childAlbum -> grandchildAlbum
+		$sourceAlbum = Album::factory()->as_root()->owned_by($this->userMayUpload1)->create();
+		$childAlbum = Album::factory()->children_of($sourceAlbum)->owned_by($this->userMayUpload1)->create();
+		Album::factory()->children_of($childAlbum)->owned_by($this->userMayUpload1)->create();
+
+		Event::fake([AlbumChildrenChanged::class, AlbumListingCacheFlushRequested::class]);
+
+		$response = $this->actingAs($this->userMayUpload1)->postJson('Album::merge', [
+			'album_id' => $this->album1->id,
+			'album_ids' => [$sourceAlbum->id],
+		]);
+		$this->assertNoContent($response);
+
+		Event::assertDispatched(AlbumChildrenChanged::class, fn (AlbumChildrenChanged $e) => in_array($this->album1->id, $e->parent_ids));
+		Event::assertDispatched(AlbumListingCacheFlushRequested::class);
+	}
+
 	public function testMergeAlbumUnauthorizedForbidden(): void
 	{
 		$response = $this->postJson('Album::merge', []);

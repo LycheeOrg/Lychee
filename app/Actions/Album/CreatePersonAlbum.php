@@ -8,6 +8,7 @@
 
 namespace App\Actions\Album;
 
+use App\Events\PersonAlbumSaved;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
 use App\Models\PersonAlbum;
@@ -41,6 +42,8 @@ class CreatePersonAlbum
 		$album->persons()->sync($person_ids);
 
 		$this->setStatistics($album);
+
+		PersonAlbumSaved::dispatch($album);
 
 		return $album;
 	}

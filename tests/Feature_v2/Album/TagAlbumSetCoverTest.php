@@ -18,10 +18,27 @@
 
 namespace Tests\Feature_v2\Album;
 
+use App\Events\AlbumSaved;
+use App\Events\TagAlbumSaved;
+use Illuminate\Support\Facades\Event;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class TagAlbumSetCoverTest extends BaseApiWithDataTest
 {
+	public function testSetCoverTagAlbumDispatchesTagAlbumSavedEvent(): void
+	{
+		Event::fake([TagAlbumSaved::class, AlbumSaved::class]);
+
+		$response = $this->actingAs($this->userMayUpload1)->postJson('Album::cover', [
+			'album_id' => $this->tagAlbum1->id,
+			'photo_id' => $this->photo1->id,
+		]);
+		$this->assertNoContent($response);
+
+		Event::assertDispatched(TagAlbumSaved::class, fn (TagAlbumSaved $e) => $e->tag_album_ids === [$this->tagAlbum1->id]);
+		Event::assertNotDispatched(AlbumSaved::class);
+	}
+
 	public function testSetCoverTagAlbumUnauthorizedForbidden(): void
 	{
 		$response = $this->postJson('Album::cover', []);

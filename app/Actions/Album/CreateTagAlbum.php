@@ -8,6 +8,7 @@
 
 namespace App\Actions\Album;
 
+use App\Events\TagAlbumSaved;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
 use App\Models\Tag;
@@ -43,6 +44,8 @@ class CreateTagAlbum
 		$album->tags()->sync($tag_models->pluck('id')->all());
 
 		$this->setStatistics($album);
+
+		TagAlbumSaved::dispatch([$album->id]);
 
 		return $album;
 	}

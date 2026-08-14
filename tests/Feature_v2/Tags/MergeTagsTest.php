@@ -18,12 +18,30 @@
 
 namespace Tests\Feature_v2\Tags;
 
+use App\Events\AlbumTagsChanged;
 use App\Models\Tag;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class MergeTagsTest extends BaseApiWithDataTest
 {
+	public function testMergeTagsDispatchesAlbumTagsChanged(): void
+	{
+		Event::fake([AlbumTagsChanged::class]);
+
+		$response = $this->actingAs($this->admin)->putJson('Tag', [
+			'tag_id' => $this->source_tag->id,
+			'destination_id' => $this->destination_tag->id,
+		]);
+		$this->assertNoContent($response);
+
+		Event::assertDispatched(
+			AlbumTagsChanged::class,
+			fn (AlbumTagsChanged $e) => count(array_diff([$this->source_tag->id, $this->destination_tag->id], $e->tag_ids)) === 0
+		);
+	}
+
 	protected Tag $source_tag;
 	protected Tag $destination_tag;
 

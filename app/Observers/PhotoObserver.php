@@ -27,8 +27,6 @@ class PhotoObserver
 	public function deleting(Photo $photo): void
 	{
 		$face_ids = $photo->faces()->pluck('id')->all();
-		if ($face_ids !== []) {
-			DeleteFaceEmbeddingsJob::dispatch($face_ids);
-		}
+		DeleteFaceEmbeddingsJob::dispatchIf($face_ids !== [], $face_ids);
 	}
 }

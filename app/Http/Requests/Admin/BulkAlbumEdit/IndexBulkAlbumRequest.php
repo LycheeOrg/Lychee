@@ -32,7 +32,7 @@ class IndexBulkAlbumRequest extends BaseApiRequest
 		return [
 			'search' => ['sometimes', 'nullable', 'string', 'max:255'],
 			'page' => ['sometimes', 'integer', 'min:1'],
-			'per_page' => ['sometimes', 'integer', 'in:25,50,100'],
+			'per_page' => ['sometimes', 'integer', 'in:100,200,500'],
 		];
 	}
 

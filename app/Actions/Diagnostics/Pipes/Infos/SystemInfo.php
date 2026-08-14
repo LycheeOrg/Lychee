@@ -27,6 +27,43 @@ class SystemInfo implements DiagnosticStringPipe
 	 */
 	public function handle(array &$data, \Closure $next): array
 	{
+		$db_version = $this->getSqlVersion();
+
+		// Output system information
+		$data[] = Diagnostics::line('System:', PHP_OS);
+		$data[] = Diagnostics::line('PHP Version:', phpversion());
+		$data[] = Diagnostics::line('PHP User agent:', ini_get('user_agent'));
+		$time_zone = CarbonTimeZone::create(config('app.timezone')) ?? null;
+		$data[] = Diagnostics::line('int size', $this->getByteSize());
+		$data[] = Diagnostics::line('Timezone:', $time_zone?->getName() ?? 'undefined');
+		$data[] = Diagnostics::line('Max uploaded file size:', ini_get('upload_max_filesize'));
+		$data[] = Diagnostics::line('Max post size:', ini_get('post_max_size'));
+		$data[] = Diagnostics::line('Chunk size:', Helpers::getSymbolByQuantity(UploadConfig::getUploadLimit()));
+		$data[] = Diagnostics::line('Max execution time: ', ini_get('max_execution_time'));
+		$data[] = Diagnostics::line($db_version['type'] . ' Version:', $db_version['version']);
+		$data[] = '';
+
+		return $next($data);
+	}
+
+	private function getByteSize(): string
+	{
+		$max_int = PHP_INT_MAX;
+		$byte_size = PHP_INT_SIZE;
+
+		// We compare to the string to avoid issues with 32-bit vs 64-bit systems and integer overflow.
+		if ("{$max_int}" === '9223372036854775807') {
+			return "64 bits {$byte_size}";
+		}
+
+		return "32 bits {$byte_size}";
+	}
+
+	/**
+	 * @return array{type:string,version:string} An array containing the SQL type and version
+	 */
+	private function getSqlVersion(): array
+	{
 		// About SQL version
 		// @codeCoverageIgnoreStart
 		try {
@@ -50,22 +87,8 @@ class SystemInfo implements DiagnosticStringPipe
 			$dbtype = 'Unknown SQL';
 			$dbver = 'unknown';
 		}
-
 		// @codeCoverageIgnoreEnd
 
-		// Output system information
-		$data[] = Diagnostics::line('System:', PHP_OS);
-		$data[] = Diagnostics::line('PHP Version:', phpversion());
-		$data[] = Diagnostics::line('PHP User agent:', ini_get('user_agent'));
-		$time_zone = CarbonTimeZone::create(config('app.timezone')) ?? null;
-		$data[] = Diagnostics::line('Timezone:', $time_zone?->getName() ?? 'undefined');
-		$data[] = Diagnostics::line('Max uploaded file size:', ini_get('upload_max_filesize'));
-		$data[] = Diagnostics::line('Max post size:', ini_get('post_max_size'));
-		$data[] = Diagnostics::line('Chunk size:', Helpers::getSymbolByQuantity(UploadConfig::getUploadLimit()));
-		$data[] = Diagnostics::line('Max execution time: ', ini_get('max_execution_time'));
-		$data[] = Diagnostics::line($dbtype . ' Version:', $dbver);
-		$data[] = '';
-
-		return $next($data);
+		return ['type' => $dbtype, 'version' => $dbver];
 	}
 }

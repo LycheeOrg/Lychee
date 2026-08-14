@@ -44,13 +44,11 @@ class ModerationController extends Controller
 	 */
 	public function list(ListModerationRequest $request): PaginatedModerationResource
 	{
-		$per_page = min((int) $request->query('per_page', 30), 100);
-
 		/** @var \Illuminate\Pagination\LengthAwarePaginator<Photo> $paginated */
 		$paginated = Photo::where('is_validated', false)
 			->with(['owner', 'albums', 'size_variants'])
 			->orderBy('created_at', 'desc')
-			->paginate($per_page);
+			->paginate($request->per_page);
 
 		return new PaginatedModerationResource($paginated);
 	}
@@ -144,9 +142,7 @@ class ModerationController extends Controller
 				->distinct()
 				->pluck('album_id')->all();
 
-			if ($all_album_ids !== []) {
-				ApplyNsfwAlbumSensitivityJob::dispatch($all_album_ids);
-			}
+			ApplyNsfwAlbumSensitivityJob::dispatchIf($all_album_ids !== [], $all_album_ids);
 		}
 	}
 }

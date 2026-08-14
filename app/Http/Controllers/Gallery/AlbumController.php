@@ -24,6 +24,10 @@ use App\Enum\AlbumTitleColor;
 use App\Enum\AlbumTitlePosition;
 use App\Enum\SizeVariantType;
 use App\Events\AlbumRouteCacheUpdated;
+use App\Events\AlbumSaved;
+use App\Events\AlbumTagsChanged;
+use App\Events\PersonAlbumSaved;
+use App\Events\TagAlbumSaved;
 use App\Exceptions\Internal\LycheeLogicException;
 use App\Exceptions\UnauthenticatedException;
 use App\Http\Requests\Album\AddAlbumRequest;
@@ -55,9 +59,11 @@ use App\Jobs\RecomputeAlbumUserThumbsJob;
 use App\Jobs\WatermarkerJob;
 use App\Models\Album;
 use App\Models\Extensions\BaseAlbum;
+use App\Models\PersonAlbum;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use App\Models\Tag;
+use App\Models\TagAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -129,7 +135,9 @@ class AlbumController extends Controller
 
 		if ($request->tagsProvided()) {
 			$tag_models = Tag::from($request->tags());
-			$album->tags()->sync($tag_models->pluck('id')->all());
+			$changes = $album->tags()->sync($tag_models->pluck('id')->all());
+			$changed_tag_ids = array_values(array_unique([...$changes['attached'], ...$changes['detached']]));
+			AlbumTagsChanged::dispatchIf($changed_tag_ids !== [], $changed_tag_ids);
 		}
 
 		$album = $set_header->do(
@@ -138,6 +146,8 @@ class AlbumController extends Controller
 			photo: $request->photo(),
 			shall_override: true
 		);
+
+		AlbumSaved::dispatch([$album->id], [$album->parent_id]);
 
 		return EditableBaseAlbumResource::fromModel($album);
 	}
@@ -167,6 +177,8 @@ class AlbumController extends Controller
 		$album->tags()->sync($tag_models->pluck('id')->all());
 		RecomputeAlbumUserThumbsJob::dispatch(RecomputeAlbumUserThumbsJob::KIND_TAG, $album->id);
 
+		TagAlbumSaved::dispatch([$album->id]);
+
 		// Root
 		return EditableBaseAlbumResource::fromModel($album);
 	}
@@ -194,6 +206,8 @@ class AlbumController extends Controller
 
 		$album->persons()->sync($request->personIds());
 		RecomputeAlbumUserThumbsJob::dispatch(RecomputeAlbumUserThumbsJob::KIND_PERSON, $album->id);
+
+		PersonAlbumSaved::dispatch($album);
 
 		return EditableBaseAlbumResource::fromModel($album);
 	}
@@ -304,6 +318,8 @@ class AlbumController extends Controller
 		$album = $request->album();
 		$album->cover_id = ($album->cover_id === $request->photo()->id) ? null : $request->photo()->id;
 		$album->save();
+
+		$this->dispatchSaved($album);
 	}
 
 	/**
@@ -311,7 +327,9 @@ class AlbumController extends Controller
 	 */
 	public function header(SetAsHeaderRequest $request, SetHeader $set_header): void
 	{
-		$set_header->do($request->album(), $request->is_compact(), $request->photo());
+		$album = $set_header->do($request->album(), $request->is_compact(), $request->photo());
+
+		AlbumSaved::dispatch([$album->id], [$album->parent_id]);
 	}
 
 	/**
@@ -325,6 +343,8 @@ class AlbumController extends Controller
 		$album->header_photo_focus = $request->headerPhotoFocus();
 		$album->save();
 
+		AlbumSaved::dispatch([$album->id], [$album->parent_id]);
+
 		return EditableBaseAlbumResource::fromModel($album);
 	}
 
@@ -336,6 +356,8 @@ class AlbumController extends Controller
 		$album = $request->album();
 		$album->title = $request->title();
 		$album->save();
+
+		$this->dispatchSaved($album);
 	}
 
 	/**
@@ -346,6 +368,26 @@ class AlbumController extends Controller
 		$album = $request->album();
 		$album->is_pinned = $request->is_pinned();
 		$album->save();
+
+		$this->dispatchSaved($album);
+	}
+
+	/**
+	 * Dispatches the type-appropriate "saved" event for the given album.
+	 *
+	 * Several endpoints (`cover`, `rename`, `setPinned`) accept any
+	 * `BaseAlbum` (`Album`/`TagAlbum`/`PersonAlbum`), since `cover_id`,
+	 * title, and `is_pinned` are all shared `base_albums` attributes, but
+	 * only a plain `Album` carries a `parent_id`.
+	 */
+	private function dispatchSaved(BaseAlbum $album): void
+	{
+		match (true) {
+			$album instanceof Album => AlbumSaved::dispatch([$album->id], [$album->parent_id]),
+			$album instanceof TagAlbum => TagAlbumSaved::dispatch([$album->id]),
+			$album instanceof PersonAlbum => PersonAlbumSaved::dispatch($album),
+			default => null,
+		};
 	}
 
 	/**
