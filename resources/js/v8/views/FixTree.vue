@@ -6,7 +6,7 @@
 		</template>
 		{{ $t("fix-tree.title") }}
 	</UHeader>
-	<div class="text-muted">
+	<UMain class="text-muted">
 		<div class="text-center mt-2 p-2">
 			<span v-html="$t('fix-tree.intro')" /><br />
 			<span class="text-error text-lg font-bold"
@@ -38,7 +38,7 @@
 
 		<div
 			v-if="albums !== undefined"
-			class="md:max-w-3xl lg:max-w-5xl xl:max-w-7xl mt-9 mx-auto sticky z-30 w-full top-0 flex h-11 justify-center"
+			class="md:max-w-3xl lg:max-w-5xl xl:max-w-7xl mt-9 mx-auto sticky z-30 w-full top-(--ui-header-height) flex h-11 justify-center"
 		>
 			<UButton variant="ghost" color="neutral" class="px-8 font-bold" @click="fetch">{{ $t("fix-tree.buttons.reset") }}</UButton>
 			<UButton variant="solid" color="warning" class="px-8 font-bold" @click="check">{{ $t("fix-tree.buttons.check") }}</UButton>
@@ -60,7 +60,7 @@
 				<div class="w-full ltr:text-right rtl:text-left">{{ $t("fix-tree.table.parent") }}</div>
 			</div>
 		</div>
-		<UScrollArea :items="albums ?? []" :virtualize="{ estimateSize: 50 }" class="h-screen">
+		<UScrollArea :items="albums ?? []" :virtualize="{ estimateSize: 32, overscan: 50 }" class="h-[calc(100vh-var(--ui-header-height)-var(--ui-main-padding))">
 			<template #default="{ item }">
 				<FixTreeLine
 					v-model:lft="item._lft"
@@ -78,7 +78,7 @@
 				/>
 			</template>
 		</UScrollArea>
-	</div>
+	</UMain>
 	<ScrollTop />
 </template>
 <script setup lang="ts">

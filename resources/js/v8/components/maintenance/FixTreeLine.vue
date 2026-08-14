@@ -21,7 +21,7 @@
 		</div>
 		<div class="flex w-1/4 gap-4">
 			<div class="flex">
-				<UInputNumber
+				<UInput
 					class="w-full px-2"
 					v-model="lft"
 					:color="lft === null || lft === undefined || lft === 0 || props.album.isDuplicate_lft ? 'error' : undefined"
@@ -32,7 +32,7 @@
 				<UButton variant="ghost" color="neutral" icon="lucide:chevron-down" class="py-0.5" @click="decrementLft" />
 			</div>
 			<div class="flex">
-				<UInputNumber
+				<UInput
 					class="w-full px-2"
 					v-model="rgt"
 					:color="rgt === null || rgt === undefined || rgt === 0 || props.album.isDuplicate_rgt ? 'error' : undefined"
