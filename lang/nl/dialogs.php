@@ -230,6 +230,8 @@ return [
         'question' => 'Voer uw tags voor deze foto in.',
         'question_multiple' => 'Voer uw tags voor alle %d geselecteerde foto’s in. Bestaande tags worden overschreven.',
         'no_tags' => 'Geen Tags',
+        'existing_tags' => 'Reeds aanwezige tags:',
+        'partial_tags_info' => 'Tags tussen haakjes staan slechts op sommige van de geselecteerde foto’s.',
         'set_tags' => 'Tags Instellen',
         'updated' => 'Tags bijgewerkt!',
         'tags_override_info' => 'Als dit niet is aangevinkt, worden de tags toegevoegd aan de bestaande tags van de foto.',
