@@ -57,6 +57,7 @@ return [
             'up' => 'Opp',
             'down' => 'Ned',
         ],
+        'reset_to_zero' => 'Reset to 0',
 
         'save' => 'Lagre innstillinger',
         'saved' => 'Vannmerkeinnstillinger lagret.',

@@ -57,6 +57,7 @@ return [
             'up' => 'Up',
             'down' => 'Down',
         ],
+        'reset_to_zero' => 'Reset to 0',
 
         'save' => 'Save Settings',
         'saved' => 'Watermark settings saved.',

@@ -18,8 +18,10 @@ return [
         'featured' => 'Recent Work',
         'scroll_down' => 'Scroll down',
     ],
-    'minimal' => [
-        'about' => 'About',
+    'meridian' => [
+        'explore_label' => 'Explore',
+        'explore_caption' => 'View the gallery',
+        'contact_caption' => 'Get in touch',
     ],
     'studio' => [
         'welcome_back' => 'Welcome back',
