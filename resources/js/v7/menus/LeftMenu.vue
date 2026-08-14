@@ -170,6 +170,15 @@ onMounted(() => {
 	Promise.allSettled([lycheeStore.load(), userStore.load(), load()]);
 });
 
+// Fold the menu as soon as one of its entries navigates somewhere,
+// otherwise the drawer stays open on top of the freshly loaded page.
+watch(
+	() => route.fullPath,
+	() => {
+		left_menu_open.value = false;
+	},
+);
+
 watch(
 	() => user.value,
 	(newValue, oldValue) => {
