@@ -59,7 +59,7 @@
 					{{ $t("landing.Powered_by_Lychee") }}
 				</a>
 			</p>
-			<p v-if="footerData.is_contact_form_enabled" class="contact_form_link w-full uppercase text-muted leading-6 font-normal">
+			<p v-if="isContactLinkVisible" class="contact_form_link w-full uppercase text-muted leading-6 font-normal">
 				<a rel="noopener noreferrer" target="_blank" :href="Constants.BASE_URL + '/contact'" class="underline">
 					{{ footerData.contact_header ? footerData.contact_header : $t("contact.title") }}
 				</a>
@@ -71,11 +71,27 @@
 import InitService from "@/services/init-service";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import Constants from "@/services/constants";
 
+const props = defineProps<{
+	context?: "gallery" | "album";
+}>();
+
 const lycheeStore = useLycheeStateStore();
-const { is_white_label_enabled } = storeToRefs(lycheeStore);
+const { is_white_label_enabled, is_contact_form_enabled, is_contact_form_enabled_on_gallery, is_contact_form_enabled_on_album } =
+	storeToRefs(lycheeStore);
+
+const isContactLinkVisible = computed(() => {
+	if (props.context === "gallery") {
+		return is_contact_form_enabled_on_gallery.value;
+	}
+	if (props.context === "album") {
+		return is_contact_form_enabled_on_album.value;
+	}
+
+	return is_contact_form_enabled.value;
+});
 
 const footerData = ref<App.Http.Resources.GalleryConfigs.FooterConfig | undefined>(undefined);
 InitService.fetchFooter().then((data) => {

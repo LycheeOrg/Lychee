@@ -1,6 +1,22 @@
 <?php
 return [
     'details' => [
+        'contact_form_enabled' => '',
+        'contact_form_security_question' => 'Optional security question, if left empty, no question will be shown and no answer will be expected.',
+        'contact_form_security_answer' => 'The answer to the security question (case-insensitive). Ignored if the security question is empty.',
+        'contact_form_custom_consent_required' => 'When set, a consent checkbox becomes required. If you need to ask users for consent (e.g. to comply with GDPR), you can set the consent text here. When set, a checkbox will be added to the form and users will have to check it before submitting the form.',
+        'contact_form_custom_privacy_url' => 'If have a privacy policy URL, you can set it here. It will be displayed as a link alongside the consent text.',
+        'contact_form_header' => 'Leave empty for default. Allows you to set a custom header for the contact form page.',
+        'contact_form_headline' => 'Leave empty for default. This allows you to provide a short description or instructions for the contact form.',
+        'contact_form_contact_method' => 'Leave empty for default. This allows you to specificy how users should expect to be contacted back (e.g. email, phone, etc.). It is just a label shown on the form, it does not have any functional effect.',
+        'contact_form_message_label' => 'Allows you to customize the question shown to the user. Instead of having just "message" and leaving them with a white box, you can ask them to provide specific information.',
+        'contact_form_message_answer' => 'Optional sample answer, shown as placeholder.',
+        'contact_form_custom_consent_text' => 'When the consent checkbox is required, you can customize the text here.',
+        'contact_form_custom_submit_button_text' => 'Default if empty is "Send Message"',
+        'contact_form_thank_you_message' => 'Default if empty is "Thank you for your message. We will get back to you soon."',
+        'contact_form_enabled_on_gallery' => 'When enabled (and the contact form is enabled), a link to the contact form is displayed at the bottom of the gallery page.',
+        'contact_form_enabled_on_album' => 'When enabled (and the contact form is enabled), a link to the contact form is displayed at the bottom of album pages.',
+        'contact_form_enabled_for_logged_in' => 'When disabled, logged-in users will not see the contact form link. Administrators always see it regardless of this setting.',
         /*
     |--------------------------------------------------------------------------
     | All Settings
@@ -403,6 +419,22 @@ return [
         'neutral_color' => 'Pick a colour, the nearest colour palette will be used. If you leave this empty, the default color will be used.<br>Note: you will need to refresh the page to see the changes. Pick a near-gray color for best results — a saturated color will tint every gray in the interface.',
     ],
     'documentation' => [
+        'contact_form_enabled' => 'Enable the contact form on the website',
+        'contact_form_security_question' => 'Security question',
+        'contact_form_security_answer' => 'Expected answer for the security question',
+        'contact_form_custom_consent_required' => 'Consent required',
+        'contact_form_custom_privacy_url' => 'URL to the privacy policy',
+        'contact_form_header' => 'Header of the contact form',
+        'contact_form_headline' => 'Headline of the contact form',
+        'contact_form_contact_method' => 'Contact method',
+        'contact_form_message_label' => 'Label for the question field',
+        'contact_form_message_answer' => 'Sample answer',
+        'contact_form_custom_consent_text' => 'Consent text',
+        'contact_form_custom_submit_button_text' => 'Custom text for the submit button',
+        'contact_form_thank_you_message' => 'Custom thank you message after submitting the form',
+        'contact_form_enabled_on_gallery' => 'Show the contact form link on the gallery page',
+        'contact_form_enabled_on_album' => 'Show the contact form link on album pages',
+        'contact_form_enabled_for_logged_in' => 'Show the contact form link to logged-in users',
         'version' => 'Version actuelle de Lychee',
         'check_for_updates' => 'Vérifier automatiquement les nouvelles mises à jour',
         'sorting_photos_col' => 'Colonne utilisée par défaut pour trier les photos',

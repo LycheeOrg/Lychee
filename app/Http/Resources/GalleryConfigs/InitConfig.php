@@ -149,6 +149,8 @@ class InitConfig extends Data
 	public string $default_homepage;
 	public bool $is_timeline_page_enabled = false;
 	public bool $is_contact_form_enabled = false;
+	public bool $is_contact_form_enabled_on_gallery = false;
+	public bool $is_contact_form_enabled_on_album = false;
 
 	// Pagination settings
 	public PaginationMode $photos_pagination_mode;
@@ -285,6 +287,9 @@ class InitConfig extends Data
 		// Homepage
 		$this->default_homepage = request()->configs()->getValueAsString('home_page_default');
 		$this->is_timeline_page_enabled = request()->configs()->getValueAsBool('timeline_page_enabled');
+		$this->is_contact_form_enabled = $this->isContactFormEnabled();
+		$this->is_contact_form_enabled_on_gallery = $this->is_contact_form_enabled && request()->configs()->getValueAsBool('contact_form_enabled_on_gallery');
+		$this->is_contact_form_enabled_on_album = $this->is_contact_form_enabled && request()->configs()->getValueAsBool('contact_form_enabled_on_album');
 
 		// Pagination settings
 		$this->photos_pagination_mode = request()->configs()->getValueAsEnum('photos_pagination_ui_mode', PaginationMode::class);
@@ -342,6 +347,26 @@ class InitConfig extends Data
 		}
 
 		return true;
+	}
+
+	/**
+	 * Whether the contact form should be offered to the current user: the feature must be
+	 * enabled, and the user must either be a guest, an administrator (who always sees it),
+	 * or logged in while logged-in users are explicitly allowed.
+	 *
+	 * @return bool
+	 */
+	private function isContactFormEnabled(): bool
+	{
+		if (!request()->configs()->getValueAsBool('contact_form_enabled')) {
+			return false;
+		}
+
+		$user = Auth::user();
+
+		return $user === null
+			|| $user->may_administrate === true
+			|| request()->configs()->getValueAsBool('contact_form_enabled_for_logged_in');
 	}
 
 	private function isNsfwClassifierEnabled(): bool
