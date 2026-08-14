@@ -12,6 +12,7 @@ use App\Http\Requests\BaseApiRequest;
 use App\Models\LandingLink;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class DestroyLandingLinkRequest extends BaseApiRequest
 {
@@ -39,5 +40,9 @@ class DestroyLandingLinkRequest extends BaseApiRequest
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		$this->landing_link = LandingLink::findOrFail($values['landing_link_id']);
+
+		if ($this->landing_link->is_built_in) {
+			throw ValidationException::withMessages(['landing_link_id' => 'This built-in link cannot be deleted.']);
+		}
 	}
 }

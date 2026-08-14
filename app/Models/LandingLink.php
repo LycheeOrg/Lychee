@@ -26,6 +26,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property bool                 $open_in_new_tab
  * @property int                  $sort_order
  * @property bool                 $enabled
+ * @property bool                 $is_built_in
  * @property Carbon               $created_at
  * @property Carbon               $updated_at
  */
@@ -39,6 +40,11 @@ class LandingLink extends Model
 	public $incrementing = false;
 	protected $keyType = 'string';
 
+	/**
+	 * `is_built_in` is intentionally excluded: it marks the built-in
+	 * "Gallery"/"Contact" rows and must never be settable through mass
+	 * assignment from the Store/Update API requests.
+	 */
 	protected $fillable = [
 		'label', 'url', 'placement', 'open_in_new_tab', 'sort_order', 'enabled',
 	];
@@ -48,6 +54,7 @@ class LandingLink extends Model
 		'open_in_new_tab' => true,
 		'sort_order' => 0,
 		'enabled' => true,
+		'is_built_in' => false,
 	];
 
 	protected $casts = [
@@ -55,6 +62,7 @@ class LandingLink extends Model
 		'open_in_new_tab' => 'boolean',
 		'sort_order' => 'integer',
 		'enabled' => 'boolean',
+		'is_built_in' => 'boolean',
 		'created_at' => 'datetime',
 		'updated_at' => 'datetime',
 	];

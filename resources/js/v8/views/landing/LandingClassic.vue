@@ -24,7 +24,15 @@
 			<div id="menu" class="w-full" :class="[entranceDownClass, introDelayClass]">
 				<ul class="menu list-none">
 					<li v-for="link in navLinks" :key="link.id" class="menu-item relative block float-right pt-6 pb-5 px-3">
+						<RouterLink
+							v-if="link.is_built_in"
+							:to="{ name: link.url }"
+							class="cursor-pointer block text-xs uppercase font-normal text-white hover:text-muted"
+						>
+							{{ link.label }}
+						</RouterLink>
 						<a
+							v-else
 							:href="link.url"
 							:target="link.open_in_new_tab ? '_blank' : undefined"
 							:rel="link.open_in_new_tab ? 'noopener' : undefined"
@@ -32,11 +40,6 @@
 						>
 							{{ link.label }}
 						</a>
-					</li>
-					<li class="menu-item relative block float-right pt-6 pb-5 px-3">
-						<RouterLink :to="{ name: 'home' }" class="cursor-pointer block text-xs uppercase font-normal text-white hover:text-muted">
-							{{ $t("landing.gallery") }}
-						</RouterLink>
 					</li>
 				</ul>
 			</div>

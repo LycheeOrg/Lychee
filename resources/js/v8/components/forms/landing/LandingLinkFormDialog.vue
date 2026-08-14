@@ -10,8 +10,8 @@
 						<UInput id="ll_label" v-model="form.label" class="w-full" required />
 					</UFormField>
 
-					<UFormField :label="$t('landing_link.field_url')" required>
-						<UInput id="ll_url" v-model="form.url" class="w-full" type="url" required />
+					<UFormField :label="$t('landing_link.field_url')" :hint="isBuiltIn ? $t('landing_link.built_in_url_hint') : undefined" required>
+						<UInput id="ll_url" v-model="form.url" class="w-full" type="url" required :disabled="isBuiltIn" />
 					</UFormField>
 
 					<div class="flex items-center gap-4">
@@ -84,6 +84,8 @@ function defaultForm(): CreateLandingLinkRequest {
 
 const form = ref<CreateLandingLinkRequest>(defaultForm());
 
+const isBuiltIn = computed(() => props.link?.is_built_in ?? false);
+
 type PlacementOption = { label: string; value: App.Enum.LandingLinkPlacement };
 
 const placementOptions: PlacementOption[] = [
@@ -105,9 +107,23 @@ function onHide(): void {
 
 function save(): void {
 	isSaving.value = true;
-	const request = props.link
-		? LandingLinkService.update(props.link.id, { ...form.value, landing_link_id: props.link.id })
-		: LandingLinkService.create(form.value);
+
+	let request;
+	if (!props.link) {
+		request = LandingLinkService.create(form.value);
+	} else if (isBuiltIn.value) {
+		// The URL of a built-in link is a route name, not editable here, and
+		// must never be resubmitted - the backend rejects any change to it.
+		request = LandingLinkService.patch(props.link.id, {
+			landing_link_id: props.link.id,
+			label: form.value.label,
+			placement: form.value.placement,
+			open_in_new_tab: form.value.open_in_new_tab,
+			enabled: form.value.enabled,
+		});
+	} else {
+		request = LandingLinkService.update(props.link.id, { ...form.value, landing_link_id: props.link.id });
+	}
 
 	request
 		.then(() => {

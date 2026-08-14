@@ -14,6 +14,7 @@ use App\Models\LandingLink;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules\Enum;
+use Illuminate\Validation\ValidationException;
 
 class UpdateLandingLinkRequest extends BaseApiRequest
 {
@@ -49,5 +50,9 @@ class UpdateLandingLinkRequest extends BaseApiRequest
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		$this->landing_link = LandingLink::findOrFail($values['landing_link_id']);
+
+		if ($this->landing_link->is_built_in && $values['url'] !== $this->landing_link->url) {
+			throw ValidationException::withMessages(['url' => 'The URL of a built-in link cannot be changed.']);
+		}
 	}
 }

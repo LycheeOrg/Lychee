@@ -690,6 +690,7 @@ declare namespace App {
 					url: string;
 					placement: App.Enum.LandingLinkPlacement;
 					open_in_new_tab: boolean;
+					is_built_in: boolean;
 				};
 				export type LandingPageResource = {
 					landing_page_enable: boolean;
@@ -994,6 +995,7 @@ declare namespace App {
 					open_in_new_tab: boolean;
 					sort_order: number;
 					enabled: boolean;
+					is_built_in: boolean;
 					created_at: string;
 					updated_at: string;
 				};

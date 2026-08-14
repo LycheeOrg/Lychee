@@ -21,9 +21,15 @@ class LandingLinkEmbedResource extends Data
 {
 	public string $id;
 	public string $label;
+	/**
+	 * A real URL for admin-created links. For built-in links (see
+	 * `is_built_in`), this is a Vue Router route name instead, and the
+	 * frontend must resolve it client-side rather than using it as an `href`.
+	 */
 	public string $url;
 	public LandingLinkPlacement $placement;
 	public bool $open_in_new_tab;
+	public bool $is_built_in;
 
 	public function __construct(LandingLink $landing_link)
 	{
@@ -32,5 +38,6 @@ class LandingLinkEmbedResource extends Data
 		$this->url = $landing_link->url;
 		$this->placement = $landing_link->placement;
 		$this->open_in_new_tab = $landing_link->open_in_new_tab;
+		$this->is_built_in = $landing_link->is_built_in;
 	}
 }

@@ -306,10 +306,29 @@
 								<UIcon name="lucide:grip-vertical" class="text-muted shrink-0" />
 								<span class="font-medium w-40 truncate">{{ link.label }}</span>
 								<span class="text-muted text-xs flex-1 truncate">{{ link.url }}</span>
+								<UBadge v-if="link.is_built_in" color="neutral" variant="subtle" size="sm">
+									{{ $t("landing_link.badge_built_in") }}
+								</UBadge>
 								<UBadge color="neutral" size="sm">{{ $t(`landing_link.placement_${link.placement}`) }}</UBadge>
 								<USwitch :model-value="link.enabled" @update:model-value="() => toggleLinkEnabled(link)" />
 								<UButton icon="lucide:pencil" color="neutral" variant="ghost" size="sm" @click="openEditLink(link)" />
-								<UButton icon="lucide:trash" color="error" variant="ghost" size="sm" @click="deleteLink(link)" />
+								<UButton
+									v-if="!link.is_built_in"
+									icon="lucide:trash"
+									color="error"
+									variant="ghost"
+									size="sm"
+									@click="deleteLink(link)"
+								/>
+								<UButton
+									v-else
+									icon="lucide:lock"
+									color="neutral"
+									variant="ghost"
+									size="sm"
+									disabled
+									:title="$t('landing_link.built_in_cannot_delete')"
+								/>
 							</div>
 						</div>
 					</div>
@@ -763,7 +782,14 @@ const previewData = computed<App.Http.Resources.GalleryConfigs.LandingPageResour
 		cta_shift_y_direction: draft.cta_shift_y_direction,
 		links: links.value
 			.filter((l) => l.enabled)
-			.map((l) => ({ id: l.id, label: l.label, url: l.url, placement: l.placement, open_in_new_tab: l.open_in_new_tab })),
+			.map((l) => ({
+				id: l.id,
+				label: l.label,
+				url: l.url,
+				placement: l.placement,
+				open_in_new_tab: l.open_in_new_tab,
+				is_built_in: l.is_built_in,
+			})),
 	};
 });
 

@@ -8,7 +8,11 @@
 			</a>
 			<ul class="flex items-center gap-6 list-none">
 				<li v-for="link in navLinks" :key="link.id">
+					<RouterLink v-if="link.is_built_in" :to="{ name: link.url }" class="text-xs uppercase hover:text-muted transition-colors">
+						{{ link.label }}
+					</RouterLink>
 					<a
+						v-else
 						:href="link.url"
 						:target="link.open_in_new_tab ? '_blank' : undefined"
 						:rel="link.open_in_new_tab ? 'noopener' : undefined"
@@ -16,16 +20,6 @@
 					>
 						{{ link.label }}
 					</a>
-				</li>
-				<li v-if="data.footer.is_contact_form_enabled">
-					<RouterLink :to="{ name: 'contact' }" class="text-xs uppercase hover:text-muted transition-colors">
-						{{ $t("landing.contact") }}
-					</RouterLink>
-				</li>
-				<li>
-					<RouterLink :to="{ name: 'home' }" class="text-xs uppercase hover:text-muted transition-colors">
-						{{ $t("landing.gallery") }}
-					</RouterLink>
 				</li>
 			</ul>
 		</nav>

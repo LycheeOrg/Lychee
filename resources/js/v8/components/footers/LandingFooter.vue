@@ -64,21 +64,30 @@
 			class="text-white text-3xs font-normal space-x-4"
 			:class="{ 'animate-landingAnimateUp': props.animated, 'no-intro-delay': props.noIntroDelay }"
 		>
-			<a
-				v-for="link in footerLinks"
-				:key="link.id"
-				:href="link.url"
-				:target="link.open_in_new_tab ? '_blank' : undefined"
-				:rel="link.open_in_new_tab ? 'noopener' : undefined"
-				class="uppercase hover:text-muted transition-all ease-in-out duration-300"
-			>
-				{{ link.label }}
-			</a>
+			<template v-for="link in footerLinks" :key="link.id">
+				<RouterLink
+					v-if="link.is_built_in"
+					:to="{ name: link.url }"
+					class="uppercase hover:text-muted transition-all ease-in-out duration-300"
+				>
+					{{ link.label }}
+				</RouterLink>
+				<a
+					v-else
+					:href="link.url"
+					:target="link.open_in_new_tab ? '_blank' : undefined"
+					:rel="link.open_in_new_tab ? 'noopener' : undefined"
+					class="uppercase hover:text-muted transition-all ease-in-out duration-300"
+				>
+					{{ link.label }}
+				</a>
+			</template>
 		</p>
 	</div>
 </template>
 <script setup lang="ts">
 import { computed } from "vue";
+import { RouterLink } from "vue-router";
 
 type FooterProps = {
 	footerData: App.Http.Resources.GalleryConfigs.FooterConfig;

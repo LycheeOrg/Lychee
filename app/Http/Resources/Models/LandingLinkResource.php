@@ -24,6 +24,7 @@ class LandingLinkResource extends Data
 	public bool $open_in_new_tab;
 	public int $sort_order;
 	public bool $enabled;
+	public bool $is_built_in;
 	public Carbon $created_at;
 	public Carbon $updated_at;
 
@@ -36,6 +37,7 @@ class LandingLinkResource extends Data
 		$this->open_in_new_tab = $landing_link->open_in_new_tab;
 		$this->sort_order = $landing_link->sort_order;
 		$this->enabled = $landing_link->enabled;
+		$this->is_built_in = $landing_link->is_built_in;
 		$this->created_at = $landing_link->created_at;
 		$this->updated_at = $landing_link->updated_at;
 	}

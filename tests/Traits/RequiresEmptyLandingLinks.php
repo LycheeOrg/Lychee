@@ -16,6 +16,10 @@ trait RequiresEmptyLandingLinks
 
 	protected function setUpRequiresEmptyLandingLinks(): void
 	{
+		// Migrations seed built-in, non-deletable "Gallery"/"Contact" rows; clear
+		// them too so tests using this trait keep operating against a genuinely
+		// empty table.
+		DB::table('landing_links')->delete();
 		$this->assertDatabaseCount('landing_links', 0);
 	}
 

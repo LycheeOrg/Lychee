@@ -50,4 +50,9 @@ class LandingLinkFactory extends Factory
 	{
 		return $this->state(fn (array $attributes) => ['placement' => LandingLinkPlacement::BOTH]);
 	}
+
+	public function builtIn(): static
+	{
+		return $this->state(fn (array $attributes) => ['is_built_in' => true]);
+	}
 }

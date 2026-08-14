@@ -32,6 +32,11 @@ return [
     'placement_footer' => 'Footer',
     'placement_both' => 'Nav & Footer',
 
+    // Built-in links (Gallery, Contact)
+    'badge_built_in' => 'Built-in',
+    'built_in_cannot_delete' => 'This built-in link cannot be deleted. Disable it instead, or reorder it like any other link.',
+    'built_in_url_hint' => 'This is a built-in link and its target cannot be changed.',
+
     // Buttons
     'create' => 'Create Link',
     'edit' => 'Edit',

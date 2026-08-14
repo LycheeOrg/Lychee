@@ -21,7 +21,15 @@
 			</a>
 			<ul class="flex items-center gap-6 list-none">
 				<li v-for="link in navLinks" :key="link.id">
+					<RouterLink
+						v-if="link.is_built_in"
+						:to="{ name: link.url }"
+						class="text-xs uppercase tracking-widest text-white hover:text-muted transition-colors"
+					>
+						{{ link.label }}
+					</RouterLink>
 					<a
+						v-else
 						:href="link.url"
 						:target="link.open_in_new_tab ? '_blank' : undefined"
 						:rel="link.open_in_new_tab ? 'noopener' : undefined"
@@ -30,44 +38,51 @@
 						{{ link.label }}
 					</a>
 				</li>
-				<li>
-					<RouterLink :to="{ name: 'home' }" class="text-xs uppercase tracking-widest text-white hover:text-muted transition-colors">
-						{{ $t("landing.gallery") }}
-					</RouterLink>
-				</li>
 			</ul>
 		</div>
 
 		<LandingIntroScreen :data="data" :effective-preset="effectivePreset" />
 
-		<!-- The signature "two lines": fixed, full-height rotated-text rails acting as the primary CTAs. -->
+		<!-- The signature "two lines": fixed, full-height vertical rules with rotated-text CTAs breaking each line. -->
 		<RouterLink
 			:to="{ name: 'home' }"
-			class="fixed top-0 h-full z-30 flex flex-col items-center justify-center gap-4 cursor-pointer group"
+			class="fixed top-0 h-full z-30 flex flex-col items-center gap-4 cursor-pointer group"
 			:class="[entranceClass, firstLinePosition]"
-			style="writing-mode: vertical-rl; text-orientation: sideways; transform: rotate(180deg)"
 		>
-			<span class="text-2xs uppercase tracking-[0.3em] text-white/70 group-hover:text-white transition-colors">
-				{{ $t("landing.meridian.explore_caption") }}
-			</span>
-			<span class="text-3xl uppercase tracking-widest font-light text-white group-hover:tracking-[0.15em] transition-all duration-300">
-				{{ exploreLabel }}
-			</span>
+			<span class="w-px flex-1 bg-white/25 group-hover:bg-white/60 transition-colors" aria-hidden="true" />
+			<div
+				class="flex flex-col items-center gap-4 shrink-0"
+				style="writing-mode: vertical-rl; text-orientation: sideways; transform: rotate(180deg)"
+			>
+				<span class="text-2xs uppercase tracking-[0.3em] text-white/70 group-hover:text-white transition-colors">
+					{{ $t("landing.meridian.explore_caption") }}
+				</span>
+				<span class="text-3xl uppercase tracking-widest font-light text-white group-hover:tracking-[0.15em] transition-all duration-300">
+					{{ exploreLabel }}
+				</span>
+			</div>
+			<span class="w-px flex-1 bg-white/25 group-hover:bg-white/60 transition-colors" aria-hidden="true" />
 		</RouterLink>
 
 		<RouterLink
 			v-if="showContactLine"
 			:to="{ name: 'contact' }"
-			class="fixed top-0 left-2/3 -translate-x-1/2 h-full z-30 flex flex-col items-center justify-center gap-4 cursor-pointer group"
+			class="fixed top-0 left-2/3 -translate-x-1/2 h-full z-30 flex flex-col items-center gap-4 cursor-pointer group"
 			:class="entranceClass"
-			style="writing-mode: vertical-rl; text-orientation: sideways; transform: rotate(180deg)"
 		>
-			<span class="text-2xs uppercase tracking-[0.3em] text-white/70 group-hover:text-white transition-colors">
-				{{ $t("landing.meridian.contact_caption") }}
-			</span>
-			<span class="text-3xl uppercase tracking-widest font-light text-white group-hover:tracking-[0.15em] transition-all duration-300">
-				{{ $t("landing.contact") }}
-			</span>
+			<span class="w-px flex-1 bg-white/25 group-hover:bg-white/60 transition-colors" aria-hidden="true" />
+			<div
+				class="flex flex-col items-center gap-4 shrink-0"
+				style="writing-mode: vertical-rl; text-orientation: sideways; transform: rotate(180deg)"
+			>
+				<span class="text-2xs uppercase tracking-[0.3em] text-white/70 group-hover:text-white transition-colors">
+					{{ $t("landing.meridian.contact_caption") }}
+				</span>
+				<span class="text-3xl uppercase tracking-widest font-light text-white group-hover:tracking-[0.15em] transition-all duration-300">
+					{{ $t("landing.contact") }}
+				</span>
+			</div>
+			<span class="w-px flex-1 bg-white/25 group-hover:bg-white/60 transition-colors" aria-hidden="true" />
 		</RouterLink>
 
 		<LandingFooter
