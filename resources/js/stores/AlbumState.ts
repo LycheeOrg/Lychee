@@ -52,6 +52,11 @@ export const useAlbumStore = defineStore("album-store", {
 		// Person filter state for photos
 		active_person_filter: null as string | null,
 
+		// Bumped whenever the tags of the photos of this album have been edited.
+		// Components displaying the album tag list watch it to refetch that list.
+		// Intentionally not cleared by reset(): it is a monotonic change signal.
+		tags_revision: 0,
+
 		// People in this album (loaded lazily)
 		album_people: [] as App.Http.Resources.Models.PersonResource[],
 		album_people_total: 0 as number,
@@ -61,6 +66,9 @@ export const useAlbumStore = defineStore("album-store", {
 		refresh(): Promise<void> {
 			this.reset();
 			return this.load();
+		},
+		bumpTagsRevision() {
+			this.tags_revision++;
 		},
 		reset() {
 			this.modelAlbum = undefined;
@@ -293,6 +301,76 @@ export const useAlbumStore = defineStore("album-store", {
 						this.photos_loading = false;
 					}
 				});
+		},
+
+		/**
+		 * Re-fetch the photos which are currently displayed, in place.
+		 *
+		 * Contrary to `refresh()`, the store is never `reset()`: the album head, the
+		 * config, the active filters and the loaded page window
+		 * (`photos_min_page` … `photos_current_page`) are all preserved, and the
+		 * thumbnails are swapped in a single mutation once every page has been
+		 * received.  The album panel therefore never unmounts, which keeps the
+		 * scroll position — and the photo selection — intact.
+		 *
+		 * Meant for operations which edit photos in place (tags, license, …) and do
+		 * not change which photos belong to the album.
+		 */
+		async reloadLoadedPhotos(): Promise<void> {
+			const photosState = usePhotosStore();
+
+			if (this.albumId === ALL || this.albumId === undefined) {
+				return;
+			}
+
+			// Capture current album ID to detect navigation during loading
+			const requestedAlbumId = this.albumId;
+			const firstPage = this.photos_min_page;
+			const lastPage = Math.max(firstPage, this.photos_current_page);
+
+			// Extract active filter params from state
+			const tag_ids = this.active_tag_filter?.tag_ids ?? null;
+			const tag_logic = this.active_tag_filter?.tag_logic ?? "OR";
+			const person_id = this.active_person_filter ?? null;
+
+			const pages: number[] = [];
+			for (let page = firstPage; page <= lastPage; page++) {
+				pages.push(page);
+			}
+
+			this.photos_loading = true;
+			try {
+				const responses = await Promise.all(
+					pages.map((page) => AlbumService.getPhotos(requestedAlbumId, page, tag_ids, tag_logic, person_id, true)),
+				);
+
+				// Race condition guard: Don't update state if user navigated away
+				if (this.albumId !== requestedAlbumId) {
+					return;
+				}
+
+				const isTimeline = this.config?.is_photo_timeline_enabled ?? false;
+				responses.forEach((response, idx) => {
+					// The first page replaces the collection, the following ones extend it,
+					// so the page window stays exactly the same as before the reload.
+					if (idx === 0) {
+						photosState.setPhotos(response.data.photos, isTimeline, pages[idx]);
+					} else {
+						photosState.appendPhotos(response.data.photos, isTimeline, pages[idx]);
+					}
+				});
+
+				const last = responses[responses.length - 1].data;
+				this.photos_current_page = last.current_page;
+				this.photos_last_page = last.last_page;
+				this.photos_per_page = last.per_page;
+				this.photos_total = last.total;
+				this.photos_min_page = firstPage;
+			} catch (error) {
+				console.error(error);
+			} finally {
+				this.photos_loading = false;
+			}
 		},
 
 		/**
