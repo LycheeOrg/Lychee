@@ -364,9 +364,9 @@ class InitConfig extends Data
 
 		$user = Auth::user();
 
-		return $user === null
-			|| $user->may_administrate === true
-			|| request()->configs()->getValueAsBool('contact_form_enabled_for_logged_in');
+		return $user === null ||
+			$user->may_administrate === true ||
+			request()->configs()->getValueAsBool('contact_form_enabled_for_logged_in');
 	}
 
 	private function isNsfwClassifierEnabled(): bool
