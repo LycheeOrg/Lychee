@@ -26,6 +26,15 @@ use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class GetTagsTest extends BaseApiWithDataTest
 {
+	public function setUp(): void
+	{
+		parent::setUp();
+		// The managed cache is gated behind this master switch (off by
+		// default); enable it so the cache-hit assertions below actually
+		// exercise the cache path instead of vacuously passing.
+		config(['features.enable-caching' => true]);
+	}
+
 	public function testCacheHitPerformsNoAlbumsTableQuery(): void
 	{
 		$this->album1->tags()->sync([$this->tag_test->id]);
