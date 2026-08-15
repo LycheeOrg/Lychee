@@ -155,6 +155,7 @@ return [
         'no_results' => 'Nothing to see here',
         'upload' => 'Upload photos',
         'edit_title' => 'アルバム設定',
+        'edit_title_with_name' => 'アルバム設定：:title',
         'tabs' => [
             'about' => 'About Album',
             'visibility' => 'Visibility',

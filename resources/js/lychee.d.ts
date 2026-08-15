@@ -651,6 +651,8 @@ declare namespace App {
 					default_homepage: string;
 					is_timeline_page_enabled: boolean;
 					is_contact_form_enabled: boolean;
+					is_contact_form_enabled_on_gallery: boolean;
+					is_contact_form_enabled_on_album: boolean;
 					photos_pagination_mode: App.Enum.PaginationMode;
 					albums_pagination_mode: App.Enum.PaginationMode;
 					photos_per_page: number;

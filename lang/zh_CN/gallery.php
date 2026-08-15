@@ -155,6 +155,7 @@ return [
         'no_results' => '这里什么都没有',
         'upload' => '上传照片',
         'edit_title' => '相册设置',
+        'edit_title_with_name' => '相册设置：:title',
         'tabs' => [
             'about' => '关于相册',
             'visibility' => '可见性',

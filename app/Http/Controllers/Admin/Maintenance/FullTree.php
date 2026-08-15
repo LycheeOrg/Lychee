@@ -15,6 +15,7 @@ use App\Http\Requests\Maintenance\MaintenanceRequest;
 use App\Http\Resources\Diagnostics\AlbumTree;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -36,6 +37,7 @@ class FullTree extends Controller
 			batch()->update($album_instance, $request->albums(), $key_name);
 		});
 
+		Cache::forget('tree_state');
 		AlbumRouteCacheUpdated::dispatch();
 	}
 

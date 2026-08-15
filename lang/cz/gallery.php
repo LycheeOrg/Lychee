@@ -155,6 +155,7 @@ return [
         'no_results' => 'Zde není nic k vidění',
         'upload' => 'Nahrát fotografie',
         'edit_title' => 'Nastavení alba',
+        'edit_title_with_name' => 'Nastavení alba: :title',
         'tabs' => [
             'about' => 'O albu',
             'visibility' => 'Viditelnost',

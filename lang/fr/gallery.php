@@ -155,6 +155,7 @@ return [
         'no_results' => 'Rien à voir ici',
         'upload' => 'Téléverser des photos',
         'edit_title' => 'Paramètres de l’album',
+        'edit_title_with_name' => 'Paramètres de l’album : :title',
         'tabs' => [
             'about' => 'À propos de l’album',
             'visibility' => 'Visibilité',

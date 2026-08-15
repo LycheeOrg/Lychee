@@ -155,6 +155,7 @@ return [
         'no_results' => 'اینجا چیزی برای نمایش نیست',
         'upload' => 'بارگذاری عکس‌ها',
         'edit_title' => 'تنظیمات آلبوم',
+        'edit_title_with_name' => 'تنظیمات آلبوم: :title',
         'tabs' => [
             'about' => 'درباره آلبوم',
             'visibility' => 'نمایانی',

@@ -12,7 +12,18 @@
 			</RouterLink>
 			<span v-else class="text-base truncate max-w-32 text-muted">{{ item.title }}</span>
 		</template>
-		<GoBack @go-back="emits('goBack')" />
+		<!-- Leftmost item of the trail (the row is reversed). A plain "up one level" arrow is
+		     redundant here since every ancestor above is already a link, so this anchors the trail
+		     at the gallery root instead. -->
+		<UButton
+			as="router-link"
+			:to="{ name: 'gallery' }"
+			icon="lucide:home"
+			:aria-label="$t('left-menu.back_to_gallery')"
+			color="neutral"
+			variant="ghost"
+			:class="isLTR() ? 'mr-2' : 'ml-2'"
+		/>
 	</nav>
 	<div class="flex sm:hidden">
 		<GoBack @go-back="emits('goBack')" />

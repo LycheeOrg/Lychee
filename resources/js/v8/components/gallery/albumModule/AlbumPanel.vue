@@ -121,7 +121,7 @@
 			<DownloadAlbum v-model:open="is_download_photo_visible" :photo-ids="downloadPhotoIds" :from-id="downloadFromId" />
 		</template>
 		<!-- </div> -->
-		<GalleryFooter v-once />
+		<GalleryFooter v-once context="album" />
 	</UMain>
 </template>
 <script setup lang="ts">
