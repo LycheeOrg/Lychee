@@ -17,7 +17,12 @@
 		<div id="header" class="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-6 py-5" :class="[entranceClass, restDelayClass]">
 			<a href="#" class="flex items-center">
 				<img v-if="data.landing_header_logo !== ''" :src="data.landing_header_logo" alt="logo" class="h-8 object-contain" />
-				<span v-else class="text-sm font-bold uppercase tracking-widest text-white">{{ data.landing_title }}</span>
+				<span v-else class="flex flex-col">
+					<span class="text-sm font-bold uppercase tracking-widest text-white">{{ data.landing_title }}</span>
+					<span v-if="data.landing_subtitle !== ''" class="text-2xs uppercase tracking-[0.3em] text-white/70">{{
+						data.landing_subtitle
+					}}</span>
+				</span>
 			</a>
 			<ul class="flex items-center gap-6 list-none">
 				<li v-for="link in navLinks" :key="link.id">
