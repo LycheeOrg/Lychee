@@ -230,6 +230,8 @@ return [
         'question' => 'Skriv inn taggene dine for dette bildet.',
         'question_multiple' => 'Skriv inn taggene dine for alle %d alle valgte bilder. Eksisterende tagger vil bli overskrevet.',
         'no_tags' => 'Ingen tagger',
+        'existing_tags' => 'Eksisterende tagger:',
+        'partial_tags_info' => 'Tagger i parentes finnes bare på noen av de valgte bildene.',
         'set_tags' => 'Angi tagger',
         'updated' => 'Tagger oppdatert!',
         'tags_override_info' => 'Hvis dette ikke er avmerket, vil taggene bli lagt til de eksisterende taggene på bildet.',

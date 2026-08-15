@@ -46,7 +46,7 @@ class BulkAlbumController extends Controller
 	public function index(IndexBulkAlbumRequest $request): PaginatedBulkAlbumResource
 	{
 		$search = $request->validated('search');
-		$per_page = (int) $request->validated('per_page', 50);
+		$per_page = (int) $request->validated('per_page', 100);
 		$page = (int) $request->validated('page', 1);
 
 		$query = Album::query()->without(

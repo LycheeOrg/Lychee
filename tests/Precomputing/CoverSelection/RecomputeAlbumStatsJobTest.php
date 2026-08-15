@@ -8,12 +8,16 @@
 
 namespace Tests\Precomputing\CoverSelection;
 
+use App\Events\AlbumComputedDataUpdated;
 use App\Jobs\RecomputeAlbumStatsJob;
+use App\Listeners\RecomputeAlbumSizeOnAlbumChange;
+use App\Listeners\RecomputeAlbumStatsOnAlbumChange;
 use App\Models\AccessPermission;
 use App\Models\Album;
 use App\Models\Photo;
 use App\Models\User;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Tests\Precomputing\Base\BasePrecomputingTest;
 
@@ -22,6 +26,48 @@ use Tests\Precomputing\Base\BasePrecomputingTest;
  */
 class RecomputeAlbumStatsJobTest extends BasePrecomputingTest
 {
+	public function testHandleDispatchesAlbumComputedDataUpdated(): void
+	{
+		$user = User::factory()->create();
+		$album = Album::factory()->as_root()->owned_by($user)->create();
+
+		Event::fake([AlbumComputedDataUpdated::class]);
+
+		$job = new RecomputeAlbumStatsJob($album->id, propagate_to_parent: false);
+		$job->handle();
+
+		Event::assertDispatched(AlbumComputedDataUpdated::class, fn (AlbumComputedDataUpdated $e) => $e->album_id === $album->id);
+	}
+
+	/**
+	 * Loop-safety proof (NFR-053-01): `AlbumComputedDataUpdated` must never be
+	 * listened to by the two `RecomputeAlbum*OnAlbumChange` listeners, or a job
+	 * completing would re-trigger itself indefinitely.
+	 */
+	public function testAlbumComputedDataUpdatedDoesNotReDispatchRecomputeJobs(): void
+	{
+		$user = User::factory()->create();
+		$album = Album::factory()->as_root()->owned_by($user)->create();
+
+		Queue::fake();
+
+		AlbumComputedDataUpdated::dispatch($album->id);
+
+		Queue::assertNothingPushed();
+	}
+
+	public function testRecomputeAlbumStatsOnAlbumChangeHasNoAlbumComputedDataUpdatedListenerMethod(): void
+	{
+		$this->assertFalse(
+			method_exists(RecomputeAlbumStatsOnAlbumChange::class, 'handleAlbumComputedDataUpdated'),
+			'RecomputeAlbumStatsOnAlbumChange must not react to AlbumComputedDataUpdated (would cause a dispatch loop).'
+		);
+		$this->assertFalse(
+			method_exists(RecomputeAlbumSizeOnAlbumChange::class, 'handleAlbumComputedDataUpdated'),
+			'RecomputeAlbumSizeOnAlbumChange must not react to AlbumComputedDataUpdated (would cause a dispatch loop).'
+		);
+	}
+
 	/**
 	 * Test job computes num_photos correctly.
 	 *

@@ -230,6 +230,8 @@ return [
         'question' => 'Wprowadź tagi dla tego zdjęcia.',
         'question_multiple' => 'Wprowadź tagi dla wszystkich %d wybranych zdjęć. Istniejące tagi zostaną nadpisane.',
         'no_tags' => 'Brak tagów',
+        'existing_tags' => 'Istniejące tagi:',
+        'partial_tags_info' => 'Tagi w nawiasach występują tylko na niektórych z wybranych zdjęć.',
         'set_tags' => 'Ustaw tagi',
         'updated' => 'Tagi zaktualizowane!',
         'tags_override_info' => 'Jeśli opcja ta nie jest zaznaczona, tagi zostaną dodane do istniejących tagów zdjęcia.',

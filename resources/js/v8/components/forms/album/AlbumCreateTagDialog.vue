@@ -58,7 +58,7 @@ const title = ref<string | undefined>(undefined);
 const tags = ref<string[]>([]);
 const is_and = ref<boolean>(true);
 
-const isValid = computed(() => title.value !== undefined && title.value.length > 0 && title.value.length <= 100);
+const isValid = computed(() => title.value !== undefined && title.value.length > 0 && title.value.length <= 100 && tags.value.length > 0);
 
 function create() {
 	if (!isValid.value) {

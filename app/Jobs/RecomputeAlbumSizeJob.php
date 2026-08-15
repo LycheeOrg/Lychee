@@ -10,6 +10,7 @@ namespace App\Jobs;
 
 use App\Constants\PhotoAlbum as PA;
 use App\Enum\SizeVariantType;
+use App\Events\AlbumComputedDataUpdated;
 use App\Jobs\Traits\DebouncesLatestJobTrait;
 use App\Models\Album;
 use App\Models\AlbumSizeStatistics;
@@ -95,6 +96,8 @@ class RecomputeAlbumSizeJob implements ShouldQueue
 			);
 
 			Log::channel('jobs')->debug("Updated size statistics for album {$album->id}");
+
+			AlbumComputedDataUpdated::dispatch($album->id);
 
 			// Propagate to parent if exists
 			if ($album->parent_id !== null && $this->propagate_to_parent) {

@@ -10,11 +10,15 @@ namespace App\DTO\Delete;
 
 use App\Enum\SizeVariantType;
 use App\Enum\StorageDiskType;
+use App\Events\AlbumSaved;
+use App\Events\TagAlbumSaved;
 use App\Jobs\DeleteFaceEmbeddingsJob;
 use App\Jobs\FileDeleterJob;
 use App\Jobs\RecomputePersonStatsJob;
+use App\Models\Album;
 use App\Models\Person;
 use App\Models\SizeVariant;
+use App\Models\TagAlbum;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -101,11 +105,33 @@ final class PhotosToBeDeletedDTO
 
 		// Reset headers and covers pointing to deleted photos.
 		// Chunk to avoid hitting the database placeholder limit (MySQL error 1390).
-		collect($this->force_delete_photo_ids)->chunk(self::CHUNK_SIZE)->each(function ($chunk): void {
+		// First capture which albums/tag albums are *currently* referencing any
+		// of the photos about to be force-deleted as their cover/header — this
+		// may be a *different* album than the one the deletion request
+		// originated from, anywhere in the instance.
+		$affected_album_ids = [];
+		$affected_tag_album_ids = [];
+		collect($this->force_delete_photo_ids)->chunk(self::CHUNK_SIZE)->each(function ($chunk) use (&$affected_album_ids, &$affected_tag_album_ids): void {
+			$affected_album_ids = array_merge(
+				$affected_album_ids,
+				DB::table('albums')
+					->where(fn ($q) => $q->whereIn('header_id', $chunk->all())->orWhereIn('cover_id', $chunk->all()))
+					->pluck('id')->all()
+			);
+			$affected_tag_album_ids = array_merge(
+				$affected_tag_album_ids,
+				DB::table('tag_albums')->whereIn('cover_id', $chunk->all())->pluck('id')->all()
+			);
+
 			DB::table('albums')->whereIn('header_id', $chunk->all())->update(['header_id' => null]);
 			DB::table('albums')->whereIn('cover_id', $chunk->all())->update(['cover_id' => null]);
 			DB::table('tag_albums')->whereIn('cover_id', $chunk->all())->update(['cover_id' => null]);
 		});
+
+		$affected_albums = Album::query()->whereIn('id', array_unique($affected_album_ids))->pluck('parent_id', 'id');
+		AlbumSaved::dispatchIf($affected_albums->isNotEmpty(), $affected_albums->keys()->all(), $affected_albums->values()->all());
+		$affected_tag_album_ids_verified = TagAlbum::query()->whereIn('id', array_unique($affected_tag_album_ids))->pluck('id')->all();
+		TagAlbumSaved::dispatchIf($affected_tag_album_ids_verified !== [], $affected_tag_album_ids_verified);
 
 		// Maybe consider doing multiple queries for the different storage types.
 		$exclude_size_variants_ids = DB::table('order_items')->select(['size_variant_id'])->pluck('size_variant_id')->all();

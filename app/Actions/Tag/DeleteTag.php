@@ -8,6 +8,7 @@
 
 namespace App\Actions\Tag;
 
+use App\Events\AlbumTagsChanged;
 use App\Models\User;
 use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Support\Facades\Auth;
@@ -62,6 +63,8 @@ class DeleteTag
 							->where('base_albums.owner_id', $user->id))
 			)
 			->delete();
+
+		AlbumTagsChanged::dispatch($tag_ids);
 
 		$this->cleanupUnusedTags();
 	}

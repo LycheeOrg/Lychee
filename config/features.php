@@ -274,7 +274,7 @@ return [
 	 | Note: caching is only active when cache_enabled is also set to 1 in
 	 | the database settings.
 	 */
-	'enable-caching' => (bool) env('ENABLE_CACHING', true),
+	'enable-caching' => (bool) env('ENABLE_CACHING', false),
 
 	/*
 	 |--------------------------------------------------------------------------

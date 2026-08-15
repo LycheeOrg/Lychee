@@ -171,13 +171,13 @@ class IndexTest extends BaseApiWithDataTest
 
 	public function testPaginationMetaIsPresent(): void
 	{
-		$response = $this->actingAs($this->admin)->getJsonWithData('BulkAlbumEdit', ['per_page' => 25, 'page' => 1]);
+		$response = $this->actingAs($this->admin)->getJsonWithData('BulkAlbumEdit', ['per_page' => 100, 'page' => 1]);
 		$this->assertOk($response);
 
 		$data = $response->json();
 		$this->assertSame(1, $data['current_page']);
 		$this->assertGreaterThanOrEqual(1, $data['last_page']);
-		$this->assertSame(25, $data['per_page']);
+		$this->assertSame(100, $data['per_page']);
 		$this->assertIsInt($data['total']);
 	}
 

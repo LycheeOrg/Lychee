@@ -18,11 +18,72 @@
 
 namespace Tests\Feature_v2\Album;
 
+use App\Events\AlbumSaved;
+use App\Events\AlbumTagsChanged;
 use App\Models\Tag;
+use Illuminate\Support\Facades\Event;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class AlbumUpdateTest extends BaseApiWithDataTest
 {
+	public function testUpdateAlbumDispatchesAlbumSavedEvent(): void
+	{
+		Event::fake([AlbumSaved::class, AlbumTagsChanged::class]);
+
+		$response = $this->actingAs($this->userMayUpload1)->patchJson('Album', [
+			'album_id' => $this->album1->id,
+			'title' => 'title',
+			'license' => 'none',
+			'description' => '',
+			'tags' => [],
+			'photo_sorting_column' => 'title',
+			'photo_sorting_order' => 'ASC',
+			'album_sorting_column' => 'title',
+			'album_sorting_order' => 'DESC',
+			'album_aspect_ratio' => '1/1',
+			'photo_layout' => null,
+			'copyright' => '',
+			'is_compact' => false,
+			'is_pinned' => false,
+			'header_id' => null,
+			'album_timeline' => null,
+			'photo_timeline' => null,
+		]);
+		$this->assertOk($response);
+
+		Event::assertDispatched(AlbumSaved::class, fn (AlbumSaved $e) => in_array($this->album1->id, $e->album_ids));
+		Event::assertNotDispatched(AlbumTagsChanged::class);
+	}
+
+	public function testUpdateAlbumWithNewTagsDispatchesAlbumTagsChangedEvent(): void
+	{
+		Event::fake([AlbumSaved::class, AlbumTagsChanged::class]);
+
+		$response = $this->actingAs($this->userMayUpload1)->patchJson('Album', [
+			'album_id' => $this->album1->id,
+			'title' => 'title',
+			'license' => 'none',
+			'description' => '',
+			'tags' => ['vacation', 'greece'],
+			'photo_sorting_column' => 'title',
+			'photo_sorting_order' => 'ASC',
+			'album_sorting_column' => 'title',
+			'album_sorting_order' => 'DESC',
+			'album_aspect_ratio' => '1/1',
+			'photo_layout' => null,
+			'copyright' => '',
+			'is_compact' => false,
+			'is_pinned' => false,
+			'header_id' => null,
+			'album_timeline' => null,
+			'photo_timeline' => null,
+		]);
+		$this->assertOk($response);
+		$new_tag_ids = Tag::whereIn('name', ['vacation', 'greece'])->pluck('id')->all();
+
+		Event::assertDispatched(AlbumTagsChanged::class, fn (AlbumTagsChanged $e) => count(array_diff($new_tag_ids, $e->tag_ids)) === 0 && count($e->tag_ids) === 2);
+	}
+
 	public function testUpdateAlbumUnauthorizedForbidden(): void
 	{
 		$response = $this->patchJson('Album', [

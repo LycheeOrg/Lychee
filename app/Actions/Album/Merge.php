@@ -9,6 +9,8 @@
 namespace App\Actions\Album;
 
 use App\Constants\PhotoAlbum as PA;
+use App\Events\AlbumChildrenChanged;
+use App\Events\AlbumListingCacheFlushRequested;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\ModelDBException;
 use App\Models\Album;
@@ -52,16 +54,24 @@ class Merge
 			->delete();
 
 		// Merge sub-albums of source albums into target
+		$target_gains_children = false;
 		/** @var Album $album */
 		foreach ($albums as $album) {
 			foreach ($album->children as $child_album) {
+				$target_gains_children = true;
+				$has_descendants = !$child_album->isLeaf();
+
 				// Don't set attribute `parent_id` manually, but use specialized
 				// methods of the nested set `NodeTrait` to keep the enumeration
 				// of the tree consistent
 				// `appendNode` also internally calls `save` on the model
 				$target_album->appendNode($child_album);
+
+				AlbumListingCacheFlushRequested::dispatchIf($has_descendants);
 			}
 		}
+
+		AlbumChildrenChanged::dispatchIf($target_gains_children, [$target_album->id]);
 
 		// Now we delete the source albums
 		// We must use the special `Delete` action in order to not break the

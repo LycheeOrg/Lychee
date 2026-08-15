@@ -230,6 +230,8 @@ return [
         'question' => 'Tags für dieses Foto eingeben.',
         'question_multiple' => 'Tags für alle %d ausgewählten Fotos eingeben. Vorhandene Tags werden überschrieben.',
         'no_tags' => 'Keine Tags',
+        'existing_tags' => 'Bereits vorhandene Tags:',
+        'partial_tags_info' => 'Tags in Klammern sind nur bei einigen der ausgewählten Fotos vorhanden.',
         'set_tags' => 'Tags angeben',
         'updated' => 'Tags aktualisiert!',
         'tags_override_info' => 'Wenn diese Option nicht aktiviert ist, werden die Tags zu den vorhandenen Tags des Fotos hinzugefügt.',

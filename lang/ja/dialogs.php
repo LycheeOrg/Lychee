@@ -229,6 +229,8 @@ return [
         'question' => 'Enter your tags for this photo.',
         'question_multiple' => 'Enter your tags for all %d selected photos. Existing tags will be overwritten.',
         'no_tags' => 'No Tags',
+        'existing_tags' => '既存のタグ:',
+        'partial_tags_info' => '括弧内のタグは、選択した写真の一部にのみ設定されています。',
         'set_tags' => 'Set Tags',
         'updated' => 'Tags updated!',
         'tags_override_info' => 'If this is checked, the existing tags on each image will be overwritten and replaced.',

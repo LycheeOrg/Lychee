@@ -18,10 +18,25 @@
 
 namespace Tests\Feature_v2\Album;
 
+use App\Events\AlbumSaved;
+use Illuminate\Support\Facades\Event;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class AlbumSetPinnedTest extends BaseApiWithDataTest
 {
+	public function testSetPinnedAlbumDispatchesAlbumSavedEvent(): void
+	{
+		Event::fake([AlbumSaved::class]);
+
+		$response = $this->actingAs($this->userMayUpload1)->patchJson('Album::setPinned', [
+			'album_id' => $this->album1->id,
+			'is_pinned' => true,
+		]);
+		$this->assertNoContent($response);
+
+		Event::assertDispatched(AlbumSaved::class, fn (AlbumSaved $e) => in_array($this->album1->id, $e->album_ids));
+	}
+
 	public function testSetPinnedAlbumUnauthorizedForbidden(): void
 	{
 		$response = $this->patchJson('Album::setPinned', []);

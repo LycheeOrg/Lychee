@@ -13,8 +13,10 @@
 
 namespace Tests\Feature_v2\BulkAlbumEdit;
 
+use App\Events\AlbumSaved;
 use App\Models\AccessPermission;
 use App\Models\Album;
+use Illuminate\Support\Facades\Event;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 /**
@@ -22,6 +24,49 @@ use Tests\Feature_v2\Base\BaseApiWithDataTest;
  */
 class PatchTest extends BaseApiWithDataTest
 {
+	// ── event dispatch (Feature 053) ─────────────────────────────────────────
+
+	public function testPatchIsNsfwOnlyDispatchesAlbumSaved(): void
+	{
+		Event::fake([AlbumSaved::class]);
+
+		$response = $this->actingAs($this->admin)->patchJson('BulkAlbumEdit', [
+			'album_ids' => [$this->album1->id],
+			'is_nsfw' => true,
+		]);
+		$this->assertNoContent($response);
+
+		Event::assertDispatched(AlbumSaved::class, fn (AlbumSaved $e) => in_array($this->album1->id, $e->album_ids));
+	}
+
+	public function testPatchSortingOnlyDispatchesAlbumSaved(): void
+	{
+		Event::fake([AlbumSaved::class]);
+
+		$response = $this->actingAs($this->admin)->patchJson('BulkAlbumEdit', [
+			'album_ids' => [$this->album1->id],
+			'album_sorting_col' => 'title',
+			'album_sorting_order' => 'ASC',
+		]);
+		$this->assertNoContent($response);
+
+		Event::assertDispatched(AlbumSaved::class, fn (AlbumSaved $e) => in_array($this->album1->id, $e->album_ids));
+	}
+
+	public function testPatchMultipleAlbumsDispatchesAlbumSavedPerAlbum(): void
+	{
+		Event::fake([AlbumSaved::class]);
+
+		$response = $this->actingAs($this->admin)->patchJson('BulkAlbumEdit', [
+			'album_ids' => [$this->album1->id, $this->album2->id],
+			'is_nsfw' => true,
+		]);
+		$this->assertNoContent($response);
+
+		Event::assertDispatched(AlbumSaved::class, fn (AlbumSaved $e) => in_array($this->album1->id, $e->album_ids));
+		Event::assertDispatched(AlbumSaved::class, fn (AlbumSaved $e) => in_array($this->album2->id, $e->album_ids));
+	}
+
 	// ── authentication / authorization ────────────────────────────────────────
 
 	public function testUnauthenticatedReceives401(): void

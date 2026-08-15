@@ -230,6 +230,8 @@ return [
         'question' => 'Introduzca sus etiquetas para esta foto.',
         'question_multiple' => 'Introduce las etiquetas de las %d fotos seleccionadas. Las etiquetas existentes se sobrescribirán.',
         'no_tags' => 'Sin etiquetas',
+        'existing_tags' => 'Etiquetas ya existentes:',
+        'partial_tags_info' => 'Las etiquetas entre paréntesis solo están presentes en algunas de las fotos seleccionadas.',
         'set_tags' => 'Establecer etiquetas',
         'updated' => '¡Etiquetas actualizadas!',
         'tags_override_info' => 'Si esta opción no está marcada, las etiquetas se agregarán a las etiquetas existentes de la foto.',

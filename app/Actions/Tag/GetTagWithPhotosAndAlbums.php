@@ -19,6 +19,8 @@ use App\Policies\AlbumPolicy;
 use App\Policies\AlbumQueryPolicy;
 use App\Policies\PhotoQueryPolicy;
 use App\Repositories\ConfigManager;
+use App\Services\Cache\CacheKeyProvider;
+use App\Services\Cache\ManagedCacheService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
@@ -34,11 +36,16 @@ use Illuminate\Support\Facades\Auth;
  */
 class GetTagWithPhotosAndAlbums
 {
+	private bool $is_cache_enabled;
+
 	public function __construct(
 		private PhotoQueryPolicy $photo_query_policy,
 		private AlbumQueryPolicy $album_query_policy,
 		protected readonly ConfigManager $config_manager,
+		protected readonly ManagedCacheService $managed_cache_service,
+		protected readonly CacheKeyProvider $cache_key_provider,
 	) {
+		$this->is_cache_enabled = $this->config_manager->getValueAsBool('managed_cache_albums_enabled');
 	}
 
 	/**
@@ -102,7 +109,42 @@ class GetTagWithPhotosAndAlbums
 	private function getAccessibleAlbums(Tag $tag, User $user): Collection
 	{
 		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
+		$user_id = Auth::id();
+		// `applyBrowsabilityFilter()` is session-scoped (depends on
+		// `getUnlockedAlbumIDs()`, not just the user), unlike the other five
+		// cached queries in this feature — a session that unlocks a
+		// password-protected album must get a fresh key, not a stale one
+		// from before the unlock (NFR-053-07).
+		//
+		// We do not need a cryptographically secure hash here,
+		// just a fast one that is unlikely to collide.
+		$unlocked_hash = hash('xxh3', implode(',', $unlocked_album_ids));
+		$key = $this->cache_key_provider->tagAlbumsKey($tag->id, $user_id, $unlocked_hash);
 
+		$albums = $this->managed_cache_service->rememberIf(
+			$this->is_cache_enabled,
+			$key,
+			[
+				$this->cache_key_provider->albumTagTag($tag->id),
+				$this->cache_key_provider->userTag($user_id),
+				$this->cache_key_provider->albumListingGlobalTag(),
+			],
+			fn () => $this->queryAccessibleAlbums($tag, $user, $unlocked_album_ids),
+			fn (\Illuminate\Database\Eloquent\Collection $albums): array => $this->cache_key_provider->albumTags(
+				$albums->map(fn (Album $album) => $album->id)->all()
+			),
+		);
+
+		return $albums->map(fn (Album $album) => ThumbAlbumResource::fromModel($album));
+	}
+
+	/**
+	 * @param array<int,string> $unlocked_album_ids
+	 *
+	 * @return \Illuminate\Database\Eloquent\Collection<int,Album>
+	 */
+	private function queryAccessibleAlbums(Tag $tag, User $user, array $unlocked_album_ids): \Illuminate\Database\Eloquent\Collection
+	{
 		$album_query = Album::query()
 			->select(['albums.*'])
 			->join('base_albums', 'base_albums.id', '=', 'albums.id')
@@ -110,8 +152,6 @@ class GetTagWithPhotosAndAlbums
 
 		$this->album_query_policy->applyBrowsabilityFilter($album_query, $user, $unlocked_album_ids);
 
-		$albums = $album_query->get();
-
-		return $albums->map(fn (Album $album) => ThumbAlbumResource::fromModel($album));
+		return $album_query->get();
 	}
 }

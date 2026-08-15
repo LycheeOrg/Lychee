@@ -9,12 +9,17 @@
 namespace App\Actions\Album;
 
 use App\Events\AlbumSaved;
+use App\Events\PersonAlbumSaved;
+use App\Events\TagAlbumSaved;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\ModelDBException;
 use App\Http\Resources\Models\Utils\AlbumProtectionPolicy;
 use App\Models\AccessPermission;
+use App\Models\Album;
 use App\Models\Extensions\BaseAlbum;
+use App\Models\PersonAlbum;
+use App\Models\TagAlbum;
 use Illuminate\Support\Facades\Hash;
 
 /**
@@ -39,7 +44,7 @@ class SetProtectionPolicy
 			$active_permissions?->delete();
 
 			// Just dispatch if something changed.
-			AlbumSaved::dispatch($album);
+			$this->dispatchSaved($album);
 
 			return;
 		}
@@ -66,6 +71,23 @@ class SetProtectionPolicy
 		$active_permissions->base_album_id = $album->get_id();
 		$active_permissions->save();
 
-		AlbumSaved::dispatch($album);
+		$this->dispatchSaved($album);
+	}
+
+	/**
+	 * Dispatches the type-appropriate "saved" event for the given album.
+	 *
+	 * `TagAlbum`/`PersonAlbum` (both also `BaseAlbum`, reachable via
+	 * `AlbumController::updateProtectionPolicy()`) have their own dedicated
+	 * events, since only a plain `Album` carries a `parent_id`.
+	 */
+	private function dispatchSaved(BaseAlbum $album): void
+	{
+		match (true) {
+			$album instanceof Album => AlbumSaved::dispatch([$album->id], [$album->parent_id]),
+			$album instanceof TagAlbum => TagAlbumSaved::dispatch([$album->id]),
+			$album instanceof PersonAlbum => PersonAlbumSaved::dispatch($album),
+			default => null,
+		};
 	}
 }

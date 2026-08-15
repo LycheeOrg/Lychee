@@ -134,11 +134,9 @@ class RecomputeAlbumStats extends Command
 			->chunk($chunk_size, function (\Illuminate\Database\Eloquent\Collection $albums) use ($dry_run, &$processed, $bar): void {
 				/** @var Album $album */
 				foreach ($albums as $album) {
-					if (!$dry_run) {
-						// Dispatch job to recompute stats for this album
-						// We do not propagate to parent here to avoid redundant jobs
-						RecomputeAlbumStatsJob::dispatch($album->id, false);
-					}
+					// Dispatch job to recompute stats for this album
+					// We do not propagate to parent here to avoid redundant jobs
+					RecomputeAlbumStatsJob::dispatchIf(!$dry_run, $album->id, false);
 
 					$processed++;
 					$bar->advance();

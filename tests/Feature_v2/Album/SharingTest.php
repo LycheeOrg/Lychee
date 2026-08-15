@@ -19,11 +19,86 @@
 namespace Tests\Feature_v2\Album;
 
 use App\Constants\AccessPermissionConstants as APC;
+use App\Events\AccessPermissionChanged;
+use App\Events\AlbumListingCacheFlushRequested;
 use App\Models\AccessPermission;
+use Illuminate\Support\Facades\Event;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class SharingTest extends BaseApiWithDataTest
 {
+	public function testCreateDispatchesAccessPermissionChangedPerAlbum(): void
+	{
+		Event::fake([AccessPermissionChanged::class]);
+
+		$response = $this->actingAs($this->userMayUpload2)->postJson('Sharing', [
+			'user_ids' => [$this->userMayUpload1->id],
+			'group_ids' => [],
+			'album_ids' => [$this->album2->id],
+			'grants_edit' => true,
+			'grants_delete' => true,
+			'grants_download' => true,
+			'grants_full_photo_access' => true,
+			'grants_upload' => true,
+		]);
+		$this->assertOk($response);
+
+		Event::assertDispatched(AccessPermissionChanged::class, fn (AccessPermissionChanged $e) => $e->base_album_id === $this->album2->id);
+	}
+
+	public function testEditDispatchesAccessPermissionChanged(): void
+	{
+		Event::fake([AccessPermissionChanged::class]);
+
+		$response = $this->actingAs($this->userMayUpload1)->patchJson('Sharing', [
+			'perm_id' => $this->perm1->id,
+			'grants_edit' => true,
+			'grants_delete' => true,
+			'grants_download' => true,
+			'grants_full_photo_access' => true,
+			'grants_upload' => true,
+		]);
+		$this->assertOk($response);
+
+		Event::assertDispatched(AccessPermissionChanged::class, fn (AccessPermissionChanged $e) => $e->base_album_id === $this->album1->id);
+	}
+
+	public function testDeleteDispatchesAccessPermissionChanged(): void
+	{
+		Event::fake([AccessPermissionChanged::class]);
+
+		$response = $this->actingAs($this->userMayUpload1)->deleteJson('Sharing', ['perm_id' => $this->perm1->id]);
+		$this->assertNoContent($response);
+
+		Event::assertDispatched(AccessPermissionChanged::class, fn (AccessPermissionChanged $e) => $e->base_album_id === $this->album1->id);
+	}
+
+	public function testPropagateUpdateDispatchesCoarseFlush(): void
+	{
+		Event::fake([AlbumListingCacheFlushRequested::class]);
+
+		$response = $this->actingAs($this->userMayUpload1)->putJson('Sharing', [
+			'album_id' => $this->album1->id,
+			'shall_override' => false,
+		]);
+		$this->assertNoContent($response);
+
+		Event::assertDispatched(AlbumListingCacheFlushRequested::class);
+	}
+
+	public function testPropagateOverwriteDispatchesCoarseFlush(): void
+	{
+		Event::fake([AlbumListingCacheFlushRequested::class]);
+
+		$response = $this->actingAs($this->userMayUpload1)->putJson('Sharing', [
+			'album_id' => $this->album1->id,
+			'shall_override' => true,
+		]);
+		$this->assertNoContent($response);
+
+		Event::assertDispatched(AlbumListingCacheFlushRequested::class);
+	}
+
 	public function testGet(): void
 	{
 		$response = $this->getJsonWithData('Sharing');

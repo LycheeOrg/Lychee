@@ -8,6 +8,12 @@
 					<UIcon name="lucide:triangle-alert" class="text-warning-600" />Press Enter to confirm each tag.
 				</span>
 			</p>
+			<div v-if="hasExistingTags" class="my-3 text-center flex flex-wrap gap-x-1 gap-y-1.5 items-center">
+				<p class="text-muted text-sm">{{ $t("dialogs.photo_tags.existing_tags") }}</p>
+				<UBadge v-for="tag in commonTags" size="sm" color="primary" variant="subtle" :key="`common-${tag}`">{{ tag }}</UBadge>
+				<UBadge v-for="tag in partialTags" size="sm" color="secondary" variant="subtle" :key="`partial-${tag}`">({{ tag }})</UBadge>
+				<p v-if="partialTags.length > 0" class="text-muted text-xs mt-1.5 italic w-full">{{ $t("dialogs.photo_tags.partial_tags_info") }}</p>
+			</div>
 			<div class="my-3 first:mt-0 last:mb-0">
 				<TagsInput v-model="tags" :placeholder="$t('dialogs.photo_tags.no_tags')" :add="true" />
 			</div>
@@ -26,7 +32,7 @@
 	</UModal>
 </template>
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, toRef } from "vue";
 import PhotoService from "@/services/photo-service";
 import AlbumService from "@/services/album-service";
 import { sprintf } from "sprintf-js";
@@ -34,6 +40,8 @@ import { useAppToast } from "@/v8/composables/useAppToast";
 import { trans } from "laravel-vue-i18n";
 import TagsService from "@/services/tags-service";
 import TagsInput from "@/v8/components/forms/basic/TagsInput.vue";
+import { useExistingTags } from "@/composables/tags/existingTags";
+import { useAlbumStore } from "@/stores/AlbumState";
 
 const props = defineProps<{
 	parentId: string | undefined;
@@ -48,6 +56,7 @@ const emits = defineEmits<{
 }>();
 
 const toast = useAppToast();
+const albumStore = useAlbumStore();
 
 const question = computed(() => {
 	if (props.photo) {
@@ -55,6 +64,8 @@ const question = computed(() => {
 	}
 	return sprintf(trans("dialogs.photo_tags.question_multiple"), props.photoIds?.length);
 });
+
+const { commonTags, partialTags, hasExistingTags } = useExistingTags(toRef(props, "photo"), toRef(props, "photoIds"));
 
 const shallOverride = ref(false);
 const tags = ref<string[]>([]);
@@ -85,6 +96,7 @@ function execute() {
 		});
 		AlbumService.clearCache(props.parentId);
 		TagsService.clearCache();
+		albumStore.bumpTagsRevision();
 		close();
 		emits("tagged");
 	});

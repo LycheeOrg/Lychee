@@ -8,8 +8,14 @@
 
 namespace App\Providers;
 
+use App\Events\AccessPermissionChanged;
+use App\Events\AlbumChildrenChanged;
+use App\Events\AlbumComputedDataUpdated;
 use App\Events\AlbumDeleted;
+use App\Events\AlbumListingCacheFlushRequested;
 use App\Events\AlbumSaved;
+use App\Events\AlbumTagsChanged;
+use App\Events\BaseAlbumRemoved;
 use App\Events\Metrics\AlbumDownload;
 use App\Events\Metrics\AlbumShared;
 use App\Events\Metrics\AlbumVisit;
@@ -18,6 +24,7 @@ use App\Events\Metrics\PhotoFavourite;
 use App\Events\Metrics\PhotoShared;
 use App\Events\Metrics\PhotoVisit;
 use App\Events\OrderCompleted;
+use App\Events\PersonAlbumSaved;
 use App\Events\PhotoAdded;
 use App\Events\PhotoDeleted;
 use App\Events\PhotoHighlightToggled;
@@ -27,8 +34,12 @@ use App\Events\PhotoRatingChanged;
 use App\Events\PhotoSaved;
 use App\Events\PhotoTagsChanged;
 use App\Events\PhotoWillBeDeleted;
+use App\Events\TagAlbumSaved;
+use App\Events\UserGroupMembershipChanged;
 use App\Listeners\CacheListener;
 use App\Listeners\LogQueryTimeout;
+use App\Listeners\ManagedCacheAlbumListingInvalidator;
+use App\Listeners\ManagedCacheUserListingInvalidator;
 use App\Listeners\MetricsListener;
 use App\Listeners\OrderCompletedListener;
 use App\Listeners\RecomputeAlbumSizeOnAlbumChange;
@@ -138,5 +149,20 @@ class EventServiceProvider extends ServiceProvider
 		Event::listen(PhotoAdded::class, WebhookListener::class . '@handlePhotoAdded');
 		Event::listen(PhotoMoved::class, WebhookListener::class . '@handlePhotoMoved');
 		Event::listen(PhotoWillBeDeleted::class, WebhookListener::class . '@handlePhotoWillBeDeleted');
+
+		// Managed-cache album-listing invalidation (Feature 053)
+		Event::listen(AlbumSaved::class, ManagedCacheAlbumListingInvalidator::class . '@handleAlbumSaved');
+		Event::listen(AlbumDeleted::class, ManagedCacheAlbumListingInvalidator::class . '@handleAlbumDeleted');
+		Event::listen(AlbumChildrenChanged::class, ManagedCacheAlbumListingInvalidator::class . '@handleAlbumChildrenChanged');
+		Event::listen(TagAlbumSaved::class, ManagedCacheAlbumListingInvalidator::class . '@handleTagAlbumSaved');
+		Event::listen(PersonAlbumSaved::class, ManagedCacheAlbumListingInvalidator::class . '@handlePersonAlbumSaved');
+		Event::listen(BaseAlbumRemoved::class, ManagedCacheAlbumListingInvalidator::class . '@handleBaseAlbumRemoved');
+		Event::listen(AccessPermissionChanged::class, ManagedCacheAlbumListingInvalidator::class . '@handleAccessPermissionChanged');
+		Event::listen(AlbumComputedDataUpdated::class, ManagedCacheAlbumListingInvalidator::class . '@handleAlbumComputedDataUpdated');
+		Event::listen(AlbumListingCacheFlushRequested::class, ManagedCacheAlbumListingInvalidator::class . '@handleAlbumListingCacheFlushRequested');
+		Event::listen(AlbumTagsChanged::class, ManagedCacheAlbumListingInvalidator::class . '@handleAlbumTagsChanged');
+
+		// Managed-cache user-listing invalidation (Feature 053)
+		Event::listen(UserGroupMembershipChanged::class, ManagedCacheUserListingInvalidator::class . '@handle');
 	}
 }

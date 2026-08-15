@@ -18,11 +18,27 @@
 
 namespace Tests\Feature_v2\Album;
 
+use App\Events\AlbumSaved;
 use App\Http\Controllers\Gallery\AlbumController;
+use Illuminate\Support\Facades\Event;
 use Tests\Feature_v2\Base\BaseApiWithDataTest;
 
 class AlbumSetHeaderTest extends BaseApiWithDataTest
 {
+	public function testSetHeaderAlbumDispatchesAlbumSavedEvent(): void
+	{
+		Event::fake([AlbumSaved::class]);
+
+		$response = $this->actingAs($this->userMayUpload1)->postJson('Album::header', [
+			'album_id' => $this->album1->id,
+			'header_id' => $this->photo1->id,
+			'is_compact' => false,
+		]);
+		$this->assertNoContent($response);
+
+		Event::assertDispatched(AlbumSaved::class, fn (AlbumSaved $e) => in_array($this->album1->id, $e->album_ids));
+	}
+
 	public function testSetHeaderAlbumUnauthorizedForbidden(): void
 	{
 		$response = $this->postJson('Album::header', []);
