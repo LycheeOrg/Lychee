@@ -431,11 +431,16 @@ class Handler extends ExceptionHandler
 			$msg = $msg_ . PHP_EOL . $msg;
 			$e = $e->getPrevious();
 		} while ($e !== null);
+
 		try {
 			Log::log($severity->value, $msg);
 		} catch (\UnexpectedValueException $e2) {
 			throw new NoWriteAccessOnLogsExceptions($e2);
 			// abort(507, 'Could not write in the logs. Check that storage/logs/ and containing files have proper permissions.');
+		} catch (\Throwable) {
+			// At that point, we failed on the Log facade... So we are just going to dump the error to the PHP error log and hope for the best.
+			echo $msg;
+			exit(1);
 		}
 	}
 
