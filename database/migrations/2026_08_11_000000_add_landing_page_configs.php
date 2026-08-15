@@ -20,6 +20,7 @@ return new class() extends BaseConfigMigration {
 	public const SHIFT_TYPE = 'relative|absolute';
 	public const SHIFT_X_DIRECTION = 'left|right';
 	public const SHIFT_Y_DIRECTION = 'up|down';
+	public const PERCENT_RANGE = 'int:0:100';
 
 	public function getConfigs(): array
 	{
@@ -239,6 +240,30 @@ return new class() extends BaseConfigMigration {
 				'is_expert' => true,
 				'level' => 0,
 				'order' => 30,
+			],
+			[
+				'key' => 'landing_meridian_explore_offset',
+				'value' => '42',
+				'cat' => self::MOD_WELCOME,
+				'type_range' => self::PERCENT_RANGE,
+				'description' => 'Meridian: explore rail vertical position (%)',
+				'details' => 'How far down the full-height rail the "explore" label sits. 0 is the top, 100 is the bottom. Applies to the meridian layout only.',
+				'is_secret' => false,
+				'is_expert' => true,
+				'level' => 0,
+				'order' => 31,
+			],
+			[
+				'key' => 'landing_meridian_contact_offset',
+				'value' => '70',
+				'cat' => self::MOD_WELCOME,
+				'type_range' => self::PERCENT_RANGE,
+				'description' => 'Meridian: contact rail vertical position (%)',
+				'details' => 'How far down the full-height rail the "contact" label sits. 0 is the top, 100 is the bottom. Applies to the meridian layout only.',
+				'is_secret' => false,
+				'is_expert' => true,
+				'level' => 0,
+				'order' => 32,
 			],
 		];
 	}

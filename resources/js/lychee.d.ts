@@ -722,6 +722,8 @@ declare namespace App {
 					cta_shift_x_direction: App.Enum.ShiftX;
 					cta_shift_y: number;
 					cta_shift_y_direction: App.Enum.ShiftY;
+					meridian_explore_offset: number;
+					meridian_contact_offset: number;
 				};
 				export type MapProviderData = {
 					layer: string;

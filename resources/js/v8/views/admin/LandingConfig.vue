@@ -207,6 +207,40 @@
 								</div>
 							</Fieldset>
 
+							<Fieldset v-if="draft.landing_layout === 'meridian'" :legend="$t('landing_config.section_meridian')">
+								<div class="flex flex-col gap-4" dir="ltr">
+									<div class="flex flex-col gap-1">
+										<label class="text-sm font-medium">{{
+											$t("landing_config.field_meridian_explore_offset", { value: String(draft.meridian_explore_offset) })
+										}}</label>
+										<input
+											type="range"
+											min="0"
+											max="100"
+											step="1"
+											class="w-full accent-primary-500"
+											:value="String(draft.meridian_explore_offset)"
+											@input="draft.meridian_explore_offset = Number(($event.target as HTMLInputElement).value)"
+										/>
+									</div>
+									<div class="flex flex-col gap-1">
+										<label class="text-sm font-medium">{{
+											$t("landing_config.field_meridian_contact_offset", { value: String(draft.meridian_contact_offset) })
+										}}</label>
+										<input
+											type="range"
+											min="0"
+											max="100"
+											step="1"
+											class="w-full accent-primary-500"
+											:value="String(draft.meridian_contact_offset)"
+											@input="draft.meridian_contact_offset = Number(($event.target as HTMLInputElement).value)"
+										/>
+									</div>
+									<small class="text-muted text-xs">{{ $t("landing_config.field_meridian_offset_hint") }}</small>
+								</div>
+							</Fieldset>
+
 							<Fieldset v-if="!isSingleScreenLayout" :legend="$t('landing_config.section_content')">
 								<div class="flex flex-col gap-4">
 									<USwitch
@@ -479,6 +513,8 @@ type Draft = {
 	cta_shift_x_direction: App.Enum.ShiftX;
 	cta_shift_y: number;
 	cta_shift_y_direction: App.Enum.ShiftY;
+	meridian_explore_offset: number;
+	meridian_contact_offset: number;
 	background_landscape_mode: App.Enum.LandingBackgroundModeType;
 	background_landscape: string;
 	background_portrait_mode: App.Enum.LandingBackgroundModeType;
@@ -501,6 +537,8 @@ const draft = reactive<Draft>({
 	cta_shift_x_direction: "right",
 	cta_shift_y: 0,
 	cta_shift_y_direction: "up",
+	meridian_explore_offset: 42,
+	meridian_contact_offset: 70,
 	background_landscape_mode: "static",
 	background_landscape: "",
 	background_portrait_mode: "static",
@@ -585,6 +623,12 @@ function loadSettings(): Promise<void> {
 				case "landing_cta_shift_y_direction":
 					draft.cta_shift_y_direction = config.value as App.Enum.ShiftY;
 					break;
+				case "landing_meridian_explore_offset":
+					draft.meridian_explore_offset = parseInt(config.value, 10) || 0;
+					break;
+				case "landing_meridian_contact_offset":
+					draft.meridian_contact_offset = parseInt(config.value, 10) || 0;
+					break;
 				case "landing_background_landscape_mode":
 					draft.background_landscape_mode = config.value as App.Enum.LandingBackgroundModeType;
 					break;
@@ -630,6 +674,8 @@ function save(): void {
 			{ key: "landing_cta_shift_x_direction", value: draft.cta_shift_x_direction },
 			{ key: "landing_cta_shift_y", value: String(draft.cta_shift_y) },
 			{ key: "landing_cta_shift_y_direction", value: draft.cta_shift_y_direction },
+			{ key: "landing_meridian_explore_offset", value: String(draft.meridian_explore_offset) },
+			{ key: "landing_meridian_contact_offset", value: String(draft.meridian_contact_offset) },
 			{ key: "landing_background_landscape_mode", value: draft.background_landscape_mode },
 			{ key: "landing_background_landscape", value: draft.background_landscape },
 			{ key: "landing_background_portrait_mode", value: draft.background_portrait_mode },
@@ -780,6 +826,8 @@ const previewData = computed<App.Http.Resources.GalleryConfigs.LandingPageResour
 		cta_shift_x_direction: draft.cta_shift_x_direction,
 		cta_shift_y: draft.cta_shift_y,
 		cta_shift_y_direction: draft.cta_shift_y_direction,
+		meridian_explore_offset: draft.meridian_explore_offset,
+		meridian_contact_offset: draft.meridian_contact_offset,
 		links: links.value
 			.filter((l) => l.enabled)
 			.map((l) => ({

@@ -63,6 +63,8 @@ class LandingPageResource extends Data
 	public ShiftX $cta_shift_x_direction;
 	public int $cta_shift_y;
 	public ShiftY $cta_shift_y_direction;
+	public int $meridian_explore_offset;
+	public int $meridian_contact_offset;
 
 	private const FALLBACK_IMAGE = 'dist/cat.webp';
 
@@ -118,6 +120,8 @@ class LandingPageResource extends Data
 		$this->cta_shift_x_direction = request()->configs()->getValueAsEnum('landing_cta_shift_x_direction', ShiftX::class) ?? ShiftX::RIGHT;
 		$this->cta_shift_y = request()->configs()->getValueAsInt('landing_cta_shift_y');
 		$this->cta_shift_y_direction = request()->configs()->getValueAsEnum('landing_cta_shift_y_direction', ShiftY::class) ?? ShiftY::UP;
+		$this->meridian_explore_offset = request()->configs()->getValueAsInt('landing_meridian_explore_offset');
+		$this->meridian_contact_offset = request()->configs()->getValueAsInt('landing_meridian_contact_offset');
 
 		$this->links = LandingLink::query()->enabled()->orderBy('sort_order')->get()
 			->map(fn (LandingLink $landing_link) => new LandingLinkEmbedResource($landing_link))
