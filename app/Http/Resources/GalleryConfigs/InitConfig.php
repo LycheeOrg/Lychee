@@ -351,8 +351,7 @@ class InitConfig extends Data
 
 	/**
 	 * Whether the contact form should be offered to the current user: the feature must be
-	 * enabled, and the user must either be a guest, an administrator (who always sees it),
-	 * or logged in while logged-in users are explicitly allowed.
+	 * enabled, and the user must either be a guest, or logged in while logged-in users are explicitly allowed.
 	 *
 	 * @return bool
 	 */
@@ -365,8 +364,10 @@ class InitConfig extends Data
 		$user = Auth::user();
 
 		return $user === null ||
-			$user->may_administrate === true ||
-			request()->configs()->getValueAsBool('contact_form_enabled_for_logged_in');
+			(
+				$user->may_administrate !== true &&
+				request()->configs()->getValueAsBool('contact_form_enabled_for_logged_in')
+			);
 	}
 
 	private function isNsfwClassifierEnabled(): bool
