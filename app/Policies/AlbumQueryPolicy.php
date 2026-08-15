@@ -636,6 +636,7 @@ class AlbumQueryPolicy
 			$columns[] = $prefix . 'base_albums.title';
 			$columns[] = $prefix . 'base_albums.created_at';
 			$columns[] = $prefix . 'base_albums.description';
+			$columns[] = $prefix . 'base_albums.published_at';
 		}
 
 		$query->joinSub(

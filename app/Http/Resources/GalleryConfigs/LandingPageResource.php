@@ -179,9 +179,9 @@ class LandingPageResource extends Data
 		$query = $album_query_policy->applyVisibilityFilter($query, null);
 
 		$albums = $query
-			->orderBy('published_at', 'DESC')
-			->orderBy('created_at', 'DESC')
-			->orderBy('id', 'DESC')
+			->orderBy('base_albums.published_at', 'DESC')
+			->orderBy('base_albums.created_at', 'DESC')
+			->orderBy('albums.id', 'DESC')
 			->limit($count)
 			->get();
 
@@ -315,9 +315,9 @@ class LandingPageResource extends Data
 		$query = $album_query_policy->applyVisibilityFilter($query, null);
 
 		$album = $query
-			->orderBy('published_at', 'DESC')
-			->orderBy('created_at', 'DESC')
-			->orderBy('id', 'DESC')
+			->orderBy('base_albums.published_at', 'DESC')
+			->orderBy('base_albums.created_at', 'DESC')
+			->orderBy('albums.id', 'DESC')
 			->limit(1)
 			->first();
 
