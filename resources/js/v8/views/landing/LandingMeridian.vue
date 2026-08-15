@@ -52,7 +52,12 @@
 		>
 			<div
 				class="absolute left-1/2 flex flex-col items-center gap-4 shrink-0"
-				:style="{ top: `${exploreOffset}%`, transform: 'translate(-50%, -50%) rotate(180deg)', writingMode: 'vertical-rl', textOrientation: 'sideways' }"
+				:style="{
+					top: `${exploreOffset}%`,
+					transform: 'translate(-50%, -50%) rotate(180deg)',
+					writingMode: 'vertical-rl',
+					textOrientation: 'sideways',
+				}"
 			>
 				<span
 					class="text-2xs uppercase tracking-[0.3em] text-white/70 group-hover:text-white transition-colors"
@@ -77,7 +82,12 @@
 		>
 			<div
 				class="absolute left-1/2 flex flex-col items-center gap-4 shrink-0"
-				:style="{ top: `${contactOffset}%`, transform: 'translate(-50%, -50%) rotate(180deg)', writingMode: 'vertical-rl', textOrientation: 'sideways' }"
+				:style="{
+					top: `${contactOffset}%`,
+					transform: 'translate(-50%, -50%) rotate(180deg)',
+					writingMode: 'vertical-rl',
+					textOrientation: 'sideways',
+				}"
 			>
 				<span
 					class="text-2xs uppercase tracking-[0.3em] text-white/70 group-hover:text-white transition-colors"
