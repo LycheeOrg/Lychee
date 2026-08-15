@@ -23,6 +23,7 @@ return [
     'section_background_landscape' => 'Background (Landscape)',
     'section_background_portrait' => 'Background (Portrait)',
     'section_cta_position' => 'Call-to-Action Position',
+    'section_meridian' => 'Meridian Rails',
     'section_content' => 'Content',
 
     'field_layout' => 'Layout',
@@ -90,6 +91,10 @@ return [
         'down' => 'Down',
     ],
     'reset_to_zero' => 'Reset to 0',
+
+    'field_meridian_explore_offset' => 'Explore label height (:value%)',
+    'field_meridian_contact_offset' => 'Contact label height (:value%)',
+    'field_meridian_offset_hint' => 'How far down each full-height rail its label sits: 0% is the top, 100% is the bottom.',
 
     'preview_title' => 'Live Preview',
     'preview_hint' => 'Updates instantly as you edit — nothing is saved until you click Save.',
