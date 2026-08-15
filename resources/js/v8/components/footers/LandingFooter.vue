@@ -10,6 +10,7 @@
 				id="facebook"
 				:href="props.footerData.sm_facebook_url"
 				class="inline-block hover:scale-150 hover:text-muted transition-all ease-in-out duration-300 text-white socials text-2xl my-4 mx-5 socialicons"
+				:class="{ 'opacity-50 hover:opacity-100': props.dimIconsUntilHover }"
 				target="_blank"
 				rel="noopener"
 			></a>
@@ -18,6 +19,7 @@
 				id="flickr"
 				:href="props.footerData.sm_flickr_url"
 				class="inline-block hover:scale-150 hover:text-muted transition-all ease-in-out duration-300 text-white socials text-2xl my-4 mx-5 socialicons"
+				:class="{ 'opacity-50 hover:opacity-100': props.dimIconsUntilHover }"
 				target="_blank"
 				rel="noopener"
 			></a>
@@ -26,6 +28,7 @@
 				id="twitter"
 				:href="props.footerData.sm_twitter_url"
 				class="inline-block hover:scale-150 hover:text-muted transition-all ease-in-out duration-300 text-white socials text-2xl my-4 mx-5 socialicons"
+				:class="{ 'opacity-50 hover:opacity-100': props.dimIconsUntilHover }"
 				target="_blank"
 				rel="noopener"
 			></a>
@@ -34,6 +37,7 @@
 				id="instagram"
 				:href="props.footerData.sm_instagram_url"
 				class="inline-block hover:scale-150 hover:text-muted transition-all ease-in-out duration-300 text-white socials text-2xl my-4 mx-5 socialicons"
+				:class="{ 'opacity-50 hover:opacity-100': props.dimIconsUntilHover }"
 				target="_blank"
 				rel="noopener"
 			></a>
@@ -42,6 +46,7 @@
 				id="youtube"
 				:href="props.footerData.sm_youtube_url"
 				class="inline-block hover:scale-150 hover:text-muted transition-all ease-in-out duration-300 text-white socials text-2xl my-4 mx-5 socialicons"
+				:class="{ 'opacity-50 hover:opacity-100': props.dimIconsUntilHover }"
 				target="_blank"
 				rel="noopener"
 			></a>
@@ -94,6 +99,7 @@ type FooterProps = {
 	links?: App.Http.Resources.GalleryConfigs.LandingLinkEmbedResource[];
 	noIntroDelay?: boolean;
 	animated?: boolean;
+	dimIconsUntilHover?: boolean;
 };
 
 const props = defineProps<FooterProps>();

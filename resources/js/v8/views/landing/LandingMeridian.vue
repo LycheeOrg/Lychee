@@ -82,6 +82,7 @@
 			:links="data.links"
 			:animated="effectivePreset !== 'none'"
 			:no-intro-delay="!data.intro_screen_enabled"
+			dim-icons-until-hover
 		/>
 	</main>
 </template>
