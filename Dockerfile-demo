@@ -2,7 +2,7 @@
 # Build on top of Current Lychee
 # ============================================================================
 FROM ghcr.io/lycheeorg/lychee:edge
-COPY --from=composer:2.10.1@sha256:c883af18892268b3b8369c4a39c08f80b393383e79d80b75140a3ea489dbbb78 /usr/bin/composer /usr/local/bin/composer
+COPY --from=composer:2.10.2@sha256:4d71c3c2109c61d5415544264b59ad4087e4c5b7244481723664138fd36d5040 /usr/bin/composer /usr/local/bin/composer
 
 RUN touch database/database.sqlite \
     && DB_CONNECTION=sqlite php /app/artisan migrate --force \
