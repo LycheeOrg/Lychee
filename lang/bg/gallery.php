@@ -155,6 +155,7 @@ return [
         'no_results' => 'Няма какво да се покаже',
         'upload' => 'Качване на снимки',
         'edit_title' => 'Настройки на албума',
+        'edit_title_with_name' => 'Настройки на албума: :title',
         'tabs' => [
             'about' => 'За албума',
             'visibility' => 'Видимост',

@@ -155,6 +155,7 @@ return [
         'no_results' => 'لا يوجد شيء هنا',
         'upload' => 'رفع الصور',
         'edit_title' => 'إعدادات الألبوم',
+        'edit_title_with_name' => 'إعدادات الألبوم: :title',
         'tabs' => [
             'about' => 'حول الألبوم',
             'visibility' => 'الظهور',

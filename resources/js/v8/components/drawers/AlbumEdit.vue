@@ -106,11 +106,12 @@ const { expert_album_settings } = storeToRefs(useLycheeStateStore());
 
 const is_expert_mode = ref(expert_album_settings.value);
 
-// Show which album is being edited: "Album Settings : My Album" (falls back to the plain
-// section title while the album is still loading).
+// Show which album is being edited: "Album Settings: My Album". Separator and word order live in
+// the translation string so locales can differ; falls back to the plain section title while the
+// album is still loading.
 const modalTitle = computed(() => {
 	const albumTitle = albumStore.album?.title;
-	return albumTitle ? `${trans("gallery.album.edit_title")} : ${albumTitle}` : trans("gallery.album.edit_title");
+	return albumTitle ? trans("gallery.album.edit_title_with_name", { title: albumTitle }) : trans("gallery.album.edit_title");
 });
 
 const numUsers = ref(0);

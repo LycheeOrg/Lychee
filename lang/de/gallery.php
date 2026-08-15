@@ -154,6 +154,7 @@ return [
         'no_results' => 'Hier gibt es nichts zu sehen',
         'upload' => 'Fotos hochladen',
         'edit_title' => 'Albumeinstellungen',
+        'edit_title_with_name' => 'Albumeinstellungen: :title',
         'tabs' => [
             'about' => 'Über das Album',
             'visibility' => 'Sichtbarkeit',
