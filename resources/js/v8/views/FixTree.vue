@@ -60,7 +60,11 @@
 				<div class="w-full ltr:text-right rtl:text-left">{{ $t("fix-tree.table.parent") }}</div>
 			</div>
 		</div>
-		<UScrollArea :items="albums ?? []" :virtualize="{ estimateSize: 32, overscan: 50 }" class="h-[calc(100vh-var(--ui-header-height)-var(--ui-main-padding))">
+		<UScrollArea
+			:items="albums ?? []"
+			:virtualize="{ estimateSize: 32, overscan: 50 }"
+			class="h-[calc(100vh-var(--ui-header-height)-var(--ui-main-padding))"
+		>
 			<template #default="{ item }">
 				<FixTreeLine
 					v-model:lft="item._lft"
