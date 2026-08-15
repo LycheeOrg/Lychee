@@ -415,6 +415,7 @@ class Handler extends ExceptionHandler
 		// with a higher severity than the eventual exception
 		$severity = self::getLogSeverity($e);
 
+		$original_exception = $e;
 		$msg = '';
 		do {
 			$cause = $this->findCause($e);
@@ -439,7 +440,7 @@ class Handler extends ExceptionHandler
 			// abort(507, 'Could not write in the logs. Check that storage/logs/ and containing files have proper permissions.');
 		} catch (\Throwable) {
 			// At that point, we failed on the Log facade... So we are just going to dump the error to the PHP error log and hope for the best.
-			echo $msg;
+			dump($original_exception);
 			exit(1);
 		}
 	}
