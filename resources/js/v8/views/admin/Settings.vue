@@ -224,6 +224,10 @@ watch(
 	() => route.params.tab,
 	(newTab, _oldTab) => {
 		tab.value = (newTab as string | undefined) ?? "";
+		// Switching category swaps the whole panel below the sidebar without a real page
+		// navigation, so the browser has no reason to reset scroll on its own - without this the
+		// new category opens wherever the previous one had been scrolled to.
+		window.scrollTo({ top: 0, behavior: "smooth" });
 	},
 );
 </script>

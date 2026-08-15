@@ -257,19 +257,23 @@ html {
 	--animate-landingSlideReveal: landingSlideReveal 0.8s ease-out forwards;
 	/*
 	  Meridian's own reveal sequence, chained in two stages off the intro splash screen's ~4s
-	  cover (LandingIntroScreen.vue's 4000ms timeout): the two rails grow in first (4s-4.9s,
+	  cover (LandingIntroScreen.vue's 4000ms timeout): the two rails grow in first (4s-4.2s,
 	  landingMeridianLineGrow), then everything else - background, header, caption, label -
-	  fades in from 4.9s once the rails are fully drawn. Layouts with the intro screen disabled
-	  add `.no-intro-delay` (via `introDelayClass`) to zero every stage's delay out at once, same
-	  pattern as landingSlidesPopIn/landingEnterPopIn above - the stagger collapses but the
-	  ordering is lost in that case, which is an accepted tradeoff (matches existing behavior).
+	  fades in from 4.13s, *before* the rails' declared 0.2s duration technically ends. This overlap
+	  is intentional, not a rounding slip: landingMeridianLineGrow eases out, so the rails read as
+	  visually complete well before the last fraction of the duration, whose motion is nearly
+	  imperceptible - waiting for the full 0.2s to elapse before starting the next stage read as a
+	  dead pause. LandingMeridian.vue's `restDelayClass`/`captionDelayClass` (not the shared
+	  `introDelayClass` used by the lines themselves) hold that same 0.13s/0.28s offset in place
+	  when the intro splash is disabled, rather than collapsing every stage's delay to 0s the way
+	  `.no-intro-delay` does for landingSlidesPopIn/landingEnterPopIn above.
 	*/
-	--animate-landingMeridianLineGrow: landingMeridianLineGrow 0.9s 4s ease-out forwards;
-	--animate-landingMeridianRevealZoom: landingZoomReveal 1s 4.9s ease-out forwards;
-	--animate-landingMeridianRevealSlide: landingSlideReveal 0.8s 4.9s ease-out forwards;
-	--animate-landingMeridianRevealPop: popIn 2s 4.9s forwards ease-in-out;
-	--animate-landingMeridianCaptionIn: landingMeridianCaptionIn 1.1s 5.05s ease-out forwards;
-	--animate-landingMeridianLabelIn: landingMeridianLabelIn 1.1s 4.9s ease-out forwards;
+	--animate-landingMeridianLineGrow: landingMeridianLineGrow 0.2s 4s ease-out forwards;
+	--animate-landingMeridianRevealZoom: landingZoomReveal 1s 4.13s ease-out forwards;
+	--animate-landingMeridianRevealSlide: landingSlideReveal 0.8s 4.13s ease-out forwards;
+	--animate-landingMeridianRevealPop: popIn 2s 4.13s forwards ease-in-out;
+	--animate-landingMeridianCaptionIn: landingMeridianCaptionIn 1.1s 4.28s ease-out forwards;
+	--animate-landingMeridianLabelIn: landingMeridianLabelIn 1.1s 4.13s ease-out forwards;
 
 	--text-2xs: 0.65rem;
 	--text-2xs--line-height: 0.8rem;

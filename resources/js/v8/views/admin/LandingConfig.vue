@@ -101,109 +101,114 @@
 										/>
 									</UFormField>
 
-									<!-- Anchor grid -->
-									<div class="flex flex-col gap-1">
-										<label class="text-sm font-medium">{{ $t("landing_config.field_cta_position") }}</label>
-										<div class="grid grid-cols-3 gap-1" dir="ltr">
-											<UButton
-												v-for="pos in ctaPositionOptions"
-												:key="pos.value"
-												:label="pos.label"
-												size="xs"
-												:color="draft.cta_position === pos.value ? 'primary' : 'neutral'"
-												:variant="draft.cta_position === pos.value ? 'solid' : 'ghost'"
-												class="text-xs"
-												:ui="{ label: 'w-full text-center' }"
-												@click="draft.cta_position = pos.value"
-											/>
+									<!-- Meridian has no free-floating CTA button - the rails are fixed full-height lines, so
+									     none of the anchor/shift controls below have anything to act on. Only the text
+									     field above still applies there (it feeds the explore rail's label). -->
+									<template v-if="draft.landing_layout !== 'meridian'">
+										<!-- Anchor grid -->
+										<div class="flex flex-col gap-1">
+											<label class="text-sm font-medium">{{ $t("landing_config.field_cta_position") }}</label>
+											<div class="grid grid-cols-3 gap-1" dir="ltr">
+												<UButton
+													v-for="pos in ctaPositionOptions"
+													:key="pos.value"
+													:label="pos.label"
+													size="xs"
+													:color="draft.cta_position === pos.value ? 'primary' : 'neutral'"
+													:variant="draft.cta_position === pos.value ? 'solid' : 'ghost'"
+													class="text-xs"
+													:ui="{ label: 'w-full text-center' }"
+													@click="draft.cta_position = pos.value"
+												/>
+											</div>
 										</div>
-									</div>
 
-									<!-- Shift unit -->
-									<div class="grid grid-cols-2 gap-1">
-										<label class="text-sm font-medium">{{ $t("landing_config.field_cta_shift_type") }}</label>
+										<!-- Shift unit -->
 										<div class="grid grid-cols-2 gap-1">
-											<UButton
-												:label="$t('landing_config.cta_shift_type_options.relative')"
-												size="xs"
-												:color="draft.cta_shift_type === 'relative' ? 'primary' : 'neutral'"
-												:variant="draft.cta_shift_type === 'relative' ? 'solid' : 'ghost'"
-												class="text-xs"
-												:ui="{ label: 'w-full text-center' }"
-												@click="draft.cta_shift_type = 'relative'"
-											/>
-											<UButton
-												:label="$t('landing_config.cta_shift_type_options.absolute')"
-												size="xs"
-												:color="draft.cta_shift_type === 'absolute' ? 'primary' : 'neutral'"
-												:variant="draft.cta_shift_type === 'absolute' ? 'solid' : 'ghost'"
-												class="text-xs"
-												:ui="{ label: 'w-full text-center' }"
-												@click="draft.cta_shift_type = 'absolute'"
-											/>
-										</div>
-										<small class="col-span-2 text-muted text-xs">{{ $t("landing_config.cta_shift_type_hint") }}</small>
-									</div>
-
-									<!-- Horizontal shift (locked to LTR: "left"/"right" refer to the physical viewport, not text direction) -->
-									<div class="flex flex-col gap-1" dir="ltr">
-										<label class="group text-sm font-medium cursor-pointer select-none w-full" @click="sliderCtaX = 0">
-											<span class="group-hover:hidden">{{
-												$t("landing_config.field_cta_shift_x", { value: String(sliderCtaX) })
-											}}</span>
-											<span class="hidden group-hover:inline">{{ $t("landing_config.reset_to_zero") }}</span>
-										</label>
-										<div class="flex items-center gap-2">
-											<span class="text-xs text-muted w-10 shrink-0 text-right">{{
-												$t("landing_config.cta_shift_x_direction_options.left")
-											}}</span>
-											<div class="relative flex-1">
-												<div class="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 h-full w-px bg-muted/50" />
-												<input
-													type="range"
-													min="-100"
-													max="100"
-													step="1"
-													class="w-full accent-primary-500"
-													:value="String(sliderCtaX)"
-													@input="sliderCtaX = Number(($event.target as HTMLInputElement).value)"
+											<label class="text-sm font-medium">{{ $t("landing_config.field_cta_shift_type") }}</label>
+											<div class="grid grid-cols-2 gap-1">
+												<UButton
+													:label="$t('landing_config.cta_shift_type_options.relative')"
+													size="xs"
+													:color="draft.cta_shift_type === 'relative' ? 'primary' : 'neutral'"
+													:variant="draft.cta_shift_type === 'relative' ? 'solid' : 'ghost'"
+													class="text-xs"
+													:ui="{ label: 'w-full text-center' }"
+													@click="draft.cta_shift_type = 'relative'"
+												/>
+												<UButton
+													:label="$t('landing_config.cta_shift_type_options.absolute')"
+													size="xs"
+													:color="draft.cta_shift_type === 'absolute' ? 'primary' : 'neutral'"
+													:variant="draft.cta_shift_type === 'absolute' ? 'solid' : 'ghost'"
+													class="text-xs"
+													:ui="{ label: 'w-full text-center' }"
+													@click="draft.cta_shift_type = 'absolute'"
 												/>
 											</div>
-											<span class="text-xs text-muted w-10 shrink-0">{{
-												$t("landing_config.cta_shift_x_direction_options.right")
-											}}</span>
+											<small class="col-span-2 text-muted text-xs">{{ $t("landing_config.cta_shift_type_hint") }}</small>
 										</div>
-									</div>
 
-									<!-- Vertical shift -->
-									<div class="flex flex-col gap-1" dir="ltr">
-										<label class="group text-sm font-medium cursor-pointer select-none w-full" @click="sliderCtaY = 0">
-											<span class="group-hover:hidden">{{
-												$t("landing_config.field_cta_shift_y", { value: String(sliderCtaY) })
-											}}</span>
-											<span class="hidden group-hover:inline">{{ $t("landing_config.reset_to_zero") }}</span>
-										</label>
-										<div class="flex items-center gap-2">
-											<span class="text-xs text-muted w-10 shrink-0 text-right">{{
-												$t("landing_config.cta_shift_y_direction_options.down")
-											}}</span>
-											<div class="relative flex-1">
-												<div class="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 h-full w-px bg-muted/50" />
-												<input
-													type="range"
-													min="-100"
-													max="100"
-													step="1"
-													class="w-full accent-primary-500"
-													:value="String(sliderCtaY)"
-													@input="sliderCtaY = Number(($event.target as HTMLInputElement).value)"
-												/>
+										<!-- Horizontal shift (locked to LTR: "left"/"right" refer to the physical viewport, not text direction) -->
+										<div class="flex flex-col gap-1" dir="ltr">
+											<label class="group text-sm font-medium cursor-pointer select-none w-full" @click="sliderCtaX = 0">
+												<span class="group-hover:hidden">{{
+													$t("landing_config.field_cta_shift_x", { value: String(sliderCtaX) })
+												}}</span>
+												<span class="hidden group-hover:inline">{{ $t("landing_config.reset_to_zero") }}</span>
+											</label>
+											<div class="flex items-center gap-2">
+												<span class="text-xs text-muted w-10 shrink-0 text-right">{{
+													$t("landing_config.cta_shift_x_direction_options.left")
+												}}</span>
+												<div class="relative flex-1">
+													<div class="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 h-full w-px bg-muted/50" />
+													<input
+														type="range"
+														min="-100"
+														max="100"
+														step="1"
+														class="w-full accent-primary-500"
+														:value="String(sliderCtaX)"
+														@input="sliderCtaX = Number(($event.target as HTMLInputElement).value)"
+													/>
+												</div>
+												<span class="text-xs text-muted w-10 shrink-0">{{
+													$t("landing_config.cta_shift_x_direction_options.right")
+												}}</span>
 											</div>
-											<span class="text-xs text-muted w-10 shrink-0">{{
-												$t("landing_config.cta_shift_y_direction_options.up")
-											}}</span>
 										</div>
-									</div>
+
+										<!-- Vertical shift -->
+										<div class="flex flex-col gap-1" dir="ltr">
+											<label class="group text-sm font-medium cursor-pointer select-none w-full" @click="sliderCtaY = 0">
+												<span class="group-hover:hidden">{{
+													$t("landing_config.field_cta_shift_y", { value: String(sliderCtaY) })
+												}}</span>
+												<span class="hidden group-hover:inline">{{ $t("landing_config.reset_to_zero") }}</span>
+											</label>
+											<div class="flex items-center gap-2">
+												<span class="text-xs text-muted w-10 shrink-0 text-right">{{
+													$t("landing_config.cta_shift_y_direction_options.down")
+												}}</span>
+												<div class="relative flex-1">
+													<div class="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 h-full w-px bg-muted/50" />
+													<input
+														type="range"
+														min="-100"
+														max="100"
+														step="1"
+														class="w-full accent-primary-500"
+														:value="String(sliderCtaY)"
+														@input="sliderCtaY = Number(($event.target as HTMLInputElement).value)"
+													/>
+												</div>
+												<span class="text-xs text-muted w-10 shrink-0">{{
+													$t("landing_config.cta_shift_y_direction_options.up")
+												}}</span>
+											</div>
+										</div>
+									</template>
 								</div>
 							</Fieldset>
 
@@ -238,6 +243,38 @@
 										/>
 									</div>
 									<small class="text-muted text-xs">{{ $t("landing_config.field_meridian_offset_hint") }}</small>
+
+									<div class="flex flex-col gap-1">
+										<label class="text-sm font-medium">{{
+											$t("landing_config.field_meridian_explore_line_position", { value: String(draft.meridian_explore_line_position) })
+										}}</label>
+										<input
+											type="range"
+											min="0"
+											max="100"
+											step="1"
+											class="w-full accent-primary-500"
+											:value="String(draft.meridian_explore_line_position)"
+											@input="draft.meridian_explore_line_position = Number(($event.target as HTMLInputElement).value)"
+										/>
+									</div>
+									<div class="flex flex-col gap-1">
+										<label class="text-sm font-medium">{{
+											$t("landing_config.field_meridian_contact_line_position", {
+												value: String(draft.meridian_contact_line_position),
+											})
+										}}</label>
+										<input
+											type="range"
+											min="0"
+											max="100"
+											step="1"
+											class="w-full accent-primary-500"
+											:value="String(draft.meridian_contact_line_position)"
+											@input="draft.meridian_contact_line_position = Number(($event.target as HTMLInputElement).value)"
+										/>
+									</div>
+									<small class="text-muted text-xs">{{ $t("landing_config.field_meridian_line_position_hint") }}</small>
 								</div>
 							</Fieldset>
 
@@ -259,7 +296,7 @@
 
 						<!-- Live preview -->
 						<div class="flex-1">
-							<div class="sticky top-4">
+							<div class="sticky top-(--ui-header-height)">
 								<div class="flex items-center justify-between gap-4 mb-2">
 									<h3 class="font-semibold">{{ $t("landing_config.preview_title") }}</h3>
 									<UButton color="primary" variant="solid" :loading="isSaving" :label="$t('landing_config.save')" @click="save" />
@@ -515,6 +552,8 @@ type Draft = {
 	cta_shift_y_direction: App.Enum.ShiftY;
 	meridian_explore_offset: number;
 	meridian_contact_offset: number;
+	meridian_explore_line_position: number;
+	meridian_contact_line_position: number;
 	background_landscape_mode: App.Enum.LandingBackgroundModeType;
 	background_landscape: string;
 	background_portrait_mode: App.Enum.LandingBackgroundModeType;
@@ -539,6 +578,8 @@ const draft = reactive<Draft>({
 	cta_shift_y_direction: "up",
 	meridian_explore_offset: 42,
 	meridian_contact_offset: 70,
+	meridian_explore_line_position: 33,
+	meridian_contact_line_position: 67,
 	background_landscape_mode: "static",
 	background_landscape: "",
 	background_portrait_mode: "static",
@@ -629,6 +670,12 @@ function loadSettings(): Promise<void> {
 				case "landing_meridian_contact_offset":
 					draft.meridian_contact_offset = parseInt(config.value, 10) || 0;
 					break;
+				case "landing_meridian_explore_line_position":
+					draft.meridian_explore_line_position = parseInt(config.value, 10) || 0;
+					break;
+				case "landing_meridian_contact_line_position":
+					draft.meridian_contact_line_position = parseInt(config.value, 10) || 0;
+					break;
 				case "landing_background_landscape_mode":
 					draft.background_landscape_mode = config.value as App.Enum.LandingBackgroundModeType;
 					break;
@@ -676,6 +723,8 @@ function save(): void {
 			{ key: "landing_cta_shift_y_direction", value: draft.cta_shift_y_direction },
 			{ key: "landing_meridian_explore_offset", value: String(draft.meridian_explore_offset) },
 			{ key: "landing_meridian_contact_offset", value: String(draft.meridian_contact_offset) },
+			{ key: "landing_meridian_explore_line_position", value: String(draft.meridian_explore_line_position) },
+			{ key: "landing_meridian_contact_line_position", value: String(draft.meridian_contact_line_position) },
 			{ key: "landing_background_landscape_mode", value: draft.background_landscape_mode },
 			{ key: "landing_background_landscape", value: draft.background_landscape },
 			{ key: "landing_background_portrait_mode", value: draft.background_portrait_mode },
@@ -828,6 +877,8 @@ const previewData = computed<App.Http.Resources.GalleryConfigs.LandingPageResour
 		cta_shift_y_direction: draft.cta_shift_y_direction,
 		meridian_explore_offset: draft.meridian_explore_offset,
 		meridian_contact_offset: draft.meridian_contact_offset,
+		meridian_explore_line_position: draft.meridian_explore_line_position,
+		meridian_contact_line_position: draft.meridian_contact_line_position,
 		links: links.value
 			.filter((l) => l.enabled)
 			.map((l) => ({

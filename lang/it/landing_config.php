@@ -95,6 +95,9 @@ return [
     'field_meridian_explore_offset' => 'Explore label height (:value%)',
     'field_meridian_contact_offset' => 'Contact label height (:value%)',
     'field_meridian_offset_hint' => 'How far down each full-height rail its label sits: 0% is the top, 100% is the bottom.',
+    'field_meridian_explore_line_position' => 'Explore rail position (:value%)',
+    'field_meridian_contact_line_position' => 'Contact rail position (:value%)',
+    'field_meridian_line_position_hint' => 'How far from the left edge each rail sits: 0% is the left edge, 100% is the right edge. The explore rail always centers itself when the contact rail is off.',
 
     'preview_title' => 'Live Preview',
     'preview_hint' => 'Updates instantly as you edit — nothing is saved until you click Save.',

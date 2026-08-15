@@ -2,13 +2,13 @@
 	<main id="landing" class="fixed inset-0 bg-black overflow-hidden">
 		<img
 			class="w-full h-full object-cover absolute top-0 left-0"
-			:class="[landscapeImageClass, entranceClass, introDelayClass]"
+			:class="[landscapeImageClass, entranceClass, restDelayClass]"
 			:src="data.landing_background_landscape"
 			alt="landing image"
 		/>
 		<img
 			class="w-full h-full object-cover absolute top-0 left-0"
-			:class="[portraitImageClass, entranceClass, introDelayClass]"
+			:class="[portraitImageClass, entranceClass, restDelayClass]"
 			:src="data.landing_background_portrait"
 			alt="landing image"
 		/>
@@ -17,7 +17,7 @@
 		<div
 			id="header"
 			class="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-6 py-5"
-			:class="[entranceClass, introDelayClass]"
+			:class="[entranceClass, restDelayClass]"
 		>
 			<a href="#" class="flex items-center">
 				<img v-if="data.landing_header_logo !== ''" :src="data.landing_header_logo" alt="logo" class="h-8 object-contain" />
@@ -49,64 +49,32 @@
 
 		<!-- The signature "two lines": fixed, full-height vertical rules — like meridians on a map — with
 		     rotated-text labels anchored at a configurable height along each one. -->
-		<RouterLink
+		<LandingMeridianRail
 			:to="{ name: 'home' }"
-			class="fixed top-0 w-20 h-full z-30 cursor-pointer group before:content-[''] before:absolute before:inset-y-0 before:left-1/2 before:-translate-x-1/2 before:w-px before:bg-white/25 before:origin-top hover:before:bg-white/60 before:transition-colors"
-			:class="[lineAnimationClass, firstLinePosition, introDelayClass]"
-		>
-			<div
-				class="absolute left-1/2 flex flex-col items-center gap-4 shrink-0"
-				:style="{
-					top: `${exploreOffset}%`,
-					transform: 'translate(-50%, -50%) rotate(180deg)',
-					writingMode: 'vertical-rl',
-					textOrientation: 'sideways',
-				}"
-			>
-				<span
-					class="text-2xs uppercase font-bold tracking-[0.3em] text-white/70 group-hover:text-white transition-colors"
-					:class="captionEntranceClass"
-				>
-					{{ $t("landing.meridian.explore_caption") }}
-				</span>
-				<span
-					class="text-3xl uppercase tracking-widest font-light text-white group-hover:font-black transition-all duration-300"
-					:class="labelEntranceClass"
-				>
-					{{ exploreLabel }}
-				</span>
-			</div>
-		</RouterLink>
+			origin="top"
+			:line-position="exploreLinePosition"
+			:label-offset="exploreOffset"
+			:caption="$t('landing.meridian.explore_caption')"
+			:label="exploreLabel"
+			:line-animation-class="lineAnimationClass"
+			:intro-delay-class="introDelayClass"
+			:caption-entrance-class="captionEntranceClass"
+			:label-entrance-class="labelEntranceClass"
+		/>
 
-		<RouterLink
+		<LandingMeridianRail
 			v-if="showContactLine"
 			:to="{ name: 'contact' }"
-			class="fixed top-0 left-2/3 -translate-x-1/2 h-full z-30 cursor-pointer group before:content-[''] before:absolute before:inset-y-0 before:left-1/2 before:-translate-x-1/2 before:w-px before:bg-white/25 before:origin-bottom hover:before:bg-white/60 before:transition-colors"
-			:class="[lineAnimationClass, introDelayClass]"
-		>
-			<div
-				class="absolute left-1/2 flex flex-col items-center gap-4 shrink-0"
-				:style="{
-					top: `${contactOffset}%`,
-					transform: 'translate(-50%, -50%) rotate(180deg)',
-					writingMode: 'vertical-rl',
-					textOrientation: 'sideways',
-				}"
-			>
-				<span
-					class="text-2xs uppercase font-bold tracking-[0.3em] text-white/70 group-hover:text-white transition-colors"
-					:class="captionEntranceClass"
-				>
-					{{ $t("landing.meridian.contact_caption") }}
-				</span>
-				<span
-					class="text-3xl uppercase tracking-widest font-light text-white group-hover:font-black transition-all duration-300"
-					:class="labelEntranceClass"
-				>
-					{{ $t("landing.contact") }}
-				</span>
-			</div>
-		</RouterLink>
+			origin="bottom"
+			:line-position="contactLinePosition"
+			:label-offset="contactOffset"
+			:caption="$t('landing.meridian.contact_caption')"
+			:label="$t('landing.contact')"
+			:line-animation-class="lineAnimationClass"
+			:intro-delay-class="introDelayClass"
+			:caption-entrance-class="captionEntranceClass"
+			:label-entrance-class="labelEntranceClass"
+		/>
 
 		<LandingFooter
 			:footer-data="data.footer"
@@ -121,6 +89,7 @@ import { computed, toRef } from "vue";
 import { RouterLink } from "vue-router";
 import LandingFooter from "@/v8/components/footers/LandingFooter.vue";
 import LandingIntroScreen from "@/v8/components/landing/LandingIntroScreen.vue";
+import LandingMeridianRail from "@/v8/components/landing/LandingMeridianRail.vue";
 import { useLandingAnimation } from "@/v8/composables/landing/useLandingAnimation";
 import { useLandingBackgroundOrientation, type LandingPreviewOrientation } from "@/v8/composables/landing/useLandingBackgroundOrientation";
 import { trans } from "laravel-vue-i18n";
@@ -134,6 +103,18 @@ const landingData = toRef(props, "data");
 
 const { effectivePreset, introDelayClass } = useLandingAnimation(landingData);
 const { landscapeImageClass, portraitImageClass } = useLandingBackgroundOrientation(toRef(props, "previewOrientation"));
+
+// The two rail lines must finish growing before anything else on the page appears — background,
+// header, caption, and label all wait for them, whether or not the intro splash is enabled.
+// `introDelayClass` (used on the lines themselves, below) zeroes a baked-in delay straight to 0s,
+// which is correct for the lines but would collapse this second stage's wait into the *same*
+// instant as the lines if reused here too. These two computed classes hold that same offset in
+// place: 0.13s, slightly *less* than the line-grow animation's own 0.2s duration, so this stage
+// starts while the rails' ease-out tail is still finishing rather than after a dead pause once it
+// technically ends (that tail is barely visible motion, so the overlap reads as continuous, not
+// early); +0.15s more on top for the caption, matching its existing stagger against the label.
+const restDelayClass = computed(() => (props.data.intro_screen_enabled ? "" : "meridian-after-lines"));
+const captionDelayClass = computed(() => (props.data.intro_screen_enabled ? "" : "meridian-after-lines-caption"));
 
 // Background/header reveal: the second stage of the sequence below, delayed (via the
 // --animate-landingMeridianReveal* custom properties in app-v8.css) to start only once the two
@@ -165,20 +146,20 @@ const lineAnimationClass = computed(() => (effectivePreset.value !== "none" ? "b
 // The caption and label converge from opposite directions once the lines are done: the small
 // caption drops down into place, the big label rises up into place. Independent of
 // `entranceClass`/animation_preset — this is the meridian layout's own signature detail.
-// `introDelayClass` ('no-intro-delay' when the intro splash is off) zeroes out every stage's
-// baked delay at once, matching landingSlidesPopIn/landingEnterPopIn's pattern in
-// LandingClassic.vue: nothing to wait for if there's no intro screen covering it.
-const captionEntranceClass = computed(() => ["opacity-0", "animate-landingMeridianCaptionIn", introDelayClass.value]);
-const labelEntranceClass = computed(() => ["opacity-0", "animate-landingMeridianLabelIn", introDelayClass.value]);
+// Delayed via captionDelayClass/restDelayClass (see above) so they still wait for the lines to
+// finish even with no intro splash to time against.
+const captionEntranceClass = computed(() => ["opacity-0", "animate-landingMeridianCaptionIn", captionDelayClass.value]);
+const labelEntranceClass = computed(() => ["opacity-0", "animate-landingMeridianLabelIn", restDelayClass.value]);
 
 const navLinks = computed(() => props.data.links.filter((link) => link.placement === "nav" || link.placement === "both"));
 
 const exploreLabel = computed(() => (props.data.cta_text !== "" ? props.data.cta_text : trans("landing.meridian.explore_label")));
 
 // Without a contact form there's nothing for the second rail to link to, so it collapses back
-// to a single, centered line rather than pointing somewhere meaningless.
+// to a single, centered line rather than pointing somewhere meaningless — the configured explore
+// line position is ignored in that case, since an off-center lone rail reads as a mistake, not a
+// deliberate choice.
 const showContactLine = computed(() => props.data.footer.is_contact_form_enabled);
-const firstLinePosition = computed(() => (showContactLine.value ? "left-1/3 -translate-x-1/2" : "left-1/2 -translate-x-1/2"));
 
 // Position of each rail's label along its full-height line, as a percentage from the top
 // (`top: X%` on an absolutely-positioned block, centered on that point via `translate(-50%, -50%)`).
@@ -186,11 +167,22 @@ const firstLinePosition = computed(() => (showContactLine.value ? "left-1/3 -tra
 const clampOffset = (value: number): number => Math.min(95, Math.max(5, value));
 const exploreOffset = computed(() => clampOffset(props.data.meridian_explore_offset));
 const contactOffset = computed(() => clampOffset(props.data.meridian_contact_offset));
+
+// Horizontal position of each rail itself, as a percentage from the left (`left: X%` on the
+// fixed-position RouterLink, centered on that point via the static `-translate-x-1/2` class in
+// the template — same convention as the vertical label offsets above). Reuses the same 5-95 clamp
+// so a rail can't be pushed fully off-screen at the extremes.
+const exploreLinePosition = computed(() => (showContactLine.value ? clampOffset(props.data.meridian_explore_line_position) : 50));
+const contactLinePosition = computed(() => clampOffset(props.data.meridian_contact_line_position));
 </script>
 <style lang="css" scoped>
-/* `::before` needs its own selector: the plain rule below doesn't reach a pseudo-element. */
-.no-intro-delay,
-.no-intro-delay::before {
-	animation-delay: 0s !important;
+/* Needed here for the background images/header, which still live in this component (the rails'
+   own version of this same rule - plus the `::before`/caption-specific variants only they need -
+   now lives in LandingMeridianRail.vue alongside the elements it targets, since Vue's scoped CSS
+   doesn't reach into a child component's template). Applied instead of .no-intro-delay so the
+   reveal still starts at the same 0.13s offset even with no intro splash to time against - only
+   the rails themselves (in the child) get to start at 0s. */
+.meridian-after-lines {
+	animation-delay: 0.13s !important;
 }
 </style>

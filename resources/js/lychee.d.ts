@@ -726,6 +726,8 @@ declare namespace App {
 					cta_shift_y_direction: App.Enum.ShiftY;
 					meridian_explore_offset: number;
 					meridian_contact_offset: number;
+					meridian_explore_line_position: number;
+					meridian_contact_line_position: number;
 				};
 				export type MapProviderData = {
 					layer: string;

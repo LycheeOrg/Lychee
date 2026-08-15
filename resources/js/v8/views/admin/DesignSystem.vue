@@ -62,10 +62,6 @@
 						<p class="font-mono text-sm">{{ $t("design-system.typography.mono_sample") }}</p>
 					</div>
 					<div>
-						<p class="font-semibold text-sm text-muted uppercase tracking-wide mb-1">{{ $t("design-system.typography.roboto") }}</p>
-						<p class="roboto">{{ $t("design-system.typography.roboto_sample") }}</p>
-					</div>
-					<div>
 						<p class="font-semibold text-sm text-muted uppercase tracking-wide mb-2">{{ $t("design-system.typography.emphasis") }}</p>
 						<div class="flex flex-col gap-1.5">
 							<div v-for="tone in textTones" :key="tone.class" class="flex items-center gap-3">

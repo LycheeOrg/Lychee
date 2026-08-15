@@ -265,6 +265,30 @@ return new class() extends BaseConfigMigration {
 				'level' => 0,
 				'order' => 32,
 			],
+			[
+				'key' => 'landing_meridian_explore_line_position',
+				'value' => '33',
+				'cat' => self::MOD_WELCOME,
+				'type_range' => self::PERCENT_RANGE,
+				'description' => 'Meridian: explore rail horizontal position (%)',
+				'details' => 'How far from the left edge the "explore" rail sits. 0 is the left edge, 100 is the right edge. Applies to the meridian layout only; ignored (rail centers itself) when the contact rail is off, since a single rail off-center looks like a mistake rather than a choice.',
+				'is_secret' => false,
+				'is_expert' => true,
+				'level' => 0,
+				'order' => 33,
+			],
+			[
+				'key' => 'landing_meridian_contact_line_position',
+				'value' => '67',
+				'cat' => self::MOD_WELCOME,
+				'type_range' => self::PERCENT_RANGE,
+				'description' => 'Meridian: contact rail horizontal position (%)',
+				'details' => 'How far from the left edge the "contact" rail sits. 0 is the left edge, 100 is the right edge. Applies to the meridian layout only.',
+				'is_secret' => false,
+				'is_expert' => true,
+				'level' => 0,
+				'order' => 34,
+			],
 		];
 	}
 };
