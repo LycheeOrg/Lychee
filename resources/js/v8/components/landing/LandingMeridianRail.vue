@@ -48,28 +48,34 @@ const props = defineProps<{
 	labelEntranceClass: string[];
 }>();
 
-const routerClass = computed(() => [(props.origin === "top" ? "before:origin-top" : "before:origin-bottom"), props.lineAnimationClass, props.introDelayClass]);
+const routerClass = computed(() => [
+	props.origin === "top" ? "before:origin-top" : "before:origin-bottom",
+	props.lineAnimationClass,
+	props.introDelayClass,
+]);
+const labelEntranceClassComputed = computed(() => {
+	// Decapsulation to avoid contamination via proxy
+	const labelEntrance = [];
+	if (props.origin === "top") {
+		labelEntrance.push(...props.labelEntranceClass);
+		labelEntrance.push("translate-x-8 group-hover:translate-x-6");
+	} else {
+		labelEntrance.push(...props.captionEntranceClass);
+		labelEntrance.push("-translate-x-8 group-hover:-translate-x-6");
+	}
+	return labelEntrance;
+});
 const captionEntranceClassComputed = computed(() => {
 	// Decapsulation to avoid contamination via proxy
-	const captionEntrance = [...props.captionEntranceClass];
+	const captionEntrance = [];
 	if (props.origin === "top") {
+		captionEntrance.push(...props.captionEntranceClass);
 		captionEntrance.push("-translate-x-8 group-hover:-translate-x-6");
-	}
-	else {
+	} else {
+		captionEntrance.push(...props.labelEntranceClass);
 		captionEntrance.push("translate-x-8 group-hover:translate-x-6");
 	}
 	return captionEntrance;
-});
-const labelEntranceClassComputed = computed(() => {
-	// Decapsulation to avoid contamination via proxy
-	const labelEntrance = [...props.labelEntranceClass];
-	if (props.origin === "top") {
-		labelEntrance.push("translate-x-4 group-hover:translate-x-2");
-	}
-	else {
-		labelEntrance.push("-translate-x-4 group-hover:-translate-x-2");
-	}
-	return labelEntrance;
 });
 </script>
 <style lang="css" scoped>

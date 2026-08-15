@@ -14,11 +14,7 @@
 		/>
 		<div class="absolute inset-0 bg-black/35" />
 
-		<div
-			id="header"
-			class="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-6 py-5"
-			:class="[entranceClass, restDelayClass]"
-		>
+		<div id="header" class="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-6 py-5" :class="[entranceClass, restDelayClass]">
 			<a href="#" class="flex items-center">
 				<img v-if="data.landing_header_logo !== ''" :src="data.landing_header_logo" alt="logo" class="h-8 object-contain" />
 				<span v-else class="text-sm font-bold uppercase tracking-widest text-white">{{ data.landing_title }}</span>

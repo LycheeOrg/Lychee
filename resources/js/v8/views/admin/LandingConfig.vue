@@ -162,7 +162,9 @@
 													$t("landing_config.cta_shift_x_direction_options.left")
 												}}</span>
 												<div class="relative flex-1">
-													<div class="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 h-full w-px bg-muted/50" />
+													<div
+														class="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 h-full w-px bg-muted/50"
+													/>
 													<input
 														type="range"
 														min="-100"
@@ -192,7 +194,9 @@
 													$t("landing_config.cta_shift_y_direction_options.down")
 												}}</span>
 												<div class="relative flex-1">
-													<div class="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 h-full w-px bg-muted/50" />
+													<div
+														class="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 h-full w-px bg-muted/50"
+													/>
 													<input
 														type="range"
 														min="-100"
@@ -246,7 +250,9 @@
 
 									<div class="flex flex-col gap-1">
 										<label class="text-sm font-medium">{{
-											$t("landing_config.field_meridian_explore_line_position", { value: String(draft.meridian_explore_line_position) })
+											$t("landing_config.field_meridian_explore_line_position", {
+												value: String(draft.meridian_explore_line_position),
+											})
 										}}</label>
 										<input
 											type="range"
