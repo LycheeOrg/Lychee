@@ -14,6 +14,17 @@
 
 html {
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	/*
+	  Defensive: some `position: fixed` elements with a `scale()`/`translate()` entrance
+	  animation (e.g. the landing page's animate-landingIntroPopIn) briefly overflow the
+	  viewport while animating, even nested inside an `overflow-hidden` ancestor — fixed
+	  positioning escapes that ancestor's clipping unless it establishes a containing block
+	  via transform/filter/etc. This was showing up as a flash of horizontal scrollbar on
+	  every landing page load. Every intentional horizontal scroll in this app is already
+	  scoped to its own `overflow-x-auto` container, so nothing relies on document-level
+	  horizontal scroll.
+	*/
+	overflow-x: hidden;
 }
 
 /*
@@ -244,6 +255,14 @@ html {
 	--animate-landingEnterPopIn: zoomIn 2s 3s forwards ease-in-out;
 	--animate-landingZoomReveal: landingZoomReveal 1s ease-out forwards;
 	--animate-landingSlideReveal: landingSlideReveal 0.8s ease-out forwards;
+	/*
+	  Baseline delay matches the intro splash screen's ~4s cover (LandingIntroScreen.vue's
+	  4000ms timeout): these play *after* the intro clears, not hidden underneath it. Layouts
+	  with the intro screen disabled add `.no-intro-delay` (via `introDelayClass`) to zero this
+	  out, same pattern as landingSlidesPopIn/landingEnterPopIn above.
+	*/
+	--animate-landingMeridianCaptionIn: landingMeridianCaptionIn 1.1s 4.15s ease-out forwards;
+	--animate-landingMeridianLabelIn: landingMeridianLabelIn 1.1s 4s ease-out forwards;
 
 	--text-2xs: 0.65rem;
 	--text-2xs--line-height: 0.8rem;
@@ -307,6 +326,35 @@ html {
 	0% {
 		opacity: 0;
 		transform: translateY(2.5rem);
+	}
+	100% {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+/*
+  The meridian rails' caption/label spans live inside a parent with
+  `transform: rotate(180deg)` (needed to flip the vertical writing-mode back
+  upright). That 180° rotation point-reflects any transform applied to these
+  children, so the translateY sign here is intentionally inverted relative to
+  what it would take to move the element on-screen: positive-to-zero here
+  reads as "slides down into place" on screen, negative-to-zero reads as
+  "slides up into place".
+*/
+@keyframes landingMeridianCaptionIn {
+	0% {
+		opacity: 0;
+		transform: translateY(1rem);
+	}
+	100% {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+@keyframes landingMeridianLabelIn {
+	0% {
+		opacity: 0;
+		transform: translateY(-1rem);
 	}
 	100% {
 		opacity: 1;
