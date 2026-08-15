@@ -155,6 +155,7 @@ return [
         'no_results' => 'Nie ma tu nic do oglądania',
         'upload' => 'Przesyłanie zdjęć',
         'edit_title' => 'Ustawienia albumu',
+        'edit_title_with_name' => 'Ustawienia albumu: :title',
         'tabs' => [
             'about' => 'Informacje o albumie',
             'visibility' => 'Widoczność',

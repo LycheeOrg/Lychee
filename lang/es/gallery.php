@@ -154,6 +154,7 @@ return [
         'no_results' => 'No hay nada que ver aquí',
         'upload' => 'Subir fotos',
         'edit_title' => 'Ajustes del álbum',
+        'edit_title_with_name' => 'Ajustes del álbum: :title',
         'tabs' => [
             'about' => 'Acerca del álbum',
             'visibility' => 'Visibilidad',

@@ -1,5 +1,5 @@
 <template>
-	<UModal v-model:open="is_album_edit_open" fullscreen :title="$t('gallery.album.edit_title')" :close="{ icon: 'lucide:x' }">
+	<UModal v-model:open="is_album_edit_open" fullscreen :title="modalTitle" :close="{ icon: 'lucide:x' }">
 		<template #body>
 			<div class="w-full max-w-6xl mx-auto">
 				<!-- Mobile fallback: the aside (where this same toggle lives on desktop) is hidden below `lg`. -->
@@ -105,6 +105,14 @@ const { is_album_edit_open } = storeToRefs(togglableStore);
 const { expert_album_settings } = storeToRefs(useLycheeStateStore());
 
 const is_expert_mode = ref(expert_album_settings.value);
+
+// Show which album is being edited: "Album Settings: My Album". Separator and word order live in
+// the translation string so locales can differ; falls back to the plain section title while the
+// album is still loading.
+const modalTitle = computed(() => {
+	const albumTitle = albumStore.album?.title;
+	return albumTitle ? trans("gallery.album.edit_title_with_name", { title: albumTitle }) : trans("gallery.album.edit_title");
+});
 
 const numUsers = ref(0);
 

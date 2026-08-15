@@ -155,6 +155,7 @@ return [
         'no_results' => 'Здесь ничего нет',
         'upload' => 'Загрузить фотографии',
         'edit_title' => 'Настройки альбома',
+        'edit_title_with_name' => 'Настройки альбома: :title',
         'tabs' => [
             'about' => 'О альбоме',
             'visibility' => 'Видимость',

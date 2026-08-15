@@ -155,6 +155,7 @@ return [
         'no_results' => 'Niets te zien hier',
         'upload' => 'Foto’s uploaden',
         'edit_title' => 'Albuminstellingen',
+        'edit_title_with_name' => 'Albuminstellingen: :title',
         'tabs' => [
             'about' => 'Over Album',
             'visibility' => 'Zichtbaarheid',

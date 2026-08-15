@@ -155,6 +155,7 @@ return [
         'no_results' => 'Nothing to see here',
         'upload' => 'Upload photos',
         'edit_title' => 'Album Settings',
+        'edit_title_with_name' => 'Album Settings: :title',
         'tabs' => [
             'about' => 'About Album',
             'visibility' => 'Visibility',

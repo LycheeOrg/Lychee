@@ -7,8 +7,11 @@
 					{{ $t("left-menu.login") }}
 				</RouterLink>
 			</div>
-			<div v-else-if="!isGallery">
-				<RouterLink :to="{ name: 'gallery' }" class="text-lg font-bold text-muted hover:text-primary">
+			<div v-else>
+				<!-- Shown on every route, gallery included. The route watcher below cannot close the
+				     menu when the link points at the page we are already on - `fullPath` never
+				     changes - so close it here explicitly. -->
+				<RouterLink :to="{ name: 'gallery' }" class="text-lg font-bold text-muted hover:text-primary" @click="left_menu_open = false">
 					{{ $t("left-menu.back_to_gallery") }}
 				</RouterLink>
 			</div>
@@ -168,10 +171,6 @@ function logout() {
 		window.location.href = Constants.BASE_URL + "/home";
 	});
 }
-
-const isGallery = computed(() => {
-	return route.name === "gallery";
-});
 
 onMounted(() => {
 	Promise.allSettled([lycheeStore.load(), userStore.load(), load()]);
