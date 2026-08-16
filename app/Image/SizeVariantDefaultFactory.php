@@ -97,7 +97,7 @@ class SizeVariantDefaultFactory implements SizeVariantFactory
 
 			$video_handler = new VideoHandler();
 			$video_handler->load($source_file);
-			$position = is_numeric($this->photo->aperture) ? floatval($this->photo->aperture) / 2 : 0.0;
+			$position = VideoHandler::resolveThumbnailFramePosition($this->photo->duration);
 			$this->reference_image = $video_handler->extractFrame($position);
 
 			// Clean up
