@@ -16,6 +16,7 @@ const FaceMaintenance = () => import("@/v8/views/face-recog/FaceMaintenance.vue"
 const NsfwConfig = () => import("@/v8/views/admin/NsfwConfig.vue");
 const DesignSystem = () => import("@/v8/views/admin/DesignSystem.vue");
 const WatermarkPreview = () => import("@/v8/views/admin/WatermarkPreview.vue");
+const LandingConfig = () => import("@/v8/views/admin/LandingConfig.vue");
 const Settings = () => import("@/v8/views/admin/Settings.vue");
 const Sharing = () => import("@/v8/views/Sharing.vue");
 const Users = () => import("@/v8/views/admin/Users.vue");
@@ -74,6 +75,7 @@ const componentByName: Record<string, any> = {
 	"nsfw-config": NsfwConfig,
 	"design-system": DesignSystem,
 	"watermark-preview": WatermarkPreview,
+	"landing-config": LandingConfig,
 	settings: Settings,
 	sharing: Sharing,
 	users: Users,

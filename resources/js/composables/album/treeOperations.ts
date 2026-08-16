@@ -186,14 +186,17 @@ export function useTreeOperations(
 
 		const lft = albums.value.find((a) => a.id === id)?._lft as number;
 
-		albums.value = albums.value.map((a) => {
+		// Mutate in place rather than `albums.value = albums.value.map(...)`: reassigning the
+		// array reference forces the virtualized list (UScrollArea) to treat the whole dataset as
+		// new on every single click, which is very slow on large trees. Per-object reactivity
+		// already covers updating the affected rows.
+		for (const a of albums.value) {
 			if (a._lft < lft) {
-				return a;
+				continue;
 			}
 			a._lft += 1;
 			a._rgt += 1;
-			return a;
-		});
+		}
 	}
 
 	// We increment all the nodes above rgt by 1 and increment rgt by 1.
@@ -204,9 +207,9 @@ export function useTreeOperations(
 
 		const rgt = albums.value.find((a) => a.id === id)?._rgt as number;
 
-		albums.value = albums.value.map((a) => {
+		for (const a of albums.value) {
 			if (a._rgt < rgt) {
-				return a;
+				continue;
 			}
 			if (a._rgt === rgt) {
 				a._rgt += 1;
@@ -214,8 +217,7 @@ export function useTreeOperations(
 				a._lft += 1;
 				a._rgt += 1;
 			}
-			return a;
-		});
+		}
 	}
 
 	// We decrement all the nodes above lft by 1.
@@ -226,14 +228,13 @@ export function useTreeOperations(
 
 		const lft = albums.value.find((a) => a.id === id)?._lft as number;
 
-		albums.value = albums.value.map((a) => {
+		for (const a of albums.value) {
 			if (a._lft < lft) {
-				return a;
+				continue;
 			}
 			a._lft -= 1;
 			a._rgt -= 1;
-			return a;
-		});
+		}
 	}
 
 	// We decrement all the nodes above rgt by 1 and decrement rgt by 1 IF lft > rgt - 1.
@@ -244,13 +245,13 @@ export function useTreeOperations(
 
 		const rgt = albums.value.find((a) => a.id === id)?._rgt as number;
 
-		albums.value = albums.value.map((a) => {
+		for (const a of albums.value) {
 			if (a._rgt < rgt) {
-				return a;
+				continue;
 			}
 			// safety check
 			if (a._lft === rgt - 1) {
-				return a;
+				continue;
 			}
 			if (a._rgt === rgt) {
 				a._rgt -= 1;
@@ -258,8 +259,7 @@ export function useTreeOperations(
 				a._lft += 1;
 				a._rgt += 1;
 			}
-			return a;
-		});
+		}
 	}
 
 	function getModifiedAlbums(): { id: string; _lft: number; _rgt: number; parent_id: string | null }[] {

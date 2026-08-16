@@ -125,7 +125,10 @@
 
 					<!-- Horizontal shift (locked to LTR: "left"/"right" refer to the physical photo, not text direction) -->
 					<div class="flex flex-col gap-1">
-						<label class="text-sm font-medium">{{ $t("watermark.preview.shift_x", { value: String(sliderX) }) }}</label>
+						<label class="group text-sm font-medium cursor-pointer select-none w-full" @click="sliderX = 0">
+							<span class="group-hover:hidden">{{ $t("watermark.preview.shift_x", { value: String(sliderX) }) }}</span>
+							<span class="hidden group-hover:inline">{{ $t("watermark.preview.reset_to_zero") }}</span>
+						</label>
 
 						<div v-if="shiftInputMode === 'slider'" class="flex items-center gap-2" dir="ltr">
 							<span class="text-xs text-muted w-10 shrink-0 text-right">{{
@@ -171,7 +174,10 @@
 
 					<!-- Vertical shift (locked to LTR: layout only, "up"/"down" text is unaffected by direction) -->
 					<div class="flex flex-col gap-1" dir="ltr">
-						<label class="text-sm font-medium">{{ $t("watermark.preview.shift_y", { value: String(sliderY) }) }}</label>
+						<label class="group text-sm font-medium cursor-pointer select-none w-full" @click="sliderY = 0">
+							<span class="group-hover:hidden">{{ $t("watermark.preview.shift_y", { value: String(sliderY) }) }}</span>
+							<span class="hidden group-hover:inline">{{ $t("watermark.preview.reset_to_zero") }}</span>
+						</label>
 
 						<div v-if="shiftInputMode === 'slider'" class="flex items-center gap-2" dir="ltr">
 							<span class="text-xs text-muted w-10 shrink-0 text-right">{{

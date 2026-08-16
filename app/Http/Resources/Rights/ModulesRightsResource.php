@@ -27,6 +27,7 @@ class ModulesRightsResource extends Data
 	public bool $is_mod_frame_enabled = false;
 	public bool $is_mod_flow_enabled = false;
 	public bool $is_watermarker_enabled = false;
+	public bool $is_watermarker_available = false;
 	public bool $is_photo_timeline_enabled = false;
 	public bool $is_mod_renamer_enabled = false;
 	public bool $is_mod_webshop_enabled = false;
@@ -47,6 +48,7 @@ class ModulesRightsResource extends Data
 		$this->is_mod_frame_enabled = $this->isModFrameEnabled();
 		$this->is_mod_flow_enabled = $this->isModFlowEnabled($is_logged_in);
 		$this->is_watermarker_enabled = $this->isWatermarkerEnabled($is_logged_in);
+		$this->is_watermarker_available = $this->isWatermarkerAvailable($is_logged_in);
 		$this->is_photo_timeline_enabled = $this->isTimelinePhotosEnabled($is_logged_in);
 		$this->is_mod_renamer_enabled = $this->isRenamerEnabled();
 		$this->is_mod_webshop_enabled = $this->isWebshopEnabled();
@@ -155,6 +157,29 @@ class ModulesRightsResource extends Data
 		}
 
 		return resolve(Watermarker::class)->can_watermark();
+	}
+
+	/**
+	 * Check if the watermarker module is configured (config toggle + Imagick) and accessible to
+	 * the current user, regardless of whether a watermark photo has been picked yet.
+	 *
+	 * Unlike {@see isWatermarkerEnabled()}, this does not require a watermark photo to already be
+	 * selected. It drives visibility of the watermarker configuration tile/page, where the admin
+	 * is meant to pick that photo in the first place.
+	 *
+	 * @return bool true if the watermarker module is configured and accessible, false otherwise
+	 */
+	private function isWatermarkerAvailable(bool $is_logged_in): bool
+	{
+		if (!$is_logged_in) {
+			return false;
+		}
+
+		if (!request()->verify()->check()) {
+			return false;
+		}
+
+		return resolve(Watermarker::class)->is_module_enabled();
 	}
 
 	/**

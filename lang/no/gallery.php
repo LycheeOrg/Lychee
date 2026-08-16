@@ -154,6 +154,7 @@ return [
         'no_results' => 'Ingenting å se her',
         'upload' => 'Last opp bilder',
         'edit_title' => 'Albuminnstillinger',
+        'edit_title_with_name' => 'Albuminnstillinger: :title',
         'tabs' => [
             'about' => 'Om Album',
             'visibility' => 'Synlighet',

@@ -15,17 +15,17 @@ colors:
   flag-rated: "#f97316"
 typography:
   title:
-    fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif"
+    fontFamily: "Libre Franklin, Vazirmatn, Helvetica Neue, Helvetica, Arial, sans-serif"
     fontSize: "1.125rem"
     fontWeight: 700
     lineHeight: 1.4
   body:
-    fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif"
+    fontFamily: "Libre Franklin, Vazirmatn, Helvetica Neue, Helvetica, Arial, sans-serif"
     fontSize: "1rem"
     fontWeight: 400
     lineHeight: 1.5
   label:
-    fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif"
+    fontFamily: "Libre Franklin, Vazirmatn, Helvetica Neue, Helvetica, Arial, sans-serif"
     fontSize: "0.65rem"
     fontWeight: 500
     lineHeight: 0.8rem
@@ -104,7 +104,7 @@ A closed, named set of hues reserved exclusively for the small corner badges on 
 
 ## Typography
 
-**Body Font:** Helvetica Neue (with Helvetica, Arial, sans-serif fallback) — a plain system stack, no custom display face loaded for v8 chrome. Text renders instantly and identically offline; this is deliberate, not an oversight (see PRODUCT.md's offline-only constraint).
+**Body Font:** Libre Franklin (SIL OFL, self-hosted under `resources/fonts/`) for Latin/Cyrillic/Vietnamese script, with Vazirmatn (SIL OFL, also self-hosted) covering the `ar`/`fa` locales right behind it, and the previous Helvetica Neue/Helvetica/Arial/sans-serif stack kept as final fallback — no custom display face loaded for v8 chrome. Both faces ship all 8 weights (Thin-Black) with no runtime dependency on an external host, so text still renders instantly and identically offline; this is deliberate, not an oversight (see PRODUCT.md's offline-only constraint). Neither face covers Greek or CJK — those locales fall through the stack to the OS's default UI font, same as before. Vazirmatn isn't gated behind a `:lang()`/`[dir]` selector: Libre Franklin has no Arabic-script glyphs at all, so the browser's normal per-character font fallback already routes Arabic/Farsi text to it automatically.
 
 **Character:** Utilitarian and dense-capable — no decorative type voice. Hierarchy is carried by weight and size steps, not by font choice.
 

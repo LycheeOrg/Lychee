@@ -1,14 +1,161 @@
 # Current Session
 
-_Last updated: 2026-08-10_
+_Last updated: 2026-08-11_
 
 ## Active Features
 
-- Feature 052 – Managed Cache Service: **Completed** (T-052-01..22 all `[x]`). Q-052-01..07 all resolved. Full quality gate green; moved to roadmap.md Completed Features. Its two deferred tasks (T-052-05/06) are now tracked and completed as T-053-01 under Feature 053.
+- Feature 054 – Configurable Landing Page: **Completed** (T-054-01..63 all `[x]`, incl. T-054-15a). Q-054-01 resolved. Full quality gate green; moved to roadmap.md Completed Features.
+- Feature 052 – Managed Cache Service: **Completed** (T-052-01..22 all `[x]`). Q-052-01..07 all resolved. Full quality gate green; moved to roadmap.md Completed Features.
 - Feature 049 – Migration to Nuxt UI: spec, plan, and tasks drafted (Draft status), analysis gate passed. Not yet implemented.
 - Feature 048 – Fix Multi-Group Permissions: spec, plan, and tasks drafted (Draft status). Not yet implemented.
 
+Note: Feature 053 (Album Listing Caching) exists on branch `caching-enablement` (commit `fab22c04`), not on this branch — intentionally skipped per user instruction; not tracked here.
+
 ## Session Summary
+
+### Feature 054 – Configurable Landing Page — Fully Implemented (new session, 2026-08-11)
+
+**Request:** Implement all 63 tasks in tasks.md end to end (backend + frontend + admin UI + translations), not just plan them.
+
+**Backend (I1–I5c):** 6 new enums (`LandingLayoutType`, `LandingTextPosition`, `LandingAnimationPreset`, `LandingLinkPlacement`, `LandingFeaturedItemsMode`, `LandingFeaturedItemType`); migration adding the 12 new `Mod Welcome` scalar configs. Introduced a new `int:MIN:MAX` bounded-integer `type_range` convention (`Configs::sanity()` + `ConfigGroup.vue`'s `NumberField` dispatch) since no existing config type supported a parameterised numeric range — needed for `landing_hero_text_opacity` (0-100) and `landing_featured_items_count` (3-12). `LandingLink`/`LandingFeaturedItem` models + migrations + factories, each with full admin CRUD (Requests/Resources/Controllers/routes) mirroring `Webhook`'s shape, plus a genuinely new pattern: a `PATCH .../Reorder` endpoint taking `{ ids: string[] }` as the complete existing-ID set, validated and applied inside a `DB::transaction()` (no prior bulk-reorder precedent existed anywhere in the codebase to follow). `LandingPageResource` extended with SE-fallback `layout`/`animation_preset` resolution (mirrors `InitConfig::set_supporter_properties`'s `is_se_enabled` derivation exactly) and both automatic-mode (public-albums query, same shape as Feature 025's `resolveLatestAlbumCover`) and manual-mode (direct PK lookup, deliberately bypassing `AlbumQueryPolicy`/`PhotoQueryPolicy`, admin-trusted) featured-content resolution via a new unified `LandingFeaturedContentResource`.
+
+**Frontend (I6–I9a):** Built `LandingClassic.vue`/`LandingPortfolio.vue`/`LandingMinimal.vue`/`LandingStudio.vue` (all new, under `resources/js/v8/views/landing/`) directly prop-driven from the start — `Landing.vue` became a thin single-fetch dispatcher immediately, rather than doing the self-fetching-extraction-then-refactor two-step the task breakdown described (same end state, fewer commits). New `useLandingTextPosition`/`useLandingAnimation`/`useScrollReveal` composables — the last is the `parallax_scroll` preset's `IntersectionObserver`-driven per-section reveal (the only preset that's scroll-linked; `zoom_in`/`slide_reveal` play once on mount via new `landingZoomReveal`/`landingSlideReveal` CSS keyframes added to `app-v8.css`).
+
+**Admin UI (I10):** New `LandingConfig.vue` — Settings tab mirrors `WatermarkPreview.vue`'s local-draft-then-explicit-Save pattern, with a live scaled-down preview built by fetching the real `LandingPageResource` once as a baseline and overlaying the in-progress draft field values (reuses the actual layout components, no separate preview-only markup). `landing_hero_text_color` reuses `ColorField.vue` directly by constructing a synthetic `ConfigResource`-shaped object, per the task's explicit instruction not to build a new component. Links and Featured tabs are immediate-save CRUD with native-HTML5 drag-and-drop reorder (`draggable`/`dragstart`/`drop`) — no drag library exists anywhere in this repo and none was added, per the existing-precedent-first convention. Featured tab's manual-curation search reuses the existing `GET /api/v2/Search` endpoint unmodified. Discovered mid-implementation that `/admin/landing-config` needed an explicit `Route::get(...)` entry in `routes/web_v2.php` (not just the SPA route manifest) for hard navigation to resolve — every other `/admin/*` v8 page already has this, it just wasn't called out in the task breakdown.
+
+**Resolved 1 new question, Q-054-01** (open-questions.md): T-054-03/FR-054-20 said to add the 12 new keys to `ConfigIntegrity`'s `SE_FIELDS`/`PRO_FIELDS` whitelist, but that mechanism raises the DB `level` column which hides `level>0` configs from non-SE admins in the flat Settings list — directly contradicting T-054-58's regression guard that all 12 keys stay visible everywhere. Resolved as: leave `level=0` (the migration default) for all 12 keys; SE-gating is enforced only by `LandingPageResource`'s render-time fallback and by disabling (not hiding) SE-only dropdown options client-side. `ConfigIntegrity` itself was left unmodified. FR-054-20 and the task file were both updated to record this.
+
+**Translations (I11):** Propagated the new keys across all 22 non-English locales via a small one-off script (English placeholder text for untranslated values — matches the repo's existing convention, confirmed by finding pre-existing untranslated keys in `ja`/`zh_CN`). Added a 3rd new lang file, `landing_config.php` (admin page-shell copy), beyond the 2 named in the task (`landing_link.php`, `landing_featured_item.php`). Confirmed the repo's translation-completeness check is `php artisan test --filter=LangTest`.
+
+**Manual verification:** No `chromium-cli` was available in this sandbox, so Playwright/Chromium were installed ad hoc (and removed afterward) to drive a real logged-in browser session against `php artisan serve` + a production Vite build. Screenshot-verified: classic default (pixel-equivalent to pre-feature), SE on/off fallback for `portfolio`/`studio`, `minimal`, hero text position/color/opacity styling, `cta_text` overrides per layout, the about section, links rendering, and the full admin `LandingConfig.vue` flow (live preview, Links CRUD create, Featured tab mode switch). A temporary devadmin user and a few config values were created/mutated in the local dev DB for this and cleaned up afterward (`.env`'s `NUXT_UI_ENABLED` was also temporarily added and removed).
+
+**Quality gates:** `make phpstan` 0 errors (full-repo run, not just touched files). `php artisan test --filter=Landing` and the full unscoped suite both run repeatedly during the session; only pre-existing/unrelated failures remain (`OptimizeTablesTest`, `PhotosAddHandlerImagickTest`, `PhotoAddTest` apple-live-photo cases — none touch Landing code). `npm run check`/`npm run format`/`eslint` all clean. `git diff --stat -- resources/js/v7/` confirmed empty (NFR-054-08). `vendor/bin/php-cs-fixer fix` clean.
+
+**Not done / known gaps:** Not every Branch & Scenario Matrix row (S-054-01..30) was re-confirmed via a manual browser click-through in this session — several are covered only by the passing automated feature tests (see T-054-62's note in tasks.md for the exact list). The `parallax_scroll`/`zoom_in`/`slide_reveal` presets were visually spot-checked only at the "does it render without error" level, not frame-by-frame animation-timing review.
+
+### Feature 054 – Configurable Landing Page — Spec/Plan/Tasks Drafted (this session, 2026-08-10)
+
+**Request:** Rework the landing page (`resources/js/v8/views/Landing.vue`) to be far more configurable: enable/disable the intro splash screen, choose what info displays, reposition hero text (like the existing album "extended hero" title-position feature), add extra links, support multiple animation presets, and support alternate page shapes such as [eikonas.at](https://eikonas.at/) (multi-section portfolio-style page). Explicitly asked to explore and propose flexibility options, including possibly multiple layouts.
+
+**Codebase inventory before drafting:** Read the existing landing page (`v7`/`v8` twins, currently identical single fullscreen-hero design with a timed intro splash, centered CTA, fixed header/menu, `LandingFooter.vue` social icons), Feature 025 (dynamic landing backgrounds — already resolves landscape/portrait backgrounds via 5 modes using `PhotoQueryPolicy`/`AlbumQueryPolicy`, left untouched by this feature), and the album "extended hero" pattern (`AlbumHeaderPanel.vue` — 5-position `AlbumTitlePosition`, 7-color `AlbumTitleColor`, focus-point picker, inline edit mode) which directly matches the user's "pro position of text" reference. Also reviewed Feature 039 (white-label, SE-gating precedent) and Feature 031 (configurable webhooks — CRUD-list pattern used as the template for the new extra-links feature) and confirmed `AllSettings.vue` renders scalar configs generically from DB metadata (no bespoke Vue needed for simple new config keys).
+
+**Three high-impact architecture questions resolved same-day via direct user confirmation** (all logged as Q-054-01..03, resolved option marked in each case):
+- Q-054-01 (shape): **multiple named layout templates** — `classic` (today's page, unchanged default, free), `portfolio` (new, eikonas.at-inspired scrollable multi-section page, SE), `minimal` (new, centered single-card page, SE) — chosen over a single mega-configurable hero or a full modular/reorderable section builder (deferred to Follow-ups as a much larger, separate feature).
+- Q-054-02 (frontend scope): **v8 (Nuxt UI) only** — `resources/js/v7/views/Landing.vue` is explicitly untouched forever by this feature, matching the precedent set by Feature 051 (Admin Setup Page, v8-only) given v7 is being actively retired by Feature 049.
+- Q-054-03 (SE gating): **classic layout + extra links stay free forever; `portfolio`/`minimal` layouts and 3 new animation presets (`zoom_in`/`parallax_scroll`/`slide_reveal`) are Lychee SE-exclusive**, resolving fail-safe to the free defaults (`classic`/`classic_fade`) when SE is inactive — mirrors Feature 039's white-label SE-gating pattern. Hero text position and extra links were deliberately kept free since they extend already-free precedents (album hero position; footer social links) rather than introducing a new page shape.
+
+**Spec shape (spec.md):** 20 Functional Requirements, 9 Non-Functional Requirements, 20 Branch & Scenario Matrix rows (S-054-01..20), full Interface & Contract Catalogue (3 domain objects, 8 API routes including a new admin CRUD for extra links, 2 migrations, 9 translation-key groups, 4 new enums). Key design points: `LandingPageResource` (Feature 025) is extended, not replaced, and reuses its exact query-policy usage pattern for two new opt-in content blocks (public gallery stats, featured-albums preview grid). A new `App\Models\LandingLink` (admin-manageable, ordered, nav/footer/both placement) mirrors `App\Models\Webhook`'s CRUD shape exactly. A deliberate small design choice is documented in the spec Appendix: a new landing-scoped `LandingTextPosition` enum duplicates `AlbumTitlePosition`'s 5 values rather than importing it, to avoid coupling the Landing and Album bounded contexts for a 5-string-case saving.
+
+**Plan shape (plan.md):** 13 increments (I1 backend config foundation → I2/I3 extra-links data+CRUD → I4/I5/I6 `LandingPageResource` extension incl. SE-fallback resolution, stats, featured albums → I7 zero-regression `LandingClassic.vue` extraction (the core risk-mitigation step, isolated before any new layout work starts) → I8 shared position/animation composables (single choke point for `prefers-reduced-motion` handling) → I9/I10 new `LandingPortfolio.vue`/`LandingMinimal.vue` → I11 admin `LandingLinks.vue` UI + SE badges → I12 translation sweep → I13 quality gates). 44 tasks in tasks.md, each tagged with FR/NFR/Scenario IDs.
+
+**Not yet done:** Implementation (I1/T-054-01 onward). Analysis Gate not yet run — plan.md flags it must happen at the start of implementation with a fresh re-read of `LandingPageResource.php`/`AlbumHeaderPanel.vue`/`AllSettings.vue` since they may have changed since drafting.
+
+### Feature 054 — Extra-Layout/Extra-Feature Brainstorm & Spec Expansion (same session, 2026-08-10)
+
+**Request:** After the initial draft, asked to think about extra things to add/improve and propose extra new layouts beyond classic/portfolio/minimal.
+
+**Brainstormed 5 additional layout candidates and ~10 non-layout improvements**, tiered by cost/value (full list preserved in spec.md's Appendix, "Extra-Layout and Extra-Feature Brainstorm," so the reasoning behind deferred items isn't lost). Confirmed via targeted greps before proposing that neither a site-wide language switcher nor a cookie-consent mechanism exists anywhere in `resources/js/v8` today, so both were framed as bigger cross-cutting asks rather than landing-page scope.
+
+**Resolved via direct user confirmation** (logged as Q-054-04/05):
+- **Q-054-04 (layouts):** add a 4th layout, **`studio`** — client-login-first hero (primary CTA is the existing `login` route, secondary smaller link to the public gallery), aimed at studios whose visitors are mostly returning clients rather than public browsers. This is a different information architecture, not a re-skin. Mosaic/grid-first, "coming soon," split-screen editorial, and cinematic/video-hero were all deferred to backlog (video explicitly flagged as contradicting the feature's inherited Non-Goal from Feature 025 rather than silently reversed).
+- **Q-054-05 (features):** fold in the 3 "cheap, high-value" items plus a raw CSS override: (1) Contact-form surfacing (wires the already-built Feature 022 onto `portfolio`/`minimal` nav/footer — no new backend), (2) `landing_cta_text` override for the primary CTA label, (3) a reduced-motion-aware scroll-down indicator on `portfolio`, (4) `landing_custom_css` — an admin-authored raw-CSS escape hatch, explicitly given the same no-sanitization trust model as the existing `footer_additional_text` field (confirmed via code read that no sanitizer/purifier is applied to that field today, so this isn't inventing an inconsistent trust boundary). A second About-section image slot and a testimonials/client-logos CRUD block were priced out as real scope and deferred.
+
+**Spec/plan/tasks all updated in place** (not appended as addenda) per the repo's "no per-feature Clarifications section, encode resolved answers directly in the normative sections" guardrail: FR-054-01/02 amended to include `studio`; 6 new FRs (FR-054-21..26) and 2 new NFRs (NFR-054-10/11) added; Branch & Scenario Matrix extended to S-054-27; a new plan increment I9a inserted for `LandingStudio.vue`; ~7 tasks added/extended in tasks.md (now ~48 tasks / 14 increments). Scalar-config count is now 11 (was 9): added `landing_cta_text`, `landing_custom_css`.
+
+**Not yet done:** Same as above — implementation not started.
+
+### Feature 054 — Fourth Revision: Featured-Content Redesign, Full Mod Welcome Absorption, Custom CSS Dropped, eikonas.at References Removed (same session, 2026-08-10)
+
+**Requests, in order, across several rapid mid-turn corrections:**
+1. "We don't want custom css/js for the landing, we can just reuse the normal custom. It is on the user to figure out how to configure things for them to work."
+2. "Yes `LandingConfig.vue` should absorb the entire `Mod Welcome` category."
+3. Two clarifying questions answered ("What is the LandingLink.icon thing?" / "What is the featured albums thing?"), followed by: icon → free-text confirmed; featured content → "Fully manual curation, it should be possible to select either photos or albums," then refined to "Actually automatic by default, but support fully manual curation."
+4. Separately, via IDE file-open context: "Do not mention eikonas.at in the specification. We do not want to advertise this. Explain the layout etc but do not link directly."
+
+**Investigation before editing:** grepped the codebase and confirmed Lychee already has a global custom CSS/JS mechanism — `SettingsController::setCSS()`/`setJS()` write to `dist/user.css`/`dist/custom.js`, exposed via `App\View\Components\Meta`'s `user_css_url`/`user_js_url`, and loaded unconditionally in the shared `vueapp.blade.php` shell's `<x-meta />` (used by both v7 and v8, confirmed by reading the blade file) — so it already applies to every landing layout today with zero new work. Also confirmed `Mod Welcome` is a real, pre-existing settings category (`config_categories` table) holding the current landing keys, and that `GET /api/v2/Search` (Feature 027/028) already exists and can be reused for a photo/album picker.
+
+**Resolved (Q-054-07..10, logged in `open-questions.md`):**
+- Q-054-07: **`landing_custom_css` dropped entirely** — reuse the existing global mechanism; added as an explicit new Non-Goal with the `Meta.php`/`SettingsController` citations, and NFR-054-09's dead-end-guardrail clause rewritten to reference the pre-existing (not new) risk.
+- Q-054-08: **`LandingConfig.vue`'s Settings tab now absorbs the *entire* `Mod Welcome` category**, not just the 11 new keys — and, unlike Feature 045's `NsfwConfig.vue` precedent (whose curated keys stay visible in the flat list too), `Mod Welcome` is now filtered out of the flat list entirely (new FR-054-27, reusing the category-visibility-filter mechanism Feature 052's Q-052-07 already established) since full-category duplication would be pure redundancy, unlike NSFW's partial-key case.
+- Q-054-09: **Featured content redesigned** from "automatic-only, albums-only" to "automatic by default, with full manual curation of photos *and* albums also supported." New `landing_featured_items_mode` enum (`automatic`/`manual`), new `App\Models\LandingFeaturedItem` CRUD (mirrors `LandingLink`'s ULID/CRUD/reorder shape exactly, FR-054-28), new manual-resolution logic that deliberately bypasses the public-visibility policy check the same way Feature 025's `photo_id` background mode already does (FR-054-29, admin-trusted precedent) — with an explicit test-intent note so this isn't later "fixed" as a privacy bug. `LandingConfig.vue` gained a third tab ("Featured") housing the mode switcher plus a manual picker built on the existing Search endpoint.
+- Q-054-10: **`LandingLink.icon` confirmed free-text** (not a visual picker), defaulting to `lucide:link` when empty.
+
+**Also completed:** every named/linked reference to the external portfolio-site example that originally inspired the `portfolio` layout was removed from `spec.md` (Overview, Goals, FR-054-16, both mockup headers, Appendix's Related Request/brainstorm/Q-054-01 sections) — the layout is now described purely structurally ("scrollable, multi-section portfolio-style page: nav → hero → about → featured work → footer"), per explicit instruction not to advertise the source.
+
+**Spec/plan/tasks all rewritten (rev 4)** — given the scale of interlocking changes (new model, new migration, renumbered scenarios S-054-01..31, new tabs, filtered category), all three files were fully rewritten rather than patched, after first re-reading each current file in full to avoid losing earlier content. Increment count grew from 13 to 16 (new I6a/I6b/I6c for `LandingFeaturedItem`'s model/CRUD/manual-resolution, split out the same way `LandingLink`'s I2/I3 already were); task count grew to ~55.
+
+**Not yet done:** Same as above — implementation not started.
+
+### Feature 054 — Review Pass Found 9 More Gaps (Q-054-11..19), All Investigated and Resolved (same session, 2026-08-10)
+
+**Request:** "where are the details for the questions 11 to 19?" — Q-054-11..19 turned out to already exist in `open-questions.md` (not authored by this session's assistant turns — found via a fresh grep, likely added by a review pass), each pointing at a real gap or unverified claim in the freshly-rewritten spec. Explicit follow-up instructions: no clarifying questions, resolve and apply directly; commit and push once done.
+
+**Investigated each against the actual codebase (not guessed):**
+- **Q-054-11** (stats on `minimal`?): FR-054-09 inconsistently said stats "may" show on both `portfolio`/`minimal`, but `minimal`'s own description never included them. Fixed: `portfolio`-only, consistent with `minimal` already excluding featured content for the same reason.
+- **Q-054-12** (does the Featured tab's `Search` picker see private content?): Read `SearchController`→`AlbumSearch`/`PhotoSearch`→`AlbumQueryPolicy::applyVisibilityFilter()` — confirmed `may_administrate === true` bypasses the visibility filter entirely (`AlbumQueryPolicy.php:62`), so an admin session (the only session that can reach this picker) already sees private content through the existing endpoint. No code change needed, just documented the confirmation.
+- **Q-054-13** (SE-badge dropdown: disabled or just badged? stored or effective value shown?): Decided badged-but-selectable + always-stored-value — lets a non-SE admin pre-configure before upgrading, consistent with the existing `is_se_preview_enabled` pattern.
+- **Q-054-14** (orphaned `FR-054-26`/`S-054-27` gap): Confirmed intentional (retired along with dropped custom-CSS), added explanatory notes above both tables rather than renumbering everything downstream.
+- **Q-054-15** (`router/paths.ts` citation wrong?): Checked — both `resources/js/router/paths.ts` (shared name/path manifest) and `resources/js/v8/router/routes.ts` (v8 component mapping) are real and both required; citation was incomplete, not wrong.
+- **Q-054-16** (Q-052-07 citation unverifiable?): Grepped `SettingsController.php` — confirmed live at line 83 (`->where('cat', '!=', 'Mod Cache')`); FR-054-27 now cites the exact line instead of asserting from memory.
+- **Q-054-17** (no `Reorder` endpoint precedent exists — confirmed by repo-wide search): Designed the contract from scratch since none existed to mirror — full-list resync (`{ ids: string[] }`, reject on set mismatch, transactional), applied identically to both `LandingLink` and `LandingFeaturedItem`.
+- **Q-054-18** (missing `icon` length validation): Straightforward gap, added `≤255 chars` matching the DB column.
+- **Q-054-19** (`studio` secondary link not configurable): Confirmed and documented as deliberate minimalism (only the primary CTA is overridable), added as an explicit Non-Goals bullet instead of leaving it silently ambiguous.
+
+**All 9 written up as full Decision Cards** (spec.md Appendix, same template as Q-054-01..10) and cross-referenced from `open-questions.md`. spec.md/plan.md/tasks.md all updated with the concrete fixes (not just documented as findings) — this pass changed actual requirement text (FR-054-09/11/12/19/21/27/28), not only added commentary.
+
+**Not yet done:** Implementation still not started. This round was committed and pushed to `origin/new-landing` per explicit instruction.
+
+### Feature 054 — Two Direct Corrections After Push (same session, 2026-08-10)
+
+**User corrected two of the just-pushed resolutions:**
+- Q-054-13 (SE-gated dropdown behaviour): "No. not selectable." — reversed from badged-but-selectable (Option A) to actually disabled/unselectable (Option B). UI-054-01/02/04 reworded; UI-054-08 (stored-value display for a previously-configured SE-only value) kept, since it's independent of the selectability question.
+- Icon field: "We said links and no icon selection." — clarified via a follow-up question that this meant **remove `icon` from `LandingLink` entirely**, not just "the earlier validation fix wasn't newsworthy." New Q-054-20 card records this, reversing Q-054-10 (free-text icon) and mooting Q-054-18 (the icon-length-validation fix from the prior round). `icon` dropped from FR-054-11/13, DO-054-01, MIG-054-02, the Spec DSL, and all three tasks/plan mentions — `LandingLink` is now `label`+`url`+`placement`+`open_in_new_tab`+`sort_order`+`enabled` only.
+
+**Also asked (via IDE selection on plan.md's I5 increment): "WHAT IS THAT FOR? WHY DO WE NEED THOSE?"** regarding the stats feature (`landing_show_stats`/`public_photo_count`/`public_album_count`, FR-054-09). This was never an explicit user request — it was invented during the very first spec draft as one interpretation of "what info to display on the landing page" (the user's original stated goal), alongside About text and featured content. Not yet resolved whether to keep or cut; answered inline, decision pending.
+
+**Not yet done:** Implementation not started. This correction round not yet committed/pushed — holding until the stats question above is resolved so it can go in the same commit.
+
+### Feature 054 — Stats Cut, Then Admin-UI Architecture Reversed a Second Time (same session, 2026-08-10)
+
+**Stats question resolved:** "Cut it entirely." Removed `landing_show_stats`, `public_photo_count`/`public_album_count`, FR-054-09, S-054-12, I5/T-054-19, and every other mention across spec/plan/tasks. Scalar-config count drops to 10. New Q-054-21 Decision Card records the reasoning (never explicitly requested — one of three things invented while fleshing out "what info to display," alongside About text and featured content, both of which survive).
+
+**Then, via an IDE selection on Goal #11 ("all landing-page settings live in exactly one dedicated admin page"):** "We want to still have all the settings in the global setting pages etc, but additionally we want to have a config page for preview etc... a bit like the watermarker module." This reverses Q-054-08 entirely.
+
+**Investigated `resources/js/v8/views/admin/WatermarkPreview.vue`** before touching anything: confirmed it's a genuinely different pattern from `NsfwConfig.vue` — a two-column settings-form (left) + live-reactive-preview (right) page, where edits are held in local component state and only persisted on an explicit **Save** click (`SettingsService.setConfigs()`), and — critically — its own settings (`Mod Watermarker` category) are **not** filtered from the flat generic Settings list (only `Mod Cache` is, confirmed by reading `SettingsController::getAll()`). This directly falsifies Q-054-08's core assumption that full-category absorption implies filtering makes sense.
+
+**Asked one clarifying question** (preview fidelity: instant reactive vs. save-then-view) since Watermarker's live-overlay pattern doesn't map 1:1 onto a whole page with 4 different layouts, and guessing wrong a third time on this same page would have been costly. Answered: instant reactive, matching Watermarker exactly.
+
+**Resolved (Q-054-22/23, logged in `open-questions.md`):**
+- Q-054-22: `LandingConfig.vue`'s 10 settings coexist with the flat list — reverses Q-054-08. FR-054-27 (the filter) removed entirely; FR-054-19 rewritten around the watermarker pattern; S-054-31 rewritten to assert the opposite of its original claim; Q-054-08's card marked reversed (kept for history).
+- Q-054-23: the preview is instantly reactive to unsaved form state, not a save-then-iframe flow. New FR-054-30 specifies this precisely: the right column renders the actual `LandingClassic.vue`/`LandingPortfolio.vue`/`LandingMinimal.vue`/`LandingStudio.vue` component (whichever matches the in-progress layout selection) fed via a new `preview` prop assembled from unsaved form state plus already-persisted links/featured-items. This requires a new plan increment, **I10a**, refactoring all 4 layout components from self-fetching (`InitService.fetchLandingData()`) to accepting their data via prop — the public `Landing.vue` dispatcher keeps fetching and now passes the result down, so both the real route and the preview panel share one component contract.
+
+**Spec/plan/tasks updated in place again** — FR-054-19 rewritten, FR-054-27 removed (gap documented alongside FR-054-09/26), new FR-054-30, Goal #11 rewritten, Overview paragraph rewritten, the `LandingConfig.vue` mockup rebuilt as a two-column watermarker-style layout, S-054-31 reversed, Q-054-08/16 cards marked reversed/moot, two new Decision Cards (Q-054-22/23) added. plan.md's I11 rebuilt around the two-column form+preview design with an explicit Save step; new I10a increment added before it. tasks.md: I11's tasks rebuilt (T-054-36a-d), new I10a tasks (T-054-35a/b), T-054-38a added as an explicit regression guard confirming the flat list still shows everything.
+
+**Not yet done:** Implementation not started. Multiple large reversals landed this session (custom CSS dropped, icon field dropped, stats dropped, admin-UI architecture reversed twice) — holding this whole accumulated diff for explicit review/commit confirmation before pushing again, given how much has changed since the last push.
+
+### Feature 054 — Decision Cards Added for All 10 Resolved Questions (same session, 2026-08-10)
+
+**Request:** "Great to add the open questions, but what about the details???" — after the Q-054-07..10 rows were added to `open-questions.md` as one-line summaries.
+
+**Gap found:** `docs/specs/4-architecture/spec-guidelines/open-questions-format.md` defines a formal "Decision Card" template (Question, lettered options each with Idea/Spec impact/Pros/Cons, preferred option, Next action) intended for exactly this — but the spec.md Appendix only had loose prose bullets for Q-054-01..10, and `open-questions.md`'s table has no options column at all (confirmed this is true of every existing row in the file, not just this feature's — a repo-wide gap between the documented format and actual practice, not something introduced this session).
+
+**Fix:** Replaced spec.md's "Resolved Scope Decisions"/"Admin UI Architecture Decision" prose sections with full Decision Cards for all 10 questions (Q-054-01..10), following the template exactly — including Q-054-03 and Q-054-09, where the resolved option was **not** the one originally recommended (Q-054-03: user picked the SE-gated option over the recommended free-for-everyone one, same override pattern as Q-052-07; Q-054-09 went through two rounds of refinement, C→B→A, all three stages documented as options with the evolution explained in "Next action"). Also updated `open-questions.md`'s 10 Q-054 rows to cross-reference the cards' A/B/C lettering and preferred option, per the format guide's stated relationship between the index and the cards.
+
+**Not yet done:** Same as above — implementation not started.
+
+### Feature 054 — Admin UI Architecture Revision (same session, 2026-08-10)
+
+**Request:** "I think we may want to have a configuration page similar to the NSFW classifier."
+
+**Read `resources/js/v8/views/admin/NsfwConfig.vue` (Feature 045)** to confirm the exact pattern being referenced: a dedicated admin page (`UTabs`, curated `Fieldset` sections per tab) that still reads/writes through the same generic `SettingsService.getAll()`/`setConfigs()` API the flat settings list uses — no new config backend, just a better-organized UI on top. Confirmed (no `SettingsController` filtering found for NSFW's keys) that curated-page keys are *not* hidden from the flat generic list — both views coexist.
+
+**Resolved as Q-054-06:** replaced FR-054-18/19's original "no bespoke Vue needed, flat generic settings list is sufficient" with a dedicated `resources/js/v8/views/admin/LandingConfig.vue` page — a Settings tab (11 keys in 4 curated `Fieldset` groups: Layout & Structure, Hero, Content, Advanced) plus a Links tab (the `LandingLink` CRUD, folded in here instead of the previously-planned standalone `LandingLinks.vue` route — mirrors how `NsfwConfig.vue`'s own second tab, "Presets," shows a related-but-distinct view alongside "Settings"). Registered as an admin tile (`group: "core"`, alongside `settings`/`design-system`) at `/admin/landing-config`. The flat generic list keeps working unfiltered in parallel, matching NSFW's precedent.
+
+**Spec/plan/tasks updated in place** (rev 3): FR-054-18/19 rewritten; new UI-054-06; plan's I11 rebuilt in full (was "generic UI + separate LandingLinks.vue page," now "LandingConfig.vue scaffold → Settings tab → SE badges → Links tab → reorder → route/tile registration"); tasks.md's I11 block rewritten (T-054-36/36a/36b/37/37a/38). Task/increment counts unchanged in shape, only I11's content changed.
+
+**Not yet done:** Same as above — implementation not started.
+
+
 
 ### Feature 053 – Album Listing Caching — Spec/Plan/Tasks drafted (this session, 2026-08-08)
 
@@ -135,6 +282,23 @@ _Last updated: 2026-08-10_
 
 ## Next Steps
 
+<<<<<<< HEAD
+1. Feature 054 is done — no follow-up required unless the deferred-to-backlog items (true modular section builder, mosaic/grid-first layout, second About image slot, testimonials block, shared `AlbumHeaderPanel.vue`/landing position-class utility) are picked up as a future feature. See tasks.md's T-054-62 note for the small set of Branch & Scenario Matrix rows verified only at the automated-test level rather than re-clicked through a browser.
+2. Feature 052 is done — no follow-up required unless broader `ManagedCacheService` adoption (deferred per spec Non-Goals) is picked up as a future feature.
+2. Confirm dependency approvals (`@nuxt/ui`, `@iconify-json/prime`) with the user, then start Feature 049 implementation at T-049-01 (install Nuxt UI in standalone Vue mode) — see [tasks.md](4-architecture/features/049-nuxt-ui-migration/tasks.md).
+3. Alternatively/in parallel across sessions: start Feature 048 implementation at T-048-01 (repo-wide caller sweep) then T-048-02/03 (unit tests reproducing the bug) — see [tasks.md](4-architecture/features/048-fix-multi-group-permissions/tasks.md).
+4. Feature 047 (Person Smart Album) remains drafted but not implemented — no active work this session.
+5. Feature 042 Part B (I7–I10, admin maintenance photo title links) remains outstanding from a prior session — see [tasks.md](4-architecture/features/042-webshop-order-item-display/tasks.md) T-042-16 to T-042-20.
+
+## Open Questions
+
+None blocking. Q-054-01..19 resolved 2026-08-10 (spec-drafting session, see spec.md Appendix for full Decision Cards); the implementation-session Q-054-01 (open-questions.md's `ConfigIntegrity` whitelist question, distinct numbering — logged in open-questions.md, not spec.md's Decision Cards) resolved 2026-08-11. Q-052-01..07 all resolved (01-05 on 2026-07-21, 06-07 on 2026-07-28 — see spec.md and open-questions.md for full rationale, including Q-052-07's non-default Option B resolution). Q-049-01, Q-049-02, Q-049-03 resolved 2026-07-02 (ADR-0005). Q-048-01 resolved 2026-07-01.
+
+## Key Artefacts
+
+- Feature 054: [spec.md](4-architecture/features/054-configurable-landing-page/spec.md) · [plan.md](4-architecture/features/054-configurable-landing-page/plan.md) · [tasks.md](4-architecture/features/054-configurable-landing-page/tasks.md) (implemented, T-054-01..63 all `[x]`)
+- Feature 052: [spec.md](4-architecture/features/052-managed-cache-service/spec.md) · [plan.md](4-architecture/features/052-managed-cache-service/plan.md) · [tasks.md](4-architecture/features/052-managed-cache-service/tasks.md) (implemented, T-052-01..22 all `[x]`)
+=======
 1. Feature 053 is implemented and quality-gated (phpstan/cs-fixer green via targeted tests) — a full non-`--filter` `php artisan test` run is still recommended before treating it as fully end-to-end verified (deferred this session per explicit instruction).
 2. Feature 052 is otherwise done — no further follow-up unless broader `ManagedCacheService` adoption beyond Feature 053 (e.g. photo-listing caching, deferred per Feature 053's Non-Goals) is picked up later.
 3. Confirm dependency approvals (`@nuxt/ui`, `@iconify-json/prime`) with the user, then start Feature 049 implementation at T-049-01 (install Nuxt UI in standalone Vue mode) — see [tasks.md](4-architecture/features/049-nuxt-ui-migration/tasks.md).
@@ -150,6 +314,7 @@ None blocking. Q-053-01..13 all resolved 2026-08-08/09 (see spec.md and open-que
 
 - Feature 053: [spec.md](4-architecture/features/053-album-listing-caching/spec.md) · [plan.md](4-architecture/features/053-album-listing-caching/plan.md) · [tasks.md](4-architecture/features/053-album-listing-caching/tasks.md) (implemented, T-053-01..24 all `[x]`; full-suite `php artisan test` run still outstanding)
 - Feature 052: [spec.md](4-architecture/features/052-managed-cache-service/spec.md) · [plan.md](4-architecture/features/052-managed-cache-service/plan.md) · [tasks.md](4-architecture/features/052-managed-cache-service/tasks.md) (implemented, T-052-01..22 all `[x]`; T-052-05/06 resumed and completed as Feature 053's T-053-01)
+>>>>>>> master
 - Feature 049: [spec.md](4-architecture/features/049-nuxt-ui-migration/spec.md) · [plan.md](4-architecture/features/049-nuxt-ui-migration/plan.md) · [tasks.md](4-architecture/features/049-nuxt-ui-migration/tasks.md) · [ADR-0005](6-decisions/ADR-0005-nuxt-ui-migration.md)
 - Feature 048: [spec.md](4-architecture/features/048-fix-multi-group-permissions/spec.md) · [plan.md](4-architecture/features/048-fix-multi-group-permissions/plan.md) · [tasks.md](4-architecture/features/048-fix-multi-group-permissions/tasks.md)
 - Open questions: [open-questions.md](4-architecture/open-questions.md) (Q-053-01..13, Q-052-01..07, Q-049-01..03, Q-048-01 — all resolved)

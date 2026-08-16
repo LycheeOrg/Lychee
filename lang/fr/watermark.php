@@ -57,6 +57,7 @@ return [
             'up' => 'Haut',
             'down' => 'Bas',
         ],
+        'reset_to_zero' => 'Reset to 0',
 
         'save' => 'Enregistrer les paramètres',
         'saved' => 'Paramètres du filigrane enregistrés.',

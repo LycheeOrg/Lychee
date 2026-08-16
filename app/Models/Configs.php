@@ -103,6 +103,18 @@ class Configs extends Model
 		];
 
 		$message_template ??= 'Error: Wrong property for ' . $this->key . ', expected %s, got ' . ($candidate_value ?? 'NULL') . '.';
+
+		// Bounded integer range, e.g. `int:0:100`. Not part of ConfigType as it is parameterised per key.
+		if (preg_match('/^int:(\d+):(\d+)$/', $this->type_range, $bounds) === 1) {
+			$min = intval($bounds[1]);
+			$max = intval($bounds[2]);
+			if (!ctype_digit(strval($candidate_value)) || intval($candidate_value) < $min || intval($candidate_value) > $max) {
+				$message = sprintf($message_template, "an integer between {$min} and {$max}");
+			}
+
+			return $message;
+		}
+
 		switch ($this->type_range) {
 			case ConfigType::STRING->value:
 			case ConfigType::DISABLED->value:

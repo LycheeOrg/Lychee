@@ -27,6 +27,155 @@
 		url("../fonts/roboto-v29-700.woff2") format("woff2");
 }
 
+/*
+  Libre Franklin - v8's base UI font (see html { font-family } in app-v8.css). Self-hosted static
+  instances subset from the OFL variable font (github.com/google/fonts/ofl/librefranklin) to
+  latin+latin-ext+cyrillic+cyrillic-ext+vietnamese, matching the Roboto subset above. License text
+  is bundled at resources/fonts/OFL-libre-franklin.txt per the SIL OFL's redistribution terms.
+  Greek/Arabic/CJK aren't covered by this typeface at all (upstream has no glyphs for them, not a
+  subsetting choice) - those locales already fall through past Helvetica/Arial to the OS's default
+  UI font today, and continue to do so unchanged with Libre Franklin added ahead of it.
+*/
+@font-face {
+	font-family: "Libre Franklin";
+	font-style: normal;
+	font-weight: 100;
+	src:
+		local(""),
+		url("../fonts/libre-franklin-v20-100.woff2") format("woff2");
+}
+@font-face {
+	font-family: "Libre Franklin";
+	font-style: normal;
+	font-weight: 200;
+	src:
+		local(""),
+		url("../fonts/libre-franklin-v20-200.woff2") format("woff2");
+}
+@font-face {
+	font-family: "Libre Franklin";
+	font-style: normal;
+	font-weight: 300;
+	src:
+		local(""),
+		url("../fonts/libre-franklin-v20-300.woff2") format("woff2");
+}
+@font-face {
+	font-family: "Libre Franklin";
+	font-style: normal;
+	font-weight: 400;
+	src:
+		local(""),
+		url("../fonts/libre-franklin-v20-400.woff2") format("woff2");
+}
+@font-face {
+	font-family: "Libre Franklin";
+	font-style: normal;
+	font-weight: 500;
+	src:
+		local(""),
+		url("../fonts/libre-franklin-v20-500.woff2") format("woff2");
+}
+@font-face {
+	font-family: "Libre Franklin";
+	font-style: normal;
+	font-weight: 600;
+	src:
+		local(""),
+		url("../fonts/libre-franklin-v20-600.woff2") format("woff2");
+}
+@font-face {
+	font-family: "Libre Franklin";
+	font-style: normal;
+	font-weight: 700;
+	src:
+		local(""),
+		url("../fonts/libre-franklin-v20-700.woff2") format("woff2");
+}
+@font-face {
+	font-family: "Libre Franklin";
+	font-style: normal;
+	font-weight: 900;
+	src:
+		local(""),
+		url("../fonts/libre-franklin-v20-900.woff2") format("woff2");
+}
+
+/*
+  Vazirmatn - Arabic/Farsi coverage for the `ar` and `fa` locales, upstream from
+  github.com/rastikerdar/vazirmatn (SIL OFL, license bundled at
+  resources/fonts/OFL-vazirmatn.txt). Designed for Persian first rather than an Arabic face with
+  Farsi letters added on, while still covering standard Arabic. Placed right after Libre Franklin
+  in html's font-family stack (app-v8.css) rather than gated behind :lang()/[dir] selectors -
+  Libre Franklin has zero Arabic-script glyphs, so the browser's normal per-character font
+  fallback already routes Arabic/Farsi text here automatically, the same mechanism Greek/CJK text
+  already relies on to fall through to the OS's default font further down the stack.
+*/
+@font-face {
+	font-family: "Vazirmatn";
+	font-style: normal;
+	font-weight: 100;
+	src:
+		local(""),
+		url("../fonts/vazirmatn-100.woff2") format("woff2");
+}
+@font-face {
+	font-family: "Vazirmatn";
+	font-style: normal;
+	font-weight: 200;
+	src:
+		local(""),
+		url("../fonts/vazirmatn-200.woff2") format("woff2");
+}
+@font-face {
+	font-family: "Vazirmatn";
+	font-style: normal;
+	font-weight: 300;
+	src:
+		local(""),
+		url("../fonts/vazirmatn-300.woff2") format("woff2");
+}
+@font-face {
+	font-family: "Vazirmatn";
+	font-style: normal;
+	font-weight: 400;
+	src:
+		local(""),
+		url("../fonts/vazirmatn-400.woff2") format("woff2");
+}
+@font-face {
+	font-family: "Vazirmatn";
+	font-style: normal;
+	font-weight: 500;
+	src:
+		local(""),
+		url("../fonts/vazirmatn-500.woff2") format("woff2");
+}
+@font-face {
+	font-family: "Vazirmatn";
+	font-style: normal;
+	font-weight: 600;
+	src:
+		local(""),
+		url("../fonts/vazirmatn-600.woff2") format("woff2");
+}
+@font-face {
+	font-family: "Vazirmatn";
+	font-style: normal;
+	font-weight: 700;
+	src:
+		local(""),
+		url("../fonts/vazirmatn-700.woff2") format("woff2");
+}
+@font-face {
+	font-family: "Vazirmatn";
+	font-style: normal;
+	font-weight: 900;
+	src:
+		local(""),
+		url("../fonts/vazirmatn-900.woff2") format("woff2");
+}
+
 @font-face {
 	font-family: "socials";
 	src: url("../fonts/socials.eot?egvu10");

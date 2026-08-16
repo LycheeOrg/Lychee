@@ -109,7 +109,7 @@
 					/>
 				</template>
 			</template>
-			<GalleryFooter v-once />
+			<GalleryFooter v-once context="gallery" />
 		</div>
 	</UContextMenu>
 	<!-- Dialogs for albums -->

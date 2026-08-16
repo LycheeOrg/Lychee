@@ -13,7 +13,18 @@
 }
 
 html {
-	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-family: "Libre Franklin", "Vazirmatn", "Helvetica Neue", Helvetica, Arial, sans-serif;
+	/*
+	  Defensive: some `position: fixed` elements with a `scale()`/`translate()` entrance
+	  animation (e.g. the landing page's animate-landingIntroPopIn) briefly overflow the
+	  viewport while animating, even nested inside an `overflow-hidden` ancestor — fixed
+	  positioning escapes that ancestor's clipping unless it establishes a containing block
+	  via transform/filter/etc. This was showing up as a flash of horizontal scrollbar on
+	  every landing page load. Every intentional horizontal scroll in this app is already
+	  scoped to its own `overflow-x-auto` container, so nothing relies on document-level
+	  horizontal scroll.
+	*/
+	overflow-x: hidden;
 }
 
 /*
@@ -241,7 +252,34 @@ html {
 	--animate-landingIntroPopIn: popIn 2s forwards ease-in-out;
 	--animate-landingIntroFadeOut: fadeOut 2s 2s forwards ease-in-out;
 	--animate-landingSlidesPopIn: popIn 2s 3s forwards ease-in-out;
-	--animate-landingEnterPopIn: zoomIn 2s 4s forwards ease-in-out;
+	--animate-landingEnterPopIn: zoomIn 2s 3s forwards ease-in-out;
+	--animate-landingZoomReveal: landingZoomReveal 1s ease-out forwards;
+	--animate-landingSlideReveal: landingSlideReveal 0.8s ease-out forwards;
+	/*
+	  Studio's side-docked login panel (LandingStudio.vue): reuses the same `slide_reveal`/
+	  `parallax_scroll` animation preset as landingSlideReveal above, but slides in horizontally
+	  from the panel's own edge - ltr:from-right/rtl:from-left - rather than landingSlideReveal's
+	  vertical rise, since the panel is pinned to that edge rather than centered.
+	*/
+	--animate-landingLoginSlideInFromRight: landingLoginSlideInFromRight 0.8s ease-out forwards;
+	--animate-landingLoginSlideInFromLeft: landingLoginSlideInFromLeft 0.8s ease-out forwards;
+	/*
+	  Meridian's own reveal sequence, chained in two stages off the intro splash screen's ~4s
+	  cover (LandingIntroScreen.vue's 4000ms timeout): the two rails grow in first (4s-4.45s,
+	  landingMeridianLineGrow), then everything else - background, header, caption, label -
+	  fades in from 4.45s once the rails are fully drawn. The 0.45s gap between the two stages is
+	  load-bearing: the rails must finish before anything else appears, intro splash or not.
+	  LandingMeridian.vue's `restDelayClass`/`captionDelayClass` (not the shared `introDelayClass`
+	  used by the lines themselves) hold that 0.45s/0.6s gap in place when the intro splash is
+	  disabled, rather than collapsing every stage's delay to 0s the way `.no-intro-delay` does
+	  for landingSlidesPopIn/landingEnterPopIn above.
+	*/
+	--animate-landingMeridianLineGrow: landingMeridianLineGrow 0.45s 4s ease-out forwards;
+	--animate-landingMeridianRevealZoom: landingZoomReveal 1s 4.45s ease-out forwards;
+	--animate-landingMeridianRevealSlide: landingSlideReveal 0.8s 4.45s ease-out forwards;
+	--animate-landingMeridianRevealPop: popIn 2s 4.45s forwards ease-in-out;
+	--animate-landingMeridianCaptionIn: landingMeridianCaptionIn 1.1s 4.6s ease-out forwards;
+	--animate-landingMeridianLabelIn: landingMeridianLabelIn 1.1s 4.45s ease-out forwards;
 
 	--text-2xs: 0.65rem;
 	--text-2xs--line-height: 0.8rem;
@@ -291,6 +329,93 @@ html {
 		transform: scale(1);
 	}
 }
+@keyframes landingZoomReveal {
+	0% {
+		opacity: 0;
+		transform: scale(1.08);
+	}
+	100% {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+@keyframes landingSlideReveal {
+	0% {
+		opacity: 0;
+		transform: translateY(2.5rem);
+	}
+	100% {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+@keyframes landingLoginSlideInFromRight {
+	0% {
+		opacity: 0;
+		transform: translateX(4rem);
+	}
+	100% {
+		opacity: 1;
+		transform: translateX(0);
+	}
+}
+@keyframes landingLoginSlideInFromLeft {
+	0% {
+		opacity: 0;
+		transform: translateX(-4rem);
+	}
+	100% {
+		opacity: 1;
+		transform: translateX(0);
+	}
+}
+/*
+  The two full-height rail lines (LandingMeridian.vue's `before:` pseudo-elements) grow in from
+  a point at one end of the line, controlled by whichever `transform-origin` the caller sets
+  (`before:origin-top` for the left rail, `before:origin-bottom` for the right) - this keyframe
+  only handles the scale, not the direction. Animates the standalone `scale` property (not
+  `transform: scaleY()`) to match Tailwind v4's own scale-* utilities (see `before:scale-y-0` in
+  LandingMeridian.vue, the resting pre-animation state) - `scale` and `transform` are independent
+  CSS properties that compose, so animating `transform` here while `scale` stays pinned at 0 via
+  the static utility would have no visible effect.
+*/
+@keyframes landingMeridianLineGrow {
+	0% {
+		scale: 1 0;
+	}
+	100% {
+		scale: 1 1;
+	}
+}
+/*
+  The meridian rails' caption/label spans live inside a parent with
+  `transform: rotate(180deg)` (needed to flip the vertical writing-mode back
+  upright). That 180° rotation point-reflects any transform applied to these
+  children, so the translateY sign here is intentionally inverted relative to
+  what it would take to move the element on-screen: positive-to-zero here
+  reads as "slides down into place" on screen, negative-to-zero reads as
+  "slides up into place".
+*/
+@keyframes landingMeridianLabelIn {
+	0% {
+		opacity: 0;
+		transform: translateX(4rem);
+	}
+	100% {
+		opacity: 1;
+		transform: translateX(0rem);
+	}
+}
+@keyframes landingMeridianCaptionIn {
+	0% {
+		opacity: 0;
+		transform: translateX(-4rem);
+	}
+	100% {
+		opacity: 1;
+		transform: translateX(0rem);
+	}
+}
 
 @keyframes fadeout {
 	0% {
@@ -314,4 +439,12 @@ html {
 }
 .animate-infinite {
 	animation-iteration-count: infinite;
+}
+
+.filter-shadow {
+	filter: drop-shadow(0 0 0.5rem black);
+}
+
+.filter-shadow-darker {
+	filter: drop-shadow(0 0 1rem black) drop-shadow(0 0 2rem black) drop-shadow(0 0 4rem black);
 }

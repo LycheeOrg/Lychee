@@ -2,7 +2,7 @@
 	<div
 		v-if="!props.isSaveVisible"
 		:class="{
-			'flex overflow-hidden transition-all duration-200 ease-out': true,
+			'flex overflow-hidden transition-all duration-200 ease-out mb-4': true,
 			'h-auto lg:h-11': !isCollapsed,
 			'h-0': isCollapsed,
 		}"

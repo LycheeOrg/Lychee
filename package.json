@@ -15,6 +15,7 @@
 		"vca": "vca -- --dir resources/js"
 	},
 	"devDependencies": {
+		"@playwright/test": "^1.62.1",
 		"@types/dropbox-chooser": "^1.0.8",
 		"@types/jsdom": "^30.0.0",
 		"@types/justified-layout": "^4.1.4",
@@ -34,6 +35,7 @@
 		"eslint": "^10.8.1",
 		"eslint-plugin-vue": "~10.10.0",
 		"jsdom": "^30.0.1",
+		"playwright": "^1.62.1",
 		"prettier": "3.9.6",
 		"sass": "^1.102.0",
 		"vue-tsc": "^3.3.9"
@@ -43,6 +45,7 @@
 		"@fortawesome/fontawesome-free": "^7.3.1",
 		"@iconify-json/lucide": "^1.2.122",
 		"@lychee-org/layouts": "^0.1.0",
+		"@lychee-org/nested-set-checker-wasm": "^1.0.0",
 		"@lychee-org/zxcvbn-wasm": "^1.0.1",
 		"@mollie/api-client": "^4.5.0",
 		"@nuxt/ui": "^4.10.0",
@@ -67,6 +70,7 @@
 		"leaflet.markercluster": "^1.5.3",
 		"pinia": "^4.0.2",
 		"pinia-plugin-persistedstate": "^4.7.1",
+		"playwright": "^1.62.1",
 		"primeicons": "^8.0.0",
 		"primevue": "^4.0.0",
 		"qrcode": "^1.5.3",

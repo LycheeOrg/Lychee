@@ -47,23 +47,35 @@ class Watermarker
 	}
 
 	/**
-	 * Check if configuration is set to allow watermark.
+	 * Check if the watermarker module is enabled and technically usable (config toggle
+	 * and Imagick both on), regardless of whether a watermark photo has been picked yet.
 	 *
 	 * @return bool
 	 */
-	private function is_watermark_enabled(): bool
+	public function is_module_enabled(): bool
 	{
 		$config_manager = resolve(ConfigManager::class);
 		$is_enabled = $config_manager->getValueAsBool('watermark_enabled');
 		$is_imagick_enabled = $config_manager->getValueAsBool('imagick');
 		$is_imagick_loaded = extension_loaded('imagick');
 
-		if (!$is_enabled || !$is_imagick_enabled || !$is_imagick_loaded) {
+		return $is_enabled && $is_imagick_enabled && $is_imagick_loaded;
+	}
+
+	/**
+	 * Check if configuration is set to allow watermark.
+	 *
+	 * @return bool
+	 */
+	private function is_watermark_enabled(): bool
+	{
+		if (!$this->is_module_enabled()) {
 			// If watermarking is not enabled or Imagick is not available, we cannot watermark
 			// Exit now.
 			return false;
 		}
 
+		$config_manager = resolve(ConfigManager::class);
 		$this->watermark_photo_id = $config_manager->getValueAsString('watermark_photo_id');
 		if ($this->watermark_photo_id === '') {
 			// Watermark photo ID is not set, we cannot watermark

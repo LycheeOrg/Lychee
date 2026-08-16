@@ -86,3 +86,4 @@ Thumbs.db
 
 # Tests
 tests/*
+e2e/*

@@ -84,3 +84,11 @@ PRODUCT.md
 .github/hooks/impeccable.json
 .github/skills/impeccable/*
 .impeccable/
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
+example.spec.ts
