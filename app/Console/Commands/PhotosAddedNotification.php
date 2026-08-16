@@ -83,7 +83,7 @@ class PhotosAddedNotification extends Command
 
 					// Mail clients do not like relative paths.
 					// if url does not start with 'http', it is not absolute...
-					if (!Str::startsWith('http', $thumb_url)) {
+					if (!Str::startsWith($thumb_url, 'http')) {
 						$thumb_url = URL::asset($thumb_url);
 					}
 
