@@ -84,3 +84,4 @@ PRODUCT.md
 .github/hooks/impeccable.json
 .github/skills/impeccable/*
 .impeccable/
+example.spec.ts
