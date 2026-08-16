@@ -119,6 +119,10 @@ class AlbumRepository
 	 */
 	public function getMatchingAlbumsForTagPaginated(TagAlbum $tag_album, int $per_page): LengthAwarePaginator
 	{
+		if (!$this->config_manager->getValueAsBool('TA_albums_listing_enabled')) {
+			return new LengthAwarePaginator([], 0, $per_page);
+		}
+
 		$user_id = Auth::id();
 		$page = Paginator::resolveCurrentPage();
 		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
@@ -194,6 +198,10 @@ class AlbumRepository
 	 */
 	public function getMatchingAlbumsForPersonPaginated(PersonAlbum $person_album, int $per_page): LengthAwarePaginator
 	{
+		if (!$this->config_manager->getValueAsBool('PA_albums_listing_enabled')) {
+			return new LengthAwarePaginator([], 0, $per_page);
+		}
+
 		$user_id = Auth::id();
 		$page = Paginator::resolveCurrentPage();
 		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();

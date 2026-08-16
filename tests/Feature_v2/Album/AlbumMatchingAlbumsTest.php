@@ -90,6 +90,16 @@ class AlbumMatchingAlbumsTest extends BaseApiWithDataTest
 		]);
 	}
 
+	public function testTagAlbumMatchingAlbumsHiddenWhenConfigDisabled(): void
+	{
+		Configs::set('TA_albums_listing_enabled', '0');
+		$this->album1->tags()->sync([$this->tag_test->id]);
+
+		$response = $this->actingAs($this->userMayUpload1)->getJsonWithData('Album::albums', ['album_id' => $this->tagAlbum1->id]);
+		$this->assertOk($response);
+		$response->assertJson(['data' => [], 'total' => 0]);
+	}
+
 	public function testTagAlbumMatchingAlbumsDoesNotMatchOnPhotoTagAlone(): void
 	{
 		// photo1 already carries `test` (see BaseApiWithDataTest fixtures), but
