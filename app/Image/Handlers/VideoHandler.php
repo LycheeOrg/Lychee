@@ -9,6 +9,7 @@
 namespace App\Image\Handlers;
 
 use App\Contracts\Image\ImageHandlerInterface;
+use App\Enum\VideoThumbnailFrameMode;
 use App\Exceptions\ConfigurationException;
 use App\Exceptions\ExternalComponentMissingException;
 use App\Exceptions\ImageProcessingException;
@@ -65,6 +66,26 @@ class VideoHandler
 		} catch (InvalidArgumentException $e) {
 			throw new MediaFileOperationException('FFmpeg could not open media file', $e);
 		}
+	}
+
+	/**
+	 * Determines the position (in seconds) of the frame that should be
+	 * extracted for a video thumbnail, based on the
+	 * `video_thumbnail_frame_mode` / `video_thumbnail_frame_seconds`
+	 * configuration.
+	 *
+	 * @param string|null $duration the video duration in seconds, as stored on {@link \App\Models\Photo::$duration}
+	 */
+	public static function resolveThumbnailFramePosition(?string $duration): float
+	{
+		$config_manager = resolve(ConfigManager::class);
+		$mode = $config_manager->getValueAsEnum('video_thumbnail_frame_mode', VideoThumbnailFrameMode::class) ?? VideoThumbnailFrameMode::MIDDLE;
+
+		return match ($mode) {
+			VideoThumbnailFrameMode::FIRST => 0.0,
+			VideoThumbnailFrameMode::CUSTOM => floatval($config_manager->getValueAsInt('video_thumbnail_frame_seconds')),
+			VideoThumbnailFrameMode::MIDDLE => is_numeric($duration) ? floatval($duration) / 2 : 0.0,
+		};
 	}
 
 	/**

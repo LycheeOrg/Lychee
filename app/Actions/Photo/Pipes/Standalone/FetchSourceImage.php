@@ -22,7 +22,7 @@ class FetchSourceImage implements StandalonePipe
 			if ($state->photo->isVideo()) {
 				$video_handler = new VideoHandler();
 				$video_handler->load($state->source_file);
-				$position = is_numeric($state->photo->aperture) ? floatval($state->photo->aperture) / 2 : 0.0;
+				$position = VideoHandler::resolveThumbnailFramePosition($state->photo->duration);
 				$state->source_image = $video_handler->extractFrame($position);
 			} else {
 				// Load source image if it is a supported photo format
