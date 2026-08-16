@@ -295,6 +295,28 @@ Route::patch('/Webhook/{webhook}', [Admin\WebhookController::class, 'patch']);
 Route::delete('/Webhook/{webhook}', [Admin\WebhookController::class, 'destroy']);
 
 /**
+ * LANDING LINKS.
+ */
+Route::get('/LandingLink', [Admin\LandingLinkController::class, 'index']);
+Route::post('/LandingLink', [Admin\LandingLinkController::class, 'store']);
+Route::patch('/LandingLink/Reorder', [Admin\LandingLinkController::class, 'reorder']);
+Route::get('/LandingLink/{landingLink}', [Admin\LandingLinkController::class, 'show']);
+Route::put('/LandingLink/{landingLink}', [Admin\LandingLinkController::class, 'update']);
+Route::patch('/LandingLink/{landingLink}', [Admin\LandingLinkController::class, 'patch']);
+Route::delete('/LandingLink/{landingLink}', [Admin\LandingLinkController::class, 'destroy']);
+
+/**
+ * LANDING FEATURED ITEMS.
+ */
+Route::get('/LandingFeaturedItem', [Admin\LandingFeaturedItemController::class, 'index']);
+Route::post('/LandingFeaturedItem', [Admin\LandingFeaturedItemController::class, 'store']);
+Route::patch('/LandingFeaturedItem/Reorder', [Admin\LandingFeaturedItemController::class, 'reorder']);
+Route::get('/LandingFeaturedItem/{landingFeaturedItem}', [Admin\LandingFeaturedItemController::class, 'show']);
+Route::put('/LandingFeaturedItem/{landingFeaturedItem}', [Admin\LandingFeaturedItemController::class, 'update']);
+Route::patch('/LandingFeaturedItem/{landingFeaturedItem}', [Admin\LandingFeaturedItemController::class, 'patch']);
+Route::delete('/LandingFeaturedItem/{landingFeaturedItem}', [Admin\LandingFeaturedItemController::class, 'destroy']);
+
+/**
  * MODERATION.
  */
 Route::get('/Moderation', [Admin\ModerationController::class, 'list']);

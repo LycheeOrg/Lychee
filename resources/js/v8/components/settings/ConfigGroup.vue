@@ -161,6 +161,14 @@
 					<BoolField v-else-if="config.type === '0|1'" :config="config" @filled="filled" @reset="reset" />
 					<NumberField v-else-if="config.type === 'int'" :config="config" :min="0" @filled="filled" @reset="reset" />
 					<NumberField v-else-if="config.type === 'positive'" :config="config" :min="1" @filled="filled" @reset="reset" />
+					<NumberField
+						v-else-if="config.type.startsWith('int:')"
+						:config="config"
+						:min="intRangeMin(config.type)"
+						:max="intRangeMax(config.type)"
+						@filled="filled"
+						@reset="reset"
+					/>
 					<SliderField v-else-if="config.type.includes('|')" :config="config" @filled="filled" @reset="reset" />
 					<p v-else-if="is_debug_enabled" class="bg-red-500">
 						{{ config.key }} -- {{ config.value }} -- {{ config.documentation }} -- {{ config.type }}
@@ -210,6 +218,14 @@ const emits = defineEmits<{
 	filled: [key: string, value: string];
 	reset: [key: string];
 }>();
+
+function intRangeMin(type: string): number {
+	return Number(type.split(":")[1] ?? 0);
+}
+
+function intRangeMax(type: string): number {
+	return Number(type.split(":")[2] ?? undefined);
+}
 
 function reset(configKey: string) {
 	emits("reset", configKey);

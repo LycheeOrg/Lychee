@@ -43,7 +43,7 @@
 				<InputPassword id="password" v-model="password" autocomplete="current-password" @keydown.enter="login" />
 				<UAlert v-if="invalidPassword" color="error" variant="soft" class="mt-2" :description="$t('dialogs.login.unknown_invalid')" />
 			</UFormField>
-			<UCheckbox v-model="rememberMe" :label="$t('dialogs.login.remember_me')" />
+			<UCheckbox v-if="!hideRememberMe" v-model="rememberMe" :label="$t('dialogs.login.remember_me')" />
 			<div class="flex items-center gap-2 mt-4">
 				<UButton
 					v-if="closeCallback !== undefined"
@@ -101,6 +101,7 @@ type OauthProvider = {
 const props = defineProps<{
 	closeCallback?: () => void;
 	padding?: string;
+	hideRememberMe?: boolean;
 }>();
 
 const username = ref("");

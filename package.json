@@ -70,6 +70,7 @@
 		"leaflet.markercluster": "^1.5.3",
 		"pinia": "^4.0.2",
 		"pinia-plugin-persistedstate": "^4.7.1",
+		"playwright": "^1.62.1",
 		"primeicons": "^8.0.0",
 		"primevue": "^4.0.0",
 		"qrcode": "^1.5.3",

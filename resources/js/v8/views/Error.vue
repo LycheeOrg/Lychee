@@ -6,6 +6,7 @@
 					color="error"
 					:title="lycheeError.exception ? `${lycheeError.exception} in ${lycheeError.file}:${lycheeError.line}` : lycheeError.message"
 					@click="closeError"
+					class="rounded-none"
 				/>
 				<UCard class="h-full overflow-y-scroll">
 					<template #header>
