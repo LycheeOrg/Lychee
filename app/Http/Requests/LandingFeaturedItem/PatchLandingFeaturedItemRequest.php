@@ -39,7 +39,7 @@ class PatchLandingFeaturedItemRequest extends BaseApiRequest
 		return [
 			'landing_featured_item_id' => ['required', 'string'],
 			'item_type' => ['sometimes', 'required', 'string', new Enum(LandingFeaturedItemType::class)],
-			'item_id' => ['sometimes', 'required', 'string', new LandingFeaturedItemExistsRule(
+			'item_id' => ['required_with:item_type', 'string', new LandingFeaturedItemExistsRule(
 				LandingFeaturedItem::find($this->route('landingFeaturedItem'))?->item_type->value,
 			)],
 			'sort_order' => ['sometimes', 'integer'],
