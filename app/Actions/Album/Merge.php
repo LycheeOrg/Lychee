@@ -57,12 +57,10 @@ class Merge
 		// Re-linking photos via raw pivot writes above bypasses every photo-level
 		// model event, which the PersonAlbum "matching albums" cache (see
 		// AlbumRepository::getMatchingAlbumsForPersonPaginated()) depends on to
-		// know a photo's containing albums changed. Dispatch PhotoSaved per
-		// photo (precise, cheap eviction) rather than a coarse flush — merges
-		// are common enough that a global flush would defeat this cache.
-		foreach ($photos_ids as $photo_id) {
-			PhotoSaved::dispatch($photo_id);
-		}
+		// know a photo's containing albums changed. Dispatch a single batched
+		// PhotoSaved (precise, cheap eviction) rather than a coarse flush —
+		// merges are common enough that a global flush would defeat this cache.
+		PhotoSaved::dispatchIf($photos_ids !== [], $photos_ids);
 
 		// Merge sub-albums of source albums into target
 		$target_gains_children = false;

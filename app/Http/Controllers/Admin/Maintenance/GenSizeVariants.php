@@ -45,6 +45,7 @@ class GenSizeVariants extends Controller
 		$photos = $photos_query->limit($request->configs()->getValueAsInt('maintenance_processing_limit'))->lazyById(100);
 
 		$generated = 0;
+		$processed_photo_ids = [];
 		/** @var Photo $photo */
 		foreach ($photos as $photo) {
 			// @codeCoverageIgnoreStart
@@ -63,12 +64,14 @@ class GenSizeVariants extends Controller
 			} catch (MediaFileOperationException $e) {
 				Log::error('Failed to create ' . $request->kind()->value . ' for photo id ' . $photo->id . '');
 			}
-			// recompute the sizes.
-			PhotoSaved::dispatch($photo->id);
+			$processed_photo_ids[] = $photo->id;
 
 			AlbumRouteCacheUpdated::dispatch();
 			// @codeCoverageIgnoreEnd
 		}
+
+		// recompute the sizes.
+		PhotoSaved::dispatchIf($processed_photo_ids !== [], $processed_photo_ids);
 	}
 
 	/**

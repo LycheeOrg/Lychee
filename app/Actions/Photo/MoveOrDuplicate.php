@@ -82,9 +82,7 @@ class MoveOrDuplicate
 			// PhotoMoved below never fires) so listeners depending on a
 			// photo's containing albums (e.g. the TagAlbum/PersonAlbum
 			// "matching albums" cache) are notified either way.
-			foreach ($photos_ids as $photo_id) {
-				PhotoSaved::dispatch($photo_id);
-			}
+			PhotoSaved::dispatch($photos_ids);
 		}
 
 		// In case of move, we need to remove the header_id of said photos.
@@ -98,11 +96,9 @@ class MoveOrDuplicate
 				$this->applyToPurchasable($photo->id, $from_album->get_id(), $to_album?->get_id());
 			}
 
-			// Dispatch PhotoMoved for each moved photo (cross-album move only; not duplication).
+			// Dispatch a single batched PhotoMoved for the moved photos (cross-album move only; not duplication).
 			if ($to_album !== null) {
-				foreach ($photos as $photo) {
-					PhotoMoved::dispatch($photo->id, $from_album->get_id(), $to_album->id);
-				}
+				PhotoMoved::dispatch($photos_ids, $from_album->get_id(), $to_album->id);
 			}
 		}
 

@@ -12,7 +12,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
 /**
- * Fired when a photo is moved from one album to another.
+ * Fired when one or more photos are moved from one album to another.
  * Dispatched from MoveOrDuplicate action when source and destination albums differ.
  */
 class PhotoMoved
@@ -22,9 +22,11 @@ class PhotoMoved
 
 	/**
 	 * Create a new event instance.
+	 *
+	 * @param array<int,string> $photo_ids batched so listeners can resolve affected albums once per call instead of once per photo
 	 */
 	public function __construct(
-		public string $photo_id,
+		public array $photo_ids,
 		public string $from_album_id,
 		public string $to_album_id,
 	) {

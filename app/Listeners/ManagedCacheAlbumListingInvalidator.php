@@ -143,7 +143,7 @@ class ManagedCacheAlbumListingInvalidator
 	 */
 	public function handlePhotoMoved(PhotoMoved $event): void
 	{
-		$this->evictPersonTagsForPhoto($event->photo_id);
+		$this->evictPersonTagsForPhotos($event->photo_ids);
 	}
 
 	/**
@@ -155,7 +155,7 @@ class ManagedCacheAlbumListingInvalidator
 	 */
 	public function handlePhotoSaved(PhotoSaved $event): void
 	{
-		$this->evictPersonTagsForPhoto($event->photo_id);
+		$this->evictPersonTagsForPhotos($event->photo_ids);
 	}
 
 	/**
@@ -165,17 +165,23 @@ class ManagedCacheAlbumListingInvalidator
 	 */
 	public function handlePhotoWillBeDeleted(PhotoWillBeDeleted $event): void
 	{
-		$this->evictPersonTagsForPhoto($event->photo_id);
+		$this->evictPersonTagsForPhotos([$event->photo_id]);
 	}
 
 	/**
 	 * Evicts the PersonAlbum "matching albums" cache for every person
-	 * currently associated (via a non-dismissed face) with the given photo.
+	 * currently associated (via a non-dismissed face) with any of the given photos.
+	 *
+	 * @param string[] $photo_ids
 	 */
-	private function evictPersonTagsForPhoto(string $photo_id): void
+	private function evictPersonTagsForPhotos(array $photo_ids): void
 	{
+		if ($photo_ids === []) {
+			return;
+		}
+
 		$person_ids = DB::table('faces')
-			->where('photo_id', '=', $photo_id)
+			->whereIn('photo_id', $photo_ids)
 			->whereNotNull('person_id')
 			->where('is_dismissed', '=', false)
 			->distinct()
