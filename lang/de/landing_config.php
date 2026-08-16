@@ -23,6 +23,7 @@ return [
     'section_background_landscape' => 'Background (Landscape)',
     'section_background_portrait' => 'Background (Portrait)',
     'section_cta_position' => 'Call-to-Action Position',
+    'section_login_position' => 'Login Panel',
     'section_meridian' => 'Meridian Rails',
     'section_content' => 'Content',
 
@@ -91,6 +92,13 @@ return [
         'down' => 'Down',
     ],
     'reset_to_zero' => 'Reset to 0',
+
+    'field_login_position' => 'Position',
+    'login_position_options' => [
+        'side' => 'Side',
+        'center' => 'Center',
+    ],
+    'field_login_position_hint' => 'On narrow screens the login panel is always centered below the hero, regardless of this setting. It slides in from the reading-direction edge when the animation preset is "Slide reveal" or "Parallax scroll".',
 
     'field_meridian_explore_offset' => 'Explore label height (:value%)',
     'field_meridian_contact_offset' => 'Contact label height (:value%)',
