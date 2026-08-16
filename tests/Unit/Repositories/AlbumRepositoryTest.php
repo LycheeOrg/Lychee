@@ -18,18 +18,26 @@
 
 namespace Tests\Unit\Repositories;
 
+use App\Actions\Album\CreatePersonAlbum;
 use App\DTO\AlbumSortingCriterion;
 use App\Enum\ColumnSortingType;
 use App\Enum\OrderSortingType;
 use App\Models\AccessPermission;
 use App\Models\Album;
 use App\Models\Configs;
+use App\Models\Face;
+use App\Models\Person;
+use App\Models\Photo;
+use App\Models\Tag;
+use App\Models\TagAlbum;
 use App\Models\User;
 use App\Repositories\AlbumRepository;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Tests\AbstractTestCase;
 use Tests\Traits\RequiresEmptyAlbums;
+use Tests\Traits\RequiresEmptyPhotos;
+use Tests\Traits\RequiresEmptyTags;
 use Tests\Traits\RequiresEmptyUsers;
 
 /**
@@ -39,6 +47,8 @@ class AlbumRepositoryTest extends AbstractTestCase
 {
 	use RequiresEmptyUsers;
 	use RequiresEmptyAlbums;
+	use RequiresEmptyPhotos;
+	use RequiresEmptyTags;
 
 	protected User $user;
 	protected Album $parentAlbum;
@@ -50,6 +60,8 @@ class AlbumRepositoryTest extends AbstractTestCase
 		config(['features.enable-caching' => true]);
 		$this->setUpRequiresEmptyUsers();
 		$this->setUpRequiresEmptyAlbums();
+		$this->setUpRequiresEmptyPhotos();
+		$this->setUpRequiresEmptyTags();
 
 		$this->user = User::factory()->may_upload()->create();
 		$this->parentAlbum = Album::factory()->as_root()->owned_by($this->user)->create();
@@ -65,7 +77,18 @@ class AlbumRepositoryTest extends AbstractTestCase
 		Configs::set('managed_cache_albums_enabled', '1');
 		Configs::set('managed_cache_enabled', '1');
 
+		// Faces/persons are not covered by RequiresEmptyPhotos and must be
+		// cleaned up before albums (photo_album/faces reference photos/albums).
+		// tag_albums_tags/albums_tags cascade-delete when tag_albums/albums/tags
+		// are removed, so explicit cleanup order relative to RequiresEmptyTags
+		// does not matter.
+		DB::table('faces')->delete();
+		DB::table('person_albums_persons')->delete();
+		DB::table('persons')->delete();
+
+		$this->tearDownRequiresEmptyPhotos();
 		$this->tearDownRequiresEmptyAlbums();
+		$this->tearDownRequiresEmptyTags();
 		$this->tearDownRequiresEmptyUsers();
 
 		parent::tearDown();
@@ -285,5 +308,78 @@ class AlbumRepositoryTest extends AbstractTestCase
 		);
 
 		$this->assertGreaterThan(0, $second_call_count, 'The master managed_cache_enabled switch must win regardless of the per-part toggle.');
+	}
+
+	// ── getMatchingAlbumsForTagPaginated (TagAlbum) ──────────────
+
+	public function testGetMatchingAlbumsForTagPaginatedReturnsTaggedAlbum(): void
+	{
+		$tag = Tag::factory()->create();
+		$tagAlbum = TagAlbum::factory()->owned_by($this->user)->of_tags([$tag])->create();
+		$this->parentAlbum->tags()->sync([$tag->id]);
+
+		$this->actingAs($this->user);
+		$result = $this->repository->getMatchingAlbumsForTagPaginated($tagAlbum, 10);
+
+		$this->assertInstanceOf(LengthAwarePaginator::class, $result);
+		$this->assertEquals(1, $result->total());
+		$this->assertEquals($this->parentAlbum->id, $result->items()[0]->id);
+	}
+
+	public function testGetMatchingAlbumsForTagPaginatedEmptyWhenUntagged(): void
+	{
+		$tag = Tag::factory()->create();
+		$tagAlbum = TagAlbum::factory()->owned_by($this->user)->of_tags([$tag])->create();
+
+		$this->actingAs($this->user);
+		$result = $this->repository->getMatchingAlbumsForTagPaginated($tagAlbum, 10);
+
+		$this->assertEquals(0, $result->total());
+	}
+
+	public function testGetMatchingAlbumsForTagPaginatedCacheHitPerformsNoAlbumsTableQueries(): void
+	{
+		$tag = Tag::factory()->create();
+		$tagAlbum = TagAlbum::factory()->owned_by($this->user)->of_tags([$tag])->create();
+		$this->parentAlbum->tags()->sync([$tag->id]);
+
+		$this->actingAs($this->user);
+		$this->repository->getMatchingAlbumsForTagPaginated($tagAlbum, 10);
+
+		$second_call_count = $this->countAlbumTableQueries(
+			fn () => $this->repository->getMatchingAlbumsForTagPaginated($tagAlbum, 10)
+		);
+
+		$this->assertSame(0, $second_call_count, 'A cache hit must not run any query against albums/base_albums.');
+	}
+
+	// ── getMatchingAlbumsForPersonPaginated (PersonAlbum) ────────
+
+	public function testGetMatchingAlbumsForPersonPaginatedReturnsContainingAlbum(): void
+	{
+		$person = Person::factory()->create(['is_searchable' => true]);
+		$photo = Photo::factory()->owned_by($this->user)->in($this->parentAlbum)->create();
+		Face::factory()->for_photo($photo)->for_person($person)->create();
+
+		$this->actingAs($this->user);
+		$personAlbum = resolve(CreatePersonAlbum::class)->create('person_album', [$person->id], false);
+
+		$result = $this->repository->getMatchingAlbumsForPersonPaginated($personAlbum, 10);
+
+		$this->assertInstanceOf(LengthAwarePaginator::class, $result);
+		$this->assertEquals(1, $result->total());
+		$this->assertEquals($this->parentAlbum->id, $result->items()[0]->id);
+	}
+
+	public function testGetMatchingAlbumsForPersonPaginatedEmptyWhenNoMatchingPhoto(): void
+	{
+		$person = Person::factory()->create(['is_searchable' => true]);
+
+		$this->actingAs($this->user);
+		$personAlbum = resolve(CreatePersonAlbum::class)->create('person_album', [$person->id], false);
+
+		$result = $this->repository->getMatchingAlbumsForPersonPaginated($personAlbum, 10);
+
+		$this->assertEquals(0, $result->total());
 	}
 }
