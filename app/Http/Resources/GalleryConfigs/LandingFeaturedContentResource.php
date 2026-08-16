@@ -10,6 +10,7 @@ namespace App\Http\Resources\GalleryConfigs;
 
 use App\Enum\LandingFeaturedItemType;
 use App\Models\Album;
+use App\Models\Extensions\SizeVariants;
 use App\Models\Photo;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
@@ -26,6 +27,9 @@ class LandingFeaturedContentResource extends Data
 	public string $id;
 	public string $title;
 	public string $thumb_url;
+	public ?string $thumb_url_2x;
+	public ?int $width;
+	public ?int $height;
 	public string $url;
 	public ?int $num_photos;
 
@@ -37,7 +41,7 @@ class LandingFeaturedContentResource extends Data
 			$this->item_type = LandingFeaturedItemType::PHOTO;
 			$this->id = $item->id;
 			$this->title = $item->title;
-			$this->thumb_url = $item->size_variants->getThumb()?->url ?? $item->size_variants->getMedium()?->url ?? self::FALLBACK_IMAGE;
+			$this->applyThumb($item->size_variants);
 			$album_id = $item->albums()->first()?->id;
 			$this->url = $album_id !== null
 				? route('gallery', ['albumId' => $album_id, 'photoId' => $item->id])
@@ -52,8 +56,24 @@ class LandingFeaturedContentResource extends Data
 		$this->title = $item->title;
 		$cover_id = $item->cover_id ?? $item->auto_cover_id_least_privilege;
 		$cover_photo = $cover_id !== null ? Photo::query()->with('size_variants')->find($cover_id) : null;
-		$this->thumb_url = $cover_photo?->size_variants->getThumb()?->url ?? $cover_photo?->size_variants->getMedium()?->url ?? self::FALLBACK_IMAGE;
+		$this->applyThumb($cover_photo?->size_variants);
 		$this->url = route('gallery', ['albumId' => $item->id]);
 		$this->num_photos = $item->num_photos;
+	}
+
+	/**
+	 * Small preserves the photo's natural aspect ratio (thumb is always square-cropped to
+	 * 200x200/400x400 - see SizeVariantDefaultFactory), which the featured section's masonry
+	 * layout needs in order to size tiles by their real proportions. Small2x is offered
+	 * alongside it for a `srcset` 2x candidate, matching the main gallery grid's own thumbnails
+	 * (PhotoThumb.vue).
+	 */
+	private function applyThumb(?SizeVariants $size_variants): void
+	{
+		$variant = $size_variants?->getSmall() ?? $size_variants?->getThumb();
+		$this->thumb_url = $variant?->url ?? self::FALLBACK_IMAGE;
+		$this->thumb_url_2x = $size_variants?->getSmall2x()?->url;
+		$this->width = $variant?->width;
+		$this->height = $variant?->height;
 	}
 }

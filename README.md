@@ -75,7 +75,7 @@ services:
       DB_DATABASE: lychee
       DB_USERNAME: lychee
       DB_PASSWORD: lychee_password
-	  # Generate the APP_KEY with `echo "base64:$(openssl rand -base64 32)"` and set it here (without the < >)
+      # Generate the APP_KEY with `echo "base64:$(openssl rand -base64 32)"` and set it here (without the < >)
       # APP_KEY: base64:<result of 'openssl rand -base64 32'>
     depends_on:
       lychee_db:

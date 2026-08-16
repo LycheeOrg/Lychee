@@ -22,7 +22,6 @@ return [
     'field_enabled' => 'Enable featured content',
     'field_mode' => 'Mode',
     'field_count' => 'Number of automatic items',
-    'field_count_hint' => 'Between 3 and 12.',
 
     'search_placeholder' => 'Search photos/albums by title…',
     'search_no_results' => 'No results.',

@@ -5,8 +5,16 @@
 				<UChip v-if="chip !== ''" standalone inset :color="chip" size="xl" /> {{ tDoc(props.config) }}
 				<SETag v-if="config.require_se" />
 			</div>
-			<div class="flex gap-4 items-center">
+			<div class="flex gap-2 items-center">
 				<ResetField v-if="changed" @click="reset" />
+				<UInput
+					v-model="hexInput"
+					class="w-28"
+					placeholder="#000000"
+					:ui="{ base: 'uppercase' }"
+					@update:model-value="handleHexInput"
+					@blur="revertHexInputIfInvalid"
+				/>
 				<BlossomColorPicker
 					:slider-position="sliderPosition"
 					:open-on-hover="openOnHover"
@@ -75,13 +83,14 @@ const props = defineProps<{
 	config: App.Http.Resources.Models.ConfigResource;
 }>();
 
-function stringToBlossomColorPickerValue(config: App.Http.Resources.Models.ConfigResource): BlossomColorPickerValue | undefined {
-	let color = config.value;
-	if (!config.value) {
-		color = getDefaultColor(config.key);
-	}
+const HEX_PATTERN = /^#[0-9a-fA-F]{6}$/;
 
-	const hsl = hexToHsl(color);
+function resolveHex(config: App.Http.Resources.Models.ConfigResource): string {
+	return config.value !== "" ? config.value : getDefaultColor(config.key);
+}
+
+function hexToBlossomValue(hex: string): BlossomColorPickerValue {
+	const hsl = hexToHsl(hex);
 	return {
 		hue: hsl.h,
 		saturation: 50,
@@ -91,7 +100,22 @@ function stringToBlossomColorPickerValue(config: App.Http.Resources.Models.Confi
 		layer: "outer",
 	};
 }
+
+function stringToBlossomColorPickerValue(config: App.Http.Resources.Models.ConfigResource): BlossomColorPickerValue | undefined {
+	return hexToBlossomValue(resolveHex(config));
+}
 const val = ref<BlossomColorPickerValue | undefined>(stringToBlossomColorPickerValue(props.config));
+
+// Accepts a leading `#` or bare digits, either case - normalizes to "#RRGGBB" uppercase (matching
+// BlossomColorPickerColor.hex's own format). Returns null while the candidate isn't a complete,
+// valid hex code yet (e.g. still mid-typing), so the caller can leave it uncommitted.
+function normalizeHexCandidate(raw: string): string | null {
+	const trimmed = raw.trim();
+	const withHash = trimmed.startsWith("#") ? trimmed : `#${trimmed}`;
+	return HEX_PATTERN.test(withHash) ? withHash.toUpperCase() : null;
+}
+
+const hexInput = ref<string>(resolveHex(props.config).toUpperCase());
 
 const changed = computed(() => {
 	const originalValue = stringToBlossomColorPickerValue(props.config);
@@ -111,6 +135,7 @@ const emits = defineEmits<{
 function reset() {
 	emits("reset", props.config.key);
 	val.value = stringToBlossomColorPickerValue(props.config);
+	hexInput.value = resolveHex(props.config).toUpperCase();
 }
 
 const debouncedHandleChange = useDebounceFn((newColor: BlossomColorPickerColor) => {
@@ -119,13 +144,34 @@ const debouncedHandleChange = useDebounceFn((newColor: BlossomColorPickerColor) 
 
 function handleChange(newColor: BlossomColorPickerColor) {
 	val.value = newColor;
+	hexInput.value = newColor.hex.toUpperCase();
 	emits("filled", props.config.key, `${newColor.hex}`);
+}
+
+function handleHexInput(value: string | number) {
+	const normalized = normalizeHexCandidate(String(value));
+	if (normalized === null) {
+		// Not a complete hex code yet - leave it uncommitted until the user finishes typing.
+		return;
+	}
+	hexInput.value = normalized;
+	val.value = hexToBlossomValue(normalized);
+	emits("filled", props.config.key, normalized);
+}
+
+function revertHexInputIfInvalid() {
+	if (normalizeHexCandidate(hexInput.value) === null) {
+		hexInput.value = resolveHex(props.config).toUpperCase();
+	}
 }
 
 // We watch props in case of updates.
 watch(
 	() => props.config,
-	(newValue, _oldValue) => (val.value = stringToBlossomColorPickerValue(newValue)),
+	(newValue, _oldValue) => {
+		val.value = stringToBlossomColorPickerValue(newValue);
+		hexInput.value = resolveHex(newValue).toUpperCase();
+	},
 );
 </script>
 <style>

@@ -14,8 +14,7 @@ return new class() extends BaseConfigMigration {
 	public const TEXT_POSITION = 'top_left|top_right|bottom_left|bottom_right|center';
 	public const ANIMATION_PRESET = 'none|classic_fade|zoom_in|parallax_scroll|slide_reveal';
 	public const FEATURED_ITEMS_MODE = 'automatic|manual';
-	public const OPACITY_RANGE = 'int:0:100';
-	public const FEATURED_COUNT_RANGE = 'int:3:12';
+	public const FEATURED_COUNT_RANGE = 'int:3:100';
 	public const CTA_POSITION = 'top-left|top|top-right|left|center|right|bottom-left|bottom|bottom-right';
 	public const SHIFT_TYPE = 'relative|absolute';
 	public const SHIFT_X_DIRECTION = 'left|right';
@@ -78,7 +77,7 @@ return new class() extends BaseConfigMigration {
 				'key' => 'landing_hero_text_opacity',
 				'value' => '100',
 				'cat' => self::MOD_WELCOME,
-				'type_range' => self::OPACITY_RANGE,
+				'type_range' => self::PERCENT_RANGE,
 				'description' => 'Hero headline/subtitle text opacity (%)',
 				'details' => 'Range 0-100. Applies to the headline and subtitle text on the portfolio and studio layouts.',
 				'is_secret' => false,
@@ -148,11 +147,11 @@ return new class() extends BaseConfigMigration {
 			],
 			[
 				'key' => 'landing_featured_items_count',
-				'value' => '6',
+				'value' => '24',
 				'cat' => self::MOD_WELCOME,
 				'type_range' => self::FEATURED_COUNT_RANGE,
 				'description' => 'Number of automatic featured items',
-				'details' => 'Range 3-12. Only used in automatic featured content mode.',
+				'details' => 'Range 3-100. Only used in automatic featured content mode.',
 				'is_secret' => false,
 				'is_expert' => true,
 				'level' => 0,
@@ -301,6 +300,18 @@ return new class() extends BaseConfigMigration {
 				'is_expert' => true,
 				'level' => 0,
 				'order' => 35,
+			],
+			[
+				'key' => 'landing_backdrop_opacity',
+				'value' => '0',
+				'cat' => self::MOD_WELCOME,
+				'type_range' => self::PERCENT_RANGE,
+				'description' => 'Global backdrop opacity (%)',
+				'details' => 'Adds a black overlay in front of the background image at this opacity. Applies to every layout. 0 disables it.',
+				'is_secret' => false,
+				'is_expert' => false,
+				'level' => 0,
+				'order' => 36,
 			],
 		];
 	}

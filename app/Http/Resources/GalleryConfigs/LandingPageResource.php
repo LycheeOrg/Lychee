@@ -45,6 +45,7 @@ class LandingPageResource extends Data
 
 	public LandingLayoutType $layout;
 	public bool $intro_screen_enabled;
+	public int $backdrop_opacity;
 	public LandingTextPosition $hero_text_position;
 	public string $hero_text_color;
 	public int $hero_text_opacity;
@@ -110,6 +111,7 @@ class LandingPageResource extends Data
 			: LandingAnimationPreset::CLASSIC_FADE;
 
 		$this->intro_screen_enabled = request()->configs()->getValueAsBool('landing_intro_screen_enabled');
+		$this->backdrop_opacity = request()->configs()->getValueAsInt('landing_backdrop_opacity');
 		$this->hero_text_position = request()->configs()->getValueAsEnum('landing_hero_text_position', LandingTextPosition::class) ?? LandingTextPosition::CENTER;
 		$this->hero_text_color = request()->configs()->getValueAsString('landing_hero_text_color');
 		$this->hero_text_opacity = request()->configs()->getValueAsInt('landing_hero_text_opacity');

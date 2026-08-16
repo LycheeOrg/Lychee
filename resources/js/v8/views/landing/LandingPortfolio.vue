@@ -32,7 +32,7 @@
 				:preview-orientation="previewOrientation"
 				:wrapper-class="heroEntranceClass"
 			/>
-			<div class="absolute inset-0 bg-black/30" />
+			<LandingBackdrop :opacity="data.backdrop_opacity" />
 			<div class="relative flex w-full h-full" :class="positionClasses">
 				<div :class="heroEntranceClass">
 					<h1 class="text-4xl md:text-6xl font-bold uppercase" :style="heroTextStyle">{{ data.landing_title }}</h1>
@@ -74,34 +74,20 @@
 		</section>
 
 		<!-- Featured content -->
-		<section
+		<LandingPortfolioFeatured
 			v-if="showFeatured"
-			id="featured"
-			ref="featuredEl"
-			class="px-6 py-24 transition-all duration-700"
-			:class="featuredVisible ? sectionRevealClass : sectionHiddenClass"
-		>
-			<h2 class="text-2xl font-bold uppercase mb-8 text-center">{{ $t("landing.portfolio.featured") }}</h2>
-			<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 max-w-7xl mx-auto">
-				<a
-					v-for="item in data.featured_items"
-					:key="`${item.item_type}-${item.id}`"
-					:href="item.url"
-					class="group relative aspect-square overflow-hidden"
-				>
-					<img
-						:src="item.thumb_url"
-						:alt="item.title"
-						class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-					/>
-					<div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
-						<span class="text-xs uppercase">{{ item.title }}</span>
-					</div>
-				</a>
-			</div>
-		</section>
+			:items="data.featured_items"
+			:is-scroll-driven="isScrollDriven"
+			:section-reveal-class="sectionRevealClass"
+		/>
 
-		<LandingFooter :footer-data="data.footer" :links="data.links" :animated="effectivePreset !== 'none'" />
+		<LandingFooter
+			:footer-data="data.footer"
+			:links="data.links"
+			:animated="effectivePreset !== 'none'"
+			:no-intro-delay="!data.intro_screen_enabled"
+			scrolling-socials
+		/>
 
 		<LandingIntroScreen :data="data" :effective-preset="effectivePreset" />
 	</div>
@@ -112,6 +98,8 @@ import { RouterLink } from "vue-router";
 import LandingFooter from "@/v8/components/footers/LandingFooter.vue";
 import LandingIntroScreen from "@/v8/components/landing/LandingIntroScreen.vue";
 import LandingBackgroundImages from "@/v8/components/landing/LandingBackgroundImages.vue";
+import LandingBackdrop from "@/v8/components/landing/LandingBackdrop.vue";
+import LandingPortfolioFeatured from "@/v8/components/landing/LandingPortfolioFeatured.vue";
 import { useLandingTextPosition } from "@/v8/composables/landing/useLandingTextPosition";
 import { useLandingAnimation } from "@/v8/composables/landing/useLandingAnimation";
 import { useLandingCtaPosition } from "@/v8/composables/landing/useLandingCtaPosition";
@@ -173,7 +161,6 @@ const showAbout = computed(() => props.data.about_enabled && props.data.about_te
 const showFeatured = computed(() => props.data.featured_items_enabled && props.data.featured_items.length > 0);
 
 const { el: aboutEl, isVisible: aboutVisible } = useScrollReveal(isScrollDriven);
-const { el: featuredEl, isVisible: featuredVisible } = useScrollReveal(isScrollDriven);
 
 const nextSectionId = computed(() => {
 	if (showAbout.value) {

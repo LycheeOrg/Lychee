@@ -1,13 +1,13 @@
 <template>
-	<div class="relative w-full min-h-screen bg-black text-white flex flex-col overflow-hidden">
+	<!-- This is necessary for the preview -->
+	<div class="fixed inset-0 bg-black text-white flex flex-col overflow-hidden">
 		<LandingBackgroundImages
 			:landscape="data.landing_background_landscape"
 			:portrait="data.landing_background_portrait"
 			:preview-orientation="previewOrientation"
 			:visible="hasBackground"
-			image-class="opacity-50"
 		/>
-		<div v-if="hasBackground" class="absolute inset-0 bg-black/40" />
+		<LandingBackdrop :opacity="data.backdrop_opacity" />
 
 		<WebauthnModal v-if="!isPreview" @logged-in="handleLoggedIn" />
 
@@ -29,8 +29,8 @@
 			<div :class="[loginWrapperClass, loginEntranceClass]">
 				<UCard class="w-full shadow-2xl">
 					<template #header>
-						<h2 class="text-lg font-bold uppercase tracking-wide text-center" :style="heroTextStyle">{{ data.landing_title }}</h2>
-						<p v-if="data.landing_subtitle !== ''" class="text-xs mt-1 text-center" :style="heroTextStyle">{{ data.landing_subtitle }}</p>
+						<h2 class="text-lg font-bold uppercase tracking-wide text-center">{{ data.landing_title }}</h2>
+						<p v-if="data.landing_subtitle !== ''" class="text-xs mt-1 text-center">{{ data.landing_subtitle }}</p>
 					</template>
 					<!-- Preview (admin settings panel) renders a static mockup instead of the real form: mounting
 					     LoginForm there would fire a live oauth-providers fetch on every preview, and - in an
@@ -44,7 +44,7 @@
 							<UFormField :label="$t('dialogs.login.password')">
 								<UInput disabled type="password" class="w-full" />
 							</UFormField>
-							<UButton color="neutral" variant="solid" disabled class="w-full justify-center font-bold">
+							<UButton color="primary" variant="solid" disabled class="w-full justify-center font-bold">
 								{{ $t("dialogs.login.signin") }}
 							</UButton>
 						</div>
@@ -64,12 +64,10 @@
 			</div>
 		</div>
 
-		<LandingFooter
-			:footer-data="data.footer"
-			:links="data.links"
-			:animated="effectivePreset !== 'none'"
-			:no-intro-delay="!data.intro_screen_enabled"
-		/>
+		<!-- Unlike Classic/Meridian/Portfolio, Studio's footer sits right below the login panel in
+		     the same viewport (not a separate scroll-in section), so it should settle in step with
+		     the rest of the page instead of trailing behind on the shared 3s intro delay. -->
+		<LandingFooter :footer-data="data.footer" :links="data.links" :animated="effectivePreset !== 'none'" no-intro-delay dim-icons-until-hover />
 
 		<LandingIntroScreen :data="data" :effective-preset="effectivePreset" />
 	</div>
@@ -80,6 +78,7 @@ import { RouterLink, useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
 import LandingIntroScreen from "@/v8/components/landing/LandingIntroScreen.vue";
 import LandingBackgroundImages from "@/v8/components/landing/LandingBackgroundImages.vue";
+import LandingBackdrop from "@/v8/components/landing/LandingBackdrop.vue";
 import LoginForm from "@/v8/components/forms/auth/LoginForm.vue";
 import WebauthnModal from "@/v8/components/modals/WebauthnModal.vue";
 import { useLandingAnimation } from "@/v8/composables/landing/useLandingAnimation";
@@ -129,11 +128,6 @@ const entranceClass = computed(() => {
 });
 
 const hasBackground = computed(() => props.data.landing_background_landscape !== "" || props.data.landing_background_portrait !== "");
-
-const heroTextStyle = computed(() => ({
-	color: props.data.hero_text_color !== "" ? props.data.hero_text_color : "#ffffff",
-	opacity: props.data.hero_text_opacity / 100,
-}));
 
 const showAbout = computed(() => props.data.about_enabled && props.data.about_text !== "");
 

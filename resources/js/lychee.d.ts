@@ -691,6 +691,9 @@ declare namespace App {
 					id: string;
 					title: string;
 					thumb_url: string;
+					thumb_url_2x: string | null;
+					width: number | null;
+					height: number | null;
 					url: string;
 					num_photos: number | null;
 				};
@@ -715,6 +718,7 @@ declare namespace App {
 					footer: App.Http.Resources.GalleryConfigs.FooterConfig;
 					layout: App.Enum.LandingLayoutType;
 					intro_screen_enabled: boolean;
+					backdrop_opacity: number;
 					hero_text_position: App.Enum.LandingTextPosition;
 					hero_text_color: string;
 					hero_text_opacity: number;

@@ -55,6 +55,7 @@
 				:wrapper-class="effectivePreset !== 'none' ? ['opacity-0', 'animate-landingSlidesPopIn', introDelayClass] : ''"
 				alt="landing image"
 			/>
+			<LandingBackdrop :opacity="data.backdrop_opacity" />
 			<div :style="ctaStyle">
 				<span
 					class="pointer-events-none absolute inset-0 flex items-center justify-center text-transparent uppercase text-3xl filter-shadow-darker py-10 px-40"
@@ -111,6 +112,7 @@ import { RouterLink } from "vue-router";
 import LandingFooter from "@/v8/components/footers/LandingFooter.vue";
 import LandingIntroScreen from "@/v8/components/landing/LandingIntroScreen.vue";
 import LandingBackgroundImages from "@/v8/components/landing/LandingBackgroundImages.vue";
+import LandingBackdrop from "@/v8/components/landing/LandingBackdrop.vue";
 import { useLtRorRtL } from "@/utils/Helpers";
 import { useLandingCtaPosition } from "@/v8/composables/landing/useLandingCtaPosition";
 import { useLandingAnimation } from "@/v8/composables/landing/useLandingAnimation";

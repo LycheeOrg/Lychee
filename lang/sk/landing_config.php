@@ -33,6 +33,7 @@ return [
     'field_hero_text_color' => 'Hero text color',
     'field_hero_text_opacity' => 'Hero text opacity',
     'field_animation_preset' => 'Animation preset',
+    'field_backdrop_opacity' => 'Backdrop opacity (:value%)',
     'field_cta_text' => 'text',
     'field_cta_text_placeholder' => 'Leave empty for the layout default',
     'field_about_enabled' => 'About section',

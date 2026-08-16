@@ -41,31 +41,6 @@
 										:label="$t('landing_config.field_intro_screen_enabled')"
 										:ui="{ label: 'font-semibold' }"
 									/>
-								</div>
-							</Fieldset>
-
-							<Fieldset :legend="$t('landing_config.section_hero')">
-								<div class="flex flex-col gap-4">
-									<template v-if="!isSingleScreenLayout">
-										<div class="flex items-center gap-4">
-											<label class="font-semibold w-1/2">{{ $t("landing_config.field_hero_text_position") }}</label>
-											<USelectMenu v-model="selectedPosition" :items="positionOptions" label-key="label" class="w-1/2">
-												<template #item-label="{ item }">{{ item.label }}</template>
-											</USelectMenu>
-										</div>
-
-										<ColorField
-											:config="heroColorConfig"
-											@filled="(_key, value) => (draft.hero_text_color = value)"
-											@reset="() => (draft.hero_text_color = '')"
-										/>
-
-										<div class="flex items-center gap-4">
-											<label class="font-semibold w-1/2">{{ $t("landing_config.field_hero_text_opacity") }}</label>
-											<UInputNumber v-model="draft.hero_text_opacity" :min="0" :max="100" class="w-1/2" />
-										</div>
-									</template>
-
 									<div class="flex items-center gap-4">
 										<label class="font-semibold w-1/2">{{ $t("landing_config.field_animation_preset") }}</label>
 										<USelectMenu v-model="selectedAnimation" :items="animationOptions" label-key="label" class="w-1/2">
@@ -74,6 +49,42 @@
 												<UBadge v-if="item.disabled" size="xs" color="primary" variant="subtle" class="ml-1">SE</UBadge>
 											</template>
 										</USelectMenu>
+									</div>
+									<div class="flex flex-col gap-1">
+										<label class="text-sm font-medium">{{
+											$t("landing_config.field_backdrop_opacity", { value: String(draft.backdrop_opacity) })
+										}}</label>
+										<input
+											type="range"
+											min="0"
+											max="100"
+											step="1"
+											class="w-full accent-primary-500"
+											:value="String(draft.backdrop_opacity)"
+											@input="draft.backdrop_opacity = Number(($event.target as HTMLInputElement).value)"
+										/>
+									</div>
+								</div>
+							</Fieldset>
+
+							<Fieldset v-if="!isSingleScreenLayout && draft.landing_layout !== 'studio'" :legend="$t('landing_config.section_hero')">
+								<div class="flex flex-col gap-4">
+									<div class="flex items-center gap-4">
+										<label class="font-semibold w-1/2">{{ $t("landing_config.field_hero_text_position") }}</label>
+										<USelectMenu v-model="selectedPosition" :items="positionOptions" label-key="label" class="w-1/2">
+											<template #item-label="{ item }">{{ item.label }}</template>
+										</USelectMenu>
+									</div>
+
+									<ColorField
+										:config="heroColorConfig"
+										@filled="(_key, value) => (draft.hero_text_color = value)"
+										@reset="() => (draft.hero_text_color = '')"
+									/>
+
+									<div class="flex items-center gap-4">
+										<label class="font-semibold w-1/2">{{ $t("landing_config.field_hero_text_opacity") }}</label>
+										<UInputNumber v-model="draft.hero_text_opacity" :min="0" :max="100" class="w-1/2" />
 									</div>
 								</div>
 							</Fieldset>
@@ -461,11 +472,10 @@
 									<UInputNumber
 										:model-value="featuredCount"
 										:min="3"
-										:max="12"
+										:max="100"
 										class="w-1/3"
 										@update:model-value="setFeaturedCount"
 									/>
-									<span class="text-muted text-xs">{{ $t("landing_featured_item.field_count_hint") }}</span>
 								</div>
 							</div>
 						</Fieldset>
@@ -572,6 +582,7 @@ const isSaving = ref(false);
 type Draft = {
 	landing_layout: App.Enum.LandingLayoutType;
 	intro_screen_enabled: boolean;
+	backdrop_opacity: number;
 	hero_text_position: App.Enum.LandingTextPosition;
 	hero_text_color: string;
 	hero_text_opacity: number;
@@ -599,6 +610,7 @@ type Draft = {
 const draft = reactive<Draft>({
 	landing_layout: "classic",
 	intro_screen_enabled: true,
+	backdrop_opacity: 0,
 	hero_text_position: "center",
 	hero_text_color: "",
 	hero_text_opacity: 100,
@@ -625,7 +637,13 @@ const draft = reactive<Draft>({
 
 const tabItems = computed<TabsItem[]>(() => [
 	{ label: trans("landing_config.tab_settings"), value: "settings", icon: "lucide:cog", slot: "settings" },
-	{ label: trans("landing_config.tab_links"), value: "links", icon: "lucide:link", slot: "links" },
+	{
+		label: trans("landing_config.tab_links"),
+		value: "links",
+		icon: "lucide:link",
+		slot: "links",
+		disabled: draft.landing_layout === "studio",
+	},
 	{
 		label: trans("landing_config.tab_featured"),
 		value: "featured",
@@ -641,6 +659,9 @@ watch(
 	() => draft.landing_layout,
 	(layout) => {
 		if (layout !== "portfolio" && activeTab.value === "featured") {
+			activeTab.value = "settings";
+		}
+		if (layout === "studio" && activeTab.value === "links") {
 			activeTab.value = "settings";
 		}
 	},
@@ -661,6 +682,9 @@ function loadSettings(): Promise<void> {
 					break;
 				case "landing_intro_screen_enabled":
 					draft.intro_screen_enabled = config.value === "1";
+					break;
+				case "landing_backdrop_opacity":
+					draft.backdrop_opacity = parseInt(config.value, 10) || 0;
 					break;
 				case "landing_hero_text_position":
 					draft.hero_text_position = config.value as App.Enum.LandingTextPosition;
@@ -735,7 +759,7 @@ function loadSettings(): Promise<void> {
 					featuredMode.value = config.value as App.Enum.LandingFeaturedItemsMode;
 					break;
 				case "landing_featured_items_count":
-					featuredCount.value = parseInt(config.value, 10) || 6;
+					featuredCount.value = parseInt(config.value, 10) || 24;
 					break;
 			}
 		}
@@ -748,6 +772,7 @@ function save(): void {
 		configs: [
 			{ key: "landing_layout", value: draft.landing_layout },
 			{ key: "landing_intro_screen_enabled", value: draft.intro_screen_enabled ? "1" : "0" },
+			{ key: "landing_backdrop_opacity", value: String(draft.backdrop_opacity) },
 			{ key: "landing_hero_text_position", value: draft.hero_text_position },
 			{ key: "landing_hero_text_color", value: draft.hero_text_color },
 			{ key: "landing_hero_text_opacity", value: String(draft.hero_text_opacity) },
@@ -829,6 +854,14 @@ const animationOptions = computed<Option<App.Enum.LandingAnimationPreset>[]>(() 
 	if (draft.landing_layout === "classic") {
 		return options;
 	}
+	// Studio's entranceClass (LandingStudio.vue) and Meridian's (LandingMeridian.vue) both map
+	// zoom_in to the same pop/fade as classic_fade, and parallax_scroll to the same rise as
+	// slide_reveal - only one option per distinct visual effect is worth showing. Portfolio is
+	// excluded: its parallax_scroll drives real scroll-linked section reveals (isScrollDriven in
+	// LandingPortfolio.vue), a genuinely different effect from slide_reveal there.
+	if (draft.landing_layout === "studio" || draft.landing_layout === "meridian") {
+		return [...options, { label: "Slide reveal", value: "slide_reveal", disabled: !isSeAvailable.value }];
+	}
 	return [
 		...options,
 		{ label: "Zoom in", value: "zoom_in", disabled: !isSeAvailable.value },
@@ -903,6 +936,7 @@ const previewData = computed<App.Http.Resources.GalleryConfigs.LandingPageResour
 		landing_background_landscape: resolvedBackgroundLandscape.value ?? baseline.value.landing_background_landscape,
 		landing_background_portrait: resolvedBackgroundPortrait.value ?? baseline.value.landing_background_portrait,
 		intro_screen_enabled: draft.intro_screen_enabled,
+		backdrop_opacity: draft.backdrop_opacity,
 		hero_text_position: draft.hero_text_position,
 		hero_text_color: draft.hero_text_color,
 		hero_text_opacity: draft.hero_text_opacity,
@@ -1019,7 +1053,7 @@ function dropLink(targetIndex: number): void {
 // Featured tab
 const featuredEnabled = ref(false);
 const featuredMode = ref<App.Enum.LandingFeaturedItemsMode>("automatic");
-const featuredCount = ref(6);
+const featuredCount = ref(24);
 const featuredItems = ref<App.Http.Resources.Models.LandingFeaturedItemResource[]>([]);
 const searchTerm = ref("");
 const isSearching = ref(false);

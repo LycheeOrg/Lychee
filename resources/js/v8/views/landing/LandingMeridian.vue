@@ -7,8 +7,7 @@
 			:wrapper-class="[entranceClass, restDelayClass]"
 			alt="landing image"
 		/>
-		<div class="absolute inset-0 bg-black/35" />
-
+		<LandingBackdrop :opacity="data.backdrop_opacity" />
 		<div id="header" class="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-6 py-5" :class="[entranceClass, restDelayClass]">
 			<a href="#" class="flex items-center">
 				<img v-if="data.landing_header_logo !== ''" :src="data.landing_header_logo" alt="logo" class="h-8 object-contain" />
@@ -24,7 +23,7 @@
 					<RouterLink
 						v-if="link.is_built_in"
 						:to="{ name: link.url }"
-						class="text-xs uppercase tracking-widest text-white hover:text-muted transition-colors"
+						class="text-xs uppercase tracking-widest text-white opacity-50 hover:opacity-100 hover:scale-125 inline-block transition-all"
 					>
 						{{ link.label }}
 					</RouterLink>
@@ -33,7 +32,7 @@
 						:href="link.url"
 						:target="link.open_in_new_tab ? '_blank' : undefined"
 						:rel="link.open_in_new_tab ? 'noopener' : undefined"
-						class="text-xs uppercase tracking-widest text-white hover:text-muted transition-colors"
+						class="text-xs uppercase tracking-widest text-white opacity-50 hover:opacity-100 hover:scale-125 inline-block transition-all"
 					>
 						{{ link.label }}
 					</a>
@@ -88,6 +87,7 @@ import LandingFooter from "@/v8/components/footers/LandingFooter.vue";
 import LandingIntroScreen from "@/v8/components/landing/LandingIntroScreen.vue";
 import LandingMeridianRail from "@/v8/components/landing/LandingMeridianRail.vue";
 import LandingBackgroundImages from "@/v8/components/landing/LandingBackgroundImages.vue";
+import LandingBackdrop from "@/v8/components/landing/LandingBackdrop.vue";
 import { useLandingAnimation } from "@/v8/composables/landing/useLandingAnimation";
 import type { LandingPreviewOrientation } from "@/v8/composables/landing/useLandingBackgroundOrientation";
 import { trans } from "laravel-vue-i18n";
