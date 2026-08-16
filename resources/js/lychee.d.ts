@@ -110,6 +110,7 @@ declare namespace App {
 		export type LandingFeaturedItemsMode = "automatic" | "manual";
 		export type LandingLayoutType = "classic" | "portfolio" | "meridian" | "studio";
 		export type LandingLinkPlacement = "nav" | "footer" | "both";
+		export type LandingLoginPosition = "side" | "center";
 		export type LandingTextPosition = "top_left" | "top_right" | "bottom_left" | "bottom_right" | "center";
 		export type LicenseType =
 			| "none"
@@ -574,6 +575,13 @@ declare namespace App {
 					sm_instagram_url: string;
 					sm_twitter_url: string;
 					sm_youtube_url: string;
+					sm_pinterest_url: string;
+					sm_deviantart_url: string;
+					sm_tumblr_url: string;
+					sm_500px_url: string;
+					sm_pixelfeed_url: string;
+					sm_discord_url: string;
+					sm_reddit_url: string;
 					is_contact_form_enabled: boolean;
 					contact_header: string;
 				};
@@ -728,6 +736,7 @@ declare namespace App {
 					meridian_contact_offset: number;
 					meridian_explore_line_position: number;
 					meridian_contact_line_position: number;
+					login_position: App.Enum.LandingLoginPosition;
 				};
 				export type MapProviderData = {
 					layer: string;

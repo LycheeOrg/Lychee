@@ -1,10 +1,10 @@
 <template>
-	<div>
+	<main id="landing">
 		<LandingStudio v-if="initdata && initdata.layout === 'studio'" :data="initdata" />
 		<LandingMeridian v-else-if="initdata && initdata.layout === 'meridian'" :data="initdata" />
 		<LandingPortfolio v-else-if="initdata && initdata.layout === 'portfolio'" :data="initdata" />
 		<LandingClassic v-else-if="initdata" :data="initdata" />
-	</div>
+	</main>
 </template>
 <script setup lang="ts">
 import { ref } from "vue";

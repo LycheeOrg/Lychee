@@ -91,7 +91,7 @@
 								:label="$t('landing_config.section_background_portrait')"
 							/>
 
-							<Fieldset :legend="$t('landing_config.section_cta_position')">
+							<Fieldset v-if="draft.landing_layout !== 'studio'" :legend="$t('landing_config.section_cta_position')">
 								<div class="flex flex-col gap-4">
 									<UFormField :label="$t('landing_config.field_cta_text')">
 										<UInput
@@ -213,6 +213,35 @@
 											</div>
 										</div>
 									</template>
+								</div>
+							</Fieldset>
+
+							<Fieldset v-if="draft.landing_layout === 'studio'" :legend="$t('landing_config.section_login_position')">
+								<div class="flex flex-col gap-4">
+									<div class="grid grid-cols-2 gap-1">
+										<label class="text-sm font-medium">{{ $t("landing_config.field_login_position") }}</label>
+										<div class="grid grid-cols-2 gap-1">
+											<UButton
+												:label="$t('landing_config.login_position_options.side')"
+												size="xs"
+												:color="draft.login_position === 'side' ? 'primary' : 'neutral'"
+												:variant="draft.login_position === 'side' ? 'solid' : 'ghost'"
+												class="text-xs"
+												:ui="{ label: 'w-full text-center' }"
+												@click="draft.login_position = 'side'"
+											/>
+											<UButton
+												:label="$t('landing_config.login_position_options.center')"
+												size="xs"
+												:color="draft.login_position === 'center' ? 'primary' : 'neutral'"
+												:variant="draft.login_position === 'center' ? 'solid' : 'ghost'"
+												class="text-xs"
+												:ui="{ label: 'w-full text-center' }"
+												@click="draft.login_position = 'center'"
+											/>
+										</div>
+									</div>
+									<small class="text-muted text-xs">{{ $t("landing_config.field_login_position_hint") }}</small>
 								</div>
 							</Fieldset>
 
@@ -560,6 +589,7 @@ type Draft = {
 	meridian_contact_offset: number;
 	meridian_explore_line_position: number;
 	meridian_contact_line_position: number;
+	login_position: App.Enum.LandingLoginPosition;
 	background_landscape_mode: App.Enum.LandingBackgroundModeType;
 	background_landscape: string;
 	background_portrait_mode: App.Enum.LandingBackgroundModeType;
@@ -586,6 +616,7 @@ const draft = reactive<Draft>({
 	meridian_contact_offset: 70,
 	meridian_explore_line_position: 33,
 	meridian_contact_line_position: 67,
+	login_position: "side",
 	background_landscape_mode: "static",
 	background_landscape: "",
 	background_portrait_mode: "static",
@@ -682,6 +713,9 @@ function loadSettings(): Promise<void> {
 				case "landing_meridian_contact_line_position":
 					draft.meridian_contact_line_position = parseInt(config.value, 10) || 0;
 					break;
+				case "landing_login_position":
+					draft.login_position = config.value as App.Enum.LandingLoginPosition;
+					break;
 				case "landing_background_landscape_mode":
 					draft.background_landscape_mode = config.value as App.Enum.LandingBackgroundModeType;
 					break;
@@ -731,6 +765,7 @@ function save(): void {
 			{ key: "landing_meridian_contact_offset", value: String(draft.meridian_contact_offset) },
 			{ key: "landing_meridian_explore_line_position", value: String(draft.meridian_explore_line_position) },
 			{ key: "landing_meridian_contact_line_position", value: String(draft.meridian_contact_line_position) },
+			{ key: "landing_login_position", value: draft.login_position },
 			{ key: "landing_background_landscape_mode", value: draft.background_landscape_mode },
 			{ key: "landing_background_landscape", value: draft.background_landscape },
 			{ key: "landing_background_portrait_mode", value: draft.background_portrait_mode },
@@ -885,6 +920,7 @@ const previewData = computed<App.Http.Resources.GalleryConfigs.LandingPageResour
 		meridian_contact_offset: draft.meridian_contact_offset,
 		meridian_explore_line_position: draft.meridian_explore_line_position,
 		meridian_contact_line_position: draft.meridian_contact_line_position,
+		login_position: draft.login_position,
 		links: links.value
 			.filter((l) => l.enabled)
 			.map((l) => ({

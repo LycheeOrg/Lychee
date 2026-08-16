@@ -1,15 +1,10 @@
 <template>
-	<main id="landing" class="fixed inset-0 bg-black overflow-hidden">
-		<img
-			class="w-full h-full object-cover absolute top-0 left-0"
-			:class="[landscapeImageClass, entranceClass, restDelayClass]"
-			:src="data.landing_background_landscape"
-			alt="landing image"
-		/>
-		<img
-			class="w-full h-full object-cover absolute top-0 left-0"
-			:class="[portraitImageClass, entranceClass, restDelayClass]"
-			:src="data.landing_background_portrait"
+	<div id="landing" class="fixed inset-0 bg-black overflow-hidden">
+		<LandingBackgroundImages
+			:landscape="data.landing_background_landscape"
+			:portrait="data.landing_background_portrait"
+			:preview-orientation="previewOrientation"
+			:wrapper-class="[entranceClass, restDelayClass]"
 			alt="landing image"
 		/>
 		<div class="absolute inset-0 bg-black/35" />
@@ -84,7 +79,7 @@
 			:no-intro-delay="!data.intro_screen_enabled"
 			dim-icons-until-hover
 		/>
-	</main>
+	</div>
 </template>
 <script setup lang="ts">
 import { computed, toRef } from "vue";
@@ -92,8 +87,9 @@ import { RouterLink } from "vue-router";
 import LandingFooter from "@/v8/components/footers/LandingFooter.vue";
 import LandingIntroScreen from "@/v8/components/landing/LandingIntroScreen.vue";
 import LandingMeridianRail from "@/v8/components/landing/LandingMeridianRail.vue";
+import LandingBackgroundImages from "@/v8/components/landing/LandingBackgroundImages.vue";
 import { useLandingAnimation } from "@/v8/composables/landing/useLandingAnimation";
-import { useLandingBackgroundOrientation, type LandingPreviewOrientation } from "@/v8/composables/landing/useLandingBackgroundOrientation";
+import type { LandingPreviewOrientation } from "@/v8/composables/landing/useLandingBackgroundOrientation";
 import { trans } from "laravel-vue-i18n";
 
 const props = defineProps<{
@@ -104,7 +100,6 @@ const props = defineProps<{
 const landingData = toRef(props, "data");
 
 const { effectivePreset, introDelayClass } = useLandingAnimation(landingData);
-const { landscapeImageClass, portraitImageClass } = useLandingBackgroundOrientation(toRef(props, "previewOrientation"));
 
 // The two rail lines must finish growing before anything else on the page appears — background,
 // header, caption, and label all wait for them, whether or not the intro splash is enabled.
@@ -178,12 +173,14 @@ const exploreLinePosition = computed(() => (showContactLine.value ? clampOffset(
 const contactLinePosition = computed(() => clampOffset(props.data.meridian_contact_line_position));
 </script>
 <style lang="css" scoped>
-/* Needed here for the background images/header, which still live in this component (the rails'
-   own version of this same rule - plus the `::before`/caption-specific variants only they need -
-   now lives in LandingMeridianRail.vue alongside the elements it targets, since Vue's scoped CSS
-   doesn't reach into a child component's template). Applied instead of .no-intro-delay so the
-   reveal still starts at the same 0.13s offset even with no intro splash to time against - only
-   the rails themselves (in the child) get to start at 0s. */
+/* Needed here for the header, which still lives in this component directly - and still reaches
+   the background images despite them now living in LandingBackgroundImages.vue's own template,
+   because Vue tags a child component's root element with the parent's scope id too (only its
+   *descendants* are opaque to the parent's scoped CSS), and the wrapper-class prop lands right on
+   that root. The rails' own version of this same rule - plus the `::before`/caption-specific
+   variants only they need - lives in LandingMeridianRail.vue alongside the elements it targets.
+   Applied instead of .no-intro-delay so the reveal still starts at the same 0.13s offset even with
+   no intro splash to time against - only the rails themselves (in the child) get to start at 0s. */
 .meridian-after-lines {
 	animation-delay: 0.13s !important;
 }

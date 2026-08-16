@@ -23,6 +23,13 @@ class FooterConfig extends Data
 	public string $sm_instagram_url;
 	public string $sm_twitter_url;
 	public string $sm_youtube_url;
+	public string $sm_pinterest_url;
+	public string $sm_deviantart_url;
+	public string $sm_tumblr_url;
+	public string $sm_500px_url;
+	public string $sm_pixelfeed_url;
+	public string $sm_discord_url;
+	public string $sm_reddit_url;
 
 	public bool $is_contact_form_enabled;
 	public string $contact_header;
@@ -38,6 +45,13 @@ class FooterConfig extends Data
 		$this->sm_instagram_url = request()->configs()->getValueAsString('sm_instagram_url');
 		$this->sm_twitter_url = request()->configs()->getValueAsString('sm_twitter_url');
 		$this->sm_youtube_url = request()->configs()->getValueAsString('sm_youtube_url');
+		$this->sm_pinterest_url = request()->configs()->getValueAsString('sm_pinterest_url');
+		$this->sm_deviantart_url = request()->configs()->getValueAsString('sm_deviantart_url');
+		$this->sm_tumblr_url = request()->configs()->getValueAsString('sm_tumblr_url');
+		$this->sm_500px_url = request()->configs()->getValueAsString('sm_500px_url');
+		$this->sm_pixelfeed_url = request()->configs()->getValueAsString('sm_pixelfeed_url');
+		$this->sm_discord_url = request()->configs()->getValueAsString('sm_discord_url');
+		$this->sm_reddit_url = request()->configs()->getValueAsString('sm_reddit_url');
 
 		$this->is_contact_form_enabled = request()->configs()->getValueAsBool('contact_form_enabled');
 		$this->contact_header = request()->configs()->getValueAsString('contact_form_header');

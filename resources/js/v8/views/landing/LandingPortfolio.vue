@@ -1,5 +1,5 @@
 <template>
-	<main class="w-full min-h-screen bg-black text-white">
+	<div class="w-full min-h-screen bg-black text-white">
 		<!-- Sticky nav -->
 		<nav class="sticky top-0 z-50 flex items-center justify-between px-6 py-4 bg-black/70 backdrop-blur">
 			<a href="#" class="flex items-center">
@@ -26,17 +26,11 @@
 
 		<!-- Hero -->
 		<section id="hero" class="relative h-[92vh] w-full overflow-hidden">
-			<img
-				:src="data.landing_background_landscape"
-				alt=""
-				class="absolute inset-0 w-full h-full object-cover"
-				:class="[landscapeImageClass, heroEntranceClass]"
-			/>
-			<img
-				:src="data.landing_background_portrait"
-				alt=""
-				class="absolute inset-0 w-full h-full object-cover"
-				:class="[portraitImageClass, heroEntranceClass]"
+			<LandingBackgroundImages
+				:landscape="data.landing_background_landscape"
+				:portrait="data.landing_background_portrait"
+				:preview-orientation="previewOrientation"
+				:wrapper-class="heroEntranceClass"
 			/>
 			<div class="absolute inset-0 bg-black/30" />
 			<div class="relative flex w-full h-full" :class="positionClasses">
@@ -110,17 +104,18 @@
 		<LandingFooter :footer-data="data.footer" :links="data.links" :animated="effectivePreset !== 'none'" />
 
 		<LandingIntroScreen :data="data" :effective-preset="effectivePreset" />
-	</main>
+	</div>
 </template>
 <script setup lang="ts">
 import { computed, toRef } from "vue";
 import { RouterLink } from "vue-router";
 import LandingFooter from "@/v8/components/footers/LandingFooter.vue";
 import LandingIntroScreen from "@/v8/components/landing/LandingIntroScreen.vue";
+import LandingBackgroundImages from "@/v8/components/landing/LandingBackgroundImages.vue";
 import { useLandingTextPosition } from "@/v8/composables/landing/useLandingTextPosition";
 import { useLandingAnimation } from "@/v8/composables/landing/useLandingAnimation";
 import { useLandingCtaPosition } from "@/v8/composables/landing/useLandingCtaPosition";
-import { useLandingBackgroundOrientation, type LandingPreviewOrientation } from "@/v8/composables/landing/useLandingBackgroundOrientation";
+import type { LandingPreviewOrientation } from "@/v8/composables/landing/useLandingBackgroundOrientation";
 import { useScrollReveal } from "@/v8/composables/useScrollReveal";
 import { trans } from "laravel-vue-i18n";
 
@@ -130,7 +125,6 @@ const props = defineProps<{
 }>();
 
 const landingData = toRef(props, "data");
-const { landscapeImageClass, portraitImageClass } = useLandingBackgroundOrientation(toRef(props, "previewOrientation"));
 
 const { positionClasses } = useLandingTextPosition(landingData);
 const { effectivePreset, isReducedMotion } = useLandingAnimation(landingData);

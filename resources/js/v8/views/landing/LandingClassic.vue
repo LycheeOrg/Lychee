@@ -1,5 +1,5 @@
 <template>
-	<main id="landing" class="fixed inset-0 bg-black overflow-hidden">
+	<div id="landing" class="fixed inset-0 bg-black overflow-hidden">
 		<div id="header" class="fixed top-0 left-0 right-0 z-50 overflow-y-hidden">
 			<div id="logo" class="float-left p-4 text-white" :class="[entranceDownClass, introDelayClass]">
 				<a href="#">
@@ -48,27 +48,13 @@
 		<LandingIntroScreen :data="data" :effective-preset="effectivePreset" />
 
 		<div id="slides" class="bg-black absolute overflow-hidden top-0 left-0 right-0 bottom-[2%]">
-			<div
-				class="slides-container w-full h-full"
-				:class="effectivePreset !== 'none' ? ['opacity-0', 'animate-landingSlidesPopIn', introDelayClass] : ''"
-			>
-				<ul class="list-none">
-					<li class="w-full h-full">
-						<img
-							class="w-full h-full object-cover absolute top-0 left-0"
-							:class="landscapeImageClass"
-							:src="data.landing_background_landscape"
-							alt="landing image"
-						/>
-						<img
-							class="w-full h-full object-cover absolute top-0 left-0"
-							:class="portraitImageClass"
-							:src="data.landing_background_portrait"
-							alt="landing image"
-						/>
-					</li>
-				</ul>
-			</div>
+			<LandingBackgroundImages
+				:landscape="data.landing_background_landscape"
+				:portrait="data.landing_background_portrait"
+				:preview-orientation="previewOrientation"
+				:wrapper-class="effectivePreset !== 'none' ? ['opacity-0', 'animate-landingSlidesPopIn', introDelayClass] : ''"
+				alt="landing image"
+			/>
 			<div :style="ctaStyle">
 				<span
 					class="pointer-events-none absolute inset-0 flex items-center justify-center text-transparent uppercase text-3xl filter-shadow-darker py-10 px-40"
@@ -117,17 +103,18 @@
 			:animated="effectivePreset !== 'none'"
 			:no-intro-delay="!data.intro_screen_enabled"
 		/>
-	</main>
+	</div>
 </template>
 <script setup lang="ts">
 import { computed, toRef } from "vue";
 import { RouterLink } from "vue-router";
 import LandingFooter from "@/v8/components/footers/LandingFooter.vue";
 import LandingIntroScreen from "@/v8/components/landing/LandingIntroScreen.vue";
+import LandingBackgroundImages from "@/v8/components/landing/LandingBackgroundImages.vue";
 import { useLtRorRtL } from "@/utils/Helpers";
 import { useLandingCtaPosition } from "@/v8/composables/landing/useLandingCtaPosition";
 import { useLandingAnimation } from "@/v8/composables/landing/useLandingAnimation";
-import { useLandingBackgroundOrientation, type LandingPreviewOrientation } from "@/v8/composables/landing/useLandingBackgroundOrientation";
+import type { LandingPreviewOrientation } from "@/v8/composables/landing/useLandingBackgroundOrientation";
 import { trans } from "laravel-vue-i18n";
 
 const { isLTR } = useLtRorRtL();
@@ -141,7 +128,6 @@ const landingData = toRef(props, "data");
 
 const { ctaStyle } = useLandingCtaPosition(landingData);
 const { effectivePreset, introDelayClass } = useLandingAnimation(landingData);
-const { landscapeImageClass, portraitImageClass } = useLandingBackgroundOrientation(toRef(props, "previewOrientation"));
 
 const entranceDownClass = computed(() => (effectivePreset.value !== "none" ? "animate-landingAnimateDown" : ""));
 

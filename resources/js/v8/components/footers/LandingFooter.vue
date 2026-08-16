@@ -5,51 +5,13 @@
 			class="fixed bottom-8 left-0 right-0 text-center z-10"
 			:class="{ 'animate-landingAnimateUp': props.animated, 'no-intro-delay': props.noIntroDelay }"
 		>
-			<a
-				v-if="props.footerData.sm_facebook_url !== ''"
-				id="facebook"
-				:href="props.footerData.sm_facebook_url"
-				class="inline-block hover:scale-150 hover:text-muted transition-all ease-in-out duration-300 text-white socials text-2xl my-4 mx-5 socialicons"
-				:class="{ 'opacity-50 hover:opacity-100': props.dimIconsUntilHover }"
-				target="_blank"
-				rel="noopener"
-			></a>
-			<a
-				v-if="props.footerData.sm_flickr_url !== ''"
-				id="flickr"
-				:href="props.footerData.sm_flickr_url"
-				class="inline-block hover:scale-150 hover:text-muted transition-all ease-in-out duration-300 text-white socials text-2xl my-4 mx-5 socialicons"
-				:class="{ 'opacity-50 hover:opacity-100': props.dimIconsUntilHover }"
-				target="_blank"
-				rel="noopener"
-			></a>
-			<a
-				v-if="props.footerData.sm_twitter_url !== ''"
-				id="twitter"
-				:href="props.footerData.sm_twitter_url"
-				class="inline-block hover:scale-150 hover:text-muted transition-all ease-in-out duration-300 text-white socials text-2xl my-4 mx-5 socialicons"
-				:class="{ 'opacity-50 hover:opacity-100': props.dimIconsUntilHover }"
-				target="_blank"
-				rel="noopener"
-			></a>
-			<a
-				v-if="props.footerData.sm_instagram_url !== ''"
-				id="instagram"
-				:href="props.footerData.sm_instagram_url"
-				class="inline-block hover:scale-150 hover:text-muted transition-all ease-in-out duration-300 text-white socials text-2xl my-4 mx-5 socialicons"
-				:class="{ 'opacity-50 hover:opacity-100': props.dimIconsUntilHover }"
-				target="_blank"
-				rel="noopener"
-			></a>
-			<a
-				v-if="props.footerData.sm_youtube_url !== ''"
-				id="youtube"
-				:href="props.footerData.sm_youtube_url"
-				class="inline-block hover:scale-150 hover:text-muted transition-all ease-in-out duration-300 text-white socials text-2xl my-4 mx-5 socialicons"
-				:class="{ 'opacity-50 hover:opacity-100': props.dimIconsUntilHover }"
-				target="_blank"
-				rel="noopener"
-			></a>
+			<SocialMediaLinks
+				:footer-data="props.footerData"
+				:link-class="[
+					'inline-block hover:scale-150 hover:text-muted transition-all ease-in-out duration-300 text-white text-2xl my-4 mx-5',
+					{ 'opacity-50 hover:opacity-100': !!props.dimIconsUntilHover },
+				]"
+			/>
 		</div>
 		<p
 			v-if="props.footerData.footer_show_copyright"
@@ -93,6 +55,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { RouterLink } from "vue-router";
+import SocialMediaLinks from "@/v8/components/footers/SocialMediaLinks.vue";
 
 type FooterProps = {
 	footerData: App.Http.Resources.GalleryConfigs.FooterConfig;

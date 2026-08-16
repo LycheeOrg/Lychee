@@ -256,6 +256,14 @@ html {
 	--animate-landingZoomReveal: landingZoomReveal 1s ease-out forwards;
 	--animate-landingSlideReveal: landingSlideReveal 0.8s ease-out forwards;
 	/*
+	  Studio's side-docked login panel (LandingStudio.vue): reuses the same `slide_reveal`/
+	  `parallax_scroll` animation preset as landingSlideReveal above, but slides in horizontally
+	  from the panel's own edge - ltr:from-right/rtl:from-left - rather than landingSlideReveal's
+	  vertical rise, since the panel is pinned to that edge rather than centered.
+	*/
+	--animate-landingLoginSlideInFromRight: landingLoginSlideInFromRight 0.8s ease-out forwards;
+	--animate-landingLoginSlideInFromLeft: landingLoginSlideInFromLeft 0.8s ease-out forwards;
+	/*
 	  Meridian's own reveal sequence, chained in two stages off the intro splash screen's ~4s
 	  cover (LandingIntroScreen.vue's 4000ms timeout): the two rails grow in first (4s-4.45s,
 	  landingMeridianLineGrow), then everything else - background, header, caption, label -
@@ -339,6 +347,26 @@ html {
 	100% {
 		opacity: 1;
 		transform: translateY(0);
+	}
+}
+@keyframes landingLoginSlideInFromRight {
+	0% {
+		opacity: 0;
+		transform: translateX(4rem);
+	}
+	100% {
+		opacity: 1;
+		transform: translateX(0);
+	}
+}
+@keyframes landingLoginSlideInFromLeft {
+	0% {
+		opacity: 0;
+		transform: translateX(-4rem);
+	}
+	100% {
+		opacity: 1;
+		transform: translateX(0);
 	}
 }
 /*

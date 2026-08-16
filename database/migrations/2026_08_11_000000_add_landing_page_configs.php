@@ -21,6 +21,7 @@ return new class() extends BaseConfigMigration {
 	public const SHIFT_X_DIRECTION = 'left|right';
 	public const SHIFT_Y_DIRECTION = 'up|down';
 	public const PERCENT_RANGE = 'int:0:100';
+	public const LOGIN_POSITION = 'side|center';
 
 	public function getConfigs(): array
 	{
@@ -288,6 +289,18 @@ return new class() extends BaseConfigMigration {
 				'is_expert' => true,
 				'level' => 0,
 				'order' => 34,
+			],
+			[
+				'key' => 'landing_login_position',
+				'value' => 'side',
+				'cat' => self::MOD_WELCOME,
+				'type_range' => self::LOGIN_POSITION,
+				'description' => 'Login panel position',
+				'details' => 'Applies to the studio layout. Side pins the login panel to the reading-direction edge on wide screens; it always centers below the hero on narrow screens regardless of this setting.',
+				'is_secret' => false,
+				'is_expert' => false,
+				'level' => 0,
+				'order' => 35,
 			],
 		];
 	}

@@ -4,46 +4,7 @@
 			<ContactForm v-if="isContactFormVisible" class="w-full text-left mt-4 text-base" />
 
 			<div v-if="footerData.footer_show_social_media" id="home_socials" class="w-full text-muted text-base space-x-2">
-				<a
-					v-if="footerData.sm_facebook_url !== ''"
-					id="facebook"
-					:href="footerData.sm_facebook_url"
-					class="socials socialicons"
-					target="_blank"
-					rel="noopener"
-				></a>
-				<a
-					v-if="footerData.sm_flickr_url !== ''"
-					id="flickr"
-					:href="footerData.sm_flickr_url"
-					class="socials socialicons"
-					target="_blank"
-					rel="noopener"
-				></a>
-				<a
-					v-if="footerData.sm_twitter_url !== ''"
-					id="twitter"
-					:href="footerData.sm_twitter_url"
-					class="socials socialicons"
-					target="_blank"
-					rel="noopener"
-				></a>
-				<a
-					v-if="footerData.sm_instagram_url !== ''"
-					id="instagram"
-					:href="footerData.sm_instagram_url"
-					class="socials socialicons"
-					target="_blank"
-					rel="noopener"
-				></a>
-				<a
-					v-if="footerData.sm_youtube_url !== ''"
-					id="youtube"
-					:href="footerData.sm_youtube_url"
-					class="socials socialicons"
-					target="_blank"
-					rel="noopener"
-				></a>
+				<SocialMediaLinks :footer-data="footerData" link-class="inline-block" />
 			</div>
 			<p
 				v-if="footerData.footer_show_copyright && footerData.copyright !== ''"
@@ -72,6 +33,7 @@
 <script setup lang="ts">
 import InitService from "@/services/init-service";
 import ContactForm from "@/v8/components/forms/contact/ContactForm.vue";
+import SocialMediaLinks from "@/v8/components/footers/SocialMediaLinks.vue";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
 import { computed, ref } from "vue";

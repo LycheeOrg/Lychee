@@ -14,6 +14,7 @@ use App\Enum\LandingCtaPosition;
 use App\Enum\LandingFeaturedItemsMode;
 use App\Enum\LandingFeaturedItemType;
 use App\Enum\LandingLayoutType;
+use App\Enum\LandingLoginPosition;
 use App\Enum\LandingTextPosition;
 use App\Enum\ShiftType;
 use App\Enum\ShiftX;
@@ -67,6 +68,7 @@ class LandingPageResource extends Data
 	public int $meridian_contact_offset;
 	public int $meridian_explore_line_position;
 	public int $meridian_contact_line_position;
+	public LandingLoginPosition $login_position;
 
 	private const FALLBACK_IMAGE = 'dist/cat.webp';
 
@@ -126,6 +128,7 @@ class LandingPageResource extends Data
 		$this->meridian_contact_offset = request()->configs()->getValueAsInt('landing_meridian_contact_offset');
 		$this->meridian_explore_line_position = request()->configs()->getValueAsInt('landing_meridian_explore_line_position');
 		$this->meridian_contact_line_position = request()->configs()->getValueAsInt('landing_meridian_contact_line_position');
+		$this->login_position = request()->configs()->getValueAsEnum('landing_login_position', LandingLoginPosition::class) ?? LandingLoginPosition::SIDE;
 
 		$this->links = LandingLink::query()->enabled()->orderBy('sort_order')->get()
 			->map(fn (LandingLink $landing_link) => new LandingLinkEmbedResource($landing_link))

@@ -79,6 +79,13 @@ class SettingsController extends Controller
 		'password_flag_enabled',
 		'sensitive_flag_enabled',
 		'expert_album_settings',
+		'sm_pinterest_url',
+		'sm_deviantart_url',
+		'sm_tumblr_url',
+		'sm_500px_url',
+		'sm_pixelfeed_url',
+		'sm_discord_url',
+		'sm_reddit_url',
 	];
 
 	/**
