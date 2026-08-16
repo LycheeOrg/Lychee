@@ -27,14 +27,14 @@ class AutoRenamer extends AbstractStandalonePipe
 		// Skip if the caller explicitly provided a title at upload time (FR-041-06).
 		// User-supplied titles take precedence and must not be overwritten by renamer rules.
 		if ($state->title !== null) {
-			Log::info('Photo has a title, we don\'t rename it, skipping');
+			Log::debug('Photo has a title, we don\'t rename it, skipping');
 
 			return $next($state);
 		}
 
 		// Skip if not enabled.
 		if (!$state->shall_rename_photo_title) {
-			Log::info('renaming not necessary, skipping');
+			Log::debug('renaming not necessary, skipping');
 
 			return $next($state);
 		}

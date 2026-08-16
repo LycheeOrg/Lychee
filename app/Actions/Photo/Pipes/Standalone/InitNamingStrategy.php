@@ -16,7 +16,7 @@ class InitNamingStrategy extends AbstractStandalonePipe
 {
 	protected function execute(StandaloneDTO $state, \Closure $next): StandaloneDTO
 	{
-		Log::info('Executing InitNamingStrategy pipe');
+		Log::debug('Executing InitNamingStrategy pipe');
 		$state->naming_strategy = resolve(AbstractSizeVariantNamingStrategy::class);
 		$state->naming_strategy->setPhoto($state->photo);
 		$state->naming_strategy->setExtension(

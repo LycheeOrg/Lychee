@@ -16,7 +16,7 @@ class SetOriginalChecksum extends AbstractStandalonePipe
 {
 	protected function execute(StandaloneDTO $state, \Closure $next): StandaloneDTO
 	{
-		Log::info('Computing original checksum');
+		Log::debug('Computing original checksum');
 
 		// Unfortunately, we must read the entire file once to create the
 		// true, original checksum.
