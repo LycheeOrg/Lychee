@@ -24,9 +24,7 @@ abstract class AbstractStandalonePipe implements StandalonePipe
 	{
 		$trace = app(TraceService::class);
 
-		return $trace->traceMethod($this->getSpanName(), function () use ($state, $next) {
-			return $this->execute($state, $next);
-		});
+		return $trace->traceMethod($this->getSpanName(), fn () => $this->execute($state, $next));
 	}
 
 	abstract protected function getSpanName(): string;
