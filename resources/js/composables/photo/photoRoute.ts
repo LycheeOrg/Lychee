@@ -1,6 +1,7 @@
 import { ALL } from "@/config/constants";
 import { Router } from "vue-router";
 import { usePhotosStore } from "@/stores/PhotosState";
+import { useSearchStore } from "@/stores/SearchState";
 
 export function usePhotoRoute(router: Router) {
 	function getParentId(): string | undefined {
@@ -17,7 +18,9 @@ export function usePhotoRoute(router: Router) {
 		const albumId = getParentId();
 
 		if (currentRoute.startsWith("search")) {
-			return { name: "search", params: { albumId: albumId ?? ALL, photoId: photoId } };
+			const searchStore = useSearchStore();
+			const searchQuery = searchStore.searchTerm ? { q: searchStore.searchTerm } : {};
+			return { name: "search", params: { albumId: albumId ?? ALL, photoId: photoId }, query: searchQuery };
 		}
 
 		if (currentRoute === "tag") {
