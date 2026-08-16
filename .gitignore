@@ -91,3 +91,4 @@ PRODUCT.md
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+example.spec.ts
