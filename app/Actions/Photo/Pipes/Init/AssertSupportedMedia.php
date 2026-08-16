@@ -8,7 +8,6 @@
 
 namespace App\Actions\Photo\Pipes\Init;
 
-use App\Contracts\PhotoCreate\InitPipe;
 use App\DTO\PhotoCreate\InitDTO;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
@@ -17,7 +16,7 @@ use App\Services\Image\FileExtensionService;
 /**
  * Assert whether we support said file.
  */
-class AssertSupportedMedia implements InitPipe
+class AssertSupportedMedia extends AbstractInitPipe
 {
 	public function __construct(
 		private FileExtensionService $file_extension_service,
@@ -30,7 +29,7 @@ class AssertSupportedMedia implements InitPipe
 	 * @throws MediaFileUnsupportedException
 	 * @throws MediaFileOperationException
 	 */
-	public function handle(InitDTO $state, \Closure $next): InitDTO
+	protected function execute(InitDTO $state, \Closure $next): InitDTO
 	{
 		$this->file_extension_service->assertIsSupportedMediaOrAcceptedRaw(
 			$state->source_file->getPath(),
@@ -39,5 +38,10 @@ class AssertSupportedMedia implements InitPipe
 		);
 
 		return $next($state);
+	}
+
+	protected function getSpanName(): string
+	{
+		return 'photo.assert_supported_media';
 	}
 }
