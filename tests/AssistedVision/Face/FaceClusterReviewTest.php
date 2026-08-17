@@ -97,6 +97,24 @@ class FaceClusterReviewTest extends BaseApiWithDataTest
 		$this->assertForbidden($response);
 	}
 
+	/**
+	 * A user who has access to the batch-face-ops feature (public mode) must not see
+	 * face clusters belonging to photos in albums they cannot access (e.g. private
+	 * albums owned by someone else). See CVE-2026-61838 for the analogous issue on /Zip.
+	 */
+	public function testListClustersExcludesFacesFromInaccessibleAlbum(): void
+	{
+		// photo1 lives in album1, which is private and owned by userMayUpload1.
+		Face::factory()->for_photo($this->photo1)->with_cluster(100)->count(3)->create();
+
+		// userNoUpload owns unrelated album3 and has not been granted access to album1.
+		$response = $this->actingAs($this->userNoUpload)->getJson('FaceDetection/clusters');
+		$this->assertOk($response);
+
+		$cluster_labels = collect($response->json('data'))->pluck('cluster_label')->all();
+		self::assertNotContains(100, $cluster_labels);
+	}
+
 	public function testAssignClusterPrivacyPreservingNonAdminForbidden(): void
 	{
 		Configs::set('ai_vision_face_permission_mode', 'privacy-preserving');
