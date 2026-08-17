@@ -49,6 +49,8 @@ class VersionRangeChecker
 
 		foreach ($tokens as $token) {
 			$token = trim($token);
+			// Fail-safe in the case the version is prefixed with a v.
+			$token = str_replace('v', '', $token);
 
 			if (!$this->evaluateToken($version, $token)) {
 				return false;
