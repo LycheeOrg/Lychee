@@ -6,6 +6,7 @@ High-level planning document for Lychee features and architectural initiatives.
 
 | Feature ID | Name | Status | Priority | Assignee | Started | Updated | Progress |
 |------------|------|--------|----------|----------|---------|---------|----------|
+| 055 | Multi-Track Albums | Planning | P2 | ildyria | 2026-08-17 | 2026-08-17 | Spec, plan, and tasks drafted (spec.md/plan.md/tasks.md); all 4 open questions resolved; analysis gate and implementation not yet started. |
 
 ## Paused Features
 
@@ -125,4 +126,4 @@ features/
 
 ---
 
-*Last updated: 2026-08-10 (Feature 054 added to Active Features)*
+*Last updated: 2026-08-17 (Feature 055 added to Active Features)*

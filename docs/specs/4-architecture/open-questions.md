@@ -6,6 +6,10 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 
 | Question ID | Feature | Priority | Summary | Status | Opened | Updated |
 |-------------|---------|----------|---------|--------|--------|---------|
+| ~~Q-055-01~~ | 055 – Multi-Track Albums | High | Legacy v7 UI keeps single-track support (per user instruction) while v8 gets full multi-track CRUD — how does the shared backend serve both once tracks move to their own table? | Resolved (A — legacy `Album::track` endpoints keep working unchanged, operating on a "primary" track (oldest-by-id) in the new `tracks` table; v8 gets new `Album::tracks` endpoints and forks its own frontend service/components) | 2026-08-17 | 2026-08-17 |
+| ~~Q-055-02~~ | 055 – Multi-Track Albums | Medium | Map view (v8) — how should multiple simultaneous tracks be rendered/distinguished (colors, legend, toggle)? | Resolved (A — all tracks rendered simultaneously, one color per track, Leaflet layer-control legend with per-track visibility checkboxes) | 2026-08-17 | 2026-08-17 |
+| ~~Q-055-03~~ | 055 – Multi-Track Albums | Medium | Track upload UX in v8 — single-file-at-a-time vs. batch multi-file upload, and where/how the `name` field is set (auto from filename vs. required user input, rename support). | Resolved (A — batch multi-file upload, name defaults to filename, rename supported afterward) | 2026-08-17 | 2026-08-17 |
+| ~~Q-055-04~~ | 055 – Multi-Track Albums | Medium | Scope of the `disk` field — data-model column only (all writes stay on the default local disk) vs. an active S3-offload capability mirroring `UploadSizeVariantToS3Job` in this same feature. | Resolved (B — also build a track-specific S3-offload job + migration console command as part of this feature) | 2026-08-17 | 2026-08-17 |
 | ~~Q-053-01~~ | 053 – Album Listing Caching | High | Scope — cache only the sub-album (children) listing, or also the more complex root-level `Actions\Albums\Top` view (smart/tag/person/pinned/root albums)? | Resolved (both — user chose the broader scope) | 2026-08-08 | 2026-08-08 |
 | ~~Q-053-02~~ | 053 – Album Listing Caching | Medium | Should photo-listing caching (`PhotoRepository::getPhotosForAlbumPaginated()`) be bundled into this same feature? | Resolved (No — deferred to a future feature, its own mutation audit needed first) | 2026-08-08 | 2026-08-08 |
 | ~~Q-053-03~~ | 053 – Album Listing Caching | Medium | Config gate — reuse Feature 052's `managed_cache_enabled`/`managed_cache_ttl` (never migrated), or introduce a new dedicated flag scoped to album-listing caching? | Resolved (A — reuse existing flags, finally ship the migration Feature 052 left undone) | 2026-08-08 | 2026-08-08 |
@@ -90,6 +94,88 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 | ~~Q-044-07~~ | 044 – Folder Drop | Low | `UploadPanel` internal drop zone bypasses `folderDrop.ts` | Resolved (A – out of scope, document boundary) | 2026-06-13 | 2026-06-13 |
 
 ## Question Details
+
+### ~~Q-055-01~~: Legacy v7 backend compatibility strategy for multi-track albums ✅ RESOLVED
+
+**Status:** Resolved — **Option A** (legacy endpoints act on a "primary" track)
+**Feature:** 055 – Multi-Track Albums
+**Priority:** High
+**Opened:** 2026-08-17
+**Resolved:** 2026-08-17
+
+**Resolution:** `POST`/`DELETE Album::track` keep their existing route names, request shapes, and behaviour for v7, but internally operate on the album's "primary" track — the oldest (lowest-`id`) row in the new `tracks` table, exposed via `Album::primaryTrack(): HasOne` (`hasOne(Track::class)->oldestOfMany('id')`). `track_url` stays on `HeadAlbumResource`/`PositionDataResource` computed from the primary track only. v8 gets new, separate `Album::tracks` endpoints (plural) for full multi-track CRUD, and forks its own frontend service/components (new `resources/js/v8/services/track-service.ts`, new `TrackManager.vue`, rewritten `Map.vue`) rather than editing the shared `album-service.ts`/`AlbumHeader.vue`/`contextMenuAlbumAdd.ts`/`Map.vue` used by v7 — consistent with the project's v8-migration convention of forking shared modules rather than editing them in place.
+
+**Spec impact:** FR-055-04/05/06 below; DO-055-02/03; API-055-01..06.
+
+**Context:** Today exactly one track exists per album: `albums.track_short_path` (nullable string) plus a computed `track_url` accessor (`app/Models/Album.php:525,541,566`). `Album::setTrack()` deletes any prior file before saving the new one, enforcing "at most one." This is exposed to both frontend trees (v7 legacy PrimeVue, v8 Nuxt UI) via the same shared `track_url` field on `HeadAlbumResource`/`PositionDataResource`, the same shared `album-service.ts` (`uploadTrack`/`deleteTrack`), and near-identical `AlbumHeader.vue`/`contextMenuAlbumAdd.ts`/`Map.vue` code in each tree. The user has instructed that v7 keeps single-track support unchanged while v8 gets full multi-track add/remove/list UI. Moving the backend to a genuine `tracks` child table (one-to-many on `album_id`) means the old single-row assumption no longer holds once a v8 user adds a second track.
+
+**Question:** How should the shared REST API serve both frontends once multiple tracks can exist per album?
+- **Option A (Recommended):** Keep the legacy endpoints (`POST`/`DELETE Album::track`) working exactly as today for v7, but re-implement them internally against the new `tracks` table by operating on a single designated "primary" track (e.g., the first track by insertion order/lowest `id`). `track_url` on `HeadAlbumResource`/`PositionDataResource` keeps being computed from that primary track only. `POST Album::track` when a primary already exists replaces just the primary (matching today's "delete old, save new" behaviour) without touching any other tracks added via v8; `DELETE Album::track` removes only the primary. v8 gets new dedicated endpoints (e.g. `GET/POST/PATCH/DELETE Album::tracks`) for full multi-track CRUD, and forks its own frontend service/components per the existing "fork shared modules rather than edit in place" v8-migration convention rather than editing `album-service.ts`/`AlbumHeader.vue` in place.
+- **Option B:** Deprecate the legacy write endpoints; v7 can still display the primary track (read-only `track_url`, same accessor as Option A) but loses the ability to add/replace/delete a track from its UI (buttons removed or disabled in v7's `contextMenuAlbumAdd.ts`).
+- **Option C:** Drop v7 track support entirely (no `track_url` in v7 API responses, no track rendering in v7's `Map.vue`, no upload/delete UI) — the feature becomes v8-exclusive end to end.
+
+**Impact:** Determines whether `Album::setTrack()/deleteTrack()` are refactored to delegate to the new `Track` model or removed outright; whether `HeadAlbumResource`/`PositionDataResource`/`PositionData` actions keep a `track_url` field at all; whether v7's `AlbumHeader.vue`/`contextMenuAlbumAdd.ts`/`Map.vue` need any changes; and the shape of the new v8-only multi-track API/DTO/frontend surface. Also affects `app/Actions/Album/Delete.php`'s track cleanup (currently hardcoded to `StorageDiskType::LOCAL` for the single `track_short_path`).
+
+---
+
+### ~~Q-055-02~~: Multi-track rendering on the Map view (v8) ✅ RESOLVED
+
+**Status:** Resolved — **Option A** (all tracks shown, colored, with legend toggle)
+**Feature:** 055 – Multi-Track Albums
+**Priority:** Medium
+**Opened:** 2026-08-17
+**Resolved:** 2026-08-17
+
+**Resolution:** All of an album's tracks render simultaneously in v8's `Map.vue`, each as its own `L.GPX` layer colored from a fixed cycling palette. Leaflet's built-in `L.control.layers` overlay control (not a custom component) provides the legend — one entry per track (`name`), each with a native visibility checkbox. Toggle state is client-side only (not persisted). v7's `Map.vue` is untouched (still renders the single `track_url`).
+
+**Spec impact:** FR-055-08 below; UI-055-02; ASCII mock-up.
+
+**Context:** `Map.vue` (v8) currently loads a single `track_url` into one Leaflet `L.GPX` layer. With multiple tracks per album, several tracks may need to render simultaneously, and the spec's required UI mock-up needs a concrete design to sketch.
+
+**Question:** How should v8's Map view present multiple tracks?
+- **Option A (Recommended):** Render all of an album's tracks simultaneously, each as its own `L.GPX` layer in a distinct color (cycled from a fixed palette), with a small legend/layer-control listing each track's `name` and a checkbox to toggle its visibility.
+- **Option B:** Render only one track at a time, selected via a dropdown/tab list next to the map; switching selection swaps the visible `L.GPX` layer.
+- **Option C:** Always render all tracks together with no per-track toggle or legend (simplest, but does not surface each track's `name` anywhere on the map).
+
+**Impact:** Drives the spec's required ASCII mock-up, the `DO`/`API` contract for how track color/visibility state is represented (client-only vs. persisted), and the `Map.vue` rewrite scope.
+
+---
+
+### ~~Q-055-03~~: Track upload UX and naming in v8 ✅ RESOLVED
+
+**Status:** Resolved — **Option A** (batch multi-file upload + rename)
+**Feature:** 055 – Multi-Track Albums
+**Priority:** Medium
+**Opened:** 2026-08-17
+**Resolved:** 2026-08-17
+
+**Resolution:** The v8 "Add tracks" action accepts multiple GPX files in one selection (`multiple` file input), uploaded in a single `POST Album::tracks` request creating one `Track` row per file. Each new track's `name` defaults to its uploaded filename with the extension stripped. A rename action (inline edit in the track list, `PATCH Album::tracks`) lets the user change the name afterward.
+
+**Spec impact:** FR-055-06/07 below; API-055-02/03; DO-055-02.
+
+**Context:** Today's upload flow is a single hidden `<input type="file">` in `AlbumHeader.vue` that immediately uploads whatever one file was picked (`app/Http/Requests/Album/SetAlbumTrackRequest.php` validates one `file`). The user's requested `Track` fields include a `name` distinct from `file_name`, implying the name is either user-supplied or derived and editable.
+
+**Question:** For the new v8 add/remove-tracks UI:
+- **Option A (Recommended):** Support multi-file selection in one upload action (batch-add several GPX files at once); each new track's `name` defaults to its uploaded filename (without extension) and can be renamed afterward via an inline rename action in the track list/menu.
+- **Option B:** Keep upload strictly one file per action (repeat the action to add more tracks); `name` is always the filename, with no rename capability in this feature (deferred).
+
+**Impact:** Shapes `SetAlbumTrackRequest`'s replacement validation rules (single vs. array of files), the new `API-055-*` upload contract, and whether a rename `API`/`FR` entry is in scope for this feature.
+
+---
+
+### ~~Q-055-04~~: Scope of the `disk` field — data model only vs. active S3 offload ✅ RESOLVED
+
+**Status:** Resolved — **Option B** (also build the S3-offload job now)
+**Feature:** 055 – Multi-Track Albums
+**Priority:** Medium
+**Opened:** 2026-08-17
+**Resolved:** 2026-08-17
+
+**Resolution:** In addition to the `tracks.disk` column (default local, cast to `StorageDiskType`, resolved via `Storage::disk($track->disk->value)`), this feature adds a track-specific offload job (`App\Jobs\UploadTrackToS3Job`, mirroring `UploadSizeVariantToS3Job`) auto-dispatched on new-track upload when `Features::active('use-s3')`, plus a new console command (mirroring `lychee:s3_migrate`/`MoveToS3`) to bulk-migrate existing local tracks to S3.
+
+**Spec impact:** FR-055-10/11 below; DO-055-04; CLI-055-01.
+
+---
 
 ### ~~Q-052-01~~ · Scope — generic infra only, infra + pilot consumer, or broad adoption? ✅ RESOLVED
 
