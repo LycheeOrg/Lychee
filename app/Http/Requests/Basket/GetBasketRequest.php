@@ -47,6 +47,12 @@ class GetBasketRequest extends BaseApiRequest implements HasBasket
 		}
 
 		if (Auth::guest()) {
+			// Guests may keep their own (anonymous) basket, but must never
+			// adopt an order that belongs to a registered user.
+			if ($this->order?->user_id !== null) {
+				$this->order = null;
+			}
+
 			return;
 		}
 

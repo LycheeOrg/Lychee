@@ -42,10 +42,8 @@ trait HasBasketTrait
 		// Validate basket is not of another user.
 		$user_id = Auth::id();
 		if (
-			$user_id !== null &&
-			$this->order !== null &&
-			$this->order->user_id !== null &&
-			$this->order->user_id !== $user_id
+			$this->order?->user_id !== null &&
+			$this->order?->user_id !== $user_id
 		) {
 			$this->order = null;
 			Cookie::queue(Cookie::forget(RequestAttribute::BASKET_ID_ATTRIBUTE));
