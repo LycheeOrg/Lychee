@@ -10,6 +10,7 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 | ~~Q-055-02~~ | 055 – Multi-Track Albums | Medium | Map view (v8) — how should multiple simultaneous tracks be rendered/distinguished (colors, legend, toggle)? | Resolved (A — all tracks rendered simultaneously, one color per track, Leaflet layer-control legend with per-track visibility checkboxes) | 2026-08-17 | 2026-08-17 |
 | ~~Q-055-03~~ | 055 – Multi-Track Albums | Medium | Track upload UX in v8 — single-file-at-a-time vs. batch multi-file upload, and where/how the `name` field is set (auto from filename vs. required user input, rename support). | Resolved (A — batch multi-file upload, name defaults to filename, rename supported afterward) | 2026-08-17 | 2026-08-17 |
 | ~~Q-055-04~~ | 055 – Multi-Track Albums | Medium | Scope of the `disk` field — data-model column only (all writes stay on the default local disk) vs. an active S3-offload capability mirroring `UploadSizeVariantToS3Job` in this same feature. | Resolved (B — also build a track-specific S3-offload job + migration console command as part of this feature) | 2026-08-17 | 2026-08-17 |
+| ~~Q-055-05~~ | 055 – Multi-Track Albums | Medium | First draft proposed a brand-new standalone `TrackManager.vue` dialog for v8 track management, opened from the album header's "+" add menu. User corrected this while reviewing the spec. | Resolved (fold track management into the existing `AlbumEdit.vue` "Album Settings" modal as a new `tracks` section, alongside `share`/`move`/`danger`/etc. — no new dialog) | 2026-08-17 | 2026-08-17 |
 | ~~Q-053-01~~ | 053 – Album Listing Caching | High | Scope — cache only the sub-album (children) listing, or also the more complex root-level `Actions\Albums\Top` view (smart/tag/person/pinned/root albums)? | Resolved (both — user chose the broader scope) | 2026-08-08 | 2026-08-08 |
 | ~~Q-053-02~~ | 053 – Album Listing Caching | Medium | Should photo-listing caching (`PhotoRepository::getPhotosForAlbumPaginated()`) be bundled into this same feature? | Resolved (No — deferred to a future feature, its own mutation audit needed first) | 2026-08-08 | 2026-08-08 |
 | ~~Q-053-03~~ | 053 – Album Listing Caching | Medium | Config gate — reuse Feature 052's `managed_cache_enabled`/`managed_cache_ttl` (never migrated), or introduce a new dedicated flag scoped to album-listing caching? | Resolved (A — reuse existing flags, finally ship the migration Feature 052 left undone) | 2026-08-08 | 2026-08-08 |
@@ -103,7 +104,7 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 **Opened:** 2026-08-17
 **Resolved:** 2026-08-17
 
-**Resolution:** `POST`/`DELETE Album::track` keep their existing route names, request shapes, and behaviour for v7, but internally operate on the album's "primary" track — the oldest (lowest-`id`) row in the new `tracks` table, exposed via `Album::primaryTrack(): HasOne` (`hasOne(Track::class)->oldestOfMany('id')`). `track_url` stays on `HeadAlbumResource`/`PositionDataResource` computed from the primary track only. v8 gets new, separate `Album::tracks` endpoints (plural) for full multi-track CRUD, and forks its own frontend service/components (new `resources/js/v8/services/track-service.ts`, new `TrackManager.vue`, rewritten `Map.vue`) rather than editing the shared `album-service.ts`/`AlbumHeader.vue`/`contextMenuAlbumAdd.ts`/`Map.vue` used by v7 — consistent with the project's v8-migration convention of forking shared modules rather than editing them in place.
+**Resolution:** `POST`/`DELETE Album::track` keep their existing route names, request shapes, and behaviour for v7, but internally operate on the album's "primary" track — the oldest (lowest-`id`) row in the new `tracks` table, exposed via `Album::primaryTrack(): HasOne` (`hasOne(Track::class)->oldestOfMany('id')`). `track_url` stays on `HeadAlbumResource`/`PositionDataResource` computed from the primary track only. v8 gets new, separate `Album::tracks` endpoints (plural) for full multi-track CRUD, and forks its own frontend service/components (new `resources/js/v8/services/track-service.ts`, a new `tracks` section inside the existing `AlbumEdit.vue` settings modal per Q-055-05, rewritten `Map.vue`) rather than editing the shared `album-service.ts`/`AlbumHeader.vue`/`contextMenuAlbumAdd.ts`/`Map.vue` used by v7 — consistent with the project's v8-migration convention of forking shared modules rather than editing them in place.
 
 **Spec impact:** FR-055-04/05/06 below; DO-055-02/03; API-055-01..06.
 
@@ -174,6 +175,22 @@ Track unresolved high- and medium-impact questions here. Remove each row as soon
 **Resolution:** In addition to the `tracks.disk` column (default local, cast to `StorageDiskType`, resolved via `Storage::disk($track->disk->value)`), this feature adds a track-specific offload job (`App\Jobs\UploadTrackToS3Job`, mirroring `UploadSizeVariantToS3Job`) auto-dispatched on new-track upload when `Features::active('use-s3')`, plus a new console command (mirroring `lychee:s3_migrate`/`MoveToS3`) to bulk-migrate existing local tracks to S3.
 
 **Spec impact:** FR-055-10/11 below; DO-055-04; CLI-055-01.
+
+---
+
+### ~~Q-055-05~~: Standalone dialog vs. folding into the existing `AlbumEdit.vue` settings modal ✅ RESOLVED
+
+**Status:** Resolved — fold into the existing modal, no new dialog
+**Feature:** 055 – Multi-Track Albums
+**Priority:** Medium
+**Opened:** 2026-08-17
+**Resolved:** 2026-08-17
+
+**Context:** The first spec draft (reviewed by the user via the IDE) designed a new standalone `TrackManager.vue` dialog for v8, triggered by a "Manage tracks" entry in the album header's "+" add context menu (`contextMenuAlbumAdd.ts`). Research into the actual v8 codebase found that album-level management surfaces (sharing, transfer, move, danger-zone delete, purchasable/shop config) all already live as scroll-spy sections inside one existing modal, `resources/js/v8/components/drawers/AlbumEdit.vue` ("Album Settings," opened via the gear icon in `AlbumHeader.vue`, toggled through the shared `useTogglablesStateStore().is_album_edit_open`). Each section is a sub-component under `resources/js/v8/components/forms/album/` (`AlbumProperties.vue`, `AlbumVisibility.vue`, `AlbumMove.vue`, `AlbumShare.vue`, `AlbumPurchasable.vue`, `AlbumTransfer.vue`, `AlbumDelete.vue`), registered via a local `SectionId` union type and `sections` computed (`AlbumEdit.vue:129-134` at time of research) plus a `<section id="album-settings-<id>">` block per entry.
+
+**Resolution:** Track management is a new section (`SectionId` value `"tracks"`) inside `AlbumEdit.vue`, backed by a new `AlbumTracks.vue` component under `resources/js/v8/components/forms/album/`, following the exact same registration pattern as the existing sections (gated the same way `share`/`move`/etc. are gated on rights). No new standalone dialog is built. The existing "+" add-menu entries for track upload/delete (`gallery.menus.upload_track`/`delete_track` in `contextMenuAlbumAdd.ts`, v8 only) are removed, since track management now lives in Album Settings like every other album-configuration concern — consistent with how sharing/transfer are *not* in the "+" menu either.
+
+**Spec impact:** UI mock-ups section rewritten (album-settings section instead of a new dialog); FR-055-06/07/08 wording updated to reference `AlbumEdit.vue`'s `tracks` section instead of a "Track manager dialog"; UI-055-01 relabeled.
 
 ---
 

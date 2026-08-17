@@ -19,13 +19,14 @@ Affected modules: **core** (new `Track` model, `Album` relations), **application
 ## Goals
 - Support an arbitrary number of GPS tracks per album, each with an independent `name`, storage path, and storage disk.
 - Preserve v7's existing single-track upload/delete UX with zero code changes, by having legacy endpoints operate on a well-defined "primary" track.
-- Give v8 full track management: batch upload (multiple GPX files at once), inline rename, per-track delete, and a Map view showing every track simultaneously with a per-track legend/visibility toggle.
+- Give v8 full track management — batch upload (multiple GPX files at once), inline rename, per-track delete — as a new section inside the existing Album Settings modal (`AlbumEdit.vue`), reusing the same modal already used for sharing/transfer/move/etc. rather than introducing a new dialog (Q-055-05); plus a Map view showing every track simultaneously with a per-track legend/visibility toggle.
 - Make `disk` (local vs. S3) a first-class, per-track attribute, consistent with the existing `size_variants.storage_disk` + `StorageDiskType` pattern, including an S3-offload job and migration command mirroring `UploadSizeVariantToS3Job`/`lychee:s3_migrate`.
 - Correctly clean up all of an album's track files (across both disks) when the album (or an ancestor) is deleted, fixing the existing hardcoded-`LOCAL` gap in `Actions\Album\Delete`.
 - Migrate existing single-track data (`albums.track_short_path`) into the new table with no data loss, then remove the old column.
 
 ## Non-Goals
 - No changes to v7's `AlbumHeader.vue`, `contextMenuAlbumAdd.ts`, `Map.vue`, or `album-service.ts`'s existing `uploadTrack`/`deleteTrack` methods (Q-055-01, Option A).
+- No new standalone modal/dialog for v8 track management — it is a section inside the existing `AlbumEdit.vue` Album Settings modal, not a bespoke component (Q-055-05). The v8 album header's "+" add-menu no longer offers track upload/delete shortcuts once this feature ships (moved into Album Settings).
 - No re-upload/replace-file capability for an existing track row (replacing content requires delete + re-add); rename only changes `name`.
 - No server-side persistence of per-track map visibility/color preferences — toggle state in v8's Map view is client-side/session-only (Q-055-02).
 - No GPX content parsing/validation beyond file extension/MIME type (same level of validation as today).
@@ -42,9 +43,10 @@ Affected modules: **core** (new `Track` model, `Album` relations), **application
 | FR-055-03 | `Album` gains `tracks(): HasMany` (`hasMany(Track::class, 'album_id', 'id')`, ordered by `id` ascending) and `primaryTrack(): HasOne` (`hasOne(Track::class, 'album_id', 'id')->oldestOfMany('id')`). | `$album->tracks` returns all tracks in upload order; `$album->primaryTrack` returns the single oldest one (or `null`). | — | — | — | Derived — relation convention (§ Album Model, `AlbumSizeStatistics`) |
 | FR-055-04 | Legacy `POST /Album::track` (`AlbumController::setTrack`) keeps its exact current request shape (`SetAlbumTrackRequest`: `album_id` + single `file`) and behaviour: if a primary track exists, its file is deleted and its row is updated in place with the new upload (`file_name`, `name` reset to the new filename, `disk` reset to the configured default); otherwise a new primary track row is created. Tracks added via v8 (i.e., not the primary) are untouched. | v7's existing "Upload track" action keeps working with no v7-side changes. | Same file validation as today (`mimetypes:application/gpx+xml`, extension `gpx`). | Same failure responses as today. | — | Q-055-01 (Option A) |
 | FR-055-05 | Legacy `DELETE /Album::track` (`AlbumController::deleteTrack`) keeps its exact current request shape (`DeleteTrackRequest`: `album_id`) and deletes only the primary track (file + row). Other tracks are untouched. If no primary track exists, behaves exactly as today's no-op-safe delete. | v7's existing "Delete track" action keeps working with no v7-side changes. | — | — | — | Q-055-01 (Option A) |
-| FR-055-06 | New `POST /Album::tracks` (v8-only) accepts `album_id` + an array of files (`files[]`, 1..N, each validated identically to the legacy single-file rule). One `Track` row is created per file, in submission order; `name` defaults to the uploaded filename with its extension stripped. Response returns the album's full updated track list. | v8's "Add tracks" action can add one or many tracks in a single request without disturbing existing tracks (including the primary). | Each file validated individually; a request with zero valid files is rejected before any row is created (all-or-nothing per request). | If one file in the batch fails validation, the entire request is rejected (no partial writes) — standard Laravel FormRequest behaviour. | — | Q-055-03 (Option A) |
-| FR-055-07 | New `PATCH /Album::tracks` (v8-only) accepts `album_id` + `track_id` + `name` and renames exactly that track. | Inline rename in the v8 track list updates `name` only; `file_name`/`disk` untouched. | `track_id` must belong to `album_id`; `name` required, string, max 255. | 404/422 if the track does not belong to the album. | — | Q-055-03 (Option A) |
-| FR-055-08 | New `DELETE /Album::tracks` (v8-only) accepts `album_id` + `track_id` and deletes exactly that track (file + row), regardless of whether it is the primary. | v8's per-track "Delete" action removes exactly one track; if the deleted track was the primary, `primaryTrack()` transparently resolves to the next-oldest remaining track (or `null`) — no extra bookkeeping needed given the `oldestOfMany` definition. | `track_id` must belong to `album_id`. | 404/422 if the track does not belong to the album. | — | Q-055-01, Q-055-03 |
+| FR-055-06 | New `POST /Album::tracks` (v8-only) accepts `album_id` + an array of files (`files[]`, 1..N, each validated identically to the legacy single-file rule). One `Track` row is created per file, in submission order; `name` defaults to the uploaded filename with its extension stripped. Response returns the album's full updated track list. | The "Add tracks..." control in `AlbumEdit.vue`'s new `tracks` section (Q-055-05) can add one or many tracks in a single request without disturbing existing tracks (including the primary). | Each file validated individually; a request with zero valid files is rejected before any row is created (all-or-nothing per request). | If one file in the batch fails validation, the entire request is rejected (no partial writes) — standard Laravel FormRequest behaviour. | — | Q-055-03 (Option A), Q-055-05 |
+| FR-055-07 | New `PATCH /Album::tracks` (v8-only) accepts `album_id` + `track_id` + `name` and renames exactly that track. | Inline rename in the `tracks` section's track list updates `name` only; `file_name`/`disk` untouched. | `track_id` must belong to `album_id`; `name` required, string, max 255. | 404/422 if the track does not belong to the album. | — | Q-055-03 (Option A), Q-055-05 |
+| FR-055-08 | New `DELETE /Album::tracks` (v8-only) accepts `album_id` + `track_id` and deletes exactly that track (file + row), regardless of whether it is the primary. | The per-track "Delete" action in the `tracks` section removes exactly one track; if the deleted track was the primary, `primaryTrack()` transparently resolves to the next-oldest remaining track (or `null`) — no extra bookkeeping needed given the `oldestOfMany` definition. | `track_id` must belong to `album_id`. | 404/422 if the track does not belong to the album. | — | Q-055-01, Q-055-03, Q-055-05 |
+| FR-055-13 | v8's Album Settings modal (`AlbumEdit.vue`) gains a new `tracks` section: a new `SectionId` value, an entry in the `sections` computed, a `<section id="album-settings-tracks">` block, and a new `AlbumTracks.vue` sub-component under `resources/js/v8/components/forms/album/` — following the exact registration pattern already used by `AlbumShare.vue`/`AlbumMove.vue`/etc. The pre-existing "+" add-menu entries for track upload/delete (`gallery.menus.upload_track`/`delete_track` in v8's `contextMenuAlbumAdd.ts` only) are removed, since track management now lives in Album Settings like every other album-configuration concern. | Opening Album Settings (gear icon) shows a "Tracks" nav entry (badge = current count) alongside About/Visibility/Move/Share/Shop/Danger zone; no separate dialog exists. | Section gated the same way sibling sections are gated on album rights (`can_edit`, matching the modal's existing access check — no new permission concept introduced). | — | — | Q-055-05 |
 | FR-055-09 | `HeadAlbumResource` and `PositionDataResource` (and the `PositionData`/`Actions\Albums\PositionData` actions that build them) keep the existing `track_url` field (nullable string, computed from the primary track only — unchanged shape for v7 back-compat) and gain a new `tracks` field: an array of `TrackResource` (`id`, `name`, `url`), always present (empty array when no tracks), ordered by `id` ascending. | v7 reads `track_url` exactly as before. v8 reads `tracks` to render its Map legend and track-management UI. | — | — | — | Q-055-01 |
 | FR-055-10 | `Track.disk` defaults to the app's configured default disk (`images`, i.e. `StorageDiskType::LOCAL`) at creation time; all file reads/writes/deletes for a track resolve the disk via `Storage::disk($track->disk->value)` (never the bare `Storage` facade). | Every track file operation is disk-aware from day one, closing the existing gap where tracks always implicitly used the default disk regardless of `StorageDiskType` configuration. | — | — | — | Q-055-04 |
 | FR-055-11 | A new `App\Jobs\UploadTrackToS3Job` (mirrors `UploadSizeVariantToS3Job`) moves one track's file from the local disk to S3 and updates `disk = StorageDiskType::S3`. It is auto-dispatched immediately after a track row is created (both via `POST /Album::track` and `POST /Album::tracks`) when `Features::active('use-s3')`. A new console command (`lychee:track_s3_migrate {limit=5} {tm=600}`, mirroring `lychee:s3_migrate`/`MoveToS3`) bulk-migrates existing local tracks, selecting `Track::query()->where('disk', '=', StorageDiskType::LOCAL->value)->limit($limit)`. | When S3 support is enabled, new tracks are offloaded automatically; existing local tracks can be migrated in batches via the console command, exactly like size variants today. | Command exits early with an error message if `Features::inactive('use-s3')`, matching `MoveToS3`'s guard. | Job failure is recorded via the existing `JobHistory`/`JobStatus` mechanism, matching `UploadSizeVariantToS3Job::failed()`. | — | Q-055-04 (Option B) |
@@ -62,36 +64,26 @@ Affected modules: **core** (new `Track` model, `Album` relations), **application
 
 ## UI / Interaction Mock-ups (required for UI-facing work)
 
-### v8 — Album header "Manage tracks" entry point (replaces the old binary Upload/Delete track menu items)
-```
-+-----------------------------------------------------------+
-|  Album Header ⋮  (context menu)                            |
-|  ┌────────────────────────────┐                            |
-|  │ Add photos                 │                            |
-|  │ Add sub-album               │                            |
-|  │ ...                          │                            |
-|  │ 🧭 Manage tracks  (3)        │  <- single entry, badge = |
-|  └────────────────────────────┘     current track count    |
-+-----------------------------------------------------------+
-```
+### v8 — "Tracks" section inside the existing Album Settings modal (`AlbumEdit.vue`)
+No new dialog is introduced. Track management is a new scroll-spy section — alongside the existing `About`/`Visibility`/`Move`/`Share`/`Shop`/`Danger zone` sections — inside the same "Album Settings" modal already opened via the gear icon in `AlbumHeader.vue` (`resources/js/v8/components/drawers/AlbumEdit.vue`). The side nav gains one more entry; the section itself is a new `AlbumTracks.vue` under `resources/js/v8/components/forms/album/`, following the same pattern as `AlbumShare.vue`/`AlbumMove.vue` (Q-055-05).
 
-### v8 — Track manager dialog
 ```
-+--------------------------------------------------------------+
-| Manage tracks — "Alps Roadtrip 2026"                    [ x ]|
-|                                                                |
-|  [ + Add tracks... ]   (multi-file picker, accept=.gpx)       |
-|                                                                |
-|  ┌──────────────────────────────────────────────────────┐    |
-|  │ ● Day 1 — Chamonix loop            [ ✎ rename ] [ 🗑 ] │    |
-|  │ ● Day 2 — Col du Galibier           [ ✎ rename ] [ 🗑 ] │    |
-|  │ ● gpx_track_003                      [ ✎ rename ] [ 🗑 ] │    |
-|  └──────────────────────────────────────────────────────┘    |
-|                                                                |
-|  ⚠ Validation: {invalid_file_type | upload_failed}            |
-+--------------------------------------------------------------+
++----------------------------------------------------------------------+
+| Album Settings — "Alps Roadtrip 2026"                          [ x ] |
+|------------------------+-----------------------------------------------|
+| ○ About                |  Tracks                                       |
+| ○ Visibility           |  ────────────────────────────────────────    |
+| ○ Move                 |  [ + Add tracks... ]  (multi-file, accept=.gpx)|
+| ○ Share                |                                                |
+| ○ Shop                 |  ┌──────────────────────────────────────┐     |
+| ● Tracks        (3)    |  │ ● Day 1 — Chamonix loop   [✎] [🗑]  │     |
+| ○ Danger zone           |  │ ● Day 2 — Col du Galibier [✎] [🗑]  │     |
+|                          |  │ ● gpx_track_003            [✎] [🗑]  │     |
+|                          |  └──────────────────────────────────────┘     |
+|                          |  ⚠ Validation: {invalid_file_type | upload_failed} |
++----------------------------------------------------------------------+
 ```
-Rename switches a row into an inline text field (`[ Day 1 — Chamonix loop___] [✓][✗]`); delete asks for confirmation via the existing shared confirm-dialog pattern before calling `DELETE Album::tracks`.
+Rename switches a row into an inline text field (`[ Day 1 — Chamonix loop___] [✓][✗]`); delete asks for confirmation via the existing shared confirm-dialog pattern before calling `DELETE Album::tracks`. The side-nav label shows the current track count as a badge, matching this spec's earlier menu-badge intent but now inside the settings nav instead of a separate context-menu entry.
 
 ### v8 — Map view with multiple tracks
 ```
@@ -134,7 +126,7 @@ Each checked track renders as a distinctly colored/dashed `L.GPX` polyline (Leaf
 - **Application:** Feature tests for `Actions\Album\Delete` covering S-055-11/S-055-12 (disk-grouped `FileDeleterJob` dispatch, correct `tracks` row cleanup); `UploadTrackToS3Job` unit test mirroring the existing `UploadSizeVariantToS3Job` test if one exists (check `tests/` for its counterpart pattern first).
 - **REST:** `BaseApiWithDataTest`-based feature tests for all 4 routes (`POST/DELETE Album::track` legacy — S-055-02/03; `POST/PATCH/DELETE Album::tracks` — S-055-01/04/05/06/07), covering success/validation/failure branches per FR-055-04..08.
 - **CLI:** Feature/console test for `lychee:track_s3_migrate` covering S-055-09/S-055-10, mirroring any existing `MoveToS3` test.
-- **UI (JS):** No JS test runner exists in this repo (per Q-051-05's prior finding) — manual verification of `TrackManager.vue` and the rewritten `Map.vue` against S-055-01/04/05/14/15, documented in the plan's implementation notes instead of automated coverage.
+- **UI (JS):** No JS test runner exists in this repo (per Q-051-05's prior finding) — manual verification of `AlbumEdit.vue`'s new `tracks` section (`AlbumTracks.vue`) and the rewritten `Map.vue` against S-055-01/04/05/14/15, documented in the plan's implementation notes instead of automated coverage.
 - **Docs/Contracts:** `docs/specs/3-reference/database-schema.md` gains a `tracks` table entry (currently missing `track_short_path` entirely — pre-existing gap, fixed here); `docs/specs/1-concepts/albums.md`'s incorrect "Track: Optional audio track for slideshow" description corrected to describe GPS/GPX tracks and multiplicity.
 
 ## Interface & Contract Catalogue
@@ -173,7 +165,7 @@ _None — this feature does not introduce new telemetry events; existing `JobHis
 ### UI States
 | ID | State | Trigger / Expected outcome |
 |----|-------|---------------------------|
-| UI-055-01 | Track manager dialog, empty state | Album has zero tracks → dialog shows only the "Add tracks..." control, no list. |
+| UI-055-01 | `AlbumEdit.vue` `tracks` section, empty state | Album has zero tracks → the section shows only the "Add tracks..." control, no list. |
 | UI-055-02 | Map legend, per-track checkbox | Unchecking a track's box hides its `L.GPX` layer only (client state, not persisted) — Q-055-02. |
 | UI-055-03 | Inline rename, validation error | Empty name submitted → inline field shows validation message, save disabled. |
 
@@ -257,7 +249,7 @@ fixtures:
     path: tests/Fixtures/ (tbd)
 ui_states:
   - id: UI-055-01
-    description: Track manager dialog empty state
+    description: AlbumEdit.vue tracks section empty state
   - id: UI-055-02
     description: Map legend per-track visibility checkbox
   - id: UI-055-03
@@ -277,6 +269,7 @@ ui_states:
 - `size_variants.storage_disk` + `StorageDiskType` pattern — `app/Enum/StorageDiskType.php`; `app/Models/SizeVariant.php:99,112,129,207`; migration `2024_04_26_201931_add_storate_disk_to_size_variants.php`.
 - S3 offload precedent — `app/Jobs/UploadSizeVariantToS3Job.php`, `app/Actions/Photo/Pipes/Shared/UploadSizeVariantsToS3.php` (gated by `Features::active('use-s3')`), `app/Console/Commands/ImageProcessing/MoveToS3.php` (`lychee:s3_migrate`).
 - Frontend single-track surfaces (v7 and v8, currently near-identical) — `resources/js/services/album-service.ts:290-306`, `resources/js/{v7,v8}/components/headers/AlbumHeader.vue`, `resources/js/{v7,v8}/composables/contextMenus/contextMenuAlbumAdd.ts`, `resources/js/{v7,v8}/views/gallery-panels/Map.vue`.
+- v8's existing Album Settings modal (reused by this feature per Q-055-05, not replaced) — `resources/js/v8/components/drawers/AlbumEdit.vue` (opened via the gear icon in `AlbumHeader.vue`, toggled through the shared `useTogglablesStateStore().is_album_edit_open`); its existing sections live under `resources/js/v8/components/forms/album/` (`AlbumProperties.vue`, `AlbumVisibility.vue`, `AlbumMove.vue`, `AlbumShare.vue`, `AlbumPurchasable.vue`, `AlbumTransfer.vue`, `AlbumDelete.vue`), registered via a local `SectionId` union type and `sections` computed inside `AlbumEdit.vue`. v7 has a separate, independent `AlbumEdit.vue` (older index-based tab UI) — untouched by this feature (NFR-055-01).
 
 ### Naming decision (low-impact, decided without a logged open question)
 Table named `tracks` (not `album_tracks`), matching the unprefixed-noun convention used by `photos`, `tags`, `size_variants` — all of which are child tables of a single parent identified by an `_id` FK, exactly like this feature's `album_id`.

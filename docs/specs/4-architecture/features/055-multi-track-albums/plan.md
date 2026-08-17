@@ -4,13 +4,13 @@ _Linked specification:_ `docs/specs/4-architecture/features/055-multi-track-albu
 _Status:_ Draft
 _Last updated:_ 2026-08-17
 
-> Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant. All four Q-055-* clarifications are resolved and folded into the spec's normative sections; no ADR was required (none of the four rose to "cross-feature/module boundary" or "security/telemetry strategy" significance — they are within-feature API/UX/scope decisions).
+> Guardrail: Keep this plan traceable back to the governing spec. Reference FR/NFR/Scenario IDs from `spec.md` where relevant. All five Q-055-* clarifications are resolved and folded into the spec's normative sections; no ADR was required (none of the five rose to "cross-feature/module boundary" or "security/telemetry strategy" significance — they are within-feature API/UX/scope decisions).
 
 ## Vision & Success Criteria
-An album can hold any number of GPS tracks instead of exactly one. v7 users notice nothing — their existing upload/delete button keeps working against a transparent "primary" track. v8 users get a track manager (batch add, rename, per-track delete) and a Map view that shows every track at once with a togglable legend. Success = all FR-055-01..12 implemented and tested (S-055-01..15 green), `resources/js/v7/` diff empty (NFR-055-01), existing single-track data preserved through the migration (S-055-13), and the pre-existing `Delete.php` hardcoded-`LOCAL` bug fixed (FR-055-12).
+An album can hold any number of GPS tracks instead of exactly one. v7 users notice nothing — their existing upload/delete button keeps working against a transparent "primary" track. v8 users get track management (batch add, rename, per-track delete) folded into the existing Album Settings modal, and a Map view that shows every track at once with a togglable legend. Success = all FR-055-01..13 implemented and tested (S-055-01..15 green), `resources/js/v7/` diff empty (NFR-055-01), existing single-track data preserved through the migration (S-055-13), and the pre-existing `Delete.php` hardcoded-`LOCAL` bug fixed (FR-055-12).
 
 ## Scope Alignment
-- **In scope:** `tracks` table + migration/backfill; `Track` model; `Album` relations; legacy endpoint refactor (v7 compat); new v8 multi-track endpoints; `HeadAlbumResource`/`PositionDataResource` extension; `Actions\Album\Delete` disk-aware cleanup fix; `UploadTrackToS3Job` + `lychee:track_s3_migrate` command; v8 `TrackManager.vue` + rewritten `Map.vue`; v8-only forked service module; docs updates (database-schema.md, albums.md, knowledge-map.md).
+- **In scope:** `tracks` table + migration/backfill; `Track` model; `Album` relations; legacy endpoint refactor (v7 compat); new v8 multi-track endpoints; `HeadAlbumResource`/`PositionDataResource` extension; `Actions\Album\Delete` disk-aware cleanup fix; `UploadTrackToS3Job` + `lychee:track_s3_migrate` command; a new `tracks` section (`AlbumTracks.vue`) inside v8's existing `AlbumEdit.vue` Album Settings modal (no new dialog, Q-055-05) + rewritten `Map.vue`; v8-only forked service module; removal of v8's now-redundant "+" add-menu track entries; docs updates (database-schema.md, albums.md, knowledge-map.md).
 - **Out of scope:** Any v7 file changes (NFR-055-01); track content re-upload/replace; persisted map visibility/color prefs; GPX content validation beyond MIME/extension; per-track user-facing disk selection; JS automated test coverage (no test runner exists in this repo, per Q-051-05 precedent — manual verification only).
 
 ## Dependencies & Interfaces
@@ -20,6 +20,7 @@ An album can hold any number of GPS tracks instead of exactly one. v7 users noti
 - `App\Actions\Album\Delete` / `App\DTO\Delete\AlbumsToBeDeletedDTO` (modified, not replaced).
 - `App\Assets\Features::active('use-s3')` feature-flag gate (existing).
 - v8 Leaflet/`L.GPX` integration already present in `resources/js/v8/views/gallery-panels/Map.vue` (rewritten, not replaced wholesale).
+- v8's existing `resources/js/v8/components/drawers/AlbumEdit.vue` Album Settings modal and its `SectionId`/`sections` registration pattern (extended with a new `tracks` section, not replaced — Q-055-05).
 - typescript-transformer build step (`php artisan typescript:transform` or equivalent existing pipeline) to regenerate `resources/js/lychee.d.ts` for the new `TrackResource`/updated `HeadAlbumResource`/`PositionDataResource` shapes.
 - Existing `AbstractTestCase`/`BaseApiWithDataTest` test base classes (AGENTS.md coding conventions).
 
@@ -74,10 +75,10 @@ Executed per `docs/specs/5-operations/analysis-gate-checklist.md`. Findings, evi
    - _Commands:_ `php artisan test --filter=TrackS3`, `make phpstan`.
    - _Exit:_ S-055-08/09/10 green.
 
-6. **I6 – v8 frontend: track manager UI**
-   - _Goal:_ FR-055-06/07/08's UI half — `TrackManager.vue`, forked v8 service, updated context-menu entry.
+6. **I6 – v8 frontend: `tracks` section inside `AlbumEdit.vue`**
+   - _Goal:_ FR-055-06/07/08's UI half + FR-055-13 — a new `AlbumTracks.vue` section registered inside the existing Album Settings modal (Q-055-05, no new dialog), forked v8 service, removal of the now-redundant "+" add-menu entries.
    - _Preconditions:_ I3 complete (endpoints must exist).
-   - _Steps:_ Create new `resources/js/v8/services/track-service.ts` (forked, not editing shared `album-service.ts`) with `uploadTracks`/`renameTrack`/`deleteTrack`; create `TrackManager.vue` per the spec's ASCII mock-up (list, inline rename, per-row delete with confirm, multi-file "Add tracks" input); update v8's `contextMenuAlbumAdd.ts` to replace the binary upload/delete entries with a single "Manage tracks" entry (badge = count) opening the dialog; regenerate TS types (`php artisan typescript:transform` or repo's existing equivalent) and confirm `Track`/`TrackResource` types land in `lychee.d.ts`.
+   - _Steps:_ Create new `resources/js/v8/services/track-service.ts` (forked, not editing shared `album-service.ts`) with `uploadTracks`/`renameTrack`/`deleteTrack`; create `AlbumTracks.vue` under `resources/js/v8/components/forms/album/` per the spec's ASCII mock-up (list, inline rename, per-row delete with confirm, multi-file "Add tracks" input), following the exact registration pattern of `AlbumShare.vue`/`AlbumMove.vue` (add a `"tracks"` `SectionId`, an entry in `AlbumEdit.vue`'s `sections` computed, and the matching `<section id="album-settings-tracks">` block); remove the now-redundant `gallery.menus.upload_track`/`delete_track` entries from v8's `contextMenuAlbumAdd.ts` (track management now lives in Album Settings); regenerate TS types (`php artisan typescript:transform` or repo's existing equivalent) and confirm `Track`/`TrackResource` types land in `lychee.d.ts`.
    - _Commands:_ `npm run check`, `npm run format`; manual verification in a running dev instance (no JS test runner in this repo).
    - _Exit:_ Manual walk-through of UI-055-01/02/03 and S-055-01/04/05 documented in Drift Gate; `resources/js/v7/` diff still empty.
 
@@ -118,10 +119,10 @@ Executed per `docs/specs/5-operations/analysis-gate-checklist.md`. Findings, evi
 ## Analysis Gate
 **Executed:** 2026-08-17, by the planning agent (self-review), per `docs/specs/5-operations/analysis-gate-checklist.md`.
 
-1. **Specification completeness** — ✅ Objectives/FR/NFR populated (FR-055-01..12, NFR-055-01..05); all four Q-055-* resolutions folded into FR-055-04/05/06/07/08/10/11, Non-Goals, and NFR-055-01; three ASCII mock-ups present (track manager menu entry, dialog, Map legend).
-2. **Open questions review** — ✅ No blocking `Open` rows remain for Feature 055 (all four struck through/Resolved). No ADR created: none of the four clarifications reached "cross-feature/module boundary" or "security/telemetry strategy" significance — they're within-feature API-shape, UX, and scope decisions, consistent with how similarly-scoped questions in other features (e.g. Q-050-*, Q-046-02/03) were resolved without an ADR.
+1. **Specification completeness** — ✅ Objectives/FR/NFR populated (FR-055-01..13, NFR-055-01..05); all five Q-055-* resolutions folded into FR-055-04/05/06/07/08/10/11/13, Non-Goals, and NFR-055-01; three ASCII mock-ups present (Album Settings nav entry, `tracks` section, Map legend).
+2. **Open questions review** — ✅ No blocking `Open` rows remain for Feature 055 (all five struck through/Resolved). No ADR created: none of the five clarifications reached "cross-feature/module boundary" or "security/telemetry strategy" significance — they're within-feature API-shape, UX, and scope decisions, consistent with how similarly-scoped questions in other features (e.g. Q-050-*, Q-046-02/03) were resolved without an ADR.
 3. **Plan alignment** — ✅ Plan cites `spec.md`/`tasks.md` at the correct paths; Dependencies & Interfaces and Exit Criteria wording matches spec's FR/NFR language.
-4. **Tasks coverage** — ✅ Every FR-055-01..12 maps to ≥1 task (traced: 01→T02/03, 02→T02, 03→T04, 04→T06, 05→T07, 06/07/08→T09-11/T20/T22, 09→T08/T12/T24, 10→T18, 11→T16-19, 12→T13-15). Every increment stages a failing-test task before its implementation tasks. Success/validation/failure branches enumerated via S-055-01..15 (validation: S-055-06/07/10; failure/edge: S-055-04/12).
+4. **Tasks coverage** — ✅ Every FR-055-01..13 maps to ≥1 task (traced: 01→T02/03, 02→T02, 03→T04, 04→T06, 05→T07, 06/07/08→T09-11/T20, 09→T08/T12/T24, 10→T18, 11→T16-19, 12→T13-15, 13→T21/T22). Every increment stages a failing-test task before its implementation tasks. Success/validation/failure branches enumerated via S-055-01..15 (validation: S-055-06/07/10; failure/edge: S-055-04/12).
 5. **Constitution compliance** — ✅ No planned work violates spec-first/test-first/documentation-sync principles. Increments delegate disk-grouping and primary-track resolution to small model-level helpers (`Track::url`, `Album::primaryTrack()`) rather than inline branching in controllers/actions. No existing ADR under `docs/specs/6-decisions/` references album/track concerns (confirmed via research), so none required review.
 6. **Tooling readiness** — ✅ Verification commands documented per task in `tasks.md`; this section records the analysis outcome.
 
@@ -130,7 +131,7 @@ Executed per `docs/specs/5-operations/analysis-gate-checklist.md`. Findings, evi
 **Outcome:** Gate passed. Implementation may proceed from I1.
 
 ## Exit Criteria
-- All FR-055-01..12 and NFR-055-01..05 implemented and traced to passing tests.
+- All FR-055-01..13 and NFR-055-01..05 implemented and traced to passing tests.
 - All S-055-01..15 scenarios green (or, for JS-only scenarios without a test runner, manually verified and documented).
 - `resources/js/v7/` diff empty (NFR-055-01).
 - `vendor/bin/php-cs-fixer fix`, `php artisan test`, `make phpstan` clean (PHP changes); `npm run format`, `npm run check` clean (frontend changes) — full quality gate per AGENTS.md since both PHP and frontend are touched.
@@ -141,4 +142,4 @@ Executed per `docs/specs/5-operations/analysis-gate-checklist.md`. Findings, evi
 ## Follow-ups / Backlog
 - Track re-upload/replace-in-place (keeping the same `id` while swapping file content) — deferred, not requested.
 - Persisted per-track map visibility/color preferences — deferred (Q-055-02 explicitly scoped this out).
-- JS automated test coverage for `TrackManager.vue`/`Map.vue` — blocked on this repo adopting a JS test runner at all (tracked generally under Q-051-05's prior finding, not specific to this feature).
+- JS automated test coverage for `AlbumTracks.vue`/`Map.vue` — blocked on this repo adopting a JS test runner at all (tracked generally under Q-051-05's prior finding, not specific to this feature).

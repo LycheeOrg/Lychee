@@ -135,7 +135,7 @@ _Last updated: 2026-08-17_
   - `php artisan test --filter=TrackS3MigrateCommandTest`
   - `make phpstan`
 
-### I6 – v8 frontend: track manager UI
+### I6 – v8 frontend: `tracks` section inside `AlbumEdit.vue`
 
 - [ ] T-055-20 – Create forked v8 `track-service.ts` (FR-055-06, FR-055-07, FR-055-08).
   _Intent:_ New `resources/js/v8/services/track-service.ts` with `uploadTracks(album_id, files: File[])`, `renameTrack(album_id, track_id, name)`, `deleteTrack(album_id, track_id)`. Do **not** edit the shared `resources/js/services/album-service.ts` (NFR-055-01).
@@ -143,15 +143,15 @@ _Last updated: 2026-08-17_
   - `npm run check`
   - `npm run format`
 
-- [ ] T-055-21 – Create `TrackManager.vue` (UI-055-01, UI-055-03).
-  _Intent:_ Dialog per the spec's ASCII mock-up: multi-file "Add tracks" input, track list with inline rename and per-row delete (confirm via existing shared confirm-dialog pattern), empty state when zero tracks.
+- [ ] T-055-21 – Create `AlbumTracks.vue` section and register it in `AlbumEdit.vue` (FR-055-13, UI-055-01, UI-055-03).
+  _Intent:_ New `resources/js/v8/components/forms/album/AlbumTracks.vue` per the spec's ASCII mock-up: multi-file "Add tracks" input, track list with inline rename and per-row delete (confirm via existing shared confirm-dialog pattern), empty state when zero tracks. Register it in `resources/js/v8/components/drawers/AlbumEdit.vue` by adding a `"tracks"` value to the local `SectionId` type, an entry in the `sections` computed, and a matching `<section id="album-settings-tracks">` block — following the exact pattern already used for `share`/`move`/etc. **No new modal/dialog is created** (Q-055-05) — this reuses the existing Album Settings modal.
   _Verification commands:_
   - `npm run check`
   - `npm run format`
   - Manual walk-through in a running dev instance (no JS test runner in this repo).
 
-- [ ] T-055-22 – Replace v8's binary upload/delete menu entries with a single "Manage tracks" entry (FR-055-06, FR-055-07, FR-055-08).
-  _Intent:_ Update `resources/js/v8/composables/contextMenus/contextMenuAlbumAdd.ts` only (not the v7 equivalent) to show one entry (badge = track count) opening `TrackManager.vue`, replacing the current `track_url`-based binary logic.
+- [ ] T-055-22 – Remove v8's now-redundant upload/delete track menu entries (FR-055-13).
+  _Intent:_ Update `resources/js/v8/composables/contextMenus/contextMenuAlbumAdd.ts` only (not the v7 equivalent) to remove the `gallery.menus.upload_track`/`delete_track` entries entirely, since track management now lives in the Album Settings modal's `tracks` section (T-055-21) — consistent with sharing/transfer/move not being in this menu either.
   _Verification commands:_
   - `npm run check`
   - `npm run format`
