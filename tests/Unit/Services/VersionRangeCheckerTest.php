@@ -223,4 +223,65 @@ class VersionRangeCheckerTest extends AbstractTestCase
 		$v = new Version(3, 0, 0);
 		$this->assertFalse($this->checker->matches($v, 'not-a-version, >= 5.0.0'));
 	}
+
+	// ── "v" prefixed versions ─────────────────────────────────────────────────
+
+	public function testGreaterThanOrEqualMatchesWithVPrefix(): void
+	{
+		$v = new Version(5, 2, 0);
+		$this->assertTrue($this->checker->matches($v, '>= v5.1.2'));
+	}
+
+	public function testGreaterThanOrEqualDoesNotMatchWithVPrefix(): void
+	{
+		$v = new Version(5, 1, 1);
+		$this->assertFalse($this->checker->matches($v, '>= v5.1.2'));
+	}
+
+	public function testLessThanMatchesWithVPrefix(): void
+	{
+		$v = new Version(5, 1, 1);
+		$this->assertTrue($this->checker->matches($v, '< v5.1.2'));
+	}
+
+	public function testEqualMatchesWithVPrefix(): void
+	{
+		$v = new Version(5, 1, 2);
+		$this->assertTrue($this->checker->matches($v, '= v5.1.2'));
+	}
+
+	public function testNotEqualMatchesWithVPrefix(): void
+	{
+		$v = new Version(5, 1, 1);
+		$this->assertTrue($this->checker->matches($v, '!= v5.1.2'));
+	}
+
+	public function testTokenWithoutOperatorAndVPrefixIsTreatedAsGreaterThanOrEqual(): void
+	{
+		// "v5.1.2" (no operator) is treated as ">= 5.1.2".
+		$v = new Version(5, 2, 0);
+		$this->assertTrue($this->checker->matches($v, 'v5.1.2'));
+	}
+
+	public function testMultiConstraintMatchesVersionInRangeWithVPrefix(): void
+	{
+		// 5.0.5 is >= 5.0.0 and < 5.1.2 — should match, even with "v" prefixes.
+		$v = new Version(5, 0, 5);
+		$this->assertTrue($this->checker->matches($v, '>= v5.0.0, < v5.1.2'));
+	}
+
+	public function testMultiConstraintDoesNotMatchVersionAtUpperBoundWithVPrefix(): void
+	{
+		$v = new Version(5, 1, 2);
+		$this->assertFalse($this->checker->matches($v, '>= v5.0.0, < v5.1.2'));
+	}
+
+	public function testUppercaseVPrefixIsNotStripped(): void
+	{
+		// Only lowercase "v" is stripped; an uppercase "V" prefix is left in the
+		// major component, so "V5" is parsed via intval() as 0, silently
+		// treating the constraint as "0.1.2" instead of "5.1.2".
+		$v = new Version(5, 2, 0);
+		$this->assertTrue($this->checker->matches($v, '>= V5.1.2'));
+	}
 }
