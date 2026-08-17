@@ -202,8 +202,21 @@ if (typeof route.query.q === "string" && route.query.q.length > 0) {
 
 const resultsMarkerRef = ref<HTMLElement | null>(null);
 
-function onSearch(terms: string) {
-	searchStore.search(terms).then(() => {
+/**
+ * Read the ?page=N query parameter from the current route.
+ * Returns 1 (first page) when the param is absent or invalid.
+ */
+function getStartPage(): number {
+	const p = route.query.page;
+	if (typeof p === "string") {
+		const parsed = parseInt(p, 10);
+		return isNaN(parsed) || parsed < 1 ? 1 : parsed;
+	}
+	return 1;
+}
+
+function onSearch(terms: string, startPage = 1) {
+	searchStore.search(terms, startPage).then(() => {
 		if (searchStore.total > 0) {
 			nextTick(() => {
 				resultsMarkerRef.value?.scrollIntoView({ behavior: "smooth" });
@@ -560,8 +573,9 @@ onMounted(async () => {
 	await load();
 
 	if (typeof route.query.q === "string" && route.query.q.length > 0) {
-		// Bookmarked/shared URL: run the search that the query string encodes.
-		onSearch(route.query.q);
+		// Bookmarked/shared URL: run the search that the query string encodes, jumping
+		// straight to ?page=N so a direct link to a photo opens on the page it came from.
+		onSearch(route.query.q, getStartPage());
 	}
 
 	setScroll();

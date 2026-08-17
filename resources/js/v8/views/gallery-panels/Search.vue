@@ -202,15 +202,28 @@ if (typeof route.query.q === "string" && route.query.q.length > 0) {
 
 const resultsMarkerRef = ref<HTMLElement | null>(null);
 
-function onSearch(terms: string) {
-	searchStore.search(terms).then(() => {
+/**
+ * Read the ?page=N query parameter from the current route.
+ * Returns 1 (first page) when the param is absent or invalid.
+ */
+function getStartPage(): number {
+	const p = route.query.page;
+	if (typeof p === "string") {
+		const parsed = parseInt(p, 10);
+		return isNaN(parsed) || parsed < 1 ? 1 : parsed;
+	}
+	return 1;
+}
+
+function onSearch(terms: string, updateQuery = true, startPage = 1) {
+	searchStore.search(terms, startPage).then(() => {
 		if (searchStore.total > 0) {
 			nextTick(() => {
 				resultsMarkerRef.value?.scrollIntoView({ behavior: "smooth" });
 			});
 		}
 	});
-	if (route.query.q !== terms) {
+	if (updateQuery && route.query.q !== terms) {
 		router.replace({ query: { ...route.query, q: terms } });
 	}
 }
@@ -269,9 +282,13 @@ function clearScope() {
 	}
 	albumId.value = ALL;
 	albumStore.reset();
-	router.replace({ name: "search", params: { albumId: undefined, photoId: photoId.value } });
+	// Preserve q (and any other query params) in this same navigation: onSearch() only
+	// updates the query when it differs from route.query.q, but route.query wouldn't
+	// reflect a preceding q-less replace() until that navigation resolves, so a separate
+	// replace() here would race with onSearch()'s check and could drop q.
+	router.replace({ name: "search", params: { albumId: undefined, photoId: photoId.value }, query: route.query });
 	if (searchStore.searchTerm !== undefined) {
-		onSearch(searchStore.searchTerm);
+		onSearch(searchStore.searchTerm, false);
 	}
 }
 
@@ -573,8 +590,9 @@ onMounted(async () => {
 	// shown as if it were search results. Must run *after* load(), not before, since load()
 	// is what (re)populates it.
 	if (typeof route.query.q === "string" && route.query.q.length > 0) {
-		// Bookmarked/shared URL: run the search that the query string encodes.
-		onSearch(route.query.q);
+		// Bookmarked/shared URL: run the search that the query string encodes, jumping
+		// straight to ?page=N so a direct link to a photo opens on the page it came from.
+		onSearch(route.query.q, true, getStartPage());
 	} else if (searchStore.searchTerm === undefined) {
 		searchStore.clear();
 	}
