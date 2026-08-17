@@ -14,6 +14,7 @@ use App\Http\Resources\Models\Utils\PreFormattedAlbumData;
 use App\Http\Resources\Rights\AlbumRightsResource;
 use App\Http\Resources\Traits\HasHeaderUrl;
 use App\Models\Album;
+use App\Models\Track;
 use App\Policies\AlbumPolicy;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -35,6 +36,9 @@ class HeadAlbumResource extends Data
 
 	// attributes
 	public ?string $track_url;
+	/** @var TrackResource[] */
+	#[LiteralTypeScriptType('App.Http.Resources.Models.TrackResource[]')]
+	public array $tracks;
 	public string $license;
 	public ?string $header_id;
 
@@ -74,6 +78,7 @@ class HeadAlbumResource extends Data
 
 		// attributes
 		$this->track_url = $album->track_url;
+		$this->tracks = $album->tracks->map(fn (Track $track) => new TrackResource($track))->all();
 		$this->license = $album->license->localization();
 		// TODO: Investigate later why this string is 24 characters long.
 		$this->header_id = $album->header_id !== null ? trim($album->header_id) : null;

@@ -243,6 +243,17 @@ Replaces on-the-fly virtual column computation with physical database fields upd
 
 **Benefits**: 50%+ query time reduction for album listings, removes expensive nested set JOINs from read path
 
+### Multi-Track Albums (Feature 055)
+Replaces the single nullable `albums.track_short_path` column with a `tracks` child table (`app/Models/Track.php`), the same one-parent-many-children shape as `size_variants`/`album_size_statistics`: own auto-increment `id`, `album_id` FK (`onDelete('cascade')` as a DB-level safety net only), `disk` cast to `StorageDiskType`.
+
+**Primary-track compatibility mechanism:** v7's single-track UI (`AlbumHeader.vue`, `contextMenuAlbumAdd.ts`, `Map.vue`, `album-service.ts`'s `uploadTrack`/`deleteTrack`) is untouched. It transparently operates on the album's "primary" track — an explicit `tracks.is_primary` boolean (no `ofMany`/`oldestOfMany` relation; that construct has zero prior usage anywhere in this codebase), maintained transactionally by application code:
+- Creation (backfill migration, legacy upload, v8 batch upload) marks a row primary only if it is the album's first track.
+- Deletion of the primary promotes the next-oldest remaining track (`ORDER BY id ASC LIMIT 1`) in the same transaction.
+
+`Album::tracks(): HasMany<Track>` / `Album::primaryTrack(): HasOne<Track>` (`where('is_primary', true)`). v8 gets a forked `resources/js/v8/services/track-service.ts` and a new `AlbumTracks.vue` section inside the existing Album Settings modal — **never edit the shared `album-service.ts` or v7 tree for track changes; fork instead**, per this repo's general v8-migration convention.
+
+**Delete cleanup:** `Actions/Album/Delete` collects all tracks recursively (not just one per album), grouped by `disk`, dispatching one `FileDeleterJob` per distinct disk (previously hardcoded to `StorageDiskType::LOCAL`, silently leaking S3-stored files). The `tracks` row cleanup lives in `AlbumsToBeDeletedDTO::executeDelete()`'s chunked dependents block (where `Schema::disableForeignKeyConstraints()` is active, so the FK cascade never fires during bulk deletes) — mirroring the existing `album_size_statistics` cleanup line there, not in `Delete.php` itself.
+
 ### RAW Upload Pipeline (Feature 020)
 Preserves original camera RAW / HEIC / PSD files as a dedicated size variant while converting to a displayable JPEG for the gallery.
 

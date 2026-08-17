@@ -72,7 +72,7 @@ Lychee uses a sophisticated album architecture with **two distinct album hierarc
 - **Visual**: cover_id, header_id, license
 - **Layout**: album_thumb_aspect_ratio, album_timeline
 - **Album sorting**: Order child albums by various criteria
-- **Track**: Optional audio track for slideshow
+- **Tracks**: Any number of GPS/GPX tracks, shown on the Map view
 
 ### Nested Tree Structure
 
@@ -300,7 +300,7 @@ All album types (Regular and Tag) share these inherited features from BaseAlbumI
 - **Header image**: Banner image for album view
 - **Album sorting**: Order child albums
 - **Aspect ratio**: Display ratio for album thumbnails
-- **Track**: Audio track for slideshow
+- **Tracks**: GPS/GPX tracks (an album can have any number)
 - **Purchasable**: E-commerce integration (webshop)
 
 ---

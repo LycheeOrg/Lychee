@@ -68,6 +68,7 @@ class PositionData
 			photos: $photo_query->get(),
 			track_url: null,
 			should_downgrade: !$this->config_manager->getValueAsBool('grants_full_photo_access'),
+			tracks: collect(),
 		);
 	}
 }
