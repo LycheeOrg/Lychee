@@ -22,6 +22,8 @@ use App\Actions\Album\CreatePersonAlbum;
 use App\DTO\AlbumSortingCriterion;
 use App\Enum\ColumnSortingType;
 use App\Enum\OrderSortingType;
+use App\Events\PersonAlbumSaved;
+use App\Events\TagAlbumSaved;
 use App\Models\AccessPermission;
 use App\Models\Album;
 use App\Models\Configs;
@@ -254,8 +256,11 @@ class AlbumRepositoryTest extends AbstractTestCase
 			DB::getQueryLog(),
 			// Identifier quoting is driver-specific (SQLite/Postgres use
 			// "double quotes", MySQL/MariaDB use `backticks`) — strip both
-			// before matching so this works under any test DB driver.
-			fn (array $q) => str_contains(str_replace(['"', '`'], '', $q['query']), 'albums')
+			// before matching so this works under any test DB driver. Match
+			// "albums" as a whole word: some matching-album queries also hit
+			// person_albums_persons, whose name contains "albums" as a
+			// substring but must not be mistaken for a hit on the albums table.
+			fn (array $q) => preg_match('/\balbums\b/', str_replace(['"', '`'], '', $q['query'])) === 1
 		));
 		DB::flushQueryLog();
 		DB::disableQueryLog();
@@ -353,6 +358,32 @@ class AlbumRepositoryTest extends AbstractTestCase
 		$this->assertSame(0, $second_call_count, 'A cache hit must not run any query against albums/base_albums.');
 	}
 
+	/**
+	 * Regression test: a cached matching-albums page for a TagAlbum must
+	 * carry that TagAlbum's own albumTag() so that
+	 * ManagedCacheAlbumListingInvalidator::handleTagAlbumSaved() (fired when
+	 * the smart album's criteria are edited) can evict it. Before the fix,
+	 * the cached entry was only tagged with per-tag-id and user tags, so a
+	 * criteria edit left the stale page cached.
+	 */
+	public function testGetMatchingAlbumsForTagPaginatedInvalidatedByTagAlbumSaved(): void
+	{
+		$tag = Tag::factory()->create();
+		$tagAlbum = TagAlbum::factory()->owned_by($this->user)->of_tags([$tag])->create();
+		$this->parentAlbum->tags()->sync([$tag->id]);
+
+		$this->actingAs($this->user);
+		$this->repository->getMatchingAlbumsForTagPaginated($tagAlbum, 10);
+
+		TagAlbumSaved::dispatch([$tagAlbum->id]);
+
+		$second_call_count = $this->countAlbumTableQueries(
+			fn () => $this->repository->getMatchingAlbumsForTagPaginated($tagAlbum, 10)
+		);
+
+		$this->assertGreaterThan(0, $second_call_count, 'A TagAlbumSaved event must evict this TagAlbum\'s cached matching-albums page.');
+	}
+
 	// ── getMatchingAlbumsForPersonPaginated (PersonAlbum) ────────
 
 	public function testGetMatchingAlbumsForPersonPaginatedReturnsContainingAlbum(): void
@@ -381,5 +412,32 @@ class AlbumRepositoryTest extends AbstractTestCase
 		$result = $this->repository->getMatchingAlbumsForPersonPaginated($personAlbum, 10);
 
 		$this->assertEquals(0, $result->total());
+	}
+
+	/**
+	 * Regression test: a cached matching-albums page for a PersonAlbum must
+	 * carry that PersonAlbum's own albumTag() so that
+	 * ManagedCacheAlbumListingInvalidator::handlePersonAlbumSaved() (fired
+	 * when the smart album's criteria are edited) can evict it. Before the
+	 * fix, the cached entry was only tagged with per-person-id and user
+	 * tags, so a criteria edit left the stale page cached.
+	 */
+	public function testGetMatchingAlbumsForPersonPaginatedInvalidatedByPersonAlbumSaved(): void
+	{
+		$person = Person::factory()->create(['is_searchable' => true]);
+		$photo = Photo::factory()->owned_by($this->user)->in($this->parentAlbum)->create();
+		Face::factory()->for_photo($photo)->for_person($person)->create();
+
+		$this->actingAs($this->user);
+		$personAlbum = resolve(CreatePersonAlbum::class)->create('person_album', [$person->id], false);
+		$this->repository->getMatchingAlbumsForPersonPaginated($personAlbum, 10);
+
+		PersonAlbumSaved::dispatch($personAlbum);
+
+		$second_call_count = $this->countAlbumTableQueries(
+			fn () => $this->repository->getMatchingAlbumsForPersonPaginated($personAlbum, 10)
+		);
+
+		$this->assertGreaterThan(0, $second_call_count, 'A PersonAlbumSaved event must evict this PersonAlbum\'s cached matching-albums page.');
 	}
 }

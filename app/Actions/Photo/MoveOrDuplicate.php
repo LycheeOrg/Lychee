@@ -75,13 +75,16 @@ class MoveOrDuplicate
 
 			// Dispatch event for destination album (photos added)
 			AlbumSaved::dispatch([$to_album->id], [$to_album->parent_id]);
+		}
 
-			// Dispatch PhotoSaved for every photo that gained this album link
-			// (covers both cross-album move and the same-album "copy" case,
-			// i.e. CopyPhotosRequest, where $from_album === $to_album and
-			// PhotoMoved below never fires) so listeners depending on a
-			// photo's containing albums (e.g. the TagAlbum/PersonAlbum
-			// "matching albums" cache) are notified either way.
+		// Dispatch PhotoSaved whenever a photo's album links were mutated in
+		// any way (link gained, lost, or both). This covers cross-album
+		// moves, the same-album "copy" case (CopyPhotosRequest, where
+		// $from_album === $to_album and PhotoMoved below never fires), and
+		// the move-to-root-album case ($to_album === null, no link gained),
+		// so listeners depending on a photo's containing albums (e.g. the
+		// TagAlbum/PersonAlbum "matching albums" cache) are notified either way.
+		if ($from_album !== null || $to_album !== null) {
 			PhotoSaved::dispatch($photos_ids);
 		}
 

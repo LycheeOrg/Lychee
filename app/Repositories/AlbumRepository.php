@@ -131,6 +131,7 @@ class AlbumRepository
 
 		$key = $this->cache_key_provider->tagAlbumMatchingAlbumsPageKey($tag_album->id, $user_id, $page, $per_page, $unlocked_digest);
 		$tags = [
+			$this->cache_key_provider->albumTag($tag_album->id),
 			...$this->cache_key_provider->albumTagTags($tag_ids),
 			$this->cache_key_provider->userTag($user_id),
 			$this->cache_key_provider->albumListingGlobalTag(),
@@ -217,6 +218,7 @@ class AlbumRepository
 
 		$key = $this->cache_key_provider->personAlbumMatchingAlbumsPageKey($person_album->id, $user_id, $page, $per_page, $unlocked_digest);
 		$tags = [
+			$this->cache_key_provider->albumTag($person_album->id),
 			...$this->cache_key_provider->albumPersonTags($person_ids),
 			$this->cache_key_provider->userTag($user_id),
 			$this->cache_key_provider->albumListingGlobalTag(),
