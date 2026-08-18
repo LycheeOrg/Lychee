@@ -14,6 +14,9 @@
 
 html {
 	font-family: "Libre Franklin", "Vazirmatn", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+body {
 	/*
 	  Defensive: some `position: fixed` elements with a `scale()`/`translate()` entrance
 	  animation (e.g. the landing page's animate-landingIntroPopIn) briefly overflow the
@@ -23,6 +26,14 @@ html {
 	  every landing page load. Every intentional horizontal scroll in this app is already
 	  scoped to its own `overflow-x-auto` container, so nothing relies on document-level
 	  horizontal scroll.
+
+	  Kept on `body`, not `html`: the CSS Overflow spec propagates `body`'s overflow to the
+	  viewport only while the root (`html`) element's own computed overflow is `visible` on
+	  both axes. Modal/dialog libraries (Reka UI's `useBodyScrollLock`, used by every v8
+	  modal) lock background scroll by setting `document.body.style.overflow = "hidden"` -
+	  that only works *because* of this propagation. Setting `overflow-x: hidden` on `html`
+	  instead breaks the propagation (root's overflow is no longer `visible`), so the body
+	  lock stops affecting the viewport and the page keeps scrolling behind an open modal.
 	*/
 	overflow-x: hidden;
 }
