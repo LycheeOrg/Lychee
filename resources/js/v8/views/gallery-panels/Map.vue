@@ -28,7 +28,7 @@ import { trans } from "laravel-vue-i18n";
 import { storeToRefs } from "pinia";
 import { ref, Ref } from "vue";
 import { useRouter } from "vue-router";
-import L, { LatLngBoundsLiteral } from "leaflet";
+import L from "leaflet";
 import "leaflet-rotatedmarker/leaflet.rotatedMarker.js";
 import "leaflet.markercluster/dist/leaflet.markercluster.js";
 import "leaflet/dist/leaflet.css";
@@ -88,10 +88,27 @@ const { is_full_screen } = storeToRefs(togglableStore);
 const camera_date = trans("gallery.camera_date");
 const map_provider = ref<App.Http.Resources.GalleryConfigs.MapProviderData | undefined>(undefined);
 const map = ref(undefined) as Ref<L.Map | undefined>;
-const bounds = ref<LatLngBoundsLiteral | undefined>(undefined);
+const bounds = ref<L.LatLngBoundsExpression | undefined>(undefined);
 const photoLayer = ref<unknown>(undefined);
-const trackLayer = ref<unknown>(undefined);
+// One entry per track (FR-055-09 UI half); keyed by track id so a future re-fetch could diff them.
+const trackLayers = ref<Map<number, L.Layer>>(new Map());
 const data = ref<App.Http.Resources.Collections.PositionDataResource | undefined>(undefined);
+
+// Fixed palette cycled across tracks (Q-055-02: no persisted/user-chosen colors).
+const TRACK_COLORS = ["#e6194b", "#3cb44b", "#4363d8", "#f58231", "#911eb4", "#42d4f4", "#f032e6", "#bfef45"];
+
+function colorForTrackIndex(index: number): string {
+	return TRACK_COLORS[index % TRACK_COLORS.length];
+}
+
+// Leaflet's layers control assigns overlay names via innerHTML, and track names
+// are user-supplied (RenameAlbumTrackRequest only validates type/length). Encode
+// here so the name renders as text instead of being parsed as HTML.
+function escapeHtml(text: string): string {
+	const div = document.createElement("div");
+	div.textContent = text;
+	return div.innerHTML;
+}
 
 function loadMapProvider() {
 	AlbumService.getMapProvider()
@@ -195,7 +212,7 @@ function open() {
 function addContentsToMap() {
 	// check if empty
 	if (data.value === undefined) return;
-	if (data.value.photos.length === 0) return;
+	if (data.value.photos.length === 0 && data.value.tracks.length === 0) return;
 
 	// Check initializations
 	if (map.value === undefined) return;
@@ -242,11 +259,7 @@ function addContentsToMap() {
 	// @ts-expect-error photoLater is created by leaflet.photo and is not typed
 	photoLayer.value.add(photos).addTo(map.value);
 
-	if (max_lat === null || min_lat === null || max_lng === null || min_lng === null) {
-		return;
-	}
-
-	if (photos.length > 0) {
+	if (photos.length > 0 && max_lat !== null && min_lat !== null && max_lng !== null && min_lng !== null) {
 		// update map bounds
 		const dist_lat = max_lat - min_lat;
 		const dist_lng = max_lng - min_lng;
@@ -256,11 +269,15 @@ function addContentsToMap() {
 		];
 	}
 
-	// add track
-	if (data.value.track_url) {
+	// add tracks: one L.GPX layer per track, colored from a fixed palette, wired into
+	// Leaflet's native layers control for the legend/visibility checkboxes (Q-055-02).
+	// Placed before any early return so a track still renders on a photo-less album.
+	const overlays: Record<string, L.Layer> = {};
+	data.value.tracks.forEach((track, index) => {
 		// @ts-expect-error L.GPX is not typed
-		trackLayer.value = new L.GPX(data.value.track_url, {
+		const layer = new L.GPX(track.url, {
 			async: true,
+			polyline_options: { color: colorForTrackIndex(index), weight: 4 },
 			marker_options: {
 				startIconUrl: null,
 				endIconUrl: null,
@@ -270,17 +287,20 @@ function addContentsToMap() {
 			.on("error", function (e: { err: string }) {
 				toast.add({ severity: "error", summary: trans("gallery.map.error_gpx"), detail: e.err, life: 3000 });
 			})
-			.on("loaded", function (e: { target: { getBounds: () => LatLngBoundsLiteral } }) {
+			.on("loaded", function (e: { target: { getBounds: () => L.LatLngBounds } }) {
 				if (photos.length === 0) {
-					// no photos, update map bound to center track
-					bounds.value = e.target.getBounds();
+					// no photos: extend the map bounds to keep every track visible
+					const loadedBounds = e.target.getBounds();
+					bounds.value = bounds.value instanceof L.LatLngBounds ? bounds.value.extend(loadedBounds) : loadedBounds;
 					updateZoom();
 				}
 			});
-		if (trackLayer.value !== undefined) {
-			// @ts-expect-error trackLayer is created by leaflet.gpx and is not typed
-			trackLayer.value.addTo(map.value);
-		}
+		layer.addTo(map.value as L.Map);
+		trackLayers.value.set(track.id, layer as L.Layer);
+		overlays[escapeHtml(track.name)] = layer as L.Layer;
+	});
+	if (Object.keys(overlays).length > 0) {
+		L.control.layers(undefined, overlays).addTo(map.value);
 	}
 
 	// Update Zoom and Position

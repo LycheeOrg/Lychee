@@ -93,7 +93,11 @@ class Delete
 		// Now can handle the regular albums
 		$albums_to_delete = $this->findAllAlbumsToDelete($album_ids);
 
-		$this->jobs[] = new FileDeleterJob(StorageDiskType::LOCAL, $albums_to_delete->tracks->all());
+		$albums_to_delete->tracks
+			->groupBy(fn (object $track) => $track->disk)
+			->each(function (Collection $group, string $disk): void {
+				$this->jobs[] = new FileDeleterJob(StorageDiskType::from($disk), $group->pluck('file_name')->all());
+			});
 
 		$photos_to_be_deleted = $this->findAllPhotosToDelete($albums_to_delete->album_ids);
 
@@ -258,9 +262,9 @@ class Delete
 		// Only regular albums are owners of photos, so we only need to
 		// find all photos in those and their descendants
 		// Only load necessary attributes for tree.
-		/** @var Collection<int,object{id:string,parent_id:string|null,_lft:int,_rgt:int,track_short_path:string|null}> $albums */
+		/** @var Collection<int,object{id:string,parent_id:string|null,_lft:int,_rgt:int}> $albums */
 		$albums = DB::table('albums')
-			->select(['id', 'parent_id', '_lft', '_rgt', 'track_short_path'])
+			->select(['id', 'parent_id', '_lft', '_rgt'])
 			->whereIn('id', $album_ids)
 			->get();
 
@@ -268,21 +272,29 @@ class Delete
 		$parent_ids = $albums->pluck('parent_id')->filter()->unique()->values()->all();
 
 		$recursive_album_ids = $albums->pluck('id')->all(); // only IDs which refer to regular albums are incubators for recursive IDs
-		$recursive_album_tracks = $albums->pluck('track_short_path');
 
 		/** @var Album $album */
 		foreach ($albums as $album) {
 			// Collect all (aka recursive) sub-albums in each album
 			// Use DB::table directly to avoid any Eloquent overhead and eager loading
 			$sub_albums = DB::table('albums')
-				->select(['id', 'track_short_path'])
+				->select(['id'])
 				->whereBetween('_lft', [$album->_lft + 1, $album->_rgt - 1])
 				->get();
 			$recursive_album_ids = array_merge($recursive_album_ids, $sub_albums->pluck('id')->all());
-			$recursive_album_tracks = $recursive_album_tracks->merge($sub_albums->pluck('track_short_path'));
 		}
-		// prune the null values
-		$recursive_album_tracks = $recursive_album_tracks->filter(fn ($val) => $val !== null);
+
+		// All tracks (across every disk) belonging to the recursive album set (FR-055-12).
+		// Chunk album_ids to avoid hitting the database placeholder limit (MySQL error 1390).
+		/** @var Collection<int,object{disk:string,file_name:string}> $recursive_album_tracks */
+		$recursive_album_tracks = collect($recursive_album_ids)->chunk(AlbumsToBeDeletedDTO::CHUNK_SIZE)->reduce(
+			function (Collection $carry, Collection $chunk): Collection {
+				return $carry->concat(
+					DB::table('tracks')->select(['disk', 'file_name'])->whereIn('album_id', $chunk->all())->get()
+				);
+			},
+			collect([])
+		);
 
 		return new AlbumsToBeDeletedDTO(
 			parent_ids: $parent_ids,

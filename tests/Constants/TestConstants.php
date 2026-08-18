@@ -24,6 +24,7 @@ class TestConstants
 	public const MIME_TYPE_VID_MP4 = 'video/mp4';
 	public const MIME_TYPE_VID_QUICKTIME = 'video/quicktime';
 	public const MIME_TYPE_APP_ZIP = 'application/zip';
+	public const MIME_TYPE_APP_GPX = 'application/gpx+xml';
 
 	public const SAMPLE_DOWNLOAD_JPG = 'https://lycheeorg.dev/test_data/mongolia.jpeg';
 	public const SAMPLE_DOWNLOAD_JPG_WITHOUT_EXTENSION = 'https://lycheeorg.dev/test_data/mongolia';
@@ -59,6 +60,8 @@ class TestConstants
 	public const SAMPLE_FILE_XCF = 'tests/Samples/xcf.xcf';
 	public const SAMPLE_FILE_HEIC = 'tests/Samples/classic-car.heic';
 	public const SAMPLE_FILE_HEIF = 'tests/Samples/sewing-threads.heic';
+	public const SAMPLE_FILE_GPX = 'tests/Fixtures/tracks/sample.gpx';
+	public const SAMPLE_FILE_GPX2 = 'tests/Fixtures/tracks/sample2.gpx';
 
 	public const SAMPLE_FILES_2_MIME = [
 		self::SAMPLE_FILE_AARHUS => self::MIME_TYPE_IMG_JPEG,
@@ -90,6 +93,8 @@ class TestConstants
 		self::SAMPLE_TEST_ZIP => self::MIME_TYPE_APP_ZIP,
 		self::SAMPLE_FILE_HEIC => self::MIME_TYPE_IMG_HEIC,
 		self::SAMPLE_FILE_HEIF => self::MIME_TYPE_IMG_HEIF,
+		self::SAMPLE_FILE_GPX => self::MIME_TYPE_APP_GPX,
+		self::SAMPLE_FILE_GPX2 => self::MIME_TYPE_APP_GPX,
 	];
 
 	public const CONFIG_ALBUMS_SORTING_COL = 'sorting_albums_col';

@@ -9,6 +9,7 @@
 namespace App\Models;
 
 use App\Actions\Album\Delete;
+use App\Assets\Features;
 use App\DTO\AlbumSortingCriterion;
 use App\DTO\EffectiveAccessPermission;
 use App\Enum\AlbumTitleColor;
@@ -17,11 +18,13 @@ use App\Enum\AspectRatioType;
 use App\Enum\ColumnSortingType;
 use App\Enum\LicenseType;
 use App\Enum\OrderSortingType;
+use App\Enum\StorageDiskType;
 use App\Enum\TimelineAlbumGranularity;
 use App\Exceptions\ConfigurationKeyMissingException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
+use App\Jobs\UploadTrackToS3Job;
 use App\ModelFunctions\HasAbstractAlbumProperties;
 use App\Models\Builders\AlbumBuilder;
 use App\Models\Extensions\BaseAlbum;
@@ -35,10 +38,12 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Kalnoy\Nestedset\Collection as NSCollection;
 use Kalnoy\Nestedset\Contracts\Node;
@@ -69,8 +74,9 @@ use Kalnoy\Nestedset\NodeTrait;
  * @property string|null              $header_id
  * @property Photo|null               $header
  * @property AlbumSizeStatistics|null $sizeStatistics                Pre-computed size statistics for this album.
- * @property string|null              $track_short_path
- * @property string|null              $track_url
+ * @property Collection<int,Track>    $tracks
+ * @property Track|null               $primaryTrack
+ * @property string|null              $track_url                     Back-compat accessor (FR-055-09): resolves to primaryTrack's URL.
  * @property AspectRatioType|null     $album_thumb_aspect_ratio
  * @property TimelineAlbumGranularity $album_timeline
  * @property int                      $_lft
@@ -343,6 +349,29 @@ class Album extends BaseAlbum implements Node
 	}
 
 	/**
+	 * Return the relationship between an album and all its tracks, ordered by upload order.
+	 *
+	 * @return HasMany<Track,$this>
+	 */
+	public function tracks(): HasMany
+	{
+		return $this->hasMany(Track::class, 'album_id', 'id')->orderBy('id');
+	}
+
+	/**
+	 * Return the relationship between an album and its primary track.
+	 *
+	 * No `ofMany`/`oldestOfMany` construct is used (Q-055-10): `is_primary` is
+	 * an explicit boolean maintained transactionally on create/delete.
+	 *
+	 * @return HasOne<Track,$this>
+	 */
+	public function primaryTrack(): HasOne
+	{
+		return $this->hasOne(Track::class, 'album_id', 'id')->where('is_primary', true);
+	}
+
+	/**
 	 * Return the License used by the album.
 	 *
 	 * @throws ConfigurationKeyMissingException
@@ -516,20 +545,20 @@ class Album extends BaseAlbum implements Node
 	/**
 	 * Accessor for the "virtual" attribute {@link Album::$track_url}.
 	 *
-	 * This is a convenient method which wraps
-	 * {@link Album::$track_short_path} into
-	 * {@link \Illuminate\Support\Facades\Storage::url()}.
+	 * Back-compat accessor for v7 (FR-055-09): resolves to the primary track's URL.
 	 *
-	 * @return string|null the url of the track
+	 * @return string|null the url of the primary track
 	 */
 	public function getTrackUrlAttribute(): ?string
 	{
-		return $this->track_short_path !== null && $this->track_short_path !== '' ?
-			Storage::url($this->track_short_path) : null;
+		return $this->primaryTrack?->url;
 	}
 
 	/**
-	 * Set the GPX track for the album.
+	 * Set the GPX track for the album (legacy v7 single-track upload, FR-055-04).
+	 *
+	 * Delegates to the primary {@link Track}: updates it in place if one
+	 * exists, otherwise creates the album's first (and thus primary) track.
 	 *
 	 * @param UploadedFile $file the GPX track file to be set
 	 *
@@ -541,14 +570,28 @@ class Album extends BaseAlbum implements Node
 	public function setTrack(UploadedFile $file): void
 	{
 		try {
-			if ($this->track_short_path !== null) {
-				Storage::delete($this->track_short_path);
+			$name = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+			$primary = $this->primaryTrack()->first();
+
+			if ($primary !== null) {
+				Storage::disk($primary->disk->value)->delete($primary->file_name);
+				$primary->file_name = $this->storeTrackFile($file);
+				$primary->name = $name;
+				$primary->disk = StorageDiskType::LOCAL;
+				$primary->save();
+				$track = $primary;
+			} else {
+				$track = new Track();
+				$track->album_id = $this->id;
+				$track->name = $name;
+				$track->file_name = $this->storeTrackFile($file);
+				$track->is_primary = true;
+				$track->save();
 			}
 
-			$new_track_name = strtr(base64_encode(random_bytes(18)), '+/', '-_') . '.xml';
-			Storage::putFileAs('tracks/', $file, $new_track_name);
-			$this->track_short_path = 'tracks/' . $new_track_name;
-			$this->save();
+			if (Features::active('use-s3')) {
+				UploadTrackToS3Job::dispatch($track, $this->owner_id);
+			}
 		} catch (ModelDBException $e) {
 			throw $e;
 		} catch (\Exception $e) {
@@ -557,7 +600,23 @@ class Album extends BaseAlbum implements Node
 	}
 
 	/**
-	 * Delete the track of the album.
+	 * Stores the uploaded track file on the local disk and returns its storage-relative path.
+	 *
+	 * @throws \Exception
+	 */
+	private function storeTrackFile(UploadedFile $file): string
+	{
+		$new_track_name = strtr(base64_encode(random_bytes(18)), '+/', '-_') . '.xml';
+		Storage::disk(StorageDiskType::LOCAL->value)->putFileAs('tracks/', $file, $new_track_name);
+
+		return 'tracks/' . $new_track_name;
+	}
+
+	/**
+	 * Delete the primary track of the album (legacy v7 single-track delete, FR-055-05).
+	 *
+	 * If another track remains, the next-oldest one is promoted to primary
+	 * (Q-055-10 — not automatic, no `ofMany` relation resolves this).
 	 *
 	 * @throws ModelDBException
 	 *
@@ -565,12 +624,21 @@ class Album extends BaseAlbum implements Node
 	 */
 	public function deleteTrack(): void
 	{
-		if ($this->track_short_path === null) {
-			return;
-		}
-		Storage::delete($this->track_short_path);
-		$this->track_short_path = null;
-		$this->save();
+		DB::transaction(function (): void {
+			$primary = $this->primaryTrack()->first();
+			if ($primary === null) {
+				return;
+			}
+
+			Storage::disk($primary->disk->value)->delete($primary->file_name);
+			$primary->delete();
+
+			$next = $this->tracks()->first();
+			if ($next !== null) {
+				$next->is_primary = true;
+				$next->save();
+			}
+		});
 	}
 
 	protected function getAlbumSortingAttribute(): ?AlbumSortingCriterion

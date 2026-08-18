@@ -1,5 +1,4 @@
 <template>
-	<input id="upload_track_file" type="file" name="fileElem" accept="application/x-gpx+xml" class="hidden" @change="uploadTrack" />
 	<UHeader
 		v-if="albumStore.album"
 		:class="{
@@ -87,7 +86,6 @@ import { useContextMenuAlbumAdd, type AddMenuItem } from "@/v8/composables/conte
 import { useGalleryModals } from "@/composables/modalsTriggers/galleryModals";
 import { useLycheeStateStore } from "@/stores/LycheeState";
 import { storeToRefs } from "pinia";
-import AlbumService from "@/services/album-service";
 import { useTogglablesStateStore } from "@/stores/ModalsState";
 import { useFavouriteStore } from "@/stores/FavouriteState";
 import GoBack from "./GoBack.vue";
@@ -123,29 +121,6 @@ const emits = defineEmits<{
 
 const showBreadcrumb = computed(() => albumStore.config?.is_breadcrumb_enabled ?? false);
 
-function toggleUploadTrack() {
-	document.getElementById("upload_track_file")?.click();
-}
-
-function uploadTrack(e: Event) {
-	if (albumStore.album === undefined) {
-		return;
-	}
-
-	const target: HTMLInputElement = e.target as HTMLInputElement;
-	if (target.files === null) {
-		return;
-	}
-	AlbumService.uploadTrack(albumStore.album.id, target.files[0] as Blob);
-}
-
-function deleteTrack() {
-	if (albumStore.album === undefined) {
-		return;
-	}
-	AlbumService.deleteTrack(albumStore.album.id);
-}
-
 const { addMenu } = useContextMenuAlbumAdd(
 	albumStore,
 	{
@@ -153,8 +128,6 @@ const { addMenu } = useContextMenuAlbumAdd(
 		toggleCameraCapture,
 		toggleCreateAlbum,
 		toggleImportFromLink,
-		toggleUploadTrack,
-		deleteTrack,
 		toggleImportFromDropbox,
 		toggleImportFromServer,
 	},

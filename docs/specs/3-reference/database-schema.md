@@ -58,8 +58,25 @@ Regular photo albums with hierarchical tree structure using nested set model.
 - Belongs to parent `Album` (self-referential)
 - Has many child `Album` (children)
 - Has many `AccessPermission`
+- Has many `Track` (`tracks()`), and one `Track` designated primary (`primaryTrack()`)
 
 For detailed information about the tree structure implementation, see [Album Tree Structure](../4-architecture/album-tree-structure.md) which explains the nested set model with `_lft` and `_rgt` boundaries.
+
+#### Track
+GPS/GPX tracks belonging to an album (Feature 055 — multiple tracks per album, superseding the single `albums.track_short_path` column it replaced).
+
+**Key Fields:**
+- `id`: Primary key (auto-increment)
+- `album_id`: Foreign key to Album (`onDelete('cascade')`)
+- `name`: Display name (defaults to the uploaded filename, extension stripped)
+- `file_name`: Storage-relative path (e.g. `tracks/<random>.xml`), same semantics as `SizeVariant.short_path`
+- `disk`: Storage disk, cast to `StorageDiskType` (`images` local / `s3`), defaults to `StorageDiskType::LOCAL` at creation
+- `is_primary`: Boolean, at most one `true` row per `album_id`, maintained transactionally by application code on create/delete (no DB-level constraint, no `ofMany` relation)
+
+**Relationships:**
+- Belongs to `Album`
+
+**Legacy v7 compatibility:** v7's single-track "Upload track"/"Delete track" UI is unchanged; it transparently reads and writes the album's primary track (`Album::setTrack()`/`deleteTrack()`, and the `Album::$track_url` accessor). v8 gets full multi-track management (batch upload, rename, per-track delete) via `POST`/`PATCH`/`DELETE /Album::tracks`.
 
 #### TagAlbum
 Special albums that automatically contain photos with specific tags.

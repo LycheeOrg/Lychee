@@ -222,6 +222,7 @@ declare namespace App {
 		export type UserSharedAlbumsVisibility = "default" | "show" | "separate" | "separate_shared_only" | "hide";
 		export type UserUploadTrustLevel = "check" | "monitor" | "trust_but_verify" | "trusted";
 		export type VersionChannelType = "release" | "git" | "tag";
+		export type VideoThumbnailFrameMode = "first" | "middle" | "custom";
 		export type VisibilityType = "never" | "always" | "hover";
 		export type WatermarkPosition = "top-left" | "top" | "top-right" | "left" | "center" | "right" | "bottom-left" | "bottom" | "bottom-right";
 		export type WebhookMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -355,6 +356,7 @@ declare namespace App {
 					id: string | null;
 					title: string | null;
 					track_url: string | null;
+					tracks: App.Http.Resources.Models.TrackResource[];
 					photos: App.Http.Resources.Models.PhotoResource[];
 				};
 				export type RootAlbumResource = {
@@ -938,6 +940,7 @@ declare namespace App {
 					description: string | null;
 					copyright: string | null;
 					track_url: string | null;
+					tracks: App.Http.Resources.Models.TrackResource[];
 					license: string;
 					header_id: string | null;
 					parent_id: string | null;
@@ -1200,6 +1203,11 @@ declare namespace App {
 					thumb: string | null;
 					thumb2x: string | null;
 					placeholder: string | null;
+				};
+				export type TrackResource = {
+					id: number;
+					name: string;
+					url: string;
 				};
 				export type UserGroupResource = {
 					id: number;

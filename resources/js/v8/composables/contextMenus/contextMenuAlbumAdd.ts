@@ -18,8 +18,6 @@ type Callbacks = {
 	toggleUpload: () => void;
 	toggleCameraCapture: () => void;
 	toggleImportFromLink: () => void;
-	toggleUploadTrack: () => void;
-	deleteTrack: () => void;
 	toggleImportFromDropbox: () => void;
 	toggleImportFromServer: () => void;
 };
@@ -69,22 +67,6 @@ export function useContextMenuAlbumAdd(albumStore: AlbumStore, callbacks: Callba
 				if: albumStore.config?.is_model_album,
 			},
 		];
-
-		if (albumStore.modelAlbum?.track_url !== null && albumStore.modelAlbum?.track_url !== undefined) {
-			menu.push({
-				label: "gallery.menus.delete_track",
-				icon: "lucide:compass",
-				callback: callbacks.deleteTrack,
-				if: albumStore.config?.is_model_album,
-			});
-		} else {
-			menu.push({
-				label: "gallery.menus.upload_track",
-				icon: "lucide:compass",
-				callback: callbacks.toggleUploadTrack,
-				if: albumStore.config?.is_model_album,
-			});
-		}
 
 		return menu.filter((item) => item.if === undefined || item.if !== false);
 	});

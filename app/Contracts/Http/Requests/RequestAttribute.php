@@ -30,6 +30,7 @@ class RequestAttribute
 	public const FROM_ID_ATTRIBUTE = 'from_id';
 	public const ALBUM_ID_ATTRIBUTE = 'album_id';
 	public const ALBUM_IDS_ATTRIBUTE = 'album_ids';
+	public const TRACK_ID_ATTRIBUTE = 'track_id';
 	public const ALBUM_DECORATION_ATTRIBUTE = 'album_decoration';
 	public const ALBUM_DECORATION_ORIENTATION_ATTRIBUTE = 'album_decoration_orientation';
 
