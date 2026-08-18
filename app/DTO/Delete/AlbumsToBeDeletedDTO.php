@@ -22,15 +22,15 @@ final class AlbumsToBeDeletedDTO
 	 * MySQL's prepared-statement placeholder limit is 65 535; staying at 1 000
 	 * keeps every query well within that bound regardless of query complexity.
 	 */
-	private const CHUNK_SIZE = 1000;
+	public const CHUNK_SIZE = 1000;
 
 	/**
 	 * Container for all Albums and associated Tracks to be deleted.
 	 *
-	 * @param string[]                 $parent_ids the parents ID to recompute the cover photo etc
-	 * @param string[]                 $album_ids  the IDs of all albums to be deleted (including descendants)
-	 * @param array{lft:int,rgt:int}[] $gaps       the gaps to be closed in the nested set tree
-	 * @param Collection<string>       $tracks     the Tracks associated to the albums to be deleted
+	 * @param string[]                                             $parent_ids the parents ID to recompute the cover photo etc
+	 * @param string[]                                             $album_ids  the IDs of all albums to be deleted (including descendants)
+	 * @param array{lft:int,rgt:int}[]                             $gaps       the gaps to be closed in the nested set tree
+	 * @param Collection<int,object{disk:string,file_name:string}> $tracks     the Tracks (across every disk) associated to the albums to be deleted
 	 *
 	 * @return void
 	 */
@@ -94,6 +94,9 @@ final class AlbumsToBeDeletedDTO
 				DB::table('access_permissions')->whereIn('base_album_id', $chunk->all())->delete();
 				DB::table('statistics')->whereIn('album_id', $chunk->all())->delete();
 				DB::table('album_size_statistics')->whereIn('album_id', $chunk->all())->delete();
+				// FK cascade is inert here (foreign key constraints are disabled for the
+				// duration of this transaction), so `tracks` rows must be deleted explicitly.
+				DB::table('tracks')->whereIn('album_id', $chunk->all())->delete();
 			});
 
 			// Delete albums leaf-first (sorted by _lft DESC) so parent_id FK constraints

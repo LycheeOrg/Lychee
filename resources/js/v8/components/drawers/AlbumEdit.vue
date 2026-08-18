@@ -33,6 +33,13 @@
 								:legend-label="$t('gallery.album.tabs.move')"
 							/>
 						</section>
+						<section v-if="canTracks" id="album-settings-tracks" class="w-full flex justify-center flex-wrap gap-4 scroll-mt-4">
+							<AlbumTracks
+								:key="`tracks_${albumStore.album?.id}`"
+								legend-icon="lucide:route"
+								:legend-label="$t('gallery.album.tabs.tracks')"
+							/>
+						</section>
 						<section v-if="canShare" id="album-settings-share" class="w-full flex justify-center flex-wrap gap-4 scroll-mt-4">
 							<AlbumShare
 								:key="`share_${albumStore.album?.id}`"
@@ -87,6 +94,7 @@ import AlbumProperties from "@/v8/components/forms/album/AlbumProperties.vue";
 import AlbumVisibility from "@/v8/components/forms/album/AlbumVisibility.vue";
 import AlbumDelete from "@/v8/components/forms/album/AlbumDelete.vue";
 import AlbumMove from "@/v8/components/forms/album/AlbumMove.vue";
+import AlbumTracks from "@/v8/components/forms/album/AlbumTracks.vue";
 import AlbumPurchasable from "@/v8/components/forms/album/AlbumPurchasable.vue";
 import AlbumTransfer from "@/v8/components/forms/album/AlbumTransfer.vue";
 import AlbumShare from "@/v8/components/forms/album/AlbumShare.vue";
@@ -122,11 +130,14 @@ UsersService.count().then((data) => {
 
 const canShare = computed(() => albumStore.rights?.can_share_with_users && numUsers.value > 1 && albumStore.config?.is_base_album);
 const canMove = computed(() => albumStore.config?.is_model_album && albumStore.rights?.can_move);
+// Gated exactly like `canMove` (Q-055-12): hidden for smart/tag/person albums.
+const canTracks = computed(() => albumStore.config?.is_model_album && albumStore.rights?.can_edit);
+const trackCount = computed(() => albumStore.modelAlbum?.tracks?.length ?? 0);
 const canTransfer = computed(() => albumStore.config?.is_base_album && numUsers.value > 1 && albumStore.rights?.can_transfer);
 const canDelete = computed(() => albumStore.config?.is_base_album && albumStore.rights?.can_delete);
 const canManagePurchase = computed(() => albumStore.config?.is_model_album && albumStore.rights?.can_make_purchasable);
 
-type SectionId = "about" | "visibility" | "share" | "move" | "shop" | "danger";
+type SectionId = "about" | "visibility" | "share" | "move" | "tracks" | "shop" | "danger";
 type Section = { value: SectionId; label: string; class?: string };
 
 // Everything renders on one continuously-scrolling page (like the admin Settings "All Settings"
@@ -142,6 +153,10 @@ const sections = computed<Section[]>(() => {
 	];
 	if (canMove.value) {
 		items.push({ value: "move", label: trans("gallery.album.tabs.move") });
+	}
+	if (canTracks.value) {
+		const label = trackCount.value > 0 ? `${trans("gallery.album.tabs.tracks")} (${trackCount.value})` : trans("gallery.album.tabs.tracks");
+		items.push({ value: "tracks", label });
 	}
 	if (canShare.value) {
 		items.push({ value: "share", label: trans("gallery.album.tabs.share") });

@@ -80,6 +80,11 @@ Route::post('/Album::track', [Gallery\AlbumController::class, 'setTrack'])
 	->withoutMiddleware(['content_type:json'])
 	->middleware(['content_type:multipart']);
 Route::delete('/Album::track', [Gallery\AlbumController::class, 'deleteTrack']);
+Route::post('/Album::tracks', [Gallery\AlbumTracksController::class, 'store'])
+	->withoutMiddleware(['content_type:json'])
+	->middleware(['content_type:multipart']);
+Route::patch('/Album::tracks', [Gallery\AlbumTracksController::class, 'update']);
+Route::delete('/Album::tracks', [Gallery\AlbumTracksController::class, 'destroy']);
 Route::post('/Album::watermark', [Gallery\AlbumController::class, 'watermarkAlbumPhotos'])->middleware('support:se');
 
 Route::post('/TagAlbum', [Gallery\AlbumController::class, 'createTagAlbum']);
