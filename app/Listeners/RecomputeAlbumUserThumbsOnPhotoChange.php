@@ -40,7 +40,7 @@ class RecomputeAlbumUserThumbsOnPhotoChange
 {
 	public function handlePhotoSaved(PhotoSaved $event): void
 	{
-		$this->refreshForPhotoId($event->photo_id);
+		$this->refreshForPhotoIds($event->photo_ids);
 	}
 
 	public function handlePhotoWillBeDeleted(PhotoWillBeDeleted $event): void
@@ -50,7 +50,7 @@ class RecomputeAlbumUserThumbsOnPhotoChange
 
 	public function handlePhotoMoved(PhotoMoved $event): void
 	{
-		$this->refreshForPhotoId($event->photo_id);
+		$this->refreshForPhotoIds($event->photo_ids);
 	}
 
 	public function handlePhotoHighlightToggled(PhotoHighlightToggled $event): void

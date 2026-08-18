@@ -10,6 +10,7 @@ namespace App\DTO\Delete;
 
 use App\Enum\SizeVariantType;
 use App\Enum\StorageDiskType;
+use App\Events\AlbumListingCacheFlushRequested;
 use App\Events\AlbumSaved;
 use App\Events\TagAlbumSaved;
 use App\Jobs\DeleteFaceEmbeddingsJob;
@@ -63,6 +64,14 @@ final class PhotosToBeDeletedDTO
 			$this->softDelete();
 			$jobs = $this->forceDelete();
 		});
+
+		// Both softDelete() (detach) and forceDelete() (hard delete) remove
+		// `photo_album` rows via raw DB writes, bypassing every photo-level
+		// model event. The TagAlbum/PersonAlbum "matching albums" cache (see
+		// AlbumRepository::getMatchingAlbumsForPersonPaginated()) depends on
+		// those events to know a photo's containing albums changed. A coarse
+		// flush is cheap and correctness-safe for this rare, bulk operation.
+		AlbumListingCacheFlushRequested::dispatchIf($this->soft_delete_photo_ids !== [] || $this->force_delete_photo_ids !== []);
 
 		return $jobs;
 	}

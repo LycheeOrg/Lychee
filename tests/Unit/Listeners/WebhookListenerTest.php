@@ -81,7 +81,7 @@ class WebhookListenerTest extends AbstractTestCase
 		Config::set('features.webhook', false);
 		Bus::fake();
 
-		$this->listener->handlePhotoMoved(new PhotoMoved('photo-001', 'album-a', 'album-b'));
+		$this->listener->handlePhotoMoved(new PhotoMoved(['photo-001'], 'album-a', 'album-b'));
 
 		Bus::assertNothingDispatched();
 	}
@@ -156,7 +156,7 @@ class WebhookListenerTest extends AbstractTestCase
 		// Only a DELETE-webhook exists, not MOVE
 		Webhook::factory()->onPhotoDelete()->create();
 
-		$this->listener->handlePhotoMoved(new PhotoMoved('nonexistent-photo', 'album-a', 'album-b'));
+		$this->listener->handlePhotoMoved(new PhotoMoved(['nonexistent-photo'], 'album-a', 'album-b'));
 
 		Bus::assertNothingDispatched();
 	}

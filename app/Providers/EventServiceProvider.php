@@ -161,6 +161,10 @@ class EventServiceProvider extends ServiceProvider
 		Event::listen(AlbumComputedDataUpdated::class, ManagedCacheAlbumListingInvalidator::class . '@handleAlbumComputedDataUpdated');
 		Event::listen(AlbumListingCacheFlushRequested::class, ManagedCacheAlbumListingInvalidator::class . '@handleAlbumListingCacheFlushRequested');
 		Event::listen(AlbumTagsChanged::class, ManagedCacheAlbumListingInvalidator::class . '@handleAlbumTagsChanged');
+		Event::listen(PhotoPersonsChanged::class, ManagedCacheAlbumListingInvalidator::class . '@handlePhotoPersonsChanged');
+		Event::listen(PhotoMoved::class, ManagedCacheAlbumListingInvalidator::class . '@handlePhotoMoved');
+		Event::listen(PhotoSaved::class, ManagedCacheAlbumListingInvalidator::class . '@handlePhotoSaved');
+		Event::listen(PhotoWillBeDeleted::class, ManagedCacheAlbumListingInvalidator::class . '@handlePhotoWillBeDeleted');
 
 		// Managed-cache user-listing invalidation (Feature 053)
 		Event::listen(UserGroupMembershipChanged::class, ManagedCacheUserListingInvalidator::class . '@handle');
