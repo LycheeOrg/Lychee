@@ -101,6 +101,15 @@ function colorForTrackIndex(index: number): string {
 	return TRACK_COLORS[index % TRACK_COLORS.length];
 }
 
+// Leaflet's layers control assigns overlay names via innerHTML, and track names
+// are user-supplied (RenameAlbumTrackRequest only validates type/length). Encode
+// here so the name renders as text instead of being parsed as HTML.
+function escapeHtml(text: string): string {
+	const div = document.createElement("div");
+	div.textContent = text;
+	return div.innerHTML;
+}
+
 function loadMapProvider() {
 	AlbumService.getMapProvider()
 		.then((data) => {
@@ -288,7 +297,7 @@ function addContentsToMap() {
 			});
 		layer.addTo(map.value as L.Map);
 		trackLayers.value.set(track.id, layer as L.Layer);
-		overlays[track.name] = layer as L.Layer;
+		overlays[escapeHtml(track.name)] = layer as L.Layer;
 	});
 	if (Object.keys(overlays).length > 0) {
 		L.control.layers(undefined, overlays).addTo(map.value);

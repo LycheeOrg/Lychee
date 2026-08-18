@@ -285,11 +285,16 @@ class Delete
 		}
 
 		// All tracks (across every disk) belonging to the recursive album set (FR-055-12).
+		// Chunk album_ids to avoid hitting the database placeholder limit (MySQL error 1390).
 		/** @var Collection<int,object{disk:string,file_name:string}> $recursive_album_tracks */
-		$recursive_album_tracks = DB::table('tracks')
-			->select(['disk', 'file_name'])
-			->whereIn('album_id', $recursive_album_ids)
-			->get();
+		$recursive_album_tracks = collect($recursive_album_ids)->chunk(AlbumsToBeDeletedDTO::CHUNK_SIZE)->reduce(
+			function (Collection $carry, Collection $chunk): Collection {
+				return $carry->concat(
+					DB::table('tracks')->select(['disk', 'file_name'])->whereIn('album_id', $chunk->all())->get()
+				);
+			},
+			collect([])
+		);
 
 		return new AlbumsToBeDeletedDTO(
 			parent_ids: $parent_ids,
