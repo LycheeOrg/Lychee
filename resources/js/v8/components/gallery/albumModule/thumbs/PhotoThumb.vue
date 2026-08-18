@@ -27,7 +27,7 @@
 
 			<img
 				:alt="$t('gallery.thumbnail')"
-				class="h-full w-full border-none object-cover object-center"
+				class="thumb-image h-full w-full border-none object-cover object-center"
 				:src="props.photo.size_variants.small?.url ?? props.photo.size_variants.thumb?.url ?? srcNoImage"
 				:srcset="
 					props.photo.size_variants.small2x?.url
