@@ -17,6 +17,10 @@ use App\Events\AlbumSaved;
 use App\Events\AlbumTagsChanged;
 use App\Events\BaseAlbumRemoved;
 use App\Events\PersonAlbumSaved;
+use App\Events\PhotoMoved;
+use App\Events\PhotoPersonsChanged;
+use App\Events\PhotoSaved;
+use App\Events\PhotoWillBeDeleted;
 use App\Events\TagAlbumSaved;
 use App\Services\Cache\CacheKeyProvider;
 use App\Services\Cache\ManagedCacheService;
@@ -119,5 +123,73 @@ class ManagedCacheAlbumListingInvalidator
 	public function handleAlbumTagsChanged(AlbumTagsChanged $event): void
 	{
 		$this->cache->forgetTags($this->cache_key_provider->albumTagTags($event->tag_ids));
+	}
+
+	/**
+	 * A face was (re)assigned/unassigned/dismissed: the PersonAlbum "matching
+	 * albums" cache (see AlbumRepository::getMatchingAlbumsForPersonPaginated())
+	 * is keyed by person id and must be evicted for every person on either
+	 * side of the change.
+	 */
+	public function handlePhotoPersonsChanged(PhotoPersonsChanged $event): void
+	{
+		$this->cache->forgetTags($this->cache_key_provider->albumPersonTags($event->person_ids));
+	}
+
+	/**
+	 * A photo was moved between real albums: which albums now contain a
+	 * given person's photos may have changed, even though the photo's own
+	 * face/person assignments did not.
+	 */
+	public function handlePhotoMoved(PhotoMoved $event): void
+	{
+		$this->evictPersonTagsForPhotos($event->photo_ids);
+	}
+
+	/**
+	 * A photo's `photo_album` link was (re)written — covers new uploads,
+	 * imports, and photo copies (see MoveOrDuplicate::do()). Fires more
+	 * broadly than strictly necessary (PhotoSaved is also dispatched for
+	 * unrelated reasons, e.g. size-variant regeneration), but the eviction
+	 * below is cheap.
+	 */
+	public function handlePhotoSaved(PhotoSaved $event): void
+	{
+		$this->evictPersonTagsForPhotos($event->photo_ids);
+	}
+
+	/**
+	 * A photo is about to be removed from an album (detach) or hard-deleted;
+	 * dispatched before the `faces` rows are gone, so they can still be
+	 * resolved here.
+	 */
+	public function handlePhotoWillBeDeleted(PhotoWillBeDeleted $event): void
+	{
+		$this->evictPersonTagsForPhotos([$event->photo_id]);
+	}
+
+	/**
+	 * Evicts the PersonAlbum "matching albums" cache for every person
+	 * currently associated (via a non-dismissed face) with any of the given photos.
+	 *
+	 * @param string[] $photo_ids
+	 */
+	private function evictPersonTagsForPhotos(array $photo_ids): void
+	{
+		if ($photo_ids === []) {
+			return;
+		}
+
+		$person_ids = DB::table('faces')
+			->whereIn('photo_id', $photo_ids)
+			->whereNotNull('person_id')
+			->where('is_dismissed', '=', false)
+			->distinct()
+			->pluck('person_id')
+			->all();
+
+		if ($person_ids !== []) {
+			$this->cache->forgetTags($this->cache_key_provider->albumPersonTags($person_ids));
+		}
 	}
 }
