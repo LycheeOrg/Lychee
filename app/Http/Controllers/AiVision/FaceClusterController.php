@@ -18,18 +18,50 @@ use App\Http\Resources\Collections\PaginatedClustersResource;
 use App\Http\Resources\Collections\PaginatedFaceResource;
 use App\Http\Resources\Models\ClusterPreviewResource;
 use App\Models\Face;
+use App\Models\Photo;
+use App\Policies\AlbumPolicy;
+use App\Policies\PhotoQueryPolicy;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class FaceClusterController extends Controller
 {
 	private const PER_PAGE = 20;
 	private const SAMPLE_SIZE = 5;
 
+	public function __construct(protected PhotoQueryPolicy $photo_query_policy)
+	{
+	}
+
+	/**
+	 * Restricts a face query to faces of photos which are accessible to the current user.
+	 *
+	 * @template TModel of Face
+	 *
+	 * @param Builder<TModel> $query
+	 *
+	 * @return Builder<TModel>
+	 */
+	private function applyAccessibilityFilter(Builder $query): Builder
+	{
+		$user = Auth::user();
+		$unlocked_album_ids = AlbumPolicy::getUnlockedAlbumIDs();
+
+		$accessible_photo_ids = $this->photo_query_policy->applySearchabilityFilter(
+			query: Photo::query()->select('photos.id'),
+			user: $user,
+			unlocked_album_ids: $unlocked_album_ids,
+		);
+
+		return $query->whereIn('photo_id', $accessible_photo_ids);
+	}
+
 	public function index(ClusterIndexRequest $request): PaginatedClustersResource
 	{
 		$page = (int) $request->query('page', '1');
-		$totals = Face::query()
+		$totals = $this->applyAccessibilityFilter(Face::query())
 			->whereNotNull('cluster_label')
 			->where('cluster_label', '>', -1)
 			->whereNull('person_id')
@@ -43,7 +75,7 @@ class FaceClusterController extends Controller
 
 		// Prefetch sample faces for all clusters in the paginated set to avoid N+1
 		$cluster_labels = $paginated->pluck('cluster_label')->all();
-		$samples_by_cluster = Face::query()
+		$samples_by_cluster = $this->applyAccessibilityFilter(Face::query())
 			->whereIn('cluster_label', $cluster_labels)
 			->whereNull('person_id')
 			->notDismissed()
@@ -73,7 +105,7 @@ class FaceClusterController extends Controller
 	public function assign(ClusterAssignRequest $request, int $label, PersonFactory $person_factory): array
 	{
 		$person = $person_factory->findOrCreate($request->person_id, $request->new_person_name);
-		$count = Face::where('cluster_label', '=', $label)
+		$count = $this->applyAccessibilityFilter(Face::where('cluster_label', '=', $label))
 			->whereNull('person_id')
 			->notDismissed()
 			->update(['person_id' => $person->id]);
@@ -88,7 +120,7 @@ class FaceClusterController extends Controller
 
 	public function dismiss(ClusterDismissRequest $request, int $label): array
 	{
-		$count = Face::where('cluster_label', '=', $label)
+		$count = $this->applyAccessibilityFilter(Face::where('cluster_label', '=', $label))
 			->whereNull('person_id')
 			->notDismissed()
 			->update(['is_dismissed' => true]);
@@ -106,7 +138,7 @@ class FaceClusterController extends Controller
 	 */
 	public function uncluster(UnclusterFacesRequest $request, int $label): array
 	{
-		$count = Face::whereIn('id', $request->face_ids)
+		$count = $this->applyAccessibilityFilter(Face::whereIn('id', $request->face_ids))
 			->where('cluster_label', '=', $label)
 			->whereNull('person_id')
 			->notDismissed()
@@ -122,7 +154,8 @@ class FaceClusterController extends Controller
 	 */
 	public function faces(ClusterFacesRequest $request, int $label): PaginatedFaceResource
 	{
-		$exists = Face::where('cluster_label', '=', $label)
+		$exists = $this->applyAccessibilityFilter(Face::query())
+			->where('cluster_label', '=', $label)
 			->whereNull('person_id')
 			->notDismissed()
 			->exists();
@@ -131,7 +164,7 @@ class FaceClusterController extends Controller
 			abort(404, 'Cluster not found or has no qualifying faces.');
 		}
 
-		$paginated = Face::query()
+		$paginated = $this->applyAccessibilityFilter(Face::query())
 			->where('cluster_label', '=', $label)
 			->whereNull('person_id')
 			->notDismissed()
