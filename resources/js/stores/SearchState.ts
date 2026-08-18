@@ -22,6 +22,10 @@ export const useSearchStore = defineStore("search-store", {
 		from: 0,
 		perPage: 0,
 		total: 0,
+
+		// Bumped on every search/refresh/clear so a late-resolving request can tell it's
+		// been superseded and must not overwrite newer state.
+		requestToken: 0,
 	}),
 	actions: {
 		reset() {
@@ -34,6 +38,7 @@ export const useSearchStore = defineStore("search-store", {
 			this.from = 0;
 			this.perPage = 0;
 			this.total = 0;
+			this.requestToken++;
 		},
 
 		load(): Promise<void> {
@@ -50,31 +55,39 @@ export const useSearchStore = defineStore("search-store", {
 			});
 		},
 
-		search(terms: string): Promise<void> {
+		search(terms: string, startPage: number = 1): Promise<void> {
 			const albumsStore = useAlbumsStore();
 			const photosStore = usePhotosStore();
 			const albumStore = useAlbumStore();
 
 			if (terms.length < (this.config?.search_minimum_length ?? 3)) {
+				this.requestToken++;
 				albumsStore.albums = [];
 				photosStore.photos = [];
 				return Promise.resolve();
 			}
 
 			this.searchTerm = terms;
-			this.searchPage = 1;
+			this.searchPage = startPage;
 			this.isSearching = true;
+			const token = ++this.requestToken;
 			return SearchService.search(albumStore.albumId, this.searchTerm, this.searchPage, this.sortingColumn, this.sortingOrder)
 				.then((response) => {
+					if (token !== this.requestToken) {
+						// Superseded by a newer search/refresh/clear; discard this response.
+						return;
+					}
 					albumsStore.albums = response.data.albums;
-					photosStore.setPhotos(response.data.photos, false);
+					photosStore.setPhotos(response.data.photos, false, this.searchPage);
 
 					this.from = response.data.from;
 					this.perPage = response.data.per_page;
 					this.total = response.data.total;
 				})
 				.finally(() => {
-					this.isSearching = false;
+					if (token === this.requestToken) {
+						this.isSearching = false;
+					}
 				});
 		},
 
@@ -88,22 +101,30 @@ export const useSearchStore = defineStore("search-store", {
 			}
 			this.isSearching = true;
 			this.searchPage = Math.ceil(this.from / this.perPage) + 1;
+			const token = ++this.requestToken;
 			return SearchService.search(albumStore.albumId, this.searchTerm, this.searchPage, this.sortingColumn, this.sortingOrder)
 				.then((response) => {
+					if (token !== this.requestToken) {
+						// Superseded by a newer search/refresh/clear; discard this response.
+						return;
+					}
 					albumsStore.albums = response.data.albums;
-					photosStore.setPhotos(response.data.photos, false);
+					photosStore.setPhotos(response.data.photos, false, this.searchPage);
 					this.from = response.data.from;
 					this.perPage = response.data.per_page;
 					this.total = response.data.total;
 				})
 				.finally(() => {
-					this.isSearching = false;
+					if (token === this.requestToken) {
+						this.isSearching = false;
+					}
 				});
 		},
 
 		clear() {
 			const albumsStore = useAlbumsStore();
 			const photosStore = usePhotosStore();
+			this.requestToken++;
 			albumsStore.albums = [];
 			photosStore.reset();
 

@@ -1,6 +1,7 @@
 import { ALL } from "@/config/constants";
 import { Router } from "vue-router";
 import { usePhotosStore } from "@/stores/PhotosState";
+import { useSearchStore } from "@/stores/SearchState";
 
 export function usePhotoRoute(router: Router) {
 	function getParentId(): string | undefined {
@@ -9,26 +10,28 @@ export function usePhotoRoute(router: Router) {
 
 	/**
 	 * Build the route object for a given photo.
-	 * For album and flow routes the ?page=N query param is included when the
+	 * For album, flow and search routes the ?page=N query param is included when the
 	 * photo's page is known, so direct links always open the correct page.
 	 */
 	function photoRoute(photoId: string) {
 		const currentRoute = router.currentRoute.value.name as string;
 		const albumId = getParentId();
 
+		const photosStore = usePhotosStore();
+		const page = photosStore.photoPageMap[photoId];
+		// Only include ?page=N when the stored value is a valid positive integer
+		const pageQuery = page !== undefined && Number.isInteger(page) && page >= 1 ? { page: String(page) } : {};
+
 		if (currentRoute.startsWith("search")) {
-			return { name: "search", params: { albumId: albumId ?? ALL, photoId: photoId } };
+			const searchStore = useSearchStore();
+			const searchQuery = searchStore.searchTerm ? { q: searchStore.searchTerm, ...pageQuery } : {};
+			return { name: "search", params: { albumId: albumId ?? ALL, photoId: photoId }, query: searchQuery };
 		}
 
 		if (currentRoute === "tag") {
 			const tagId = router.currentRoute.value.params.tagId as string;
 			return { name: "tag", params: { tagId, photoId } };
 		}
-
-		const photosStore = usePhotosStore();
-		const page = photosStore.photoPageMap[photoId];
-		// Only include ?page=N when the stored value is a valid positive integer
-		const pageQuery = page !== undefined && Number.isInteger(page) && page >= 1 ? { page: String(page) } : {};
 
 		if (currentRoute.startsWith("flow")) {
 			return { name: "flow-album", params: { albumId: albumId ?? ALL, photoId: photoId }, query: pageQuery };
